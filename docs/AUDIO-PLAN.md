@@ -38,7 +38,7 @@ re-generated with this voice so the whole game is one actor.
 ## Generation flows (fill in as they start — resume key!)
 
 - Existing footstep takes: flow `m4CCp8NwghWEw9rSHPqZ` (from Cowork).
-- v2.3 generation flow: (not started yet — fill in the flow_id here)
+- v2.3 generation flow: `GWD3XGXSf18EJYIKmgds` (https://elevenlabs.io/app/flows/GWD3XGXSf18EJYIKmgds)
 - Session IDs per sound: see STATUS table.
 
 ## Inventory
@@ -154,3 +154,22 @@ Chad the bundle + zip.
 - [ ] All assets downloaded + encoded + wired (checkpoint 4)
 - [ ] Harnesses green both builds (checkpoint 5)
 - [ ] v2.3 released: tag, bundle, zip, artifact, Netlify (checkpoint 6)
+
+## Node map (flow GWD3XGXSf18EJYIKmgds) — resume key
+
+amb=oq6hrlY5MprMXsbXBB4y fire=Lz9058vdEv37PGKKluLX ghostloop=eb42C0g7gsG4WAlqpOGy
+heart=gU4xa8zfhNYbBOoydx97 paper=V7JfbuuS5BQrSg79WnVK kick=HHmt9IeeiPHgOnLvOZs4
+clang=0L9CSPhKb26JIERJXKlX whoosh=HaScgtSLd0G2g0WyooOb boom=tLbAayIQmaX5EqCYUb9y
+scream=RekrrA8uM07sAgvzUoeF cry=RkCL77bghMTCiA3X5Wjh breath=d4Drd9pxbJlkb7JlYTmS
+chime=L5FeePYdPGxMwQtEOJ3n chant=bMRvX4VvikwbIK0RI7Ea uiclick=vt33XAedKSHt4wPgyrAp
+uiconfirm=eV6XUKCBVgAYhTrx5zOc uicard=TaBvjXcy4nlKBLHZk1m3 uirank=RYg1AEkiweqdX6KlYSQx
+ulost=sIdZcO9pNkJGfxplZtA9 steps(4-in-1)=J7jpiBWS2kiVlyM6EOT3
+dread=vi4nGDBpGKLtiutzZnVH endbad=MFSV80I9A2o5sU0CbhPA endgood=LLgyW4pebsM8Z0DAiKwJ
+voice=KgQ5iY3DyVVaaMnG5QDa vpile=z87bo9UFM3iwjy65zdEg vnote=UwgB3nD7n5p4nCnD7QIl
+vghost=b5nuVeohEhIs1aow35Vf vlow=EJPLVpaemLuvybHBSS9o vA=eH4EWivLrlEoqyworNlL
+vB=jhQ1u3DP9fX5EsxTiTxh vC=FEW5TK2fzak3bYmGEnrc vD=B62VvcyAnuVoiuJ8Xc2O
+vlost=G4flDiFsnBETv1isG1gm
+
+Note: this connector's eleven_v3 tts node exposes no stability parameter;
+lines are generated at the node default. If a take feels off, Chad can
+re-take it on the canvas with the stability slider at 0% (Creative).
