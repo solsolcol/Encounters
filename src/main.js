@@ -2364,9 +2364,9 @@ $('startBtn').onclick = () => {
   });
 };
 $('stepBack').onclick = () => dismissDecision();
-$('retryBtn').onclick = () => location.reload();
+$('retryBtn').onclick = () => restart();
 $('nextBtn').onclick = () => { ui.result.classList.add('hide'); finish(); };
-$('againBtn').onclick = () => location.reload();
+$('againBtn').onclick = () => restart();
 
 /* The title screen speaks for the whole series, not for whichever chapter is
    loaded — so it has its own line. CHAPTER.brief stays as the chapter's own
@@ -2526,6 +2526,84 @@ function finish() {
   ui.complete.classList.remove('hide');
   ui.hud.classList.add('hide');
   state = 'complete';
+}
+
+/* ------------------------------------------------------------- restart ---
+   Walking it again used to reload the page, which meant fetching and decoding
+   four and a half megabytes, recompiling every shader, and then sitting
+   through the title screen and the chapter card to reach a world that was
+   already built and still in memory. Nothing about the scene is consumed by
+   playing it, so the honest thing is to put every moving part back where it
+   started and drop the player straight onto the grass.
+
+   The three snapshots below are taken at load, before a frame has run, so
+   they are the pristine values however many times you go round.            */
+const STATS_AT_START = { ...stats };
+const SPAWN = { pos: yaw.position.clone(), rot: yaw.rotation.y };
+const DRUM_REST = { pos: drum.position.clone(), rotZ: drum.rotation.z };
+
+function restart() {
+  // every screen that could be up, down
+  for (const el of [ui.complete, ui.over, ui.result, ui.decide,
+                    ui.prompt, ui.interact, ui.chapter, hint]) {
+    el.classList.add('hide');
+  }
+  ui.hud.classList.remove('hide');
+  document.body.classList.remove('cine');
+  cineFadeEl.style.opacity = '0';
+  // The red has to go NOW, not over four tenths of a second: a CSS transition
+  // is frame-driven, so on the device that just struggled through a cutscene
+  // it would bleed over the first seconds of the new run. Kill the transition,
+  // force the value, commit it, then hand it back to the stylesheet.
+  ui.panic.classList.remove('critical');
+  ui.panic.style.transition = 'none';
+  ui.panic.style.opacity = '0';
+  void ui.panic.offsetWidth;
+  ui.panic.style.transition = '';
+  const ticks = $('ticks');
+  if (ticks) ticks.textContent = '';
+
+  // the numbers
+  Object.assign(stats, STATS_AT_START);
+  syncBars();
+  showHaunt(false);
+  drainAcc = 0; lastTickAt = 0;
+  chosen = null;
+
+  // the player, back out on the grass facing the block, standing still
+  yaw.position.copy(SPAWN.pos); yaw.rotation.y = SPAWN.rot;
+  pitch.rotation.x = 0; camera.rotation.z = 0;
+  vel.set(0, 0, 0); bob = 0;
+  lookX = lookY = 0; edgeTurn = 0;
+  stickVec.x = stickVec.y = 0;
+  for (const k in keys) keys[k] = false;
+
+  // her, back in the corridor, unseen
+  ghost.position.copy(GHOST_HOME);
+  ghost.rotation.y = 0;
+  reveal = 0;
+  ghostOpacity(0);
+
+  // and the props any cutscene may have borrowed
+  drum.position.copy(DRUM_REST.pos); drum.rotation.z = DRUM_REST.rotZ;
+  ash.visible = true;
+  heroNote.visible = true;
+  noteStorm = 1;
+  noteProp.visible = false;
+  if (prayerArmL) prayerArmL.visible = false;
+  if (rightHandModel) setHandCurl(rightHandModel, 1);
+  armR.visible = true;
+  armR.rotation.set(0.50, 0.28, -0.48);
+  vmKey.intensity = 0.50;
+  layoutHands();
+  redoShadows();
+
+  state = 'play';
+  setHint();
+  hint.classList.remove('hide');
+  clearTimeout(hintTimer);
+  hintTimer = setTimeout(() => hint.classList.add('hide'), 7000);
+  tryLock();                       // the click that got us here is the gesture
 }
 
 /* ---------------------------------------------------------------- loop */
@@ -2725,7 +2803,7 @@ window.__enc = { yaw, stats, blockers: BLOCKERS, getState: () => state,
                  interactPile, pile, pileDist, pileInView,
                  pileScreen, pointerHitsPile, PILE_POS, INTERACT_R,
                  pileGlow: () => pileRing.material.opacity, renderer,
-                 pick, chapter: CHAPTER,
+                 pick, chapter: CHAPTER, restart,
                  cine: {
                    active: () => !!cine,
                    t: () => (cine ? cine.t : -1),

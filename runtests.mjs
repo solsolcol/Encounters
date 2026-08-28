@@ -23,6 +23,7 @@ const ALL = [
   { name: 'sound',    file: 'soundtest.mjs', quick: true,  why: 'music, the mute button, the credits' },
   { name: 'perf',     file: 'perftest.mjs',  quick: true,  why: 'frame pacing, frozen shadows, drift' },
   { name: 'cine',     file: 'cinetest.mjs',  quick: true,  why: 'all four cutscenes, skip, restore' },
+  { name: 'restart',  file: 'restarttest.mjs', quick: true, why: 'both endings start a fresh run in place' },
   { name: 'title',    file: 'titletest.mjs', quick: false, why: 'logo, button, chapter card' },
   { name: 'final',    file: 'final.mjs',     quick: false, why: 'the whole walk, on a real phone and desktop' },
 ];
