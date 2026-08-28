@@ -8,13 +8,16 @@ for (const [name, opts] of [['phone', devices['iPhone 13']], ['desktop', {viewpo
   const fits = await p.evaluate(()=>{ const c=document.querySelector('#title .card');
     return { cardH:Math.round(c.scrollHeight), viewH:innerHeight, bodyOverflowX: document.documentElement.scrollWidth>innerWidth }; });
   await p.screenshot({path:`f-${name}-title.png`});
-  await (name==='phone'? p.tap('#startBtn') : p.click('#startBtn')); await p.waitForTimeout(400);
+  // The headless renderer is software and this box is shared, so the first
+  // seconds after start go on shader compilation rather than frames. Warm up
+  // before timing anything, or the walk below measures the container.
+  await (name==='phone'? p.tap('#startBtn') : p.click('#startBtn')); await p.waitForTimeout(4000);
   await p.evaluate(()=>{ const e=window.__enc; e.yaw.position.set(1.4,1.62,6.0); e.yaw.rotation.y=0.26; });
   await p.waitForTimeout(2400); await p.screenshot({path:`f-${name}-world.png`});
   // walk in until the decision fires
   await p.evaluate(()=>{ window.__enc.yaw.position.set(-1.0,1.62,-1.5); });
   let fired=false;
-  for(let i=0;i<130 && !fired;i++){ await p.keyboard.down('KeyW'); await p.waitForTimeout(250);
+  for(let i=0;i<300 && !fired;i++){ await p.keyboard.down('KeyW'); await p.waitForTimeout(250);
     fired = await p.$eval('#decide',e=>!e.classList.contains('hide')); }
   await p.keyboard.up('KeyW'); await p.waitForTimeout(900);
   await p.screenshot({path:`f-${name}-decide.png`});

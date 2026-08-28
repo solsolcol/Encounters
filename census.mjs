@@ -40,8 +40,9 @@ await p.evaluate(()=>{ const e=window.__enc;
   for(let step=0; step<200; step++){
     e.yaw.position.z -= 0.05; e.yaw.position.x -= 0.014;
     e.yaw.updateMatrixWorld(true); e.updateGhost(1/60);
+    // SHRINE, the one point the burner and everything around it is placed from
     if(e.ghost.visible) { window.__appearedAt = +Math.hypot(
-      e.yaw.position.x-(-2.4), e.yaw.position.z-(-0.6)).toFixed(2); break; }
+      e.yaw.position.x-(-1.0), e.yaw.position.z-(-7.5)).toFixed(2); break; }
   }
 });
 console.log('visible at start:', before,

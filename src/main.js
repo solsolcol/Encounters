@@ -153,6 +153,41 @@ function makeSoftDot(inner = 'rgba(255,255,255,1)', outer = 'rgba(255,255,255,0)
   return new THREE.CanvasTexture(c);
 }
 
+// --- the moon: a lit disc with faint maria, soft at the limb. Drawn on a
+// transparent canvas so the sprite has a real silhouette rather than a square.
+function makeMoon() {
+  const s = 256, [c, ctx] = cnv(s);
+  const r = s * 0.40;
+  const g = ctx.createRadialGradient(s * 0.42, s * 0.40, r * 0.1, s / 2, s / 2, r);
+  g.addColorStop(0.00, '#fffdf4');
+  g.addColorStop(0.70, '#f0ebdc');
+  g.addColorStop(0.94, '#d5d8dc');
+  g.addColorStop(1.00, '#bcc3cd');
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.arc(s / 2, s / 2, r, 0, Math.PI * 2); ctx.fill();
+
+  ctx.save();
+  ctx.beginPath(); ctx.arc(s / 2, s / 2, r, 0, Math.PI * 2); ctx.clip();
+  ctx.fillStyle = '#8f96a3';
+  ctx.globalAlpha = 0.17;                       // maria — keeps it off being a coin
+  for (const [x, y, rr] of [[0.40, 0.36, 0.19], [0.58, 0.29, 0.12], [0.63, 0.55, 0.16],
+                            [0.37, 0.61, 0.11], [0.50, 0.73, 0.08], [0.30, 0.47, 0.07]]) {
+    ctx.beginPath(); ctx.arc(s * x, s * y, s * rr, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.globalAlpha = 0.07;                       // craters
+  for (let i = 0; i < 34; i++) {
+    ctx.beginPath();
+    ctx.arc(s * (0.16 + Math.random() * 0.68), s * (0.16 + Math.random() * 0.68),
+            s * (0.006 + Math.random() * 0.022), 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.restore();
+
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+
 /* --------------------------------------------------- glTF texture rescue */
 /* GLTFLoader decodes embedded images by wrapping each one in a Blob URL and
    fetching it. Inside a sandboxed frame the page's security policy refuses
@@ -236,6 +271,114 @@ const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x070a10);
 scene.fog = new THREE.FogExp2(0x0b1018, 0.021);
 
+/* ------------------------------------------------------------ night sky */
+/* Three layers, all of them ignoring fog and writing no depth: a gradient
+   dome, a star field, and the moon. The dome is drawn first with depth
+   testing off, so it can never occlude anything; the stars and moon sit
+   inside the far plane and DO depth-test, so the block and the trees cut
+   into them the way a real skyline does.                                   */
+// Added to the scene further down, after `world`, so that the first Group in
+// the scene is still the world — several of the test harnesses find it that
+// way. Draw order is decided by renderOrder and depth, not by scene order.
+const sky = new THREE.Group();
+
+{
+  // horizon carries the city's sodium haze; overhead goes almost black
+  const [sc, sctx] = cnv(64);
+  const grad = sctx.createLinearGradient(0, 64, 0, 0);
+  grad.addColorStop(0.00, '#241d1c');
+  grad.addColorStop(0.16, '#1a1a24');
+  grad.addColorStop(0.42, '#101526');
+  grad.addColorStop(0.72, '#080b16');
+  grad.addColorStop(1.00, '#04060b');
+  sctx.fillStyle = grad; sctx.fillRect(0, 0, 64, 64);
+  const skyTex = new THREE.CanvasTexture(sc);
+  skyTex.colorSpace = THREE.SRGBColorSpace;
+  const dome = new THREE.Mesh(
+    new THREE.SphereGeometry(150, 24, 16),
+    new THREE.MeshBasicMaterial({
+      map: skyTex, side: THREE.BackSide, fog: false,
+      depthWrite: false, depthTest: false
+    }));
+  dome.renderOrder = -1000;
+  sky.add(dome);
+}
+
+// --- stars: two layers, so the sky has a few bright ones rather than an
+// even dusting. sizeAttenuation off keeps them crisp points at any distance.
+const starDot = makeSoftDot('rgba(255,255,255,1)', 'rgba(255,255,255,0)');
+function starLayer(n, size, minLum, maxLum) {
+  const geo = new THREE.BufferGeometry();
+  const pos = new Float32Array(n * 3), col = new Float32Array(n * 3);
+  for (let i = 0; i < n; i++) {
+    // uniform over the upper hemisphere, kept just off the horizon
+    const el = Math.asin(0.09 + Math.random() * 0.9);
+    const az = Math.random() * Math.PI * 2;
+    const cr = Math.cos(el) * 140;
+    pos[i * 3] = Math.cos(az) * cr;
+    pos[i * 3 + 1] = Math.sin(el) * 140;
+    pos[i * 3 + 2] = Math.sin(az) * cr;
+    const l = minLum + Math.random() * (maxLum - minLum);
+    const warm = Math.random() < 0.22;          // a few amber ones among the blue-white
+    col[i * 3] = l * (warm ? 1.0 : 0.86);
+    col[i * 3 + 1] = l * (warm ? 0.90 : 0.90);
+    col[i * 3 + 2] = l * (warm ? 0.76 : 1.0);
+  }
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  const pts = new THREE.Points(geo, new THREE.PointsMaterial({
+    map: starDot, size, sizeAttenuation: false, vertexColors: true,
+    transparent: true, depthWrite: false, fog: false,
+    blending: THREE.AdditiveBlending
+  }));
+  pts.frustumCulled = false;
+  sky.add(pts);
+  return pts;
+}
+const DIM_N = LOW ? 380 : 760, BRIGHT_N = LOW ? 60 : 120;
+starLayer(DIM_N, 1.6, 0.20, 0.55);
+const brightStars = starLayer(BRIGHT_N, 3.2, 0.60, 1.0);
+
+// twinkle, on the bright layer only — the dim ones would just look noisy
+const starBase = brightStars.geometry.attributes.color.array.slice();
+const starPhase = new Float32Array(BRIGHT_N);
+for (let i = 0; i < BRIGHT_N; i++) starPhase[i] = Math.random() * 100;
+function updateStars(t) {
+  const c = brightStars.geometry.attributes.color;
+  for (let i = 0; i < BRIGHT_N; i++) {
+    const p = starPhase[i];
+    const k = 0.74 + 0.26 * Math.sin(t * (0.5 + (p % 1) * 1.7) + p);
+    c.array[i * 3] = starBase[i * 3] * k;
+    c.array[i * 3 + 1] = starBase[i * 3 + 1] * k;
+    c.array[i * 3 + 2] = starBase[i * 3 + 2] * k;
+  }
+  c.needsUpdate = true;
+}
+
+// --- the moon. It sits roughly where the moonlight comes from, but lower and
+// swung a little toward the block, so it is in frame on the walk in rather
+// than something you have to go looking for.
+const MOON_POS = new THREE.Vector3(-14.9, 9.3, -13.4).normalize().multiplyScalar(126);
+{
+  const halo = new THREE.Sprite(new THREE.SpriteMaterial({
+    map: makeSoftDot('rgba(196,218,255,0.34)', 'rgba(150,182,255,0)'),
+    transparent: true, depthWrite: false, fog: false,
+    blending: THREE.AdditiveBlending
+  }));
+  halo.position.copy(MOON_POS);
+  halo.scale.setScalar(40);
+  halo.renderOrder = -2;
+  sky.add(halo);
+
+  const disc = new THREE.Sprite(new THREE.SpriteMaterial({
+    map: makeMoon(), transparent: true, depthWrite: false, fog: false
+  }));
+  disc.position.copy(MOON_POS);
+  disc.scale.setScalar(14);
+  disc.renderOrder = -1;
+  sky.add(disc);
+}
+
 const camera = new THREE.PerspectiveCamera(72, innerWidth / innerHeight, 0.08, 160);
 const yaw = new THREE.Object3D();      // horizontal rotation
 const pitch = new THREE.Object3D();    // vertical rotation
@@ -267,14 +410,7 @@ const fill = new THREE.DirectionalLight(0x6a86b8, 0.28);
 fill.position.set(6, 8, 16);
 scene.add(fill);
 
-// sodium street lamp — the only warm anchor in the scene
-const lampLight = new THREE.SpotLight(0xffb367, 26, 26, Math.PI / 4.4, 0.55, 1.4);
-lampLight.position.set(8.0, 5.5, 6.0);
-lampLight.target.position.set(5.8, 0, 3.2);
-lampLight.castShadow = true;
-lampLight.shadow.mapSize.set(LOW ? 512 : 1024, LOW ? 512 : 1024);
-lampLight.shadow.bias = -0.002;
-scene.add(lampLight, lampLight.target);
+// The sodium lamps are built with their posts further down — see makeLamp().
 
 // candle / burner fire light (flickers)
 const fireLight = new THREE.PointLight(0xff7a26, 14, 16, 1.7);
@@ -305,6 +441,7 @@ const matGold = new THREE.MeshStandardMaterial({ color: 0xc79a3d, roughness: 0.3
 /* --------------------------------------------------------------- world */
 const world = new THREE.Group();
 scene.add(world);
+scene.add(sky);          // see the note where `sky` is built
 
 // ground — grass everywhere outside the block
 const ground = new THREE.Mesh(new THREE.PlaneGeometry(220, 220), matGrass);
@@ -370,17 +507,75 @@ deckBack.position.set(0, DECK.clear / 2, -19.5);
 deckBack.castShadow = true; deckBack.receiveShadow = true;
 world.add(deckBack);
 
-// street lamp
-const lampPost = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.12, 5.6, 8), matMetal);
-lampPost.position.set(8.0, 2.8, 6.6); lampPost.castShadow = true;
-world.add(lampPost);
-const lampArm = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.1, 0.1), matMetal);
-lampArm.position.set(7.6, 5.55, 6.4); lampArm.castShadow = true;
-world.add(lampArm);
-const lampHead = new THREE.Mesh(new THREE.SphereGeometry(0.26, 12, 8),
-  new THREE.MeshStandardMaterial({ color: 0xffc98a, emissive: 0xffb367, emissiveIntensity: 3.4, roughness: 0.4 }));
-lampHead.position.set(7.15, 5.5, 6.3);
-world.add(lampHead);
+/* ---------------------------------------------------------- street lamps */
+/* One post, arm and head per lamp, all sharing three geometries and one
+   emissive material.
+
+   Only two of them carry a real light. Every extra dynamic light is paid for
+   on every lit pixel in the scene, which is the one cost a phone genuinely
+   cannot absorb — so the lamps further out fake their pool of light with a
+   flat additive disc on the grass instead. At that distance the difference
+   is invisible and it costs nothing.                                        */
+const lampPostGeo = new THREE.CylinderGeometry(0.09, 0.12, 5.6, 8);
+const lampArmGeo = new THREE.BoxGeometry(0.9, 0.1, 0.1);
+const lampHeadGeo = new THREE.SphereGeometry(0.26, 12, 8);
+const lampPoolGeo = new THREE.CircleGeometry(1, 24);
+const lampHeadMat = new THREE.MeshStandardMaterial({
+  color: 0xffc98a, emissive: 0xffb367, emissiveIntensity: 3.4, roughness: 0.4 });
+const lampPoolTex = makeSoftDot('rgba(255,166,84,0.70)', 'rgba(255,128,40,0)');
+lampPoolTex.colorSpace = THREE.SRGBColorSpace;   // otherwise the sodium reads grey
+const lampPoolMat = new THREE.MeshBasicMaterial({
+  map: lampPoolTex, transparent: true, depthWrite: false,
+  blending: THREE.AdditiveBlending
+});
+
+function makeLamp(x, z, aimX, aimZ, light) {
+  const dx = aimX - x, dz = aimZ - z, len = Math.hypot(dx, dz) || 1;
+  const ux = dx / len, uz = dz / len;              // the way the arm reaches
+
+  const post = new THREE.Mesh(lampPostGeo, matMetal);
+  post.position.set(x, 2.8, z); post.castShadow = true;
+  world.add(post);
+
+  const arm = new THREE.Mesh(lampArmGeo, matMetal);
+  arm.position.set(x + ux * 0.45, 5.55, z + uz * 0.45);
+  arm.rotation.y = Math.atan2(-uz, ux);            // box is long on +X
+  arm.castShadow = true;
+  world.add(arm);
+
+  const hx = x + ux * 0.9, hz = z + uz * 0.9;
+  const head = new THREE.Mesh(lampHeadGeo, lampHeadMat);
+  head.position.set(hx, 5.5, hz);
+  world.add(head);
+
+  if (!light) {                                    // the painted-on version
+    const pool = new THREE.Mesh(lampPoolGeo, lampPoolMat);
+    pool.rotation.x = -Math.PI / 2;
+    pool.position.set(x + ux * 2.6, 0.035, z + uz * 2.6);
+    pool.scale.setScalar(3.9);
+    world.add(pool);
+    return null;
+  }
+
+  const sp = new THREE.SpotLight(0xffb367, light.power, 26, Math.PI / 4.4, 0.55, 1.4);
+  sp.position.set(hx, 5.5, hz);
+  sp.target.position.set(x + ux * 3.4, 0, z + uz * 3.4);
+  if (light.shadow) {
+    sp.castShadow = true;
+    sp.shadow.mapSize.set(LOW ? 512 : 1024, LOW ? 512 : 1024);
+    sp.shadow.bias = -0.002;
+  }
+  scene.add(sp, sp.target);
+  return sp;
+}
+
+// the entrance lamp keeps its shadow, the one behind the spawn point lights
+// the way in, and the three further out are painted
+makeLamp(8.0, 6.6, 5.5, 3.0, { power: 26, shadow: true });
+makeLamp(5.5, 20.5, 3.5, 18.2, { power: 17 });
+makeLamp(-11.5, 4.6, -9.2, 2.2, null);
+makeLamp(17.5, 12.5, 15.0, 10.2, null);
+makeLamp(-19.0, 16.5, -16.5, 14.0, null);
 
 /* --------------- the offering: the object of the encounter --------------- */
 const offering = new THREE.Group();
@@ -464,10 +659,10 @@ const _v = new THREE.Vector3(), _one = new THREE.Vector3(1, 1, 1), _ax = new THR
 // wallpaper. Positions are built first so the mesh is sized to what survives.
 const NEAR_R = 3.2;                        // "at the burner" ends here
 const FAR_KEEP = 0.6;                      // keep 60% of everything past it
-const GROUND_TRIES = LOW ? 240 : 420;
+const GROUND_TRIES = LOW ? 300 : 525;
 const groundXforms = [];
 for (let i = 0; i < GROUND_TRIES; i++) {
-  const r = 0.7 + 15 * Math.pow(Math.random(), 1.7);   // clustered near the source
+  const r = 0.7 + 19 * Math.pow(Math.random(), 1.7);   // clustered near the source
   if (r > NEAR_R && Math.random() > FAR_KEEP) continue;
   const a = Math.random() * Math.PI * 2;
   groundXforms.push(new THREE.Matrix4().compose(
@@ -489,17 +684,25 @@ grounded.instanceMatrix.needsUpdate = true;
 world.add(grounded);
 
 // --- airborne, turning slowly on the updraft and drifting round the deck
-const FLY_N = LOW ? 38 : 82;
+const FLY_N = LOW ? 54 : 115;
 const flying = new THREE.InstancedMesh(noteGeo, noteMat, FLY_N);
 flying.frustumCulled = false;
 world.add(flying);
 
 const airborne = [];
+const FAR_SHARE = 0.30;                              // how many drift out over the grass
+
 function seedNote(f, firstRun) {
+  // Roughly a third of them ride out past the block, so the air is already
+  // moving where you spawn instead of only around the burner.
+  f.far = Math.random() < FAR_SHARE;
   do {                                               // distance from the burner,
-    f.r = 1.5 + Math.random() * 18;                  // thinned past NEAR_R to match
-  } while (f.r > NEAR_R && Math.random() > FAR_KEEP); // the ground scatter
-  f.a = Math.random() * Math.PI * 2;                 // angle around it
+    f.r = f.far ? 17 + Math.random() * 15            // thinned past NEAR_R to match
+                : 1.5 + Math.random() * 16;          // the ground scatter
+  } while (!f.far && f.r > NEAR_R && Math.random() > FAR_KEEP);
+  // the far ones keep to the open side — swung the other way they would just
+  // orbit inside the block, where nothing can see them
+  f.a = f.far ? Math.random() * Math.PI : Math.random() * Math.PI * 2;
   f.y = firstRun ? 0.2 + Math.random() * 7 : 0.15 + Math.random() * 0.5;
   f.top = 5.5 + Math.random() * 7;                     // height it fades out at
   f.rise = 0.16 + Math.random() * 0.62;              // updraft speed
@@ -563,20 +766,54 @@ if (SHOW_AMULET && AMULET_B64) {
   }, (err) => console.warn('amulet failed to load', err));
 }
 
-/* ------------------------------------------------------------ the tree */
-const tree = new THREE.Group();
-tree.position.set(-13.5, 0, 7.5);
-const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.42, 5.2, 9), matDarkWood);
-trunk.position.y = 2.6; trunk.castShadow = true;
-tree.add(trunk);
+/* ---------------------------------------------------------- the tree line */
+/* Low-poly blobs on a trunk: a dozen of them cost less than one of the
+   pillars. They stay out of the corridor between the spawn point and the
+   void deck, so the way in still reads as open.                            */
+const trunkGeo = new THREE.CylinderGeometry(0.26, 0.42, 5.2, 9);
+// three canopy blobs, reused and jittered per instance rather than a fresh
+// geometry per leaf cluster — a hundred one-off geometries is a hundred
+// buffers to upload for no visible gain
+const leafGeo = [1.0, 1.22, 1.45].map(r => new THREE.IcosahedronGeometry(r, 0));
 const leafMat = new THREE.MeshStandardMaterial({ color: 0x1d2b1c, roughness: 1.0, flatShading: true });
-for (let i = 0; i < 7; i++) {
-  const b = new THREE.Mesh(new THREE.IcosahedronGeometry(0.9 + Math.random() * 0.7, 0), leafMat);
-  b.position.set((Math.random() - 0.5) * 2.4, 4.6 + Math.random() * 1.6, (Math.random() - 0.5) * 2.4);
-  b.castShadow = true;
-  tree.add(b);
+
+function makeTree(x, z, s = 1) {
+  const g = new THREE.Group();
+  g.position.set(x, 0, z);
+  g.rotation.y = Math.random() * Math.PI * 2;
+  g.scale.setScalar(s);
+  // only trees the shadow camera actually covers pay for a shadow pass
+  const shadowed = Math.abs(x) < 19 && Math.abs(z) < 19;
+  const trunk = new THREE.Mesh(trunkGeo, matDarkWood);
+  trunk.position.y = 2.6; trunk.castShadow = shadowed;
+  g.add(trunk);
+  const n = 6 + ((Math.random() * 3) | 0);
+  for (let i = 0; i < n; i++) {
+    const b = new THREE.Mesh(leafGeo[(Math.random() * leafGeo.length) | 0], leafMat);
+    b.position.set((Math.random() - 0.5) * 2.4, 4.6 + Math.random() * 1.6, (Math.random() - 0.5) * 2.4);
+    b.scale.setScalar(0.85 + Math.random() * 0.4);
+    b.rotation.set(Math.random() * 3, Math.random() * 3, Math.random() * 3);
+    b.castShadow = shadowed;
+    g.add(b);
+  }
+  world.add(g);
+  return g;
 }
-world.add(tree);
+
+for (const [tx, tz, ts] of [
+  [-13.5, 7.5, 1.00],    // the original, where it always was
+  [-21.5, 12.5, 1.14],
+  [-9.5, 18.5, 0.92],
+  [-24.5, 3.5, 1.06],
+  [11.5, 15.5, 1.04],
+  [17.5, 6.0, 0.94],
+  [23.5, 17.5, 1.18],
+  [-15.0, 26.0, 1.10],
+  [8.5, 26.5, 1.00],
+  [-27.0, 20.5, 0.98],
+  [26.0, 27.5, 1.12],
+  [-4.5, 31.0, 0.90],
+]) makeTree(tx, tz, ts);
 
 /* ---------------------------------------------------------- atmosphere */
 // drifting smoke from the burner
@@ -620,16 +857,23 @@ world.add(embers);
    walks toward you, stopping short. The trigger is your distance to the BURNER,
    not to her, so it fires however you approach the shrine.                     */
 
-const GHOST_HOME = new THREE.Vector3(-7.5, 0, -14.0);  // deep in the corridor, off to one side
+/* Where she waits. This is picked for the sightline, not for the floor plan:
+   from out on the grass the lift core and the pillar rows hide most of the
+   corridor, and a figure standing in the dark 20 m away cannot be seen at
+   all. Just behind and beside the burner she is lit by the fire and stands
+   against the smoke column, so you notice her from outside — which is the
+   whole point of her showing up earlier.                                    */
+const GHOST_HOME = new THREE.Vector3(-2.5, 0, -12.0);
 const GHOST_MIN_DIST = 3.4;                            // never closer than this
-const GHOST_APPEAR_AT = 8.5;                           // measured from the burner, not from her
+const GHOST_APPEAR_AT = 14.0;                          // measured from the burner, not from her
+const GHOST_DECK_EDGE = -1.2;                          // she does not follow you outside
 const GHOST_FADE_TIME = 1.1;                           // seconds to come fully in
 
 const ghost = new THREE.Group();
 ghost.position.copy(GHOST_HOME);
 world.add(ghost);
 
-const ghostLight = new THREE.PointLight(0xa8c4e0, 0, 7, 1.8);
+const ghostLight = new THREE.PointLight(0xa8c4e0, 0, 8.5, 1.8);
 ghostLight.position.set(0, 1.45, 0.7);                 // just in front of her chest
 ghost.add(ghostLight);
 
@@ -725,7 +969,7 @@ function updateGhost(dt) {
         m.needsUpdate = true;
       }
     }
-    ghostLight.intensity = o * 0.5;
+    ghostLight.intensity = o * 0.7;
     ghost.visible = reveal > 0.001;
   }
   if (!ghost.visible) return;
@@ -735,10 +979,18 @@ function updateGhost(dt) {
   const dx = yaw.position.x - ghost.position.x, dz = yaw.position.z - ghost.position.z;
   const dist = Math.hypot(dx, dz);
   if (ghostMixer) ghostMixer.update(dt);
-  if (dist > GHOST_MIN_DIST) {
+  // She shows herself from much further out now, so she would otherwise be
+  // waiting at the entrance by the time you got there — and you would walk
+  // straight through her. Instead she holds her ground while you are still
+  // outside: you see her standing in the corridor, watching. She only starts
+  // closing once you are under the block with her, and she never comes out.
+  const inside = yaw.position.z < -0.5;
+  if (inside && dist > GHOST_MIN_DIST) {
     const step = 0.85 * dt;
     ghost.position.x += (dx / dist) * step;
     ghost.position.z += (dz / dist) * step;
+    ghost.position.z = Math.min(ghost.position.z, GHOST_DECK_EDGE);
+    ghost.position.x = THREE.MathUtils.clamp(ghost.position.x, -20.5, 20.5);
   }
   ghost.rotation.y = Math.atan2(dx, dz);               // always turned toward you
 }
@@ -1236,6 +1488,7 @@ function tick() {
 
   updateNotes(dt, t);
   updateGhost(dt);
+  updateStars(t);
 
   // fire flicker
   const fl = 0.75 + Math.sin(t * 11.3) * 0.14 + Math.sin(t * 27.7) * 0.09 + Math.random() * 0.08;
