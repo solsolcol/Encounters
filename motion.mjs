@@ -1,7 +1,7 @@
 import { chromium } from 'playwright';
 const b = await chromium.launch({ executablePath:'/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
   args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--no-sandbox']});
-const p = await b.newPage({viewport:{width:1280,height:760}});
+const p = await b.newPage({viewport:{width:480,height:320}});
 p.on('pageerror',e=>console.log('ERR',e.message));
 await p.goto('file:///tmp/g/wrapped.html'); await p.waitForTimeout(3000);
 await p.click('#startBtn'); await p.waitForTimeout(900);

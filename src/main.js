@@ -1387,7 +1387,10 @@ world.traverse(o => {
 /* ------------------------------------------------------------ controls */
 const keys = Object.create(null);
 addEventListener('keydown', e => {
-  // Escape closes the decision panel the same way the Step back button does
+  // Escape closes whatever is open: credits first, then the decision panel
+  if (e.code === 'Escape' && !$('credits').classList.contains('hide')) {
+    showCredits(false); return;
+  }
   if (e.code === 'Escape' && state === 'decide') { dismissDecision(); return; }
   if (e.code === 'KeyE' && state === 'play') { interactPile(); return; }
   keys[e.code] = true;
@@ -1617,6 +1620,93 @@ const LOGO_B64 = '__LOGO_B64__';
   } catch { giveUp(); }
 })();
 
+/* ------------------------------------------------------------- music ----
+   Played through the Web Audio API, not an <audio src="data:…"> and not a
+   blob: URL. A sandboxed frame's media-src can refuse both, the same way it
+   refuses data: images — decodeAudioData takes the bytes and no URL exists.
+
+   Muted by default on a desktop, because someone is probably at a desk with
+   other people. A phone or tablet is a private, deliberate thing, so it
+   starts with sound. Either way the choice is remembered per device.       */
+const MUSIC_B64 = '__MUSIC_B64__';
+const MUSIC_VOL = 0.34, MUTE_KEY = 'mzse3d_muted';
+
+let muted = !HAS_TOUCH;
+try {
+  const saved = localStorage.getItem(MUTE_KEY);
+  if (saved !== null) muted = saved === '1';
+} catch { /* private mode, or storage blocked — the default stands */ }
+
+let actx = null, musicGain = null, musicBuf = null, musicSrc = null, musicWanted = false;
+const muteBtn = $('mute');
+
+function paintMuteBtn() { muteBtn?.classList.toggle('muted', muted); }
+paintMuteBtn();
+
+function musicSetup() {
+  if (actx || !MUSIC_B64) return;
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC) return;
+  try { actx = new AC(); } catch { return; }
+  musicGain = actx.createGain();
+  musicGain.gain.value = muted ? 0 : MUSIC_VOL;
+  musicGain.connect(actx.destination);
+  const bin = atob(MUSIC_B64), bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  actx.decodeAudioData(bytes.buffer)
+    .then(buf => { musicBuf = buf; if (musicWanted) musicStart(); })
+    .catch(() => { /* no decoder for it here; the game is fine without */ });
+}
+
+function musicStart() {
+  musicWanted = true;
+  if (!actx) musicSetup();
+  if (!actx) return;
+  if (actx.state === 'suspended') actx.resume().catch(() => {});
+  if (!musicBuf || musicSrc) return;
+  musicSrc = actx.createBufferSource();
+  musicSrc.buffer = musicBuf;
+  musicSrc.loop = true;
+  // mp3 decoding pads both ends with silence; loop inside the padding or the
+  // seam is audible on every pass
+  musicSrc.loopStart = 0.06;
+  musicSrc.loopEnd = Math.max(0.2, musicBuf.duration - 0.06);
+  musicSrc.connect(musicGain);
+  musicSrc.start(0, musicSrc.loopStart);
+}
+
+function setMuted(v) {
+  muted = v;
+  try { localStorage.setItem(MUTE_KEY, v ? '1' : '0'); } catch {}
+  if (musicGain && actx) {
+    const g = musicGain.gain, now = actx.currentTime;
+    g.cancelScheduledValues(now);
+    g.setValueAtTime(g.value, now);
+    g.linearRampToValueAtTime(muted ? 0 : MUSIC_VOL, now + 0.35);
+  }
+  if (!muted) musicStart();
+  paintMuteBtn();
+}
+
+muteBtn?.addEventListener('click', () => setMuted(!muted));
+
+// Nothing may play until the page has been touched, so take the first thing
+// that happens — including the tap that starts the game.
+function firstGesture() { musicStart(); }
+addEventListener('pointerdown', firstGesture, { once: true });
+addEventListener('keydown', firstGesture, { once: true });
+addEventListener('touchstart', firstGesture, { once: true, passive: true });
+musicSetup();                      // decode early so it is ready on that first tap
+
+/* ------------------------------------------------------------ credits --- */
+const creditsLayer = $('credits');
+function showCredits(on) { creditsLayer?.classList.toggle('hide', !on); }
+$('creditsLink')?.addEventListener('click', () => showCredits(true));
+$('credClose')?.addEventListener('click', () => showCredits(false));
+creditsLayer?.addEventListener('click', e => {
+  if (e.target === creditsLayer) showCredits(false);      // click the backdrop
+});
+
 /* Start. The chapter card goes black over the top while the scene is already
    running behind it, so the fade out puts you in a night that has been going
    on without you. Nothing can be done during it — the state is not 'play'
@@ -1665,6 +1755,7 @@ function playChapterCard(then) {
 
 $('startBtn').onclick = () => {
   state = 'chapter';
+  musicStart();                    // the click that counts as the gesture
   tryLock();                       // has to be inside the click to be allowed
   playChapterCard(() => {
     ui.hud.classList.remove('hide');
@@ -1973,7 +2064,11 @@ function tick() {
 window.__enc = { yaw, stats, blockers: BLOCKERS, getState: () => state,
                  handsRoot, armR, vmCam, vm, updateViewmodel, updateNotes, flying,
                  ghost, updateGhost, ghostInView, getReveal: () => reveal,
-                 dismissDecision, ghostDrainRate, lose,
+                 dismissDecision, ghostDrainRate, lose, setMuted, showCredits,
+                 audio: () => ({ muted, ctxState: actx ? actx.state : 'none',
+                                 gain: musicGain ? +musicGain.gain.value.toFixed(3) : null,
+                                 decoded: !!musicBuf, playing: !!musicSrc,
+                                 seconds: musicBuf ? +musicBuf.duration.toFixed(1) : 0 }),
                  interactPile, pile, pileDist, pileInView,
                  pileScreen, pointerHitsPile, PILE_POS, INTERACT_R,
                  pileGlow: () => pileRing.material.opacity };

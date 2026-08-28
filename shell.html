@@ -50,6 +50,22 @@ html,body{height:100%;overflow:hidden;background:var(--void);color:var(--bone);
 .layer{position:fixed;inset:0;z-index:5;display:flex;pointer-events:none}
 .hide{display:none !important}
 
+/* ── sound toggle — above every layer, on every screen ──────────────── */
+.soundBtn{position:fixed;z-index:9;pointer-events:auto;
+  top:max(14px,env(safe-area-inset-top));right:max(14px,env(safe-area-inset-right));
+  width:46px;height:46px;display:grid;place-items:center;cursor:pointer;
+  background:rgba(7,8,11,.62);border:1px solid var(--line);border-radius:50%;
+  backdrop-filter:blur(6px);transition:border-color .16s,background .16s}
+.soundBtn:hover,.soundBtn:focus-visible{background:rgba(22,26,34,.92);
+  border-color:var(--sodium);outline:none}
+.soundBtn svg{width:24px;height:24px;fill:none;stroke:var(--bone);
+  stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.soundBtn svg path:first-child{fill:var(--bone)}
+.soundBtn.muted svg{stroke:#7A808E} .soundBtn.muted svg path:first-child{fill:#7A808E}
+.soundBtn.muted .waves{display:none}
+.soundBtn:not(.muted) .cross{display:none}
+.soundBtn.muted .cross{stroke:var(--seal)}
+
 /* ── shared type devices ────────────────────────────────────────────── */
 .stencil{display:block;font-family:var(--ui);font-size:1.02rem;
   letter-spacing:.1em;text-transform:uppercase;color:#9AA1B0;font-weight:600}
@@ -86,6 +102,36 @@ html,body{height:100%;overflow:hidden;background:var(--void);color:var(--bone);
 .disclaimer code{font-family:var(--mono);font-size:.94em;color:#9AA1B0}
 .disclaimer{margin-top:24px;padding-top:16px;border-top:1px solid var(--line);
   font-size:1rem;line-height:1.62;color:#767D8C;max-width:46ch;margin-inline:auto}
+
+/* ── credits ────────────────────────────────────────────────────────── */
+.creditsLink{display:block;margin:26px auto 0;background:none;border:0;
+  font-family:var(--ui);font-size:.98rem;letter-spacing:.06em;color:#767D8C;
+  text-decoration:underline;text-underline-offset:4px;
+  text-decoration-color:#3A404D;cursor:pointer;padding:6px 10px}
+.creditsLink:hover,.creditsLink:focus-visible{color:var(--bone);
+  text-decoration-color:var(--sodium);outline:none}
+#credits{align-items:center;justify-content:center;pointer-events:auto;padding:20px;
+  background:rgba(3,4,7,.9);backdrop-filter:blur(4px);z-index:8}
+.credCard{width:min(560px,100%);max-height:86vh;overflow-y:auto;
+  background:var(--ash);border:1px solid var(--line);padding:26px 26px 24px;
+  animation:fadeup .35s var(--ease)}
+.credHead{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.credClose{background:none;border:1px solid var(--line);color:var(--dust);
+  font-size:1rem;line-height:1;padding:7px 11px;cursor:pointer;
+  transition:color .16s,border-color .16s}
+.credClose:hover,.credClose:focus-visible{color:var(--bone);border-color:var(--sodium);outline:none}
+.credIntro,.credFoot{font-size:1rem;line-height:1.6;color:#9AA1B0;margin-top:14px;
+  text-wrap:pretty}
+.credFoot{margin-top:20px;padding-top:16px;border-top:1px solid var(--line);font-size:.94rem}
+.credList{list-style:none;margin:18px 0 0}
+.credList li{padding:13px 0;border-top:1px solid #20242D}
+.credList li:first-child{border-top:0}
+.credWhat{display:block;font-family:var(--ui);font-size:.92rem;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--sodium)}
+.credWho{display:block;font-size:1.06rem;color:var(--bone);margin-top:4px}
+.credList a{display:block;margin-top:4px;font-family:var(--mono);font-size:.88rem;
+  color:var(--jade);text-decoration:none;word-break:break-word}
+.credList a:hover,.credList a:focus-visible{text-decoration:underline;outline:none}
 
 /* ── the chapter card ───────────────────────────────────────────────── */
 /* Black over everything while the scene is already running behind it, so the
@@ -138,8 +184,12 @@ html,body{height:100%;overflow:hidden;background:var(--void);color:var(--bone);
 /* ── decision panel ─────────────────────────────────────────────────── */
 #decide{align-items:flex-end;justify-content:center;pointer-events:auto;
   padding:0 0 max(0px,env(safe-area-inset-bottom))}
+/* The panel never reaches the top of the screen: the sound button lives up
+   there and on a short screen — a phone held sideways — it would land on
+   top of Step back. It scrolls inside itself instead. */
 #decide .panel{width:min(760px,100%);background:rgba(9,11,15,.94);
   border-top:1px solid var(--line);backdrop-filter:blur(14px);
+  max-height:calc(100vh - 84px);max-height:calc(100dvh - 84px);overflow-y:auto;
   opacity:1;animation:rise .45s var(--ease)}
 @keyframes rise{from{transform:translateY(40px)}}
 .panel{border-top:2px solid var(--sodium)}
@@ -276,6 +326,16 @@ html,body{height:100%;overflow:hidden;background:var(--void);color:var(--bone);
 }
 </style>
 
+<!-- sound, reachable from every screen -->
+<button id="mute" class="soundBtn" type="button" aria-label="Sound on or off">
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M4 9.2h3.4L12.4 5v14L7.4 14.8H4z"/>
+    <g class="waves"><path d="M15.9 8.9a4.4 4.4 0 0 1 0 6.2"/>
+      <path d="M18.6 6.2a8.2 8.2 0 0 1 0 11.6"/></g>
+    <g class="cross"><path d="M16.4 9.6l5.2 4.8"/><path d="M21.6 9.6l-5.2 4.8"/></g>
+  </svg>
+</button>
+
 <canvas id="scene"></canvas>
 <div id="grade"></div>
 <div id="panic"></div>
@@ -300,6 +360,46 @@ html,body{height:100%;overflow:hidden;background:var(--void);color:var(--bone);
     <p class="disclaimer">Playable 3D prototype. The scene, characters and dialogue here are
       placeholder material written to demonstrate the mechanic &mdash; the real script,
       teachings and voice belong to Master Z and replace all of it.</p>
+    <button id="creditsLink" class="creditsLink" type="button">Credits</button>
+  </div>
+</div>
+
+<!-- credits -->
+<div id="credits" class="layer hide">
+  <div class="credCard" role="dialog" aria-modal="true" aria-label="Credits">
+    <div class="credHead">
+      <span class="stencil">Credits &amp; attributions</span>
+      <button id="credClose" class="credClose" type="button" aria-label="Close">&#10005;</button>
+    </div>
+    <p class="credIntro">Work by other people used in this prototype, with thanks.</p>
+    <ul class="credList">
+      <li>
+        <span class="credWhat">Music</span>
+        <span class="credWho">Leberch &middot; Pixabay</span>
+        <a href="https://pixabay.com/users/leberch-42823964/" target="_blank"
+           rel="noopener noreferrer">pixabay.com/users/leberch-42823964</a>
+      </li>
+      <li>
+        <span class="credWhat">Hands</span>
+        <span class="credWho">Free VR Hands pack &middot; Fab</span>
+        <a href="https://www.fab.com/listings/5f77c468-92da-46d0-bf5e-ecb9685b87c1"
+           target="_blank" rel="noopener noreferrer">fab.com/listings/5f77c468</a>
+      </li>
+      <li>
+        <span class="credWhat">Ghost</span>
+        <span class="credWho">Kuntilanak, Indonesian ghost &middot; Sketchfab</span>
+        <a href="https://sketchfab.com/3d-models/kuntilanak-indonesian-ghost-747c8d863b344ee09505f0d0ccd679f8"
+           target="_blank" rel="noopener noreferrer">sketchfab.com &middot; kuntilanak-indonesian-ghost</a>
+      </li>
+      <li>
+        <span class="credWhat">HDB block</span>
+        <span class="credWho">HDB &middot; Sketchfab</span>
+        <a href="https://sketchfab.com/3d-models/hdb-339b173efd9645b680ed3ea206d9a16c"
+           target="_blank" rel="noopener noreferrer">sketchfab.com &middot; hdb</a>
+      </li>
+    </ul>
+    <p class="credFoot">Everything else in the scene &mdash; the void deck, the burner, the
+      offerings, the hell notes, the sky and the lighting &mdash; is generated in code.</p>
   </div>
 </div>
 

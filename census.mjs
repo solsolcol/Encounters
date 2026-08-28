@@ -2,7 +2,7 @@ import { chromium } from 'playwright';
 const errs=[];
 const b = await chromium.launch({ executablePath:'/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
   args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--no-sandbox']});
-const p = await b.newPage({viewport:{width:900,height:560}});
+const p = await b.newPage({viewport:{width:480,height:320}});
 p.on('pageerror',e=>errs.push('PAGEERROR '+e.message));
 p.on('console',m=>{ if(m.type()==='error'&&!m.text().includes('TUNNEL')) errs.push('CONSOLE '+m.text().slice(0,120)); });
 await p.goto('file:///tmp/g/wrapped.html'); await p.waitForTimeout(6000);

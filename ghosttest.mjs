@@ -12,7 +12,7 @@ import { chromium } from 'playwright';
 const errs = [];
 const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
   args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--no-sandbox'] });
-const p = await b.newPage({ viewport: { width: 1280, height: 760 } });
+const p = await b.newPage({ viewport: { width: 520, height: 360 } });
 p.on('pageerror', e => errs.push('ERR ' + e.message));
 await p.goto('file:///tmp/g/wrapped.html'); await p.waitForTimeout(5000);
 await p.click('#startBtn'); await p.waitForTimeout(600);
