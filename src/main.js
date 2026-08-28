@@ -358,7 +358,7 @@ function updateStars(t) {
 // --- the moon. It sits roughly where the moonlight comes from, but lower and
 // swung a little toward the block, so it is in frame on the walk in rather
 // than something you have to go looking for.
-const MOON_POS = new THREE.Vector3(-14.9, 9.3, -13.4).normalize().multiplyScalar(126);
+const MOON_POS = new THREE.Vector3(-12.3, 12.4, -15.8).normalize().multiplyScalar(126);
 {
   const halo = new THREE.Sprite(new THREE.SpriteMaterial({
     map: makeSoftDot('rgba(196,218,255,0.34)', 'rgba(150,182,255,0)'),
@@ -1189,7 +1189,11 @@ world.traverse(o => {
 
 /* ------------------------------------------------------------ controls */
 const keys = Object.create(null);
-addEventListener('keydown', e => { keys[e.code] = true; });
+addEventListener('keydown', e => {
+  // Escape closes the decision panel the same way the Step back button does
+  if (e.code === 'Escape' && state === 'decide') { dismissDecision(); return; }
+  keys[e.code] = true;
+});
 addEventListener('keyup', e => { keys[e.code] = false; });
 
 let lookX = 0, lookY = 0;            // accumulated look delta this frame
@@ -1365,6 +1369,7 @@ $('startBtn').onclick = () => {
   setHint();
   tryLock();
 };
+$('stepBack').onclick = () => dismissDecision();
 $('nextBtn').onclick = () => { ui.result.classList.add('hide'); finish(); };
 $('againBtn').onclick = () => location.reload();
 
@@ -1398,6 +1403,25 @@ function startDecision() {
   edgeTurn = 0;
   ui.decide.classList.remove('hide');
   document.exitPointerLock?.();
+}
+
+/* Backing out. Nothing is decided and nothing is lost — the panel closes, you
+   get your feet back, and the burner is still there. It re-arms once you are
+   REARM_R away, so walking off and returning brings the choices up again
+   rather than the panel snapping open in your face as you turn around.       */
+let hintTimer = 0;
+function dismissDecision() {
+  if (state !== 'decide') return;
+  ui.decide.classList.add('hide');
+  state = 'play';
+  const el = $('hintTxt');
+  if (el) {
+    el.textContent = 'Walk away · come back to the burner when you are ready';
+    hint.classList.remove('hide');
+    clearTimeout(hintTimer);
+    hintTimer = setTimeout(() => { hint.classList.add('hide'); setHint(); }, 5000);
+  }
+  tryLock();
 }
 function pick(i) {
   if (chosen !== null) return;
@@ -1433,6 +1457,7 @@ const vel = new THREE.Vector3();
 const tmp = new THREE.Vector3();
 const OFFER_POS = SHRINE;
 let triggered = false;
+const REARM_R = 7.5;      // step this far back and the decision can be re-entered
 let bob = 0;
 
 function collide(nx, nz) {
@@ -1480,9 +1505,12 @@ function tick() {
     bob += dt * sp * 8.5;
     yaw.position.y = 1.62 + Math.sin(bob) * 0.028 * Math.min(sp / 2.5, 1);
 
-    // proximity trigger
+    // proximity trigger. `triggered` is not "has fired once" but "is spent" —
+    // stepping back out past REARM_R reloads it, so the encounter can be
+    // walked away from and walked back into as many times as you like.
     const d = Math.hypot(yaw.position.x - OFFER_POS.x, yaw.position.z - OFFER_POS.z);
     if (d < 6.2) ui.prompt.classList.remove('hide'); else ui.prompt.classList.add('hide');
+    if (triggered && d > REARM_R) triggered = false;
     if (d < 4.5 && !triggered) { triggered = true; startDecision(); }
   }
 
@@ -1539,7 +1567,8 @@ function tick() {
 }
 window.__enc = { yaw, stats, blockers: BLOCKERS, getState: () => state,
                  handsRoot, armR, vmCam, vm, updateViewmodel, updateNotes, flying,
-                 ghost, updateGhost, ghostInView, getReveal: () => reveal };
+                 ghost, updateGhost, ghostInView, getReveal: () => reveal,
+                 dismissDecision };
 tick();
 
 addEventListener('resize', () => {
