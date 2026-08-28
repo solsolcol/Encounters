@@ -14,14 +14,34 @@ for (const [name, opts] of [['phone', devices['iPhone 13']], ['desktop', {viewpo
   await (name==='phone'? p.tap('#startBtn') : p.click('#startBtn')); await p.waitForTimeout(4000);
   await p.evaluate(()=>{ const e=window.__enc; e.yaw.position.set(1.4,1.62,6.0); e.yaw.rotation.y=0.26; });
   await p.waitForTimeout(2400); await p.screenshot({path:`f-${name}-world.png`});
-  // walk in until the decision fires
+  // Walk in until the heap is in reach, then act on it. Nothing opens by
+  // itself any more, so reaching it and opening it are two separate checks.
   await p.evaluate(()=>{ window.__enc.yaw.position.set(-1.0,1.62,-1.5); });
-  let fired=false;
-  for(let i=0;i<300 && !fired;i++){ await p.keyboard.down('KeyW'); await p.waitForTimeout(250);
-    fired = await p.$eval('#decide',e=>!e.classList.contains('hide')); }
+  let reached=false;
+  for(let i=0;i<300 && !reached;i++){ await p.keyboard.down('KeyW'); await p.waitForTimeout(250);
+    reached = await p.evaluate(()=>window.__enc.pileDist() < window.__enc.INTERACT_R); }
   await p.keyboard.up('KeyW'); await p.waitForTimeout(900);
+  const openedItself = await p.$eval('#decide',e=>!e.classList.contains('hide'));
+  if (name === 'phone') {
+    // a portrait phone sees about 37 degrees across, so aim at the heap first
+    // or there is nothing on screen to tap
+    await p.evaluate(()=>{ const e=window.__enc;
+      e.yaw.rotation.y = Math.atan2(-(e.PILE_POS.x - e.yaw.position.x),
+                                    -(e.PILE_POS.z - e.yaw.position.z));
+      e.yaw.updateMatrixWorld(true); });
+    await p.waitForTimeout(2000);
+    const h = await p.evaluate(()=>{ const n=window.__enc.pileScreen();
+      return { x:(n.x*.5+.5)*innerWidth, y:(-n.y*.5+.5)*innerHeight }; });
+    await p.touchscreen.tap(Math.round(h.x), Math.round(h.y));
+  } else {
+    await p.keyboard.press('KeyE');
+  }
+  await p.waitForTimeout(2500);
+  const fired = await p.$eval('#decide',e=>!e.classList.contains('hide'));
   await p.screenshot({path:`f-${name}-decide.png`});
-  console.log(name, '| decision fired:', fired, '| title fits:', fits, '| errors:', errs.length?errs:'none');
+  console.log(name, '| reached the heap:', reached, '| opened on its own:', openedItself,
+              '| opened when acted on:', fired,
+              '| title fits:', fits, '| errors:', errs.length?errs:'none');
   await ctx.close();
 }
 await b.close();

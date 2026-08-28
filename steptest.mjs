@@ -1,4 +1,7 @@
-/* Walking away from the decision and walking back into it. */
+/* Opening the decision, leaving it, and opening it again.
+
+   Nothing opens by itself: the heap is the only way in. So the first check is
+   that standing right next to it, doing nothing, leaves the panel shut.      */
 import { chromium, devices } from 'playwright';
 const b = await chromium.launch({ executablePath:'/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
   args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--no-sandbox']});
@@ -11,33 +14,56 @@ await (label==='phone' ? p.tap('#startBtn') : p.click('#startBtn')); await p.wai
 
 const open = () => p.$eval('#decide', e=>!e.classList.contains('hide'));
 const st   = () => p.evaluate(()=>window.__enc.getState());
-const put  = (x,z) => p.evaluate(([x,z])=>{ const e=window.__enc; e.yaw.position.set(x,1.62,z); }, [x,z]);
+// Face the heap as well as stand near it. A portrait phone sees about 37
+// degrees across, so a target a step off the centre line is simply not on
+// screen — and then there is nothing to tap.
+const put  = (x,z) => p.evaluate(([x,z])=>{ const e=window.__enc;
+  e.yaw.position.set(x,1.62,z);
+  e.yaw.rotation.y = Math.atan2(-(e.PILE_POS.x - x), -(e.PILE_POS.z - z));
+  e.yaw.updateMatrixWorld(true); }, [x,z]);
+// act on the heap the way a player would, not through the debug hook
+const act = async () => {
+  if (label === 'phone') {
+    const h = await p.evaluate(()=>{ const n=window.__enc.pileScreen();
+      return { x:(n.x*.5+.5)*innerWidth, y:(-n.y*.5+.5)*innerHeight }; });
+    await p.touchscreen.tap(Math.round(h.x), Math.round(h.y));
+  } else {
+    await p.keyboard.press('KeyE');
+  }
+  await p.waitForTimeout(2500);
+};
 const out = {};
 
-await put(-1, -4.6); await p.waitForTimeout(3000);          // inside 4.5 m
-out.opensOnApproach = await open();
+// standing right on top of it, doing nothing at all
+await put(-1, -3.6); await p.waitForTimeout(3500);
+out.stayShutUntilYouAct = !(await open());
 
-await (label==='phone' ? p.tap('#stepBack') : p.click('#stepBack')); await p.waitForTimeout(2000);
+await act();
+out.opensWhenYouAct = await open();
+
+await (label==='phone' ? p.tap('#stepBack') : p.click('#stepBack')); await p.waitForTimeout(2500);
 out.closesOnStepBack = !(await open());
 out.stateAfterClose = await st();
 
-await p.waitForTimeout(3000);                              // still standing there
+await p.waitForTimeout(3000);                               // still standing there
 out.staysClosedWhileNear = !(await open());
 
-await put(-1, 3.0); await p.waitForTimeout(3000);           // walk out past 7.5 m
+await put(-1, 3.0); await p.waitForTimeout(3000);           // walk right away
 out.staysClosedAwayFromIt = !(await open());
 
-await put(-1, -4.6); await p.waitForTimeout(3000);          // and back in
-out.reopensOnReturn = await open();
+await put(-1, -3.6); await p.waitForTimeout(3000);          // and back in
+out.stillShutOnReturn = !(await open());
+await act();
+out.reopensWhenYouActAgain = await open();
 
 // Escape closes it too (desktop only — no key on a phone)
 if (label === 'desktop') {
   await p.keyboard.press('Escape'); await p.waitForTimeout(2000);
   out.escapeCloses = !(await open());
+  await act();
 }
 // and the choices still work afterwards
-await put(-1, 3.0); await p.waitForTimeout(3000);
-await put(-1, -4.6); await p.waitForTimeout(3000);
+await p.waitForTimeout(1500);
 await (label==='phone' ? p.tap('#choices .choice') : p.click('#choices .choice'));
 await p.waitForTimeout(3000);
 out.choiceStillWorks = await p.$eval('#result', e=>!e.classList.contains('hide'));

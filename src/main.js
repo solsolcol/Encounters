@@ -804,6 +804,61 @@ for (const n of pileNotes) {
   pileOutline.add(o);
 }
 
+/* The mark. A ring on the floor says "this is a thing"; the exclamation says
+   "and it is waiting for you". It carries further than the ring does — you
+   should be able to pick it out from the deck entrance — and it bobs, so it
+   reads as a marker rather than as part of the scene. A sprite, so it faces
+   you from every angle without any work.                                    */
+const MARK_R = 15.0;                       // you can see it from this far out
+
+/* The glyph is drawn as shapes, not as text. A web font is still loading when
+   this canvas is painted, so ctx.fillText('!') would silently come out in
+   whatever the fallback happens to be — which is how you end up with a pale
+   bar and no dot. A stem and a dot are three lines of geometry and always
+   look like an exclamation mark.                                            */
+function makeMark() {
+  const s = 256, [c, ctx] = cnv(s);
+  const glyph = (fill, w) => {
+    ctx.fillStyle = fill;
+    ctx.beginPath();                       // tapered stem
+    ctx.moveTo(s / 2 - w, 34);
+    ctx.lineTo(s / 2 + w, 34);
+    ctx.lineTo(s / 2 + w * 0.52, 156);
+    ctx.lineTo(s / 2 - w * 0.52, 156);
+    ctx.closePath();
+    ctx.fill();
+    ctx.beginPath();                       // and the dot
+    ctx.arc(s / 2, 205, w * 0.95, 0, Math.PI * 2);
+    ctx.fill();
+  };
+  ctx.shadowColor = 'rgba(99,214,200,0.95)';
+  ctx.shadowBlur = 26;
+  glyph('#06201C', 32);                    // dark rim, so it survives firelight
+  ctx.shadowBlur = 0;
+  glyph('#EFFFFB', 23);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+
+// sizeAttenuation off: a marker should be the same size on screen whether you
+// are across the deck or standing on it
+const pileMarkGlow = new THREE.Sprite(new THREE.SpriteMaterial({
+  map: makeSoftDot('rgba(99,214,200,0.50)', 'rgba(99,214,200,0)'),
+  transparent: true, depthWrite: false, fog: false, sizeAttenuation: false,
+  blending: THREE.AdditiveBlending }));
+pileMarkGlow.scale.setScalar(0.34);
+const pileMark = new THREE.Sprite(new THREE.SpriteMaterial({
+  map: makeMark(), transparent: true, depthWrite: false, fog: false,
+  sizeAttenuation: false }));
+pileMark.scale.setScalar(0.115);
+
+const pileMarkRoot = new THREE.Group();
+pileMarkRoot.position.y = 1.15;
+pileMarkRoot.visible = false;
+pileMarkRoot.add(pileMarkGlow, pileMark);
+pile.add(pileMarkRoot);
+
 const _pileNdc = new THREE.Vector3();
 const _ray = new THREE.Raycaster();
 const _ptr = new THREE.Vector2();
@@ -846,14 +901,28 @@ function pointerHitsPile(cx, cy) {
 function canInteract() { return state === 'play' && pileDist() < INTERACT_R; }
 function interactPile() {
   if (!canInteract()) return false;
-  triggered = true;                         // it is open; do not also auto-open
   startDecision();
   return true;
 }
 
 function updatePile(t) {
+  const dist = pileDist();
+
+  // the mark carries further than the highlight, and keeps moving so it never
+  // reads as a bit of scenery
+  const mark = THREE.MathUtils.clamp(
+    (MARK_R - dist) / (MARK_R - INTERACT_R) * 1.9, 0, 1);   // fully on well before you arrive
+  pileMarkRoot.visible = mark > 0.01;
+  if (pileMarkRoot.visible) {
+    const beat = 0.72 + 0.28 * Math.sin(t * 3.1);
+    pileMarkRoot.position.y = 1.22 + Math.sin(t * 1.9) * 0.10;
+    pileMark.material.opacity = mark;
+    pileMark.scale.setScalar(0.115 * (0.93 + beat * 0.11));
+    pileMarkGlow.material.opacity = mark * beat * 0.55;
+  }
+
   const near = THREE.MathUtils.clamp(
-    (HIGHLIGHT_R - pileDist()) / (HIGHLIGHT_R - INTERACT_R), 0, 1);
+    (HIGHLIGHT_R - dist) / (HIGHLIGHT_R - INTERACT_R), 0, 1);
   const g = near * (0.62 + 0.38 * Math.sin(t * 2.6));
   const on = near > 0.01;
   pileRing.visible = pileOutline.visible = on;
@@ -1575,9 +1644,8 @@ function startDecision() {
 }
 
 /* Backing out. Nothing is decided and nothing is lost — the panel closes, you
-   get your feet back, and the burner is still there. It re-arms once you are
-   REARM_R away, so walking off and returning brings the choices up again
-   rather than the panel snapping open in your face as you turn around.       */
+   get your feet back, and the heap is still there. Since nothing opens on its
+   own, there is nothing to re-arm: look at it again whenever you want to.    */
 let hintTimer = 0;
 function dismissDecision() {
   if (state !== 'decide') return;
@@ -1696,8 +1764,6 @@ const clock = new THREE.Timer();
 const vel = new THREE.Vector3();
 const tmp = new THREE.Vector3();
 const OFFER_POS = SHRINE;
-let triggered = false;
-const REARM_R = 7.5;      // step this far back and the decision can be re-entered
 let bob = 0;
 
 function collide(nx, nz) {
@@ -1745,11 +1811,11 @@ function tick() {
     bob += dt * sp * 8.5;
     yaw.position.y = 1.62 + Math.sin(bob) * 0.028 * Math.min(sp / 2.5, 1);
 
-    // proximity trigger. `triggered` is not "has fired once" but "is spent" —
-    // stepping back out past REARM_R reloads it, so the encounter can be
-    // walked away from and walked back into as many times as you like.
+    // Distance to the burner, which is still what raises the "something is
+    // burning ahead" line. Nothing opens the decision on its own any more:
+    // the heap is the only way in, so looking at the note is always a choice
+    // the player made rather than something that happened to them.
     const d = Math.hypot(yaw.position.x - OFFER_POS.x, yaw.position.z - OFFER_POS.z);
-    if (triggered && d > REARM_R) triggered = false;
 
     // the heap: one prompt at a time, and only when it is actually on screen —
     // a key prompt for something behind you is noise
@@ -1772,11 +1838,11 @@ function tick() {
       syncBars();
       if (stats.sanity <= 0) lose();
     }
-    // the edges close in as it goes, whether or not she is draining you now
-    ui.panic.style.opacity =
-      (THREE.MathUtils.clamp((42 - stats.sanity) / 42, 0, 1) * 0.9).toFixed(3);
-
-    if (state === 'play' && d < 4.5 && !triggered) { triggered = true; startDecision(); }
+    // the edges close in as it goes, whether or not she is draining you now,
+    // and start beating once it is genuinely getting dangerous
+    const dread = THREE.MathUtils.clamp((60 - stats.sanity) / 60, 0, 1);
+    ui.panic.style.opacity = dread.toFixed(3);
+    ui.panic.classList.toggle('critical', stats.sanity > 0 && stats.sanity < 30);
   } else {
     ui.interact.classList.add('hide');
     if (state !== 'lost') showHaunt(false);
