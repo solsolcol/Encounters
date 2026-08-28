@@ -1538,7 +1538,7 @@ if (HAS_TOUCH) canvas.addEventListener('touchcancel', onTouchEnd, { passive: fal
 const CHAPTER = {
   id: 1,
   title: 'The Hell Note',
-  brief: 'Late. A void deck you have walked a hundred times. Tonight someone has been burning for the dead, and a single note has drifted away from the pile — right into your path.',
+  brief: 'Late. A void deck you have walked a hundred times. Tonight someone has been burning for the dead, and a single note has drifted away from the pile, right into your path.',
   prompt: 'The note is at your feet. What do you do?',
   choices: [
     {
@@ -1795,7 +1795,13 @@ $('retryBtn').onclick = () => location.reload();
 $('nextBtn').onclick = () => { ui.result.classList.add('hide'); finish(); };
 $('againBtn').onclick = () => location.reload();
 
-$('brief').textContent = CHAPTER.brief;
+/* The title screen speaks for the whole series, not for whichever chapter is
+   loaded — so it has its own line. CHAPTER.brief stays as the chapter's own
+   framing, for wherever that ends up being used. */
+const INTRO = 'A void deck. A stairwell. A hotel corridor at 3 AM. Ordinary '
+            + 'places on the wrong night, and in each one, something you have '
+            + 'to decide how to answer.';
+$('brief').textContent = INTRO;
 $('qtext').textContent = CHAPTER.prompt;
 const cWrap = $('choices');
 CHAPTER.choices.forEach((c, i) => {
