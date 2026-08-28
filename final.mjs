@@ -4,6 +4,9 @@ const b = await chromium.launch({ executablePath:'/opt/pw-browsers/chromium-1194
 for (const [name, opts] of [['phone', devices['iPhone 13']], ['desktop', {viewport:{width:1440,height:860}}]]) {
   const ctx = await b.newContext(opts); const p = await ctx.newPage();
   const errs=[]; p.on('pageerror',e=>errs.push(e.message));
+  // the page is 4.5 MB and two of these run at once on a two-core box;
+  // the default 30 s navigation timeout is not enough for that
+  p.setDefaultNavigationTimeout(180000); p.setDefaultTimeout(60000);
   await p.goto('file:///tmp/g/wrapped.html'); await p.waitForTimeout(1800);
   const fits = await p.evaluate(()=>{ const c=document.querySelector('#title .card');
     return { cardH:Math.round(c.scrollHeight), viewH:innerHeight, bodyOverflowX: document.documentElement.scrollWidth>innerWidth }; });

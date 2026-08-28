@@ -21,6 +21,7 @@ const ALL = [
   { name: 'sanity',   file: 'sanitytest.mjs',quick: true,  why: 'the drain, the freeze, and losing' },
   { name: 'tick',     file: 'ticktest.mjs',  quick: true,  why: 'damage numbers and the type scale' },
   { name: 'sound',    file: 'soundtest.mjs', quick: true,  why: 'music, the mute button, the credits' },
+  { name: 'perf',     file: 'perftest.mjs',  quick: true,  why: 'frame pacing, frozen shadows, drift' },
   { name: 'title',    file: 'titletest.mjs', quick: false, why: 'logo, button, chapter card' },
   { name: 'final',    file: 'final.mjs',     quick: false, why: 'the whole walk, on a real phone and desktop' },
 ];

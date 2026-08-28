@@ -96,9 +96,15 @@ html,body{height:100%;overflow:hidden;background:var(--void);color:var(--bone);
   box-shadow:0 0 0 rgba(255,179,103,0)}
 #startBtn:hover,#startBtn:focus-visible{transform:translateY(-2px);
   box-shadow:0 8px 30px rgba(255,179,103,.28);outline:none}
-#title .ctrl{margin-top:20px;display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
-#title .ctrl span{font-family:var(--ui);font-size:.98rem;letter-spacing:.04em;
-  color:#767D8C}
+#title .ctrl{margin-top:24px;display:flex;flex-direction:column;gap:12px;
+  align-items:center}
+.ctrlRow{display:flex;align-items:center;gap:10px;text-align:left;
+  max-width:46ch}
+.ctrlIcon{flex:none;width:25px;height:25px;fill:none;stroke:#A6ADBB;
+  stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+#title .ctrl span{font-family:var(--ui);font-size:.98rem;line-height:1.45;
+  letter-spacing:.02em;color:#8A91A0}
+#title .ctrl b{color:var(--bone);font-weight:600}
 .disclaimer code{font-family:var(--mono);font-size:.94em;color:#9AA1B0}
 .disclaimer{margin-top:24px;padding-top:16px;border-top:1px solid var(--line);
   font-size:1rem;line-height:1.62;color:#767D8C;max-width:46ch;margin-inline:auto}
@@ -344,22 +350,40 @@ html,body{height:100%;overflow:hidden;background:var(--void);color:var(--bone);
 <!-- title -->
 <div id="title" class="layer">
   <div class="card">
-    <div class="mark"><span class="dot"></span><span class="stencil">Case File 01 · Prototype</span></div>
     <!-- The logo is painted into this canvas from the JS. `h1` is the fallback
          and stays hidden unless the paint fails, so the screen is never blank. -->
     <canvas id="logo" width="1300" height="560"
             aria-label="Master Z's Encounters — The Game"></canvas>
     <h1 class="hide">The <em>Hell Note</em><br>I Should Never<br>Have Taken</h1>
-    <p class="sub">The Hell Note I Should Never Have Taken</p>
     <p id="brief"></p>
     <button id="startBtn">Start game</button>
     <div class="ctrl">
-      <span>Desktop · WASD + mouse</span>
-      <span>Phone · left thumb moves, right thumb looks</span>
+      <div class="ctrlRow">
+        <svg class="ctrlIcon" viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="1.5" y="6" width="21" height="12.5" rx="2.2"/>
+          <path d="M8.6 9.6h1.2M6.2 12.6h1.2M8.6 12.6h1.2M11 12.6h1.2M7.6 15.6h7"/>
+        </svg>
+        <svg class="ctrlIcon" viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="7.5" y="2.5" width="9" height="19" rx="4.5"/>
+          <path d="M12 6.4v3.2"/>
+        </svg>
+        <span><b>Desktop</b> &middot; W A S D to walk, move the mouse to look,
+          <b>E</b> to look at things</span>
+      </div>
+      <div class="ctrlRow">
+        <svg class="ctrlIcon" viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="5.5" y="1.5" width="13" height="21" rx="2.4"/>
+          <circle cx="9.4" cy="16.4" r="1.7"/><circle cx="14.6" cy="16.4" r="1.7"/>
+        </svg>
+        <svg class="ctrlIcon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M9 11V5.6a1.8 1.8 0 0 1 3.6 0V13"/>
+          <path d="M12.6 9.6a1.7 1.7 0 0 1 3.4 0v1.2"/>
+          <path d="M16 10.4a1.7 1.7 0 0 1 3.4 0v3.4a6.4 6.4 0 0 1-6.4 6.4h-1a5 5 0 0 1-4-2l-3-4.2a1.7 1.7 0 0 1 2.6-2.1L9 13.6"/>
+        </svg>
+        <span><b>Phone</b> &middot; left thumb walks, right thumb looks,
+          <b>tap</b> things to look at them</span>
+      </div>
     </div>
-    <p class="disclaimer">Playable 3D prototype. The scene, characters and dialogue here are
-      placeholder material written to demonstrate the mechanic &mdash; the real script,
-      teachings and voice belong to Master Z and replace all of it.</p>
     <button id="creditsLink" class="creditsLink" type="button">Credits</button>
   </div>
 </div>

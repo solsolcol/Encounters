@@ -24,6 +24,9 @@ for (const [label, url] of [['no CSP (file://)','file:///tmp/g/wrapped.html'],
   const p = await b.newPage({viewport:{width:600,height:400}});
   const blocked=[];
   p.on('console', m => { const t=m.text(); if(/Content Security|Refused/i.test(t)) blocked.push(t.slice(0,90)); });
+  // the page is 4.5 MB and two of these run at once on a two-core box;
+  // the default 30 s navigation timeout is not enough for that
+  p.setDefaultNavigationTimeout(180000); p.setDefaultTimeout(60000);
   await p.goto(url); await p.waitForTimeout(7000);
   const r = await p.evaluate(()=>{
     const out = {hdb:null, ghost:null, logo:null};

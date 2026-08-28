@@ -5,6 +5,9 @@ const b = await chromium.launch({ executablePath:'/opt/pw-browsers/chromium-1194
 const p = await b.newPage({viewport:{width:480,height:320}});
 p.on('pageerror',e=>errs.push('PAGEERROR '+e.message));
 p.on('console',m=>{ if(m.type()==='error'&&!m.text().includes('TUNNEL')) errs.push('CONSOLE '+m.text().slice(0,120)); });
+// the page is 4.5 MB and two of these run at once on a two-core box;
+// the default 30 s navigation timeout is not enough for that
+p.setDefaultNavigationTimeout(180000); p.setDefaultTimeout(60000);
 await p.goto('file:///tmp/g/wrapped.html'); await p.waitForTimeout(6000);
 await p.click('#startBtn'); await p.waitForTimeout(1500);
 // the chapter card holds the screen for about four seconds after Start;

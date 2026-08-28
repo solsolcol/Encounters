@@ -254,6 +254,15 @@ renderer.setPixelRatio(Math.min(devicePixelRatio, LOW ? 1.6 : 2));
 renderer.setSize(innerWidth, innerHeight);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFShadowMap;
+/* Nothing that casts a shadow in this scene ever moves. The block, the
+   pillars, the trees, the lamps, the burner and the heap are all fixed; the
+   ghost throws none by design and neither do you. So the two shadow maps
+   were re-rendering 131 objects every frame to produce a byte-identical
+   picture. They are drawn on demand instead: `shadowDirty` asks for a few
+   fresh frames whenever something that casts one arrives.                  */
+renderer.shadowMap.autoUpdate = false;
+let shadowDirty = 4;
+const redoShadows = () => { shadowDirty = 3; };
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.42;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -476,6 +485,7 @@ new GLTFLoader().parse(HDB_BUF, '', (gltf) => {
     for (const m of mats) { m.roughness = 0.94; m.metalness = 0; }
   });
   world.add(blk);
+  redoShadows();                 // the block is most of what casts one
 }, (err) => console.warn('HDB failed to load', err));
 
 // --- the void deck we build underneath it
@@ -959,6 +969,7 @@ if (SHOW_AMULET && AMULET_B64) {
     amulet.rotation.set(-0.14, 0, 0);
     amulet.traverse(o => { if (o.isMesh) o.castShadow = o.receiveShadow = true; });
     offering.add(amulet);
+    redoShadows();
   }, (err) => console.warn('amulet failed to load', err));
 }
 
@@ -1690,13 +1701,27 @@ function setMuted(v) {
 
 muteBtn?.addEventListener('click', () => setMuted(!muted));
 
-// Nothing may play until the page has been touched, so take the first thing
-// that happens — including the tap that starts the game.
-function firstGesture() { musicStart(); }
-addEventListener('pointerdown', firstGesture, { once: true });
-addEventListener('keydown', firstGesture, { once: true });
-addEventListener('touchstart', firstGesture, { once: true, passive: true });
-musicSetup();                      // decode early so it is ready on that first tap
+/* No browser will let a page make a sound before it has been interacted with,
+   so the music cannot literally start on load. What it can do is start on the
+   very first thing the visitor does — a tap anywhere, a key, a scroll — and
+   keep trying until it actually has. These listeners are deliberately not
+   `once`: the first attempt can land while the context is still resuming or
+   the track is still decoding, and giving up after one try is how you end up
+   with silence until someone happens to press the sound button.            */
+function nudgeMusic() {
+  musicStart();
+  if (actx && actx.state === 'running' && musicSrc) {
+    for (const ev of ['pointerdown', 'pointerup', 'touchstart', 'touchend',
+                      'keydown', 'click', 'wheel'])
+      removeEventListener(ev, nudgeMusic);
+  }
+}
+for (const ev of ['pointerdown', 'pointerup', 'touchstart', 'touchend',
+                  'keydown', 'click', 'wheel'])
+  addEventListener(ev, nudgeMusic, { passive: true });
+// and if the browser is feeling generous, start without waiting to be asked
+musicSetup();
+musicStart();
 
 /* ------------------------------------------------------------ credits --- */
 const creditsLayer = $('credits');
@@ -1933,11 +1958,34 @@ function collide(nx, nz) {
   return nx < BOUNDS.minX || nx > BOUNDS.maxX || nz < BOUNDS.minZ || nz > BOUNDS.maxZ;
 }
 
-function tick() {
+/* Frame pacing.
+
+   A phone or tablet is capped at 60. A ProMotion iPhone will happily hand out
+   120 frames a second, which is twice the heat for a smoothness nobody can
+   see at walking pace. Desktops are left alone. The threshold is 1/61 rather
+   than 1/60 so a plain 60 Hz display never has a frame taken off it.
+
+   The title screen renders at 8 — it is behind a full-screen panel, and the
+   only reason to draw it at all is so the scene is warm and already moving
+   when the chapter card lifts. A hidden tab draws nothing.                 */
+const FRAME_MIN_MS = HAS_TOUCH ? 1000 / 61 : 0;
+const IDLE_MIN_MS = 1000 / 8;
+const SLOW_EVERY_OTHER = HAS_TOUCH;      // half-rate drift for the soft stuff
+let lastFrame = -1e9, slowFrame = 0, slowDt = 0;
+
+function tick(now = 0) {
   requestAnimationFrame(tick);
+  if (document.hidden) return;
+  const gap = state === 'title' ? IDLE_MIN_MS : FRAME_MIN_MS;
+  if (gap && now - lastFrame < gap) return;
+  lastFrame = now;
+
   clock.update();
   const dt = Math.min(clock.getDelta(), 0.05);
   const t = clock.getElapsed();
+
+  // the shadow maps are static; redraw them only when asked
+  if (shadowDirty > 0) { renderer.shadowMap.needsUpdate = true; shadowDirty--; }
 
   // look — keep this frame's delta, the viewmodel needs it for sway
   if (edgeTurn) lookX += Math.sign(edgeTurn) * edgeTurn * edgeTurn * 2.6 * dt;
@@ -2011,7 +2059,6 @@ function tick() {
 
   updateNotes(dt, t);
   updateGhost(dt);
-  updateStars(t);
   updatePile(t);
 
   // fire flicker
@@ -2022,30 +2069,42 @@ function tick() {
     tp.material.color.setHSL(0.04, 1, 0.42 + Math.sin(t * 3 + i) * 0.1);
   });
 
-  // smoke + embers drift
-  const sp2 = smoke.geometry.attributes.position.array;
-  for (let i = 0; i < SMOKE_N; i++) {
-    sp2[i * 3 + 1] += dt * (0.28 + (sSeed[i] % 1) * 0.3);
-    sp2[i * 3] += Math.sin(t * 0.5 + sSeed[i]) * dt * 0.12;
-    if (sp2[i * 3 + 1] > 4.6) {
-      sp2[i * 3 + 1] = 0.9;
-      sp2[i * 3] = SHRINE.x - 0.2 + (Math.random() - 0.5) * 0.8;
-      sp2[i * 3 + 2] = SHRINE.z + (Math.random() - 0.5) * 0.8;
-    }
-  }
-  smoke.geometry.attributes.position.needsUpdate = true;
+  /* Smoke, embers and the star twinkle run at half rate on a phone. All
+     three are slow, soft and blurred, so the eye cannot tell — but each one
+     walks an array and re-uploads a buffer to the GPU, and that adds up on a
+     device with no cooling. The skipped frame's time is carried over, so
+     everything still drifts at the speed it always did.                    */
+  slowDt += dt;
+  if (!SLOW_EVERY_OTHER || (slowFrame++ & 1) === 0) {
+    const sdt = slowDt;
+    slowDt = 0;
 
-  const ep = embers.geometry.attributes.position.array;
-  for (let i = 0; i < EM_N; i++) {
-    ep[i * 3 + 1] += dt * (0.7 + Math.random() * 0.5);
-    ep[i * 3] += Math.sin(t * 1.7 + i) * dt * 0.25;
-    if (ep[i * 3 + 1] > 3.6) {
-      ep[i * 3 + 1] = 0.8;
-      ep[i * 3] = SHRINE.x - 0.2 + (Math.random() - 0.5) * 0.3;
-      ep[i * 3 + 2] = SHRINE.z + (Math.random() - 0.5) * 0.3;
+    updateStars(t);
+
+    const sp2 = smoke.geometry.attributes.position.array;
+    for (let i = 0; i < SMOKE_N; i++) {
+      sp2[i * 3 + 1] += sdt * (0.28 + (sSeed[i] % 1) * 0.3);
+      sp2[i * 3] += Math.sin(t * 0.5 + sSeed[i]) * sdt * 0.12;
+      if (sp2[i * 3 + 1] > 4.6) {
+        sp2[i * 3 + 1] = 0.9;
+        sp2[i * 3] = SHRINE.x - 0.2 + (Math.random() - 0.5) * 0.8;
+        sp2[i * 3 + 2] = SHRINE.z + (Math.random() - 0.5) * 0.8;
+      }
     }
+    smoke.geometry.attributes.position.needsUpdate = true;
+
+    const ep = embers.geometry.attributes.position.array;
+    for (let i = 0; i < EM_N; i++) {
+      ep[i * 3 + 1] += sdt * (0.7 + Math.random() * 0.5);
+      ep[i * 3] += Math.sin(t * 1.7 + i) * sdt * 0.25;
+      if (ep[i * 3 + 1] > 3.6) {
+        ep[i * 3 + 1] = 0.8;
+        ep[i * 3] = SHRINE.x - 0.2 + (Math.random() - 0.5) * 0.3;
+        ep[i * 3 + 2] = SHRINE.z + (Math.random() - 0.5) * 0.3;
+      }
+    }
+    embers.geometry.attributes.position.needsUpdate = true;
   }
-  embers.geometry.attributes.position.needsUpdate = true;
 
   // hands: driven by exactly the same movement the camera uses
   updateViewmodel(dt, t, playerSpeed, strafeInput, dLookX, dLookY);
@@ -2071,7 +2130,12 @@ window.__enc = { yaw, stats, blockers: BLOCKERS, getState: () => state,
                                  seconds: musicBuf ? +musicBuf.duration.toFixed(1) : 0 }),
                  interactPile, pile, pileDist, pileInView,
                  pileScreen, pointerHitsPile, PILE_POS, INTERACT_R,
-                 pileGlow: () => pileRing.material.opacity };
+                 pileGlow: () => pileRing.material.opacity, renderer,
+                 perf: () => ({ shadowAuto: renderer.shadowMap.autoUpdate,
+                                shadowPending: renderer.shadowMap.needsUpdate,
+                                capMs: +FRAME_MIN_MS.toFixed(2),
+                                halfRateDrift: SLOW_EVERY_OTHER,
+                                pixelRatio: renderer.getPixelRatio() }) };
 tick();
 
 addEventListener('resize', () => {
