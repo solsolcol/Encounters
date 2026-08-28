@@ -1,5 +1,5 @@
 <title>The Hell Note</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&amp;family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&amp;family=Inter:wght@400;500;600;700&amp;family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap">
 <style>
 
 /* ── palette lifted from the scene itself ───────────────────────────── */
@@ -14,11 +14,15 @@
   --seal:#B23A2E;      /* hell-note red — danger, stamps, timer */
   --jade:#63D6C8;      /* the ghost's cold light — gains */
   --ease:cubic-bezier(.22,.61,.36,1);
+  /* Inter for anything you have to READ; the mono is kept for numbers and
+     key caps only, where its even width is the point. */
+  --ui:Inter,"Helvetica Neue",Arial,system-ui,-apple-system,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
 }
 
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden;background:var(--void);color:var(--bone);
-  font-family:Archivo,system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-family:var(--ui);
   overscroll-behavior:none;touch-action:none}
 #scene{position:fixed;inset:0;width:100%;height:100%;display:block;background:var(--void)}
 
@@ -39,8 +43,8 @@ html,body{height:100%;overflow:hidden;background:var(--void);color:var(--bone);
 .hide{display:none !important}
 
 /* ── shared type devices ────────────────────────────────────────────── */
-.stencil{display:block;font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.62rem;
-  letter-spacing:.26em;text-transform:uppercase;color:var(--dust);font-weight:500}
+.stencil{display:block;font-family:var(--ui);font-size:1.02rem;
+  letter-spacing:.1em;text-transform:uppercase;color:#9AA1B0;font-weight:600}
 .rule{height:1px;background:linear-gradient(90deg,var(--line),transparent);border:0}
 
 /* ── title card ─────────────────────────────────────────────────────── */
@@ -48,47 +52,60 @@ html,body{height:100%;overflow:hidden;background:var(--void);color:var(--bone);
   padding:28px 20px calc(28px + env(safe-area-inset-bottom,0px));
   background:radial-gradient(ellipse at 50% 40%,#0E1218 0%,#05060A 70%)}
 #title .card{max-width:min(600px,100%);text-align:center;margin:auto;padding:0 4px}
-#title .mark{display:inline-flex;align-items:center;gap:10px;margin-bottom:34px}
+#title .mark{display:inline-flex;align-items:center;gap:10px;margin-bottom:24px}
 #title .mark .dot{width:6px;height:6px;background:var(--seal);border-radius:50%;
   box-shadow:0 0 14px var(--seal)}
 #title h1{font-family:"Cormorant Garamond",Georgia,serif;font-weight:600;
-  font-size:clamp(2.5rem,9vw,4.4rem);line-height:.98;letter-spacing:-.015em;
-  text-wrap:balance;margin-bottom:6px}
+  font-size:clamp(2.2rem,8vw,3.8rem);line-height:1;letter-spacing:-.015em;
+  text-wrap:balance;margin-bottom:8px}
 #title h1 em{font-style:italic;color:var(--sodium)}
-#title .sub{font-family:"JetBrains Mono",monospace;font-size:.7rem;letter-spacing:.3em;
-  text-transform:uppercase;color:var(--dust);margin-bottom:30px}
-#brief{font-size:1.02rem;line-height:1.62;color:#B9BDC7;max-width:46ch;margin:0 auto 34px;
+#title .sub{font-family:var(--ui);font-size:1.05rem;letter-spacing:.13em;font-weight:500;
+  text-transform:uppercase;color:#9AA1B0;margin-bottom:26px}
+#brief{font-size:1.3rem;line-height:1.6;color:#C6CAD3;max-width:44ch;margin:0 auto 30px;
   text-wrap:pretty}
-#startBtn{font-family:"JetBrains Mono",monospace;font-size:.76rem;font-weight:700;
-  letter-spacing:.22em;text-transform:uppercase;color:var(--void);background:var(--sodium);
-  border:0;padding:16px 40px;cursor:pointer;transition:transform .18s var(--ease),box-shadow .18s var(--ease);
+#startBtn{font-family:var(--ui);font-size:1.12rem;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--void);background:var(--sodium);
+  border:0;padding:17px 42px;cursor:pointer;transition:transform .18s var(--ease),box-shadow .18s var(--ease);
   box-shadow:0 0 0 rgba(255,179,103,0)}
 #startBtn:hover,#startBtn:focus-visible{transform:translateY(-2px);
   box-shadow:0 8px 30px rgba(255,179,103,.28);outline:none}
-#title .ctrl{margin-top:26px;display:flex;gap:22px;justify-content:center;flex-wrap:wrap}
-#title .ctrl span{font-family:"JetBrains Mono",monospace;font-size:.62rem;letter-spacing:.14em;
-  color:#565C69;text-transform:uppercase}
-.disclaimer code{font-family:"JetBrains Mono",monospace;font-size:.92em;color:var(--dust)}
-.disclaimer{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);
-  font-size:.72rem;line-height:1.6;color:#565C69;max-width:44ch;margin-inline:auto}
+#title .ctrl{margin-top:20px;display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+#title .ctrl span{font-family:var(--ui);font-size:.98rem;letter-spacing:.04em;
+  color:#767D8C}
+.disclaimer code{font-family:var(--mono);font-size:.94em;color:#9AA1B0}
+.disclaimer{margin-top:24px;padding-top:16px;border-top:1px solid var(--line);
+  font-size:1rem;line-height:1.62;color:#767D8C;max-width:46ch;margin-inline:auto}
 
 /* ── hud ────────────────────────────────────────────────────────────── */
 #hud{padding:max(16px,env(safe-area-inset-top)) 16px 16px;align-items:flex-start}
-#stats{display:flex;flex-direction:column;gap:9px;width:min(190px,42vw)}
-.stat{display:grid;grid-template-columns:1fr auto;gap:2px 8px;align-items:baseline}
-.stat .n{font-family:"JetBrains Mono",monospace;font-size:.58rem;letter-spacing:.2em;
-  text-transform:uppercase;color:var(--dust)}
-.stat .v{font-family:"JetBrains Mono",monospace;font-size:.72rem;font-weight:700;
+#stats{display:flex;flex-direction:column;gap:13px;width:min(290px,58vw)}
+.stat{position:relative;display:grid;grid-template-columns:1fr auto;gap:4px 10px;
+  align-items:baseline}
+.stat .n{font-family:var(--ui);font-size:1.02rem;letter-spacing:.07em;font-weight:600;
+  text-transform:uppercase;color:#9AA1B0}
+.stat .v{font-family:var(--mono);font-size:1.36rem;font-weight:700;
   font-variant-numeric:tabular-nums;color:var(--bone)}
-.track{grid-column:1/-1;height:2px;background:#22262F;overflow:hidden}
+.track{grid-column:1/-1;height:5px;background:#22262F;overflow:hidden;border-radius:3px}
 .track i{display:block;height:100%;transition:width .5s var(--ease)}
 #bSan{background:var(--seal)} #bAwa{background:var(--sodium)} #bWis{background:var(--jade)}
+/* each point of sanity leaves visibly, next to the number it came out of */
+/* anchored under the bar, not above it: the hud is already at the top of the
+   screen and a number that floats up from the value gets clipped away */
+#ticks{position:absolute;right:-14px;top:calc(100% - 4px);width:0;pointer-events:none}
+#ticks span{position:absolute;right:0;top:0;font-family:var(--mono);font-weight:700;
+  font-size:1.34rem;color:#FF6E5D;white-space:nowrap;
+  text-shadow:0 0 16px rgba(226,74,58,.8),0 1px 2px rgba(0,0,0,.9);
+  animation:tick 1.2s var(--ease) forwards}
+@keyframes tick{
+  0%{opacity:0;transform:translate(0,8px) scale(.86)}
+  16%{opacity:1;transform:translate(5px,2px) scale(1.08)}
+  100%{opacity:0;transform:translate(13px,-34px) scale(1)}}
 
 /* ── proximity prompt ───────────────────────────────────────────────── */
 #prompt{align-items:flex-end;justify-content:center;padding-bottom:clamp(80px,16vh,140px)}
-#prompt div{font-family:"JetBrains Mono",monospace;font-size:.66rem;letter-spacing:.24em;
-  text-transform:uppercase;color:var(--bone);background:rgba(7,8,11,.6);
-  border:1px solid var(--line);padding:9px 18px;backdrop-filter:blur(6px);
+#prompt div{font-family:var(--ui);font-size:1.18rem;font-weight:500;letter-spacing:.01em;
+  color:var(--bone);background:rgba(7,8,11,.72);
+  border:1px solid var(--line);padding:12px 22px;backdrop-filter:blur(6px);
   animation:breathe 2.6s ease-in-out infinite}
 @keyframes breathe{0%,100%{opacity:.5}50%{opacity:1}}
 
@@ -102,23 +119,23 @@ html,body{height:100%;overflow:hidden;background:var(--void);color:var(--bone);
 .panel{border-top:2px solid var(--sodium)}
 .dhead{display:flex;justify-content:space-between;align-items:center;
   padding:14px 22px 10px}
-#qtext{padding:0 22px 16px;font-size:1.06rem;line-height:1.45;color:var(--bone);
+#qtext{padding:0 24px 18px;font-size:1.46rem;line-height:1.4;color:var(--bone);
   text-wrap:pretty}
 #choices{display:flex;flex-direction:column;gap:2px;
   padding:0 14px calc(18px + env(safe-area-inset-bottom,0px))}
 .choice{display:flex;gap:14px;align-items:flex-start;text-align:left;width:100%;
   background:transparent;border:0;border-left:2px solid transparent;
-  padding:13px 14px;color:#C7CBD4;font-family:Archivo,sans-serif;font-size:.95rem;
-  line-height:1.42;cursor:pointer;transition:background .16s,color .16s,border-color .16s}
+  padding:15px 16px;color:#CDD2DB;font-family:var(--ui);font-size:1.24rem;
+  line-height:1.4;cursor:pointer;transition:background .16s,color .16s,border-color .16s}
 .choice:hover,.choice:focus-visible{background:#161A22;color:var(--bone);
   border-left-color:var(--sodium);outline:none}
-.choice .key{font-family:"JetBrains Mono",monospace;font-size:.7rem;font-weight:700;
-  color:var(--dust);padding-top:2px;min-width:14px}
+.choice .key{font-family:var(--mono);font-size:1.18rem;font-weight:700;
+  color:#9AA1B0;padding-top:1px;min-width:20px}
 .choice:hover .key,.choice:focus-visible .key{color:var(--sodium)}
 /* leaving without deciding — the burner is still there when you come back */
 .dclose{background:var(--seal);border:1px solid var(--seal);color:#FFFFFF;
-  font-family:"JetBrains Mono",monospace;font-size:.6rem;letter-spacing:.16em;
-  text-transform:uppercase;font-weight:700;padding:8px 13px;cursor:pointer;
+  font-family:var(--ui);font-size:1rem;letter-spacing:.06em;
+  text-transform:uppercase;font-weight:700;padding:10px 16px;cursor:pointer;
   transition:background .16s,border-color .16s}
 .dclose:hover,.dclose:focus-visible{background:#CE4638;border-color:#CE4638;
   color:#FFFFFF;outline:none}
@@ -126,24 +143,24 @@ html,body{height:100%;overflow:hidden;background:var(--void);color:var(--bone);
 /* ── interact prompt — the pile of notes ────────────────────────────── */
 #interact{align-items:flex-end;justify-content:center;
   padding-bottom:clamp(76px,13vh,132px)}
-.ibadge{display:flex;gap:11px;align-items:center;background:rgba(7,8,11,.72);
-  border:1px solid rgba(99,214,200,.45);padding:9px 16px;backdrop-filter:blur(6px);
-  font-family:"JetBrains Mono",monospace;font-size:.64rem;letter-spacing:.2em;
-  text-transform:uppercase;color:var(--jade);
+.ibadge{display:flex;gap:13px;align-items:center;background:rgba(7,8,11,.78);
+  border:1px solid rgba(99,214,200,.5);padding:12px 20px;backdrop-filter:blur(6px);
+  font-family:var(--ui);font-size:1.18rem;font-weight:500;letter-spacing:.01em;
+  color:#8FE6DB;
   box-shadow:0 0 26px rgba(99,214,200,.16);animation:breathe 2.6s ease-in-out infinite}
-.ikey{border:1px solid rgba(99,214,200,.6);border-radius:2px;padding:2px 7px;
-  font-weight:700;color:#EAFFFB;letter-spacing:.06em}
+.ikey{font-family:var(--mono);border:1px solid rgba(99,214,200,.65);border-radius:3px;
+  padding:3px 9px;font-size:1.02rem;font-weight:700;color:#EAFFFB;letter-spacing:.04em}
 
 /* ── she is here ────────────────────────────────────────────────────── */
 #haunt{align-items:flex-start;justify-content:center;
-  padding-top:max(96px,calc(env(safe-area-inset-top) + 96px))}
-.hbadge{display:flex;gap:10px;align-items:center;max-width:min(92vw,560px);
-  background:rgba(28,6,4,.82);border:1px solid rgba(178,58,46,.75);
-  padding:9px 16px;backdrop-filter:blur(6px);
-  font-family:"JetBrains Mono",monospace;font-size:.62rem;letter-spacing:.14em;
-  text-transform:uppercase;color:#F3C9C3;line-height:1.5;
+  padding:clamp(172px,26vh,212px) 12px 0}
+.hbadge{display:flex;gap:13px;align-items:center;max-width:min(94vw,640px);
+  background:rgba(30,6,4,.88);border:1px solid rgba(178,58,46,.8);
+  padding:13px 20px;backdrop-filter:blur(6px);
+  font-family:var(--ui);font-size:1.2rem;font-weight:600;letter-spacing:.005em;
+  color:#FFD9D2;line-height:1.45;
   box-shadow:0 0 30px rgba(178,58,46,.26);animation:alarm 1.5s ease-in-out infinite}
-.hdot{flex:none;width:7px;height:7px;border-radius:50%;background:var(--seal);
+.hdot{flex:none;width:11px;height:11px;border-radius:50%;background:#E24A3A;
   box-shadow:0 0 12px var(--seal)}
 @keyframes alarm{0%,100%{opacity:.72}50%{opacity:1}}
 /* the sanity bar itself beats while it is draining */
@@ -158,18 +175,18 @@ html,body{height:100%;overflow:hidden;background:var(--void);color:var(--bone);
   opacity:1;animation:fadeup .5s var(--ease)}
 @keyframes fadeup{from{transform:translateY(14px)}}
 #deltas{display:flex;gap:16px;margin:14px 0 22px;flex-wrap:wrap}
-#deltas span{font-family:"JetBrains Mono",monospace;font-size:.64rem;letter-spacing:.14em;
+#deltas span{font-family:var(--mono);font-size:1.1rem;font-weight:700;letter-spacing:.04em;
   font-variant-numeric:tabular-nums}
 #deltas .up{color:var(--jade)} #deltas .dn{color:var(--seal)}
-#say{font-size:1.06rem;line-height:1.6;color:#C7CBD4;margin-top:12px;text-wrap:pretty}
+#say{font-size:1.34rem;line-height:1.6;color:#CDD2DB;margin-top:14px;text-wrap:pretty}
 .teachbox{margin-top:28px;padding:24px 26px;border:1px solid var(--line);
   background:linear-gradient(180deg,rgba(27,31,40,.7),rgba(18,21,28,.4))}
 .teachbox .stencil{color:var(--sodium);display:block;margin-bottom:14px}
-#teach{font-family:"Cormorant Garamond",Georgia,serif;font-size:1.42rem;line-height:1.45;
-  font-style:italic;color:var(--bone);text-wrap:pretty}
-#nextBtn,#againBtn,#retryBtn{margin-top:26px;font-family:"JetBrains Mono",monospace;font-size:.72rem;
-  font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--void);
-  background:var(--bone);border:0;padding:14px 32px;cursor:pointer;
+#teach{font-family:var(--ui);font-size:1.44rem;line-height:1.55;font-weight:500;
+  color:var(--bone);text-wrap:pretty}
+#nextBtn,#againBtn,#retryBtn{margin-top:26px;font-family:var(--ui);font-size:1.08rem;
+  font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--void);
+  background:var(--bone);border:0;padding:16px 34px;cursor:pointer;
   transition:background .18s,transform .18s var(--ease)}
 #nextBtn:hover,#againBtn:hover,#retryBtn:hover,
 #nextBtn:focus-visible,#againBtn:focus-visible,#retryBtn:focus-visible{
@@ -181,20 +198,20 @@ html,body{height:100%;overflow:hidden;background:var(--void);color:var(--bone);
 .stampwrap{display:block;position:relative;margin-bottom:10px}
 #rank{font-family:"Cormorant Garamond",Georgia,serif;font-size:clamp(4rem,18vw,7rem);
   font-weight:600;line-height:.9;color:var(--sodium)}
-#pct{font-family:"JetBrains Mono",monospace;font-size:.72rem;letter-spacing:.24em;
-  color:var(--dust);font-variant-numeric:tabular-nums}
+#pct{font-family:var(--mono);font-size:1.1rem;letter-spacing:.1em;font-weight:600;
+  color:#9AA1B0;font-variant-numeric:tabular-nums}
 .sealed{position:absolute;top:2px;right:6px;transform:rotate(-13deg);
-  border:2px solid var(--seal);color:var(--seal);font-family:"JetBrains Mono",monospace;
-  font-size:.56rem;font-weight:700;letter-spacing:.18em;padding:5px 9px;opacity:.85}
-#core{font-family:"Cormorant Garamond",Georgia,serif;font-size:1.3rem;line-height:1.5;
-  font-style:italic;color:var(--bone);max-width:38ch;margin:22px auto 0;text-wrap:pretty}
+  border:2px solid var(--seal);color:var(--seal);font-family:var(--ui);
+  font-size:.92rem;font-weight:700;letter-spacing:.1em;padding:6px 11px;opacity:.9}
+#core{font-family:var(--ui);font-size:1.4rem;line-height:1.55;font-weight:500;
+  color:var(--bone);max-width:40ch;margin:22px auto 0;text-wrap:pretty}
 
 /* ── sanity gone ────────────────────────────────────────────────────── */
 #over .card{position:relative;padding-top:8px}
 #over .card > .stencil{margin-bottom:10px}
-#overSay{font-size:1.06rem;line-height:1.6;color:#C7CBD4;margin-top:12px;text-wrap:pretty}
-#over .teachbox p{font-family:"Cormorant Garamond",Georgia,serif;font-size:1.34rem;
-  line-height:1.45;font-style:italic;color:var(--bone);text-wrap:pretty}
+#overSay{font-size:1.34rem;line-height:1.6;color:#CDD2DB;margin-top:14px;text-wrap:pretty}
+#over .teachbox p{font-family:var(--ui);font-size:1.4rem;line-height:1.55;font-weight:500;
+  color:var(--bone);text-wrap:pretty}
 
 /* ── touch stick ────────────────────────────────────────────────────── */
 #stick{position:fixed;width:112px;height:112px;margin:-56px 0 0 -56px;z-index:4;
@@ -204,17 +221,27 @@ html,body{height:100%;overflow:hidden;background:var(--void);color:var(--bone);
 #knob{position:absolute;left:50%;top:50%;width:44px;height:44px;margin:-22px 0 0 -22px;
   border-radius:50%;background:rgba(232,226,212,.16);border:1px solid rgba(232,226,212,.3)}
 #hint{position:fixed;left:0;right:0;bottom:max(14px,env(safe-area-inset-bottom));z-index:4;
-  text-align:center;pointer-events:none}
+  text-align:center;pointer-events:none;padding:0 18px}
+#hint .stencil{font-size:1.02rem;letter-spacing:.06em;text-transform:none;line-height:1.5;
+  color:#B4BAC6;text-shadow:0 1px 3px rgba(0,0,0,.85)}
 
 @media (max-height:760px){
-  #title h1{font-size:clamp(2rem,7.4vw,3rem)}
-  #title .mark{margin-bottom:20px} #title .sub{margin-bottom:20px}
-  #brief{margin-bottom:24px;font-size:.96rem}
-  .disclaimer{margin-top:26px}
+  #title h1{font-size:clamp(1.9rem,7vw,2.8rem)}
+  #title .mark{margin-bottom:16px} #title .sub{margin-bottom:16px;font-size:.98rem}
+  #brief{margin-bottom:22px;font-size:1.14rem;line-height:1.5}
+  #startBtn{padding:15px 34px;font-size:1.04rem}
+  #title .ctrl{margin-top:18px;gap:14px} #title .ctrl span{font-size:.9rem}
+  .disclaimer{margin-top:22px;font-size:.92rem;line-height:1.5}
 }
 @media (max-width:640px){
-  #qtext{font-size:.98rem} .choice{font-size:.9rem;padding:12px 12px}
-  #teach{font-size:1.2rem} #say{font-size:.98rem}
+  #qtext{font-size:1.3rem} .choice{font-size:1.14rem;padding:13px 12px}
+  #teach{font-size:1.3rem} #say,#overSay{font-size:1.2rem}
+  #core,#over .teachbox p{font-size:1.26rem}
+  .hbadge{font-size:1.06rem;padding:11px 16px}
+  .ibadge,#prompt div{font-size:1.06rem}
+  #stats{width:min(290px,64vw)}
+  #brief{font-size:1.16rem} .disclaimer{font-size:.92rem}
+  #title .sub{font-size:.96rem} #title .ctrl span{font-size:.9rem}
   .sealed{right:0;top:0}
 }
 @media (prefers-reduced-motion:reduce){
@@ -242,10 +269,7 @@ html,body{height:100%;overflow:hidden;background:var(--void);color:var(--bone);
     </div>
     <p class="disclaimer">Playable 3D prototype. The scene, characters and dialogue here are
       placeholder material written to demonstrate the mechanic &mdash; the real script,
-      teachings and voice belong to Master Z and replace all of it.<br><br>
-      Your right hand is a rigged <code>.glb</code> model loaded at runtime, posed
-      through its own finger bones and moved by the same walk data as the camera.
-      Everything else in the scene is generated in code.</p>
+      teachings and voice belong to Master Z and replace all of it.</p>
   </div>
 </div>
 
@@ -253,7 +277,8 @@ html,body{height:100%;overflow:hidden;background:var(--void);color:var(--bone);
 <div id="hud" class="layer hide">
   <div id="stats">
     <div class="stat"><span class="n">Sanity</span><span class="v" id="vSan">100</span>
-      <span class="track"><i id="bSan" style="width:100%"></i></span></div>
+      <span class="track"><i id="bSan" style="width:100%"></i></span>
+      <span id="ticks"></span></div>
     <div class="stat"><span class="n">Awareness</span><span class="v" id="vAwa">50</span>
       <span class="track"><i id="bAwa" style="width:50%"></i></span></div>
     <div class="stat"><span class="n">Wisdom</span><span class="v" id="vWis">50</span>
@@ -316,7 +341,7 @@ html,body{height:100%;overflow:hidden;background:var(--void);color:var(--bone);
 <div id="haunt" class="layer hide">
   <div class="hbadge">
     <span class="hdot"></span>
-    <span>Ghost spotted &mdash; sanity is dropping. Act, or get away from her.</span>
+    <span>Ghost spotted! Sanity level is dropping until you take action.</span>
   </div>
 </div>
 

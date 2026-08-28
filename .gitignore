@@ -51,3 +51,5 @@ dbgtap.mjs
 dbgview.mjs
 pileshot.mjs
 hauntshot.mjs
+uishot.mjs
+tickshot.mjs

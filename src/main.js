@@ -1618,9 +1618,9 @@ function pick(i) {
    the whole point of taking the timer off the choices was that the choosing
    is not the part meant to panic you. Walking out of her reach stops it too:
    that is a real answer, not an escape from the mechanic.                   */
-// At arm's length this empties a full bar in about twenty seconds: long
-// enough to turn and run, short enough that standing there is a decision.
-const DRAIN_FAR = 1.1, DRAIN_NEAR = 5.0;      // sanity per second
+// At arm's length this empties a full bar in about forty seconds: enough
+// room to look at her, think, and still get out.
+const DRAIN_FAR = 0.55, DRAIN_NEAR = 2.5;     // sanity per second
 const DRAIN_FAR_D = 13.0, DRAIN_NEAR_D = 4.0; // metres to her
 
 function ghostDrainRate() {
@@ -1630,6 +1630,29 @@ function ghostDrainRate() {
   const k = THREE.MathUtils.clamp(
     (DRAIN_FAR_D - d) / (DRAIN_FAR_D - DRAIN_NEAR_D), 0, 1);
   return (DRAIN_FAR + (DRAIN_NEAR - DRAIN_FAR) * k * k) * reveal;
+}
+
+/* The bar moving is easy to miss with a ghost walking at you, so every whole
+   point that leaves is also thrown as a number beside the figure it came out
+   of. They are batched on a minimum interval, so a fast drain reads "-2"
+   rather than flickering two "-1"s in the same breath.                      */
+let drainAcc = 0, lastTickAt = 0;
+function sanityTick(n) {
+  const host = $('ticks');
+  if (!host) return;
+  const el = document.createElement('span');
+  el.textContent = '−' + n;               // a real minus sign, not a hyphen
+  el.addEventListener('animationend', () => el.remove());
+  host.appendChild(el);
+}
+function noteDrain(amount) {
+  drainAcc += amount;
+  const now = performance.now();
+  if (drainAcc < 1 || now - lastTickAt < 460) return;
+  const n = Math.floor(drainAcc);
+  drainAcc -= n;
+  lastTickAt = now;
+  sanityTick(n);
 }
 
 let hauntShown = false;
@@ -1743,7 +1766,9 @@ function tick() {
     const drain = ghostDrainRate();
     showHaunt(drain > 0);
     if (drain > 0) {
-      stats.sanity = Math.max(0, stats.sanity - drain * dt);
+      const lost = Math.min(stats.sanity, drain * dt);
+      stats.sanity -= lost;
+      noteDrain(lost);
       syncBars();
       if (stats.sanity <= 0) lose();
     }
