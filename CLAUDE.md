@@ -105,10 +105,13 @@ original bytes untouched. Always strip metadata (`ffmpeg -map_metadata
 -1`). Watch the embedded build: the claude.ai preview artifact caps at
 16 MB and v2.3 ships ~13.8 MB. All playback through
 the shared Web Audio context — never `<audio src=data:>` — and everything
-obeys the one mute button. SFX today are procedural stings in main.js; an
-ElevenLabs replacement pack is planned (ambience loop, fire crackle, drum
-clang, paper flutter, footsteps, ghost breath — footstep takes already
-generated, flow m4CCp8NwghWEw9rSHPqZ in his ElevenLabs workspace).
+obeys the one mute button. Since v2.3 the game runs a full generated
+soundscape: 34 sounds in one `audiopack` asset (assets/audio/ packed by
+build.py) + the James opening line — loops, UI cues, ghost vocalisations,
+cutscene stings, ending music beds, and in-world narration lines (voice:
+"James - Husky, Engaging and Bold", eleven_v3). The procedural stings in
+main.js remain only as the decode-time fallback. docs/AUDIO-PLAN.md has
+the full inventory, cue map, and the generation flow IDs.
 
 ## Content ground truth
 

@@ -56,8 +56,12 @@ out.buttonInPlay = await p.isVisible('#mute');
 await p.waitForTimeout(5200);
 const v = await p.evaluate(() => window.__enc.voice());
 out.voice = v;
-out.voiceDecoded = v.decoded && v.dur > 2 && v.dur < 3.2;
+out.voiceDecoded = v.decoded && v.dur > 3.5 && v.dur < 5.5;   // the James line
 out.voiceObeysMute = (await audio()).muted ? !v.played : v.played;
+// the v2.3 sound pack: loaded in both builds, lazily decoded, loops driven
+const pk = await p.evaluate(() => window.__enc.pack());
+out.packLoaded = pk.loaded && pk.names >= 30;
+out.packLoopsDriven = pk.loops && typeof pk.loops.amb === 'number' && pk.loops.amb > 0;
 await p.evaluate(() => { const e = window.__enc;
   e.yaw.position.set(-1, 1.62, -3.6);
   e.yaw.rotation.y = Math.atan2(-(e.PILE_POS.x + 1), -(e.PILE_POS.z + 3.6));

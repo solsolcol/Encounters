@@ -4,7 +4,11 @@ const errs=[];
 const b = await chromium.launch(LAUNCH);
 const p = await b.newPage({viewport:{width:480,height:320}});
 p.on('pageerror',e=>errs.push('PAGEERROR '+e.message));
-p.on('console',m=>{ if(m.type()==='error'&&!m.text().includes('TUNNEL')) errs.push('CONSOLE '+m.text().slice(0,120)); });
+// TUNNEL and ERR_CONNECTION_RESET are both the sandbox refusing the Google
+// Fonts stylesheet (environment noise, different spellings per container);
+// the page itself never fetches over the network in the wrapped build
+p.on('console',m=>{ if(m.type()==='error'&&!m.text().includes('TUNNEL')
+  &&!m.text().includes('ERR_CONNECTION_RESET')) errs.push('CONSOLE '+m.text().slice(0,120)); });
 // the page is 4.5 MB and two of these run at once on a two-core box;
 // the default 30 s navigation timeout is not enough for that
 p.setDefaultNavigationTimeout(180000); p.setDefaultTimeout(60000);
