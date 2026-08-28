@@ -16,6 +16,10 @@ const p = await b.newPage({ viewport: { width: 1280, height: 760 } });
 p.on('pageerror', e => errs.push('ERR ' + e.message));
 await p.goto('file:///tmp/g/wrapped.html'); await p.waitForTimeout(5000);
 await p.click('#startBtn'); await p.waitForTimeout(600);
+// the chapter card holds the screen for about four seconds after Start;
+// wait for the game to actually be playable rather than for a stopwatch
+await p.waitForFunction(()=>window.__enc && window.__enc.getState()==='play',
+                        null, { timeout: 90000, polling: 120 });
 await p.evaluate(() => ['prompt', 'hud', 'hint', 'decide'].forEach(i => document.getElementById(i).classList.add('hide')));
 
 const out = await p.evaluate(() => {

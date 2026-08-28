@@ -12,6 +12,10 @@ for (const [name, opts] of [['phone', devices['iPhone 13']], ['desktop', {viewpo
   // seconds after start go on shader compilation rather than frames. Warm up
   // before timing anything, or the walk below measures the container.
   await (name==='phone'? p.tap('#startBtn') : p.click('#startBtn')); await p.waitForTimeout(4000);
+  // the chapter card holds the screen for about four seconds after Start;
+  // wait for the game to actually be playable rather than for a stopwatch
+  await p.waitForFunction(()=>window.__enc && window.__enc.getState()==='play',
+                          null, { timeout: 90000, polling: 120 });
   await p.evaluate(()=>{ const e=window.__enc; e.yaw.position.set(1.4,1.62,6.0); e.yaw.rotation.y=0.26; });
   await p.waitForTimeout(2400); await p.screenshot({path:`f-${name}-world.png`});
   // Walk in until the heap is in reach, then act on it. Nothing opens by

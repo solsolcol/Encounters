@@ -9,6 +9,10 @@ const ctx = await b.newContext(opts); const p = await ctx.newPage();
 const errs=[]; p.on('pageerror',e=>errs.push(e.message));
 await p.goto('file:///tmp/g/wrapped.html'); await p.waitForTimeout(3500);
 await (label==='phone' ? p.tap('#startBtn') : p.click('#startBtn')); await p.waitForTimeout(3000);
+// the chapter card holds the screen for about four seconds after Start;
+// wait for the game to actually be playable rather than for a stopwatch
+await p.waitForFunction(()=>window.__enc && window.__enc.getState()==='play',
+                        null, { timeout: 90000, polling: 120 });
 
 const shown = id => p.$eval('#'+id, e=>!e.classList.contains('hide'));
 const put = (x,z,ry=0) => p.evaluate(([x,z,ry])=>{ const e=window.__enc;

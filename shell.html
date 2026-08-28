@@ -63,6 +63,9 @@ html,body{height:100%;overflow:hidden;background:var(--void);color:var(--bone);
 #title .mark{display:inline-flex;align-items:center;gap:10px;margin-bottom:24px}
 #title .mark .dot{width:6px;height:6px;background:var(--seal);border-radius:50%;
   box-shadow:0 0 14px var(--seal)}
+/* the logo sits where the heading was; it carries its own dark haze, so it
+   needs no plate behind it on the title screen's near-black ground */
+#logo{display:block;width:min(100%,600px);height:auto;margin:0 auto 2px}
 #title h1{font-family:"Cormorant Garamond",Georgia,serif;font-weight:600;
   font-size:clamp(2.2rem,8vw,3.8rem);line-height:1;letter-spacing:-.015em;
   text-wrap:balance;margin-bottom:8px}
@@ -83,6 +86,18 @@ html,body{height:100%;overflow:hidden;background:var(--void);color:var(--bone);
 .disclaimer code{font-family:var(--mono);font-size:.94em;color:#9AA1B0}
 .disclaimer{margin-top:24px;padding-top:16px;border-top:1px solid var(--line);
   font-size:1rem;line-height:1.62;color:#767D8C;max-width:46ch;margin-inline:auto}
+
+/* ── the chapter card ───────────────────────────────────────────────── */
+/* Black over everything while the scene is already running behind it, so the
+   fade out lands you in a world that has been going without you. */
+#chapter{align-items:center;justify-content:center;background:#000;
+  pointer-events:auto;opacity:0;transition:opacity .9s linear;z-index:6}
+#chapter.in{opacity:1}
+.chapCard{text-align:center;padding:24px;max-width:min(760px,92vw)}
+.chapCard .stencil{color:var(--seal);letter-spacing:.24em;margin-bottom:20px}
+.chapCard h2{font-family:"Cormorant Garamond",Georgia,serif;font-weight:600;
+  font-size:clamp(2rem,6.2vw,3.4rem);line-height:1.14;color:var(--bone);
+  letter-spacing:-.01em;text-wrap:balance}
 
 /* ── hud ────────────────────────────────────────────────────────────── */
 #hud{padding:max(16px,env(safe-area-inset-top)) 16px 16px;align-items:flex-start}
@@ -270,10 +285,14 @@ html,body{height:100%;overflow:hidden;background:var(--void);color:var(--bone);
 <div id="title" class="layer">
   <div class="card">
     <div class="mark"><span class="dot"></span><span class="stencil">Case File 01 · Prototype</span></div>
-    <h1>The <em>Hell Note</em><br>I Should Never<br>Have Taken</h1>
-    <p class="sub">Master Z&rsquo;s Spiritual Encounters</p>
+    <!-- The logo is painted into this canvas from the JS. `h1` is the fallback
+         and stays hidden unless the paint fails, so the screen is never blank. -->
+    <canvas id="logo" width="1300" height="560"
+            aria-label="Master Z's Encounters — The Game"></canvas>
+    <h1 class="hide">The <em>Hell Note</em><br>I Should Never<br>Have Taken</h1>
+    <p class="sub">The Hell Note I Should Never Have Taken</p>
     <p id="brief"></p>
-    <button id="startBtn">Enter the encounter</button>
+    <button id="startBtn">Start game</button>
     <div class="ctrl">
       <span>Desktop · WASD + mouse</span>
       <span>Phone · left thumb moves, right thumb looks</span>
@@ -281,6 +300,14 @@ html,body{height:100%;overflow:hidden;background:var(--void);color:var(--bone);
     <p class="disclaimer">Playable 3D prototype. The scene, characters and dialogue here are
       placeholder material written to demonstrate the mechanic &mdash; the real script,
       teachings and voice belong to Master Z and replace all of it.</p>
+  </div>
+</div>
+
+<!-- the chapter card: black, held, then gone -->
+<div id="chapter" class="layer hide">
+  <div class="chapCard">
+    <span class="stencil">Chapter 1</span>
+    <h2>The Hell Note<br>I Should Never Have Taken</h2>
   </div>
 </div>
 

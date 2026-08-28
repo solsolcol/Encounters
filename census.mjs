@@ -7,6 +7,10 @@ p.on('pageerror',e=>errs.push('PAGEERROR '+e.message));
 p.on('console',m=>{ if(m.type()==='error'&&!m.text().includes('TUNNEL')) errs.push('CONSOLE '+m.text().slice(0,120)); });
 await p.goto('file:///tmp/g/wrapped.html'); await p.waitForTimeout(6000);
 await p.click('#startBtn'); await p.waitForTimeout(1500);
+// the chapter card holds the screen for about four seconds after Start;
+// wait for the game to actually be playable rather than for a stopwatch
+await p.waitForFunction(()=>window.__enc && window.__enc.getState()==='play',
+                        null, { timeout: 90000, polling: 120 });
 
 // full census: is every system present and running?
 console.log(JSON.stringify(await p.evaluate(()=>{

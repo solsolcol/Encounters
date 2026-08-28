@@ -5,6 +5,10 @@ const p = await b.newPage({viewport:{width:1280,height:760}});
 p.on('pageerror',e=>console.log('ERR',e.message));
 await p.goto('file:///tmp/g/wrapped.html'); await p.waitForTimeout(3000);
 await p.click('#startBtn'); await p.waitForTimeout(900);
+// the chapter card holds the screen for about four seconds after Start;
+// wait for the game to actually be playable rather than for a stopwatch
+await p.waitForFunction(()=>window.__enc && window.__enc.getState()==='play',
+                        null, { timeout: 90000, polling: 120 });
 
 // step the motion system on a fixed clock, independent of render speed
 const run = (frames, speed, strafe, lx, ly) => p.evaluate(a => {

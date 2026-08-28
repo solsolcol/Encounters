@@ -26,7 +26,7 @@ for (const [label, url] of [['no CSP (file://)','file:///tmp/g/wrapped.html'],
   p.on('console', m => { const t=m.text(); if(/Content Security|Refused/i.test(t)) blocked.push(t.slice(0,90)); });
   await p.goto(url); await p.waitForTimeout(7000);
   const r = await p.evaluate(()=>{
-    const out = {hdb:null, ghost:null};
+    const out = {hdb:null, ghost:null, logo:null};
     const scan = (root) => { let withImg=0, total=0;
       root.traverse(o=>{ if(!o.isMesh) return;
         const ms=Array.isArray(o.material)?o.material:[o.material];
@@ -37,9 +37,19 @@ for (const [label, url] of [['no CSP (file://)','file:///tmp/g/wrapped.html'],
     let blk=null; world.traverse(o=>{ if(!blk && o.name && o.name.includes('TTH')) blk=o; });
     out.hdb = blk ? scan(blk.parent) : 'block not found';
     out.ghost = scan(window.__enc.ghost);
+    // the title logo goes through the same no-URL path as the model textures,
+    // so it has to survive the same policy
+    const cv = document.getElementById('logo');
+    if (!cv) out.logo = 'canvas gone — it fell back to the heading';
+    else {
+      const d = cv.getContext('2d').getImageData(0,0,cv.width,cv.height).data;
+      let lit = 0;
+      for (let i = 3; i < d.length; i += 4 * 97) if (d[i] > 8) lit++;
+      out.logo = lit > 500 ? `painted (${lit} lit samples)` : `BLANK (${lit} lit samples)`;
+    }
     return out;
   });
-  console.log(label.padEnd(22), '| HDB:', r.hdb, '| ghost:', r.ghost);
+  console.log(label.padEnd(22), '| HDB:', r.hdb, '| ghost:', r.ghost, '| logo:', r.logo);
   if (blocked.length) console.log('   CSP violations:', blocked.slice(0,3));
   await p.close();
 }

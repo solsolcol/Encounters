@@ -1170,7 +1170,7 @@ function updateGhost(dt) {
   }
   if (!ghost.visible) return;
 
-  if (state === 'title' || state === 'result'
+  if (state === 'title' || state === 'chapter' || state === 'result'
       || state === 'complete' || state === 'lost') return;
 
   const dx = yaw.position.x - ghost.position.x, dz = yaw.position.z - ghost.position.z;
@@ -1560,7 +1560,7 @@ const CHAPTER = {
 };
 
 const stats = { sanity: 100, awareness: 50, wisdom: 50 };
-let state = 'title';   // title | play | decide | result | complete | lost
+let state = 'title';   // title | chapter | play | decide | result | complete | lost
 let chosen = null;
 
 /* ---------------------------------------------------------------- ui */
@@ -1568,7 +1568,7 @@ const $ = id => document.getElementById(id);
 const ui = {
   title: $('title'), hud: $('hud'), prompt: $('prompt'), interact: $('interact'),
   decide: $('decide'), result: $('result'), complete: $('complete'),
-  haunt: $('haunt'), over: $('over'), panic: $('panic'),
+  haunt: $('haunt'), over: $('over'), panic: $('panic'), chapter: $('chapter'),
   bSan: $('bSan'), bAwa: $('bAwa'), bWis: $('bWis'),
   vSan: $('vSan'), vAwa: $('vAwa'), vWis: $('vWis'),
   say: $('say'), teach: $('teach'), deltas: $('deltas'),
@@ -1595,14 +1595,84 @@ if (HAS_TOUCH) {
   $('ikey').textContent = 'Tap';
   $('itxt').textContent = 'the pile of hell notes';
 }
+/* The logo. Decoded from base64 and painted into a canvas rather than handed
+   to an <img src="data:…">, because a sandboxed frame's policy can refuse
+   data: images outright — the same trap that dropped every model texture.
+   createImageBitmap takes the Blob itself, so no URL is ever created. The
+   heading underneath is the fallback and only appears if this fails.        */
+const LOGO_B64 = '__LOGO_B64__';
+(function paintLogo() {
+  const cv = document.getElementById('logo');
+  const fallback = document.querySelector('#title h1');
+  const giveUp = () => { cv?.remove(); fallback?.classList.remove('hide'); };
+  if (!cv || !LOGO_B64) return giveUp();
+  try {
+    const bin = atob(LOGO_B64), bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    createImageBitmap(new Blob([bytes], { type: 'image/webp' })).then(bmp => {
+      cv.width = bmp.width; cv.height = bmp.height;
+      cv.getContext('2d').drawImage(bmp, 0, 0);
+      bmp.close?.();
+    }).catch(giveUp);
+  } catch { giveUp(); }
+})();
+
+/* Start. The chapter card goes black over the top while the scene is already
+   running behind it, so the fade out puts you in a night that has been going
+   on without you. Nothing can be done during it — the state is not 'play'
+   yet, so nothing moves and nothing drains.                                 */
+const CARD_FADE = 900, CARD_HOLD = 2300;
+function playChapterCard(then) {
+  const el = ui.chapter;
+  el.classList.remove('hide');
+
+  // Two frames: one for `display` to take, one to give the transition a value
+  // to move away from. A timer backs it up, because the next frame can be a
+  // second away while the first shaders compile — which is exactly when this
+  // runs — and until the class lands the layer is still transparent.
+  const arm = () => el.classList.add('in');
+  requestAnimationFrame(() => requestAnimationFrame(arm));
+  setTimeout(arm, 120);
+
+  /* The title screen stays up underneath until the black has actually
+     arrived. A CSS fade is frame-driven, so on a stalling device it can make
+     no progress at all; hiding the title on a stopwatch would then show the
+     scene through a transparent layer, which is the one thing this card
+     exists to prevent. So: wait for the transition to finish, fall back to a
+     timer, and force the layer opaque either way before anything moves.    */
+  let covered = false;
+  const cover = () => {
+    if (covered) return;
+    covered = true;
+    // Kill the transition before forcing the value, or setting opacity here
+    // just starts a second 0.9 s fade from wherever the first one stalled —
+    // and the title goes away while the black is still half there.
+    el.style.transition = 'none';
+    el.style.opacity = '1';
+    void el.offsetWidth;                     // commit it this instant
+    ui.title.classList.add('hide');
+    setTimeout(() => {
+      el.style.transition = '';              // hand it back to the stylesheet
+      void el.offsetWidth;
+      el.style.opacity = '';
+      el.classList.remove('in');
+      setTimeout(() => { el.classList.add('hide'); then(); }, CARD_FADE);
+    }, CARD_HOLD);
+  };
+  el.addEventListener('transitionend', cover, { once: true });
+  setTimeout(cover, CARD_FADE + 1200);
+}
+
 $('startBtn').onclick = () => {
-  ui.title.classList.add('hide');
-  ui.hud.classList.remove('hide');
-  hint.classList.remove('hide');
-  setTimeout(() => hint.classList.add('hide'), 7000);
-  state = 'play';
-  setHint();
-  tryLock();
+  state = 'chapter';
+  tryLock();                       // has to be inside the click to be allowed
+  playChapterCard(() => {
+    ui.hud.classList.remove('hide');
+    hint.classList.remove('hide');
+    setTimeout(() => hint.classList.add('hide'), 7000);
+    state = 'play';
+    setHint();
+  });
 };
 $('stepBack').onclick = () => dismissDecision();
 $('retryBtn').onclick = () => location.reload();
