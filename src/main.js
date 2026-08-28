@@ -49,13 +49,15 @@ function b64ToBuffer(b64) {
 }
 
 const _assetCache = {};
-function assetBytes(name) {                    // -> Promise<ArrayBuffer>
+function assetBytes(name, lowPriority) {       // -> Promise<ArrayBuffer>
   if (_assetCache[name]) return _assetCache[name];
   let p;
   if (HOSTED) {
     const url = ASSET_MAP[name];
+    // `priority` keeps sound files from elbowing the world models on a slow
+    // connection; browsers that don't know the option simply ignore it
     p = url
-      ? fetch(url).then(r => {
+      ? fetch(url, lowPriority ? { priority: 'low' } : {}).then(r => {
           if (!r.ok) throw new Error(`${name}: HTTP ${r.status}`);
           return r.arrayBuffer();
         })
@@ -1714,7 +1716,7 @@ function musicSetup() {
   musicGain = actx.createGain();
   musicGain.gain.value = muted ? 0 : MUSIC_VOL;
   musicGain.connect(actx.destination);
-  assetBytes('music')
+  assetBytes('music', true)
     .then(bytes => actx.decodeAudioData(bytes))
     .then(buf => { musicBuf = buf; if (musicWanted) musicStart(); })
     .catch(() => { /* no file or no decoder; the game is fine without */ });
@@ -1777,7 +1779,7 @@ for (const ev of ['pointerdown', 'pointerup', 'touchstart', 'touchend',
 musicSetup();
 musicStart();
 // pull the spoken line down early too; it decodes on a gesture later
-assetBytes('voice').catch(() => {});
+assetBytes('voice', true).catch(() => {});
 
 /* ---------------------------------------------------- the player's voice ---
    One short line in the player's own voice, a beat after the world fades in —

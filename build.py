@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, shutil, zipfile
 
-VERSION = '2.0'
+VERSION = '2.1'
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -61,18 +61,18 @@ print(f'wrote {p} {p.stat().st_size / 1024:.0f} KB')
 dist = d / 'dist'
 shutil.rmtree(dist, ignore_errors=True)
 (dist / 'assets').mkdir(parents=True)
-(dist / 'chapters').mkdir()
 
-# copy each asset under a name derived from its content, so the URL changes
-# exactly when the bytes do — that is what makes the year-long cache safe
+# every file except index.html goes under assets/ named by its content hash,
+# so the URL changes exactly when the bytes do — that is what makes the
+# year-long cache safe, and it leaves index.html as the ONE file a returning
+# visitor ever has to revalidate
 asset_map = {}
 for key, (name, wanted) in ASSETS.items():
     if not wanted:
         continue
     body = (d / name).read_bytes()
     tag = hashlib.md5(body).hexdigest()[:10]
-    ext = pathlib.Path(name).suffix
-    out = f'assets/{key}.{tag}{ext}'
+    out = f'assets/{key}.{tag}{pathlib.Path(name).suffix}'
     (dist / out).write_bytes(body)
     asset_map[key] = out
 
@@ -80,14 +80,35 @@ hosted = bundle.replace('__ASSET_MAP_B64__',
                         base64.b64encode(json.dumps(asset_map).encode()).decode())
 for key in ASSETS:                                        # no bytes ride along
     hosted = hosted.replace(f'__{key.upper()}_B64__', '')
-(dist / 'game.js').write_text(hosted)
-(dist / 'chapters' / 'ch1.js').write_text(chapter)
-(dist / 'index.html').write_text(shell.replace(
-    '<script>/*BUNDLE*/</script>',
-    '<script defer src="chapters/ch1.js"></script>\n<script defer src="game.js"></script>'))
 
-# fingerprinted files may be cached forever; the page, engine and chapter use
-# Netlify's default etag revalidation so an update reaches players at once
+ch_out = f'assets/ch1.{hashlib.md5(chapter.encode()).hexdigest()[:10]}.js'
+(dist / ch_out).write_text(chapter)
+js_out = f'assets/game.{hashlib.md5(hosted.encode()).hexdigest()[:10]}.js'
+(dist / js_out).write_text(hosted)
+
+# A real document, unlike the wrapped preview: without the doctype the page
+# renders in quirks mode. Preloads start the title logo (it IS the first
+# paint, so it goes high) and the three world models downloading before the
+# engine has even parsed; `as="fetch" crossorigin` matches the engine's own
+# fetch() so the browser hands over the preloaded bytes instead of fetching
+# twice — hostedtest asserts exactly one request per asset. Sounds are NOT
+# preloaded: the engine pulls them itself at priority low.
+preloads = ['<link rel="preload" as="fetch" crossorigin fetchpriority="high" '
+            f'href="{asset_map["logo"]}">']
+preloads += [f'<link rel="preload" as="fetch" crossorigin href="{asset_map[k]}">'
+             for k in ('hdb', 'hands', 'ghost')]
+(dist / 'index.html').write_text(
+    '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
+    '<meta name="viewport" content="width=device-width,initial-scale=1,'
+    'maximum-scale=1,viewport-fit=cover">\n'
+    + '\n'.join(preloads) + '\n</head>\n<body>\n'
+    + shell.replace('<script>/*BUNDLE*/</script>',
+                    f'<script defer src="{ch_out}"></script>\n'
+                    f'<script defer src="{js_out}"></script>')
+    + '\n</body>\n</html>\n')
+
+# fingerprinted files may be cached forever; index.html rides Netlify's
+# default etag revalidation so an update reaches players at once
 (dist / '_headers').write_text(
     '/assets/*\n  Cache-Control: public, max-age=31536000, immutable\n')
 

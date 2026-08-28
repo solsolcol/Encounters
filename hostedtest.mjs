@@ -38,10 +38,17 @@ await p.waitForTimeout(6000);
 const out = {};
 
 // the network really carried separate, fingerprinted files — and all of them
-const want = ['/chapters/ch1.js', '/game.js', '/assets/hands.', '/assets/ghost.',
+const want = ['/assets/ch1.', '/assets/game.', '/assets/hands.', '/assets/ghost.',
               '/assets/hdb.', '/assets/logo.', '/assets/music.', '/assets/voice.'];
 out.splitFilesFetched = want.every(w => hits.some(h => h.url.startsWith(w) && h.ok));
 out.nothingFailed = hits.every(h => h.ok);
+// the preload hints must HAND OVER their bytes, not race the engine's own
+// fetch — a mismatched preload shows up here as the same URL twice
+const dupes = {};
+for (const h of hits) dupes[h.url] = (dupes[h.url] || 0) + 1;
+out.noDoubleDownloads = Object.values(dupes).every(n => n === 1);
+// the doctype is real: quirks mode would say BackCompat
+out.standardsMode = await p.evaluate(() => document.compatMode === 'CSS1Compat');
 
 // the title screen is up and the logo canvas holds real pixels
 out.titleUp = await p.$eval('#title', e => !e.classList.contains('hide'));
