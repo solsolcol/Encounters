@@ -1,0 +1,515 @@
+<title>Encounters 3D Build Plan</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;family=Newsreader:opsz,wght@6..72,500;6..72,600&amp;family=Public+Sans:wght@400;500;600&amp;display=swap">
+<style>
+
+:root{
+  --ground:#F6F6F8; --raised:#FFFFFF; --sunk:#EDEDF1;
+  --ink:#14161B; --ink-2:#4A4F5A; --ink-3:#797F8B;
+  --line:#DEDFE5; --line-2:#C8CAD3;
+  --sodium:#B0620F; --seal:#9E3025; --jade:#15726A;
+  --sodium-bg:#FBF1E4; --seal-bg:#FBEDEB; --jade-bg:#E7F3F1;
+  --shadow:0 1px 2px rgba(20,22,27,.05),0 8px 24px rgba(20,22,27,.05);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C0E13; --raised:#141821; --sunk:#0A0C10;
+    --ink:#E6E8EC; --ink-2:#A7ADBA; --ink-3:#767D8B;
+    --line:#242A35; --line-2:#333A48;
+    --sodium:#FFB367; --seal:#E0685A; --jade:#63D6C8;
+    --sodium-bg:#1E1710; --seal-bg:#1F1211; --jade-bg:#0E1D1C;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 28px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C0E13; --raised:#141821; --sunk:#0A0C10;
+  --ink:#E6E8EC; --ink-2:#A7ADBA; --ink-3:#767D8B;
+  --line:#242A35; --line-2:#333A48;
+  --sodium:#FFB367; --seal:#E0685A; --jade:#63D6C8;
+  --sodium-bg:#1E1710; --seal-bg:#1F1211; --jade-bg:#0E1D1C;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 28px rgba(0,0,0,.35);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--ground);color:var(--ink);
+  font-family:"Public Sans",system-ui,-apple-system,sans-serif;
+  font-size:16px;line-height:1.62;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1080px;margin:0 auto;padding:56px 22px 100px}
+
+/* ── the left gutter carries section numbers on wide screens ────────── */
+.sec{display:grid;grid-template-columns:1fr;gap:0;margin-top:64px}
+@media (min-width:900px){
+  .sec{grid-template-columns:86px minmax(0,1fr);gap:0 34px}
+  .sec > .num{grid-column:1;text-align:right;padding-top:6px}
+  .sec > .bd{grid-column:2}
+}
+.num{font-family:"JetBrains Mono",monospace;font-size:.7rem;font-weight:700;
+  letter-spacing:.1em;color:var(--sodium);font-variant-numeric:tabular-nums}
+@media (max-width:899px){.num{margin-bottom:8px}}
+.bd{min-width:0}
+.bd > * + *{margin-top:16px}
+.bd > h2 + *{margin-top:14px}
+
+h1{font-family:Newsreader,Georgia,serif;font-weight:600;font-size:clamp(2.1rem,5.4vw,3.2rem);
+  line-height:1.06;letter-spacing:-.02em;text-wrap:balance}
+h2{font-family:Newsreader,Georgia,serif;font-weight:600;font-size:clamp(1.4rem,3.2vw,1.72rem);
+  line-height:1.2;letter-spacing:-.01em;text-wrap:balance}
+h3{font-family:"Public Sans",sans-serif;font-weight:600;font-size:1rem;letter-spacing:-.005em}
+p{max-width:66ch;text-wrap:pretty}
+strong{font-weight:600;color:var(--ink)}
+em{font-style:italic}
+a{color:var(--sodium);text-underline-offset:3px;text-decoration-thickness:1px}
+a:focus-visible,button:focus-visible{outline:2px solid var(--sodium);outline-offset:3px}
+ul{list-style:none;max-width:66ch}
+li{position:relative;padding-left:20px}
+li + li{margin-top:9px}
+li::before{content:"";position:absolute;left:2px;top:.72em;width:5px;height:1px;
+  background:var(--line-2)}
+code{font-family:"JetBrains Mono",monospace;font-size:.86em;background:var(--sunk);
+  border:1px solid var(--line);padding:1px 5px;border-radius:3px}
+
+.eyebrow{font-family:"JetBrains Mono",monospace;font-size:.66rem;font-weight:500;
+  letter-spacing:.24em;text-transform:uppercase;color:var(--ink-3)}
+
+/* ── masthead ───────────────────────────────────────────────────────── */
+header{border-bottom:1px solid var(--line);padding-bottom:34px}
+header .eyebrow{margin-bottom:18px}
+header p.lede{font-size:1.12rem;color:var(--ink-2);margin-top:18px;max-width:60ch}
+.demo{display:inline-flex;align-items:center;gap:12px;margin-top:28px;
+  background:var(--sodium);color:var(--ground);text-decoration:none;
+  font-family:"JetBrains Mono",monospace;font-size:.72rem;font-weight:700;
+  letter-spacing:.16em;text-transform:uppercase;padding:14px 24px;
+  transition:transform .18s cubic-bezier(.22,.61,.36,1),box-shadow .18s}
+.demo:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.demo .flame{font-size:1rem}
+
+/* ── verdict cards: a decision, its reason, its cost ────────────────── */
+.verdict{background:var(--raised);border:1px solid var(--line);
+  border-left:3px solid var(--sodium);padding:20px 22px;box-shadow:var(--shadow)}
+.verdict .eyebrow{color:var(--sodium);margin-bottom:8px}
+.verdict p{margin-top:0}
+.verdict.warn{border-left-color:var(--seal)}
+.verdict.warn .eyebrow{color:var(--seal)}
+
+/* ── tables ─────────────────────────────────────────────────────────── */
+.tw{overflow-x:auto;border:1px solid var(--line);background:var(--raised);
+  box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:.9rem}
+th,td{text-align:left;padding:11px 16px;border-bottom:1px solid var(--line);
+  vertical-align:top}
+thead th{font-family:"JetBrains Mono",monospace;font-size:.62rem;font-weight:700;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);
+  background:var(--sunk);white-space:nowrap}
+tbody tr:last-child td{border-bottom:0}
+td.mono,th.mono{font-family:"JetBrains Mono",monospace;font-variant-numeric:tabular-nums;
+  white-space:nowrap}
+.pick{display:inline-block;font-family:"JetBrains Mono",monospace;font-size:.58rem;
+  font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:2px 7px;
+  border-radius:2px;background:var(--jade-bg);color:var(--jade);white-space:nowrap}
+.pick.no{background:var(--seal-bg);color:var(--seal)}
+.pick.maybe{background:var(--sodium-bg);color:var(--sodium)}
+
+/* ── the two-column honesty split ───────────────────────────────────── */
+.split{display:grid;gap:2px;background:var(--line);border:1px solid var(--line);
+  box-shadow:var(--shadow)}
+@media (min-width:720px){.split{grid-template-columns:1fr 1fr}}
+.split > div{background:var(--raised);padding:20px 22px}
+.split h3{margin-bottom:12px;display:flex;align-items:center;gap:9px}
+.split h3 .tag{font-family:"JetBrains Mono",monospace;font-size:.58rem;font-weight:700;
+  letter-spacing:.12em;padding:2px 7px;border-radius:2px}
+.split .yes .tag{background:var(--jade-bg);color:var(--jade)}
+.split .no .tag{background:var(--seal-bg);color:var(--seal)}
+.split li::before{background:var(--line-2)}
+
+/* ── roadmap: a real sequence, so it gets real numbering ────────────── */
+.road{border-left:1px solid var(--line);margin-left:6px}
+.phase{position:relative;padding:0 0 30px 26px}
+.phase:last-child{padding-bottom:0}
+.phase::before{content:"";position:absolute;left:-4.5px;top:7px;width:8px;height:8px;
+  border-radius:50%;background:var(--ground);border:2px solid var(--sodium)}
+.phase .when{font-family:"JetBrains Mono",monospace;font-size:.63rem;font-weight:700;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3)}
+.phase h3{margin:4px 0 6px}
+.phase p{color:var(--ink-2);font-size:.94rem}
+.phase .out{margin-top:8px;font-size:.84rem;color:var(--ink-3)}
+.phase .out b{font-family:"JetBrains Mono",monospace;font-size:.62rem;font-weight:700;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--jade)}
+
+/* ── start-here steps ───────────────────────────────────────────────── */
+.steps{counter-reset:s;display:grid;gap:2px;background:var(--line);
+  border:1px solid var(--line);box-shadow:var(--shadow)}
+.step{background:var(--raised);padding:20px 22px 20px 62px;position:relative}
+.step::before{counter-increment:s;content:counter(s);position:absolute;left:22px;top:20px;
+  font-family:"JetBrains Mono",monospace;font-size:.8rem;font-weight:700;color:var(--sodium);
+  font-variant-numeric:tabular-nums}
+.step h3{margin-bottom:5px}
+.step p{font-size:.94rem;color:var(--ink-2)}
+
+footer{margin-top:80px;padding-top:26px;border-top:1px solid var(--line);
+  font-size:.82rem;color:var(--ink-3);max-width:66ch}
+footer a{color:var(--ink-3)}
+@media (prefers-reduced-motion:reduce){*{transition:none !important}}
+</style>
+
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">Master Z&rsquo;s Spiritual Encounters</p>
+  <h1>Turning the Casebook into a 3D game</h1>
+  <p class="lede">You already have a working game. What you don&rsquo;t have yet is a
+    third dimension, a pipeline, and a scope you can actually finish by December 2026.
+    This is the route.</p>
+  <a class="demo" href="https://claude.ai/code/artifact/d6e23de8-26f3-4ad1-9760-20be30ecce7b" target="_blank" rel="noopener">
+    <span class="flame">🕯️</span> Play the working prototype
+  </a>
+</header>
+
+<!-- 01 ────────────────────────────────────────────────────────────── -->
+<section class="sec">
+  <div class="num">01</div>
+  <div class="bd">
+    <h2>Start from what already works</h2>
+    <p>Your game trial is not a placeholder — it is a finished design. Five chapters
+      per episode, four choices, a thirty-second clock that auto-picks A, three stats
+      (Sanity, Awareness, Wisdom), a teaching after every choice, a core lesson at the
+      end, and a D-to-S rank. That loop is proven and it is <em>good</em>.</p>
+    <div class="verdict">
+      <p class="eyebrow">The reframe</p>
+      <p>You are not designing a game. You are re-rendering a game you already have.
+        Every chapter you write for the 2D trial is a chapter the 3D version can run
+        unchanged — the choice data is just JSON. The 3D work is presentation, not design.
+        That is the difference between a two-year project and a one-year one.</p>
+    </div>
+    <p>The prototype linked above runs your exact loop in 3D: you walk a void deck at
+      night, find the note, the clock starts, the teaching lands, the file is sealed with
+      a rank. It is one HTML file. It works on your phone. Nothing in it is fake.</p>
+  </div>
+</section>
+
+<!-- 02 ────────────────────────────────────────────────────────────── -->
+<section class="sec">
+  <div class="num">02</div>
+  <div class="bd">
+    <h2>The one decision that decides everything else</h2>
+    <p>Build <strong>encounter dioramas</strong>, not an open world. Each chapter is one
+      small, dense, beautiful location you spend three to six minutes inside — a void deck,
+      a temple courtyard, a hospital corridor, a stretch of Old Upper Thomson Road. You can
+      walk around it. You cannot walk out of it.</p>
+    <ul>
+      <li>Roughly ten times cheaper to build than a connected world.</li>
+      <li>It matches the source material — a case file <em>is</em> one place, one night.</li>
+      <li>It is the difference between shipping and not shipping. This is the decision
+        that most first projects get wrong.</li>
+    </ul>
+    <div class="verdict warn">
+      <p class="eyebrow">On &ldquo;AAA graphics&rdquo;</p>
+      <p>Don&rsquo;t. Chasing photoreal will end the project. What you actually want is
+        <em>atmosphere</em>, and horror is the cheapest genre on earth to make look
+        expensive: darkness, fog, two or three strong lights, and good composition do
+        almost all of it. The prototype is boxes, cylinders and cones with textures drawn
+        in code — no models at all — and it reads as a Singapore void deck at 2am.
+        Spend your budget on lighting and mood, not polygon counts.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 03 ────────────────────────────────────────────────────────────── -->
+<section class="sec">
+  <div class="num">03</div>
+  <div class="bd">
+    <h2>The stack</h2>
+    <p><strong>Three.js</strong>, running as a plain website. Not a game engine — a
+      JavaScript 3D library. That distinction is the whole reason it&rsquo;s the right
+      pick for you.</p>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Option</th><th>Verdict</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Three.js</strong></td><td><span class="pick">Use this</span></td>
+            <td>Free, MIT. Biggest code corpus of any 3D library, so AI writes it more
+              reliably than anything else — that is your single most important criterion.
+              Ships as a static website. WebGPU now, automatic WebGL fallback for old phones.</td></tr>
+          <tr><td>Babylon.js</td><td><span class="pick maybe">Solid #2</span></td>
+            <td>Free, Apache 2.0, more built in (physics, editor), excellent mobile support.
+              Genuinely good. Smaller corpus means AI is a little less fluent in it.</td></tr>
+          <tr><td>PlayCanvas</td><td><span class="pick no">Skip</span></td>
+            <td>Great mobile performance, but the workflow lives in a visual editor.
+              AI can&rsquo;t click buttons in an editor for you.</td></tr>
+          <tr><td>Unity (WebGL)</td><td><span class="pick no">Skip</span></td>
+            <td>Heavy runtime, slow startup, mobile browser performance is a known sore
+              point. Also editor-driven. Wrong tool for a browser-first game.</td></tr>
+          <tr><td>Unreal</td><td><span class="pick no">Skip</span></td>
+            <td>No meaningful web export. Dead end for this project.</td></tr>
+          <tr><td>Godot (web export)</td><td><span class="pick no">Skip</span></td>
+            <td>Better than Unity on the web, still a large WebAssembly payload and
+              iOS Safari quirks. Editor-driven again.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3 style="margin-top:26px">Everything you install</h3>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Tool</th><th>Job</th><th class="mono">Cost</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Claude Code</strong> or <strong>Cursor</strong></td>
+            <td>Where 90% of the work happens. You describe, it writes, you look at the
+              result in the browser and say what&rsquo;s wrong.</td><td class="mono">$20&ndash;200/mo</td></tr>
+          <tr><td>Node.js + Vite</td><td>Project scaffolding and live preview. One-time
+            setup, done by the AI in a single command.</td><td class="mono">Free</td></tr>
+          <tr><td>Three.js</td><td>The 3D engine itself.</td><td class="mono">Free</td></tr>
+          <tr><td><strong>Meshy</strong> or <strong>Tripo</strong></td>
+            <td>Text- or image-to-3D for the props that carry meaning — amulets, urns,
+              joss items, shrine pieces. Tripo also auto-rigs characters.</td><td class="mono">~$20/mo</td></tr>
+          <tr><td>Blender</td><td>Not for modelling. Only for fixing what the AI generators
+            hand you: scale, origin point, polygon reduction, export. Five operations, about
+            an afternoon to learn.</td><td class="mono">Free</td></tr>
+          <tr><td>Mixamo <span class="pick maybe">ageing</span></td>
+            <td>Free character animations — walking, idling, reacting. Still free and
+              royalty-free, but Adobe has effectively stopped maintaining it. Quaternius
+              (CC0) is the backup.</td><td class="mono">Free</td></tr>
+          <tr><td>Netlify, Vercel or Cloudflare Pages</td><td>Hosting. Push a folder, get a
+            URL. Point <code>game.triplegem.asia</code> at it.</td><td class="mono">Free</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- 04 ────────────────────────────────────────────────────────────── -->
+<section class="sec">
+  <div class="num">04</div>
+  <div class="bd">
+    <h2>What AI does, and what stays yours</h2>
+    <p>The honest split. Everything on the left is a conversation; everything on the right
+      is you.</p>
+    <div class="split">
+      <div class="yes">
+        <h3><span class="tag">AI</span> Handled for you</h3>
+        <ul>
+          <li>All the code — movement, camera, touch controls, the choice system, the timer,
+            stats, saves, the entire UI.</li>
+          <li>Scene assembly: placing objects, setting up lights, tuning fog and colour.</li>
+          <li>Performance work — this is where a non-specialist would drown, and it&rsquo;s
+            exactly what AI is good at.</li>
+          <li>Converting and compressing models via command line, so you touch Blender as
+            little as possible.</li>
+          <li>Deployment, domains, bilingual text, analytics.</li>
+        </ul>
+      </div>
+      <div class="no">
+        <h3><span class="tag">You</span> Nobody else can</h3>
+        <ul>
+          <li>The writing. Master Z&rsquo;s teachings, the case scripts, the tone. This is
+            the whole product.</li>
+          <li>Judging whether a scene actually feels unsettling. AI cannot feel dread.</li>
+          <li>Cultural and religious accuracy — what an offering looks like, what a person
+            would really do, what would be disrespectful.</li>
+          <li>Choosing reference images so the AI has a target to hit.</li>
+          <li>Deciding when something is good enough to ship.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="verdict">
+      <p class="eyebrow">The skill you do need</p>
+      <p>Not coding — <em>describing</em>. &ldquo;It looks flat and the shadows are too
+        soft, here&rsquo;s a photo of what I mean&rdquo; gets you further than any tutorial.
+        Screenshot what&rsquo;s wrong, paste it, say what you want instead. That is the
+        entire job.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 05 ────────────────────────────────────────────────────────────── -->
+<section class="sec">
+  <div class="num">05</div>
+  <div class="bd">
+    <h2>Where the art comes from</h2>
+    <p>Three sources, and the split matters more than the quality of any one of them.</p>
+    <div class="tw">
+      <table>
+        <thead><tr><th class="mono">Share</th><th>Source</th><th>Used for</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">~60%</td><td>Built in code</td>
+            <td>Architecture. Void decks, corridors, walls, pillars, roads, stairs — these
+              are boxes, and the AI can build them faster than you could find them. The
+              prototype is entirely this.</td></tr>
+          <tr><td class="mono">~25%</td><td>Free libraries<br><span style="color:var(--ink-3);font-size:.86em">Poly Haven, Quaternius, Kenney, Fab</span></td>
+            <td>Background dressing nobody looks at closely. Foliage, street furniture,
+              bins, generic clutter, plus all your textures and sky maps. Check the licence
+              is CC0 or clearly commercial-use.</td></tr>
+          <tr><td class="mono">~15%</td><td>AI-generated + hand-fixed</td>
+            <td>The things that carry meaning: the specific amulets, the urn, the talisman,
+              Master Z himself, each spirit. Nobody notices a generic drain cover.
+              Everybody notices a wrong amulet.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="verdict" style="margin-bottom:16px">
+      <p class="eyebrow">Proven in the prototype</p>
+      <p>The first-person hands are a real <code>.glb</code> file &mdash; four meshes,
+        two PBR materials, ~23,000 triangles &mdash; built outside the game and loaded at
+        runtime. Custom models drop in exactly this way, whether they come from Blender,
+        from Meshy, or from a modelling script. Two traps that catch everyone: metal
+        renders <em>black</em> until you give the scene an environment to reflect, and
+        <code>.glb</code> stores colour in <strong>linear</strong> space, so a colour
+        picked the normal way and written straight into a model file comes out pale and
+        washed out. Both cost an hour the first time and thirty seconds after that.</p>
+    </div>
+    <p>Characters are the genuinely hard part — human faces and rigs are where AI 3D is
+      still weakest. Plan to either buy one stylised character pack and re-dress it for
+      every role, or keep spirits abstract: robes, silhouettes, light, distortion.
+      Abstract is cheaper <em>and</em> scarier.</p>
+  </div>
+</section>
+
+<!-- 06 ────────────────────────────────────────────────────────────── -->
+<section class="sec">
+  <div class="num">06</div>
+  <div class="bd">
+    <h2>The budgets you cannot exceed</h2>
+    <p>Mobile browsers are the constraint that kills web 3D projects. Give these numbers to
+      whoever is writing your code and hold the line on them.</p>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Budget</th><th class="mono">Target</th><th class="mono">Ceiling</th><th>Note</th></tr></thead>
+        <tbody>
+          <tr><td>Download before first play</td><td class="mono">&lt; 15 MB</td><td class="mono">25 MB</td>
+            <td>Load later chapters on demand, not upfront.</td></tr>
+          <tr><td>Triangles on screen</td><td class="mono">150k</td><td class="mono">300k</td>
+            <td>Mid-range Android is the target, not your laptop.</td></tr>
+          <tr><td>Draw calls</td><td class="mono">&lt; 100</td><td class="mono">150</td>
+            <td>Repeated props should be instanced.</td></tr>
+          <tr><td>Shadow-casting lights</td><td class="mono">1</td><td class="mono">2</td>
+            <td>Everything else is baked or faked. Biggest single win.</td></tr>
+          <tr><td>Texture size</td><td class="mono">1024&sup2;</td><td class="mono">2048&sup2;</td>
+            <td>2K for hero objects only. Compress to KTX2/Basis.</td></tr>
+          <tr><td>Frame rate</td><td class="mono">30 fps mobile</td><td class="mono">60 desktop</td>
+            <td>A steady 30 beats a stuttering 50.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Test on the cheapest phone you can find, every single week. Not at the end.</p>
+  </div>
+</section>
+
+<!-- 07 ────────────────────────────────────────────────────────────── -->
+<section class="sec">
+  <div class="num">07</div>
+  <div class="bd">
+    <h2>The route to December 2026</h2>
+    <p>Sixteen months from now. Comfortable at part-time pace <em>if</em> you build in this
+      order — each phase is only allowed to start once the previous one is on the internet
+      and playable.</p>
+    <div class="road">
+      <div class="phase">
+        <p class="when">Sep &mdash; Weeks 1&ndash;2</p>
+        <h3>Vertical slice</h3>
+        <p>One chapter, end to end, ugly on purpose. Grey boxes, your real Chapter 1 script,
+          real choices, real teaching, shipped to a real URL. The prototype is already
+          most of this.</p>
+        <p class="out"><b>Done when</b> &nbsp;you can send a friend a link and they finish
+          Chapter 1 on their phone.</p>
+      </div>
+      <div class="phase">
+        <p class="when">Oct &mdash; Nov</p>
+        <h3>The look</h3>
+        <p>Art-pass that one chapter until it feels like the series. Real models, real
+          textures, sound, the lighting recipe. Do not move on until one chapter looks
+          the way you want all of them to look.</p>
+        <p class="out"><b>Done when</b> &nbsp;a still from the game could be the poster.</p>
+      </div>
+      <div class="phase">
+        <p class="when">Dec &mdash; Feb</p>
+        <h3>The kit</h3>
+        <p>Build roughly thirty reusable pieces — HDB parts, temple parts, road parts,
+          foliage, props, two or three spirit types. Everything after this is assembly,
+          not creation.</p>
+        <p class="out"><b>Done when</b> &nbsp;a new location takes a day, not a week.</p>
+      </div>
+      <div class="phase">
+        <p class="when">Mar &mdash; Aug</p>
+        <h3>Content</h3>
+        <p>Chapters 2 through 5 (and Episodes 2&ndash;3) built from the kit. This is the
+          long, unglamorous stretch. It is also the stretch that only works if the three
+          phases above were done properly.</p>
+        <p class="out"><b>Done when</b> &nbsp;all episodes are playable start to finish.</p>
+      </div>
+      <div class="phase">
+        <p class="when">Sep &mdash; Nov</p>
+        <h3>Polish and release</h3>
+        <p>Voice, music, the 中文 pass, saves, progress tracking, an accessibility and
+          content-warning pass, testing on cheap phones, and a launch that feeds the
+          Facebook series.</p>
+        <p class="out"><b>Done when</b> &nbsp;December 2026 arrives and it&rsquo;s live.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 08 ────────────────────────────────────────────────────────────── -->
+<section class="sec">
+  <div class="num">08</div>
+  <div class="bd">
+    <h2>Two things only you can decide</h2>
+    <div class="verdict warn">
+      <p class="eyebrow">The amulet problem</p>
+      <p>&ldquo;Equip the right amulet to survive the ghost&rdquo; is a great game mechanic
+        and a poor teaching. It turns practice into a power-up and reads as superstition —
+        the exact thing your disclaimers push back on. Your own Episode 1 core lesson gets
+        this right: <em>observe before reacting; do not blindly believe, blindly dismiss, or
+        provoke.</em> Make the correct <strong>action</strong> the answer — notice, withdraw,
+        don&rsquo;t take what isn&rsquo;t yours, calm the mind, generate merit — and let
+        objects be secondary, with the game explaining what an amulet actually
+        <em>means</em> rather than what damage it blocks.</p>
+    </div>
+    <div class="verdict warn" style="margin-top:14px">
+      <p class="eyebrow">Education or funnel</p>
+      <p>The consultancy sells charms and remedies. A game where the answer is repeatedly
+        &ldquo;buy the right item&rdquo; becomes an advertisement, and players feel it
+        instantly. Decide this deliberately and early rather than letting it happen by
+        drift — a game that is unmistakably not selling anything will do more for the
+        consultancy than one that is.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 09 ────────────────────────────────────────────────────────────── -->
+<section class="sec">
+  <div class="num">09</div>
+  <div class="bd">
+    <h2>Start here, this week</h2>
+    <div class="steps">
+      <div class="step">
+        <h3>Play the prototype on your phone, then tell me what&rsquo;s wrong with it</h3>
+        <p>Too dark, too slow, wrong mood, wrong location, controls awkward — all useful.
+          This is the whole working method, and doing it once tells you whether you enjoy it.</p>
+      </div>
+      <div class="step">
+        <h3>Send me Episode 1&rsquo;s five chapters</h3>
+        <p>The real script, choices, teachings and stat changes from your trial. I&rsquo;ll
+          put them into the prototype so you can play your actual Chapter 1 in 3D and see
+          the real thing rather than my placeholder writing.</p>
+      </div>
+      <div class="step">
+        <h3>Collect twenty reference photos</h3>
+        <p>Real places at night — void decks, temples, back lanes, the specific corners
+          these stories happened in. Photographs, not concept art. This is what the art
+          direction gets built from, and it&rsquo;s the one input nothing can substitute for.</p>
+      </div>
+    </div>
+    <p style="margin-top:22px">Rough running cost while you build: about
+      <strong>$40&ndash;250 a month</strong> — the AI coding tool, one 3D generator
+      subscription, and nothing else. Hosting is free. There is no upfront spend, and
+      you can stop any month.</p>
+  </div>
+</section>
+
+<footer>
+  <p>Sources: <a href="https://encounters.triplegem.asia/" target="_blank" rel="noopener">encounters.triplegem.asia</a>
+    (casebook, game trial and disclaimers) and
+    <a href="https://triplegem.asia/" target="_blank" rel="noopener">triplegem.asia</a>.
+    Engine, tooling, licensing and mobile-support claims checked against current
+    2026 sources. The prototype&rsquo;s dialogue and teachings are placeholder text written
+    to demonstrate the mechanic, not Master Z&rsquo;s words.</p>
+</footer>
+
+</div>

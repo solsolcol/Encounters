@@ -1,0 +1,1299 @@
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
+
+// The page is embedded in a wrapper we do not control — make sure mobile gets a
+// real device-width viewport (and safe-area insets) either way.
+(() => {
+  let m = document.querySelector('meta[name="viewport"]');
+  if (!m) { m = document.createElement('meta'); m.name = 'viewport'; document.head.appendChild(m); }
+  if (!/viewport-fit/.test(m.content || '')) {
+    m.content = 'width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover';
+  }
+})();
+
+/* =========================================================================
+   MASTER Z'S SPIRITUAL ENCOUNTERS — 3D PROTOTYPE
+   Chapter 1 · The Hell Note
+   Placeholder narrative — to be replaced with the real script.
+   ========================================================================= */
+
+// A touchscreen laptop reports BOTH. Never use one to switch the other off:
+// HAS_TOUCH only decides whether touch handlers are worth attaching, and the
+// mouse is always live. LOW (reduced quality) needs a small screen too, or a
+// touchscreen laptop gets phone-grade rendering for no reason.
+const HAS_TOUCH = matchMedia('(pointer: coarse)').matches || 'ontouchstart' in window;
+const IS_PHONE = HAS_TOUCH && Math.max(innerWidth, innerHeight) < 1100;
+const LOW = IS_PHONE;
+
+/* ---------------------------------------------------------- procedural tex */
+function cnv(s = 512) {
+  const c = document.createElement('canvas');
+  c.width = c.height = s;
+  return [c, c.getContext('2d')];
+}
+function noiseInto(ctx, s, amt, alpha = 1) {
+  const img = ctx.getImageData(0, 0, s, s), d = img.data;
+  for (let i = 0; i < d.length; i += 4) {
+    const n = (Math.random() - 0.5) * amt;
+    d[i] += n; d[i + 1] += n; d[i + 2] += n;
+    if (alpha < 1) d[i + 3] = 255 * alpha;
+  }
+  ctx.putImageData(img, 0, 0);
+}
+function fbmField(s, oct = 5) {
+  const f = new Float32Array(s * s);
+  let amp = 1, tot = 0;
+  for (let o = 0; o < oct; o++) {
+    const step = Math.max(1, s >> (o + 1));
+    const g = [];
+    const gs = Math.ceil(s / step) + 2;
+    for (let i = 0; i < gs * gs; i++) g.push(Math.random());
+    for (let y = 0; y < s; y++) for (let x = 0; x < s; x++) {
+      const gx = x / step, gy = y / step;
+      const x0 = Math.floor(gx), y0 = Math.floor(gy);
+      const tx = gx - x0, ty = gy - y0;
+      const sx = tx * tx * (3 - 2 * tx), sy = ty * ty * (3 - 2 * ty);
+      const a = g[y0 * gs + x0], b = g[y0 * gs + x0 + 1];
+      const c = g[(y0 + 1) * gs + x0], dd = g[(y0 + 1) * gs + x0 + 1];
+      f[y * s + x] += ((a + (b - a) * sx) + ((c + (dd - c) * sx) - (a + (b - a) * sx)) * sy) * amp;
+    }
+    tot += amp; amp *= 0.5;
+  }
+  for (let i = 0; i < f.length; i++) f[i] /= tot;
+  return f;
+}
+function texFromField(f, s, ramp) {
+  const [c, ctx] = cnv(s);
+  const img = ctx.createImageData(s, s), d = img.data;
+  for (let i = 0; i < s * s; i++) {
+    const [r, g, b] = ramp(f[i], i % s, (i / s) | 0);
+    d[i * 4] = r; d[i * 4 + 1] = g; d[i * 4 + 2] = b; d[i * 4 + 3] = 255;
+  }
+  ctx.putImageData(img, 0, 0);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.anisotropy = 4;
+  return t;
+}
+// grayscale (non-color) variant for roughness / bump maps
+function grayTex(f, s, ramp) {
+  const t = texFromField(f, s, ramp);
+  t.colorSpace = THREE.NoColorSpace;
+  return t;
+}
+
+const S = LOW ? 256 : 512;
+
+// --- wet asphalt / concrete pavement
+function makeGround() {
+  const f = fbmField(S, 5);
+  const map = texFromField(f, S, (v) => {
+    const b = 38 + v * 34;
+    const speck = Math.random() < 0.02 ? 30 : 0;
+    return [b + speck, b + speck * 0.95, b * 1.06 + speck];
+  });
+  const rough = grayTex(f, S, (v) => { const r = 150 + v * 90; return [r, r, r]; });
+  map.repeat.set(14, 14); rough.repeat.set(14, 14);
+  return { map, rough };
+}
+// --- coarse night grass for the ground outside the block
+function makeGrass() {
+  const f = fbmField(S, 5);
+  const map = texFromField(f, S, (v) => {
+    const blade = Math.random() < 0.16 ? 14 : 0;
+    return [20 + v * 22 + blade, 34 + v * 40 + blade * 1.4, 20 + v * 18 + blade * 0.5];
+  });
+  const rough = grayTex(f, S, (v) => { const r = 205 + v * 45; return [r, r, r]; });
+  map.repeat.set(46, 46); rough.repeat.set(46, 46);
+  return { map, rough };
+}
+// --- weathered concrete pillar
+function makeConcrete() {
+  const f = fbmField(S, 4);
+  const map = texFromField(f, S, (v, x, y) => {
+    let b = 112 + v * 46;
+    if (y > S * 0.82) b *= 0.72 - (y / S - 0.82) * 0.8; // damp base staining
+    return [b, b * 0.99, b * 0.94];
+  });
+  const rough = grayTex(f, S, (v) => { const r = 175 + v * 60; return [r, r, r]; });
+  return { map, rough };
+}
+// --- red-gold joss / lacquer
+function makeLacquer() {
+  const f = fbmField(S, 4);
+  return texFromField(f, S, (v) => [120 + v * 70, 14 + v * 18, 12 + v * 14]);
+}
+// --- hell note paper: pale yellow with red print bands
+function makeHellNote() {
+  const s = 256, [c, ctx] = cnv(s);
+  ctx.fillStyle = '#d8c489'; ctx.fillRect(0, 0, s, s);
+  ctx.fillStyle = '#8d2b22';
+  ctx.fillRect(0, s * 0.06, s, s * 0.10);
+  ctx.fillRect(0, s * 0.84, s, s * 0.10);
+  ctx.globalAlpha = 0.55;
+  for (let i = 0; i < 22; i++) {
+    ctx.fillRect(s * 0.1 + (i % 11) * s * 0.072, s * 0.3 + ((i / 11) | 0) * s * 0.2, s * 0.05, s * 0.13);
+  }
+  ctx.globalAlpha = 1;
+  ctx.strokeStyle = '#9a7a33'; ctx.lineWidth = 3;
+  ctx.strokeRect(s * 0.03, s * 0.03, s * 0.94, s * 0.94);
+  noiseInto(ctx, s, 26);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+// --- soft round sprite for smoke / embers
+function makeSoftDot(inner = 'rgba(255,255,255,1)', outer = 'rgba(255,255,255,0)') {
+  const s = 64, [c, ctx] = cnv(s);
+  const g = ctx.createRadialGradient(s / 2, s / 2, 0, s / 2, s / 2, s / 2);
+  g.addColorStop(0, inner); g.addColorStop(1, outer);
+  ctx.fillStyle = g; ctx.fillRect(0, 0, s, s);
+  return new THREE.CanvasTexture(c);
+}
+
+/* --------------------------------------------------- glTF texture rescue */
+/* GLTFLoader decodes embedded images by wrapping each one in a Blob URL and
+   fetching it. Inside a sandboxed frame the page's security policy refuses
+   blob: fetches, so every texture is silently dropped and the model renders
+   as flat white — which is exactly what happens here in production and never
+   happens locally, because a local file has no such policy.
+
+   createImageBitmap() accepts a Blob object directly. No URL is created and
+   nothing is fetched, so no policy applies. This decodes the images that way
+   and hangs them back on the materials.                                      */
+
+function glbChunks(buf) {
+  const dv = new DataView(buf);
+  let off = 12, json = null, bin = null;
+  while (off + 8 <= dv.byteLength) {
+    const len = dv.getUint32(off, true), type = dv.getUint32(off + 4, true);
+    const data = buf.slice(off + 8, off + 8 + len);
+    if (type === 0x4E4F534A) json = JSON.parse(new TextDecoder().decode(data));
+    else if (type === 0x004E4942) bin = data;
+    off += 8 + len;
+  }
+  return { json, bin };
+}
+
+function rescueTextures(gltf, buf) {
+  let json, bin;
+  try { ({ json, bin } = glbChunks(buf)); } catch { return; }
+  if (!json || !bin || !json.images || !json.images.length) return;
+
+  const cache = new Map();                     // one decode per image, not per material
+  const bitmap = (i) => {
+    if (!cache.has(i)) {
+      const img = json.images[i], bv = json.bufferViews[img.bufferView];
+      const bytes = new Uint8Array(bin, bv.byteOffset || 0, bv.byteLength);
+      cache.set(i, createImageBitmap(new Blob([bytes], { type: img.mimeType || 'image/jpeg' })));
+    }
+    return cache.get(i);
+  };
+
+  for (const [obj, assoc] of gltf.parser.associations) {
+    if (!obj || !obj.isMaterial || assoc.materials === undefined) continue;
+    if (obj.map) continue;                     // the normal path worked; leave it alone
+    const md = json.materials[assoc.materials];
+    const ref = md && md.pbrMetallicRoughness && md.pbrMetallicRoughness.baseColorTexture;
+    if (!ref) continue;
+    const src = json.textures[ref.index] && json.textures[ref.index].source;
+    if (src === undefined) continue;
+    bitmap(src).then((bmp) => {
+      const t = new THREE.Texture(bmp);
+      t.flipY = false;                         // glTF images are already top-left
+      t.colorSpace = THREE.SRGBColorSpace;
+      t.wrapS = t.wrapT = THREE.RepeatWrapping;
+      t.needsUpdate = true;
+      obj.map = t;
+      obj.needsUpdate = true;
+    }).catch(() => {});
+  }
+}
+
+/* ------------------------------------------------------------- renderer */
+const canvas = document.getElementById('scene');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: !LOW, powerPreference: 'high-performance' });
+renderer.setPixelRatio(Math.min(devicePixelRatio, LOW ? 1.6 : 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.42;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+// Metal needs something to reflect. RoomEnvironment is a tiny procedural
+// studio generated at runtime — no file to download, and it fixes every
+// metallic surface in the scene at once.
+const scene = new THREE.Scene();
+{
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+  scene.environmentIntensity = 0.05;   // just enough to keep metal from going black
+  pmrem.dispose();
+}
+scene.background = new THREE.Color(0x070a10);
+scene.fog = new THREE.FogExp2(0x0b1018, 0.021);
+
+const camera = new THREE.PerspectiveCamera(72, innerWidth / innerHeight, 0.08, 160);
+const yaw = new THREE.Object3D();      // horizontal rotation
+const pitch = new THREE.Object3D();    // vertical rotation
+yaw.add(pitch); pitch.add(camera);
+yaw.position.set(0, 1.62, 17);         // out on the grass, facing the block
+
+// The burner and everything that belongs to it — light, smoke, embers, notes,
+// the trigger radius — are all positioned from this one point, so the shrine
+// can be moved without hunting down a dozen hard-coded coordinates.
+const SHRINE = new THREE.Vector3(-1.0, 0, -7.5);   // inside the void deck
+scene.add(yaw);
+
+/* -------------------------------------------------------------- lighting */
+const hemi = new THREE.HemisphereLight(0x35446b, 0x14161c, 0.85);
+scene.add(hemi);
+
+const moon = new THREE.DirectionalLight(0xa8bfe6, 0.95);
+moon.position.set(-14, 20, -8);
+moon.castShadow = true;
+moon.shadow.mapSize.set(LOW ? 1024 : 2048, LOW ? 1024 : 2048);
+moon.shadow.camera.near = 1; moon.shadow.camera.far = 60;
+moon.shadow.camera.left = -20; moon.shadow.camera.right = 20;
+moon.shadow.camera.top = 20; moon.shadow.camera.bottom = -20;
+moon.shadow.bias = -0.0012;
+moon.shadow.normalBias = 0.03;
+scene.add(moon);
+
+const fill = new THREE.DirectionalLight(0x6a86b8, 0.28);
+fill.position.set(6, 8, 16);
+scene.add(fill);
+
+// sodium street lamp — the only warm anchor in the scene
+const lampLight = new THREE.SpotLight(0xffb367, 26, 26, Math.PI / 4.4, 0.55, 1.4);
+lampLight.position.set(8.0, 5.5, 6.0);
+lampLight.target.position.set(5.8, 0, 3.2);
+lampLight.castShadow = true;
+lampLight.shadow.mapSize.set(LOW ? 512 : 1024, LOW ? 512 : 1024);
+lampLight.shadow.bias = -0.002;
+scene.add(lampLight, lampLight.target);
+
+// candle / burner fire light (flickers)
+const fireLight = new THREE.PointLight(0xff7a26, 14, 16, 1.7);
+fireLight.position.set(SHRINE.x - 0.2, 0.95, SHRINE.z);
+scene.add(fireLight);
+
+/* ------------------------------------------------------------ materials */
+const gTex = makeGround();
+const grassTex = makeGrass();
+const cTex = makeConcrete();
+const lacquerTex = makeLacquer();
+const noteTex = makeHellNote();
+
+const matGround = new THREE.MeshStandardMaterial({
+  map: gTex.map, roughnessMap: gTex.rough, roughness: 0.92, metalness: 0.02, color: 0xffffff
+});
+const matGrass = new THREE.MeshStandardMaterial({
+  map: grassTex.map, roughnessMap: grassTex.rough, roughness: 0.98, metalness: 0
+});
+const matConcrete = new THREE.MeshStandardMaterial({
+  map: cTex.map, roughnessMap: cTex.rough, roughness: 0.95, metalness: 0.0
+});
+const matLacquer = new THREE.MeshStandardMaterial({ map: lacquerTex, roughness: 0.42, metalness: 0.18 });
+const matMetal = new THREE.MeshStandardMaterial({ color: 0x39332c, roughness: 0.62, metalness: 0.85 });
+const matDarkWood = new THREE.MeshStandardMaterial({ color: 0x2a1c14, roughness: 0.78, metalness: 0.05 });
+const matGold = new THREE.MeshStandardMaterial({ color: 0xc79a3d, roughness: 0.3, metalness: 0.95 });
+
+/* --------------------------------------------------------------- world */
+const world = new THREE.Group();
+scene.add(world);
+
+// ground — grass everywhere outside the block
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(220, 220), matGrass);
+ground.rotation.x = -Math.PI / 2;
+ground.receiveShadow = true;
+world.add(ground);
+
+/* ------------------------------------------------------------- the block */
+/* HDB.glb is a textured shell: its void deck is painted on the outside of a
+   solid box, so there is nothing to walk into. The fix is to hide that box
+   (Grd_Floor) and build a real corridor in the gap it leaves — floor, ceiling
+   and pillars under the tower, which is how a void deck is actually put
+   together anyway. The tower, roof, lift core and staircase are all the
+   model's own.                                                              */
+
+const HDB_SCALE = 0.001;                        // the model is in millimetres
+const HDB_OFFSET = new THREE.Vector3(-4.706, 0, -4.30);   // tower centred, face at z=0
+const DECK = { w: 43.5, d: 19.8, zc: -9.8, clear: 3.0 };  // the corridor we build
+
+const HDB_BUF = b64ToBuffer('__HDB_B64__');
+new GLTFLoader().parse(HDB_BUF, '', (gltf) => {
+  rescueTextures(gltf, HDB_BUF);
+  const blk = gltf.scene;
+  blk.scale.setScalar(HDB_SCALE);
+  blk.position.copy(HDB_OFFSET);
+  blk.traverse(o => {
+    if (!o.isMesh) return;
+    if (o.name.includes('Grd_Floor')) { o.visible = false; return; }  // the solid box
+    o.castShadow = true;
+    o.receiveShadow = true;
+    const mats = Array.isArray(o.material) ? o.material : [o.material];
+    for (const m of mats) { m.roughness = 0.94; m.metalness = 0; }
+  });
+  world.add(blk);
+}, (err) => console.warn('HDB failed to load', err));
+
+// --- the void deck we build underneath it
+const deckFloor = new THREE.Mesh(new THREE.PlaneGeometry(DECK.w, DECK.d), matGround);
+deckFloor.rotation.x = -Math.PI / 2;
+deckFloor.position.set(0, 0.012, DECK.zc);
+deckFloor.receiveShadow = true;
+world.add(deckFloor);
+
+const deckCeil = new THREE.Mesh(new THREE.BoxGeometry(DECK.w, 0.22, DECK.d), matConcrete);
+deckCeil.position.set(0, DECK.clear + 0.11, DECK.zc);
+deckCeil.castShadow = true; deckCeil.receiveShadow = true;
+world.add(deckCeil);
+
+const deckPillar = new THREE.BoxGeometry(0.6, DECK.clear, 0.6);
+// offset so the bay on the approach line is clear — a pillar dead ahead of
+// the spawn point makes the entrance read as blocked rather than inviting
+for (const px of [-21.75, -16.75, -11.75, -6.75, -1.75, 3.25, 8.25, 13.25, 18.25]) {
+  for (const pz of [-1.2, -9.8, -18.2]) {
+    const c = new THREE.Mesh(deckPillar, matConcrete);
+    c.position.set(px, DECK.clear / 2, pz);
+    c.castShadow = true; c.receiveShadow = true;
+    world.add(c);
+  }
+}
+
+const deckBack = new THREE.Mesh(new THREE.BoxGeometry(DECK.w, DECK.clear, 0.3), matConcrete);
+deckBack.position.set(0, DECK.clear / 2, -19.5);
+deckBack.castShadow = true; deckBack.receiveShadow = true;
+world.add(deckBack);
+
+// street lamp
+const lampPost = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.12, 5.6, 8), matMetal);
+lampPost.position.set(8.0, 2.8, 6.6); lampPost.castShadow = true;
+world.add(lampPost);
+const lampArm = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.1, 0.1), matMetal);
+lampArm.position.set(7.6, 5.55, 6.4); lampArm.castShadow = true;
+world.add(lampArm);
+const lampHead = new THREE.Mesh(new THREE.SphereGeometry(0.26, 12, 8),
+  new THREE.MeshStandardMaterial({ color: 0xffc98a, emissive: 0xffb367, emissiveIntensity: 3.4, roughness: 0.4 }));
+lampHead.position.set(7.15, 5.5, 6.3);
+world.add(lampHead);
+
+/* --------------- the offering: the object of the encounter --------------- */
+const offering = new THREE.Group();
+offering.position.copy(SHRINE);
+world.add(offering);
+
+// paving square the offering sits on
+const mat = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.04, 1.8),
+  new THREE.MeshStandardMaterial({ color: 0x1a1d22, roughness: 0.9 }));
+mat.position.y = 0.02; mat.receiveShadow = true;
+offering.add(mat);
+
+// metal burner drum
+const drum = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.38, 0.9, 16, 1, true), matMetal);
+drum.position.set(-0.2, 0.45, 0.0);
+drum.castShadow = true; drum.receiveShadow = true;
+drum.material.side = THREE.DoubleSide;
+offering.add(drum);
+// glowing ash inside
+const ash = new THREE.Mesh(new THREE.CircleGeometry(0.36, 16),
+  new THREE.MeshBasicMaterial({ color: 0xff5a12 }));
+ash.rotation.x = -Math.PI / 2; ash.position.set(-0.2, 0.72, 0);
+offering.add(ash);
+
+// offering sets: a lacquer plate of oranges with joss sticks planted beside it.
+// Three of them, spaced around the drum at different angles, so the shrine
+// reads as something several people have added to rather than one tidy display.
+const orangeMat = new THREE.MeshStandardMaterial({ color: 0xd06a12, roughness: 0.72 });
+const jossTips = [];
+
+function offeringSet(px, pz, spin, scale = 1) {
+  const set = new THREE.Group();
+  set.position.set(px, 0, pz);
+  set.rotation.y = spin;
+  set.scale.setScalar(scale);
+  offering.add(set);
+
+  const plate = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.24, 0.05, 18), matLacquer);
+  plate.position.y = 0.045;
+  plate.castShadow = plate.receiveShadow = true;
+  set.add(plate);
+
+  for (const [ox, oz] of [[-0.07, -0.06], [0.07, 0.02], [0.0, 0.10]]) {
+    const o = new THREE.Mesh(new THREE.SphereGeometry(0.085, 12, 10), orangeMat);
+    o.position.set(ox, 0.15, oz);
+    o.castShadow = true;
+    set.add(o);
+  }
+
+  for (let i = 0; i < 3; i++) {
+    const st = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.52, 5), matDarkWood);
+    st.position.set(-0.17 + i * 0.09, 0.3, -0.30);
+    st.rotation.z = (i - 1) * 0.06;
+    set.add(st);
+    const tip = new THREE.Mesh(new THREE.SphereGeometry(0.016, 6, 5),
+      new THREE.MeshBasicMaterial({ color: 0xff6a1f }));
+    tip.position.set(st.position.x + (i - 1) * 0.015, 0.56, -0.30);
+    set.add(tip);
+    jossTips.push(tip);
+  }
+  return set;
+}
+
+offeringSet(0.58, 0.30, -0.22);
+offeringSet(-0.80, 0.34, 0.55, 0.94);
+offeringSet(0.04, -0.58, 2.7, 0.88);
+
+// hell notes: hundreds of them, so one InstancedMesh rather than hundreds of
+// objects — the whole drift is a single draw call either way.
+const noteMat = new THREE.MeshStandardMaterial({
+  map: noteTex, roughness: 0.88, side: THREE.DoubleSide });
+const noteGeo = new THREE.PlaneGeometry(0.30, 0.15);
+
+const OFFER_X = SHRINE.x, OFFER_Z = SHRINE.z;   // the burner everything blew away from
+const _m = new THREE.Matrix4(), _q = new THREE.Quaternion();
+const _v = new THREE.Vector3(), _one = new THREE.Vector3(1, 1, 1), _ax = new THREE.Vector3();
+
+// --- settled on the ground, thickest near the drum and thinning outward.
+// The pile around the burner stays as dense as it was; past NEAR_R the
+// scatter is thinned out, so the eye still reads a source rather than
+// wallpaper. Positions are built first so the mesh is sized to what survives.
+const NEAR_R = 3.2;                        // "at the burner" ends here
+const FAR_KEEP = 0.6;                      // keep 60% of everything past it
+const GROUND_TRIES = LOW ? 240 : 420;
+const groundXforms = [];
+for (let i = 0; i < GROUND_TRIES; i++) {
+  const r = 0.7 + 15 * Math.pow(Math.random(), 1.7);   // clustered near the source
+  if (r > NEAR_R && Math.random() > FAR_KEEP) continue;
+  const a = Math.random() * Math.PI * 2;
+  groundXforms.push(new THREE.Matrix4().compose(
+    new THREE.Vector3(
+      THREE.MathUtils.clamp(OFFER_X + Math.cos(a) * r, -20.5, 20.5),
+      0.004 + Math.random() * 0.012,                   // stacked a hair off the floor
+      THREE.MathUtils.clamp(OFFER_Z + Math.sin(a) * r * 0.9, -18.5, 18)),
+    new THREE.Quaternion().setFromEuler(new THREE.Euler(
+      -Math.PI / 2 + (Math.random() - 0.5) * 0.16,     // not perfectly flat
+      Math.random() * Math.PI * 2,
+      (Math.random() - 0.5) * 0.2)),
+    _one));
+}
+const grounded = new THREE.InstancedMesh(noteGeo, noteMat, groundXforms.length);
+grounded.receiveShadow = true;
+grounded.frustumCulled = false;
+groundXforms.forEach((m, i) => grounded.setMatrixAt(i, m));
+grounded.instanceMatrix.needsUpdate = true;
+world.add(grounded);
+
+// --- airborne, turning slowly on the updraft and drifting round the deck
+const FLY_N = LOW ? 38 : 82;
+const flying = new THREE.InstancedMesh(noteGeo, noteMat, FLY_N);
+flying.frustumCulled = false;
+world.add(flying);
+
+const airborne = [];
+function seedNote(f, firstRun) {
+  do {                                               // distance from the burner,
+    f.r = 1.5 + Math.random() * 18;                  // thinned past NEAR_R to match
+  } while (f.r > NEAR_R && Math.random() > FAR_KEEP); // the ground scatter
+  f.a = Math.random() * Math.PI * 2;                 // angle around it
+  f.y = firstRun ? 0.2 + Math.random() * 7 : 0.15 + Math.random() * 0.5;
+  f.top = 5.5 + Math.random() * 7;                     // height it fades out at
+  f.rise = 0.16 + Math.random() * 0.62;              // updraft speed
+  f.swirl = (0.05 + Math.random() * 0.22) * (Math.random() < 0.25 ? -1 : 1);
+  f.wob = Math.random() * Math.PI * 2;               // per-note phase offset
+  f.spin = 0.5 + Math.random() * 2.4;                // tumble rate
+  f.axis = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5)
+    .normalize();
+  return f;
+}
+for (let i = 0; i < FLY_N; i++) airborne.push(seedNote({}, true));
+
+function updateNotes(dt, t) {
+  for (let i = 0; i < FLY_N; i++) {
+    const f = airborne[i];
+    f.a += f.swirl * dt * (3 / Math.max(f.r, 2));    // tighter orbits move faster
+    f.y += f.rise * dt;
+    if (f.y > f.top) seedNote(f, false);             // recycle back to the ground
+    const r = f.r + Math.sin(t * 0.45 + f.wob) * 0.9;
+    _v.set(OFFER_X + Math.cos(f.a) * r,
+           f.y + Math.sin(t * 1.1 + f.wob) * 0.18,
+           OFFER_Z + Math.sin(f.a) * r);
+    _q.setFromAxisAngle(_ax.copy(f.axis), t * f.spin + f.wob);
+    flying.setMatrixAt(i, _m.compose(_v, _q, _one));
+  }
+  flying.instanceMatrix.needsUpdate = true;
+}
+
+// the note this chapter is actually about, lit and lying apart from the rest
+const heroNote = new THREE.Mesh(noteGeo, noteMat.clone());
+heroNote.rotation.x = -Math.PI / 2; heroNote.rotation.z = 0.4;
+heroNote.position.set(1.35, 0.05, 1.15);
+heroNote.receiveShadow = true;
+offering.add(heroNote);
+
+/* ---------------------------------------- parked: cased amulet (.glb) ----
+   Built and verified, kept out of this chapter. Flip SHOW_AMULET to true and
+   the build step re-embeds amulet.glb; the loading code below is unchanged.   */
+const SHOW_AMULET = false;
+const AMULET_B64 = '__AMULET_B64__';
+
+function b64ToBuffer(b64) {
+  const bin = atob(b64), buf = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
+  return buf.buffer;
+}
+
+if (SHOW_AMULET && AMULET_B64) {
+  const stand = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.028, 0.075), matDarkWood);
+  stand.position.set(0.86, 0.055, 0.52);
+  stand.castShadow = stand.receiveShadow = true;
+  offering.add(stand);
+
+  new GLTFLoader().parse(b64ToBuffer(AMULET_B64), '', (gltf) => {
+    const amulet = gltf.scene;
+    amulet.scale.setScalar(2.2);
+    amulet.position.set(0.86, 0.069, 0.52);
+    amulet.rotation.set(-0.14, 0, 0);
+    amulet.traverse(o => { if (o.isMesh) o.castShadow = o.receiveShadow = true; });
+    offering.add(amulet);
+  }, (err) => console.warn('amulet failed to load', err));
+}
+
+/* ------------------------------------------------------------ the tree */
+const tree = new THREE.Group();
+tree.position.set(-13.5, 0, 7.5);
+const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.42, 5.2, 9), matDarkWood);
+trunk.position.y = 2.6; trunk.castShadow = true;
+tree.add(trunk);
+const leafMat = new THREE.MeshStandardMaterial({ color: 0x1d2b1c, roughness: 1.0, flatShading: true });
+for (let i = 0; i < 7; i++) {
+  const b = new THREE.Mesh(new THREE.IcosahedronGeometry(0.9 + Math.random() * 0.7, 0), leafMat);
+  b.position.set((Math.random() - 0.5) * 2.4, 4.6 + Math.random() * 1.6, (Math.random() - 0.5) * 2.4);
+  b.castShadow = true;
+  tree.add(b);
+}
+world.add(tree);
+
+/* ---------------------------------------------------------- atmosphere */
+// drifting smoke from the burner
+const smokeTex = makeSoftDot('rgba(190,190,190,0.55)', 'rgba(190,190,190,0)');
+const SMOKE_N = LOW ? 70 : 130;
+const smokeGeo = new THREE.BufferGeometry();
+const sPos = new Float32Array(SMOKE_N * 3), sSeed = new Float32Array(SMOKE_N);
+for (let i = 0; i < SMOKE_N; i++) {
+  sPos[i * 3] = SHRINE.x - 0.2 + (Math.random() - 0.5) * 0.9;
+  sPos[i * 3 + 1] = 0.9 + Math.random() * 3.4;
+  sPos[i * 3 + 2] = SHRINE.z + (Math.random() - 0.5) * 0.5;
+  sSeed[i] = Math.random() * 100;
+}
+smokeGeo.setAttribute('position', new THREE.BufferAttribute(sPos, 3));
+const smoke = new THREE.Points(smokeGeo, new THREE.PointsMaterial({
+  map: smokeTex, size: 2.4, transparent: true, opacity: 0.038,
+  depthWrite: false, blending: THREE.NormalBlending, sizeAttenuation: true
+}));
+world.add(smoke);
+
+// embers rising from the drum
+const emberTex = makeSoftDot('rgba(255,170,60,1)', 'rgba(255,90,0,0)');
+const EM_N = LOW ? 26 : 48;
+const emGeo = new THREE.BufferGeometry();
+const ePos = new Float32Array(EM_N * 3);
+for (let i = 0; i < EM_N; i++) {
+  ePos[i * 3] = SHRINE.x - 0.2 + (Math.random() - 0.5) * 0.4;
+  ePos[i * 3 + 1] = 0.8 + Math.random() * 2.5;
+  ePos[i * 3 + 2] = SHRINE.z + (Math.random() - 0.5) * 0.4;
+}
+emGeo.setAttribute('position', new THREE.BufferAttribute(ePos, 3));
+const embers = new THREE.Points(emGeo, new THREE.PointsMaterial({
+  map: emberTex, size: 0.075, transparent: true, opacity: 0.6,
+  depthWrite: false, blending: THREE.AdditiveBlending
+}));
+world.add(embers);
+
+/* --------------------------------------------------------------- the ghost */
+/* She is not in the scene at all until you are near the burner — no silhouette
+   to notice early. Inside GHOST_APPEAR_AT she fades up over about a second and
+   walks toward you, stopping short. The trigger is your distance to the BURNER,
+   not to her, so it fires however you approach the shrine.                     */
+
+const GHOST_HOME = new THREE.Vector3(-7.5, 0, -14.0);  // deep in the corridor, off to one side
+const GHOST_MIN_DIST = 3.4;                            // never closer than this
+const GHOST_APPEAR_AT = 8.5;                           // measured from the burner, not from her
+const GHOST_FADE_TIME = 1.1;                           // seconds to come fully in
+
+const ghost = new THREE.Group();
+ghost.position.copy(GHOST_HOME);
+world.add(ghost);
+
+const ghostLight = new THREE.PointLight(0xa8c4e0, 0, 7, 1.8);
+ghostLight.position.set(0, 1.45, 0.7);                 // just in front of her chest
+ghost.add(ghostLight);
+
+let ghostReady = false, ghostMixer = null;
+const ghostMats = [];
+let reveal = 0;                                        // 0 = not there, 1 = fully present
+ghost.visible = false;
+
+const GHOST_BUF = b64ToBuffer('__GHOST_B64__');
+new GLTFLoader().parse(GHOST_BUF, '', (gltf) => {
+  rescueTextures(gltf, GHOST_BUF);
+  const g = gltf.scene;
+  g.traverse(o => {
+    if (!o.isMesh) return;
+    o.frustumCulled = false;                           // skinned bounds are unreliable
+    o.castShadow = false;                              // she throws no shadow
+    const mats = Array.isArray(o.material) ? o.material : [o.material];
+    for (const m of mats) {
+      m.roughness = Math.min(1, (m.roughness ?? 0.8) + 0.15);
+      m.metalness = 0;
+      // Her shroud is near-white and she stands beside a fire: at full exposure
+      // the texture clips and she reads as a blank white sheet. Knock the base
+      // colour down once so the blood and hair survive the highlight.
+      m.color.multiplyScalar(0.85);
+      m.transparent = true;                            // she fades in on approach
+      m.opacity = 0;
+      if (ghostMats.indexOf(m) < 0) ghostMats.push(m);
+    }
+  });
+  ghost.add(g);
+
+  // A skinned mesh's geometry bounding box is the bind pose in some arbitrary
+  // authoring unit, so it is useless for sizing. Measure the skeleton instead
+  // and scale her to a real human height — self-correcting for any model.
+  g.updateMatrixWorld(true);
+  const bbox = new THREE.Box3(), _bp = new THREE.Vector3();
+  g.traverse(o => { if (o.isBone) bbox.expandByPoint(o.getWorldPosition(_bp)); });
+  const boneSpan = bbox.max.y - bbox.min.y;            // toe bones up to the head bone
+  if (boneSpan > 1e-6) {
+    const scale = 1.72 / (boneSpan / 0.87);            // skull sits above the head bone
+    g.scale.multiplyScalar(scale);
+    g.position.y = -bbox.min.y * scale;                // stand her on the floor
+  }
+
+  if (gltf.animations.length) {
+    ghostMixer = new THREE.AnimationMixer(g);
+    const act = ghostMixer.clipAction(gltf.animations[0]);
+    act.play();
+    ghostMixer.update(0.9);                            // start part-way into the stride
+  }
+  // Everything about her first visible frame is expensive: four textures to
+  // upload and a fresh shader to compile for every material. Doing that at the
+  // moment she fades in is exactly the stutter you would notice. Force it all
+  // now, while the title card is still up, then put her away.
+  ghost.visible = true;
+  for (const m of ghostMats) {
+    for (const slot of ['map', 'emissiveMap', 'normalMap']) {
+      if (m[slot]) renderer.initTexture(m[slot]);
+    }
+  }
+  renderer.compile(scene, camera);
+  ghost.visible = false;
+
+  ghostReady = true;
+}, (err) => console.warn('ghost failed to load', err));
+
+// is she inside the camera's view right now?
+const _ndc = new THREE.Vector3();
+function ghostInView() {
+  _ndc.set(ghost.position.x, ghost.position.y + 1.3, ghost.position.z).project(camera);
+  return _ndc.z < 1 && Math.abs(_ndc.x) < 1.08 && Math.abs(_ndc.y) < 1.15;
+}
+
+function updateGhost(dt) {
+  if (!ghostReady) return;
+
+  // Appearance is keyed to the shrine, not to her: walk straight at the burner
+  // and she still shows up. Keyed to her own position she could be skirted.
+  const bx = yaw.position.x - OFFER_POS.x, bz = yaw.position.z - OFFER_POS.z;
+  const distToBurner = Math.hypot(bx, bz);
+
+  const want = distToBurner < GHOST_APPEAR_AT ? 1 : 0;
+  if (reveal !== want) {
+    reveal = want > reveal
+      ? Math.min(1, reveal + dt / GHOST_FADE_TIME)
+      : Math.max(0, reveal - dt / (GHOST_FADE_TIME * 2));
+    const o = reveal * reveal * (3 - 2 * reveal);      // ease in and out
+    const solid = o > 0.995;                           // once fully there, leave the
+    for (const m of ghostMats) {                       // transparent pass entirely —
+      m.opacity = o;                                   // otherwise she sorts against
+      if (m.transparent === solid) {                   // the smoke and the notes
+        m.transparent = !solid;
+        m.needsUpdate = true;
+      }
+    }
+    ghostLight.intensity = o * 0.5;
+    ghost.visible = reveal > 0.001;
+  }
+  if (!ghost.visible) return;
+
+  if (state === 'title' || state === 'result' || state === 'complete') return;
+
+  const dx = yaw.position.x - ghost.position.x, dz = yaw.position.z - ghost.position.z;
+  const dist = Math.hypot(dx, dz);
+  if (ghostMixer) ghostMixer.update(dt);
+  if (dist > GHOST_MIN_DIST) {
+    const step = 0.85 * dt;
+    ghost.position.x += (dx / dist) * step;
+    ghost.position.z += (dz / dist) * step;
+  }
+  ghost.rotation.y = Math.atan2(dx, dz);               // always turned toward you
+}
+
+/* ------------------------------------------------- first-person viewmodel */
+/* The hands live in their own scene with their own camera. That is how every
+   FPS does it: a narrower field of view so they don't distort at the edges,
+   and a separate depth pass so they can never clip through a wall. */
+
+const vmScene = new THREE.Scene();
+const vmCam = new THREE.PerspectiveCamera(52, innerWidth / innerHeight, 0.008, 4);
+
+// lighting that echoes the world without being tied to it
+const vmHemi = new THREE.HemisphereLight(0x38486e, 0x0e1014, 0.55);
+vmScene.add(vmHemi);
+const vmKey = new THREE.DirectionalLight(0x93aad4, 0.50);
+vmKey.position.set(-0.6, 1.0, 0.6);
+vmScene.add(vmKey);
+const vmFire = new THREE.PointLight(0xff8433, 0, 6, 1.4);   // brightens near the burner
+vmFire.position.set(-0.35, 0.15, -0.55);
+vmScene.add(vmFire);
+vmScene.environment = scene.environment;
+vmScene.environmentIntensity = 0.025;
+
+const handsRoot = new THREE.Group();    // all sway and bob is applied here
+vmScene.add(handsRoot);
+const armR = new THREE.Group();         // right hand only
+handsRoot.add(armR);
+armR.rotation.set(0.50, 0.28, -0.48);   // relaxed: fingers forward, palm turned inward
+
+// Where the hand sits has to follow the shape of the screen: an offset that
+// frames nicely on a laptop puts it off the edge of a portrait phone. Position
+// it as a fraction of the visible frame at its own depth instead.
+const HAND_Z = 0.44;
+function layoutHands() {
+  const halfH = Math.tan(THREE.MathUtils.degToRad(vmCam.fov / 2)) * HAND_Z;
+  const halfW = halfH * vmCam.aspect;
+  armR.position.set(Math.min(0.175, halfW * 0.60), -halfH * 1.02, -HAND_Z);
+}
+layoutHands();
+
+let handsReady = false;
+new GLTFLoader().parse(b64ToBuffer('__HANDS_B64__'), '', (gltf) => {
+  const model = gltf.scene;
+
+  // The pack ships both hands in one skinned mesh, so the left one can't just
+  // be hidden — collapsing its root bone shrinks those vertices to a point.
+  const leftRoot = model.getObjectByName('J_Left_21');
+  if (leftRoot) leftRoot.scale.setScalar(1e-4);
+
+  // The model's material is flat grey and untextured; give it a skin tone.
+  // (setHex takes sRGB and converts — writing a raw linear value here is the
+  //  same trap that made the first pass look like latex gloves.)
+  model.traverse(o => {
+    if (!o.isMesh) return;
+    o.frustumCulled = false;            // skinned bounds are bind-pose only
+    o.material.color.setHex(0xC08E6E);
+    o.material.roughness = 0.72;
+    o.material.metalness = 0.0;
+  });
+
+  // Every hand model arrives in a different orientation, so rather than
+  // hard-coding one, measure it: four bones give the hand's own axes, and we
+  // rotate those onto ours — fingers to -Z, index-to-pinky to +X, palm to -Y.
+  // Swapping in a different model later only means changing these four names.
+  const BONES = {
+    wrist: 'J_Right_Hand_42',   middle: 'J_Right_HandMiddle3_31',
+    index: 'J_Right_HandIndex3_27', pinky: 'J_Right_HandPinky3_39'
+  };
+  const BONE_IDS = {
+    Thumb1: 'J_Right_HandThumb1_25',  Thumb2: 'J_Right_HandThumb2_24',  Thumb3: 'J_Right_HandThumb3_23',
+    Index1: 'J_Right_HandIndex1_29',  Index2: 'J_Right_HandIndex2_28',  Index3: 'J_Right_HandIndex3_27',
+    Middle1:'J_Right_HandMiddle1_33', Middle2:'J_Right_HandMiddle2_32', Middle3:'J_Right_HandMiddle3_31',
+    Ring1:  'J_Right_HandRing1_37',   Ring2:  'J_Right_HandRing2_36',   Ring3:  'J_Right_HandRing3_35',
+    Pinky1: 'J_Right_HandPinky1_41',  Pinky2: 'J_Right_HandPinky2_40',  Pinky3: 'J_Right_HandPinky3_39'
+  };
+  const oriented = new THREE.Group();
+  oriented.add(model);
+  armR.add(oriented);
+
+  const bone = {};
+  for (const k in BONES) bone[k] = model.getObjectByName(BONES[k]);
+
+  if (bone.wrist && bone.middle && bone.index && bone.pinky) {
+    model.updateWorldMatrix(true, true);
+    const toLocal = new THREE.Matrix4().copy(model.matrixWorld).invert();
+    const at = (o) => o.getWorldPosition(new THREE.Vector3()).applyMatrix4(toLocal);
+
+    const w = at(bone.wrist);
+    const fwd = at(bone.middle).sub(w).normalize();                  // wrist → fingers
+    const across = at(bone.pinky).sub(at(bone.index));               // index → pinky
+    across.addScaledVector(fwd, -across.dot(fwd)).normalize();       // make it square to fwd
+    const palm = new THREE.Vector3().crossVectors(fwd, across);
+
+    const from = new THREE.Matrix4().makeBasis(fwd, across, palm);
+    const to = new THREE.Matrix4().makeBasis(
+      new THREE.Vector3(0, 0, -1), new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, -1, 0));
+    oriented.quaternion.setFromRotationMatrix(to.multiply(from.transpose()));
+    model.position.copy(w).negate();          // put the wrist on the pivot
+    // The pack ships a flat, splayed VR pose — fine for tracking a controller,
+    // wrong for a person walking at night. It is rigged, so pose it: flex each
+    // joint about the hand's own across-axis, parents before children.
+    const CURL = [0.34, 0.56, 0.42];          // proximal, middle, distal
+    const FINGERS = {
+      Index: 0.86, Middle: 0.96, Ring: 1.08, Pinky: 1.22, Thumb: 0.42
+    };
+    const bendAxis = new THREE.Vector3();
+    const m3 = new THREE.Matrix3();
+    for (const finger in FINGERS) {
+      for (let seg = 1; seg <= 3; seg++) {
+        const b = model.getObjectByName(
+          Object.keys(BONE_IDS).length ? BONE_IDS[finger + seg] : '');
+        if (!b) continue;
+        b.updateWorldMatrix(true, false);
+        // express the flexion axis in this bone's own frame, then rotate
+        bendAxis.copy(across).applyMatrix3(m3.setFromMatrix4(b.matrixWorld).invert()).normalize();
+        b.rotateOnAxis(bendAxis, -CURL[seg - 1] * FINGERS[finger]);
+      }
+    }
+  } else {
+    console.warn('hand bones not found — check the names in BONES');
+  }
+
+  handsReady = true;
+}, (err) => console.warn('hands failed to load', err));
+
+// ── motion state ─────────────────────────────────────────────────────────
+const vm = {
+  step: 0,                              // walk cycle phase
+  sway: new THREE.Vector2(),            // smoothed look lag
+  swayTarget: new THREE.Vector2(),
+  lean: 0,                              // strafe roll
+  breathe: Math.random() * 10,
+  land: 0                               // footfall impulse
+};
+
+function updateViewmodel(dt, t, speed, strafe, dLookX, dLookY) {
+  if (!handsReady) return;
+
+  const sp = Math.min(speed / 3.4, 1);              // 0 idle → 1 running
+
+  // walk cycle: hands trace a figure-of-eight, x at half the frequency of y
+  const prevStep = vm.step;
+  vm.step += dt * speed * 5.6;
+  if (Math.floor(prevStep / Math.PI) !== Math.floor(vm.step / Math.PI)) vm.land = 1;
+  vm.land = Math.max(0, vm.land - dt * 6.5);
+
+  const bobX = Math.sin(vm.step) * 0.020 * sp;
+  const bobY = (Math.abs(Math.cos(vm.step)) - 0.55) * 0.026 * sp
+             - vm.land * vm.land * 0.012 * sp;      // small drop on each footfall
+  const bobRoll = Math.sin(vm.step) * 0.055 * sp;
+  const bobPitch = Math.cos(vm.step * 2) * 0.018 * sp;
+
+  // sway: the hands lag behind the camera, then settle back
+  vm.swayTarget.set(
+    THREE.MathUtils.clamp(dLookX * 9.0, -0.075, 0.075),
+    THREE.MathUtils.clamp(dLookY * 7.0, -0.060, 0.060));
+  vm.sway.lerp(vm.swayTarget, 1 - Math.pow(0.00008, dt));
+
+  // idle breathing, strongest when standing still
+  vm.breathe += dt;
+  const idle = 1 - sp;
+  const brY = Math.sin(vm.breathe * 1.45) * 0.0055 * idle;
+  const brX = Math.sin(vm.breathe * 0.83) * 0.0035 * idle;
+
+  // strafe lean
+  vm.lean += (strafe * 0.045 - vm.lean) * (1 - Math.pow(0.004, dt));
+
+  handsRoot.position.set(bobX + vm.sway.x + brX - vm.lean,
+                         bobY + vm.sway.y + brY - Math.abs(vm.lean) * 0.25,
+                         sp * 0.012);
+  handsRoot.rotation.set(bobPitch - vm.sway.y * 1.6,
+                         vm.sway.x * 1.9,
+                         bobRoll + vm.lean * 1.5);
+
+  // the burner throws warm light on the hands as you get close to it
+  const dFire = Math.hypot(yaw.position.x - fireLight.position.x,
+                           yaw.position.z - fireLight.position.z);
+  const warm = Math.max(0, 1 - dFire / 7) ** 2;
+  vmFire.intensity = warm * 2.4 * (0.82 + Math.sin(t * 11.3) * 0.12 + Math.random() * 0.06);
+  vmHemi.intensity = 0.55 - warm * 0.16;
+}
+
+/* ------------------------------------------------------- collision box */
+const BOUNDS = { minX: -21, maxX: 21, minZ: -18.6, maxZ: 26 };
+const BLOCKERS = [];
+world.traverse(o => {
+  if (o.isMesh && (o.material === matConcrete) && o.geometry.type === 'BoxGeometry') {
+    o.updateWorldMatrix(true, false);
+    const b = new THREE.Box3().setFromObject(o);
+    b.expandByScalar(0.28);
+    const h = b.max.y - b.min.y;
+    if (b.min.y < 2.2 && h > 1.0) BLOCKERS.push(b);
+  }
+});
+
+/* ------------------------------------------------------------ controls */
+const keys = Object.create(null);
+addEventListener('keydown', e => { keys[e.code] = true; });
+addEventListener('keyup', e => { keys[e.code] = false; });
+
+let lookX = 0, lookY = 0;            // accumulated look delta this frame
+let locked = false;                  // pointer lock currently held
+let lockBlocked = false;             // the page is not allowed to lock at all
+const lastMouse = { x: 0, y: 0 };
+
+function tryLock() {
+  if (lockBlocked || locked || state === 'title') return;
+  try {
+    const r = canvas.requestPointerLock?.();
+    if (r && typeof r.catch === 'function') r.catch(() => { lockBlocked = true; setHint(); });
+  } catch { lockBlocked = true; setHint(); }
+}
+document.addEventListener('pointerlockchange', () => {
+  locked = document.pointerLockElement === canvas;
+  setHint();
+});
+document.addEventListener('pointerlockerror', () => { lockBlocked = true; setHint(); });
+
+let edgeTurn = 0;                    // continuous turn while the cursor sits at a screen edge
+let pointerInside = false;
+
+canvas.addEventListener('mouseenter', () => { pointerInside = true; });
+canvas.addEventListener('mouseleave', () => { pointerInside = false; edgeTurn = 0; });
+addEventListener('blur', () => { edgeTurn = 0; });
+
+canvas.addEventListener('mousedown', e => {
+  if (e.button === 0) tryLock();     // upgrade to real free look where allowed
+});
+
+document.addEventListener('mousemove', e => {
+  if (locked) {                      // pointer lock: the ideal path, no limits
+    lookX -= e.movementX * 0.0022;
+    lookY -= e.movementY * 0.0022;
+    return;
+  }
+  // No lock available. Look on plain mouse movement anyway — no button held —
+  // and only while actually playing, so moving the cursor to a choice button
+  // doesn't spin the camera.
+  if (state !== 'play' || !pointerInside) { edgeTurn = 0; return; }
+  const dx = e.movementX !== undefined ? e.movementX : e.clientX - lastMouse.x;
+  const dy = e.movementY !== undefined ? e.movementY : e.clientY - lastMouse.y;
+  lastMouse.x = e.clientX; lastMouse.y = e.clientY;
+  lookX -= dx * 0.0026;
+  lookY -= dy * 0.0026;
+
+  // Without pointer lock the cursor runs out of window and you can't keep
+  // turning. Near either edge, add a steady turn so you can spin all the way
+  // round — push the mouse to the edge and hold it there.
+  const margin = Math.min(innerWidth, innerHeight) * 0.09;
+  const left = Math.max(0, margin - e.clientX);
+  const right = Math.max(0, e.clientX - (innerWidth - margin));
+  edgeTurn = (left - right) / margin;
+});
+
+// --- touch: left half = move stick, right half = look
+const stick = document.getElementById('stick');
+const knob = document.getElementById('knob');
+let stickId = null, lookId = null, stickVec = { x: 0, y: 0 }, lastLook = { x: 0, y: 0 };
+
+function onTouchStart(e) {
+  for (const t of e.changedTouches) {
+    if (t.clientX < innerWidth * 0.45 && stickId === null) {
+      stickId = t.identifier;
+      stick.style.left = t.clientX + 'px'; stick.style.top = t.clientY + 'px';
+      stick.classList.add('on');
+    } else if (lookId === null) {
+      lookId = t.identifier; lastLook.x = t.clientX; lastLook.y = t.clientY;
+    }
+  }
+}
+function onTouchMove(e) {
+  for (const t of e.changedTouches) {
+    if (t.identifier === stickId) {
+      const cx = parseFloat(stick.style.left), cy = parseFloat(stick.style.top);
+      let dx = t.clientX - cx, dy = t.clientY - cy;
+      const d = Math.hypot(dx, dy), max = 52;
+      if (d > max) { dx = dx / d * max; dy = dy / d * max; }
+      knob.style.transform = `translate(${dx}px,${dy}px)`;
+      stickVec.x = dx / max; stickVec.y = dy / max;
+    } else if (t.identifier === lookId) {
+      lookX -= (t.clientX - lastLook.x) * 0.0042;
+      lookY -= (t.clientY - lastLook.y) * 0.0042;
+      lastLook.x = t.clientX; lastLook.y = t.clientY;
+    }
+  }
+  e.preventDefault();
+}
+function onTouchEnd(e) {
+  for (const t of e.changedTouches) {
+    if (t.identifier === stickId) {
+      stickId = null; stickVec.x = stickVec.y = 0;
+      knob.style.transform = 'translate(0,0)'; stick.classList.remove('on');
+    } else if (t.identifier === lookId) lookId = null;
+  }
+}
+if (HAS_TOUCH) canvas.addEventListener('touchstart', onTouchStart, { passive: true });
+if (HAS_TOUCH) canvas.addEventListener('touchmove', onTouchMove, { passive: false });
+if (HAS_TOUCH) canvas.addEventListener('touchend', onTouchEnd, { passive: true });
+if (HAS_TOUCH) canvas.addEventListener('touchcancel', onTouchEnd, { passive: true });
+
+/* ------------------------------------------------------------ game data */
+const CHAPTER = {
+  id: 1,
+  title: 'The Hell Note',
+  brief: 'Late. A void deck you have walked a hundred times. Tonight someone has been burning for the dead, and a single note has drifted away from the pile — right into your path.',
+  prompt: 'The note is at your feet. What do you do?',
+  choices: [
+    {
+      k: 'A', text: 'Pick it up. It is only paper — and it might be real money.',
+      d: { sanity: -20, awareness: -10, wisdom: -15 },
+      verdict: 'bad',
+      say: 'You bend down and take it. The air near the drum goes still, and the warmth on your face is suddenly gone.',
+      teach: 'What is burned is given. Taking it back is taking from someone who can no longer object. Greed does not become harmless just because the object is worthless.'
+    },
+    {
+      k: 'B', text: 'Kick it away and laugh. Superstition is for other people.',
+      d: { sanity: -30, awareness: -15, wisdom: -25 },
+      verdict: 'worst',
+      say: 'Your foot scuffs the note across the concrete. Behind you, the drum ticks once — metal cooling, or something else.',
+      teach: 'Mockery is a form of belief: it insists on an answer before you have looked. Contempt costs nothing to feel and everything to carry.'
+    },
+    {
+      k: 'C', text: 'Stop. Look at what is actually here before moving.',
+      d: { sanity: 5, awareness: 25, wisdom: 15 },
+      verdict: 'good',
+      say: 'You stand still. Drum. Plate. Three sticks, still lit. Someone was here minutes ago. This is not a place for you to be standing.',
+      teach: 'Observation costs nothing and prevents most of what follows. Before you believe or dismiss, first see. Awareness is the cheapest protection there is.'
+    },
+    {
+      k: 'D', text: 'Step around it, palms together, and quietly excuse yourself.',
+      d: { sanity: 15, awareness: 15, wisdom: 25 },
+      verdict: 'best',
+      say: 'You go the long way round. A short bow, no words out loud. The lamp buzzes. The night carries on without you in it.',
+      teach: 'Respect is not agreement. You do not need to believe in something to leave it undisturbed — and leaving things undisturbed is most of the practice.'
+    }
+  ],
+  core: 'Observe before reacting. Do not blindly believe, blindly dismiss, or provoke what you do not understand.'
+};
+
+const stats = { sanity: 100, awareness: 50, wisdom: 50 };
+let state = 'title';   // title | play | decide | result | complete
+let chosen = null;
+
+/* ---------------------------------------------------------------- ui */
+const $ = id => document.getElementById(id);
+const ui = {
+  title: $('title'), hud: $('hud'), prompt: $('prompt'),
+  decide: $('decide'), result: $('result'), complete: $('complete'),
+  bSan: $('bSan'), bAwa: $('bAwa'), bWis: $('bWis'),
+  vSan: $('vSan'), vAwa: $('vAwa'), vWis: $('vWis'),
+  say: $('say'), teach: $('teach'), deltas: $('deltas'),
+  rank: $('rank'), core: $('core'), pct: $('pct')
+};
+const hint = $('hint');
+function setHint() {
+  const el = $('hintTxt');
+  if (!el) return;
+  el.textContent =
+      IS_PHONE ? 'Left thumb walks · right thumb looks'
+    : HAS_TOUCH && !locked ? 'W A S D to walk · move the mouse to look · touch works too'
+    : locked ? 'W A S D to walk · move the mouse to look'
+    : 'W A S D to walk · move the mouse to look · edges keep turning';
+}
+setHint();
+$('startBtn').onclick = () => {
+  ui.title.classList.add('hide');
+  ui.hud.classList.remove('hide');
+  hint.classList.remove('hide');
+  setTimeout(() => hint.classList.add('hide'), 7000);
+  state = 'play';
+  setHint();
+  tryLock();
+};
+$('nextBtn').onclick = () => { ui.result.classList.add('hide'); finish(); };
+$('againBtn').onclick = () => location.reload();
+
+$('brief').textContent = CHAPTER.brief;
+$('qtext').textContent = CHAPTER.prompt;
+const cWrap = $('choices');
+CHAPTER.choices.forEach((c, i) => {
+  const b = document.createElement('button');
+  b.className = 'choice';
+  b.innerHTML = `<span class="key">${c.k}</span><span>${c.text}</span>`;
+  b.onclick = () => pick(i);
+  cWrap.appendChild(b);
+});
+
+function syncBars() {
+  const cl = v => Math.max(0, Math.min(100, v));
+  ui.bSan.style.width = cl(stats.sanity) + '%';
+  ui.bAwa.style.width = cl(stats.awareness) + '%';
+  ui.bWis.style.width = cl(stats.wisdom) + '%';
+  ui.vSan.textContent = Math.round(cl(stats.sanity));
+  ui.vAwa.textContent = Math.round(cl(stats.awareness));
+  ui.vWis.textContent = Math.round(cl(stats.wisdom));
+}
+syncBars();
+
+function startDecision() {
+  state = 'decide';
+  chosen = null;
+  ui.prompt.classList.add('hide');
+  hint.classList.add('hide');
+  edgeTurn = 0;
+  ui.decide.classList.remove('hide');
+  document.exitPointerLock?.();
+}
+function pick(i) {
+  if (chosen !== null) return;
+  chosen = i;
+  const c = CHAPTER.choices[i];
+  for (const k in c.d) stats[k] += c.d[k];
+  syncBars();
+  ui.decide.classList.add('hide');
+  ui.say.textContent = c.say;
+  ui.teach.textContent = c.teach;
+  ui.deltas.innerHTML = Object.entries(c.d).map(([k, v]) =>
+    `<span class="${v >= 0 ? 'up' : 'dn'}">${k.toUpperCase()} ${v >= 0 ? '+' : ''}${v}</span>`).join('');
+  ui.result.classList.remove('hide');
+  state = 'result';
+}
+function finish() {
+  const score = (Math.max(0, Math.min(100, stats.sanity)) * 0.3
+    + Math.max(0, Math.min(100, stats.awareness)) * 0.3
+    + Math.max(0, Math.min(100, stats.wisdom)) * 0.4);
+  const r = score >= 90 ? 'S' : score >= 80 ? 'A+' : score >= 70 ? 'A'
+    : score >= 55 ? 'B' : score >= 40 ? 'C' : 'D';
+  ui.rank.textContent = r;
+  ui.pct.textContent = Math.round(score) + '%';
+  ui.core.textContent = CHAPTER.core;
+  ui.complete.classList.remove('hide');
+  ui.hud.classList.add('hide');
+  state = 'complete';
+}
+
+/* ---------------------------------------------------------------- loop */
+const clock = new THREE.Timer();
+const vel = new THREE.Vector3();
+const tmp = new THREE.Vector3();
+const OFFER_POS = SHRINE;
+let triggered = false;
+let bob = 0;
+
+function collide(nx, nz) {
+  const p = new THREE.Vector3(nx, 1.0, nz);
+  for (const b of BLOCKERS) if (b.containsPoint(p)) return true;
+  return nx < BOUNDS.minX || nx > BOUNDS.maxX || nz < BOUNDS.minZ || nz > BOUNDS.maxZ;
+}
+
+function tick() {
+  requestAnimationFrame(tick);
+  clock.update();
+  const dt = Math.min(clock.getDelta(), 0.05);
+  const t = clock.getElapsed();
+
+  // look — keep this frame's delta, the viewmodel needs it for sway
+  if (edgeTurn) lookX += Math.sign(edgeTurn) * edgeTurn * edgeTurn * 2.6 * dt;
+  const dLookX = lookX, dLookY = lookY;
+  yaw.rotation.y += lookX;
+  pitch.rotation.x = Math.max(-1.2, Math.min(1.2, pitch.rotation.x + lookY));
+  lookX = lookY = 0;
+
+  // move
+  let strafeInput = 0, playerSpeed = 0;
+  if (state === 'play') {
+    let f = 0, s = 0;
+    if (keys.KeyW || keys.ArrowUp) f += 1;
+    if (keys.KeyS || keys.ArrowDown) f -= 1;
+    if (keys.KeyA || keys.ArrowLeft) s -= 1;
+    if (keys.KeyD || keys.ArrowRight) s += 1;
+    f -= stickVec.y; s += stickVec.x;
+    const len = Math.hypot(f, s);
+    if (len > 1) { f /= len; s /= len; }
+    strafeInput = s;
+    const run = keys.ShiftLeft ? 1.75 : 1;
+    const speed = 2.55 * run;
+    tmp.set(s, 0, -f).applyAxisAngle(new THREE.Vector3(0, 1, 0), yaw.rotation.y);
+    vel.lerp(tmp.multiplyScalar(speed), 1 - Math.pow(0.0005, dt));
+
+    const nx = yaw.position.x + vel.x * dt, nz = yaw.position.z + vel.z * dt;
+    if (!collide(nx, yaw.position.z)) yaw.position.x = nx;
+    if (!collide(yaw.position.x, nz)) yaw.position.z = nz;
+
+    // head bob
+    const sp = playerSpeed = Math.hypot(vel.x, vel.z);
+    bob += dt * sp * 8.5;
+    yaw.position.y = 1.62 + Math.sin(bob) * 0.028 * Math.min(sp / 2.5, 1);
+
+    // proximity trigger
+    const d = Math.hypot(yaw.position.x - OFFER_POS.x, yaw.position.z - OFFER_POS.z);
+    if (d < 6.2) ui.prompt.classList.remove('hide'); else ui.prompt.classList.add('hide');
+    if (d < 4.5 && !triggered) { triggered = true; startDecision(); }
+  }
+
+  updateNotes(dt, t);
+  updateGhost(dt);
+
+  // fire flicker
+  const fl = 0.75 + Math.sin(t * 11.3) * 0.14 + Math.sin(t * 27.7) * 0.09 + Math.random() * 0.08;
+  fireLight.intensity = 14 * fl;
+  ash.material.color.setHSL(0.045, 1, 0.35 + fl * 0.16);
+  jossTips.forEach((tp, i) => {
+    tp.material.color.setHSL(0.04, 1, 0.42 + Math.sin(t * 3 + i) * 0.1);
+  });
+
+  // smoke + embers drift
+  const sp2 = smoke.geometry.attributes.position.array;
+  for (let i = 0; i < SMOKE_N; i++) {
+    sp2[i * 3 + 1] += dt * (0.28 + (sSeed[i] % 1) * 0.3);
+    sp2[i * 3] += Math.sin(t * 0.5 + sSeed[i]) * dt * 0.12;
+    if (sp2[i * 3 + 1] > 4.6) {
+      sp2[i * 3 + 1] = 0.9;
+      sp2[i * 3] = SHRINE.x - 0.2 + (Math.random() - 0.5) * 0.8;
+      sp2[i * 3 + 2] = SHRINE.z + (Math.random() - 0.5) * 0.8;
+    }
+  }
+  smoke.geometry.attributes.position.needsUpdate = true;
+
+  const ep = embers.geometry.attributes.position.array;
+  for (let i = 0; i < EM_N; i++) {
+    ep[i * 3 + 1] += dt * (0.7 + Math.random() * 0.5);
+    ep[i * 3] += Math.sin(t * 1.7 + i) * dt * 0.25;
+    if (ep[i * 3 + 1] > 3.6) {
+      ep[i * 3 + 1] = 0.8;
+      ep[i * 3] = SHRINE.x - 0.2 + (Math.random() - 0.5) * 0.3;
+      ep[i * 3 + 2] = SHRINE.z + (Math.random() - 0.5) * 0.3;
+    }
+  }
+  embers.geometry.attributes.position.needsUpdate = true;
+
+  // hands: driven by exactly the same movement the camera uses
+  updateViewmodel(dt, t, playerSpeed, strafeInput, dLookX, dLookY);
+
+  renderer.render(scene, camera);
+
+  // second pass: the viewmodel gets its own fresh depth buffer, so the hands
+  // can never poke through a wall however close you stand to one
+  if (state !== 'title' && handsReady) {
+    renderer.autoClear = false;
+    renderer.clearDepth();
+    renderer.render(vmScene, vmCam);
+    renderer.autoClear = true;
+  }
+}
+window.__enc = { yaw, stats, blockers: BLOCKERS, getState: () => state,
+                 handsRoot, armR, vmCam, vm, updateViewmodel, updateNotes, flying,
+                 ghost, updateGhost, ghostInView, getReveal: () => reveal };
+tick();
+
+addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  vmCam.aspect = innerWidth / innerHeight;
+  vmCam.updateProjectionMatrix();
+  layoutHands();
+  renderer.setSize(innerWidth, innerHeight);
+});

@@ -1,0 +1,40 @@
+# dependencies — restore with `npm install`
+node_modules/
+
+# build output — regenerate with `npm run build`, never edit by hand
+bundle.js
+hellnote.html
+wrapped.html
+
+# throwaway render checks from the test harnesses
+*.png
+view/
+
+# original asset archives (the .glb files that matter are committed)
+**/*.zip
+
+# one-off debug harnesses and unshrunk intermediates
+dbg*.mjs
+amshot.mjs
+count.mjs
+cspshot.mjs
+gfinal.mjs
+gscene.mjs
+gshot.mjs
+hshot.mjs
+hdbshot.mjs
+hview.mjs
+hprobe.mjs
+probe.mjs
+shots.mjs
+vr.mjs
+vshot.mjs
+meas.mjs
+test.mjs
+planshots.mjs
+handshot.mjs
+notes.mjs
+ghost/kuntilanak.glb
+hdb/hdb.glb
+**/textures_orig/
+**/*.fbm/
