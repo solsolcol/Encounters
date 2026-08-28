@@ -154,7 +154,7 @@ Chad the bundle + zip.
 - [x] Generations started, flow IDs recorded (checkpoint 2)
 - [x] Engine + build pipeline in place, builds green (checkpoint 3)
 - [x] All assets downloaded + encoded + wired (checkpoint 4)
-- [ ] Harnesses green both builds (checkpoint 5)
+- [x] Harnesses green both builds (checkpoint 5)
 - [ ] v2.3 released: tag, bundle, zip, artifact, Netlify (checkpoint 6)
 
 ## Node map (flow GWD3XGXSf18EJYIKmgds) — resume key
