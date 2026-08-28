@@ -1101,7 +1101,8 @@ function updateGhost(dt) {
   }
   if (!ghost.visible) return;
 
-  if (state === 'title' || state === 'result' || state === 'complete') return;
+  if (state === 'title' || state === 'result'
+      || state === 'complete' || state === 'lost') return;
 
   const dx = yaw.position.x - ghost.position.x, dz = yaw.position.z - ghost.position.z;
   const dist = Math.hypot(dx, dz);
@@ -1490,7 +1491,7 @@ const CHAPTER = {
 };
 
 const stats = { sanity: 100, awareness: 50, wisdom: 50 };
-let state = 'title';   // title | play | decide | result | complete
+let state = 'title';   // title | play | decide | result | complete | lost
 let chosen = null;
 
 /* ---------------------------------------------------------------- ui */
@@ -1498,6 +1499,7 @@ const $ = id => document.getElementById(id);
 const ui = {
   title: $('title'), hud: $('hud'), prompt: $('prompt'), interact: $('interact'),
   decide: $('decide'), result: $('result'), complete: $('complete'),
+  haunt: $('haunt'), over: $('over'), panic: $('panic'),
   bSan: $('bSan'), bAwa: $('bAwa'), bWis: $('bWis'),
   vSan: $('vSan'), vAwa: $('vAwa'), vWis: $('vWis'),
   say: $('say'), teach: $('teach'), deltas: $('deltas'),
@@ -1534,6 +1536,7 @@ $('startBtn').onclick = () => {
   tryLock();
 };
 $('stepBack').onclick = () => dismissDecision();
+$('retryBtn').onclick = () => location.reload();
 $('nextBtn').onclick = () => { ui.result.classList.add('hide'); finish(); };
 $('againBtn').onclick = () => location.reload();
 
@@ -1608,6 +1611,49 @@ function pick(i) {
   ui.result.classList.remove('hide');
   state = 'result';
 }
+/* --------------------------------------------------------- sanity drain ---
+   Being looked at costs you. From the moment she is there, sanity bleeds —
+   slowly at range, hard up close — and it only bleeds while you are stood in
+   the world doing nothing about it. Opening the decision stops it, because
+   the whole point of taking the timer off the choices was that the choosing
+   is not the part meant to panic you. Walking out of her reach stops it too:
+   that is a real answer, not an escape from the mechanic.                   */
+// At arm's length this empties a full bar in about twenty seconds: long
+// enough to turn and run, short enough that standing there is a decision.
+const DRAIN_FAR = 1.1, DRAIN_NEAR = 5.0;      // sanity per second
+const DRAIN_FAR_D = 13.0, DRAIN_NEAR_D = 4.0; // metres to her
+
+function ghostDrainRate() {
+  if (!ghostReady || reveal <= 0.01) return 0;
+  const d = Math.hypot(yaw.position.x - ghost.position.x,
+                       yaw.position.z - ghost.position.z);
+  const k = THREE.MathUtils.clamp(
+    (DRAIN_FAR_D - d) / (DRAIN_FAR_D - DRAIN_NEAR_D), 0, 1);
+  return (DRAIN_FAR + (DRAIN_NEAR - DRAIN_FAR) * k * k) * reveal;
+}
+
+let hauntShown = false;
+function showHaunt(on) {
+  if (on === hauntShown) return;
+  hauntShown = on;
+  ui.haunt.classList.toggle('hide', !on);
+  ui.bSan.classList.toggle('drain', on);
+}
+
+function lose() {
+  if (state === 'lost') return;
+  state = 'lost';
+  stats.sanity = 0;
+  syncBars();
+  showHaunt(false);
+  for (const el of [ui.decide, ui.result, ui.prompt, ui.interact, ui.hud, hint]) {
+    el.classList.add('hide');
+  }
+  ui.panic.style.opacity = '1';
+  ui.over.classList.remove('hide');
+  document.exitPointerLock?.();
+}
+
 function finish() {
   const score = (Math.max(0, Math.min(100, stats.sanity)) * 0.3
     + Math.max(0, Math.min(100, stats.awareness)) * 0.3
@@ -1693,9 +1739,22 @@ function tick() {
       if (d < 6.2) ui.prompt.classList.remove('hide'); else ui.prompt.classList.add('hide');
     }
 
-    if (d < 4.5 && !triggered) { triggered = true; startDecision(); }
+    // she is here, and standing still in front of her costs you
+    const drain = ghostDrainRate();
+    showHaunt(drain > 0);
+    if (drain > 0) {
+      stats.sanity = Math.max(0, stats.sanity - drain * dt);
+      syncBars();
+      if (stats.sanity <= 0) lose();
+    }
+    // the edges close in as it goes, whether or not she is draining you now
+    ui.panic.style.opacity =
+      (THREE.MathUtils.clamp((42 - stats.sanity) / 42, 0, 1) * 0.9).toFixed(3);
+
+    if (state === 'play' && d < 4.5 && !triggered) { triggered = true; startDecision(); }
   } else {
     ui.interact.classList.add('hide');
+    if (state !== 'lost') showHaunt(false);
   }
 
   updateNotes(dt, t);
@@ -1753,7 +1812,8 @@ function tick() {
 window.__enc = { yaw, stats, blockers: BLOCKERS, getState: () => state,
                  handsRoot, armR, vmCam, vm, updateViewmodel, updateNotes, flying,
                  ghost, updateGhost, ghostInView, getReveal: () => reveal,
-                 dismissDecision, interactPile, pile, pileDist, pileInView,
+                 dismissDecision, ghostDrainRate, lose,
+                 interactPile, pile, pileDist, pileInView,
                  pileScreen, pointerHitsPile, PILE_POS, INTERACT_R,
                  pileGlow: () => pileRing.material.opacity };
 tick();
