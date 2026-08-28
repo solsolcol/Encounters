@@ -72,7 +72,11 @@ if (label === 'desktop') {
 // and the choices still work afterwards
 await p.waitForTimeout(1500);
 await (label==='phone' ? p.tap('#choices .choice') : p.click('#choices .choice'));
-await p.waitForTimeout(3000);
+// the choice now plays a cutscene first — skip it, we are testing the flow
+await p.waitForFunction(()=>window.__enc.getState()==='cine', null, {timeout:30000, polling:100});
+await p.waitForTimeout(1200);
+await p.evaluate(()=>window.__enc.cine.skip());
+await p.waitForTimeout(1500);
 out.choiceStillWorks = await p.$eval('#result', e=>!e.classList.contains('hide'));
 
 console.log(label.padEnd(8), JSON.stringify(out), '| errors:', errs.length?errs:'none');

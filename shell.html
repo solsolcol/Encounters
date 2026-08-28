@@ -139,6 +139,26 @@ html,body{height:100%;overflow:hidden;background:var(--void);color:var(--bone);
   color:var(--jade);text-decoration:none;word-break:break-word}
 .credList a:hover,.credList a:focus-visible{text-decoration:underline;outline:none}
 
+/* ── cutscenes ──────────────────────────────────────────────────────── */
+/* The fade sits UNDER the dialogue layers (z4 vs z5), so the result card can
+   rise over a screen the cutscene left in darkness. Its opacity is driven
+   from the timeline every frame — no CSS transition, because a stalling
+   renderer would leave a transition half-run. */
+#cineFade{position:fixed;inset:0;background:#000;opacity:0;
+  pointer-events:none;z-index:4}
+.cineBar{position:fixed;left:0;right:0;height:11vh;background:#000;z-index:4;
+  transition:transform .55s var(--ease);pointer-events:none}
+#barTop{top:0;transform:translateY(-101%)}
+#barBot{bottom:0;transform:translateY(101%)}
+body.cine #barTop,body.cine #barBot{transform:translateY(0)}
+#cineSkip{position:fixed;right:max(16px,env(safe-area-inset-right));
+  bottom:max(16px,env(safe-area-inset-bottom));z-index:7;pointer-events:auto;
+  background:rgba(7,8,11,.66);border:1px solid var(--line);color:#B4BAC6;
+  font-family:var(--ui);font-size:1rem;letter-spacing:.05em;padding:10px 18px;
+  cursor:pointer;transition:color .16s,border-color .16s}
+#cineSkip:hover,#cineSkip:focus-visible{color:var(--bone);
+  border-color:var(--sodium);outline:none}
+
 /* ── the chapter card ───────────────────────────────────────────────── */
 /* Black over everything while the scene is already running behind it, so the
    fade out lands you in a world that has been going without you. */
@@ -345,6 +365,10 @@ html,body{height:100%;overflow:hidden;background:var(--void);color:var(--bone);
 <canvas id="scene"></canvas>
 <div id="grade"></div>
 <div id="panic"></div>
+<div id="cineFade"></div>
+<div id="barTop" class="cineBar"></div>
+<div id="barBot" class="cineBar"></div>
+<button id="cineSkip" class="hide" type="button">Skip &#9656;</button>
 <div id="stick"><div id="knob"></div></div>
 
 <!-- title -->

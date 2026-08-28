@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
+import { clone as cloneSkinned } from 'three/examples/jsm/utils/SkeletonUtils.js';
 
 // The page is embedded in a wrapper we do not control — make sure mobile gets a
 // real device-width viewport (and safe-area insets) either way.
@@ -725,11 +726,14 @@ function seedNote(f, firstRun) {
 }
 for (let i = 0; i < FLY_N; i++) airborne.push(seedNote({}, true));
 
+// 1 is the everyday drift; a cutscene can spin it up to a storm and back
+let noteStorm = 1;
+
 function updateNotes(dt, t) {
   for (let i = 0; i < FLY_N; i++) {
     const f = airborne[i];
-    f.a += f.swirl * dt * (3 / Math.max(f.r, 2));    // tighter orbits move faster
-    f.y += f.rise * dt;
+    f.a += f.swirl * dt * noteStorm * (3 / Math.max(f.r, 2));  // tighter orbits move faster
+    f.y += f.rise * dt * noteStorm;
     if (f.y > f.top) seedNote(f, false);             // recycle back to the ground
     const r = f.r + Math.sin(t * 0.45 + f.wob) * 0.9;
     _v.set(OFFER_X + Math.cos(f.a) * r,
@@ -916,6 +920,12 @@ function interactPile() {
 }
 
 function updatePile(t) {
+  // game furniture, not part of a film — everything off while a scene plays
+  if (state === 'cine') {
+    pileMarkRoot.visible = pileRing.visible = pileOutline.visible = false;
+    pileMat.emissive.setRGB(0, 0, 0);
+    return;
+  }
   const dist = pileDist();
 
   // the mark carries further than the highlight, and keeps moving so it never
@@ -1156,6 +1166,10 @@ function ghostInView() {
 
 function updateGhost(dt) {
   if (!ghostReady) return;
+  // During a cutscene the timeline owns her completely — position, facing,
+  // opacity, even whether she exists. And once the choice is made (result,
+  // complete), she holds whatever the scene left her as.
+  if (state === 'cine' || state === 'result' || state === 'complete') return;
 
   // Appearance is keyed to the shrine, not to her: walk straight at the burner
   // and she still shows up. Keyed to her own position she could be skirted.
@@ -1301,6 +1315,13 @@ new GLTFLoader().parse(b64ToBuffer('__HANDS_B64__'), '', (gltf) => {
     // The pack ships a flat, splayed VR pose — fine for tracking a controller,
     // wrong for a person walking at night. It is rigged, so pose it: flex each
     // joint about the hand's own across-axis, parents before children.
+    // remember the straight pose before curling, for the prayer cutscene
+    restPose = {};
+    model.traverse(o => {
+      if (o.isBone && /J_Right_Hand(Thumb|Index|Middle|Ring|Pinky)\d/.test(o.name)) {
+        restPose[o.name] = o.quaternion.clone();
+      }
+    });
     const CURL = [0.34, 0.56, 0.42];          // proximal, middle, distal
     const FINGERS = {
       Index: 0.86, Middle: 0.96, Ring: 1.08, Pinky: 1.22, Thumb: 0.42
@@ -1322,8 +1343,31 @@ new GLTFLoader().parse(b64ToBuffer('__HANDS_B64__'), '', (gltf) => {
     console.warn('hand bones not found — check the names in BONES');
   }
 
+  // Kept for the cutscenes: the model, the curl the hand normally carries,
+  // and each finger bone's pose both before and after that curl, so a scene
+  // can straighten the fingers (prayer) and hand them back exactly as found.
+  rightHandModel = model;
+  rightOriented = oriented;
+  fingerPose = [];
+  model.traverse(o => {
+    if (o.isBone && /J_Right_Hand(Thumb|Index|Middle|Ring|Pinky)\d/.test(o.name)) {
+      fingerPose.push({ name: o.name, curled: o.quaternion.clone() });
+    }
+  });
+
   handsReady = true;
 }, (err) => console.warn('hands failed to load', err));
+
+let rightHandModel = null, rightOriented = null, fingerPose = null, restPose = null;
+
+// slide every finger between straight (0) and the walking curl (1)
+function setHandCurl(root, k) {
+  if (!fingerPose || !restPose) return;
+  for (const f of fingerPose) {
+    const b = root.getObjectByName(f.name);
+    if (b && restPose[f.name]) b.quaternion.slerpQuaternions(restPose[f.name], f.curled, k);
+  }
+}
 
 // ── motion state ─────────────────────────────────────────────────────────
 const vm = {
@@ -1574,7 +1618,7 @@ const CHAPTER = {
 };
 
 const stats = { sanity: 100, awareness: 50, wisdom: 50 };
-let state = 'title';   // title | chapter | play | decide | result | complete | lost
+let state = 'title';   // title | chapter | play | decide | cine | result | complete | lost
 let chosen = null;
 
 /* ---------------------------------------------------------------- ui */
@@ -1732,6 +1776,535 @@ creditsLayer?.addEventListener('click', e => {
   if (e.target === creditsLayer) showCredits(false);      // click the backdrop
 });
 
+/* ========================================================================
+   CUTSCENES
+   One tiny timeline engine, four directed scenes — the action and its
+   consequence played in the world itself, with the camera taken off the
+   player's hands.
+
+   Every visual change is a TRACK: an absolute setter evaluated from the
+   current time. That one rule buys everything hard about cutscenes for
+   free — skipping is seek(duration), scrubbing for screenshots is seek(t),
+   and a stalling phone can never leave the scene half-applied, because the
+   next frame re-derives all of it. Sounds are the only exception: they are
+   fire-once STINGS, and a seek or skip never fires them.
+   ======================================================================== */
+
+const cineFadeEl = $('cineFade'), skipBtn = $('cineSkip');
+let cine = null;
+
+/* ------------------------------------------------------------ tiny sfx --
+   Little synthesised stings through the same AudioContext as the music.
+   No files — a cutscene's thud, clang and chime are cheaper to make than
+   to download, and they obey the mute button by never firing under it.   */
+let sfxGain = null, noiseBuf = null;
+function sfxOut() {
+  if (!actx) return null;
+  if (!sfxGain) {
+    sfxGain = actx.createGain();
+    sfxGain.gain.value = 0.9;
+    sfxGain.connect(actx.destination);
+  }
+  if (!noiseBuf) {
+    noiseBuf = actx.createBuffer(1, actx.sampleRate, actx.sampleRate);
+    const d = noiseBuf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  }
+  return sfxGain;
+}
+function sting(kind) {
+  if (!actx || muted || !sfxOut()) return;
+  const t0 = actx.currentTime;
+  const env = (node, peak, a, d) => {
+    const g = actx.createGain();
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(Math.max(peak, 0.001), t0 + a);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + a + d);
+    node.connect(g); g.connect(sfxGain);
+  };
+  const noise = (filterType, freq, q, peak, a, d) => {
+    const src = actx.createBufferSource(); src.buffer = noiseBuf;
+    const f = actx.createBiquadFilter(); f.type = filterType;
+    f.frequency.setValueAtTime(freq, t0); f.Q.value = q;
+    src.connect(f); env(f, peak, a, d);
+    src.start(t0); src.stop(t0 + a + d + 0.05);
+    return f;
+  };
+  const tone = (type, f0, f1, peak, a, d) => {
+    const o = actx.createOscillator(); o.type = type;
+    o.frequency.setValueAtTime(f0, t0);
+    o.frequency.exponentialRampToValueAtTime(Math.max(f1, 1), t0 + a + d);
+    env(o, peak, a, d);
+    o.start(t0); o.stop(t0 + a + d + 0.05);
+  };
+  switch (kind) {
+    case 'boom':                                  // she is here
+      tone('sine', 68, 36, 0.5, 0.02, 0.85);
+      noise('lowpass', 220, 0.7, 0.3, 0.01, 0.4);
+      break;
+    case 'clang':                                 // metal hitting concrete
+      tone('square', 195, 82, 0.16, 0.005, 0.34);
+      noise('bandpass', 900, 4, 0.3, 0.004, 0.22);
+      noise('lowpass', 160, 0.7, 0.4, 0.01, 0.5);
+      break;
+    case 'whoosh': {                              // something moves fast
+      const f = noise('bandpass', 380, 1.4, 0.32, 0.12, 0.45);
+      f.frequency.exponentialRampToValueAtTime(2300, t0 + 0.28);
+      f.frequency.exponentialRampToValueAtTime(280, t0 + 0.6);
+      break;
+    }
+    case 'take':                                  // paper against skin
+      noise('highpass', 1900, 0.8, 0.12, 0.01, 0.12);
+      break;
+    case 'step':                                  // a footfall
+      noise('lowpass', 150, 0.8, 0.2, 0.006, 0.09);
+      break;
+    case 'chime':                                 // the calm answer
+      tone('sine', 659.3, 659.3, 0.075, 0.16, 2.1);
+      tone('sine', 880.0, 880.0, 0.06, 0.22, 2.3);
+      tone('sine', 1318.5, 1318.5, 0.035, 0.30, 2.6);
+      break;
+  }
+}
+
+/* ----------------------------------------------------- prayer left hand --
+   The pack's own left hand was collapsed at load, and resurrecting it means
+   fighting a rig that was never framed for the camera. Instead the RIGHT
+   hand — already oriented, already known — is cloned and mirrored, so both
+   hands share one anatomy and a symmetric pose is symmetric by construction.
+   Mirroring flips the winding, so the clone's materials go double-sided.   */
+let prayerArmL = null;
+function buildPrayerArm() {
+  if (prayerArmL || !rightOriented) return prayerArmL;
+  const c = cloneSkinned(rightOriented);
+  c.traverse(o => {
+    if (o.isMesh) {
+      o.frustumCulled = false;
+      o.material = o.material.clone();
+      o.material.side = THREE.DoubleSide;
+    }
+  });
+  const mir = new THREE.Group();
+  mir.scale.x = -1;
+  mir.add(c);
+  prayerArmL = new THREE.Group();
+  prayerArmL.add(mir);
+  prayerArmL.visible = false;
+  prayerArmL.userData.model = c;
+  handsRoot.add(prayerArmL);
+  return prayerArmL;
+}
+
+// the hell note the hand comes back holding — lives in the viewmodel scene
+const noteProp = new THREE.Mesh(
+  new THREE.PlaneGeometry(0.15, 0.078),
+  new THREE.MeshStandardMaterial({ map: noteTex, roughness: 0.85, side: THREE.DoubleSide }));
+noteProp.visible = false;
+armR.add(noteProp);
+noteProp.position.set(0.012, -0.052, -0.148);
+noteProp.rotation.set(-1.18, 0.10, 0.16);
+
+// mirrors the fade logic in updateGhost, for scenes that own her directly
+function ghostOpacity(o) {
+  for (const m of ghostMats) {
+    m.opacity = o;
+    const solid = o > 0.995;
+    if (m.transparent === solid) { m.transparent = !solid; m.needsUpdate = true; }
+  }
+  ghostLight.intensity = o * 0.7;
+  ghost.visible = o > 0.003;
+}
+
+/* --------------------------------------------------------------- engine */
+const smoothK = k => k * k * (3 - 2 * k);
+const rawK = k => k;
+// shortest-arc angle interpolation, so a turn never whips the long way round
+function mixAngle(a, b, k) {
+  let d = (b - a) % (Math.PI * 2);
+  if (d > Math.PI) d -= Math.PI * 2;
+  if (d < -Math.PI) d += Math.PI * 2;
+  return a + d * k;
+}
+const faceFrom = (x, z, tx, tz) => Math.atan2(-(tx - x), -(tz - z));
+
+function snapWorld() {
+  return {
+    yawPos: yaw.position.clone(), yawRot: yaw.rotation.y,
+    pitchX: pitch.rotation.x, camRoll: camera.rotation.z,
+    gPos: ghost.position.clone(), gRotY: ghost.rotation.y, reveal,
+    hero: heroNote.visible,
+    drumPos: drum.position.clone(), drumRotZ: drum.rotation.z, ashVis: ash.visible,
+    emberSize: embers.material.size, emberOp: embers.material.opacity,
+    storm: noteStorm, armVis: armR.visible
+  };
+}
+
+function restoreWorld(s, keep) {
+  yaw.position.copy(s.yawPos); yaw.rotation.y = s.yawRot;
+  pitch.rotation.x = s.pitchX; camera.rotation.z = s.camRoll;
+  drum.position.copy(s.drumPos); drum.rotation.z = s.drumRotZ; ash.visible = s.ashVis;
+  embers.material.size = s.emberSize; embers.material.opacity = s.emberOp;
+  noteStorm = s.storm;
+  heroNote.visible = s.hero;
+  armR.visible = s.armVis;
+  armR.rotation.set(0.50, 0.28, -0.48);
+  vmKey.intensity = 0.50;
+  layoutHands();
+  noteProp.visible = false;
+  if (prayerArmL) prayerArmL.visible = false;
+  if (rightHandModel) setHandCurl(rightHandModel, 1);
+  ghost.position.copy(s.gPos);
+  ghost.rotation.y = s.gRotY;
+  if (keep.ghostGone) { reveal = 0; ghostOpacity(0); }
+  else { reveal = s.reveal; ghostOpacity(s.reveal); }
+}
+
+function playCine(i, onDone) {
+  const snap = snapWorld();
+  const c = {
+    t: 0, last: performance.now(), paused: false,
+    tracks: [], stings: [], dur: 1,
+    handsAuto: null,           // t => walking speed, or null when scripted
+    ghostMix: null,            // t => animation speed for her walk cycle
+    keep: {}, endFade: 0, snap, onDone
+  };
+  CINE_SCENES[i](c, snap);
+  c.dur = c.tracks.reduce((m, tr) => Math.max(m, tr.t1), 1);
+  cine = c;
+  state = 'cine';
+  ui.hud.classList.add('hide');
+  ui.interact.classList.add('hide');
+  hint.classList.add('hide');
+  document.body.classList.add('cine');
+  cineFadeEl.style.opacity = '0';
+  document.exitPointerLock?.();
+}
+
+function cineSeek(t) {
+  const c = cine;
+  for (const tr of c.tracks) {
+    if (t < tr.t0) continue;
+    if (tr.once) { if (tr.done) continue; tr.done = true; }
+    const k = tr.t1 > tr.t0 ? Math.min(1, (t - tr.t0) / (tr.t1 - tr.t0)) : 1;
+    tr.fn((tr.ease || smoothK)(k), t);
+  }
+}
+
+function cineUpdate() {
+  const c = cine;
+  if (!c) return;
+  const now = performance.now();
+  let rdt = (now - c.last) / 1000;
+  c.last = now;
+  if (c.paused) rdt = 0;
+  rdt = Math.min(rdt, 0.5);          // a stalled frame advances, never leaps
+  const before = c.t;
+  c.t = Math.min(c.t + rdt, c.dur);
+  for (const s of c.stings) {
+    if (!s.fired && s.at > before - 1e-9 && s.at <= c.t) { s.fired = true; sting(s.kind); }
+  }
+  cineSeek(c.t);
+  if (c.ghostMix && ghostMixer) {
+    const sp = c.ghostMix(c.t);
+    if (sp > 0) ghostMixer.update(rdt * sp);
+  }
+  skipBtn.classList.toggle('hide', c.t < 0.9);
+  if (c.t >= c.dur && !c.paused) cineEnd();
+}
+
+function cineHands(dt, t) {
+  const c = cine;
+  if (!c) return;
+  if (c.handsAuto) updateViewmodel(dt, t, c.handsAuto(c.t), 0, 0, 0);
+}
+
+function cineEnd() {
+  const c = cine;
+  if (!c) return;
+  cine = null;
+  restoreWorld(c.snap, c.keep);
+  cineFadeEl.style.opacity = String(c.endFade);
+  document.body.classList.remove('cine');
+  skipBtn.classList.add('hide');
+  ui.hud.classList.remove('hide');
+  c.onDone();
+}
+
+function skipCine() {
+  const c = cine;
+  if (!c) return;
+  c.t = c.dur;
+  cineSeek(c.dur);
+  cineEnd();
+}
+
+skipBtn.addEventListener('click', e => { e.stopPropagation(); skipCine(); });
+addEventListener('keydown', e => {
+  if (state === 'cine' && cine && cine.t > 0.6 &&
+      (e.code === 'Escape' || e.code === 'KeyE' || e.code === 'Space' || e.code === 'Enter')) {
+    skipCine();
+  }
+});
+addEventListener('pointerdown', e => {
+  // a tap anywhere skips — except on the sound button, which keeps its job
+  if (state === 'cine' && cine && !cine.paused && cine.t > 0.8 && !e.target.closest?.('#mute')) {
+    skipCine();
+  }
+});
+
+/* --------------------------------------------------------------- scenes */
+const NOTE_POS = { x: 0.35, z: -6.35 };            // the hero note, in the world
+const DRUM_W = { x: -1.2, z: -7.5 };               // the burner drum
+
+// shared authoring helpers, bound to the cine being built
+function A(c) {
+  const tr = (t0, t1, fn, ease) => c.tracks.push({ t0, t1, fn, ease });
+  const step = (t0, fn) => c.tracks.push({ t0, t1: t0, fn, once: true });
+  const sfx = (at, kind) => c.stings.push({ at, kind });
+  const fade = (t0, t1, from, to) =>
+    tr(t0, t1, k => { cineFadeEl.style.opacity = String(from + (to - from) * k); }, rawK);
+  const camTo = (t0, t1, from, to, ease) => tr(t0, t1, k => {
+    yaw.position.x = from.x + (to.x - from.x) * k;
+    yaw.position.y = (from.y ?? 1.62) + ((to.y ?? 1.62) - (from.y ?? 1.62)) * k;
+    yaw.position.z = from.z + (to.z - from.z) * k;
+  }, ease);
+  const yawTo = (t0, t1, from, to, ease) =>
+    tr(t0, t1, k => { yaw.rotation.y = mixAngle(from, to, k); }, ease);
+  const pitchTo = (t0, t1, from, to, ease) =>
+    tr(t0, t1, k => { pitch.rotation.x = from + (to - from) * k; }, ease);
+  const bob = (t0, t1, rate, amp, baseY = 1.62) => tr(t0, t1, (k, t) => {
+    yaw.position.y = baseY + Math.sin((t - t0) * Math.PI * 2 * rate) * amp * Math.sin(Math.PI * k);
+  }, rawK);
+  const ghostGlide = (t0, t1, from, to) => tr(t0, t1, k => {
+    ghost.position.set(from.x + (to.x - from.x) * k, (from.y || 0) + ((to.y || 0) - (from.y || 0)) * k,
+                       from.z + (to.z - from.z) * k);
+  });
+  const ghostFacePlayer = (t0, t1) => tr(t0, t1, () => {
+    ghost.rotation.y = Math.atan2(yaw.position.x - ghost.position.x,
+                                  yaw.position.z - ghost.position.z);
+  }, rawK);
+  return { tr, step, sfx, fade, camTo, yawTo, pitchTo, bob, ghostGlide, ghostFacePlayer };
+}
+
+function scPickUp(c, s) {                          /* A — you take it */
+  const { tr, step, sfx, fade, camTo, yawTo, pitchTo } = A(c);
+  // the heap the player just tapped is what the hand goes to
+  const P = { x: PILE_POS.x, y: 1.62, z: PILE_POS.z + 1.55 };
+  // Her group origin sits a touch right of her face, so the staged spot
+  // compensates — measured from a screenshot, not guessed.
+  const FACE = { x: P.x - 0.14, z: P.z - 0.80 };
+
+  camTo(0, 0.9, { x: s.yawPos.x, y: s.yawPos.y, z: s.yawPos.z }, P);
+  yawTo(0, 0.9, s.yawRot, faceFrom(P.x, P.z, PILE_POS.x, PILE_POS.z));
+  pitchTo(0, 0.9, s.pitchX, -0.58);
+
+  // crouch toward it as the hand reaches forward into frame
+  camTo(1.1, 2.5, P, { x: P.x, y: 1.12, z: P.z - 0.14 });
+  pitchTo(1.1, 2.5, -0.58, -0.84);
+  // Position comes from the root; the hand's ANGLE comes from armR itself.
+  // Rotating the root would orbit the arm about the camera and swing it
+  // clean out of frame — found the hard way, by an empty screenshot.
+  tr(1.1, 2.5, k => {
+    handsRoot.position.set(-0.15 * k, 0.185 * k, -0.09 * k);
+    handsRoot.rotation.set(0, 0, 0);
+    armR.rotation.set(0.50 - 0.48 * k, 0.28 - 0.13 * k, -0.48 + 0.28 * k);
+  });
+  step(2.5, () => { noteProp.visible = true; });
+  sfx(2.5, 'take');
+
+  // rise with it — and while you are looking at your hand, she arrives
+  camTo(2.7, 3.9, { x: P.x, y: 1.12, z: P.z - 0.14 }, { x: P.x, y: 1.58, z: P.z });
+  pitchTo(2.7, 3.9, -0.84, -0.34);
+  tr(2.7, 3.9, k => {
+    handsRoot.position.set(-0.15 + 0.05 * k, 0.185 - 0.07 * k, -0.09 + 0.09 * k);
+    armR.rotation.set(0.02 + 0.60 * k, 0.15 - 0.05 * k, -0.20 - 0.05 * k);
+  });
+  /* She cannot be standing there early: at 0.8 m even a camera pitched hard
+     at the floor still catches her gown, and the reveal dies. So she
+     condenses DURING the look-up itself — position set as the sweep begins,
+     opacity racing the pitch, fully there the instant the eyes arrive. */
+  step(4.3, () => {
+    ghost.position.set(FACE.x, 0, FACE.z);
+    ghost.rotation.y = Math.atan2(P.x - FACE.x, P.z - FACE.z);
+  });
+  tr(4.35, 4.8, k => { ghostOpacity(k); ghostLight.intensity = 1.5 * k; }, rawK);
+  tr(4.3, 5.2, k => { fireLight.intensity = 14 - 11.5 * k; }, rawK);
+
+  // look up. she is already there.
+  pitchTo(4.2, 5.1, -0.34, 0.03);
+  camTo(4.2, 5.1, { x: P.x, y: 1.58, z: P.z }, P);
+  tr(4.2, 5.1, k => { handsRoot.position.set(-0.10, 0.115 - 0.46 * k, 0); }, smoothK);
+  sfx(4.75, 'boom');
+  tr(5.1, 6.6, k => { camera.rotation.z = 0.05 * k; }, rawK);
+  tr(5.6, 6.6, k => { ghost.position.z = FACE.z + 0.17 * k; });   // one slow inch closer
+  fade(6.6, 8.1, 0, 1);
+  sfx(7.1, 'boom');
+
+  c.endFade = 1;
+}
+
+function scKick(c, s) {                            /* B — the burner goes over */
+  const { tr, step, sfx, fade, camTo, yawTo, pitchTo, bob, ghostGlide, ghostFacePlayer } = A(c);
+  const P = { x: 0.35, y: 1.62, z: -4.9 };
+  const faceDrum = faceFrom(P.x, P.z, DRUM_W.x, DRUM_W.z);
+
+  camTo(0, 0.8, { x: s.yawPos.x, y: s.yawPos.y, z: s.yawPos.z }, P);
+  yawTo(0, 0.8, s.yawRot, faceDrum);
+  pitchTo(0, 0.8, s.pitchX, -0.14);
+  // she may already be stood right here from normal play — the scene owns
+  // her now, and she is not part of this shot until the drum has gone over
+  step(0, () => { ghostOpacity(0); });
+
+  // the kick, told by its impact
+  camTo(0.9, 1.2, P, { x: P.x - 0.32, y: 1.40, z: P.z - 0.55 }, rawK);
+  pitchTo(0.9, 1.2, -0.14, -0.46, rawK);
+  sfx(1.15, 'clang');
+  step(1.15, () => { ash.visible = false; });
+  tr(1.15, 1.9, k => {
+    drum.rotation.z = 1.5 * k;
+    drum.position.set(-0.2 - 0.58 * k, 0.45 - 0.26 * k, 0.10 * k);
+  });
+  for (const at of [1.2, 1.45, 1.7, 2.0]) step(at, () => { shadowDirty = 2; });
+  tr(1.15, 1.7, k => { fireLight.intensity = 14 + 9 * Math.sin(Math.PI * k); }, rawK);
+  tr(1.7, 2.6, k => { fireLight.intensity = 14 - 12 * k; }, rawK);
+  tr(1.15, 2.3, k => {
+    embers.material.size = 0.075 + 0.38 * Math.sin(Math.PI * k);
+    embers.material.opacity = 0.6 + 0.35 * Math.sin(Math.PI * k);
+  }, rawK);
+  tr(1.3, 3.2, k => { noteStorm = 1 + 6.5 * k; });
+  tr(3.2, 6.0, k => { noteStorm = 7.5 - 5 * k; });
+
+  // recover — and she is at the drum
+  camTo(1.9, 2.5, { x: P.x - 0.32, y: 1.40, z: P.z - 0.55 }, P);
+  pitchTo(1.9, 2.5, -0.46, -0.03);
+  step(2.5, () => { ghost.position.set(-1.0, 0, -7.2); });
+  tr(2.5, 2.85, k => { ghostOpacity(k); }, rawK);
+  tr(2.9, 9.4, () => { ghostLight.intensity = 1.5; }, rawK);
+  ghostFacePlayer(2.5, 9.4);
+  ghostGlide(3.1, 3.55, { x: -1.0, z: -7.2 }, { x: 0.2, z: -5.9 });
+  sfx(3.15, 'whoosh');
+  c.ghostMix = t => (t < 2.5 || t > 9.4 ? 0 : t < 3.1 ? 0.7 : 2.4);
+
+  // run
+  yawTo(3.55, 4.25, faceDrum, Math.PI);
+  const path1 = { x: P.x, y: 1.62, z: P.z }, path2 = { x: 0.75, y: 1.62, z: -0.9 },
+        path3 = { x: 0.55, y: 1.62, z: 4.6 }, path4 = { x: 0.30, y: 1.62, z: 9.4 };
+  camTo(4.25, 5.85, path1, path2, rawK);
+  camTo(5.85, 7.4, path2, path3, rawK);
+  bob(4.25, 7.4, 3.1, 0.055);
+  for (let i = 0; i < 9; i++) sfx(4.35 + i * 0.34, 'step');
+  ghostGlide(3.55, 5.85, { x: 0.2, z: -5.9 }, { x: 0.65, z: -1.6 });
+  ghostGlide(5.85, 8.3, { x: 0.65, z: -1.6 }, { x: 0.45, z: 4.4 });
+
+  // the look back — she is still coming
+  camTo(7.4, 8.6, path3, path4, rawK);
+  yawTo(7.4, 8.3, Math.PI, 0.28);
+  pitchTo(7.4, 8.3, -0.03, -0.06);
+  ghostGlide(8.3, 9.4, { x: 0.45, z: 4.4 }, { x: 0.33, z: 7.3 });
+  sfx(8.5, 'boom');
+  tr(8.6, 9.6, k => { camera.rotation.z = 0.05 * k; }, rawK);
+  fade(8.8, 10.0, 0, 1);
+
+  c.handsAuto = t => (t > 4.25 && t < 8.6 ? 4.3 : 0);
+  c.endFade = 1;
+}
+
+function scLeave(c, s) {                           /* C — you walk away */
+  const { sfx, fade, camTo, yawTo, pitchTo, bob } = A(c);
+  const P = { x: 0.15, y: 1.62, z: -4.3 };
+  const faceShrine = faceFrom(P.x, P.z, SHRINE.x, SHRINE.z);
+
+  camTo(0, 0.9, { x: s.yawPos.x, y: s.yawPos.y, z: s.yawPos.z }, P);
+  yawTo(0, 0.9, s.yawRot, faceShrine);
+  pitchTo(0, 0.9, s.pitchX, -0.16);
+
+  // one long beat on the offerings: seen, considered, left alone
+  camTo(1.0, 2.4, P, { x: P.x, y: 1.62, z: P.z - 0.35 });
+  pitchTo(1.0, 2.4, -0.16, -0.24);
+
+  yawTo(2.4, 3.7, faceShrine, Math.PI);
+  pitchTo(2.4, 3.7, -0.24, -0.02);
+  camTo(3.7, 6.9, { x: P.x, y: 1.62, z: P.z - 0.35 }, { x: 0.45, y: 1.62, z: 3.9 }, rawK);
+  bob(3.7, 6.9, 2.1, 0.038);
+  for (let i = 0; i < 6; i++) sfx(3.9 + i * 0.5, 'step');
+  fade(6.1, 7.7, 0, 1);
+
+  c.handsAuto = t => (t > 3.7 && t < 6.9 ? 2.3 : 0);
+  c.endFade = 1;
+}
+
+function scChant(c, s) {                           /* D — palms together */
+  const { tr, step, sfx, camTo, yawTo, pitchTo, ghostGlide, ghostFacePlayer } = A(c);
+  const P = { x: 0.0, y: 1.62, z: -4.1 };
+  const faceShrine = faceFrom(P.x, P.z, SHRINE.x, SHRINE.z);
+  const HOME = { x: -1.05, z: -10.3 };
+
+  camTo(0, 0.9, { x: s.yawPos.x, y: s.yawPos.y, z: s.yawPos.z }, P);
+  yawTo(0, 0.9, s.yawRot, faceShrine);
+  pitchTo(0, 0.9, s.pitchX, -0.10);
+  ghostGlide(0, 0.9, { x: s.gPos.x, z: s.gPos.z }, HOME);
+  ghostFacePlayer(0, 8.6);
+  tr(0, 0.5, k => { ghostOpacity(Math.max(reveal, k)); }, rawK);
+
+  // the hands rise into prayer
+  step(0.9, () => {
+    buildPrayerArm();
+    if (prayerArmL) prayerArmL.visible = true;
+  });
+  const upAxis = new THREE.Vector3(0, 1, 0);
+  tr(0.9, 2.3, k => {
+    const y = -0.46 + 0.295 * k;
+    // palms turn in to meet as the hands rise — the world-Y turn is applied
+    // on top of the base pose, because the Euler order fights a direct edit
+    armR.position.set(0.020, y, -0.375);
+    armR.rotation.set(1.32, -0.38, -1.50);
+    armR.rotateOnWorldAxis(upAxis, 0.92 * k);
+    if (prayerArmL) {
+      prayerArmL.position.set(-0.020, y, -0.375);
+      prayerArmL.rotation.set(1.32, 0.38, 1.50);
+      prayerArmL.rotateOnWorldAxis(upAxis, -0.92 * k);
+    }
+    if (rightHandModel) setHandCurl(rightHandModel, 1 - 0.86 * k);
+    if (prayerArmL) setHandCurl(prayerArmL.userData.model, 1 - 0.86 * k);
+    handsRoot.position.set(0, Math.sin(k * Math.PI) * 0.008, 0);
+  });
+  // the hands are the subject of this shot — light them like it
+  tr(0.9, 2.0, k => {
+    vmHemi.intensity = 0.55 + 0.55 * k;
+    vmKey.intensity = 0.50 + 0.55 * k;
+    vmFire.intensity = 2.4;
+  }, rawK);
+  sfx(2.5, 'chime');
+  tr(2.3, 8.6, () => { fireLight.intensity = 9; }, rawK);
+
+  // look up to her — and she lets go
+  pitchTo(3.4, 4.3, -0.10, 0.11);
+  // the hands sink a little as she is released, so you watch her go over them
+  tr(4.3, 5.4, k => {
+    const y = -0.165 - 0.10 * k;
+    armR.position.y = y;
+    if (prayerArmL) prayerArmL.position.y = y;
+  });
+  tr(4.3, 6.6, k => {
+    ghostOpacity(1 - k);
+    ghost.position.y = 0.5 * k;
+  }, rawK);
+  sfx(5.3, 'chime');
+
+  // hands come down; the night is ordinary again
+  tr(6.6, 7.8, k => {
+    const y = -0.265 - 0.24 * k;
+    armR.position.y = y;
+    if (prayerArmL) prayerArmL.position.y = y;
+  });
+  tr(7.8, 8.6, () => {}, rawK);                     // a held beat of calm
+
+  c.keep.ghostGone = true;
+  c.endFade = 0;
+}
+
+const CINE_SCENES = [scPickUp, scKick, scLeave, scChant];
+
 /* Start. The chapter card goes black over the top while the scene is already
    running behind it, so the fade out puts you in a night that has been going
    on without you. Nothing can be done during it — the state is not 'play'
@@ -1861,15 +2434,19 @@ function pick(i) {
   if (performance.now() - decideOpenedAt < 340) return;
   chosen = i;
   const c = CHAPTER.choices[i];
-  for (const k in c.d) stats[k] += c.d[k];
-  syncBars();
   ui.decide.classList.add('hide');
-  ui.say.textContent = c.say;
-  ui.teach.textContent = c.teach;
-  ui.deltas.innerHTML = Object.entries(c.d).map(([k, v]) =>
-    `<span class="${v >= 0 ? 'up' : 'dn'}">${k.toUpperCase()} ${v >= 0 ? '+' : ''}${v}</span>`).join('');
-  ui.result.classList.remove('hide');
-  state = 'result';
+  // The scene plays first; the numbers and the teaching wait until it is
+  // done. The card then rises over whatever the scene left on screen.
+  playCine(i, () => {
+    for (const k in c.d) stats[k] += c.d[k];
+    syncBars();
+    ui.say.textContent = c.say;
+    ui.teach.textContent = c.teach;
+    ui.deltas.innerHTML = Object.entries(c.d).map(([k, v]) =>
+      `<span class="${v >= 0 ? 'up' : 'dn'}">${k.toUpperCase()} ${v >= 0 ? '+' : ''}${v}</span>`).join('');
+    ui.result.classList.remove('hide');
+    state = 'result';
+  });
 }
 /* --------------------------------------------------------- sanity drain ---
    Being looked at costs you. From the moment she is there, sanity bleeds —
@@ -1993,12 +2570,18 @@ function tick(now = 0) {
   // the shadow maps are static; redraw them only when asked
   if (shadowDirty > 0) { renderer.shadowMap.needsUpdate = true; shadowDirty--; }
 
-  // look — keep this frame's delta, the viewmodel needs it for sway
+  // look — keep this frame's delta, the viewmodel needs it for sway.
+  // Only the player's own state consumes it: during a cutscene the timeline
+  // owns the camera, and a locked pointer must not be able to fight it.
   if (edgeTurn) lookX += Math.sign(edgeTurn) * edgeTurn * edgeTurn * 2.6 * dt;
   const dLookX = lookX, dLookY = lookY;
-  yaw.rotation.y += lookX;
-  pitch.rotation.x = Math.max(-1.2, Math.min(1.2, pitch.rotation.x + lookY));
+  if (state === 'play') {
+    yaw.rotation.y += lookX;
+    pitch.rotation.x = Math.max(-1.2, Math.min(1.2, pitch.rotation.x + lookY));
+  }
   lookX = lookY = 0;
+
+  if (state === 'cine') cineUpdate(t);
 
   // move
   let strafeInput = 0, playerSpeed = 0;
@@ -2067,10 +2650,13 @@ function tick(now = 0) {
   updateGhost(dt);
   updatePile(t);
 
-  // fire flicker
+  // fire flicker — during a cutscene the timeline owns the fire, so a scene
+  // can kill it or knock it over without this fighting it every frame
   const fl = 0.75 + Math.sin(t * 11.3) * 0.14 + Math.sin(t * 27.7) * 0.09 + Math.random() * 0.08;
-  fireLight.intensity = 14 * fl;
-  ash.material.color.setHSL(0.045, 1, 0.35 + fl * 0.16);
+  if (state !== 'cine') {
+    fireLight.intensity = 14 * fl;
+    ash.material.color.setHSL(0.045, 1, 0.35 + fl * 0.16);
+  }
   jossTips.forEach((tp, i) => {
     tp.material.color.setHSL(0.04, 1, 0.42 + Math.sin(t * 3 + i) * 0.1);
   });
@@ -2112,8 +2698,10 @@ function tick(now = 0) {
     embers.geometry.attributes.position.needsUpdate = true;
   }
 
-  // hands: driven by exactly the same movement the camera uses
-  updateViewmodel(dt, t, playerSpeed, strafeInput, dLookX, dLookY);
+  // hands: driven by exactly the same movement the camera uses — unless a
+  // cutscene is directing them itself
+  if (state === 'cine') cineHands(dt, t);
+  else updateViewmodel(dt, t, playerSpeed, strafeInput, dLookX, dLookY);
 
   renderer.render(scene, camera);
 
@@ -2137,6 +2725,15 @@ window.__enc = { yaw, stats, blockers: BLOCKERS, getState: () => state,
                  interactPile, pile, pileDist, pileInView,
                  pileScreen, pointerHitsPile, PILE_POS, INTERACT_R,
                  pileGlow: () => pileRing.material.opacity, renderer,
+                 pick, chapter: CHAPTER,
+                 cine: {
+                   active: () => !!cine,
+                   t: () => (cine ? cine.t : -1),
+                   dur: () => (cine ? cine.dur : 0),
+                   seek: (t) => { if (cine) { cine.paused = true; cine.t = t; cineSeek(t); } },
+                   resume: () => { if (cine) { cine.paused = false; cine.last = performance.now(); } },
+                   skip: skipCine
+                 },
                  perf: () => ({ shadowAuto: renderer.shadowMap.autoUpdate,
                                 shadowPending: renderer.shadowMap.needsUpdate,
                                 capMs: +FRAME_MIN_MS.toFixed(2),
