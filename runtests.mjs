@@ -10,6 +10,7 @@
                                        viewport, for a change mid-flight     */
 
 import { spawn } from 'child_process';
+import { DIR } from './testlib.mjs';
 
 const ALL = [
   { name: 'census',   file: 'census.mjs',    quick: true,  why: 'every system present and running' },
@@ -47,7 +48,7 @@ let failed = 0;
 function run(t) {
   return new Promise(resolve => {
     const t0 = Date.now();
-    const kid = spawn('node', [t.file], { cwd: '/tmp/g' });
+    const kid = spawn('node', [t.file], { cwd: DIR });
     let out = '', err = '';
     kid.stdout.on('data', d => out += d);
     kid.stderr.on('data', d => err += d);

@@ -1,8 +1,9 @@
 import http from 'http';
 import fs from 'fs';
 import { chromium } from 'playwright';
+import { LAUNCH, PAGE } from './testlib.mjs';
 
-const html = fs.readFileSync('/tmp/g/wrapped.html');
+const html = fs.readFileSync(new URL('./wrapped.html', import.meta.url));
 // Serve the page under a CSP in the spirit of a sandboxed artifact frame:
 // inline script allowed, but no blob: or data: image sources.
 const srv = http.createServer((req, res) => {
@@ -17,9 +18,8 @@ const srv = http.createServer((req, res) => {
 });
 await new Promise(r => srv.listen(8099, r));
 
-const b = await chromium.launch({ executablePath:'/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
-  args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--no-sandbox']});
-for (const [label, url] of [['no CSP (file://)','file:///tmp/g/wrapped.html'],
+const b = await chromium.launch(LAUNCH);
+for (const [label, url] of [['no CSP (file://)',PAGE],
                             ['strict CSP','http://localhost:8099/']]) {
   const p = await b.newPage({viewport:{width:600,height:400}});
   const blocked=[];

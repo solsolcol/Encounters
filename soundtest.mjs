@@ -3,8 +3,8 @@
    Launched without any autoplay override, so what is measured is what a real
    visitor gets: nothing may make a sound until the page has been touched.   */
 import { chromium, devices } from 'playwright';
-const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
-  args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--no-sandbox'] });
+import { LAUNCH, PAGE } from './testlib.mjs';
+const b = await chromium.launch(LAUNCH);
 
 for (const [label, opts] of [['desktop', { viewport: { width: 520, height: 380 } }],
                              ['phone', devices['iPhone 13']]]) {
@@ -13,7 +13,7 @@ const errs = []; p.on('pageerror', e => errs.push(e.message));
 // the page is 4.5 MB and two of these run at once on a two-core box;
 // the default 30 s navigation timeout is not enough for that
 p.setDefaultNavigationTimeout(180000); p.setDefaultTimeout(60000);
-await p.goto('file:///tmp/g/wrapped.html'); await p.waitForTimeout(5000);
+await p.goto(PAGE); await p.waitForTimeout(5000);
 const out = {};
 const audio = () => p.evaluate(() => window.__enc.audio());
 const shown = id => p.$eval('#' + id, e => !e.classList.contains('hide'));

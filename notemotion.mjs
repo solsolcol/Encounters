@@ -1,9 +1,9 @@
 import { chromium } from 'playwright';
-const b = await chromium.launch({ executablePath:'/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
-  args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--no-sandbox']});
+import { LAUNCH, PAGE } from './testlib.mjs';
+const b = await chromium.launch(LAUNCH);
 const p = await b.newPage({viewport:{width:900,height:600}});
 p.on('pageerror',e=>console.log('ERR',e.message));
-await p.goto('file:///tmp/g/wrapped.html'); await p.waitForTimeout(2500);
+await p.goto(PAGE); await p.waitForTimeout(2500);
 console.log(await p.evaluate(()=>{
   const e = window.__enc, N = e.flying.count, dt = 1/60;
   const grab = () => { const a = e.flying.instanceMatrix.array, out = [];

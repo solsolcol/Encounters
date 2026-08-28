@@ -1,10 +1,10 @@
 import { chromium, devices } from 'playwright';
-const b = await chromium.launch({ executablePath:'/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
-  args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--no-sandbox']});
+import { LAUNCH, PAGE } from './testlib.mjs';
+const b = await chromium.launch(LAUNCH);
 const ctx = await b.newContext({ ...devices['iPhone 13'] });
 const p = await ctx.newPage();
 const errs=[]; p.on('pageerror',e=>errs.push(e.message));
-await p.goto('file:///tmp/g/wrapped.html'); await p.waitForTimeout(2000);
+await p.goto(PAGE); await p.waitForTimeout(2000);
 await p.screenshot({path:'m1-title.png'});
 console.log('touch detected:', await p.evaluate(()=>matchMedia('(pointer: coarse)').matches));
 await p.tap('#startBtn'); await p.waitForTimeout(600);

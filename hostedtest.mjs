@@ -7,11 +7,13 @@
    actually carries separate files, that all of them arrive, and that the
    chapter still plays start to finish on top of them.                      */
 import { createServer } from 'node:http';
+import { fileURLToPath } from 'node:url';
 import { readFile } from 'node:fs/promises';
 import { extname, join, normalize } from 'node:path';
 import { chromium } from 'playwright';
+import { LAUNCH } from './testlib.mjs';
 
-const ROOT = '/tmp/g/dist';
+const ROOT = fileURLToPath(new URL('./dist/', import.meta.url));
 const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.glb': 'model/gltf-binary',
                '.webp': 'image/webp', '.mp3': 'audio/mpeg' };
 const srv = createServer(async (req, res) => {
@@ -26,8 +28,7 @@ const srv = createServer(async (req, res) => {
 await new Promise(r => srv.listen(0, '127.0.0.1', r));
 const base = `http://127.0.0.1:${srv.address().port}`;
 
-const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
-  args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--no-sandbox'] });
+const b = await chromium.launch(LAUNCH);
 const p = await b.newPage({ viewport: { width: 500, height: 350 } });
 const errs = []; p.on('pageerror', e => errs.push(e.message));
 const hits = [];  p.on('response', r => hits.push({ url: r.url().replace(base, ''), ok: r.ok() }));

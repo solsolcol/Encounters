@@ -1,10 +1,10 @@
 import { chromium } from 'playwright';
+import { LAUNCH, PAGE } from './testlib.mjs';
 const errs=[];
-const b = await chromium.launch({ executablePath:'/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
-  args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--no-sandbox']});
+const b = await chromium.launch(LAUNCH);
 const p = await b.newPage({viewport:{width:1000,height:560}});
 p.on('pageerror',e=>errs.push('ERR '+e.message));
-await p.goto('file:///tmp/g/wrapped.html'); await p.waitForTimeout(5500);
+await p.goto(PAGE); await p.waitForTimeout(5500);
 await p.click('#startBtn'); await p.waitForTimeout(700);
 await p.evaluate(()=>['prompt','hud','hint','decide'].forEach(i=>document.getElementById(i).classList.add('hide')));
 

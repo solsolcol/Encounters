@@ -1,11 +1,14 @@
-# Master Z's Spiritual Encounters — 3D prototype
+# Master Z's Encounters — The Game
 
-Chapter 1, *The Hell Note*. A first-person browser game: cross the grass to
-Block 464, walk into the void deck, and decide what to do about the note at
-your feet. Runs on desktop and mobile from a single HTML file.
+A first-person browser horror-education game. Chapter 1, *The Hell Note*:
+cross the grass to Block 464, walk into the void deck, and decide what to do
+about the note at your feet. Runs on desktop and mobile.
 
-The narrative in `src/main.js` is **placeholder** — written to demonstrate the
-mechanic. Master Z's real script, teachings and voice replace all of it.
+**Start with `CLAUDE.md`** — the working contract for this repo — and
+`docs/LEARNINGS.md` for every hard-won lesson. The chapter narrative is
+placeholder; Master Z's real material is studied in `docs/SOURCE-NOTES.md`.
+
+Live at https://masterz-encounters-game.netlify.app
 
 ---
 
@@ -13,18 +16,27 @@ mechanic. Master Z's real script, teachings and voice replace all of it.
 
 ```bash
 npm install
-npm run build        # -> hellnote.html, a single self-contained file
+npm run build
 ```
 
-`hellnote.html` is generated. Never edit it — edit `src/main.js` or
-`shell.html` and rebuild.
+One run produces both builds:
+
+- `dist/` + `masterz-encounters-vN.N.zip` — the real site for Netlify:
+  engine, chapter file and fingerprinted assets as separate cached files
+- `hellnote.html` (mirrored to `wrapped.html` for tests) — the whole game
+  in one self-contained file, for the claude.ai preview artifact
+
+All are generated. Never edit them — edit `src/`, `shell.html` or
+`build.py` and rebuild.
 
 | File | What it is |
 |---|---|
-| `src/main.js` | The whole game: scene, lighting, controls, viewmodel, ghost, notes, chapter data |
+| `src/main.js` | The engine: scene, lighting, controls, viewmodel, ghost, notes, audio, cutscenes |
+| `src/chapters/ch1.js` | The chapter: words, choices, teachings, stage positions, asset list |
 | `shell.html` | Page shell — all UI, CSS and copy |
-| `build.py` | Bundles the JS, inlines every `.glb` as base64, writes `hellnote.html` |
-| `wrap.py` | Wraps the output the way the host frame does, for local testing |
+| `build.py` | Produces both builds; `VERSION` at the top names the release |
+| `wrap.py` | Mirrors the single file the way the preview frame wraps it |
+| `testlib.mjs` | Portable browser launch + paths shared by every harness |
 
 ## Assets
 

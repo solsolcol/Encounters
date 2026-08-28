@@ -6,8 +6,8 @@
    waits out four eight-second films. One scene (Leave it, the shortest) is
    also allowed to finish on its own clock, to prove natural completion.    */
 import { chromium } from 'playwright';
-const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
-  args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--no-sandbox'] });
+import { LAUNCH, PAGE } from './testlib.mjs';
+const b = await chromium.launch(LAUNCH);
 
 const EXPECT = [                       // sanity/awareness/wisdom deltas per choice
   { d: [-20, -10, -15], fadeDark: true,  ghostGone: false },
@@ -20,7 +20,7 @@ for (let i = 0; i < 4; i++) {
   const p = await b.newPage({ viewport: { width: 500, height: 340 } });
   const errs = []; p.on('pageerror', e => errs.push(e.message));
   p.setDefaultNavigationTimeout(180000); p.setDefaultTimeout(90000);
-  await p.goto('file:///tmp/g/wrapped.html'); await p.waitForTimeout(4000);
+  await p.goto(PAGE); await p.waitForTimeout(4000);
   await p.click('#startBtn');
   await p.waitForFunction(() => window.__enc && window.__enc.getState() === 'play',
                           null, { timeout: 90000, polling: 120 });
