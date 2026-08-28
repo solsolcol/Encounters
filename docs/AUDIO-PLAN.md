@@ -173,3 +173,6 @@ vlost=G4flDiFsnBETv1isG1gm
 Note: this connector's eleven_v3 tts node exposes no stability parameter;
 lines are generated at the node default. If a take feels off, Chad can
 re-take it on the canvas with the stability slider at 0% (Creative).
+
+Run session IDs (batch1 sfx): sLQW0rcBleTtKm8jDbul Z8Tnut493pekNKGI0wBU ZeQX0i8qgQNAJQJvAWPP XbqiZwPfrzGoPdRO0jHV sWeIAxgPcTE6nTgnEHtr BnsOMnl3Sk0lfPqfxcLk KDKCBetsKDJgWoqVpkrG A54FXawbcV2QRnWh4e2K OCyccqkE1d2MzGpjNp48 LV5vjNW57p2uLmsrdir2 bdSIRC0zlnRrt7vQ3J7o V2Wv3g0XoDjKTTnoZ9ER H4jskfCahYJxz7Hs2qNF KHHrBr56NzKySNUD4eex cvONMy6Bum6RST7gttRL Vx89GYzOjBQTK63PMiNv z7r7thIiockZQpq0bsBU GIVhoufNbjKaGPTVKkq3 Wd0jgCNKD4R7ynQSdec9 f6TJOsqqo8Te3NdsKwyy
+Run session IDs (batch2 music+tts): k3E3KufkCWF8tLKWvUe4 gUvNObYXmT2g8QvGEJAJ 7j7LL3QtBYvLMXqpN4wh G5FZlRdWeL29sWWL227L yxJXosfiqwbt3ODhs8AD t3mHo6ngP8dhAosp3bvg R1bFOlNpwJvgL4KUg4em muqv5jgaF02o4Y62AnbT JAwRVRaEhtzrfYoxy6co X5USOpq3A6wF2VzexaaO lYI7O56r2YMP397VZaqM QMuo8G9R0XmfHamP0vrv 7b96pmgGkdXOCWmaJyNi
