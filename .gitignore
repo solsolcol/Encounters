@@ -38,3 +38,4 @@ ghost/kuntilanak.glb
 hdb/hdb.glb
 **/textures_orig/
 **/*.fbm/
+*.bundle
