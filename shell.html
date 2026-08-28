@@ -111,12 +111,23 @@ html,body{height:100%;overflow:hidden;background:var(--void);color:var(--bone);
   color:var(--dust);padding-top:2px;min-width:14px}
 .choice:hover .key,.choice:focus-visible .key{color:var(--sodium)}
 /* leaving without deciding — the burner is still there when you come back */
-.dclose{background:transparent;border:1px solid var(--line);color:var(--dust);
+.dclose{background:var(--seal);border:1px solid var(--seal);color:#FFFFFF;
   font-family:"JetBrains Mono",monospace;font-size:.6rem;letter-spacing:.16em;
-  text-transform:uppercase;padding:8px 13px;cursor:pointer;
-  transition:color .16s,border-color .16s,background .16s}
-.dclose:hover,.dclose:focus-visible{color:var(--bone);border-color:var(--sodium);
-  background:#161A22;outline:none}
+  text-transform:uppercase;font-weight:700;padding:8px 13px;cursor:pointer;
+  transition:background .16s,border-color .16s}
+.dclose:hover,.dclose:focus-visible{background:#CE4638;border-color:#CE4638;
+  color:#FFFFFF;outline:none}
+
+/* ── interact prompt — the pile of notes ────────────────────────────── */
+#interact{align-items:flex-end;justify-content:center;
+  padding-bottom:clamp(76px,13vh,132px)}
+.ibadge{display:flex;gap:11px;align-items:center;background:rgba(7,8,11,.72);
+  border:1px solid rgba(99,214,200,.45);padding:9px 16px;backdrop-filter:blur(6px);
+  font-family:"JetBrains Mono",monospace;font-size:.64rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--jade);
+  box-shadow:0 0 26px rgba(99,214,200,.16);animation:breathe 2.6s ease-in-out infinite}
+.ikey{border:1px solid rgba(99,214,200,.6);border-radius:2px;padding:2px 7px;
+  font-weight:700;color:#EAFFFB;letter-spacing:.06em}
 
 /* ── result / teaching — the page changes voice here ────────────────── */
 #result,#complete{align-items:center;justify-content:center;pointer-events:auto;
@@ -221,6 +232,14 @@ html,body{height:100%;overflow:hidden;background:var(--void);color:var(--bone);
 
 <!-- proximity prompt -->
 <div id="prompt" class="layer hide"><div>Something is burning ahead</div></div>
+
+<!-- interact prompt — shown when the pile of hell notes is within reach -->
+<div id="interact" class="layer hide">
+  <div class="ibadge">
+    <span class="ikey" id="ikey">E</span>
+    <span id="itxt">Examine the pile of hell notes</span>
+  </div>
+</div>
 
 <!-- decision -->
 <div id="decide" class="layer hide">

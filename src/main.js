@@ -738,6 +738,133 @@ heroNote.position.set(1.35, 0.05, 1.15);
 heroNote.receiveShadow = true;
 offering.add(heroNote);
 
+/* ------------------------------------------- the pile: an interactable ---
+   The one thing in this scene you can act on, so it is built as a real
+   object rather than scattered instances: a heap you can look at, walk up
+   to and touch. It carries its own highlight — a ring on the floor and a
+   soft shell around the heap — which comes up as you get near, so it reads
+   as interactable without a word of UI. The notes are thin boxes, not
+   planes, so the heap has volume from every angle.                        */
+
+const PILE_POS = new THREE.Vector3(SHRINE.x + 1.15, 0, SHRINE.z + 1.55);
+const PILE_R = 0.40;                       // footprint of the heap
+const INTERACT_R = 5.0;                    // close enough to act on it
+const HIGHLIGHT_R = 8.0;                   // close enough to notice it glowing
+
+const pile = new THREE.Group();
+pile.position.copy(PILE_POS);
+world.add(pile);
+
+const pileMat = new THREE.MeshStandardMaterial({ map: noteTex, roughness: 0.86 });
+const pileNoteGeo = new THREE.BoxGeometry(0.30, 0.009, 0.16);
+const pileNotes = [];
+for (let i = 0; i < 30; i++) {
+  const r = Math.sqrt(Math.random()) * PILE_R;
+  const a = Math.random() * Math.PI * 2;
+  const n = new THREE.Mesh(pileNoteGeo, pileMat);
+  n.position.set(Math.cos(a) * r,
+                 0.008 + (1 - r / PILE_R) * 0.20 * Math.random(),   // a mound
+                 Math.sin(a) * r * 0.88);
+  n.rotation.set((Math.random() - 0.5) * 0.55,
+                 Math.random() * Math.PI * 2,
+                 (Math.random() - 0.5) * 0.55);
+  n.castShadow = true; n.receiveShadow = true;
+  pile.add(n);
+  pileNotes.push(n);
+}
+
+// the highlight: a ring on the floor and a soft shell over the heap, both
+// additive so they read as light rather than as paint
+const pileRing = new THREE.Mesh(
+  new THREE.RingGeometry(PILE_R + 0.10, PILE_R + 0.24, 44),
+  new THREE.MeshBasicMaterial({ color: 0x63d6c8, transparent: true, opacity: 0,
+    side: THREE.DoubleSide, blending: THREE.AdditiveBlending,
+    depthWrite: false, fog: false }));
+pileRing.rotation.x = -Math.PI / 2;
+pileRing.position.y = 0.032;
+pileRing.visible = false;
+pile.add(pileRing);
+
+/* The border itself is drawn the way outlines have always been drawn: each
+   note again, a little larger and inside out. Only the parts that poke out
+   past the real note are ever seen, which is exactly a rim of light around
+   the heap's silhouette. A glow volume was tried first and was worse — it
+   sat over the paper and turned the whole heap milky grey.                */
+const pileOutlineMat = new THREE.MeshBasicMaterial({
+  color: 0x63d6c8, transparent: true, opacity: 0, side: THREE.BackSide,
+  blending: THREE.AdditiveBlending, depthWrite: false, fog: false });
+const pileOutline = new THREE.Group();
+pileOutline.visible = false;
+pile.add(pileOutline);
+for (const n of pileNotes) {
+  const o = new THREE.Mesh(pileNoteGeo, pileOutlineMat);
+  o.position.copy(n.position);
+  o.rotation.copy(n.rotation);
+  o.scale.set(1.09, 2.6, 1.14);        // the notes are thin: the edge needs the height
+  pileOutline.add(o);
+}
+
+const _pileNdc = new THREE.Vector3();
+const _ray = new THREE.Raycaster();
+const _ptr = new THREE.Vector2();
+
+function pileDist() {
+  return Math.hypot(yaw.position.x - PILE_POS.x, yaw.position.z - PILE_POS.z);
+}
+// The camera's world matrix is refreshed by the renderer, so anything asking
+// where a thing is on screen mid-frame would be answering for the previous
+// frame's orientation — one frame stale is enough to leave a prompt up after
+// you have turned away from what it refers to.
+function syncCamera() {
+  camera.updateWorldMatrix(true, false);
+  camera.matrixWorldInverse.copy(camera.matrixWorld).invert();
+}
+function pileScreen() {                     // normalised device coords of the heap
+  syncCamera();
+  return _pileNdc.set(PILE_POS.x, 0.15, PILE_POS.z).project(camera);
+}
+function pileInView() {
+  const n = pileScreen();
+  return n.z < 1 && Math.abs(n.x) < 0.97 && Math.abs(n.y) < 0.97;
+}
+
+// Is this screen point on the heap? A heap of paper is a small target on a
+// phone, so a tap that lands near it counts too — missing by ten pixels
+// should not mean nothing happens.
+function pointerHitsPile(cx, cy) {
+  if (pileDist() > INTERACT_R) return false;
+  syncCamera();
+  _ptr.set((cx / innerWidth) * 2 - 1, -(cy / innerHeight) * 2 + 1);
+  _ray.setFromCamera(_ptr, camera);
+  if (_ray.intersectObjects(pileNotes, false).length) return true;
+  const n = pileScreen();
+  if (n.z > 1) return false;
+  const sx = (n.x * 0.5 + 0.5) * innerWidth, sy = (-n.y * 0.5 + 0.5) * innerHeight;
+  return Math.hypot(cx - sx, cy - sy) < Math.min(innerWidth, innerHeight) * 0.11;
+}
+
+function canInteract() { return state === 'play' && pileDist() < INTERACT_R; }
+function interactPile() {
+  if (!canInteract()) return false;
+  triggered = true;                         // it is open; do not also auto-open
+  startDecision();
+  return true;
+}
+
+function updatePile(t) {
+  const near = THREE.MathUtils.clamp(
+    (HIGHLIGHT_R - pileDist()) / (HIGHLIGHT_R - INTERACT_R), 0, 1);
+  const g = near * (0.62 + 0.38 * Math.sin(t * 2.6));
+  const on = near > 0.01;
+  pileRing.visible = pileOutline.visible = on;
+  if (!on) { pileMat.emissive.setRGB(0, 0, 0); return; }
+  // additive light goes white long before it goes bright, so these stay low
+  // enough for the jade to survive against the fire
+  pileRing.material.opacity = g * 0.58;
+  pileOutlineMat.opacity = g * 0.44;
+  pileMat.emissive.setRGB(0.015 * g, 0.055 * g, 0.05 * g);   // a hint, not a wash
+}
+
 /* ---------------------------------------- parked: cased amulet (.glb) ----
    Built and verified, kept out of this chapter. Flip SHOW_AMULET to true and
    the build step re-embeds amulet.glb; the loading code below is unchanged.   */
@@ -1192,6 +1319,7 @@ const keys = Object.create(null);
 addEventListener('keydown', e => {
   // Escape closes the decision panel the same way the Step back button does
   if (e.code === 'Escape' && state === 'decide') { dismissDecision(); return; }
+  if (e.code === 'KeyE' && state === 'play') { interactPile(); return; }
   keys[e.code] = true;
 });
 addEventListener('keyup', e => { keys[e.code] = false; });
@@ -1222,7 +1350,15 @@ canvas.addEventListener('mouseleave', () => { pointerInside = false; edgeTurn = 
 addEventListener('blur', () => { edgeTurn = 0; });
 
 canvas.addEventListener('mousedown', e => {
-  if (e.button === 0) tryLock();     // upgrade to real free look where allowed
+  if (e.button !== 0) return;
+  // With no pointer lock there is a real cursor, so clicking the heap works
+  // the same way tapping it does on a phone. Locked, there is no cursor and
+  // E is the way in.
+  if (!locked && state === 'play' && pointerHitsPile(e.clientX, e.clientY)) {
+    interactPile();
+    return;
+  }
+  tryLock();                         // upgrade to real free look where allowed
 });
 
 document.addEventListener('mousemove', e => {
@@ -1255,8 +1391,14 @@ const stick = document.getElementById('stick');
 const knob = document.getElementById('knob');
 let stickId = null, lookId = null, stickVec = { x: 0, y: 0 }, lastLook = { x: 0, y: 0 };
 
+// Every touch is remembered so a short, still one can be told apart from a
+// drag afterwards — that is what makes tapping the heap possible without
+// stealing the look and walk gestures.
+const touchStarts = new Map();
+
 function onTouchStart(e) {
   for (const t of e.changedTouches) {
+    touchStarts.set(t.identifier, { x: t.clientX, y: t.clientY, at: performance.now() });
     if (t.clientX < innerWidth * 0.45 && stickId === null) {
       stickId = t.identifier;
       stick.style.left = t.clientX + 'px'; stick.style.top = t.clientY + 'px';
@@ -1285,6 +1427,17 @@ function onTouchMove(e) {
 }
 function onTouchEnd(e) {
   for (const t of e.changedTouches) {
+    const s = touchStarts.get(t.identifier);
+    touchStarts.delete(t.identifier);
+    if (s && performance.now() - s.at < 380
+        && Math.hypot(t.clientX - s.x, t.clientY - s.y) < 15
+        && state === 'play' && pointerHitsPile(t.clientX, t.clientY)
+        && interactPile()) {
+      // The browser follows an unprevented touchend with a synthetic click at
+      // the same point — which by then lands on the panel this tap just
+      // opened, and picks whichever choice is under your finger. Swallow it.
+      e.preventDefault();
+    }
     if (t.identifier === stickId) {
       stickId = null; stickVec.x = stickVec.y = 0;
       knob.style.transform = 'translate(0,0)'; stick.classList.remove('on');
@@ -1293,8 +1446,9 @@ function onTouchEnd(e) {
 }
 if (HAS_TOUCH) canvas.addEventListener('touchstart', onTouchStart, { passive: true });
 if (HAS_TOUCH) canvas.addEventListener('touchmove', onTouchMove, { passive: false });
-if (HAS_TOUCH) canvas.addEventListener('touchend', onTouchEnd, { passive: true });
-if (HAS_TOUCH) canvas.addEventListener('touchcancel', onTouchEnd, { passive: true });
+// not passive: a tap on the heap has to be able to cancel the synthetic click
+if (HAS_TOUCH) canvas.addEventListener('touchend', onTouchEnd, { passive: false });
+if (HAS_TOUCH) canvas.addEventListener('touchcancel', onTouchEnd, { passive: false });
 
 /* ------------------------------------------------------------ game data */
 const CHAPTER = {
@@ -1342,7 +1496,7 @@ let chosen = null;
 /* ---------------------------------------------------------------- ui */
 const $ = id => document.getElementById(id);
 const ui = {
-  title: $('title'), hud: $('hud'), prompt: $('prompt'),
+  title: $('title'), hud: $('hud'), prompt: $('prompt'), interact: $('interact'),
   decide: $('decide'), result: $('result'), complete: $('complete'),
   bSan: $('bSan'), bAwa: $('bAwa'), bWis: $('bWis'),
   vSan: $('vSan'), vAwa: $('vAwa'), vWis: $('vWis'),
@@ -1350,16 +1504,26 @@ const ui = {
   rank: $('rank'), core: $('core'), pct: $('pct')
 };
 const hint = $('hint');
+// how you act on the heap, in the words that match the device you are on
+const ACT_HINT = HAS_TOUCH ? 'tap the glowing pile' : 'E at the glowing pile';
+const ACT_LINE = HAS_TOUCH
+  ? 'Tap the glowing pile of notes to look again'
+  : 'Press E at the glowing pile to look again';
 function setHint() {
   const el = $('hintTxt');
   if (!el) return;
-  el.textContent =
+  el.textContent = (
       IS_PHONE ? 'Left thumb walks · right thumb looks'
     : HAS_TOUCH && !locked ? 'W A S D to walk · move the mouse to look · touch works too'
     : locked ? 'W A S D to walk · move the mouse to look'
-    : 'W A S D to walk · move the mouse to look · edges keep turning';
+    : 'W A S D to walk · move the mouse to look · edges keep turning'
+  ) + ' · ' + ACT_HINT;
 }
 setHint();
+if (HAS_TOUCH) {
+  $('ikey').textContent = 'Tap';
+  $('itxt').textContent = 'the pile of hell notes';
+}
 $('startBtn').onclick = () => {
   ui.title.classList.add('hide');
   ui.hud.classList.remove('hide');
@@ -1399,9 +1563,11 @@ function startDecision() {
   state = 'decide';
   chosen = null;
   ui.prompt.classList.add('hide');
+  ui.interact.classList.add('hide');
   hint.classList.add('hide');
   edgeTurn = 0;
   ui.decide.classList.remove('hide');
+  decideOpenedAt = performance.now();
   document.exitPointerLock?.();
 }
 
@@ -1416,15 +1582,20 @@ function dismissDecision() {
   state = 'play';
   const el = $('hintTxt');
   if (el) {
-    el.textContent = 'Walk away · come back to the burner when you are ready';
+    el.textContent = ACT_LINE;
     hint.classList.remove('hide');
     clearTimeout(hintTimer);
     hintTimer = setTimeout(() => { hint.classList.add('hide'); setHint(); }, 5000);
   }
   tryLock();
 }
+let decideOpenedAt = 0;
 function pick(i) {
   if (chosen !== null) return;
+  // Nothing chosen in the first moments after the panel appears. The panel
+  // opens under wherever the player's hand or cursor already was, and a
+  // stray event landing on a choice is not a decision.
+  if (performance.now() - decideOpenedAt < 340) return;
   chosen = i;
   const c = CHAPTER.choices[i];
   for (const k in c.d) stats[k] += c.d[k];
@@ -1509,14 +1680,28 @@ function tick() {
     // stepping back out past REARM_R reloads it, so the encounter can be
     // walked away from and walked back into as many times as you like.
     const d = Math.hypot(yaw.position.x - OFFER_POS.x, yaw.position.z - OFFER_POS.z);
-    if (d < 6.2) ui.prompt.classList.remove('hide'); else ui.prompt.classList.add('hide');
     if (triggered && d > REARM_R) triggered = false;
+
+    // the heap: one prompt at a time, and only when it is actually on screen —
+    // a key prompt for something behind you is noise
+    const reach = pileDist() < INTERACT_R && pileInView();
+    if (reach) {
+      ui.interact.classList.remove('hide');
+      ui.prompt.classList.add('hide');
+    } else {
+      ui.interact.classList.add('hide');
+      if (d < 6.2) ui.prompt.classList.remove('hide'); else ui.prompt.classList.add('hide');
+    }
+
     if (d < 4.5 && !triggered) { triggered = true; startDecision(); }
+  } else {
+    ui.interact.classList.add('hide');
   }
 
   updateNotes(dt, t);
   updateGhost(dt);
   updateStars(t);
+  updatePile(t);
 
   // fire flicker
   const fl = 0.75 + Math.sin(t * 11.3) * 0.14 + Math.sin(t * 27.7) * 0.09 + Math.random() * 0.08;
@@ -1568,7 +1753,9 @@ function tick() {
 window.__enc = { yaw, stats, blockers: BLOCKERS, getState: () => state,
                  handsRoot, armR, vmCam, vm, updateViewmodel, updateNotes, flying,
                  ghost, updateGhost, ghostInView, getReveal: () => reveal,
-                 dismissDecision };
+                 dismissDecision, interactPile, pile, pileDist, pileInView,
+                 pileScreen, pointerHitsPile, PILE_POS, INTERACT_R,
+                 pileGlow: () => pileRing.material.opacity };
 tick();
 
 addEventListener('resize', () => {

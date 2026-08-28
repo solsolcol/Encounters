@@ -47,3 +47,6 @@ hdb/hdb.glb
 **/*.fbm/
 *.bundle
 publish.html
+dbgtap.mjs
+dbgview.mjs
+pileshot.mjs
