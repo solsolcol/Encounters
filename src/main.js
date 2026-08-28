@@ -14,10 +14,60 @@ import { clone as cloneSkinned } from 'three/examples/jsm/utils/SkeletonUtils.js
 })();
 
 /* =========================================================================
-   MASTER Z'S SPIRITUAL ENCOUNTERS — 3D PROTOTYPE
-   Chapter 1 · The Hell Note
-   Placeholder narrative — to be replaced with the real script.
+   MASTER Z'S SPIRITUAL ENCOUNTERS — THE ENGINE
+   Everything shared between chapters lives here: rendering, input, the
+   hands, the ghost system, the notes, audio, cutscenes, UI flow. What a
+   chapter SAYS — its words, choices, stage positions and heavy files —
+   lives in src/chapters/chN.js and is read off the chapter registry.
    ========================================================================= */
+
+/* The chapter to play. Both builds guarantee the chapter script has already
+   run: the hosted page loads chapters/ch1.js before game.js (two cached
+   files), and the single-file build concatenates it ahead of the engine.   */
+const CH = (window.__CHAPTERS__ || {}).ch1;
+if (!CH) throw new Error('no chapter registered — chapters/ch1.js must load before the engine');
+
+/* ------------------------------------------------------------- assets ----
+   One seam for every heavy file. The hosted build carries a map of real,
+   fingerprinted URLs and fetches on demand (the browser then caches each
+   file for a year — the name changes when the content does). The embedded
+   single-file build carries the bytes inline instead, and the map is empty.
+   Every loader downstream asks assetBytes() and neither knows nor cares
+   which build it is in.                                                    */
+const ASSET_MAP = JSON.parse(atob('__ASSET_MAP_B64__'));
+const HOSTED = Object.keys(ASSET_MAP).length > 0;
+const EMBED = {
+  hands: '__HANDS_B64__', ghost: '__GHOST_B64__', hdb: '__HDB_B64__',
+  logo: '__LOGO_B64__', music: '__MUSIC_B64__', voice: '__VOICE_B64__',
+  amulet: '__AMULET_B64__'
+};
+
+function b64ToBuffer(b64) {
+  const bin = atob(b64), buf = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
+  return buf.buffer;
+}
+
+const _assetCache = {};
+function assetBytes(name) {                    // -> Promise<ArrayBuffer>
+  if (_assetCache[name]) return _assetCache[name];
+  let p;
+  if (HOSTED) {
+    const url = ASSET_MAP[name];
+    p = url
+      ? fetch(url).then(r => {
+          if (!r.ok) throw new Error(`${name}: HTTP ${r.status}`);
+          return r.arrayBuffer();
+        })
+      : Promise.reject(new Error(`${name}: not in the asset map`));
+  } else {
+    p = EMBED[name]
+      ? Promise.resolve(b64ToBuffer(EMBED[name]))
+      : Promise.reject(new Error(`${name}: not embedded`));
+  }
+  p.catch(() => { delete _assetCache[name]; });   // a failed fetch may retry
+  return _assetCache[name] = p;
+}
 
 // A touchscreen laptop reports BOTH. Never use one to switch the other off:
 // HAS_TOUCH only decides whether touch handlers are worth attaching, and the
@@ -393,12 +443,12 @@ const camera = new THREE.PerspectiveCamera(72, innerWidth / innerHeight, 0.08, 1
 const yaw = new THREE.Object3D();      // horizontal rotation
 const pitch = new THREE.Object3D();    // vertical rotation
 yaw.add(pitch); pitch.add(camera);
-yaw.position.set(0, 1.62, 17);         // out on the grass, facing the block
+yaw.position.set(CH.spawn.x, CH.spawn.y, CH.spawn.z);   // the chapter decides
 
 // The burner and everything that belongs to it — light, smoke, embers, notes,
 // the trigger radius — are all positioned from this one point, so the shrine
 // can be moved without hunting down a dozen hard-coded coordinates.
-const SHRINE = new THREE.Vector3(-1.0, 0, -7.5);   // inside the void deck
+const SHRINE = new THREE.Vector3(CH.shrine.x, 0, CH.shrine.z);   // the burner
 scene.add(yaw);
 
 /* -------------------------------------------------------------- lighting */
@@ -471,8 +521,8 @@ const HDB_SCALE = 0.001;                        // the model is in millimetres
 const HDB_OFFSET = new THREE.Vector3(-4.706, 0, -4.30);   // tower centred, face at z=0
 const DECK = { w: 43.5, d: 19.8, zc: -9.8, clear: 3.0 };  // the corridor we build
 
-const HDB_BUF = b64ToBuffer('__HDB_B64__');
-new GLTFLoader().parse(HDB_BUF, '', (gltf) => {
+let hdbReady = false;
+assetBytes('hdb').then(HDB_BUF => new GLTFLoader().parse(HDB_BUF, '', (gltf) => {
   rescueTextures(gltf, HDB_BUF);
   const blk = gltf.scene;
   blk.scale.setScalar(HDB_SCALE);
@@ -486,8 +536,10 @@ new GLTFLoader().parse(HDB_BUF, '', (gltf) => {
     for (const m of mats) { m.roughness = 0.94; m.metalness = 0; }
   });
   world.add(blk);
+  hdbReady = true;
   redoShadows();                 // the block is most of what casts one
-}, (err) => console.warn('HDB failed to load', err));
+}, (err) => console.warn('HDB failed to load', err)))
+  .catch(err => console.warn('HDB failed to load', err));
 
 // --- the void deck we build underneath it
 const deckFloor = new THREE.Mesh(new THREE.PlaneGeometry(DECK.w, DECK.d), matGround);
@@ -958,21 +1010,14 @@ function updatePile(t) {
    Built and verified, kept out of this chapter. Flip SHOW_AMULET to true and
    the build step re-embeds amulet.glb; the loading code below is unchanged.   */
 const SHOW_AMULET = false;
-const AMULET_B64 = '__AMULET_B64__';
 
-function b64ToBuffer(b64) {
-  const bin = atob(b64), buf = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
-  return buf.buffer;
-}
-
-if (SHOW_AMULET && AMULET_B64) {
+if (SHOW_AMULET) {
   const stand = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.028, 0.075), matDarkWood);
   stand.position.set(0.86, 0.055, 0.52);
   stand.castShadow = stand.receiveShadow = true;
   offering.add(stand);
 
-  new GLTFLoader().parse(b64ToBuffer(AMULET_B64), '', (gltf) => {
+  assetBytes('amulet').then(buf => new GLTFLoader().parse(buf, '', (gltf) => {
     const amulet = gltf.scene;
     amulet.scale.setScalar(2.2);
     amulet.position.set(0.86, 0.069, 0.52);
@@ -980,7 +1025,8 @@ if (SHOW_AMULET && AMULET_B64) {
     amulet.traverse(o => { if (o.isMesh) o.castShadow = o.receiveShadow = true; });
     offering.add(amulet);
     redoShadows();
-  }, (err) => console.warn('amulet failed to load', err));
+  }, (err) => console.warn('amulet failed to load', err)))
+    .catch(err => console.warn('amulet failed to load', err));
 }
 
 /* ---------------------------------------------------------- the tree line */
@@ -1080,7 +1126,7 @@ world.add(embers);
    all. Just behind and beside the burner she is lit by the fire and stands
    against the smoke column, so you notice her from outside — which is the
    whole point of her showing up earlier.                                    */
-const GHOST_HOME = new THREE.Vector3(-2.5, 0, -12.0);
+const GHOST_HOME = new THREE.Vector3(CH.ghostHome.x, 0, CH.ghostHome.z);
 const GHOST_MIN_DIST = 3.4;                            // never closer than this
 const GHOST_APPEAR_AT = 14.0;                          // measured from the burner, not from her
 const GHOST_DECK_EDGE = -1.2;                          // she does not follow you outside
@@ -1099,8 +1145,7 @@ const ghostMats = [];
 let reveal = 0;                                        // 0 = not there, 1 = fully present
 ghost.visible = false;
 
-const GHOST_BUF = b64ToBuffer('__GHOST_B64__');
-new GLTFLoader().parse(GHOST_BUF, '', (gltf) => {
+assetBytes('ghost').then(GHOST_BUF => new GLTFLoader().parse(GHOST_BUF, '', (gltf) => {
   rescueTextures(gltf, GHOST_BUF);
   const g = gltf.scene;
   g.traverse(o => {
@@ -1155,7 +1200,8 @@ new GLTFLoader().parse(GHOST_BUF, '', (gltf) => {
   ghost.visible = false;
 
   ghostReady = true;
-}, (err) => console.warn('ghost failed to load', err));
+}, (err) => console.warn('ghost failed to load', err)))
+  .catch(err => console.warn('ghost failed to load', err));
 
 // is she inside the camera's view right now?
 const _ndc = new THREE.Vector3();
@@ -1255,7 +1301,7 @@ function layoutHands() {
 layoutHands();
 
 let handsReady = false;
-new GLTFLoader().parse(b64ToBuffer('__HANDS_B64__'), '', (gltf) => {
+assetBytes('hands').then(handsBuf => new GLTFLoader().parse(handsBuf, '', (gltf) => {
   const model = gltf.scene;
 
   // The pack ships both hands in one skinned mesh, so the left one can't just
@@ -1356,7 +1402,8 @@ new GLTFLoader().parse(b64ToBuffer('__HANDS_B64__'), '', (gltf) => {
   });
 
   handsReady = true;
-}, (err) => console.warn('hands failed to load', err));
+}, (err) => console.warn('hands failed to load', err)))
+  .catch(err => console.warn('hands failed to load', err));
 
 let rightHandModel = null, rightOriented = null, fingerPose = null, restPose = null;
 
@@ -1427,7 +1474,7 @@ function updateViewmodel(dt, t, speed, strafe, dLookX, dLookY) {
 }
 
 /* ------------------------------------------------------- collision box */
-const BOUNDS = { minX: -21, maxX: 21, minZ: -18.6, maxZ: 26 };
+const BOUNDS = { ...CH.bounds };
 const BLOCKERS = [];
 world.traverse(o => {
   if (o.isMesh && (o.material === matConcrete) && o.geometry.type === 'BoxGeometry') {
@@ -1579,43 +1626,8 @@ if (HAS_TOUCH) canvas.addEventListener('touchend', onTouchEnd, { passive: false 
 if (HAS_TOUCH) canvas.addEventListener('touchcancel', onTouchEnd, { passive: false });
 
 /* ------------------------------------------------------------ game data */
-const CHAPTER = {
-  id: 1,
-  title: 'The Hell Note',
-  brief: 'Late. A void deck you have walked a hundred times. Tonight someone has been burning for the dead, and a single note has drifted away from the pile, right into your path.',
-  prompt: 'The note is at your feet. What do you do?',
-  choices: [
-    {
-      k: 'A', text: 'Pick it up. It is only paper — and it might be real money.',
-      d: { sanity: -20, awareness: -10, wisdom: -15 },
-      verdict: 'bad',
-      say: 'You bend down and take it. The air near the drum goes still, and the warmth on your face is suddenly gone.',
-      teach: 'What is burned is given. Taking it back is taking from someone who can no longer object. Greed does not become harmless just because the object is worthless.'
-    },
-    {
-      k: 'B', text: 'Kick it away and laugh. Superstition is for other people.',
-      d: { sanity: -30, awareness: -15, wisdom: -25 },
-      verdict: 'worst',
-      say: 'Your foot scuffs the note across the concrete. Behind you, the drum ticks once — metal cooling, or something else.',
-      teach: 'Mockery is a form of belief: it insists on an answer before you have looked. Contempt costs nothing to feel and everything to carry.'
-    },
-    {
-      k: 'C', text: 'Stop. Look at what is actually here before moving.',
-      d: { sanity: 5, awareness: 25, wisdom: 15 },
-      verdict: 'good',
-      say: 'You stand still. Drum. Plate. Three sticks, still lit. Someone was here minutes ago. This is not a place for you to be standing.',
-      teach: 'Observation costs nothing and prevents most of what follows. Before you believe or dismiss, first see. Awareness is the cheapest protection there is.'
-    },
-    {
-      k: 'D', text: 'Step around it, palms together, and quietly excuse yourself.',
-      d: { sanity: 15, awareness: 15, wisdom: 25 },
-      verdict: 'best',
-      say: 'You go the long way round. A short bow, no words out loud. The lamp buzzes. The night carries on without you in it.',
-      teach: 'Respect is not agreement. You do not need to believe in something to leave it undisturbed — and leaving things undisturbed is most of the practice.'
-    }
-  ],
-  core: 'Observe before reacting. Do not blindly believe, blindly dismiss, or provoke what you do not understand.'
-};
+// The chapter's words and numbers live in src/chapters/ch1.js now — CH was
+// read off the registry at the top of this file.
 
 const stats = { sanity: 100, awareness: 50, wisdom: 50 };
 let state = 'title';   // title | chapter | play | decide | cine | result | complete | lost
@@ -1658,21 +1670,18 @@ if (HAS_TOUCH) {
    data: images outright — the same trap that dropped every model texture.
    createImageBitmap takes the Blob itself, so no URL is ever created. The
    heading underneath is the fallback and only appears if this fails.        */
-const LOGO_B64 = '__LOGO_B64__';
 (function paintLogo() {
   const cv = document.getElementById('logo');
   const fallback = document.querySelector('#title h1');
   const giveUp = () => { cv?.remove(); fallback?.classList.remove('hide'); };
-  if (!cv || !LOGO_B64) return giveUp();
-  try {
-    const bin = atob(LOGO_B64), bytes = new Uint8Array(bin.length);
-    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-    createImageBitmap(new Blob([bytes], { type: 'image/webp' })).then(bmp => {
+  if (!cv) return giveUp();
+  assetBytes('logo')
+    .then(bytes => createImageBitmap(new Blob([bytes], { type: 'image/webp' })))
+    .then(bmp => {
       cv.width = bmp.width; cv.height = bmp.height;
       cv.getContext('2d').drawImage(bmp, 0, 0);
       bmp.close?.();
     }).catch(giveUp);
-  } catch { giveUp(); }
 })();
 
 /* ------------------------------------------------------------- music ----
@@ -1683,7 +1692,6 @@ const LOGO_B64 = '__LOGO_B64__';
    Muted by default on a desktop, because someone is probably at a desk with
    other people. A phone or tablet is a private, deliberate thing, so it
    starts with sound. Either way the choice is remembered per device.       */
-const MUSIC_B64 = '__MUSIC_B64__';
 const MUSIC_VOL = 0.34, MUTE_KEY = 'mzse3d_muted';
 
 let muted = !HAS_TOUCH;
@@ -1699,18 +1707,17 @@ function paintMuteBtn() { muteBtn?.classList.toggle('muted', muted); }
 paintMuteBtn();
 
 function musicSetup() {
-  if (actx || !MUSIC_B64) return;
+  if (actx) return;
   const AC = window.AudioContext || window.webkitAudioContext;
   if (!AC) return;
   try { actx = new AC(); } catch { return; }
   musicGain = actx.createGain();
   musicGain.gain.value = muted ? 0 : MUSIC_VOL;
   musicGain.connect(actx.destination);
-  const bin = atob(MUSIC_B64), bytes = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-  actx.decodeAudioData(bytes.buffer)
+  assetBytes('music')
+    .then(bytes => actx.decodeAudioData(bytes))
     .then(buf => { musicBuf = buf; if (musicWanted) musicStart(); })
-    .catch(() => { /* no decoder for it here; the game is fine without */ });
+    .catch(() => { /* no file or no decoder; the game is fine without */ });
 }
 
 function musicStart() {
@@ -1769,6 +1776,8 @@ for (const ev of ['pointerdown', 'pointerup', 'touchstart', 'touchend',
 // and if the browser is feeling generous, start without waiting to be asked
 musicSetup();
 musicStart();
+// pull the spoken line down early too; it decodes on a gesture later
+assetBytes('voice').catch(() => {});
 
 /* ---------------------------------------------------- the player's voice ---
    One short line in the player's own voice, a beat after the world fades in —
@@ -1776,21 +1785,19 @@ musicStart();
    AudioContext as everything else and obeys the same rules: nothing before a
    gesture, nothing while muted. The three seconds are real time, not frame
    time, so a stalling phone still hears it at the right moment.            */
-const VOICE_B64 = '__VOICE_B64__';
 const VOICE_DELAY_MS = 3000;
 let voiceBuf = null, voiceSrc = null, voiceTimer = 0;
 let voiceDecoding = false, voicePlayed = false;
 
 function voiceDecode() {
-  if (voiceBuf || voiceDecoding || !VOICE_B64) return;
+  if (voiceBuf || voiceDecoding) return;
   if (!actx) musicSetup();
   if (!actx) return;
   voiceDecoding = true;
-  const bin = atob(VOICE_B64), bytes = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-  actx.decodeAudioData(bytes.buffer)
+  assetBytes('voice')
+    .then(bytes => actx.decodeAudioData(bytes))
     .then(buf => { voiceBuf = buf; })
-    .catch(() => { /* no decoder here; the game is fine without */ });
+    .catch(() => { /* no file or no decoder; the game is fine without */ });
 }
 
 /* Called whenever a fresh run enters the playable scene. It checks the world
@@ -2387,11 +2394,29 @@ function playChapterCard(then) {
     void el.offsetWidth;                     // commit it this instant
     ui.title.classList.add('hide');
     setTimeout(() => {
-      el.style.transition = '';              // hand it back to the stylesheet
-      void el.offsetWidth;
-      el.style.opacity = '';
-      el.classList.remove('in');
-      setTimeout(() => { el.classList.add('hide'); then(); }, CARD_FADE);
+      /* On the hosted site the world's files stream in while the title and
+         this card are up; nearly always they have long since arrived. If the
+         connection is slow, the card simply holds — a black card is already
+         a loading screen — and says so, rather than dropping the player into
+         an empty night. The cap means a lost fetch can't hold it forever:
+         past it we proceed and models pop in late, exactly like today.     */
+      const t0 = performance.now();
+      const load = $('chapLoad');
+      const fadeOut = () => {
+        load?.classList.add('hide');
+        el.style.transition = '';            // hand it back to the stylesheet
+        void el.offsetWidth;
+        el.style.opacity = '';
+        el.classList.remove('in');
+        setTimeout(() => { el.classList.add('hide'); then(); }, CARD_FADE);
+      };
+      const gate = () => {
+        if ((hdbReady && handsReady && ghostReady)
+            || performance.now() - t0 > 12000) return fadeOut();
+        load?.classList.remove('hide');
+        setTimeout(gate, 180);
+      };
+      gate();
     }, CARD_HOLD);
   };
   el.addEventListener('transitionend', cover, { once: true });
@@ -2417,15 +2442,18 @@ $('nextBtn').onclick = () => { ui.result.classList.add('hide'); finish(); };
 $('againBtn').onclick = () => restart();
 
 /* The title screen speaks for the whole series, not for whichever chapter is
-   loaded — so it has its own line. CHAPTER.brief stays as the chapter's own
+   loaded — so it has its own line. CH.brief stays as the chapter’s own
    framing, for wherever that ends up being used. */
 const INTRO = 'A void deck. A stairwell. A hotel corridor at 3 AM. Ordinary '
             + 'places on the wrong night, and in each one, something you have '
             + 'to decide how to answer.';
 $('brief').textContent = INTRO;
-$('qtext').textContent = CHAPTER.prompt;
+$('qtext').textContent = CH.prompt;
+// the black chapter card carries whatever chapter is registered
+if ($('chapLabel')) $('chapLabel').textContent = CH.cardLabel;
+if ($('chapTitle')) $('chapTitle').innerHTML = CH.cardTitle;
 const cWrap = $('choices');
-CHAPTER.choices.forEach((c, i) => {
+CH.choices.forEach((c, i) => {
   const b = document.createElement('button');
   b.className = 'choice';
   b.innerHTML = `<span class="key">${c.k}</span><span>${c.text}</span>`;
@@ -2481,7 +2509,7 @@ function pick(i) {
   // stray event landing on a choice is not a decision.
   if (performance.now() - decideOpenedAt < 340) return;
   chosen = i;
-  const c = CHAPTER.choices[i];
+  const c = CH.choices[i];
   ui.decide.classList.add('hide');
   // The scene plays first; the numbers and the teaching wait until it is
   // done. The card then rises over whatever the scene left on screen.
@@ -2570,7 +2598,7 @@ function finish() {
     : score >= 55 ? 'B' : score >= 40 ? 'C' : 'D';
   ui.rank.textContent = r;
   ui.pct.textContent = Math.round(score) + '%';
-  ui.core.textContent = CHAPTER.core;
+  ui.core.textContent = CH.core;
   ui.complete.classList.remove('hide');
   ui.hud.classList.add('hide');
   state = 'complete';
@@ -2852,7 +2880,9 @@ window.__enc = { yaw, stats, blockers: BLOCKERS, getState: () => state,
                  interactPile, pile, pileDist, pileInView,
                  pileScreen, pointerHitsPile, PILE_POS, INTERACT_R,
                  pileGlow: () => pileRing.material.opacity, renderer,
-                 pick, chapter: CHAPTER, restart,
+                 pick, chapter: CH, restart,
+                 ready: () => ({ hdb: hdbReady, hands: handsReady,
+                                 ghost: ghostReady, hosted: HOSTED }),
                  voice: () => ({ decoded: !!voiceBuf, playing: !!voiceSrc,
                                  played: voicePlayed,
                                  dur: voiceBuf ? +voiceBuf.duration.toFixed(2) : 0 }),

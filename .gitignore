@@ -59,3 +59,6 @@ credshot.mjs
 dbgaudio.mjs
 dbghand.mjs
 cineshot.mjs
+deploy/
+dist/
+masterz-encounters-v*.zip
