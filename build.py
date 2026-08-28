@@ -14,7 +14,8 @@ for token, name, wanted in (('__AMULET_B64__', 'amulet.glb', want_amulet),
                             # frame's policy can refuse data: images outright —
                             # the same trap that ate the model textures.
                             ('__LOGO_B64__', 'assets/logo.webp', True),
-                            ('__MUSIC_B64__', 'assets/music.mp3', True)):
+                            ('__MUSIC_B64__', 'assets/music.mp3', True),
+                            ('__VOICE_B64__', 'assets/voice.mp3', True)):
     assert token in bundle, f'{token} missing from bundle'
     data = base64.b64encode((d / name).read_bytes()).decode() if wanted else ''
     bundle = bundle.replace(token, data)

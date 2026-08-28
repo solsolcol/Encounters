@@ -1740,6 +1740,9 @@ function setMuted(v) {
     g.linearRampToValueAtTime(muted ? 0 : MUSIC_VOL, now + 0.35);
   }
   if (!muted) musicStart();
+  // a half-spoken line under a mute button that was just pressed is a bug,
+  // not an atmosphere
+  if (muted && voiceSrc) { try { voiceSrc.stop(); } catch {} voiceSrc = null; }
   paintMuteBtn();
 }
 
@@ -1766,6 +1769,50 @@ for (const ev of ['pointerdown', 'pointerup', 'touchstart', 'touchend',
 // and if the browser is feeling generous, start without waiting to be asked
 musicSetup();
 musicStart();
+
+/* ---------------------------------------------------- the player's voice ---
+   One short line in the player's own voice, a beat after the world fades in —
+   on the first run and again on every walk-it-again. It rides the same
+   AudioContext as everything else and obeys the same rules: nothing before a
+   gesture, nothing while muted. The three seconds are real time, not frame
+   time, so a stalling phone still hears it at the right moment.            */
+const VOICE_B64 = '__VOICE_B64__';
+const VOICE_DELAY_MS = 3000;
+let voiceBuf = null, voiceSrc = null, voiceTimer = 0;
+let voiceDecoding = false, voicePlayed = false;
+
+function voiceDecode() {
+  if (voiceBuf || voiceDecoding || !VOICE_B64) return;
+  if (!actx) musicSetup();
+  if (!actx) return;
+  voiceDecoding = true;
+  const bin = atob(VOICE_B64), bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  actx.decodeAudioData(bytes.buffer)
+    .then(buf => { voiceBuf = buf; })
+    .catch(() => { /* no decoder here; the game is fine without */ });
+}
+
+/* Called whenever a fresh run enters the playable scene. It checks the world
+   again when the timer lands, because three seconds is long enough to have
+   opened the decision, muted the sound, or walked into a cutscene.         */
+function queueVoice() {
+  clearTimeout(voiceTimer);
+  voicePlayed = false;
+  voiceDecode();
+  voiceTimer = setTimeout(() => {
+    if (state !== 'play' || muted || !voiceBuf || !actx) return;
+    if (actx.state !== 'running' || !sfxOut()) return;
+    try {
+      voiceSrc = actx.createBufferSource();
+      voiceSrc.buffer = voiceBuf;
+      voiceSrc.onended = () => { voiceSrc = null; };
+      voiceSrc.connect(sfxGain);
+      voiceSrc.start();
+      voicePlayed = true;
+    } catch { voiceSrc = null; }
+  }, VOICE_DELAY_MS);
+}
 
 /* ------------------------------------------------------------ credits --- */
 const creditsLayer = $('credits');
@@ -2361,6 +2408,7 @@ $('startBtn').onclick = () => {
     setTimeout(() => hint.classList.add('hide'), 7000);
     state = 'play';
     setHint();
+    queueVoice();                  // his own voice, three seconds in
   });
 };
 $('stepBack').onclick = () => dismissDecision();
@@ -2600,6 +2648,7 @@ function restart() {
 
   state = 'play';
   setHint();
+  queueVoice();                    // a fresh run gets the line again
   hint.classList.remove('hide');
   clearTimeout(hintTimer);
   hintTimer = setTimeout(() => hint.classList.add('hide'), 7000);
@@ -2804,6 +2853,9 @@ window.__enc = { yaw, stats, blockers: BLOCKERS, getState: () => state,
                  pileScreen, pointerHitsPile, PILE_POS, INTERACT_R,
                  pileGlow: () => pileRing.material.opacity, renderer,
                  pick, chapter: CHAPTER, restart,
+                 voice: () => ({ decoded: !!voiceBuf, playing: !!voiceSrc,
+                                 played: voicePlayed,
+                                 dur: voiceBuf ? +voiceBuf.duration.toFixed(2) : 0 }),
                  cine: {
                    active: () => !!cine,
                    t: () => (cine ? cine.t : -1),

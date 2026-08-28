@@ -49,6 +49,15 @@ out.buttonOnChapterCard = await p.isVisible('#mute');
 await p.waitForFunction(() => window.__enc && window.__enc.getState() === 'play',
                         null, { timeout: 90000, polling: 120 });
 out.buttonInPlay = await p.isVisible('#mute');
+// his own line, three seconds after the world is his: heard when the sound is
+// on, suppressed entirely when it is muted. (By this point the mute state is
+// the OPPOSITE of the device default — the reload test above flipped it — so
+// the desktop leg checks the line plays and the phone leg checks it doesn't.)
+await p.waitForTimeout(5200);
+const v = await p.evaluate(() => window.__enc.voice());
+out.voice = v;
+out.voiceDecoded = v.decoded && v.dur > 2 && v.dur < 3.2;
+out.voiceObeysMute = (await audio()).muted ? !v.played : v.played;
 await p.evaluate(() => { const e = window.__enc;
   e.yaw.position.set(-1, 1.62, -3.6);
   e.yaw.rotation.y = Math.atan2(-(e.PILE_POS.x + 1), -(e.PILE_POS.z + 3.6));

@@ -20,7 +20,7 @@ const ALL = [
   { name: 'step',     file: 'steptest.mjs',  quick: true,  why: 'nothing opens by itself; stepping back works' },
   { name: 'sanity',   file: 'sanitytest.mjs',quick: true,  why: 'the drain, the freeze, and losing' },
   { name: 'tick',     file: 'ticktest.mjs',  quick: true,  why: 'damage numbers and the type scale' },
-  { name: 'sound',    file: 'soundtest.mjs', quick: true,  why: 'music, the mute button, the credits' },
+  { name: 'sound',    file: 'soundtest.mjs', quick: true,  why: 'music, the voice line, mute, credits' },
   { name: 'perf',     file: 'perftest.mjs',  quick: true,  why: 'frame pacing, frozen shadows, drift' },
   { name: 'cine',     file: 'cinetest.mjs',  quick: true,  why: 'all four cutscenes, skip, restore' },
   { name: 'restart',  file: 'restarttest.mjs', quick: true, why: 'both endings start a fresh run in place' },
