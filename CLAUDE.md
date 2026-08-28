@@ -98,8 +98,12 @@ gitignored by design — write them freely, they die with the session.
 ## Audio pipeline
 
 Voice/music/SFX come from ElevenLabs (his account, connector or manual).
-Re-encode before committing: music mono 22.05 kHz 40 kbps, voice mono
-64 kbps, strip metadata (`ffmpeg -map_metadata -1`). All playback through
+Full-fidelity spec (Chad's call, v2.3 — replaces the old mono/low-bitrate
+one): keep each source's native channel layout (stereo stays stereo),
+44.1 kHz, 128 kbps for generated sounds; the explore music keeps its
+original bytes untouched. Always strip metadata (`ffmpeg -map_metadata
+-1`). Watch the embedded build: the claude.ai preview artifact caps at
+16 MB and v2.3 ships ~13.8 MB. All playback through
 the shared Web Audio context — never `<audio src=data:>` — and everything
 obeys the one mute button. SFX today are procedural stings in main.js; an
 ElevenLabs replacement pack is planned (ambience loop, fire crackle, drum
