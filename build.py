@@ -26,6 +26,17 @@ chapter = (d / 'src' / 'chapters' / 'ch1.js').read_text()
 
 want_amulet = 'SHOW_AMULET = true' in src
 
+# every generated sound (assets/audio/*.mp3, already re-encoded per the
+# CLAUDE.md audio contract) rides as ONE pack asset: {name: base64-mp3}.
+# Adding a sound to the game = dropping a file in assets/audio/.
+audio_dir = d / 'assets' / 'audio'
+audio_dir.mkdir(parents=True, exist_ok=True)
+pack = {p.stem: base64.b64encode(p.read_bytes()).decode()
+        for p in sorted(audio_dir.glob('*.mp3'))}
+(d / 'assets' / 'audiopack.json').write_text(json.dumps(pack))
+print(f'  audiopack: {len(pack)} sounds, '
+      f'{(d / "assets" / "audiopack.json").stat().st_size // 1024} KB')
+
 # every heavy file the game can ask for: key -> (source file, wanted)
 ASSETS = {
     'hands':  ('vrhands_fixed.glb', True),
@@ -34,6 +45,7 @@ ASSETS = {
     'logo':   ('assets/logo.webp', True),
     'music':  ('assets/music.mp3', True),
     'voice':  ('assets/voice.mp3', True),
+    'audiopack': ('assets/audiopack.json', True),
     'amulet': ('amulet.glb', want_amulet),
 }
 

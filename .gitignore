@@ -62,3 +62,6 @@ cineshot.mjs
 deploy/
 dist/
 masterz-encounters-v*.zip
+
+# generated audio pack — rebuilt by build.py from assets/audio/
+assets/audiopack.json

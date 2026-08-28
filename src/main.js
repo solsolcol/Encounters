@@ -39,7 +39,7 @@ const HOSTED = Object.keys(ASSET_MAP).length > 0;
 const EMBED = {
   hands: '__HANDS_B64__', ghost: '__GHOST_B64__', hdb: '__HDB_B64__',
   logo: '__LOGO_B64__', music: '__MUSIC_B64__', voice: '__VOICE_B64__',
-  amulet: '__AMULET_B64__'
+  amulet: '__AMULET_B64__', audiopack: '__AUDIOPACK_B64__'
 };
 
 function b64ToBuffer(b64) {
@@ -1436,7 +1436,12 @@ function updateViewmodel(dt, t, speed, strafe, dLookX, dLookY) {
   // walk cycle: hands trace a figure-of-eight, x at half the frequency of y
   const prevStep = vm.step;
   vm.step += dt * speed * 5.6;
-  if (Math.floor(prevStep / Math.PI) !== Math.floor(vm.step / Math.PI)) vm.land = 1;
+  if (Math.floor(prevStep / Math.PI) !== Math.floor(vm.step / Math.PI)) {
+    vm.land = 1;
+    // a real footfall on concrete — play state only; cutscenes schedule
+    // their own steps on the timeline to match their authored bob
+    if (state === 'play' && speed > 0.4) stepSnd(0.32 + Math.min(speed / 5, 0.3));
+  }
   vm.land = Math.max(0, vm.land - dt * 6.5);
 
   const bobX = Math.sin(vm.step) * 0.020 * sp;
@@ -1752,6 +1757,8 @@ function setMuted(v) {
   // a half-spoken line under a mute button that was just pressed is a bug,
   // not an atmosphere
   if (muted && voiceSrc) { try { voiceSrc.stop(); } catch {} voiceSrc = null; }
+  if (muted && narSrc) { try { narSrc.stop(); } catch {} narSrc = null; }
+  packMuteSync();
   paintMuteBtn();
 }
 
@@ -1823,6 +1830,175 @@ function queueVoice() {
   }, VOICE_DELAY_MS);
 }
 
+/* ----------------------------------------------------------- sound pack ---
+   Every generated sound — SFX, loops, the ending music beds, the James
+   narration lines — ships as one JSON pack (assets/audio/*.mp3, packed by
+   build.py) behind the same assetBytes seam as everything else. Buffers
+   decode lazily on first use, and sting() below keeps its procedural synth
+   as a fallback while a sample is still decoding, so a cutscene never goes
+   silent mid-download. Loops start once at volume zero and are only ever
+   mixed, never restarted. One mute button rules it all: packGain/ambGain
+   ramp with it, and nothing new fires while muted.                        */
+let packJson = null, packGain = null, ambGain = null, bedSrc = null, narSrc = null;
+const packBufs = {}, packPending = {}, packLoops = {}, narrated = {};
+
+function packSetup() {
+  if (!actx) musicSetup();
+  if (!actx || packGain) return;
+  packGain = actx.createGain();
+  packGain.gain.value = muted ? 0 : 1;
+  packGain.connect(actx.destination);
+  ambGain = actx.createGain();
+  ambGain.gain.value = muted ? 0 : 1;
+  ambGain.connect(actx.destination);
+}
+function packMuteSync() {
+  if (!actx) return;
+  const now = actx.currentTime;
+  for (const g of [packGain, ambGain]) {
+    if (!g) continue;
+    g.gain.cancelScheduledValues(now);
+    g.gain.setValueAtTime(g.gain.value, now);
+    g.gain.linearRampToValueAtTime(muted ? 0 : 1, now + 0.35);
+  }
+}
+assetBytes('audiopack', true)
+  .then(b => { packJson = JSON.parse(new TextDecoder().decode(b)); })
+  .catch(() => {});
+
+function sndBuf(name) {              // AudioBuffer if ready, else kick a decode
+  if (packBufs[name]) return packBufs[name];
+  if (!packJson || !packJson[name] || packPending[name]) return null;
+  packSetup();
+  if (!actx) return null;
+  packPending[name] = true;
+  actx.decodeAudioData(b64ToBuffer(packJson[name]))
+    .then(buf => { packBufs[name] = buf; })
+    .catch(() => { delete packPending[name]; });
+  return null;
+}
+function packWarm(names) { for (const n of names) sndBuf(n); }
+
+function snd(name, vol = 1, rate = 1) {                 // one-shot
+  if (muted) return null;
+  const buf = sndBuf(name);
+  if (!buf || !actx || actx.state !== 'running') return null;
+  const s = actx.createBufferSource();
+  s.buffer = buf;
+  s.playbackRate.value = rate;
+  const g = actx.createGain();
+  g.gain.value = vol;
+  s.connect(g);
+  g.connect(packGain);
+  s.start();
+  return s;
+}
+
+// the 60 ms inset hides the silence mp3 decoding pads onto both ends
+function loopVol(name, vol) {
+  let L = packLoops[name];
+  if (!L) L = packLoops[name] = { want: 0, gain: null, started: false };
+  L.want = vol;
+  if (!L.started) {
+    const buf = vol > 0 ? sndBuf(name) : null;   // don't decode what's silent
+    if (!buf || !actx) return;
+    L.started = true;
+    const g = actx.createGain();
+    g.gain.value = 0;
+    g.connect(ambGain);
+    const s = actx.createBufferSource();
+    s.buffer = buf;
+    s.loop = true;
+    s.loopStart = 0.06;
+    s.loopEnd = Math.max(0.2, buf.duration - 0.06);
+    s.connect(g);
+    s.start(0, 0.06);
+    L.gain = g;
+  }
+  if (L.gain) L.gain.gain.setTargetAtTime(L.want, actx.currentTime, 0.3);
+}
+
+// the music bed under an ending card — one at a time, stoppable on restart
+function playBed(name, vol) {
+  stopBed();
+  bedSrc = snd(name, vol);
+  if (bedSrc) bedSrc.onended = () => { bedSrc = null; };
+}
+function stopBed() {
+  if (bedSrc) { try { bedSrc.stop(); } catch {} bedSrc = null; }
+}
+
+/* narration: one James line at a time, each trigger once per run unless
+   asked again. A line never talks over the opening voice line or another
+   line, and never fires during a cutscene — scene audio is authored.      */
+function say(name, opts) {
+  const once = !(opts && opts.again);
+  if (once && narrated[name]) return;
+  if (muted || narSrc || voiceSrc || state === 'cine') { sndBuf(name); return; }
+  const buf = sndBuf(name);
+  if (!buf || !actx || actx.state !== 'running') return;
+  if (once) narrated[name] = true;
+  narSrc = actx.createBufferSource();
+  narSrc.buffer = buf;
+  narSrc.onended = () => { narSrc = null; };
+  narSrc.connect(packGain);
+  narSrc.start();
+}
+
+// a short dip in the music so a reveal or an ending bed owns the moment
+function duckMusic(sec) {
+  if (!musicGain || !actx || muted) return;
+  const g = musicGain.gain, now = actx.currentTime;
+  g.cancelScheduledValues(now);
+  g.setValueAtTime(g.value, now);
+  g.linearRampToValueAtTime(MUSIC_VOL * 0.22, now + 0.5);
+  g.setValueAtTime(MUSIC_VOL * 0.22, now + Math.max(1, sec - 1.5));
+  g.linearRampToValueAtTime(MUSIC_VOL, now + Math.max(2, sec));
+}
+
+/* the per-frame mix: loop volumes derived from world state, the occasional
+   ghost vocalisation, the heartbeat, the once-per-appearance reveal hit.  */
+let ghostWasHere = false, nextCry = 0, nextBreath = 0, stepIdx = 0;
+const STEP_TAKES = ['step1', 'step2', 'step3', 'step4'];
+function stepSnd(vol) {
+  const n = STEP_TAKES[stepIdx++ % STEP_TAKES.length];
+  snd(sndBuf(n) ? n : STEP_TAKES[0], vol, 0.94 + Math.random() * 0.12);
+}
+function updateAudioFrame(t) {
+  if (!packJson) return;
+  const inWorld = state !== 'title' && state !== 'chapter';
+  loopVol('amb', inWorld ? 0.33 : 0);
+  const dFire = Math.hypot(yaw.position.x - SHRINE.x, yaw.position.z - SHRINE.z);
+  loopVol('fire', inWorld
+    ? Math.pow(THREE.MathUtils.clamp(1 - dFire / 16, 0, 1), 1.6) * 0.6 : 0);
+  const dGhost = Math.hypot(yaw.position.x - ghost.position.x,
+                            yaw.position.z - ghost.position.z);
+  const near = THREE.MathUtils.clamp(1 - dGhost / 15, 0, 1);
+  loopVol('ghostloop', state === 'play' ? reveal * (0.25 + near * 0.6) : 0);
+  const dying = state === 'play' && stats.sanity < 30;
+  loopVol('heart', dying ? 0.12 + (1 - stats.sanity / 30) * 0.26 : 0);
+  if (dying) say('vlow');
+  if (state === 'play' && reveal > 0.15) {
+    if (!ghostWasHere) {                     // she was not here a frame ago
+      ghostWasHere = true;
+      snd('boom', 0.65);
+      snd('dread', 0.5);
+      duckMusic(9);
+      say('vghost');
+    }
+    if (t > nextCry) { nextCry = t + 9 + Math.random() * 11; snd('cry', 0.2 + near * 0.4); }
+    if (dGhost < 2.8 && t > nextBreath) { nextBreath = t + 6 + Math.random() * 6; snd('breath', 0.7); }
+  } else if (reveal <= 0.01) {
+    ghostWasHere = false;
+    if (nextCry < t + 4) nextCry = t + 4 + Math.random() * 6;
+  }
+  // the pile, narrated on the first approach and at the first clear look
+  if (state === 'play') {
+    if (pileDist() < 8) say('vpile');
+    if (pileDist() < INTERACT_R && pileInView()) say('vnote');
+  }
+}
+
 /* ------------------------------------------------------------ credits --- */
 const creditsLayer = $('credits');
 function showCredits(on) { creditsLayer?.classList.toggle('hide', !on); }
@@ -1831,6 +2007,13 @@ $('credClose')?.addEventListener('click', () => showCredits(false));
 creditsLayer?.addEventListener('click', e => {
   if (e.target === creditsLayer) showCredits(false);      // click the backdrop
 });
+
+// every plain button answers with the same soft click (the mute button stays
+// silent — a click under a button that just silenced everything is a bug)
+for (const id of ['startBtn', 'creditsLink', 'credClose', 'stepBack',
+                  'nextBtn', 'againBtn', 'retryBtn', 'cineSkip']) {
+  $(id)?.addEventListener('click', () => snd('uiclick', 0.5));
+}
 
 /* ========================================================================
    CUTSCENES
@@ -1868,8 +2051,19 @@ function sfxOut() {
   }
   return sfxGain;
 }
+// pack sample per sting kind; the synth below stays as the fallback while
+// a sample is still decoding. Kinds with no synth equivalent simply wait.
+const STING_SAMPLE = {
+  boom: ['boom', 0.7], clang: ['clang', 0.75], whoosh: ['whoosh', 0.6],
+  take: ['paper', 0.8], chime: ['chime', 0.55],
+  kick: ['kick', 0.8], scream: ['scream', 0.85], chant: ['chant', 0.9]
+};
 function sting(kind) {
   if (!actx || muted || !sfxOut()) return;
+  if (kind === 'step' && sndBuf('step1')) { stepSnd(0.5); return; }
+  const smp = STING_SAMPLE[kind];
+  if (smp && snd(smp[0], smp[1])) return;
+  if (kind === 'kick' || kind === 'scream' || kind === 'chant') return;
   const t0 = actx.currentTime;
   const env = (node, peak, a, d) => {
     const g = actx.createGain();
@@ -2214,6 +2408,7 @@ function scKick(c, s) {                            /* B — the burner goes over
   // the kick, told by its impact
   camTo(0.9, 1.2, P, { x: P.x - 0.32, y: 1.40, z: P.z - 0.55 }, rawK);
   pitchTo(0.9, 1.2, -0.14, -0.46, rawK);
+  sfx(0.95, 'kick');
   sfx(1.15, 'clang');
   step(1.15, () => { ash.visible = false; });
   tr(1.15, 1.9, k => {
@@ -2258,6 +2453,7 @@ function scKick(c, s) {                            /* B — the burner goes over
   pitchTo(7.4, 8.3, -0.03, -0.06);
   ghostGlide(8.3, 9.4, { x: 0.45, z: 4.4 }, { x: 0.33, z: 7.3 });
   sfx(8.5, 'boom');
+  sfx(8.55, 'scream');
   tr(8.6, 9.6, k => { camera.rotation.z = 0.05 * k; }, rawK);
   fade(8.8, 10.0, 0, 1);
 
@@ -2330,6 +2526,7 @@ function scChant(c, s) {                           /* D — palms together */
     vmKey.intensity = 0.50 + 0.55 * k;
     vmFire.intensity = 2.4;
   }, rawK);
+  sfx(1.0, 'chant');
   sfx(2.5, 'chime');
   tr(2.3, 8.6, () => { fireLight.intensity = 9; }, rawK);
 
@@ -2477,6 +2674,12 @@ syncBars();
 function startDecision() {
   state = 'decide';
   chosen = null;
+  snd('paper', 0.7);
+  // everything a cutscene or the card after it could need, decoding now so
+  // the scene's first sting is a sample rather than the synth fallback
+  packWarm(['clang', 'whoosh', 'boom', 'scream', 'kick', 'chant', 'chime',
+            'paper', 'endbad', 'endgood', 'uicard', 'uiconfirm', 'uirank',
+            'vA', 'vB', 'vC', 'vD', 'step1', 'step2', 'step3', 'step4']);
   ui.prompt.classList.add('hide');
   ui.interact.classList.add('hide');
   hint.classList.add('hide');
@@ -2492,6 +2695,7 @@ function startDecision() {
 let hintTimer = 0;
 function dismissDecision() {
   if (state !== 'decide') return;
+  snd('uiclick', 0.5);
   ui.decide.classList.add('hide');
   state = 'play';
   const el = $('hintTxt');
@@ -2511,6 +2715,7 @@ function pick(i) {
   // stray event landing on a choice is not a decision.
   if (performance.now() - decideOpenedAt < 340) return;
   chosen = i;
+  snd('uiconfirm', 0.7);
   const c = CH.choices[i];
   ui.decide.classList.add('hide');
   // The scene plays first; the numbers and the teaching wait until it is
@@ -2524,6 +2729,11 @@ function pick(i) {
       `<span class="${v >= 0 ? 'up' : 'dn'}">${k.toUpperCase()} ${v >= 0 ? '+' : ''}${v}</span>`).join('');
     ui.result.classList.remove('hide');
     state = 'result';
+    // the card rises: its swish, the ending's music bed, and the James line
+    snd('uicard', 0.6);
+    playBed(c.verdict === 'good' || c.verdict === 'best' ? 'endgood' : 'endbad', 0.5);
+    duckMusic(15);
+    say('v' + c.k, { again: true });
   });
 }
 /* --------------------------------------------------------- sanity drain ---
@@ -2581,6 +2791,10 @@ function showHaunt(on) {
 function lose() {
   if (state === 'lost') return;
   state = 'lost';
+  stopBed();
+  loopVol('heart', 0);
+  snd('ulost', 0.8);
+  say('vlost', { again: true });
   stats.sanity = 0;
   syncBars();
   showHaunt(false);
@@ -2604,6 +2818,7 @@ function finish() {
   ui.complete.classList.remove('hide');
   ui.hud.classList.add('hide');
   state = 'complete';
+  snd('uirank', 0.7);
 }
 
 /* ------------------------------------------------------------- restart ---
@@ -2647,6 +2862,13 @@ function restart() {
   showHaunt(false);
   drainAcc = 0; lastTickAt = 0;
   chosen = null;
+
+  // the soundscape, back to a fresh run: the bed and any half-spoken line
+  // stop, and every once-per-run narration trigger re-arms
+  stopBed();
+  if (narSrc) { try { narSrc.stop(); } catch {} narSrc = null; }
+  for (const k in narrated) delete narrated[k];
+  ghostWasHere = false;
 
   // the player, back out on the grass facing the block, standing still
   yaw.position.copy(SPAWN.pos); yaw.rotation.y = SPAWN.rot;
@@ -2806,6 +3028,7 @@ function tick(now = 0) {
   updateNotes(dt, t);
   updateGhost(dt);
   updatePile(t);
+  updateAudioFrame(t);
 
   // fire flicker — during a cutscene the timeline owns the fire, so a scene
   // can kill it or knock it over without this fighting it every frame
@@ -2875,6 +3098,16 @@ window.__enc = { yaw, stats, blockers: BLOCKERS, getState: () => state,
                  handsRoot, armR, vmCam, vm, updateViewmodel, updateNotes, flying,
                  ghost, updateGhost, ghostInView, getReveal: () => reveal,
                  dismissDecision, ghostDrainRate, lose, setMuted, showCredits,
+                 snd, say, loopVol, sting, updateAudioFrame,
+                 pack: () => ({
+                   loaded: !!packJson,
+                   names: packJson ? Object.keys(packJson).length : 0,
+                   decoded: Object.keys(packBufs).length,
+                   loops: Object.fromEntries(Object.entries(packLoops)
+                     .map(([k, v]) => [k, +v.want.toFixed(3)])),
+                   bed: !!bedSrc, nar: !!narSrc,
+                   narrated: Object.keys(narrated)
+                 }),
                  audio: () => ({ muted, ctxState: actx ? actx.state : 'none',
                                  gain: musicGain ? +musicGain.gain.value.toFixed(3) : null,
                                  decoded: !!musicBuf, playing: !!musicSrc,
