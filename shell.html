@@ -65,6 +65,18 @@ html,body{height:100%;overflow:hidden;background:var(--void);color:var(--bone);
 .soundBtn.muted .waves{display:none}
 .soundBtn:not(.muted) .cross{display:none}
 .soundBtn.muted .cross{stroke:var(--seal)}
+/* master volume, laptop/desktop only: the body gains .finePtr when the
+   primary pointer is a hovering mouse/trackpad — a phone's volume rocker
+   is faster than any slider we could draw, so touch devices never see it */
+#volWrap{position:fixed;z-index:9;pointer-events:auto;
+  top:max(14px,env(safe-area-inset-top));
+  right:calc(max(14px,env(safe-area-inset-right)) + 56px);
+  height:46px;padding:0 16px;display:none;align-items:center;
+  background:rgba(7,8,11,.62);border:1px solid var(--line);border-radius:23px;
+  backdrop-filter:blur(6px);opacity:.45;transition:opacity .18s,border-color .16s}
+body.finePtr #volWrap{display:flex}
+#volWrap:hover,#volWrap:focus-within{opacity:1;border-color:#3A414E}
+#vol{width:112px;height:18px;accent-color:var(--sodium);cursor:pointer;margin:0}
 
 /* ── shared type devices ────────────────────────────────────────────── */
 .stencil{display:block;font-family:var(--ui);font-size:1.02rem;
@@ -174,15 +186,33 @@ body.cine #barTop,body.cine #barBot{transform:translateY(0)}
 /* ── hud ────────────────────────────────────────────────────────────── */
 #hud{padding:max(16px,env(safe-area-inset-top)) 16px 16px;align-items:flex-start}
 #stats{display:flex;flex-direction:column;gap:13px;width:min(290px,58vw)}
-.stat{position:relative;display:grid;grid-template-columns:1fr auto;gap:4px 10px;
-  align-items:baseline}
+.stat{position:relative;display:grid;grid-template-columns:auto 1fr auto;gap:4px 9px;
+  align-items:center}
 .stat .n{font-family:var(--ui);font-size:1.02rem;letter-spacing:.07em;font-weight:600;
   text-transform:uppercase;color:#9AA1B0}
 .stat .v{font-family:var(--mono);font-size:1.36rem;font-weight:700;
   font-variant-numeric:tabular-nums;color:var(--bone)}
-.track{grid-column:1/-1;height:5px;background:#22262F;overflow:hidden;border-radius:3px}
-.track i{display:block;height:100%;transition:width .5s var(--ease)}
-#bSan{background:var(--seal)} #bAwa{background:var(--sodium)} #bWis{background:var(--jade)}
+/* the stat marks — one hue per stat, everywhere a stat is named */
+svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visible}
+.stat svg.sic{width:19px;height:19px;filter:drop-shadow(0 0 5px currentColor)}
+.sSan{color:#E05543}.sAwa{color:var(--sodium)}.sWis{color:var(--jade)}
+.track{grid-column:1/-1;height:8px;background:rgba(30,34,42,.92);overflow:hidden;
+  border-radius:4px;box-shadow:inset 0 1px 2px rgba(0,0,0,.6)}
+/* the fill flows: a drifting gradient inside the bar, a bright meniscus at
+   its leading edge. Passive, GPU-cheap, and stilled for reduced motion. */
+.track i{display:block;height:100%;border-radius:4px;position:relative;
+  transition:width .5s var(--ease);
+  background-size:220% 100%;animation:barflow linear infinite}
+.track i::after{content:"";position:absolute;top:0;bottom:0;right:0;width:2px;
+  border-radius:2px;background:rgba(255,246,235,.75);filter:blur(.5px)}
+#bSan{background-image:linear-gradient(100deg,#7E251C,#E05543 38%,#F4907F 50%,#E05543 62%,#7E251C);
+  box-shadow:0 0 9px rgba(226,74,58,.4);animation-duration:4.2s}
+#bAwa{background-image:linear-gradient(100deg,#B36A2B,#FFB367 38%,#FFD9AE 50%,#FFB367 62%,#B36A2B);
+  box-shadow:0 0 9px rgba(255,179,103,.32);animation-duration:5.6s}
+#bWis{background-image:linear-gradient(100deg,#2E7C72,#63D6C8 38%,#B5F0E8 50%,#63D6C8 62%,#2E7C72);
+  box-shadow:0 0 9px rgba(99,214,200,.32);animation-duration:7s}
+@keyframes barflow{from{background-position:0% 0}to{background-position:-220% 0}}
+@media (prefers-reduced-motion:reduce){.track i{animation:none}}
 /* each point of sanity leaves visibly, next to the number it came out of */
 /* anchored under the bar, not above it: the hud is already at the top of the
    screen and a number that floats up from the value gets clipped away */
@@ -278,7 +308,7 @@ body.cine #barTop,body.cine #barBot{transform:translateY(0)}
 @keyframes fadeup{from{transform:translateY(14px)}}
 #deltas{display:flex;gap:16px;margin:14px 0 22px;flex-wrap:wrap}
 #deltas span{font-family:var(--mono);font-size:1.1rem;font-weight:700;letter-spacing:.04em;
-  font-variant-numeric:tabular-nums}
+  font-variant-numeric:tabular-nums;display:inline-flex;align-items:center;gap:7px}
 #deltas .up{color:var(--jade)} #deltas .dn{color:var(--seal)}
 #say{font-size:1.34rem;line-height:1.6;color:#CDD2DB;margin-top:14px;text-wrap:pretty}
 .teachbox{margin-top:28px;padding:24px 26px;border:1px solid var(--line);
@@ -353,6 +383,31 @@ body.cine #barTop,body.cine #barBot{transform:translateY(0)}
 </style>
 
 <!-- sound, reachable from every screen -->
+<!-- the three stat marks: sanity a candle flame, awareness an open eye,
+     wisdom a lotus. Inline symbols (no data: URLs — CSP) referenced with
+     <use> wherever a stat is named. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-san" viewBox="0 0 24 24">
+    <path d="M12 3C9.3 6.4 7.2 9.3 7.2 12.8a4.8 4.8 0 0 0 9.6 0C16.8 9.3 14.7 6.4 12 3Z"
+      fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    <path d="M12 10.6c-1.1 1.5-1.9 2.6-1.9 3.9a1.9 1.9 0 0 0 3.8 0c0-1.3-.8-2.4-1.9-3.9Z"
+      fill="currentColor"/>
+    <path d="M9 20.6h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="i-awa" viewBox="0 0 24 24">
+    <path d="M2.6 12S6.2 6.4 12 6.4 21.4 12 21.4 12 17.8 17.6 12 17.6 2.6 12 2.6 12Z"
+      fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    <circle cx="12" cy="12" r="2.7" fill="currentColor"/>
+  </symbol>
+  <symbol id="i-wis" viewBox="0 0 24 24">
+    <path d="M12 4.6c-1.5 2-2.3 3.8-2.3 5.6 0 1.9 1 3.4 2.3 4.2 1.3-.8 2.3-2.3 2.3-4.2 0-1.8-.8-3.6-2.3-5.6Z"
+      fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+    <path d="M4.8 9.8c2.6.7 4.6 2 5.9 3.9M19.2 9.8c-2.6.7-4.6 2-5.9 3.9"
+      fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+    <path d="M4 13.4c1.6 3.8 4.4 5.8 8 5.8s6.4-2 8-5.8"
+      fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+  </symbol>
+</svg>
 <button id="mute" class="soundBtn" type="button" aria-label="Sound on or off">
   <svg viewBox="0 0 24 24" aria-hidden="true">
     <path d="M4 9.2h3.4L12.4 5v14L7.4 14.8H4z"/>
@@ -361,6 +416,8 @@ body.cine #barTop,body.cine #barBot{transform:translateY(0)}
     <g class="cross"><path d="M16.4 9.6l5.2 4.8"/><path d="M21.6 9.6l-5.2 4.8"/></g>
   </svg>
 </button>
+<div id="volWrap"><input id="vol" type="range" min="0" max="100" value="100"
+  aria-label="Game volume"></div>
 
 <canvas id="scene"></canvas>
 <div id="grade"></div>
@@ -463,12 +520,15 @@ body.cine #barTop,body.cine #barBot{transform:translateY(0)}
 <!-- hud -->
 <div id="hud" class="layer hide">
   <div id="stats">
-    <div class="stat"><span class="n">Sanity</span><span class="v" id="vSan">100</span>
+    <div class="stat sSan"><svg class="sic" aria-hidden="true"><use href="#i-san"/></svg>
+      <span class="n">Sanity</span><span class="v" id="vSan">100</span>
       <span class="track"><i id="bSan" style="width:100%"></i></span>
       <span id="ticks"></span></div>
-    <div class="stat"><span class="n">Awareness</span><span class="v" id="vAwa">50</span>
+    <div class="stat sAwa"><svg class="sic" aria-hidden="true"><use href="#i-awa"/></svg>
+      <span class="n">Awareness</span><span class="v" id="vAwa">50</span>
       <span class="track"><i id="bAwa" style="width:50%"></i></span></div>
-    <div class="stat"><span class="n">Wisdom</span><span class="v" id="vWis">50</span>
+    <div class="stat sWis"><svg class="sic" aria-hidden="true"><use href="#i-wis"/></svg>
+      <span class="n">Wisdom</span><span class="v" id="vWis">50</span>
       <span class="track"><i id="bWis" style="width:50%"></i></span></div>
   </div>
 </div>
@@ -528,7 +588,8 @@ body.cine #barTop,body.cine #barBot{transform:translateY(0)}
 <div id="haunt" class="layer hide">
   <div class="hbadge">
     <span class="hdot"></span>
-    <span>Ghost spotted! Sanity level is dropping until you take action.</span>
+    <span>Ghost spotted! <svg class="sic sSan" aria-hidden="true"><use href="#i-san"/></svg>
+      Sanity level is dropping until you take action.</span>
   </div>
 </div>
 

@@ -1713,6 +1713,38 @@ const muteBtn = $('mute');
 function paintMuteBtn() { muteBtn?.classList.toggle('muted', muted); }
 paintMuteBtn();
 
+/* One master gain sits between every bus (music, stings, pack, loops) and
+   the speakers, so a single slider scales the whole game. Volume is a
+   different thing from mute: mute is a state, volume is a level, and both
+   are remembered separately.                                             */
+let masterGain = null, volume = 1;
+const VOL_KEY = 'mzse3d_vol';
+try {
+  const v = localStorage.getItem(VOL_KEY);
+  if (v !== null) volume = Math.min(1, Math.max(0, +v || 0));
+} catch {}
+function masterOut() {
+  if (!actx) return null;
+  if (!masterGain) {
+    masterGain = actx.createGain();
+    masterGain.gain.value = volume;
+    masterGain.connect(actx.destination);
+  }
+  return masterGain;
+}
+function setVolume(v) {
+  volume = Math.min(1, Math.max(0, v));
+  try { localStorage.setItem(VOL_KEY, String(volume)); } catch {}
+  if (masterOut()) {
+    const g = masterGain.gain, now = actx.currentTime;
+    g.cancelScheduledValues(now);
+    g.setValueAtTime(g.value, now);
+    g.linearRampToValueAtTime(volume, now + 0.15);
+  }
+  // raising the volume from a muted game is an unambiguous "I want sound"
+  if (volume > 0 && muted) setMuted(false);
+}
+
 function musicSetup() {
   if (actx) return;
   const AC = window.AudioContext || window.webkitAudioContext;
@@ -1726,7 +1758,7 @@ function musicSetup() {
   try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch {}
   musicGain = actx.createGain();
   musicGain.gain.value = muted ? 0 : MUSIC_VOL;
-  musicGain.connect(actx.destination);
+  musicGain.connect(masterOut());
   assetBytes('music', true)
     .then(bytes => actx.decodeAudioData(bytes))
     .then(buf => { musicBuf = buf; if (musicWanted) musicStart(); })
@@ -1769,6 +1801,19 @@ function setMuted(v) {
 }
 
 muteBtn?.addEventListener('click', () => setMuted(!muted));
+
+/* the volume slider appears only where the primary pointer hovers — a
+   laptop or desktop. On a phone the rocker in the player's hand is faster
+   than anything we could draw, so touch devices keep just the mute button.
+   (hover+fine matches a touchscreen laptop too, which is correct: it has
+   a trackpad.) */
+const FINE_PTR = matchMedia('(hover: hover) and (pointer: fine)').matches;
+if (FINE_PTR) document.body.classList.add('finePtr');
+const volEl = $('vol');
+if (volEl) {
+  volEl.value = String(Math.round(volume * 100));
+  volEl.addEventListener('input', () => { setVolume(volEl.value / 100); });
+}
 
 /* No browser will let a page make a sound before it has been interacted with,
    so the music cannot literally start on load. What it can do is start on the
@@ -1867,10 +1912,10 @@ function packSetup() {
   if (!actx || packGain) return;
   packGain = actx.createGain();
   packGain.gain.value = muted ? 0 : 1;
-  packGain.connect(actx.destination);
+  packGain.connect(masterOut());
   ambGain = actx.createGain();
   ambGain.gain.value = muted ? 0 : 1;
-  ambGain.connect(actx.destination);
+  ambGain.connect(masterOut());
 }
 function packMuteSync() {
   if (!actx) return;
@@ -2062,7 +2107,7 @@ function sfxOut() {
   if (!sfxGain) {
     sfxGain = actx.createGain();
     sfxGain.gain.value = 0.9;
-    sfxGain.connect(actx.destination);
+    sfxGain.connect(masterOut());
   }
   if (!noiseBuf) {
     noiseBuf = actx.createBuffer(1, actx.sampleRate, actx.sampleRate);
@@ -2746,7 +2791,8 @@ function pick(i) {
     ui.say.textContent = c.say;
     ui.teach.textContent = c.teach;
     ui.deltas.innerHTML = Object.entries(c.d).map(([k, v]) =>
-      `<span class="${v >= 0 ? 'up' : 'dn'}">${k.toUpperCase()} ${v >= 0 ? '+' : ''}${v}</span>`).join('');
+      `<span class="${v >= 0 ? 'up' : 'dn'}"><svg class="sic" aria-hidden="true">` +
+      `<use href="#i-${k.slice(0, 3)}"/></svg>${k.toUpperCase()} ${v >= 0 ? '+' : ''}${v}</span>`).join('');
     ui.result.classList.remove('hide');
     state = 'result';
     // the card rises: its swish, the ending's music bed, and the James line
@@ -3128,7 +3174,10 @@ window.__enc = { yaw, stats, blockers: BLOCKERS, getState: () => state,
                    bed: !!bedSrc, nar: !!narSrc,
                    narrated: Object.keys(narrated)
                  }),
+                 setVolume,
                  audio: () => ({ muted, ctxState: actx ? actx.state : 'none',
+                                 volume: +volume.toFixed(3), finePtr: FINE_PTR,
+                                 master: masterGain ? +masterGain.gain.value.toFixed(3) : null,
                                  gain: musicGain ? +musicGain.gain.value.toFixed(3) : null,
                                  decoded: !!musicBuf, playing: !!musicSrc,
                                  seconds: musicBuf ? +musicBuf.duration.toFixed(1) : 0 }),
