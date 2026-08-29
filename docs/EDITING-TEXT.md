@@ -15,8 +15,9 @@ column`** · `Notes`. He only ever touches the TEXT column.
 hides the element rather than leaving a blank gap. That is the documented
 way to delete a line without touching code.
 
-He may add rows freely? No — IDs are the contract. A row with an unknown ID
-is skipped with a warning, never silently dropped.
+The IDs are the contract: a row whose ID is not known to the game is skipped
+with a warning on stderr, never silently applied and never able to corrupt a
+file.
 
 ## Where the words live
 
