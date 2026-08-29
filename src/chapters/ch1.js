@@ -21,38 +21,38 @@
   cardTitle: 'The Hell Note<br>I Should Never Have Taken',
 
   brief: 'Late. A void deck you have walked a hundred times. Tonight someone has been burning for the dead, and a single note has drifted away from the pile, right into your path.',
-  prompt: 'The note is at your feet. What do you do?',
+  prompt: 'The hell note is right at your feet. What do you do?',
   choices: [
     {
-      k: 'A', text: 'Pick it up. It is only paper — and it might be real money.',
+      k: 'A', text: 'Pick it up. It is only paper.',
       d: { sanity: -20, awareness: -10, wisdom: -15 },
       verdict: 'bad',
-      say: 'You bend down and take it. The air near the drum goes still, and the warmth on your face is suddenly gone.',
-      teach: 'What is burned is given. Taking it back is taking from someone who can no longer object. Greed does not become harmless just because the object is worthless.'
+      say: 'You bend down and take it. The warmth on your face is suddenly gone.',
+      teach: 'What is burned is already given. Take it away, and the debt returns in another form.'
     },
     {
-      k: 'B', text: 'Kick it away and laugh. Superstition is for other people.',
+      k: 'B', text: 'Kick it and laugh. Superstition is for other people.',
       d: { sanity: -30, awareness: -15, wisdom: -25 },
       verdict: 'worst',
-      say: 'Your foot scuffs the note across the concrete. Behind you, the drum ticks once — metal cooling, or something else.',
-      teach: 'Mockery is a form of belief: it insists on an answer before you have looked. Contempt costs nothing to feel and everything to carry.'
+      say: 'Your foot scuffs across the concrete. Behind you, something is on the chase.',
+      teach: 'You do not have to believe in something to respect it. Disrespect may invite what belief never could.'
     },
     {
-      k: 'C', text: 'Stop. Look at what is actually here before moving.',
+      k: 'C', text: 'Stop and look around before walking away.',
       d: { sanity: 5, awareness: 25, wisdom: 15 },
       verdict: 'good',
-      say: 'You stand still. Drum. Plate. Three sticks, still lit. Someone was here minutes ago. This is not a place for you to be standing.',
-      teach: 'Observation costs nothing and prevents most of what follows. Before you believe or dismiss, first see. Awareness is the cheapest protection there is.'
+      say: 'Your intuition was right. This is not a place for you to be standing.',
+      teach: 'Observation costs nothing and prevents the unintended. Awareness is the cheapest protection there is.'
     },
     {
-      k: 'D', text: 'Step around it, palms together, and quietly excuse yourself.',
+      k: 'D', text: 'Recite a chant, then respectfully excuse yourself.',
       d: { sanity: 15, awareness: 15, wisdom: 25 },
       verdict: 'best',
-      say: 'You go the long way round. A short bow, no words out loud. The lamp buzzes. The night carries on without you in it.',
-      teach: 'Respect is not agreement. You do not need to believe in something to leave it undisturbed — and leaving things undisturbed is most of the practice.'
+      say: 'The lamp buzzes. A sense of peacefulness arise.',
+      teach: 'Act wisely. Respect what you cannot see. It may matter more than you think.'
     }
   ],
-  core: 'Observe before reacting. Do not blindly believe, blindly dismiss, or provoke what you do not understand.',
+  core: 'Never take what is not given.<br><i>Adinnādānā veramaṇī sikkhāpadaṃ samādiyāmi.</i>',
 
   // --- the stage -----------------------------------------------------------
   // Every world position the engine parameterises on. The void-deck builder

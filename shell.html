@@ -88,9 +88,6 @@ body.finePtr #volWrap{display:flex}
   padding:28px 20px calc(28px + env(safe-area-inset-bottom,0px));
   background:radial-gradient(ellipse at 50% 40%,#0E1218 0%,#05060A 70%)}
 #title .card{max-width:min(600px,100%);text-align:center;margin:auto;padding:0 4px}
-#title .mark{display:inline-flex;align-items:center;gap:10px;margin-bottom:24px}
-#title .mark .dot{width:6px;height:6px;background:var(--seal);border-radius:50%;
-  box-shadow:0 0 14px var(--seal)}
 /* the logo sits where the heading was; it carries its own dark haze, so it
    needs no plate behind it on the title screen's near-black ground */
 #logo{display:block;width:min(100%,600px);height:auto;margin:0 auto 2px}
@@ -98,8 +95,6 @@ body.finePtr #volWrap{display:flex}
   font-size:clamp(2.2rem,8vw,3.8rem);line-height:1;letter-spacing:-.015em;
   text-wrap:balance;margin-bottom:8px}
 #title h1 em{font-style:italic;color:var(--sodium)}
-#title .sub{font-family:var(--ui);font-size:1.05rem;letter-spacing:.13em;font-weight:500;
-  text-transform:uppercase;color:#9AA1B0;margin-bottom:26px}
 #brief{font-size:1.3rem;line-height:1.6;color:#C6CAD3;max-width:44ch;margin:0 auto 30px;
   text-wrap:pretty}
 #startBtn{font-family:var(--ui);font-size:1.12rem;font-weight:700;
@@ -117,9 +112,6 @@ body.finePtr #volWrap{display:flex}
 #title .ctrl span{font-family:var(--ui);font-size:.98rem;line-height:1.45;
   letter-spacing:.02em;color:#8A91A0}
 #title .ctrl b{color:var(--bone);font-weight:600}
-.disclaimer code{font-family:var(--mono);font-size:.94em;color:#9AA1B0}
-.disclaimer{margin-top:24px;padding-top:16px;border-top:1px solid var(--line);
-  font-size:1rem;line-height:1.62;color:#767D8C;max-width:46ch;margin-inline:auto}
 
 /* ── credits ────────────────────────────────────────────────────────── */
 .creditsLink{display:block;margin:26px auto 0;background:none;border:0;
@@ -495,28 +487,28 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
         <span class="credWhat" data-t="credits.music">Music</span>
         <span class="credWho" data-t="credits.musicWho">Leberch &middot; Pixabay</span>
         <a href="https://pixabay.com/users/leberch-42823964/" target="_blank"
-           rel="noopener noreferrer">pixabay.com/users/leberch-42823964</a>
+           rel="noopener noreferrer" data-t="credits.musicLink">pixabay.com/users/leberch-42823964</a>
       </li>
       <li>
         <span class="credWhat" data-t="credits.hands">Hands</span>
         <span class="credWho" data-t="credits.handsWho">Free VR Hands pack &middot; Fab</span>
         <a href="https://www.fab.com/listings/5f77c468-92da-46d0-bf5e-ecb9685b87c1"
-           target="_blank" rel="noopener noreferrer">fab.com/listings/5f77c468</a>
+           target="_blank" rel="noopener noreferrer" data-t="credits.handsLink">fab.com/listings/5f77c468</a>
       </li>
       <li>
         <span class="credWhat" data-t="credits.ghost">Ghost</span>
         <span class="credWho" data-t="credits.ghostWho">Kuntilanak, Indonesian ghost &middot; Sketchfab</span>
         <a href="https://sketchfab.com/3d-models/kuntilanak-indonesian-ghost-747c8d863b344ee09505f0d0ccd679f8"
-           target="_blank" rel="noopener noreferrer">sketchfab.com &middot; kuntilanak-indonesian-ghost</a>
+           target="_blank" rel="noopener noreferrer" data-t="credits.ghostLink">sketchfab.com &middot; kuntilanak-indonesian-ghost</a>
       </li>
       <li>
         <span class="credWhat" data-t="credits.block">HDB block</span>
         <span class="credWho" data-t="credits.blockWho">HDB &middot; Sketchfab</span>
         <a href="https://sketchfab.com/3d-models/hdb-339b173efd9645b680ed3ea206d9a16c"
-           target="_blank" rel="noopener noreferrer">sketchfab.com &middot; hdb</a>
+           target="_blank" rel="noopener noreferrer" data-t="credits.blockLink">sketchfab.com &middot; hdb</a>
       </li>
     </ul>
-    <p class="credFoot">Everything else in the scene &mdash; the void deck, the burner, the
+    <p class="credFoot" data-t="credits.footer">Everything else in the scene &mdash; the void deck, the burner, the
       offerings, the hell notes, the sky and the lighting &mdash; is generated in code.</p>
   </div>
 </div>
@@ -601,7 +593,7 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
 <div id="haunt" class="layer hide">
   <div class="hbadge">
     <span class="hdot"></span>
-    <span>Ghost spotted! <svg class="sic sSan" aria-hidden="true"><use href="#i-san"/></svg>
+    <span><span data-t="hud.ghostAlarm">Ghost spotted!</span> <svg class="sic sSan" aria-hidden="true"><use href="#i-san"/></svg>
       <span data-t="hud.ghostWarning">Sanity level is dropping until you take action.</span></span>
   </div>
 </div>

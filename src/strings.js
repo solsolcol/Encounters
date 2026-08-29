@@ -21,17 +21,18 @@
 Object.assign(window.__TEXT__, {
 
   // --- title screen --------------------------------------------------------
-  'title.tabTitle':      'The Hell Note',
+  'title.tabTitle':      'Master Z’s Encounters — The Game',
   'title.logoAlt':       'Master Z’s Encounters — The Game',
-  'title.headingPlain':  'The <em>Hell Note</em><br>I Should Never<br>Have Taken',
+  'title.headingPlain':  'Master Z’s Encounters — The Game',
+  'title.intro':         'A void deck. A stairwell. A hotel corridor at 3 AM. Ordinary places on the wrong night, and in each one, something you have to decide how to answer.',
   'title.start':         'Start game',
-  'title.controlsDesktop': '<b>Desktop</b> · W A S D to walk, move the mouse to look, <b>E</b> to look at things',
-  'title.controlsPhone':   '<b>Phone</b> · left thumb walks, right thumb looks, <b>tap</b> things to look at them',
+  'title.controlsDesktop': '<b>Desktop</b> · W A S D to walk, move the mouse to look, <b>E</b> to interact with objects',
+  'title.controlsPhone':   '<b>Phone</b> · left thumb walks, right thumb looks, <b>tap</b> objects to interact with them',
   'title.credits':       'Credits',
 
   // --- credits panel -------------------------------------------------------
-  'credits.heading':     'Credits &amp; attributions',
-  'credits.intro':       'Work by other people used in this prototype, with thanks.',
+  'credits.heading':     'Credits &amp; Attributions',
+  'credits.intro':       'Creative works by other people used in this game, with thanks.',
   'credits.music':       'Music',
   'credits.musicWho':    'Leberch · Pixabay',
   'credits.hands':       'Hands',
@@ -40,6 +41,11 @@ Object.assign(window.__TEXT__, {
   'credits.ghostWho':    'Kuntilanak, Indonesian ghost · Sketchfab',
   'credits.block':       'HDB block',
   'credits.blockWho':    'HDB · Sketchfab',
+  'credits.musicLink':   'pixabay.com/users/leberch-42823964',
+  'credits.handsLink':   'fab.com/listings/5f77c468',
+  'credits.ghostLink':   'sketchfab.com · kuntilanak-indonesian-ghost',
+  'credits.blockLink':   'sketchfab.com · hdb',
+  'credits.footer':      'Everything else in the scene — the void deck, the burner, the offerings, the hell notes, the sky and the lighting — is generated in code.',
 
   // --- chapter card (between Start and the night) --------------------------
   'chapter.loading':     'Loading…',
@@ -48,10 +54,11 @@ Object.assign(window.__TEXT__, {
   'hud.sanity':          'Sanity',
   'hud.awareness':       'Awareness',
   'hud.wisdom':          'Wisdom',
-  'hud.ghostWarning':    'Ghost spotted! Sanity level is dropping until you take action.',
+  'hud.ghostAlarm':      'Ghost spotted!',
+  'hud.ghostWarning':    'Ghost spotted! Sanity level dropping until you take action.',
 
   // --- in the world --------------------------------------------------------
-  'world.burning':       'Something is burning ahead',
+  'world.burning':       'Something is burning ahead...',
   'world.interactKey':   'E',
   'world.interactKeyTouch': 'Tap',
   'world.interactText':  'Examine the pile of hell notes',
@@ -60,7 +67,7 @@ Object.assign(window.__TEXT__, {
   'world.hintPhone':     'Left thumb walks · right thumb looks',
   'world.hintMouseTouch': 'W A S D to walk · move the mouse to look · touch works too',
   'world.hintLocked':    'W A S D to walk · move the mouse to look',
-  'world.hintEdges':     'W A S D to walk · move the mouse to look · edges keep turning',
+  'world.hintEdges':     'W A S D to walk · move the mouse to look',
   'world.actHintTouch':  'tap the glowing pile',
   'world.actHintKey':    'E at the glowing pile',
   'world.actLineTouch':  'Tap the glowing pile of notes to look again',
@@ -76,19 +83,25 @@ Object.assign(window.__TEXT__, {
   // --- the outcome and the teaching ----------------------------------------
   'result.label':        'Outcome',
   'result.teachingLabel': 'Master Z’s teaching',
-  'result.next':         'Close the file',
+  'result.next':         'Continue',
 
   // --- the end of a run ----------------------------------------------------
   'complete.label':      'Case file complete',
   'complete.sealed':     'Sealed',
   'complete.coreLabel':  'Core lesson',
-  'complete.again':      'Walk it again',
+  'complete.again':      'Continue',
 
   // --- losing your nerve ---------------------------------------------------
-  'lost.label':          'Case file abandoned',
+  'lost.label':          'Case failed',
   'lost.sealed':         'Lost',
-  'lost.say':            'Your nerve went before your legs did. Somewhere behind you the drum is still burning, and you could not tell anyone what you saw.',
+  'lost.say':            'Your sanity has shattered. You\'ve seen what no mind was meant to endure.',
   'lost.teachingLabel':  'Master Z’s teaching',
-  'lost.teaching':       'Fear is not the danger. Standing in front of what frightens you, doing nothing, is the danger. Act, or step away — but do not freeze and call it caution.',
-  'lost.retry':          'Walk it again'
+  'lost.teaching':       'Fear is not the danger. Facing what terrifies you...and doing nothing—is.',
+  'lost.retry':          'Retry',
+
+  // --- spoken by screen readers, never seen on screen ----------------------
+  'a11y.soundButton':    'Sound on or off',
+  'a11y.volumeSlider':   'Game volume',
+  'a11y.closeButton':    'Close',
+  'a11y.creditsButton':  'Credits'
 });

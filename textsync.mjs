@@ -31,7 +31,8 @@ const NOTES = {
   'title.controlsPhone': 'Keeps <b>bold</b> formatting',
   'world.interactKey': 'Keycap shown on desktop — keep it short',
   'world.interactKeyTouch': 'Keycap shown on phones — keep it short',
-  'ch1.brief': 'The paragraph under the logo on the title screen',
+  'title.intro': 'The paragraph under the logo on the title screen',
+  'ch1.brief': 'One-line summary of this chapter (not shown on screen yet)',
   'ch1.cardTitle': 'Chapter card headline — <br> makes a line break',
   'ch1.prompt': 'The question above the four choices',
   'ch1.core': 'The lesson on the final Sealed card'

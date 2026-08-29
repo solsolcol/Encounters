@@ -59,6 +59,13 @@ backslashes, so `\<b\>` and `\&amp;` come back as real markup.
 **After changing text in code by hand**, re-export so the sheet does not go
 stale, and hand him the refreshed sheet or update it.
 
+## The guard
+
+`node runtests.mjs text` (harness `texttest.mjs`) fails if ANY visible text
+on any screen is not editable from the sheet, or if a key in the sheet no
+longer reaches anything. Run it after touching copy or markup — it is what
+keeps the promise "everything is in the sheet" true over time.
+
 ## Guarantees worth keeping
 
 - Round-trip is lossless: export → import leaves both source files

@@ -1667,6 +1667,15 @@ function applyText() {
   }
 }
 applyText();
+// the two strings that are attributes rather than element text
+(() => {
+  const key = $('ikey'); if (key && TEXT['world.interactKey'] !== undefined) key.textContent = T('world.interactKey');
+  const lg = $('logo'); if (lg && TEXT['title.logoAlt'] !== undefined) lg.setAttribute('aria-label', T('title.logoAlt'));
+  for (const [id, k] of [['mute', 'a11y.soundButton'], ['vol', 'a11y.volumeSlider'],
+                         ['credClose', 'a11y.closeButton'], ['creditsLink', 'a11y.creditsButton']]) {
+    const el = $(id); if (el && TEXT[k] !== undefined) el.setAttribute('aria-label', T(k));
+  }
+})();
 const ui = {
   title: $('title'), hud: $('hud'), prompt: $('prompt'), interact: $('interact'),
   decide: $('decide'), result: $('result'), complete: $('complete'),
@@ -2822,13 +2831,13 @@ $('againBtn').onclick = () => restart();
 /* The title screen speaks for the whole series, not for whichever chapter is
    loaded — so it has its own line. CH.brief stays as the chapter’s own
    framing, for wherever that ends up being used. */
-const INTRO = 'A void deck. A stairwell. A hotel corridor at 3 AM. Ordinary '
-            + 'places on the wrong night, and in each one, something you have '
-            + 'to decide how to answer.';
-$('brief').textContent = INTRO;
-$('qtext').textContent = CH.prompt;
+/* The paragraph under the logo describes the GAME, not this chapter, so it
+   is an engine string. (The chapter's own `brief` is its one-line summary,
+   kept for the chapter picker and for anyone reading the chapter file.)   */
+$('brief').innerHTML = T('title.intro');
+$('qtext').innerHTML = CH.prompt;
 // the black chapter card carries whatever chapter is registered
-if ($('chapLabel')) $('chapLabel').textContent = CH.cardLabel;
+if ($('chapLabel')) $('chapLabel').innerHTML = CH.cardLabel;
 if ($('chapTitle')) $('chapTitle').innerHTML = CH.cardTitle;
 const cWrap = $('choices');
 CH.choices.forEach((c, i) => {
@@ -2902,11 +2911,12 @@ function pick(i) {
   playCine(i, () => {
     for (const k in c.d) stats[k] += c.d[k];
     syncBars();
-    ui.say.textContent = c.say;
-    ui.teach.textContent = c.teach;
+    ui.say.innerHTML = c.say;
+    ui.teach.innerHTML = c.teach;
     ui.deltas.innerHTML = Object.entries(c.d).map(([k, v]) =>
       `<span class="${v >= 0 ? 'up' : 'dn'}"><svg class="sic" aria-hidden="true">` +
-      `<use href="#i-${k.slice(0, 3)}"/></svg>${k.toUpperCase()} ${v >= 0 ? '+' : ''}${v}</span>`).join('');
+      `<use href="#i-${k.slice(0, 3)}"/></svg>${(T('hud.' + k) || k).toUpperCase()} `
+      + `${v >= 0 ? '+' : ''}${v}</span>`).join('');
     ui.result.classList.remove('hide');
     state = 'result';
     // the card rises: its swish, the ending's music bed, and the James line
@@ -2994,7 +3004,7 @@ function finish() {
     : score >= 55 ? 'B' : score >= 40 ? 'C' : 'D';
   ui.rank.textContent = r;
   ui.pct.textContent = Math.round(score) + '%';
-  ui.core.textContent = CH.core;
+  ui.core.innerHTML = CH.core;
   ui.complete.classList.remove('hide');
   ui.hud.classList.add('hide');
   state = 'complete';
