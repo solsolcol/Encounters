@@ -23,7 +23,9 @@ const WHERE = {
   title: 'Title screen', credits: 'Credits panel', chapter: 'Chapter card',
   hud: 'HUD (always on screen)', world: 'In the world', cine: 'Cutscenes',
   decide: 'Decision panel', result: 'Outcome + teaching card',
-  complete: 'Finished the chapter', lost: 'Lost your nerve', ch1: 'CHAPTER 1 — the story itself'
+  complete: 'Finished the chapter', lost: 'Lost your nerve', ch1: 'CHAPTER 1 — the story itself',
+  inv: 'Equipment panel', slot: 'Equipment panel — slot names',
+  item: 'Equipment panel — the items'
 };
 const NOTES = {
   'title.headingPlain': 'Only shows if the logo image fails to load',

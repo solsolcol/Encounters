@@ -27,6 +27,7 @@ const ALL = [
   { name: 'restart',  file: 'restarttest.mjs', quick: true, why: 'both endings start a fresh run in place' },
   { name: 'hosted',   file: 'hostedtest.mjs', quick: true, why: 'the split-file build over real HTTP' },
   { name: 'text',     file: 'texttest.mjs',  quick: true,  why: 'every word on screen is editable from the sheet' },
+  { name: 'inv',      file: 'invtest.mjs',   quick: true,  why: 'equipment opens, moves and loses nothing, on both' },
   { name: 'title',    file: 'titletest.mjs', quick: false, why: 'logo, button, chapter card' },
   { name: 'final',    file: 'final.mjs',     quick: false, why: 'the whole walk, on a real phone and desktop' },
 ];

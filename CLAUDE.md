@@ -72,7 +72,7 @@ chapter 2**: the void-deck world builder and the four cutscene scripts
 
 ## Testing
 
-16 harnesses, listed in `runtests.mjs` with one-line purposes. All use
+17 harnesses, listed in `runtests.mjs` with one-line purposes. All use
 `testlib.mjs` (portable browser launch + repo-relative paths). On a real
 machine set `REAL_GPU=1` for much faster runs; in a GPU-less container
 SwiftShader runs ~1 fps — trust state polls, never stopwatches. Full

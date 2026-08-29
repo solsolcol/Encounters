@@ -40,10 +40,34 @@ const shell = readFileSync(join(DIR, 'shell.html'), 'utf8');
 const main = readFileSync(join(DIR, 'src', 'main.js'), 'utf8');
 const win = {}; new Function('window', readFileSync(join(DIR, 'src', 'strings.js'), 'utf8'))(win);
 const keys = Object.keys(win.__TEXT__);
-const dead = keys.filter(k => !shell.includes(`data-t="${k}"`) && !main.includes(`'${k}'`));
+
+/* Some key families are composed at runtime -- T('slot.' + key), T('item.' +
+   id + '.name') -- so the literal key never appears in the source and the
+   plain search below would call them dead. Rather than exempt them, check
+   them exactly: the engine's own tables say which ones can be built, so a
+   composed key is reachable if and only if its table has that entry. A
+   stale slot or an item that no longer exists still fails.               */
+const listOf = re => { const m = main.match(re); return m ? m[1] : ''; };
+const slots = [...listOf(/const GEAR_SLOTS = \[([^\]]*)\]/).matchAll(/'([^']+)'/g)].map(m => m[1]);
+const items = [...listOf(/const ITEM_DEFS = \{([\s\S]*?)\n\};/).matchAll(/^\s{2}(\w+):/gm)].map(m => m[1]);
+const composed = new Set();
+if (main.includes("T('slot.' + key")) slots.forEach(k => composed.add('slot.' + k));
+if (main.includes("T('item.' + id + '.name'")) items.forEach(k => composed.add('item.' + k + '.name'));
+if (main.includes("T('item.' + id + '.desc'")) items.forEach(k => composed.add('item.' + k + '.desc'));
+console.log('composed at runtime:', composed.size, '(' + slots.length + ' slots,',
+            items.length, 'items)');
+
+const dead = keys.filter(k => !shell.includes(`data-t="${k}"`) && !main.includes(`'${k}'`)
+                           && !composed.has(k));
+// and the reverse: a table entry the sheet has no words for would render its
+// own id on screen, which is never what anyone wants
+const wordless = [...composed].filter(k => !keys.includes(k));
 
 console.log('ui strings:', keys.length);
 console.log('untagged visible text:', untagged.length ? untagged : 'none');
 console.log('keys that reach nothing:', dead.length ? dead : 'none');
-if (untagged.length || dead.length) { console.log('errors: [text not fully editable]'); process.exitCode = 1; }
+console.log('slots or items with no words:', wordless.length ? wordless : 'none');
+if (untagged.length || dead.length || wordless.length) {
+  console.log('errors: [text not fully editable]'); process.exitCode = 1;
+}
 await b.close();

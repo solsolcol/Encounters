@@ -172,6 +172,35 @@ twice. When code in this repo looks odd, the reason is usually here.
   their styling behind. When something looks unused, find the commit that
   orphaned it — it explains the intent and confirms the finding.
 
+## Pointer lock owns the pointer, not just the cursor
+
+- While pointer lock is held, Chromium delivers pointer events to the
+  LOCKED element, whatever is on top. So a HUD button can be visible,
+  `pointer-events:auto`, on top in `elementsFromPoint`, with the right
+  bounding box — and still be untappable, because the canvas gets the
+  event. Playwright reports this as `<canvas id="scene"> intercepts
+  pointer events`, which reads like a z-index bug and is not one.
+- Only ask for the lock where there is a mouse to hide: `tryLock()` bails
+  unless `(hover: hover) and (pointer: fine)` matches. iOS Safari has no
+  pointer lock API at all, which is why the phone bug never showed on
+  Chad's iPhone — it was waiting on Android Chrome, and on any emulated
+  phone in the harness (desktop Chromium with touch emulation).
+- The corollary: on a locked desktop, NO round HUD button can be clicked.
+  That is why the equipment panel has a keyboard route (`I`) and the
+  button wears an "I" badge, and why the panel calls `exitPointerLock()`
+  on open and `tryLock()` on close. Any future in-play UI needs the same
+  pair, or it is decoration.
+
+## Testing a double tap on a software renderer
+
+- Two back-to-back `touchscreen.tap()` calls land ~900 ms apart under
+  SwiftShader — they queue behind ~1 fps frames — so they can never fall
+  inside a 330 ms double-tap window. Measured, not guessed: instrument a
+  capture-phase listener and print `performance.now()` gaps before
+  concluding the game is wrong. The fix is to dispatch the pair in one
+  task at the slot's real coordinates, through the same listeners; the
+  game's timing constant stays honest for real devices.
+
 ## Environments (Cowork vs Claude Code)
 
 - The Cowork cloud container had a fixed egress allowlist: it could call

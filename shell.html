@@ -78,6 +78,103 @@ body.finePtr #volWrap{display:flex}
 #volWrap:hover,#volWrap:focus-within{opacity:1;border-color:#3A414E}
 #vol{width:112px;height:18px;accent-color:var(--sodium);cursor:pointer;margin:0}
 
+/* the inventory button sits directly under the sound button, same size.
+   On a laptop it also wears the key that opens it; a phone just taps it. */
+.invBtn{top:calc(max(14px,env(safe-area-inset-top)) + 56px);display:none}
+body.inplay .invBtn{display:grid}
+body.cine .invBtn{display:none}   /* a scene owns the screen */
+.invBtn svg{fill:none;stroke:var(--bone);stroke-width:1.8}
+.invBtn svg path:first-child{fill:none}
+.invKey{display:none}
+body.finePtr .invKey{display:grid;place-items:center;position:absolute;
+  right:-3px;bottom:-3px;width:17px;height:17px;border-radius:5px;
+  background:var(--sodium);color:var(--void);font-family:var(--mono);
+  font-size:.62rem;font-weight:700;line-height:1}
+.invBtn{position:fixed}
+.invBtn.open{border-color:var(--sodium);background:rgba(22,26,34,.95)}
+
+/* ── inventory / equipment ──────────────────────────────────────────────
+   One interaction model for both hands and mice: press-and-drag moves an
+   item, a quick tap picks it up and the next tap places it, and a double
+   tap sends it to the obvious place. Everything a finger can do, a mouse
+   can do identically — nothing here needs hover.                        */
+/* while the panel is up it owns the screen: the floating round buttons would
+   otherwise sit on top of its own corner. This must come after the
+   `body.inplay .invBtn` rule above -- equal specificity, source order wins.
+   Esc, I, Close and a tap on the backdrop all still shut the panel. */
+body.invopen .soundBtn{display:none}
+#inv{align-items:center;justify-content:center;pointer-events:auto;padding:16px;
+  background:rgba(4,5,8,.86);backdrop-filter:blur(4px);z-index:8}
+#inv .invPanel{width:min(580px,100%);max-height:94vh;
+  display:flex;flex-direction:column;overflow:hidden;
+  background:linear-gradient(180deg,#12151C,#0C0F14);
+  border:1px solid #2E3542;border-top:2px solid var(--sodium);
+  box-shadow:0 24px 70px rgba(0,0,0,.7);padding:16px 18px 14px;
+  animation:fadeup .32s var(--ease)}
+.invHead{display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:16px;flex:0 0 auto}
+.invGrids{flex:1 1 auto;min-height:0;overflow-y:auto}
+.invInfo,.invHint{flex:0 0 auto}
+.invClose{background:none;border:1px solid var(--line);color:#9AA1B0;
+  font-family:var(--ui);font-size:.92rem;padding:7px 13px;cursor:pointer;
+  border-radius:4px}
+.invClose:hover,.invClose:focus-visible{color:var(--bone);border-color:var(--sodium);outline:none}
+.invGear{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;
+  justify-items:center;margin-bottom:4px}
+.invBag{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-top:8px;
+  justify-items:center}
+
+/* a slot: empty shows its ghost icon, filled shows the item */
+.slot{position:relative;aspect-ratio:1;width:100%;max-width:64px;
+  background:#0A0D12;border:1px solid #262D39;border-radius:6px;
+  display:grid;place-items:center;cursor:pointer;
+  transition:border-color .14s,background .14s,transform .1s}
+.slot:hover,.slot:focus-visible{border-color:#3D4657;outline:none}
+.slot.gear{border-color:#333B4A;background:#0C1016}
+.slot .ghost{width:52%;height:52%;color:#333B49}
+.slot .item{width:64%;height:64%;color:var(--sodium);
+  filter:drop-shadow(0 0 7px rgba(255,179,103,.35))}
+.slot.gear .item{color:var(--jade);filter:drop-shadow(0 0 7px rgba(99,214,200,.35))}
+.slot .lbl{position:absolute;bottom:3px;left:0;right:0;text-align:center;
+  font-family:var(--mono);font-size:.55rem;letter-spacing:.08em;
+  text-transform:uppercase;color:#4C5464;pointer-events:none}
+.slot.sel{border-color:var(--sodium);background:#1A1710;
+  box-shadow:0 0 0 1px var(--sodium) inset}
+.slot.ok{border-color:var(--jade);background:#0D1A19}     /* valid target */
+.slot.no{border-color:#3A2320;opacity:.55}                /* wrong slot */
+.slot.lifted .item{opacity:.25}
+
+/* the piece that follows the pointer while moving an item */
+#invDrag{position:fixed;z-index:12;width:58px;height:58px;pointer-events:none;
+  display:none;place-items:center;transform:translate(-50%,-50%);
+  background:rgba(12,16,22,.95);border:1px solid var(--sodium);border-radius:8px;
+  box-shadow:0 10px 26px rgba(0,0,0,.6)}
+#invDrag svg{width:62%;height:62%;color:var(--sodium)}
+#invDrag.on{display:grid}
+
+.invSub{font-family:var(--mono);font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:#5E6675;margin:12px 0 2px}
+.invInfo{margin-top:12px;padding-top:10px;border-top:1px solid var(--line);
+  min-height:56px}
+.invInfo h4{font-family:var(--ui);font-size:1.06rem;font-weight:600;
+  color:var(--bone);margin-bottom:4px}
+.invInfo p{font-size:.95rem;line-height:1.5;color:#8A91A0}
+.invHint{margin-top:10px;font-family:var(--mono);font-size:.62rem;
+  letter-spacing:.1em;color:#4C5464;text-align:center}
+
+/* The panel is the tallest thing the game ever shows. On a phone keep the
+   bag five across -- four rows instead of five -- and trim the chrome, so
+   the whole of it (info line and hint included) fits without scrolling. */
+@media (max-width:430px){
+  #inv{padding:10px}
+  #inv .invPanel{padding:13px 13px 11px}
+  .invHead{margin-bottom:9px}
+  .invBag{gap:6px} .invGear{gap:6px}
+  .slot{max-width:54px}          /* all four bag rows fit a 664px screen */
+  .invSub{margin:7px 0 2px}
+  .invInfo{min-height:44px;margin-top:8px;padding-top:8px}
+}
+
 /* ── shared type devices ────────────────────────────────────────────── */
 .stencil{display:block;font-family:var(--ui);font-size:1.02rem;
   letter-spacing:.1em;text-transform:uppercase;color:#9AA1B0;font-weight:600}
@@ -114,6 +211,9 @@ body.finePtr #volWrap{display:flex}
 #title .ctrl b{color:var(--bone);font-weight:600}
 
 /* ── credits ────────────────────────────────────────────────────────── */
+/* build number under the credits link — quiet, never competing */
+.ver{margin:10px auto 0;font-family:var(--mono);font-size:.72rem;
+  letter-spacing:.14em;color:#5A606D;text-align:center}
 .creditsLink{display:block;margin:26px auto 0;background:none;border:0;
   font-family:var(--ui);font-size:.98rem;letter-spacing:.06em;color:#767D8C;
   text-decoration:underline;text-underline-offset:4px;
@@ -401,6 +501,43 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
       fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
     <circle cx="12" cy="12" r="2.7" fill="currentColor"/>
   </symbol>
+  <symbol id="e-amulet" viewBox="0 0 24 24">
+    <path d="M7 3.5c1.6 2.4 3.4 4 5 5.2 1.6-1.2 3.4-2.8 5-5.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+    <path d="M12 8.7c-2.4 0-4.3 1.9-4.3 4.2S9.6 20.5 12 20.5s4.3-5.3 4.3-7.6S14.4 8.7 12 8.7Z" fill="none" stroke="currentColor" stroke-width="1.6"/>
+    <circle cx="12" cy="13.2" r="1.5" fill="currentColor"/>
+  </symbol>
+  <symbol id="e-beads" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="1.5 3.1"/>
+    <circle cx="12" cy="5" r="2" fill="currentColor"/>
+  </symbol>
+  <symbol id="e-talisman" viewBox="0 0 24 24">
+    <path d="M7.5 3h9l1.2 18-5.7-2.6L6.3 21Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M12 7v7M9.5 10.5h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="e-incense" viewBox="0 0 24 24">
+    <path d="M12 20V8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+    <circle cx="12" cy="6.6" r="1.5" fill="currentColor"/>
+    <path d="M9 20h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+    <path d="M12 5C10.6 3.6 13.4 2.8 12 1.4" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity=".75"/>
+  </symbol>
+  <symbol id="e-light" viewBox="0 0 24 24">
+    <rect x="8.5" y="3" width="7" height="18" rx="1.8" fill="none" stroke="currentColor" stroke-width="1.6"/>
+    <path d="M10.4 6.6h3.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    <circle cx="12" cy="16.5" r="1.6" fill="currentColor"/>
+  </symbol>
+  <symbol id="e-offering" viewBox="0 0 24 24">
+    <path d="M4 12.5h16c0 4-3.6 6.5-8 6.5s-8-2.5-8-6.5Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+    <circle cx="9.5" cy="9" r="2.2" fill="none" stroke="currentColor" stroke-width="1.4"/>
+    <circle cx="14.5" cy="9" r="2.2" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  </symbol>
+  <symbol id="e-keys" viewBox="0 0 24 24">
+    <circle cx="8" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="1.7"/>
+    <path d="M10.9 10.9 20 20M17 17l2-2M14.5 14.5l2-2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="e-note" viewBox="0 0 24 24">
+    <path d="M5 3.5h14v17l-3.5-2-3.5 2-3.5-2-3.5 2Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M8.5 8h7M8.5 11.5h7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+  </symbol>
   <symbol id="i-wis" viewBox="0 0 24 24">
     <path d="M12 4.6c-1.5 2-2.3 3.8-2.3 5.6 0 1.9 1 3.4 2.3 4.2 1.3-.8 2.3-2.3 2.3-4.2 0-1.8-.8-3.6-2.3-5.6Z"
       fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
@@ -420,6 +557,14 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
 </button>
 <div id="volWrap"><input id="vol" type="range" min="0" max="100" value="100"
   aria-label="Game volume"></div>
+<button id="invBtn" class="soundBtn invBtn" type="button" aria-label="Inventory">
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M4 8.5h16v11a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 19.5Z"/>
+    <path d="M8.5 8.5V6a3.5 3.5 0 0 1 7 0v2.5"/>
+    <path d="M4 12.5h16"/>
+  </svg>
+  <span class="invKey">I</span>
+</button>
 
 <canvas id="scene"></canvas>
 <div id="grade"></div>
@@ -468,6 +613,7 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
       </div>
     </div>
     <button id="creditsLink" class="creditsLink" type="button" data-t="title.credits">Credits</button>
+    <div id="ver" class="ver"></div>
   </div>
 </div>
 
@@ -608,6 +754,25 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
     <button id="retryBtn" data-t="lost.retry">Walk it again</button>
   </div>
 </div>
+
+<!-- inventory / equipment -->
+<div id="inv" class="layer hide">
+  <div class="invPanel">
+    <div class="invHead">
+      <span class="stencil" data-t="inv.title">Equipment</span>
+      <button id="invCloseBtn" class="invClose" type="button" data-t="inv.close">Close ✕</button>
+    </div>
+    <div class="invGrids">
+      <div class="invSub" data-t="inv.worn">Worn</div>
+      <div class="invGear" id="invGear"></div>
+      <div class="invSub" data-t="inv.carried">Carried</div>
+      <div class="invBag" id="invBag"></div>
+    </div>
+    <div class="invInfo" id="invInfo"></div>
+    <div class="invHint" id="invHint" data-t="inv.hintTouch">Tap an item, then tap where it goes · double-tap to equip</div>
+  </div>
+</div>
+<div id="invDrag" aria-hidden="true"></div>
 
 <div id="hint" class="hide"><span class="stencil" id="hintTxt" data-t="world.hintWalk">Walk toward the light</span></div>
 

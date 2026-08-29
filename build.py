@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, shutil, zipfile
 
-VERSION = '3.01'
+VERSION = '3.1'
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -54,6 +54,8 @@ assert '/*BUNDLE*/' in shell, 'placeholder missing from shell.html'
 for key in ASSETS:
     assert f'__{key.upper()}_B64__' in bundle, f'__{key.upper()}_B64__ missing from bundle'
 assert '__ASSET_MAP_B64__' in bundle, '__ASSET_MAP_B64__ missing from bundle'
+
+bundle = bundle.replace('__VERSION__', VERSION)   # the number shown under Credits
 
 guard = lambda js: js.replace('</script', '<\\/script')   # an inline </script> ends the tag early
 

@@ -77,6 +77,10 @@ function assetBytes(name, lowPriority) {       // -> Promise<ArrayBuffer>
 // touchscreen laptop gets phone-grade rendering for no reason.
 const HAS_TOUCH = matchMedia('(pointer: coarse)').matches || 'ontouchstart' in window;
 const IS_PHONE = HAS_TOUCH && Math.max(innerWidth, innerHeight) < 1100;
+// A real mouse or trackpad: hover + a fine pointer. A touchscreen laptop
+// matches (it has a trackpad); a phone or tablet does not. Two things hang
+// off it -- the volume slider, and whether pointer lock is worth asking for.
+const FINE_PTR = matchMedia('(hover: hover) and (pointer: fine)').matches;
 const LOW = IS_PHONE;
 
 /* ---------------------------------------------------------- procedural tex */
@@ -1512,6 +1516,12 @@ let lockBlocked = false;             // the page is not allowed to lock at all
 const lastMouse = { x: 0, y: 0 };
 
 function tryLock() {
+  // Pointer lock only makes sense where there is a mouse to hide. On a
+  // touch-primary device it wins nothing and costs everything: while the
+  // lock is held Chromium retargets pointer events to the locked element,
+  // so the canvas swallows taps meant for the HUD buttons. iOS Safari has
+  // no pointer lock at all -- which is why this only ever bit Android.
+  if (!FINE_PTR) return;
   if (lockBlocked || locked || state === 'title') return;
   try {
     const r = canvas.requestPointerLock?.();
@@ -1667,6 +1677,9 @@ function applyText() {
   }
 }
 applyText();
+// the build stamps its own number here — never edited by hand or by the sheet
+const BUILD_VERSION = '__VERSION__';
+{ const v = $('ver'); if (v) v.textContent = 'v' + BUILD_VERSION; }
 // the two strings that are attributes rather than element text
 (() => {
   const key = $('ikey'); if (key && TEXT['world.interactKey'] !== undefined) key.textContent = T('world.interactKey');
@@ -1838,7 +1851,6 @@ muteBtn?.addEventListener('click', () => setMuted(!muted));
    than anything we could draw, so touch devices keep just the mute button.
    (hover+fine matches a touchscreen laptop too, which is correct: it has
    a trackpad.) */
-const FINE_PTR = matchMedia('(hover: hover) and (pointer: fine)').matches;
 if (FINE_PTR) document.body.classList.add('finePtr');
 const volEl = $('vol');
 if (volEl) {
@@ -2183,6 +2195,265 @@ function updatePulse(dt) {
   const headY = Math.min(H - 1, Math.max(1, mid - ecgTrail[(ecgX - 1 + W) % W] * span));
   ecgCtx.fillRect(W - 2 * dpr, headY - dpr, 2 * dpr, 2 * dpr);
 }
+
+/* ================================================================== INVENTORY
+   Equipment and what you are carrying, in one panel.
+
+   THE INPUT PROBLEM. In play the mouse is captured for looking, so a normal
+   click cannot reach a UI element at all. Opening the inventory therefore
+   releases the pointer and parks the game in its own state — the same move
+   the decision panel already makes, so movement, the drain and the ghost all
+   freeze while you are in here, and the pointer is recaptured on the way out.
+
+   ONE MODEL FOR BOTH HANDS AND MICE. Every gesture below works identically
+   with a finger and with a mouse, so nothing is second-class on either:
+     · press and drag       — the item follows and drops where you release
+     · tap, then tap        — the item lifts, the next tap places it
+     · double tap/click     — send it to the obvious place (equip, or bag)
+     · arrows + Enter       — the same moves from the keyboard
+   Pointer events give us all of it once, rather than a mouse path and a
+   touch path that drift apart.                                             */
+
+const GEAR_SLOTS = ['amulet', 'beads', 'talisman', 'incense', 'light', 'offering'];
+const BAG_SIZE = 20;
+
+// what an item is: an id, the words (from the sheet), an icon, and the one
+// equipment slot it fits — null means it can only be carried
+const ITEM_DEFS = {
+  phone: { icon: 'e-light', slot: 'light' },
+  keys:  { icon: 'e-keys', slot: null },
+  beads: { icon: 'e-beads', slot: 'beads' },
+  note:  { icon: 'e-note', slot: null }
+};
+const itemName = id => T('item.' + id + '.name', id);
+const itemDesc = id => T('item.' + id + '.desc', '');
+
+const inv = {
+  gear: Object.fromEntries(GEAR_SLOTS.map(k => [k, null])),
+  bag: new Array(BAG_SIZE).fill(null),
+  held: null,          // { id, from } while an item is lifted or dragging
+  sel: null,           // the slot the keyboard is on
+  open: false
+};
+inv.gear.beads = 'beads';
+inv.bag[0] = 'phone';
+inv.bag[1] = 'keys';
+
+/* the game gives items out; chapters and scenes call these */
+function invAdd(id) {
+  if (!ITEM_DEFS[id]) return false;
+  const i = inv.bag.indexOf(null);
+  if (i < 0) return false;
+  inv.bag[i] = id; if (inv.open) invPaint();
+  return true;
+}
+function invHas(id) { return inv.bag.includes(id) || Object.values(inv.gear).includes(id); }
+function invRemove(id) {
+  const i = inv.bag.indexOf(id);
+  if (i >= 0) { inv.bag[i] = null; if (inv.open) invPaint(); return true; }
+  for (const k of GEAR_SLOTS) if (inv.gear[k] === id) { inv.gear[k] = null; if (inv.open) invPaint(); return true; }
+  return false;
+}
+
+const invEl = () => $('inv');
+const dragEl = () => $('invDrag');
+const iconSvg = (icon, cls) =>
+  `<svg class="${cls}" aria-hidden="true"><use href="#${icon}"/></svg>`;
+
+function slotHTML(kind, key, id) {
+  const def = id ? ITEM_DEFS[id] : null;
+  const inner = def ? iconSvg(def.icon, 'item')
+    : kind === 'gear' ? iconSvg('e-' + (key === 'light' ? 'light' : key), 'ghost') : '';
+  const label = kind === 'gear' ? `<span class="lbl">${T('slot.' + key, key)}</span>` : '';
+  return `<button class="slot ${kind === 'gear' ? 'gear' : ''}" type="button"
+      data-kind="${kind}" data-key="${key}"
+      aria-label="${def ? itemName(id) : T('slot.' + key, 'empty')}">${inner}${label}</button>`;
+}
+
+function invPaint() {
+  const gear = $('invGear'), bag = $('invBag');
+  if (!gear || !bag) return;
+  gear.innerHTML = GEAR_SLOTS.map(k => slotHTML('gear', k, inv.gear[k])).join('');
+  bag.innerHTML = inv.bag.map((id, i) => slotHTML('bag', String(i), id)).join('');
+  // mark what is lifted, and which slots would accept it
+  for (const el of invEl().querySelectorAll('.slot')) {
+    const kind = el.dataset.kind, key = el.dataset.key;
+    const here = kind === 'gear' ? inv.gear[key] : inv.bag[+key];
+    if (inv.held && inv.held.from.kind === kind && inv.held.from.key === key) el.classList.add('lifted');
+    if (inv.held) {
+      const def = ITEM_DEFS[inv.held.id];
+      el.classList.add(kind === 'gear' ? (def.slot === key ? 'ok' : 'no') : 'ok');
+    }
+    if (inv.sel && inv.sel.kind === kind && inv.sel.key === key) el.classList.add('sel');
+    if (here) el.dataset.item = here;
+  }
+  invInfoPaint();
+}
+
+function invInfoPaint(id) {
+  const box = $('invInfo'); if (!box) return;
+  const showing = id || inv.held?.id ||
+    (inv.sel && (inv.sel.kind === 'gear' ? inv.gear[inv.sel.key] : inv.bag[+inv.sel.key]));
+  box.innerHTML = showing
+    ? `<h4>${itemName(showing)}</h4><p>${itemDesc(showing)}</p>`
+    : `<h4>${T('inv.empty')}</h4><p>${T('inv.emptyDesc')}</p>`;
+}
+
+const slotGet = (kind, key) => kind === 'gear' ? inv.gear[key] : inv.bag[+key];
+const slotSet = (kind, key, v) => { if (kind === 'gear') inv.gear[key] = v; else inv.bag[+key] = v; };
+const fits = (id, kind, key) => kind === 'bag' || ITEM_DEFS[id]?.slot === key;
+
+function invLift(kind, key) {
+  const id = slotGet(kind, key);
+  if (!id) return;
+  inv.held = { id, from: { kind, key } };
+  const d = dragEl();
+  d.innerHTML = iconSvg(ITEM_DEFS[id].icon, '');
+  d.classList.add('on');
+  invPaint();
+}
+function invDropAt(kind, key) {
+  if (!inv.held) return;
+  const { id, from } = inv.held;
+  if (!fits(id, kind, key)) { invCancel(); return; }     // wrong slot: put it back
+  const other = slotGet(kind, key);
+  slotSet(from.kind, from.key, other);                   // swap, never destroy
+  slotSet(kind, key, id);
+  invCancel(true);
+  snd('uiconfirm', 0.45);
+}
+function invCancel(keepInfo) {
+  inv.held = null;
+  dragEl().classList.remove('on');
+  invPaint();
+  if (!keepInfo) invInfoPaint();
+}
+/* double tap: equip it if it fits somewhere, otherwise send it back to the bag */
+function invQuickMove(kind, key) {
+  const id = slotGet(kind, key); if (!id) return;
+  if (kind === 'bag') {
+    const target = ITEM_DEFS[id].slot;
+    if (!target) return;
+    const swap = inv.gear[target];
+    inv.gear[target] = id; inv.bag[+key] = swap;
+  } else {
+    const free = inv.bag.indexOf(null);
+    if (free < 0) return;
+    inv.bag[free] = id; inv.gear[key] = null;
+  }
+  inv.held = null; dragEl().classList.remove('on');
+  invPaint(); snd('uiconfirm', 0.45);
+}
+
+/* pointer handling — one path for mouse and touch */
+let ptr = null;
+function invPointerDown(e) {
+  const el = e.target.closest?.('.slot'); if (!el) return;
+  const kind = el.dataset.kind, key = el.dataset.key;
+  ptr = { kind, key, x: e.clientX, y: e.clientY, moved: false, hadHeld: !!inv.held };
+  if (!inv.held && slotGet(kind, key)) invInfoPaint(slotGet(kind, key));
+  inv.sel = { kind, key };
+}
+function invPointerMove(e) {
+  if (inv.held) {                      // the ghost follows finger or cursor
+    const d = dragEl();
+    d.style.left = e.clientX + 'px';
+    d.style.top = (e.clientY - (HAS_TOUCH ? 46 : 0)) + 'px';
+  }
+  if (!ptr || ptr.moved) return;
+  if (Math.hypot(e.clientX - ptr.x, e.clientY - ptr.y) > 7) {
+    ptr.moved = true;
+    if (!inv.held && slotGet(ptr.kind, ptr.key)) {   // a drag begins
+      invLift(ptr.kind, ptr.key);
+      invPointerMove(e);
+    }
+  }
+}
+function invPointerUp(e) {
+  if (!ptr) return;
+  const el = document.elementFromPoint(e.clientX, e.clientY)?.closest?.('.slot');
+  const p = ptr; ptr = null;
+  if (p.moved) {                                   // dragged: drop where released
+    if (inv.held) { if (el) invDropAt(el.dataset.kind, el.dataset.key); else invCancel(); }
+    return;
+  }
+  // a tap: pick up, or place what is already lifted
+  if (inv.held) {
+    if (p.hadHeld) invDropAt(p.kind, p.key);
+    return;
+  }
+  if (slotGet(p.kind, p.key)) { invLift(p.kind, p.key); invPointerMove(e); }
+}
+
+function invOpen() {
+  if (inv.open || state === 'cine' || state === 'title') return;
+  inv.open = true;
+  invEl().classList.remove('hide');
+  document.body.classList.add('invopen');   // the round buttons step aside
+  $('invBtn')?.classList.add('open');
+  $('invHint').textContent = HAS_TOUCH ? T('inv.hintTouch') : T('inv.hintDesktop');
+  statePrev = state;
+  state = 'inventory';                 // freezes movement, drain and the ghost
+  document.exitPointerLock?.();
+  inv.sel = null; invCancel();
+  snd('uiclick', 0.5);
+}
+function invClose() {
+  if (!inv.open) return;
+  inv.open = false;
+  invCancel();
+  invEl().classList.add('hide');
+  document.body.classList.remove('invopen');
+  $('invBtn')?.classList.remove('open');
+  state = statePrev === 'inventory' ? 'play' : (statePrev || 'play');
+  snd('uiclick', 0.5);
+  if (state === 'play') tryLock();     // hand the mouse back to looking
+}
+let statePrev = 'play';
+const invToggle = () => (inv.open ? invClose() : invOpen());
+
+$('invBtn')?.addEventListener('click', invToggle);
+$('invCloseBtn')?.addEventListener('click', invClose);
+invEl()?.addEventListener('click', e => { if (e.target === invEl()) invClose(); });
+invEl()?.addEventListener('pointerdown', invPointerDown);
+addEventListener('pointermove', invPointerMove);
+addEventListener('pointerup', invPointerUp);
+invEl()?.addEventListener('dblclick', e => {
+  const el = e.target.closest?.('.slot'); if (el) invQuickMove(el.dataset.kind, el.dataset.key);
+});
+// double tap on a phone, where dblclick is unreliable
+let lastTap = 0, lastTapKey = '';
+invEl()?.addEventListener('pointerup', e => {
+  const el = e.target.closest?.('.slot'); if (!el) return;
+  const k = el.dataset.kind + el.dataset.key, now = performance.now();
+  if (k === lastTapKey && now - lastTap < 330) { invQuickMove(el.dataset.kind, el.dataset.key); lastTap = 0; }
+  else { lastTap = now; lastTapKey = k; }
+});
+
+/* the keyboard: arrows walk the slots, Enter picks up and places */
+addEventListener('keydown', e => {
+  if (e.code === 'KeyI' && (state === 'play' || state === 'inventory')) {
+    e.preventDefault(); invToggle(); return;
+  }
+  if (!inv.open) return;
+  if (e.code === 'Escape') { e.preventDefault(); inv.held ? invCancel() : invClose(); return; }
+  const slots = [...invEl().querySelectorAll('.slot')];
+  if (!slots.length) return;
+  let i = slots.findIndex(el => el.dataset.kind === inv.sel?.kind && el.dataset.key === inv.sel?.key);
+  const bagStart = GEAR_SLOTS.length, cols = 5;
+  if (e.code === 'Enter' || e.code === 'Space') {
+    e.preventDefault();
+    if (inv.sel) inv.held ? invDropAt(inv.sel.kind, inv.sel.key) : invLift(inv.sel.kind, inv.sel.key);
+    return;
+  }
+  const step = { ArrowLeft: -1, ArrowRight: 1,
+                 ArrowUp: i >= bagStart ? -cols : -3, ArrowDown: i >= bagStart ? cols : 3 }[e.code];
+  if (step === undefined) return;
+  e.preventDefault();
+  if (i < 0) i = 0; else i = Math.max(0, Math.min(slots.length - 1, i + step));
+  inv.sel = { kind: slots[i].dataset.kind, key: slots[i].dataset.key };
+  invPaint();
+});
 
 /* ------------------------------------------------------------ credits --- */
 const creditsLayer = $('credits');
@@ -2818,6 +3089,7 @@ $('startBtn').onclick = () => {
     ui.hud.classList.remove('hide');
     hint.classList.remove('hide');
     setTimeout(() => hint.classList.add('hide'), 7000);
+    document.body.classList.add('inplay');   // the inventory button belongs to play
     state = 'play';
     setHint();
     queueVoice();                  // his own voice, three seconds in
@@ -3290,6 +3562,9 @@ window.__enc = { yaw, stats, blockers: BLOCKERS, getState: () => state,
                  ghost, updateGhost, ghostInView, getReveal: () => reveal,
                  dismissDecision, ghostDrainRate, lose, setMuted, showCredits,
                  snd, say, loopVol, sting, updateAudioFrame, pulseSpike,
+                 invOpen, invClose, invToggle, invAdd, invHas, invRemove,
+                 inv: () => ({ gear: { ...inv.gear }, bag: [...inv.bag],
+                               held: inv.held?.id || null, open: inv.open }),
                  pulse: () => ({ bpm: Math.round(curBpm),
                                  stress: +pulseStress().toFixed(2),
                                  spike: +spikeLevel.toFixed(2),

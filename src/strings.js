@@ -55,7 +55,7 @@ Object.assign(window.__TEXT__, {
   'hud.awareness':       'Awareness',
   'hud.wisdom':          'Wisdom',
   'hud.ghostAlarm':      'Ghost spotted!',
-  'hud.ghostWarning':    'Ghost spotted! Sanity level dropping until you take action.',
+  'hud.ghostWarning':    'Sanity level dropping until you take action.',
 
   // --- in the world --------------------------------------------------------
   'world.burning':       'Something is burning ahead...',
@@ -98,6 +98,30 @@ Object.assign(window.__TEXT__, {
   'lost.teachingLabel':  'Master Z’s teaching',
   'lost.teaching':       'Fear is not the danger. Facing what terrifies you...and doing nothing—is.',
   'lost.retry':          'Retry',
+
+  // --- inventory / equipment -----------------------------------------------
+  'inv.title':           'Equipment',
+  'inv.close':           'Close ✕',
+  'inv.worn':            'Worn',
+  'inv.carried':         'Carried',
+  'inv.empty':           'Nothing selected',
+  'inv.emptyDesc':       'Tap an item to look at it.',
+  'inv.hintTouch':       'Tap an item, then tap where it goes · double-tap to equip',
+  'inv.hintDesktop':     'Drag an item, or click it and click where it goes · double-click to equip · I or Esc closes',
+  'slot.amulet':         'Amulet',
+  'slot.beads':          'Beads',
+  'slot.talisman':       'Talisman',
+  'slot.incense':        'Incense',
+  'slot.light':          'Light',
+  'slot.offering':       'Offering',
+  'item.phone.name':     'Phone',
+  'item.phone.desc':     'Two percent battery and a torch that works. Enough to see your feet, not enough to see far.',
+  'item.keys.name':      'House Keys',
+  'item.keys.desc':      'Home is four floors up. They have never felt this far away.',
+  'item.beads.name':     'Prayer Beads',
+  'item.beads.desc':     'Your grandmother pressed these into your hand years ago. You have never taken them seriously, and never taken them off.',
+  'item.note.name':      'Hell Note',
+  'item.note.desc':      'Burned for someone else. It should not be in your pocket.',
 
   // --- spoken by screen readers, never seen on screen ----------------------
   'a11y.soundButton':    'Sound on or off',

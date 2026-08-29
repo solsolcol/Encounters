@@ -24,7 +24,7 @@ file.
 
 | File | Holds |
 |---|---|
-| `src/strings.js` | every UI word the ENGINE says (52) |
+| `src/strings.js` | every UI word the ENGINE says (85) |
 | `src/chapters/ch1.js` | the CHAPTER's own words (18): brief, prompt, choices, teachings |
 
 Both are hand-written and stay readable — the sync tool edits values in
