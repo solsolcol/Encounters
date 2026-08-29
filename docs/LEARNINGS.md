@@ -154,6 +154,24 @@ twice. When code in this repo looks odd, the reason is usually here.
 - `window.__enc` is the debug surface — extend it rather than poking
   internals from harnesses.
 
+## Removing "dead" code safely
+
+- Orphaned CSS hides in TWO places: the base rule and its responsive
+  overrides inside `@media` blocks. Removing only the base rule looks
+  complete and is not — v3.0 shipped with `.mark`/`.sub`/`.disclaimer`
+  still referenced in two media queries after the base rules were gone.
+  Grep for the bare class name, not the rule.
+- The proof that a removal is safe is not "grep found nothing", it is
+  "every element's computed style is identical before and after".
+  `dbgcmp`-style comparison (reveal every screen, freeze animations,
+  diff getComputedStyle across all elements at desktop/640/phone widths)
+  is cheap and settles it. Freeze animations first or running keyframes
+  make opacity differ in the 4th decimal and read as false differences.
+- The title screen's dead rules were orphaned by commit 33f323a, which
+  removed the prototype badge, subtitle and disclaimer ELEMENTS and left
+  their styling behind. When something looks unused, find the commit that
+  orphaned it — it explains the intent and confirms the finding.
+
 ## Environments (Cowork vs Claude Code)
 
 - The Cowork cloud container had a fixed egress allowlist: it could call
