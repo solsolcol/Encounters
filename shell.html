@@ -85,11 +85,20 @@ body.inplay .invBtn{display:grid}
 body.cine .invBtn{display:none}   /* a scene owns the screen */
 .invBtn svg{fill:none;stroke:var(--bone);stroke-width:1.8}
 .invBtn svg path:first-child{fill:none}
-.invKey{display:none}
-body.finePtr .invKey{display:grid;place-items:center;position:absolute;
-  right:-3px;bottom:-3px;width:17px;height:17px;border-radius:5px;
-  background:var(--sodium);color:var(--void);font-family:var(--mono);
-  font-size:.62rem;font-weight:700;line-height:1}
+/* the label rides inside the button, hanging off its left edge, so the
+   words are part of the click target. A phone needs no words: there the
+   button is simply tapped, and the label stays hidden. */
+.invLabel{display:none}
+body.finePtr .invLabel{display:flex;align-items:center;gap:7px;
+  position:absolute;right:calc(100% + 10px);top:50%;transform:translateY(-50%);
+  padding:7px 11px;border-radius:7px;white-space:nowrap;
+  background:rgba(7,8,11,.72);border:1px solid var(--line);
+  font-family:var(--ui);font-size:.86rem;font-weight:600;
+  letter-spacing:.04em;color:var(--bone)}
+.invLabel kbd{display:grid;place-items:center;min-width:20px;height:20px;
+  padding:0 4px;border-radius:5px;background:var(--sodium);color:var(--void);
+  font-family:var(--mono);font-size:.72rem;font-weight:700;line-height:1}
+.invBtn:hover .invLabel,.invBtn:focus-visible .invLabel{border-color:var(--sodium)}
 .invBtn{position:fixed}
 .invBtn.open{border-color:var(--sodium);background:rgba(22,26,34,.95)}
 
@@ -119,10 +128,28 @@ body.invopen .soundBtn{display:none}
   font-family:var(--ui);font-size:.92rem;padding:7px 13px;cursor:pointer;
   border-radius:4px}
 .invClose:hover,.invClose:focus-visible{color:var(--bone);border-color:var(--sodium);outline:none}
-.invGear{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;
-  justify-items:center;margin-bottom:4px}
+/* the figure: slots sit ON the body, Diablo style. The silhouette is a
+   backdrop drawing; each slot is pinned to the anatomy it dresses. He
+   faces the player, so his RIGHT hand is the viewer's left. */
+.invGear{position:relative;height:264px;margin-bottom:6px}
+.invGear .doll{position:absolute;left:50%;top:0;height:100%;
+  transform:translateX(-50%);color:#404E68;pointer-events:none;
+  filter:drop-shadow(0 0 14px rgba(99,214,200,.10))}
+.invGear .slot{position:absolute;width:56px;max-width:none;
+  background:rgba(10,13,18,.66)}   /* translucent: the body reads through */
+.invGear .slot[data-key="head"]{left:50%;top:2px;transform:translateX(-50%)}
+.invGear .slot[data-key="neck"]{left:50%;top:72px;transform:translateX(-50%)}
+.invGear .slot[data-key="body"]{left:50%;top:142px;transform:translateX(-50%)}
+.invGear .slot[data-key="rightHand"]{left:calc(50% - 148px);top:84px}
+.invGear .slot[data-key="leftHand"]{left:calc(50% + 92px);top:84px}
+/* a hairline ties each hand slot to the hand it dresses */
+.invGear .slot[data-key="rightHand"]::after,
+.invGear .slot[data-key="leftHand"]::after{content:"";position:absolute;
+  top:50%;width:30px;border-top:1px dashed #333D4F}
+.invGear .slot[data-key="rightHand"]::after{left:100%}
+.invGear .slot[data-key="leftHand"]::after{right:100%}
 .invBag{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-top:8px;
-  justify-items:center}
+  justify-items:center}   /* 15 slots: three rows of five */
 
 /* a slot: empty shows its ghost icon, filled shows the item */
 .slot{position:relative;aspect-ratio:1;width:100%;max-width:64px;
@@ -172,6 +199,14 @@ body.invopen .soundBtn{display:none}
   .invBag{gap:6px} .invGear{gap:6px}
   .slot{max-width:54px}          /* all four bag rows fit a 664px screen */
   .invSub{margin:7px 0 2px}
+  .invGear{height:224px}
+  .invGear .slot{width:52px}
+  .invGear .slot[data-key="neck"]{top:62px}
+  .invGear .slot[data-key="body"]{top:122px}
+  .invGear .slot[data-key="rightHand"]{left:calc(50% - 122px);top:72px}
+  .invGear .slot[data-key="leftHand"]{left:calc(50% + 70px);top:72px}
+  .invGear .slot[data-key="rightHand"]::after,
+  .invGear .slot[data-key="leftHand"]::after{width:20px}
   .invInfo{min-height:44px;margin-top:8px;padding-top:8px}
 }
 
@@ -510,25 +545,30 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
     <circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="1.5 3.1"/>
     <circle cx="12" cy="5" r="2" fill="currentColor"/>
   </symbol>
-  <symbol id="e-talisman" viewBox="0 0 24 24">
-    <path d="M7.5 3h9l1.2 18-5.7-2.6L6.3 21Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
-    <path d="M12 7v7M9.5 10.5h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-  </symbol>
-  <symbol id="e-incense" viewBox="0 0 24 24">
-    <path d="M12 20V8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-    <circle cx="12" cy="6.6" r="1.5" fill="currentColor"/>
-    <path d="M9 20h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
-    <path d="M12 5C10.6 3.6 13.4 2.8 12 1.4" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity=".75"/>
-  </symbol>
   <symbol id="e-light" viewBox="0 0 24 24">
     <rect x="8.5" y="3" width="7" height="18" rx="1.8" fill="none" stroke="currentColor" stroke-width="1.6"/>
     <path d="M10.4 6.6h3.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
     <circle cx="12" cy="16.5" r="1.6" fill="currentColor"/>
   </symbol>
-  <symbol id="e-offering" viewBox="0 0 24 24">
-    <path d="M4 12.5h16c0 4-3.6 6.5-8 6.5s-8-2.5-8-6.5Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
-    <circle cx="9.5" cy="9" r="2.2" fill="none" stroke="currentColor" stroke-width="1.4"/>
-    <circle cx="14.5" cy="9" r="2.2" fill="none" stroke="currentColor" stroke-width="1.4"/>
+  <symbol id="doll" viewBox="0 0 200 260">
+    <circle cx="100" cy="26" r="17" fill="currentColor"/>
+    <path d="M100 46c-15 0-26 5-32 14L34 106c-5 7 4 16 10 10l30-30-3 34-8 128c0 7 10 8 11 1l22-96 22 96c1 7 11 6 11-1l-8-128-3-34 30 30c6 6 15-3 10-10l-34-46c-6-9-17-14-32-14Z"
+      fill="currentColor" stroke="none"/>
+  </symbol>
+  <symbol id="e-eye" viewBox="0 0 24 24">
+    <path d="M3.4 13S6.8 7.8 12 7.8 20.6 13 20.6 13 17.2 18.2 12 18.2 3.4 13 3.4 13Z"
+      fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+    <circle cx="12" cy="13" r="2.3" fill="none" stroke="currentColor" stroke-width="1.4"/>
+    <path d="M12 7.8V4.6M8.6 8.6 7.2 6.4M15.4 8.6l1.4-2.2" stroke="currentColor"
+      stroke-width="1.3" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="e-yant" viewBox="0 0 24 24">
+    <path d="M12 3.6 5 17.4h14Z" fill="none" stroke="currentColor" stroke-width="1.5"
+      stroke-linejoin="round"/>
+    <path d="M12 8.2l-3.4 6.6h6.8Z" fill="none" stroke="currentColor" stroke-width="1.2"
+      stroke-linejoin="round"/>
+    <path d="M9 20.4c1 .9 2 .9 3 0s2-.9 3 0" fill="none" stroke="currentColor"
+      stroke-width="1.3" stroke-linecap="round"/>
   </symbol>
   <symbol id="e-keys" viewBox="0 0 24 24">
     <circle cx="8" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="1.7"/>
@@ -563,7 +603,7 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
     <path d="M8.5 8.5V6a3.5 3.5 0 0 1 7 0v2.5"/>
     <path d="M4 12.5h16"/>
   </svg>
-  <span class="invKey">I</span>
+  <span class="invLabel"><span data-t="inv.button">Inventory</span><kbd data-t="inv.buttonKey">I</kbd></span>
 </button>
 
 <canvas id="scene"></canvas>

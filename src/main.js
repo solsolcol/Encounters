@@ -1902,7 +1902,7 @@ addEventListener('pointerdown', resumeAudio, { passive: true });
    AudioContext as everything else and obeys the same rules: nothing before a
    gesture, nothing while muted. The three seconds are real time, not frame
    time, so a stalling phone still hears it at the right moment.            */
-const VOICE_DELAY_MS = 3000;
+const VOICE_DELAY_MS = 2000;   // Chad timed it: two seconds after the world fades in
 let voiceBuf = null, voiceSrc = null, voiceTimer = 0;
 let voiceDecoding = false, voicePlayed = false;
 
@@ -2214,15 +2214,22 @@ function updatePulse(dt) {
    Pointer events give us all of it once, rather than a mouse path and a
    touch path that drift apart.                                             */
 
-const GEAR_SLOTS = ['amulet', 'beads', 'talisman', 'incense', 'light', 'offering'];
-const BAG_SIZE = 20;
+/* The worn slots are the body itself, Diablo style: each one is a place on
+   the figure drawn behind them. head takes the divine eyes, neck the
+   amulet, body the sak yant, the RIGHT hand the chanting beads, the LEFT
+   hand the torch or phone. (The figure faces the player, so his right
+   hand sits on the viewer's left.) */
+const GEAR_SLOTS = ['head', 'neck', 'body', 'rightHand', 'leftHand'];
+const SLOT_ICON = { head: 'e-eye', neck: 'e-amulet', body: 'e-yant',
+                    rightHand: 'e-beads', leftHand: 'e-light' };
+const BAG_SIZE = 15;
 
 // what an item is: an id, the words (from the sheet), an icon, and the one
 // equipment slot it fits — null means it can only be carried
 const ITEM_DEFS = {
-  phone: { icon: 'e-light', slot: 'light' },
+  phone: { icon: 'e-light', slot: 'leftHand' },
   keys:  { icon: 'e-keys', slot: null },
-  beads: { icon: 'e-beads', slot: 'beads' },
+  beads: { icon: 'e-beads', slot: 'rightHand' },
   note:  { icon: 'e-note', slot: null }
 };
 const itemName = id => T('item.' + id + '.name', id);
@@ -2235,7 +2242,7 @@ const inv = {
   sel: null,           // the slot the keyboard is on
   open: false
 };
-inv.gear.beads = 'beads';
+inv.gear.rightHand = 'beads';
 inv.bag[0] = 'phone';
 inv.bag[1] = 'keys';
 
@@ -2263,7 +2270,7 @@ const iconSvg = (icon, cls) =>
 function slotHTML(kind, key, id) {
   const def = id ? ITEM_DEFS[id] : null;
   const inner = def ? iconSvg(def.icon, 'item')
-    : kind === 'gear' ? iconSvg('e-' + (key === 'light' ? 'light' : key), 'ghost') : '';
+    : kind === 'gear' ? iconSvg(SLOT_ICON[key], 'ghost') : '';
   const label = kind === 'gear' ? `<span class="lbl">${T('slot.' + key, key)}</span>` : '';
   return `<button class="slot ${kind === 'gear' ? 'gear' : ''}" type="button"
       data-kind="${kind}" data-key="${key}"
@@ -2273,7 +2280,8 @@ function slotHTML(kind, key, id) {
 function invPaint() {
   const gear = $('invGear'), bag = $('invBag');
   if (!gear || !bag) return;
-  gear.innerHTML = GEAR_SLOTS.map(k => slotHTML('gear', k, inv.gear[k])).join('');
+  gear.innerHTML = '<svg class="doll" viewBox="0 0 120 260" aria-hidden="true"><use href="#doll"/></svg>'
+    + GEAR_SLOTS.map(k => slotHTML('gear', k, inv.gear[k])).join('');
   bag.innerHTML = inv.bag.map((id, i) => slotHTML('bag', String(i), id)).join('');
   // mark what is lifted, and which slots would accept it
   for (const el of invEl().querySelectorAll('.slot')) {

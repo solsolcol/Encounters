@@ -101,6 +101,8 @@ Object.assign(window.__TEXT__, {
   'lost.retry':          'Retry',
 
   // --- inventory / equipment -----------------------------------------------
+  'inv.button':          'Inventory',
+  'inv.buttonKey':       'I',
   'inv.title':           'Equipment',
   'inv.close':           'Close ✕',
   'inv.worn':            'Worn',
@@ -109,12 +111,12 @@ Object.assign(window.__TEXT__, {
   'inv.emptyDesc':       'Tap an item to look at it.',
   'inv.hintTouch':       'Tap an item, then tap where it goes · double-tap to equip',
   'inv.hintDesktop':     'Drag an item, or click it and click where it goes · double-click to equip · I or Esc closes',
-  'slot.amulet':         'Amulet',
-  'slot.beads':          'Beads',
-  'slot.talisman':       'Talisman',
-  'slot.incense':        'Incense',
-  'slot.light':          'Light',
-  'slot.offering':       'Offering',
+  // slot labels name what the place takes; WHERE it is, the figure shows
+  'slot.head':           'Divine Eyes',
+  'slot.neck':           'Amulet',
+  'slot.body':           'Sak Yant',
+  'slot.rightHand':      'Beads',
+  'slot.leftHand':       'Light',
   'item.phone.name':     'Phone',
   'item.phone.desc':     'Two percent battery and a torch that works. Enough to see your feet, not enough to see far.',
   'item.keys.name':      'House Keys',
