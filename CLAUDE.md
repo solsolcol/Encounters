@@ -113,6 +113,17 @@ cutscene stings, ending music beds, and in-world narration lines (voice:
 main.js remain only as the decode-time fallback. docs/AUDIO-PLAN.md has
 the full inventory, cue map, and the generation flow IDs.
 
+## Changing the words
+
+Every string in the game is editable from ONE Google Sheet — Chad edits it
+on his phone, and `node textsync.mjs import <sheet>` applies the lot in one
+pass. UI words live in `src/strings.js` (reaching the screen through
+`data-t` attributes in `shell.html` and `T()` in code); the chapter's own
+words stay in the chapter file. An empty cell removes that text. Full
+workflow, guarantees and the sheet id: `docs/EDITING-TEXT.md`. **Never
+hand-edit a string without re-exporting the sheet afterwards**, or his copy
+of the text goes stale.
+
 ## Content ground truth
 
 `docs/SOURCE-NOTES.md` + `docs/source/` hold the studied originals: all

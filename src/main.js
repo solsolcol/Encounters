@@ -1642,6 +1642,31 @@ let chosen = null;
 
 /* ---------------------------------------------------------------- ui */
 const $ = id => document.getElementById(id);
+
+/* ------------------------------------------------------------ the words ---
+   Every string the engine shows comes from src/strings.js (and the chapter's
+   own words from the chapter file). T() looks one up; applyText() pours them
+   into every element carrying data-t at boot.
+
+   An EMPTY string hides that element rather than leaving a blank gap — that
+   is how a cleared cell in Chad's text sheet removes a line without anyone
+   editing code. Missing keys leave the markup's own text alone, so a
+   half-finished strings file can never blank the game.                     */
+const TEXT = window.__TEXT__ || {};
+function T(key, fallback) {
+  const v = TEXT[key];
+  return v === undefined ? (fallback !== undefined ? fallback : '') : v;
+}
+function applyText() {
+  for (const el of document.querySelectorAll('[data-t]')) {
+    const v = TEXT[el.dataset.t];
+    if (v === undefined) continue;              // not in the sheet: leave as authored
+    if (v === '') { el.style.display = 'none'; continue; }
+    el.style.removeProperty('display');
+    el.innerHTML = v;                           // his own copy may carry <b>, <br>
+  }
+}
+applyText();
 const ui = {
   title: $('title'), hud: $('hud'), prompt: $('prompt'), interact: $('interact'),
   decide: $('decide'), result: $('result'), complete: $('complete'),
@@ -1653,24 +1678,21 @@ const ui = {
 };
 const hint = $('hint');
 // how you act on the heap, in the words that match the device you are on
-const ACT_HINT = HAS_TOUCH ? 'tap the glowing pile' : 'E at the glowing pile';
-const ACT_LINE = HAS_TOUCH
-  ? 'Tap the glowing pile of notes to look again'
-  : 'Press E at the glowing pile to look again';
+const ACT_HINT = HAS_TOUCH ? T('world.actHintTouch') : T('world.actHintKey');
+const ACT_LINE = HAS_TOUCH ? T('world.actLineTouch') : T('world.actLineKey');
 function setHint() {
   const el = $('hintTxt');
   if (!el) return;
-  el.textContent = (
-      IS_PHONE ? 'Left thumb walks · right thumb looks'
-    : HAS_TOUCH && !locked ? 'W A S D to walk · move the mouse to look · touch works too'
-    : locked ? 'W A S D to walk · move the mouse to look'
-    : 'W A S D to walk · move the mouse to look · edges keep turning'
-  ) + ' · ' + ACT_HINT;
+  const base = IS_PHONE ? T('world.hintPhone')
+    : HAS_TOUCH && !locked ? T('world.hintMouseTouch')
+    : locked ? T('world.hintLocked')
+    : T('world.hintEdges');
+  el.textContent = ACT_HINT ? base + ' · ' + ACT_HINT : base;
 }
 setHint();
 if (HAS_TOUCH) {
-  $('ikey').textContent = 'Tap';
-  $('itxt').textContent = 'the pile of hell notes';
+  $('ikey').textContent = T('world.interactKeyTouch');
+  $('itxt').textContent = T('world.interactTextTouch');
 }
 /* The logo. Decoded from base64 and painted into a canvas rather than handed
    to an <img src="data:…">, because a sandboxed frame's policy can refuse

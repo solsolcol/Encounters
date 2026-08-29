@@ -16,13 +16,14 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, shutil, zipfile
 
-VERSION = '2.8'
+VERSION = '2.9'
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
 bundle = (d / 'bundle.js').read_text()
 src = (d / 'src' / 'main.js').read_text()
 chapter = (d / 'src' / 'chapters' / 'ch1.js').read_text()
+strings = (d / 'src' / 'strings.js').read_text()   # every UI word, loaded first
 
 want_amulet = 'SHOW_AMULET = true' in src
 
@@ -64,7 +65,8 @@ for key, (name, wanted) in ASSETS.items():
     emb = emb.replace(f'__{key.upper()}_B64__', data)
     print(f'  embed {name}: {str(len(data) // 1024) + " KB" if wanted else "skipped"}')
 single = shell.replace('<script>/*BUNDLE*/</script>',
-                       '<script>\n' + guard(chapter) + '\n' + guard(emb) + '\n</script>')
+                       '<script>\n' + guard(strings) + '\n' + guard(chapter)
+                       + '\n' + guard(emb) + '\n</script>')
 p = d / 'hellnote.html'
 p.write_text(single)
 print(f'wrote {p} {p.stat().st_size / 1024:.0f} KB')
@@ -93,6 +95,8 @@ hosted = bundle.replace('__ASSET_MAP_B64__',
 for key in ASSETS:                                        # no bytes ride along
     hosted = hosted.replace(f'__{key.upper()}_B64__', '')
 
+st_out = f'assets/strings.{hashlib.md5(strings.encode()).hexdigest()[:10]}.js'
+(dist / st_out).write_text(strings)
 ch_out = f'assets/ch1.{hashlib.md5(chapter.encode()).hexdigest()[:10]}.js'
 (dist / ch_out).write_text(chapter)
 js_out = f'assets/game.{hashlib.md5(hosted.encode()).hexdigest()[:10]}.js'
@@ -115,6 +119,7 @@ preloads += [f'<link rel="preload" as="fetch" crossorigin href="{asset_map[k]}">
     'maximum-scale=1,viewport-fit=cover">\n'
     + '\n'.join(preloads) + '\n</head>\n<body>\n'
     + shell.replace('<script>/*BUNDLE*/</script>',
+                    f'<script defer src="{st_out}"></script>\n'
                     f'<script defer src="{ch_out}"></script>\n'
                     f'<script defer src="{js_out}"></script>')
     + '\n</body>\n</html>\n')

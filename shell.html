@@ -1,4 +1,4 @@
-<title>The Hell Note</title>
+<title data-t="title.tabTitle">The Hell Note</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&amp;family=Inter:wght@400;500;600;700&amp;family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap">
 <style>
 
@@ -438,7 +438,7 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
 <div id="cineFade"></div>
 <div id="barTop" class="cineBar"></div>
 <div id="barBot" class="cineBar"></div>
-<button id="cineSkip" class="hide" type="button">Skip &#9656;</button>
+<button id="cineSkip" class="hide" type="button" data-t="cine.skip">Skip &#9656;</button>
 <div id="stick"><div id="knob"></div></div>
 
 <!-- title -->
@@ -448,9 +448,9 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
          and stays hidden unless the paint fails, so the screen is never blank. -->
     <canvas id="logo" width="1300" height="560"
             aria-label="Master Z's Encounters — The Game"></canvas>
-    <h1 class="hide">The <em>Hell Note</em><br>I Should Never<br>Have Taken</h1>
+    <h1 class="hide" data-t="title.headingPlain">The <em>Hell Note</em><br>I Should Never<br>Have Taken</h1>
     <p id="brief"></p>
-    <button id="startBtn">Start game</button>
+    <button id="startBtn" data-t="title.start">Start game</button>
     <div class="ctrl">
       <div class="ctrlRow">
         <svg class="ctrlIcon" viewBox="0 0 24 24" aria-hidden="true">
@@ -461,7 +461,7 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
           <rect x="7.5" y="2.5" width="9" height="19" rx="4.5"/>
           <path d="M12 6.4v3.2"/>
         </svg>
-        <span><b>Desktop</b> &middot; W A S D to walk, move the mouse to look,
+        <span data-t="title.controlsDesktop"><b>Desktop</b> &middot; W A S D to walk, move the mouse to look,
           <b>E</b> to look at things</span>
       </div>
       <div class="ctrlRow">
@@ -474,11 +474,11 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
           <path d="M12.6 9.6a1.7 1.7 0 0 1 3.4 0v1.2"/>
           <path d="M16 10.4a1.7 1.7 0 0 1 3.4 0v3.4a6.4 6.4 0 0 1-6.4 6.4h-1a5 5 0 0 1-4-2l-3-4.2a1.7 1.7 0 0 1 2.6-2.1L9 13.6"/>
         </svg>
-        <span><b>Phone</b> &middot; left thumb walks, right thumb looks,
+        <span data-t="title.controlsPhone"><b>Phone</b> &middot; left thumb walks, right thumb looks,
           <b>tap</b> things to look at them</span>
       </div>
     </div>
-    <button id="creditsLink" class="creditsLink" type="button">Credits</button>
+    <button id="creditsLink" class="creditsLink" type="button" data-t="title.credits">Credits</button>
   </div>
 </div>
 
@@ -486,32 +486,32 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
 <div id="credits" class="layer hide">
   <div class="credCard" role="dialog" aria-modal="true" aria-label="Credits">
     <div class="credHead">
-      <span class="stencil">Credits &amp; attributions</span>
+      <span class="stencil" data-t="credits.heading">Credits &amp; attributions</span>
       <button id="credClose" class="credClose" type="button" aria-label="Close">&#10005;</button>
     </div>
-    <p class="credIntro">Work by other people used in this prototype, with thanks.</p>
+    <p class="credIntro" data-t="credits.intro">Work by other people used in this prototype, with thanks.</p>
     <ul class="credList">
       <li>
-        <span class="credWhat">Music</span>
-        <span class="credWho">Leberch &middot; Pixabay</span>
+        <span class="credWhat" data-t="credits.music">Music</span>
+        <span class="credWho" data-t="credits.musicWho">Leberch &middot; Pixabay</span>
         <a href="https://pixabay.com/users/leberch-42823964/" target="_blank"
            rel="noopener noreferrer">pixabay.com/users/leberch-42823964</a>
       </li>
       <li>
-        <span class="credWhat">Hands</span>
-        <span class="credWho">Free VR Hands pack &middot; Fab</span>
+        <span class="credWhat" data-t="credits.hands">Hands</span>
+        <span class="credWho" data-t="credits.handsWho">Free VR Hands pack &middot; Fab</span>
         <a href="https://www.fab.com/listings/5f77c468-92da-46d0-bf5e-ecb9685b87c1"
            target="_blank" rel="noopener noreferrer">fab.com/listings/5f77c468</a>
       </li>
       <li>
-        <span class="credWhat">Ghost</span>
-        <span class="credWho">Kuntilanak, Indonesian ghost &middot; Sketchfab</span>
+        <span class="credWhat" data-t="credits.ghost">Ghost</span>
+        <span class="credWho" data-t="credits.ghostWho">Kuntilanak, Indonesian ghost &middot; Sketchfab</span>
         <a href="https://sketchfab.com/3d-models/kuntilanak-indonesian-ghost-747c8d863b344ee09505f0d0ccd679f8"
            target="_blank" rel="noopener noreferrer">sketchfab.com &middot; kuntilanak-indonesian-ghost</a>
       </li>
       <li>
-        <span class="credWhat">HDB block</span>
-        <span class="credWho">HDB &middot; Sketchfab</span>
+        <span class="credWhat" data-t="credits.block">HDB block</span>
+        <span class="credWho" data-t="credits.blockWho">HDB &middot; Sketchfab</span>
         <a href="https://sketchfab.com/3d-models/hdb-339b173efd9645b680ed3ea206d9a16c"
            target="_blank" rel="noopener noreferrer">sketchfab.com &middot; hdb</a>
       </li>
@@ -526,7 +526,7 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
   <div class="chapCard">
     <span class="stencil" id="chapLabel">Chapter 1</span>
     <h2 id="chapTitle">The Hell Note<br>I Should Never Have Taken</h2>
-    <span class="stencil hide" id="chapLoad" style="display:block;margin-top:26px;opacity:.6">Loading&hellip;</span>
+    <span class="stencil hide" id="chapLoad" style="display:block;margin-top:26px;opacity:.6" data-t="chapter.loading">Loading&hellip;</span>
   </div>
 </div>
 
@@ -534,26 +534,26 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
 <div id="hud" class="layer hide">
   <div id="stats">
     <div class="stat sSan"><svg class="sic" aria-hidden="true"><use href="#i-san"/></svg>
-      <span class="n">Sanity</span><canvas id="ecg"></canvas><span class="v" id="vSan">100</span>
+      <span class="n" data-t="hud.sanity">Sanity</span><canvas id="ecg"></canvas><span class="v" id="vSan">100</span>
       <span class="track"><i id="bSan" style="width:100%"></i></span>
       <span id="ticks"></span></div>
     <div class="stat sAwa"><svg class="sic" aria-hidden="true"><use href="#i-awa"/></svg>
-      <span class="n">Awareness</span><span class="v" id="vAwa">50</span>
+      <span class="n" data-t="hud.awareness">Awareness</span><span class="v" id="vAwa">50</span>
       <span class="track"><i id="bAwa" style="width:50%"></i></span></div>
     <div class="stat sWis"><svg class="sic" aria-hidden="true"><use href="#i-wis"/></svg>
-      <span class="n">Wisdom</span><span class="v" id="vWis">50</span>
+      <span class="n" data-t="hud.wisdom">Wisdom</span><span class="v" id="vWis">50</span>
       <span class="track"><i id="bWis" style="width:50%"></i></span></div>
   </div>
 </div>
 
 <!-- proximity prompt -->
-<div id="prompt" class="layer hide"><div>Something is burning ahead</div></div>
+<div id="prompt" class="layer hide"><div data-t="world.burning">Something is burning ahead</div></div>
 
 <!-- interact prompt — shown when the pile of hell notes is within reach -->
 <div id="interact" class="layer hide">
   <div class="ibadge">
     <span class="ikey" id="ikey">E</span>
-    <span id="itxt">Examine the pile of hell notes</span>
+    <span id="itxt" data-t="world.interactText">Examine the pile of hell notes</span>
   </div>
 </div>
 
@@ -561,8 +561,8 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
 <div id="decide" class="layer hide">
   <div class="panel">
     <div class="dhead">
-      <span class="stencil">Decision</span>
-      <button id="stepBack" class="dclose" type="button">Step back &#10005;</button>
+      <span class="stencil" data-t="decide.label">Decision</span>
+      <button id="stepBack" class="dclose" type="button" data-t="decide.stepBack">Step back &#10005;</button>
     </div>
     <p id="qtext"></p>
     <div id="choices"></div>
@@ -572,28 +572,28 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
 <!-- result -->
 <div id="result" class="layer hide">
   <div class="card">
-    <span class="stencil">Outcome</span>
+    <span class="stencil" data-t="result.label">Outcome</span>
     <p id="say"></p>
     <div id="deltas"></div>
     <div class="teachbox">
-      <span class="stencil">Master Z&rsquo;s teaching</span>
+      <span class="stencil" data-t="result.teachingLabel">Master Z&rsquo;s teaching</span>
       <p id="teach"></p>
     </div>
-    <button id="nextBtn">Close the file</button>
+    <button id="nextBtn" data-t="result.next">Close the file</button>
   </div>
 </div>
 
 <!-- complete -->
 <div id="complete" class="layer hide">
   <div class="card">
-    <span class="stencil">Case file complete</span>
-    <div class="sealed">Sealed</div>
+    <span class="stencil" data-t="complete.label">Case file complete</span>
+    <div class="sealed" data-t="complete.sealed">Sealed</div>
     <div class="stampwrap"><div id="rank">A</div></div>
     <div id="pct">0%</div>
     <hr class="rule" style="margin:26px auto;max-width:200px">
-    <span class="stencil">Core lesson</span>
+    <span class="stencil" data-t="complete.coreLabel">Core lesson</span>
     <p id="core"></p>
-    <button id="againBtn">Walk it again</button>
+    <button id="againBtn" data-t="complete.again">Walk it again</button>
   </div>
 </div>
 
@@ -602,26 +602,24 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
   <div class="hbadge">
     <span class="hdot"></span>
     <span>Ghost spotted! <svg class="sic sSan" aria-hidden="true"><use href="#i-san"/></svg>
-      Sanity level is dropping until you take action.</span>
+      <span data-t="hud.ghostWarning">Sanity level is dropping until you take action.</span></span>
   </div>
 </div>
 
 <!-- sanity gone -->
 <div id="over" class="layer hide">
   <div class="card">
-    <span class="stencil">Case file abandoned</span>
-    <div class="sealed" style="color:var(--seal);border-color:var(--seal)">Lost</div>
-    <p id="overSay">Your nerve went before your legs did. Somewhere behind you the drum
-      is still burning, and you could not tell anyone what you saw.</p>
+    <span class="stencil" data-t="lost.label">Case file abandoned</span>
+    <div class="sealed" style="color:var(--seal);border-color:var(--seal)" data-t="lost.sealed">Lost</div>
+    <p id="overSay" data-t="lost.say">Your nerve went before your legs did.</p>
     <div class="teachbox">
-      <span class="stencil">Master Z&rsquo;s teaching</span>
-      <p>Fear is not the danger. Standing in front of what frightens you, doing nothing,
-        is the danger. Act, or step away — but do not freeze and call it caution.</p>
+      <span class="stencil" data-t="lost.teachingLabel">Master Z&rsquo;s teaching</span>
+      <p data-t="lost.teaching">Fear is not the danger.</p>
     </div>
-    <button id="retryBtn">Walk it again</button>
+    <button id="retryBtn" data-t="lost.retry">Walk it again</button>
   </div>
 </div>
 
-<div id="hint" class="hide"><span class="stencil" id="hintTxt">Walk toward the light</span></div>
+<div id="hint" class="hide"><span class="stencil" id="hintTxt" data-t="world.hintWalk">Walk toward the light</span></div>
 
 <script>/*BUNDLE*/</script>
