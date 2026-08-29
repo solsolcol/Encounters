@@ -33,17 +33,18 @@ Object.assign(window.__TEXT__, {
   // --- credits panel -------------------------------------------------------
   'credits.heading':     'Credits &amp; Attributions',
   'credits.intro':       'Creative works by other people used in this game, with thanks.',
+  // each entry reads what / who / link, so the sheet keeps them together
   'credits.music':       'Music',
   'credits.musicWho':    'Leberch · Pixabay',
+  'credits.musicLink':   'pixabay.com/users/leberch-42823964',
   'credits.hands':       'Hands',
   'credits.handsWho':    'Free VR Hands pack · Fab',
+  'credits.handsLink':   'fab.com/listings/5f77c468',
   'credits.ghost':       'Ghost',
   'credits.ghostWho':    'Kuntilanak, Indonesian ghost · Sketchfab',
+  'credits.ghostLink':   'sketchfab.com · kuntilanak-indonesian-ghost',
   'credits.block':       'HDB block',
   'credits.blockWho':    'HDB · Sketchfab',
-  'credits.musicLink':   'pixabay.com/users/leberch-42823964',
-  'credits.handsLink':   'fab.com/listings/5f77c468',
-  'credits.ghostLink':   'sketchfab.com · kuntilanak-indonesian-ghost',
   'credits.blockLink':   'sketchfab.com · hdb',
   'credits.footer':      'Everything else in the scene — the void deck, the burner, the offerings, the hell notes, the sky and the lighting — is generated in code.',
 

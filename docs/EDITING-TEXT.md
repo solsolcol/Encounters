@@ -5,9 +5,17 @@ without prompting for each change. This is how it works and how to run it.
 
 ## The sheet
 
-**Master Z's Encounters — GAME TEXT v2 (edit here)** in his Drive
-(id `1TIc1lRLGCLIX8LhHHFEcoM9sHHj9NQ5FCIRCoMRUeyw` — the **v2** sheet;
-the first one is superseded and should not be edited).
+**Master Z's Encounters — GAME TEXT v3 (edit here)** in his Drive
+(id `1FH0XtvIeZms3H1M-arBj9QCQltGplIoSCgM3-Cjfi58` — the **v3** sheet;
+v1 and v2 are superseded and should not be edited).
+
+The Drive connector can read a sheet and can create one, but it cannot
+write cells into an existing one. So a release that adds strings makes a
+NEW sheet from `textsync export` and Chad switches to that link. Two rules
+keep that safe: read the old sheet and import it FIRST, so any edit he has
+made but not asked for is already in the game before the new sheet is
+generated from it; and keep the Notes column in `textsync.mjs` (the NOTES
+map), not only in the sheet, or every regeneration loses it.
 
 Four columns: `ID (do not edit)` · `Where it appears` · **`TEXT — edit this
 column`** · `Notes`. He only ever touches the TEXT column.
