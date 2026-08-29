@@ -192,9 +192,18 @@ body.cine #barTop,body.cine #barBot{transform:translateY(0)}
   text-transform:uppercase;color:#9AA1B0}
 .stat .v{font-family:var(--mono);font-size:1.36rem;font-weight:700;
   font-variant-numeric:tabular-nums;color:var(--bone)}
-/* the stat marks — one hue per stat, everywhere a stat is named */
+/* the stat marks — one hue per stat, everywhere a stat is named. In the
+   HUD they breathe: the glow swells and settles like a slow inhale, each
+   stat on its own rhythm so the column never pulses in lockstep. */
 svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visible}
-.stat svg.sic{width:19px;height:19px;filter:drop-shadow(0 0 5px currentColor)}
+.stat svg.sic{width:19px;height:19px;animation:sicbreathe ease-in-out infinite}
+.stat.sSan svg.sic{animation-duration:2.6s}
+.stat.sAwa svg.sic{animation-duration:3.8s}
+.stat.sWis svg.sic{animation-duration:5s}
+@keyframes sicbreathe{
+  0%,100%{filter:drop-shadow(0 0 2px currentColor);opacity:.8;transform:scale(.96)}
+  50%{filter:drop-shadow(0 0 8px currentColor) drop-shadow(0 0 18px currentColor);
+      opacity:1;transform:scale(1.04)}}
 .sSan{color:#E05543}.sAwa{color:var(--sodium)}.sWis{color:var(--jade)}
 .track{grid-column:1/-1;height:8px;background:rgba(30,34,42,.92);overflow:hidden;
   border-radius:4px;box-shadow:inset 0 1px 2px rgba(0,0,0,.6)}
@@ -205,14 +214,18 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
   background-size:220% 100%;animation:barflow linear infinite}
 .track i::after{content:"";position:absolute;top:0;bottom:0;right:0;width:2px;
   border-radius:2px;background:rgba(255,246,235,.75);filter:blur(.5px)}
-#bSan{background-image:linear-gradient(100deg,#7E251C,#E05543 38%,#F4907F 50%,#E05543 62%,#7E251C);
-  box-shadow:0 0 9px rgba(226,74,58,.4);animation-duration:4.2s}
-#bAwa{background-image:linear-gradient(100deg,#B36A2B,#FFB367 38%,#FFD9AE 50%,#FFB367 62%,#B36A2B);
-  box-shadow:0 0 9px rgba(255,179,103,.32);animation-duration:5.6s}
-#bWis{background-image:linear-gradient(100deg,#2E7C72,#63D6C8 38%,#B5F0E8 50%,#63D6C8 62%,#2E7C72);
-  box-shadow:0 0 9px rgba(99,214,200,.32);animation-duration:7s}
+#bSan{background-image:linear-gradient(100deg,#5C160F,#E05543 30%,#FFC7BC 50%,#E05543 70%,#5C160F);
+  box-shadow:0 0 9px rgba(226,74,58,.4);animation-duration:2.4s}
+#bAwa{background-image:linear-gradient(100deg,#7A4415,#FFB367 30%,#FFE8CE 50%,#FFB367 70%,#7A4415);
+  box-shadow:0 0 9px rgba(255,179,103,.32);animation-duration:3.2s}
+#bWis{background-image:linear-gradient(100deg,#1C544C,#63D6C8 30%,#D8FBF6 50%,#63D6C8 70%,#1C544C);
+  box-shadow:0 0 9px rgba(99,214,200,.32);animation-duration:4.1s}
 @keyframes barflow{from{background-position:0% 0}to{background-position:-220% 0}}
-@media (prefers-reduced-motion:reduce){.track i{animation:none}}
+@media (prefers-reduced-motion:reduce){.track i,.stat svg.sic{animation:none}}
+/* the hospital trace beside SANITY — fills the gap between name and number */
+.stat.sSan{grid-template-columns:auto auto 1fr auto}
+#ecg{width:100%;height:20px;min-width:36px;align-self:center;display:block;
+  filter:drop-shadow(0 0 6px rgba(255,84,66,.55))}
 /* each point of sanity leaves visibly, next to the number it came out of */
 /* anchored under the bar, not above it: the hud is already at the top of the
    screen and a number that floats up from the value gets clipped away */
@@ -521,7 +534,7 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
 <div id="hud" class="layer hide">
   <div id="stats">
     <div class="stat sSan"><svg class="sic" aria-hidden="true"><use href="#i-san"/></svg>
-      <span class="n">Sanity</span><span class="v" id="vSan">100</span>
+      <span class="n">Sanity</span><canvas id="ecg"></canvas><span class="v" id="vSan">100</span>
       <span class="track"><i id="bSan" style="width:100%"></i></span>
       <span id="ticks"></span></div>
     <div class="stat sAwa"><svg class="sic" aria-hidden="true"><use href="#i-awa"/></svg>

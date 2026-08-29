@@ -2046,6 +2046,7 @@ function updateAudioFrame(t) {
   if (state === 'play' && reveal > 0.15) {
     if (!ghostWasHere) {                     // she was not here a frame ago
       ghostWasHere = true;
+      pulseSpike(0.85);
       snd('boom', 0.65);
       snd('dread', 0.5);
       duckMusic(9);
@@ -2062,6 +2063,79 @@ function updateAudioFrame(t) {
     if (pileDist() < 8) say('vpile');
     if (pileDist() < INTERACT_R && pileInView()) say('vnote');
   }
+}
+
+/* -------------------------------------------------------------- pulse ----
+   The hospital trace beside SANITY. One number drives everything: stress,
+   0..1, re-derived every frame from whatever the night is doing — her
+   presence, her closeness, how worn down the player is — plus short
+   spikes any scare can push with pulseSpike(). A new scene or scenario
+   needs nothing new: its booms and screams already spike the heart via
+   sting(), and its world state speaks through the ambient inputs. BPM,
+   amplitude and beat regularity all follow stress; sanity zero flatlines. */
+const ecgCv = $('ecg');
+const ecgCtx = ecgCv ? ecgCv.getContext('2d') : null;
+const ECG_WINDOW = 3.0;                       // seconds shown across the strip
+let ecgTrail = null, ecgX = 0, beatPhase = 0, curBpm = 62, spikeLevel = 0;
+function pulseSpike(n) { spikeLevel = Math.min(1, Math.max(spikeLevel, n)); }
+function pulseStress() {
+  if (state === 'lost') return -1;            // flatline
+  const dGhost = Math.hypot(yaw.position.x - ghost.position.x,
+                            yaw.position.z - ghost.position.z);
+  const near = THREE.MathUtils.clamp(1 - dGhost / 15, 0, 1);
+  const fear = THREE.MathUtils.clamp((100 - stats.sanity) / 100, 0, 1);
+  return THREE.MathUtils.clamp(
+    Math.max(reveal * (0.4 + near * 0.6), fear * 0.55, spikeLevel), 0, 1);
+}
+// one heartbeat, phase 0..1: P bump, the QRS spike, the T bump, rest
+function ecgWave(k) {
+  if (k < 0.10) return Math.sin(k / 0.10 * Math.PI) * 0.14;
+  if (k < 0.14) return 0;
+  if (k < 0.17) return -(k - 0.14) / 0.03 * 0.24;
+  if (k < 0.21) return -0.24 + (k - 0.17) / 0.04 * 1.24;
+  if (k < 0.25) return 1.0 - (k - 0.21) / 0.04 * 1.34;
+  if (k < 0.30) return -0.34 + (k - 0.25) / 0.05 * 0.34;
+  if (k < 0.44) return 0;
+  if (k < 0.58) return Math.sin((k - 0.44) / 0.14 * Math.PI) * 0.22;
+  return 0;
+}
+function updatePulse(dt) {
+  if (!ecgCtx || ui.hud.classList.contains('hide')) return;
+  const dpr = Math.min(devicePixelRatio || 1, 2);
+  const W = Math.max(24, (ecgCv.clientWidth * dpr) | 0);
+  const H = Math.max(12, (ecgCv.clientHeight * dpr) | 0);
+  if (ecgCv.width !== W || ecgCv.height !== H) {
+    ecgCv.width = W; ecgCv.height = H;
+    ecgTrail = new Float32Array(W); ecgX = 0;
+  }
+  const s = pulseStress(), flat = s < 0;
+  spikeLevel = Math.max(0, spikeLevel - dt * 0.25);         // scares decay
+  curBpm += (((flat ? 62 : 62 + s * 82)) - curBpm) * Math.min(1, dt * 2.2);
+  // under high stress the rhythm itself goes wrong: beats land early, late
+  const jitter = !flat && s > 0.55 ? 1 + Math.sin(beatPhase * 19.7) * 0.3 * s : 1;
+  beatPhase += dt * (curBpm / 60) * jitter;
+  const amp = flat ? 0 : 0.5 + s * 0.5;
+  const cols = Math.min(W, Math.max(1, Math.round(W * dt / ECG_WINDOW)));
+  for (let i = 0; i < cols; i++) {
+    const noise = !flat && s > 0.35 ? (Math.random() - 0.5) * 0.08 * s : 0;
+    ecgTrail[ecgX] = ecgWave(((beatPhase - (cols - 1 - i) * dt / cols * (curBpm / 60)) % 1 + 1) % 1) * amp + noise;
+    ecgX = (ecgX + 1) % W;
+  }
+  ecgCtx.clearRect(0, 0, W, H);
+  const mid = H * 0.62, span = H * 0.42;
+  for (const [width, alpha] of [[3 * dpr, 0.22], [1.2 * dpr, 0.95]]) {
+    ecgCtx.beginPath();
+    for (let i = 0; i < W; i++) {
+      const y = mid - ecgTrail[(ecgX + i) % W] * span;
+      if (i) ecgCtx.lineTo(i, y); else ecgCtx.moveTo(i, y);
+    }
+    ecgCtx.strokeStyle = `rgba(255,84,66,${alpha})`;
+    ecgCtx.lineWidth = width;
+    ecgCtx.lineJoin = 'round';
+    ecgCtx.stroke();
+  }
+  ecgCtx.fillStyle = 'rgba(255,224,214,.95)';               // the bright head
+  ecgCtx.fillRect(W - 2 * dpr, mid - ecgTrail[(ecgX - 1 + W) % W] * span - dpr, 2 * dpr, 2 * dpr);
 }
 
 /* ------------------------------------------------------------ credits --- */
@@ -2124,6 +2198,9 @@ const STING_SAMPLE = {
   kick: ['kick', 0.8], scream: ['scream', 0.85], chant: ['chant', 0.9]
 };
 function sting(kind) {
+  // the heart hears these even when the speakers are off
+  if (kind === 'boom') pulseSpike(0.7);
+  if (kind === 'scream') pulseSpike(0.95);
   if (!actx || muted || !sfxOut()) return;
   if (kind === 'step' && sndBuf('step1')) { stepSnd(0.5); return; }
   const smp = STING_SAMPLE[kind];
@@ -3095,6 +3172,7 @@ function tick(now = 0) {
   updateGhost(dt);
   updatePile(t);
   updateAudioFrame(t);
+  updatePulse(dt);
 
   // fire flicker — during a cutscene the timeline owns the fire, so a scene
   // can kill it or knock it over without this fighting it every frame
@@ -3164,7 +3242,10 @@ window.__enc = { yaw, stats, blockers: BLOCKERS, getState: () => state,
                  handsRoot, armR, vmCam, vm, updateViewmodel, updateNotes, flying,
                  ghost, updateGhost, ghostInView, getReveal: () => reveal,
                  dismissDecision, ghostDrainRate, lose, setMuted, showCredits,
-                 snd, say, loopVol, sting, updateAudioFrame,
+                 snd, say, loopVol, sting, updateAudioFrame, pulseSpike,
+                 pulse: () => ({ bpm: Math.round(curBpm),
+                                 stress: +pulseStress().toFixed(2),
+                                 spike: +spikeLevel.toFixed(2) }),
                  pack: () => ({
                    loaded: !!packJson,
                    names: packJson ? Object.keys(packJson).length : 0,
