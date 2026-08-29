@@ -2076,8 +2076,15 @@ function updateAudioFrame(t) {
 const ecgCv = $('ecg');
 const ecgCtx = ecgCv ? ecgCv.getContext('2d') : null;
 const ECG_WINDOW = 3.0;                       // seconds shown across the strip
-let ecgTrail = null, ecgX = 0, beatPhase = 0, curBpm = 62, spikeLevel = 0;
-function pulseSpike(n) { spikeLevel = Math.min(1, Math.max(spikeLevel, n)); }
+let ecgTrail = null, ecgX = 0, beatPhase = 0, curBpm = 50, spikeLevel = 0;
+/* a scare is an impulse: it kicks the AMPLITUDE hard and rings down fast
+   (~1 s), while spikeLevel decays slowly and carries the raised RATE.
+   Sudden jolt, tall beats, then the height settles while the speed lingers. */
+let impulse = 0;
+function pulseSpike(n) {
+  spikeLevel = Math.min(1, Math.max(spikeLevel, n));
+  impulse = Math.min(1.4, impulse + n);
+}
 function pulseStress() {
   if (state === 'lost') return -1;            // flatline
   const dGhost = Math.hypot(yaw.position.x - ghost.position.x,
@@ -2109,16 +2116,22 @@ function updatePulse(dt) {
     ecgTrail = new Float32Array(W); ecgX = 0;
   }
   const s = pulseStress(), flat = s < 0;
-  spikeLevel = Math.max(0, spikeLevel - dt * 0.25);         // scares decay
-  curBpm += (((flat ? 62 : 62 + s * 82)) - curBpm) * Math.min(1, dt * 2.2);
+  spikeLevel = Math.max(0, spikeLevel - dt * 0.25);         // the rate lingers
+  impulse = Math.max(0, impulse - dt * 0.9);                // the height rings down
+  curBpm += (((flat ? 50 : 50 + s * 95)) - curBpm) * Math.min(1, dt * 2.2);
   // under high stress the rhythm itself goes wrong: beats land early, late
   const jitter = !flat && s > 0.55 ? 1 + Math.sin(beatPhase * 19.7) * 0.3 * s : 1;
   beatPhase += dt * (curBpm / 60) * jitter;
-  const amp = flat ? 0 : 0.5 + s * 0.5;
+  const amp = flat ? 0 : 0.42 + s * 0.35;
   const cols = Math.min(W, Math.max(1, Math.round(W * dt / ECG_WINDOW)));
   for (let i = 0; i < cols; i++) {
-    const noise = !flat && s > 0.35 ? (Math.random() - 0.5) * 0.08 * s : 0;
-    ecgTrail[ecgX] = ecgWave(((beatPhase - (cols - 1 - i) * dt / cols * (curBpm / 60)) % 1 + 1) % 1) * amp + noise;
+    const k = ((beatPhase - (cols - 1 - i) * dt / cols * (curBpm / 60)) % 1 + 1) % 1;
+    // stress drives the QRS spike TALL — peaks and valleys both — while the
+    // small P/T bumps barely grow: the shape itself changes, not just speed
+    const qrsGain = (k >= 0.14 && k < 0.30) ? 1 + s * 0.9 + impulse * 1.5
+                                            : 1 + s * 0.25;
+    const noise = !flat && s > 0.35 ? (Math.random() - 0.5) * (0.08 + impulse * 0.05) * s : 0;
+    ecgTrail[ecgX] = ecgWave(k) * amp * qrsGain + noise;
     ecgX = (ecgX + 1) % W;
   }
   ecgCtx.clearRect(0, 0, W, H);
@@ -2126,7 +2139,8 @@ function updatePulse(dt) {
   for (const [width, alpha] of [[3 * dpr, 0.22], [1.2 * dpr, 0.95]]) {
     ecgCtx.beginPath();
     for (let i = 0; i < W; i++) {
-      const y = mid - ecgTrail[(ecgX + i) % W] * span;
+      // extreme beats peg the strip edge, like a real monitor clipping
+      const y = Math.min(H - 1, Math.max(1, mid - ecgTrail[(ecgX + i) % W] * span));
       if (i) ecgCtx.lineTo(i, y); else ecgCtx.moveTo(i, y);
     }
     ecgCtx.strokeStyle = `rgba(255,84,66,${alpha})`;
@@ -2135,7 +2149,8 @@ function updatePulse(dt) {
     ecgCtx.stroke();
   }
   ecgCtx.fillStyle = 'rgba(255,224,214,.95)';               // the bright head
-  ecgCtx.fillRect(W - 2 * dpr, mid - ecgTrail[(ecgX - 1 + W) % W] * span - dpr, 2 * dpr, 2 * dpr);
+  const headY = Math.min(H - 1, Math.max(1, mid - ecgTrail[(ecgX - 1 + W) % W] * span));
+  ecgCtx.fillRect(W - 2 * dpr, headY - dpr, 2 * dpr, 2 * dpr);
 }
 
 /* ------------------------------------------------------------ credits --- */
@@ -3245,7 +3260,8 @@ window.__enc = { yaw, stats, blockers: BLOCKERS, getState: () => state,
                  snd, say, loopVol, sting, updateAudioFrame, pulseSpike,
                  pulse: () => ({ bpm: Math.round(curBpm),
                                  stress: +pulseStress().toFixed(2),
-                                 spike: +spikeLevel.toFixed(2) }),
+                                 spike: +spikeLevel.toFixed(2),
+                                 impulse: +impulse.toFixed(2) }),
                  pack: () => ({
                    loaded: !!packJson,
                    names: packJson ? Object.keys(packJson).length : 0,
