@@ -1718,6 +1718,12 @@ function musicSetup() {
   const AC = window.AudioContext || window.webkitAudioContext;
   if (!AC) return;
   try { actx = new AC(); } catch { return; }
+  // iPhone Safari treats Web Audio as "ambient" and the ringer/silent
+  // switch kills it outright — videos keep playing, the game goes mute.
+  // Declaring the page playback media opts out (iOS 16.4+, harmless
+  // everywhere else). Without this, an iPhone with the switch down —
+  // most of them — hears nothing at all.
+  try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch {}
   musicGain = actx.createGain();
   musicGain.gain.value = muted ? 0 : MUSIC_VOL;
   musicGain.connect(actx.destination);
@@ -1787,6 +1793,20 @@ musicSetup();
 musicStart();
 // pull the spoken line down early too; it decodes on a gesture later
 assetBytes('voice', true).catch(() => {});
+
+/* iOS suspends — or "interrupts" — the context when the tab is backgrounded,
+   a call comes in, or Siri speaks, and does not reliably hand the audio
+   back. The nudge listeners above have detached by then (their job was the
+   autoplay gate, and it was done), so the return paths re-arm the resume
+   themselves. The pointerdown one stays attached for good: a tap after any
+   interruption is a user gesture, which is exactly what resume() wants.   */
+function resumeAudio() {
+  if (actx && actx.state !== 'running') actx.resume().catch(() => {});
+}
+document.addEventListener('visibilitychange', () => { if (!document.hidden) resumeAudio(); });
+addEventListener('pageshow', resumeAudio);
+addEventListener('focus', resumeAudio);
+addEventListener('pointerdown', resumeAudio, { passive: true });
 
 /* ---------------------------------------------------- the player's voice ---
    One short line in the player's own voice, a beat after the world fades in —

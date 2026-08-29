@@ -57,6 +57,14 @@ twice. When code in this repo looks odd, the reason is usually here.
   under 5 kHz — measure before assuming bitrate needs).
 - The voice line fires on a real-time setTimeout (3 s), not frame time,
   and re-checks state/mute when it lands.
+- iPhone Safari has TWO extra silencers beyond the autoplay gate: the
+  ringer/silent switch mutes all Web Audio ("ambient" media) even while
+  videos play — opt out with `navigator.audioSession.type = 'playback'`
+  right after creating the context — and iOS suspends/"interrupts" the
+  context on app switch, call, or Siri without reliably resuming it. The
+  autoplay nudge listeners are long detached by then, so permanent
+  resume paths (visibilitychange/pageshow/focus/pointerdown) must re-arm
+  `actx.resume()`. Both found the hard way on Chad's iPhone, v2.4.
 
 ## The cutscene engine
 
