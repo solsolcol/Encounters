@@ -5,8 +5,9 @@ without prompting for each change. This is how it works and how to run it.
 
 ## The sheet
 
-**Master Z's Encounters — GAME TEXT (edit here)** in his Drive
-(id `1JpGGjE2UowBuFfla8OUBSWUv0lQE_Fo4MkMteGBCi2o`).
+**Master Z's Encounters — GAME TEXT v2 (edit here)** in his Drive
+(id `1TIc1lRLGCLIX8LhHHFEcoM9sHHj9NQ5FCIRCoMRUeyw` — the **v2** sheet;
+the first one is superseded and should not be edited).
 
 Four columns: `ID (do not edit)` · `Where it appears` · **`TEXT — edit this
 column`** · `Notes`. He only ever touches the TEXT column.
