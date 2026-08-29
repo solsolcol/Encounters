@@ -1,130 +1,111 @@
-# The v3 Blueprint — making Encounters cinematic, Until Dawn's way
+# The v3 Blueprint — one spine, staged thick
 
-Status: PROPOSAL. Nothing here is built. Chad picks the package(s) and
-order; research behind it is `docs/research/until-dawn.md`. Written
-29 Aug 2026, after v2.4.
+Status: PROPOSAL, revision 2 after Chad's direction (29 Aug 2026):
+no branching complexity, no multiple outcome versions. What he wants:
+more cutscenes, directed camera, cinematic feel, storytelling between
+beats, and real meat per beat — "one action then next chapter" is not
+gameplay. Research behind it: `docs/research/until-dawn.md`.
 
-## The one-paragraph verdict
+## The shape
 
-Until Dawn's power is not its graphics or its branching — analyses show
-the branching is modest and heavily reconverges. Its power is a handful
-of cheap, loud mechanisms that make players *believe* every choice is
-permanent and *dread* what's coming: consequences that are advertised
-the moment you act, punishments that are foreshadowed before they land,
-failure that continues the story instead of ending it, and an authored
-camera. Every one of those mechanisms is affordable in our engine, and —
-the lucky part — Master Z's own trial game already contains the deep
-per-chapter content (five beats per episode, four scored choices each,
-scare grading, karma arithmetic) that Until Dawn's structure needs. We
-don't have to invent depth; we have to stage what he already wrote.
+**One linear spine.** Exactly like Master Z's trial game: every player
+goes through the same five beats of an episode, in the same order, seeing
+the same scenes. Choices change three numbers, the words on the teaching
+card, and (optionally, later) a few one-line callbacks. They never create
+alternate scenes or versions. This is also Until Dawn's real secret —
+its branching is theatrical; its spine is shared. We keep the theatre,
+skip the branching cost entirely.
 
-## What we deliberately do NOT copy
+**Thick beats.** The meat comes from staging each beat as a directed
+sequence, not from outcomes. Target 7–12 minutes per beat, 45–60 minutes
+per episode.
 
-- **Third-person cameras.** Until Dawn's own biggest lesson — they
-  pivoted from first person BECAUSE perspective is tone. But rebuilding
-  us as third person is a different game and a huge cost. Instead we get
-  authored framing the way we already do: the cutscene engine takes the
-  camera at every beat that matters, more often and more boldly.
-- **The choice timer on moral picks.** The trial had a 30 s timer; Chad
-  removed it deliberately (the ghost's drain is the pressure). Stands.
-  Timers appear only in reflex moments (see Held Breath), never on the
-  four-choice moral decision.
-- **Shock for shock's sake.** The site promises "shared for awareness,
-  not fear… nothing dramatised for shock." The trial's own rule keeps us
-  honest: scare intensity is *derived from how bad the choice was*. The
-  jolt is the consequence, never a random ambush. Sanity stays composure,
-  never a mind breaking.
+## The beat anatomy (the template every beat follows)
 
-## The three packages
+1. **Arrival scene** (~30 s, directed camera). A cutscene brings you into
+   the beat: where you are, what the night feels like, James narrating.
+   Letterboxed, skippable like all scenes.
+2. **Guided exploration** (3–6 min). The observation game — which IS the
+   series' teaching. 3–5 examinables per beat (the drum still warm, three
+   joss sticks still lit, the plate of oranges, wax on the concrete).
+   Examining one: the camera takes over for a slow close-up move, a
+   narrated line plays, a caption card shows Master Z's words. The
+   decision does not unlock until enough has been observed — "observe
+   first" as literal gameplay, not just the lesson on the card.
+3. **Escalation** (2–4 min). Scripted in-world events on a pacing
+   timeline while you explore: the lamp flickers, a cry far off, a shadow
+   crosses a doorway, she appears at a distance and is gone. Sanity drain
+   arms partway through. Pressure rises toward the decision on a curve,
+   not a jump scare lottery.
+4. **The decision.** Untimed, four choices, as today.
+5. **Action + consequence scenes** (30–60 s, directed). The trial's
+   two-screen beat staged in-world: first the act (your hand takes the
+   note), then the consequence as its own short scene (the warmth leaves
+   the air). We currently collapse these; splitting them is the single
+   biggest cinematic upgrade per decision — and it is per-CHOICE scene
+   work we already know how to author (four exist today).
+6. **Teaching card** with deltas and one reflective line, as today.
+7. **Transition** (~20 s). A cliffhanger cut into the next beat, and
+   between beats a storytelling interlude: Master Z's voice over a dark
+   frame — what he remembers of that night, setting up the next scene.
+   (The interstitial voice is a new ElevenLabs casting, Chad's ear
+   required; James stays the in-world player voice.)
 
-### Package A — The Cinematic Layer  (feel: Until Dawn; content: current)
+Optional garnish, all still linear: omens (examinables that flash a
+1-second premonition — pure foreshadowing, no branches), Held Breath
+(hold-still moment during escalation), Karma Ripple notifications (the
+line "The note remembers being taken" — flavour, not state).
 
-All inside the existing chapter. Each item is small; together they change
-what the game feels like.
+## Episode 1 mapped onto the anatomy
 
-1. **Karma Ripples** (their Butterfly Effect updates). The moment a
-   choice or a meaningful act happens, a small ripple icon + one line
-   ("The note remembers being taken") slides in and a **Karma Thread**
-   screen logs cause → effect chains that fill in as consequences land.
-   Their single most load-bearing trick, and it is UI + state.
-2. **Freeze is not game over.** Sanity 0 stops ending the run. Instead: a
-   short freeze scene (she passes; you couldn't move), a Karma Ripple
-   ("Fear chose for you"), sanity partially restored, a wisdom cost, and
-   the night continues. Their principle: failure produces different
-   story. Also sits better with the site's care framing.
-3. **Held Breath** (their Don't Move). When she hunts close: "HOLD" —
-   touch and hold / hold a key, screen edges tighten, heartbeat rises;
-   release too early and she turns. Tuned generously (their remake's
-   oversensitivity is the documented failure mode).
-4. **Omens** (their totems, in our cosmology). 3–5 findable signs in the
-   scene — a bent joss stick, a stopped watch, a cold patch. Examining
-   one plays a 1-second premonition flash built from our own cutscene
-   engine (seek + filter — no new renderer). Warning omens foreshadow
-   the bad endings; guidance omens hint the wise path.
-5. **Scare grading from scores** (the trial's own rule). Choices carry
-   the trial's scare levels: flash + shake + (Android) vibration scaled
-   by how negative the choice was.
-6. **Status updates as mirror.** After each decision, one reflective
-   line under the deltas ("You are curious. Curiosity is not wisdom —
-   yet."), and stats realigned to the source: start 70/10/5, rank from
-   normalised wisdom only (fixes the divergence flagged in
-   SOURCE-NOTES).
-7. **More authored camera in play.** Letterbox bars creep in when she
-   appears; a slow scripted push-in on the pile the first time the
-   prompt shows; a held beat before the decision panel. All track-engine
-   work we already know how to do.
+All five beats exist in the trial with full text (choices, action lines,
+consequence lines, teachings — `docs/source/trial-game-chapters.md`):
 
-### Package B — The Full Episode  (depth: this is the real one)
+| Beat | Place | New build |
+|---|---|---|
+| 1 The Offerings | void deck (built) | restage to the anatomy only |
+| 2 The Presence | his bedroom, night | new small diorama |
+| 3 The Gathering | a spiritual gathering | new small diorama |
+| 4 Back Home | bedroom redressed | redress of beat 2 |
+| 5 The Lesson | void deck at daylight | relight of beat 1 |
 
-Restructure "Chapter 1" from one decision into Master Z's actual Episode
-1 — **five beats, one night**: The Offerings (built) → The Presence (his
-bedroom) → The Gathering (a spiritual gathering) → Back Home (the
-pattern) → The Lesson (daylight). Twenty real choices, his words, his
-scores, already balanced.
+So: two genuinely new dioramas, two re-uses. The engine prerequisite is
+the already-planned extraction of the world builder + scenes into the
+chapter module (roadmap step one of chapter 2 — this work IS that work).
 
-- **Prerequisite** (already roadmap step 1): extract the world builder +
-  cutscenes into the chapter module. Then a "beat" = a small diorama +
-  its choices + its scenes. Four new small dense dioramas (bedroom,
-  gathering, home, daylight void deck — two are redressings).
-- **Long-fuse consequences, parameterized** (their affordable-branching
-  lesson): the same five beats always play, but earlier choices change
-  intensity, lines, and gates. Took the note in beat 1 → the presence
-  in beat 2 is bolder and the drain faster. Asked the adult → beat 4's
-  "ask for help again" resolves warmer, and the finale acknowledges it.
-  8–10 authored ripples per episode, no parallel scenes.
-- **Cliffhanger cards + "Previously" recap** built from the player's own
-  choice log when they return mid-episode.
-- Persistence: the trial's own localStorage pattern (resume mid-episode).
+## Engine pieces the anatomy needs (all linear, all reusable for ch2+)
 
-### Package C — The Storyteller  (the frame that ties chapters together)
+- **Examine system**: registered points of interest → camera take,
+  narration, caption card, "observed" flag; decision gated on a count.
+- **Event timeline**: per-beat scripted escalation events with triggers
+  (time in beat, proximity, observation count) — a thin cousin of the
+  cutscene engine's tracks, running during play.
+- **Beat sequencer**: beat → beat flow with transitions, persistence
+  (resume mid-episode, the trial's localStorage pattern), recap card.
+- **Interstitial player**: voice + dark frame + skip.
+- More scenes per beat = more cutscene authoring, the engine for which
+  already exists and is the project's strongest muscle.
 
-1. **Master Z interstitials** (their Dr. Hill, honestly ours). Between
-   beats, a direct-address moment — his voice (a NEW ElevenLabs voice,
-   distinct from James), a dark room, incense: he reflects on what you
-   did, in his register, and once per episode asks a personalization
-   question ("What do you fear more — what you can see, or what you
-   can't?") whose answer quietly retunes later scares. On-brand: the
-   real Master Z IS the teacher framing device.
-2. **Case-file clues.** 6–8 examinable objects per episode that assemble
-   the actual published case file in a journal; finding them changes
-   narration lines. Finishing a clue line links out to the real file on
-   encounters.triplegem.asia — the game feeds the site.
+## The build order (each step playable and shippable)
 
-## Recommended order
+1. **v3.0 — Beat 1 rebuilt thick, in place.** The existing void deck
+   restaged to the full anatomy: arrival scene, five examinables, gated
+   decision, escalation timeline, split action/consequence scenes for all
+   four choices, transition out. Real Episode 1 Chapter 1 text swapped in
+   (the placeholder choices finally retired). ~10 minutes of directed
+   gameplay where there are ~3 today. **This is the template — Chad
+   approves the feel here before anything is replicated.**
+2. **v3.1 — Beats 2–5** built on the template + the two new dioramas +
+   interstitials. The full 45–60 minute Episode 1.
+3. **v3.2 — polish pass**: omens, Held Breath, ripples, recap cards,
+   scare grading, stat realignment to the trial's scoring.
 
-**A → B → C**, shipped as v3.0 / v3.1 / v3.2. A transforms feel now with
-zero new content risk; B is where "deeper content per chapter" truly
-lands and rides the already-planned engine extraction; C makes the
-multi-chapter frame sing before chapter 2 content lands. Chapter 2 then
-arrives already cinematic.
+## What this costs
 
-## Costs, honestly
+v3.0 is the sound-pass scale of effort — mostly authoring in systems we
+have, plus three new engine pieces (examine, timeline, sequencer), new
+voice lines and a handful of sounds. v3.1 is the big one (two dioramas,
+four beats of authoring, interstitial voice casting). v3.2 is days.
 
-- A: days-scale. No new assets beyond ~6 small sounds + UI; biggest item
-  is Omens' premonition flashes.
-- B: the size of "chapter 2" as originally imagined, plus content wiring;
-  the four dioramas are the long pole. The 16 MB preview-artifact cap
-  will bite on embedded assets — hosted build becomes primary, preview
-  stays playable with beat 1 fully embedded.
-- C: days-to-week. New voice casting needs Chad's ear for the Master Z
-  interstitial voice.
+No package needs alternate scene versions, ever. The five-minute-episode
+problem is solved by staging density, not by outcome multiplication.
