@@ -593,7 +593,7 @@ scene.add(sky);          // added AFTER the chapter's world, so the first Group
 
 /* --------------------------------------------------------------- the ghost */
 /* She is not in the scene at all until you are near the burner — no silhouette
-   to notice early. Inside GHOST_APPEAR_AT she fades up over about a second and
+   to notice early. Inside her appear radius she fades up over about a second and
    walks toward you, stopping short. The trigger is your distance to the BURNER,
    not to her, so it fires however you approach the shrine.                     */
 
@@ -604,10 +604,49 @@ scene.add(sky);          // added AFTER the chapter's world, so the first Group
    against the smoke column, so you notice her from outside — which is the
    whole point of her showing up earlier.                                    */
 const GHOST_HOME = new THREE.Vector3(CH.ghostHome.x, 0, CH.ghostHome.z);
-const GHOST_MIN_DIST = 3.4;                            // never closer than this
-const GHOST_APPEAR_AT = 14.0;                          // measured from the burner, not from her
-const GHOST_DECK_EDGE = -1.2;                          // she does not follow you outside
 const GHOST_FADE_TIME = 1.1;                           // seconds to come fully in
+
+/* HER TERRITORY, AND IT BELONGS TO THE CHAPTER.
+   -------------------------------------------------------------------------
+   Every number here used to be chapter 1's void deck, written into the
+   engine: she never came closer than 3.4 m, she appeared within 14 m of the
+   burner, and she could glide anywhere inside a box 41 m across and 17 m
+   deep. That is not a ghost system, it is chapter 1's ghost system — drop it
+   into a four metre bedroom and she can never come near you, is always "in
+   territory", and glides eighteen metres through the wall into nothing.
+
+   So a chapter may declare `ghost: {...}` and override any of it. Every
+   default below is the value that was hard-coded, unchanged, so chapter 1
+   and the fixture behave exactly as they did — including the three
+   different insets off the old GHOST_DECK_EDGE, which are preserved as
+   offsets from `roam.maxZ` rather than quietly unified.
+
+   MUTATED, never reassigned, like every other chapter-derived value: see
+   the note on setChapter.                                                 */
+const GHOST_TERRITORY = {
+  minDist: 3.4,        // she never comes closer than this
+  appearAt: 14.0,      // ...of the SHRINE, not of her; that is what makes her
+                       //    appear however you approach it
+  near: 5.5, far: 12,  // where a spawn ahead of the player may land
+  cross: [6, 9],       // a crossing walks this far across the view
+  away: [6, 10],       // a flee covers this much ground
+  behind: 2.1,         // how far behind the shrine she first stands
+  // the box she may stand in at all. Chapter 1's is the void deck: wide,
+  // deep, and stopping short of the open grass so she never follows you out.
+  roam: { minX: -20.5, maxX: 20.5, minZ: -18.8, maxZ: -1.45 }
+};
+const GH = { roam: {} };
+function applyGhostTerritory() {
+  const g = CH.ghost || {};
+  for (const k of ['minDist', 'appearAt', 'near', 'far', 'behind']) {
+    GH[k] = Number.isFinite(g[k]) ? g[k] : GHOST_TERRITORY[k];
+  }
+  for (const k of ['cross', 'away']) {
+    GH[k] = Array.isArray(g[k]) && g[k].length === 2 ? g[k].slice() : GHOST_TERRITORY[k].slice();
+  }
+  Object.assign(GH.roam, GHOST_TERRITORY.roam, g.roam || {});
+}
+applyGhostTerritory();
 
 const ghost = new THREE.Group();
 ghost.position.copy(GHOST_HOME);
@@ -723,14 +762,12 @@ function pointInView(x, z, edge) {
   _nv.set(x, 1.3, z).project(camera);
   return _nv.z < 1 && _nv.z > -1 && Math.abs(_nv.x) < edge && Math.abs(_nv.y) < 1.1;
 }
-// The deck ends in a solid wall at z=-19.5 and holds three pillar rows;
-// a spawn the geometry hides is worse than no spawn at all (the review
-// caught this: from the burner, an 11-14 m chase spawn lands BEHIND the
-// wall). So: a rear bound, and a clear line from the player's eyes to
-// her, marched against the same boxes that stop the player.
-const GHOST_DECK_REAR = -18.8;
-const inDeck = (x, z) => z <= GHOST_DECK_EDGE - 0.25 && z >= GHOST_DECK_REAR
-                      && Math.abs(x) <= 20.5;
+// A spawn the geometry hides is worse than no spawn at all (the review
+// caught this on the deck: from the burner, an 11-14 m chase spawn lands
+// BEHIND the rear wall). So: her roam box, and a clear line from the
+// player's eyes to her, marched against the same boxes that stop the player.
+const inRoam = (x, z) => x >= GH.roam.minX && x <= GH.roam.maxX
+                      && z >= GH.roam.minZ && z <= GH.roam.maxZ;
 const _lv = new THREE.Vector3();
 function lineClear(x, z) {
   const px = yaw.position.x, pz = yaw.position.z;
@@ -748,8 +785,9 @@ function ghostPlaceBehindBurner() {
   const px = yaw.position.x - OFFER_POS.x, pz = yaw.position.z - OFFER_POS.z;
   const d = Math.hypot(px, pz) || 1;
   ghost.position.set(
-    THREE.MathUtils.clamp(OFFER_POS.x - (px / d) * 2.1, -20.5, 20.5), 0,
-    Math.min(OFFER_POS.z - (pz / d) * 2.1, GHOST_DECK_EDGE - 0.4));
+    THREE.MathUtils.clamp(OFFER_POS.x - (px / d) * GH.behind,
+                          GH.roam.minX, GH.roam.maxX), 0,
+    Math.min(OFFER_POS.z - (pz / d) * GH.behind, GH.roam.maxZ - 0.15));
 }
 
 // a spot ahead of the player: inside the deck, inside the view, far enough
@@ -759,7 +797,7 @@ function pickAhead(dMin, dMax, spread, edge, minFromPlayer) {
     const dist = dMin + Math.random() * (dMax - dMin);
     const x = yaw.position.x - Math.sin(ang) * dist;
     const z = yaw.position.z - Math.cos(ang) * dist;
-    if (!inDeck(x, z)) continue;
+    if (!inRoam(x, z)) continue;
     if (Math.hypot(x - yaw.position.x, z - yaw.position.z) < minFromPlayer) continue;
     if (!pointInView(x, z, edge)) continue;
     if (!lineClear(x, z)) continue;              // a wall or pillar would hide her
@@ -788,7 +826,7 @@ function stageVariant(v) {
     const ang = yaw.rotation.y + (Math.random() * 2 - 1) * 0.06;
     const x = yaw.position.x - Math.sin(ang) * 2.2;
     const z = yaw.position.z - Math.cos(ang) * 2.2;
-    if (!inDeck(x, z) || !lineClear(x, z)) return false;
+    if (!inRoam(x, z) || !lineClear(x, z)) return false;
     ghost.position.set(x, 0, z);
     gTimer = 1.1;
     audioCues.push({ kind: 'closeScare', pan: 0 });
@@ -805,11 +843,11 @@ function stageVariant(v) {
     const side = Math.random() < 0.5 ? 1 : -1;
     for (let i = 0; i < 8; i++) {
       const half = 0.6 - i * 0.04;                   // narrow until it fits
-      const dist = 6 + Math.random() * 3;
+      const dist = GH.cross[0] + Math.random() * (GH.cross[1] - GH.cross[0]);
       const a0 = yaw.rotation.y + side * half, a1 = yaw.rotation.y - side * half;
       const fx = yaw.position.x - Math.sin(a0) * dist, fz = yaw.position.z - Math.cos(a0) * dist;
       const tx = yaw.position.x - Math.sin(a1) * dist, tz = yaw.position.z - Math.cos(a1) * dist;
-      if (!inDeck(fx, fz) || !inDeck(tx, tz)) continue;
+      if (!inRoam(fx, fz) || !inRoam(tx, tz)) continue;
       if (!pointInView(fx, fz, 1.0) || !pointInView(tx, tz, 1.0)) continue;
       if (!lineClear(fx, fz) || !lineClear(tx, tz)) continue;
       ghost.position.set(fx, 0, fz);
@@ -822,7 +860,7 @@ function stageVariant(v) {
   // flee: first time behind the burner; after that the corner of the eye
   if (appearCount === 1) ghostPlaceBehindBurner();
   else {
-    const spot = pickAhead(5.5, 12, 0.55, 0.88, GHOST_MIN_DIST + 1);
+    const spot = pickAhead(GH.near, GH.far, 0.55, 0.88, GH.minDist + 1);
     if (spot) ghost.position.set(spot.x, 0, spot.z);
     else ghostPlaceBehindBurner();
   }
@@ -863,16 +901,19 @@ function ghostStartGlide(kind) {
     const away = Math.atan2(ghost.position.x - yaw.position.x,
                             ghost.position.z - yaw.position.z);
     const ang = away + (Math.random() - 0.5) * 1.1;
-    const dist = 6 + Math.random() * 4;
-    const tx = THREE.MathUtils.clamp(ghost.position.x + Math.sin(ang) * dist, -20.5, 20.5);
+    const dist = GH.away[0] + Math.random() * (GH.away[1] - GH.away[0]);
+    const tx = THREE.MathUtils.clamp(ghost.position.x + Math.sin(ang) * dist,
+                                     GH.roam.minX, GH.roam.maxX);
+    // a hair inside the box, so a glide never lands exactly on the line
+    // inRoam() tests
     const tz = THREE.MathUtils.clamp(ghost.position.z + Math.cos(ang) * dist,
-                                     GHOST_DECK_REAR, GHOST_DECK_EDGE - 0.3);
+                                     GH.roam.minZ, GH.roam.maxZ - 0.05);
     gGlide = { fx: ghost.position.x, fz: ghost.position.z, tx, tz,
                t: 0, dur: 0.62, ease: 'in4', hover: 0.28, fadeFrom: 0.6 };
   } else {                                           // toward — but never arriving
     const dx = yaw.position.x - ghost.position.x, dz = yaw.position.z - ghost.position.z;
     const d = Math.hypot(dx, dz) || 1;
-    const stop = Math.max(GHOST_MIN_DIST + 0.8, 4.2);
+    const stop = GH.minDist + 0.8;
     const k = Math.max(0, (d - stop) / d);
     gGlide = { fx: ghost.position.x, fz: ghost.position.z,
                tx: ghost.position.x + dx * k, tz: ghost.position.z + dz * k,
@@ -895,7 +936,7 @@ function updateGhost(dt) {
 
   const distToBurner = Math.hypot(yaw.position.x - OFFER_POS.x,
                                   yaw.position.z - OFFER_POS.z);
-  const inTerritory = distToBurner < GHOST_APPEAR_AT;
+  const inTerritory = distToBurner < GH.appearAt;
   const playing = state === 'play';
 
   if (seenThisRun && inTerritory && playing)
@@ -933,7 +974,7 @@ function updateGhost(dt) {
       } else if (gVariant === 'chase') {
         if (gTimer <= 0) ghostStartGlide('toward');
       } else {                                       // flee
-        if (gTimer <= 0 || dPlayer < GHOST_MIN_DIST + 0.6) ghostStartGlide('away');
+        if (gTimer <= 0 || dPlayer < GH.minDist + 0.6) ghostStartGlide('away');
       }
       break;
 
@@ -2801,6 +2842,7 @@ function setChapter(key) {
   SHRINE.set(CH.shrine.x, 0, CH.shrine.z);
   GHOST_HOME.set(CH.ghostHome.x, 0, CH.ghostHome.z);
   Object.assign(BOUNDS, CH.bounds);
+  applyGhostTerritory();           // her reach is the new chapter's, not the old one's
   SPAWN.pos.set(CH.spawn.x, CH.spawn.y, CH.spawn.z);
   SPAWN.rot = 0;
   rebuildStage(CH);
