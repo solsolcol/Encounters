@@ -2567,7 +2567,7 @@ function invPointerUp(e) {
 }
 
 function invOpen() {
-  if (inv.open || state === 'cine' || state === 'title') return;
+  if (inv.open || state !== 'play') return;   // the bag belongs to the walk, not the cards
   inv.open = true;
   invEl().classList.remove('hide');
   document.body.classList.add('invopen');   // the round buttons step aside
@@ -3350,6 +3350,108 @@ function dismissDecision() {
   }
   tryLock();
 }
+/* ── the outcome plays out ────────────────────────────────────────────
+   Nothing on the card is stated; it happens, in order: the stat bars
+   grow or shrink one after another with their numbers counting, then
+   Master Z's teaching writes itself letter by letter, then — only once
+   James has also finished speaking — the button fades in. A tap
+   fast-forwards the animations; the voice gate stays (Chad's call).
+   Muted (or a missing line) resolves the voice gate at once, so nobody
+   is ever stuck waiting for silence.                                  */
+let cardHurry = false, cardSeq = 0;      // seq id guards a stale async chain
+
+function typeText(el, html, cps = 32) {
+  const probe = document.createElement('div');
+  probe.innerHTML = html;
+  const full = probe.textContent;
+  el.textContent = '';
+  el.classList.add('writing');
+  return new Promise(res => {
+    let i = 0, last = performance.now();
+    const mySeq = cardSeq;
+    const step = now => {
+      if (mySeq !== cardSeq) return res();           // card is gone; stop quietly
+      if (cardHurry) i = full.length;
+      i += ((now - last) / 1000) * cps; last = now;
+      const n = Math.min(full.length, Math.floor(i));
+      el.textContent = full.slice(0, n);
+      if (n >= full.length) {
+        el.classList.remove('writing');
+        el.innerHTML = html;                          // any markup comes back intact
+        return res();
+      }
+      requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  });
+}
+
+function animateStatRow(row) {
+  return new Promise(res => {
+    row.classList.add('on');
+    snd('uiclick', 0.3);
+    const bar = row.querySelector('.track i'), val = row.querySelector('.v');
+    const from = +row.dataset.from, to = +row.dataset.to;
+    const t0 = performance.now(), mySeq = cardSeq;
+    const step = now => {
+      if (mySeq !== cardSeq) return res();
+      const k = cardHurry ? 1 : Math.min(1, (now - t0) / 900);
+      const e = 1 - Math.pow(1 - k, 3);
+      const v = from + (to - from) * e;
+      bar.style.width = Math.max(0, Math.min(100, v)) + '%';
+      val.textContent = Math.round(v);
+      if (k >= 1) { snd('uiconfirm', 0.25); return setTimeout(res, cardHurry ? 0 : 140); }
+      requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  });
+}
+
+const STAT_ORDER = ['sanity', 'awareness', 'wisdom'];
+const STAT_ROW = {
+  sanity:    { cls: 'sSan', fill: 'fSan', icon: 'i-san' },
+  awareness: { cls: 'sAwa', fill: 'fAwa', icon: 'i-awa' },
+  wisdom:    { cls: 'sWis', fill: 'fWis', icon: 'i-wis' }
+};
+function statRowsHTML(before, d) {
+  const cl = v => Math.max(0, Math.min(100, v));
+  return STAT_ORDER.filter(k => d[k]).map(k => {
+    const r = STAT_ROW[k], from = cl(before[k]), to = cl(before[k] + d[k]);
+    return `<div class="srow ${r.cls}" data-from="${from.toFixed(0)}" data-to="${to.toFixed(0)}">`
+      + `<svg class="sic" aria-hidden="true"><use href="#${r.icon}"/></svg>`
+      + `<span class="n">${(T('hud.' + k) || k).toUpperCase()}</span>`
+      + `<span class="chip ${d[k] >= 0 ? 'up' : 'dn'}">${d[k] >= 0 ? '+' : ''}${d[k]}</span>`
+      + `<span class="v">${from.toFixed(0)}</span>`
+      + `<span class="track"><i class="${r.fill}" style="width:${from.toFixed(0)}%"></i></span>`
+      + `</div>`;
+  }).join('');
+}
+
+async function runCardSequence(rows, teachEl, teachHTML, speech, btn) {
+  const mySeq = ++cardSeq;
+  cardHurry = false;
+  btn.classList.add('waiting');
+  for (const row of rows) {
+    if (mySeq !== cardSeq) return;
+    await animateStatRow(row);
+  }
+  if (mySeq !== cardSeq) return;
+  teachEl.closest('.teachbox').classList.remove('veiled');
+  await typeText(teachEl, teachHTML);
+  await speech;                          // James finishes before the button
+  if (mySeq !== cardSeq) return;
+  btn.classList.remove('waiting');
+  snd('uiclick', 0.4);
+}
+// a tap anywhere on a card fast-forwards what is still animating
+for (const id of ['result', 'over']) {
+  $(id)?.addEventListener('pointerdown', () => { cardHurry = true; });
+}
+addEventListener('keydown', e => {
+  if ((state === 'result' || state === 'lost')
+      && (e.code === 'Space' || e.code === 'Enter')) cardHurry = true;
+});
+
 let decideOpenedAt = 0;
 function pick(i) {
   if (chosen !== null) return;
@@ -3364,21 +3466,23 @@ function pick(i) {
   // The scene plays first; the numbers and the teaching wait until it is
   // done. The card then rises over whatever the scene left on screen.
   playCine(i, () => {
+    const before = { ...stats };           // the bars animate FROM these
     for (const k in c.d) stats[k] += c.d[k];
-    syncBars();
+    syncBars();                            // the hidden HUD stays truthful
     ui.say.innerHTML = c.say;
-    ui.teach.innerHTML = c.teach;
-    ui.deltas.innerHTML = Object.entries(c.d).map(([k, v]) =>
-      `<span class="${v >= 0 ? 'up' : 'dn'}"><svg class="sic" aria-hidden="true">` +
-      `<use href="#i-${k.slice(0, 3)}"/></svg>${(T('hud.' + k) || k).toUpperCase()} `
-      + `${v >= 0 ? '+' : ''}${v}</span>`).join('');
+    ui.teach.textContent = '';             // it will write itself
+    ui.teach.closest('.teachbox').classList.add('veiled');
+    ui.deltas.innerHTML = statRowsHTML(before, c.d);
+    ui.hud.classList.add('hide');       // the card's bars ARE the bars now
     ui.result.classList.remove('hide');
     state = 'result';
     // the card rises: its swish, the ending's music bed, and the James line
     snd('uicard', 0.6);
     playBed(c.verdict === 'good' || c.verdict === 'best' ? 'endgood' : 'endbad', 0.5);
     duckMusic(15);
-    say('v' + c.k, { again: true });
+    const speech = speak('v' + c.k, { wait: 9000 });
+    runCardSequence([...ui.deltas.querySelectorAll('.srow')],
+                    ui.teach, c.teach, speech, $('nextBtn'));
   });
 }
 /* --------------------------------------------------------- sanity drain ---
@@ -3504,6 +3608,10 @@ function lose() {
     snd('ulost', 0.8);
     ui.over.classList.remove('hide');
     loseSpeech = speak('vlost', { wait: 10000 });
+    const teach = $('overTeach');
+    teach.closest('.teachbox').classList.add('veiled');
+    const teachHTML = T('lost.teaching', teach.innerHTML);
+    runCardSequence([], teach, teachHTML, loseSpeech, $('retryBtn'));
     document.exitPointerLock?.();
   });
 }
@@ -3515,12 +3623,31 @@ function finish() {
   const r = score >= 90 ? 'S' : score >= 80 ? 'A+' : score >= 70 ? 'A'
     : score >= 55 ? 'B' : score >= 40 ? 'C' : 'D';
   ui.rank.textContent = r;
-  ui.pct.textContent = Math.round(score) + '%';
+  ui.rank.classList.add('glow');           // the grade breathes light
   ui.core.innerHTML = CH.core;
   ui.complete.classList.remove('hide');
   ui.hud.classList.add('hide');
   state = 'complete';
   snd('uirank', 0.7);
+
+  // SEALED comes down as a stamp, a beat after the card lands
+  const sealed = ui.complete.querySelector('.sealed');
+  sealed.classList.remove('stampin');
+  void sealed.offsetWidth;                 // restartable on every completion
+  setTimeout(() => { sealed.classList.add('stampin'); snd('kick', 0.5); }, 420);
+
+  // the score rolls up from zero, digits flipping to rest on the real number
+  const target = Math.round(score);
+  ui.pct.textContent = '0%';
+  const t0 = performance.now(), mySeq = ++cardSeq;
+  const roll = now => {
+    if (mySeq !== cardSeq) return;
+    const k = Math.min(1, (now - t0) / 1300);
+    ui.pct.textContent = Math.round(target * (1 - Math.pow(1 - k, 3))) + '%';
+    if (k < 1) requestAnimationFrame(roll);
+    else snd('uiconfirm', 0.35);
+  };
+  requestAnimationFrame(roll);
 }
 
 /* ------------------------------------------------------------- restart ---
@@ -3571,6 +3698,10 @@ function restart() {
   if (narSrc) { try { narSrc.stop(); } catch {} narSrc = null; }
   for (const k in narrated) delete narrated[k];
   fainting = false;
+  cardSeq++;                       // orphan any card animation still running
+  $('nextBtn')?.classList.remove('waiting');
+  $('retryBtn')?.classList.remove('waiting');
+  ui.rank.classList.remove('glow');
   gPhase = 'hidden'; gTimer = 0; gDart = null;
   hauntK = 0; seenThisRun = false;
   audioCues.length = 0; wantLine = null;

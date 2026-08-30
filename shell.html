@@ -341,11 +341,11 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
   background-size:220% 100%;animation:barflow linear infinite}
 .track i::after{content:"";position:absolute;top:0;bottom:0;right:0;width:2px;
   border-radius:2px;background:rgba(255,246,235,.75);filter:blur(.5px)}
-#bSan{background-image:linear-gradient(100deg,#5C160F,#E05543 30%,#FFC7BC 50%,#E05543 70%,#5C160F);
+#bSan,.fSan{background-image:linear-gradient(100deg,#5C160F,#E05543 30%,#FFC7BC 50%,#E05543 70%,#5C160F);
   box-shadow:0 0 9px rgba(226,74,58,.4);animation-duration:2.4s}
-#bAwa{background-image:linear-gradient(100deg,#7A4415,#FFB367 30%,#FFE8CE 50%,#FFB367 70%,#7A4415);
+#bAwa,.fAwa{background-image:linear-gradient(100deg,#7A4415,#FFB367 30%,#FFE8CE 50%,#FFB367 70%,#7A4415);
   box-shadow:0 0 9px rgba(255,179,103,.32);animation-duration:3.2s}
-#bWis{background-image:linear-gradient(100deg,#1C544C,#63D6C8 30%,#D8FBF6 50%,#63D6C8 70%,#1C544C);
+#bWis,.fWis{background-image:linear-gradient(100deg,#1C544C,#63D6C8 30%,#D8FBF6 50%,#63D6C8 70%,#1C544C);
   box-shadow:0 0 9px rgba(99,214,200,.32);animation-duration:4.1s}
 @keyframes barflow{from{background-position:0% 0}to{background-position:-220% 0}}
 @media (prefers-reduced-motion:reduce){.track i,.stat svg.sic{animation:none}}
@@ -446,16 +446,46 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
 #result .card,#complete .card,#over .card{width:min(600px,100%);max-height:88vh;overflow-y:auto;
   opacity:1;animation:fadeup .5s var(--ease)}
 @keyframes fadeup{from{transform:translateY(14px)}}
-#deltas{display:flex;gap:16px;margin:14px 0 22px;flex-wrap:wrap}
-#deltas span{font-family:var(--mono);font-size:1.1rem;font-weight:700;letter-spacing:.04em;
-  font-variant-numeric:tabular-nums;display:inline-flex;align-items:center;gap:7px}
-#deltas .up{color:var(--jade)} #deltas .dn{color:var(--seal)}
+/* ── the outcome plays out, it is not stated ─────────────────────────
+   The HUD's own bars reappear in the middle of the card and MOVE: each
+   stat row lights up in turn and its bar grows or shrinks to the new
+   value like an exp bar, the +N/−N chip popping beside it. JS drives
+   the width by rAF (no transition), so the count and the bar agree.  */
+#deltas{display:flex;flex-direction:column;gap:13px;margin:18px 0 24px}
+.srow{display:grid;grid-template-columns:auto 1fr auto auto;gap:4px 10px;
+  align-items:center;opacity:0;transform:translateY(7px);
+  transition:opacity .3s,transform .3s var(--ease)}
+.srow.on{opacity:1;transform:none}
+.srow svg.sic{width:19px;height:19px}
+.srow .n{font-family:var(--ui);font-size:.95rem;letter-spacing:.07em;
+  font-weight:600;color:#B9BFC9;text-transform:uppercase;text-align:left}
+.srow .v{font-family:var(--mono);font-size:1.2rem;font-weight:700;
+  font-variant-numeric:tabular-nums;color:var(--bone);min-width:2.6ch;text-align:right}
+.srow .chip{font-family:var(--mono);font-weight:700;font-size:1.02rem;
+  transform:scale(.4);opacity:0;
+  transition:transform .35s cubic-bezier(.2,1.6,.4,1),opacity .2s}
+.srow.on .chip{transform:none;opacity:1}
+.srow .chip.up{color:var(--jade)} .srow .chip.dn{color:var(--seal)}
+.srow .track{grid-column:1/-1}
+.srow .track i{transition:none}
 #say{font-size:1.34rem;line-height:1.6;color:#CDD2DB;margin-top:14px;text-wrap:pretty}
 .teachbox{margin-top:28px;padding:24px 26px;border:1px solid var(--line);
   background:linear-gradient(180deg,rgba(27,31,40,.7),rgba(18,21,28,.4))}
 .teachbox .stencil{color:var(--sodium);display:block;margin-bottom:14px}
-#teach{font-family:var(--ui);font-size:1.44rem;line-height:1.55;font-weight:500;
-  color:var(--bone);text-wrap:pretty}
+/* Master Z's words arrive as script unveiling itself: serif italics,
+   letter by letter (typeText in code), a soft caret while it writes */
+#teach,#overTeach{font-family:"Cormorant Garamond",Georgia,serif;font-style:italic;
+  font-size:1.62rem;line-height:1.5;font-weight:500;
+  color:var(--bone);text-wrap:pretty;min-height:1.5em}
+.writing::after{content:"";display:inline-block;width:2px;height:1em;
+  vertical-align:-.14em;margin-left:2px;background:var(--sodium);
+  animation:caret 1s steps(2) infinite}
+@keyframes caret{to{visibility:hidden}}
+.teachbox.veiled{opacity:0}
+.teachbox{transition:opacity .4s}
+/* a button that is not ready yet is not there yet */
+#nextBtn.waiting,#retryBtn.waiting{opacity:0;pointer-events:none;transform:translateY(8px)}
+#nextBtn,#retryBtn{transition:opacity .45s,transform .45s var(--ease),background .18s}
 #nextBtn,#againBtn,#retryBtn{margin-top:26px;font-family:var(--ui);font-size:1.08rem;
   font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--void);
   background:var(--bone);border:0;padding:16px 34px;cursor:pointer;
@@ -475,6 +505,23 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
 .sealed{position:absolute;top:2px;right:6px;transform:rotate(-13deg);
   border:2px solid var(--seal);color:var(--seal);font-family:var(--ui);
   font-size:.92rem;font-weight:700;letter-spacing:.1em;padding:6px 11px;opacity:.9}
+/* the stamp comes DOWN: oversized and clear of the page, then slammed flat
+   with a shockwave flash. Replayed by re-adding the class. */
+.sealed.stampin{animation:stampin .5s cubic-bezier(.16,.9,.28,1) both}
+@keyframes stampin{
+  0%{opacity:0;transform:rotate(-4deg) scale(2.6)}
+  62%{opacity:1;transform:rotate(-14.5deg) scale(.94)}
+  78%{transform:rotate(-12.5deg) scale(1.05)}
+  100%{opacity:.9;transform:rotate(-13deg) scale(1)}}
+.sealed.stampin::after{content:"";position:absolute;inset:-9px;border-radius:4px;
+  box-shadow:0 0 0 2px rgba(178,58,46,.55),0 0 34px 8px rgba(178,58,46,.4);
+  animation:stampwave .6s .3s ease-out both;pointer-events:none}
+@keyframes stampwave{from{opacity:1;transform:scale(.86)}to{opacity:0;transform:scale(1.25)}}
+#rank.glow{animation:rankglow 2.8s ease-in-out infinite}
+@keyframes rankglow{
+  0%,100%{text-shadow:0 0 12px rgba(255,179,103,.25),0 0 30px rgba(255,179,103,.12)}
+  50%{text-shadow:0 0 22px rgba(255,179,103,.65),0 0 60px rgba(255,179,103,.35)}}
+@media (prefers-reduced-motion:reduce){#rank.glow,.sealed.stampin{animation:none}}
 #core{font-family:var(--ui);font-size:1.4rem;line-height:1.55;font-weight:500;
   color:var(--bone);max-width:40ch;margin:22px auto 0;text-wrap:pretty}
 
@@ -789,7 +836,7 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
     <p id="overSay" data-t="lost.say">Your nerve went before your legs did.</p>
     <div class="teachbox">
       <span class="stencil" data-t="lost.teachingLabel">Master Z&rsquo;s teaching</span>
-      <p data-t="lost.teaching">Fear is not the danger.</p>
+      <p id="overTeach" data-t="lost.teaching">Fear is not the danger.</p>
     </div>
     <button id="retryBtn" data-t="lost.retry">Walk it again</button>
   </div>
