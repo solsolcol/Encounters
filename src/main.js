@@ -24,7 +24,14 @@ import { clone as cloneSkinned } from 'three/examples/jsm/utils/SkeletonUtils.js
 /* The chapter to play. Both builds guarantee the chapter script has already
    run: the hosted page loads chapters/ch1.js before game.js (two cached
    files), and the single-file build concatenates it ahead of the engine.   */
-const CH = (window.__CHAPTERS__ || {}).ch1;
+/* Which chapter this boot runs. ?ch=<key> selects from the registry —
+   the seam per-chapter tests and deep links use — and anything unknown
+   falls back to ch1, so a bad link is never a broken boot. */
+const CH_KEY = (() => {
+  const want = new URLSearchParams(location.search).get('ch');
+  return want && (window.__CHAPTERS__ || {})[want] ? want : 'ch1';
+})();
+const CH = (window.__CHAPTERS__ || {})[CH_KEY];
 if (!CH) throw new Error('no chapter registered — chapters/ch1.js must load before the engine');
 
 /* ------------------------------------------------------------- assets ----
@@ -2625,6 +2632,47 @@ inv.gear.rightHand = 'beads';
 inv.bag[0] = 'phone';
 inv.bag[1] = 'keys';
 
+/* ── the state seam ─────────────────────────────────────────────────────
+   Everything a run IS, as plain JSON: the chapter key, the three stats,
+   what is worn and carried. This is CHECKPOINT state — what a save at a
+   chapter boundary needs and what a test needs to stage chapter N
+   directly. It is deliberately NOT a quicksave: her phase, cutscene
+   progress and timers are not state; she re-arms from hidden after any
+   restore, which is also the correct staging. If it cannot be JSON, it
+   is not state. Chapter 2 wires persistence to this; the harnesses use
+   it today via window.__enc.                                          */
+function worldState() {
+  return {
+    v: 1,
+    ch: CH_KEY,
+    stats: { sanity: stats.sanity, awareness: stats.awareness, wisdom: stats.wisdom },
+    inv: { gear: { ...inv.gear }, bag: [...inv.bag] }
+  };
+}
+function applyState(st) {
+  if (!st || typeof st !== 'object' || st.v !== 1) return false;
+  if (!st.stats || typeof st.stats !== 'object') return false;
+  const num = (v, fb) => {
+    const n = +v;
+    return Number.isFinite(n) ? Math.max(0, Math.min(100, n)) : fb;
+  };
+  // a lifted item lives outside gear and bag; applying over it would
+  // duplicate whatever the hand was holding
+  invCancel();
+  stats.sanity = num(st.stats.sanity, stats.sanity);
+  stats.awareness = num(st.stats.awareness, stats.awareness);
+  stats.wisdom = num(st.stats.wisdom, stats.wisdom);
+  if (st.inv && typeof st.inv === 'object') {
+    const ok = id => (typeof id === 'string' && ITEM_DEFS[id]) ? id : null;
+    for (const k of GEAR_SLOTS) inv.gear[k] = ok(st.inv.gear?.[k]);
+    const bag = Array.isArray(st.inv.bag) ? st.inv.bag : [];
+    for (let i = 0; i < BAG_SIZE; i++) inv.bag[i] = ok(bag[i]);
+    if (inv.open) invPaint();
+  }
+  syncBars();
+  return true;
+}
+
 /* the game gives items out; chapters and scenes call these */
 function invAdd(id) {
   if (!ITEM_DEFS[id]) return false;
@@ -4147,6 +4195,7 @@ window.__enc = { yaw, stats, blockers: BLOCKERS, getState: () => state,
                                      appearances: appearCount }),
                  dismissDecision, ghostDrainRate, lose, setMuted, showCredits,
                  snd, say, loopVol, sting, updateAudioFrame, pulseSpike,
+                 worldState, applyState,
                  invOpen, invClose, invToggle, invAdd, invHas, invRemove,
                  inv: () => ({ gear: { ...inv.gear }, bag: [...inv.bag],
                                held: inv.held?.id || null, open: inv.open }),

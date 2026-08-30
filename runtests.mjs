@@ -6,6 +6,8 @@
 
      node runtests.mjs                 every test
      node runtests.mjs pile step       only those
+     node runtests.mjs @engine         a group (engine | release); chapter
+                                       groups arrive with chapter 2
      node runtests.mjs --quick         the ones that do not need a real
                                        viewport, for a change mid-flight     */
 
@@ -13,30 +15,32 @@ import { spawn } from 'child_process';
 import { DIR } from './testlib.mjs';
 
 const ALL = [
-  { name: 'census',   file: 'census.mjs',    quick: true,  why: 'every system present and running' },
-  { name: 'csp',      file: 'csptest.mjs',   quick: true,  why: 'the hand-parsed loaders still work with no blob:/data:' },
-  { name: 'ghost',    file: 'ghosttest.mjs', quick: true,  why: 'her repertoire: flee, chase, cross, close; upright, in view' },
-  { name: 'motion',   file: 'motion.mjs',    quick: true,  why: 'the hands bob, sway and lean' },
-  { name: 'pile',     file: 'piletest.mjs',  quick: true,  why: 'the heap highlights, prompts and opens' },
-  { name: 'step',     file: 'steptest.mjs',  quick: true,  why: 'nothing opens by itself; stepping back works' },
-  { name: 'sanity',   file: 'sanitytest.mjs',quick: true,  why: 'the drain, the freeze, and losing' },
-  { name: 'tick',     file: 'ticktest.mjs',  quick: true,  why: 'damage numbers and the type scale' },
-  { name: 'sound',    file: 'soundtest.mjs', quick: true,  why: 'music, the voice line, mute, credits' },
-  { name: 'perf',     file: 'perftest.mjs',  quick: true,  why: 'frame pacing, frozen shadows, drift' },
-  { name: 'cine',     file: 'cinetest.mjs',  quick: true,  why: 'all four cutscenes, skip, restore' },
-  { name: 'restart',  file: 'restarttest.mjs', quick: true, why: 'both endings start a fresh run in place' },
-  { name: 'hosted',   file: 'hostedtest.mjs', quick: true, why: 'the split-file build over real HTTP' },
-  { name: 'text',     file: 'texttest.mjs',  quick: true,  why: 'every word on screen is editable from the sheet' },
-  { name: 'inv',      file: 'invtest.mjs',   quick: true,  why: 'equipment opens, moves and loses nothing, on both' },
-  { name: 'title',    file: 'titletest.mjs', quick: false, why: 'logo, button, chapter card' },
-  { name: 'final',    file: 'final.mjs',     quick: false, why: 'the whole walk, on a real phone and desktop' },
+  { name: 'census',   file: 'census.mjs',    quick: true,  group: 'engine', why: 'every system present and running' },
+  { name: 'csp',      file: 'csptest.mjs',   quick: true,  group: 'engine', why: 'the hand-parsed loaders still work with no blob:/data:' },
+  { name: 'ghost',    file: 'ghosttest.mjs', quick: true,  group: 'engine', why: 'her repertoire: flee, chase, cross, close; upright, in view' },
+  { name: 'motion',   file: 'motion.mjs',    quick: true,  group: 'engine', why: 'the hands bob, sway and lean' },
+  { name: 'pile',     file: 'piletest.mjs',  quick: true,  group: 'engine', why: 'the heap highlights, prompts and opens' },
+  { name: 'step',     file: 'steptest.mjs',  quick: true,  group: 'engine', why: 'nothing opens by itself; stepping back works' },
+  { name: 'sanity',   file: 'sanitytest.mjs',quick: true,  group: 'engine', why: 'the drain, the freeze, and losing' },
+  { name: 'tick',     file: 'ticktest.mjs',  quick: true,  group: 'engine', why: 'damage numbers and the type scale' },
+  { name: 'sound',    file: 'soundtest.mjs', quick: true,  group: 'engine', why: 'music, the voice line, mute, credits' },
+  { name: 'perf',     file: 'perftest.mjs',  quick: true,  group: 'engine', why: 'frame pacing, frozen shadows, drift' },
+  { name: 'cine',     file: 'cinetest.mjs',  quick: true,  group: 'engine', why: 'all four cutscenes, skip, restore' },
+  { name: 'restart',  file: 'restarttest.mjs', quick: true, group: 'engine', why: 'both endings start a fresh run in place' },
+  { name: 'hosted',   file: 'hostedtest.mjs', quick: true, group: 'release', why: 'the split-file build over real HTTP' },
+  { name: 'text',     file: 'texttest.mjs',  quick: true,  group: 'engine', why: 'every word on screen is editable from the sheet' },
+  { name: 'state',    file: 'statetest.mjs', quick: true,  group: 'engine', why: 'a run is JSON: save, seed, round-trip exactly' },
+  { name: 'inv',      file: 'invtest.mjs',   quick: true,  group: 'engine', why: 'equipment opens, moves and loses nothing, on both' },
+  { name: 'title',    file: 'titletest.mjs', quick: false, group: 'release', why: 'logo, button, chapter card' },
+  { name: 'final',    file: 'final.mjs',     quick: false, group: 'release', why: 'the whole walk, on a real phone and desktop' },
 ];
 
 const args = process.argv.slice(2);
 const quickOnly = args.includes('--quick');
 const picked = args.filter(a => !a.startsWith('--'));
 const jobs = ALL.filter(t =>
-  (picked.length ? picked.includes(t.name) : true) && (!quickOnly || t.quick));
+  (picked.length ? picked.includes(t.name) || picked.includes('@' + t.group) : true)
+  && (!quickOnly || t.quick));
 
 if (!jobs.length) {
   console.log('nothing matched. known:', ALL.map(t => t.name).join(' '));
