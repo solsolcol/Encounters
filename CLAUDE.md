@@ -183,12 +183,16 @@ preview artifact removed the 16 MB cap that was making compression
 urgent, so it is now a plain download-speed improvement to schedule when
 convenient, not a blocker on new assets.
 
-Next up: **chapter 2** — extract the world builder + cutscenes into the
-chapter module, add a chapter picker (registry + on-demand chapter
-script loading is already the mechanism), build the new location, swap
-in Master Z's real chapter-1 text along the way. The extraction is a
-pure refactor of the reference build: the base game must play
-identically after it, and the suite is how that is proved.
+Next up: **chapter 2**, and before any of it the foundation work in
+`docs/SCALING-FOUNDATION.md` — the ordered list of what has to be true
+for ~10 chapters not to bloat the download or the test suite. Short
+form: a JSON state seam first (the engine can build exactly one world
+state today, which is the real reason chapter N cannot be tested
+directly), then the world-builder/cutscene extraction behind a chapter
+interface, then a synthetic fixture chapter so most harnesses stop
+loading a real one. The extraction is a pure refactor of the reference
+build: the base game must play identically after it, and the suite is
+how that is proved.
 
 `docs/LEARNINGS.md` is the catalog of every hard-won lesson (CSP traps,
 audio traps, cutscene staging, test flakiness). When something in this
