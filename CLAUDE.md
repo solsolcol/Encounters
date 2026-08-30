@@ -50,7 +50,7 @@ from his **phone**. Consequences:
 5. The generated files (`hellnote.html`, `wrapped.html`, `bundle.js`,
    `dist/`) are never edited by hand.
 
-## Architecture (v3.7)
+## Architecture (v3.8)
 
 One source, two builds, built by `npm run build` (esbuild → `build.py` →
 `wrap.py`):
@@ -218,10 +218,34 @@ What the baseline contains, by release:
   audio, James's scared reactions, chunk sanity drain.
 - **v3.4–v3.6** the scaling foundation (below) and autosave/resume.
 - **v3.7** the presentation pass: every outcome card reads as glass, the
-  viewmodel gained a forearm, a kicking leg and real añjali hands, the
   title screen plays a darkened looping video, the teaching types with a
   key tick, and all four cutscenes got their voice — 32 cues across the
   four scenes, up from 19, with the cartoonish `whoosh` retired.
+- **v3.8** real art where there was code: a bought first-person ARM rig
+  (`arms.glb`, credited to Fab) replaces the wrist-only hand pack and the
+  forearm that was built out of cylinders to cover for it, and the hell
+  notes are a real photographed note (`assets/hellnote.webp`) instead of
+  a canvas drawing. The kicking leg built in v3.7 is gone — Chad's call;
+  the kick is told by the camera again.
+
+  Two things to know before touching either. **glTF strips dots from node
+  names**: `hand.R` in the file is `handR` in the scene, and a bone lookup
+  that gets this wrong fails silently — every name returns undefined and
+  the hand simply never poses. And the arm model is **scaled at load to a
+  measured hand length**, wrist to middle fingertip, rather than trusted:
+  packs export in different units (this one arrives through Blender's FBX
+  path with a ×100 armature) and a viewmodel a hundred times life size is
+  a wall of skin. Measure from BONES, never from `Box3.setFromObject` —
+  on a skinned mesh that reports the bind pose.
+
+  The note art loads through `loadImageTexture()` (bytes → Blob →
+  `createImageBitmap`, the same CSP-safe path as the logo) and reaches the
+  chapter through `stage.setNoteTexture()`, re-applied after every
+  rebuild. The chapter builds with the drawn note immediately and swaps,
+  so a 330 KB download is never on the first frame's path. It is also
+  BRIGHTENED as it goes in (colour ×1.75, a little emissive): a saturated
+  print at this light level collapses into a dark tile and reads worse
+  than the flat card it replaced — the opposite of what you would guess.
 
 The anchors for that baseline: tag `v3.3`, commit `c8abf61`, the
 `Encounters-backup.bundle` Chad holds (it carries the tag), and the

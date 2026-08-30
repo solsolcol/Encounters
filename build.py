@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = '3.7'
+VERSION = '3.8'
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -52,10 +52,14 @@ print(f'  audiopack: {len(pack)} sounds, '
 # things the first frame needs, false for sound, which the engine pulls itself
 # at low priority so it never competes with the models.
 ASSETS = {
-    'hands':  ('vrhands_fixed.glb', True, True),
+    'hands':  ('arms.glb', True, True),
     'ghost':  ('ghost.glb', True, True),
     'hdb':    ('hdb.glb', True, True),
     'logo':   ('assets/logo.webp', True, True),
+    # the real hell-note art. Not preloaded: the chapter builds with the
+    # drawn note straight away and swaps this in when it lands, so a
+    # 330 KB image is never on the first frame's critical path.
+    'hellnote': ('assets/hellnote.webp', True, False),
     'music':  ('assets/music.mp3', True, False),
     'voice':  ('assets/voice.mp3', True, False),
     'audiopack': ('assets/audiopack.json', True, False),

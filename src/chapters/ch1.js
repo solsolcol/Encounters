@@ -81,7 +81,10 @@
     // Keys into the engine's asset table. Anything every chapter uses (hands,
     // ghost, logo, music, the sound pack) is the engine's own; these are the
     // files that exist only because this chapter does.
-    assets: ['hdb', 'voice']
+    assets: ['hdb', 'voice', 'hellnote'],
+    // the asset key holding this chapter's note art; the engine loads it and
+    // hands it back through setNoteTexture() once it lands
+    noteArt: 'hellnote'
   };
 
   /* ====================================================================== */
@@ -92,7 +95,7 @@
     const { THREE, GLTFLoader, scene, camera, yaw, LOW,
             assetBytes, rescueTextures, redoShadows,
             cnv, makeSoftDot, makeGround, makeGrass, makeConcrete, makeLacquer,
-            makeHellNote, getState, startDecision } = ctx;
+            makeHellNote, loadImageTexture, getState, startDecision } = ctx;
 
     // The burner and everything that belongs to it — light, smoke, embers,
     // notes, the trigger radius — are positioned from this one point, so the
@@ -342,9 +345,17 @@
 
   // hell notes: hundreds of them, so one InstancedMesh rather than hundreds of
   // objects — the whole drift is a single draw call either way.
+  /* The real note is 1.667 wide to 1 tall — banknote proportions, not the
+     2:1 the drawn placeholder happened to be. The plane follows the ART, or
+     every one of the five hundred is squashed by a sixth.
+
+     `color` above 1 and a little emissive is not a cheat: a saturated print
+     under this much darkness collapses to a dark tile, and the note ends up
+     LESS readable than the flat card it replaced. Paper this bright catches
+     firelight, and these are meant to be seen. */
   const noteMat = new THREE.MeshStandardMaterial({
     map: noteTex, roughness: 0.88, side: THREE.DoubleSide });
-  const noteGeo = new THREE.PlaneGeometry(0.30, 0.15);
+  const noteGeo = new THREE.PlaneGeometry(0.30, 0.18);
 
   const OFFER_X = SHRINE.x, OFFER_Z = SHRINE.z;   // the burner everything blew away from
   const _m = new THREE.Matrix4(), _q = new THREE.Quaternion();
@@ -456,7 +467,7 @@
   world.add(pile);
 
   const pileMat = new THREE.MeshStandardMaterial({ map: noteTex, roughness: 0.86 });
-  const pileNoteGeo = new THREE.BoxGeometry(0.30, 0.009, 0.16);
+  const pileNoteGeo = new THREE.BoxGeometry(0.30, 0.009, 0.18);
   const pileNotes = [];
   for (let i = 0; i < 30; i++) {
     const r = Math.sqrt(Math.random()) * PILE_R;
@@ -889,6 +900,25 @@
       set noteStorm(v) { noteStorm = v; },
 
       updateNotes, updatePile, updateFire, updateSlow,
+      /* The drawn note is a placeholder. build() is synchronous and runs
+         long before a download lands, so the world is made with the drawn
+         one and the real art arrives here — every note, the pile, the hero
+         note and (through the engine) the one in your hand, all at once.
+
+         The brightening comes with the art, not before it: the print is
+         saturated and dark, and at this light level it collapses into a
+         tile unless the paper is lifted and given a little of its own
+         glow. The drawn placeholder needs none of that. */
+      setNoteTexture(tex) {
+        if (!tex) return;
+        for (const m of [noteMat, pileMat, heroNote.material]) {
+          m.map = tex;
+          m.color.setScalar(1.75);
+          m.emissive.setScalar(0.20);
+          m.emissiveMap = tex;
+          m.needsUpdate = true;
+        }
+      },
       snap, restore, reset, dispose
     });
   }
@@ -988,7 +1018,7 @@ function scPickUp(c, s, api) {                       /* A — you take it */
 function scKick(c, s, api) {                         /* B — the burner goes over */
   const { tr, step, sfx, fade, camTo, yawTo, pitchTo, bob, ghostGlide,
           ghostFacePlayer, faceFrom, rawK, stage, camera, ghost, ghostLight,
-          ghostOpacity, dirtyShadows, leg, legRest } = api;
+          ghostOpacity, dirtyShadows } = api;
     const P = { x: 0.35, y: 1.62, z: -4.9 };
     const faceDrum = faceFrom(P.x, P.z, DRUM_W.x, DRUM_W.z);
 
@@ -998,42 +1028,6 @@ function scKick(c, s, api) {                         /* B — the burner goes ov
     // she may already be stood right here from normal play — the scene owns
     // her now, and she is not part of this shot until the drum has gone over
     step(0, () => { ghostOpacity(0); });
-
-    /* The leg. It was told entirely by the camera before — the drum simply
-       fell over while a hand hovered at the edge of frame — so now the foot
-       actually swings through the shot: up from below the frame, extended
-       at the moment of contact, then back down out of view. The engine owns
-       the limb; this scene only borrows it and gives it back.            */
-    /* Angled down and swept to the left, never pointed at the lens. A shin
-       aimed straight at the target is what a kick really does, and it looks
-       like a barrel: all you see is the end of the cylinder. Held at about
-       thirty degrees below the horizontal it reads as a leg, and the shoe
-       — which is the thing the shot is about — stays the far end of it.
-       The drum sits left of the camera here, so the foot sweeps that way. */
-    const SWING = [
-      { t: 0.62, p: [0.10, -0.78, -0.52], r: [-1.15, 0.00] },   // below frame
-      // the knee has to clear the bottom edge: at half a metre the visible
-      // half-height is only about 0.25, so −0.34 was entirely off screen
-      { t: 0.98, p: [0.05, -0.10, -0.50], r: [-0.55, 0.26] },   // contact
-      { t: 1.30, p: [0.02, -0.05, -0.58], r: [-0.42, 0.36] },   // follow through
-      { t: 1.85, p: [0.10, -0.78, -0.52], r: [-1.15, 0.00] }    // and gone
-    ];
-    // the hand goes away while the foot works: nobody holds a hand out in
-    // front of themselves to kick something, and it sat right on top of the
-    // shoe. restoreWorld puts it back from the snapshot.
-    step(SWING[0].t, () => { leg.visible = true; api.armR.visible = false; });
-    step(1.90, () => { api.armR.visible = true; });
-    for (let i = 0; i < SWING.length - 1; i++) {
-      const a = SWING[i], b2 = SWING[i + 1];
-      tr(a.t, b2.t, k => {
-        leg.position.set(a.p[0] + (b2.p[0] - a.p[0]) * k,
-                         a.p[1] + (b2.p[1] - a.p[1]) * k,
-                         a.p[2] + (b2.p[2] - a.p[2]) * k);
-        leg.rotation.set(a.r[0] + (b2.r[0] - a.r[0]) * k,
-                         a.r[1] + (b2.r[1] - a.r[1]) * k, 0);
-      }, i === 0 ? rawK : undefined);
-    }
-    step(SWING[SWING.length - 1].t, () => { leg.visible = false; });
 
     // the kick, told by its impact
     camTo(0.9, 1.2, P, { x: P.x - 0.32, y: 1.40, z: P.z - 0.55 }, rawK);
