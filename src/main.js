@@ -1216,25 +1216,45 @@ function ghostInView() {
   return _ndc.z < 1 && Math.abs(_ndc.x) < 1.08 && Math.abs(_ndc.y) < 1.15;
 }
 
-/* Her rhythm is a horror film's, not a zombie's. She shows herself, holds
-   just long enough to be believed, then whips away — and is somewhere else
-   the next time you blink: a standing figure behind the burner first, then
-   the corner of your eye, again and again. One state machine owns it.
+/* Her rhythm is a horror film's. The first sight is a standing figure
+   behind the burner that flees when believed. After that she has a
+   repertoire, and the player never knows which one is coming:
 
-   The drain is deliberately NOT tied to the flickers: once she has shown
-   herself, standing your ground in her territory keeps costing you whether
-   she is on screen this instant or not (hauntK below). Walking out of
-   range remains the honest exit — everything ramps down and re-arms.     */
-let gPhase = 'hidden';        // hidden | appear | standing | dart | gone | fade
-let gTimer = 0;               // seconds left in the current phase
-let gDart = null;             // the flight in progress
+     flee   — the corner of your eye; stands a beat, then whips away
+     chase  — glides straight AT you out of the dark, gone before she arrives
+     cross  — passes left-to-right (or mirrored) through your view
+     close  — simply THERE, an arm's length from your face, then not
+
+   Rules that hold for all of them, from Chad's notes: she is always
+   perfectly upright and facing you (yaw is the only rotation ever
+   touched, and the walk animation NEVER advances while she moves — the
+   swimming lean of the walk cycle is what read as a tilt); she never
+   arcs up-and-down mid-flight (a low hover, held); every spawn point is
+   projected through the real camera so she appears INSIDE your view;
+   and each appearance takes a bite out of sanity, not a trickle.      */
+let gPhase = 'hidden';        // hidden | appear | standing | glide | gone | fade
+let gVariant = 'flee';        // what THIS appearance does
+let lastVariant = '';         // never the same trick twice in a row
+let appearCount = 0;          // 1 = behind the burner, 2 = always the chase
+let gTimer = 0;
+let gGlide = null;            // { fx,fz,tx,tz,t,dur,ease,hover,fadeFrom }
 let hauntK = 0;               // her presence for the drain — outlasts the flickers
-let seenThisRun = false;      // the hair-raising strings are for the FIRST sight only
+let seenThisRun = false;      // the strings are for the FIRST sight only
 const audioCues = [];         // machine -> audio frame; replayed until samples exist
 
+const CHUNK = { flee: 4, chase: 7, cross: 5, close: 10 };   // sanity per sighting
+
+const _nv = new THREE.Vector3();
+function pointInView(x, z, edge) {
+  // through the REAL camera, so "in view" means on the player's screen —
+  // matrices forced because the fixed-clock tests never render
+  yaw.updateMatrixWorld(true);
+  _nv.set(x, 1.3, z).project(camera);
+  return _nv.z < 1 && _nv.z > -1 && Math.abs(_nv.x) < edge && Math.abs(_nv.y) < 1.1;
+}
+const inDeck = (x, z) => z <= GHOST_DECK_EDGE - 0.25 && Math.abs(x) <= 20.5;
+
 function ghostPlaceBehindBurner() {
-  // the burner sits between you and her: the first sight is a figure
-  // standing in the smoke column, right where the offerings burn
   const px = yaw.position.x - OFFER_POS.x, pz = yaw.position.z - OFFER_POS.z;
   const d = Math.hypot(px, pz) || 1;
   ghost.position.set(
@@ -1242,44 +1262,141 @@ function ghostPlaceBehindBurner() {
     Math.min(OFFER_POS.z - (pz / d) * 2.1, GHOST_DECK_EDGE - 0.4));
 }
 
-function ghostSpotInCorner() {
-  // somewhere she can be half-seen: near the edge of your view, inside the
-  // deck, never at arm's length. Sampled, not solved — a bad sample just
-  // tries another angle, and behind the burner is always a valid fallback.
-  for (let i = 0; i < 10; i++) {
-    const side = Math.random() < 0.5 ? 1 : -1;
-    const off = side * (0.38 + Math.random() * 0.34);      // 22–41° off your gaze
-    const ang = yaw.rotation.y + off;
-    const dist = 5.5 + Math.random() * 6.5;
+// a spot ahead of the player: inside the deck, inside the view, far enough
+function pickAhead(dMin, dMax, spread, edge, minFromPlayer) {
+  for (let i = 0; i < 14; i++) {
+    const ang = yaw.rotation.y + (Math.random() * 2 - 1) * spread;
+    const dist = dMin + Math.random() * (dMax - dMin);
     const x = yaw.position.x - Math.sin(ang) * dist;
     const z = yaw.position.z - Math.cos(ang) * dist;
-    if (z > GHOST_DECK_EDGE - 0.3 || Math.abs(x) > 20.5) continue;
-    if (Math.hypot(x - yaw.position.x, z - yaw.position.z) < GHOST_MIN_DIST + 1) continue;
+    if (!inDeck(x, z)) continue;
+    if (Math.hypot(x - yaw.position.x, z - yaw.position.z) < minFromPlayer) continue;
+    if (!pointInView(x, z, edge)) continue;
     return { x, z };
   }
-  ghostPlaceBehindBurner();
-  return { x: ghost.position.x, z: ghost.position.z };
+  return null;
 }
 
-function ghostStartDart() {
-  // she flees AWAY from you, roughly, with spread — hovering, and on an
-  // accelerating curve: a slow lift-off that whips into nothing
-  const away = Math.atan2(ghost.position.x - yaw.position.x,
-                          ghost.position.z - yaw.position.z);
-  const ang = away + (Math.random() - 0.5) * 1.2;
-  const dist = 6 + Math.random() * 4;
-  const tx = THREE.MathUtils.clamp(ghost.position.x + Math.sin(ang) * dist, -20.5, 20.5);
-  const tz = Math.min(ghost.position.z + Math.cos(ang) * dist, GHOST_DECK_EDGE - 0.3);
-  gDart = { fx: ghost.position.x, fz: ghost.position.z, tx, tz, t: 0, dur: 0.72 };
-  gPhase = 'dart';
-  audioCues.push({ kind: 'dart' });
-  pulseSpike(0.35);
+function chooseVariant() {
+  appearCount++;
+  if (appearCount === 1) return 'flee';
+  if (appearCount === 2) return 'chase';           // Chad: then she comes FOR you
+  const pool = [];
+  const add = (v, w) => { if (v !== lastVariant) for (let i = 0; i < w; i++) pool.push(v); };
+  add('chase', 30); add('cross', 30); add('close', 20); add('flee', 20);
+  return pool[Math.floor(Math.random() * pool.length)] || 'chase';
 }
+
+/* Stage the chosen appearance: position her, set the phase, queue sound.
+   Returns false when the geometry cannot host that variant from where the
+   player stands (facing the grass, hard against a wall) — the caller
+   falls through to a variant that always works.                        */
+function stageVariant(v) {
+  if (v === 'close') {
+    // simply there. Dead ahead, an arm and a half away, standing still.
+    const ang = yaw.rotation.y + (Math.random() * 2 - 1) * 0.06;
+    const x = yaw.position.x - Math.sin(ang) * 2.2;
+    const z = yaw.position.z - Math.cos(ang) * 2.2;
+    if (!inDeck(x, z)) return false;
+    ghost.position.set(x, 0, z);
+    gTimer = 1.1;
+    audioCues.push({ kind: 'closeScare', pan: 0 });
+    return true;
+  }
+  if (v === 'chase') {
+    const spot = pickAhead(11, 14, 0.28, 0.62, 9) || pickAhead(7, 14, 0.5, 0.8, 6);
+    if (!spot) return false;
+    ghost.position.set(spot.x, 0, spot.z);
+    gTimer = 0.5 + Math.random() * 0.3;              // spotted — then she comes
+    return true;
+  }
+  if (v === 'cross') {
+    const side = Math.random() < 0.5 ? 1 : -1;
+    for (let i = 0; i < 8; i++) {
+      const half = 0.6 - i * 0.04;                   // narrow until it fits
+      const dist = 6 + Math.random() * 3;
+      const a0 = yaw.rotation.y + side * half, a1 = yaw.rotation.y - side * half;
+      const fx = yaw.position.x - Math.sin(a0) * dist, fz = yaw.position.z - Math.cos(a0) * dist;
+      const tx = yaw.position.x - Math.sin(a1) * dist, tz = yaw.position.z - Math.cos(a1) * dist;
+      if (!inDeck(fx, fz) || !inDeck(tx, tz)) continue;
+      if (!pointInView(fx, fz, 1.0) || !pointInView(tx, tz, 1.0)) continue;
+      ghost.position.set(fx, 0, fz);
+      gGlide = { fx, fz, tx, tz, t: 0, dur: 1.5, ease: 'inout', hover: 0.22, fadeFrom: 0.75 };
+      gTimer = 0.2;
+      return true;
+    }
+    return false;
+  }
+  // flee: first time behind the burner; after that the corner of the eye
+  if (appearCount === 1) ghostPlaceBehindBurner();
+  else {
+    const spot = pickAhead(5.5, 12, 0.55, 0.88, GHOST_MIN_DIST + 1);
+    if (spot) ghost.position.set(spot.x, 0, spot.z);
+    else ghostPlaceBehindBurner();
+  }
+  gTimer = 1.4 + Math.random() * 0.8;                // the anticipation IS the scare
+  return true;
+}
+
+function beginAppearance() {
+  let v = chooseVariant();
+  if (!stageVariant(v)) { v = 'flee'; stageVariant(v); }   // flee always stages
+  gVariant = v; lastVariant = v;
+  gPhase = 'appear';
+  if (!seenThisRun) {
+    seenThisRun = true;
+    audioCues.push({ kind: 'first' });
+    pulseSpike(1.0);
+  } else if (v !== 'close') {                        // close pushed its own scare
+    audioCues.push({ kind: 'reappear' });
+    pulseSpike(v === 'chase' ? 0.7 : 0.5);
+  } else {
+    pulseSpike(1.2);
+  }
+}
+
+// the bite: every sighting costs a chunk, thrown as the HUD's tick numbers
+function applyChunk(v) {
+  if (state !== 'play') return;
+  const n = CHUNK[v] || 4;
+  stats.sanity -= n;
+  syncBars();
+  sanityTick(n);
+  if (stats.sanity <= 0) lose();
+}
+
+function ghostStartGlide(kind) {
+  // she flees AWAY, or comes AT you — one glide, staged by intent
+  if (kind === 'away') {
+    const away = Math.atan2(ghost.position.x - yaw.position.x,
+                            ghost.position.z - yaw.position.z);
+    const ang = away + (Math.random() - 0.5) * 1.1;
+    const dist = 6 + Math.random() * 4;
+    const tx = THREE.MathUtils.clamp(ghost.position.x + Math.sin(ang) * dist, -20.5, 20.5);
+    const tz = Math.min(ghost.position.z + Math.cos(ang) * dist, GHOST_DECK_EDGE - 0.3);
+    gGlide = { fx: ghost.position.x, fz: ghost.position.z, tx, tz,
+               t: 0, dur: 0.62, ease: 'in4', hover: 0.28, fadeFrom: 0.6 };
+  } else {                                           // toward — but never arriving
+    const dx = yaw.position.x - ghost.position.x, dz = yaw.position.z - ghost.position.z;
+    const d = Math.hypot(dx, dz) || 1;
+    const stop = Math.max(GHOST_MIN_DIST + 0.8, 4.2);
+    const k = Math.max(0, (d - stop) / d);
+    gGlide = { fx: ghost.position.x, fz: ghost.position.z,
+               tx: ghost.position.x + dx * k, tz: ghost.position.z + dz * k,
+               t: 0, dur: 1.15, ease: 'in3', hover: 0.22, fadeFrom: 0.55 };
+  }
+  gPhase = 'glide';
+  audioCues.push({ kind: 'glide' });
+}
+
+const GLIDE_EASE = {
+  in3: k => k * k * k,
+  in4: k => k * k * k * k,                           // slow lift-off, then GONE
+  inout: k => k * k * (3 - 2 * k)
+};
 
 function updateGhost(dt) {
   if (!ghostReady) return;
-  // A cutscene owns her completely; the cards after it hold whatever the
-  // scene left; the faint holds her too, so she can stand over you.
   if (state === 'cine' || state === 'result' || state === 'complete'
       || state === 'lost') return;
 
@@ -1288,8 +1405,6 @@ function updateGhost(dt) {
   const inTerritory = distToBurner < GHOST_APPEAR_AT;
   const playing = state === 'play';
 
-  // presence for the drain: ramps in once she has shown herself, ramps out
-  // when you leave her ground (or the game is elsewhere)
   if (seenThisRun && inTerritory && playing)
     hauntK = Math.min(0.85, hauntK + dt / 1.6);
   else
@@ -1301,49 +1416,49 @@ function updateGhost(dt) {
   switch (gPhase) {
     case 'hidden':
       reveal = 0;
-      if (inTerritory && playing) {
-        ghostPlaceBehindBurner();
-        gPhase = 'appear';
-        if (!seenThisRun) {
-          seenThisRun = true;
-          audioCues.push({ kind: 'first' });
-          pulseSpike(1.0);
-        } else {
-          audioCues.push({ kind: 'appear' });
-          pulseSpike(0.5);
-        }
-      }
+      if (inTerritory && playing) beginAppearance();
       break;
 
     case 'appear':
-      reveal = Math.min(1, reveal + dt / 0.5);
-      if (ghostMixer) ghostMixer.update(dt * 0.25);
+      reveal = Math.min(1, reveal + dt / (gVariant === 'close' ? 0.3 : 0.45));
+      if (ghostMixer) ghostMixer.update(dt * 0.2);
       if (!inTerritory) { gPhase = 'fade'; break; }
-      if (reveal >= 1) { gPhase = 'standing'; gTimer = 1.2 + Math.random() * 0.8; }
+      if (reveal >= 1) {
+        applyChunk(gVariant);                        // the sighting itself costs
+        if (gVariant === 'cross') ghostStartGlideCross();
+        else gPhase = 'standing';
+      }
       break;
 
     case 'standing':
       gTimer -= dt;
-      if (ghostMixer) ghostMixer.update(dt * 0.3);
+      if (ghostMixer) ghostMixer.update(dt * 0.25);  // breathing, not walking
       if (!inTerritory) { gPhase = 'fade'; break; }
-      // she does not let you reach her, and she does not overstay
-      if (gTimer <= 0 || dPlayer < GHOST_MIN_DIST + 0.6) ghostStartDart();
+      if (gVariant === 'close') {
+        if (gTimer <= 0) gPhase = 'fade';            // she never moves. she is just gone.
+      } else if (gVariant === 'chase') {
+        if (gTimer <= 0) ghostStartGlide('toward');
+      } else {                                       // flee
+        if (gTimer <= 0 || dPlayer < GHOST_MIN_DIST + 0.6) ghostStartGlide('away');
+      }
       break;
 
-    case 'dart': {
-      gDart.t += dt;
-      const k = Math.min(1, gDart.t / gDart.dur);
-      const a = k * k * k;                     // the accelerating curve
-      ghost.position.x = gDart.fx + (gDart.tx - gDart.fx) * a;
-      ghost.position.z = gDart.fz + (gDart.tz - gDart.fz) * a;
-      ghost.position.y = Math.sin(Math.PI * k) * 0.55;   // off the floor: floating
-      reveal = k < 0.6 ? 1 : Math.max(0, 1 - (k - 0.6) / 0.4);
-      if (ghostMixer) ghostMixer.update(dt * 1.5);
+    case 'glide': {
+      gGlide.t += dt;
+      const k = Math.min(1, gGlide.t / gGlide.dur);
+      const a = GLIDE_EASE[gGlide.ease](k);
+      ghost.position.x = gGlide.fx + (gGlide.tx - gGlide.fx) * a;
+      ghost.position.z = gGlide.fz + (gGlide.tz - gGlide.fz) * a;
+      // off the floor and HELD there — no arc, nothing that reads as shrinking
+      ghost.position.y = Math.min(1, k * 3) * gGlide.hover;
+      const ff = gGlide.fadeFrom;
+      reveal = k < ff ? 1 : Math.max(0, 1 - (k - ff) / (1 - ff));
+      // the walk cycle stays frozen: she GLIDES, she does not swim
       if (k >= 1) {
         ghost.position.y = 0;
         reveal = 0;
         gPhase = 'gone';
-        gTimer = 2 + Math.random() * 1.0;      // Chad's 2–3 seconds of nothing
+        gTimer = 2 + Math.random() * 1.0;
       }
       break;
     }
@@ -1352,26 +1467,31 @@ function updateGhost(dt) {
       reveal = 0;
       gTimer -= dt;
       if (!inTerritory) { gPhase = 'hidden'; break; }
-      if (gTimer <= 0 && playing) {
-        const spot = ghostSpotInCorner();
-        ghost.position.set(spot.x, 0, spot.z);
-        gPhase = 'appear';
-        audioCues.push({ kind: 'appear' });
-        pulseSpike(0.45);
-      }
+      if (gTimer <= 0 && playing) beginAppearance();
       break;
 
     case 'fade':
-      reveal = Math.max(0, reveal - dt / 0.9);
-      if (reveal <= 0) { ghost.position.y = 0; gPhase = 'hidden'; }
+      reveal = Math.max(0, reveal - dt / (gVariant === 'close' ? 0.7 : 0.9));
+      if (reveal <= 0) {
+        ghost.position.y = 0;
+        gPhase = inTerritory && playing
+          ? 'gone' : 'hidden';                       // close fades into the cycle
+        gTimer = 2 + Math.random() * 1.0;
+      }
       break;
   }
 
   ghostOpacity(reveal);
   if (ghost.visible) {
+    // upright, always; facing you, always. Yaw is the only rotation touched.
     ghost.rotation.y = Math.atan2(yaw.position.x - ghost.position.x,
                                   yaw.position.z - ghost.position.z);
   }
+}
+
+function ghostStartGlideCross() {
+  gPhase = 'glide';                                  // gGlide was staged with the spawn
+  audioCues.push({ kind: 'glide' });
 }
 
 /* ------------------------------------------------- first-person viewmodel */
@@ -2030,9 +2150,10 @@ function voiceDecode() {
    narration lines must find their buffers ready (see LEARNINGS on the
    fire-once decode race).                                                 */
 function warmPlaySet() {
-  packWarm(['strings', 'whisper', 'boom', 'dread', 'whoosh', 'cry', 'breath',
-            'ghostloop', 'heart', 'kick', 'ulost',
-            'vghost', 'vfaint', 'vlow', 'vpile', 'vnote', 'vlost']);
+  packWarm(['strings', 'whisper', 'boom', 'dread', 'swoosh', 'sobbing',
+            'gscream', 'breath', 'ghostloop', 'heart', 'kick', 'ulost',
+            'vghost', 'vfaint', 'vlow', 'vpile', 'vnote', 'vlost',
+            'vscare1', 'vscare2', 'vscare3', 'vscare4']);
 }
 
 function queueVoice() {
@@ -2102,7 +2223,7 @@ function sndBuf(name) {              // AudioBuffer if ready, else kick a decode
 }
 function packWarm(names) { for (const n of names) sndBuf(n); }
 
-function snd(name, vol = 1, rate = 1) {                 // one-shot
+function snd(name, vol = 1, rate = 1, pan = 0) {        // one-shot
   if (muted) return null;
   const buf = sndBuf(name);
   if (!buf || !actx || actx.state !== 'running') return null;
@@ -2112,7 +2233,14 @@ function snd(name, vol = 1, rate = 1) {                 // one-shot
   const g = actx.createGain();
   g.gain.value = vol;
   s.connect(g);
-  g.connect(packGain);
+  let out = g;
+  if (pan && actx.createStereoPanner) {   // where she IS, not just that she is
+    const pn = actx.createStereoPanner();
+    pn.pan.value = THREE.MathUtils.clamp(pan, -1, 1);
+    g.connect(pn);
+    out = pn;
+  }
+  out.connect(packGain);
   s.start();
   return s;
 }
@@ -2128,7 +2256,13 @@ function loopVol(name, vol) {
     L.started = true;
     const g = actx.createGain();
     g.gain.value = 0;
-    g.connect(ambGain);
+    let out = g;
+    if (actx.createStereoPanner) {               // steerable via loopPan()
+      L.pan = actx.createStereoPanner();
+      g.connect(L.pan);
+      out = L.pan;
+    }
+    out.connect(ambGain);
     const s = actx.createBufferSource();
     s.buffer = buf;
     s.loop = true;
@@ -2139,6 +2273,18 @@ function loopVol(name, vol) {
     L.gain = g;
   }
   if (L.gain) L.gain.gain.setTargetAtTime(L.want, actx.currentTime, 0.3);
+}
+function loopPan(name, v) {
+  const L = packLoops[name];
+  if (L && L.pan) L.pan.pan.setTargetAtTime(THREE.MathUtils.clamp(v, -1, 1),
+                                            actx.currentTime, 0.15);
+}
+// her bearing on the player's screen, -1 left ... +1 right
+const _pp = new THREE.Vector3();
+function ghostPan() {
+  _pp.set(ghost.position.x, 1.35, ghost.position.z);
+  camera.worldToLocal(_pp);
+  return THREE.MathUtils.clamp(_pp.x / (Math.abs(_pp.z) + 1.5), -1, 1);
 }
 
 // the music bed under an ending card — one at a time, stoppable on restart
@@ -2209,6 +2355,20 @@ function duckMusic(sec) {
    ghost vocalisation, the heartbeat, the once-per-appearance reveal hit.  */
 let nextCry = 0, nextBreath = 0, stepIdx = 0;
 let wantLine = null, wantLineUntil = 0;   // a narration that must not be lost
+// his fear has a voice: a different sound each time she reappears
+const VSCARES = ['vscare1', 'vscare2', 'vscare3', 'vscare4'];
+let scareIdx = Math.floor(Math.random() * VSCARES.length);
+function scaredGasp() {
+  if (muted || narSrc || voiceSrc || state !== 'play') return;
+  const name = VSCARES[scareIdx++ % VSCARES.length];
+  const buf = sndBuf(name);
+  if (!buf || !actx || actx.state !== 'running') return;
+  narSrc = actx.createBufferSource();
+  narSrc.buffer = buf;
+  narSrc.onended = () => { narSrc = null; };
+  narSrc.connect(packGain);
+  narSrc.start();
+}
 const STEP_TAKES = ['step1', 'step2', 'step3', 'step4'];
 function stepSnd(vol) {
   const n = STEP_TAKES[stepIdx++ % STEP_TAKES.length];
@@ -2251,10 +2411,26 @@ function updateAudioFrame(t) {
           wantLine = 'vghost'; wantLineUntil = t + 12;
           done = true;
         }
-      } else if (c.kind === 'appear') {
-        if (sndBuf('whoosh')) { snd('whoosh', 0.28, 1.35); done = true; }
-      } else if (c.kind === 'dart') {
-        if (sndBuf('whoosh')) { snd('whoosh', 0.5); done = true; }
+      } else if (c.kind === 'reappear') {
+        // her sounds come from WHERE SHE IS; his fear is his own
+        if (sndBuf('sobbing') && sndBuf('gscream')) {
+          const gp = ghostPan();
+          if (Math.random() < 0.55) snd('sobbing', 0.42, 1, gp);
+          if (Math.random() < 0.25) { snd('gscream', 0.7, 1, gp); pulseSpike(0.9); }
+          scaredGasp();
+          done = true;
+        }
+      } else if (c.kind === 'closeScare') {
+        if (sndBuf('gscream') && sndBuf('sobbing')) {
+          snd('gscream', 0.95);                       // in your face: dead centre
+          snd('sobbing', 0.5, 1, 0);
+          duckMusic(5);
+          scaredGasp();
+          done = true;
+        }
+      } else if (c.kind === 'glide') {
+        // a soft, wide rush of air — never the old zip
+        if (sndBuf('swoosh')) { snd('swoosh', 0.4, 1, ghostPan()); done = true; }
       } else done = true;
     }
     if (done) audioCues.splice(i, 1);
@@ -2266,8 +2442,15 @@ function updateAudioFrame(t) {
     else if (state === 'play') say(wantLine);
   }
 
+  // steer the loops to her side of the world every frame
+  const gpan = ghostPan();
+  loopPan('whisper', gpan * 0.8);
+  loopPan('ghostloop', gpan * 0.6);
   if (state === 'play' && presence > 0.15) {
-    if (t > nextCry) { nextCry = t + 9 + Math.random() * 11; snd('cry', 0.2 + near * 0.4); }
+    if (t > nextCry) {
+      nextCry = t + 9 + Math.random() * 11;
+      snd('sobbing', 0.25 + near * 0.4, 1, gpan);     // clear, female, directional
+    }
     if (dGhost < 2.8 && reveal > 0.3 && t > nextBreath) {
       nextBreath = t + 6 + Math.random() * 6; snd('breath', 0.7);
     }
@@ -3494,7 +3677,7 @@ function pick(i) {
    that is a real answer, not an escape from the mechanic.                   */
 // At arm's length this empties a full bar in about forty seconds: enough
 // room to look at her, think, and still get out.
-const DRAIN_FAR = 0.55, DRAIN_NEAR = 2.5;     // sanity per second
+const DRAIN_FAR = 0.75, DRAIN_NEAR = 3.2;     // sanity per second — v3.3: urgency
 const DRAIN_FAR_D = 13.0, DRAIN_NEAR_D = 4.0; // metres to her
 
 function ghostDrainRate() {
@@ -3702,7 +3885,8 @@ function restart() {
   $('nextBtn')?.classList.remove('waiting');
   $('retryBtn')?.classList.remove('waiting');
   ui.rank.classList.remove('glow');
-  gPhase = 'hidden'; gTimer = 0; gDart = null;
+  gPhase = 'hidden'; gTimer = 0; gGlide = null;
+  appearCount = 0; lastVariant = '';
   hauntK = 0; seenThisRun = false;
   audioCues.length = 0; wantLine = null;
   ghost.position.y = 0;
@@ -3936,6 +4120,8 @@ function tick(now = 0) {
 window.__enc = { yaw, stats, blockers: BLOCKERS, getState: () => state,
                  handsRoot, armR, vmCam, vm, updateViewmodel, updateNotes, flying,
                  ghost, updateGhost, ghostInView, getReveal: () => reveal,
+                 ghostInfo: () => ({ phase: gPhase, variant: gVariant,
+                                     appearances: appearCount }),
                  dismissDecision, ghostDrainRate, lose, setMuted, showCredits,
                  snd, say, loopVol, sting, updateAudioFrame, pulseSpike,
                  invOpen, invClose, invToggle, invAdd, invHas, invRemove,
