@@ -3804,6 +3804,7 @@ function restart() {
   // the soundscape, back to a fresh run: the bed and any half-spoken line
   // stop, and every once-per-run narration trigger re-arms
   stopBed();
+  stopCineVoices();                // and anything the last scene left ringing
   if (narSrc) { try { narSrc.stop(); } catch {} narSrc = null; }
   for (const k in narrated) delete narrated[k];
   fainting = false;

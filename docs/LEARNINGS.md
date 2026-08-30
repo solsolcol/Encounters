@@ -429,3 +429,23 @@ twice. When code in this repo looks odd, the reason is usually here.
   for a long paragraph. That is the guard working, not a bug: at any real
   frame rate (even 5 fps) fewer than two characters arrive per frame.
   Read the guard before believing the count.
+
+## An upload-lagging counter needs a WARM baseline, not just a warm end
+
+- `leaktest` compares `renderer.info.memory` after the first rebuild against
+  the count after eight more, and fails on a positive slope. The baseline was
+  a single sample taken right after cycle one — and renderer.info counts what
+  has been UPLOADED, which only happens when an object is actually drawn.
+- On a loaded box (two harnesses on two cores, and since v3.7 a title video
+  decoding behind them) the two frames after that first rebuild can miss part
+  of the world. One run read 55 geometries where every other cycle reads 70,
+  and the harness reported a 1.88-per-cycle leak that did not exist: an
+  undercounted baseline manufactures a slope out of nothing.
+- Proved it was the measurement, not the engine, before touching either: a
+  probe logging the count after every one of 22 rebuilds read 70/22 dead flat
+  the whole way. A 1.88/cycle leak would have reached 111.
+- The fix is three warm rebuilds before the baseline, so BOTH ends of the
+  measurement come from a fully uploaded world and the slope between them is
+  the steady-state slope — which is what the harness was always about. That
+  is a sharper measurement, not a relaxed threshold; the 0.5 limit is
+  unchanged.

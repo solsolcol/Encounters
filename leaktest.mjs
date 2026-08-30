@@ -23,6 +23,7 @@ import { LAUNCH, PAGE } from './testlib.mjs';
 // enough cycles for a per-cycle leak to be unmissable, but each one now waits
 // for two real frames and SwiftShader gives about one a second
 const CYCLES = 8;
+const WARM = 3;          // rebuilds before the baseline is taken (see below)
 const errs = [];
 
 const b = await chromium.launch(LAUNCH);
@@ -33,7 +34,7 @@ await p.goto(PAGE, { waitUntil: 'load' });
 await p.waitForFunction(() => !!window.__enc && window.__enc.ready().hdb, null,
   { timeout: 120000 });
 
-const out = await p.evaluate(async (CYCLES) => {
+const out = await p.evaluate(async ({ CYCLES, WARM }) => {
   const e = window.__enc;
   const log = {};
   const count = () => {
@@ -53,9 +54,21 @@ const out = await p.evaluate(async (CYCLES) => {
   const drawn = () => new Promise(r =>
     requestAnimationFrame(() => requestAnimationFrame(r)));
 
+  /* The BASELINE has to be warm too, and one cycle is not enough to make it
+     so. renderer.info counts uploads, and an upload only happens when the
+     object is actually drawn — so on a loaded box (two harnesses at once on
+     two cores, and since v3.7 a title video decoding behind all of it) the
+     two frames after the first rebuild can miss part of the world. That
+     undercounts `first`, and an undercounted baseline manufactures a
+     positive slope out of nothing: a run that failed at 1.88 geometries per
+     cycle had simply sampled 55 where every other cycle reads 70.
+
+     Three warm cycles instead of one, so both ends of the measurement are
+     taken from a fully uploaded world and the slope between them is the
+     steady-state slope, which is the thing this harness is actually about. */
   await drawn();
   log.before = count();
-  await e.rebuildStage(); await drawn();     // cycle 1 warms whatever warms
+  for (let i = 0; i < WARM; i++) { await e.rebuildStage(); await drawn(); }
   const first = count();
   for (let i = 0; i < CYCLES; i++) { await e.rebuildStage(); await drawn(); }
   const after = count();
@@ -65,6 +78,7 @@ const out = await p.evaluate(async (CYCLES) => {
   log.first = first;
   log.after = after;
   log.cycles = CYCLES;
+  log.warmCycles = WARM;
   // per-cycle growth after the first build; a real leak shows up as a
   // constant positive slope
   log.geoPerCycle = +((after.geometries - first.geometries) / CYCLES).toFixed(2);
@@ -78,7 +92,7 @@ const out = await p.evaluate(async (CYCLES) => {
   log.blockersAlive = e.blockers.length > 0;
   log.stillPlayable = e.getState() !== 'error';
   return log;
-}, CYCLES);
+}, { CYCLES, WARM });
 
 console.log(JSON.stringify(out, null, 1));
 
