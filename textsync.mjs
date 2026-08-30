@@ -3,20 +3,41 @@
      node textsync.mjs export [file.csv]   read the game -> write the sheet
      node textsync.mjs import file.csv     read the sheet -> write the game
 
-   Two files hold text: src/strings.js (the engine's UI words) and
-   src/chapters/ch1.js (the chapter's own words). Both are hand-written and
-   stay that way — import edits values in place and never regenerates a file,
-   so comments and structure survive.
+   Two kinds of file hold text: src/strings.js (the engine's UI words) and
+   EVERY chapter in src/chapters/ (each chapter's own words). They are
+   hand-written and stay that way — import edits values in place and never
+   regenerates a file, so comments and structure survive.
+
+   Chapters are DISCOVERED, not listed. Adding a chapter is dropping a file
+   in that folder, and its words appear in the sheet on the next export with
+   no edit here — which is the same promise build.py makes about assets. The
+   fixture chapter is skipped: nothing a player will ever read lives in it.
 
    The sheet's TEXT column is the only editable one. An empty cell means
    "remove this from the game": the engine hides an empty UI string, and an
    empty chapter string is left as an empty string for the chapter to skip.  */
-import { readFileSync, writeFileSync } from 'fs';
+import { readFileSync, writeFileSync, readdirSync } from 'fs';
 import { DIR } from './testlib.mjs';
 import { join } from 'path';
 
 const P_STRINGS = join(DIR, 'src', 'strings.js');
-const P_CH1 = join(DIR, 'src', 'chapters', 'ch1.js');
+const CHAP_DIR = join(DIR, 'src', 'chapters');
+/* Every chapter file, in id order, minus the fixture. `id` over 90 is the
+   engine's own convention for "not part of the game" — nextChapterKey()
+   filters on exactly the same number. */
+function chapterFiles() {
+  return readdirSync(CHAP_DIR).filter(f => f.endsWith('.js')).sort()
+    .map(f => {
+      const key = f.slice(0, -3);
+      const ch = loadGlobals(join(CHAP_DIR, f)).__CHAPTERS__?.[key];
+      return ch && (ch.id || 0) < 90 ? { key, ch, path: join(CHAP_DIR, f) } : null;
+    })
+    .filter(Boolean)
+    .sort((a, b) => (a.ch.id || 0) - (b.ch.id || 0));
+}
+// the chapter fields that are words, in the order they read on screen
+const CH_FIELDS = ['title', 'cardLabel', 'cardTitle', 'brief', 'prompt'];
+const CH_WORDS = ['approach', 'act', 'actTouch', 'interact', 'interactTouch'];
 
 // what each row means, so the sheet explains itself
 const WHERE = {
@@ -24,7 +45,7 @@ const WHERE = {
   hud: 'HUD (always on screen)', world: 'In the world', cine: 'Cutscenes',
   decide: 'Decision panel', result: 'Outcome + teaching card',
   complete: 'Finished the chapter', lost: 'Lost your nerve',
-  newgame: 'Starting over — the confirmation', ch1: 'CHAPTER 1 — the story itself',
+  newgame: 'Starting over — the confirmation',
   a11y: 'Screen readers only',
   inv: 'Equipment panel', slot: 'Equipment panel — slot names',
   item: 'Equipment panel — the items'
@@ -98,11 +119,21 @@ function readRows() {
   const rows = [];
   const ui = loadGlobals(P_STRINGS).__TEXT__;
   for (const [k, v] of Object.entries(ui)) rows.push([k, v]);
-  const ch = loadGlobals(P_CH1).__CHAPTERS__.ch1;
-  for (const f of ['title', 'cardLabel', 'cardTitle', 'brief', 'prompt', 'core'])
-    rows.push([`ch1.${f}`, ch[f]]);
-  for (const c of ch.choices)
-    for (const f of ['text', 'say', 'teach']) rows.push([`ch1.${c.k}.${f}`, c[f]]);
+  for (const { key, ch } of chapterFiles()) {
+    for (const f of [...CH_FIELDS, 'core']) {
+      if (typeof ch[f] === 'string') rows.push([`${key}.${f}`, ch[f]]);
+    }
+    // the words that name the thing you can act on, when the chapter has
+    // its own rather than falling back to the sheet's
+    for (const f of CH_WORDS) {
+      if (ch.words && typeof ch.words[f] === 'string') {
+        rows.push([`${key}.words.${f}`, ch.words[f]]);
+      }
+    }
+    for (const c of ch.choices) {
+      for (const f of ['text', 'say', 'teach']) rows.push([`${key}.${c.k}.${f}`, c[f]]);
+    }
+  }
   return rows;
 }
 
@@ -111,7 +142,9 @@ const q = s => `"${String(s).replace(/"/g, '""')}"`;
 function toCSV(rows) {
   const out = [['ID (do not edit)', 'Where it appears', 'TEXT — edit this column', 'Notes'].map(q).join(',')];
   for (const [k, v] of rows) {
-    const where = WHERE[k.split('.')[0]] || '';
+    const head = k.split('.')[0];
+    const where = WHERE[head]
+      || (/^ch\d/.test(head) ? `CHAPTER ${head.slice(2)} — the story itself` : '');
     out.push([q(k), q(where), q(v), q(NOTES[k] || '')].join(','));
   }
   return out.join('\n');
@@ -155,7 +188,7 @@ const esc = s => String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/
 function writeStrings(map) {
   let s = readFileSync(P_STRINGS, 'utf8'); let n = 0;
   for (const [k, v] of Object.entries(map)) {
-    if (k.startsWith('ch1.')) continue;
+    if (/^ch\w*\./.test(k)) continue;         // a chapter's, not the sheet's
     const re = new RegExp(`('${k.replace(/\./g, '\\.')}':\\s*)'(?:[^'\\\\]|\\\\.)*'`);
     if (!re.test(s)) { console.error(`  ! unknown UI key, skipped: ${k}`); continue; }
     s = s.replace(re, (_, head) => `${head}'${esc(v)}'`);
@@ -164,46 +197,73 @@ function writeStrings(map) {
   writeFileSync(P_STRINGS, s); return n;
 }
 
+/* Every chapter, each edited in its own file. Scoped exactly as before —
+   top-level fields before the choices array, `core` after it, and each
+   choice by its own `k: 'A'` — because the point of this tool is that it
+   edits values in place and leaves the file otherwise untouched. */
 function writeChapter(map) {
-  let s = readFileSync(P_CH1, 'utf8'); let n = 0;
+  let n = 0;
   const setField = (block, field, v) => {
     const re = new RegExp(`(\\b${field}:\\s*)'(?:[^'\\\\]|\\\\.)*'`);
     if (!re.test(block)) return null;
     return block.replace(re, (_, head) => `${head}'${esc(v)}'`);
   };
-  // the chapter's own top-level fields, matched before the choices array
-  const head = s.slice(0, s.indexOf('choices:'));
-  let newHead = head;
-  for (const f of ['title', 'cardLabel', 'cardTitle', 'brief', 'prompt']) {
-    const key = `ch1.${f}`;
-    if (!(key in map)) continue;
-    const r = setField(newHead, f, map[key]);
-    if (r === null) { console.error(`  ! chapter field not found: ${f}`); continue; }
-    newHead = r; n++;
-  }
-  s = newHead + s.slice(head.length);
-  // core sits after the choices array
-  if ('ch1.core' in map) {
-    const tail = s.slice(s.indexOf('  core:'));
-    const r = setField(tail, 'core', map['ch1.core']);
-    if (r !== null) { s = s.slice(0, s.indexOf('  core:')) + r; n++; }
-  }
-  // each choice block, scoped by its own k: 'A'
-  for (const letter of ['A', 'B', 'C', 'D']) {
-    const start = s.indexOf(`k: '${letter}'`);
-    if (start < 0) { console.error(`  ! choice ${letter} not found`); continue; }
-    const end = s.indexOf('\n    }', start);
-    let block = s.slice(start, end);
-    for (const f of ['text', 'say', 'teach']) {
-      const key = `ch1.${letter}.${f}`;
-      if (!(key in map)) continue;
-      const r = setField(block, f, map[key]);
-      if (r === null) { console.error(`  ! ${key} not found`); continue; }
-      block = r; n++;
+
+  for (const { key, ch, path } of chapterFiles()) {
+    let s = readFileSync(path, 'utf8');
+    const has = f => `${key}.${f}` in map;
+
+    // the top-level fields, matched before the choices array
+    const head = s.slice(0, s.indexOf('choices:'));
+    let newHead = head;
+    for (const f of CH_FIELDS) {
+      if (!has(f)) continue;
+      const r = setField(newHead, f, map[`${key}.${f}`]);
+      if (r === null) { console.error(`  ! ${key}: field not found: ${f}`); continue; }
+      newHead = r; n++;
     }
-    s = s.slice(0, start) + block + s.slice(end);
+    s = newHead + s.slice(head.length);
+
+    // the words that name what you act on, inside their own words: { } block
+    const wStart = s.indexOf('words: {');
+    if (wStart >= 0) {
+      const wEnd = s.indexOf('\n    }', wStart);
+      let wBlock = s.slice(wStart, wEnd);
+      for (const f of CH_WORDS) {
+        const k2 = `${key}.words.${f}`;
+        if (!(k2 in map)) continue;
+        const r = setField(wBlock, f, map[k2]);
+        if (r === null) { console.error(`  ! ${k2} not found`); continue; }
+        wBlock = r; n++;
+      }
+      s = s.slice(0, wStart) + wBlock + s.slice(wEnd);
+    }
+
+    // core sits after the choices array
+    if (has('core') && s.indexOf('  core:') >= 0) {
+      const at = s.indexOf('  core:');
+      const r = setField(s.slice(at), 'core', map[`${key}.core`]);
+      if (r !== null) { s = s.slice(0, at) + r; n++; }
+    }
+
+    // each choice block, scoped by its own k: 'A'
+    for (const c of ch.choices) {
+      const start = s.indexOf(`k: '${c.k}'`);
+      if (start < 0) { console.error(`  ! ${key}: choice ${c.k} not found`); continue; }
+      const end = s.indexOf('\n    }', start);
+      let block = s.slice(start, end);
+      for (const f of ['text', 'say', 'teach']) {
+        const k2 = `${key}.${c.k}.${f}`;
+        if (!(k2 in map)) continue;
+        const r = setField(block, f, map[k2]);
+        if (r === null) { console.error(`  ! ${k2} not found`); continue; }
+        block = r; n++;
+      }
+      s = s.slice(0, start) + block + s.slice(end);
+    }
+    writeFileSync(path, s);
   }
-  writeFileSync(P_CH1, s); return n;
+  return n;
 }
 
 // --- go --------------------------------------------------------------------
