@@ -1162,11 +1162,18 @@ function scChant(c, s, api) {                        /* D — palms together */
        the measured hand so the palms MEET instead of overlapping or
        floating apart.                                                    */
     const half = handWidth() * 0.085;
+    /* How high the clasp is held, and the ONE number that moves it — every
+       height after this is derived from it, so the whole sequence stays
+       consistent. Dropped 7 cm at v3.8: the arm rig's thumb sits higher off
+       the fist than the old hand pack's did, and at the previous height its
+       tip cleared the top of frame on its own, which reads as a stray finger
+       rather than as hands. */
+    const PRAY_Y = -0.235;
     const startR = armR.quaternion.clone();
     const startL = new THREE.Quaternion();
     let gotStartL = false;
     tr(0.9, 2.3, k => {
-      const y = -0.46 + 0.295 * k;
+      const y = -0.46 + (PRAY_Y + 0.46) * k;
       armR.position.set(half, y, -0.375);
       armR.quaternion.slerpQuaternions(startR, PRAYER_R, k);
       if (prayerArmL) {
@@ -1194,7 +1201,7 @@ function scChant(c, s, api) {                        /* D — palms together */
     pitchTo(3.4, 4.3, -0.10, 0.11);
     // the hands sink a little as she is released, so you watch her go over them
     tr(4.3, 5.4, k => {
-      const y = -0.165 - 0.10 * k;
+      const y = PRAY_Y - 0.10 * k;
       armR.position.y = y;
       if (prayerArmL) prayerArmL.position.y = y;
     });
@@ -1207,7 +1214,7 @@ function scChant(c, s, api) {                        /* D — palms together */
 
     // hands come down; the night is ordinary again
     tr(6.6, 7.8, k => {
-      const y = -0.265 - 0.24 * k;
+      const y = (PRAY_Y - 0.10) - 0.24 * k;
       armR.position.y = y;
       if (prayerArmL) prayerArmL.position.y = y;
     });
