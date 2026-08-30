@@ -124,5 +124,55 @@ for (const [key, ch] of Object.entries(chapters)) {
   }
 }
 
+/* --- every cutscene cue is a sound that actually exists -------------------
+   A sting whose kind is not in the engine's STING_SAMPLE, or whose sample
+   has no file in assets/audio/, is SILENT — no error, no warning, just a
+   beat in the cutscene where nothing happens. That is exactly the bug this
+   catches, and it is the kind of bug you only find by playing the scene
+   with the sound on, which no harness does.
+
+   Read statically out of the chapter source rather than by running the
+   scene: a scene needs the whole cast (a stage, a ghost, a hand rig) before
+   its first line executes, and every cue in the game is a literal. A cue
+   built from a variable would not be seen here — none exist, and one that
+   did would deserve a comment saying why. */
+const mainJs = readFileSync(join(DIR, 'src', 'main.js'), 'utf8');
+const sampleBlock = mainJs.slice(mainJs.indexOf('const STING_SAMPLE = {'),
+                                 mainJs.indexOf('};', mainJs.indexOf('const STING_SAMPLE = {')));
+const STING_TO_SAMPLE = Object.fromEntries(
+  [...sampleBlock.matchAll(/(\w+):\s*\['([a-zA-Z0-9_]+)',/g)].map(m => [m[1], m[2]]));
+if (!Object.keys(STING_TO_SAMPLE).length) {
+  errs.push('ERR could not read STING_SAMPLE out of src/main.js');
+}
+// 'step' is the one kind with no STING_SAMPLE row: it is routed to the
+// four-sample footstep rotation before the table is ever consulted.
+const SPECIAL_KINDS = new Set(['step']);
+const audioDir = join(DIR, 'assets', 'audio');
+const HAVE_SOUND = new Set(readdirSync(audioDir)
+  .filter(f => f.endsWith('.mp3')).map(f => f.slice(0, -4)));
+
+for (const f of files) {
+  const src = readFileSync(join(chapDir, f), 'utf8');
+  const cues = [...src.matchAll(/\bsfx\(\s*[^,)]+,\s*'([a-zA-Z0-9_]+)'/g)].map(m => m[1]);
+  const uniq = [...new Set(cues)].sort();
+  console.log(`${f}: ${cues.length} cutscene cues, ${uniq.length} distinct — ${uniq.join(' ') || '(none)'}`);
+  for (const kind of uniq) {
+    if (SPECIAL_KINDS.has(kind)) continue;
+    const sample = STING_TO_SAMPLE[kind];
+    if (!sample) {
+      bad(f, `cue '${kind}' is not a kind in STING_SAMPLE — it plays nothing`);
+    } else if (!HAVE_SOUND.has(sample)) {
+      bad(f, `cue '${kind}' maps to sample '${sample}', which has no assets/audio/${sample}.mp3`);
+    }
+  }
+}
+// and every sample the table names must exist too, so a renamed file is
+// caught here rather than in whichever scene happens to use it
+for (const [kind, sample] of Object.entries(STING_TO_SAMPLE)) {
+  if (!HAVE_SOUND.has(sample)) {
+    errs.push(`engine: sting kind '${kind}' names sample '${sample}', which has no assets/audio/${sample}.mp3`);
+  }
+}
+
 console.log('errors:', errs.length ? errs : 'none');
 if (errs.length) process.exit(1);

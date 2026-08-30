@@ -50,7 +50,7 @@ from his **phone**. Consequences:
 5. The generated files (`hellnote.html`, `wrapped.html`, `bundle.js`,
    `dist/`) are never edited by hand.
 
-## Architecture (v3.6)
+## Architecture (v3.7)
 
 One source, two builds, built by `npm run build` (esbuild → `build.py` →
 `wrap.py`):
@@ -150,12 +150,24 @@ separately, so audio budget is now a download-time judgement, not a hard
 cap. All playback through
 the shared Web Audio context — never `<audio src=data:>` — and everything
 obeys the one mute button. Since v2.3 the game runs a full generated
-soundscape: 34 sounds in one `audiopack` asset (assets/audio/ packed by
+soundscape: 56 sounds in one `audiopack` asset (assets/audio/ packed by
 build.py) + the James opening line — loops, UI cues, ghost vocalisations,
 cutscene stings, ending music beds, and in-world narration lines (voice:
 "James - Husky, Engaging and Bold", eleven_v3). The procedural stings in
 main.js remain only as the decode-time fallback. docs/AUDIO-PLAN.md has
-the full inventory, cue map, and the generation flow IDs.
+the full inventory, cue map, and the generation flow IDs; the v3.7
+cutscene pass is in docs/V3.7-PLAN.md.
+
+A cutscene reaches sound through `sfx(at, kind, vol)` and nothing else.
+`kind` is a row in `STING_SAMPLE` in main.js — that table IS the
+vocabulary a scene has, so giving a chapter a new noise means adding a
+row there, not reaching past the seam. `STING_SYNTH` names the handful
+of kinds the procedural fallback can fake; every other kind is
+sample-only and simply stays silent if its buffer has not decoded, which
+is why `startDecision()` warms the whole cutscene set. `chaptertest`
+fails the build if any chapter's cue names a kind that does not exist or
+a sample with no file — a mistyped cue is silent with no error, and that
+is not a bug a screenshot can catch.
 
 ## Changing the words
 
@@ -204,6 +216,12 @@ What the baseline contains, by release:
   complete cards, the paper-doll equipment screen.
 - **v3.3** the terror pass: her four-variant repertoire, directional
   audio, James's scared reactions, chunk sanity drain.
+- **v3.4–v3.6** the scaling foundation (below) and autosave/resume.
+- **v3.7** the presentation pass: every outcome card reads as glass, the
+  viewmodel gained a forearm, a kicking leg and real añjali hands, the
+  title screen plays a darkened looping video, the teaching types with a
+  key tick, and all four cutscenes got their voice — 32 cues across the
+  four scenes, up from 19, with the cartoonish `whoosh` retired.
 
 The anchors for that baseline: tag `v3.3`, commit `c8abf61`, the
 `Encounters-backup.bundle` Chad holds (it carries the tag), and the

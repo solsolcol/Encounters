@@ -372,3 +372,60 @@ twice. When code in this repo looks odd, the reason is usually here.
   is the wrong assertion — the saved spot was inside her trigger radius, so
   she quite properly appears. The right one is "reveal is 0 on the FIRST
   frame of the resumed run", which is what resume actually controls.
+
+## A hard-coded "no fallback" list is a silent-sound generator
+
+- `sting()` looked its kind up in `STING_SAMPLE` and, on a miss, fell into
+  a procedural switch — with `if (kind === 'kick' || kind === 'scream' ||
+  kind === 'chant') return;` in front of it to catch the three kinds the
+  synth cannot fake. That list is the wrong shape: it enumerates the
+  EXCEPTIONS, so every sound added afterwards has to remember to join it,
+  and none of them would have. Inverted at v3.7 into `STING_SYNTH`, the
+  set of kinds the synth CAN fake; everything else is sample-only by
+  construction.
+- The failure this prevents is the nastiest kind in a game: a cue that
+  names a kind which does not exist plays nothing, logs nothing, and looks
+  exactly like a scene that was written without sound. `chaptertest` now
+  reads every `sfx(t, 'kind')` out of every chapter and fails if the kind
+  is not in `STING_SAMPLE` or its sample has no file in `assets/audio/`.
+  Statically, out of the source — running a scene needs the whole cast
+  built first, and every cue in the game is a literal.
+- Give a scene a volume scale (`sfx(at, kind, vol)`) rather than a second
+  sample. The same dread bed is loud under a reveal and 0.28 behind a
+  turned back; without the scale that is two kinds, two files and two
+  things to keep in sync.
+
+## Identify a played sound by its buffer, not its duration
+
+- Probing "did this cue actually sound?" means hooking
+  `createBufferSource` and naming what starts. Matching the decoded buffer
+  against file durations does not work twice over: an mp3 decodes tens of
+  milliseconds longer than the file, and several of the pack's samples are
+  the same length anyway (`boom`/`breath`/`clang` all 2.51 s). A duration
+  table quietly reported `swoosh` as missing when it had played.
+- The pack decodes each sound once and reuses that AudioBuffer object
+  forever, so the reliable table is a `Map` keyed on the object itself:
+  play every name once at inaudible gain, record `s.buffer`, then look up
+  what the scene starts. Exact, and it cannot confuse two samples.
+
+## A cutscene's sounds must end with the cutscene
+
+- Stings are fire-and-forget `BufferSource`s, so a nine second chant
+  started at 1.35 s carries on happily over the teaching card when the
+  player skips at 2 s. Every sample a scene starts is now recorded and
+  ramped out over 300 ms in `cineEnd()` — a ramp, not a `stop()`, because
+  an abrupt cut clicks.
+- The corollary when writing a scene: a cue is only as long as the time
+  left in the scene. Scene D was extended from 8.6 s to 10.4 s so James's
+  chant finishes rather than being cut, and the held beat got a slow pitch
+  settle so the shot is still moving while it waits.
+
+## SwiftShader's frame rate is a load-bearing part of what you measure
+
+- The teaching typewriter ticks every third character, guarded by
+  `n - shown < 8` so a fast-forward tap does not fire dozens of samples in
+  one frame. At the container's ~1 fps a whole 32-character line arrives
+  per frame, the guard suppresses it, and the probe counted three ticks
+  for a long paragraph. That is the guard working, not a bug: at any real
+  frame rate (even 5 fps) fewer than two characters arrive per frame.
+  Read the guard before believing the count.

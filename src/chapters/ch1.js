@@ -940,6 +940,9 @@ function scPickUp(c, s, api) {                       /* A — you take it */
       handsRoot.rotation.set(0, 0, 0);
       armR.rotation.set(0.50 - 0.48 * k, 0.28 - 0.13 * k, -0.48 + 0.28 * k);
     });
+    // he stops breathing as the hand goes down. The scene had one noise in
+    // its first three seconds and it was a page turning.
+    sfx(1.15, 'breath', 0.55);
     step(2.5, () => { noteProp.visible = true; });
     sfx(2.5, 'take');
 
@@ -960,14 +963,22 @@ function scPickUp(c, s, api) {                       /* A — you take it */
     });
     tr(4.35, 4.8, k => { ghostOpacity(k); ghostLight.intensity = 1.5 * k; }, rawK);
     tr(4.3, 5.2, k => { stage.fireLight.intensity = 14 - 11.5 * k; }, rawK);
+    // the chord arrives with her, and the fire goes out under it
+    sfx(4.22, 'strings', 0.85);
+    sfx(4.30, 'firedie');
 
     // look up. she is already there.
     pitchTo(4.2, 5.1, -0.34, 0.03);
     camTo(4.2, 5.1, { x: P.x, y: 1.58, z: P.z }, P);
     tr(4.2, 5.1, k => { handsRoot.position.set(-0.10, 0.115 - 0.46 * k, 0); }, smoothK);
     sfx(4.75, 'boom');
+    sfx(5.02, 'vgasp');            // his eyes arrive and she is already there
     tr(5.1, 6.6, k => { camera.rotation.z = 0.05 * k; }, rawK);
     tr(5.6, 6.6, k => { ghost.position.z = FACE.z + 0.17 * k; });   // one slow inch closer
+    // three layers under the last approach, separated by register so they
+    // stack instead of muddying: the bed low, her crying mid, the hit on top
+    sfx(5.45, 'dread', 0.5);
+    sfx(6.25, 'sobbing', 0.5);
     fade(6.6, 8.1, 0, 1);
     sfx(7.1, 'boom');
 
@@ -1027,8 +1038,13 @@ function scKick(c, s, api) {                         /* B — the burner goes ov
     // the kick, told by its impact
     camTo(0.9, 1.2, P, { x: P.x - 0.32, y: 1.40, z: P.z - 0.55 }, rawK);
     pitchTo(0.9, 1.2, -0.14, -0.46, rawK);
+    // the scoff lands before the boot does: the kick is a character beat,
+    // and it was previously silent right up to the impact
+    sfx(0.62, 'vscoff', 0.9);
     sfx(0.95, 'kick');
     sfx(1.15, 'clang');
+    sfx(1.22, 'ashburst');         // the drum's insides across the concrete
+    sfx(1.60, 'paperstorm');       // swelling exactly as noteStorm ramps
     step(1.15, () => { stage.ash.visible = false; });
     tr(1.15, 1.9, k => {
       stage.drum.rotation.z = 1.5 * k;
@@ -1052,7 +1068,10 @@ function scKick(c, s, api) {                         /* B — the burner goes ov
     tr(2.9, 9.4, () => { ghostLight.intensity = 1.5; }, rawK);
     ghostFacePlayer(2.5, 9.4);
     ghostGlide(3.1, 3.55, { x: -1.0, z: -7.2 }, { x: 0.2, z: -5.9 });
-    sfx(3.15, 'whoosh');
+    // was 'whoosh' — the old zip read as a cartoon. 'swoosh' is the same
+    // sound the ghost already uses when she darts in normal play.
+    sfx(3.15, 'swoosh');
+    sfx(3.40, 'gwail', 0.9);       // and she comes after him, out loud
     c.ghostMix = t => (t < 2.5 || t > 9.4 ? 0 : t < 3.1 ? 0.7 : 2.4);
 
     // run
@@ -1063,6 +1082,7 @@ function scKick(c, s, api) {                         /* B — the burner goes ov
     camTo(5.85, 7.4, path2, path3, rawK);
     bob(4.25, 7.4, 3.1, 0.055);
     for (let i = 0; i < 9; i++) sfx(4.35 + i * 0.34, 'step');
+    sfx(4.60, 'vpant');            // his breath going, under the whole run
     ghostGlide(3.55, 5.85, { x: 0.2, z: -5.9 }, { x: 0.65, z: -1.6 });
     ghostGlide(5.85, 8.3, { x: 0.65, z: -1.6 }, { x: 0.45, z: 4.4 });
 
@@ -1071,8 +1091,10 @@ function scKick(c, s, api) {                         /* B — the burner goes ov
     yawTo(7.4, 8.3, Math.PI, 0.28);
     pitchTo(7.4, 8.3, -0.03, -0.06);
     ghostGlide(8.3, 9.4, { x: 0.45, z: 4.4 }, { x: 0.33, z: 7.3 });
+    sfx(7.55, 'dread', 0.7);       // under the look back
     sfx(8.5, 'boom');
-    sfx(8.55, 'scream');
+    sfx(8.55, 'scream');           // him
+    sfx(8.66, 'gscream', 0.85);    // and her, right behind it
     tr(8.6, 9.6, k => { camera.rotation.z = 0.05 * k; }, rawK);
     fade(8.8, 10.0, 0, 1);
 
@@ -1097,7 +1119,13 @@ function scLeave(c, s, api) {                        /* C — you walk away */
     pitchTo(2.4, 3.7, -0.24, -0.02);
     camTo(3.7, 6.9, { x: P.x, y: 1.62, z: P.z - 0.35 }, { x: 0.45, y: 1.62, z: 3.9 }, rawK);
     bob(3.7, 6.9, 2.1, 0.038);
+    // Restraint is the point of this one — nothing happens, and that has to
+    // be AUDIBLE rather than empty: a held breath, a low bed that never pays
+    // off behind his turned back, and the exhale once he is clear.
+    sfx(1.15, 'breath', 0.5);
+    sfx(2.55, 'dread', 0.28);
     for (let i = 0; i < 6; i++) sfx(3.9 + i * 0.5, 'step');
+    sfx(4.60, 'vrelief', 0.9);
     fade(6.1, 7.7, 0, 1);
 
     c.handsAuto = t => (t > 3.7 && t < 6.9 ? 2.3 : 0);
@@ -1163,9 +1191,11 @@ function scChant(c, s, api) {                        /* D — palms together */
       vmKey.intensity = 0.50 + 0.55 * k;
       vmFire.intensity = 2.4;
     }, rawK);
+    sfx(0.85, 'bowl');             // struck as the palms come together
     sfx(1.0, 'chant');
+    sfx(1.35, 'vchant', 0.9);      // and he actually says the words
     sfx(2.5, 'chime');
-    tr(2.3, 8.6, () => { stage.fireLight.intensity = 9; }, rawK);
+    tr(2.3, 10.4, () => { stage.fireLight.intensity = 9; }, rawK);
 
     // look up to her — and she lets go
     pitchTo(3.4, 4.3, -0.10, 0.11);
@@ -1179,6 +1209,7 @@ function scChant(c, s, api) {                        /* D — palms together */
       ghostOpacity(1 - k);
       ghost.position.y = 0.5 * k;
     }, rawK);
+    sfx(4.45, 'gsigh');            // she lets go, out loud
     sfx(5.3, 'chime');
 
     // hands come down; the night is ordinary again
@@ -1187,7 +1218,10 @@ function scChant(c, s, api) {                        /* D — palms together */
       armR.position.y = y;
       if (prayerArmL) prayerArmL.position.y = y;
     });
-    tr(7.8, 8.6, () => {}, rawK);                     // a held beat of calm
+    /* A held beat of calm — long enough now for his chant to finish rather
+       than be cut off by the card, with the eyes settling back to level so
+       the shot is still moving while it waits. */
+    pitchTo(7.8, 10.4, 0.11, -0.06);
 
     c.keep.ghostGone = true;
     c.endFade = 0;

@@ -1888,6 +1888,7 @@ function snd(name, vol = 1, rate = 1, pan = 0) {        // one-shot
   }
   out.connect(packGain);
   s.start();
+  s.__g = g;        // so a caller can ramp it down instead of cutting it dead
   return s;
 }
 
@@ -2645,22 +2646,72 @@ function sfxOut() {
 const STING_SAMPLE = {
   boom: ['boom', 0.7], clang: ['clang', 0.75], whoosh: ['whoosh', 0.6],
   take: ['paper', 0.8], chime: ['chime', 0.55],
-  kick: ['kick', 0.8], scream: ['scream', 0.85], chant: ['chant', 0.9]
+  kick: ['kick', 0.8], scream: ['scream', 0.85], chant: ['chant', 0.9],
+  /* v3.7 — everything the four cutscenes were missing. A scene had eight
+     noises available to it and four of them were the same thump; these are
+     the rest of the vocabulary: his voice, hers, and the world's.        */
+  swoosh: ['swoosh', 0.55],        // her, moving — replaces the cartoon zip
+  strings: ['strings', 0.7],       // the dread chord under a reveal
+  dread: ['dread', 0.55], breath: ['breath', 0.7], whisper: ['whisper', 0.45],
+  firedie: ['firedie', 0.5],       // the flame giving up
+  ashburst: ['ashburst', 0.75],    // the drum's insides thrown across concrete
+  paperstorm: ['paperstorm', 0.9], // a thousand notes in the air
+  bowl: ['bowl', 0.8],             // the singing bowl under the chant
+  gwail: ['gwail', 0.5], gsigh: ['gsigh', 0.85],
+  gscream: ['gscream', 0.6], sobbing: ['sobbing', 0.55],
+  vgasp: ['vgasp', 1], vscoff: ['vscoff', 0.95], vpant: ['vpant', 0.9],
+  vrelief: ['vrelief', 0.95], vchant: ['vchantline', 1]
 };
-function sting(kind) {
+/* Which kinds the synth below can actually fake. Everything else in
+   STING_SAMPLE is sample-only: if its buffer is not decoded yet it stays
+   silent rather than falling through into a switch with no matching case.
+   (This used to be an explicit `kick || scream || chant` list, which every
+   new sound would have had to be added to and none of them would have
+   been.)                                                                */
+const STING_SYNTH = new Set(['boom', 'clang', 'whoosh', 'take', 'step', 'chime']);
+/* Long cutscene sounds outlive the scene when it is skipped — a nine second
+   chant or a four second wail carrying on over the teaching card is a bug,
+   not a tail. Every sample a scene starts is remembered here and ramped out
+   when the scene ends. Ambient play sounds are NOT in this list: only stings
+   fired while a cine is running.                                          */
+let cineVoices = [];
+function stopCineVoices() {
+  if (actx) {
+    const t = actx.currentTime;
+    for (const s of cineVoices) {
+      try {
+        if (s.__g) {
+          s.__g.gain.cancelScheduledValues(t);
+          s.__g.gain.setValueAtTime(s.__g.gain.value, t);
+          s.__g.gain.linearRampToValueAtTime(0.0001, t + 0.30);
+        }
+        s.stop(t + 0.32);
+      } catch { /* already finished on its own */ }
+    }
+  }
+  cineVoices = [];
+}
+/* `vol` scales the kind's own level, so a scene can place the same dread bed
+   loud under a reveal and barely-there under a walk away, without inventing
+   a second kind for every shade. */
+function sting(kind, vol = 1) {
   // the heart hears these even when the speakers are off
   if (kind === 'boom') pulseSpike(0.7);
-  if (kind === 'scream') pulseSpike(0.95);
+  if (kind === 'scream' || kind === 'gscream') pulseSpike(0.95);
+  if (kind === 'gwail') pulseSpike(0.8);
   if (!actx || muted || !sfxOut()) return;
-  if (kind === 'step' && sndBuf('step1')) { stepSnd(0.5); return; }
+  if (kind === 'step' && sndBuf('step1')) { stepSnd(0.5 * vol); return; }
   const smp = STING_SAMPLE[kind];
-  if (smp && snd(smp[0], smp[1])) return;
-  if (kind === 'kick' || kind === 'scream' || kind === 'chant') return;
+  if (smp) {
+    const src = snd(smp[0], smp[1] * vol);
+    if (src) { if (cine) cineVoices.push(src); return; }
+  }
+  if (!STING_SYNTH.has(kind)) return;
   const t0 = actx.currentTime;
   const env = (node, peak, a, d) => {
     const g = actx.createGain();
     g.gain.setValueAtTime(0.0001, t0);
-    g.gain.exponentialRampToValueAtTime(Math.max(peak, 0.001), t0 + a);
+    g.gain.exponentialRampToValueAtTime(Math.max(peak * vol, 0.001), t0 + a);
     g.gain.exponentialRampToValueAtTime(0.0001, t0 + a + d);
     node.connect(g); g.connect(sfxGain);
   };
@@ -2906,7 +2957,9 @@ function cineUpdate() {
   const before = c.t;
   c.t = Math.min(c.t + rdt, c.dur);
   for (const s of c.stings) {
-    if (!s.fired && s.at > before - 1e-9 && s.at <= c.t) { s.fired = true; sting(s.kind); }
+    if (!s.fired && s.at > before - 1e-9 && s.at <= c.t) {
+      s.fired = true; sting(s.kind, s.vol === undefined ? 1 : s.vol);
+    }
   }
   cineSeek(c.t);
   if (c.ghostMix && ghostMixer) {
@@ -2944,6 +2997,7 @@ function cineEnd() {
   const c = cine;
   if (!c) return;
   cine = null;
+  stopCineVoices();
   restoreWorld(c.snap, c.keep);
   cineFadeEl.style.opacity = String(c.endFade);
   document.body.classList.remove('cine');
@@ -2979,7 +3033,7 @@ addEventListener('pointerdown', e => {
 function A(c) {
   const tr = (t0, t1, fn, ease) => c.tracks.push({ t0, t1, fn, ease });
   const step = (t0, fn) => c.tracks.push({ t0, t1: t0, fn, once: true });
-  const sfx = (at, kind) => c.stings.push({ at, kind });
+  const sfx = (at, kind, vol) => c.stings.push({ at, kind, vol });
   const fade = (t0, t1, from, to) =>
     tr(t0, t1, k => { cineFadeEl.style.opacity = String(from + (to - from) * k); }, rawK);
   const camTo = (t0, t1, from, to, ease) => tr(t0, t1, k => {
@@ -3334,7 +3388,13 @@ function startDecision() {
   // the scene's first sting is a sample rather than the synth fallback
   packWarm(['clang', 'whoosh', 'boom', 'scream', 'kick', 'chant', 'chime',
             'paper', 'endbad', 'endgood', 'uicard', 'uiconfirm', 'uirank',
-            'vA', 'vB', 'vC', 'vD', 'step1', 'step2', 'step3', 'step4']);
+            'vA', 'vB', 'vC', 'vD', 'step1', 'step2', 'step3', 'step4',
+            // the v3.7 cutscene voice: a sting that is still decoding when
+            // its moment arrives simply does not happen, and these have no
+            // synth to cover for them
+            'swoosh', 'strings', 'dread', 'breath', 'sobbing', 'gscream',
+            'firedie', 'ashburst', 'paperstorm', 'bowl', 'gwail', 'gsigh',
+            'vgasp', 'vscoff', 'vpant', 'vrelief', 'vchantline', 'type']);
   ui.prompt.classList.add('hide');
   ui.interact.classList.add('hide');
   hint.classList.add('hide');
