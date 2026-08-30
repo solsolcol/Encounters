@@ -82,8 +82,17 @@ const out = await p.evaluate(() => {
   log.othersKeepDistance = minDNonClose > 3.0;
   log.sanityBites = spent > 40;                        // chunks, not a trickle
 
-  // 7b. the blind spot the review found: stand AT the burner facing the
-  // deep half — every spawn must still be in view and in front of the wall
+  /* 7b. the blind spot the review found: stand AT the burner facing the
+     deep half — every spawn must still be in view and in front of the wall.
+
+     Retreat FIRST. Without it this section can arrive while she is still
+     visible from section 3-6, and score a sighting that was staged for a
+     player standing somewhere else entirely — in view of nothing, because
+     it was never meant to be seen from here. Measured at about two runs in
+     five. Same family as the chaseComesCloser flake in v3.3: never score a
+     sighting the observation window did not stage.                       */
+  place(0, 17); step(60 * 4);                     // out of range: she fades out
+  log.deepStartsClean = e.getReveal() < 0.05;     // if this ever fails, say so
   place(-1, -7.0, 0); step(30);
   let deepBad = 0, deepSeen = 0, deepCur = false;
   for (let i = 0; i < 60 * 40; i++) {
@@ -108,7 +117,8 @@ const out = await p.evaluate(() => {
 });
 
 console.log(JSON.stringify(out, null, 1));
-const MUST = ['hiddenAtSpawn', 'firstSightBehindBurner', 'enoughSightings', 'deepDeckAllVisible',
+const MUST = ['hiddenAtSpawn', 'firstSightBehindBurner', 'enoughSightings',
+  'deepStartsClean', 'deepDeckAllVisible',
   'secondIsChase', 'chaseComesCloser', 'threePlusVariants', 'allSpawnsInView',
   'neverTwiceInARow', 'alwaysUpright', 'staysInDeck', 'closeFloor',
   'othersKeepDistance', 'sanityBites', 'drainBetween', 'stopsAfterRetreat'];

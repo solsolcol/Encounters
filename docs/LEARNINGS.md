@@ -314,3 +314,24 @@ twice. When code in this repo looks odd, the reason is usually here.
 - Removing an object from a scene frees NOTHING in three.js. Geometries,
   materials and every texture hanging off those materials each need their
   own `.dispose()`, and the textures are the ones people forget.
+
+## Never score a sighting the observation window did not stage
+
+- Twice now a ghosttest section has flaked by measuring something that
+  arrived from OUTSIDE its own setup. v3.3: `chaseComesCloser` counted a
+  sighting cut off by the end of the window. v3.5: the deep-deck section
+  teleports the player to the burner and counts the next few spawns — but
+  she is often still visible from the previous section, staged for a
+  player who was standing somewhere else, so it scored an appearance that
+  was never meant to be seen from there. Measured at two runs in five.
+- Both looked like engine regressions and neither was. The tell: it does
+  not reproduce when the section is run on its own.
+- The fix is the same both times: make the section OWN everything it
+  measures. The deep-deck check now walks out of range first (she fades),
+  asserts she is actually gone (`deepStartsClean`, so a broken retreat
+  reports itself instead of quietly restoring the flake), and only then
+  returns to the burner and starts counting.
+- Generally: when a harness drives a state machine through several
+  scenarios in one page, each scenario must reset the machine, and the
+  reset must be asserted. A shared fixture that carries state between
+  sections is a flake generator.

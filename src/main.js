@@ -2557,7 +2557,19 @@ function playCineFn(sceneFn, onDone) {
   cineFadeEl.style.opacity = '0';
   document.exitPointerLock?.();
 }
-const playCine = (i, onDone) => playCineFn(CINE_SCENES[i], onDone);
+/* A choice with no scene falls straight through to its outcome card rather
+   than throwing. Chapter 2 will be written scene by scene, and a half-built
+   chapter must be PLAYABLE while it is half-built — a crash on choice three
+   would make the other three untestable too. */
+const playCine = (i, onDone) => {
+  const sceneFn = CINE_SCENES[i];
+  if (typeof sceneFn !== 'function') {
+    console.warn(`chapter ${CH_KEY}: choice ${i} has no scene — skipping to the card`);
+    onDone();
+    return;
+  }
+  playCineFn(sceneFn, onDone);
+};
 
 function cineSeek(t) {
   const c = cine;
