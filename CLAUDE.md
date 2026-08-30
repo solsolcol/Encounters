@@ -15,7 +15,9 @@ from his **phone**. Consequences:
 
 - Explain in plain language. No jargon walls. Paths only in code blocks.
 - **Never push him toward git commands or terminal steps.** Rollback for
-  him means the artifact version picker or the `.bundle` backups he keeps.
+  him means the Netlify Deploys page (open an older deploy, Publish
+  deploy) or the `.bundle` backups he keeps. The claude.ai preview
+  artifact was a third route; retired 30 Aug 2026 (below).
 - He values care over speed: **"be extremely careful, don't break anything,
   don't lose anything"** is a standing instruction. Two past incidents of
   accidentally deleted code made this a hard rule (see LEARNINGS).
@@ -37,7 +39,9 @@ from his **phone**. Consequences:
    refresh `Encounters-backup.bundle` (`git bundle create
    Encounters-backup.bundle --all`), hand it to Chad.
 4. **Both builds must stay green.** One source produces the hosted site
-   AND the single-file preview; a change that breaks either is not done.
+   AND the single-file build; a change that breaks either is not done.
+   The single-file build is no longer published anywhere, but it is what
+   16 of the 17 harnesses actually load (`wrapped.html`), so it stays.
 5. The generated files (`hellnote.html`, `wrapped.html`, `bundle.js`,
    `dist/`) are never edited by hand.
 
@@ -61,9 +65,10 @@ One source, two builds, built by `npm run build` (esbuild → `build.py` →
 - **Outputs**: `dist/` (Netlify: real doctype document, preloads, engine
   + chapter + assets all content-hashed under `assets/`, `_headers` with
   year-long immutable caching, only `index.html` revalidates) zipped as
-  `masterz-encounters-vN.N.zip`; and `hellnote.html` (everything inlined,
-  for the claude.ai preview artifact whose sandbox cannot fetch) mirrored
-  to `wrapped.html` for the harnesses.
+  `masterz-encounters-vN.N.zip`; and `hellnote.html` (everything inlined
+  — built for the retired claude.ai preview, kept because it is the
+  test surface and the anywhere-fallback) mirrored to `wrapped.html`,
+  which is what the harnesses load.
 - Version lives at the top of `build.py` (`VERSION`)— bump it each release.
 
 Still deliberately in the engine, to be extracted as **step one of
@@ -89,10 +94,11 @@ gitignored by design — write them freely, they die with the session.
   site's Deploys page, or the Netlify MCP `deploy-site` npx command run
   from `dist/` when the environment's network allows it.
   **His `chadsor` project is his personal resume site — NEVER touch it.**
-- **Preview artifact** (claude.ai, private to Chad):
+- **Retired: the claude.ai preview artifact** (Chad's call, 30 Aug
+  2026 — the game is fully on Netlify). Do NOT republish it as part of
+  a release. The old link still holds its version history up to v3.3 if
+  it is ever wanted:
   https://claude.ai/code/artifact/21317842-7db2-4d6a-95a4-eef816d9e68a
-  — republish `hellnote.html` to that URL with a `vN.N-name` label each
-  release. It holds the full version history picker.
 - He may later point `game.triplegem.asia` at the Netlify site.
 
 ## Audio pipeline
@@ -102,8 +108,10 @@ Full-fidelity spec (Chad's call, v2.3 — replaces the old mono/low-bitrate
 one): keep each source's native channel layout (stereo stays stereo),
 44.1 kHz, 128 kbps for generated sounds; the explore music keeps its
 original bytes untouched. Always strip metadata (`ffmpeg -map_metadata
--1`). Watch the embedded build: the claude.ai preview artifact caps at
-16 MB and v2.3 ships ~13.8 MB. All playback through
+-1`). The 16 MB ceiling on the embedded build was the preview
+artifact's and no longer applies; the hosted build streams assets
+separately, so audio budget is now a download-time judgement, not a hard
+cap. All playback through
 the shared Web Audio context — never `<audio src=data:>` — and everything
 obeys the one mute button. Since v2.3 the game runs a full generated
 soundscape: 34 sounds in one `audiopack` asset (assets/audio/ packed by
@@ -170,9 +178,10 @@ the reference build, not a test that needs relaxing.
 Deferred by explicit choice: ghost mesh compression (1.6 MB, the
 biggest download win, but it touches the fragile `rescueTextures` GLB
 parsing — visual verification required), service worker/offline,
-canvas-resolution and backdrop-blur thermal options. Worth revisiting
-before the next heavy asset: the embedded preview build sits at 15.0 MB
-against a 16 MB cap.
+canvas-resolution and backdrop-blur thermal options. Retiring the
+preview artifact removed the 16 MB cap that was making compression
+urgent, so it is now a plain download-speed improvement to schedule when
+convenient, not a blocker on new assets.
 
 Next up: **chapter 2** — extract the world builder + cutscenes into the
 chapter module, add a chapter picker (registry + on-demand chapter

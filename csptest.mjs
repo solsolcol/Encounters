@@ -4,8 +4,13 @@ import { chromium } from 'playwright';
 import { LAUNCH, PAGE } from './testlib.mjs';
 
 const html = fs.readFileSync(new URL('./wrapped.html', import.meta.url));
-// Serve the page under a CSP in the spirit of a sandboxed artifact frame:
-// inline script allowed, but no blob: or data: image sources.
+// Serve the page under a strict CSP: inline script allowed, but no blob:
+// or data: image sources. This began as a model of the claude.ai artifact
+// sandbox; that artifact was retired 30 Aug 2026 and the constraint no
+// longer ships. The test stays because the constraint is what SHAPED the
+// loaders — rescueTextures' hand-parsed GLB, createImageBitmap, decode of
+// raw audio bytes — and those are the fragile pieces (see LEARNINGS). It
+// is the guard that stops someone "simplifying" one back to a blob: URL.
 const srv = http.createServer((req, res) => {
   res.writeHead(200, {
     'Content-Type': 'text/html',

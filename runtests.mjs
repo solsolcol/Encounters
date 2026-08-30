@@ -14,7 +14,7 @@ import { DIR } from './testlib.mjs';
 
 const ALL = [
   { name: 'census',   file: 'census.mjs',    quick: true,  why: 'every system present and running' },
-  { name: 'csp',      file: 'csptest.mjs',   quick: true,  why: 'textures and logo survive a strict policy' },
+  { name: 'csp',      file: 'csptest.mjs',   quick: true,  why: 'the hand-parsed loaders still work with no blob:/data:' },
   { name: 'ghost',    file: 'ghosttest.mjs', quick: true,  why: 'her repertoire: flee, chase, cross, close; upright, in view' },
   { name: 'motion',   file: 'motion.mjs',    quick: true,  why: 'the hands bob, sway and lean' },
   { name: 'pile',     file: 'piletest.mjs',  quick: true,  why: 'the heap highlights, prompts and opens' },

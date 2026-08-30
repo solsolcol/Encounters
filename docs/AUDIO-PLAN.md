@@ -140,7 +140,11 @@ wired → tested. "kind" = the `sting()`/engine name.
 - `hosted`: the new audiopack asset fetches over HTTP.
 - Full suite only at the release commit (substantial release).
 
-## Release ritual (v2.3)
+## Release ritual (v2.3 — HISTORICAL)
+
+> This records what the v2.3 release did. It is not current
+> procedure: the preview artifact was retired on 30 Aug 2026 and
+> is no longer republished. CLAUDE.md holds the live ritual.
 
 VERSION → 2.3 in build.py; both builds green; commit; tag v2.3; refresh
 `Encounters-backup.bundle`; zip; push branch; republish preview artifact
