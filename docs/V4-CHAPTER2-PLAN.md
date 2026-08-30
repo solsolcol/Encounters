@@ -22,8 +22,8 @@ music, voicelines, the complete works."*
 | # | Phase | State |
 |---|---|---|
 | 0 | Map the engine seams a chapter must satisfy | done |
-| 1 | This plan doc | in progress |
-| 2 | Chapter-advance flow: ch1 complete → ch2 opening cutscene → title → play | not started |
+| 1 | This plan doc | live — keep updating |
+| 2 | Chapter-advance flow: ch1 complete → ch2 opening cutscene → title → play | **done** |
 | 3 | `src/chapters/ch2.js` — DATA block | not started |
 | 4 | `build(ctx)` — the bedroom world | not started |
 | 5 | The opening cinematic (`intro` scene) | not started |
@@ -214,3 +214,37 @@ id here when chosen.
 - **30 Aug 2026** — source read, design fixed, this doc written. Seam-mapping
   workflow `wf_445eee23-067` run to document the chapter contract before any
   code is written.
+
+
+## HOW THE OPENING FILM WORKS (built, phase 2)
+
+A chapter may carry `intro` — a scene function in exactly the same cutscene
+language as its four choice scenes. `enterWorld(place, { intro: true })`
+then runs, in order: black → the film → the chapter card → the night.
+A chapter with no `intro` (ch1, chtest) takes the path it always took,
+which is the test that this changed nothing.
+
+The three entry points that pass `{ intro: true }`:
+
+- `againBtn` on the complete card, when `nextChapterKey()` returns a chapter.
+  It calls `restart()` first — the one piece of code that knows everything a
+  fresh run must put back — and `enterWorld` takes it straight back out in
+  the same tick, so no frame of play is ever drawn.
+- `resumeRun()`, but ONLY when the save carries no position. A save written
+  at a chapter boundary means the player finished the last chapter and never
+  saw this one; a save with a position is a run in progress and drops
+  straight back in. Sitting through an opening again to get back to where
+  you were would be a punishment.
+- `newGame()`, so a `?ch=ch2` deep link opens on the film too — which is
+  also how the film gets tested without playing chapter 1 first.
+
+Three supporting engine changes, all small:
+
+- `c.keepFade` — a scene that hands over to something else still black says
+  so, and `cineEnd()` leaves the black alone instead of dissolving it.
+- `whenWorldReady(then, cap)` — extracted from the chapter card's own gate
+  and now used by both. A card over an unloaded world is just a card; a FILM
+  over one is a camera move through an empty room.
+- `playChapterCard`'s `cover()` drops any leftover cutscene black once the
+  card is opaque, or the card would fade out at the end and reveal the black
+  instead of the night.

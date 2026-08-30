@@ -2957,7 +2957,12 @@ function cineEnd() {
   stopCineVoices();
   restoreWorld(c.snap, c.keep);
   cineFadeEl.style.opacity = String(c.endFade);
-  clearCineFade();          // the snap is done; the black has nothing left to hide
+  /* Usually the black has nothing left to hide once the snap is done, so it
+     goes. A scene that hands over to something else still black — a
+     chapter's opening film, which ends and lets the chapter card come up
+     over it — says so with `keepFade`, and the black stays until whatever
+     comes next puts something in front of it.                            */
+  if (!c.keepFade) clearCineFade();
   document.body.classList.remove('cine');
   skipBtn.classList.add('hide');
   ui.hud.classList.remove('hide');
@@ -3068,6 +3073,30 @@ warnIfScenesMissing();
    on without you. Nothing can be done during it — the state is not 'play'
    yet, so nothing moves and nothing drains.                                 */
 const CARD_FADE = 900, CARD_HOLD = 2300;
+/* Wait for the chapter's own world, the hands and the ghost, under whatever
+   is already covering the screen.
+
+   Two things need this now: the chapter card, which has always held its
+   black until the models arrived, and a chapter's OPENING FILM, which is a
+   worse case — a card over an unloaded world is just a card, but a film
+   over one is a camera move through an empty room. Capped, because a fetch
+   that never lands must not hold the game forever; past the cap we proceed
+   and models pop in late, exactly as before.                             */
+function whenWorldReady(then, capMs = 12000) {
+  const t0 = performance.now();
+  const load = $('chapLoad');
+  const gate = () => {
+    if ((stage.ready() && handsReady && ghostReady)
+        || performance.now() - t0 > capMs) {
+      load?.classList.add('hide');
+      return then();
+    }
+    load?.classList.remove('hide');
+    setTimeout(gate, 180);
+  };
+  gate();
+}
+
 function playChapterCard(then) {
   const el = ui.chapter;
   el.classList.remove('hide');
@@ -3097,6 +3126,12 @@ function playChapterCard(then) {
     el.style.opacity = '1';
     void el.offsetWidth;                     // commit it this instant
     ui.title.classList.add('hide');
+    /* The card is opaque now, so it is the thing covering the screen. Any
+       black left over from an opening film goes here — if it did not, the
+       card would fade out at the end and reveal that black instead of the
+       night behind it. */
+    cineFadeEl.classList.remove('clearing');
+    cineFadeEl.style.opacity = '0';
     setTimeout(() => {
       /* On the hosted site the world's files stream in while the title and
          this card are up; nearly always they have long since arrived. If the
@@ -3104,23 +3139,13 @@ function playChapterCard(then) {
          a loading screen — and says so, rather than dropping the player into
          an empty night. The cap means a lost fetch can't hold it forever:
          past it we proceed and models pop in late, exactly like today.     */
-      const t0 = performance.now();
-      const load = $('chapLoad');
-      const fadeOut = () => {
-        load?.classList.add('hide');
+      whenWorldReady(() => {
         el.style.transition = '';            // hand it back to the stylesheet
         void el.offsetWidth;
         el.style.opacity = '';
         el.classList.remove('in');
         setTimeout(() => { el.classList.add('hide'); then(); }, CARD_FADE);
-      };
-      const gate = () => {
-        if ((stage.ready() && handsReady && ghostReady)
-            || performance.now() - t0 > 12000) return fadeOut();
-        load?.classList.remove('hide');
-        setTimeout(gate, 180);
-      };
-      gate();
+      });
     }, CARD_HOLD);
   };
   el.addEventListener('transitionend', cover, { once: true });
@@ -3136,15 +3161,29 @@ function playChapterCard(then) {
    `place` runs while the screen is already black: everything it moves has
    to be moved BEFORE the fade out, or the player watches themselves being
    teleported.                                                            */
-function enterWorld(place) {
+function enterWorld(place, opts = {}) {
   // the title's backdrop stops when the title does — a hidden video still
   // decodes every frame, and the deck needs those frames more
   titleVideo?.el.pause();
   state = 'chapter';
   musicStart();                    // the click that counts as the gesture
   tryLock();                       // has to be inside the click to be allowed
-  playChapterCard(() => {
-    if (place) place();
+
+  /* A chapter may open on a FILM. `intro` is a scene function in exactly the
+     cutscene language the four choice scenes are written in, and it runs
+     against the chapter's own world before the chapter card — so the order
+     the player sees is: film, then the chapter's title, then the night.
+
+     Only when starting a chapter from its beginning. Resuming into the
+     middle of one skips it: an opening is an opening, and sitting through
+     it again to get back to where you were would be a punishment.
+
+     A chapter with no `intro` — chapter 1, and the fixture — takes the path
+     it always took, which is the test that this changed nothing.        */
+  const intro = opts.intro && typeof CH.intro === 'function' ? CH.intro : null;
+
+  const card = () => playChapterCard(() => {
+    if (place && !intro) place();  // with a film, the placing already happened
     ui.hud.classList.remove('hide');
     hint.classList.remove('hide');
     setTimeout(() => hint.classList.add('hide'), 7000);
@@ -3155,6 +3194,19 @@ function enterWorld(place) {
     queueVoice();                  // his own voice, two seconds in
     autosave(true);                // the run is recorded from its first moment
   });
+
+  if (!intro) return card();
+
+  /* Black first, and hold it: the film starts on a covered screen, so the
+     world snapping into its opening position is never seen. The title goes
+     now rather than when the card lands, because the card is no longer the
+     next thing on screen.                                                */
+  cineFadeEl.classList.remove('clearing');
+  cineFadeEl.style.opacity = '1';
+  ui.title.classList.add('hide');
+  ui.hud.classList.add('hide');
+  if (place) place();
+  whenWorldReady(() => playCineFn(intro, card));
 }
 
 /* Continue: the default, and what the big button does whenever there is
@@ -3191,6 +3243,12 @@ function resumeRun() {
     gPhase = 'hidden'; gTimer = 0; gGlide = null;
     reveal = 0; ghostOpacity(0);
     ghost.position.copy(GHOST_HOME);
+  }, {
+    /* A save written at a chapter boundary carries no position: the player
+       finished the last chapter and closed the tab before seeing this one.
+       They have not watched its opening yet, so they get it. A save with a
+       position is a run in progress, and gets dropped straight back in. */
+    intro: !(s.at && ['x', 'y', 'z'].every(k => Number.isFinite(s.at[k])))
   });
   return true;
 }
@@ -3211,7 +3269,7 @@ function newGame(wipe = true) {
   enterWorld(() => {
     yaw.position.copy(SPAWN.pos);
     yaw.rotation.y = SPAWN.rot;
-  });
+  }, { intro: true });     // a ?ch= deep link opens on its film too
 }
 
 $('startBtn').onclick = () => {
@@ -3294,7 +3352,19 @@ $('againBtn').onclick = () => {
   if (!nxt) return restart();
   setChapter(nxt);
   for (const el of [ui.complete, ui.result, ui.over]) el.classList.add('hide');
-  restart();                       // fresh run state, now in the new chapter
+  /* restart() puts the run's state back — the props, the ghost, the hands,
+     the numbers — and lands in play. enterWorld() takes it straight back
+     out again in the same tick, so no frame of play is ever drawn, and the
+     new chapter arrives the way a chapter should: its opening film, its
+     title, then the night. Reusing restart() rather than reimplementing
+     its reset is deliberate; it is the one piece of code that knows
+     everything a fresh run has to put back.                             */
+  restart();
+  enterWorld(() => {
+    yaw.position.copy(SPAWN.pos);
+    yaw.rotation.y = SPAWN.rot;
+    pitch.rotation.x = 0; camera.rotation.z = 0;
+  }, { intro: true });
 };
 
 /* The title screen speaks for the whole series, not for whichever chapter is
