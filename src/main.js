@@ -1216,57 +1216,162 @@ function ghostInView() {
   return _ndc.z < 1 && Math.abs(_ndc.x) < 1.08 && Math.abs(_ndc.y) < 1.15;
 }
 
+/* Her rhythm is a horror film's, not a zombie's. She shows herself, holds
+   just long enough to be believed, then whips away — and is somewhere else
+   the next time you blink: a standing figure behind the burner first, then
+   the corner of your eye, again and again. One state machine owns it.
+
+   The drain is deliberately NOT tied to the flickers: once she has shown
+   herself, standing your ground in her territory keeps costing you whether
+   she is on screen this instant or not (hauntK below). Walking out of
+   range remains the honest exit — everything ramps down and re-arms.     */
+let gPhase = 'hidden';        // hidden | appear | standing | dart | gone | fade
+let gTimer = 0;               // seconds left in the current phase
+let gDart = null;             // the flight in progress
+let hauntK = 0;               // her presence for the drain — outlasts the flickers
+let seenThisRun = false;      // the hair-raising strings are for the FIRST sight only
+const audioCues = [];         // machine -> audio frame; replayed until samples exist
+
+function ghostPlaceBehindBurner() {
+  // the burner sits between you and her: the first sight is a figure
+  // standing in the smoke column, right where the offerings burn
+  const px = yaw.position.x - OFFER_POS.x, pz = yaw.position.z - OFFER_POS.z;
+  const d = Math.hypot(px, pz) || 1;
+  ghost.position.set(
+    THREE.MathUtils.clamp(OFFER_POS.x - (px / d) * 2.1, -20.5, 20.5), 0,
+    Math.min(OFFER_POS.z - (pz / d) * 2.1, GHOST_DECK_EDGE - 0.4));
+}
+
+function ghostSpotInCorner() {
+  // somewhere she can be half-seen: near the edge of your view, inside the
+  // deck, never at arm's length. Sampled, not solved — a bad sample just
+  // tries another angle, and behind the burner is always a valid fallback.
+  for (let i = 0; i < 10; i++) {
+    const side = Math.random() < 0.5 ? 1 : -1;
+    const off = side * (0.38 + Math.random() * 0.34);      // 22–41° off your gaze
+    const ang = yaw.rotation.y + off;
+    const dist = 5.5 + Math.random() * 6.5;
+    const x = yaw.position.x - Math.sin(ang) * dist;
+    const z = yaw.position.z - Math.cos(ang) * dist;
+    if (z > GHOST_DECK_EDGE - 0.3 || Math.abs(x) > 20.5) continue;
+    if (Math.hypot(x - yaw.position.x, z - yaw.position.z) < GHOST_MIN_DIST + 1) continue;
+    return { x, z };
+  }
+  ghostPlaceBehindBurner();
+  return { x: ghost.position.x, z: ghost.position.z };
+}
+
+function ghostStartDart() {
+  // she flees AWAY from you, roughly, with spread — hovering, and on an
+  // accelerating curve: a slow lift-off that whips into nothing
+  const away = Math.atan2(ghost.position.x - yaw.position.x,
+                          ghost.position.z - yaw.position.z);
+  const ang = away + (Math.random() - 0.5) * 1.2;
+  const dist = 6 + Math.random() * 4;
+  const tx = THREE.MathUtils.clamp(ghost.position.x + Math.sin(ang) * dist, -20.5, 20.5);
+  const tz = Math.min(ghost.position.z + Math.cos(ang) * dist, GHOST_DECK_EDGE - 0.3);
+  gDart = { fx: ghost.position.x, fz: ghost.position.z, tx, tz, t: 0, dur: 0.72 };
+  gPhase = 'dart';
+  audioCues.push({ kind: 'dart' });
+  pulseSpike(0.35);
+}
+
 function updateGhost(dt) {
   if (!ghostReady) return;
-  // During a cutscene the timeline owns her completely — position, facing,
-  // opacity, even whether she exists. And once the choice is made (result,
-  // complete), she holds whatever the scene left her as.
-  if (state === 'cine' || state === 'result' || state === 'complete') return;
+  // A cutscene owns her completely; the cards after it hold whatever the
+  // scene left; the faint holds her too, so she can stand over you.
+  if (state === 'cine' || state === 'result' || state === 'complete'
+      || state === 'lost') return;
 
-  // Appearance is keyed to the shrine, not to her: walk straight at the burner
-  // and she still shows up. Keyed to her own position she could be skirted.
-  const bx = yaw.position.x - OFFER_POS.x, bz = yaw.position.z - OFFER_POS.z;
-  const distToBurner = Math.hypot(bx, bz);
+  const distToBurner = Math.hypot(yaw.position.x - OFFER_POS.x,
+                                  yaw.position.z - OFFER_POS.z);
+  const inTerritory = distToBurner < GHOST_APPEAR_AT;
+  const playing = state === 'play';
 
-  const want = distToBurner < GHOST_APPEAR_AT ? 1 : 0;
-  if (reveal !== want) {
-    reveal = want > reveal
-      ? Math.min(1, reveal + dt / GHOST_FADE_TIME)
-      : Math.max(0, reveal - dt / (GHOST_FADE_TIME * 2));
-    const o = reveal * reveal * (3 - 2 * reveal);      // ease in and out
-    const solid = o > 0.995;                           // once fully there, leave the
-    for (const m of ghostMats) {                       // transparent pass entirely —
-      m.opacity = o;                                   // otherwise she sorts against
-      if (m.transparent === solid) {                   // the smoke and the notes
-        m.transparent = !solid;
-        m.needsUpdate = true;
+  // presence for the drain: ramps in once she has shown herself, ramps out
+  // when you leave her ground (or the game is elsewhere)
+  if (seenThisRun && inTerritory && playing)
+    hauntK = Math.min(0.85, hauntK + dt / 1.6);
+  else
+    hauntK = Math.max(0, hauntK - dt / 1.2);
+
+  const dPlayer = Math.hypot(yaw.position.x - ghost.position.x,
+                             yaw.position.z - ghost.position.z);
+
+  switch (gPhase) {
+    case 'hidden':
+      reveal = 0;
+      if (inTerritory && playing) {
+        ghostPlaceBehindBurner();
+        gPhase = 'appear';
+        if (!seenThisRun) {
+          seenThisRun = true;
+          audioCues.push({ kind: 'first' });
+          pulseSpike(1.0);
+        } else {
+          audioCues.push({ kind: 'appear' });
+          pulseSpike(0.5);
+        }
       }
+      break;
+
+    case 'appear':
+      reveal = Math.min(1, reveal + dt / 0.5);
+      if (ghostMixer) ghostMixer.update(dt * 0.25);
+      if (!inTerritory) { gPhase = 'fade'; break; }
+      if (reveal >= 1) { gPhase = 'standing'; gTimer = 1.2 + Math.random() * 0.8; }
+      break;
+
+    case 'standing':
+      gTimer -= dt;
+      if (ghostMixer) ghostMixer.update(dt * 0.3);
+      if (!inTerritory) { gPhase = 'fade'; break; }
+      // she does not let you reach her, and she does not overstay
+      if (gTimer <= 0 || dPlayer < GHOST_MIN_DIST + 0.6) ghostStartDart();
+      break;
+
+    case 'dart': {
+      gDart.t += dt;
+      const k = Math.min(1, gDart.t / gDart.dur);
+      const a = k * k * k;                     // the accelerating curve
+      ghost.position.x = gDart.fx + (gDart.tx - gDart.fx) * a;
+      ghost.position.z = gDart.fz + (gDart.tz - gDart.fz) * a;
+      ghost.position.y = Math.sin(Math.PI * k) * 0.55;   // off the floor: floating
+      reveal = k < 0.6 ? 1 : Math.max(0, 1 - (k - 0.6) / 0.4);
+      if (ghostMixer) ghostMixer.update(dt * 1.5);
+      if (k >= 1) {
+        ghost.position.y = 0;
+        reveal = 0;
+        gPhase = 'gone';
+        gTimer = 2 + Math.random() * 1.0;      // Chad's 2–3 seconds of nothing
+      }
+      break;
     }
-    ghostLight.intensity = o * 0.7;
-    ghost.visible = reveal > 0.001;
-  }
-  if (!ghost.visible) return;
 
-  if (state === 'title' || state === 'chapter' || state === 'result'
-      || state === 'complete' || state === 'lost') return;
+    case 'gone':
+      reveal = 0;
+      gTimer -= dt;
+      if (!inTerritory) { gPhase = 'hidden'; break; }
+      if (gTimer <= 0 && playing) {
+        const spot = ghostSpotInCorner();
+        ghost.position.set(spot.x, 0, spot.z);
+        gPhase = 'appear';
+        audioCues.push({ kind: 'appear' });
+        pulseSpike(0.45);
+      }
+      break;
 
-  const dx = yaw.position.x - ghost.position.x, dz = yaw.position.z - ghost.position.z;
-  const dist = Math.hypot(dx, dz);
-  if (ghostMixer) ghostMixer.update(dt);
-  // She shows herself from much further out now, so she would otherwise be
-  // waiting at the entrance by the time you got there — and you would walk
-  // straight through her. Instead she holds her ground while you are still
-  // outside: you see her standing in the corridor, watching. She only starts
-  // closing once you are under the block with her, and she never comes out.
-  const inside = yaw.position.z < -0.5;
-  if (inside && dist > GHOST_MIN_DIST) {
-    const step = 0.85 * dt;
-    ghost.position.x += (dx / dist) * step;
-    ghost.position.z += (dz / dist) * step;
-    ghost.position.z = Math.min(ghost.position.z, GHOST_DECK_EDGE);
-    ghost.position.x = THREE.MathUtils.clamp(ghost.position.x, -20.5, 20.5);
+    case 'fade':
+      reveal = Math.max(0, reveal - dt / 0.9);
+      if (reveal <= 0) { ghost.position.y = 0; gPhase = 'hidden'; }
+      break;
   }
-  ghost.rotation.y = Math.atan2(dx, dz);               // always turned toward you
+
+  ghostOpacity(reveal);
+  if (ghost.visible) {
+    ghost.rotation.y = Math.atan2(yaw.position.x - ghost.position.x,
+                                  yaw.position.z - ghost.position.z);
+  }
 }
 
 /* ------------------------------------------------- first-person viewmodel */
@@ -1920,6 +2025,16 @@ function voiceDecode() {
 /* Called whenever a fresh run enters the playable scene. It checks the world
    again when the timer lands, because three seconds is long enough to have
    opened the decision, muted the sound, or walked into a cutscene.         */
+/* Decode, ahead of need, every sample the night can demand without warning.
+   Called at each entry into play: the first appearance, the faint, and the
+   narration lines must find their buffers ready (see LEARNINGS on the
+   fire-once decode race).                                                 */
+function warmPlaySet() {
+  packWarm(['strings', 'whisper', 'boom', 'dread', 'whoosh', 'cry', 'breath',
+            'ghostloop', 'heart', 'kick', 'ulost',
+            'vghost', 'vfaint', 'vlow', 'vpile', 'vnote', 'vlost']);
+}
+
 function queueVoice() {
   clearTimeout(voiceTimer);
   voicePlayed = false;
@@ -2066,7 +2181,8 @@ function duckMusic(sec) {
 
 /* the per-frame mix: loop volumes derived from world state, the occasional
    ghost vocalisation, the heartbeat, the once-per-appearance reveal hit.  */
-let ghostWasHere = false, nextCry = 0, nextBreath = 0, stepIdx = 0;
+let nextCry = 0, nextBreath = 0, stepIdx = 0;
+let wantLine = null, wantLineUntil = 0;   // a narration that must not be lost
 const STEP_TAKES = ['step1', 'step2', 'step3', 'step4'];
 function stepSnd(vol) {
   const n = STEP_TAKES[stepIdx++ % STEP_TAKES.length];
@@ -2082,23 +2198,54 @@ function updateAudioFrame(t) {
   const dGhost = Math.hypot(yaw.position.x - ghost.position.x,
                             yaw.position.z - ghost.position.z);
   const near = THREE.MathUtils.clamp(1 - dGhost / 15, 0, 1);
-  loopVol('ghostloop', state === 'play' ? reveal * (0.25 + near * 0.6) : 0);
+  // presence outlasts her flickers: the low bed hums while she is anywhere
+  // near, and the ethereal layer — murmurs, moans, crying, whispers — swells
+  // whenever she is actually on screen
+  const presence = Math.max(reveal, hauntK);
+  loopVol('ghostloop', state === 'play' ? presence * (0.25 + near * 0.55) : 0);
+  loopVol('whisper', state === 'play'
+    ? (reveal * 0.55 + presence * 0.25) * (0.35 + near * 0.65) : 0);
   const dying = state === 'play' && stats.sanity < 30;
   loopVol('heart', dying ? 0.12 + (1 - stats.sanity / 30) * 0.26 : 0);
   if (dying) say('vlow');
-  if (state === 'play' && reveal > 0.15) {
-    if (!ghostWasHere) {                     // she was not here a frame ago
-      ghostWasHere = true;
-      pulseSpike(0.85);
-      snd('boom', 0.65);
-      snd('dread', 0.5);
-      duckMusic(9);
-      say('vghost');
+
+  /* Cues from her state machine. The moment they mark is real even when
+     the sample is still decoding, so a cue is replayed every frame until
+     its buffers exist (or five seconds pass) — the fire-once silence of
+     v3.1 came exactly from not doing this (see LEARNINGS).             */
+  for (let i = audioCues.length - 1; i >= 0; i--) {
+    const c = audioCues[i];
+    if (!c.until) c.until = t + 5;
+    let done = t > c.until || muted || !packJson;
+    if (!done) {
+      if (c.kind === 'first') {
+        if (sndBuf('strings') && sndBuf('boom')) {
+          snd('strings', 0.85); snd('boom', 0.5);
+          duckMusic(9);
+          wantLine = 'vghost'; wantLineUntil = t + 12;
+          done = true;
+        }
+      } else if (c.kind === 'appear') {
+        if (sndBuf('whoosh')) { snd('whoosh', 0.28, 1.35); done = true; }
+      } else if (c.kind === 'dart') {
+        if (sndBuf('whoosh')) { snd('whoosh', 0.5); done = true; }
+      } else done = true;
     }
+    if (done) audioCues.splice(i, 1);
+  }
+  // the narration attached to a cue retries too: it may be waiting out a
+  // decode, another line, or the opening voice — never lost to any of them
+  if (wantLine) {
+    if (t > wantLineUntil || narrated[wantLine]) wantLine = null;
+    else if (state === 'play') say(wantLine);
+  }
+
+  if (state === 'play' && presence > 0.15) {
     if (t > nextCry) { nextCry = t + 9 + Math.random() * 11; snd('cry', 0.2 + near * 0.4); }
-    if (dGhost < 2.8 && t > nextBreath) { nextBreath = t + 6 + Math.random() * 6; snd('breath', 0.7); }
-  } else if (reveal <= 0.01) {
-    ghostWasHere = false;
+    if (dGhost < 2.8 && reveal > 0.3 && t > nextBreath) {
+      nextBreath = t + 6 + Math.random() * 6; snd('breath', 0.7);
+    }
+  } else if (presence <= 0.01) {
     if (nextCry < t + 4) nextCry = t + 4 + Math.random() * 6;
   }
   // the pile, narrated on the first approach and at the first clear look
@@ -2135,7 +2282,7 @@ function pulseStress() {
   const near = THREE.MathUtils.clamp(1 - dGhost / 15, 0, 1);
   const fear = THREE.MathUtils.clamp((100 - stats.sanity) / 100, 0, 1);
   return THREE.MathUtils.clamp(
-    Math.max(reveal * (0.4 + near * 0.6), fear * 0.55, spikeLevel), 0, 1);
+    Math.max(Math.max(reveal, hauntK) * (0.4 + near * 0.6), fear * 0.55, spikeLevel), 0, 1);
 }
 // one heartbeat, phase 0..1: P bump, the QRS spike, the T bump, rest
 function ecgWave(k) {
@@ -3100,7 +3247,8 @@ $('startBtn').onclick = () => {
     document.body.classList.add('inplay');   // the inventory button belongs to play
     state = 'play';
     setHint();
-    queueVoice();                  // his own voice, three seconds in
+    warmPlaySet();                 // her sounds must never race their decode
+    queueVoice();                  // his own voice, two seconds in
   });
 };
 $('stepBack').onclick = () => dismissDecision();
@@ -3219,12 +3367,18 @@ const DRAIN_FAR = 0.55, DRAIN_NEAR = 2.5;     // sanity per second
 const DRAIN_FAR_D = 13.0, DRAIN_NEAR_D = 4.0; // metres to her
 
 function ghostDrainRate() {
-  if (!ghostReady || reveal <= 0.01) return 0;
+  // presence, not the flicker: once she has shown herself, standing in her
+  // territory keeps costing you between appearances too — the banner says
+  // exactly this ("dropping until you take action"), and walking out of
+  // range remains the honest way to stop it
+  if (!ghostReady) return 0;
+  const presence = Math.max(reveal, hauntK);
+  if (presence <= 0.01) return 0;
   const d = Math.hypot(yaw.position.x - ghost.position.x,
                        yaw.position.z - ghost.position.z);
   const k = THREE.MathUtils.clamp(
     (DRAIN_FAR_D - d) / (DRAIN_FAR_D - DRAIN_NEAR_D), 0, 1);
-  return (DRAIN_FAR + (DRAIN_NEAR - DRAIN_FAR) * k * k) * reveal;
+  return (DRAIN_FAR + (DRAIN_NEAR - DRAIN_FAR) * k * k) * presence;
 }
 
 /* The bar moving is easy to miss with a ghost walking at you, so every whole
@@ -3338,7 +3492,10 @@ function restart() {
   stopBed();
   if (narSrc) { try { narSrc.stop(); } catch {} narSrc = null; }
   for (const k in narrated) delete narrated[k];
-  ghostWasHere = false;
+  gPhase = 'hidden'; gTimer = 0; gDart = null;
+  hauntK = 0; seenThisRun = false;
+  audioCues.length = 0; wantLine = null;
+  ghost.position.y = 0;
 
   // the player, back out on the grass facing the block, standing still
   yaw.position.copy(SPAWN.pos); yaw.rotation.y = SPAWN.rot;
@@ -3370,6 +3527,7 @@ function restart() {
 
   state = 'play';
   setHint();
+  warmPlaySet();
   queueVoice();                    // a fresh run gets the line again
   hint.classList.remove('hide');
   clearTimeout(hintTimer);
