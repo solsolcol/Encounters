@@ -114,6 +114,11 @@
        `lines` are the two he says about the gap — on the first approach and
        at the first clear look at it — and `sayPrefix` picks the four that
        run under the outcome cards: v2A, v2B, v2C, v2D.                    */
+    /* The room's own sound: the traffic four floors down, the fan, and a
+       clock somewhere. No `atShrine` — the altar's candle is electric, and
+       a crackling fire on a shelf beside a boy's bed would be nonsense. */
+    ambience: { beds: [['amb', 0.20], ['fan', 0.30], ['clock', 0.10]],
+                atShrine: null },
     lines: { near: 'v2near', close: 'v2gap', nearAt: 2.6 },
     sayPrefix: 'v2'
   };

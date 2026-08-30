@@ -1800,8 +1800,25 @@ function voiceDecode() {
 function warmPlaySet() {
   packWarm(['strings', 'whisper', 'boom', 'dread', 'swoosh', 'sobbing',
             'gscream', 'breath', 'ghostloop', 'heart', 'kick', 'ulost',
-            'vghost', 'vfaint', 'vlow', 'vpile', 'vnote', 'vlost',
+            'vghost', 'vfaint', 'vlow', 'vlost',
             'vscare1', 'vscare2', 'vscare3', 'vscare4']);
+  /* and the CHAPTER's own: its room tone, and the two lines about the thing
+     you can act on — which used to be listed here by chapter 1's names. */
+  const amb = CH.ambience || AMBIENCE_DEFAULT;
+  packWarm((amb.beds || []).map(b => b[0]));
+  if (amb.atShrine) packWarm([amb.atShrine[0]]);
+  if (CH.lines) packWarm([CH.lines.near, CH.lines.close].filter(Boolean));
+}
+
+/* Everything a chapter's OPENING FILM asks for, decoded before it starts.
+   A film is a worse case than a scene: it runs on a screen that has only
+   just gone black, before the player has done anything at all, so nothing
+   else has warmed the pack for it — and a line that misses its cue in the
+   first ten seconds of a chapter is the first thing anyone notices. */
+function warmIntroSet() {
+  packWarm(['clock', 'fan', 'breath', 'sobbing', 'dread', 'strings', 'boom',
+            'whisper', 'heart', 'doorcreak', 'bedcreak',
+            'v2wake1', 'v2wake2', 'v2wake3']);
 }
 
 function queueVoice() {
@@ -2023,13 +2040,49 @@ function stepSnd(vol) {
   const n = STEP_TAKES[stepIdx++ % STEP_TAKES.length];
   snd(sndBuf(n) ? n : STEP_TAKES[0], vol, 0.94 + Math.random() * 0.12);
 }
+/* Chapter 1's, exactly: the deck's night bed, and the burner's fire keyed
+   to how close you are standing to it. */
+const AMBIENCE_DEFAULT = { beds: [['amb', 0.33]], atShrine: ['fire', 0.6, 16] };
+/* Every loop name any chapter has asked for this session. Changing chapter
+   silences the ones the new one does not use — otherwise the outgoing
+   chapter's fire would go on crackling in the incoming chapter's bedroom,
+   because nothing would ever set it back to zero. */
+const liveLoops = new Set();
+function silenceChapterLoops() {
+  const amb = CH.ambience || AMBIENCE_DEFAULT;
+  const keep = new Set((amb.beds || []).map(b => b[0]));
+  if (amb.atShrine) keep.add(amb.atShrine[0]);
+  for (const n of liveLoops) if (!keep.has(n)) loopVol(n, 0);
+}
+
 function updateAudioFrame(t) {
   if (!packJson) return;
   const inWorld = state !== 'title' && state !== 'chapter';
-  loopVol('amb', inWorld ? 0.33 : 0);
-  const dFire = Math.hypot(yaw.position.x - SHRINE.x, yaw.position.z - SHRINE.z);
-  loopVol('fire', inWorld
-    ? Math.pow(THREE.MathUtils.clamp(1 - dFire / 16, 0, 1), 1.6) * 0.6 : 0);
+
+  /* THE ROOM TONE, AND IT BELONGS TO THE CHAPTER.
+     A void deck's night is crickets and far traffic under a joss fire that
+     gets louder as you approach the burner. A bedroom's is a fan, a clock
+     and the traffic four floors down, and there is no fire in it at all —
+     played unchanged, chapter 1's crackle would burn quietly on a shelf
+     beside a boy's bed, at more than half volume, because a four metre room
+     is always "near the shrine".
+
+     `beds` are the loops that simply run while you are in the world;
+     `atShrine` is one keyed to your distance from it. Chapter 1's values
+     are the defaults, so nothing about the deck moves.                   */
+  const amb = CH.ambience || AMBIENCE_DEFAULT;
+  for (const [name, vol] of (amb.beds || AMBIENCE_DEFAULT.beds)) {
+    loopVol(name, inWorld ? vol : 0);
+    liveLoops.add(name);
+  }
+  const at = amb.atShrine;
+  if (at) {
+    const [name, vol, range] = at;
+    const dFire = Math.hypot(yaw.position.x - SHRINE.x, yaw.position.z - SHRINE.z);
+    loopVol(name, inWorld
+      ? Math.pow(THREE.MathUtils.clamp(1 - dFire / range, 0, 1), 1.6) * vol : 0);
+    liveLoops.add(name);
+  }
   const dGhost = Math.hypot(yaw.position.x - ghost.position.x,
                             yaw.position.z - ghost.position.z);
   const near = THREE.MathUtils.clamp(1 - dGhost / 15, 0, 1);
@@ -2669,7 +2722,17 @@ const STING_SAMPLE = {
   gwail: ['gwail', 0.5], gsigh: ['gsigh', 0.85],
   gscream: ['gscream', 0.6], sobbing: ['sobbing', 0.55],
   vgasp: ['vgasp', 1], vscoff: ['vscoff', 0.95], vpant: ['vpant', 0.9],
-  vrelief: ['vrelief', 0.95], vchant: ['vchantline', 1]
+  vrelief: ['vrelief', 0.95], vchant: ['vchantline', 1],
+  /* Chapter 2's room, and the sounds a bedroom has that a void deck does
+     not. `heart` was already in the pack as a loop and had no row here, so
+     a scene asking for it got silence — chaptertest's cue check found that
+     the moment chapter 2 asked. */
+  heart: ['heart', 0.7],
+  clock: ['clock', 0.85], fan: ['fan', 0.8],
+  doorcreak: ['doorcreak', 0.75], hallsteps: ['hallsteps', 0.9],
+  bedcreak: ['bedcreak', 0.85],
+  v2wake1: ['v2wake1', 1], v2wake2: ['v2wake2', 1], v2wake3: ['v2wake3', 1],
+  v2call: ['v2call', 1], v2ma: ['v2ma', 1]
 };
 /* Which kinds the synth below can actually fake. Everything else in
    STING_SAMPLE is sample-only: if its buffer is not decoded yet it stays
@@ -2862,6 +2925,7 @@ function setChapter(key) {
   GHOST_HOME.set(CH.ghostHome.x, 0, CH.ghostHome.z);
   Object.assign(BOUNDS, CH.bounds);
   applyGhostTerritory();           // her reach is the new chapter's, not the old one's
+  silenceChapterLoops();           // and so is the room tone
   SPAWN.pos.set(CH.spawn.x, CH.spawn.y, CH.spawn.z);
   SPAWN.rot = 0;
   rebuildStage(CH);
@@ -3267,6 +3331,7 @@ function enterWorld(place, opts = {}) {
   ui.title.classList.add('hide');
   ui.hud.classList.add('hide');
   if (place) place();
+  warmIntroSet();
   whenWorldReady(() => playCineFn(intro, card));
 }
 
@@ -3482,7 +3547,10 @@ function startDecision() {
             // synth to cover for them
             'swoosh', 'strings', 'dread', 'breath', 'sobbing', 'gscream',
             'firedie', 'ashburst', 'paperstorm', 'bowl', 'gwail', 'gsigh',
-            'vgasp', 'vscoff', 'vpant', 'vrelief', 'vchantline', 'type']);
+            'vgasp', 'vscoff', 'vpant', 'vrelief', 'vchantline', 'type',
+            // and chapter 2's
+            'clock', 'fan', 'doorcreak', 'hallsteps', 'bedcreak', 'heart',
+            'v2call', 'v2ma']);
   ui.prompt.classList.add('hide');
   ui.interact.classList.add('hide');
   hint.classList.add('hide');

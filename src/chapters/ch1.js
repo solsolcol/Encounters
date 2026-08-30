@@ -89,6 +89,8 @@
     // outcome cards (vA..vD). Both are about hell notes, so both are this
     // chapter's rather than the engine's.
     lines: { near: 'vpile', close: 'vnote', nearAt: 8 },
+    // the deck's night, and the burner's fire getting louder as you near it
+    ambience: { beds: [['amb', 0.33]], atShrine: ['fire', 0.6, 16] },
     sayPrefix: 'v',
     // the asset key holding this chapter's note art; the engine loads it and
     // hands it back through setNoteTexture() once it lands

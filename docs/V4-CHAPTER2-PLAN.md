@@ -28,7 +28,7 @@ music, voicelines, the complete works."*
 | 4 | `build(ctx)` — the bedroom world | **done** |
 | 5 | The opening cinematic (`intro` scene) | **done** (silent until phase 7) |
 | 6 | The four choice cutscenes | **done** (silent until phase 7) |
-| 7 | Audio: generate, encode, wire | **in progress** |
+| 7 | Audio: generate, encode, wire | **done** |
 | 8 | Strings + sheet re-export | not started |
 | 9 | Tests (full suite), docs, release | not started |
 
@@ -277,3 +277,41 @@ as a loop, needs a STING_SAMPLE row) · `v2call` · `v2ma` · `v2wake1` ·
 
 Plus, not cues but needed: `v2near`, `v2gap` (the two proximity lines) and
 `v2A`..`v2D` (under the outcome cards).
+
+
+## THE SIXTEEN SOUNDS, AS BUILT (phase 7)
+
+ElevenLabs flow `q7aeSWHTTHg8qW28OmlM`. James is `EkK5I93UQWFDigLMpZcX`;
+**Mother is `XrExE9yKIg1WjnnlVkGX` (Matilda)** — the workspace has no
+Singaporean or Asian female voice, and of what it has, a middle-aged alto
+is the closest to a tired woman woken at two in the morning. She is
+off-screen through a doorway, which forgives the accent.
+
+| name | what | where |
+|---|---|---|
+| `clock` | a cheap wall clock, 4 s loop | a bed of the room; the silences |
+| `fan` | the ceiling fan, 5 s loop | a bed of the room |
+| `doorcreak` | a dry hinge | the intro, B, C |
+| `hallsteps` | slippers on terrazzo, coming | B |
+| `bedcreak` | a mattress taking weight | the intro, A, D |
+| `v2wake1` | *"It followed me home."* | intro, over black |
+| `v2wake2` | *"Ma? Ma, is that you?"* | intro, and nothing answers |
+| `v2wake3` | *"There is someone in the room."* | intro, under the fade |
+| `v2call` | *"MA! MA, COME HERE! PLEASE!"* | B |
+| `v2ma` | Mother: *"Aiyah. What is it now? Go back to sleep, boy. I am here."* | B |
+| `v2near` / `v2gap` | the two proximity lines about the gap | play |
+| `v2A`–`v2D` | the four under the outcome cards | the cards |
+
+**Two things worth remembering.** Five of eleven eleven_v3 lines FAILED on
+the first run, and the pattern was length plus fussy punctuation — an
+ellipsis mid-line, an inline `[exhale]`, a comma splice. Shortening each to
+two plain sentences fixed all five. That is the same class of failure as
+the em-dash note in LEARNINGS.
+
+And the generator's output level is not to be trusted: `fan` came back at
+−42 dB mean and `clock` at −45, against a pack that sits at −20 to −25.
+They needed +18 and +12; `doorcreak` came back HOT at −9 and needed −8.
+Measure with `volumedetect` against the existing pack, every time.
+
+The pack is now 72 sounds and 7.3 MB. Worth a compression pass before
+chapter 3, not before shipping this one.
