@@ -24,11 +24,11 @@ music, voicelines, the complete works."*
 | 0 | Map the engine seams a chapter must satisfy | done |
 | 1 | This plan doc | live — keep updating |
 | 2 | Chapter-advance flow: ch1 complete → ch2 opening cutscene → title → play | **done** |
-| 3 | `src/chapters/ch2.js` — DATA block | not started |
-| 4 | `build(ctx)` — the bedroom world | not started |
-| 5 | The opening cinematic (`intro` scene) | not started |
-| 6 | The four choice cutscenes | not started |
-| 7 | Audio: generate, encode, wire | not started |
+| 3 | `src/chapters/ch2.js` — DATA block | **done** |
+| 4 | `build(ctx)` — the bedroom world | **done** |
+| 5 | The opening cinematic (`intro` scene) | **done** (silent until phase 7) |
+| 6 | The four choice cutscenes | **done** (silent until phase 7) |
+| 7 | Audio: generate, encode, wire | **in progress** |
 | 8 | Strings + sheet re-export | not started |
 | 9 | Tests (full suite), docs, release | not started |
 
@@ -248,3 +248,32 @@ Three supporting engine changes, all small:
 - `playChapterCard`'s `cover()` drops any leftover cutscene black once the
   card is opaque, or the card would fade out at the end and reveal the black
   instead of the night.
+
+
+## THREE MORE CHAPTER-1 LEAKS FOUND AND FIXED (phase 4)
+
+Placing a bedroom found three more places where the engine was really
+chapter 1's engine. All three are fixed the same way: a chapter declares
+it, and chapter 1's current value is the default, so nothing moves.
+
+- **The ghost's whole territory** (phase 2b, its own commit).
+- **`voiceLine`** — the line he says a few seconds into a chapter.
+  "Almost midnight, and this is still the fastest way home" is about a void
+  deck. A chapter names its own asset key; one that names none opens in
+  silence, which is what chapter 2 does, because its film has just spoken
+  three lines and a fourth would crowd them.
+- **`lines` and `sayPrefix`** — the two proximity lines about the thing you
+  can act on (chapter 1: "someone's been burning offerings"), and the prefix
+  of the four spoken under the outcome cards (`vA`..`vD` for chapter 1,
+  `v2A`..`v2D` for chapter 2).
+
+## THE SOUNDS CHAPTER 2 STILL NEEDS (phase 7)
+
+`chaptertest`'s cue check names them exactly, which is what it is for:
+
+`bedcreak` · `clock` · `doorcreak` · `fan` · `hallsteps` · `heart` (exists
+as a loop, needs a STING_SAMPLE row) · `v2call` · `v2ma` · `v2wake1` ·
+`v2wake2` · `v2wake3`
+
+Plus, not cues but needed: `v2near`, `v2gap` (the two proximity lines) and
+`v2A`..`v2D` (under the outcome cards).

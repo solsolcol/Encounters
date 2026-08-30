@@ -1741,7 +1741,8 @@ for (const ev of ['pointerdown', 'pointerup', 'touchstart', 'touchend',
 musicSetup();
 musicStart();
 // pull the spoken line down early too; it decodes on a gesture later
-assetBytes('voice', true).catch(() => {});
+// warm the booting chapter's own opening line at low priority
+if (CH.voiceLine) assetBytes(CH.voiceLine, true).catch(() => {});
 
 /* iOS suspends — or "interrupts" — the context when the tab is backgrounded,
    a call comes in, or Siri speaks, and does not reliably hand the audio
@@ -1764,17 +1765,28 @@ addEventListener('pointerdown', resumeAudio, { passive: true });
    gesture, nothing while muted. The three seconds are real time, not frame
    time, so a stalling phone still hears it at the right moment.            */
 const VOICE_DELAY_MS = 2000;   // Chad timed it: two seconds after the world fades in
+/* The line he says a few seconds into a chapter, and it belongs to the
+   CHAPTER — "Almost midnight, and this is still the fastest way home" is
+   about a void deck, and playing it in a bedroom would be nonsense. A
+   chapter names its own asset key in `voiceLine`; one that names none opens
+   in silence, which is a legitimate choice for a chapter that has already
+   said its piece in an opening film.
+
+   Keyed by that asset name, so changing chapter throws the previous
+   chapter's buffer away rather than speaking it in the wrong room.       */
 let voiceBuf = null, voiceSrc = null, voiceTimer = 0;
-let voiceDecoding = false, voicePlayed = false;
+let voiceKey = null, voiceDecoding = false, voicePlayed = false;
 
 function voiceDecode() {
-  if (voiceBuf || voiceDecoding) return;
+  const key = CH.voiceLine;
+  if (key !== voiceKey) { voiceBuf = null; voiceDecoding = false; voiceKey = key; }
+  if (!key || voiceBuf || voiceDecoding) return;
   if (!actx) musicSetup();
   if (!actx) return;
   voiceDecoding = true;
-  assetBytes('voice')
+  assetBytes(key)
     .then(bytes => actx.decodeAudioData(bytes))
-    .then(buf => { voiceBuf = buf; })
+    .then(buf => { if (CH.voiceLine === key) voiceBuf = buf; })
     .catch(() => { /* no file or no decoder; the game is fine without */ });
 }
 
@@ -2094,10 +2106,17 @@ function updateAudioFrame(t) {
   } else if (presence <= 0.01) {
     if (nextCry < t + 4) nextCry = t + 4 + Math.random() * 6;
   }
-  // the pile, narrated on the first approach and at the first clear look
-  if (state === 'play') {
-    if (stage.pile.dist() < 8) say('vpile');
-    if (stage.pile.dist() < stage.pile.radius && stage.pile.inView()) say('vnote');
+  /* The thing you can act on, narrated on the first approach and again at
+     the first clear look. WHICH lines those are belongs to the chapter:
+     "someone's been burning offerings" is about a void deck, and saying it
+     in a bedroom would be nonsense. A chapter with no `lines` simply says
+     nothing, which is a legitimate choice for one that has already spoken
+     in an opening film.                                                   */
+  if (state === 'play' && CH.lines) {
+    const far = Number.isFinite(CH.lines.nearAt) ? CH.lines.nearAt : 8;
+    if (CH.lines.near && stage.pile.dist() < far) say(CH.lines.near);
+    if (CH.lines.close && stage.pile.dist() < stage.pile.radius
+        && stage.pile.inView()) say(CH.lines.close);
   }
 }
 
@@ -3636,7 +3655,9 @@ function pick(i) {
     snd('uicard', 0.6);
     playBed(c.verdict === 'good' || c.verdict === 'best' ? 'endgood' : 'endbad', 0.5);
     duckMusic(15);
-    const speech = speak('v' + c.k, { wait: 9000 });
+    // vA..vD for chapter 1, v2A..v2D for chapter 2: the prefix is the
+    // chapter's, because the words under its own card are
+    const speech = speak((CH.sayPrefix || 'v') + c.k, { wait: 9000 });
     runCardSequence([...ui.deltas.querySelectorAll('.srow')],
                     ui.teach, c.teach, speech, $('nextBtn'));
   });

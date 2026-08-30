@@ -82,6 +82,14 @@
     // ghost, logo, music, the sound pack) is the engine's own; these are the
     // files that exist only because this chapter does.
     assets: ['hdb', 'voice', 'hellnote'],
+    // the line he says a few seconds in; this one is about a void deck, so
+    // it is this chapter's rather than the engine's
+    voiceLine: 'voice',
+    // his two lines about the heap, and the prefix of the four under the
+    // outcome cards (vA..vD). Both are about hell notes, so both are this
+    // chapter's rather than the engine's.
+    lines: { near: 'vpile', close: 'vnote', nearAt: 8 },
+    sayPrefix: 'v',
     // the asset key holding this chapter's note art; the engine loads it and
     // hands it back through setNoteTexture() once it lands
     noteArt: 'hellnote'
