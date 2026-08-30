@@ -138,18 +138,48 @@ Attributions must stay in the credits panel; he adds more as they come.
 
 ## Current state and roadmap
 
-Done through v2.1: full chapter-1 loop (explore → interact with the pile
-→ four choices → in-engine cutscenes → teaching card → rank), sanity
-drain, instant restart, player voice line, split-file hosting with
-preloads and immutable caching. Deferred by explicit choice: ghost mesh
-compression (1.6 MB, biggest download win, but it touches the fragile
-`rescueTextures` GLB parsing — visual verification required), service
-worker/offline, canvas-resolution and backdrop-blur thermal options.
+**v3.3 is the reference standard for the base game** (Chad's call,
+30 Aug 2026). Everything below it is settled: chapter 1 plays end to
+end and the engine's feel — how she behaves, how she sounds, how the
+cards perform, how the equipment screen works — is the bar new chapters
+are held to, not a thing to be renegotiated while building them. Treat
+a change that alters base-game feel as its own decision to put to Chad,
+separately from the chapter work that prompted it.
+
+What the baseline contains, by release:
+- **v2.1** the chapter-1 loop (explore → the pile → four choices →
+  in-engine cutscenes → teaching card → rank), sanity drain, instant
+  restart, split-file hosting with preloads and immutable caching.
+- **v2.3** the full generated soundscape (one audiopack + the James
+  narration).
+- **v2.5–v2.9** stat icons, flowing bars, volume slider, the logo, the
+  reactive ECG.
+- **v3.0–v3.01** the one-sheet text pipeline (`textsync` + `texttest`).
+- **v3.1** the equipment/inventory system and the pointer-lock fix.
+- **v3.2** the drama pass: faint at sanity zero, performing outcome and
+  complete cards, the paper-doll equipment screen.
+- **v3.3** the terror pass: her four-variant repertoire, directional
+  audio, James's scared reactions, chunk sanity drain.
+
+The anchors for that baseline: tag `v3.3`, commit `c8abf61`, the
+`Encounters-backup.bundle` Chad holds (it carries the tag), and the
+17 harnesses — which are what actually *enforce* the standard. A
+chapter-2 change that reddens a base-game harness is a regression in
+the reference build, not a test that needs relaxing.
+
+Deferred by explicit choice: ghost mesh compression (1.6 MB, the
+biggest download win, but it touches the fragile `rescueTextures` GLB
+parsing — visual verification required), service worker/offline,
+canvas-resolution and backdrop-blur thermal options. Worth revisiting
+before the next heavy asset: the embedded preview build sits at 15.0 MB
+against a 16 MB cap.
 
 Next up: **chapter 2** — extract the world builder + cutscenes into the
 chapter module, add a chapter picker (registry + on-demand chapter
 script loading is already the mechanism), build the new location, swap
-in Master Z's real chapter-1 text along the way.
+in Master Z's real chapter-1 text along the way. The extraction is a
+pure refactor of the reference build: the base game must play
+identically after it, and the suite is how that is proved.
 
 `docs/LEARNINGS.md` is the catalog of every hard-won lesson (CSP traps,
 audio traps, cutscene staging, test flakiness). When something in this
