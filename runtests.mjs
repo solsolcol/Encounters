@@ -15,7 +15,7 @@ import { DIR } from './testlib.mjs';
 const ALL = [
   { name: 'census',   file: 'census.mjs',    quick: true,  why: 'every system present and running' },
   { name: 'csp',      file: 'csptest.mjs',   quick: true,  why: 'textures and logo survive a strict policy' },
-  { name: 'ghost',    file: 'ghosttest.mjs', quick: true,  why: 'she appears, closes, and stays in the deck' },
+  { name: 'ghost',    file: 'ghosttest.mjs', quick: true,  why: 'behind the burner, the dart, the corner of your eye' },
   { name: 'motion',   file: 'motion.mjs',    quick: true,  why: 'the hands bob, sway and lean' },
   { name: 'pile',     file: 'piletest.mjs',  quick: true,  why: 'the heap highlights, prompts and opens' },
   { name: 'step',     file: 'steptest.mjs',  quick: true,  why: 'nothing opens by itself; stepping back works' },

@@ -61,14 +61,22 @@ const s2 = await p.evaluate(()=>window.__enc.stats.sanity);
 out.frozenWhileDeciding = Math.abs(s2 - s1) < 0.01;
 out.bannerDownWhileDeciding = !(await shown('haunt'));
 
-// and running out ends the game
+// and running out ends the game — through the FAINT first: the camera goes
+// down to the concrete inside a cutscene before the card is allowed up
 await p.evaluate(()=>{ window.__enc.dismissDecision(); window.__enc.stats.sanity = 0.4; });
 // the renderer here manages about a frame a second, so wait for the state
 // rather than for a stopwatch — reading mid-frame is what makes this flaky
-for (let i = 0; i < 30; i++) {
-  if (await p.evaluate(()=>window.__enc.getState()) === 'lost') break;
+let sawFaint = false, minCamY = 9;
+for (let i = 0; i < 40; i++) {
+  const st = await p.evaluate(()=>({ s: window.__enc.getState(),
+                                     y: window.__enc.yaw.position.y }));
+  if (st.s === 'cine') { sawFaint = true; minCamY = Math.min(minCamY, st.y); }
+  if (st.s === 'lost') break;
   await p.waitForTimeout(1000);
 }
+out.faintPlayed = sawFaint;
+out.cameraWentDown = minCamY < 0.9;
+if (!sawFaint || minCamY >= 0.9) errs.push('faint sequence missing or camera never fell');
 out.state = await p.evaluate(()=>window.__enc.getState());
 out.lostScreen = await shown('over');
 out.hudHidden = !(await shown('hud'));

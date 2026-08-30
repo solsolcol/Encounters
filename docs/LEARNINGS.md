@@ -191,6 +191,26 @@ twice. When code in this repo looks odd, the reason is usually here.
   on open and `tryLock()` on close. Any future in-play UI needs the same
   pair, or it is decoration.
 
+## Fire-once audio cues lose a race they don't know they're in
+
+- Every pack sample decodes lazily on first request. A cue fired exactly
+  once at a state transition (`if (!wasHere) { snd('boom'); say('line') }`)
+  asks for buffers that do not exist yet on that first frame — `snd()`
+  and `say()` return silently, the transition flag is already consumed,
+  and the moment is gone forever. This is why v3.1's ghost appeared in
+  silence while its music duck (which needs no buffer) worked: proof the
+  trigger fired and only the samples were missing.
+- Two fixes, both applied and both needed: `warmPlaySet()` decodes the
+  whole night set at every entry into play, AND one-shot cues go through
+  a queue that is replayed every frame until the buffers exist (with a
+  deadline). Narration retries separately (`wantLine`) because it also
+  waits out other lines and the opening voice.
+- The rule for every future cue: it is either in a warm list or it
+  retries. A bare `snd()` at a fire-once moment is a silent bug.
+- ElevenLabs sfx v2 ignores durations written in the prompt text: without
+  an explicit `duration_seconds` parameter it returns 0.5–2 s clips. Set
+  the parameter (creative_update_node), don't fight the prompt.
+
 ## Testing a double tap on a software renderer
 
 - Two back-to-back `touchscreen.tap()` calls land ~900 ms apart under
