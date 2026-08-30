@@ -219,3 +219,45 @@ Flow `QqOIcaVGcllJIiE9Qw8t`. `cry` retired (superseded by sobbing).
 Directional layer: whisper + ghostloop loops each carry a StereoPanner
 steered per frame to her camera-space bearing (loopPan/ghostPan); one-shot
 pans are set at fire time. snd() takes an optional 4th `pan` argument.
+
+
+## v3.7 additions (the cutscene pass) — 56 sounds in the pack
+
+Flow `RCPKylyhFk08CZOw1Czi`. Chad: "there are still a serious lack of
+sound effects and voicelines... And there is an old ghost whoosh/zip
+sound that sounds cartoonish."
+
+James is `EkK5I93UQWFDigLMpZcX`, eleven_v3, stability 0. SFX are
+`eleven_text_to_sound_v2` with an explicit `duration_seconds` — see the
+note above; four of these came back at 0.5–2 s on the first run because
+the duration was written in the prompt text, which the model ignores.
+
+| name | what | wired at |
+|---|---|---|
+| vgasp | James, sharp frightened inhale, 2.1 s | A @5.02 — his eyes arrive and she is already there |
+| vscoff | James, dismissive laugh, 3.1 s | B @0.62 — before the boot, so the kick has a character behind it |
+| vpant | James, running out of breath, 4.4 s | B @4.60, under the whole run |
+| vrelief | James, quiet shaken exhale, 3.3 s | C @4.60, once he is clear |
+| vchantline | James, murmured chant, 9.3 s | D @1.35 (kind `vchant`) — scene D grew to 10.4 s so it finishes |
+| gwail | her, low moan rising to a shriek, 4.0 s | B @3.40, as she starts after him |
+| gsigh | her, letting go, dissolving into reverb, 4.5 s | D @4.45, as she is released |
+| paperstorm | a thousand thin sheets in a gust, 6.0 s | B @1.60, swelling exactly as noteStorm ramps |
+| ashburst | hot ash and embers thrown across concrete, 5.0 s | B @1.22, the drum going over |
+| firedie | a large flame snuffed, 2.0 s | A @4.30, the fire dying as she condenses |
+| bowl | bronze singing bowl, one strike, long decay, 7.0 s | D @0.85, struck as the palms come together |
+| type | one soft key tick, trimmed to 0.29 s | the teaching reveal, every third character |
+
+Levels matter as much as the samples: `type` came back at −59 dB mean and
+needed +27 dB before a 0.16 playback volume was audible at all; `gsigh`
++14, `paperstorm`/`bowl` +7, `ashburst` +5. Measure with `volumedetect`
+against the pack's existing sounds (mean −20 to −25 dB) rather than
+trusting the generator.
+
+Reused rather than regenerated for these scenes: `breath`, `dread`,
+`strings`, `sobbing`, `scream`, `gscream`, `swoosh`.
+
+The engine seam changed with them — `STING_SAMPLE` is now the whole
+vocabulary a cutscene can reach, `STING_SYNTH` names the few kinds the
+procedural fallback can fake, `sfx(at, kind, vol)` takes a level, and
+`cineEnd()` ramps out every sample the scene started. See CLAUDE.md and
+docs/V3.7-PLAN.md.
