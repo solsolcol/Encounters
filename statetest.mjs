@@ -60,7 +60,11 @@ const out = await p.evaluate(() => {
 
   // 6. garbage: rejected, nothing disturbed, still playing
   const before = e.worldState();
-  const rejected = [null, 42, {}, { v: 2, stats: {} },
+  /* v:99 stands for a save written by a LATER build. Refusing it outright
+     is the point: half-applying a shape you do not understand is how a
+     future field silently becomes a corrupt run. (Until v3.6 this slot
+     read v:2, which was unsupported then and is the current version now.) */
+  const rejected = [null, 42, {}, { v: 99, stats: {} }, { v: 0, stats: {} },
                     { v: 1 }, { v: 1, stats: 'no' }]
     .every(x => e.applyState(x) === false);
   const softened = e.applyState({ v: 1,
@@ -138,7 +142,7 @@ out.checkpoint = await p.evaluate(() => {
                  inv: { gear: {}, bag: ['keys'] } });
   const wrote = e.saveCheckpoint();
   const back = e.loadCheckpoint();
-  const same = !!back && back.v === 1 && back.ch === 'ch1'
+  const same = !!back && back.v === 2 && back.ch === 'ch1'
     && back.stats.sanity === 71 && back.stats.awareness === 62 && back.stats.wisdom === 43
     && back.inv.bag.includes('keys');
   // and it applies cleanly, because it is just state
