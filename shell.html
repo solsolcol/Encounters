@@ -222,33 +222,22 @@ body.invopen .soundBtn{display:none}
 /* ── the title's moving backdrop ─────────────────────────────────────
    Behind everything on the title screen and nothing else. It fades itself
    in only once it is actually playing, so a slow connection shows the flat
-   night rather than a black rectangle that pops. The scrim over it is what
-   keeps the logo and the words readable — the video is flair, never the
-   subject.                                                              */
+   night rather than a black rectangle that pops.
+
+   Chad's call: the clip plays at full opacity, unfiltered, with no dark
+   scrim over it — the version he asked for after seeing the graded one.
+   The logo and the words sit above it on z-index alone, so the clip's own
+   darkness is all that keeps them readable.                             */
 /* overflow only — NOT position. `.layer` is position:fixed, which already
    makes this the containing block for the absolutely-positioned backdrop;
    adding position:relative here drops it out of fixed, the layer collapses
    to its content height, and the world shows below the fold. */
 #title{overflow:hidden}
 .titleVid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
-  z-index:0;opacity:0;transition:opacity 1.6s var(--ease);pointer-events:none;
-  /* The clip is DARK on its own — mean luma sits around 35 of 255, about
-     14% — so opacity alone barely moves it and the scrim was never the
-     thing holding it back. It is lifted here instead, then held back by
-     the scrim only where the words are. */
-  filter:saturate(.85) contrast(1.02) brightness(2.1)}
-.titleVid.on{opacity:.82}
-/* The scrim still has one job the opacity cannot do: keep the CENTRE dark,
-   where the logo and the buttons sit. So it stays heavy at 50% 42% and
-   lets go toward the edges, which is where the video is now allowed to
-   show. Lifting the video without lifting this just greys the text. */
-.titleScrim{position:absolute;inset:0;z-index:1;pointer-events:none;
-  background:radial-gradient(ellipse at 50% 42%,rgba(3,4,7,.62) 0%,
-    rgba(3,4,7,.52) 45%,rgba(3,4,7,.66) 100%)}
+  z-index:0;opacity:0;transition:opacity 1.6s var(--ease);pointer-events:none}
+.titleVid.on{opacity:1}
 #title .card{position:relative;z-index:2;
   max-width:min(600px,100%);text-align:center;margin:auto;padding:0 4px}
-/* someone who asked the system for less movement gets a still frame */
-@media (prefers-reduced-motion: reduce){ .titleVid.on{opacity:.50} }
 /* the logo sits where the heading was; it carries its own dark haze, so it
    needs no plate behind it on the title screen's near-black ground */
 #logo{display:block;width:min(100%,600px);height:auto;margin:0 auto 2px}
@@ -716,12 +705,10 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
 <!-- title -->
 <div id="title" class="layer">
   <!-- Decoration, and treated like it: no source until the engine hands it
-       one, muted+playsinline so a phone will autoplay it at all, and a scrim
-       over the top so it never competes with the words. If it never arrives,
-       the title screen is exactly what it was before. -->
+       one, muted+playsinline so a phone will autoplay it at all. If it never
+       arrives, the title screen is exactly what it was before. -->
   <video id="titleVid" class="titleVid" muted loop playsinline
          preload="none" aria-hidden="true" tabindex="-1"></video>
-  <div class="titleScrim" aria-hidden="true"></div>
   <div class="card">
     <!-- The logo is painted into this canvas from the JS. `h1` is the fallback
          and stays hidden unless the paint fails, so the screen is never blank. -->
