@@ -78,6 +78,21 @@ function b64ToBuffer(b64) {
 }
 
 const _assetCache = {};
+/* The URL of an asset, for the one thing that must NOT come through
+   assetBytes: a <video>. Bytes would have to reach it as a blob: or data:
+   URL, and the strict CSP that shaped every other loader forbids both — so
+   the video takes a real same-origin URL instead, which `default-src 'self'`
+   allows and which lets the browser stream it rather than holding a
+   megabyte in memory.
+
+   Null in the embedded build, which carries no URLs. That is deliberate:
+   the title video is decoration, and the single-file build is the offline
+   fallback, so it simply goes without and the title screen looks exactly
+   as it did before there was a video at all.                            */
+function assetUrl(name) {
+  return HOSTED ? (ASSET_MAP[name] || null) : null;
+}
+
 function assetBytes(name, lowPriority) {       // -> Promise<ArrayBuffer>
   if (_assetCache[name]) return _assetCache[name];
   let p;
@@ -523,6 +538,7 @@ if (typeof CH.build !== 'function') {
   throw new Error('chapter ' + CH_KEY + ' registered no build() — see chapters/ch1.js');
 }
 let stage = CH.build(CHCTX);         // reassigned by rebuildStage(), below
+let titleVideo = null;               // the title screen's backdrop, if it loads
 scene.add(sky);          // added AFTER the chapter's world, so the first Group
                          // in the scene is still the world — several harnesses
                          // find it that way (see the note where `sky` is built)
@@ -2641,6 +2657,7 @@ function playCineFn(sceneFn, onDone) {
   ui.interact.classList.add('hide');
   hint.classList.add('hide');
   document.body.classList.add('cine');
+  cineFadeEl.classList.remove('clearing');   // a scene owns the fade outright
   cineFadeEl.style.opacity = '0';
   document.exitPointerLock?.();
 }
@@ -2694,6 +2711,23 @@ function cineHands(dt, t) {
   const c = cine;
   if (!c) return;
   if (c.handsAuto) updateViewmodel(dt, t, c.handsAuto(c.t), 0, 0, 0);
+}
+
+/* Dissolve the black a scene ended on. It was covering restoreWorld()'s snap
+   back to where the player actually stands; once the card is up that is done
+   with, and the night belongs behind the card. Three of the four scenes end
+   on black, which is the whole reason only the fourth card used to look like
+   glass — the card was always semi-transparent, there was simply a solid
+   layer underneath it. */
+function clearCineFade() {
+  if (cineFadeEl.style.opacity === '0' || cineFadeEl.style.opacity === '') return;
+  cineFadeEl.classList.add('clearing');
+  // the class carries opacity:0 too, so a browser that skips the transition
+  // still lands on clear rather than staying black
+  setTimeout(() => {
+    cineFadeEl.style.opacity = '0';
+    cineFadeEl.classList.remove('clearing');
+  }, 1000);
 }
 
 function cineEnd() {
@@ -2880,6 +2914,9 @@ function playChapterCard(then) {
    to be moved BEFORE the fade out, or the player watches themselves being
    teleported.                                                            */
 function enterWorld(place) {
+  // the title's backdrop stops when the title does — a hidden video still
+  // decodes every frame, and the deck needs those frames more
+  titleVideo?.el.pause();
   state = 'chapter';
   musicStart();                    // the click that counts as the gesture
   tryLock();                       // has to be inside the click to be allowed
@@ -2981,6 +3018,46 @@ function paintTitle() {
   }
 }
 paintTitle();
+
+/* ------------------------------------------------------ the title backdrop
+   Pure decoration, so every step is written to fail quietly: no source until
+   we have a real URL (the embedded build has none and simply goes without),
+   no fade-in until it is genuinely playing, and no complaint if autoplay is
+   refused. It also stops the moment the title screen goes away — a hidden
+   video still decodes frames, and this game already asks enough of a phone.
+
+   `prefers-reduced-motion` gets one frame and a pause: the still image, not
+   the loop.                                                              */
+(() => {
+  const vid = $('titleVid');
+  // two encodes of the same clip; let the browser choose. VP9 first because
+  // it is the smaller file and what Chrome, Firefox and Edge take; H.264 is
+  // the Safari and iOS fallback.
+  const sources = [['titlevidwebm', 'video/webm'], ['titlevid', 'video/mp4']]
+    .map(([k, type]) => [assetUrl(k), type]).filter(([u]) => u);
+  if (!vid || !sources.length) return;
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  vid.addEventListener('playing', () => vid.classList.add('on'), { once: true });
+  // reduced motion: let one frame land, then hold it
+  if (still) vid.addEventListener('timeupdate', () => {
+    if (vid.currentTime > 0) { vid.classList.add('on'); vid.pause(); }
+  }, { once: true });
+
+  vid.preload = 'auto';
+  for (const [u, type] of sources) {
+    const s = document.createElement('source');
+    s.src = u; s.type = type;
+    vid.appendChild(s);
+  }
+  vid.load();
+  const go = () => { const q = vid.play(); if (q) q.catch(() => {}); };
+  go();
+  // some browsers refuse autoplay until a gesture; take the first one
+  addEventListener('pointerdown', go, { once: true, passive: true });
+
+  titleVideo = { el: vid, play: go };
+})();
 $('stepBack').onclick = () => dismissDecision();
 $('retryBtn').onclick = () => restart();
 $('nextBtn').onclick = () => { ui.result.classList.add('hide'); finish(); };
@@ -3090,13 +3167,28 @@ function typeText(el, html, cps = 32) {
   el.textContent = '';
   el.classList.add('writing');
   return new Promise(res => {
-    let i = 0, last = performance.now();
+    let i = 0, last = performance.now(), shown = 0;
     const mySeq = cardSeq;
     const step = now => {
       if (mySeq !== cardSeq) return res();           // card is gone; stop quietly
       if (cardHurry) i = full.length;
       i += ((now - last) / 1000) * cps; last = now;
       const n = Math.min(full.length, Math.floor(i));
+      /* A tick as it writes. Every THIRD character, not every one — at 32
+         characters a second one-per-letter is a machine gun, and the ear
+         reads a group of three as the same "being typed" either way. The
+         rate is jittered so it never falls into a loop, and a run of
+         spaces stays silent, which is what puts the rhythm in it.      */
+      // a tap fast-forwards the whole line at once; ticking for every skipped
+      // character would fire dozens of samples in one frame
+      if (n > shown && n - shown < 8) {
+        for (let c = shown; c < n; c++) {
+          if (c % 3 === 0 && /\S/.test(full[c] || '')) {
+            snd('type', 0.16, 0.94 + Math.random() * 0.16);
+          }
+        }
+      }
+      shown = n;
       el.textContent = full.slice(0, n);
       if (n >= full.length) {
         el.classList.remove('writing');
@@ -3199,6 +3291,7 @@ function pick(i) {
     ui.hud.classList.add('hide');       // the card's bars ARE the bars now
     ui.result.classList.remove('hide');
     state = 'result';
+    clearCineFade();                    // the night comes back behind the card
     // the card rises: its swish, the ending's music bed, and the James line
     snd('uicard', 0.6);
     playBed(c.verdict === 'good' || c.verdict === 'best' ? 'endgood' : 'endbad', 0.5);
@@ -3337,6 +3430,7 @@ function lose() {
     ui.panic.style.opacity = '1';
     snd('ulost', 0.8);
     ui.over.classList.remove('hide');
+    clearCineFade();                 // the ground you are lying on, behind it
     loseSpeech = speak('vlost', { wait: 10000 });
     const teach = $('overTeach');
     teach.closest('.teachbox').classList.add('veiled');
@@ -3412,6 +3506,9 @@ function restart() {
   }
   ui.hud.classList.remove('hide');
   document.body.classList.remove('cine');
+  // drop the dissolve before forcing the value, or a restart taken mid-fade
+  // keeps transitioning and the new run starts under a clearing black
+  cineFadeEl.classList.remove('clearing');
   cineFadeEl.style.opacity = '0';
   // The red has to go NOW, not over four tenths of a second: a CSS transition
   // is frame-driven, so on the device that just struggled through a cutscene

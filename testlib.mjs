@@ -55,14 +55,34 @@ import { extname, join, normalize } from 'node:path';
 const _ROOT = join(DIR, 'dist');
 const _MIME = { '.html': 'text/html', '.js': 'text/javascript',
                 '.glb': 'model/gltf-binary', '.webp': 'image/webp',
-                '.mp3': 'audio/mpeg', '.json': 'application/json' };
+                '.mp3': 'audio/mpeg', '.json': 'application/json',
+                '.mp4': 'video/mp4' };
 const _srv = createServer((req, res) => {
   try {
     const path = normalize(decodeURIComponent(req.url.split('?')[0]));
     if (path === '/favicon.ico') { res.writeHead(200, { 'content-type': 'image/x-icon' }); return res.end(); }
     const file = path === '/' || path === '\\' ? 'index.html' : path;
     const body = readFileSync(join(_ROOT, file));
-    res.writeHead(200, { 'content-type': _MIME[extname(file)] || 'application/octet-stream' });
+    const type = _MIME[extname(file)] || 'application/octet-stream';
+    /* Range support, for one reason: <video>. Chromium's media stack asks
+       for a byte range and a server that answers 200-with-everything makes
+       it re-fetch and stall. Netlify serves ranges, so the harness has to
+       as well or the title video only misbehaves under test.            */
+    const range = /^bytes=(\d*)-(\d*)$/.exec(req.headers.range || '');
+    if (range && body.length) {
+      const start = range[1] ? parseInt(range[1], 10) : 0;
+      const end = range[2] ? Math.min(parseInt(range[2], 10), body.length - 1) : body.length - 1;
+      if (start <= end && start < body.length) {
+        res.writeHead(206, {
+          'content-type': type,
+          'accept-ranges': 'bytes',
+          'content-range': `bytes ${start}-${end}/${body.length}`,
+          'content-length': end - start + 1
+        });
+        return res.end(body.subarray(start, end + 1));
+      }
+    }
+    res.writeHead(200, { 'content-type': type, 'accept-ranges': 'bytes' });
     res.end(body);
   } catch { res.writeHead(404); res.end('not found'); }
 });

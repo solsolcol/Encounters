@@ -219,7 +219,28 @@ body.invopen .soundBtn{display:none}
 #title{align-items:center;justify-content:center;pointer-events:auto;overflow-y:auto;
   padding:28px 20px calc(28px + env(safe-area-inset-bottom,0px));
   background:radial-gradient(ellipse at 50% 40%,#0E1218 0%,#05060A 70%)}
-#title .card{max-width:min(600px,100%);text-align:center;margin:auto;padding:0 4px}
+/* ── the title's moving backdrop ─────────────────────────────────────
+   Behind everything on the title screen and nothing else. It fades itself
+   in only once it is actually playing, so a slow connection shows the flat
+   night rather than a black rectangle that pops. The scrim over it is what
+   keeps the logo and the words readable — the video is flair, never the
+   subject.                                                              */
+/* overflow only — NOT position. `.layer` is position:fixed, which already
+   makes this the containing block for the absolutely-positioned backdrop;
+   adding position:relative here drops it out of fixed, the layer collapses
+   to its content height, and the world shows below the fold. */
+#title{overflow:hidden}
+.titleVid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  z-index:0;opacity:0;transition:opacity 1.6s var(--ease);pointer-events:none;
+  filter:saturate(.55) contrast(1.05)}
+.titleVid.on{opacity:.42}
+.titleScrim{position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 42%,rgba(3,4,7,.62) 0%,
+    rgba(3,4,7,.82) 45%,rgba(3,4,7,.94) 100%)}
+#title .card{position:relative;z-index:2;
+  max-width:min(600px,100%);text-align:center;margin:auto;padding:0 4px}
+/* someone who asked the system for less movement gets a still frame */
+@media (prefers-reduced-motion: reduce){ .titleVid.on{opacity:.24} }
 /* the logo sits where the heading was; it carries its own dark haze, so it
    needs no plate behind it on the title screen's near-black ground */
 #logo{display:block;width:min(100%,600px);height:auto;margin:0 auto 2px}
@@ -302,6 +323,11 @@ body.invopen .soundBtn{display:none}
    renderer would leave a transition half-run. */
 #cineFade{position:fixed;inset:0;background:#000;opacity:0;
   pointer-events:none;z-index:4}
+/* The black a scene ends on has one job: cover the snap back to where the
+   player actually stands. Once the outcome card is up that job is done, so
+   it dissolves and the night shows through the card — which is what makes
+   every card read as glass, not just the one scene that ended clear. */
+#cineFade.clearing{transition:opacity .9s var(--ease);opacity:0}
 .cineBar{position:fixed;left:0;right:0;height:11vh;background:#000;z-index:4;
   transition:transform .55s var(--ease);pointer-events:none}
 #barTop{top:0;transform:translateY(-101%)}
@@ -681,6 +707,13 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
 
 <!-- title -->
 <div id="title" class="layer">
+  <!-- Decoration, and treated like it: no source until the engine hands it
+       one, muted+playsinline so a phone will autoplay it at all, and a scrim
+       over the top so it never competes with the words. If it never arrives,
+       the title screen is exactly what it was before. -->
+  <video id="titleVid" class="titleVid" muted loop playsinline
+         preload="none" aria-hidden="true" tabindex="-1"></video>
+  <div class="titleScrim" aria-hidden="true"></div>
   <div class="card">
     <!-- The logo is painted into this canvas from the JS. `h1` is the fallback
          and stays hidden unless the paint fails, so the screen is never blank. -->

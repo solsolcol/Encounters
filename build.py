@@ -59,15 +59,32 @@ ASSETS = {
     'music':  ('assets/music.mp3', True, False),
     'voice':  ('assets/voice.mp3', True, False),
     'audiopack': ('assets/audiopack.json', True, False),
+    # two encodes of the same clip; the browser takes the first it can play.
+    # VP9 is smaller and is what Chrome, Firefox and Edge get (and what the
+    # test Chromium can decode at all — Playwright's build ships without the
+    # proprietary codecs). H.264 is the Safari and iOS fallback.
+    'titlevidwebm': ('assets/titlevid.webm', True, False),
+    'titlevid': ('assets/titlevid.mp4', True, False),
     'amulet': ('amulet.glb', want_amulet, False),
 }
+
+# Hosted-only assets: shipped as a URL, never inlined as base64.
+#
+# The title video is the one asset the engine reaches by URL rather than by
+# bytes, because a <video> can only be fed bytes through a blob: or data: URL
+# and the strict CSP that shaped every other loader forbids both. The
+# single-file build carries no URLs, so it simply has no title video — which
+# is correct for decoration in an offline fallback, and keeps a megabyte of
+# H.264 out of a file that is already 15 MB.
+HOSTED_ONLY = {'titlevid', 'titlevidwebm'}
 
 # What the ENGINE uses, whatever chapter is playing: the player's hands, the
 # ghost, the logo, the music bed, the sound pack. Everything else belongs to
 # whichever chapter names it in its own `assets:` list — and only the booting
 # chapter's files are preloaded, so chapter 7's location never slows down
 # chapter 1's first paint.
-SHARED_ASSETS = {'hands', 'ghost', 'logo', 'music', 'audiopack'}
+SHARED_ASSETS = {'hands', 'ghost', 'logo', 'music', 'audiopack',
+                 'titlevid', 'titlevidwebm'}
 
 
 def chapter_assets(key):
@@ -85,6 +102,8 @@ for key in ASSETS:
 
 assert '/*BUNDLE*/' in shell, 'placeholder missing from shell.html'
 for key in ASSETS:
+    if key in HOSTED_ONLY:          # reached by URL, so it has no embed token
+        continue
     assert f'__{key.upper()}_B64__' in bundle, f'__{key.upper()}_B64__ missing from bundle'
 assert '__ASSET_MAP_B64__' in bundle, '__ASSET_MAP_B64__ missing from bundle'
 
@@ -96,6 +115,9 @@ guard = lambda js: js.replace('</script', '<\\/script')   # an inline </script> 
 emb = bundle.replace('__ASSET_MAP_B64__',
                      base64.b64encode(b'{}').decode())    # empty map = embedded mode
 for key, (name, wanted, _pre) in ASSETS.items():
+    if key in HOSTED_ONLY:
+        print(f'  embed {name}: hosted only, not inlined')
+        continue
     data = base64.b64encode((d / name).read_bytes()).decode() if wanted else ''
     emb = emb.replace(f'__{key.upper()}_B64__', data)
     print(f'  embed {name}: {str(len(data) // 1024) + " KB" if wanted else "skipped"}')
