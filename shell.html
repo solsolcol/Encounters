@@ -237,11 +237,11 @@ body.invopen .soundBtn{display:none}
   z-index:0;opacity:0;transition:opacity 1.6s var(--ease);pointer-events:none}
 .titleVid.on{opacity:1}
 /* Heaviest at the edges, lightest over 50% 42% where the logo sits.
-   Half the original alpha, then 20% more on top of that: .31/.41/.47
-   became .37/.49/.56. */
+   Tuned by eye in steps: the original .62/.82/.94, halved, then lifted
+   20% twice. Now about 71% of where it started. */
 .titleScrim{position:absolute;inset:0;z-index:1;pointer-events:none;
-  background:radial-gradient(ellipse at 50% 42%,rgba(3,4,7,.37) 0%,
-    rgba(3,4,7,.49) 45%,rgba(3,4,7,.56) 100%)}
+  background:radial-gradient(ellipse at 50% 42%,rgba(3,4,7,.44) 0%,
+    rgba(3,4,7,.59) 45%,rgba(3,4,7,.67) 100%)}
 #title .card{position:relative;z-index:2;
   max-width:min(600px,100%);text-align:center;margin:auto;padding:0 4px}
 /* the logo sits where the heading was; it carries its own dark haze, so it
