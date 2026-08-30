@@ -2168,6 +2168,32 @@ function say(name, opts) {
   narSrc.start();
 }
 
+/* A narration you can WAIT for: resolves when the line finishes, or with
+   false when it cannot play (muted, missing, or the floor never frees up
+   within `wait`). The cards use this to hold their buttons until James
+   has finished talking — and to fall back to animation-only gating the
+   moment sound is off, so nobody is ever stuck.                         */
+function speak(name, opts = {}) {
+  const deadline = performance.now() + (opts.wait ?? 6000);
+  return new Promise(resolve => {
+    const attempt = () => {
+      if (muted || !packJson || !packJson[name]) return resolve(false);
+      const buf = sndBuf(name);
+      if (!buf || narSrc || voiceSrc || !actx || actx.state !== 'running') {
+        if (performance.now() > deadline) return resolve(false);
+        setTimeout(attempt, 160);
+        return;
+      }
+      narSrc = actx.createBufferSource();
+      narSrc.buffer = buf;
+      narSrc.onended = () => { narSrc = null; resolve(true); };
+      narSrc.connect(packGain);
+      narSrc.start();
+    };
+    attempt();
+  });
+}
+
 // a short dip in the music so a reveal or an ending bed owns the moment
 function duckMusic(sec) {
   if (!musicGain || !actx || muted) return;
@@ -2276,7 +2302,7 @@ function pulseSpike(n) {
   impulse = Math.min(1.4, impulse + n);
 }
 function pulseStress() {
-  if (state === 'lost') return -1;            // flatline
+  if (state === 'lost' || fainting) return -1;   // flatline
   const dGhost = Math.hypot(yaw.position.x - ghost.position.x,
                             yaw.position.z - ghost.position.z);
   const near = THREE.MathUtils.clamp(1 - dGhost / 15, 0, 1);
@@ -2823,7 +2849,7 @@ function restoreWorld(s, keep) {
   else { reveal = s.reveal; ghostOpacity(s.reveal); }
 }
 
-function playCine(i, onDone) {
+function playCineFn(sceneFn, onDone) {
   const snap = snapWorld();
   const c = {
     t: 0, last: performance.now(), paused: false,
@@ -2832,7 +2858,7 @@ function playCine(i, onDone) {
     ghostMix: null,            // t => animation speed for her walk cycle
     keep: {}, endFade: 0, snap, onDone
   };
-  CINE_SCENES[i](c, snap);
+  sceneFn(c, snap);
   c.dur = c.tracks.reduce((m, tr) => Math.max(m, tr.t1), 1);
   cine = c;
   state = 'cine';
@@ -2843,6 +2869,7 @@ function playCine(i, onDone) {
   cineFadeEl.style.opacity = '0';
   document.exitPointerLock?.();
 }
+const playCine = (i, onDone) => playCineFn(CINE_SCENES[i], onDone);
 
 function cineSeek(t) {
   const c = cine;
@@ -3412,22 +3439,73 @@ function showHaunt(on) {
   ui.bSan.classList.toggle('drain', on);
 }
 
+/* ------------------------------------------------------------- the faint --
+   Sanity zero is not a screen, it is a collapse: the eyes roll up, the legs
+   go, the ground arrives, and the world settles sideways — the last thing a
+   person sees lying on the void deck floor. Only then, the card. Built as a
+   cutscene (tracks + stings), so it is skippable and stall-proof like every
+   other scene. `fainting` keeps the ECG flat from the first frame.        */
+let fainting = false;
+let loseSpeech = Promise.resolve(false);   // Retry waits for James to finish
+
+function scFaint(c, s) {
+  const { tr, step, sfx, fade, pitchTo } = A(c);
+  const Y0 = s.yawPos.y ?? 1.62;
+  step(0, () => { armR.visible = false; });          // his hands go with him
+
+  // the whip: eyes roll skyward, hard and sudden — an impulse, not a pan
+  pitchTo(0, 0.38, s.pitchX, 0.62, k => k * k);
+  sfx(0.02, 'boom');
+  // decaying shake on yaw and roll — the death-cam judder
+  tr(0, 1.7, (k, t) => {
+    const decay = Math.exp(-2.2 * t);
+    yaw.rotation.y = s.yawRot + Math.sin(t * 31) * 0.05 * decay;
+    camera.rotation.z = Math.sin(t * 23 + 1.7) * 0.10 * decay;
+  }, rawK);
+
+  // the fall — gravity accelerates, the floor stops it
+  tr(0.45, 1.35, k => { yaw.position.y = Y0 - (Y0 - 0.42) * k * k; }, rawK);
+  sfx(1.28, 'kick');
+  pitchTo(0.9, 1.5, 0.62, -0.12);
+  tr(1.35, 1.75, k => { yaw.position.y = 0.42 + Math.sin(Math.PI * k) * 0.06; }, rawK);
+
+  // settle onto the side: the horizon goes vertical, cheek on the concrete
+  tr(1.6, 3.1, k => { camera.rotation.z = 0.02 + 1.30 * k; });
+  pitchTo(1.6, 3.1, -0.12, -0.05);
+  tr(1.7, 3.2, k => { yaw.position.y = 0.48 - 0.13 * k; }, rawK);
+  // the last slow drift of someone going under
+  tr(3.1, 4.6, (k, t) => { camera.rotation.z = 1.32 + Math.sin(t * 1.4) * 0.02; }, rawK);
+
+  // eyes close
+  fade(3.6, 4.9, 0, 1);
+  c.endFade = 1;
+}
+
 function lose() {
-  if (state === 'lost') return;
-  state = 'lost';
-  stopBed();
-  loopVol('heart', 0);
-  snd('ulost', 0.8);
-  say('vlost', { again: true });
+  if (state === 'lost' || fainting) return;
+  fainting = true;
   stats.sanity = 0;
   syncBars();
+  stopBed();
+  loopVol('heart', 0);
   showHaunt(false);
-  for (const el of [ui.decide, ui.result, ui.prompt, ui.interact, ui.hud, hint]) {
+  for (const el of [ui.decide, ui.result, ui.prompt, ui.interact, hint]) {
     el.classList.add('hide');
   }
-  ui.panic.style.opacity = '1';
-  ui.over.classList.remove('hide');
-  document.exitPointerLock?.();
+  // the line goes down WITH him — cut anything mid-sentence first
+  if (narSrc) { try { narSrc.stop(); } catch {} narSrc = null; }
+  speak('vfaint');
+  snd('dread', 0.6);
+  playCineFn(scFaint, () => {
+    fainting = false;
+    state = 'lost';
+    ui.hud.classList.add('hide');
+    ui.panic.style.opacity = '1';
+    snd('ulost', 0.8);
+    ui.over.classList.remove('hide');
+    loseSpeech = speak('vlost', { wait: 10000 });
+    document.exitPointerLock?.();
+  });
 }
 
 function finish() {
@@ -3492,6 +3570,7 @@ function restart() {
   stopBed();
   if (narSrc) { try { narSrc.stop(); } catch {} narSrc = null; }
   for (const k in narrated) delete narrated[k];
+  fainting = false;
   gPhase = 'hidden'; gTimer = 0; gDart = null;
   hauntK = 0; seenThisRun = false;
   audioCues.length = 0; wantLine = null;
