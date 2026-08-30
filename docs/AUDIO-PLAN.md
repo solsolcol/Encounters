@@ -261,3 +261,47 @@ vocabulary a cutscene can reach, `STING_SYNTH` names the few kinds the
 procedural fallback can fake, `sfx(at, kind, vol)` takes a level, and
 `cineEnd()` ramps out every sample the scene started. See CLAUDE.md and
 docs/V3.7-PLAN.md.
+
+
+## v4.0 additions (chapter 2 · The Presence) — 72 sounds in the pack
+
+Flow `q7aeSWHTTHg8qW28OmlM`. James is `EkK5I93UQWFDigLMpZcX`; **Mother is
+`XrExE9yKIg1WjnnlVkGX` (Matilda)** — a new speaker, and the first voice in
+the game that is not James. The workspace has no Singaporean or Asian
+female voice; of what it has, a middle-aged alto is the closest thing to a
+tired woman woken at two in the morning, and she is off-screen through a
+doorway, which forgives the accent.
+
+| name | what | where |
+|---|---|---|
+| `clock` | cheap wall clock, 4 s loop | a bed of the room, and the silences |
+| `fan` | ceiling fan, slow, 5 s loop | a bed of the room |
+| `doorcreak` | a dry hinge | the opening film, B, C |
+| `hallsteps` | slippers on terrazzo, approaching | B |
+| `bedcreak` | a mattress and frame taking weight | the film, A, D |
+| `v2wake1` | *"It followed me home."* | the film, over black |
+| `v2wake2` | *"Ma? Ma, is that you?"* | the film, and nothing answers |
+| `v2wake3` | *"There is someone in the room."* | the film, under the fade |
+| `v2call` | *"MA! MA, COME HERE! PLEASE!"* | B |
+| `v2ma` | Mother: *"Aiyah. What is it now? Go back to sleep, boy. I am here."* | B |
+| `v2near` / `v2gap` | the two proximity lines about the gap | play |
+| `v2A`–`v2D` | the four under the outcome cards | the cards |
+
+**A chapter now declares its own sound.** `ambience` names the loops that
+run in it (`beds`) and the one keyed to the shrine (`atShrine`), `lines`
+names its two proximity lines, `sayPrefix` picks the four under its cards,
+and `voiceLine` the one on entering play. Chapter 1's values are all
+defaults, so nothing about the deck changed. Chapter 2 has traffic, a fan
+and a clock, and no fire — see CLAUDE.md for the full table.
+
+`warmIntroSet()` is new and separate from `warmPlaySet()`: an opening film
+runs before the player has done anything, so nothing else has warmed the
+pack for it.
+
+Two warnings, both learned the hard way here and both in LEARNINGS: five of
+eleven eleven_v3 lines FAILED on long sentences with fussy punctuation, and
+the generator's output level ranged over 33 dB across one run. Measure
+every file against the pack before encoding.
+
+The pack is now 72 sounds and 7.3 MB, and that is the next thing to look at
+— a compression pass before chapter 3, not before shipping this one.

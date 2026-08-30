@@ -50,7 +50,7 @@ from his **phone**. Consequences:
 5. The generated files (`hellnote.html`, `wrapped.html`, `bundle.js`,
    `dist/`) are never edited by hand.
 
-## Architecture (v3.8)
+## Architecture (v4.0)
 
 One source, two builds, built by `npm run build` (esbuild → `build.py` →
 `wrap.py`):
@@ -63,7 +63,7 @@ One source, two builds, built by `npm run build` (esbuild → `build.py` →
   file:// tests and the CSP build both choke on module imports) wrapped in
   one closure, registering itself on `window.__CHAPTERS__`. A chapter
   carries its words, choices, stat deltas, teachings, stage positions,
-  asset keys, and **two entry points**:
+  asset keys, and **three entry points**:
   - `build(ctx) -> stage` constructs its world and hands back the handle
     the engine drives it through (`pile.*`, `blockers`, `snap/restore/
     reset`, `updateNotes/updatePile/updateFire/updateSlow`, `dispose`).
@@ -72,11 +72,37 @@ One source, two builds, built by `npm run build` (esbuild → `build.py` →
   - `scenes[i](c, s, api)` — one cutscene per choice, written in the
     engine's cutscene language (`api`: the verbs from `A(c)` plus the cast
     a scene may direct, and `api.stage` for its own props).
+  - `intro(c, s, api)` — OPTIONAL, added at v4.0. The chapter's opening
+    FILM, in the same cutscene language, run against its own world BEFORE
+    the chapter card: black, film, title, night. Chapter 2 has one;
+    chapter 1 does not, and a chapter without one takes exactly the path
+    it always took.
   - `src/chapters/chtest.js` is the FIXTURE chapter: primitives only, no
     location model, no assets. It is not part of the game — it exists so
     "the engine is chapter-agnostic" is a tested claim (`fixturetest`)
     rather than a hope.
-  **Chapter 2 starts by copying ch1.js.**
+
+**WHAT A CHAPTER OWNS, and the rule behind it.** Building chapter 2 found
+eight places where "the engine" was really chapter 1's engine. Every one
+was fixed the same way and the pattern is now the law here: **a chapter
+declares it, chapter 1's current value is the default, so nothing moves.**
+The declarations, all optional:
+
+| field | what it decides | default |
+|---|---|---|
+| `ghost` | her whole territory: `minDist`, `appearAt`, `near`/`far`, `cross`, `away`, `behind`, and the `roam` box she may stand in | the void deck's numbers |
+| `ambience` | `beds` (loops that just run) and `atShrine` (one keyed to distance from the shrine) | `amb` + the burner's `fire` |
+| `words` | `approach`, `act`, `actTouch`, `interact`, `interactTouch` — the words that NAME the thing you act on | the string sheet's |
+| `lines` | `near`, `close`, `nearAt` — the two proximity narration lines | — |
+| `sayPrefix` | the prefix of the four lines under the outcome cards | `'v'` (→ `vA`..`vD`) |
+| `voiceLine` | the asset key of the line he says a few seconds into play | — (silence) |
+| `noteArt` | the asset key of the chapter's note art | — (the drawn one) |
+| `intro` | the opening film | — (straight to the card) |
+
+`shrine` is the engine's anchor for HER, not for the chapter's warm light.
+Chapter 1's happens to be both; chapter 2's is the gap beside the bed and
+its altar is a separate thing on the other wall. Getting that wrong made
+the safest object in the room the source of the haunting.
 - Advancing a chapter is `rebuildStage(next)` — `dispose()` then
   `build()`, never a page reload, which would re-pay the GLB parse, the
   shader compile and the whole audio decode. `leaktest` is what keeps
@@ -221,6 +247,10 @@ What the baseline contains, by release:
   title screen plays a darkened looping video, the teaching types with a
   key tick, and all four cutscenes got their voice — 32 cues across the
   four scenes, up from 19, with the cartoonish `whoosh` retired.
+- **v4.0** CHAPTER 2 · The Presence — a bedroom, an opening film, and the
+  eight chapter-1 leaks that building it exposed (the table above). Also:
+  `textsync` now discovers every chapter rather than naming chapter 1, so
+  a new chapter's words reach Chad's sheet with no edit to the tool.
 - **v3.8** real art where there was code: a bought first-person ARM rig
   (`arms.glb`, credited to Fab) replaces the wrist-only hand pack and the
   forearm that was built out of cylinders to cover for it, and the hell
@@ -281,10 +311,17 @@ true, and must stay true:
 - only the shared assets and the booting chapter's own are preloaded;
 - **adding a chapter must not add a harness.**
 
-Next up: **chapter 2 itself** — copy `src/chapters/ch1.js`, change what
-it says and what it builds. The real content is already written: the
-"THE OFFERINGS" data in `docs/source/trial-game-chapters.md`, which is
-also still waiting to replace chapter 1's placeholder choices.
+**Chapter 2 is built** (v4.0) — THE PRESENCE, from the trial game's own
+episode 1: the bedroom, days after the void deck. Its choices, ranking and
+teachings are Master Z's verbatim; only the delta magnitudes are rescaled
+from the trial's ±12 to this game's ±30. `docs/V4-CHAPTER2-PLAN.md` is the
+build's memory — read it before touching chapter 2.
+
+Next up: **chapter 3**, and the still-outstanding job of replacing chapter
+1's placeholder choices with the real "THE OFFERINGS" data in
+`docs/source/trial-game-chapters.md`. Chapter 3 should be much cheaper
+than chapter 2 was: the eight leaks are fixed, so the next chapter
+declares what it needs and the engine already knows how to be told.
 
 `docs/LEARNINGS.md` is the catalog of every hard-won lesson (CSP traps,
 audio traps, cutscene staging, test flakiness). When something in this

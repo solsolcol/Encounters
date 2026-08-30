@@ -449,3 +449,78 @@ twice. When code in this repo looks odd, the reason is usually here.
   the steady-state slope — which is what the harness was always about. That
   is a sharper measurement, not a relaxed threshold; the 0.5 limit is
   unchanged.
+
+## "The engine" was chapter 1's engine, in eight places
+
+Building chapter 2 was mostly an exercise in finding out what the engine
+actually knew about chapter 1. Eight things that read as engine behaviour
+turned out to be void-deck behaviour, and only a second, DIFFERENT location
+could have found them — the fixture chapter is deliberately abstract, so it
+sails past all eight. In rough order of how badly they broke:
+
+1. **Her territory.** `GHOST_MIN_DIST 3.4`, `GHOST_APPEAR_AT 14`, and a
+   roam box 41 m across clamped to literal deck coordinates. In a four
+   metre bedroom she could never come near you, was always "in territory",
+   and a flee clamped her eighteen metres away through the wall.
+2. **The ambient loops.** A joss fire keyed to distance from the shrine,
+   burning quietly on a shelf beside a boy's bed at more than half volume.
+3. **The words that name what you act on** — "the glowing pile", "Examine
+   the pile of hell notes", "Something is burning ahead". All on screen, in
+   the bedroom.
+4. **The proximity narration** — `say('vpile')`, `say('vnote')`, by name.
+5. **The line under the outcome card** — `speak('v' + c.k)`, so chapter 2
+   would have spoken chapter 1's four.
+6. **The opening voice line** — "Almost midnight, and this is still the
+   fastest way home", in a bedroom.
+7. **`textsync`** named `ch1` throughout, so a new chapter's words could
+   never reach the sheet Chad edits. A broken promise, not a missing
+   feature.
+8. **`shrine` means two things** and chapter 1 never had to separate them:
+   the anchor for HER, and the chapter's warm light. Putting chapter 2's on
+   the altar made the safest object in the room the source of the haunting.
+
+Every one was fixed the same way, and that is the transferable part: **the
+chapter declares it, chapter 1's current value is the default, so nothing
+moves.** No behaviour changed for the deck — including three different
+insets that used to hang off one constant, preserved as offsets rather than
+quietly unified, because unifying them would have shifted chapter 1's ghost
+five centimetres for no reason anyone asked for.
+
+The lesson for chapter 3: when something in the engine is a NUMBER or a
+NAME, ask whether a different location would want a different one. If the
+honest answer is yes, it belongs to the chapter, and the deck's value is
+the default.
+
+## An opening film needs its buffers warmed harder than a scene does
+
+- A cutscene between choices runs deep into a session: the pack has been
+  warmed by entering play, by the decision panel, by the last ten minutes.
+  A chapter's OPENING film has none of that. It runs on a screen that has
+  only just gone black, before the player has done anything at all, and a
+  line that misses its cue in the first ten seconds of a chapter is the
+  first thing anyone notices about it. Hence `warmIntroSet()`, separate
+  from `warmPlaySet()` and called before the film, not with it.
+- The same film must also wait for the WORLD. A chapter card over an
+  unloaded world is just a card; a camera move through one is a move
+  through an empty room. `whenWorldReady()` was lifted out of the card's
+  own gate so both use it.
+
+## eleven_v3 fails on long lines with fussy punctuation
+
+- Five of eleven lines failed outright on the first run — "Failed to
+  generate audio", no detail. The pattern was length plus punctuation: an
+  ellipsis mid-sentence, an inline `[exhale]` between clauses, a comma
+  splice. Every one succeeded when rewritten as two plain short sentences
+  with the delivery tag only at the front.
+- Same family as the em-dash failure recorded above. The working rule: one
+  bracketed tag at the start, then plain sentences, nothing clever inside.
+
+## Never trust the generator's output level
+
+- Against a pack that sits at −20 to −25 dB mean, one run returned a fan at
+  −42 and a clock at −45 (inaudible under any playback volume the game
+  would use) and a door creak at −9 (twice as loud as anything else in the
+  game). The same run, the same model, the same prompt shape.
+- Measure every generated file with `volumedetect` against the existing
+  pack and correct on the way in. It is one ffmpeg flag and it is the
+  difference between a mix and a pile of sounds.
