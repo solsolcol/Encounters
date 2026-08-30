@@ -1560,8 +1560,15 @@ const ui = {
   newConfirm: $('newConfirm')
 };
 const hint = $('hint');
-// how you act on the heap, in the words that match the device you are on
-const ACT_HINT = HAS_TOUCH ? T('world.actHintTouch') : T('world.actHintKey');
+/* The words that NAME the thing you can act on, and they belong to the
+   CHAPTER — "the glowing pile", "the pile of hell notes" and "something is
+   burning ahead" are all about a void deck, and chapter 2 is a bedroom with
+   a gap beside the bed.
+
+   A chapter declares `words: {...}`; anything it leaves out falls back to
+   the string sheet, which is where chapter 1's live and where they stay. So
+   chapter 1 and the sheet are untouched by this. */
+const chWord = (k, fallbackKey) => (CH.words && CH.words[k]) || T(fallbackKey);
 const ACT_LINE = HAS_TOUCH ? T('world.actLineTouch') : T('world.actLineKey');
 function setHint() {
   const el = $('hintTxt');
@@ -1570,13 +1577,25 @@ function setHint() {
     : HAS_TOUCH && !locked ? T('world.hintMouseTouch')
     : locked ? T('world.hintLocked')
     : T('world.hintEdges');
-  el.textContent = ACT_HINT ? base + ' · ' + ACT_HINT : base;
+  const act = HAS_TOUCH ? chWord('actTouch', 'world.actHintTouch')
+                        : chWord('act', 'world.actHintKey');
+  el.textContent = act ? base + ' · ' + act : base;
 }
-setHint();
-if (HAS_TOUCH) {
-  $('ikey').textContent = T('world.interactKeyTouch');
-  $('itxt').textContent = T('world.interactTextTouch');
+/* Re-applied whenever the chapter changes: the badge under the reticle, the
+   far prompt, and the hint along the bottom all name the same thing. */
+function applyChapterWords() {
+  const el = $('itxt');
+  if (el) {
+    el.textContent = HAS_TOUCH
+      ? chWord('interactTouch', 'world.interactTextTouch')
+      : chWord('interact', 'world.interactText');
+  }
+  const pr = document.querySelector('#prompt div');
+  if (pr) pr.textContent = chWord('approach', 'world.burning');
+  setHint();
 }
+if (HAS_TOUCH) $('ikey').textContent = T('world.interactKeyTouch');
+applyChapterWords();
 /* The logo. Decoded from base64 and painted into a canvas rather than handed
    to an <img src="data:…">, because a sandboxed frame's policy can refuse
    data: images outright — the same trap that dropped every model texture.
@@ -2930,6 +2949,7 @@ function setChapter(key) {
   SPAWN.rot = 0;
   rebuildStage(CH);
   applyChapterText();
+  applyChapterWords();             // and the words that name what you act on
   warnIfScenesMissing();
   return true;
 }

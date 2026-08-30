@@ -81,7 +81,12 @@
        names, including the gap behind the bed, which is a place she stands
        and you never do.                                                    */
     spawn:     { x: 0.55, y: 1.62, z: 0.75 },   // standing, facing the window
-    shrine:    { x: 1.62, z: 1.25 },            // the altar shelf: the one warm light
+    /* `shrine` is the engine's word for the thing SHE is attached to — the
+       burner, in chapter 1. Here it is the gap, not the altar: her territory
+       is measured from it, and anchoring it on the altar would have made the
+       safest object in the room the source of the haunting, and the whole
+       four metre room permanently inside it. */
+    shrine:    { x: -1.62, z: -0.10 },          // the gap between bed and wall
     ghostHome: { x: -1.80, z: -1.15 },          // the gap, at the head end
     bounds:    { minX: -1.85, maxX: 1.72, minZ: -2.00, maxZ: 2.00 },
 
@@ -92,7 +97,11 @@
        through the wall.                                                    */
     ghost: {
       minDist: 1.15,          // close enough to be in the room with you
-      appearAt: 12,           // you are always inside it: the room IS her territory
+      /* Measured from the gap. Small enough that the far corner by the door
+         is genuinely relief — in a room this size a generous radius means
+         the haunt never lets up, and a sanity drain that never stops is not
+         tension, it is a countdown. */
+      appearAt: 2.0,
       near: 1.5, far: 3.0,    // where a spawn ahead of you can land
       cross: [1.7, 2.5],      // a crossing goes wall to wall, not deck to deck
       away: [1.3, 2.3],
@@ -119,6 +128,16 @@
        a crackling fire on a shelf beside a boy's bed would be nonsense. */
     ambience: { beds: [['amb', 0.20], ['fan', 0.30], ['clock', 0.10]],
                 atShrine: null },
+    /* The words that name the thing you can act on. Chapter 1's are about a
+       heap of hell notes on a void deck; these are about a slot of dark
+       beside a bed. */
+    words: {
+      approach: 'Something is not right in here...',
+      act: 'E at the gap beside the bed',
+      actTouch: 'tap the gap beside the bed',
+      interact: 'Look into the gap beside the bed',
+      interactTouch: 'the gap beside the bed'
+    },
     lines: { near: 'v2near', close: 'v2gap', nearAt: 2.6 },
     sayPrefix: 'v2'
   };
@@ -133,9 +152,14 @@
             cnv, makeSoftDot, makeConcrete, makeLacquer,
             makeHellNote, getState, startDecision } = ctx;
 
-    // the altar shelf: the chapter's one warm light, and what the engine
-    // warms the player's hands from as they cross the room
+    /* SHRINE is the engine's anchor for HER — chapter 1's burner, this
+       chapter's gap. The altar is a different thing entirely and lives on
+       the right wall: it is the one warm light in the room, and what the
+       engine warms the player's hands from as they cross it. Keeping them
+       apart matters, because the first pass had them share a position and
+       the family's altar ended up floating over the bed. */
     const SHRINE = new THREE.Vector3(DATA.shrine.x, 0, DATA.shrine.z);
+    const ALTAR = { x: 1.62, z: 1.25 };
 
     const owned = [];         // parented to the SCENE, so dispose() needs a list
     let alive = true;         // a GLB landing after dispose() must not build
@@ -212,11 +236,16 @@
     const zFar = -R.z - R.wall / 2;
     wall(R.x * 2, WIN.sill, R.wall, 0, WIN.sill / 2, zFar);                       // under
     wall(R.x * 2, R.h - WIN.top, R.wall, 0, (R.h + WIN.top) / 2, zFar);           // over
-    const jambW = (R.x * 2 - WIN.w) / 2;
-    wall(jambW, WIN.top - WIN.sill, R.wall,
-         -R.x + jambW / 2, (WIN.sill + WIN.top) / 2, zFar);
-    wall(jambW, WIN.top - WIN.sill, R.wall,
-         R.x - jambW / 2, (WIN.sill + WIN.top) / 2, zFar);
+    /* The jambs are measured from the WINDOW, not from the wall's middle.
+       The window is off centre (it is over the desk, not over the room), so
+       splitting the leftover width in half put a slab of plaster across the
+       glass and left a hole beside it. */
+    const winL = WIN.x - WIN.w / 2, winR = WIN.x + WIN.w / 2;
+    const lw = winL - (-R.x), rw = R.x - winR;
+    wall(lw, WIN.top - WIN.sill, R.wall,
+         -R.x + lw / 2, (WIN.sill + WIN.top) / 2, zFar);
+    wall(rw, WIN.top - WIN.sill, R.wall,
+         R.x - rw / 2, (WIN.sill + WIN.top) / 2, zFar);
 
     // near wall, with the door
     const DOOR = { x: 1.05, w: 0.86, h: 2.05 };
@@ -311,8 +340,8 @@
     /* The sodium streetlight, well outside and low, so it comes through the
        louvres almost flat and lays the room out in bars. It is the only
        reason you can see anything, and it is the wrong colour for comfort. */
-    const street = new THREE.SpotLight(0xffb267, LOW ? 12 : 20, 16, 0.62, 0.55, 1.2);
-    street.position.set(WIN.x - 0.6, 3.4, -8.0);
+    const street = new THREE.SpotLight(0xffb267, LOW ? 26 : 44, 18, 0.68, 0.5, 1.1);
+    street.position.set(WIN.x - 0.5, 3.0, -6.2);
     street.target.position.set(WIN.x + 0.6, 0.3, 1.2);
     street.castShadow = !LOW;
     if (street.shadow) {
@@ -324,12 +353,17 @@
     owned.push(street, street.target);
 
     // the altar's red electric candle: small, warm, and the only kind light
-    const fireLight = new THREE.PointLight(0xff5a30, 2.6, 3.4, 1.8);
-    fireLight.position.set(SHRINE.x - 0.06, 1.80, SHRINE.z);
+    const fireLight = new THREE.PointLight(0xff5a30, 3.4, 4.0, 1.7);
+    fireLight.position.set(ALTAR.x - 0.06, 1.80, ALTAR.z);
     scene.add(fireLight); owned.push(fireLight);
 
     // a floor bounce so the shadows are not pure black
-    const bounce = new THREE.HemisphereLight(0x2b3446, 0x0b0d11, 0.30);
+    /* A room lit by one streetlight through louvres is nearly black in the
+       corners, and nearly black is not the same as atmospheric: you have to
+       be able to read the room you are trapped in. This lifts the shadows
+       just enough to see furniture in, and stays cold so the altar's candle
+       is still the only warm thing in here. */
+    const bounce = new THREE.HemisphereLight(0x36435c, 0x121722, 0.62);
     scene.add(bounce); owned.push(bounce);
 
     // the strip of hallway past the door, which scene B floods and scene C
@@ -545,7 +579,7 @@
 
     /* ----------------------------------------------------- the altar shelf */
     const altar = new THREE.Group();
-    altar.position.set(SHRINE.x, 0, SHRINE.z);
+    altar.position.set(ALTAR.x, 0, ALTAR.z);
     world.add(altar);
     const shelf = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.035, 0.46), matLacquer);
     shelf.position.y = 1.66;
@@ -736,7 +770,7 @@
       // an electric candle does not flicker like a flame; it wavers, barely
       const fl = 0.88 + Math.sin(t * 2.3) * 0.07 + Math.sin(t * 7.1) * 0.03;
       if (getState() !== 'cine') {
-        fireLight.intensity = 2.6 * fl;
+        fireLight.intensity = 3.4 * fl;
         candleTip.material.color.setHSL(0.045, 1, 0.42 + fl * 0.1);
       }
     }
@@ -1010,7 +1044,7 @@
     step(17.8, () => { stage.fanSpeed = 1; });
     tr(17.8, 21.4, k => {
       stage.fanSpeed = 1 - 0.72 * k;
-      stage.fireLight.intensity = 2.6 * (1 - 0.72 * k);
+      stage.fireLight.intensity = 3.4 * (1 - 0.72 * k);
       stage.candleTip.material.color.setHSL(0.045, 1, 0.5 - 0.28 * k);
     }, rawK);
     sfx(18.0, 'strings', 0.55);
@@ -1144,7 +1178,7 @@
     tr(7.8, 10.2, k => {
       ghostOpacity(0);
       ghostLight.intensity = 0;
-      stage.fireLight.intensity = 2.6 * (1 + 0.5 * k);
+      stage.fireLight.intensity = 3.4 * (1 + 0.5 * k);
     }, rawK);
 
     // he looks at the gap once more. It is a gap.
