@@ -31,6 +31,9 @@ const ALL = [
   { name: 'text',     file: 'texttest.mjs',  quick: true,  group: 'engine', why: 'every word on screen is editable from the sheet' },
   { name: 'state',    file: 'statetest.mjs', quick: true,  group: 'engine', why: 'a run is JSON: save, seed, round-trip exactly' },
   { name: 'inv',      file: 'invtest.mjs',   quick: true,  group: 'engine', why: 'equipment opens, moves and loses nothing, on both' },
+  { name: 'leak',     file: 'leaktest.mjs',  quick: true,  group: 'engine', why: 'a chapter gives the GPU back everything it took' },
+  { name: 'chapter',  file: 'chaptertest.mjs', quick: true, group: 'chapter', why: 'every chapter\'s data is complete and in bounds' },
+  { name: 'fixture',  file: 'fixturetest.mjs', quick: true, group: 'chapter', why: 'the engine plays a chapter it has never seen' },
   { name: 'title',    file: 'titletest.mjs', quick: false, group: 'release', why: 'logo, button, chapter card' },
   { name: 'final',    file: 'final.mjs',     quick: false, group: 'release', why: 'the whole walk, on a real phone and desktop' },
 ];

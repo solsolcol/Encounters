@@ -41,25 +41,46 @@ from his **phone**. Consequences:
 4. **Both builds must stay green.** One source produces the hosted site
    AND the single-file build; a change that breaks either is not done.
    The single-file build is no longer published or (since v3.4) what the
-   suite drives, but it stays: it is the anywhere-fallback and csptest's
-   strict-CSP surface. Removing it is a WITH-CHAPTER-2 decision
-   (docs/SCALING-FOUNDATION.md, E2), not a cleanup.
+   suite drives, but it stays, and that was reconsidered and confirmed at
+   v3.5: it costs ~5 s of build time, it is the anywhere/offline
+   fallback, and it is the ONLY surface csptest can test the strict
+   no-blob/no-data CSP on — the policy that shaped the hand-parsed GLB
+   and audio loaders. Deleting a working fallback to save five seconds is
+   the wrong trade (docs/V3.5-PLAN.md).
 5. The generated files (`hellnote.html`, `wrapped.html`, `bundle.js`,
    `dist/`) are never edited by hand.
 
-## Architecture (v2.1)
+## Architecture (v3.5)
 
 One source, two builds, built by `npm run build` (esbuild → `build.py` →
 `wrap.py`):
 
-- `src/main.js` — THE ENGINE (~2700 lines): renderer, input, viewmodel
-  hands, ghost system, notes, pile interactable, audio, cutscene engine,
-  UI flow, sky. It reads the current chapter off `window.__CHAPTERS__`.
-- `src/chapters/ch1.js` — THE CHAPTER: words, choices, stat deltas,
-  teachings, card title, stage positions (spawn/shrine/ghostHome/bounds),
-  and the chapter's asset keys. Plain script (no ESM — file:// tests and
-  the sandboxed preview both choke on module imports); registers itself
-  on a global registry. **Chapter 2 starts by copying this file.**
+- `src/main.js` — THE ENGINE (~3400 lines): renderer, input, viewmodel
+  hands, ghost system, audio, cutscene engine + its language, UI flow,
+  sky, sanity, inventory. It owns everything every chapter shares and
+  nothing that belongs to one.
+- `src/chapters/*.js` — THE CHAPTERS. Each is a plain script (no ESM —
+  file:// tests and the CSP build both choke on module imports) wrapped in
+  one closure, registering itself on `window.__CHAPTERS__`. A chapter
+  carries its words, choices, stat deltas, teachings, stage positions,
+  asset keys, and **two entry points**:
+  - `build(ctx) -> stage` constructs its world and hands back the handle
+    the engine drives it through (`pile.*`, `blockers`, `snap/restore/
+    reset`, `updateNotes/updatePile/updateFire/updateSlow`, `dispose`).
+    `ctx` is the engine's kit passed in — THREE, the scene, the texture
+    library — so a chapter never imports anything.
+  - `scenes[i](c, s, api)` — one cutscene per choice, written in the
+    engine's cutscene language (`api`: the verbs from `A(c)` plus the cast
+    a scene may direct, and `api.stage` for its own props).
+  - `src/chapters/chtest.js` is the FIXTURE chapter: primitives only, no
+    location model, no assets. It is not part of the game — it exists so
+    "the engine is chapter-agnostic" is a tested claim (`fixturetest`)
+    rather than a hope.
+  **Chapter 2 starts by copying ch1.js.**
+- Advancing a chapter is `rebuildStage(next)` — `dispose()` then
+  `build()`, never a page reload, which would re-pay the GLB parse, the
+  shader compile and the whole audio decode. `leaktest` is what keeps
+  that honest.
 - `assetBytes(name)` in main.js is the asset seam: hosted mode fetches
   fingerprinted URLs from `__ASSET_MAP_B64__`; embedded mode returns
   inline base64. `HOSTED` = the map is non-empty. Loaders never know
@@ -73,15 +94,23 @@ One source, two builds, built by `npm run build` (esbuild → `build.py` →
   since v3.4 the other harnesses load `dist/` over testlib's server.
 - Version lives at the top of `build.py` (`VERSION`)— bump it each release.
 
-Still deliberately in the engine, to be extracted as **step one of
-chapter 2**: the void-deck world builder and the four cutscene scripts
-(both already parameterized on the chapter's positions).
+Deliberately still in the engine, and correctly so: the ghost (she is the
+game's, not chapter 1's), the faint sequence, the cutscene *language*, and
+the sky. A chapter owns its location, its props and its four scenes —
+nothing else.
 
 ## Testing
 
-18 harnesses, listed in `runtests.mjs` with one-line purposes and a
-group tag (`node runtests.mjs @engine` / `@release`; a `chapter` group
-arrives with chapter 2). All use `testlib.mjs` (portable browser launch
+21 harnesses, listed in `runtests.mjs` with one-line purposes and a
+group tag (`node runtests.mjs @engine` / `@release` / `@chapter`).
+**The rule that stops the suite growing with the game: adding a chapter
+must not add a harness.** Per-chapter correctness is one data-driven
+file, `chaptertest.mjs` — keys resolve, deltas are in scale, the stage is
+inside its own bounds, every asset key exists in build.py, every choice
+has a scene — and it runs in plain Node in under a second, no browser.
+`fixturetest.mjs` proves the engine plays a chapter it has never seen,
+and `leaktest.mjs` proves a chapter gives the GPU back what it took.
+All use `testlib.mjs` (portable browser launch
 + repo-relative paths). Since v3.4 `testlib.PAGE` serves `dist/` over a
 local HTTP server, so the suite drives the HOSTED build — the one
 players load — and needs `npm run build` first, same as before. The one
@@ -178,7 +207,7 @@ What the baseline contains, by release:
 
 The anchors for that baseline: tag `v3.3`, commit `c8abf61`, the
 `Encounters-backup.bundle` Chad holds (it carries the tag), and the
-18 harnesses — which are what actually *enforce* the standard. A
+21 harnesses — which are what actually *enforce* the standard. A
 chapter-2 change that reddens a base-game harness is a regression in
 the reference build, not a test that needs relaxing.
 
@@ -190,16 +219,23 @@ preview artifact removed the 16 MB cap that was making compression
 urgent, so it is now a plain download-speed improvement to schedule when
 convenient, not a blocker on new assets.
 
-Next up: **chapter 2**, and before any of it the foundation work in
-`docs/SCALING-FOUNDATION.md` — the ordered list of what has to be true
-for ~10 chapters not to bloat the download or the test suite. Short
-form: a JSON state seam first (the engine can build exactly one world
-state today, which is the real reason chapter N cannot be tested
-directly), then the world-builder/cutscene extraction behind a chapter
-interface, then a synthetic fixture chapter so most harnesses stop
-loading a real one. The extraction is a pure refactor of the reference
-build: the base game must play identically after it, and the suite is
-how that is proved.
+**The scaling foundation is DONE** (v3.4 + v3.5 — Chad's call to do all
+of it now rather than alongside chapter 2). `docs/SCALING-FOUNDATION.md`
+holds the reasoning and `docs/V3.5-PLAN.md` the execution. What is now
+true, and must stay true:
+- a run is plain JSON (`worldState`/`applyState`) and writes itself down
+  at a chapter boundary (`saveCheckpoint`); nothing restores at boot,
+  deliberately — auto-resume is a feel decision still open to Chad;
+- `?ch=<key>` selects any registered chapter, unknown keys fall back;
+- a chapter owns its world and its scenes behind `build(ctx)`/`scenes[]`,
+  and advancing is `rebuildStage()` in place, never a page reload;
+- only the shared assets and the booting chapter's own are preloaded;
+- **adding a chapter must not add a harness.**
+
+Next up: **chapter 2 itself** — copy `src/chapters/ch1.js`, change what
+it says and what it builds. The real content is already written: the
+"THE OFFERINGS" data in `docs/source/trial-game-chapters.md`, which is
+also still waiting to replace chapter 1's placeholder choices.
 
 `docs/LEARNINGS.md` is the catalog of every hard-won lesson (CSP traps,
 audio traps, cutscene staging, test flakiness). When something in this

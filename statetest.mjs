@@ -123,21 +123,40 @@ out.liftGuard = await p.evaluate(() => {
 });
 await p.evaluate(() => window.__enc.invClose());
 
-/* 8. the ?ch= seam. With only ch1 registered, "?ch=ch1 boots ch1" would
-   pass even if the selector ignored the URL entirely — so pre-create the
-   registry with an alias that mirrors every registration. ch1.js does
-   `__CHAPTERS__ = __CHAPTERS__ || {}` and so reuses our object; only a
-   selector that really reads ?ch can then answer 'alt'. */
-const sep = PAGE.includes('?') ? '&' : '?';
-await p.addInitScript(() => {
-  const reg = {};
-  window.__CHAPTERS__ = new Proxy(reg, {
-    set(t, k, v) { t[k] = v; if (k === 'ch1') t.alt = v; return true; }
-  });
+/* 7b. the checkpoint: the same state, written down and read back. It must
+   survive storage (which means it must survive JSON, again) and it must NOT
+   be applied on its own — nothing restores at boot, deliberately. */
+out.checkpoint = await p.evaluate(() => {
+  const e = window.__enc;
+  e.clearCheckpoint();
+  const empty = e.loadCheckpoint() === null;
+  e.applyState({ v: 1, ch: 'ch1', stats: { sanity: 71, awareness: 62, wisdom: 43 },
+                 inv: { gear: {}, bag: ['keys'] } });
+  const wrote = e.saveCheckpoint();
+  const back = e.loadCheckpoint();
+  const same = !!back && back.v === 1 && back.ch === 'ch1'
+    && back.stats.sanity === 71 && back.stats.awareness === 62 && back.stats.wisdom === 43
+    && back.inv.bag.includes('keys');
+  // and it applies cleanly, because it is just state
+  e.applyState({ v: 1, ch: 'ch1', stats: { sanity: 5, awareness: 5, wisdom: 5 },
+                 inv: { gear: {}, bag: [] } });
+  const applied = e.applyState(back) && e.worldState().stats.sanity === 71;
+  e.clearCheckpoint();
+  return empty && wrote && same && applied && e.loadCheckpoint() === null;
 });
-await p.goto(PAGE + sep + 'ch=alt'); await p.waitForTimeout(5000);
+
+/* 8. the ?ch= seam. This used to fake a second chapter with a Proxy, because
+   only ch1 existed and "?ch=ch1 boots ch1" would pass even if the selector
+   ignored the URL entirely. There is a real second chapter now (chtest, the
+   fixture), so the check is the real thing: a different chapter, built by
+   the engine, from a file it has no special knowledge of. */
+const sep = PAGE.includes('?') ? '&' : '?';
+await p.goto(PAGE + sep + 'ch=chtest'); await p.waitForTimeout(5000);
 out.chParamReallySelects = await p.evaluate(() =>
-  !!window.__enc && window.__enc.worldState().ch === 'alt');
+  !!window.__enc && window.__enc.worldState().ch === 'chtest');
+// and it is genuinely a different world, not ch1 wearing a label
+out.altChapterIsDifferent = await p.evaluate(() =>
+  window.__enc.chapter.id === 99 && window.__enc.chapter.assets.length === 0);
 
 // inherited keys must fall back, not kill the boot
 out.protoChapterFallsBack = true;
@@ -155,7 +174,9 @@ console.log(JSON.stringify(out, null, 1));
 const MUST = ['shape', 'survivesJson', 'seedAccepted', 'seedLanded', 'hudFollows',
   'roundTripBack', 'garbageRejected', 'garbageSoftened', 'nullStatsKept',
   'protoItemsDropped', 'foreignChapterRejected', 'stillPlaying', 'liftGuard',
-  'chParamReallySelects', 'protoChapterFallsBack', 'badChapterFallsBack'];
+  'checkpoint',
+  'chParamReallySelects', 'altChapterIsDifferent', 'protoChapterFallsBack',
+  'badChapterFallsBack'];
 for (const k of MUST) if (out[k] !== true) errs.push(`ERR state promise broken: ${k}`);
 console.log('errors:', errs.length ? errs : 'none');
 await b.close();

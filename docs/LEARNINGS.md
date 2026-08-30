@@ -281,3 +281,36 @@ twice. When code in this repo looks odd, the reason is usually here.
 - GitHub: he owns github.com/solsolcol/Encounters (empty). Pushing never
   worked from Cowork (proxy scope); from an open environment it should.
   He found GitHub setup hard — set it up FOR him, don't teach it.
+
+## A cutscene is mostly the engine, not the chapter
+
+- Moving the four scenes into the chapter (v3.5) looked like moving
+  chapter content. Measured first: the scenes reference **28** engine
+  names — camera, yaw, pitch, ghost, ghostLight, ghostOpacity, handsRoot,
+  armR, noteProp, the prayer arm, the viewmodel lights, shadowDirty — and
+  about six chapter props. A cutscene is stage direction; only the stage
+  belongs to the chapter.
+- So the seam is a LANGUAGE (`sceneApi`), not a prop bag: the verbs from
+  `A(c)` plus the cast a scene may direct. Three of its members are
+  accessors on purpose — `prayerArm()`, `rightHand()`, `getReveal()` —
+  because the arms do not exist until the hands finish loading and
+  `reveal` changes under the scene's feet. Capturing any of them by value
+  at scene-build time freezes the wrong answer.
+- Measure the seam before you design it. Both extractions in v3.5 were
+  scripted only after counting the two-way references, and both scripts
+  refused to remove a line from the engine that was not already present,
+  verbatim, in the chapter — which is the machine version of this repo's
+  "account for every removed line" rule, and stronger.
+
+## renderer.info counts what was UPLOADED, not what exists
+
+- The first leaktest passed with a perfectly flat zero and meant nothing:
+  it built and disposed the world without ever drawing it, and three.js
+  only registers a geometry or texture with the GPU on first render. The
+  counts were sitting at whatever the last dispose had left.
+- Draw before you measure. With two real frames per cycle the numbers
+  became 55 geometries / 21 textures and stayed exactly there over eight
+  build/dispose cycles — which is the actual proof that `dispose()` frees.
+- Removing an object from a scene frees NOTHING in three.js. Geometries,
+  materials and every texture hanging off those materials each need their
+  own `.dispose()`, and the textures are the ones people forget.

@@ -95,7 +95,37 @@ requires conditional world-building, which is the extraction. Moved.
 
 ---
 
-## WITH CHAPTER 2 (deliberately not now, with reasons)
+## Update, same day: the rest was done too (v3.5)
+
+Chad, after v3.4 shipped: *"why don't you just do all the proper
+foundation work now instead of waiting."* So everything below was
+executed in v3.5 rather than alongside chapter 2 — see
+`docs/V3.5-PLAN.md` for how, and for the two places the plan below
+turned out to be wrong once the code was measured rather than guessed:
+
+1. **The scenes are mostly engine choreography.** The plan assumed a
+   cutscene was chapter content with a few engine touches. Measured, the
+   four scenes reference 28 engine names (camera, ghost, hands, lights)
+   and about six chapter props. They are still chapter content — chapter
+   2 needs four different ones — but the seam had to be a real
+   **cutscene language** (`sceneApi`), not a thin prop bag.
+2. **Re-pointing the engine harnesses at a fixture was the wrong idea.**
+   D2 below says most tests should stop loading a real chapter. That
+   solves a problem that does not exist: the engine harnesses run once
+   whatever the chapter count, so they do not grow with the game — and
+   pointing them at a fixture would have *removed* coverage of the
+   reference build the harnesses exist to enforce. What actually stops
+   test bloat is that per-chapter correctness is data-driven
+   (`chaptertest.mjs`, no browser, under a second). The fixture chapter
+   was still built, for the thing it is genuinely good for: proving the
+   engine can play a chapter it has never seen (`fixturetest.mjs`).
+
+E2 (deleting the embedded build) was reconsidered and **declined** — it
+is the offline fallback and csptest's only strict-CSP surface, and it
+costs about five seconds of build time. The reasoning is in CLAUDE.md
+rule 4 and V3.5-PLAN.md.
+
+## WITH CHAPTER 2 — the original plan, kept for its reasoning
 
 ### A2. Persistence wiring
 Persist on chapter complete, restore on boot, recap card. NOT now:
