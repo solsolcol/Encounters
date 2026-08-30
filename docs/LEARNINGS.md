@@ -191,6 +191,37 @@ twice. When code in this repo looks odd, the reason is usually here.
   on open and `tryLock()` on close. Any future in-play UI needs the same
   pair, or it is decoration.
 
+## A truthiness lookup on a plain object accepts the whole prototype
+
+- `obj[key]` is truthy for `constructor`, `toString`, `valueOf`,
+  `hasOwnProperty`, `__proto__` — on EVERY object literal. v3.4 shipped
+  two of these into review: `?ch=constructor` picked `Object` as the
+  chapter and killed the boot (a dead title screen, a state v3.3 never
+  had), and `applyState` accepted `'toString'` as an item id, storing it
+  in the bag and rendering `<use href="#undefined">`.
+- Both were validators — code whose entire job is rejecting bad input —
+  and both read like correct guards. Use
+  `Object.prototype.hasOwnProperty.call(o, k)` (not `Object.hasOwn`;
+  it is ES2022 and this ships to phones) for ANY lookup where the key
+  comes from a URL, JSON, or a save file.
+- The same review pass found the sibling trap in coercion: `+null` is
+  `0`, and JSON has no `undefined`, so `null` is exactly how a real save
+  file spells "absent" — landing as sanity 0, which faints the run.
+  Validate with `typeof v === 'number' && Number.isFinite(v)`, never a
+  bare `+v`.
+
+## An A/B test loses its control when the shared fixture moves
+
+- `csptest` compared the same bytes with and without a strict CSP. Its
+  control leg used `testlib.PAGE`. When v3.4 re-pointed PAGE at the
+  hosted build, the control silently began testing a DIFFERENT BUILD
+  from the CSP leg — so the two legs differed by build and policy at
+  once, and the printed label ("no CSP (file://)") lied twice. Nothing
+  in the diff touched csptest; the diff changed what csptest meant.
+- When a shared fixture changes, grep every consumer for what it assumed
+  the fixture WAS, not just whether it still runs. Both csptest legs now
+  serve wrapped.html from its own server, differing only by header.
+
 ## Fire-once audio cues lose a race they don't know they're in
 
 - Every pack sample decodes lazily on first request. A cue fired exactly

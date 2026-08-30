@@ -1,7 +1,7 @@
 import http from 'http';
 import fs from 'fs';
 import { chromium } from 'playwright';
-import { LAUNCH, PAGE } from './testlib.mjs';
+import { LAUNCH } from './testlib.mjs';
 
 const html = fs.readFileSync(new URL('./wrapped.html', import.meta.url));
 // Serve the page under a strict CSP: inline script allowed, but no blob:
@@ -11,20 +11,24 @@ const html = fs.readFileSync(new URL('./wrapped.html', import.meta.url));
 // loaders — rescueTextures' hand-parsed GLB, createImageBitmap, decode of
 // raw audio bytes — and those are the fragile pieces (see LEARNINGS). It
 // is the guard that stops someone "simplifying" one back to a blob: URL.
+// Both legs serve the SAME wrapped.html bytes; only the policy differs,
+// which is what makes this a controlled comparison. (Before v3.4 the
+// control leg used testlib's PAGE — harmless while PAGE was also
+// wrapped.html, but PAGE now serves the hosted build, which would have
+// made the two legs differ by build AND policy at once.)
+const CSP = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+  "font-src https://fonts.gstatic.com; img-src 'self'; connect-src 'self'";
 const srv = http.createServer((req, res) => {
-  res.writeHead(200, {
-    'Content-Type': 'text/html',
-    'Content-Security-Policy':
-      "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
-      "font-src https://fonts.gstatic.com; img-src 'self'; connect-src 'self'"
-  });
+  const head = { 'Content-Type': 'text/html' };
+  if (!req.url.startsWith('/nocsp')) head['Content-Security-Policy'] = CSP;
+  res.writeHead(200, head);
   res.end(html);
 });
 await new Promise(r => srv.listen(8099, r));
 
 const b = await chromium.launch(LAUNCH);
-for (const [label, url] of [['no CSP (file://)',PAGE],
+for (const [label, url] of [['no CSP (wrapped)','http://localhost:8099/nocsp'],
                             ['strict CSP','http://localhost:8099/']]) {
   const p = await b.newPage({viewport:{width:600,height:400}});
   const blocked=[];

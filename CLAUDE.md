@@ -40,8 +40,10 @@ from his **phone**. Consequences:
    Encounters-backup.bundle --all`), hand it to Chad.
 4. **Both builds must stay green.** One source produces the hosted site
    AND the single-file build; a change that breaks either is not done.
-   The single-file build is no longer published anywhere, but it is what
-   16 of the 17 harnesses actually load (`wrapped.html`), so it stays.
+   The single-file build is no longer published or (since v3.4) what the
+   suite drives, but it stays: it is the anywhere-fallback and csptest's
+   strict-CSP surface. Removing it is a WITH-CHAPTER-2 decision
+   (docs/SCALING-FOUNDATION.md, E2), not a cleanup.
 5. The generated files (`hellnote.html`, `wrapped.html`, `bundle.js`,
    `dist/`) are never edited by hand.
 
@@ -67,8 +69,8 @@ One source, two builds, built by `npm run build` (esbuild → `build.py` →
   year-long immutable caching, only `index.html` revalidates) zipped as
   `masterz-encounters-vN.N.zip`; and `hellnote.html` (everything inlined
   — built for the retired claude.ai preview, kept because it is the
-  test surface and the anywhere-fallback) mirrored to `wrapped.html`,
-  which is what the harnesses load.
+  anywhere-fallback) mirrored to `wrapped.html`, which csptest loads;
+  since v3.4 the other harnesses load `dist/` over testlib's server.
 - Version lives at the top of `build.py` (`VERSION`)— bump it each release.
 
 Still deliberately in the engine, to be extracted as **step one of
@@ -77,14 +79,19 @@ chapter 2**: the void-deck world builder and the four cutscene scripts
 
 ## Testing
 
-17 harnesses, listed in `runtests.mjs` with one-line purposes. All use
-`testlib.mjs` (portable browser launch + repo-relative paths). On a real
-machine set `REAL_GPU=1` for much faster runs; in a GPU-less container
-SwiftShader runs ~1 fps — trust state polls, never stopwatches. Full
-suite in batches if the shell has a time cap. `hostedtest.mjs` serves
-`dist/` over local HTTP and is the only harness for the hosted build;
-everything else drives `wrapped.html`. Debug/screenshot one-offs are
-gitignored by design — write them freely, they die with the session.
+18 harnesses, listed in `runtests.mjs` with one-line purposes and a
+group tag (`node runtests.mjs @engine` / `@release`; a `chapter` group
+arrives with chapter 2). All use `testlib.mjs` (portable browser launch
++ repo-relative paths). Since v3.4 `testlib.PAGE` serves `dist/` over a
+local HTTP server, so the suite drives the HOSTED build — the one
+players load — and needs `npm run build` first, same as before. The one
+deliberate exception is `csptest.mjs`, which serves `wrapped.html`
+itself under the strict no-blob/no-data CSP that shaped the hand-parsed
+loaders. On a real machine set `REAL_GPU=1` for much faster runs; in a
+GPU-less container SwiftShader runs ~1 fps — trust state polls, never
+stopwatches. Full suite in batches if the shell has a time cap.
+Debug/screenshot one-offs are gitignored by design — write them freely,
+they die with the session.
 
 ## Live targets
 
@@ -171,7 +178,7 @@ What the baseline contains, by release:
 
 The anchors for that baseline: tag `v3.3`, commit `c8abf61`, the
 `Encounters-backup.bundle` Chad holds (it carries the tag), and the
-17 harnesses — which are what actually *enforce* the standard. A
+18 harnesses — which are what actually *enforce* the standard. A
 chapter-2 change that reddens a base-game harness is a regression in
 the reference build, not a test that needs relaxing.
 

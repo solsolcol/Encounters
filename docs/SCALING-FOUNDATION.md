@@ -57,11 +57,34 @@ mechanism, two consumers.
   not at all; the suite now drives the build players load, and drives
   it against the frozen baseline — the one moment any embedded/hosted
   behavioral difference is guaranteed to surface as a clean diff.
-- `csptest` deliberately keeps `wrapped.html`: its job is the strict
-  no-blob/no-data CSP that SHAPED the fragile loaders, and it is the
-  guard against "simplifying" one back to a blob: URL.
+- `csptest` does not use PAGE at all: it serves `wrapped.html` from its
+  own server on BOTH legs, with and without the strict no-blob/no-data
+  CSP, so the comparison isolates the policy. That CSP shaped the
+  fragile loaders and guards against "simplifying" one back to a blob:
+  URL.
 - Note what is lost: wrapped.html was also the no-viewport-meta "worst
   case". Players get index.html's meta; testing reality wins.
+
+### Review findings, fixed before release
+An adversarial review (3 lenses; the verify stage died on credits, so
+findings were verified by hand against live probes) found one blocker
+and three real defects in the new seams, all now fixed and covered by
+statetest:
+- **blocker** `?ch=constructor` (and `toString`, `__proto__`, …) passed
+  a truthiness lookup on the registry, so CH became `Object` and the
+  boot died — a player-reachable broken state v3.3 did not have. Own-key
+  check now.
+- `applyState` accepted the same inherited keys as item ids.
+- `applyState` ignored `st.ch`: a checkpoint stamped for another chapter
+  applied silently to the booted one. Mismatched `ch` is now rejected;
+  absent `ch` still means "the current one".
+- `+null` is 0, so a JSON `null` sanity meant an instant faint. Only
+  finite numbers are accepted now.
+Two test-quality findings too: statetest's `?ch=` case could not fail
+(only one chapter exists) — it now aliases the registry so only a real
+selector produces the alias; and csptest's control leg had silently
+started loading the hosted build while its CSP leg loaded the embedded
+one (see LEARNINGS), so both legs now serve the same bytes again.
 
 ## Ordering reversal, with the reason
 The first draft put E last. Wrong: E does not depend on D, and the

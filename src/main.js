@@ -27,9 +27,13 @@ import { clone as cloneSkinned } from 'three/examples/jsm/utils/SkeletonUtils.js
 /* Which chapter this boot runs. ?ch=<key> selects from the registry —
    the seam per-chapter tests and deep links use — and anything unknown
    falls back to ch1, so a bad link is never a broken boot. */
+const hasOwn = (o, k) => !!o && Object.prototype.hasOwnProperty.call(o, k);
 const CH_KEY = (() => {
   const want = new URLSearchParams(location.search).get('ch');
-  return want && (window.__CHAPTERS__ || {})[want] ? want : 'ch1';
+  // own keys ONLY: a plain object inherits 'constructor', 'toString',
+  // '__proto__'... and a truthiness lookup would accept every one of
+  // them, making ?ch=constructor a dead boot instead of a fallback
+  return hasOwn(window.__CHAPTERS__, want) ? want : 'ch1';
 })();
 const CH = (window.__CHAPTERS__ || {})[CH_KEY];
 if (!CH) throw new Error('no chapter registered — chapters/ch1.js must load before the engine');
@@ -2652,10 +2656,16 @@ function worldState() {
 function applyState(st) {
   if (!st || typeof st !== 'object' || st.v !== 1) return false;
   if (!st.stats || typeof st.stats !== 'object') return false;
-  const num = (v, fb) => {
-    const n = +v;
-    return Number.isFinite(n) ? Math.max(0, Math.min(100, n)) : fb;
-  };
+  // a state stamped for a different chapter is not applicable to this
+  // boot — silently seeding ch2's run into ch1's world is exactly the
+  // quiet corruption the A2 restore wiring must never hit. Absent ch
+  // means "the current one" and stays tolerated.
+  if (st.ch && st.ch !== CH_KEY) return false;
+  // Only a real finite number counts. null is how JSON spells "absent",
+  // and +null is 0 — which for sanity means an instant faint, the most
+  // destructive possible reading of a missing value.
+  const num = (v, fb) => (typeof v === 'number' && Number.isFinite(v))
+    ? Math.max(0, Math.min(100, v)) : fb;
   // a lifted item lives outside gear and bag; applying over it would
   // duplicate whatever the hand was holding
   invCancel();
@@ -2663,7 +2673,7 @@ function applyState(st) {
   stats.awareness = num(st.stats.awareness, stats.awareness);
   stats.wisdom = num(st.stats.wisdom, stats.wisdom);
   if (st.inv && typeof st.inv === 'object') {
-    const ok = id => (typeof id === 'string' && ITEM_DEFS[id]) ? id : null;
+    const ok = id => (typeof id === 'string' && hasOwn(ITEM_DEFS, id)) ? id : null;
     for (const k of GEAR_SLOTS) inv.gear[k] = ok(st.inv.gear?.[k]);
     const bag = Array.isArray(st.inv.bag) ? st.inv.bag : [];
     for (let i = 0; i < BAG_SIZE; i++) inv.bag[i] = ok(bag[i]);

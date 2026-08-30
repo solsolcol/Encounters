@@ -42,9 +42,13 @@ export const DIR = fileURLToPath(new URL('.', import.meta.url));
      error as a failure (found in the migration spike).
    - Each harness process gets its own server on an ephemeral port, so
      the runner's two-at-a-time concurrency cannot collide.
-   - csptest deliberately does NOT use PAGE for content: it serves
-     wrapped.html itself under the strict no-blob/no-data CSP that shaped
-     the hand-parsed loaders. That guard outlives the preview.           */
+   - csptest does not use PAGE at all: it serves wrapped.html from its
+     own server on both legs (with and without the strict no-blob/no-data
+     CSP) so its A/B differs only by policy. That guard outlives the
+     preview and must keep testing the inlined loaders.
+   - listen() errors are surfaced, not left to hang: DIR-only importers
+     (runtests, textsync) bind this socket too, and an unhandled 'error'
+     would kill them with a stack instead of a sentence.                 */
 import { createServer } from 'node:http';
 import { readFileSync } from 'node:fs';
 import { extname, join, normalize } from 'node:path';
@@ -62,7 +66,14 @@ const _srv = createServer((req, res) => {
     res.end(body);
   } catch { res.writeHead(404); res.end('not found'); }
 });
+_srv.on('error', e => {
+  console.error('testlib: could not serve dist/ on localhost —', e.message);
+  process.exit(1);
+});
 _srv.listen(0, '127.0.0.1');
 _srv.unref();
-await new Promise(r => _srv.once('listening', r));
+await new Promise((res, rej) => {
+  _srv.once('listening', res);
+  _srv.once('error', rej);
+});
 export const PAGE = `http://127.0.0.1:${_srv.address().port}/`;

@@ -70,6 +70,28 @@ const out = await p.evaluate(() => {
     && after.stats.wisdom === 100                   // clamped
     && after.inv.gear.leftHand === null             // unknown item dropped
     && after.inv.bag[0] === null;
+
+  // null is how JSON spells "absent"; +null is 0, and sanity 0 faints the
+  // run. It must fall back, never zero the player.
+  e.applyState({ v: 1, ch: 'ch1', stats: { sanity: 88, awareness: 50, wisdom: 50 },
+                 inv: { gear: {}, bag: [] } });
+  e.applyState({ v: 1, ch: 'ch1', stats: { sanity: null, awareness: null, wisdom: null },
+                 inv: { gear: {}, bag: [] } });
+  log.nullStatsKept = e.worldState().stats.sanity === 88;
+
+  // inherited keys are not item ids: a truthiness lookup on a plain
+  // object accepts 'toString' and friends
+  e.applyState({ v: 1, ch: 'ch1', stats: { sanity: 50, awareness: 50, wisdom: 50 },
+    inv: { gear: { rightHand: 'toString' }, bag: ['hasOwnProperty', 'constructor'] } });
+  const proto = e.worldState().inv;
+  log.protoItemsDropped = proto.gear.rightHand === null
+    && proto.bag.every(x => x === null);
+
+  // a checkpoint stamped for another chapter is not applicable here
+  log.foreignChapterRejected =
+    e.applyState({ v: 1, ch: 'ch2', stats: { sanity: 1, awareness: 1, wisdom: 1 },
+                   inv: { gear: {}, bag: [] } }) === false
+    && e.worldState().stats.sanity !== 1;
   log.stillPlaying = e.getState() === 'play';
 
   return log;
@@ -101,19 +123,39 @@ out.liftGuard = await p.evaluate(() => {
 });
 await p.evaluate(() => window.__enc.invClose());
 
-// 8. the ?ch= seam: unknown keys fall back, never a broken boot
+/* 8. the ?ch= seam. With only ch1 registered, "?ch=ch1 boots ch1" would
+   pass even if the selector ignored the URL entirely — so pre-create the
+   registry with an alias that mirrors every registration. ch1.js does
+   `__CHAPTERS__ = __CHAPTERS__ || {}` and so reuses our object; only a
+   selector that really reads ?ch can then answer 'alt'. */
 const sep = PAGE.includes('?') ? '&' : '?';
+await p.addInitScript(() => {
+  const reg = {};
+  window.__CHAPTERS__ = new Proxy(reg, {
+    set(t, k, v) { t[k] = v; if (k === 'ch1') t.alt = v; return true; }
+  });
+});
+await p.goto(PAGE + sep + 'ch=alt'); await p.waitForTimeout(5000);
+out.chParamReallySelects = await p.evaluate(() =>
+  !!window.__enc && window.__enc.worldState().ch === 'alt');
+
+// inherited keys must fall back, not kill the boot
+out.protoChapterFallsBack = true;
+for (const k of ['constructor', 'toString', '__proto__']) {
+  await p.goto(PAGE + sep + 'ch=' + k); await p.waitForTimeout(5000);
+  const ok = await p.evaluate(() =>
+    !!window.__enc && window.__enc.worldState().ch === 'ch1');
+  if (!ok) { out.protoChapterFallsBack = false; out.protoBroke = k; break; }
+}
 await p.goto(PAGE + sep + 'ch=nonexistent'); await p.waitForTimeout(5000);
 out.badChapterFallsBack = await p.evaluate(() =>
-  !!window.__enc && window.__enc.worldState().ch === 'ch1');
-await p.goto(PAGE + sep + 'ch=ch1'); await p.waitForTimeout(5000);
-out.namedChapterBoots = await p.evaluate(() =>
   !!window.__enc && window.__enc.worldState().ch === 'ch1');
 
 console.log(JSON.stringify(out, null, 1));
 const MUST = ['shape', 'survivesJson', 'seedAccepted', 'seedLanded', 'hudFollows',
-  'roundTripBack', 'garbageRejected', 'garbageSoftened', 'stillPlaying',
-  'liftGuard', 'badChapterFallsBack', 'namedChapterBoots'];
+  'roundTripBack', 'garbageRejected', 'garbageSoftened', 'nullStatsKept',
+  'protoItemsDropped', 'foreignChapterRejected', 'stillPlaying', 'liftGuard',
+  'chParamReallySelects', 'protoChapterFallsBack', 'badChapterFallsBack'];
 for (const k of MUST) if (out[k] !== true) errs.push(`ERR state promise broken: ${k}`);
 console.log('errors:', errs.length ? errs : 'none');
 await b.close();
