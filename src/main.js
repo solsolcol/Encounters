@@ -28,15 +28,33 @@ import { clone as cloneSkinned } from 'three/examples/jsm/utils/SkeletonUtils.js
    the seam per-chapter tests and deep links use — and anything unknown
    falls back to ch1, so a bad link is never a broken boot. */
 const hasOwn = (o, k) => !!o && Object.prototype.hasOwnProperty.call(o, k);
-const CH_KEY = (() => {
+const chapterExists = k => typeof k === 'string' && hasOwn(window.__CHAPTERS__, k);
+
+/* Which chapter is playing. `let`, not `const`, since v3.6: resuming a save
+   can land in a chapter other than the one the URL booted, and finishing a
+   chapter advances to the next — both go through setChapter() below.      */
+const CH_ASKED = (() => {
   const want = new URLSearchParams(location.search).get('ch');
   // own keys ONLY: a plain object inherits 'constructor', 'toString',
   // '__proto__'... and a truthiness lookup would accept every one of
   // them, making ?ch=constructor a dead boot instead of a fallback
-  return hasOwn(window.__CHAPTERS__, want) ? want : 'ch1';
+  return chapterExists(want) ? want : null;
 })();
-const CH = (window.__CHAPTERS__ || {})[CH_KEY];
+let CH_KEY = CH_ASKED || 'ch1';
+let CH = (window.__CHAPTERS__ || {})[CH_KEY];
 if (!CH) throw new Error('no chapter registered — chapters/ch1.js must load before the engine');
+const BOOT_CH = CH_KEY;      // where New game goes back to, whatever a save said
+
+/* The order chapters are played in, taken from their own `id`. A chapter
+   does not need to know what comes after it — the registry does. The
+   fixture chapter carries id 99 so it sorts last and is never "next".   */
+const chapterOrder = () => Object.keys(window.__CHAPTERS__ || {})
+  .sort((a, b) => (window.__CHAPTERS__[a].id || 0) - (window.__CHAPTERS__[b].id || 0));
+function nextChapterKey(after = CH_KEY) {
+  const order = chapterOrder().filter(k => (window.__CHAPTERS__[k].id || 0) < 90);
+  const i = order.indexOf(after);
+  return (i >= 0 && i + 1 < order.length) ? order[i + 1] : null;
+}
 
 /* ------------------------------------------------------------- assets ----
    One seam for every heavy file. The hosted build carries a map of real,
@@ -1327,7 +1345,8 @@ const ui = {
   bSan: $('bSan'), bAwa: $('bAwa'), bWis: $('bWis'),
   vSan: $('vSan'), vAwa: $('vAwa'), vWis: $('vWis'),
   say: $('say'), teach: $('teach'), deltas: $('deltas'),
-  rank: $('rank'), core: $('core'), pct: $('pct')
+  rank: $('rank'), core: $('core'), pct: $('pct'),
+  newConfirm: $('newConfirm')
 };
 const hint = $('hint');
 // how you act on the heap, in the words that match the device you are on
@@ -2033,32 +2052,76 @@ inv.bag[1] = 'keys';
    modes, rather than politely returning null.                             */
 const SAVE_KEY = 'mz.encounters.checkpoint';
 
-function saveCheckpoint() {
+const SAVE_V = 2;                  // v1 (v3.5) still loads: no `at`, no `done`
+
+/* `extra` carries what worldState() has no business knowing — where the
+   player was standing, whether the chapter is sealed — and can override the
+   stats, which the faint path needs (it writes the chapter's STARTING stats,
+   not the zero sanity that just ended the run). Everything else is the plain
+   run state, so a save is still just JSON. */
+function saveCheckpoint(extra) {
+  /* A ?ch= session is a deep link: a preview, a test, a shared "look at
+     this bit". It reads no save and it writes none. Without this the first
+     autosave of a deep-linked chapter would silently overwrite the run the
+     player actually cares about — the read guard alone is not enough. */
+  if (CH_ASKED) return false;
   try {
-    localStorage.setItem(SAVE_KEY, JSON.stringify(worldState()));
+    const at = (extra && 'at' in extra) ? extra.at : {
+      x: yaw.position.x, y: yaw.position.y, z: yaw.position.z, ry: yaw.rotation.y
+    };
+    const base = worldState();
+    if (extra && extra.stats) base.stats = { ...extra.stats };
+    if (extra && extra.ch && chapterExists(extra.ch)) base.ch = extra.ch;
+    localStorage.setItem(SAVE_KEY, JSON.stringify({
+      ...base, at, done: !!(extra && extra.done), t: Date.now()
+    }));
+    lastSaveAt = performance.now();
     return true;
   } catch { return false; }        // private mode, quota, or storage disabled
 }
 function loadCheckpoint() {
+  /* An explicit ?ch= wins over the save. Asking for a chapter by name and
+     being resumed into a different one is surprising for a player and
+     wrong for a harness, which would otherwise inherit whatever run was
+     left in that browser profile. */
+  if (CH_ASKED) return null;
   try {
     const raw = localStorage.getItem(SAVE_KEY);
-    return raw ? JSON.parse(raw) : null;
+    if (!raw) return null;
+    const s = JSON.parse(raw);
+    // A save is only usable if it names a chapter this build still has.
+    // Same rule as ?ch= — an unknown key falls back, never bricks the boot.
+    if (!s || typeof s !== 'object' || (s.v !== 1 && s.v !== SAVE_V)) return null;
+    if (!chapterExists(s.ch)) return null;
+    return s;
   } catch { return null; }         // absent, unreadable, or half-written
 }
 function clearCheckpoint() {
   try { localStorage.removeItem(SAVE_KEY); return true; } catch { return false; }
 }
 
+/* Autosave. On by default and always on — there is no switch, because a
+   switch implies it is sometimes off. It writes ONLY during play: restoring
+   into a half-open decision or the middle of a cutscene is the fragile case
+   and buys nothing, so those moments simply are not saved. */
+const AUTOSAVE_MS = 8000;
+let lastSaveAt = 0;
+function autosave(force) {
+  if (state !== 'play' || fainting) return false;
+  if (!force && performance.now() - lastSaveAt < AUTOSAVE_MS) return false;
+  return saveCheckpoint();
+}
+
 function worldState() {
   return {
-    v: 1,
+    v: SAVE_V,
     ch: CH_KEY,
     stats: { sanity: stats.sanity, awareness: stats.awareness, wisdom: stats.wisdom },
     inv: { gear: { ...inv.gear }, bag: [...inv.bag] }
   };
 }
 function applyState(st) {
-  if (!st || typeof st !== 'object' || st.v !== 1) return false;
+  if (!st || typeof st !== 'object' || (st.v !== 1 && st.v !== SAVE_V)) return false;
   if (!st.stats || typeof st.stats !== 'object') return false;
   // a state stamped for a different chapter is not applicable to this
   // boot — silently seeding ch2's run into ch1's world is exactly the
@@ -2483,9 +2546,8 @@ function ghostOpacity(o) {
    player's hand, and the ghost, who belongs to the engine but lives inside
    the chapter's world group so that she moves with it.
 
-   Called by leaktest today and by the chapter-advance path when chapter 2
-   arrives. Deliberately does not touch stats or inventory: those are the
-   player's, and worldState()/applyState() are how they travel.           */
+   Deliberately does not touch stats or inventory: those are the player's,
+   and worldState()/applyState() are how they travel.                     */
 function rebuildStage(next) {
   const ch = next || CH;
   stage.dispose();
@@ -2496,6 +2558,31 @@ function rebuildStage(next) {
   noteProp.material.needsUpdate = true;
   redoShadows();
   return stage;
+}
+
+/* Switch which chapter the engine is playing: the resume path when a save
+   names a different one, and the advance path when a chapter is sealed.
+
+   Note what is MUTATED rather than reassigned. `OFFER_POS` aliases the same
+   Vector3 as SHRINE, several closures captured BOUNDS, and the ghost reads
+   GHOST_HOME directly — reassigning those bindings would leave every alias
+   pointing at the previous chapter's numbers, and the only symptom would be
+   the player walking through a wall three chapters later. Mutating the
+   objects in place keeps every alias correct by construction.            */
+function setChapter(key) {
+  if (!chapterExists(key)) return false;
+  if (key === CH_KEY) return true;                 // already there; not an error
+  CH_KEY = key;
+  CH = window.__CHAPTERS__[key];
+  SHRINE.set(CH.shrine.x, 0, CH.shrine.z);
+  GHOST_HOME.set(CH.ghostHome.x, 0, CH.ghostHome.z);
+  Object.assign(BOUNDS, CH.bounds);
+  SPAWN.pos.set(CH.spawn.x, CH.spawn.y, CH.spawn.z);
+  SPAWN.rot = 0;
+  rebuildStage(CH);
+  applyChapterText();
+  warnIfScenesMissing();
+  return true;
 }
 
 /* --------------------------------------------------------------- engine */
@@ -2562,7 +2649,7 @@ function playCineFn(sceneFn, onDone) {
    chapter must be PLAYABLE while it is half-built — a crash on choice three
    would make the other three untestable too. */
 const playCine = (i, onDone) => {
-  const sceneFn = CINE_SCENES[i];
+  const sceneFn = scenesOf()[i];
   if (typeof sceneFn !== 'function') {
     console.warn(`chapter ${CH_KEY}: choice ${i} has no scene — skipping to the card`);
     onDone();
@@ -2704,12 +2791,19 @@ function sceneApi(c) {
    player's camera, the ghost, the hands, and the chapter's own props by way
    of `stage`. Every chapter's scenes are written against exactly this, which
    is the whole reason it is worth naming.                                 */
-const CINE_SCENES = CH.scenes || [];
-if (CINE_SCENES.length !== CH.choices.length) {
-  console.warn(`chapter ${CH_KEY}: ${CH.choices.length} choices but ` +
-               `${CINE_SCENES.length} scenes — a choice with no scene will ` +
-               `fall straight through to its outcome card`);
+/* Read off CH at call time rather than captured once: setChapter() can put a
+   different chapter in play, and a captured list would keep running the old
+   chapter's cutscenes over the new chapter's world. */
+const scenesOf = () => (CH.scenes || []);
+function warnIfScenesMissing() {
+  const n = scenesOf().length;
+  if (n !== CH.choices.length) {
+    console.warn(`chapter ${CH_KEY}: ${CH.choices.length} choices but ${n} ` +
+                 `scenes — a choice with no scene will fall straight through ` +
+                 `to its outcome card`);
+  }
 }
+warnIfScenesMissing();
 
 
 /* Start. The chapter card goes black over the top while the scene is already
@@ -2776,11 +2870,21 @@ function playChapterCard(then) {
   setTimeout(cover, CARD_FADE + 1200);
 }
 
-$('startBtn').onclick = () => {
+/* ------------------------------------------------------- starting a run ---
+   One path into the world, whether it is a fresh run or a resumed one. The
+   chapter card holds the black while the models finish streaming in, so
+   resume gets the same clean entrance a new game does — and it names the
+   chapter you are resuming into, which is worth seeing.
+
+   `place` runs while the screen is already black: everything it moves has
+   to be moved BEFORE the fade out, or the player watches themselves being
+   teleported.                                                            */
+function enterWorld(place) {
   state = 'chapter';
   musicStart();                    // the click that counts as the gesture
   tryLock();                       // has to be inside the click to be allowed
   playChapterCard(() => {
+    if (place) place();
     ui.hud.classList.remove('hide');
     hint.classList.remove('hide');
     setTimeout(() => hint.classList.add('hide'), 7000);
@@ -2789,12 +2893,109 @@ $('startBtn').onclick = () => {
     setHint();
     warmPlaySet();                 // her sounds must never race their decode
     queueVoice();                  // his own voice, two seconds in
+    autosave(true);                // the run is recorded from its first moment
   });
+}
+
+/* Continue: the default, and what the big button does whenever there is
+   anything to come back to. */
+function resumeRun() {
+  const s = loadCheckpoint();
+  if (!s) return false;
+  // land in the right chapter FIRST: setChapter rebuilds the world, and
+  // anything placed before it would be placed in the outgoing one
+  if (s.ch !== CH_KEY) setChapter(s.ch);
+  enterWorld(() => {
+    /* `done` means the chapter was sealed and there is nothing after it —
+       the game is finished. Continue then means "play it again", so the
+       stats go back to the chapter's starting values rather than carrying
+       the finished run's numbers into a replay. When a next chapter DOES
+       exist, finish() has already moved the save to it and left done
+       false, and the stats travel with the player as they should.      */
+    if (s.done) { Object.assign(stats, STATS_AT_START); }
+    else applyState(s);            // stats and inventory, validated
+    const at = s.at;
+    if (at && ['x', 'y', 'z'].every(k => Number.isFinite(at[k]))) {
+      yaw.position.set(at.x, at.y, at.z);
+      yaw.rotation.y = Number.isFinite(at.ry) ? at.ry : SPAWN.rot;
+    } else {
+      // a v1 save, or one written at a chapter boundary: start of the chapter
+      yaw.position.copy(SPAWN.pos);
+      yaw.rotation.y = SPAWN.rot;
+    }
+    pitch.rotation.x = 0; camera.rotation.z = 0;
+    syncBars();
+    // she is never restored mid-appearance; she re-arms from hidden, which
+    // is also the right staging — you come back to the deck, not to the
+    // middle of a jump scare
+    gPhase = 'hidden'; gTimer = 0; gGlide = null;
+    reveal = 0; ghostOpacity(0);
+    ghost.position.copy(GHOST_HOME);
+  });
+  return true;
+}
+
+/* New game: always reachable, never the accident. The confirm exists
+   because losing a run to a mistap is exactly the kind of quiet loss this
+   project does not accept.
+
+   `wipe` is false on the one path that is NOT the player starting over: a
+   ?ch= link, where the save was merely hidden rather than absent. Clearing
+   it there would delete a real run just because someone opened a deep
+   link — the confirm never appeared and no one asked for that.          */
+function newGame(wipe = true) {
+  if (wipe) clearCheckpoint();
+  Object.assign(stats, STATS_AT_START);
+  syncBars();
+  if (wipe && CH_KEY !== BOOT_CH) setChapter(BOOT_CH);
+  enterWorld(() => {
+    yaw.position.copy(SPAWN.pos);
+    yaw.rotation.y = SPAWN.rot;
+  });
+}
+
+$('startBtn').onclick = () => {
+  if (CH_ASKED) return newGame(false);   // a deep link plays what it names
+  if (!resumeRun()) newGame();
 };
+$('newGameBtn').onclick = () => showNewConfirm(true);
+$('newYes').onclick = () => { showNewConfirm(false); newGame(); };
+$('newNo').onclick = () => showNewConfirm(false);
+function showNewConfirm(on) { ui.newConfirm?.classList.toggle('hide', !on); }
+
+/* The title screen reads the save and says so: Continue when there is a run
+   waiting, Start game when there is not. Called at boot and again whenever
+   the save changes underneath it. */
+function paintTitle() {
+  const s = loadCheckpoint();
+  const btn = $('startBtn');
+  if (btn) btn.textContent = s ? T('title.continue') : T('title.start');
+  $('newGameBtn')?.classList.toggle('hide', !s);
+  const note = $('resumeNote');
+  if (note) {
+    note.classList.toggle('hide', !s);
+    if (s) {
+      const ch = window.__CHAPTERS__[s.ch];
+      note.textContent = T('title.resumeNote').replace('{chapter}', ch?.cardLabel || '');
+    }
+  }
+}
+paintTitle();
 $('stepBack').onclick = () => dismissDecision();
 $('retryBtn').onclick = () => restart();
 $('nextBtn').onclick = () => { ui.result.classList.add('hide'); finish(); };
-$('againBtn').onclick = () => restart();
+/* Continue on the sealed card. With a next chapter it ADVANCES — which is
+   the same move finish() already recorded in the save, so the button and
+   the save can never disagree. With nothing after this chapter it restarts,
+   which is what "play again" means at the end of the game. Inert today:
+   ch1 is the only real chapter, so nextChapterKey() is null. */
+$('againBtn').onclick = () => {
+  const nxt = nextChapterKey();
+  if (!nxt) return restart();
+  setChapter(nxt);
+  for (const el of [ui.complete, ui.result, ui.over]) el.classList.add('hide');
+  restart();                       // fresh run state, now in the new chapter
+};
 
 /* The title screen speaks for the whole series, not for whichever chapter is
    loaded — so it has its own line. CH.brief stays as the chapter’s own
@@ -2803,18 +3004,27 @@ $('againBtn').onclick = () => restart();
    is an engine string. (The chapter's own `brief` is its one-line summary,
    kept for the chapter picker and for anyone reading the chapter file.)   */
 $('brief').innerHTML = T('title.intro');
-$('qtext').innerHTML = CH.prompt;
-// the black chapter card carries whatever chapter is registered
-if ($('chapLabel')) $('chapLabel').innerHTML = CH.cardLabel;
-if ($('chapTitle')) $('chapTitle').innerHTML = CH.cardTitle;
-const cWrap = $('choices');
-CH.choices.forEach((c, i) => {
-  const b = document.createElement('button');
-  b.className = 'choice';
-  b.innerHTML = `<span class="key">${c.k}</span><span>${c.text}</span>`;
-  b.onclick = () => pick(i);
-  cWrap.appendChild(b);
-});
+
+/* Everything on screen that comes from the CHAPTER rather than the game.
+   Re-run by setChapter(), so advancing or resuming into another chapter
+   repaints its card, its question and its four choices — the buttons are
+   rebuilt rather than relabelled, because a chapter may not have four. */
+function applyChapterText() {
+  $('qtext').innerHTML = CH.prompt;
+  // the black chapter card carries whatever chapter is registered
+  if ($('chapLabel')) $('chapLabel').innerHTML = CH.cardLabel;
+  if ($('chapTitle')) $('chapTitle').innerHTML = CH.cardTitle;
+  const cWrap = $('choices');
+  cWrap.textContent = '';
+  CH.choices.forEach((c, i) => {
+    const b = document.createElement('button');
+    b.className = 'choice';
+    b.innerHTML = `<span class="key">${c.k}</span><span>${c.text}</span>`;
+    b.onclick = () => pick(i);
+    cWrap.appendChild(b);
+  });
+}
+applyChapterText();
 
 function syncBars() {
   const cl = v => Math.max(0, Math.min(100, v));
@@ -3109,6 +3319,13 @@ function lose() {
   for (const el of [ui.decide, ui.result, ui.prompt, ui.interact, hint]) {
     el.classList.add('hide');
   }
+  /* Fainting must not become a rewind. The save is rewritten to the START of
+     this chapter — same chapter, fresh stats, no position — so closing the
+     tab mid-faint and pressing Continue restarts the chapter, exactly like
+     Retry does. Leaving the last autosave in place would instead drop the
+     player back three seconds before it with two sanity left: both a cheat
+     and a trap.                                                          */
+  saveCheckpoint({ at: null, stats: STATS_AT_START });
   // the line goes down WITH him — cut anything mid-sentence first
   if (narSrc) { try { narSrc.stop(); } catch {} narSrc = null; }
   speak('vfaint');
@@ -3141,9 +3358,15 @@ function finish() {
   ui.complete.classList.remove('hide');
   ui.hud.classList.add('hide');
   state = 'complete';
-  // the chapter is sealed: this is the one moment a run is worth writing
-  // down. Nothing reads it back yet — see the note on saveCheckpoint.
-  saveCheckpoint();
+  /* The chapter is sealed. The save moves to the NEXT chapter if there is
+     one, so Continue picks up there rather than replaying the one just
+     finished; with no next chapter it records this one as done, and
+     Continue starts it over — which is what "play again" means when there
+     is nothing after it. Position is cleared either way: you resume at the
+     start of a chapter, never at the spot where the last one ended.     */
+  const nxt = nextChapterKey();
+  saveCheckpoint(nxt ? { at: null, done: false, ch: nxt }
+                     : { at: null, done: true });
   snd('uirank', 0.7);
 
   // SEALED comes down as a stamp, a beat after the card lands
@@ -3258,6 +3481,7 @@ function restart() {
   clearTimeout(hintTimer);
   hintTimer = setTimeout(() => hint.classList.add('hide'), 7000);
   tryLock();                       // the click that got us here is the gesture
+  autosave(true);                  // the fresh run is recorded at once
 }
 
 /* ---------------------------------------------------------------- loop */
@@ -3389,6 +3613,7 @@ function tick(now = 0) {
   updateAudioFrame(t);
   updatePulse(dt);
   stage.updateFire(t);
+  autosave();          // throttled, and only ever during play — see autosave()
 
   /* Smoke, embers and the star twinkle run at half rate on a phone. All
      three are slow, soft and blurred, so the eye cannot tell — but each one

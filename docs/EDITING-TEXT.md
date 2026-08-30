@@ -5,9 +5,11 @@ without prompting for each change. This is how it works and how to run it.
 
 ## The sheet
 
-**Master Z's Encounters — GAME TEXT v4 (edit here)** in his Drive
-(id `1pYeF0Wog-QX-f8Ye2lFAI3lw1Fz9MAKpqfgPCMTpCjg` — the **v4** sheet;
-v1–v3 are superseded and should not be edited).
+**Master Z's Encounters — GAME TEXT v5 (edit here)** in his Drive
+(id `1Mh6eXHxwbkQLnr1TyBW_kd3V3luQojf8U1WOezTziAY` — the **v5** sheet, made
+at v3.6 when save/resume added seven strings; v1–v4 are superseded and
+should not be edited).
+<https://docs.google.com/spreadsheets/d/1Mh6eXHxwbkQLnr1TyBW_kd3V3luQojf8U1WOezTziAY/edit>
 
 The Drive connector can read a sheet and can create one, but it cannot
 write cells into an existing one. So a release that adds strings makes a

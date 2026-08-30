@@ -26,6 +26,9 @@ Object.assign(window.__TEXT__, {
   'title.headingPlain':  'Master Z’s Encounters — The Game',
   'title.intro':         'A void deck. A stairwell. A hotel corridor at 3 AM. Ordinary places on the wrong night, and in each one, something you have to decide how to answer.',
   'title.start':         'Start game',
+  'title.continue':      'Continue',
+  'title.resumeNote':    'Picking up where you left off · {chapter}',
+  'title.newGame':       'Start a new game',
   'title.controlsDesktop': '<b>Desktop</b> · W A S D to walk, move the mouse to look, <b>E</b> to interact with objects',
   'title.controlsPhone':   '<b>Phone</b> · left thumb walks, right thumb looks, <b>tap</b> objects to interact with them',
   'title.credits':       'Credits',
@@ -99,6 +102,11 @@ Object.assign(window.__TEXT__, {
   'lost.teachingLabel':  'Master Z’s teaching',
   'lost.teaching':       'Fear is not the danger. Facing what terrifies you...and doing nothing—is.',
   'lost.retry':          'Retry',
+
+  'newgame.heading':     'Start a new game?',
+  'newgame.body':        'Your saved progress will be erased and you will begin again from the first chapter.',
+  'newgame.yes':         'Start over',
+  'newgame.no':          'Keep playing',
 
   // --- inventory / equipment -----------------------------------------------
   'inv.button':          'Inventory',

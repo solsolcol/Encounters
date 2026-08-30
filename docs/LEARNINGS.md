@@ -335,3 +335,40 @@ twice. When code in this repo looks odd, the reason is usually here.
   scenarios in one page, each scenario must reset the machine, and the
   reset must be asserted. A shared fixture that carries state between
   sections is a flake generator.
+
+## Mutate the derived values; never reassign the binding
+
+- v3.6 had to make "which chapter is playing" changeable, and the obvious
+  move — turn every `const` derived from CH into a `let` and reassign —
+  would have been a slow-acting bug. `const OFFER_POS = SHRINE` aliases the
+  same Vector3; several closures had already captured `BOUNDS`. Reassigning
+  the bindings leaves every alias pointing at the OLD chapter's numbers, and
+  the only symptom is the player walking through a wall in a later chapter,
+  a long way from the change that caused it.
+- So `SHRINE`, `GHOST_HOME`, `BOUNDS` and `SPAWN` stay `const` and are
+  MUTATED in place (`.set()`, `Object.assign`). Every alias then stays
+  correct by construction rather than by everyone remembering.
+- Only three things genuinely had to become reassignable: `CH`, `CH_KEY`,
+  and the scene list — and the scene list was better solved by deleting the
+  binding and reading `CH.scenes` at call time. A captured list would have
+  played the previous chapter's cutscenes over the new chapter's world.
+- The general rule: when something becomes swappable, hunt for who has
+  already taken a reference to it. `grep` for the name, and treat every
+  alias and every closure as a place the swap has to reach.
+
+## An autosave has to decide what it refuses to save
+
+- The temptation is to save everything, continuously. The v3.6 save
+  deliberately writes ONLY during `state === 'play'`: restoring into a
+  half-open decision panel, a running cutscene or the faint sequence is the
+  fragile case, and it buys the player nothing.
+- Two consequences worth keeping. She is never restored mid-appearance —
+  the ghost re-arms from hidden, which is also the right staging (you come
+  back to the deck, not to the middle of a jump scare). And fainting
+  REWRITES the save to the start of the chapter, because leaving the last
+  autosave in place would let a player close the tab mid-faint and resume
+  three seconds earlier with two sanity: a cheat and a trap at once.
+- Test the promise, not the mechanism. "Reveal is 0 a second after resume"
+  is the wrong assertion — the saved spot was inside her trigger radius, so
+  she quite properly appears. The right one is "reveal is 0 on the FIRST
+  frame of the resumed run", which is what resume actually controls.

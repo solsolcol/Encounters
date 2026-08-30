@@ -30,6 +30,7 @@ const ALL = [
   { name: 'hosted',   file: 'hostedtest.mjs', quick: true, group: 'release', why: 'the split-file build over real HTTP' },
   { name: 'text',     file: 'texttest.mjs',  quick: true,  group: 'engine', why: 'every word on screen is editable from the sheet' },
   { name: 'state',    file: 'statetest.mjs', quick: true,  group: 'engine', why: 'a run is JSON: save, seed, round-trip exactly' },
+  { name: 'resume',   file: 'resumetest.mjs',quick: true,  group: 'engine', why: 'autosave, Continue lands where you were, New game asks' },
   { name: 'inv',      file: 'invtest.mjs',   quick: true,  group: 'engine', why: 'equipment opens, moves and loses nothing, on both' },
   { name: 'leak',     file: 'leaktest.mjs',  quick: true,  group: 'engine', why: 'a chapter gives the GPU back everything it took' },
   { name: 'chapter',  file: 'chaptertest.mjs', quick: true, group: 'chapter', why: 'every chapter\'s data is complete and in bounds' },

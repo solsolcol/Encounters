@@ -50,7 +50,7 @@ from his **phone**. Consequences:
 5. The generated files (`hellnote.html`, `wrapped.html`, `bundle.js`,
    `dist/`) are never edited by hand.
 
-## Architecture (v3.5)
+## Architecture (v3.6)
 
 One source, two builds, built by `npm run build` (esbuild → `build.py` →
 `wrap.py`):
@@ -101,7 +101,7 @@ nothing else.
 
 ## Testing
 
-21 harnesses, listed in `runtests.mjs` with one-line purposes and a
+22 harnesses, listed in `runtests.mjs` with one-line purposes and a
 group tag (`node runtests.mjs @engine` / `@release` / `@chapter`).
 **The rule that stops the suite growing with the game: adding a chapter
 must not add a harness.** Per-chapter correctness is one data-driven
@@ -207,7 +207,7 @@ What the baseline contains, by release:
 
 The anchors for that baseline: tag `v3.3`, commit `c8abf61`, the
 `Encounters-backup.bundle` Chad holds (it carries the tag), and the
-21 harnesses — which are what actually *enforce* the standard. A
+22 harnesses — which are what actually *enforce* the standard. A
 chapter-2 change that reddens a base-game harness is a regression in
 the reference build, not a test that needs relaxing.
 
@@ -223,10 +223,17 @@ convenient, not a blocker on new assets.
 of it now rather than alongside chapter 2). `docs/SCALING-FOUNDATION.md`
 holds the reasoning and `docs/V3.5-PLAN.md` the execution. What is now
 true, and must stay true:
-- a run is plain JSON (`worldState`/`applyState`) and writes itself down
-  at a chapter boundary (`saveCheckpoint`); nothing restores at boot,
-  deliberately — auto-resume is a feel decision still open to Chad;
+- a run is plain JSON (`worldState`/`applyState`) and **autosaves while
+  you play** — Chad's call at v3.6. Continue is the default action on the
+  title screen; New game is always reachable and always asks first. Only
+  `state === 'play'` is ever saved, so nothing restores into a half-open
+  decision or a cutscene, and fainting rewrites the save to the START of
+  the chapter rather than three seconds before the faint;
 - `?ch=<key>` selects any registered chapter, unknown keys fall back;
+- the playing chapter is not fixed: `setChapter(key)` swaps it (resume
+  into another chapter, and the advance path when one is sealed). The
+  chapter-derived values are MUTATED in place, never reassigned —
+  `OFFER_POS` aliases SHRINE and closures captured BOUNDS;
 - a chapter owns its world and its scenes behind `build(ctx)`/`scenes[]`,
   and advancing is `rebuildStage()` in place, never a page reload;
 - only the shared assets and the booting chapter's own are preloaded;

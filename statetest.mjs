@@ -31,13 +31,17 @@ const out = await p.evaluate(() => {
 
   // 1+2. the fresh checkpoint, and it IS json
   const s0 = e.worldState();
-  log.shape = s0.v === 1 && s0.ch === 'ch1'
+  log.shape = s0.v === 2 && s0.ch === 'ch1'
     && s0.stats.sanity === 100 && s0.stats.awareness === 50 && s0.stats.wisdom === 50
     && s0.inv.gear.rightHand === 'beads'
     && s0.inv.bag[0] === 'phone' && s0.inv.bag[1] === 'keys';
   log.survivesJson = eq(JSON.parse(JSON.stringify(s0)), s0);
 
-  // 3+5. seed a different run; unspecified gear/bag places come back empty
+  /* 3+5. seed a different run; unspecified gear/bag places come back empty.
+     Deliberately still stamped v:1 — a save written by v3.5 must keep
+     loading in every build after it, and the only way that stays true is if
+     something exercises it. The v:1 literals below are that guard, not a
+     leftover from before the bump.                                       */
   log.seedAccepted = e.applyState({ v: 1, ch: 'ch1',
     stats: { sanity: 37.5, awareness: 80, wisdom: 12 },
     inv: { gear: { leftHand: 'phone' }, bag: ['note', 'beads'] } });

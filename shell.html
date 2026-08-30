@@ -249,6 +249,23 @@ body.invopen .soundBtn{display:none}
 /* build number under the credits link — quiet, never competing */
 .ver{margin:10px auto 0;font-family:var(--mono);font-size:.72rem;
   letter-spacing:.14em;color:#5A606D;text-align:center}
+/* the line under Continue that says what you are coming back to */
+.resumeNote{margin:14px auto 0;font-family:var(--ui);font-size:.94rem;
+  letter-spacing:.02em;color:#8C93A2;text-align:center}
+/* New game asks first: losing a run to a mistap is exactly the kind of
+   quiet loss this project does not accept */
+#newConfirm{align-items:center;justify-content:center;pointer-events:auto;padding:20px;
+  background:rgba(3,4,7,.9);backdrop-filter:blur(4px);z-index:9}
+.newCard{width:min(420px,100%);background:var(--ash);border:1px solid var(--line);
+  padding:26px;text-align:center;animation:fadeup .35s var(--ease)}
+.newCard h3{font-family:var(--ui);font-size:1.12rem;color:var(--bone);margin:0 0 10px}
+.newCard p{font-family:var(--ui);font-size:.98rem;line-height:1.5;color:#A6ADBB;margin:0 0 22px}
+.newBtns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.newBtns button{font-family:var(--ui);font-size:.98rem;font-weight:700;
+  letter-spacing:.06em;text-transform:uppercase;border:0;padding:13px 24px;cursor:pointer}
+#newYes{color:var(--void);background:var(--sodium)}
+#newNo{color:#C6CAD3;background:transparent;border:1px solid var(--line)}
+#newYes:focus-visible,#newNo:focus-visible{outline:2px solid var(--sodium);outline-offset:2px}
 .creditsLink{display:block;margin:26px auto 0;background:none;border:0;
   font-family:var(--ui);font-size:.98rem;letter-spacing:.06em;color:#767D8C;
   text-decoration:underline;text-underline-offset:4px;
@@ -671,7 +688,14 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
             aria-label="Master Z's Encounters — The Game"></canvas>
     <h1 class="hide" data-t="title.headingPlain">The <em>Hell Note</em><br>I Should Never<br>Have Taken</h1>
     <p id="brief"></p>
+    <!-- Continue is the default: startBtn's own label switches to it when a
+         save is waiting, so a returning player presses the same big button
+         they always did. New game sits under it as the secondary action and
+         asks before it wipes anything. -->
     <button id="startBtn" data-t="title.start">Start game</button>
+    <p id="resumeNote" class="resumeNote hide"></p>
+    <button id="newGameBtn" class="creditsLink hide" type="button"
+            data-t="title.newGame">Start a new game</button>
     <div class="ctrl">
       <div class="ctrlRow">
         <svg class="ctrlIcon" viewBox="0 0 24 24" aria-hidden="true">
@@ -705,6 +729,18 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
 </div>
 
 <!-- credits -->
+<!-- New game asks first. A run is only ever lost on purpose. -->
+<div id="newConfirm" class="layer hide">
+  <div class="newCard">
+    <h3 data-t="newgame.heading">Start a new game?</h3>
+    <p data-t="newgame.body">Your saved progress will be erased and you will begin again from the first chapter.</p>
+    <div class="newBtns">
+      <button id="newYes" type="button" data-t="newgame.yes">Start over</button>
+      <button id="newNo" type="button" data-t="newgame.no">Keep playing</button>
+    </div>
+  </div>
+</div>
+
 <div id="credits" class="layer hide">
   <div class="credCard" role="dialog" aria-modal="true" aria-label="Credits">
     <div class="credHead">
