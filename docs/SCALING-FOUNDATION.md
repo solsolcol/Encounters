@@ -1,111 +1,129 @@
 # The foundation for many chapters
 
-Decision note, 30 Aug 2026, from Chad's question: what has to be true so
-the game scales to ~10 chapters without bloating the download or the
-test suite. Written before chapter 2 starts, because every item here is
-cheaper now than after a second chapter exists.
+Decision note, 30 Aug 2026, revised the same day after a full
+reconsideration (Chad: account for every scaling/bloat/testing/waste
+possibility, then execute). The revision splits every item into
+**NOW** (executed in v3.4 — zero feel change, provable by the suite)
+and **WITH CHAPTER 2** (needs the extraction, or only means something
+once a second chapter exists). v3.3 remains the reference standard;
+v3.4 must play identically, and the suite is the proof.
 
-The governing insight: the thing blocking "test chapter 10 directly" is
-not the build shape. It is that **the engine can construct exactly one
-world state** — `stats` is a literal at `main.js:1897`, the inventory is
-two hardcoded lines at 2624-2625, `STATS_AT_START` snapshots them at
-load. Delivery (file:// vs http://) is downstream of that and mostly a
-detail. Fix state first.
-
-Two facts make this cheap. The V3 blueprint commits to one linear spine
-— choices move three numbers and swap a teaching, they never fork — so
-saved state is small and flat, not combinatorial. And the save/resume
-system the blueprint already wants IS the test-seeding mechanism. Build
-it once, two consumers.
-
----
-
-## A. The state seam  — small, first, unlocks the rest
-
-1. `worldState()` returns plain JSON: `{ ch, stats, inv, seen }`.
-   `applyState(s)` sets them. Nothing else.
-2. Persist on chapter complete; restore on boot. localStorage, one slot.
-3. Expose `applyState` on `window.__enc` — that is the test entry point.
-
-**Anti-bloat rule: if it cannot be JSON, it is not state.** No engine
-objects, no THREE refs, no save slots, no branching histories. One save.
-
-## B. The chapter as a unit  — the planned extraction, now with an interface
-
-4. Move the void-deck world builder and the four cutscenes out of
-   `main.js` into the chapter module. A chapter exports:
-   `{ text, choices, stage, assets[], scenes[], build(ctx), dispose() }`.
-5. `CH` stops being a module-scope const bound to `.ch1`. Chapter is
-   chosen at boot from `?ch=N` (tests and deep links get this free).
-6. In-game advance runs the same path: `dispose()` then `build()` of the
-   next chapter. **One code path, two entry points.** No page reload
-   between chapters (reload re-pays GLB parse, shader compile and audio
-   decode — the cost `restart()` was built to avoid), and no hot-swap
-   machinery beyond dispose/build.
-7. `dispose()` must actually free geometries, materials and textures.
-   This is the one real new discipline; three.js leaks without it.
-
-## C. Assets per chapter  — stops download bloat
-
-8. Split `build.py`'s `ASSETS` into **shared** (hands, ghost, audiopack,
-   music, logo — the engine's) and **per-chapter** (location GLB, that
-   chapter's voice/sfx). Correction to make while doing it: `ch1.js`
-   currently declares `ghost` as its own; the ghost system is engine, so
-   `ghost` moves to shared.
-9. Emit a per-chapter manifest; `index.html` preloads shared + the
-   current chapter only. A player on chapter 1 never downloads
-   chapter 7's location.
-
-## D. Test layering  — stops test bloat. The item that matters most.
-
-Today every harness boots the whole world and plays chapter 1: ~10-15 s
-of fixed cost before any assertion, and the full suite ran ~14 minutes
-for ONE chapter. Multiplying that by chapters is how this dies.
-
-10. Add a **synthetic fixture chapter** (`src/chapters/chtest.js`): a
-    bare room from primitives, no location GLB, engine positions only.
-11. Re-point the ~13 engine harnesses (census, csp, motion, perf, tick,
-    text, inv, sanity, step, pile, restart, title, fade) at the fixture.
-    They get much faster, and they stop silently depending on the void
-    deck — if an "engine" test fails on the fixture, the engine had a
-    chapter coupling worth knowing about.
-12. **Per-chapter tests stay small and data-driven**, one parameterized
-    file over all chapters: text keys resolve, choice deltas are sane,
-    stage positions sit inside bounds, declared assets exist, each
-    cutscene runs to completion. Cheap; most of it needs no browser.
-13. Keep exactly two full integration harnesses (`final`, `hosted`) on
-    the real chapter, release-only.
-14. `runtests.mjs` gains groups: `engine` (always), `chapter N`
-    (when that chapter changes), `release` (everything).
-
-**The rule: most tests must never load a real chapter.** That is the
-whole anti-bloat move, and it is already worth doing at one chapter.
-
-## E. Retire the embedded build  — last, after D
-
-15. Point `testlib.PAGE` at a local server over `dist/` (the ~15 lines
-    already proven in `hostedtest.mjs`; spiked this session — `motion`
-    passed unchanged, `census` needed only its console filter relaxed,
-    which assumed "the page never fetches").
-16. Then delete `hellnote.html` / `wrap.py`. Frees ES modules (currently
-    blocked only by `file://`), kills the 31 % base64 inflation
-    (measured: 15.0 MB embedded vs 11.4 MB hosted), and ends the
-    inverted coverage where 16 harnesses test a build nobody runs.
-
-## Do NOT build
-
-Branching saves or save slots · chapter hot-swap mid-scene · the full
-suite per chapter · any inlining · a framework · a level editor. The
-linear spine is the simplification — spend it.
+The governing insight, unchanged: the thing that blocked "test chapter
+10 directly" was never the build shape. It was that **the engine could
+construct exactly one world state** (stats a literal, inventory two
+hardcoded lines, `STATS_AT_START` a load-time snapshot). Fix state
+first; delivery is downstream. Two facts keep it cheap: the V3
+blueprint's linear spine means saved state is small and flat, and the
+save/resume the blueprint wants IS the test-seeding mechanism — one
+mechanism, two consumers.
 
 ---
 
-## Order and shape of the work
+## Executed NOW (v3.4)
 
-`A → B → D → C → E`. A is small and independent. B is the extraction
-chapter 2 needs anyway. D depends on B's interface (the fixture chapter
-needs `build()`). C depends on B. E is cleanup once D lands.
+### A. The state seam
+- `worldState()` → plain JSON `{ v: 1, ch, stats, inv }`.
+  `applyState(s)` validates and applies: numbers coerced and clamped
+  0–100, gear keys limited to GEAR_SLOTS, bag normalised to BAG_SIZE,
+  unknown item ids dropped (forward-compat when items change), any
+  lifted item cancelled first (or a held item could duplicate), bars
+  synced. Returns false on garbage without disturbing play.
+- Both exposed on `window.__enc` — that is the test entry point, and
+  later the save/resume entry point. `statetest.mjs` (harness #18)
+  proves round-trip, seeding, and garbage rejection; the round-trip
+  design is inherently non-vacuous (a no-op applyState fails it).
+- **What state is:** CHECKPOINT state, at chapter boundaries. Not a
+  quicksave. Her position/phase, cutscene progress, timers are
+  deliberately not state — she re-arms from hidden on any restore,
+  which is also correct staging. **If it cannot be JSON, it is not
+  state.** No slots, no histories.
 
-A + B + D are the foundation; C and E follow mechanically. The base game
-must play identically after all of it — v3.3 is the reference standard
-and the suite is what proves it.
+### B1. The chapter-select seam
+- `CH` is chosen at boot from `?ch=<key>` against the registry, safe
+  fallback to `ch1` (never a broken boot). Identical behavior today;
+  it is the hook per-chapter tests and deep links need, and it makes
+  hosted's per-chapter script loading meaningful later.
+
+### D1. Test groups
+- Every harness carries a group: `engine` or `release` (a `chapter`
+  group arrives with per-chapter data tests). `node runtests.mjs
+  @engine` runs a group; default behavior unchanged.
+
+### E1. The suite tests what ships
+- `testlib.PAGE` is now a local static server over `dist/` — the same
+  ~15 lines `hostedtest.mjs` proved, unref'd so processes still exit,
+  with `/favicon.ico` answered (file:// never requests it; http does —
+  this was the census "404" in the spike). Harnesses change little to
+  not at all; the suite now drives the build players load, and drives
+  it against the frozen baseline — the one moment any embedded/hosted
+  behavioral difference is guaranteed to surface as a clean diff.
+- `csptest` deliberately keeps `wrapped.html`: its job is the strict
+  no-blob/no-data CSP that SHAPED the fragile loaders, and it is the
+  guard against "simplifying" one back to a blob: URL.
+- Note what is lost: wrapped.html was also the no-viewport-meta "worst
+  case". Players get index.html's meta; testing reality wins.
+
+## Ordering reversal, with the reason
+The first draft put E last. Wrong: E does not depend on D, and the
+best time to re-point the suite is against a frozen reference build,
+not mid-extraction — any difference shows up now as a clean signal.
+Conversely the first draft put the fixture chapter early; it actually
+requires conditional world-building, which is the extraction. Moved.
+
+---
+
+## WITH CHAPTER 2 (deliberately not now, with reasons)
+
+### A2. Persistence wiring
+Persist on chapter complete, restore on boot, recap card. NOT now:
+with one chapter it is meaningless, and restore-on-boot is a
+player-visible behavior change to the frozen baseline — its feel
+(auto-resume vs title screen) is Chad's call when resume exists.
+
+### B2. The extraction (the big one)
+Void-deck builder + the four cutscenes out of `main.js`; a chapter
+exports `{ text, choices, stage, assets[], scenes[], build(ctx),
+dispose() }`; advancing runs `dispose()` → `build()` — one code path
+for boot and advance, no page reload (a reload re-pays GLB parse,
+shader compile, audio decode). NOT now: it is the highest-risk change
+in the repo, the `ctx` the scenes need (drum, ash, embers, heroNote,
+fireLight, noteProp, arms, pile/burner positions…) should be designed
+against chapter 2's REAL needs, not guessed; and nothing before
+chapter 2 benefits. `dispose()` must genuinely free geometries,
+materials, textures — add a leak harness that builds/disposes 50× and
+watches `renderer.info` counts.
+
+### C. Per-chapter assets
+Split build.py's ASSETS into shared (hands, ghost, audiopack, music,
+logo — and note `ch1.js` wrongly lists `ghost` as its own; the ghost
+is engine) vs per-chapter (location GLB, that chapter's lines).
+Manifest per chapter; preload shared + current only. NOT now: with
+one chapter it is bookkeeping with real regression surface in
+build.py and zero payoff until a second chapter exists.
+
+### D2. The fixture chapter
+`chtest.js`: bare primitive room, no location GLB; re-point the
+~13 engine harnesses at it (fast, decoupled); per-chapter tests
+become one small data-driven file (keys resolve, deltas sane, stage
+in bounds, assets exist, scenes complete — mostly no browser); keep
+exactly two full-integration harnesses (`final`, `hosted`) on a real
+chapter, release-tier. **The rule that stops test bloat: most tests
+must never load a real chapter.** Requires B2's conditional build.
+
+### E2. Delete the embedded build
+Only after D2, and after csptest is re-thought (its CSP guard must
+survive in some form). Until then hellnote.html stays buildable: it
+costs ~5.5 s, is the offline fallback, and deleting things early is
+how code gets lost.
+
+## Do NOT build — the linear spine is the simplification; spend it
+Branching saves or slots · mid-scene hot-swap · full suite per
+chapter · any new inlining · a framework · a level editor.
+
+---
+
+## Sequence
+
+NOW (v3.4): A → B1 → D1 → E1, one release, full suite green on the
+hosted target, adversarially reviewed. WITH CH2: B2 → D2 → C → A2 →
+E2, in that order, each with the suite green before and after.
