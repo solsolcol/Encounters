@@ -225,10 +225,9 @@ body.invopen .soundBtn{display:none}
    night rather than a black rectangle that pops.
 
    Chad's call: the clip plays at full opacity and ungraded — no filter on
-   it at all — under a scrim carrying HALF the alpha it originally had.
-   The original .62/.82/.94 buried it; nothing at all was a touch bare.
-   These are exactly half of those, so the shape of the fade is unchanged
-   and only its weight moved.                                            */
+   it at all — under a scrim well lighter than the original .62/.82/.94,
+   which buried it. Halved first, then lifted 20% from there. The shape of
+   the fade has never changed through any of it; only its weight has.    */
 /* overflow only — NOT position. `.layer` is position:fixed, which already
    makes this the containing block for the absolutely-positioned backdrop;
    adding position:relative here drops it out of fixed, the layer collapses
@@ -237,11 +236,12 @@ body.invopen .soundBtn{display:none}
 .titleVid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
   z-index:0;opacity:0;transition:opacity 1.6s var(--ease);pointer-events:none}
 .titleVid.on{opacity:1}
-/* Heaviest at the edges, lightest over 50% 42% where the logo sits — the
-   same gradient as before, at half the alpha. */
+/* Heaviest at the edges, lightest over 50% 42% where the logo sits.
+   Half the original alpha, then 20% more on top of that: .31/.41/.47
+   became .37/.49/.56. */
 .titleScrim{position:absolute;inset:0;z-index:1;pointer-events:none;
-  background:radial-gradient(ellipse at 50% 42%,rgba(3,4,7,.31) 0%,
-    rgba(3,4,7,.41) 45%,rgba(3,4,7,.47) 100%)}
+  background:radial-gradient(ellipse at 50% 42%,rgba(3,4,7,.37) 0%,
+    rgba(3,4,7,.49) 45%,rgba(3,4,7,.56) 100%)}
 #title .card{position:relative;z-index:2;
   max-width:min(600px,100%);text-align:center;margin:auto;padding:0 4px}
 /* the logo sits where the heading was; it carries its own dark haze, so it
