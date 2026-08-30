@@ -238,7 +238,7 @@ the duration was written in the prompt text, which the model ignores.
 | vscoff | James, dismissive laugh, 3.1 s | B @0.62 — before the boot, so the kick has a character behind it |
 | vpant | James, running out of breath, 4.4 s | B @4.60, under the whole run |
 | vrelief | James, quiet shaken exhale, 3.3 s | C @4.60, once he is clear |
-| vchantline | James, murmured chant, 9.3 s | D @1.35 (kind `vchant`) — scene D grew to 10.4 s so it finishes |
+| vchantline | James, murmured chant, 9.3 s | RETIRED at v3.8 — Chad wanted the original chant with nothing spoken over it. Sample and `vchant` sting kind both kept; no scene fires it. |
 | gwail | her, low moan rising to a shriek, 4.0 s | B @3.40, as she starts after him |
 | gsigh | her, letting go, dissolving into reverb, 4.5 s | D @4.45, as she is released |
 | paperstorm | a thousand thin sheets in a gust, 6.0 s | B @1.60, swelling exactly as noteStorm ramps |

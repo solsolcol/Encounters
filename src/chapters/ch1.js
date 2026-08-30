@@ -1186,10 +1186,9 @@ function scChant(c, s, api) {                        /* D — palms together */
       vmFire.intensity = 2.4;
     }, rawK);
     sfx(0.85, 'bowl');             // struck as the palms come together
-    sfx(1.0, 'chant');
-    sfx(1.35, 'vchant', 0.9);      // and he actually says the words
+    sfx(1.0, 'chant');             // the chant itself, and nothing over it
     sfx(2.5, 'chime');
-    tr(2.3, 10.4, () => { stage.fireLight.intensity = 9; }, rawK);
+    tr(2.3, 8.6, () => { stage.fireLight.intensity = 9; }, rawK);
 
     // look up to her — and she lets go
     pitchTo(3.4, 4.3, -0.10, 0.11);
@@ -1212,10 +1211,11 @@ function scChant(c, s, api) {                        /* D — palms together */
       armR.position.y = y;
       if (prayerArmL) prayerArmL.position.y = y;
     });
-    /* A held beat of calm — long enough now for his chant to finish rather
-       than be cut off by the card, with the eyes settling back to level so
-       the shot is still moving while it waits. */
-    pitchTo(7.8, 10.4, 0.11, -0.06);
+    /* A held beat of calm, with the eyes settling back to level so the shot
+       is still moving while it waits. It ran to 10.4 s in v3.7 only to let a
+       spoken chant line finish; that line is gone, so the beat is its old
+       length again rather than two seconds of nothing. */
+    pitchTo(7.8, 8.6, 0.11, -0.06);
 
     c.keep.ghostGone = true;
     c.endFade = 0;
