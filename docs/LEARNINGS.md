@@ -211,6 +211,21 @@ twice. When code in this repo looks odd, the reason is usually here.
   an explicit `duration_seconds` parameter it returns 0.5–2 s clips. Set
   the parameter (creative_update_node), don't fight the prompt.
 
+## "In view" is not "visible"
+
+- A frustum projection (`.project(camera)`) passes straight through
+  walls. v3.3's spawn picker proved a point was on-screen and still
+  placed the ghost behind the deck's rear wall from the most common
+  play position — recreating the very complaint being fixed, found only
+  by an adversarial review, because the harness stood where the deck was
+  shallow. Visibility needs BOTH: bounds that respect the geometry
+  (a rear wall the world actually has) and a line-of-sight march against
+  the BLOCKER boxes the player collides with.
+- The harness lesson: probe from the position where the promise is
+  weakest (deep in the deck, facing the wall), not where it is easy.
+  And prove a two-layer fix by removing BOTH layers — one layer can
+  mask the other's absence.
+
 ## Testing a double tap on a software renderer
 
 - Two back-to-back `touchscreen.tap()` calls land ~900 ms apart under

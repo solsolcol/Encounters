@@ -66,7 +66,7 @@ wired → tested. "kind" = the `sting()`/engine name.
 | whoosh | her fast move (scene B) | wired |
 | boom | dread hit — she is here (scenes A/B + first reveal in play) | wired |
 | scream | kuntilanak scream, scene B look-back | wired |
-| cry | distant female weeping, random while she is present in play | wired |
+| cry (RETIRED in v3.3; file kept in session scratch only) | distant female weeping, random while she is present in play | wired |
 | breath | close ghost breath, when she is very near in play | wired |
 | chime | temple bell/singing bowl (scene D, teaching card) | wired |
 | chant | low male Buddhist chant phrase, scene D under the prayer | wired |
@@ -109,7 +109,7 @@ wired → tested. "kind" = the `sting()`/engine name.
   speed-gated; not under cutscenes — scenes keep their scheduled `sfx`).
 - `updateGhost`: reveal crossing ~0.1 upward → `boom` + `dread` duck +
   `vghost` (once per appearance for boom/duck; vghost once per run); while
-  reveal > 0: ghostloop gain by distance, random `cry` every 9–20 s,
+  reveal > 0: ghostloop gain by distance, random crying every 9–20 s (v3.3: `sobbing`, panned),
   `breath` when < 2.5 m; all zeroed when she is gone.
 - shrine proximity: fire loop gain by distance to SHRINE (always on in
   play/decide, it is a real fire).
@@ -199,3 +199,19 @@ Wiring rules learned in this pass (see LEARNINGS for the trap):
 - SFX nodes MUST get explicit `duration_seconds` — the model otherwise
   returns 0.5–2 s clips whatever the prompt says. Set via
   creative_update_node + creative_run_flow_nodes.
+
+
+## v3.3 additions (the terror pass) — 44 sounds in the pack
+
+Flow `QqOIcaVGcllJIiE9Qw8t`. `cry` retired (superseded by sobbing).
+
+| name | what | wired at |
+|---|---|---|
+| sobbing | clear female weeping, 9 s | appearances (55 %), the crying cadence, the close scare — always panned to her bearing |
+| gscream | piercing banshee scream, 3 s | ~25 % of reappearances (panned), always dead-centre on the close scare |
+| swoosh | deep airy spectral pass, 2 s | every glide, panned; the old whoosh no longer plays for HER (cutscene stings keep it) |
+| vscare1..4 | James eleven_v3: Ahh! / No no no / Who's there?! / What is that | rotating on every reappearance, via the narration channel |
+
+Directional layer: whisper + ghostloop loops each carry a StereoPanner
+steered per frame to her camera-space bearing (loopPan/ghostPan); one-shot
+pans are set at fire time. snd() takes an optional 4th `pan` argument.

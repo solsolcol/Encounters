@@ -1252,7 +1252,26 @@ function pointInView(x, z, edge) {
   _nv.set(x, 1.3, z).project(camera);
   return _nv.z < 1 && _nv.z > -1 && Math.abs(_nv.x) < edge && Math.abs(_nv.y) < 1.1;
 }
-const inDeck = (x, z) => z <= GHOST_DECK_EDGE - 0.25 && Math.abs(x) <= 20.5;
+// The deck ends in a solid wall at z=-19.5 and holds three pillar rows;
+// a spawn the geometry hides is worse than no spawn at all (the review
+// caught this: from the burner, an 11-14 m chase spawn lands BEHIND the
+// wall). So: a rear bound, and a clear line from the player's eyes to
+// her, marched against the same boxes that stop the player.
+const GHOST_DECK_REAR = -18.8;
+const inDeck = (x, z) => z <= GHOST_DECK_EDGE - 0.25 && z >= GHOST_DECK_REAR
+                      && Math.abs(x) <= 20.5;
+const _lv = new THREE.Vector3();
+function lineClear(x, z) {
+  const px = yaw.position.x, pz = yaw.position.z;
+  const d = Math.hypot(x - px, z - pz);
+  const steps = Math.max(2, Math.ceil(d / 0.6));
+  for (let i = 1; i <= steps; i++) {
+    const k = i / steps;
+    _lv.set(px + (x - px) * k, 1.4, pz + (z - pz) * k);
+    for (const b of BLOCKERS) if (b.containsPoint(_lv)) return false;
+  }
+  return true;
+}
 
 function ghostPlaceBehindBurner() {
   const px = yaw.position.x - OFFER_POS.x, pz = yaw.position.z - OFFER_POS.z;
@@ -1272,6 +1291,7 @@ function pickAhead(dMin, dMax, spread, edge, minFromPlayer) {
     if (!inDeck(x, z)) continue;
     if (Math.hypot(x - yaw.position.x, z - yaw.position.z) < minFromPlayer) continue;
     if (!pointInView(x, z, edge)) continue;
+    if (!lineClear(x, z)) continue;              // a wall or pillar would hide her
     return { x, z };
   }
   return null;
@@ -1297,7 +1317,7 @@ function stageVariant(v) {
     const ang = yaw.rotation.y + (Math.random() * 2 - 1) * 0.06;
     const x = yaw.position.x - Math.sin(ang) * 2.2;
     const z = yaw.position.z - Math.cos(ang) * 2.2;
-    if (!inDeck(x, z)) return false;
+    if (!inDeck(x, z) || !lineClear(x, z)) return false;
     ghost.position.set(x, 0, z);
     gTimer = 1.1;
     audioCues.push({ kind: 'closeScare', pan: 0 });
@@ -1320,6 +1340,7 @@ function stageVariant(v) {
       const tx = yaw.position.x - Math.sin(a1) * dist, tz = yaw.position.z - Math.cos(a1) * dist;
       if (!inDeck(fx, fz) || !inDeck(tx, tz)) continue;
       if (!pointInView(fx, fz, 1.0) || !pointInView(tx, tz, 1.0)) continue;
+      if (!lineClear(fx, fz) || !lineClear(tx, tz)) continue;
       ghost.position.set(fx, 0, fz);
       gGlide = { fx, fz, tx, tz, t: 0, dur: 1.5, ease: 'inout', hover: 0.22, fadeFrom: 0.75 };
       gTimer = 0.2;
@@ -1373,7 +1394,8 @@ function ghostStartGlide(kind) {
     const ang = away + (Math.random() - 0.5) * 1.1;
     const dist = 6 + Math.random() * 4;
     const tx = THREE.MathUtils.clamp(ghost.position.x + Math.sin(ang) * dist, -20.5, 20.5);
-    const tz = Math.min(ghost.position.z + Math.cos(ang) * dist, GHOST_DECK_EDGE - 0.3);
+    const tz = THREE.MathUtils.clamp(ghost.position.z + Math.cos(ang) * dist,
+                                     GHOST_DECK_REAR, GHOST_DECK_EDGE - 0.3);
     gGlide = { fx: ghost.position.x, fz: ghost.position.z, tx, tz,
                t: 0, dur: 0.62, ease: 'in4', hover: 0.28, fadeFrom: 0.6 };
   } else {                                           // toward — but never arriving
@@ -1425,6 +1447,7 @@ function updateGhost(dt) {
       if (!inTerritory) { gPhase = 'fade'; break; }
       if (reveal >= 1) {
         applyChunk(gVariant);                        // the sighting itself costs
+        if (fainting || state === 'cine') break;     // it cost EVERYTHING: she holds
         if (gVariant === 'cross') ghostStartGlideCross();
         else gPhase = 'standing';
       }
