@@ -977,7 +977,7 @@ function scPickUp(c, s, api) {                       /* A — you take it */
 function scKick(c, s, api) {                         /* B — the burner goes over */
   const { tr, step, sfx, fade, camTo, yawTo, pitchTo, bob, ghostGlide,
           ghostFacePlayer, faceFrom, rawK, stage, camera, ghost, ghostLight,
-          ghostOpacity, dirtyShadows } = api;
+          ghostOpacity, dirtyShadows, leg, legRest } = api;
     const P = { x: 0.35, y: 1.62, z: -4.9 };
     const faceDrum = faceFrom(P.x, P.z, DRUM_W.x, DRUM_W.z);
 
@@ -987,6 +987,42 @@ function scKick(c, s, api) {                         /* B — the burner goes ov
     // she may already be stood right here from normal play — the scene owns
     // her now, and she is not part of this shot until the drum has gone over
     step(0, () => { ghostOpacity(0); });
+
+    /* The leg. It was told entirely by the camera before — the drum simply
+       fell over while a hand hovered at the edge of frame — so now the foot
+       actually swings through the shot: up from below the frame, extended
+       at the moment of contact, then back down out of view. The engine owns
+       the limb; this scene only borrows it and gives it back.            */
+    /* Angled down and swept to the left, never pointed at the lens. A shin
+       aimed straight at the target is what a kick really does, and it looks
+       like a barrel: all you see is the end of the cylinder. Held at about
+       thirty degrees below the horizontal it reads as a leg, and the shoe
+       — which is the thing the shot is about — stays the far end of it.
+       The drum sits left of the camera here, so the foot sweeps that way. */
+    const SWING = [
+      { t: 0.62, p: [0.10, -0.78, -0.52], r: [-1.15, 0.00] },   // below frame
+      // the knee has to clear the bottom edge: at half a metre the visible
+      // half-height is only about 0.25, so −0.34 was entirely off screen
+      { t: 0.98, p: [0.05, -0.10, -0.50], r: [-0.55, 0.26] },   // contact
+      { t: 1.30, p: [0.02, -0.05, -0.58], r: [-0.42, 0.36] },   // follow through
+      { t: 1.85, p: [0.10, -0.78, -0.52], r: [-1.15, 0.00] }    // and gone
+    ];
+    // the hand goes away while the foot works: nobody holds a hand out in
+    // front of themselves to kick something, and it sat right on top of the
+    // shoe. restoreWorld puts it back from the snapshot.
+    step(SWING[0].t, () => { leg.visible = true; api.armR.visible = false; });
+    step(1.90, () => { api.armR.visible = true; });
+    for (let i = 0; i < SWING.length - 1; i++) {
+      const a = SWING[i], b2 = SWING[i + 1];
+      tr(a.t, b2.t, k => {
+        leg.position.set(a.p[0] + (b2.p[0] - a.p[0]) * k,
+                         a.p[1] + (b2.p[1] - a.p[1]) * k,
+                         a.p[2] + (b2.p[2] - a.p[2]) * k);
+        leg.rotation.set(a.r[0] + (b2.r[0] - a.r[0]) * k,
+                         a.r[1] + (b2.r[1] - a.r[1]) * k, 0);
+      }, i === 0 ? rawK : undefined);
+    }
+    step(SWING[SWING.length - 1].t, () => { leg.visible = false; });
 
     // the kick, told by its impact
     camTo(0.9, 1.2, P, { x: P.x - 0.32, y: 1.40, z: P.z - 0.55 }, rawK);
@@ -1071,7 +1107,8 @@ function scLeave(c, s, api) {                        /* C — you walk away */
 function scChant(c, s, api) {                        /* D — palms together */
   const { tr, step, sfx, camTo, yawTo, pitchTo, ghostGlide, ghostFacePlayer,
           faceFrom, rawK, SHRINE, THREE, stage, ghost, ghostOpacity, getReveal,
-          buildPrayerArm, rightHand, setHandCurl,
+          buildPrayerArm, rightHand, setHandCurl, setHandPrayer,
+          PRAYER_R, PRAYER_L, handWidth,
           handsRoot, armR, vmHemi, vmKey, vmFire } = api;
   // the mirrored left arm is built on the fly at 0.9 s; the tracks after
   // that read it, so the scene holds its own reference rather than
@@ -1093,21 +1130,31 @@ function scChant(c, s, api) {                        /* D — palms together */
       prayerArmL = buildPrayerArm();
       if (prayerArmL) prayerArmL.visible = true;
     });
-    const upAxis = new THREE.Vector3(0, 1, 0);
+    /* Into añjali: palms flat against each other, fingers straight up, the
+       whole clasp centred in front of the chest. The orientations come from
+       PRAYER_R / PRAYER_L — bases the engine derives from the hand's own
+       axes — rather than from Euler triples, which is what left the first
+       version splayed and facing the lens.
+
+       The gap is half a palm's thickness either side of centre, taken from
+       the measured hand so the palms MEET instead of overlapping or
+       floating apart.                                                    */
+    const half = handWidth() * 0.085;
+    const startR = armR.quaternion.clone();
+    const startL = new THREE.Quaternion();
+    let gotStartL = false;
     tr(0.9, 2.3, k => {
       const y = -0.46 + 0.295 * k;
-      // palms turn in to meet as the hands rise — the world-Y turn is applied
-      // on top of the base pose, because the Euler order fights a direct edit
-      armR.position.set(0.020, y, -0.375);
-      armR.rotation.set(1.32, -0.38, -1.50);
-      armR.rotateOnWorldAxis(upAxis, 0.92 * k);
+      armR.position.set(half, y, -0.375);
+      armR.quaternion.slerpQuaternions(startR, PRAYER_R, k);
       if (prayerArmL) {
-        prayerArmL.position.set(-0.020, y, -0.375);
-        prayerArmL.rotation.set(1.32, 0.38, 1.50);
-        prayerArmL.rotateOnWorldAxis(upAxis, -0.92 * k);
+        if (!gotStartL) { startL.copy(prayerArmL.quaternion); gotStartL = true; }
+        prayerArmL.position.set(-half, y, -0.375);
+        prayerArmL.quaternion.slerpQuaternions(startL, PRAYER_L, k);
       }
-      if (rightHand()) setHandCurl(rightHand(), 1 - 0.86 * k);
-      if (prayerArmL) setHandCurl(prayerArmL.userData.model, 1 - 0.86 * k);
+      // straight AND closed — a straight-but-splayed hand is a wave
+      if (rightHand()) setHandPrayer(rightHand(), k);
+      if (prayerArmL) setHandPrayer(prayerArmL.userData.model, k);
       handsRoot.position.set(0, Math.sin(k * Math.PI) * 0.008, 0);
     });
     // the hands are the subject of this shot — light them like it

@@ -969,6 +969,71 @@ armR.rotation.set(0.50, 0.28, -0.48);   // relaxed: fingers forward, palm turned
 // Where the hand sits has to follow the shape of the screen: an offset that
 // frames nicely on a laptop puts it off the edge of a portrait phone. Position
 // it as a fraction of the visible frame at its own depth instead.
+/* ------------------------------------------------------------- the leg ---
+   Kicking something is the one action in this game that is unmistakably
+   done with a foot, and the scene played it with no leg at all: the drum
+   simply toppled while a hand hovered at the edge of frame. So the player
+   gets a right leg — shin, ankle, shoe — parked out of sight below the
+   frame and swung up through it on the kick beat.
+
+   It lives in the viewmodel scene with the hands, so it is always drawn in
+   front of the world and never clips into the deck. It belongs to the
+   ENGINE rather than to chapter 1: a leg is part of the player, and a
+   scene only borrows it (`api.leg`).                                     */
+const legR = new THREE.Group();
+legR.visible = false;
+handsRoot.add(legR);
+{
+  const skin = new THREE.MeshStandardMaterial({
+    color: 0xC08E6E, roughness: 0.72, metalness: 0 });
+  const trouser = new THREE.MeshStandardMaterial({
+    color: 0x232833, roughness: 0.94, metalness: 0 });
+  // not pure black: the deck floor is nearly black too, and a black shoe on
+  // it is a silhouette with no shape. A little lift plus a pale sole is what
+  // makes it read as a shoe rather than a smudge.
+  const shoe = new THREE.MeshStandardMaterial({
+    color: 0x2A2F3A, roughness: 0.52, metalness: 0.08 });
+  const sole = new THREE.MeshStandardMaterial({
+    color: 0x6E6459, roughness: 0.88, metalness: 0 });
+
+  /* Everything sits well forward of the eye. The first pass put the knee at
+     z = −0.30, nearer than the hand, and a shin only 10 cm across then
+     filled a third of the screen — at a 52° field of view the near end of a
+     limb pointed away from you is the part that swallows the frame. The
+     knee starts beyond the hand instead, and the shoe is what the shot is
+     actually about.                                                      */
+  const shin = new THREE.Mesh(new THREE.CylinderGeometry(0.040, 0.032, 0.40, 14), trouser);
+  shin.rotation.x = Math.PI / 2;
+  shin.position.set(0, 0, -0.20);
+  legR.add(shin);
+
+  const ankle = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.030, 0.05, 12), skin);
+  ankle.rotation.x = Math.PI / 2;
+  ankle.position.set(0, 0, -0.41);
+  legR.add(ankle);
+
+  const foot = new THREE.Mesh(new THREE.BoxGeometry(0.070, 0.050, 0.17), shoe);
+  foot.position.set(0, -0.010, -0.51);
+  legR.add(foot);
+  const toe = new THREE.Mesh(new THREE.SphereGeometry(0.036, 12, 10), shoe);
+  toe.scale.set(1, 0.70, 1.15);
+  toe.position.set(0, -0.012, -0.59);
+  legR.add(toe);
+  const soleM = new THREE.Mesh(new THREE.BoxGeometry(0.072, 0.014, 0.20), sole);
+  soleM.position.set(0, -0.038, -0.53);
+  legR.add(soleM);
+
+  for (const m of legR.children) { m.frustumCulled = false; m.castShadow = false; }
+}
+// where the leg rests when a scene is not using it: below the frame
+const LEG_REST = { pos: new THREE.Vector3(0.10, -0.78, -0.52), rotX: -1.15 };
+function resetLeg() {
+  legR.visible = false;
+  legR.position.copy(LEG_REST.pos);
+  legR.rotation.set(LEG_REST.rotX, 0, 0);
+}
+resetLeg();
+
 const HAND_Z = 0.44;
 function layoutHands() {
   const halfH = Math.tan(THREE.MathUtils.degToRad(vmCam.fov / 2)) * HAND_Z;
@@ -1045,6 +1110,37 @@ assetBytes('hands').then(handsBuf => new GLTFLoader().parse(handsBuf, '', (gltf)
         restPose[o.name] = o.quaternion.clone();
       }
     });
+
+    /* The prayer pose, captured while the fingers are still straight.
+       Straight is not enough on its own: the pack ships a SPLAYED rest
+       pose, so simply uncurling gives a fan, and a fan is what made the
+       chant scene look like two hands waving rather than añjali. Closing
+       them means rotating each finger about the PALM normal — the axis
+       fingers spread around — until the fan shuts. The thumbs come across
+       to lie against the index fingers, which is what the Chinese
+       hand-clasp actually looks like.                                   */
+    const ADDUCT = { Index: -0.135, Middle: 0, Ring: 0.135, Pinky: 0.27, Thumb: -0.62 };
+    const palmAxis = new THREE.Vector3();
+    const m3s = new THREE.Matrix3();
+    for (const finger in ADDUCT) {
+      if (!ADDUCT[finger]) continue;
+      const b = model.getObjectByName(BONE_IDS[finger + '1']);
+      if (!b) continue;
+      b.updateWorldMatrix(true, false);
+      palmAxis.copy(palm).applyMatrix3(m3s.setFromMatrix4(b.matrixWorld).invert()).normalize();
+      b.rotateOnAxis(palmAxis, ADDUCT[finger]);
+    }
+    prayerPose = {};
+    model.traverse(o => {
+      if (o.isBone && /J_Right_Hand(Thumb|Index|Middle|Ring|Pinky)\d/.test(o.name)) {
+        prayerPose[o.name] = o.quaternion.clone();
+      }
+    });
+    // hand the fingers back straight before the walking curl is applied
+    for (const n in restPose) {
+      const b = model.getObjectByName(n);
+      if (b) b.quaternion.copy(restPose[n]);
+    }
     const CURL = [0.34, 0.56, 0.42];          // proximal, middle, distal
     const FINGERS = {
       Index: 0.86, Middle: 0.96, Ring: 1.08, Pinky: 1.22, Thumb: 0.42
@@ -1071,6 +1167,20 @@ assetBytes('hands').then(handsBuf => new GLTFLoader().parse(handsBuf, '', (gltf)
   // can straighten the fingers (prayer) and hand them back exactly as found.
   rightHandModel = model;
   rightOriented = oriented;
+
+  /* Measure the hand, then give it an arm. From the BONES, not from a
+     bounding box: this is a skinned mesh, so Box3.setFromObject reports the
+     bind pose, which here is several times life size and produced a forearm
+     that filled the screen. Wrist to middle fingertip is a real distance
+     whatever the pose.                                                   */
+  oriented.updateWorldMatrix(true, true);
+  if (bone.wrist && bone.middle) {
+    const a = bone.wrist.getWorldPosition(new THREE.Vector3());
+    const bmid = bone.middle.getWorldPosition(new THREE.Vector3());
+    HAND_W = Math.max(1e-4, a.distanceTo(bmid)) * 0.92;   // ≈ across the palm
+  }
+  armR.add(makeForearm(HAND_W));
+
   fingerPose = [];
   model.traverse(o => {
     if (o.isBone && /J_Right_Hand(Thumb|Index|Middle|Ring|Pinky)\d/.test(o.name)) {
@@ -1083,6 +1193,101 @@ assetBytes('hands').then(handsBuf => new GLTFLoader().parse(handsBuf, '', (gltf)
   .catch(err => console.warn('hands failed to load', err));
 
 let rightHandModel = null, rightOriented = null, fingerPose = null, restPose = null;
+let prayerPose = null;              // straight AND closed, for añjali
+let HAND_W = 0.06;                  // measured once the hand model lands
+
+/* Añjali, built from a basis instead of tuned Euler angles — which is how
+   the first attempt ended up with two splayed hands facing the camera a
+   palm's width apart.
+
+   The hand's own axes, set by the orientation step above: fingers −Z,
+   palm −Y, index-to-pinky +X. Praying hands need the fingers pointing UP
+   and each palm facing the OTHER hand:
+
+     right hand → fingers +Y, palm −X   (it sits on +X, facing the middle)
+     left hand  → fingers +Y, palm +X
+
+   The left is the mirrored clone, and the mirror is INSIDE its group, so
+   its rotation is applied after the flip and has to be derived separately
+   rather than negated.                                                  */
+const PRAYER_R = new THREE.Quaternion().setFromRotationMatrix(
+  new THREE.Matrix4().makeBasis(new THREE.Vector3(0, 0, -1),
+                                new THREE.Vector3(1, 0, 0),
+                                new THREE.Vector3(0, -1, 0)));
+const PRAYER_L = new THREE.Quaternion().setFromRotationMatrix(
+  new THREE.Matrix4().makeBasis(new THREE.Vector3(0, 0, 1),
+                                new THREE.Vector3(-1, 0, 0),
+                                new THREE.Vector3(0, -1, 0)));
+
+/* Slide the fingers from the walking curl into the prayer pose. Separate
+   from setHandCurl because "straight" and "straight and closed" are
+   different poses, and only the second one reads as praying hands. */
+function setHandPrayer(root, k) {
+  if (!fingerPose || !prayerPose) return;
+  for (const f of fingerPose) {
+    const b = root.getObjectByName(f.name);
+    if (b && prayerPose[f.name]) b.quaternion.slerpQuaternions(f.curled, prayerPose[f.name], k);
+  }
+}
+
+/* ------------------------------------------------------------- the arm ---
+   The pack ships a hand and nothing else — cut off at the wrist — which
+   reads as a severed hand floating over the pile the moment a cutscene
+   brings the camera down to it. So the forearm is built here: a tapered
+   limb running back from the wrist toward the camera, a rolled sleeve over
+   it, and a cuff where the two meet.
+
+   Built in armR's own space (fingers −Z, palm −Y, across +X), so it simply
+   extends along +Z, back toward the eye. It is deliberately NOT parented
+   into the skinned model: it needs no bones, and keeping it out means the
+   hand's rig and the pose code stay exactly as they were.
+
+   Sized from the hand's measured width rather than hard numbers, so
+   swapping the hand model later does not leave a doll's arm on a giant's
+   hand.                                                                 */
+let ARM_GEO = null;
+function makeForearm(hw) {                   // hw = hand width, world units
+  if (!ARM_GEO) {
+    const len = hw * 2.6;
+    ARM_GEO = {
+      arm: new THREE.CylinderGeometry(hw * 0.30, hw * 0.26, len, 14, 1, true),
+      cuff: new THREE.CylinderGeometry(hw * 0.34, hw * 0.31, hw * 0.26, 14),
+      sleeve: new THREE.CylinderGeometry(hw * 0.36, hw * 0.32, len * 0.85, 14, 1, true),
+      len
+    };
+  }
+  const len = ARM_GEO.len;
+  const g = new THREE.Group();
+  /* Angle it down as it recedes. A real first-person forearm runs back
+     toward a shoulder that is below and behind the eye; a limb pointed
+     straight at the camera instead drives its far end through the near
+     plane, and you end up looking down the inside of your own sleeve. */
+  g.rotation.set(0.42, -0.10, 0);
+
+  const skin = new THREE.MeshStandardMaterial({
+    color: 0xC08E6E, roughness: 0.72, metalness: 0, side: THREE.DoubleSide });
+  const cloth = new THREE.MeshStandardMaterial({
+    color: 0x2E3440, roughness: 0.92, metalness: 0, side: THREE.DoubleSide });
+
+  // the limb: a cylinder points +Y by default, so lay it along +Z
+  const arm = new THREE.Mesh(ARM_GEO.arm, skin);
+  arm.rotation.x = Math.PI / 2;
+  arm.position.set(0, hw * 0.06, len * 0.5 - hw * 0.10);
+  g.add(arm);
+
+  const cuff = new THREE.Mesh(ARM_GEO.cuff, cloth);
+  cuff.rotation.x = Math.PI / 2;
+  cuff.position.set(0, hw * 0.06, hw * 1.30);
+  g.add(cuff);
+
+  const sleeve = new THREE.Mesh(ARM_GEO.sleeve, cloth);
+  sleeve.rotation.x = Math.PI / 2;
+  sleeve.position.set(0, hw * 0.06, hw * 1.30 + len * 0.36);
+  g.add(sleeve);
+
+  for (const m of g.children) { m.frustumCulled = false; m.castShadow = false; }
+  return g;
+}
 
 // slide every finger between straight (0) and the walking curl (1)
 function setHandCurl(root, k) {
@@ -2524,6 +2729,10 @@ function buildPrayerArm() {
   const mir = new THREE.Group();
   mir.scale.x = -1;
   mir.add(c);
+  // its own forearm, inside the mirror so it flips with the hand. The right
+  // hand's arm is parented to armR rather than into the skinned model, so
+  // the clone does not bring one along.
+  mir.add(makeForearm(HAND_W));
   prayerArmL = new THREE.Group();
   prayerArmL.add(mir);
   prayerArmL.visible = false;
@@ -2632,6 +2841,7 @@ function restoreWorld(s, keep) {
   vmKey.intensity = 0.50;
   layoutHands();
   noteProp.visible = false;
+  resetLeg();                        // a scene only ever borrows the leg
   if (prayerArmL) prayerArmL.visible = false;
   if (rightHandModel) setHandCurl(rightHandModel, 1);
   ghost.position.copy(s.gPos);
@@ -2808,9 +3018,11 @@ function sceneApi(c) {
   return {
     ...A(c),
     rawK, smoothK, mixAngle, faceFrom, THREE, SHRINE, stage,
+    PRAYER_R, PRAYER_L, setHandPrayer, handWidth: () => HAND_W,
     camera, yaw, pitch,
     ghost, ghostLight, ghostOpacity, getReveal: () => reveal,
     handsRoot, armR, noteProp,
+    leg: legR, legRest: LEG_REST,
     buildPrayerArm, prayerArm: () => prayerArmL,
     rightHand: () => rightHandModel, setHandCurl,
     vmKey, vmFire, vmHemi,
@@ -3562,6 +3774,7 @@ function restart() {
   // and the props any cutscene may have borrowed
   stage.reset();
   noteProp.visible = false;
+  resetLeg();                        // a scene only ever borrows the leg
   if (prayerArmL) prayerArmL.visible = false;
   if (rightHandModel) setHandCurl(rightHandModel, 1);
   armR.visible = true;
@@ -3747,6 +3960,7 @@ window.__enc = { yaw, stats, getState: () => state,
                  // and a captured reference would quietly go stale
                  get blockers() { return BLOCKERS; },
                  handsRoot, armR, vmCam, vm, updateViewmodel,
+                 handWidth: () => HAND_W,
                  updateNotes: (dt, t) => stage.updateNotes(dt, t),
                  get flying() { return stage.flying; },
                  ghost, updateGhost, ghostInView, getReveal: () => reveal,
