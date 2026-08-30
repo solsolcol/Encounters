@@ -2923,21 +2923,31 @@ function cineHands(dt, t) {
   if (c.handsAuto) updateViewmodel(dt, t, c.handsAuto(c.t), 0, 0, 0);
 }
 
-/* Dissolve the black a scene ended on. It was covering restoreWorld()'s snap
-   back to where the player actually stands; once the card is up that is done
-   with, and the night belongs behind the card. Three of the four scenes end
-   on black, which is the whole reason only the fourth card used to look like
-   glass — the card was always semi-transparent, there was simply a solid
-   layer underneath it. */
+/* Dissolve the black a scene ended on.
+
+   Timing is the whole thing here. The black exists to cover restoreWorld()'s
+   snap back to where the player actually stands — and restoreWorld has
+   ALREADY RUN by the time this is called, so from this moment the black is
+   doing no work at all. Started from cineEnd(), it is on its way out before
+   the card even begins to rise, which is why all four outcomes now look
+   like the fourth one did: a card over the night, never a card over black.
+
+   It used to be started after the card was shown, and to take nearly a
+   second, so scenes A, B and C spent that second as a solid black plate
+   under a card that was semi-transparent the whole time and could not show
+   it. Only scene D, which ends unfaded, escaped.                        */
 function clearCineFade() {
   if (cineFadeEl.style.opacity === '0' || cineFadeEl.style.opacity === '') return;
+  // commit the current opacity before the transition is attached, or there
+  // is nothing for it to run FROM and the black simply snaps off
+  void cineFadeEl.offsetWidth;
   cineFadeEl.classList.add('clearing');
   // the class carries opacity:0 too, so a browser that skips the transition
   // still lands on clear rather than staying black
   setTimeout(() => {
     cineFadeEl.style.opacity = '0';
     cineFadeEl.classList.remove('clearing');
-  }, 1000);
+  }, 520);
 }
 
 function cineEnd() {
@@ -2947,6 +2957,7 @@ function cineEnd() {
   stopCineVoices();
   restoreWorld(c.snap, c.keep);
   cineFadeEl.style.opacity = String(c.endFade);
+  clearCineFade();          // the snap is done; the black has nothing left to hide
   document.body.classList.remove('cine');
   skipBtn.classList.add('hide');
   ui.hud.classList.remove('hide');
@@ -3509,7 +3520,6 @@ function pick(i) {
     ui.hud.classList.add('hide');       // the card's bars ARE the bars now
     ui.result.classList.remove('hide');
     state = 'result';
-    clearCineFade();                    // the night comes back behind the card
     // the card rises: its swish, the ending's music bed, and the James line
     snd('uicard', 0.6);
     playBed(c.verdict === 'good' || c.verdict === 'best' ? 'endgood' : 'endbad', 0.5);
@@ -3648,7 +3658,6 @@ function lose() {
     ui.panic.style.opacity = '1';
     snd('ulost', 0.8);
     ui.over.classList.remove('hide');
-    clearCineFade();                 // the ground you are lying on, behind it
     loseSpeech = speak('vlost', { wait: 10000 });
     const teach = $('overTeach');
     teach.closest('.teachbox').classList.add('veiled');

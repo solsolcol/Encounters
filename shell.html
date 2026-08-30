@@ -276,6 +276,18 @@ body.invopen .soundBtn{display:none}
 /* the line under Continue that says what you are coming back to */
 .resumeNote{margin:14px auto 0;font-family:var(--ui);font-size:.94rem;
   letter-spacing:.02em;color:#8C93A2;text-align:center}
+/* New game is the secondary action under Continue, and it is a real button
+   rather than a text link: it is a thing you press, and on a phone a link
+   sitting under a big solid button is both easy to miss and easy to mistap.
+   Outlined rather than filled, so Continue stays the obvious one. */
+#newGameBtn{display:block;margin:16px auto 0;font-family:var(--ui);
+  font-size:.92rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:#C6CAD3;background:transparent;border:1px solid var(--line);
+  padding:13px 30px;cursor:pointer;
+  transition:transform .18s var(--ease),border-color .18s var(--ease),
+             color .18s var(--ease)}
+#newGameBtn:hover,#newGameBtn:focus-visible{color:var(--bone);
+  border-color:var(--sodium);transform:translateY(-2px);outline:none}
 /* New game asks first: losing a run to a mistap is exactly the kind of
    quiet loss this project does not accept */
 #newConfirm{align-items:center;justify-content:center;pointer-events:auto;padding:20px;
@@ -330,7 +342,7 @@ body.invopen .soundBtn{display:none}
    player actually stands. Once the outcome card is up that job is done, so
    it dissolves and the night shows through the card — which is what makes
    every card read as glass, not just the one scene that ended clear. */
-#cineFade.clearing{transition:opacity .9s var(--ease);opacity:0}
+#cineFade.clearing{transition:opacity .42s var(--ease);opacity:0}
 .cineBar{position:fixed;left:0;right:0;height:11vh;background:#000;z-index:4;
   transition:transform .55s var(--ease);pointer-events:none}
 #barTop{top:0;transform:translateY(-101%)}
@@ -730,7 +742,7 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
          asks before it wipes anything. -->
     <button id="startBtn" data-t="title.start">Start game</button>
     <p id="resumeNote" class="resumeNote hide"></p>
-    <button id="newGameBtn" class="creditsLink hide" type="button"
+    <button id="newGameBtn" class="hide" type="button"
             data-t="title.newGame">Start a new game</button>
     <div class="ctrl">
       <div class="ctrlRow">
