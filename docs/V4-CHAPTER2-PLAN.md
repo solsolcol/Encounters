@@ -29,8 +29,8 @@ music, voicelines, the complete works."*
 | 5 | The opening cinematic (`intro` scene) | **done** (silent until phase 7) |
 | 6 | The four choice cutscenes | **done** (silent until phase 7) |
 | 7 | Audio: generate, encode, wire | **done** |
-| 8 | Strings + sheet re-export | not started |
-| 9 | Tests (full suite), docs, release | not started |
+| 8 | Strings + sheet re-export | **done** — textsync generalised; sheet needs Chad's re-import |
+| 9 | Tests (full suite), docs, release | **done** — 22/22 green |
 
 ---
 
@@ -315,3 +315,21 @@ Measure with `volumedetect` against the existing pack, every time.
 
 The pack is now 72 sounds and 7.3 MB. Worth a compression pass before
 chapter 3, not before shipping this one.
+
+
+## SHIPPED — v4.0, 30 Aug 2026
+
+All 22 harnesses green, including every base-game one: chapter 1's ghost,
+cutscenes, sanity, inventory, resume and restart are untouched, which was
+the condition on all of this.
+
+**Still open, for Chad:** the text sheet has 23 new chapter-2 rows in it
+(and the ID column now reads `ch2.` for them). He needs to re-import the
+sheet from `node textsync.mjs export` output before editing, or his copy
+is missing chapter 2 entirely.
+
+**Next, and cheaper than this was:** chapter 3. The eight chapter-1 leaks
+are fixed, so a new chapter declares what it needs and the engine already
+knows how to be told. The two jobs left over from before: chapter 1's
+placeholder choices still want replacing with the real THE OFFERINGS data,
+and the sound pack is 72 sounds and 7.3 MB and wants a compression pass.
