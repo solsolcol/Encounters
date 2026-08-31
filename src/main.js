@@ -3529,8 +3529,12 @@ $('nextBtn').onclick = () => { ui.result.classList.add('hide'); finish(); };
 /* Continue on the sealed card. With a next chapter it ADVANCES — which is
    the same move finish() already recorded in the save, so the button and
    the save can never disagree. With nothing after this chapter it restarts,
-   which is what "play again" means at the end of the game. Inert today:
-   ch1 is the only real chapter, so nextChapterKey() is null. */
+   which is what "play again" means at the end of the game.
+
+   Live since v4.0, and the busiest path in the game as of v4.1: chapter 1
+   hands over to chapter 2 and chapter 2 to chapter 3 through here, each with
+   its own opening film. (It was inert when written — ch1 was the only real
+   chapter and nextChapterKey() returned null.) */
 $('againBtn').onclick = () => {
   const nxt = nextChapterKey();
   if (!nxt) return restart();
