@@ -93,15 +93,15 @@ The declarations, all optional:
 
 | field | what it decides | default |
 |---|---|---|
-| `ghost` | her whole territory: `minDist`, `appearAt`, `near`/`far`, `cross`, `away`, `behind`, and the `roam` box she may stand in | the void deck's numbers |
+| `ghost` | her whole territory: `minDist`, `appearAt`, `near`/`far`, `cross`, `away`, `behind`, and the `roam` box she may stand in — or `null`, which switches the haunting OFF for the chapter (no appearances, no drain, no banner; cutscenes may still drive her mesh) | the void deck's numbers |
 | `ambience` | `beds` (loops that just run) and `atShrine` (one keyed to distance from the shrine) | `amb` + the burner's `fire` |
 | `words` | `approach`, `act`, `actTouch`, `interact`, `interactTouch` — the words that NAME the thing you act on | the string sheet's |
 | `lines` | `near`, `close`, `nearAt` — the two proximity narration lines | — |
 | `sayPrefix` | the prefix of the four lines under the outcome cards | `'v'` (→ `vA`..`vD`) |
-| `voiceLine` | the asset key of the line he says a few seconds into play | — (silence) |
+| `voiceLine` | the line he says a few seconds into play — an asset key, or since v4.3 a pack sound's name | — (silence) |
 | `noteArt` | the asset key of the chapter's note art | — (the drawn one) |
 | `intro` | the opening film | — (straight to the card) |
-| `daylight` | the sky, the fog and the three global lights | chapter 1's midnight |
+| `daylight` | the sky, the fog, the three global lights — and since v4.3 the sun (`sun`), the cloud layer (`clouds`) and the viewmodel's own rig (`vmHemi`/`vmKey`), so a bright chapter lights the HANDS too | chapter 1's midnight |
 
 `shrine` is the engine's anchor for HER, not for the chapter's warm light.
 Chapter 1's happens to be both; chapter 2's is the gap beside the bed and
@@ -137,9 +137,8 @@ opacity of the stars and the moon. `applyDaylight()` MUTATES them in place
 beside `applyGhostTerritory()`; chapters 1 and 2 declare nothing and stay at
 midnight. It is worth saying why the change is good rather than merely
 asked-for: chapters 1 and 2 hide her in the dark because that is what dark
-is for, and there is nowhere to hide at ten in the morning. She is sitting
-in row four in broad daylight in front of forty people and not one of them
-turns round.
+is for, and there is nowhere to hide at ten in the morning. (Where she is
+in that daylight changed again at v4.3 — see below.)
 
 **The ninth leak, found at v4.1**: a cutscene may now hold a chapter's own
 ambience loops down, through `api.duck(name, k)`. Chapters 1 and 2 run room
@@ -333,6 +332,15 @@ What the baseline contains, by release:
   second, smaller Opus encoding made from the surviving ElevenLabs masters,
   chosen by decode-testing a 179-byte probe rather than by guessing. Chapter
   1's sound: 6830 KB -> 3864 KB, and chapter 4 will add nothing to it.
+- **v4.3** THE GATHERING REVISED — the ghost left chapter 3 (Chad's call:
+  "the focus is on the medium event"), surviving only as the opening film's
+  one image: her, far out on the tarmac, in full sun, not coming in. All
+  four scenes recentred on the medium; a constant tang-ki ceremony bed plus
+  13 more new sounds; the eleventh leak (`ghost: null` — a chapter with no
+  haunting); daylight now reaches the VIEWMODEL (the hands were exposed for
+  midnight in a bright chapter); a chapter can declare a sun and clouds;
+  `voiceLine` may name a pack sound; two more blocks and fourteen rain
+  trees fill the skyline. docs/V4.3-CH3-REVISION.md is the build's memory.
 - **v3.8** real art where there was code: a bought first-person ARM rig
   (`arms.glb`, credited to Fab) replaces the wrist-only hand pack and the
   forearm that was built out of cylinders to cover for it, and the hell
@@ -404,8 +412,17 @@ before touching either chapter.
 **The three chapters escalate on one axis, deliberately.** Chapter 1's
 terror is DISTANCE (she is over there, and then she is closer). Chapter 2's
 is SMALLNESS (a room you cross in four steps, and nowhere in it to go).
-Chapter 3's is COMPANY, in DAYLIGHT (forty people, ten in the morning, and
-she is in row four, and not one of them turns round). A change that blunts one of those is a change to the
+Chapter 3's, since v4.3, is INVERSION: the chapter has NO haunting at all
+(`ghost: null` — Chad's call). The focus is the medium event itself — a man
+at the altar who has stopped being himself, a constant ceremony, one empty
+chair turned to face the car park — and she appears exactly once, in the
+opening film, standing far out on the open tarmac in full sun, facing the
+tent, NOT COMING IN. The thing that has hunted the player for two chapters
+is afraid of this place; the player spends the chapter inside the one
+ground she cannot follow them onto, knowing home is on the other side of
+her. That is chapter 4 loaded by a single shot. No ghost sound is cued
+anywhere in the chapter — not even `strings`, which is, in practice, her
+leitmotif. A change that blunts one of those axes is a change to the
 chapter's whole reason for existing.
 
 Next up: **chapter 4** (BACK HOME, in the trial's episode 1), and the

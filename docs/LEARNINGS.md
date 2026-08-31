@@ -673,3 +673,35 @@ the default.
   shrinks.
 - Same trap, smaller: `packWarm([...])` lists are decode HINTS, not
   ownership. They still name chapter 2's sounds by hand.
+
+## The sound model reads its knobs, not your prose
+
+- Four of six sfx generations came back at 0.5-2 s against prompts asking
+  for 3.5, 5, 7 and 12 — with "12 seconds" written right there in the text.
+  The durations in the prompt are decoration; `duration_seconds` is a real
+  node parameter (0.5-30, default auto) and auto runs SHORT.
+- So is `loop`. Set both with creative_update_node and re-run the node —
+  the same update-and-rerun pattern v3.2 recorded — rather than
+  regenerating from scratch, which loses the node and pays for a new one.
+- The music model has the same shape of problem from the other side: told
+  "no fade-out, seamless loop" twice, it faded the ceremony to -62 dB over
+  its last two seconds anyway. Loop surgery in post (body + tail crossfaded
+  into a copy of the head) is reliable; prompting for loopability is not.
+- And VERIFY instrumentality instead of trusting the prompt: a scribe
+  transcription of the whole bed costs cents, and an empty transcript is
+  proof. The settings on the finished node said "Instrumental: False" —
+  the transcript is how we know the prompt won anyway.
+
+## A camera note: an empty chair is invisible at eye height
+
+- The revision's intro finds one empty chair, turned the wrong way, in a
+  full tent — and at eye height the shot showed nothing but the backs of
+  heads. One unoccupied seat in a seated crowd simply does not read from
+  inside the crowd.
+- The camera now CRANES: half a metre up, over the back rows, pitched down
+  0.26. From just above head height the gap in the crowd is instant.
+- Same beat, opposite lesson, when the camera then finds HER out on the
+  tarmac: at yaw PI (facing +z) the world's +x side is screen-LEFT, so
+  centring a subject standing at +x means yaw PI PLUS the offset. The
+  first attempt subtracted and pushed her further off-centre — the two yaw
+  conventions LEARNINGS already carries strike again, one convention deep.

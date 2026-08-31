@@ -373,3 +373,37 @@ because it changes what "add a sound" means:
 - **Which encoding a player gets is decided by decoding a 179-byte probe**,
   never by a support string. mp3 is the fallback and is exactly what shipped
   before.
+
+
+## v4.3 additions (the Gathering revised) — 109 sounds in the pack
+
+Flow `Ba3KbvcsokjCitaXcrmo`. James only — the auntie's five lines carry over.
+All seven voice lines passed on the FIRST run (0 of 7 failed; the 1-in-3
+failure rate is real but it is a distribution, not a guarantee).
+
+| name | what | wired at |
+|---|---|---|
+| `ceremony` | THE constant tang-ki ensemble bed, 25 s loop, eleven_music_v2, loop-cut in post | a bed of the chapter, 0.42 |
+| `crowdmur` | crowd murmur under canvas, 12 s loop | a bed, 0.26 |
+| `suona` | one rising shawm blast | intro, A, B |
+| `bellring` | tang-ki hand-bell shake | A, C, D |
+| `drumroll` | accelerating roll into a slam | A |
+| `gongdeep` | huge low temple gong, 5 s decay | A, B, C, D |
+| `trancehum` | sub drone swell — the chapter's dread layer, replacing her leitmotif | A, B, C, D |
+| `v3chair` | *"There's one chair facing the wrong way. Just one."* | the film |
+| `v3out1` | *"She's out there. Standing in the middle of the car park. In the sun."* | the film |
+| `v3out2` | *"She's not coming in."* | the film — the four words the revision exists for |
+| `v3seen` | *"He looked at me. Out of all of them... he looked at me."* | A |
+| `v3grip` | *"His eyes were shut. He was looking at me with his eyes shut."* | B |
+| `v3left` | *"I could still hear the drum from the lift. I told myself that was normal."* | D — chapter 4's doorstep |
+| `v3play` | *"It didn't feel wrong in there. That was the part that felt wrong."* | entering play, via `voiceLine` (which may name a pack sound since v4.3) |
+
+Chapter 3 cues NO ghost sound and none of her grammar: whisper, gwail,
+gsigh, gscream and the `strings` reveal-sting appear nowhere in it.
+`v3wake4` lost its caller (the old her-at-the-chair line) and sits unused
+in the shared pack.
+
+Two model lessons, both in LEARNINGS: the sfx model ignores durations
+written in prose (`duration_seconds` is a node parameter; so is `loop`),
+and the music model fades out despite "no fade-out" — loop-cut in post and
+verify instrumentality by transcribing it (empty transcript = no lyrics).

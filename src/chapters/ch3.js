@@ -103,19 +103,14 @@
     ghostHome: { x: 2.7,  z: 2.6 },             // the back row, far side
     bounds:    { minX: -8.4, maxX: 8.4, minZ: -8.6, maxZ: 14.0 },
 
-    /* Her reach, in a tent twelve metres across and eighteen deep — between
-       the void deck's numbers and the bedroom's. `roam.minZ` stops at -5.0
-       so she never stands in the ritual space between the front row and the
-       altar: she belongs in the chairs, with everyone else. */
-    ghost: {
-      minDist: 2.4,
-      appearAt: 9.0,          // measured from the seating, so outside is relief
-      near: 3.5, far: 8.0,
-      cross: [4, 7],
-      away: [4, 8],
-      behind: 2.2,
-      roam: { minX: -5.6, maxX: 5.6, minZ: -5.0, maxZ: 9.6 }
-    },
+    /* NO HAUNTING. Chad's call at v4.3, and the chapter's thesis now: "it
+       should not have the ghost at all, the focus is on the medium event."
+       She appears exactly once, in the opening film, far out on the open
+       tarmac in full sun, facing the tent — and she does not come in. The
+       engine's play machinery (appearances, drain, the banner, her loops,
+       the scare reactions) is off wholesale; the film drives her mesh
+       directly, which the seam deliberately leaves alone. */
+    ghost: null,
 
     /* MORNING. Chad's call, 31 Aug 2026: "the medium event should be in the
        morning instead of a night scene" — and he is right about the practice
@@ -142,7 +137,13 @@
       hemi: [0xcfe0f2, 0x8a8272, 1.15],
       key: [0xfff2df, 1.85, 16, 26, 12],   // the sun, and it is already up
       fill: [0xa8bed8, 0.34],
-      stars: 0, moon: 0
+      stars: 0, moon: 0,
+      sun: 1, clouds: 0.6,
+      /* the hands live under their own little rig, and until v4.3 it was
+         hard-coded to midnight — which is why they read near-black against
+         this chapter's bright sky. Neutral warm daylight, roughly doubled. */
+      vmHemi: [0xdfe9f5, 0x8f8878, 1.10],
+      vmKey: [0xfff2df, 0.85]
     },
 
     /* hdb is the block itself, standing over the car park — the third use of
@@ -153,17 +154,19 @@
     assets: ['hdb', 'hellnote'],
     noteArt: 'hellnote',
 
-    /* The tent's own sound, in two beds. `tentamb` is the place — canvas,
-       shuffling, the traffic on the road behind. `ritual` is what is being
-       done in it: the priest's chanting over a wooden fish with the hand
-       drum keeping time, ONE loop rather than two, so a cutscene that wants
-       the ritual to stop can stop all of it on a single track. `drum` is a
-       separate single struck hit, for accents.
+    /* The tent's own sound, in FOUR beds since v4.3 — and the loudest is
+       the point. Chad asked for "a constant tangki/medium taoist ceremonial
+       music ongoing throughout the event", and `ceremony` is that: a
+       thirty-second ensemble loop — dagu drum, gong cycle, cymbals, suona —
+       under the whole chapter. `tentamb` stays the place (canvas, traffic),
+       `crowdmur` is the forty people in it, `ritual` the priest's chant
+       keeping time underneath. Scenes duck them as one band.
 
-       No `atShrine` — the warm light in this chapter is the altar's, and it
-       is most of a tent away from where she stands. */
-    ambience: { beds: [['tentamb', 0.34], ['ritual', 0.30]],
+       No `atShrine` — the warm light in this chapter is the altar's. */
+    ambience: { beds: [['tentamb', 0.30], ['crowdmur', 0.26],
+                       ['ritual', 0.22], ['ceremony', 0.42]],
                 atShrine: null },
+    voiceLine: 'v3play',   // spoken a few seconds into play, from the pack
 
     /* The words that name the thing you can act on. Chapter 1's are about a
        heap of hell notes, chapter 2's about a slot of dark; these are about
@@ -327,6 +330,49 @@
       world.add(car);
     }
 
+    /* TREES — rain trees at the edge of the car park, because a Singapore
+       car park without trees reads as a render, and this one read as empty
+       (Chad's note). Built the way the chairs are: one trunk geometry and
+       one canopy geometry, instanced — fourteen trees, two draw calls.
+       Every spot is hand-picked OUTSIDE the play bounds, clear of the two
+       parked cars, and clear of the corridor out to the middle of the car
+       park, which the opening film needs empty for a reason.             */
+    const TREE_AT = [
+      [-13, -2], [-16, 6], [-14, 14], [-19, 22], [-12, 30],
+      [13, 0], [16, 9], [14, 18], [19, 27], [12.5, 36],
+      [-4, 40], [6, 44], [-9, 38], [16, 44]
+    ];
+    const trunkGeo = new THREE.CylinderGeometry(0.13, 0.22, 1, 7);
+    const leafGeo = new THREE.IcosahedronGeometry(1, 1);
+    const matTrunk = new THREE.MeshStandardMaterial({
+      color: 0x6a563f, roughness: 0.95, metalness: 0 });
+    const matLeaf = new THREE.MeshStandardMaterial({
+      color: 0xffffff, roughness: 0.92, metalness: 0, flatShading: true });
+    const trunkIM = new THREE.InstancedMesh(trunkGeo, matTrunk, TREE_AT.length);
+    const leafIM = new THREE.InstancedMesh(leafGeo, matLeaf, TREE_AT.length * 3);
+    {
+      const m4 = new THREE.Matrix4(), q0 = new THREE.Quaternion(),
+            sv = new THREE.Vector3(), pv = new THREE.Vector3();
+      const GREENS = [0x5f7f4b, 0x546f45, 0x6a8a55].map(c => new THREE.Color(c));
+      const PUFF = [[0, 0], [0.9, 0.5], [-0.8, 0.6]];
+      TREE_AT.forEach(([tx, tz], i) => {
+        const h = 2.6 + ((i * 37) % 10) * 0.11;        // 2.6-3.7 m, deterministic
+        m4.compose(pv.set(tx, h / 2, tz), q0, sv.set(1, h, 1));
+        trunkIM.setMatrixAt(i, m4);
+        for (let b = 0; b < 3; b++) {
+          const r = 1.5 + ((i * 7 + b * 13) % 9) * 0.13;
+          m4.compose(pv.set(tx + PUFF[b][0], h + 0.55 + b * 0.28, tz + PUFF[b][1]),
+                     q0, sv.set(r * 1.25, r * 0.8, r * 1.25));
+          leafIM.setMatrixAt(i * 3 + b, m4);
+          leafIM.setColorAt(i * 3 + b, GREENS[(i + b) % 3]);
+        }
+      });
+      trunkIM.instanceMatrix.needsUpdate = true;
+      leafIM.instanceMatrix.needsUpdate = true;
+      if (leafIM.instanceColor) leafIM.instanceColor.needsUpdate = true;
+    }
+    world.add(trunkIM, leafIM);
+
     /* ------------------------------------------------------------ the block
        The same model chapter 1 stands under and chapter 2 sees through a
        window, put behind the altar end so the tent has something to be
@@ -361,6 +407,23 @@
         }
       });
       world.add(blk);
+      /* TWO MORE BLOCKS, far off and hazy, because one building does not make
+         an estate. Chad: "add more trees or duplicate hdb blocks in the far
+         background to make the scene feel more alive. It's rather empty now."
+         Clones SHARE the original's geometry and its already-darkened
+         materials — placed after the traverse above on purpose, so nothing
+         is darkened twice — which makes them almost free on the GPU and
+         means dispose() cannot double-free anything the Set in dispose()
+         would not have deduplicated anyway. One stands past the left edge of
+         the car park, one off to the right, one behind the player's whole
+         walk so turning round no longer faces an empty horizon. All three
+         are far outside BOUNDS and deep in the morning haze.             */
+      for (const [bx, bz, ry] of [[-54, -34, 0.95], [46, -48, -0.60], [20, 64, 2.75]]) {
+        const far = blk.clone();
+        far.position.set(bx, 0, bz);
+        far.rotation.y = ry;
+        world.add(far);
+      }
       /* No fake lit windows. There were fourteen and they were wrong twice —
          first hand-placed into the sky above the roofline, then placed off
          the model's BOUNDING BOX, which spans x -21..27 and z -41..-3 because
@@ -1263,6 +1326,7 @@
         tent: tentLights.map(l => l.intensity),
         keyI: key.intensity, fire: fireLight.intensity, braz: brazLight.intensity,
         mediumRot: medium.rotation.clone(),
+        mediumPos: medium.position.clone(),   // scene B borrows his body
         headRot: medium.userData.head.rotation.clone(),
         headPos: medium.userData.head.position.clone(),
         oddRot: chairRot[ODD_I], backRot: chairRot[BACK_I],
@@ -1277,6 +1341,7 @@
       fireLight.intensity = s.fire;
       brazLight.intensity = s.braz;
       medium.rotation.copy(s.mediumRot);
+      medium.position.copy(s.mediumPos);
       medium.userData.head.rotation.copy(s.headRot);
       medium.userData.head.position.copy(s.headPos);
       chairRot[ODD_I] = s.oddRot; placeChair(ODD_I);
@@ -1300,6 +1365,7 @@
       tentLights.forEach((l, i) => { l.intensity = REST.tent[i]; });
       key.intensity = REST.keyI;
       medium.rotation.set(0, 0, 0);
+      medium.position.set(MEDIUM.x, 0, MEDIUM.z);
       medium.userData.head.rotation.set(0, 0, 0);
       medium.userData.head.position.set(0, MED_HEAD_Y, 0);
       chairRot[ODD_I] = REST.oddRot; placeChair(ODD_I);
@@ -1383,7 +1449,7 @@
       scene.remove(world);
       for (const o of owned) { o.parent?.remove(o); o.dispose?.(); }
       owned.length = 0;
-      for (const im of [seatIM, backIM, legIM, flying]) im.dispose?.();
+      for (const im of [seatIM, backIM, legIM, flying, trunkIM, leafIM]) im.dispose?.();
       for (const g of geos) g.dispose();
       for (const m of mats) {
         for (const k of ['map', 'roughnessMap', 'normalMap', 'emissiveMap', 'alphaMap']) {
@@ -1594,7 +1660,10 @@
             handsRoot, armR } = api;
 
     const ODDC = stage.chairAt[stage.ODD_I];
-    const HER = { x: ODDC.x, z: ODDC.z + 0.42 };   // stood at the turned chair
+    /* HER mark: far out on the open tarmac, in the corridor the trees were
+       deliberately kept out of, framed dead centre by the tent's open back.
+       Not at the chair. Not in the tent. That is the entire revision. */
+    const HER = { x: 2.3, z: 23.5 };
 
     step(0, () => {
       armR.visible = false;               // the hands have no business in this
@@ -1602,14 +1671,13 @@
       stage.crowdLife = 1;
       stage.noteStorm = 1;
       ghostOpacity(0);
-      ghost.position.set(HER.x, 0, HER.z);
-      ghost.rotation.y = 0;               // facing +z. Everyone else faces -z.
-      stage.turnChair(stage.ODD_I, Math.PI);
+      stage.turnChair(stage.ODD_I, Math.PI);   // one empty chair, facing out
     });
 
     /* 0-2.8  black, and the tent heard from a long way off. The loops are
        already running, so this is a duck and not a cue. */
-    tr(0, 0.4, () => { duck('tentamb', 0.16); duck('ritual', 0.11); }, rawK);
+    tr(0, 0.4, () => { duck('tentamb', 0.16); duck('ritual', 0.11);
+                       duck('ceremony', 0.09); duck('crowdmur', 0.12); }, rawK);
     sfx(0.55, 'drum', 0.55);
     sfx(1.00, 'v3wake1');                 // "They put the tent up on Monday."
     camTo(0, 0.1, OUTSIDE, OUTSIDE);
@@ -1633,6 +1701,8 @@
     tr(5.2, 13.0, k => {
       duck('tentamb', 0.16 + 0.84 * k);
       duck('ritual', 0.11 + 0.89 * k);
+      duck('ceremony', 0.09 + 0.91 * k);   // the band arrives with the walk
+      duck('crowdmur', 0.12 + 0.88 * k);
     }, rawK);
     sfx(6.0, 'step', 0.30); sfx(6.9, 'step', 0.32);
     sfx(7.8, 'drum', 0.6);
@@ -1668,6 +1738,7 @@
        reason a cutscene can hold a chapter's loops down. */
     tr(21.9, 22.6, k => {
       duck('ritual', 1 - k);
+      duck('ceremony', 1 - k);             // the whole band, not just the drum
       stage.drumBeat = 1 - k;
     }, rawK);
 
@@ -1686,32 +1757,59 @@
     sfx(25.0, 'breath', 0.55);
     sfx(26.5, 'v3wake3');                 // "Nobody is scared. Why is nobody scared?"
 
-    /* 29.0-32.4  something is in the corner of the eye, so the camera comes
-       off the front — slowly, the way you look when you do not want to. */
-    yawTo(29.0, 32.4, 0, faceFrom(WATCH.x, WATCH.z, HER.x, HER.z), smoothK);
-    pitchTo(29.0, 32.4, -0.01, -0.09, smoothK);
-    sfx(29.4, 'strings', 0.6);
-    sfx(30.6, 'chair', 0.45);             // and the turned chair says where
-    /* Half of her, not a third. There is no darkness for her to come out of
-       any more, so she has to carry herself — and a glow at ten in the
-       morning would read as a lamp, so the light on her is nearly nothing.
-       She is not luminous. She is just THERE, in the sun, in a chair. */
-    tr(31.4, 33.4, k => {
-      ghostOpacity(k * 0.50);
-      ghostLight.intensity = 0.25 * k;
+    /* 26.8-30.2  the camera comes off the front — slowly, the way you look
+       when you do not want to — and finds the one chair that is facing the
+       wrong way. It is EMPTY. Forty people watch the man at the altar; one
+       red plastic chair in row four has been turned to face the open back
+       of the tent and the car park beyond it, and nobody sits in it, and
+       nobody looks at it. */
+    /* the camera CRANES — up half a metre and over the back rows — because
+       at eye height the crowd's heads swallow the one empty seat; from just
+       above them a single unoccupied red chair, turned the wrong way in a
+       full tent, reads instantly */
+    const CRANE = { x: -0.55, y: 2.10, z: 2.35 };
+    const LOOKCHAIR = faceFrom(CRANE.x, CRANE.z, ODDC.x, ODDC.z);
+    camTo(26.8, 29.8, WATCH, CRANE, smoothK);
+    yawTo(26.8, 29.8, 0, LOOKCHAIR, smoothK);
+    pitchTo(26.8, 29.8, -0.01, -0.26, smoothK);
+    sfx(27.4, 'chair', 0.5);
+    sfx(28.1, 'v3chair');       // "There's one chair facing the wrong way. Just one."
+
+    /* 30.4-34.2  and the camera LIFTS along the line the chair faces — out
+       through the open back of the tent, into the glare — AND SHE IS OUT
+       THERE. Twenty metres of empty tarmac, full sun, facing the tent.
+       Utterly still. Not coming closer. NOT COMING IN.
+
+       No sting under her, and no ghost sound anywhere in this chapter —
+       the ceremony stopped its own drum a beat ago, so what plays under
+       the reveal is a tent's worth of silence. In three chapters nothing
+       has frightened her. The tent does. That is the shot. */
+    step(30.4, () => {
+      ghost.position.set(HER.x, 0, HER.z);
+      ghost.rotation.y = Math.PI;        // facing the tent: forward is +z at 0
+    });
+    yawTo(30.4, 33.2, LOOKCHAIR, Math.PI + 0.094, smoothK);  // her, dead centre
+    pitchTo(30.4, 33.2, -0.26, -0.005, smoothK);
+    camTo(30.4, 33.2, CRANE, { x: 0.30, y: EYE, z: 2.30 }, smoothK);
+    /* she RESOLVES out of the glare rather than fading in — full daylight,
+       so she carries herself, and the light on her is nearly nothing */
+    tr(31.6, 33.6, k => {
+      ghostOpacity(0.88 * k);
+      ghostLight.intensity = 0.12 * k;
     }, rawK);
-    sfx(31.9, 'boom');
-    sfx(32.2, 'whisper', 0.45);
+    sfx(31.2, 'breath', 0.5);
+    sfx(33.8, 'v3out1');        // "She's out there. Standing in the middle of
+                                //  the car park. In the sun."
+    sfx(38.2, 'heart', 0.45);
 
-    // 33.5-37.4  the last line, and then the dark takes it
-    sfx(33.6, 'v3wake4');                 // "...that one is looking at me."
-    sfx(34.4, 'heart', 0.5);
-    fade(35.2, 37.4, 0, 1);
+    // 39.2  four words, and they change what the whole game has been about
+    sfx(39.2, 'v3out2');        // "She's not coming in."
+    fade(40.4, 42.4, 0, 1);
     // the drum starts again, alone, in the black — the tent does not care
-    tr(36.0, 37.4, k => { duck('ritual', 0.55 * k); }, rawK);
-    sfx(36.4, 'drum', 0.7);
+    tr(41.0, 42.4, k => { duck('ritual', 0.55 * k); }, rawK);
+    sfx(41.4, 'drum', 0.7);
 
-    step(37.4, () => {
+    step(42.4, () => {
       armR.visible = true;
       stage.crowdLife = 1;
       stage.drumBeat = 1;
@@ -1725,79 +1823,83 @@
 
   /* ------------------------------------------------- A · OBSERVE QUIETLY --
      The good answer, and the scene about NOT acting — so the camera barely
-     moves and the world does all of the work. He backs off to the aisle and
-     watches, and twice he looks away at the turned chair, and each time he
-     looks BACK at the front she is nearer than she was.
+     moves and the RITUAL does all of the work. He backs off to the aisle
+     and watches, and the trance climbs: the drum doubles, the bell, the
+     flags, the horn over the top of it. And then the payoff of watching
+     carefully, which is that something watches back: the medium's head
+     comes up — not thrown back at the sky, LEVEL — and out of forty people
+     he finds the one who is looking, and holds him, and lets him go.
 
-     No scream and no chase. The good answer is paid in information and costs
-     almost nothing, and a thing that simply stands there while forty people
-     face the other way is worse than a jump.                              */
+     No scream and no chase. The good answer is paid in information and
+     costs almost nothing, and a man looking at you with a god behind his
+     face is worse than a jump.                                          */
   function scWatch(c, s, api) {
-    const { tr, step, sfx, fade, camTo, yawTo, pitchTo, faceFrom, rawK, smoothK,
-            duck, stage, camera, ghost, ghostOpacity, ghostLight, armR } = api;
-
-    const ODDC = stage.chairAt[stage.ODD_I];
-    const LOOK = faceFrom(WATCH.x, WATCH.z, ODDC.x, ODDC.z);
+    const { tr, step, sfx, fade, camTo, yawTo, pitchTo, rawK, smoothK,
+            duck, stage, camera } = api;
 
     // he goes back rather than forward, which is the choice, told as a move
     camTo(0, 2.0, { x: s.yawPos.x, y: s.yawPos.y, z: s.yawPos.z }, WATCH, smoothK);
     yawTo(0, 2.0, s.yawRot, 0, smoothK);
     pitchTo(0, 2.0, s.pitchX, -0.02, smoothK);
-    step(0, () => { ghostOpacity(0); ghostLight.intensity = 0; });
     sfx(0.4, 'step', 0.3); sfx(1.2, 'step', 0.3);
 
-    // 2.0-3.6  the front, doing what the front does
-    sfx(2.2, 'cymbal', 0.5);
-    sfx(2.9, 'drum', 0.6);
+    /* 2.0-7.4  the trance climbs, one instrument at a time. Nothing here is
+       a jump: it is five seconds of a ceremony finding a higher gear. */
+    tr(2.0, 7.4, k => {
+      stage.drumBeat = 1 + 1.9 * k;
+      stage.noteStorm = 1 + 1.6 * k;
+      duck('ceremony', 1 + 0.55 * k);          // the band leans IN
+    }, rawK);
+    sfx(2.3, 'drumroll', 0.8);
+    sfx(3.6, 'bellring', 0.7);
+    tr(3.2, 7.0, (k, t2) => {
+      stage.flags[0].rotation.z = 0.5 + 0.9 * k * Math.sin(t2 * 6.4);
+      stage.flags[1].rotation.z = -0.5 - 0.9 * k * Math.sin(t2 * 5.7);
+    }, rawK);
+    sfx(5.0, 'cymbal', 0.7);
+    sfx(6.2, 'suona', 0.85);                   // the horn over the top of it
 
-    // 3.6-4.9  the first look away: the chair is turned, and it is empty
-    yawTo(3.6, 4.9, 0, LOOK, smoothK);
-    pitchTo(3.6, 4.9, -0.02, -0.08, smoothK);
-    sfx(4.0, 'whisper', 0.35);
+    /* 7.4-8.2  and everything stops AT ONCE — band, drum, forty paper fans —
+       because the medium's head has come up. Not back. LEVEL. */
+    tr(7.4, 8.2, k => {
+      duck('ceremony', 1.55 * (1 - k));
+      duck('ritual', 1 - k);
+      duck('crowdmur', 1 - 0.85 * k);
+      stage.drumBeat = 2.9 * (1 - k);
+      stage.crowdLife = 1 - 0.9 * k;
+    }, rawK);
+    tr(7.6, 8.4, k => {
+      stage.medium.userData.head.rotation.x = 0.16 * k;   // tipped at the aisle
+    }, smoothK);
+    sfx(8.0, 'gongdeep', 0.55);
 
-    // and she is up the aisle when he looks back, faint, between him and it
-    // facing him, not facing wherever play happened to leave her
-    step(4.9, () => { ghost.position.set(0.22, 0, -3.60); ghost.rotation.y = 0; });
-    yawTo(4.9, 6.2, LOOK, 0, smoothK);
-    pitchTo(4.9, 6.2, -0.08, -0.02, smoothK);
-    tr(5.6, 6.8, k => { ghostOpacity(0.30 * k); ghostLight.intensity = 0.7 * k; }, rawK);
-    sfx(5.8, 'strings', 0.5);
-    sfx(6.4, 'dread', 0.4);
+    /* 8.4-12.6  he is being looked at, from the front of the tent, by a man
+       whose eyes the distance keeps him from seeing — and the shot just
+       HOLDS, with one slow push-in, which is the scene. */
+    camTo(8.4, 12.6, WATCH, { x: WATCH.x, y: EYE, z: WATCH.z - 0.55 }, smoothK);
+    tr(8.4, 12.6, k => { camera.rotation.z = 0.014 * Math.sin(k * Math.PI); }, rawK);
+    sfx(8.8, 'trancehum', 0.6);
+    sfx(9.6, 'v3seen');       // "He looked at me. Out of all of them... he looked at me."
 
-    // 6.8-8.9  a held beat. She is standing in the aisle and nobody reacts.
-    tr(6.8, 8.9, () => {}, rawK);
-    sfx(7.6, 'drum', 0.55);
+    /* 12.6-14.0  the head goes back to the altar as if nothing happened,
+       and the band picks up mid-phrase, and not one person reacts. */
+    tr(12.6, 13.4, k => {
+      stage.medium.userData.head.rotation.x = 0.16 * (1 - k);
+    }, smoothK);
+    tr(12.8, 14.2, k => {
+      duck('ceremony', k);
+      duck('ritual', k);
+      duck('crowdmur', 0.15 + 0.85 * k);
+      stage.drumBeat = k;
+      stage.crowdLife = 0.1 + 0.9 * k;
+    }, rawK);
+    sfx(13.2, 'drum', 0.6);
+    sfx(14.0, 'bellring', 0.4);
 
-    // 8.9-10.1  the second look away, and she is gone from the aisle
-    yawTo(8.9, 10.1, 0, LOOK, smoothK);
-    /* A TRACK, not a step. Every track keeps running once t passes its t0 —
-       clamped at k=1, forever — so the 5.6-6.8 fade-in above is still
-       writing 0.30 on every frame at t = 10. A step() fires once, is
-       overwritten on the very next frame, and she blinks straight back in.
-       Pushed after that fade-in and before the reveal below, so it beats the
-       one and loses to the other, which is the whole of the ordering. */
-    tr(9.4, 10.1, () => { ghostOpacity(0); ghostLight.intensity = 0; }, rawK);
-    sfx(9.2, 'whisper', 0.4);
+    // 14.6-17.0  and out, with the ceremony refusing to be interesting again
+    sfx(15.2, 'breath', 0.5);
+    fade(15.4, 17.2, 0, 1);
 
-    /* 10.1-11.6  and back — and this time she is four metres away, solid,
-       facing him, with the whole tent still watching the other direction. */
-    step(10.1, () => { ghost.position.set(0.14, 0, -0.70); ghost.rotation.y = 0; });
-    yawTo(10.1, 11.4, LOOK, 0, smoothK);
-    tr(10.9, 11.5, k => { ghostOpacity(k); ghostLight.intensity = 2.0 * k; }, rawK);
-    sfx(11.0, 'boom');
-    sfx(11.1, 'strings', 0.85);
-    sfx(11.4, 'vgasp');
-
-    // 11.6-15.0  he does not run. He does not look away. Neither does she.
-    camTo(11.6, 15.0, WATCH, { x: WATCH.x + 0.10, y: EYE, z: WATCH.z + 0.34 }, smoothK);
-    tr(11.6, 15.0, k => { camera.rotation.z = 0.020 * Math.sin(k * Math.PI); }, rawK);
-    tr(11.8, 15.0, k => { duck('ritual', 1 - 0.55 * k); }, rawK);
-    sfx(12.0, 'heart', 0.6);
-    sfx(13.2, 'whisper', 0.4);
-    sfx(14.2, 'dread', 0.55);
-    fade(13.6, 15.6, 0, 1);
-
-    c.keep.ghostGone = true;
     c.endFade = 1;
   }
 
@@ -1805,15 +1907,18 @@
      The worst answer, and the loudest scene in the game. He goes up with the
      others and puts his hands together, and the tent takes it badly: the
      drum crowds in, the tubes start to strobe, the chant doubles into
-     something that is not language. Then one frame of nothing, and she is
-     on the lens.
+     something that is not language. Then one frame of nothing — and the
+     MEDIUM is on the lens. The man from the altar, face to face, head
+     tilted the wrong amount, eyes shut. Nothing in this tent is hers; what
+     lives here answers to nobody's grief, and joining uninvited is how you
+     meet it.
 
      It ends the way the source says it ends — an experienced practitioner
-     notices and hauls him out of it. The last thing in the scene is not the
-     ghost. It is a woman's hand on his arm.                               */
+     notices and hauls him out of it. The last thing in the scene is a
+     woman's hand on his arm.                                             */
   function scJoin(c, s, api) {
     const { tr, step, sfx, fade, camTo, yawTo, pitchTo, faceFrom,
-            rawK, smoothK, duck, stage, camera, ghost, ghostOpacity, ghostLight,
+            rawK, smoothK, duck, stage, camera,
             handsRoot, armR, PRAYER_R, PRAYER_L, setHandPrayer, handWidth,
             buildPrayerArm, rightHand, vmKey, vmHemi, vmFire, THREE } = api;
 
@@ -1824,7 +1929,11 @@
     camTo(0, 2.6, { x: s.yawPos.x, y: s.yawPos.y, z: s.yawPos.z }, INSIDE, smoothK);
     yawTo(0, 2.6, s.yawRot, 0, smoothK);
     pitchTo(0, 2.6, s.pitchX, -0.04, smoothK);
-    step(0, () => { ghostOpacity(0); ghostLight.intensity = 0; armR.visible = true; });
+    /* the viewmodel's rest levels are the CHAPTER's now (daylight reaches
+       the hands since v4.3), so the brighten below starts from wherever
+       this chapter put them rather than from midnight's constants */
+    let H0 = 1.0, K0 = 0.8;
+    step(0, () => { H0 = vmHemi.intensity; K0 = vmKey.intensity; armR.visible = true; });
     sfx(0.5, 'step', 0.34); sfx(1.3, 'step', 0.34); sfx(2.1, 'step', 0.34);
     sfx(0.9, 'drum', 0.7);
 
@@ -1853,8 +1962,8 @@
       handsRoot.position.set(0, Math.sin(k * Math.PI) * 0.008, 0);
     });
     tr(1.6, 3.2, k => {
-      vmHemi.intensity = 0.55 + 0.45 * k;
-      vmKey.intensity = 0.50 + 0.45 * k;
+      vmHemi.intensity = H0 + 0.40 * k;
+      vmKey.intensity = K0 + 0.40 * k;
       vmFire.intensity = 2.4;
     }, rawK);
     sfx(2.4, 'bowl', 0.7);
@@ -1865,6 +1974,7 @@
        is a jump: it is four seconds of getting steadily worse. */
     tr(3.4, 8.4, k => {
       duck('ritual', 1 + 1.6 * k);
+      duck('ceremony', 1 + 1.3 * k);       // the band crowds in with the drum
       stage.drumBeat = 1 + 2.4 * k;
       stage.noteStorm = 1 + 4.5 * k;
       stage.haze.material.opacity = 0.34 + 0.34 * k;
@@ -1886,7 +1996,7 @@
     sfx(4.4, 'drum', 0.9);
     sfx(5.2, 'gong', 0.8);
     sfx(5.9, 'cymbal', 0.9);
-    sfx(6.4, 'gwail', 0.55);
+    sfx(6.4, 'suona', 0.6);              // the horn, not her — nothing here is hers
     sfx(7.0, 'drum', 1);
     sfx(7.6, 'vpant', 0.9);
     sfx(8.1, 'cymbal', 1);
@@ -1894,7 +2004,9 @@
     /* 8.4-8.9  everything stops. Half a second of a tent with nothing in it. */
     tr(8.4, 8.9, k => {
       duck('ritual', 2.6 * (1 - k) * (1 - k));
+      duck('ceremony', 2.3 * (1 - k) * (1 - k));
       duck('tentamb', 1 - 0.9 * k);
+      duck('crowdmur', 1 - 0.9 * k);
       stage.drumBeat = 3.4 * (1 - k);
       stage.crowdLife = 1 - k;
       for (const l of stage.tentLights) l.intensity = REST_TENT * (0.05 + 0.35 * k);
@@ -1902,25 +2014,31 @@
     }, rawK);
     tr(8.4, 8.9, k => { camera.rotation.z = 0.11 * (1 - k); }, rawK);
 
-    // 8.9  and she is on the lens
+    /* 8.9  and the MEDIUM is on the lens. Not her — nothing in this tent is
+       hers. The man from the altar, face to face, close enough to touch,
+       head tilted the way no one tilts a head, and his eyes are SHUT. The
+       scene borrows his body: snap()/restore()/reset() carry his position
+       since v4.3, so a skip cannot leave him standing in the aisle. */
+    const MED0 = new THREE.Vector3();
     step(8.9, () => {
-      ghost.position.set(-0.10, 0, -6.10);
-      ghost.rotation.y = 0;
-      ghostOpacity(1);
-      ghostLight.intensity = 2.6;
+      MED0.copy(stage.medium.position);
+      stage.medium.position.set(-0.18, 0, -6.42);   // right in front of the lens
+      stage.medium.userData.head.rotation.x = 0.10;
+      stage.medium.userData.head.rotation.z = 0.42;  // tilted, the wrong amount
     });
     sfx(8.92, 'boom');
-    sfx(8.98, 'strings', 1);
-    sfx(9.15, 'gscream', 0.95);
-    sfx(9.35, 'scream');
+    sfx(9.0, 'gongdeep', 0.9);
+    sfx(9.1, 'trancehum', 0.8);
+    sfx(9.25, 'suona', 0.9);
 
-    /* 9.0-10.8  he goes over backwards, and the room goes with him. */
+    /* 9.0-11.6  he goes over backwards, and the room goes with him — and the
+       man's face does not follow him down. It stays exactly where it was. */
     camTo(9.0, 10.8, { x: -0.18, y: 1.54, z: -5.55 },
                      { x: 0.42, y: 1.06, z: -3.90 }, rawK);
     pitchTo(9.0, 10.8, 0.06, 0.46, rawK);
-    /* Ends on sin(1.4*PI) = -0.95, so it holds sixteen degrees of roll for
-       as long as the scene runs — right through the auntie pulling him out.
-       The settle below is pushed later and therefore wins. */
+    /* Ends on sin(1.4*PI) = -0.95, so it would hold sixteen degrees of roll
+       for as long as the scene runs. The settle below is pushed later and
+       therefore wins. */
     tr(9.0, 11.6, k => { camera.rotation.z = 0.30 * Math.sin(k * Math.PI * 1.4); }, rawK);
     tr(11.6, 13.4, k => { camera.rotation.z = -0.285 * (1 - k); }, smoothK);
     tr(9.0, 10.4, k => {
@@ -1929,29 +2047,38 @@
       if (prayerArmL) prayerArmL.position.y = y;
       handsRoot.position.set(0.10 * k, -0.06 * k, 0);
     }, rawK);
-    tr(9.0, 11.0, k => { ghostOpacity(1 - k * 0.85); ghostLight.intensity = 2.6 * (1 - k); }, rawK);
-    tr(9.0, 12.0, k => {
+    sfx(9.6, 'v3grip');     // "His eyes were shut. He was looking at me with
+                            //  his eyes shut."
+    tr(9.4, 12.4, k => {
       duck('tentamb', 0.1 + 0.9 * k);
       for (const l of stage.tentLights) l.intensity = REST_TENT * (0.4 + 0.6 * k);
       stage.key.intensity = REST_KEY * (0.4 + 0.6 * k);
       stage.crowdLife = k;
       stage.drumBeat = k;
       duck('ritual', k);
+      duck('ceremony', k);
+      duck('crowdmur', k);
     }, rawK);
 
-    /* 10.8-14.4  and then a hand on his arm, and the tent from a long way
-       off, and an auntie who has seen this before telling him to get out. */
-    camTo(10.8, 13.6, { x: 0.42, y: 1.06, z: -3.90 },
+    /* 11.5-14.4  a hand on his arm, and the tent from a long way off. The
+       camera is yanked toward the paper table — which is when the medium is
+       put back at the altar, off-frame, as if he never moved. Because he
+       never moved. Ask anyone in the tent. */
+    camTo(11.5, 14.2, { x: 0.42, y: 1.06, z: -3.90 },
                       { x: 2.30, y: 1.48, z: -2.20 }, smoothK);
-    yawTo(10.8, 13.6, 0, -0.95, smoothK);
-    pitchTo(10.8, 13.6, 0.46, -0.02, smoothK);
-    sfx(10.9, 'v3aunt5');                 // "Boy! Boy, come out. You cannot stand there."
-    sfx(11.4, 'step', 0.4); sfx(12.0, 'step', 0.4);
-    sfx(12.6, 'vpant', 0.8);
-    sfx(13.6, 'dread', 0.6);
-    fade(12.8, 14.8, 0, 1);
+    yawTo(11.5, 14.2, 0, -0.95, smoothK);
+    pitchTo(11.5, 14.2, 0.46, -0.02, smoothK);
+    step(12.4, () => {
+      stage.medium.position.copy(MED0);
+      stage.medium.userData.head.rotation.x = 0;
+      stage.medium.userData.head.rotation.z = 0;
+    });
+    sfx(14.6, 'v3aunt5');   // "Boy! Boy, come out. You cannot stand there."
+    sfx(15.2, 'step', 0.4); sfx(15.8, 'step', 0.4);
+    sfx(16.4, 'vpant', 0.8);
+    sfx(17.2, 'gongdeep', 0.35);      // far off, the ceremony not caring
+    fade(17.0, 19.0, 0, 1);
 
-    c.keep.ghostGone = true;
     c.endFade = 1;
   }
 
@@ -1971,8 +2098,7 @@
      the best answer is paid in information rather than in safety.        */
   function scAsk(c, s, api) {
     const { tr, step, sfx, fade, camTo, yawTo, pitchTo, bob, faceFrom,
-            rawK, smoothK, duck, stage, camera, ghost, ghostOpacity, ghostLight,
-            armR } = api;
+            rawK, smoothK, duck, stage, camera, armR } = api;
 
     const AUNT = { x: stage.auntie.position.x, z: stage.auntie.position.z };
     const BACKC = stage.chairAt[stage.BACK_I];
@@ -1986,8 +2112,11 @@
     bob(0, 2.2, 0.80, 0.024, EYE);
     yawTo(0, 2.2, s.yawRot, TO_AUNT, smoothK);
     pitchTo(0, 2.2, s.pitchX, -0.05, smoothK);
-    step(0, () => { ghostOpacity(0); ghostLight.intensity = 0; });
-    tr(0, 2.2, k => { duck('ritual', 1 - 0.60 * k); }, rawK);
+    tr(0, 2.2, k => {
+      duck('ritual', 1 - 0.60 * k);
+      duck('ceremony', 1 - 0.55 * k);   // twelve metres from a drum is quieter
+      duck('crowdmur', 1 - 0.30 * k);
+    }, rawK);
     sfx(0.4, 'step', 0.32); sfx(1.2, 'step', 0.32); sfx(1.9, 'step', 0.30);
 
     // she looks up from the folding
@@ -2019,7 +2148,7 @@
     /* 22.6  and then she stops folding. Half a second, and the whole scene
        changes register without a single sound effect in it. */
     step(22.6, () => { stage.auntie.rotation.y = TO_AUNT + 0.62; });
-    sfx(22.7, 'dread', 0.5);
+    sfx(22.7, 'trancehum', 0.45);
     tr(22.6, 23.1, () => {}, rawK);
     sfx(23.1, 'v3aunt4');  // "Listen to me, boy. Do not sit in the back row tonight."
 
@@ -2029,45 +2158,40 @@
     yawTo(24.4, 26.6, TO_AUNT, TO_BACK, smoothK);
     pitchTo(24.4, 26.6, -0.05, -0.10, smoothK);
     camTo(24.4, 27.0, TABLE, { x: TABLE.x - 0.30, y: EYE, z: TABLE.z + 0.20 }, smoothK);
-    sfx(24.8, 'whisper', 0.35);
 
-    // one chair in the back row, empty, and still going
-    sfx(26.2, 'chair', 0.75);
-    tr(26.2, 28.4, (k, t2) => {
-      stage.turnChair(stage.BACK_I,
-        REST_BACK + Math.sin(t2 * 7.4) * 0.14 * (1 - k));
-    }, rawK);
+    /* The back row, empty, in the sun — and beyond it, through the open
+       back of the tent, the stretch of tarmac the opening film taught the
+       player to be afraid of. NOTHING MOVES. The rattling chair the first
+       version put here is gone, and it is gone on principle: nothing of
+       hers is inside this tent. The wrongness of the shot is a warning
+       about a chair, an exit, and what the player knows is out there. */
+    sfx(26.4, 'bellring', 0.3);       // the ceremony carrying on regardless
     sfx(27.0, 'chime', 0.5);
-    sfx(27.6, 'dread', 0.6);
+    sfx(27.6, 'gongdeep', 0.35);
     fade(27.4, 29.4, 0, 1);
     step(29.4, () => { stage.auntie.rotation.y = AUNT_REST; });
 
-    c.keep.ghostGone = true;
     c.endFade = 1;
   }
 
   /* ------------------------------------------------ D · LEAVE THE GATHERING
-     The bad answer, and the widest shot in the game. He walks out, and the
-     tent's light and noise fall off behind him until he is standing in the
-     dark car park looking at exactly the frame the opening film started on.
+     The bad answer, and the emptiest shot in the game. He walks out, and
+     the ceremony falls away behind him exactly as far as he walks — and
+     when he stops for one last look, THE DRUM STOPS MID-PATTERN. Forty
+     people under a tent at ten in the morning, in total silence, and not
+     one of them turns round, and nothing else happens at all.
 
-     Then: forty people, all facing the front. Except one, at the back of the
-     seating, standing, facing out. Facing him.
-
-     And when he keeps backing away she does not get smaller — the glide
-     moves her at the same rate the camera does, so her size on screen never
-     changes. That is the whole scene, and it costs two tracks.           */
+     That nothing is the scene. He leaves with the question instead of the
+     answer, and the band starts again behind him, quiet and complete and
+     not for him. The teaching priced this choice, and this is what minus
+     wisdom sounds like.                                                  */
   function scGo(c, s, api) {
     const { tr, step, sfx, fade, camTo, yawTo, pitchTo, bob, rawK, smoothK,
-            duck, stage, camera, ghost, ghostOpacity, ghostLight, armR } = api;
-
-    const HER0 = { x: 1.60, z: 4.40 };
-    const HER1 = { x: 1.60, z: 8.40 };
+            duck, stage, camera } = api;
 
     // turn his back on it
     yawTo(0, 1.4, s.yawRot, Math.PI, smoothK);
     pitchTo(0, 1.4, s.pitchX, -0.01, smoothK);
-    step(0, () => { ghostOpacity(0); ghostLight.intensity = 0; });
     sfx(0.6, 'breath', 0.5);
 
     /* 1.4-9.4  out. The tent goes quiet behind him on the same track that
@@ -2076,48 +2200,59 @@
     bob(1.4, 9.4, 0.88, 0.034, EYE);
     tr(1.4, 9.4, k => {
       duck('ritual', 1 - 0.86 * k);
+      duck('ceremony', 1 - 0.80 * k);
+      duck('crowdmur', 1 - 0.72 * k);
       duck('tentamb', 1 - 0.55 * k);
     }, rawK);
     for (let i = 0; i < 7; i++) sfx(2.0 + i * 0.86, 'step', 0.32 - i * 0.02);
     sfx(4.4, 'drum', 0.4);
-    sfx(7.2, 'cymbal', 0.22);
+    sfx(7.2, 'bellring', 0.2);
 
     // 9.4-10.9  he stops, and turns round, and it is the opening shot again
     yawTo(9.4, 10.9, Math.PI, 0, smoothK);
     pitchTo(9.4, 10.9, -0.01, -0.02, smoothK);
     sfx(9.8, 'vrelief', 0.75);
 
-    // 10.9  one of them is standing up, at the back, facing out
-    step(10.9, () => {
-      ghost.position.set(HER0.x, 0, HER0.z);
-      /* FACING HIM. A figure's forward is +z at rotation 0 — the same
-         convention ghostFacePlayer uses (atan2(px-gx, pz-gz) is 0 for a
-         player straight ahead in +z) — and the camera is out at z = 15.5.
-         This said Math.PI, and turned her back on the one shot the whole
-         scene exists for. */
-      ghost.rotation.y = 0;
-      ghostOpacity(0);
-    });
-    tr(11.0, 12.2, k => { ghostOpacity(0.88 * k); ghostLight.intensity = 0.9 * k; }, rawK);
-    sfx(11.1, 'strings', 0.6);
-    sfx(11.6, 'boom', 0.8);
-    sfx(12.0, 'vgasp', 0.9);
-
-    /* 12.4-16.0  he keeps going backwards. So does she, at exactly the same
-       speed, so she never gets any smaller. */
-    camTo(12.4, 16.0, AWAY, FAR, rawK);
-    tr(12.4, 16.0, k => {
-      ghost.position.set(HER0.x + (HER1.x - HER0.x) * k, 0,
-                         HER0.z + (HER1.z - HER0.z) * k);
+    /* 10.9-11.5  and the drum stops. Mid-pattern. Not a decrescendo — a
+       CUT, the way a room goes quiet about you, from fifteen metres. */
+    tr(10.9, 11.5, k => {
+      duck('ritual', 0.14 * (1 - k));
+      duck('ceremony', 0.20 * (1 - k));
+      duck('crowdmur', 0.28 * (1 - 0.7 * k));
+      stage.drumBeat = 1 - k;
+      stage.crowdLife = 1 - 0.92 * k;
     }, rawK);
-    tr(12.4, 16.4, k => { camera.rotation.z = 0.03 * Math.sin(k * Math.PI * 2); }, rawK);
-    sfx(12.9, 'dread', 0.6);
-    sfx(13.6, 'heart', 0.55);
-    sfx(14.6, 'whisper', 0.4);
-    sfx(15.6, 'gsigh', 0.5);
-    fade(14.8, 16.8, 0, 1);
+    sfx(11.3, 'breath', 0.55);
 
-    c.keep.ghostGone = true;
+    /* 11.5-13.6  HOLD. The tent, tiny and bright and silent, forty people
+       facing the front. Nothing else happens. Nothing else needs to. */
+    tr(11.5, 13.6, k => { camera.rotation.z = 0.012 * Math.sin(k * Math.PI * 2); }, rawK);
+    sfx(12.6, 'heart', 0.45);
+
+    /* 13.6-14.4  he turns his back on it, and the band starts again behind
+       him — quiet, complete, and not for him. */
+    yawTo(13.6, 14.6, 0, Math.PI, smoothK);
+    tr(13.8, 14.8, k => {
+      duck('ceremony', 0.45 * k);
+      duck('ritual', 0.35 * k);
+      duck('crowdmur', 0.20 + 0.35 * k);
+      stage.drumBeat = 0.7 * k;
+      stage.crowdLife = 0.08 + 0.92 * k;
+    }, rawK);
+    sfx(13.9, 'drum', 0.5);
+    sfx(14.5, 'bellring', 0.25);
+
+    /* 14.4-18.0  and away, toward the block, with the drum keeping its own
+       time behind him all the way to the lift. Which is the line. */
+    camTo(14.4, 17.6, AWAY, FAR, smoothK);
+    bob(14.4, 17.6, 0.86, 0.030, EYE);
+    sfx(14.8, 'v3left');    // "I could still hear the drum from the lift.
+                            //  I told myself that was normal."
+    sfx(15.2, 'step', 0.3); sfx(16.1, 'step', 0.28); sfx(17.0, 'step', 0.26);
+    sfx(15.4, 'trancehum', 0.5);
+    fade(18.4, 20.4, 0, 1);
+    sfx(19.6, 'gongdeep', 0.3);       // the last thing: far off, behind him
+
     c.endFade = 1;
   }
 

@@ -493,6 +493,82 @@ let moonHalo = null, moonDisc = null;
   sky.add(disc);
 }
 
+// --- the sun, for chapters that declare one. The same halo-and-disc trick
+// as the moon, but soft-on-soft: at ten in the morning in the tropics the
+// sun is GLARE, not a coin — a hard-edged disc read as a sticker. It sits
+// along the chapter's own key-light direction, set in applyDaylight(), so
+// the light and the thing that claims to cast it can never disagree.
+let sunHalo = null, sunDisc = null;
+{
+  const halo = sunHalo = new THREE.Sprite(new THREE.SpriteMaterial({
+    map: makeSoftDot('rgba(255,244,214,0.50)', 'rgba(255,236,190,0)'),
+    transparent: true, opacity: 0, depthWrite: false, fog: false,
+    blending: THREE.AdditiveBlending
+  }));
+  halo.scale.setScalar(58);
+  halo.renderOrder = -2;
+  halo.visible = false;
+  sky.add(halo);
+
+  const disc = sunDisc = new THREE.Sprite(new THREE.SpriteMaterial({
+    map: makeSoftDot('rgba(255,252,240,1)', 'rgba(255,244,208,0)'),
+    transparent: true, opacity: 0, depthWrite: false, fog: false,
+    blending: THREE.AdditiveBlending
+  }));
+  disc.scale.setScalar(16);
+  disc.renderOrder = -1;
+  disc.visible = false;
+  sky.add(disc);
+}
+
+// --- clouds: seven soft canvas blobs on the upper dome, opacity declared by
+// the chapter (0 for the night chapters, so nothing about them moves). The
+// whole group yaws imperceptibly slowly — parked clouds read as a skybox.
+function makeCloud(seed) {
+  const w = 256, h = 128;
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  const ctx = c.getContext('2d');
+  let s = seed;
+  const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647;
+  for (let i = 0; i < 11; i++) {
+    const bx = w * (0.18 + rnd() * 0.64), by = h * (0.34 + rnd() * 0.26);
+    const br = 14 + rnd() * 30;
+    const g = ctx.createRadialGradient(bx, by, 0, bx, by, br);
+    g.addColorStop(0, 'rgba(255,255,255,0.32)');
+    g.addColorStop(0.7, 'rgba(252,252,250,0.14)');
+    g.addColorStop(1, 'rgba(250,250,250,0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, w, h);
+  }
+  return new THREE.CanvasTexture(c);
+}
+const cloudGroup = new THREE.Group();
+cloudGroup.visible = false;
+sky.add(cloudGroup);
+let skyClouds = 0;                         // read by the frame, for the drift
+{
+  const R = 118;
+  const SPOTS = [                          // azimuth, elevation, width, squash
+    [0.35, 0.62, 62, 0.34], [1.45, 0.80, 46, 0.30], [2.60, 0.55, 70, 0.36],
+    [3.55, 0.72, 52, 0.30], [4.40, 0.50, 66, 0.38], [5.30, 0.84, 44, 0.28],
+    [5.95, 0.60, 58, 0.32]
+  ];
+  SPOTS.forEach(([az, el, w, sq], i) => {
+    const sp = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: makeCloud(7 + i * 13), transparent: true, opacity: 0,
+      depthWrite: false, fog: false
+    }));
+    sp.position.set(Math.cos(az) * Math.cos(el) * R,
+                    Math.sin(el) * R,
+                    Math.sin(az) * Math.cos(el) * R);
+    sp.scale.set(w, w * sq, 1);
+    sp.renderOrder = -3;
+    sp.userData.base = 0.75 + (i % 3) * 0.08;   // some thicker than others
+    cloudGroup.add(sp);
+  });
+}
+
 const camera = new THREE.PerspectiveCamera(72, innerWidth / innerHeight, 0.08, 160);
 const yaw = new THREE.Object3D();      // horizontal rotation
 const pitch = new THREE.Object3D();    // vertical rotation
@@ -545,8 +621,21 @@ const SKY_NIGHT = {
   hemi: [0x35446b, 0x14161c, 0.85],
   key: [0xa8bfe6, 0.95, -14, 20, -8],     // colour, intensity, and where from
   fill: [0x6a86b8, 0.28],
-  stars: 1, moon: 1                        // opacity, so a dawn can keep a ghost of one
+  stars: 1, moon: 1,                       // opacity, so a dawn can keep a ghost of one
+  sun: 0, clouds: 0,                       // the night chapters have neither
+  /* the VIEWMODEL's own rig, which was hard-coded to these midnight values
+     for eight releases — which is why the hands read near-black the moment a
+     chapter declared a bright sky around them. A chapter that changes the
+     world's light now changes the light on the hands in the same breath. */
+  vmHemi: [0x38486e, 0x0e1014, 0.55],
+  vmKey: [0x93aad4, 0.50]
 };
+/* What the viewmodel rig returns to whenever nothing dramatic is happening.
+   updateViewmodel() re-asserts intensity EVERY FRAME (that is how the burner
+   warmth breathes), so a one-time set inside applyDaylight would be undone
+   within sixteen milliseconds — the frame reads these instead. */
+const VM_REST = { hemi: 0.55, key: 0.50 };
+let vmLightsLive = false;                  // they are built later in the file
 let skyStars = 1;                          // read by the frame, to skip the twinkle
 function applyDaylight() {
   const d = { ...SKY_NIGHT, ...(CH.daylight || {}) };
@@ -568,6 +657,25 @@ function applyDaylight() {
   dimStars.visible = brightStars.visible = d.stars > 0.01;
   if (moonHalo) { moonHalo.material.opacity = d.moon; moonHalo.visible = d.moon > 0.01; }
   if (moonDisc) { moonDisc.material.opacity = d.moon; moonDisc.visible = d.moon > 0.01; }
+  // the sun rides the chapter's own key-light direction, so light and lamp agree
+  if (sunHalo) {
+    const sd = new THREE.Vector3(d.key[2], d.key[3], d.key[4]).normalize().multiplyScalar(126);
+    sunHalo.position.copy(sd); sunDisc.position.copy(sd);
+    sunHalo.material.opacity = 0.9 * d.sun; sunHalo.visible = d.sun > 0.01;
+    sunDisc.material.opacity = d.sun;       sunDisc.visible = d.sun > 0.01;
+  }
+  skyClouds = d.clouds;
+  cloudGroup.visible = d.clouds > 0.01;
+  for (const sp of cloudGroup.children) sp.material.opacity = sp.userData.base * d.clouds;
+  VM_REST.hemi = d.vmHemi[2];
+  VM_REST.key = d.vmKey[1];
+  if (vmLightsLive) {
+    vmHemi.color.setHex(d.vmHemi[0]);
+    vmHemi.groundColor.setHex(d.vmHemi[1]);
+    vmHemi.intensity = VM_REST.hemi;
+    vmKey.color.setHex(d.vmKey[0]);
+    vmKey.intensity = VM_REST.key;
+  }
   redoShadows();
 }
 applyDaylight();          // whichever chapter booted — ch1's night is the default
@@ -688,6 +796,13 @@ const GHOST_TERRITORY = {
 };
 const GH = { roam: {} };
 function applyGhostTerritory() {
+  /* THE ELEVENTH LEAK. Chapter 3's revision needed a chapter with no
+     haunting at all — the ghost's one appearance there is a cutscene
+     driving her mesh directly, and play must never stage her, drain for
+     her, or speak her banner. `ghost: null` declares exactly that.
+     UNDECLARED (undefined) still means chapter 1's numbers, so nothing
+     about chapters 1 and 2 moves.                                      */
+  GH.off = CH.ghost === null;
   const g = CH.ghost || {};
   for (const k of ['minDist', 'appearAt', 'near', 'far', 'behind']) {
     GH[k] = Number.isFinite(g[k]) ? g[k] : GHOST_TERRITORY[k];
@@ -984,6 +1099,16 @@ function updateGhost(dt) {
   if (!ghostReady) return;
   if (state === 'cine' || state === 'result' || state === 'complete'
       || state === 'lost') return;
+  if (GH.off) {                        // a chapter with no haunting: she is
+    reveal = 0; hauntK = 0;            // nowhere, costs nothing, stays parked
+    gPhase = 'hidden';
+    /* and HIDDEN, enforced here rather than assumed: this runs only outside
+       cutscenes (the state check above), so it cannot fight the one scene
+       allowed to show her, but it does catch a resume that arrives with the
+       mesh still visible from another chapter's world. */
+    if (ghost.visible) ghostOpacity(0);
+    return;
+  }
 
   const distToBurner = Math.hypot(yaw.position.x - OFFER_POS.x,
                                   yaw.position.z - OFFER_POS.z);
@@ -1089,12 +1214,15 @@ const vmScene = new THREE.Scene();
 const vmCam = new THREE.PerspectiveCamera(52, innerWidth / innerHeight, 0.008, 4);
 
 // lighting that echoes the world without being tied to it
-const vmHemi = new THREE.HemisphereLight(0x38486e, 0x0e1014, 0.55);
+const vmHemi = new THREE.HemisphereLight(0x38486e, 0x0e1014, VM_REST.hemi);
 vmScene.add(vmHemi);
-const vmKey = new THREE.DirectionalLight(0x93aad4, 0.50);
+const vmKey = new THREE.DirectionalLight(0x93aad4, VM_REST.key);
 vmKey.position.set(-0.6, 1.0, 0.6);
 vmScene.add(vmKey);
 const vmFire = new THREE.PointLight(0xff8433, 0, 6, 1.4);   // brightens near the burner
+vmLightsLive = true;
+applyDaylight();     // now that the rig exists, the booting chapter's declaration
+                     // reaches it too — a second call is idempotent by design
 vmFire.position.set(-0.35, 0.15, -0.55);
 vmScene.add(vmFire);
 vmScene.environment = scene.environment;
@@ -1398,7 +1526,7 @@ function updateViewmodel(dt, t, speed, strafe, dLookX, dLookY) {
                            yaw.position.z - stage.fireLight.position.z);
   const warm = Math.max(0, 1 - dFire / 7) ** 2;
   vmFire.intensity = warm * 2.4 * (0.82 + Math.sin(t * 11.3) * 0.12 + Math.random() * 0.06);
-  vmHemi.intensity = 0.55 - warm * 0.16;
+  vmHemi.intensity = VM_REST.hemi - warm * 0.16;
 }
 
 /* ------------------------------------------------------- collision box */
@@ -1878,6 +2006,9 @@ function warmPlaySet() {
   packWarm((amb.beds || []).map(b => b[0]));
   if (amb.atShrine) packWarm([amb.atShrine[0]]);
   if (CH.lines) packWarm([CH.lines.near, CH.lines.close].filter(Boolean));
+  // a voiceLine that lives in the pack decodes here; one that is its own
+  // asset (chapter 1's 'voice') is simply not a pack name, and this no-ops
+  if (CH.voiceLine) packWarm([CH.voiceLine]);
 }
 
 /* WHAT A SCENE ASKS FOR, READ OFF THE SCENE.
@@ -1933,11 +2064,16 @@ function queueVoice() {
   voicePlayed = false;
   voiceDecode();
   voiceTimer = setTimeout(() => {
-    if (state !== 'play' || muted || !voiceBuf || !actx) return;
+    /* The line may live in the sound pack rather than as its own asset —
+       chapter 3's does, chapter 1's 'voice' predates the pack — so the pack
+       buffer is the fallback. sndBuf() also kicks the decode if the pack
+       arrived after voiceDecode() looked. */
+    const buf = voiceBuf || (CH.voiceLine ? sndBuf(CH.voiceLine) : null);
+    if (state !== 'play' || muted || !buf || !actx) return;
     if (actx.state !== 'running' || !sfxOut()) return;
     try {
       voiceSrc = actx.createBufferSource();
-      voiceSrc.buffer = voiceBuf;
+      voiceSrc.buffer = buf;
       voiceSrc.onended = () => { voiceSrc = null; };
       voiceSrc.connect(sfxGain);
       voiceSrc.start();
@@ -2948,7 +3084,14 @@ const STING_SAMPLE = {
   v3ask: ['v3ask', 1],
   // the auntie at the paper table — the one voice in the game that is calm
   v3aunt1: ['v3aunt1', 1], v3aunt2: ['v3aunt2', 1], v3aunt3: ['v3aunt3', 1],
-  v3aunt4: ['v3aunt4', 1], v3aunt5: ['v3aunt5', 1]
+  v3aunt4: ['v3aunt4', 1], v3aunt5: ['v3aunt5', 1],
+  // v4.3: the revision's fresh palette — the ceremony's own instruments,
+  // its dread layer, and the lines the ghost-free chapter runs on
+  suona: ['suona', 0.9], bellring: ['bellring', 0.85],
+  drumroll: ['drumroll', 0.9], gongdeep: ['gongdeep', 0.9],
+  trancehum: ['trancehum', 0.85],
+  v3chair: ['v3chair', 1], v3out1: ['v3out1', 1], v3out2: ['v3out2', 1],
+  v3seen: ['v3seen', 1], v3grip: ['v3grip', 1], v3left: ['v3left', 1]
 };
 /* Which kinds the synth below can actually fake. Everything else in
    STING_SAMPLE is sample-only: if its buffer is not decoded yet it stays
@@ -3181,7 +3324,7 @@ function restoreWorld(s, keep) {
   stage.restore(s.ch);
   armR.visible = s.armVis;
   armR.rotation.set(0.50, 0.28, -0.48);
-  vmKey.intensity = 0.50;
+  vmKey.intensity = VM_REST.key;
   layoutHands();
   noteProp.visible = false;
   if (prayerArmL) prayerArmL.visible = false;
@@ -3986,7 +4129,7 @@ function ghostDrainRate() {
   // territory keeps costing you between appearances too — the banner says
   // exactly this ("dropping until you take action"), and walking out of
   // range remains the honest way to stop it
-  if (!ghostReady) return 0;
+  if (!ghostReady || GH.off) return 0;
   const presence = Math.max(reveal, hauntK);
   if (presence <= 0.01) return 0;
   const d = Math.hypot(yaw.position.x - ghost.position.x,
@@ -4234,7 +4377,7 @@ function restart() {
   if (rightHandModel) setHandCurl(rightHandModel, 1);
   armR.visible = true;
   armR.rotation.set(0.50, 0.28, -0.48);
-  vmKey.intensity = 0.50;
+  vmKey.intensity = VM_REST.key;
   layoutHands();
   redoShadows();
 
@@ -4391,6 +4534,8 @@ function tick(now = 0) {
     slowDt = 0;
 
     updateStars(t);
+    // parked clouds read as a skybox; this is about a degree a minute
+    if (skyClouds > 0.01) cloudGroup.rotation.y += sdt * 0.0028;
     stage.updateSlow(sdt, t);     // the chapter's own drifting particles
   }
 
