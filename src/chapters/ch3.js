@@ -147,7 +147,7 @@
       interact: 'Watch the ritual at the altar',
       interactTouch: 'the altar'
     },
-    lines: { near: 'v3near', close: 'v3altar', nearAt: 7.0 },
+    lines: { near: 'v3near', close: 'v3altar', nearAt: 8.5 },
     sayPrefix: 'v3'
     /* No `voiceLine`: the opening film gives him four lines, and a fifth the
        moment the black lifts would be crowding them — chapter 2's reasoning,
@@ -197,7 +197,7 @@
 
     const matTarmac = new THREE.MeshStandardMaterial({
       map: gTex.map, roughnessMap: gTex.rough, roughness: 0.93, metalness: 0.02,
-      color: 0xe8e8f0 });
+      color: 0x9fa3ad });
     const matKerb = new THREE.MeshStandardMaterial({
       map: cTex.map, roughnessMap: cTex.rough, roughness: 0.95, metalness: 0 });
     const matCanvas = new THREE.MeshStandardMaterial({
@@ -225,7 +225,7 @@
     const matSkin = new THREE.MeshStandardMaterial({
       color: 0x8a6247, roughness: 0.78, metalness: 0 });
     const matHair = new THREE.MeshStandardMaterial({
-      color: 0x14100e, roughness: 0.72, metalness: 0.05 });
+      color: 0x241c17, roughness: 0.72, metalness: 0.05 });
     const matDark = new THREE.MeshStandardMaterial({
       color: 0x232830, roughness: 0.85, metalness: 0.03 });
     const matSash = new THREE.MeshStandardMaterial({
@@ -297,7 +297,15 @@
         o.castShadow = false;              // nothing up there lights this tent
         o.receiveShadow = false;
         const mats = Array.isArray(o.material) ? o.material : [o.material];
-        for (const m of mats) { m.roughness = 0.94; m.metalness = 0; }
+        for (const m of mats) {
+          m.roughness = 0.94; m.metalness = 0;
+          /* And DARK. The model's own textures are daylight-bright, and at
+             twenty-five metres under the engine's moon the block was reading
+             as a lit shopping mall behind the altar instead of the black
+             cliff the whole shot is composed against. */
+          m.color?.multiplyScalar(0.34);
+          m.emissive?.setScalar(0);
+        }
       });
       world.add(blk);
       hdbReady = true;
@@ -420,14 +428,19 @@
     const tentLights = [];
     const LIT_Z = LOW ? [-4.2, 4.2] : [-6.4, -2.1, 2.1, 6.4];
     for (const lz of LIT_Z) {
-      const l = new THREE.PointLight(0xdfe9ff, LOW ? 15 : 9, 15, 1.55);
+      /* Tuned DOWN from the first pass, which lit the tent like a school
+         fête: from outside it was the box of light it should be, but from
+         inside everything was flat and washed and the canvas read as a
+         circus. A cheap tube is not white either — the tint is the faint
+         warm green every one of these has. */
+      const l = new THREE.PointLight(0xdde6d8, LOW ? 10 : 6.2, 15, 1.55);
       l.position.set(0, T.ridge - 0.30, lz);
       tent.add(l); tentLights.push(l);
     }
     /* One of them casts, and only one. Shadows here are frozen after the
        first few frames (the engine redraws them on demand), so a static
        crowd under a static light costs one map and then nothing. */
-    const key = new THREE.SpotLight(0xe4ecff, LOW ? 0 : 26, 22, Math.PI / 3.1, 0.62, 1.5);
+    const key = new THREE.SpotLight(0xdfe8e2, LOW ? 0 : 17, 22, Math.PI / 3.1, 0.62, 1.5);
     key.position.set(0.4, T.ridge + 0.6, -1.0);
     key.target.position.set(0, 0, -3.0);
     key.castShadow = !LOW;
@@ -441,7 +454,7 @@
     /* A little bounce off the canvas. A tent lit from inside is not a room
        with one lamp in it — the roof throws most of the light back down, and
        without this the crowd is a field of black silhouettes. */
-    const bounce = new THREE.HemisphereLight(0xb9c6df, 0x2a2b30, 0.5);
+    const bounce = new THREE.HemisphereLight(0x9aa8bd, 0x24262c, 0.32);
     bounce.position.set(0, T.eave, 0);
     tent.add(bounce);
 
@@ -551,12 +564,26 @@
     eBody.position.y = 0.93;
     eBody.castShadow = true;
     effigy.add(eBody);
-    const eHead = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.42, 0.30), matGold);
+    /* The face is painted paper, not gold leaf: a flat pale mask with a gold
+       crown over it. In the first pass the head was matGold, which caught the
+       altar's flame at full strength and read as a lamp on a cone. */
+    const matEffigyFace = new THREE.MeshStandardMaterial({
+      color: 0x9c8f7a, roughness: 0.92, metalness: 0.02 });
+    const eHead = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.40, 0.28), matEffigyFace);
     eHead.position.y = 2.06;
     eHead.castShadow = true;
     effigy.add(eHead);
-    const eCrown = new THREE.Mesh(new THREE.ConeGeometry(0.26, 0.42, 6), matGold);
-    eCrown.position.y = 2.46;
+    // the eyes and mouth, three dark slots, which is all a face needs at this range
+    const matSlot = new THREE.MeshBasicMaterial({ color: 0x140f0c, fog: true });
+    for (const [ex, ey, ew, eh] of [[-0.08, 2.12, 0.08, 0.035],
+                                    [0.08, 2.12, 0.08, 0.035],
+                                    [0, 1.96, 0.13, 0.03]]) {
+      const sl = new THREE.Mesh(new THREE.PlaneGeometry(ew, eh), matSlot);
+      sl.position.set(ex, ey, 0.145);
+      effigy.add(sl);
+    }
+    const eCrown = new THREE.Mesh(new THREE.ConeGeometry(0.20, 0.30, 6), matGold);
+    eCrown.position.y = 2.40;
     effigy.add(eCrown);
     for (const sx of [-1, 1]) {
       const arm = new THREE.Mesh(new THREE.BoxGeometry(0.10, 0.72, 0.10), matCloth);
@@ -655,26 +682,38 @@
     function figure({ shirt, seated = false, h = 1.0 }) {
       const g = new THREE.Group();
       const hipY = seated ? 0.46 : 0.86;
+      /* Slightly tapered and shallower than the first pass, which from three
+         metres behind read as a row of filing cabinets with heads on. A
+         cylinder with six sides is the same cost as a box and has corners
+         that catch the light differently, which is most of the difference. */
       const torso = new THREE.Mesh(
-        new THREE.BoxGeometry(0.38, 0.56, 0.23), shirt);
+        new THREE.CylinderGeometry(0.155, 0.185, 0.56, 6), shirt);
       torso.position.y = (hipY + 0.30) * h;
+      torso.scale.set(1.14, 1, 0.78);
+      torso.rotation.y = Math.PI / 6;
       torso.castShadow = !LOW;
       const shoulders = new THREE.Mesh(
-        new THREE.BoxGeometry(0.46, 0.14, 0.22), shirt);
-      shoulders.position.y = (hipY + 0.56) * h;
+        new THREE.BoxGeometry(0.42, 0.13, 0.20), shirt);
+      shoulders.position.y = (hipY + 0.55) * h;
       const neck = new THREE.Mesh(
         new THREE.CylinderGeometry(0.055, 0.06, 0.09, 6), matSkin);
       neck.position.y = (hipY + 0.66) * h;
       const head = new THREE.Mesh(new THREE.SphereGeometry(0.105, 10, 8), matSkin);
       head.position.y = (hipY + 0.775) * h;
       head.castShadow = !LOW;
-      const hair = new THREE.Mesh(new THREE.SphereGeometry(0.112, 10, 8,
-        0, Math.PI * 2, 0, Math.PI * 0.62), matHair);
-      hair.position.y = (hipY + 0.79) * h;
+      /* A cap of hair, TILTED BACK. A sphere-cap sitting flat on top of a
+         head is a mushroom from behind and a bowl cut from the front; tipping
+         it puts the coverage where hair actually is — the crown and the back
+         of the skull — and leaves the face clear. */
+      const hair = new THREE.Mesh(new THREE.SphereGeometry(0.113, 10, 8,
+        0, Math.PI * 2, 0, Math.PI * 0.60), matHair);
+      hair.position.y = (hipY + 0.775) * h;
+      hair.position.z = -0.012;
+      hair.rotation.x = -0.34;
       g.add(torso, shoulders, neck, head, hair);
       if (seated) {
-        const thigh = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.14, 0.40), matDark);
-        thigh.position.set(0, 0.44 * h, 0.17);
+        const thigh = new THREE.Mesh(new THREE.BoxGeometry(0.30, 0.13, 0.38), matDark);
+        thigh.position.set(0, 0.44 * h, 0.16);
         const shin = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.42, 0.14), matDark);
         shin.position.set(0, 0.23 * h, 0.35);
         g.add(thigh, shin);
@@ -756,8 +795,8 @@
        small meshes each is under two hundred objects, they need per-person
        colours and a per-person breathing offset anyway, and it keeps
        dispose() to one traverse. */
-    const SHIRTS = [0x51606f, 0x6d6357, 0x3f4a55, 0x7a6a5c, 0x4a5560,
-                    0x62544a, 0x556070, 0x6b5f53, 0x455060, 0x736657];
+    const SHIRTS = [0x37424e, 0x4a443b, 0x2c343d, 0x554a40, 0x333c45,
+                    0x453b34, 0x3b434f, 0x4b433a, 0x2f3843, 0x50483d];
     const shirtMats = SHIRTS.map(c => new THREE.MeshStandardMaterial({
       color: c, roughness: 0.86, metalness: 0.02 }));
     const crowd = [];
@@ -956,9 +995,15 @@
        the aisle, which is exactly where a fifteen-year-old would actually
        be standing. */
     const PILE_POS = new THREE.Vector3(ALTAR.x, 0, ALTAR.z);
-    const INTERACT_R = 3.0;
-    const HIGHLIGHT_R = 5.5;
-    const MARK_R = 12.0;
+    /* Wide, because the RITUAL SPACE is walled off (see blockers) and the
+       player is stopped at the head of the aisle, three and a half metres
+       short of the altar. The first pass let them walk to within half a
+       metre of the medium's back, which is both wrong about how anyone
+       behaves at one of these and a bad shot: at that range he is an
+       anonymous dark shape filling the frame. */
+    const INTERACT_R = 4.0;
+    const HIGHLIGHT_R = 6.6;
+    const MARK_R = 13.0;
 
     const ringGeo = new THREE.RingGeometry(1.35, 1.85, 40);
     const altarRing = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({
@@ -1226,7 +1271,10 @@
       }
       // and the things that are actually solid
       box(ALTAR.x - 1.75, ALTAR.x + 1.75, 2.60, ALTAR.z - 1.30, ALTAR.z + 0.75);
-      box(MEDIUM.x - 0.55, MEDIUM.x + 0.55, 1.60, MEDIUM.z - 0.55, MEDIUM.z + 0.55);
+      /* THE RITUAL SPACE, not the man: the whole floor between the front row
+         and the altar, which is the part of a tentage nobody walks into. It
+         is what stops the player at the head of the aisle. */
+      box(-1.35, 1.35, 1.60, -6.40, -4.05);
       box(-2.35, -1.15, 1.90, -7.10, -5.90);                       // the priest
       box(BRAZ.x - 0.75, BRAZ.x + 0.75, 1.20, BRAZ.z - 0.75, BRAZ.z + 0.75);
       box(PAPER.x - 1.35, PAPER.x + 0.75, 1.20, PAPER.z - 1.20, PAPER.z + 1.20);
@@ -1323,21 +1371,30 @@
   // is made of, dirtied down so it does not read as a circus.
   function makeStripe(cnv) {
     const s = 256, [c, ctx] = cnv(s);
-    ctx.fillStyle = '#d8d2c6'; ctx.fillRect(0, 0, s, s);
-    ctx.fillStyle = '#a8322c';
+    /* Dingy on purpose. The first pass used a clean near-white and a bright
+       red at three stripes across, and from inside it read as a circus: this
+       canvas has been up since Monday in the rain. */
+    ctx.fillStyle = '#b0a99b'; ctx.fillRect(0, 0, s, s);
+    ctx.fillStyle = '#8c2a25';
     for (let i = 0; i < 4; i++) ctx.fillRect(i * (s / 4) + s / 8, 0, s / 8, s);
     // grime, and the weave
-    ctx.globalAlpha = 0.10;
-    for (let i = 0; i < 900; i++) {
-      ctx.fillStyle = Math.random() < 0.5 ? '#000' : '#6a6256';
-      ctx.fillRect(Math.random() * s, Math.random() * s, 2 + Math.random() * 5, 1.5);
-    }
     ctx.globalAlpha = 0.16;
-    ctx.fillStyle = '#2b2a26';
+    for (let i = 0; i < 1600; i++) {
+      ctx.fillStyle = Math.random() < 0.5 ? '#000' : '#5a5348';
+      ctx.fillRect(Math.random() * s, Math.random() * s, 2 + Math.random() * 7, 1.5);
+    }
+    // and the streaks that run down a canvas panel between its ties
+    ctx.globalAlpha = 0.13;
+    ctx.fillStyle = '#2a2620';
+    for (let i = 0; i < 40; i++) {
+      ctx.fillRect(Math.random() * s, 0, 1 + Math.random() * 3, s);
+    }
+    ctx.globalAlpha = 0.20;
+    ctx.fillStyle = '#22211d';
     for (let y = 0; y < s; y += 3) ctx.fillRect(0, y, s, 1);
     ctx.globalAlpha = 1;
     const t = finishTex(c);
-    t.repeat.set(3, 5);
+    t.repeat.set(4, 7);
     return t;
   }
 
