@@ -2067,6 +2067,29 @@ const AMBIENCE_DEFAULT = { beds: [['amb', 0.33]], atShrine: ['fire', 0.6, 16] };
    chapter's fire would go on crackling in the incoming chapter's bedroom,
    because nothing would ever set it back to zero. */
 const liveLoops = new Set();
+
+/* A CUTSCENE MAY HOLD A CHAPTER'S OWN LOOPS DOWN.
+
+   The ninth leak, and it only showed up when a chapter had a bed that
+   STOPS. Chapters 1 and 2 run room tones — a deck's crickets, a fan, a
+   clock — and a room tone is a room tone: nothing in either chapter ever
+   wants one to go quiet for four seconds and come back. Chapter 3's tent
+   runs a ritual drum, and its opening film is built entirely on the moment
+   that drum stops: forty people, one held breath, and nothing.
+
+   The ambient frame re-asserts every bed's volume every frame, so a scene
+   calling loopVol() directly would be overwritten before it was heard. This
+   is a multiplier the frame respects instead. Keyed by loop name, 1 means
+   untouched, and it is cleared both when a cutscene starts and when one
+   ends — so it can never leak into play, and a scene that ducks cannot
+   leave the next scene silent.                                          */
+let cineDuck = null;
+const duckLoop = (name, k) => {
+  if (!cineDuck) cineDuck = Object.create(null);
+  cineDuck[name] = k;
+};
+const duckOf = name => (cineDuck && name in cineDuck) ? cineDuck[name] : 1;
+
 function silenceChapterLoops() {
   const amb = CH.ambience || AMBIENCE_DEFAULT;
   const keep = new Set((amb.beds || []).map(b => b[0]));
@@ -2091,7 +2114,7 @@ function updateAudioFrame(t) {
      are the defaults, so nothing about the deck moves.                   */
   const amb = CH.ambience || AMBIENCE_DEFAULT;
   for (const [name, vol] of (amb.beds || AMBIENCE_DEFAULT.beds)) {
-    loopVol(name, inWorld ? vol : 0);
+    loopVol(name, inWorld ? vol * duckOf(name) : 0);
     liveLoops.add(name);
   }
   const at = amb.atShrine;
@@ -2099,7 +2122,8 @@ function updateAudioFrame(t) {
     const [name, vol, range] = at;
     const dFire = Math.hypot(yaw.position.x - SHRINE.x, yaw.position.z - SHRINE.z);
     loopVol(name, inWorld
-      ? Math.pow(THREE.MathUtils.clamp(1 - dFire / range, 0, 1), 1.6) * vol : 0);
+      ? Math.pow(THREE.MathUtils.clamp(1 - dFire / range, 0, 1), 1.6) * vol * duckOf(name)
+      : 0);
     liveLoops.add(name);
   }
   const dGhost = Math.hypot(yaw.position.x - ghost.position.x,
@@ -2751,7 +2775,18 @@ const STING_SAMPLE = {
   doorcreak: ['doorcreak', 0.75], hallsteps: ['hallsteps', 0.9],
   bedcreak: ['bedcreak', 0.85],
   v2wake1: ['v2wake1', 1], v2wake2: ['v2wake2', 1], v2wake3: ['v2wake3', 1],
-  v2call: ['v2call', 1], v2ma: ['v2ma', 1]
+  v2call: ['v2call', 1], v2ma: ['v2ma', 1],
+  /* Chapter 3's tentage. `drum` is ONE struck hit for accents — the steady
+     beat is inside the `ritual` loop, so a scene that wants the ritual to
+     stop stops the chant and the drum on a single track. */
+  drum: ['drum', 0.8], cymbal: ['cymbal', 0.7], gong: ['gong', 0.85],
+  burn: ['burn', 0.7], chair: ['chair', 0.7],
+  v3wake1: ['v3wake1', 1], v3wake2: ['v3wake2', 1],
+  v3wake3: ['v3wake3', 1], v3wake4: ['v3wake4', 1],
+  v3ask: ['v3ask', 1],
+  // the auntie at the paper table — the one voice in the game that is calm
+  v3aunt1: ['v3aunt1', 1], v3aunt2: ['v3aunt2', 1], v3aunt3: ['v3aunt3', 1],
+  v3aunt4: ['v3aunt4', 1], v3aunt5: ['v3aunt5', 1]
 };
 /* Which kinds the synth below can actually fake. Everything else in
    STING_SAMPLE is sample-only: if its buffer is not decoded yet it stays
@@ -3002,6 +3037,7 @@ function playCineFn(sceneFn, onDone) {
     ghostMix: null,            // t => animation speed for her walk cycle
     keep: {}, endFade: 0, snap, onDone
   };
+  cineDuck = null;                 // a scene starts with the room at full
   sceneFn(c, snap, sceneApi(c));
   c.dur = c.tracks.reduce((m, tr) => Math.max(m, tr.t1), 1);
   cine = c;
@@ -3099,6 +3135,7 @@ function cineEnd() {
   const c = cine;
   if (!c) return;
   cine = null;
+  cineDuck = null;                  // the room tone comes back up with the world
   stopCineVoices();
   restoreWorld(c.snap, c.keep);
   cineFadeEl.style.opacity = String(c.endFade);
@@ -3183,6 +3220,7 @@ function sceneApi(c) {
     PRAYER_R, PRAYER_L, setHandPrayer, handWidth: () => HAND_W,
     camera, yaw, pitch,
     ghost, ghostLight, ghostOpacity, getReveal: () => reveal,
+    duck: duckLoop,                  // hold one of the chapter's loops down
     handsRoot, armR, noteProp,
     buildPrayerArm, prayerArm: () => prayerArmL,
     rightHand: () => rightHandModel, setHandCurl,
