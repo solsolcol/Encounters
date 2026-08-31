@@ -4,9 +4,12 @@ A 3D first-person horror-education game based on Master Z's Spiritual
 Encounters (encounters.triplegem.asia, Triple Gem Affiliation Consultancy,
 Singapore). Multi-chapter; each chapter is one small dense location, one
 supernatural encounter, one decision with consequences and a Buddhist
-teaching. Chapter 1 (The Hell Note: a void deck, a burner, a note, her) is
-complete and live. This file is the contract for how work on this repo
-happens — read it before changing anything.
+teaching. Three chapters are complete and live — The Hell Note (a void
+deck, a burner, a note, her), The Presence (a bedroom, a fan, the gap
+beside the bed) and The Gathering (a seventh-month tentage in the car park,
+forty people on red plastic chairs, and one of them facing the wrong way).
+All three happen at the same block. This file is the contract for how work
+on this repo happens — read it before changing anything.
 
 ## Who you are working with
 
@@ -50,7 +53,7 @@ from his **phone**. Consequences:
 5. The generated files (`hellnote.html`, `wrapped.html`, `bundle.js`,
    `dist/`) are never edited by hand.
 
-## Architecture (v4.0)
+## Architecture (v4.1)
 
 One source, two builds, built by `npm run build` (esbuild → `build.py` →
 `wrap.py`):
@@ -125,6 +128,15 @@ game's, not chapter 1's), the faint sequence, the cutscene *language*, and
 the sky. A chapter owns its location, its props and its four scenes —
 nothing else.
 
+**The ninth leak, found at v4.1**: a cutscene may now hold a chapter's own
+ambience loops down, through `api.duck(name, k)`. Chapters 1 and 2 run room
+tones and a room tone never stops; chapter 3 runs a ceremony, and its
+opening film is built on the moment the drum does. A scene cannot call
+`loopVol()` directly — the ambient frame re-asserts every declared volume
+every frame — so this is a multiplier that frame respects, cleared at both
+ends of every cutscene. Chapters 1 and 2 are untouched: `duckOf()` returns
+1 unless a scene says otherwise.
+
 ## Testing
 
 22 harnesses, listed in `runtests.mjs` with one-line purposes and a
@@ -176,13 +188,23 @@ separately, so audio budget is now a download-time judgement, not a hard
 cap. All playback through
 the shared Web Audio context — never `<audio src=data:>` — and everything
 obeys the one mute button. Since v2.3 the game runs a full generated
-soundscape: 56 sounds in one `audiopack` asset (assets/audio/ packed by
+soundscape: 95 sounds in one `audiopack` asset (assets/audio/ packed by
 build.py) + the James opening line — loops, UI cues, ghost vocalisations,
-cutscene stings, ending music beds, and in-world narration lines (voice:
-"James - Husky, Engaging and Bold", eleven_v3). The procedural stings in
-main.js remain only as the decode-time fallback. docs/AUDIO-PLAN.md has
-the full inventory, cue map, and the generation flow IDs; the v3.7
-cutscene pass is in docs/V3.7-PLAN.md.
+cutscene stings, ending music beds, and in-world narration lines. Three
+speakers now: James (`EkK5I93UQWFDigLMpZcX`), chapter 2's Mother (Matilda,
+`XrExE9yKIg1WjnnlVkGX`) and chapter 3's auntie (Alice,
+`Xb7hH8MSUJpSbSDYk0k2`) — all eleven_v3. The workspace has no Southeast
+Asian voice at all; what those two were actually chosen for is that they do
+not sound like each other. The procedural stings in main.js remain only as
+the decode-time fallback. docs/AUDIO-PLAN.md has the full inventory, cue map
+and generation flow IDs; the v3.7 cutscene pass is in docs/V3.7-PLAN.md and
+chapter 3's twenty-three sounds are in docs/V4.1-CHAPTER3-PLAN.md.
+
+**eleven_v3 fails about one line in three, at random.** Seven of sixteen
+failed on the first run at v4.1 and every one succeeded on a plain re-run
+with the text unchanged. Do not rewrite a line that failed — check
+`has_failures`, re-run, repeat. (The v4.0 note blaming line length and
+punctuation was wrong; LEARNINGS carries the correction.)
 
 A cutscene reaches sound through `sfx(at, kind, vol)` and nothing else.
 `kind` is a row in `STING_SAMPLE` in main.js — that table IS the
@@ -251,6 +273,11 @@ What the baseline contains, by release:
   eight chapter-1 leaks that building it exposed (the table above). Also:
   `textsync` now discovers every chapter rather than naming chapter 1, so
   a new chapter's words reach Chad's sheet with no edit to the tool.
+- **v4.1** CHAPTER 3 · The Gathering — a seventh-month tentage in the car
+  park under the same block, forty-eight red chairs, an altar, a tang-ki in
+  trance, a crowd of thirty, and the ninth leak (a cutscene may duck the
+  chapter's loops). Twenty-three new sounds and a second speaker. The
+  chapter cost one engine seam, which is what v4.0 was for.
 - **v3.8** real art where there was code: a bought first-person ARM rig
   (`arms.glb`, credited to Fab) replaces the wrist-only hand pack and the
   forearm that was built out of cylinders to cover for it, and the hell
@@ -311,17 +338,29 @@ true, and must stay true:
 - only the shared assets and the booting chapter's own are preloaded;
 - **adding a chapter must not add a harness.**
 
-**Chapter 2 is built** (v4.0) — THE PRESENCE, from the trial game's own
-episode 1: the bedroom, days after the void deck. Its choices, ranking and
-teachings are Master Z's verbatim; only the delta magnitudes are rescaled
-from the trial's ±12 to this game's ±30. `docs/V4-CHAPTER2-PLAN.md` is the
-build's memory — read it before touching chapter 2.
+**Chapters 2 and 3 are built** (v4.0, v4.1) — THE PRESENCE and THE
+GATHERING, from the trial game's own episode 1. Every choice, ranking and
+teaching is Master Z's verbatim; only the delta magnitudes are rescaled
+from the trial's ±12 to this game's ±30, by the same factor in both, so one
+rank formula serves all three chapters. `docs/V4-CHAPTER2-PLAN.md` and
+`docs/V4.1-CHAPTER3-PLAN.md` are those builds' memory — read the right one
+before touching either chapter.
 
-Next up: **chapter 3**, and the still-outstanding job of replacing chapter
-1's placeholder choices with the real "THE OFFERINGS" data in
-`docs/source/trial-game-chapters.md`. Chapter 3 should be much cheaper
-than chapter 2 was: the eight leaks are fixed, so the next chapter
-declares what it needs and the engine already knows how to be told.
+**The three chapters escalate on one axis, deliberately.** Chapter 1's
+terror is DISTANCE (she is over there, and then she is closer). Chapter 2's
+is SMALLNESS (a room you cross in four steps, and nowhere in it to go).
+Chapter 3's is COMPANY (forty people, and she is in row four, and not one
+of them turns round). A change that blunts one of those is a change to the
+chapter's whole reason for existing.
+
+Next up: **chapter 4** (BACK HOME, in the trial's episode 1), and the
+still-outstanding job of replacing chapter 1's placeholder choices with the
+real "THE OFFERINGS" data in `docs/source/trial-game-chapters.md`. Chapter 3
+cost one engine seam; chapter 4 should cost none.
+
+Also outstanding, and Chad's call: the sound pack is now 95 sounds and
+6.9 MB, which is the biggest single download after the ghost mesh. A
+compression pass is a plain download-speed improvement, not a blocker.
 
 `docs/LEARNINGS.md` is the catalog of every hard-won lesson (CSP traps,
 audio traps, cutscene staging, test flakiness). When something in this

@@ -505,15 +505,71 @@ the default.
   through an empty room. `whenWorldReady()` was lifted out of the card's
   own gate so both use it.
 
-## eleven_v3 fails on long lines with fussy punctuation
+## eleven_v3 failures are TRANSIENT, not textual — re-run, do not rewrite
 
-- Five of eleven lines failed outright on the first run — "Failed to
-  generate audio", no detail. The pattern was length plus punctuation: an
-  ellipsis mid-sentence, an inline `[exhale]` between clauses, a comma
-  splice. Every one succeeded when rewritten as two plain short sentences
-  with the delivery tag only at the front.
-- Same family as the em-dash failure recorded above. The working rule: one
-  bracketed tag at the start, then plain sentences, nothing clever inside.
+- **This entry corrects the v4.0 version of it.** At v4.0, five of eleven
+  lines failed with "Failed to generate audio" and the conclusion drawn was
+  that length plus fussy punctuation caused it — an ellipsis mid-sentence,
+  an inline `[exhale]`, a comma splice. Rewriting them fixed it, so the
+  theory looked confirmed.
+- At v4.1, SEVEN of sixteen failed, and the theory did not survive contact:
+  *"I knew better. I went up there anyway."* failed while *"I did not move.
+  I just watched it come closer."* passed, in the same batch, same voice,
+  same shape. *"Half the block is down here tonight."* — one plain sentence,
+  the shape that had just "explained" three other failures — passed. Every
+  failed line succeeded on a straight re-run with the text unchanged.
+- So the failure rate is roughly one in three and it is random. Budget for
+  it: generate, check `has_failures`, re-run the failures, repeat. Do NOT
+  rewrite the line, because a rewrite that then succeeds will look like a
+  fix and teach the next person the wrong lesson — which is exactly what
+  happened here.
+- The em-dash rule above still holds: that one is reproducible.
+
+## Two collision heights, and chapter 3's crowd lives in the gap
+
+- `collide()` tests the player at **y = 1.0** (`main.js:4041`). `lineClear()`
+  marches HER sightline at **y = 1.4** (`main.js:778`). Nothing had ever
+  needed the difference before, because chapter 1's blockers are pillars and
+  chapter 2's are walls, and both are taller than either number.
+- Chapter 3 is six rows of chairs with a ghost standing among them. A
+  blocker that tops out at 1.20 stops the player walking through the seating
+  and does not block her being seen over it — which is the entire staging of
+  the chapter. Those boxes are therefore built BY HAND, not through
+  `Box3.setFromObject().expandByScalar(0.22)`, which would grow a 0.95 m
+  chair to 1.17 and, on a slightly taller chair, past 1.4 — at which point
+  her appearances start being silently rejected at random by `lineClear`.
+- The general rule: if you build blockers from the geometry, you inherit the
+  geometry's height. Sometimes the height is the point.
+
+## A room tone never stops; a ritual does
+
+- The ninth "the engine was chapter 1's engine" leak, and it only surfaced
+  when a chapter had a bed that STOPS. Chapters 1 and 2 run crickets, a fan
+  and a clock; nothing in either wants one to go silent for four seconds and
+  come back. Chapter 3's opening film is built on the moment the ceremony
+  drum stops.
+- A scene cannot call `loopVol()` to do it: the ambient frame re-asserts
+  every bed's declared volume on every frame, so the write is gone before it
+  is heard. The fix is a multiplier that frame respects (`duckOf`), set by
+  `api.duck(name, k)` and cleared at BOTH ends of every cutscene — on start
+  so a scene never inherits the last one's duck, and on end so nothing can
+  leak into play.
+- Because it is a multiplier read inside the same track system, a scene can
+  fade the room on the same `tr()` that moves the camera. That is the
+  difference between sound that follows the picture and sound that is cued.
+
+## curl and ffmpeg eat the loop's stdin
+
+- `while read -r name url; do curl -o "$_$name" "$url"; done < list.txt`
+  silently truncates the FIRST CHARACTER of every name after the first line.
+  Not the URL — the name, and only from line two onwards.
+- Both `curl` and `ffmpeg` read stdin when they are not told otherwise, and
+  inside a `while read` loop stdin is the list file. One byte consumed
+  shifts the next `read`, so `v3aunt2` arrives as `3aunt2` and the download
+  lands under a filename nothing will ever look for.
+- `< /dev/null` on every command inside the loop, or `ffmpeg -nostdin`. The
+  bug is invisible unless you list the directory afterwards, which is the
+  reason to always list the directory afterwards.
 
 ## Never trust the generator's output level
 

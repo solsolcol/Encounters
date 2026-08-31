@@ -305,3 +305,48 @@ every file against the pack before encoding.
 
 The pack is now 72 sounds and 7.3 MB, and that is the next thing to look at
 — a compression pass before chapter 3, not before shipping this one.
+
+
+## v4.1 additions (chapter 3, THE GATHERING) — 95 sounds in the pack
+
+Flow `3Af3rMqvMtsVecg9KPd5`. James is `EkK5I93UQWFDigLMpZcX`; the auntie at
+the paper table is **`Xb7hH8MSUJpSbSDYk0k2` (Alice)** — the workspace still
+has no Southeast Asian female voice, so what she was actually chosen for is
+that she does not sound like chapter 2's Mother (Matilda). Two women in
+consecutive chapters must not be the same voice.
+
+| name | what | wired at |
+|---|---|---|
+| `tentamb` | the tentage's room tone: canvas, a shifting crowd, traffic a street away, 6 s loop | a bed of the chapter |
+| `ritual` | the ceremony ITSELF — hand drum, wooden fish, a man chanting low — 8 s loop | a bed; ducked to nothing at the film's 22 s mark |
+| `drum` | ONE struck hand-drum hit, for accents | the film ×6, A, B, C, D |
+| `cymbal` | small hand cymbals, one strike | the film ×3, A, B, D |
+| `gong` | bronze temple gong, the trance moment | the film @23.3, B @5.2 |
+| `burn` | a bundle of paper into the brazier | the film @13.9 |
+| `chair` | a red plastic chair moving on tarmac with nobody in it | the film @30.6, C @22.0 |
+| `v3wake1`–`v3wake4` | James, the four lines of the opening film | intro |
+| `v3near` / `v3altar` | the two proximity lines about the altar | play |
+| `v3ask` | *"Is it real, auntie?"* | C |
+| `v3aunt1`–`v3aunt4` | the auntie's four in scene C | C |
+| `v3aunt5` | *"Boy, come out of there now."* | B, hauling him out of the ritual |
+| `v3A`–`v3D` | the four under the outcome cards | the cards |
+
+**Why the drum is inside `ritual` and also its own sample.** A cutscene can
+duck a chapter's loops (`api.duck`, added at v4.1) but it cannot duck half a
+loop. The film's whole spine is the ceremony stopping dead — chant AND drum,
+on one track — so they are one loop. The separate `drum` sample is a single
+hit, cued by hand, which is also the only way to write a ritardando.
+
+**Two findings, both of which correct earlier notes here:**
+
+- **eleven_v3 fails about one line in three, at random.** Seven of sixteen
+  failed and every one succeeded on a plain re-run with the text unchanged.
+  Lines of identical shape both passed and failed in the same batch. The
+  v3.7/v4.0 note blaming length and punctuation was wrong. Check
+  `has_failures`, re-run, repeat — do not rewrite.
+- **The generator's level spread was 36 dB this run**, worse than v4.0's.
+  `drum` and `tentamb` both came back at −57 dB mean. Re-prompting for
+  "LOUD, close-miked, full level" helped and was not enough, so every file is
+  gain-corrected from its own `volumedetect` reading: one-shots peak −3.0,
+  loops mean −27 (peak capped −3), voice peak −1.8. See
+  `docs/V4.1-CHAPTER3-PLAN.md` for the script and the per-file numbers.
