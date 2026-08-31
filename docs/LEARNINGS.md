@@ -727,3 +727,26 @@ the default.
 - And ALWAYS byte-verify after deploying — this is the second release in a
   row where the verification pass caught something (last time truncated
   fetches, this time the outage itself, within a minute of it starting).
+
+## The explore music was chapter 1's music (the twelfth leak)
+
+- Chapter 3's ceremony bed was inaudible in the shipped v4.3, and Chad said
+  so within one play: "the creepy music should no longer be playing in this
+  chapter... That music should be the focus."
+- The engine plays the explore music bed — a dark ambient wash written for
+  the void deck — in EVERY chapter, at a fixed MUSIC_VOL, with swells that
+  peak ~10 dB above a mean-normalised ambience loop. Any chapter-owned
+  music drowns under it by construction.
+- Fixed like the eleven leaks before it: a chapter declares `musicVol`
+  (default 1 — chapters 1/2 bit-identical), every write to musicGain goes
+  through one function, and setChapter ramps between chapters. And the
+  chapter's own music must be LEVELLED as music (mean ~-22), not as
+  ambience (mean -27): the loop contract in the encode script is for room
+  tones, and applying it to the thing that should lead the mix buries it.
+- The wider lesson: state probes prove a scene RUNS — they cannot hear
+  that a bed is buried, that two narration takes overlap, or that a line's
+  words describe a beat that no longer exists. Levels can be computed
+  (effective dB = file mean + 20·log10(gain)); overlaps can be computed
+  (cue time + MEASURED take duration vs the next cue); line MEANING has to
+  be re-read against the scene every time the scene changes. All three
+  checks are cheap, and all three were skipped because the suite was green.

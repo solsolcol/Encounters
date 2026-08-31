@@ -1803,6 +1803,15 @@ applyChapterWords();
    other people. A phone or tablet is a private, deliberate thing, so it
    starts with sound. Either way the choice is remembered per device.       */
 const MUSIC_VOL = 0.34, MUTE_KEY = 'mzse3d_muted';
+/* THE TWELFTH LEAK. The explore music bed is the void deck's — a dark
+   ambient wash written for chapters that are hauntings. Chapter 3 is a
+   CEREMONY: its music is the tang-ki band in its own beds, and the dread
+   wash on top of a morning ritual read as exactly what it was, someone
+   else's soundtrack (Chad: "the creepy music should no longer be playing
+   in this chapter"). A chapter declares `musicVol` (0..1, default 1) and
+   every site that writes the music gain reads this instead of MUSIC_VOL. */
+const musicVolNow = () =>
+  muted ? 0 : MUSIC_VOL * (Number.isFinite(CH.musicVol) ? CH.musicVol : 1);
 
 let muted = !HAS_TOUCH;
 try {
@@ -1860,7 +1869,7 @@ function musicSetup() {
   // most of them — hears nothing at all.
   try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch {}
   musicGain = actx.createGain();
-  musicGain.gain.value = muted ? 0 : MUSIC_VOL;
+  musicGain.gain.value = musicVolNow();
   musicGain.connect(masterOut());
   assetBytes('music', true)
     .then(bytes => actx.decodeAudioData(bytes))
@@ -1892,7 +1901,7 @@ function setMuted(v) {
     const g = musicGain.gain, now = actx.currentTime;
     g.cancelScheduledValues(now);
     g.setValueAtTime(g.value, now);
-    g.linearRampToValueAtTime(muted ? 0 : MUSIC_VOL, now + 0.35);
+    g.linearRampToValueAtTime(musicVolNow(), now + 0.35);
   }
   if (!muted) musicStart();
   // a half-spoken line under a mute button that was just pressed is a bug,
@@ -2329,9 +2338,9 @@ function duckMusic(sec) {
   const g = musicGain.gain, now = actx.currentTime;
   g.cancelScheduledValues(now);
   g.setValueAtTime(g.value, now);
-  g.linearRampToValueAtTime(MUSIC_VOL * 0.22, now + 0.5);
-  g.setValueAtTime(MUSIC_VOL * 0.22, now + Math.max(1, sec - 1.5));
-  g.linearRampToValueAtTime(MUSIC_VOL, now + Math.max(2, sec));
+  g.linearRampToValueAtTime(musicVolNow() * 0.22, now + 0.5);
+  g.setValueAtTime(musicVolNow() * 0.22, now + Math.max(1, sec - 1.5));
+  g.linearRampToValueAtTime(musicVolNow(), now + Math.max(2, sec));
 }
 
 /* the per-frame mix: loop volumes derived from world state, the occasional
@@ -3287,6 +3296,12 @@ function setChapter(key) {
   applyDaylight();                 // and so is the time of day
   silenceChapterLoops();           // and so is the room tone
   packLoad(key);                   // and its own sounds, if they are not here yet
+  if (musicGain && actx) {         // and the explore music obeys the new chapter
+    const g = musicGain.gain, now = actx.currentTime;
+    g.cancelScheduledValues(now);
+    g.setValueAtTime(g.value, now);
+    g.linearRampToValueAtTime(musicVolNow(), now + 1.2);
+  }
   SPAWN.pos.set(CH.spawn.x, CH.spawn.y, CH.spawn.z);
   SPAWN.rot = 0;
   rebuildStage(CH);

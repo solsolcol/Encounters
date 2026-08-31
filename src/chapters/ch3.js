@@ -164,8 +164,12 @@
 
        No `atShrine` — the warm light in this chapter is the altar's. */
     ambience: { beds: [['tentamb', 0.30], ['crowdmur', 0.26],
-                       ['ritual', 0.22], ['ceremony', 0.42]],
+                       ['ritual', 0.26], ['ceremony', 0.65]],
                 atShrine: null },
+    /* the engine's explore music is the void deck's dark wash — someone
+       else's soundtrack here. OFF for this chapter: the tang-ki band above
+       IS the chapter's music (Chad: "That music should be the focus"). */
+    musicVol: 0,
     voiceLine: 'v3play',   // spoken a few seconds into play, from the pack
 
     /* The words that name the thing you can act on. Chapter 1's are about a
@@ -1754,8 +1758,8 @@
     }, smoothK);
     sfx(23.9, 'cymbal', 0.9);
     step(24.2, () => { stage.crowdLife = 0.12; });   // nobody moves. nobody.
-    sfx(25.0, 'breath', 0.55);
-    sfx(26.5, 'v3wake3');                 // "Nobody is scared. Why is nobody scared?"
+    sfx(24.6, 'breath', 0.55);
+    sfx(25.0, 'v3wake3');                 // "Nobody is scared. Why is nobody scared?"
 
     /* 26.8-30.2  the camera comes off the front — slowly, the way you look
        when you do not want to — and finds the one chair that is facing the
@@ -1773,7 +1777,11 @@
     yawTo(26.8, 29.8, 0, LOOKCHAIR, smoothK);
     pitchTo(26.8, 29.8, -0.01, -0.26, smoothK);
     sfx(27.4, 'chair', 0.5);
-    sfx(28.1, 'v3chair');       // "There's one chair facing the wrong way. Just one."
+    /* ONE line at a time, everywhere in this film: wake3 ends at 28.97,
+       this starts at 29.4, and everything after moves down to keep it so.
+       Two James lines talking over each other was the first thing Chad
+       heard in the shipped version, because of course it was. */
+    sfx(29.4, 'v3chair');       // "There's one chair facing the wrong way. Just one."
 
     /* 30.4-34.2  and the camera LIFTS along the line the chair faces — out
        through the open back of the tent, into the glare — AND SHE IS OUT
@@ -1784,32 +1792,32 @@
        the ceremony stopped its own drum a beat ago, so what plays under
        the reveal is a tent's worth of silence. In three chapters nothing
        has frightened her. The tent does. That is the shot. */
-    step(30.4, () => {
+    step(34.2, () => {
       ghost.position.set(HER.x, 0, HER.z);
       ghost.rotation.y = Math.PI;        // facing the tent: forward is +z at 0
     });
-    yawTo(30.4, 33.2, LOOKCHAIR, Math.PI + 0.094, smoothK);  // her, dead centre
-    pitchTo(30.4, 33.2, -0.26, -0.005, smoothK);
-    camTo(30.4, 33.2, CRANE, { x: 0.30, y: EYE, z: 2.30 }, smoothK);
+    yawTo(34.4, 37.2, LOOKCHAIR, Math.PI + 0.094, smoothK);  // her, dead centre
+    pitchTo(34.4, 37.2, -0.26, -0.005, smoothK);
+    camTo(34.4, 37.2, CRANE, { x: 0.30, y: EYE, z: 2.30 }, smoothK);
     /* she RESOLVES out of the glare rather than fading in — full daylight,
        so she carries herself, and the light on her is nearly nothing */
-    tr(31.6, 33.6, k => {
+    tr(35.6, 37.6, k => {
       ghostOpacity(0.88 * k);
       ghostLight.intensity = 0.12 * k;
     }, rawK);
-    sfx(31.2, 'breath', 0.5);
-    sfx(33.8, 'v3out1');        // "She's out there. Standing in the middle of
+    sfx(35.0, 'breath', 0.5);
+    sfx(38.0, 'v3out1');        // "She's out there. Standing in the middle of
                                 //  the car park. In the sun."
-    sfx(38.2, 'heart', 0.45);
+    sfx(42.6, 'heart', 0.45);
 
-    // 39.2  four words, and they change what the whole game has been about
-    sfx(39.2, 'v3out2');        // "She's not coming in."
-    fade(40.4, 42.4, 0, 1);
+    // 43.7  four words, and they change what the whole game has been about
+    sfx(43.7, 'v3out2');        // "She's not coming in."
+    fade(45.6, 47.6, 0, 1);
     // the drum starts again, alone, in the black — the tent does not care
-    tr(41.0, 42.4, k => { duck('ritual', 0.55 * k); }, rawK);
-    sfx(41.4, 'drum', 0.7);
+    tr(46.2, 47.6, k => { duck('ritual', 0.55 * k); }, rawK);
+    sfx(46.6, 'drum', 0.7);
 
-    step(42.4, () => {
+    step(47.6, () => {
       armR.visible = true;
       stage.crowdLife = 1;
       stage.drumBeat = 1;
@@ -1896,9 +1904,10 @@
     sfx(13.2, 'drum', 0.6);
     sfx(14.0, 'bellring', 0.4);
 
-    // 14.6-17.0  and out, with the ceremony refusing to be interesting again
+    // 15.2-19.6  and out, with the ceremony refusing to be interesting
+    // again. v3seen's take runs 8.4 seconds; the fade waits for it.
     sfx(15.2, 'breath', 0.5);
-    fade(15.4, 17.2, 0, 1);
+    fade(17.6, 19.6, 0, 1);
 
     c.endFade = 1;
   }
@@ -1998,7 +2007,6 @@
     sfx(5.9, 'cymbal', 0.9);
     sfx(6.4, 'suona', 0.6);              // the horn, not her — nothing here is hers
     sfx(7.0, 'drum', 1);
-    sfx(7.6, 'vpant', 0.9);
     sfx(8.1, 'cymbal', 1);
 
     /* 8.4-8.9  everything stops. Half a second of a tent with nothing in it. */
@@ -2075,9 +2083,12 @@
     });
     sfx(14.6, 'v3aunt5');   // "Boy! Boy, come out. You cannot stand there."
     sfx(15.2, 'step', 0.4); sfx(15.8, 'step', 0.4);
-    sfx(16.4, 'vpant', 0.8);
-    sfx(17.2, 'gongdeep', 0.35);      // far off, the ceremony not caring
-    fade(17.0, 19.0, 0, 1);
+    /* ONE voice at a time: the panting take runs 4.4 seconds, so it waits
+       for the auntie to finish (17.9) and then trails into the black —
+       breathing under a fade-out is the one thing allowed to be cut off */
+    sfx(18.2, 'vpant', 0.7);
+    sfx(19.4, 'gongdeep', 0.35);      // far off, the ceremony not caring
+    fade(18.6, 20.6, 0, 1);
 
     c.endFade = 1;
   }
@@ -2250,8 +2261,8 @@
                             //  I told myself that was normal."
     sfx(15.2, 'step', 0.3); sfx(16.1, 'step', 0.28); sfx(17.0, 'step', 0.26);
     sfx(15.4, 'trancehum', 0.5);
-    fade(18.4, 20.4, 0, 1);
-    sfx(19.6, 'gongdeep', 0.3);       // the last thing: far off, behind him
+    fade(19.4, 21.4, 0, 1);           // v3left ends at 20.9; the cut waits
+    sfx(20.2, 'gongdeep', 0.3);       // the last thing: far off, behind him
 
     c.endFade = 1;
   }
