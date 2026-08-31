@@ -5,11 +5,19 @@ without prompting for each change. This is how it works and how to run it.
 
 ## The sheet
 
-**Master Z's Encounters — GAME TEXT v7 (edit here)** in his Drive
-(id `1AD8BGROfoE2oL1Rn0UhOZ-NpyWXvCwFLJUViGTGecvs` — the **v7** sheet, made
-at v4.1 when chapter 3 added its 23 rows; v1–v6 are superseded, renamed
-"OLD — do not edit" in his Drive, and should not be edited).
-<https://docs.google.com/spreadsheets/d/1AD8BGROfoE2oL1Rn0UhOZ-NpyWXvCwFLJUViGTGecvs/edit>
+**Master Z's Encounters — GAME TEXT v8 (edit here)** in his Drive
+(id `1Sy9LH7OaDfH9RDF8ICHXZXRiPa9mId4HETU4IHq828Q` — the **v8** sheet, made
+at v4.1 when chapter 3 moved from a night scene to a morning one and its
+`brief` changed with it; v1–v7 are superseded, renamed "OLD — do not edit"
+in his Drive, and should not be edited).
+<https://docs.google.com/spreadsheets/d/1Sy9LH7OaDfH9RDF8ICHXZXRiPa9mId4HETU4IHq828Q/edit>
+
+Two sheets in one session is the cost of the connector's one real
+limitation, and it is worth restating why: it can READ a sheet and it can
+CREATE one, but it cannot write cells into an existing one. So any change to
+a string — even one word — means a new sheet and a new link. Read the old
+one and import it FIRST, every time, or an edit Chad made and did not
+mention is lost.
 
 The Drive connector can read a sheet and can create one, but it cannot
 write cells into an existing one. So a release that adds strings makes a
