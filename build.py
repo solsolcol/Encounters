@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = '4.6'
+VERSION = '4.7'
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -183,6 +183,16 @@ ASSETS = {
     'titlevidwebm': ('assets/titlevid.webm', True, False),
     'titlevid': ('assets/titlevid.mp4', True, False),
     'amulet': ('amulet.glb', want_amulet, False),
+    # v4.7: the bought and scanned location models, all Sketchfab (the
+    # credits panel carries the attributions). Shrunk from 31 MB of source
+    # to 4 by docs/V4.7-MODELS.md's pipeline; per-chapter, so only the
+    # chapter that names one ever downloads it. Preloaded because each is
+    # the furniture of the first shot of its chapter.
+    'mother': ('assets/mother.glb', True, True),        # ch2
+    'seat': ('assets/seat.glb', True, True),            # ch3
+    'cars': ('assets/cars.glb', True, True),            # ch3
+    'guangong': ('assets/guangong.glb', True, True),    # ch3
+    'encik': ('assets/encik.glb', True, True),          # ch3
 }
 
 # Hosted-only assets: shipped as a URL, never inlined as base64.

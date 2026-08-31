@@ -109,7 +109,21 @@ const out = await p.evaluate(async ({ CYCLES, WARM }) => {
 
   log.before = count();
   for (let i = 0; i < WARM; i++) { await e.rebuildStage(); await drawn(); }
-  const first = count();
+  /* Warm cycles were supposed to make the baseline honest and were not
+     enough twice: under load the two frames after a rebuild still upload
+     only part of the world, the baseline reads 55 where steady state is 70,
+     and the missing fifteen come back as a fictitious 1.88-per-cycle slope.
+     So the baseline is now taken only once the count has actually stopped
+     moving: draw, count, and accept the number when two reads in a row
+     agree (a few extra frames also give the chapters' async props time to
+     land, which v4.7's five bought models made a real factor). */
+  let first = count();
+  for (let tries = 0; tries < 10; tries++) {
+    await drawn();
+    const again = count();
+    if (again.geometries === first.geometries && again.textures === first.textures) break;
+    first = again;
+  }
   for (let i = 0; i < CYCLES; i++) { await e.rebuildStage(); await drawn(); }
   const after = count();
   // and the world really is back on the GPU, not an empty scene reading zero

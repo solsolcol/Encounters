@@ -5,12 +5,13 @@ without prompting for each change. This is how it works and how to run it.
 
 ## The sheet
 
-**Master Z's Encounters — GAME TEXT v8 (edit here)** in his Drive
-(id `1Sy9LH7OaDfH9RDF8ICHXZXRiPa9mId4HETU4IHq828Q` — the **v8** sheet, made
-at v4.1 when chapter 3 moved from a night scene to a morning one and its
-`brief` changed with it; v1–v7 are superseded, renamed "OLD — do not edit"
-in his Drive, and should not be edited).
-<https://docs.google.com/spreadsheets/d/1Sy9LH7OaDfH9RDF8ICHXZXRiPa9mId4HETU4IHq828Q/edit>
+**Master Z's Encounters — GAME TEXT v9 (edit here)** in his Drive
+(id `1OIloqMG-nv1aw8RYxg3RXFMaNgJ7QjkhRB7mn26MzJ4` — the **v9** sheet, made
+at v4.7 when the five bought-model credits joined the credits panel; v1–v8
+are superseded, renamed "OLD — do not edit" in his Drive, and should not be
+edited. v8 was read and compared against the game before v9 was generated:
+no pending edit of Chad's was outstanding, so nothing was lost).
+<https://docs.google.com/spreadsheets/d/1OIloqMG-nv1aw8RYxg3RXFMaNgJ7QjkhRB7mn26MzJ4/edit>
 
 Two sheets in one session is the cost of the connector's one real
 limitation, and it is worth restating why: it can READ a sheet and it can

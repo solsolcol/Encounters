@@ -366,6 +366,19 @@ What the baseline contains, by release:
   with half the tremble, which is what it takes to keep the thumbs out of
   frame at both ends of the shake. docs/V4-CHAPTER2-PLAN.md carries the
   beat sheets.
+- **v4.7** REAL MODELS — Chad's five Sketchfab uploads, shrunk from 31 MB
+  to 4 with gltf-transform and placed exactly where he said: the rigged
+  woman IS the ch2 mother (same `mother` group contract, idle clip cut past
+  its bind-pose lead-in, grounded and sized from POSED BONES — the arms
+  rig's lesson striking twice); the plastic chair is every seat in ch3 (a
+  fourth InstancedMesh behind the same `placeChair`); the low-poly cars
+  replace the boxes; the Guan Gong scan stands on a plinth where the paper
+  effigy stood; and the seated audience is the sitting encik BAKED to one
+  static geometry and shared by ~25 tinted, half-mirrored meshes. All five
+  credited in the credits panel; the sheet is GAME TEXT v9 for the new
+  rows. Everything loads async over invisible primitive fallbacks, so a
+  failed download costs a nicer prop, never the chapter.
+  docs/V4.7-MODELS.md is the build's memory, traps included.
 - **v3.8** real art where there was code: a bought first-person ARM rig
   (`arms.glb`, credited to Fab) replaces the wrist-only hand pack and the
   forearm that was built out of cylinders to cover for it, and the hell
@@ -463,3 +476,9 @@ job left outstanding.
 `docs/LEARNINGS.md` is the catalog of every hard-won lesson (CSP traps,
 audio traps, cutscene staging, test flakiness). When something in this
 repo looks weird, it is probably load-bearing — check there first.
+
+One more that earns its place at the bottom of this file because it now has
+TWO notches in it: **a bought rig is sized and grounded from its POSED
+BONES, never from any bounding box, and never from the file's own units.**
+The arms rig (v3.8) and the mother (v4.7) both arrived through FBX at the
+wrong scale with a bind pose standing somewhere their animation does not.

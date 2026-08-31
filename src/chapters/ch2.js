@@ -113,7 +113,7 @@
        new, and the most Singaporean thing in the shot. hellnote is the note
        itself, sitting on the desk where he left it: the thread out of chapter
        one, and also what the engine's in-hand note prop is textured from. */
-    assets: ['hdb', 'hellnote'],
+    assets: ['hdb', 'hellnote', 'mother'],
     noteArt: 'hellnote',
 
     /* No `voiceLine`. Chapter 1 opens on silence and gives him a line three
@@ -760,6 +760,77 @@
     mother.visible = false;                      // until scene B says otherwise
     world.add(mother);
 
+    /* v4.7: the REAL her — a bought rigged model with an idle animation
+       ("Casual Woman in brown dress", Sketchfab; the credits panel carries
+       the attribution). It loads beside the primitive figure and swaps in
+       when the bytes land; the primitives stay as the instant fallback, so
+       a resume straight into the decision can never put an empty doorway on
+       screen. The GROUP is the contract: every scene, snap and reset drives
+       `mother`, and none of them knows or cares which body is inside it.
+
+       Two lessons from the arms rig apply verbatim (see CLAUDE.md): the
+       model's units are not to be trusted — this one comes through an FBX
+       armature a hundred times life size — so it is scaled from its own
+       measured bind-pose height to hers; and a skinned mesh's bounding box
+       reports the BIND pose forever after, which is exactly why it is
+       measured once now and never again, and why the meshes give up frustum
+       culling (the bind-pose box is not where she is standing).          */
+    let mumMixer = null;
+    const mumPrims = [...mother.children];       // the fallback body
+    assetBytes('mother').then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
+      if (!alive) return;                        // disposed while the bytes flew
+      rescueTextures(gltf, BUF);
+      const g = gltf.scene;
+      // a first guess at scale, from the bind box; corrected from bones below
+      const box = new THREE.Box3().setFromObject(g);
+      const s = 1.60 / (box.max.y - box.min.y);
+      g.scale.setScalar(s);
+      g.traverse(o => {
+        if (o.isMesh) { o.castShadow = !LOW; o.frustumCulled = false; }
+      });
+
+      /* The idle clip's first second and a half is a LEAD-IN: the pose
+         easing out of the bind, with the root at a different offset. Played
+         whole, she starts on the floor and then rides 0.8 m into the air
+         the moment the real idle begins — and drops back every time the
+         loop wraps. So the loop is CUT past the lead-in (mixamo's 30 fps,
+         8.33 s take -> keep 1.6 s to 8.2 s), and it never plays.        */
+      if (gltf.animations && gltf.animations.length) {
+        const fps = 30;
+        const clip = THREE.AnimationUtils.subclip(
+          gltf.animations[0], 'idle', Math.round(1.6 * fps), Math.floor(8.2 * fps), fps);
+        mumMixer = new THREE.AnimationMixer(g);
+        mumMixer.clipAction(clip).play();
+        mumMixer.update(0.001);                  // pose her before measuring
+      }
+
+      /* Ground and size her from BONES IN THE POSED SKELETON — the arms
+         rig's lesson, which struck twice today: a skinned mesh's bounding
+         box reports the bind pose forever, and this file's bind stands
+         0.8 m below where its own idle stands. Feet to the terrazzo, and
+         the crown (the Head match includes mixamo's HeadTop_End, the top
+         of the skull) to 1.56 — a small, real woman.                    */
+      g.updateMatrixWorld(true);
+      const v = new THREE.Vector3();
+      let toeY = Infinity, headY = -Infinity;
+      g.traverse(o => {
+        if (!o.isBone) return;
+        o.getWorldPosition(v);
+        if (/Toe|Foot/.test(o.name)) toeY = Math.min(toeY, v.y);
+        if (/Head/.test(o.name)) headY = Math.max(headY, v.y);
+      });
+      if (isFinite(toeY) && headY > toeY) {
+        const s2 = s * (1.56 / (headY - toeY));
+        g.scale.setScalar(s2);
+        g.position.y = -toeY * (s2 / s);
+      }
+
+      for (const c of mumPrims) c.visible = false;
+      mother.add(g);
+      redoShadows();
+    }, (err) => console.warn('mother failed to load', err)))
+      .catch(err => console.warn('mother failed to load', err));
+
     /* ----------------------------------------------------- the altar shelf */
     const altar = new THREE.Group();
     altar.position.set(ALTAR.x, 0, ALTAR.z);
@@ -924,6 +995,9 @@
 
     const _m4 = new THREE.Matrix4();
     function updateNotes(dt, t) {
+      // the mother's idle, while she is on screen — a mixer is cheap, but a
+      // mixer for somebody behind a shut door is still work for nothing
+      if (mumMixer && mother.visible) mumMixer.update(dt);
       fan.rotation.y += dt * 2.1 * fanSpeed;
 
       // the curtain breathes, and a little more when the air does

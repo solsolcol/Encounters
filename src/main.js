@@ -69,7 +69,9 @@ const EMBED = {
   hands: '__HANDS_B64__', ghost: '__GHOST_B64__', hdb: '__HDB_B64__',
   logo: '__LOGO_B64__', music: '__MUSIC_B64__', voice: '__VOICE_B64__',
   amulet: '__AMULET_B64__', audiopack: '__AUDIOPACK_B64__',
-  hellnote: '__HELLNOTE_B64__'
+  hellnote: '__HELLNOTE_B64__',
+  mother: '__MOTHER_B64__', seat: '__SEAT_B64__', cars: '__CARS_B64__',
+  guangong: '__GUANGONG_B64__', encik: '__ENCIK_B64__'
 };
 
 function b64ToBuffer(b64) {

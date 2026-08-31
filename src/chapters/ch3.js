@@ -151,7 +151,7 @@
        deck, chapter 2's bedroom and this car park one place. hellnote is the
        note, which is on the altar table tonight where it should have been
        all along. */
-    assets: ['hdb', 'hellnote'],
+    assets: ['hdb', 'hellnote', 'seat', 'cars', 'guangong', 'encik'],
     noteArt: 'hellnote',
 
     /* The tent's own sound, in FOUR beds since v4.3 — and the loudest is
@@ -213,6 +213,14 @@
     const MEDIUM = { x: 0, z: -5.6 };
     const BRAZ = { x: 5.2, z: -4.6 };
     const PAPER = { x: 5.0, z: -1.0 };
+
+    /* v4.7: the bought models' orientation corrections, tuned by eye from
+       screenshots — a bought file's forward axis is a fact about its
+       exporter, not about this tent. */
+    const SEAT_YAW = 0;               // the file already faces -z at identity
+    const GG_YAW = 0;                 // Guan Gong faces the crowd
+    const ENCIK_YAW = 0;              // he faces +z at identity, like figure()
+    const ENCIK_Z = 0.22;             // slid back onto the seat pan
 
     const owned = [];         // parented to the SCENE, so dispose() needs a list
     let alive = true;         // a GLB landing after dispose() must not build
@@ -334,6 +342,7 @@
       color: 0x2b3038, roughness: 0.35, metalness: 0.55 });
     const matWindscreen = new THREE.MeshStandardMaterial({
       color: 0x0d1218, roughness: 0.14, metalness: 0.2 });
+    const boxCars = [];
     for (const [cx, cz, ry] of [[-9.6, 3.2, 0.06], [9.9, 6.4, -0.09]]) {
       const car = new THREE.Group();
       car.position.set(cx, 0, cz);
@@ -344,6 +353,7 @@
       cab.position.set(0, 1.14, -0.15);
       car.add(body, cab);
       world.add(car);
+      boxCars.push(car);      // v4.7: hidden when the real cars land
     }
 
     /* TREES — rain trees at the edge of the car park, because a Singapore
@@ -904,7 +914,12 @@
       backIM.setMatrixAt(i, _m.compose(_p, _q, _s));
       _p.set(at.x, 0.23, at.z);
       legIM.setMatrixAt(i, _m.compose(_p, _q, _s));
+      if (chairIM) {                 // the bought chair stands on its origin,
+        _p.set(at.x, 0, at.z);       // orientation baked into its geometry
+        chairIM.setMatrixAt(i, _m.compose(_p, _q, _s));
+      }
     }
+    let chairIM = null;              // v4.7: set when the real chair lands
 
     let ci = 0;
     for (let r = 0; r < ROW_Z.length; r++) {
@@ -921,7 +936,11 @@
     }
     const ODD_I = ODD.row * COL_X.length + ODD.col;
     const BACK_I = BACK.row * COL_X.length + BACK.col;
-    for (const im of [seatIM, backIM, legIM]) im.instanceMatrix.needsUpdate = true;
+    /* every place that says "the chair matrices moved" says it to THIS list,
+       because v4.7 adds a fourth instanced mesh (the bought chair) to it at
+       load time and none of those places should have to know */
+    const chairIMs = [seatIM, backIM, legIM];
+    for (const im of chairIMs) im.instanceMatrix.needsUpdate = true;
 
     /* ------------------------------------------------------- the audience
        Thirty-one of the forty-eight seats taken, scattered rather than
@@ -1055,6 +1074,193 @@
     const bun = new THREE.Mesh(new THREE.SphereGeometry(0.062, 8, 6), matHair);
     bun.position.set(0, 1.60, -0.10);
     auntie.add(bun);
+
+    /* ================================================================== */
+    /* v4.7 · THE BOUGHT MODELS                                            */
+    /* ================================================================== */
+    /* Chad's uploads, all Sketchfab (the credits panel carries the four
+       attributions): the plastic chair, the low-poly cars, the EinScan
+       Guan Gong, and Encik Lim Cheng Teck sitting, who is the audience now.
+
+       All four load the way the block model always has — async, with the
+       primitives standing in until the bytes land, so nothing here is ever
+       on the first frame's critical path and a failed download costs a
+       nicer prop, never the chapter. Each loader HIDES what it replaces
+       rather than removing it: the primitives stay in `world`, so the one
+       dispose() traverse still frees everything however far the downloads
+       got, which is the contract leaktest holds this chapter to.
+
+       Sizing is never trusted from the file (the arms rig's lesson): every
+       model is measured and scaled to the real-world size of the thing it
+       is, and orientation corrections are baked into GEOMETRY so that the
+       code that places things keeps thinking in position + yaw only.     */
+    const loadGLB = (key, fn) => {
+      assetBytes(key).then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
+        if (!alive) return;                    // disposed while the bytes flew
+        rescueTextures(gltf, BUF);
+        fn(gltf);
+        redoShadows();
+      }, (err) => console.warn(key + ' failed to load', err)))
+        .catch(err => console.warn(key + ' failed to load', err));
+    };
+
+    /* THE CHAIR — one 710-triangle mesh, instanced over every seat, and the
+       three primitive instanced-meshes go dark. placeChair() already drives
+       the fourth matrix set, so the odd chair, the turned chair and every
+       scene that touches one keep working unchanged. */
+    loadGLB('seat', (gltf) => {
+      let src = null;
+      gltf.scene.updateMatrixWorld(true);
+      gltf.scene.traverse(o => { if (o.isMesh && !src) src = o; });
+      if (!src) return;
+      const geo = src.geometry.clone();
+      geo.applyMatrix4(src.matrixWorld);       // the FBX wrapper's Z-up fix etc.
+      geo.computeBoundingBox();
+      const bb = geo.boundingBox;
+      const s = 0.88 / (bb.max.y - bb.min.y);  // a real plastic chair's height
+      geo.translate(-(bb.min.x + bb.max.x) / 2, -bb.min.y, -(bb.min.z + bb.max.z) / 2);
+      geo.scale(s, s, s);
+      geo.rotateY(SEAT_YAW);                   // face -z at rotation 0, like the old ones
+      chairIM = new THREE.InstancedMesh(geo, src.material, N_CHAIR);
+      chairIM.castShadow = !LOW;
+      chairIM.receiveShadow = true;
+      chairIM.frustumCulled = false;
+      world.add(chairIM);
+      chairIMs.push(chairIM);
+      for (let i = 0; i < N_CHAIR; i++) placeChair(i);
+      chairIM.instanceMatrix.needsUpdate = true;
+      for (const im of [seatIM, backIM, legIM]) im.visible = false;
+    });
+
+    /* THE CARS — four in the file; each is re-centred onto its own origin,
+       scaled to a sedan's length, and parked where the boxes were plus two
+       more spots, nose-in and nose-out so the row reads parked rather than
+       placed. All outside the player's bounds, same as the boxes.        */
+    loadGLB('cars', (gltf) => {
+      gltf.scene.updateMatrixWorld(true);
+      const bodies = [];
+      gltf.scene.traverse(o => { if (o.isMesh) bodies.push(o); });
+      const spots = [[-9.6, 3.2, 0.10], [9.9, 6.4, 3.05],
+                     [-10.4, 9.8, -0.06], [10.3, -1.6, 3.18]];
+      bodies.slice(0, spots.length).forEach((m, i) => {
+        const geo = m.geometry.clone();
+        geo.applyMatrix4(m.matrixWorld);
+        geo.computeBoundingBox();
+        const bb = geo.boundingBox;
+        const s = 4.35 / Math.max(bb.max.x - bb.min.x, bb.max.z - bb.min.z);
+        geo.translate(-(bb.min.x + bb.max.x) / 2, -bb.min.y, -(bb.min.z + bb.max.z) / 2);
+        geo.scale(s, s, s);
+        const car = new THREE.Mesh(geo, m.material);
+        car.castShadow = !LOW;
+        car.receiveShadow = true;
+        car.position.set(spots[i][0], 0, spots[i][1]);
+        car.rotation.y = spots[i][2];
+        world.add(car);
+      });
+      for (const c of boxCars) c.visible = false;
+    });
+
+    /* GUAN GONG — the scan, standing where the paper effigy stood, behind
+       the altar and over it, facing the crowd. The effigy goes dark the
+       moment he lands. */
+    loadGLB('guangong', (gltf) => {
+      const g = gltf.scene;
+      g.updateMatrixWorld(true);
+      let b1 = new THREE.Box3().setFromObject(g);
+      if ((b1.max.z - b1.min.z) > (b1.max.y - b1.min.y) * 1.4) {
+        g.rotation.x = -Math.PI / 2;           // a scan that arrived Z-up
+        g.updateMatrixWorld(true);
+        b1 = new THREE.Box3().setFromObject(g);
+      }
+      const s = 2.05 / (b1.max.y - b1.min.y);  // effigy height, statue's dignity
+      g.scale.setScalar(s);
+      g.updateMatrixWorld(true);
+      const b2 = new THREE.Box3().setFromObject(g);
+      g.position.set(-(b2.min.x + b2.max.x) / 2, -b2.min.y, -(b2.min.z + b2.max.z) / 2);
+      const holder = new THREE.Group();
+      holder.rotation.y = GG_YAW;              // face the crowd; tuned by eye
+      holder.position.set(0, 0, -0.75);        // exactly the effigy's spot
+      holder.add(g);
+      altar.add(holder);
+      /* On a plinth, the way a deity statue stands at one of these events —
+         and for the same reason here as there: the altar table is 0.94 m of
+         occlusion, and a floor-standing figure is legs-first furniture from
+         every seat. 0.72 m of red box puts his head above the old effigy's
+         shoulders and the whole statue above the tabletop. */
+      const plinth = new THREE.Mesh(new THREE.BoxGeometry(1.10, 0.72, 0.85), matCloth);
+      plinth.position.y = 0.36;
+      plinth.castShadow = !LOW; plinth.receiveShadow = true;
+      holder.add(plinth);
+      const plinthTrim = new THREE.Mesh(new THREE.BoxGeometry(1.14, 0.09, 0.89), matGold);
+      plinthTrim.position.y = 0.045;
+      holder.add(plinthTrim);
+      g.position.y += 0.72;
+      g.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; } });
+      effigy.visible = false;
+    });
+
+    /* THE AUDIENCE — Encik Lim Cheng Teck, sitting. One skinned model would
+       mean thirty skeletons; instead his sitting pose is BAKED into a plain
+       geometry once, on arrival, and thirty tinted meshes share it. The
+       primitives' seating plan (TAKEN), phases and sway contract carry over
+       exactly — `crowd` still holds one group per person, `userData.head`
+       still turns, crowdLife still freezes everybody dead.               */
+    loadGLB('encik', (gltf) => {
+      let src = null;
+      gltf.scene.traverse(o => { if (o.isSkinnedMesh && !src) src = o; });
+      if (!src) return;
+      if (gltf.animations.length) {
+        const mixer = new THREE.AnimationMixer(gltf.scene);
+        mixer.clipAction(gltf.animations[0]).play();
+        mixer.update(0.4);                     // one frame into the idle
+      }
+      gltf.scene.updateMatrixWorld(true);
+      src.skeleton.update();
+      const geo = src.geometry.clone();
+      const pos = geo.attributes.position;
+      const v = new THREE.Vector3();
+      for (let i = 0; i < pos.count; i++) {
+        v.fromBufferAttribute(pos, i);
+        src.applyBoneTransform(i, v);          // the pose, in mesh space
+        pos.setXYZ(i, v.x, v.y, v.z);
+      }
+      geo.deleteAttribute('skinIndex');
+      geo.deleteAttribute('skinWeight');
+      geo.applyMatrix4(src.matrixWorld);       // the FBX wrapper's scale
+      geo.computeVertexNormals();
+      geo.computeBoundingBox();
+      const bb = geo.boundingBox;
+      const s = 1.30 / (bb.max.y - bb.min.y);  // a seated man, floor to crown
+      geo.translate(-(bb.min.x + bb.max.x) / 2, -bb.min.y, -(bb.min.z + bb.max.z) / 2);
+      geo.scale(s, s, s);
+      geo.rotateY(ENCIK_YAW);
+      geo.translate(0, 0, ENCIK_Z);            // back onto the seat pan
+      for (const f of crowd) f.visible = false;
+      crowd.length = 0;
+      for (const i of TAKEN) {
+        const at = chairAt[i];
+        const mat = src.material.clone();
+        const k = 0.74 + ((i * 37) % 7) * 0.045;         // per-person light
+        mat.color.setRGB(k, k * (0.95 + ((i * 13) % 3) * 0.028), k * (0.97 + ((i * 5) % 2) * 0.03));
+        const inner = new THREE.Group();
+        const body = new THREE.Mesh(geo, mat);
+        body.castShadow = !LOW;
+        const hs = 0.96 + ((i * 11) % 5) * 0.02;
+        // every other one mirrored: the pose's asymmetry flips, which does
+        // more against thirty-of-one-man than any tint can (the material is
+        // double-sided in the file, so the flipped winding costs nothing)
+        body.scale.set(((i * 7) % 3 === 0 ? -hs : hs), hs, hs);
+        inner.add(body);
+        const f = new THREE.Group();
+        f.add(inner);
+        f.position.set(at.x, 0, at.z);
+        f.rotation.y = chairRot[i] + Math.PI;  // facing the altar, like the chair
+        f.userData.ph = (i * 1.37) % 6.28;
+        f.userData.head = inner;               // the sway loop turns this
+        crowdRoot.add(f);
+        crowd.push(f);
+      }
+    });
 
     /* ================================================================== */
     /* WEATHER — smoke, embers, and the haze this tent is full of          */
@@ -1362,7 +1568,7 @@
       medium.userData.head.position.copy(s.headPos);
       chairRot[ODD_I] = s.oddRot; placeChair(ODD_I);
       chairRot[BACK_I] = s.backRot; placeChair(BACK_I);
-      for (const im of [seatIM, backIM, legIM]) im.instanceMatrix.needsUpdate = true;
+      for (const im of chairIMs) im.instanceMatrix.needsUpdate = true;
       auntie.rotation.y = s.auntieRot;
       heroNote.visible = s.hero;
       haze.material.opacity = s.hazeOp;
@@ -1386,7 +1592,7 @@
       medium.userData.head.position.set(0, MED_HEAD_Y, 0);
       chairRot[ODD_I] = REST.oddRot; placeChair(ODD_I);
       chairRot[BACK_I] = REST.backRot; placeChair(BACK_I);
-      for (const im of [seatIM, backIM, legIM]) im.instanceMatrix.needsUpdate = true;
+      for (const im of chairIMs) im.instanceMatrix.needsUpdate = true;
       auntie.rotation.y = REST.auntieRot;
       heroNote.visible = true;
       haze.material.opacity = 0.34;
@@ -1465,7 +1671,7 @@
       scene.remove(world);
       for (const o of owned) { o.parent?.remove(o); o.dispose?.(); }
       owned.length = 0;
-      for (const im of [seatIM, backIM, legIM, flying, trunkIM, leafIM]) im.dispose?.();
+      for (const im of [...chairIMs, flying, trunkIM, leafIM]) im.dispose?.();
       for (const g of geos) g.dispose();
       for (const m of mats) {
         for (const k of ['map', 'roughnessMap', 'normalMap', 'emissiveMap', 'alphaMap']) {

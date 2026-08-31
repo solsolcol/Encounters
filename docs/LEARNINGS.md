@@ -846,3 +846,31 @@ the default.
 - Rule of thumb for this repo: hand-written camera angles are for OFFSETS
   (a few degrees off something derived). Anything that means "look at that
   thing" gets derived from that thing's position, every time.
+
+## A bought rig's bind pose is a lie twice over (the mother, v4.7)
+
+- The rigged woman crumpled, floated 0.8 m up, or lost her head depending
+  on the moment — and every wrong theory (broken simplify, stacked outfit
+  variants, a mixer that was not running) was believable from screenshots.
+  What settled it was NUMBERS: sample a head bone, a foot bone and the hips
+  in WORLD space at several scene times. Feet at 0.9 = floating; identical
+  broken pose at different mixer times = not animating; head 2.18 with grp
+  y 0 = the offset is inside the model. Three numbers beat forty
+  screenshots.
+- The file's three meshes are PARTS — body, dress, hair — sharing one
+  skeleton, not variants. Toggle each visible ALONE before concluding
+  anything: "the dress by itself is crumpled floating fabric" is obvious in
+  one frame and explains an evening of confusion.
+- The idle clip's first ~1.5 s is a LEAD-IN out of the bind pose with the
+  ROOT at a different offset. Played whole and looped, she drops and snaps
+  every cycle. `THREE.AnimationUtils.subclip` past the lead-in; the clip's
+  own numbers (250 keys / 8.33 s = 30 fps) tell you where to cut.
+- Ground and size from the POSED skeleton's bones (mixer.update once,
+  updateMatrixWorld, lowest Toe/Foot bone to the floor, HeadTop_End to her
+  height). The bind box stands 0.8 m below where the same file's idle
+  stands. The arms rig taught this at v3.8; it is now a CLAUDE.md rule.
+- And from the shrink pipeline: stripping an emissive TEXTURE while leaving
+  `emissiveFactor` at [1,1,1] turns the whole material into a white glow —
+  zero the factor when you drop the map. An unindexed scan (30k verts for
+  10k tris) will not weld and so will not simplify: drop NORMAL, weld,
+  simplify, regrow normals.
