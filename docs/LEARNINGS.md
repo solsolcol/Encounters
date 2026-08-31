@@ -580,3 +580,23 @@ the default.
 - Measure every generated file with `volumedetect` against the existing
   pack and correct on the way in. It is one ffmpeg flag and it is the
   difference between a mix and a pile of sounds.
+
+## The sky was chapter 1's sky too
+
+- Nine leaks in, the sky still was not a chapter's to decide: one gradient
+  dome, one fog, one hemisphere, one moon, one fill, all of them tuned for a
+  void deck at midnight, and the game had exactly one time of day.
+- Chapter 3 is a seventh-month ceremony in a car park, and those happen in
+  the MORNING. Fixed the way the other nine were: a chapter declares
+  `daylight`, `applyDaylight()` MUTATES the existing objects in place next to
+  `applyGhostTerritory()`, and chapter 1's midnight is the default — so
+  chapters 1 and 2 do not move a pixel.
+- The repaint is a 64-pixel canvas redrawn and marked `needsUpdate`. Cheaper
+  than a second texture and it keeps the dome's material identity, which
+  matters for the same reason every other derived value is mutated rather
+  than reassigned.
+- Worth recording the design half as well: daylight made the chapter BETTER,
+  not merely different. The other two chapters hide her in the dark because
+  that is what dark is for. There is nowhere to hide at ten in the morning —
+  she is just sitting there, in the sun, in front of forty people, and the
+  horror has to survive being looked straight at.

@@ -393,18 +393,19 @@ scene.fog = new THREE.FogExp2(0x0b1018, 0.021);
 // way. Draw order is decided by renderOrder and depth, not by scene order.
 const sky = new THREE.Group();
 
+/* The dome is repaintable, because since v4.1 the sky is not always night:
+   a chapter may declare its own (see applyDaylight below), and the cheapest
+   honest way to change a gradient is to redraw the same 64px canvas. */
+const [skyCanvas, skyCtx] = cnv(64);
+const skyTex = new THREE.CanvasTexture(skyCanvas);
+skyTex.colorSpace = THREE.SRGBColorSpace;
+function paintSky(stops) {
+  const grad = skyCtx.createLinearGradient(0, 64, 0, 0);   // horizon -> zenith
+  for (const [at, col] of stops) grad.addColorStop(at, col);
+  skyCtx.fillStyle = grad; skyCtx.fillRect(0, 0, 64, 64);
+  skyTex.needsUpdate = true;
+}
 {
-  // horizon carries the city's sodium haze; overhead goes almost black
-  const [sc, sctx] = cnv(64);
-  const grad = sctx.createLinearGradient(0, 64, 0, 0);
-  grad.addColorStop(0.00, '#241d1c');
-  grad.addColorStop(0.16, '#1a1a24');
-  grad.addColorStop(0.42, '#101526');
-  grad.addColorStop(0.72, '#080b16');
-  grad.addColorStop(1.00, '#04060b');
-  sctx.fillStyle = grad; sctx.fillRect(0, 0, 64, 64);
-  const skyTex = new THREE.CanvasTexture(sc);
-  skyTex.colorSpace = THREE.SRGBColorSpace;
   const dome = new THREE.Mesh(
     new THREE.SphereGeometry(150, 24, 16),
     new THREE.MeshBasicMaterial({
@@ -447,7 +448,7 @@ function starLayer(n, size, minLum, maxLum) {
   return pts;
 }
 const DIM_N = LOW ? 380 : 760, BRIGHT_N = LOW ? 60 : 120;
-starLayer(DIM_N, 1.6, 0.20, 0.55);
+const dimStars = starLayer(DIM_N, 1.6, 0.20, 0.55);
 const brightStars = starLayer(BRIGHT_N, 3.2, 0.60, 1.0);
 
 // twinkle, on the bright layer only — the dim ones would just look noisy
@@ -455,6 +456,7 @@ const starBase = brightStars.geometry.attributes.color.array.slice();
 const starPhase = new Float32Array(BRIGHT_N);
 for (let i = 0; i < BRIGHT_N; i++) starPhase[i] = Math.random() * 100;
 function updateStars(t) {
+  if (skyStars <= 0.01) return;          // a morning has nothing to twinkle
   const c = brightStars.geometry.attributes.color;
   for (let i = 0; i < BRIGHT_N; i++) {
     const p = starPhase[i];
@@ -470,8 +472,9 @@ function updateStars(t) {
 // swung a little toward the block, so it is in frame on the walk in rather
 // than something you have to go looking for.
 const MOON_POS = new THREE.Vector3(-12.3, 12.4, -15.8).normalize().multiplyScalar(126);
+let moonHalo = null, moonDisc = null;
 {
-  const halo = new THREE.Sprite(new THREE.SpriteMaterial({
+  const halo = moonHalo = new THREE.Sprite(new THREE.SpriteMaterial({
     map: makeSoftDot('rgba(196,218,255,0.34)', 'rgba(150,182,255,0)'),
     transparent: true, depthWrite: false, fog: false,
     blending: THREE.AdditiveBlending
@@ -481,7 +484,7 @@ const MOON_POS = new THREE.Vector3(-12.3, 12.4, -15.8).normalize().multiplyScala
   halo.renderOrder = -2;
   sky.add(halo);
 
-  const disc = new THREE.Sprite(new THREE.SpriteMaterial({
+  const disc = moonDisc = new THREE.Sprite(new THREE.SpriteMaterial({
     map: makeMoon(), transparent: true, depthWrite: false, fog: false
   }));
   disc.position.copy(MOON_POS);
@@ -520,6 +523,54 @@ scene.add(moon);
 const fill = new THREE.DirectionalLight(0x6a86b8, 0.28);
 fill.position.set(6, 8, 16);
 scene.add(fill);
+
+/* ------------------------------------------------- THE TENTH LEAK: THE SKY
+
+   Every value above is chapter 1's midnight, and until v4.1 that was the
+   game's only weather. Chapter 3 is a seventh-month ceremony in a car park
+   and those happen in the MORNING, so the sky, the fog, the three lights,
+   the stars and the moon all belong to the chapter now — declared, with
+   chapter 1's night as the default, which is how the other nine were fixed
+   and why chapters 1 and 2 do not move.
+
+   MUTATED, never reassigned, like every other chapter-derived value: the
+   dome's canvas is repainted, the fog and the lights keep their identity.
+   scene.fog is one FogExp2 for the life of the page and several things hold
+   a reference to it.                                                      */
+const SKY_NIGHT = {
+  stops: [[0.00, '#241d1c'], [0.16, '#1a1a24'], [0.42, '#101526'],
+          [0.72, '#080b16'], [1.00, '#04060b']],
+  bg: 0x070a10,
+  fog: [0x0b1018, 0.021],
+  hemi: [0x35446b, 0x14161c, 0.85],
+  key: [0xa8bfe6, 0.95, -14, 20, -8],     // colour, intensity, and where from
+  fill: [0x6a86b8, 0.28],
+  stars: 1, moon: 1                        // opacity, so a dawn can keep a ghost of one
+};
+let skyStars = 1;                          // read by the frame, to skip the twinkle
+function applyDaylight() {
+  const d = { ...SKY_NIGHT, ...(CH.daylight || {}) };
+  paintSky(d.stops);
+  scene.background.setHex(d.bg);
+  scene.fog.color.setHex(d.fog[0]);
+  scene.fog.density = d.fog[1];
+  hemi.color.setHex(d.hemi[0]);
+  hemi.groundColor.setHex(d.hemi[1]);
+  hemi.intensity = d.hemi[2];
+  moon.color.setHex(d.key[0]);
+  moon.intensity = d.key[1];
+  moon.position.set(d.key[2], d.key[3], d.key[4]);
+  fill.color.setHex(d.fill[0]);
+  fill.intensity = d.fill[1];
+  skyStars = d.stars;
+  dimStars.material.opacity = d.stars;
+  brightStars.material.opacity = d.stars;
+  dimStars.visible = brightStars.visible = d.stars > 0.01;
+  if (moonHalo) { moonHalo.material.opacity = d.moon; moonHalo.visible = d.moon > 0.01; }
+  if (moonDisc) { moonDisc.material.opacity = d.moon; moonDisc.visible = d.moon > 0.01; }
+  redoShadows();
+}
+applyDaylight();          // whichever chapter booted — ch1's night is the default
 
 /* ------------------------------------------------------ the chapter's world
    The void deck, the burner, the drifting notes and the pile you act on used
@@ -3016,6 +3067,7 @@ function setChapter(key) {
   GHOST_HOME.set(CH.ghostHome.x, 0, CH.ghostHome.z);
   Object.assign(BOUNDS, CH.bounds);
   applyGhostTerritory();           // her reach is the new chapter's, not the old one's
+  applyDaylight();                 // and so is the time of day
   silenceChapterLoops();           // and so is the room tone
   SPAWN.pos.set(CH.spawn.x, CH.spawn.y, CH.spawn.z);
   SPAWN.rot = 0;

@@ -43,7 +43,7 @@
     cardLabel: 'Chapter 3',
     cardTitle: 'The Gathering<br>Nobody Else Turned Round',
 
-    brief: 'The tentage has been up all week in the car park under his block. Tonight there is a drum, a crowd on red plastic chairs, and a man at the altar who has stopped being himself. Everyone is watching the front. Nobody is watching row four.',
+    brief: 'The tentage has been up all week in the car park under his block. This morning there is a drum, a crowd on red plastic chairs, and a man at the altar who has stopped being himself. Everyone is watching the front. Nobody is watching row four.',
     prompt: 'The medium has gone into trance at the altar. What do you do?',
 
     /* Source order — OBSERVE, JOIN, QUESTION, LEAVE — kept as Master Z wrote
@@ -115,6 +115,34 @@
       away: [4, 8],
       behind: 2.2,
       roam: { minX: -5.6, maxX: 5.6, minZ: -5.0, maxZ: 9.6 }
+    },
+
+    /* MORNING. Chad's call, 31 Aug 2026: "the medium event should be in the
+       morning instead of a night scene" — and he is right about the practice
+       as well as the shot. A seventh-month tentage ceremony is a daytime
+       event; the tang-ki goes into trance under a tent in the sun, with the
+       traffic going past and half the block watching in slippers.
+
+       It is also the better horror, which is the part worth writing down.
+       Chapters 1 and 2 hide her in the dark because that is what the dark is
+       for. There is nowhere to hide at ten in the morning: she is simply
+       sitting in row four in broad daylight, in front of forty people, and
+       not one of them turns round. Take the darkness away and the thing that
+       is wrong has to be wrong in the open.
+
+       Declared, not hard-coded, because the sky is the engine's — the tenth
+       leak, fixed the same way as the other nine. Chapters 1 and 2 declare
+       nothing and stay at midnight. */
+    daylight: {
+      // a hazy tropical morning: white at the horizon, thin blue overhead
+      stops: [[0.00, '#d8dcd6'], [0.18, '#c3cfd4'], [0.45, '#a2bcd2'],
+              [0.74, '#7fa5c9'], [1.00, '#6b95c4']],
+      bg: 0xb9c6cc,
+      fog: [0xc2cdd0, 0.0085],       // thinner than the night's, and pale
+      hemi: [0xcfe0f2, 0x8a8272, 1.15],
+      key: [0xfff2df, 1.85, 16, 26, 12],   // the sun, and it is already up
+      fill: [0xa8bed8, 0.34],
+      stars: 0, moon: 0
     },
 
     /* hdb is the block itself, standing over the car park — the third use of
@@ -195,13 +223,29 @@
     const floralTex = makeFloral(cnv);
     const goldTex = makeGoldPaper(cnv);
 
+    /* CONCRETE, not chapter 1's ground texture. That map is 38-72 out of
+       255 — it was built for a void deck at midnight, and no amount of
+       tinting makes a 0.2 albedo look like a car park at ten in the morning.
+       Concrete's base is 112-158 and this is a multi-storey deck anyway.
+       Cloned so the repeat can be its own, and disposed in dispose() for the
+       same reason. */
+    const parkMap = cTex.map.clone(); parkMap.needsUpdate = true;
+    parkMap.repeat.set(30, 30);
+    const parkRough = cTex.rough.clone(); parkRough.needsUpdate = true;
+    parkRough.repeat.set(30, 30);
     const matTarmac = new THREE.MeshStandardMaterial({
-      map: gTex.map, roughnessMap: gTex.rough, roughness: 0.93, metalness: 0.02,
-      color: 0x9fa3ad });
+      map: parkMap, roughnessMap: parkRough, roughness: 0.95, metalness: 0.01,
+      color: 0x9c9a94 });
     const matKerb = new THREE.MeshStandardMaterial({
       map: cTex.map, roughnessMap: cTex.rough, roughness: 0.95, metalness: 0 });
+    /* Slightly emissive, and that is the whole trick of a tent in daylight:
+       canvas is thin, so its underside is not a shadowed surface — it GLOWS,
+       with the sun coming through from the other side. Lit as a plain
+       shadowed material the tent reads as a dark box under a bright sky,
+       which is exactly what it is not. */
     const matCanvas = new THREE.MeshStandardMaterial({
-      map: canvasTex, roughness: 0.95, metalness: 0, side: THREE.DoubleSide });
+      map: canvasTex, roughness: 0.95, metalness: 0, side: THREE.DoubleSide,
+      emissive: 0xffffff, emissiveMap: canvasTex, emissiveIntensity: 0.22 });
     const matPole = new THREE.MeshStandardMaterial({
       color: 0x9aa1a8, roughness: 0.45, metalness: 0.75 });
     const matPlastic = new THREE.MeshStandardMaterial({
@@ -307,37 +351,27 @@
              twenty-five metres under the engine's moon the block was reading
              as a lit shopping mall behind the altar instead of the black
              cliff the whole shot is composed against. */
-          m.color?.multiplyScalar(0.34);
+          /* Knocked back, not blacked out: the model is textured bright and
+             a touch garish, and it stands twelve metres behind the altar in
+             most of this chapter's shots. At 0.34 — the value the night
+             version needed — it was a silhouette; a morning wants the
+             building back. */
+          m.color?.multiplyScalar(0.72);
           m.emissive?.setScalar(0);
         }
       });
       world.add(blk);
-
-      /* The lit windows go on AFTER the block, measured against its real
-         bounding box. Placed by hand they were scattered from y=5 to y=25 at
-         a guessed z, and about two thirds of them ended up hanging in the
-         night sky above the roofline — clearly visible from the car park,
-         which is the shot the chapter opens on. */
-      const bb = new THREE.Box3().setFromObject(blk);
-      const winGeo = new THREE.PlaneGeometry(0.95, 1.15);
-      const face = bb.max.z + 0.06;
-      for (let i = 0; i < 14; i++) {
-        const w = new THREE.Mesh(winGeo, matWin);
-        w.position.set(
-          THREE.MathUtils.lerp(bb.min.x + 1.5, bb.max.x - 1.5, Math.random()),
-          THREE.MathUtils.lerp(bb.min.y + 4.0, bb.max.y - 2.0, Math.random()),
-          face);
-        world.add(w);
-      }
-
+      /* No fake lit windows. There were fourteen and they were wrong twice —
+         first hand-placed into the sky above the roofline, then placed off
+         the model's BOUNDING BOX, which spans x -21..27 and z -41..-3 because
+         the export includes its podium, so they landed on a plane in front of
+         the tent. The chapter is a morning now and a lit window at ten in the
+         morning is not a thing. The block has its own facade. */
       hdbReady = true;
       redoShadows();
     }, (err) => console.warn('HDB failed to load', err)))
       .catch(err => console.warn('HDB failed to load', err));
 
-    // a scatter of lit windows, so the block is inhabited at 1 AM. They are
-    // placed in the GLB's callback above, against its measured bounds.
-    const matWin = new THREE.MeshBasicMaterial({ color: 0xffdca0, fog: true });
 
     /* ================================================================== */
     /* THE TENTAGE                                                        */
@@ -448,14 +482,14 @@
          inside everything was flat and washed and the canvas read as a
          circus. A cheap tube is not white either — the tint is the faint
          warm green every one of these has. */
-      const l = new THREE.PointLight(0xdde6d8, LOW ? 10 : 6.2, 15, 1.55);
+      const l = new THREE.PointLight(0xdde6d8, LOW ? 6 : 3.6, 15, 1.55);
       l.position.set(0, T.ridge - 0.30, lz);
       tent.add(l); tentLights.push(l);
     }
     /* One of them casts, and only one. Shadows here are frozen after the
        first few frames (the engine redraws them on demand), so a static
        crowd under a static light costs one map and then nothing. */
-    const key = new THREE.SpotLight(0xdfe8e2, LOW ? 0 : 17, 22, Math.PI / 3.1, 0.62, 1.5);
+    const key = new THREE.SpotLight(0xdfe8e2, LOW ? 0 : 9, 22, Math.PI / 3.1, 0.62, 1.5);
     key.position.set(0.4, T.ridge + 0.6, -1.0);
     key.target.position.set(0, 0, -3.0);
     key.castShadow = !LOW;
@@ -475,7 +509,9 @@
     /* A little bounce off the canvas. A tent lit from inside is not a room
        with one lamp in it — the roof throws most of the light back down, and
        without this the crowd is a field of black silhouettes. */
-    const bounce = new THREE.HemisphereLight(0x9aa8bd, 0x24262c, 0.32);
+    /* The light under the canvas, and in a morning it is most of what lights
+       the crowd: sky above, hot tarmac below. */
+    const bounce = new THREE.HemisphereLight(0xcadcf0, 0x9a9384, 0.72);
     bounce.position.set(0, T.eave, 0);
     tent.add(bounce);
 
@@ -633,7 +669,8 @@
        which is what the engine warms the player's hands from as they come up
        the aisle. Candles, joss and the paper on the table: it flickers,
        because all three of those do.                                      */
-    const fireLight = new THREE.PointLight(0xff8b33, 9, 11, 1.7);
+    // a candle in daylight is a candle, not a bonfire
+    const fireLight = new THREE.PointLight(0xff8b33, 3.4, 9, 1.7);
     fireLight.position.set(ALTAR.x, 1.35, ALTAR.z + 0.30);
     scene.add(fireLight);
     owned.push(fireLight);
@@ -663,7 +700,7 @@
     mouth.rotation.x = -Math.PI / 2;
     mouth.position.y = 0.73;
     brazier.add(mouth);
-    const brazLight = new THREE.PointLight(0xff7220, 7, 8, 1.8);
+    const brazLight = new THREE.PointLight(0xff7220, 2.8, 7, 1.8);
     brazLight.position.set(BRAZ.x, 1.05, BRAZ.z);
     scene.add(brazLight);
     owned.push(brazLight);
@@ -981,7 +1018,7 @@
     }
     hazeGeo.setAttribute('position', new THREE.BufferAttribute(hazePos, 3));
     const haze = new THREE.Points(hazeGeo, new THREE.PointsMaterial({
-      map: dotTex, size: 0.030, transparent: true, opacity: 0.26,
+      map: dotTex, size: 0.030, transparent: true, opacity: 0.34,
       depthWrite: false, blending: THREE.AdditiveBlending, fog: false }));
     world.add(haze);
 
@@ -1198,8 +1235,8 @@
     function updateFire(t) {
       const fl = 0.86 + Math.sin(t * 7.3) * 0.09 + Math.sin(t * 19.1) * 0.05;
       if (getState() !== 'cine') {
-        fireLight.intensity = 9 * fl;
-        brazLight.intensity = 7 * (0.82 + Math.sin(t * 5.1) * 0.14 + Math.random() * 0.05);
+        fireLight.intensity = 3.4 * fl;
+        brazLight.intensity = 2.8 * (0.82 + Math.sin(t * 5.1) * 0.14 + Math.random() * 0.05);
         mouth.material.color.setHSL(0.045, 1, 0.40 + fl * 0.13);
         for (const f of flames) f.scale.y = 0.86 + fl * 0.3;
       }
@@ -1270,7 +1307,7 @@
       for (const im of [seatIM, backIM, legIM]) im.instanceMatrix.needsUpdate = true;
       auntie.rotation.y = REST.auntieRot;
       heroNote.visible = true;
-      haze.material.opacity = 0.26;
+      haze.material.opacity = 0.34;
     }
 
     /* ------------------------------------------------------------ collision
@@ -1355,7 +1392,8 @@
         m.dispose();
       }
       // the procedural sources, which no mesh points at directly
-      for (const t of [gTex.map, gTex.rough, cTex.map, cTex.rough, lacquerTex,
+      for (const t of [gTex.map, gTex.rough, cTex.map, cTex.rough,
+                       parkMap, parkRough, lacquerTex,
                        noteTex, dotTex, canvasTex, floralTex, goldTex]) t?.dispose?.();
       world.clear();
       S = null;
@@ -1535,11 +1573,18 @@
      the tent means something, and leave him looking at the one chair that
      is facing the wrong way.
 
-     The sound is the spine of it. The tent's loops are already running when
-     the film starts — the engine plays a chapter's beds through a cutscene —
-     so the film DUCKS them to almost nothing while the camera is twenty
-     metres out, brings them up on the same track as the walk in, and then
-     kills the drum outright at twenty-two seconds. That silence is the shot.
+     A MORNING, since Chad's note. The night version opened on a box of light
+     in a black car park, which is a shot you simply cannot have at ten in
+     the morning — so the equivalent is the other way up: fade in on the
+     glare and the top of the block, then tilt DOWN and find the tent
+     underneath, already full. Same job, opposite gesture.
+
+     The sound is the spine of it either way. The tent's loops are already
+     running when the film starts — the engine plays a chapter's beds through
+     a cutscene — so the film DUCKS them to almost nothing while the camera
+     is twenty metres out, brings them up on the same track as the walk in,
+     and then kills the drum outright at twenty-two seconds. That silence is
+     the shot, and it is the one beat daylight cannot touch.
 
      It ends on black and KEEPS it, so the chapter card comes up over the
      dark rather than over the tent.                                       */
@@ -1569,12 +1614,17 @@
     sfx(1.00, 'v3wake1');                 // "They put the tent up on Monday."
     camTo(0, 0.1, OUTSIDE, OUTSIDE);
     yawTo(0, 0.1, 0, 0);                  // yaw 0 is -z, which is the tent
-    pitchTo(0, 0.1, -0.02, -0.02);
+    pitchTo(0, 0.1, 0.40, 0.40);          // positive is UP: the sky, and glare
 
-    // 2.6-5.4  fade up on a box of white light in the middle of a black night
+    /* 2.6-5.4  fade up, and it is BRIGHT — the hazy top of the block, the sun
+       somewhere off to the left, and nothing else in frame at all. */
     fade(2.6, 5.4, 1, 0);
     sfx(3.4, 'drum', 0.5);
     sfx(4.6, 'cymbal', 0.30);
+
+    /* 4.4-9.6  and then the camera comes down off the sky, and the tent is
+       underneath it, and it is already full of people. */
+    pitchTo(4.4, 9.6, 0.40, -0.02, smoothK);
 
     /* 5.2-13.0  he walks in. The dolly and the sound come up on one track,
        which is the only way this ever sounds right. */
@@ -1597,6 +1647,8 @@
     yawTo(13.0, 16.0, 0, faceFrom(BACKROW.x, BACKROW.z, stage.PAPER.x, stage.PAPER.z),
           smoothK);
     pitchTo(13.0, 16.0, -0.02, -0.07, smoothK);
+    // the brazier's smoke going straight up in the still morning air
+    tr(13.0, 17.4, k => { stage.noteStorm = 1 + 0.5 * k; }, rawK);
     sfx(13.9, 'burn', 0.65);
     sfx(14.4, 'step', 0.30);
     sfx(15.4, 'drum', 0.7);
@@ -1640,9 +1692,13 @@
     pitchTo(29.0, 32.4, -0.01, -0.09, smoothK);
     sfx(29.4, 'strings', 0.6);
     sfx(30.6, 'chair', 0.45);             // and the turned chair says where
+    /* Half of her, not a third. There is no darkness for her to come out of
+       any more, so she has to carry herself — and a glow at ten in the
+       morning would read as a lamp, so the light on her is nearly nothing.
+       She is not luminous. She is just THERE, in the sun, in a chair. */
     tr(31.4, 33.4, k => {
-      ghostOpacity(k * 0.34);             // a third of her, and no more
-      ghostLight.intensity = 0.7 * k;
+      ghostOpacity(k * 0.50);
+      ghostLight.intensity = 0.25 * k;
     }, rawK);
     sfx(31.9, 'boom');
     sfx(32.2, 'whisper', 0.45);
@@ -1811,7 +1867,7 @@
       duck('ritual', 1 + 1.6 * k);
       stage.drumBeat = 1 + 2.4 * k;
       stage.noteStorm = 1 + 4.5 * k;
-      stage.haze.material.opacity = 0.26 + 0.34 * k;
+      stage.haze.material.opacity = 0.34 + 0.34 * k;
     }, rawK);
     // the tubes: a bad ballast, then a worse one
     tr(4.2, 9.0, (k, t2) => {

@@ -6,9 +6,9 @@ Singapore). Multi-chapter; each chapter is one small dense location, one
 supernatural encounter, one decision with consequences and a Buddhist
 teaching. Three chapters are complete and live — The Hell Note (a void
 deck, a burner, a note, her), The Presence (a bedroom, a fan, the gap
-beside the bed) and The Gathering (a seventh-month tentage in the car park,
-forty people on red plastic chairs, and one of them facing the wrong way).
-All three happen at the same block. This file is the contract for how work
+beside the bed) and The Gathering (a seventh-month tentage in the car park
+at ten in the morning, forty people on red plastic chairs, and one of them
+facing the wrong way). All three happen at the same block. This file is the contract for how work
 on this repo happens — read it before changing anything.
 
 ## Who you are working with
@@ -101,6 +101,7 @@ The declarations, all optional:
 | `voiceLine` | the asset key of the line he says a few seconds into play | — (silence) |
 | `noteArt` | the asset key of the chapter's note art | — (the drawn one) |
 | `intro` | the opening film | — (straight to the card) |
+| `daylight` | the sky, the fog and the three global lights | chapter 1's midnight |
 
 `shrine` is the engine's anchor for HER, not for the chapter's warm light.
 Chapter 1's happens to be both; chapter 2's is the gap beside the bed and
@@ -127,6 +128,18 @@ Deliberately still in the engine, and correctly so: the ghost (she is the
 game's, not chapter 1's), the faint sequence, the cutscene *language*, and
 the sky. A chapter owns its location, its props and its four scenes —
 nothing else.
+
+**The tenth leak, also v4.1**: the SKY was chapter 1's sky. Chapter 3 is a
+ceremony in a car park and those happen in the MORNING (Chad's call), so a
+chapter now declares `daylight` — the dome's gradient, the background, the
+fog, the hemisphere, the key light and its direction, the fill, and the
+opacity of the stars and the moon. `applyDaylight()` MUTATES them in place
+beside `applyGhostTerritory()`; chapters 1 and 2 declare nothing and stay at
+midnight. It is worth saying why the change is good rather than merely
+asked-for: chapters 1 and 2 hide her in the dark because that is what dark
+is for, and there is nowhere to hide at ten in the morning. She is sitting
+in row four in broad daylight in front of forty people and not one of them
+turns round.
 
 **The ninth leak, found at v4.1**: a cutscene may now hold a chapter's own
 ambience loops down, through `api.duck(name, k)`. Chapters 1 and 2 run room
@@ -274,10 +287,13 @@ What the baseline contains, by release:
   `textsync` now discovers every chapter rather than naming chapter 1, so
   a new chapter's words reach Chad's sheet with no edit to the tool.
 - **v4.1** CHAPTER 3 · The Gathering — a seventh-month tentage in the car
-  park under the same block, forty-eight red chairs, an altar, a tang-ki in
-  trance, a crowd of thirty, and the ninth leak (a cutscene may duck the
-  chapter's loops). Twenty-three new sounds and a second speaker. The
-  chapter cost one engine seam, which is what v4.0 was for.
+  park under the same block at ten in the morning, forty-eight red chairs, an
+  altar, a tang-ki in trance, a crowd of thirty, and one of them facing the
+  wrong way. Twenty-three new sounds and a third speaker. Two engine seams:
+  the ninth leak (a cutscene may duck the chapter's loops) and the tenth (a
+  chapter declares its own daylight). Also `leaktest` now builds EVERY
+  registered chapter, which is how a chapter that throws in `build()` stops
+  being invisible to all twenty-two harnesses.
 - **v3.8** real art where there was code: a bought first-person ARM rig
   (`arms.glb`, credited to Fab) replaces the wrist-only hand pack and the
   forearm that was built out of cylinders to cover for it, and the hell
@@ -349,8 +365,8 @@ before touching either chapter.
 **The three chapters escalate on one axis, deliberately.** Chapter 1's
 terror is DISTANCE (she is over there, and then she is closer). Chapter 2's
 is SMALLNESS (a room you cross in four steps, and nowhere in it to go).
-Chapter 3's is COMPANY (forty people, and she is in row four, and not one
-of them turns round). A change that blunts one of those is a change to the
+Chapter 3's is COMPANY, in DAYLIGHT (forty people, ten in the morning, and
+she is in row four, and not one of them turns round). A change that blunts one of those is a change to the
 chapter's whole reason for existing.
 
 Next up: **chapter 4** (BACK HOME, in the trial's episode 1), and the
