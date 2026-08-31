@@ -69,3 +69,5 @@ masterz-encounters-v*.zip
 # build, in both encodings.
 assets/audiopack*.json
 assets/opuspack*.json
+# the backup bundle split for delivery (the whole bundle is ignored above)
+Encounters-backup.bundle.part*
