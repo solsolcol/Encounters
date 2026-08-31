@@ -5,11 +5,11 @@ without prompting for each change. This is how it works and how to run it.
 
 ## The sheet
 
-**Master Z's Encounters — GAME TEXT v5 (edit here)** in his Drive
-(id `1Mh6eXHxwbkQLnr1TyBW_kd3V3luQojf8U1WOezTziAY` — the **v5** sheet, made
-at v3.6 when save/resume added seven strings; v1–v4 are superseded and
-should not be edited).
-<https://docs.google.com/spreadsheets/d/1Mh6eXHxwbkQLnr1TyBW_kd3V3luQojf8U1WOezTziAY/edit>
+**Master Z's Encounters — GAME TEXT v6 (edit here)** in his Drive
+(id `1xgR4XPBeW5OvntjnoQY8YkeYwqUky6chUkqdICrYlEY` — the **v6** sheet, made
+at v4.0 when chapter 2 added its 23 rows; v1–v5 are superseded, renamed
+"OLD — do not edit" in his Drive, and should not be edited).
+<https://docs.google.com/spreadsheets/d/1xgR4XPBeW5OvntjnoQY8YkeYwqUky6chUkqdICrYlEY/edit>
 
 The Drive connector can read a sheet and can create one, but it cannot
 write cells into an existing one. So a release that adds strings makes a
@@ -34,11 +34,16 @@ file.
 
 | File | Holds |
 |---|---|
-| `src/strings.js` | every UI word the ENGINE says (85) |
-| `src/chapters/ch1.js` | the CHAPTER's own words (18): brief, prompt, choices, teachings |
+| `src/strings.js` | every UI word the ENGINE says (93) |
+| `src/chapters/ch1.js` | chapter 1's own words (18): brief, prompt, choices, teachings |
+| `src/chapters/ch2.js` | chapter 2's own words (23): the same, plus its `words` block |
 
-Both are hand-written and stay readable — the sync tool edits values in
-place and never regenerates a file, so comments and structure survive.
+Chapters are DISCOVERED, not named: `textsync.mjs` globs `src/chapters/*.js`,
+skips fixtures (id 90+), and sorts by id — so chapter 3 joins the sheet by
+existing, with no change to the tool.
+
+All of them are hand-written and stay readable — the sync tool edits values
+in place and never regenerates a file, so comments and structure survive.
 
 `src/strings.js` reaches the screen two ways: elements in `shell.html`
 carrying `data-t="key"` are filled at boot by `applyText()`, and code calls
