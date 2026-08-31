@@ -1288,7 +1288,7 @@
          ash, smoke and embers, and here the brazier really is a drum with
          ash in it — and then this chapter's cast, which its scenes direct. */
       drum, ash, embers, heroNote, smoke, flying, jossTips, fireLight,
-      tent, tentLights, key, bounce, tubes, canvasGeo, roofL, roofR,
+      tent, tentLights, key, bounce, tubes, canvasGeo, roof, skirtL, skirtR,
       altar, tableTop, effigy, bigTips, flames, altarRing,
       medium, stool, flags, priest, handDrum, auntie, paperTable,
       brazier, brazLight, mouth, crowd, standers, crowdRoot, haze,

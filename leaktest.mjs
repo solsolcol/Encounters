@@ -16,7 +16,14 @@
    The pass condition is not "zero growth" — the engine itself allocates
    during a frame, and the first cycle warms caches — but "flat": the counts
    after many cycles must be close to the counts after the first, not
-   climbing with every cycle.                                              */
+   climbing with every cycle.
+
+   Since v4.1 it also builds EVERY registered chapter once before it starts
+   measuring. That is not about leaks: it is the only place in the suite
+   where a chapter's build() runs at all other than chapter 1's, and a
+   chapter that throws in build() was otherwise green everywhere. It stays
+   here rather than becoming a harness of its own, because a new chapter
+   must never add one.                                                     */
 import { chromium } from 'playwright';
 import { LAUNCH, PAGE } from './testlib.mjs';
 
@@ -67,6 +74,39 @@ const out = await p.evaluate(async ({ CYCLES, WARM }) => {
      taken from a fully uploaded world and the slope between them is the
      steady-state slope, which is the thing this harness is actually about. */
   await drawn();
+
+  /* FIRST: EVERY REGISTERED CHAPTER, BUILT ONCE.
+
+     The slope below is measured on ONE chapter, which is the right way to
+     measure a leak — and it left the suite with a hole big enough to ship a
+     crash through. Nothing else calls a chapter's build() either:
+     chaptertest never runs one (it is plain Node, no WebGL), fixturetest
+     builds the fixture, and every remaining harness plays chapter 1. So a
+     chapter whose build() THROWS is green everywhere.
+
+     Chapter 3 did exactly that at v4.1 — one stale name in the object it
+     returns — and the whole suite passed while `?ch=ch3` was a black screen.
+     Two rebuilds per chapter is a few seconds, it needs no per-chapter code,
+     and it means the next chapter cannot ship broken the same way.       */
+  log.chapters = {};
+  const KEYS = Object.keys(window.__CHAPTERS__ || {})
+    .filter(k => (window.__CHAPTERS__[k].id || 0) < 90)
+    .sort((a, b) => (window.__CHAPTERS__[a].id || 0) - (window.__CHAPTERS__[b].id || 0));
+  for (const k of KEYS) {
+    try {
+      e.rebuildStage(window.__CHAPTERS__[k]);
+      await drawn();
+      const w = e.chapterWorld();
+      log.chapters[k] = !!w && w.children.length > 3
+                        && isFinite(e.pileDist()) && e.blockers.length > 0;
+    } catch (err) {
+      log.chapters[k] = 'threw: ' + (err && err.message);
+    }
+  }
+  log.everyChapterBuilds = KEYS.length > 0 && KEYS.every(k => log.chapters[k] === true);
+  // back to the booted chapter, so everything below measures one world
+  try { e.rebuildStage(window.__CHAPTERS__[KEYS[0]]); await drawn(); } catch (err) {}
+
   log.before = count();
   for (let i = 0; i < WARM; i++) { await e.rebuildStage(); await drawn(); }
   const first = count();
@@ -96,8 +136,8 @@ const out = await p.evaluate(async ({ CYCLES, WARM }) => {
 
 console.log(JSON.stringify(out, null, 1));
 
-const MUST = ['hasRebuild', 'geoFlat', 'texFlat', 'uploadedAgain', 'worldRebuilt',
-              'pileAlive', 'blockersAlive', 'stillPlayable'];
+const MUST = ['hasRebuild', 'everyChapterBuilds', 'geoFlat', 'texFlat', 'uploadedAgain',
+              'worldRebuilt', 'pileAlive', 'blockersAlive', 'stillPlayable'];
 for (const k of MUST) if (out[k] !== true) errs.push(`ERR leak promise broken: ${k}`);
 console.log('errors:', errs.length ? errs : 'none');
 await b.close();
