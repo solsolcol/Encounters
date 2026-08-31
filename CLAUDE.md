@@ -177,8 +177,11 @@ they die with the session.
 - **Netlify (the real site)**: project `masterz-encounters-game`
   (id 4133ded1-c901-49ac-8a93-0cfd34128e06) →
   masterz-encounters-game.netlify.app. Deploy = the dist zip on the
-  site's Deploys page, or the Netlify MCP `deploy-site` npx command run
-  from `dist/` when the environment's network allows it.
+  site's Deploys page, or the Netlify MCP `deploy-site` npx command —
+  **run from INSIDE `dist/`, never the repo root**: the uploader ships
+  its cwd verbatim, and from the root it publishes the repo (no index at
+  /, site down — it happened at v4.3, LEARNINGS has the write-up).
+  Byte-verify against dist/ after every deploy.
   **His `chadsor` project is his personal resume site — NEVER touch it.**
 - **Retired: the claude.ai preview artifact** (Chad's call, 30 Aug
   2026 — the game is fully on Netlify). Do NOT republish it as part of

@@ -705,3 +705,25 @@ the default.
   centring a subject standing at +x means yaw PI PLUS the offset. The
   first attempt subtracted and pushed her further off-centre — the two yaw
   conventions LEARNINGS already carries strike again, one convention deep.
+
+## The deploy uploads your WORKING DIRECTORY, not your intention
+
+- The v4.3 deploy took the site down for seventeen minutes. The Netlify MCP
+  uploader was run from the repo root — as its own instructions suggest —
+  and it uploaded the repo VERBATIM: 459 files, `dist/index.html` as a page
+  at /dist/, no index at the root, and the live site became Netlify's 404.
+  It printed "Deploy is ready!" while doing it, and the deploy's state was
+  "ready" — ready is about the upload, not about the site making sense.
+- The tell in the deploy summary: "New pages include: dist/index.html,
+  hellnote.html, shell.html..." — the publish root plainly is not dist —
+  and "No header rules processed", when dist/_headers exists.
+- The fix and the rule: **run the uploader from INSIDE `dist/`** so the
+  thing uploaded IS the site — index.html at the root, assets/, _headers
+  picked up (verified live: `cache-control: immutable` served). This is the
+  drag-the-dist-folder-onto-the-Deploys-page ritual, spelled as a cwd.
+- Recovery is the same command run correctly; Netlify keeps every previous
+  deploy, so the Deploys page (open an older deploy → Publish deploy)
+  remains the human rollback exactly as CLAUDE.md documents for Chad.
+- And ALWAYS byte-verify after deploying — this is the second release in a
+  row where the verification pass caught something (last time truncated
+  fetches, this time the outage itself, within a minute of it starting).
