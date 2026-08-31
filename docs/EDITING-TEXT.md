@@ -5,11 +5,11 @@ without prompting for each change. This is how it works and how to run it.
 
 ## The sheet
 
-**Master Z's Encounters — GAME TEXT v6 (edit here)** in his Drive
-(id `1xgR4XPBeW5OvntjnoQY8YkeYwqUky6chUkqdICrYlEY` — the **v6** sheet, made
-at v4.0 when chapter 2 added its 23 rows; v1–v5 are superseded, renamed
+**Master Z's Encounters — GAME TEXT v7 (edit here)** in his Drive
+(id `1AD8BGROfoE2oL1Rn0UhOZ-NpyWXvCwFLJUViGTGecvs` — the **v7** sheet, made
+at v4.1 when chapter 3 added its 23 rows; v1–v6 are superseded, renamed
 "OLD — do not edit" in his Drive, and should not be edited).
-<https://docs.google.com/spreadsheets/d/1xgR4XPBeW5OvntjnoQY8YkeYwqUky6chUkqdICrYlEY/edit>
+<https://docs.google.com/spreadsheets/d/1AD8BGROfoE2oL1Rn0UhOZ-NpyWXvCwFLJUViGTGecvs/edit>
 
 The Drive connector can read a sheet and can create one, but it cannot
 write cells into an existing one. So a release that adds strings makes a
@@ -37,10 +37,12 @@ file.
 | `src/strings.js` | every UI word the ENGINE says (93) |
 | `src/chapters/ch1.js` | chapter 1's own words (18): brief, prompt, choices, teachings |
 | `src/chapters/ch2.js` | chapter 2's own words (23): the same, plus its `words` block |
+| `src/chapters/ch3.js` | chapter 3's own words (23) |
 
 Chapters are DISCOVERED, not named: `textsync.mjs` globs `src/chapters/*.js`,
-skips fixtures (id 90+), and sorts by id — so chapter 3 joins the sheet by
-existing, with no change to the tool.
+skips fixtures (id 90+), and sorts by id. Chapter 3 joined the sheet by
+existing: not one line of `textsync.mjs` changed for it, which is what that
+generalisation was for.
 
 All of them are hand-written and stay readable — the sync tool edits values
 in place and never regenerates a file, so comments and structure survive.
