@@ -600,3 +600,76 @@ the default.
   that is what dark is for. There is nowhere to hide at ten in the morning —
   she is just sitting there, in the sun, in front of forty people, and the
   horror has to survive being looked straight at.
+
+## A master is not whatever file has the right name
+
+- Re-encoding the pack from the surviving ElevenLabs originals, the levels
+  were matched per file as `shipped peak − master peak`. Twenty of ninety-five
+  came out wrong anyway. `fire` landed 9.8 dB quieter.
+- The encoding was innocent. Several sounds had been REGENERATED during
+  development, and the raw folder still held the earlier take. Peak-matching
+  cannot notice: it happily rescales the wrong recording to the right peak,
+  and every check that looks at level alone comes back green.
+- Identify a master by **crest factor** — peak minus mean, which is
+  gain-invariant — plus duration. That found the right take for 92 of 95.
+  For the three with no match, transcode the shipped file instead: one extra
+  generation, but the level is identical by construction.
+- The general shape: when you are about to rescale one file to match another,
+  first prove they are the same recording. Level tells you nothing about that.
+
+## Whole-file RMS is a screening tool, never a verdict
+
+- One sound of ninety-five, `doorcreak`, read 1.12 dB quieter after
+  re-encoding, and 3 dB quieter over its first 0.4 s. Nothing else did.
+- Two false leads. It was not a bitrate ceiling: 128, 160 and 192 kbps all
+  measured identically. And the silent tail — 18 dB quieter in Opus, because
+  Opus reproduces silence where mp3 puts quantisation noise — explains the
+  whole-file number but not the first 0.4 s.
+- Meanwhile every octave band from 31 Hz to 16 kHz matched within 0.2 dB.
+  Bands matching while total energy does not is not a contradiction, it is a
+  FINGERPRINT: the energy is below the lowest band you measured.
+- It was **DC offset** — 0.1096 in the mp3, 0.0182 in the Opus. High-pass
+  both at 20 Hz and the window measures −19.2 dB in each. DC is 0 Hz; it is
+  inaudible by definition and it steals headroom. Nothing was lost, an
+  artifact was removed.
+- So: when whole-file RMS flags something, split by time AND by frequency
+  band, and if the bands all agree, look below them before believing the
+  total.
+
+## The test browser decides which codecs exist
+
+- AAC is ~24% smaller than mp3 at matched quality and is the obvious choice
+  for an audience on iPhones. It is also undecodable in Playwright's
+  Chromium, which ships without the proprietary codecs — the same fact that
+  already forced a VP9 encode of the title video.
+- A format the suite cannot decode is a format the suite cannot defend, and
+  it fails identically on the Chromium builds some real players use.
+- Opus is royalty-free, decodes everywhere the tests run, and was 35%
+  smaller. Check what the harness can decode BEFORE choosing a format, not
+  after encoding ninety-five files.
+
+## Never guess a codec you can decode instead
+
+- Opus is not safe everywhere: Safari's Ogg support is recent, and this
+  audience is phone-first with plenty of older iPhones. Guessing wrong is
+  not a slightly larger download, it is a game with no sound at all.
+- So the game does not guess and does not consult `canPlayType`, which
+  describes `<audio>` support rather than `decodeAudioData`. It DECODES a
+  179-byte Opus file through an `OfflineAudioContext` and only takes the
+  Opus packs if a real AudioBuffer came back.
+- `OfflineAudioContext` is the detail that makes it usable: it needs no user
+  gesture, so the answer is ready long before the first tap.
+
+## A vocabulary table is not a usage list
+
+- Splitting the sound pack per chapter meant deciding which sounds only one
+  chapter can ask for. The obvious scan — "which sample names does main.js
+  mention?" — returns all of them, because `STING_SAMPLE` maps every cue kind
+  to its sample and lives in main.js.
+- A row in that table proves the kind EXISTS. It says nothing about who plays
+  it. Exclude the table's own span from the scan or the split silently
+  collapses to "everything is shared" — and it collapses green, because
+  coverage still checks out. The only symptom is that the download never
+  shrinks.
+- Same trap, smaller: `packWarm([...])` lists are decode HINTS, not
+  ownership. They still name chapter 2's sounds by hand.

@@ -1978,9 +1978,83 @@ function packMuteSync() {
     g.gain.linearRampToValueAtTime(muted ? 0 : 1, now + 0.35);
   }
 }
-assetBytes('audiopack', true)
-  .then(b => { packJson = JSON.parse(new TextDecoder().decode(b)); })
-  .catch(() => {});
+/* WHICH PACK, AND HOW MANY.
+
+   Until v4.2 this was one line: fetch `audiopack`, keep the JSON. That pack
+   held every sound in the game, so a player who never left chapter 1 still
+   downloaded chapter 3's twenty-three, and the first load grew every time a
+   chapter was added. Two things changed, and neither is visible below the
+   seam: sndBuf() is untouched, because the packs MERGE into the same object
+   it has always read.
+
+   ONE: the pack is split — shared, plus one per chapter (build.py computes
+   which is which). The shared pack and the booting chapter's load at once;
+   the next chapter's is fetched when the decision opens, which is minutes of
+   play before its opening film can need it and only for a player who
+   actually got that far.
+
+   TWO: there are two encodings of every sound. Opus is ~35% smaller than the
+   mp3 and, encoded from the surviving ElevenLabs masters, is a FIRST
+   generation copy where the shipping mp3 is a second. But not every browser
+   decodes it, and a wrong guess here is a game with no sound at all — so the
+   choice is not a guess. A 179-byte Opus file is DECODED before anything is
+   fetched, and only a browser that really produced an AudioBuffer from it is
+   given the Opus packs. Everything else gets the mp3s, which are the bytes
+   that have always shipped. An OfflineAudioContext is used deliberately: it
+   needs no user gesture, so the answer is ready long before the first tap.
+
+   The embedded single-file build keeps ONE mp3 pack of everything, as it
+   always had — it is the offline fallback, it has no download to save, and
+   there is no second file for it to fetch.                                */
+const OPUS_PROBE =
+  'T2dnUwACAAAAAAAAAAC9nVGQAAAAAOUMiAMBE09wdXNIZWFkAQE4AYC7AAAAAABPZ2dTAAAAAAAA'
+  + 'AAAAAL2dUZABAAAAVZ8nLgE+T3B1c1RhZ3MNAAAATGF2ZjYwLjE2LjEwMAEAAAAdAAAAZW5jb2Rl'
+  + 'cj1MYXZjNjAuMzEuMTAyIGxpYm9wdXNPZ2dTAAT4BAAAAAAAAL2dUZACAAAAtlB4FwIHBggL5jsj'
+  + 'q2AICKyzDsY=';
+let packFormat = 'mp3';
+const packCodecReady = (() => {
+  if (!HOSTED) return Promise.resolve();       // embedded: one mp3 pack, inline
+  try {
+    const OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+    if (!OAC) return Promise.resolve();
+    // 48 kHz because that is the only rate Opus encodes at, so the probe
+    // asks the decoder to do nothing it would not do for a real sound; and a
+    // length of 1024 rather than 1 because a one-frame context is the kind of
+    // edge an older implementation refuses outright, and a refusal here reads
+    // as "no Opus" and would cost a capable browser the smaller download.
+    const probe = new OAC(1, 1024, 48000).decodeAudioData(b64ToBuffer(OPUS_PROBE));
+    if (!probe || !probe.then) return Promise.resolve();   // callback-only: mp3
+    return probe.then(() => { packFormat = 'opus'; }, () => {});
+  } catch { return Promise.resolve(); }
+})();
+
+const packLoaded = Object.create(null);
+/* Load one pack and MERGE it in. Chapter packs exist only in the hosted
+   build; asking for one anywhere else is a no-op rather than a rejection. */
+function packLoad(chapterKey) {
+  if (chapterKey && !HOSTED) return Promise.resolve();
+  return packCodecReady.then(() => {
+    const key = (packFormat === 'opus' ? 'opuspack' : 'audiopack')
+              + (chapterKey ? '_' + chapterKey : '');
+    if (packLoaded[key]) return packLoaded[key];
+    return (packLoaded[key] = assetBytes(key, true)
+      .then(b => {
+        const part = JSON.parse(new TextDecoder().decode(b));
+        packJson = Object.assign(packJson || Object.create(null), part);
+      })
+      .catch(() => {
+        /* A chapter with no sounds of its own simply has no pack, and that
+           is not an error. A pack that failed to ARRIVE is, though, and
+           forgetting it here is what lets the next packLoad() for the same
+           chapter try again — setChapter() and startDecision() both call
+           this at natural moments, so a dropped fetch costs a retry rather
+           than a chapter that is silent for the rest of the run.        */
+        delete packLoaded[key];
+      }));
+  });
+}
+packLoad();                                  // the shared sounds
+packLoad(CH_KEY);                            // and the booting chapter's own
 
 function sndBuf(name) {              // AudioBuffer if ready, else kick a decode
   if (packBufs[name]) return packBufs[name];
@@ -3069,6 +3143,7 @@ function setChapter(key) {
   applyGhostTerritory();           // her reach is the new chapter's, not the old one's
   applyDaylight();                 // and so is the time of day
   silenceChapterLoops();           // and so is the room tone
+  packLoad(key);                   // and its own sounds, if they are not here yet
   SPAWN.pos.set(CH.spawn.x, CH.spawn.y, CH.spawn.z);
   SPAWN.rot = 0;
   rebuildStage(CH);
@@ -3707,6 +3782,14 @@ function startDecision() {
      off the scenes rather than listed, for the reason in warmIntroSet. */
   for (const sc of (CH.scenes || [])) warmCues(cuesOf(sc));
   packWarm((CH.choices || []).map(c => (CH.sayPrefix || 'v') + c.k));
+  /* and the NEXT chapter's sounds start downloading here, which is the one
+     moment that is both late enough and early enough. Late, because a player
+     who stops before ever opening the decision has still not paid for a
+     chapter they did not reach — that is the whole point of splitting the
+     pack. Early, because what comes after this is a cutscene, a teaching
+     card and a rank screen, so a megabyte has minutes to arrive before the
+     next chapter's opening film asks for its first line.               */
+  packLoad(nextChapterKey());
   ui.prompt.classList.add('hide');
   ui.interact.classList.add('hide');
   hint.classList.add('hide');
@@ -4351,6 +4434,8 @@ window.__enc = { yaw, stats, getState: () => state,
                                  impulse: +impulse.toFixed(2) }),
                  pack: () => ({
                    loaded: !!packJson,
+                   format: packFormat,
+                   packs: Object.keys(packLoaded),
                    names: packJson ? Object.keys(packJson).length : 0,
                    decoded: Object.keys(packBufs).length,
                    loops: Object.fromEntries(Object.entries(packLoops)

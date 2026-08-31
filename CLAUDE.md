@@ -201,8 +201,7 @@ separately, so audio budget is now a download-time judgement, not a hard
 cap. All playback through
 the shared Web Audio context — never `<audio src=data:>` — and everything
 obeys the one mute button. Since v2.3 the game runs a full generated
-soundscape: 95 sounds in one `audiopack` asset (assets/audio/ packed by
-build.py) + the James opening line — loops, UI cues, ghost vocalisations,
+soundscape: 95 sounds + the James opening line — loops, UI cues, ghost vocalisations,
 cutscene stings, ending music beds, and in-world narration lines. Three
 speakers now: James (`EkK5I93UQWFDigLMpZcX`), chapter 2's Mother (Matilda,
 `XrExE9yKIg1WjnnlVkGX`) and chapter 3's auntie (Alice,
@@ -212,6 +211,41 @@ not sound like each other. The procedural stings in main.js remain only as
 the decode-time fallback. docs/AUDIO-PLAN.md has the full inventory, cue map
 and generation flow IDs; the v3.7 cutscene pass is in docs/V3.7-PLAN.md and
 chapter 3's twenty-three sounds are in docs/V4.1-CHAPTER3-PLAN.md.
+
+**HOW THE SOUND REACHES THE PLAYER, since v4.2** (Chad's question: "it
+shouldnt grow like that as a single download right?" — he was right).
+There is no longer ONE pack. There is a shared pack plus one per chapter,
+and `build.py` COMPUTES the split rather than any chapter declaring it:
+**a sound is a chapter's when exactly one chapter can ask for it and the
+engine never does; everything else is shared.** The bias to shared is
+deliberate and asymmetric — a sound wrongly left shared costs a few KB, a
+sound wrongly moved out of it is a cue that plays nothing with no error.
+Shared and the booting chapter's load at boot, `setChapter()` loads a new
+chapter's, and `startDecision()` fetches the NEXT chapter's, which is late
+enough that a player who never finishes chapter 1 never pays for chapter 2
+and early enough that a cutscene, a card and a rank screen cover the
+download. `sndBuf()` never changed: packs `Object.assign` into the same
+`packJson`.
+
+And there are TWO ENCODINGS of every sound. The mp3s are exactly the bytes
+that always shipped and must stay untouched — they are the proven fallback.
+Beside them, `assets/audio-opus/` holds the same 95 at 96 kbps stereo /
+64 kbps mono: 4.5 MB against 6.9, encoded from the surviving ElevenLabs
+MASTERS, so it is a FIRST-generation copy where the mp3 is a second, and
+measurably closer to the master than the file now live. Stereo stays stereo
+(the 48 spoken lines were always mono — that is what one voice is). The one
+contract term that moved is sample rate: Opus is 48 kHz only, which
+discards nothing, since Web Audio resamples every buffer anyway. **AAC is
+disqualified, not overlooked** — it is smaller still, but Playwright's
+Chromium cannot decode it (the same missing proprietary codecs that gave
+the title video a VP9 encode), so the suite could never defend it. And the
+codec is never GUESSED: a 179-byte Opus file is DECODED through an
+`OfflineAudioContext` before anything is fetched, and only a browser that
+really produced an AudioBuffer from it gets the Opus packs. Guessing wrong
+is not a bigger download, it is a game with no sound at all.
+Chapter 1's sound download: 6830 KB -> 3864 KB, and chapter 4 adds nothing
+to it. Full reasoning, the measurements and the traps:
+docs/V4.2-AUDIO-DELIVERY.md.
 
 **eleven_v3 fails about one line in three, at random.** Seven of sixteen
 failed on the first run at v4.1 and every one succeeded on a plain re-run
@@ -294,6 +328,11 @@ What the baseline contains, by release:
   chapter declares its own daylight). Also `leaktest` now builds EVERY
   registered chapter, which is how a chapter that throws in `build()` stops
   being invisible to all twenty-two harnesses.
+- **v4.2** the sound stopped being one download that grew with the game:
+  the pack is split per chapter (computed, not declared) and there is a
+  second, smaller Opus encoding made from the surviving ElevenLabs masters,
+  chosen by decode-testing a 179-byte probe rather than by guessing. Chapter
+  1's sound: 6830 KB -> 3864 KB, and chapter 4 will add nothing to it.
 - **v3.8** real art where there was code: a bought first-person ARM rig
   (`arms.glb`, credited to Fab) replaces the wrist-only hand pack and the
   forearm that was built out of cylinders to cover for it, and the hell
@@ -374,9 +413,10 @@ still-outstanding job of replacing chapter 1's placeholder choices with the
 real "THE OFFERINGS" data in `docs/source/trial-game-chapters.md`. Chapter 3
 cost one engine seam; chapter 4 should cost none.
 
-Also outstanding, and Chad's call: the sound pack is now 95 sounds and
-6.9 MB, which is the biggest single download after the ghost mesh. A
-compression pass is a plain download-speed improvement, not a blocker.
+The sound download is **done** (v4.2, above): split per chapter so it no
+longer grows with the game, and re-encoded from the masters. The ghost mesh
+is now the biggest single download by a wide margin and the only compression
+job left outstanding.
 
 `docs/LEARNINGS.md` is the catalog of every hard-won lesson (CSP traps,
 audio traps, cutscene staging, test flakiness). When something in this

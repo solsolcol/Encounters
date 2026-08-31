@@ -350,3 +350,26 @@ hit, cued by hand, which is also the only way to write a ritardando.
   gain-corrected from its own `volumedetect` reading: one-shots peak −3.0,
   loops mean −27 (peak capped −3), voice peak −1.8. See
   `docs/V4.1-CHAPTER3-PLAN.md` for the script and the per-file numbers.
+
+
+## v4.2 · Delivery, not content
+
+No new sounds. What changed is how the 95 reach the player, and it is
+written up in full in `docs/V4.2-AUDIO-DELIVERY.md`. The short version,
+because it changes what "add a sound" means:
+
+- **`assets/audio/*.mp3` is still the source of truth and is untouched.**
+  Dropping a new mp3 in there is still all it takes to add a sound.
+- **`assets/audio-opus/*.ogg` must carry the same stems.** `build.py` fails
+  the build if an mp3 has no Opus encode, or an Opus file has no mp3. Encode
+  a new one from its ElevenLabs MASTER (not from the mp3 you just made):
+  `-ar 48000 -c:a libopus -b:a 96k` for stereo, `64k` for a mono voice line,
+  `-map_metadata -1`, and a `volume=NdB` that matches the mp3's peak.
+- **The pack is no longer one file.** `build.py` splits it into a shared pack
+  plus one per chapter, computed from what each chapter's source actually
+  asks for. Nothing to declare, nothing to maintain — but see the two traps
+  in the v4.2 doc about `STING_SAMPLE` and `packWarm`, both of which look
+  like usage and are not.
+- **Which encoding a player gets is decided by decoding a 179-byte probe**,
+  never by a support string. mp3 is the fallback and is exactly what shipped
+  before.

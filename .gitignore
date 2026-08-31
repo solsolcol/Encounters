@@ -63,5 +63,9 @@ deploy/
 dist/
 masterz-encounters-v*.zip
 
-# generated audio pack — rebuilt by build.py from assets/audio/
-assets/audiopack.json
+# generated sound packs — rebuilt by build.py from assets/audio/ and
+# assets/audio-opus/, which ARE committed (they are the sources). Since v4.2
+# there is one shared pack, one per chapter, and a full one for the embedded
+# build, in both encodings.
+assets/audiopack*.json
+assets/opuspack*.json

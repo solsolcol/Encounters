@@ -61,6 +61,16 @@ out.voiceObeysMute = (await audio()).muted ? !v.played : v.played;
 // the v2.3 sound pack: loaded in both builds, lazily decoded, loops driven
 const pk = await p.evaluate(() => window.__enc.pack());
 out.packLoaded = pk.loaded && pk.names >= 30;
+// v4.2: the pack is split, and a chapter-1 player must be carrying only the
+// shared pack and chapter 1's own — pulling ch2's or ch3's here would mean
+// the split silently stopped splitting, which costs a download and nothing
+// else, so nothing louder than this would ever notice.
+out.packFormat = pk.format;
+out.packFormatKnown = pk.format === 'opus' || pk.format === 'mp3';
+out.packScopedToThisChapter = Array.isArray(pk.packs) && pk.packs.length <= 2
+  && !pk.packs.some(k => /_ch[23]$/.test(k));
+for (const k of ['packFormatKnown', 'packScopedToThisChapter'])
+  if (out[k] !== true) errs.push(`ERR sound promise broken: ${k}`);
 out.packLoopsDriven = pk.loops && typeof pk.loops.amb === 'number' && pk.loops.amb > 0;
 await p.evaluate(() => { const e = window.__enc;
   e.yaw.position.set(-1, 1.62, -3.6);
