@@ -1829,6 +1829,43 @@ function warmPlaySet() {
   if (CH.lines) packWarm([CH.lines.near, CH.lines.close].filter(Boolean));
 }
 
+/* WHAT A SCENE ASKS FOR, READ OFF THE SCENE.
+
+   Both warm sets used to be hand-written lists of sound names, and the names
+   were chapter 1's and chapter 2's. Chapter 3 would have played its opening
+   film — four spoken lines, on a screen that has only just gone black —
+   against buffers nothing had decoded, and its best scene would have had no
+   dialogue. That is "the engine was chapter 1's engine" one more time, and
+   adding chapter 3's names here would only have moved it to chapter 4.
+
+   So the cues are read out of the scene itself. Chapter files ship
+   UNMINIFIED — build.py copies them; only the engine goes through esbuild —
+   so a scene's source really is its source, and every cue in the game is a
+   literal. It is the same fact `chaptertest` leans on to check them
+   statically, used here at runtime.
+
+   Wrapped in try/catch and unioned with the hand-written floor below, so the
+   worst this can do if it ever stops working is what the code did before. */
+const CUE_RE = /\bsfx\(\s*[^,)]+,\s*'([a-zA-Z0-9_]+)'/g;
+function cuesOf(fn) {
+  if (typeof fn !== 'function') return [];
+  try {
+    return [...Function.prototype.toString.call(fn).matchAll(CUE_RE)].map(m => m[1]);
+  } catch { return []; }
+}
+/* kinds -> the samples behind them. `step` is the one kind with no
+   STING_SAMPLE row: it is routed to the footstep rotation before the table
+   is ever consulted, so it has to be spelled out. */
+function warmCues(kinds) {
+  const out = [];
+  for (const k of new Set(kinds)) {
+    if (k === 'step') { out.push('step1', 'step2', 'step3', 'step4'); continue; }
+    const smp = STING_SAMPLE[k];
+    if (smp) out.push(smp[0]);
+  }
+  if (out.length) packWarm(out);
+}
+
 /* Everything a chapter's OPENING FILM asks for, decoded before it starts.
    A film is a worse case than a scene: it runs on a screen that has only
    just gone black, before the player has done anything at all, so nothing
@@ -1836,8 +1873,8 @@ function warmPlaySet() {
    first ten seconds of a chapter is the first thing anyone notices. */
 function warmIntroSet() {
   packWarm(['clock', 'fan', 'breath', 'sobbing', 'dread', 'strings', 'boom',
-            'whisper', 'heart', 'doorcreak', 'bedcreak',
-            'v2wake1', 'v2wake2', 'v2wake3']);
+            'whisper', 'heart', 'doorcreak', 'bedcreak']);
+  warmCues(cuesOf(CH.intro));
 }
 
 function queueVoice() {
@@ -3613,6 +3650,11 @@ function startDecision() {
             // and chapter 2's
             'clock', 'fan', 'doorcreak', 'hallsteps', 'bedcreak', 'heart',
             'v2call', 'v2ma']);
+  /* and THIS chapter's, whichever chapter it is: every cue in all four of
+     its scenes, plus the four lines spoken under the outcome cards. Read
+     off the scenes rather than listed, for the reason in warmIntroSet. */
+  for (const sc of (CH.scenes || [])) warmCues(cuesOf(sc));
+  packWarm((CH.choices || []).map(c => (CH.sayPrefix || 'v') + c.k));
   ui.prompt.classList.add('hide');
   ui.interact.classList.add('hide');
   hint.classList.add('hide');

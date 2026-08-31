@@ -245,13 +245,17 @@
     /* Parking lot lines. Four white strokes either side of the tent is the
        cheapest possible way to say "this is a car park and the tent is
        standing where the cars usually are". */
+    /* The DIVIDERS between bays, so they run across the bay and repeat along
+       it. The first pass had them 4.6 m long and 2.6 m apart down the same
+       axis, which overlaps into one continuous stripe — a smear on the
+       tarmac rather than a car park. */
     const matLine = new THREE.MeshBasicMaterial({ color: 0xb9b6a8, fog: true });
-    const lineGeo = new THREE.PlaneGeometry(0.10, 4.6);
+    const lineGeo = new THREE.PlaneGeometry(4.8, 0.10);
     for (const sx of [-1, 1]) {
-      for (let i = 0; i < 5; i++) {
+      for (let i = 0; i < 7; i++) {
         const l = new THREE.Mesh(lineGeo, matLine);
         l.rotation.x = -Math.PI / 2;
-        l.position.set(sx * (T.x + 2.3), 0.012, -5.0 + i * 2.6);
+        l.position.set(sx * (T.x + 3.2), 0.012, -6.0 + i * 2.4);
         world.add(l);
       }
     }
@@ -308,21 +312,32 @@
         }
       });
       world.add(blk);
+
+      /* The lit windows go on AFTER the block, measured against its real
+         bounding box. Placed by hand they were scattered from y=5 to y=25 at
+         a guessed z, and about two thirds of them ended up hanging in the
+         night sky above the roofline — clearly visible from the car park,
+         which is the shot the chapter opens on. */
+      const bb = new THREE.Box3().setFromObject(blk);
+      const winGeo = new THREE.PlaneGeometry(0.95, 1.15);
+      const face = bb.max.z + 0.06;
+      for (let i = 0; i < 14; i++) {
+        const w = new THREE.Mesh(winGeo, matWin);
+        w.position.set(
+          THREE.MathUtils.lerp(bb.min.x + 1.5, bb.max.x - 1.5, Math.random()),
+          THREE.MathUtils.lerp(bb.min.y + 4.0, bb.max.y - 2.0, Math.random()),
+          face);
+        world.add(w);
+      }
+
       hdbReady = true;
       redoShadows();
     }, (err) => console.warn('HDB failed to load', err)))
       .catch(err => console.warn('HDB failed to load', err));
 
-    // a scatter of lit windows up there, so the block is inhabited at 1 AM
+    // a scatter of lit windows, so the block is inhabited at 1 AM. They are
+    // placed in the GLB's callback above, against its measured bounds.
     const matWin = new THREE.MeshBasicMaterial({ color: 0xffdca0, fog: true });
-    const winGeo = new THREE.PlaneGeometry(0.95, 1.15);
-    for (let i = 0; i < 14; i++) {
-      const w = new THREE.Mesh(winGeo, matWin);
-      w.position.set(-9.5 + Math.round(Math.random() * 8) * 2.3,
-                     5.0 + Math.round(Math.random() * 7) * 2.8,
-                     -11.35);
-      world.add(w);
-    }
 
     /* ================================================================== */
     /* THE TENTAGE                                                        */
@@ -450,6 +465,12 @@
       key.shadow.camera.near = 1; key.shadow.camera.far = 26;
     }
     tent.add(key, key.target);
+    /* Into `owned` as well, exactly as chapter 1 does its sodium lamps:
+       Light.dispose() is what frees a 1024x1024 shadow map, and
+       world.traverse() never reaches a light, because a light has neither
+       geometry nor material. renderer.info does not count render targets,
+       so leaktest would not have caught this one. */
+    owned.push(key, key.target);
 
     /* A little bounce off the canvas. A tent lit from inside is not a room
        with one lamp in it — the roof throws most of the light back down, and
@@ -1115,6 +1136,12 @@
       }
       skirtGeo.attributes.position.needsUpdate = true;
 
+      /* THE RITUAL, and a cutscene owns it outright while one is running.
+         Without this, a scene that poses the medium or throws his flags up
+         is overwritten by this function on the very same frame — the head
+         survived only because nothing here writes head.rotation. */
+      if (getState() === 'cine') return;
+
       // the priest keeps the beat, and the drum is the tent's pulse
       const swing = Math.sin(t * 2.4 * drumBeat);
       handDrum.rotation.z = swing * 0.16 * drumBeat;
@@ -1278,11 +1305,23 @@
       box(-2.35, -1.15, 1.90, -7.10, -5.90);                       // the priest
       box(BRAZ.x - 0.75, BRAZ.x + 0.75, 1.20, BRAZ.z - 0.75, BRAZ.z + 0.75);
       box(PAPER.x - 1.35, PAPER.x + 0.75, 1.20, PAPER.z - 1.20, PAPER.z + 1.20);
-      // the corner poles, so you cannot walk out through the frame
+      // the giant joss, which stands OUTSIDE the altar's own box
+      for (const bx of [-2.0, 2.0]) {
+        box(ALTAR.x + bx - 0.22, ALTAR.x + bx + 0.22, 2.60,
+            ALTAR.z + 0.10 - 0.22, ALTAR.z + 0.10 + 0.22);
+      }
+      // the poles, so you cannot walk out through the frame — including the
+      // two CENTRE uprights, one of which stands in the entrance itself
       for (const sx of [-1, 1]) {
         for (const pz of POLE_Z) {
           box(sx * T.x - 0.22, sx * T.x + 0.22, 2.90, pz - 0.22, pz + 0.22);
         }
+      }
+      for (const pz of [-T.z, T.z]) box(-0.22, 0.22, 2.90, pz - 0.22, pz + 0.22);
+      // and the people standing at the edges, who were walk-through
+      for (const f of standers) {
+        box(f.position.x - 0.28, f.position.x + 0.28, 1.20,
+            f.position.z - 0.24, f.position.z + 0.24);
       }
       return out;
     }
@@ -1661,7 +1700,8 @@
     sfx(4.0, 'whisper', 0.35);
 
     // and she is up the aisle when he looks back, faint, between him and it
-    step(4.9, () => { ghost.position.set(0.22, 0, -3.60); });
+    // facing him, not facing wherever play happened to leave her
+    step(4.9, () => { ghost.position.set(0.22, 0, -3.60); ghost.rotation.y = 0; });
     yawTo(4.9, 6.2, LOOK, 0, smoothK);
     pitchTo(4.9, 6.2, -0.08, -0.02, smoothK);
     tr(5.6, 6.8, k => { ghostOpacity(0.30 * k); ghostLight.intensity = 0.7 * k; }, rawK);
@@ -1674,7 +1714,13 @@
 
     // 8.9-10.1  the second look away, and she is gone from the aisle
     yawTo(8.9, 10.1, 0, LOOK, smoothK);
-    step(9.9, () => { ghostOpacity(0); ghostLight.intensity = 0; });
+    /* A TRACK, not a step. Every track keeps running once t passes its t0 —
+       clamped at k=1, forever — so the 5.6-6.8 fade-in above is still
+       writing 0.30 on every frame at t = 10. A step() fires once, is
+       overwritten on the very next frame, and she blinks straight back in.
+       Pushed after that fade-in and before the reveal below, so it beats the
+       one and loses to the other, which is the whole of the ordering. */
+    tr(9.4, 10.1, () => { ghostOpacity(0); ghostLight.intensity = 0; }, rawK);
     sfx(9.2, 'whisper', 0.4);
 
     /* 10.1-11.6  and back — and this time she is four metres away, solid,
@@ -1816,7 +1862,11 @@
     camTo(9.0, 10.8, { x: -0.18, y: 1.54, z: -5.55 },
                      { x: 0.42, y: 1.06, z: -3.90 }, rawK);
     pitchTo(9.0, 10.8, 0.06, 0.46, rawK);
+    /* Ends on sin(1.4*PI) = -0.95, so it holds sixteen degrees of roll for
+       as long as the scene runs — right through the auntie pulling him out.
+       The settle below is pushed later and therefore wins. */
     tr(9.0, 11.6, k => { camera.rotation.z = 0.30 * Math.sin(k * Math.PI * 1.4); }, rawK);
+    tr(11.6, 13.4, k => { camera.rotation.z = -0.285 * (1 - k); }, smoothK);
     tr(9.0, 10.4, k => {
       const y = PRAY_Y - 0.42 * k;
       armR.position.y = y;
@@ -1885,47 +1935,56 @@
     sfx(0.4, 'step', 0.32); sfx(1.2, 'step', 0.32); sfx(1.9, 'step', 0.30);
 
     // she looks up from the folding
-    tr(2.2, 2.9, k => { stage.auntie.rotation.y = AUNT_REST + (TO_AUNT + Math.PI - AUNT_REST) * k; }, smoothK);
+    /* TO_AUNT is a CAMERA yaw (0 = -z). A figure's forward is +z at 0, so
+       the two conventions are half a turn apart — and for her to look back
+       along the line the camera is looking down, her yaw is TO_AUNT exactly.
+       Adding PI, as this first did, faced her away from him for the whole
+       conversation. */
+    tr(2.2, 2.9, k => { stage.auntie.rotation.y = AUNT_REST + (TO_AUNT - AUNT_REST) * k; }, smoothK);
     sfx(2.4, 'take', 0.4);
 
-    sfx(3.1, 'v3aunt1');   // "That one? He is the tang ki. The god borrows his body."
-    sfx(7.3, 'v3aunt2');   // "He has done this for thirty years. Watch his hands, not his face."
+    /* THE TIMINGS ARE THE LINE LENGTHS. The first pass had three of these
+       starting before the previous one had finished — aunt1 runs 4.96 s,
+       aunt2 4.96, ask 1.49, aunt3 6.35, aunt4 3.87 (measured, in the plan
+       doc) — and two people talking over each other is the one thing a
+       conversation scene cannot survive. Every gap below is about 0.4 s. */
+    sfx(3.1, 'v3aunt1');   // "That one? He is the tang kee. The god borrows his body."
+    sfx(8.5, 'v3aunt2');   // "He has done this for thirty years. Watch his hands, not his face."
 
     // and he does look, because she told him to
-    yawTo(7.9, 9.2, TO_AUNT, TO_MED, smoothK);
-    pitchTo(7.9, 9.2, -0.05, -0.03, smoothK);
-    yawTo(9.2, 10.6, TO_MED, TO_AUNT, smoothK);
-    sfx(8.6, 'drum', 0.45);
+    yawTo(9.1, 10.5, TO_AUNT, TO_MED, smoothK);
+    pitchTo(9.1, 10.5, -0.05, -0.03, smoothK);
+    yawTo(10.5, 11.9, TO_MED, TO_AUNT, smoothK);
+    sfx(9.8, 'drum', 0.45);
 
-    sfx(11.1, 'v3ask');    // "Is it real, auntie?"
-    sfx(13.2, 'v3aunt3');  // "Real, not real, I do not know. He drives a lorry."
+    sfx(13.9, 'v3ask');    // "Is it real, auntie?"
+    sfx(15.8, 'v3aunt3');  // "Real, not real, I do not know. He drives a lorry."
 
-    /* 18.3  and then she stops folding. One second, and the whole scene
+    /* 22.6  and then she stops folding. Half a second, and the whole scene
        changes register without a single sound effect in it. */
-    step(18.3, () => { stage.auntie.rotation.y = TO_AUNT + Math.PI + 0.55; });
-    sfx(18.4, 'dread', 0.5);
-    tr(18.3, 19.0, () => {}, rawK);
-    sfx(18.8, 'v3aunt4');  // "You. Do not sit in the back row tonight."
+    step(22.6, () => { stage.auntie.rotation.y = TO_AUNT + 0.62; });
+    sfx(22.7, 'dread', 0.5);
+    tr(22.6, 23.1, () => {}, rawK);
+    sfx(23.1, 'v3aunt4');  // "Listen to me, boy. Do not sit in the back row tonight."
 
-    /* 20.2-22.4  the camera turns, slowly, all the way round to the back of
+    /* 24.4-26.6  the camera turns, slowly, all the way round to the back of
        the tent — away from the ritual, which is where it has been pointing
        since the film started. */
-    yawTo(20.2, 22.4, TO_AUNT, TO_BACK, smoothK);
-    pitchTo(20.2, 22.4, -0.05, -0.10, smoothK);
-    camTo(20.2, 22.8, TABLE, { x: TABLE.x - 0.30, y: EYE, z: TABLE.z + 0.20 }, smoothK);
-    sfx(20.6, 'whisper', 0.35);
+    yawTo(24.4, 26.6, TO_AUNT, TO_BACK, smoothK);
+    pitchTo(24.4, 26.6, -0.05, -0.10, smoothK);
+    camTo(24.4, 27.0, TABLE, { x: TABLE.x - 0.30, y: EYE, z: TABLE.z + 0.20 }, smoothK);
+    sfx(24.8, 'whisper', 0.35);
 
     // one chair in the back row, empty, and still going
-    sfx(22.0, 'chair', 0.75);
-    tr(22.0, 24.2, (k, t2) => {
+    sfx(26.2, 'chair', 0.75);
+    tr(26.2, 28.4, (k, t2) => {
       stage.turnChair(stage.BACK_I,
         REST_BACK + Math.sin(t2 * 7.4) * 0.14 * (1 - k));
     }, rawK);
-    sfx(22.9, 'chime', 0.5);
-    sfx(23.4, 'dread', 0.6);
-    sfx(24.0, 'heart', 0.45);
-    fade(23.4, 25.4, 0, 1);
-    step(25.4, () => { stage.auntie.rotation.y = AUNT_REST; });
+    sfx(27.0, 'chime', 0.5);
+    sfx(27.6, 'dread', 0.6);
+    fade(27.4, 29.4, 0, 1);
+    step(29.4, () => { stage.auntie.rotation.y = AUNT_REST; });
 
     c.keep.ghostGone = true;
     c.endFade = 1;
@@ -1975,7 +2034,12 @@
     // 10.9  one of them is standing up, at the back, facing out
     step(10.9, () => {
       ghost.position.set(HER0.x, 0, HER0.z);
-      ghost.rotation.y = Math.PI;         // facing +z, which is where he is
+      /* FACING HIM. A figure's forward is +z at rotation 0 — the same
+         convention ghostFacePlayer uses (atan2(px-gx, pz-gz) is 0 for a
+         player straight ahead in +z) — and the camera is out at z = 15.5.
+         This said Math.PI, and turned her back on the one shot the whole
+         scene exists for. */
+      ghost.rotation.y = 0;
       ghostOpacity(0);
     });
     tr(11.0, 12.2, k => { ghostOpacity(0.88 * k); ghostLight.intensity = 0.9 * k; }, rawK);
