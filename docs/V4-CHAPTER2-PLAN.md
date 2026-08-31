@@ -333,3 +333,134 @@ are fixed, so a new chapter declares what it needs and the engine already
 knows how to be told. The two jobs left over from before: chapter 1's
 placeholder choices still want replacing with the real THE OFFERINGS data,
 and the sound pack is 72 sounds and 7.3 MB and wants a compression pass.
+
+
+---
+
+# v4.6 · THE DOORWAY PASS — 31 Aug 2026
+
+Chad played chapters 2 and 3 through and came back with four things. Three
+of them are chapter 2's, and all three are the same kind of bug: the writing
+described a shot that the geometry could not produce.
+
+> "for chapter 2, for the option of leaving the room, the door is not opening
+> the right way when he goes out. And there's no corridor or walk way after
+> he leaves the room. Build that so it doesnt look off."
+>
+> "For the option of the mother, the door should open the right way when the
+> mother comes in, show the mother coming in, then the mother walks out
+> again, and closes the door right."
+
+## What was actually wrong
+
+**The door's sign was never written down, and both scenes guessed it wrong.**
+The leaf is hinged at the low-x jamb and swings OUTWARD, into the corridor:
+`rotation.y` of 0 is shut, −0.62 is the ajar the night starts on, and more
+negative is more open. Both scenes opened it by ADDING a positive number to
+`DOOR_AJAR`, which drives it toward SHUT. So:
+
+- Scene B's mother "arrived" by closing the door in your face. The room went
+  warm anyway, because `hallLight` is a point light with no shadow and does
+  not care whether a leaf is in the way — which is exactly why nobody noticed
+  in a screenshot: the LIGHTING was right and the door was wrong.
+- Scene C walked him into the closing leaf at the threshold.
+
+Fixed by naming the convention at the door itself, adding `DOOR_OPEN`
+(−1.38) beside `DOOR_AJAR`, and having both scenes interpolate between the
+two named angles instead of doing arithmetic on one of them.
+
+**There was no corridor.** Past the doorway sat a 2.6 m square of floor and
+one blank wall — enough while nothing ever went out there. Scene C goes out
+there. Worse, it then turned to `Math.PI`, which faces AWAY from the room, so
+the last four seconds of "the room is perfectly ordinary" were spent looking
+at grey plaster while the door closed behind the camera, off screen.
+
+Now it is a passage: floor, ceiling, a far wall, the stretches of near wall
+either side of this bedroom, a closed door further along (hers — the one
+heard opening in scene B), an architrave around our own doorway, a switch, a
+calendar, a framed photograph, a batten light on the ceiling, and the living
+room glowing round the corner at the far end. All set dressing and none of it
+a blocker: `bounds` stop the player at z = 2.0, twenty centimetres short of
+the doorway, so only cutscenes are ever out there.
+
+The batten is worth one note. It is not a light — `hallLight` already is —
+it is what a lit corridor looks like it comes FROM, so its brightness is
+driven off that light's intensity in `updateFire`, outside the cine guard.
+One line, and it is right in every scene without any scene saying so.
+
+**And the mother was never there.** The best answer in the chapter was a
+voice behind a closing door. She is built now, in `build()` and not in the
+scene (a cutscene borrows props, it does not create them — anything created
+inside a scene outlives it and leaks on rebuild), hidden until scene B shows
+her, and carried through `snap`/`restore`/`reset` so a skip mid-stride cannot
+leave her standing in the bedroom for the rest of the night.
+
+She is deliberately plain: a housecoat, a bun, slippers, 1.64 m to the top of
+her head — a little shorter than the eye she is talking to. For most of her
+time on screen she is a silhouette in a warm doorway, which is the one thing
+a shape like this does well.
+
+## The new scene B, in beats
+
+| t | what |
+|---|---|
+| 1.0 | the shout (`v2call`, 4.7 s of it, nothing under it) |
+| 1.5–5.6 | four seconds in which the room does not care |
+| 5.8 | her door, down the hall |
+| 6.4 | slippers on terrazzo, and the hall light coming up |
+| 7.6–9.0 | the door swings OPEN, outward, and she is already in it |
+| 8.2–10.0 | in, over four unhurried steps, to an arm's length away |
+| 10.6 | "What is it? Go back to sleep." — to his face, 5.0 s |
+| 11.6–13.6 | she goes out backwards, still looking at him |
+| 13.6–15.2 | and shuts it: the leaf comes across her before it lands |
+| 16.2 | `vrelief`, which now starts AFTER `v2ma` has finished |
+| 19.4 | end, on the room, no black |
+
+That last row is a bug fixed in passing: `v2ma` ran 7.6→12.6 and `vrelief`
+started at 10.0, so chapter 2's best scene had two of James's own lines
+talking over each other — the same fault Chad heard in chapter 3 at v4.4,
+sitting unnoticed in chapter 2 the whole time. Both are now timed against
+MEASURED take durations.
+
+## Scene C, in beats
+
+Walk (open the door ahead of him, not into him) → through into the corridor →
+turn BACK, square to the doorway, a metre out → four seconds of an ordinary
+bedroom framed in its own doorway → the door swings shut on it → black.
+
+The standing spot is not free: it is 1.24 m from the hinge, a clear 38 cm
+outside the leaf's 0.86 m swing, so the door that closes on the room does not
+close through the camera. Anything nearer and the leaf sweeps the lens.
+
+## Not touched
+
+Chapter 2's intro film, scenes A and D, its sounds (no new audio: every cue
+here already existed in this chapter's pack), its words, its stats, and the
+sheet — no string changed, so no re-export is needed.
+
+## Found on the way: the opening film was looking the wrong way
+
+Not on Chad's list, because from the passenger seat it just reads as a slow
+film. Measured, it is unambiguous — the camera yaw at each beat against the
+direction of the thing the beat is named after:
+
+| beat | the shot says | the door was | the gap was |
+|---|---|---|---|
+| 16.2 s | "the door, ajar, and nothing beyond it" | **160° behind** | 84° off |
+| 22.0 s | "...Ma?" — and nothing answers | **160° behind** | 83° off |
+| 28.0 s | "something moves in the gap" | 67° off | **144° behind** |
+
+So the film's own climax — her, fading in at 34% in the slot beside the bed —
+played entirely off screen, and had since v4.0. Both turns were hand-written
+angles with the sign inverted; both are now `faceFrom(PILLOW…)`, the helper
+every choice scene already uses. After: the door is 0.6° off centre at its
+beat and the gap 1.1° off at hers.
+
+The general lesson is in LEARNINGS: an angle nobody derives is an angle
+somebody guessed, and a first-person camera has no second pair of eyes to
+notice it is facing a wardrobe.
+
+## SHIPPED — v4.6, 31 Aug 2026
+
+Full suite green. No new sounds, no new strings, no sheet re-export. The
+chapter-2 pack is the same 16 sounds it was.

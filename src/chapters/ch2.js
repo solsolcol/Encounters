@@ -552,7 +552,19 @@
 
     /* ------------------------------------------------------------ the door */
     const door = new THREE.Group();
-    // hinged on the left jamb, so it swings into the room
+    /* Hinged on the jamb at the low-x side, and it opens OUTWARD, into the
+       corridor. That sign is the whole contract every scene here works to,
+       so it is written down rather than left to be re-derived:
+
+         rotation.y  0     shut, flush in the frame
+                    -0.62  ajar, which is how the night starts
+                    -1.38  wide open, the leaf flat against the corridor wall
+
+       Positive would swing it into the bedroom, through the wardrobe. Both
+       scenes that touch this door used to open it by adding a POSITIVE
+       number to the ajar angle, which drove it toward shut — the mother
+       arrived by closing the door in your face, and leaving the room meant
+       walking into the leaf.                                             */
     door.position.set(DOOR.x - DOOR.w / 2, 0, R.z);
     world.add(door);
     const doorLeaf = new THREE.Mesh(
@@ -564,18 +576,189 @@
     knob.position.set(DOOR.w - 0.08, 1.02, -0.05);
     door.add(knob);
     const DOOR_AJAR = -0.62;                   // how far open the night starts
+    const DOOR_OPEN = -1.38;                   // and how far it goes when it goes
     door.rotation.y = DOOR_AJAR;
 
-    // the hallway past it: a short floor and a back wall, so the opening is
-    // somewhere rather than a hole into the void
-    const hallFloor = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 2.2), matFloor);
+    // the architrave, so the opening is a doorway and not a hole cut in a wall
+    const jambMat = new THREE.MeshStandardMaterial({ color: 0xc8c2b4, roughness: 0.8 });
+    for (const [w, h, x, y] of [[0.05, DOOR.h + 0.06, DOOR.x - DOOR.w / 2 - 0.025, (DOOR.h + 0.06) / 2],
+                                [0.05, DOOR.h + 0.06, DOOR.x + DOOR.w / 2 + 0.025, (DOOR.h + 0.06) / 2],
+                                [DOOR.w + 0.14, 0.06, DOOR.x, DOOR.h + 0.03]]) {
+      const j = new THREE.Mesh(new THREE.BoxGeometry(w, h, R.wall + 0.02), jambMat);
+      j.position.set(x, y, R.z + R.wall / 2);
+      world.add(j);
+    }
+
+    /* ------------------------------------------------------ the corridor --
+       What is on the other side of that door. It used to be a 2.6 m square of
+       floor and one blank wall — enough while nobody ever went out there, and
+       then scene C walked into it, turned the wrong way and spent four
+       seconds looking at grey plaster. So it is a passage now: the one every
+       flat of this age has, bedrooms off one side, the living room glowing at
+       the far end, and a batten light nobody switches on at night.
+
+       All of it is set dressing. `bounds` stop the player at z = 2.0, twenty
+       centimetres short of the doorway, so nothing out here is ever walked on
+       except by a cutscene — which is also why none of it is a blocker.   */
+    /* `hz0` is the OUTSIDE face of this room's near wall — the plaster
+       somebody standing in the corridor can put a hand on. The room's own
+       wall is a box of depth R.wall CENTRED on R.z + R.wall/2, so it runs
+       from R.z to R.z + R.wall, and the corridor starts where it stops.
+       Half a wall out and everything hung on this face ends up buried in
+       it, which is how the light switch spent its first draft inside the
+       plaster with 8 mm of it poking into the bedroom.                   */
+    const hz0 = R.z + R.wall;                   // the corridor's near face
+    const HALL = { d: 1.56, x0: -3.4, x1: 3.6, z0: hz0, z1: hz0 + 1.56 };
+    const hz1 = HALL.z1;                        // the inner face of its far wall
+    const hallW = HALL.x1 - HALL.x0, hallMidX = (HALL.x0 + HALL.x1) / 2;
+
+    const hallFloor = new THREE.Mesh(new THREE.PlaneGeometry(hallW, HALL.d + 0.1), matFloor);
     hallFloor.rotation.x = -Math.PI / 2;
-    hallFloor.position.set(DOOR.x, 0.004, R.z + 1.1);
+    hallFloor.position.set(hallMidX, 0.004, (hz0 + hz1) / 2);
+    hallFloor.receiveShadow = true;
     world.add(hallFloor);
-    const hallBack = new THREE.Mesh(new THREE.PlaneGeometry(2.6, R.h), matWall);
-    hallBack.position.set(DOOR.x, R.h / 2, R.z + 2.2);
-    hallBack.rotation.y = Math.PI;
-    world.add(hallBack);
+    const hallCeil = new THREE.Mesh(new THREE.PlaneGeometry(hallW, HALL.d + 0.1), matCeil);
+    hallCeil.rotation.x = Math.PI / 2;
+    hallCeil.position.set(hallMidX, R.h, (hz0 + hz1) / 2);
+    world.add(hallCeil);
+
+    function hallWall(w, h, d, x, y, z) {
+      const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), matWall);
+      m.position.set(x, y, z);
+      m.receiveShadow = true;
+      world.add(m);
+      return m;
+    }
+    // the far side of the passage, and the two stretches of near wall either
+    // side of this room — the room's own near wall closes the middle
+    hallWall(hallW, R.h, R.wall, hallMidX, R.h / 2, hz1 + R.wall / 2);
+    hallWall(-R.x - HALL.x0, R.h, R.wall, (HALL.x0 - R.x) / 2, R.h / 2, hz0 - R.wall / 2);
+    hallWall(HALL.x1 - R.x, R.h, R.wall, (R.x + HALL.x1) / 2, R.h / 2, hz0 - R.wall / 2);
+    // the far end is closed; the near end keeps going, to the living room
+    hallWall(R.wall, R.h, HALL.d, HALL.x1 + R.wall / 2, R.h / 2, (hz0 + hz1) / 2);
+
+    // skirting, the same 9 cm the room has, so the two floors read as one flat
+    for (const [w, x, z] of [[hallW, hallMidX, hz1 - 0.015],
+                             [-R.x - HALL.x0, (HALL.x0 - R.x) / 2, hz0 + 0.015],
+                             [HALL.x1 - R.x, (R.x + HALL.x1) / 2, hz0 + 0.015]]) {
+      const s = new THREE.Mesh(new THREE.BoxGeometry(w, 0.09, 0.03), skirtMat);
+      s.position.set(x, 0.045, z);
+      world.add(s);
+    }
+
+    /* Her door, shut, in the near wall past this room — which is the door
+       heard opening in scene B, four seconds before she is. */
+    const mumDoor = new THREE.Mesh(new THREE.BoxGeometry(0.80, 2.02, 0.04), matPaint);
+    mumDoor.position.set(2.55, 1.01, hz0 + 0.02);
+    world.add(mumDoor);
+    const mumKnob = new THREE.Mesh(new THREE.SphereGeometry(0.032, 10, 8), matMetal);
+    mumKnob.position.set(2.22, 1.02, hz0 + 0.06);
+    world.add(mumKnob);
+
+    /* The batten light on the corridor ceiling. It is not a light — the hall
+       light already is — it is what a lit corridor looks like it comes from,
+       so its brightness is driven off hallLight every frame in updateFire. */
+    const hallTube = new THREE.Mesh(new THREE.BoxGeometry(0.62, 0.06, 0.10),
+      new THREE.MeshBasicMaterial({ color: 0x1a1c20, fog: false }));
+    hallTube.position.set(DOOR.x + 0.30, R.h - 0.05, hz0 + HALL.d * 0.5);
+    world.add(hallTube);
+
+    // the switch by the door, and the family photograph opposite it: two
+    // small things at eye height that say somebody lives here
+    const plate = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.13, 0.012), jambMat);
+    plate.position.set(DOOR.x - DOOR.w / 2 - 0.20, 1.28, hz0 + 0.008);
+    world.add(plate);
+    /* A calendar, the free kind from a provision shop. It is here for a
+       composition reason as much as a decorating one: the shot at the end of
+       scene C looks straight down this stretch of wall, and a metre of
+       unbroken plaster in the corner of frame reads as an unfinished set. */
+    const cal = new THREE.Mesh(new THREE.PlaneGeometry(0.22, 0.34),
+      new THREE.MeshStandardMaterial({ color: 0xbfae90, roughness: 0.92 }));
+    cal.position.set(0.06, 1.44, hz0 + 0.006);
+    world.add(cal);
+    const calTop = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.045, 0.014),
+      new THREE.MeshStandardMaterial({ color: 0x8c2118, roughness: 0.85 }));
+    calTop.position.set(0.06, 1.635, hz0 + 0.010);
+    world.add(calTop);
+    const photoFrame = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.26, 0.02), matWoodDark);
+    photoFrame.position.set(DOOR.x + 0.90, 1.52, hz1 - 0.012);
+    world.add(photoFrame);
+    const photo = new THREE.Mesh(new THREE.PlaneGeometry(0.27, 0.19),
+      new THREE.MeshStandardMaterial({ color: 0x6b6257, roughness: 0.9 }));
+    photo.position.set(DOOR.x + 0.90, 1.52, hz1 - 0.022);
+    photo.rotation.y = Math.PI;
+    world.add(photo);
+
+    /* The living room, off the near end of the passage and around a corner:
+       a lamp somebody left on, four metres away and out of sight. It reaches
+       the far end of the corridor and nothing else — the room's own night is
+       a streetlight through louvres and stays that way.                   */
+    const livingGlow = new THREE.PointLight(0xffc98e, LOW ? 0.5 : 0.8, 4.2, 1.8);
+    livingGlow.position.set(HALL.x0 - 0.6, 1.55, hz0 + 0.9);
+    scene.add(livingGlow); owned.push(livingGlow);
+
+    /* ---------------------------------------------------------- the mother --
+       The other person in this chapter, and the whole of its best answer. She
+       waits out here from the moment the room is built, hidden, and only
+       scene B ever shows her — which is why she is built and not spawned: a
+       cutscene borrows props, it does not create them (and anything created
+       inside a scene would outlive the scene and leak on rebuild).
+
+       She is deliberately plain. For most of her time on screen she is a
+       silhouette in a warm doorway with the corridor behind her, and a
+       silhouette is the one thing a shape like this does well.
+
+       Her scale is a person's: hem at knee height, shoulders at 1.36, the
+       top of her head at 1.64 — a little shorter than the eye she is talking
+       to, which is the difference between a mother and a figure.         */
+    /* Where she waits, and it is not a free choice: it is 0.99 m from the
+       door's hinge, outside the 0.86 m the leaf sweeps. Any nearer and the
+       door OPENS THROUGH HER on its way — which the first pass did, by 1 cm,
+       for a sixth of a second. Same reason her step back out ends where it
+       does (1.16 m from the hinge): the door has to be able to shut in front
+       of her without passing through her shoulder.                       */
+    const MUM = { x: 1.36, z: 2.86 };            // in the corridor, at the door
+    const matCoat = new THREE.MeshStandardMaterial({ color: 0x7d6f78, roughness: 0.94 });
+    const matSkin = new THREE.MeshStandardMaterial({ color: 0xc9a184, roughness: 0.86 });
+    const matHair = new THREE.MeshStandardMaterial({ color: 0x1c1a1c, roughness: 0.82 });
+    const mother = new THREE.Group();
+    {
+      // the housecoat every auntie of this generation sleeps in
+      const coat = new THREE.Mesh(new THREE.CylinderGeometry(0.175, 0.245, 0.94, 8), matCoat);
+      coat.position.y = 0.89;
+      coat.scale.set(1.06, 1, 0.86);
+      coat.castShadow = !LOW;
+      const shoulders = new THREE.Mesh(new THREE.BoxGeometry(0.355, 0.12, 0.19), matCoat);
+      shoulders.position.y = 1.365;
+      const armGeo = new THREE.BoxGeometry(0.075, 0.50, 0.105);
+      const armL = new THREE.Mesh(armGeo, matCoat);
+      armL.position.set(-0.205, 1.06, 0.01);
+      const armR2 = new THREE.Mesh(armGeo, matCoat);
+      armR2.position.set(0.205, 1.06, 0.01);
+      const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.048, 0.055, 0.085, 6), matSkin);
+      neck.position.y = 1.455;
+      const head = new THREE.Mesh(new THREE.SphereGeometry(0.098, 12, 10), matSkin);
+      head.position.y = 1.556;
+      head.castShadow = !LOW;
+      // hair: a cap tipped back off the face, and the bun it is gathered into
+      const hair = new THREE.Mesh(new THREE.SphereGeometry(0.105, 12, 10,
+        0, Math.PI * 2, 0, Math.PI * 0.58), matHair);
+      hair.position.set(0, 1.556, -0.012);
+      hair.rotation.x = -0.36;
+      const bun = new THREE.Mesh(new THREE.SphereGeometry(0.058, 10, 8), matHair);
+      bun.position.set(0, 1.545, -0.112);
+      const calves = new THREE.Mesh(new THREE.BoxGeometry(0.235, 0.36, 0.135), matSkin);
+      calves.position.y = 0.22;
+      const slippers = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.05, 0.30),
+        new THREE.MeshStandardMaterial({ color: 0x3a3f46, roughness: 0.9 }));
+      slippers.position.set(0, 0.025, 0.035);
+      mother.add(coat, shoulders, armL, armR2, neck, head, hair, bun, calves, slippers);
+      mother.userData.head = head;
+    }
+    mother.position.set(MUM.x, 0, MUM.z);
+    mother.rotation.y = Math.PI;                 // facing the room, as she will be
+    mother.visible = false;                      // until scene B says otherwise
+    world.add(mother);
 
     /* ----------------------------------------------------- the altar shelf */
     const altar = new THREE.Group();
@@ -767,6 +950,12 @@
     }
 
     function updateFire(t) {
+      /* The corridor batten is not a light, it is what the hall light looks
+         like it comes from — so it is driven off that light rather than
+         animated, and it is right in every scene without any scene saying
+         so. Outside the cine guard on purpose: cutscenes are exactly when
+         the hall light moves. */
+      hallTube.material.color.setScalar(Math.min(0.92, 0.06 + hallLight.intensity * 0.24));
       // an electric candle does not flicker like a flame; it wavers, barely
       const fl = 0.88 + Math.sin(t * 2.3) * 0.07 + Math.sin(t * 7.1) * 0.03;
       if (getState() !== 'cine') {
@@ -796,7 +985,11 @@
         hall: hallLight.intensity, street: street.intensity,
         candle: fireLight.intensity,
         blanketPos: blanket.position.clone(), blanketRot: blanket.rotation.x,
-        mattressY: mattress.position.y, hero: heroNote.visible
+        mattressY: mattress.position.y, hero: heroNote.visible,
+        // scene B walks her in and out; skipping it mid-stride must not
+        // leave her standing in the bedroom for the rest of the night
+        mumPos: mother.position.clone(), mumRot: mother.rotation.y,
+        mumVis: mother.visible
       };
     }
     function restore(s) {
@@ -808,6 +1001,9 @@
       blanket.position.copy(s.blanketPos); blanket.rotation.x = s.blanketRot;
       mattress.position.y = s.mattressY;
       heroNote.visible = s.hero;
+      mother.position.copy(s.mumPos);
+      mother.rotation.y = s.mumRot;
+      mother.visible = s.mumVis;
     }
 
     // taken before a frame has run, so a restart gets the pristine values
@@ -828,6 +1024,9 @@
       fanSpeed = 1;
       noteStorm = 1;
       heroNote.visible = true;
+      mother.position.set(MUM.x, 0, MUM.z);
+      mother.rotation.y = Math.PI;
+      mother.visible = false;
     }
 
     /* ------------------------------------------------------------ collision
@@ -898,8 +1097,8 @@
       jossTips, fireLight,
       bed, mattress, blanket, pillow, gap, gapDark, wardrobe, wardDoorL,
       desk, chair, door, doorLeaf, curtain, fan, altar, candleTip,
-      street, hallLight, dust,
-      DOOR, BED, GAP, R, WIN, DOOR_AJAR,
+      street, hallLight, hallTube, dust, mother,
+      DOOR, BED, GAP, R, WIN, DOOR_AJAR, DOOR_OPEN, HALL, MUM,
       get fanSpeed() { return fanSpeed; },
       set fanSpeed(v) { fanSpeed = v; },
       get noteStorm() { return noteStorm; },
@@ -997,8 +1196,18 @@
      thing in the gap. It ends on black and KEEPS it, so the chapter card
      comes up over the dark rather than over the room.                     */
   function intro(c, s, api) {
-    const { tr, step, sfx, fade, camTo, yawTo, pitchTo, rawK, smoothK,
+    const { tr, step, sfx, fade, camTo, yawTo, pitchTo, faceFrom, rawK, smoothK,
             stage, ghost, ghostOpacity, ghostLight, handsRoot, armR } = api;
+
+    /* WHERE THE HEAD TURNS TO, derived rather than dialled in — and this is
+       a fix, not a tidy-up. Until v4.6 the two turns below were hand-written
+       angles with the wrong sign: at "the door, ajar" the door was 160°
+       BEHIND the camera, and at "something moves in the gap" she faded in
+       144° off screen, so the film's own climax played to a wardrobe. Both
+       are now `faceFrom`, the same helper every choice scene uses, measured
+       from the pillow he is lying on.                                     */
+    const TO_DOOR = faceFrom(PILLOW.x, PILLOW.z, stage.DOOR.x, stage.R.z);
+    const TO_GAP = faceFrom(PILLOW.x, PILLOW.z, stage.GAP.x, stage.BED.z - 0.20);
 
     // he is in bed, on his back. The hands have no business in this shot.
     step(0, () => {
@@ -1032,7 +1241,7 @@
     // 10–15  and somewhere in the flat, a woman is crying. Not outside.
     sfx(10.2, 'sobbing', 0.75);
     sfx(10.4, 'dread', 0.45);
-    yawTo(11.0, 14.2, -0.62, 0.92, smoothK);      // he turns toward the sound
+    yawTo(11.0, 14.2, -0.62, TO_DOOR, smoothK);   // he turns toward the sound
     pitchTo(11.0, 14.2, -0.05, 0.04, smoothK);
 
     // 14–18  the door, ajar, and nothing beyond it
@@ -1055,7 +1264,7 @@
 
     // 25–29  something moves in the gap. It is not seen. It is heard.
     sfx(24.9, 'bedcreak', 0.8);
-    yawTo(24.9, 27.4, 0.92, -1.42, smoothK);      // he looks left, at the gap
+    yawTo(24.9, 27.4, TO_DOOR, TO_GAP, smoothK);  // he looks left, at the gap
     pitchTo(24.9, 27.4, 0.04, -0.36, smoothK);
     camTo(24.9, 27.4, { x: PILLOW.x + 0.10, y: PILLOW.y + 0.05, z: PILLOW.z + 0.06 },
                       { x: PILLOW.x + 0.16, y: PILLOW.y + 0.10, z: PILLOW.z + 0.02 });
@@ -1136,20 +1345,40 @@
   /* ----------------------------------------------------- B · CALL FOR MOTHER
      The best answer, and it is made of a long nothing. He shouts, and for
      four seconds the room does not care. Then a door down the hall, slippers
-     on terrazzo, and the light arrives before she does.                   */
+     on terrazzo, and the light arrives before she does.
+
+     And then SHE arrives, which she did not use to. Until v4.6 this scene
+     opened the door by rotating it toward SHUT, the room went warm because a
+     point light does not care about a closed leaf, and the best answer in the
+     chapter was a door closing in your face with a voice behind it. Now the
+     door opens the way that door opens, she is in it, she comes in, she says
+     her line to your face, and she goes out and shuts it behind her — which
+     is Chad's ask, and also the teaching: you called across the edge of what
+     you could handle, and somebody came.                                  */
   function scCall(c, s, api) {
-    const { tr, step, sfx, fade, camTo, yawTo, pitchTo, faceFrom, rawK, smoothK,
-            stage, ghost, ghostOpacity, ghostLight, vmHemi, vmKey } = api;
+    const { tr, step, sfx, camTo, yawTo, pitchTo, faceFrom, rawK, smoothK,
+            stage, ghostOpacity, ghostLight, vmHemi, vmKey } = api;
     const P = { x: MIDROOM.x, y: EYE, z: MIDROOM.z };
     const doorAt = { x: stage.DOOR.x, z: stage.R.z };
+    const mum = stage.mother;
+    // where she stands: out in the corridor, then just inside the door
+    const OUT = { x: stage.MUM.x, z: stage.MUM.z };
+    const IN = { x: 1.10, z: 1.94 };
+    const BACKOUT = { x: 1.42, z: 3.04 };        // clear of the closing leaf
+    const mumAt = (x, z) => { mum.position.x = x; mum.position.z = z; };
 
     camTo(0, 0.9, { x: s.yawPos.x, y: s.yawPos.y, z: s.yawPos.z }, P);
     yawTo(0, 0.9, s.yawRot, faceFrom(P.x, P.z, doorAt.x, doorAt.z));
     pitchTo(0, 0.9, s.pitchX, -0.02);
-    step(0, () => { ghostOpacity(0); });
+    step(0, () => {
+      ghostOpacity(0);
+      mum.visible = false;
+      mum.rotation.y = Math.PI;          // she faces the room the whole time
+      mumAt(OUT.x, OUT.z);
+    });
 
     // the shout
-    sfx(1.0, 'v2call', 1);
+    sfx(1.0, 'v2call', 1);               // 4.7 s of it, and nothing under it
     tr(1.0, 1.5, k => { stage.noteStorm = 1 + 2 * Math.sin(Math.PI * k); }, rawK);
 
     /* And then nothing, for four seconds, which is the longest thing in this
@@ -1159,48 +1388,103 @@
     tr(1.5, 5.6, () => {}, rawK);
     sfx(3.2, 'breath', 0.6);
 
-    // a door, somewhere else in the flat. Then slippers.
-    sfx(5.6, 'doorcreak', 0.6);
-    sfx(6.2, 'hallsteps', 0.85);
-    tr(6.2, 8.4, k => { stage.hallLight.intensity = 3.4 * k; }, rawK);
+    // her own door, down the hall. Then slippers on terrazzo, coming.
+    sfx(5.8, 'doorcreak', 0.6);
+    sfx(6.4, 'hallsteps', 0.85);
+    tr(6.4, 8.6, k => { stage.hallLight.intensity = 3.4 * k; }, rawK);
 
-    // the door swings in and the room floods warm
-    tr(7.4, 8.6, k => { stage.door.rotation.y = stage.DOOR_AJAR + 0.62 * k; }, smoothK);
-    tr(7.4, 9.4, k => {
+    /* The door swings OPEN — outward, into the corridor, the way it is hung —
+       and she is standing in it before it has finished. The warm rectangle
+       arrives first and she is a silhouette in it, which is what a doorway at
+       night does to anybody standing in one.                              */
+    tr(7.6, 9.0, k => {
+      stage.door.rotation.y = stage.DOOR_AJAR + (stage.DOOR_OPEN - stage.DOOR_AJAR) * k;
+    }, smoothK);
+    step(7.9, () => { mum.visible = true; mumAt(OUT.x, OUT.z); });
+    // in, over four unhurried steps, and she stops an arm's length away
+    tr(8.2, 10.0, k => {
+      mumAt(OUT.x + (IN.x - OUT.x) * k, OUT.z + (IN.z - OUT.z) * k);
+    }, smoothK);
+    tr(8.2, 10.0, (k, t2) => {           // the small sway of somebody walking
+      mum.position.y = Math.abs(Math.sin(t2 * 5.2)) * 0.012;
+      mum.rotation.z = Math.sin(t2 * 5.2) * 0.014;
+    }, rawK);
+    // the hall light reaches the hands too, because it reaches everything
+    tr(7.6, 9.6, k => {
       vmHemi.intensity = 0.55 + 0.5 * k;
       vmKey.intensity = 0.50 + 0.4 * k;
-      stage.street.intensity = stage.street.intensity;   // untouched: this is her light
     }, rawK);
-    sfx(7.6, 'v2ma', 0.95);              // "What is it? Go back to sleep."
-    sfx(8.0, 'chime', 0.5);
+    sfx(8.6, 'chime', 0.5);
 
     // and the cold goes out of the room with the dark
-    tr(7.8, 10.2, k => {
+    tr(7.8, 10.4, k => {
       ghostOpacity(0);
       ghostLight.intensity = 0;
       stage.fireLight.intensity = 3.4 * (1 + 0.5 * k);
     }, rawK);
 
+    // "What is it? Go back to sleep." — said to his face, five seconds of it
+    sfx(10.6, 'v2ma', 0.95);
+    tr(10.0, 11.6, (k, t2) => {          // she stands there, breathing
+      mum.position.y = Math.sin(t2 * 1.4) * 0.004;
+      mum.rotation.z = 0;
+    }, rawK);
+
+    /* She goes out backwards, which is what anybody does when they are still
+       looking at you and reaching for the handle — and it keeps her face on
+       screen instead of her back. */
+    tr(11.6, 13.6, k => {
+      mumAt(IN.x + (BACKOUT.x - IN.x) * k, IN.z + (BACKOUT.z - IN.z) * k);
+    }, smoothK);
+    sfx(13.0, 'hallsteps', 0.45);
+
+    /* And she shuts it. The leaf swings back across her as it comes, so she
+       is gone behind it before it lands — which is why she is hidden a beat
+       AFTER the latch and not before it.                                  */
+    tr(13.6, 15.2, k => {
+      stage.door.rotation.y = stage.DOOR_OPEN * (1 - k);   // all the way to the latch
+    }, smoothK);
+    sfx(13.7, 'doorcreak', 0.7);
+    sfx(15.1, 'clang', 0.35);
+    step(15.3, () => { mum.visible = false; });
+    // a line of light under a shut door, and the room is his again
+    tr(14.6, 16.4, k => { stage.hallLight.intensity = 3.4 - 2.85 * k; }, rawK);
+
     // he looks at the gap once more. It is a gap.
-    yawTo(9.4, 10.8, faceFrom(P.x, P.z, doorAt.x, doorAt.z),
-                     faceFrom(P.x, P.z, stage.GAP.x, stage.BED.z));
-    pitchTo(9.4, 10.8, -0.02, -0.26);
-    sfx(10.0, 'vrelief', 0.9);
-    tr(10.8, 12.0, () => {}, rawK);
+    yawTo(15.6, 17.0, faceFrom(P.x, P.z, doorAt.x, doorAt.z),
+                      faceFrom(P.x, P.z, stage.GAP.x, stage.BED.z));
+    pitchTo(15.6, 17.0, -0.02, -0.26);
+    sfx(16.2, 'vrelief', 0.9);           // starts after v2ma has finished, at 15.6
+    tr(17.0, 19.7, () => {}, rawK);      // and the scene outlasts it: it runs to 19.5
 
     c.keep.ghostGone = true;
     c.endFade = 0;                       // this one does NOT end on black
   }
 
   /* ------------------------------------------------------ C · LEAVE THE ROOM
-     Distance, taken calmly. Out the far side, three steps, the hallway. And
+     Distance, taken calmly. Out the far side, three steps, the corridor. And
      at the threshold he turns back, and the room is perfectly ordinary —
-     until the door closes itself.                                        */
+     until the door closes itself.
+
+     That is what it always said it did. What it did until v4.6 was push the
+     door toward SHUT as he walked into it, step through into a 2.6 m square
+     of nothing, and turn to face a blank wall for the last four seconds
+     while the door swung closed behind his head, off camera. Three fixes,
+     all of them geography: the door opens outward now, there is a corridor
+     to come out into, and the turn is a turn BACK — so the shot the writing
+     always described is the shot that plays.
+
+     The standing spot matters and is not free: it is 1.24 m from the hinge,
+     which is a clear 38 cm outside the leaf's swing, so the door that closes
+     on the room does not close through the camera.                       */
   function scLeave(c, s, api) {
     const { tr, step, sfx, fade, camTo, yawTo, pitchTo, bob, faceFrom, rawK, smoothK,
-            stage, ghost, ghostOpacity } = api;
+            stage, ghostOpacity } = api;
     const P = { x: MIDROOM.x, y: EYE, z: MIDROOM.z };
     const doorAt = { x: stage.DOOR.x, z: stage.R.z };
+    // out in the corridor, off to the latch side, looking back through the door
+    const OUTSIDE = { x: 1.15, y: EYE, z: stage.HALL.z0 + 1.00 };
+    const BACK = faceFrom(OUTSIDE.x, OUTSIDE.z, stage.DOOR.x, stage.HALL.z0);
 
     camTo(0, 0.9, { x: s.yawPos.x, y: s.yawPos.y, z: s.yawPos.z }, P);
     yawTo(0, 0.9, s.yawRot, faceFrom(P.x, P.z, doorAt.x, doorAt.z));
@@ -1209,30 +1493,37 @@
 
     sfx(0.9, 'breath', 0.55);
 
-    // he does not run. Three steps, and the door is right there.
+    // he does not run. Three steps, and the door is right there — and it
+    // goes open ahead of him rather than swinging into his face.
     camTo(1.4, 3.6, P, DOORWAY, rawK);
     bob(1.4, 3.6, 2.0, 0.030);
     for (let i = 0; i < 4; i++) sfx(1.6 + i * 0.52, 'step');
-    tr(2.4, 3.4, k => { stage.door.rotation.y = stage.DOOR_AJAR + 0.5 * k; }, smoothK);
+    tr(2.2, 3.5, k => {
+      stage.door.rotation.y = stage.DOOR_AJAR + (stage.DOOR_OPEN - stage.DOOR_AJAR) * k;
+    }, smoothK);
     tr(2.4, 4.6, k => { stage.hallLight.intensity = 1.6 * k; }, rawK);
 
-    // out, and at the threshold he turns back
-    camTo(3.6, 4.8, DOORWAY, { x: stage.DOOR.x, y: EYE, z: stage.R.z + 0.86 }, rawK);
-    yawTo(4.4, 5.8, faceFrom(P.x, P.z, doorAt.x, doorAt.z), Math.PI, smoothK);
-    pitchTo(4.4, 5.8, -0.06, -0.10);
-    for (let i = 0; i < 2; i++) sfx(3.9 + i * 0.5, 'step');
+    // out into the corridor, and at the threshold he turns back
+    camTo(3.6, 5.2, DOORWAY, OUTSIDE, rawK);
+    bob(3.6, 5.2, 1.9, 0.026);
+    yawTo(4.0, 6.0, faceFrom(P.x, P.z, doorAt.x, doorAt.z), BACK, smoothK);
+    pitchTo(4.0, 6.0, -0.06, -0.02);
+    for (let i = 0; i < 2; i++) sfx(3.9 + i * 0.52, 'step');
 
-    /* The room is ordinary. That is the shot: nothing in it, no music, the
-       fan going round. Four seconds of a bedroom.                        */
-    sfx(5.8, 'vrelief', 0.75);
-    tr(5.8, 8.0, () => {}, rawK);
+    /* The room is ordinary. That is the shot, and now it is actually the
+       shot: the bedroom framed in its own doorway, nothing in it, no music,
+       the fan going round. Four seconds of it.                           */
+    sfx(6.4, 'vrelief', 0.75);
+    tr(6.2, 8.6, () => {}, rawK);
 
-    // and then the door swings shut, gently, on nothing
-    tr(8.0, 9.6, k => { stage.door.rotation.y = (stage.DOOR_AJAR + 0.5) * (1 - k) - 0.02 * k; }, smoothK);
-    sfx(8.1, 'doorcreak', 0.7);
-    sfx(9.4, 'clang', 0.35);
-    sfx(9.5, 'dread', 0.5);
-    fade(9.6, 11.0, 0, 1);
+    // and then the door swings shut on it, gently, on nothing
+    tr(8.6, 10.2, k => {
+      stage.door.rotation.y = stage.DOOR_OPEN * (1 - k) - 0.04 * k;
+    }, smoothK);
+    sfx(8.7, 'doorcreak', 0.7);
+    sfx(10.0, 'clang', 0.35);
+    sfx(10.2, 'dread', 0.5);
+    fade(10.2, 11.8, 0, 1);
 
     c.keep.ghostGone = true;
     c.endFade = 1;

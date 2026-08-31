@@ -79,7 +79,9 @@ One source, two builds, built by `npm run build` (esbuild → `build.py` →
     FILM, in the same cutscene language, run against its own world BEFORE
     the chapter card: black, film, title, night. Chapter 2 has one;
     chapter 1 does not, and a chapter without one takes exactly the path
-    it always took.
+    it always took. It begins on BLACK and stays there until its own
+    `fade()` lifts it (v4.6: `playCineFn`'s `startFade`) — so a film opens
+    on the dark it was written to open on, and `cinetest` checks it.
   - `src/chapters/chtest.js` is the FIXTURE chapter: primitives only, no
     location model, no assets. It is not part of the game — it exists so
     "the engine is chapter-agnostic" is a tested claim (`fixturetest`)
@@ -344,6 +346,26 @@ What the baseline contains, by release:
   midnight in a bright chapter); a chapter can declare a sun and clouds;
   `voiceLine` may name a pack sound; two more blocks and fourteen rain
   trees fill the skyline. docs/V4.3-CH3-REVISION.md is the build's memory.
+- **v4.4 / v4.5** chapter 3's sound: the ceremony became THE music (the
+  twelfth leak — `musicVol`, because the engine's explore bed was chapter
+  1's and buried it), overlapping narration re-timed against measured take
+  durations, then four crowd rows with walkable lanes, horns, cymbals, an
+  audience, and three lines re-said in Chad's own words.
+- **v4.6** THE DOORWAY PASS — the three things Chad found by playing:
+  chapter 2's door swung the WRONG WAY in both scenes that touch it (the
+  sign was never written down, so both guessed, and the mother arrived by
+  closing the door in your face); there was no corridor to leave into, and
+  scene C turned away from the room to watch a blank wall; and every
+  chapter's opening FILM played its first seconds in full view before its
+  own fade-in snapped the screen black and showed them again. Now: a named
+  swing contract (`DOOR_AJAR` / `DOOR_OPEN`), a real corridor with the
+  mother's door, a switch, a calendar and the living room round the corner,
+  a MOTHER who opens the door, comes in, says her line and shuts it behind
+  her, and `playCineFn(fn, done, startFade)` so a film begins on the black
+  the caller already raised. Chapter 3's prayer clasp also sits 3 cm lower
+  with half the tremble, which is what it takes to keep the thumbs out of
+  frame at both ends of the shake. docs/V4-CHAPTER2-PLAN.md carries the
+  beat sheets.
 - **v3.8** real art where there was code: a bought first-person ARM rig
   (`arms.glb`, credited to Fab) replaces the wrist-only hand pack and the
   forearm that was built out of cylinders to cover for it, and the hell

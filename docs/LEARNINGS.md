@@ -750,3 +750,99 @@ the default.
   (cue time + MEASURED take duration vs the next cue); line MEANING has to
   be re-read against the scene every time the scene changes. All three
   checks are cheap, and all three were skipped because the suite was green.
+
+## The opening film played twice (and the second time was the real one)
+
+- Chad, 31 Aug 2026: *"all the intro cinematic cutscenes before each new
+  chapter, they will appear first, then suddenly there's a fade in, and it
+  appears again."*
+- `enterWorld()` does exactly the right thing: it puts the black overlay up
+  (`opacity = '1'`) BEFORE placing the world and starting the film, with a
+  comment saying "Black first, and hold it". Then `playCineFn()` — three
+  hundred lines away, and correct for every OTHER caller — cleared it
+  unconditionally: `cineFadeEl.style.opacity = '0'`, commented *"a scene owns
+  the fade outright"*.
+- So the film's first seconds (2.6 s in both chapters) played in full view;
+  at 2.6 its own `fade(2.6, 5.2, 1, 0)` track set the overlay to its FROM
+  value, snapping the screen to black; and then it faded up on the same shot
+  a second time. Every chapter with an opening film had it, from the moment
+  chapter 2 shipped.
+- The fix is a parameter, not a special case: `playCineFn(fn, onDone,
+  startFade = 0)`, and the intro path passes 1. Choice scenes and the faint
+  keep the old behaviour by default.
+- **The lesson is about ownership.** Two pieces of code both believed they
+  owned the fade at t=0, and the one that ran last won — which is a race
+  decided by call order, not by design. When a caller sets up state that a
+  callee also initialises, the callee needs to be TOLD, not to guess.
+- And why no harness caught it: every cutscene check asserted the fade at the
+  END of a scene (`fadeAsScripted`), because that is what covers the snap
+  back. Nothing had ever looked at the first frame. `cinetest` now does, on
+  chapter 2's film — one more page in the harness that already owns
+  cutscenes, rather than a new harness.
+
+## A pose is safe or not in FRACTIONS OF FRAME, never in metres
+
+- Chapter 3's prayer clasp put two pale wedges — the thumbs, splayed off the
+  base of each hand — into the bottom of shot. Chapter 1 hit the same thing
+  at v3.8 and fixed it by dropping the clasp 7 cm, which is the right fix and
+  an unrepeatable one: the number is meaningless in another shot.
+- Measure it instead. Project the actual BONES through `vmCam` and read them
+  in pixels: the topmost thumb bone, the topmost fingertip bone, and the
+  pixels-per-metre at the hands' depth (1720 px/m at 560 px tall). The flesh
+  reaches about 40 px above the topmost thumb bone; the letterbox eats the
+  bottom 11 vh. Everything after that is arithmetic.
+- Express the answer as a FRACTION of frame height, and it holds on every
+  device: `vmCam`'s 52° is a VERTICAL fov, so the visible band at a given
+  depth does not change with the shape of the screen — a portrait phone gets
+  more pixels, not more world.
+- There are two walls, not one. Drop the clasp far enough to hide the thumbs
+  and the trough of the hand-tremble takes the fingertips out of shot as
+  well. The tremble's amplitude is part of the same budget as the height: ±5
+  cm of shake needed cutting to ±2 before any height was safe at both ends.
+- Do not manipulate the pose live to find the number: cutscene tracks are
+  absolute and re-applied every frame even while paused, so anything nudged
+  from the console is overwritten before the next screenshot. Edit the
+  source, rebuild, re-measure.
+
+## A rotation with no written sign gets guessed, and both guesses were wrong
+
+- Chapter 2's door is hinged at one jamb and swings outward: 0 shut, −0.62
+  ajar, more negative more open. Nothing said so. Both scenes that touch it
+  opened it by ADDING to the ajar angle, which drives it toward shut — so the
+  mother arrived by closing the door in your face, and leaving the room meant
+  walking into the leaf.
+- It survived a release because the LIGHTING was right: `hallLight` is a
+  point light with no shadow, so the room floods warm through a closed door
+  exactly as it does through an open one. The screenshot looked correct.
+- Two rules out of it. Write the sign convention down AT the object, as a
+  table of the angles that mean something. And give the meaningful angles
+  names (`DOOR_AJAR`, `DOOR_OPEN`) so scenes interpolate between them instead
+  of doing arithmetic on one of them — arithmetic on an angle is where the
+  sign gets guessed.
+- A camera standing near a swinging door has a second constraint nobody
+  writes down either: it must be further from the HINGE than the leaf is
+  long, or the door closes through the lens. Chapter 2's leaf is 0.86 m; the
+  spot scene C stands on is 1.24 m from the hinge, and that is on purpose.
+
+## An angle nobody derives is an angle somebody guessed
+
+- Chapter 2's opening film turned to face the door with `yawTo(..., 0.92)`
+  and to face the gap with `yawTo(..., -1.42)`. Measured against the
+  positions of those two things, the door was **160° behind the camera** at
+  the beat named after it, and the ghost faded in **144° off screen** at the
+  film's climax. It shipped that way at v4.0 and survived five releases.
+- Both were replaced by `faceFrom(...)` — the helper the four choice scenes
+  in the same file already use, which takes a position and a target and
+  returns the yaw that looks at it. After: 0.6° and 1.1° off centre.
+- Why nobody caught it: a first-person camera has no second pair of eyes. A
+  screenshot of a dark bedroom looks like a dark bedroom whichever way it
+  points, and every automated check asked whether the scene RAN.
+- The cheap check is arithmetic, not eyes: at each beat, print the angle
+  between the camera's yaw and the direction of the thing the beat is about.
+  Anything over about 40° is a mistake or a deliberate reveal, and the code
+  should say which. The same probe answers "is she actually on screen"
+  (`ghostInView`) — with the caveat that it projects her HEAD, so a shot
+  looking down into a gap correctly reports false.
+- Rule of thumb for this repo: hand-written camera angles are for OFFSETS
+  (a few degrees off something derived). Anything that means "look at that
+  thing" gets derived from that thing's position, every time.

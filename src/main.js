@@ -3350,7 +3350,17 @@ function restoreWorld(s, keep) {
   else { reveal = s.reveal; ghostOpacity(s.reveal); }
 }
 
-function playCineFn(sceneFn, onDone) {
+/* `startFade` is what the black overlay reads on the film's FIRST frame: 0
+   for a scene that begins on the world in front of you, and 1 for a
+   chapter's opening FILM, which has to begin on black and stay black until
+   its own fade track lifts it.
+
+   It exists because the line below used to clear the overlay unconditionally
+   and so undid the black that enterWorld had just put up: the film's first
+   seconds played in full view, and then its fade-in snapped the screen to
+   black and revealed the same shot a second time. An opening that shows you
+   the room before it fades in is not an opening.                          */
+function playCineFn(sceneFn, onDone, startFade = 0) {
   const snap = snapWorld();
   const c = {
     t: 0, last: performance.now(), paused: false,
@@ -3369,7 +3379,7 @@ function playCineFn(sceneFn, onDone) {
   hint.classList.add('hide');
   document.body.classList.add('cine');
   cineFadeEl.classList.remove('clearing');   // a scene owns the fade outright
-  cineFadeEl.style.opacity = '0';
+  cineFadeEl.style.opacity = String(startFade);
   document.exitPointerLock?.();
 }
 /* A choice with no scene falls straight through to its outcome card rather
@@ -3712,7 +3722,7 @@ function enterWorld(place, opts = {}) {
   ui.hud.classList.add('hide');
   if (place) place();
   warmIntroSet();
-  whenWorldReady(() => playCineFn(intro, card));
+  whenWorldReady(() => playCineFn(intro, card, 1));
 }
 
 /* Continue: the default, and what the big button does whenever there is

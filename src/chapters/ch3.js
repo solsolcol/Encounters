@@ -1980,7 +1980,24 @@
       if (prayerArmL) prayerArmL.visible = true;
     });
     const half = handWidth() * 0.085;
-    const PRAY_Y = -0.235;
+    /* How high the clasp is held, and the one number every height in this
+       scene is derived from. Chapter 1 holds its añjali at -0.235; this one
+       hangs 3 cm lower, and the reason is the THUMBS. In this pose they
+       splay wide off the base of each hand, and at chapter 1's height their
+       flesh sits within about 20 px of the bottom letterbox — close enough
+       that the tremble below (which used to lift the hands 5 cm above this)
+       swung two pale wedges up into shot that read as stray fingers rather
+       than as hands.
+
+       Measured, not guessed, and in fractions of frame height so it holds on
+       a phone as well as a laptop (the viewmodel camera's 52° is a VERTICAL
+       fov, so the visible band at this depth does not change with the shape
+       of the screen). At the worst frame the topmost thumb BONE now sits at
+       102% of frame height and its flesh reaches about 7% above that — a
+       clear 6% below the 89% line where the letterbox starts. Push the clasp
+       any lower and the trough of the tremble takes the fingertips out of
+       shot with it; that is the other wall this number is between.       */
+    const PRAY_Y = -0.265;
     const startR = armR.quaternion.clone();
     const startL = new THREE.Quaternion();
     let gotStartL = false;
@@ -2026,8 +2043,13 @@
     camTo(3.4, 8.4, INSIDE, { x: -0.18, y: 1.54, z: -5.55 }, rawK);
     pitchTo(3.4, 8.4, -0.04, 0.06, rawK);
     tr(3.4, 8.4, k => { camera.rotation.z = 0.11 * Math.sin(k * Math.PI * 1.3); }, rawK);
+    /* The hands shake as it goes wrong — but only half as far as they used
+       to, and centred on the clasp's height rather than swinging 5 cm above
+       it. The old amplitude put the thumbs in frame at every peak and took
+       the clasp nearly out of it at every trough; this reads as a tremble
+       instead of a bounce, and never leaves the safe band. */
     tr(4.0, 8.4, k => {
-      const y = PRAY_Y + 0.05 * Math.sin(k * Math.PI * 4);
+      const y = PRAY_Y + 0.020 * Math.sin(k * Math.PI * 4);
       armR.position.y = y;
       if (prayerArmL) prayerArmL.position.y = y;
     }, rawK);

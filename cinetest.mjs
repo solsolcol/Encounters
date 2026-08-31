@@ -80,4 +80,46 @@ for (let i = 0; i < 4; i++) {
   console.log(JSON.stringify(out), '| errors:', errs.length ? errs : 'none');
   await p.close();
 }
+
+/* AND THE OPENING FILM STARTS ON BLACK.
+
+   A chapter with an `intro` is entered on a screen enterWorld has already
+   covered, and it must STAY covered until the film's own fade lifts it.
+   Until v4.6 the cutscene start cleared that cover unconditionally, so the
+   first seconds of chapter 2's and chapter 3's films played in full view and
+   then their fade-in snapped the screen to black and showed the same shot
+   again — which is what a player reported, and what nothing here caught.
+
+   Not a new harness: one more page in the one that already owns cutscenes.
+   Chapter 2 is the cheapest chapter that has a film.                      */
+{
+  const p = await b.newPage({ viewport: { width: 500, height: 340 } });
+  const errs = []; p.on('pageerror', e => errs.push(e.message));
+  p.setDefaultNavigationTimeout(180000); p.setDefaultTimeout(90000);
+  const sep = PAGE.includes('?') ? '&' : '?';
+  await p.goto(PAGE + sep + 'ch=ch2');
+  await p.waitForTimeout(4000);
+  await p.click('#startBtn');
+  await p.waitForFunction(() => window.__enc && window.__enc.getState() === 'cine',
+                          null, { timeout: 120000, polling: 100 });
+  const out = { film: 'ch2 opening' };
+  const cover = [];
+  for (const t of [0.15, 0.9, 1.8, 2.4]) {        // all before the fade at 2.6
+    await p.evaluate(tt => window.__enc.cine.seek(tt), t);
+    await p.waitForTimeout(180);
+    cover.push(await p.evaluate(() =>
+      +getComputedStyle(document.getElementById('cineFade')).opacity));
+  }
+  out.coverBeforeFadeIn = cover;
+  out.startsOnBlack = cover.every(v => v > 0.98);
+  await p.evaluate(() => window.__enc.cine.seek(6.0));   // its fade ends at 5.2
+  await p.waitForTimeout(220);
+  out.fadesInAfter = await p.evaluate(() =>
+    +getComputedStyle(document.getElementById('cineFade')).opacity) < 0.05;
+  if (!out.startsOnBlack)
+    errs.push('ERR the film is visible before its own fade-in: ' + JSON.stringify(cover));
+  if (!out.fadesInAfter) errs.push('ERR the film never fades in');
+  console.log(JSON.stringify(out), '| errors:', errs.length ? errs : 'none');
+  await p.close();
+}
 await b.close();
