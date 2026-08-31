@@ -164,13 +164,19 @@
 
        No `atShrine` — the warm light in this chapter is the altar's. */
     ambience: { beds: [['tentamb', 0.30], ['crowdmur', 0.26],
-                       ['ritual', 0.26], ['ceremony', 0.65]],
+                       ['ritual', 0.26], ['ceremony', 0.78],
+                       /* v4.5, all Chad's asks: the ritual horns and the
+                          qiang-qiang cymbals as their own looping layers,
+                          and an audience that gasps, wows and softly
+                          cheers at the performance */
+                       ['hornloop', 0.30], ['cymloop', 0.26],
+                       ['crowdreact', 0.30]],
                 atShrine: null },
     /* the engine's explore music is the void deck's dark wash — someone
        else's soundtrack here. OFF for this chapter: the tang-ki band above
        IS the chapter's music (Chad: "That music should be the focus"). */
     musicVol: 0,
-    voiceLine: 'v3play',   // spoken a few seconds into play, from the pack
+    voiceLine: 'v3play',   // "I feel better here... but why?" — a few seconds in
 
     /* The words that name the thing you can act on. Chapter 1's are about a
        heap of hell notes, chapter 2's about a slot of dark; these are about
@@ -215,10 +221,16 @@
     const T = { x: 6.0, z: 9.0, eave: 2.9, ridge: 4.3, pole: 0.055 };
 
     // the seating, laid out once and read by everything that needs it
-    const ROW_Z = [-4.4, -3.0, -1.6, -0.2, 1.2, 2.6];
+    /* FOUR rows since v4.5 (Chad: down from six, with more space between
+       them "so it is easier to walk through"). The pitch is 2.0 m against
+       chair blockers 1.2 m deep, which leaves an 0.8 m walkway between any
+       two rows — the engine collides a POINT, so that is a generous lane.
+       Everything below (chairs, blockers, crowd fill, the odd chair's
+       index) derives from this array and moves with it. */
+    const ROW_Z = [-4.4, -2.4, -0.4, 1.6];
     const COL_X = [-3.6, -2.7, -1.8, -0.9, 0.9, 1.8, 2.7, 3.6];
-    const ODD = { row: 3, col: 2 };     // row four, and it faces the wrong way
-    const BACK = { row: 5, col: 5 };    // the one still rocking at the end of C
+    const ODD = { row: 3, col: 2 };     // row four — now also the back row
+    const BACK = { row: 3, col: 5 };    // the far side of that same back row
 
     /* ------------------------------------------------------------ textures */
     const gTex = makeGround();
@@ -1681,7 +1693,9 @@
     /* 0-2.8  black, and the tent heard from a long way off. The loops are
        already running, so this is a duck and not a cue. */
     tr(0, 0.4, () => { duck('tentamb', 0.16); duck('ritual', 0.11);
-                       duck('ceremony', 0.09); duck('crowdmur', 0.12); }, rawK);
+                       duck('ceremony', 0.09); duck('crowdmur', 0.12);
+                       duck('hornloop', 0.08); duck('cymloop', 0.08);
+                       duck('crowdreact', 0.10); }, rawK);
     sfx(0.55, 'drum', 0.55);
     sfx(1.00, 'v3wake1');                 // "They put the tent up on Monday."
     camTo(0, 0.1, OUTSIDE, OUTSIDE);
@@ -1707,6 +1721,9 @@
       duck('ritual', 0.11 + 0.89 * k);
       duck('ceremony', 0.09 + 0.91 * k);   // the band arrives with the walk
       duck('crowdmur', 0.12 + 0.88 * k);
+      duck('hornloop', 0.08 + 0.92 * k);
+      duck('cymloop', 0.08 + 0.92 * k);
+      duck('crowdreact', 0.10 + 0.90 * k);
     }, rawK);
     sfx(6.0, 'step', 0.30); sfx(6.9, 'step', 0.32);
     sfx(7.8, 'drum', 0.6);
@@ -1743,6 +1760,9 @@
     tr(21.9, 22.6, k => {
       duck('ritual', 1 - k);
       duck('ceremony', 1 - k);             // the whole band, not just the drum
+      duck('hornloop', 1 - k);
+      duck('cymloop', 1 - k);
+      duck('crowdreact', 1 - 0.9 * k);     // and the audience holds its breath
       stage.drumBeat = 1 - k;
     }, rawK);
 
@@ -1759,7 +1779,7 @@
     sfx(23.9, 'cymbal', 0.9);
     step(24.2, () => { stage.crowdLife = 0.12; });   // nobody moves. nobody.
     sfx(24.6, 'breath', 0.55);
-    sfx(25.0, 'v3wake3');                 // "Nobody is scared. Why is nobody scared?"
+    sfx(25.0, 'v3wake3');                 // "Everyone seems fascinated by the performance..."
 
     /* 26.8-30.2  the camera comes off the front — slowly, the way you look
        when you do not want to — and finds the one chair that is facing the
@@ -1771,11 +1791,11 @@
        at eye height the crowd's heads swallow the one empty seat; from just
        above them a single unoccupied red chair, turned the wrong way in a
        full tent, reads instantly */
-    const CRANE = { x: -0.55, y: 2.10, z: 2.35 };
+    const CRANE = { x: -0.35, y: 2.20, z: 4.60 };
     const LOOKCHAIR = faceFrom(CRANE.x, CRANE.z, ODDC.x, ODDC.z);
     camTo(26.8, 29.8, WATCH, CRANE, smoothK);
     yawTo(26.8, 29.8, 0, LOOKCHAIR, smoothK);
-    pitchTo(26.8, 29.8, -0.01, -0.26, smoothK);
+    pitchTo(26.8, 29.8, -0.01, -0.34, smoothK);
     sfx(27.4, 'chair', 0.5);
     /* ONE line at a time, everywhere in this film: wake3 ends at 28.97,
        this starts at 29.4, and everything after moves down to keep it so.
@@ -1797,7 +1817,7 @@
       ghost.rotation.y = Math.PI;        // facing the tent: forward is +z at 0
     });
     yawTo(34.4, 37.2, LOOKCHAIR, Math.PI + 0.094, smoothK);  // her, dead centre
-    pitchTo(34.4, 37.2, -0.26, -0.005, smoothK);
+    pitchTo(34.4, 37.2, -0.34, -0.005, smoothK);
     camTo(34.4, 37.2, CRANE, { x: 0.30, y: EYE, z: 2.30 }, smoothK);
     /* she RESOLVES out of the glare rather than fading in — full daylight,
        so she carries herself, and the light on her is nearly nothing */
@@ -1806,8 +1826,7 @@
       ghostLight.intensity = 0.12 * k;
     }, rawK);
     sfx(35.0, 'breath', 0.5);
-    sfx(38.0, 'v3out1');        // "She's out there. Standing in the middle of
-                                //  the car park. In the sun."
+    sfx(38.0, 'v3out1');        // "She's out there! Standing outside..."
     sfx(42.6, 'heart', 0.45);
 
     // 43.7  four words, and they change what the whole game has been about
@@ -1856,7 +1875,9 @@
     tr(2.0, 7.4, k => {
       stage.drumBeat = 1 + 1.9 * k;
       stage.noteStorm = 1 + 1.6 * k;
-      duck('ceremony', 1 + 0.55 * k);          // the band leans IN
+      duck('ceremony', 1 + 0.45 * k);          // the band leans IN
+      duck('hornloop', 1 + 0.35 * k);
+      duck('cymloop', 1 + 0.5 * k);
     }, rawK);
     sfx(2.3, 'drumroll', 0.8);
     sfx(3.6, 'bellring', 0.7);
@@ -1870,9 +1891,12 @@
     /* 7.4-8.2  and everything stops AT ONCE — band, drum, forty paper fans —
        because the medium's head has come up. Not back. LEVEL. */
     tr(7.4, 8.2, k => {
-      duck('ceremony', 1.55 * (1 - k));
+      duck('ceremony', 1.45 * (1 - k));
       duck('ritual', 1 - k);
       duck('crowdmur', 1 - 0.85 * k);
+      duck('hornloop', 1.35 * (1 - k));
+      duck('cymloop', 1.5 * (1 - k));
+      duck('crowdreact', 1 - k);
       stage.drumBeat = 2.9 * (1 - k);
       stage.crowdLife = 1 - 0.9 * k;
     }, rawK);
@@ -1898,6 +1922,9 @@
       duck('ceremony', k);
       duck('ritual', k);
       duck('crowdmur', 0.15 + 0.85 * k);
+      duck('hornloop', k);
+      duck('cymloop', k);
+      duck('crowdreact', k);
       stage.drumBeat = k;
       stage.crowdLife = 0.1 + 0.9 * k;
     }, rawK);
@@ -1983,7 +2010,9 @@
        is a jump: it is four seconds of getting steadily worse. */
     tr(3.4, 8.4, k => {
       duck('ritual', 1 + 1.6 * k);
-      duck('ceremony', 1 + 1.3 * k);       // the band crowds in with the drum
+      duck('ceremony', 1 + 1.1 * k);       // the band crowds in with the drum
+      duck('hornloop', 1 + 0.8 * k);
+      duck('cymloop', 1 + 1.5 * k);        // the cymbals most of all
       stage.drumBeat = 1 + 2.4 * k;
       stage.noteStorm = 1 + 4.5 * k;
       stage.haze.material.opacity = 0.34 + 0.34 * k;
@@ -2012,9 +2041,12 @@
     /* 8.4-8.9  everything stops. Half a second of a tent with nothing in it. */
     tr(8.4, 8.9, k => {
       duck('ritual', 2.6 * (1 - k) * (1 - k));
-      duck('ceremony', 2.3 * (1 - k) * (1 - k));
+      duck('ceremony', 2.1 * (1 - k) * (1 - k));
+      duck('hornloop', 1.8 * (1 - k) * (1 - k));
+      duck('cymloop', 2.5 * (1 - k) * (1 - k));
       duck('tentamb', 1 - 0.9 * k);
       duck('crowdmur', 1 - 0.9 * k);
+      duck('crowdreact', 1 - k);
       stage.drumBeat = 3.4 * (1 - k);
       stage.crowdLife = 1 - k;
       for (const l of stage.tentLights) l.intensity = REST_TENT * (0.05 + 0.35 * k);
@@ -2066,6 +2098,9 @@
       duck('ritual', k);
       duck('ceremony', k);
       duck('crowdmur', k);
+      duck('hornloop', k);
+      duck('cymloop', k);
+      duck('crowdreact', k);
     }, rawK);
 
     /* 11.5-14.4  a hand on his arm, and the tent from a long way off. The
@@ -2127,6 +2162,9 @@
       duck('ritual', 1 - 0.60 * k);
       duck('ceremony', 1 - 0.55 * k);   // twelve metres from a drum is quieter
       duck('crowdmur', 1 - 0.30 * k);
+      duck('hornloop', 1 - 0.55 * k);
+      duck('cymloop', 1 - 0.60 * k);
+      duck('crowdreact', 1 - 0.45 * k);
     }, rawK);
     sfx(0.4, 'step', 0.32); sfx(1.2, 'step', 0.32); sfx(1.9, 'step', 0.30);
 
@@ -2214,6 +2252,9 @@
       duck('ceremony', 1 - 0.80 * k);
       duck('crowdmur', 1 - 0.72 * k);
       duck('tentamb', 1 - 0.55 * k);
+      duck('hornloop', 1 - 0.80 * k);
+      duck('cymloop', 1 - 0.84 * k);
+      duck('crowdreact', 1 - 0.78 * k);
     }, rawK);
     for (let i = 0; i < 7; i++) sfx(2.0 + i * 0.86, 'step', 0.32 - i * 0.02);
     sfx(4.4, 'drum', 0.4);
@@ -2230,6 +2271,9 @@
       duck('ritual', 0.14 * (1 - k));
       duck('ceremony', 0.20 * (1 - k));
       duck('crowdmur', 0.28 * (1 - 0.7 * k));
+      duck('hornloop', 0.20 * (1 - k));
+      duck('cymloop', 0.16 * (1 - k));
+      duck('crowdreact', 0.22 * (1 - k));
       stage.drumBeat = 1 - k;
       stage.crowdLife = 1 - 0.92 * k;
     }, rawK);
@@ -2247,6 +2291,9 @@
       duck('ceremony', 0.45 * k);
       duck('ritual', 0.35 * k);
       duck('crowdmur', 0.20 + 0.35 * k);
+      duck('hornloop', 0.35 * k);
+      duck('cymloop', 0.40 * k);
+      duck('crowdreact', 0.30 * k);
       stage.drumBeat = 0.7 * k;
       stage.crowdLife = 0.08 + 0.92 * k;
     }, rawK);
