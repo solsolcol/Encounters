@@ -105,10 +105,10 @@
 
     /* hdb is the block opposite — the fifth chapter at the same block,
        which is the point. seat is the red chair (a hall prop continuity).
-       praying is the tang-ki, mother is Ma, hellnote is the REAL note art
+       tangki is the tang-ki (+ his clips), mother is Ma, hellnote is the note art
        the engine hands back through setNoteTexture: the found note on the
        table carries the photograph, not the drawn card.                 */
-    assets: ['hdb', 'seat', 'praying', 'mother', 'motheranim', 'hellnote'],
+    assets: ['hdb', 'seat', 'tangki', 'tangkianim', 'mother', 'motheranim', 'hellnote'],
     noteArt: 'hellnote',
 
     /* Morning sound: the estate awake, far off. The dread bed is all but
@@ -766,8 +766,9 @@
        they are forty metres of night and fog away and never seen.       */
     /* ================================================================== */
     /* ------------------------------------------------ the morning's cast --
-       THE TANG-KI (the praying man — ch3's load recipe verbatim: mixer
-       FIRST, then size and ground from POSED BONES, never a box) stands
+       THE TANG-KI (Chad's rigged Taoist master — ch3's load recipe
+       verbatim: size and ground from POSED BONES, never a box; his clips
+       come in a second file and the grounding is taken again) stands
        mid-room at the interact anchor; his clip runs at half rate — a
        quiet standing sway, a man listening to a house. MA (ch2's mother
        recipe verbatim: the idle cut past its 1.6 s lead-in) waits by the
@@ -790,16 +791,20 @@
     tangki.add(tangProxy);
     let tangMixer = null, tangHead = null;
     let tangBow = 0;                             // scenes add this to the head, post-mixer
-    assetBytes('praying').then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
+    let tangActs = null, tangCur = '';
+    const tangPlay = (name, ts = 1, fade = 0.34) => {
+      if (!tangActs || !tangActs[name] || tangCur === name) return;
+      const nx = tangActs[name];
+      nx.reset(); nx.setEffectiveTimeScale(ts); nx.setEffectiveWeight(1);
+      nx.fadeIn(fade).play();
+      if (tangCur && tangActs[tangCur]) tangActs[tangCur].fadeOut(fade);
+      tangCur = name;
+    };
+    assetBytes('tangki').then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
       if (!alive) return;
       rescueTextures(gltf, BUF);
       const g = gltf.scene;
       g.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.frustumCulled = false; } });
-      if (gltf.animations.length) {
-        tangMixer = new THREE.AnimationMixer(g);
-        tangMixer.clipAction(gltf.animations[0]).play();
-        tangMixer.update(0.001);                 // pose him before measuring
-      }
       g.updateMatrixWorld(true);
       const v = new THREE.Vector3();
       let lo = Infinity, hi = -Infinity;
@@ -817,6 +822,30 @@
       tangProxy.visible = false;
       tangki.add(g);
       redoShadows();
+
+      /* His clips arrive in a SEPARATE file — the model ships none, so
+         without them he stands in his bind pose with his arms out. Same
+         two-file dance as the mother, re-grounding included: the law is to
+         ground from the POSED bones, and the pose changes when they land. */
+      assetBytes('tangkianim').then(AB => new GLTFLoader().parse(AB, '', (an) => {
+        if (!alive || !an.animations.length) return;
+        tangMixer = new THREE.AnimationMixer(g);
+        const acts = {};
+        for (const clip of an.animations) acts[clip.name] = tangMixer.clipAction(clip);
+        if (!acts.idle) return;
+        tangActs = acts;
+        tangPlay('idle');
+        tangMixer.update(0.001);
+        g.updateMatrixWorld(true);
+        const v2 = new THREE.Vector3();
+        let lo2 = Infinity;
+        g.traverse(o => {
+          if (!o.isBone) return;
+          o.getWorldPosition(v2);
+          lo2 = Math.min(lo2, v2.y);
+        });
+        if (isFinite(lo2)) g.position.y -= lo2;
+      }, () => {})).catch(() => {});
     }, () => {})).catch(() => {});
 
     const ma = new THREE.Group();
@@ -1126,7 +1155,11 @@
     function castUpdate(dt) {
       const w = lookWeight();
       if (tangMixer) {
-        tangMixer.update(dt * 0.5);
+        /* full rate since v5.06. The half rate was tuned for the praying
+           man's slow, wide prayer loop; a Mixamo standing idle is already
+           small (measured: 1.8 mm of hand travel over two seconds at 0.5x),
+           and halving it again left him reading as a photograph. */
+        tangMixer.update(dt);
         if (tangHead && tangBow) tangHead.rotation.x += tangBow;
         headLook(tangHead, tangki, tangLook, dt, w);
       }

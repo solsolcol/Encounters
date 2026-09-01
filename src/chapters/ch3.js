@@ -152,7 +152,7 @@
        note, which is on the altar table tonight where it should have been
        all along. */
     assets: ['hdb', 'hellnote', 'seat', 'cars', 'guangong', 'encik',
-             'praying', 'boy', 'shrine', 'sitclap', 'sitangry'],
+             'tangki', 'tangkianim', 'boy', 'shrine', 'sitclap', 'sitangry'],
     noteArt: 'hellnote',
 
     /* The tent's own sound, in FOUR beds since v4.3 — and the loudest is
@@ -221,7 +221,7 @@
     const SEAT_YAW = Math.PI;         // backrest at -z in the file, so identity faces +z: flip it
     const GG_YAW = 0;                 // Guan Gong faces the crowd
     const ENCIK_Z = -0.05;            // hips just behind the pan centre, in his facing frame
-    const PRAY_H = 1.68;              // the praying tang-ki STANDS: a man, floor to crown
+    const PRAY_H = 1.68;              // the tang-ki STANDS: a man, floor to crown
     const BOY_YAW = 0;                // which way the boy scan faces at identity
     const SHRINE_YAW = -0.12;         // the second figure angles toward the principal
 
@@ -935,7 +935,7 @@
       }
     }
     let chairIM = null;                    // v4.7: set when the real chair lands
-    let medMixer = null, medHead = null;   // the praying tang-ki model (v4.8)
+    let medMixer = null, medHead = null;   // the tang-ki model (v4.8, remade v5.06)
     let encikMixers = [];                  // the audience's shared skeletons (v4.8)
     const specialMixers = [];              // the two sitters of their own (v5.05)
 
@@ -1395,23 +1395,19 @@
       });
     }
 
-    /* THE TANG-KI — Chad's praying man, rigged and ANIMATED; the clip is
-       the whole point ("his animations must be preserved and shown"). He
+    /* THE TANG-KI — Chad's rigged Taoist master (v5.06, replacing the
+       praying man), animated; the clip is the whole point ("his animations
+       must be preserved and shown"). He
        joins the `medium` group, so every scene that leans, stills or
        borrows the medium keeps working; the primitive body stays as the
        invisible control proxy those scenes drive, and updateNotes re-lays
        the proxy head's motion onto the model's head bone every frame. */
-    loadGLB('praying', (gltf) => {
+    loadGLB('tangki', (gltf) => {
       const g = gltf.scene;
       let headB = null;
       g.traverse(o => {
         if (o.isMesh) { o.castShadow = !LOW; o.frustumCulled = false; }
       });
-      if (gltf.animations.length) {
-        medMixer = new THREE.AnimationMixer(g);
-        medMixer.clipAction(gltf.animations[0]).play();
-        medMixer.update(0.001);                // pose him before measuring
-      }
       g.updateMatrixWorld(true);
       const v = new THREE.Vector3();
       let lo = Infinity, hi = -Infinity;
@@ -1430,6 +1426,36 @@
       for (const c of [...medium.children]) c.visible = false;
       stool.visible = false;                   // he STANDS; a stool under nobody floats the eye
       medium.add(g);
+
+      /* His clips arrive in a SEPARATE file, because the model ships none of
+         its own — `tangkianim` is two Mixamo takes retargeted onto this
+         skeleton offline, the v5.02 bake pointed at a second rig. Until they
+         land he stands in his bind pose, arms out, which is exactly why the
+         mixer's rate stays tied to `drumBeat` below: what the ceremony
+         quickens has to be a real clip, not a pose. */
+      loadGLB('tangkianim', (an) => {
+        if (!an.animations.length) return;
+        medMixer = new THREE.AnimationMixer(g);
+        /* the TALK take, not the idle: this man is mid-ritual with a god in
+           him, and the idle is a breathing stand. Measured on the baked
+           clips — idle swings 11 degrees off its first frame, talk swings
+           99 — and it is the drum that sets his rate, so the take has to be
+           one the drum can visibly quicken. */
+        const clip = an.animations.find(c => c.name === 'talk') || an.animations[0];
+        medMixer.clipAction(clip).play();
+        medMixer.update(0.001);
+        /* RE-GROUND: the pose just changed under him, and the law is to
+           ground from the POSED bones, so the measurement is taken again. */
+        g.updateMatrixWorld(true);
+        const v2 = new THREE.Vector3();
+        let lo2 = Infinity;
+        g.traverse(o => {
+          if (!o.isBone) return;
+          o.getWorldPosition(v2);
+          lo2 = Math.min(lo2, v2.y);
+        });
+        if (isFinite(lo2)) g.position.y -= lo2;
+      });
     });
 
     /* THE BOY — Chad's chinese boy, standing in for the front-left

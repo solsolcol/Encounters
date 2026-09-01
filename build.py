@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = '5.05'
+VERSION = '5.06'
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -194,7 +194,12 @@ ASSETS = {
     'guangong': ('assets/guangong.glb', True, True),    # ch3
     'encik': ('assets/encik.glb', True, True),          # ch3
     # v4.8: three more of Chad's Sketchfab picks, same pipeline
-    'praying': ('assets/praying.glb', True, True),      # ch3
+    # v5.06: Chad's rigged Taoist master REPLACES the praying man as the
+    # tang-ki in both chapters that show him. He arrives with no clips of
+    # his own, so `tangkianim` carries two Mixamo takes retargeted onto
+    # his skeleton offline — the v5.02 bake, pointed at a second rig.
+    'tangki': ('assets/tangki.glb', True, True),        # ch3, ch5
+    'tangkianim': ('assets/tangkianim.glb', True, False),  # ch3, ch5
     'boy': ('assets/boy.glb', True, True),              # ch3
     'shrine': ('assets/shrine.glb', True, True),        # ch3
     # v5.05: two ANIMATED sitters, each its own character and its own clip,

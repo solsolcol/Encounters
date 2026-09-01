@@ -1145,3 +1145,19 @@ screen before deciding what to keep. Resizing a map the policy will drop is
 work spent making a smaller invisible thing. (Rule of thumb for the rest:
 diffuse to 512 JPEG; anything with a cutout alpha — hair, eyelashes,
 foliage — must stay PNG or WebP and can usually go to 256.)
+
+## A rigged model with no clips is a pose, and a take is chosen by its amplitude (v5.06)
+
+Chad's tang-ki replacement was a clean Mixamo-rigged character that shipped
+zero animations — and the model it replaced had been chosen for its clip.
+Dropped in as-is he stood with his arms held out, which no amount of model
+quality fixes. So "replace the model" had to mean "replace the model and
+supply its movement", and the v5.02 bake did that in minutes once pointed
+at his rig.
+
+The second lesson is which take. Both chapters show the same man, and the
+obvious move — idle everywhere — made chapter 3's medium a man breathing at
+an altar. Measure the clips before choosing: the idle swings 11° off its
+first frame, the talk 99°. A drum-driven trance needs the 99° take; a man
+listening across a table needs the 11° one at full rate, not half. The
+number decides, not the clip's name.

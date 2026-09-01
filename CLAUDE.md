@@ -545,6 +545,16 @@ What the baseline contains, by release:
   **When a new thing is placed among existing things, the measure that
   matters is the one the existing things used.** Cost in engine seams:
   zero. Sheet v14. docs/V5.05-CROWD.md is the build's memory.
+- **v5.06** THE TANG-KI, REMADE — Chad's rigged Taoist master (white
+  beard, ochre robe, scroll and signboard, ~1000 triangles) replaces the
+  praying man in chapters 3 and 5. It arrived with its textures beside it
+  and NO clips, so it got both: the sheets reattached with alpha MASK (the
+  beard is a cutout card) and `tangkianim.glb`, Chad's Standing Idle and
+  Talking retargeted onto its skeleton by the v5.02 bake. Measured, the
+  idle swings 11° and the talk 99° — so ch3's medium runs the TALK take
+  under the drum and ch5's listener runs the idle at full rate (the old
+  0.5× was for the praying loop). Every scene verb drives the group, so no
+  timeline moved. Engine seams: zero. docs/V5.06-TANGKI.md.
 - **v3.8** real art where there was code: a bought first-person ARM rig
   (`arms.glb`, credited to Fab) replaces the wrist-only hand pack and the
   forearm that was built out of cylinders to cover for it, and the hell

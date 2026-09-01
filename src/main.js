@@ -72,7 +72,8 @@ const EMBED = {
   hellnote: '__HELLNOTE_B64__',
   mother: '__MOTHER_B64__', seat: '__SEAT_B64__', cars: '__CARS_B64__',
   guangong: '__GUANGONG_B64__', encik: '__ENCIK_B64__',
-  praying: '__PRAYING_B64__', boy: '__BOY_B64__', shrine: '__SHRINE_B64__',
+  tangki: '__TANGKI_B64__', tangkianim: '__TANGKIANIM_B64__',
+  boy: '__BOY_B64__', shrine: '__SHRINE_B64__',
   motheranim: '__MOTHERANIM_B64__',
   sitclap: '__SITCLAP_B64__', sitangry: '__SITANGRY_B64__'
 };
