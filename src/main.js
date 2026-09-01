@@ -3127,7 +3127,18 @@ const STING_SAMPLE = {
   v4tired: ['v4tired', 1], v4wake3am: ['v4wake3am', 1],
   v4taunt: ['v4taunt', 1], v4regret: ['v4regret', 1],
   v4call1: ['v4call1', 1], v4call2: ['v4call2', 1],
-  v4ma1: ['v4ma1', 1], v4ma2: ['v4ma2', 1], v4ma3: ['v4ma3', 1]
+  v4ma1: ['v4ma1', 1], v4ma2: ['v4ma2', 1], v4ma3: ['v4ma3', 1],
+  /* v5.0: chapter 5's morning — the knock, the find, the burning; the
+     tang-ki's seven lines are the game's fourth speaker. */
+  doorknock: ['doorknock', 0.9], notepull: ['notepull', 0.9],
+  matchstrike: ['matchstrike', 0.85], noteburn: ['noteburn', 0.85],
+  teaset: ['teaset', 0.7],
+  v5wake1: ['v5wake1', 1], v5wake2: ['v5wake2', 1], v5wake3: ['v5wake3', 1],
+  v5fearB1: ['v5fearB1', 1], v5disC1: ['v5disC1', 1], v5learnD: ['v5learnD', 1],
+  v5ma1: ['v5ma1', 1], v5ma2: ['v5ma2', 1],
+  t5note: ['t5note', 1], t5teachA: ['t5teachA', 1], t5hallA: ['t5hallA', 1],
+  t5fearB: ['t5fearB', 1], t5disC: ['t5disC', 1],
+  t5learnD1: ['t5learnD1', 1], t5learnD2: ['t5learnD2', 1]
 };
 /* Which kinds the synth below can actually fake. Everything else in
    STING_SAMPLE is sample-only: if its buffer is not decoded yet it stays
