@@ -73,8 +73,8 @@ Object.assign(window.__TEXT__, {
   'credits.shrine':      'The second altar figure',
   'credits.shrineWho':   'Seated shrine figure with sword, Thailand · Sketchfab',
   'credits.shrineLink':  'sketchfab.com · seated-shrine-figure-with-sword-thailand',
-  'credits.anim':        'The mother’s movement',
-  'credits.animWho':     'Walking, idle and talking takes · Mixamo',
+  'credits.anim':        'Animation and two of the crowd',
+  'credits.animWho':     'The mother’s takes, and two seated characters · Mixamo',
   'credits.animLink':    'mixamo.com',
   'credits.footer':      'Everything else in the scene — the void deck, the burner, the offerings, the hell notes, the sky and the lighting — is generated in code.',
 

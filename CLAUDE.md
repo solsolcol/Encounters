@@ -524,6 +524,27 @@ What the baseline contains, by release:
   existed, wasteful once a real talking take did, since the walk clip takes
   the body back. Scene B's whole tail shifts ~3.8 s later: she stands and
   finishes the sentence, THEN goes. All four takes now read.
+- **v5.05** TWO IN THE CROWD WHO ARE NOT ENCIK — Chad's note that the
+  tentage audience reads as "too many repetitive ones", which it did:
+  since v4.7 every sitter has been one scan cloned nineteen times, tinted
+  and half of them mirrored, and no tint makes a face. Two of his Mixamo
+  characters take two seats — one clapping along, one sitting through it —
+  each with its own skeleton, mixer and clip, frozen and thawed with the
+  crowd by `crowdLife`. Shrunk 47/54 MB of FBX to 917/1040 KB by DROPPING
+  every map the CSP-safe `rescueTextures()` cannot restore (it only ever
+  rescues base colour, so a normal map is pure download), the body sheet to
+  512 JPEG, the alpha-carrying hair sheet to 256 PNG, and meshopt at 0.28.
+  The seats are chosen against the scatter, not by eye: both occupied,
+  both even so they survive `LOW`, both aisle-side in the middle rows where
+  the lanes run. The encik loader skips them and leaves their primitive
+  placeholder standing until the real bytes land, in whichever order the
+  three loaders arrive. One trap, and it generalises: the crowd's crown
+  measure is a loose `/Head/i`, which on a Mixamo rig also catches
+  `HeadTop_End` — measured with the technically-correct `HEAD_RE` these two
+  normalised to the NECK and stood a head over everyone (1.577 → 1.348).
+  **When a new thing is placed among existing things, the measure that
+  matters is the one the existing things used.** Cost in engine seams:
+  zero. Sheet v14. docs/V5.05-CROWD.md is the build's memory.
 - **v3.8** real art where there was code: a bought first-person ARM rig
   (`arms.glb`, credited to Fab) replaces the wrist-only hand pack and the
   forearm that was built out of cylinders to cover for it, and the hell

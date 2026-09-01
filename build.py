@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = '5.04'
+VERSION = '5.05'
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -197,6 +197,12 @@ ASSETS = {
     'praying': ('assets/praying.glb', True, True),      # ch3
     'boy': ('assets/boy.glb', True, True),              # ch3
     'shrine': ('assets/shrine.glb', True, True),        # ch3
+    # v5.05: two ANIMATED sitters, each its own character and its own clip,
+    # so the crowd is no longer thirty copies of one man. Not preloaded —
+    # they are two faces in a crowd, not the first shot's furniture, and
+    # the primitive figures hold their seats until they land.
+    'sitclap': ('assets/sitclap.glb', True, False),     # ch3
+    'sitangry': ('assets/sitangry.glb', True, False),   # ch3
     # v5.02: four Mixamo clips RETARGETED onto the mother's skeleton offline
     # (idle, talk, walkstart, walkstop). Her model ships only a standing
     # idle, so every appearance of her stood still and slid. Not preloaded:

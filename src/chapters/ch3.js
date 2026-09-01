@@ -152,7 +152,7 @@
        note, which is on the altar table tonight where it should have been
        all along. */
     assets: ['hdb', 'hellnote', 'seat', 'cars', 'guangong', 'encik',
-             'praying', 'boy', 'shrine'],
+             'praying', 'boy', 'shrine', 'sitclap', 'sitangry'],
     noteArt: 'hellnote',
 
     /* The tent's own sound, in FOUR beds since v4.3 — and the loudest is
@@ -242,6 +242,18 @@
     const COL_X = [-3.6, -2.7, -1.8, -0.9, 0.9, 1.8, 2.7, 3.6];
     const ODD = { row: 3, col: 2 };     // row four — now also the back row
     const BACK = { row: 3, col: 5 };    // the far side of that same back row
+    /* v5.05: two seats belong to somebody else. Chad's note was that the
+       crowd reads as too many copies of one man, and it did — every sitter
+       was Encik Lim tinted and half of them mirrored. These two are their
+       own characters with their own clips: one clapping along with the
+       ceremony, one sitting through it unimpressed. Chosen for where they
+       are seen from: both are aisle-side in the two middle rows, on
+       opposite sides, and both survive the LOW thinning. */
+    const SPECIALS = [
+      { key: 'sitclap', i: 1 * 8 + 4 },      // row two, right of the aisle
+      { key: 'sitangry', i: 2 * 8 + 2 },     // row three, the far side
+    ];
+    const SPECIAL_I = new Set(SPECIALS.map(sp => sp.i));
 
     /* ------------------------------------------------------------ textures */
     const gTex = makeGround();
@@ -925,6 +937,7 @@
     let chairIM = null;                    // v4.7: set when the real chair lands
     let medMixer = null, medHead = null;   // the praying tang-ki model (v4.8)
     let encikMixers = [];                  // the audience's shared skeletons (v4.8)
+    const specialMixers = [];              // the two sitters of their own (v5.05)
 
     let ci = 0;
     for (let r = 0; r < ROW_Z.length; r++) {
@@ -982,6 +995,7 @@
         f.rotation.y = chairRot[i] + Math.PI;   // facing the altar, like the chair
         f.userData.ph = (i * 1.37) % 6.28;
         f.userData.baseY = 0;
+        f.userData.seat = i;                  // so the model loaders can find it
         crowdRoot.add(f);
         crowd.push(f);
         n++;
@@ -1262,9 +1276,14 @@
       if (!isFinite(lo) || hi <= lo) return;
       if (hipN) hip.divideScalar(hipN); else hip.set(0, 0, 0);
       const s2 = 1.30 / (hi - lo);             // a seated man, floor to crown
-      for (const f of crowd) f.visible = false;
+      /* the two special seats keep their primitive figure: if their own
+         model never arrives, somebody is still sitting there */
+      const kept = crowd.filter(f => SPECIAL_I.has(f.userData.seat));
+      for (const f of crowd) if (!SPECIAL_I.has(f.userData.seat)) f.visible = false;
       crowd.length = 0;
+      crowd.push(...kept);
       for (const i of TAKEN) {
+        if (SPECIAL_I.has(i)) continue;        // somebody else has that chair
         const at = chairAt[i];
         const srcMesh = poseMeshes[(i * 7) % N_POSE];  // neighbours differ
         const mat = src.material.clone();
@@ -1306,6 +1325,75 @@
       }
       encikMixers = mixers;
     });
+
+    /* THE TWO WHO ARE NOT ENCIK — v5.05. Everyone else in this tent is one
+       scan of one man, tinted and half of them mirrored, which reads as
+       thirty of him however hard the tints work. These two are whole
+       characters with their own clip each: one clapping along, one sitting
+       through the whole thing unimpressed. Unlike the encik crowd they get
+       a skeleton and a mixer of their own — two of them is two, not thirty,
+       so the shared-pose trick that the crowd needs buys nothing here.
+
+       Their seat's primitive figure stays put until the bytes land and is
+       hidden only on arrival, so a download that never finishes costs a
+       nicer face and never an empty chair. */
+    for (const sp of SPECIALS) {
+      loadGLB(sp.key, (gltf) => {
+        const g = gltf.scene;
+        const at = chairAt[sp.i];
+        if (!at) return;
+        g.traverse(o => {
+          if (o.isMesh) { o.castShadow = !LOW; o.frustumCulled = false; }
+        });
+        if (gltf.animations.length) {
+          const mx = new THREE.AnimationMixer(g);
+          mx.clipAction(gltf.animations[0]).play();
+          mx.update(0.001);                    // pose him before measuring
+          specialMixers.push(mx);
+        }
+        g.updateMatrixWorld(true);
+        /* size and seat from POSED BONES — feet named where the rig names
+           them, the full bone span otherwise, exactly as the encik crowd
+           does, so both sit at the same floor-to-crown height */
+        const v = new THREE.Vector3();
+        const hip = new THREE.Vector3();
+        let footY = Infinity, crownY = -Infinity, loA = Infinity, hiA = -Infinity;
+        let hipN = 0;
+        g.traverse(o => {
+          if (!o.isBone) return;
+          o.getWorldPosition(v);
+          loA = Math.min(loA, v.y); hiA = Math.max(hiA, v.y);
+          if (/Toe|Foot/i.test(o.name)) footY = Math.min(footY, v.y);
+          /* deliberately the crowd's own loose /Head/ and not HEAD_RE: on a
+             Mixamo rig it also catches HeadTop_End, so the crown it measures
+             is the top of the skull rather than the neck joint. Matching the
+             encik crowd's measure exactly is the point — measured against
+             HEAD_RE these two stood a head higher than everyone near them. */
+          if (/Head/i.test(o.name)) crownY = Math.max(crownY, v.y);
+          if (/Hips|Pelvis/i.test(o.name)) { hip.add(v); hipN++; }
+        });
+        const lo = isFinite(footY) ? footY : loA;
+        const hi = crownY > -Infinity ? crownY : hiA;
+        if (!isFinite(lo) || hi <= lo) return;
+        if (hipN) hip.divideScalar(hipN); else hip.set(0, 0, 0);
+        const hs = 1.30 / (hi - lo);            // a seated person, floor to crown
+        const inner = new THREE.Group();
+        inner.scale.setScalar(hs);
+        inner.position.set(-hip.x * hs, -lo * hs, -hip.z * hs + ENCIK_Z);
+        inner.add(g);
+        const f = new THREE.Group();
+        f.add(inner);
+        f.position.set(at.x, 0, at.z);
+        f.rotation.y = chairRot[sp.i] + Math.PI;   // facing the altar, like the chair
+        f.userData.ph = (sp.i * 1.37) % 6.28;
+        f.userData.head = inner;                // the sway loop turns this
+        f.userData.seat = sp.i;
+        crowdRoot.add(f);
+        /* only now does the placeholder go: the chair is never empty */
+        for (const p of crowd) if (p.userData.seat === sp.i) p.visible = false;
+        crowd.push(f);
+      });
+    }
 
     /* THE TANG-KI — Chad's praying man, rigged and ANIMATED; the clip is
        the whole point ("his animations must be preserved and shown"). He
@@ -1650,6 +1738,7 @@
       if (medMixer) medMixer.update(dt * Math.min(drumBeat, 2.4));
       if (medHead) medHead.rotation.z += md.head.position.x * 7;
       for (const em of encikMixers) em.update(dt * crowdLife);
+      for (const sm of specialMixers) sm.update(dt * crowdLife);
       for (let i = 0; i < flags.length; i++) {
         flags[i].rotation.z = (i ? 1 : -1) * (0.5 + Math.sin(t * 2.1 + i) * 0.35 * drumBeat);
       }

@@ -1109,3 +1109,39 @@ actions was free before and is a swallowed performance now. Expose the
 current clip name on the stage (`mumClip` / `maClip`) — "which clip is
 actually playing" should be answerable by measurement, not inference from
 a screenshot.
+
+## Match the measure the neighbours used, not the correct one (v5.05)
+
+Two new characters were dropped into chapter 3's audience and stood a
+visible head taller than everyone around them, despite following the
+standing law — size and ground from POSED bones — exactly.
+
+The reason is that the encik crowd normalises to a crown it finds with a
+loose `/Head/i`, which on a Mixamo skeleton also matches `HeadTop_End`, i.e.
+the top of the skull. The new loader used `HEAD_RE` (`/Head(_\d+)?$/`),
+which is the *correct* regex for finding the head JOINT and is what v5.01
+was written to fix — and so normalised to the base of the skull instead.
+Same law, different crown, ~9% taller. Measured: crowns at 1.577 and 1.572
+against a crowd at ~1.30; using the crowd's own measure, 1.348 and 1.316.
+
+The lesson is not "use the loose regex". It is that a thing placed AMONG
+existing things has to be measured the way those things were measured, even
+where that measure is the worse one — consistency inside a frame beats
+correctness against an absolute. Fixing the crowd's regex would have been
+the other valid answer; it would also have resized nineteen people to fix
+two, which is the larger change and the riskier one.
+
+## A texture that cannot survive the CSP is pure download (v5.05)
+
+Two 47–54 MB character FBXs shrank to under a megabyte each, and most of
+that came from DELETING maps rather than compressing them. Each carried a
+4096² normal map at ~20 MB and a packed AO/metal/rough sheet — and the
+engine's `rescueTextures()` only ever restores the BASE COLOR map, because
+that is the only one it walks the glTF JSON for. Every other map renders
+white in production regardless of how carefully it was encoded.
+
+So when budgeting a bought model: check what the loader can actually put on
+screen before deciding what to keep. Resizing a map the policy will drop is
+work spent making a smaller invisible thing. (Rule of thumb for the rest:
+diffuse to 512 JPEG; anything with a cutout alpha — hair, eyelashes,
+foliage — must stay PNG or WebP and can usually go to 256.)

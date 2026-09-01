@@ -5,18 +5,17 @@ without prompting for each change. This is how it works and how to run it.
 
 ## The sheet
 
-**Master Z's Encounters — GAME TEXT v13 (edit here)** in his Drive
-(id `1QosBZiLpHEP1Gs-n2dISTiVcfBwIu3b2w1bpH7he5FE` — the **v13** sheet, made
-at v5.02 with the three Mixamo credit rows. v12 (v5.0's, id
-`1GtiP5fki-rwWV1vgguB0R7rsH8bdHQDMAAXUfW0uoO0`) and everything before it
-are superseded and should not be edited. Provenance, stated plainly: v12
-was made the usual way, by reading v11 back and importing it first — a
-zero diff, nothing of Chad's outstanding. v13 differs: it came from a
-code-side edit minutes later (the Mixamo credit rows) with v12 untouched
-in between, so it is v12 plus three rows and no read-back was needed.
-Whenever a sheet has been in his hands for real time, read it back and
-import FIRST — that is what the rule is for).
-<https://docs.google.com/spreadsheets/d/1QosBZiLpHEP1Gs-n2dISTiVcfBwIu3b2w1bpH7he5FE/edit>
+**Master Z's Encounters — GAME TEXT v14 (edit here)** in his Drive
+(id `1Akknk3O7QXCYS6qi6FpS8VnGDJmYKBSy_BlJaYy72FQ` — the **v14** sheet, made
+at v5.05 when the Mixamo credit broadened to cover two whole characters as
+well as the mother's takes. v13 (v5.02's, id
+`1QosBZiLpHEP1Gs-n2dISTiVcfBwIu3b2w1bpH7he5FE`) and everything before it are
+superseded and should not be edited. Provenance, stated plainly: v13 was
+read back in full before v14 was generated, and it matched the code row for
+row — nothing of Chad's was outstanding, so v14 is v13 plus the two reworded
+credit rows. Whenever a sheet has been in his hands for real time, read it
+back and import FIRST — that is what the rule is for).
+<https://docs.google.com/spreadsheets/d/1Akknk3O7QXCYS6qi6FpS8VnGDJmYKBSy_BlJaYy72FQ/edit>
 
 Two sheets in one session is the cost of the connector's one real
 limitation, and it is worth restating why: it can READ a sheet and it can
