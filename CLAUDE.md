@@ -39,8 +39,23 @@ from his **phone**. Consequences:
    break; the full suite only before a substantial release. `node
    runtests.mjs <names>` runs picked harnesses two at a time.
 3. **Version every good build**: commit with a real message, tag `vN.N`,
-   refresh `Encounters-backup.bundle` (`git bundle create
-   Encounters-backup.bundle --all`), hand it to Chad.
+   push the branch, hand Chad the dist zip.
+   **The backup bundle is MILESTONE-ONLY since v4.81** (Chad's call — "i
+   feel it is unnecesary", and he was right): refresh
+   `Encounters-backup.bundle` (`git bundle create
+   Encounters-backup.bundle --all`, split at 20 MB for the upload limit)
+   when a CHAPTER ships, or whenever he asks — not every release. Why the
+   old rule is retired: GitHub now holds the branch and its whole history,
+   Netlify holds every published build with two-tap rollback, so the
+   bundle was a third copy of what two durable places already had. What it
+   still uniquely buys is an OFFLINE copy in his own hands, dependent on
+   no account — worth having occasionally, not every time.
+   The one real gap it papered over: **tags cannot be pushed from these
+   sessions** (`git push --tags` → 403; the GitHub grant covers branch
+   refs, not tag refs), so `vN.N` labels live only locally and in the
+   bundle. That costs nothing, because every release commit's message
+   BEGINS with its version — a version is findable on GitHub by message
+   whether or not a tag survived. Keep writing them that way.
 4. **Both builds must stay green.** One source produces the hosted site
    AND the single-file build; a change that breaks either is not done.
    The single-file build is no longer published or (since v3.4) what the
