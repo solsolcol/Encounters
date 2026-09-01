@@ -221,7 +221,13 @@
     const SEAT_YAW = Math.PI;         // backrest at -z in the file, so identity faces +z: flip it
     const GG_YAW = 0;                 // Guan Gong faces the crowd
     const ENCIK_Z = -0.05;            // hips just behind the pan centre, in his facing frame
-    const PRAY_H = 1.68;              // the tang-ki STANDS: a man, floor to crown
+    /* v5.07: the tang-ki's height is measured to his HEAD JOINT, because
+       that is the topmost bone his rig has (no HeadTop_End), and 1.68
+       there put the top of his skull at ~1.81 and the hairpin at 2.09 —
+       a 2.1 m man, "more than 1.5x a normal person" (Chad). 1.50 puts the
+       skull at ~1.63 and the pin at ~1.88: a slightly short old man whose
+       topknot clears the player's 1.62 m eye line. Measured, in ch5. */
+    const PRAY_H = 1.50;              // the tang-ki STANDS: floor to head joint
     const BOY_YAW = 0;                // which way the boy scan faces at identity
     const SHRINE_YAW = -0.12;         // the second figure angles toward the principal
 
@@ -936,6 +942,25 @@
     }
     let chairIM = null;                    // v4.7: set when the real chair lands
     let medMixer = null, medHead = null;   // the tang-ki model (v4.8, remade v5.06)
+    /* v5.07: his takes, by name, and the switch between them. `fade` 0 is a
+       HARD CUT that also bakes the new pose immediately — needed because
+       the mixer's rate is `drumBeat`, and at drumBeat 0 a crossfade would
+       never advance and the old pose would hold under the new action. */
+    let medActs = null, medCur = '';
+    const medPlay = (name, ts = 1, fade = 0.34) => {
+      if (!medMixer || !medActs || !medActs[name] || medCur === name) return;
+      const nx = medActs[name], old = medCur && medActs[medCur];
+      nx.reset(); nx.setEffectiveTimeScale(ts); nx.setEffectiveWeight(1);
+      if (fade > 0) {
+        nx.fadeIn(fade).play();
+        if (old) old.fadeOut(fade);
+      } else {
+        nx.play();
+        for (const a of Object.values(medActs)) if (a !== nx) a.stop();   // a hard cut is hard
+        medMixer.update(0.0001);
+      }
+      medCur = name;
+    };
     let encikMixers = [];                  // the audience's shared skeletons (v4.8)
     const specialMixers = [];              // the two sitters of their own (v5.05)
 
@@ -1436,13 +1461,15 @@
       loadGLB('tangkianim', (an) => {
         if (!an.animations.length) return;
         medMixer = new THREE.AnimationMixer(g);
-        /* the TALK take, not the idle: this man is mid-ritual with a god in
-           him, and the idle is a breathing stand. Measured on the baked
-           clips — idle swings 11 degrees off its first frame, talk swings
-           99 — and it is the drum that sets his rate, so the take has to be
-           one the drum can visibly quicken. */
-        const clip = an.animations.find(c => c.name === 'talk') || an.animations[0];
-        medMixer.clipAction(clip).play();
+        medActs = {};
+        for (const clip of an.animations) medActs[clip.name] = medMixer.clipAction(clip);
+        /* v5.07: his rest state is Chad's Standing Idle 03 — "idle for at
+           the medium event before pressing options" — and the two-handed
+           magic take is the scenes' to call (v5.06 ran the talking take
+           here for its 99 degrees of swing; that job is the magic take's
+           now). The drum still sets his rate. */
+        const rest = medActs.idle3 ? 'idle3' : (medActs.talk ? 'talk' : Object.keys(medActs)[0]);
+        medPlay(rest, 1, 0);
         medMixer.update(0.001);
         /* RE-GROUND: the pose just changed under him, and the law is to
            ground from the POSED bones, so the measurement is taken again. */
@@ -2002,6 +2029,8 @@
       set noteStorm(v) { noteStorm = v; },
       get drumBeat() { return drumBeat; },
       set drumBeat(v) { drumBeat = v; },
+      medPlay,                                   // v5.07: the medium's takes
+      get medClip() { return medCur || null; },
       get crowdLife() { return crowdLife; },
       set crowdLife(v) { crowdLife = v; },
 
@@ -2367,6 +2396,12 @@
 
     /* 2.0-7.4  the trance climbs, one instrument at a time. Nothing here is
        a jump: it is five seconds of a ceremony finding a higher gear. */
+    /* v5.07: the climb is HIS — the two-handed magic take (2.83 s) lands
+       its peak inside the ceremony's, and he is back at rest by the time
+       everything stops at 7.4. Chad: "magic attack for when user press
+       option 1, 2, and 3 at the medium event." */
+    step(2.4, () => { stage.medPlay('magic'); });
+    step(6.6, () => { stage.medPlay('idle3'); });
     tr(2.0, 7.4, k => {
       stage.drumBeat = 1 + 1.9 * k;
       stage.noteStorm = 1 + 1.6 * k;
@@ -2520,6 +2555,7 @@
     /* 3.4-8.4  and it goes wrong. The drum crowds in, the tubes lose their
        nerve, the air thickens, and the whole shot leans over. Nothing here
        is a jump: it is four seconds of getting steadily worse. */
+    step(3.6, () => { stage.medPlay('magic'); });     // v5.07: his spell, as it goes wrong
     tr(3.4, 8.4, k => {
       duck('ritual', 1 + 1.6 * k);
       duck('ceremony', 1 + 1.1 * k);       // the band crowds in with the drum
@@ -2579,6 +2615,9 @@
     const MED0 = new THREE.Vector3();
     step(8.9, () => {
       MED0.copy(stage.medium.position);
+      /* at rest for the face-to-face, cut not faded: drumBeat is 0 here, so
+         the mixer never advances and a fade would leave him mid-spell */
+      stage.medPlay('idle3', 1, 0);
       stage.medium.position.set(-0.18, 0, -6.42);   // right in front of the lens
       stage.medium.userData.head.rotation.x = 0.10;
       stage.medium.userData.head.rotation.z = 0.42;  // tilted, the wrong amount
@@ -2702,7 +2741,10 @@
     sfx(3.1, 'v3aunt1');   // "That one? He is the tang kee. The god borrows his body."
     sfx(8.5, 'v3aunt2');   // "He has done this for thirty years. Watch his hands, not his face."
 
-    // and he does look, because she told him to
+    // and he does look, because she told him to — and the hands she told
+    // him to watch are mid-gesture when he does (v5.07)
+    step(8.7, () => { stage.medPlay('magic'); });
+    step(12.2, () => { stage.medPlay('idle3'); });
     yawTo(9.1, 10.5, TO_AUNT, TO_MED, smoothK);
     pitchTo(9.1, 10.5, -0.05, -0.03, smoothK);
     yawTo(10.5, 11.9, TO_MED, TO_AUNT, smoothK);

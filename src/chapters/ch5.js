@@ -775,7 +775,11 @@
        kitchen doorway. Both are the film's actors; scenes glide the
        groups. Invisible proxies stand in while the GLBs fly and give the
        interact raycast something to hit.                                */
-    const TANG_H = 1.68;
+    /* v5.07: floor to HEAD JOINT (his topmost bone); 1.68 there made a
+       2.09 m man once the topknot was counted — measured, with Ma's mesh
+       top at 1.585 beside him. 1.50 lands his skull at ~1.63 and the
+       hairpin at ~1.88. The same number as ch3's PRAY_H, on purpose. */
+    const TANG_H = 1.50;
     const tangki = new THREE.Group();
     tangki.position.set(SHRINE.x, 0, SHRINE.z);
     /* the models are +z-forward: visual front = (sin ry, cos ry). -0.85
@@ -792,19 +796,57 @@
     let tangMixer = null, tangHead = null;
     let tangBow = 0;                             // scenes add this to the head, post-mixer
     let tangActs = null, tangCur = '';
-    const tangPlay = (name, ts = 1, fade = 0.34) => {
-      if (!tangActs || !tangActs[name] || tangCur === name) return;
-      const nx = tangActs[name];
+    let tangHand = null;                         // v5.07: his right hand bone, for the note
+    /* the model carries its own props — a signboard and paper talismans on
+       a second material — skinned to the same hands. The insert holds the
+       NOTE up in that hand, so the props step out of it for the shot. */
+    const tangProps = [];
+    const setTangProps = (v) => { for (const m of tangProps) m.visible = v; };
+    /* `fade` 0 is a HARD CUT that bakes the pose at once (the ch3 precedent);
+       `once` plays a take through and holds its last frame — the torch grab
+       ends on the hand raised, and that is the pose the burning holds. */
+    const tangPlay = (name, ts = 1, fade = 0.34, once = false, at) => {
+      if (!tangMixer || !tangActs || !tangActs[name]) return;
+      if (tangCur === name && at === undefined) return;
+      const nx = tangActs[name], old = tangCur && tangCur !== name && tangActs[tangCur];
       nx.reset(); nx.setEffectiveTimeScale(ts); nx.setEffectiveWeight(1);
-      nx.fadeIn(fade).play();
-      if (tangCur && tangActs[tangCur]) tangActs[tangCur].fadeOut(fade);
+      nx.setLoop(once ? THREE.LoopOnce : THREE.LoopRepeat, Infinity);
+      nx.clampWhenFinished = once;
+      if (at !== undefined) {
+        /* a FROZEN FRAME: the take parked at a fraction of its length and
+           held there — the insert holds the note up on one frame of the
+           magic take, where the hand is exactly where the shot wants it */
+        nx.play(); nx.time = nx.getClip().duration * at; nx.paused = true;
+        for (const a of Object.values(tangActs)) if (a !== nx) a.stop();
+        tangMixer.update(0);
+      } else if (fade > 0) {
+        nx.paused = false;
+        nx.fadeIn(fade).play();
+        if (old) old.fadeOut(fade);
+      } else {
+        nx.paused = false;
+        nx.play();
+        /* a HARD cut stops every other take, not only the current one: a
+           crossfade still running from two steps ago would otherwise keep
+           its weight through the cut, and a pose read on the same frame
+           (the insert aims the note from the hand) would be a blend */
+        for (const a of Object.values(tangActs)) if (a !== nx) a.stop();
+        tangMixer.update(0.0001);
+      }
       tangCur = name;
     };
     assetBytes('tangki').then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
       if (!alive) return;
       rescueTextures(gltf, BUF);
       const g = gltf.scene;
-      g.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.frustumCulled = false; } });
+      g.traverse(o => {
+        if (!o.isMesh) return;
+        o.castShadow = !LOW; o.frustumCulled = false;
+        /* the prop material is the file's second one ('df397071'); the
+           mesh name is the fallback if a re-export renames it */
+        const mat = Array.isArray(o.material) ? o.material[0] : o.material;
+        if ((mat && mat.name === 'df397071') || /1bbfac30/.test(o.name)) tangProps.push(o);
+      });
       g.updateMatrixWorld(true);
       const v = new THREE.Vector3();
       let lo = Infinity, hi = -Infinity;
@@ -813,6 +855,7 @@
         o.getWorldPosition(v);
         lo = Math.min(lo, v.y); hi = Math.max(hi, v.y);
         if (HEAD_RE.test(o.name) && !tangHead) tangHead = o;
+        if (/RightHand$/.test(o.name) && !tangHand) tangHand = o;
       });
       if (isFinite(lo) && hi > lo) {
         const s = TANG_H / (hi - lo);
@@ -1256,6 +1299,8 @@
       tangki.position.copy(s.tangPos); tangki.rotation.y = s.tangRot;
       ma.position.copy(s.maPos); ma.rotation.y = s.maRot;
       maPlay('idle');
+      tangPlay('idle', 1, 0);                    // v5.07: a skipped scene leaves no walk running
+      setTangProps(true);
       lookOverride = null;
       if (s.noteParent && note.parent !== s.noteParent) s.noteParent.add(note);
       note.position.copy(s.notePos);
@@ -1286,6 +1331,8 @@
       handset.rotation.set(0, 0, 0);
       tangki.position.set(SHRINE.x, 0, SHRINE.z);
       tangki.rotation.y = -0.85;
+      tangPlay('idle', 1, 0);
+      setTangProps(true);
       ma.position.set(-2.45, 0, -0.85);
       ma.rotation.y = 1.2;
       maPlay('idle');
@@ -1382,6 +1429,11 @@
       hall, bedDoor, maDoor, lateMat, litWins,
       tangki, tangProxy, ma, note, NOTE_HOME, cup3, maPlay,
       get maClip() { return maCur ? maCur.getClip().name : null; },
+      tangPlay,                                  // v5.07: his takes, by name
+      get tangClip() { return tangCur || null; },
+      get tangActs() { return tangActs; },       // read-only: probes seek a take by .time
+      get tangHand() { return tangHand; },       // the bone the note rides in
+      setTangProps,                              // his signboard and talismans, on or off
       set castLook(v) { lookOverride = v; },
       get castLook() { return lookOverride; },
       get tangBow() { return tangBow; },
@@ -1490,6 +1542,42 @@
      out with the hell note. His first words in the whole game land on the
      note held up in the morning light. Title card on that image.
      Every timing here is measured take length + gap, per the plan doc.  */
+  /* v5.07: A REAL TURN. Chad's catwalk take (Walk Start Turn 180 Right)
+     rotates his HIPS a half turn to the right over TURN_DUR seconds while
+     the group holds still — so the group's yaw is walked from ry0 to
+     (ry1 + PI) across the take, and when it ends the take is cut for `then`
+     (whose hips carry no yaw) with the group snapped to ry1. The visible
+     facing is continuous through the cut: (ry1+PI) + (-PI) before it, ry1 + 0
+     after. The group's share is wrapped to the short way round, so a turn
+     that is not exactly a half turn absorbs the difference as a slow drift
+     under the take rather than a second spin. `ts` speeds the take up for
+     turns that happen at the start of a walk (the glides are eased, so the
+     first second of one barely moves him).
+
+     A TRACK HOLDS: the cutscene engine re-applies every `tr` at k = 1 on
+     every frame after its end (there is no cut-off past t1, and later
+     tracks win), so a track that writes rotation.y would pin the yaw
+     forever and every later `step` on it would lose. `yawTr` below is the
+     one-shot form: it writes until it has delivered k = 1 once, then goes
+     inert and leaves the property to whoever writes it next. Found by
+     measurement — he walked to the altar facing backwards. */
+  const TURN_DUR = 2.92;                          // measured on the baked clip
+  const wrapA = a => { while (a > Math.PI) a -= 2 * Math.PI; while (a < -Math.PI) a += 2 * Math.PI; return a; };
+  const yawTr = (tr, ease, t0, t1, fn) => {
+    let done = false;
+    tr(t0, t1, k => { if (done) return; fn(k); if (k >= 0.999) done = true; }, ease);
+  };
+  function mkTurn(api) {
+    const { tr, step, stage, smoothK } = api;
+    return (t0, ry0, ry1, ts = 1, then = 'walk', thenTs = 1) => {
+      const dur = TURN_DUR / ts;
+      const share = wrapA(ry1 + Math.PI - ry0);
+      step(t0, () => { stage.tangki.rotation.y = ry0; stage.tangPlay('turn', ts, 0.12, true); });
+      yawTr(tr, smoothK, t0, t0 + dur, k => { stage.tangki.rotation.y = ry0 + share * k; });
+      step(t0 + dur, () => { stage.tangki.rotation.y = ry1; stage.tangPlay(then, thenTs, 0.15); });
+    };
+  }
+
   function intro(c, s, api) {
     const { tr, step, sfx, fade, camTo, yawTo, pitchTo, faceFrom, rawK, smoothK,
             duck, stage, ghostOpacity, handsRoot } = api;
@@ -1506,14 +1594,70 @@
     const Y_LOW = faceFrom(LOWCAM.x, LOWCAM.z, CHX, CHZ);
     /* THE INSERT geometry. He stands at (0.75, 0.65) facing the chair -
        unit direction (0.81, -0.59). The camera sits 1.15 m out ALONG that
-       facing, so his face carries the shot; the note hangs 0.45 m off his
-       chest toward the lens - 0.70 m from camera, a fifth of the frame.
-       The first cut put the camera 0.44 m from his robe and the note
-       INSIDE it: a wall of cloth, no note at all.                       */
-    const INS_CAM = { x: 1.68, y: 1.42, z: -0.03 };
-    const INS_NOTE = { x: 1.11, y: 1.30, z: 0.38 };
+       facing, so his face carries the shot.
+       v5.07 (Chad: "put the hell note in his actual hand instead of it
+       floating in air"): the note rides his RIGHT HAND BONE, and the hand
+       is put where the old floating note was by FREEZING the magic take
+       one fifth of the way in — measured across the take, that frame has
+       the hand 0.45 m forward of his hips at 1.44 m, which is the shot the
+       floating note was faking. The note then sits at (1.34, 1.43, 0.57)
+       in the world, 0.69 m from the lens; the camera is raised a little
+       and aimed there, with his face beside it.                          */
+    /* 0.62 m from the note (it was 0.69, then 0.45 — at which the robe's
+       flared cuff was most of the frame and his face was out of it). A
+       15 cm note at 0.62 m is a sixth of the frame, held at the fingertips
+       with the face in the right of frame: a man holding up a note. */
+    const INS_CAM = { x: 1.64, y: 1.49, z: 0.03 };
+    const INS_NOTE = { x: 1.34, y: 1.45, z: 0.57 };     // measured, in the hand
     const Y_INS = faceFrom(INS_CAM.x, INS_CAM.z, INS_NOTE.x, INS_NOTE.z);
-    const Y_INS_NOTE = faceFrom(INS_NOTE.x, INS_NOTE.z, INS_CAM.x, INS_CAM.z) + Math.PI;
+    const INS_FRAME = 0.2;                        // of the magic take's length
+    const turnTo = mkTurn(api);
+    /* seat the note in the palm: along the finger axis of the hand bone
+       (measured as (-0.69, 0.72, 0) in bone space), a centimetre off the
+       palm, its face turned out; scaled back to world size because the
+       bone carries the model's ~95x scale */
+    const noteToHand = () => {
+      const h = stage.tangHand;
+      if (!h) return false;
+      const ws = h.getWorldScale(new stage.note.position.constructor());
+      stage.note.parent?.remove(stage.note);
+      h.add(stage.note);
+      stage.note.visible = true;
+      stage.note.scale.setScalar(1 / ws.x);
+      stage.note.position.set(-0.69 * 0.11 / ws.x, 0.72 * 0.11 / ws.x, 0.05 / ws.x);
+      stage.note.rotation.set(0, 0, 0.76);
+      return true;
+    };
+    /* The note's seat in the hand is SOLVED, not guessed. Three guesses at
+       the bone's axes (a flip, a palm side, a finger offset) each produced
+       the same frame — a plane edge-on to the lens, hidden in the cuff —
+       because a hand bone's frame is nothing a person can reason about.
+       So, on the frozen frame: take the hand's world position and rotation,
+       build the world rotation that faces the note's front at the lens with
+       its top to the sky, put it 10 cm toward the lens and 16 cm up from the
+       hand (at 5 and 10 the cuff still cut through it), and convert both
+       into the bone's space. Whatever the bone's
+       axes are, the note faces the camera upright. */
+    const aimNoteInHand = (cam) => {
+      const h = stage.tangHand;
+      if (!h || stage.note.parent !== h) return;
+      const V = stage.note.position.constructor;
+      const Q = h.quaternion.constructor;
+      stage.tangki.updateMatrixWorld(true);
+      const hp = h.getWorldPosition(new V());
+      const hq = h.getWorldQuaternion(new Q());
+      const ws = h.getWorldScale(new V());
+      const d = new V(cam.x - hp.x, cam.y - hp.y, cam.z - hp.z).normalize();
+      const right = new V().crossVectors(new V(0, 1, 0), d).normalize();
+      const up = new V().crossVectors(d, right).normalize();
+      const m = new (stage.note.matrix.constructor)().makeBasis(right, up, d);
+      const qw = new Q().setFromRotationMatrix(m);
+      const wpos = hp.clone().addScaledVector(d, 0.10).addScaledVector(up, 0.16);
+      const inv = hq.clone().invert();
+      stage.note.position.copy(wpos.sub(hp).applyQuaternion(inv).divideScalar(ws.x));
+      stage.note.quaternion.copy(inv.multiply(qw));
+      stage.note.scale.setScalar(1 / ws.x);
+    };
 
     step(0, () => {
       handsRoot.visible = false;
@@ -1548,6 +1692,8 @@
     tr(7.2, 9.0, k => { stage.doorMain.rotation.y = stage.DOORM_OPEN * k; }, smoothK);
     sfx(8.0, 'v5ma1');                            // 2.19 s
     // 10.5-13.5 he steps in and STOPS AT THE THRESHOLD; the house is read
+    step(10.5, () => { stage.tangPlay('walk', 0.45); });    // v5.07: on real feet
+    step(13.5, () => { stage.tangPlay('idle'); });
     tr(10.5, 13.5, k => {
       stage.tangki.position.set(
         stage.DOORM.x + 0.35 * k, 0, stage.R.zNear + 0.85 - 1.55 * k);
@@ -1560,7 +1706,11 @@
 
     // 16-22 he crosses to the KITCHEN DOORWAY and BOWS to the empty dark
     yawTo(16.0, 19.0, Y_DOOR2, Y_KD, smoothK);
-    step(16.0, () => { stage.tangki.rotation.y = faceFrom(-1.85, 1.9, -2.15, -0.8) + Math.PI; });
+    step(16.0, () => {
+      stage.tangki.rotation.y = faceFrom(-1.85, 1.9, -2.15, -0.8) + Math.PI;
+      stage.tangPlay('walk', 0.65);              // 2.7 m in 3.6 s
+    });
+    step(19.6, () => { stage.tangPlay('idle'); });
     tr(16.0, 19.6, k => {
       stage.tangki.position.set(
         stage.DOORM.x + 0.35 + (-2.15 - (stage.DOORM.x + 0.35)) * k, 0,
@@ -1573,7 +1723,12 @@
     // 22.5-27 he turns to the dining table; the camera pans with him, then
     // HARD CUTS low, under it. Only now, with his path clear, does Ma
     // withdraw to her place by the kitchen - off-frame, behind the pan.
-    step(22.5, () => { stage.tangki.rotation.y = faceFrom(-2.15, -0.8, CHX - 0.55, CHZ + 0.4) + Math.PI; });
+    /* the one true turnaround of the film: from the kitchen dark, 177
+       degrees round to the chair — the catwalk take, quickened, under the
+       eased start of the walk */
+    turnTo(22.5, faceFrom(-2.15, stage.KDOOR.z + 0.6, KD.x, KD.z) + Math.PI,
+           faceFrom(-2.15, -0.8, CHX - 0.55, CHZ + 0.4) + Math.PI, 1.6, 'walk', 0.85);
+    step(25.8, () => { stage.tangPlay('idle'); });
     tr(22.5, 25.8, k => {
       stage.tangki.position.set(
         -2.15 + (CHX - 0.55 - -2.15) * k, 0,
@@ -1601,24 +1756,35 @@
     sfx(26.5, 'notepull', 0.9);
     step(27.3, () => {
       stage.chairs[0].remove?.(stage.note);
-      stage.tangki.add(stage.note);               // in his hand as he rises
-      stage.note.position.set(0.2, 1.05, 0.2);
-      stage.note.rotation.set(0.3, 0.4, 0.2);
+      stage.setTangProps(false);                  // the signboard leaves the hand the note takes
+      if (!noteToHand()) {                        // no bone yet: the old fixed spot
+        stage.tangki.add(stage.note);
+        stage.note.position.set(0.2, 1.05, 0.2);
+        stage.note.rotation.set(0.3, 0.4, 0.2);
+      }
     });
 
     /* 28.5-40.5 THE INSERT: the note held up in the morning light — the
        real photographed art, a third of the frame. His first words in
        five chapters of game land here, and then the boy names it.       */
     step(28.5, () => {
-      stage.tangki.remove?.(stage.note);
-      stage.chairs[0].parent.add(stage.note);     // the world group
-      stage.note.position.set(INS_NOTE.x, INS_NOTE.y, INS_NOTE.z);
-      stage.note.rotation.set(-0.10, Y_INS_NOTE, 0.06);
+      if (stage.tangHand) {
+        stage.tangPlay('magic', 1, 0, true, INS_FRAME);   // the hand comes up, and holds
+        if (stage.note.parent !== stage.tangHand) noteToHand();
+        aimNoteInHand(INS_CAM);                     // and the note faces the lens, upright
+      } else {                                    // no bone: the v5.06 floating insert
+        stage.tangki.remove?.(stage.note);
+        stage.chairs[0].parent.add(stage.note);
+        stage.note.position.set(INS_NOTE.x, INS_NOTE.y, INS_NOTE.z);
+        stage.note.rotation.set(-0.10, faceFrom(INS_NOTE.x, INS_NOTE.z, INS_CAM.x, INS_CAM.z) + Math.PI, 0.06);
+      }
     });
     camTo(28.5, 40.5, INS_CAM,
       { x: INS_CAM.x - 0.04, y: INS_CAM.y + 0.02, z: INS_CAM.z + 0.04 }, smoothK);
     yawTo(28.5, 40.5, Y_INS, Y_INS);
-    pitchTo(28.5, 40.5, -0.17, -0.17);
+    pitchTo(28.5, 40.5, -0.10, -0.10);
+    // the black takes him back to his idle; restore() re-homes the note
+    step(41.8, () => { stage.tangPlay('idle', 1, 0); stage.setTangProps(true); });
     // he inclines toward what he is holding, and stays inclined
     tr(28.6, 29.6, k => { stage.tangBow = 0.16 * k; }, smoothK);
     sfx(29.0, 't5note');                          // 3.55 s: "Here. Under where you sit."
@@ -1669,17 +1835,24 @@
     step(20.5, () => { handsRoot.visible = false; });
     /* two legs, because the straight line from the head of the table to the
        corridor mouth clips the table's corner */
-    step(21.0, () => { stage.tangki.rotation.y = faceFrom(0.35, -0.55, 0.3, 0.6) + Math.PI; });
+    const Y_L1 = faceFrom(0.35, -0.55, 0.3, 0.6) + Math.PI;
+    const Y_L2 = faceFrom(0.3, 0.6, 1.55, 2.35) + Math.PI;
+    step(21.0, () => { stage.tangki.rotation.y = Y_L1; stage.tangPlay('walk', 0.45); });
     tr(21.0, 23.2, k => {
       stage.tangki.position.set(0.35 + (0.3 - 0.35) * k, 0, -0.55 + (0.6 - -0.55) * k);
     }, smoothK);
-    step(23.2, () => { stage.tangki.rotation.y = faceFrom(0.3, 0.6, 1.55, 2.35) + Math.PI; });
+    /* v5.07: the corner is WALKED — 38 degrees of yaw eased over the first
+       stride of the second leg, feet still going. The turnaround take is
+       for turnarounds; on a corner it would spin him past and back. */
+    step(23.2, () => { stage.tangPlay('walk', 0.8); });
+    yawTr(tr, smoothK, 23.2, 23.9, k => { stage.tangki.rotation.y = Y_L1 + wrapA(Y_L2 - Y_L1) * k; });
     tr(23.2, 25.5, k => {
       stage.tangki.position.set(0.3 + (1.55 - 0.3) * k, 0, 0.6 + (2.35 - 0.6) * k);
     }, smoothK);
     // beside the corridor mouth, looking down the hall
     step(25.5, () => {
       stage.tangki.rotation.y = faceFrom(1.55, 2.35, 2.05, stage.R.zNear + 2.2) + Math.PI;
+      stage.tangPlay('idle');
     });
     camTo(21.5, 26.5, ATTABLE, HALLCAM, smoothK);
     yawTo(21.5, 26.5, Y_TANG, Y_HALL, smoothK);
@@ -1844,6 +2017,7 @@
     const ALTCAM = { x: -1.45, y: EYE, z: -0.55 };
     const Y_ALT = faceFrom(ALTCAM.x, ALTCAM.z, -2.85, -2.15);
 
+    const turnTo = mkTurn(api);
     step(0, () => { ghostOpacity(0); handsRoot.visible = false; });
     camTo(0, 2.4, { x: s.yawPos.x, y: s.yawPos.y, z: s.yawPos.z }, WATCH, smoothK);
     yawTo(0, 2.4, s.yawRot, Y_TBL, smoothK);
@@ -1852,8 +2026,13 @@
     /* 2-5.3 he takes the note from where he stands. There is no walk here
        and there must not be: the dining set is ringed by its own four
        chairs, and every lane to the old note spot went through one of them
-       or through the tabletop. The note now lies at his end (NOTE_HOME),
-       0.68 m away — a lean, which is what taking something off a table is. */
+       or through the tabletop. The note lies at his end (NOTE_HOME), 0.68 m
+       away — a lean, which is what taking something off a table is.
+       v5.07 (Chad): the note is GONE from the table at the bottom of the
+       lean and is never seen again — not in his hand, not at the altar.
+       "Just show the hell note disappearing from the table when the medium
+       approaches the table ... there is no need to show the hell note
+       being burnt at the altar because it looks very fake." */
     step(2.0, () => {
       stage.tangki.rotation.y = faceFrom(0.35, -0.55, 0.98, -0.27) + Math.PI;
     });
@@ -1861,9 +2040,7 @@
     sfx(4.8, 'notepull', 0.5);
     step(5.2, () => {
       stage.tangBow = 0;
-      stage.tangki.add(stage.note);
-      stage.note.position.set(0.02, 1.2, 0.3);     // pressed to the clasp
-      stage.note.rotation.set(0.4, 0.3, 0.1);
+      stage.note.visible = false;                 // taken; the table is bare
     });
     sfx(5.8, 't5learnD1');                        // 2.59 s: "We return what was kept."
 
@@ -1871,15 +2048,23 @@
        line runs THROUGH the tabletop. Ma steps up to the edge of the rite,
        frame-left of the altar camera, where her thank-you can land on
        someone the player can see.                                       */
-    step(8.5, () => { stage.tangki.rotation.y = faceFrom(0.35, -0.55, 0.2, 0.15) + Math.PI; });
+    const Y_D1 = faceFrom(0.35, -0.55, 0.2, 0.15) + Math.PI;
+    const Y_D2 = faceFrom(0.2, 0.15, -2.35, -1.75) + Math.PI;
+    step(8.5, () => { stage.tangki.rotation.y = Y_D1; stage.tangPlay('walk', 0.3); });
     tr(8.5, 10.6, k => {
       stage.tangki.position.set(0.35 + (0.2 - 0.35) * k, 0, -0.55 + (0.15 - -0.55) * k);
     }, smoothK);
-    step(10.6, () => { stage.tangki.rotation.y = faceFrom(0.2, 0.15, -2.35, -1.75) + Math.PI; });
+    /* the corner at the table's near end is 115 degrees — a turnaround by
+       any honest measure, so the catwalk take carries it, quickened under
+       the eased start of the second leg (3.2 m in 2.4 s) */
+    turnTo(10.6, Y_D1, Y_D2, 1.6, 'walk', 1.1);
     tr(10.6, 13.0, k => {
       stage.tangki.position.set(0.2 + (-2.35 - 0.2) * k, 0, 0.15 + (-1.75 - 0.15) * k);
     }, smoothK);
-    step(13.0, () => { stage.tangki.rotation.y = faceFrom(-2.35, -1.75, -2.85, -2.15) + Math.PI; });
+    step(13.0, () => {
+      stage.tangki.rotation.y = faceFrom(-2.35, -1.75, -2.85, -2.15) + Math.PI;
+      stage.tangPlay('idle');
+    });
     step(9.0, () => { stage.maPlay('walkstart'); });
     tr(9.0, 13.0, k => {
       stage.ma.position.set(-2.45 + (-2.5 - -2.45) * k, 0, -0.85 + (-1.15 - -0.85) * k);
@@ -1895,28 +2080,23 @@
     yawTo(8.5, 12.5, Y_TBL, Y_ALT, smoothK);
     pitchTo(8.5, 12.5, -0.18, 0.05, smoothK);
 
-    // 13.8-27 the match, the burn, ONE bell — and the room lifts
+    /* 13.6-27 THE RITE AT THE ALTAR — v5.07, to Chad's spec. He reaches
+       up to the altar with the torch take (Unarmed Grab Torch From Wall,
+       4.58 s, played once and HELD on its last frame: the hand up, holding
+       the flame), the match strikes into the reach, the fire takes with a
+       12-second crackle (`noteburn` is exactly that sound), and the altar
+       light lives with it. No paper is shown burning: "it looks very
+       fake". The bell, the room lifting, and Ma's thank-you are as before. */
+    step(13.6, () => { stage.tangPlay('torch', 1, 0.25, true); });
     sfx(13.8, 'matchstrike', 0.85);
     tr(14.0, 15.0, k => { stage.altLight.intensity = 0.9 + 3.6 * k; }, rawK);
-    sfx(15.2, 'noteburn', 0.85);                  // 12.04 s: the whole hold
-    /* the note burns IN WORLD SPACE, hung just off the shelf's front edge
-       and angled down at the camera - laid ON the shelf it was edge-on and
-       occluded by the board (the camera looks UP at a 1.85 m shelf)     */
-    step(15.0, () => {
-      stage.tangki.remove?.(stage.note);
-      stage.homeAltar.parent.add(stage.note);
-      stage.note.position.set(-2.72, 1.80, -2.02);
-      stage.note.rotation.set(-0.35,
-        faceFrom(-2.72, -2.02, ALTCAM.x, ALTCAM.z) + Math.PI, 0);
-    });
+    sfx(15.2, 'noteburn', 0.85);                  // 12.04 s of fire, the whole hold
     pitchTo(15.0, 16.5, 0.05, 0.12, smoothK);     // the eye rises with the flame
     tr(15.2, 24.0, (k, t2) => {
-      const sc = 1 - 0.85 * k;
-      stage.note.scale.set(sc, sc, sc);
-      stage.note.rotation.z = k * 0.6;
       stage.altLight.intensity = 4.5 * (0.85 + Math.sin(t2 * 9.5) * 0.15) * (1 - 0.35 * k);
     }, rawK);
-    step(24.0, () => { stage.note.visible = false; stage.note.scale.set(1, 1, 1); });
+    // the hand comes down once the fire has taken
+    step(21.5, () => { stage.tangPlay('idle', 1, 0.6); });
     sfx(17.5, 'bellring', 0.7);
     /* the flat exhales: the room's fill light lifts through the burn */
     tr(16.0, 24.0, k => { stage.duskFill.intensity = 0.15 + 0.55 * k; }, smoothK);
@@ -1928,9 +2108,9 @@
        turns from the altar to the boy for the lesson, and the camera leans
        slowly in for the length of it - twenty static seconds was a wall. */
     sfx(25.0, 'v5ma2');                           // 2.12 s
-    step(27.5, () => {
-      stage.tangki.rotation.y = faceFrom(-2.35, -1.75, ALTCAM.x, ALTCAM.z) + Math.PI;
-    });
+    // he turns from the altar to the boy — the whole way round, on the take
+    turnTo(27.5, faceFrom(-2.35, -1.75, -2.85, -2.15) + Math.PI,
+           faceFrom(-2.35, -1.75, ALTCAM.x, ALTCAM.z) + Math.PI, 1, 'idle');
     camTo(28.0, 44.5, ALTCAM, { x: -1.62, y: EYE - 0.02, z: -0.74 }, smoothK);
     sfx(28.2, 't5learnD2');                       // 5.56 s
     sfx(35.0, 'v5learnD');                        // 5.15 s

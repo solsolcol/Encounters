@@ -555,6 +555,26 @@ What the baseline contains, by release:
   under the drum and ch5's listener runs the idle at full rate (the old
   0.5× was for the praying loop). Every scene verb drives the group, so no
   timeline moved. Engine seams: zero. docs/V5.06-TANGKI.md.
+- **v5.07** THE TANG-KI MOVES — Chad's five Mixamo takes for the old man
+  (idle, magic attack, catwalk turn, walk in place, grab torch) baked onto
+  his rig beside the two from v5.06, pinned in place, and staged: ch3 rests
+  on the idle and casts the two-handed magic take in scenes A/B/C; ch5
+  walks him on real feet on every glide, turns him on the catwalk take at
+  every real turnaround (a 38° corner is WALKED — a half-turn take on a
+  corner spins him past and back), and remade the burning to Chad's spec:
+  the note vanishes from the table at his lean, he walks to the altar,
+  reaches with the torch take, the fire takes with the crackle that
+  `noteburn` always was, and no paper is shown burning. His height was
+  2.09 m (the rig's top bone is the head JOINT; v5.06 scaled that to a
+  crown) and is 1.87 to the hairpin now. The film's floating note is IN
+  HIS HAND: it rides the right hand bone, and the hand is put where the
+  shot wants it by FREEZING the magic take one fifth in — `tangPlay`'s
+  `at` argument; a take parked on one frame is a pose library. Two laws
+  from the measuring: on this box a clip's end pose is FORCED via
+  `action.time`, never waited for (dt is clamped to 0.05 s); and a fade of
+  0 must be a hard cut that bakes the pose, because a mixer whose rate is
+  `drumBeat` never advances at 0. Credit moved to Chad's Sketchfab old
+  man; sheet v15. docs/V5.07-TANGKI-MOVES.md is the build's memory.
 - **v3.8** real art where there was code: a bought first-person ARM rig
   (`arms.glb`, credited to Fab) replaces the wrist-only hand pack and the
   forearm that was built out of cylinders to cover for it, and the hell

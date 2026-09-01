@@ -1161,3 +1161,52 @@ an altar. Measure the clips before choosing: the idle swings 11° off its
 first frame, the talk 99°. A drum-driven trance needs the 99° take; a man
 listening across a table needs the 11° one at full rate, not half. The
 number decides, not the clip's name.
+
+## A clip's end pose is forced, never waited for (v5.07)
+
+The first probe of the catwalk turn "played the take through" by waiting
+4.2 s and measuring — and reported that a 180° turn had turned him 6°. It
+had not. The engine clamps dt to 0.05 s per frame (`main.js`, and rightly:
+a stalled frame advances, never leaps), and on this GPU-less box a frame
+takes about a second, so four seconds of wall clock is a fifth of a second
+of clip. Nothing about the take was wrong.
+
+Measure a take by SETTING its time: `action.time = clip.duration * k;
+action.paused = true; mixer.update(0)`. That is what `dbg-hand*.mjs` do,
+and it is why `stage.tangActs` is exposed read-only. The same clamp is why
+a hard-cut `tangPlay`/`medPlay` must call `mixer.update(0.0001)` itself:
+at `drumBeat` 0 the mixer's rate is zero and a new action never shows.
+
+## A take parked on one frame is a pose library (v5.07)
+
+"Put the note in his actual hand" needed a hand held up in front of his
+face, and there is no take for that. There is a two-handed spell whose
+frame at 20% has the right hand 0.45 m forward at 1.44 m — sampled across
+the take at ten fractions, not eyeballed — which is exactly where the
+floating note used to hang. Freeze the take there (`tangPlay(..., at)`),
+parent the note to the hand bone, and the insert is a held note. Before
+reaching for another download, sample the takes already in the file.
+
+And when the shot does not change no matter what you do to the object,
+you are not looking at the object. Three edits to the note's orientation
+produced pixel-identical frames (mean difference 2.8/255) before the card
+in his hand was recognised as the robe's cuff with the note inside it.
+Compare the render against the asset's own art; a plane whose edits do
+nothing is hidden, not wrong.
+
+## A cutscene track HOLDS after it ends (v5.07)
+
+`tr(t0, t1, fn)` is re-applied at k = 1 on every frame after t1 — the
+engine's track loop skips a track only before its start, never after its
+end, and later-pushed tracks win. That is what makes a glide's end pose
+stick, and it is load-bearing. It also means a track that writes a
+property a later `step` also writes will WIN over that step, forever: the
+turn helper's yaw track pinned him at ry1 + PI after every turn, and he
+walked to the altar facing backwards. Measured (ry 7.21 where 4.07 was
+staged), not seen — from the altar camera his back reads as a robe.
+
+Two ways out, and the chapter uses the second: write such properties only
+from `step`s, or make the track one-shot (`yawTr` in ch5: it goes inert
+after delivering k = 1 once). Every position glide in every chapter is safe
+because nothing else ever writes those positions until the next glide's
+own track takes over — the hold is exactly the behaviour those want.

@@ -5,17 +5,17 @@ without prompting for each change. This is how it works and how to run it.
 
 ## The sheet
 
-**Master Z's Encounters — GAME TEXT v14 (edit here)** in his Drive
-(id `1Akknk3O7QXCYS6qi6FpS8VnGDJmYKBSy_BlJaYy72FQ` — the **v14** sheet, made
-at v5.05 when the Mixamo credit broadened to cover two whole characters as
-well as the mother's takes. v13 (v5.02's, id
-`1QosBZiLpHEP1Gs-n2dISTiVcfBwIu3b2w1bpH7he5FE`) and everything before it are
-superseded and should not be edited. Provenance, stated plainly: v13 was
-read back in full before v14 was generated, and it matched the code row for
-row — nothing of Chad's was outstanding, so v14 is v13 plus the two reworded
+**Master Z's Encounters — GAME TEXT v15 (edit here)** in his Drive
+(id `1LatA9wmRwKpCYRQ5Jkf7YfsR7TxGX1aeR6VGTLiUmqU` — the **v15** sheet, made
+at v5.07 when the tang-ki's credit moved from the Sketchfab praying man to
+Chad's Sketchfab old man. v14 (v5.05's, id
+`1Akknk3O7QXCYS6qi6FpS8VnGDJmYKBSy_BlJaYy72FQ`) and everything before it are
+superseded and should not be edited. Provenance, stated plainly: v14 was
+read back in full before v15 was generated and matched the code row for
+row — nothing of Chad's outstanding — so v15 is v14 plus two reworded
 credit rows. Whenever a sheet has been in his hands for real time, read it
 back and import FIRST — that is what the rule is for).
-<https://docs.google.com/spreadsheets/d/1Akknk3O7QXCYS6qi6FpS8VnGDJmYKBSy_BlJaYy72FQ/edit>
+<https://docs.google.com/spreadsheets/d/1LatA9wmRwKpCYRQ5Jkf7YfsR7TxGX1aeR6VGTLiUmqU/edit>
 
 Two sheets in one session is the cost of the connector's one real
 limitation, and it is worth restating why: it can READ a sheet and it can
