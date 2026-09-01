@@ -5,17 +5,16 @@ without prompting for each change. This is how it works and how to run it.
 
 ## The sheet
 
-**Master Z's Encounters — GAME TEXT v15 (edit here)** in his Drive
-(id `1LatA9wmRwKpCYRQ5Jkf7YfsR7TxGX1aeR6VGTLiUmqU` — the **v15** sheet, made
-at v5.07 when the tang-ki's credit moved from the Sketchfab praying man to
-Chad's Sketchfab old man. v14 (v5.05's, id
-`1Akknk3O7QXCYS6qi6FpS8VnGDJmYKBSy_BlJaYy72FQ`) and everything before it are
-superseded and should not be edited. Provenance, stated plainly: v14 was
-read back in full before v15 was generated and matched the code row for
-row — nothing of Chad's outstanding — so v15 is v14 plus two reworded
-credit rows. Whenever a sheet has been in his hands for real time, read it
-back and import FIRST — that is what the rule is for).
-<https://docs.google.com/spreadsheets/d/1LatA9wmRwKpCYRQ5Jkf7YfsR7TxGX1aeR6VGTLiUmqU/edit>
+**Master Z's Encounters — GAME TEXT v16 (edit here)** in his Drive
+(id `1CAUB0Y3I5Eu6Ncx7cMJJmXHsWCTthEuq53Mk-mC2ZF4` — the **v16** sheet, made
+at v5.08 for the Vietnamese altar's three credit rows. v15 (v5.07's, id
+`1LatA9wmRwKpCYRQ5Jkf7YfsR7TxGX1aeR6VGTLiUmqU`) and everything before it are
+superseded and should not be edited. Provenance, stated plainly: v15 was
+read back in full before v16 was generated and matched the code row for
+row — nothing of Chad's outstanding — so v16 is v15 plus three rows.
+Whenever a sheet has been in his hands for real time, read it back and
+import FIRST — that is what the rule is for).
+<https://docs.google.com/spreadsheets/d/1CAUB0Y3I5Eu6Ncx7cMJJmXHsWCTthEuq53Mk-mC2ZF4/edit>
 
 Two sheets in one session is the cost of the connector's one real
 limitation, and it is worth restating why: it can READ a sheet and it can

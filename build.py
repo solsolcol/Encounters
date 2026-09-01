@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = '5.07'
+VERSION = '5.08'
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -214,6 +214,13 @@ ASSETS = {
     # she is nobody's first frame, and the chapter plays correctly with her
     # posed until it lands. docs/V5.02-MOTHER-ANIM.md has the bake.
     'motheranim': ('assets/motheranim.glb', True, False),   # ch2, ch5
+    # v5.08: Chad's Vietnamese altar (Sketchfab) — both tiers in the flat
+    # (ch4, ch5), the upper tier alone in the bedroom (ch2); and Master Zav
+    # himself, the 3D figure the equipment screen turns. Neither preloaded:
+    # the altar stands in over its primitive shelf until it lands, and Zav
+    # is fetched the first time the panel opens.
+    'altar': ('assets/altar.glb', True, False),         # ch2, ch4, ch5
+    'zav': ('assets/zav.glb', True, False),             # the equipment screen
 }
 
 # Hosted-only assets: shipped as a URL, never inlined as base64.
@@ -246,7 +253,8 @@ PACK_KEYS = {k for k in ASSETS if k.endswith('pack') or 'pack_' in k}
 # chapter's files are preloaded, so chapter 7's location never slows down
 # chapter 1's first paint.
 SHARED_ASSETS = {'hands', 'ghost', 'logo', 'music', 'audiopack',
-                 'titlevid', 'titlevidwebm'} | PACK_KEYS
+                 'titlevid', 'titlevidwebm',
+                 'zav'} | PACK_KEYS           # v5.08: the equipment screen's figure
 
 
 def chapter_assets(key):

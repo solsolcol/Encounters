@@ -75,7 +75,8 @@ const EMBED = {
   tangki: '__TANGKI_B64__', tangkianim: '__TANGKIANIM_B64__',
   boy: '__BOY_B64__', shrine: '__SHRINE_B64__',
   motheranim: '__MOTHERANIM_B64__',
-  sitclap: '__SITCLAP_B64__', sitangry: '__SITANGRY_B64__'
+  sitclap: '__SITCLAP_B64__', sitangry: '__SITANGRY_B64__',
+  altar: '__ALTAR_B64__', zav: '__ZAV_B64__'
 };
 
 function b64ToBuffer(b64) {
@@ -2835,11 +2836,15 @@ function slotHTML(kind, key, id) {
       aria-label="${def ? itemName(id) : T('slot.' + key, 'empty')}">${inner}${label}</button>`;
 }
 
+/* the two columns beside the figure: his head, neck and RIGHT hand on the
+   viewer's left, his body and LEFT hand on the right. The figure cell in
+   between is never repainted — it holds a live WebGL canvas. */
+const GEAR_LEFT = ['head', 'neck', 'rightHand'], GEAR_RIGHT = ['body', 'leftHand'];
 function invPaint() {
-  const gear = $('invGear'), bag = $('invBag');
-  if (!gear || !bag) return;
-  gear.innerHTML = '<svg class="doll" viewBox="0 0 120 260" aria-hidden="true"><use href="#doll"/></svg>'
-    + GEAR_SLOTS.map(k => slotHTML('gear', k, inv.gear[k])).join('');
+  const gearL = $('gearL'), gearR = $('gearR'), bag = $('invBag');
+  if (!gearL || !gearR || !bag) return;
+  gearL.innerHTML = GEAR_LEFT.map(k => slotHTML('gear', k, inv.gear[k])).join('');
+  gearR.innerHTML = GEAR_RIGHT.map(k => slotHTML('gear', k, inv.gear[k])).join('');
   bag.innerHTML = inv.bag.map((id, i) => slotHTML('bag', String(i), id)).join('');
   // mark what is lifted, and which slots would accept it
   for (const el of invEl().querySelectorAll('.slot')) {
@@ -2951,10 +2956,101 @@ function invPointerUp(e) {
   if (slotGet(p.kind, p.key)) { invLift(p.kind, p.key); invPointerMove(e); }
 }
 
+/* ── MASTER ZAV, in three dimensions (v5.08) ──────────────────────────
+   Chad's Guild Wars screen: the character himself turns in the middle of
+   the panel and the boxes sit around him. A SECOND renderer on its own
+   small canvas — the game's canvas is behind the panel's blur, and a
+   modal figure wants its own lights and its own camera anyway. His model
+   (a static sculpt: no bones, no clips — 40k triangles down from 990k)
+   is fetched the first time the panel opens and kept; until it lands,
+   and on a machine where it never does, the silhouette drawing behind
+   the canvas is the figure. Drag on him to spin him; leave him and he
+   turns on his own. Rendered only while the panel is open.           */
+const zav = { r: null, scene: null, cam: null, pivot: null, model: null,
+              loading: false, raf: 0, spin: 0.35, auto: true, dragX: null, idleT: 0 };
+function zavInit() {
+  const cv = $('zavCanvas');
+  if (!cv || zav.r) return;
+  try {
+    zav.r = new THREE.WebGLRenderer({ canvas: cv, antialias: true, alpha: true,
+                                      powerPreference: 'low-power' });
+  } catch { zav.r = null; return; }
+  zav.r.setPixelRatio(Math.min(devicePixelRatio, 2));
+  zav.r.setClearColor(0x000000, 0);
+  zav.r.outputColorSpace = THREE.SRGBColorSpace;
+  zav.r.toneMapping = THREE.ACESFilmicToneMapping;
+  zav.r.toneMappingExposure = 1.15;
+  zav.scene = new THREE.Scene();
+  zav.cam = new THREE.PerspectiveCamera(30, 1, 0.05, 20);
+  zav.scene.add(new THREE.HemisphereLight(0xe4ecff, 0x2a2420, 1.0));
+  const key = new THREE.DirectionalLight(0xfff0dc, 2.4); key.position.set(1.6, 3.0, 2.6);
+  const rim = new THREE.DirectionalLight(0x63d6c8, 1.3); rim.position.set(-2.2, 2.2, -2.4);
+  zav.scene.add(key, rim);
+  zav.pivot = new THREE.Group();
+  zav.scene.add(zav.pivot);
+  cv.addEventListener('pointerdown', e => {
+    zav.dragX = e.clientX; zav.auto = false; zav.idleT = 0;
+    cv.setPointerCapture?.(e.pointerId);
+  });
+  cv.addEventListener('pointermove', e => {
+    if (zav.dragX === null) return;
+    zav.spin += (e.clientX - zav.dragX) * 0.012;
+    zav.dragX = e.clientX;
+  });
+  const up = () => { zav.dragX = null; };
+  cv.addEventListener('pointerup', up);
+  cv.addEventListener('pointercancel', up);
+}
+function zavLoad() {
+  if (zav.model || zav.loading || !zav.r) return;
+  zav.loading = true;
+  assetBytes('zav').then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
+    rescueTextures(gltf, BUF);
+    const g = gltf.scene;
+    g.traverse(o => { if (o.isMesh) o.frustumCulled = false; });
+    /* size and ground from the MESH — there are no bones to measure — to a
+       man's 1.75 m, feet at the pivot's origin, centred on his own middle */
+    const box = new THREE.Box3().setFromObject(g);
+    const size = box.getSize(new THREE.Vector3());
+    if (!(size.y > 0)) { zav.loading = false; return; }
+    g.scale.setScalar(1.75 / size.y);
+    const b2 = new THREE.Box3().setFromObject(g);
+    const c = b2.getCenter(new THREE.Vector3());
+    g.position.set(-c.x, -b2.min.y, -c.z);
+    zav.pivot.add(g);
+    zav.model = g;
+    zav.loading = false;
+    $('gearFig')?.classList.add('has3d');
+  }, () => { zav.loading = false; })).catch(() => { zav.loading = false; });
+}
+function zavFrame() {
+  if (!inv.open || !zav.r) { zav.raf = 0; return; }
+  zav.raf = requestAnimationFrame(zavFrame);
+  const cv = zav.r.domElement;
+  const w = cv.clientWidth, h = cv.clientHeight;
+  if (!w || !h) return;
+  const pr = zav.r.getPixelRatio();
+  if (cv.width !== Math.round(w * pr) || cv.height !== Math.round(h * pr)) {
+    zav.r.setSize(w, h, false);
+    zav.cam.aspect = w / h;
+    zav.cam.updateProjectionMatrix();
+  }
+  if (!zav.auto) { zav.idleT += 1; if (zav.idleT > 240) zav.auto = true; }   // four seconds after a spin, he turns again
+  if (zav.auto) zav.spin += 0.006;
+  zav.pivot.rotation.y = zav.spin;
+  /* 30 degrees of lens at 3.6 m sees 1.93 m at the figure: the whole man
+     with a little air, whatever the panel's width */
+  zav.cam.position.set(0, 0.98, 3.6);
+  zav.cam.lookAt(0, 0.88, 0);
+  zav.r.render(zav.scene, zav.cam);
+}
+
 function invOpen() {
   if (inv.open || state !== 'play') return;   // the bag belongs to the walk, not the cards
   inv.open = true;
   invEl().classList.remove('hide');
+  zavInit(); zavLoad();
+  if (!zav.raf) zav.raf = requestAnimationFrame(zavFrame);
   document.body.classList.add('invopen');   // the round buttons step aside
   $('invBtn')?.classList.add('open');
   $('invHint').textContent = HAS_TOUCH ? T('inv.hintTouch') : T('inv.hintDesktop');
@@ -3012,8 +3108,11 @@ addEventListener('keydown', e => {
     if (inv.sel) inv.held ? invDropAt(inv.sel.kind, inv.sel.key) : invLift(inv.sel.kind, inv.sel.key);
     return;
   }
-  const step = { ArrowLeft: -1, ArrowRight: 1,
-                 ArrowUp: i >= bagStart ? -cols : -3, ArrowDown: i >= bagStart ? cols : 3 }[e.code];
+  /* the worn slots are two columns beside the figure (three left, two
+     right, in DOM order): up and down walk a column, left and right hop
+     between them; the bag is a grid of five */
+  const step = { ArrowLeft: i >= bagStart ? -1 : -3, ArrowRight: i >= bagStart ? 1 : 3,
+                 ArrowUp: i >= bagStart ? -cols : -1, ArrowDown: i >= bagStart ? cols : 1 }[e.code];
   if (step === undefined) return;
   e.preventDefault();
   if (i < 0) i = 0; else i = Math.max(0, Math.min(slots.length - 1, i + step));

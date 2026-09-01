@@ -128,26 +128,31 @@ body.invopen .soundBtn{display:none}
   font-family:var(--ui);font-size:.92rem;padding:7px 13px;cursor:pointer;
   border-radius:4px}
 .invClose:hover,.invClose:focus-visible{color:var(--bone);border-color:var(--sodium);outline:none}
-/* the figure: slots sit ON the body, Diablo style. The silhouette is a
-   backdrop drawing; each slot is pinned to the anatomy it dresses. He
-   faces the player, so his RIGHT hand is the viewer's left. */
-.invGear{position:relative;height:264px;margin-bottom:6px}
-.invGear .doll{position:absolute;left:50%;top:0;height:100%;
+/* the figure: MASTER ZAV HIMSELF, in three dimensions, turning in the
+   middle (v5.08, Chad's Guild Wars screen). The worn slots flank him in
+   two columns — his right hand's box on the viewer's left, because he
+   faces the player. The silhouette drawing stays behind the canvas as the
+   picture until his model lands, and as the picture on a machine that
+   never gets it. */
+.invGear{display:grid;grid-template-columns:60px 1fr 60px;gap:10px;
+  height:280px;margin-bottom:6px}   /* 280: the bag's third row stays on a 760px screen */
+.gearCol{display:flex;flex-direction:column;justify-content:space-evenly;
+  align-items:center}
+/* an explicit height, not aspect-ratio: in a flex column the ratio-derived
+   height is not definite, the icon's 52% falls back to the SVG's 150px
+   intrinsic height, and the box grows to hold it */
+.gearCol .slot{width:56px;height:56px;max-width:none;flex:0 0 auto}
+.gearFig{position:relative;border:1px solid #262D39;border-radius:8px;
+  overflow:hidden;
+  background:radial-gradient(ellipse at 50% 88%,rgba(99,214,200,.10),transparent 60%),
+             linear-gradient(180deg,#0B0E13,#070A0E)}
+.gearFig .doll{position:absolute;left:50%;top:5%;height:90%;
   transform:translateX(-50%);color:#404E68;pointer-events:none;
   filter:drop-shadow(0 0 14px rgba(99,214,200,.10))}
-.invGear .slot{position:absolute;width:56px;max-width:none;
-  background:rgba(10,13,18,.66)}   /* translucent: the body reads through */
-.invGear .slot[data-key="head"]{left:50%;top:2px;transform:translateX(-50%)}
-.invGear .slot[data-key="neck"]{left:50%;top:72px;transform:translateX(-50%)}
-.invGear .slot[data-key="body"]{left:50%;top:142px;transform:translateX(-50%)}
-.invGear .slot[data-key="rightHand"]{left:calc(50% - 148px);top:84px}
-.invGear .slot[data-key="leftHand"]{left:calc(50% + 92px);top:84px}
-/* a hairline ties each hand slot to the hand it dresses */
-.invGear .slot[data-key="rightHand"]::after,
-.invGear .slot[data-key="leftHand"]::after{content:"";position:absolute;
-  top:50%;width:30px;border-top:1px dashed #333D4F}
-.invGear .slot[data-key="rightHand"]::after{left:100%}
-.invGear .slot[data-key="leftHand"]::after{right:100%}
+.gearFig.has3d .doll{display:none}
+.gearFig canvas{position:absolute;inset:0;width:100%;height:100%;
+  touch-action:none;cursor:grab}
+.gearFig canvas:active{cursor:grabbing}
 .invBag{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-top:8px;
   justify-items:center}   /* 15 slots: three rows of five */
 
@@ -196,7 +201,8 @@ body.invopen .soundBtn{display:none}
   #inv{padding:10px}
   #inv .invPanel{padding:13px 13px 11px}
   .invHead{margin-bottom:9px}
-  .invBag{gap:6px} .invGear{gap:6px}
+  .invBag{gap:6px} .invGear{gap:6px;grid-template-columns:54px 1fr 54px;height:260px}
+  .gearCol .slot{width:54px;height:54px}
   .slot{max-width:54px}          /* all four bag rows fit a 664px screen */
   .invSub{margin:7px 0 2px}
   .invGear{height:224px}
@@ -870,6 +876,12 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
            target="_blank" rel="noopener noreferrer" data-t="credits.shrineLink">sketchfab.com &middot; seated-shrine-figure-with-sword-thailand</a>
       </li>
       <li>
+        <span class="credWhat" data-t="credits.altar">The home altars</span>
+        <span class="credWho" data-t="credits.altarWho">Vietnamese altar &middot; Sketchfab</span>
+        <a href="https://sketchfab.com/3d-models/vietnamese-altar-5d65b1d0919c4394808727f461773c11"
+           target="_blank" rel="noopener noreferrer" data-t="credits.altarLink">sketchfab.com &middot; vietnamese-altar</a>
+      </li>
+      <li>
         <span class="credWhat" data-t="credits.anim">Animation and two of the crowd</span>
         <span class="credWho" data-t="credits.animWho">The mother&rsquo;s takes, and two seated characters &middot; Mixamo</span>
         <a href="https://www.mixamo.com/"
@@ -989,7 +1001,14 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
     </div>
     <div class="invGrids">
       <div class="invSub" data-t="inv.worn">Worn</div>
-      <div class="invGear" id="invGear"></div>
+      <div class="invGear" id="invGear">
+        <div class="gearCol" id="gearL"></div>
+        <div class="gearFig" id="gearFig">
+          <svg class="doll" viewBox="0 0 120 260" aria-hidden="true"><use href="#doll"/></svg>
+          <canvas id="zavCanvas" aria-hidden="true"></canvas>
+        </div>
+        <div class="gearCol" id="gearR"></div>
+      </div>
       <div class="invSub" data-t="inv.carried">Carried</div>
       <div class="invBag" id="invBag"></div>
     </div>

@@ -575,6 +575,19 @@ What the baseline contains, by release:
   0 must be a hard cut that bakes the pose, because a mixer whose rate is
   `drumBeat` never advances at 0. Credit moved to Chad's Sketchfab old
   man; sheet v15. docs/V5.07-TANGKI-MOVES.md is the build's memory.
+- **v5.08** THE HOME ALTARS, AND MASTER ZAV IN THE ROUND — Chad's
+  Vietnamese altar (Sketchfab) stands in the flat (ch4/ch5) as both tiers,
+  cabinet and shrine, and hangs in the bedroom (ch2) as the shrine alone;
+  which mesh is which tier is MEASURED (the lower centre is the cabinet),
+  the offerings are re-seated on surfaces read from the model's own box,
+  and the cabinet's box joins the blockers by reference. And the equipment
+  screen is Chad's Guild Wars screen: Master Zav's own model (990k tris to
+  40k) turns in a second renderer's canvas in the middle of the panel, the
+  five worn boxes flank him (his right hand on the viewer's left), and the
+  v3.1 drag/tap/double-tap/keyboard model is untouched. Traps in LEARNINGS:
+  aspect-ratio in a flex column is not a definite height; a shelf tier's
+  board is where its own cups are, not where its box starts. Sheet v16.
+  docs/V5.08-ALTAR-AND-DOLL.md is the build's memory.
 - **v3.8** real art where there was code: a bought first-person ARM rig
   (`arms.glb`, credited to Fab) replaces the wrist-only hand pack and the
   forearm that was built out of cylinders to cover for it, and the hell

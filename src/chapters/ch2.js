@@ -113,7 +113,7 @@
        new, and the most Singaporean thing in the shot. hellnote is the note
        itself, sitting on the desk where he left it: the thread out of chapter
        one, and also what the engine's in-hand note prop is textured from. */
-    assets: ['hdb', 'hellnote', 'mother', 'motheranim'],
+    assets: ['hdb', 'hellnote', 'mother', 'motheranim', 'altar'],
     noteArt: 'hellnote',
 
     /* No `voiceLine`. Chapter 1 opens on silence and gives him a line three
@@ -917,12 +917,62 @@
     const jossTips = [candleTip];             // the engine's fire flicker drives these
     // two oranges, because there are always two
     const fruitMat = new THREE.MeshStandardMaterial({ color: 0xd8791c, roughness: 0.72 });
+    const altFruit = [];
     for (const fz of [-0.13, 0.13]) {
       const f = new THREE.Mesh(new THREE.SphereGeometry(0.038, 12, 10), fruitMat);
       f.position.set(-0.02, 1.716, fz);
       f.scale.y = 0.88;
       altar.add(f);
+      altFruit.push(f);
     }
+
+    /* v5.08: CHAD'S VIETNAMESE ALTAR, the UPPER TIER ONLY — "for the bedroom
+       altar, use only the top one." The same file the flat hangs whole
+       (ch4/ch5), scaled by the same rule (its full height to 2.15 m, so the
+       shrine is the same object in both homes), with the cabinet hidden and
+       the shrine hung on this wall. The tier is a shelf BOARD with carved
+       brackets below it and the deity's picture above: its bounding box
+       starts at the bracket tips, and the board — where things stand —
+       sits 0.42 m above that (measured in the flat, where the cups on it
+       show where it is). Hung so the board lands at 1.67, the old shelf's
+       height. The candle and the oranges are re-seated on it. It loads
+       over the shelf; a failed download leaves the shelf. */
+    const ALT_H = 2.15, ALT_HANG = 1.25, ALT_BOARD = 0.42;
+    const ALT_YAW = -Math.PI / 2;                // the file's +z front turned to -x, into the room
+    assetBytes('altar').then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
+      if (!alive) return;
+      rescueTextures(gltf, BUF);
+      const g = gltf.scene;
+      const meshes = [];
+      g.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.receiveShadow = true; meshes.push(o); } });
+      g.rotation.y = ALT_YAW;
+      g.updateMatrixWorld(true);
+      const size = new THREE.Box3().setFromObject(g).getSize(new THREE.Vector3());
+      if (!(size.y > 0)) return;
+      g.scale.setScalar(ALT_H / size.y);
+      g.updateMatrixWorld(true);
+      const tiers = meshes.map(m => ({ m, box: new THREE.Box3().setFromObject(m) }))
+        .sort((a, b) => (a.box.min.y + a.box.max.y) - (b.box.min.y + b.box.max.y));
+      tiers[0].m.visible = false;                // the cabinet stays in the flat
+      const top = tiers[tiers.length - 1].box;   // the shrine, in the model's frame
+      const wall = R.x - R.wall * 0.5;
+      // hang it: back to the +x wall, floor board at ALT_HANG, centred on the shelf's z
+      g.position.set(wall - top.max.x - altar.position.x, ALT_HANG - top.min.y,
+                     ALTAR.z - (top.min.z + top.max.z) / 2 - altar.position.z);
+      altar.add(g);
+      g.updateMatrixWorld(true);
+      const b = new THREE.Box3().setFromObject(tiers[tiers.length - 1].m);   // world, hung
+      const fx = b.min.x + 0.10 - altar.position.x;   // its open front is the room side (-x)
+      const fz = (b.min.z + b.max.z) / 2 - altar.position.z;
+      const board = b.min.y + ALT_BOARD;
+      shelf.visible = false;
+      candleBody.position.set(fx, board + 0.07, fz);
+      candleTip.position.set(fx, board + 0.155, fz);
+      altFruit[0].position.set(fx, board + 0.034, fz - 0.11);
+      altFruit[1].position.set(fx, board + 0.034, fz + 0.11);
+      fireLight.position.set(fx + altar.position.x - 0.02, board + 0.20, fz + altar.position.z);
+      redoShadows();
+    }, () => {})).catch(() => {});
 
     /* ------------------------------------------------------ the ceiling fan */
     const fan = new THREE.Group();

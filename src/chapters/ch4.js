@@ -114,7 +114,7 @@
        chapter to reuse it, which is the point: all of this happens at one
        block. seat is chapter 3's red plastic chair, back for one shot in
        the flashback. NO hellnote: it is not seen in this chapter.        */
-    assets: ['hdb', 'seat'],
+    assets: ['hdb', 'seat', 'altar'],
 
     /* The room's own sound: an evening, not a night — crickets and traffic
        far down, the clock, the fan. The explore music sits a little lower
@@ -718,12 +718,67 @@
     homeAltar.add(altTip);
     const jossTips = [altTip];
     const fruitMat4 = new THREE.MeshStandardMaterial({ color: 0xd8791c, roughness: 0.72 });
+    const altFruit = [];
     for (const fz of [-0.1, -0.02]) {
       const f = new THREE.Mesh(new THREE.SphereGeometry(0.034, 12, 10), fruitMat4);
       f.position.set(0.02, 1.755, fz);
       f.scale.y = 0.88;
       homeAltar.add(f);
+      altFruit.push(f);
     }
+
+    /* v5.08: CHAD'S VIETNAMESE ALTAR (Sketchfab) replaces the shelf — both
+       tiers: the cabinet on the floor against the kitchen-corner wall, the
+       shrine hung above it. It loads over the primitives; on arrival the
+       slab hides, and the lamp, its flame and the oranges are RE-SEATED on
+       the lower tier's top surface, measured from the model rather than
+       assumed. Which mesh is which tier is measured too: the one whose
+       centre sits lower is the cabinet. Its box joins the blockers, by
+       reference, so the player cannot walk through a piece of furniture
+       that arrived after the walls were counted. */
+    const ALT_H = 2.15;                          // floor to the top of the shrine
+    const ALT_YAW = Math.PI / 2;                 // the file's +z front turned to +x, into the room
+    assetBytes('altar').then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
+      if (!alive) return;
+      rescueTextures(gltf, BUF);
+      const g = gltf.scene;
+      const meshes = [];
+      g.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.receiveShadow = true; meshes.push(o); } });
+      g.rotation.y = ALT_YAW;
+      g.updateMatrixWorld(true);
+      const box = new THREE.Box3().setFromObject(g);
+      const size = box.getSize(new THREE.Vector3());
+      if (!(size.y > 0)) return;
+      const s = ALT_H / size.y;
+      g.scale.setScalar(s);
+      g.updateMatrixWorld(true);
+      const b2 = new THREE.Box3().setFromObject(g);
+      /* ground it, back it to the wall, centre it on the old shelf's z —
+         all in WORLD terms, then into the group's own frame */
+      const wall = -R.x + R.wall * 0.5;
+      g.position.set(wall - b2.min.x - homeAltar.position.x, -b2.min.y,
+                     -2.15 - (b2.min.z + b2.max.z) / 2 - homeAltar.position.z);
+      homeAltar.add(g);
+      g.updateMatrixWorld(true);
+      // the tiers, by height
+      const tiers = meshes.map(m => ({ m, box: new THREE.Box3().setFromObject(m) }))
+        .sort((a, b) => (a.box.min.y + a.box.max.y) - (b.box.min.y + b.box.max.y));
+      const lower = tiers[0].box;
+      const topY = lower.max.y;                  // the cabinet's top, world
+      const fx = lower.max.x - 0.14 - homeAltar.position.x;   // near the front edge
+      const fz = (lower.min.z + lower.max.z) / 2 - homeAltar.position.z;
+      altShelf.visible = false;
+      altBody.position.set(fx, topY + 0.06, fz + 0.06);
+      altTip.position.set(fx, topY + 0.135, fz + 0.06);
+      altFruit[0].position.set(fx + 0.02, topY + 0.03, fz - 0.10);
+      altFruit[1].position.set(fx + 0.02, topY + 0.03, fz - 0.02);
+      // the cabinet is furniture: a column the walk cannot enter
+      const bb = new THREE.Box3(
+        new THREE.Vector3(lower.min.x - 0.10, 0, lower.min.z - 0.10),
+        new THREE.Vector3(lower.max.x + 0.14, 1.40, lower.max.z + 0.10));
+      BLK.push(bb);
+      redoShadows();
+    }, () => {})).catch(() => {});
 
     /* ------------------------------------------------------ the ceiling fan */
     const fan = new THREE.Group();
@@ -1338,8 +1393,9 @@
       S = null;
     }
 
+    const BLK = blockers();                    // by reference: the altar adds its box on arrival
     return (S = {
-      world, noteTex, blockers: blockers(),
+      world, noteTex, blockers: BLK,
       ready: () => hdbReady,
       pile: {
         pos: PILE_POS, radius: INTERACT_R, group: chairTh,

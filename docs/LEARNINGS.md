@@ -1210,3 +1210,25 @@ from `step`s, or make the track one-shot (`yawTr` in ch5: it goes inert
 after delivering k = 1 once). Every position glide in every chapter is safe
 because nothing else ever writes those positions until the next glide's
 own track takes over — the hold is exactly the behaviour those want.
+
+## aspect-ratio in a flex column is not a definite height (v5.08)
+
+The worn slots moved from absolute positions to two flex columns and came
+out 150 px tall. Nothing set a height; `aspect-ratio: 1` on a 56 px-wide
+box should have. But in a flex column the ratio-derived height is not
+DEFINITE for percentage resolution, so the icon's `height: 52%` fell back
+to an inline SVG's intrinsic 150 px, and a flex item's `min-height: auto`
+grew the box to hold its content. The absolute boxes never showed this
+because an absolutely positioned box's ratio height IS definite.
+
+Give such a box an explicit height. Aspect ratio is a layout hint, not a
+promise anything inside it can measure against.
+
+## A tier's board is where its own cups are (v5.08)
+
+The bedroom shrine's candle and oranges floated under the shelf, at the
+tips of its carved brackets — because "the bottom of the tier" was read as
+the bottom of its bounding box, and a wall shelf's box starts at the
+bracket tips, 0.42 m below the board things actually stand on. The model
+itself said where the board was: its cups sit on it. Read a surface off
+the things the model already puts there, not off the box.
