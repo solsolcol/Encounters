@@ -830,7 +830,7 @@
     let maMixer = null;
     /* her four retargeted clips (see ch2 for the bake). Same tiny interface:
        a scene names a clip, a negative rate runs it backwards. */
-    let maActs = null, maCur = null, maIdleBuiltin = null;
+    let maActs = null, maCur = null, maIdleBuiltin = null, maHead = null;
     function maPlay(name, ts = 1) {
       const nx = maActs && maActs[name];
       if (!nx || (nx === maCur && nx.timeScale === ts)) return;
@@ -899,6 +899,7 @@
           if (/Toe|Foot/.test(o.name)) toe2 = Math.min(toe2, v2.y);
         });
         if (isFinite(toe2)) g.position.y -= toe2;
+        g.traverse(o => { if (o.isBone && HEAD_RE.test(o.name) && !maHead) maHead = o; });
       }, () => {})).catch(() => {});
     }, () => {})).catch(() => {});
 
@@ -912,7 +913,25 @@
     const note = new THREE.Mesh(new THREE.PlaneGeometry(0.15, 0.09), noteMat);
     const NOTE_HOME = {
       parent: table,
-      pos: new THREE.Vector3(0.18, TABLE.top + 0.004, -0.05),
+      /* -0.28, not 0.18: the note sits at the tang-ki's END of the table.
+         He stands at the head of it, and at the old spot he had to WALK to
+         the note — a walk with no clean lane, because the dining set is
+         ringed by its own four chairs and every route clipped one. Moving
+         the paper 46 cm is the fix that removes the problem instead of
+         steering around it: he reaches it from where he already stands. */
+      /* local (-0.32, +0.33) = world (0.98, -0.27): his end of the table AND
+         its room-facing edge. Both matter. West so he reaches it from the
+         head of the table without a walk the chairs leave no lane for;
+         room-side so the player can SEE it — parked deeper in it sat behind
+         the teapot from every angle anyone approaches from. Clear of the
+         pot (0.23) and both cups (0.29). */
+      /* +0.026, not +0.004. TABLE.top is the slab's CENTRE and the slab is
+         45 mm thick, so its surface is at TABLE.top + 0.0225 — the note has
+         been sitting 19 mm INSIDE the wood since this chapter shipped, which
+         is why "the note lies on the table between you" was a line about an
+         object nobody could see. The cups (+0.048) and the pot (+0.085)
+         cleared it by luck of being taller things. */
+      pos: new THREE.Vector3(-0.32, TABLE.top + 0.026, 0.33),
       rot: new THREE.Euler(-Math.PI / 2, 0, 0.5)
     };
     note.position.copy(NOTE_HOME.pos);
@@ -1056,12 +1075,53 @@
        listening to a house), hers at a domestic idle. tangBow is a scene's
        own addition, laid on the head bone AFTER the mixer each frame so it
        survives the clip — the ch3/v4.8 re-lay law.                      */
+    /* THE LOOK (v5.03). A person whose head never moves is the deadest
+       thing in a room, and both of these stand still for minutes at a time.
+       In PLAY the camera IS the boy, so they track it: yaw and pitch on the
+       head, clamped to what a neck actually does, eased so it follows
+       instead of snapping, and laid on AFTER the mixer like every other
+       additive here. Past the clamp plus a margin — the player behind her —
+       it returns to neutral rather than craning, because a head screwed
+       round backwards is worse than a still one.
+       CUTSCENES DEFAULT TO OFF and opt in per scene: a film cuts to cameras
+       that are not a person, and this chapter's own hard cut goes UNDER the
+       dining table. A head that snapped to look at that would be a horror
+       of a different kind.                                              */
+    const _lookP = new THREE.Vector3(), _lookH = new THREE.Vector3();
+    let lookOverride = null;            // a scene may force it on (1) or off (0)
+    const lookWeight = () =>
+      lookOverride !== null ? lookOverride : (getState() === 'play' ? 1 : 0);
+    function headLook(head, group, st, dt, w) {
+      if (!head) return;
+      camera.getWorldPosition(_lookP);
+      head.getWorldPosition(_lookH);
+      const dx = _lookP.x - _lookH.x, dz = _lookP.z - _lookH.z;
+      const flat = Math.hypot(dx, dz);
+      let dy = Math.atan2(dx, dz) - group.rotation.y;
+      dy = Math.atan2(Math.sin(dy), Math.cos(dy));        // wrap to +-PI
+      const YAW = 0.75, PIT = 0.34;
+      const wy = Math.abs(dy) > YAW + 0.9 ? 0 : Math.max(-YAW, Math.min(YAW, dy));
+      const wx = flat < 0.05 ? 0
+        : Math.max(-PIT, Math.min(PIT, Math.atan2(_lookP.y - _lookH.y, flat)));
+      const k = Math.min(1, dt * 3.5);
+      st.y += (wy * w - st.y) * k;
+      st.x += (wx * w - st.x) * k;
+      head.rotation.y += st.y;
+      head.rotation.x -= st.x;
+    }
+    const tangLook = { x: 0, y: 0 }, maLook = { x: 0, y: 0 };
+
     function castUpdate(dt) {
+      const w = lookWeight();
       if (tangMixer) {
         tangMixer.update(dt * 0.5);
         if (tangHead && tangBow) tangHead.rotation.x += tangBow;
+        headLook(tangHead, tangki, tangLook, dt, w);
       }
-      if (maMixer) maMixer.update(dt * 0.9);
+      if (maMixer) {
+        maMixer.update(dt * 0.9);
+        headLook(maHead, ma, maLook, dt, w);
+      }
     }
 
     function updateNotes(dt, t) {
@@ -1151,6 +1211,7 @@
       tangki.position.copy(s.tangPos); tangki.rotation.y = s.tangRot;
       ma.position.copy(s.maPos); ma.rotation.y = s.maRot;
       maPlay('idle');
+      lookOverride = null;
       if (s.noteParent && note.parent !== s.noteParent) s.noteParent.add(note);
       note.position.copy(s.notePos);
       note.rotation.copy(s.noteRot);
@@ -1183,6 +1244,8 @@
       ma.position.set(-2.45, 0, -0.85);
       ma.rotation.y = 1.2;
       maPlay('idle');
+      lookOverride = null;
+      tangLook.x = tangLook.y = maLook.x = maLook.y = 0;
       table.add(note);
       note.position.copy(NOTE_HOME.pos);
       note.rotation.copy(NOTE_HOME.rot);
@@ -1201,11 +1264,28 @@
         b.expandByScalar(0.20);
         out.push(b);
       };
+      /* FURNITURE IS A COLUMN, and that needs saying out loud, because the
+         reason it was walk-through is a two-centimetre miss. `collide()`
+         samples ONE point, at y = 1.0. A tabletop sits at 0.75 and is thin,
+         so even with the wall padding its box tops out at 0.98 — just under
+         the probe. The sofa (0.62) and the chair seats (0.68) miss by more.
+         Every one of them was solid in the list and solid nowhere else.
+         A piece of furniture obstructs you at whatever height you meet it,
+         so its blocker runs FLOOR TO ABOVE THE PROBE. The padding is
+         smaller than a wall's: you brush past a chair, never past a wall. */
+      const solid = o => {
+        o.updateWorldMatrix(true, false);
+        const b = new THREE.Box3().setFromObject(o);
+        b.expandByScalar(0.14);
+        b.min.y = 0;
+        b.max.y = Math.max(b.max.y, 1.40);
+        out.push(b);
+      };
       for (const w of walls) box(w);
-      box(tableTop); box(sofaBase); box(tvConsole); box(tvBody);
-      box(ptTop); box(shoeRack); box(doorLeaf);
+      solid(tableTop); solid(sofaBase); solid(tvConsole); solid(tvBody);
+      solid(ptTop); solid(shoeRack); box(doorLeaf);
       box(tangProxy); box(maProxy);              // two people are solid
-      for (const c of chairs) box(c.children[0]);
+      for (const c of chairs) solid(c);          // the whole chair, not the seat slab
       return out;
     }
 
@@ -1256,6 +1336,8 @@
       ceilLight, lampLight, duskFill, outLight, fan,
       hall, bedDoor, maDoor, lateMat, litWins,
       tangki, tangProxy, ma, note, NOTE_HOME, cup3, maPlay,
+      set castLook(v) { lookOverride = v; },
+      get castLook() { return lookOverride; },
       get tangBow() { return tangBow; },
       set tangBow(v) { tangBow = v; },
       CHAIR, TABLE, R, WIN, KDOOR, CORR,
@@ -1462,7 +1544,8 @@
     tr(23.0, 27.0, k => {
       stage.ma.position.set(-1.45 + (-2.45 - -1.45) * k, 0, 1.55 + (-0.85 - 1.55) * k);
     }, smoothK);
-    step(27.0, () => { stage.ma.rotation.y = 1.2; stage.maPlay('idle'); });
+    step(26.0, () => { stage.maPlay('walkstop'); });   // she arrives, she stops
+    step(27.4, () => { stage.ma.rotation.y = 1.2; stage.maPlay('idle'); });
     step(25.8, () => { stage.tangki.rotation.y = faceFrom(CHX - 0.55, CHZ + 0.4, CHX, CHZ) + Math.PI; });
     camTo(24.2, 24.2, LOWCAM, LOWCAM);            // a hard cut down
     yawTo(24.2, 24.2, Y_LOW, Y_LOW);
@@ -1591,7 +1674,7 @@
     /* from the SOFA side: the old spot (0.55, 0.85) had the tang-ki dead on
        the line to the note, and his robe hid the scene's whole subject */
     const AT_TABLE = { x: 1.85, y: EYE, z: 0.75 };
-    const Y_NOTE = faceFrom(AT_TABLE.x, AT_TABLE.z, 1.45, -0.65);
+    const Y_NOTE = faceFrom(AT_TABLE.x, AT_TABLE.z, 0.98, -0.27);
 
     step(0, () => { ghostOpacity(0); handsRoot.visible = false; });
     // he was already watching before you decided anything
@@ -1651,7 +1734,7 @@
     const { tr, step, sfx, fade, camTo, yawTo, pitchTo, faceFrom, rawK, smoothK,
             duck, stage, camera, ghostOpacity, handsRoot } = api;
     const AT_TABLE = { x: 1.7, y: EYE, z: 0.6 };  // sofa side: the note in the clear
-    const Y_NOTE = faceFrom(AT_TABLE.x, AT_TABLE.z, 1.45, -0.65);
+    const Y_NOTE = faceFrom(AT_TABLE.x, AT_TABLE.z, 0.98, -0.27);
     const TO_WIN = faceFrom(0.2, -0.9, stage.WIN.x, -stage.R.z);
 
     step(0, () => { ghostOpacity(0); handsRoot.visible = false; });
@@ -1711,7 +1794,7 @@
     const { tr, step, sfx, fade, camTo, yawTo, pitchTo, faceFrom, rawK, smoothK,
             duck, stage, ghostOpacity, handsRoot } = api;
     const WATCH = { x: 0.35, y: EYE, z: 0.5 };
-    const Y_TBL = faceFrom(WATCH.x, WATCH.z, 1.45, -0.65);
+    const Y_TBL = faceFrom(WATCH.x, WATCH.z, 0.98, -0.27);
     const ALTCAM = { x: -1.45, y: EYE, z: -0.55 };
     const Y_ALT = faceFrom(ALTCAM.x, ALTCAM.z, -2.85, -2.15);
 
@@ -1720,14 +1803,18 @@
     yawTo(0, 2.4, s.yawRot, Y_TBL, smoothK);
     pitchTo(0, 2.4, s.pitchX, -0.18, smoothK);
 
-    // 2-5.3 the tang-ki comes round to the note's edge of the table
-    step(2.0, () => { stage.tangki.rotation.y = faceFrom(0.35, -0.55, 1.5, -0.02) + Math.PI; });
-    tr(2.0, 5.0, k => {
-      stage.tangki.position.set(0.35 + (1.5 - 0.35) * k, 0, -0.55 + (-0.02 - -0.55) * k);
-    }, smoothK);
+    /* 2-5.3 he takes the note from where he stands. There is no walk here
+       and there must not be: the dining set is ringed by its own four
+       chairs, and every lane to the old note spot went through one of them
+       or through the tabletop. The note now lies at his end (NOTE_HOME),
+       0.68 m away — a lean, which is what taking something off a table is. */
+    step(2.0, () => {
+      stage.tangki.rotation.y = faceFrom(0.35, -0.55, 0.98, -0.27) + Math.PI;
+    });
+    tr(2.0, 4.6, k => { stage.tangBow = 0.20 * Math.sin(Math.PI * k); }, rawK);
     sfx(4.8, 'notepull', 0.5);
     step(5.2, () => {
-      stage.tangki.rotation.y = faceFrom(1.5, -0.02, 1.45, -0.65) + Math.PI;
+      stage.tangBow = 0;
       stage.tangki.add(stage.note);
       stage.note.position.set(0.02, 1.2, 0.3);     // pressed to the clasp
       stage.note.rotation.set(0.4, 0.3, 0.1);
@@ -1738,9 +1825,9 @@
        line runs THROUGH the tabletop. Ma steps up to the edge of the rite,
        frame-left of the altar camera, where her thank-you can land on
        someone the player can see.                                       */
-    step(8.5, () => { stage.tangki.rotation.y = faceFrom(1.5, -0.02, 0.2, 0.15) + Math.PI; });
+    step(8.5, () => { stage.tangki.rotation.y = faceFrom(0.35, -0.55, 0.2, 0.15) + Math.PI; });
     tr(8.5, 10.6, k => {
-      stage.tangki.position.set(1.5 + (0.2 - 1.5) * k, 0, -0.02 + (0.15 - -0.02) * k);
+      stage.tangki.position.set(0.35 + (0.2 - 0.35) * k, 0, -0.55 + (0.15 - -0.55) * k);
     }, smoothK);
     step(10.6, () => { stage.tangki.rotation.y = faceFrom(0.2, 0.15, -2.35, -1.75) + Math.PI; });
     tr(10.6, 13.0, k => {

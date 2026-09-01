@@ -1289,10 +1289,27 @@
         b.expandByScalar(0.20);
         out.push(b);
       };
+      /* FURNITURE IS A COLUMN, and that needs saying out loud, because the
+         reason it was walk-through is a two-centimetre miss. `collide()`
+         samples ONE point, at y = 1.0. A tabletop sits at 0.75 and is thin,
+         so even with the wall padding its box tops out at 0.98 — just under
+         the probe. The sofa (0.62) and the chair seats (0.68) miss by more.
+         Every one of them was solid in the list and solid nowhere else.
+         A piece of furniture obstructs you at whatever height you meet it,
+         so its blocker runs FLOOR TO ABOVE THE PROBE. The padding is
+         smaller than a wall's: you brush past a chair, never past a wall. */
+      const solid = o => {
+        o.updateWorldMatrix(true, false);
+        const b = new THREE.Box3().setFromObject(o);
+        b.expandByScalar(0.14);
+        b.min.y = 0;
+        b.max.y = Math.max(b.max.y, 1.40);
+        out.push(b);
+      };
       for (const w of walls) box(w);
-      box(tableTop); box(sofaBase); box(tvConsole); box(tvBody);
-      box(ptTop); box(shoeRack); box(doorLeaf);
-      for (const c of chairs) box(c.children[0]);
+      solid(tableTop); solid(sofaBase); solid(tvConsole); solid(tvBody);
+      solid(ptTop); solid(shoeRack); box(doorLeaf);
+      for (const c of chairs) solid(c);          // the whole chair, not the seat slab
       return out;
     }
 

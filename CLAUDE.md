@@ -490,6 +490,24 @@ What the baseline contains, by release:
   to the neck at -0.79 m, so both chapters RE-GROUND after the swap. The
   procedural head-nod survives as the fallback when the clips do not load.
   Mixamo credited in the panel; sheet v13. docs/V5.02-MOTHER-ANIM.md.
+- **v5.03** SOLID FURNITURE, AND A LOOK — Chad found both. The table, sofa
+  and chairs of ch4 and ch5 were walk-through, and not because they were
+  missing from `blockers()`: `collide()` samples ONE point, at y = 1.0, and
+  a tabletop's padded box tops out at 0.98. Furniture blockers are now
+  COLUMNS (`solid()`, floor to 1.40, 0.14 pad against a wall's 0.20) and a
+  chair is boxed whole, not by its seat slab. Cutscene paths obey no
+  collision at all, so all five ch5 timelines were audited against the
+  boxes: scene D walked the tang-ki through the table for seven seconds,
+  and routing him round it only put him in a chair — the dining set is
+  ringed by four. So the NOTE moved to his end instead and the walk is
+  gone. Which surfaced the older bug underneath: the note sat at
+  `TABLE.top + 0.004`, and TABLE.top is the slab's CENTRE of 45 mm, so
+  since v5.0 it lay 19 mm INSIDE the wood — the chapter's premise object,
+  never once visible. And the cast LOOKS AT THE PLAYER now: head yaw and
+  pitch clamped to a neck's range, eased, laid on after the mixer, on in
+  play and opt-in per scene (a film cuts to cameras that are not a person —
+  this one's goes under the table). ch2's mother also stops on `walkstop`
+  before she speaks rather than snapping from mid-stride to a stand.
 - **v3.8** real art where there was code: a bought first-person ARM rig
   (`arms.glb`, credited to Fab) replaces the wrist-only hand pack and the
   forearm that was built out of cylinders to cover for it, and the hell

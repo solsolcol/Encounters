@@ -1030,3 +1030,50 @@ bone hookup works is MEASURING THE BONE: set the driver, read
 `rotation.x`, confirm the delta (0.2024 -> 0.7042 for a 0.5 bow, released
 back to 0.2058). A screenshot of a man standing still looks identical
 whether the code ran or not.
+
+## collide() samples ONE point, at y = 1.0 (v5.03)
+
+Furniture in ch4 and ch5 was walk-through, and the reason is arithmetic, not
+a missing entry: every piece was already in `blockers()`. `collide(nx, nz)`
+tests `containsPoint(nx, 1.0, nz)` — a single height. A tabletop sits at
+0.75 and is thin, so even with the walls' 0.20 padding its box topped out at
+**0.98, two centimetres under the probe**. The sofa reached 0.62, the chair
+seats 0.68. All present, all missed.
+
+Two rules follow. A blocker for anything you walk into is a COLUMN — floor
+to above the probe — not the object's own bounds; ch5/ch4 now have a
+`solid()` helper beside `box()` that says so. And a chair's blocker is the
+whole chair, not `children[0]`: boxing the seat slab alone was the same
+mistake twice, since the slab is exactly the part at the wrong height.
+
+Padding is not one number either: walls use 0.20, furniture 0.14. You brush
+past a chair; you never brush past a wall.
+
+## Cutscene paths obey nothing — audit them against the boxes (v5.03)
+
+Collision applies to the PLAYER. A cast member moved by `tr()` has its
+position written directly, so a scene can walk somebody through a table and
+nothing anywhere complains. ch5 scene D did, for seven seconds, 0.34 m deep.
+
+The audit is cheap and worth keeping: seek each cutscene in 0.25 s steps and
+test every cast position against the furniture boxes (`dbg-paths.mjs`, the
+`solid()` boxes identify themselves by `max.y === 1.40`). Doing that found
+the one bad path out of five and, once the first fix moved him into a chair
+instead, proved the dining set has no clean lane at all — four chairs ring
+it. The fix was to stop routing and move the NOTE to his end of the table:
+when every path through a space is blocked, move the destination.
+
+## A prop's Y offset must clear the surface's own THICKNESS (v5.03)
+
+The ch5 hell note sat at `TABLE.top + 0.004` and was invisible from the
+first day the chapter shipped — because `TABLE.top` is the slab's CENTRE and
+the slab is 45 mm thick. Its surface is at `top + 0.0225`, so the note lay
+19 mm inside the wood. The chapter's own prompt says "the note lies on the
+table between you"; it lay in it. The cups (+0.048) and the teapot (+0.085)
+were only safe by being taller objects.
+
+It survived a full release because nothing catches it: no error, no test,
+and a screenshot of a table with no note on it looks exactly like a table.
+Offset a surface prop from the SURFACE (centre + half-thickness), never from
+the centre line, and when a prop is the point of a scene, confirm it renders
+by finding it in a frame rather than by trusting the arithmetic.

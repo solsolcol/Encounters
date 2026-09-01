@@ -786,7 +786,9 @@
        procedural head-nod below — a failed download costs her walk, never
        the scene. `mumPlay` is the whole interface a cutscene needs.     */
     let mumActs = null, mumCur = null, mumIdleBuiltin = null;
-    function mumPlay(name, ts = 1) {
+    const mumLook = { x: 0, y: 0 };
+    const _lookP = new THREE.Vector3(), _lookH = new THREE.Vector3();
+    function mumPlay(name, ts = 1, fade = 0.34) {
       const nx = mumActs && mumActs[name];
       if (!nx || (nx === mumCur && nx.timeScale === ts)) return;
       nx.reset();
@@ -796,7 +798,7 @@
          with her face still to camera, off a forwards take. */
       if (ts < 0) nx.time = nx.getClip().duration;
       nx.play();
-      if (mumCur && mumCur !== nx) mumCur.crossFadeTo(nx, 0.28, false);
+      if (mumCur && mumCur !== nx) mumCur.crossFadeTo(nx, fade, false);
       else nx.setEffectiveWeight(1);
       mumCur = nx;
     }
@@ -1064,6 +1066,29 @@
       /* v4.8, the talking beat: the file ships one clip — a standing idle,
          no talk, no walk — so when she speaks the HEAD carries it: small
          nods laid on top of the idle after every mixer step. */
+      /* THE LOOK (v5.03): she turns her head to the boy. Every camera that
+         ever sees her in this chapter is his point of view — she only
+         appears in scene B — so this needs no per-scene gate, unlike ch5
+         where the film cuts to cameras that are nobody. Clamped to a neck's
+         range, eased, laid on after the mixer. */
+      if (mumHead) {
+        camera.getWorldPosition(_lookP);
+        mumHead.getWorldPosition(_lookH);
+        const dx = _lookP.x - _lookH.x, dz = _lookP.z - _lookH.z;
+        const flat = Math.hypot(dx, dz);
+        let d = Math.atan2(dx, dz) - mother.rotation.y;
+        d = Math.atan2(Math.sin(d), Math.cos(d));
+        const w = mother.visible ? 1 : 0;
+        const YAW = 0.75, PIT = 0.34;
+        const wy = Math.abs(d) > YAW + 0.9 ? 0 : Math.max(-YAW, Math.min(YAW, d));
+        const wx = flat < 0.05 ? 0
+          : Math.max(-PIT, Math.min(PIT, Math.atan2(_lookP.y - _lookH.y, flat)));
+        const k = Math.min(1, dt * 3.5);
+        mumLook.y += (wy * w - mumLook.y) * k;
+        mumLook.x += (wx * w - mumLook.x) * k;
+        mumHead.rotation.y += mumLook.y;
+        mumHead.rotation.x -= mumLook.x;
+      }
       /* the procedural nod is the FALLBACK only: once the real talking clip
          is in, it animates the head itself and adding this on top doubles
          the motion into a twitch. */
@@ -1563,8 +1588,13 @@
        land within a tenth of the ground they cover and nothing skates.
        The group-level bob that used to fake this is GONE — the clip's hips
        carry it, and running both read as a limp.                       */
-    step(8.2, () => { stage.mumPlay('walkstart'); });
-    tr(8.2, 10.0, k => {
+    step(8.2, () => { stage.mumPlay('walkstart', 1, 0.22); });
+    /* and she STOPS, on the take that exists for stopping. Snapping from
+       mid-stride to a standing idle is the thing that read as unnatural:
+       the legs were still swinging and then they simply were not. The
+       glide is one eased span, so it decelerates under the stop take. */
+    step(9.5, () => { stage.mumPlay('walkstop', 1, 0.3); });
+    tr(8.2, 10.2, k => {
       mumAt(OUT.x + (IN.x - OUT.x) * k, OUT.z + (IN.z - OUT.z) * k);
     }, smoothK);
     // the hall light reaches the hands too, because it reaches everything
@@ -1581,17 +1611,17 @@
       stage.fireLight.intensity = 3.4 * (1 + 0.5 * k);
     }, rawK);
 
-    step(10.0, () => { stage.mumPlay('idle'); });   // she arrives and settles
+    step(10.6, () => { stage.mumPlay('idle', 1, 0.5); });   // settled, breathing
     // "What is it? Go back to sleep." — said to his face, five seconds of it
     sfx(10.6, 'v2ma', 0.95);
     /* v4.8 nodded her head procedurally; v5.02 gives her the real talking
        take, which moves her shoulders and hands too. mumTalk stays set so
        that a session where the clips never downloaded still gets the nod. */
-    step(10.5, () => { stage.mumPlay('talk'); });
+    step(10.9, () => { stage.mumPlay('talk', 1, 0.45); });
     tr(10.5, 15.6, (k) => {
       stage.mumTalk = k < 0.08 ? k / 0.08 : (k > 0.92 ? (1 - k) / 0.08 : 1);
     }, rawK);
-    step(10.0, () => { mum.position.y = 0; mum.rotation.z = 0; });
+    step(10.2, () => { mum.position.y = 0; mum.rotation.z = 0; });
 
     /* She goes out backwards, which is what anybody does when they are still
        looking at you and reaching for the handle — and it keeps her face on
@@ -1600,7 +1630,7 @@
        REVERSE is one, though: `walkstop` is a walk settling to a halt, so
        played backwards it is a stand breaking into a backwards walk —
        exactly her, reaching for the handle without looking away.        */
-    step(11.6, () => { stage.mumPlay('walkstop', -1); });
+    step(11.6, () => { stage.mumPlay('walkstop', -1, 0.3); });
     tr(11.6, 13.6, k => {
       mumAt(IN.x + (BACKOUT.x - IN.x) * k, IN.z + (BACKOUT.z - IN.z) * k);
     }, smoothK);
