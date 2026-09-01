@@ -1099,15 +1099,27 @@
       const flat = Math.hypot(dx, dz);
       let dy = Math.atan2(dx, dz) - group.rotation.y;
       dy = Math.atan2(Math.sin(dy), Math.cos(dy));        // wrap to +-PI
-      const YAW = 0.75, PIT = 0.34;
+      /* AIM FROM THE EYES, AND SET PITCH ABSOLUTELY. Two errors compounded
+         here and the result was a chin pointed at the player. The Mixamo
+         head BONE sits at the base of the skull, ~11 cm under the eyes, so
+         aiming it at a 1.62 m camera asks for far more lift than a look
+         needs. And the clips carry their own head pitch — measured at
+         -0.16 rad of chin-up — which an ADDITIVE offset piles onto instead
+         of replacing: the total came to -0.247.
+         So the origin rises to eye level, and pitch is driven to an
+         ABSOLUTE target (yaw stays additive — the clips barely turn the
+         head, 0.07 at rest). The small downward bias is deliberate: a face
+         angled a few degrees down reads as attention, a face angled up
+         reads as disdain, and she is shorter than him either way. */
+      const YAW = 0.75, PIT = 0.34, EYE_UP = 0.11, DOWN_BIAS = 0.14;
       const wy = Math.abs(dy) > YAW + 0.9 ? 0 : Math.max(-YAW, Math.min(YAW, dy));
-      const wx = flat < 0.05 ? 0
-        : Math.max(-PIT, Math.min(PIT, Math.atan2(_lookP.y - _lookH.y, flat)));
+      const wx = flat < 0.05 ? 0 : Math.max(-PIT, Math.min(PIT,
+        Math.atan2(_lookP.y - (_lookH.y + EYE_UP), flat) - DOWN_BIAS));
       const k = Math.min(1, dt * 3.5);
       st.y += (wy * w - st.y) * k;
       st.x += (wx * w - st.x) * k;
       head.rotation.y += st.y;
-      head.rotation.x -= st.x;
+      head.rotation.x += (-st.x - head.rotation.x) * 0.88 * w;
     }
     const tangLook = { x: 0, y: 0 }, maLook = { x: 0, y: 0 };
 
@@ -1336,6 +1348,7 @@
       ceilLight, lampLight, duskFill, outLight, fan,
       hall, bedDoor, maDoor, lateMat, litWins,
       tangki, tangProxy, ma, note, NOTE_HOME, cup3, maPlay,
+      get maClip() { return maCur ? maCur.getClip().name : null; },
       set castLook(v) { lookOverride = v; },
       get castLook() { return lookOverride; },
       get tangBow() { return tangBow; },

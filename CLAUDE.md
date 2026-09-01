@@ -508,6 +508,22 @@ What the baseline contains, by release:
   play and opt-in per scene (a film cuts to cameras that are not a person —
   this one's goes under the table). ch2's mother also stops on `walkstop`
   before she speaks rather than snapping from mid-stride to a stand.
+- **v5.04** THE LOOK, CORRECTED, AND HER LINE GIVEN BACK — two of Chad's
+  notes, both measured. Her chin pointed at the player because two errors
+  compounded: the Mixamo head BONE sits ~11 cm below the eyes, so aiming it
+  at a 1.62 m camera asks for far more lift than a look needs, and the clips
+  carry their own chin-up (-0.16 rad) which an ADDITIVE offset piled onto
+  rather than replaced — total -0.247. Now the aim starts at eye level and
+  pitch is driven to an ABSOLUTE target (yaw stays additive; the clips
+  barely turn the head), with a small downward bias, because a face angled
+  a few degrees down reads as attention and one angled up reads as disdain.
+  Measured -0.247 -> +0.03.
+  And "why is she not using the talking animation" had a real answer: she
+  was, for 0.7 s. v4.6 started her backing out at 11.6, one second into a
+  five-second line — harmless when the walk was a fake glide and no clip
+  existed, wasteful once a real talking take did, since the walk clip takes
+  the body back. Scene B's whole tail shifts ~3.8 s later: she stands and
+  finishes the sentence, THEN goes. All four takes now read.
 - **v3.8** real art where there was code: a bought first-person ARM rig
   (`arms.glb`, credited to Fab) replaces the wrist-only hand pack and the
   forearm that was built out of cylinders to cover for it, and the hell

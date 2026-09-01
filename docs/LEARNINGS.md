@@ -1077,3 +1077,35 @@ and a screenshot of a table with no note on it looks exactly like a table.
 Offset a surface prop from the SURFACE (centre + half-thickness), never from
 the centre line, and when a prop is the point of a scene, confirm it renders
 by finding it in a frame rather than by trusting the arithmetic.
+
+## A look-at that ADDS to the clip's own head pitch stacks, it does not aim (v5.04)
+
+Two compounding errors put the ch2 mother's chin at the player's eyes.
+First, aim origin: a Mixamo head BONE sits at the base of the skull, ~11 cm
+under the eyes, so pointing it at a 1.62 m camera asks for far more lift
+than a look needs — her bone measured 1.385, a 0.235 m rise. Second and
+worse, the clips carry their OWN head pitch (measured -0.16 rad of chin-up
+in the talking take), and `rotation.x -= offset` piles onto that instead of
+replacing it. Total came to -0.247.
+
+So: aim from an eye point above the bone, and drive PITCH to an absolute
+target — `rot.x += (target - rot.x) * blend` — rather than adding to
+whatever the clip left there. Yaw can stay additive because the clips barely
+turn the head (0.07 at rest); pitch cannot, because they always tilt it.
+A little downward bias is worth having: a face angled a few degrees down
+reads as attention, angled up reads as disdain.
+
+## A clip only reads for as long as no other clip is playing (v5.04)
+
+"Why is she not using the talking animation?" — she was, for 0.7 seconds of
+a five-second line. ch2's scene B started her backing out at 11.6, one
+second in, and the walk clip owns the body from that moment.
+
+The staging was written at v4.6 when the walk was a fake group glide and
+there were no clips at all, so nothing was lost by overlapping them. Adding
+real animation silently invalidated that timing. When a character gains
+clips, RE-READ every scene they appear in: a beat that overlapped two
+actions was free before and is a swallowed performance now. Expose the
+current clip name on the stage (`mumClip` / `maClip`) — "which clip is
+actually playing" should be answerable by measurement, not inference from
+a screenshot.

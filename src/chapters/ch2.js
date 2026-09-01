@@ -1079,15 +1079,27 @@
         let d = Math.atan2(dx, dz) - mother.rotation.y;
         d = Math.atan2(Math.sin(d), Math.cos(d));
         const w = mother.visible ? 1 : 0;
-        const YAW = 0.75, PIT = 0.34;
+        /* AIM FROM THE EYES, AND SET PITCH ABSOLUTELY. Two errors compounded
+           here and the result was a chin pointed at the player. The Mixamo
+           head BONE sits at the base of the skull, ~11 cm under the eyes, so
+           aiming it at a 1.62 m camera asks for far more lift than a look
+           needs. And the clips carry their own head pitch — measured at
+           -0.16 rad of chin-up — which an ADDITIVE offset piles onto instead
+           of replacing: the total came to -0.247.
+           So the origin rises to eye level, and pitch is driven to an
+           ABSOLUTE target (yaw stays additive — the clips barely turn the
+           head, 0.07 at rest). The small downward bias is deliberate: a face
+           angled a few degrees down reads as attention, a face angled up
+           reads as disdain, and she is shorter than him either way. */
+        const YAW = 0.75, PIT = 0.34, EYE_UP = 0.11, DOWN_BIAS = 0.14;
         const wy = Math.abs(d) > YAW + 0.9 ? 0 : Math.max(-YAW, Math.min(YAW, d));
-        const wx = flat < 0.05 ? 0
-          : Math.max(-PIT, Math.min(PIT, Math.atan2(_lookP.y - _lookH.y, flat)));
+        const wx = flat < 0.05 ? 0 : Math.max(-PIT, Math.min(PIT,
+          Math.atan2(_lookP.y - (_lookH.y + EYE_UP), flat) - DOWN_BIAS));
         const k = Math.min(1, dt * 3.5);
         mumLook.y += (wy * w - mumLook.y) * k;
         mumLook.x += (wx * w - mumLook.x) * k;
         mumHead.rotation.y += mumLook.y;
-        mumHead.rotation.x -= mumLook.x;
+        mumHead.rotation.x += (-mumLook.x - mumHead.rotation.x) * 0.88 * w;
       }
       /* the procedural nod is the FALLBACK only: once the real talking clip
          is in, it animates the head itself and adding this on top doubles
@@ -1285,6 +1297,7 @@
       get mumTalk() { return mumTalk; },
       set mumTalk(v) { mumTalk = v; },
       mumPlay,
+      get mumClip() { return mumCur ? mumCur.getClip().name : null; },
       updateNotes, updatePile, updateFire, updateSlow,
       setNoteTexture(tex) {
         if (!tex) return;
@@ -1626,34 +1639,40 @@
     /* She goes out backwards, which is what anybody does when they are still
        looking at you and reaching for the handle — and it keeps her face on
        screen instead of her back. */
-    /* Backing out is the one move Mixamo has no take for. A walk run in
-       REVERSE is one, though: `walkstop` is a walk settling to a halt, so
-       played backwards it is a stand breaking into a backwards walk —
-       exactly her, reaching for the handle without looking away.        */
-    step(11.6, () => { stage.mumPlay('walkstop', -1, 0.3); });
-    tr(11.6, 13.6, k => {
+    /* SHE FINISHES THE SENTENCE BEFORE SHE MOVES. v4.6 started her backing
+       out at 11.6 — one second into a five-second line — which was harmless
+       when the walk was a fake glide and nothing was playing anyway. With a
+       real talking take it is not harmless: the walk clip takes the body
+       back and she delivers four fifths of her only line while retreating
+       behind a closing door. The whole tail of this scene therefore shifts
+       ~3.8 s later. She stands and says it; then she goes.
+       Backing out is still the one move Mixamo has no take for, and a walk
+       run in REVERSE is one: `walkstop` is a walk settling to a halt, so
+       played backwards it is a stand breaking into a backwards walk. */
+    step(15.4, () => { stage.mumPlay('walkstop', -1, 0.3); });
+    tr(15.4, 17.4, k => {
       mumAt(IN.x + (BACKOUT.x - IN.x) * k, IN.z + (BACKOUT.z - IN.z) * k);
     }, smoothK);
-    sfx(13.0, 'hallsteps', 0.45);
+    sfx(16.8, 'hallsteps', 0.45);
 
     /* And she shuts it. The leaf swings back across her as it comes, so she
        is gone behind it before it lands — which is why she is hidden a beat
        AFTER the latch and not before it.                                  */
-    tr(13.6, 15.2, k => {
+    tr(17.4, 19.0, k => {
       stage.door.rotation.y = stage.DOOR_OPEN * (1 - k);   // all the way to the latch
     }, smoothK);
-    sfx(13.7, 'doorcreak', 0.7);
-    sfx(15.1, 'clang', 0.35);
-    step(15.3, () => { mum.visible = false; });
+    sfx(17.5, 'doorcreak', 0.7);
+    sfx(18.9, 'clang', 0.35);
+    step(19.1, () => { mum.visible = false; });
     // a line of light under a shut door, and the room is his again
-    tr(14.6, 16.4, k => { stage.hallLight.intensity = 3.4 - 2.85 * k; }, rawK);
+    tr(18.4, 20.2, k => { stage.hallLight.intensity = 3.4 - 2.85 * k; }, rawK);
 
     // he looks at the gap once more. It is a gap.
-    yawTo(15.6, 17.0, faceFrom(P.x, P.z, doorAt.x, doorAt.z),
+    yawTo(19.4, 20.8, faceFrom(P.x, P.z, doorAt.x, doorAt.z),
                       faceFrom(P.x, P.z, stage.GAP.x, stage.BED.z));
-    pitchTo(15.6, 17.0, -0.02, -0.26);
-    sfx(16.2, 'vrelief', 0.9);           // starts after v2ma has finished, at 15.6
-    tr(17.0, 19.7, () => {}, rawK);      // and the scene outlasts it: it runs to 19.5
+    pitchTo(19.4, 20.8, -0.02, -0.26);
+    sfx(20.0, 'vrelief', 0.9);           // starts after v2ma has finished, at 15.6
+    tr(20.8, 23.5, () => {}, rawK);      // and the scene outlasts it
 
     c.keep.ghostGone = true;
     c.endFade = 0;                       // this one does NOT end on black
