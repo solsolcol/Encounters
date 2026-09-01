@@ -930,3 +930,47 @@ SAYS. Now both paths place first. The related trap: `window.__enc.chapter`
 was a captured binding (`chapter: CH`), stale after every setChapter —
 a probe that trusts it reports the WRONG chapter while the world is
 right; exports of rebindable state must be getters.
+
+## The screenshot is the proof a fix landed, not the edit log (v4.9)
+
+Three ch4 fixes were "applied" through a home-made edit helper driven the
+wrong way — the helper is a LIBRARY (`from edit import rep`), and feeding
+it a text DSL on stdin does nothing, prints nothing, and exits 0. The
+"fixed" build then reproduced the exact bug, and an hour went to
+re-deriving what was never applied. Two rules out of it: a batch editor
+must print one `ok:` line per hunk (silence is failure, not success), and
+after any "fix applied" the artifact itself — the grep of the source, the
+re-shot frame — is what says so, never the intent to have applied it.
+
+## Off-world film sets need their own darkness, not fog (v4.9)
+
+Chapter 4's three flashback dioramas sit forty metres out at x=-40, on the
+theory that fog hides them from the flat. It does not: at the chapter's
+livable density (0.010) an exp2 fog passes ~84% at 42 m, so every set read
+from the window as a tiny floating box against the dusk — and the skydome
+behind them is BACKGROUND, which fog never touches at all, so the film's
+own frames had a purple horizon and the neighbouring memory floating in
+shot. The fix is theatre, not atmospherics: `memRoot.visible` only inside
+the scene that owns the sets, plus one matte-black BackSide sphere AROUND
+EACH set (bubbles per set, or they see each other), `fog: false`. A
+memory then floats in its own black box whatever the sky is doing.
+
+## Her territory is a radius; the spawn must stand outside it (v4.9)
+
+`ghost.appearAt` is the RADIUS of her ground around the chapter's anchor,
+and `hidden -> beginAppearance()` fires the moment the player is inside
+it. A spawn placed within the radius means "Ghost spotted!" on frame one —
+softening the number UPWARD (2.6 -> 3.0, meant as "rarer") swallowed the
+spawn (2.75 m from ch4's chair) and made it certain. In chapters 1-3 the
+spawn always stood outside and walking in was the player's own act; keep
+that law: appearAt strictly less than the spawn's distance to the anchor.
+
+## A doorway's wall thickness needs floor, or the sky shines through it (v4.9)
+
+Every opening cut through a 15 cm wall leaves a 15 cm strip of ground that
+belongs to neither room's floor plane. From eye height it renders as a
+thin line of SKYDOME — magenta at dusk — along the threshold. Overlap one
+side's floor a couple of dm through the opening (and enclose a stub room
+flush to the wall it hangs off: a side wall centred where its neighbour
+was, instead of at the opening, leaves a slot of open sky). Both leaks
+are invisible in a plan view and obvious in one probe frame at the door.

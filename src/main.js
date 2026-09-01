@@ -3103,7 +3103,27 @@ const STING_SAMPLE = {
   drumroll: ['drumroll', 0.9], gongdeep: ['gongdeep', 0.9],
   trancehum: ['trancehum', 0.85],
   v3chair: ['v3chair', 1], v3out1: ['v3out1', 1], v3out2: ['v3out2', 1],
-  v3seen: ['v3seen', 1], v3grip: ['v3grip', 1], v3left: ['v3left', 1]
+  v3seen: ['v3seen', 1], v3grip: ['v3grip', 1], v3left: ['v3left', 1],
+  /* v4.9: chapter 4's flat — the sit, the memories, the 90s phone, and
+     the flat answering back. The three mem beds and nightsilence are long
+     one-shots a scene lays under a passage, not loops. */
+  memwash: ['memwash', 0.8], mem1: ['mem1', 0.85], mem2: ['mem2', 0.85],
+  mem3: ['mem3', 0.9], sitdown: ['sitdown', 0.8], sofacreak: ['sofacreak', 0.85],
+  nightsilence: ['nightsilence', 0.9],
+  phonepick: ['phonepick', 0.9], dialtone: ['dialtone', 0.7],
+  dialbeep: ['dialbeep', 0.8], ringtone: ['ringtone', 0.8],
+  phonedown: ['phonedown', 0.85], phonebell: ['phonebell', 1],
+  tvstatic: ['tvstatic', 0.95], lightbuzz: ['lightbuzz', 0.85],
+  curtain: ['curtain', 0.85], switch4: ['switch4', 0.9],
+  doorkeys: ['doorkeys', 0.85],
+  v4wake1: ['v4wake1', 1], v4wake2: ['v4wake2', 1], v4wake3: ['v4wake3', 1],
+  v4sit: ['v4sit', 1],   // scene A cues the close line itself, at the sit
+  v4thinkA1: ['v4thinkA1', 1], v4thinkA2: ['v4thinkA2', 1],
+  v4thinkA3: ['v4thinkA3', 1],
+  v4tired: ['v4tired', 1], v4wake3am: ['v4wake3am', 1],
+  v4taunt: ['v4taunt', 1], v4regret: ['v4regret', 1],
+  v4call1: ['v4call1', 1], v4call2: ['v4call2', 1],
+  v4ma1: ['v4ma1', 1], v4ma2: ['v4ma2', 1], v4ma3: ['v4ma3', 1]
 };
 /* Which kinds the synth below can actually fake. Everything else in
    STING_SAMPLE is sample-only: if its buffer is not decoded yet it stays

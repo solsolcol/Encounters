@@ -407,3 +407,42 @@ Two model lessons, both in LEARNINGS: the sfx model ignores durations
 written in prose (`duration_seconds` is a node parameter; so is `loop`),
 and the music model fades out despite "no fade-out" — loop-cut in post and
 verify instrumentality by transcribing it (empty transcript = no lyrics).
+
+## v4.9 additions (chapter 4 · BACK HOME) — 152 sounds in the pack
+
+Flow `onCJRf3baqVywQCBx6W5`. Third speaker returns: Ma is Matilda
+(`XrExE9yKIg1WjnnlVkGX`, same voice as ch2's mother — she IS the same
+character), phone-EQ'd (highpass 280 / lowpass 3300) for the handset;
+the dry masters live in the session scratchpad only. James per contract.
+19 SFX + 19 James lines + 3 Ma lines; every scene-cued name is a
+STING_SAMPLE row, the three beds are chapter ambience (no rows needed).
+
+| name | what | wired at |
+|---|---|---|
+| `v4room` | evening flat room tone, 12 s loop | a bed of the chapter, 0.22 |
+| `nightsilence` | oppressive 3 am near-silence bed, 10 s loop | B |
+| `mem1` `mem2` `mem3` | the three flashback beds (fire, fan, ceremony) | A |
+| `memwash` | dreamlike transition wash | A |
+| `sitdown` `sofacreak` | body on wood / on fabric | A, B |
+| `switch4` | the wall switch — the lights-on beat | the film |
+| `doorkeys` | keys in the front door | the film |
+| `phonepick` `phonedown` `dialtone` `dialbeep` `ringtone` `phonebell` | the 90s house phone, end to end | C, D |
+| `tvstatic` | dead-channel roar, trimmed to die at C's stop-beat | C |
+| `lightbuzz` | fluorescent buzz-flicker | B, C |
+| `curtain` | fabric snap in wind | C |
+| `v4wake1/2/3` | the film: the lift line, the lights line, the window line | the film |
+| `v4voice` | the entering-play line (`voiceLine`) | play |
+| `v4near` `v4sit` | proximity lines at the chair (`lines`) + seated | play, A |
+| `v4thinkA1/2/3` | the three flashback voice-overs | A |
+| `v4tired` `v4wake3am` | scene B: exhaustion, the 3 am wake | B |
+| `v4taunt` `v4regret` | scene C: the shout at the room, the regret | C |
+| `v4call1/2` | scene D: his side of the phone call | D |
+| `v4ma1/2/3` | Ma through the handset: answer, the tang-ki promise, goodnight | D |
+| `v4A/B/C/D` | the four outcome-card lines (`sayPrefix: 'v4'`) | cards |
+
+The auto-duration trap bit seven sounds (v4room 12 s came back 1 s):
+`duration_seconds`/`loop` are NODE parameters — set with
+`creative_update_node`, re-run the node, and the model honours them
+exactly. All seven were re-run at pinned durations and re-encoded from
+those masters. `v4ma2` (the tang-ki promise — the chapter's key line)
+failed BOTH first takes and needed a plain re-run ×3, text unchanged.

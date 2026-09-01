@@ -413,6 +413,23 @@ What the baseline contains, by release:
   6 → 4 and the 'half the block' line retired with them. CHCTX gained
   `cloneSkinned` — the only engine seam this cost. Sheet v10.
   docs/V4.8-NOTES.md is the build's memory.
+- **v4.9** CHAPTER 4 · BACK HOME — the evening after the tentage: dusk
+  through the window of the family flat, a dining table, a 90s house
+  phone, and the haunting HOME with him (her territory is the radius
+  round the dining chair; the spawn stands just outside it). An opening
+  film (keys, the dark flat, the lights, the block outside); scene A's
+  flashbacks as three black-box memory dioramas forty metres off (the
+  void deck burner, the bedroom fan, ONE red chair in noon white);
+  scene B's 3 a.m. wake with her silhouette in the kitchen doorway;
+  scene C's provocation (TV static, the phone ringing by itself, then
+  everything stopping at once — the handset found OFF THE HOOK); scene
+  D's call to Ma on the old phone, her voice phone-EQ'd through the
+  handset, and the promise that loads chapter 5: the tang-ki comes to
+  the house tomorrow. 41 new sounds (19 SFX + 19 James + 3 Ma —
+  Matilda again, because Ma IS ch2's mother); NO hell note anywhere in
+  the chapter — the tang-ki finds it in chapter 5. Cost in engine
+  seams: ZERO, as planned. Sheet v11.
+  docs/V4.9-CHAPTER4-PLAN.md is the build's memory.
 - **v3.8** real art where there was code: a bought first-person ARM rig
   (`arms.glb`, credited to Fab) replaces the wrist-only hand pack and the
   forearm that was built out of cylinders to cover for it, and the hell
@@ -497,10 +514,18 @@ anywhere in the chapter — not even `strings`, which is, in practice, her
 leitmotif. A change that blunts one of those axes is a change to the
 chapter's whole reason for existing.
 
-Next up: **chapter 4** (BACK HOME, in the trial's episode 1), and the
-still-outstanding job of replacing chapter 1's placeholder choices with the
-real "THE OFFERINGS" data in `docs/source/trial-game-chapters.md`. Chapter 3
-cost one engine seam; chapter 4 should cost none.
+**Chapter 4 is built** (v4.9) — BACK HOME, from the trial's episode 1,
+and it cost ZERO engine seams, as predicted. The four chapters now
+escalate DISTANCE → SMALLNESS → INVERSION → INTRUSION: she followed him
+home, and the flat with its lights on is not the refuge the word "home"
+promises. The chapter closes on Ma's phone promise — the tang-ki comes
+to the house tomorrow.
+
+Next up: **chapter 5** (the tang-ki's house visit — he comes down, checks
+the flat, and FINDS the hell note; Chad's call to hold the note back from
+chapter 4 exists to arm that discovery), and the still-outstanding job of
+replacing chapter 1's placeholder choices with the real "THE OFFERINGS"
+data in `docs/source/trial-game-chapters.md`.
 
 The sound download is **done** (v4.2, above): split per chapter so it no
 longer grows with the game, and re-encoded from the masters. The ghost mesh
