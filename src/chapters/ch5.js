@@ -73,9 +73,12 @@
        to +2.8 (the corridor wall), ceiling 2.6 — in MORNING sun. */
     spawn:     { x: -1.8, y: 1.62, z: 2.0 },     // in from the front door
     /* `shrine` is the engine's interactable anchor. Here it is THE
-       TANG-KI's stand, mid-room between the table and the window: the
-       chapter's one act is to go to him and ask. */
-    shrine:    { x: 0.9, z: -0.4 },
+       TANG-KI's stand, at the HEAD of the dining table: the chapter's one
+       act is to go to him and ask. (0.9,-0.4) was inside the table's own
+       footprint — the 1.5 x 0.9 top is centred at (1.3,-0.6) — so he
+       stood in the furniture and his robe hid the note from every scene
+       camera. The head of the table is his, and it is clear floor.      */
+    shrine:    { x: 0.35, z: -0.55 },
     ghostHome: { x: -2.7, z: -1.4 },             // unused: ghost is null
     bounds:    { minX: -3.05, maxX: 3.05, minZ: -2.45, maxZ: 3.55 },
 
@@ -164,7 +167,9 @@
     const matPaint = new THREE.MeshStandardMaterial({ color: 0xd8d2c4, roughness: 0.7 });
     const matCream = new THREE.MeshStandardMaterial({ color: 0xe4ddcb, roughness: 0.65 });
     const matLacquer = new THREE.MeshStandardMaterial({ map: lacquerTex, roughness: 0.42, metalness: 0.18 });
-    const matSheet = new THREE.MeshStandardMaterial({ color: 0xcac2ae, roughness: 0.94, side: THREE.DoubleSide });
+    /* deeper than ch4's sheet: in full morning hemi a pale flat plane reads
+       as a glowing white board, not a curtain */
+    const matSheet = new THREE.MeshStandardMaterial({ color: 0xaba390, roughness: 0.97, side: THREE.DoubleSide });
     const matGlass = new THREE.MeshStandardMaterial({
       color: 0x2a3040, roughness: 0.15, metalness: 0.1, transparent: true, opacity: 0.30 });
     const matVoid = new THREE.MeshBasicMaterial({ color: 0x000000, fog: false });
@@ -494,7 +499,10 @@
     world.add(lampShade);
 
     // the home altar's red bulb, high in the kitchen corner
-    const altLight = new THREE.PointLight(0xff5a30, 2.2, 3.4, 1.7);
+    /* 0.9, not ch4's 2.2: at ten in the morning the altar lamp is an ember
+       in a bright room, not the room's light source — 2.2 washed the whole
+       ceiling corner sunset-orange. Scene D still takes it to 4.5.       */
+    const altLight = new THREE.PointLight(0xff5a30, 0.9, 3.4, 1.7);
     altLight.position.set(-2.85, 1.85, -2.15);
     scene.add(altLight); owned.push(altLight);
 
@@ -504,9 +512,18 @@
     scene.add(duskFill); owned.push(duskFill);
 
     // the corridor outside the front door, for the film: dusk on concrete
-    const outLight = new THREE.PointLight(0xdfe9f2, 0, 6.5, 1.6);
+    /* lit from build: the film opens this door on a MORNING corridor, and in
+       play the door is shut, so a lit corridor costs nothing              */
+    const outLight = new THREE.PointLight(0xdfe9f2, 0.85, 6.5, 1.6);
     outLight.position.set(DOORM.x + 0.8, 2.1, R.zNear + 1.0);
     scene.add(outLight); owned.push(outLight);
+
+    /* the internal corridor gets its share of the morning: without this it
+       reads as a black mouth in a bright flat, and scene A's line about
+       "the sun in it" plays over darkness */
+    const corrLight = new THREE.PointLight(0xfff1dc, 1.4, 5.0, 1.5);
+    corrLight.position.set(2.05, 1.9, R.zNear + 1.1);
+    scene.add(corrLight); owned.push(corrLight);
 
     /* ------------------------------------------------------ dining set --- */
     const TABLE = { x: 1.3, z: -0.6, w: 1.5, d: 0.9, top: 0.75 };
@@ -760,7 +777,11 @@
     const TANG_H = 1.68;
     const tangki = new THREE.Group();
     tangki.position.set(SHRINE.x, 0, SHRINE.z);
-    tangki.rotation.y = 2.1;                     // reading the altar wall
+    /* the models are +z-forward: visual front = (sin ry, cos ry). -0.85
+       faces him at the spawn/door corner — he greets the player's approach.
+       (`faceFrom` is CAMERA-convention (-z forward); a model facing set
+       from it needs + Math.PI. Every scene below does this.)            */
+    tangki.rotation.y = -0.85;
     world.add(tangki);
     const tangProxy = new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.30, 1.66, 10),
       new THREE.MeshStandardMaterial({ color: 0x6a5c4a, roughness: 0.9 }));
@@ -1040,7 +1061,7 @@
       ceilTube.material.color.setScalar(Math.min(1, 0.05 + ceilLight.intensity * 0.30));
       const fl = 0.88 + Math.sin(t * 2.3) * 0.07 + Math.sin(t * 7.1) * 0.03;
       if (getState() !== 'cine') {
-        altLight.intensity = 2.2 * fl;
+        altLight.intensity = 0.9 * fl;
         altTip.material.color.setHSL(0.045, 1, 0.42 + fl * 0.1);
       }
     }
@@ -1118,7 +1139,7 @@
       handset.position.copy(HANDSET_HOME.pos);
       handset.rotation.set(0, 0, 0);
       tangki.position.set(SHRINE.x, 0, SHRINE.z);
-      tangki.rotation.y = 2.1;
+      tangki.rotation.y = -0.85;
       ma.position.set(-2.45, 0, -0.85);
       ma.rotation.y = 1.2;
       table.add(note);
@@ -1314,9 +1335,16 @@
     const CHX = 1.3, CHZ = 0.25;                 // the chair (the note's spot)
     const LOWCAM = { x: CHX - 0.95, y: 0.52, z: CHZ + 0.95 };
     const Y_LOW = faceFrom(LOWCAM.x, LOWCAM.z, CHX, CHZ);
-    const INS_CAM = { x: CHX - 0.78, y: 1.34, z: CHZ + 0.78 };
-    const INS_NOTE = { x: CHX - 0.38, y: 1.30, z: CHZ + 0.38 };
+    /* THE INSERT geometry. He stands at (0.75, 0.65) facing the chair -
+       unit direction (0.81, -0.59). The camera sits 1.15 m out ALONG that
+       facing, so his face carries the shot; the note hangs 0.45 m off his
+       chest toward the lens - 0.70 m from camera, a fifth of the frame.
+       The first cut put the camera 0.44 m from his robe and the note
+       INSIDE it: a wall of cloth, no note at all.                       */
+    const INS_CAM = { x: 1.68, y: 1.42, z: -0.03 };
+    const INS_NOTE = { x: 1.11, y: 1.30, z: 0.38 };
     const Y_INS = faceFrom(INS_CAM.x, INS_CAM.z, INS_NOTE.x, INS_NOTE.z);
+    const Y_INS_NOTE = faceFrom(INS_NOTE.x, INS_NOTE.z, INS_CAM.x, INS_CAM.z) + Math.PI;
 
     step(0, () => {
       handsRoot.visible = false;
@@ -1326,8 +1354,11 @@
       /* the note starts where four chapters left it: under the chair seat */
       stage.tangki.position.set(stage.DOORM.x, 0, stage.R.zNear + 0.85);
       stage.tangki.rotation.y = Math.PI;         // facing the door from outside
-      stage.ma.position.set(-1.7, 0, 2.1);       // crossing to answer it
-      stage.ma.rotation.y = faceFrom(-1.7, 2.1, DOORAT.x, DOORAT.z);
+      /* she answered during the black and stands ASIDE, clear of the leaf's
+         swing and of his entry line - (-1.7,2.1) was exactly where his
+         threshold stop lands, and the two meshes stood inside each other */
+      stage.ma.position.set(-1.45, 0, 1.55);
+      stage.ma.rotation.y = faceFrom(-1.45, 1.55, DOORAT.x, DOORAT.z) + Math.PI;
       const ch = stage.chairs[0];
       ch.add(stage.note);
       stage.note.position.set(0, 0.42, 0.02);
@@ -1352,33 +1383,39 @@
       stage.tangki.position.set(
         stage.DOORM.x + 0.35 * k, 0, stage.R.zNear + 0.85 - 1.55 * k);
     }, smoothK);
-    step(13.5, () => { stage.tangki.rotation.y = 2.4; });   // a slow look left
-    // Ma shuts the door behind him and withdraws toward the kitchen
-    sfx(15.6, 'doorcreak', 0.4);
-    tr(15.6, 17.2, k => { stage.doorMain.rotation.y = stage.DOORM_OPEN * (1 - k); }, smoothK);
-    tr(15.0, 19.5, k => {
-      stage.ma.position.set(-1.7 - 0.75 * k, 0, 2.1 - 2.95 * k);
-    }, smoothK);
-    step(19.5, () => { stage.ma.rotation.y = 1.2; });
+    // a slow look into the flat's heart: the table, the room he was called for
+    step(13.5, () => { stage.tangki.rotation.y = faceFrom(-1.85, 1.9, 0.9, 0.0) + Math.PI; });
+    // the door swings shut behind him while every eye is on his stillness
+    sfx(13.9, 'doorcreak', 0.4);
+    tr(13.8, 15.2, k => { stage.doorMain.rotation.y = stage.DOORM_OPEN * (1 - k); }, smoothK);
 
     // 16-22 he crosses to the KITCHEN DOORWAY and BOWS to the empty dark
     yawTo(16.0, 19.0, Y_DOOR2, Y_KD, smoothK);
+    step(16.0, () => { stage.tangki.rotation.y = faceFrom(-1.85, 1.9, -2.15, -0.8) + Math.PI; });
     tr(16.0, 19.6, k => {
       stage.tangki.position.set(
         stage.DOORM.x + 0.35 + (-2.15 - (stage.DOORM.x + 0.35)) * k, 0,
         stage.R.zNear - 0.7 + (stage.KDOOR.z + 0.6 - (stage.R.zNear - 0.7)) * k);
     }, smoothK);
-    step(19.6, () => { stage.tangki.rotation.y = faceFrom(-2.15, stage.KDOOR.z + 0.6, KD.x, KD.z); });
+    step(19.6, () => { stage.tangki.rotation.y = faceFrom(-2.15, stage.KDOOR.z + 0.6, KD.x, KD.z) + Math.PI; });
     tr(20.0, 22.2, k => { stage.tangBow = 0.5 * Math.sin(Math.PI * k); }, rawK);
     sfx(18.5, 'v5wake2');                         // 2.19 s: "Why is he bowing..."
 
-    // 22.5-27 he turns to the dining table; the camera goes LOW, under it
+    // 22.5-27 he turns to the dining table; the camera pans with him, then
+    // HARD CUTS low, under it. Only now, with his path clear, does Ma
+    // withdraw to her place by the kitchen - off-frame, behind the pan.
+    step(22.5, () => { stage.tangki.rotation.y = faceFrom(-2.15, -0.8, CHX - 0.55, CHZ + 0.4) + Math.PI; });
     tr(22.5, 25.8, k => {
       stage.tangki.position.set(
         -2.15 + (CHX - 0.55 - -2.15) * k, 0,
         stage.KDOOR.z + 0.6 + (CHZ + 0.4 - (stage.KDOOR.z + 0.6)) * k);
     }, smoothK);
-    step(25.8, () => { stage.tangki.rotation.y = faceFrom(CHX - 0.55, CHZ + 0.4, CHX, CHZ); });
+    yawTo(22.3, 24.2, Y_KD, faceFrom(MIDPUSH.x, MIDPUSH.z, CHX - 0.55, CHZ + 0.4), smoothK);
+    tr(23.0, 27.0, k => {
+      stage.ma.position.set(-1.45 + (-2.45 - -1.45) * k, 0, 1.55 + (-0.85 - 1.55) * k);
+    }, smoothK);
+    step(27.0, () => { stage.ma.rotation.y = 1.2; });
+    step(25.8, () => { stage.tangki.rotation.y = faceFrom(CHX - 0.55, CHZ + 0.4, CHX, CHZ) + Math.PI; });
     camTo(24.2, 24.2, LOWCAM, LOWCAM);            // a hard cut down
     yawTo(24.2, 24.2, Y_LOW, Y_LOW);
     pitchTo(24.2, 26.0, 0.14, 0.10, smoothK);     // up, at the seat's underside
@@ -1399,12 +1436,14 @@
       stage.tangki.remove?.(stage.note);
       stage.chairs[0].parent.add(stage.note);     // the world group
       stage.note.position.set(INS_NOTE.x, INS_NOTE.y, INS_NOTE.z);
-      stage.note.rotation.set(-0.12, Y_INS + Math.PI, 0.06);
+      stage.note.rotation.set(-0.10, Y_INS_NOTE, 0.06);
     });
     camTo(28.5, 40.5, INS_CAM,
-      { x: INS_CAM.x - 0.05, y: INS_CAM.y + 0.02, z: INS_CAM.z - 0.05 }, smoothK);
+      { x: INS_CAM.x - 0.04, y: INS_CAM.y + 0.02, z: INS_CAM.z + 0.04 }, smoothK);
     yawTo(28.5, 40.5, Y_INS, Y_INS);
-    pitchTo(28.5, 40.5, -0.02, -0.02);
+    pitchTo(28.5, 40.5, -0.17, -0.17);
+    // he inclines toward what he is holding, and stays inclined
+    tr(28.6, 29.6, k => { stage.tangBow = 0.16 * k; }, smoothK);
     sfx(29.0, 't5note');                          // 3.55 s: "Here. Under where you sit."
     sfx(33.5, 'v5wake3');                         // 6.84 s: "That's the note..."
 
@@ -1427,12 +1466,18 @@
     const Y_TANG = faceFrom(ATTABLE.x, ATTABLE.z, stage.tangki.position.x, stage.tangki.position.z);
     const RISEN = { x: 1.25, y: EYE, z: 1.3 };
     const HALLCAM = { x: 1.15, y: EYE, z: 2.2 };
-    const HALLIN = { x: 1.9, y: EYE, z: 3.05 };
+    const HALLIN = { x: 2.05, y: EYE, z: 3.4 };   // corridor CENTRE, half a metre in
     const Y_HALL = faceFrom(HALLCAM.x, HALLCAM.z, 2.05, stage.R.zNear + 2.2);
 
     step(0, () => { ghostOpacity(0); handsRoot.visible = false; });
     sitDown(api, s);
-    step(2.6, () => { handsRoot.visible = true; });   // his hands on the table
+    // he turns to the boy who just sat down at his table
+    step(2.6, () => {
+      handsRoot.visible = true;                       // his hands on the table
+      stage.tangki.rotation.y = faceFrom(
+        stage.tangki.position.x, stage.tangki.position.z,
+        ATTABLE.x, ATTABLE.z) + Math.PI;
+    });
     yawTo(2.8, 4.0, 0, Y_TANG, smoothK);
     pitchTo(2.8, 4.0, -0.06, -0.03, smoothK);
     sfx(2.2, 'teaset', 0.6);
@@ -1445,11 +1490,20 @@
 
     // 20.6-26 he turns for the corridor; the boy rises and follows
     step(20.5, () => { handsRoot.visible = false; });
-    tr(21.0, 25.5, k => {
-      const sx = 0.9 + (2.0 - 0.9) * k, sz = -0.4 + (2.3 - -0.4) * k;
-      stage.tangki.position.set(sx, 0, sz);
+    /* two legs, because the straight line from the head of the table to the
+       corridor mouth clips the table's corner */
+    step(21.0, () => { stage.tangki.rotation.y = faceFrom(0.35, -0.55, 0.3, 0.6) + Math.PI; });
+    tr(21.0, 23.2, k => {
+      stage.tangki.position.set(0.35 + (0.3 - 0.35) * k, 0, -0.55 + (0.6 - -0.55) * k);
     }, smoothK);
-    step(25.5, () => { stage.tangki.rotation.y = Math.PI; });   // facing down the hall
+    step(23.2, () => { stage.tangki.rotation.y = faceFrom(0.3, 0.6, 1.55, 2.35) + Math.PI; });
+    tr(23.2, 25.5, k => {
+      stage.tangki.position.set(0.3 + (1.55 - 0.3) * k, 0, 0.6 + (2.35 - 0.6) * k);
+    }, smoothK);
+    // beside the corridor mouth, looking down the hall
+    step(25.5, () => {
+      stage.tangki.rotation.y = faceFrom(1.55, 2.35, 2.05, stage.R.zNear + 2.2) + Math.PI;
+    });
     camTo(21.5, 26.5, ATTABLE, HALLCAM, smoothK);
     yawTo(21.5, 26.5, Y_TANG, Y_HALL, smoothK);
     pitchTo(21.5, 26.5, -0.03, 0.0, smoothK);
@@ -1457,10 +1511,17 @@
     /* 26.5-33.2 the hallway, calmly (6.69 s): the same corridor as every
        night, with the sun in it. The camera drifts INTO the mouth.      */
     sfx(26.5, 't5hallA');
-    camTo(27.5, 33.5, HALLCAM, HALLIN, smoothK);
+    /* enter EARLY - by 30 the camera stands inside the mouth, so most of the
+       6.7 s line plays over the down-hall view, not over the approach wall.
+       The aim also straightens as it enters: Y_HALL was computed from
+       HALLCAM and, held from inside, turned half the frame into the
+       corridor's right wall at grazing angle.                            */
+    camTo(27.0, 30.0, HALLCAM, HALLIN, smoothK);
+    const Y_HALLIN = faceFrom(HALLIN.x, HALLIN.z, 2.05, stage.R.zNear + 2.2);
+    yawTo(27.0, 30.0, Y_HALL, Y_HALLIN, smoothK);
 
     // 34-38 back to the room; a soft close
-    yawTo(34.5, 37.0, Y_HALL, faceFrom(HALLIN.x, HALLIN.z, 0.9, -0.4), smoothK);
+    yawTo(34.5, 37.0, Y_HALLIN, faceFrom(HALLIN.x, HALLIN.z, 1.3, -0.6), smoothK);
     sfx(37.2, 'chime', 0.45);
     sfx(38.6, 'breath', 0.5);
     tr(38.5, 40.3, k => { duck('v5room', 0.5 + 0.5 * k); }, rawK);
@@ -1479,18 +1540,27 @@
   function scFear(c, s, api) {
     const { tr, step, sfx, fade, camTo, yawTo, pitchTo, faceFrom, rawK, smoothK,
             duck, stage, camera, ghostOpacity, handsRoot } = api;
-    const AT_TABLE = { x: 0.55, y: EYE, z: 0.85 };
+    /* from the SOFA side: the old spot (0.55, 0.85) had the tang-ki dead on
+       the line to the note, and his robe hid the scene's whole subject */
+    const AT_TABLE = { x: 1.85, y: EYE, z: 0.75 };
     const Y_NOTE = faceFrom(AT_TABLE.x, AT_TABLE.z, 1.45, -0.65);
 
     step(0, () => { ghostOpacity(0); handsRoot.visible = false; });
+    // he was already watching before you decided anything
+    step(0.4, () => {
+      stage.tangki.rotation.y = faceFrom(0.35, -0.55, AT_TABLE.x, AT_TABLE.z) + Math.PI;
+    });
     camTo(0, 2.2, { x: s.yawPos.x, y: s.yawPos.y, z: s.yawPos.z }, AT_TABLE, smoothK);
     yawTo(0, 2.2, s.yawRot, Y_NOTE, smoothK);
-    pitchTo(0, 2.2, s.pitchX, -0.35, smoothK);
+    pitchTo(0, 2.2, s.pitchX, -0.54, smoothK);
 
-    // 3-6 the morning drains
+    /* 3-6 the morning drains: the world outside whites into the fog, the
+       room's fill dies, the altar ember goes out. Sound first, then light. */
     tr(3.0, 6.0, k => {
       duck('v5room', 1 - 0.95 * k); duck('clock', 1 - k);
-      stage.setFogDensity(0.008 + 0.006 * k);
+      stage.setFogDensity(0.008 + 0.042 * k);
+      stage.duskFill.intensity = 0.15 - 0.11 * k;
+      stage.altLight.intensity = 0.9 - 0.75 * k;
     }, rawK);
     sfx(5.8, 'heart', 0.5);
 
@@ -1510,9 +1580,11 @@
     step(19.5, () => {
       duck('v5room', 1); duck('clock', 1);
       stage.setFogDensity(0.008);
+      stage.duskFill.intensity = 0.15;
+      stage.altLight.intensity = 0.9;
       camera.rotation.z = 0;
     });
-    pitchTo(19.5, 22.0, -0.35, -0.10, smoothK);
+    pitchTo(19.5, 22.0, -0.54, -0.10, smoothK);
 
     // 27-30.6 the boy, shaky (3.55 s)
     sfx(27.0, 'v5fearB1');
@@ -1529,22 +1601,26 @@
      no strings. He stops mid-step and does not turn around.             */
   function scDismiss(c, s, api) {
     const { tr, step, sfx, fade, camTo, yawTo, pitchTo, faceFrom, rawK, smoothK,
-            duck, stage, ghostOpacity, handsRoot } = api;
-    const AT_TABLE = { x: 0.5, y: EYE, z: 0.35 };
+            duck, stage, camera, ghostOpacity, handsRoot } = api;
+    const AT_TABLE = { x: 1.7, y: EYE, z: 0.6 };  // sofa side: the note in the clear
     const Y_NOTE = faceFrom(AT_TABLE.x, AT_TABLE.z, 1.45, -0.65);
     const TO_WIN = faceFrom(0.2, -0.9, stage.WIN.x, -stage.R.z);
 
     step(0, () => { ghostOpacity(0); handsRoot.visible = false; });
+    // he watches the dismissal without a word
+    step(0.4, () => {
+      stage.tangki.rotation.y = faceFrom(0.35, -0.55, AT_TABLE.x, AT_TABLE.z) + Math.PI;
+    });
     camTo(0, 2.0, { x: s.yawPos.x, y: s.yawPos.y, z: s.yawPos.z }, AT_TABLE, smoothK);
     yawTo(0, 2.0, s.yawRot, Y_NOTE, smoothK);
-    pitchTo(0, 2.0, s.pitchX, -0.30, smoothK);
+    pitchTo(0, 2.0, s.pitchX, -0.50, smoothK);
 
     // 2.8-5.3 "Paper. It's just paper." (2.43 s)
     sfx(2.8, 'v5disC1');
 
     // 6.2-10 he turns his back on it and walks for the window
     yawTo(6.2, 8.2, Y_NOTE, TO_WIN, smoothK);
-    pitchTo(6.2, 8.2, -0.30, -0.02, smoothK);
+    pitchTo(6.2, 8.2, -0.50, -0.02, smoothK);
     camTo(6.2, 10.0, AT_TABLE, { x: 0.2, y: EYE, z: -0.9 }, smoothK);
 
     // 9.4-14.3 the tang-ki, quiet, behind him (4.91 s)
@@ -1553,11 +1629,22 @@
     /* 15.5-21 THE ANSWER, once: curtains billow with no wind; the fan
        stops mid-turn, holds, and resumes as if nothing happened.        */
     sfx(15.5, 'curtain', 0.8);
-    tr(15.5, 18.5, k => { stage.billow = Math.sin(Math.PI * k) * 0.9; }, rawK);
+    /* 1.8, not 0.9: the billow moves the cloth along the camera axis, and
+       foreshortening ate the old amplitude whole - a quarter-metre lunge is
+       what it takes to read from three metres back */
+    tr(15.5, 18.5, k => { stage.billow = Math.sin(Math.PI * k) * 1.8; }, rawK);
     tr(15.5, 16.1, k => { stage.fanSpeed = 1 - k; }, rawK);
     tr(20.0, 21.0, k => { stage.fanSpeed = k; }, rawK);
-    tr(15.5, 19.0, k => { duck('v5room', 1 - 0.7 * Math.sin(Math.PI * k)); }, rawK);
-    pitchTo(15.8, 17.0, -0.02, -0.07, smoothK);   // the flinch, mid-step
+    tr(15.5, 19.0, k => {
+      duck('v5room', 1 - 0.7 * Math.sin(Math.PI * k));
+      // the room itself dims for the length of the answer
+      stage.duskFill.intensity = 0.15 - 0.12 * Math.sin(Math.PI * k);
+    }, rawK);
+    // the flinch, mid-step: a dropped gaze and a kicked horizon, decaying
+    pitchTo(15.8, 16.6, -0.02, -0.10, smoothK);
+    pitchTo(16.6, 18.5, -0.10, -0.04, smoothK);
+    tr(15.6, 16.9, k => { camera.rotation.z = 0.035 * (1 - k); }, rawK);
+    step(17.0, () => { camera.rotation.z = 0; });
 
     // 19-23 four held seconds, back still turned
     tr(19.0, 23.0, () => {}, rawK);
@@ -1585,40 +1672,56 @@
     yawTo(0, 2.4, s.yawRot, Y_TBL, smoothK);
     pitchTo(0, 2.4, s.pitchX, -0.18, smoothK);
 
-    // 2-5.3 the tang-ki comes to the table and takes the note up
+    // 2-5.3 the tang-ki comes round to the note's edge of the table
+    step(2.0, () => { stage.tangki.rotation.y = faceFrom(0.35, -0.55, 1.5, -0.02) + Math.PI; });
     tr(2.0, 5.0, k => {
-      stage.tangki.position.set(0.9 + (0.85 - 0.9) * k, 0, -0.4 + (0.05 - -0.4) * k);
+      stage.tangki.position.set(0.35 + (1.5 - 0.35) * k, 0, -0.55 + (-0.02 - -0.55) * k);
     }, smoothK);
     sfx(4.8, 'notepull', 0.5);
     step(5.2, () => {
+      stage.tangki.rotation.y = faceFrom(1.5, -0.02, 1.45, -0.65) + Math.PI;
       stage.tangki.add(stage.note);
-      stage.note.position.set(0.2, 1.12, 0.2);
+      stage.note.position.set(0.02, 1.2, 0.3);     // pressed to the clasp
       stage.note.rotation.set(0.4, 0.3, 0.1);
     });
     sfx(5.8, 't5learnD1');                        // 2.59 s: "We return what was kept."
 
-    // 8.5-13 to the altar; Ma comes to stand at the edge of it
-    tr(8.5, 12.5, k => {
-      stage.tangki.position.set(0.85 + (-2.35 - 0.85) * k, 0, 0.05 + (-1.75 - 0.05) * k);
+    /* 8.5-13 to the altar, round the near side of the table - the straight
+       line runs THROUGH the tabletop. Ma steps up to the edge of the rite,
+       frame-left of the altar camera, where her thank-you can land on
+       someone the player can see.                                       */
+    step(8.5, () => { stage.tangki.rotation.y = faceFrom(1.5, -0.02, 0.2, 0.15) + Math.PI; });
+    tr(8.5, 10.6, k => {
+      stage.tangki.position.set(1.5 + (0.2 - 1.5) * k, 0, -0.02 + (0.15 - -0.02) * k);
     }, smoothK);
-    step(12.5, () => { stage.tangki.rotation.y = faceFrom(-2.35, -1.75, -2.85, -2.15); });
+    step(10.6, () => { stage.tangki.rotation.y = faceFrom(0.2, 0.15, -2.35, -1.75) + Math.PI; });
+    tr(10.6, 13.0, k => {
+      stage.tangki.position.set(0.2 + (-2.35 - 0.2) * k, 0, 0.15 + (-1.75 - 0.15) * k);
+    }, smoothK);
+    step(13.0, () => { stage.tangki.rotation.y = faceFrom(-2.35, -1.75, -2.85, -2.15) + Math.PI; });
     tr(9.0, 13.0, k => {
-      stage.ma.position.set(-2.45 + 0.35 * k, 0, -0.85 + (-0.5 - -0.85) * k * 2);
+      stage.ma.position.set(-2.45 + (-2.5 - -2.45) * k, 0, -0.85 + (-1.15 - -0.85) * k);
     }, smoothK);
+    step(13.0, () => { stage.ma.rotation.y = faceFrom(-2.5, -1.15, -2.85, -2.15) + Math.PI; });
     camTo(8.5, 12.5, WATCH, ALTCAM, smoothK);
     yawTo(8.5, 12.5, Y_TBL, Y_ALT, smoothK);
-    pitchTo(8.5, 12.5, -0.18, -0.06, smoothK);
+    pitchTo(8.5, 12.5, -0.18, 0.05, smoothK);
 
     // 13.8-27 the match, the burn, ONE bell — and the room lifts
     sfx(13.8, 'matchstrike', 0.85);
-    tr(14.0, 15.0, k => { stage.altLight.intensity = 2.2 + 2.3 * k; }, rawK);
+    tr(14.0, 15.0, k => { stage.altLight.intensity = 0.9 + 3.6 * k; }, rawK);
     sfx(15.2, 'noteburn', 0.85);                  // 12.04 s: the whole hold
+    /* the note burns IN WORLD SPACE, hung just off the shelf's front edge
+       and angled down at the camera - laid ON the shelf it was edge-on and
+       occluded by the board (the camera looks UP at a 1.85 m shelf)     */
     step(15.0, () => {
       stage.tangki.remove?.(stage.note);
-      stage.homeAltar.add(stage.note);
-      stage.note.position.set(0, 1.86, 0.12);
-      stage.note.rotation.set(-0.5, 0, 0);
+      stage.homeAltar.parent.add(stage.note);
+      stage.note.position.set(-2.72, 1.80, -2.02);
+      stage.note.rotation.set(-0.35,
+        faceFrom(-2.72, -2.02, ALTCAM.x, ALTCAM.z) + Math.PI, 0);
     });
+    pitchTo(15.0, 16.5, 0.05, 0.12, smoothK);     // the eye rises with the flame
     tr(15.2, 24.0, (k, t2) => {
       const sc = 1 - 0.85 * k;
       stage.note.scale.set(sc, sc, sc);
@@ -1629,9 +1732,18 @@
     sfx(17.5, 'bellring', 0.7);
     /* the flat exhales: the room's fill light lifts through the burn */
     tr(16.0, 24.0, k => { stage.duskFill.intensity = 0.15 + 0.55 * k; }, smoothK);
+    // the blaze settles to an ember once the paper is gone
+    tr(24.0, 26.5, k => { stage.altLight.intensity = 2.9 + (1.1 - 2.9) * k; }, smoothK);
+    pitchTo(26.0, 29.0, 0.12, 0.05, smoothK);
 
-    // 25-41 the three goodbyes, in turn, with real air between them
+    /* 25-41 the three goodbyes, in turn, with real air between them. He
+       turns from the altar to the boy for the lesson, and the camera leans
+       slowly in for the length of it - twenty static seconds was a wall. */
     sfx(25.0, 'v5ma2');                           // 2.12 s
+    step(27.5, () => {
+      stage.tangki.rotation.y = faceFrom(-2.35, -1.75, ALTCAM.x, ALTCAM.z) + Math.PI;
+    });
+    camTo(28.0, 44.5, ALTCAM, { x: -1.62, y: EYE - 0.02, z: -0.74 }, smoothK);
     sfx(28.2, 't5learnD2');                       // 5.56 s
     sfx(35.0, 'v5learnD');                        // 5.15 s
     sfx(41.0, 'chime', 0.5);
