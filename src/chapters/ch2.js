@@ -150,7 +150,7 @@
     const { THREE, GLTFLoader, scene, camera, yaw, LOW,
             assetBytes, rescueTextures, redoShadows,
             cnv, makeSoftDot, makeConcrete, makeLacquer,
-            makeHellNote, getState, startDecision } = ctx;
+            makeHellNote, getState, startDecision, HEAD_RE } = ctx;
 
     /* SHRINE is the engine's anchor for HER — chapter 1's burner, this
        chapter's gap. The altar is a different thing entirely and lives on
@@ -829,7 +829,11 @@
         g.position.y = -toeY * (s2 / s);
       }
 
-      g.traverse(o => { if (o.isBone && /Head$/.test(o.name) && !mumHead) mumHead = o; });
+      /* HEAD_RE, not /Head$/: glTF sanitizes `mixamorig:Head_06` to
+         `mixamorigHead_06`, so an anchored match finds NOTHING and her nods
+         silently never happen. The optional _NN keeps a clean `...Head`
+         working too, and the anchor still excludes HeadTop_End. */
+      g.traverse(o => { if (o.isBone && HEAD_RE.test(o.name) && !mumHead) mumHead = o; });
       for (const c of mumPrims) c.visible = false;
       mother.add(g);
       redoShadows();

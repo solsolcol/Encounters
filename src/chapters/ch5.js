@@ -135,7 +135,7 @@
     const { THREE, GLTFLoader, scene, camera, yaw, LOW,
             assetBytes, rescueTextures, redoShadows,
             cnv, makeSoftDot, makeConcrete, makeLacquer,
-            makeHellNote, getState, startDecision, worldSfx } = ctx;
+            makeHellNote, getState, startDecision, worldSfx, HEAD_RE } = ctx;
 
     const SHRINE = new THREE.Vector3(DATA.shrine.x, 0, DATA.shrine.z);
 
@@ -807,7 +807,7 @@
         if (!o.isBone) return;
         o.getWorldPosition(v);
         lo = Math.min(lo, v.y); hi = Math.max(hi, v.y);
-        if (/Head$/.test(o.name) && !tangHead) tangHead = o;
+        if (HEAD_RE.test(o.name) && !tangHead) tangHead = o;
       });
       if (isFinite(lo) && hi > lo) {
         const s = TANG_H / (hi - lo);

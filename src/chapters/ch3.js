@@ -204,7 +204,7 @@
     const { THREE, GLTFLoader, cloneSkinned, scene, camera, yaw, LOW,
             assetBytes, rescueTextures, redoShadows,
             cnv, makeSoftDot, makeGround, makeConcrete, makeLacquer,
-            makeHellNote, getState, startDecision } = ctx;
+            makeHellNote, getState, startDecision, HEAD_RE } = ctx;
 
     /* SHRINE is her anchor — the middle of the seating. The ALTAR is a
        different thing entirely, nine metres away at the front, and keeping
@@ -1331,7 +1331,7 @@
         if (!o.isBone) return;
         o.getWorldPosition(v);
         lo = Math.min(lo, v.y); hi = Math.max(hi, v.y);
-        if (/Head$/.test(o.name) && !headB) headB = o;
+        if (HEAD_RE.test(o.name) && !headB) headB = o;
       });
       if (isFinite(lo) && hi > lo) {
         const s = PRAY_H / (hi - lo);

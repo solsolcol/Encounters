@@ -1008,3 +1008,25 @@ BOARD — deepen the material, don't fight the light. And a curtain-billow
 that displaces vertices along local z displaces along the CAMERA AXIS
 for any camera facing the window: foreshortening ate a 12 cm billow
 whole. The amplitude that reads from three metres is a quarter metre.
+
+## A bone lookup that finds nothing is the quietest bug in the repo (v5.01)
+
+Shipped broken from v4.8 to v5.0 in THREE chapters at once, unnoticed by
+22 harnesses and two playthroughs: `/Head$/` matching a Mixamo skeleton.
+glTF sanitizes node names, so `mixamorig:Head_06` in the file is
+`mixamorigHead_06` in the scene — the anchor never matches, the variable
+stays null, and every `if (bone)` guard downstream simply skips. No
+error, no warning, no crash: ch2's mother "talked" without moving, and
+ch3's and ch5's tang-ki never bowed. The dot-stripping trap (v3.8, the
+arms rig) was already written down; what was missed is that Mixamo also
+appends `_NN`, so a name can fail an anchored match at BOTH ends.
+
+Three things follow. The regex now lives ONCE, on CHCTX as `HEAD_RE`
+(`/Head(_\d+)?$/`), beside FINGER_RE's precedent — a fact about how models
+arrive belongs to the engine, not copied into each chapter. A guard that
+silently skips is not a safe guard when the thing it guards is the whole
+feature; prefer proving the handle resolved. And the only proof that a
+bone hookup works is MEASURING THE BONE: set the driver, read
+`rotation.x`, confirm the delta (0.2024 -> 0.7042 for a 0.5 bow, released
+back to 0.2058). A screenshot of a man standing still looks identical
+whether the code ran or not.

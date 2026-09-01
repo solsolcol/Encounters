@@ -468,6 +468,12 @@ What the baseline contains, by release:
   facing needs `faceFrom(...) + Math.PI` (faceFrom aims cameras), and a
   cast member's stand must clear the furniture footprints. Sheet v12.
   docs/V5.0-CHAPTER5-PLAN.md is the build's memory.
+- **v5.01** THE HEAD BONE — `/Head$/` never matched a Mixamo skeleton
+  (glTF sanitizes `mixamorig:Head_06` to `mixamorigHead_06`), so from
+  v4.8 to v5.0 ch2's mother "talked" without moving and ch3's and ch5's
+  tang-ki never bowed — three chapters, no error, nothing on screen. The
+  regex now lives once as `CHCTX.HEAD_RE`, beside FINGER_RE's precedent.
+  Verified by MEASURING the bone, not by looking at it (LEARNINGS).
 - **v3.8** real art where there was code: a bought first-person ARM rig
   (`arms.glb`, credited to Fab) replaces the wrist-only hand pack and the
   forearm that was built out of cylinders to cover for it, and the hell

@@ -721,7 +721,17 @@ const CHCTX = {
   /* the thirteenth leak (v4.91): a chapter's WORLD may make a noise outside a
      cutscene — footsteps in the kitchen, a chair dragged in an empty room.
      Chapter 4's haunting is never seen, so this is the whole haunting. */
-  worldSfx: (name, vol, rate, pan) => snd(name, vol, rate, pan)
+  worldSfx: (name, vol, rate, pan) => snd(name, vol, rate, pan),
+  /* THE HEAD BONE, named once for everybody (v5.01). Every rigged human in
+     this game is a Mixamo skeleton, and glTF SANITIZES its node names:
+     `mixamorig:Head_06` in the file is `mixamorigHead_06` in the scene. The
+     obvious `/Head$/` therefore matches NOTHING — and a bone lookup that
+     finds nothing fails in total silence, so ch2's mother nodded at no one
+     and ch3's and ch5's tang-ki never bowed, from v4.8 to v5.0, with no
+     error anywhere. The optional `_NN` covers both naming styles and the
+     anchor still excludes HeadTop_End. Same family as FINGER_RE: a fact
+     about how models arrive, so the engine owns it, not each chapter. */
+  HEAD_RE: /Head(_\d+)?$/
 };
 if (typeof CH.build !== 'function') {
   throw new Error('chapter ' + CH_KEY + ' registered no build() — see chapters/ch1.js');
