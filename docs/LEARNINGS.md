@@ -974,3 +974,37 @@ side's floor a couple of dm through the opening (and enclose a stub room
 flush to the wall it hangs off: a side wall centred where its neighbour
 was, instead of at the opening, leaves a slot of open sky). Both leaks
 are invisible in a plan view and obvious in one probe frame at the door.
+
+## faceFrom() aims CAMERAS; a model facing needs + Math.PI (v5.0)
+
+`faceFrom(x, z, tx, tz)` returns the yaw that points a -z-forward object
+(a three.js CAMERA) at the target. The character models (the praying man,
+the mother) are +z-forward, so `model.rotation.y = faceFrom(...)` faces
+them 180° AWAY from the target. Chapter 5 was built with bare faceFrom on
+every cast facing and the probes caught it everywhere at once: the tang-ki
+delivered his altar rite INTO the camera, "faced the kitchen" with his
+back to it, and the film's insert framed his face only because two errors
+cancelled. The law: `yawTo(faceFrom(...))` for the camera, bare;
+`rotation.y = faceFrom(...) + Math.PI` for a model. Hand-authored yaw
+constants think in (sin ry, cos ry) = visual front. Chapters 2 and 4
+survived on eyeballed constants, which is why the convention was never
+written down until a chapter used faceFrom for its cast throughout.
+
+## A cast member's stand must clear the furniture footprints (v5.0)
+
+Ch5's tang-ki stood at (0.9,-0.4) — INSIDE the dining table's 1.5 x 0.9
+top centred at (1.3,-0.6). His robe hid the clipping and, worse, hid THE
+NOTE from every scene camera aimed at it. Walk targets have the same
+trap: three of the chapter's glide paths ran straight lines THROUGH the
+tabletop and needed two-leg routes. Check every stand and every straight
+glide against the footprints before probing; the probe only shows the
+symptom (a subject that never appears in frame), not the cause.
+
+## Under a bright hemi, plane displacement foreshortens away (v5.0)
+
+Two morning-light lessons from the same pass. A pale flat plane
+(curtains) under a full daylight hemisphere reads as a glowing white
+BOARD — deepen the material, don't fight the light. And a curtain-billow
+that displaces vertices along local z displaces along the CAMERA AXIS
+for any camera facing the window: foreshortening ate a 12 cm billow
+whole. The amplitude that reads from three metres is a quarter metre.

@@ -446,3 +446,43 @@ The auto-duration trap bit seven sounds (v4room 12 s came back 1 s):
 exactly. All seven were re-run at pinned durations and re-encoded from
 those masters. `v4ma2` (the tang-ki promise — the chapter's key line)
 failed BOTH first takes and needed a plain re-run ×3, text unchanged.
+
+## v5.0 additions (chapter 5 · THE LESSON) — 180 sounds in the pack
+
+Flow `onCJRf3baqVywQCBx6W5`. FOURTH speaker: the tang-ki is Bill
+(`pqHfZKP75CvOlQylNhV4`, premade, age old, "Wise, Mature, Balanced") —
+chosen for maximum distinctness from James; the workspace still has no
+Southeast Asian voice. Ma is Matilda again, DRY this time (she is in the
+room, not on the phone). James per contract. 6 SFX/beds + 13 James + 7
+tang-ki + 2 Ma; the scene-cued names are 20 STING_SAMPLE rows, `v5room`
+and `clock` are chapter ambience (no rows), the near/sit/voice lines play
+through the lines/voiceLine paths (no rows).
+
+| name | what | wired at |
+|---|---|---|
+| `doorknock` | three knocks on the front door | film 0.8 |
+| `notepull` | paper peeled from under a seat | film 26.5 · scene D 4.8 |
+| `matchstrike` | one match | scene D 13.8 |
+| `noteburn` | 12 s of paper burning — the whole hold | scene D 15.2 |
+| `teaset` | cups set down on wood | scene A 2.2 |
+| `v5room` | 12 s morning-room bed (loop; the auto-duration trap bit it once — re-run at pinned 12 s) | ambience bed |
+| `v5wake1/2/3` | James: the knock, the bow, THE NOTE | film 3.5 / 18.5 / 33.5 |
+| `v5voice` | James: "He walks the flat like he is reading it..." | voiceLine |
+| `v5near` / `v5sit` | the two proximity lines | lines.near/close |
+| `v5fearB1` | James, shaky, after the release | scene B 27.0 |
+| `v5disC1` | James: "Paper. It's just paper." | scene C 2.8 |
+| `v5learnD` | James: the last line of the episode | scene D 35.0 |
+| `v5ma1` / `v5ma2` | Ma: "Master, please come in." / "Master... thank you." | film 8.0 / scene D 25.0 |
+| `t5note` | tang-ki: "Here. Under where you sit." — his first words in five chapters | film 29.0 |
+| `t5teachA` | the 14.76 s teaching across the table | scene A 5.0 |
+| `t5hallA` | the corridor, calmly, in daylight | scene A 26.5 |
+| `t5fearB` | his voice cutting the fear replay — the release lands mid-line at 19.5 | scene B 16.5 |
+| `t5disC` | quiet, behind the turned back | scene C 9.4 |
+| `t5learnD1` / `t5learnD2` | "We return what was kept." / the lesson at the altar | scene D 5.8 / 28.2 |
+| `v5A/B/C/D` | the four outcome-card lines (`sayPrefix: 'v5'`), James' terse first-person per the vA/v2/v3/v4 convention | cards |
+
+Five of 55 generation sessions failed (eleven_v3's usual one-in-three,
+spread thin); every line had a completed sibling take, so zero re-runs.
+The pack split promoted `hallsteps`, `chair` and `doorcreak` to shared
+automatically once ch5 named them (ch4 already did) — the computed split
+doing exactly what it is for.

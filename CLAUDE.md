@@ -4,12 +4,15 @@ A 3D first-person horror-education game based on Master Z's Spiritual
 Encounters (encounters.triplegem.asia, Triple Gem Affiliation Consultancy,
 Singapore). Multi-chapter; each chapter is one small dense location, one
 supernatural encounter, one decision with consequences and a Buddhist
-teaching. Three chapters are complete and live — The Hell Note (a void
-deck, a burner, a note, her), The Presence (a bedroom, a fan, the gap
-beside the bed) and The Gathering (a seventh-month tentage in the car park
-at ten in the morning, forty people on red plastic chairs, and one of them
-facing the wrong way). All three happen at the same block. This file is the contract for how work
-on this repo happens — read it before changing anything.
+teaching. Five chapters — one complete episode — are live: The Hell Note
+(a void deck, a burner, a note, her), The Presence (a bedroom, a fan, the
+gap beside the bed), The Gathering (a seventh-month tentage in the car
+park at ten in the morning, and one chair facing the wrong way), Back
+Home (the evening after, the flat misbehaving on a poltergeist clock)
+and The Lesson (the tang-ki's morning visit, the note found, taught
+over, and returned to the fire). All five happen at the same block. This
+file is the contract for how work on this repo happens — read it before
+changing anything.
 
 ## Who you are working with
 
@@ -447,6 +450,24 @@ What the baseline contains, by release:
   terse first-person reflections ("It was never random. It followed me
   home.") matching vA–vD / v2 / v3 convention — the old ones read the
   cards aloud.
+- **v5.0** CHAPTER 5 · THE LESSON — the morning after: the tang-ki from
+  the tentage comes to the flat, reads it room by room, and pulls the
+  hell note from under the chair the player thought in — his first
+  spoken words in five chapters land on the note held up in the morning
+  light, and the title card lands on that image. Ma is home; the flat is
+  ch4's set in full sun (morning daylight declaration, lit corridors,
+  the altar lamp at ember). Four scenes: the sit-down teaching across
+  the table, the fear replay that drains the morning and releases it
+  mid-line, the dismissal the flat answers with a lunging curtain and a
+  stopped fan, and THE BURNING — the note returned to the fire at the
+  home altar, one bell, the flat exhaling, the episode's last lesson
+  delivered to camera. Ends the first episode: the five chapters run
+  DISTANCE → SMALLNESS → INVERSION → INTRUSION → RELEASE. A fourth
+  speaker (the tang-ki, Bill) joins the cast; 28 new sounds; cost in
+  engine seams: ZERO. Two laws this build wrote into LEARNINGS: a model
+  facing needs `faceFrom(...) + Math.PI` (faceFrom aims cameras), and a
+  cast member's stand must clear the furniture footprints. Sheet v12.
+  docs/V5.0-CHAPTER5-PLAN.md is the build's memory.
 - **v3.8** real art where there was code: a bought first-person ARM rig
   (`arms.glb`, credited to Fab) replaces the wrist-only hand pack and the
   forearm that was built out of cylinders to cover for it, and the hell
@@ -532,19 +553,27 @@ leitmotif. A change that blunts one of those axes is a change to the
 chapter's whole reason for existing.
 
 **Chapter 4 is built** (v4.9, revised v4.91) — BACK HOME, from the
-trial's episode 1. The four chapters now escalate DISTANCE → SMALLNESS →
-INVERSION → INTRUSION: she followed him home, and the flat with its
+trial's episode 1: she followed him home, and the flat with its
 lights on is not the refuge the word "home" promises. Since v4.91 the
 intrusion is NEVER SEEN (Chad's call): no ghost mesh, no `strings`,
 only the flat misbehaving — footsteps, a dipped light, a moved chair —
 on a poltergeist clock. The chapter closes on Ma's phone promise — the
 tang-ki comes to the house tomorrow.
 
-Next up: **chapter 5** (the tang-ki's house visit — he comes down, checks
-the flat, and FINDS the hell note; Chad's call to hold the note back from
-chapter 4 exists to arm that discovery), and the still-outstanding job of
-replacing chapter 1's placeholder choices with the real "THE OFFERINGS"
-data in `docs/source/trial-game-chapters.md`.
+**Chapter 5 is built** (v5.0) — THE LESSON, and with it the trial's
+EPISODE 1 IS COMPLETE. The five chapters escalate DISTANCE → SMALLNESS →
+INVERSION → INTRUSION → RELEASE: the tang-ki keeps Ma's promise, finds
+the note under the thinking chair, teaches at the table, and returns
+what was kept to the fire. The haunting is answered, not fought — the
+fifth chapter has no scare that is not the player's own memory replayed
+and released. `nextChapterKey()` past ch5 is null, so sealing it ends
+the run exactly as it always ended a last chapter.
+
+Next up: **episode 2** (a new location from the case files — the trial
+game has fourteen more episodes' worth of material), and the
+still-outstanding job of replacing chapter 1's placeholder choices with
+the real "THE OFFERINGS" data in
+`docs/source/trial-game-chapters.md`.
 
 The sound download is **done** (v4.2, above): split per chapter so it no
 longer grows with the game, and re-encoded from the masters. The ghost mesh

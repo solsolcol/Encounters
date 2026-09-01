@@ -5,15 +5,15 @@ without prompting for each change. This is how it works and how to run it.
 
 ## The sheet
 
-**Master Z's Encounters — GAME TEXT v11 (edit here)** in his Drive
-(id `11T7x2A4PDY0hLFBsFfSt100aIqkfiQJ6q3AITkOF8E0` — the **v11** sheet, made
-at v4.9 with chapter 4's 23 rows. v10 (v4.8's, id
-`1PoRkT2w7WxYDvJNg85v6XXt-BdgxHNtY2whXB1vvZ5o`) and everything before it
+**Master Z's Encounters — GAME TEXT v12 (edit here)** in his Drive
+(id `1GtiP5fki-rwWV1vgguB0R7rsH8bdHQDMAAXUfW0uoO0` — the **v12** sheet, made
+at v5.0 with chapter 5's 23 rows. v11 (v4.9's, id
+`11T7x2A4PDY0hLFBsFfSt100aIqkfiQJ6q3AITkOF8E0`) and everything before it
 are superseded and should not be edited. Same rule as every handover: the
 old sheet was read back and imported before the new one was generated —
 its import produced a zero diff, so no pending edit of Chad's was
 outstanding, nothing lost).
-<https://docs.google.com/spreadsheets/d/11T7x2A4PDY0hLFBsFfSt100aIqkfiQJ6q3AITkOF8E0/edit>
+<https://docs.google.com/spreadsheets/d/1GtiP5fki-rwWV1vgguB0R7rsH8bdHQDMAAXUfW0uoO0/edit>
 
 Two sheets in one session is the cost of the connector's one real
 limitation, and it is worth restating why: it can READ a sheet and it can
