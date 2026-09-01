@@ -85,15 +85,13 @@
     ghostHome: { x: -2.7, z: -1.4 },             // the dark kitchen doorway
     bounds:    { minX: -3.05, maxX: 3.05, minZ: -2.45, maxZ: 3.55 },
 
-    ghost: {
-      minDist: 1.3,
-      appearAt: 2.3,          // territory RADIUS round the chair. The spawn is
-      near: 2.0, far: 3.6,    // 2.75 m out — entering her ground is a chosen
-      cross: [1.9, 2.8],      // step toward the table, never the first frame
-      away: [1.5, 2.6],
-      behind: 1.0,
-      roam: { minX: -2.9, maxX: 2.4, minZ: -2.2, maxZ: 2.3 }
-    },
+    /* v4.91, Chad's call: she is NEVER SEEN in this chapter — not in play,
+       not in a scene, and her string leitmotif is never cued. The haunting
+       is the flat itself: footsteps in the kitchen, a light that dips, a
+       chair dragged in an empty room (the poltergeist timer in build()).
+       That is creepier, and it loads chapter 5: whatever followed him home
+       does not need to be visible to be HERE. */
+    ghost: null,
 
     /* dusk: amber dying at the horizon, violet over it, the first stars.
        The sun is below the roofline, so the key is a last low ember and
@@ -144,7 +142,7 @@
     const { THREE, GLTFLoader, scene, camera, yaw, LOW,
             assetBytes, rescueTextures, redoShadows,
             cnv, makeSoftDot, makeConcrete, makeLacquer,
-            makeHellNote, getState, startDecision } = ctx;
+            makeHellNote, getState, startDecision, worldSfx } = ctx;
 
     const SHRINE = new THREE.Vector3(DATA.shrine.x, 0, DATA.shrine.z);
 
@@ -771,50 +769,159 @@
       memRoot.add(bubble);
     }
 
-    // MEM1 · the void deck: concrete, one pillar, the burner
+    /* MEM1 · CHAPTER 1's shrine, rebuilt to its own recipe (v4.91 — Chad:
+       the flashbacks "must look exactly like back in chapter 1, 2 and 3").
+       The metal drum, the glowing ash, the lacquer plate of oranges, the
+       joss sticks with lit tips, the drifted hell notes, the void deck
+       pillars: every dimension and colour is chapter 1's own. */
     const mem1 = new THREE.Group();
     memRoot.add(mem1);
     const m1Floor = new THREE.Mesh(new THREE.PlaneGeometry(7, 7), matFloor);
     m1Floor.rotation.x = -Math.PI / 2;
     mem1.add(m1Floor);
-    const m1Pillar = new THREE.Mesh(new THREE.BoxGeometry(0.55, 2.6, 0.55), matWall);
-    m1Pillar.position.set(-1.3, 1.3, -0.8);
-    mem1.add(m1Pillar);
-    const m1Burner = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.30, 0.62, 14),
-      new THREE.MeshStandardMaterial({ color: 0x5b2019, roughness: 0.7, metalness: 0.2 }));
-    m1Burner.position.set(0.4, 0.31, 0.2);
-    mem1.add(m1Burner);
-    const m1Glow = new THREE.Mesh(new THREE.CylinderGeometry(0.30, 0.30, 0.05, 14),
-      new THREE.MeshBasicMaterial({ color: 0xff7a2e, fog: false }));
-    m1Glow.position.set(0.4, 0.60, 0.2);
-    mem1.add(m1Glow);
-    const mem1Light = new THREE.PointLight(0xff7a2e, 0, 7.5, 1.5);
-    mem1Light.position.set(0.4, 1.1, 0.2);
+    const m1Ceil = new THREE.Mesh(new THREE.PlaneGeometry(7, 7),
+      new THREE.MeshStandardMaterial({ color: 0x4e4a42, roughness: 0.95 }));
+    m1Ceil.rotation.x = Math.PI / 2;
+    m1Ceil.position.y = 2.9;
+    mem1.add(m1Ceil);
+    for (const [px, pz] of [[-1.5, -0.9], [1.8, -1.1]]) {
+      const p = new THREE.Mesh(new THREE.BoxGeometry(0.55, 2.9, 0.55), matWall);
+      p.position.set(px, 1.45, pz);
+      mem1.add(p);
+    }
+    const m1MatMetal = new THREE.MeshStandardMaterial({
+      color: 0x39332c, roughness: 0.62, metalness: 0.85, side: THREE.DoubleSide });
+    const m1Mat = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.04, 1.8),
+      new THREE.MeshStandardMaterial({ color: 0x1a1d22, roughness: 0.9 }));
+    m1Mat.position.set(0.2, 0.02, 0.2);
+    mem1.add(m1Mat);
+    const m1Drum = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.38, 0.9, 16, 1, true), m1MatMetal);
+    m1Drum.position.set(0.0, 0.45, 0.2);
+    mem1.add(m1Drum);
+    const m1Ash = new THREE.Mesh(new THREE.CircleGeometry(0.36, 16),
+      new THREE.MeshBasicMaterial({ color: 0xff5a12, fog: false }));
+    m1Ash.rotation.x = -Math.PI / 2;
+    m1Ash.position.set(0.0, 0.72, 0.2);
+    mem1.add(m1Ash);
+    {  // one of chapter 1's offering sets, to its own recipe
+      const set = new THREE.Group();
+      set.position.set(0.85, 0, 0.55);
+      set.rotation.y = 0.6;
+      mem1.add(set);
+      const plate = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.24, 0.05, 18), matLacquer);
+      plate.position.y = 0.045;
+      set.add(plate);
+      const orangeMat = new THREE.MeshStandardMaterial({ color: 0xd06a12, roughness: 0.72 });
+      for (const [ox, oz] of [[-0.07, -0.06], [0.07, 0.02], [0.0, 0.10]]) {
+        const o = new THREE.Mesh(new THREE.SphereGeometry(0.085, 12, 10), orangeMat);
+        o.position.set(ox, 0.15, oz);
+        set.add(o);
+      }
+      const m1Stick = new THREE.MeshStandardMaterial({ color: 0x2a1c14, roughness: 0.78 });
+      for (let i = 0; i < 3; i++) {
+        const st = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.52, 5), m1Stick);
+        st.position.set(-0.17 + i * 0.09, 0.3, -0.30);
+        st.rotation.z = (i - 1) * 0.06;
+        set.add(st);
+        const tip = new THREE.Mesh(new THREE.SphereGeometry(0.016, 6, 5),
+          new THREE.MeshBasicMaterial({ color: 0xff6a1f, fog: false }));
+        tip.position.set(st.position.x + (i - 1) * 0.015, 0.56, -0.30);
+        set.add(tip);
+      }
+    }
+    {  // the drifted notes — the chapter's own art, scattered where they fell
+      const noteMat = new THREE.MeshStandardMaterial({
+        map: noteTex, roughness: 0.85, side: THREE.DoubleSide });
+      const noteGeo = new THREE.PlaneGeometry(0.15, 0.09);
+      for (const [nx, nz, ry] of [[-0.5, 0.9, 0.4], [-0.75, 0.55, 2.1], [-0.3, 1.25, 1.2],
+                                  [0.45, 1.05, 2.8], [-0.95, 1.0, 0.9]]) {
+        const n = new THREE.Mesh(noteGeo, noteMat);
+        n.rotation.set(-Math.PI / 2 + 0.05, 0, ry);
+        n.position.set(nx, 0.015, nz);
+        mem1.add(n);
+      }
+    }
+    const mem1Light = new THREE.PointLight(0xff7a26, 0, 7.5, 1.5);
+    mem1Light.position.set(0.0, 1.1, 0.2);
     mem1.add(mem1Light);
 
-    // MEM2 · the bedroom corner: the bed's edge, the wall, THE GAP
+    /* MEM2 · CHAPTER 2's bedroom, rebuilt to its own recipe: the bed with
+       its dark frame, pale mattress, slate blanket and pillow; the wall a
+       hand-span away with THE GAP between; the louvred window glowing the
+       streetlight's amber; the ceiling fan overhead. */
     const mem2 = new THREE.Group();
     mem2.position.set(0, 0, -14);
     memRoot.add(mem2);
+    const m2MatWood = new THREE.MeshStandardMaterial({ color: 0x2e1f13, roughness: 0.8, metalness: 0.03 });
+    const m2MatSheet = new THREE.MeshStandardMaterial({ color: 0xb9b3a4, roughness: 0.94 });
+    const m2MatBlanket = new THREE.MeshStandardMaterial({ color: 0x4a5a6b, roughness: 0.95 });
     const m2Floor = new THREE.Mesh(new THREE.PlaneGeometry(5, 5), matFloor);
     m2Floor.rotation.x = -Math.PI / 2;
     mem2.add(m2Floor);
     const m2Wall = new THREE.Mesh(new THREE.BoxGeometry(0.12, 2.6, 4.2), matWall);
     m2Wall.position.set(-1.0, 1.3, 0);
     mem2.add(m2Wall);
-    const m2Bed = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.5, 1.9), matWoodDark);
-    m2Bed.position.set(-0.42, 0.25, 0);
+    const m2Bed = new THREE.Group();
+    m2Bed.position.set(-0.42, 0, 0);
     mem2.add(m2Bed);
-    const m2Sheet = new THREE.Mesh(new THREE.BoxGeometry(0.91, 0.16, 1.84), matSheet);
-    m2Sheet.position.set(-0.42, 0.53, 0);
-    mem2.add(m2Sheet);
+    const m2Frame = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.30, 1.90), m2MatWood);
+    m2Frame.position.y = 0.20;
+    m2Bed.add(m2Frame);
+    const m2Mattress = new THREE.Mesh(new THREE.BoxGeometry(0.91, 0.18, 1.84), m2MatSheet);
+    m2Mattress.position.y = 0.44;
+    m2Bed.add(m2Mattress);
+    const m2Blanket = new THREE.Mesh(new THREE.BoxGeometry(0.93, 0.07, 1.18), m2MatBlanket);
+    m2Blanket.position.set(0, 0.56, 0.30);
+    m2Bed.add(m2Blanket);
+    const m2Pillow = new THREE.Mesh(new THREE.BoxGeometry(0.73, 0.11, 0.34), m2MatSheet);
+    m2Pillow.position.set(0, 0.58, -0.68);
+    m2Bed.add(m2Pillow);
+    const m2Head = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.62, 0.05), m2MatWood);
+    m2Head.position.set(0, 0.55, -0.93);
+    m2Bed.add(m2Head);
     const m2GapDark = new THREE.Mesh(new THREE.PlaneGeometry(0.2, 2.0), matVoid);
     m2GapDark.rotation.x = -Math.PI / 2;
     m2GapDark.position.set(-0.87, 0.012, 0);
     mem2.add(m2GapDark);
-    const mem2Light = new THREE.SpotLight(0x6a86c8, 0, 9, 0.5, 0.55, 1.2);
-    mem2Light.position.set(2.4, 2.1, 1.4);
-    mem2Light.target.position.set(-0.8, 0.3, -0.2);
+    {  // the louvred window, glowing the streetlight's amber (ch2's louvres)
+      const wFrame = new THREE.Mesh(new THREE.BoxGeometry(1.3, 1.25, 0.06), m2MatWood);
+      wFrame.position.set(0.7, 1.55, -2.05);
+      mem2.add(wFrame);
+      const louvreMat = new THREE.MeshStandardMaterial({
+        color: 0x8a6a3a, roughness: 0.3, metalness: 0.1,
+        emissive: 0xffb267, emissiveIntensity: 0.55 });
+      const louvreGeo = new THREE.BoxGeometry(1.18, 0.075, 0.02);
+      for (let i = 0; i < 9; i++) {
+        const l = new THREE.Mesh(louvreGeo, louvreMat);
+        l.position.set(0.7, 1.02 + 0.09 + i * 0.125, -2.01);
+        l.rotation.x = -0.42;
+        mem2.add(l);
+      }
+    }
+    {  // chapter 2's ceiling fan, to its own recipe
+      const m2Fan = new THREE.Group();
+      m2Fan.position.set(0.3, 2.36, -0.2);
+      mem2.add(m2Fan);
+      const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.22, 8), m1MatMetal);
+      rod.position.y = 0.13;
+      m2Fan.add(rod);
+      const hub = new THREE.Mesh(new THREE.CylinderGeometry(0.10, 0.12, 0.07, 14), m1MatMetal);
+      m2Fan.add(hub);
+      const bladeGeo = new THREE.BoxGeometry(0.72, 0.012, 0.17);
+      for (let i = 0; i < 3; i++) {
+        const b = new THREE.Mesh(bladeGeo, m2MatWood);
+        const a = (i / 3) * Math.PI * 2;
+        b.position.set(Math.cos(a) * 0.42, -0.015, Math.sin(a) * 0.42);
+        b.rotation.y = -a;
+        b.rotation.z = 0.09;
+        m2Fan.add(b);
+      }
+      mem2.userData.fan = m2Fan;      // scene A spins it while the memory holds
+    }
+    // the streetlight: chapter 2's amber, low and sideways through the window
+    const mem2Light = new THREE.SpotLight(0xffb267, 0, 9, 0.5, 0.55, 1.2);
+    mem2Light.position.set(2.4, 2.1, -2.6);
+    mem2Light.target.position.set(-0.6, 0.4, 0.2);
     mem2.add(mem2Light); mem2.add(mem2Light.target);
     // the fan's sweep: a slow shadow bar that crosses the light
     const m2Blade = new THREE.Mesh(new THREE.BoxGeometry(1.7, 0.02, 0.24),
@@ -823,7 +930,10 @@
     m2Blade.visible = false;
     mem2.add(m2Blade);
 
-    // MEM3 · the tent: ONE red chair, facing the camera, in noon white
+    /* MEM3 · CHAPTER 3's tentage: a ROW of the real red plastic chairs
+       under the white canvas glow, three of them facing the altar the way
+       everyone sat — and ONE turned the wrong way, facing you. That single
+       image is the whole of chapter 3's dread, replayed. */
     const mem3 = new THREE.Group();
     mem3.position.set(0, 0, -28);
     memRoot.add(mem3);
@@ -831,24 +941,36 @@
       new THREE.MeshStandardMaterial({ color: 0x6b6f74, roughness: 0.9 }));
     m3Floor.rotation.x = -Math.PI / 2;
     mem3.add(m3Floor);
+    const m3Canvas = new THREE.Mesh(new THREE.PlaneGeometry(4.6, 4.6),
+      new THREE.MeshStandardMaterial({
+        color: 0xf3efe6, roughness: 0.95, side: THREE.DoubleSide,
+        emissive: 0xfff6e2, emissiveIntensity: 0.28 }));
+    m3Canvas.rotation.x = Math.PI / 2;
+    m3Canvas.position.y = 2.7;
+    mem3.add(m3Canvas);
     const matRed = new THREE.MeshStandardMaterial({ color: 0xb01a12, roughness: 0.5 });
-    const m3Chair = new THREE.Group();
-    m3Chair.position.set(0, 0, 0);
-    m3Chair.rotation.y = 0;                      // geometry faces -z: at the camera
-    mem3.add(m3Chair);
-    {  // a primitive stand-in the real chair replaces when the GLB lands
+    /* four chair anchors in one row; index 2 is the wrong-way one. The
+       geometry faces -z at rotation 0, chapter 3's own convention. */
+    const m3Chairs = [];
+    for (let i = 0; i < 4; i++) {
+      const g = new THREE.Group();
+      g.position.set(-0.95 + i * 0.62, 0, 0);
+      g.rotation.y = (i === 2) ? 0 : Math.PI;    // 2 faces the camera; the rest, the altar
+      mem3.add(g);
+      m3Chairs.push(g);
       const cSeat = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.05, 0.4), matRed);
       cSeat.position.y = 0.44;
-      m3Chair.add(cSeat);
+      g.add(cSeat);
       const cBack = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.44, 0.05), matRed);
       cBack.position.set(0, 0.68, 0.19);
-      m3Chair.add(cBack);
+      g.add(cBack);
       for (const [lx, lz] of [[-0.17, -0.15], [0.17, -0.15], [-0.17, 0.15], [0.17, 0.15]]) {
         const l = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.44, 0.04), matRed);
         l.position.set(lx, 0.22, lz);
-        m3Chair.add(l);
+        g.add(l);
       }
     }
+    const m3Chair = m3Chairs[2];                 // the cast name the scene aims at
     assetBytes('seat').then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
       if (!alive) return;
       rescueTextures(gltf, BUF);
@@ -864,11 +986,12 @@
       geo.translate(-(bb.min.x + bb.max.x) / 2, -bb.min.y, -(bb.min.z + bb.max.z) / 2);
       geo.scale(sc, sc, sc);
       geo.rotateY(Math.PI);                      // face -z, like chapter 3's
-      const real = new THREE.Mesh(geo, src.material);
-      for (const c of [...m3Chair.children]) c.visible = false;
-      m3Chair.add(real);
+      for (const g of m3Chairs) {
+        for (const c of [...g.children]) c.visible = false;
+        g.add(new THREE.Mesh(geo, src.material));
+      }
     }, () => {})).catch(() => {});
-    const mem3Light = new THREE.SpotLight(0xffffff, 0, 8, 0.42, 0.4, 1.1);
+    const mem3Light = new THREE.SpotLight(0xffffff, 0, 8, 0.62, 0.5, 1.1);
     mem3Light.position.set(0, 4.4, -1.2);
     mem3Light.target.position.set(0, 0.4, 0);
     mem3.add(mem3Light); mem3.add(mem3Light.target);
@@ -1009,7 +1132,41 @@
     let billow = 0;                 // scene C throws the curtains
 
     const _m4 = new THREE.Matrix4();
+    /* ------------------------------------------- the unseen haunting ----
+       v4.91, Chad's call: she is never shown in this chapter. What the flat
+       has instead is a poltergeist clock — every half minute or so of PLAY,
+       one thing happens that should not: slippered footsteps cross a room
+       nobody is in, the ceiling light dips and steadies, a chair is dragged
+       a hand-span, the front door is tried. The sounds are the other
+       chapters' own (her slippers are ch2's, the chair is ch3's), because
+       what followed him home brought its rooms with it. */
+    let polterClock = 0;
+    let polterNext = 26 + Math.random() * 12;    // the room settles first
+    let dipT = -1, dipBase = 3.2;
+    function polterUpdate(dt) {
+      if (getState() !== 'play') return;
+      if (dipT >= 0) {                           // a light-dip in progress
+        dipT += dt;
+        const k = Math.min(1, dipT / 1.7);
+        const flick = 0.28 + Math.abs(Math.sin(dipT * 21)) * 0.22;
+        ceilLight.intensity = dipBase * (k < 0.65 ? flick : flick + (k - 0.65) / 0.35 * (1 - flick));
+        if (k >= 1) { ceilLight.intensity = dipBase; dipT = -1; }
+      }
+      polterClock += dt;
+      if (polterClock < polterNext) return;
+      polterClock = 0;
+      polterNext = 24 + Math.random() * 20;
+      const pan = Math.random() < 0.5 ? -0.7 : 0.6;
+      const r = Math.random();
+      if (!worldSfx) return;                     // older engine: quietly nothing
+      if (r < 0.34) worldSfx('hallsteps', 0.42, 1, pan);
+      else if (r < 0.60) { dipT = 0; dipBase = ceilLight.intensity || 3.2; worldSfx('lightbuzz', 0.28); }
+      else if (r < 0.84) worldSfx('chair', 0.38, 1, pan);
+      else worldSfx('doorcreak', 0.28, 1.12, -0.4);
+    }
+
     function updateNotes(dt, t) {
+      polterUpdate(dt);
       fan.rotation.y += dt * 2.0 * fanSpeed;
 
       const air = 0.014 * noteStorm;
@@ -1359,12 +1516,12 @@
      line lands on the third, and the drum stops mid-strike.              */
   function scThink(c, s, api) {
     const { tr, step, sfx, fade, camTo, yawTo, pitchTo, faceFrom, rawK, smoothK,
-            duck, stage, ghostOpacity } = api;
+            duck, stage, ghostOpacity, handsRoot } = api;
     const M1 = { x: -41.6, y: 1.28, z: 1.9 };     // in the void deck memory
     const M2 = { x: -38.6, y: 1.05, z: -12.6 };   // at the foot of the bed
-    const M3 = { x: -40.0, y: 1.30, z: -30.4 };   // before the one red chair
+    const M3 = { x: -39.71, y: 1.30, z: -30.4 };  // before the wrong-way chair
 
-    step(0, () => { ghostOpacity(0); });
+    step(0, () => { ghostOpacity(0); handsRoot.visible = false; });
     sitDown(api, s);
 
     // 2.5–5.5 stillness at the table; the room hushes around him
@@ -1384,9 +1541,9 @@
     const M1A = { x: M1.x - 0.9, y: M1.y, z: M1.z + 1.4 };
     const M1B = { x: M1.x + 0.5, y: M1.y - 0.1, z: M1.z - 1.2 };
     camTo(6.2, 13.6, M1A, M1B, smoothK);
-    // the burner sits at world (-39.6, 0.2); both ends of the push face it
-    yawTo(6.2, 13.6, faceFrom(M1A.x, M1A.z, -39.6, 0.2),
-                     faceFrom(M1B.x, M1B.z, -39.6, 0.2), smoothK);
+    // the drum sits at world (-40.0, 0.2); both ends of the push face it
+    yawTo(6.2, 13.6, faceFrom(M1A.x, M1A.z, -40.0, 0.2),
+                     faceFrom(M1B.x, M1B.z, -40.0, 0.2), smoothK);
     pitchTo(6.2, 13.6, -0.05, -0.16, smoothK);
     tr(6.2, 13.6, (k, t2) => {
       stage.mem1Light.intensity = 3.0 * (0.85 + Math.sin(t2 * 7.1) * 0.1 + Math.sin(t2 * 2.3) * 0.08);
@@ -1412,6 +1569,8 @@
     pitchTo(14.3, 22.6, -0.10, -0.34, smoothK);
     tr(14.3, 22.6, (k, t2) => {
       stage.m2Blade.rotation.y = t2 * 2.2;        // the sweep across the light
+      const f = stage.mem2.userData.fan;          // and the fan itself, turning
+      if (f) f.rotation.y = t2 * 5.0;
     }, rawK);
     sfx(17.0, 'v4thinkA2');
 
@@ -1428,9 +1587,10 @@
     sfx(23.4, 'mem3', 0.95);
     camTo(23.3, 34.9, { x: M3.x, y: M3.y, z: M3.z + 0.2 },
                       { x: M3.x, y: M3.y - 0.08, z: M3.z + 1.55 }, smoothK);
-    // dead on: the chair at world (-40, -28), and it faces him
-    yawTo(23.3, 34.9, faceFrom(M3.x, M3.z + 0.2, -40, -28),
-                      faceFrom(M3.x, M3.z + 1.55, -40, -28), smoothK);
+    // dead on: the wrong-way chair at world (-39.71, -28), facing him out
+    // of the row that faces the altar — chapter 3's whole image, replayed
+    yawTo(23.3, 34.9, faceFrom(M3.x, M3.z + 0.2, -39.71, -28),
+                      faceFrom(M3.x, M3.z + 1.55, -39.71, -28), smoothK);
     pitchTo(23.3, 34.9, -0.08, -0.14, smoothK);
     sfx(25.0, 'v4thinkA3');           // 9.87 s measured: it OWNS the shot
 
@@ -1447,7 +1607,7 @@
     fade(36.4, 37.6, 1, 0);
     camTo(36.4, 41.4, ATTABLE, ATTABLE);
     yawTo(36.4, 41.4, 0, 0);
-    pitchTo(36.4, 39.4, -0.06, -0.30, smoothK);   // down, at his own hands
+    pitchTo(36.4, 39.4, -0.06, -0.18, smoothK);   // down, at the table edge
     tr(36.4, 39.9, k => {
       duck('v4room', 0.15 + 0.85 * k); duck('clock', 0.1 + 0.9 * k);
       duck('fan', 0.1 + 0.9 * k);
@@ -1455,6 +1615,7 @@
     sfx(38.6, 'chime', 0.5);
     tr(41.4, 43.0, () => {}, rawK);
     fade(43.0, 46.5, 0, 1);
+    step(46.4, () => { handsRoot.visible = true; });
 
     c.endFade = 1;
   }
@@ -1465,9 +1626,9 @@
      and the kitchen doorway open. Nothing touches him. Nothing needs to. */
   function scSleep(c, s, api) {
     const { tr, step, sfx, fade, camTo, yawTo, pitchTo, faceFrom, rawK, smoothK,
-            duck, stage, ghost, ghostOpacity, ghostLight, armR } = api;
+            duck, stage, ghostOpacity, handsRoot } = api;
 
-    step(0, () => { ghostOpacity(0); });
+    step(0, () => { ghostOpacity(0); handsRoot.visible = false; });
     // 0–3.5 he pushes off toward the sofa
     camTo(0, 2.6, { x: s.yawPos.x, y: s.yawPos.y, z: s.yawPos.z }, SOFAPT, smoothK);
     yawTo(0, 2.6, s.yawRot, Math.PI / 2, smoothK);
@@ -1505,21 +1666,17 @@
     pitchTo(16.5, 21.0, 0.95, 0.95);
     yawTo(16.5, 21.0, Math.PI / 2, Math.PI / 2);
 
-    // 21–27 the head turns. The kitchen doorway is a black he can feel.
+    /* 21–29.5 the head turns. The kitchen doorway is a black he can feel —
+       and NOTHING shows in it. What there is instead (v4.91, Chad's call:
+       she is never seen): slippered footsteps crossing the kitchen tiles,
+       and a chair leg dragged one hand-span over terrazzo, in a flat with
+       one person in it. He watches an empty doorway while the sounds move. */
     const TO_KITCH = faceFrom(LYING.x, LYING.z, -stage.R.x, stage.KDOOR.z);
     pitchTo(21.0, 24.5, 0.95, 0.10, smoothK);
     yawTo(21.0, 24.5, Math.PI / 2, TO_KITCH, smoothK);
-    sfx(22.5, 'strings', 0.5);
     sfx(24.0, 'heart', 0.55);
-
-    // 27–29.5 she is PAST the doorway, in the kitchen dark, for one breath
-    step(26.8, () => {
-      ghost.position.set(-stage.R.x + 0.10, 0, stage.KDOOR.z + 0.05);
-      ghost.rotation.y = Math.PI / 2;          // side-on in the doorway
-    });
-    tr(26.8, 28.2, k => { ghostOpacity(Math.min(k * 1.6, 1) * 0.30); ghostLight.intensity = 0.4 * k; }, rawK);
-    sfx(27.2, 'gsigh', 0.6);
-    tr(28.2, 29.2, k => { ghostOpacity(0.30 * (1 - k)); ghostLight.intensity = 0.4 * (1 - k); }, rawK);
+    sfx(24.6, 'hallsteps', 0.75);              // in the kitchen. Slippers. Hers.
+    sfx(27.6, 'chair', 0.8);                   // a chair moves where no one is
 
     // 29.5–33 he sits up hard; the lamp crawls back on; the room is empty
     sfx(29.5, 'boom');
@@ -1532,7 +1689,7 @@
     sfx(31.4, 'breath', 0.8);
     tr(31.5, 34.0, () => {}, rawK);
     fade(34.0, 37.5, 0, 1);
-    step(37.5, () => { armR.visible = true; });
+    step(37.5, () => { handsRoot.visible = true; });
 
     c.endFade = 1;
   }
@@ -1544,13 +1701,13 @@
      He never sees her. He is not given even that much.                   */
   function scProvoke(c, s, api) {
     const { tr, step, sfx, fade, camTo, yawTo, pitchTo, faceFrom, rawK, smoothK,
-            duck, stage, camera, ghostOpacity } = api;
+            duck, stage, camera, ghostOpacity, handsRoot } = api;
     const CENTRE = { x: 0.2, y: EYE, z: 0.5 };
     const TO_PHONE = faceFrom(CENTRE.x, CENTRE.z, -0.4, stage.R.zNear - 0.3);
     const TO_TV = faceFrom(CENTRE.x, CENTRE.z, -2.8, 0.4);
     const nz = t2 => Math.abs(Math.sin(t2 * 91.7) * 43758.5) % 1;   // deterministic static
 
-    step(0, () => { ghostOpacity(0); });
+    step(0, () => { ghostOpacity(0); handsRoot.visible = false; });
     // 0–3 up from the chair, hard — the chair legs bark on the terrazzo
     sfx(0.4, 'sitdown', 1);
     camTo(0, 2.2, { x: s.yawPos.x, y: s.yawPos.y, z: s.yawPos.z }, CENTRE, smoothK);
@@ -1591,8 +1748,8 @@
     tr(21.4, 24.0, k => { stage.billow = Math.sin(Math.PI * k); }, rawK);
     sfx(22.5, 'boom');
 
-    // 24–28 everything at once: strings, heart, strobe, the room pushing him
-    sfx(24.0, 'strings', 0.95);
+    // 24–28 everything at once: heart, strobe, the room pushing him —
+    // and her leitmotif NEVER plays in this chapter (v4.91)
     sfx(24.8, 'heart', 0.8);
     tr(24.0, 28.0, (k, t2) => {
       camera.rotation.z = 0.05 * Math.sin(t2 * 9) * k;
@@ -1624,6 +1781,7 @@
     sfx(33.5, 'v4regret', 1);
     tr(36.0, 38.0, () => {}, rawK);
     fade(38.0, 43.0, 0, 1);
+    step(42.9, () => { handsRoot.visible = true; });
 
     c.endFade = 1;
   }
@@ -1635,7 +1793,7 @@
      the house. He hangs up and the flat is 10 percent warmer.            */
   function scCall(c, s, api) {
     const { tr, step, sfx, fade, camTo, yawTo, pitchTo, faceFrom, rawK, smoothK,
-            duck, stage, ghostOpacity } = api;
+            duck, stage, ghostOpacity, handsRoot } = api;
     const TO_PHONE = faceFrom(PHONEPT.x, PHONEPT.z, -0.4, stage.R.zNear - 0.24);
     const TO_WIN = faceFrom(PHONEPT.x, PHONEPT.z, -0.4, -stage.R.z);
     const TO_HALL = faceFrom(PHONEPT.x, PHONEPT.z, 2.05, stage.R.zNear + 0.8);
@@ -1650,10 +1808,13 @@
     // 3.5–12.5 pickup, dial tone, seven beeps, and the ring
     sfx(3.6, 'phonepick', 0.9);
     step(3.7, () => {
-      /* at his ear = at the camera = out of shot. The empty cradle is what
-         the audience reads; a handset floating over the base is what they
-         got when this posed it in mid-air instead. */
-      stage.handset.visible = false;
+      /* the handset rides the viewmodel: parented into the hands rig it
+         breathes and sways with him, held up at the right of frame — the
+         phone GRABBED IN HIS HAND while he speaks (v4.91, Chad's call).
+         stage.restore() re-seats it on the cradle whatever happens. */
+      handsRoot.add(stage.handset);
+      stage.handset.position.set(0.26, -0.12, -0.48);
+      stage.handset.rotation.set(0.45, -0.6, 1.15);
     });
     pitchTo(3.7, 4.6, -0.62, -0.40, smoothK);     // lifts a shade as the handset does
     sfx(4.3, 'dialtone', 0.5);
@@ -1666,43 +1827,46 @@
     pitchTo(12.9, 14.0, -0.40, -0.50, smoothK);   // head bows into her voice
     tr(12.9, 17.7, () => {}, rawK);
 
-    // 18–27.4 his side of it — shaky, honest (5.96 s, then 3.08 s)
-    sfx(18.0, 'v4call1', 1);
-    pitchTo(18.0, 19.5, -0.50, -0.32, smoothK);   // lifts as he finds the words
-    sfx(24.3, 'v4call2', 1);
+    /* 18.6–28.4 his side of it — shaky, honest (5.96 s, then 3.08 s). The
+       gaps between turns are REAL phone gaps (v4.91: 0.35 s cuts read as
+       people talking over each other; ~1 s reads as listening). */
+    sfx(18.6, 'v4call1', 1);
+    pitchTo(18.6, 20.1, -0.50, -0.32, smoothK);   // lifts as he finds the words
+    sfx(25.3, 'v4call2', 1);
 
-    // 27.8–36.8 the promise (8.99 s). While she talks he drifts to the
+    // 29.3–38.3 the promise (8.99 s). While she talks he drifts to the
     // window: the block opposite, floor after floor of other evenings.
-    sfx(27.8, 'v4ma2', 1);
-    yawTo(29.2, 34.6, TO_PHONE, TO_WIN, smoothK);
-    camTo(29.2, 34.6, PHONEPT, { x: -0.2, y: EYE, z: 1.0 }, smoothK);
-    pitchTo(29.2, 34.6, -0.32, 0.02, smoothK);
+    sfx(29.3, 'v4ma2', 1);
+    yawTo(30.5, 36.0, TO_PHONE, TO_WIN, smoothK);
+    camTo(30.5, 36.0, PHONEPT, { x: -0.2, y: EYE, z: 1.0 }, smoothK);
+    pitchTo(30.5, 36.0, -0.32, 0.02, smoothK);
 
-    // 37.4–41.5 lock the door. Leave the light on. I'm coming home. (4.05 s)
-    sfx(37.4, 'v4ma3', 1);
-    tr(37.4, 41.4, () => {}, rawK);
+    // 39.2–43.3 lock the door. Leave the light on. I'm coming home. (4.05 s)
+    sfx(39.2, 'v4ma3', 1);
+    tr(39.2, 43.2, () => {}, rawK);
 
-    // 41.6–47.2 hang up; the exhale; the lamp comes up a shade warmer
-    yawTo(41.5, 42.8, TO_WIN, TO_PHONE, smoothK);
-    camTo(41.5, 42.8, { x: -0.2, y: EYE, z: 1.0 }, PHONEPT, smoothK);
-    pitchTo(41.5, 42.8, 0.02, -0.55, smoothK);    // down, to cradle it
-    sfx(42.9, 'phonedown', 0.85);
-    step(43.0, () => {
+    // 43.3–49.5 hang up; the exhale; the lamp comes up a shade warmer
+    yawTo(43.3, 44.6, TO_WIN, TO_PHONE, smoothK);
+    camTo(43.3, 44.6, { x: -0.2, y: EYE, z: 1.0 }, PHONEPT, smoothK);
+    pitchTo(43.3, 44.6, 0.02, -0.55, smoothK);    // down, to cradle it
+    sfx(44.7, 'phonedown', 0.85);
+    step(44.8, () => {
+      stage.phone.add(stage.handset);             // back on the cradle
       stage.handset.visible = true;
       stage.handset.position.copy(stage.HANDSET_HOME.pos);
       stage.handset.rotation.set(0, 0, 0);
     });
-    sfx(43.8, 'vrelief', 0.85);
-    tr(43.8, 46.2, k => {
+    sfx(45.6, 'vrelief', 0.85);
+    tr(45.6, 48.0, k => {
       stage.lampLight.intensity = 1.7 + 0.5 * k;
       duck('v4room', 0.5 + 0.5 * k);
     }, smoothK);
 
-    // 46.4–49.6 he looks down the corridor: the two doors. Home, with help coming.
-    yawTo(46.4, 48.2, TO_PHONE, TO_HALL, smoothK);
-    pitchTo(46.4, 48.2, -0.55, 0.0, smoothK);
-    tr(48.2, 49.2, () => {}, rawK);
-    fade(48.0, 49.6, 0, 1);
+    // 48.2–51.2 he looks down the corridor: the two doors. Home, with help coming.
+    yawTo(48.2, 50.0, TO_PHONE, TO_HALL, smoothK);
+    pitchTo(48.2, 50.0, -0.55, 0.0, smoothK);
+    tr(50.0, 51.0, () => {}, rawK);
+    fade(49.7, 51.2, 0, 1);
 
     c.endFade = 1;
   }

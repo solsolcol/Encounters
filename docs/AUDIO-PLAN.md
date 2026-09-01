@@ -438,7 +438,7 @@ STING_SAMPLE row, the three beds are chapter ambience (no rows needed).
 | `v4taunt` `v4regret` | scene C: the shout at the room, the regret | C |
 | `v4call1/2` | scene D: his side of the phone call | D |
 | `v4ma1/2/3` | Ma through the handset: answer, the tang-ki promise, goodnight | D |
-| `v4A/B/C/D` | the four outcome-card lines (`sayPrefix: 'v4'`) | cards |
+| `v4A/B/C/D` | the four outcome-card lines (`sayPrefix: 'v4'`). REGENERATED at v4.91: the first takes READ THE CARDS (7–9 s narration) — the convention (vA, v2, v3 alike) is James' own terse first-person reflection. Now: "It was never random. It followed me home." · "I ignored it. It did not ignore me." · "I dared it. In my own home. It answered." · "Help is coming tomorrow. I can hold one night." | cards |
 
 The auto-duration trap bit seven sounds (v4room 12 s came back 1 s):
 `duration_seconds`/`loop` are NODE parameters — set with

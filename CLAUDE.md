@@ -430,6 +430,23 @@ What the baseline contains, by release:
   the chapter — the tang-ki finds it in chapter 5. Cost in engine
   seams: ZERO, as planned. Sheet v11.
   docs/V4.9-CHAPTER4-PLAN.md is the build's memory.
+- **v4.91** BACK HOME REVISED — Chad's playthrough notes, all five. The
+  flashbacks are now VISUAL RECALL: each memory set rebuilt to its own
+  chapter's recipe (ch1's drum + ash + oranges + joss + drifted notes;
+  ch2's full bed, amber louvres and turning fan; ch3's ROW of real red
+  chairs with one facing the wrong way). The haunting became UNSEEN:
+  `ghost: null`, no `strings` anywhere, her silhouette cut from scene B —
+  presence is footsteps (ch2's slippers), a dipping light, a dragged
+  chair (ch3's), a tried door, both in the scenes and via a poltergeist
+  clock in play (the THIRTEENTH leak: CHCTX gains `worldSfx`, a chapter's
+  world may make a noise outside a cutscene). Hands hidden in scenes
+  A/B/C; scene D keeps them and parents the HANDSET INTO THE HAND while
+  he speaks. The overlap root-cause: play narration survived into
+  cutscenes — playCineFn now stops it (base-game-safe), and scene D's
+  phone gaps widened to real turn-taking. v4A–D regenerated as James'
+  terse first-person reflections ("It was never random. It followed me
+  home.") matching vA–vD / v2 / v3 convention — the old ones read the
+  cards aloud.
 - **v3.8** real art where there was code: a bought first-person ARM rig
   (`arms.glb`, credited to Fab) replaces the wrist-only hand pack and the
   forearm that was built out of cylinders to cover for it, and the hell
@@ -514,12 +531,14 @@ anywhere in the chapter — not even `strings`, which is, in practice, her
 leitmotif. A change that blunts one of those axes is a change to the
 chapter's whole reason for existing.
 
-**Chapter 4 is built** (v4.9) — BACK HOME, from the trial's episode 1,
-and it cost ZERO engine seams, as predicted. The four chapters now
-escalate DISTANCE → SMALLNESS → INVERSION → INTRUSION: she followed him
-home, and the flat with its lights on is not the refuge the word "home"
-promises. The chapter closes on Ma's phone promise — the tang-ki comes
-to the house tomorrow.
+**Chapter 4 is built** (v4.9, revised v4.91) — BACK HOME, from the
+trial's episode 1. The four chapters now escalate DISTANCE → SMALLNESS →
+INVERSION → INTRUSION: she followed him home, and the flat with its
+lights on is not the refuge the word "home" promises. Since v4.91 the
+intrusion is NEVER SEEN (Chad's call): no ghost mesh, no `strings`,
+only the flat misbehaving — footsteps, a dipped light, a moved chair —
+on a poltergeist clock. The chapter closes on Ma's phone promise — the
+tang-ki comes to the house tomorrow.
 
 Next up: **chapter 5** (the tang-ki's house visit — he comes down, checks
 the flat, and FINDS the hell note; Chad's call to hold the note back from

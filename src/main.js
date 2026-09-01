@@ -717,7 +717,11 @@ const CHCTX = {
   assetBytes, rescueTextures, redoShadows, loadImageTexture,
   cnv, makeSoftDot, makeGround, makeGrass, makeConcrete, makeLacquer, makeHellNote,
   getState: () => state,           // `state` is declared below; read at call time
-  startDecision                    // a hoisted declaration, so naming it here is safe
+  startDecision,                   // a hoisted declaration, so naming it here is safe
+  /* the thirteenth leak (v4.91): a chapter's WORLD may make a noise outside a
+     cutscene — footsteps in the kitchen, a chair dragged in an empty room.
+     Chapter 4's haunting is never seen, so this is the whole haunting. */
+  worldSfx: (name, vol, rate, pan) => snd(name, vol, rate, pan)
 };
 if (typeof CH.build !== 'function') {
   throw new Error('chapter ' + CH_KEY + ' registered no build() — see chapters/ch1.js');
@@ -3397,6 +3401,11 @@ function playCineFn(sceneFn, onDone, startFade = 0) {
   c.dur = c.tracks.reduce((m, tr) => Math.max(m, tr.t1), 1);
   cine = c;
   state = 'cine';
+  /* scene audio is authored: a play-state narration still talking when the
+     scene starts would run straight over the scene's own first line (ch4's
+     near line could carry three seconds into a cutscene that speaks at one) */
+  if (voiceSrc) { try { voiceSrc.stop(); } catch {} voiceSrc = null; }
+  if (narSrc) { try { narSrc.stop(); } catch {} narSrc = null; }
   ui.hud.classList.add('hide');
   ui.interact.classList.add('hide');
   hint.classList.add('hide');
