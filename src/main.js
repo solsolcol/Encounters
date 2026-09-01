@@ -71,7 +71,8 @@ const EMBED = {
   amulet: '__AMULET_B64__', audiopack: '__AUDIOPACK_B64__',
   hellnote: '__HELLNOTE_B64__',
   mother: '__MOTHER_B64__', seat: '__SEAT_B64__', cars: '__CARS_B64__',
-  guangong: '__GUANGONG_B64__', encik: '__ENCIK_B64__'
+  guangong: '__GUANGONG_B64__', encik: '__ENCIK_B64__',
+  praying: '__PRAYING_B64__', boy: '__BOY_B64__', shrine: '__SHRINE_B64__'
 };
 
 function b64ToBuffer(b64) {
@@ -712,7 +713,7 @@ function loadImageTexture(name, mime = 'image/webp') {
 }
 
 const CHCTX = {
-  THREE, GLTFLoader, scene, camera, yaw, LOW,
+  THREE, GLTFLoader, cloneSkinned, scene, camera, yaw, LOW,
   assetBytes, rescueTextures, redoShadows, loadImageTexture,
   cnv, makeSoftDot, makeGround, makeGrass, makeConcrete, makeLacquer, makeHellNote,
   getState: () => state,           // `state` is declared below; read at call time
@@ -3700,7 +3701,6 @@ function enterWorld(place, opts = {}) {
   const intro = opts.intro && typeof CH.intro === 'function' ? CH.intro : null;
 
   const card = () => playChapterCard(() => {
-    if (place && !intro) place();  // with a film, the placing already happened
     ui.hud.classList.remove('hide');
     hint.classList.remove('hide');
     setTimeout(() => hint.classList.add('hide'), 7000);
@@ -3712,7 +3712,9 @@ function enterWorld(place, opts = {}) {
     autosave(true);                // the run is recorded from its first moment
   });
 
-  if (!intro) return card();
+  // placing happens BEFORE the card, not at its dissolve: the card's
+  // fade must never reveal a frame of the world from the old vantage
+  if (!intro) { if (place) place(); return card(); }
 
   /* Black first, and hold it: the film starts on a covered screen, so the
      world snapping into its opening position is never seen. The title goes
@@ -4635,7 +4637,7 @@ window.__enc = { yaw, stats, getState: () => state,
                  get stage() { return stage; },
                  chapterWorld: () => stage.world,
                  rebuildStage,
-                 pick, chapter: CH, restart,
+                 pick, get chapter() { return CH; }, restart,
                  ready: () => ({ hdb: stage.ready(), hands: handsReady,
                                  ghost: ghostReady, hosted: HOSTED }),
                  voice: () => ({ decoded: !!voiceBuf, playing: !!voiceSrc,

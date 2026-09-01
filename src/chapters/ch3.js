@@ -151,7 +151,8 @@
        deck, chapter 2's bedroom and this car park one place. hellnote is the
        note, which is on the altar table tonight where it should have been
        all along. */
-    assets: ['hdb', 'hellnote', 'seat', 'cars', 'guangong', 'encik'],
+    assets: ['hdb', 'hellnote', 'seat', 'cars', 'guangong', 'encik',
+             'praying', 'boy', 'shrine'],
     noteArt: 'hellnote',
 
     /* The tent's own sound, in FOUR beds since v4.3 — and the loudest is
@@ -188,7 +189,7 @@
       interact: 'Watch the ritual at the altar',
       interactTouch: 'the altar'
     },
-    lines: { near: 'v3near', close: 'v3altar', nearAt: 8.5 },
+    lines: { close: 'v3altar' },
     sayPrefix: 'v3'
     /* No `voiceLine`: the opening film gives him four lines, and a fifth the
        moment the black lifts would be crowding them — chapter 2's reasoning,
@@ -200,7 +201,7 @@
   /* ====================================================================== */
 
   function build(ctx) {
-    const { THREE, GLTFLoader, scene, camera, yaw, LOW,
+    const { THREE, GLTFLoader, cloneSkinned, scene, camera, yaw, LOW,
             assetBytes, rescueTextures, redoShadows,
             cnv, makeSoftDot, makeGround, makeConcrete, makeLacquer,
             makeHellNote, getState, startDecision } = ctx;
@@ -217,10 +218,12 @@
     /* v4.7: the bought models' orientation corrections, tuned by eye from
        screenshots — a bought file's forward axis is a fact about its
        exporter, not about this tent. */
-    const SEAT_YAW = 0;               // the file already faces -z at identity
+    const SEAT_YAW = Math.PI;         // backrest at -z in the file, so identity faces +z: flip it
     const GG_YAW = 0;                 // Guan Gong faces the crowd
-    const ENCIK_YAW = 0;              // he faces +z at identity, like figure()
-    const ENCIK_Z = 0.22;             // slid back onto the seat pan
+    const ENCIK_Z = -0.05;            // hips just behind the pan centre, in his facing frame
+    const PRAY_H = 1.68;              // the praying tang-ki STANDS: a man, floor to crown
+    const BOY_YAW = 0;                // which way the boy scan faces at identity
+    const SHRINE_YAW = -0.12;         // the second figure angles toward the principal
 
     const owned = [];         // parented to the SCENE, so dispose() needs a list
     let alive = true;         // a GLB landing after dispose() must not build
@@ -919,7 +922,9 @@
         chairIM.setMatrixAt(i, _m.compose(_p, _q, _s));
       }
     }
-    let chairIM = null;              // v4.7: set when the real chair lands
+    let chairIM = null;                    // v4.7: set when the real chair lands
+    let medMixer = null, medHead = null;   // the praying tang-ki model (v4.8)
+    let encikMixers = [];                  // the audience's shared skeletons (v4.8)
 
     let ci = 0;
     for (let r = 0; r < ROW_Z.length; r++) {
@@ -983,11 +988,10 @@
       }
     }
 
-    /* Six standing at the edges — the ones who came late and the ones who
+    /* Four standing at the edges — the ones who came late and the ones who
        never sit. Two of them are down by the brazier feeding it. */
     const standers = [];
-    for (const [sx, sz, ry] of [[-4.9, 1.4, 0.15], [-4.9, -1.1, 0.05],
-                                [4.9, 2.2, -0.2], [5.1, 0.6, -0.1],
+    for (const [sx, sz, ry] of [[-4.9, 1.4, 0.15], [4.9, 2.2, -0.2],
                                 [4.6, -3.9, -1.3], [3.9, -4.6, -1.0]]) {
       if (LOW && standers.length >= 3) break;
       const f = figure({ shirt: shirtMats[(standers.length * 3) % shirtMats.length],
@@ -1118,8 +1122,17 @@
       geo.computeBoundingBox();
       const bb = geo.boundingBox;
       const s = 0.88 / (bb.max.y - bb.min.y);  // a real plastic chair's height
-      geo.translate(-(bb.min.x + bb.max.x) / 2, -bb.min.y, -(bb.min.z + bb.max.z) / 2);
+      geo.translate(-(bb.min.x + bb.max.x) / 2, -bb.min.y, 0);
       geo.scale(s, s, s);
+      /* centre z on the SEAT PAN, not the bounding box: the pan is where a
+         sitter goes, so the instance point keeps meaning "where you sit"
+         whichever way the shell leans over it */
+      { const pp = geo.attributes.position; let cz = 0, pn = 0;
+        for (let i = 0; i < pp.count; i++) {
+          const py = pp.getY(i);
+          if (py > 0.32 && py < 0.48) { cz += pp.getZ(i); pn++; }
+        }
+        if (pn) geo.translate(0, 0, -cz / pn); }
       geo.rotateY(SEAT_YAW);                   // face -z at rotation 0, like the old ones
       chairIM = new THREE.InstancedMesh(geo, src.material, N_CHAIR);
       chairIM.castShadow = !LOW;
@@ -1199,57 +1212,88 @@
       effigy.visible = false;
     });
 
-    /* THE AUDIENCE — Encik Lim Cheng Teck, sitting. One skinned model would
-       mean thirty skeletons; instead his sitting pose is BAKED into a plain
-       geometry once, on arrival, and thirty tinted meshes share it. The
-       primitives' seating plan (TAKEN), phases and sway contract carry over
-       exactly — `crowd` still holds one group per person, `userData.head`
-       still turns, crowdLife still freezes everybody dead.               */
+    /* THE AUDIENCE — Encik Lim Cheng Teck, sitting, and since v4.8 ALIVE.
+       One skeleton per person would be thirty; instead N_POSE skeletons run
+       the file's own idle offstage at staggered phases, and every sitter's
+       mesh POINTS AT one of them. In 'detached' bind mode with identity
+       binds, a clone renders  its own transform · (pose in world) — the
+       live idle, seated wherever its group is, one draw call per person
+       and no skeleton of his own. Tints, mirroring, the seating plan (TAKEN),
+       `userData.head` and the crowdLife freeze all carry over exactly. */
     loadGLB('encik', (gltf) => {
       let src = null;
       gltf.scene.traverse(o => { if (o.isSkinnedMesh && !src) src = o; });
-      if (!src) return;
-      if (gltf.animations.length) {
-        const mixer = new THREE.AnimationMixer(gltf.scene);
-        mixer.clipAction(gltf.animations[0]).play();
-        mixer.update(0.4);                     // one frame into the idle
+      if (!src || !gltf.animations.length) return;
+      const clip = gltf.animations[0];
+      const N_POSE = LOW ? 2 : 4;
+      const poseMeshes = [], mixers = [];
+      for (let j = 0; j < N_POSE; j++) {
+        const sc = cloneSkinned(gltf.scene);
+        sc.visible = false;                    // bones update; nothing draws
+        world.add(sc);
+        const mx = new THREE.AnimationMixer(sc);
+        const act = mx.clipAction(clip);
+        act.play();
+        act.time = (clip.duration * j) / N_POSE;
+        mx.update(0);
+        let sm = null;
+        sc.traverse(o => { if (o.isSkinnedMesh && !sm) sm = o; });
+        poseMeshes.push(sm);
+        mixers.push(mx);
+        sc.updateMatrixWorld(true);            // matrixWorld is copied below
       }
-      gltf.scene.updateMatrixWorld(true);
-      src.skeleton.update();
-      const geo = src.geometry.clone();
-      const pos = geo.attributes.position;
+      /* size and seat him from POSED BONES — the rule with two notches in
+         it. Named feet and crown when the rig names them; the full bone
+         span as the fallback when it does not. */
       const v = new THREE.Vector3();
-      for (let i = 0; i < pos.count; i++) {
-        v.fromBufferAttribute(pos, i);
-        src.applyBoneTransform(i, v);          // the pose, in mesh space
-        pos.setXYZ(i, v.x, v.y, v.z);
-      }
-      geo.deleteAttribute('skinIndex');
-      geo.deleteAttribute('skinWeight');
-      geo.applyMatrix4(src.matrixWorld);       // the FBX wrapper's scale
-      geo.computeVertexNormals();
-      geo.computeBoundingBox();
-      const bb = geo.boundingBox;
-      const s = 1.30 / (bb.max.y - bb.min.y);  // a seated man, floor to crown
-      geo.translate(-(bb.min.x + bb.max.x) / 2, -bb.min.y, -(bb.min.z + bb.max.z) / 2);
-      geo.scale(s, s, s);
-      geo.rotateY(ENCIK_YAW);
-      geo.translate(0, 0, ENCIK_Z);            // back onto the seat pan
+      const hip = new THREE.Vector3();
+      let footY = Infinity, crownY = -Infinity, loA = Infinity, hiA = -Infinity;
+      let hipN = 0;
+      poseMeshes[0].skeleton.bones[0].parent.traverse(o => {
+        if (!o.isBone) return;
+        o.getWorldPosition(v);
+        loA = Math.min(loA, v.y); hiA = Math.max(hiA, v.y);
+        if (/Toe|Foot/i.test(o.name)) footY = Math.min(footY, v.y);
+        if (/Head/i.test(o.name)) crownY = Math.max(crownY, v.y);
+        if (/Hips|Pelvis/i.test(o.name)) { hip.add(v); hipN++; }
+      });
+      const lo = isFinite(footY) ? footY : loA;
+      const hi = crownY > -Infinity ? crownY : hiA;
+      if (!isFinite(lo) || hi <= lo) return;
+      if (hipN) hip.divideScalar(hipN); else hip.set(0, 0, 0);
+      const s2 = 1.30 / (hi - lo);             // a seated man, floor to crown
       for (const f of crowd) f.visible = false;
       crowd.length = 0;
       for (const i of TAKEN) {
         const at = chairAt[i];
+        const srcMesh = poseMeshes[(i * 7) % N_POSE];  // neighbours differ
         const mat = src.material.clone();
         const k = 0.74 + ((i * 37) % 7) * 0.045;         // per-person light
         mat.color.setRGB(k, k * (0.95 + ((i * 13) % 3) * 0.028), k * (0.97 + ((i * 5) % 2) * 0.03));
-        const inner = new THREE.Group();
-        const body = new THREE.Mesh(geo, mat);
+        const body = srcMesh.clone();          // shares geometry AND skeleton
+        body.material = mat;
         body.castShadow = !LOW;
-        const hs = 0.96 + ((i * 11) % 5) * 0.02;
+        body.frustumCulled = false;            // its bounds live at the source
+        /* In the default 'attached' bind mode the renderer rewrites
+           bindMatrixInverse from the mesh's own matrixWorld every update —
+           which is exactly why "moving a skinned mesh does nothing": the
+           node transform cancels out and every clone drew the pose at the
+           armature's origin, stacked into one giant. 'detached' with
+           identity bind matrices keeps the node transform, so the clone
+           renders  group · inner · (pose in world)  — the live idle,
+           seated wherever the group is. (This file rebinds with identity;
+           a file with a real bindMatrix would need it folded in here.) */
+        body.bindMode = 'detached';
+        body.bindMatrix.identity();
+        body.bindMatrixInverse.identity();
+        const inner = new THREE.Group();
+        const hs = s2 * (0.96 + ((i * 11) % 5) * 0.02);
         // every other one mirrored: the pose's asymmetry flips, which does
         // more against thirty-of-one-man than any tint can (the material is
         // double-sided in the file, so the flipped winding costs nothing)
-        body.scale.set(((i * 7) % 3 === 0 ? -hs : hs), hs, hs);
+        const mir = (i * 7) % 3 === 0 ? -1 : 1;
+        inner.scale.set(mir * hs, hs, hs);
+        inner.position.set(-mir * hip.x * hs, -lo * hs, -hip.z * hs + ENCIK_Z);
         inner.add(body);
         const f = new THREE.Group();
         f.add(inner);
@@ -1260,6 +1304,120 @@
         crowdRoot.add(f);
         crowd.push(f);
       }
+      encikMixers = mixers;
+    });
+
+    /* THE TANG-KI — Chad's praying man, rigged and ANIMATED; the clip is
+       the whole point ("his animations must be preserved and shown"). He
+       joins the `medium` group, so every scene that leans, stills or
+       borrows the medium keeps working; the primitive body stays as the
+       invisible control proxy those scenes drive, and updateNotes re-lays
+       the proxy head's motion onto the model's head bone every frame. */
+    loadGLB('praying', (gltf) => {
+      const g = gltf.scene;
+      let headB = null;
+      g.traverse(o => {
+        if (o.isMesh) { o.castShadow = !LOW; o.frustumCulled = false; }
+      });
+      if (gltf.animations.length) {
+        medMixer = new THREE.AnimationMixer(g);
+        medMixer.clipAction(gltf.animations[0]).play();
+        medMixer.update(0.001);                // pose him before measuring
+      }
+      g.updateMatrixWorld(true);
+      const v = new THREE.Vector3();
+      let lo = Infinity, hi = -Infinity;
+      g.traverse(o => {
+        if (!o.isBone) return;
+        o.getWorldPosition(v);
+        lo = Math.min(lo, v.y); hi = Math.max(hi, v.y);
+        if (/Head$/.test(o.name) && !headB) headB = o;
+      });
+      if (isFinite(lo) && hi > lo) {
+        const s = PRAY_H / (hi - lo);
+        g.scale.setScalar(s);
+        g.position.y = -lo * s;
+      }
+      medHead = headB;
+      for (const c of [...medium.children]) c.visible = false;
+      stool.visible = false;                   // he STANDS; a stool under nobody floats the eye
+      medium.add(g);
+    });
+
+    /* THE BOY — Chad's chinese boy, standing in for the front-left
+       stander, where the walkable lane passes closest. A static scan; the
+       wrapper keeps the stander's sway contract, so the crowd loop drives
+       him like everyone else. */
+    loadGLB('boy', (gltf) => {
+      const g = gltf.scene;
+      g.updateMatrixWorld(true);
+      let b = new THREE.Box3().setFromObject(g);
+      if ((b.max.z - b.min.z) > (b.max.y - b.min.y) * 1.4) {
+        g.rotation.x = -Math.PI / 2;           // a scan that arrived Z-up
+        g.updateMatrixWorld(true);
+        b = new THREE.Box3().setFromObject(g);
+      }
+      const s = 1.24 / (b.max.y - b.min.y);    // a boy, not a man
+      g.scale.setScalar(s);
+      g.rotation.y = BOY_YAW;
+      g.updateMatrixWorld(true);
+      const b2 = new THREE.Box3().setFromObject(g);
+      g.position.set(-(b2.min.x + b2.max.x) / 2, -b2.min.y, -(b2.min.z + b2.max.z) / 2);
+      g.traverse(o => { if (o.isMesh) o.castShadow = !LOW; });
+      const old = standers[0];
+      if (!old) return;
+      const inner = new THREE.Group();
+      inner.add(g);
+      const f = new THREE.Group();
+      f.add(inner);
+      f.position.copy(old.position);
+      f.rotation.y = old.rotation.y;
+      f.userData.ph = old.userData.ph;
+      f.userData.head = inner;                 // the sway loop turns this
+      crowdRoot.add(f);
+      old.visible = false;
+      standers[0] = f;
+    });
+
+    /* THE SHRINE FIGURE — the seated Thai figure with the sword, beside
+       Guan Gong on his own lower plinth, the way a second deity sits
+       beside the principal one. A 770k-triangle scan cut to 27k; it ships
+       WITHOUT normals (flat ones would triple the vertex count), so
+       smooth ones are grown here, and the flat-shading flag the loader
+       sets for a normal-less mesh is cleared with them. */
+    loadGLB('shrine', (gltf) => {
+      const g = gltf.scene;
+      g.updateMatrixWorld(true);
+      g.traverse(o => {
+        if (!o.isMesh) return;
+        if (!o.geometry.attributes.normal) o.geometry.computeVertexNormals();
+        if (o.material) { o.material.flatShading = false; o.material.needsUpdate = true; }
+        o.castShadow = !LOW;
+      });
+      let b = new THREE.Box3().setFromObject(g);
+      if ((b.max.z - b.min.z) > (b.max.y - b.min.y) * 1.4) {
+        g.rotation.x = -Math.PI / 2;           // a scan that arrived Z-up
+        g.updateMatrixWorld(true);
+        b = new THREE.Box3().setFromObject(g);
+      }
+      const s = 1.12 / (b.max.y - b.min.y);    // subordinate to the 2.05 m principal
+      g.scale.setScalar(s);
+      g.updateMatrixWorld(true);
+      const b2 = new THREE.Box3().setFromObject(g);
+      g.position.set(-(b2.min.x + b2.max.x) / 2, -b2.min.y, -(b2.min.z + b2.max.z) / 2);
+      const holder = new THREE.Group();
+      holder.rotation.y = SHRINE_YAW;
+      holder.position.set(0.98, 0, -0.72);     // beside the principal's plinth
+      altar.add(holder);
+      const pl = new THREE.Mesh(new THREE.BoxGeometry(0.62, 0.60, 0.55), matCloth);
+      pl.position.y = 0.30;
+      pl.castShadow = !LOW; pl.receiveShadow = true;
+      holder.add(pl);
+      const plTrim = new THREE.Mesh(new THREE.BoxGeometry(0.66, 0.08, 0.59), matGold);
+      plTrim.position.y = 0.04;
+      holder.add(plTrim);
+      g.position.y += 0.60;
+      holder.add(g);
     });
 
     /* ================================================================== */
@@ -1476,6 +1634,13 @@
       md.head.position.x = Math.sin(t * 5.7) * 0.012 * drumBeat;
       md.torso.rotation.z = Math.sin(t * 1.7) * 0.05 * drumBeat;
       medium.rotation.z = Math.sin(t * 0.9) * 0.02 * drumBeat;
+      /* v4.8: the model tang-ki prays at the ritual's own speed — the
+         escalation quickens him, the freeze stops him mid-gesture — and
+         the proxy head's tremor is re-laid onto his head bone, so the
+         scenes' drives reach the model without knowing it exists. */
+      if (medMixer) medMixer.update(dt * Math.min(drumBeat, 2.4));
+      if (medHead) medHead.rotation.z += md.head.position.x * 7;
+      for (const em of encikMixers) em.update(dt * crowdLife);
       for (let i = 0; i < flags.length; i++) {
         flags[i].rotation.z = (i ? 1 : -1) * (0.5 + Math.sin(t * 2.1 + i) * 0.35 * drumBeat);
       }

@@ -237,7 +237,7 @@ the duration was written in the prompt text, which the model ignores.
 | vgasp | James, sharp frightened inhale, 2.1 s | A @5.02 — his eyes arrive and she is already there |
 | vscoff | James, dismissive laugh, 3.1 s | B @0.62 — before the boot, so the kick has a character behind it |
 | vpant | James, running out of breath, 4.4 s | B @4.60, under the whole run |
-| vrelief | James, quiet shaken exhale, 3.3 s | C @4.60, once he is clear |
+| vrelief | James, quiet shaken exhale, 3.8 s (REMADE v4.8 — the original take actually said "Just keep walking. Don't look back", wrong wherever relief was meant; eleven_v3 refuses a tags-only prompt, so the remake gives it breath vocalisations as text) | C @4.60, once he is clear |
 | vchantline | James, murmured chant, 9.3 s | RETIRED at v3.8 — Chad wanted the original chant with nothing spoken over it. Sample and `vchant` sting kind both kept; no scene fires it. |
 | gwail | her, low moan rising to a shriek, 4.0 s | B @3.40, as she starts after him |
 | gsigh | her, letting go, dissolving into reverb, 4.5 s | D @4.45, as she is released |
@@ -276,7 +276,7 @@ doorway, which forgives the accent.
 |---|---|---|
 | `clock` | cheap wall clock, 4 s loop | a bed of the room, and the silences |
 | `fan` | ceiling fan, slow, 5 s loop | a bed of the room |
-| `doorcreak` | a dry hinge | the opening film, B, C |
+| `doorcreak` | a domestic door: handle click, quiet swing, settle (REMADE v4.8 — Chad: the old creak "does not sound like it") | the opening film, B, C |
 | `hallsteps` | slippers on terrazzo, approaching | B |
 | `bedcreak` | a mattress and frame taking weight | the film, A, D |
 | `v2wake1` | *"It followed me home."* | the film, over black |

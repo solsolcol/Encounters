@@ -64,6 +64,15 @@ Object.assign(window.__TEXT__, {
   'credits.encik':       'The audience',
   'credits.encikWho':    'Encik Lim Cheng Teck, duduk · Sketchfab',
   'credits.encikLink':   'sketchfab.com · encik-lim-cheng-teck-duduk',
+  'credits.tangki':      'The tang-ki',
+  'credits.tangkiWho':   'Praying · Sketchfab',
+  'credits.tangkiLink':  'sketchfab.com · praying',
+  'credits.boy':         'The boy in the crowd',
+  'credits.boyWho':      'Chinese boy · Sketchfab',
+  'credits.boyLink':     'sketchfab.com · chinese-boy',
+  'credits.shrine':      'The second altar figure',
+  'credits.shrineWho':   'Seated shrine figure with sword, Thailand · Sketchfab',
+  'credits.shrineLink':  'sketchfab.com · seated-shrine-figure-with-sword-thailand',
   'credits.footer':      'Everything else in the scene — the void deck, the burner, the offerings, the hell notes, the sky and the lighting — is generated in code.',
 
   // --- chapter card (between Start and the night) --------------------------

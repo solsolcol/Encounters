@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = '4.7'
+VERSION = '4.8'
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -193,6 +193,10 @@ ASSETS = {
     'cars': ('assets/cars.glb', True, True),            # ch3
     'guangong': ('assets/guangong.glb', True, True),    # ch3
     'encik': ('assets/encik.glb', True, True),          # ch3
+    # v4.8: three more of Chad's Sketchfab picks, same pipeline
+    'praying': ('assets/praying.glb', True, True),      # ch3
+    'boy': ('assets/boy.glb', True, True),              # ch3
+    'shrine': ('assets/shrine.glb', True, True),        # ch3
 }
 
 # Hosted-only assets: shipped as a URL, never inlined as base64.

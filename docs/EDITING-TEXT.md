@@ -5,13 +5,14 @@ without prompting for each change. This is how it works and how to run it.
 
 ## The sheet
 
-**Master Z's Encounters — GAME TEXT v9 (edit here)** in his Drive
-(id `1OIloqMG-nv1aw8RYxg3RXFMaNgJ7QjkhRB7mn26MzJ4` — the **v9** sheet, made
-at v4.7 when the five bought-model credits joined the credits panel; v1–v8
-are superseded, renamed "OLD — do not edit" in his Drive, and should not be
-edited. v8 was read and compared against the game before v9 was generated:
-no pending edit of Chad's was outstanding, so nothing was lost).
-<https://docs.google.com/spreadsheets/d/1OIloqMG-nv1aw8RYxg3RXFMaNgJ7QjkhRB7mn26MzJ4/edit>
+**Master Z's Encounters — GAME TEXT v10 (edit here)** in his Drive
+(id `1PoRkT2w7WxYDvJNg85v6XXt-BdgxHNtY2whXB1vvZ5o` — the **v10** sheet, made
+at v4.8 with the three new credit rows. v9 (v4.7's, id
+`1OIloqMG-nv1aw8RYxg3RXFMaNgJ7QjkhRB7mn26MzJ4`) and everything before it
+are superseded and should not be edited. Same rule as every handover: the
+old sheet was read back and compared against the game before the new one
+was generated — no pending edit of Chad's was outstanding, nothing lost).
+<https://docs.google.com/spreadsheets/d/1PoRkT2w7WxYDvJNg85v6XXt-BdgxHNtY2whXB1vvZ5o/edit>
 
 Two sheets in one session is the cost of the connector's one real
 limitation, and it is worth restating why: it can READ a sheet and it can

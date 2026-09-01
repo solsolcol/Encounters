@@ -581,9 +581,13 @@
 
     // the architrave, so the opening is a doorway and not a hole cut in a wall
     const jambMat = new THREE.MeshStandardMaterial({ color: 0xc8c2b4, roughness: 0.8 });
-    for (const [w, h, x, y] of [[0.05, DOOR.h + 0.06, DOOR.x - DOOR.w / 2 - 0.025, (DOOR.h + 0.06) / 2],
-                                [0.05, DOOR.h + 0.06, DOOR.x + DOOR.w / 2 + 0.025, (DOOR.h + 0.06) / 2],
-                                [DOOR.w + 0.14, 0.06, DOOR.x, DOOR.h + 0.03]]) {
+    /* Trim sits 6-8 mm CLEAR of the wall's cut faces. A jamb face in the
+       same plane as the cut it wraps is two surfaces at one depth value,
+       and that flickers as the camera moves; the sliver of reveal that
+       shows plaster instead is invisible and stable. */
+    for (const [w, h, x, y] of [[0.044, DOOR.h + 0.06, DOOR.x - DOOR.w / 2 - 0.028, (DOOR.h + 0.06) / 2],
+                                [0.044, DOOR.h + 0.06, DOOR.x + DOOR.w / 2 + 0.028, (DOOR.h + 0.06) / 2],
+                                [DOOR.w + 0.14, 0.052, DOOR.x, DOOR.h + 0.034]]) {
       const j = new THREE.Mesh(new THREE.BoxGeometry(w, h, R.wall + 0.02), jambMat);
       j.position.set(x, y, R.z + R.wall / 2);
       world.add(j);
@@ -649,7 +653,7 @@
     /* Her door, shut, in the near wall past this room — which is the door
        heard opening in scene B, four seconds before she is. */
     const mumDoor = new THREE.Mesh(new THREE.BoxGeometry(0.80, 2.02, 0.04), matPaint);
-    mumDoor.position.set(2.55, 1.01, hz0 + 0.02);
+    mumDoor.position.set(2.55, 1.01, hz0 + 0.0225); // back face just off the wall plane
     world.add(mumDoor);
     const mumKnob = new THREE.Mesh(new THREE.SphereGeometry(0.032, 10, 8), matMetal);
     mumKnob.position.set(2.22, 1.02, hz0 + 0.06);
@@ -685,7 +689,7 @@
     world.add(photoFrame);
     const photo = new THREE.Mesh(new THREE.PlaneGeometry(0.27, 0.19),
       new THREE.MeshStandardMaterial({ color: 0x6b6257, roughness: 0.9 }));
-    photo.position.set(DOOR.x + 0.90, 1.52, hz1 - 0.022);
+    photo.position.set(DOOR.x + 0.90, 1.52, hz1 - 0.0245); // proud of the frame face, or the print flickers against it
     photo.rotation.y = Math.PI;
     world.add(photo);
 
@@ -775,7 +779,7 @@
        reports the BIND pose forever after, which is exactly why it is
        measured once now and never again, and why the meshes give up frustum
        culling (the bind-pose box is not where she is standing).          */
-    let mumMixer = null;
+    let mumMixer = null, mumHead = null, mumTalk = 0;
     const mumPrims = [...mother.children];       // the fallback body
     assetBytes('mother').then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
       if (!alive) return;                        // disposed while the bytes flew
@@ -825,6 +829,7 @@
         g.position.y = -toeY * (s2 / s);
       }
 
+      g.traverse(o => { if (o.isBone && /Head$/.test(o.name) && !mumHead) mumHead = o; });
       for (const c of mumPrims) c.visible = false;
       mother.add(g);
       redoShadows();
@@ -998,6 +1003,13 @@
       // the mother's idle, while she is on screen — a mixer is cheap, but a
       // mixer for somebody behind a shut door is still work for nothing
       if (mumMixer && mother.visible) mumMixer.update(dt);
+      /* v4.8, the talking beat: the file ships one clip — a standing idle,
+         no talk, no walk — so when she speaks the HEAD carries it: small
+         nods laid on top of the idle after every mixer step. */
+      if (mumHead && mumTalk > 0 && mother.visible) {
+        mumHead.rotation.x += (Math.sin(t * 8.3) * 0.05 + Math.sin(t * 12.7) * 0.022) * mumTalk;
+        mumHead.rotation.y += Math.sin(t * 3.1) * 0.05 * mumTalk;
+      }
       fan.rotation.y += dt * 2.1 * fanSpeed;
 
       // the curtain breathes, and a little more when the air does
@@ -1078,6 +1090,7 @@
       mother.position.copy(s.mumPos);
       mother.rotation.y = s.mumRot;
       mother.visible = s.mumVis;
+      mumTalk = 0;
     }
 
     // taken before a frame has run, so a restart gets the pristine values
@@ -1101,6 +1114,7 @@
       mother.position.set(MUM.x, 0, MUM.z);
       mother.rotation.y = Math.PI;
       mother.visible = false;
+      mumTalk = 0;
     }
 
     /* ------------------------------------------------------------ collision
@@ -1178,6 +1192,8 @@
       get noteStorm() { return noteStorm; },
       set noteStorm(v) { noteStorm = v; },
 
+      get mumTalk() { return mumTalk; },
+      set mumTalk(v) { mumTalk = v; },
       updateNotes, updatePile, updateFire, updateSlow,
       setNoteTexture(tex) {
         if (!tex) return;
@@ -1499,6 +1515,10 @@
 
     // "What is it? Go back to sleep." — said to his face, five seconds of it
     sfx(10.6, 'v2ma', 0.95);
+    // v4.8: she talks with the line — the stage nods her head while it runs
+    tr(10.5, 15.6, (k) => {
+      stage.mumTalk = k < 0.08 ? k / 0.08 : (k > 0.92 ? (1 - k) / 0.08 : 1);
+    }, rawK);
     tr(10.0, 11.6, (k, t2) => {          // she stands there, breathing
       mum.position.y = Math.sin(t2 * 1.4) * 0.004;
       mum.rotation.z = 0;

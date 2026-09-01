@@ -379,6 +379,25 @@ What the baseline contains, by release:
   rows. Everything loads async over invisible primitive fallbacks, so a
   failed download costs a nicer prop, never the chapter.
   docs/V4.7-MODELS.md is the build's memory, traps included.
+- **v4.8** THE LIVING CROWD — Chad's second play-through list. The chairs
+  face the altar (settled by arithmetic on the file's vertices, not by
+  eyeballing renders) and the bake centres on the seat pan; the encik
+  audience ANIMATES — four offstage skeletons run the file's idle and
+  every sitter's mesh points at one, `bindMode 'detached'` because
+  'attached' cancels a skinned mesh's node transform and stacked all
+  thirty into one giant (LEARNINGS); the tang-ki is Chad's praying-man
+  model with his clip preserved and rate-tied to `drumBeat`; a chinese
+  boy stands in the crowd and a seated shrine figure (769k tris → 27k)
+  sits beside Guan Gong; the mother TALKS through her one line
+  (head-bone nods — the file ships only a standing idle, no walk/talk
+  clips); resume no longer flashes the previous chapter (place before
+  the card); the ch2 door/photo frames stop flickering (trim clear of
+  the wall's cut planes); vrelief was TRANSCRIBED, found to say "Just
+  keep walking. Don't look back", and remade as the wordless exhale it
+  was designed to be; the door sound is a real domestic door; standers
+  6 → 4 and the 'half the block' line retired with them. CHCTX gained
+  `cloneSkinned` — the only engine seam this cost. Sheet v10.
+  docs/V4.8-NOTES.md is the build's memory.
 - **v3.8** real art where there was code: a bought first-person ARM rig
   (`arms.glb`, credited to Fab) replaces the wrist-only hand pack and the
   forearm that was built out of cylinders to cover for it, and the hell

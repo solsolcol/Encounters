@@ -874,3 +874,59 @@ the default.
   zero the factor when you drop the map. An unindexed scan (30k verts for
   10k tris) will not weld and so will not simplify: drop NORMAL, weld,
   simplify, regrow normals.
+
+## 'Attached' bind mode makes moving a skinned mesh do NOTHING (v4.8)
+
+The v4.8 audience: one skeleton animates offstage, thirty seat meshes
+share it. First attempt gave every clone its own transform — and all
+thirty rendered STACKED AT THE ORIGIN as one giant, because in three.js's
+default `bindMode: 'attached'` the renderer rewrites `bindMatrixInverse`
+from the mesh's own `matrixWorld` on every update. The node transform
+cancels itself out by construction; that IS the mechanism behind the
+folklore that "moving a skinned mesh does nothing". The fix is
+`bindMode: 'detached'` with identity bind matrices: the clone then renders
+`group · (pose in world)`, the live idle wherever the group is, one draw
+call per person and no skeleton of his own. Diagnose this class of bug by
+computing a skinned vertex CPU-side (`applyBoneTransform` + matrixWorld)
+for two clones: identical world results from different node transforms
+names the cancellation exactly.
+
+## Transcribe your shipped stems — a wrong TAKE hides for versions (v4.8)
+
+Chad asked why the mother option triggers "don't look back". Nothing cues
+such a line — until `vrelief.mp3`, documented since v2.3 as "a quiet
+shaken exhale", was TRANSCRIBED and turned out to say "Just keep walking.
+Don't look back." The wrong take was picked at generation time and no
+harness can hear; it shipped in four releases and three scenes where
+relief was meant. When a sound is voice, transcribe the file you ship
+once and compare it against the design sheet — the tooling exists and it
+is one call per stem. Related: eleven_v3 FAILS a tags-only prompt every
+time (six consecutive failures, not the usual one-in-three) — a wordless
+breath line still needs voiceable text ("Hoohh... hahh") for the tags to
+shape.
+
+## An axis argument is settled by vertices, not by screenshots (v4.8)
+
+The chair's facing flip-flopped twice by eyeballing renders before it was
+settled in one minute of arithmetic: mean z of the backrest vertices
+(upper band) vs mean z of the seat-pan vertices, in file space. Backrest
+at -z means the file faces +z, so the game (chairs face -z at rotation 0)
+needs a pi flip — no screenshot can argue with that. Same lesson as "an
+angle nobody derives is an angle somebody guessed", one notch deeper:
+when the question is which way a MODEL points, compute it from the
+geometry. And when a bake is re-centred, centre it on the functional
+point (the seat pan — where a sitter goes), not the bounding box, so the
+instance point keeps its meaning whichever way the shell leans.
+
+## Place the player BEFORE the card, or the dissolve shows the old vantage
+
+Resuming into chapter 2 flashed "chapter 1" for a split second: the
+non-intro path ran `place()` inside the chapter card's completion
+callback, so the card's dissolve raced the placement and could reveal a
+frame from the previous camera vantage in the new world. The film path
+never had the bug — it places before fading in, which was the invariant
+all along: THE WORLD IS NEVER SHOWN UNTIL THE PLAYER IS WHERE THE SAVE
+SAYS. Now both paths place first. The related trap: `window.__enc.chapter`
+was a captured binding (`chapter: CH`), stale after every setChapter —
+a probe that trusts it reports the WRONG chapter while the world is
+right; exports of rebindable state must be getters.
