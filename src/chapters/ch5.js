@@ -108,7 +108,7 @@
        praying is the tang-ki, mother is Ma, hellnote is the REAL note art
        the engine hands back through setNoteTexture: the found note on the
        table carries the photograph, not the drawn card.                 */
-    assets: ['hdb', 'seat', 'praying', 'mother', 'hellnote'],
+    assets: ['hdb', 'seat', 'praying', 'mother', 'motheranim', 'hellnote'],
     noteArt: 'hellnote',
 
     /* Morning sound: the estate awake, far off. The dread bed is all but
@@ -828,6 +828,20 @@
     maProxy.position.y = 0.75;
     ma.add(maProxy);
     let maMixer = null;
+    /* her four retargeted clips (see ch2 for the bake). Same tiny interface:
+       a scene names a clip, a negative rate runs it backwards. */
+    let maActs = null, maCur = null, maIdleBuiltin = null;
+    function maPlay(name, ts = 1) {
+      const nx = maActs && maActs[name];
+      if (!nx || (nx === maCur && nx.timeScale === ts)) return;
+      nx.reset();
+      nx.timeScale = ts;
+      if (ts < 0) nx.time = nx.getClip().duration;
+      nx.play();
+      if (maCur && maCur !== nx) maCur.crossFadeTo(nx, 0.28, false);
+      else nx.setEffectiveWeight(1);
+      maCur = nx;
+    }
     assetBytes('mother').then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
       if (!alive) return;
       rescueTextures(gltf, BUF);
@@ -841,7 +855,8 @@
         const clip = THREE.AnimationUtils.subclip(
           gltf.animations[0], 'idle', Math.round(1.6 * fps), Math.floor(8.2 * fps), fps);
         maMixer = new THREE.AnimationMixer(g);
-        maMixer.clipAction(clip).play();
+        maIdleBuiltin = maMixer.clipAction(clip);
+        maIdleBuiltin.play();
         maMixer.update(0.001);                   // pose her before measuring
       }
       g.updateMatrixWorld(true);
@@ -861,6 +876,30 @@
       maProxy.visible = false;
       ma.add(g);
       redoShadows();
+
+      /* v5.02: her four retargeted clips, same as ch2 — and the same
+         RE-GROUNDING with them, because the model's built-in idle rides
+         ~0.8 m above bind and the offset just measured is tuned to it.
+         Skip that and she is buried to the neck (ch2 measured -0.79 m). */
+      assetBytes('motheranim').then(AB => new GLTFLoader().parse(AB, '', (an) => {
+        if (!alive || !maMixer) return;
+        const acts = {};
+        for (const clip of an.animations) acts[clip.name] = maMixer.clipAction(clip);
+        if (!acts.idle) return;
+        maActs = acts;
+        if (maIdleBuiltin) maIdleBuiltin.stop();
+        maPlay('idle');
+        maMixer.update(0.001);
+        g.updateMatrixWorld(true);
+        const v2 = new THREE.Vector3();
+        let toe2 = Infinity;
+        g.traverse(o => {
+          if (!o.isBone) return;
+          o.getWorldPosition(v2);
+          if (/Toe|Foot/.test(o.name)) toe2 = Math.min(toe2, v2.y);
+        });
+        if (isFinite(toe2)) g.position.y -= toe2;
+      }, () => {})).catch(() => {});
     }, () => {})).catch(() => {});
 
     /* THE NOTE — the found thing itself. build() puts it ON THE TABLE
@@ -1111,6 +1150,7 @@
       handset.rotation.copy(s.hsRot);
       tangki.position.copy(s.tangPos); tangki.rotation.y = s.tangRot;
       ma.position.copy(s.maPos); ma.rotation.y = s.maRot;
+      maPlay('idle');
       if (s.noteParent && note.parent !== s.noteParent) s.noteParent.add(note);
       note.position.copy(s.notePos);
       note.rotation.copy(s.noteRot);
@@ -1142,6 +1182,7 @@
       tangki.rotation.y = -0.85;
       ma.position.set(-2.45, 0, -0.85);
       ma.rotation.y = 1.2;
+      maPlay('idle');
       table.add(note);
       note.position.copy(NOTE_HOME.pos);
       note.rotation.copy(NOTE_HOME.rot);
@@ -1214,7 +1255,7 @@
       curtainL, curtainR, winGroup, kitDark, homeAltar, altTip, altLight,
       ceilLight, lampLight, duskFill, outLight, fan,
       hall, bedDoor, maDoor, lateMat, litWins,
-      tangki, tangProxy, ma, note, NOTE_HOME, cup3,
+      tangki, tangProxy, ma, note, NOTE_HOME, cup3, maPlay,
       get tangBow() { return tangBow; },
       set tangBow(v) { tangBow = v; },
       CHAIR, TABLE, R, WIN, KDOOR, CORR,
@@ -1411,10 +1452,17 @@
         stage.KDOOR.z + 0.6 + (CHZ + 0.4 - (stage.KDOOR.z + 0.6)) * k);
     }, smoothK);
     yawTo(22.3, 24.2, Y_KD, faceFrom(MIDPUSH.x, MIDPUSH.z, CHX - 0.55, CHZ + 0.4), smoothK);
+    step(23.0, () => {
+      /* she turns the way she is about to travel, and WALKS it: 2.6 m over
+         4 s is 0.65 m/s, a shade brisker than the take's own 0.48, which
+         at this distance and behind the pan reads as unhurried. */
+      stage.ma.rotation.y = faceFrom(-1.45, 1.55, -2.45, -0.85) + Math.PI;
+      stage.maPlay('walkstart');
+    });
     tr(23.0, 27.0, k => {
       stage.ma.position.set(-1.45 + (-2.45 - -1.45) * k, 0, 1.55 + (-0.85 - 1.55) * k);
     }, smoothK);
-    step(27.0, () => { stage.ma.rotation.y = 1.2; });
+    step(27.0, () => { stage.ma.rotation.y = 1.2; stage.maPlay('idle'); });
     step(25.8, () => { stage.tangki.rotation.y = faceFrom(CHX - 0.55, CHZ + 0.4, CHX, CHZ) + Math.PI; });
     camTo(24.2, 24.2, LOWCAM, LOWCAM);            // a hard cut down
     yawTo(24.2, 24.2, Y_LOW, Y_LOW);
@@ -1699,10 +1747,17 @@
       stage.tangki.position.set(0.2 + (-2.35 - 0.2) * k, 0, 0.15 + (-1.75 - 0.15) * k);
     }, smoothK);
     step(13.0, () => { stage.tangki.rotation.y = faceFrom(-2.35, -1.75, -2.85, -2.15) + Math.PI; });
+    step(9.0, () => { stage.maPlay('walkstart'); });
     tr(9.0, 13.0, k => {
       stage.ma.position.set(-2.45 + (-2.5 - -2.45) * k, 0, -0.85 + (-1.15 - -0.85) * k);
     }, smoothK);
-    step(13.0, () => { stage.ma.rotation.y = faceFrom(-2.5, -1.15, -2.85, -2.15) + Math.PI; });
+    step(13.0, () => {
+      stage.ma.rotation.y = faceFrom(-2.5, -1.15, -2.85, -2.15) + Math.PI;
+      stage.maPlay('idle');                      // she settles to watch the rite
+    });
+    // and she says her thank-you on the talking take, not standing frozen
+    step(24.8, () => { stage.maPlay('talk'); });
+    step(27.6, () => { stage.maPlay('idle'); });
     camTo(8.5, 12.5, WATCH, ALTCAM, smoothK);
     yawTo(8.5, 12.5, Y_TBL, Y_ALT, smoothK);
     pitchTo(8.5, 12.5, -0.18, 0.05, smoothK);

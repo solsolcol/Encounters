@@ -5,15 +5,18 @@ without prompting for each change. This is how it works and how to run it.
 
 ## The sheet
 
-**Master Z's Encounters — GAME TEXT v12 (edit here)** in his Drive
-(id `1GtiP5fki-rwWV1vgguB0R7rsH8bdHQDMAAXUfW0uoO0` — the **v12** sheet, made
-at v5.0 with chapter 5's 23 rows. v11 (v4.9's, id
-`11T7x2A4PDY0hLFBsFfSt100aIqkfiQJ6q3AITkOF8E0`) and everything before it
-are superseded and should not be edited. Same rule as every handover: the
-old sheet was read back and imported before the new one was generated —
-its import produced a zero diff, so no pending edit of Chad's was
-outstanding, nothing lost).
-<https://docs.google.com/spreadsheets/d/1GtiP5fki-rwWV1vgguB0R7rsH8bdHQDMAAXUfW0uoO0/edit>
+**Master Z's Encounters — GAME TEXT v13 (edit here)** in his Drive
+(id `1QosBZiLpHEP1Gs-n2dISTiVcfBwIu3b2w1bpH7he5FE` — the **v13** sheet, made
+at v5.02 with the three Mixamo credit rows. v12 (v5.0's, id
+`1GtiP5fki-rwWV1vgguB0R7rsH8bdHQDMAAXUfW0uoO0`) and everything before it
+are superseded and should not be edited. Provenance, stated plainly: v12
+was made the usual way, by reading v11 back and importing it first — a
+zero diff, nothing of Chad's outstanding. v13 differs: it came from a
+code-side edit minutes later (the Mixamo credit rows) with v12 untouched
+in between, so it is v12 plus three rows and no read-back was needed.
+Whenever a sheet has been in his hands for real time, read it back and
+import FIRST — that is what the rule is for).
+<https://docs.google.com/spreadsheets/d/1QosBZiLpHEP1Gs-n2dISTiVcfBwIu3b2w1bpH7he5FE/edit>
 
 Two sheets in one session is the cost of the connector's one real
 limitation, and it is worth restating why: it can READ a sheet and it can
@@ -45,11 +48,12 @@ file.
 
 | File | Holds |
 |---|---|
-| `src/strings.js` | every UI word the ENGINE says (93) |
+| `src/strings.js` | every UI word the ENGINE says (120) |
 | `src/chapters/ch1.js` | chapter 1's own words (18): brief, prompt, choices, teachings |
 | `src/chapters/ch2.js` | chapter 2's own words (23): the same, plus its `words` block |
 | `src/chapters/ch3.js` | chapter 3's own words (23) |
 | `src/chapters/ch4.js` | chapter 4's own words (23) |
+| `src/chapters/ch5.js` | chapter 5's own words (23) |
 
 Chapters are DISCOVERED, not named: `textsync.mjs` globs `src/chapters/*.js`,
 skips fixtures (id 90+), and sorts by id. Chapter 3 joined the sheet by

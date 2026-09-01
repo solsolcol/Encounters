@@ -113,7 +113,7 @@
        new, and the most Singaporean thing in the shot. hellnote is the note
        itself, sitting on the desk where he left it: the thread out of chapter
        one, and also what the engine's in-hand note prop is textured from. */
-    assets: ['hdb', 'hellnote', 'mother'],
+    assets: ['hdb', 'hellnote', 'mother', 'motheranim'],
     noteArt: 'hellnote',
 
     /* No `voiceLine`. Chapter 1 opens on silence and gives him a line three
@@ -780,6 +780,26 @@
        measured once now and never again, and why the meshes give up frustum
        culling (the bind-pose box is not where she is standing).          */
     let mumMixer = null, mumHead = null, mumTalk = 0;
+    /* v5.02: the four RETARGETED clips (idle, talk, walkstart, walkstop),
+       baked onto her own skeleton offline so playing one costs nothing but
+       a mixer. Until they land she keeps the model's built-in idle and the
+       procedural head-nod below — a failed download costs her walk, never
+       the scene. `mumPlay` is the whole interface a cutscene needs.     */
+    let mumActs = null, mumCur = null, mumIdleBuiltin = null;
+    function mumPlay(name, ts = 1) {
+      const nx = mumActs && mumActs[name];
+      if (!nx || (nx === mumCur && nx.timeScale === ts)) return;
+      nx.reset();
+      nx.timeScale = ts;
+      /* a reversed clip has to START at its end, or it plays one frame and
+         sits on the clamp — this is how she walks BACKWARDS out of the room
+         with her face still to camera, off a forwards take. */
+      if (ts < 0) nx.time = nx.getClip().duration;
+      nx.play();
+      if (mumCur && mumCur !== nx) mumCur.crossFadeTo(nx, 0.28, false);
+      else nx.setEffectiveWeight(1);
+      mumCur = nx;
+    }
     const mumPrims = [...mother.children];       // the fallback body
     assetBytes('mother').then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
       if (!alive) return;                        // disposed while the bytes flew
@@ -804,7 +824,8 @@
         const clip = THREE.AnimationUtils.subclip(
           gltf.animations[0], 'idle', Math.round(1.6 * fps), Math.floor(8.2 * fps), fps);
         mumMixer = new THREE.AnimationMixer(g);
-        mumMixer.clipAction(clip).play();
+        mumIdleBuiltin = mumMixer.clipAction(clip);
+        mumIdleBuiltin.play();
         mumMixer.update(0.001);                  // pose her before measuring
       }
 
@@ -837,6 +858,39 @@
       for (const c of mumPrims) c.visible = false;
       mother.add(g);
       redoShadows();
+
+      /* Her clips ride on the SAME mixer and the same skeleton, and they
+         arrive after her grounding has already been measured against the
+         built-in idle — which is exactly why the block below measures it
+         again. */
+      assetBytes('motheranim').then(AB => new GLTFLoader().parse(AB, '', (an) => {
+        if (!alive || !mumMixer) return;
+        const acts = {};
+        for (const clip of an.animations) acts[clip.name] = mumMixer.clipAction(clip);
+        if (!acts.idle) return;                  // nothing usable; keep the built-in
+        mumActs = acts;
+        if (mumIdleBuiltin) mumIdleBuiltin.stop();
+        mumPlay('idle');
+
+        /* RE-GROUND, because the pose just changed under her. Her grounding
+           was measured from the model's OWN idle, and that clip rides ~0.8 m
+           above its bind (the lead-in note above is the same quirk seen from
+           the other end). These takes are ordinary Mixamo and stand at bind
+           height, so the old offset overshot and buried her to the neck —
+           measured, not guessed: toes came out at -0.79 m.
+           The law from CLAUDE.md holds either way: ground from the POSED
+           bones. The pose is new, so the measurement is taken again.     */
+        mumMixer.update(0.001);
+        g.updateMatrixWorld(true);
+        const v2 = new THREE.Vector3();
+        let toe2 = Infinity;
+        g.traverse(o => {
+          if (!o.isBone) return;
+          o.getWorldPosition(v2);
+          if (/Toe|Foot/.test(o.name)) toe2 = Math.min(toe2, v2.y);
+        });
+        if (isFinite(toe2)) g.position.y -= toe2;
+      }, () => {})).catch(() => {});
     }, (err) => console.warn('mother failed to load', err)))
       .catch(err => console.warn('mother failed to load', err));
 
@@ -1010,7 +1064,10 @@
       /* v4.8, the talking beat: the file ships one clip — a standing idle,
          no talk, no walk — so when she speaks the HEAD carries it: small
          nods laid on top of the idle after every mixer step. */
-      if (mumHead && mumTalk > 0 && mother.visible) {
+      /* the procedural nod is the FALLBACK only: once the real talking clip
+         is in, it animates the head itself and adding this on top doubles
+         the motion into a twitch. */
+      if (mumHead && mumTalk > 0 && mother.visible && !mumActs) {
         mumHead.rotation.x += (Math.sin(t * 8.3) * 0.05 + Math.sin(t * 12.7) * 0.022) * mumTalk;
         mumHead.rotation.y += Math.sin(t * 3.1) * 0.05 * mumTalk;
       }
@@ -1095,6 +1152,8 @@
       mother.rotation.y = s.mumRot;
       mother.visible = s.mumVis;
       mumTalk = 0;
+      mother.rotation.z = 0; mother.position.y = 0;
+      mumPlay('idle');
     }
 
     // taken before a frame has run, so a restart gets the pristine values
@@ -1119,6 +1178,8 @@
       mother.rotation.y = Math.PI;
       mother.visible = false;
       mumTalk = 0;
+      mother.rotation.z = 0; mother.position.y = 0;
+      mumPlay('idle');
     }
 
     /* ------------------------------------------------------------ collision
@@ -1198,6 +1259,7 @@
 
       get mumTalk() { return mumTalk; },
       set mumTalk(v) { mumTalk = v; },
+      mumPlay,
       updateNotes, updatePile, updateFire, updateSlow,
       setNoteTexture(tex) {
         if (!tex) return;
@@ -1495,14 +1557,16 @@
       stage.door.rotation.y = stage.DOOR_AJAR + (stage.DOOR_OPEN - stage.DOOR_AJAR) * k;
     }, smoothK);
     step(7.9, () => { mum.visible = true; mumAt(OUT.x, OUT.z); });
-    // in, over four unhurried steps, and she stops an arm's length away
+    /* in, over four unhurried steps, and she stops an arm's length away.
+       v5.02: those are now REAL steps. The glide covers 0.96 m in 1.8 s
+       (0.53 m/s) and the clip's own take walks at 0.48 m/s, so her feet
+       land within a tenth of the ground they cover and nothing skates.
+       The group-level bob that used to fake this is GONE — the clip's hips
+       carry it, and running both read as a limp.                       */
+    step(8.2, () => { stage.mumPlay('walkstart'); });
     tr(8.2, 10.0, k => {
       mumAt(OUT.x + (IN.x - OUT.x) * k, OUT.z + (IN.z - OUT.z) * k);
     }, smoothK);
-    tr(8.2, 10.0, (k, t2) => {           // the small sway of somebody walking
-      mum.position.y = Math.abs(Math.sin(t2 * 5.2)) * 0.012;
-      mum.rotation.z = Math.sin(t2 * 5.2) * 0.014;
-    }, rawK);
     // the hall light reaches the hands too, because it reaches everything
     tr(7.6, 9.6, k => {
       vmHemi.intensity = 0.55 + 0.5 * k;
@@ -1517,20 +1581,26 @@
       stage.fireLight.intensity = 3.4 * (1 + 0.5 * k);
     }, rawK);
 
+    step(10.0, () => { stage.mumPlay('idle'); });   // she arrives and settles
     // "What is it? Go back to sleep." — said to his face, five seconds of it
     sfx(10.6, 'v2ma', 0.95);
-    // v4.8: she talks with the line — the stage nods her head while it runs
+    /* v4.8 nodded her head procedurally; v5.02 gives her the real talking
+       take, which moves her shoulders and hands too. mumTalk stays set so
+       that a session where the clips never downloaded still gets the nod. */
+    step(10.5, () => { stage.mumPlay('talk'); });
     tr(10.5, 15.6, (k) => {
       stage.mumTalk = k < 0.08 ? k / 0.08 : (k > 0.92 ? (1 - k) / 0.08 : 1);
     }, rawK);
-    tr(10.0, 11.6, (k, t2) => {          // she stands there, breathing
-      mum.position.y = Math.sin(t2 * 1.4) * 0.004;
-      mum.rotation.z = 0;
-    }, rawK);
+    step(10.0, () => { mum.position.y = 0; mum.rotation.z = 0; });
 
     /* She goes out backwards, which is what anybody does when they are still
        looking at you and reaching for the handle — and it keeps her face on
        screen instead of her back. */
+    /* Backing out is the one move Mixamo has no take for. A walk run in
+       REVERSE is one, though: `walkstop` is a walk settling to a halt, so
+       played backwards it is a stand breaking into a backwards walk —
+       exactly her, reaching for the handle without looking away.        */
+    step(11.6, () => { stage.mumPlay('walkstop', -1); });
     tr(11.6, 13.6, k => {
       mumAt(IN.x + (BACKOUT.x - IN.x) * k, IN.z + (BACKOUT.z - IN.z) * k);
     }, smoothK);

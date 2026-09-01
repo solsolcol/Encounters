@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = '5.01'
+VERSION = '5.02'
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -197,6 +197,12 @@ ASSETS = {
     'praying': ('assets/praying.glb', True, True),      # ch3
     'boy': ('assets/boy.glb', True, True),              # ch3
     'shrine': ('assets/shrine.glb', True, True),        # ch3
+    # v5.02: four Mixamo clips RETARGETED onto the mother's skeleton offline
+    # (idle, talk, walkstart, walkstop). Her model ships only a standing
+    # idle, so every appearance of her stood still and slid. Not preloaded:
+    # she is nobody's first frame, and the chapter plays correctly with her
+    # posed until it lands. docs/V5.02-MOTHER-ANIM.md has the bake.
+    'motheranim': ('assets/motheranim.glb', True, False),   # ch2, ch5
 }
 
 # Hosted-only assets: shipped as a URL, never inlined as base64.

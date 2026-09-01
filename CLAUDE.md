@@ -474,6 +474,22 @@ What the baseline contains, by release:
   tang-ki never bowed — three chapters, no error, nothing on screen. The
   regex now lives once as `CHCTX.HEAD_RE`, beside FINGER_RE's precedent.
   Verified by MEASURING the bone, not by looking at it (LEARNINGS).
+- **v5.02** THE MOTHER WALKS — Chad's four Mixamo takes (start walking,
+  stop walking, standing idle, talking), retargeted onto her skeleton
+  OFFLINE and merged into one 224 KB `motheranim.glb` with four clips.
+  Every model in this game had shipped a POSE and slid; she is the first
+  with real movement. ch2 scene B now walks her in on real legs, settles
+  her, gives her the talking take on her line, and backs her out on
+  `walkstop` at rate **-1** — a walk settling to a halt, reversed, is a
+  backwards walk, which Mixamo has no take for. ch5's Ma walks her
+  withdrawal and her step to the altar, and talks her thank-you.
+  Two traps, both measured not guessed: three.js binds tracks BY NAME so
+  `mixamorig:Hips` had to become her `mixamorigHips_01` (the same
+  silent-failure family as v5.01), and her grounding was calibrated to the
+  model's own idle, which rides ~0.8 m above bind — reusing it buried her
+  to the neck at -0.79 m, so both chapters RE-GROUND after the swap. The
+  procedural head-nod survives as the fallback when the clips do not load.
+  Mixamo credited in the panel; sheet v13. docs/V5.02-MOTHER-ANIM.md.
 - **v3.8** real art where there was code: a bought first-person ARM rig
   (`arms.glb`, credited to Fab) replaces the wrist-only hand pack and the
   forearm that was built out of cylinders to cover for it, and the hell
