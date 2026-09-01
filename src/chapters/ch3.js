@@ -1379,9 +1379,11 @@
       standers[0] = f;
     });
 
-    /* THE SHRINE FIGURE — the seated Thai figure with the sword, beside
-       Guan Gong on his own lower plinth, the way a second deity sits
-       beside the principal one. A 770k-triangle scan cut to 27k; it ships
+    /* THE SHRINE FIGURES — the seated Thai figure with the sword, one on
+       EACH side of Guan Gong on his own lower plinth (v4.81, Chad's call),
+       the way attendant deities flank the principal one — and a pair reads
+       as an arrangement where a single one read as a spare. A 770k-triangle
+       scan cut to 27k; it ships
        WITHOUT normals (flat ones would triple the vertex count), so
        smooth ones are grown here, and the flat-shading flag the loader
        sets for a normal-less mesh is cleared with them. */
@@ -1405,19 +1407,26 @@
       g.updateMatrixWorld(true);
       const b2 = new THREE.Box3().setFromObject(g);
       g.position.set(-(b2.min.x + b2.max.x) / 2, -b2.min.y, -(b2.min.z + b2.max.z) / 2);
-      const holder = new THREE.Group();
-      holder.rotation.y = SHRINE_YAW;
-      holder.position.set(0.98, 0, -0.72);     // beside the principal's plinth
-      altar.add(holder);
-      const pl = new THREE.Mesh(new THREE.BoxGeometry(0.62, 0.60, 0.55), matCloth);
-      pl.position.y = 0.30;
-      pl.castShadow = !LOW; pl.receiveShadow = true;
-      holder.add(pl);
-      const plTrim = new THREE.Mesh(new THREE.BoxGeometry(0.66, 0.08, 0.59), matGold);
-      plTrim.position.y = 0.04;
-      holder.add(plTrim);
       g.position.y += 0.60;
-      holder.add(g);
+      /* One each side, mirrored about the principal: the second is a plain
+         clone (static scan — geometry and material are shared, so it costs
+         a draw call and nothing else), and each angles its own way inward,
+         which is what makes them read as a pair attending him rather than
+         two copies of one prop. */
+      for (const side of [1, -1]) {
+        const holder = new THREE.Group();
+        holder.rotation.y = SHRINE_YAW * side;
+        holder.position.set(0.98 * side, 0, -0.72);   // beside the principal's plinth
+        altar.add(holder);
+        const pl = new THREE.Mesh(new THREE.BoxGeometry(0.62, 0.60, 0.55), matCloth);
+        pl.position.y = 0.30;
+        pl.castShadow = !LOW; pl.receiveShadow = true;
+        holder.add(pl);
+        const plTrim = new THREE.Mesh(new THREE.BoxGeometry(0.66, 0.08, 0.59), matGold);
+        plTrim.position.y = 0.04;
+        holder.add(plTrim);
+        holder.add(side === 1 ? g : g.clone());
+      }
     });
 
     /* ================================================================== */
