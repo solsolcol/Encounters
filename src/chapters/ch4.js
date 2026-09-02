@@ -41,10 +41,10 @@
 
     choices: [
       {
-        k: 'A', text: 'Connect the locations.',
+        k: 'A', text: 'Connect the dots.',
         d: { sanity: 3, awareness: 30, wisdom: 27 },
         verdict: 'good',
-        say: 'You review the sequence and compare where each disturbance occurred. A pattern begins to emerge. The events no longer feel random.',
+        say: 'You review the sequence. A pattern begins to emerge. The events no longer feel random.',
         teach: 'Look for patterns before jumping to conclusions. Context matters.'
       },
       {
@@ -65,7 +65,7 @@
         k: 'D', text: 'Ask for help again.',
         d: { sanity: 16, awareness: 16, wisdom: 30 },
         verdict: 'best',
-        say: 'You stop trying to handle this alone. Help is coming tomorrow. Tonight, her voice is enough.',
+        say: 'You stop trying to handle this alone. Help is coming tomorrow. Tonight, mom\'s voice is enough.',
         teach: 'Knowing when to seek qualified guidance is a form of wisdom.'
       }
     ],

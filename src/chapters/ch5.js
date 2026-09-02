@@ -34,39 +34,39 @@
     cardTitle: 'The Lesson<br>What It Was All For',
 
     brief: 'Morning. Ma is home, the tea is poured, and the tang-ki from the tentage is standing in the living room reading the flat like a letter. On the table: the hell note. It was here all along.',
-    prompt: 'The tang-ki has read every room, and the note lies on the table between you. What do you ask of him?',
+    prompt: 'The tang-ki has read every room, and the hellnote lies on the table. What do you ask of him?',
 
     choices: [
       {
-        k: 'A', text: 'Seek experienced guidance.',
+        k: 'A', text: 'Seek his guidance.',
         d: { sanity: 16, awareness: 22, wisdom: 30 },
         verdict: 'good',
-        say: 'You sit down with him and ask what you should learn from everything that happened. In daylight, the same hallway is examined calmly. Fear gives way to observation.',
-        teach: 'Do not assume. Do not provoke. Observe, understand the circumstances and seek knowledge before acting.'
+        say: 'You sit down with him and ask what you should learn from everything that happened. Fear has given way to wisdom.',
+        teach: 'Do not assume. Do not provoke. Observe, understand the situation and seek guidance before acting.'
       },
       {
-        k: 'B', text: 'Trust fear alone.',
+        k: 'B', text: 'Ignore him and trust your fear alone.',
         d: { sanity: -16, awareness: -14, wisdom: -22 },
         verdict: 'bad',
-        say: 'You let the memory of the nights decide what everything means. Fear begins filling in the missing information before you verify what is actually there.',
-        teach: 'Fear is a signal, not proof. Verify before deciding what something means.'
+        say: 'Fear begins filling in the missing information before you verify what is actually there.',
+        teach: 'Always verify before deciding what something means.'
       },
       {
         k: 'C', text: 'Dismiss everything.',
         d: { sanity: 5, awareness: -19, wisdom: -19 },
         verdict: 'worst',
-        say: 'You decide every experience must have been imagination and refuse to examine any of it further. You avoid the fear — and lose what it was trying to teach.',
-        teach: 'Blind disbelief can be as unhelpful as blind belief. Discernment requires observation.'
+        say: 'You decide it must have been imagination and refuse to examine further. You lose what it was trying to teach.',
+        teach: 'Blind disbelief can be as unhelpful as blind belief. Discernment requires real observation and an open mind.'
       },
       {
-        k: 'D', text: 'Learn and move forward.',
+        k: 'D', text: 'Ask him to settle the presence.',
         d: { sanity: 19, awareness: 27, wisdom: 30 },
         verdict: 'best',
         say: 'You accept that you do not understand everything yet, and commit to learning without recklessness. The note is returned to the fire. The case becomes your first lesson.',
         teach: 'Wisdom grows when experience is combined with humility, observation and proper guidance.'
       }
     ],
-    core: 'Do not assume. Do not provoke. Observe, and seek knowledge before acting.<br><i>The first case is closed. The lesson is yours to keep.</i>',
+    core: 'Do not dismiss. Do not provoke. Observe, and seek knowledge before acting.<br><i>The first case is closed. The lesson is yours to keep.</i>',
 
     /* --- the stage ------------------------------------------------------
        The same room as chapter 4: x -3.2..3.2, z -2.6 (the window wall)

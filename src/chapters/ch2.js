@@ -36,12 +36,12 @@
     cardLabel: 'Chapter 2',
     cardTitle: 'The Presence<br>In My Own Room',
 
-    brief: 'Days later. Your own bedroom, the fan turning, the streetlight coming through the louvres. Someone has been crying in this flat and it is not your mother. Tonight the room is not empty.',
+    brief: 'Days later. Your own bedroom, the fan turning, the streetlight coming through the window. Someone has been crying in this flat and it is not your mother. Tonight the room is not empty.',
     prompt: 'Something is in the gap between the bed and the wall. What do you do?',
 
     choices: [
       {
-        k: 'A', text: 'Look behind the bed.',
+        k: 'A', text: 'Look around the bed.',
         d: { sanity: -25, awareness: 25, wisdom: 5 },
         verdict: 'worst',
         say: 'You lean over the edge and look down into the dark. It is looking back, and it has been for a while.',
@@ -51,25 +51,25 @@
         k: 'B', text: 'Call for your mother.',
         d: { sanity: 15, awareness: 12, wisdom: 25 },
         verdict: 'best',
-        say: 'You shout. Nothing, for a long moment. Then a door, and slippers on the terrazzo, and the light.',
+        say: 'You shout. Nothing. Then a door, and slippers shuffles in, and the light.',
         teach: 'Seeking help is not weakness. Knowing your limits is part of wisdom.'
       },
       {
         k: 'C', text: 'Get out of the room.',
         d: { sanity: -8, awareness: 20, wisdom: 18 },
         verdict: 'good',
-        say: 'You take the far side of the bed and go. At the door you look back, and the room looks ordinary.',
-        teach: 'Creating distance can reduce exposure even when it does not solve the cause.'
+        say: 'You decide to head out. At the door you look back, and the room looks ordinary.',
+        teach: 'Creating distance can reduce exposure even if it does not solve the cause.'
       },
       {
         k: 'D', text: 'Stay silent and do not move.',
         d: { sanity: -12, awareness: 14, wisdom: 12 },
         verdict: 'bad',
         say: 'You lie still and count the fan going round. Beside your head, the mattress takes someone’s weight.',
-        teach: 'Stillness may prevent escalation, but enduring fear indefinitely is not the same as solving the problem.'
+        teach: 'Stillness may prevent escalation, but enduring fear is not the same as solving the problem.'
       }
     ],
-    core: 'Know the edge of what you can handle, and call across it.<br><i>Kalyāṇamittatā — admirable friendship is the whole of the holy life.</i>',
+    core: 'Know the edge of what you can handle. You do not have to suffer in silence.',
 
     /* --- the stage ------------------------------------------------------
        The room's interior is x from -1.9 to 1.9 and z from -2.2 to 2.2, with

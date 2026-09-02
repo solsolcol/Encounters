@@ -52,14 +52,14 @@
        his judgement and not ours to widen. */
     choices: [
       {
-        k: 'A', text: 'Stay at the edge and watch.',
+        k: 'A', text: 'Stay at the back and watch.',
         d: { sanity: 4, awareness: 28, wisdom: 22 },
         verdict: 'good',
-        say: 'You stay at the back and let it happen in front of you. Four rows ahead, one chair is facing the wrong way.',
+        say: 'You stay at the back and watch it unfold. You\'ve never seen anything like this before.',
         teach: 'Observation before interpretation strengthens awareness.'
       },
       {
-        k: 'B', text: 'Go up and join in.',
+        k: 'B', text: 'Join the trance.',
         d: { sanity: -22, awareness: 8, wisdom: -16 },
         verdict: 'worst',
         say: 'You go up with the others. The drum is inside your chest, the air goes thin, and someone takes your arm and walks you out of it.',
@@ -70,17 +70,17 @@
         d: { sanity: 6, awareness: 22, wisdom: 30 },
         verdict: 'best',
         say: 'She does not laugh at you. She tells you what the man is doing, and what he is not. Then she tells you where not to sit.',
-        teach: 'Questioning respectfully is part of discernment. Unusual does not automatically mean supernatural.'
+        teach: 'Questioning respectfully is part of discernment.'
       },
       {
         k: 'D', text: 'Leave while you still can.',
         d: { sanity: 10, awareness: 12, wisdom: 19 },
         verdict: 'bad',
-        say: 'You are out and into the car park before the drum stops. It is quieter out here, and that turns out to be worse.',
+        say: 'You are out before the drum stops. It is quieter out here, and that turns out to be worse.',
         teach: 'Leaving can be appropriate when you lack the knowledge to engage safely.'
       }
     ],
-    core: 'Look first. Name it after.<br><i>Ehipassiko — the teaching invites you to come and see.</i>',
+    core: 'Some things lie beyond understanding. Keep an open mind, and observe before you judge.',
 
     /* --- the stage ------------------------------------------------------
        The tent runs along z, altar at -z, entrance at +z, and the player

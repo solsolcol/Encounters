@@ -326,7 +326,10 @@ const esc = s => String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/
 function writeStrings(map) {
   let s = readFileSync(P_STRINGS, 'utf8'); let n = 0;
   for (const [k, v] of Object.entries(map)) {
-    if (/^(ch\w*|voice)\./.test(k)) continue;  // a chapter's or a voice line's, not the sheet's
+    /* a chapter's key is chN.<field>; the DIGIT matters — the engine's own
+       `chapters.*` strings (the selector) start with the same two letters
+       and must NOT be skipped, which they were from v5.12 until this fix */
+    if (/^(ch\d+|voice)\./.test(k)) continue;
     const re = new RegExp(`('${k.replace(/\./g, '\\.')}':\\s*)'(?:[^'\\\\]|\\\\.)*'`);
     if (!re.test(s)) { console.error(`  ! unknown UI key, skipped: ${k}`); continue; }
     s = s.replace(re, (_, head) => `${head}'${esc(v)}'`);
