@@ -13,9 +13,13 @@ checkpoint: if a session dies mid-task, the next one resumes from the
 STATUS columns and the flow IDs below.
 
 **Main character voice (Chad's explicit pick, use everywhere, never vary):**
-voice "James - Husky, Engaging and Bold" — voice_id `EkK5I93UQWFDigLMpZcX`,
-model `eleven_v3`, stability 0 (0%). The old `assets/voice.mp3` line is
-re-generated with this voice so the whole game is one actor.
+**since v5.15 the boy is VALF — voice_id `loY1uopAz31XyhAEhNSa`**, model
+`eleven_v3` (Chad's pick from three rounds of child-voice candidates; the
+registry key and the file names stay `james`/`v*`). From v2.3 to v5.14 he
+was "James - Husky, Engaging and Bold", `EkK5I93UQWFDigLMpZcX`, stability
+0 — every `EkK5I93UQWFDigLMpZcX` below is that history, not the current
+voice. The `assets/voice.mp3` line is generated with the same voice so
+the whole game is one actor.
 
 ## Architecture decisions
 
@@ -492,3 +496,22 @@ spread thin); every line had a completed sibling take, so zero re-runs.
 The pack split promoted `hallsteps`, `chair` and `doorcreak` to shared
 automatically once ch5 named them (ch4 already did) — the computed split
 doing exactly what it is for.
+
+## v5.15 — the boy (VALF), and Chad's sheet pass
+
+Flow `ONfG5TjBa2jA5CvgvRf9`. Every line of the main character regenerated in
+VALF (`loY1uopAz31XyhAEhNSa`, eleven_v3): 82 takes, plus the changed lines
+of the other speakers — `v3aunt3/4/5` (Alice), `v4ma2` (Matilda),
+`t5teachA`, `t5fearB`, `t5disC` (Bill). 86 masters in `masters/v5.15/`,
+one row each in `progress.json` (prompt, session, measured length).
+Prompts are the registry text; `[shouting]`/`[whispering]` from the
+notes; the scares and the faint carry a fear tag. Encoded by
+`masters/v5.15/encode.mjs`: both contracts, each take PEAK-MATCHED to the
+file it replaced (never above −0.5 dB) — the new masters ran 2–4 dB hotter
+at the same peak, so a blanket gain would have re-mixed every scene.
+`src/voicelines.js` carries the new lengths; `masters/v5.15/overlapscan.mjs`
+is the timing check (see V5.15-THE-BOY.md). `vrelief` is once again the
+v4.8 recipe: "[exhales, shaken, relieved] Hoohh... hahh." — a tags-only
+prompt failed three times first (LEARNINGS said it would). Transcribed
+after generation: empty, i.e. wordless. Four generations failed on the
+first run (vrelief ×3, none other); zero re-runs beyond that.

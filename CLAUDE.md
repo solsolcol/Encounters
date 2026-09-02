@@ -224,10 +224,13 @@ cap. All playback through
 the shared Web Audio context — never `<audio src=data:>` — and everything
 obeys the one mute button. Since v2.3 the game runs a full generated
 soundscape: 95 sounds + the James opening line — loops, UI cues, ghost vocalisations,
-cutscene stings, ending music beds, and in-world narration lines. Three
-speakers now: James (`EkK5I93UQWFDigLMpZcX`), chapter 2's Mother (Matilda,
-`XrExE9yKIg1WjnnlVkGX`) and chapter 3's auntie (Alice,
-`Xb7hH8MSUJpSbSDYk0k2`) — all eleven_v3. The workspace has no Southeast
+cutscene stings, ending music beds, and in-world narration lines. Four
+speakers now: the boy (VALF, `loY1uopAz31XyhAEhNSa` — since v5.15, Chad's
+pick after three rounds of candidates; the registry still calls him
+`james` and the files `v*`, because renaming eighty-two keys buys
+nothing), chapter 2's Mother (Matilda, `XrExE9yKIg1WjnnlVkGX`), chapter
+3's auntie (Alice, `Xb7hH8MSUJpSbSDYk0k2`) and the tang-ki (Bill,
+`pqHfZKP75CvOlQylNhV4`) — all eleven_v3. The workspace has no Southeast
 Asian voice at all; what those two were actually chosen for is that they do
 not sound like each other. The procedural stings in main.js remain only as
 the decode-time fallback. docs/AUDIO-PLAN.md has the full inventory, cue map
@@ -701,6 +704,26 @@ What the baseline contains, by release:
   carries the voice lines** (Chad's rule). No engine change; the shipped
   bytes differ from v5.13 only by the version under Credits.
   docs/V5.14-VOICE-LINES.md.
+- **v5.15** THE BOY — the main character re-voiced as a boy (VALF, Chad's
+  pick from three rounds of candidates; "aaron is the closest, but still
+  not quite there") and Chad's first full editing pass over the sheet:
+  every one of his v19 changes applied — UI words (Equipped, Bag, the
+  selector's hint, the credits footer), chapter choices, outcomes and
+  teachings (ch2 and ch3's `core` lost their Pali line by his choice),
+  and 24 voice lines. All 82 of the boy's takes regenerated, plus the
+  changed lines of Ma, the auntie and the tang-ki: 86 masters, each
+  peak-matched to the file it replaced (the v4.8 rule), both encodings,
+  every `secs` in the registry re-measured. Timing was checked by a
+  STATIC SCAN (cue + measured length vs the next cue and the scene end)
+  rather than by ear: no new collision; ch3 scene B's tail +0.4 s and
+  ch5 scene C's answer +1.0 s were the only moves. Two bugs found on
+  the way: `textsync import` had skipped the selector's `chapters.*`
+  strings since v5.12 (a `ch` prefix mistaken for a chapter's), and
+  `vrelief` failed three times as a tags-only prompt before the v4.8
+  recipe in LEARNINGS was re-read — the lesson was already written down.
+  Built in five checkpoints against context loss (`masters/v5.15/` holds
+  the progress record and the scripts). Sheet v20.
+  docs/V5.15-THE-BOY.md is the build's memory.
 - **v3.8** real art where there was code: a bought first-person ARM rig
   (`arms.glb`, credited to Fab) replaces the wrist-only hand pack and the
   forearm that was built out of cylinders to cover for it, and the hell

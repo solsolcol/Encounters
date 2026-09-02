@@ -1360,3 +1360,25 @@ timestamps, but each line is a sentence and the order is known) and to
 keep the words IN ONE FILE beside the take, with a harness that refuses a
 take with no row. The registry says what is heard. When a take is
 regenerated, listen to it — or transcribe it — before its text is trusted.
+
+## Check the timing of a re-voice by arithmetic, not by ear (v5.15)
+
+Re-voicing the main character changed the length of 81 of 86 takes, some by
+half (v4voice 4.9 s -> 1.3 s, vnote 7.7 -> 3.9) and some the other way
+(vD 6.7 -> 9.5, v4regret 5.6 -> 7.5). Listening to twenty-six scenes for
+collisions is an afternoon and misses the quiet ones. `overlapscan.mjs`
+does it in a second: every `sfx(at, kind)` whose kind maps to a voice
+sample, plus its MEASURED length from the registry, against the next
+voice cue (a 0.3 s comfort gap) and the scene's end (max t1 of its
+tracks, exactly how `c.dur` is computed) — and it reports whether the
+flag was already true at the previous version, so a pre-existing
+trailing exhale is not mistaken for a regression. Two truths the scan
+cannot see and a human must: a take that got SHORTER leaves air in a
+shot written for the long one (usually fine), and an action keyed to a
+line's END (ch5 scene C's curtain, 1.2 s after the tang-ki's last word)
+moves with the line or lands on his syllable. Read the beat around every
+line that grew. Related, and already written above under v4.8: eleven_v3
+fails a tags-only prompt every time — the lesson was in this file and
+`vrelief` still cost three failed runs before it was re-read. When a
+generation fails twice with the text unchanged, grep LEARNINGS for the
+sound's name before trying a third wording.
