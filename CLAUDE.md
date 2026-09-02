@@ -588,6 +588,27 @@ What the baseline contains, by release:
   aspect-ratio in a flex column is not a definite height; a shelf tier's
   board is where its own cups are, not where its box starts. Sheet v16.
   docs/V5.08-ALTAR-AND-DOLL.md is the build's memory.
+- **v5.09** THE EQUIPMENT PASS — Chad's notes on the new screen. The
+  "crack lines" on Master Zav were not aliasing (it was already on) and
+  not the simplifier (the 990k original had them): they are PAINTED in the
+  scan's atlas — hundreds of small islands over a cream fill, each rim a
+  few texels of lighter blur, drawn from both sides of every seam on the
+  face and hair. Fixed offline in three passes over the atlas using the
+  full-res mesh's UVs (`tools/prepzav.mjs`): strip only the rim texels
+  lighter than the island's own interior (a blanket erosion ate thin
+  islands and put white patches on the hair), pad, then feather across
+  each seam pair ONLY where the two sides differ by an exposure step (a
+  hairline is a content edge and must stay one). Faint tonal steps
+  remain — that is the scan's own lighting. The five boxes became FOUR
+  (Divine Eyes, Amulet, Sak Yant, Hand — the Light box gone, one hand
+  slot for beads or phone), 74 px with the name UNDER the box; the figure
+  cell is deliberately narrow (176 px) because at a fixed vertical lens
+  the canvas WIDTH is what put air between him and the boxes; the bag is
+  two rows of five; old saves fold two hands and a three-row bag into the
+  new shape with nothing lost (statetest). Polish: the room environment
+  on the figure, a jade pool and a counter-turning ring under his feet, a
+  one-shot flash on the box an item lands in. Sheet v17.
+  docs/V5.09-EQUIPMENT-PASS.md is the build's memory.
 - **v3.8** real art where there was code: a bought first-person ARM rig
   (`arms.glb`, credited to Fab) replaces the wrist-only hand pack and the
   forearm that was built out of cylinders to cover for it, and the hell

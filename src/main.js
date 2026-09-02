@@ -2651,21 +2651,21 @@ function updatePulse(dt) {
    touch path that drift apart.                                             */
 
 /* The worn slots are the body itself, Diablo style: each one is a place on
-   the figure drawn behind them. head takes the divine eyes, neck the
-   amulet, body the sak yant, the RIGHT hand the chanting beads, the LEFT
-   hand the torch or phone. (The figure faces the player, so his right
-   hand sits on the viewer's left.) */
-const GEAR_SLOTS = ['head', 'neck', 'body', 'rightHand', 'leftHand'];
-const SLOT_ICON = { head: 'e-eye', neck: 'e-amulet', body: 'e-yant',
-                    rightHand: 'e-beads', leftHand: 'e-light' };
-const BAG_SIZE = 15;
+   the figure turning between them. head takes the divine eyes, neck the
+   amulet, body the sak yant, and ONE hand slot takes whatever he holds —
+   the chanting beads or the phone. (v5.09, Chad's call: the fifth box,
+   'Light', went; four boxes, bigger. A save from before wore two hands and
+   is folded into the one by applyState(), nothing dropped.) */
+const GEAR_SLOTS = ['head', 'neck', 'body', 'hand'];
+const SLOT_ICON = { head: 'e-eye', neck: 'e-amulet', body: 'e-yant', hand: 'e-hand' };
+const BAG_SIZE = 10;   // two rows of five (v5.09; three rows before)
 
 // what an item is: an id, the words (from the sheet), an icon, and the one
 // equipment slot it fits — null means it can only be carried
 const ITEM_DEFS = {
-  phone: { icon: 'e-light', slot: 'leftHand' },
+  phone: { icon: 'e-light', slot: 'hand' },
   keys:  { icon: 'e-keys', slot: null },
-  beads: { icon: 'e-beads', slot: 'rightHand' },
+  beads: { icon: 'e-beads', slot: 'hand' },
   note:  { icon: 'e-note', slot: null }
 };
 const itemName = id => T('item.' + id + '.name', id);
@@ -2678,7 +2678,7 @@ const inv = {
   sel: null,           // the slot the keyboard is on
   open: false
 };
-inv.gear.rightHand = 'beads';
+inv.gear.hand = 'beads';
 inv.bag[0] = 'phone';
 inv.bag[1] = 'keys';
 
@@ -2796,9 +2796,22 @@ function applyState(st) {
   stats.wisdom = num(st.stats.wisdom, stats.wisdom);
   if (st.inv && typeof st.inv === 'object') {
     const ok = id => (typeof id === 'string' && hasOwn(ITEM_DEFS, id)) ? id : null;
-    for (const k of GEAR_SLOTS) inv.gear[k] = ok(st.inv.gear?.[k]);
-    const bag = Array.isArray(st.inv.bag) ? st.inv.bag : [];
-    for (let i = 0; i < BAG_SIZE; i++) inv.bag[i] = ok(bag[i]);
+    const g = (st.inv.gear && typeof st.inv.gear === 'object') ? st.inv.gear : {};
+    for (const k of GEAR_SLOTS) inv.gear[k] = ok(g[k]);
+    const bag = (Array.isArray(st.inv.bag) ? st.inv.bag : []).map(ok);
+    /* a save from before v5.09 wore TWO hands and carried three rows: the
+       first hand that held something takes the one hand slot, and whatever
+       has no place left goes into the bag — nothing an old save held is lost */
+    const spare = [];
+    for (const k of ['rightHand', 'leftHand']) {
+      const id = ok(g[k]); if (!id) continue;
+      if (!inv.gear.hand && ITEM_DEFS[id].slot === 'hand') inv.gear.hand = id; else spare.push(id);
+    }
+    for (let i = 0; i < BAG_SIZE; i++) inv.bag[i] = bag[i] || null;
+    for (const id of [...bag.slice(BAG_SIZE).filter(Boolean), ...spare]) {
+      const free = inv.bag.indexOf(null); if (free < 0) break;
+      inv.bag[free] = id;
+    }
     if (inv.open) invPaint();
   }
   syncBars();
@@ -2830,16 +2843,17 @@ function slotHTML(kind, key, id) {
   const def = id ? ITEM_DEFS[id] : null;
   const inner = def ? iconSvg(def.icon, 'item')
     : kind === 'gear' ? iconSvg(SLOT_ICON[key], 'ghost') : '';
-  const label = kind === 'gear' ? `<span class="lbl">${T('slot.' + key, key)}</span>` : '';
-  return `<button class="slot ${kind === 'gear' ? 'gear' : ''}" type="button"
+  const btn = `<button class="slot ${kind === 'gear' ? 'gear' : ''}" type="button"
       data-kind="${kind}" data-key="${key}"
-      aria-label="${def ? itemName(id) : T('slot.' + key, 'empty')}">${inner}${label}</button>`;
+      aria-label="${def ? itemName(id) : T('slot.' + key, 'empty')}">${inner}</button>`;
+  // a worn slot's name sits UNDER the box, not inside it over the icon (v5.09)
+  return kind === 'gear' ? `<div class="gslot">${btn}<span class="cap">${T('slot.' + key, key)}</span></div>` : btn;
 }
 
-/* the two columns beside the figure: his head, neck and RIGHT hand on the
-   viewer's left, his body and LEFT hand on the right. The figure cell in
-   between is never repainted — it holds a live WebGL canvas. */
-const GEAR_LEFT = ['head', 'neck', 'rightHand'], GEAR_RIGHT = ['body', 'leftHand'];
+/* the two columns beside the figure: his head and neck on the viewer's
+   left, his body and hand on the right. The figure cell in between is
+   never repainted — it holds a live WebGL canvas. */
+const GEAR_LEFT = ['head', 'neck'], GEAR_RIGHT = ['body', 'hand'];
 function invPaint() {
   const gearL = $('gearL'), gearR = $('gearR'), bag = $('invBag');
   if (!gearL || !gearR || !bag) return;
@@ -2856,8 +2870,10 @@ function invPaint() {
       el.classList.add(kind === 'gear' ? (def.slot === key ? 'ok' : 'no') : 'ok');
     }
     if (inv.sel && inv.sel.kind === kind && inv.sel.key === key) el.classList.add('sel');
+    if (inv.flash && inv.flash.kind === kind && inv.flash.key === key) el.classList.add('flash');
     if (here) el.dataset.item = here;
   }
+  inv.flash = null;   // one paint's worth: the animation runs, the next paint forgets it
   invInfoPaint();
 }
 
@@ -2890,6 +2906,7 @@ function invDropAt(kind, key) {
   const other = slotGet(kind, key);
   slotSet(from.kind, from.key, other);                   // swap, never destroy
   slotSet(kind, key, id);
+  inv.flash = { kind, key };                             // the box it landed in lights up once
   invCancel(true);
   snd('uiconfirm', 0.45);
 }
@@ -2907,6 +2924,7 @@ function invQuickMove(kind, key) {
     if (!target) return;
     const swap = inv.gear[target];
     inv.gear[target] = id; inv.bag[+key] = swap;
+    inv.flash = { kind: 'gear', key: target };
   } else {
     const free = inv.bag.indexOf(null);
     if (free < 0) return;
@@ -2966,7 +2984,7 @@ function invPointerUp(e) {
    and on a machine where it never does, the silhouette drawing behind
    the canvas is the figure. Drag on him to spin him; leave him and he
    turns on his own. Rendered only while the panel is open.           */
-const zav = { r: null, scene: null, cam: null, pivot: null, model: null,
+const zav = { r: null, scene: null, cam: null, pivot: null, model: null, ring: null,
               loading: false, raf: 0, spin: 0.35, auto: true, dragX: null, idleT: 0 };
 function zavInit() {
   const cv = $('zavCanvas');
@@ -2982,12 +3000,39 @@ function zavInit() {
   zav.r.toneMappingExposure = 1.15;
   zav.scene = new THREE.Scene();
   zav.cam = new THREE.PerspectiveCamera(30, 1, 0.05, 20);
-  zav.scene.add(new THREE.HemisphereLight(0xe4ecff, 0x2a2420, 1.0));
-  const key = new THREE.DirectionalLight(0xfff0dc, 2.4); key.position.set(1.6, 3.0, 2.6);
-  const rim = new THREE.DirectionalLight(0x63d6c8, 1.3); rim.position.set(-2.2, 2.2, -2.4);
+  zav.scene.add(new THREE.HemisphereLight(0xe4ecff, 0x2a2420, 0.8));
+  const key = new THREE.DirectionalLight(0xfff0dc, 2.2); key.position.set(1.6, 3.0, 2.6);
+  const rim = new THREE.DirectionalLight(0x63d6c8, 1.4); rim.position.set(-2.2, 2.2, -2.4);
   zav.scene.add(key, rim);
+  /* v5.09: the same little procedural studio the game's metal reflects,
+     here at a strength that reads — a scanned man under three lamps is
+     flat, one inside a lit room has soft light on every side of him */
+  try {
+    const pmrem = new THREE.PMREMGenerator(zav.r);
+    zav.scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+    zav.scene.environmentIntensity = 0.45;
+    pmrem.dispose();
+  } catch { /* no environment: the three lamps still light him */ }
   zav.pivot = new THREE.Group();
   zav.scene.add(zav.pivot);
+  /* the ground under him: a soft jade pool of light and a thin ring that
+     turns against his spin — the plinth a display figure stands on */
+  {
+    const cv2 = document.createElement('canvas'); cv2.width = cv2.height = 128;
+    const g = cv2.getContext('2d');
+    const rg = g.createRadialGradient(64, 64, 4, 64, 64, 64);
+    rg.addColorStop(0, 'rgba(99,214,200,0.55)'); rg.addColorStop(0.45, 'rgba(99,214,200,0.16)');
+    rg.addColorStop(1, 'rgba(99,214,200,0)');
+    g.fillStyle = rg; g.fillRect(0, 0, 128, 128);
+    const tex = new THREE.CanvasTexture(cv2); tex.colorSpace = THREE.SRGBColorSpace;
+    const pool = new THREE.Mesh(new THREE.CircleGeometry(0.75, 40),
+      new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false }));
+    pool.rotation.x = -Math.PI / 2; pool.position.y = 0.002;
+    zav.ring = new THREE.Mesh(new THREE.RingGeometry(0.50, 0.53, 64),
+      new THREE.MeshBasicMaterial({ color: 0x63d6c8, transparent: true, opacity: 0.45, depthWrite: false, side: THREE.DoubleSide }));
+    zav.ring.rotation.x = -Math.PI / 2; zav.ring.position.y = 0.004;
+    zav.scene.add(pool, zav.ring);
+  }
   cv.addEventListener('pointerdown', e => {
     zav.dragX = e.clientX; zav.auto = false; zav.idleT = 0;
     cv.setPointerCapture?.(e.pointerId);
@@ -3038,6 +3083,7 @@ function zavFrame() {
   if (!zav.auto) { zav.idleT += 1; if (zav.idleT > 240) zav.auto = true; }   // four seconds after a spin, he turns again
   if (zav.auto) zav.spin += 0.006;
   zav.pivot.rotation.y = zav.spin;
+  if (zav.ring) zav.ring.rotation.z = -zav.spin * 0.5;
   /* 30 degrees of lens at 3.6 m sees 1.93 m at the figure: the whole man
      with a little air, whatever the panel's width */
   zav.cam.position.set(0, 0.98, 3.6);
@@ -3108,10 +3154,10 @@ addEventListener('keydown', e => {
     if (inv.sel) inv.held ? invDropAt(inv.sel.kind, inv.sel.key) : invLift(inv.sel.kind, inv.sel.key);
     return;
   }
-  /* the worn slots are two columns beside the figure (three left, two
+  /* the worn slots are two columns beside the figure (two left, two
      right, in DOM order): up and down walk a column, left and right hop
      between them; the bag is a grid of five */
-  const step = { ArrowLeft: i >= bagStart ? -1 : -3, ArrowRight: i >= bagStart ? 1 : 3,
+  const step = { ArrowLeft: i >= bagStart ? -1 : -2, ArrowRight: i >= bagStart ? 1 : 2,
                  ArrowUp: i >= bagStart ? -cols : -1, ArrowDown: i >= bagStart ? cols : 1 }[e.code];
   if (step === undefined) return;
   e.preventDefault();

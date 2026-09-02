@@ -84,19 +84,19 @@ ck(label + ':info and hint fit the screen', out.readableBottom);
 const bag = i => `#invBag .slot:nth-child(${i + 1})`;
 const gear = k => `#invGear .slot[data-key="${k}"]`;
 
-// --- pick up, put down: the phone fits the light slot
+// --- pick up, put down: the phone fits the hand slot
 await hit(bag(0)); await p.waitForTimeout(300);
 out.liftedShowsHeld = (await st()).held === 'phone';
 ck(label + ':a tap lifts', out.liftedShowsHeld);
-await hit(gear('leftHand')); await p.waitForTimeout(400);
-out.equipped = (await st()).gear.leftHand === 'phone';
+await hit(gear('hand')); await p.waitForTimeout(400);
+out.equipped = (await st()).gear.hand === 'phone';
 ck(label + ':it goes where it fits', out.equipped);
 
 // --- a slot it does not fit simply refuses and puts it back
-await hit(gear('leftHand')); await p.waitForTimeout(250);
+await hit(gear('hand')); await p.waitForTimeout(250);
 await hit(gear('neck')); await p.waitForTimeout(350);
 const s2 = await st();
-out.wrongSlotRefused = s2.gear.neck === null && s2.gear.leftHand === 'phone';
+out.wrongSlotRefused = s2.gear.neck === null && s2.gear.hand === 'phone';
 ck(label + ':a wrong slot refuses', out.wrongSlotRefused);
 
 // --- double tap sends it home again.
@@ -117,10 +117,10 @@ if (touch) {
       el.dispatchEvent(ev('pointerdown'));
       el.dispatchEvent(ev('pointerup'));
     }
-  }, gear('leftHand'));
-} else await p.dblclick(gear('leftHand'));
+  }, gear('hand'));
+} else await p.dblclick(gear('hand'));
 await p.waitForTimeout(500);
-out.quickMoveHome = (await st()).gear.leftHand === null;
+out.quickMoveHome = (await st()).gear.hand === null;
 ck(label + ':double tap unequips', out.quickMoveHome);
 
 // --- dragging, which is the mouse's natural move and a finger's too

@@ -5,16 +5,17 @@ without prompting for each change. This is how it works and how to run it.
 
 ## The sheet
 
-**Master Z's Encounters — GAME TEXT v16 (edit here)** in his Drive
-(id `1CAUB0Y3I5Eu6Ncx7cMJJmXHsWCTthEuq53Mk-mC2ZF4` — the **v16** sheet, made
-at v5.08 for the Vietnamese altar's three credit rows. v15 (v5.07's, id
-`1LatA9wmRwKpCYRQ5Jkf7YfsR7TxGX1aeR6VGTLiUmqU`) and everything before it are
-superseded and should not be edited. Provenance, stated plainly: v15 was
-read back in full before v16 was generated and matched the code row for
-row — nothing of Chad's outstanding — so v16 is v15 plus three rows.
-Whenever a sheet has been in his hands for real time, read it back and
-import FIRST — that is what the rule is for).
-<https://docs.google.com/spreadsheets/d/1CAUB0Y3I5Eu6Ncx7cMJJmXHsWCTthEuq53Mk-mC2ZF4/edit>
+**Master Z's Encounters — GAME TEXT v17 (edit here)** in his Drive
+(id `1HvLUt3w7XPFmPV63hO37dYw_IsdJUKETnvCJh8lcX1g` — the **v17** sheet, made
+at v5.09 when the two hand slots became one: `slot.rightHand` and
+`slot.leftHand` are gone, `slot.hand` is new. v16 (v5.08's, id
+`1CAUB0Y3I5Eu6Ncx7cMJJmXHsWCTthEuq53Mk-mC2ZF4`) and everything before it are
+superseded and should not be edited. Provenance, stated plainly: v16 was
+read back in full before v17 was generated and matched the code row for
+row — nothing of Chad's outstanding — so v17 is v16 minus two rows plus
+one. Whenever a sheet has been in his hands for real time, read it back
+and import FIRST — that is what the rule is for).
+<https://docs.google.com/spreadsheets/d/1HvLUt3w7XPFmPV63hO37dYw_IsdJUKETnvCJh8lcX1g/edit>
 
 Two sheets in one session is the cost of the connector's one real
 limitation, and it is worth restating why: it can READ a sheet and it can

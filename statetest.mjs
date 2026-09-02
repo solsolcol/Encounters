@@ -33,7 +33,7 @@ const out = await p.evaluate(() => {
   const s0 = e.worldState();
   log.shape = s0.v === 2 && s0.ch === 'ch1'
     && s0.stats.sanity === 100 && s0.stats.awareness === 50 && s0.stats.wisdom === 50
-    && s0.inv.gear.rightHand === 'beads'
+    && s0.inv.gear.hand === 'beads'
     && s0.inv.bag[0] === 'phone' && s0.inv.bag[1] === 'keys';
   log.survivesJson = eq(JSON.parse(JSON.stringify(s0)), s0);
 
@@ -47,10 +47,9 @@ const out = await p.evaluate(() => {
     inv: { gear: { leftHand: 'phone' }, bag: ['note', 'beads'] } });
   const s1 = e.worldState();
   log.seedLanded = s1.stats.sanity === 37.5 && s1.stats.awareness === 80
-    && s1.stats.wisdom === 12 && s1.inv.gear.leftHand === 'phone'
-    && s1.inv.gear.rightHand === null
+    && s1.stats.wisdom === 12 && s1.inv.gear.hand === 'phone'   // v5.09: the old leftHand folds into the one hand slot
     && s1.inv.bag[0] === 'note' && s1.inv.bag[1] === 'beads'
-    && s1.inv.bag[2] === null && s1.inv.bag.length === 15;
+    && s1.inv.bag[2] === null && s1.inv.bag.length === 10;
   log.hudFollows = document.getElementById('vSan').textContent === '38'
     && document.getElementById('vWis').textContent === '12';
 
@@ -76,7 +75,7 @@ const out = await p.evaluate(() => {
     && after.stats.sanity === before.stats.sanity   // unparseable → kept
     && after.stats.awareness === 0                  // clamped
     && after.stats.wisdom === 100                   // clamped
-    && after.inv.gear.leftHand === null             // unknown item dropped
+    && after.inv.gear.hand === null                 // unknown item dropped
     && after.inv.bag[0] === null;
 
   // null is how JSON spells "absent"; +null is 0, and sanity 0 faints the
@@ -92,8 +91,18 @@ const out = await p.evaluate(() => {
   e.applyState({ v: 1, ch: 'ch1', stats: { sanity: 50, awareness: 50, wisdom: 50 },
     inv: { gear: { rightHand: 'toString' }, bag: ['hasOwnProperty', 'constructor'] } });
   const proto = e.worldState().inv;
-  log.protoItemsDropped = proto.gear.rightHand === null
+  log.protoItemsDropped = proto.gear.hand === null
     && proto.bag.every(x => x === null);
+
+  // v5.09: a save from before wore TWO hands and carried three rows. The
+  // first hand takes the one hand slot; the other hand and the bag's tail
+  // fold into the two rows — nothing an old save held is lost
+  e.applyState({ v: 1, ch: 'ch1', stats: { sanity: 50, awareness: 50, wisdom: 50 },
+    inv: { gear: { rightHand: 'beads', leftHand: 'phone' },
+           bag: [null, null, null, null, null, null, null, null, null, null, null, null, 'note', null, 'keys'] } });
+  const old = e.worldState().inv;
+  log.oldSaveFolded = old.gear.hand === 'beads' && old.bag.length === 10
+    && ['phone', 'note', 'keys'].every(id => old.bag.includes(id));
 
   // a checkpoint stamped for another chapter is not applicable here
   log.foreignChapterRejected =

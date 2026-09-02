@@ -1232,3 +1232,39 @@ the bottom of its bounding box, and a wall shelf's box starts at the
 bracket tips, 0.42 m below the board things actually stand on. The model
 itself said where the board was: its cups sit on it. Read a surface off
 the things the model already puts there, not off the box.
+
+## Remove the texture before blaming the mesh (v5.09)
+
+Master Zav's "crack lines" looked like a simplifier's torn UV seams, which
+is what a locked-border re-simplification would fix — and it changed
+nothing, because the 990k-triangle original had the same lines. One render
+with the texture swapped for plain grey settled it in a minute: no lines.
+They were painted into the scan's atlas, a lighter rim baked around every
+island. Order of diagnosis for any "line on a model": untextured render
+first (is it shading?), then the atlas at the seam (is it paint?), and only
+then the mesh. The cheapest test is the one that removes a whole class of
+causes.
+
+## A UV seam is not always a seam (v5.09)
+
+The mesh knows which UV edge is which other UV edge (same two 3D points),
+so feathering colour across every pair is easy to write and wrong to ship:
+a UV island border is very often also a CONTENT border — hairline, eyelid,
+lip — and averaging black hair with skin draws a grey band where there was
+a clean edge. The feather is right only where the two sides differ by an
+exposure-sized step. Likewise a blanket erosion of island rims eats the
+thin islands (an eye strip, a wisp of hair) whole, and what refills them
+comes from whatever lies nearest in the atlas. Strip only the pixels that
+are actually lighter than the island's own interior; the halo is a
+property of a pixel, not of a distance.
+
+## The width of a canvas is what puts air beside a figure (v5.09)
+
+The boxes sat far from Master Zav and the instinct was to move the boxes.
+The lens was fixed at 30° vertical, so the canvas HEIGHT decided what was
+seen top to bottom (1.93 m at the figure) and the width simply followed
+the aspect: a wide cell showed a 0.6 m man with half a metre of nothing
+either side, and the boxes could not be nearer than that nothing. Narrow
+the cell (176 px) and the same camera shows a shoulder's width of air. When
+a thing in a viewport looks small and far from its neighbours, check what
+the viewport's shape is asking the camera to show before touching layout.
