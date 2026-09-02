@@ -905,6 +905,37 @@ time (six consecutive failures, not the usual one-in-three) — a wordless
 breath line still needs voiceable text ("Hoohh... hahh") for the tags to
 shape.
 
+## Quantization is the one model compression this game gets free (v5.16)
+
+A 10 MB character came down to 1423 KB by the standing recipe (drop every
+map `rescueTextures` cannot restore, weld, simplify, 512 JPEG sheets) and
+then to **910 KB** by one more transform: `quantize()`, i.e.
+`KHR_mesh_quantization`. It is worth knowing why that one is available when
+the smaller one is not:
+
+- **KHR_mesh_quantization is decoded inside three.js's own GLTFLoader.** No
+  worker, no WebAssembly, no `blob:` — so it passes the strict CSP the
+  hand-parsed loaders were built for, and every chapter loader gets it for
+  nothing.
+- **EXT_meshopt_compression needs a decoder** the chapter loaders do not
+  carry: only `zavLoader()` sets one (v5.10). A model packed with meshopt
+  and loaded through `loadGLB()` fails to parse.
+- Draco is worse still: its decoder is a worker built from a `blob:` URL,
+  which the policy forbids outright (v5.10 measured this).
+
+Two things to check every time, because both fail silently:
+
+1. **For a SKINNED mesh the dequantization scale must land on the skin's
+   INVERSE BIND MATRICES, not on the mesh node.** gltf-transform does this
+   correctly (the node stays at identity, IBM[0] picks up the scale), and
+   it matters because three.js drives a SkinnedMesh from its skeleton —
+   a scale parked on the node would be ignored and the man would render at
+   1/87th size with no error anywhere.
+2. **Render it before and after at the size it ships at.** Here the same
+   in-game shot differed only by the phase of his idle. That is the v5.11
+   lesson in its cheapest form: a model check is a render, at the real
+   size, not a reading of the file.
+
 ## An axis argument is settled by vertices, not by screenshots (v4.8)
 
 The chair's facing flip-flopped twice by eyeballing renders before it was

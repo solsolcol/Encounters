@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = '5.15'
+VERSION = '5.16'
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -208,6 +208,10 @@ ASSETS = {
     # the primitive figures hold their seats until they land.
     'sitclap': ('assets/sitclap.glb', True, False),     # ch3
     'sitangry': ('assets/sitangry.glb', True, False),   # ch3
+    # v5.16: a whole standing character with his own idle, taking the
+    # right-edge stander. Same reasoning as the two sitters, and not
+    # preloaded for the same reason: the primitive holds the spot.
+    'standman': ('assets/standman.glb', True, False),   # ch3
     # v5.02: four Mixamo clips RETARGETED onto the mother's skeleton offline
     # (idle, talk, walkstart, walkstop). Her model ships only a standing
     # idle, so every appearance of her stood still and slid. Not preloaded:

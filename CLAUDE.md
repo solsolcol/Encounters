@@ -724,6 +724,22 @@ What the baseline contains, by release:
   Built in five checkpoints against context loss (`masters/v5.15/` holds
   the progress record and the scripts). Sheet v20.
   docs/V5.15-THE-BOY.md is the build's memory.
+- **v5.16** THE MAN AT THE TENT EDGE — Chad's Sketchfab standing man takes
+  the RIGHT-edge stander in chapter 3, mirroring the chinese boy on the
+  left: the two ends of the back of the tent, where the lane brings you
+  closest to a face. 10 MB to 910 KB by v5.05's recipe plus one new step
+  worth knowing — **KHR_mesh_quantization is the one compression this game
+  gets for free**, handled inside three.js's own GLTFLoader with no
+  decoder and no blob (unlike meshopt, which only `zavLoader()` carries);
+  it took a third off with no visible change, and for a skinned mesh the
+  dequantization scale rides the INVERSE BIND MATRICES, not the node.
+  Sized from posed bones to the primitive he replaces (crown 1.732 ->
+  1.750) and grounded to the tarmac. Standers 2 and 3 are the brazier
+  pair and 3 is the one `LOW` drops, which is why he took 1. Chad's
+  second model, a Fab kungfu man, is NOT in: its FBX references an
+  external `kungfu_man_v2_texture256.png` it never embeds, and carries no
+  clip — 750 clean triangles waiting on one PNG.
+  docs/V5.16-STANDING-MAN.md is the build's memory.
 - **v3.8** real art where there was code: a bought first-person ARM rig
   (`arms.glb`, credited to Fab) replaces the wrist-only hand pack and the
   forearm that was built out of cylinders to cover for it, and the hell

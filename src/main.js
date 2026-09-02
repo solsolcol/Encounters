@@ -77,6 +77,7 @@ const EMBED = {
   boy: '__BOY_B64__', shrine: '__SHRINE_B64__',
   motheranim: '__MOTHERANIM_B64__',
   sitclap: '__SITCLAP_B64__', sitangry: '__SITANGRY_B64__',
+  standman: '__STANDMAN_B64__',
   altar: '__ALTAR_B64__', zav: '__ZAV_B64__'
 };
 

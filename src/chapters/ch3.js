@@ -229,6 +229,14 @@
        topknot clears the player's 1.62 m eye line. Measured, in ch5. */
     const PRAY_H = 1.50;              // the tang-ki STANDS: floor to head joint
     const BOY_YAW = 0;                // which way the boy scan faces at identity
+    /* v5.16 · the standing man. His toes measure +z of his feet, so he
+       faces +z at identity like the boy, and the stander wrapper's own
+       Math.PI is what turns him to the altar. STAND_H is the primitive
+       standers' floor-to-crown: head centre (0.86 + 0.775) * h plus the
+       hair cap's 0.11, at the h = 1.00 the right-edge stander is built
+       with — so the model lands at the height of the men beside him. */
+    const STAND_YAW = 0;
+    const STAND_H = 1.74;
     const SHRINE_YAW = -0.12;         // the second figure angles toward the principal
 
     const owned = [];         // parented to the SCENE, so dispose() needs a list
@@ -1518,6 +1526,73 @@
       crowdRoot.add(f);
       old.visible = false;
       standers[0] = f;
+    });
+
+    /* THE STANDING MAN — v5.16, Chad's Sketchfab standing man, taking the
+       RIGHT-edge stander opposite the boy: the two ends of the back of the
+       tent, which is where the walkable lane brings you closest to a face.
+       He is a whole character with his own 3 s idle, so unlike the boy he
+       gets a skeleton and a mixer, joining the two sitters of v5.05 in
+       `specialMixers` — three mixers is three, and the shared-pose trick the
+       encik crowd needs buys nothing at this count.
+
+       standers[1] and not [2] or [3]: those two are down at the brazier
+       feeding it, and [3] is the one LOW drops, so replacing it would make
+       him vanish on a weak phone. [1] survives LOW and is the one you walk
+       past on the way in.                                                */
+    loadGLB('standman', (gltf) => {
+      const old = standers[1];
+      if (!old) return;
+      const g = gltf.scene;
+      g.traverse(o => {
+        if (o.isMesh) { o.castShadow = !LOW; o.frustumCulled = false; }
+      });
+      if (gltf.animations.length) {
+        const mx = new THREE.AnimationMixer(g);
+        mx.clipAction(gltf.animations[0]).play();
+        mx.update(0.001);                      // pose him before measuring
+        specialMixers.push(mx);
+      }
+      g.rotation.y = STAND_YAW;
+      g.updateMatrixWorld(true);
+      /* Sized and grounded from POSED BONES, never a box — and with the
+         crowd's own loose /Head/ rather than HEAD_RE, which on a Mixamo rig
+         catches HeadTop_End and so measures the top of the skull. That is
+         the v5.05 lesson: among existing things, the measure that matters is
+         the one the existing things used. STAND_H is the primitive
+         standers' own floor-to-crown, so he is the height of the men he is
+         standing between.                                                */
+      const v = new THREE.Vector3();
+      const hip = new THREE.Vector3();
+      let hipN = 0, footY = Infinity, crownY = -Infinity, loA = Infinity, hiA = -Infinity;
+      g.traverse(o => {
+        if (!o.isBone) return;
+        o.getWorldPosition(v);
+        loA = Math.min(loA, v.y); hiA = Math.max(hiA, v.y);
+        if (/Toe|Foot/i.test(o.name)) footY = Math.min(footY, v.y);
+        if (/Head/i.test(o.name)) crownY = Math.max(crownY, v.y);
+        if (/Hips|Pelvis/i.test(o.name)) { hip.add(v); hipN++; }
+      });
+      const lo = isFinite(footY) ? footY : loA;
+      const hi = crownY > -Infinity ? crownY : hiA;
+      if (!isFinite(lo) || hi <= lo) return;
+      if (hipN) hip.divideScalar(hipN); else hip.set(0, 0, 0);
+      const hs = STAND_H / (hi - lo);
+      const inner = new THREE.Group();
+      inner.scale.setScalar(hs);
+      inner.position.set(-hip.x * hs, -lo * hs, -hip.z * hs);
+      inner.add(g);
+      const f = new THREE.Group();
+      f.add(inner);
+      f.position.copy(old.position);
+      f.rotation.y = old.rotation.y;
+      f.userData.ph = old.userData.ph;
+      f.userData.head = inner;                 // the sway loop turns this
+      crowdRoot.add(f);
+      /* only now does the primitive go: a download that never finishes
+         costs a nicer man and never an empty patch of tarmac */
+      old.visible = false;
+      standers[1] = f;
     });
 
     /* THE SHRINE FIGURES — the seated Thai figure with the sword, one on
