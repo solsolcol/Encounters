@@ -65,11 +65,13 @@
    "id": "vrelief",
    "who": "james",
    "voice": "loY1uopAz31XyhAEhNSa",
-   "prompt": "[exhales shakily]",
+   "prompt": "[exhales, shaken, relieved] Hoohh... hahh.",
    "secsOld": 3.79,
-   "status": "generating",
+   "status": "done",
    "session": "3CxfjCMCF1s7cbK5LMpp",
-   "promptTried": "[a quiet, shaken exhale — no words]"
+   "promptTried": "[a quiet, shaken exhale — no words]",
+   "promptTried2": "[exhales shakily]",
+   "secsNew": 3.47
   },
   {
    "id": "vchantline",
@@ -597,8 +599,9 @@
    "voice": "loY1uopAz31XyhAEhNSa",
    "prompt": "Enough. I'm tired. It's nothing — every block has its stories.",
    "secsOld": 5.72,
-   "status": "generating",
-   "session": "zLYlsGv2qPReFfnpXGkD"
+   "status": "done",
+   "session": "zLYlsGv2qPReFfnpXGkD",
+   "secsNew": 5.64
   },
   {
    "id": "v4wake3am",
@@ -606,8 +609,9 @@
    "voice": "loY1uopAz31XyhAEhNSa",
    "prompt": "[whispering] ...the clock. Why can't I hear the clock?",
    "secsOld": 3.16,
-   "status": "generating",
-   "session": "OG81U75kiErYZ0WbUbVv"
+   "status": "done",
+   "session": "OG81U75kiErYZ0WbUbVv",
+   "secsNew": 3.4
   },
   {
    "id": "v4taunt",
@@ -615,8 +619,9 @@
    "voice": "loY1uopAz31XyhAEhNSa",
    "prompt": "[shouting] You want me?! I'm right here! Come out where I can SEE you!",
    "secsOld": 5.33,
-   "status": "generating",
-   "session": "sY9jF2QKC0kLJa4Un7wI"
+   "status": "done",
+   "session": "sY9jF2QKC0kLJa4Un7wI",
+   "secsNew": 5.49
   },
   {
    "id": "v4regret",
@@ -624,8 +629,9 @@
    "voice": "loY1uopAz31XyhAEhNSa",
    "prompt": "[whispering] okay... okay. stupid. stupid. stupid me...",
    "secsOld": 5.64,
-   "status": "generating",
-   "session": "ju3ZuFQZjiEvxZe6Bf8v"
+   "status": "done",
+   "session": "ju3ZuFQZjiEvxZe6Bf8v",
+   "secsNew": 7.47
   },
   {
    "id": "v4call1",
@@ -633,8 +639,9 @@
    "voice": "loY1uopAz31XyhAEhNSa",
    "prompt": "Ma. It's me... no— something's wrong with the flat.",
    "secsOld": 5.96,
-   "status": "generating",
-   "session": "r00b6TXMJ6JVwVrqBKk6"
+   "status": "done",
+   "session": "r00b6TXMJ6JVwVrqBKk6",
+   "secsNew": 5.8
   },
   {
    "id": "v4call2",
@@ -642,8 +649,9 @@
    "voice": "loY1uopAz31XyhAEhNSa",
    "prompt": "I know how it sounds. Please.",
    "secsOld": 3.08,
-   "status": "generating",
-   "session": "JPcF3pq47qoRjXt7tR7U"
+   "status": "done",
+   "session": "JPcF3pq47qoRjXt7tR7U",
+   "secsNew": 2.77
   },
   {
    "id": "v4ma2",
@@ -651,8 +659,9 @@
    "voice": "XrExE9yKIg1WjnnlVkGX",
    "prompt": "Listen to me. Tomorrow I ask the temple to send the tang-ki down. He will come and check the whole house. Tonight you don't touch anything ah, you hear me?",
    "secsOld": 8.99,
-   "status": "generating",
-   "session": "NwLSflj1AWK9LH6mOrfT"
+   "status": "done",
+   "session": "NwLSflj1AWK9LH6mOrfT",
+   "secsNew": 9.56
   },
   {
    "id": "v4A",
@@ -660,8 +669,9 @@
    "voice": "loY1uopAz31XyhAEhNSa",
    "prompt": "It was never random. It followed me home.",
    "secsOld": 3.71,
-   "status": "generating",
-   "session": "2YEvxF8iC3H8Liw2Ru2S"
+   "status": "done",
+   "session": "2YEvxF8iC3H8Liw2Ru2S",
+   "secsNew": 3.63
   },
   {
    "id": "v4B",
@@ -669,8 +679,9 @@
    "voice": "loY1uopAz31XyhAEhNSa",
    "prompt": "I ignored it. It did not ignore me.",
    "secsOld": 4.91,
-   "status": "generating",
-   "session": "BgnSi50s5wgNP8gS5rpo"
+   "status": "done",
+   "session": "BgnSi50s5wgNP8gS5rpo",
+   "secsNew": 2.69
   },
   {
    "id": "v4C",
@@ -678,8 +689,9 @@
    "voice": "loY1uopAz31XyhAEhNSa",
    "prompt": "I dared it. In my own home. It answered.",
    "secsOld": 5.96,
-   "status": "generating",
-   "session": "0oijkEfYPv7Ho9j3U47d"
+   "status": "done",
+   "session": "0oijkEfYPv7Ho9j3U47d",
+   "secsNew": 6.27
   },
   {
    "id": "v4D",
@@ -687,8 +699,9 @@
    "voice": "loY1uopAz31XyhAEhNSa",
    "prompt": "Help is coming tomorrow. I can hold one night.",
    "secsOld": 5.96,
-   "status": "generating",
-   "session": "Ip4jmT5o5JWMXhwgdbU7"
+   "status": "done",
+   "session": "Ip4jmT5o5JWMXhwgdbU7",
+   "secsNew": 3.87
   },
   {
    "id": "v5wake1",
@@ -696,8 +709,9 @@
    "voice": "loY1uopAz31XyhAEhNSa",
    "prompt": "He actually came.",
    "secsOld": 1.72,
-   "status": "generating",
-   "session": "uajcXuJ3kjOdloHwhAs9"
+   "status": "done",
+   "session": "uajcXuJ3kjOdloHwhAs9",
+   "secsNew": 2.04
   },
   {
    "id": "v5wake2",
@@ -705,8 +719,9 @@
    "voice": "loY1uopAz31XyhAEhNSa",
    "prompt": "Why is he bowing at the kitchen.",
    "secsOld": 2.19,
-   "status": "generating",
-   "session": "KBCLyB6foDy0kKKr2F2Q"
+   "status": "done",
+   "session": "KBCLyB6foDy0kKKr2F2Q",
+   "secsNew": 2.43
   },
   {
    "id": "v5wake3",
@@ -714,8 +729,9 @@
    "voice": "loY1uopAz31XyhAEhNSa",
    "prompt": "That's the hell note. From the void deck. It's been here the whole time.",
    "secsOld": 6.84,
-   "status": "generating",
-   "session": "4YUz9hbkRSgLjNs5zMrf"
+   "status": "done",
+   "session": "4YUz9hbkRSgLjNs5zMrf",
+   "secsNew": 4.6
   },
   {
    "id": "v5voice",
@@ -723,8 +739,9 @@
    "voice": "loY1uopAz31XyhAEhNSa",
    "prompt": "Do I...approach him?",
    "secsOld": 3.63,
-   "status": "generating",
-   "session": "4jltCGgBLOOhoUg4wK3i"
+   "status": "done",
+   "session": "4jltCGgBLOOhoUg4wK3i",
+   "secsNew": 2.27
   },
   {
    "id": "v5near",
@@ -732,8 +749,9 @@
    "voice": "loY1uopAz31XyhAEhNSa",
    "prompt": "He walked around the flat like he's reading it.",
    "secsOld": 2.27,
-   "status": "generating",
-   "session": "ny8IAe18V8l3OJ8m2erC"
+   "status": "done",
+   "session": "ny8IAe18V8l3OJ8m2erC",
+   "secsNew": 3
   },
   {
    "id": "v5sit",
@@ -741,8 +759,9 @@
    "voice": "loY1uopAz31XyhAEhNSa",
    "prompt": "Uncle. What did you see?",
    "secsOld": 2.35,
-   "status": "generating",
-   "session": "0D87Q27wA99H2GtSFVpM"
+   "status": "done",
+   "session": "0D87Q27wA99H2GtSFVpM",
+   "secsNew": 2.04
   },
   {
    "id": "t5teachA",
@@ -750,8 +769,9 @@
    "voice": "pqHfZKP75CvOlQylNhV4",
    "prompt": "Think back. Understand what you did. Seek help before you act. [beat] You know you've done wrong. That is why this morning is quiet.",
    "secsOld": 14.76,
-   "status": "generating",
-   "session": "5cuaMSZ8M9Bsl7FMxTU3"
+   "status": "done",
+   "session": "5cuaMSZ8M9Bsl7FMxTU3",
+   "secsNew": 10.11
   },
   {
    "id": "t5fearB",
@@ -759,8 +779,9 @@
    "voice": "pqHfZKP75CvOlQylNhV4",
    "prompt": "I cannot help you if you do not open up. But you already know what you did wrong...",
    "secsOld": 9.33,
-   "status": "generating",
-   "session": "VhiAJYJdpxDAbluwwyUH"
+   "status": "done",
+   "session": "VhiAJYJdpxDAbluwwyUH",
+   "secsNew": 6.53
   },
   {
    "id": "v5fearB1",
@@ -768,8 +789,9 @@
    "voice": "loY1uopAz31XyhAEhNSa",
    "prompt": "I should never have asked for help. I sound...crazy.",
    "secsOld": 3.55,
-   "status": "generating",
-   "session": "nZEZJaYVAjcP1cLXErMy"
+   "status": "done",
+   "session": "nZEZJaYVAjcP1cLXErMy",
+   "secsNew": 5.07
   },
   {
    "id": "v5disC1",
@@ -777,8 +799,9 @@
    "voice": "loY1uopAz31XyhAEhNSa",
    "prompt": "Paper. It's just paper.",
    "secsOld": 2.43,
-   "status": "generating",
-   "session": "b6FqJQS3Y8ZcaSdK1RxT"
+   "status": "done",
+   "session": "b6FqJQS3Y8ZcaSdK1RxT",
+   "secsNew": 2.59
   },
   {
    "id": "t5disC",
@@ -786,8 +809,9 @@
    "voice": "pqHfZKP75CvOlQylNhV4",
    "prompt": "You may call it paper. [beat] Paper burns, and now you're caught in its fire...",
    "secsOld": 4.91,
-   "status": "generating",
-   "session": "hoGAnYerkTIRZY5ol6va"
+   "status": "done",
+   "session": "hoGAnYerkTIRZY5ol6va",
+   "secsNew": 5.96
   },
   {
    "id": "v5learnD",
@@ -795,8 +819,9 @@
    "voice": "loY1uopAz31XyhAEhNSa",
    "prompt": "The first one. He says every case teaches you the next.",
    "secsOld": 5.15,
-   "status": "generating",
-   "session": "dWkDVd0vv5QnFC734d5p"
+   "status": "done",
+   "session": "dWkDVd0vv5QnFC734d5p",
+   "secsNew": 4.75
   },
   {
    "id": "v5A",
@@ -804,8 +829,9 @@
    "voice": "loY1uopAz31XyhAEhNSa",
    "prompt": "I asked him what to learn. He told me. All of it.",
    "secsOld": 4.6,
-   "status": "generating",
-   "session": "n5Tcss7Dgfyv8AghzbTL"
+   "status": "done",
+   "session": "n5Tcss7Dgfyv8AghzbTL",
+   "secsNew": 4.91
   },
   {
    "id": "v5B",
@@ -813,8 +839,9 @@
    "voice": "loY1uopAz31XyhAEhNSa",
    "prompt": "The fear followed me into the morning. When will it go away?",
    "secsOld": 4.52,
-   "status": "generating",
-   "session": "lxsgCUjHFk9afe7NISz0"
+   "status": "done",
+   "session": "lxsgCUjHFk9afe7NISz0",
+   "secsNew": 5.49
   },
   {
    "id": "v5C",
@@ -822,8 +849,9 @@
    "voice": "loY1uopAz31XyhAEhNSa",
    "prompt": "I called it paper. She heard me.",
    "secsOld": 3.32,
-   "status": "generating",
-   "session": "Eqws8elghnjtR5m8X582"
+   "status": "done",
+   "session": "Eqws8elghnjtR5m8X582",
+   "secsNew": 3.08
   },
   {
    "id": "v5D",
@@ -831,8 +859,9 @@
    "voice": "loY1uopAz31XyhAEhNSa",
    "prompt": "It's over. [beat] It's really over.",
    "secsOld": 4.21,
-   "status": "generating",
-   "session": "beM15yaOu3IEsDjJ6A2P"
+   "status": "done",
+   "session": "beM15yaOu3IEsDjJ6A2P",
+   "secsNew": 3.79
   }
  ],
  "flow": "ONfG5TjBa2jA5CvgvRf9"
