@@ -3,7 +3,7 @@
 import fs from 'node:fs'; import { execSync } from 'node:child_process';
 const secsOf = src => { const m = {}; for (const r of src.matchAll(/\{ id: "(\w+)",[\s\S]*?secs: ([\d.]+)/g)) m[r[1]] = +r[2]; return m; };
 const NEW = secsOf(fs.readFileSync('src/voicelines.js', 'utf8'));
-const OLD = secsOf(execSync('git show 9a1d7b3:src/voicelines.js').toString());   // v5.14's lengths
+const OLD = secsOf(execSync('git show f41fc91:src/voicelines.js').toString());   // VALF's lengths (v5.15-v5.17)
 const main = fs.readFileSync('src/main.js', 'utf8');
 const KIND = {}; for (const r of main.matchAll(/(\w+): \['(\w+)', [\d.]+\]/g)) KIND[r[1]] = r[2];
 const isVoice = s => /^(v\w+|t5\w+)$/.test(s) && (s in NEW);

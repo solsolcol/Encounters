@@ -1450,3 +1450,39 @@ fails a tags-only prompt every time — the lesson was in this file and
 `vrelief` still cost three failed runs before it was re-read. When a
 generation fails twice with the text unchanged, grep LEARNINGS for the
 sound's name before trying a third wording.
+
+## A voice id comes from the call that made it, never from its name (v5.18)
+
+Chad picked "River" by ear in a v5.15 candidate round. The workspace has
+more than one voice whose name begins with River, and `creative_list_voices`
+answers with a premade middle-aged one (`SAz9YHcvj6GT2YYXdXww`) that is not
+what he heard. Regenerating 79 takes in the wrong voice would have looked
+like success right up to the moment he pressed play. The id was recovered
+by grepping the earlier session's own generation calls for the takes he
+listened to — `v6KgbPaQh6lAmMpmmtcH`, River Faith. **A voice, a model, a
+flow: resolve it from the call that produced the artefact, not from a name
+lookup.** Names in a voice library are labels; ids are the thing.
+
+## Pick a NARROW voice for a character with eighty lines (v5.18)
+
+VALF was the right pick on the sample — an unmistakable child, which is
+what chapter 1 needs. It was the wrong pick across 79 takes, because
+eleven_v3 re-rolls a voice's character on every generation and VALF's
+range is wide: the same voice id read as a small girl in one line and a
+grown man in the next. Chad heard it immediately ("sometimes sounding
+like a girl and sometimes adult"); no single take is wrong, so no single
+take reveals it. **Judge a voice for a long cast on CONSISTENCY, not on
+its best sample** — generate five lines of different emotion from the same
+id and listen for drift before committing to a whole game's worth. River
+Faith is a narrower voice and holds.
+
+## The aggregate says nothing about the cue (v5.18)
+
+The River re-voice ran 58 seconds SHORTER in total than VALF's, 67 takes
+of 79 shorter. It is tempting to conclude nothing can collide and skip the
+scan. Twelve takes got longer, and one of them — `vrelief`, the wordless
+exhale, +1.05 s — was cued in two chapters at a time that only worked for
+the short version, so it ran past the fade into the outcome card in ch1
+scene C and past the end of ch2 scene B. **Run `overlapscan.mjs` over
+every cue every time, whichever way the total moved.** A timeline is
+checked per cue or not at all.

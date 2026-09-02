@@ -225,10 +225,11 @@ the shared Web Audio context — never `<audio src=data:>` — and everything
 obeys the one mute button. Since v2.3 the game runs a full generated
 soundscape: 95 sounds + the James opening line — loops, UI cues, ghost vocalisations,
 cutscene stings, ending music beds, and in-world narration lines. Four
-speakers now: the boy (VALF, `loY1uopAz31XyhAEhNSa` — since v5.15, Chad's
-pick after three rounds of candidates; the registry still calls him
-`james` and the files `v*`, because renaming eighty-two keys buys
-nothing), chapter 2's Mother (Matilda, `XrExE9yKIg1WjnnlVkGX`), chapter
+speakers now: the boy (**River Faith, `v6KgbPaQh6lAmMpmmtcH` — since
+v5.18**, after VALF, his v5.15 pick, turned out to drift between a girl
+and a grown man across takes; the registry still calls him `james` and
+the files `v*`, because renaming eighty-two keys buys nothing), chapter
+2's Mother (Matilda, `XrExE9yKIg1WjnnlVkGX`), chapter
 3's auntie (Alice, `Xb7hH8MSUJpSbSDYk0k2`) and the tang-ki (Bill,
 `pqHfZKP75CvOlQylNhV4`) — all eleven_v3. The workspace has no Southeast
 Asian voice at all; what those two were actually chosen for is that they do
@@ -744,6 +745,22 @@ What the baseline contains, by release:
   before this build and is fixed here — it settled only the baseline, so
   the same fifteen-geometry step read as +1.88 or -1.88 at random.
   Sheet v22. docs/V5.17-BEDROOM.md is the build's memory.
+- **v5.18** THE RIVER — the boy re-voiced again, and this time the reason
+  is a property of the model rather than a taste: eleven_v3 re-rolls a
+  voice's character per take, and VALF's range was wide enough to land on
+  a girl in one line and a grown man in the next ("horrible and
+  inconsistent" — Chad). **River Faith** (`v6KgbPaQh6lAmMpmmtcH`) is
+  narrower and stays put. All 79 of his takes across five chapters
+  regenerated, peak-matched, both encodings, `secs` re-measured; the
+  regeneration list is `who === 'james'` out of the registry, which is the
+  same list `chaptertest` checks the shipped files against, so "everywhere,
+  leave nothing behind" is enforced rather than promised. **Not one word
+  changed** — sheet v23 is identical to v22 in every TEXT cell. River is
+  faster (331.5 s -> 273.3 s over 79 takes), so nothing could newly
+  collide; the only two moves were the wordless exhale `vrelief`, which
+  went the OTHER way (+1.05 s) and now starts earlier in ch1 scene C
+  (4.60 -> 3.15) and ch2 scene B (20.0 -> 18.9). Engine seams: zero.
+  docs/V5.18-THE-RIVER.md.
 - **v5.16** THE MAN AT THE TENT EDGE — Chad's Sketchfab standing man takes
   the RIGHT-edge stander in chapter 3, mirroring the chinese boy on the
   left: the two ends of the back of the tent, where the lane brings you

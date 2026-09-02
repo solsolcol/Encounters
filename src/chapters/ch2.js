@@ -1928,7 +1928,10 @@
     yawTo(19.4, 20.8, faceFrom(P.x, P.z, doorAt.x, doorAt.z),
                       faceFrom(P.x, P.z, stage.GAP.x, stage.BED.z));
     pitchTo(19.4, 20.8, -0.02, -0.26);
-    sfx(20.0, 'vrelief', 0.9);           // starts after v2ma has finished, at 15.6
+    /* v5.18: 18.9, not 20.0. It still starts well after Ma has finished at
+       15.6, and at River's 4.52 s (VALF's was 3.47) it now ends at 23.4 —
+       just inside the scene, which is written to outlast it. */
+    sfx(18.9, 'vrelief', 0.9);           // starts after v2ma has finished, at 15.6
     tr(20.8, 23.5, () => {}, rawK);      // and the scene outlasts it
 
     c.keep.ghostGone = true;

@@ -1129,7 +1129,12 @@ function scLeave(c, s, api) {                        /* C — you walk away */
     sfx(1.15, 'breath', 0.5);
     sfx(2.55, 'dread', 0.28);
     for (let i = 0; i < 6; i++) sfx(3.9 + i * 0.5, 'step');
-    sfx(4.60, 'vrelief', 0.9);
+    /* v5.18: 3.15, not 4.60. River's exhale runs 4.52 s where VALF's ran
+       3.47, and from 4.60 it played a second and a half after the scene had
+       handed over to the outcome card. From here it ends at 7.67, just
+       inside the 7.7 the fade takes the picture out on, which is where an
+       exhale belongs. */
+    sfx(3.15, 'vrelief', 0.9);
     fade(6.1, 7.7, 0, 1);
 
     c.handsAuto = t => (t > 3.7 && t < 6.9 ? 2.3 : 0);

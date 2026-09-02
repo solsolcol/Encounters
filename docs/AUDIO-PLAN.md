@@ -13,12 +13,14 @@ checkpoint: if a session dies mid-task, the next one resumes from the
 STATUS columns and the flow IDs below.
 
 **Main character voice (Chad's explicit pick, use everywhere, never vary):**
-**since v5.15 the boy is VALF — voice_id `loY1uopAz31XyhAEhNSa`**, model
-`eleven_v3` (Chad's pick from three rounds of child-voice candidates; the
-registry key and the file names stay `james`/`v*`). From v2.3 to v5.14 he
-was "James - Husky, Engaging and Bold", `EkK5I93UQWFDigLMpZcX`, stability
-0 — every `EkK5I93UQWFDigLMpZcX` below is that history, not the current
-voice. The `assets/voice.mp3` line is generated with the same voice so
+**since v5.18 the boy is RIVER FAITH — voice_id
+`v6KgbPaQh6lAmMpmmtcH`**, model `eleven_v3` (the registry key and the file
+names stay `james`/`v*`). The history below it is history, not the current
+voice: v5.15–v5.17 he was VALF, `loY1uopAz31XyhAEhNSa`, dropped because
+eleven_v3 re-rolls a voice's character per take and VALF's range is wide
+enough to land on a girl in one line and a grown man in the next; and from
+v2.3 to v5.14 he was "James - Husky, Engaging and Bold",
+`EkK5I93UQWFDigLMpZcX`, stability 0. The `assets/voice.mp3` line is generated with the same voice so
 the whole game is one actor.
 
 ## Architecture decisions
@@ -247,7 +249,7 @@ the duration was written in the prompt text, which the model ignores.
 | vgasp | James, sharp frightened inhale, 2.1 s | A @5.02 — his eyes arrive and she is already there |
 | vscoff | James, dismissive laugh, 3.1 s | B @0.62 — before the boot, so the kick has a character behind it |
 | vpant | James, running out of breath, 4.4 s | B @4.60, under the whole run |
-| vrelief | James, quiet shaken exhale, 3.8 s (REMADE v4.8 — the original take actually said "Just keep walking. Don't look back", wrong wherever relief was meant; eleven_v3 refuses a tags-only prompt, so the remake gives it breath vocalisations as text) | C @4.60, once he is clear |
+| vrelief | James, quiet shaken exhale, 3.8 s (REMADE v4.8 — the original take actually said "Just keep walking. Don't look back", wrong wherever relief was meant; eleven_v3 refuses a tags-only prompt, so the remake gives it breath vocalisations as text) | C @3.15 since v5.18, once he is clear |
 | vchantline | James, murmured chant, 9.3 s | RETIRED at v3.8 — Chad wanted the original chant with nothing spoken over it. Sample and `vchant` sting kind both kept; no scene fires it. |
 | gwail | her, low moan rising to a shriek, 4.0 s | B @3.40, as she starts after him |
 | gsigh | her, letting go, dissolving into reverb, 4.5 s | D @4.45, as she is released |
@@ -515,3 +517,30 @@ v4.8 recipe: "[exhales, shaken, relieved] Hoohh... hahh." — a tags-only
 prompt failed three times first (LEARNINGS said it would). Transcribed
 after generation: empty, i.e. wordless. Four generations failed on the
 first run (vrelief ×3, none other); zero re-runs beyond that.
+
+## v5.18 — the boy again (River Faith)
+
+Flow `SJOh2uYIDn17yolZgzzW`. Every line of the main character regenerated
+in River Faith (`v6KgbPaQh6lAmMpmmtcH`, eleven_v3): **79 takes** — the
+whole of `LINES.filter(l => l.who === 'james')`, which is 78 files in
+`assets/audio/` plus chapter 1's standalone `assets/voice.mp3`. No other
+speaker was touched (Ma, the auntie and the tang-ki keep their v5.15
+takes), and **no prompt changed** — every one is the registry text
+character for character, which is what makes this a re-voice and not a
+re-write.
+
+Same pipeline as v5.15, in `masters/v5.18/`: `dl.sh` + `harvest.mjs` fetch
+the masters, `encode.mjs` writes both contracts with each take
+PEAK-MATCHED to the file it replaced (audited after installing: 79 files,
+loudest `vscare1` at −1.90 dB, quietest `v2wake2` at −11.50, none above
+−0.5), and `progress.json` carries a row per line (prompt, session, VALF
+length, River length, status). `overlapscan.mjs` re-checked every cue in
+all five chapters' films and scenes.
+
+River is FASTER than VALF — 331.5 s → 273.3 s over the 79, 67 shorter and
+12 longer — so no cue could newly collide; the scan found none. The two
+fixes it did want are the same take both times, `vrelief`, one of the
+twelve that got LONGER (3.47 s → 4.52): `ch1` scene C 4.60 → 3.15 and
+`ch2` scene B 20.0 → 18.9, so the exhale lands inside its scene instead of
+running past the fade. Download: the 79 mp3s 5213 KB → 4306 KB, the Opus
+2711 KB → 2273 KB.
