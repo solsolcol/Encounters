@@ -5,20 +5,19 @@ without prompting for each change. This is how it works and how to run it.
 
 ## The sheet
 
-**Master Z's Encounters — GAME TEXT v21 (edit here)** in his Drive
-(id `1vFVnYeQrZSYk-buGrr72ImHzscE9iO0rEe8MHO4EQEY` — the **v21** sheet, made at v5.16: 250 GAME TEXT
+**Master Z's Encounters — GAME TEXT v22 (edit here)** in his Drive
+(id `1NOcGQuKd0zxZItRAGwSLqnBae8jhbixZNcggXzCmttc` — the **v22** sheet, made at v5.17: 265 GAME TEXT
 rows and, under them after a divider row, the 97 **VOICE LINES**. What
-changed from v20: three rows only, the credit for the standing man who
-took the right-edge stander in chapter 3 (`credits.stand`,
-`credits.standWho`, `credits.standLink`). Nothing else moved, in the text
-or in the takes. v20 (id
-`1wQ7wY9Co3j7yW3bOv0hys-jcB7pZRMWJphz2AzFWzw8`) and everything before it
-are superseded and should not be edited. Provenance: v20 was published at
-v5.15 and read back and imported the same session with nothing changed,
-and it sat untouched between, so nothing of Chad's was outstanding when
-v21 was made. Whenever a sheet has been in his hands for real time, read
-it back and import FIRST — that is what the rule is for.
-<https://docs.google.com/spreadsheets/d/1vFVnYeQrZSYk-buGrr72ImHzscE9iO0rEe8MHO4EQEY/edit>
+changed from v21: fifteen rows, the credits for Chad's five bedroom models
+in chapter 2 (`credits.bed`, `credits.ward`, `credits.table`,
+`credits.deskchair`, `credits.curtain`, each with its Who and Link). No
+word of the game itself moved, and no take changed. v21 (id
+`1vFVnYeQrZSYk-buGrr72ImHzscE9iO0rEe8MHO4EQEY`) and everything before it
+are superseded and should not be edited. Provenance: v21 was published at
+v5.16 and read back and imported the same session with nothing changed,
+and sat untouched between. Whenever a sheet has been in his hands for real
+time, read it back and import FIRST — that is what the rule is for.
+<https://docs.google.com/spreadsheets/d/1NOcGQuKd0zxZItRAGwSLqnBae8jhbixZNcggXzCmttc/edit>
 
 **Every sheet from v19 on carries the VOICE LINES** — Chad's rule, set
 when he asked for it: "moving forward, every new version of the sheet
