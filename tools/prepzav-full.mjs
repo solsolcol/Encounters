@@ -18,6 +18,19 @@ const tex = root.listMaterials()[0].getBaseColorTexture();
 const { data: px, info } = await sharp(Buffer.from(tex.getImage())).raw().toBuffer({ resolveWithObject: true });
 const W = info.width, H = info.height, C = info.channels;
 const cov = new Uint8Array(W * H);
+/* v5.11: which UV CHART each covered texel belongs to. Charts are found on
+   the mesh (triangles joined through shared UV vertices), not on the
+   image — the atlas packs its patches edge to edge, so a flood fill over
+   coverage merges hair with the robe beside it. */
+const chart = new Int32Array(W * H).fill(-1);
+const parent = new Map(); const find = k => { let r = k; while (parent.get(r) !== r) r = parent.get(r); let c = k; while (parent.get(c) !== r) { const n = parent.get(c); parent.set(c, r); c = n; } return r; };
+const key = (u, v) => Math.round(u * 4096) * 8192 + Math.round(v * 4096);
+const uni = (a, b) => { if (!parent.has(a)) parent.set(a, a); if (!parent.has(b)) parent.set(b, b); const ra = find(a), rb = find(b); if (ra !== rb) parent.set(ra, rb); };
+for (const mesh of root.listMeshes()) for (const prim of mesh.listPrimitives()) {
+  const uv = prim.getAttribute('TEXCOORD_0'); const idx = prim.getIndices(); if (!uv) continue;
+  const U = uv.getArray(), I = idx ? idx.getArray() : null; const n = I ? I.length : uv.getCount();
+  for (let t = 0; t < n; t += 3) { const k = []; for (let e = 0; e < 3; e++) { const vi = I ? I[t + e] : t + e; k.push(key(U[vi * 2], U[vi * 2 + 1])); } uni(k[0], k[1]); uni(k[1], k[2]); }
+}
 let tris = 0;
 for (const mesh of root.listMeshes()) for (const prim of mesh.listPrimitives()) {
   const uv = prim.getAttribute('TEXCOORD_0'); const idx = prim.getIndices();
@@ -28,6 +41,7 @@ for (const mesh of root.listMeshes()) for (const prim of mesh.listPrimitives()) 
   for (let t = 0; t < n; t += 3) {
     tris++;
     const x0 = u(t), y0 = v(t), x1 = u(t + 1), y1 = v(t + 1), x2 = u(t + 2), y2 = v(t + 2);
+    const cid = find(key(U[(I ? I[t] : t) * 2], U[(I ? I[t] : t) * 2 + 1]));
     const minx = Math.max(0, Math.floor(Math.min(x0, x1, x2)) - 1), maxx = Math.min(W - 1, Math.ceil(Math.max(x0, x1, x2)) + 1);
     const miny = Math.max(0, Math.floor(Math.min(y0, y1, y2)) - 1), maxy = Math.min(H - 1, Math.ceil(Math.max(y0, y1, y2)) + 1);
     const area = (x1 - x0) * (y2 - y0) - (x2 - x0) * (y1 - y0);
@@ -39,7 +53,7 @@ for (const mesh of root.listMeshes()) for (const prim of mesh.listPrimitives()) 
       const e1 = ((x2 - x1) * (cy - y1) - (cx - x1) * (y2 - y1)) / area;
       const e2 = ((x0 - x2) * (cy - y2) - (cx - x2) * (y0 - y2)) / area;
       const slack = 0.7 / Math.sqrt(Math.abs(area));   // ~0.7 px in barycentric units
-      if (e0 >= -slack && e1 >= -slack && e2 >= -slack) cov[y * W + x] = 1;
+      if (e0 >= -slack && e1 >= -slack && e2 >= -slack) { cov[y * W + x] = 1; chart[y * W + x] = cid; }
     }
   }
 }
@@ -53,6 +67,11 @@ console.log('tris', tris, 'covered px', covered, 'of', W * H, (100 * covered / (
 //         than the island's own interior DEEP texels in — the halo, and
 //         nothing else. The padding below repaints what went.
 const BAND = Number(process.env.BAND || 4), DEEP = Number(process.env.DEEP || 6), THRESH = Number(process.env.THRESH || 8);
+/* v5.11: DARKMAX gates the pass to DARK islands only — the hair. A pale rim
+   on black hair is a white streak on a phone; the same rim on skin is the
+   scan's own look and Chad wants the face untouched. A skin pixel's
+   interior is never this dark, so no face pixel can qualify. */
+const DARKMAX = Number(process.env.DARKMAX || 999);
 {
   // distance to the nearest uncovered pixel, capped at DEEP+1 (chessboard)
   const dist = new Uint8Array(W * H).fill(DEEP + 1);
@@ -67,6 +86,14 @@ const BAND = Number(process.env.BAND || 4), DEEP = Number(process.env.DEEP || 6)
     if (near) dist[i] = d;
   }
   const lum = i => 0.299 * px[i * C] + 0.587 * px[i * C + 1] + 0.114 * px[i * C + 2];
+  /* v5.11: the dark/light decision is made per ISLAND (connected patch of
+     coverage), never per local window — an eyebrow sits inside a skin
+     island and a local window there reads dark, which is how the v5.09
+     brow streak happened. Island mean luminance <= DARKMAX = hair. */
+  const isum = new Map(), icnt = new Map();
+  for (let i = 0; i < W * H; i++) { if (!cov[i]) continue; const c = chart[i]; isum.set(c, (isum.get(c) || 0) + lum(i)); icnt.set(c, (icnt.get(c) || 0) + 1); }
+  const dark = new Map(); for (const [c, s] of isum) dark.set(c, s / icnt.get(c) <= DARKMAX);
+  console.log('charts', isum.size, 'dark charts', [...dark.values()].filter(Boolean).length);
   let stripped = 0, rim = 0;
   const R = DEEP + 2;
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
@@ -79,7 +106,15 @@ const BAND = Number(process.env.BAND || 4), DEEP = Number(process.env.DEEP || 6)
       const j = yy * W + xx; if (dist[j] < DEEP) continue;
       sum += lum(j); k++; r += px[j * C]; g += px[j * C + 1]; b += px[j * C + 2];
     }
-    if (!k) continue;                       // a thin island: nothing deeper to compare with, keep it
+    if (!k) {                               // a thin island: fall back to whatever is at least 3 in
+      for (let dy = -R; dy <= R; dy++) for (let dx = -R; dx <= R; dx++) {
+        const xx = x + dx, yy = y + dy; if (xx < 0 || yy < 0 || xx >= W || yy >= H) continue;
+        const j = yy * W + xx; if (dist[j] < 3) continue;
+        sum += lum(j); k++; r += px[j * C]; g += px[j * C + 1]; b += px[j * C + 2];
+      }
+      if (!k) continue;
+    }
+    if (!dark.get(chart[i])) continue;      // not a dark chart: leave it alone
     /* v5.10: a halo pixel is REPAINTED with the island's own interior colour,
        not uncovered and refilled — a refill takes the nearest covered pixel,
        and beside an eyebrow that is the brow's dark, which drew a black

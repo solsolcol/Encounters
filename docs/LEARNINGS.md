@@ -1307,3 +1307,24 @@ padding the empty fill between islands, which removes seam bleed and can
 change nothing else. When a texture fix keeps producing artefacts, the
 honest deliverable is the untouched paint plus the one safe pass, and the
 hand-retouch belongs in a paint tool with a person looking at it.
+
+## Judge a texture at the size the player sees it (v5.11)
+
+Three releases of seam work were judged on 900 px close-ups of the head,
+and every one of them magnified the texture. The panel on a phone
+minifies it — the head is eighty device pixels — and a minified texture
+is read from its mipmaps, where each texel is the average of a block of
+the original. A scan's atlas with no gutters between patches averages
+black hair with the cream robe beside it, and no amount of work on the
+full-size paint can change what a shrunken copy contains. Chad's "it may
+look fine in your preview but not in the game on my phone" was the exact
+diagnosis. Render at the real canvas size with the real lighting FIRST;
+the close-up is for finding where, not whether.
+
+## A flood fill over coverage is not a UV chart (v5.11)
+
+Labelling the atlas's patches by flood-filling the covered texels gave
+190 "islands" for hundreds of patches and called the hair light: patches
+that touch merge. The chart a texel belongs to is a property of the
+MESH — triangles joined through shared UV vertices — and only that
+labelling keeps a hair patch separate from the robe patch it abuts.

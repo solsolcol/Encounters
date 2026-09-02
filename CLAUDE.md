@@ -627,6 +627,21 @@ What the baseline contains, by release:
   texture touches no painted pixel — only the empty fill between the
   atlas's islands is padded, which removes the cream bleed at the seams
   and can change nothing else. docs/V5.10-ZAV-FULL.md.
+- **v5.11** THE WHITE STREAKS IN HIS HAIR — Chad, from his phone: "it may
+  look fine in your preview but not when im in the game". He was right:
+  every seam render was a 900 px close-up, which MAGNIFIES the texture,
+  while the panel on a phone MINIFIES it and samples its mipmaps — and the
+  scan's atlas packs black hair patches edge to edge against cream robe
+  patches, so every shrunken copy averages the two into a white streak
+  along every hair seam. Reproduced the first time it was rendered at the
+  panel's real size. Fix: no mipmaps for this one texture (`zavNoMip`, on
+  both the normal path and the CSP rescue, which gained an `onMap`
+  callback); the model file is byte-identical to v5.10, which is the
+  strongest possible "without affecting the face". Also: spin 0.006 →
+  0.0085, and he turns again the moment you let go (eased over twenty
+  frames) instead of after four seconds. And a correction recorded in the
+  doc: v5.10's paint was not "untouched" — 1.1 % of painted texels carry
+  the v5.09 seam treatment. docs/V5.11-HAIR-AND-SPIN.md.
 - **v3.8** real art where there was code: a bought first-person ARM rig
   (`arms.glb`, credited to Fab) replaces the wrist-only hand pack and the
   forearm that was built out of cylinders to cover for it, and the hell

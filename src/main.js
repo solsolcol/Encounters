@@ -322,7 +322,7 @@ function glbChunks(buf) {
   return { json, bin };
 }
 
-function rescueTextures(gltf, buf) {
+function rescueTextures(gltf, buf, onMap) {   // onMap(material): optional, called once a rescued map lands (v5.11)
   let json, bin;
   try { ({ json, bin } = glbChunks(buf)); } catch { return; }
   if (!json || !bin || !json.images || !json.images.length) return;
@@ -353,6 +353,7 @@ function rescueTextures(gltf, buf) {
       t.needsUpdate = true;
       obj.map = t;
       obj.needsUpdate = true;
+      if (onMap) onMap(obj);
     }).catch(() => {});
   }
 }
@@ -2986,7 +2987,7 @@ function invPointerUp(e) {
    the canvas is the figure. Drag on him to spin him; leave him and he
    turns on his own. Rendered only while the panel is open.           */
 const zav = { r: null, scene: null, cam: null, pivot: null, model: null, ring: null,
-              loading: false, warm: false, raf: 0, spin: 0.35, auto: true, dragX: null, idleT: 0 };
+              loading: false, warm: false, raf: 0, spin: 0.35, auto: true, dragX: null, ramp: 1 };
 function zavInit() {
   const cv = $('zavCanvas');
   if (!cv || zav.r) return;
@@ -3036,7 +3037,7 @@ function zavInit() {
   }
   if (zav.model && !zav.model.parent) zav.pivot.add(zav.model);   // parsed before the panel existed (v5.10)
   cv.addEventListener('pointerdown', e => {
-    zav.dragX = e.clientX; zav.auto = false; zav.idleT = 0;
+    zav.dragX = e.clientX; zav.auto = false;
     cv.setPointerCapture?.(e.pointerId);
   });
   cv.addEventListener('pointermove', e => {
@@ -3044,7 +3045,10 @@ function zavInit() {
     zav.spin += (e.clientX - zav.dragX) * 0.012;
     zav.dragX = e.clientX;
   });
-  const up = () => { zav.dragX = null; };
+  /* v5.11 (Chad): he turns again the moment you let go — no four-second
+     wait — easing up to speed over about a third of a second so the
+     hand-off from the finger to the turntable is not a jolt */
+  const up = () => { if (zav.dragX === null) return; zav.dragX = null; zav.auto = true; zav.ramp = 0; };
   cv.addEventListener('pointerup', up);
   cv.addEventListener('pointercancel', up);
 }
@@ -3060,9 +3064,9 @@ function zavLoad() {
   if (zav.model || zav.loading) return;
   zav.loading = true;
   assetBytes('zav').then(BUF => zavLoader().parse(BUF, '', (gltf) => {
-    rescueTextures(gltf, BUF);
+    rescueTextures(gltf, BUF, zavNoMip);
     const g = gltf.scene;
-    g.traverse(o => { if (o.isMesh) o.frustumCulled = false; });
+    g.traverse(o => { if (o.isMesh) { o.frustumCulled = false; zavNoMip(o.material); } });
     /* size and ground from the MESH — there are no bones to measure — to a
        man's 1.75 m, feet at the pivot's origin, centred on his own middle */
     const box = new THREE.Box3().setFromObject(g);
@@ -3078,6 +3082,21 @@ function zavLoad() {
     $('gearFig')?.classList.add('has3d');
     zavWarm();
   }, () => { zav.loading = false; })).catch(() => { zav.loading = false; });
+}
+/* v5.11: NO shrunken copies of his texture (mipmaps). The scan's atlas packs
+   its patches edge to edge — a black hair patch sits directly against a
+   cream robe patch with no gutter — so every shrunken copy averages hair
+   with cream, and on a phone, where the panel draws him small, that is a
+   white streak along every seam of the hair. (Chad saw them on the back,
+   sides and top; the close-ups never showed them because a close-up
+   magnifies.) Plain bilinear sampling never reaches past one texel, and
+   the one-texel line it leaves is fixed in the paint itself. The texture
+   may arrive twice — the normal path or, under the strict CSP, the
+   rescue — so this is applied where the material is, and again on the
+   rescued map when it lands. */
+function zavNoMip(m) {
+  const t = m && m.map; if (!t) return;
+  t.generateMipmaps = false; t.minFilter = THREE.LinearFilter; t.needsUpdate = true;
 }
 /* one off-screen frame at 64 px: shaders compiled, geometry and texture on
    the GPU, so the first frame the player sees is not the slow one */
@@ -3109,8 +3128,7 @@ function zavFrame() {
     zav.cam.aspect = w / h;
     zav.cam.updateProjectionMatrix();
   }
-  if (!zav.auto) { zav.idleT += 1; if (zav.idleT > 240) zav.auto = true; }   // four seconds after a spin, he turns again
-  if (zav.auto) zav.spin += 0.006;
+  if (zav.auto) { zav.ramp = Math.min(1, zav.ramp + 1 / 20); zav.spin += 0.0085 * zav.ramp; }   // v5.11: a little faster, and straight back after a drag
   zav.pivot.rotation.y = zav.spin;
   if (zav.ring) zav.ring.rotation.z = -zav.spin * 0.5;
   /* 30 degrees of lens at 3.6 m sees 1.93 m at the figure: the whole man
