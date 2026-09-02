@@ -212,6 +212,16 @@ ASSETS = {
     # right-edge stander. Same reasoning as the two sitters, and not
     # preloaded for the same reason: the primitive holds the spot.
     'standman': ('assets/standman.glb', True, False),   # ch3
+    # v5.17: Chad's bedroom for chapter 2 — bed, wardrobe, study table,
+    # chair and curtain. The bed and the curtain ARE the first shot of the
+    # chapter (the film opens lying in one, looking past the other), so
+    # those two are preloaded; the rest of the room can arrive over their
+    # primitives while the film plays.
+    'bed': ('assets/bed.glb', True, True),              # ch2
+    'curtain': ('assets/curtain.glb', True, True),      # ch2
+    'wardrobe': ('assets/wardrobe.glb', True, False),   # ch2
+    'table': ('assets/table.glb', True, False),         # ch2
+    'chair': ('assets/chair.glb', True, False),         # ch2
     # v5.02: four Mixamo clips RETARGETED onto the mother's skeleton offline
     # (idle, talk, walkstart, walkstop). Her model ships only a standing
     # idle, so every appearance of her stood still and slid. Not preloaded:

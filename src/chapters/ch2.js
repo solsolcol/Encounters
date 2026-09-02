@@ -375,7 +375,15 @@
     /* ---------------------------------------------------------- the bed */
     /* Against the left wall but NOT against it: the 20 cm the frame stands
        off the plaster is the whole chapter. */
-    const BED = { x: -1.22, z: -0.45, w: 0.95, len: 1.90, top: 0.50 };
+    /* v5.17 · the bed is Chad's model now, and its LENGTH follows from his
+       geometry rather than the other way round. The model is 0.786 wide by
+       1.756 long; scaled so its width is BED.w — which is what keeps the
+       twenty-centimetre gap between it and the wall exactly where five
+       scenes and the whole premise expect it — its length comes out at
+       2.12. The primitive placeholder is built to the same figures, so the
+       gap planes, the blockers and the headboard end agree whether or not
+       the download ever lands.                                          */
+    const BED = { x: -1.22, z: -0.45, w: 0.95, len: 2.12, top: 0.50 };
     const bed = new THREE.Group();
     bed.position.set(BED.x, 0, BED.z);
     world.add(bed);
@@ -487,7 +495,13 @@
     wardDoorL.position.x += 0.05;
 
     /* ------------------------------------------------- desk, chair, books */
-    const DESK = { x: 0.86, z: -1.86, w: 1.06, d: 0.52, top: 0.74 };
+    /* v5.17 · likewise the desk: Chad's study table is 1.40 by 0.91 at the
+       0.74 top a desk has, so the footprint here is his, and it moved left
+       and back to take it — against the far wall, clear of the wardrobe's
+       corner (which starts at x 1.29), still under the window. The
+       primitive is built to the same box, so blockers() fences the real
+       desk and the hell note lands on the real wood.                    */
+    const DESK = { x: 0.40, z: -1.705, w: 1.40, d: 0.91, top: 0.74 };
     const desk = new THREE.Group();
     desk.position.set(DESK.x, 0, DESK.z);
     world.add(desk);
@@ -496,28 +510,36 @@
     deskTop.castShadow = true; deskTop.receiveShadow = true;
     desk.add(deskTop);
     const legGeo = new THREE.BoxGeometry(0.05, DESK.top, 0.05);
-    for (const [lx, lz] of [[-0.47, -0.21], [0.47, -0.21], [-0.47, 0.21], [0.47, 0.21]]) {
+    const legX = DESK.w / 2 - 0.06, legZ = DESK.d / 2 - 0.06;
+    const deskLegs = [];
+    for (const [lx, lz] of [[-legX, -legZ], [legX, -legZ], [-legX, legZ], [legX, legZ]]) {
       const l = new THREE.Mesh(legGeo, matWoodDark);
       l.position.set(lx, DESK.top / 2, lz);
       l.castShadow = true;
       desk.add(l);
+      deskLegs.push(l);
     }
     // schoolbooks, stacked and slightly out of true
     const bookMats = [0x7a2f2a, 0x2c4a63, 0x6a5a2c].map(c =>
       new THREE.MeshStandardMaterial({ color: c, roughness: 0.9 }));
+    const books = [];
     for (let i = 0; i < 3; i++) {
       const b = new THREE.Mesh(new THREE.BoxGeometry(0.21, 0.028, 0.29), bookMats[i]);
       b.position.set(-0.30 + i * 0.012, DESK.top + 0.035 + i * 0.029, 0.02 + i * 0.008);
       b.rotation.y = (i - 1) * 0.07;
       b.castShadow = true;
       desk.add(b);
+      books.push(b);
     }
     // and the hell note, flat on the desk where he left it
     const noteMat = new THREE.MeshStandardMaterial({
       map: noteTex, roughness: 0.88, side: THREE.DoubleSide });
     const heroNote = new THREE.Mesh(new THREE.PlaneGeometry(0.24, 0.144), noteMat);
     heroNote.rotation.set(-Math.PI / 2, 0, 0.34);
-    heroNote.position.set(0.22, DESK.top + 0.024, -0.02);
+    /* v5.17: the front edge of the desk, not the middle. Chad's table comes
+       with its own lamp, notebook, pen and water bottle, and the middle —
+       where the primitive's bare top let the note lie — is where they are. */
+    heroNote.position.set(-0.10, DESK.top + 0.024, 0.30);
     desk.add(heroNote);
 
     // the desk lamp, off — a shape in the dark, not a light
@@ -535,7 +557,7 @@
     desk.add(lampHead);
 
     const chair = new THREE.Group();
-    chair.position.set(DESK.x - 0.06, 0, DESK.z + 0.62);
+    chair.position.set(DESK.x + 0.10, 0, DESK.z + DESK.d / 2 + 0.30);
     chair.rotation.y = 0.24;
     world.add(chair);
     const seat = new THREE.Mesh(new THREE.BoxGeometry(0.40, 0.04, 0.40), matWood);
@@ -1160,6 +1182,22 @@
       }
       fan.rotation.y += dt * 2.1 * fanSpeed;
 
+      /* v5.17 · the model bed takes the weight. Scene D drives the hidden
+         mattress and blanket down beside his head; the model is one mesh
+         and cannot dip a corner, so the whole bed gives by the same amount
+         — three and a half centimetres, on legs nobody is looking at in a
+         shot pointed at the ceiling. */
+      if (bedModel) bedModel.position.y = bedRestY + (mattress.position.y - 0.44);
+
+      /* and the model curtain swings from its rail instead of rippling in
+         its vertices: the mesh ships quantized, so its positions are
+         normalised integers that no per-frame float can be written into */
+      if (curtainSwing) {
+        curtainSwing.rotation.x = (Math.sin(t * 1.4) * 0.022
+                                 + Math.sin(t * 0.6) * 0.013) * noteStorm;
+        curtainSwing.rotation.z = Math.sin(t * 0.9 + 1.1) * 0.010 * noteStorm;
+      }
+
       // the curtain breathes, and a little more when the air does
       const cp = curtain.geometry.attributes.position.array;
       for (let i = 0; i < cp.length; i += 3) {
@@ -1319,6 +1357,171 @@
       S = null;
     }
 
+    /* ================================================================== */
+    /* v5.17 · THE BEDROOM MODELS                                          */
+    /* ================================================================== */
+    /* Chad's five Sketchfab pieces — the bed, the wardrobe, the study
+       table, the chair and the curtain — on the same contract every bought
+       model in this game loads under: async, over a primitive that stays
+       visible until the real bytes land, and sized from the model's OWN
+       measured geometry to the box the primitive already occupies. That
+       last part is what keeps this a dressing change and not a re-staging:
+       blockers() was computed from the primitives at build time, the gap
+       is measured off BED, and five scenes drive cameras to fixed points
+       in this room. Nothing here moves any of them.                     */
+    const loadGLB = (key, fn) => {
+      assetBytes(key).then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
+        if (!alive) return;                    // disposed while the bytes flew
+        rescueTextures(gltf, BUF);
+        fn(gltf);
+        redoShadows();
+      }, (err) => console.warn(key + ' failed to load', err)))
+        .catch(err => console.warn(key + ' failed to load', err));
+    };
+    // the box of one object, in the frame of whatever it is about to hang in
+    const boxOf = (o) => { o.updateMatrixWorld(true); return new THREE.Box3().setFromObject(o); };
+    const shade = (g) => g.traverse(o => {
+      if (!o.isMesh) return;
+      o.castShadow = !LOW; o.receiveShadow = true;
+    });
+
+    /* THE BED. Scaled by WIDTH, never by length: the gap beside it is the
+       chapter, and the bed's left edge is one wall of that gap. Its
+       headboard is at its own low z — measured, not assumed — which is the
+       end this room's pillow is at, so it needs no turning.             */
+    let bedModel = null, bedRestY = 0;
+    loadGLB('bed', (gltf) => {
+      const g = gltf.scene;
+      const b = boxOf(g);
+      const w = b.max.x - b.min.x;
+      if (!(w > 0)) return;
+      const sc = BED.w / w;
+      g.scale.setScalar(sc);
+      const b2 = boxOf(g);
+      bedRestY = -b2.min.y;
+      g.position.set(-(b2.min.x + b2.max.x) / 2, bedRestY, -(b2.min.z + b2.max.z) / 2);
+      shade(g);
+      bed.add(g);
+      bedModel = g;
+      /* the primitives go only now, and the mattress and blanket stay in
+         the group as INVISIBLE PROXIES: scene D drives their y to make the
+         bed take someone's weight beside your head, and updateNotes lays
+         that movement onto the model, which is one mesh and cannot dip a
+         corner of itself. */
+      for (const o of [frame, mattress, blanket, pillow, headboard]) o.visible = false;
+    });
+
+    /* THE WARDROBE. Its doors are at its own +z (measured off the knob
+       mesh), and in this room the wardrobe stands against the right wall
+       with its doors facing the room, which is -x: a quarter turn.      */
+    loadGLB('wardrobe', (gltf) => {
+      const g = gltf.scene;
+      g.rotation.y = -Math.PI / 2;
+      const b = boxOf(g);
+      const h = b.max.y - b.min.y;
+      if (!(h > 0)) return;
+      const sc = WARD.h / h;
+      g.scale.setScalar(sc);
+      const b2 = boxOf(g);
+      g.position.set(-(b2.min.x + b2.max.x) / 2, -b2.min.y, -(b2.min.z + b2.max.z) / 2);
+      shade(g);
+      wardrobe.add(g);
+      for (const o of [wardBody, wardDoorL, wardDoorR, wardGapMesh]) o.visible = false;
+    });
+
+    /* THE STUDY TABLE. Scaled by the DESK BODY's own height, not by the
+       model's box — the box includes a lamp and a water bottle, and a desk
+       scaled by those would stand at a child's knee. The body is found as
+       the mesh with the largest footprint, and its top surface becomes
+       DESK.top, which is the height the hell note has always been laid at.
+       The model brings its own lamp, so ours goes with the primitives. */
+    loadGLB('table', (gltf) => {
+      const g = gltf.scene;
+      let body = null, bodyBox = null, bestArea = 0;
+      g.updateMatrixWorld(true);
+      g.traverse(o => {
+        if (!o.isMesh) return;
+        const bb = new THREE.Box3().setFromObject(o);
+        const area = (bb.max.x - bb.min.x) * (bb.max.z - bb.min.z);
+        if (area > bestArea) { bestArea = area; body = o; bodyBox = bb; }
+      });
+      if (!body) return;
+      const h = bodyBox.max.y - bodyBox.min.y;
+      if (!(h > 0)) return;
+      const sc = DESK.top / h;
+      g.scale.setScalar(sc);
+      g.updateMatrixWorld(true);
+      const bb2 = new THREE.Box3().setFromObject(body);
+      g.position.set(-(bb2.min.x + bb2.max.x) / 2, -bb2.min.y, -(bb2.min.z + bb2.max.z) / 2);
+      shade(g);
+      desk.add(g);
+      for (const o of [deskTop, ...deskLegs, ...books, lampBase, lampArm, lampHead]) o.visible = false;
+    });
+
+    /* THE CHAIR. Its backrest is at its own -z (measured: everything above
+       the seat has a mean z of -128 in its own millimetres), and a chair at
+       a desk faces the desk — which from where it stands is -z. So it is
+       turned half round, inside a group that already carries the small
+       angle it was never quite square at.                               */
+    loadGLB('chair', (gltf) => {
+      const g = gltf.scene;
+      g.rotation.y = Math.PI;
+      const b = boxOf(g);
+      const h = b.max.y - b.min.y;
+      if (!(h > 0)) return;
+      const sc = 0.885 / h;                    // a folding chair, floor to back
+      g.scale.setScalar(sc);
+      const b2 = boxOf(g);
+      g.position.set(-(b2.min.x + b2.max.x) / 2, -b2.min.y, -(b2.min.z + b2.max.z) / 2);
+      shade(g);
+      chair.add(g);
+      for (const o of chair.children) if (o !== g) o.visible = false;
+    });
+
+    /* THE CURTAIN. Its folds run along its own z and its drop along its own
+       x, so it hangs by a quarter turn about Z inside a group turned a
+       quarter about Y. Scaled per axis, which for cloth is not a distortion
+       but a width: 0.60 across, 1.55 down, and the folds kept deep enough
+       to read from the bed. It arrived with the cloth baked as TWO HUNDRED
+       morph targets and a 200x200 weight matrix — five megabytes for a
+       curtain, and a morph texture in every frame — so the targets are
+       gone and it moves the way the primitive did, from this chapter's own
+       clock. */
+    let curtainSwing = null;
+    loadGLB('curtain', (gltf) => {
+      const g = gltf.scene;
+      const b = boxOf(g);
+      const drop = b.max.x - b.min.x, wide = b.max.z - b.min.z;
+      if (!(drop > 0 && wide > 0)) return;
+      g.rotation.z = Math.PI / 2;               // its x is the drop: stand it up
+      g.scale.set(1.42 / drop, 0.42, 0.72 / wide);   // hem clear of the desk below
+      /* it ships with no texture at all — one untextured material — so the
+         cloth is coloured here, to the same washed cotton the primitive
+         sheet used rather than the flat white it arrives as */
+      g.traverse(o => {
+        if (!o.isMesh || !o.material) return;
+        for (const m of (Array.isArray(o.material) ? o.material : [o.material])) {
+          m.color.setHex(0xcfc7bb); m.roughness = 0.94; m.metalness = 0;
+          m.side = THREE.DoubleSide;
+        }
+      });
+      const inner = new THREE.Group();
+      inner.rotation.y = Math.PI / 2;           // and its z is the width: face the room
+      inner.add(g);
+      inner.updateMatrixWorld(true);
+      /* hang it from a RAIL POINT: the cloth's top edge at the group's own
+         origin, centred across it, so swinging the group swings the curtain
+         from the rod the way cloth actually moves */
+      const bi = new THREE.Box3().setFromObject(inner);
+      inner.position.set(-(bi.min.x + bi.max.x) / 2, -bi.max.y, -(bi.min.z + bi.max.z) / 2);
+      curtainSwing = new THREE.Group();
+      curtainSwing.position.set(curtain.position.x, WIN.top + 0.14, curtain.position.z);
+      curtainSwing.add(inner);
+      shade(g);
+      winGroup.add(curtainSwing);
+      curtain.visible = false;
+    });
+
     return (S = {
       world, noteTex, blockers: blockers(),
       ready: () => hdbReady,
@@ -1425,7 +1628,11 @@
 
      Where the camera lives in this room, in one place, so five scenes agree:  */
   const EYE = 1.62;                              // standing
-  const PILLOW = { x: -1.22, y: 0.72, z: -1.20 };  // lying, head on the pillow
+  /* v5.17: 0.60, not the 0.72 the primitive bed wanted. Chad's bed is a low
+     one — measured, its pillow tops out at 0.52 where the box bed's was at
+     0.64 — and an eye eight centimetres above the pillow is a head resting
+     on it. Left at 0.72 the camera floated a hand's width over the bed. */
+  const PILLOW = { x: -1.22, y: 0.60, z: -1.20 };  // lying, head on the pillow
   const MIDROOM = { x: 0.45, y: EYE, z: 0.55 };
   const BEDSIDE = { x: -0.42, y: EYE, z: -0.20 };  // stood over the gap
   const DOORWAY = { x: 1.05, y: EYE, z: 1.85 };
