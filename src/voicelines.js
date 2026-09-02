@@ -38,7 +38,7 @@
   // for every take in the game. Changing the main character's voice is a
   // change to ONE row here plus a regeneration of every line marked james.
   const SPEAKERS = {
-    james:  { name: "James (the player)", voice: "EkK5I93UQWFDigLMpZcX", model: "eleven_v3" },
+    james:  { name: "James (the player)", voice: "loY1uopAz31XyhAEhNSa", model: "eleven_v3" },
     mother: { name: "Ma (his mother)", voice: "XrExE9yKIg1WjnnlVkGX", model: "eleven_v3",
               note: "Matilda. Chapter 2's mother at the door, chapter 4's Ma on the phone (EQ'd through the handset), chapter 5's Ma in the room." },
     auntie: { name: "The auntie at the paper table (chapter 3)", voice: "Xb7hH8MSUJpSbSDYk0k2", model: "eleven_v3",
