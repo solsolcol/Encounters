@@ -171,7 +171,7 @@ ends of every cutscene. Chapters 1 and 2 are untouched: `duckOf()` returns
 
 ## Testing
 
-22 harnesses, listed in `runtests.mjs` with one-line purposes and a
+23 harnesses, listed in `runtests.mjs` with one-line purposes and a
 group tag (`node runtests.mjs @engine` / `@release` / `@chapter`).
 **The rule that stops the suite growing with the game: adding a chapter
 must not add a harness.** Per-chapter correctness is one data-driven
@@ -642,6 +642,20 @@ What the baseline contains, by release:
   frames) instead of after four seconds. And a correction recorded in the
   doc: v5.10's paint was not "untouched" — 1.1 % of painted texels carry
   the v5.09 seam treatment. docs/V5.11-HAIR-AND-SPIN.md.
+- **v5.12** THE PAUSE MENU AND THE CHAPTER SELECTOR — Chad's ask. A gear
+  button sits between the mute button and the inventory button (which
+  moved down to make room); M or a tap opens a pause menu — Return to the
+  game, Select a chapter, Back to the title screen — in a fourth screen
+  state, `menu`, that every "is it play?" gate already closes. The
+  CHAPTER SELECTOR is one panel reached from a Chapters button on the
+  title and from the menu: a chapter is OPEN once REACHED, recorded on
+  its own key (`mz.encounters.progress`) separate from the run's save, so
+  a new game or a replay never locks a later chapter again; picking one
+  asks when there is a run to lose, then replays it from its opening film
+  through the same `setChapter` → `restart` → `enterWorld` the sealed
+  card's Continue uses. Back to the title saves the position first, so
+  Continue returns to the spot. A 23rd harness, `menutest`. Sheet v18.
+  docs/V5.12-MENU-AND-CHAPTERS.md.
 - **v3.8** real art where there was code: a bought first-person ARM rig
   (`arms.glb`, credited to Fab) replaces the wrist-only hand pack and the
   forearm that was built out of cylinders to cover for it, and the hell
@@ -670,7 +684,7 @@ What the baseline contains, by release:
 
 The anchors for that baseline: tag `v3.3`, commit `c8abf61`, the
 `Encounters-backup.bundle` Chad holds (it carries the tag), and the
-22 harnesses — which are what actually *enforce* the standard. A
+23 harnesses — which are what actually *enforce* the standard. A
 chapter-2 change that reddens a base-game harness is a regression in
 the reference build, not a test that needs relaxing.
 

@@ -32,6 +32,7 @@ const ALL = [
   { name: 'state',    file: 'statetest.mjs', quick: true,  group: 'engine', why: 'a run is JSON: save, seed, round-trip exactly' },
   { name: 'resume',   file: 'resumetest.mjs',quick: true,  group: 'engine', why: 'autosave, Continue lands where you were, New game asks' },
   { name: 'inv',      file: 'invtest.mjs',   quick: true,  group: 'engine', why: 'equipment opens, moves and loses nothing, on both' },
+  { name: 'menu',     file: 'menutest.mjs',  quick: true,  group: 'engine', why: 'the pause menu, back to the title, the chapter selector' },
   { name: 'leak',     file: 'leaktest.mjs',  quick: true,  group: 'engine', why: 'a chapter gives the GPU back everything it took' },
   { name: 'chapter',  file: 'chaptertest.mjs', quick: true, group: 'chapter', why: 'every chapter\'s data is complete and in bounds' },
   { name: 'fixture',  file: 'fixturetest.mjs', quick: true, group: 'chapter', why: 'the engine plays a chapter it has never seen' },

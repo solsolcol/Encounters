@@ -1747,7 +1747,8 @@ const BUILD_VERSION = '__VERSION__';
   const key = $('ikey'); if (key && TEXT['world.interactKey'] !== undefined) key.textContent = T('world.interactKey');
   const lg = $('logo'); if (lg && TEXT['title.logoAlt'] !== undefined) lg.setAttribute('aria-label', T('title.logoAlt'));
   for (const [id, k] of [['mute', 'a11y.soundButton'], ['vol', 'a11y.volumeSlider'],
-                         ['credClose', 'a11y.closeButton'], ['creditsLink', 'a11y.creditsButton']]) {
+                         ['credClose', 'a11y.closeButton'], ['creditsLink', 'a11y.creditsButton'],
+                         ['menuBtn', 'a11y.menuButton']]) {
     const el = $(id); if (el && TEXT[k] !== undefined) el.setAttribute('aria-label', T(k));
   }
 })();
@@ -3213,6 +3214,189 @@ addEventListener('keydown', e => {
   invPaint();
 });
 
+
+/* ---------------------------------------------------- the pause menu -----
+   v5.12 (Chad): a gear between the mute button and the inventory button, M
+   or a tap. It freezes the walk exactly the way the inventory does — one
+   state, `menu`, that every gate in the engine already treats as "not
+   play" — and offers three things: back to the game, the chapter
+   selector, and the title screen.
+
+   THE CHAPTER SELECTOR is one panel, reached from the title screen and
+   from this menu. A chapter is OPEN once the player has reached it: the
+   furthest chapter reached is recorded on its own key, separate from the
+   run's save, so starting a new game or replaying chapter 1 never locks
+   chapter 4 again. Picking a chapter plays it from its beginning — its
+   opening film, its title card, then the night — through the same
+   enterWorld() every other start uses.                                  */
+const PROG_KEY = 'mz.encounters.progress';
+const chId = k => (window.__CHAPTERS__[k] && window.__CHAPTERS__[k].id) || 0;
+const playableKeys = () => chapterOrder().filter(k => chId(k) < 90);
+function reachedKey() {
+  try {
+    const s = JSON.parse(localStorage.getItem(PROG_KEY) || 'null');
+    return (s && chapterExists(s.reached)) ? s.reached : null;
+  } catch { return null; }
+}
+function markReached(key) {
+  if (!chapterExists(key) || chId(key) >= 90) return false;
+  const cur = reachedKey();
+  if (cur && chId(cur) >= chId(key)) return true;      // already further
+  try { localStorage.setItem(PROG_KEY, JSON.stringify({ reached: key, t: Date.now() })); return true; }
+  catch { return false; }
+}
+/* every chapter up to and including the furthest reached; chapter 1 always */
+function unlockedKeys() {
+  const top = reachedKey();
+  const topId = top ? chId(top) : 0;
+  return playableKeys().filter((k, i) => i === 0 || chId(k) <= topId);
+}
+
+const menuEl = () => $('menu');
+function menuOpen() {
+  if (state !== 'play' || inv.open) return;
+  for (const k in keys) keys[k] = false;      // a held W does not keep walking under the panel
+  state = 'menu';
+  menuEl().classList.remove('hide');
+  document.body.classList.add('menuopen');
+  $('menuBtn')?.classList.add('open');
+  document.exitPointerLock?.();
+  snd('uiclick', 0.5);
+}
+function menuClose(toPlay = true) {
+  if (state !== 'menu') return;
+  menuEl().classList.add('hide');
+  document.body.classList.remove('menuopen');
+  $('menuBtn')?.classList.remove('open');
+  state = 'play';
+  if (toPlay) { snd('uiclick', 0.5); tryLock(); }
+}
+const menuToggle = () => (state === 'menu' ? menuClose() : menuOpen());
+
+/* the explore music leaves with the player and comes back with them */
+function musicRamp(v, secs = 1.0) {
+  if (!musicGain || !actx) return;
+  const g = musicGain.gain, now = actx.currentTime;
+  g.cancelScheduledValues(now);
+  g.setValueAtTime(g.value, now);
+  g.linearRampToValueAtTime(v, now + secs);
+}
+
+/* Back to the title screen: the run is saved where the player stands first,
+   so Continue brings them straight back here. Everything that play put on
+   screen or in the air comes down; the title's own backdrop starts again. */
+function returnToTitle() {
+  if (state !== 'menu' && state !== 'play') return false;
+  saveCheckpoint();
+  closeChapters();
+  menuClose(false);
+  if (inv.open) invClose();
+  state = 'title';
+  document.exitPointerLock?.();
+  for (const el of [ui.hud, hint, ui.prompt, ui.interact, ui.decide]) el?.classList.add('hide');
+  document.body.classList.remove('inplay');
+  showHaunt(false);
+  stopBed(); silenceChapterLoops(); stopCineVoices();
+  if (narSrc) { try { narSrc.stop(); } catch {} narSrc = null; }
+  musicRamp(0);
+  gPhase = 'hidden'; gTimer = 0; gGlide = null;
+  reveal = 0; ghostOpacity(0);
+  ghost.position.copy(GHOST_HOME);
+  for (const k in keys) keys[k] = false;
+  vel.set(0, 0, 0);
+  ui.title.classList.remove('hide');
+  titleVideo?.play();
+  paintTitle();
+  return true;
+}
+
+/* ---------------------------------------------------- the chapter panel */
+let chPending = null;
+const chaptersOpen = () => !$('chapters')?.classList.contains('hide');
+function paintChapters() {
+  const list = $('chList'); if (!list) return;
+  const open = unlockedKeys();
+  list.textContent = '';
+  for (const k of playableKeys()) {
+    const ch = window.__CHAPTERS__[k], ok = open.includes(k);
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'chTile' + (ok ? '' : ' locked') + (ok && k === CH_KEY && state !== 'title' ? ' now' : '');
+    b.dataset.ch = k;
+    b.disabled = !ok;
+    b.innerHTML = `<span class="num">${ch.cardLabel || k}</span>`
+      + `<span class="name">${ok ? (ch.title || '') : T('chapters.locked')}</span>`;
+    b.onclick = () => askChapter(k);
+    list.appendChild(b);
+  }
+}
+function openChapters() {
+  if (!$('chapters')) return;
+  chPending = null;
+  $('chAsk')?.classList.add('hide');
+  $('chList')?.classList.remove('hide');
+  paintChapters();
+  $('chapters').classList.remove('hide');
+  snd('uiclick', 0.5);
+}
+function closeChapters() {
+  chPending = null;
+  $('chapters')?.classList.add('hide');
+}
+/* a tap on an open chapter: if there is a run to lose, ask; otherwise go */
+function askChapter(key) {
+  if (!unlockedKeys().includes(key)) return;
+  const inRun = state !== 'title' || !!loadCheckpoint();
+  if (!inRun) return startChapter(key);
+  chPending = key;
+  const ch = window.__CHAPTERS__[key];
+  const label = (ch.cardLabel || key) + (ch.title ? ' · ' + ch.title : '');
+  const t = $('chAskText'); if (t) t.textContent = T('chapters.ask').replace('{chapter}', label);
+  $('chList')?.classList.add('hide');
+  $('chAsk')?.classList.remove('hide');
+}
+/* Start a chapter from its beginning, from the title or from mid-play.
+   restart() is the one piece of code that knows everything a fresh run has
+   to put back, and enterWorld() then takes the player out again in the
+   same tick — the film, the card, the night — exactly as advancing does. */
+function startChapter(key) {
+  if (!unlockedKeys().includes(key)) return false;
+  closeChapters();
+  if (state === 'menu') menuClose(false);
+  if (inv.open) invClose();
+  for (const el of [ui.complete, ui.result, ui.over]) el.classList.add('hide');
+  document.body.classList.remove('inplay');
+  setChapter(key);
+  restart();
+  enterWorld(() => {
+    yaw.position.copy(SPAWN.pos);
+    yaw.rotation.y = SPAWN.rot;
+    pitch.rotation.x = 0; camera.rotation.z = 0;
+  }, { intro: true });
+  return true;
+}
+
+$('menuBtn')?.addEventListener('click', menuToggle);
+$('menuResume')?.addEventListener('click', () => menuClose());
+$('menuChapters')?.addEventListener('click', () => openChapters());
+$('menuTitle')?.addEventListener('click', () => returnToTitle());
+$('chaptersBtn')?.addEventListener('click', () => openChapters());
+$('chClose')?.addEventListener('click', () => closeChapters());
+$('chYes')?.addEventListener('click', () => { if (chPending) startChapter(chPending); });
+$('chNo')?.addEventListener('click', () => { chPending = null; $('chAsk')?.classList.add('hide'); $('chList')?.classList.remove('hide'); });
+$('chapters')?.addEventListener('click', e => { if (e.target === $('chapters')) closeChapters(); });
+menuEl()?.addEventListener('click', e => { if (e.target === menuEl()) menuClose(); });
+addEventListener('keydown', e => {
+  if (e.code === 'Escape') {
+    if (chaptersOpen()) { e.preventDefault(); closeChapters(); return; }
+    if (state === 'menu') { e.preventDefault(); menuClose(); return; }
+    return;
+  }
+  if (e.code === 'KeyM' && !chaptersOpen() && (state === 'play' || state === 'menu')) {
+    e.preventDefault(); menuToggle();
+  }
+});
+
 /* ------------------------------------------------------------ credits --- */
 const creditsLayer = $('credits');
 function showCredits(on) { creditsLayer?.classList.toggle('hide', !on); }
@@ -3930,6 +4114,7 @@ function enterWorld(place, opts = {}) {
   titleVideo?.el.pause();
   state = 'chapter';
   musicStart();                    // the click that counts as the gesture
+  musicRamp(musicVolNow());        // back up if a trip to the title ramped it out (v5.12)
   tryLock();                       // has to be inside the click to be allowed
 
   /* A chapter may open on a FILM. `intro` is a scene function in exactly the
@@ -3956,6 +4141,7 @@ function enterWorld(place, opts = {}) {
     zavPrefetch();                 // and the equipment figure should be standing there before it is asked for
     queueVoice();                  // his own voice, two seconds in
     autosave(true);                // the run is recorded from its first moment
+    markReached(CH_KEY);           // and the chapter is open in the selector from now on (v5.12)
   });
 
   // placing happens BEFORE the card, not at its dissolve: the card's
@@ -4065,6 +4251,7 @@ function paintTitle() {
   }
 }
 paintTitle();
+{ const s = loadCheckpoint(); if (s && s.ch) markReached(s.ch); }   // a run already past chapter 1 opens what it reached (v5.12)
 
 /* ------------------------------------------------------ the title backdrop
    Pure decoration, so every step is written to fail quietly: no source until
@@ -4546,6 +4733,7 @@ function finish() {
   const nxt = nextChapterKey();
   saveCheckpoint(nxt ? { at: null, done: false, ch: nxt }
                      : { at: null, done: true });
+  if (nxt) markReached(nxt);       // finished this one: the next is open in the selector (v5.12)
   snd('uirank', 0.7);
 
   // SEALED comes down as a stamp, a beat after the card lands
@@ -4847,6 +5035,9 @@ window.__enc = { yaw, stats, getState: () => state,
                  worldState, applyState,
                  saveCheckpoint, loadCheckpoint, clearCheckpoint,
                  invOpen, invClose, invToggle, invAdd, invHas, invRemove,
+                 menuOpen, menuClose, menuToggle, openChapters, closeChapters,
+                 startChapter, returnToTitle, unlockedKeys, markReached,
+                 chapterKey: () => CH_KEY,
                  inv: () => ({ gear: { ...inv.gear }, bag: [...inv.bag],
                                held: inv.held?.id || null, open: inv.open }),
                  pulse: () => ({ bpm: Math.round(curBpm),

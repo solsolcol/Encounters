@@ -29,6 +29,7 @@ Object.assign(window.__TEXT__, {
   'title.continue':      'Continue',
   'title.resumeNote':    'Picking up where you left off · {chapter}',
   'title.newGame':       'Start a new game',
+  'title.chapters':      'Chapters',
   'title.controlsDesktop': '<b>Desktop</b> · W A S D to walk, move the mouse to look, <b>E</b> to interact with objects',
   'title.controlsPhone':   '<b>Phone</b> · left thumb walks, right thumb looks, <b>tap</b> objects to interact with them',
   'title.credits':       'Credits',
@@ -138,6 +139,21 @@ Object.assign(window.__TEXT__, {
   'newgame.yes':         'Start over',
   'newgame.no':          'Keep playing',
 
+  // --- the pause menu and the chapter selector (v5.12) --------------------
+  'menu.button':         'Menu',
+  'menu.buttonKey':      'M',
+  'menu.heading':        'Paused',
+  'menu.resume':         'Return to the game',
+  'menu.chapters':       'Select a chapter',
+  'menu.toTitle':        'Back to the title screen',
+  'chapters.heading':    'Chapters',
+  'chapters.hint':       'A chapter you have reached can be played again from its opening.',
+  'chapters.locked':     'Not yet reached',
+  'chapters.close':      'Close ✕',
+  'chapters.ask':        'Play {chapter} from its beginning? Your current place in the story will be replaced.',
+  'chapters.yes':        'Play it',
+  'chapters.no':         'Back',
+
   // --- inventory / equipment -----------------------------------------------
   'inv.button':          'Inventory',
   'inv.buttonKey':       'I',
@@ -167,5 +183,6 @@ Object.assign(window.__TEXT__, {
   'a11y.soundButton':    'Sound on or off',
   'a11y.volumeSlider':   'Game volume',
   'a11y.closeButton':    'Close',
-  'a11y.creditsButton':  'Credits'
+  'a11y.creditsButton':  'Credits',
+  'a11y.menuButton':     'Menu'
 });

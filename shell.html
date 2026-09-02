@@ -78,13 +78,15 @@ body.finePtr #volWrap{display:flex}
 #volWrap:hover,#volWrap:focus-within{opacity:1;border-color:#3A414E}
 #vol{width:112px;height:18px;accent-color:var(--sodium);cursor:pointer;margin:0}
 
-/* the inventory button sits directly under the sound button, same size.
-   On a laptop it also wears the key that opens it; a phone just taps it. */
-.invBtn{top:calc(max(14px,env(safe-area-inset-top)) + 56px);display:none}
-body.inplay .invBtn{display:grid}
-body.cine .invBtn{display:none}   /* a scene owns the screen */
-.invBtn svg{fill:none;stroke:var(--bone);stroke-width:1.8}
-.invBtn svg path:first-child{fill:none}
+/* the menu button (v5.12) sits directly under the sound button, and the
+   inventory button under that — same size, same column. On a laptop each
+   wears the key that opens it; a phone just taps them. */
+.menuBtn{top:calc(max(14px,env(safe-area-inset-top)) + 56px);display:none}
+.invBtn{top:calc(max(14px,env(safe-area-inset-top)) + 112px);display:none}
+body.inplay .invBtn,body.inplay .menuBtn{display:grid}
+body.cine .invBtn,body.cine .menuBtn{display:none}   /* a scene owns the screen */
+.invBtn svg,.menuBtn svg{fill:none;stroke:var(--bone);stroke-width:1.8}
+.invBtn svg path:first-child,.menuBtn svg path:first-child{fill:none}
 /* the label rides inside the button, hanging off its left edge, so the
    words are part of the click target. A phone needs no words: there the
    button is simply tapped, and the label stays hidden. */
@@ -98,9 +100,51 @@ body.finePtr .invLabel{display:flex;align-items:center;gap:7px;
 .invLabel kbd{display:grid;place-items:center;min-width:20px;height:20px;
   padding:0 4px;border-radius:5px;background:var(--sodium);color:var(--void);
   font-family:var(--mono);font-size:.72rem;font-weight:700;line-height:1}
-.invBtn:hover .invLabel,.invBtn:focus-visible .invLabel{border-color:var(--sodium)}
-.invBtn{position:fixed}
-.invBtn.open{border-color:var(--sodium);background:rgba(22,26,34,.95)}
+.invBtn:hover .invLabel,.invBtn:focus-visible .invLabel,
+.menuBtn:hover .invLabel,.menuBtn:focus-visible .invLabel{border-color:var(--sodium)}
+.invBtn,.menuBtn{position:fixed}
+.invBtn.open,.menuBtn.open{border-color:var(--sodium);background:rgba(22,26,34,.95)}
+
+/* ── the pause menu and the chapter selector (v5.12) ──────────────────── */
+body.menuopen .soundBtn{display:none}
+#menu,#chapters{align-items:center;justify-content:center;pointer-events:auto;padding:20px;
+  background:rgba(3,4,7,.9);backdrop-filter:blur(4px);z-index:9}
+#chapters{z-index:10}   /* opens over the menu, and over the title */
+.menuCard{width:min(440px,100%);max-height:88vh;overflow-y:auto;
+  background:var(--ash);border:1px solid var(--line);padding:24px;text-align:center;
+  animation:fadeup .35s var(--ease)}
+.menuCard h3{font-family:var(--ui);font-size:1.12rem;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--bone);margin:0 0 16px}
+.menuBtns{display:flex;flex-direction:column;gap:10px}
+.menuBtns button{font-family:var(--ui);font-size:.98rem;font-weight:700;
+  letter-spacing:.06em;text-transform:uppercase;padding:14px 20px;cursor:pointer;
+  color:#C6CAD3;background:transparent;border:1px solid var(--line);
+  transition:border-color .16s,color .16s,transform .16s}
+.menuBtns button:hover,.menuBtns button:focus-visible{color:var(--bone);
+  border-color:var(--sodium);transform:translateY(-1px);outline:none}
+#menuResume{color:var(--void);background:var(--sodium);border-color:var(--sodium)}
+#menuResume:hover,#menuResume:focus-visible{color:var(--void)}
+.chHead{display:flex;justify-content:space-between;align-items:center;gap:14px}
+.chHead h3{margin:0}
+.chHint{font-family:var(--ui);font-size:.94rem;line-height:1.5;color:#8A91A0;
+  margin:12px 0 14px;text-align:left}
+.chList{display:flex;flex-direction:column;gap:8px}
+.chTile{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;
+  text-align:left;padding:12px 14px;cursor:pointer;
+  background:#0C1016;border:1px solid var(--line);color:#C6CAD3;
+  transition:border-color .16s,background .16s}
+.chTile .num{font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;
+  text-transform:uppercase;color:#7A8290;white-space:nowrap}
+.chTile .name{font-family:var(--ui);font-size:1rem;font-weight:600;color:var(--bone)}
+.chTile:hover,.chTile:focus-visible{border-color:var(--sodium);background:#141A23;outline:none}
+.chTile.now{border-color:var(--jade)}
+.chTile.locked{opacity:.42;cursor:default}
+.chTile.locked .name{color:#8A91A0;font-weight:400}
+.chTile.locked:hover{border-color:var(--line);background:#0C1016}
+.chAsk p{font-family:var(--ui);font-size:.98rem;line-height:1.5;color:#A6ADBB;margin:6px 0 18px}
+#chYes{color:var(--void);background:var(--sodium)}
+#chNo{color:#C6CAD3;background:transparent;border:1px solid var(--line)}
+#chYes:focus-visible,#chNo:focus-visible{outline:2px solid var(--sodium);outline-offset:2px}
 
 /* ── inventory / equipment ──────────────────────────────────────────────
    One interaction model for both hands and mice: press-and-drag moves an
@@ -288,14 +332,16 @@ body.invopen .soundBtn{display:none}
    rather than a text link: it is a thing you press, and on a phone a link
    sitting under a big solid button is both easy to miss and easy to mistap.
    Outlined rather than filled, so Continue stays the obvious one. */
-#newGameBtn{display:block;margin:16px auto 0;font-family:var(--ui);
+#newGameBtn,#chaptersBtn{display:block;margin:16px auto 0;font-family:var(--ui);
   font-size:.92rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
   color:#C6CAD3;background:transparent;border:1px solid var(--line);
   padding:13px 30px;cursor:pointer;
   transition:transform .18s var(--ease),border-color .18s var(--ease),
              color .18s var(--ease)}
-#newGameBtn:hover,#newGameBtn:focus-visible{color:var(--bone);
+#newGameBtn:hover,#newGameBtn:focus-visible,
+#chaptersBtn:hover,#chaptersBtn:focus-visible{color:var(--bone);
   border-color:var(--sodium);transform:translateY(-2px);outline:none}
+#chaptersBtn{margin-top:10px}   /* the selector (v5.12): a third, quieter way in */
 /* New game asks first: losing a run to a mistap is exactly the kind of
    quiet loss this project does not accept */
 #newConfirm{align-items:center;justify-content:center;pointer-events:auto;padding:20px;
@@ -722,6 +768,13 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
   </svg>
   <span class="invLabel"><span data-t="inv.button">Inventory</span><kbd data-t="inv.buttonKey">I</kbd></span>
 </button>
+<button id="menuBtn" class="soundBtn menuBtn" type="button" aria-label="Menu">
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M12 8.7a3.3 3.3 0 1 0 0 6.6 3.3 3.3 0 0 0 0-6.6Z"/>
+    <path d="M19.3 13.1a7.4 7.4 0 0 0 0-2.2l2-1.5-1.9-3.3-2.3.9a7.4 7.4 0 0 0-1.9-1.1l-.4-2.5H9.2l-.4 2.5a7.4 7.4 0 0 0-1.9 1.1l-2.3-.9-1.9 3.3 2 1.5a7.4 7.4 0 0 0 0 2.2l-2 1.5 1.9 3.3 2.3-.9a7.4 7.4 0 0 0 1.9 1.1l.4 2.5h5.6l.4-2.5a7.4 7.4 0 0 0 1.9-1.1l2.3.9 1.9-3.3Z"/>
+  </svg>
+  <span class="invLabel"><span data-t="menu.button">Menu</span><kbd data-t="menu.buttonKey">M</kbd></span>
+</button>
 
 <canvas id="scene"></canvas>
 <div id="grade"></div>
@@ -756,6 +809,7 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
     <p id="resumeNote" class="resumeNote hide"></p>
     <button id="newGameBtn" class="hide" type="button"
             data-t="title.newGame">Start a new game</button>
+    <button id="chaptersBtn" type="button" data-t="title.chapters">Chapters</button>
     <div class="ctrl">
       <div class="ctrlRow">
         <svg class="ctrlIcon" viewBox="0 0 24 24" aria-hidden="true">
@@ -785,6 +839,36 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
     </div>
     <button id="creditsLink" class="creditsLink" type="button" data-t="title.credits">Credits</button>
     <div id="ver" class="ver"></div>
+  </div>
+</div>
+
+<!-- the pause menu (v5.12): M, or the gear under the mute button -->
+<div id="menu" class="layer hide">
+  <div class="menuCard">
+    <h3 data-t="menu.heading">Paused</h3>
+    <div class="menuBtns">
+      <button id="menuResume" type="button" data-t="menu.resume">Return to the game</button>
+      <button id="menuChapters" type="button" data-t="menu.chapters">Select a chapter</button>
+      <button id="menuTitle" type="button" data-t="menu.toTitle">Back to the title screen</button>
+    </div>
+  </div>
+</div>
+<!-- the chapter selector, reached from the title screen and from the menu -->
+<div id="chapters" class="layer hide">
+  <div class="menuCard">
+    <div class="chHead">
+      <h3 data-t="chapters.heading">Chapters</h3>
+      <button id="chClose" class="credClose" type="button" data-t="chapters.close">Close ✕</button>
+    </div>
+    <p class="chHint" data-t="chapters.hint">A chapter you have reached can be played again from its opening.</p>
+    <div id="chList" class="chList"></div>
+    <div id="chAsk" class="chAsk hide">
+      <p id="chAskText"></p>
+      <div class="newBtns">
+        <button id="chYes" type="button" data-t="chapters.yes">Play it</button>
+        <button id="chNo" type="button" data-t="chapters.no">Back</button>
+      </div>
+    </div>
   </div>
 </div>
 

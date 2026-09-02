@@ -5,17 +5,17 @@ without prompting for each change. This is how it works and how to run it.
 
 ## The sheet
 
-**Master Z's Encounters — GAME TEXT v17 (edit here)** in his Drive
-(id `1HvLUt3w7XPFmPV63hO37dYw_IsdJUKETnvCJh8lcX1g` — the **v17** sheet, made
-at v5.09 when the two hand slots became one: `slot.rightHand` and
-`slot.leftHand` are gone, `slot.hand` is new. v16 (v5.08's, id
-`1CAUB0Y3I5Eu6Ncx7cMJJmXHsWCTthEuq53Mk-mC2ZF4`) and everything before it are
-superseded and should not be edited. Provenance, stated plainly: v16 was
-read back in full before v17 was generated and matched the code row for
-row — nothing of Chad's outstanding — so v17 is v16 minus two rows plus
-one. Whenever a sheet has been in his hands for real time, read it back
-and import FIRST — that is what the rule is for).
-<https://docs.google.com/spreadsheets/d/1HvLUt3w7XPFmPV63hO37dYw_IsdJUKETnvCJh8lcX1g/edit>
+**Master Z's Encounters — GAME TEXT v18 (edit here)** in his Drive
+(id `1y0iXiJ1xkPGs_e5-tH5AtmnLmoI_s1CoSePk_TFJp1A` — the **v18** sheet, made
+at v5.12 for the pause menu and the chapter selector: fifteen new rows
+under `title.chapters`, `menu.*`, `chapters.*` and `a11y.menuButton`. v17
+(v5.09's, id `1HvLUt3w7XPFmPV63hO37dYw_IsdJUKETnvCJh8lcX1g`) and everything
+before it are superseded and should not be edited. Provenance, stated
+plainly: v17 was read back in full before v18 was generated and matched
+the code row for row — nothing of Chad's outstanding — so v18 is v17 plus
+fifteen rows. Whenever a sheet has been in his hands for real time, read
+it back and import FIRST — that is what the rule is for).
+<https://docs.google.com/spreadsheets/d/1y0iXiJ1xkPGs_e5-tH5AtmnLmoI_s1CoSePk_TFJp1A/edit>
 
 Two sheets in one session is the cost of the connector's one real
 limitation, and it is worth restating why: it can READ a sheet and it can
