@@ -11,7 +11,9 @@
      5. Back to the title screen saves where you stood, brings the title
         up and the HUD down, and Continue then lands you on that spot
      6. reaching chapter 2 opens it in the selector; picking it from the
-        menu asks first, then plays its opening film, then the chapter    */
+        menu asks first, then plays its opening film, then the chapter
+     7. and that film has its SOUND: every cue it fires finds a decoded
+        sample — the v5.13 fix for the silent replayed film              */
 import { chromium } from 'playwright';
 import { LAUNCH, PAGE } from './testlib.mjs';
 
@@ -87,7 +89,7 @@ const after = await at();
 out.continueLandsThere = Math.hypot(after.x - before.x, after.z - before.z) < 0.05;
 
 // --- 6. the selector from the menu: reached opens, ask, film, chapter --------
-await p.evaluate(() => window.__enc.markReached('ch2'));
+await p.evaluate(() => { window.__enc.markReached('ch2'); window.__enc.setMuted(false); });
 await p.keyboard.press('KeyM'); await p.waitForTimeout(250);
 await p.click('#menuChapters'); await p.waitForTimeout(300);
 { const t = await tiles(); out.reachedOpensIt = t.length >= 3 && !t[0].locked && !t[1].locked && t[2].locked; }
@@ -96,6 +98,13 @@ out.asksFirst = !(await hidden('chAsk'));
 await p.click('#chYes');
 await p.waitForFunction(() => window.__enc.getState() === 'cine', null, { timeout: 150000 });
 out.opensOnItsFilm = await p.evaluate(() => window.__enc.chapterKey() === 'ch2');
+// --- 7. the film is heard: wait for its first cues, none may have missed its sample
+await p.waitForFunction(() => window.__enc.stings().length >= 2, null, { timeout: 120000 }).catch(() => {});
+{
+  const st6 = await p.evaluate(() => window.__enc.stings());
+  out.filmHasItsSound = st6.length >= 2 && st6.every(s => s.how === 'sample' || s.how === 'step' || s.how === 'synth');
+  if (!out.filmHasItsSound) console.log('cues:', JSON.stringify(st6));
+}
 await p.evaluate(() => window.__enc.cine.skip());
 await p.waitForFunction(() => window.__enc.getState() === 'play', null, { timeout: 150000 });
 out.thenPlaysIt = await p.evaluate(() => window.__enc.chapterKey() === 'ch2')

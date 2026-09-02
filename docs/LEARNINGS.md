@@ -1328,3 +1328,17 @@ Labelling the atlas's patches by flood-filling the covered texels gave
 that touch merge. The chart a texel belongs to is a property of the
 MESH — triangles joined through shared UV vertices — and only that
 labelling keeps a hair patch separate from the robe patch it abuts.
+
+## A cue fired before its decode is silent, and every new entry path re-asks the question (v5.13)
+
+Cutscene sounds are sample-only on purpose, and the sealed-card advance
+never went silent because `startDecision()` warmed the next chapter's
+whole cutscene set a minute ahead. Every NEW way into a chapter — the
+selector, Continue into a chapter never entered — arrived seconds after
+`setChapter()` started the pack fetch, and the film's first cues fired
+into the gap: no voice, no clock, and no error anywhere. Two rules. The
+thing that starts a film owns the wait for that film's sounds — pack,
+decodes, models, in that order, each capped — and not the thing that
+happens to have prefetched them on one path. And "does it make a sound"
+must be measurable: the cue log (`__enc.stings()`) turned an ear-only bug
+into a harness assertion in an afternoon; a screenshot never would have.

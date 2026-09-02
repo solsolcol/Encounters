@@ -106,7 +106,7 @@ body.finePtr .invLabel{display:flex;align-items:center;gap:7px;
 .invBtn.open,.menuBtn.open{border-color:var(--sodium);background:rgba(22,26,34,.95)}
 
 /* ── the pause menu and the chapter selector (v5.12) ──────────────────── */
-body.menuopen .soundBtn{display:none}
+body.menuopen .soundBtn,body.menuopen #volWrap,body.invopen #volWrap{display:none}
 #menu,#chapters{align-items:center;justify-content:center;pointer-events:auto;padding:20px;
   background:rgba(3,4,7,.9);backdrop-filter:blur(4px);z-index:9}
 #chapters{z-index:10}   /* opens over the menu, and over the title */

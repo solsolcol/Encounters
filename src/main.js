@@ -2086,10 +2086,31 @@ function warmCues(kinds) {
    just gone black, before the player has done anything at all, so nothing
    else has warmed the pack for it — and a line that misses its cue in the
    first ten seconds of a chapter is the first thing anyone notices. */
-function warmIntroSet() {
-  packWarm(['clock', 'fan', 'breath', 'sobbing', 'dread', 'strings', 'boom',
-            'whisper', 'heart', 'doorcreak', 'bedcreak']);
-  warmCues(cuesOf(CH.intro));
+const INTRO_BED = ['clock', 'fan', 'breath', 'sobbing', 'dread', 'strings', 'boom',
+                   'whisper', 'heart', 'doorcreak', 'bedcreak'];
+/* the samples an opening film will ask for: its own cues, plus the bed */
+function introSamples() {
+  const out = new Set(INTRO_BED);
+  for (const k of cuesOf(CH.intro)) {
+    if (k === 'step') { ['step1', 'step2', 'step3', 'step4'].forEach(n => out.add(n)); continue; }
+    const smp = STING_SAMPLE[k]; if (smp) out.add(smp[0]);
+  }
+  return [...out];
+}
+function warmIntroSet() { packWarm(introSamples()); }
+/* v5.13: call `then` once every named sample that IS in the pack has
+   decoded — or after capMs, so a decode that never lands cannot hold the
+   film forever. A cue whose buffer is not ready is silent by design
+   (sfx is sample-only), so this is the difference between a film with its
+   voice and a film without it. */
+function whenDecoded(names, then, capMs = 4000) {
+  const t0 = performance.now();
+  const tick = () => {
+    const pending = names.filter(n => packJson && packJson[n] && !packBufs[n]);
+    if (!pending.length || performance.now() - t0 > capMs) then();
+    else setTimeout(tick, 60);
+  };
+  tick();
 }
 
 function queueVoice() {
@@ -3239,6 +3260,7 @@ function reachedKey() {
   } catch { return null; }
 }
 function markReached(key) {
+  if (CH_ASKED) return false;                  // a ?ch= preview opens nothing, the same way it saves nothing
   if (!chapterExists(key) || chId(key) >= 90) return false;
   const cur = reachedKey();
   if (cur && chId(cur) >= chId(key)) return true;      // already further
@@ -3254,7 +3276,7 @@ function unlockedKeys() {
 
 const menuEl = () => $('menu');
 function menuOpen() {
-  if (state !== 'play' || inv.open) return;
+  if (state !== 'play' || inv.open || fainting) return;   // a faint is not a moment to pause in
   for (const k in keys) keys[k] = false;      // a held W does not keep walking under the panel
   state = 'menu';
   menuEl().classList.remove('hide');
@@ -3286,7 +3308,7 @@ function musicRamp(v, secs = 1.0) {
    so Continue brings them straight back here. Everything that play put on
    screen or in the air comes down; the title's own backdrop starts again. */
 function returnToTitle() {
-  if (state !== 'menu' && state !== 'play') return false;
+  if ((state !== 'menu' && state !== 'play') || fainting) return false;
   saveCheckpoint();
   closeChapters();
   menuClose(false);
@@ -3296,9 +3318,14 @@ function returnToTitle() {
   for (const el of [ui.hud, hint, ui.prompt, ui.interact, ui.decide]) el?.classList.add('hide');
   document.body.classList.remove('inplay');
   showHaunt(false);
-  stopBed(); silenceChapterLoops(); stopCineVoices();
+  stopBed(); stopCineVoices();
+  for (const n of liveLoops) loopVol(n, 0);   // ALL of them: silenceChapterLoops() keeps this chapter's own
   if (narSrc) { try { narSrc.stop(); } catch {} narSrc = null; }
+  clearTimeout(voiceTimer);                    // his opening line must not land on the title screen
   musicRamp(0);
+  ui.panic.classList.remove('critical');       // the red of a low sanity does not follow you out
+  ui.panic.style.transition = 'none'; ui.panic.style.opacity = '0';
+  void ui.panic.offsetWidth; ui.panic.style.transition = '';
   gPhase = 'hidden'; gTimer = 0; gGlide = null;
   reveal = 0; ghostOpacity(0);
   ghost.position.copy(GHOST_HOME);
@@ -3561,19 +3588,26 @@ function stopCineVoices() {
 /* `vol` scales the kind's own level, so a scene can place the same dread bed
    loud under a reveal and barely-there under a walk away, without inventing
    a second kind for every shade. */
+/* every cue a scene fires, and whether it made a sound — a probe and a
+   harness can read this where a screenshot hears nothing (v5.13) */
+const stingLog = [];
 function sting(kind, vol = 1) {
   // the heart hears these even when the speakers are off
   if (kind === 'boom') pulseSpike(0.7);
   if (kind === 'scream' || kind === 'gscream') pulseSpike(0.95);
   if (kind === 'gwail') pulseSpike(0.8);
-  if (!actx || muted || !sfxOut()) return;
-  if (kind === 'step' && sndBuf('step1')) { stepSnd(0.5 * vol); return; }
+  const rec = { kind, how: '' };
+  stingLog.push(rec); if (stingLog.length > 300) stingLog.shift();
+  if (!actx || muted || !sfxOut()) { rec.how = !actx ? 'no-ctx' : muted ? 'muted' : 'no-out'; return; }
+  if (kind === 'step' && sndBuf('step1')) { stepSnd(0.5 * vol); rec.how = 'step'; return; }
   const smp = STING_SAMPLE[kind];
   if (smp) {
     const src = snd(smp[0], smp[1] * vol);
-    if (src) { if (cine) cineVoices.push(src); return; }
+    if (src) { if (cine) cineVoices.push(src); rec.how = 'sample'; return; }
+    rec.how = packBufs[smp[0]] ? 'ctx-' + (actx ? actx.state : 'none') : (packJson && packJson[smp[0]] ? 'decoding' : 'no-pack');
   }
-  if (!STING_SYNTH.has(kind)) return;
+  if (!STING_SYNTH.has(kind)) { if (!rec.how) rec.how = 'no-sample'; return; }
+  rec.how = rec.how ? rec.how + '+synth' : 'synth';
   const t0 = actx.currentTime;
   const env = (node, peak, a, d) => {
     const g = actx.createGain();
@@ -4157,8 +4191,20 @@ function enterWorld(place, opts = {}) {
   ui.title.classList.add('hide');
   ui.hud.classList.add('hide');
   if (place) place();
-  warmIntroSet();
-  whenWorldReady(() => playCineFn(intro, card, 1));
+  /* v5.13: THE FILM WAITS FOR ITS SOUNDS. A chapter's pack is fetched by
+     setChapter(), and on the advance path startDecision() fetched it a
+     whole decision earlier — but from the chapter selector, and on
+     Continue into a chapter sealed-into but never entered, the fetch
+     starts moments before the film. A cue fired before its sample has
+     decoded is silent by design, so the film opened with no voice and no
+     sound (Chad heard it first). So: the pack, then the decodes, then the
+     models, then the film — each capped, so nothing can hold the black
+     forever. */
+  const packWait = Promise.race([packLoad(CH_KEY), new Promise(r => setTimeout(r, 12000))]);
+  packWait.then(() => {
+    warmIntroSet();
+    whenDecoded(introSamples(), () => whenWorldReady(() => playCineFn(intro, card, 1)));
+  });
 }
 
 /* Continue: the default, and what the big button does whenever there is
@@ -5038,6 +5084,8 @@ window.__enc = { yaw, stats, getState: () => state,
                  menuOpen, menuClose, menuToggle, openChapters, closeChapters,
                  startChapter, returnToTitle, unlockedKeys, markReached,
                  chapterKey: () => CH_KEY,
+                 stings: () => stingLog.slice(),
+                 audio: () => ({ ctx: actx ? actx.state : 'none', muted, decoded: Object.keys(packBufs) }),
                  inv: () => ({ gear: { ...inv.gear }, bag: [...inv.bag],
                                held: inv.held?.id || null, open: inv.open }),
                  pulse: () => ({ bpm: Math.round(curBpm),

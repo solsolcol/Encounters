@@ -656,6 +656,19 @@ What the baseline contains, by release:
   card's Continue uses. Back to the title saves the position first, so
   Continue returns to the spot. A 23rd harness, `menutest`. Sheet v18.
   docs/V5.12-MENU-AND-CHAPTERS.md.
+- **v5.13** THE FILM WAITS FOR ITS SOUNDS — Chad: a chapter replayed from
+  the selector opened on a silent film. A cue is sample-only and a sample
+  that has not decoded plays nothing; from the selector (and on Continue
+  into a chapter sealed-into but never entered) the chapter's pack is
+  fetched moments before the film, so every cue fired into the gap. Now
+  `enterWorld()`'s film path waits for the pack, then the intro's decodes
+  (`whenDecoded`, capped), then the models. Measured with a cue log
+  (`__enc.stings()`), which `menutest` now reads: the replayed film must
+  hear every cue. Also found by reading the new paths: no menu during a
+  faint (it would have saved the zero sanity), every loop down on the way
+  to the title (the room tone followed you out), the opening-line timer
+  cleared, the panic red cleared, a `?ch=` preview unlocks nothing, the
+  volume slider hides under the panels. docs/V5.13-THE-FILM-WAITS.md.
 - **v3.8** real art where there was code: a bought first-person ARM rig
   (`arms.glb`, credited to Fab) replaces the wrist-only hand pack and the
   forearm that was built out of cylinders to cover for it, and the hell
