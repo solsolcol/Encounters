@@ -724,6 +724,26 @@ What the baseline contains, by release:
   Built in five checkpoints against context loss (`masters/v5.15/` holds
   the progress record and the scripts). Sheet v20.
   docs/V5.15-THE-BOY.md is the build's memory.
+- **v5.17** THE BEDROOM — Chad's five Sketchfab pieces (bed, wardrobe,
+  study table, chair, curtain) replace every box in chapter 2, 11.7 MB
+  shrunk to 852 KB. Three needed more than shrinking: the study table's
+  materials are `KHR_materials_pbrSpecularGlossiness`, which three.js
+  REMOVED from GLTFLoader — it renders flat white and says nothing, so
+  `metalRough()` converts it back into colours; the curtain was five
+  megabytes of 1,953 triangles because its cloth was baked as 200 MORPH
+  TARGETS with a 200x200 weight matrix (deleted — it swings from a rail
+  point instead, because a quantized mesh's positions are integers no
+  per-frame float can be written into); and the BED IS SCALED BY WIDTH,
+  never length, because its left edge is one wall of the gap that is the
+  whole chapter. Two things moved and both were forced: the lying camera
+  came down to 0.60 (his bed is low — pillow measured at 0.52, so 0.72
+  floated a hand's width over it), and the desk grew to his 1.40 x 0.91 and
+  shifted left and back to take it. Scene D's mattress still dips: the
+  primitive mattress and blanket stay as INVISIBLE PROXIES the scene
+  drives, and the model sinks by their delta. `leaktest` was a coin toss
+  before this build and is fixed here — it settled only the baseline, so
+  the same fifteen-geometry step read as +1.88 or -1.88 at random.
+  Sheet v22. docs/V5.17-BEDROOM.md is the build's memory.
 - **v5.16** THE MAN AT THE TENT EDGE — Chad's Sketchfab standing man takes
   the RIGHT-edge stander in chapter 3, mirroring the chinese boy on the
   left: the two ends of the back of the tent, where the lane brings you

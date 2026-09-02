@@ -905,6 +905,43 @@ time (six consecutive failures, not the usual one-in-three) — a wordless
 breath line still needs voiceable text ("Hoohh... hahh") for the tags to
 shape.
 
+## A bought model can be broken by an extension three.js dropped (v5.17)
+
+Chad's study table arrived flat white — every material, no colour, in the
+viewer and in the game. Nothing was wrong with the file: its fourteen
+materials are `KHR_materials_pbrSpecularGlossiness`, and three.js REMOVED
+that extension from GLTFLoader. The loader does not warn, does not throw
+and does not fall back to the diffuse factor; it ignores the extension and
+renders the default white material. `metalRough()` from gltf-transform
+converts the spec-gloss factors into metallic-roughness offline and the
+model comes back with its wood, its lamp and its bottle.
+
+The general rule this belongs to: **when a bought model looks wrong in a
+way that is uniform — everything white, everything black, everything
+untextured — read its extension list before touching its materials.**
+`listExtensionsUsed()` is one line, and the answer is usually there.
+Extensions this repo has now met: `KHR_materials_pbrSpecularGlossiness`
+(dead, convert it), `KHR_mesh_quantization` (free, use it), `KHR_draco_*`
+(forbidden — blob: worker), `EXT_meshopt_compression` (only in the one
+loader that carries the decoder).
+
+And its neighbour, from the same five models: **a curtain that weighs five
+megabytes for 1,953 triangles is not a texture problem.** It was 200 morph
+targets with a 200x200 weight matrix — a baked vertex animation, one
+target per frame. Check `listTargets().length` on any file whose size and
+triangle count disagree by two orders of magnitude.
+
+## A per-frame vertex ripple and a quantized mesh cannot both be had (v5.17)
+
+Chapter 2's curtain had always breathed by writing new z values into its
+geometry every frame. The model that replaced it ships quantized, so its
+POSITION is normalised Int16 and a float written into that array means
+nothing. There are only three ways out, and the cheapest is usually right:
+ship it unquantized (bigger), dequantize on load (slower, and undoes the
+saving), or MOVE THE OBJECT INSTEAD OF ITS VERTICES. The curtain now hangs
+from a rail point — a group whose origin is the rod — and swings from it,
+which is closer to how cloth actually moves than a ripple ever was.
+
 ## Quantization is the one model compression this game gets free (v5.16)
 
 A 10 MB character came down to 1423 KB by the standing recipe (drop every

@@ -125,7 +125,23 @@ const out = await p.evaluate(async ({ CYCLES, WARM }) => {
     first = again;
   }
   for (let i = 0; i < CYCLES; i++) { await e.rebuildStage(); await drawn(); }
-  const after = count();
+  /* and the FINAL count is settled exactly as the baseline is, for exactly
+     the same reason. The steady state of this world is fifteen geometries
+     above what two frames after a rebuild have uploaded, so whichever end
+     of the measurement is read too early decides the verdict: read the
+     baseline early and the slope is a fictitious +1.88, read the end early
+     and it is a harmless -1.88. Settling only one end made the harness a
+     coin toss that happened to land green — measured on both the v5.16 and
+     v5.17 builds, three runs each, it flipped either way with no change to
+     the game. A real per-cycle leak survives this: it grows with every one
+     of the eight cycles and a few extra frames cannot give it back.     */
+  let after = count();
+  for (let tries = 0; tries < 10; tries++) {
+    await drawn();
+    const again = count();
+    if (again.geometries === after.geometries && again.textures === after.textures) break;
+    after = again;
+  }
   // and the world really is back on the GPU, not an empty scene reading zero
   log.uploadedAgain = after.geometries > 10 && after.textures > 3;
 
