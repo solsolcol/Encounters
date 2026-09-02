@@ -1268,3 +1268,42 @@ either side, and the boxes could not be nearer than that nothing. Narrow
 the cell (176 px) and the same camera shows a shoulder's width of air. When
 a thing in a viewport looks small and far from its neighbours, check what
 the viewport's shape is asking the camera to show before touching layout.
+
+## Draco cannot run under the strict CSP; meshopt can (v5.10)
+
+A Draco-compressed upload looks like free download savings until it meets
+the single-file build's policy: three.js decodes Draco in a Web Worker
+built from a blob: URL, and blob: is exactly what the strict CSP forbids.
+meshopt (`EXT_meshopt_compression` + `KHR_mesh_quantization`) decodes in a
+plain WebAssembly module inlined in three's bundle, which `'unsafe-eval'`
+permits — measured on the strict build, not assumed. And the numbers
+matter: the same 990k-triangle man is 22.6 MB raw, 7.3 MB meshopt; a 150k
+cut with quantization costs the SAME 1.4 MB as the 40k-triangle float32
+file it replaced. Quantize before you simplify — most of a plain GLB's
+bytes are 32-bit floats no screen can tell from 16-bit integers.
+
+## Where "the original looks better" actually comes from (v5.10)
+
+Chad preferred the untouched upload to the 40k cut, and he was right, but
+not for the reason either of us first named: the seams are identical in
+both (they are in the texture), and what his eye caught was the SHAPE —
+a scan's hair has a sculpted look at a million triangles and a blobby
+one at forty thousand, and a face at forty thousand shows its facets in
+any close-up. Render the candidates at the scale the person judged on,
+side by side, with the file sizes on each. That turned a "use the
+original" into a "the 30 % cut is the original at a third of the cost",
+which is a choice he could make instead of a guess he had to.
+
+## Do not retouch a scan's paint by rule; pad its gaps and stop (v5.10)
+
+Three passes over Master Zav's atlas, each reasoned from a measured cause,
+each producing a NEW mark the owner could see at a glance: the halo strip's
+refill drew a black streak beside the eyebrow (the nearest covered pixel
+was the brow), its repaint drew a brown "birth mark" (the interior mean
+included the brow), the seam feather drew grey bands (a UV seam is often a
+content edge). A rule applied to a face has no idea what a face is. The
+only pass that survived is the one that cannot touch a painted pixel:
+padding the empty fill between islands, which removes seam bleed and can
+change nothing else. When a texture fix keeps producing artefacts, the
+honest deliverable is the untouched paint plus the one safe pass, and the
+hand-retouch belongs in a paint tool with a person looking at it.

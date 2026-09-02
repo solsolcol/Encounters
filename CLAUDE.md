@@ -609,6 +609,24 @@ What the baseline contains, by release:
   on the figure, a jade pool and a counter-turning ring under his feet, a
   one-shot flash on the box an item lands in. Sheet v17.
   docs/V5.09-EQUIPMENT-PASS.md is the build's memory.
+- **v5.10** MASTER ZAV AT FULL DETAIL — Chad's call after seeing v5.09:
+  "why dont u use the model file that i originally sent you". Because its
+  Draco decoder is a worker built from a blob: URL, which the strict CSP
+  forbids; uncompressed, the same geometry is 22.6 MB. The way through is
+  meshopt + quantization (a plain WebAssembly decoder, permitted by
+  'unsafe-eval', verified on the strict build): full 990k triangles is
+  7.3 MB, the 30 % cut 2.5 MB, the 15 % cut 1.4 MB — and the 30 % cut, which
+  ships, is indistinguishable from the full one at the close-up he judged
+  on. The figure is PREFETCHED: on the first entry into play, in idle
+  time, the panel's renderer is created on its hidden canvas, the model
+  parsed, and one 64 px frame rendered off-screen, so the panel opens with
+  him already standing there. `zavLoader()` is the one GLTFLoader with the
+  meshopt decoder. And the v5.09 seam retouching is RETIRED: its refill
+  drew a black streak beside the eyebrow, its repaint a brown "birth
+  mark", both spotted by Chad and neither in the original. The shipped
+  texture touches no painted pixel — only the empty fill between the
+  atlas's islands is padded, which removes the cream bleed at the seams
+  and can change nothing else. docs/V5.10-ZAV-FULL.md.
 - **v3.8** real art where there was code: a bought first-person ARM rig
   (`arms.glb`, credited to Fab) replaces the wrist-only hand pack and the
   forearm that was built out of cylinders to cover for it, and the hell

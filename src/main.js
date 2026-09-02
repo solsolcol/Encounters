@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
+import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 import { clone as cloneSkinned } from 'three/examples/jsm/utils/SkeletonUtils.js';
 
 // The page is embedded in a wrapper we do not control — make sure mobile gets a
@@ -2985,7 +2986,7 @@ function invPointerUp(e) {
    the canvas is the figure. Drag on him to spin him; leave him and he
    turns on his own. Rendered only while the panel is open.           */
 const zav = { r: null, scene: null, cam: null, pivot: null, model: null, ring: null,
-              loading: false, raf: 0, spin: 0.35, auto: true, dragX: null, idleT: 0 };
+              loading: false, warm: false, raf: 0, spin: 0.35, auto: true, dragX: null, idleT: 0 };
 function zavInit() {
   const cv = $('zavCanvas');
   if (!cv || zav.r) return;
@@ -3033,6 +3034,7 @@ function zavInit() {
     zav.ring.rotation.x = -Math.PI / 2; zav.ring.position.y = 0.004;
     zav.scene.add(pool, zav.ring);
   }
+  if (zav.model && !zav.model.parent) zav.pivot.add(zav.model);   // parsed before the panel existed (v5.10)
   cv.addEventListener('pointerdown', e => {
     zav.dragX = e.clientX; zav.auto = false; zav.idleT = 0;
     cv.setPointerCapture?.(e.pointerId);
@@ -3046,10 +3048,18 @@ function zavInit() {
   cv.addEventListener('pointerup', up);
   cv.addEventListener('pointercancel', up);
 }
+/* v5.10 (Chad's call: the full-detail man). The geometry is meshopt-packed
+   and quantized — the upload's own Draco cannot run here, because its
+   decoder is a worker built from a blob URL and the strict CSP forbids
+   blob:, while meshopt's decoder is a plain WebAssembly module, which
+   'unsafe-eval' permits. And the model is fetched and parsed WITHOUT the
+   renderer, at boot in idle time (zavPrefetch), so the panel opens with him
+   already standing there instead of a silhouette that fills in later. */
+const zavLoader = () => { const l = new GLTFLoader(); l.setMeshoptDecoder(MeshoptDecoder); return l; };
 function zavLoad() {
-  if (zav.model || zav.loading || !zav.r) return;
+  if (zav.model || zav.loading) return;
   zav.loading = true;
-  assetBytes('zav').then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
+  assetBytes('zav').then(BUF => zavLoader().parse(BUF, '', (gltf) => {
     rescueTextures(gltf, BUF);
     const g = gltf.scene;
     g.traverse(o => { if (o.isMesh) o.frustumCulled = false; });
@@ -3062,11 +3072,30 @@ function zavLoad() {
     const b2 = new THREE.Box3().setFromObject(g);
     const c = b2.getCenter(new THREE.Vector3());
     g.position.set(-c.x, -b2.min.y, -c.z);
-    zav.pivot.add(g);
     zav.model = g;
     zav.loading = false;
+    if (zav.pivot) zav.pivot.add(g);
     $('gearFig')?.classList.add('has3d');
+    zavWarm();
   }, () => { zav.loading = false; })).catch(() => { zav.loading = false; });
+}
+/* one off-screen frame at 64 px: shaders compiled, geometry and texture on
+   the GPU, so the first frame the player sees is not the slow one */
+function zavWarm() {
+  if (!zav.r || !zav.model || zav.warm) return;
+  zav.warm = true;
+  try {
+    zav.r.setSize(64, 64, false); zav.cam.aspect = 1; zav.cam.updateProjectionMatrix();
+    zav.cam.position.set(0, 0.98, 3.6); zav.cam.lookAt(0, 0.88, 0);
+    zav.r.render(zav.scene, zav.cam);
+  } catch { /* a machine that cannot: the panel will still try on open */ }
+}
+let zavPrefetched = false;
+function zavPrefetch() {
+  if (zavPrefetched) return;
+  zavPrefetched = true;
+  const go = () => { zavInit(); zavLoad(); zavWarm(); };
+  if (window.requestIdleCallback) requestIdleCallback(go, { timeout: 8000 }); else setTimeout(go, 2500);
 }
 function zavFrame() {
   if (!inv.open || !zav.r) { zav.raf = 0; return; }
@@ -3906,6 +3935,7 @@ function enterWorld(place, opts = {}) {
     state = 'play';
     setHint();
     warmPlaySet();                 // her sounds must never race their decode
+    zavPrefetch();                 // and the equipment figure should be standing there before it is asked for
     queueVoice();                  // his own voice, two seconds in
     autosave(true);                // the run is recorded from its first moment
   });
@@ -4611,6 +4641,7 @@ function restart() {
   state = 'play';
   setHint();
   warmPlaySet();
+  zavPrefetch();
   queueVoice();                    // a fresh run gets the line again
   hint.classList.remove('hide');
   clearTimeout(hintTimer);
