@@ -1,0 +1,799 @@
+{
+  "voice": "v6KgbPaQh6lAmMpmmtcH",
+  "voiceName": "River Faith",
+  "why": "Chad, after v5.15: VALF was horrible and inconsistent, sometimes a girl and sometimes an adult. River is the candidate he heard in the second round — youthful, timid, mixed rather than plainly American.",
+  "flow": "SJOh2uYIDn17yolZgzzW",
+  "lines": [
+    {
+      "id": "voice",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "Almost midnight... and this is the only way home.",
+      "secsVALF": 4.44,
+      "status": "done",
+      "session": "WbwpKdHYHwjZ7FA9CmGG",
+      "secsNew": 4.6
+    },
+    {
+      "id": "vpile",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "Someone's been burning offerings. [beat] Is it Seventh Month already?",
+      "secsVALF": 5.41,
+      "status": "done",
+      "session": "kgjciXgM4U29vC9DDbi8",
+      "secsNew": 4.44
+    },
+    {
+      "id": "vnote",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "There's one right at my feet. Like it was left for me.",
+      "secsVALF": 3.87,
+      "status": "done",
+      "session": "vaxgtyZPVVyzYqDkyQ8o",
+      "secsNew": 3.97
+    },
+    {
+      "id": "vgasp",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "[a sharp, frightened inhale] Oh my God.",
+      "secsVALF": 1.31,
+      "status": "done",
+      "session": "cQ73TG6gWKjudH50utba",
+      "secsNew": 2.35
+    },
+    {
+      "id": "vscoff",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "[a short, dismissive laugh] It's just paper.",
+      "secsVALF": 2.27,
+      "status": "done",
+      "session": "14f59BwMtXDXWcoCOsLo",
+      "secsNew": 2.27
+    },
+    {
+      "id": "vpant",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "[running out of breath] No, no, no, no, no.",
+      "secsVALF": 2.19,
+      "status": "done",
+      "session": "J3X16afBdL1xXpeV59rf",
+      "secsNew": 2.04
+    },
+    {
+      "id": "vrelief",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "[exhales, shaken, relieved] Hoohh... hahh.",
+      "secsVALF": 3.47,
+      "status": "done",
+      "session": "E3gh3jx8enlTYdHydbvA",
+      "secsNew": 4.52
+    },
+    {
+      "id": "vchantline",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "Namo tassa bhagavato arahato sammāsambuddhassa. I'm sorry. I'll go.",
+      "secsVALF": 12.59,
+      "status": "done",
+      "session": "c1kL9wkkW8qcmb8Bo320",
+      "secsNew": 7.16
+    },
+    {
+      "id": "vA",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "It's just paper. [beat] So why does my hand feel like it's holding something heavier?",
+      "secsVALF": 6.27,
+      "status": "done",
+      "session": "VqJ9ZcWKVoEykdMFbB4p",
+      "secsNew": 5.07
+    },
+    {
+      "id": "vB",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "[panting] I shouldn't have done that. I knew it the second my foot touched it.",
+      "secsVALF": 5.49,
+      "status": "done",
+      "session": "XCgw6RvDidsavnThAn0C",
+      "secsNew": 4.21
+    },
+    {
+      "id": "vC",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "Look first. That's all it takes. Just... look first.",
+      "secsVALF": 8.2,
+      "status": "done",
+      "session": "PggEYB2erLfXBnvcQTxl",
+      "secsNew": 4.91
+    },
+    {
+      "id": "vD",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "Not my offering. Not my business. [exhale] Rest well, whoever you are.",
+      "secsVALF": 9.48,
+      "status": "done",
+      "session": "d82KLiTRNIJvTKrTrBFf",
+      "secsNew": 5.72
+    },
+    {
+      "id": "vghost",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "[whispering] Am I... seeing things?",
+      "secsVALF": 2.69,
+      "status": "done",
+      "session": "Wzn9E9yXzCQaBtjbnNjd",
+      "secsNew": 4.05
+    },
+    {
+      "id": "vscare1",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "[startled, frightened] Ahh!",
+      "secsVALF": 1.65,
+      "status": "done",
+      "session": "6ydQxKeyeJl5y1U7qLtb",
+      "secsNew": 0.91
+    },
+    {
+      "id": "vscare2",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "[frightened, fast] No no no",
+      "secsVALF": 1.31,
+      "status": "done",
+      "session": "99FJkgseyNci440XxI6P",
+      "secsNew": 1.41
+    },
+    {
+      "id": "vscare3",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "[frightened] Who's there?!",
+      "secsVALF": 1.96,
+      "status": "todo",
+      "session": null,
+      "secsNew": null,
+      "tries": 1
+    },
+    {
+      "id": "vscare4",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "[frightened, breathless] What is that",
+      "secsVALF": 2.77,
+      "status": "done",
+      "session": "XNE07s35R4Ogyoo0XcPk",
+      "secsNew": 1.96
+    },
+    {
+      "id": "vlow",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "[shaky breathing] My chest... I need to get out of here. Now.",
+      "secsVALF": 5.07,
+      "status": "done",
+      "session": "1rgsxkvcZFXx7GoR5mpT",
+      "secsNew": 4.28
+    },
+    {
+      "id": "vfaint",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "[weak, dizzy] No... my head... everything's... spinning...",
+      "secsVALF": 7.24,
+      "status": "done",
+      "session": "bBuhFwqZ8orYztcAVz5H",
+      "secsNew": 5.25
+    },
+    {
+      "id": "vlost",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "[terrified whisper] I can't... I can't be here... [panicked breathing] No. No. No.",
+      "secsVALF": 8.12,
+      "status": "done",
+      "session": "9rPueIs4PoGbfcTXuKsg",
+      "secsNew": 6.03
+    },
+    {
+      "id": "v2wake1",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "It followed me home.",
+      "secsVALF": 2.04,
+      "status": "generating",
+      "session": "4GCIFI5lntBAa0HZ4mNY",
+      "secsNew": null
+    },
+    {
+      "id": "v2wake2",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "Ma? Ma, is that you?",
+      "secsVALF": 2.59,
+      "status": "generating",
+      "session": "ZSi5X6wQuJcSHI8seUrv",
+      "secsNew": null
+    },
+    {
+      "id": "v2wake3",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "There is someone in the room.",
+      "secsVALF": 2.04,
+      "status": "generating",
+      "session": "nxISfPwPjyzq8VaONyQg",
+      "secsNew": null
+    },
+    {
+      "id": "v2near",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "It keeps coming from over there, from the wall.",
+      "secsVALF": 3.55,
+      "status": "generating",
+      "session": "d9fuWPTNgKgPsEtMCSbY",
+      "secsNew": null
+    },
+    {
+      "id": "v2gap",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "I have slept beside that gap my whole life. Never has this happened.",
+      "secsVALF": 5.72,
+      "status": "generating",
+      "session": "oOLIxtkTEJUJYnITYWAN",
+      "secsNew": null
+    },
+    {
+      "id": "v2call",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "[shouting] MA! MA, COME HERE! PLEASE!",
+      "secsVALF": 3.97,
+      "status": "generating",
+      "session": "jJFh8yhbN8Her8erVLM1",
+      "secsNew": null
+    },
+    {
+      "id": "v2A",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "It was already looking at me. It had been the whole time.",
+      "secsVALF": 4.75,
+      "status": "generating",
+      "session": "U6Ya221BgwZuMfATMC1s",
+      "secsNew": null
+    },
+    {
+      "id": "v2B",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "She did not even ask what was wrong. She just left.",
+      "secsVALF": 4.75,
+      "status": "generating",
+      "session": "YPTATaCB8shZKqh9qTqY",
+      "secsNew": null
+    },
+    {
+      "id": "v2C",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "I'm leaving this room. I will sleep in the living room tonight.",
+      "secsVALF": 4.05,
+      "status": "generating",
+      "session": "8IYwaZM7q9LtYgT4rWMS",
+      "secsNew": null
+    },
+    {
+      "id": "v2D",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "Nothing happened. That is not the same as nothing being there.",
+      "secsVALF": 5.15,
+      "status": "generating",
+      "session": "2CHuPA75uI2mQrsapXJE",
+      "secsNew": null
+    },
+    {
+      "id": "v3wake1",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "They put the tent up on Monday. It is still going.",
+      "secsVALF": 4.05,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v3wake2",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "My mother told me not to come down. I came down anyway.",
+      "secsVALF": 4.75,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v3wake3",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "Everyone seems fascinated by the performance...",
+      "secsVALF": 2.77,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v3wake4",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "That one is looking at me. Nobody else is.",
+      "secsVALF": 3.4,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v3chair",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "There's one chair facing the wrong way. Just one.",
+      "secsVALF": 3.71,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v3out1",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "She's out there! Standing outside...",
+      "secsVALF": 2.43,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v3out2",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "She's not coming in.",
+      "secsVALF": 1.8,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v3play",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "I feel better here... but why?",
+      "secsVALF": 3.63,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v3altar",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "He has not blinked. Not once.",
+      "secsVALF": 3.24,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v3seen",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "He looked at me. Out of all of them... he looked at me.",
+      "secsVALF": 6.35,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v3grip",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "His eyes were shut. He was looking at me with his eyes shut.",
+      "secsVALF": 5.15,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v3ask",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "Is it real, auntie?",
+      "secsVALF": 1.41,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v3left",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "I could still hear the drum from the lift. I told myself that was normal.",
+      "secsVALF": 5.49,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v3A",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "I did not move. He looked at me anyway.",
+      "secsVALF": 3.55,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v3B",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "I knew better. I went up there anyway.",
+      "secsVALF": 3.71,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v3C",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "She told me the truth. Both halves of it.",
+      "secsVALF": 3.97,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v3D",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "I got out. The drum stopped when I did.",
+      "secsVALF": 3.32,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v4wake1",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "I stayed outside the whole day. Anywhere but here.",
+      "secsVALF": 4.36,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v4wake2",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "Ma's working late. The flat is empty.",
+      "secsVALF": 3.24,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v4wake3",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "One quiet night. That's all I want.",
+      "secsVALF": 3.97,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v4voice",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "I can do this.",
+      "secsVALF": 1.31,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v4near",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "Sit down. Breathe. Think it through.",
+      "secsVALF": 6.19,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v4sit",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "Start from the beginning.",
+      "secsVALF": 1.8,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v4thinkA1",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "The void deck. The hell note. Where it started.",
+      "secsVALF": 4.91,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v4thinkA2",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "Then my own room. The gap beside my bed. It wasn't random.",
+      "secsVALF": 7.08,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v4thinkA3",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "Same block. Same week. Same me. It's not the places — it's following me.",
+      "secsVALF": 8.36,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v4tired",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "Enough. I'm tired. It's nothing — every block has its stories.",
+      "secsVALF": 5.64,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v4wake3am",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "[whispering] ...the clock. Why can't I hear the clock?",
+      "secsVALF": 3.4,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v4taunt",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "[shouting] You want me?! I'm right here! Come out where I can SEE you!",
+      "secsVALF": 5.49,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v4regret",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "[whispering] okay... okay. stupid. stupid. stupid me...",
+      "secsVALF": 7.47,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v4call1",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "Ma. It's me... no— something's wrong with the flat.",
+      "secsVALF": 5.8,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v4call2",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "I know how it sounds. Please.",
+      "secsVALF": 2.77,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v4A",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "It was never random. It followed me home.",
+      "secsVALF": 3.63,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v4B",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "I ignored it. It did not ignore me.",
+      "secsVALF": 2.69,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v4C",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "I dared it. In my own home. It answered.",
+      "secsVALF": 6.27,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v4D",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "Help is coming tomorrow. I can hold one night.",
+      "secsVALF": 3.87,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v5wake1",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "He actually came.",
+      "secsVALF": 2.04,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v5wake2",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "Why is he bowing at the kitchen.",
+      "secsVALF": 2.43,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v5wake3",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "That's the hell note. From the void deck. It's been here the whole time.",
+      "secsVALF": 4.6,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v5voice",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "Do I...approach him?",
+      "secsVALF": 2.27,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v5near",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "He walked around the flat like he's reading it.",
+      "secsVALF": 3,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v5sit",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "Uncle. What did you see?",
+      "secsVALF": 2.04,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v5fearB1",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "I should never have asked for help. I sound...crazy.",
+      "secsVALF": 5.07,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v5disC1",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "Paper. It's just paper.",
+      "secsVALF": 2.59,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v5learnD",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "The first one. He says every case teaches you the next.",
+      "secsVALF": 4.75,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v5A",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "I asked him what to learn. He told me. All of it.",
+      "secsVALF": 4.91,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v5B",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "The fear followed me into the morning. When will it go away?",
+      "secsVALF": 5.49,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v5C",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "I called it paper. She heard me.",
+      "secsVALF": 3.08,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    },
+    {
+      "id": "v5D",
+      "who": "james",
+      "voice": "v6KgbPaQh6lAmMpmmtcH",
+      "prompt": "It's over. [beat] It's really over.",
+      "secsVALF": 3.79,
+      "status": "todo",
+      "session": null,
+      "secsNew": null
+    }
+  ]
+}
