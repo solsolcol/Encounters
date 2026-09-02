@@ -1,7 +1,7 @@
 {
   "name": "encounters-hell-note",
   "version": "1.0.0",
-  "description": "Master Z's Spiritual Encounters \u2014 Chapter 1 3D prototype",
+  "description": "Master Z's Spiritual Encounters — Chapter 1 3D prototype",
   "main": "index.js",
   "scripts": {
     "build": "esbuild src/main.js --bundle --minify --format=iife --target=es2020 --outfile=bundle.js && python3 build.py && python3 wrap.py",
@@ -16,7 +16,8 @@
     "three": "^0.185.1"
   },
   "devDependencies": {
-    "esbuild": "^0.28.2"
+    "esbuild": "^0.28.2",
+    "xlsx": "^0.18.5"
   },
   "private": true
 }

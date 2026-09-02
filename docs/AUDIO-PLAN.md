@@ -1,5 +1,11 @@
 # The v2.3 sound pass — plan and live checkpoint
 
+> **Since v5.14 the WORDS of every voice take live in `src/voicelines.js`**
+> (and on the VOICE LINES tab of Chad's sheet) — transcribed from the
+> shipped takes, not copied from the plans. The line texts in the tables
+> below are history: what was asked for, which is not always what was
+> recorded (docs/V5.14-VOICE-LINES.md has the differences).
+
 Goal: a complete soundscape for chapter 1 — every interaction, UI cue,
 cutscene beat, ghost moment and self-narration line — generated on Chad's
 ElevenLabs account and playing in both builds. This file is the running

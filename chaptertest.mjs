@@ -13,7 +13,7 @@
 
    A chapter file is a plain script that registers itself on
    window.__CHAPTERS__, so all this needs is a stub window and eval.       */
-import { readFileSync, readdirSync } from 'node:fs';
+import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { DIR } from './testlib.mjs';
 
@@ -172,6 +172,39 @@ for (const [kind, sample] of Object.entries(STING_TO_SAMPLE)) {
   if (!HAVE_SOUND.has(sample)) {
     errs.push(`engine: sting kind '${kind}' names sample '${sample}', which has no assets/audio/${sample}.mp3`);
   }
+}
+
+/* --- every voice take is written down (v5.14) -----------------------------
+   src/voicelines.js is the registry of every spoken line — who, where, the
+   words, the measured length. It is not shipped; it is what the VOICE LINES
+   tab of Chad's sheet is made from. A take without a row is a line he cannot
+   review; a row without a take is a line the game cannot play. A voice take
+   is a sound whose name starts with v or t5 and is not a room bed. */
+const voiceWin = {};
+try {
+  new Function('window', readFileSync(join(DIR, 'src', 'voicelines.js'), 'utf8'))(voiceWin);
+} catch (e) { errs.push('ERR src/voicelines.js failed to load: ' + e.message); }
+const VOICE = voiceWin.__VOICE__;
+if (VOICE && Array.isArray(VOICE.LINES)) {
+  const rows = new Set(VOICE.LINES.map(l => l.id));
+  const isVoice = n => /^(v|t5)/.test(n) && !/room$/.test(n);
+  for (const n of [...HAVE_SOUND].filter(isVoice).sort()) {
+    if (!rows.has(n)) errs.push(`voice: assets/audio/${n}.mp3 has no row in src/voicelines.js`);
+  }
+  for (const l of VOICE.LINES) {
+    const file = l.id === 'voice' ? join(DIR, 'assets', 'voice.mp3') : join(audioDir, `${l.id}.mp3`);
+    if (!existsSync(file)) errs.push(`voice: row '${l.id}' has no take on disk`);
+    if (!VOICE.SPEAKERS?.[l.who]) errs.push(`voice: row '${l.id}' names an unknown speaker '${l.who}'`);
+    if (!VOICE.CHAPTERS?.[l.ch]) errs.push(`voice: row '${l.id}' names an unknown chapter '${l.ch}'`);
+    if (typeof l.text !== 'string' || !l.text.trim() || l.text.includes('???')) {
+      errs.push(`voice: row '${l.id}' has no text written down`);
+    }
+    if (typeof l.secs !== 'number' || !(l.secs > 0)) errs.push(`voice: row '${l.id}' has no measured length`);
+  }
+  if (rows.size !== VOICE.LINES.length) errs.push('voice: a sample has two rows in src/voicelines.js');
+  console.log(`voice lines: ${VOICE.LINES.length} rows, ${Object.keys(VOICE.SPEAKERS || {}).length} speakers`);
+} else if (!errs.some(e => e.startsWith('ERR src/voicelines.js'))) {
+  errs.push('ERR src/voicelines.js did not register window.__VOICE__');
 }
 
 console.log('errors:', errs.length ? errs : 'none');

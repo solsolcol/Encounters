@@ -1,12 +1,24 @@
 /* textsync — every word in the game, out to one sheet and back in.
    ---------------------------------------------------------------------------
      node textsync.mjs export [file.csv]   read the game -> write the sheet
-     node textsync.mjs import file.csv     read the sheet -> write the game
+     node textsync.mjs export file.xlsx    the same, as a two-tab workbook
+     node textsync.mjs import file         read the sheet -> write the game
+                                           (.csv, .xlsx, or the markdown the
+                                           Drive connector returns)
 
-   Two kinds of file hold text: src/strings.js (the engine's UI words) and
-   EVERY chapter in src/chapters/ (each chapter's own words). They are
-   hand-written and stay that way — import edits values in place and never
-   regenerates a file, so comments and structure survive.
+   Three kinds of file hold text: src/strings.js (the engine's UI words),
+   EVERY chapter in src/chapters/ (each chapter's own words) and, since
+   v5.14, src/voicelines.js (the words of every spoken take — who says it,
+   where it plays, how long it runs). They are hand-written and stay that
+   way — import edits values in place and never regenerates a file, so
+   comments and structure survive.
+
+   The sheet has TWO TABS: GAME TEXT (everything on screen) and VOICE LINES
+   (everything heard). A CSV export carries both as rows; an .xlsx export
+   carries them as two tabs, which is what Chad's Google Sheet is made from.
+   Voice rows are keyed 'voice.<sample>', so they can never collide with a
+   UI key or a chapter's. Import reports every voice line whose TEXT
+   changed — that list is the list of takes to regenerate.
 
    Chapters are DISCOVERED, not listed. Adding a chapter is dropping a file
    in that folder, and its words appear in the sheet on the next export with
@@ -17,10 +29,12 @@
    "remove this from the game": the engine hides an empty UI string, and an
    empty chapter string is left as an empty string for the chapter to skip.  */
 import { readFileSync, writeFileSync, readdirSync } from 'fs';
+import { createRequire } from 'module';
 import { DIR } from './testlib.mjs';
 import { join } from 'path';
 
 const P_STRINGS = join(DIR, 'src', 'strings.js');
+const P_VOICE = join(DIR, 'src', 'voicelines.js');
 const CHAP_DIR = join(DIR, 'src', 'chapters');
 /* Every chapter file, in id order, minus the fixture. `id` over 90 is the
    engine's own convention for "not part of the game" — nextChapterKey()
@@ -150,15 +164,39 @@ function readRows() {
   return rows;
 }
 
+/* --- the voice lines (v5.14) ------------------------------------------------
+   src/voicelines.js registers window.__VOICE__: SPEAKERS, CHAPTERS and one
+   LINES row per take. Nothing in the engine reads it; this tool does. */
+function readVoice() {
+  const V = loadGlobals(P_VOICE).__VOICE__;
+  const chapters = Object.fromEntries(chapterFiles().map(c => [c.key, c.ch]));
+  return V.LINES.map(l => {
+    const sp = V.SPEAKERS[l.who] || {};
+    // a line under an outcome card names its choice, read from the chapter
+    // so the sheet shows which button it follows without anyone typing it
+    let where = l.where;
+    const m = /^Under the outcome card after choice ([A-D])$/.exec(l.where || '');
+    const c = m && chapters[l.ch] && (chapters[l.ch].choices || []).find(x => x.k === m[1]);
+    if (c) where += ` — “${c.text}”`;
+    return { id: l.id, who: sp.name || l.who, chapter: V.CHAPTERS[l.ch] || l.ch,
+             where, text: l.text, secs: l.secs, note: l.note || '' };
+  });
+}
+// the same rows in the four-column shape of the text sheet, for the CSV
+function voiceRows() {
+  return readVoice().map(v => [`voice.${v.id}`, v.text, `${v.chapter} — ${v.who}: ${v.where}`,
+    `${v.secs.toFixed(2)} s${v.note ? ' · ' + v.note : ''}`]);
+}
+
 // --- csv -------------------------------------------------------------------
 const q = s => `"${String(s).replace(/"/g, '""')}"`;
 function toCSV(rows) {
   const out = [['ID (do not edit)', 'Where it appears', 'TEXT — edit this column', 'Notes'].map(q).join(',')];
-  for (const [k, v] of rows) {
+  for (const [k, v, w, n] of rows) {
     const head = k.split('.')[0];
-    const where = WHERE[head]
-      || (/^ch\d/.test(head) ? `CHAPTER ${head.slice(2)} — the story itself` : '');
-    out.push([q(k), q(where), q(v), q(NOTES[k] || '')].join(','));
+    const where = w ?? (WHERE[head]
+      || (/^ch\d/.test(head) ? `CHAPTER ${head.slice(2)} — the story itself` : ''));
+    out.push([q(k), q(where), q(v), q(n ?? (NOTES[k] || ''))].join(','));
   }
   return out.join('\n');
 }
@@ -195,13 +233,100 @@ function parseCSV(text) {
   return rows.filter(r => r.length > 1);
 }
 
+/* --- the two-tab workbook ---------------------------------------------------
+   The Drive connector turns an .xlsx into a Google Sheet with one tab per
+   worksheet, which is how Chad's sheet gets its VOICE LINES tab. Written
+   by hand as the smallest valid package — two worksheets with inline
+   strings, no styles, no theme, deflated — because the connector takes the
+   file as base64 INSIDE a tool call, and the 111 KB the xlsx package
+   writes for the same rows (a theme, a shared-string table, a styles part)
+   was too big to carry that way; this comes out under 30 KB. Reading an
+   .xlsx back (import) still uses the xlsx package. */
+const require = createRequire(import.meta.url);
+const XML_HEAD = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n';
+const xmlEsc = t => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const colName = i => { let n = ''; for (i += 1; i > 0; i = Math.floor((i - 1) / 26)) n = String.fromCharCode(64 + ((i - 1) % 26) + 1) + n; return n; };
+function sheetXML(rows, widths) {
+  let x = XML_HEAD + '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><cols>';
+  widths.forEach((w, i) => { x += `<col min="${i + 1}" max="${i + 1}" width="${w}" customWidth="1"/>`; });
+  x += '</cols><sheetData>';
+  rows.forEach((row, r) => {
+    x += `<row r="${r + 1}">`;
+    row.forEach((v, c) => {
+      const ref = `${colName(c)}${r + 1}`;
+      if (typeof v === 'number') x += `<c r="${ref}"><v>${v}</v></c>`;
+      else if (v !== '' && v != null) x += `<c r="${ref}" t="inlineStr"><is><t xml:space="preserve">${xmlEsc(v)}</t></is></c>`;
+    });
+    x += '</row>';
+  });
+  return x + '</sheetData></worksheet>';
+}
+// a zip writer small enough to live here: local headers, central directory, deflate
+function zipWrite(file, entries) {
+  const zlib = require('zlib');
+  const table = new Int32Array(256).map((_, n) => { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1; return c; });
+  const crc32 = b => { let c = -1; for (const x of b) c = table[(c ^ x) & 0xff] ^ (c >>> 8); return (c ^ -1) >>> 0; };
+  const parts = [], dir = []; let off = 0;
+  for (const { name, data } of entries) {
+    const raw = Buffer.from(data), comp = zlib.deflateRawSync(raw, { level: 9 }), n = Buffer.from(name), crc = crc32(raw);
+    const lh = Buffer.alloc(30); lh.writeUInt32LE(0x04034b50, 0); lh.writeUInt16LE(20, 4); lh.writeUInt16LE(8, 8);
+    lh.writeUInt32LE(crc, 14); lh.writeUInt32LE(comp.length, 18); lh.writeUInt32LE(raw.length, 22); lh.writeUInt16LE(n.length, 26);
+    const ch = Buffer.alloc(46); ch.writeUInt32LE(0x02014b50, 0); ch.writeUInt16LE(20, 4); ch.writeUInt16LE(20, 6); ch.writeUInt16LE(8, 10);
+    ch.writeUInt32LE(crc, 16); ch.writeUInt32LE(comp.length, 20); ch.writeUInt32LE(raw.length, 24); ch.writeUInt16LE(n.length, 28); ch.writeUInt32LE(off, 42);
+    parts.push(lh, n, comp); dir.push(ch, n); off += lh.length + n.length + comp.length;
+  }
+  const cd = Buffer.concat(dir), eocd = Buffer.alloc(22);
+  eocd.writeUInt32LE(0x06054b50, 0); eocd.writeUInt16LE(entries.length, 8); eocd.writeUInt16LE(entries.length, 10);
+  eocd.writeUInt32LE(cd.length, 12); eocd.writeUInt32LE(off, 16);
+  writeFileSync(file, Buffer.concat([...parts, cd, eocd]));
+}
+function toXLSX(file) {
+  const text = [['ID (do not edit)', 'Where it appears', 'TEXT — edit this column', 'Notes']];
+  for (const [k, v] of readRows()) {
+    const head = k.split('.')[0];
+    const where = WHERE[head] || (/^ch\d/.test(head) ? `CHAPTER ${head.slice(2)} — the story itself` : '');
+    text.push([k, where, v, NOTES[k] || '']);
+  }
+  const voice = [['ID (do not edit)', 'Who', 'Chapter', 'When it plays', 'TEXT — edit this column', 'Length (s)', 'Notes']];
+  for (const v of readVoice()) voice.push([`voice.${v.id}`, v.who, v.chapter, v.where, v.text, v.secs, v.note]);
+  const R = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+  const P = 'http://schemas.openxmlformats.org/package/2006/relationships';
+  zipWrite(file, [
+    { name: '[Content_Types].xml', data: XML_HEAD + '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
+      + '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/>'
+      + '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>'
+      + '<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>'
+      + '<Override PartName="/xl/worksheets/sheet2.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>' },
+    { name: '_rels/.rels', data: XML_HEAD + `<Relationships xmlns="${P}"><Relationship Id="rId1" Type="${R}/officeDocument" Target="xl/workbook.xml"/></Relationships>` },
+    { name: 'xl/workbook.xml', data: XML_HEAD + `<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="${R}"><sheets>`
+      + '<sheet name="GAME TEXT" sheetId="1" r:id="rId1"/><sheet name="VOICE LINES" sheetId="2" r:id="rId2"/></sheets></workbook>' },
+    { name: 'xl/_rels/workbook.xml.rels', data: XML_HEAD + `<Relationships xmlns="${P}"><Relationship Id="rId1" Type="${R}/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="${R}/worksheet" Target="worksheets/sheet2.xml"/></Relationships>` },
+    { name: 'xl/worksheets/sheet1.xml', data: sheetXML(text, [26, 30, 70, 44]) },
+    { name: 'xl/worksheets/sheet2.xml', data: sheetXML(voice, [18, 22, 26, 44, 70, 10, 44]) }
+  ]);
+}
+/* Whatever shape the sheet comes back in — the CSV this tool wrote, the
+   markdown table(s) the Drive connector returns, or an .xlsx download with
+   both tabs — it is read to plain rows, header rows included. */
+function readSheet(file) {
+  if (file.endsWith('.xlsx')) {
+    const XLSX = require('xlsx');
+    const wb = XLSX.readFile(file);
+    return wb.SheetNames.flatMap(n =>
+      XLSX.utils.sheet_to_json(wb.Sheets[n], { header: 1, raw: false, defval: '' }));
+  }
+  const raw = readFileSync(file, 'utf8');
+  return raw.includes('| :-:') || /^\s*\|.*\|.*\|/m.test(raw)
+    ? parseMarkdownTable(raw) : parseCSV(raw);
+}
+
 // --- writing ---------------------------------------------------------------
 const esc = s => String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, '\\n');
 
 function writeStrings(map) {
   let s = readFileSync(P_STRINGS, 'utf8'); let n = 0;
   for (const [k, v] of Object.entries(map)) {
-    if (/^ch\w*\./.test(k)) continue;         // a chapter's, not the sheet's
+    if (/^(ch\w*|voice)\./.test(k)) continue;  // a chapter's or a voice line's, not the sheet's
     const re = new RegExp(`('${k.replace(/\./g, '\\.')}':\\s*)'(?:[^'\\\\]|\\\\.)*'`);
     if (!re.test(s)) { console.error(`  ! unknown UI key, skipped: ${k}`); continue; }
     s = s.replace(re, (_, head) => `${head}'${esc(v)}'`);
@@ -279,26 +404,74 @@ function writeChapter(map) {
   return n;
 }
 
+/* The voice registry, edited in place like the chapters: each row is found
+   by its own id and only its text is replaced. Texts there are double-quoted
+   (they are full of apostrophes), so the escaping differs from the chapter
+   fields. A changed text is reported by name — that is the regeneration
+   list. An empty cell is refused: a take cannot be removed from the sheet,
+   and a wordless take already carries its direction in brackets. */
+const escD = s => String(s).replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, ' ');
+function writeVoice(map) {
+  let s = readFileSync(P_VOICE, 'utf8'); let n = 0; const changed = [];
+  for (const [k, v] of Object.entries(map)) {
+    if (!k.startsWith('voice.')) continue;
+    const id = k.slice(6);
+    const start = s.indexOf(`{ id: "${id}",`);
+    if (start < 0) { console.error(`  ! unknown voice line, skipped: ${k}`); continue; }
+    const end = s.indexOf('}', start);
+    let block = s.slice(start, end);
+    const m = /(\btext:\s*)"((?:[^"\\]|\\.)*)"/.exec(block);
+    if (!m) { console.error(`  ! ${k}: text not found`); continue; }
+    if (!v) { console.error(`  ! ${k}: empty cell ignored — a take cannot be removed from the sheet`); continue; }
+    let old = m[2];
+    try { old = JSON.parse(`"${m[2]}"`); } catch { /* keep the raw form */ }
+    if (old !== v) changed.push(id);
+    block = block.replace(m[0], () => `${m[1]}"${escD(v)}"`);
+    s = s.slice(0, start) + block + s.slice(end);
+    n++;
+  }
+  writeFileSync(P_VOICE, s); return { n, changed };
+}
+
 // --- go --------------------------------------------------------------------
 const [mode, file] = process.argv.slice(2);
 if (mode === 'export') {
-  const csv = toCSV(readRows());
-  if (file) { writeFileSync(file, csv); console.log(`wrote ${file} (${readRows().length} rows)`); }
-  else process.stdout.write(csv);
+  /* one CSV, both kinds of row: the voice lines follow the text under a
+     divider whose ID cell is EMPTY, which import skips — it is there for the
+     person reading the sheet, and it is how a one-tab Google Sheet made from
+     this CSV still shows where the words end and the takes begin */
+  const rows = [...readRows(),
+    ['', 'Edit the TEXT column; a changed line is regenerated in that speaker\'s voice',
+     'VOICE LINES — every spoken take, every speaker', 'Length of the current take'],   // [id, text, where, notes]
+    ...voiceRows()];
+  if (file && file.endsWith('.xlsx')) {
+    toXLSX(file);
+    console.log(`wrote ${file} (${readRows().length} text rows + ${voiceRows().length} voice lines, two tabs)`);
+  } else if (file) { writeFileSync(file, toCSV(rows)); console.log(`wrote ${file} (${rows.length} rows)`); }
+  else process.stdout.write(toCSV(rows));
 } else if (mode === 'import') {
-  if (!file) { console.error('usage: node textsync.mjs import file.csv'); process.exit(1); }
-  const raw = readFileSync(file, 'utf8');
-  const rows = raw.includes('| :-:') || /^\s*\|.*\|.*\|/m.test(raw)
-    ? parseMarkdownTable(raw) : parseCSV(raw);
-  const map = {};
+  if (!file) { console.error('usage: node textsync.mjs import file'); process.exit(1); }
+  const rows = readSheet(file);
+  /* Every tab and every table has its own header row, and the TEXT column is
+     not in the same place on both tabs (the voice tab puts Who, Chapter and
+     When before it) — so the column is found from each header row rather
+     than assumed to be the third. */
+  const map = {}; let col = 2;
   for (const r of rows) {
-    const id = (r[0] || '').trim();
-    if (!id || id.startsWith('ID')) continue;             // header or blank line
-    map[id] = (r[2] ?? '').trim();
+    const id = (r[0] ?? '').toString().trim();
+    if (!id) continue;
+    if (id.startsWith('ID')) {                            // a header row
+      const at = r.findIndex(c => /^TEXT/i.test((c ?? '').toString().trim()));
+      col = at >= 0 ? at : 2; continue;
+    }
+    map[id] = (r[col] ?? '').toString().trim();
   }
-  const a = writeStrings(map), b = writeChapter(map);
-  console.log(`imported ${Object.keys(map).length} rows -> ${a} UI strings, ${b} chapter strings`);
+  const a = writeStrings(map), b = writeChapter(map), v = writeVoice(map);
+  console.log(`imported ${Object.keys(map).length} rows -> ${a} UI strings, ${b} chapter strings, ${v.n} voice lines`);
+  if (v.changed.length) {
+    console.log(`\n${v.changed.length} voice line(s) changed — regenerate these takes:\n  ${v.changed.join(' ')}`);
+  } else console.log('no voice line changed');
 } else {
-  console.error('usage: node textsync.mjs export [file.csv] | import file.csv');
+  console.error('usage: node textsync.mjs export [file.csv|file.xlsx] | import file');
   process.exit(1);
 }

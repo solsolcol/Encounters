@@ -296,6 +296,14 @@ words stay in the chapter file. An empty cell removes that text. Full
 workflow, guarantees and the sheet id: `docs/EDITING-TEXT.md`. **Never
 hand-edit a string without re-exporting the sheet afterwards**, or his copy
 of the text goes stale.
+Since v5.14 the sheet carries the VOICE LINES too, made from
+`src/voicelines.js` — every spoken take, who says it, where it plays, its
+words and its measured length — and **every sheet version must carry
+them** (Chad's rule). They are a second tab in the .xlsx the tool exports
+and a labelled block under the text on the Google Sheet (made from the
+CSV; the connector cannot carry the workbook). `import` reads either shape and names every voice line whose text changed,
+which is the list of takes to regenerate. A new line in a chapter is not
+done until it has a row there — `chaptertest` says so.
 
 ## Content ground truth
 
@@ -669,6 +677,30 @@ What the baseline contains, by release:
   to the title (the room tone followed you out), the opening-line timer
   cleared, the panic red cleared, a `?ch=` preview unlocks nothing, the
   volume slider hides under the panels. docs/V5.13-THE-FILM-WAITS.md.
+- **v5.14** EVERY VOICE LINE WRITTEN DOWN — Chad's ask, on the way to
+  re-voicing the boy: a sheet tab of every spoken line, every speaker, so
+  he can review and change them. Until now the words of a take lived in
+  whichever plan doc built it, eight lines were written down nowhere, and
+  three "wordless" takes (`vgasp`, `vscoff`, `vpant`) turned out to carry
+  words nobody knew about — found the way `vrelief`'s were at v4.8, by
+  TRANSCRIBING the shipped take. Every take in the game was transcribed
+  and the registry says what is HEARD, not what was asked for. Now
+  `src/voicelines.js` is the one registry — speaker, chapter, moment,
+  text, measured length — NOT shipped (build.py never globs it), read by
+  `textsync` and `chaptertest`. The voice lines joined the sheet: as a
+  second tab, VOICE LINES, in the .xlsx `export file.xlsx` writes (a
+  hand-built minimal workbook, 20 KB), and as a labelled block under the
+  text on the Google Sheet itself — which is made from the CSV, because
+  the Drive connector takes a workbook only as base64 inside a tool call
+  and even 27 KB of it is past what a session can read and re-emit
+  faithfully; the CSV route is the proven one. `import` reads CSV, xlsx
+  or the connector's markdown (the TEXT column found from each header
+  row, not assumed) and REPORTS which voice lines changed — that list is
+  the regeneration list. `chaptertest` fails if a take has no row or a row has
+  no take. Sheet v19, the first with two tabs. **Every sheet from here on
+  carries the voice lines** (Chad's rule). No engine change; the shipped
+  bytes differ from v5.13 only by the version under Credits.
+  docs/V5.14-VOICE-LINES.md.
 - **v3.8** real art where there was code: a bought first-person ARM rig
   (`arms.glb`, credited to Fab) replaces the wrist-only hand pack and the
   forearm that was built out of cylinders to cover for it, and the hell

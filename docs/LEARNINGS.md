@@ -1342,3 +1342,21 @@ decodes, models, in that order, each capped — and not the thing that
 happens to have prefetched them on one path. And "does it make a sound"
 must be measurable: the cue log (`__enc.stings()`) turned an ear-only bug
 into a harness assertion in an afternoon; a screenshot never would have.
+
+## A "wordless" take is not wordless, and a plan doc is not a transcript (v5.14)
+
+Three takes generated as pure vocalisations — a gasp, a scoff, panting —
+carried words nobody had written down: "Oh my God", "It's just paper",
+"No, no, no, no, no". `vrelief` had done the same at v4.8 ("Just keep
+walking. Don't look back"), and it was treated as a one-off. It is not:
+eleven_v3 given a direction with no text finds words for it. And the docs
+were wrong in smaller ways everywhere — `v3aunt4` says "today" (re-said
+for the morning at v4.3, recorded as "tonight"), `v4ma2` is a sentence
+longer than its beat sheet, `t5teachA`'s words were never written at all,
+and eight lines (`v2near`, `v2gap`, `v2A`–`v2D`, `v4voice`, `v4near`)
+existed only as sound. The fix was to transcribe every take in the game
+(joined with two-second gaps, one Scribe call per batch — plain text, no
+timestamps, but each line is a sentence and the order is known) and to
+keep the words IN ONE FILE beside the take, with a harness that refuses a
+take with no row. The registry says what is heard. When a take is
+regenerated, listen to it — or transcribe it — before its text is trusted.
