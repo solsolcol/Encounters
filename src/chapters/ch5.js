@@ -2029,33 +2029,34 @@
     pitchTo(6.2, 8.2, -0.50, -0.02, smoothK);
     camTo(6.2, 10.0, AT_TABLE, { x: 0.2, y: EYE, z: -0.9 }, smoothK);
 
-    // 9.4-14.3 the tang-ki, quiet, behind him (4.91 s)
+    // 9.4-15.4 the tang-ki, quiet, behind him (5.96 s since v5.15)
     sfx(9.4, 't5disC');
 
-    /* 15.5-21 THE ANSWER, once: curtains billow with no wind; the fan
+    /* 16.5-22 THE ANSWER, once (v5.15: the block moved +1.0 s so the
+       flat still waits a breath after his last word, as it did at 4.91 s): curtains billow with no wind; the fan
        stops mid-turn, holds, and resumes as if nothing happened.        */
-    sfx(15.5, 'curtain', 0.8);
+    sfx(16.5, 'curtain', 0.8);
     /* 1.8, not 0.9: the billow moves the cloth along the camera axis, and
        foreshortening ate the old amplitude whole - a quarter-metre lunge is
        what it takes to read from three metres back */
-    tr(15.5, 18.5, k => { stage.billow = Math.sin(Math.PI * k) * 1.8; }, rawK);
-    tr(15.5, 16.1, k => { stage.fanSpeed = 1 - k; }, rawK);
-    tr(20.0, 21.0, k => { stage.fanSpeed = k; }, rawK);
-    tr(15.5, 19.0, k => {
+    tr(16.5, 19.5, k => { stage.billow = Math.sin(Math.PI * k) * 1.8; }, rawK);
+    tr(16.5, 17.1, k => { stage.fanSpeed = 1 - k; }, rawK);
+    tr(21.0, 22.0, k => { stage.fanSpeed = k; }, rawK);
+    tr(16.5, 20.0, k => {
       duck('v5room', 1 - 0.7 * Math.sin(Math.PI * k));
       // the room itself dims for the length of the answer
       stage.duskFill.intensity = 0.15 - 0.12 * Math.sin(Math.PI * k);
     }, rawK);
     // the flinch, mid-step: a dropped gaze and a kicked horizon, decaying
-    pitchTo(15.8, 16.6, -0.02, -0.10, smoothK);
-    pitchTo(16.6, 18.5, -0.10, -0.04, smoothK);
-    tr(15.6, 16.9, k => { camera.rotation.z = 0.035 * (1 - k); }, rawK);
-    step(17.0, () => { camera.rotation.z = 0; });
+    pitchTo(16.8, 17.6, -0.02, -0.10, smoothK);
+    pitchTo(17.6, 19.5, -0.10, -0.04, smoothK);
+    tr(16.6, 17.9, k => { camera.rotation.z = 0.035 * (1 - k); }, rawK);
+    step(18.0, () => { camera.rotation.z = 0; });
 
-    // 19-23 four held seconds, back still turned
-    tr(19.0, 23.0, () => {}, rawK);
-    fade(23.5, 26.5, 0, 1);
-    step(26.4, () => { handsRoot.visible = true; });
+    // 20-24 four held seconds, back still turned
+    tr(20.0, 24.0, () => {}, rawK);
+    fade(24.5, 27.5, 0, 1);
+    step(27.4, () => { handsRoot.visible = true; });
 
     c.endFade = 1;
   }

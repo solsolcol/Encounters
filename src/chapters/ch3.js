@@ -2672,14 +2672,16 @@
       stage.medium.userData.head.rotation.x = 0;
       stage.medium.userData.head.rotation.z = 0;
     });
-    sfx(14.6, 'v3aunt5');   // "Boy! Boy, come out. You cannot stand there."
-    sfx(15.2, 'step', 0.4); sfx(15.8, 'step', 0.4);
-    /* ONE voice at a time: the panting take runs 4.4 seconds, so it waits
-       for the auntie to finish (17.9) and then trails into the black —
+    /* v5.15: everything from here +0.4 s — the boy's take grew to 5.15 s
+       and the auntie's shout at 14.6 landed on his last syllable */
+    sfx(15.0, 'v3aunt5');   // "Boy, come out of there now. You cannot stand there!"
+    sfx(15.6, 'step', 0.4); sfx(16.2, 'step', 0.4);
+    /* ONE voice at a time: the panting take runs 2.2 seconds, so it waits
+       for the auntie to finish (18.3) and then trails into the black —
        breathing under a fade-out is the one thing allowed to be cut off */
-    sfx(18.2, 'vpant', 0.7);
-    sfx(19.4, 'gongdeep', 0.35);      // far off, the ceremony not caring
-    fade(18.6, 20.6, 0, 1);
+    sfx(18.6, 'vpant', 0.7);
+    sfx(19.8, 'gongdeep', 0.35);      // far off, the ceremony not caring
+    fade(19.0, 21.0, 0, 1);
 
     c.endFade = 1;
   }
