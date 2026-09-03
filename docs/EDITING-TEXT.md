@@ -5,23 +5,26 @@ without prompting for each change. This is how it works and how to run it.
 
 ## The sheet
 
-**Master Z's Encounters — GAME TEXT v23 (edit here)** in his Drive
-(id `1-WolRRObawI_pqzODGcn0rqnnfHtZzoNrqK8wBfC-ks` — the **v23** sheet, made at v5.18: 265 GAME TEXT
+**Master Z's Encounters — GAME TEXT v25 (edit here)** in his Drive
+(id `18XgpC6E3Il7GU8FyfOxiXMprJevZO-gyOKxci9LA2Ak` — the **v25** sheet, made at v5.22: 270 GAME TEXT
 rows and, under them after a divider row, the 97 **VOICE LINES**. What
-changed from v22: **not one word**. v5.18 re-voiced the boy — all 79 of
-his takes remade in River Faith — and a take's WORDS are what the sheet
-carries, so every TEXT cell is identical. What moved is the Notes column
-of 76 of his 79 voice rows: the measured length of each new take, which
-is what the timing of a cutscene is checked against (the other three came
-back exactly the length they were). v22 (id
-`1NOcGQuKd0zxZItRAGwSLqnBae8jhbixZNcggXzCmttc`) and everything before it
-are superseded and should not be edited. Provenance: v22 was published at
-v5.17 and read back and imported the same session with nothing changed,
-and was read back and imported again at the start of v5.18 — again with
-nothing changed — before v23 was made from it. Whenever a sheet has been
+changed from v23: **five credit rows, nothing else** — `credits.auntWho`
+now names the granny (Chad's model; no source link until he supplies
+one, so `credits.auntLink` is gone), the `credits.seated*` and
+`credits.backrow*` rows (gracy and the fearful woman, deleted at v5.22)
+are gone, and `credits.burner*` (kana, now the woman at the burner) is
+new. Not one word of the story or a voice line moved. There was no v24
+on Drive: it was exported at v5.20 and never published, so it never
+existed for editing. v23 (id `1-WolRRObawI_pqzODGcn0rqnnfHtZzoNrqK8wBfC-ks`)
+and everything before it are superseded and should not be edited.
+Provenance: v23 was read back at the start of v5.22 and found untouched
+(its modified time is its creation time), so nothing needed importing
+before v25 was made from the game's own text; v25 was created from the
+exported CSV re-emitted through the Drive connector and read back the
+same session (the transcription check below). Whenever a sheet has been
 in his hands for real time, read it back and import FIRST — that is what
 the rule is for.
-<https://docs.google.com/spreadsheets/d/1-WolRRObawI_pqzODGcn0rqnnfHtZzoNrqK8wBfC-ks/edit>
+<https://docs.google.com/spreadsheets/d/18XgpC6E3Il7GU8FyfOxiXMprJevZO-gyOKxci9LA2Ak/edit>
 
 **Every sheet from v19 on carries the VOICE LINES** — Chad's rule, set
 when he asked for it: "moving forward, every new version of the sheet

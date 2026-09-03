@@ -823,9 +823,31 @@ What the baseline contains, by release:
   seed — 6 encik, 6 sitclap, 6 sitangry — through one `seatKind()` that is
   v4.8's shared-skeleton trick with two corrections it always needed: the
   source mesh's matrix folded into the clone's bindMatrix (identity was
-  only right for the encik's file), and EVERY skinned mesh cloned, not the
-  first — the first render of this build was a tent of floating heads,
-  after every number had passed. docs/V5.21-THE-CROWD-SHUFFLED.md.
+  only right for the encik's file — WRONG, undone at v5.22), and EVERY
+  skinned mesh cloned, not the first — the first render of this build was
+  a tent of floating heads, after every number had passed.
+  docs/V5.21-THE-CROWD-SHUFFLED.md.
+- **v5.22** THE TENT, PUT RIGHT — Chad's play-through of v5.21: "a tangled
+  mangled texture mess floating in the sky", every sitter sunk into the
+  floor, the encik gone. Measured from the shipped build before anything
+  moved: the six encik seats rendered 22–58 m up — v5.21's bind-matrix
+  "correction" was WRONG (identity is right for EVERY file, because the
+  bones' world matrices already carry the node chain; on the encik's
+  0.018-scaled Sketchfab root it multiplied every bone translation by 55)
+  — and the twelve Mixamo sitters rendered a metre under the tarmac (the
+  measure walked down from the first skin's first bone, the SPINE on a
+  multi-skin file: no feet, no hips). Both fixed. gracy and the fearful
+  woman DELETED at his ask ("unfixable"); kana moved to the burner, facing
+  the fire, idle on frame 0, talking through scene B's shout (the camera
+  is on the brazier when it plays); his GRANNY is the auntie, with two
+  takes of her own — idle and talking as two clips crossfaded, each take's
+  root measured so the fade does not walk her through the table; the
+  auntie faces the TABLE (a sign error since v4.1 that a featureless
+  primitive hid); the prep tool learned that a dropped emissive map leaves
+  a white lamp. The probe now measures what RENDERS — a skin box per seat
+  against its chair, a ceiling on every skinned part — and photographs
+  the sky. The granny's credit row has no source yet (Chad to supply).
+  Sheet v25. docs/V5.22-THE-TENT-PUT-RIGHT.md is the build's memory.
 - **v5.16** THE MAN AT THE TENT EDGE — Chad's Sketchfab standing man takes
   the RIGHT-edge stander in chapter 3, mirroring the chinese boy on the
   left: the two ends of the back of the tent, where the lane brings you

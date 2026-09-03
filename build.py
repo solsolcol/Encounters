@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = '5.21'
+VERSION = '5.22'
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -212,12 +212,13 @@ ASSETS = {
     # right-edge stander. Same reasoning as the two sitters, and not
     # preloaded for the same reason: the primitive holds the spot.
     'standman': ('assets/standman.glb', True, False),   # ch3
-    # v5.20 — the women of chapter 3. Not preloaded: each replaces a
-    # primitive already standing (or sitting) in the right place, so a slow
-    # download costs a nicer face and never an empty chair.
-    'gracy':    ('assets/gracy.glb', True, False),      # ch3, seated, retargeted take
-    'fearful':  ('assets/fearful.glb', True, False),    # ch3, standing at her seat
-    'kana':     ('assets/kana.glb', True, False),       # ch3, the auntie at the paper table
+    # v5.20 — the women of chapter 3; v5.22 — two of the three deleted at
+    # Chad's ask (gracy and the fearful woman, "unfixable"), kana moved to
+    # the brazier, and his granny is the auntie. Not preloaded: each
+    # replaces a primitive already standing in the right place, so a slow
+    # download costs a nicer face and never an empty spot.
+    'kana':     ('assets/kana.glb', True, False),       # ch3, the woman at the brazier
+    'granny':   ('assets/granny.glb', True, False),     # ch3, the auntie at the paper table
     # v5.17: Chad's bedroom for chapter 2 — bed, wardrobe, study table,
     # chair and curtain. The bed and the curtain ARE the first shot of the
     # chapter (the film opens lying in one, looking past the other), so

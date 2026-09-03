@@ -23,7 +23,7 @@
       comma-separated keep-list as the last argument to keep named clips
       (kana brings her own talking take and must keep it).
 
-   Usage: node tools/prepwoman.mjs in.glb out.glb [ratio] [bodyPx] [alphaPx] [keepClips]
+   Usage: node tools/prepwoman.mjs in.glb out.glb [ratio] [bodyPx] [alphaPx] [keepClips] [opaque]
 */
 import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS, KHRMeshQuantization } from '@gltf-transform/extensions';
@@ -34,8 +34,14 @@ import fs from 'node:fs';
 
 await MeshoptSimplifier.ready; await MeshoptEncoder.ready; await MeshoptDecoder.ready;
 
-const [inp, outp, ratioS = '0.28', bodyS = '512', alphaS = '256', keepS = ''] = process.argv.slice(2);
+const [inp, outp, ratioS = '0.28', bodyS = '512', alphaS = '256', keepS = '', opaqueS = ''] = process.argv.slice(2);
 const RATIO = +ratioS, BODY = +bodyS, ALPHA = +alphaS;
+/* v5.22: `opaque` (a 7th argument, '1') says every sheet is a body sheet.
+   The alpha test below is right for a hair card and wrong for a single
+   atlas that happens to carry transparent padding between its islands —
+   the granny's 2048 sheet has that, and without this flag it became a
+   256-colour PNG at 256 px, which is no face at all. */
+const OPAQUE = opaqueS === '1';
 const KEEP = keepS.split(',').map(s => s.trim()).filter(Boolean);
 
 const io = new NodeIO().registerExtensions(ALL_EXTENSIONS)
@@ -54,6 +60,10 @@ for (const m of root.listMaterials()) {
   m.setMetallicRoughnessTexture(null);
   m.setOcclusionTexture(null);
   m.setEmissiveTexture(null);
+  /* v5.22: a dropped emissive MAP leaves the emissive FACTOR behind, and a
+     factor of 1,1,1 with no map is a white lamp — the granny rendered as a
+     solid white silhouette until this line. Nothing here should glow. */
+  m.setEmissiveFactor([0, 0, 0]);
   m.setRoughnessFactor(0.85);
   m.setMetallicFactor(0);
   /* KHR_materials_specular and friends read as extra bytes and extra
@@ -76,7 +86,7 @@ for (const t of root.listTextures()) {
   const s = sharp(Buffer.from(img));
   const meta = await s.metadata();
   let hasAlpha = false;
-  if (meta.hasAlpha) {
+  if (meta.hasAlpha && !OPAQUE) {
     const st = await s.clone().ensureAlpha().extractChannel(3).stats();
     hasAlpha = st.channels[0].min < 250;      // a real cutout, not an opaque alpha channel
   }

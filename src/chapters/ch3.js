@@ -153,7 +153,7 @@
        all along. */
     assets: ['hdb', 'hellnote', 'seat', 'cars', 'guangong', 'encik',
              'tangki', 'tangkianim', 'boy', 'shrine', 'sitclap', 'sitangry',
-             'standman', 'gracy', 'fearful', 'kana'],
+             'standman', 'kana', 'granny'],
     noteArt: 'hellnote',
 
     /* The tent's own sound, in FOUR beds since v4.3 — and the loudest is
@@ -275,15 +275,9 @@
        it lands — so a kind that never downloads costs its faces, never its
        chairs. */
     const KINDS = ['encik', 'sitclap', 'sitangry'];
-    const SPECIALS = [
-      /* v5.20: gracy_lee, the one seated woman, on the aisle. An EVEN index
-         on purpose — LOW drops the odd ones, and a face worth having should
-         not be the one that vanishes on a weak phone. Her ValveBiped rig
-         has no usable clip of its own, so she is the one model here running
-         a RETARGETED take (tools/retarget.mjs, Sitting_Talking, 38 bones). */
-      { key: 'gracy', i: 2 * 8 + 4 },        // row three, right of the aisle
-    ];
-    const SPECIAL_I = new Set(SPECIALS.map(sp => sp.i));
+    /* v5.22: no SPECIALS any more. gracy_lee — the one seated character
+       with a skeleton of her own, on a retargeted take — is deleted at
+       Chad's ask ("unfixable"), and her seat goes back into the shuffle. */
 
     /* ------------------------------------------------------------ textures */
     const gTex = makeGround();
@@ -999,17 +993,44 @@
     };
     let encikMixers = [];                  // the audience's shared skeletons (v4.8)
     const specialMixers = [];              // characters with a skeleton of their own (v5.05)
-    /* v5.21 — the auntie's clock is her own, and it only runs while she is
-       being asked. Chad: "Kana should always be in an idle position (part
-       of its original model), and only switch to talking pose in the
-       cutscene, when the player engages her." Her file ships ONE take, the
-       talking one, and her rest pose is an A-pose — so 'idle' is the take's
-       first frame, held: a woman standing at a table with her hands down.
-       `auntTalk` is the only thing that advances her. */
-    let auntMixer = null, auntAct = null, auntTalk = false;
+    /* v5.21 — the auntie's clock is her own; v5.22 — she is Chad's GRANNY
+       (kana moved to the brazier, below) and she brings two takes of her
+       own, so idle and talking are two different things: `Stand_and_Chat`
+       loops in play, and `Talk_Passionately` crossfades in while a scene
+       holds `stage.auntTalk`, then fades back out. The two takes were
+       authored half a metre apart — each take's foot centre is measured at
+       load (`auntRoot`) and `auntSlide` moves the model by the blend
+       weight, so what the mixer blends in pose the slide undoes in place
+       and her feet stay on her spot through a fade. `auntIdle` is the hard
+       cut restore()/reset() need: a skipped scene leaves her idle. */
+    let auntMixer = null, auntIdleAct = null, auntTalkAct = null, auntModel = null;
+    let auntTalk = false;
+    const auntRoot = { idle: new THREE.Vector3(), talk: new THREE.Vector3() };
+    const auntSlide = (w) => {
+      if (!auntModel) return;
+      w = Math.min(1, Math.max(0, w));
+      auntModel.position.x = -(auntRoot.idle.x + (auntRoot.talk.x - auntRoot.idle.x) * w);
+      auntModel.position.z = -(auntRoot.idle.z + (auntRoot.talk.z - auntRoot.idle.z) * w);
+    };
     const auntIdle = () => {
       auntTalk = false;
-      if (auntAct) { auntAct.reset(); auntAct.play(); auntMixer.update(0.001); }
+      if (!auntMixer) return;
+      auntMixer.stopAllAction();
+      /* a stopped action keeps its last effective weight, and the slide
+         reads that weight every frame — so it is zeroed by hand */
+      auntTalkAct.setEffectiveWeight(0);
+      auntIdleAct.reset().setEffectiveWeight(1).play();
+      auntMixer.update(0.001);
+      auntSlide(0);
+    };
+    const auntSet = (v) => {
+      v = !!v;
+      if (v === auntTalk) return;
+      auntTalk = v;
+      if (!auntMixer) return;
+      const from = v ? auntIdleAct : auntTalkAct, to = v ? auntTalkAct : auntIdleAct;
+      to.reset().setEffectiveWeight(1).play();
+      from.crossFadeTo(to, 0.5, false);
     };
 
     let ci = 0;
@@ -1080,7 +1101,7 @@
        from TAKEN so LOW's thinner crowd is dealt the same way. */
     const SEAT_KIND = {};
     {
-      const seats = [...TAKEN].filter(i => !SPECIAL_I.has(i)).sort((a, b) => a - b);
+      const seats = [...TAKEN].sort((a, b) => a - b);
       const bag = seats.map((_, k) => k % KINDS.length);
       let seed = 0x9E3779B1 >>> 0;
       const rnd = () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed / 4294967296; };
@@ -1095,8 +1116,9 @@
        never sit. Two of them are down by the brazier feeding it. */
     const standers = [];
     /* v5.21: THREE, not four. The second brazier figure ([3.9, -4.6]) is
-       removed at Chad's ask — the fearful woman takes the brazier alone
-       (below) — so nothing here is dropped by LOW any more either. */
+       removed at Chad's ask — one woman takes the brazier alone (the
+       fearful woman for one build; since v5.22, kana, below) — so nothing
+       here is dropped by LOW any more either. */
     for (const [sx, sz, ry] of [[-4.9, 1.4, 0.15], [4.9, 2.2, -0.2],
                                 [4.6, -3.9, -1.3]]) {
       const f = figure({ shirt: shirtMats[(standers.length * 3) % shirtMats.length],
@@ -1190,7 +1212,14 @@
     const AUNT_H = (0.86 + 0.775) * 0.95 + 0.105;      // 1.658 m
     const auntie = figure({ shirt: matFloral, h: 0.95 });
     auntie.position.set(PAPER.x - 0.86, 0, PAPER.z - 0.10);
-    auntie.rotation.y = -Math.PI / 2 + 0.25;      // facing the table
+    /* facing the table — which is at +x of her, and a figure's forward is
+       +z at yaw 0, so +PI/2 faces +x. This read -PI/2 + 0.25 from v4.1 to
+       v5.21, which faces -x: the primitive stood with its back to the table
+       and nobody could tell, and the first real face (v5.20's kana) stood
+       the same way and it showed. +PI/2 - 0.25 is the mirror: the table in
+       front of her and her back three-quarters to the ritual, which is what
+       the paragraph above has always said. */
+    auntie.rotation.y = Math.PI / 2 - 0.25;
     world.add(auntie);
     const bun = new THREE.Mesh(new THREE.SphereGeometry(0.062, 8, 6), matHair);
     bun.position.set(0, 1.60, -0.10);
@@ -1353,7 +1382,7 @@
            sitclap and sitangry are several (body, head, hair, eyes), and a
            clone of the first alone seats a floating head with no body under
            it — which is exactly what the first v5.21 render showed. */
-        const poseMeshes = [], mixers = [];
+        const poseMeshes = [], poseRoots = [], mixers = [];
         for (let j = 0; j < N_POSE; j++) {
           const sc = cloneSkinned(gltf.scene);
           sc.visible = false;                  // bones update; nothing draws
@@ -1366,6 +1395,7 @@
           const sms = [];
           sc.traverse(o => { if (o.isSkinnedMesh) sms.push(o); });
           poseMeshes.push(sms);
+          poseRoots.push(sc);
           mixers.push(mx);
           sc.updateMatrixWorld(true);          // matrixWorld is copied below
         }
@@ -1373,12 +1403,18 @@
            it. Named feet and crown when the rig names them; the full bone
            span as the fallback when it does not. The loose /Head/ is the
            crowd's own measure (v5.05): on a Mixamo rig it catches
-           HeadTop_End, the top of the skull. */
+           HeadTop_End, the top of the skull.
+           Over the WHOLE clone (v5.22). v5.21 walked down from the first
+           skin's first bone's parent — on the encik's one-skin file that is
+           the rig root; on the two Mixamo sitters, whose first skin starts
+           at Spine2, it is the spine: no feet, no hips, `lo` a hand's
+           height off the floor, and every one of them scaled up and sunk a
+           metre into the tarmac. */
         const v = new THREE.Vector3();
         const hip = new THREE.Vector3();
         let footY = Infinity, crownY = -Infinity, loA = Infinity, hiA = -Infinity;
         let hipN = 0;
-        poseMeshes[0][0].skeleton.bones[0].parent.traverse(o => {
+        poseRoots[0].traverse(o => {
           if (!o.isBone) return;
           o.getWorldPosition(v);
           loA = Math.min(loA, v.y); hiA = Math.max(hiA, v.y);
@@ -1392,7 +1428,6 @@
         if (hipN) hip.divideScalar(hipN); else hip.set(0, 0, 0);
         const s2 = 1.30 / (hi - lo);           // a seated person, floor to crown
         for (const i of TAKEN) {
-          if (SPECIAL_I.has(i)) continue;      // somebody else has that chair
           if (SEAT_KIND[i] !== key) continue;  // and this seat was dealt to another kind
           const at = chairAt[i];
           const srcMeshes = poseMeshes[(i * 7) % N_POSE];  // neighbours differ
@@ -1417,14 +1452,18 @@
              armature's origin, stacked into one giant. 'detached' keeps the
              node transform, so the clone renders
                  group · inner · bindMatrixInverse · (pose) · bindMatrix · v
-             The source draws ΣB · M · v where M is its mesh node's own
-             matrixWorld, so the clone is only right when bindMatrix = M and
-             bindMatrixInverse = I. v4.8 set both to identity, which is the
-             same thing for the encik's file (M = I) and WRONG for any file
-             whose mesh node carries a transform — folded in here since
-             v5.21 so all three kinds sit where their chair is. */
+             and with BOTH bind matrices identity that is  group · inner ·
+             (pose in world)  — the live take, seated wherever the group is.
+             Identity is right for EVERY file, not only the encik's: the
+             pose Σ B·v is built from the BONES' world matrices, which
+             already carry the whole node chain above them, so the mesh
+             node's own transform M has no business in it. v5.21 believed
+             otherwise and folded M in (bindMatrix = M) — and on the encik,
+             whose M is a Sketchfab root scaled 0.018, that multiplied every
+             bone translation by 55 and put six men in the sky over the car
+             park. Derived and measured; LEARNINGS has the write-up. */
           body.bindMode = 'detached';
-          body.bindMatrix.copy(srcMesh.matrixWorld);
+          body.bindMatrix.identity();
           body.bindMatrixInverse.identity();
           inner.add(body);
           }
@@ -1454,94 +1493,6 @@
       });
     }
     for (const key of KINDS) seatKind(key);
-
-    /* THE ONE WHO IS NOT IN THE SHUFFLE — gracy_lee (v5.20). She is a whole
-       character with a skeleton and a mixer of her own, seated where
-       SPECIALS says, and her seat's primitive figure stays put until the
-       bytes land and is hidden only on arrival. (v5.05's two men used to
-       be seated this way too; since v5.21 they are crowd KINDS above.) */
-    for (const sp of SPECIALS) {
-      loadGLB(sp.key, (gltf) => {
-        const g = gltf.scene;
-        const at = chairAt[sp.i];
-        if (!at) return;
-        g.traverse(o => {
-          if (o.isMesh) { o.castShadow = !LOW; o.frustumCulled = false; }
-        });
-        if (gltf.animations.length) {
-          const mx = new THREE.AnimationMixer(g);
-          mx.clipAction(gltf.animations[0]).play();
-          mx.update(0.001);                    // pose him before measuring
-          specialMixers.push(mx);
-        }
-        g.updateMatrixWorld(true);
-        /* size and seat from POSED BONES — feet named where the rig names
-           them, the full bone span otherwise, exactly as the encik crowd
-           does, so both sit at the same floor-to-crown height */
-        const v = new THREE.Vector3();
-        const hip = new THREE.Vector3();
-        let footY = Infinity, crownY = -Infinity, loA = Infinity, hiA = -Infinity;
-        let hipN = 0;
-        g.traverse(o => {
-          if (!o.isBone) return;
-          o.getWorldPosition(v);
-          loA = Math.min(loA, v.y); hiA = Math.max(hiA, v.y);
-          if (/Toe|Foot/i.test(o.name)) footY = Math.min(footY, v.y);
-          /* deliberately the crowd's own loose /Head/ and not HEAD_RE: on a
-             Mixamo rig it also catches HeadTop_End, so the crown it measures
-             is the top of the skull rather than the neck joint. Matching the
-             encik crowd's measure exactly is the point — measured against
-             HEAD_RE these two stood a head higher than everyone near them. */
-          if (/Head/i.test(o.name)) crownY = Math.max(crownY, v.y);
-          if (/Hips|Pelvis/i.test(o.name)) { hip.add(v); hipN++; }
-        });
-        /* v5.21 — THE CROWN, when the rig has no crown bone. A Mixamo rig
-           has HeadTop_End, the top of the skull; gracy's ValveBiped has
-           only Head1, the head JOINT at the base of the skull, so the loose
-           /Head/ measure stopped a whole skull short, `hi - lo` came out
-           small, and she was scaled UP to compensate — a face that filled
-           the frame from a metre away (Chad: "completely fucked up and
-           abnormal"). So when no bone names a crown, the crown is read off
-           the POSED SKIN: every vertex through the skeleton as it stands
-           now. That is not the bind-pose box the law forbids — it is the
-           pose, measured. */
-        let hasCrownBone = false;
-        g.traverse(o => { if (o.isBone && /HeadTop|Head.*End/i.test(o.name)) hasCrownBone = true; });
-        if (!hasCrownBone) {
-          let skinTop = -Infinity;
-          g.traverse(o => {
-            if (!o.isSkinnedMesh) return;
-            o.skeleton.update();
-            const n = o.geometry.attributes.position.count;
-            for (let k = 0; k < n; k++) {
-              o.getVertexPosition(k, v).applyMatrix4(o.matrixWorld);
-              if (v.y > skinTop) skinTop = v.y;
-            }
-          });
-          if (skinTop > crownY) crownY = skinTop;
-        }
-        const lo = isFinite(footY) ? footY : loA;
-        const hi = crownY > -Infinity ? crownY : hiA;
-        if (!isFinite(lo) || hi <= lo) return;
-        if (hipN) hip.divideScalar(hipN); else hip.set(0, 0, 0);
-        const hs = 1.30 / (hi - lo);            // a seated person, floor to crown
-        const inner = new THREE.Group();
-        inner.scale.setScalar(hs);
-        inner.position.set(-hip.x * hs, -lo * hs, -hip.z * hs + ENCIK_Z);
-        inner.add(g);
-        const f = new THREE.Group();
-        f.add(inner);
-        f.position.set(at.x, 0, at.z);
-        f.rotation.y = chairRot[sp.i] + Math.PI;   // facing the altar, like the chair
-        f.userData.ph = (sp.i * 1.37) % 6.28;
-        f.userData.head = inner;                // the sway loop turns this
-        f.userData.seat = sp.i;
-        crowdRoot.add(f);
-        /* only now does the placeholder go: the chair is never empty */
-        for (const p of crowd) if (p.userData.seat === sp.i) p.visible = false;
-        crowd.push(f);
-      });
-    }
 
     /* THE TANG-KI — Chad's rigged Taoist master (v5.06, replacing the
        praying man), animated; the clip is the whole point ("his animations
@@ -1643,82 +1594,115 @@
       standers[0] = f;
     });
 
-    /* v5.20 — and she becomes a real person. Chad's kana talk woman takes
-       the paper table, and of his four she is the one who belongs here:
-       the auntie has FOUR spoken lines in scene C and kana is the only one
-       of the four who arrived with a talking take of her own, authored
-       against her own rest pose. She keeps talking under the ceremony,
-       which is what an auntie folding paper at a table does.
+    /* THE AUNTIE — v5.22, Chad's granny: "Use this granny animated rigged
+       glb file to become the woman who talks in option 3." She replaces
+       kana at the paper table, and by the v5.20 rule — reach for a
+       character's OWN clips first — she is the better fit, because she
+       brings two, authored against her own rest pose: `Stand_and_Chat`, a
+       calm standing idle that turns the body slowly, and
+       `Talk_Passionately`, ten seconds of gesturing. Idle and talking are
+       two takes, not one take frozen and unfrozen. 597k triangles and a
+       4.7 MB sheet shrunk to 17.9k and a 1024 JPEG by tools/prepwoman.mjs
+       (which learned two things from her; its header says what).
 
-       She is added INTO the `auntie` group rather than replacing it, so
-       everything that already drives the auntie still does: scene C turns
-       `stage.auntie` to face the boy, and snap/restore/reset carry her
-       rotation. The primitive's own children are hidden on arrival and not
-       before, so a download that never lands costs a nicer face and never
-       an empty space at the table. */
-    loadGLB('kana', (gltf) => {
+       She joins the `auntie` group as kana did, so scene C's turn to the
+       boy and snap/restore/reset carry her. MEASURED, never trusted: her
+       height from posed bones to AUNT_H (the loose /Head/ catches
+       `head_end`, her crown), with `lo` the lowest the feet go ACROSS the
+       idle take rather than on one frame of it — the take lifts her a
+       hand's width and settles, and grounding on the high frame would sink
+       her on the low ones; and the ROOT of each take, because the two were
+       authored half a metre apart (feet at 0.54, -0.42 in one, at the
+       origin in the other) and a plain crossfade would walk her through
+       the table. */
+    loadGLB('granny', (gltf) => {
       const g = gltf.scene;
       g.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.frustumCulled = false; } });
-      if (gltf.animations.length) {
-        auntMixer = new THREE.AnimationMixer(g);
-        auntAct = auntMixer.clipAction(gltf.animations[0]);
-        auntIdle();                            // frame 0, held — and posed for measuring
-      }
-      g.updateMatrixWorld(true);
-      /* From POSED BONES, and to the primitive's own floor-to-crown, so she
-         is the height of the auntie she replaces rather than the height her
-         file happens to be authored at (v3.8's law, v5.05's corollary: the
-         measure that matters is the one the thing beside her used). The
-         crowd's loose /Head/ again, not HEAD_RE — on a Mixamo rig it also
-         catches HeadTop_End, which is the crown and not the neck joint. */
+      const idleClip = gltf.animations.find(a => a.name === 'Stand_and_Chat') || gltf.animations[0];
+      const talkClip = gltf.animations.find(a => a.name === 'Talk_Passionately') || gltf.animations[1] || idleClip;
+      if (!idleClip) return;
+      const mx = new THREE.AnimationMixer(g);
       const v = new THREE.Vector3();
-      let footY = Infinity, crownY = -Infinity, loA = Infinity, hiA = -Infinity;
-      g.traverse(o => {
-        if (!o.isBone) return;
-        o.getWorldPosition(v);
-        loA = Math.min(loA, v.y); hiA = Math.max(hiA, v.y);
-        if (/Toe|Foot/i.test(o.name)) footY = Math.min(footY, v.y);
-        if (/Head/i.test(o.name)) crownY = Math.max(crownY, v.y);
-      });
-      const lo = isFinite(footY) ? footY : loA;
-      const hi = crownY > -Infinity ? crownY : hiA;
+      /* the foot centre of a take at its first frame, in the model's own
+         space — the feet do not travel within either take, so one frame is
+         the whole answer */
+      const footOf = (clip) => {
+        const a = mx.clipAction(clip);
+        a.reset().setEffectiveWeight(1).play(); mx.update(0); g.updateMatrixWorld(true);
+        const c = new THREE.Vector3(); let n = 0;
+        g.traverse(o => { if (o.isBone && /Foot$/i.test(o.name)) { o.getWorldPosition(v); c.add(v); n++; } });
+        a.stop();
+        return n ? c.divideScalar(n) : c;
+      };
+      auntRoot.idle.copy(footOf(idleClip));
+      auntRoot.talk.copy(footOf(talkClip));
+      /* floor and crown from POSED BONES, sampled across the idle take */
+      let lo = Infinity, hi = -Infinity;
+      {
+        const a = mx.clipAction(idleClip);
+        a.reset().setEffectiveWeight(1).play();
+        for (let k = 0; k < 8; k++) {
+          mx.setTime((idleClip.duration * k) / 8); g.updateMatrixWorld(true);
+          let footY = Infinity, crownY = -Infinity, loA = Infinity, hiA = -Infinity;
+          g.traverse(o => {
+            if (!o.isBone) return;
+            o.getWorldPosition(v);
+            loA = Math.min(loA, v.y); hiA = Math.max(hiA, v.y);
+            if (/Toe|Foot/i.test(o.name)) footY = Math.min(footY, v.y);
+            if (/Head/i.test(o.name)) crownY = Math.max(crownY, v.y);
+          });
+          lo = Math.min(lo, isFinite(footY) ? footY : loA);
+          hi = Math.max(hi, crownY > -Infinity ? crownY : hiA);
+        }
+        a.stop();
+      }
       if (!(hi > lo)) return;                  // a collapsed rig gets no chance to explode
+      auntMixer = mx;
+      auntIdleAct = mx.clipAction(idleClip);
+      auntTalkAct = mx.clipAction(talkClip);
+      auntModel = g;
       const hs = AUNT_H / (hi - lo);
       const inner = new THREE.Group();
       inner.scale.setScalar(hs);
       inner.position.y = -lo * hs;
       inner.add(g);
+      auntIdle();                              // idle, weight 1, feet on her spot
       for (const c of [...auntie.children]) c.visible = false;
       auntie.add(inner);
     });
 
-    /* THE WOMAN AT THE BRAZIER — v5.21. Chad: "Take fearful woman ... out
-       of her seat area, i dont want her to be an audience at the chair
-       area. Instead place her at the burner to replace one of the 2
-       figures there. Remove the other generated figure at the burner,
-       leaving only 1 fearful woman there." So she takes standers[2], the
-       one at [4.6, -3.9] feeding the fire; the fourth stander is gone from
-       the list above; and she runs her own `idle_fear_lookback` — a woman
-       at the burner, glancing back over her shoulder. Same contract as the
-       standing man: the primitive stays until her bytes land, then the
-       model takes its place, position, facing and sway phase. */
-    loadGLB('fearful', (gltf) => {
+    /* THE WOMAN AT THE BRAZIER — v5.22: kana. Chad: "Move kana model to
+       become the person standing at the burner, replacing fearful women
+       model, she should be idle, until cutscene requires her to talk, and
+       then she switches to talking animation for the cutscene." She takes
+       standers[2] — the one at [4.6, -3.9] feeding the fire, which the
+       fearful woman held for one build — on the standing man's contract:
+       the primitive stays until her bytes land, then the model takes its
+       place, facing and sway phase. Her file ships ONE take, a talking one,
+       so idle is its first frame held (v5.21's answer for her, kept: a
+       woman standing with her hands down) and the take runs only while a
+       scene sets `stage.brazierTalk`. Scene B does: the shout at 15.0 is
+       delivered with the camera on the brazier, so it is hers now. */
+    let brazMixer = null, brazAct = null, brazTalk = false;
+    const brazIdle = () => {
+      brazTalk = false;
+      if (brazAct) { brazAct.reset(); brazAct.play(); brazMixer.update(0.001); }
+    };
+    loadGLB('kana', (gltf) => {
       const old = standers[2];
       if (!old) return;
       const g = gltf.scene;
       g.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.frustumCulled = false; } });
       if (gltf.animations.length) {
-        const mx = new THREE.AnimationMixer(g);
-        mx.clipAction(gltf.animations[0]).play();
-        mx.update(0.001);                      // pose her before measuring
-        specialMixers.push(mx);
+        brazMixer = new THREE.AnimationMixer(g);
+        brazAct = brazMixer.clipAction(gltf.animations[0]);
+        brazIdle();                            // frame 0, held — and posed for measuring
       }
-      g.rotation.y = old.rotation.y;
       g.updateMatrixWorld(true);
-      /* POSED BONES, and to a woman's height beside the standers' 1.74 —
-         the same MEASURE (crown from posed bones) at 1.66. Her rig is a
-         Blender one: feet are `foot_L_082`, and the loose /Head/ catches
-         `forehead_070`, which is near enough the top of her skull. */
+      /* POSED BONES, to a woman's height beside the standers' 1.74, with
+         the crowd's loose /Head/ — on her Mixamo rig it catches
+         HeadTop_End, the crown — and hips centred over the spot */
+      const BRAZ_H = 1.66;
       const v = new THREE.Vector3();
       const hip = new THREE.Vector3();
       let hipN = 0, footY = Infinity, crownY = -Infinity, loA = Infinity, hiA = -Infinity;
@@ -1726,15 +1710,15 @@
         if (!o.isBone) return;
         o.getWorldPosition(v);
         loA = Math.min(loA, v.y); hiA = Math.max(hiA, v.y);
-        if (/Toe|toes|Foot|foot/.test(o.name)) footY = Math.min(footY, v.y);
+        if (/Toe|Foot/i.test(o.name)) footY = Math.min(footY, v.y);
         if (/Head/i.test(o.name)) crownY = Math.max(crownY, v.y);
         if (/Hips|Pelvis/i.test(o.name)) { hip.add(v); hipN++; }
       });
       const lo = isFinite(footY) ? footY : loA;
       const hi = crownY > -Infinity ? crownY : hiA;
-      if (!(hi > lo)) return;
+      if (!(hi > lo)) return;                  // a collapsed rig gets no chance to explode
       if (hipN) hip.divideScalar(hipN); else hip.set(0, 0, 0);
-      const hs = 1.66 / (hi - lo);
+      const hs = BRAZ_H / (hi - lo);
       const inner = new THREE.Group();
       inner.scale.setScalar(hs);
       inner.position.set(-hip.x * hs, -lo * hs, -hip.z * hs);
@@ -1742,8 +1726,15 @@
       const f = new THREE.Group();
       f.add(inner);
       f.position.copy(old.position);
+      /* facing the FIRE, computed from where it is rather than inherited:
+         the primitive's yaw looked past the drum at the car park, which a
+         featureless figure got away with and a face does not */
+      f.rotation.y = Math.atan2(BRAZ.x - f.position.x, BRAZ.z - f.position.z);
       f.userData.ph = old.userData.ph;
-      world.add(f);
+      f.userData.head = inner;
+      crowdRoot.add(f);
+      /* only now does the primitive go: a download that never finishes
+         costs a nicer woman and never an empty patch of tarmac */
       old.visible = false;
       standers[2] = f;
     });
@@ -1757,7 +1748,7 @@
        encik crowd needs buys nothing at this count.
 
        standers[1] and not [2]: that one is down at the brazier feeding it
-       (and since v5.21 is the fearful woman). [1] is the one you walk past
+       (and since v5.22 is kana, the woman at the burner). [1] is the one you walk past
        on the way in.                                                      */
     loadGLB('standman', (gltf) => {
       const old = standers[1];
@@ -2079,7 +2070,14 @@
         : 1));
       for (const em of encikMixers) em.update(dt * crowdLife);
       for (const sm of specialMixers) sm.update(dt * crowdLife);
-      if (auntMixer) auntMixer.update(auntTalk ? dt : 0);   // v5.21: idle until asked
+      /* v5.22: the auntie's idle runs with the tent (a scene that stills
+         everyone stills her), her talking take at full speed; and the
+         slide undoes the two takes' root offset as the mixer blends them */
+      if (auntMixer) {
+        auntMixer.update(auntTalk ? dt : dt * crowdLife);
+        auntSlide(auntTalkAct.getEffectiveWeight());
+      }
+      if (brazMixer) brazMixer.update(brazTalk ? dt : 0);   // kana: frame 0 held until asked
 
       /* THE RITUAL, and a cutscene owns it outright while one is running.
          Without this, a scene that poses the medium or throws his flags up
@@ -2183,6 +2181,7 @@
         headPos: medium.userData.head.position.clone(),
         oddRot: chairRot[ODD_I], backRot: chairRot[BACK_I],
         auntieRot: auntie.rotation.y,
+        brazRot: standers[2].rotation.y,     // v5.22: she turns to him in scene B
         hero: heroNote.visible, hazeOp: haze.material.opacity
       };
     }
@@ -2190,6 +2189,7 @@
       noteStorm = s.storm; drumBeat = s.beat; crowdLife = s.life;
       medRate = s.medR === undefined ? null : s.medR;
       auntIdle();                        // v5.21: a skipped scene leaves her idle
+      brazIdle();                        // v5.22: and the woman at the brazier too
       /* v5.19: and put him back on the rest take. A scene that is SKIPPED
          never reaches its own `medPlay('idle3')`, so he was left casting.
          Invisible until this build, because he was frozen anyway; now the
@@ -2208,6 +2208,7 @@
       chairRot[BACK_I] = s.backRot; placeChair(BACK_I);
       for (const im of chairIMs) im.instanceMatrix.needsUpdate = true;
       auntie.rotation.y = s.auntieRot;
+      if (s.brazRot !== undefined) standers[2].rotation.y = s.brazRot;
       heroNote.visible = s.hero;
       haze.material.opacity = s.hazeOp;
     }
@@ -2218,11 +2219,13 @@
       tent: tentLights.map(l => l.intensity),
       keyI: key.intensity,
       oddRot: chairRot[ODD_I], backRot: chairRot[BACK_I],
-      auntieRot: auntie.rotation.y
+      auntieRot: auntie.rotation.y,
+      brazRot: standers[2].rotation.y
     };
     function reset() {
       noteStorm = 1; drumBeat = 1; crowdLife = 1; medRate = null;
       auntIdle();
+      brazIdle();
       medPlay('idle3', 1, 0);        // v5.19: never restart him mid-spell
       tentLights.forEach((l, i) => { l.intensity = REST.tent[i]; });
       key.intensity = REST.keyI;
@@ -2234,6 +2237,7 @@
       chairRot[BACK_I] = REST.backRot; placeChair(BACK_I);
       for (const im of chairIMs) im.instanceMatrix.needsUpdate = true;
       auntie.rotation.y = REST.auntieRot;
+      standers[2].rotation.y = REST.brazRot;
       heroNote.visible = true;
       haze.material.opacity = 0.34;
     }
@@ -2358,9 +2362,14 @@
          and 0 is the only honest way to say "he does not move". */
       get medRate() { return medRate; },
       set medRate(v) { medRate = v; },
-      /* v5.21: the auntie talks only while a scene says so */
+      /* v5.21: the auntie talks only while a scene says so; v5.22: the
+         setter crossfades her two takes, the woman at the brazier (kana)
+         has the same switch, and a handle so a scene can turn her */
       get auntTalk() { return auntTalk; },
-      set auntTalk(v) { auntTalk = !!v; },
+      set auntTalk(v) { auntSet(v); },
+      get brazierTalk() { return brazTalk; },
+      set brazierTalk(v) { brazTalk = !!v; },
+      get brazierWoman() { return standers[2]; },
       medPlay,                                   // v5.07: the medium's takes
       get medClip() { return medCur || null; },
       get crowdLife() { return crowdLife; },
@@ -3010,6 +3019,23 @@
     /* v5.15: everything from here +0.4 s — the boy's take grew to 5.15 s
        and the auntie's shout at 14.6 landed on his last syllable */
     sfx(15.0, 'v3aunt5');   // "Boy, come out of there now. You cannot stand there!"
+    /* v5.22: the shout is HERS — the woman at the brazier (kana). The
+       camera has been on the brazier since 14.2 (the camTo above lands at
+       2.30, -2.20 looking straight at it), so she turns from the fire to
+       the boy and her talking take runs under the line; restore() puts her
+       facing back and stops the take. Read through the stage on every
+       frame rather than captured once: her model may land mid-scene. */
+    const BOY_AT = { x: 2.30, z: -2.20 };
+    const bwRest = { y: null };
+    tr(14.3, 14.9, k => {
+      const w = stage.brazierWoman;
+      if (bwRest.y === null) bwRest.y = w.rotation.y;
+      let d = Math.atan2(BOY_AT.x - w.position.x, BOY_AT.z - w.position.z) - bwRest.y;
+      d = Math.atan2(Math.sin(d), Math.cos(d));          // the short way round
+      w.rotation.y = bwRest.y + d * k;
+    }, smoothK);
+    step(14.9, () => { stage.brazierTalk = true; });
+    step(18.4, () => { stage.brazierTalk = false; });
     sfx(15.6, 'step', 0.4); sfx(16.2, 'step', 0.4);
     /* ONE voice at a time: the panting take runs 2.2 seconds, so it waits
        for the auntie to finish (18.3) and then trails into the black —

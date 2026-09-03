@@ -1589,13 +1589,71 @@ every vertex through the skeleton as it stands (`SkinnedMesh.getVertexPosition`)
 That is not the bind-pose box the sizing law forbids; it is the pose,
 measured. The tell was in the bone list all along: one `/Head/` hit, not two.
 
-## An identity bind matrix is a property of one file, not of the trick (v5.21)
+## An identity bind matrix is right for EVERY file — v5.21 said otherwise and put six men in the sky (v5.21, corrected v5.22)
 
-v4.8's detached-bind crowd set `bindMatrix` and `bindMatrixInverse` to
-identity and its own comment said that was right "for this file". It was —
-the encik's mesh node sits at the origin. A source draws `ΣB · M · v` with
-`M` its mesh node's matrix, so a clone is right only with `bindMatrix = M`,
-`bindMatrixInverse = I`. Folded in for v5.21 it is a no-op for the encik and
-the difference between a chair and the armature's origin for any file
-whose mesh node carries a transform. **When you generalise a trick, go
-back to the comment that said what it assumed.**
+What this entry said at v5.21 was wrong, and the wrong version shipped:
+it claimed a clone of a skinned mesh is right only with `bindMatrix = M`
+(the source mesh node's matrix), so v5.21 folded `M` in. The derivation,
+done properly at v5.22: a skinned vertex renders as
+`clone.matrixWorld · bindMatrixInverse · Σ wᵢ Bᵢ · bindMatrix · v`, and each
+`Bᵢ` is a BONE's world matrix times its inverse bind. The bones' world
+matrices already carry the whole node chain above them, so `Σ Bᵢ v` is the
+pose in world space whatever the mesh node's transform is — which is the
+very reason "moving a skinned mesh by its node does nothing". Identity for
+both bind matrices is right for every file. On the encik's file the mesh
+sits under a Sketchfab root scaled 0.018; folding it in gave
+`inv(0.018) · Σ Bᵢ · (0.018 v)` — the rotations cancel and every bone
+TRANSLATION is multiplied by 55. Six men rendered 22–58 m over the car park
+(Chad: "a tangled mangled texture mess floating in the sky"). The v5.21
+lesson — go back to the comment that said what the trick assumed — was
+right and was misapplied: v4.8's comment said the file "rebinds with
+identity", which is about the BIND, not the node chain. **Derive the
+maths before believing a comment's hedge, and then measure what RENDERS.**
+
+## A multi-skin rig is measured from its ROOT, never from a bone's parent (v5.22)
+
+v5.21's crowd loader sized each kind by walking down from
+`skeleton.bones[0].parent` of the first skinned mesh. On the encik's
+one-skin file that is the rig root. On a Mixamo character split into
+several skins, the first skin's first bone is `Spine2` and its parent is
+the spine — no feet, no hips, `lo` a hand's height off the floor, and
+every sitter scaled up to make the truncated span 1.30 m and then dropped
+by the missing distance: a metre into the tarmac. Traverse the clone's
+ROOT. A rig's skins are an export's bookkeeping, not its anatomy.
+
+## Measure what renders, and when a thing is missing, find where it went (v5.22)
+
+v5.21's verification measured the offstage POSE skeletons (correct) and
+counted meshes per seat (correct) and photographed seats from two metres,
+and passed a build in which the encik was in the sky and the sitters were
+under the floor. The numbers measured the wrong thing: the pose is
+correct on the skeleton and wrong on the clone that draws it. The probe
+now pushes every rendered vertex through the clone's own matrices — the
+picture the GPU makes — and boxes it against the chair; puts a ceiling on
+every skinned part; and photographs the sky. And the first rule of a
+missing thing: **it did not vanish, it is somewhere — measure where.**
+
+## A dropped emissive MAP leaves the emissive FACTOR: a white lamp (v5.22)
+
+`tools/prepwoman.mjs` strips every map but base colour. The granny's file
+carried an emissive map (a copy of the base, the usual "looks unlit"
+export trick) with an emissive factor of 1,1,1; strip the map and the
+factor stays, and a factor with no map is full emission — she rendered as
+a solid white silhouette. Set the factor to black whenever the map goes.
+Same tool, second blind spot: its alpha test (a sheet with real
+transparency is a hair card, so PNG at 256 px) fired on her single
+2048 atlas, which carries transparent padding between islands, and made
+her face a 256-colour PNG at 256 px. A flag now says "every sheet here is
+a body sheet".
+
+## A figure's forward is +z, and a primitive hides a yaw that is backwards (v5.22)
+
+The auntie's yaw was `-PI/2 + 0.25` from v4.1 to v5.21 — facing -x, with
+her paper table at +x. A cylinder-and-sphere figure has no face, so
+twenty builds shipped her with her back to her own table and nobody could
+see it; the first real face (v5.20's kana) stood the same way and it
+showed, and the render caught it. When a face is placed, check its yaw
+against the thing it should look at BY ARITHMETIC (`atan2(dx, dz)` for a
++z-forward figure), not by the comment beside it. kana at the burner got
+the same treatment: her yaw is computed from the brazier's position, not
+inherited from a primitive that looked past the drum.
