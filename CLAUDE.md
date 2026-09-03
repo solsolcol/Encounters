@@ -300,6 +300,14 @@ words stay in the chapter file. An empty cell removes that text. Full
 workflow, guarantees and the sheet id: `docs/EDITING-TEXT.md`. **Never
 hand-edit a string without re-exporting the sheet afterwards**, or his copy
 of the text goes stale.
+**And ALWAYS HAND HIM THE LINK** (Chad's rule, v5.23: "always give me the
+latest sheet link"). A sheet he cannot find is a sheet he cannot edit, and
+he works from his phone where a bare version number is useless — so every
+time a new sheet is published, the full
+`https://docs.google.com/spreadsheets/d/<id>/edit` URL goes in the reply
+that reports the release, not just "sheet v26". If a session ends without
+publishing a new one, give him the current one's link anyway when the text
+comes up.
 Since v5.14 the sheet carries the VOICE LINES too, made from
 `src/voicelines.js` — every spoken take, who says it, where it plays, its
 words and its measured length — and **every sheet version must carry

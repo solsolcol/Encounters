@@ -5,6 +5,12 @@ without prompting for each change. This is how it works and how to run it.
 
 ## The sheet
 
+**Hand Chad the link every time** (his rule, v5.23: "always give me the
+latest sheet link"). Whenever a new sheet is published — and whenever the
+text comes up at all — the reply carries the full URL, not the version
+number alone. He reads these on his phone; a number he has to go hunting
+for in Drive is not a link.
+
 **Master Z's Encounters — GAME TEXT v26 (edit here)** in his Drive
 (id `1VziNnTPiTC_AXlybaN-9GOqGGGb2p_OirgFCGVSlXgw` — the **v26** sheet, made at v5.23: 268 GAME TEXT
 rows and, under them after a divider row, the 97 **VOICE LINES**. What
