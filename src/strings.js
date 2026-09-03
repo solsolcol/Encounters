@@ -95,8 +95,6 @@ Object.assign(window.__TEXT__, {
   'credits.altar':       'The home altars',
   'credits.altarWho':    'Vietnamese altar · Sketchfab',
   'credits.altarLink':   'sketchfab.com · vietnamese-altar',
-  'credits.aunt':        'The auntie at the paper table',
-  'credits.auntWho':     'Granny · animated, rigged',
   'credits.burner':      'The woman at the burner',
   'credits.burnerWho':   'Free 018 Kana talk · Sketchfab',
   'credits.burnerLink':  'sketchfab.com · free-018-kana-talk',

@@ -807,8 +807,9 @@ What the baseline contains, by release:
   one ("why not make fearful woman stand at her seat using one of her
   animations"). **yinn is unusable as delivered** — all 108 of her bones
   sit at the same point and her mesh is a body lying flattened; the
-  untouched file from Drive renders identically, so she needs a re-export.
-  Sheet v24. docs/V5.20-THE-WOMEN.md is the build's memory.
+  untouched file from Drive renders identically. DROPPED at v5.23 (Chad:
+  "forget yinn and kungfu man, drop them") — not a pending re-export, a
+  closed item. Sheet v24. docs/V5.20-THE-WOMEN.md is the build's memory.
 - **v5.21** THE CROWD, SHUFFLED — Chad's play-through of v5.20, all five
   notes, and the honest reason they existed: v5.20 was verified from a wide
   shot. gracy's Valve rig has no crown bone, so the crowd's loose `/Head/`
@@ -862,7 +863,7 @@ What the baseline contains, by release:
   pair and 3 is the one `LOW` drops, which is why he took 1. Chad's
   second model, a Fab kungfu man, is NOT in: its FBX references an
   external `kungfu_man_v2_texture256.png` it never embeds, and carries no
-  clip — 750 clean triangles waiting on one PNG.
+  clip. DROPPED at v5.23 (Chad's call) — do not ask for the PNG again.
   docs/V5.16-STANDING-MAN.md is the build's memory.
 - **v3.8** real art where there was code: a bought first-person ARM rig
   (`arms.glb`, credited to Fab) replaces the wrist-only hand pack and the

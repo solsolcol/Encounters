@@ -5,25 +5,30 @@ without prompting for each change. This is how it works and how to run it.
 
 ## The sheet
 
-**Master Z's Encounters — GAME TEXT v25 (edit here)** in his Drive
-(id `18XgpC6E3Il7GU8FyfOxiXMprJevZO-gyOKxci9LA2Ak` — the **v25** sheet, made at v5.22: 270 GAME TEXT
+**Master Z's Encounters — GAME TEXT v26 (edit here)** in his Drive
+(id `1VziNnTPiTC_AXlybaN-9GOqGGGb2p_OirgFCGVSlXgw` — the **v26** sheet, made at v5.23: 268 GAME TEXT
 rows and, under them after a divider row, the 97 **VOICE LINES**. What
-changed from v23: **five credit rows, nothing else** — `credits.auntWho`
-now names the granny (Chad's model; no source link until he supplies
-one, so `credits.auntLink` is gone), the `credits.seated*` and
-`credits.backrow*` rows (gracy and the fearful woman, deleted at v5.22)
-are gone, and `credits.burner*` (kana, now the woman at the burner) is
-new. Not one word of the story or a voice line moved. There was no v24
-on Drive: it was exported at v5.20 and never published, so it never
-existed for editing. v23 (id `1-WolRRObawI_pqzODGcn0rqnnfHtZzoNrqK8wBfC-ks`)
-and everything before it are superseded and should not be edited.
-Provenance: v23 was read back at the start of v5.22 and found untouched
-(its modified time is its creation time), so nothing needed importing
-before v25 was made from the game's own text; v25 was created from the
-exported CSV re-emitted through the Drive connector, then READ BACK the
-same session and fed through `textsync import` on the committed tree:
-367 rows, not one cell changed, so the sheet is byte-faithful to the
-game. (That round trip is the transcription check every re-emitted sheet
+changed from v25: **two credit rows are GONE and nothing else** —
+`credits.aunt` and `credits.auntWho`, the granny at the paper table.
+She is Chad's own model ("granny was done by me so no credits needed"),
+and the credits panel lists creative works by OTHER people, so she has
+no row at all rather than a row with no link.
+
+What changed at v25, for the record: `credits.auntWho` named the granny,
+the `credits.seated*` and `credits.backrow*` rows (gracy and the fearful
+woman, deleted at v5.22) went, and `credits.burner*` (kana at the burner)
+arrived. There was no v24 on Drive: it was exported at v5.20 and never
+published, so it never existed for editing. v25 (id
+`18XgpC6E3Il7GU8FyfOxiXMprJevZO-gyOKxci9LA2Ak`), v23 (id
+`1-WolRRObawI_pqzODGcn0rqnnfHtZzoNrqK8wBfC-ks`) and everything before
+them are superseded and should not be edited.
+Provenance: v25 was published and read back at v5.22 and fed through
+`textsync import` on the committed tree — 367 rows, not one cell changed.
+v26 was made the same session as v5.23's two-row edit, published from the
+exported CSV through the Drive connector, read back, and checked by
+importing the v25 read-back MINUS exactly those two rows: 365 rows, no
+change to any string or voice line, and the only diff in the tree was the
+two deliberate deletions. Neither sheet has been in his hands yet. (That round trip is the transcription check every re-emitted sheet
 gets; a difference there is a typo of the session's, never an edit.)
 Whenever a sheet has been in his hands for real time, read it back and
 import FIRST — that is what the rule is for.
