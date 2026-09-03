@@ -761,6 +761,29 @@ What the baseline contains, by release:
   went the OTHER way (+1.05 s) and now starts earlier in ch1 scene C
   (4.60 -> 3.15) and ch2 scene B (20.0 -> 18.9). Engine seams: zero.
   docs/V5.18-THE-RIVER.md.
+- **v5.19** THE TANG-KI MOVES IN THE CUTSCENES TOO — Chad, playing: "why
+  is the tangki animation always frozen in the cutscenes". "Always" was
+  literal: from the FIRST frame of every chapter-3 cutscene he stopped
+  dead, and so did thirty other people. `updateNotes`'s
+  `if (getState() === 'cine') return;` is correct — a cutscene must own the
+  ambient POSE writes — but every mixer added since v4.8 had been written
+  BELOW it, so a guard meant to own the poses silently owned the CLOCKS.
+  The mixers move above the return; only the poses stay under it. Under
+  that sat a second bug the first was hiding: the mixer's rate was
+  `drumBeat`, the RITUAL's tempo, which scenes drive to 0 — so his idle
+  froze at every "everything stops" beat and the magic take ran at 3.4x and
+  stuck. A named take now plays at its own speed and only the idle follows
+  the ritual, floored at 0.45 because a man at rest still breathes;
+  `stage.medRate` is the only honest way for a scene to say "he does not
+  move". Measured, not eyeballed — a hand BONE's world position across a
+  scene: 1 distinct position before, 18 of 22 after. Also: an AUDIT of all
+  five takes Chad specified (his catwalk turn, walk-in-place and grab-torch
+  in chapter 5 were already right; the ch3 idle and magic attack were the
+  two that were not), and `.github/workflows/deploy.yml`, which deploys
+  through the Netlify CLI's digest dedup instead of re-zipping the whole
+  50 MB site — manual-trigger only, so deploys stay deliberate. Chapter 3's
+  four women are deferred to docs/V5.20-THE-WOMEN.md.
+  docs/V5.19-TANGKI-IN-CUTSCENES.md.
 - **v5.16** THE MAN AT THE TENT EDGE — Chad's Sketchfab standing man takes
   the RIGHT-edge stander in chapter 3, mirroring the chinese boy on the
   left: the two ends of the back of the tent, where the lane brings you

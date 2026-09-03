@@ -1486,3 +1486,41 @@ the short version, so it ran past the fade into the outcome card in ch1
 scene C and past the end of ch2 scene B. **Run `overlapscan.mjs` over
 every cue every time, whichever way the total moved.** A timeline is
 checked per cue or not at all.
+
+## An early return owns everything below it, forever (v5.19)
+
+Chapter 3's `updateNotes` has carried `if (getState() === 'cine') return;`
+since v4.3, and the guard is correct: a cutscene must own the ambient pose
+writes or its staging is overwritten on the same frame. What went wrong is
+that it kept being TRUE while what sat below it kept changing. The tang-ki's
+mixer was added under it at v4.8, the encik audience's four at v4.8, the two
+special sitters' at v5.05 — so a guard written to own the POSES silently
+came to own the CLOCKS, and thirty-one animated people froze from the first
+frame of every cutscene. Nothing errored; the scenes played; three chapters'
+worth of harnesses stayed green, because no harness asks whether a bone
+moved.
+
+Two rules out of it. **When you add a per-frame line to a function that has
+an early return, decide which side of it you are on and say so in the
+code** — a mixer is not a pose write, and the two belong on opposite sides.
+And **when you add a guard, list what is already below it**, because you
+are not writing one condition, you are writing a condition on every line
+that follows for as long as the file lives.
+
+The generalizable test is the one that caught it: a screenshot cannot tell
+a still pose from a stopped one, so measure a BONE'S WORLD POSITION at two
+moments and compare. Before: one distinct hand position across a whole
+scene. After: 18 of 22 samples.
+
+## A tempo is not a playback rate (v5.19)
+
+The same build's second bug, which the first was hiding. Chapter 3's
+tang-ki mixer ran at `drumBeat` — the ceremony's tempo, which scenes drive
+from 0 to 3.4 — so his idle stopped dead at every "everything stops" beat
+and the magic take blurred through at 3.4x and stuck. It made sense at v4.8,
+when he was a praying loop and prayer speed WAS ritual speed. It stopped
+making sense at v5.07, when he got named takes a scene calls by name.
+**A named take is a performance and plays at its own speed; only an idle
+should follow the world's tempo, and never below a floor, because a thing
+at rest still breathes.** Tying a mixer to a dramatic variable reads as
+elegant and is a freeze waiting for the first scene that sets it to zero.

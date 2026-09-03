@@ -951,10 +951,22 @@
     let chairIM = null;                    // v4.7: set when the real chair lands
     let medMixer = null, medHead = null;   // the tang-ki model (v4.8, remade v5.06)
     /* v5.07: his takes, by name, and the switch between them. `fade` 0 is a
-       HARD CUT that also bakes the new pose immediately — needed because
-       the mixer's rate is `drumBeat`, and at drumBeat 0 a crossfade would
-       never advance and the old pose would hold under the new action. */
+       HARD CUT that also bakes the new pose immediately — used where a
+       scene CUTS to him (the face-to-face) rather than easing, so no blend
+       is visible on the first frame of the new shot. */
     let medActs = null, medCur = '';
+    /* v5.19: the mixer's own rate, and the reason it needs one. Until now
+       it was `drumBeat` itself, and drumBeat is the RITUAL's tempo, which
+       every scene drives to 0 to still the tent — which also stopped HIS
+       clips dead. So his idle froze mid-breath through the long hold that
+       is the whole point of scene A, the face-to-face in scene B was a
+       statue, and the magic take he is asked for ran at up to 3.4x and then
+       stuck. Chad found it: "why is the tangki animation always frozen in
+       the cutscenes". A named take is a PERFORMANCE and plays at its own
+       speed; only the idle takes the ritual's tempo, and never below a
+       floor, because a man at rest still breathes. A scene that wants him
+       genuinely motionless sets `medRate = 0` and says so. */
+    let medRate = null;              // null = follow the ritual
     const medPlay = (name, ts = 1, fade = 0.34) => {
       if (!medMixer || !medActs || !medActs[name] || medCur === name) return;
       const nx = medActs[name], old = medCur && medActs[medCur];
@@ -1841,6 +1853,26 @@
       }
       skirtGeo.attributes.position.needsUpdate = true;
 
+      /* THE CAST'S OWN CLIPS RUN IN EVERY STATE — v5.19, and this is the
+         line that was missing. Everything below the early return is an
+         AMBIENT POSE WRITE, and a cutscene must own those or its staging is
+         overwritten on the same frame. A MIXER is not a pose write: it
+         plays the take a scene has explicitly asked for. Running them
+         together meant that from the first frame of every cutscene the
+         tang-ki stopped dead — the long hold that is the whole of scene A,
+         the face-to-face that is the whole of scene B, and the magic take
+         Chad asked for in all three — and thirty seated people stopped with
+         him. Chad found it: "why is the tangki animation always frozen in
+         the cutscenes". So the mixers move ABOVE the return; only the poses
+         stay below it.
+            The crowd still answers `crowdLife`, because a scene that drives
+         it to 0 ("everything stops at once") means that, and only that. */
+      if (medMixer) medMixer.update(dt * (medRate !== null ? medRate
+        : medCur === 'idle3' ? Math.min(Math.max(drumBeat, 0.45), 2.4)
+        : 1));
+      for (const em of encikMixers) em.update(dt * crowdLife);
+      for (const sm of specialMixers) sm.update(dt * crowdLife);
+
       /* THE RITUAL, and a cutscene owns it outright while one is running.
          Without this, a scene that poses the medium or throws his flags up
          is overwritten by this function on the very same frame — the head
@@ -1859,14 +1891,13 @@
       md.head.position.x = Math.sin(t * 5.7) * 0.012 * drumBeat;
       md.torso.rotation.z = Math.sin(t * 1.7) * 0.05 * drumBeat;
       medium.rotation.z = Math.sin(t * 0.9) * 0.02 * drumBeat;
-      /* v4.8: the model tang-ki prays at the ritual's own speed — the
-         escalation quickens him, the freeze stops him mid-gesture — and
-         the proxy head's tremor is re-laid onto his head bone, so the
-         scenes' drives reach the model without knowing it exists. */
-      if (medMixer) medMixer.update(dt * Math.min(drumBeat, 2.4));
+      /* v4.8: the proxy head's tremor is re-laid onto his head bone, so the
+         scenes' drives reach the model without knowing it exists. It stays
+         BELOW the return with the other pose writes — `+=` on top of the
+         value the mixer just wrote is only safe while the mixer and this
+         line run on the same frame, which they do here and only here.
+         (The mixers themselves moved above the return at v5.19.) */
       if (medHead) medHead.rotation.z += md.head.position.x * 7;
-      for (const em of encikMixers) em.update(dt * crowdLife);
-      for (const sm of specialMixers) sm.update(dt * crowdLife);
       for (let i = 0; i < flags.length; i++) {
         flags[i].rotation.z = (i ? 1 : -1) * (0.5 + Math.sin(t * 2.1 + i) * 0.35 * drumBeat);
       }
@@ -1935,7 +1966,7 @@
     /* ------------------------------------------------------ cutscene state */
     function snap() {
       return {
-        storm: noteStorm, beat: drumBeat, life: crowdLife,
+        storm: noteStorm, beat: drumBeat, life: crowdLife, medR: medRate,
         tent: tentLights.map(l => l.intensity),
         keyI: key.intensity, fire: fireLight.intensity, braz: brazLight.intensity,
         mediumRot: medium.rotation.clone(),
@@ -1949,6 +1980,13 @@
     }
     function restore(s) {
       noteStorm = s.storm; drumBeat = s.beat; crowdLife = s.life;
+      medRate = s.medR === undefined ? null : s.medR;
+      /* v5.19: and put him back on the rest take. A scene that is SKIPPED
+         never reaches its own `medPlay('idle3')`, so he was left casting.
+         Invisible until this build, because he was frozen anyway; now the
+         mixer runs and he would spell-cast through the rest of the chapter.
+         (ch5 learned the same lesson at v5.07 with the walk take.) */
+      medPlay('idle3', 1, 0);
       tentLights.forEach((l, i) => { l.intensity = s.tent[i]; });
       key.intensity = s.keyI;
       fireLight.intensity = s.fire;
@@ -1974,7 +2012,8 @@
       auntieRot: auntie.rotation.y
     };
     function reset() {
-      noteStorm = 1; drumBeat = 1; crowdLife = 1;
+      noteStorm = 1; drumBeat = 1; crowdLife = 1; medRate = null;
+      medPlay('idle3', 1, 0);        // v5.19: never restart him mid-spell
       tentLights.forEach((l, i) => { l.intensity = REST.tent[i]; });
       key.intensity = REST.keyI;
       medium.rotation.set(0, 0, 0);
@@ -2104,6 +2143,11 @@
       set noteStorm(v) { noteStorm = v; },
       get drumBeat() { return drumBeat; },
       set drumBeat(v) { drumBeat = v; },
+      /* v5.19: null hands his mixer back to the rule above (idle follows
+         the ritual, a named take runs at its own speed); a number forces it,
+         and 0 is the only honest way to say "he does not move". */
+      get medRate() { return medRate; },
+      set medRate(v) { medRate = v; },
       medPlay,                                   // v5.07: the medium's takes
       get medClip() { return medCur || null; },
       get crowdLife() { return crowdLife; },
@@ -2690,8 +2734,11 @@
     const MED0 = new THREE.Vector3();
     step(8.9, () => {
       MED0.copy(stage.medium.position);
-      /* at rest for the face-to-face, cut not faded: drumBeat is 0 here, so
-         the mixer never advances and a fade would leave him mid-spell */
+      /* at rest for the face-to-face, CUT not faded — the shot cuts to him,
+         so a blend would be visible on its first frame. Since v5.19 the
+         idle then keeps running at the floor rate: he is a man in trance
+         with his face on the lens, and a man breathes. A statue was the
+         old behaviour and it was the bug. */
       stage.medPlay('idle3', 1, 0);
       stage.medium.position.set(-0.18, 0, -6.42);   // right in front of the lens
       stage.medium.userData.head.rotation.x = 0.10;

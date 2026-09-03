@@ -1,0 +1,97 @@
+# Deploy the built site to Netlify — INCREMENTALLY.
+#
+# Why this exists (v5.19). Deploying from a session uploaded the WHOLE site
+# every time: the Netlify MCP command zips the directory and runs a remote
+# build, so a one-word text fix cost the same ~8 minutes as a new chapter,
+# and that cost grows with the game. The plain Netlify CLI does not work
+# that way — it sends a manifest of every file's digest, Netlify answers
+# with the short list it does not already have, and only those bytes move.
+# On a release where the sound and models are unchanged that is a handful
+# of files instead of fifty, and seconds instead of minutes.
+#
+# It is MANUAL on purpose (workflow_dispatch, no push trigger). Deploys
+# stay deliberate exactly as they are today — a work-in-progress commit
+# must never reach the live site. Run it from the repo's Actions tab, or
+# ask Claude to run it.
+#
+# It needs ONE secret, set once: NETLIFY_AUTH_TOKEN.
+#   Netlify -> avatar -> User settings -> Applications -> Personal access
+#   tokens -> New access token -> copy it
+#   GitHub  -> this repo -> Settings -> Secrets and variables -> Actions ->
+#   New repository secret -> name NETLIFY_AUTH_TOKEN -> paste
+# Nothing else changes: the same site, the same Deploys page, the same
+# two-tap rollback.
+name: Deploy to Netlify
+
+on:
+  workflow_dispatch:
+    inputs:
+      draft:
+        description: 'Deploy as a draft preview instead of publishing live'
+        type: boolean
+        default: false
+
+concurrency:
+  group: netlify-deploy          # never two deploys racing to the same site
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      # build.py and wrap.py are stdlib-only, so the runner's own python3
+      # is enough — nothing to install.
+      # Only esbuild is needed to build, but npm ci keeps the install
+      # deterministic. Playwright is a dependency for the test harnesses and
+      # its postinstall would pull ~150 MB of browsers this job never runs.
+      - name: Install build tools
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+        run: npm ci --no-audit --no-fund
+
+      - name: Build the site
+        run: npm run build
+
+      # The version must match what build.py stamped, or we would publish a
+      # build nobody asked for. This is cheap and it has caught a stale
+      # checkout before.
+      - name: Report the version being deployed
+        run: |
+          V=$(grep -m1 "^VERSION" build.py | cut -d"'" -f2)
+          echo "Deploying v$V"
+          test -f "dist/index.html" || { echo "dist/index.html missing"; exit 1; }
+          echo "dist is $(du -sh dist | cut -f1) in $(find dist -type f | wc -l) files"
+
+      - name: Check the token is set
+        env:
+          TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "::error::NETLIFY_AUTH_TOKEN is not set on this repository."
+            echo "Set it under Settings -> Secrets and variables -> Actions."
+            exit 1
+          fi
+
+      # --dir=dist with --no-build uploads PRE-BUILT files and dedups by
+      # digest. Never point this at the repo root: the uploader ships the
+      # directory verbatim, and from the root it publishes the repo with no
+      # index at / and the site goes down (it happened at v4.3).
+      - name: Deploy
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: 4133ded1-c901-49ac-8a93-0cfd34128e06
+          DRAFT: ${{ inputs.draft }}
+        run: |
+          V=$(grep -m1 "^VERSION" build.py | cut -d"'" -f2)
+          PROD="--prod"
+          [ "$DRAFT" = "true" ] && PROD=""
+          npx -y netlify-cli@latest deploy \
+            --dir=dist --no-build $PROD \
+            --message "v$V from ${GITHUB_SHA::7}"
