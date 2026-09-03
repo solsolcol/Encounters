@@ -20,10 +20,13 @@ and everything before it are superseded and should not be edited.
 Provenance: v23 was read back at the start of v5.22 and found untouched
 (its modified time is its creation time), so nothing needed importing
 before v25 was made from the game's own text; v25 was created from the
-exported CSV re-emitted through the Drive connector and read back the
-same session (the transcription check below). Whenever a sheet has been
-in his hands for real time, read it back and import FIRST — that is what
-the rule is for.
+exported CSV re-emitted through the Drive connector, then READ BACK the
+same session and fed through `textsync import` on the committed tree:
+367 rows, not one cell changed, so the sheet is byte-faithful to the
+game. (That round trip is the transcription check every re-emitted sheet
+gets; a difference there is a typo of the session's, never an edit.)
+Whenever a sheet has been in his hands for real time, read it back and
+import FIRST — that is what the rule is for.
 <https://docs.google.com/spreadsheets/d/18XgpC6E3Il7GU8FyfOxiXMprJevZO-gyOKxci9LA2Ak/edit>
 
 **Every sheet from v19 on carries the VOICE LINES** — Chad's rule, set
