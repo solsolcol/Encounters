@@ -264,27 +264,26 @@
        ceremony, one sitting through it unimpressed. Chosen for where they
        are seen from: both are aisle-side in the two middle rows, on
        opposite sides, and both survive the LOW thinning. */
+    /* v5.21 — THE SEATED AUDIENCE IS THREE PEOPLE, SHUFFLED. Chad: "randomize
+       and redistribute the encik, and the other 2 sitting figures ... so
+       that the whole seated audience is a mix of these 3 models and don't
+       look so repetitive as now the encik forms the large majority."
+       Every taken seat is dealt one of the three KINDS below, a third each,
+       shuffled with a FIXED seed so the tent is the same on every load.
+       Each kind arrives through the same shared-skeleton loader the encik
+       has used since v4.8, and hides only ITS OWN seats' placeholders when
+       it lands — so a kind that never downloads costs its faces, never its
+       chairs. */
+    const KINDS = ['encik', 'sitclap', 'sitangry'];
     const SPECIALS = [
-      { key: 'sitclap', i: 1 * 8 + 4 },      // row two, right of the aisle
-      { key: 'sitangry', i: 2 * 8 + 2 },     // row three, the far side
-      /* v5.20: gracy_lee, the first woman in the seated audience, on the
-         aisle behind sitclap. An EVEN index on purpose — LOW drops the odd
-         ones, and a face worth having should not be the one that vanishes
-         on a weak phone. Her ValveBiped rig has no usable clip of its own,
-         so she is the one model here running a RETARGETED take
-         (tools/retarget.mjs, Sitting_Talking, 38 bones). */
+      /* v5.20: gracy_lee, the one seated woman, on the aisle. An EVEN index
+         on purpose — LOW drops the odd ones, and a face worth having should
+         not be the one that vanishes on a weak phone. Her ValveBiped rig
+         has no usable clip of its own, so she is the one model here running
+         a RETARGETED take (tools/retarget.mjs, Sitting_Talking, 38 bones). */
       { key: 'gracy', i: 2 * 8 + 4 },        // row three, right of the aisle
     ];
-    /* v5.20: and the one who is NOT sitting. Chad: "why not make fearful
-       woman stand at her seat using one of her animations rather than make
-       her sit." Her seat is the BACK row, aisle side — two seats from the
-       chair that faces the wrong way — and she stands at it, turned,
-       running her own `idle_fear_lookback`. A woman standing in the back
-       row looking behind her, in a tent where one chair already faces the
-       car park, is the chapter in a second figure. Her chair stays empty:
-       she is standing at it, not in it. */
-    const STANDER_SEAT = 3 * 8 + 4;
-    const SPECIAL_I = new Set([...SPECIALS.map(sp => sp.i), STANDER_SEAT]);
+    const SPECIAL_I = new Set(SPECIALS.map(sp => sp.i));
 
     /* ------------------------------------------------------------ textures */
     const gTex = makeGround();
@@ -999,7 +998,19 @@
       medCur = name;
     };
     let encikMixers = [];                  // the audience's shared skeletons (v4.8)
-    const specialMixers = [];              // the two sitters of their own (v5.05)
+    const specialMixers = [];              // characters with a skeleton of their own (v5.05)
+    /* v5.21 — the auntie's clock is her own, and it only runs while she is
+       being asked. Chad: "Kana should always be in an idle position (part
+       of its original model), and only switch to talking pose in the
+       cutscene, when the player engages her." Her file ships ONE take, the
+       talking one, and her rest pose is an A-pose — so 'idle' is the take's
+       first frame, held: a woman standing at a table with her hands down.
+       `auntTalk` is the only thing that advances her. */
+    let auntMixer = null, auntAct = null, auntTalk = false;
+    const auntIdle = () => {
+      auntTalk = false;
+      if (auntAct) { auntAct.reset(); auntAct.play(); auntMixer.update(0.001); }
+    };
 
     let ci = 0;
     for (let r = 0; r < ROW_Z.length; r++) {
@@ -1063,13 +1074,31 @@
         n++;
       }
     }
+    /* Which of the three kinds sits where. Balanced first (a third each),
+       then shuffled by a small LCG from a fixed seed, so it reads as random
+       and is identical on every load, every device, every test run. Built
+       from TAKEN so LOW's thinner crowd is dealt the same way. */
+    const SEAT_KIND = {};
+    {
+      const seats = [...TAKEN].filter(i => !SPECIAL_I.has(i)).sort((a, b) => a - b);
+      const bag = seats.map((_, k) => k % KINDS.length);
+      let seed = 0x9E3779B1 >>> 0;
+      const rnd = () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed / 4294967296; };
+      for (let k = bag.length - 1; k > 0; k--) {
+        const j = Math.floor(rnd() * (k + 1));
+        [bag[k], bag[j]] = [bag[j], bag[k]];
+      }
+      seats.forEach((i, k) => { SEAT_KIND[i] = KINDS[bag[k]]; });
+    }
 
     /* Four standing at the edges — the ones who came late and the ones who
        never sit. Two of them are down by the brazier feeding it. */
     const standers = [];
+    /* v5.21: THREE, not four. The second brazier figure ([3.9, -4.6]) is
+       removed at Chad's ask — the fearful woman takes the brazier alone
+       (below) — so nothing here is dropped by LOW any more either. */
     for (const [sx, sz, ry] of [[-4.9, 1.4, 0.15], [4.9, 2.2, -0.2],
-                                [4.6, -3.9, -1.3], [3.9, -4.6, -1.0]]) {
-      if (LOW && standers.length >= 3) break;
+                                [4.6, -3.9, -1.3]]) {
       const f = figure({ shirt: shirtMats[(standers.length * 3) % shirtMats.length],
                          h: 0.97 + (standers.length % 3) * 0.03 });
       f.position.set(sx, 0, sz);
@@ -1126,6 +1155,13 @@
     priest.position.set(-1.75, 0, -6.5);
     priest.rotation.y = 0.25;
     world.add(priest);
+    /* v5.21: the generated drummer is REMOVED at Chad's ask — hidden, not
+       deleted, because the drum's own rhythm loop (`ritual`), the handDrum
+       swing in updateNotes and the `priest` handle the scenes are given all
+       keep working against an invisible man. His collision box further
+       down stays too: an invisible wall where a man stood is a smaller
+       risk than opening an untested path beside the altar. */
+    priest.visible = false;
     const robe = new THREE.Mesh(
       new THREE.CylinderGeometry(0.26, 0.40, 0.92, 10), matDark);
     robe.position.y = 0.46;
@@ -1293,117 +1329,137 @@
       effigy.visible = false;
     });
 
-    /* THE AUDIENCE — Encik Lim Cheng Teck, sitting, and since v4.8 ALIVE.
-       One skeleton per person would be thirty; instead N_POSE skeletons run
-       the file's own idle offstage at staggered phases, and every sitter's
-       mesh POINTS AT one of them. In 'detached' bind mode with identity
-       binds, a clone renders  its own transform · (pose in world) — the
-       live idle, seated wherever its group is, one draw call per person
-       and no skeleton of his own. Tints, mirroring, the seating plan (TAKEN),
-       `userData.head` and the crowdLife freeze all carry over exactly. */
-    loadGLB('encik', (gltf) => {
-      let src = null;
-      gltf.scene.traverse(o => { if (o.isSkinnedMesh && !src) src = o; });
-      if (!src || !gltf.animations.length) return;
-      const clip = gltf.animations[0];
-      const N_POSE = LOW ? 2 : 4;
-      const poseMeshes = [], mixers = [];
-      for (let j = 0; j < N_POSE; j++) {
-        const sc = cloneSkinned(gltf.scene);
-        sc.visible = false;                    // bones update; nothing draws
-        world.add(sc);
-        const mx = new THREE.AnimationMixer(sc);
-        const act = mx.clipAction(clip);
-        act.play();
-        act.time = (clip.duration * j) / N_POSE;
-        mx.update(0);
-        let sm = null;
-        sc.traverse(o => { if (o.isSkinnedMesh && !sm) sm = o; });
-        poseMeshes.push(sm);
-        mixers.push(mx);
-        sc.updateMatrixWorld(true);            // matrixWorld is copied below
-      }
-      /* size and seat him from POSED BONES — the rule with two notches in
-         it. Named feet and crown when the rig names them; the full bone
-         span as the fallback when it does not. */
-      const v = new THREE.Vector3();
-      const hip = new THREE.Vector3();
-      let footY = Infinity, crownY = -Infinity, loA = Infinity, hiA = -Infinity;
-      let hipN = 0;
-      poseMeshes[0].skeleton.bones[0].parent.traverse(o => {
-        if (!o.isBone) return;
-        o.getWorldPosition(v);
-        loA = Math.min(loA, v.y); hiA = Math.max(hiA, v.y);
-        if (/Toe|Foot/i.test(o.name)) footY = Math.min(footY, v.y);
-        if (/Head/i.test(o.name)) crownY = Math.max(crownY, v.y);
-        if (/Hips|Pelvis/i.test(o.name)) { hip.add(v); hipN++; }
+    /* THE AUDIENCE — since v4.8 ALIVE, and since v5.21 THREE PEOPLE. One
+       skeleton per person would be thirty; instead N_POSE skeletons per
+       KIND run that kind's own clip offstage at staggered phases, and every
+       sitter's mesh POINTS AT one of them. In 'detached' bind mode a clone
+       renders  its own transform · (pose in world) — the live clip, seated
+       wherever its group is, one draw call per person and no skeleton of
+       his own. Tints, mirroring, the seating plan (TAKEN + SEAT_KIND),
+       `userData.head` and the crowdLife freeze all carry over exactly.
+
+       Each kind hides ONLY ITS OWN seats' placeholders when it lands, so
+       whichever order the three downloads arrive in — or if one never does
+       — no chair is ever empty. */
+    function seatKind(key) {
+      loadGLB(key, (gltf) => {
+        let src = null;
+        gltf.scene.traverse(o => { if (o.isSkinnedMesh && !src) src = o; });
+        if (!src || !gltf.animations.length) return;
+        const clip = gltf.animations[0];
+        const N_POSE = LOW ? 2 : 4;
+        /* poseMeshes[j] is EVERY skinned mesh of pose clone j, not the first.
+           The encik is one mesh, so v4.8 could take the first and be done;
+           sitclap and sitangry are several (body, head, hair, eyes), and a
+           clone of the first alone seats a floating head with no body under
+           it — which is exactly what the first v5.21 render showed. */
+        const poseMeshes = [], mixers = [];
+        for (let j = 0; j < N_POSE; j++) {
+          const sc = cloneSkinned(gltf.scene);
+          sc.visible = false;                  // bones update; nothing draws
+          world.add(sc);
+          const mx = new THREE.AnimationMixer(sc);
+          const act = mx.clipAction(clip);
+          act.play();
+          act.time = (clip.duration * j) / N_POSE;
+          mx.update(0);
+          const sms = [];
+          sc.traverse(o => { if (o.isSkinnedMesh) sms.push(o); });
+          poseMeshes.push(sms);
+          mixers.push(mx);
+          sc.updateMatrixWorld(true);          // matrixWorld is copied below
+        }
+        /* size and seat from POSED BONES — the rule with two notches in
+           it. Named feet and crown when the rig names them; the full bone
+           span as the fallback when it does not. The loose /Head/ is the
+           crowd's own measure (v5.05): on a Mixamo rig it catches
+           HeadTop_End, the top of the skull. */
+        const v = new THREE.Vector3();
+        const hip = new THREE.Vector3();
+        let footY = Infinity, crownY = -Infinity, loA = Infinity, hiA = -Infinity;
+        let hipN = 0;
+        poseMeshes[0][0].skeleton.bones[0].parent.traverse(o => {
+          if (!o.isBone) return;
+          o.getWorldPosition(v);
+          loA = Math.min(loA, v.y); hiA = Math.max(hiA, v.y);
+          if (/Toe|Foot/i.test(o.name)) footY = Math.min(footY, v.y);
+          if (/Head/i.test(o.name)) crownY = Math.max(crownY, v.y);
+          if (/Hips|Pelvis/i.test(o.name)) { hip.add(v); hipN++; }
+        });
+        const lo = isFinite(footY) ? footY : loA;
+        const hi = crownY > -Infinity ? crownY : hiA;
+        if (!isFinite(lo) || hi <= lo) return;
+        if (hipN) hip.divideScalar(hipN); else hip.set(0, 0, 0);
+        const s2 = 1.30 / (hi - lo);           // a seated person, floor to crown
+        for (const i of TAKEN) {
+          if (SPECIAL_I.has(i)) continue;      // somebody else has that chair
+          if (SEAT_KIND[i] !== key) continue;  // and this seat was dealt to another kind
+          const at = chairAt[i];
+          const srcMeshes = poseMeshes[(i * 7) % N_POSE];  // neighbours differ
+          const inner = new THREE.Group();
+          for (const srcMesh of srcMeshes) {
+          const body = srcMesh.clone();        // shares geometry AND skeleton
+          /* the encik is one scan tinted per seat, or thirty of him read as
+             thirty of him; the other two have faces and a tint would muddy
+             them, so they keep the file's material */
+          if (key === 'encik') {
+            const mat = src.material.clone();
+            const k = 0.74 + ((i * 37) % 7) * 0.045;       // per-person light
+            mat.color.setRGB(k, k * (0.95 + ((i * 13) % 3) * 0.028), k * (0.97 + ((i * 5) % 2) * 0.03));
+            body.material = mat;
+          }
+          body.castShadow = !LOW;
+          body.frustumCulled = false;          // its bounds live at the source
+          /* In the default 'attached' bind mode the renderer rewrites
+             bindMatrixInverse from the mesh's own matrixWorld every update —
+             which is exactly why "moving a skinned mesh does nothing": the
+             node transform cancels out and every clone drew the pose at the
+             armature's origin, stacked into one giant. 'detached' keeps the
+             node transform, so the clone renders
+                 group · inner · bindMatrixInverse · (pose) · bindMatrix · v
+             The source draws ΣB · M · v where M is its mesh node's own
+             matrixWorld, so the clone is only right when bindMatrix = M and
+             bindMatrixInverse = I. v4.8 set both to identity, which is the
+             same thing for the encik's file (M = I) and WRONG for any file
+             whose mesh node carries a transform — folded in here since
+             v5.21 so all three kinds sit where their chair is. */
+          body.bindMode = 'detached';
+          body.bindMatrix.copy(srcMesh.matrixWorld);
+          body.bindMatrixInverse.identity();
+          inner.add(body);
+          }
+          const hs = s2 * (0.96 + ((i * 11) % 5) * 0.02);
+          // every other one mirrored: the pose's asymmetry flips, which does
+          // more against a crowd of copies than any tint can (the materials
+          // are double-sided in the files, so the flipped winding costs nothing)
+          const mir = (i * 7) % 3 === 0 ? -1 : 1;
+          inner.scale.set(mir * hs, hs, hs);
+          inner.position.set(-mir * hip.x * hs, -lo * hs, -hip.z * hs + ENCIK_Z);
+          const f = new THREE.Group();
+          f.add(inner);
+          f.position.set(at.x, 0, at.z);
+          f.rotation.y = chairRot[i] + Math.PI;  // facing the altar, like the chair
+          f.userData.ph = (i * 1.37) % 6.28;
+          f.userData.head = inner;             // the sway loop turns this
+          f.userData.seat = i;
+          f.userData.kind = key;
+          crowdRoot.add(f);
+          /* only now does THIS seat's placeholder go: the chair is never empty */
+          for (let k = crowd.length - 1; k >= 0; k--) {
+            if (crowd[k].userData.seat === i) { crowd[k].visible = false; crowd.splice(k, 1); }
+          }
+          crowd.push(f);
+        }
+        encikMixers.push(...mixers);
       });
-      const lo = isFinite(footY) ? footY : loA;
-      const hi = crownY > -Infinity ? crownY : hiA;
-      if (!isFinite(lo) || hi <= lo) return;
-      if (hipN) hip.divideScalar(hipN); else hip.set(0, 0, 0);
-      const s2 = 1.30 / (hi - lo);             // a seated man, floor to crown
-      /* the two special seats keep their primitive figure: if their own
-         model never arrives, somebody is still sitting there */
-      const kept = crowd.filter(f => SPECIAL_I.has(f.userData.seat));
-      for (const f of crowd) if (!SPECIAL_I.has(f.userData.seat)) f.visible = false;
-      crowd.length = 0;
-      crowd.push(...kept);
-      for (const i of TAKEN) {
-        if (SPECIAL_I.has(i)) continue;        // somebody else has that chair
-        const at = chairAt[i];
-        const srcMesh = poseMeshes[(i * 7) % N_POSE];  // neighbours differ
-        const mat = src.material.clone();
-        const k = 0.74 + ((i * 37) % 7) * 0.045;         // per-person light
-        mat.color.setRGB(k, k * (0.95 + ((i * 13) % 3) * 0.028), k * (0.97 + ((i * 5) % 2) * 0.03));
-        const body = srcMesh.clone();          // shares geometry AND skeleton
-        body.material = mat;
-        body.castShadow = !LOW;
-        body.frustumCulled = false;            // its bounds live at the source
-        /* In the default 'attached' bind mode the renderer rewrites
-           bindMatrixInverse from the mesh's own matrixWorld every update —
-           which is exactly why "moving a skinned mesh does nothing": the
-           node transform cancels out and every clone drew the pose at the
-           armature's origin, stacked into one giant. 'detached' with
-           identity bind matrices keeps the node transform, so the clone
-           renders  group · inner · (pose in world)  — the live idle,
-           seated wherever the group is. (This file rebinds with identity;
-           a file with a real bindMatrix would need it folded in here.) */
-        body.bindMode = 'detached';
-        body.bindMatrix.identity();
-        body.bindMatrixInverse.identity();
-        const inner = new THREE.Group();
-        const hs = s2 * (0.96 + ((i * 11) % 5) * 0.02);
-        // every other one mirrored: the pose's asymmetry flips, which does
-        // more against thirty-of-one-man than any tint can (the material is
-        // double-sided in the file, so the flipped winding costs nothing)
-        const mir = (i * 7) % 3 === 0 ? -1 : 1;
-        inner.scale.set(mir * hs, hs, hs);
-        inner.position.set(-mir * hip.x * hs, -lo * hs, -hip.z * hs + ENCIK_Z);
-        inner.add(body);
-        const f = new THREE.Group();
-        f.add(inner);
-        f.position.set(at.x, 0, at.z);
-        f.rotation.y = chairRot[i] + Math.PI;  // facing the altar, like the chair
-        f.userData.ph = (i * 1.37) % 6.28;
-        f.userData.head = inner;               // the sway loop turns this
-        crowdRoot.add(f);
-        crowd.push(f);
-      }
-      encikMixers = mixers;
-    });
+    }
+    for (const key of KINDS) seatKind(key);
 
-    /* THE TWO WHO ARE NOT ENCIK — v5.05. Everyone else in this tent is one
-       scan of one man, tinted and half of them mirrored, which reads as
-       thirty of him however hard the tints work. These two are whole
-       characters with their own clip each: one clapping along, one sitting
-       through the whole thing unimpressed. Unlike the encik crowd they get
-       a skeleton and a mixer of their own — two of them is two, not thirty,
-       so the shared-pose trick that the crowd needs buys nothing here.
-
-       Their seat's primitive figure stays put until the bytes land and is
-       hidden only on arrival, so a download that never finishes costs a
-       nicer face and never an empty chair. */
+    /* THE ONE WHO IS NOT IN THE SHUFFLE — gracy_lee (v5.20). She is a whole
+       character with a skeleton and a mixer of her own, seated where
+       SPECIALS says, and her seat's primitive figure stays put until the
+       bytes land and is hidden only on arrival. (v5.05's two men used to
+       be seated this way too; since v5.21 they are crowd KINDS above.) */
     for (const sp of SPECIALS) {
       loadGLB(sp.key, (gltf) => {
         const g = gltf.scene;
@@ -1439,6 +1495,31 @@
           if (/Head/i.test(o.name)) crownY = Math.max(crownY, v.y);
           if (/Hips|Pelvis/i.test(o.name)) { hip.add(v); hipN++; }
         });
+        /* v5.21 — THE CROWN, when the rig has no crown bone. A Mixamo rig
+           has HeadTop_End, the top of the skull; gracy's ValveBiped has
+           only Head1, the head JOINT at the base of the skull, so the loose
+           /Head/ measure stopped a whole skull short, `hi - lo` came out
+           small, and she was scaled UP to compensate — a face that filled
+           the frame from a metre away (Chad: "completely fucked up and
+           abnormal"). So when no bone names a crown, the crown is read off
+           the POSED SKIN: every vertex through the skeleton as it stands
+           now. That is not the bind-pose box the law forbids — it is the
+           pose, measured. */
+        let hasCrownBone = false;
+        g.traverse(o => { if (o.isBone && /HeadTop|Head.*End/i.test(o.name)) hasCrownBone = true; });
+        if (!hasCrownBone) {
+          let skinTop = -Infinity;
+          g.traverse(o => {
+            if (!o.isSkinnedMesh) return;
+            o.skeleton.update();
+            const n = o.geometry.attributes.position.count;
+            for (let k = 0; k < n; k++) {
+              o.getVertexPosition(k, v).applyMatrix4(o.matrixWorld);
+              if (v.y > skinTop) skinTop = v.y;
+            }
+          });
+          if (skinTop > crownY) crownY = skinTop;
+        }
         const lo = isFinite(footY) ? footY : loA;
         const hi = crownY > -Infinity ? crownY : hiA;
         if (!isFinite(lo) || hi <= lo) return;
@@ -1579,10 +1660,9 @@
       const g = gltf.scene;
       g.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.frustumCulled = false; } });
       if (gltf.animations.length) {
-        const mx = new THREE.AnimationMixer(g);
-        mx.clipAction(gltf.animations[0]).play();
-        mx.update(0.001);                      // pose her before measuring
-        specialMixers.push(mx);
+        auntMixer = new THREE.AnimationMixer(g);
+        auntAct = auntMixer.clipAction(gltf.animations[0]);
+        auntIdle();                            // frame 0, held — and posed for measuring
       }
       g.updateMatrixWorld(true);
       /* From POSED BONES, and to the primitive's own floor-to-crown, so she
@@ -1612,20 +1692,19 @@
       auntie.add(inner);
     });
 
-    /* THE WOMAN WHO IS NOT SITTING — v5.20. Chad: "why not make fearful
-       woman stand at her seat using one of her animations rather than make
-       her sit." Her file ships eleven takes of its own and one of them is
-       `idle_fear_lookback` — a woman standing, turned, looking back over
-       her shoulder. In a tent where one chair already faces the car park
-       instead of the altar, a second person facing the wrong way is the
-       chapter said twice, and it needed no retargeting at all.
-
-       She stands AT the back-row aisle seat, not in it: STANDER_SEAT is in
-       SPECIAL_I so the encik crowd skips that chair, and the chair itself
-       stays where it is, empty behind her. */
+    /* THE WOMAN AT THE BRAZIER — v5.21. Chad: "Take fearful woman ... out
+       of her seat area, i dont want her to be an audience at the chair
+       area. Instead place her at the burner to replace one of the 2
+       figures there. Remove the other generated figure at the burner,
+       leaving only 1 fearful woman there." So she takes standers[2], the
+       one at [4.6, -3.9] feeding the fire; the fourth stander is gone from
+       the list above; and she runs her own `idle_fear_lookback` — a woman
+       at the burner, glancing back over her shoulder. Same contract as the
+       standing man: the primitive stays until her bytes land, then the
+       model takes its place, position, facing and sway phase. */
     loadGLB('fearful', (gltf) => {
-      const at = chairAt[STANDER_SEAT];
-      if (!at) return;
+      const old = standers[2];
+      if (!old) return;
       const g = gltf.scene;
       g.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.frustumCulled = false; } });
       if (gltf.animations.length) {
@@ -1634,42 +1713,39 @@
         mx.update(0.001);                      // pose her before measuring
         specialMixers.push(mx);
       }
+      g.rotation.y = old.rotation.y;
       g.updateMatrixWorld(true);
-      /* POSED BONES, and to the STANDERS' height — she is standing, so the
-         people she must match are the ones on their feet, not the ones in
-         the chairs (the v5.05 rule: the measure that matters is the one the
-         existing things used). Her rig is a Blender one, so the feet are
-         `foot_L_082` and the crown bone is `Head_043`; the loose /Head/
-         also catches her facial `Head.00n` bones, which sit inside the
-         skull and so cannot push the crown too high. */
+      /* POSED BONES, and to a woman's height beside the standers' 1.74 —
+         the same MEASURE (crown from posed bones) at 1.66. Her rig is a
+         Blender one: feet are `foot_L_082`, and the loose /Head/ catches
+         `forehead_070`, which is near enough the top of her skull. */
       const v = new THREE.Vector3();
-      let footY = Infinity, crownY = -Infinity, loA = Infinity, hiA = -Infinity;
+      const hip = new THREE.Vector3();
+      let hipN = 0, footY = Infinity, crownY = -Infinity, loA = Infinity, hiA = -Infinity;
       g.traverse(o => {
         if (!o.isBone) return;
         o.getWorldPosition(v);
         loA = Math.min(loA, v.y); hiA = Math.max(hiA, v.y);
         if (/Toe|toes|Foot|foot/.test(o.name)) footY = Math.min(footY, v.y);
         if (/Head/i.test(o.name)) crownY = Math.max(crownY, v.y);
+        if (/Hips|Pelvis/i.test(o.name)) { hip.add(v); hipN++; }
       });
       const lo = isFinite(footY) ? footY : loA;
       const hi = crownY > -Infinity ? crownY : hiA;
       if (!(hi > lo)) return;
-      /* STAND_H is the male standers' 1.74; she is scaled to 1.66, which
-         is the same MEASURE (crown from posed bones) at a woman's height.
-         Matching the neighbours means matching how they were measured, not
-         copying a man's number onto her. */
+      if (hipN) hip.divideScalar(hipN); else hip.set(0, 0, 0);
       const hs = 1.66 / (hi - lo);
       const inner = new THREE.Group();
       inner.scale.setScalar(hs);
-      inner.position.y = -lo * hs;
+      inner.position.set(-hip.x * hs, -lo * hs, -hip.z * hs);
       inner.add(g);
       const f = new THREE.Group();
       f.add(inner);
-      /* Half a seat back from the chair, so she reads as standing BEHIND
-         her own chair rather than growing out of it. */
-      f.position.set(at.x, 0, at.z + 0.34);
-      f.rotation.y = chairRot[STANDER_SEAT] + Math.PI;   // she faces the altar; the take turns her head
+      f.position.copy(old.position);
+      f.userData.ph = old.userData.ph;
       world.add(f);
+      old.visible = false;
+      standers[2] = f;
     });
 
     /* THE STANDING MAN — v5.16, Chad's Sketchfab standing man, taking the
@@ -1680,10 +1756,9 @@
        `specialMixers` — three mixers is three, and the shared-pose trick the
        encik crowd needs buys nothing at this count.
 
-       standers[1] and not [2] or [3]: those two are down at the brazier
-       feeding it, and [3] is the one LOW drops, so replacing it would make
-       him vanish on a weak phone. [1] survives LOW and is the one you walk
-       past on the way in.                                                */
+       standers[1] and not [2]: that one is down at the brazier feeding it
+       (and since v5.21 is the fearful woman). [1] is the one you walk past
+       on the way in.                                                      */
     loadGLB('standman', (gltf) => {
       const old = standers[1];
       if (!old) return;
@@ -2004,6 +2079,7 @@
         : 1));
       for (const em of encikMixers) em.update(dt * crowdLife);
       for (const sm of specialMixers) sm.update(dt * crowdLife);
+      if (auntMixer) auntMixer.update(auntTalk ? dt : 0);   // v5.21: idle until asked
 
       /* THE RITUAL, and a cutscene owns it outright while one is running.
          Without this, a scene that poses the medium or throws his flags up
@@ -2113,6 +2189,7 @@
     function restore(s) {
       noteStorm = s.storm; drumBeat = s.beat; crowdLife = s.life;
       medRate = s.medR === undefined ? null : s.medR;
+      auntIdle();                        // v5.21: a skipped scene leaves her idle
       /* v5.19: and put him back on the rest take. A scene that is SKIPPED
          never reaches its own `medPlay('idle3')`, so he was left casting.
          Invisible until this build, because he was frozen anyway; now the
@@ -2145,6 +2222,7 @@
     };
     function reset() {
       noteStorm = 1; drumBeat = 1; crowdLife = 1; medRate = null;
+      auntIdle();
       medPlay('idle3', 1, 0);        // v5.19: never restart him mid-spell
       tentLights.forEach((l, i) => { l.intensity = REST.tent[i]; });
       key.intensity = REST.keyI;
@@ -2280,6 +2358,9 @@
          and 0 is the only honest way to say "he does not move". */
       get medRate() { return medRate; },
       set medRate(v) { medRate = v; },
+      /* v5.21: the auntie talks only while a scene says so */
+      get auntTalk() { return auntTalk; },
+      set auntTalk(v) { auntTalk = !!v; },
       medPlay,                                   // v5.07: the medium's takes
       get medClip() { return medCur || null; },
       get crowdLife() { return crowdLife; },
@@ -2987,6 +3068,10 @@
        Adding PI, as this first did, faced her away from him for the whole
        conversation. */
     tr(2.2, 2.9, k => { stage.auntie.rotation.y = AUNT_REST + (TO_AUNT - AUNT_REST) * k; }, smoothK);
+    /* v5.21: her talking take runs from the moment she has turned to him
+       until the fade; every other moment of the chapter she is idle */
+    step(2.9, () => { stage.auntTalk = true; });
+    step(27.4, () => { stage.auntTalk = false; });
     sfx(2.4, 'take', 0.4);
 
     /* THE TIMINGS ARE THE LINE LENGTHS. The first pass had three of these

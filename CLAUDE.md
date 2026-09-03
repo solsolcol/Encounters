@@ -809,6 +809,23 @@ What the baseline contains, by release:
   sit at the same point and her mesh is a body lying flattened; the
   untouched file from Drive renders identically, so she needs a re-export.
   Sheet v24. docs/V5.20-THE-WOMEN.md is the build's memory.
+- **v5.21** THE CROWD, SHUFFLED — Chad's play-through of v5.20, all five
+  notes, and the honest reason they existed: v5.20 was verified from a wide
+  shot. gracy's Valve rig has no crown bone, so the crowd's loose `/Head/`
+  stopped at her head JOINT and scaled her up until her face filled the
+  frame; a rig with no crown bone is now measured from its POSED SKIN
+  (`getVertexPosition` — the pose, not a bind box). The fearful woman
+  leaves the chairs for the brazier, taking `standers[2]` exactly as the
+  standing man took [1]; the fourth stander is gone; the drummer is hidden
+  (his rhythm loop, drum swing, handle and collider all kept). kana idles on
+  frame 0 of her one take and talks only while scene C says `auntTalk`.
+  And the seated audience is THREE KINDS dealt a third each from a fixed
+  seed — 6 encik, 6 sitclap, 6 sitangry — through one `seatKind()` that is
+  v4.8's shared-skeleton trick with two corrections it always needed: the
+  source mesh's matrix folded into the clone's bindMatrix (identity was
+  only right for the encik's file), and EVERY skinned mesh cloned, not the
+  first — the first render of this build was a tent of floating heads,
+  after every number had passed. docs/V5.21-THE-CROWD-SHUFFLED.md.
 - **v5.16** THE MAN AT THE TENT EDGE — Chad's Sketchfab standing man takes
   the RIGHT-edge stander in chapter 3, mirroring the chinese boy on the
   left: the two ends of the back of the tent, where the lane brings you

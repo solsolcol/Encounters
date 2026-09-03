@@ -1563,3 +1563,39 @@ collapsed, so every vertex is dragged to one point by its skin weights.
 **Two numbers separate "my pipeline broke it" from "it arrived broken":
 the spread of the bone positions, and the mesh's own bounding box.** Both
 take one traversal, and neither can be judged by looking at the render.
+
+## The numbers passed and the picture was a tent of floating heads (v5.21)
+
+Nineteen seats with a model, zero placeholders left visible, six of each
+kind, kana's hand motionless in play — every measurement in the v5.21
+probe passed. The render showed heads and hands with no bodies under them.
+The shared-skeleton crowd loader cloned `poseMeshes[j]` as ONE mesh, which
+the encik is and the other two kinds are not (seven each: body, head, hair,
+eyes). No number I had thought to take counted meshes per seat. **Measure
+first, then look, and do not skip the second because the first passed** —
+a measurement only catches what you knew to measure. And when a loader
+assumes "one skinned mesh", say so in a comment, because the next file
+will have seven.
+
+## A rig without a crown bone scales itself up (v5.21)
+
+The crowd's loose `/Head/` measure works on a Mixamo rig because it also
+catches `HeadTop_End`, the top of the skull. gracy_lee's ValveBiped has
+only `Head1`, the JOINT at the base of the skull. So `hi - lo` came out a
+skull short, the scale factor came out large, and she was seated a head
+taller than everyone round her with her face filling the frame from a
+metre away. **A rig with no crown bone is measured from its POSED SKIN** —
+every vertex through the skeleton as it stands (`SkinnedMesh.getVertexPosition`).
+That is not the bind-pose box the sizing law forbids; it is the pose,
+measured. The tell was in the bone list all along: one `/Head/` hit, not two.
+
+## An identity bind matrix is a property of one file, not of the trick (v5.21)
+
+v4.8's detached-bind crowd set `bindMatrix` and `bindMatrixInverse` to
+identity and its own comment said that was right "for this file". It was —
+the encik's mesh node sits at the origin. A source draws `ΣB · M · v` with
+`M` its mesh node's matrix, so a clone is right only with `bindMatrix = M`,
+`bindMatrixInverse = I`. Folded in for v5.21 it is a no-op for the encik and
+the difference between a chair and the armature's origin for any file
+whose mesh node carries a transform. **When you generalise a trick, go
+back to the comment that said what it assumed.**
