@@ -152,7 +152,8 @@
        note, which is on the altar table tonight where it should have been
        all along. */
     assets: ['hdb', 'hellnote', 'seat', 'cars', 'guangong', 'encik',
-             'tangki', 'tangkianim', 'boy', 'shrine', 'sitclap', 'sitangry'],
+             'tangki', 'tangkianim', 'boy', 'shrine', 'sitclap', 'sitangry',
+             'standman', 'gracy', 'fearful', 'kana'],
     noteArt: 'hellnote',
 
     /* The tent's own sound, in FOUR beds since v4.3 — and the loudest is
@@ -266,8 +267,24 @@
     const SPECIALS = [
       { key: 'sitclap', i: 1 * 8 + 4 },      // row two, right of the aisle
       { key: 'sitangry', i: 2 * 8 + 2 },     // row three, the far side
+      /* v5.20: gracy_lee, the first woman in the seated audience, on the
+         aisle behind sitclap. An EVEN index on purpose — LOW drops the odd
+         ones, and a face worth having should not be the one that vanishes
+         on a weak phone. Her ValveBiped rig has no usable clip of its own,
+         so she is the one model here running a RETARGETED take
+         (tools/retarget.mjs, Sitting_Talking, 38 bones). */
+      { key: 'gracy', i: 2 * 8 + 4 },        // row three, right of the aisle
     ];
-    const SPECIAL_I = new Set(SPECIALS.map(sp => sp.i));
+    /* v5.20: and the one who is NOT sitting. Chad: "why not make fearful
+       woman stand at her seat using one of her animations rather than make
+       her sit." Her seat is the BACK row, aisle side — two seats from the
+       chair that faces the wrong way — and she stands at it, turned,
+       running her own `idle_fear_lookback`. A woman standing in the back
+       row looking behind her, in a tent where one chair already faces the
+       car park, is the chapter in a second figure. Her chair stays empty:
+       she is standing at it, not in it. */
+    const STANDER_SEAT = 3 * 8 + 4;
+    const SPECIAL_I = new Set([...SPECIALS.map(sp => sp.i), STANDER_SEAT]);
 
     /* ------------------------------------------------------------ textures */
     const gTex = makeGround();
@@ -1130,6 +1147,11 @@
        ritual because she has seen it a hundred times. She is the experienced
        practitioner the source names, and the reason the best answer is the
        best answer. */
+    /* Her floor-to-crown, DERIVED from the primitive rather than guessed,
+       because v5.20's kana is scaled to it: figure() puts the head centre at
+       (hipY + 0.775) * h with hipY 0.86 standing, and the head is a 0.105
+       sphere — (0.86 + 0.775) * 0.95 + 0.105. */
+    const AUNT_H = (0.86 + 0.775) * 0.95 + 0.105;      // 1.658 m
     const auntie = figure({ shirt: matFloral, h: 0.95 });
     auntie.position.set(PAPER.x - 0.86, 0, PAPER.z - 0.10);
     auntie.rotation.y = -Math.PI / 2 + 0.25;      // facing the table
@@ -1538,6 +1560,116 @@
       crowdRoot.add(f);
       old.visible = false;
       standers[0] = f;
+    });
+
+    /* v5.20 — and she becomes a real person. Chad's kana talk woman takes
+       the paper table, and of his four she is the one who belongs here:
+       the auntie has FOUR spoken lines in scene C and kana is the only one
+       of the four who arrived with a talking take of her own, authored
+       against her own rest pose. She keeps talking under the ceremony,
+       which is what an auntie folding paper at a table does.
+
+       She is added INTO the `auntie` group rather than replacing it, so
+       everything that already drives the auntie still does: scene C turns
+       `stage.auntie` to face the boy, and snap/restore/reset carry her
+       rotation. The primitive's own children are hidden on arrival and not
+       before, so a download that never lands costs a nicer face and never
+       an empty space at the table. */
+    loadGLB('kana', (gltf) => {
+      const g = gltf.scene;
+      g.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.frustumCulled = false; } });
+      if (gltf.animations.length) {
+        const mx = new THREE.AnimationMixer(g);
+        mx.clipAction(gltf.animations[0]).play();
+        mx.update(0.001);                      // pose her before measuring
+        specialMixers.push(mx);
+      }
+      g.updateMatrixWorld(true);
+      /* From POSED BONES, and to the primitive's own floor-to-crown, so she
+         is the height of the auntie she replaces rather than the height her
+         file happens to be authored at (v3.8's law, v5.05's corollary: the
+         measure that matters is the one the thing beside her used). The
+         crowd's loose /Head/ again, not HEAD_RE — on a Mixamo rig it also
+         catches HeadTop_End, which is the crown and not the neck joint. */
+      const v = new THREE.Vector3();
+      let footY = Infinity, crownY = -Infinity, loA = Infinity, hiA = -Infinity;
+      g.traverse(o => {
+        if (!o.isBone) return;
+        o.getWorldPosition(v);
+        loA = Math.min(loA, v.y); hiA = Math.max(hiA, v.y);
+        if (/Toe|Foot/i.test(o.name)) footY = Math.min(footY, v.y);
+        if (/Head/i.test(o.name)) crownY = Math.max(crownY, v.y);
+      });
+      const lo = isFinite(footY) ? footY : loA;
+      const hi = crownY > -Infinity ? crownY : hiA;
+      if (!(hi > lo)) return;                  // a collapsed rig gets no chance to explode
+      const hs = AUNT_H / (hi - lo);
+      const inner = new THREE.Group();
+      inner.scale.setScalar(hs);
+      inner.position.y = -lo * hs;
+      inner.add(g);
+      for (const c of [...auntie.children]) c.visible = false;
+      auntie.add(inner);
+    });
+
+    /* THE WOMAN WHO IS NOT SITTING — v5.20. Chad: "why not make fearful
+       woman stand at her seat using one of her animations rather than make
+       her sit." Her file ships eleven takes of its own and one of them is
+       `idle_fear_lookback` — a woman standing, turned, looking back over
+       her shoulder. In a tent where one chair already faces the car park
+       instead of the altar, a second person facing the wrong way is the
+       chapter said twice, and it needed no retargeting at all.
+
+       She stands AT the back-row aisle seat, not in it: STANDER_SEAT is in
+       SPECIAL_I so the encik crowd skips that chair, and the chair itself
+       stays where it is, empty behind her. */
+    loadGLB('fearful', (gltf) => {
+      const at = chairAt[STANDER_SEAT];
+      if (!at) return;
+      const g = gltf.scene;
+      g.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.frustumCulled = false; } });
+      if (gltf.animations.length) {
+        const mx = new THREE.AnimationMixer(g);
+        mx.clipAction(gltf.animations[0]).play();
+        mx.update(0.001);                      // pose her before measuring
+        specialMixers.push(mx);
+      }
+      g.updateMatrixWorld(true);
+      /* POSED BONES, and to the STANDERS' height — she is standing, so the
+         people she must match are the ones on their feet, not the ones in
+         the chairs (the v5.05 rule: the measure that matters is the one the
+         existing things used). Her rig is a Blender one, so the feet are
+         `foot_L_082` and the crown bone is `Head_043`; the loose /Head/
+         also catches her facial `Head.00n` bones, which sit inside the
+         skull and so cannot push the crown too high. */
+      const v = new THREE.Vector3();
+      let footY = Infinity, crownY = -Infinity, loA = Infinity, hiA = -Infinity;
+      g.traverse(o => {
+        if (!o.isBone) return;
+        o.getWorldPosition(v);
+        loA = Math.min(loA, v.y); hiA = Math.max(hiA, v.y);
+        if (/Toe|toes|Foot|foot/.test(o.name)) footY = Math.min(footY, v.y);
+        if (/Head/i.test(o.name)) crownY = Math.max(crownY, v.y);
+      });
+      const lo = isFinite(footY) ? footY : loA;
+      const hi = crownY > -Infinity ? crownY : hiA;
+      if (!(hi > lo)) return;
+      /* STAND_H is the male standers' 1.74; she is scaled to 1.66, which
+         is the same MEASURE (crown from posed bones) at a woman's height.
+         Matching the neighbours means matching how they were measured, not
+         copying a man's number onto her. */
+      const hs = 1.66 / (hi - lo);
+      const inner = new THREE.Group();
+      inner.scale.setScalar(hs);
+      inner.position.y = -lo * hs;
+      inner.add(g);
+      const f = new THREE.Group();
+      f.add(inner);
+      /* Half a seat back from the chair, so she reads as standing BEHIND
+         her own chair rather than growing out of it. */
+      f.position.set(at.x, 0, at.z + 0.34);
+      f.rotation.y = chairRot[STANDER_SEAT] + Math.PI;   // she faces the altar; the take turns her head
+      world.add(f);
     });
 
     /* THE STANDING MAN — v5.16, Chad's Sketchfab standing man, taking the

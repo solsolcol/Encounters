@@ -78,6 +78,7 @@ const EMBED = {
   motheranim: '__MOTHERANIM_B64__',
   sitclap: '__SITCLAP_B64__', sitangry: '__SITANGRY_B64__',
   standman: '__STANDMAN_B64__',
+  gracy: '__GRACY_B64__', fearful: '__FEARFUL_B64__', kana: '__KANA_B64__',
   bed: '__BED_B64__', wardrobe: '__WARDROBE_B64__',
   table: '__TABLE_B64__', chair: '__CHAIR_B64__', curtain: '__CURTAIN_B64__',
   altar: '__ALTAR_B64__', zav: '__ZAV_B64__'

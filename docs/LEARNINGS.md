@@ -1524,3 +1524,42 @@ making sense at v5.07, when he got named takes a scene calls by name.
 should follow the world's tempo, and never below a floor, because a thing
 at rest still breathes.** Tying a mixer to a dramatic variable reads as
 elegant and is a freeze waiting for the first scene that sets it to zero.
+
+## Try the model's OWN clips before retargetting anything (v5.20)
+
+Chapter 3's fearful woman tore when a Mixamo sitting take was retargeted
+onto her Blender rig — an arm as a flat shard, the face smeared. I
+diagnosed over-simplification, re-shrank her three times gentler, and she
+tore identically. Chad asked the question that settled it: *"why not make
+fearful woman stand at her seat using one of her animations rather than
+make her sit."* She ships ELEVEN takes of her own; one of them is a
+standing fearful idle that looks back over the shoulder. On her own clip
+she is clean at the ORIGINAL aggressive 13k triangles.
+
+So the simplification was never implicated, and the retarget was the whole
+cause. **A bought character's own takes were authored against its own rest
+pose and will beat anything retargeted onto it.** Retargeting is for a rig
+with no clips at all. And the cheapest test of "is my pipeline breaking
+this model" is to play the model's own animation through it, which costs
+one render and rules out everything downstream of the file.
+
+## A bought character's CLIP LIBRARY can outweigh its mesh (v5.20)
+
+fearful_woman came out of the v5.05 shrink recipe at 3070 KB with textures
+down to 74 KB and geometry to 258 KB. The other 2742 KB was eleven
+animation clips — running, jumping, three walks — for a woman who stands
+in a crowd and plays exactly one. Dropping them took her to 400 KB, a
+bigger saving than every texture and every triangle put together.
+`prepwoman.mjs` takes a keep-list. **Look at the animation budget before
+the texture budget on any character that arrives with a take library.**
+
+## A skeleton collapsed to a point renders as abstract art (v5.20)
+
+yinn's 110 MB file draws as a splay of flat triangles, and the instinct is
+to blame whatever touched it last. Measured instead: all 108 of her bones
+report the same world position (y = 0.82, x = z = 0) and her mesh box is
+0.93 x 0.39 x 1.53 — a body lying down and flattened. Her skeleton is
+collapsed, so every vertex is dragged to one point by its skin weights.
+**Two numbers separate "my pipeline broke it" from "it arrived broken":
+the spread of the bone positions, and the mesh's own bounding box.** Both
+take one traversal, and neither can be judged by looking at the render.

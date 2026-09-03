@@ -784,6 +784,31 @@ What the baseline contains, by release:
   50 MB site — manual-trigger only, so deploys stay deliberate. Chapter 3's
   four women are deferred to docs/V5.20-THE-WOMEN.md.
   docs/V5.19-TANGKI-IN-CUTSCENES.md.
+- **v5.20** THE WOMEN OF CHAPTER 3 — the tentage crowd stops being thirty
+  copies of one man plus two. Three of Chad's four arrive: his kana talk
+  woman becomes the AUNTIE at the paper table (she is the only one of the
+  four with a talking take authored against her own rest pose, and the
+  auntie has four spoken lines), gracy_lee sits in the audience on the
+  aisle, and the fearful woman STANDS at her back-row seat, turned, looking
+  behind her — two seats from the chair that already faces the car park,
+  which is the chapter said twice without a word. 145 MB of source down to
+  2.5 MB shipped. `tools/prepwoman.mjs` makes the v5.05 crowd recipe
+  reusable and adds the step that mattered most: **drop the clip library**
+  — fearful_woman's eleven takes were 2742 KB against 258 KB of geometry
+  and 74 KB of texture. `tools/retarget.mjs` does REAL cross-rig
+  retargeting in world space (source delta from its own rest, applied to
+  the target's rest, back to local under the parent's already-retargeted
+  world rotation, parents first) because two rigs can pose a body
+  identically and still hold their bones at different rest orientations —
+  v5.02's rename only worked because the mother's rig WAS Mixamo. It is
+  proven on gracy_lee and needed nowhere else, which is the lesson: **reach
+  for a character's OWN clips first**; a bought take was authored against
+  its own rest pose and beats anything retargeted onto it. Chad found that
+  one ("why not make fearful woman stand at her seat using one of her
+  animations"). **yinn is unusable as delivered** — all 108 of her bones
+  sit at the same point and her mesh is a body lying flattened; the
+  untouched file from Drive renders identically, so she needs a re-export.
+  Sheet v24. docs/V5.20-THE-WOMEN.md is the build's memory.
 - **v5.16** THE MAN AT THE TENT EDGE — Chad's Sketchfab standing man takes
   the RIGHT-edge stander in chapter 3, mirroring the chinese boy on the
   left: the two ends of the back of the tent, where the lane brings you
