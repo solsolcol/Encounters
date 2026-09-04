@@ -50,6 +50,58 @@ is audible.
 All 18 takes generated first time; no `has_failures`. (eleven_v3 fails
 about one take in three at random, so that was luck, not a property.)
 
+## eleven_v4 is NOT available on this account (tested, 4 Sep 2026)
+
+Chad's pick from the options was "try the newer model first" — cheap, and if
+v4 held a child voice steady where v3 re-rolls it, the whole problem went
+away. It does not work: **all eight takes failed with "Your account is not
+authorized to access this model."**
+
+That is an entitlement, not a bug and not a prompt problem. `eleven_v4` is
+listed by `creative_get_flow_node_types` as a model this workspace can run,
+so the only way to discover the block is to spend a generation on it — which
+cost about 4 cents in credits. **Do not retry v4 until Chad confirms his
+ElevenLabs plan has been upgraded to include it.** If it is ever enabled, the
+test to run is the one that failed here: VALF and Teddy Twinkle (the two
+genuine child voices) on the opening line and the whispered 3 a.m. line, two
+takes each — the question is whether v4 holds a child steady across takes.
+
+## Why no "proper child voice" exists, and this is the important part
+
+Chad: "isnt there a proper young male child voice?" Searched the library
+this round on `boy`, `child`, `teen`, `young male teenage boy`,
+`teenager shy nervous timid soft-spoken male`, and
+`Singaporean Singapore Malaysian young male English`.
+
+Every English male "child" voice in the library is one of two things:
+
+1. **A cartoon.** Teddy Twinkle ("cute cartoon boy"), VALF ("playful,
+   sarcastic... cartoon sidekicks"), Amit ("kids cartoon character"). Built
+   for children's animation. Wrong register for horror at any quality.
+2. **An adult performing a child.** One is literally named *"Adult-made
+   child-like character Riya"*.
+
+There is no natural, non-cartoon boy speaking English in the library, and
+the reason is structural rather than bad luck: **a voice library is built
+from adult contributors who can consent to their own voice being cloned and
+sold.** Children generally cannot, so real children's voices are not
+crowd-sourced assets. Every "child" voice on the shelf is an adult doing a
+kid — which is exactly why they all sound like cartoons, and why round six
+of the same search will return the same thing.
+
+**Searching harder is not the answer. The routes that remain are:**
+
+- **Age the character up** to 14–16 and use a natural young voice (Aaron).
+  Free, works today, and the writing survives — see below.
+- **Record a real boy.** The only route that gets the right age AND a
+  Singaporean accent, which no library voice will ever give. Needs a kid and
+  a parent's consent; a phone in a quiet room is enough to work from.
+- **Voice-changer.** This workspace has a `voice-changer` node
+  (`eleven_multilingual_sts_v2`) that keeps a real performance's timing and
+  emotion and swaps the timbre. It cannot conjure a child out of nothing,
+  but it fixes the flat generated feel, which may be part of the complaint.
+- **eleven_v4**, if and when the account is authorised for it.
+
 ## The thing worth deciding before the voice
 
 `docs/V5.14-VOICE-LINES.md` said it plainly: **"Aaron is not twelve."** He
