@@ -1035,6 +1035,18 @@ job left outstanding.
 audio traps, cutscene staging, test flakiness). When something in this
 repo looks weird, it is probably load-bearing — check there first.
 
+`docs/AUDIT-2026-09.md` is the standing AUDIT — Chad asked for a deep
+pass over all five chapters, the engine and the phone-vs-desktop framing
+question, to be saved and revisited. NOTHING in it is fixed. It holds
+four confirmed bugs (ch3's medium never moves his head in three
+cutscenes; ch4's fan keeps spinning through its own silent beat; the
+volume slider skips a cutscene; a light dip can stick dimmed), the
+fragile-but-not-broken list, and the viewport answer. **Read Part One
+before touching cutscene framing**: the camera's 72° is VERTICAL and
+fixed, so a portrait phone is a CENTRE CROP at a third of the width — and
+that helps as often as it hurts, which is why a global lens change is the
+wrong fix and is argued against there in full.
+
 One more that earns its place at the bottom of this file because it now has
 TWO notches in it: **a bought rig is sized and grounded from its POSED
 BONES, never from any bounding box, and never from the file's own units.**
