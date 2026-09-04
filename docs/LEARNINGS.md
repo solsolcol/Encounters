@@ -1742,3 +1742,34 @@ already emphatic.
 Same words, six punctuations, 3.16 s to 6.32 s of audio. So the style has
 to be decided once and applied to every take in a pass, or the cutscene
 timings stop being predictable.
+
+## A tag must name a FEELING, not a volume (v5.28)
+
+Chad, on a prompt sheet full of `[whispering]` and `[shouting]`:
+**"whispering is not an emotion"**. He is right, and it explains more than
+it looks like it does.
+
+`[whispering]` tells the model how LOUD. It says nothing about how the boy
+feels, so what comes back is a flat read performed quietly — which is
+indistinguishable from the monotony the whole re-voice was trying to fix.
+Two whispers can be terrified or tender and this tag cannot tell them
+apart.
+
+Name the emotion. Where the moment also needs a volume — a 3 a.m. line has
+to be quiet whatever else is true — put both in one tag:
+
+    [whispering]        ->  [terrified whisper]
+    [shouting]          ->  [panicked shout] / [furious shout]
+    [quietly]           ->  [hesitant] / [apprehensive] / [relieved]
+
+Compound emotion tags are safe: the registry's own `[terrified whisper]`
+and `[panicked breathing]` have shipped since v2.3, and a two-word
+emotional tag is absorbed, not spoken (verified by duration —
+`[humiliated, shaky]`, the least conventional tag in the sheet, added
+nothing to the take). What gets spoken is PROSE, not length: a phrase is
+a tag, a sentence is dialogue.
+
+Where a line's delivery is already documented, use that: `src/voicelines.js`
+carries a `note` field saying Whispered / Shouted / Shaky on several takes.
+That is the take's real direction and belongs in the tag — but it supplies
+the volume half only, and the feeling half still has to be authored.
