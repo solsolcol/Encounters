@@ -17,7 +17,8 @@ await p.goto(PAGE); await p.waitForTimeout(6000);
 
 // slots filled at runtime from the chapter file or from live numbers
 const DYNAMIC = ['brief','qtext','say','teach','core','rank','pct','vSan','vAwa','vWis',
-                 'chapLabel','chapTitle','ikey','itxt','hintTxt','choices','deltas','ticks','overSay'];
+                 'chapLabel','chapTitle','ikey','itxt','hintTxt','choices','deltas','ticks','overSay',
+                 'chapEp','chEpName','chTabs'];   // v6.0: the card's episode line, the selector's heading and tabs — all from T()
 
 const untagged = await p.evaluate(dynamic => {
   const out = [];
@@ -54,8 +55,16 @@ const composed = new Set();
 if (main.includes("T('slot.' + key")) slots.forEach(k => composed.add('slot.' + k));
 if (main.includes("T('item.' + id + '.name'")) items.forEach(k => composed.add('item.' + k + '.name'));
 if (main.includes("T('item.' + id + '.desc'")) items.forEach(k => composed.add('item.' + k + '.desc'));
+/* v6.0: the episodes' words are composed too -- T(`ep${n}.label`) on the
+   chapter card and the selector, T(`ep${n}.title`) under the tabs -- for
+   n in 1..EPISODE_COUNT, which is the engine's own constant. So a sheet
+   that lost ep7.title still fails, and an eleventh episode's rows would be
+   dead until the count says otherwise. */
+const epCount = +listOf(/const EPISODE_COUNT = (\d+)/) || 0;
+if (main.includes('T(`ep${') && main.includes('.label`')) for (let n = 1; n <= epCount; n++) composed.add(`ep${n}.label`);
+if (main.includes('T(`ep${') && main.includes('.title`')) for (let n = 1; n <= epCount; n++) composed.add(`ep${n}.title`);
 console.log('composed at runtime:', composed.size, '(' + slots.length + ' slots,',
-            items.length, 'items)');
+            items.length, 'items,', epCount, 'episodes)');
 
 const dead = keys.filter(k => !shell.includes(`data-t="${k}"`) && !main.includes(`'${k}'`)
                            && !composed.has(k));

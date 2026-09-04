@@ -39,6 +39,21 @@ await p.waitForTimeout(600);
 await p.click('#chaptersBtn'); await p.waitForTimeout(300);
 out.titleOpensChapters = !(await hidden('chapters'));
 { const t = await tiles(); out.freshOnlyFirstOpen = t.length >= 2 && !t[0].locked && t.slice(1).every(x => x.locked); }
+// --- 1b. v6.0: ten episode tabs; an unwritten episode lists five empty rows;
+//         back on episode 1 the rows are the real ones; the card names the episode
+out.tenTabs = await p.evaluate(() => document.querySelectorAll('#chTabs .chTab').length === 10
+  && document.querySelector('#chTabs .chTab.on')?.dataset.ep === '1'
+  && document.getElementById('chEpName').textContent.includes('Episode 1'));
+await p.click('#chTabs .chTab[data-ep="2"]'); await p.waitForTimeout(200);
+out.emptyEpisodeRows = await p.evaluate(() => {
+  const r = [...document.querySelectorAll('#chList .chTile')];
+  return r.length === 5 && r.every(x => x.classList.contains('unwritten') && x.disabled)
+    && document.querySelector('#chTabs .chTab.on')?.dataset.ep === '2'
+    && document.getElementById('chEpName').textContent.includes('Episode 2');
+});
+await p.click('#chTabs .chTab[data-ep="1"]'); await p.waitForTimeout(200);
+{ const t = await tiles(); out.backToEpisodeOne = t.length === 5 && t[0].ch === 'ch1' && !t[0].locked && t[4].ch === 'ch5'; }
+out.cardNamesEpisode = await p.evaluate(() => document.getElementById('chapEp').textContent.trim() === 'Episode 1');
 await p.click('#chClose'); await p.waitForTimeout(200);
 out.closeCloses = await hidden('chapters');
 

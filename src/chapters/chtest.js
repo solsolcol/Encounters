@@ -27,6 +27,7 @@
 
   const DATA = {
     id: 99,
+    episode: 1,            // the fixture rides with episode 1 (v6.0)
     title: 'The Empty Room',
     cardLabel: 'Fixture',
     cardTitle: 'The Empty Room<br>A Test Of The Seam',

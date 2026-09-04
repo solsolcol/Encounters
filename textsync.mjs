@@ -62,10 +62,24 @@ const WHERE = {
   newgame: 'Starting over — the confirmation',
   menu: 'The pause menu (M, or the gear button)',
   chapters: 'The chapter selector',
+  ep: 'The episodes — the ten case files (v6.0)',
   a11y: 'Screen readers only',
   inv: 'Equipment panel', slot: 'Equipment panel — slot names',
   item: 'Equipment panel — the items'
 };
+/* v6.0: where a chapter's rows belong — episode 1's `chN` as always, and a
+   later episode's `eNcM` (docs/EPISODES-PLAN.md) — and the notes for the
+   twenty episode rows, which are the same two sentences ten times. */
+const chapterWhere = head => {
+  let m;
+  if ((m = /^ch(\d+)$/.exec(head))) return `CHAPTER ${m[1]} — the story itself`;
+  if ((m = /^e(\d+)c(\d+)$/.exec(head))) return `EPISODE ${m[1]} · CHAPTER ${m[2]} — the story itself`;
+  if (/^ep\d+$/.test(head)) return WHERE.ep;          // ep1.label, ep1.title ... — the prefix carries the number
+  return '';
+};
+const noteFor = k => NOTES[k]
+  || (/^ep\d+\.label$/.test(k) ? 'The line above "Chapter N" on the chapter card, and the heading under the episode tabs'
+    : /^ep\d+\.title$/.test(k) ? 'The name of the case — shown under the episode tabs in the selector' : '');
 const NOTES = {
   'title.tabTitle': 'Browser tab name',
   'title.logoAlt': 'Read aloud by screen readers',
@@ -124,6 +138,9 @@ const NOTES = {
   'chapters.ask': 'Asked before replaying a chapter — {chapter} is filled in for you',
   'chapters.yes': 'Confirms the replay',
   'chapters.no': 'Backs out to the list',
+  'chapters.unwritten': 'Shown in place of a chapter that is not written yet',
+  'chapters.episode': 'The name of an episode tab, for screen readers — {n} is filled in for you',
+  'chapters.chapter': 'The label of a chapter that is not written yet — {n} is filled in for you',
   'newgame.heading': 'Shown when the player asks to start over',
   'newgame.body': 'The warning under it',
   'newgame.yes': 'Erases the save and starts again',
@@ -194,9 +211,8 @@ function toCSV(rows) {
   const out = [['ID (do not edit)', 'Where it appears', 'TEXT — edit this column', 'Notes'].map(q).join(',')];
   for (const [k, v, w, n] of rows) {
     const head = k.split('.')[0];
-    const where = w ?? (WHERE[head]
-      || (/^ch\d/.test(head) ? `CHAPTER ${head.slice(2)} — the story itself` : ''));
-    out.push([q(k), q(where), q(v), q(n ?? (NOTES[k] || ''))].join(','));
+    const where = w ?? (WHERE[head] || chapterWhere(head));
+    out.push([q(k), q(where), q(v), q(n ?? noteFor(k))].join(','));
   }
   return out.join('\n');
 }
@@ -284,8 +300,8 @@ function toXLSX(file) {
   const text = [['ID (do not edit)', 'Where it appears', 'TEXT — edit this column', 'Notes']];
   for (const [k, v] of readRows()) {
     const head = k.split('.')[0];
-    const where = WHERE[head] || (/^ch\d/.test(head) ? `CHAPTER ${head.slice(2)} — the story itself` : '');
-    text.push([k, where, v, NOTES[k] || '']);
+    const where = WHERE[head] || chapterWhere(head);
+    text.push([k, where, v, noteFor(k)]);
   }
   const voice = [['ID (do not edit)', 'Who', 'Chapter', 'When it plays', 'TEXT — edit this column', 'Length (s)', 'Notes']];
   for (const v of readVoice()) voice.push([`voice.${v.id}`, v.who, v.chapter, v.where, v.text, v.secs, v.note]);
@@ -329,7 +345,7 @@ function writeStrings(map) {
     /* a chapter's key is chN.<field>; the DIGIT matters — the engine's own
        `chapters.*` strings (the selector) start with the same two letters
        and must NOT be skipped, which they were from v5.12 until this fix */
-    if (/^(ch\d+|voice)\./.test(k)) continue;
+    if (/^(ch\d+|e\d+c\d+|voice)\./.test(k)) continue;
     const re = new RegExp(`('${k.replace(/\./g, '\\.')}':\\s*)'(?:[^'\\\\]|\\\\.)*'`);
     if (!re.test(s)) { console.error(`  ! unknown UI key, skipped: ${k}`); continue; }
     s = s.replace(re, (_, head) => `${head}'${esc(v)}'`);

@@ -31,6 +31,7 @@
 
   const DATA = {
     id: 2,
+    episode: 1,            // v6.0: the case file this chapter belongs to — docs/EPISODES-PLAN.md
     title: 'The Presence',
 
     cardLabel: 'Chapter 2',

@@ -180,6 +180,34 @@ Object.assign(window.__TEXT__, {
   'chapters.ask':        'Play {chapter} from its beginning? Your current place in the story will be replaced.',
   'chapters.yes':        'Play it',
   'chapters.no':         'Back',
+  'chapters.unwritten':  'Not yet written',
+  'chapters.episode':    'Episode {n}',
+  'chapters.chapter':    'Chapter {n}',
+
+  // --- the episodes (v6.0): ten case files, five chapters each. The label
+  //     is the line above "Chapter N" on the chapter card and the selector's
+  //     tab; the title is the case's name under the tabs. Chad's list, and
+  //     his to change here.
+  'ep1.label':           'Episode 1',
+  'ep1.title':           'The Hell Note I Should Never Have Taken',
+  'ep2.label':           'Episode 2',
+  'ep2.title':           'The 3 AM Shower',
+  'ep3.label':           'Episode 3',
+  'ep3.title':           'The Room That Didn\'t Want Us There',
+  'ep4.label':           'Episode 4',
+  'ep4.title':           'The Love Spell That Followed Me Home',
+  'ep5.label':           'Episode 5',
+  'ep5.title':           'Not Every Master Should Be Trusted',
+  'ep6.label':           'Episode 6',
+  'ep6.title':           'The Ghost Clinging To Her Back',
+  'ep7.label':           'Episode 7',
+  'ep7.title':           'Spiritual Disturbance After A Crematorium Visit',
+  'ep8.label':           'Episode 8',
+  'ep8.title':           'The Toilet Possession: When Belief Isn\'t Enough',
+  'ep9.label':           'Episode 9',
+  'ep9.title':           'The Corner The Dog Wouldn\'t Go Near',
+  'ep10.label':           'Episode 10',
+  'ep10.title':           'The Mirror That Wouldn\'t Stop Banging',
 
   // --- inventory / equipment -----------------------------------------------
   'inv.button':          'Inventory',

@@ -53,6 +53,10 @@ for (const [key, ch] of Object.entries(chapters)) {
     if (!str(ch[f])) bad(key, `${f} is missing or empty`);
   }
   if (!num(ch.id)) bad(key, 'id is not a number');
+  // v6.0: the episode a chapter belongs to, when it says — an integer 1..10
+  if (ch.episode !== undefined && !(Number.isInteger(ch.episode) && ch.episode >= 1 && ch.episode <= 10)) {
+    bad(key, `episode must be an integer from 1 to 10, not ${JSON.stringify(ch.episode)}`);
+  }
 
   // --- the choices ---------------------------------------------------------
   if (!Array.isArray(ch.choices) || ch.choices.length < 2) {
@@ -230,5 +234,30 @@ if (VOICE && Array.isArray(VOICE.LINES)) {
   errs.push('ERR src/voicelines.js did not register window.__VOICE__');
 }
 
+// --- v6.0: the episodes — ids unique inside each, and the sheet has the words
+{
+  const byEp = {};
+  for (const [key, ch] of Object.entries(chapters)) {
+    if ((ch.id || 0) >= 90) continue;
+    const n = Number.isInteger(ch.episode) ? ch.episode : 1;
+    (byEp[n] ||= []).push([key, ch.id]);
+  }
+  for (const [n, rows] of Object.entries(byEp)) {
+    const ids = rows.map(r => r[1]);
+    if (new Set(ids).size !== ids.length) errs.push(`episode ${n}: two chapters share an id (${rows.map(r => r.join('=')).join(', ')})`);
+    if (ids.some(i => i < 1 || i > 5)) errs.push(`episode ${n}: a chapter id is outside 1..5 (${ids.join(', ')})`);
+  }
+  console.log('episodes built:', Object.entries(byEp).map(([n, r]) => `${n}: ${r.length} chapter(s)`).join(', '));
+  const textWin = { __TEXT__: undefined };
+  try { new Function('window', readFileSync(join(DIR, 'src', 'strings.js'), 'utf8'))(textWin); }
+  catch (e) { errs.push('ERR src/strings.js failed to load: ' + e.message); }
+  const TEXT = textWin.__TEXT__ || {};
+  for (let n = 1; n <= 10; n++) for (const f of ['label', 'title']) {
+    if (!str(TEXT[`ep${n}.${f}`])) errs.push(`strings: ep${n}.${f} is missing or empty`);
+  }
+  for (const k of ['chapters.unwritten', 'chapters.episode', 'chapters.chapter', 'chapters.locked']) {
+    if (!str(TEXT[k])) errs.push(`strings: ${k} is missing or empty`);
+  }
+}
 console.log('errors:', errs.length ? errs : 'none');
 if (errs.length) process.exit(1);

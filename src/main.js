@@ -46,15 +46,38 @@ let CH = (window.__CHAPTERS__ || {})[CH_KEY];
 if (!CH) throw new Error('no chapter registered — chapters/ch1.js must load before the engine');
 const BOOT_CH = CH_KEY;      // where New game goes back to, whatever a save said
 
-/* The order chapters are played in, taken from their own `id`. A chapter
-   does not need to know what comes after it — the registry does. The
-   fixture chapter carries id 99 so it sorts last and is never "next".   */
+/* The order chapters are played in, taken from their own `episode` and
+   `id`. A chapter does not need to know what comes after it — the registry
+   does. The fixture chapter carries id 99 so it sorts last and is never
+   "next".
+   EPISODES (v6.0). Ten case files, five chapters each; what exists is
+   episode 1. A chapter declares `episode` (one when it says nothing, so
+   chapters 1-5 stay exactly where they were) and its `id` is its place
+   INSIDE that episode; the order of play is episode-major. The engine
+   holds the SHAPE — ten tabs exist before their chapters do — and the
+   words (ep1.label, ep1.title ...) are the string sheet's, so Chad's.
+   docs/EPISODES-PLAN.md is the reasoning and the decisions still open.  */
+const EPISODE_COUNT = 10, CHAPTERS_PER_EPISODE = 5;
+function episodeOf(key) {
+  const ch = window.__CHAPTERS__ && window.__CHAPTERS__[key];
+  const n = ch ? Number(ch.episode) : NaN;
+  return Number.isInteger(n) && n >= 1 ? n : 1;
+}
 const chapterOrder = () => Object.keys(window.__CHAPTERS__ || {})
-  .sort((a, b) => (window.__CHAPTERS__[a].id || 0) - (window.__CHAPTERS__[b].id || 0));
+  .sort((a, b) => (episodeOf(a) - episodeOf(b))
+    || ((window.__CHAPTERS__[a].id || 0) - (window.__CHAPTERS__[b].id || 0)));
 function nextChapterKey(after = CH_KEY) {
   const order = chapterOrder().filter(k => (window.__CHAPTERS__[k].id || 0) < 90);
   const i = order.indexOf(after);
   return (i >= 0 && i + 1 < order.length) ? order[i + 1] : null;
+}
+/* the built chapters of one episode, in order — never the fixture */
+const episodeKeys = n => chapterOrder()
+  .filter(k => (window.__CHAPTERS__[k].id || 0) < 90 && episodeOf(k) === n);
+/* "Episode 1 · Chapter 3" — the resume note and the selector's ask */
+function chapterLabel(key) {
+  const ch = window.__CHAPTERS__[key];
+  return T(`ep${episodeOf(key)}.label`, '') + ' · ' + ((ch && ch.cardLabel) || key);
 }
 
 /* ------------------------------------------------------------- assets ----
@@ -3342,17 +3365,17 @@ const zavLoader = () => { const l = new GLTFLoader(); l.setMeshoptDecoder(Meshop
      episode 2  (ch1-ch5)   teenager  — 'zavteen', when Chad supplies it
      later                  adult     — 'zav', the scan, still here
 
-   Keyed by CHAPTER because the chapter key is what the engine actually
-   knows; the episode is the reason behind the grouping, not a thing the
-   engine tracks. When episode 2's chapters arrive under their own keys they
-   take their own rows. */
+   Keyed by EPISODE since v6.0 — the engine knows what an episode is now
+   (episodeOf(), the registry above), so the table says what the contract
+   says: one row per episode, and episode 2's chapters, whatever their keys,
+   get the teenager the day his model arrives. Until then anything not
+   listed here is the adult, which is the "kept" the contract asks for. */
 const ZAV_FIGURE = {
-  ch1: 'zavyoung', ch2: 'zavyoung', ch3: 'zavyoung',
-  ch4: 'zavyoung', ch5: 'zavyoung',
-  chtest: 'zavyoung',                 // the fixture rides with episode 1
+  1: 'zavyoung',                      // episode 1, chapters 1-5 (and the fixture, which declares episode 1)
+  // 2: 'zavteen',                    // episode 2 — Chad supplies the model
 };
 const ZAV_ADULT = 'zav';              // kept, and the fallback for anything unlisted
-function zavKey() { return ZAV_FIGURE[CH_KEY] || ZAV_ADULT; }
+function zavKey() { return ZAV_FIGURE[episodeOf(CH_KEY)] || ZAV_ADULT; }
 function zavLoad() {
   const key = zavKey();
   /* a chapter from another episode wants another age of him: drop the one
@@ -3540,6 +3563,11 @@ addEventListener('keydown', e => {
 const PROG_KEY = 'mz.encounters.progress';
 const chId = k => (window.__CHAPTERS__[k] && window.__CHAPTERS__[k].id) || 0;
 const playableKeys = () => chapterOrder().filter(k => chId(k) < 90);
+/* v6.0: where a chapter stands in the whole run. The unlock test used to
+   compare ids, which works while there is one episode and breaks the day
+   there are two: episode 2's chapter 1 has id 1, and id 1 <= id 5 would
+   have opened it the moment episode 1's chapter 5 was reached. */
+const orderIdx = k => playableKeys().indexOf(k);
 function reachedKey() {
   try {
     const s = JSON.parse(localStorage.getItem(PROG_KEY) || 'null');
@@ -3550,15 +3578,15 @@ function markReached(key) {
   if (CH_ASKED) return false;                  // a ?ch= preview opens nothing, the same way it saves nothing
   if (!chapterExists(key) || chId(key) >= 90) return false;
   const cur = reachedKey();
-  if (cur && chId(cur) >= chId(key)) return true;      // already further
+  if (cur && orderIdx(cur) >= orderIdx(key)) return true;      // already further (by place, v6.0)
   try { localStorage.setItem(PROG_KEY, JSON.stringify({ reached: key, t: Date.now() })); return true; }
   catch { return false; }
 }
 /* every chapter up to and including the furthest reached; chapter 1 always */
 function unlockedKeys() {
   const top = reachedKey();
-  const topId = top ? chId(top) : 0;
-  return playableKeys().filter((k, i) => i === 0 || chId(k) <= topId);
+  const topIdx = top ? orderIdx(top) : 0;
+  return playableKeys().filter((k, i) => i === 0 || i <= topIdx);
 }
 
 const menuEl = () => $('menu');
@@ -3626,27 +3654,64 @@ function returnToTitle() {
 
 /* ---------------------------------------------------- the chapter panel */
 let chPending = null;
+let chEpisode = 1;                        // v6.0: the episode whose tab is open
 const chaptersOpen = () => !$('chapters')?.classList.contains('hide');
+/* v6.0 (Chad: "a tab to switch between episodes, and each episode lists out
+   5 chapters each"): ten tabs, numerals because ten "Episode N"s do not fit
+   a phone; the case's name reads under the row; then FIVE rows, always —
+   a built chapter as before (open, locked, the one you are in), and for a
+   chapter that is not written yet a dim row that says so, so the shape of
+   the game is visible before the game is. */
 function paintChapters() {
   const list = $('chList'); if (!list) return;
   const open = unlockedKeys();
+  const tabs = $('chTabs');
+  if (tabs) {
+    tabs.textContent = '';
+    for (let n = 1; n <= EPISODE_COUNT; n++) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'chTab' + (n === chEpisode ? ' on' : '') + (episodeKeys(n).length ? '' : ' empty');
+      b.dataset.ep = String(n);
+      b.setAttribute('role', 'tab');
+      b.setAttribute('aria-selected', n === chEpisode ? 'true' : 'false');
+      b.setAttribute('aria-label', T('chapters.episode', 'Episode {n}').replace('{n}', String(n)));
+      b.textContent = String(n);
+      b.onclick = () => { if (chEpisode !== n) { chEpisode = n; paintChapters(); snd('uiclick', 0.35); } };
+      tabs.appendChild(b);
+    }
+  }
+  const name = $('chEpName');
+  if (name) name.textContent = T(`ep${chEpisode}.label`, '') + ' · ' + T(`ep${chEpisode}.title`, '');
   list.textContent = '';
-  for (const k of playableKeys()) {
-    const ch = window.__CHAPTERS__[k], ok = open.includes(k);
+  const built = episodeKeys(chEpisode);
+  for (let i = 0; i < Math.max(CHAPTERS_PER_EPISODE, built.length); i++) {
+    const k = built[i];
     const b = document.createElement('button');
     b.type = 'button';
-    b.className = 'chTile' + (ok ? '' : ' locked') + (ok && k === CH_KEY && state !== 'title' ? ' now' : '');
-    b.dataset.ch = k;
-    b.disabled = !ok;
-    b.innerHTML = `<span class="num">${ch.cardLabel || k}</span>`
-      + `<span class="name">${ok ? (ch.title || '') : T('chapters.locked')}</span>`;
-    b.onclick = () => askChapter(k);
+    if (k) {
+      const ch = window.__CHAPTERS__[k], ok = open.includes(k);
+      b.className = 'chTile' + (ok ? '' : ' locked') + (ok && k === CH_KEY && state !== 'title' ? ' now' : '');
+      b.dataset.ch = k;
+      b.disabled = !ok;
+      b.innerHTML = `<span class="num">${ch.cardLabel || k}</span>`
+        + `<span class="name">${ok ? (ch.title || '') : T('chapters.locked')}</span>`;
+      b.onclick = () => askChapter(k);
+    } else {
+      b.className = 'chTile locked unwritten';
+      b.disabled = true;
+      b.innerHTML = `<span class="num">${T('chapters.chapter', 'Chapter {n}').replace('{n}', String(i + 1))}</span>`
+        + `<span class="name">${T('chapters.unwritten')}</span>`;
+    }
     list.appendChild(b);
   }
 }
 function openChapters() {
   if (!$('chapters')) return;
   chPending = null;
+  /* the tab that opens is the episode you are in — from the title, the one
+     you got furthest into */
+  chEpisode = episodeOf(state === 'title' && reachedKey() ? reachedKey() : CH_KEY);
   $('chAsk')?.classList.add('hide');
   $('chList')?.classList.remove('hide');
   paintChapters();
@@ -3664,7 +3729,7 @@ function askChapter(key) {
   if (!inRun) return startChapter(key);
   chPending = key;
   const ch = window.__CHAPTERS__[key];
-  const label = (ch.cardLabel || key) + (ch.title ? ' · ' + ch.title : '');
+  const label = chapterLabel(key) + (ch.title ? ' · ' + ch.title : '');
   const t = $('chAskText'); if (t) t.textContent = T('chapters.ask').replace('{chapter}', label);
   $('chList')?.classList.add('hide');
   $('chAsk')?.classList.remove('hide');
@@ -4602,7 +4667,7 @@ function paintTitle() {
     note.classList.toggle('hide', !s);
     if (s) {
       const ch = window.__CHAPTERS__[s.ch];
-      note.textContent = T('title.resumeNote').replace('{chapter}', ch?.cardLabel || '');
+      note.textContent = T('title.resumeNote').replace('{chapter}', ch ? chapterLabel(s.ch) : '');   // v6.0: "Episode 1 · Chapter 3"
     }
   }
 }
@@ -4695,6 +4760,7 @@ $('brief').innerHTML = T('title.intro');
 function applyChapterText() {
   $('qtext').innerHTML = CH.prompt;
   // the black chapter card carries whatever chapter is registered
+  if ($('chapEp')) $('chapEp').textContent = T(`ep${episodeOf(CH_KEY)}.label`, '');   // v6.0
   if ($('chapLabel')) $('chapLabel').innerHTML = CH.cardLabel;
   if ($('chapTitle')) $('chapTitle').innerHTML = CH.cardTitle;
   const cWrap = $('choices');
@@ -5410,6 +5476,7 @@ window.__enc = { yaw, stats, getState: () => state,
                  menuOpen, menuClose, menuToggle, openChapters, closeChapters,
                  startChapter, returnToTitle, unlockedKeys, markReached,
                  chapterKey: () => CH_KEY,
+                 episode: () => episodeOf(CH_KEY), episodeOf,     // v6.0
                  stings: () => stingLog.slice(),
                  audio: () => ({ ctx: actx ? actx.state : 'none', muted, decoded: Object.keys(packBufs) }),
                  /* v5.27: the dialogue duck, observable. A gain node that is

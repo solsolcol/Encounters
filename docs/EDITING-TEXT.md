@@ -11,10 +11,26 @@ text comes up at all — the reply carries the full URL, not the version
 number alone. He reads these on his phone; a number he has to go hunting
 for in Drive is not a link.
 
-**Master Z's Encounters — GAME TEXT v31 (edit here)** in his Drive
-(id `194fHX9UUAfkVbQYAKWRES4sNx7dDA1dm3379fhe8Kl4` — the **v31** sheet, made at v5.30: 271 GAME TEXT
+**Master Z's Encounters — GAME TEXT v32 (edit here)** in his Drive
+(id `1zWVqB9TTJb9u-qPXAYd4uL_CNuOtugZWh0-BKOelnts` — the **v32** sheet, made at v6.0: 294 GAME TEXT
 rows and, under them after a divider row, the 97 **VOICE LINES**.
-<https://docs.google.com/spreadsheets/d/194fHX9UUAfkVbQYAKWRES4sNx7dDA1dm3379fhe8Kl4/edit>
+<https://docs.google.com/spreadsheets/d/1zWVqB9TTJb9u-qPXAYd4uL_CNuOtugZWh0-BKOelnts/edit>
+
+What changed from v31: **twenty-three rows ADDED, none changed, no spoken
+word.** The ten-episode architecture (v6.0, docs/EPISODES-PLAN.md) puts the
+episodes' words in the sheet: `ep1.label`..`ep10.label` ("Episode 1" …
+"Episode 10" — the line above "Chapter N" on the chapter card and the
+heading under the selector's tabs) and `ep1.title`..`ep10.title` (the ten
+case names Chad gave, "may be subject to change" — so they are here to
+change), under a new "The episodes" section between the selector and the
+equipment panel; and three selector strings: `chapters.unwritten` ("Not yet
+written", the row of a chapter that has no file yet), `chapters.episode`
+("Episode {n}", the tab's screen-reader name) and `chapters.chapter`
+("Chapter {n}", the label of an unwritten row). Every v31 cell is
+byte-identical. v31 (id `194fHX9UUAfkVbQYAKWRES4sNx7dDA1dm3379fhe8Kl4`) is
+superseded. Provenance: v32 was published from the fresh export and read
+back, and all 393 rows diffed cell by cell against it across all four
+columns — zero differences.
 
 What changed from v30: **fourteen cells, in the VOICE LINES block only —
 one spoken line's text, its "where", and thirteen lengths.** No UI string

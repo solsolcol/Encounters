@@ -113,6 +113,7 @@ The declarations, all optional:
 
 | field | what it decides | default |
 |---|---|---|
+| `episode` | which of the ten case files the chapter belongs to (v6.0); `id` is its place INSIDE that episode, 1–5, and the order of play is episode-major. The engine holds the shape (`EPISODE_COUNT` 10, `CHAPTERS_PER_EPISODE` 5); the words (`ep1.label`, `ep1.title` …) are the sheet's | 1 |
 | `ghost` | her whole territory: `minDist`, `appearAt`, `near`/`far`, `cross`, `away`, `behind`, and the `roam` box she may stand in — or `null`, which switches the haunting OFF for the chapter (no appearances, no drain, no banner; cutscenes may still drive her mesh) | the void deck's numbers |
 | `ambience` | `beds` (loops that just run) and `atShrine` (one keyed to distance from the shrine) | `amb` + the burner's `fire` |
 | `words` | `approach`, `act`, `actTouch`, `interact`, `interactTouch` — the words that NAME the thing you act on | the string sheet's |
@@ -184,18 +185,18 @@ well"). The rotating Master Zav in the inventory is the man the player is
 scan and every number that shaped it (v5.08-v5.11: the meshopt pack, the
 no-mipmap rule for his atlas, the seam padding) is **kept, not deleted** —
 it returns when the adult phase does, and `ZAV_ADULT` is the fallback for
-any chapter not listed. It is keyed by CHAPTER because the chapter key is
-what the engine actually knows; the episode is the reason behind the
-grouping, not a thing the engine tracks. Swapping ages is a real swap —
-`zavLoad()` disposes the standing figure when `zav.key` no longer matches —
-so episode 2's chapters need only their own rows, nothing else.
+any episode not listed. Since v6.0 it is keyed by EPISODE (`episodeOf()`),
+because the engine knows what an episode is now; episode 2 is one row
+(`2: 'zavteen'`) the day Chad's model arrives. Swapping ages is a real
+swap — `zavLoad()` disposes the standing figure when `zav.key` no longer
+matches.
 
 ## Testing
 
 23 harnesses, listed in `runtests.mjs` with one-line purposes and a
 group tag (`node runtests.mjs @engine` / `@release` / `@chapter`).
 **The rule that stops the suite growing with the game: adding a chapter
-must not add a harness.** Per-chapter correctness is one data-driven
+must not add a harness — and neither must adding an episode (v6.0).** Per-chapter correctness is one data-driven
 file, `chaptertest.mjs` — keys resolve, deltas are in scale, the stage is
 inside its own bounds, every asset key exists in build.py, every choice
 has a scene — and it runs in plain Node in under a second, no browser.
@@ -1021,6 +1022,26 @@ What the baseline contains, by release:
   get the 180 s navigation budget every other harness already had; both had
   failed on Playwright's 30 s default under a loaded box, with nothing wrong
   in the game. docs/V5.31-TWO-FACES.md.
+- **v6.0** TEN EPISODES — the architecture for the whole game, Chad's ask:
+  ten episodes of five chapters, of which everything so far is episode 1.
+  The engine knows what an episode is now: a chapter declares `episode`
+  (one when it says nothing, so chapters 1–5 stay exactly where they were),
+  the order of play is episode-major, and progress is by PLACE in the run
+  rather than by id — the bug that would have opened episode 2's chapter 1
+  the moment episode 1's chapter 5 was reached, avoided before it existed.
+  The chapter selector has a tab per episode (numerals — ten "Episode N"s
+  do not fit a phone), the case's name under the row, and five rows always:
+  the built chapters as before, and "Not yet written" for the ones that are
+  not. The chapter card says EPISODE 1 above CHAPTER 1; the resume note and
+  the selector's ask say both. Twenty new sheet rows carry the ten titles
+  Chad gave (his to change); `ZAV_FIGURE` is keyed by episode; `textsync`
+  knows a later episode's chapter keys (`e2c1`); `chaptertest` checks the
+  episode fields and the words, `menutest` walks the tabs. What ELSE the
+  architecture touches — keys and folders for episodes 2–10, an
+  episode-complete card, per-episode packs, the sheet at fifty chapters,
+  the single-file build's growth, his voice ageing with his figure — is
+  written down with the decisions that are Chad's in docs/EPISODES-PLAN.md.
+  Sheet v32.
 - **v5.28** AARON — Chad, after two rounds of level work on River: *"i'm still
   not satisfied with this voice."* All 79 of the boy's takes regenerated in a
   THIRD voice (Aaron, `B6uUx2p7cRgxseOUyP6P`), under an approved prompt sheet

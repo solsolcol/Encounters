@@ -30,6 +30,7 @@
 
   const DATA = {
     id: 1,
+    episode: 1,            // v6.0: the case file this chapter belongs to — docs/EPISODES-PLAN.md
     title: 'The Hell Note',
 
     // the black card shown between Start and the playable night

@@ -128,6 +128,13 @@ body.menuopen .soundBtn,body.menuopen #volWrap,body.invopen #volWrap{display:non
 .chHead h3{margin:0}
 .chHint{font-family:var(--ui);font-size:.94rem;line-height:1.5;color:#8A91A0;
   margin:12px 0 14px;text-align:left}
+.chTabs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}   /* v6.0 */
+.chTab{min-width:36px;padding:7px 10px;font-family:var(--mono);font-size:.78rem;letter-spacing:.06em;
+  background:#0C1016;border:1px solid var(--line);color:#8A91A0;cursor:pointer;transition:border-color .16s,background .16s}
+.chTab:hover,.chTab:focus-visible{border-color:var(--sodium);outline:none}
+.chTab.on{color:var(--void);background:var(--sodium);border-color:var(--sodium)}
+.chTab.empty{opacity:.55}
+.chEpName{font-family:var(--ui);font-size:.92rem;line-height:1.4;color:#C6CAD3;margin:0 0 10px;text-align:left}
 .chList{display:flex;flex-direction:column;gap:8px}
 .chTile{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;
   text-align:left;padding:12px 14px;cursor:pointer;
@@ -141,6 +148,7 @@ body.menuopen .soundBtn,body.menuopen #volWrap,body.invopen #volWrap{display:non
 .chTile.locked{opacity:.42;cursor:default}
 .chTile.locked .name{color:#8A91A0;font-weight:400}
 .chTile.locked:hover{border-color:var(--line);background:#0C1016}
+.chTile.unwritten{opacity:.3}   /* v6.0: a chapter that does not exist yet */
 .chAsk p{font-family:var(--ui);font-size:.98rem;line-height:1.5;color:#A6ADBB;margin:6px 0 18px}
 #chYes{color:var(--void);background:var(--sodium)}
 #chNo{color:#C6CAD3;background:transparent;border:1px solid var(--line)}
@@ -418,6 +426,7 @@ body.cine #barTop,body.cine #barBot{transform:translateY(0)}
 #chapter.in{opacity:1}
 .chapCard{text-align:center;padding:24px;max-width:min(760px,92vw)}
 .chapCard .stencil{color:var(--seal);letter-spacing:.24em;margin-bottom:20px}
+.chapCard .stencil.ep{color:#8A91A0;font-size:.86rem;margin-bottom:8px}   /* v6.0: the case above the chapter, one step dimmer */
 .chapCard h2{font-family:"Cormorant Garamond",Georgia,serif;font-weight:600;
   font-size:clamp(2rem,6.2vw,3.4rem);line-height:1.14;color:var(--bone);
   letter-spacing:-.01em;text-wrap:balance}
@@ -861,6 +870,9 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
       <button id="chClose" class="credClose" type="button" data-t="chapters.close">Close ✕</button>
     </div>
     <p class="chHint" data-t="chapters.hint">A chapter you have reached can be played again from its opening.</p>
+    <!-- v6.0: one tab per episode, the case's name under them, then its five chapters -->
+    <div id="chTabs" class="chTabs" role="tablist"></div>
+    <p id="chEpName" class="chEpName"></p>
     <div id="chList" class="chList"></div>
     <div id="chAsk" class="chAsk hide">
       <p id="chAskText"></p>
@@ -1034,6 +1046,7 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
 <!-- the chapter card: black, held, then gone -->
 <div id="chapter" class="layer hide">
   <div class="chapCard">
+    <span class="stencil ep" id="chapEp">Episode 1</span>
     <span class="stencil" id="chapLabel">Chapter 1</span>
     <h2 id="chapTitle">The Hell Note<br>I Should Never Have Taken</h2>
     <span class="stencil hide" id="chapLoad" style="display:block;margin-top:26px;opacity:.6" data-t="chapter.loading">Loading&hellip;</span>
