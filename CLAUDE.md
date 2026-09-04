@@ -334,9 +334,13 @@ comes up.
 Since v5.14 the sheet carries the VOICE LINES too, made from
 `src/voicelines.js` — every spoken take, who says it, where it plays, its
 words and its measured length — and **every sheet version must carry
-them** (Chad's rule). They are a second tab in the .xlsx the tool exports
-and a labelled block under the text on the Google Sheet (made from the
-CSV; the connector cannot carry the workbook). `import` reads either shape and names every voice line whose text changed,
+them** (Chad's rule). Since v6.1 the Google Sheet is TABBED — UI TEXT, one
+EPISODE N tab per episode that has a chapter, VOICE LINES — made from the
+.xlsx `textsync export` writes, which the Drive connector carries as
+base64 and Drive converts into a native sheet (v5.14 wrote that down as
+impossible; it had never been tried), and `tools/verifytabs.py` diffs
+every cell of the read-back against the workbook before the link goes to
+him. `import` reads every shape and names every voice line whose text changed,
 which is the list of takes to regenerate. A new line in a chapter is not
 done until it has a row there — `chaptertest` says so.
 
@@ -728,7 +732,9 @@ What the baseline contains, by release:
   text on the Google Sheet itself — which is made from the CSV, because
   the Drive connector takes a workbook only as base64 inside a tool call
   and even 27 KB of it is past what a session can read and re-emit
-  faithfully; the CSV route is the proven one. `import` reads CSV, xlsx
+  faithfully; the CSV route is the proven one (WRONG, corrected at v6.1:
+  the workbook goes through intact, and the sheet has been tabbed since
+  v33). `import` reads CSV, xlsx
   or the connector's markdown (the TEXT column found from each header
   row, not assumed) and REPORTS which voice lines changed — that list is
   the regeneration list. `chaptertest` fails if a take has no row or a row has
@@ -1042,6 +1048,31 @@ What the baseline contains, by release:
   the single-file build's growth, his voice ageing with his figure — is
   written down with the decisions that are Chad's in docs/EPISODES-PLAN.md.
   Sheet v32.
+- **v6.1** THE HANDSET, THE GAP, THE WORD, AND THE TABBED SHEET — Chad's
+  notes on v6.0. Chapter 4's handset stands UP in the palm ("tilted left in
+  its place, so that the phone fills the gap between his thumb and index
+  finger, in the space of his palm area"): rotation (0.85, 0, 0.85) against
+  v5.30's (1.57, 0, 0.30), the mouthpiece low in the palm and the earpiece
+  in the V of thumb and index finger, chosen from fourteen rendered
+  candidates over two rounds — posed by pausing the film BEFORE the pickup
+  step, because cineSeek re-applies every passed track (v5.30's law).
+  Chapter 5 scene C answers sooner ("reduce the delay after the tangki says
+  'in its fire' and between the hellnote starts flying"): the whole tail
+  0.8 s earlier, so his line ends at 15.36 and the paper lifts at 15.6, a
+  quarter-second where it waited a full one; measured lifting at 15.8, at
+  the glass at 19.0, seven metres out at 21.8, the cue firing. The title's
+  button, the menu's row and the selector's heading say EPISODES. And THE
+  SHEET IS TABBED ("google sheets wont be sustainable in the long run
+  unless you can figure out a way to write tabbed google sheets"):
+  `textsync export file.xlsx` writes UI TEXT, one EPISODE N tab per episode
+  that has a chapter, and VOICE LINES; the Drive connector carries the 22 KB
+  workbook as base64 and Drive converts it into a native Google Sheet with
+  one tab per worksheet — the thing v5.14 wrote down as impossible and never
+  tried, proven on a two-tab test and then on the real one, read back as one
+  table per tab and diffed cell by cell by the new `tools/verifytabs.py`:
+  393 rows, zero differences. `import` already read every tab. main.js
+  untouched. Sheet v33, the first tabbed one. docs/EDITING-TEXT.md carries
+  the publish-and-verify steps.
 - **v5.28** AARON — Chad, after two rounds of level work on River: *"i'm still
   not satisfied with this voice."* All 79 of the boy's takes regenerated in a
   THIRD voice (Aaron, `B6uUx2p7cRgxseOUyP6P`), under an approved prompt sheet

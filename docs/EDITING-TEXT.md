@@ -11,10 +11,34 @@ text comes up at all — the reply carries the full URL, not the version
 number alone. He reads these on his phone; a number he has to go hunting
 for in Drive is not a link.
 
-**Master Z's Encounters — GAME TEXT v32 (edit here)** in his Drive
-(id `1zWVqB9TTJb9u-qPXAYd4uL_CNuOtugZWh0-BKOelnts` — the **v32** sheet, made at v6.0: 294 GAME TEXT
-rows and, under them after a divider row, the 97 **VOICE LINES**.
-<https://docs.google.com/spreadsheets/d/1zWVqB9TTJb9u-qPXAYd4uL_CNuOtugZWh0-BKOelnts/edit>
+**Master Z's Encounters — GAME TEXT v33 (edit here)** in his Drive
+(id `1qMSPsGghb0AdBk_drLd7yzvsG53dK-mbxhWYf4FjnIQ` — the **v33** sheet,
+made at v6.1, and the first TABBED one: **UI TEXT** (184 rows, the
+engine's words), **EPISODE 1** (110 rows, chapters 1–5's words) and
+**VOICE LINES** (97, on their own tab with their seven columns).
+<https://docs.google.com/spreadsheets/d/1qMSPsGghb0AdBk_drLd7yzvsG53dK-mbxhWYf4FjnIQ/edit>
+
+What changed from v32: **four UI cells, and the shape of the sheet.** The
+button on the title screen, the row in the pause menu and the selector's
+heading now say EPISODES (Chad: "use the word episodes in title screen
+button"): `title.chapters` "Chapters" → "Episodes", `menu.chapters` "Select
+a chapter" → "Episodes and chapters", `chapters.heading` "Chapters" →
+"Episodes", and `chapters.hint` "A chapter you have completed can be played
+again from its opening." → "Pick an episode, then a chapter you have
+reached, to play it again from its opening." No chapter text, no spoken
+word and no length moved. And the sheet is TABBED (Chad: "the sheet must be
+tabbed, google sheets wont be sustainable in the long run unless you can
+figure out a way to write tabbed google sheets"): the 294 GAME TEXT rows
+split into UI TEXT and EPISODE 1, and the voice lines left the block under
+the text for a tab of their own — the layout the .xlsx has carried since
+v19, now on the Google Sheet itself (how, below). v32 (id
+`1zWVqB9TTJb9u-qPXAYd4uL_CNuOtugZWh0-BKOelnts`) is superseded; its
+metadata was checked before v33 went to him (created 19:48:33, modified
+19:48:34 — the conversion itself), so it holds no edit of his to import.
+Provenance: v33 was published from the fresh `.xlsx` export through the
+Drive connector, read back as three tables, and every cell of all three
+diffed against the uploaded workbook by `tools/verifytabs.py` — 393 rows,
+zero differences.
 
 What changed from v31: **twenty-three rows ADDED, none changed, no spoken
 word.** The ten-episode architecture (v6.0, docs/EPISODES-PLAN.md) puts the
@@ -139,18 +163,44 @@ when he asked for it: "moving forward, every new version of the sheet
 should include these voicelines too." Every export carries them, so there
 is no way to make a sheet without them.
 
-**Why one tab on the Google Sheet, and where the two-tab version is.**
-Chad asked for a tab. `textsync export <file>.xlsx` writes a real two-tab
-workbook (GAME TEXT · VOICE LINES) and it is handed to him as a file with
-each release — opened with Google Sheets on his phone it becomes a
-two-tab sheet in his Drive. The sheet the connector CREATES from a session
-is made from the CSV (text, proven since v3.0): the connector takes a
-workbook only as base64 inside a tool call, and even a 20 KB workbook is
-27 KB of base64 — past what a session can read back and re-emit without
-risking a corrupt byte. So on the created sheet the voice lines sit under
-the text, and `import` reads either layout the same way. If he moves them
-to a tab of his own, or works from the workbook copy, nothing changes:
-import finds every table on every tab by its header row.
+**The Google Sheet is TABBED since v33 (v6.1), and this is how it gets
+that way.** `textsync export <file>.xlsx` writes a real workbook — UI
+TEXT, one EPISODE N tab for every episode that has a chapter file, VOICE
+LINES — as the smallest valid package (inline strings, no styles; three
+tabs are 22 KB). The Drive connector's `create_file` takes that file as
+`base64Content` with `contentMimeType`
+`application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`, and
+Drive CONVERTS it into a native Google Sheet
+(`application/vnd.google-apps.spreadsheet`) with one tab per worksheet.
+v5.14 wrote down that this could not be done — "even a 20 KB workbook is
+27 KB of base64, past what a session can read back and re-emit without
+risking a corrupt byte" — and it had never been tried: the 30 KB went
+through intact, first on a two-tab test workbook and then on the real
+one, and the cell-by-cell read-back check below proves it on every
+publish rather than hoping. A chapter of episode 2 makes an EPISODE 2 tab
+the day its file exists; `toXLSX` groups chapter rows by the chapter's
+own `episode`. `import` finds every table on every tab by its header row,
+so the CSV, the workbook and the connector's read-back all import alike.
+
+**Publishing a sheet, start to finish** (every release that changes a word):
+
+1. `get_file_metadata` on the CURRENT sheet: a `modifiedTime` more than a
+   few seconds after its `createdTime` (the conversion itself takes about
+   one) means Chad edited it — `read_file_content`, save the output whole,
+   `textsync import` it, and review that diff FIRST.
+2. `node textsync.mjs export gametext-vNN.xlsx` in the scratchpad, then
+   `base64 -w0 gametext-vNN.xlsx > gametext-vNN.b64`.
+3. `create_file` with `title` "Master Z's Encounters — GAME TEXT vNN (edit
+   here)", `contentMimeType` as above and `base64Content` from the .b64.
+   The result's `id` is the new sheet; its `mimeType` must come back as
+   the Google spreadsheet type, or Drive did not convert it.
+4. `read_file_content` on that id returns one markdown table per tab with
+   a blank line between tables. Save it WHOLE to a file and run
+   `python3 tools/verifytabs.py gametext-vNN.xlsx readback.md` — the last
+   line must be `mismatched cells: 0` (v33: three tabs, 393 rows, zero).
+5. Put the full `https://docs.google.com/spreadsheets/d/<id>/edit` link in
+   the reply, and record the new id, its counts and what changed at the
+   top of this file.
 
 Two sheets in one session is the cost of the connector's one real
 limitation, and it is worth restating why: it can READ a sheet and it can
@@ -170,11 +220,12 @@ map), not only in the sheet, or every regeneration loses it.
 Four columns: `ID (do not edit)` · `Where it appears` · **`TEXT — edit this
 column`** · `Notes`. He only ever touches the TEXT column.
 
-In the workbook the VOICE LINES tab has seven: `ID (do not edit)` · `Who`
+The VOICE LINES tab has seven: `ID (do not edit)` · `Who`
 · `Chapter` · `When it plays` · **`TEXT — edit this column`** · `Length
-(s)` · `Notes`. On the one-tab sheet the same rows use the four text
-columns: `Where it appears` holds chapter — speaker: when it plays, and
-`Notes` holds the length and any note. Again only TEXT is his. The ID is `voice.` plus the take's sample name
+(s)` · `Notes`. (Before v33 the Google Sheet was one tab made from the
+CSV, and the same rows used the four text columns — `Where it appears`
+holding chapter — speaker: when it plays, `Notes` the length and any note;
+`import` still reads that shape.) Again only TEXT is his. The ID is `voice.` plus the take's sample name
 (`voice.v2wake1`), so a voice row can never be mistaken for a UI string. A
 line under an outcome card names the choice it follows, read from the
 chapter at export time. The TEXT of a take is what the take SAYS — every
@@ -202,7 +253,7 @@ file.
 
 | File | Holds |
 |---|---|
-| `src/strings.js` | every UI word the ENGINE says (120) |
+| `src/strings.js` | every UI word the ENGINE says (184) |
 | `src/chapters/ch1.js` | chapter 1's own words (18): brief, prompt, choices, teachings |
 | `src/chapters/ch2.js` | chapter 2's own words (23): the same, plus its `words` block |
 | `src/chapters/ch3.js` | chapter 3's own words (23) |
@@ -228,7 +279,7 @@ never blank the game.
 
 ```
 node textsync.mjs export text.csv     # game  -> sheet, both kinds of row in one CSV
-node textsync.mjs export text.xlsx    # game  -> the two-tab workbook the Google Sheet is made from
+node textsync.mjs export text.xlsx    # game  -> the tabbed workbook the Google Sheet is made from
 node textsync.mjs import <file>       # sheet -> game (.csv, .xlsx, or the connector's markdown)
 ```
 
@@ -244,8 +295,9 @@ tab of an .xlsx. At the end it names every voice line whose text changed.
 
 1. Read the sheet with the Drive connector (`read_file_content` on the id
    above).
-2. Save that output to a file, e.g. `/tmp/sheet.md`.
-3. `node textsync.mjs import /tmp/sheet.md`
+2. Save that output WHOLE to a file (one table per tab since v33), e.g.
+   the scratchpad's `sheet.md`.
+3. `node textsync.mjs import <that file>`
 4. `npm run build`, run `title step sound` (more if the text touches more),
    review the diff, commit, tag, deploy, refresh the bundle.
 5. If the import named voice lines, regenerate those takes before the

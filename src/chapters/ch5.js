@@ -2142,7 +2142,7 @@
     // 9.4-15.4 the tang-ki, quiet, behind him (5.96 s since v5.15)
     sfx(9.4, 't5disC');
 
-    /* 16.3-22.6 THE ANSWER — v5.30, to Chad's spec: "after the tangki says
+    /* 15.5-21.8 THE ANSWER — v5.30, to Chad's spec: "after the tangki says
        'caught in its fire', i want the single hellnote to fly off from
        the table with wind physics/movement, and cinematically fly out of
        the window by its own as the camera tracks the hellnote, to end
@@ -2158,11 +2158,15 @@
        note's table-local frame (the table sits unrotated at TABLE.x/z);
        stage.restore() puts the note back at NOTE_HOME, so nothing here has
        to be undone. `noteflight` is a new sound: one sheet lifting,
-       flapping and a low gust, 6.5 s, made for this shot.              */
+       flapping and a low gust, 6.5 s, made for this shot.
+       v6.1 (Chad: "reduce the delay after the tangki says 'in its fire'
+       and between the hellnote starts flying"): the whole tail 0.8 s
+       earlier — his line ends at 15.36 and the paper lifts at 15.6, a
+       quarter-second, where it used to wait a full second.              */
     const NW = { x: stage.TABLE.x, z: stage.TABLE.z };     // world -> table-local
     const CAM_C = { x: 0.2, y: EYE, z: -0.9 };             // where he stands, facing the window
     const CAM_D = { x: -0.05, y: EYE, z: -1.55 };          // the step after it
-    const FLY0 = 16.4, FLY1 = 22.6;
+    const FLY0 = 15.6, FLY1 = 21.8;
     const flyAt = (t) => {                                  // the note's world position at cine time t
       const u = Math.max(0, Math.min(1, (t - FLY0) / (FLY1 - FLY0)));
       const e = u * u * (3 - 2 * u);
@@ -2179,7 +2183,7 @@
       y += Math.sin(s2 * 11.0) * 0.03;
       return { x, y, z, s2 };
     };
-    sfx(16.3, 'noteflight', 0.75);
+    sfx(15.5, 'noteflight', 0.75);
     tr(FLY0, FLY1, (k, t) => {
       const f = flyAt(t);
       stage.note.position.set(f.x - NW.x, f.y, f.z - NW.z);
@@ -2189,9 +2193,9 @@
                               0.5 + Math.sin(f.s2 * 3.7) * 0.8);
     }, rawK);
     // the fan and the dim, as before — the room's answer is now visible too
-    tr(16.5, 17.1, k => { stage.fanSpeed = 1 - k; }, rawK);
-    tr(21.0, 22.0, k => { stage.fanSpeed = k; }, rawK);
-    tr(16.5, 20.0, k => {
+    tr(15.7, 16.3, k => { stage.fanSpeed = 1 - k; }, rawK);
+    tr(20.2, 21.2, k => { stage.fanSpeed = k; }, rawK);
+    tr(15.7, 19.2, k => {
       duck('v5room', 1 - 0.7 * Math.sin(Math.PI * k));
       stage.duskFill.intensity = 0.15 - 0.12 * Math.sin(Math.PI * k);
     }, rawK);
@@ -2203,25 +2207,25 @@
     const aimAt = (cam, n) => ({
       yaw: faceFrom(cam.x, cam.z, n.x, n.z),
       pitch: Math.atan2(n.y - cam.y, Math.hypot(n.x - cam.x, n.z - cam.z)) });
-    camTo(19.6, 22.6, CAM_C, CAM_D, smoothK);
-    tr(17.4, 22.6, (k, t) => {
-      const kc = Math.max(0, Math.min(1, (t - 19.6) / 3.0)), ec = kc * kc * (3 - 2 * kc);
+    camTo(18.8, 21.8, CAM_C, CAM_D, smoothK);
+    tr(16.6, 21.8, (k, t) => {
+      const kc = Math.max(0, Math.min(1, (t - 18.8) / 3.0)), ec = kc * kc * (3 - 2 * kc);
       const cam = { x: CAM_C.x + (CAM_D.x - CAM_C.x) * ec, y: EYE, z: CAM_C.z + (CAM_D.z - CAM_C.z) * ec };
       const a = aimAt(cam, flyAt(t));
-      const kb = Math.max(0, Math.min(1, (t - 17.4) / 1.0)), eb = kb * kb * (3 - 2 * kb);
+      const kb = Math.max(0, Math.min(1, (t - 16.6) / 1.0)), eb = kb * kb * (3 - 2 * kb);
       yaw.rotation.y = mixAngle(TO_WIN, a.yaw, eb);
       pitch.rotation.x = -0.02 + (a.pitch - -0.02) * eb;
     }, rawK);
     // the kicked horizon lands as the paper passes his shoulder
-    tr(18.3, 19.6, k => { camera.rotation.z = 0.035 * (1 - k); }, rawK);
-    step(19.7, () => { camera.rotation.z = 0; });
+    tr(17.5, 18.8, k => { camera.rotation.z = 0.035 * (1 - k); }, rawK);
+    step(18.9, () => { camera.rotation.z = 0; });
 
-    // 22.6-24.4 it is gone; he is left looking at the window it went out of
-    yawTo(22.6, 24.2, faceFrom(CAM_D.x, CAM_D.z, -0.90, -7.5), TO_WIN, smoothK);
-    pitchTo(22.6, 24.2, Math.atan2(2.1 - EYE, Math.hypot(-0.90 - CAM_D.x, -7.5 - CAM_D.z)), 0.02, smoothK);
-    tr(24.2, 24.5, () => {}, rawK);
-    fade(24.5, 27.5, 0, 1);
-    step(27.4, () => { handsRoot.visible = true; });
+    // 21.8-23.6 it is gone; he is left looking at the window it went out of
+    yawTo(21.8, 23.4, faceFrom(CAM_D.x, CAM_D.z, -0.90, -7.5), TO_WIN, smoothK);
+    pitchTo(21.8, 23.4, Math.atan2(2.1 - EYE, Math.hypot(-0.90 - CAM_D.x, -7.5 - CAM_D.z)), 0.02, smoothK);
+    tr(23.4, 23.7, () => {}, rawK);
+    fade(23.7, 26.7, 0, 1);
+    step(26.6, () => { handsRoot.visible = true; });
 
     c.endFade = 1;
   }

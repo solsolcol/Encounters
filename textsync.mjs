@@ -1,7 +1,8 @@
 /* textsync — every word in the game, out to one sheet and back in.
    ---------------------------------------------------------------------------
      node textsync.mjs export [file.csv]   read the game -> write the sheet
-     node textsync.mjs export file.xlsx    the same, as a two-tab workbook
+     node textsync.mjs export file.xlsx    the same, as a TABBED workbook (UI text,
+                                           one tab per episode, voice lines)
      node textsync.mjs import file         read the sheet -> write the game
                                            (.csv, .xlsx, or the markdown the
                                            Drive connector returns)
@@ -249,9 +250,9 @@ function parseCSV(text) {
   return rows.filter(r => r.length > 1);
 }
 
-/* --- the two-tab workbook ---------------------------------------------------
+/* --- the tabbed workbook -------------------------------------------------
    The Drive connector turns an .xlsx into a Google Sheet with one tab per
-   worksheet, which is how Chad's sheet gets its VOICE LINES tab. Written
+   worksheet, which is how Chad's sheet gets its tabs (v6.1). Written
    by hand as the smallest valid package — two worksheets with inline
    strings, no styles, no theme, deflated — because the connector takes the
    file as base64 INSIDE a tool call, and the 111 KB the xlsx package
@@ -296,30 +297,50 @@ function zipWrite(file, entries) {
   eocd.writeUInt32LE(cd.length, 12); eocd.writeUInt32LE(off, 16);
   writeFileSync(file, Buffer.concat([...parts, cd, eocd]));
 }
+/* v6.1 — TABS (Chad: "the sheet must be tabbed, google sheets wont be
+   sustainable in the long run" otherwise). One worksheet per kind of text:
+   the engine's UI strings, one tab per EPISODE holding its chapters' rows,
+   and the voice lines. Chapter rows are grouped by the chapter's own
+   `episode`, so episode 2's chapters make their own tab the day the first
+   one exists. The Drive connector turns this file, sent as base64, into a
+   Google Sheet with one tab per worksheet and reads it back as one table
+   per tab — proven at v6.1 on a two-tab test before the real one went up. */
 function toXLSX(file) {
-  const text = [['ID (do not edit)', 'Where it appears', 'TEXT — edit this column', 'Notes']];
+  const HEAD = ['ID (do not edit)', 'Where it appears', 'TEXT — edit this column', 'Notes'];
+  const epOf = Object.fromEntries(chapterFiles().map(c => [c.key, Number.isInteger(c.ch.episode) ? c.ch.episode : 1]));
+  const ui = [HEAD], byEp = new Map();
   for (const [k, v] of readRows()) {
     const head = k.split('.')[0];
-    const where = WHERE[head] || chapterWhere(head);
-    text.push([k, where, v, noteFor(k)]);
+    const row = [k, WHERE[head] || chapterWhere(head), v, noteFor(k)];
+    const m = /^(?:ch\d+|e(\d+)c\d+)$/.exec(head);
+    if (m) {
+      const ep = m[1] ? +m[1] : (epOf[head] || 1);
+      if (!byEp.has(ep)) byEp.set(ep, [HEAD]);
+      byEp.get(ep).push(row);
+    } else ui.push(row);
   }
+  const tabs = [{ name: 'UI TEXT', rows: ui, widths: [26, 30, 70, 44] }];
+  for (const ep of [...byEp.keys()].sort((a, b) => a - b)) tabs.push({ name: `EPISODE ${ep}`, rows: byEp.get(ep), widths: [26, 30, 70, 44] });
   const voice = [['ID (do not edit)', 'Who', 'Chapter', 'When it plays', 'TEXT — edit this column', 'Length (s)', 'Notes']];
   for (const v of readVoice()) voice.push([`voice.${v.id}`, v.who, v.chapter, v.where, v.text, v.secs, v.note]);
+  tabs.push({ name: 'VOICE LINES', rows: voice, widths: [18, 22, 26, 44, 70, 10, 44] });
   const R = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
   const P = 'http://schemas.openxmlformats.org/package/2006/relationships';
-  zipWrite(file, [
+  const entries = [
     { name: '[Content_Types].xml', data: XML_HEAD + '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
       + '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/>'
       + '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>'
-      + '<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>'
-      + '<Override PartName="/xl/worksheets/sheet2.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>' },
+      + tabs.map((_, i) => `<Override PartName="/xl/worksheets/sheet${i + 1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join('')
+      + '</Types>' },
     { name: '_rels/.rels', data: XML_HEAD + `<Relationships xmlns="${P}"><Relationship Id="rId1" Type="${R}/officeDocument" Target="xl/workbook.xml"/></Relationships>` },
     { name: 'xl/workbook.xml', data: XML_HEAD + `<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="${R}"><sheets>`
-      + '<sheet name="GAME TEXT" sheetId="1" r:id="rId1"/><sheet name="VOICE LINES" sheetId="2" r:id="rId2"/></sheets></workbook>' },
-    { name: 'xl/_rels/workbook.xml.rels', data: XML_HEAD + `<Relationships xmlns="${P}"><Relationship Id="rId1" Type="${R}/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="${R}/worksheet" Target="worksheets/sheet2.xml"/></Relationships>` },
-    { name: 'xl/worksheets/sheet1.xml', data: sheetXML(text, [26, 30, 70, 44]) },
-    { name: 'xl/worksheets/sheet2.xml', data: sheetXML(voice, [18, 22, 26, 44, 70, 10, 44]) }
-  ]);
+      + tabs.map((t, i) => `<sheet name="${xmlEsc(t.name)}" sheetId="${i + 1}" r:id="rId${i + 1}"/>`).join('') + '</sheets></workbook>' },
+    { name: 'xl/_rels/workbook.xml.rels', data: XML_HEAD + `<Relationships xmlns="${P}">`
+      + tabs.map((_, i) => `<Relationship Id="rId${i + 1}" Type="${R}/worksheet" Target="worksheets/sheet${i + 1}.xml"/>`).join('') + '</Relationships>' },
+    ...tabs.map((t, i) => ({ name: `xl/worksheets/sheet${i + 1}.xml`, data: sheetXML(t.rows, t.widths) }))
+  ];
+  zipWrite(file, entries);
+  return tabs.map(t => `${t.name} (${t.rows.length - 1})`);
 }
 /* Whatever shape the sheet comes back in — the CSV this tool wrote, the
    markdown table(s) the Drive connector returns, or an .xlsx download with
@@ -464,8 +485,8 @@ if (mode === 'export') {
      'VOICE LINES — every spoken take, every speaker', 'Length of the current take'],   // [id, text, where, notes]
     ...voiceRows()];
   if (file && file.endsWith('.xlsx')) {
-    toXLSX(file);
-    console.log(`wrote ${file} (${readRows().length} text rows + ${voiceRows().length} voice lines, two tabs)`);
+    const tabs = toXLSX(file);
+    console.log(`wrote ${file} — ${tabs.length} tabs: ${tabs.join(', ')}`);
   } else if (file) { writeFileSync(file, toCSV(rows)); console.log(`wrote ${file} (${rows.length} rows)`); }
   else process.stdout.write(toCSV(rows));
 } else if (mode === 'import') {

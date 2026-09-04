@@ -2047,11 +2047,15 @@
     step(3.7, () => {
       ARM0.p = armR.position.clone(); ARM0.e = armR.rotation.clone();
       armR.add(stage.handset);
-      /* the receiver's long axis is its local z (22.6 cm, measured); this
-         lays it diagonally along the fingers with the earpiece up-right —
-         chosen from eight rendered candidates, not reasoned out */
+      /* the receiver's long axis is its local z (22.6 cm, measured). v5.30
+         laid it diagonally along the fingers (1.57, 0, 0.30); v6.1 stands it
+         UP in the palm — Chad: "tilted left in its place, so that the phone
+         fills the gap between his thumb and index finger, in the space of
+         his palm area" — the mouthpiece low in the palm, the earpiece up
+         in the V of thumb and index finger. Chosen from fourteen rendered
+         candidates over two rounds, not reasoned out. */
       stage.handset.position.set(0.02, -0.03, -0.12);
-      stage.handset.rotation.set(1.57, 0.0, 0.30);
+      stage.handset.rotation.set(0.85, 0.0, 0.85);
     });
     // the fingers close round it (the walking curl is a relaxed fist)
     tr(3.7, 4.3, k => { if (rightHand()) setHandCurl(rightHand(), 0.85 * k); }, smoothK);

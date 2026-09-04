@@ -1956,3 +1956,23 @@ game, and the game had not changed at boot (the live site's preloads were
 diffed against the build's: identical). Now both set the same 180 s. A
 harness that fails on its own timeout is a harness that will one day be
 "flaky" in someone's memory and skipped; give every one the same budget.
+
+## "Cannot", written down without a try, held for fourteen sheets (v6.1)
+
+v5.14 put the voice lines under the text on the Google Sheet because "the
+connector takes a workbook only as base64 inside a tool call, and even a
+20 KB workbook is 27 KB of base64 — past what a session can read back and
+re-emit without risking a corrupt byte." Nothing had been tried; it was a
+fear about the session, recorded as a property of the connector, and it
+shaped fourteen sheets (v19–v32). Chad's ask for tabs — "google sheets
+wont be sustainable in the long run unless you can figure out a way to
+write tabbed google sheets" — forced the attempt: a two-tab test workbook,
+then the real 22 KB one, sent as 30 KB of base64 through `create_file` with
+the xlsx MIME type. Drive converted each into a native sheet with one tab
+per worksheet, and the read-back matched the uploaded file in every one of
+393 rows (`tools/verifytabs.py`). Two rules. A limit written down as
+"cannot" must say what was TRIED, or it is a guess wearing a fact's
+clothes. And the fear it guarded against is better TESTED than avoided:
+the session emits the base64 once, into one tool call, and the
+cell-by-cell read-back check would catch a corrupt byte on any publish —
+which turns "might corrupt" into "verified, every time".
