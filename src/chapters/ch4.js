@@ -114,7 +114,7 @@
        chapter to reuse it, which is the point: all of this happens at one
        block. seat is chapter 3's red plastic chair, back for one shot in
        the flashback. NO hellnote: it is not seen in this chapter.        */
-    assets: ['hdb', 'seat', 'altar'],
+    assets: ['hdb', 'seat', 'altar', 'sofa'],
 
     /* The room's own sound: an evening, not a night — crickets and traffic
        far down, the clock, the fan. The explore music sits a little lower
@@ -174,7 +174,6 @@
     const matPaint = new THREE.MeshStandardMaterial({ color: 0xd8d2c4, roughness: 0.7 });
     const matCream = new THREE.MeshStandardMaterial({ color: 0xe4ddcb, roughness: 0.65 });
     const matLacquer = new THREE.MeshStandardMaterial({ map: lacquerTex, roughness: 0.42, metalness: 0.18 });
-    const matSheet = new THREE.MeshStandardMaterial({ color: 0xcac2ae, roughness: 0.94, side: THREE.DoubleSide });
     const matGlass = new THREE.MeshStandardMaterial({
       color: 0x2a3040, roughness: 0.15, metalness: 0.1, transparent: true, opacity: 0.30 });
     const matVoid = new THREE.MeshBasicMaterial({ color: 0x000000, fog: false });
@@ -415,16 +414,12 @@
                      (WIN.sill + WIN.top) / 2, 0.05);
       winGroup.add(b);
     }
-    // curtains at both edges, with base arrays so they can billow
-    const curtainGeoL = new THREE.PlaneGeometry(0.6, WIN.top - WIN.sill + 0.3, 6, 1);
-    const curtainL = new THREE.Mesh(curtainGeoL, matSheet);
-    curtainL.position.set(-WIN.w / 2 + 0.22, (WIN.sill + WIN.top) / 2 - 0.08, 0.12);
-    winGroup.add(curtainL);
-    const curtainR = new THREE.Mesh(curtainGeoL.clone(), matSheet);
-    curtainR.position.set(WIN.w / 2 - 0.22, (WIN.sill + WIN.top) / 2 - 0.08, 0.12);
-    winGroup.add(curtainR);
-    const curtLBase = curtainL.geometry.attributes.position.array.slice();
-    const curtRBase = curtainR.geometry.attributes.position.array.slice();
+    /* v5.24: NO CURTAINS. Chad's call — "remove all curtains from the
+       living room windows" — so the window is glass, frame and grille, and
+       the evening comes through it unfiltered. What went with them: their
+       billow, which nothing else drove, and the `billow` seam that only
+       ever moved them (scene C's cloth moment is now carried by the fan,
+       the dim and the boom that always ran beside it).                  */
 
     // the block opposite, and its windows coming on for the evening
     let hdbReady = false;
@@ -595,6 +590,47 @@
       cu.position.set(cx, 0.47, 0.05);
       sofa.add(cu);
     }
+
+    /* CHAD'S SOFA — v5.24, Sketchfab, replacing the boxes above. 3.4 MB and
+       13,984 triangles down to 331 KB and 6,292, with every map but base
+       colour dropped (the CSP-safe rescueTextures only ever restores base
+       colour, so a normal or AO map is pure download).
+
+       It needs no fitting numbers of its own, which is the nice part: the
+       file is 80 x 39 x 38 in its own units, and scaled uniformly so its
+       LENGTH is the primitive's 1.9 m it comes out 0.93 deep and 0.90 high
+       against the boxes' 0.85 and 0.92. So one scalar, measured from the
+       file rather than guessed, and no per-axis squashing.
+
+       Its length runs along its own z and the group's runs along local x
+       (the group is turned a quarter about Y to face the TV), so it is
+       turned a quarter the other way inside the group. That also puts its
+       BACK where the primitive's back is: the model's backrest is at +x of
+       its own centre, which a quarter turn sends to local -z, exactly where
+       sofaBack sat.
+
+       The primitive stays in the group, hidden: `sofaBase` is what
+       `blockers()` boxes for the collision column, and a download that
+       never lands must still leave something to sit on.                */
+    assetBytes('sofa').then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
+      if (!alive) return;
+      rescueTextures(gltf, BUF);
+      const g = gltf.scene;
+      g.updateMatrixWorld(true);
+      let b = new THREE.Box3().setFromObject(g);
+      const sz = new THREE.Vector3(); b.getSize(sz);
+      if (!(sz.x > 0 && sz.y > 0 && sz.z > 0)) return;
+      const s = 1.90 / Math.max(sz.x, sz.z);     // its longest floor axis IS its length
+      g.scale.setScalar(s);
+      g.rotation.y = Math.PI / 2;                // length onto the group's local x
+      g.updateMatrixWorld(true);
+      b = new THREE.Box3().setFromObject(g);
+      g.position.set(-(b.min.x + b.max.x) / 2, -b.min.y, -(b.min.z + b.max.z) / 2);
+      g.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+      for (const c of [...sofa.children]) c.visible = false;
+      sofa.add(g);
+      redoShadows();
+    }, () => {})).catch(() => {});
 
     /* ------------------------------------------------------ TV and console */
     const tvConsole = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.42, 1.1), matWoodDark);
@@ -1184,7 +1220,6 @@
     /* ================================================================== */
     let fanSpeed = 1;
     let noteStorm = 1;              // the contract's word for "how much air"
-    let billow = 0;                 // scene C throws the curtains
 
     const _m4 = new THREE.Matrix4();
     /* ------------------------------------------- the unseen haunting ----
@@ -1223,20 +1258,6 @@
     function updateNotes(dt, t) {
       polterUpdate(dt);
       fan.rotation.y += dt * 2.0 * fanSpeed;
-
-      const air = 0.014 * noteStorm;
-      const cpL = curtainL.geometry.attributes.position.array;
-      const cpR = curtainR.geometry.attributes.position.array;
-      for (let i = 0; i < cpL.length; i += 3) {
-        const y = curtLBase[i + 1];
-        const b = Math.max(0, (y + 0.6)) * billow;
-        cpL[i + 2] = curtLBase[i + 2] + Math.sin(t * 1.2 + y * 2.0) * air
-          + Math.sin(t * 7.0 + y * 3.0) * 0.10 * b;
-        cpR[i + 2] = curtRBase[i + 2] + Math.sin(t * 1.35 + y * 2.1) * air
-          + Math.sin(t * 6.4 + y * 2.7) * 0.10 * b;
-      }
-      curtainL.geometry.attributes.position.needsUpdate = true;
-      curtainR.geometry.attributes.position.needsUpdate = true;
 
       for (let i = 0; i < motes.length; i++) {
         const f = motes[i];
@@ -1278,7 +1299,7 @@
     /* ------------------------------------------------------ cutscene state */
     function snap() {
       return {
-        fanSpeed, storm: noteStorm, billow,
+        fanSpeed, storm: noteStorm,
         ceil: ceilLight.intensity, lamp: lampLight.intensity,
         alt: altLight.intensity, tvL: tvLight.intensity,
         tvCol: tvScreen.material.color.getHex(),
@@ -1293,7 +1314,7 @@
       };
     }
     function restore(s) {
-      fanSpeed = s.fanSpeed; noteStorm = s.storm; billow = s.billow;
+      fanSpeed = s.fanSpeed; noteStorm = s.storm;
       ceilLight.intensity = s.ceil; lampLight.intensity = s.lamp;
       altLight.intensity = s.alt; tvLight.intensity = s.tvL;
       tvScreen.material.color.setHex(s.tvCol);
@@ -1316,7 +1337,7 @@
       alt: altLight.intensity
     };
     function reset() {
-      fanSpeed = 1; noteStorm = 1; billow = 0;
+      fanSpeed = 1; noteStorm = 1;
       ceilLight.intensity = REST.ceil;
       lampLight.intensity = REST.lamp;
       altLight.intensity = REST.alt;
@@ -1412,7 +1433,7 @@
       table, chairTh, chairs, sofa, tv, tvScreen, tvLight, tvConsole,
       phone, phoneTable, handset, HANDSET_HOME, cord,
       doorMain, doorLeaf, DOORM, DOORM_OPEN, gate,
-      curtainL, curtainR, winGroup, kitDark, homeAltar, altTip, altLight,
+      winGroup, kitDark, homeAltar, altTip, altLight,
       ceilLight, lampLight, duskFill, outLight, fan,
       hall, bedDoor, maDoor, lateMat, litWins,
       mem1, mem2, mem3, mem1Light, mem2Light, mem3Light, mem3Wash,
@@ -1422,8 +1443,6 @@
       set fanSpeed(v) { fanSpeed = v; },
       get noteStorm() { return noteStorm; },
       set noteStorm(v) { noteStorm = v; },
-      get billow() { return billow; },
-      set billow(v) { billow = v; },
       updateNotes, updatePile, updateFire, updateSlow,
       /* scene A thins the fog so the memory sets forty metres out are
          not washed to the fog colour; the engine's api does not hand a
@@ -1817,8 +1836,9 @@
     yawTo(17.2, 18.4, TO_TV, TO_PHONE, smoothK);
     pitchTo(17.2, 18.4, 0.02, -0.30, smoothK);    // down: the phone, not the clock
     camTo(17.2, 19.4, CENTRE, { x: 0.0, y: EYE, z: 1.1 }, smoothK);
-    sfx(21.4, 'curtain', 0.8);
-    tr(21.4, 24.0, k => { stage.billow = Math.sin(Math.PI * k); }, rawK);
+    /* v5.24: the cloth beat is gone with the curtains (Chad removed them
+       from this window). The BOOM was always the punctuation under it and
+       it still lands here on its own. */
     sfx(22.5, 'boom');
 
     // 24–28 everything at once: heart, strobe, the room pushing him —
@@ -1834,7 +1854,6 @@
       stage.tvLight.intensity = 0;
       stage.tvScreen.material.color.setHex(0x0a0c0e);
       stage.ceilLight.intensity = 0.9;            // dim, steady, wrong
-      stage.billow = 0;
     });
     tr(28.0, 30.0, () => { camera.rotation.z = 0; }, rawK);
 

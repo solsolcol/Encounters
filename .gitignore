@@ -15,6 +15,7 @@ view/
 
 # one-off debug harnesses and unshrunk intermediates
 dbg*.mjs
+dbg*.html
 ablate.mjs
 bench.mjs
 fps.mjs

@@ -836,6 +836,29 @@ What the baseline contains, by release:
   skinned mesh cloned, not the first — the first render of this build was
   a tent of floating heads, after every number had passed.
   docs/V5.21-THE-CROWD-SHUFFLED.md.
+- **v5.24** THE SOFA, AND THE CURTAINS — three of Chad's asks, two rooms.
+  His Sketchfab SOFA replaces the boxes in the living room of chapters 4
+  AND 5 (3.40 MB -> 331 KB): it needed no fitting numbers, because scaled
+  uniformly to the primitive's 1.9 m length the file comes out 0.93 deep
+  and 0.90 high against the boxes' 0.85 and 0.92, and the same quarter
+  turn that puts its length on the group's local x puts its BACK where
+  sofaBack was. The primitive stays hidden in the group because
+  `sofaBase` is what `blockers()` boxes. The LIVING-ROOM CURTAINS are
+  gone from both chapters, and the whole `billow` seam with them (nothing
+  else drove it) — which costs both scene Cs their cloth moment; ch4's
+  boom still lands, and ch5's camera is ON the window there, so the room's
+  dim is what answers in frame now. And the ch2 BEDROOM curtain stopped
+  slicing the window: its folds reach 4.9 cm behind its own rail, which at
+  a rail of 0.10 put its back face inside the grille bars (0.039-0.061),
+  and its swing — positive rotation.x drives the hem AT the window, times
+  a `noteStorm` that scene A takes to 6 — threw it 30 cm through the glass.
+  The rail moved to 0.21 and the BACKWARD lean alone is clamped at 0.045,
+  above the 0.035 the swing reaches by itself, so play is untouched and a
+  storm holds 2.9 cm off the bars. docs/V5.24-SOFA-AND-CURTAINS.md.
+- **v5.23** THE GRANNY IS CHAD'S — her credit row removed (the panel lists
+  other people's work, and she is his own), and yinn and the kungfu man
+  DROPPED rather than deferred, with the asks withdrawn from every doc
+  that carried them. Sheet v26.
 - **v5.22** THE TENT, PUT RIGHT — Chad's play-through of v5.21: "a tangled
   mangled texture mess floating in the sky", every sitter sunk into the
   floor, the encik gone. Measured from the shipped build before anything

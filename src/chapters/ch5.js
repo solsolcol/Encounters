@@ -108,7 +108,7 @@
        tangki is the tang-ki (+ his clips), mother is Ma, hellnote is the note art
        the engine hands back through setNoteTexture: the found note on the
        table carries the photograph, not the drawn card.                 */
-    assets: ['hdb', 'seat', 'tangki', 'tangkianim', 'mother', 'motheranim', 'hellnote', 'altar'],
+    assets: ['hdb', 'seat', 'tangki', 'tangkianim', 'mother', 'motheranim', 'hellnote', 'altar', 'sofa'],
     noteArt: 'hellnote',
 
     /* Morning sound: the estate awake, far off. The dread bed is all but
@@ -169,7 +169,6 @@
     const matLacquer = new THREE.MeshStandardMaterial({ map: lacquerTex, roughness: 0.42, metalness: 0.18 });
     /* deeper than ch4's sheet: in full morning hemi a pale flat plane reads
        as a glowing white board, not a curtain */
-    const matSheet = new THREE.MeshStandardMaterial({ color: 0xaba390, roughness: 0.97, side: THREE.DoubleSide });
     const matGlass = new THREE.MeshStandardMaterial({
       color: 0x2a3040, roughness: 0.15, metalness: 0.1, transparent: true, opacity: 0.30 });
     const matVoid = new THREE.MeshBasicMaterial({ color: 0x000000, fog: false });
@@ -410,16 +409,12 @@
                      (WIN.sill + WIN.top) / 2, 0.05);
       winGroup.add(b);
     }
-    // curtains at both edges, with base arrays so they can billow
-    const curtainGeoL = new THREE.PlaneGeometry(0.6, WIN.top - WIN.sill + 0.3, 6, 1);
-    const curtainL = new THREE.Mesh(curtainGeoL, matSheet);
-    curtainL.position.set(-WIN.w / 2 + 0.22, (WIN.sill + WIN.top) / 2 - 0.08, 0.12);
-    winGroup.add(curtainL);
-    const curtainR = new THREE.Mesh(curtainGeoL.clone(), matSheet);
-    curtainR.position.set(WIN.w / 2 - 0.22, (WIN.sill + WIN.top) / 2 - 0.08, 0.12);
-    winGroup.add(curtainR);
-    const curtLBase = curtainL.geometry.attributes.position.array.slice();
-    const curtRBase = curtainR.geometry.attributes.position.array.slice();
+    /* v5.24: NO CURTAINS. Chad's call — "remove all curtains from the
+       living room windows" — so the window is glass, frame and grille, and
+       the evening comes through it unfiltered. What went with them: their
+       billow, which nothing else drove, and the `billow` seam that only
+       ever moved them (scene C's cloth moment is now carried by the fan,
+       the dim and the boom that always ran beside it).                  */
 
     // the block opposite, and its windows coming on for the evening
     let hdbReady = false;
@@ -608,6 +603,47 @@
       cu.position.set(cx, 0.47, 0.05);
       sofa.add(cu);
     }
+
+    /* CHAD'S SOFA — v5.24, Sketchfab, replacing the boxes above. 3.4 MB and
+       13,984 triangles down to 331 KB and 6,292, with every map but base
+       colour dropped (the CSP-safe rescueTextures only ever restores base
+       colour, so a normal or AO map is pure download).
+
+       It needs no fitting numbers of its own, which is the nice part: the
+       file is 80 x 39 x 38 in its own units, and scaled uniformly so its
+       LENGTH is the primitive's 1.9 m it comes out 0.93 deep and 0.90 high
+       against the boxes' 0.85 and 0.92. So one scalar, measured from the
+       file rather than guessed, and no per-axis squashing.
+
+       Its length runs along its own z and the group's runs along local x
+       (the group is turned a quarter about Y to face the TV), so it is
+       turned a quarter the other way inside the group. That also puts its
+       BACK where the primitive's back is: the model's backrest is at +x of
+       its own centre, which a quarter turn sends to local -z, exactly where
+       sofaBack sat.
+
+       The primitive stays in the group, hidden: `sofaBase` is what
+       `blockers()` boxes for the collision column, and a download that
+       never lands must still leave something to sit on.                */
+    assetBytes('sofa').then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
+      if (!alive) return;
+      rescueTextures(gltf, BUF);
+      const g = gltf.scene;
+      g.updateMatrixWorld(true);
+      let b = new THREE.Box3().setFromObject(g);
+      const sz = new THREE.Vector3(); b.getSize(sz);
+      if (!(sz.x > 0 && sz.y > 0 && sz.z > 0)) return;
+      const s = 1.90 / Math.max(sz.x, sz.z);     // its longest floor axis IS its length
+      g.scale.setScalar(s);
+      g.rotation.y = Math.PI / 2;                // length onto the group's local x
+      g.updateMatrixWorld(true);
+      b = new THREE.Box3().setFromObject(g);
+      g.position.set(-(b.min.x + b.max.x) / 2, -b.min.y, -(b.min.z + b.max.z) / 2);
+      g.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+      for (const c of [...sofa.children]) c.visible = false;
+      sofa.add(g);
+      redoShadows();
+    }, () => {})).catch(() => {});
 
     /* ------------------------------------------------------ TV and console */
     const tvConsole = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.42, 1.1), matWoodDark);
@@ -1195,7 +1231,6 @@
     /* ================================================================== */
     let fanSpeed = 1;
     let noteStorm = 1;              // the contract's word for "how much air"
-    let billow = 0;                 // scene C throws the curtains
 
     const _m4 = new THREE.Matrix4();
     /* the cast breathes: his clip at half rate (a man standing quietly,
@@ -1271,20 +1306,6 @@
       castUpdate(dt);
       fan.rotation.y += dt * 2.0 * fanSpeed;
 
-      const air = 0.014 * noteStorm;
-      const cpL = curtainL.geometry.attributes.position.array;
-      const cpR = curtainR.geometry.attributes.position.array;
-      for (let i = 0; i < cpL.length; i += 3) {
-        const y = curtLBase[i + 1];
-        const b = Math.max(0, (y + 0.6)) * billow;
-        cpL[i + 2] = curtLBase[i + 2] + Math.sin(t * 1.2 + y * 2.0) * air
-          + Math.sin(t * 7.0 + y * 3.0) * 0.10 * b;
-        cpR[i + 2] = curtRBase[i + 2] + Math.sin(t * 1.35 + y * 2.1) * air
-          + Math.sin(t * 6.4 + y * 2.7) * 0.10 * b;
-      }
-      curtainL.geometry.attributes.position.needsUpdate = true;
-      curtainR.geometry.attributes.position.needsUpdate = true;
-
       for (let i = 0; i < motes.length; i++) {
         const f = motes[i];
         f.y += dt * f.rise * noteStorm;
@@ -1325,7 +1346,7 @@
     /* ------------------------------------------------------ cutscene state */
     function snap() {
       return {
-        fanSpeed, storm: noteStorm, billow,
+        fanSpeed, storm: noteStorm,
         ceil: ceilLight.intensity, lamp: lampLight.intensity,
         alt: altLight.intensity, tvL: tvLight.intensity,
         tvCol: tvScreen.material.color.getHex(),
@@ -1342,7 +1363,7 @@
       };
     }
     function restore(s) {
-      fanSpeed = s.fanSpeed; noteStorm = s.storm; billow = s.billow;
+      fanSpeed = s.fanSpeed; noteStorm = s.storm;
       ceilLight.intensity = s.ceil; lampLight.intensity = s.lamp;
       altLight.intensity = s.alt; tvLight.intensity = s.tvL;
       tvScreen.material.color.setHex(s.tvCol);
@@ -1373,7 +1394,7 @@
       dusk: duskFill.intensity, out: outLight.intensity
     };
     function reset() {
-      fanSpeed = 1; noteStorm = 1; billow = 0;
+      fanSpeed = 1; noteStorm = 1;
       ceilLight.intensity = REST.ceil;
       lampLight.intensity = REST.lamp;
       altLight.intensity = REST.alt;
@@ -1480,7 +1501,7 @@
       table, chairTh, chairs, sofa, tv, tvScreen, tvLight, tvConsole,
       phone, phoneTable, handset, HANDSET_HOME, cord,
       doorMain, doorLeaf, DOORM, DOORM_OPEN, gate,
-      curtainL, curtainR, winGroup, kitDark, homeAltar, altTip, altLight,
+      winGroup, kitDark, homeAltar, altTip, altLight,
       ceilLight, lampLight, duskFill, outLight, fan,
       hall, bedDoor, maDoor, lateMat, litWins,
       tangki, tangProxy, ma, note, NOTE_HOME, cup3, maPlay,
@@ -1499,8 +1520,6 @@
       set fanSpeed(v) { fanSpeed = v; },
       get noteStorm() { return noteStorm; },
       set noteStorm(v) { noteStorm = v; },
-      get billow() { return billow; },
-      set billow(v) { billow = v; },
       updateNotes, updatePile, updateFire, updateSlow,
       /* scene B closes the fog a little — the fear in his head — and
          not washed to the fog colour; the engine's api does not hand a
@@ -2003,8 +2022,11 @@
 
   /* ------------------------------------------------ C · DISMISS EVERYTHING
      A short laugh, a turned back — and the flat declines to be dismissed:
-     the curtains billow with no wind and the fan stops mid-turn. No ghost,
-     no strings. He stops mid-step and does not turn around.             */
+     the room itself dims and the fan stops mid-turn. No ghost, no strings.
+     He stops mid-step and does not turn around. (Until v5.24 the curtains
+     billowed with no wind as well; Chad took the curtains out of this
+     window, so the dim, the stopped fan and his own flinch are the whole
+     answer now.)                                                        */
   function scDismiss(c, s, api) {
     const { tr, step, sfx, fade, camTo, yawTo, pitchTo, faceFrom, rawK, smoothK,
             duck, stage, camera, ghostOpacity, handsRoot } = api;
@@ -2033,13 +2055,11 @@
     sfx(9.4, 't5disC');
 
     /* 16.5-22 THE ANSWER, once (v5.15: the block moved +1.0 s so the
-       flat still waits a breath after his last word, as it did at 4.91 s): curtains billow with no wind; the fan
-       stops mid-turn, holds, and resumes as if nothing happened.        */
-    sfx(16.5, 'curtain', 0.8);
-    /* 1.8, not 0.9: the billow moves the cloth along the camera axis, and
-       foreshortening ate the old amplitude whole - a quarter-metre lunge is
-       what it takes to read from three metres back */
-    tr(16.5, 19.5, k => { stage.billow = Math.sin(Math.PI * k) * 1.8; }, rawK);
+       flat still waits a breath after his last word, as it did at 4.91 s):
+       the fan stops mid-turn, holds, and resumes as if nothing happened,
+       and the room dims for exactly the length of it. The camera is on the
+       window here, so since v5.24 the DIM is what answers in frame — the
+       curtains that used to lunge across this shot are gone.            */
     tr(16.5, 17.1, k => { stage.fanSpeed = 1 - k; }, rawK);
     tr(21.0, 22.0, k => { stage.fanSpeed = k; }, rawK);
     tr(16.5, 20.0, k => {

@@ -1193,8 +1193,21 @@
          its vertices: the mesh ships quantized, so its positions are
          normalised integers that no per-frame float can be written into */
       if (curtainSwing) {
-        curtainSwing.rotation.x = (Math.sin(t * 1.4) * 0.022
-                                 + Math.sin(t * 0.6) * 0.013) * noteStorm;
+        /* v5.24 — THE SWING IS CLAMPED ON THE WAY BACK, and only that way.
+           A positive rotation about x drives the hem toward the window, and
+           the amplitude is multiplied by noteStorm, which scene A takes to
+           SIX: 0.035 x 6 = 0.21 rad, which on a 1.42 m drop throws the hem
+           30 cm — a quarter of a metre THROUGH the grille, the glass and
+           the wall behind them. Forward (into the room) it can lunge as far
+           as it likes and that is the drama, so the clamp is one-sided:
+           0.039 rad is the most the cloth may lean back, which lands its
+           back face 3 cm short of the bars. It sits ABOVE the 0.035 the
+           swing reaches under its own steam, so in play, where noteStorm
+           is 1, the clamp never bites and the motion is exactly what it
+           always was.                                                    */
+        const sw = (Math.sin(t * 1.4) * 0.022
+                  + Math.sin(t * 0.6) * 0.013) * noteStorm;
+        curtainSwing.rotation.x = Math.min(sw, 0.045);
         curtainSwing.rotation.z = Math.sin(t * 0.9 + 1.1) * 0.010 * noteStorm;
       }
 
@@ -1515,7 +1528,23 @@
       const bi = new THREE.Box3().setFromObject(inner);
       inner.position.set(-(bi.min.x + bi.max.x) / 2, -bi.max.y, -(bi.min.z + bi.max.z) / 2);
       curtainSwing = new THREE.Group();
-      curtainSwing.position.set(curtain.position.x, WIN.top + 0.14, curtain.position.z);
+      /* v5.24 — HUNG CLEAR OF THE WINDOW. Chad: "the curtain is colliding
+         with the window." It was, and by a measured amount: the cloth's
+         folds reach 4.9 cm BEHIND its rail point, so at the primitive's
+         z of 0.10 its back face sat at 0.051 — inside the grille bars,
+         which occupy 0.039 to 0.061, and inside the louvres behind them.
+         Its own swing then drove the hem another 3 cm each way, so it
+         sliced through the bars every few seconds.
+
+         0.21 puts the back face at 0.16, and MEASURED over a whole swing
+         cycle the cloth's nearest point to the bars is 4.9 cm in play and
+         2.9 cm at the height of scene A's storm. (0.175 was tried first
+         and measured at 2 mm in the storm — right, but not a gap you can
+         trust on a phone.) It hangs over the back edge of the desk now
+         rather than tucking behind it, which is what a curtain over a desk
+         under a window actually does, and the hem (0.82) stays clear above
+         the desktop (0.76) — a swing about the rail only ever lifts it. */
+      curtainSwing.position.set(curtain.position.x, WIN.top + 0.14, 0.21);
       curtainSwing.add(inner);
       shade(g);
       winGroup.add(curtainSwing);

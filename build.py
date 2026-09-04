@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = '5.23'
+VERSION = '5.24'
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -219,6 +219,10 @@ ASSETS = {
     # download costs a nicer face and never an empty spot.
     'kana':     ('assets/kana.glb', True, False),       # ch3, the woman at the brazier
     'granny':   ('assets/granny.glb', True, False),     # ch3, the auntie at the paper table
+    # v5.24: Chad's sofa, the living room's, in chapters 4 and 5. Not
+    # preloaded: the primitive it replaces is already sitting there, so a
+    # slow download costs a nicer sofa and never an empty wall.
+    'sofa':     ('assets/sofa.glb', True, False),      # ch4, ch5
     # v5.17: Chad's bedroom for chapter 2 — bed, wardrobe, study table,
     # chair and curtain. The bed and the curtain ARE the first shot of the
     # chapter (the film opens lying in one, looking past the other), so
