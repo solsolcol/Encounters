@@ -1926,3 +1926,33 @@ The opening line's timer fires two seconds into play and, by design, stands
 down if the game is muted then. The probe box starts muted; unmuting after
 `state === 'play'` took longer than two seconds on SwiftShader, so the line
 was "missing" for three runs before the probe was wrong and the code right.
+
+## "Over-compressed" is a face you did not look at up close (v5.31)
+
+Chad, on v5.29's seated woman and the brazier granny: "overly compressed
+... they should not look so deformed." Both had been accepted from a wide
+shot. Rendered head-and-shoulders in a bare viewer, the woman's face was a
+smear — 26k triangles and an 8192-pixel atlas shrunk SIXTEEN times to 512,
+so a whole body's texture gave the face a few dozen pixels — and the
+granny's nose was a wedge, her chin a polygon (22k triangles from 257k).
+Gentler encodes (47k triangles on a 1024 sheet; 39k on 1024) cost 1.0 MB
+and 0.6 MB more and have a real face each. Two rules from it: a figure the
+player can walk up to is judged at the distance the player can reach, and
+a texture is judged by the pixels its FACE gets, not by the sheet's size.
+And v5.29's note that the woman "would not simplify below ~26k triangles"
+was wrong: at the tool's own defaults the same source gives 47k at ratio
+0.08 and 165k at 0.28 — the 26k file came from a far lower ratio than the
+doc believed. When a number contradicts the tool's documented behaviour,
+re-run the tool before writing the number down as a property of the model.
+
+## A harness's navigation timeout is part of the suite's contract (v5.31)
+
+`leaktest` and `fixturetest` were the only two harnesses on Playwright's
+default 30 s navigation timeout; every other one gives the page 180 s.
+Both failed twice on `page.goto` alone — the boot preloads (the 1.6 MB
+ghost among them) do not finish in 30 s when two browsers share the box —
+and passed the moment they ran alone. The failure named nothing in the
+game, and the game had not changed at boot (the live site's preloads were
+diffed against the build's: identical). Now both set the same 180 s. A
+harness that fails on its own timeout is a harness that will one day be
+"flaky" in someone's memory and skipped; give every one the same budget.

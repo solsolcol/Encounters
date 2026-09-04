@@ -1010,6 +1010,17 @@ What the baseline contains, by release:
   hips blended, so for 0.15 s he faced the wrong way and whipped round — now
   a hard cut, per the v5.07 law. Sheet v31.
   docs/V5.30-SIXTEEN-NOTES.md is the build's memory.
+- **v5.31** TWO FACES — Chad, on v5.29's crowd: the seated woman in the
+  pink shirt and the scolding granny "seem to be overly compressed that they
+  look weird now ... deformed". Rendered head-and-shoulders, they were: her
+  face a smear (26k triangles, an 8192-pixel atlas shrunk sixteenfold to
+  512), the granny's nose a wedge (22k of 257k). Re-encoded through the same
+  `prepwoman.mjs` at ratio 0.08 / 0.15 on 1024-pixel sheets — 47k and 39k
+  triangles, 2.3 MB and 1.9 MB (from 1.3 and 1.3) — and judged this time at
+  the distance the player can walk up to. Also `leaktest` and `fixturetest`
+  get the 180 s navigation budget every other harness already had; both had
+  failed on Playwright's 30 s default under a loaded box, with nothing wrong
+  in the game. docs/V5.31-TWO-FACES.md.
 - **v5.28** AARON — Chad, after two rounds of level work on River: *"i'm still
   not satisfied with this voice."* All 79 of the boy's takes regenerated in a
   THIRD voice (Aaron, `B6uUx2p7cRgxseOUyP6P`), under an approved prompt sheet

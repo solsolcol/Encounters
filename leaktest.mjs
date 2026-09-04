@@ -37,6 +37,10 @@ const b = await chromium.launch(LAUNCH);
 const p = await b.newPage({ viewport: { width: 800, height: 520 } });
 p.on('pageerror', e => errs.push('pageerror: ' + e.message));
 
+/* v5.31: the same navigation budget every other harness gives the page —
+   Playwright's default 30 s is not enough for the boot preloads on a box that
+   is running two browsers, and this harness failed twice on nothing else */
+p.setDefaultNavigationTimeout(180000); p.setDefaultTimeout(120000);
 await p.goto(PAGE, { waitUntil: 'load' });
 await p.waitForFunction(() => !!window.__enc && window.__enc.ready().hdb, null,
   { timeout: 120000 });
