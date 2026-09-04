@@ -875,8 +875,9 @@ What the baseline contains, by release:
   bone's frame at the lens — is deleted with the shot it existed for.
   One probing law worth keeping: **`__enc.cine.seek()` PAUSES the film**,
   so seeking past a cue never fires it; `resume()` after the seek is what
-  proves a sound plays. Sheet v28 (one description cell — no spoken word
-  moved). docs/V5.25-THE-NOTE-ON-THE-TABLE.md.
+  proves a sound plays. Sheet v28 — one description cell, no spoken word
+  moved, and verified cell-by-cell against Drive rather than only by an
+  import. docs/V5.25-THE-NOTE-ON-THE-TABLE.md.
 - **v5.23** THE GRANNY IS CHAD'S — her credit row removed (the panel lists
   other people's work, and she is his own), and yinn and the kungfu man
   DROPPED rather than deferred, with the asks withdrawn from every doc

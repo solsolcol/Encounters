@@ -11,10 +11,22 @@ text comes up at all — the reply carries the full URL, not the version
 number alone. He reads these on his phone; a number he has to go hunting
 for in Drive is not a link.
 
-**Master Z's Encounters — GAME TEXT v27 (edit here)** in his Drive
-(id `1yBNm3qg6JHM0haHA4s9sILRR6UNDbVm9qhMKcJ7SdY0` — the **v27** sheet, made at v5.24: 271 GAME TEXT
-rows and, under them after a divider row, the 97 **VOICE LINES**. What
-changed from v26: **three credit rows added and nothing else** —
+**Master Z's Encounters — GAME TEXT v28 (edit here)** in his Drive
+(id `1h_ktagugD0nazoE2hRLWlA0LuyuEdfAanaVmBKDkWlU` — the **v28** sheet, made at v5.25: 271 GAME TEXT
+rows and, under them after a divider row, the 97 **VOICE LINES**.
+<https://docs.google.com/spreadsheets/d/1h_ktagugD0nazoE2hRLWlA0LuyuEdfAanaVmBKDkWlU/edit>
+
+What changed from v27: **one cell, and it is not one Chad edits** —
+`voice.t5note`'s "Where it appears" moved from "the note held up" to
+"the note set down on the table", because at v5.25 chapter 5's opening
+film stopped showing the tang-ki holding the note up and started setting
+it down on the table. **Every TEXT cell is byte-identical to v27**: no
+spoken word and no UI string changed anywhere in the game. The sheet was
+re-made anyway because the "where" column is what tells him which moment
+a take belongs to, and the one row it was wrong about is the row for the
+shot this release rebuilt.
+
+What changed at v27: **three credit rows added and nothing else** —
 `credits.sofa`, `credits.sofaWho` and `credits.sofaLink`, for the
 Sketchfab sofa that replaced the primitive one in the living room of
 chapters 4 and 5.
@@ -29,7 +41,8 @@ the `credits.seated*` and `credits.backrow*` rows (gracy and the fearful
 woman, deleted at v5.22) went, and `credits.burner*` (kana at the burner)
 arrived. There was no v24 on Drive: it was exported at v5.20 and never
 published, so it never existed for editing. v25 (id
-`18XgpC6E3Il7GU8FyfOxiXMprJevZO-gyOKxci9LA2Ak`), v23 (id
+`18XgpC6E3Il7GU8FyfOxiXMprJevZO-gyOKxci9LA2Ak`), v27 (id
+`1yBNm3qg6JHM0haHA4s9sILRR6UNDbVm9qhMKcJ7SdY0`), v23 (id
 `1-WolRRObawI_pqzODGcn0rqnnfHtZzoNrqK8wBfC-ks`) and everything before
 them are superseded and should not be edited.
 Provenance: v25 was published and read back at v5.22 and fed through
@@ -39,8 +52,18 @@ exported CSV through the Drive connector, read back, and checked by
 importing the v25 read-back MINUS exactly those two rows: 365 rows, no
 change to any string or voice line. v27 was checked the same way — the
 verified v26 read-back PLUS exactly the three sofa rows, imported against
-the committed tree: 368 rows, not one cell different. None of the three
-has been in his hands yet.
+the committed tree: 368 rows, not one cell different.
+
+v28 was checked HARDER, and the method is worth keeping. v27 was read
+back first and diffed against the verified v27 expectation: identical, so
+Chad had made no edits and there was nothing to import. Then v28 was
+published from the fresh export and read back, and BOTH columns of the
+read-back were transcribed independently and diffed against the same two
+columns generated straight out of the committed tree — 271 GAME TEXT
+cells and 97 VOICE LINES, every one identical. That is stronger than the
+import round trip, because it compares what DRIVE actually holds against
+what the GAME actually holds, cell by cell, rather than only proving the
+import applied nothing.
 
 **The check is worth naming, because it is cheap and it is the one that
 matters.** Every re-emitted sheet is verified by rebuilding what it OUGHT
@@ -52,7 +75,6 @@ and it would be caught before he ever opened the link. (That round trip is the t
 gets; a difference there is a typo of the session's, never an edit.)
 Whenever a sheet has been in his hands for real time, read it back and
 import FIRST — that is what the rule is for.
-<https://docs.google.com/spreadsheets/d/18XgpC6E3Il7GU8FyfOxiXMprJevZO-gyOKxci9LA2Ak/edit>
 
 **Every sheet from v19 on carries the VOICE LINES** — Chad's rule, set
 when he asked for it: "moving forward, every new version of the sheet
