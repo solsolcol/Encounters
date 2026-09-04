@@ -11,10 +11,22 @@ text comes up at all — the reply carries the full URL, not the version
 number alone. He reads these on his phone; a number he has to go hunting
 for in Drive is not a link.
 
-**Master Z's Encounters — GAME TEXT v28 (edit here)** in his Drive
-(id `1h_ktagugD0nazoE2hRLWlA0LuyuEdfAanaVmBKDkWlU` — the **v28** sheet, made at v5.25: 271 GAME TEXT
+**Master Z's Encounters — GAME TEXT v29 (edit here)** in his Drive
+(id `1mIuLsXsM6QfgvaD7d_LPSr2Si1a6MGNknVsz2LTLPtY` — the **v29** sheet, made at v5.28: 271 GAME TEXT
 rows and, under them after a divider row, the 97 **VOICE LINES**.
-<https://docs.google.com/spreadsheets/d/1h_ktagugD0nazoE2hRLWlA0LuyuEdfAanaVmBKDkWlU/edit>
+<https://docs.google.com/spreadsheets/d/1mIuLsXsM6QfgvaD7d_LPSr2Si1a6MGNknVsz2LTLPtY/edit>
+
+What changed from v28: **not one TEXT cell.** v5.28 re-voiced the boy
+(River -> Aaron) without moving a single word, so all 271 GAME TEXT cells
+and all 97 VOICE LINES texts are byte-identical to v28. What moved is the
+**length** column: 73 of his 79 takes are a different length in Aaron's
+voice, and the sheet is where Chad reviews them. v28 (id
+`1h_ktagugD0nazoE2hRLWlA0LuyuEdfAanaVmBKDkWlU`) is superseded.
+Provenance: v28 was read back FIRST and diffed cell by cell against the
+committed tree — 271 rows, not one difference, so Chad had made no edits
+and there was nothing to import. v29 was then published from the fresh
+export and read back, and its TEXT column diffed against that verified v28
+read-back: identical throughout; its length column matches the export.
 
 What changed from v27: **one cell, and it is not one Chad edits** —
 `voice.t5note`'s "Where it appears" moved from "the note held up" to
