@@ -11,14 +11,18 @@ text comes up at all — the reply carries the full URL, not the version
 number alone. He reads these on his phone; a number he has to go hunting
 for in Drive is not a link.
 
-**Master Z's Encounters — GAME TEXT v26 (edit here)** in his Drive
-(id `1VziNnTPiTC_AXlybaN-9GOqGGGb2p_OirgFCGVSlXgw` — the **v26** sheet, made at v5.23: 268 GAME TEXT
+**Master Z's Encounters — GAME TEXT v27 (edit here)** in his Drive
+(id `1yBNm3qg6JHM0haHA4s9sILRR6UNDbVm9qhMKcJ7SdY0` — the **v27** sheet, made at v5.24: 271 GAME TEXT
 rows and, under them after a divider row, the 97 **VOICE LINES**. What
-changed from v25: **two credit rows are GONE and nothing else** —
-`credits.aunt` and `credits.auntWho`, the granny at the paper table.
-She is Chad's own model ("granny was done by me so no credits needed"),
-and the credits panel lists creative works by OTHER people, so she has
-no row at all rather than a row with no link.
+changed from v26: **three credit rows added and nothing else** —
+`credits.sofa`, `credits.sofaWho` and `credits.sofaLink`, for the
+Sketchfab sofa that replaced the primitive one in the living room of
+chapters 4 and 5.
+
+What changed at v26: `credits.aunt` and `credits.auntWho` (the granny at
+the paper table) were REMOVED — she is Chad's own model ("granny was done
+by me so no credits needed"), and the credits panel lists creative works
+by OTHER people, so she has no row at all rather than a row with no link.
 
 What changed at v25, for the record: `credits.auntWho` named the granny,
 the `credits.seated*` and `credits.backrow*` rows (gracy and the fearful
@@ -33,8 +37,18 @@ Provenance: v25 was published and read back at v5.22 and fed through
 v26 was made the same session as v5.23's two-row edit, published from the
 exported CSV through the Drive connector, read back, and checked by
 importing the v25 read-back MINUS exactly those two rows: 365 rows, no
-change to any string or voice line, and the only diff in the tree was the
-two deliberate deletions. Neither sheet has been in his hands yet. (That round trip is the transcription check every re-emitted sheet
+change to any string or voice line. v27 was checked the same way — the
+verified v26 read-back PLUS exactly the three sofa rows, imported against
+the committed tree: 368 rows, not one cell different. None of the three
+has been in his hands yet.
+
+**The check is worth naming, because it is cheap and it is the one that
+matters.** Every re-emitted sheet is verified by rebuilding what it OUGHT
+to say from the last verified read-back, applying only the rows this
+release changed, and running that through `textsync import`. An empty
+diff proves the sheet, the export and the game all agree. A difference
+would be a transcription slip of the session's, never an edit of Chad's —
+and it would be caught before he ever opened the link. (That round trip is the transcription check every re-emitted sheet
 gets; a difference there is a typo of the session's, never an edit.)
 Whenever a sheet has been in his hands for real time, read it back and
 import FIRST — that is what the rule is for.
