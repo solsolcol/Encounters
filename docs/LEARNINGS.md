@@ -1683,3 +1683,16 @@ Two rules come out of it, and they generalise past audio:
 The trap is worse than a plain false negative: a FAIL taken at face value
 sends a correct fix back to be "repaired", which is how a working build
 gets broken by its own test.
+
+## Byte-verifying a deploy will report one harmless mismatch (v5.27)
+
+Deploying from inside `dist/` (which is the rule — see CLAUDE.md and the
+v4.3 incident) makes the Netlify CLI write its own link file,
+`dist/.netlify/state.json`, into the directory it is about to upload. The
+next byte-verify then reports `identical: 53  mismatched: 1`, and the one
+mismatch is that file: the live site answers its path with the 404 page,
+because Netlify never published it.
+
+It is cruft, not a failure — but "mismatched: 1" looks alarming at the end
+of a release, so: check WHICH file before reacting, and `rm -rf
+dist/.netlify` afterwards. It contains only the siteId, nothing secret.
