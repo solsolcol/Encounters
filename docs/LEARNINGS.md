@@ -1773,3 +1773,34 @@ Where a line's delivery is already documented, use that: `src/voicelines.js`
 carries a `note` field saying Whispered / Shouted / Shaky on several takes.
 That is the take's real direction and belongs in the tag — but it supplies
 the volume half only, and the feeling half still has to be authored.
+
+## The transcript ECHOES the prompt — it is not proof of what was said (v5.28)
+
+Chad: *"are you sure those tags with comma works?"* Checking properly
+overturned my own evidence.
+
+`creative_transcribe_audio` on a take generated from
+`[humiliated, shaky] I should never have asked for help…` returns the
+prompt **verbatim, brackets included** — for a take that provably does not
+speak the tag. So the transcript reflects the source prompt, not purely the
+audio, and CANNOT be used to decide whether a tag was spoken.
+
+That matters retroactively: the earlier "eleven_v3 speaks a prose stage
+direction" finding was reported here as confirmed by transcription. It was
+confirmed by DURATION — 8.83 s against 3.32 s for the same words. The
+conclusion stands; the stated proof did not.
+
+Three things that ARE decisive, in order of strength:
+
+1. **The envelope.** A spoken tag is an extra phrase before the line. Decode
+   to PCM, take per-100 ms RMS, and print it: an unspoken tag leaves the
+   phrase structure identical to an untagged control.
+2. **A comparison that cannot go the other way.** `[terrified whisper]`
+   produced 3.00 s; `[whispering]` produced 3.63 s on the same line. A
+   LONGER tag giving a SHORTER take is impossible if tags are spoken.
+3. **Duration against an untagged control** of the same words — but only as
+   a rough signal. +0.64 s here was ambiguous on its own, because an
+   emotional read is genuinely slower.
+
+So: comma-separated compound emotion tags work. And when a measurement and a
+transcript disagree, suspect the transcript.
