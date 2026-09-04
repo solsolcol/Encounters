@@ -153,7 +153,9 @@
        all along. */
     assets: ['hdb', 'hellnote', 'seat', 'cars', 'guangong', 'encik',
              'tangki', 'tangkianim', 'boy', 'shrine', 'sitclap', 'sitangry',
-             'standman', 'kana', 'granny'],
+             'standman', 'granny',
+             /* v5.29 — the three new seated kinds and the scolding granny */
+             'sitman', 'sitwoman', 'sitshout', 'scold'],
     noteArt: 'hellnote',
 
     /* The tent's own sound, in FOUR beds since v4.3 — and the loudest is
@@ -274,7 +276,12 @@
        has used since v4.8, and hides only ITS OWN seats' placeholders when
        it lands — so a kind that never downloads costs its faces, never its
        chairs. */
-    const KINDS = ['encik', 'sitclap', 'sitangry'];
+    /* v5.29 — SIX kinds, not three. Chad's three new Meshy sitters join the
+       three that were there: "Mix it up and redistribute randomly ... so
+       that there is maximum diversity in the audience ... You must make
+       sure every model is represented at least once ... Mathematically."
+       Both halves of that are guaranteed below rather than hoped for. */
+    const KINDS = ['encik', 'sitclap', 'sitangry', 'sitman', 'sitwoman', 'sitshout'];
     /* v5.22: no SPECIALS any more. gracy_lee — the one seated character
        with a skeleton of her own, on a retargeted take — is deleted at
        Chad's ask ("unfixable"), and her seat goes back into the shuffle. */
@@ -1095,21 +1102,80 @@
         n++;
       }
     }
-    /* Which of the three kinds sits where. Balanced first (a third each),
-       then shuffled by a small LCG from a fixed seed, so it reads as random
-       and is identical on every load, every device, every test run. Built
-       from TAKEN so LOW's thinner crowd is dealt the same way. */
+    /* WHICH OF THE SIX KINDS SITS WHERE — v5.29, and the two guarantees
+       Chad asked for are both structural.
+
+       ONE · every model is represented. The deal is BALANCED before it is
+       anything else: seat k starts on kind k % 6, so each kind gets
+       floor(n/6) or ceil(n/6) seats and the counts can never drift. At the
+       full crowd that is 19 seats as 4/3/3/3/3/3; at LOW's thinned 10 it is
+       2/2/2/2/1/1. Every kind appears in BOTH, which is the requirement,
+       and it holds for any n >= 6 rather than for these numbers only.
+
+       TWO · maximum diversity, and this is the part a shuffle cannot do. A
+       balanced shuffle fixes the counts and says nothing about the
+       arrangement — it will happily seat three of the same man shoulder to
+       shoulder, which is the repetition Chad keeps seeing. So the shuffle
+       is only the starting point for a LOCAL SEARCH over the seating grid.
+       Two seats are neighbours when they are within 2.30 m of each other,
+       which is measured in the car park rather than in grid indices, so it
+       picks up the row (0.9 m), the row behind (2.0 m) and the diagonals
+       (2.19 m) and correctly does NOT bridge the 1.8 m aisle as though it
+       were a normal gap. Each pair is weighted 1/distance, because the
+       closer two identical faces are the more they read as a copy. Cost is
+       the weighted count of neighbour pairs sharing a kind; a swap only
+       changes the cost around its two seats, so each step is O(1).
+
+       Measured, both densities: the shuffle alone leaves cost 3.08 (full)
+       and 0.50 (LOW), and the search drives BOTH to exactly 0.00 — zero
+       adjacent pairs out of 39 and 9 respectively. Not "fewer": none. That
+       is the optimum, and it is reached in well under the iteration cap.
+
+       Deterministic throughout — one seeded LCG for the shuffle and the
+       search — so the tent is identical on every load, every device and
+       every test run. */
     const SEAT_KIND = {};
     {
       const seats = [...TAKEN].sort((a, b) => a - b);
+      const n = seats.length;
       const bag = seats.map((_, k) => k % KINDS.length);
       let seed = 0x9E3779B1 >>> 0;
       const rnd = () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed / 4294967296; };
-      for (let k = bag.length - 1; k > 0; k--) {
+      for (let k = n - 1; k > 0; k--) {
         const j = Math.floor(rnd() * (k + 1));
         [bag[k], bag[j]] = [bag[j], bag[k]];
       }
+      const nbr = seats.map(() => []);
+      for (let a = 0; a < n; a++) {
+        const A = chairAt[seats[a]];
+        for (let b = a + 1; b < n; b++) {
+          const B = chairAt[seats[b]];
+          const d = Math.hypot(A.x - B.x, A.z - B.z);
+          if (d > 2.30) continue;
+          const w = 1 / d;
+          nbr[a].push([b, w]); nbr[b].push([a, w]);
+        }
+      }
+      const cost = a => { let c = 0; for (const [b, w] of nbr[a]) if (bag[b] === bag[a]) c += w; return c; };
+      for (let it = 0; it < 4000; it++) {
+        const a = Math.floor(rnd() * n), b = Math.floor(rnd() * n);
+        if (bag[a] === bag[b]) continue;
+        const before = cost(a) + cost(b);
+        [bag[a], bag[b]] = [bag[b], bag[a]];
+        if (cost(a) + cost(b) > before) [bag[a], bag[b]] = [bag[b], bag[a]];
+      }
       seats.forEach((i, k) => { SEAT_KIND[i] = KINDS[bag[k]]; });
+      /* the probe reads this: counts per kind, and how many neighbour pairs
+         still share one. A number that is not 0 is a regression. */
+      SEAT_KIND.__stats = () => {
+        let same = 0, pairs = 0;
+        for (let a = 0; a < n; a++) for (const [b] of nbr[a]) if (b > a) {
+          pairs++; if (bag[a] === bag[b]) same++;
+        }
+        const c = {}; for (const k of KINDS) c[k] = 0;
+        seats.forEach((i, k) => { c[KINDS[bag[k]]]++; });
+        return { seats: n, counts: c, samePairs: same, pairs };
+      };
     }
 
     /* Four standing at the edges — the ones who came late and the ones who
@@ -1117,7 +1183,8 @@
     const standers = [];
     /* v5.21: THREE, not four. The second brazier figure ([3.9, -4.6]) is
        removed at Chad's ask — one woman takes the brazier alone (the
-       fearful woman for one build; since v5.22, kana, below) — so nothing
+       fearful woman for one build; kana at v5.22; since v5.29 the scolding
+       granny, below) — so nothing
        here is dropped by LOW any more either. */
     for (const [sx, sz, ry] of [[-4.9, 1.4, 0.15], [4.9, 2.2, -0.2],
                                 [4.6, -3.9, -1.3]]) {
@@ -1671,24 +1738,30 @@
       auntie.add(inner);
     });
 
-    /* THE WOMAN AT THE BRAZIER — v5.22: kana. Chad: "Move kana model to
-       become the person standing at the burner, replacing fearful women
-       model, she should be idle, until cutscene requires her to talk, and
-       then she switches to talking animation for the cutscene." She takes
-       standers[2] — the one at [4.6, -3.9] feeding the fire, which the
-       fearful woman held for one build — on the standing man's contract:
-       the primitive stays until her bytes land, then the model takes its
-       place, facing and sway phase. Her file ships ONE take, a talking one,
-       so idle is its first frame held (v5.21's answer for her, kept: a
-       woman standing with her hands down) and the take runs only while a
-       scene sets `stage.brazierTalk`. Scene B does: the shout at 15.0 is
-       delivered with the camera on the brazier, so it is hers now. */
+    /* THE WOMAN AT THE BRAZIER — v5.29: the SCOLDING GRANNY. Chad: "The
+       file 'granny scolding' is to replace kana model, as the woman who
+       tells you to not go up there in one of the options."
+
+       She is the right casting and kana never was: kana's one take is a
+       pleasant talking loop, and the line delivered here is a shout at a
+       boy who has walked somewhere he should not have. This model's single
+       clip is literally `Stand_Talking_Angry`.
+
+       Everything about the contract is kana's, unchanged, because it was
+       right: she takes standers[2] — the one at [4.6, -3.9] feeding the
+       fire — the primitive stays until her bytes land, and then the model
+       takes its place, facing and sway phase. One take, so idle is its
+       first frame held (a woman standing, hands down) and the take runs
+       only while a scene sets `stage.brazierTalk`. Scene B does: the shout
+       at 15.0 is delivered with the camera on the brazier, so it is hers.
+       Her line was re-voiced with her (v5.29) — the take that was the
+       auntie's is now an old woman's. */
     let brazMixer = null, brazAct = null, brazTalk = false;
     const brazIdle = () => {
       brazTalk = false;
       if (brazAct) { brazAct.reset(); brazAct.play(); brazMixer.update(0.001); }
     };
-    loadGLB('kana', (gltf) => {
+    loadGLB('scold', (gltf) => {
       const old = standers[2];
       if (!old) return;
       const g = gltf.scene;
@@ -1748,7 +1821,8 @@
        encik crowd needs buys nothing at this count.
 
        standers[1] and not [2]: that one is down at the brazier feeding it
-       (and since v5.22 is kana, the woman at the burner). [1] is the one you walk past
+       (the woman at the burner: kana at v5.22, the scolding granny
+       since v5.29). [1] is the one you walk past
        on the way in.                                                      */
     loadGLB('standman', (gltf) => {
       const old = standers[1];
@@ -2077,7 +2151,7 @@
         auntMixer.update(auntTalk ? dt : dt * crowdLife);
         auntSlide(auntTalkAct.getEffectiveWeight());
       }
-      if (brazMixer) brazMixer.update(brazTalk ? dt : 0);   // kana: frame 0 held until asked
+      if (brazMixer) brazMixer.update(brazTalk ? dt : 0);   // frame 0 held until a scene asks
 
       /* THE RITUAL, and a cutscene owns it outright while one is running.
          Without this, a scene that poses the medium or throws his flags up
@@ -2363,8 +2437,11 @@
       get medRate() { return medRate; },
       set medRate(v) { medRate = v; },
       /* v5.21: the auntie talks only while a scene says so; v5.22: the
-         setter crossfades her two takes, the woman at the brazier (kana)
-         has the same switch, and a handle so a scene can turn her */
+         setter crossfades her two takes, the woman at the brazier (kana at
+         v5.22, the scolding granny since v5.29) has the same switch, and a handle so a scene can turn her */
+      /* v5.29: the seating plan, for the probe — counts per kind and how
+         many neighbouring pairs still share one. It must read 0. */
+      seatStats: () => SEAT_KIND.__stats(),
       get auntTalk() { return auntTalk; },
       set auntTalk(v) { auntSet(v); },
       get brazierTalk() { return brazTalk; },
@@ -3019,7 +3096,8 @@
     /* v5.15: everything from here +0.4 s — the boy's take grew to 5.15 s
        and the auntie's shout at 14.6 landed on his last syllable */
     sfx(15.0, 'v3aunt5');   // "Boy, come out of there now. You cannot stand there!"
-    /* v5.22: the shout is HERS — the woman at the brazier (kana). The
+    /* v5.22: the shout is HERS — the woman at the brazier (kana then; the
+       SCOLDING GRANNY since v5.29, who is what the line always wanted). The
        camera has been on the brazier since 14.2 (the camTo above lands at
        2.30, -2.20 looking straight at it), so she turns from the fire to
        the boy and her talking take runs under the line; restore() puts her

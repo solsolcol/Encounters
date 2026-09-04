@@ -78,7 +78,12 @@ const EMBED = {
   motheranim: '__MOTHERANIM_B64__',
   sitclap: '__SITCLAP_B64__', sitangry: '__SITANGRY_B64__',
   standman: '__STANDMAN_B64__',
-  kana: '__KANA_B64__', granny: '__GRANNY_B64__', sofa: '__SOFA_B64__',
+  granny: '__GRANNY_B64__', sofa: '__SOFA_B64__',
+  /* v5.29 — the three new seated kinds, the scolding granny at the brazier,
+     and young Master Zav for the equipment panel */
+  sitman: '__SITMAN_B64__', sitwoman: '__SITWOMAN_B64__',
+  sitshout: '__SITSHOUT_B64__', scold: '__SCOLD_B64__',
+  zavyoung: '__ZAVYOUNG_B64__',
   bed: '__BED_B64__', wardrobe: '__WARDROBE_B64__',
   table: '__TABLE_B64__', chair: '__CHAIR_B64__', curtain: '__CURTAIN_B64__',
   altar: '__ALTAR_B64__', zav: '__ZAV_B64__'
@@ -3176,6 +3181,7 @@ function invPointerUp(e) {
    the canvas is the figure. Drag on him to spin him; leave him and he
    turns on his own. Rendered only while the panel is open.           */
 const zav = { r: null, scene: null, cam: null, pivot: null, model: null, ring: null,
+              key: null,        // v5.29: which age of him is standing there
               loading: false, warm: false, raf: 0, spin: 0.35, auto: true, dragX: null, ramp: 1 };
 function zavInit() {
   const cv = $('zavCanvas');
@@ -3249,10 +3255,59 @@ function zavInit() {
    renderer, at boot in idle time (zavPrefetch), so the panel opens with him
    already standing there instead of a silhouette that fills in later. */
 const zavLoader = () => { const l = new GLTFLoader(); l.setMeshoptDecoder(MeshoptDecoder); return l; };
+/* ------------------------------------------------------------------------
+   WHICH MASTER ZAV TURNS IN THE PANEL — v5.29, and it is a TABLE because it
+   changes with the story rather than with the code.
+
+   Chad: "This young model should replace the current 3d model (adult master
+   zav) that is rotating in the inventory menu. For episode 1 chapters 1 to
+   5, whenever the inventory is opened, it should show young master zav, for
+   story reasons. In future episode and chapters, when we enter the adult
+   phase, the adult master zav model will then return... So do not delete
+   the adult master zav configuration but instead save it for future use...
+   In the next episode 2 (chp1-5), it will instead show teenager master zav
+   model in the inventory, however, i will provide that model separately."
+
+   So: the figure is the Master Zav of the EPISODE the player is in, and all
+   three ages coexist. The adult is not removed — he is the DEFAULT, which
+   is the strongest form of "kept": any chapter this table does not name
+   gets him, so a future episode needs no engine change at all, only a row.
+
+     episode 1  (ch1-ch5)   young     — shipping now
+     episode 2  (ch1-ch5)   teenager  — 'zavteen', when Chad supplies it
+     later                  adult     — 'zav', the scan, still here
+
+   Keyed by CHAPTER because the chapter key is what the engine actually
+   knows; the episode is the reason behind the grouping, not a thing the
+   engine tracks. When episode 2's chapters arrive under their own keys they
+   take their own rows. */
+const ZAV_FIGURE = {
+  ch1: 'zavyoung', ch2: 'zavyoung', ch3: 'zavyoung',
+  ch4: 'zavyoung', ch5: 'zavyoung',
+  chtest: 'zavyoung',                 // the fixture rides with episode 1
+};
+const ZAV_ADULT = 'zav';              // kept, and the fallback for anything unlisted
+function zavKey() { return ZAV_FIGURE[CH_KEY] || ZAV_ADULT; }
 function zavLoad() {
+  const key = zavKey();
+  /* a chapter from another episode wants another age of him: drop the one
+     standing there and fetch the right one. Within episode 1 this never
+     fires, because all five chapters name the same figure. */
+  if (zav.model && zav.key !== key) {
+    if (zav.pivot) zav.pivot.remove(zav.model);
+    zav.model.traverse(o => {
+      if (o.isMesh) {
+        o.geometry?.dispose();
+        const mats = Array.isArray(o.material) ? o.material : [o.material];
+        for (const m of mats) { m?.map?.dispose(); m?.dispose(); }
+      }
+    });
+    zav.model = null; zav.warm = false;
+  }
   if (zav.model || zav.loading) return;
   zav.loading = true;
-  assetBytes('zav').then(BUF => zavLoader().parse(BUF, '', (gltf) => {
+  zav.key = key;
+  assetBytes(key).then(BUF => zavLoader().parse(BUF, '', (gltf) => {
     rescueTextures(gltf, BUF, zavNoMip);
     const g = gltf.scene;
     g.traverse(o => { if (o.isMesh) { o.frustumCulled = false; zavNoMip(o.material); } });
@@ -3933,6 +3988,11 @@ function setChapter(key) {
   applyDaylight();                 // and so is the time of day
   silenceChapterLoops();           // and so is the room tone
   packLoad(key);                   // and its own sounds, if they are not here yet
+  /* v5.29: and the right AGE of Master Zav in the equipment panel. Within
+     episode 1 every chapter names the same figure, so this is a no-op
+     today; it is what makes episode 2 a table row rather than a bug. */
+  zavPrefetched = false;
+  zavPrefetch();
   if (musicGain && actx) {         // and the explore music obeys the new chapter
     const g = musicGain.gain, now = actx.currentTime;
     g.cancelScheduledValues(now);
@@ -5245,6 +5305,14 @@ window.__enc = { yaw, stats, getState: () => state,
                  // a getter, not the array: rebuildStage() re-points BLOCKERS
                  // and a captured reference would quietly go stale
                  get blockers() { return BLOCKERS; },
+                 /* v5.29: the live stage, for probes. A getter for the same
+                    reason blockers is one — rebuildStage() re-points it. */
+                 get stage() { return stage; },
+                 /* v5.29: which age of Master Zav the panel is showing, and
+                    whether his bytes are in. The figure lives in its own
+                    renderer's scene, unreachable from the world graph, so a
+                    probe cannot measure it the way it measures the tent. */
+                 zav: () => ({ key: zav.key, want: zavKey(), model: !!zav.model }),
                  handsRoot, armR, vmCam, vm, updateViewmodel,
                  handWidth: () => HAND_W,
                  updateNotes: (dt, t) => stage.updateNotes(dt, t),

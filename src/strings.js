@@ -98,9 +98,12 @@ Object.assign(window.__TEXT__, {
   'credits.sofa':        'The living room sofa',
   'credits.sofaWho':     'Sofa · Sketchfab',
   'credits.sofaLink':    'sketchfab.com · sofa',
-  'credits.burner':      'The woman at the burner',
-  'credits.burnerWho':   'Free 018 Kana talk · Sketchfab',
-  'credits.burnerLink':  'sketchfab.com · free-018-kana-talk',
+  /* v5.29 — Chad's four Meshy characters, all CC0. One row for the set:
+     they are one author, one licence, and four names in a credits panel
+     that already runs long reads worse than one line that is true. */
+  'credits.meshy':       'The tent crowd and the woman at the burner',
+  'credits.meshyWho':    'Three seated characters and a scolding granny · Meshy AI (CC0)',
+  'credits.meshyLink':   'meshy.ai',
   'credits.anim':        'Animation and two of the crowd',
   'credits.animWho':     'The mother’s takes, and two seated characters · Mixamo',
   'credits.animLink':    'mixamo.com',

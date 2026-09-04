@@ -34,7 +34,7 @@ import fs from 'node:fs';
 
 await MeshoptSimplifier.ready; await MeshoptEncoder.ready; await MeshoptDecoder.ready;
 
-const [inp, outp, ratioS = '0.28', bodyS = '512', alphaS = '256', keepS = '', opaqueS = ''] = process.argv.slice(2);
+const [inp, outp, ratioS = '0.28', bodyS = '512', alphaS = '256', keepS = '', opaqueS = '', errS = '0.02'] = process.argv.slice(2);
 const RATIO = +ratioS, BODY = +bodyS, ALPHA = +alphaS;
 /* v5.22: `opaque` (a 7th argument, '1') says every sheet is a body sheet.
    The alpha test below is right for a hair card and wrong for a single
@@ -119,7 +119,12 @@ for (const m of root.listMeshes()) for (const p of m.listPrimitives()) {
 await doc.transform(
   dedup(),
   weld(),
-  simplify({ simplifier: MeshoptSimplifier, ratio: RATIO, error: 0.02 }),
+  /* v5.29: the error cap is an 8th argument. 0.02 is right for a face you
+     walk up to; a background sitter four metres away can take far more, and
+     the cap — not the ratio — is what the simplifier actually stops on. The
+     SG woman held at 26k tris against a ratio asking for 7k until this was
+     opened up. */
+  simplify({ simplifier: MeshoptSimplifier, ratio: RATIO, error: +errS }),
   prune(),
 );
 /* quantize last, and its extension declared, or three.js will not know to

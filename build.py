@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "5.28"
+VERSION = "5.29"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -214,11 +214,24 @@ ASSETS = {
     'standman': ('assets/standman.glb', True, False),   # ch3
     # v5.20 — the women of chapter 3; v5.22 — two of the three deleted at
     # Chad's ask (gracy and the fearful woman, "unfixable"), kana moved to
-    # the brazier, and his granny is the auntie. Not preloaded: each
-    # replaces a primitive already standing in the right place, so a slow
-    # download costs a nicer face and never an empty spot.
-    'kana':     ('assets/kana.glb', True, False),       # ch3, the woman at the brazier
+    # the brazier, and his granny is the auntie. v5.29 — kana deleted in
+    # turn, replaced at the brazier by the scolding granny below. Not
+    # preloaded: each replaces a primitive already standing in the right
+    # place, so a slow download costs a nicer face and never an empty spot.
     'granny':   ('assets/granny.glb', True, False),     # ch3, the auntie at the paper table
+    # v5.29 — Chad's four Meshy characters (meshy.ai, CC0). Three more
+    # SEATED kinds, so the tent's audience is six people rather than three;
+    # and the scolding granny, who takes the brazier from kana and the shout
+    # in scene B with her. Not preloaded, for the reason every crowd model
+    # is not: a primitive is already sitting or standing in each spot.
+    'sitman':   ('assets/sitman.glb', True, False),     # ch3, seated, clapping
+    'sitwoman': ('assets/sitwoman.glb', True, False),   # ch3, seated, cross-legged
+    'sitshout': ('assets/sitshout.glb', True, False),   # ch3, seated, hands to mouth
+    'scold':    ('assets/scold.glb', True, False),      # ch3, the woman at the brazier
+    # v5.29 — YOUNG Master Zav, the equipment panel's figure for episode 1.
+    # The adult scan below stays: ZAV_FIGURE in main.js picks by chapter and
+    # falls back to him, so episode 2's teenager is a table row, not a swap.
+    'zavyoung': ('assets/zavyoung.glb', True, False),  # the panel, ch1-ch5
     # v5.24: Chad's sofa, the living room's, in chapters 4 and 5. Not
     # preloaded: the primitive it replaces is already sitting there, so a
     # slow download costs a nicer sofa and never an empty wall.

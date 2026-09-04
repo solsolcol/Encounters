@@ -169,6 +169,27 @@ every frame — so this is a multiplier that frame respects, cleared at both
 ends of every cutscene. Chapters 1 and 2 are untouched: `duckOf()` returns
 1 unless a scene says otherwise.
 
+**THE FIGURE IN THE EQUIPMENT PANEL IS KEYED TO THE EPISODE** (Chad's
+rule, v5.29 — "take note of this entire context in memory, remember it
+well"). The rotating Master Zav in the inventory is the man the player is
+*becoming*, so his AGE tracks the story:
+
+| episode | chapters | figure | asset |
+|---|---|---|---|
+| 1 | ch1-ch5 | young | `zavyoung` — shipping now |
+| 2 | ch1-ch5 | teenager | `zavteen` — **Chad supplies the model** |
+| later | the adult phase | adult | `zav`, the 990k-tri scan |
+
+`ZAV_FIGURE` in main.js is that table and `zavKey()` reads it; the adult
+scan and every number that shaped it (v5.08-v5.11: the meshopt pack, the
+no-mipmap rule for his atlas, the seam padding) is **kept, not deleted** —
+it returns when the adult phase does, and `ZAV_ADULT` is the fallback for
+any chapter not listed. It is keyed by CHAPTER because the chapter key is
+what the engine actually knows; the episode is the reason behind the
+grouping, not a thing the engine tracks. Swapping ages is a real swap —
+`zavLoad()` disposes the standing figure when `zav.key` no longer matches —
+so episode 2's chapters need only their own rows, nothing else.
+
 ## Testing
 
 23 harnesses, listed in `runtests.mjs` with one-line purposes and a
@@ -925,6 +946,27 @@ What the baseline contains, by release:
   equals `who === 'james'` in both directions. Not one audio byte changed;
   the other three speakers are deliberately left flat.
   docs/V5.26-HIS-VOICE.md is the build's memory.
+- **v5.29** THE CROWD REDEALT, THE GRANNY, AND THE BOY IN THE PANEL —
+  Chad's four Meshy models (CC0) and one instruction that is really a
+  constraint problem: *"maximum visual diversity. Mathematically."* The
+  seated audience goes from three kinds to SIX, and the arrangement is
+  SOLVED rather than shuffled — a balanced deal (every kind guaranteed a
+  seat, which is the "represented at least once, don't accidentally remove
+  any" half), a seeded shuffle, then a local search over a distance-weighted
+  neighbour graph (any two seats within 2.30 m, weighted 1/d) that swaps a
+  pair only when it lowers the same-kind cost. Measured on the shipped
+  build: **0 same-kind neighbour pairs out of 39** at FULL and 0 of 9 at
+  `LOW` — the optimum, not an improvement on it. `stage.seatStats()` reports
+  it so the claim stays checkable. `scold` REPLACES kana at the brazier and
+  is the right casting where kana never was: her one clip is literally
+  `Stand_Talking_Angry` and the line is a shout at a boy who has gone
+  somewhere he should not have — so `v3aunt5` was re-voiced with her, moving
+  from the auntie to a new `granny` speaker (Lexi, `TiKM6Oo9KZhmYBsTBA2s`),
+  3.32 s -> 3.16 s, which incidentally cleared the one standing overlap flag
+  in chapter 3. And the equipment panel shows YOUNG Master Zav for the whole
+  of episode 1 — the contract above, Chad's "remember it well". All four
+  models credited to Meshy AI (CC0). Sheet v30.
+  docs/V5.29-THE-CROWD-REDEALT.md is the build's memory.
 - **v5.28** AARON — Chad, after two rounds of level work on River: *"i'm still
   not satisfied with this voice."* All 79 of the boy's takes regenerated in a
   THIRD voice (Aaron, `B6uUx2p7cRgxseOUyP6P`), under an approved prompt sheet

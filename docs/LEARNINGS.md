@@ -1840,3 +1840,39 @@ direction is a separate utterance, so it leaves a silence between itself and the
 line. Scan for an internal silence >=0.15 s at -38 dB before ~45 % of the take's
 duration. Across 26 tagged takes at v5.28: zero. That is evidence; a duration
 that "looks about right" is not.
+
+## "Maximum diversity" is a constraint problem, not a shuffle (v5.29)
+
+Chad asked for the tent audience to be *"distibuted in a way that has maximum
+visual diversity. Mathematically."* A random deal cannot answer that, because
+random is exactly what puts two identical faces side by side. What answers it:
+
+1. **A balanced deal** (`bag[k] = k % KINDS.length`) before any shuffle, so
+   every kind is guaranteed a seat BY CONSTRUCTION rather than checked for
+   afterwards. That is the whole of "represented at least once, don't
+   accidentally remove any".
+2. **A neighbour graph in WORLD SPACE, not grid indices.** Two seats are
+   neighbours within 2.30 m, which picks up the row (0.9 m), the row behind
+   (2.0 m) and the diagonals (2.19 m) and correctly does NOT bridge the 1.8 m
+   aisle. Grid adjacency would have called across it. Weight each pair `1/d` —
+   the closer two identical faces are, the more they read as a copy.
+3. **An O(1)-delta local search.** A swap only changes the cost around its two
+   seats, so 4000 steps are free. It drove cost 3.08 -> **0.00** at full
+   density and 0.50 -> **0.00** at `LOW`: zero same-kind adjacent pairs out of
+   39 and 9. Not "fewer". None.
+
+Seed the LCG and use it for both the shuffle and the search, so the tent is
+identical on every load, device and test run — a crowd that re-rolls per
+session is a crowd no probe can defend. Then expose the measure
+(`stage.seatStats()`) so the claim stays checkable: **a `samePairs` that is not
+0 is a regression**, and that is a test, where "looks varied" never was.
+
+## A cap you raise that changes nothing was not the constraint (v5.29)
+
+`sitwoman` would not simplify below ~26k triangles. The first guess was
+gltf-transform's `error: 0.02` cap, and `prepwoman.mjs` gained an argument to
+raise it — at 0.08 the mesh came out 26331 triangles against 26309. The floor
+was topological: locked UV seams the simplifier will not collapse across. One
+measurement would have read as "the cap is the limit"; the SECOND measurement,
+at a different cap, is what proved it wasn't. Before optimising against a knob,
+move the knob and check the number actually follows it.

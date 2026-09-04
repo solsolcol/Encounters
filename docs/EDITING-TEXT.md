@@ -11,12 +11,25 @@ text comes up at all — the reply carries the full URL, not the version
 number alone. He reads these on his phone; a number he has to go hunting
 for in Drive is not a link.
 
-**Master Z's Encounters — GAME TEXT v29 (edit here)** in his Drive
-(id `1mIuLsXsM6QfgvaD7d_LPSr2Si1a6MGNknVsz2LTLPtY` — the **v29** sheet, made at v5.28: 271 GAME TEXT
+**Master Z's Encounters — GAME TEXT v30 (edit here)** in his Drive
+(id `1VH8votcILO8KkULToZhOEbUJ5PCWcaBd6otCQmQ5MTA` — the **v30** sheet, made at v5.29: 271 GAME TEXT
 rows and, under them after a divider row, the 97 **VOICE LINES**.
-<https://docs.google.com/spreadsheets/d/1mIuLsXsM6QfgvaD7d_LPSr2Si1a6MGNknVsz2LTLPtY/edit>
+<https://docs.google.com/spreadsheets/d/1VH8votcILO8KkULToZhOEbUJ5PCWcaBd6otCQmQ5MTA/edit>
 
-What changed from v28: **not one TEXT cell.** v5.28 re-voiced the boy
+What changed from v29: **two things, and no spoken word.** The credits
+panel's `credits.burner*` rows (kana at the burner) became `credits.meshy*`
+— one row covering all four of Chad's Meshy models, "attributed to meshy.ai
+with cc0 license" as he asked. And `voice.v3aunt5` — *"Boy, come out of
+there now."* — changed SPEAKER and LENGTH, not text: it moved from the
+auntie at the paper table to the granny at the brazier, who is where the
+line is actually delivered, and her take is 3.16 s against the old 3.32 s.
+Every other TEXT cell is byte-identical to v29. v29 (id
+`1mIuLsXsM6QfgvaD7d_LPSr2Si1a6MGNknVsz2LTLPtY`) is superseded.
+Provenance: v30 was published from the fresh export and read back, and all
+370 rows diffed cell by cell against it across all four columns — zero
+differences.
+
+What changed at v29, for the record: **not one TEXT cell.** v5.28 re-voiced the boy
 (River -> Aaron) without moving a single word, so all 271 GAME TEXT cells
 and all 97 VOICE LINES texts are byte-identical to v28. What moved is the
 **length** column: 73 of his 79 takes are a different length in Aaron's

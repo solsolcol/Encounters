@@ -352,7 +352,7 @@ consecutive chapters must not be the same voice.
 | `v3near` / `v3altar` | the two proximity lines about the altar | play |
 | `v3ask` | *"Is it real, auntie?"* | C |
 | `v3aunt1`–`v3aunt4` | the auntie's four in scene C | C |
-| `v3aunt5` | *"Boy, come out of there now."* | B, hauling him out of the ritual |
+| `v3aunt5` | *"Boy, come out of there now."* | B, hauling him out of the ritual — **the GRANNY at the brazier since v5.29**, not the auntie |
 | `v3A`–`v3D` | the four under the outcome cards | the cards |
 
 **Why the drum is inside `ritual` and also its own sample.** A cutscene can
@@ -584,3 +584,25 @@ v5.26 bus. His bus gained a limiter (threshold -3, knee 0, ratio 20, 1 ms /
 50 ms) and `VOICE_BOOST` went 2.0 -> 3.5: measured through the real node that
 is +1.31 dB against River with nothing clipping. The other three speakers are
 untouched — they never ran on his bus. docs/V5.28-AARON.md.
+
+---
+
+## v5.29 — the granny at the brazier gets her own voice
+
+`v3aunt5` — *"Boy, come out of there now."* — was the auntie's, and shouldn't
+have been. It is not delivered at the paper table: it lands in scene B at 15.0
+with the camera on the BRAZIER, shouted at a boy who has walked somewhere he
+should not have. v5.29 gives that spot its own model (Chad's Meshy scolding
+granny, whose one clip is literally `Stand_Talking_Angry`), so the line got its
+own speaker to match:
+
+**`granny` — Lexi, `TiKM6Oo9KZhmYBsTBA2s`, eleven_v3.** A fifth voice, chosen
+on the same rule the auntie and the Mother were: the workspace still has no
+Southeast Asian voice at all, so what matters is that she does not sound like
+either of the two women already in the cast.
+
+The key, the file and every cue that fires it are unchanged — only `who` and
+the recording moved. Peak-matched to the take it replaces (the v4.8 rule),
+both encodings, `secs` re-measured **3.32 s → 3.16 s**. The shorter take
+incidentally cleared the one standing overlap flag in chapter 3; the scan now
+reports every ch3 film and scene `ok`. Master: `masters/v5.29/v3aunt5.mp3`.

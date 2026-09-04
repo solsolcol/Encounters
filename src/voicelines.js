@@ -45,7 +45,18 @@
     auntie: { name: "The auntie at the paper table (chapter 3)", voice: "Xb7hH8MSUJpSbSDYk0k2", model: "eleven_v3",
               note: "Alice." },
     tangki: { name: "The tang-ki (chapters 3 and 5)", voice: "pqHfZKP75CvOlQylNhV4", model: "eleven_v3",
-              note: "Bill. He speaks only in chapter 5." }
+              note: "Bill. He speaks only in chapter 5." },
+    /* v5.29 — the woman at the brazier is her OWN character, and always was:
+       she stands at the fire on the far side of the tent, not at the paper
+       table, and the one thing she says is a shout at a boy. Until now her
+       line rode on the auntie's row and the auntie's voice, which is why it
+       never sounded like a grandmother. Chad's scolding-granny model made
+       the mismatch visible, so she gets the row and the voice she needed.
+       Lexi is the first genuinely Southeast Asian voice this cast has had —
+       the note in CLAUDE.md that "the workspace has no Southeast Asian voice
+       at all" is now out of date by exactly one. */
+    granny: { name: "The granny at the brazier (chapter 3)", voice: "TiKM6Oo9KZhmYBsTBA2s", model: "eleven_v3",
+              note: "Lexi — Singapore English. Middle-aged in the library, aged into a grandmother by the prompt's tag. One line: the shout in scene B." }
   };
 
   const LINES = [
@@ -144,8 +155,8 @@
       text: "He looked at me. Out of all of them... he looked at me.", secs: 3.63 },
     { id: "v3grip", who: "james", ch: "ch3", where: "Scene B",
       text: "His eyes were shut. He was looking at me with his eyes shut.", secs: 4.6 },
-    { id: "v3aunt5", who: "auntie", ch: "ch3", where: "Scene B, hauling him out",
-      text: "Boy, come out of there now. You cannot stand there!", secs: 3.32 },
+    { id: "v3aunt5", who: "granny", ch: "ch3", where: "Scene B, hauling him out",
+      text: "Boy, come out of there now. You cannot stand there!", secs: 3.16 },
     { id: "v3aunt1", who: "auntie", ch: "ch3", where: "Scene C",
       text: "That one? He is the tang kee. The god borrows his body.", secs: 4.99 },
     { id: "v3aunt2", who: "auntie", ch: "ch3", where: "Scene C",
