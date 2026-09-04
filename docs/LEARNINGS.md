@@ -1804,3 +1804,39 @@ Three things that ARE decisive, in order of strength:
 
 So: comma-separated compound emotion tags work. And when a measurement and a
 transcript disagree, suspect the transcript.
+
+## Peak-matching hides an actor swap's real level change (v5.28)
+
+Peak-matching a new take to the file it replaces (the v4.8 rule) aligns the
+loudest instant and says NOTHING about the average. Swap the actor and the two
+can diverge badly: Aaron's 79 takes, peak-matched to River's, came out 3.7 dB
+quieter in mean loudness with a 3.2 dB wider crest. The files look right and the
+game sounds softer. **After any voice swap, measure mean loudness and crest
+across the whole set against the set it replaces** — not just peaks, and not by
+ear. `ffmpeg -af volumedetect` gives both; note that `-v error` SUPPRESSES its
+output, so the measurement silently returns nothing (it needs `-hide_banner`
+instead).
+
+And a crest problem cannot be fixed at the file level: with the hottest take at
+-2.3 dBFS the whole set had under 2 dB of headroom against a 3.7 dB gap. It is
+a dynamics problem and wants a dynamics tool.
+
+## Gain and clipping separate only with a limiter (v5.28)
+
+Raising a compressor's input gain buys loudness and clipping together — measured
+through the real Web Audio node, 2.5x put 3 of 18 takes over 0 dBFS and 3.0x put
+8 over. Adding a LIMITER after the compressor (threshold -3, knee 0, ratio 20,
+attack 1 ms, release 50 ms) is what separates them: 3.5x through compressor +
+limiter is +1.31 dB louder than the previous voice with zero takes clipping.
+Search the gain ladder to the last non-clipping rung; the one above it is not
+"slightly hotter", it is broken.
+
+## A spoken stage direction leaves a pause; that is how to detect one (v5.28)
+
+eleven_v3 has no scene-description concept, so a bracketed direction is either
+absorbed as a tag or read out loud — and `creative_transcribe_audio` echoes the
+prompt, so transcription can never tell you which happened. What can: a spoken
+direction is a separate utterance, so it leaves a silence between itself and the
+line. Scan for an internal silence >=0.15 s at -38 dB before ~45 % of the take's
+duration. Across 26 tagged takes at v5.28: zero. That is evidence; a duration
+that "looks about right" is not.

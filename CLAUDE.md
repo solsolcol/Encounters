@@ -225,10 +225,11 @@ the shared Web Audio context — never `<audio src=data:>` — and everything
 obeys the one mute button. Since v2.3 the game runs a full generated
 soundscape: 95 sounds + the James opening line — loops, UI cues, ghost vocalisations,
 cutscene stings, ending music beds, and in-world narration lines. Four
-speakers now: the boy (**River Faith, `v6KgbPaQh6lAmMpmmtcH` — since
-v5.18**, after VALF, his v5.15 pick, turned out to drift between a girl
-and a grown man across takes; the registry still calls him `james` and
-the files `v*`, because renaming eighty-two keys buys nothing), chapter
+speakers now: the boy (**Aaron, `B6uUx2p7cRgxseOUyP6P` — since v5.28**,
+Chad's third pick for the part after VALF, v5.15, drifted between a girl
+and a grown man across takes and River, v5.18, never satisfied him; the
+registry still calls him `james` and the files `v*`, because renaming
+eighty-two keys buys nothing), chapter
 2's Mother (Matilda, `XrExE9yKIg1WjnnlVkGX`), chapter
 3's auntie (Alice, `Xb7hH8MSUJpSbSDYk0k2`) and the tang-ki (Bill,
 `pqHfZKP75CvOlQylNhV4`) — all eleven_v3. The workspace has no Southeast
@@ -924,6 +925,29 @@ What the baseline contains, by release:
   equals `who === 'james'` in both directions. Not one audio byte changed;
   the other three speakers are deliberately left flat.
   docs/V5.26-HIS-VOICE.md is the build's memory.
+- **v5.28** AARON — Chad, after two rounds of level work on River: *"i'm still
+  not satisfied with this voice."* All 79 of the boy's takes regenerated in a
+  THIRD voice (Aaron, `B6uUx2p7cRgxseOUyP6P`), under an approved prompt sheet
+  that survived four rounds of his correction: the registry's words exactly, no
+  added capitals, at most one added ellipsis, and a tag that names an EMOTION
+  rather than only a volume ("whispering is not an emotion") — because a tag
+  that says how LOUD gets a flat read at that volume, which is half of what
+  makes a pass sound monotone. 26 of the 79 carry a tag, and that every tag was
+  ABSORBED rather than spoken is measured: a spoken direction leaves a pause
+  before the line, and none of the 26 has one (transcription cannot answer
+  this — `creative_transcribe_audio` echoes the prompt). "Leave nothing behind"
+  is enforced by construction, not promised: the regeneration list is
+  `who === 'james'` out of the registry, which is the same set `chaptertest`
+  checks `JAMES_TAKES` and the shipped files against, both directions.
+  No word changed and no timeline moved — the overlap scan of all 24 films and
+  scenes finds no new collision, and its one flag is the auntie's, from before.
+  The engine cost is one node: Aaron reads **3.7 dB quieter than River with a
+  3.2 dB wider crest**, so the v5.26 bus left him 1.87 dB under the voice Chad
+  already called too soft, and more gain alone clipped his loudest takes. His
+  bus gained a LIMITER (threshold -3, knee 0, ratio 20, 1 ms / 50 ms) after the
+  compressor, with `VOICE_BOOST` 2.0 -> 3.5 — measured through the real node,
+  that is +1.31 dB against River with nothing clipping, and the quietest lines
+  gain most. Nothing outside his bus moved. docs/V5.28-AARON.md.
 - **v5.23** THE GRANNY IS CHAD'S — her credit row removed (the panel lists
   other people's work, and she is his own), and yinn and the kungfu man
   DROPPED rather than deferred, with the asks withdrawn from every doc

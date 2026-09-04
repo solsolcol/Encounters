@@ -13,10 +13,12 @@ checkpoint: if a session dies mid-task, the next one resumes from the
 STATUS columns and the flow IDs below.
 
 **Main character voice (Chad's explicit pick, use everywhere, never vary):**
-**since v5.18 the boy is RIVER FAITH — voice_id
-`v6KgbPaQh6lAmMpmmtcH`**, model `eleven_v3` (the registry key and the file
+**since v5.28 the boy is AARON — voice_id
+`B6uUx2p7cRgxseOUyP6P`**, model `eleven_v3` (the registry key and the file
 names stay `james`/`v*`). The history below it is history, not the current
-voice: v5.15–v5.17 he was VALF, `loY1uopAz31XyhAEhNSa`, dropped because
+voice: v5.18–v5.27 he was River Faith, `v6KgbPaQh6lAmMpmmtcH`, dropped
+because Chad was never satisfied with the voice itself even after two rounds
+of level work on it; v5.15–v5.17 he was VALF, `loY1uopAz31XyhAEhNSa`, dropped because
 eleven_v3 re-rolls a voice's character per take and VALF's range is wide
 enough to land on a girl in one line and a grown man in the next; and from
 v2.3 to v5.14 he was "James - Husky, Engaging and Bold",
@@ -555,3 +557,30 @@ twelve that got LONGER (3.47 s → 4.52): `ch1` scene C 4.60 → 3.15 and
 `ch2` scene B 20.0 → 18.9, so the exhale lands inside its scene instead of
 running past the fade. Download: the 79 mp3s 5213 KB → 4306 KB, the Opus
 2711 KB → 2273 KB.
+
+## v5.28 — the boy a third time (Aaron)
+
+Chad: *"i'm still not satisfied with this voice. lets completely change all
+of the main character's voicelines ... every single instance of the main
+character's voice in the entire game to Aaron. It must cover everything and
+leave nothing behind."*
+
+**Aaron** (`B6uUx2p7cRgxseOUyP6P`, eleven_v3), 79 takes — the whole of
+`who === 'james'`, which is the same set `chaptertest` holds `JAMES_TAKES` and
+the shipped files to, both directions, so a miss is a red build. Not one word
+changed; only the voice.
+
+The prompts are `masters/v5.28/prompts.json`, not the bare registry text: 26
+of the 79 carry an emotion tag, under rules Chad corrected four times (the
+registry's words exactly, no added capitals, at most one added ellipsis, and a
+tag that names a FEELING — "whispering is not an emotion" — so `[terrified
+whisper]`, never `[whispering]`). Prose in brackets is spoken aloud and must
+never be written. That the tags were absorbed is measured, not assumed: none of
+the 26 has an internal pause before its line.
+
+Level: peak-matched to River as always, Aaron still measured **3.7 dB quieter
+with a 3.2 dB wider crest**, which left him 1.87 dB under River through the
+v5.26 bus. His bus gained a limiter (threshold -3, knee 0, ratio 20, 1 ms /
+50 ms) and `VOICE_BOOST` went 2.0 -> 3.5: measured through the real node that
+is +1.31 dB against River with nothing clipping. The other three speakers are
+untouched — they never ran on his bus. docs/V5.28-AARON.md.

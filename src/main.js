@@ -2247,7 +2247,7 @@ function packSetup() {
    not only him. Only his takes take the boost and the compressor on the
    way in; the other three are already 1.2 dB louder than he is and need
    the clarity, not the gain.                                             */
-const VOICE_BOOST = 2.0;             // +6 dB into the compressor
+const VOICE_BOOST = 3.5;             // +10.9 dB into the compressor (v5.28: Aaron)
 let voiceBusIn = null, voiceOut = null;
 function voiceStage() {              // every voice, mute-able, never ducked
   if (!actx) return null;
@@ -2270,8 +2270,19 @@ function voiceBus() {                // his takes only: boosted and evened out
     comp.ratio.value = 4;
     comp.attack.value = 0.004;       // fast enough to catch a consonant
     comp.release.value = 0.25;
+    /* v5.28: a LIMITER after the compressor. Aaron reads 3.7 dB quieter than
+       River with a 3.2 dB wider crest, so the boost that evens him out would
+       otherwise clip his loudest takes (measured: 3 of 18 over 0 dBFS at this
+       gain). The limiter is what buys the loudness without the clipping. */
+    const lim = actx.createDynamicsCompressor();
+    lim.threshold.value = -3;
+    lim.knee.value = 0;              // a limiter, not a second compressor
+    lim.ratio.value = 20;
+    lim.attack.value = 0.001;
+    lim.release.value = 0.05;
     voiceBusIn.connect(comp);
-    comp.connect(out);
+    comp.connect(lim);
+    lim.connect(out);
   }
   return voiceBusIn;
 }
