@@ -38,7 +38,8 @@
   // for every take in the game. Changing the main character's voice is a
   // change to ONE row here plus a regeneration of every line marked james.
   const SPEAKERS = {
-    james:  { name: "James (the player)", voice: "v6KgbPaQh6lAmMpmmtcH", model: "eleven_v3" },
+    james:  { name: "James (the player)", voice: "B6uUx2p7cRgxseOUyP6P", model: "eleven_v3",
+              note: "Aaron, since v5.28 — Chad's third and final pick after River (v5.18-v5.27) and VALF (v5.15-v5.17). The registry key and the file names stay `james`/`v*`: renaming 79 keys buys nothing." },
     mother: { name: "Ma (his mother)", voice: "XrExE9yKIg1WjnnlVkGX", model: "eleven_v3",
               note: "Matilda. Chapter 2's mother at the door, chapter 4's Ma on the phone (EQ'd through the handset), chapter 5's Ma in the room." },
     auntie: { name: "The auntie at the paper table (chapter 3)", voice: "Xb7hH8MSUJpSbSDYk0k2", model: "eleven_v3",

@@ -1,0 +1,324 @@
+{
+ "voice": "B6uUx2p7cRgxseOUyP6P",
+ "voice_name": "Aaron",
+ "model": "eleven_v3",
+ "flow": "1ok1A4liUyO4SLIS8vRy",
+ "takes": {
+  "voice": {
+   "state": "downloaded",
+   "session": null
+  },
+  "vpile": {
+   "state": "downloaded",
+   "session": null
+  },
+  "vnote": {
+   "state": "downloaded",
+   "session": null
+  },
+  "vgasp": {
+   "state": "downloaded",
+   "session": null
+  },
+  "vscoff": {
+   "state": "downloaded",
+   "session": null
+  },
+  "vpant": {
+   "state": "downloaded",
+   "session": null
+  },
+  "vrelief": {
+   "state": "downloaded",
+   "session": null
+  },
+  "vchantline": {
+   "state": "downloaded",
+   "session": null
+  },
+  "vA": {
+   "state": "downloaded",
+   "session": null
+  },
+  "vB": {
+   "state": "downloaded",
+   "session": null
+  },
+  "vC": {
+   "state": "downloaded",
+   "session": null
+  },
+  "vD": {
+   "state": "downloaded",
+   "session": null
+  },
+  "vghost": {
+   "state": "todo",
+   "session": null
+  },
+  "vscare1": {
+   "state": "todo",
+   "session": null
+  },
+  "vscare2": {
+   "state": "todo",
+   "session": null
+  },
+  "vscare3": {
+   "state": "todo",
+   "session": null
+  },
+  "vscare4": {
+   "state": "todo",
+   "session": null
+  },
+  "vlow": {
+   "state": "todo",
+   "session": null
+  },
+  "vfaint": {
+   "state": "todo",
+   "session": null
+  },
+  "vlost": {
+   "state": "todo",
+   "session": null
+  },
+  "v2wake1": {
+   "state": "todo",
+   "session": null
+  },
+  "v2wake2": {
+   "state": "todo",
+   "session": null
+  },
+  "v2wake3": {
+   "state": "todo",
+   "session": null
+  },
+  "v2near": {
+   "state": "todo",
+   "session": null
+  },
+  "v2gap": {
+   "state": "todo",
+   "session": null
+  },
+  "v2call": {
+   "state": "todo",
+   "session": null
+  },
+  "v2A": {
+   "state": "todo",
+   "session": null
+  },
+  "v2B": {
+   "state": "todo",
+   "session": null
+  },
+  "v2C": {
+   "state": "todo",
+   "session": null
+  },
+  "v2D": {
+   "state": "todo",
+   "session": null
+  },
+  "v3wake1": {
+   "state": "todo",
+   "session": null
+  },
+  "v3wake2": {
+   "state": "todo",
+   "session": null
+  },
+  "v3wake3": {
+   "state": "todo",
+   "session": null
+  },
+  "v3wake4": {
+   "state": "todo",
+   "session": null
+  },
+  "v3chair": {
+   "state": "todo",
+   "session": null
+  },
+  "v3out1": {
+   "state": "todo",
+   "session": null
+  },
+  "v3out2": {
+   "state": "todo",
+   "session": null
+  },
+  "v3play": {
+   "state": "todo",
+   "session": null
+  },
+  "v3altar": {
+   "state": "todo",
+   "session": null
+  },
+  "v3seen": {
+   "state": "todo",
+   "session": null
+  },
+  "v3grip": {
+   "state": "todo",
+   "session": null
+  },
+  "v3ask": {
+   "state": "todo",
+   "session": null
+  },
+  "v3left": {
+   "state": "todo",
+   "session": null
+  },
+  "v3A": {
+   "state": "todo",
+   "session": null
+  },
+  "v3B": {
+   "state": "todo",
+   "session": null
+  },
+  "v3C": {
+   "state": "todo",
+   "session": null
+  },
+  "v3D": {
+   "state": "todo",
+   "session": null
+  },
+  "v4wake1": {
+   "state": "todo",
+   "session": null
+  },
+  "v4wake2": {
+   "state": "todo",
+   "session": null
+  },
+  "v4wake3": {
+   "state": "todo",
+   "session": null
+  },
+  "v4voice": {
+   "state": "todo",
+   "session": null
+  },
+  "v4near": {
+   "state": "todo",
+   "session": null
+  },
+  "v4sit": {
+   "state": "todo",
+   "session": null
+  },
+  "v4thinkA1": {
+   "state": "todo",
+   "session": null
+  },
+  "v4thinkA2": {
+   "state": "todo",
+   "session": null
+  },
+  "v4thinkA3": {
+   "state": "todo",
+   "session": null
+  },
+  "v4tired": {
+   "state": "todo",
+   "session": null
+  },
+  "v4wake3am": {
+   "state": "todo",
+   "session": null
+  },
+  "v4taunt": {
+   "state": "todo",
+   "session": null
+  },
+  "v4regret": {
+   "state": "todo",
+   "session": null
+  },
+  "v4call1": {
+   "state": "todo",
+   "session": null
+  },
+  "v4call2": {
+   "state": "todo",
+   "session": null
+  },
+  "v4A": {
+   "state": "todo",
+   "session": null
+  },
+  "v4B": {
+   "state": "todo",
+   "session": null
+  },
+  "v4C": {
+   "state": "todo",
+   "session": null
+  },
+  "v4D": {
+   "state": "todo",
+   "session": null
+  },
+  "v5wake1": {
+   "state": "todo",
+   "session": null
+  },
+  "v5wake2": {
+   "state": "todo",
+   "session": null
+  },
+  "v5wake3": {
+   "state": "todo",
+   "session": null
+  },
+  "v5voice": {
+   "state": "todo",
+   "session": null
+  },
+  "v5near": {
+   "state": "todo",
+   "session": null
+  },
+  "v5sit": {
+   "state": "todo",
+   "session": null
+  },
+  "v5fearB1": {
+   "state": "todo",
+   "session": null
+  },
+  "v5disC1": {
+   "state": "todo",
+   "session": null
+  },
+  "v5learnD": {
+   "state": "todo",
+   "session": null
+  },
+  "v5A": {
+   "state": "todo",
+   "session": null
+  },
+  "v5B": {
+   "state": "todo",
+   "session": null
+  },
+  "v5C": {
+   "state": "todo",
+   "session": null
+  },
+  "v5D": {
+   "state": "todo",
+   "session": null
+  }
+ }
+}
