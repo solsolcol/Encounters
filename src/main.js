@@ -2133,7 +2133,7 @@ function queueVoice() {
       voiceSrc = actx.createBufferSource();
       voiceSrc.buffer = buf;
       voiceSrc.onended = () => { voiceSrc = null; };
-      voiceSrc.connect(sfxGain);
+      voiceSrc.connect(voiceBus() || sfxGain);
       voiceSrc.start();
       voicePlayed = true;
     } catch { voiceSrc = null; }
@@ -2162,6 +2162,77 @@ function packSetup() {
   ambGain.gain.value = muted ? 0 : 1;
   ambGain.connect(masterOut());
 }
+/* ------------------------------------------------------------ his voice ---
+   THE BOY IS THE ONLY VOICE INSIDE YOUR HEAD, and until v5.26 he was mixed
+   like a footstep: every narration line, every cutscene line and the
+   opening line all went into packGain at the same unity the door hinges
+   use. There was no seam to turn "him" up — which is why Chad heard him as
+   "way too soft" while the measurements said his takes were fine.
+
+   They were fine, and that was the problem. Measured over all 79 takes he
+   averages -20.8 dBFS with peaks up to -1.9, a 19 dB crest: the takes were
+   PEAK-matched (the v4.8 rule), and peak-matching aligns the loudest
+   instant while leaving the average wherever the performance put it. River
+   is a soft, breathy read, so his average sits a long way under his peaks
+   and only ~3.5 dB over chapter 2's fan bed. Raising every sample uniformly
+   cannot fix that: the loudest take (vscare1, -1.9 dB) leaves 1.9 dB of
+   room, and 1.9 dB is not what "way too soft" means.
+
+   So his lines get a BUS: a boost, then a compressor to hold the peaks the
+   boost creates. The compressor is doing the real work — it lifts the
+   average without ever letting a peak through, which is exactly the gap
+   between what was measured and what was heard.
+
+   It hangs BEFORE packGain, deliberately. Everything downstream — the mute
+   button, the volume slider, the cutscene ducking — already acts on
+   packGain, so routing his voice through packGain rather than around it
+   means none of that had to be touched or re-tested.                     */
+const VOICE_BOOST = 2.0;             // +6 dB into the compressor
+let voiceBusIn = null;
+function voiceBus() {
+  if (!actx) return null;
+  packSetup();
+  if (!voiceBusIn && packGain) {
+    voiceBusIn = actx.createGain();
+    voiceBusIn.gain.value = VOICE_BOOST;
+    const comp = actx.createDynamicsCompressor();
+    comp.threshold.value = -18;      // under his average, so it acts on speech
+    comp.knee.value = 12;            // soft enough that it never pumps
+    comp.ratio.value = 4;
+    comp.attack.value = 0.004;       // fast enough to catch a consonant
+    comp.release.value = 0.25;
+    voiceBusIn.connect(comp);
+    comp.connect(packGain);
+  }
+  return voiceBusIn;
+}
+/* Every take the boy speaks, by sample name. It is spelled out rather than
+   pattern-matched because the file names do NOT separate the cast: his are
+   `v*`, but so are the mother's (`v2ma`, `v4ma1`) and the auntie's
+   (`v3aunt1`). A prefix rule would quietly put another actor on his bus.
+   `chaptertest` asserts this set is exactly `who === 'james'` out of
+   src/voicelines.js, so the registry stays the one source of truth and a
+   new line that is never added here fails the build instead of shipping
+   quiet. */
+const JAMES_TAKES = new Set(['voice',
+  'vpile', 'vnote', 'vgasp', 'vscoff', 'vpant', 'vrelief', 'vchantline',
+  'vA', 'vB', 'vC', 'vD', 'vghost', 'vscare1', 'vscare2', 'vscare3',
+  'vscare4', 'vlow', 'vfaint', 'vlost',
+  'v2wake1', 'v2wake2', 'v2wake3', 'v2near', 'v2gap', 'v2call',
+  'v2A', 'v2B', 'v2C', 'v2D',
+  'v3wake1', 'v3wake2', 'v3wake3', 'v3wake4', 'v3chair', 'v3out1', 'v3out2',
+  'v3play', 'v3altar', 'v3seen', 'v3grip', 'v3ask', 'v3left',
+  'v3A', 'v3B', 'v3C', 'v3D',
+  'v4wake1', 'v4wake2', 'v4wake3', 'v4voice', 'v4near', 'v4sit',
+  'v4thinkA1', 'v4thinkA2', 'v4thinkA3', 'v4tired', 'v4wake3am', 'v4taunt',
+  'v4regret', 'v4call1', 'v4call2', 'v4A', 'v4B', 'v4C', 'v4D',
+  'v5wake1', 'v5wake2', 'v5wake3', 'v5voice', 'v5near', 'v5sit',
+  'v5fearB1', 'v5disC1', 'v5learnD', 'v5A', 'v5B', 'v5C', 'v5D']);
+// where a sound belongs: his bus, or the flat pack everything else uses
+function outFor(name) {
+  return (JAMES_TAKES.has(name) && voiceBus()) || packGain;
+}
+
 function packMuteSync() {
   if (!actx) return;
   const now = actx.currentTime;
@@ -2280,7 +2351,7 @@ function snd(name, vol = 1, rate = 1, pan = 0) {        // one-shot
     g.connect(pn);
     out = pn;
   }
-  out.connect(packGain);
+  out.connect(outFor(name));
   s.start();
   s.__g = g;        // so a caller can ramp it down instead of cutting it dead
   return s;
@@ -2351,7 +2422,7 @@ function say(name, opts) {
   narSrc = actx.createBufferSource();
   narSrc.buffer = buf;
   narSrc.onended = () => { narSrc = null; };
-  narSrc.connect(packGain);
+  narSrc.connect(outFor(name));
   narSrc.start();
 }
 
@@ -2374,7 +2445,7 @@ function speak(name, opts = {}) {
       narSrc = actx.createBufferSource();
       narSrc.buffer = buf;
       narSrc.onended = () => { narSrc = null; resolve(true); };
-      narSrc.connect(packGain);
+      narSrc.connect(outFor(name));
       narSrc.start();
     };
     attempt();
@@ -2407,7 +2478,7 @@ function scaredGasp() {
   narSrc = actx.createBufferSource();
   narSrc.buffer = buf;
   narSrc.onended = () => { narSrc = null; };
-  narSrc.connect(packGain);
+  narSrc.connect(outFor(name));
   narSrc.start();
 }
 const STEP_TAKES = ['step1', 'step2', 'step3', 'step4'];

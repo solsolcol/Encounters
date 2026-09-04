@@ -878,6 +878,28 @@ What the baseline contains, by release:
   proves a sound plays. Sheet v28 — one description cell, no spoken word
   moved, and verified cell-by-cell against Drive rather than only by an
   import. docs/V5.25-THE-NOTE-ON-THE-TABLE.md.
+- **v5.26** HIS VOICE — Chad kept River ("lets stick to river for now")
+  but found him "way too soft". The takes MEASURE fine: -20.8 dBFS mean
+  against the cast's -19.6. What explains the ear is the CREST — peaks to
+  -1.9 dB, a 19 dB gap — because every take is PEAK-matched (the v4.8
+  rule), and peak-matching says nothing about the average; River is a soft,
+  breathy read. Against chapter 2's fan bed (-24.3) he had 3.5 dB of margin.
+  So a uniform lift could never fix it: the loudest take leaves 1.9 dB
+  before it clips. A dynamics problem wants a dynamics tool — his lines now
+  ride a BUS (gain 2.0 -> DynamicsCompressor, threshold -18/ratio 4) that
+  hangs BEFORE `packGain`, so mute, the volume slider and the cutscene
+  ducking keep working untouched. Five call sites moved to `outFor(name)`:
+  `snd` (every cutscene line), `say`, `speak` (the card lines), `scaredGasp`
+  and chapter 1's opening line, which was on `sfxGain` outside the pack
+  entirely. Measured through the REAL compressor in an OfflineAudioContext
+  across four configurations: +4.8 dB average, nothing clips, and the
+  quietest lines gain most (the 3 a.m. whisper +7.7, the loudest take
+  +0.0) — it evens him out rather than turning him up. `JAMES_TAKES` names
+  all 79 samples because a prefix rule CANNOT work (the mother's `v2ma` and
+  the auntie's `v3aunt1` are also `v*`), and `chaptertest` asserts the set
+  equals `who === 'james'` in both directions. Not one audio byte changed;
+  the other three speakers are deliberately left flat.
+  docs/V5.26-HIS-VOICE.md is the build's memory.
 - **v5.23** THE GRANNY IS CHAD'S — her credit row removed (the panel lists
   other people's work, and she is his own), and yinn and the kungfu man
   DROPPED rather than deferred, with the asks withdrawn from every doc

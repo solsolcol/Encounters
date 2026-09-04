@@ -202,6 +202,29 @@ if (VOICE && Array.isArray(VOICE.LINES)) {
     if (typeof l.secs !== 'number' || !(l.secs > 0)) errs.push(`voice: row '${l.id}' has no measured length`);
   }
   if (rows.size !== VOICE.LINES.length) errs.push('voice: a sample has two rows in src/voicelines.js');
+
+  /* v5.26: the boy's takes ride their own bus in the engine (VOICE_BOOST),
+     and the engine has to know which samples are HIS. It cannot be told by
+     a prefix — his files are `v*` but so are the mother's (`v2ma`) and the
+     auntie's (`v3aunt1`) — so main.js spells the set out, and this check is
+     what keeps that copy honest. A new line for him that never reaches
+     JAMES_TAKES would not error at runtime; it would simply play at the old
+     volume, which is precisely the kind of silent drift nobody hears until
+     the whole chapter is built. */
+  const mainSrc = readFileSync(join(DIR, 'src', 'main.js'), 'utf8');
+  const setLit = mainSrc.match(/const JAMES_TAKES = new Set\(\[([\s\S]*?)\]\)/);
+  if (!setLit) errs.push('voice: main.js has no JAMES_TAKES set');
+  else {
+    const inEngine = new Set([...setLit[1].matchAll(/'([^']+)'/g)].map(m => m[1]));
+    const inRegistry = new Set(VOICE.LINES.filter(l => l.who === 'james').map(l => l.id));
+    for (const id of inRegistry) {
+      if (!inEngine.has(id)) errs.push(`voice: '${id}' is james in the registry but missing from JAMES_TAKES in main.js`);
+    }
+    for (const id of inEngine) {
+      if (!inRegistry.has(id)) errs.push(`voice: JAMES_TAKES names '${id}', which is not a james row in src/voicelines.js`);
+    }
+    console.log(`his voice bus: ${inEngine.size} takes, matching the registry`);
+  }
   console.log(`voice lines: ${VOICE.LINES.length} rows, ${Object.keys(VOICE.SPEAKERS || {}).length} speakers`);
 } else if (!errs.some(e => e.startsWith('ERR src/voicelines.js'))) {
   errs.push('ERR src/voicelines.js did not register window.__VOICE__');

@@ -23,6 +23,16 @@ v2.3 to v5.14 he was "James - Husky, Engaging and Bold",
 `EkK5I93UQWFDigLMpZcX`, stability 0. The `assets/voice.mp3` line is generated with the same voice so
 the whole game is one actor.
 
+**Since v5.26 his lines ride their own bus** (`VOICE_BOOST` in main.js:
+gain 2.0 into a DynamicsCompressor, before `packGain`). His takes are
+peak-matched like everything else, which left his AVERAGE ~19 dB under his
+peaks and only 3.5 dB over a room bed — measured, that is what "too soft"
+was. The bus lifts the quiet lines ~5-8 dB and the loud ones not at all.
+Two things follow for anyone generating a new take for him: keep
+peak-matching (the bus handles the average, and the mp3s stay the proven
+fallback), and **add its id to `JAMES_TAKES` in main.js** or it plays at
+the old level — `chaptertest` fails the build if you forget.
+
 ## Architecture decisions
 
 - **One audio pack asset.** All new sounds live as small mp3s in
