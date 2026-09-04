@@ -72,6 +72,10 @@ twice. When code in this repo looks odd, the reason is usually here.
   re-derived from current time each frame. Skipping is seek(duration),
   screenshots are seek(t), and a stalled frame can never leave the scene
   half-applied. Sounds are fire-once STINGS, never fired by seeks.
+  And `__enc.cine.seek()` also sets `cine.paused = true` (v5.25) — so a
+  probe that seeks past a cue and then reads the cue log sees NOTHING and
+  will report a working sound as broken. `cine.resume()` after the seek,
+  then let the film RUN across the cue, is the only way to prove one fires.
 - Scenes run on their own performance.now clock capped at 0.5 s/frame —
   the game's 0.05 dt cap would stretch an 8 s scene to minutes at 1 fps.
 - Snapshot/restore the world around every scene; per-scene `keep`

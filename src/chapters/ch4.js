@@ -113,8 +113,13 @@
     /* hdb is the block opposite, out the living room window — the fourth
        chapter to reuse it, which is the point: all of this happens at one
        block. seat is chapter 3's red plastic chair, back for one shot in
-       the flashback. NO hellnote: it is not seen in this chapter.        */
-    assets: ['hdb', 'seat', 'altar', 'sofa'],
+       the flashback. hellnote and bed are for the FLASHBACK only — the
+       chapter's own present has neither (the note is not seen in this
+       chapter; chapter 5's tang-ki finds it), but scene A's memories are
+       chapter 1's void deck and chapter 2's bedroom, and since v5.25 they
+       are those rooms' real note art and real bed rather than a drawn
+       placeholder and five boxes.                                        */
+    assets: ['hdb', 'seat', 'altar', 'sofa', 'hellnote', 'bed'],
 
     /* The room's own sound: an evening, not a night — crickets and traffic
        far down, the clock, the fan. The explore music sits a little lower
@@ -140,7 +145,7 @@
 
   function build(ctx) {
     const { THREE, GLTFLoader, scene, camera, yaw, LOW,
-            assetBytes, rescueTextures, redoShadows,
+            assetBytes, rescueTextures, redoShadows, loadImageTexture,
             cnv, makeSoftDot, makeConcrete, makeLacquer,
             makeHellNote, getState, startDecision, worldSfx } = ctx;
 
@@ -920,9 +925,24 @@
         set.add(tip);
       }
     }
-    {  // the drifted notes — the chapter's own art, scattered where they fell
+    {  /* the drifted notes. v5.25: the REAL photographed art, the same
+          file chapter 1 puts under your feet — this memory is chapter 1,
+          and a drawn placeholder in it is the one thing in the frame that
+          was never in that room. It builds with the drawn note and swaps
+          when the bytes land, so a slow download costs the photograph and
+          never the notes. The brightening is chapter 1's own (v3.8): a
+          saturated print at this light collapses into a dark tile unless
+          the paper is lifted and given a little glow of its own.       */
       const noteMat = new THREE.MeshStandardMaterial({
         map: noteTex, roughness: 0.85, side: THREE.DoubleSide });
+      loadImageTexture('hellnote').then(tex => {
+        if (!alive || !tex) return;
+        noteMat.map = tex;
+        noteMat.color.setScalar(1.75);
+        noteMat.emissive.setScalar(0.20);
+        noteMat.emissiveMap = tex;
+        noteMat.needsUpdate = true;
+      }).catch(() => {});
       const noteGeo = new THREE.PlaneGeometry(0.15, 0.09);
       for (const [nx, nz, ry] of [[-0.5, 0.9, 0.4], [-0.75, 0.55, 2.1], [-0.3, 1.25, 1.2],
                                   [0.45, 1.05, 2.8], [-0.95, 1.0, 0.9]]) {
@@ -970,6 +990,31 @@
     const m2Head = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.62, 0.05), m2MatWood);
     m2Head.position.set(0, 0.55, -0.93);
     m2Bed.add(m2Head);
+    /* v5.25 — and it is CHAD'S BED, the one chapter 2 actually has. The
+       memory is that bedroom; five boxes standing in for the bed was the
+       last thing in this set that did not match the room it remembers.
+       Scaled by WIDTH to 0.95, which is ch2's own BED.w and the width of
+       the boxes above — never by length, because the bed's left edge is
+       one wall of the GAP, and the gap is what this memory is about (the
+       dark strip at x -0.87 is right beside it). The primitives go only
+       when the bytes land. */
+    assetBytes('bed').then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
+      if (!alive) return;
+      rescueTextures(gltf, BUF);
+      const g = gltf.scene;
+      g.updateMatrixWorld(true);
+      let b = new THREE.Box3().setFromObject(g);
+      const w = b.max.x - b.min.x;
+      if (!(w > 0)) return;
+      g.scale.setScalar(0.95 / w);
+      g.updateMatrixWorld(true);
+      b = new THREE.Box3().setFromObject(g);
+      g.position.set(-(b.min.x + b.max.x) / 2, -b.min.y, -(b.min.z + b.max.z) / 2);
+      g.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+      for (const o of [m2Frame, m2Mattress, m2Blanket, m2Pillow, m2Head]) o.visible = false;
+      m2Bed.add(g);
+      redoShadows();
+    }, () => {})).catch(() => {});
     const m2GapDark = new THREE.Mesh(new THREE.PlaneGeometry(0.2, 2.0), matVoid);
     m2GapDark.rotation.x = -Math.PI / 2;
     m2GapDark.position.set(-0.87, 0.012, 0);

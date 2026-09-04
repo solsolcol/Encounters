@@ -220,7 +220,7 @@
       text: "Come in, sifu. Come in, come in.", secs: 2.19 },
     { id: "v5wake2", who: "james", ch: "ch5", where: "Opening film, the bow to the kitchen",
       text: "Why is he bowing at the kitchen.", secs: 1.57 },
-    { id: "t5note", who: "tangki", ch: "ch5", where: "Opening film, the note held up — his first words in the game",
+    { id: "t5note", who: "tangki", ch: "ch5", where: "Opening film, the note set down on the table — his first words in the game",
       text: "Here. [beat] Under where you sit.", secs: 3.55 },
     { id: "v5wake3", who: "james", ch: "ch5", where: "Opening film, the last line",
       text: "That's the hell note. From the void deck. It's been here the whole time.", secs: 5.15 },

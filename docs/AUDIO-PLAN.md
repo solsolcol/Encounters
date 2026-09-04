@@ -474,6 +474,7 @@ through the lines/voiceLine paths (no rows).
 |---|---|---|
 | `doorknock` | three knocks on the front door | film 0.8 |
 | `notepull` | paper peeled from under a seat | film 26.5 · scene D 4.8 |
+| `noteset` | the note set down on the table — the film's reveal (v5.25) | film 30.2 |
 | `matchstrike` | one match | scene D 13.8 |
 | `noteburn` | 12 s of paper burning — the whole hold | scene D 15.2 |
 | `teaset` | cups set down on wood | scene A 2.2 |

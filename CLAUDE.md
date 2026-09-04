@@ -855,6 +855,28 @@ What the baseline contains, by release:
   The rail moved to 0.21 and the BACKWARD lean alone is clamped at 0.045,
   above the 0.035 the swing reaches by itself, so play is untouched and a
   storm holds 2.9 cm off the bars. docs/V5.24-SOFA-AND-CURTAINS.md.
+- **v5.25** THE NOTE ON THE TABLE — Chad's two notes, one idea under
+  both: the memory and the reveal should show the REAL thing. Chapter 4's
+  flashbacks are visual recall, and two of the three still held what those
+  chapters had before their art arrived — the five drifted notes in the
+  void-deck memory were the canvas-drawn placeholder v3.8 replaced, and the
+  bedroom memory was five boxes while chapter 2 has had Chad's bed since
+  v5.17. Both now load the real asset over the primitive (colour x1.75 +
+  emissive map on the note, chapter 1's own brightening; the bed scaled by
+  WIDTH to ch2's 0.95, never by length, because its left edge is one wall
+  of the GAP). And chapter 5's find is no longer a man trying to hold a
+  note up: he stands, carries it the 0.37 m to the table, SETS IT DOWN with
+  a new `noteset` sound, and the film hard-cuts to the wood. Where it lands
+  is not a new number — it is `NOTE_HOME`, the spot play already keeps the
+  note in, so the film ends with it exactly where the chapter begins with
+  it. Where he STANDS to reach it is measured against the v5.03 collision
+  columns (0.11 m clear of the thinking chair) because cutscene paths obey
+  no collision. `aimNoteInHand` — v5.07's solver for aiming a plane in a
+  bone's frame at the lens — is deleted with the shot it existed for.
+  One probing law worth keeping: **`__enc.cine.seek()` PAUSES the film**,
+  so seeking past a cue never fires it; `resume()` after the seek is what
+  proves a sound plays. Sheet v28 (one description cell — no spoken word
+  moved). docs/V5.25-THE-NOTE-ON-THE-TABLE.md.
 - **v5.23** THE GRANNY IS CHAD'S — her credit row removed (the panel lists
   other people's work, and she is his own), and yinn and the kungfu man
   DROPPED rather than deferred, with the asks withdrawn from every doc

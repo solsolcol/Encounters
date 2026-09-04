@@ -3551,6 +3551,9 @@ const STING_SAMPLE = {
   /* v5.0: chapter 5's morning — the knock, the find, the burning; the
      tang-ki's seven lines are the game's fourth speaker. */
   doorknock: ['doorknock', 0.9], notepull: ['notepull', 0.9],
+  /* v5.25: the note SET DOWN on the table — chapter 5's film reveals it
+     on the wood rather than held up in a hand, and this is the reveal. */
+  noteset: ['noteset', 0.95],
   matchstrike: ['matchstrike', 0.85], noteburn: ['noteburn', 0.85],
   teaset: ['teaset', 0.7],
   v5wake1: ['v5wake1', 1], v5wake2: ['v5wake2', 1], v5wake3: ['v5wake3', 1],

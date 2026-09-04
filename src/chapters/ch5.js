@@ -1667,25 +1667,38 @@
     const CHX = 1.3, CHZ = 0.25;                 // the chair (the note's spot)
     const LOWCAM = { x: CHX - 0.95, y: 0.52, z: CHZ + 0.95 };
     const Y_LOW = faceFrom(LOWCAM.x, LOWCAM.z, CHX, CHZ);
-    /* THE INSERT geometry. He stands at (0.75, 0.65) facing the chair -
-       unit direction (0.81, -0.59). The camera sits 1.15 m out ALONG that
-       facing, so his face carries the shot.
-       v5.07 (Chad: "put the hell note in his actual hand instead of it
-       floating in air"): the note rides his RIGHT HAND BONE, and the hand
-       is put where the old floating note was by FREEZING the magic take
-       one fifth of the way in — measured across the take, that frame has
-       the hand 0.45 m forward of his hips at 1.44 m, which is the shot the
-       floating note was faking. The note then sits at (1.34, 1.43, 0.57)
-       in the world, 0.69 m from the lens; the camera is raised a little
-       and aimed there, with his face beside it.                          */
-    /* 0.62 m from the note (it was 0.69, then 0.45 — at which the robe's
-       flared cuff was most of the frame and his face was out of it). A
-       15 cm note at 0.62 m is a sixth of the frame, held at the fingertips
-       with the face in the right of frame: a man holding up a note. */
-    const INS_CAM = { x: 1.64, y: 1.49, z: 0.03 };
-    const INS_NOTE = { x: 1.34, y: 1.45, z: 0.57 };     // measured, in the hand
-    const Y_INS = faceFrom(INS_CAM.x, INS_CAM.z, INS_NOTE.x, INS_NOTE.z);
-    const INS_FRAME = 0.2;                        // of the magic take's length
+    /* THE REVEAL geometry — v5.25, Chad's call: "i want the tangki to walk
+       to the table and the next shot immediately zooms in on the table
+       surface with the hellnote placed on it, instead of showing the
+       tangki trying to hold it up in his hand."
+
+       So the note is not held up any more. He takes it from under the
+       seat, carries it the short step to the table, SETS IT DOWN, and the
+       film cuts to the wood.
+
+       Where it lands is not a new number: it is NOTE_HOME, the spot the
+       chapter's play state already puts the note in — his end of the
+       table, on the room-facing edge, clear of the pot and both cups. So
+       the film now ends with the note exactly where the chapter begins
+       with it, instead of somewhere the engine has to move it from.
+
+       Where he STANDS to reach it is measured against the furniture the
+       v5.03 audit boxed: (0.72, 0.28) is 0.37 m off the table's near edge,
+       0.11 m clear of the thinking chair's box, and 0.61 m from the note —
+       a reach with a lean, not a walk through the dining set.           */
+    const PLACE = { x: 0.72, z: 0.28 };            // where he sets it down from
+    /* 1.6 m back, not 0.9: at 0.9 his robe was most of the frame and the
+       table he is walking to was not in it. */
+    const MIDCAM = { x: -0.25, y: 1.50, z: 1.55 };  // the room-side view of that
+    const Y_MID = faceFrom(MIDCAM.x, MIDCAM.z, PLACE.x, PLACE.z);
+    /* the insert: over the table's far side looking back across the note,
+       so the wood fills the frame and his robe stands beyond it. 0.54 m
+       from a 15 cm note is a third of frame. */
+    const TBL_NOTE = { x: stage.TABLE.x - 0.32,
+                       y: stage.TABLE.top + 0.026,
+                       z: stage.TABLE.z + 0.33 };  // = NOTE_HOME, in the world
+    const TBL_CAM = { x: 1.28, y: 1.00, z: -0.66 };
+    const Y_TBL = faceFrom(TBL_CAM.x, TBL_CAM.z, TBL_NOTE.x, TBL_NOTE.z);
     const turnTo = mkTurn(api);
     /* seat the note in the palm: along the finger axis of the hand bone
        (measured as (-0.69, 0.72, 0) in bone space), a centimetre off the
@@ -1703,35 +1716,20 @@
       stage.note.rotation.set(0, 0, 0.76);
       return true;
     };
-    /* The note's seat in the hand is SOLVED, not guessed. Three guesses at
-       the bone's axes (a flip, a palm side, a finger offset) each produced
-       the same frame — a plane edge-on to the lens, hidden in the cuff —
-       because a hand bone's frame is nothing a person can reason about.
-       So, on the frozen frame: take the hand's world position and rotation,
-       build the world rotation that faces the note's front at the lens with
-       its top to the sky, put it 10 cm toward the lens and 16 cm up from the
-       hand (at 5 and 10 the cuff still cut through it), and convert both
-       into the bone's space. Whatever the bone's
-       axes are, the note faces the camera upright. */
-    const aimNoteInHand = (cam) => {
-      const h = stage.tangHand;
-      if (!h || stage.note.parent !== h) return;
-      const V = stage.note.position.constructor;
-      const Q = h.quaternion.constructor;
-      stage.tangki.updateMatrixWorld(true);
-      const hp = h.getWorldPosition(new V());
-      const hq = h.getWorldQuaternion(new Q());
-      const ws = h.getWorldScale(new V());
-      const d = new V(cam.x - hp.x, cam.y - hp.y, cam.z - hp.z).normalize();
-      const right = new V().crossVectors(new V(0, 1, 0), d).normalize();
-      const up = new V().crossVectors(d, right).normalize();
-      const m = new (stage.note.matrix.constructor)().makeBasis(right, up, d);
-      const qw = new Q().setFromRotationMatrix(m);
-      const wpos = hp.clone().addScaledVector(d, 0.10).addScaledVector(up, 0.16);
-      const inv = hq.clone().invert();
-      stage.note.position.copy(wpos.sub(hp).applyQuaternion(inv).divideScalar(ws.x));
-      stage.note.quaternion.copy(inv.multiply(qw));
-      stage.note.scale.setScalar(1 / ws.x);
+    /* v5.25: the solver that aimed the note at the lens INSIDE his hand is
+       gone with the shot it existed for. `noteToHand` stays — he still
+       carries the note from the chair to the table — but nothing has to
+       make a plane in a bone's frame face a camera any more, because the
+       camera now looks at a table.                                      */
+    /* the note comes back off the hand at full size: noteToHand divides it
+       down by the bone's ~95x world scale to survive being parented there */
+    const noteToTable = () => {
+      stage.note.parent?.remove(stage.note);
+      stage.NOTE_HOME.parent.add(stage.note);
+      stage.note.scale.setScalar(1);
+      stage.note.position.copy(stage.NOTE_HOME.pos);
+      stage.note.rotation.copy(stage.NOTE_HOME.rot);
+      stage.note.visible = true;
     };
 
     step(0, () => {
@@ -1839,31 +1837,51 @@
       }
     });
 
-    /* 28.5-40.5 THE INSERT: the note held up in the morning light — the
-       real photographed art, a third of the frame. His first words in
-       five chapters of game land here, and then the boy names it.       */
-    step(28.5, () => {
-      if (stage.tangHand) {
-        stage.tangPlay('magic', 1, 0, true, INS_FRAME);   // the hand comes up, and holds
-        if (stage.note.parent !== stage.tangHand) noteToHand();
-        aimNoteInHand(INS_CAM);                     // and the note faces the lens, upright
-      } else {                                    // no bone: the v5.06 floating insert
-        stage.tangki.remove?.(stage.note);
-        stage.chairs[0].parent.add(stage.note);
-        stage.note.position.set(INS_NOTE.x, INS_NOTE.y, INS_NOTE.z);
-        stage.note.rotation.set(-0.10, faceFrom(INS_NOTE.x, INS_NOTE.z, INS_CAM.x, INS_CAM.z) + Math.PI, 0.06);
-      }
-    });
-    camTo(28.5, 40.5, INS_CAM,
-      { x: INS_CAM.x - 0.04, y: INS_CAM.y + 0.02, z: INS_CAM.z + 0.04 }, smoothK);
-    yawTo(28.5, 40.5, Y_INS, Y_INS);
-    pitchTo(28.5, 40.5, -0.10, -0.10);
+    /* 28.4-30.2 HE STANDS AND TAKES IT TO THE TABLE. The camera comes up
+       off the floor with him — the low shot was for the hand under the
+       seat, and holding it while he walks away would be a shot of his
+       ankles. He crosses the 0.37 m to the table's edge on real feet.  */
+    camTo(28.4, 30.2, LOWCAM, MIDCAM, smoothK);
+    yawTo(28.4, 30.2, Y_LOW, Y_MID, smoothK);
+    pitchTo(28.4, 30.2, 0.10, -0.274, smoothK);
+    step(28.4, () => { stage.tangPlay('walk', 0.5); });
+    tr(28.4, 29.9, k => {
+      stage.tangki.position.set(CHX - 0.55 + (PLACE.x - (CHX - 0.55)) * k, 0,
+                                CHZ + 0.4 + (PLACE.z - (CHZ + 0.4)) * k);
+    }, smoothK);
+    tr(28.4, 29.9, k => {
+      const a = faceFrom(CHX - 0.55, CHZ + 0.4, CHX, CHZ) + Math.PI;
+      const b = faceFrom(PLACE.x, PLACE.z, TBL_NOTE.x, TBL_NOTE.z) + Math.PI;
+      let d = b - a; d = Math.atan2(Math.sin(d), Math.cos(d));   // the short way
+      stage.tangki.rotation.y = a + d * k;
+    }, smoothK);
+    step(29.9, () => { stage.tangPlay('idle'); });
+    // he leans over the table to set it down, and straightens after
+    tr(29.9, 30.3, k => { stage.tangBow = 0.22 * k; }, smoothK);
+    tr(30.5, 31.4, k => { stage.tangBow = 0.22 * (1 - k); }, smoothK);
+
+    /* 30.2 THE PLACEMENT — the note leaves his hand for the wood, at
+       NOTE_HOME, and the sound is the reveal (Chad: "a sound effect to
+       show that the hellnote was placed on the table"). */
+    step(30.2, () => { noteToTable(); });
+    sfx(30.2, 'noteset', 0.95);
+
+    /* 30.4-41.5 THE INSERT: the TABLE SURFACE, the note lying on it in the
+       morning light — the real photographed art, a third of the frame, and
+       his robe beyond the near edge. A hard cut, then the slowest push in
+       the film. His first words in five chapters of game land here, and
+       then the boy names what he is looking at.                        */
+    camTo(30.4, 30.4, TBL_CAM, TBL_CAM);          // the hard cut across
+    yawTo(30.4, 30.4, Y_TBL, Y_TBL);
+    pitchTo(30.4, 30.4, -0.427, -0.427);
+    camTo(30.4, 41.5, TBL_CAM,
+      { x: TBL_CAM.x - 0.05, y: TBL_CAM.y - 0.04, z: TBL_CAM.z + 0.08 }, smoothK);
+    yawTo(30.4, 41.5, Y_TBL, Y_TBL);
+    pitchTo(30.4, 41.5, -0.427, -0.427);
     // the black takes him back to his idle; restore() re-homes the note
     step(41.8, () => { stage.tangPlay('idle', 1, 0); stage.setTangProps(true); });
-    // he inclines toward what he is holding, and stays inclined
-    tr(28.6, 29.6, k => { stage.tangBow = 0.16 * k; }, smoothK);
-    sfx(29.0, 't5note');                          // 3.55 s: "Here. Under where you sit."
-    sfx(33.5, 'v5wake3');                         // 6.84 s: "That's the note..."
+    sfx(31.2, 't5note');                          // 3.55 s: "Here. Under where you sit."
+    sfx(35.4, 'v5wake3');                         // 5.15 s: "That's the hell note..."
 
     tr(40.3, 40.8, () => {}, rawK);
     fade(40.6, 42.6, 0, 1);
