@@ -53,3 +53,60 @@ Aaron is faster than River, measurably. The opening line `voice`:
 River 4.60 s -> Aaron 3.16 s. Shorter takes cannot newly collide with the
 cue after them, but they can open gaps a beat was written to fill, so CP3
 re-scans every timeline rather than assuming the change is safe.
+
+## PAUSED at 22/79 — Chad heard Aaron and stopped it
+
+*"why is aaron so monotonous, this is worse than river"* — mid-run, after
+chapter 2 finished. Generation stopped there; no further credits spent.
+
+**Nothing shipped changed.** Not one file in `assets/audio/` or
+`assets/audio-opus/` was replaced. The only tracked change is
+`SPEAKERS.james.voice` in the registry, which is not shipped and has no
+runtime effect. The live game is still River, still v5.27. Reverting is
+one line.
+
+### Measured, because "monotonous" can be checked
+
+Within-take variation (spread of per-50 ms RMS across the voiced parts —
+how much the delivery MOVES) over the 17 lines both voices have recorded:
+
+| | mean spread |
+|---|---|
+| Aaron | 7.69 dB |
+| River | 8.07 dB |
+
+Aaron is flatter on 11 of 17 lines, by **0.38 dB** on average. That is a
+real effect but a small one — it does not by itself explain "worse than
+River". The monotony Chad hears is mostly in PITCH and inflection, which
+this measure does not capture and his ear does. Recorded honestly rather
+than claimed as vindication.
+
+### The directed test (Chad's pick from four options)
+
+Every one of the 22 takes was generated from BARE TEXT with no performance
+direction, and Aaron's own billing is "Conversational American Male" — an
+undirected Aaron is exactly a flat conversational read. Four lines were
+re-generated with direction written into the prompt (`masters/v5.28/directed/`):
+
+| line | undirected | directed | River |
+|---|---|---|---|
+| opening | 6.11 | **6.10** | 7.84 |
+| the shout | 9.00 | **11.02** | 9.78 |
+
+**Direction rescues the shout and does nothing for the opening.** Where
+there is an emotion to play, the tags work — the shout now moves more than
+River's. Where the line is a boy thinking out loud, Aaron delivers it flat
+whatever the prompt says, and a lot of this game is a boy thinking out loud.
+
+**And direction inflates the takes badly**: the opening 3.16 s -> 8.80 s,
+the breakdown 14.72 s. The model performs the stage directions as pauses
+and breaths. Every directed take would need re-timing against its cutscene
+and some would not fit their beat at all. Cost also triples, ~1c -> ~3c
+per line.
+
+### Where it stands
+
+Awaiting Chad's ear on the four directed takes. If they read as a person,
+redo all 79 directed and absorb the re-timing. If the opening still sounds
+dead — and it measures dead — it is Aaron's register, not the direction,
+and he should be dropped.
