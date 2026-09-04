@@ -1661,3 +1661,25 @@ against the thing it should look at BY ARITHMETIC (`atan2(dx, dz)` for a
 +z-forward figure), not by the comment beside it. kana at the burner got
 the same treatment: her yaw is computed from the brazier's position, not
 inherited from a primitive that looked past the drum.
+
+## A probe that does not wait for silence measures the wrong thing (v5.27)
+
+The dialogue-duck probe reported `ducks while he speaks: NO` on a build
+where the duck was working exactly as designed. Its very first sample —
+labelled "idle" — already read `bg: 0.4, speaking: 1`, which was the
+answer: the chapter's own opening line was still playing, `say()` refuses
+to talk over another line, so the probe's test line never started and it
+spent the rest of the run watching a recovery it mistook for a failure.
+
+Two rules come out of it, and they generalise past audio:
+
+- **Wait for the quiet state before asking for the loud one.** The probe
+  now blocks on `speaking === 0 && bg > 0.95` before it speaks.
+- **Assert the stimulus actually happened.** It now checks the line took
+  (`duck().speaking > 0`) instead of assuming a call to `say()` produced
+  sound. A guard that silently declines is indistinguishable from a broken
+  feature unless you look.
+
+The trap is worse than a plain false negative: a FAIL taken at face value
+sends a correct fix back to be "repaired", which is how a working build
+gets broken by its own test.
