@@ -134,7 +134,11 @@
       interact: 'Sit down and think it through',
       interactTouch: 'the dining chair'
     },
-    lines: { near: 'v4near', close: 'v4sit', nearAt: 3.2 },
+    /* v5.30: 'Start from the beginning' is the ACT line — said when the
+       decision opens on the chair — not the close line, which fired on
+       merely walking up to it (Chad: "that line should only be played
+       when interacting with the chair"). */
+    lines: { near: 'v4near', act: 'v4sit', nearAt: 3.2 },
     voiceLine: 'v4voice',
     sayPrefix: 'v4'
   };
@@ -447,6 +451,55 @@
     }, (err) => console.warn('HDB failed to load', err)))
       .catch(err => console.warn('HDB failed to load', err));
 
+
+    /* v5.30 — GRASS under the block (Chad: "add some grass to the ground for
+       the HDB flat outside the window"). Until now nothing stood under the
+       block at all: it rose out of the fog gradient with no ground, which
+       reads as floating the moment the eye drops below the sill. A field
+       from just past the outer wall to well beyond the block, drawn in
+       code — thousands of short strokes in three greens over a base — so
+       it costs no download and passes the strict CSP (a canvas, never a
+       blob or a data URL). Its top sits a hair under the block's own
+       ground slab so the two never fight for the same pixels.           */
+    {
+      const cv = document.createElement('canvas');
+      cv.width = cv.height = 256;
+      const g2 = cv.getContext('2d');
+      g2.fillStyle = '#3d6a2c';
+      g2.fillRect(0, 0, 256, 256);
+      let gs = 0x7F4A7C15 >>> 0;
+      const gr = () => { gs = (Math.imul(gs, 1664525) + 1013904223) >>> 0; return gs / 4294967296; };
+      const greens = ['#527d33', '#2e5122', '#6a8e3a', '#446d2a'];
+      for (let i = 0; i < 4200; i++) {
+        const x = gr() * 256, y = gr() * 256, a = (gr() - 0.5) * 1.2, len = 2 + gr() * 5;
+        g2.strokeStyle = greens[(gr() * greens.length) | 0];
+        g2.lineWidth = 0.6 + gr() * 0.9;
+        g2.beginPath(); g2.moveTo(x, y); g2.lineTo(x + Math.sin(a) * len, y - Math.cos(a) * len); g2.stroke();
+      }
+      const grassTex = new THREE.CanvasTexture(cv);
+      grassTex.wrapS = grassTex.wrapT = THREE.RepeatWrapping;
+      grassTex.repeat.set(34, 30);
+      grassTex.colorSpace = THREE.SRGBColorSpace;
+      grassTex.anisotropy = 4;
+      const grass = new THREE.Mesh(new THREE.PlaneGeometry(140, 120),
+        new THREE.MeshStandardMaterial({ map: grassTex, roughness: 1, metalness: 0 }));
+      grass.rotation.x = -Math.PI / 2;
+      grass.position.set(-3.5, -4.125, -66);    // the block's base is at -4.118
+      grass.receiveShadow = false;
+      world.add(grass);
+    }
+
+    /* v5.30 — THE LIT WINDOWS ARE NOT ADDED TO THE WORLD ANY MORE. Chad:
+       "the HDB flat outside the window has some glitchy white boxes". They
+       were these: flat pale planes at one depth (z -20.4) in front of a
+       block whose facade is not at that depth, so some hung in the air
+       ahead of the wall and some poked through it, none on its window
+       grid — and the block's own texture already carries lit windows, so
+       they were never needed. The meshes, the material and the handles
+       stay (the snapshot, the restore and the film's raise of `lateMat`
+       all still touch them, harmlessly); they simply never enter the scene.
+       Rendered and checked from the sill, the table and the film's window
+       shot before this was written. */
     const litMat = new THREE.MeshBasicMaterial({ color: 0xffd9a0, fog: false });
     const litGeo = new THREE.PlaneGeometry(0.9, 0.7);
     const litWins = [];
@@ -454,7 +507,7 @@
                             [1.1, 11.6], [4.3, 7.4], [-3.3, 13.2]]) {
       const w2 = new THREE.Mesh(litGeo, litMat);
       w2.position.set(lx - 2.0, ly - 2.0, -20.4);
-      world.add(w2); litWins.push(w2);
+      litWins.push(w2);                        // v5.30: never added to the world (above)
     }
     /* a few more that come on DURING the opening film — evening is other
        people getting home too. Off (invisible) until the film raises them. */
@@ -464,7 +517,7 @@
     for (const [lx, ly] of [[-6.4, 5.2], [0.2, 8.8], [3.2, 4.6]]) {
       const w2 = new THREE.Mesh(litGeo, lateMat);
       w2.position.set(lx - 2.0, ly - 2.0, -20.4);
-      world.add(w2); lateWins.push(w2);
+      lateWins.push(w2);                       // v5.30: never added to the world (above)
     }
 
     /* ------------------------------------------------------------ lighting */
@@ -943,13 +996,47 @@
         noteMat.emissiveMap = tex;
         noteMat.needsUpdate = true;
       }).catch(() => {});
-      const noteGeo = new THREE.PlaneGeometry(0.15, 0.09);
-      for (const [nx, nz, ry] of [[-0.5, 0.9, 0.4], [-0.75, 0.55, 2.1], [-0.3, 1.25, 1.2],
-                                  [0.45, 1.05, 2.8], [-0.95, 1.0, 0.9]]) {
-        const n = new THREE.Mesh(noteGeo, noteMat);
-        n.rotation.set(-Math.PI / 2 + 0.05, 0, ry);
-        n.position.set(nx, 0.015, nz);
-        mem1.add(n);
+      /* v5.30 — MORE OF THEM, to chapter 1's own recipe (Chad: "the
+         flashback should have more hellnotes scattered in that flashback,
+         just like the pile of hell notes back in chapter 1"). Five notes at
+         half size was a memory of a tidier void deck than the one he was
+         in. Now: chapter 1's full-size note (0.30 x 0.18), sixty of them
+         settled on the floor thickest at the drum and thinning outward
+         (its ground scatter, clustered by the same r^1.7), and its HEAP —
+         two dozen thin boxes mounded at the drum's side, where the one he
+         took came from. Seeded, so the memory is the same memory on every
+         replay. */
+      const noteGeo = new THREE.PlaneGeometry(0.30, 0.18);
+      let seed = 0x2545F491 >>> 0;
+      const rnd = () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed / 4294967296; };
+      const N_SCATTER = LOW ? 36 : 60;
+      const xf = [];
+      const _q = new THREE.Quaternion(), _e = new THREE.Euler(), _one = new THREE.Vector3(1, 1, 1);
+      for (let i = 0; i < N_SCATTER; i++) {
+        const r = 0.55 + 2.6 * Math.pow(rnd(), 1.7);       // clustered at the drum
+        const a = rnd() * Math.PI * 2;
+        const px = THREE.MathUtils.clamp(Math.cos(a) * r, -3.2, 3.2);
+        const pz = THREE.MathUtils.clamp(0.2 + Math.sin(a) * r * 0.9, -3.0, 3.2);
+        _e.set(-Math.PI / 2 + (rnd() - 0.5) * 0.16, rnd() * Math.PI * 2, (rnd() - 0.5) * 0.2);
+        xf.push(new THREE.Matrix4().compose(
+          new THREE.Vector3(px, 0.006 + rnd() * 0.012, pz), _q.setFromEuler(_e), _one));
+      }
+      const scatter = new THREE.InstancedMesh(noteGeo, noteMat, xf.length);
+      scatter.frustumCulled = false;
+      xf.forEach((m, i) => scatter.setMatrixAt(i, m));
+      mem1.add(scatter);
+      // the heap: chapter 1 puts it a step to the burner's side
+      const heap = new THREE.Group();
+      heap.position.set(0.95, 0, 1.25);
+      mem1.add(heap);
+      const heapGeo = new THREE.BoxGeometry(0.30, 0.009, 0.18);
+      const HEAP_R = 0.40;
+      for (let i = 0; i < 24; i++) {
+        const r = Math.sqrt(rnd()) * HEAP_R, a = rnd() * Math.PI * 2;
+        const n = new THREE.Mesh(heapGeo, noteMat);
+        n.position.set(Math.cos(a) * r, 0.008 + (1 - r / HEAP_R) * 0.20 * rnd(), Math.sin(a) * r * 0.88);
+        n.rotation.set((rnd() - 0.5) * 0.55, rnd() * Math.PI * 2, (rnd() - 0.5) * 0.55);
+        heap.add(n);
       }
     }
     const mem1Light = new THREE.PointLight(0xff7a26, 0, 7.5, 1.5);
@@ -1930,7 +2017,7 @@
      the house. He hangs up and the flat is 10 percent warmer.            */
   function scCall(c, s, api) {
     const { tr, step, sfx, fade, camTo, yawTo, pitchTo, faceFrom, rawK, smoothK,
-            duck, stage, ghostOpacity, handsRoot } = api;
+            duck, stage, ghostOpacity, handsRoot, armR, setHandCurl, rightHand } = api;
     const TO_PHONE = faceFrom(PHONEPT.x, PHONEPT.z, -0.4, stage.R.zNear - 0.24);
     const TO_WIN = faceFrom(PHONEPT.x, PHONEPT.z, -0.4, -stage.R.z);
     const TO_HALL = faceFrom(PHONEPT.x, PHONEPT.z, 2.05, stage.R.zNear + 0.8);
@@ -1944,15 +2031,38 @@
 
     // 3.5–12.5 pickup, dial tone, seven beeps, and the ring
     sfx(3.6, 'phonepick', 0.9);
+    /* v5.30 — THE HANDSET IS IN HIS HAND. Chad: "the phone is not held
+       properly in his hand". It was not held at all: v4.91 parented it to
+       handsRoot at a fixed offset, which put it near where a raised hand
+       would be while the hand itself stayed on the phone base — rendered,
+       the receiver hung at the edge of frame on its own. Now it is a child
+       of the RIGHT ARM at a palm offset (chapter 1's note prop is the
+       precedent — armR.add(noteProp) at (0.012, -0.052, -0.148)), so it
+       goes wherever the hand goes, and the hand goes UP: the arm lifts to
+       his ear over 0.9 s and stays there for the call. restoreWorld()'s
+       layoutHands() puts the arm back; stage.restore() re-seats the
+       receiver on the cradle whatever happens. */
+    const ARM0 = { p: null, e: null };
     step(3.7, () => {
-      /* the handset rides the viewmodel: parented into the hands rig it
-         breathes and sways with him, held up at the right of frame — the
-         phone GRABBED IN HIS HAND while he speaks (v4.91, Chad's call).
-         stage.restore() re-seats it on the cradle whatever happens. */
-      handsRoot.add(stage.handset);
-      stage.handset.position.set(0.26, -0.12, -0.48);
-      stage.handset.rotation.set(0.45, -0.6, 1.15);
+      ARM0.p = armR.position.clone(); ARM0.e = armR.rotation.clone();
+      armR.add(stage.handset);
+      /* the receiver's long axis is its local z (22.6 cm, measured); this
+         lays it diagonally along the fingers with the earpiece up-right —
+         chosen from eight rendered candidates, not reasoned out */
+      stage.handset.position.set(0.02, -0.03, -0.12);
+      stage.handset.rotation.set(1.57, 0.0, 0.30);
     });
+    // the fingers close round it (the walking curl is a relaxed fist)
+    tr(3.7, 4.3, k => { if (rightHand()) setHandCurl(rightHand(), 0.85 * k); }, smoothK);
+    /* the hand at the lower right of frame, lifted toward the ear — a
+       first-person hand on a call lives at the edge of the eye, not in the
+       middle of it (the first pose filled the centre of frame) */
+    const ARM_UP = { x: 0.22, y: -0.08, z: -0.30, rx: 1.22, ry: 0.30, rz: -0.90 };
+    tr(3.7, 4.6, k => {
+      if (!ARM0.p) return;
+      armR.position.set(ARM0.p.x + (ARM_UP.x - ARM0.p.x) * k, ARM0.p.y + (ARM_UP.y - ARM0.p.y) * k, ARM0.p.z + (ARM_UP.z - ARM0.p.z) * k);
+      armR.rotation.set(ARM0.e.x + (ARM_UP.rx - ARM0.e.x) * k, ARM0.e.y + (ARM_UP.ry - ARM0.e.y) * k, ARM0.e.z + (ARM_UP.rz - ARM0.e.z) * k);
+    }, smoothK);
     pitchTo(3.7, 4.6, -0.62, -0.40, smoothK);     // lifts a shade as the handset does
     sfx(4.3, 'dialtone', 0.5);
     sfx(5.6, 'dialbeep', 0.8);
@@ -1986,7 +2096,14 @@
     yawTo(43.3, 44.6, TO_WIN, TO_PHONE, smoothK);
     camTo(43.3, 44.6, { x: -0.2, y: EYE, z: 1.0 }, PHONEPT, smoothK);
     pitchTo(43.3, 44.6, 0.02, -0.55, smoothK);    // down, to cradle it
+    // and the arm comes down with the receiver (v5.30)
+    tr(43.3, 44.7, k => {
+      if (!ARM0.p) return;
+      armR.position.set(ARM_UP.x + (ARM0.p.x - ARM_UP.x) * k, ARM_UP.y + (ARM0.p.y - ARM_UP.y) * k, ARM_UP.z + (ARM0.p.z - ARM_UP.z) * k);
+      armR.rotation.set(ARM_UP.rx + (ARM0.e.x - ARM_UP.rx) * k, ARM_UP.ry + (ARM0.e.y - ARM_UP.ry) * k, ARM_UP.rz + (ARM0.e.z - ARM_UP.rz) * k);
+    }, smoothK);
     sfx(44.7, 'phonedown', 0.85);
+    tr(44.2, 44.8, k => { if (rightHand()) setHandCurl(rightHand(), 0.85 * (1 - k)); }, smoothK);
     step(44.8, () => {
       stage.phone.add(stage.handset);             // back on the cradle
       stage.handset.visible = true;

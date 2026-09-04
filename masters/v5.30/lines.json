@@ -1,0 +1,68 @@
+[
+ {
+  "id": "v3wake1",
+  "text": "They put the tent up on Monday. It is still going.",
+  "prompt": "[quietly uneasy] They put the tent up on Monday... It is still going."
+ },
+ {
+  "id": "v3wake2",
+  "text": "My mother told me not to come down. I came down anyway.",
+  "prompt": "[guilty, hushed] My mother told me not to come down... I came down... anyway."
+ },
+ {
+  "id": "v3wake3",
+  "text": "Everyone seems fascinated by the performance...",
+  "prompt": "[wary, wondering] Everyone seems fascinated... by the performance..."
+ },
+ {
+  "id": "v3chair",
+  "text": "There's one chair facing the wrong way. Just one.",
+  "prompt": "[unsettled] There's one chair facing the wrong way... Just... one."
+ },
+ {
+  "id": "v3out1",
+  "text": "She's out there! Standing outside...",
+  "prompt": "[alarmed, breath catching] She's out there!... Standing outside..."
+ },
+ {
+  "id": "v3out2",
+  "text": "She's not coming in.",
+  "prompt": "[dread, hushed] She's not... coming in."
+ },
+ {
+  "id": "v3seen",
+  "text": "He looked at me. Out of all of them... he looked at me.",
+  "prompt": "[shaken] He looked at me... Out of all of them... he looked at me."
+ },
+ {
+  "id": "v3grip",
+  "text": "His eyes were shut. He was looking at me with his eyes shut.",
+  "prompt": "[frightened, hushed] His eyes were shut... He was looking at me... with his eyes shut."
+ },
+ {
+  "id": "v3ask",
+  "text": "Is it real, auntie?",
+  "prompt": "[uneasy, small] Is it real... auntie?"
+ },
+ {
+  "id": "v3left",
+  "text": "I could still hear the drum from the lift. I told myself that was normal.",
+  "prompt": "[shaky relief, catching his breath] I could still hear the drum... from the lift... I told myself... that was normal.",
+  "retake": "the first read came out at 3.29 w/s, faster than the 5.41 s take it replaced"
+ },
+ {
+  "id": "v3C",
+  "text": "She told me the truth. Both halves of it.",
+  "prompt": "[quietly sobered] She told me the truth... Both halves of it."
+ },
+ {
+  "id": "v4sit",
+  "text": "Start from the beginning...",
+  "prompt": "[brooding, low] Start from the beginning..."
+ },
+ {
+  "id": "v4thinkA3",
+  "text": "Same block. Same week. Same me. It's not the places — it's following me.",
+  "prompt": "[afraid, voice tightening] Same block... Same week... Same me... It's not the places — it's following me."
+ }
+]

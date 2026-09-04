@@ -116,7 +116,7 @@ The declarations, all optional:
 | `ghost` | her whole territory: `minDist`, `appearAt`, `near`/`far`, `cross`, `away`, `behind`, and the `roam` box she may stand in — or `null`, which switches the haunting OFF for the chapter (no appearances, no drain, no banner; cutscenes may still drive her mesh) | the void deck's numbers |
 | `ambience` | `beds` (loops that just run) and `atShrine` (one keyed to distance from the shrine) | `amb` + the burner's `fire` |
 | `words` | `approach`, `act`, `actTouch`, `interact`, `interactTouch` — the words that NAME the thing you act on | the string sheet's |
-| `lines` | `near`, `close`, `nearAt` — the two proximity narration lines | — |
+| `lines` | `near`, `close`, `nearAt` — the two proximity narration lines; since v5.30 also `act`, a line for the moment the DECISION OPENS (chapter 4's "Start from the beginning...", which used to be its `close` line and so fired on merely walking up to the chair) | — |
 | `sayPrefix` | the prefix of the four lines under the outcome cards | `'v'` (→ `vA`..`vD`) |
 | `voiceLine` | the line he says a few seconds into play — an asset key, or since v4.3 a pack sound's name | — (silence) |
 | `noteArt` | the asset key of the chapter's note art | — (the drawn one) |
@@ -967,6 +967,49 @@ What the baseline contains, by release:
   of episode 1 — the contract above, Chad's "remember it well". All four
   models credited to Meshy AI (CC0). Sheet v30.
   docs/V5.29-THE-CROWD-REDEALT.md is the build's memory.
+- **v5.30** SIXTEEN NOTES — Chad's play-through list, all sixteen, across
+  the engine and three chapters. THE EDGES: the "mic opening chuff" at the
+  start and end of every line was not the compressor (softening it moved
+  nothing) but the FILES — eleven_v3 trims a take to its last audible
+  sample, so his lines begin and end ON signal, several while still loud
+  (`v5fearB1`'s last 40 ms sit 14 dB above the body of the line), and ×3.5
+  makes that a click. Every voice source now runs through its own 8 ms in /
+  50 ms out envelope (`voiceEdges`; one `mkVoice` for the four play-time
+  paths), which turns every tail negative (+14.2 → −1.5 dB) for 0.2 dB of
+  level; the bytes and the bus are untouched. THE STACKING: nothing of his
+  starts while ANY voice is live — `say`, `speak` and the opening line wait
+  on `liveVoices` (a scare is dropped instead: three seconds late reads
+  wrong), the opening line waits for its own decode rather than standing
+  down, and a scene's NATURAL end lets a line finish its sentence
+  (`stopCineVoices(keepSpeech)`; a skip still cuts everything). Proven by
+  the new `__enc.voices()` log: film → opening line → near line → the sit
+  line → the scene → the card, no overlaps. THE SLOW LINES: thirteen takes
+  re-said (Aaron, unchanged) under an emotion tag and Chad's ellipses —
+  chapter 3's film had opened at 3.97 words a second against the game's
+  median 2.3; 1.4–2.3 after — and its film and scenes B, C and D re-timed.
+  CHAPTER 4: the "glitchy white boxes" on the block outside were lit-window
+  planes floating at one depth in front of a facade that is not at that
+  depth (never added to the world now — the block's own texture carries its
+  windows); a grass field drawn in code under the block (a canvas, CSP-safe,
+  no download); "Start from the beginning..." moved from the `close` line to
+  a new `act` line — the FOURTEENTH leak, a line for the moment the decision
+  opens, said through `speak()` so it waits its turn; the void-deck memory
+  holds sixty of chapter 1's full-size notes and its heap instead of five at
+  half size; and the HANDSET is a child of the right ARM at a palm offset
+  (chapter 1's note-prop precedent) — the fingers curl round it and the arm
+  lifts to the ear, a pose chosen from eight rendered candidates. CHAPTER 5:
+  scene A's tail moved 4.5 s earlier (it was authored for a 14.76 s take that
+  has been 10.11 s since v5.15 — five seconds of silence after "that is why
+  this morning is quiet"); scene B's steps +3 dB and closer, the roll 2.5×
+  with a faster tremor riding on it, his answer 27.0 → 24.3; scene C now
+  ENDS WITH THE NOTE FLYING OUT OF THE WINDOW — off the table behind him,
+  past his right shoulder, out through the glass into the morning, the
+  camera turning to catch it and following it out, on a new `noteflight`
+  sound (6.5 s, peak-normalised from −25.8 dBFS); scene D's "double spin"
+  was a 0.15 s crossfade after the turn take — the group snapped and the
+  hips blended, so for 0.15 s he faced the wrong way and whipped round — now
+  a hard cut, per the v5.07 law. Sheet v31.
+  docs/V5.30-SIXTEEN-NOTES.md is the build's memory.
 - **v5.28** AARON — Chad, after two rounds of level work on River: *"i'm still
   not satisfied with this voice."* All 79 of the boy's takes regenerated in a
   THIRD voice (Aaron, `B6uUx2p7cRgxseOUyP6P`), under an approved prompt sheet

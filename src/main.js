@@ -1914,6 +1914,9 @@ function bgOut() {
    source that somehow ends twice cannot strand the mix ducked forever —
    `stop()` fires 'ended' too, so a skipped cutscene releases it. */
 const liveVoices = new Set();
+/* v5.30: every voice source, in order, with when it started and ended —
+   for the probe that proves two of his lines never sound at once. */
+const voiceLog = [];
 function duckSync() {
   if (!bgGain || !actx) return;
   const g = bgGain.gain, now = actx.currentTime, on = liveVoices.size > 0;
@@ -1924,10 +1927,52 @@ function duckSync() {
 /* Hold the mix down for as long as this source runs. 'ended' is added as a
    LISTENER, never as .onended — every caller already sets that, and
    clobbering it would leak narSrc/voiceSrc and wedge the narration floor. */
-function voiceHold(src) {
+function voiceHold(src, name = '?') {
   liveVoices.add(src);
-  src.addEventListener('ended', () => { liveVoices.delete(src); duckSync(); });
+  const rec = { name, t0: actx ? actx.currentTime : 0, t1: null };
+  voiceLog.push(rec); if (voiceLog.length > 200) voiceLog.shift();
+  src.addEventListener('ended', () => {
+    liveVoices.delete(src); rec.t1 = actx ? actx.currentTime : 0; duckSync();
+  });
   duckSync();
+}
+/* THE EDGES OF A TAKE (v5.30). Chad: the compressor "adds this sound effect
+   that sounds like a mic opening chuff or clipping sound at the start and
+   end of every voiceline", and some lines "sound cut off prematurely".
+   Measured, the bus was innocent — softening it moved nothing — and the
+   FILES were the cause: eleven_v3 returns a take trimmed to its last
+   audible sample, so nearly every one of his begins on signal and ends on
+   it, several while the voice is still loud (v5fearB1's last 40 ms sit
+   14 dB ABOVE the body of the line; v2D +9, vlost +5). A buffer that
+   starts and stops on a non-zero sample is a click at ×3.5, and a
+   syllable that ends at full level is a cut. So every voice source now
+   gets an 8 ms fade in and a 50 ms fade out, applied on its own gain
+   node before the bus: through the real chain that turns every one of
+   those tails negative (+14.2 -> -1.5) and costs 0.2 dB of level. The
+   bytes stay untouched, which keeps the masters the proven fallback.  */
+const VOICE_FADE_IN = 0.008, VOICE_FADE_OUT = 0.05;
+function voiceEdges(g, buf, plateau = 1) {
+  const t = actx.currentTime, d = buf.duration;
+  const up = Math.min(VOICE_FADE_IN, d * 0.25);
+  const down = Math.min(VOICE_FADE_OUT, d * 0.25);
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(plateau, t + up);
+  g.gain.setValueAtTime(plateau, t + Math.max(up, d - down));
+  g.gain.linearRampToValueAtTime(0, t + d);
+}
+/* one source, edged, on the right stage, held for the duck: the four
+   play-time paths (narration, the cards, a scare, the opening line) all
+   build theirs here, so the edge is one decision rather than four. */
+function mkVoice(name, buf) {
+  const s = actx.createBufferSource();
+  s.buffer = buf;
+  const g = actx.createGain();
+  voiceEdges(g, buf, 1);
+  s.connect(g);
+  g.connect(outFor(name));
+  s.__g = g;
+  voiceHold(s, name);
+  return s;
 }
 
 function setVolume(v) {
@@ -2068,6 +2113,8 @@ const VOICE_DELAY_MS = 2000;   // Chad timed it: two seconds after the world fad
    Keyed by that asset name, so changing chapter throws the previous
    chapter's buffer away rather than speaking it in the wrong room.       */
 let voiceBuf = null, voiceSrc = null, voiceTimer = 0;
+let voicePending = false;      // v5.30: his opening line is due and not yet said
+let voiceWaits = 0;            // v5.30: how long it has waited on its decode
 let voiceKey = null, voiceDecoding = false, voicePlayed = false;
 
 function voiceDecode() {
@@ -2100,7 +2147,7 @@ function warmPlaySet() {
   const amb = CH.ambience || AMBIENCE_DEFAULT;
   packWarm((amb.beds || []).map(b => b[0]));
   if (amb.atShrine) packWarm([amb.atShrine[0]]);
-  if (CH.lines) packWarm([CH.lines.near, CH.lines.close].filter(Boolean));
+  if (CH.lines) packWarm([CH.lines.near, CH.lines.close, CH.lines.act].filter(Boolean));
   // a voiceLine that lives in the pack decodes here; one that is its own
   // asset (chapter 1's 'voice') is simply not a pack name, and this no-ops
   if (CH.voiceLine) packWarm([CH.voiceLine]);
@@ -2178,25 +2225,42 @@ function whenDecoded(names, then, capMs = 4000) {
 function queueVoice() {
   clearTimeout(voiceTimer);
   voicePlayed = false;
+  voicePending = true;
+  voiceWaits = 0;
   voiceDecode();
-  voiceTimer = setTimeout(() => {
+  const fire = () => {
     /* The line may live in the sound pack rather than as its own asset —
        chapter 3's does, chapter 1's 'voice' predates the pack — so the pack
        buffer is the fallback. sndBuf() also kicks the decode if the pack
        arrived after voiceDecode() looked. */
     const buf = voiceBuf || (CH.voiceLine ? sndBuf(CH.voiceLine) : null);
-    if (state !== 'play' || muted || !buf || !actx) return;
-    if (actx.state !== 'running' || !sfxOut()) return;
+    if (state !== 'play' || muted || !actx
+        || actx.state !== 'running' || !sfxOut()) { voicePending = false; return; }
+    /* v5.30: a buffer still DECODING is waited for, not given up on. The
+       timer used to fire once at two seconds and return if the bytes were
+       not there yet, which on a slow phone dropped his opening line with no
+       error — the probe box lost it every run. Bounded, so a pack that
+       never arrives cannot hold the near line hostage. */
+    if (!buf) {
+      const stillComing = CH.voiceLine ? (packJson && packJson[CH.voiceLine]) : voiceDecoding;
+      if (stillComing && (voiceWaits = (voiceWaits || 0) + 1) < 80) { voiceTimer = setTimeout(fire, 250); return; }
+      voicePending = false; return;
+    }
+    /* v5.30: it waits its turn. Chapter 4 spawns you 2.75 m from the chair
+       whose near line fires at 3.2, so 'Sit down. Breathe.' was already
+       running when 'I can do this.' landed on top of it two seconds in.
+       Now nothing of his starts while a voice is live — and the near line
+       holds until this one has been said (say() honours voicePending). */
+    if (liveVoices.size > 0) { voiceTimer = setTimeout(fire, 250); return; }
     try {
-      voiceSrc = actx.createBufferSource();
-      voiceSrc.buffer = buf;
+      voiceSrc = mkVoice(CH.voiceLine || 'voice', buf);
       voiceSrc.onended = () => { voiceSrc = null; };
-      voiceSrc.connect(voiceBus() || sfxGain);
-      voiceHold(voiceSrc);
       voiceSrc.start();
       voicePlayed = true;
     } catch { voiceSrc = null; }
-  }, VOICE_DELAY_MS);
+    voicePending = false;
+  };
+  voiceTimer = setTimeout(fire, VOICE_DELAY_MS);
 }
 
 /* ----------------------------------------------------------- sound pack ---
@@ -2435,7 +2499,7 @@ function snd(name, vol = 1, rate = 1, pan = 0) {        // one-shot
   s.buffer = buf;
   s.playbackRate.value = rate;
   const g = actx.createGain();
-  g.gain.value = vol;
+  if (isVoice(name)) voiceEdges(g, buf, vol); else g.gain.value = vol;
   s.connect(g);
   let out = g;
   if (pan && actx.createStereoPanner) {   // where she IS, not just that she is
@@ -2445,7 +2509,7 @@ function snd(name, vol = 1, rate = 1, pan = 0) {        // one-shot
     out = pn;
   }
   out.connect(outFor(name));
-  if (isVoice(name)) voiceHold(s);
+  if (isVoice(name)) voiceHold(s, name);
   s.start();
   s.__g = g;        // so a caller can ramp it down instead of cutting it dead
   return s;
@@ -2509,15 +2573,20 @@ function stopBed() {
 function say(name, opts) {
   const once = !(opts && opts.again);
   if (once && narrated[name]) return;
-  if (muted || narSrc || voiceSrc || state === 'cine') { sndBuf(name); return; }
+  /* v5.30 (Chad: his lines "will quickly stack on top of each other
+     instead of waiting for the previous one to end"): a line also waits
+     while ANY voice is live — a cutscene's last line finishing under the
+     card, the film's last line under the fade — and while his opening
+     line is still due, so the first thing heard in a chapter is the line
+     written to be first. The callers retry every frame, so waiting is
+     free: the near line simply lands when the floor is clear.        */
+  if (muted || narSrc || voiceSrc || state === 'cine'
+      || liveVoices.size > 0 || voicePending) { sndBuf(name); return; }
   const buf = sndBuf(name);
   if (!buf || !actx || actx.state !== 'running') return;
   if (once) narrated[name] = true;
-  narSrc = actx.createBufferSource();
-  narSrc.buffer = buf;
+  narSrc = mkVoice(name, buf);
   narSrc.onended = () => { narSrc = null; };
-  narSrc.connect(outFor(name));
-  voiceHold(narSrc);
   narSrc.start();
 }
 
@@ -2532,16 +2601,14 @@ function speak(name, opts = {}) {
     const attempt = () => {
       if (muted || !packJson || !packJson[name]) return resolve(false);
       const buf = sndBuf(name);
-      if (!buf || narSrc || voiceSrc || !actx || actx.state !== 'running') {
+      if (!buf || narSrc || voiceSrc || liveVoices.size > 0
+          || !actx || actx.state !== 'running') {
         if (performance.now() > deadline) return resolve(false);
         setTimeout(attempt, 160);
         return;
       }
-      narSrc = actx.createBufferSource();
-      narSrc.buffer = buf;
+      narSrc = mkVoice(name, buf);
       narSrc.onended = () => { narSrc = null; resolve(true); };
-      narSrc.connect(outFor(name));
-      voiceHold(narSrc);
       narSrc.start();
     };
     attempt();
@@ -2567,15 +2634,13 @@ let wantLine = null, wantLineUntil = 0;   // a narration that must not be lost
 const VSCARES = ['vscare1', 'vscare2', 'vscare3', 'vscare4'];
 let scareIdx = Math.floor(Math.random() * VSCARES.length);
 function scaredGasp() {
-  if (muted || narSrc || voiceSrc || state !== 'play') return;
+  // a scare three seconds late reads wrong, so this one is dropped, not held
+  if (muted || narSrc || voiceSrc || liveVoices.size > 0 || state !== 'play') return;
   const name = VSCARES[scareIdx++ % VSCARES.length];
   const buf = sndBuf(name);
   if (!buf || !actx || actx.state !== 'running') return;
-  narSrc = actx.createBufferSource();
-  narSrc.buffer = buf;
+  narSrc = mkVoice(name, buf);
   narSrc.onended = () => { narSrc = null; };
-  narSrc.connect(outFor(name));
-  voiceHold(narSrc);
   narSrc.start();
 }
 const STEP_TAKES = ['step1', 'step2', 'step3', 'step4'];
@@ -3543,7 +3608,7 @@ function returnToTitle() {
   stopBed(); stopCineVoices();
   for (const n of liveLoops) loopVol(n, 0);   // ALL of them: silenceChapterLoops() keeps this chapter's own
   if (narSrc) { try { narSrc.stop(); } catch {} narSrc = null; }
-  clearTimeout(voiceTimer);                    // his opening line must not land on the title screen
+  clearTimeout(voiceTimer); voicePending = false;   // his opening line must not land on the title screen
   musicRamp(0);
   ui.panic.classList.remove('critical');       // the red of a low sanity does not follow you out
   ui.panic.style.transition = 'none'; ui.panic.style.opacity = '0';
@@ -3739,6 +3804,7 @@ const STING_SAMPLE = {
      stop stops the chant and the drum on a single track. */
   drum: ['drum', 0.8], cymbal: ['cymbal', 0.7], gong: ['gong', 0.85],
   burn: ['burn', 0.7], chair: ['chair', 0.7],
+  noteflight: ['noteflight', 0.7],   // v5.30: one sheet lifting and going out of the window (ch5 scene C)
   v3wake1: ['v3wake1', 1], v3wake2: ['v3wake2', 1],
   v3wake3: ['v3wake3', 1], v3wake4: ['v3wake4', 1],
   v3ask: ['v3ask', 1],
@@ -3800,10 +3866,17 @@ const STING_SYNTH = new Set(['boom', 'clang', 'whoosh', 'take', 'step', 'chime']
    when the scene ends. Ambient play sounds are NOT in this list: only stings
    fired while a cine is running.                                          */
 let cineVoices = [];
-function stopCineVoices() {
+/* v5.30: `keepSpeech` — at a scene's NATURAL end a line still being said
+   finishes its sentence instead of being ramped out in 300 ms (Chad: "some
+   of his voicelines sound cut off prematurely"); the card's own line waits
+   for it (speak() honours liveVoices). A skip still cuts everything: the
+   player ended the scene, and a sentence carrying on past that is the bug
+   this list was written for. */
+function stopCineVoices(keepSpeech = false) {
   if (actx) {
     const t = actx.currentTime;
     for (const s of cineVoices) {
+      if (keepSpeech && liveVoices.has(s)) continue;
       try {
         if (s.__g) {
           s.__g.gain.cancelScheduledValues(t);
@@ -4170,7 +4243,7 @@ function cineEnd() {
   if (!c) return;
   cine = null;
   cineDuck = null;                  // the room tone comes back up with the world
-  stopCineVoices();
+  stopCineVoices(!c.skipped);       // v5.30: speech finishes unless the player cut it
   restoreWorld(c.snap, c.keep);
   cineFadeEl.style.opacity = String(c.endFade);
   /* Usually the black has nothing left to hide once the snap is done, so it
@@ -4188,6 +4261,7 @@ function cineEnd() {
 function skipCine() {
   const c = cine;
   if (!c) return;
+  c.skipped = true;                 // v5.30: cineEnd() ramps the voices out too
   c.t = c.dur;
   cineSeek(c.dur);
   cineEnd();
@@ -4650,6 +4724,14 @@ function startDecision() {
   state = 'decide';
   chosen = null;
   snd('paper', 0.7);
+  /* v5.30: a chapter may name a line for the moment the decision OPENS —
+     the fourteenth leak. Chapter 4's 'Start from the beginning' was its
+     `close` line, so it fired on walking near the chair; Chad: "that line
+     should only be played when interacting with the chair". speak() rather
+     than say() because it waits its turn instead of dropping when the near
+     line is still going, and because it is not once-per-run: he says it
+     every time he sits down to think. Chapter 1 declares nothing here. */
+  if (CH.lines && CH.lines.act) speak(CH.lines.act, { wait: 8000 });
   // everything a cutscene or the card after it could need, decoding now so
   // the scene's first sting is a sample rather than the synth fallback
   packWarm(['clang', 'whoosh', 'boom', 'scream', 'kick', 'chant', 'chime',
@@ -5335,6 +5417,9 @@ window.__enc = { yaw, stats, getState: () => state,
                     until someone speaks, so the probe reads the NODE. */
                  duck: () => ({ bg: bgGain ? +bgGain.gain.value.toFixed(3) : null,
                                 speaking: liveVoices.size, floor: BG_DUCK }),
+                 /* v5.30: every voice source so far, with start and end —
+                    two of his overlapping is the bug, and this is the proof */
+                 voices: () => voiceLog.map(r => ({ ...r })),
                  inv: () => ({ gear: { ...inv.gear }, bag: [...inv.bag],
                                held: inv.held?.id || null, open: inv.open }),
                  pulse: () => ({ bpm: Math.round(curBpm),
@@ -5376,6 +5461,10 @@ window.__enc = { yaw, stats, getState: () => state,
                  ready: () => ({ hdb: stage.ready(), hands: handsReady,
                                  ghost: ghostReady, hosted: HOSTED }),
                  voice: () => ({ decoded: !!voiceBuf, playing: !!voiceSrc,
+                                 // v5.30: the wait, for the probe
+                                 pending: voicePending, waits: voiceWaits, line: CH.voiceLine || null,
+                                 inPack: !!(CH.voiceLine && packJson && packJson[CH.voiceLine]),
+                                 bufReady: !!(CH.voiceLine && packBufs[CH.voiceLine]),
                                  played: voicePlayed,
                                  dur: voiceBuf ? +voiceBuf.duration.toFixed(2) : 0 }),
                  cine: {

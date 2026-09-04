@@ -11,10 +11,27 @@ text comes up at all — the reply carries the full URL, not the version
 number alone. He reads these on his phone; a number he has to go hunting
 for in Drive is not a link.
 
-**Master Z's Encounters — GAME TEXT v30 (edit here)** in his Drive
-(id `1VH8votcILO8KkULToZhOEbUJ5PCWcaBd6otCQmQ5MTA` — the **v30** sheet, made at v5.29: 271 GAME TEXT
+**Master Z's Encounters — GAME TEXT v31 (edit here)** in his Drive
+(id `194fHX9UUAfkVbQYAKWRES4sNx7dDA1dm3379fhe8Kl4` — the **v31** sheet, made at v5.30: 271 GAME TEXT
 rows and, under them after a divider row, the 97 **VOICE LINES**.
-<https://docs.google.com/spreadsheets/d/1VH8votcILO8KkULToZhOEbUJ5PCWcaBd6otCQmQ5MTA/edit>
+<https://docs.google.com/spreadsheets/d/194fHX9UUAfkVbQYAKWRES4sNx7dDA1dm3379fhe8Kl4/edit>
+
+What changed from v30: **fourteen cells, in the VOICE LINES block only —
+one spoken line's text, its "where", and thirteen lengths.** No UI string
+and no chapter text moved. `voice.v4sit` is now *"Start from the
+beginning..."* (Chad: "it should have '...' at the back to sound more
+brooding"), and its "Where it appears" says it plays on INTERACTING with
+the dining chair, no longer on walking near it. The thirteen takes Chad
+heard as too fast — chapter 3's film and scene lines (`v3wake1 v3wake2
+v3wake3 v3chair v3out1 v3out2 v3seen v3grip v3ask v3left v3C`), `v4sit`
+and `v4thinkA3` ("should sound more afraid") — were re-said slower and
+with feeling, so their length cells changed (e.g. `v3wake1` 2.77 s →
+5.33 s); their words did not, except v4sit's ellipsis. Every other cell
+is byte-identical to v30. v30 (id
+`1VH8votcILO8KkULToZhOEbUJ5PCWcaBd6otCQmQ5MTA`) is superseded.
+Provenance: v31 was published from the fresh export and read back, and all
+370 rows diffed cell by cell against it across all four columns — zero
+differences.
 
 What changed from v29: **two things, and no spoken word.** The credits
 panel's `credits.burner*` rows (kana at the burner) became `credits.meshy*`

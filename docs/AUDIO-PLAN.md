@@ -606,3 +606,36 @@ the recording moved. Peak-matched to the take it replaces (the v4.8 rule),
 both encodings, `secs` re-measured **3.32 s → 3.16 s**. The shorter take
 incidentally cleared the one standing overlap flag in chapter 3; the scan now
 reports every ch3 film and scene `ok`. Master: `masters/v5.29/v3aunt5.mp3`.
+
+---
+
+## v5.30 — chapter 3 re-said slower, two of chapter 4's re-directed, and the edges of every take
+
+Chad: chapter 3's film and some scene lines were "talking too fast and with
+little emotion"; the chair line should end in "..." to sound brooding; the
+red-chair memory line should sound more afraid. Thirteen takes regenerated
+(Aaron, unchanged): `v3wake1 v3wake2 v3wake3 v3chair v3out1 v3out2 v3seen
+v3grip v3ask v3left v3C v4sit v4thinkA3`. Picked by MEASUREMENT: words per
+second over all 79 — the game's median is 2.3, chapter 3's film opened at
+3.97 — and every one of the thirteen had been untagged at v5.28. Prompts in
+`masters/v5.30/lines.json`: an emotion tag each and the ellipses Chad asked
+for (prompt-only; the registry text is unchanged except `v4sit`, now "Start
+from the beginning..."). Rates after: 1.4–2.3 w/s. `v3left` was re-taken once
+(the first read came out FASTER, 3.29 w/s). Peak-matched, both encodings,
+`secs` re-measured; chapter 3's film and scenes B, C and D re-timed, the
+overlap scan clean everywhere.
+
+**One new sound: `noteflight`** — one sheet of paper lifting, flapping and a
+low gust, 6.5 s, ElevenLabs sound effects v2 (flow `QQFMBc7vo8htSK1i8X53`),
+for chapter 5 scene C's new ending: the hell note flies off the table and out
+of the window while the camera follows it. Peak-normalised to -3.9 dBFS on
+install (it arrived at -25.8).
+
+**And every voice source now has EDGES** (main.js `voiceEdges`): an 8 ms fade
+in and a 50 ms fade out on its own gain node. That is what the "mic-open
+chuff" was — takes that begin and end on a loud sample, through ×3.5 — and
+what "cut off prematurely" was: eleven_v3 trims to the last audible sample.
+The bus (v5.26/v5.28) is unchanged; the bytes are unchanged. The play-time
+gate (`say`/`speak`/the opening line) now also waits for ANY live voice, so
+his lines never stack, and a scene's natural end lets a line finish rather
+than ramping it out.

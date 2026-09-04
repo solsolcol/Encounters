@@ -1,0 +1,61 @@
+{
+ "voice": "B6uUx2p7cRgxseOUyP6P",
+ "voice_name": "Aaron",
+ "model": "eleven_v3",
+ "flow": "QQFMBc7vo8htSK1i8X53",
+ "takes": {
+  "v3wake1": {
+   "state": "downloaded",
+   "session": "xpkvQMDFh28PsydSGDcD"
+  },
+  "v3wake2": {
+   "state": "downloaded",
+   "session": "jOVoS8xMUrIo20rPIXxM"
+  },
+  "v3wake3": {
+   "state": "downloaded",
+   "session": "YtsqaNjUoFSpcapqfpqG"
+  },
+  "v3chair": {
+   "state": "downloaded",
+   "session": "tAEB2xwbM84JkOhX1qrH"
+  },
+  "v3out1": {
+   "state": "downloaded",
+   "session": "bHyCudDRXPqxobAJ1nAL"
+  },
+  "v3out2": {
+   "state": "downloaded",
+   "session": "RJucR3edfUGR6is1PLwQ"
+  },
+  "v3seen": {
+   "state": "downloaded",
+   "session": "3ObU8oNtVfZjKqIj9nNX"
+  },
+  "v3grip": {
+   "state": "downloaded",
+   "session": "JshFe5EW4BQwRzxi2zKm"
+  },
+  "v3ask": {
+   "state": "downloaded",
+   "session": "ArkxIxOKPIxOzqaeRWcz"
+  },
+  "v3left": {
+   "state": "downloaded",
+   "session": "56rW4OyA943BUTIU2atY",
+   "retake_of": "b59T3200XUsKejz3JY46"
+  },
+  "v3C": {
+   "state": "downloaded",
+   "session": "lNn0rdRSWxp7sLODxWq3"
+  },
+  "v4sit": {
+   "state": "downloaded",
+   "session": "t2l652tzXz1TVV3aUpl4"
+  },
+  "v4thinkA3": {
+   "state": "downloaded",
+   "session": "h1WpO1GxdmEnVlFaTmgB"
+  }
+ }
+}

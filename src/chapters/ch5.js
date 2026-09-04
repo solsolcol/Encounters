@@ -437,6 +437,55 @@
     }, (err) => console.warn('HDB failed to load', err)))
       .catch(err => console.warn('HDB failed to load', err));
 
+
+    /* v5.30 — GRASS under the block (Chad: "add some grass to the ground for
+       the HDB flat outside the window"). Until now nothing stood under the
+       block at all: it rose out of the fog gradient with no ground, which
+       reads as floating the moment the eye drops below the sill. A field
+       from just past the outer wall to well beyond the block, drawn in
+       code — thousands of short strokes in three greens over a base — so
+       it costs no download and passes the strict CSP (a canvas, never a
+       blob or a data URL). Its top sits a hair under the block's own
+       ground slab so the two never fight for the same pixels.           */
+    {
+      const cv = document.createElement('canvas');
+      cv.width = cv.height = 256;
+      const g2 = cv.getContext('2d');
+      g2.fillStyle = '#3d6a2c';
+      g2.fillRect(0, 0, 256, 256);
+      let gs = 0x7F4A7C15 >>> 0;
+      const gr = () => { gs = (Math.imul(gs, 1664525) + 1013904223) >>> 0; return gs / 4294967296; };
+      const greens = ['#527d33', '#2e5122', '#6a8e3a', '#446d2a'];
+      for (let i = 0; i < 4200; i++) {
+        const x = gr() * 256, y = gr() * 256, a = (gr() - 0.5) * 1.2, len = 2 + gr() * 5;
+        g2.strokeStyle = greens[(gr() * greens.length) | 0];
+        g2.lineWidth = 0.6 + gr() * 0.9;
+        g2.beginPath(); g2.moveTo(x, y); g2.lineTo(x + Math.sin(a) * len, y - Math.cos(a) * len); g2.stroke();
+      }
+      const grassTex = new THREE.CanvasTexture(cv);
+      grassTex.wrapS = grassTex.wrapT = THREE.RepeatWrapping;
+      grassTex.repeat.set(34, 30);
+      grassTex.colorSpace = THREE.SRGBColorSpace;
+      grassTex.anisotropy = 4;
+      const grass = new THREE.Mesh(new THREE.PlaneGeometry(140, 120),
+        new THREE.MeshStandardMaterial({ map: grassTex, roughness: 1, metalness: 0 }));
+      grass.rotation.x = -Math.PI / 2;
+      grass.position.set(-3.5, -4.125, -66);    // the block's base is at -4.118
+      grass.receiveShadow = false;
+      world.add(grass);
+    }
+
+    /* v5.30 — THE LIT WINDOWS ARE NOT ADDED TO THE WORLD ANY MORE. Chad:
+       "the HDB flat outside the window has some glitchy white boxes". They
+       were these: flat pale planes at one depth (z -20.4) in front of a
+       block whose facade is not at that depth, so some hung in the air
+       ahead of the wall and some poked through it, none on its window
+       grid — and the block's own texture already carries lit windows, so
+       they were never needed. The meshes, the material and the handles
+       stay (the snapshot, the restore and the film's raise of `lateMat`
+       all still touch them, harmlessly); they simply never enter the scene.
+       Rendered and checked from the sill, the table and the film's window
+       shot before this was written. */
     const litMat = new THREE.MeshBasicMaterial({ color: 0xffd9a0, fog: false });
     const litGeo = new THREE.PlaneGeometry(0.9, 0.7);
     const litWins = [];
@@ -444,7 +493,7 @@
                             [1.1, 11.6], [4.3, 7.4], [-3.3, 13.2]]) {
       const w2 = new THREE.Mesh(litGeo, litMat);
       w2.position.set(lx - 2.0, ly - 2.0, -20.4);
-      world.add(w2); litWins.push(w2);
+      litWins.push(w2);                        // v5.30: never added to the world (above)
     }
     /* a few more that come on DURING the opening film — evening is other
        people getting home too. Off (invisible) until the film raises them. */
@@ -454,7 +503,7 @@
     for (const [lx, ly] of [[-6.4, 5.2], [0.2, 8.8], [3.2, 4.6]]) {
       const w2 = new THREE.Mesh(litGeo, lateMat);
       w2.position.set(lx - 2.0, ly - 2.0, -20.4);
-      world.add(w2); lateWins.push(w2);
+      lateWins.push(w2);                       // v5.30: never added to the world (above)
     }
     /* morning: nobody's window is lit — the evening quads stay dark */
     for (const w2 of litWins) w2.visible = false;
@@ -1649,7 +1698,15 @@
       const share = wrapA(ry1 + Math.PI - ry0);
       step(t0, () => { stage.tangki.rotation.y = ry0; stage.tangPlay('turn', ts, 0.12, true); });
       yawTr(tr, smoothK, t0, t0 + dur, k => { stage.tangki.rotation.y = ry0 + share * k; });
-      step(t0 + dur, () => { stage.tangki.rotation.y = ry1; stage.tangPlay(then, thenTs, 0.15); });
+      /* v5.30: a HARD cut into `then`, not a 0.15 s crossfade. The group
+         snaps by -PI on this frame; the take's hips carry -PI and the next
+         take's carry 0, so the two cancel only if the hips change on the
+         SAME frame. A crossfade let the group snap first and the hips
+         blend after, and for 0.15 s he faced the wrong way and whipped
+         round — Chad: "a double spin after he turns around". The law was
+         already in LEARNINGS (v5.07: a fade of 0 is a hard cut that bakes
+         the pose); this is the one place that had not been held to it. */
+      step(t0 + dur, () => { stage.tangki.rotation.y = ry1; stage.tangPlay(then, thenTs, 0); });
     };
   }
 
@@ -1919,57 +1976,62 @@
     sfx(2.2, 'teaset', 0.6);
     tr(3.0, 5.0, k => { duck('v5room', 1 - 0.5 * k); }, rawK);
 
-    // 5.0-19.8 the teaching (14.76 s), the tang-ki stepping a half-pace in
+    /* 5.0-15.1 the teaching (10.11 s since v5.15), the tang-ki stepping a
+       half-pace in. v5.30: everything after it moved 4.5 s EARLIER — the
+       tail was authored for the 14.76 s take this line used to be, so
+       since v5.15 the room sat in silence for five seconds after "that is
+       why this morning is quiet" (Chad: "a big gap of silence"). One
+       breath of air is what the moment wants, not five. */
     sfx(5.0, 't5teachA');
-    camTo(6.0, 19.0, ATTABLE,
+    camTo(6.0, 15.0, ATTABLE,
       { x: ATTABLE.x - 0.08, y: ATTABLE.y + 0.02, z: ATTABLE.z - 0.10 }, smoothK);
 
-    // 20.6-26 he turns for the corridor; the boy rises and follows
-    step(20.5, () => { handsRoot.visible = false; });
+    // 16-21.5 he turns for the corridor; the boy rises and follows
+    step(16.0, () => { handsRoot.visible = false; });
     /* two legs, because the straight line from the head of the table to the
        corridor mouth clips the table's corner */
     const Y_L1 = faceFrom(0.35, -0.55, 0.3, 0.6) + Math.PI;
     const Y_L2 = faceFrom(0.3, 0.6, 1.55, 2.35) + Math.PI;
-    step(21.0, () => { stage.tangki.rotation.y = Y_L1; stage.tangPlay('walk', 0.45); });
-    tr(21.0, 23.2, k => {
+    step(16.5, () => { stage.tangki.rotation.y = Y_L1; stage.tangPlay('walk', 0.45); });
+    tr(16.5, 18.7, k => {
       stage.tangki.position.set(0.35 + (0.3 - 0.35) * k, 0, -0.55 + (0.6 - -0.55) * k);
     }, smoothK);
     /* v5.07: the corner is WALKED — 38 degrees of yaw eased over the first
        stride of the second leg, feet still going. The turnaround take is
        for turnarounds; on a corner it would spin him past and back. */
-    step(23.2, () => { stage.tangPlay('walk', 0.8); });
-    yawTr(tr, smoothK, 23.2, 23.9, k => { stage.tangki.rotation.y = Y_L1 + wrapA(Y_L2 - Y_L1) * k; });
-    tr(23.2, 25.5, k => {
+    step(18.7, () => { stage.tangPlay('walk', 0.8); });
+    yawTr(tr, smoothK, 18.7, 19.4, k => { stage.tangki.rotation.y = Y_L1 + wrapA(Y_L2 - Y_L1) * k; });
+    tr(18.7, 21.0, k => {
       stage.tangki.position.set(0.3 + (1.55 - 0.3) * k, 0, 0.6 + (2.35 - 0.6) * k);
     }, smoothK);
     // beside the corridor mouth, looking down the hall
-    step(25.5, () => {
+    step(21.0, () => {
       stage.tangki.rotation.y = faceFrom(1.55, 2.35, 2.05, stage.R.zNear + 2.2) + Math.PI;
       stage.tangPlay('idle');
     });
-    camTo(21.5, 26.5, ATTABLE, HALLCAM, smoothK);
-    yawTo(21.5, 26.5, Y_TANG, Y_HALL, smoothK);
-    pitchTo(21.5, 26.5, -0.03, 0.0, smoothK);
+    camTo(17.0, 22.0, ATTABLE, HALLCAM, smoothK);
+    yawTo(17.0, 22.0, Y_TANG, Y_HALL, smoothK);
+    pitchTo(17.0, 22.0, -0.03, 0.0, smoothK);
 
-    /* 26.5-33.2 the hallway, calmly (6.69 s): the same corridor as every
+    /* 22-28.7 the hallway, calmly (6.69 s): the same corridor as every
        night, with the sun in it. The camera drifts INTO the mouth.      */
-    sfx(26.5, 't5hallA');
+    sfx(22.0, 't5hallA');
     /* enter EARLY - by 30 the camera stands inside the mouth, so most of the
        6.7 s line plays over the down-hall view, not over the approach wall.
        The aim also straightens as it enters: Y_HALL was computed from
        HALLCAM and, held from inside, turned half the frame into the
        corridor's right wall at grazing angle.                            */
-    camTo(27.0, 30.0, HALLCAM, HALLIN, smoothK);
+    camTo(22.5, 25.5, HALLCAM, HALLIN, smoothK);
     const Y_HALLIN = faceFrom(HALLIN.x, HALLIN.z, 2.05, stage.R.zNear + 2.2);
-    yawTo(27.0, 30.0, Y_HALL, Y_HALLIN, smoothK);
+    yawTo(22.5, 25.5, Y_HALL, Y_HALLIN, smoothK);
 
-    // 34-38 back to the room; a soft close
-    yawTo(34.5, 37.0, Y_HALLIN, faceFrom(HALLIN.x, HALLIN.z, 1.3, -0.6), smoothK);
-    sfx(37.2, 'chime', 0.45);
-    sfx(38.6, 'breath', 0.5);
-    tr(38.5, 40.3, k => { duck('v5room', 0.5 + 0.5 * k); }, rawK);
-    fade(40.5, 43.5, 0, 1);
-    step(43.4, () => { handsRoot.visible = true; });
+    // 30-33.5 back to the room; a soft close
+    yawTo(30.0, 32.5, Y_HALLIN, faceFrom(HALLIN.x, HALLIN.z, 1.3, -0.6), smoothK);
+    sfx(32.7, 'chime', 0.45);
+    sfx(34.1, 'breath', 0.5);
+    tr(34.0, 35.8, k => { duck('v5room', 0.5 + 0.5 * k); }, rawK);
+    fade(36.0, 39.0, 0, 1);
+    step(38.9, () => { handsRoot.visible = true; });
 
     c.endFade = 1;
   }
@@ -2007,18 +2069,22 @@
     }, rawK);
     sfx(5.8, 'heart', 0.5);
 
-    // 7-15.5 chapter 4's night, replayed by his own head, circling
-    sfx(7.0, 'hallsteps', 0.85);
-    sfx(10.0, 'chair', 0.8);
-    sfx(12.5, 'hallsteps', 0.7);
+    /* 7-15.5 chapter 4's night, replayed by his own head, circling.
+       v5.30 (Chad: "make the camera shake more and footsteps louder"):
+       the steps come up 3 dB and closer, the chair with them, and the roll
+       is two and a half times what it was with a faster tremor riding on
+       it — a head that cannot hold still, not a boat. */
+    sfx(7.0, 'hallsteps', 1.2);
+    sfx(10.0, 'chair', 1.0);
+    sfx(12.5, 'hallsteps', 1.1);
     tr(7.0, 15.5, (k, t2) => {
-      camera.rotation.z = Math.sin(t2 * 8.5) * 0.009 * k;
+      camera.rotation.z = (Math.sin(t2 * 8.5) * 0.022 + Math.sin(t2 * 23.0) * 0.006) * k;
     }, rawK);
     sfx(15.3, 'boom', 0.6);
 
-    /* 16.5-25.8 his voice cuts through (9.33 s). The first half lands in
-       the fear; at 19.5 EVERYTHING releases at once and the second half
-       lands in a bright, still, unchanged room.                         */
+    /* 16.5-23.0 his voice cuts through (6.53 s since v5.15). The first
+       half lands in the fear; at 19.5 EVERYTHING releases at once and the
+       second half lands in a bright, still, unchanged room.             */
     sfx(16.5, 't5fearB');
     step(19.5, () => {
       duck('v5room', 1); duck('clock', 1);
@@ -2029,11 +2095,14 @@
     });
     pitchTo(19.5, 22.0, -0.54, -0.10, smoothK);
 
-    // 27-30.6 the boy, shaky (3.55 s)
-    sfx(27.0, 'v5fearB1');
-    tr(30.8, 33.2, () => {}, rawK);
-    fade(33.5, 36.5, 0, 1);
-    step(36.4, () => { handsRoot.visible = true; });
+    /* 24.3-29.9 the boy, shaky (5.64 s). v5.30: 27.0 -> 24.3 — the old cue
+       waited on a 9.33 s take that has been 6.53 s since v5.15, so four
+       seconds of nothing sat between "you did wrong" and his answer
+       (Chad: "a gap of silence"). 1.3 s of air is a person taking that in. */
+    sfx(24.3, 'v5fearB1');
+    tr(30.2, 32.6, () => {}, rawK);
+    fade(32.9, 35.9, 0, 1);
+    step(35.8, () => { handsRoot.visible = true; });
 
     c.endFade = 1;
   }
@@ -2047,7 +2116,7 @@
      answer now.)                                                        */
   function scDismiss(c, s, api) {
     const { tr, step, sfx, fade, camTo, yawTo, pitchTo, faceFrom, rawK, smoothK,
-            duck, stage, camera, ghostOpacity, handsRoot } = api;
+            duck, stage, camera, ghostOpacity, handsRoot, yaw, pitch, mixAngle } = api;
     const AT_TABLE = { x: 1.7, y: EYE, z: 0.6 };  // sofa side: the note in the clear
     const Y_NOTE = faceFrom(AT_TABLE.x, AT_TABLE.z, 0.98, -0.27);
     const TO_WIN = faceFrom(0.2, -0.9, stage.WIN.x, -stage.R.z);
@@ -2072,27 +2141,84 @@
     // 9.4-15.4 the tang-ki, quiet, behind him (5.96 s since v5.15)
     sfx(9.4, 't5disC');
 
-    /* 16.5-22 THE ANSWER, once (v5.15: the block moved +1.0 s so the
-       flat still waits a breath after his last word, as it did at 4.91 s):
-       the fan stops mid-turn, holds, and resumes as if nothing happened,
-       and the room dims for exactly the length of it. The camera is on the
-       window here, so since v5.24 the DIM is what answers in frame — the
-       curtains that used to lunge across this shot are gone.            */
+    /* 16.3-22.6 THE ANSWER — v5.30, to Chad's spec: "after the tangki says
+       'caught in its fire', i want the single hellnote to fly off from
+       the table with wind physics/movement, and cinematically fly out of
+       the window by its own as the camera tracks the hellnote, to end
+       that scene, instead of a big gap of nothing right now."
+
+       He has his back to the table, facing the window. The note lifts off
+       the wood behind him, trembles up to shoulder height, sails past his
+       RIGHT shoulder into frame, and goes out through the window into the
+       morning while the camera turns to catch it and follows it out. The
+       fan still stops mid-turn and the room still dims for the length of
+       it (the v5.15 answer) — the flat answers "just paper" by sending the
+       paper away. The path is authored in WORLD space and written into the
+       note's table-local frame (the table sits unrotated at TABLE.x/z);
+       stage.restore() puts the note back at NOTE_HOME, so nothing here has
+       to be undone. `noteflight` is a new sound: one sheet lifting,
+       flapping and a low gust, 6.5 s, made for this shot.              */
+    const NW = { x: stage.TABLE.x, z: stage.TABLE.z };     // world -> table-local
+    const CAM_C = { x: 0.2, y: EYE, z: -0.9 };             // where he stands, facing the window
+    const CAM_D = { x: -0.05, y: EYE, z: -1.55 };          // the step after it
+    const FLY0 = 16.4, FLY1 = 22.6;
+    const flyAt = (t) => {                                  // the note's world position at cine time t
+      const u = Math.max(0, Math.min(1, (t - FLY0) / (FLY1 - FLY0)));
+      const e = u * u * (3 - 2 * u);
+      // three legs: lift off the table, past the shoulder to the glass, out and away
+      let x, y, z;
+      if (u < 0.22) { const k = u / 0.22, kk = k * k;
+        x = 0.98 - 0.18 * k; y = 0.776 + 0.57 * kk; z = -0.27 - 0.18 * k; }
+      else if (u < 0.62) { const k = (u - 0.22) / 0.40;
+        x = 0.80 - 1.00 * k; y = 1.35 + 0.20 * Math.sin(Math.PI * k) + 0.10 * k; z = -0.45 - 2.15 * k; }
+      else { const k = (u - 0.62) / 0.38;
+        x = -0.20 - 0.70 * k; y = 1.55 + 0.55 * k * k; z = -2.60 - 4.90 * k; }
+      const s2 = t - FLY0;                                  // the flutter riding on the path
+      x += Math.sin(s2 * 7.3) * 0.045 * (1 - 0.5 * e);
+      y += Math.sin(s2 * 11.0) * 0.03;
+      return { x, y, z, s2 };
+    };
+    sfx(16.3, 'noteflight', 0.75);
+    tr(FLY0, FLY1, (k, t) => {
+      const f = flyAt(t);
+      stage.note.position.set(f.x - NW.x, f.y, f.z - NW.z);
+      // tumbling: a sheet never flies flat
+      stage.note.rotation.set(-Math.PI / 2 + Math.sin(f.s2 * 5.1) * 0.9,
+                              f.s2 * 2.3,
+                              0.5 + Math.sin(f.s2 * 3.7) * 0.8);
+    }, rawK);
+    // the fan and the dim, as before — the room's answer is now visible too
     tr(16.5, 17.1, k => { stage.fanSpeed = 1 - k; }, rawK);
     tr(21.0, 22.0, k => { stage.fanSpeed = k; }, rawK);
     tr(16.5, 20.0, k => {
       duck('v5room', 1 - 0.7 * Math.sin(Math.PI * k));
-      // the room itself dims for the length of the answer
       stage.duskFill.intensity = 0.15 - 0.12 * Math.sin(Math.PI * k);
     }, rawK);
-    // the flinch, mid-step: a dropped gaze and a kicked horizon, decaying
-    pitchTo(16.8, 17.6, -0.02, -0.10, smoothK);
-    pitchTo(17.6, 19.5, -0.10, -0.04, smoothK);
-    tr(16.6, 17.9, k => { camera.rotation.z = 0.035 * (1 - k); }, rawK);
-    step(18.0, () => { camera.rotation.z = 0; });
+    /* the camera: on the window until the paper is in the air behind him,
+       then it turns to catch it as it comes past the shoulder and follows
+       it out — yaw and pitch aimed at the note every frame, blended in
+       from the window heading over the first second so the turn reads as
+       a head turn, not a cut. Then a step toward the window after it.   */
+    const aimAt = (cam, n) => ({
+      yaw: faceFrom(cam.x, cam.z, n.x, n.z),
+      pitch: Math.atan2(n.y - cam.y, Math.hypot(n.x - cam.x, n.z - cam.z)) });
+    camTo(19.6, 22.6, CAM_C, CAM_D, smoothK);
+    tr(17.4, 22.6, (k, t) => {
+      const kc = Math.max(0, Math.min(1, (t - 19.6) / 3.0)), ec = kc * kc * (3 - 2 * kc);
+      const cam = { x: CAM_C.x + (CAM_D.x - CAM_C.x) * ec, y: EYE, z: CAM_C.z + (CAM_D.z - CAM_C.z) * ec };
+      const a = aimAt(cam, flyAt(t));
+      const kb = Math.max(0, Math.min(1, (t - 17.4) / 1.0)), eb = kb * kb * (3 - 2 * kb);
+      yaw.rotation.y = mixAngle(TO_WIN, a.yaw, eb);
+      pitch.rotation.x = -0.02 + (a.pitch - -0.02) * eb;
+    }, rawK);
+    // the kicked horizon lands as the paper passes his shoulder
+    tr(18.3, 19.6, k => { camera.rotation.z = 0.035 * (1 - k); }, rawK);
+    step(19.7, () => { camera.rotation.z = 0; });
 
-    // 20-24 four held seconds, back still turned
-    tr(20.0, 24.0, () => {}, rawK);
+    // 22.6-24.4 it is gone; he is left looking at the window it went out of
+    yawTo(22.6, 24.2, faceFrom(CAM_D.x, CAM_D.z, -0.90, -7.5), TO_WIN, smoothK);
+    pitchTo(22.6, 24.2, Math.atan2(2.1 - EYE, Math.hypot(-0.90 - CAM_D.x, -7.5 - CAM_D.z)), 0.02, smoothK);
+    tr(24.2, 24.5, () => {}, rawK);
     fade(24.5, 27.5, 0, 1);
     step(27.4, () => { handsRoot.visible = true; });
 

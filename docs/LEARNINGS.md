@@ -1876,3 +1876,53 @@ was topological: locked UV seams the simplifier will not collapse across. One
 measurement would have read as "the cap is the limit"; the SECOND measurement,
 at a different cap, is what proved it wasn't. Before optimising against a knob,
 move the knob and check the number actually follows it.
+
+## The "compressor chuff" was the FILES, and a fade is what fixes a file edge (v5.30)
+
+Chad heard "a mic opening chuff or clipping sound at the start and end of
+every voiceline" and blamed the compressor. Measured through the real bus in
+an OfflineAudioContext, softening the compressor moved nothing (±0.3 dB, the
+artefact untouched). The takes were the cause: eleven_v3 returns audio
+trimmed to its last audible sample, so nearly every one of his begins on
+signal and ends on it — several while the voice is still LOUD (`v5fearB1`'s
+last 40 ms sit 14 dB above the body of its own line). A buffer that starts
+and stops on a non-zero sample is a click, and ×3.5 makes it a chuff. An
+8 ms fade-in and a 50 ms fade-out on every voice source's own gain node
+turned every positive tail negative at a cost of 0.2 dB. Before touching a
+bus for an edge artefact, measure the first and last 40 ms of the file
+against its body.
+
+## A crossfade after a turn take is a second spin (v5.30)
+
+The catwalk take carries -180° in the hips. `mkTurn` walks the GROUP to
+ry1 + PI under it and snaps the group to ry1 on the cut, so the two cancel —
+but only if the hips change on the SAME frame. With a 0.15 s crossfade into
+the next take the group snapped first and the hips blended after: for 0.15 s
+he faced the wrong way and whipped round. Chad saw it as "a double spin".
+The v5.07 law already said it: a fade of 0 is a hard cut that bakes the
+pose. Any cut that undoes a take's baked rotation must be hard.
+
+## cineSeek re-applies every passed track at its end value (v5.30)
+
+A `tr` whose window has passed is still applied every frame at k = 1 — a
+scene is a set of state functions of t, not a list of one-shots. So a probe
+that pauses the film and overwrites something a passed tween wrote sees its
+change undone on the next frame, while a value set by a `step` (once) sticks.
+To pose a thing by hand for a screenshot, pause BEFORE the first track that
+touches it. Found because six candidate arm poses rendered identically.
+
+## The sound-effects node's default length is one second (v5.30)
+
+`creative_generate_in_flow` for `sfx` takes no `duration_seconds`; the first
+paper-and-wind take came back 1.04 s long. The three-step path —
+`creative_add_flow_node` with `model_parameters.duration_seconds`, then
+`creative_run_flow_nodes` — is how a sound gets the length the shot needs.
+And it came back at -25.8 dBFS peak: an SFX take is peak-normalised on
+install like any other sound, never trusted as delivered.
+
+## A headless probe must unmute on the TITLE screen (v5.30)
+
+The opening line's timer fires two seconds into play and, by design, stands
+down if the game is muted then. The probe box starts muted; unmuting after
+`state === 'play'` took longer than two seconds on SwiftShader, so the line
+was "missing" for three runs before the probe was wrong and the code right.

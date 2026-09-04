@@ -2743,7 +2743,7 @@
        this starts at 29.4, and everything after moves down to keep it so.
        Two James lines talking over each other was the first thing Chad
        heard in the shipped version, because of course it was. */
-    sfx(29.4, 'v3chair');       // "There's one chair facing the wrong way. Just one."
+    sfx(29.7, 'v3chair');       // "There's one chair facing the wrong way. Just one." (v5.30: 29.4 -> 29.7, the line before it grew)
 
     /* 30.4-34.2  and the camera LIFTS along the line the chair faces — out
        through the open back of the tent, into the glare — AND SHE IS OUT
@@ -3095,7 +3095,9 @@
     });
     /* v5.15: everything from here +0.4 s — the boy's take grew to 5.15 s
        and the auntie's shout at 14.6 landed on his last syllable */
-    sfx(15.0, 'v3aunt5');   // "Boy, come out of there now. You cannot stand there!"
+    /* v5.30: +0.8 s from here — his line grew to 5.72 s (re-said slower,
+       with feeling) and the shout at 15.0 landed on its last words */
+    sfx(15.8, 'v3aunt5');   // "Boy, come out of there now. You cannot stand there!"
     /* v5.22: the shout is HERS — the woman at the brazier (kana then; the
        SCOLDING GRANNY since v5.29, who is what the line always wanted). The
        camera has been on the brazier since 14.2 (the camTo above lands at
@@ -3105,22 +3107,22 @@
        frame rather than captured once: her model may land mid-scene. */
     const BOY_AT = { x: 2.30, z: -2.20 };
     const bwRest = { y: null };
-    tr(14.3, 14.9, k => {
+    tr(15.1, 15.7, k => {
       const w = stage.brazierWoman;
       if (bwRest.y === null) bwRest.y = w.rotation.y;
       let d = Math.atan2(BOY_AT.x - w.position.x, BOY_AT.z - w.position.z) - bwRest.y;
       d = Math.atan2(Math.sin(d), Math.cos(d));          // the short way round
       w.rotation.y = bwRest.y + d * k;
     }, smoothK);
-    step(14.9, () => { stage.brazierTalk = true; });
-    step(18.4, () => { stage.brazierTalk = false; });
-    sfx(15.6, 'step', 0.4); sfx(16.2, 'step', 0.4);
+    step(15.7, () => { stage.brazierTalk = true; });
+    step(19.2, () => { stage.brazierTalk = false; });
+    sfx(16.4, 'step', 0.4); sfx(17.0, 'step', 0.4);
     /* ONE voice at a time: the panting take runs 2.2 seconds, so it waits
        for the auntie to finish (18.3) and then trails into the black —
        breathing under a fade-out is the one thing allowed to be cut off */
-    sfx(18.6, 'vpant', 0.7);
-    sfx(19.8, 'gongdeep', 0.35);      // far off, the ceremony not caring
-    fade(19.0, 21.0, 0, 1);
+    sfx(19.4, 'vpant', 0.7);
+    sfx(20.6, 'gongdeep', 0.35);      // far off, the ceremony not caring
+    fade(19.8, 21.8, 0, 1);
 
     c.endFade = 1;
   }
@@ -3196,21 +3198,23 @@
     sfx(9.8, 'drum', 0.45);
 
     sfx(13.9, 'v3ask');    // "Is it real, auntie?"
-    sfx(15.8, 'v3aunt3');  // "Real, not real, I do not know. He drives a lorry."
+    /* v5.30: +0.7 s from here — his question grew to 2.12 s and her answer
+       at 15.8 came in over it */
+    sfx(16.5, 'v3aunt3');  // "Real, not real, I do not know. He drives a lorry."
 
     /* 22.6  and then she stops folding. Half a second, and the whole scene
        changes register without a single sound effect in it. */
-    step(22.6, () => { stage.auntie.rotation.y = TO_AUNT + 0.62; });
-    sfx(22.7, 'trancehum', 0.45);
-    tr(22.6, 23.1, () => {}, rawK);
-    sfx(23.1, 'v3aunt4');  // "Listen to me, boy. Do not sit in the back row tonight."
+    step(23.3, () => { stage.auntie.rotation.y = TO_AUNT + 0.62; });
+    sfx(23.4, 'trancehum', 0.45);
+    tr(23.3, 23.8, () => {}, rawK);
+    sfx(23.8, 'v3aunt4');  // "Listen to me, boy. Do not sit in the back row tonight."
 
     /* 24.4-26.6  the camera turns, slowly, all the way round to the back of
        the tent — away from the ritual, which is where it has been pointing
        since the film started. */
-    yawTo(24.4, 26.6, TO_AUNT, TO_BACK, smoothK);
-    pitchTo(24.4, 26.6, -0.05, -0.10, smoothK);
-    camTo(24.4, 27.0, TABLE, { x: TABLE.x - 0.30, y: EYE, z: TABLE.z + 0.20 }, smoothK);
+    yawTo(25.1, 27.3, TO_AUNT, TO_BACK, smoothK);
+    pitchTo(25.1, 27.3, -0.05, -0.10, smoothK);
+    camTo(25.1, 27.7, TABLE, { x: TABLE.x - 0.30, y: EYE, z: TABLE.z + 0.20 }, smoothK);
 
     /* The back row, empty, in the sun — and beyond it, through the open
        back of the tent, the stretch of tarmac the opening film taught the
@@ -3218,11 +3222,11 @@
        version put here is gone, and it is gone on principle: nothing of
        hers is inside this tent. The wrongness of the shot is a warning
        about a chair, an exit, and what the player knows is out there. */
-    sfx(26.4, 'bellring', 0.3);       // the ceremony carrying on regardless
-    sfx(27.0, 'chime', 0.5);
-    sfx(27.6, 'gongdeep', 0.35);
-    fade(27.4, 29.4, 0, 1);
-    step(29.4, () => { stage.auntie.rotation.y = AUNT_REST; });
+    sfx(27.1, 'bellring', 0.3);       // the ceremony carrying on regardless
+    sfx(27.7, 'chime', 0.5);
+    sfx(28.3, 'gongdeep', 0.35);
+    fade(28.1, 30.1, 0, 1);
+    step(30.1, () => { stage.auntie.rotation.y = AUNT_REST; });
 
     c.endFade = 1;
   }
@@ -3308,12 +3312,12 @@
        time behind him all the way to the lift. Which is the line. */
     camTo(14.4, 17.6, AWAY, FAR, smoothK);
     bob(14.4, 17.6, 0.86, 0.030, EYE);
-    sfx(14.8, 'v3left');    // "I could still hear the drum from the lift.
-                            //  I told myself that was normal."
+    sfx(14.3, 'v3left');    // "I could still hear the drum from the lift.
+                            //  I told myself that was normal." (v5.30: 6.92 s; 14.8 -> 14.3)
     sfx(15.2, 'step', 0.3); sfx(16.1, 'step', 0.28); sfx(17.0, 'step', 0.26);
     sfx(15.4, 'trancehum', 0.5);
-    fade(19.4, 21.4, 0, 1);           // v3left ends at 20.9; the cut waits
-    sfx(20.2, 'gongdeep', 0.3);       // the last thing: far off, behind him
+    fade(20.2, 22.2, 0, 1);           // v3left ends at 21.2; the cut waits (v5.30)
+    sfx(21.0, 'gongdeep', 0.3);       // the last thing: far off, behind him
 
     c.endFade = 1;
   }
