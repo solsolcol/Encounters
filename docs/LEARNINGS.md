@@ -1696,3 +1696,30 @@ because Netlify never published it.
 It is cruft, not a failure — but "mismatched: 1" looks alarming at the end
 of a release, so: check WHICH file before reacting, and `rm -rf
 dist/.netlify` afterwards. It contains only the siteId, nothing secret.
+
+## eleven_v3 SPEAKS a stage direction it does not recognise (v5.28)
+
+Writing prose direction in brackets — `[a teenage boy alone on a dark
+walkway at night, uneasy, talking himself into it]` — does not direct the
+performance. The model reads it out, word for word, as part of the line.
+Chad caught it by ear ("why is he saying the direction out loud?"); the
+transcript confirmed the take contains the entire prompt.
+
+The model guide says it plainly: **"There is no scene description. The
+prompt is the text the voice will speak."** Only SHORT tags are recognised
+(`[whispering]`, `[shouting]`, `[sighs]`, `[laughs softly]`). Everything
+else in brackets is dialogue.
+
+Direct a line with the three things that DO work:
+- a short recognised tag at the front,
+- CAPITALS for the stressed word ("the ONLY way home"),
+- punctuation for pacing — ellipses for a long beat, em-dashes for a short
+  one, commas for breath.
+
+Two traps beyond the obvious one. The duration explodes (3.3 s -> 8.8 s
+here), which silently wrecks every cutscene timeline the take is cued
+into. And it CONTAMINATES measurement: the spoken direction added
+intonation variety, so a "delivery variation" metric scored the broken
+take HIGHER and nearly sold a bug as an improvement. When a take's
+duration is far off its text, transcribe it before believing any number
+computed from it.

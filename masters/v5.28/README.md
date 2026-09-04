@@ -110,3 +110,46 @@ Awaiting Chad's ear on the four directed takes. If they read as a person,
 redo all 79 directed and absorb the re-timing. If the opening still sounds
 dead — and it measures dead — it is Aaron's register, not the direction,
 and he should be dropped.
+
+## The directed test was WRONG, and Chad heard it (4 Sep)
+
+*"this is better, but why is he saying the direction out loud?"*
+
+Because he was. Transcribing the take rather than assuming:
+
+> `[a teenage boy alone on a dark walkway at night, uneasy, talking himself
+> into it, voice dropping on the second half] Almost midnight... [swallows]
+> and this is the only way home.`
+
+The model spoke the entire prompt, stage direction included. That is the
+whole of the 8.8 s, not a performance choice.
+
+`creative_get_model_guide` for eleven_v3 says it outright: **"There is no
+scene description."** The prompt IS the spoken text. Only SHORT tags are
+recognised (`[whispering]`, `[laughs softly]`); anything else in brackets
+is read aloud. Emphasis is meant to come from CAPITALS and pacing from
+punctuation (ellipses, em-dashes, commas).
+
+**The conclusion drawn from that test is withdrawn.** "Direction rescues
+the shout, 9.00 -> 11.02" was measuring the model reading my instructions
+with varied intonation, not delivering the line better. The whole directed
+comparison measured nothing about Aaron.
+
+Redone with correct short tags (`E*` files beside the `D*` ones), and the
+durations alone show the difference:
+
+| line | prose tags (spoke them) | short tags |
+|---|---|---|
+| opening | 8.83 s | **3.32 s** |
+| whisper | 7.47 s | **3.63 s** |
+| shout | 5.15 s | **3.40 s** |
+| breakdown | 14.75 s | **5.49 s** |
+
+The re-timing problem this created disappears with the bug: the corrected
+takes are close to the shipped River lengths, so most cues would not move
+at all.
+
+**Note the 22 undirected takes are NOT affected by this bug** — their tags
+came from the registry (`[beat]`, `[panting]`, `[exhale]`), which is the
+style River's shipped takes used. Their durations are all in the normal
+range. They stand as a fair sample of undirected Aaron.
