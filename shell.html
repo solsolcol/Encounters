@@ -113,6 +113,7 @@ body.menuopen .soundBtn,body.menuopen #volWrap,body.invopen #volWrap{display:non
 .menuCard{width:min(440px,100%);max-height:88vh;overflow-y:auto;
   background:var(--ash);border:1px solid var(--line);padding:24px;text-align:center;
   animation:fadeup .35s var(--ease)}
+#chapters .menuCard{width:min(560px,100%);padding:22px 20px 16px}   /* v6.2: room for the case files */
 .menuCard h3{font-family:var(--ui);font-size:1.12rem;letter-spacing:.06em;
   text-transform:uppercase;color:var(--bone);margin:0 0 16px}
 .menuBtns{display:flex;flex-direction:column;gap:10px}
@@ -127,28 +128,98 @@ body.menuopen .soundBtn,body.menuopen #volWrap,body.invopen #volWrap{display:non
 .chHead{display:flex;justify-content:space-between;align-items:center;gap:14px}
 .chHead h3{margin:0}
 .chHint{font-family:var(--ui);font-size:.94rem;line-height:1.5;color:#8A91A0;
-  margin:12px 0 14px;text-align:left}
-.chTabs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}   /* v6.0 */
-.chTab{min-width:36px;padding:7px 10px;font-family:var(--mono);font-size:.78rem;letter-spacing:.06em;
-  background:#0C1016;border:1px solid var(--line);color:#8A91A0;cursor:pointer;transition:border-color .16s,background .16s}
-.chTab:hover,.chTab:focus-visible{border-color:var(--sodium);outline:none}
-.chTab.on{color:var(--void);background:var(--sodium);border-color:var(--sodium)}
-.chTab.empty{opacity:.55}
-.chEpName{font-family:var(--ui);font-size:.92rem;line-height:1.4;color:#C6CAD3;margin:0 0 10px;text-align:left}
-.chList{display:flex;flex-direction:column;gap:8px}
-.chTile{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;
-  text-align:left;padding:12px 14px;cursor:pointer;
-  background:#0C1016;border:1px solid var(--line);color:#C6CAD3;
-  transition:border-color .16s,background .16s}
-.chTile .num{font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;
-  text-transform:uppercase;color:#7A8290;white-space:nowrap}
-.chTile .name{font-family:var(--ui);font-size:1rem;font-weight:600;color:var(--bone)}
-.chTile:hover,.chTile:focus-visible{border-color:var(--sodium);background:#141A23;outline:none}
-.chTile.now{border-color:var(--jade)}
-.chTile.locked{opacity:.42;cursor:default}
-.chTile.locked .name{color:#8A91A0;font-weight:400}
-.chTile.locked:hover{border-color:var(--line);background:#0C1016}
-.chTile.unwritten{opacity:.3}   /* v6.0: a chapter that does not exist yet */
+  margin:10px 0 8px;text-align:left}
+/* ── v6.2: the selector redesigned (Chad: "rather plain and boring now ...
+   clear differentiation between episodes and chapters"). EPISODES are CASE
+   FILES: a strip of dossier cards you slide through, the open one lifted
+   and lit sodium, a sealed one stamped. CHAPTERS are STOPS ON A LINE under
+   the case's name: a sealed stop is filled and carries its rank, the one
+   you are in breathes jade, the rest wait on the line. The two look
+   nothing alike, which is the point. Every word in them is T()'s. A
+   sealed stop's class is `done`: `.sealed` is the complete card's stamp. */
+.chTabs{position:relative;display:flex;gap:10px;overflow-x:auto;overscroll-behavior-x:contain;
+  scroll-snap-type:x proximity;padding:13px 4px 10px;margin:0 -4px 0;
+  scrollbar-width:thin;scrollbar-color:var(--line) transparent;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 16px,#000 calc(100% - 16px),transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 16px,#000 calc(100% - 16px),transparent)}
+.chTab{position:relative;flex:0 0 128px;height:162px;scroll-snap-align:center;
+  display:flex;flex-direction:column;align-items:flex-start;text-align:left;
+  padding:16px 12px 12px;cursor:pointer;color:#8A91A0;
+  background:linear-gradient(168deg,#171C25 0%,#0C1016 72%);
+  border:1px solid var(--line);border-radius:2px 6px 3px 3px;
+  transition:border-color .16s,transform .18s var(--ease),box-shadow .18s var(--ease),opacity .16s}
+.chTab::before{content:"";position:absolute;left:-1px;top:-8px;width:42px;height:9px;   /* the folder's tab */
+  background:#171C25;border:1px solid var(--line);border-bottom:none;border-radius:3px 3px 0 0}
+.chTab .epN{font-family:"Cormorant Garamond",Georgia,serif;font-size:2.5rem;font-weight:600;
+  line-height:.85;color:#9AA1B0;letter-spacing:-.02em}
+.chTab .epL{font-family:var(--mono);font-size:.56rem;letter-spacing:.2em;text-transform:uppercase;
+  color:#6E7584;margin-top:9px}
+.chTab .epT{font-family:"Cormorant Garamond",Georgia,serif;font-style:italic;font-size:.96rem;
+  line-height:1.18;color:#C6CAD3;margin-top:7px;flex-shrink:0;display:-webkit-box;-webkit-line-clamp:3;
+  -webkit-box-orient:vertical;overflow:hidden}   /* three lines, never a fourth, never a cut glyph */
+.chTab .epDots{display:flex;gap:5px;margin-top:auto;padding-top:8px}
+.chTab .epDots i{width:7px;height:7px;border-radius:50%;border:1px solid #4A5160;background:transparent}
+.chTab .epDots i.done{background:var(--sodium);border-color:var(--sodium)}
+.chTab .epDots i.now{border-color:var(--jade);box-shadow:0 0 6px var(--jade)}
+.chTab .epDots i.open{border-color:var(--sodium)}
+.chTab .epS{font-family:var(--ui);font-size:.72rem;color:#6E7584;margin-top:auto;padding-top:8px}
+.chTab .epStamp{position:absolute;right:8px;top:12px;transform:rotate(-14deg);
+  border:1.5px solid var(--seal);color:var(--seal);font-family:var(--ui);font-size:.56rem;
+  font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:2px 5px;opacity:.85}
+.chTab:hover,.chTab:focus-visible{border-color:#5A6170;outline:none}
+.chTab.on{border-color:var(--sodium);transform:translateY(-4px);
+  box-shadow:0 14px 28px -14px rgba(255,179,103,.6),0 0 0 1px rgba(255,179,103,.28)}
+.chTab.on::before{border-color:var(--sodium);background:#1E1A15}
+.chTab.on .epN{color:var(--sodium)}
+.chTab.on .epL{color:var(--sodium);opacity:.85}
+.chTab.on .epT{color:var(--bone)}
+.chTab.empty{opacity:.5;border-style:dashed}
+.chTab.empty::before{border-style:dashed}
+.chTab.empty .epT{color:#8A91A0}
+.chTab.locked{opacity:.6}
+.chEpName{text-align:left;margin:0 0 8px;padding:0 0 10px;border-bottom:1px solid var(--line)}
+.chEpName .epK{display:block;font-family:var(--mono);font-size:.68rem;letter-spacing:.26em;
+  text-transform:uppercase;color:var(--sodium);margin-bottom:5px}
+.chEpName .epTitle{display:block;font-family:"Cormorant Garamond",Georgia,serif;font-weight:600;
+  font-size:1.56rem;line-height:1.1;color:var(--bone);letter-spacing:-.01em;text-wrap:balance}
+.chEpName .epProg{display:block;font-family:var(--ui);font-size:.86rem;color:#8A91A0;margin-top:7px}
+.chList{display:flex;flex-direction:column;gap:0}
+.chTile{position:relative;display:grid;grid-template-columns:30px 1fr auto;gap:0 12px;align-items:center;
+  text-align:left;padding:5px 10px 5px 2px;min-height:46px;cursor:pointer;
+  background:transparent;border:0;border-radius:4px;color:#C6CAD3;transition:background .16s}
+.chTile:hover,.chTile:focus-visible{background:#141A23;outline:none}
+/* the line the stops sit on: each row draws the piece above its stop and the
+   piece below it, so the line follows the rows whatever their height, and a
+   sealed stop lights the line down to the next one */
+.chTile::before,.chTile::after{content:"";position:absolute;left:16px;width:2px;background:#2A303C;pointer-events:none}
+.chTile::before{top:0;height:calc(50% - 12px)}
+.chTile::after{bottom:0;height:calc(50% - 12px)}
+.chTile:first-child::before,.chTile:last-child::after{display:none}
+.chTile.done::after,.chTile.done+.chTile::before{background:rgba(255,179,103,.6)}
+.chTile .node{position:relative;width:22px;height:22px;justify-self:center;border-radius:50%;
+  border:2px solid #4A5160;display:grid;place-items:center;
+  font-family:var(--mono);font-size:.6rem;font-weight:700;letter-spacing:0;color:var(--void);z-index:1}
+.chTile .node i{width:6px;height:6px;border-radius:50%;background:var(--sodium)}
+.chTile.done .node{background:var(--sodium);border-color:var(--sodium)}
+.chTile.now .node{border-color:var(--jade);background:#0C1016;animation:herePulse 2.2s ease-in-out infinite}
+.chTile.now .node i{background:var(--jade)}
+.chTile.open .node{border-color:var(--sodium);background:#0C1016}
+.chTile.locked{cursor:default}
+.chTile.locked .node{border-color:#3A4150;background:transparent}
+.chTile.locked:hover{background:transparent}
+.chTile.unwritten .node{border-style:dashed}
+.chTile .txt{display:block;min-width:0}
+.chTile .num{display:block;font-family:var(--mono);font-size:.62rem;letter-spacing:.16em;
+  text-transform:uppercase;color:#7A8290;margin-bottom:3px;white-space:nowrap}
+.chTile .name{display:block;font-family:var(--ui);font-size:1rem;font-weight:600;color:var(--bone);line-height:1.25}
+.chTile.locked .name{color:#7A8290;font-weight:400}
+.chTile.unwritten .name{color:#5E6573}
+.chTile .state{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  color:#7A8290;white-space:nowrap}
+.chTile.done .state{color:var(--sodium)}
+.chTile.now .state{color:var(--jade)}
+@keyframes herePulse{0%,100%{box-shadow:0 0 0 3px rgba(99,214,200,.14)}50%{box-shadow:0 0 0 8px rgba(99,214,200,.03)}}
+@media (prefers-reduced-motion:reduce){.chTile.now .node{animation:none}}
 .chAsk p{font-family:var(--ui);font-size:.98rem;line-height:1.5;color:#A6ADBB;margin:6px 0 18px}
 #chYes{color:var(--void);background:var(--sodium)}
 #chNo{color:#C6CAD3;background:transparent;border:1px solid var(--line)}
@@ -870,9 +941,11 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
       <button id="chClose" class="credClose" type="button" data-t="chapters.close">Close ✕</button>
     </div>
     <p class="chHint" data-t="chapters.hint">A chapter you have reached can be played again from its opening.</p>
-    <!-- v6.0: one tab per episode, the case's name under them, then its five chapters -->
+    <!-- v6.0: one tab per episode, the case's name under them, then its five chapters.
+         v6.2: the tabs are case-file cards in a strip, the name is a heading
+         block, the chapters are stops on a line — all painted by paintChapters() -->
     <div id="chTabs" class="chTabs" role="tablist"></div>
-    <p id="chEpName" class="chEpName"></p>
+    <div id="chEpName" class="chEpName"></div>
     <div id="chList" class="chList"></div>
     <div id="chAsk" class="chAsk hide">
       <p id="chAskText"></p>

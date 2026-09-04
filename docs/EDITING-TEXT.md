@@ -11,14 +11,29 @@ text comes up at all — the reply carries the full URL, not the version
 number alone. He reads these on his phone; a number he has to go hunting
 for in Drive is not a link.
 
-**Master Z's Encounters — GAME TEXT v33 (edit here)** in his Drive
-(id `1qMSPsGghb0AdBk_drLd7yzvsG53dK-mbxhWYf4FjnIQ` — the **v33** sheet,
-made at v6.1, and the first TABBED one: **UI TEXT** (184 rows, the
-engine's words), **EPISODE 1** (110 rows, chapters 1–5's words) and
-**VOICE LINES** (97, on their own tab with their seven columns).
-<https://docs.google.com/spreadsheets/d/1qMSPsGghb0AdBk_drLd7yzvsG53dK-mbxhWYf4FjnIQ/edit>
+**Master Z's Encounters — GAME TEXT v34 (edit here)** in his Drive
+(id `124sqKs4CPH7gaiG_d6wE0KDidzHv0lEFl9xrYA6PZz0` — the **v34** sheet,
+made at v6.2, tabbed like v33: **UI TEXT** (187 rows, the engine's words),
+**EPISODE 1** (110 rows, chapters 1–5's words) and **VOICE LINES** (97).
+<https://docs.google.com/spreadsheets/d/124sqKs4CPH7gaiG_d6wE0KDidzHv0lEFl9xrYA6PZz0/edit>
 
-What changed from v32: **four UI cells, and the shape of the sheet.** The
+What changed from v33: **three rows ADDED, none changed, no spoken word.**
+The redesigned selector (v6.2, docs/V6.2-SELECTOR.md) says three new
+things: `chapters.inProgress` ("In progress" — beside a chapter you have
+reached but not finished), `chapters.here` ("You are here" — beside the
+chapter you are in) and `chapters.progress` ("{n} of {m} chapters sealed"
+— the line under the case's name; {n} and {m} are filled in for you), all
+in "The chapter selector" section of UI TEXT. The word on a sealed chapter
+is `complete.sealed`, the stamp's own word, reused rather than duplicated.
+Every v33 cell is byte-identical. v33 (id
+`1qMSPsGghb0AdBk_drLd7yzvsG53dK-mbxhWYf4FjnIQ`) is superseded; its metadata
+was checked before v34 went to him (created 22:37:08, modified 22:37:09 —
+the conversion itself), so it holds no edit of his to import. Provenance:
+v34 was published from the fresh `.xlsx` export, read back as three
+tables, and every cell diffed against the uploaded workbook by
+`tools/verifytabs.py` — 394 rows, zero differences.
+
+What changed from v32 (v33, at v6.1): **four UI cells, and the shape of the sheet.** The
 button on the title screen, the row in the pause menu and the selector's
 heading now say EPISODES (Chad: "use the word episodes in title screen
 button"): `title.chapters` "Chapters" → "Episodes", `menu.chapters` "Select

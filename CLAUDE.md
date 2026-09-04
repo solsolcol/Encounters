@@ -1073,6 +1073,26 @@ What the baseline contains, by release:
   393 rows, zero differences. `import` already read every tab. main.js
   untouched. Sheet v33, the first tabbed one. docs/EDITING-TEXT.md carries
   the publish-and-verify steps.
+- **v6.2** THE SELECTOR, DRESSED AS WHAT IT IS — Chad: "rather plain and
+  boring now ... clear differentiation between episodes and chapters".
+  Episodes are CASE FILES: a strip of dossier cards (folder tab, the
+  numeral in the display serif, "EPISODE N", the case's name in italic
+  serif, five dots for its five chapters, a red SEALED stamp when all five
+  are), the open one lifted and lit sodium and centred in the strip, an
+  unwritten one dashed and dim with its name still on it. Chapters are
+  STOPS ON A LINE under the case's name: a sealed stop is filled and carries
+  the RANK the chapter got, the one you are in breathes jade, a reached one
+  is a sodium ring, the rest wait; the line lights between sealed stops and
+  is drawn by each row in two pieces so it follows the rows' heights. The
+  data under it is new: the progress store keeps `sealed: { ch: {score,
+  rank} }`, written by `finish()` — the latest result per chapter, kept
+  across a new game like `reached` — which is what the episode-complete
+  card (v6.3) tallies. The harnesses' contract (ids, classes, data-)
+  is unchanged; `menutest` gained the stops-and-ranks check and `texttest`
+  now opens the selector before its scan. One trap: the state class
+  `sealed` inherited the complete card's STAMP (`.sealed` is absolute,
+  rotated, red) and put two rows in the corner — the class is `done`.
+  Three strings; sheet v34. docs/V6.2-SELECTOR.md is the build's memory.
 - **v5.28** AARON — Chad, after two rounds of level work on River: *"i'm still
   not satisfied with this voice."* All 79 of the boy's takes regenerated in a
   THIRD voice (Aaron, `B6uUx2p7cRgxseOUyP6P`), under an approved prompt sheet

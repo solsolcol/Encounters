@@ -183,6 +183,9 @@ Object.assign(window.__TEXT__, {
   'chapters.unwritten':  'Not yet written',
   'chapters.episode':    'Episode {n}',
   'chapters.chapter':    'Chapter {n}',
+  'chapters.inProgress': 'In progress',                         // v6.2: a chapter reached but not yet sealed
+  'chapters.here':       'You are here',                        // v6.2: the chapter you are in
+  'chapters.progress':   '{n} of {m} chapters sealed',          // v6.2: the line under the case's name
 
   // --- the episodes (v6.0): ten case files, five chapters each. The label
   //     is the line above "Chapter N" on the chapter card and the selector's

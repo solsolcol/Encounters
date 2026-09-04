@@ -91,6 +91,14 @@ ten names), `chapters.unwritten` ("Not yet written"), `chapters.episode`
 (the tab's screen-reader name, "Episode {n}") and `chapters.chapter`
 ("Chapter {n}", the label of a row that has no chapter file yet).
 
+**v6.2 — the same panel, dressed** (Chad: "rather plain and boring ...
+clear differentiation between episodes and chapters"): the tabs are
+case-file cards in a scrolling strip (numeral, name, five dots, a stamp
+when sealed), the heading is a stencil line over the name in the display
+serif with "n of 5 chapters sealed", and the rows are stops on a line
+that carry the rank each chapter got. Same ids and classes, so the
+harnesses read it as before. docs/V6.2-SELECTOR.md.
+
 **DECISION · the words on the title screen.** The button says "Chapters"
 and the panel's heading says "Chapters". With ten tabs it is really the
 episode list. Options: keep "Chapters"; "Episodes"; "Episodes & chapters".
@@ -117,6 +125,14 @@ unlocked by arithmetic. Both the unlock test and "already further" in
 `markReached()` move to the ORDER INDEX (position in the episode-major
 list). The save format does not change: `reached` is still a key, the run's
 `chapter` is still a key, `statetest` round-trips the same JSON.
+
+**v6.2 addendum — the same key now also holds the RESULTS.** Beside
+`reached`, `mz.encounters.progress` carries `sealed: { ch1: { score, rank,
+t }, … }`, written by `finish()` through `markSealed()`: the latest result
+per chapter, kept across a new game the way `reached` is. The selector
+shows the rank on each sealed stop; the episode-complete card (§5) tallies
+the five. `markReached()` preserves the object instead of rewriting it; a
+store from before v6.2 simply has no `sealed` and reads as empty.
 
 ## 5 · Advancing, and the end of an episode
 

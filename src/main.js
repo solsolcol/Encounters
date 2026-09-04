@@ -3574,13 +3574,33 @@ function reachedKey() {
     return (s && chapterExists(s.reached)) ? s.reached : null;
   } catch { return null; }
 }
+const progressRead = () => { try { return JSON.parse(localStorage.getItem(PROG_KEY) || 'null') || {}; } catch { return {}; } };
 function markReached(key) {
   if (CH_ASKED) return false;                  // a ?ch= preview opens nothing, the same way it saves nothing
   if (!chapterExists(key) || chId(key) >= 90) return false;
   const cur = reachedKey();
   if (cur && orderIdx(cur) >= orderIdx(key)) return true;      // already further (by place, v6.0)
-  try { localStorage.setItem(PROG_KEY, JSON.stringify({ reached: key, t: Date.now() })); return true; }
+  try { const s = progressRead(); s.reached = key; s.t = Date.now(); localStorage.setItem(PROG_KEY, JSON.stringify(s)); return true; }
   catch { return false; }
+}
+/* v6.2: what each sealed chapter SCORED, kept beside the furthest reached —
+   the latest result per chapter, so a replay overwrites and a new game
+   inherits (a chapter you sealed stays sealed, the way it stays reached).
+   The selector shows the rank on the stop; the episode-complete card
+   (v6.3) tallies the five. Absent on a store from before v6.2: empty. */
+function sealedResults() {
+  const s = progressRead();
+  return (s.sealed && typeof s.sealed === 'object') ? s.sealed : {};
+}
+function markSealed(key, score, rank) {
+  if (CH_ASKED) return false;
+  if (!chapterExists(key) || chId(key) >= 90) return false;
+  try {
+    const s = progressRead();
+    s.sealed = Object.assign({}, s.sealed, { [key]: { score: Math.round(score), rank, t: Date.now() } });
+    localStorage.setItem(PROG_KEY, JSON.stringify(s));
+    return true;
+  } catch { return false; }
 }
 /* every chapter up to and including the furthest reached; chapter 1 always */
 function unlockedKeys() {
@@ -3661,50 +3681,110 @@ const chaptersOpen = () => !$('chapters')?.classList.contains('hide');
    a phone; the case's name reads under the row; then FIVE rows, always —
    a built chapter as before (open, locked, the one you are in), and for a
    chapter that is not written yet a dim row that says so, so the shape of
-   the game is visible before the game is. */
-function paintChapters() {
+   the game is visible before the game is.
+   v6.2 (Chad: "rather plain and boring ... clear differentiation between
+   episodes and chapters"): the same ten buttons and five rows, dressed as
+   what they are. Each tab is a CASE FILE — numeral, its name, five dots for
+   its five chapters, a stamp when all five are sealed — in a strip that
+   scrolls and centres the open one. Each row is a STOP ON A LINE: sealed
+   stops (class `done`) are filled and carry the rank the chapter got (v6.2's progress
+   store), the one you are in breathes jade, a reached one is an open ring,
+   the rest wait. The ids, classes and data- attributes the harnesses read
+   (`#chTabs .chTab[data-ep]`, `.on`, `#chEpName`, `#chList .chTile[data-ch]`,
+   `.locked`, `.unwritten`) are unchanged. */
+function chapterStops(n) {
+  /* one word per stop of episode n: done | now | open | locked | unwritten
+     (`done` rather than `sealed` as a CLASS: the complete card's stamp owns `.sealed`) */
+  const open = unlockedKeys(), results = sealedResults();
+  const top = reachedKey(), topIdx = top ? orderIdx(top) : 0;
+  const built = episodeKeys(n), out = [];
+  for (let i = 0; i < Math.max(CHAPTERS_PER_EPISODE, built.length); i++) {
+    const k = built[i];
+    if (!k) { out.push({ k: null, s: 'unwritten' }); continue; }
+    const here = k === CH_KEY && state !== 'title';
+    const sealed = !!results[k] || orderIdx(k) < topIdx;   // a result on record, or a later chapter reached (a store from before v6.2 has no results)
+    out.push({ k, sealed, s: here ? 'now' : sealed ? 'done' : open.includes(k) ? 'open' : 'locked', rank: results[k] && results[k].rank });
+  }
+  return out;
+}
+function paintChapters(smooth = false) {
   const list = $('chList'); if (!list) return;
-  const open = unlockedKeys();
+  const mk = (tag, cls, text) => { const e = document.createElement(tag); e.className = cls; if (text != null) e.textContent = text; return e; };
   const tabs = $('chTabs');
   if (tabs) {
     tabs.textContent = '';
     for (let n = 1; n <= EPISODE_COUNT; n++) {
+      const stops = chapterStops(n), built = stops.some(x => x.k);
+      const reached = built && stops.some(x => x.s !== 'locked' && x.s !== 'unwritten');
+      const allSealed = built && stops.every(x => x.sealed);          // by the record, not the display: the stop you are replaying is still sealed
       const b = document.createElement('button');
       b.type = 'button';
-      b.className = 'chTab' + (n === chEpisode ? ' on' : '') + (episodeKeys(n).length ? '' : ' empty');
+      b.className = 'chTab' + (n === chEpisode ? ' on' : '') + (built ? '' : ' empty') + (built && !reached ? ' locked' : '');
       b.dataset.ep = String(n);
       b.setAttribute('role', 'tab');
       b.setAttribute('aria-selected', n === chEpisode ? 'true' : 'false');
       b.setAttribute('aria-label', T('chapters.episode', 'Episode {n}').replace('{n}', String(n)));
-      b.textContent = String(n);
-      b.onclick = () => { if (chEpisode !== n) { chEpisode = n; paintChapters(); snd('uiclick', 0.35); } };
+      b.appendChild(mk('span', 'epN', String(n)));
+      b.appendChild(mk('span', 'epL', T(`ep${n}.label`, '')));
+      b.appendChild(mk('span', 'epT', T(`ep${n}.title`, '')));
+      if (!built) b.appendChild(mk('span', 'epS', T('chapters.unwritten')));
+      else if (!reached) b.appendChild(mk('span', 'epS', T('chapters.locked')));
+      else {
+        const d = mk('span', 'epDots');
+        for (const x of stops) d.appendChild(mk('i', x.s));
+        b.appendChild(d);
+      }
+      if (allSealed) b.appendChild(mk('span', 'epStamp', T('complete.sealed')));
+      b.onclick = () => { if (chEpisode !== n) { chEpisode = n; paintChapters(true); snd('uiclick', 0.35); } };
       tabs.appendChild(b);
     }
+    /* the open case sits in the middle of the strip; the panel must be
+       visible for the widths to be real (openChapters shows it first) */
+    const on = tabs.querySelector('.chTab.on');
+    if (on && tabs.clientWidth) {
+      const left = on.offsetLeft - (tabs.clientWidth - on.offsetWidth) / 2;
+      if (smooth && tabs.scrollTo) tabs.scrollTo({ left, behavior: 'smooth' }); else tabs.scrollLeft = left;
+    }
   }
+  const stops = chapterStops(chEpisode), built = stops.some(x => x.k);
   const name = $('chEpName');
-  if (name) name.textContent = T(`ep${chEpisode}.label`, '') + ' · ' + T(`ep${chEpisode}.title`, '');
+  if (name) {
+    name.textContent = '';
+    name.appendChild(mk('span', 'epK', T(`ep${chEpisode}.label`, '')));
+    name.appendChild(mk('span', 'epTitle', T(`ep${chEpisode}.title`, '')));
+    const sealedN = stops.filter(x => x.sealed).length;
+    const reached = built && stops.some(x => x.s !== 'locked' && x.s !== 'unwritten');
+    name.appendChild(mk('span', 'epProg', !built ? T('chapters.unwritten') : !reached ? T('chapters.locked')
+      : T('chapters.progress', '{n} of {m}').replace('{n}', String(sealedN)).replace('{m}', String(stops.length))));
+  }
   list.textContent = '';
-  const built = episodeKeys(chEpisode);
-  for (let i = 0; i < Math.max(CHAPTERS_PER_EPISODE, built.length); i++) {
-    const k = built[i];
+  const inRun = state !== 'title' || !!loadCheckpoint();   // a fresh profile's chapter 1 is open, not "in progress"
+  stops.forEach((x, i) => {
     const b = document.createElement('button');
     b.type = 'button';
-    if (k) {
-      const ch = window.__CHAPTERS__[k], ok = open.includes(k);
-      b.className = 'chTile' + (ok ? '' : ' locked') + (ok && k === CH_KEY && state !== 'title' ? ' now' : '');
-      b.dataset.ch = k;
-      b.disabled = !ok;
-      b.innerHTML = `<span class="num">${ch.cardLabel || k}</span>`
-        + `<span class="name">${ok ? (ch.title || '') : T('chapters.locked')}</span>`;
-      b.onclick = () => askChapter(k);
+    const ok = x.s === 'done' || x.s === 'now' || x.s === 'open';
+    b.className = 'chTile ' + x.s + (ok ? '' : ' locked');   // `locked` stays on an unwritten row too, as at v6.0
+    b.disabled = !ok;
+    const node = mk('span', 'node');
+    if (x.s === 'done') node.textContent = x.rank || '✓';
+    else if (x.s === 'now' || x.s === 'open') node.appendChild(mk('i', ''));
+    b.appendChild(node);
+    const txt = mk('span', 'txt');
+    if (x.k) {
+      const ch = window.__CHAPTERS__[x.k];
+      b.dataset.ch = x.k;
+      txt.appendChild(mk('span', 'num', ch.cardLabel || x.k));
+      txt.appendChild(mk('span', 'name', ok ? (ch.title || '') : T('chapters.locked')));
+      if (ok) b.onclick = () => askChapter(x.k);
     } else {
-      b.className = 'chTile locked unwritten';
-      b.disabled = true;
-      b.innerHTML = `<span class="num">${T('chapters.chapter', 'Chapter {n}').replace('{n}', String(i + 1))}</span>`
-        + `<span class="name">${T('chapters.unwritten')}</span>`;
+      txt.appendChild(mk('span', 'num', T('chapters.chapter', 'Chapter {n}').replace('{n}', String(i + 1))));
+      txt.appendChild(mk('span', 'name', T('chapters.unwritten')));
     }
+    b.appendChild(txt);
+    const word = x.s === 'done' ? T('complete.sealed') : x.s === 'now' ? T('chapters.here') : (x.s === 'open' && inRun) ? T('chapters.inProgress') : '';
+    if (word) b.appendChild(mk('span', 'state', word));
     list.appendChild(b);
-  }
+  });
 }
 function openChapters() {
   if (!$('chapters')) return;
@@ -3714,8 +3794,8 @@ function openChapters() {
   chEpisode = episodeOf(state === 'title' && reachedKey() ? reachedKey() : CH_KEY);
   $('chAsk')?.classList.add('hide');
   $('chList')?.classList.remove('hide');
+  $('chapters').classList.remove('hide');   // shown BEFORE the paint: the strip centres its open case by measured width (v6.2)
   paintChapters();
-  $('chapters').classList.remove('hide');
   snd('uiclick', 0.5);
 }
 function closeChapters() {
@@ -5164,6 +5244,7 @@ function finish() {
   saveCheckpoint(nxt ? { at: null, done: false, ch: nxt }
                      : { at: null, done: true });
   if (nxt) markReached(nxt);       // finished this one: the next is open in the selector (v5.12)
+  markSealed(CH_KEY, score, r);    // and its result is on record: the rank on its stop in the selector (v6.2), the tally at the episode's end (v6.3)
   snd('uirank', 0.7);
 
   // SEALED comes down as a stamp, a beat after the card lands
@@ -5475,6 +5556,7 @@ window.__enc = { yaw, stats, getState: () => state,
                  invOpen, invClose, invToggle, invAdd, invHas, invRemove,
                  menuOpen, menuClose, menuToggle, openChapters, closeChapters,
                  startChapter, returnToTitle, unlockedKeys, markReached,
+                 sealed: sealedResults, markSealed,               // v6.2
                  chapterKey: () => CH_KEY,
                  episode: () => episodeOf(CH_KEY), episodeOf,     // v6.0
                  stings: () => stingLog.slice(),

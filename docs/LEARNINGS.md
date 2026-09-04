@@ -1976,3 +1976,18 @@ clothes. And the fear it guarded against is better TESTED than avoided:
 the session emits the base64 once, into one tool call, and the
 cell-by-cell read-back check would catch a corrupt byte on any publish —
 which turns "might corrupt" into "verified, every time".
+
+## A state class named like a global stamp IS the stamp (v6.2)
+
+The selector's first build put two chapter rows and two progress dots in
+the top-right corner of the panel, rotated thirteen degrees with red
+borders. They had been given the class `sealed` to mean "this chapter is
+sealed" — and `.sealed` is the complete card's STAMP, `position:absolute;
+top:2px; right:6px; transform:rotate(-13deg); border:2px solid
+var(--seal)`, a bare class selector that reaches every element on the
+page. Nothing errored; the rows simply became stamps. The rule is one
+grep before naming a state class in a shared stylesheet: look for the bare
+name (`\.sealed\b`), and if it exists anywhere unscoped, pick another (the
+stop's class is `done`). The same grep run over every new class of the
+build found no other collision — which is the check that should have come
+first, not second.

@@ -14,6 +14,11 @@ const b = await chromium.launch(LAUNCH);
 const p = await b.newPage({ viewport: { width: 900, height: 700 } });
 p.setDefaultNavigationTimeout(180000); p.setDefaultTimeout(60000);
 await p.goto(PAGE); await p.waitForTimeout(6000);
+/* v6.2: open the selector so its painted words are on the page for the scan
+   below — they come from T() and the chapter files, never from markup, and
+   the scan should be able to say so rather than never see them */
+await p.evaluate(() => { try { window.__enc.markReached('ch3'); window.__enc.markSealed('ch1', 91, 'S'); } catch {} });
+await p.click('#chaptersBtn'); await p.waitForTimeout(400);
 
 // slots filled at runtime from the chapter file or from live numbers
 const DYNAMIC = ['brief','qtext','say','teach','core','rank','pct','vSan','vAwa','vWis',
@@ -30,7 +35,7 @@ const untagged = await p.evaluate(dynamic => {
     if (!own || !/[A-Za-z]{2}/.test(own)) continue;
     if (el.closest('[data-t]')) continue;
     if (dynamic.includes(el.id) || dynamic.includes(el.parentElement?.id)) continue;
-    if (el.closest('#choices, #deltas, #ticks')) continue;
+    if (el.closest('#choices, #deltas, #ticks, #chTabs, #chEpName, #chList')) continue;   // painted whole by the engine from T() and the chapters (v6.2)
     out.push((el.id ? '#' + el.id : el.tagName.toLowerCase() + '.' + el.className) + ' -> ' + own.slice(0, 60));
   }
   return out;

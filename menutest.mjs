@@ -13,7 +13,11 @@
      6. reaching chapter 2 opens it in the selector; picking it from the
         menu asks first, then plays its opening film, then the chapter
      7. and that film has its SOUND: every cue it fires finds a decoded
-        sample — the v5.13 fix for the silent replayed film              */
+        sample — the v5.13 fix for the silent replayed film
+     8. (v6.2) with chapter 3 reached and results on record for 1 and 2,
+        the rail shows 1 and 2 SEALED (class `done`) with their ranks on the stops, 3 in
+        progress, 4 and 5 locked; the case's card is the lit one, centred
+        in the strip, with the same five dots; the heading counts 2 of 5  */
 import { chromium } from 'playwright';
 import { LAUNCH, PAGE } from './testlib.mjs';
 
@@ -56,6 +60,27 @@ await p.click('#chTabs .chTab[data-ep="1"]'); await p.waitForTimeout(200);
 out.cardNamesEpisode = await p.evaluate(() => document.getElementById('chapEp').textContent.trim() === 'Episode 1');
 await p.click('#chClose'); await p.waitForTimeout(200);
 out.closeCloses = await hidden('chapters');
+// --- 1c. v6.2: the stops, the ranks, the dots, the count, the centred case
+await p.evaluate(() => { window.__enc.markReached('ch3'); window.__enc.markSealed('ch1', 91, 'S'); window.__enc.markSealed('ch2', 62, 'B'); });
+await p.click('#chaptersBtn'); await p.waitForTimeout(400);
+out.railStates = await p.evaluate(() => {
+  const r = [...document.querySelectorAll('#chList .chTile')];
+  const st = r.map(x => ['done', 'now', 'open', 'locked', 'unwritten'].find(c => x.classList.contains(c)));
+  const node = i => r[i].querySelector('.node').textContent.trim();
+  return st.join(',') === 'done,done,open,locked,locked' && node(0) === 'S' && node(1) === 'B'
+    && !r[0].disabled && !r[2].disabled && r[3].disabled;
+});
+out.caseCardLit = await p.evaluate(() => {
+  const on = document.querySelector('#chTabs .chTab.on'), strip = document.getElementById('chTabs');
+  const dots = [...on.querySelectorAll('.epDots i')].map(i => i.className).join(',');
+  const a = on.getBoundingClientRect(), s = strip.getBoundingClientRect();
+  return on.dataset.ep === '1' && dots === 'done,done,open,locked,locked'
+    && a.left >= s.left - 1 && a.right <= s.right + 1      // the open case is in view
+    && document.querySelector('#chTabs .chTab[data-ep="2"]').classList.contains('empty');
+});
+out.headingCounts = await p.evaluate(() => /2 of 5/.test(document.getElementById('chEpName').textContent));
+await p.click('#chClose'); await p.waitForTimeout(200);
+await p.evaluate(() => { try { localStorage.removeItem('mz.encounters.progress'); } catch {} });   // back to a fresh profile for the rest
 
 // --- 2. play: the column of round buttons ----------------------------------
 await p.click('#startBtn');
