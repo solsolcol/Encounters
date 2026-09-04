@@ -1872,6 +1872,59 @@ function masterOut() {
   }
   return masterGain;
 }
+/* ------------------------------------------------------- ducking (v5.27) ---
+   v5.26 gave the boy a bus and he was still buried the moment anything
+   else played — Chad, on the shipped build: "he gets buried, this starts
+   even in chapter 1". Measuring the things that land ON his lines says why,
+   and it is not his level. Against his post-bus average of about -16 dBFS:
+
+     firedie   -11.6 effective   LOUDER than he is
+     strings   -17.4             1.4 dB under him
+     gscream   -20.1             4 dB under him
+     boom      -22.7             7 dB under him
+
+   Speech wants roughly 10-15 dB over whatever shares the moment with it,
+   and several of these fire at once and SUM. He had 1.4 dB over a dread
+   chord. There was also nowhere left to go: his loudest take already peaks
+   at -0.28 dBFS after the bus, so lifting him further clips.
+
+   When the voice cannot come up, the mix must come down. Everything that
+   is not a voice now passes through `bgGain` on its way to the master, and
+   `bgGain` dips while anyone is speaking — the same move a film mixer makes
+   under dialogue. Fast down (120 ms, so the first syllable is already
+   clear), slow up (450 ms, so a gap between two lines does not pump the
+   whole world up and down).                                             */
+const BG_DUCK = 0.40;                    // -8 dB under any spoken line
+let bgGain = null;
+function bgOut() {
+  if (!actx) return null;
+  if (!bgGain) {
+    bgGain = actx.createGain();
+    bgGain.gain.value = 1;
+    bgGain.connect(masterOut());
+  }
+  return bgGain;
+}
+/* Which sources are speaking right now. A Set rather than a counter so a
+   source that somehow ends twice cannot strand the mix ducked forever —
+   `stop()` fires 'ended' too, so a skipped cutscene releases it. */
+const liveVoices = new Set();
+function duckSync() {
+  if (!bgGain || !actx) return;
+  const g = bgGain.gain, now = actx.currentTime, on = liveVoices.size > 0;
+  g.cancelScheduledValues(now);
+  g.setValueAtTime(g.value, now);
+  g.linearRampToValueAtTime(on ? BG_DUCK : 1, now + (on ? 0.12 : 0.45));
+}
+/* Hold the mix down for as long as this source runs. 'ended' is added as a
+   LISTENER, never as .onended — every caller already sets that, and
+   clobbering it would leak narSrc/voiceSrc and wedge the narration floor. */
+function voiceHold(src) {
+  liveVoices.add(src);
+  src.addEventListener('ended', () => { liveVoices.delete(src); duckSync(); });
+  duckSync();
+}
+
 function setVolume(v) {
   volume = Math.min(1, Math.max(0, v));
   try { localStorage.setItem(VOL_KEY, String(volume)); } catch {}
@@ -1898,7 +1951,7 @@ function musicSetup() {
   try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch {}
   musicGain = actx.createGain();
   musicGain.gain.value = musicVolNow();
-  musicGain.connect(masterOut());
+  musicGain.connect(bgOut());
   assetBytes('music', true)
     .then(bytes => actx.decodeAudioData(bytes))
     .then(buf => { musicBuf = buf; if (musicWanted) musicStart(); })
@@ -2134,6 +2187,7 @@ function queueVoice() {
       voiceSrc.buffer = buf;
       voiceSrc.onended = () => { voiceSrc = null; };
       voiceSrc.connect(voiceBus() || sfxGain);
+      voiceHold(voiceSrc);
       voiceSrc.start();
       voicePlayed = true;
     } catch { voiceSrc = null; }
@@ -2157,10 +2211,10 @@ function packSetup() {
   if (!actx || packGain) return;
   packGain = actx.createGain();
   packGain.gain.value = muted ? 0 : 1;
-  packGain.connect(masterOut());
+  packGain.connect(bgOut());
   ambGain = actx.createGain();
   ambGain.gain.value = muted ? 0 : 1;
-  ambGain.connect(masterOut());
+  ambGain.connect(bgOut());
 }
 /* ------------------------------------------------------------ his voice ---
    THE BOY IS THE ONLY VOICE INSIDE YOUR HEAD, and until v5.26 he was mixed
@@ -2183,16 +2237,31 @@ function packSetup() {
    average without ever letting a peak through, which is exactly the gap
    between what was measured and what was heard.
 
-   It hangs BEFORE packGain, deliberately. Everything downstream — the mute
-   button, the volume slider, the cutscene ducking — already acts on
-   packGain, so routing his voice through packGain rather than around it
-   means none of that had to be touched or re-tested.                     */
+   v5.26 hung it before `packGain` so that mute and the volume slider kept
+   working untouched. v5.27 had to move it OUT: `packGain` is ducked under
+   dialogue now, and a bus that ducks itself is a bus that does nothing. So
+   voices run to their own `voiceOut`, which is what mute ramps instead.
+
+   `voiceOut` is the stage EVERY speaker shares — the boy, the mother, the
+   auntie and the tang-ki — because the duck has to lift whoever is talking,
+   not only him. Only his takes take the boost and the compressor on the
+   way in; the other three are already 1.2 dB louder than he is and need
+   the clarity, not the gain.                                             */
 const VOICE_BOOST = 2.0;             // +6 dB into the compressor
-let voiceBusIn = null;
-function voiceBus() {
+let voiceBusIn = null, voiceOut = null;
+function voiceStage() {              // every voice, mute-able, never ducked
   if (!actx) return null;
-  packSetup();
-  if (!voiceBusIn && packGain) {
+  if (!voiceOut) {
+    voiceOut = actx.createGain();
+    voiceOut.gain.value = muted ? 0 : 1;
+    voiceOut.connect(masterOut());
+  }
+  return voiceOut;
+}
+function voiceBus() {                // his takes only: boosted and evened out
+  if (!actx) return null;
+  const out = voiceStage();
+  if (!voiceBusIn && out) {
     voiceBusIn = actx.createGain();
     voiceBusIn.gain.value = VOICE_BOOST;
     const comp = actx.createDynamicsCompressor();
@@ -2202,7 +2271,7 @@ function voiceBus() {
     comp.attack.value = 0.004;       // fast enough to catch a consonant
     comp.release.value = 0.25;
     voiceBusIn.connect(comp);
-    comp.connect(packGain);
+    comp.connect(out);
   }
   return voiceBusIn;
 }
@@ -2228,15 +2297,23 @@ const JAMES_TAKES = new Set(['voice',
   'v4regret', 'v4call1', 'v4call2', 'v4A', 'v4B', 'v4C', 'v4D',
   'v5wake1', 'v5wake2', 'v5wake3', 'v5voice', 'v5near', 'v5sit',
   'v5fearB1', 'v5disC1', 'v5learnD', 'v5A', 'v5B', 'v5C', 'v5D']);
-// where a sound belongs: his bus, or the flat pack everything else uses
+/* The rest of the cast. They share `voiceOut` and the duck, but not the
+   boost — see voiceStage() above. */
+const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
+  'v3aunt1', 'v3aunt2', 'v3aunt3', 'v3aunt4', 'v3aunt5',
+  't5note', 't5teachA', 't5hallA', 't5fearB', 't5disC', 't5learnD1', 't5learnD2']);
+const isVoice = name => JAMES_TAKES.has(name) || CAST_TAKES.has(name);
+// where a sound belongs: his bus, the cast's stage, or the ducked pack
 function outFor(name) {
-  return (JAMES_TAKES.has(name) && voiceBus()) || packGain;
+  if (JAMES_TAKES.has(name)) return voiceBus() || packGain;
+  if (CAST_TAKES.has(name)) return voiceStage() || packGain;
+  return packGain;
 }
 
 function packMuteSync() {
   if (!actx) return;
   const now = actx.currentTime;
-  for (const g of [packGain, ambGain]) {
+  for (const g of [packGain, ambGain, voiceOut]) {
     if (!g) continue;
     g.gain.cancelScheduledValues(now);
     g.gain.setValueAtTime(g.gain.value, now);
@@ -2352,6 +2429,7 @@ function snd(name, vol = 1, rate = 1, pan = 0) {        // one-shot
     out = pn;
   }
   out.connect(outFor(name));
+  if (isVoice(name)) voiceHold(s);
   s.start();
   s.__g = g;        // so a caller can ramp it down instead of cutting it dead
   return s;
@@ -2423,6 +2501,7 @@ function say(name, opts) {
   narSrc.buffer = buf;
   narSrc.onended = () => { narSrc = null; };
   narSrc.connect(outFor(name));
+  voiceHold(narSrc);
   narSrc.start();
 }
 
@@ -2446,6 +2525,7 @@ function speak(name, opts = {}) {
       narSrc.buffer = buf;
       narSrc.onended = () => { narSrc = null; resolve(true); };
       narSrc.connect(outFor(name));
+      voiceHold(narSrc);
       narSrc.start();
     };
     attempt();
@@ -2479,6 +2559,7 @@ function scaredGasp() {
   narSrc.buffer = buf;
   narSrc.onended = () => { narSrc = null; };
   narSrc.connect(outFor(name));
+  voiceHold(narSrc);
   narSrc.start();
 }
 const STEP_TAKES = ['step1', 'step2', 'step3', 'step4'];
@@ -3542,7 +3623,7 @@ function sfxOut() {
   if (!sfxGain) {
     sfxGain = actx.createGain();
     sfxGain.gain.value = 0.9;
-    sfxGain.connect(masterOut());
+    sfxGain.connect(bgOut());
   }
   if (!noiseBuf) {
     noiseBuf = actx.createBuffer(1, actx.sampleRate, actx.sampleRate);
@@ -3563,7 +3644,13 @@ const STING_SAMPLE = {
   swoosh: ['swoosh', 0.55],        // her, moving — replaces the cartoon zip
   strings: ['strings', 0.7],       // the dread chord under a reveal
   dread: ['dread', 0.55], breath: ['breath', 0.7], whisper: ['whisper', 0.45],
-  firedie: ['firedie', 0.5],       // the flame giving up
+  /* v5.27: 0.5 -> 0.18. This file is a measured OUTLIER — its mean is
+     -5.6 dBFS, nearly 9 dB hotter than the next loudest sample in the
+     whole pack (`strings`, -14.3), which at the old cue volume made the
+     flame going out LOUDER than the boy narrating over it. The new number
+     puts its effective level in line with `strings`; nothing else about
+     the cue moved. */
+  firedie: ['firedie', 0.18],      // the flame giving up
   ashburst: ['ashburst', 0.75],    // the drum's insides thrown across concrete
   paperstorm: ['paperstorm', 0.9], // a thousand notes in the air
   bowl: ['bowl', 0.8],             // the singing bowl under the chant
@@ -5164,6 +5251,11 @@ window.__enc = { yaw, stats, getState: () => state,
                  chapterKey: () => CH_KEY,
                  stings: () => stingLog.slice(),
                  audio: () => ({ ctx: actx ? actx.state : 'none', muted, decoded: Object.keys(packBufs) }),
+                 /* v5.27: the dialogue duck, observable. A gain node that is
+                    wired wrong sounds exactly like one that is wired right
+                    until someone speaks, so the probe reads the NODE. */
+                 duck: () => ({ bg: bgGain ? +bgGain.gain.value.toFixed(3) : null,
+                                speaking: liveVoices.size, floor: BG_DUCK }),
                  inv: () => ({ gear: { ...inv.gear }, bag: [...inv.bag],
                                held: inv.held?.id || null, open: inv.open }),
                  pulse: () => ({ bpm: Math.round(curBpm),

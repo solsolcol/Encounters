@@ -878,6 +878,30 @@ What the baseline contains, by release:
   proves a sound plays. Sheet v28 — one description cell, no spoken word
   moved, and verified cell-by-cell against Drive rather than only by an
   import. docs/V5.25-THE-NOTE-ON-THE-TABLE.md.
+- **v5.27** THE DUCK — Chad, on v5.26: "he is still soft, especially when
+  there are multiple sounds at the same time, he gets buried, this starts
+  even in chapter 1". v5.26 fixed a LEVEL problem and this is a MASKING
+  one — his own words name it. Measured against his post-bus -16 dBFS:
+  `firedie` lands at -11.6 (LOUDER than the narrator), `strings` at -17.4
+  (1.4 dB under him), and the three loudest firing together sum to -10.1,
+  putting him 5.9 dB UNDERNEATH the mix. Speech wants 10-15 dB of margin.
+  He could not come up — `vscare1` already peaks at -0.28 dBFS — so the mix
+  comes down: every non-voice source (music, loops, sfx, the procedural
+  fallback) now passes through one `bgGain` that dips to 0.40 (-8 dB) while
+  ANYONE speaks, fast down (120 ms) and slow up (450 ms). The trigger is a
+  Set of live sources, because `stop()` fires `ended` too, and `'ended'` is
+  a LISTENER — `.onended` is already taken by every caller and clobbering it
+  would wedge the narration floor shut. Two consequences: the v5.26 bus had
+  to leave `packGain` (a bus that ducks itself does nothing), so voices run
+  to their own `voiceOut` and `packMuteSync` gained it — without that a muted
+  game still talks; and `voiceOut` carries the WHOLE cast, since ducking for
+  him alone would newly bury the other three. One cue volume moved:
+  `firedie` 0.5 -> 0.18, a measured outlier whose file is 9 dB hotter than
+  anything else in the pack. Margins after: `strings` +9.4, `firedie` +12.5,
+  all three at once +6.3. `__enc.duck()` exposes the node and `dbgduck.mjs`
+  reads it across a real line, because a gain node wired wrong sounds exactly
+  like one wired right until somebody speaks.
+  docs/V5.27-THE-DUCK.md is the build's memory.
 - **v5.26** HIS VOICE — Chad kept River ("lets stick to river for now")
   but found him "way too soft". The takes MEASURE fine: -20.8 dBFS mean
   against the cast's -19.6. What explains the ear is the CREST — peaks to
