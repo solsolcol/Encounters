@@ -85,43 +85,43 @@
    "session": null
   },
   "v2wake1": {
-   "state": "downloaded",
+   "state": "todo",
    "session": null
   },
   "v2wake2": {
-   "state": "downloaded",
+   "state": "todo",
    "session": null
   },
   "v2wake3": {
-   "state": "downloaded",
+   "state": "todo",
    "session": null
   },
   "v2near": {
-   "state": "downloaded",
+   "state": "todo",
    "session": null
   },
   "v2gap": {
-   "state": "downloaded",
+   "state": "todo",
    "session": null
   },
   "v2call": {
-   "state": "downloaded",
+   "state": "todo",
    "session": null
   },
   "v2A": {
-   "state": "downloaded",
+   "state": "todo",
    "session": null
   },
   "v2B": {
-   "state": "downloaded",
+   "state": "todo",
    "session": null
   },
   "v2C": {
-   "state": "downloaded",
+   "state": "todo",
    "session": null
   },
   "v2D": {
-   "state": "downloaded",
+   "state": "todo",
    "session": null
   },
   "v3wake1": {
@@ -320,5 +320,6 @@
    "state": "todo",
    "session": null
   }
- }
+ },
+ "style": "prompts.json (Chad-approved 4 Sep)"
 }
