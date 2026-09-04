@@ -158,3 +158,33 @@ needed. Sent to Chad. **Decision still open; nothing in the game changed.**
 On the accent: for a Singapore-set game an Indian-accented boy is not a
 defect — it is a plausible boy in that block. It is a character decision,
 which is Chad's, not a technical disqualification.
+
+## What River Faith actually is (Chad's ear, confirmed 4 Sep 2026)
+
+Chad, listening to the shipped game: *"river also had some slight indian
+accent i noticed"*. He is right, and the vendor says so in its own words.
+`creative_list_voices` returns River Faith (`v6KgbPaQh6lAmMpmmtcH`) twice,
+with two descriptions written by whoever published it:
+
+> A youthful **Asian** voice with a **multi-cultural influence**
+> A youthful male voice with a multi-cultural influence. Fit for a timid
+> conversationalist or a neutral narrator.
+
+and labels `gender: male, age: young, accent: en-american`.
+
+So the LABEL says American and the DESCRIPTION says Asian and
+multi-cultural. The label is what a search filters on; the description is
+what the voice sounds like. **Search by label and you will keep missing
+what you are hearing** — this is why five rounds of auditions kept
+surfacing the same handful of candidates.
+
+Two consequences worth carrying forward:
+
+1. The accent Chad hears in River is a documented property of the voice,
+   not a bad roll and not one take. Re-rolling will not remove it.
+2. It changes what the Riya/Amit accent MEANS. The game has shipped a boy
+   with a South Asian colour in his voice across five chapters and it did
+   not read as wrong — it read as a kid from the block. So an accent is
+   not the thing to disqualify a candidate on. **Consistency across takes
+   is** — that is what removed VALF at v5.18, and it is the only
+   property that has ever actually broken the part.
