@@ -130,3 +130,31 @@ Three.
 
 The audition mp3s are not committed — they are throwaway until a pick is
 made, and the flow above holds them.
+
+## Round 5 — Riya, Teddy Twinkle, Amit (Chad's pick, 4 Sep 2026)
+
+Chad asked to hear the three I had dismissed from their descriptions
+rather than take my word for it. Fair — a description is not a listen.
+
+| voice | id | notes |
+|---|---|---|
+| Riya | `4RloeZf2FRvGiu4uoKOf` | Hindi-language voice; Indian accent |
+| Teddy Twinkle | `XjGYkUkzth8BPs29fmcV` | English; the most overtly "cartoon" of the three by description |
+| Amit | `NbvR1eY6Q8ivACdEO8PV` | Hindi-language voice; Indian accent |
+
+Two lines each, two takes each (12 files), on `eleven_v3`, flow
+`b6hTf3IJetFxUl0t0zCy`. The lines are the two most diagnostic in the
+game — if a voice survives both it survives the part:
+
+- **`voice`** — "Almost midnight... and this is the only way home."
+  (calm, level, the boy before anything happens)
+- **`v4wake3am`** — "[whispering] ...the clock. Why can't I hear the clock?"
+  (whispered, frightened, the register that broke every previous candidate)
+
+All 12 generated clean — `has_failures: false` on every one, no re-runs
+needed. Sent to Chad. **Decision still open; nothing in the game changed.**
+`SPEAKERS.james.voice` remains River Faith (`v6KgbPaQh6lAmMpmmtcH`).
+
+On the accent: for a Singapore-set game an Indian-accented boy is not a
+defect — it is a plausible boy in that block. It is a character decision,
+which is Chad's, not a technical disqualification.
