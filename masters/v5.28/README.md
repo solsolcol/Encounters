@@ -153,3 +153,38 @@ at all.
 came from the registry (`[beat]`, `[panting]`, `[exhale]`), which is the
 style River's shipped takes used. Their durations are all in the normal
 range. They stand as a fair sample of undirected Aaron.
+
+## Directing a line: what actually works (Chad's ellipsis idea)
+
+*"why dont you sometimes use like '...' to get a more moody feeling"* — he
+is right, and it is in the model guide I had already read: **"Ellipses
+create longer thoughtful pauses. Em-dashes create short beats."** The first
+directed pass used a tag and CAPITALS and no punctuation shaping at all,
+which is the one lever that changes delivery without forcing anything.
+
+Chad's other note, *"the chp 1 opening sounds weird"*, has a specific
+cause: **I capitalised ONLY**. "and this is the ONLY way home" puts a hard
+stress on a word the line was never written to stress — declamatory, not a
+kid walking home. That was my addition, not the script's.
+
+The six variants of the same line (`directed/F*`, `directed/G*`), words
+identical to the registry throughout:
+
+| file | length | prompt |
+|---|---|---|
+| `F0-plain` | 3.16 s | the bare registry text — what the 22-take run produced |
+| `E1-opening` | 3.31 s | `[nervously]` + **ONLY** in caps — the "weird" one |
+| `F1-nervous-nocaps` | 4.59 s | `[nervously]`, caps removed |
+| `F2-quietly` | 4.08 s | `[quietly]`, caps removed |
+| `G1-ellipsis` | 3.92 s | no tag, a second ellipsis before the admission |
+| `G2-ellipsis-quiet` | 6.32 s | `[quietly]` + ellipses throughout |
+
+**Punctuation is the safe lever and capitals are the dangerous one.**
+An ellipsis buys a pause the actor fills; a capital forces an emphasis that
+may be wrong for the sentence. Prefer ellipses and em-dashes; use capitals
+only where the writing itself is emphatic.
+
+Note the length spread: 3.16 s to 6.32 s for the same words. Whatever style
+is chosen has to be applied consistently across all 79 or the cutscene
+timings become unpredictable — this is a per-line authoring decision, not a
+switch.

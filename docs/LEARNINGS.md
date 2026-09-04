@@ -1723,3 +1723,22 @@ intonation variety, so a "delivery variation" metric scored the broken
 take HIGHER and nearly sold a bug as an improvement. When a take's
 duration is far off its text, transcribe it before believing any number
 computed from it.
+
+## Punctuation directs a take; CAPITALS force a stress (v5.28)
+
+Chad, on a re-voiced chapter 1 opening: *"the chp 1 opening sounds weird"*.
+The cause was one word I had capitalised for emphasis — `and this is the
+ONLY way home`. Capitals in an eleven_v3 prompt do work, which is the
+problem: they put a hard stress on that word whether or not the sentence
+wants one, and a boy walking home does not declaim "ONLY".
+
+His follow-up was the actual fix: *"why dont you sometimes use like '...'
+to get a more moody feeling"*. The model guide says exactly that —
+ellipses make long thoughtful pauses, em-dashes short beats, commas
+breath. **Punctuation gives the performance room; capitals dictate it.**
+Reach for punctuation first and use capitals only where the writing is
+already emphatic.
+
+Same words, six punctuations, 3.16 s to 6.32 s of audio. So the style has
+to be decided once and applied to every take in a pass, or the cutscene
+timings stop being predictable.
