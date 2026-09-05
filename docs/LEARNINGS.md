@@ -2077,3 +2077,17 @@ answer, so a harness that had used a stopwatch instead of a state wait
 would have run its checks inside the film and passed. And a change to the
 first chapter's entry is a change to the suite's entry: grep for
 `startBtn` before deciding a chapter change is "just the chapter".
+
+## A stopwatch after a state change is not the first frame after it (v6.4)
+
+`resumetest` installs a `requestAnimationFrame` observer, presses Continue,
+waits 1.2 s, and reads what the observer saw at the first play frame. On a
+box running two software-rendered browsers, one frame took longer than the
+1.2 s, so the read came BEFORE the observer's first play frame and found
+null — the check failed with nothing wrong in the game, and passed on the
+next run beside a lighter neighbour. The suite's own rule, written in a
+dozen harnesses, is "wait for the game to actually be playable rather
+than for a stopwatch"; it applies just as much to a harness's OWN observer
+as to the engine's state. Wait for the observer to have observed
+(`__firstReveal !== null`), then read. And print the measured value with
+the boolean, so a failure says what it saw.

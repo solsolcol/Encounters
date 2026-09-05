@@ -113,7 +113,12 @@ await p.evaluate(() => {
   requestAnimationFrame(tick);
 });
 await play();
-await p.waitForTimeout(1200);
+/* v6.4: wait for the observer's first play FRAME, not a stopwatch — under a
+   loaded box a software-rendered frame can take longer than 1.2 s, and the
+   check then read null before the tick had seen play once (it failed that
+   way exactly once, beside restarttest, and passed alone). */
+await p.waitForFunction(() => window.__firstReveal !== null, null, { timeout: 90000, polling: 100 }).catch(() => {});
+await p.waitForTimeout(400);
 out.resumedExactly = await p.evaluate(() => {
   const e = window.__enc, y = e.yaw;
   return Math.abs(y.position.x - 1.0) < 0.05 && Math.abs(y.position.z + 2.0) < 0.05
