@@ -135,13 +135,17 @@ await p.click('#menuChapters'); await p.waitForTimeout(300);
 { const t = await tiles(); out.reachedOpensIt = t.length >= 3 && !t[0].locked && !t[1].locked && t[2].locked; }
 await p.click('#chList .chTile[data-ch="ch2"]'); await p.waitForTimeout(300);
 out.asksFirst = !(await hidden('chAsk'));
+/* v6.4: the cue log holds every cue since the page loaded — chapter 1's
+   prologue fired its first under the boot's mute before toPlay skipped it —
+   so only the cues from here on are this film's. */
+const st0 = await p.evaluate(() => window.__enc.stings().length);
 await p.click('#chYes');
 await p.waitForFunction(() => window.__enc.getState() === 'cine', null, { timeout: 150000 });
 out.opensOnItsFilm = await p.evaluate(() => window.__enc.chapterKey() === 'ch2');
 // --- 7. the film is heard: wait for its first cues, none may have missed its sample
-await p.waitForFunction(() => window.__enc.stings().length >= 2, null, { timeout: 120000 }).catch(() => {});
+await p.waitForFunction(n => window.__enc.stings().length >= n + 2, st0, { timeout: 120000 }).catch(() => {});
 {
-  const st6 = await p.evaluate(() => window.__enc.stings());
+  const st6 = (await p.evaluate(() => window.__enc.stings())).slice(st0);
   out.filmHasItsSound = st6.length >= 2 && st6.every(s => s.how === 'sample' || s.how === 'step' || s.how === 'synth');
   if (!out.filmHasItsSound) console.log('cues:', JSON.stringify(st6));
 }

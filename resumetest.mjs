@@ -101,11 +101,13 @@ await boot();
    put her back mid-appearance, so the thing to measure is the instant the
    run begins, not a second and a half into it. */
 await p.evaluate(() => {
-  window.__firstReveal = null;
+  window.__firstReveal = null; window.__playFrames = [];   // v6.4: the first frames, for the record
   const tick = () => {
     if (window.__firstReveal === null && window.__enc.getState() === 'play') {
       window.__firstReveal = window.__enc.getReveal();
     }
+    if (window.__enc.getState() === 'play' && window.__playFrames.length < 4)
+      window.__playFrames.push([+performance.now().toFixed(0), +window.__enc.getReveal().toFixed(3)]);
     requestAnimationFrame(tick);
   };
   requestAnimationFrame(tick);
@@ -119,6 +121,7 @@ out.resumedExactly = await p.evaluate(() => {
     && e.inv().bag.includes('note');
 });
 out.ghostRearmed = await p.evaluate(() => window.__firstReveal === 0);
+if (!out.ghostRearmed) console.log('first reveal:', await p.evaluate(() => JSON.stringify({ first: window.__firstReveal, frames: window.__playFrames }))); // v6.4
 
 // --- 5. New game asks first, and Cancel cancels -----------------------------
 await boot();
