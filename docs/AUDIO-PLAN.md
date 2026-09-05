@@ -639,3 +639,19 @@ The bus (v5.26/v5.28) is unchanged; the bytes are unchanged. The play-time
 gate (`say`/`speak`/the opening line) now also waits for ANY live voice, so
 his lines never stack, and a scene's natural end lets a line finish rather
 than ramping it out.
+
+## v6.3 — one new sound: `epfanfare`
+
+The episode-complete card's fanfare: a low gong struck once and a rising
+swell that settles, 7.0 s, stereo — ElevenLabs sound effects v2 (flow
+`bxh1TbtFsFmg6RPoqgPh`, node `tq3SMH9D3pG2U2nCjVh1`, take A of two: the
+louder gong, the longer decay). Master `masters/v6.3/epfanfare-a.mp3`
+arrived at 0.0 dBFS peak and is installed at −3.8 (mp3 44.1 kHz stereo
+128 kbps, 113 KB; opus 48 kHz stereo 96 kbps, 78 KB) to sit with the
+game's other stings (`uirank` −4.2, `noteflight` −3.9, `gongdeep` −3.4).
+The engine fires it (`snd('epfanfare')` in `showEpisodeCard`), so the split
+puts it in the SHARED pack (138 sounds shared of 183); it is decoded under
+the sealed card by `packWarm` in `finish()` when the chapter is a case's
+last. The rest of the card's sound is the vocabulary that existed: `kick`
+under the stamp, `uiclick` per chapter stop, `uirank` as the score settles,
+`uiconfirm` as the trail lights. docs/V6.3-EPISODE-CARD.md.

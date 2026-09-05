@@ -11,13 +11,32 @@ text comes up at all — the reply carries the full URL, not the version
 number alone. He reads these on his phone; a number he has to go hunting
 for in Drive is not a link.
 
-**Master Z's Encounters — GAME TEXT v34 (edit here)** in his Drive
-(id `124sqKs4CPH7gaiG_d6wE0KDidzHv0lEFl9xrYA6PZz0` — the **v34** sheet,
-made at v6.2, tabbed like v33: **UI TEXT** (187 rows, the engine's words),
+**Master Z's Encounters — GAME TEXT v35 (edit here)** in his Drive
+(id `1VyBwICzc7TF8ANyj8U_OrOz_aH2RhNJVLPQMe7nMOpQ` — the **v35** sheet,
+made at v6.3, tabbed: **UI TEXT** (198 rows, the engine's words),
 **EPISODE 1** (110 rows, chapters 1–5's words) and **VOICE LINES** (97).
-<https://docs.google.com/spreadsheets/d/124sqKs4CPH7gaiG_d6wE0KDidzHv0lEFl9xrYA6PZz0/edit>
+<https://docs.google.com/spreadsheets/d/1VyBwICzc7TF8ANyj8U_OrOz_aH2RhNJVLPQMe7nMOpQ/edit>
 
-What changed from v33: **three rows ADDED, none changed, no spoken word.**
+What changed from v34: **eleven rows ADDED, none changed, no spoken word.**
+The episode-complete card (v6.3, docs/V6.3-EPISODE-CARD.md) says eleven
+new things, all in a new "The episode-complete card (v6.3)" section of UI
+TEXT: `episode.label` ("Episode complete"), `episode.stamp` ("Case
+closed" — the stamp), `episode.scoreLabel` ("Episode score"),
+`episode.tallyLabel` ("Five chapters, tallied"), `episode.mapLabel` ("The
+ten cases"), `episode.unlocked` ("Unlocked" — the flag on the next case),
+`episode.next` ("Next · {episode}"), `episode.nextUnwritten` ("{episode}
+is unlocked. It is not yet written — come back for it."),
+`episode.allDone` ("Every case is closed."), `episode.continue`
+("Continue") and `episode.toTitle` ("Back to the title screen"). Every v34
+cell is byte-identical. v34 (id
+`124sqKs4CPH7gaiG_d6wE0KDidzHv0lEFl9xrYA6PZz0`) is superseded; its metadata
+was checked before v35 went to him (created 23:33:47, modified 23:33:48 —
+the conversion itself), so it holds no edit of his to import. Provenance:
+v35 was published from the fresh `.xlsx` export, read back as three tables,
+and every cell diffed against the uploaded workbook by
+`tools/verifytabs.py` — 405 rows, zero differences.
+
+What changed from v33 (v34, at v6.2): **three rows ADDED, none changed, no spoken word.**
 The redesigned selector (v6.2, docs/V6.2-SELECTOR.md) says three new
 things: `chapters.inProgress` ("In progress" — beside a chapter you have
 reached but not finished), `chapters.here` ("You are here" — beside the

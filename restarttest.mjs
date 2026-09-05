@@ -121,4 +121,59 @@ const stateOf = p => p.evaluate(() => ({
   console.log(JSON.stringify(out), '| errors:', errs.length ? errs : 'none');
   await p.close();
 }
+/* ---- v6.3: the LAST chapter of a case: complete -> the EPISODE card -> the title.
+   Results for chapters 1-4 seeded on the progress store, chapter 5 played to
+   its end through finish(): the card must tally the five, rank the mean, light
+   the trail to case 2, and — with no case 2 written — send the run to the title. */
+{
+  const p = await b.newPage({ viewport: { width: 500, height: 700 } });
+  p.setDefaultNavigationTimeout(180000); p.setDefaultTimeout(150000);
+  const errs = []; p.on('pageerror', e => errs.push(e.message));
+  const out = { path: 'episode' };
+  await p.goto(PAGE); await p.waitForTimeout(4000);
+  await p.waitForFunction(() => !!window.__enc, null, { timeout: 120000 });
+  await p.evaluate(() => { const e = window.__enc; e.clearCheckpoint(); try { localStorage.removeItem('mz.encounters.progress'); } catch {}
+    e.markReached('ch5'); e.markSealed('ch1', 91, 'S'); e.markSealed('ch2', 62, 'B'); e.markSealed('ch3', 84, 'A+'); e.markSealed('ch4', 45, 'C'); });
+  await p.evaluate(() => window.__enc.startChapter('ch5'));
+  await p.waitForFunction(() => window.__enc.getState() === 'cine', null, { timeout: 150000, polling: 120 });
+  await p.waitForTimeout(800);
+  await p.evaluate(() => window.__enc.cine.skip());
+  await p.waitForFunction(() => window.__enc.getState() === 'play', null, { timeout: 150000, polling: 120 });
+  await p.waitForTimeout(600);
+  await p.evaluate(() => { const e = window.__enc; e.stats.sanity = 100; e.stats.awareness = 70; e.stats.wisdom = 70; e.finish(); });   // 30 + 21 + 28 = 79 -> A
+  await p.waitForTimeout(800);
+  out.sealedCardUp = await p.evaluate(() => window.__enc.getState() === 'complete' && !document.getElementById('complete').classList.contains('hide'));
+  out.ch5OnRecord = await p.evaluate(() => { const r = window.__enc.sealed().ch5; return !!r && r.rank === 'A' && r.score === 79; });
+  await p.click('#againBtn');
+  await p.waitForTimeout(7500);                          // the choreography runs about six seconds
+  out.episodeCardUp = await p.evaluate(() => window.__enc.getState() === 'complete'
+    && !document.getElementById('episode').classList.contains('hide') && document.getElementById('complete').classList.contains('hide'));
+  out.tallied = await p.evaluate(() => {
+    const st = [...document.querySelectorAll('#epTally .epStop')];
+    const ranks = st.map(x => x.querySelector('.r').textContent).join(','), scores = st.map(x => x.querySelector('.s').textContent).join(',');
+    return st.length === 5 && ranks === 'S,B,A+,C,A' && scores === '91%,62%,84%,45%,79%' && st.every(x => x.classList.contains('in'));
+  });
+  out.episodeScore = await p.evaluate(() => document.getElementById('epScore').textContent === '72%'   // (91+62+84+45+79)/5 = 72.2
+    && document.getElementById('epRank').textContent === 'A' && document.getElementById('epRank').classList.contains('glow'));
+  out.stamped = await p.evaluate(() => document.getElementById('epStamp').classList.contains('stampin'));
+  out.trailToCaseTwo = await p.evaluate(() => {
+    const done = [...document.querySelectorAll('#epMap g.done')], next = document.querySelector('#epMap g.next');
+    return done.length === 1 && done[0].dataset.ep === '1' && done[0].querySelector('.msT').textContent === 'A'
+      && !!next && next.dataset.ep === '2' && document.getElementById('epMap').classList.contains('in')
+      && document.querySelectorAll('#epMap g.locked').length === 8;
+  });
+  out.saysNextCase = await p.evaluate(() => /Episode 2/.test(document.getElementById('epNext').textContent));
+  out.buttonToTitle = await p.evaluate(() => { const b = document.getElementById('epBtn'); return !b.disabled && b.classList.contains('in') && b.textContent === 'Back to the title screen'; });
+  await p.click('#epBtn'); await p.waitForTimeout(800);
+  out.backOnTitle = await p.evaluate(() => window.__enc.getState() === 'title' && !document.getElementById('title').classList.contains('hide')
+    && document.getElementById('episode').classList.contains('hide') && document.getElementById('hud').classList.contains('hide'));
+  out.runMarkedDone = await p.evaluate(() => { const s = window.__enc.loadCheckpoint(); return !!s && s.done === true && s.at === null; });
+  console.log(JSON.stringify(out), '| errors:', errs.length ? errs : 'none');
+  /* runtests reads the exit code and an "errors: [" line, not the booleans —
+     so a false one here is turned into both, the way menutest reports */
+  const bad = Object.entries(out).filter(([k, v]) => k !== 'path' && v !== true).map(([k]) => k);
+  if (bad.length) { console.log('errors: [episode card: ' + bad.join(', ') + ']'); process.exitCode = 1; }
+  await p.close();
+}
+
 await b.close();

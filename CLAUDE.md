@@ -1093,6 +1093,28 @@ What the baseline contains, by release:
   `sealed` inherited the complete card's STAMP (`.sealed` is absolute,
   rotated, red) and put two rows in the corner — the class is `done`.
   Three strings; sheet v34. docs/V6.2-SELECTOR.md is the build's memory.
+- **v6.3** THE EPISODE COMPLETE CARD — Chad: "an episode complete card ...
+  next episode unlocked in a progress line with checkpoint/milestones like
+  going through a map ... scores across all chapters properly tallied up and
+  brought over ... visually different ... impressive and exciting, with
+  sound effects." Continue on the sealed card of a case's LAST chapter (the
+  fifth) now closes the case first: a dossier moment with its own look (a
+  red-black ground, slow light turning behind the rank, bracketed corners),
+  the episode's rank huge with a CASE CLOSED stamp slamming across it, the
+  five chapters' ranks and scores landing one by one, the episode score
+  rolling up (the MEAN of the five on the chapter formula — `RANK_OF`, now
+  one function), and the TEN CASES as a winding trail: the closed case
+  filled with its rank, the trail drawing itself to the next case, which
+  pulses jade under an UNLOCKED flag whether or not it is written ("Episode
+  2 · The 3 AM Shower is unlocked. It is not yet written — come back for
+  it."). One button: Continue into the next case when it exists
+  (`advanceTo`, the sealed card's own path), else back to the title with
+  the run marked done. Sound: a new `epfanfare` (gong and swell, 7 s,
+  shared pack, decoded under the sealed card), the stamp's kick, a tick per
+  chapter, `uirank` on the score, `uiconfirm` on the trail. `restarttest`
+  plays chapter 5 to `finish()` and walks the card — and now FAILS on a
+  false check (LEARNINGS: `runtests` reads exit codes, not printed
+  booleans). Twelve strings; sheet v35. docs/V6.3-EPISODE-CARD.md.
 - **v5.28** AARON — Chad, after two rounds of level work on River: *"i'm still
   not satisfied with this voice."* All 79 of the boy's takes regenerated in a
   THIRD voice (Aaron, `B6uUx2p7cRgxseOUyP6P`), under an approved prompt sheet

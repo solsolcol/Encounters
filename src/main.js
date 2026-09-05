@@ -1787,6 +1787,7 @@ const BUILD_VERSION = '__VERSION__';
 const ui = {
   title: $('title'), hud: $('hud'), prompt: $('prompt'), interact: $('interact'),
   decide: $('decide'), result: $('result'), complete: $('complete'),
+  episode: $('episode'),                                     // v6.3: the episode-complete card
   haunt: $('haunt'), over: $('over'), panic: $('panic'), chapter: $('chapter'),
   bSan: $('bSan'), bAwa: $('bAwa'), bWis: $('bWis'),
   vSan: $('vSan'), vAwa: $('vAwa'), vWis: $('vWis'),
@@ -3823,7 +3824,7 @@ function startChapter(key) {
   closeChapters();
   if (state === 'menu') menuClose(false);
   if (inv.open) invClose();
-  for (const el of [ui.complete, ui.result, ui.over]) el.classList.add('hide');
+  for (const el of [ui.complete, ui.result, ui.over, ui.episode]) el?.classList.add('hide');
   document.body.classList.remove('inplay');
   setChapter(key);
   restart();
@@ -3832,6 +3833,137 @@ function startChapter(key) {
     yaw.rotation.y = SPAWN.rot;
     pitch.rotation.x = 0; camera.rotation.z = 0;
   }, { intro: true });
+  return true;
+}
+
+/* ------------------------------------------- the EPISODE COMPLETE card (v6.3)
+   Chad: "have an episode complete card, and show next episode unlocked in a
+   progress line with checkpoint/milestones like going through a map or
+   something. The scores across all chapters must be properly tallied up and
+   brought over. The episode complete card must look visually different from
+   the usual outcomes and score cards. It must look impressive and exciting,
+   with sound effects."
+   It shows when Continue is pressed on the sealed card of a case's LAST
+   chapter (the fifth — an episode with fewer chapters built is not
+   complete). The tally is the progress store's per-chapter results (v6.2):
+   the five ranks and scores, and the episode's score is their mean, ranked
+   on the chapter formula. The map is the ten cases as a winding trail —
+   closed cases carry their rank, the trail lights from the closed case to
+   the NEXT one, which pulses jade under an "Unlocked" flag whether or not
+   it is written yet (the words under the trail say which). Then the one
+   button: Continue into the next case when it exists, else back to the
+   title. The sound: the fanfare (a gong and a swell, `epfanfare`), the
+   stamp's kick, a tick per chapter as it lands, the rank sting as the
+   score settles, a confirm as the trail lights.                          */
+const RANK_OF = s => s >= 90 ? 'S' : s >= 80 ? 'A+' : s >= 70 ? 'A' : s >= 55 ? 'B' : s >= 40 ? 'C' : 'D';
+const isLastOfEpisode = k => episodeKeys(episodeOf(k)).indexOf(k) === CHAPTERS_PER_EPISODE - 1;
+function episodeTally(n) {
+  const results = sealedResults(), keys = episodeKeys(n), rows = [];
+  for (let i = 0; i < Math.max(CHAPTERS_PER_EPISODE, keys.length); i++) {
+    const k = keys[i], r = k && results[k];
+    rows.push({ k, label: k ? (window.__CHAPTERS__[k].cardLabel || k) : T('chapters.chapter', 'Chapter {n}').replace('{n}', String(i + 1)),
+                score: r && Number.isFinite(r.score) ? r.score : null, rank: (r && r.rank) || null });
+  }
+  const have = rows.filter(x => x.score != null);
+  const score = have.length ? Math.round(have.reduce((a, x) => a + x.score, 0) / have.length) : null;
+  return { rows, score, rank: score == null ? null : RANK_OF(score) };
+}
+function rollNumber(el, target, ms, done) {
+  if (!el) return;
+  if (target == null) { el.textContent = ''; if (done) done(); return; }
+  const t0 = performance.now();
+  const step = now => {
+    const k = Math.min(1, (now - t0) / ms);
+    el.textContent = Math.round(target * (1 - Math.pow(1 - k, 3))) + '%';
+    if (k < 1) requestAnimationFrame(step); else if (done) done();
+  };
+  requestAnimationFrame(step);
+}
+function paintEpisodeMap(n) {
+  const map = $('epMap'); if (!map) return;
+  map.classList.remove('in'); map.textContent = '';
+  const NS = 'http://www.w3.org/2000/svg';
+  const W = 520, H = 100, x0 = 26, dx = (W - 2 * x0) / (EPISODE_COUNT - 1);
+  const pt = i => ({ x: x0 + i * dx, y: i % 2 ? 68 : 34 });     // a winding trail, not a ruler
+  const el = (tag, attrs) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); return e; };
+  const line = (from, to, cls) => el('path', { d: Array.from({ length: to - from + 1 }, (_, j) => { const p = pt(from + j); return (j ? 'L' : 'M') + p.x + ' ' + p.y; }).join(' '), class: cls });
+  const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, 'aria-hidden': 'true' });
+  const nextN = n < EPISODE_COUNT ? n + 1 : null;
+  svg.appendChild(line(0, EPISODE_COUNT - 1, 'trail'));
+  const lit = line(0, (nextN || EPISODE_COUNT) - 1, 'trailDone');
+  svg.appendChild(lit);
+  for (let i = 0; i < EPISODE_COUNT; i++) {
+    const m = i + 1, p = pt(i), done = m <= n, next = m === nextN;
+    const g = el('g', { class: 'msg ' + (done ? 'done' : next ? 'next' : 'locked'), 'data-ep': String(m) });
+    if (next) g.appendChild(el('circle', { cx: p.x, cy: p.y, r: 11, class: 'halo' }));
+    g.appendChild(el('circle', { cx: p.x, cy: p.y, r: 11, class: 'ms' }));
+    const t = el('text', { x: p.x, y: p.y, class: 'msT' });
+    t.textContent = done ? (episodeTally(m).rank || '✓') : String(m);
+    g.appendChild(t);
+    if (next) {
+      const f = el('text', { x: p.x, y: p.y < 50 ? p.y - 20 : p.y + 26, class: 'flagT flag' });
+      f.textContent = T('episode.unlocked').toUpperCase();
+      g.appendChild(f);
+    }
+    svg.appendChild(g);
+  }
+  map.appendChild(svg);
+  const L = lit.getTotalLength ? lit.getTotalLength() : 600;   // the lit trail draws itself when the map comes in
+  lit.style.strokeDasharray = String(L); lit.style.strokeDashoffset = String(L);
+  map.__lit = lit;
+}
+let epTimers = [];
+function showEpisodeCard(n) {
+  const layer = ui.episode; if (!layer || !$('epTally')) return false;
+  for (const t of epTimers) clearTimeout(t);
+  epTimers = [];
+  const later = (ms, fn) => epTimers.push(setTimeout(fn, ms));
+  const mk = (tag, cls, text) => { const e = document.createElement(tag); e.className = cls; if (text != null) e.textContent = text; return e; };
+  const tally = episodeTally(n);
+  $('epEp').textContent = T(`ep${n}.label`, '');
+  $('epTitle').textContent = T(`ep${n}.title`, '');
+  const rank = $('epRank'); rank.textContent = tally.rank || '✓'; rank.classList.remove('in', 'glow');
+  const stamp = $('epStamp'); stamp.classList.remove('stampin');
+  const score = $('epScore'); score.textContent = tally.score == null ? '' : '0%';
+  const tl = $('epTally'); tl.textContent = '';
+  for (const x of tally.rows) {
+    const s = mk('div', 'epStop' + (x.score == null ? ' none' : ''));
+    s.appendChild(mk('span', 'n', x.label));
+    s.appendChild(mk('span', 'r', x.rank || '—'));
+    s.appendChild(mk('span', 's', ''));
+    tl.appendChild(s);
+  }
+  paintEpisodeMap(n);
+  const nextN = n < EPISODE_COUNT ? n + 1 : null;
+  const nextBuilt = !!nextN && episodeKeys(nextN).length > 0;
+  const epName = nextN ? T(`ep${nextN}.label`, '') + ' · ' + T(`ep${nextN}.title`, '') : '';
+  $('epNext').textContent = !nextN ? T('episode.allDone')
+    : (nextBuilt ? T('episode.next') : T('episode.nextUnwritten')).replace('{episode}', epName);
+  const btn = $('epBtn');
+  btn.textContent = nextBuilt ? T('episode.continue') : T('episode.toTitle');
+  btn.classList.remove('in'); btn.disabled = true;
+  ui.complete.classList.add('hide');
+  ui.hud.classList.add('hide');
+  layer.classList.remove('hide');
+  layer.scrollTop = 0;
+  state = 'complete';
+  // the choreography: fanfare, rank, stamp, five stops, the score, the trail, the button
+  snd('epfanfare', 0.85);
+  later(350, () => rank.classList.add('in'));
+  later(850, () => { stamp.classList.add('stampin'); snd('kick', 0.6); });
+  const stops = [...tl.children];
+  stops.forEach((s, i) => later(1500 + i * 230, () => {
+    s.classList.add('in'); snd('uiclick', 0.4);
+    rollNumber(s.querySelector('.s'), tally.rows[i].score, 520);
+  }));
+  const scoreAt = 1500 + stops.length * 230 + 250;
+  later(scoreAt, () => rollNumber(score, tally.score, 1300, () => { snd('uirank', 0.7); rank.classList.add('glow'); }));
+  later(scoreAt + 1500, () => {
+    const map = $('epMap'); map.classList.add('in');
+    if (map.__lit) map.__lit.style.strokeDashoffset = '0';
+    snd('uiconfirm', 0.5);
+  });
+  later(scoreAt + 2600, () => { btn.disabled = false; btn.classList.add('in'); });
   return true;
 }
 
@@ -4805,11 +4937,11 @@ $('nextBtn').onclick = () => { ui.result.classList.add('hide'); finish(); };
    hands over to chapter 2 and chapter 2 to chapter 3 through here, each with
    its own opening film. (It was inert when written — ch1 was the only real
    chapter and nextChapterKey() returned null.) */
-$('againBtn').onclick = () => {
-  const nxt = nextChapterKey();
-  if (!nxt) return restart();
+/* Advancing into a chapter: what Continue on a sealed card has done since
+   v3.6, and since v6.3 also what the episode card's Continue does. */
+function advanceTo(nxt) {
   setChapter(nxt);
-  for (const el of [ui.complete, ui.result, ui.over]) el.classList.add('hide');
+  for (const el of [ui.complete, ui.result, ui.over, ui.episode]) el?.classList.add('hide');
   /* restart() puts the run's state back — the props, the ghost, the hands,
      the numbers — and lands in play. enterWorld() takes it straight back
      out again in the same tick, so no frame of play is ever drawn, and the
@@ -4823,7 +4955,29 @@ $('againBtn').onclick = () => {
     yaw.rotation.y = SPAWN.rot;
     pitch.rotation.x = 0; camera.rotation.z = 0;
   }, { intro: true });
+}
+$('againBtn').onclick = () => {
+  /* v6.3: the LAST chapter of a case closes the case file first — the
+     episode card, whose own button then advances or returns to the title */
+  if (isLastOfEpisode(CH_KEY) && showEpisodeCard(episodeOf(CH_KEY))) return;
+  const nxt = nextChapterKey();
+  if (!nxt) return restart();
+  advanceTo(nxt);
 };
+$('epBtn')?.addEventListener('click', () => {
+  if ($('epBtn').disabled) return;
+  for (const t of epTimers) clearTimeout(t);
+  epTimers = [];
+  const nxt = nextChapterKey();
+  if (nxt) return advanceTo(nxt);        // the next case's first chapter, the way any chapter arrives
+  /* nothing follows yet: the run is over. A fresh last chapter stands ready
+     under the title — Continue plays it again, as it always did after the
+     final chapter — and the save says the run is done, as finish() said. */
+  ui.episode.classList.add('hide');
+  restart();
+  returnToTitle();
+  saveCheckpoint({ at: null, done: true });
+});
 
 /* The title screen speaks for the whole series, not for whichever chapter is
    loaded — so it has its own line. CH.brief stays as the chapter’s own
@@ -5226,8 +5380,7 @@ function finish() {
   const score = (Math.max(0, Math.min(100, stats.sanity)) * 0.3
     + Math.max(0, Math.min(100, stats.awareness)) * 0.3
     + Math.max(0, Math.min(100, stats.wisdom)) * 0.4);
-  const r = score >= 90 ? 'S' : score >= 80 ? 'A+' : score >= 70 ? 'A'
-    : score >= 55 ? 'B' : score >= 40 ? 'C' : 'D';
+  const r = RANK_OF(score);
   ui.rank.textContent = r;
   ui.rank.classList.add('glow');           // the grade breathes light
   ui.core.innerHTML = CH.core;
@@ -5245,6 +5398,7 @@ function finish() {
                      : { at: null, done: true });
   if (nxt) markReached(nxt);       // finished this one: the next is open in the selector (v5.12)
   markSealed(CH_KEY, score, r);    // and its result is on record: the rank on its stop in the selector (v6.2), the tally at the episode's end (v6.3)
+  if (isLastOfEpisode(CH_KEY)) packWarm(['epfanfare', 'uiclick', 'uiconfirm']);   // the episode card's sounds decode under this card (v6.3)
   snd('uirank', 0.7);
 
   // SEALED comes down as a stamp, a beat after the card lands
@@ -5285,8 +5439,8 @@ const SPAWN = { pos: yaw.position.clone(), rot: yaw.rotation.y };
 function restart() {
   // every screen that could be up, down
   for (const el of [ui.complete, ui.over, ui.result, ui.decide,
-                    ui.prompt, ui.interact, ui.chapter, hint]) {
-    el.classList.add('hide');
+                    ui.prompt, ui.interact, ui.chapter, hint, ui.episode]) {
+    el?.classList.add('hide');
   }
   ui.hud.classList.remove('hide');
   document.body.classList.remove('cine');
@@ -5557,6 +5711,7 @@ window.__enc = { yaw, stats, getState: () => state,
                  menuOpen, menuClose, menuToggle, openChapters, closeChapters,
                  startChapter, returnToTitle, unlockedKeys, markReached,
                  sealed: sealedResults, markSealed,               // v6.2
+                 episodeCard: showEpisodeCard, episodeTally, finish,   // v6.3
                  chapterKey: () => CH_KEY,
                  episode: () => episodeOf(CH_KEY), episodeOf,     // v6.0
                  stings: () => stingLog.slice(),

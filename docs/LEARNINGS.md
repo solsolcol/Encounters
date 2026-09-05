@@ -1991,3 +1991,16 @@ name (`\.sealed\b`), and if it exists anywhere unscoped, pick another (the
 stop's class is `done`). The same grep run over every new class of the
 build found no other collision — which is the check that should have come
 first, not second.
+
+## A harness that prints its verdict but never fails is decoration (v6.3)
+
+`runtests` decides pass or fail from a harness's EXIT CODE and an
+"errors: [" line in its output — never from the booleans the harness prints
+in its JSON. `restarttest` had printed `{ playing: true, hudBack: true … }`
+for two ending paths since v3.2 and exited 0 whatever the values were, so
+a false `statsReset` would have read as a pass. Found while adding the
+episode card's path to it and asking how a false check would be reported.
+The new block sets `process.exitCode = 1` and prints `errors: [...]` when
+a check is false, as `menutest` does. Rule: a harness earns its place only
+if a wrong answer turns the line red — after writing a check, make it fail
+once (or read how the runner judges it) before trusting it green.

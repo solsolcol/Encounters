@@ -187,6 +187,20 @@ Object.assign(window.__TEXT__, {
   'chapters.here':       'You are here',                        // v6.2: the chapter you are in
   'chapters.progress':   '{n} of {m} chapters sealed',          // v6.2: the line under the case's name
 
+  // --- the EPISODE COMPLETE card (v6.3): after the last chapter of a case
+  //     is sealed, before the next case opens
+  'episode.label':       'Episode complete',
+  'episode.stamp':       'Case closed',                          // the stamp across the rank
+  'episode.scoreLabel':  'Episode score',
+  'episode.tallyLabel':  'Five chapters, tallied',
+  'episode.mapLabel':    'The ten cases',
+  'episode.unlocked':    'Unlocked',                             // the flag on the next case
+  'episode.next':        'Next · {episode}',                      // {episode} = "Episode 2 · The 3 AM Shower"
+  'episode.nextUnwritten': '{episode} is unlocked. It is not yet written — come back for it.',
+  'episode.allDone':     'Every case is closed.',
+  'episode.continue':    'Continue',
+  'episode.toTitle':     'Back to the title screen',
+
   // --- the episodes (v6.0): ten case files, five chapters each. The label
   //     is the line above "Chapter N" on the chapter card and the selector's
   //     tab; the title is the case's name under the tabs. Chad's list, and

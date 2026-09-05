@@ -19,11 +19,17 @@ await p.goto(PAGE); await p.waitForTimeout(6000);
    the scan should be able to say so rather than never see them */
 await p.evaluate(() => { try { window.__enc.markReached('ch3'); window.__enc.markSealed('ch1', 91, 'S'); } catch {} });
 await p.click('#chaptersBtn'); await p.waitForTimeout(400);
+/* v6.3: and the episode card, painted for episode 1 — its labels carry data-t,
+   the rest comes from T() and the chapters (a card on the title screen is
+   harmless here: the scan only reads text) */
+await p.evaluate(() => { try { window.__enc.episodeCard(1); } catch {} });
+await p.waitForTimeout(300);
 
 // slots filled at runtime from the chapter file or from live numbers
 const DYNAMIC = ['brief','qtext','say','teach','core','rank','pct','vSan','vAwa','vWis',
                  'chapLabel','chapTitle','ikey','itxt','hintTxt','choices','deltas','ticks','overSay',
-                 'chapEp','chEpName','chTabs'];   // v6.0: the card's episode line, the selector's heading and tabs — all from T()
+                 'chapEp','chEpName','chTabs',    // v6.0: the card's episode line, the selector's heading and tabs — all from T()
+                 'epEp','epTitle','epRank','epScore','epNext','epBtn'];   // v6.3: the episode card's painted lines
 
 const untagged = await p.evaluate(dynamic => {
   const out = [];
@@ -35,7 +41,7 @@ const untagged = await p.evaluate(dynamic => {
     if (!own || !/[A-Za-z]{2}/.test(own)) continue;
     if (el.closest('[data-t]')) continue;
     if (dynamic.includes(el.id) || dynamic.includes(el.parentElement?.id)) continue;
-    if (el.closest('#choices, #deltas, #ticks, #chTabs, #chEpName, #chList')) continue;   // painted whole by the engine from T() and the chapters (v6.2)
+    if (el.closest('#choices, #deltas, #ticks, #chTabs, #chEpName, #chList, #epTally, #epMap')) continue;   // painted whole by the engine from T() and the chapters (v6.2, v6.3)
     out.push((el.id ? '#' + el.id : el.tagName.toLowerCase() + '.' + el.className) + ' -> ' + own.slice(0, 60));
   }
   return out;

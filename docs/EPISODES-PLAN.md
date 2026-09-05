@@ -141,6 +141,13 @@ chapter 5 leads into `e2c1` when it exists, and ends the run as it does
 today while it does not. `startDecision()` prefetches the next chapter's
 pack the same way across the boundary.
 
+**DECIDED at v6.3 — the episode-complete card exists** (Chad: "Yes, have an
+episode complete card"): after the last chapter's sealed card, the five
+results tallied to a mean and ranked on the chapter formula, the ten cases
+as a trail with the next one lit, Continue into the next case or back to
+the title. docs/V6.3-EPISODE-CARD.md. The paragraph below is the decision
+as it was put, kept for the record.
+
 **DECISION · an episode-complete card.** The trial game scores per episode;
 here the "Case file complete" card is per chapter. Between episodes there is
 nothing yet. Options: (a) none — chapter 5's sealed card runs straight into
