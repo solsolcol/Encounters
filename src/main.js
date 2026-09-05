@@ -2400,7 +2400,9 @@ const JAMES_TAKES = new Set(['voice',
   'v4thinkA1', 'v4thinkA2', 'v4thinkA3', 'v4tired', 'v4wake3am', 'v4taunt',
   'v4regret', 'v4call1', 'v4call2', 'v4A', 'v4B', 'v4C', 'v4D',
   'v5wake1', 'v5wake2', 'v5wake3', 'v5voice', 'v5near', 'v5sit',
-  'v5fearB1', 'v5disC1', 'v5learnD', 'v5A', 'v5B', 'v5C', 'v5D']);
+  'v5fearB1', 'v5disC1', 'v5learnD', 'v5A', 'v5B', 'v5C', 'v5D',
+  // v6.4: the five lines of the chapter-1 opening film (the prologue)
+  'vpro1', 'vpro2', 'vpro3', 'vpro4', 'vpro5']);
 /* The rest of the cast. They share `voiceOut` and the duck, but not the
    boost — see voiceStage() above. */
 const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
@@ -4128,7 +4130,18 @@ const STING_SAMPLE = {
   v5ma1: ['v5ma1', 1], v5ma2: ['v5ma2', 1],
   t5note: ['t5note', 1], t5teachA: ['t5teachA', 1], t5hallA: ['t5hallA', 1],
   t5fearB: ['t5fearB', 1], t5disC: ['t5disC', 1],
-  t5learnD1: ['t5learnD1', 1], t5learnD2: ['t5learnD2', 1]
+  t5learnD1: ['t5learnD1', 1], t5learnD2: ['t5learnD2', 1],
+  /* v6.4: chapter 1's PROLOGUE — the five lines the boy narrates over his
+     three memories, the afternoon bed under them, the two pick-ups, and
+     the slow-motion pass of the note beside his face. All ch1's by the
+     split (named only here). `memwash`, chapter 4's wash between memories,
+     is reused between these and so becomes shared. */
+  vpro1: ['vpro1', 1], vpro2: ['vpro2', 1], vpro3: ['vpro3', 1],
+  vpro4: ['vpro4', 1], vpro5: ['vpro5', 1],
+  memday: ['memday', 0.7],         // a hot afternoon, far off: cicadas and a little wind
+  leafpick: ['leafpick', 0.7],     // a dry leaf off the grass
+  toypick: ['toypick', 0.7],       // a plush toy off the concrete
+  noteslow: ['noteslow', 0.8]      // the sheet turning past his face, stretched
 };
 /* Which kinds the synth below can actually fake. Everything else in
    STING_SAMPLE is sample-only: if its buffer is not decoded yet it stays

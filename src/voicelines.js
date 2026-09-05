@@ -61,6 +61,20 @@
 
   const LINES = [
     // ---- chapter 1 · THE HELL NOTE ------------------------------------------
+    /* v6.4 — THE PROLOGUE: the five lines he narrates over the opening film,
+       before the chapter card. Warm and fond for the three memories, the
+       smile gone for the fifth. vpro1 is the one take run through a 0.9x
+       tempo offline (the v5.30 fallback): it read fast even with ellipses. */
+    { id: "vpro1", who: "james", ch: "ch1", where: "Opening film, over black, before the first memory",
+      text: "Ever since I was young, I loved picking things up from the ground.", secs: 4.47 },
+    { id: "vpro2", who: "james", ch: "ch1", where: "Opening film, the leaf on the grass",
+      text: "Sometimes it was just random leaves that I found interesting.", secs: 4.05 },
+    { id: "vpro3", who: "james", ch: "ch1", where: "Opening film, the toy on the stairwell landing",
+      text: "Sometimes I found thrown-away toys that I liked, when nobody else did.", secs: 5.56 },
+    { id: "vpro4", who: "james", ch: "ch1", where: "Opening film, the note by the drain",
+      text: "And if I'm lucky... sometimes I find money.", secs: 3.0 },
+    { id: "vpro5", who: "james", ch: "ch1", where: "Opening film, over black, before the void deck at night",
+      text: "This time however... this time was different.", secs: 3.47 },
     { id: "voice", who: "james", ch: "ch1", where: "A few seconds after chapter 1 begins",
       text: "Almost midnight... and this is the only way home.", secs: 3.97,
       note: "Its own file (assets/voice.mp3), not in the sound pack." },

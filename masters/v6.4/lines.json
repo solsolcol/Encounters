@@ -1,0 +1,160 @@
+{
+ "flow": "5iXzaZia4TLXHBqw6Tr5",
+ "flow_url": "https://elevenlabs.io/app/flows/5iXzaZia4TLXHBqw6Tr5",
+ "voice": {
+  "james": "B6uUx2p7cRgxseOUyP6P",
+  "model": "eleven_v3"
+ },
+ "style": "v5.28's rules: the registry's words exactly, no added capitals, at most one added ellipsis, a tag that names an EMOTION. Two takes per line, picked by measure (length, rate) and by ear-proxy (transcription echoes the prompt, so a pause before the first word is the only tell of a spoken tag).",
+ "lines": [
+  {
+   "id": "vpro1",
+   "text": "Ever since I was young, I loved picking things up from the ground.",
+   "prompt": "[warm, fond, remembering] Ever since I was young, I loved picking things up from the ground.",
+   "node": "TWRPjzW5o5TUpIvmVoyb",
+   "sessions": [
+    "WZE0qoJZURP3pxlyey4j",
+    "Ra5TjQPoAtF2AHvAQj9O"
+   ]
+  },
+  {
+   "id": "vpro2",
+   "text": "Sometimes it was just random leaves that I found interesting.",
+   "prompt": "[fond, a little amused] Sometimes it was just random leaves… that I found interesting.",
+   "node": "oRQTipY66zBkfzNNLq8B",
+   "sessions": [
+    "JGXaIRyuy3zdLlxAYEOd",
+    "3eNwhidgDlhYLTeyX7SM"
+   ]
+  },
+  {
+   "id": "vpro3",
+   "text": "Sometimes I found thrown-away toys that I liked, when nobody else did.",
+   "prompt": "[quietly proud, tender] Sometimes I found thrown-away toys that I liked, when nobody else did.",
+   "node": "LYVp59aYxR516Xu9Zdk4",
+   "sessions": [
+    "2O19SWR21oUqGUz2mizv",
+    "f3gG10SmMT7zBj3K1Vml"
+   ]
+  },
+  {
+   "id": "vpro4",
+   "text": "And if I'm lucky... sometimes I find money.",
+   "prompt": "[a small grin, mischievous] And if I'm lucky... sometimes I find money.",
+   "node": "Ebnf56iSYnCDRDvErMDI",
+   "sessions": [
+    "x8NMOKHPTlNONwhQ5LWK",
+    "2ppShiqag4ojY8E9rIPb"
+   ]
+  },
+  {
+   "id": "vpro5",
+   "text": "This time however... this time was different.",
+   "prompt": "[quiet, uneasy, the smile gone] This time however... this time was different.",
+   "node": "gft80EgMB0UKBv3RvU6d",
+   "sessions": [
+    "DfBi2j1A8iDJq0re0P61",
+    "7FvcMIedKkDabrLM622I"
+   ]
+  }
+ ],
+ "sfx": [
+  {
+   "id": "memday",
+   "prompt": "Quiet afternoon in a housing estate, distant and steady: light wind through tree leaves, faint cicadas, far-off traffic hum",
+   "node": "q2msacPjWkk8H9VUtUqC",
+   "sessions": [
+    "ABRLduOis0amTO42dkuw",
+    "LrLV4DNsIc7oLAFTbNgm"
+   ]
+  },
+  {
+   "id": "leafpick",
+   "prompt": "A single dry leaf picked up off short grass, soft crisp rustle, close-mic",
+   "node": "xxR1pctqqEa9q41So1MT",
+   "sessions": [
+    "ugIf138Fy9w8qDGrqBgf",
+    "wuHsTQyWRMs75zgaLzWW"
+   ]
+  },
+  {
+   "id": "toypick",
+   "prompt": "A small plush teddy bear lifted off a concrete floor, soft fabric rustle, a gentle brush against concrete, close-mic",
+   "node": "2UuK1DO1MfYs6Vscm1GD",
+   "sessions": [
+    "Pxyasnn2mGrIYfaPlqzF",
+    "O1tewgIpoTBtpszBihPH"
+   ]
+  },
+  {
+   "id": "noteslow",
+   "prompt": "A single sheet of paper turning slowly in the air, deep stretched flutter with a low airy tone slowly rising, close-mic",
+   "node": "uDOcs7KvzccJ5qhb1Osc",
+   "sessions": [
+    "cP3qTQOW32HMTVDXcxyo",
+    "mw4JLbgEoxRPm0fOdYCf"
+   ]
+  }
+ ],
+ "retakes": {
+  "vpro3-b": {
+   "why": "take b failed on the concurrency limit; prompt unchanged",
+   "node": "dXy353MnXkpWtYwVzWUA",
+   "sessions": [
+    "lZzFkhwolXlfZjvWbR0s"
+   ]
+  },
+  "vpro1-cd": {
+   "why": "first pair 3.7 w/s; ellipses where the line turns (v5.30)",
+   "prompt": "[warm, fond, remembering] Ever since I was young... I loved picking things up... from the ground.",
+   "node": "eJHBqTtinWFtUPsuVUev",
+   "sessions": [
+    "OCVU0QafQTwiuvo7UsmR",
+    "FGSlbzP7gbu8fv5GJ8RZ"
+   ]
+  },
+  "vpro2-cd": {
+   "why": "first pair 2.9-3.3 w/s",
+   "prompt": "[fond, a little amused] Sometimes... it was just random leaves... that I found interesting.",
+   "node": "OHi3oYGruXIRuV9ubsRi",
+   "sessions": [
+    "wLtZr2frQFUfygns9CiJ",
+    "yUTzskMq9d8QGZa7nHmr"
+   ]
+  },
+  "vpro3-cd": {
+   "why": "2.8 w/s",
+   "prompt": "[quietly proud, tender] Sometimes I found thrown-away toys... that I liked... when nobody else did.",
+   "node": "lQX3xzE3NS0KvC1O396p",
+   "sessions": [
+    "BfOQ1xecbqvCmQLQYkAE",
+    "ElNa1AG6vQ9xE8dXYYwZ"
+   ]
+  },
+  "memday-cd": {
+   "why": "composite prompt again with a stated length; 0.5 s and 1 s — the SFX model picks its own length",
+   "node": "TlW8kV54CaPBfH4xW9YJ",
+   "sessions": [
+    "U66Zc7QteItBmUEt5C3c",
+    "8uNjJGxLoEaJrjXGJp23"
+   ]
+  },
+  "cicadas": {
+   "why": "the bed built from layers instead",
+   "prompt": "Cicadas buzzing steadily in trees on a hot afternoon, far away, continuous drone",
+   "node": "FzwDizuxR551UU9cgiRB",
+   "sessions": [
+    "PYn4FvWP92VmIoprvWJf",
+    "cv9JlCehuwLrAMzaXg8i"
+   ]
+  },
+  "wind": {
+   "prompt": "Light wind moving through tree leaves, steady and continuous, soft rustling",
+   "node": "K1M5I52vCnGv1RVbwVko",
+   "sessions": [
+    "UJWSFxtqL1ylqmiQMrNW",
+    "6Gxk8IsCyzu3VVP0ImZL"
+   ]
+  }
+ }
+}

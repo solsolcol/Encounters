@@ -1,0 +1,74 @@
+[
+ {
+  "id": "vpro1",
+  "srcPeak": -2,
+  "gain": -1.4,
+  "peak": -3.9,
+  "secs": 4.47,
+  "kb": "70/43"
+ },
+ {
+  "id": "vpro2",
+  "srcPeak": -5.6,
+  "gain": 2.2,
+  "peak": -3.9,
+  "secs": 4.05,
+  "kb": "63/37"
+ },
+ {
+  "id": "vpro3",
+  "srcPeak": -8,
+  "gain": 4.6,
+  "peak": -3.8,
+  "secs": 5.56,
+  "kb": "87/47"
+ },
+ {
+  "id": "vpro4",
+  "srcPeak": -3.9,
+  "gain": 0.5,
+  "peak": -3.9,
+  "secs": 3,
+  "kb": "47/24"
+ },
+ {
+  "id": "vpro5",
+  "srcPeak": -3.5,
+  "gain": 0.1,
+  "peak": -3.8,
+  "secs": 3.47,
+  "kb": "54/25"
+ },
+ {
+  "id": "noteslow",
+  "srcPeak": -2.7,
+  "gain": -1.2,
+  "peak": -4.3,
+  "secs": 14.03,
+  "kb": "219/161"
+ },
+ {
+  "id": "leafpick",
+  "srcPeak": -31,
+  "gain": 23,
+  "peak": -8.7,
+  "secs": 2.04,
+  "kb": "32/18"
+ },
+ {
+  "id": "toypick",
+  "srcPeak": -21.9,
+  "gain": 14.9,
+  "peak": -7.4,
+  "secs": 2.04,
+  "kb": "32/15"
+ },
+ {
+  "id": "memday",
+  "srcPeak": -2.8,
+  "gain": -9.7,
+  "peak": -13.3,
+  "secs": 14.03,
+  "kb": "219/153"
+ }
+]
