@@ -82,7 +82,11 @@
     // Keys into the engine's asset table. Anything every chapter uses (hands,
     // ghost, logo, music, the sound pack) is the engine's own; these are the
     // files that exist only because this chapter does.
-    assets: ['hdb', 'voice', 'hellnote'],
+    assets: ['hdb', 'voice', 'hellnote',
+             /* v6.4 — THE PROLOGUE's actor and props: the rigged young master
+                (preloaded; he is the first shot), the bear, the leaf, and the
+                photograph of the five-dollar note (docs/V6.4-PROLOGUE.md) */
+             'young', 'teddy', 'leaf', 'note5'],
     // the line he says a few seconds in; this one is about a void deck, so
     // it is this chapter's rather than the engine's
     voiceLine: 'voice',
@@ -106,7 +110,7 @@
     const { THREE, GLTFLoader, scene, camera, yaw, LOW,
             assetBytes, rescueTextures, redoShadows,
             cnv, makeSoftDot, makeGround, makeGrass, makeConcrete, makeLacquer,
-            makeHellNote, loadImageTexture, getState, startDecision } = ctx;
+            makeHellNote, loadImageTexture, getState, startDecision, HEAD_RE } = ctx;
 
     // The burner and everything that belongs to it — light, smoke, embers,
     // notes, the trigger radius — are positioned from this one point, so the
@@ -436,18 +440,26 @@
 
   // 1 is the everyday drift; a cutscene can spin it up to a storm and back
   let noteStorm = 1;
+  /* v6.4: and slow the WHOLE air down — the prologue's last beat is a note
+     passing his face in slow motion, and a drift crawling while its tumble
+     and wobble ran at full speed read as a glitch, not as time. `slowMo`
+     scales the clock the notes, the smoke and the embers read; `noteT` is
+     that clock. In play it is 1 and the chapter is exactly what it was. */
+  let slowMo = 1, noteT = 0;
 
   function updateNotes(dt, t) {
+    const sdt = dt * slowMo;
+    noteT += sdt;
     for (let i = 0; i < FLY_N; i++) {
       const f = airborne[i];
-      f.a += f.swirl * dt * noteStorm * (3 / Math.max(f.r, 2));  // tighter orbits move faster
-      f.y += f.rise * dt * noteStorm;
+      f.a += f.swirl * sdt * noteStorm * (3 / Math.max(f.r, 2));  // tighter orbits move faster
+      f.y += f.rise * sdt * noteStorm;
       if (f.y > f.top) seedNote(f, false);             // recycle back to the ground
-      const r = f.r + Math.sin(t * 0.45 + f.wob) * 0.9;
+      const r = f.r + Math.sin(noteT * 0.45 + f.wob) * 0.9;
       _v.set(OFFER_X + Math.cos(f.a) * r,
-             f.y + Math.sin(t * 1.1 + f.wob) * 0.18,
+             f.y + Math.sin(noteT * 1.1 + f.wob) * 0.18,
              OFFER_Z + Math.sin(f.a) * r);
-      _q.setFromAxisAngle(_ax.copy(f.axis), t * f.spin + f.wob);
+      _q.setFromAxisAngle(_ax.copy(f.axis), noteT * f.spin + f.wob);
       flying.setMatrixAt(i, _m.compose(_v, _q, _one));
     }
     flying.instanceMatrix.needsUpdate = true;
@@ -770,6 +782,360 @@
   }));
   world.add(embers);
 
+    /* ================================================================== */
+    /* THE PROLOGUE SET (v6.4) — chapter 1's opening film lives here.       */
+    /* Three memory POCKETS forty-four metres off the playable world, each   */
+    /* a black bubble with its own light (chapter 4's flashback recipe); the */
+    /* BOY — Chad's rigged young master — who walks through them and stands  */
+    /* at the spawn point for the last beat; the LEAF, the BEAR and the      */
+    /* folded NOTE he picks up; and the one hell note that passes his face.  */
+    /* Everything here is hidden outside the film, and its lights sit under  */
+    /* the hidden groups, so play pays nothing for any of it (an invisible   */
+    /* subtree is never collected — the light count only changes on black). */
+    /* docs/V6.4-PROLOGUE.md is the build's memory.                         */
+    /* ================================================================== */
+    const MEM = new THREE.Vector3(-44, 0, 6);          // memRoot, world
+    const POCKET_Z = [0, -16, -32];                    // the three pockets, local z
+    const memRoot = new THREE.Group();
+    memRoot.position.copy(MEM);
+    memRoot.visible = false;
+    world.add(memRoot);
+    const proRoot = new THREE.Group();                 // the present tense: the boy, the note, a fill
+    proRoot.visible = false;
+    world.add(proRoot);
+    /* the pockets' concrete is a CLONE of the deck's material: blockers()
+       collects every box that wears matConcrete, and a stairwell forty
+       metres outside the bounds has no business in the collision list */
+    const matPocketCon = matConcrete.clone();
+    const matTarmac = new THREE.MeshStandardMaterial({ color: 0x1c1d20, roughness: 0.96 });
+    const matPlaster = new THREE.MeshStandardMaterial({ color: 0xb9b3a4, roughness: 0.92 });
+    const memLights = [];                              // [light, intensity when on]
+    const memLight = (parent, color, on, dist, decay, x, y, z) => {
+      const L = new THREE.PointLight(color, 0, dist, decay);
+      L.position.set(x, y, z);
+      parent.add(L);
+      memLights.push([L, on]);
+      return L;
+    };
+    const bubbleGeo = new THREE.SphereGeometry(6.5, 20, 12);
+    const bubbleMat = new THREE.MeshBasicMaterial({ color: 0x0d0b16, side: THREE.BackSide, fog: false });
+    const pocket = (z) => {
+      const g = new THREE.Group();
+      g.position.z = z;
+      memRoot.add(g);
+      g.add(new THREE.Mesh(bubbleGeo, bubbleMat));
+      return g;
+    };
+    const P1 = pocket(POCKET_Z[0]), P2 = pocket(POCKET_Z[1]), P3 = pocket(POCKET_Z[2]);
+
+    /* POCKET ONE · the verge — grass, a kerb, a footpath, a tree at the edge
+       of frame, and a late afternoon that comes in low and gold from the
+       side with a cool sky fill from the other. */
+    {
+      const lawn = new THREE.Mesh(new THREE.CircleGeometry(5.6, 28), matGrass);
+      lawn.rotation.x = -Math.PI / 2; lawn.position.y = 0.02;
+      P1.add(lawn);
+      const kerb = new THREE.Mesh(new THREE.BoxGeometry(9, 0.14, 0.24), matPocketCon);
+      kerb.position.set(0, 0.07, -2.0);
+      P1.add(kerb);
+      const path = new THREE.Mesh(new THREE.BoxGeometry(9, 0.10, 1.6), matPocketCon);
+      path.position.set(0, 0.05, -3.0);
+      P1.add(path);
+      const trunk = new THREE.Mesh(trunkGeo, matDarkWood);
+      trunk.position.set(-2.7, 2.6, -0.8);
+      P1.add(trunk);
+      for (let i = 0; i < 7; i++) {
+        const b = new THREE.Mesh(leafGeo[i % 3], leafMat);
+        b.position.set(-2.7 + ((i % 3) - 1) * 1.1, 4.5 + (i % 2) * 1.0, -0.8 + (((i * 7) % 5) - 2) * 0.5);
+        b.scale.setScalar(0.9 + (i % 3) * 0.15);
+        b.rotation.set(i * 0.7, i * 1.3, i * 0.4);
+        P1.add(b);
+      }
+      memLight(P1, 0xffd2a0, 13.0, 13, 1.4, 2.4, 2.4, 1.8);     // the sun, low
+      memLight(P1, 0x9fb8ff, 1.3, 11, 1.6, -2.2, 3.2, -2.6);  // the sky
+    }
+    /* POCKET TWO · the landing — a concrete floor, a plaster wall with a
+       pipe down it, three steps up to a door that is not shown, a bin, a
+       little litter, and one fluorescent tube that has gone green. */
+    {
+      const floor = new THREE.Mesh(new THREE.BoxGeometry(9, 0.04, 9), matPocketCon);
+      floor.position.y = 0.0;
+      P2.add(floor);
+      const wall = new THREE.Mesh(new THREE.BoxGeometry(9, 3.0, 0.24), matPlaster);
+      wall.position.set(0, 1.5, -3.2);
+      P2.add(wall);
+      const pipe = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 3.0, 8), matMetal);
+      pipe.position.set(-1.6, 1.5, -3.02);
+      P2.add(pipe);
+      for (let i = 0; i < 3; i++) {                  // three steps rising toward +x
+        const st = new THREE.Mesh(new THREE.BoxGeometry(0.34 * (3 - i) + 0.9, 0.17, 2.0), matPocketCon);
+        st.position.set(2.2 + i * 0.17, 0.085 + i * 0.17, -2.2);
+        P2.add(st);
+      }
+      const bin = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.22, 0.72, 12), matMetal);
+      bin.position.set(-0.9, 0.36, -2.6);
+      P2.add(bin);
+      const litterMat = new THREE.MeshStandardMaterial({ color: 0xd8d0c0, roughness: 0.9, side: THREE.DoubleSide });
+      for (const [lx, lz, ry] of [[-0.3, -1.9, 0.4], [0.9, -2.4, 1.9], [-1.4, -0.9, 2.6]]) {
+        const l = new THREE.Mesh(new THREE.PlaneGeometry(0.16, 0.11), litterMat);
+        l.rotation.set(-Math.PI / 2, 0, ry); l.position.set(lx, 0.024, lz);
+        P2.add(l);
+      }
+      const tube = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.05, 0.08),
+        new THREE.MeshBasicMaterial({ color: 0xd4ffe4, fog: false }));
+      tube.position.set(0.2, 2.62, -1.4);
+      P2.add(tube);
+      memLight(P2, 0xcfffdf, 6.5, 9, 1.5, 0.2, 2.5, -1.4);     // the tube
+      memLight(P2, 0x6a8fb0, 0.7, 9, 1.8, 3.2, 1.6, 1.8);      // a cold spill from the stair above
+    }
+    /* POCKET THREE · the pavement — a slab, a kerb, the road, a drain grating
+       the note is caught against, and a sodium lamp over it all. */
+    {
+      const slab = new THREE.Mesh(new THREE.BoxGeometry(7, 0.12, 2.4), matPocketCon);
+      slab.position.set(0, 0.06, 0.7);
+      P3.add(slab);
+      const kerb = new THREE.Mesh(new THREE.BoxGeometry(7, 0.14, 0.18), matPocketCon);
+      kerb.position.set(0, 0.07, -0.55);
+      P3.add(kerb);
+      const road = new THREE.Mesh(new THREE.PlaneGeometry(9, 5), matTarmac);
+      road.rotation.x = -Math.PI / 2; road.position.set(0, 0.005, -3.0);
+      P3.add(road);
+      const grate = new THREE.Group();
+      grate.position.set(0.55, 0.121, 0.05);
+      P3.add(grate);
+      const grateFrame = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.02, 0.36), matMetal);
+      grate.add(grateFrame);
+      const slotMat = new THREE.MeshBasicMaterial({ color: 0x050505 });
+      for (let i = 0; i < 6; i++) {
+        const sl = new THREE.Mesh(new THREE.BoxGeometry(0.44, 0.024, 0.025), slotMat);
+        sl.position.set(0, 0, -0.14 + i * 0.056);
+        grate.add(sl);
+      }
+      const post = new THREE.Mesh(lampPostGeo, matMetal);
+      post.position.set(1.1, 2.8, -1.3);
+      P3.add(post);
+      const arm = new THREE.Mesh(lampArmGeo, matMetal);
+      arm.position.set(0.7, 5.55, -1.0); arm.rotation.y = -0.6;
+      P3.add(arm);
+      const head = new THREE.Mesh(lampHeadGeo, lampHeadMat);
+      head.position.set(0.35, 5.5, -0.75);
+      P3.add(head);
+      memLight(P3, 0xffb367, 30.0, 14, 1.5, 0.35, 5.2, -0.7);   // the sodium lamp
+      memLight(P3, 0x30405a, 0.5, 8, 1.8, -3.0, 1.2, 1.6);     // the night beyond its pool
+    }
+
+    /* THE THINGS HE FINDS. Each has two bodies: the one on the ground and
+       an in-hand copy parented to his right hand bone, shown at the grab
+       frame; restore() puts them back the way they were. The leaf is
+       scaled to 11 cm — a birch leaf is four, and four vanishes in a 72°
+       lens; the bear to 28 cm; the note is the real thing's size, folded. */
+    const LEAF_AT = new THREE.Vector3(0, 0.04, 0);                  // P1 local, above the lawn's 0.02
+    const BEAR_AT = new THREE.Vector3(0.3, 0.02, -1.0);             // P2 local
+    const NOTE_AT = new THREE.Vector3(0.62, 0.142, 0.02);           // P3 local, on the grate
+    const leafGround = new THREE.Group(), leafHand = new THREE.Group();
+    leafGround.position.copy(LEAF_AT); P1.add(leafGround);
+    const leafExtras = new THREE.Group(); P1.add(leafExtras);      // two more, not his
+    const bearGround = new THREE.Group(), bearHand = new THREE.Group();
+    bearGround.position.copy(BEAR_AT); P2.add(bearGround);
+    const noteGround = new THREE.Group(), noteHand = new THREE.Group();
+    noteGround.position.copy(NOTE_AT); P3.add(noteGround);
+    leafHand.visible = bearHand.visible = noteHand.visible = false;
+    // the folded five-dollar note: two hinged halves, each carrying half of the front
+    const noteMat5 = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.6, side: THREE.DoubleSide });
+    loadImageTexture('note5').then(tex => {
+      if (!alive || !tex) return;
+      noteMat5.map = tex; noteMat5.needsUpdate = true;
+    }).catch(() => {});
+    function foldedNote() {
+      const g = new THREE.Group();
+      const half = (u0) => {
+        const geo = new THREE.PlaneGeometry(0.066, 0.066);
+        const uv = geo.attributes.uv;
+        for (let i = 0; i < uv.count; i++) uv.setX(i, u0 + uv.getX(i) * 0.5);
+        return new THREE.Mesh(geo, noteMat5);
+      };
+      const a = half(0); a.rotation.x = -Math.PI / 2; a.position.set(0, 0, 0.033);
+      const hinge = new THREE.Group(); hinge.rotation.x = -0.42;   // sprung a little open
+      const b = half(0.5); b.rotation.x = -Math.PI / 2; b.rotation.z = Math.PI; b.position.set(0, 0, -0.033);
+      hinge.add(b);
+      g.add(a, hinge);
+      return g;
+    }
+    const noteFoldG = foldedNote(); noteFoldG.rotation.y = 0.35; noteFoldG.scale.setScalar(1.6); noteGround.add(noteFoldG);
+    const noteFoldH = foldedNote(); noteFoldH.scale.setScalar(1.4); noteFoldH.position.set(0, 0.05, 0.02); noteFoldH.rotation.set(1.2, 0, 0.6); noteHand.add(noteFoldH);
+    // the leaf and the bear arrive over nothing — a missing download costs a prop, never the film
+    const fitTo = (g, height) => {
+      const box = new THREE.Box3().setFromObject(g);
+      const size = box.getSize(new THREE.Vector3());
+      const s = height / Math.max(size.y, 1e-6);
+      g.scale.multiplyScalar(s);                   // MULTIPLY: a clone of a fitted scene is already scaled
+      g.updateMatrixWorld(true);
+      const b2 = new THREE.Box3().setFromObject(g);
+      g.position.y -= b2.min.y; g.position.x -= (b2.min.x + b2.max.x) / 2; g.position.z -= (b2.min.z + b2.max.z) / 2;
+      return g;
+    };
+    assetBytes('leaf', true).then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
+      if (!alive) return;
+      rescueTextures(gltf, BUF);
+      gltf.scene.traverse(o => { if (o.isMesh) { o.material.side = THREE.DoubleSide; o.frustumCulled = false;
+        if (o.material.map) { o.material.emissive.setScalar(0.35); o.material.emissiveMap = o.material.map; } o.material.needsUpdate = true; } });
+      const mk = () => { const g = gltf.scene.clone(); g.rotation.x = -Math.PI / 2; g.scale.setScalar(2.2); return g; };
+      const L = mk(); L.rotation.z = 0.6; L.position.y = 0.004; leafGround.add(L);
+      const L2 = mk(); L2.rotation.z = 2.4; L2.position.set(-0.55, 0.04, 0.85); leafExtras.add(L2);
+      const L3 = mk(); L3.rotation.z = -1.7; L3.position.set(0.9, 0.04, -0.35); L3.scale.setScalar(1.8); leafExtras.add(L3);
+      /* in the hand: the bone's frame is nobody's guess — this pose was
+         chosen from renders (docs/V6.4-PROLOGUE.md) */
+      /* the hand bone's +y runs down the fingers (measured: 0.98 against the
+         forearm-to-wrist line), so the props sit a few centimetres along it */
+      const H = mk(); H.position.set(0.0, 0.075, 0.015); H.rotation.set(-0.5, 0.2, 1.3);
+      leafHand.add(H);
+    }, () => {})).catch(() => {});
+    assetBytes('teddy', true).then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
+      if (!alive) return;
+      rescueTextures(gltf, BUF);
+      gltf.scene.traverse(o => { if (o.isMesh) { o.frustumCulled = false; o.castShadow = false;
+        if (o.material.map) { o.material.emissive.setScalar(0.18); o.material.emissiveMap = o.material.map; o.material.needsUpdate = true; } } });
+      const B = fitTo(gltf.scene, 0.28);
+      const lie = new THREE.Group(); lie.add(B);
+      lie.rotation.set(0, 0.9, Math.PI * 0.46);      // on its side on the concrete, face to the wall
+      lie.position.y = 0.13;
+      bearGround.add(lie);
+      const held = new THREE.Group(); held.add(fitTo(gltf.scene.clone(), 0.28));
+      held.position.set(0.09, 0.06, 0.0); held.rotation.set(0.2, 0.0, 1.57);
+      bearHand.add(held);
+    }, () => {})).catch(() => {});
+
+    /* THE BOY. Chad's young master, rigged, five Mixamo takes baked in
+       (walk, alert, walkpick, look, pick). Sized and grounded from POSED
+       BONES to a head JOINT of 1.24 m — a crown of about 1.42, a boy of ten
+       or eleven (the v5.07 lesson: the top bone is the head joint, not the
+       crown). Hidden in play; the film shows him, and only the film.
+
+       He is POSED BY TIME, never played: every take is parked at the frame
+       the film asks for (`boyPose`), so a seek, a skip and a one-frame-a-
+       second box all land on the same picture — the engine's whole rule
+       ("a scene is a description of where things ARE at time t") applied
+       to an actor. The head look-at is laid on AFTER the pose, inside the
+       same call, so the order of the engine's frame cannot undo it.     */
+    const BOY_H = 1.24;
+    const boy = new THREE.Group();
+    boy.position.set(0, 0, 17); boy.rotation.y = Math.PI;   // the spawn, facing the block
+    proRoot.add(boy);
+    let boyMixer = null, boyActs = null, boyHead = null, boyHand = null, boyReady = false, boyS = 1;
+    const boyScale = () => boyS;
+    const boyLook = { target: null, w: 0, x: 0, y: 0, last: 0 };
+    const _lh = new THREE.Vector3();
+    function boyLookApply() {
+      if (!boyHead) return;
+      const now = performance.now();
+      const dt = Math.min(0.1, (now - (boyLook.last || now)) / 1000);
+      boyLook.last = now;
+      const T = boyLook.target, w = boyLook.w;
+      let wy = 0, wx = 0;
+      if (T && w > 0) {
+        boyHead.getWorldPosition(_lh);
+        const dx = T.x - _lh.x, dz = T.z - _lh.z, flat = Math.hypot(dx, dz);
+        let dy = Math.atan2(dx, dz) - boy.rotation.y;
+        dy = Math.atan2(Math.sin(dy), Math.cos(dy));
+        /* the sign is MEASURED (a frame at the pass showed him turning
+           away from the paper): on this rig a positive rotation.y turns
+           the head to its own left, and dy is positive for a target on
+           his right */
+        wy = -THREE.MathUtils.clamp(dy, -1.15, 1.15) * w;
+        wx = THREE.MathUtils.clamp(Math.atan2(T.y - _lh.y, Math.max(flat, 0.05)), -0.55, 0.75) * w;
+      }
+      const k = Math.min(1, dt * 4.5);
+      boyLook.y += (wy - boyLook.y) * k;
+      boyLook.x += (wx - boyLook.x) * k;
+      boyHead.rotation.y += boyLook.y;
+      boyHead.rotation.x += (-boyLook.x - boyHead.rotation.x) * Math.min(1, Math.abs(boyLook.x) * 6 + w * 0.9);
+    }
+    /* park `a` at time ta (and `b` at tb, blended by k); everything else off */
+    function boyPose(a, ta, b, tb, k = 0) {
+      if (!boyMixer || !boyActs) return;
+      for (const [n, act] of Object.entries(boyActs)) {
+        const use = n === a ? 1 - k : n === b ? k : 0;
+        /* stop() unconditionally: a PAUSED action is not "running" but is
+           still scheduled on the mixer at its old weight, and the first
+           version of this asked isRunning() first — so the walk he arrived
+           on never left the mix and every pick was half a walk (measured:
+           the hand at 0.67 m at the grab frame, 0.16 once it was stopped) */
+        if (use <= 0.001) { act.stop(); continue; }
+        if (!act.isScheduled()) { act.reset(); act.play(); }
+        act.paused = true;
+        act.setEffectiveWeight(use);
+        const d = act.getClip().duration, tt = n === a ? ta : tb;
+        act.time = Math.max(0, Math.min(d - 1e-4, tt));
+      }
+      boyMixer.update(0);
+      boyLookApply();
+    }
+    assetBytes('young').then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
+      if (!alive) return;
+      rescueTextures(gltf, BUF);
+      const g = gltf.scene;
+      g.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.frustumCulled = false; } });
+      const NAMES = { Walking: 'walk', Alert: 'alert', Female_Walk_Pick_Put_In_Pocket: 'walkpick',
+                      Look_Around_Dumbfounded: 'look', Male_Bend_Over_Pick_Up: 'pick' };
+      if (gltf.animations && gltf.animations.length) {
+        boyMixer = new THREE.AnimationMixer(g);
+        const acts = {};
+        for (const clip of gltf.animations) { const n = NAMES[clip.name]; if (n) acts[n] = boyMixer.clipAction(clip); }
+        boyActs = acts;
+        const st = acts.look || Object.values(acts)[0];
+        if (st) { st.reset(); st.play(); st.paused = true; st.time = 2.6; boyMixer.update(0); }
+      }
+      g.updateMatrixWorld(true);
+      const v = new THREE.Vector3();
+      let toe = Infinity, head = -Infinity;
+      g.traverse(o => {
+        if (!o.isBone) return;
+        o.getWorldPosition(v);
+        if (/Toe|Foot/.test(o.name)) toe = Math.min(toe, v.y);
+        if (HEAD_RE.test(o.name)) { head = Math.max(head, v.y); if (!boyHead) boyHead = o; }
+        if (/RightHand$/.test(o.name) && !boyHand) boyHand = o;
+      });
+      if (isFinite(toe) && head > toe) {
+        boyS = BOY_H / (head - toe);
+        g.scale.setScalar(boyS);
+        g.position.y = -toe * boyS;
+      }
+      if (boyHand) {
+        boyHand.add(leafHand, bearHand, noteHand);
+        /* the hand bone's frame is in the rig's own units (centimetres under
+           a 0.01 root, times his sizing), so the in-hand groups undo the
+           bone's WORLD scale and everything inside them is in metres */
+        boy.add(g); g.updateMatrixWorld(true);
+        const ws = new THREE.Vector3(); boyHand.getWorldScale(ws);
+        for (const h of [leafHand, bearHand, noteHand]) h.scale.setScalar(1 / Math.max(ws.x, 1e-6));
+      }
+      if (g.parent !== boy) boy.add(g);
+      boyReady = true;
+      redoShadows();
+    }, () => { boyReady = true; })).catch(() => { boyReady = true; });
+
+    /* THE NOTE THAT COMES TO HIM — chapter 1's own note art on the chapter's
+       own material, so setNoteTexture() brightens it with the rest */
+    const flyNote = new THREE.Mesh(noteGeo, noteMat);
+    flyNote.visible = false;
+    proRoot.add(flyNote);
+    // a warm fill on his face for the close-up, motivated by the deck's fire
+    const faceFill = new THREE.PointLight(0xffb070, 0, 5, 1.6);
+    faceFill.position.set(-0.55, 1.55, 16.25);
+    proRoot.add(faceFill);
+
+    function filmReset() {
+      memRoot.visible = proRoot.visible = false;
+      for (const [L] of memLights) L.intensity = 0;
+      faceFill.intensity = 0;
+      flyNote.visible = false;
+      leafHand.visible = bearHand.visible = noteHand.visible = false;
+      leafGround.visible = bearGround.visible = noteGround.visible = true;
+      boyLook.target = null; boyLook.w = 0; boyLook.x = boyLook.y = 0;
+      slowMo = 1;
+      boy.position.set(0, 0, 17); boy.rotation.y = Math.PI;
+    }
+
     /* ------------------------------------------------------ the frame ---
        Four separate calls rather than one, because the engine interleaves
        the ghost and the audio mix between them and the order is load-bearing:
@@ -792,6 +1158,7 @@
        runs them at half rate on a phone and hands over the carried-over time
        — everything still drifts at the speed it always did.                */
     function updateSlow(sdt, t) {
+      sdt *= slowMo;                              // v6.4: the prologue's slow motion
       const sp2 = smoke.geometry.attributes.position.array;
       for (let i = 0; i < SMOKE_N; i++) {
         sp2[i * 3 + 1] += sdt * (0.28 + (sSeed[i] % 1) * 0.3);
@@ -833,6 +1200,7 @@
       embers.material.size = s.emberSize; embers.material.opacity = s.emberOp;
       noteStorm = s.storm;
       heroNote.visible = s.hero;
+      filmReset();                    // v6.4: the prologue's set goes back into the dark
     }
 
     // taken before a frame has run, so a restart gets the pristine values
@@ -843,6 +1211,7 @@
       ash.visible = true;
       heroNote.visible = true;
       noteStorm = 1;
+      filmReset();
     }
 
     /* -------------------------------------------------------- collision ---
@@ -898,7 +1267,10 @@
 
     return (S = {
       world, noteTex, blockers: blockers(),
-      ready: () => hdbReady,
+      /* v6.4: the film's actor is preloaded and the black holds for him
+         too (capped by whenWorldReady, so a lost download costs the boy,
+         never the chapter) */
+      ready: () => hdbReady && boyReady,
       pile: {
         pos: PILE_POS, radius: INTERACT_R, group: pile,
         dist: pileDist, screen: pileScreen, inView: pileInView,
@@ -909,6 +1281,14 @@
       drum, ash, embers, heroNote, smoke, flying, jossTips, fireLight,
       get noteStorm() { return noteStorm; },
       set noteStorm(v) { noteStorm = v; },
+      /* v6.4 — what the prologue drives: the pockets and their lights, the
+         boy (posed by time), the props, the note, the slow motion */
+      MEM, POCKET_Z, memRoot, proRoot, memLights, faceFill, boy, flyNote,
+      leafGround, leafHand, bearGround, bearHand, noteGround, noteHand,
+      boyPose, boyLook, boyScale, boyHand: () => boyHand, boyHead: () => boyHead,
+      boyActs: () => boyActs,
+      get slowMo() { return slowMo; },
+      set slowMo(v) { slowMo = v; },
 
       updateNotes, updatePile, updateFire, updateSlow,
       /* The drawn note is a placeholder. build() is synchronous and runs
@@ -1245,8 +1625,259 @@ function scChant(c, s, api) {                        /* D — palms together */
   }
 
 
+  /* ====================================================================== */
+  /* THE PROLOGUE (v6.4) — the opening film                                  */
+  /* ====================================================================== */
+  /* He looks down at the world, and the world has never once looked back.
+     Until it does. Three things picked up, in three pockets of light forty
+     metres off the deck — a leaf on a verge in the afternoon, a bear on a
+     stairwell landing under a green tube, a folded note by a drain in
+     sodium light — with the lens at the level of the things and his face
+     kept out of frame; then the deck at night, the close-up the film has
+     withheld, one hell note passing his eyes in slow motion, his head
+     turning to follow it, and the lens climbing after it to the moon.
+     docs/V6.4-PROLOGUE.md is the beat sheet and the shot list.
+
+     The boy is POSED BY TIME (stage.boyPose) from every track, so a seek
+     lands on the right frame and a skip leaves no take running. Camera
+     moves are `shot`s: the lens glides A -> B while it looks at P -> Q. */
+  function intro(c, s, api) {
+    const { tr, step, sfx, fade, faceFrom, rawK, smoothK, duck, stage,
+            camera, yaw, pitch, ghostOpacity, handsRoot, armR, THREE } = api;
+    const MEMX = stage.MEM.x, MEMZ = stage.MEM.z, PZ = stage.POCKET_Z;
+    const at = (p, x, y, z) => ({ x: MEMX + x, y, z: MEMZ + PZ[p] + z });   // pocket-local -> world
+    const lerp3 = (a, b, k) => ({ x: a.x + (b.x - a.x) * k, y: a.y + (b.y - a.y) * k, z: a.z + (b.z - a.z) * k });
+    const aimAt = (cx, cy, cz, tx, ty, tz) => {
+      yaw.position.set(cx, cy, cz);
+      yaw.rotation.y = faceFrom(cx, cz, tx, tz);
+      pitch.rotation.x = Math.atan2(ty - cy, Math.hypot(tx - cx, tz - cz));
+    };
+    const shot = (t0, t1, A, B, P, Q, ease) => tr(t0, t1, k => {
+      const C = lerp3(A, B, k), T = lerp3(P, Q, k);
+      aimAt(C.x, C.y, C.z, T.x, T.y, T.z);
+    }, ease);
+    const roll = (t0, t1, a, b) => tr(t0, t1, k => { camera.rotation.z = a + (b - a) * k; });
+    /* a TAKE parked at the frame cine time asks for; it holds its last
+       frame after t1 (the track holds), and a later take wins */
+    const take = (t0, t1, name, rate = 1, off = 0, loopDur = 0) => tr(t0, t1, (k, t) => {
+      let tt = off + (Math.min(t, t1) - t0) * rate;
+      if (loopDur) tt = ((tt % loopDur) + loopDur) % loopDur;
+      stage.boyPose(name, tt);
+    }, rawK);
+    const blend = (t0, t1, a, ta, b, tb) => tr(t0, t1, k => stage.boyPose(a, ta, b, tb, k));
+    /* a GLIDE goes inert once it has delivered k = 1 (chapter 5's yawTr):
+       a track holds after its end, and a held glide would win over every
+       later step that moves him — he would stand in the verge for the
+       whole film (v5.07's law, met again here) */
+    const glide = (t0, t1, A, B, ease) => { let done = false; tr(t0, t1, k => {
+      if (done) return;
+      stage.boy.position.set(A.x + (B.x - A.x) * k, (A.y || 0) + ((B.y || 0) - (A.y || 0)) * k, A.z + (B.z - A.z) * k);
+      if (k >= 1) done = true;
+    }, ease); };
+    // a shot that keeps its aim on his right HAND (plus an offset), wherever the take puts it
+    const _hw = new THREE.Vector3();
+    const shotHand = (t0, t1, A, B, off, ease) => tr(t0, t1, k => {
+      const C = lerp3(A, B, k), h = stage.boyHand();
+      if (h) { h.getWorldPosition(_hw); aimAt(C.x, C.y, C.z, _hw.x + off.x, _hw.y + off.y, _hw.z + off.z); }
+    }, ease);
+    const setLights = (p, k) => { for (const [L, on] of stage.memLights.slice(p * 2, p * 2 + 2)) L.intensity = on * k; };
+    /* where he must STAND for a take's hand to land on a thing: the hand's
+       offset in his own frame (measured on the takes, scaled to him), turned
+       by his facing and taken away from the thing's position */
+    const standFor = (T, ry, ox, oz) => ({
+      x: T.x - (ox * Math.cos(ry) + oz * Math.sin(ry)), y: T.y > 0.1 ? 0.12 : 0,
+      z: T.z - (-ox * Math.sin(ry) + oz * Math.cos(ry)) });
+    const LEAF = at(0, 0, 0.014, 0), BEAR = at(1, 0.3, 0.02, -1.0), NOTE5 = at(2, 0.62, 0.135, 0.02);
+    // pocket one: he faces -z with the leaf ahead; three metres of walk-in
+    const RY1 = Math.PI, S1 = standFor(LEAF, RY1, -0.15, 0.33), W1 = { x: S1.x, y: 0, z: S1.z + 3.2 };
+    // pocket two: from the top step, then from the step's foot to the bear
+    const TOP2 = at(1, 2.35, 0.51, -2.2), FOOT2 = at(1, 1.75, 0, -1.55);
+    const RY2a = Math.atan2(BEAR.x - TOP2.x, BEAR.z - TOP2.z);
+    const RY2 = Math.atan2(BEAR.x - FOOT2.x, BEAR.z - FOOT2.z), S2 = standFor(BEAR, RY2, -0.15, 0.33);
+    // pocket three: along the pavement toward +x; the walkpick take walks itself
+    const RY3 = Math.PI / 2, S3 = standFor(NOTE5, RY3, 0.58, 1.16);
+    const G3 = { x: S3.x + 0.15, y: 0.12, z: S3.z - 0.22 }, W3 = { x: G3.x - 1.9, y: 0.12, z: G3.z };
+    const SP = { x: 0, y: 0, z: 17 };
+
+    // ---- 0–4.4 BLACK. The day is heard before it is seen.
+    step(0, () => {
+      ghostOpacity(0); armR.visible = false; handsRoot.visible = false;
+      stage.memRoot.visible = true; stage.proRoot.visible = true;
+      stage.flyNote.visible = false;
+      stage.boy.position.set(W1.x, 0, W1.z); stage.boy.rotation.y = RY1;
+      duck('amb', 0.10); duck('fire', 0.10);
+    });
+    sfx(0.4, 'memday', 0.7);
+    sfx(0.6, 'vpro1');
+
+    // ---- 4.4–14.0 POCKET ONE · THE LEAF
+    fade(4.4, 6.2, 1, 0);
+    tr(4.4, 6.2, k => setLights(0, k), rawK);
+    // 1a: a macro at the leaf, at ground level; his shoes arrive from behind it
+    shot(4.4, 8.2, at(0, -0.06, 0.30, -0.40), at(0, -0.03, 0.27, -0.34),
+                   LEAF, { x: LEAF.x - 0.06, y: 0.02, z: LEAF.z + 0.16 }, smoothK);
+    take(4.4, 8.0, 'walk', 1.0, 0.2, 1.08);
+    glide(4.6, 8.0, W1, { x: S1.x, y: 0, z: S1.z }, rawK);
+    for (const st of [4.9, 5.5, 6.1, 6.7, 7.3]) sfx(st, 'step', 0.5);
+    sfx(6.6, 'vpro2');
+    // he stops, and bends
+    blend(8.0, 8.4, 'walk', 0.2, 'pick', 0.0);
+    take(8.4, 15.0, 'pick', 1.0, 0.0);                 // the grab at 8.4 + 1.45; the hand up from ~11.3
+    step(9.85, () => { stage.leafGround.visible = false; stage.leafHand.visible = true; });
+    sfx(9.85, 'leafpick', 0.7);
+    // 1b: low three-quarter from behind the leaf, looking up; a push-in on the hand
+    shotHand(8.2, 10.6, at(0, 0.78, 0.40, -1.0), at(0, 0.56, 0.34, -0.72), { x: 0, y: 0.04, z: 0 }, smoothK);
+    shotHand(10.6, 14.0, at(0, 0.56, 0.34, -0.72), at(0, 0.30, 1.22, -0.40), { x: 0, y: 0.02, z: 0 }, smoothK);
+
+    // ---- 14.0–25.2 POCKET TWO · THE TOY
+    sfx(13.4, 'memday', 0.7);
+    sfx(13.6, 'memwash', 0.6);
+    fade(13.6, 14.2, 0, 1);
+    tr(13.6, 14.2, k => setLights(0, 1 - k), rawK);
+    step(14.2, () => {
+      stage.leafHand.visible = false;
+      stage.boy.position.set(TOP2.x, TOP2.y, TOP2.z); stage.boy.rotation.y = RY2a;
+    });
+    tr(14.2, 15.0, k => setLights(1, k), rawK);
+    fade(14.4, 15.2, 1, 0);
+    take(14.2, 19.0, 'alert', 1.0, 0.4);                // is anyone watching
+    sfx(15.4, 'vpro3');
+    // 2a: low, the bear large in the foreground, him small on the steps behind it
+    shot(14.2, 19.0, at(1, -1.05, 0.22, -0.10), at(1, -0.85, 0.26, -0.22),
+                     at(1, 0.9, 0.42, -1.45), at(1, 1.0, 0.48, -1.5), smoothK);
+    roll(14.2, 19.0, 0.035, 0.035);
+    // 2b: from ABOVE — he crosses to it, crouches, lifts it; the lens cranes down to his shoulder
+    step(19.0, () => { stage.boy.position.set(FOOT2.x, 0, FOOT2.z); stage.boy.rotation.y = RY2; });
+    roll(19.0, 19.05, 0.035, 0);
+    take(19.0, 20.2, 'walk', 1.0, 0.3, 1.08);
+    glide(19.0, 20.2, FOOT2, S2, rawK);
+    sfx(19.3, 'step', 0.4); sfx(19.85, 'step', 0.4);
+    blend(20.2, 20.5, 'walk', 0.5, 'pick', 0.0);
+    take(20.5, 25.2, 'pick', 1.0, 0.0);                 // the grab at 21.95; held up from ~23.4
+    step(21.95, () => { stage.bearGround.visible = false; stage.bearHand.visible = true; });
+    sfx(21.9, 'toypick', 0.7);
+    shot(19.0, 25.2, at(1, 0.9, 3.4, -0.5), at(1, -0.55, 1.35, 0.25),
+                     at(1, 0.7, 0.0, -1.0), at(1, 0.55, 0.85, -0.85), smoothK);
+
+    // ---- 25.2–36.2 POCKET THREE · THE MONEY
+    sfx(24.4, 'memday', 0.7);
+    sfx(24.8, 'memwash', 0.6);
+    fade(24.8, 25.4, 0, 1);
+    tr(24.8, 25.4, k => setLights(1, 1 - k), rawK);
+    step(25.4, () => {
+      stage.bearHand.visible = false;
+      stage.boy.position.set(W3.x, 0.12, W3.z); stage.boy.rotation.y = RY3;
+    });
+    tr(25.4, 26.2, k => setLights(2, k), rawK);
+    fade(25.6, 26.4, 1, 0);
+    take(25.4, 27.4, 'walk', 1.0, 0.5, 1.08);
+    glide(25.4, 27.4, W3, G3, rawK);
+    for (const st of [25.6, 26.15, 26.7, 27.25]) sfx(st, 'step', 0.45);
+    sfx(26.8, 'vpro4');
+    /* the walk-pick-pocket take carries its own travel and starts with the
+       hips off its origin, so the glide lands where its first frame stands
+       and the group jumps back to the stand spot under it */
+    step(27.4, () => { stage.boy.position.set(S3.x, 0.12, S3.z); });
+    blend(27.4, 27.7, 'walk', 0.5, 'walkpick', 0.0);
+    take(27.7, 36.2, 'walkpick', 1.0, 0.0);             // the stoop at 27.7 + 5.75
+    // 3a: a TRACKING shot along the kerb that finds the note; his feet arrive
+    shot(25.6, 31.5, at(2, -3.0, 0.34, -1.55), at(2, 0.25, 0.30, -1.25),
+                     at(2, -1.6, 0.16, -0.10), NOTE5, smoothK);
+    // 3b: from behind at hip height — the stoop, the pocket
+    shot(31.5, 36.2, at(2, -1.7, 0.78, 0.95), at(2, -1.3, 0.72, 0.85),
+                     at(2, 0.2, 0.45, 0.15), at(2, 0.5, 0.55, 0.20), smoothK);
+    step(33.45, () => { stage.noteGround.visible = false; stage.noteHand.visible = true; });
+    sfx(33.5, 'take', 0.55);
+
+    // ---- 36.2–39.6 BLACK, held. The night comes up under the last line.
+    sfx(35.4, 'memwash', 0.6);
+    fade(35.4, 36.2, 0, 1);
+    tr(35.4, 36.2, k => setLights(2, 1 - k), rawK);
+    tr(35.6, 39.6, k => { duck('amb', 0.10 + 0.90 * k); duck('fire', 0.10 + 0.90 * k); }, rawK);
+    step(36.2, () => {
+      stage.memRoot.visible = false; stage.noteHand.visible = false;
+      stage.boy.position.set(SP.x, 0, SP.z); stage.boy.rotation.y = Math.PI;
+    });
+    sfx(36.4, 'dread', 0.35);
+    sfx(36.6, 'vpro5');
+
+    // ---- 39.6–45.0 THE PRESENT · the wide: the block at night, him from behind
+    fade(39.6, 41.2, 1, 0);
+    shot(39.6, 45.0, { x: 1.9, y: 1.55, z: 21.6 }, { x: 0.75, y: 1.42, z: 18.7 },
+                     { x: 0, y: 1.2, z: 12 }, { x: 0, y: 1.25, z: 15.5 }, smoothK);
+    take(39.6, 45.0, 'look', 0.35, 2.4);
+
+    // ---- 45.0–53.0 THE FACE · the world slows; the note comes to him
+    tr(45.0, 46.2, k => { stage.slowMo = 1 - 0.88 * k; stage.noteStorm = 1 - 0.90 * k; }, smoothK);
+    tr(45.0, 46.5, k => { duck('amb', 1 - 0.65 * k); duck('fire', 1 - 0.65 * k); }, rawK);
+    tr(45.0, 47.0, k => { stage.faceFill.intensity = 2.4 * k; }, rawK);
+    take(45.0, 59.0, 'look', 0.12, 4.3);
+    sfx(45.0, 'noteslow', 0.8);
+    step(45.0, () => { stage.flyNote.visible = true; });
+    /* the note's path: keyframes in world space, a Catmull-Rom through them
+       by TIME, and a flutter riding on top — in from frame left and low,
+       nearest his eyes at 48.3, past his right shoulder, then up */
+    const KEYS = [[45.0, -1.6, 1.00, 15.0], [47.0, -0.75, 1.24, 15.95], [48.3, -0.22, 1.39, 16.36],
+                  [49.6, 0.30, 1.48, 16.58], [51.0, 0.75, 1.70, 16.55], [52.5, 1.00, 2.40, 16.2],
+                  [54.0, 0.70, 4.4, 14.6], [55.5, -2.4, 7.9, 10.4], [57.0, -8.4, 12.0, 5.4], [59.0, -12.5, 16.5, 0.5]];
+    const flyAt = (t) => {
+      const K = KEYS, n = K.length;
+      if (t <= K[0][0]) return { x: K[0][1], y: K[0][2], z: K[0][3] };
+      if (t >= K[n - 1][0]) return { x: K[n - 1][1], y: K[n - 1][2], z: K[n - 1][3] };
+      let i = 0; while (K[i + 1][0] < t) i++;
+      const P0 = K[Math.max(0, i - 1)], P1 = K[i], P2 = K[i + 1], P3 = K[Math.min(n - 1, i + 2)];
+      const h = P2[0] - P1[0], u = (t - P1[0]) / h, u2 = u * u, u3 = u2 * u;
+      const out = { x: 0, y: 0, z: 0 };
+      for (const [ax, j] of [['x', 1], ['y', 2], ['z', 3]]) {
+        const m1 = (P2[j] - P0[j]) / (P2[0] - P0[0]) * h, m2 = (P3[j] - P1[j]) / (P3[0] - P1[0]) * h;
+        out[ax] = (2 * u3 - 3 * u2 + 1) * P1[j] + (u3 - 2 * u2 + u) * m1 + (-2 * u3 + 3 * u2) * P2[j] + (u3 - u2) * m2;
+      }
+      const s2 = t - K[0][0], e = Math.min(1, s2 / 8);
+      out.x += Math.sin(s2 * 6.1) * 0.03 * (1 - 0.6 * e);
+      out.y += Math.sin(s2 * 9.7) * 0.02;
+      return out;
+    };
+    const noteTarget = new THREE.Vector3();
+    tr(45.0, 59.0, (k, t) => {
+      const f = flyAt(t), s2 = t - 45.0;
+      stage.flyNote.position.set(f.x, f.y, f.z);
+      stage.flyNote.rotation.set(-Math.PI / 2 + Math.sin(s2 * 1.6) * 0.55, s2 * 0.55, 0.3 + Math.sin(s2 * 1.3) * 0.5);
+      noteTarget.set(f.x, f.y, f.z);
+      stage.boyLook.target = noteTarget;
+      stage.boyLook.w = Math.min(1, Math.max(0, (t - 46.0) / 1.5));
+    }, rawK);
+    sfx(48.2, 'strings', 0.6);
+    /* the ARC: the lens on a circle about his head, front-left to front-right
+       through the pass, aimed at his face until the paper has crossed it,
+       then handed to the paper and lifted after it */
+    /* measured, not assumed: with the group at z 17 his head joint sits at
+       (-0.08, 1.21, 16.71) and the face a hand's breadth forward of it */
+    const HC = { x: -0.06, y: 1.28, z: 16.66 }, FACE = { x: -0.06, y: 1.29, z: 16.58 };
+    tr(45.0, 57.5, (k, t) => {
+      const u = Math.max(0, Math.min(1, (t - 45.0) / 8.0)), e = u * u * (3 - 2 * u);
+      const a = -0.62 + 1.02 * e, r = 0.74;
+      let cx = HC.x + Math.sin(a) * r, cy = 1.36 + 0.05 * e, cz = HC.z - Math.cos(a) * r;
+      const v = Math.max(0, Math.min(1, (t - 53.0) / 4.5)), ev = v * v * (3 - 2 * v);
+      cx += (0.35 - cx) * ev; cy += (3.2 - cy) * ev; cz += (16.9 - cz) * ev;
+      const f = flyAt(t);
+      const b = Math.max(0, Math.min(1, (t - 48.5) / 2.2)), eb = b * b * (3 - 2 * b);
+      aimAt(cx, cy, cz, FACE.x + (f.x - FACE.x) * eb, FACE.y + (f.y - FACE.y) * eb, FACE.z + (f.z - FACE.z) * eb);
+    }, rawK);
+    roll(45.0, 53.0, 0.05, 0.0);
+
+    // ---- 57.0–59.0 a fleck against the moon; black; the card
+    fade(57.0, 59.0, 0, 1);
+    sfx(58.2, 'boom', 0.4);
+    step(59.0, () => { stage.proRoot.visible = false; armR.visible = true; handsRoot.visible = true; });
+
+    c.keep.ghostGone = true;      // she is not standing there when play starts
+    c.endFade = 1;
+    c.keepFade = true;            // the chapter card comes up over this black
+  }
+
   (window.__CHAPTERS__ = window.__CHAPTERS__ || {}).ch1 = Object.assign(DATA, {
     build,
-    scenes: [scPickUp, scKick, scLeave, scChant]
+    scenes: [scPickUp, scKick, scLeave, scChant],
+    intro                          // v6.4: the prologue, before the chapter card
   });
 })();

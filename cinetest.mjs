@@ -6,7 +6,7 @@
    waits out four eight-second films. One scene (Leave it, the shortest) is
    also allowed to finish on its own clock, to prove natural completion.    */
 import { chromium } from 'playwright';
-import { LAUNCH, PAGE } from './testlib.mjs';
+import { LAUNCH, PAGE, toPlay } from './testlib.mjs';
 const b = await chromium.launch(LAUNCH);
 
 const EXPECT = [                       // sanity/awareness/wisdom deltas per choice
@@ -22,8 +22,7 @@ for (let i = 0; i < 4; i++) {
   p.setDefaultNavigationTimeout(180000); p.setDefaultTimeout(90000);
   await p.goto(PAGE); await p.waitForTimeout(4000);
   await p.click('#startBtn');
-  await p.waitForFunction(() => window.__enc && window.__enc.getState() === 'play',
-                          null, { timeout: 90000, polling: 120 });
+  await toPlay(p);                 // v6.4: through the film, the card, into play
   const out = { choice: 'ABCD'[i] };
 
   // walk up and open the decision for real
@@ -119,6 +118,51 @@ for (let i = 0; i < 4; i++) {
   if (!out.startsOnBlack)
     errs.push('ERR the film is visible before its own fade-in: ' + JSON.stringify(cover));
   if (!out.fadesInAfter) errs.push('ERR the film never fades in');
+  console.log(JSON.stringify(out), '| errors:', errs.length ? errs : 'none');
+  await p.close();
+}
+/* v6.4: AND CHAPTER 1'S FILM — the prologue. The same contract (black until
+   its own fade at 4.4, in by 6.2), plus the film's own set: the boy and the
+   pockets are on screen while it plays and gone once it is skipped, so play
+   never inherits an actor standing at the spawn point. */
+{
+  const p = await b.newPage({ viewport: { width: 500, height: 340 } });
+  const errs = []; p.on('pageerror', e => errs.push(e.message));
+  p.setDefaultNavigationTimeout(180000); p.setDefaultTimeout(90000);
+  await p.goto(PAGE);
+  await p.waitForTimeout(4000);
+  await p.evaluate(() => { window.__enc.clearCheckpoint(); });
+  await p.click('#startBtn');
+  await p.waitForFunction(() => window.__enc && window.__enc.getState() === 'cine',
+                          null, { timeout: 150000, polling: 100 });
+  const out = { film: 'ch1 prologue' };
+  out.duration = await p.evaluate(() => +window.__enc.cine.dur().toFixed(1));
+  const cover = [];
+  for (const t of [0.15, 1.5, 3.0, 4.2]) {           // all before the fade at 4.4
+    await p.evaluate(tt => window.__enc.cine.seek(tt), t);
+    await p.waitForTimeout(180);
+    cover.push(await p.evaluate(() => +getComputedStyle(document.getElementById('cineFade')).opacity));
+  }
+  out.coverBeforeFadeIn = cover;
+  out.startsOnBlack = cover.every(v => v > 0.98);
+  await p.evaluate(() => window.__enc.cine.seek(12.8));   // its fade ends at 6.2; the leaf is in his hand
+  await p.waitForTimeout(220);
+  out.fadesInAfter = await p.evaluate(() => +getComputedStyle(document.getElementById('cineFade')).opacity) < 0.05;
+  out.setOnScreen = await p.evaluate(() => window.__enc.stage.memRoot.visible && window.__enc.stage.proRoot.visible
+    && window.__enc.stage.leafHand.visible && !window.__enc.stage.leafGround.visible);
+  await p.evaluate(() => window.__enc.cine.seek(48.3));   // the pass: the note beside his face, his head on it
+  await p.waitForTimeout(220);
+  out.headFollows = await p.evaluate(() => window.__enc.stage.flyNote.visible && window.__enc.stage.boyLook.w > 0.99
+    && window.__enc.stage.slowMo < 0.2);
+  await p.evaluate(() => window.__enc.cine.skip());
+  await p.waitForTimeout(600);
+  out.setGoneAfterSkip = await p.evaluate(() => !window.__enc.stage.memRoot.visible && !window.__enc.stage.proRoot.visible
+    && !window.__enc.stage.flyNote.visible && window.__enc.stage.slowMo === 1 && window.__enc.stage.boyLook.w === 0);
+  if (!out.startsOnBlack) errs.push('ERR the prologue is visible before its own fade-in: ' + JSON.stringify(cover));
+  if (!out.fadesInAfter) errs.push('ERR the prologue never fades in');
+  if (!out.setOnScreen) errs.push('ERR the prologue set is not on screen mid-film');
+  if (!out.headFollows) errs.push('ERR the pass: no note, no head turn or no slow motion');
+  if (!out.setGoneAfterSkip) errs.push('ERR the prologue set survived the skip');
   console.log(JSON.stringify(out), '| errors:', errs.length ? errs : 'none');
   await p.close();
 }

@@ -101,6 +101,7 @@ const EMBED = {
   motheranim: '__MOTHERANIM_B64__',
   sitclap: '__SITCLAP_B64__', sitangry: '__SITANGRY_B64__',
   standman: '__STANDMAN_B64__',
+  young: '__YOUNG_B64__', teddy: '__TEDDY_B64__', leaf: '__LEAF_B64__', note5: '__NOTE5_B64__',   // v6.4: the prologue
   granny: '__GRANNY_B64__', sofa: '__SOFA_B64__',
   /* v5.29 — the three new seated kinds, the scolding granny at the brazier,
      and young Master Zav for the equipment panel */
@@ -4760,8 +4761,9 @@ function enterWorld(place, opts = {}) {
      middle of one skips it: an opening is an opening, and sitting through
      it again to get back to where you were would be a punishment.
 
-     A chapter with no `intro` — chapter 1, and the fixture — takes the path
-     it always took, which is the test that this changed nothing.        */
+     A chapter with no `intro` — the fixture, and chapter 1 until v6.4 gave
+     it the prologue — takes the path it always took, which is the test that
+     this changed nothing.                                                */
   const intro = opts.intro && typeof CH.intro === 'function' ? CH.intro : null;
 
   const card = () => playChapterCard(() => {
