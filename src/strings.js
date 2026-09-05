@@ -98,6 +98,13 @@ Object.assign(window.__TEXT__, {
   'credits.sofa':        'The living room sofa',
   'credits.sofaWho':     'Sofa · Sketchfab',
   'credits.sofaLink':    'sketchfab.com · sofa',
+  // v6.4 — the two things he picks up in chapter 1's opening film
+  'credits.teddy':       'The toy in the prologue',
+  'credits.teddyWho':    'Teddybear toy · Sketchfab',
+  'credits.teddyLink':   'sketchfab.com · teddybear-toy',
+  'credits.leaf':        'The leaf in the prologue',
+  'credits.leafWho':     'Birch leaf · popovs · Sketchfab (CC BY 4.0)',
+  'credits.leafLink':    'sketchfab.com · birch-leaf',
   /* v5.29 — Chad's four Meshy characters, all CC0. One row for the set:
      they are one author, one licence, and four names in a credits panel
      that already runs long reads worse than one line that is true. */

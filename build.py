@@ -232,6 +232,17 @@ ASSETS = {
     # The adult scan below stays: ZAV_FIGURE in main.js picks by chapter and
     # falls back to him, so episode 2's teenager is a table row, not a swap.
     'zavyoung': ('assets/zavyoung.glb', True, False),  # the panel, ch1-ch5
+    # v6.4 — THE PROLOGUE, chapter 1's opening film. The young master again,
+    # this time RIGGED with five Mixamo takes baked in (Chad's file, shrunk by
+    # prepwoman + resampleclips: 17.4 MB -> 2.2 MB), the two things he picks
+    # up before the note (Sketchfab, credited in the panel), and the money —
+    # Chad's own photograph of a five-dollar note, on a folded paper prop.
+    # The boy is PRELOADED: he is the first shot of the game. The rest arrive
+    # over invisible proxies while the black holds.
+    'young': ('assets/young.glb', True, True),         # ch1, the film's actor
+    'teddy': ('assets/teddy.glb', True, False),        # ch1, the toy
+    'leaf': ('assets/leaf.glb', True, False),          # ch1, the leaf
+    'note5': ('assets/note5.webp', True, False),       # ch1, the money
     # v5.24: Chad's sofa, the living room's, in chapters 4 and 5. Not
     # preloaded: the primitive it replaces is already sitting there, so a
     # slow download costs a nicer sofa and never an empty wall.
