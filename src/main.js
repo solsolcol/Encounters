@@ -4558,17 +4558,30 @@ function skipCine() {
   cineEnd();
 }
 
-skipBtn.addEventListener('click', e => { e.stopPropagation(); skipCine(); });
+/* v6.4: a FILM releases the mouse when it starts (so Skip can be reached),
+   and until chapter 1 had one a new game on a desktop landed in play
+   LOCKED — the Start click was the gesture. Skipping a film by click, tap
+   or key is a gesture too, so it re-locks; a film left to run to its end
+   has none, and play begins unlocked as it always has after chapters 2-5's
+   films (edge-turn look, one click to lock). Only films: a scene's skip
+   leads to an outcome card with buttons. Never from __enc.cine.skip(): a
+   request with no gesture is refused and marks the page as unable to lock. */
+function skipFilmOrScene() {
+  const film = !!(cine && cine.film);
+  skipCine();
+  if (film) tryLock();
+}
+skipBtn.addEventListener('click', e => { e.stopPropagation(); skipFilmOrScene(); });
 addEventListener('keydown', e => {
   if (state === 'cine' && cine && cine.t > 0.6 &&
       (e.code === 'Escape' || e.code === 'KeyE' || e.code === 'Space' || e.code === 'Enter')) {
-    skipCine();
+    skipFilmOrScene();
   }
 });
 addEventListener('pointerdown', e => {
   // a tap anywhere skips — except on the sound button, which keeps its job
   if (state === 'cine' && cine && !cine.paused && cine.t > 0.8 && !e.target.closest?.('#mute')) {
-    skipCine();
+    skipFilmOrScene();
   }
 });
 
@@ -4805,7 +4818,10 @@ function enterWorld(place, opts = {}) {
   const packWait = Promise.race([packLoad(CH_KEY), new Promise(r => setTimeout(r, 12000))]);
   packWait.then(() => {
     warmIntroSet();
-    whenDecoded(introSamples(), () => whenWorldReady(() => playCineFn(intro, card, 1)));
+    whenDecoded(introSamples(), () => whenWorldReady(() => {
+      playCineFn(intro, card, 1);
+      cine.film = true;            // v6.4: a skip by gesture may re-lock the mouse (skipFilmOrScene)
+    }));
   });
 }
 

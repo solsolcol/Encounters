@@ -1144,7 +1144,12 @@ What the baseline contains, by release:
   their grab frames; the money is Chad's own photograph on a folded
   two-plane prop. Five new lines (Aaron) and four new sounds; chapter 1's
   `ready()` waits for him. Engine cost: rows in `STING_SAMPLE` and
-  `JAMES_TAKES`, four embed tokens — zero seams. And the SUITE learned
+  `JAMES_TAKES`, four embed tokens — zero seams — plus one base-game fix
+  the film exposed: a film releases the mouse so Skip can be reached, and
+  a desktop new game used to land in play LOCKED (the Start click was the
+  gesture); skipping a film by click, tap or key is a gesture too and now
+  re-locks (`skipFilmOrScene`), while a film left to run to its end lands
+  unlocked exactly as chapters 2–5's always have. And the SUITE learned
   that Start is a film now: testlib's `toPlay` taps through it the way a
   player who has seen it does, and every harness that presses Start goes
   through it. Two credit rows; sheet v36. docs/V6.4-PROLOGUE.md is the

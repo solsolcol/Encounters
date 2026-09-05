@@ -2091,3 +2091,18 @@ than for a stopwatch"; it applies just as much to a harness's OWN observer
 as to the engine's state. Wait for the observer to have observed
 (`__firstReveal !== null`), then read. And print the measured value with
 the boolean, so a failure says what it saw.
+
+## A lock request with no gesture does worse than fail (v6.4)
+
+`tryLock()` treats a refused `requestPointerLock()` as "this page may not
+lock" and stops asking for the rest of the session — right for a browser
+that forbids it, wrong for a request that merely lacked a user gesture,
+which is refused the same way. So the re-lock after a skipped film lives
+in the three GESTURE handlers (the Skip button, the key, the tap
+anywhere) and not in `skipCine()` itself, which `__enc.cine.skip()` also
+calls from harnesses with no gesture at all; one such call would have
+disabled the mouse for every check after it. Two facts worth keeping:
+Chromium grants activation to a keydown of E, Space or Enter but NOT to
+Escape, so a harness that skips "like a player" presses E; and a film
+that runs to its natural end has no gesture to lock on, so an unlocked
+arrival there is not a bug but the browser's rule.

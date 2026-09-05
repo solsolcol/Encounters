@@ -113,7 +113,19 @@ export const PAGE = `http://127.0.0.1:${_srv.address().port}/`;
 export async function toPlay(p, timeout = 150000) {
   await p.waitForFunction(() => window.__enc && ['cine', 'play'].includes(window.__enc.getState()),
                           null, { timeout, polling: 120 });
-  if (await p.evaluate(() => window.__enc.getState() === 'cine'))
-    await p.evaluate(() => window.__enc.cine.skip());
+  if (await p.evaluate(() => window.__enc.getState() === 'cine')) {
+    /* the skip is a KEY, not __enc.cine.skip(): a real key press is the
+       gesture the engine re-locks the mouse on after a film (a desktop new
+       game lands in play locked, as it did before the film), and the
+       harness must arrive in play the way a player does. E is the game's
+       skip key that Chromium counts as activation (Escape is not). The
+       film accepts it from 0.6 s; if the key somehow never lands, the
+       engine's own skip is the fallback rather than a timeout. */
+    await p.waitForFunction(() => !window.__enc.cine.active() || window.__enc.cine.t() > 0.7,
+                            null, { timeout, polling: 120 });
+    await p.keyboard.press('KeyE');
+    await p.waitForFunction(() => window.__enc.getState() !== 'cine', null, { timeout: 15000, polling: 120 })
+      .catch(() => p.evaluate(() => window.__enc.cine.skip()));
+  }
   await p.waitForFunction(() => window.__enc.getState() === 'play', null, { timeout, polling: 120 });
 }
