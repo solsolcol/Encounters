@@ -1,6 +1,6 @@
 /* Sanity drains while she is there, harder up close, and running out ends it. */
 import { chromium, devices } from 'playwright';
-import { LAUNCH, PAGE } from './testlib.mjs';
+import { LAUNCH, PAGE, toPlay } from './testlib.mjs';
 const b = await chromium.launch(LAUNCH);
 for (const [label, opts] of [['desktop',{viewport:{width:480,height:320}}],
                              ['phone', devices['iPhone 13']]]) {
@@ -13,8 +13,7 @@ await p.goto(PAGE); await p.waitForTimeout(3500);
 await (label==='phone' ? p.tap('#startBtn') : p.click('#startBtn')); await p.waitForTimeout(3000);
 // the chapter card holds the screen for about four seconds after Start;
 // wait for the game to actually be playable rather than for a stopwatch
-await p.waitForFunction(()=>window.__enc && window.__enc.getState()==='play',
-                        null, { timeout: 90000, polling: 120 });
+await toPlay(p);                 // v6.4: through the film, the card, into play
 
 const shown = id => p.$eval('#'+id, e=>!e.classList.contains('hide'));
 const out = {};

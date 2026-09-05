@@ -1,5 +1,5 @@
 import { chromium, devices } from 'playwright';
-import { LAUNCH, PAGE } from './testlib.mjs';
+import { LAUNCH, PAGE, toPlay } from './testlib.mjs';
 const b = await chromium.launch(LAUNCH);
 for (const [name, opts] of [['phone', devices['iPhone 13']], ['desktop', {viewport:{width:1440,height:860}}]]) {
   const ctx = await b.newContext(opts); const p = await ctx.newPage();
@@ -17,8 +17,7 @@ for (const [name, opts] of [['phone', devices['iPhone 13']], ['desktop', {viewpo
   await (name==='phone'? p.tap('#startBtn') : p.click('#startBtn')); await p.waitForTimeout(4000);
   // the chapter card holds the screen for about four seconds after Start;
   // wait for the game to actually be playable rather than for a stopwatch
-  await p.waitForFunction(()=>window.__enc && window.__enc.getState()==='play',
-                          null, { timeout: 90000, polling: 120 });
+  await toPlay(p);                 // v6.4: through the film, the card, into play
   await p.evaluate(()=>{ const e=window.__enc; e.yaw.position.set(1.4,1.62,6.0); e.yaw.rotation.y=0.26; });
   await p.waitForTimeout(2400); await p.screenshot({path:`f-${name}-world.png`});
   // Walk in until the heap is in reach, then act on it. Nothing opens by

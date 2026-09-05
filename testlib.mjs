@@ -97,3 +97,23 @@ await new Promise((res, rej) => {
   _srv.once('error', rej);
 });
 export const PAGE = `http://127.0.0.1:${_srv.address().port}/`;
+
+/* v6.4: PRESSING START RUNS A FILM NOW. Chapter 1 opens on the prologue, so
+   a new game is film, card, play — and at one software frame a second a
+   fifty-nine-second film is two minutes of real time. A harness that tests
+   PLAY does what a player who has seen it does: taps through it.
+
+   Waits for whichever comes first, the film or play (a chapter with no film,
+   and a resume with a position, go straight to the card), skips the film if
+   that is what arrived, and returns once the world is playable. Every
+   harness that presses Start goes through here, so the next chapter to gain
+   an opening costs the suite nothing. The harnesses that test a FILM
+   (cinetest's film pages, menutest's replay, hostedtest's advance) wait for
+   'cine' themselves and never call this.                                 */
+export async function toPlay(p, timeout = 150000) {
+  await p.waitForFunction(() => window.__enc && ['cine', 'play'].includes(window.__enc.getState()),
+                          null, { timeout, polling: 120 });
+  if (await p.evaluate(() => window.__enc.getState() === 'cine'))
+    await p.evaluate(() => window.__enc.cine.skip());
+  await p.waitForFunction(() => window.__enc.getState() === 'play', null, { timeout, polling: 120 });
+}

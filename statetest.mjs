@@ -13,7 +13,7 @@
      7. applying over a lifted item cannot duplicate it
      8. ?ch= selects a registered chapter and falls back safely          */
 import { chromium } from 'playwright';
-import { LAUNCH, PAGE } from './testlib.mjs';
+import { LAUNCH, PAGE, toPlay } from './testlib.mjs';
 const errs = [];
 const b = await chromium.launch(LAUNCH);
 const p = await b.newPage({ viewport: { width: 640, height: 420 } });
@@ -21,8 +21,7 @@ p.on('pageerror', e => errs.push('ERR ' + e.message));
 p.setDefaultNavigationTimeout(180000); p.setDefaultTimeout(60000);
 await p.goto(PAGE); await p.waitForTimeout(5000);
 await p.click('#startBtn');
-await p.waitForFunction(() => window.__enc && window.__enc.getState() === 'play',
-                        null, { timeout: 90000, polling: 120 });
+await toPlay(p);                 // v6.4: through the film, the card, into play
 await p.waitForTimeout(600);
 
 const out = await p.evaluate(() => {

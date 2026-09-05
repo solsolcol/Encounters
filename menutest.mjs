@@ -19,7 +19,7 @@
         progress, 4 and 5 locked; the case's card is the lit one, centred
         in the strip, with the same five dots; the heading counts 2 of 5  */
 import { chromium } from 'playwright';
-import { LAUNCH, PAGE } from './testlib.mjs';
+import { LAUNCH, PAGE, toPlay } from './testlib.mjs';
 
 const errs = [];
 const b = await chromium.launch(LAUNCH);
@@ -84,7 +84,7 @@ await p.evaluate(() => { try { localStorage.removeItem('mz.encounters.progress')
 
 // --- 2. play: the column of round buttons ----------------------------------
 await p.click('#startBtn');
-await p.waitForFunction(() => window.__enc.getState() === 'play', null, { timeout: 150000 });
+await toPlay(p);                 // v6.4: through the film, the card, into play
 await p.waitForTimeout(800);
 out.buttonsStacked = await p.evaluate(() => {
   const r = id => document.getElementById(id).getBoundingClientRect();

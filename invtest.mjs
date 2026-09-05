@@ -10,7 +10,7 @@
    The second guard is that no move ever loses an item: after every lift,
    drop, double-click and drag, the same four items are still somewhere.    */
 import { chromium, devices } from 'playwright';
-import { LAUNCH, PAGE } from './testlib.mjs';
+import { LAUNCH, PAGE, toPlay } from './testlib.mjs';
 
 const FAILS = [];
 const ck = (name, cond) => { if (!cond) FAILS.push(name); return cond; };
@@ -42,8 +42,7 @@ out.hiddenOnTitle = !(await shown('#invBtn'));
 ck(label + ':hidden on title', out.hiddenOnTitle);
 
 await hit('#startBtn');
-await p.waitForFunction(() => window.__enc && window.__enc.getState() === 'play',
-                        null, { timeout: 90000, polling: 120 });
+await toPlay(p);                 // v6.4: through the film, the card, into play
 await p.waitForTimeout(900);
 out.shownInPlay = await shown('#invBtn');
 ck(label + ':shown in play', out.shownInPlay);

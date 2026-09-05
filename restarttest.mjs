@@ -6,7 +6,7 @@
    a genuinely fresh run: fresh numbers, back on the grass, her gone, the
    black cleared, and the heap still openable.                              */
 import { chromium } from 'playwright';
-import { LAUNCH, PAGE } from './testlib.mjs';
+import { LAUNCH, PAGE, toPlay } from './testlib.mjs';
 const b = await chromium.launch(LAUNCH);
 
 const openPage = async () => {
@@ -14,8 +14,7 @@ const openPage = async () => {
   p.setDefaultNavigationTimeout(180000); p.setDefaultTimeout(90000);
   await p.goto(PAGE); await p.waitForTimeout(4000);
   await p.click('#startBtn');
-  await p.waitForFunction(() => window.__enc && window.__enc.getState() === 'play',
-                          null, { timeout: 90000, polling: 120 });
+  await toPlay(p);                 // v6.4: through the film, the card, into play
   return p;
 };
 

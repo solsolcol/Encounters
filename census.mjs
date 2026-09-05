@@ -1,5 +1,5 @@
 import { chromium } from 'playwright';
-import { LAUNCH, PAGE } from './testlib.mjs';
+import { LAUNCH, PAGE, toPlay } from './testlib.mjs';
 const errs=[];
 const b = await chromium.launch(LAUNCH);
 const p = await b.newPage({viewport:{width:480,height:320}});
@@ -16,8 +16,7 @@ await p.goto(PAGE); await p.waitForTimeout(6000);
 await p.click('#startBtn'); await p.waitForTimeout(1500);
 // the chapter card holds the screen for about four seconds after Start;
 // wait for the game to actually be playable rather than for a stopwatch
-await p.waitForFunction(()=>window.__enc && window.__enc.getState()==='play',
-                        null, { timeout: 90000, polling: 120 });
+await toPlay(p);                 // v6.4: through the film, the card, into play
 
 // full census: is every system present and running?
 console.log(JSON.stringify(await p.evaluate(()=>{

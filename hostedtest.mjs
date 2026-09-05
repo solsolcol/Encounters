@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url';
 import { readFile } from 'node:fs/promises';
 import { extname, join, normalize } from 'node:path';
 import { chromium } from 'playwright';
-import { LAUNCH } from './testlib.mjs';
+import { LAUNCH, toPlay } from './testlib.mjs';
 
 const ROOT = fileURLToPath(new URL('./dist/', import.meta.url));
 const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.glb': 'model/gltf-binary',
@@ -64,8 +64,7 @@ out.hostedMode = await p.evaluate(() => window.__enc.ready().hosted);
 
 // start the chapter: the card gates on the world being ready, then play
 await p.click('#startBtn');
-await p.waitForFunction(() => window.__enc && window.__enc.getState() === 'play',
-                        null, { timeout: 120000, polling: 150 });
+await toPlay(p);                 // v6.4: through the film, the card, into play
 out.reachedPlay = true;
 out.worldReady = await p.evaluate(() => window.__enc.ready());
 out.cardText = await p.$eval('#chapTitle', e => e.textContent.includes('Hell Note'));

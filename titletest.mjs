@@ -34,13 +34,21 @@ await p.evaluate(()=>{
   const t = document.getElementById('title'), c = document.getElementById('chapter');
   window.__cover = null;
   new MutationObserver(() => {
+    // v6.4: chapter 1 opens on a FILM, so the black that takes the title
+    // away is the film's cover; the card's own black comes after the film
     if (window.__cover === null && t.classList.contains('hide'))
-      window.__cover = +getComputedStyle(c).opacity;
+      window.__cover = Math.max(+getComputedStyle(c).opacity,
+                                +getComputedStyle(document.getElementById('cineFade')).opacity);
   }).observe(t, { attributes: true, attributeFilter: ['class'] });
 });
 
 // the card: black, then the words, then gone
 await (label==='phone' ? p.tap('#startBtn') : p.click('#startBtn'));
+// v6.4: the prologue plays first — tap through it to the card, the way a
+// player who has seen it does; the card's own checks below are unchanged
+await p.waitForFunction(() => window.__enc && window.__enc.getState() === 'cine',
+                        null, { timeout: 150000, polling: 120 });
+await p.evaluate(() => window.__enc.cine.skip());
 // wait for the black to actually arrive rather than for a stopwatch — this
 // renderer's frames are far apart and the fade is frame-driven
 await p.waitForFunction(

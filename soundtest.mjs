@@ -3,7 +3,7 @@
    Launched without any autoplay override, so what is measured is what a real
    visitor gets: nothing may make a sound until the page has been touched.   */
 import { chromium, devices } from 'playwright';
-import { LAUNCH, PAGE } from './testlib.mjs';
+import { LAUNCH, PAGE, toPlay } from './testlib.mjs';
 const b = await chromium.launch(LAUNCH);
 
 for (const [label, opts] of [['desktop', { viewport: { width: 520, height: 380 } }],
@@ -46,8 +46,7 @@ out.buttonOnTitle = await p.isVisible('#mute');
 await p.click('#startBtn');
 await p.waitForTimeout(1200);
 out.buttonOnChapterCard = await p.isVisible('#mute');
-await p.waitForFunction(() => window.__enc && window.__enc.getState() === 'play',
-                        null, { timeout: 90000, polling: 120 });
+await toPlay(p);                 // v6.4: through the film, the card, into play
 out.buttonInPlay = await p.isVisible('#mute');
 // his own line, three seconds after the world is his: heard when the sound is
 // on, suppressed entirely when it is muted. (By this point the mute state is

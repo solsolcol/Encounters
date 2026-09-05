@@ -21,7 +21,7 @@
    It reloads the page repeatedly on purpose: a save that only works without
    a reload is not a save.                                                 */
 import { chromium } from 'playwright';
-import { LAUNCH, PAGE } from './testlib.mjs';
+import { LAUNCH, PAGE, toPlay } from './testlib.mjs';
 
 const errs = [];
 const b = await chromium.launch(LAUNCH);
@@ -38,7 +38,7 @@ const boot = async () => {
 };
 const play = async () => {
   await p.click('#startBtn');
-  await p.waitForFunction(() => window.__enc.getState() === 'play', null, { timeout: 150000 });
+  await toPlay(p);                 // v6.4: through the film, the card, into play
 };
 const titleBits = () => p.evaluate(() => ({
   btn: document.getElementById('startBtn')?.textContent.trim(),
@@ -137,7 +137,7 @@ out.cancelKeepsSave = await p.evaluate(() =>
 await p.click('#newGameBtn');
 await p.waitForTimeout(400);
 await p.click('#newYes');
-await p.waitForFunction(() => window.__enc.getState() === 'play', null, { timeout: 150000 });
+await toPlay(p);                 // v6.4: through the film, the card, into play
 await p.waitForTimeout(800);
 out.newGameResets = await p.evaluate(() => {
   const e = window.__enc;

@@ -5,7 +5,7 @@
    software: what is being checked is that frames are being SKIPPED on
    purpose, not how fast one takes.                                        */
 import { chromium, devices } from 'playwright';
-import { LAUNCH, PAGE } from './testlib.mjs';
+import { LAUNCH, PAGE, toPlay } from './testlib.mjs';
 const b = await chromium.launch(LAUNCH);
 
 for (const [label, opts] of [['desktop',{viewport:{width:480,height:320}}],
@@ -35,8 +35,7 @@ const rate = () => p.evaluate(()=>new Promise(res=>{
 out.stepsPerSecOnTitle = await rate();
 
 await (label==='phone' ? p.tap('#startBtn') : p.click('#startBtn'));
-await p.waitForFunction(()=>window.__enc && window.__enc.getState()==='play',
-                        null, { timeout: 90000, polling: 120 });
+await toPlay(p);                 // v6.4: through the film, the card, into play
 out.stepsPerSecInPlay = await rate();
 
 // the shadow maps must be settled, not redrawn every frame

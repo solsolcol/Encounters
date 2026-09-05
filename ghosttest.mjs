@@ -11,7 +11,7 @@
      7. every sighting bites: sanity falls by chunks, fast
      8. drain persists between flickers; walking out stops everything     */
 import { chromium } from 'playwright';
-import { LAUNCH, PAGE } from './testlib.mjs';
+import { LAUNCH, PAGE, toPlay } from './testlib.mjs';
 const errs = [];
 const b = await chromium.launch(LAUNCH);
 const p = await b.newPage({ viewport: { width: 520, height: 360 } });
@@ -19,8 +19,7 @@ p.on('pageerror', e => errs.push('ERR ' + e.message));
 p.setDefaultNavigationTimeout(180000); p.setDefaultTimeout(60000);
 await p.goto(PAGE); await p.waitForTimeout(5000);
 await p.click('#startBtn'); await p.waitForTimeout(600);
-await p.waitForFunction(()=>window.__enc && window.__enc.getState()==='play',
-                        null, { timeout: 90000, polling: 120 });
+await toPlay(p);                 // v6.4: through the film, the card, into play
 await p.evaluate(() => ['prompt', 'hud', 'hint', 'decide'].forEach(i => document.getElementById(i).classList.add('hide')));
 
 const out = await p.evaluate(() => {
