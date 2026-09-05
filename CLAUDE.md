@@ -95,8 +95,9 @@ One source, two builds, built by `npm run build` (esbuild → `build.py` →
     a scene may direct, and `api.stage` for its own props).
   - `intro(c, s, api)` — OPTIONAL, added at v4.0. The chapter's opening
     FILM, in the same cutscene language, run against its own world BEFORE
-    the chapter card: black, film, title, night. Chapter 2 has one;
-    chapter 1 does not, and a chapter without one takes exactly the path
+    the chapter card: black, film, title, night. Chapters 2–5 have one,
+    and since v6.4 so does chapter 1 (the prologue — docs/V6.4-PROLOGUE.md);
+    a chapter without one, the fixture, takes exactly the path
     it always took. It begins on BLACK and stays there until its own
     `fade()` lifts it (v4.6: `playCineFn`'s `startFade`) — so a film opens
     on the dark it was written to open on, and `cinetest` checks it.
@@ -208,6 +209,11 @@ local HTTP server, so the suite drives the HOSTED build — the one
 players load — and needs `npm run build` first, same as before. The one
 deliberate exception is `csptest.mjs`, which serves `wrapped.html`
 itself under the strict no-blob/no-data CSP that shaped the hand-parsed
+loaders. **Since v6.4 pressing Start is a FILM** (chapter 1's prologue),
+so every harness that presses Start reaches play through testlib's
+`toPlay` — wait for the film or play, skip the film, wait for play — and
+the harnesses that test a film wait for `cine` themselves. A harness that
+waits for `play` straight after Start will time out, not fail wrong.
 loaders. On a real machine set `REAL_GPU=1` for much faster runs; in a
 GPU-less container SwiftShader runs ~1 fps — trust state polls, never
 stopwatches. Full suite in batches if the shell has a time cap.
@@ -1115,6 +1121,34 @@ What the baseline contains, by release:
   plays chapter 5 to `finish()` and walks the card — and now FAILS on a
   false check (LEARNINGS: `runtests` reads exit codes, not printed
   booleans). Twelve strings; sheet v35. docs/V6.3-EPISODE-CARD.md.
+- **v6.4** THE PROLOGUE — Chad: "a new highly cinematic, powerful,
+  tasteful intro cutscene when the player starts a new game ... starts
+  with the young animated master zav model ... self narrated". Chapter 1
+  has an opening FILM now, through the `intro` entry point v4.0 added and
+  chapter 1 alone never used: fifty-nine seconds, his own five lines in
+  Chad's words (the leaf, the toy, the money, "this time was different"),
+  three memories as POCKETS OF LIGHT forty-four metres off the deck
+  (chapter 4's bubble recipe: afternoon gold for a leaf on the grass, tube
+  green-white for a bear on a stairwell landing, sodium orange for a
+  five-dollar note on a drain grate — the camera at the height of the
+  things he finds, his face turned down or above the frame), then the
+  present: the block at night, him from behind at the spawn, the CLOSE-UP,
+  the world slowed to 0.12, one note crossing eight centimetres in front
+  of his eyes on `strings` — her chord, planted before she exists — his
+  head turning to follow it, and the lens climbing after the paper up the
+  moon's line to black and the chapter card. The boy is Chad's rigged
+  young master (17 MB → 2.2 MB, five Mixamo takes kept) and he is POSED
+  BY TIME: every take is parked at the frame the cine clock asks for and
+  never played (`boyPose`), so a seek, a skip and a one-frame-a-second box
+  land on the same pose. The leaf and the bear ride his hand bone from
+  their grab frames; the money is Chad's own photograph on a folded
+  two-plane prop. Five new lines (Aaron) and four new sounds; chapter 1's
+  `ready()` waits for him. Engine cost: rows in `STING_SAMPLE` and
+  `JAMES_TAKES`, four embed tokens — zero seams. And the SUITE learned
+  that Start is a film now: testlib's `toPlay` taps through it the way a
+  player who has seen it does, and every harness that presses Start goes
+  through it. Two credit rows; sheet v36. docs/V6.4-PROLOGUE.md is the
+  build's memory, the shipped timeline included.
 - **v5.28** AARON — Chad, after two rounds of level work on River: *"i'm still
   not satisfied with this voice."* All 79 of the boy's takes regenerated in a
   THIRD voice (Aaron, `B6uUx2p7cRgxseOUyP6P`), under an approved prompt sheet

@@ -655,3 +655,45 @@ the sealed card by `packWarm` in `finish()` when the chapter is a case's
 last. The rest of the card's sound is the vocabulary that existed: `kick`
 under the stamp, `uiclick` per chapter stop, `uirank` as the score settles,
 `uiconfirm` as the trail lights. docs/V6.3-EPISODE-CARD.md.
+
+## v6.4 — the prologue: the boy's five lines and four new sounds
+
+Chapter 1's opening film (docs/V6.4-PROLOGUE.md). Flow
+`5iXzaZia4TLXHBqw6Tr5`; masters, `lines.json` (every prompt, node and
+session id) and `encode.mjs` in `masters/v6.4/`.
+
+**The lines — `vpro1`–`vpro5`, James (Aaron `B6uUx2p7cRgxseOUyP6P`,
+eleven_v3), the v5.28 prompt rules** (the registry's words exactly, no
+added capitals, a tag that names an EMOTION, ellipses only to slow a read).
+Two takes per line, picked by measure. Peak-matched to −3.9 dBFS like the
+rest of his takes, both encodings, `secs` measured:
+
+| id | words | tag | secs | note |
+|---|---|---|---|---|
+| `vpro1` | Ever since I was young, I loved picking things up from the ground. | warm, fond, remembering | 4.47 | every take read at 3.3–3.7 words a second against the game's 2.3 median, an ellipsis retake included; slowed 0.9× offline (`atempo`, the v5.30 fallback) |
+| `vpro2` | Sometimes it was just random leaves that I found interesting. | fond, a little amused | 4.05 | slowed by an ellipsis retake, 2.6 w/s |
+| `vpro3` | Sometimes I found thrown-away toys that I liked, when nobody else did. | quietly proud, tender | 5.56 | slowed by an ellipsis retake, 2.4 w/s |
+| `vpro4` | And if I'm lucky... sometimes I find money. | a small grin, mischievous | 3.00 | |
+| `vpro5` | This time however... this time was different. | quiet, uneasy, the smile gone | 3.47 | |
+
+**All five are in the SHARED pack, by construction** — `JAMES_TAKES` names
+every one of his takes in main.js so his bus can find them, and the split's
+rule is that a sound named in main.js is the engine's. That has been true
+of every voice line since v5.26; it is written down here because the plan
+said "in chapter 1's pack" and the build proved it wrong. Chapter 1's own
+pack gains the four sounds below.
+
+**The sounds — ElevenLabs sound effects v2, two takes each:**
+
+| sound | what | secs | level | note |
+|---|---|---|---|---|
+| `leafpick` | a dry leaf lifted from short grass, close | 2.04 | arrived at −31 dBFS, installed at −8.7 | |
+| `toypick` | a plush toy lifted off concrete | 2.04 | −21.9 → −7.4 | |
+| `noteslow` | the slow-motion pass: paper turning in the air, stretched, a low tone under it | 14.03 | −4.3 | the plan said 8 s; the model gave 14 and the film uses all of it (45.0–59.0) |
+| `memday` | a warm afternoon far away, under the three memories | 14.03 | −13.3 (a bed) | BUILT, not generated whole: the model chooses its own length, and the composite prompt ("light wind through tree leaves, faint cicadas, far-off traffic") came back as 0.5–2 s clips twice. A 16 s cicada drone (one generation, `cicadas-a`) under a 2 s wind (`wind-b`) looped, with fades, in ffmpeg. Re-cued at each pocket: 0.4, 13.4, 24.4 |
+
+Reused, all already in the vocabulary: `memwash` (chapter 4's transition
+wash — already SHARED, the rhyme the plan wanted comes free), `step`,
+`take`, `dread`, `strings` (her chord, on the note as it passes his eyes),
+`boom`. The chapter's `amb` and fire loops are ducked to 0.10 through the
+pockets, brought back under `vpro5`, and dipped to 0.35 for the close-up.

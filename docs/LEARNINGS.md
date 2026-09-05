@@ -2004,3 +2004,76 @@ The new block sets `process.exitCode = 1` and prints `errors: [...]` when
 a check is false, as `menutest` does. Rule: a harness earns its place only
 if a wrong answer turns the line red — after writing a check, make it fail
 once (or read how the runner judges it) before trusting it green.
+
+## A paused action is not "running", but it is still scheduled (v6.4)
+
+The prologue's boy is posed by time: every take parked at the frame the
+cine clock asks for, `mixer.update(0)`, nothing played. The first pose
+player stopped only the actions whose `isRunning()` was true — and every
+pick in the film came out as half a walk (the hand 0.67 m from the leaf at
+the grab frame). A PAUSED action returns `isRunning()` false while it
+stays scheduled at its old weight, so the walk it had blended out of was
+still in the mix. `stop()` every action the pose does not use, without
+asking, and use `isScheduled()` to decide whether one needs `reset()` and
+`play()` before it can be parked. Verified by the hand's distance to the
+thing at the grab: 0.156 m after.
+
+## A prop in a hand undoes the bone's scale, and a fit must multiply (v6.4)
+
+Two sizes were wrong in one afternoon. The leaf and the bear parented to
+the boy's hand bone came out a hundred times too small: a Mixamo rig's
+bones are in the rig's CENTIMETRE units (the hand's world scale measured
+0.0129), so a group under the bone is scaled by the inverse of the BONE's
+world scale, not the model's, and bone +y runs down the fingers. Then the
+bear at its grab was a giant: `fitTo` set an absolute scale on a clone that
+had already been fitted once. A fit is a multiplier — `scale.multiplyScalar
+(s)` — so fitting twice fits once. Both were found from rendered frames,
+not from numbers that looked right.
+
+## A glide that holds k = 1 beats every step after it (v6.4)
+
+The v5.07 law — a track HOLDS at k = 1 after its end, later tracks win — has
+a corollary that cost an hour: a walk glide written as a track keeps
+writing the group's position every frame at k = 1 forever, so every later
+`step` that placed the boy in the next pocket was overwritten the same
+frame. He stood in pocket one for the whole film. A glide that moves an
+actor must go INERT once it has delivered its end (chapter 5's `yawTr`
+does; the prologue's `glide` does now) — a move is not a pose.
+
+## A prop that is not visible may be millimetres under the floor (v6.4)
+
+The leaf was invisible in every frame of shot 1a, with nothing wrong in
+the loader, the material or the light. It lay at y 0.018 on a lawn disc
+whose top was 0.02 — two millimetres under it. A "missing" prop is
+checked against the SURFACE it lies on, not against zero.
+
+## The sound-effects model picks its own length (v6.4)
+
+Four attempts at a fourteen-second afternoon bed — wind in trees,
+cicadas, far traffic — returned clips of 0.5 to 2 s, while a plain
+cicada-drone prompt returned 16 s. The model chooses a length that fits
+what it hears in the prompt; a composite prompt reads as an event, a
+single texture reads as a bed. Build a bed from textures — one drone, one
+looped layer, fades — rather than re-prompting for the length wanted.
+
+## Read a projection only after the frame that drew it (v6.4)
+
+`__enc.cine.seek(t)` pauses the film and re-applies every passed track,
+but the CANVAS still shows the previous frame until the next animation
+frame draws — and a probe that projected the note's screen position
+straight after the seek read garbage for the first hour. Two
+`requestAnimationFrame`s after a seek, then measure, then screenshot.
+
+## When Start became a film, the suite had to learn to tap (v6.4)
+
+Chapter 1 gained an opening film and `cinetest`'s first page died at its
+wait for play: a 59 s film at one software frame a second is two minutes,
+past every harness's timeout. Eighteen more harnesses press Start and wait
+for play the same way. The fix is one helper (`testlib.toPlay`: wait for
+the film or play, skip the film if that is what came, wait for play) and
+one line per harness — what a player who has seen the film does. Two
+things worth keeping from it. The failure was a TIMEOUT, not a wrong
+answer, so a harness that had used a stopwatch instead of a state wait
+would have run its checks inside the film and passed. And a change to the
+first chapter's entry is a change to the suite's entry: grep for
+`startBtn` before deciding a chapter change is "just the chapter".

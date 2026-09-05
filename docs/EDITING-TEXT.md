@@ -11,13 +11,32 @@ text comes up at all — the reply carries the full URL, not the version
 number alone. He reads these on his phone; a number he has to go hunting
 for in Drive is not a link.
 
-**Master Z's Encounters — GAME TEXT v35 (edit here)** in his Drive
-(id `1VyBwICzc7TF8ANyj8U_OrOz_aH2RhNJVLPQMe7nMOpQ` — the **v35** sheet,
-made at v6.3, tabbed: **UI TEXT** (198 rows, the engine's words),
-**EPISODE 1** (110 rows, chapters 1–5's words) and **VOICE LINES** (97).
-<https://docs.google.com/spreadsheets/d/1VyBwICzc7TF8ANyj8U_OrOz_aH2RhNJVLPQMe7nMOpQ/edit>
+**Master Z's Encounters — GAME TEXT v36 (edit here)** in his Drive
+(id `1zWSm0M5A8i8T1YdPlKsOneQ3bS2eFd1GNaGY_RbUK3E` — the **v36** sheet,
+made at v6.4, tabbed: **UI TEXT** (204 rows, the engine's words),
+**EPISODE 1** (110 rows, chapters 1–5's words) and **VOICE LINES** (102).
+<https://docs.google.com/spreadsheets/d/1zWSm0M5A8i8T1YdPlKsOneQ3bS2eFd1GNaGY_RbUK3E/edit>
 
-What changed from v34: **eleven rows ADDED, none changed, no spoken word.**
+What changed from v35: **eleven rows ADDED, none changed; five new spoken
+lines.** The prologue (v6.4, docs/V6.4-PROLOGUE.md) brings two credit
+rows to UI TEXT — `credits.teddy` / `credits.teddyWho` /
+`credits.teddyLink` ("The toy in the prologue" · "Teddybear toy ·
+Sketchfab" · "sketchfab.com · teddybear-toy") and `credits.leaf` /
+`credits.leafWho` / `credits.leafLink` ("The leaf in the prologue" ·
+"Birch leaf · popovs · Sketchfab (CC BY 4.0)" · "sketchfab.com ·
+birch-leaf") — and five rows to VOICE LINES, the boy's `vpro1`–`vpro5`
+("Ever since I was young, I loved picking things up from the ground." …
+"This time however... this time was different."), each with its speaker,
+its moment in the film and its measured length. Chapter 1's own words are
+untouched: the film has no card text of its own. Every v35 cell is
+byte-identical. v35 (id `1VyBwICzc7TF8ANyj8U_OrOz_aH2RhNJVLPQMe7nMOpQ`)
+is superseded; its metadata was checked before v36 went to him (created
+01:14:58, modified 01:14:59 — the conversion itself), so it holds no edit
+of his to import. Provenance: v36 was published from the fresh `.xlsx`
+export, read back as three tables, and every cell diffed against the
+uploaded workbook by `tools/verifytabs.py` — 416 rows, zero differences.
+
+What changed from v34 (v35, at v6.3): **eleven rows ADDED, none changed, no spoken word.**
 The episode-complete card (v6.3, docs/V6.3-EPISODE-CARD.md) says eleven
 new things, all in a new "The episode-complete card (v6.3)" section of UI
 TEXT: `episode.label` ("Episode complete"), `episode.stamp` ("Case
