@@ -818,7 +818,9 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
   transition:opacity .5s var(--ease),transform .7s cubic-bezier(.16,.9,.28,1)}
 #epRank.in{opacity:1;transform:none}
 #epRank.glow{animation:rankglow 2.8s ease-in-out infinite}
-.epClosed{position:absolute;right:-18px;top:16px;transform:rotate(-14deg);border:2.5px solid var(--seal);color:var(--seal);
+/* v6.7: the stamp sits UNDER the rank, not across its corner — at 22vw the
+   letter's right arm ran into it (Chad). A stamp under the mark, tilted. */
+.epClosed{position:relative;display:inline-block;margin:22px 0 0;transform:rotate(-13deg);border:2.5px solid var(--seal);color:var(--seal);
   font-family:var(--ui);font-size:1.02rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
   padding:7px 12px;opacity:0;white-space:nowrap;background:rgba(7,8,11,.55)}
 .epClosed.stampin{animation:stampin .5s cubic-bezier(.16,.9,.28,1) both}

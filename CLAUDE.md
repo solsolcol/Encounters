@@ -42,7 +42,14 @@ from his **phone**. Consequences:
    break; the full suite only before a substantial release. `node
    runtests.mjs <names>` runs picked harnesses two at a time.
 3. **Version every good build**: commit with a real message, tag `vN.N`,
-   push the branch, hand Chad the dist zip.
+   push the branch, hand Chad the dist zip. **THE DEPLOY COMES FIRST**
+   (Chad, v6.6, after a Drive upload held a finished build for hours:
+   "the most important thing is making sure the build is live on netlify").
+   Order of a release: build → harnesses → commit/push → DEPLOY and
+   byte-verify → then the sheet, the docs' sheet link, any Drive tidy-up.
+   Nothing that talks to Google Drive may stand between a green build and
+   Netlify; if the sheet upload fails, the build still ships and the sheet
+   is retried afterwards.
    **The backup bundle is MILESTONE-ONLY since v4.81** (Chad's call — "i
    feel it is unnecesary", and he was right): refresh
    `Encounters-backup.bundle` (`git bundle create
@@ -1202,6 +1209,14 @@ What the baseline contains, by release:
   the chin capped, a two-second macro riding with the paper, the world back
   to speed under the climb. The film is 62 s. Sheet v38.
   docs/V6.6-PLAN.md is the build's memory, with what shipped against the plan.
+- **v6.7** THE STAMP, CLEAR OF THE MARK — Chad: on the episode-complete
+  card "the 'case closed' stamping label is too close to the score letter
+  and is colliding or overlapping it". It sat across the letter's top-right
+  corner; at the phone's 22vw the A's right arm ran into it. The stamp now
+  slams in UNDER the rank (an inline-block with 22 px of air, tilted −13°),
+  measured by bounding box on phone and desktop: no overlap. CSS only, no
+  string moved, no sheet. And the release order is now a rule (above):
+  the Netlify deploy comes before the sheet and anything Drive.
  *"i'm still
   not satisfied with this voice."* All 79 of the boy's takes regenerated in a
   THIRD voice (Aaron, `B6uUx2p7cRgxseOUyP6P`), under an approved prompt sheet
