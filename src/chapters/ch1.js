@@ -446,10 +446,12 @@
      scales the clock the notes, the smoke and the embers read; `noteT` is
      that clock. In play it is 1 and the chapter is exactly what it was. */
   let slowMo = 1, noteT = 0;
+  let pocketTick = null;    // v6.6: the prologue set's own motion (the sea, a kite), only while it is shown
 
   function updateNotes(dt, t) {
     const sdt = dt * slowMo;
     noteT += sdt;
+    if (pocketTick && memRoot.visible) pocketTick(sdt, t);
     for (let i = 0; i < FLY_N; i++) {
       const f = airborne[i];
       f.a += f.swirl * sdt * noteStorm * (3 / Math.max(f.r, 2));  // tighter orbits move faster
@@ -795,7 +797,7 @@
     /* docs/V6.4-PROLOGUE.md is the build's memory.                         */
     /* ================================================================== */
     const MEM = new THREE.Vector3(-44, 0, 6);          // memRoot, world
-    const POCKET_Z = [0, -16, -32];                    // the three pockets, local z
+    const POCKET_Z = [0, -34, -74];                   // the three pockets, local z (v6.6: bubbles of 18, 14 and 20 m)
     const memRoot = new THREE.Group();
     memRoot.position.copy(MEM);
     memRoot.visible = false;
@@ -809,119 +811,406 @@
     const matPocketCon = matConcrete.clone();
     const matTarmac = new THREE.MeshStandardMaterial({ color: 0x1c1d20, roughness: 0.96 });
     const matPlaster = new THREE.MeshStandardMaterial({ color: 0xb9b3a4, roughness: 0.92 });
-    const memLights = [];                              // [light, intensity when on]
+    /* v6.6 — THE THREE MEMORIES, BUILT AS PLACES (Chad: "the environments
+       are too empty. Build them properly"). Each pocket is a bigger bubble
+       whose inside is a PAINTED SKY — the evening over East Coast Park, the
+       night outside a stairwell, a hot blue afternoon over an estate — and
+       everything inside it wears a fog-free material, because the chapter's
+       fog is chapter 1's midnight and the camera stands forty metres out in
+       it. Light is still two or three point lights per pocket, switched by
+       the film; the count only changes on black.                          */
+    const nf = (m, o) => { const c = m.clone(); c.fog = false; if (o) Object.assign(c, o); return c; };
+    const std = (o) => new THREE.MeshStandardMaterial(Object.assign({ fog: false }, o));
+    const mesh = (parent, geo, mat, x, y, z, rx = 0, ry = 0, rz = 0) => {
+      const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.rotation.set(rx, ry, rz); parent.add(m); return m;
+    };
+    const boxAt = (parent, w, h, d, mat, x, y, z, ry = 0) => mesh(parent, new THREE.BoxGeometry(w, h, d), mat, x, y, z, 0, ry, 0);
+    const cylAt = (parent, rt, rb, h, mat, x, y, z, seg = 10) => mesh(parent, new THREE.CylinderGeometry(rt, rb, h, seg), mat, x, y, z);
+    const srgb = (t) => { t.colorSpace = THREE.SRGBColorSpace; return t; };
+    /* a sky is a square canvas wrapped on the bubble: row 0 is the zenith,
+       the middle row the horizon (a SphereGeometry's v runs top to bottom);
+       column 0.25 faces +z, 0.5 faces +x, 0.75 faces -z (measured from the
+       geometry's u: phi = 0 is -x). */
+    const SKY_S = LOW ? 512 : 1024;
+    const cloud = (ctx, S, cx, cy, w, h, top, bottom, a) => {
+      ctx.globalAlpha = a;
+      const puffs = [[0, 0, 1, 1], [-0.32, 0.12, 0.62, 0.72], [0.34, 0.1, 0.66, 0.78], [-0.1, -0.18, 0.5, 0.55], [0.14, -0.14, 0.44, 0.5]];
+      for (const [px, py, pw, ph] of puffs) {
+        const g = ctx.createLinearGradient(0, cy + py * h - ph * h, 0, cy + py * h + ph * h);
+        g.addColorStop(0, top); g.addColorStop(1, bottom);
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.ellipse(cx + px * w, cy + py * h, pw * w, ph * h, 0, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    };
+    const skyTex = (paint) => {
+      const S = SKY_S, [c, ctx] = cnv(S);
+      paint(ctx, S);
+      const t = srgb(new THREE.CanvasTexture(c));
+      t.wrapS = THREE.RepeatWrapping;
+      return t;
+    };
+    const bubble = (z, r, tex) => {
+      const g = new THREE.Group();
+      g.position.z = z;
+      memRoot.add(g);
+      g.add(new THREE.Mesh(new THREE.SphereGeometry(r, 36, 22),
+        new THREE.MeshBasicMaterial({ map: tex, side: THREE.BackSide, fog: false })));
+      return g;
+    };
+    const memLights = [[], [], []];                    // per pocket: [light, intensity when on]
     const memLight = (parent, color, on, dist, decay, x, y, z) => {
       const L = new THREE.PointLight(color, 0, dist, decay);
       L.position.set(x, y, z);
       parent.add(L);
-      memLights.push([L, on]);
+      memLights[parent.userData.p].push([L, on]);
       return L;
     };
-    const bubbleGeo = new THREE.SphereGeometry(6.5, 20, 12);
-    const bubbleMat = new THREE.MeshBasicMaterial({ color: 0x0d0b16, side: THREE.BackSide, fog: false });
-    const pocket = (z) => {
-      const g = new THREE.Group();
-      g.position.z = z;
-      memRoot.add(g);
-      g.add(new THREE.Mesh(bubbleGeo, bubbleMat));
+    // an evening over the sea: deep blue down to a gold horizon, the sun low at +z, a few lit clouds
+    const skyEvening = skyTex((ctx, S) => {
+      const g = ctx.createLinearGradient(0, 0, 0, S);
+      g.addColorStop(0, '#16224a'); g.addColorStop(0.22, '#3b5a95'); g.addColorStop(0.38, '#9a8aa0');
+      g.addColorStop(0.46, '#e3a070'); g.addColorStop(0.5, '#f5c37a'); g.addColorStop(0.505, '#24485c');
+      g.addColorStop(0.7, '#182a38'); g.addColorStop(1, '#0c141c');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, S, S);
+      const sx = S * 0.25, sy = S * 0.472;                       // the sun: +z, five degrees up
+      const glow = ctx.createRadialGradient(sx, sy, 0, sx, sy, S * 0.16);
+      glow.addColorStop(0, 'rgba(255,236,190,0.95)'); glow.addColorStop(0.18, 'rgba(255,200,120,0.55)');
+      glow.addColorStop(0.5, 'rgba(255,160,90,0.18)'); glow.addColorStop(1, 'rgba(255,140,80,0)');
+      ctx.fillStyle = glow; ctx.beginPath(); ctx.ellipse(sx, sy, S * 0.22, S * 0.10, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#fff6dc'; ctx.beginPath(); ctx.arc(sx, sy, S * 0.011, 0, Math.PI * 2); ctx.fill();
+      const rows = [[0.05, 0.30, 0.05, 0.02], [0.17, 0.26, 0.07, 0.028], [0.31, 0.34, 0.08, 0.03], [0.46, 0.29, 0.06, 0.022],
+                    [0.58, 0.37, 0.09, 0.03], [0.72, 0.31, 0.06, 0.024], [0.86, 0.35, 0.08, 0.03], [0.95, 0.27, 0.05, 0.02],
+                    [0.12, 0.41, 0.08, 0.014], [0.36, 0.43, 0.09, 0.012], [0.66, 0.42, 0.08, 0.013], [0.9, 0.44, 0.07, 0.011],
+                    [0.24, 0.38, 0.05, 0.016], [0.52, 0.40, 0.04, 0.012], [0.79, 0.39, 0.05, 0.014], [0.02, 0.44, 0.06, 0.01]];
+      for (const [u, v, w, h] of rows) {
+        const near = Math.abs(u - 0.25) < 0.2;                   // the clouds by the sun catch its colour
+        cloud(ctx, S, u * S, v * S, w * S, h * S, near ? '#ffe2c0' : '#e8dce8', near ? '#e39868' : '#8f7f9a', v > 0.4 ? 0.7 : 0.9);
+      }
+      // a far shore to the left of the sun, flat and dark (Chad's ECP has one across the strait)
+      ctx.fillStyle = 'rgba(40,60,80,0.8)'; ctx.fillRect(S * 0.05, S * 0.496, S * 0.11, S * 0.006);
+    });
+    // a night outside: black, and one neighbouring block's windows toward +z
+    const skyNight = skyTex((ctx, S) => {
+      ctx.fillStyle = '#0d0b16'; ctx.fillRect(0, 0, S, S);
+      for (let r = 0; r < 9; r++) for (let c = 0; c < 8; c++) {
+        if (((r * 7 + c * 3) % 5) === 0) continue;                // not every flat is up
+        const warm = ((r + c) % 4) !== 0;
+        ctx.fillStyle = warm ? 'rgba(255,214,150,0.85)' : 'rgba(160,200,255,0.7)';
+        ctx.fillRect(S * (0.19 + c * 0.014), S * (0.415 + r * 0.0085), S * 0.006, S * 0.0045);
+      }
+    });
+    // a hot afternoon: blue to haze, cumulus, the sun high behind the camera, a faint estate all round
+    const skyDay = skyTex((ctx, S) => {
+      const g = ctx.createLinearGradient(0, 0, 0, S);
+      g.addColorStop(0, '#2a68d0'); g.addColorStop(0.28, '#6ea6e8'); g.addColorStop(0.47, '#c9ddf0');
+      g.addColorStop(0.5, '#e6eef2'); g.addColorStop(0.505, '#7a9a6e'); g.addColorStop(1, '#3a5a34');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, S, S);
+      const sx = S * 0.25, sy = S * 0.2;
+      const glow = ctx.createRadialGradient(sx, sy, 0, sx, sy, S * 0.2);
+      glow.addColorStop(0, 'rgba(255,255,255,0.9)'); glow.addColorStop(0.2, 'rgba(255,250,230,0.35)'); glow.addColorStop(1, 'rgba(255,250,230,0)');
+      ctx.fillStyle = glow; ctx.beginPath(); ctx.arc(sx, sy, S * 0.2, 0, Math.PI * 2); ctx.fill();
+      // distant blocks all round the horizon, pale in the haze, windows as dots
+      for (let i = 0; i < 26; i++) {
+        const u = (i * 0.0385 + (i % 3) * 0.008) % 1, w = 0.02 + (i % 4) * 0.008, h = 0.02 + ((i * 5) % 4) * 0.009;
+        ctx.fillStyle = `rgba(${150 + (i % 3) * 12},${165 + (i % 2) * 10},${185},0.75)`;
+        ctx.fillRect(u * S, (0.5 - h) * S, w * S, h * S);
+        ctx.fillStyle = 'rgba(210,225,240,0.6)';
+        for (let r = 0; r < 4; r++) for (let c = 0; c < 3; c++)
+          ctx.fillRect((u + 0.003 + c * (w / 3)) * S, (0.5 - h + 0.004 + r * (h / 4)) * S, S * 0.003, S * 0.002);
+      }
+      const rows = [[0.08, 0.30, 0.07, 0.03], [0.2, 0.24, 0.09, 0.04], [0.35, 0.33, 0.08, 0.03], [0.5, 0.27, 0.1, 0.045],
+                    [0.63, 0.36, 0.07, 0.028], [0.76, 0.29, 0.09, 0.04], [0.9, 0.33, 0.08, 0.032], [0.44, 0.41, 0.09, 0.02], [0.82, 0.42, 0.1, 0.018],
+                    [0.14, 0.4, 0.06, 0.016], [0.29, 0.43, 0.07, 0.014], [0.58, 0.44, 0.05, 0.012], [0.97, 0.38, 0.06, 0.02]];
+      for (const [u, v, w, h] of rows) cloud(ctx, S, u * S, v * S, w * S, h * S, '#ffffff', '#b8c4d8', 0.95);
+    });
+    const P1 = bubble(POCKET_Z[0], 18, skyEvening), P2 = bubble(POCKET_Z[1], 14, skyNight), P3 = bubble(POCKET_Z[2], 20, skyDay);
+    P1.userData.p = 0; P2.userData.p = 1; P3.userData.p = 2;
+    // shared bits: a fog-free tree in two greens, a bench, a bin
+    const treeAt = (parent, x, z, s, leaf, trunk, seed = 1) => {
+      const g = new THREE.Group(); g.position.set(x, 0, z); g.scale.setScalar(s); g.rotation.y = seed * 1.7;
+      parent.add(g);
+      mesh(g, trunkGeo, trunk, 0, 2.6, 0);
+      for (let i = 0; i < 7; i++) {
+        const b = new THREE.Mesh(leafGeo[(i + seed) % 3], leaf);
+        b.position.set(((i * 5 + seed) % 5 - 2) * 0.62, 4.5 + ((i * 3 + seed) % 4) * 0.45, ((i * 7 + seed) % 5 - 2) * 0.62);
+        b.scale.setScalar(0.9 + ((i + seed) % 3) * 0.16);
+        b.rotation.set(i * 0.7 + seed, i * 1.3, i * 0.4);
+        g.add(b);
+      }
       return g;
     };
-    const P1 = pocket(POCKET_Z[0]), P2 = pocket(POCKET_Z[1]), P3 = pocket(POCKET_Z[2]);
+    const matBenchWood = std({ color: 0x8a5a36, roughness: 0.8 }), matBenchIron = std({ color: 0x2a2a2a, roughness: 0.6, metalness: 0.6 });
+    const benchAt = (parent, x, z, ry) => {
+      const g = new THREE.Group(); g.position.set(x, 0, z); g.rotation.y = ry; parent.add(g);
+      for (const dy of [-0.16, 0, 0.16]) boxAt(g, 1.7, 0.035, 0.13, matBenchWood, 0, 0.46, dy);   // three slats
+      for (const dy of [0.16, 0.30]) boxAt(g, 1.7, 0.12, 0.03, matBenchWood, 0, 0.62 + dy, -0.22);
+      for (const dx of [-0.72, 0.72]) { boxAt(g, 0.06, 0.46, 0.42, matBenchIron, dx, 0.23, 0); boxAt(g, 0.06, 0.5, 0.05, matBenchIron, dx, 0.7, -0.22); }
+      return g;
+    };
+    const binAt = (parent, x, z, mat) => cylAt(parent, 0.24, 0.22, 0.74, mat, x, 0.37, z, 12);
 
-    /* POCKET ONE · the verge — grass, a kerb, a footpath, a tree at the edge
-       of frame, and a late afternoon that comes in low and gold from the
-       side with a cool sky fill from the other. */
+    /* POCKET ONE · EAST COAST PARK, EVENING (Chad). He faces -z at the leaf
+       and the lens looks back past him toward +z: so +z is the sea — lawn,
+       the jogging path, sand, water to the bubble's edge, two tankers on
+       the horizon, the sun low over all of it. Casuarinas and coconut palms
+       along the path, a bench, a bin, a lamp, a kite. Everything on the
+       lawn keeps the leaf's spot (0, 0.04, 0) as it was. */
     {
-      const lawn = new THREE.Mesh(new THREE.CircleGeometry(5.6, 28), matGrass);
+      const lawnMat = nf(matGrass, { color: new THREE.Color(1.35, 1.5, 1.0) });
+      const lawn = new THREE.Mesh(new THREE.CircleGeometry(18.6, 40), lawnMat);
       lawn.rotation.x = -Math.PI / 2; lawn.position.y = 0.02;
       P1.add(lawn);
-      const kerb = new THREE.Mesh(new THREE.BoxGeometry(9, 0.14, 0.24), matPocketCon);
-      kerb.position.set(0, 0.07, -2.0);
-      P1.add(kerb);
-      const path = new THREE.Mesh(new THREE.BoxGeometry(9, 0.10, 1.6), matPocketCon);
-      path.position.set(0, 0.05, -3.0);
-      P1.add(path);
-      const trunk = new THREE.Mesh(trunkGeo, matDarkWood);
-      trunk.position.set(-2.7, 2.6, -0.8);
-      P1.add(trunk);
-      for (let i = 0; i < 7; i++) {
-        const b = new THREE.Mesh(leafGeo[i % 3], leafMat);
-        b.position.set(-2.7 + ((i % 3) - 1) * 1.1, 4.5 + (i % 2) * 1.0, -0.8 + (((i * 7) % 5) - 2) * 0.5);
-        b.scale.setScalar(0.9 + (i % 3) * 0.15);
-        b.rotation.set(i * 0.7, i * 1.3, i * 0.4);
-        P1.add(b);
+      const pathMat = nf(matConcrete, { color: new THREE.Color(1.5, 1.45, 1.35) });
+      boxAt(P1, 34, 0.06, 2.4, pathMat, 0, 0.03, 4.3);                          // the jogging path along the beach
+      boxAt(P1, 34, 0.012, 0.09, std({ color: 0xf0e2a0, roughness: 0.9 }), 0, 0.062, 4.3);   // its centre line
+      boxAt(P1, 9, 0.14, 0.24, pathMat, 0, 0.07, -2.0);                          // the kerb behind him
+      boxAt(P1, 9, 0.10, 1.6, pathMat, 0, 0.05, -3.0);                           // and the cycling track
+      const sand = mesh(P1, new THREE.PlaneGeometry(40, 6.4), std({ color: 0xc9b58c, roughness: 1 }), 0, 0.03, 8.7, -Math.PI / 2);
+      sand.name = 'sand';
+      // the sea: a canvas of streaks, scrolled slowly by pocketTick
+      const seaCanvas = (() => { const s = 256, [c, ctx] = cnv(s);
+        ctx.fillStyle = '#2b6d86'; ctx.fillRect(0, 0, s, s);
+        for (let i = 0; i < 260; i++) { ctx.fillStyle = `rgba(${120 + Math.random() * 60},${180 + Math.random() * 40},${200 + Math.random() * 40},${0.12 + Math.random() * 0.25})`;
+          ctx.fillRect(Math.random() * s, Math.random() * s, 6 + Math.random() * 40, 1 + Math.random() * 2); }
+        return c; })();
+      const seaTex = srgb(new THREE.CanvasTexture(seaCanvas)); seaTex.wrapS = seaTex.wrapT = THREE.RepeatWrapping; seaTex.repeat.set(8, 3);
+      const seaMat = std({ map: seaTex, color: 0xffffff, roughness: 0.32, metalness: 0.08, emissive: 0x0a2a3a, emissiveIntensity: 0.6 });
+      mesh(P1, new THREE.PlaneGeometry(44, 14), seaMat, 0, 0.04, 17.0, -Math.PI / 2);
+      const foamMat = std({ color: 0xf4f8f6, roughness: 1, transparent: true, opacity: 0.55, depthWrite: false });
+      for (const [z, w] of [[10.05, 30], [10.5, 26], [11.2, 22]]) mesh(P1, new THREE.PlaneGeometry(w, 0.14), foamMat, (z - 10) * 3, 0.046, z, -Math.PI / 2);
+      const shipMat = std({ color: 0x2a2e36, roughness: 0.9 });
+      for (const [x, z, s] of [[-5.5, 16.4, 1.0], [6.5, 15.6, 0.8], [1.5, 17.1, 0.6]]) {
+        boxAt(P1, 2.2 * s, 0.32 * s, 0.4 * s, shipMat, x, 0.18 * s, z);
+        boxAt(P1, 0.4 * s, 0.34 * s, 0.34 * s, shipMat, x + 0.7 * s, 0.5 * s, z);
       }
-      memLight(P1, 0xffd2a0, 13.0, 13, 1.4, 2.4, 2.4, 1.8);     // the sun, low
-      memLight(P1, 0x9fb8ff, 1.3, 11, 1.6, -2.2, 3.2, -2.6);  // the sky
+      // casuarinas: tall, thin, wispy — the tree East Coast is planted with
+      const casLeaf = std({ color: 0x2f5a30, roughness: 1, flatShading: true }), casTrunk = std({ color: 0x4a3a2c, roughness: 0.9 });
+      for (const [x, z, s] of [[-7.2, 6.4, 1.0], [8.4, 5.9, 1.15], [-12.5, 1.2, 0.9], [13.0, 0.5, 1.05], [-3.0, 9.6, 0.8]]) {
+        const g = new THREE.Group(); g.position.set(x, 0, z); g.scale.setScalar(s); P1.add(g);
+        cylAt(g, 0.1, 0.2, 8.0, casTrunk, 0, 4.0, 0, 7);
+        for (let i = 0; i < 6; i++) {
+          const b = new THREE.Mesh(leafGeo[i % 3], casLeaf);
+          b.position.set(((i * 3) % 3 - 1) * 0.8, 5.6 + i * 0.55, ((i * 5) % 3 - 1) * 0.8);
+          b.scale.set(0.9, 1.5, 0.9); b.rotation.set(i, i * 0.6, 0);
+          g.add(b);
+        }
+      }
+      // coconut palms by the path
+      const palmTrunk = std({ color: 0x8a7a62, roughness: 0.95 }), frondMat = std({ color: 0x3f7a2e, roughness: 1, side: THREE.DoubleSide });
+      const frondGeo = new THREE.PlaneGeometry(2.6, 0.5);
+      for (const [x, z, lean, s] of [[-4.0, 5.4, 0.14, 1.0], [5.4, 6.3, -0.1, 1.1], [10.5, 8.5, 0.05, 0.9]]) {
+        const g = new THREE.Group(); g.position.set(x, 0, z); g.rotation.z = lean; g.scale.setScalar(s); P1.add(g);
+        cylAt(g, 0.13, 0.22, 6.0, palmTrunk, 0, 3.0, 0, 8);
+        const crown = new THREE.Group(); crown.position.y = 6.0; g.add(crown);
+        for (let i = 0; i < 9; i++) {
+          const arm = new THREE.Group(); arm.rotation.y = i * (Math.PI * 2 / 9); crown.add(arm);
+          const f = new THREE.Mesh(frondGeo, frondMat); f.position.x = 1.25; f.rotation.z = -0.55 - (i % 2) * 0.2; f.rotation.x = 0.35; arm.add(f);
+        }
+        mesh(g, new THREE.SphereGeometry(0.22, 8, 6), std({ color: 0x6a5a30 }), 0, 5.9, 0);   // coconuts
+      }
+      treeAt(P1, -2.7, -0.8, 1.0, nf(leafMat, { color: new THREE.Color(2.2, 2.4, 2.0) }), nf(matDarkWood, { color: new THREE.Color(1.6, 1.6, 1.6) }), 2);   // the rain tree at the edge of frame, as before
+      benchAt(P1, 3.4, 2.3, 0); benchAt(P1, -6.0, 2.5, 0);
+      binAt(P1, 4.6, 2.7, std({ color: 0x2c6a3c, roughness: 0.8 }));
+      const postMat = nf(matMetal, { color: new THREE.Color(0x8a8a8a) });
+      mesh(P1, lampPostGeo, postMat, -2.2, 2.8, 3.3); mesh(P1, lampHeadGeo, nf(lampHeadMat, { emissiveIntensity: 0.6 }), -2.2, 5.7, 3.3);
+      // a kite, high over the sand, on its line
+      const kite = mesh(P1, new THREE.PlaneGeometry(0.9, 1.2), std({ color: 0xe0303a, side: THREE.DoubleSide }), 5.5, 9.5, 11.0, 0.4, 0.3, 0.6);
+      kite.name = 'kite';
+      mesh(P1, new THREE.CylinderGeometry(0.006, 0.006, 11.5, 4), std({ color: 0xdddddd }), 4.2, 5.0, 8.3, 0.25, 0, 0.12);
+      // the sun itself, a soft disc on the sky wall where the painting put it
+      const sunTex = makeSoftDot('rgba(255,244,214,1)', 'rgba(255,190,120,0)');
+      const sun = new THREE.Sprite(new THREE.SpriteMaterial({ map: sunTex, fog: false, transparent: true, depthWrite: false }));
+      sun.position.set(0, 1.55, 17.5); sun.scale.setScalar(5.5);
+      P1.add(sun);
+      memLight(P1, 0xffc27a, 34.0, 60, 1.0, -2.0, 2.6, 15.0);   // the sun, low over the water
+      memLight(P1, 0xb8c8ff, 30.0, 50, 1.0, 1.5, 9.0, -6.0);    // the sky, from behind the lens
+      memLight(P1, 0xffd2a0, 5.0, 12, 1.4, 1.6, 1.3, -1.6);     // a warm bounce on his face and the leaf
+      const seaDrift = seaTex;
+      pocketTick = (sdt, t) => { seaDrift.offset.x += sdt * 0.012; seaDrift.offset.y = Math.sin(t * 0.35) * 0.004; kite.rotation.z = 0.6 + Math.sin(t * 1.3) * 0.12; };
     }
-    /* POCKET TWO · the landing — a concrete floor, a plaster wall with a
-       pipe down it, three steps up to a door that is not shown, a bin, a
-       little litter, and one fluorescent tube that has gone green. */
+    /* POCKET TWO · THE STAIRWELL LANDING, NIGHT — an HDB landing as it is:
+       plaster walls, the flight up on the right with its rail, a lift with
+       its doors shut, letterboxes, a shoe rack with slippers, a bicycle
+       against the wall, a notice board, a plant somebody keeps, the storey
+       number, and one fluorescent tube gone green. The bear at (0.3, 0.02,
+       -1.0) and the top step he starts on are where they were. */
     {
-      const floor = new THREE.Mesh(new THREE.BoxGeometry(9, 0.04, 9), matPocketCon);
-      floor.position.y = 0.0;
-      P2.add(floor);
-      const wall = new THREE.Mesh(new THREE.BoxGeometry(9, 3.0, 0.24), matPlaster);
-      wall.position.set(0, 1.5, -3.2);
-      P2.add(wall);
-      const pipe = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 3.0, 8), matMetal);
-      pipe.position.set(-1.6, 1.5, -3.02);
-      P2.add(pipe);
-      for (let i = 0; i < 3; i++) {                  // three steps rising toward +x
-        const st = new THREE.Mesh(new THREE.BoxGeometry(0.34 * (3 - i) + 0.9, 0.17, 2.0), matPocketCon);
-        st.position.set(2.2 + i * 0.17, 0.085 + i * 0.17, -2.2);
-        P2.add(st);
+      const con = nf(matConcrete, { color: new THREE.Color(1.15, 1.15, 1.1) });
+      const plaster = nf(matPlaster, { color: new THREE.Color(0.78, 0.76, 0.72) }), metal = nf(matMetal, { color: new THREE.Color(0x6a6a66) });
+      boxAt(P2, 11, 0.04, 9, con, 0.5, 0.0, 0);                                  // the floor
+      const joint = std({ color: 0x4a4740, roughness: 1 });
+      for (const z of [-2.0, -0.5, 1.0, 2.5]) boxAt(P2, 11, 0.008, 0.02, joint, 0.5, 0.024, z);   // its expansion joints
+      for (const x of [-2.0, 0.5, 3.0]) boxAt(P2, 0.02, 0.008, 9, joint, x, 0.024, 0);
+      boxAt(P2, 11, 4.2, 0.24, plaster, 0.5, 2.1, -3.2);                         // the back wall
+      boxAt(P2, 0.24, 4.2, 9, plaster, -3.5, 2.1, 0);                             // the left wall
+      boxAt(P2, 0.24, 4.2, 9, plaster, 5.6, 2.1, 0);                              // the right wall, past the flight
+      boxAt(P2, 11, 0.1, 9, nf(matPlaster, { color: new THREE.Color(0.7, 0.7, 0.7) }), 0.5, 4.1, 0);   // the ceiling, two storeys up the well
+      boxAt(P2, 9, 1.0, 0.2, plaster, 0.5, 0.5, 3.1);                             // the parapet on the open side
+      for (const dx of [-3.0, 3.6]) boxAt(P2, 0.3, 4.2, 0.3, plaster, dx, 2.1, 3.1);   // and its two columns
+      boxAt(P2, 0.3, 0.7, 0.3, std({ color: 0x8a8070, roughness: 0.9 }), -1.0, 0.35, 1.9);   // a low stain-dark plinth by the parapet
+      cylAt(P2, 0.05, 0.05, 3.6, metal, -1.6, 1.8, -3.02, 8);                    // the down-pipe
+      /* the flight: a dog-leg. Eight steps rise toward +x along the back
+         wall (run 0.28, rise 0.17 — each box runs to the flight's end so
+         they stack solid), a half-landing, and the flight above comes back
+         toward -x beside it, its underside sloping up to the floor above.
+         He starts on the third step (TOP2, y 0.51). */
+      const RUN = 0.28, RISE = 0.17, X0 = 2.05, XEND = X0 + 8 * RUN;
+      for (let i = 0; i < 8; i++) { const x0 = X0 + i * RUN; boxAt(P2, XEND - x0 + 0.02, RISE, 2.0, con, (x0 + XEND) / 2, RISE / 2 + i * RISE, -2.2); }
+      boxAt(P2, 5.6 - XEND, RISE, 4.0, con, (XEND + 5.6) / 2, 8 * RISE - RISE / 2, -1.2);        // the half-landing, full depth
+      mesh(P2, new THREE.BoxGeometry(4.8, 0.24, 2.0), con, 2.3, 2.78, -0.2, 0, 0, -0.586);       // the flight above, rising back toward -x
+      const rail = std({ color: 0x3a6a4a, roughness: 0.5, metalness: 0.5 });
+      for (let i = 0; i < 8; i += 2) cylAt(P2, 0.02, 0.02, 0.9, rail, X0 + i * RUN + 0.14, RISE * (i + 1) + 0.45, -1.22, 6);   // balusters
+      mesh(P2, new THREE.CylinderGeometry(0.03, 0.03, 2.0, 8), rail, X0 + 3 * RUN + 0.14, RISE * 4 + 0.9, -1.22, 0, 0, -(Math.PI / 2 - 0.545));   // the handrail, rising with them
+      cylAt(P2, 0.02, 0.02, 0.9, rail, 5.0, 8 * RISE + 0.45, 0.3, 6);                                   // one on the half-landing's open edge
+      // the lift: two shut doors, a call button, the indicator lit
+      const doorMat = std({ color: 0x9a9a96, roughness: 0.32, metalness: 0.7 });
+      for (const dx of [-0.24, 0.24]) boxAt(P2, 0.46, 2.1, 0.05, doorMat, -2.3 + dx, 1.05, -3.06);
+      boxAt(P2, 1.1, 2.3, 0.04, std({ color: 0x5a5a58, roughness: 0.6 }), -2.3, 1.15, -3.075);
+      boxAt(P2, 0.12, 0.05, 0.03, std({ color: 0xff3020, emissive: 0xff3020, emissiveIntensity: 1.6 }), -2.3, 2.34, -3.04);
+      boxAt(P2, 0.08, 0.14, 0.03, std({ color: 0x222222 }), -1.62, 1.1, -3.06);
+      // letterboxes, three rows of five, on the left wall
+      const lbMat = std({ color: 0x8c8c88, roughness: 0.5, metalness: 0.5 }), slotMat2 = std({ color: 0x111111 });
+      for (let r = 0; r < 3; r++) for (let c = 0; c < 5; c++) {
+        boxAt(P2, 0.12, 0.13, 0.28, lbMat, -3.32, 1.16 + r * 0.15, -2.55 + c * 0.31);
+        boxAt(P2, 0.005, 0.02, 0.18, slotMat2, -3.255, 1.2 + r * 0.15, -2.55 + c * 0.31);
       }
-      const bin = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.22, 0.72, 12), matMetal);
-      bin.position.set(-0.9, 0.36, -2.6);
-      P2.add(bin);
-      const litterMat = new THREE.MeshStandardMaterial({ color: 0xd8d0c0, roughness: 0.9, side: THREE.DoubleSide });
-      for (const [lx, lz, ry] of [[-0.3, -1.9, 0.4], [0.9, -2.4, 1.9], [-1.4, -0.9, 2.6]]) {
-        const l = new THREE.Mesh(new THREE.PlaneGeometry(0.16, 0.11), litterMat);
-        l.rotation.set(-Math.PI / 2, 0, ry); l.position.set(lx, 0.024, lz);
-        P2.add(l);
-      }
-      const tube = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.05, 0.08),
-        new THREE.MeshBasicMaterial({ color: 0xd4ffe4, fog: false }));
-      tube.position.set(0.2, 2.62, -1.4);
-      P2.add(tube);
-      memLight(P2, 0xcfffdf, 6.5, 9, 1.5, 0.2, 2.5, -1.4);     // the tube
-      memLight(P2, 0x6a8fb0, 0.7, 9, 1.8, 3.2, 1.6, 1.8);      // a cold spill from the stair above
+      // a shoe rack by the back wall, slippers on it and off it
+      const rackMat = std({ color: 0x3a2a1c, roughness: 0.85 });
+      for (const y of [0.16, 0.42, 0.68]) boxAt(P2, 0.82, 0.03, 0.3, rackMat, 0.6, y, -2.95);
+      for (const dx of [-0.4, 0.4]) boxAt(P2, 0.03, 0.72, 0.3, rackMat, 0.6 + dx, 0.36, -2.95);
+      const slipperCols = [0x2a4aa0, 0xd03030, 0x222222, 0xe0c070, 0x3a8a4a, 0xf0f0f0];
+      let sl = 0;
+      for (const [x, y, z, ry] of [[0.42, 0.19, -2.95, 0], [0.62, 0.19, -2.95, 0.1], [0.82, 0.45, -2.95, 0], [0.5, 0.71, -2.95, -0.1], [1.15, 0.012, -2.55, 0.5], [1.32, 0.012, -2.5, 0.4], [-0.25, 0.012, -2.7, 1.9]])
+        boxAt(P2, 0.1, 0.025, 0.26, std({ color: slipperCols[sl++ % slipperCols.length], roughness: 0.9 }), x, y, z, ry);
+      // the bicycle, leaning on the left wall
+      const bikeMat = std({ color: 0x1c1c22, roughness: 0.5, metalness: 0.5 }), tyreMat = std({ color: 0x151515, roughness: 1 });
+      const bike = new THREE.Group(); bike.position.set(-3.05, 0, 1.0); bike.rotation.z = 0.13; P2.add(bike);
+      for (const dz of [-0.52, 0.52]) mesh(bike, new THREE.TorusGeometry(0.33, 0.025, 6, 22), tyreMat, 0, 0.33, dz, 0, Math.PI / 2, 0);
+      mesh(bike, new THREE.BoxGeometry(0.03, 0.03, 0.95), bikeMat, 0, 0.55, 0, 0.2, 0, 0);
+      mesh(bike, new THREE.BoxGeometry(0.03, 0.55, 0.03), bikeMat, 0, 0.6, 0.12, 0.35, 0, 0);
+      mesh(bike, new THREE.BoxGeometry(0.03, 0.6, 0.03), bikeMat, 0, 0.6, -0.45, -0.3, 0, 0);
+      boxAt(bike, 0.14, 0.04, 0.26, bikeMat, 0, 0.92, 0.1);                        // the seat
+      mesh(bike, new THREE.BoxGeometry(0.5, 0.025, 0.025), bikeMat, 0, 0.95, -0.6);   // the handlebar
+      // a notice board with three notices, the storey number, a plant
+      boxAt(P2, 0.9, 0.7, 0.03, std({ color: 0x1e4a30, roughness: 0.9 }), 1.7, 1.75, -3.07);
+      for (const [dx, dy, s] of [[-0.25, 0.1, 1], [0.15, 0.05, 1.2], [0.28, -0.2, 0.8]])
+        boxAt(P2, 0.2 * s, 0.26 * s, 0.01, std({ color: 0xf0ece0, roughness: 1 }), 1.7 + dx, 1.75 + dy, -3.05);
+      const numTex = (() => { const [c, ctx] = cnv(128); ctx.fillStyle = '#b9b3a4'; ctx.fillRect(0, 0, 128, 128);
+        ctx.fillStyle = '#2a2a30'; ctx.font = 'bold 84px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('03', 64, 68); return srgb(new THREE.CanvasTexture(c)); })();
+      mesh(P2, new THREE.PlaneGeometry(0.5, 0.5), std({ map: numTex, roughness: 1 }), 0.4, 2.2, -3.075);
+      cylAt(P2, 0.18, 0.14, 0.32, std({ color: 0x9a5a3a, roughness: 0.9 }), -2.9, 0.16, 2.5, 10);
+      for (let i = 0; i < 5; i++) mesh(P2, new THREE.PlaneGeometry(0.34, 0.16), std({ color: 0x3a7a3a, side: THREE.DoubleSide }), -2.9, 0.45 + i * 0.06, 2.5, -0.5, i * 1.25, 0);
+      binAt(P2, -0.9, -2.6, metal);
+      const litterMat = std({ color: 0xd8d0c0, roughness: 0.9, side: THREE.DoubleSide });
+      for (const [lx, lz, ry] of [[-0.3, -1.9, 0.4], [0.9, -2.4, 1.9], [-1.4, -0.9, 2.6]])
+        mesh(P2, new THREE.PlaneGeometry(0.16, 0.11), litterMat, lx, 0.024, lz, -Math.PI / 2, 0, ry);
+      // grime where the wall meets the floor, and a conduit up to the tube
+      boxAt(P2, 10.6, 0.5, 0.01, std({ color: 0x6a6458, roughness: 1, transparent: true, opacity: 0.5 }), 0.5, 0.25, -3.07);
+      boxAt(P2, 0.03, 4.0, 0.03, metal, 0.2, 2.0, -3.06); boxAt(P2, 0.03, 0.03, 1.8, metal, 0.2, 4.03, -2.3);
+      const tube = boxAt(P2, 1.2, 0.05, 0.08, new THREE.MeshBasicMaterial({ color: 0xd4ffe4, fog: false }), 0.2, 4.0, -1.4);
+      tube.name = 'tube';
+      boxAt(P2, 1.2, 0.05, 0.08, std({ color: 0x8a8a80 }), 3.6, 4.0, 0.6);       // a second tube, dead
+      memLight(P2, 0xcfffdf, 5.0, 10, 1.5, 0.2, 3.85, -1.4);   // the tube
+      memLight(P2, 0x6a8fb0, 0.9, 9, 1.8, 3.2, 1.6, 1.8);      // a cold spill from the stair above
+      memLight(P2, 0xffd9a0, 1.6, 12, 1.6, 0.4, 2.2, 3.6);     // the lobby's warmth from the open side
     }
-    /* POCKET THREE · the pavement — a slab, a kerb, the road, a drain grating
-       the note is caught against, and a sodium lamp over it all. */
+    /* POCKET THREE · AN HDB PLAYGROUND, DAY (Chad). The paved apron he
+       walks along stays where the walk was written, the drain grate with
+       it, and beyond the kerb is the rubber mat: a slide with a little
+       roof, swings, a climbing dome, a seesaw, a sand pit; benches, a
+       sign, rain trees; and two four-storey blocks with a void deck under
+       them at the back of the bubble. The note at (0.62, 0.142, 0.02). */
     {
-      const slab = new THREE.Mesh(new THREE.BoxGeometry(7, 0.12, 2.4), matPocketCon);
-      slab.position.set(0, 0.06, 0.7);
-      P3.add(slab);
-      const kerb = new THREE.Mesh(new THREE.BoxGeometry(7, 0.14, 0.18), matPocketCon);
-      kerb.position.set(0, 0.07, -0.55);
-      P3.add(kerb);
-      const road = new THREE.Mesh(new THREE.PlaneGeometry(9, 5), matTarmac);
-      road.rotation.x = -Math.PI / 2; road.position.set(0, 0.005, -3.0);
-      P3.add(road);
-      const grate = new THREE.Group();
-      grate.position.set(0.55, 0.121, 0.05);
-      P3.add(grate);
-      const grateFrame = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.02, 0.36), matMetal);
-      grate.add(grateFrame);
-      const slotMat = new THREE.MeshBasicMaterial({ color: 0x050505 });
-      for (let i = 0; i < 6; i++) {
-        const sl = new THREE.Mesh(new THREE.BoxGeometry(0.44, 0.024, 0.025), slotMat);
-        sl.position.set(0, 0, -0.14 + i * 0.056);
-        grate.add(sl);
+      const grassDay = nf(matGrass, { color: new THREE.Color(2.4, 2.7, 1.9) });
+      const field = new THREE.Mesh(new THREE.CircleGeometry(20.6, 44), grassDay);
+      field.rotation.x = -Math.PI / 2; field.position.y = 0.01;
+      P3.add(field);
+      const con = nf(matConcrete, { color: new THREE.Color(1.3, 1.28, 1.2) });
+      boxAt(P3, 16, 0.12, 2.4, con, 0, 0.06, 0.7);                                // the apron
+      boxAt(P3, 16, 0.14, 0.18, con, 0, 0.07, -0.55);                              // its kerb
+      const matCanvas = (() => { const s = 256, [c, ctx] = cnv(s), n = 4, w = s / n;
+        for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) { ctx.fillStyle = ((x + y) % 2) ? '#c8622c' : '#ad4f22'; ctx.fillRect(x * w, y * w, w, w); }
+        ctx.strokeStyle = '#7a3814'; ctx.lineWidth = 3; for (let i = 0; i <= n; i++) { ctx.beginPath(); ctx.moveTo(i * w, 0); ctx.lineTo(i * w, s); ctx.moveTo(0, i * w); ctx.lineTo(s, i * w); ctx.stroke(); }
+        return c; })();
+      const matTex = srgb(new THREE.CanvasTexture(matCanvas)); matTex.wrapS = matTex.wrapT = THREE.RepeatWrapping; matTex.repeat.set(9, 4.5);
+      mesh(P3, new THREE.PlaneGeometry(18, 9), std({ map: matTex, roughness: 0.95 }), 0, 0.03, -5.4, -Math.PI / 2);
+      mesh(P3, new THREE.CircleGeometry(2.7, 24), std({ color: 0xd8c49a, roughness: 1 }), 3.2, 0.036, -4.4, -Math.PI / 2);   // the sand pit
+      const red = std({ color: 0xc83a2a, roughness: 0.6 }), yellow = std({ color: 0xf2c230, roughness: 0.5 }), blue = std({ color: 0x2a5db0, roughness: 0.6 }), green = std({ color: 0x2f9a4a, roughness: 0.6 });
+      const steel = std({ color: 0xd0d4d8, roughness: 0.35, metalness: 0.7 });
+      // the slide: a platform on four posts under a little pyramid roof, the chute down toward +z, a ladder up from -z
+      const slide = new THREE.Group(); slide.position.set(3.2, 0, -5.5); P3.add(slide);
+      boxAt(slide, 1.3, 0.08, 1.3, blue, 0, 1.55, 0);
+      for (const [dx, dz] of [[-0.6, -0.6], [0.6, -0.6], [-0.6, 0.6], [0.6, 0.6]]) cylAt(slide, 0.05, 0.05, 2.9, red, dx, 1.45, dz, 8);
+      mesh(slide, new THREE.ConeGeometry(1.15, 0.75, 4), green, 0, 3.15, 0, 0, Math.PI / 4, 0);
+      for (const dx of [-0.6, 0.6]) boxAt(slide, 0.04, 0.5, 1.3, yellow, dx, 1.85, 0);       // side rails on the platform
+      const chute = new THREE.Group(); chute.position.set(0, 0.93, 1.95); chute.rotation.x = 0.42; slide.add(chute);
+      boxAt(chute, 0.7, 0.05, 3.0, yellow, 0, 0, 0);
+      for (const dx of [-0.36, 0.36]) boxAt(chute, 0.04, 0.22, 3.0, yellow, dx, 0.1, 0);
+      const ladder = new THREE.Group(); ladder.position.set(0, 0.8, -0.95); ladder.rotation.x = -0.35; slide.add(ladder);
+      for (const dx of [-0.3, 0.3]) cylAt(ladder, 0.025, 0.025, 1.8, steel, dx, 0, 0, 6);
+      for (let i = 0; i < 5; i++) mesh(ladder, new THREE.CylinderGeometry(0.02, 0.02, 0.6, 6), steel, 0, -0.7 + i * 0.35, 0, 0, 0, Math.PI / 2);
+      // the swings: an A-frame, two seats on chains
+      const sw = new THREE.Group(); sw.position.set(-4.2, 0, -5.6); P3.add(sw);
+      mesh(sw, new THREE.CylinderGeometry(0.05, 0.05, 3.6, 8), red, 0, 2.4, 0, 0, 0, Math.PI / 2);
+      for (const [dx, dz] of [[-1.7, -0.7], [-1.7, 0.7], [1.7, -0.7], [1.7, 0.7]]) mesh(sw, new THREE.CylinderGeometry(0.05, 0.05, 2.6, 8), red, dx, 1.2, dz * 0.5, Math.sign(dz) * 0.28, 0, 0);
+      for (const sx of [-0.7, 0.7]) {
+        boxAt(sw, 0.5, 0.04, 0.2, std({ color: 0x222222 }), sx, 0.55, 0);
+        for (const cx of [-0.22, 0.22]) cylAt(sw, 0.01, 0.01, 1.85, steel, sx + cx, 1.47, 0, 5);
       }
-      const post = new THREE.Mesh(lampPostGeo, matMetal);
-      post.position.set(1.1, 2.8, -1.3);
-      P3.add(post);
-      const arm = new THREE.Mesh(lampArmGeo, matMetal);
-      arm.position.set(0.7, 5.55, -1.0); arm.rotation.y = -0.6;
-      P3.add(arm);
-      const head = new THREE.Mesh(lampHeadGeo, lampHeadMat);
-      head.position.set(0.35, 5.5, -0.75);
-      P3.add(head);
-      memLight(P3, 0xffb367, 30.0, 14, 1.5, 0.35, 5.2, -0.7);   // the sodium lamp
-      memLight(P3, 0x30405a, 0.5, 8, 1.8, -3.0, 1.2, 1.6);     // the night beyond its pool
+      // the climbing dome: three rings and six meridians
+      const dome = new THREE.Group(); dome.position.set(7.4, 0, -2.4); P3.add(dome);
+      for (const [r, y] of [[1.5, 0.05], [1.3, 0.72], [0.78, 1.28]]) mesh(dome, new THREE.TorusGeometry(r, 0.03, 6, 28), steel, 0, y, 0, Math.PI / 2, 0, 0);
+      for (let i = 0; i < 6; i++) mesh(dome, new THREE.TorusGeometry(1.5, 0.03, 6, 28, Math.PI), steel, 0, 0, 0, 0, i * Math.PI / 6, 0);
+      // a seesaw
+      const ss = new THREE.Group(); ss.position.set(-1.0, 0, -8.0); ss.rotation.y = 0.35; P3.add(ss);
+      boxAt(ss, 0.36, 0.5, 0.36, blue, 0, 0.25, 0);
+      const plank = new THREE.Group(); plank.position.y = 0.55; plank.rotation.z = 0.17; ss.add(plank);
+      boxAt(plank, 2.9, 0.06, 0.3, yellow, 0, 0, 0);
+      for (const dx of [-1.2, 1.2]) { boxAt(plank, 0.12, 0.05, 0.36, red, dx, 0.03, 0); cylAt(plank, 0.02, 0.02, 0.32, steel, dx - 0.25 * Math.sign(dx), 0.18, 0, 6); }
+      // a spring rider, a bin, two benches, the sign, a covered walkway's edge
+      const rider = new THREE.Group(); rider.position.set(0.8, 0, -3.0); P3.add(rider);
+      cylAt(rider, 0.06, 0.06, 0.5, steel, 0, 0.25, 0, 8);
+      mesh(rider, new THREE.SphereGeometry(0.3, 10, 8), green, 0, 0.7, 0); mesh(rider, new THREE.SphereGeometry(0.18, 8, 6), green, 0, 0.9, 0.3);
+      benchAt(P3, -3.6, 2.6, Math.PI); benchAt(P3, 4.4, 2.6, Math.PI);
+      binAt(P3, 6.0, 2.4, std({ color: 0x2c6a3c, roughness: 0.8 }));
+      cylAt(P3, 0.04, 0.04, 2.0, steel, -6.6, 1.0, -0.9, 6);
+      boxAt(P3, 0.9, 0.62, 0.03, std({ color: 0xf4f2ea, roughness: 1 }), -6.6, 1.75, -0.9);
+      boxAt(P3, 0.9, 0.14, 0.035, green, -6.6, 1.99, -0.9);
+      mesh(P3, lampPostGeo, nf(matMetal, { color: new THREE.Color(0x9a9a9a) }), -5.6, 2.8, -1.4);   // out of the middle of the tracking shot
+      mesh(P3, lampHeadGeo, nf(lampHeadMat, { emissiveIntensity: 0.2 }), -5.6, 5.7, -1.4);
+      // rain trees, wide and bright
+      const dayLeaf = std({ color: 0x4f8a34, roughness: 1, flatShading: true }), dayTrunk = std({ color: 0x5a4636, roughness: 0.9 });
+      for (const [x, z, s, seed] of [[-10.5, -3.5, 1.35, 1], [10.8, -6.2, 1.25, 2], [-8.2, 7.4, 1.2, 3], [9.4, 8.2, 1.3, 4], [-14.0, 1.5, 1.1, 5], [14.5, 2.0, 1.15, 6]])
+        treeAt(P3, x, z, s, dayLeaf, dayTrunk, seed);
+      // two blocks with a void deck under them, at the back and the right; windows as a repeating storey
+      const winCanvas = (() => { const s = 256, [c, ctx] = cnv(s);
+        ctx.fillStyle = '#e8dcc4'; ctx.fillRect(0, 0, s, s);
+        ctx.fillStyle = '#c7b99a'; ctx.fillRect(0, s * 0.82, s, s * 0.06);        // the storey line
+        ctx.fillStyle = '#5a6a7e'; ctx.fillRect(s * 0.22, s * 0.2, s * 0.56, s * 0.48);   // the window
+        ctx.fillStyle = '#f4f2ee'; ctx.fillRect(s * 0.22, s * 0.2, s * 0.56, s * 0.03); ctx.fillRect(s * 0.49, s * 0.2, s * 0.02, s * 0.48);
+        ctx.fillStyle = '#9fb7c9'; ctx.fillRect(s * 0.24, s * 0.23, s * 0.24, s * 0.2);
+        ctx.fillStyle = '#3a8a4a'; ctx.fillRect(s * 0.18, s * 0.68, s * 0.64, s * 0.05);   // a green sill band
+        return c; })();
+      const winTex = (rx, ry) => { const t = srgb(new THREE.CanvasTexture(winCanvas)); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(rx, ry); return t; };
+      const blockMat = std({ color: 0xe8dcc4, roughness: 0.95 }), deckDark = std({ color: 0x2a2a30, roughness: 1 });
+      const pillar = std({ color: 0xd8d0c0, roughness: 0.9 });
+      // the long block behind the mat
+      boxAt(P3, 16, 7.6, 2.5, blockMat, 0, 6.7, -12.2);
+      mesh(P3, new THREE.PlaneGeometry(16, 7.6), std({ map: winTex(6, 3), roughness: 0.95 }), 0, 6.7, -10.93);
+      boxAt(P3, 16, 0.5, 2.9, std({ color: 0xb8b0a0 }), 0, 10.7, -12.2);          // the parapet
+      boxAt(P3, 16, 3.0, 0.2, deckDark, 0, 1.5, -13.3);                            // the void deck's back
+      for (let i = 0; i < 7; i++) boxAt(P3, 0.45, 3.0, 0.45, pillar, -7.2 + i * 2.4, 1.5, -11.0);
+      boxAt(P3, 16, 0.12, 2.6, con, 0, 0.06, -12.1);                               // its floor
+      // the block on the right, side-on, its face toward -x
+      boxAt(P3, 2.5, 7.6, 10, blockMat, 13.2, 6.7, -1.5);
+      mesh(P3, new THREE.PlaneGeometry(10, 7.6), std({ map: winTex(4, 3), roughness: 0.95 }), 11.93, 6.7, -1.5, 0, -Math.PI / 2, 0);
+      boxAt(P3, 2.9, 0.5, 10, std({ color: 0xb8b0a0 }), 13.2, 10.7, -1.5);
+      for (let i = 0; i < 5; i++) boxAt(P3, 0.45, 3.0, 0.45, pillar, 12.0, 1.5, -5.5 + i * 2.0);
+      boxAt(P3, 0.2, 3.0, 10, deckDark, 14.3, 1.5, -1.5);
+      memLight(P3, 0xfff2dc, 70.0, 80, 1.0, 5.0, 17.0, 8.0);    // the sun, high and behind the lens
+      memLight(P3, 0x9fc4ff, 30.0, 60, 1.0, -6.0, 12.0, -6.0);  // the sky
+      memLight(P3, 0xffe8c0, 5.0, 10, 1.4, -1.2, 1.4, 1.6);     // bounce off the apron onto him
     }
 
     /* THE THINGS HE FINDS. Each has two bodies: the one on the ground and
@@ -1021,6 +1310,12 @@
     const boy = new THREE.Group();
     boy.position.set(0, 0, 17); boy.rotation.y = Math.PI;   // the spawn, facing the block
     proRoot.add(boy);
+    /* v6.6: a soft contact shadow at his feet — the memories are lit by
+       point lights that cast none, and a boy with no shadow floats */
+    const boyShadow = new THREE.Mesh(new THREE.CircleGeometry(0.42, 20),
+      new THREE.MeshBasicMaterial({ map: makeSoftDot('rgba(0,0,0,0.6)', 'rgba(0,0,0,0)'), transparent: true, depthWrite: false, fog: false }));
+    boyShadow.rotation.x = -Math.PI / 2; boyShadow.position.y = 0.012; boyShadow.scale.set(1.0, 1.35, 1);
+    boy.add(boyShadow);
     let boyMixer = null, boyActs = null, boyHead = null, boyHand = null, boyReady = false, boyS = 1;
     const boyScale = () => boyS;
     const boyLook = { target: null, w: 0, x: 0, y: 0, last: 0 };
@@ -1126,7 +1421,7 @@
 
     function filmReset() {
       memRoot.visible = proRoot.visible = false;
-      for (const [L] of memLights) L.intensity = 0;
+      for (const arr of memLights) for (const [L] of arr) L.intensity = 0;
       faceFill.intensity = 0;
       flyNote.visible = false;
       leafHand.visible = bearHand.visible = noteHand.visible = false;
@@ -1680,7 +1975,7 @@ function scChant(c, s, api) {                        /* D — palms together */
       const C = lerp3(A, B, k), h = stage.boyHand();
       if (h) { h.getWorldPosition(_hw); aimAt(C.x, C.y, C.z, _hw.x + off.x, _hw.y + off.y, _hw.z + off.z); }
     }, ease);
-    const setLights = (p, k) => { for (const [L, on] of stage.memLights.slice(p * 2, p * 2 + 2)) L.intensity = on * k; };
+    const setLights = (p, k) => { for (const [L, on] of stage.memLights[p]) L.intensity = on * k; };
     /* where he must STAND for a take's hand to land on a thing: the hand's
        offset in his own frame (measured on the takes, scaled to him), turned
        by his facing and taken away from the thing's position */
@@ -1691,7 +1986,7 @@ function scChant(c, s, api) {                        /* D — palms together */
     // pocket one: he faces -z with the leaf ahead; three metres of walk-in
     const RY1 = Math.PI, S1 = standFor(LEAF, RY1, -0.15, 0.33), W1 = { x: S1.x, y: 0, z: S1.z + 3.2 };
     // pocket two: from the top step, then from the step's foot to the bear
-    const TOP2 = at(1, 2.35, 0.51, -2.2), FOOT2 = at(1, 1.75, 0, -1.55);
+    const TOP2 = at(1, 2.75, 0.51, -2.2), FOOT2 = at(1, 1.75, 0, -1.55);   // v6.6: the third step of the rebuilt flight
     const RY2a = Math.atan2(BEAR.x - TOP2.x, BEAR.z - TOP2.z);
     const RY2 = Math.atan2(BEAR.x - FOOT2.x, BEAR.z - FOOT2.z), S2 = standFor(BEAR, RY2, -0.15, 0.33);
     // pocket three: along the pavement toward +x; the walkpick take walks itself

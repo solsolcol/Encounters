@@ -121,6 +121,12 @@ const out = await p.evaluate(async ({ CYCLES, WARM }) => {
      moving: draw, count, and accept the number when two reads in a row
      agree (a few extra frames also give the chapters' async props time to
      land, which v4.7's five bought models made a real factor). */
+  /* v6.6: and the chapter's own actors must have LANDED before either end
+     is read — the film's boy is fifteen geometries that arrive by promise,
+     and two agreeing frames can both precede him. The engine's ready() is
+     the chapter's ready() (hdb + boy for chapter 1); wait on it, bounded. */
+  const landed = async () => { for (let i = 0; i < 300; i++) { const r = e.ready && e.ready(); if (!r || r.hdb) break; await drawn(); } await drawn(); };
+  await landed();
   let first = count();
   for (let tries = 0; tries < 10; tries++) {
     await drawn();
@@ -139,6 +145,7 @@ const out = await p.evaluate(async ({ CYCLES, WARM }) => {
      v5.17 builds, three runs each, it flipped either way with no change to
      the game. A real per-cycle leak survives this: it grows with every one
      of the eight cycles and a few extra frames cannot give it back.     */
+  await landed();
   let after = count();
   for (let tries = 0; tries < 10; tries++) {
     await drawn();
