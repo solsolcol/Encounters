@@ -1,0 +1,58 @@
+[
+ {
+  "id": "vpick1",
+  "srcPeak": -6.5,
+  "gain": 3.1,
+  "peak": -3.9,
+  "secs": 2.35,
+  "kb": "37/18"
+ },
+ {
+  "id": "vpick2",
+  "srcPeak": -2.9,
+  "gain": -0.5,
+  "peak": -3.9,
+  "secs": 1.72,
+  "kb": "27/13"
+ },
+ {
+  "id": "vpick3",
+  "srcPeak": -1.1,
+  "gain": -2.3,
+  "peak": -3.8,
+  "secs": 2.27,
+  "kb": "35/19"
+ },
+ {
+  "id": "memtheme",
+  "srcPeak": -7.6,
+  "gain": 4.6,
+  "peak": -3.4,
+  "secs": 40.05,
+  "kb": "626/474"
+ },
+ {
+  "id": "ecpamb",
+  "srcPeak": -9.3,
+  "gain": -0.7,
+  "peak": -10.5,
+  "secs": 14.03,
+  "kb": "219/148"
+ },
+ {
+  "id": "stairamb",
+  "srcPeak": -30.6,
+  "gain": 18.6,
+  "peak": -12.4,
+  "secs": 14.03,
+  "kb": "219/170"
+ },
+ {
+  "id": "playamb",
+  "srcPeak": -25,
+  "gain": 15,
+  "peak": -10.7,
+  "secs": 14.03,
+  "kb": "219/155"
+ }
+]

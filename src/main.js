@@ -2429,7 +2429,9 @@ const JAMES_TAKES = new Set(['voice',
   'v5wake1', 'v5wake2', 'v5wake3', 'v5voice', 'v5near', 'v5sit',
   'v5fearB1', 'v5disC1', 'v5learnD', 'v5A', 'v5B', 'v5C', 'v5D',
   // v6.4: the five lines of the chapter-1 opening film (the prologue)
-  'vpro1', 'vpro2', 'vpro3', 'vpro4', 'vpro5']);
+  'vpro1', 'vpro2', 'vpro3', 'vpro4', 'vpro5',
+  // v6.6: his three pick-up reactions in the same film
+  'vpick1', 'vpick2', 'vpick3']);
 /* The rest of the cast. They share `voiceOut` and the duck, but not the
    boost — see voiceStage() above. */
 const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
@@ -4174,6 +4176,15 @@ const STING_SAMPLE = {
   vpro1: ['vpro1', 1], vpro2: ['vpro2', 1], vpro3: ['vpro3', 1],
   vpro4: ['vpro4', 1], vpro5: ['vpro5', 1],
   vfaint: ['vfaint', 1],                    // v6.6: the faint scene's own line
+  /* v6.6: the prologue built out — his pick-up reactions, its own theme
+     (40 s, eleven_music_v2, handed to the dread bed on the line that
+     turns) and a bed per memory: the sea at East Coast, a stairwell at
+     night, a playground by day. All ch1's by the split. */
+  vpick1: ['vpick1', 1], vpick2: ['vpick2', 1], vpick3: ['vpick3', 1],
+  memtheme: ['memtheme', 0.55],    // the memory theme, under the three memories
+  ecpamb: ['ecpamb', 0.8],         // waves and a sea breeze at East Coast Park
+  stairamb: ['stairamb', 0.8],     // a fluorescent tube and a hollow stairwell
+  playamb: ['playamb', 0.8],       // children far off, birds, an afternoon
   memday: ['memday', 0.7],         // a hot afternoon, far off: cicadas and a little wind
   leafpick: ['leafpick', 0.7],     // a dry leaf off the grass
   toypick: ['toypick', 0.7],       // a plush toy off the concrete
