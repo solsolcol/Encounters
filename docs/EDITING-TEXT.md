@@ -11,13 +11,27 @@ text comes up at all — the reply carries the full URL, not the version
 number alone. He reads these on his phone; a number he has to go hunting
 for in Drive is not a link.
 
-**Master Z's Encounters — GAME TEXT v36 (edit here)** in his Drive
-(id `1zWSm0M5A8i8T1YdPlKsOneQ3bS2eFd1GNaGY_RbUK3E` — the **v36** sheet,
-made at v6.4, tabbed: **UI TEXT** (204 rows, the engine's words),
+**Master Z's Encounters — GAME TEXT v37 (edit here)** in his Drive
+(id `1vEh5qeVWCk_NbCiL3FhNLfylCkPs5hb9JAsh0RYfdqE` — the **v37** sheet,
+made at v6.5, tabbed: **UI TEXT** (206 rows, the engine's words),
 **EPISODE 1** (110 rows, chapters 1–5's words) and **VOICE LINES** (102).
-<https://docs.google.com/spreadsheets/d/1zWSm0M5A8i8T1YdPlKsOneQ3bS2eFd1GNaGY_RbUK3E/edit>
+<https://docs.google.com/spreadsheets/d/1vEh5qeVWCk_NbCiL3FhNLfylCkPs5hb9JAsh0RYfdqE/edit>
 
-What changed from v35: **eleven rows ADDED, none changed; five new spoken
+What changed from v36: **one cell changed, two rows ADDED, no spoken
+word.** The selector polish (v6.5, docs/V6.5-SELECTOR-POLISH.md):
+`chapters.progress` now reads "{n} of {m} chapters completed" (was
+"sealed" — Chad's call; the cards and stamps keep Sealed), and two rows
+join UI TEXT — `chapters.completed` ("Completed", a finished chapter's
+word on the selector) and `chapters.play` ("Play ▸", the pill on every
+chapter you can pick). Every other v36 cell is byte-identical. v36 (id
+`1zWSm0M5A8i8T1YdPlKsOneQ3bS2eFd1GNaGY_RbUK3E`) is superseded; its
+metadata was checked before v37 went to him (created 03:29:05, modified
+03:29:07 — the conversion itself), so it holds no edit of his to import.
+Provenance: v37 was published from the fresh `.xlsx` export, read back
+as three tables, and every cell diffed against the uploaded workbook by
+`tools/verifytabs.py` — 418 rows, zero differences.
+
+What changed from v35 (v36, at v6.4): **eleven rows ADDED, none changed; five new spoken
 lines.** The prologue (v6.4, docs/V6.4-PROLOGUE.md) brings two credit
 rows to UI TEXT — `credits.teddy` / `credits.teddyWho` /
 `credits.teddyLink` ("The toy in the prologue" · "Teddybear toy ·

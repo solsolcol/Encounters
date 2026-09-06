@@ -2106,3 +2106,16 @@ Chromium grants activation to a keydown of E, Space or Enter but NOT to
 Escape, so a harness that skips "like a player" presses E; and a film
 that runs to its natural end has no gesture to lock on, so an unlocked
 arrival there is not a bug but the browser's rule.
+
+## A glow that hangs outside a card must be ink, not an element (v6.5)
+
+The strip of case files is `overflow-x: auto`, and CSS makes the other
+axis `auto` as well, so a pseudo-element placed outside the open card to
+draw its aura would have given the strip a vertical scrollbar. Box
+shadows and background layers are ink overflow — they paint past the box
+and never scroll — so the halo is an animated `box-shadow` and the light
+that crosses the paper is a second background layer whose position
+animates. And an entrance animation on something that also moves on
+hover needs `animation-fill-mode: backwards`, not `both`: `both` keeps
+the keyframe's final `transform: none` applied forever, and the hover's
+translate silently loses to it.

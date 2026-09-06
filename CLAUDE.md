@@ -1154,7 +1154,23 @@ What the baseline contains, by release:
   player who has seen it does, and every harness that presses Start goes
   through it. Two credit rows; sheet v36. docs/V6.4-PROLOGUE.md is the
   build's memory, the shipped timeline included.
-- **v5.28** AARON — Chad, after two rounds of level work on River: *"i'm still
+- **v6.5** THE CASE FILES, LIT — Chad, on the selector: "cramped ...
+  glowing subtle animations on and around the selected episode case file
+  ... X of X chapters completed instead of sealed ... more obvious that
+  the chapters are selectable ... even more visually impressive". Air
+  between everything (the panel 600 wide with corner brackets and a top
+  light, the cards 140 × 172, the rows 54 tall with 6 px between); the
+  open case file breathes — a sodium halo that swells and settles, a light
+  that crosses its paper every seven seconds, the numeral glowing, the
+  folder tab lit; "X of 5 chapters completed" with a five-segment TALLY
+  BAR under it; the chapter stops say Completed (the cards and stamps
+  keep Sealed; a fully completed case is stamped CASE CLOSED); every
+  chapter you can pick is a bordered ROW with a Play pill, lifted and lit
+  on hover, a locked row dashed and dim, the rows entering with a short
+  stagger; on a phone the state word sits under the chapter's name so a
+  title never wraps beside the pill. The harness contract is unchanged.
+  Three strings; sheet v37. docs/V6.5-SELECTOR-POLISH.md.
+ *"i'm still
   not satisfied with this voice."* All 79 of the boy's takes regenerated in a
   THIRD voice (Aaron, `B6uUx2p7cRgxseOUyP6P`), under an approved prompt sheet
   that survived four rounds of his correction: the registry's words exactly, no
