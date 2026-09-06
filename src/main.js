@@ -206,6 +206,23 @@ function fbmField(s, oct = 5) {
   for (let i = 0; i < f.length; i++) f[i] /= tot;
   return f;
 }
+/* v6.6: make a field PERIODIC, so a texture that repeats across a ground
+   has no seam. The field is cross-blended with itself shifted by half a
+   tile in x, in y and in both, with weights that fall to zero at the
+   edges — the standard seamless trick — so the left edge meets the right
+   and the top meets the bottom exactly. Chapter 1's grass repeats 46 times
+   across 220 m and read as a grid of 4.8 m squares (Chad); this is why. */
+function tileField(f, s) {
+  const out = new Float32Array(s * s), h = s >> 1;
+  for (let y = 0; y < s; y++) for (let x = 0; x < s; x++) {
+    const wx = 1 - Math.abs(x - h) / h, wy = 1 - Math.abs(y - h) / h;   // 1 at the centre, 0 at the edges
+    const x2 = (x + h) % s, y2 = (y + h) % s;
+    const a = f[y * s + x] * wx * wy, b = f[y * s + x2] * (1 - wx) * wy,
+          c = f[y2 * s + x] * wx * (1 - wy), d = f[y2 * s + x2] * (1 - wx) * (1 - wy);
+    out[y * s + x] = a + b + c + d;
+  }
+  return out;
+}
 function texFromField(f, s, ramp) {
   const [c, ctx] = cnv(s);
   const img = ctx.createImageData(s, s), d = img.data;
@@ -243,7 +260,7 @@ function makeGround() {
 }
 // --- coarse night grass for the ground outside the block
 function makeGrass() {
-  const f = fbmField(S, 5);
+  const f = tileField(fbmField(S, 5), S);                 // v6.6: seamless — no 4.8 m squares
   const map = texFromField(f, S, (v) => {
     const blade = Math.random() < 0.16 ? 14 : 0;
     return [20 + v * 22 + blade, 34 + v * 40 + blade * 1.4, 20 + v * 18 + blade * 0.5];
@@ -1868,8 +1885,17 @@ const MUSIC_VOL = 0.34, MUTE_KEY = 'mzse3d_muted';
    else's soundtrack (Chad: "the creepy music should no longer be playing
    in this chapter"). A chapter declares `musicVol` (0..1, default 1) and
    every site that writes the music gain reads this instead of MUSIC_VOL. */
+/* v6.6: and a CUTSCENE may hold the music down — `api.music(k, secs)`, the
+   verb v6.4's plan deferred — so chapter 1's opening film can play its own
+   memory theme and hand over to the dread bed on the line that turns. The
+   multiplier is cleared at both ends of every cutscene, like the ducks. */
+let cineMusicK = 1;
 const musicVolNow = () =>
-  muted ? 0 : MUSIC_VOL * (Number.isFinite(CH.musicVol) ? CH.musicVol : 1);
+  muted ? 0 : MUSIC_VOL * (Number.isFinite(CH.musicVol) ? CH.musicVol : 1) * cineMusicK;
+function cineMusic(k, secs = 1.0) {
+  cineMusicK = Math.max(0, Math.min(1, k));
+  musicRamp(musicVolNow(), secs);
+}
 
 let muted = !HAS_TOUCH;
 try {
@@ -4147,6 +4173,7 @@ const STING_SAMPLE = {
      is reused between these and so becomes shared. */
   vpro1: ['vpro1', 1], vpro2: ['vpro2', 1], vpro3: ['vpro3', 1],
   vpro4: ['vpro4', 1], vpro5: ['vpro5', 1],
+  vfaint: ['vfaint', 1],                    // v6.6: the faint scene's own line
   memday: ['memday', 0.7],         // a hot afternoon, far off: cicadas and a little wind
   leafpick: ['leafpick', 0.7],     // a dry leaf off the grass
   toypick: ['toypick', 0.7],       // a plush toy off the concrete
@@ -4439,6 +4466,7 @@ function playCineFn(sceneFn, onDone, startFade = 0) {
     keep: {}, endFade: 0, snap, onDone
   };
   cineDuck = null;                 // a scene starts with the room at full
+  cineMusicK = 1;                  // v6.6: and the music at the chapter's level
   sceneFn(c, snap, sceneApi(c));
   c.dur = c.tracks.reduce((m, tr) => Math.max(m, tr.t1), 1);
   cine = c;
@@ -4500,7 +4528,7 @@ function cineUpdate() {
     const sp = c.ghostMix(c.t);
     if (sp > 0) ghostMixer.update(rdt * sp);
   }
-  skipBtn.classList.toggle('hide', c.t < 0.9);
+  skipBtn.classList.toggle('hide', c.t < CINE_SKIP_AT);   // v6.6: 3.0 s, every cutscene
   if (c.t >= c.dur && !c.paused) cineEnd();
 }
 
@@ -4542,6 +4570,7 @@ function cineEnd() {
   if (!c) return;
   cine = null;
   cineDuck = null;                  // the room tone comes back up with the world
+  if (cineMusicK !== 1) { cineMusicK = 1; musicRamp(musicVolNow(), 1.5); }   // v6.6: and the music, if a film held it
   stopCineVoices(!c.skipped);       // v5.30: speech finishes unless the player cut it
   restoreWorld(c.snap, c.keep);
   cineFadeEl.style.opacity = String(c.endFade);
@@ -4557,6 +4586,7 @@ function cineEnd() {
   c.onDone();
 }
 
+const CINE_SKIP_AT = 3.0;   // v6.6: the Skip button (and its keys) open this far into EVERY cutscene (Chad)
 function skipCine() {
   const c = cine;
   if (!c) return;
@@ -4581,14 +4611,16 @@ function skipFilmOrScene() {
 }
 skipBtn.addEventListener('click', e => { e.stopPropagation(); skipFilmOrScene(); });
 addEventListener('keydown', e => {
-  if (state === 'cine' && cine && cine.t > 0.6 &&
+  if (state === 'cine' && cine && cine.t > CINE_SKIP_AT &&
       (e.code === 'Escape' || e.code === 'KeyE' || e.code === 'Space' || e.code === 'Enter')) {
     skipFilmOrScene();
   }
 });
+/* v6.6: a tap or click ANYWHERE no longer skips (it did from 0.8 s, and a
+   stray touch skipped a film — Chad). The Skip button and, on a keyboard,
+   its shortcut keys are the only ways out, and both open at 3.0 s. */
 addEventListener('pointerdown', e => {
-  // a tap anywhere skips — except on the sound button, which keeps its job
-  if (state === 'cine' && cine && !cine.paused && cine.t > 0.8 && !e.target.closest?.('#mute')) {
+  if (false && state === 'cine' && cine && !cine.paused && cine.t > 0.8 && !e.target.closest?.('#mute')) {
     skipFilmOrScene();
   }
 });
@@ -4641,6 +4673,7 @@ function sceneApi(c) {
     camera, yaw, pitch,
     ghost, ghostLight, ghostOpacity, getReveal: () => reveal,
     duck: duckLoop,                  // hold one of the chapter's loops down
+    music: cineMusic,                // v6.6: hold the explore music down (a film with its own theme)
     handsRoot, armR, noteProp,
     buildPrayerArm, prayerArm: () => prayerArmL,
     rightHand: () => rightHandModel, setHandCurl,
@@ -5352,6 +5385,7 @@ function scFaint(c, s) {
   // the whip: eyes roll skyward, hard and sudden — an impulse, not a pan
   pitchTo(0, 0.38, s.pitchX, 0.62, k => k * k);
   sfx(0.02, 'boom');
+  sfx(0.30, 'vfaint');                                // v6.6: "No... my head..." — his, and nothing cuts it here
   // decaying shake on yaw and roll — the death-cam judder
   tr(0, 1.7, (k, t) => {
     const decay = Math.exp(-2.2 * t);
@@ -5397,7 +5431,10 @@ function lose() {
   saveCheckpoint({ at: null, stats: STATS_AT_START });
   // the line goes down WITH him — cut anything mid-sentence first
   if (narSrc) { try { narSrc.stop(); } catch {} narSrc = null; }
-  speak('vfaint');
+  /* v6.6: his faint line is the faint SCENE's cue (scFaint), not a speak()
+     here — playCineFn stops every play-time narration on its first line
+     (v4.91), so a line started here was cut a millisecond later and the
+     faint was silent (Chad heard nothing). */
   snd('dread', 0.6);
   playCineFn(scFaint, () => {
     fainting = false;

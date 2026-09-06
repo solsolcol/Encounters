@@ -74,6 +74,11 @@ for (let i = 0; i < 40; i++) {
   await p.waitForTimeout(1000);
 }
 out.faintPlayed = sawFaint;
+// v6.6: the faint has a LINE — cued by the faint scene itself, because a
+// speak() started in lose() was cut by playCineFn a millisecond later and
+// the faint was silent (Chad). The log records the cue even under mute.
+out.faintLineCued = await p.evaluate(()=>window.__enc.stings().some(r => r.kind === 'vfaint'));
+if (!out.faintLineCued) errs.push('the faint played without its line (vfaint never cued)');
 out.cameraWentDown = minCamY < 0.9;
 if (!sawFaint || minCamY >= 0.9) errs.push('faint sequence missing or camera never fell');
 out.state = await p.evaluate(()=>window.__enc.getState());

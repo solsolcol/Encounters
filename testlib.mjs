@@ -121,7 +121,7 @@ export async function toPlay(p, timeout = 150000) {
        skip key that Chromium counts as activation (Escape is not). The
        film accepts it from 0.6 s; if the key somehow never lands, the
        engine's own skip is the fallback rather than a timeout. */
-    await p.waitForFunction(() => !window.__enc.cine.active() || window.__enc.cine.t() > 0.7,
+    await p.waitForFunction(() => !window.__enc.cine.active() || window.__enc.cine.t() > 3.1,   // v6.6: the skip opens at 3.0 s
                             null, { timeout, polling: 120 });
     await p.keyboard.press('KeyE');
     await p.waitForFunction(() => window.__enc.getState() !== 'cine', null, { timeout: 15000, polling: 120 })
