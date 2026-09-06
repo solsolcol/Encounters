@@ -1218,6 +1218,7 @@
        frame; restore() puts them back the way they were. The leaf is
        scaled to 11 cm — a birch leaf is four, and four vanishes in a 72°
        lens; the bear to 28 cm; the note is the real thing's size, folded. */
+    const LEAF_SPIN = 0;                                             // v6.6: a trim on the hanging leaf's turn (renders)
     const LEAF_AT = new THREE.Vector3(0, 0.04, 0);                  // P1 local, above the lawn's 0.02
     const BEAR_AT = new THREE.Vector3(0.3, 0.02, -1.0);             // P2 local
     const NOTE_AT = new THREE.Vector3(0.62, 0.142, 0.02);           // P3 local, on the grate
@@ -1235,7 +1236,7 @@
       if (!alive || !tex) return;
       noteMat5.map = tex; noteMat5.needsUpdate = true;
     }).catch(() => {});
-    function foldedNote() {
+    function foldedNote(hingeOpen = -0.42, flat = false) {
       const g = new THREE.Group();
       const half = (u0) => {
         const geo = new THREE.PlaneGeometry(0.066, 0.066);
@@ -1244,14 +1245,20 @@
         return new THREE.Mesh(geo, noteMat5);
       };
       const a = half(0); a.rotation.x = -Math.PI / 2; a.position.set(0, 0, 0.033);
-      const hinge = new THREE.Group(); hinge.rotation.x = -0.42;   // sprung a little open
-      const b = half(0.5); b.rotation.x = -Math.PI / 2; b.rotation.z = Math.PI; b.position.set(0, 0, -0.033);
+      const hinge = new THREE.Group(); hinge.rotation.x = hingeOpen;   // sprung a little open
+      /* the far half is turned in its plane for the FOLDED note (its face
+         meets the near half's through the hinge); an OPEN note's far half is
+         the plain continuation — turned, it read upside down in the palm (v6.6) */
+      const b = half(0.5); b.rotation.x = -Math.PI / 2; b.rotation.z = flat ? 0 : Math.PI; b.position.set(0, 0, -0.033);
       hinge.add(b);
       g.add(a, hinge);
       return g;
     }
     const noteFoldG = foldedNote(); noteFoldG.rotation.y = 0.35; noteFoldG.scale.setScalar(1.6); noteGround.add(noteFoldG);
-    const noteFoldH = foldedNote(); noteFoldH.scale.setScalar(1.4); noteFoldH.position.set(0, 0.05, 0.02); noteFoldH.rotation.set(1.2, 0, 0.6); noteHand.add(noteFoldH);
+    /* v6.6: in the hand it lies OPEN and FLAT on the palm (Chad: "flat facing
+       up in his palm"): the fold group's normal is +y, a quarter turn about x
+       points it out of the palm (the bone's +z), and its length runs down the fingers */
+    const noteFoldH = foldedNote(-0.10, true); noteFoldH.scale.setScalar(1.4); noteFoldH.position.set(0, 0.06, 0.010); noteFoldH.rotation.set(Math.PI / 2, 0, 0); noteHand.add(noteFoldH);
     // the leaf and the bear arrive over nothing — a missing download costs a prop, never the film
     const fitTo = (g, height) => {
       const box = new THREE.Box3().setFromObject(g);
@@ -1276,7 +1283,15 @@
          chosen from renders (docs/V6.4-PROLOGUE.md) */
       /* the hand bone's +y runs down the fingers (measured: 0.98 against the
          forearm-to-wrist line), so the props sit a few centimetres along it */
-      const H = mk(); H.position.set(0.0, 0.075, 0.015); H.rotation.set(-0.5, 0.2, 1.3);
+      /* v6.6: PINCHED AT THE FINGERTIPS, the blade hanging (Chad: "held like
+         a normal person would"). The pick take carries its object palm-DOWN,
+         so nothing can lie on the palm at the hand-up frame; a leaf held by
+         its stem between the fingers, blade down, is how a person holds one
+         up to look at it. Measured on the bone: +y runs down the fingers, +z
+         is the palm, so world-down at that frame is mostly the bone's +x — the
+         leaf's own length (+y) goes to +x and its face (+z) to +y, toward a
+         lens beyond the fingertips. */
+      const H = mk(); H.position.set(0.0, 0.105, 0.002); H.rotation.set(-Math.PI / 2, 0, -Math.PI / 2 + LEAF_SPIN);
       leafHand.add(H);
     }, () => {})).catch(() => {});
     assetBytes('teddy', true).then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
@@ -1313,37 +1328,50 @@
     /* v6.6: a soft contact shadow at his feet — the memories are lit by
        point lights that cast none, and a boy with no shadow floats */
     const boyShadow = new THREE.Mesh(new THREE.CircleGeometry(0.42, 20),
-      new THREE.MeshBasicMaterial({ map: makeSoftDot('rgba(0,0,0,0.6)', 'rgba(0,0,0,0)'), transparent: true, depthWrite: false, fog: false }));
-    boyShadow.rotation.x = -Math.PI / 2; boyShadow.position.y = 0.012; boyShadow.scale.set(1.0, 1.35, 1);
+      new THREE.MeshBasicMaterial({ map: makeSoftDot('rgba(0,0,0,0.42)', 'rgba(0,0,0,0)'), transparent: true, depthWrite: false, fog: false }));
+    boyShadow.rotation.x = -Math.PI / 2; boyShadow.position.y = 0.012; boyShadow.scale.set(0.8, 1.05, 1);
     boy.add(boyShadow);
     let boyMixer = null, boyActs = null, boyHead = null, boyHand = null, boyReady = false, boyS = 1;
+    let boyG = null; const boyFeet = [];        // v6.6: the model root and its four foot joints, for grounding
+    const _ft = new THREE.Vector3();
     const boyScale = () => boyS;
-    const boyLook = { target: null, w: 0, x: 0, y: 0, last: 0 };
-    const _lh = new THREE.Vector3();
+    const boyLook = { target: null, w: 0, x: 0, y: 0, k: 0 };
+    const _lh = new THREE.Vector3(), _ld = new THREE.Vector3(), _lm = new THREE.Matrix4(), _lq = new THREE.Quaternion(), _lpq = new THREE.Quaternion();
+    const LOOK_UP = new THREE.Vector3(0, 1, 0);
+    /* v6.6: the look is ABSOLUTE. v6.4 added a yaw on top of the clip's and
+       drove the pitch to a target, and it held only while the take kept the
+       head still: the dumbfounded look-around turns the head itself, so the
+       same additive yaw faced the paper at one frame and away from it a
+       second later (measured: head +Z against the direction to the target,
+       +0.53 x at 52.5 s, -0.41 at 53.5 with the target at +0.86). Now the
+       head bone's +Z — its face, measured — is aimed at the target in world,
+       yaw clamped to a neck's range about the BODY's facing, pitch capped
+       low (Chad: his chin was too high), and the clip's pose is blended
+       toward that aim by an eased weight. `x`/`y` are kept for probes. */
     function boyLookApply() {
       if (!boyHead) return;
-      const now = performance.now();
-      const dt = Math.min(0.1, (now - (boyLook.last || now)) / 1000);
-      boyLook.last = now;
-      const T = boyLook.target, w = boyLook.w;
-      let wy = 0, wx = 0;
-      if (T && w > 0) {
-        boyHead.getWorldPosition(_lh);
-        const dx = T.x - _lh.x, dz = T.z - _lh.z, flat = Math.hypot(dx, dz);
-        let dy = Math.atan2(dx, dz) - boy.rotation.y;
-        dy = Math.atan2(Math.sin(dy), Math.cos(dy));
-        /* the sign is MEASURED (a frame at the pass showed him turning
-           away from the paper): on this rig a positive rotation.y turns
-           the head to its own left, and dy is positive for a target on
-           his right */
-        wy = -THREE.MathUtils.clamp(dy, -1.15, 1.15) * w;
-        wx = THREE.MathUtils.clamp(Math.atan2(T.y - _lh.y, Math.max(flat, 0.05)), -0.55, 0.75) * w;
-      }
-      const k = Math.min(1, dt * 4.5);
-      boyLook.y += (wy - boyLook.y) * k;
-      boyLook.x += (wx - boyLook.x) * k;
-      boyHead.rotation.y += boyLook.y;
-      boyHead.rotation.x += (-boyLook.x - boyHead.rotation.x) * Math.min(1, Math.abs(boyLook.x) * 6 + w * 0.9);
+      const T = boyLook.target;
+      if (!T) { boyLook.k = 0; boyLook.x = boyLook.y = 0; return; }   // a cut releases the head outright
+      /* the weight is the TRACK's, ramped by cine time in lookAt() and the
+         pass — not eased here by the wall clock, so a seek lands on the
+         same head as playback (v6.4's rule for the whole actor) */
+      boyLook.k = Math.max(0, Math.min(1, boyLook.w));
+      if (boyLook.k < 0.002) { boyLook.x = boyLook.y = 0; return; }
+      boyHead.updateWorldMatrix(true, false);
+      boyHead.getWorldPosition(_lh);
+      _ld.set(T.x - _lh.x, T.y - _lh.y, T.z - _lh.z);
+      const flat = Math.max(0.05, Math.hypot(_ld.x, _ld.z));
+      const pitch = THREE.MathUtils.clamp(Math.atan2(_ld.y, flat), -0.55, 0.25);
+      let dy = Math.atan2(_ld.x, _ld.z) - boy.rotation.y;
+      dy = Math.atan2(Math.sin(dy), Math.cos(dy));
+      const yaw = boy.rotation.y + THREE.MathUtils.clamp(dy, -1.15, 1.15);
+      boyLook.x = pitch; boyLook.y = dy;
+      _ld.set(Math.sin(yaw) * Math.cos(pitch), Math.sin(pitch), Math.cos(yaw) * Math.cos(pitch)).add(_lh);
+      _lm.lookAt(_ld, _lh, LOOK_UP);                  // an object's lookAt: +Z toward the target
+      _lq.setFromRotationMatrix(_lm);
+      boyHead.parent.getWorldQuaternion(_lpq);
+      _lq.premultiply(_lpq.invert());                 // world aim -> the bone's local frame
+      boyHead.quaternion.slerp(_lq, boyLook.k);
     }
     /* park `a` at time ta (and `b` at tb, blended by k); everything else off */
     function boyPose(a, ta, b, tb, k = 0) {
@@ -1363,6 +1391,17 @@
         act.time = Math.max(0, Math.min(d - 1e-4, tt));
       }
       boyMixer.update(0);
+      /* v6.6: GROUNDED PER FRAME (Chad: "his feet sunken into the ground").
+         He was grounded once, from the look take's frame 2.6; the pick take
+         plants the toes 4.4 cm lower and the walk rolls them, so every other
+         frame sank. Now the lowest foot joint is put on the group's floor,
+         plus a sole's thickness, whatever the take is doing. */
+      if (boyG && boyFeet.length) {
+        boy.updateMatrixWorld(true);
+        let low = Infinity;
+        for (const f of boyFeet) { f.getWorldPosition(_ft); if (_ft.y < low) low = _ft.y; }
+        if (isFinite(low)) boyG.position.y += (boy.position.y + 0.012) - low;
+      }
       boyLookApply();
     }
     assetBytes('young').then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
@@ -1389,7 +1428,9 @@
         if (/Toe|Foot/.test(o.name)) toe = Math.min(toe, v.y);
         if (HEAD_RE.test(o.name)) { head = Math.max(head, v.y); if (!boyHead) boyHead = o; }
         if (/RightHand$/.test(o.name) && !boyHand) boyHand = o;
+        if (/Foot$|ToeBase$/.test(o.name)) boyFeet.push(o);
       });
+      boyG = g;
       if (isFinite(toe) && head > toe) {
         boyS = BOY_H / (head - toe);
         g.scale.setScalar(boyS);
@@ -1937,7 +1978,7 @@ function scChant(c, s, api) {                        /* D — palms together */
      lands on the right frame and a skip leaves no take running. Camera
      moves are `shot`s: the lens glides A -> B while it looks at P -> Q. */
   function intro(c, s, api) {
-    const { tr, step, sfx, fade, faceFrom, rawK, smoothK, duck, stage,
+    const { tr, step, sfx, fade, faceFrom, rawK, smoothK, duck, music, stage,
             camera, yaw, pitch, ghostOpacity, handsRoot, armR, THREE } = api;
     const MEMX = stage.MEM.x, MEMZ = stage.MEM.z, PZ = stage.POCKET_Z;
     const at = (p, x, y, z) => ({ x: MEMX + x, y, z: MEMZ + PZ[p] + z });   // pocket-local -> world
@@ -1976,6 +2017,47 @@ function scChant(c, s, api) {                        /* D — palms together */
       if (h) { h.getWorldPosition(_hw); aimAt(C.x, C.y, C.z, _hw.x + off.x, _hw.y + off.y, _hw.z + off.z); }
     }, ease);
     const setLights = (p, k) => { for (const [L, on] of stage.memLights[p]) L.intensity = on * k; };
+    /* v6.6: his HEAD on the thing (Chad: "his head should look at the leaf") —
+       a look at a point, or at his own right hand once the thing is in it,
+       ramped in; cleared at every cut */
+    const _lk = new THREE.Vector3();
+    const lookAt = (t0, t1, get, ramp = 0.6) => tr(t0, t1, (k, t) => {
+      /* a track HOLDS after its end (the engine's rule), and two held looks
+         would fight every frame in registration order — measured: at the pass
+         he looked at his own hand, at the bear he looked at the floor. A look
+         therefore writes only while it runs; the last one written stands
+         until the next, or until a cut's lookOff() */
+      if (t > t1) return;
+      const T = get(); if (!T) return;
+      _lk.set(T.x, T.y, T.z); stage.boyLook.target = _lk;
+      stage.boyLook.w = Math.min(1, Math.max(0, (t - t0) / ramp));
+    }, rawK);
+    const handPt = () => { const h = stage.boyHand(); if (!h) return null; h.getWorldPosition(_hw); return { x: _hw.x, y: _hw.y + 0.03, z: _hw.z }; };
+    const lookOff = () => { stage.boyLook.target = null; stage.boyLook.w = 0; stage.boyLook.x = stage.boyLook.y = 0; };
+    /* v6.6: a shot that looks INTO HIS PALM — the lens sits along the palm's
+       normal (the bone's +z: a render along -z showed the knuckles), a little
+       above it, aimed a few centimetres down the fingers, wherever the take
+       has put the hand. What lies on the palm is face-on by construction. */
+    const _hp = new THREE.Vector3(), _hn = new THREE.Vector3(), _hf = new THREE.Vector3();
+    /* and a shot from BEYOND THE FINGERTIPS, a little below them, for a thing
+       that hangs from a pinch: the lens out along the fingers, looking back
+       at the hand, so what hangs is between the lens and his face */
+    const shotFingers = (t0, t1, e0, e1, drop0, drop1, aimDrop, ease) => tr(t0, t1, k => {
+      const h = stage.boyHand(); if (!h) return;
+      h.getWorldPosition(_hp);
+      _hf.set(0, 1, 0).transformDirection(h.matrixWorld);
+      const e = e0 + (e1 - e0) * k, drop = drop0 + (drop1 - drop0) * k;
+      aimAt(_hp.x + _hf.x * e, _hp.y + _hf.y * e - drop, _hp.z + _hf.z * e, _hp.x, _hp.y - aimDrop, _hp.z);
+    }, ease);
+    const shotPalm = (t0, t1, d0, d1, e0, e1, lift0, lift1, ease) => tr(t0, t1, k => {
+      const h = stage.boyHand(); if (!h) return;
+      h.getWorldPosition(_hp);
+      _hn.set(0, 0, 1).transformDirection(h.matrixWorld);
+      _hf.set(0, 1, 0).transformDirection(h.matrixWorld);
+      const d = d0 + (d1 - d0) * k, e = e0 + (e1 - e0) * k, lift = lift0 + (lift1 - lift0) * k;   // out from the palm, past the fingertips, up
+      const tx = _hp.x + _hf.x * 0.05, ty = _hp.y + _hf.y * 0.05, tz = _hp.z + _hf.z * 0.05;
+      aimAt(tx + _hn.x * d + _hf.x * e, ty + _hn.y * d + _hf.y * e + lift, tz + _hn.z * d + _hf.z * e, tx, ty, tz);
+    }, ease);
     /* where he must STAND for a take's hand to land on a thing: the hand's
        offset in his own frame (measured on the takes, scaled to him), turned
        by his facing and taken away from the thing's position */
@@ -1984,11 +2066,12 @@ function scChant(c, s, api) {                        /* D — palms together */
       z: T.z - (-ox * Math.sin(ry) + oz * Math.cos(ry)) });
     const LEAF = at(0, 0, 0.014, 0), BEAR = at(1, 0.3, 0.02, -1.0), NOTE5 = at(2, 0.62, 0.135, 0.02);
     // pocket one: he faces -z with the leaf ahead; three metres of walk-in
-    const RY1 = Math.PI, S1 = standFor(LEAF, RY1, -0.15, 0.33), W1 = { x: S1.x, y: 0, z: S1.z + 3.2 };
+    const RY1 = Math.PI, S1 = standFor(LEAF, RY1, -0.15, 0.33); S1.y = 0.02;   // v6.6: on the lawn's top
+    const W1 = { x: S1.x, y: 0.02, z: S1.z + 3.2 };
     // pocket two: from the top step, then from the step's foot to the bear
-    const TOP2 = at(1, 2.75, 0.51, -2.2), FOOT2 = at(1, 1.75, 0, -1.55);   // v6.6: the third step of the rebuilt flight
+    const TOP2 = at(1, 2.75, 0.51, -2.2), FOOT2 = at(1, 1.75, 0.02, -1.55);   // v6.6: the third step of the rebuilt flight; the floor's top
     const RY2a = Math.atan2(BEAR.x - TOP2.x, BEAR.z - TOP2.z);
-    const RY2 = Math.atan2(BEAR.x - FOOT2.x, BEAR.z - FOOT2.z), S2 = standFor(BEAR, RY2, -0.15, 0.33);
+    const RY2 = Math.atan2(BEAR.x - FOOT2.x, BEAR.z - FOOT2.z), S2 = standFor(BEAR, RY2, -0.15, 0.33); S2.y = 0.02;
     // pocket three: along the pavement toward +x; the walkpick take walks itself
     const RY3 = Math.PI / 2, S3 = standFor(NOTE5, RY3, 0.58, 1.16);
     const G3 = { x: S3.x + 0.15, y: 0.12, z: S3.z - 0.22 }, W3 = { x: G3.x - 1.9, y: 0.12, z: G3.z };
@@ -1999,10 +2082,13 @@ function scChant(c, s, api) {                        /* D — palms together */
       ghostOpacity(0); armR.visible = false; handsRoot.visible = false;
       stage.memRoot.visible = true; stage.proRoot.visible = true;
       stage.flyNote.visible = false;
-      stage.boy.position.set(W1.x, 0, W1.z); stage.boy.rotation.y = RY1;
+      stage.boy.position.set(W1.x, W1.y, W1.z); stage.boy.rotation.y = RY1;
       duck('amb', 0.10); duck('fire', 0.10);
+      music(0, 0.4);                 // v6.6: the title's music is not this film's (Chad)
     });
-    sfx(0.4, 'memday', 0.7);
+    // v6.6: the sea, the cicadas under it, and the memory's own theme
+    sfx(0.4, 'ecpamb', 0.8); sfx(0.4, 'memday', 0.3);
+    sfx(0.7, 'memtheme', 0.55);
     sfx(0.6, 'vpro1');
 
     // ---- 4.4–14.0 POCKET ONE · THE LEAF
@@ -2012,7 +2098,7 @@ function scChant(c, s, api) {                        /* D — palms together */
     shot(4.4, 8.2, at(0, -0.06, 0.30, -0.40), at(0, -0.03, 0.27, -0.34),
                    LEAF, { x: LEAF.x - 0.06, y: 0.02, z: LEAF.z + 0.16 }, smoothK);
     take(4.4, 8.0, 'walk', 1.0, 0.2, 1.08);
-    glide(4.6, 8.0, W1, { x: S1.x, y: 0, z: S1.z }, rawK);
+    glide(4.6, 8.0, W1, S1, rawK);
     for (const st of [4.9, 5.5, 6.1, 6.7, 7.3]) sfx(st, 'step', 0.5);
     sfx(6.6, 'vpro2');
     // he stops, and bends
@@ -2020,16 +2106,20 @@ function scChant(c, s, api) {                        /* D — palms together */
     take(8.4, 15.0, 'pick', 1.0, 0.0);                 // the grab at 8.4 + 1.45; the hand up from ~11.3
     step(9.85, () => { stage.leafGround.visible = false; stage.leafHand.visible = true; });
     sfx(9.85, 'leafpick', 0.7);
-    // 1b: low three-quarter from behind the leaf, looking up; a push-in on the hand
+    sfx(10.8, 'vpick1');                                // v6.6: "Ooh! Nice." — after vpro2 ends at 10.65
+    lookAt(7.6, 9.85, () => LEAF);                      // v6.6: his eyes on the leaf, then on his hand
+    lookAt(9.85, 13.6, handPt, 0.3);
+    // 1b: low three-quarter from behind the leaf, looking up; then INTO HIS PALM as he lifts it (v6.6)
     shotHand(8.2, 10.6, at(0, 0.78, 0.40, -1.0), at(0, 0.56, 0.34, -0.72), { x: 0, y: 0.04, z: 0 }, smoothK);
-    shotHand(10.6, 14.0, at(0, 0.56, 0.34, -0.72), at(0, 0.30, 1.22, -0.40), { x: 0, y: 0.02, z: 0 }, smoothK);
+    shotFingers(10.6, 14.0, 0.46, 0.36, 0.20, 0.16, -0.09, smoothK);   // the leaf hanging between the lens and his face, the sunset behind
 
     // ---- 14.0–25.2 POCKET TWO · THE TOY
-    sfx(13.4, 'memday', 0.7);
+    sfx(13.4, 'stairamb', 0.8);                        // v6.6: the tube's hum, the well's echo
     sfx(13.6, 'memwash', 0.6);
     fade(13.6, 14.2, 0, 1);
     tr(13.6, 14.2, k => setLights(0, 1 - k), rawK);
     step(14.2, () => {
+      lookOff();
       stage.leafHand.visible = false;
       stage.boy.position.set(TOP2.x, TOP2.y, TOP2.z); stage.boy.rotation.y = RY2a;
     });
@@ -2037,12 +2127,13 @@ function scChant(c, s, api) {                        /* D — palms together */
     fade(14.4, 15.2, 1, 0);
     take(14.2, 19.0, 'alert', 1.0, 0.4);                // is anyone watching
     sfx(15.4, 'vpro3');
+    lookAt(16.4, 19.0, () => BEAR, 0.8);                // v6.6: and then his eyes go to it
     // 2a: low, the bear large in the foreground, him small on the steps behind it
     shot(14.2, 19.0, at(1, -1.05, 0.22, -0.10), at(1, -0.85, 0.26, -0.22),
                      at(1, 0.9, 0.42, -1.45), at(1, 1.0, 0.48, -1.5), smoothK);
     roll(14.2, 19.0, 0.035, 0.035);
     // 2b: from ABOVE — he crosses to it, crouches, lifts it; the lens cranes down to his shoulder
-    step(19.0, () => { stage.boy.position.set(FOOT2.x, 0, FOOT2.z); stage.boy.rotation.y = RY2; });
+    step(19.0, () => { stage.boy.position.set(FOOT2.x, FOOT2.y, FOOT2.z); stage.boy.rotation.y = RY2; });
     roll(19.0, 19.05, 0.035, 0);
     take(19.0, 20.2, 'walk', 1.0, 0.3, 1.08);
     glide(19.0, 20.2, FOOT2, S2, rawK);
@@ -2051,15 +2142,19 @@ function scChant(c, s, api) {                        /* D — palms together */
     take(20.5, 25.2, 'pick', 1.0, 0.0);                 // the grab at 21.95; held up from ~23.4
     step(21.95, () => { stage.bearGround.visible = false; stage.bearHand.visible = true; });
     sfx(21.9, 'toypick', 0.7);
+    sfx(22.1, 'vpick2');                                // v6.6: "Oh! Hello there."
+    lookAt(19.0, 21.95, () => BEAR, 0.4);               // v6.6: on the bear, then on the bear in his hand
+    lookAt(21.95, 24.8, handPt, 0.3);
     shot(19.0, 25.2, at(1, 0.9, 3.4, -0.5), at(1, -0.55, 1.35, 0.25),
                      at(1, 0.7, 0.0, -1.0), at(1, 0.55, 0.85, -0.85), smoothK);
 
     // ---- 25.2–36.2 POCKET THREE · THE MONEY
-    sfx(24.4, 'memday', 0.7);
+    sfx(24.4, 'playamb', 0.8); sfx(24.4, 'memday', 0.3);   // v6.6: children far off, cicadas
     sfx(24.8, 'memwash', 0.6);
     fade(24.8, 25.4, 0, 1);
     tr(24.8, 25.4, k => setLights(1, 1 - k), rawK);
     step(25.4, () => {
+      lookOff();
       stage.bearHand.visible = false;
       stage.boy.position.set(W3.x, 0.12, W3.z); stage.boy.rotation.y = RY3;
     });
@@ -2074,47 +2169,57 @@ function scChant(c, s, api) {                        /* D — palms together */
        and the group jumps back to the stand spot under it */
     step(27.4, () => { stage.boy.position.set(S3.x, 0.12, S3.z); });
     blend(27.4, 27.7, 'walk', 0.5, 'walkpick', 0.0);
-    take(27.7, 36.2, 'walkpick', 1.0, 0.0);             // the stoop at 27.7 + 5.75
+    take(27.7, 33.55, 'walkpick', 1.0, 0.0);            // the stoop at 27.7 + 5.75
+    take(33.55, 38.4, 'walkpick', 0, 5.85);              // v6.6: PARKED a beat after the grab, the palm still up (measured: +z = (0.65, 0.71, -0.29)) — the note stays in his palm, not his pocket
+    lookAt(30.2, 33.45, () => NOTE5, 0.8);              // v6.6: he sees it coming
+    lookAt(33.45, 38.4, handPt, 0.4);
     // 3a: a TRACKING shot along the kerb that finds the note; his feet arrive
     shot(25.6, 31.5, at(2, -3.0, 0.34, -1.55), at(2, 0.25, 0.30, -1.25),
                      at(2, -1.6, 0.16, -0.10), NOTE5, smoothK);
     // 3b: from behind at hip height — the stoop, the pocket
-    shot(31.5, 36.2, at(2, -1.7, 0.78, 0.95), at(2, -1.3, 0.72, 0.85),
+    shot(31.5, 33.7, at(2, -1.7, 0.78, 0.95), at(2, -1.3, 0.72, 0.85),
                      at(2, 0.2, 0.45, 0.15), at(2, 0.5, 0.55, 0.20), smoothK);
     step(33.45, () => { stage.noteGround.visible = false; stage.noteHand.visible = true; });
     sfx(33.5, 'take', 0.55);
+    sfx(33.8, 'vpick3');                                // v6.6: "Wah! Five dollars!"
+    // 3c (v6.6): THE NOTE IN HIS PALM — a macro into the open hand, the five flat and face-up, a slow push-in
+    shotPalm(33.7, 38.4, 0.30, 0.20, 0.0, 0.0, 0.02, 0.02, smoothK);
 
-    // ---- 36.2–39.6 BLACK, held. The night comes up under the last line.
-    sfx(35.4, 'memwash', 0.6);
-    fade(35.4, 36.2, 0, 1);
-    tr(35.4, 36.2, k => setLights(2, 1 - k), rawK);
-    tr(35.6, 39.6, k => { duck('amb', 0.10 + 0.90 * k); duck('fire', 0.10 + 0.90 * k); }, rawK);
-    step(36.2, () => {
+    // ---- 39.2–42.6 BLACK, held. The night comes up under the last line.
+    sfx(38.4, 'memwash', 0.6);
+    fade(38.4, 39.2, 0, 1);
+    tr(38.4, 39.2, k => setLights(2, 1 - k), rawK);
+    tr(38.6, 42.6, k => { duck('amb', 0.10 + 0.90 * k); duck('fire', 0.10 + 0.90 * k); }, rawK);
+    step(39.2, () => {
+      lookOff();
       stage.memRoot.visible = false; stage.noteHand.visible = false;
       stage.boy.position.set(SP.x, 0, SP.z); stage.boy.rotation.y = Math.PI;
     });
-    sfx(36.4, 'dread', 0.35);
-    sfx(36.6, 'vpro5');
+    sfx(39.4, 'dread', 0.35);
+    sfx(39.6, 'vpro5');
+    step(38.6, () => music(1, 4.0));                    // v6.6: the title's music returns under "this time was different"
 
-    // ---- 39.6–45.0 THE PRESENT · the wide: the block at night, him from behind
-    fade(39.6, 41.2, 1, 0);
-    shot(39.6, 45.0, { x: 1.9, y: 1.55, z: 21.6 }, { x: 0.75, y: 1.42, z: 18.7 },
+    // ---- 42.6–48.0 THE PRESENT · the wide: the block at night, him from behind
+    fade(42.6, 44.2, 1, 0);
+    shot(42.6, 48.0, { x: 1.9, y: 1.55, z: 21.6 }, { x: 0.75, y: 1.42, z: 18.7 },
                      { x: 0, y: 1.2, z: 12 }, { x: 0, y: 1.25, z: 15.5 }, smoothK);
-    take(39.6, 45.0, 'look', 0.35, 2.4);
+    take(42.6, 48.0, 'look', 0.35, 2.4);
 
-    // ---- 45.0–53.0 THE FACE · the world slows; the note comes to him
-    tr(45.0, 46.2, k => { stage.slowMo = 1 - 0.88 * k; stage.noteStorm = 1 - 0.90 * k; }, smoothK);
-    tr(45.0, 46.5, k => { duck('amb', 1 - 0.65 * k); duck('fire', 1 - 0.65 * k); }, rawK);
-    tr(45.0, 47.0, k => { stage.faceFill.intensity = 2.4 * k; }, rawK);
-    take(45.0, 59.0, 'look', 0.12, 4.3);
-    sfx(45.0, 'noteslow', 0.8);
-    step(45.0, () => { stage.flyNote.visible = true; });
+    // ---- 48.0–56.0 THE FACE · the world slows; the note comes to him
+    tr(48.0, 49.2, k => { stage.slowMo = 1 - 0.88 * k; stage.noteStorm = 1 - 0.90 * k; }, smoothK);
+    tr(48.0, 49.5, k => { duck('amb', 1 - 0.65 * k); duck('fire', 1 - 0.65 * k); }, rawK);
+    tr(48.0, 50.0, k => { stage.faceFill.intensity = 2.4 * k; }, rawK);
+    take(48.0, 62.0, 'look', 0.12, 4.3);
+    sfx(48.0, 'noteslow', 0.8);
+    step(48.0, () => { stage.flyNote.visible = true; });
     /* the note's path: keyframes in world space, a Catmull-Rom through them
        by TIME, and a flutter riding on top — in from frame left and low,
-       nearest his eyes at 48.3, past his right shoulder, then up */
-    const KEYS = [[45.0, -1.6, 1.00, 15.0], [47.0, -0.75, 1.24, 15.95], [48.3, -0.22, 1.39, 16.36],
-                  [49.6, 0.30, 1.48, 16.58], [51.0, 0.75, 1.70, 16.55], [52.5, 1.00, 2.40, 16.2],
-                  [54.0, 0.70, 4.4, 14.6], [55.5, -2.4, 7.9, 10.4], [57.0, -8.4, 12.0, 5.4], [59.0, -12.5, 16.5, 0.5]];
+       nearest his eyes at 51.3, past his right shoulder, then up */
+    /* v6.6: the keys hold the paper at EYE LEVEL through the pass (1.22-1.36
+       against a face at 1.29) — it rose to 1.70 before, and his chin with it */
+    const KEYS = [[48.0, -1.6, 1.00, 15.0], [50.0, -0.75, 1.22, 15.95], [51.3, -0.22, 1.30, 16.36],
+                  [52.6, 0.30, 1.31, 16.58], [54.0, 0.75, 1.36, 16.55], [55.5, 1.00, 1.90, 16.2],
+                  [57.0, 0.70, 4.4, 14.6], [58.5, -2.4, 7.9, 10.4], [60.0, -8.4, 12.0, 5.4], [62.0, -12.5, 16.5, 0.5]];
     const flyAt = (t) => {
       const K = KEYS, n = K.length;
       if (t <= K[0][0]) return { x: K[0][1], y: K[0][2], z: K[0][3] };
@@ -2133,37 +2238,48 @@ function scChant(c, s, api) {                        /* D — palms together */
       return out;
     };
     const noteTarget = new THREE.Vector3();
-    tr(45.0, 59.0, (k, t) => {
-      const f = flyAt(t), s2 = t - 45.0;
+    tr(48.0, 62.0, (k, t) => {
+      const f = flyAt(t), s2 = t - 48.0;
       stage.flyNote.position.set(f.x, f.y, f.z);
       stage.flyNote.rotation.set(-Math.PI / 2 + Math.sin(s2 * 1.6) * 0.55, s2 * 0.55, 0.3 + Math.sin(s2 * 1.3) * 0.5);
       noteTarget.set(f.x, f.y, f.z);
       stage.boyLook.target = noteTarget;
-      stage.boyLook.w = Math.min(1, Math.max(0, (t - 46.0) / 1.5));
+      // v6.6: and the look lets go once the paper has climbed past him
+      stage.boyLook.w = Math.min(1, Math.max(0, (t - 49.0) / 1.5)) * (1 - Math.min(1, Math.max(0, (t - 57.2) / 1.8)));
     }, rawK);
-    sfx(48.2, 'strings', 0.6);
+    sfx(51.2, 'strings', 0.6);
     /* the ARC: the lens on a circle about his head, front-left to front-right
        through the pass, aimed at his face until the paper has crossed it,
        then handed to the paper and lifted after it */
     /* measured, not assumed: with the group at z 17 his head joint sits at
        (-0.08, 1.21, 16.71) and the face a hand's breadth forward of it */
     const HC = { x: -0.06, y: 1.28, z: 16.66 }, FACE = { x: -0.06, y: 1.29, z: 16.58 };
-    tr(45.0, 57.5, (k, t) => {
-      const u = Math.max(0, Math.min(1, (t - 45.0) / 8.0)), e = u * u * (3 - 2 * u);
+    tr(48.0, 60.5, (k, t) => {
+      const u = Math.max(0, Math.min(1, (t - 48.0) / 8.0)), e = u * u * (3 - 2 * u);
       const a = -0.62 + 1.02 * e, r = 0.74;
       let cx = HC.x + Math.sin(a) * r, cy = 1.36 + 0.05 * e, cz = HC.z - Math.cos(a) * r;
-      const v = Math.max(0, Math.min(1, (t - 53.0) / 4.5)), ev = v * v * (3 - 2 * v);
+      const v = Math.max(0, Math.min(1, (t - 56.0) / 4.5)), ev = v * v * (3 - 2 * v);
       cx += (0.35 - cx) * ev; cy += (3.2 - cy) * ev; cz += (16.9 - cz) * ev;
       const f = flyAt(t);
-      const b = Math.max(0, Math.min(1, (t - 48.5) / 2.2)), eb = b * b * (3 - 2 * b);
+      const b = Math.max(0, Math.min(1, (t - 51.5) / 2.2)), eb = b * b * (3 - 2 * b);
       aimAt(cx, cy, cz, FACE.x + (f.x - FACE.x) * eb, FACE.y + (f.y - FACE.y) * eb, FACE.z + (f.z - FACE.z) * eb);
     }, rawK);
-    roll(45.0, 53.0, 0.05, 0.0);
+    roll(48.0, 56.0, 0.05, 0.0);
+    /* v6.6: THE MACRO (Chad: "no proper zoom on the hellnote details in
+       slow-mo as it flies by") — for two seconds the lens rides with the
+       paper, a hand's breadth off it, his eye behind; registered after the
+       arc so it wins the frame; then the arc has the camera back, and the
+       world comes back up to speed under the climb */
+    tr(52.0, 54.2, (k, t) => {
+      const f = flyAt(t);
+      aimAt(f.x + 0.10 + 0.04 * k, f.y + 0.05, f.z - 0.25 + 0.03 * k, f.x, f.y, f.z);
+    }, rawK);
+    tr(54.2, 55.6, k => { stage.slowMo = 0.12 + 0.88 * k; stage.noteStorm = 0.10 + 0.90 * k; }, smoothK);
 
-    // ---- 57.0–59.0 a fleck against the moon; black; the card
-    fade(57.0, 59.0, 0, 1);
-    sfx(58.2, 'boom', 0.4);
-    step(59.0, () => { stage.proRoot.visible = false; armR.visible = true; handsRoot.visible = true; });
+    // ---- 60.0–62.0 a fleck against the moon; black; the card
+    fade(60.0, 62.0, 0, 1);
+    sfx(61.2, 'boom', 0.4);
+    step(62.0, () => { stage.proRoot.visible = false; armR.visible = true; handsRoot.visible = true; });
 
     c.keep.ghostGone = true;      // she is not standing there when play starts
     c.endFade = 1;
