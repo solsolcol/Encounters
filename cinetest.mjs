@@ -150,7 +150,7 @@ for (let i = 0; i < 4; i++) {
   out.fadesInAfter = await p.evaluate(() => +getComputedStyle(document.getElementById('cineFade')).opacity) < 0.05;
   out.setOnScreen = await p.evaluate(() => window.__enc.stage.memRoot.visible && window.__enc.stage.proRoot.visible
     && window.__enc.stage.leafHand.visible && !window.__enc.stage.leafGround.visible);
-  await p.evaluate(() => window.__enc.cine.seek(48.3));   // the pass: the note beside his face, his head on it
+  await p.evaluate(() => window.__enc.cine.seek(51.3));   // the pass: the note beside his face, his head on it (v6.6: the film grew 3 s for the macro on the five)
   await p.waitForTimeout(220);
   out.headFollows = await p.evaluate(() => window.__enc.stage.flyNote.visible && window.__enc.stage.boyLook.w > 0.99
     && window.__enc.stage.slowMo < 0.2);

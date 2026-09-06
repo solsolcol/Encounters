@@ -1170,6 +1170,38 @@ What the baseline contains, by release:
   stagger; on a phone the state word sits under the chapter's name so a
   title never wraps beside the pill. The harness contract is unchanged.
   Three strings; sheet v37. docs/V6.5-SELECTOR-POLISH.md.
+- **v6.6** THE PROLOGUE, BUILT OUT — Chad's eleven notes, three on the
+  base game and eight on the film. THE BASE GAME: chapter 1's grass read
+  as 4.8 m squares because its noise tile was not periodic and repeated 46
+  times (`tileField()` makes it wrap); the faint was SILENT because
+  `lose()` spoke its line a millisecond before `playCineFn` stopped every
+  play-time narration (the line is the faint scene's own cue now, and
+  sanitytest asserts it); and a tap anywhere no longer skips a cutscene —
+  the Skip button and its keys alone, and only from 3.0 s of EVERY film and
+  scene (`CINE_SKIP_AT`; testlib waits past it). THE FILM: the three
+  memories are PLACES — East Coast Park at evening (a painted sky inside an
+  18 m bubble, the sea to its edge, sand, palms and casuarinas, tankers, a
+  kite, the sun low), a dressed HDB landing (a dog-leg flight, a lift,
+  letterboxes, a shoe rack, a bicycle, the storey number), a playground by
+  day (rubber tiles, a slide with a roof, swings, a dome, a seesaw, two
+  four-storey blocks with a void deck) — every material a fog-free clone
+  because the fog is midnight and the set stands forty metres out in it;
+  the boy is GROUNDED EVERY FRAME from his lowest foot joint (the pick take
+  plants the toes 4.4 cm under the look take's floor); the leaf is pinched
+  at the fingertips with the blade hanging (the take carries its object
+  palm-DOWN — the bone's +z, measured by a render, not by a thumb), the
+  five lies OPEN AND FLAT on the palm at a 4.7 s macro parked a beat after
+  the grab; his eyes go to each thing and then to his own hand through an
+  ABSOLUTE look (the head bone's +Z aimed at the target — the additive yaw
+  of v6.4 held only while a take kept the head still, and a look now
+  writes only while it runs, because held tracks fought in registration
+  order); a 40 s memory theme under the memories and the title's music
+  brought back over four seconds under "this time was different"
+  (`api.music(k, secs)`, the fifteenth seam); a bed per memory and three
+  small vocal reactions at the grabs; and the pass: the paper at eye level,
+  the chin capped, a two-second macro riding with the paper, the world back
+  to speed under the climb. The film is 62 s. Sheet v38.
+  docs/V6.6-PLAN.md is the build's memory, with what shipped against the plan.
  *"i'm still
   not satisfied with this voice."* All 79 of the boy's takes regenerated in a
   THIRD voice (Aaron, `B6uUx2p7cRgxseOUyP6P`), under an approved prompt sheet

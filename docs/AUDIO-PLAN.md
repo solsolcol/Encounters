@@ -697,3 +697,51 @@ wash — already SHARED, the rhyme the plan wanted comes free), `step`,
 `take`, `dread`, `strings` (her chord, on the note as it passes his eyes),
 `boom`. The chapter's `amb` and fire loops are ducked to 0.10 through the
 pockets, brought back under `vpro5`, and dipped to 0.35 for the close-up.
+
+## v6.6 — the memory theme, three reactions, three beds
+
+The prologue built out (docs/V6.6-PLAN.md). Flow `F0uITe7b5SpyTarliWrA`;
+masters and `encode.mjs` in `masters/v6.6/`; every file to the contract
+(voice mono 44.1k/128k mp3 + 48k/64k opus peak-matched to `vpile`; the
+rest stereo 44.1k/128k + 48k/96k, peak-normalised as named).
+
+**The theme — `memtheme`, eleven_music_v2:** two 40 s instrumental takes;
+theme-b chosen (transcribed through `creative_transcribe_audio` to an
+EMPTY transcript — no vocals — and quiet by itself from ~34 s, so the last
+wash and the dread bed take over with nothing to fade). 40.05 s, −3.4
+dBFS, cued at 0.7 under the first memory at 0.55. The title's music is
+held at zero from the film's first frame and brought back over four
+seconds from 38.6, under "this time was different" — `api.music(k, secs)`
+(main.js: `cineMusicK` inside `musicVolNow()`, cleared at both ends of
+every cutscene like the ducks).
+
+**The reactions — `vpick1`–`vpick3`, James (Aaron, eleven_v3), the v5.28
+rules:** two takes each, picked by measure, peak-matched to −3.9 dBFS:
+
+| id | heard | secs | cue |
+|---|---|---|---|
+| `vpick1` | Ooh! Nice. | 2.35 | 10.8, after `vpro2` ends at 10.65 |
+| `vpick2` | Oh! Hello there. | 1.72 | 22.1, after `vpro3` ends at 20.96 |
+| `vpick3` | Wah! Five dollars! | 2.27 | 33.8, over the macro on the five |
+
+SHARED by construction (`JAMES_TAKES`), rows in `src/voicelines.js`.
+
+**The beds — eleven_text_to_sound_v2, `duration_seconds: 14, loop: true`,
+`prompt_influence 0.4`:**
+
+| sound | what | level | note |
+|---|---|---|---|
+| `ecpamb` | waves on a sandy shore, a warm breeze through casuarinas, far seabirds | −10.5 | under the leaf, with `memday` at 0.3 |
+| `stairamb` | a fluorescent tube's hum, a hollow well, a lift far off, a drip | −12.4 (arrived at −30.6) | under the landing, alone |
+| `playamb` | children far off, a swing chain, tropical birds, a breeze | −10.7 (arrived at −25) | under the playground, with `memday` at 0.3 |
+
+Each 14.03 s with 1.5 s in / 2.5 s out fades baked in. **The first attempt
+came out at 1–2 s**: without `duration_seconds` the model picks its own
+length however the prompt begs for a loop, and the parameter (0.5–30 s,
+with `loop`) is on `creative_get_model_schema`, not in the prompt.
+Chapter 1's pack once the film names them.
+
+Reused: `memday`, `memwash`, `leafpick`, `toypick`, `take`, `noteslow`,
+`strings`, `dread`, `boom`, `step`. Also new this release, engine-side:
+`vfaint` gets a `STING_SAMPLE` row because the faint SCENE cues it now
+(`lose()` no longer speaks it — see CLAUDE.md v6.6).

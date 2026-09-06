@@ -2119,3 +2119,72 @@ animates. And an entrance animation on something that also moves on
 hover needs `animation-fill-mode: backwards`, not `both`: `both` keeps
 the keyframe's final `transform: none` applied forever, and the hover's
 translate silently loses to it.
+
+## A held track fights the next one, in registration order (v6.6)
+
+A cutscene track keeps firing after its end with k = 1 — that is the
+engine's rule, and the glides learned it at v5.07. Two tracks that write
+the SAME state are therefore not "one, then the other"; they are both,
+every frame, in the order they were registered, and the earlier one
+wins whenever it comes later in the list than the reader. The prologue's
+head-looks were written as such tracks: during the pass he looked at his
+own hand (the third memory's look, held), holding the bear he looked at
+the floor (the look at the bear on the ground, held). A look now writes
+only while it runs (`if (t > t1) return`) and the last one stands until
+the next or a cut's `lookOff()`. Measured, not eyeballed: the head bone's
++Z against the direction to its target, per frame.
+
+## Aim the face; do not add to it (v6.6)
+
+v6.4 turned the boy's head by ADDING a yaw to whatever the clip had and
+driving the pitch to a target. It held exactly as long as the take kept
+the head still. The dumbfounded look-around turns the head itself, so the
+same additive yaw faced the paper at one frame (+0.53 x) and away from it
+a second later (−0.41 x, target at +0.86). The look is absolute now: the
+head bone's +Z is its face (measured — at rest it matches the body's
+facing tilted down by the walk's 32°), a world aim is built from the
+clamped yaw and pitch, brought into the bone's local frame through the
+parent's world quaternion, and the clip's pose is slerped toward it by the
+track's own weight — by cine time, never the wall clock, so a seek lands
+on the same head as playback.
+
+## A palm is measured by a render along the axis, not by a thumb (v6.6)
+
+The hand bone's +y runs down the fingers (measured at v6.4). Which of ±z
+is the palm was first argued from where the thumb sat in a frame, and
+argued wrong — the argument holds a right hand out and turns it over
+twice. One render with the camera placed along −z showed the knuckles.
+That is the whole method: put the lens on the axis and look. The same
+render answered a second question the plan had not asked: the pick take
+carries its object palm-DOWN at the hand-up frame, so nothing can lie on
+the palm there — the leaf is pinched at the fingertips instead, and the
+note's macro is parked at the one frame after the grab where the palm
+faces up (+z = (0.65, 0.71, −0.29)).
+
+## A generated bed has the length you ASK for, not the length you describe (v6.6)
+
+Six ambience takes prompted as "seamless ambient loop" came out at one
+and two seconds. `eleven_text_to_sound_v2` takes `duration_seconds`
+(0.5–30) and `loop` as model parameters, read from
+`creative_get_model_schema`, and with them the same prompts came back at
+14.0 s. v6.4's `memday` was built from pieces for the same reason and
+need not have been.
+
+## leaktest waits for the actors, at both ends (v6.6)
+
+v5.17 settled leaktest's baseline and its end on two agreeing frames and
+halved a coin toss. Two agreeing frames can both precede a GLB that
+arrives by promise — chapter 1's boy is fifteen geometries — and beside
+`cine` on a loaded box the harness read +1.88 a cycle again with nothing
+leaking. Both ends now wait on the engine's `ready()` (the chapter's own,
+hdb + boy) before settling.
+
+## A 31 KB base64 string is copied to a file and cmp'd before it is uploaded (v6.6)
+
+Two uploads of the v38 workbook were rejected as "not a valid base64
+string". A tiny workbook went through, so the connector was fine; the
+string was not. Writing the same string to a local file and diffing it
+against the export found one eight-character run mangled the same way
+both times — a memory error, reproduced faithfully. The rule now: emit
+the base64 into a scratch file, `cmp` it against `base64 -w0` of the
+export, and only a byte-identical copy goes into the Drive call.

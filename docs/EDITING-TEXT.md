@@ -11,13 +11,29 @@ text comes up at all — the reply carries the full URL, not the version
 number alone. He reads these on his phone; a number he has to go hunting
 for in Drive is not a link.
 
-**Master Z's Encounters — GAME TEXT v37 (edit here)** in his Drive
-(id `1vEh5qeVWCk_NbCiL3FhNLfylCkPs5hb9JAsh0RYfdqE` — the **v37** sheet,
-made at v6.5, tabbed: **UI TEXT** (206 rows, the engine's words),
-**EPISODE 1** (110 rows, chapters 1–5's words) and **VOICE LINES** (102).
-<https://docs.google.com/spreadsheets/d/1vEh5qeVWCk_NbCiL3FhNLfylCkPs5hb9JAsh0RYfdqE/edit>
+**Master Z's Encounters — GAME TEXT v38 (edit here)** in his Drive
+(id `1ky0BOBiGWaMrD4I92LmSDNbkMd7FhBdG4zqBS2jj95Q` — the **v38** sheet,
+made at v6.6, tabbed: **UI TEXT** (206 rows, the engine's words),
+**EPISODE 1** (110 rows, chapters 1–5's words) and **VOICE LINES** (105).
+<https://docs.google.com/spreadsheets/d/1ky0BOBiGWaMrD4I92LmSDNbkMd7FhBdG4zqBS2jj95Q/edit>
 
-What changed from v36: **one cell changed, two rows ADDED, no spoken
+What changed from v37: **three rows ADDED, none changed; three new spoken
+takes.** The prologue built out (v6.6, docs/V6.6-PLAN.md) brings the boy's
+three pick-up reactions to VOICE LINES — `vpick1` ("Ooh! Nice."), `vpick2`
+("Oh! Hello there.") and `vpick3` ("Wah! Five dollars!") — each with its
+speaker, its moment in the film and its measured length. No UI or chapter
+text moved. Every v37 cell is byte-identical. v37 (id
+`1vEh5qeVWCk_NbCiL3FhNLfylCkPs5hb9JAsh0RYfdqE`) is superseded; its
+metadata was checked before v38 went to him (created 17:16:56, modified
+17:16:57 — the conversion itself), so it holds no edit of his to import.
+Provenance: v38 was published from the fresh `.xlsx` export, read back as
+three tables, and every cell diffed against the uploaded workbook by
+`tools/verifytabs.py` — 424 rows, zero differences. (The upload itself
+took three attempts: a 31 KB base64 string is at the edge of what a
+session can re-emit faithfully, so the string is now WRITTEN TO A FILE and
+`cmp`'d against the export before it goes to Drive — LEARNINGS.)
+
+What changed from v36 (v37, at v6.5): **one cell changed, two rows ADDED, no spoken
 word.** The selector polish (v6.5, docs/V6.5-SELECTOR-POLISH.md):
 `chapters.progress` now reads "{n} of {m} chapters completed" (was
 "sealed" — Chad's call; the cards and stamps keep Sealed), and two rows
