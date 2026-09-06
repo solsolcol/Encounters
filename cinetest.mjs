@@ -150,7 +150,14 @@ for (let i = 0; i < 4; i++) {
   out.fadesInAfter = await p.evaluate(() => +getComputedStyle(document.getElementById('cineFade')).opacity) < 0.05;
   out.setOnScreen = await p.evaluate(() => window.__enc.stage.memRoot.visible && window.__enc.stage.proRoot.visible
     && window.__enc.stage.leafHand.visible && !window.__enc.stage.leafGround.visible);
-  await p.evaluate(() => window.__enc.cine.seek(51.3));   // the pass: the note beside his face, his head on it (v6.6: the film grew 3 s for the macro on the five)
+  /* the pass (v6.6: the film grew 3 s for the macro on the five). v6.8:
+     the paper crosses his eyes at 51.3 while he still looks AHEAD — the
+     look begins at 51.5 (Chad's order) — so the check is 51.3 head still,
+     then 52.8 head on the paper in slow motion */
+  await p.evaluate(() => window.__enc.cine.seek(51.3));
+  await p.waitForTimeout(220);
+  out.headStillAtPass = await p.evaluate(() => window.__enc.stage.flyNote.visible && window.__enc.stage.boyLook.w < 0.01);
+  await p.evaluate(() => window.__enc.cine.seek(52.8));
   await p.waitForTimeout(220);
   out.headFollows = await p.evaluate(() => window.__enc.stage.flyNote.visible && window.__enc.stage.boyLook.w > 0.99
     && window.__enc.stage.slowMo < 0.2);
@@ -161,6 +168,7 @@ for (let i = 0; i < 4; i++) {
   if (!out.startsOnBlack) errs.push('ERR the prologue is visible before its own fade-in: ' + JSON.stringify(cover));
   if (!out.fadesInAfter) errs.push('ERR the prologue never fades in');
   if (!out.setOnScreen) errs.push('ERR the prologue set is not on screen mid-film');
+  if (!out.headStillAtPass) errs.push('ERR the pass: his head turned before the paper crossed his face');
   if (!out.headFollows) errs.push('ERR the pass: no note, no head turn or no slow motion');
   if (!out.setGoneAfterSkip) errs.push('ERR the prologue set survived the skip');
   console.log(JSON.stringify(out), '| errors:', errs.length ? errs : 'none');

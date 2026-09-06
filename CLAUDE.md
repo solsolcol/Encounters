@@ -1217,6 +1217,31 @@ What the baseline contains, by release:
   measured by bounding box on phone and desktop: no overlap. CSS only, no
   string moved, no sheet. And the release order is now a rule (above):
   the Netlify deploy comes before the sheet and anything Drive.
+- **v6.8** THE FACE — Chad, on v6.6's film: "Did you even look at how bad
+  the new chp 1 intro cutscene is? ... Head tracking totally broken, chin
+  still facing so high up at the last scene, head spinning to the back,
+  clouds look like some shit, every single frame has a problem." Every
+  frame of the 62 s WAS looked at this time — desktop at half-second steps,
+  the phone crop at one-second steps, on contact sheets, before and after —
+  and one measurement explains most of the list: the head bone's +Z is NOT
+  his face. From the bind pose (the inverse bind matrix, inverted) +Z points
+  30° BELOW forward, so aiming +Z at a thing put his face 30° above it — a
+  level paper read as a chin in the air, his own hand as a look past the
+  lens, the leaf at his feet as a look at the sky, and with the yaw clamp
+  fighting it, a twist over the shoulder. Proven by RENDER, four candidate
+  axes with the target on the lens: only the bind-derived face looks into
+  the camera (`dbg-facecand`). `boyLook.face` is that axis; the neck's
+  range is `down` 1.25 (to his feet) / `up` 0.30 / `side` 1.2. Then: the
+  paper crosses his eyes at 51.3 BEFORE the look begins (51.5, Chad's
+  order); the five is ONE FLAT PLANE resting on the cupped fingers (the
+  hinged halves each carried half the picture across their own width);
+  the leaf's stem sits in the thumb-index gap of a hand that has NO finger
+  bones (measured from the skinned vertices in the bone's frame,
+  `dbg-handmesh`, then marker discs photographed), the blade on world-down
+  at the hero frame; clouds are clusters of soft radial puffs a third the
+  size (a 0.09 S ellipse was 32° of sky); pocket one fades by 13.7 so the
+  fingertip shot never slides under his shirt; the three reactions at −9 dB.
+  No word moved, no sheet; sheet v38 stands. docs/V6.8-THE-FACE.md.
  *"i'm still
   not satisfied with this voice."* All 79 of the boy's takes regenerated in a
   THIRD voice (Aaron, `B6uUx2p7cRgxseOUyP6P`), under an approved prompt sheet

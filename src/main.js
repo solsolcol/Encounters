@@ -4180,7 +4180,7 @@ const STING_SAMPLE = {
      (40 s, eleven_music_v2, handed to the dread bed on the line that
      turns) and a bed per memory: the sea at East Coast, a stairwell at
      night, a playground by day. All ch1's by the split. */
-  vpick1: ['vpick1', 1], vpick2: ['vpick2', 1], vpick3: ['vpick3', 1],
+  vpick1: ['vpick1', 0.35], vpick2: ['vpick2', 0.35], vpick3: ['vpick3', 0.35],   // v6.8: -9 dB into the bus — "so loud" (Chad) beside the beds
   memtheme: ['memtheme', 0.55],    // the memory theme, under the three memories
   ecpamb: ['ecpamb', 0.8],         // waves and a sea breeze at East Coast Park
   stairamb: ['stairamb', 0.8],     // a fluorescent tube and a hollow stairwell

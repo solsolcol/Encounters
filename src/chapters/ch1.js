@@ -832,14 +832,29 @@
        column 0.25 faces +z, 0.5 faces +x, 0.75 faces -z (measured from the
        geometry's u: phi = 0 is -x). */
     const SKY_S = LOW ? 512 : 1024;
+    /* v6.8: a cloud is a CLUSTER OF SOFT PUFFS (Chad, v6.7: "clouds look
+       like some shit" — they were five hard-edged ellipses in a row). A
+       shaded base row of small round puffs, a lighter cap of bigger ones
+       on top, every puff a radial gradient that fades out over its outer
+       third, jittered by a small seeded hash so no two clouds repeat. */
+    const rgba = (hex, a) => `rgba(${parseInt(hex.slice(1, 3), 16)},${parseInt(hex.slice(3, 5), 16)},${parseInt(hex.slice(5, 7), 16)},${a})`;
     const cloud = (ctx, S, cx, cy, w, h, top, bottom, a) => {
       ctx.globalAlpha = a;
-      const puffs = [[0, 0, 1, 1], [-0.32, 0.12, 0.62, 0.72], [0.34, 0.1, 0.66, 0.78], [-0.1, -0.18, 0.5, 0.55], [0.14, -0.14, 0.44, 0.5]];
-      for (const [px, py, pw, ph] of puffs) {
-        const g = ctx.createLinearGradient(0, cy + py * h - ph * h, 0, cy + py * h + ph * h);
-        g.addColorStop(0, top); g.addColorStop(1, bottom);
-        ctx.fillStyle = g;
-        ctx.beginPath(); ctx.ellipse(cx + px * w, cy + py * h, pw * w, ph * h, 0, 0, Math.PI * 2); ctx.fill();
+      const jit = (i) => (Math.sin(cx * 0.013 + cy * 0.031 + i * 7.3) * 0.5);      // -0.5..0.5, stable per cloud
+      const puff = (x, y, r, hex) => {
+        const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+        g.addColorStop(0, rgba(hex, 1)); g.addColorStop(0.55, rgba(hex, 0.95)); g.addColorStop(1, rgba(hex, 0));
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+      };
+      const n = Math.max(3, Math.round(w / (h * 0.8)));
+      for (let i = 0; i < n; i++) {                                         // the base: flat-bottomed, shaded
+        const u = n === 1 ? 0 : i / (n - 1) - 0.5;
+        puff(cx + u * w * 0.85 + jit(i) * h * 0.2, cy + h * 0.22 + jit(i + 3) * h * 0.1, h * (0.5 + 0.12 * Math.abs(jit(i + 5))), bottom);
+      }
+      for (let i = 0; i < n - 1; i++) {                                     // the cap: bigger, lit
+        const u = n === 2 ? 0 : i / (n - 2) - 0.5;
+        const r = h * (0.62 + 0.25 * (1 - Math.abs(u) * 1.4) + 0.1 * jit(i + 9));
+        puff(cx + u * w * 0.7 + jit(i + 1) * h * 0.25, cy - h * 0.2 - r * 0.15 + jit(i + 4) * h * 0.1, r, top);
       }
       ctx.globalAlpha = 1;
     };
@@ -879,13 +894,19 @@
       glow.addColorStop(0.5, 'rgba(255,160,90,0.18)'); glow.addColorStop(1, 'rgba(255,140,80,0)');
       ctx.fillStyle = glow; ctx.beginPath(); ctx.ellipse(sx, sy, S * 0.22, S * 0.10, 0, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = '#fff6dc'; ctx.beginPath(); ctx.arc(sx, sy, S * 0.011, 0, Math.PI * 2); ctx.fill();
-      const rows = [[0.05, 0.30, 0.05, 0.02], [0.17, 0.26, 0.07, 0.028], [0.31, 0.34, 0.08, 0.03], [0.46, 0.29, 0.06, 0.022],
-                    [0.58, 0.37, 0.09, 0.03], [0.72, 0.31, 0.06, 0.024], [0.86, 0.35, 0.08, 0.03], [0.95, 0.27, 0.05, 0.02],
-                    [0.12, 0.41, 0.08, 0.014], [0.36, 0.43, 0.09, 0.012], [0.66, 0.42, 0.08, 0.013], [0.9, 0.44, 0.07, 0.011],
-                    [0.24, 0.38, 0.05, 0.016], [0.52, 0.40, 0.04, 0.012], [0.79, 0.39, 0.05, 0.014], [0.02, 0.44, 0.06, 0.01]];
+      /* v6.8: fewer, smaller, higher — a 0.09 S cloud was 32° of sky */
+      const rows = [[0.05, 0.31, 0.030, 0.012], [0.17, 0.27, 0.040, 0.016], [0.31, 0.35, 0.045, 0.017], [0.46, 0.30, 0.034, 0.013],
+                    [0.58, 0.37, 0.050, 0.018], [0.72, 0.32, 0.036, 0.014], [0.86, 0.36, 0.044, 0.016], [0.95, 0.28, 0.028, 0.011],
+                    [0.24, 0.40, 0.030, 0.010], [0.52, 0.41, 0.026, 0.009], [0.79, 0.40, 0.032, 0.010]];
       for (const [u, v, w, h] of rows) {
         const near = Math.abs(u - 0.25) < 0.2;                   // the clouds by the sun catch its colour
-        cloud(ctx, S, u * S, v * S, w * S, h * S, near ? '#ffe2c0' : '#e8dce8', near ? '#e39868' : '#8f7f9a', v > 0.4 ? 0.7 : 0.9);
+        cloud(ctx, S, u * S, v * S, w * S, h * S, near ? '#ffe4c4' : '#e6dcea', near ? '#d98f66' : '#8a7a98', 0.85);
+      }
+      // thin stratus at the horizon, lit from below, barely there
+      for (const [u, v, w] of [[0.12, 0.435, 0.10], [0.36, 0.45, 0.12], [0.66, 0.44, 0.10], [0.9, 0.455, 0.09]]) {
+        const g = ctx.createRadialGradient(u * S, v * S, 0, u * S, v * S, w * S);
+        g.addColorStop(0, 'rgba(255,210,170,0.28)'); g.addColorStop(1, 'rgba(255,210,170,0)');
+        ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(u * S, v * S, w * S, S * 0.006, 0, 0, Math.PI * 2); ctx.fill();
       }
       // a far shore to the left of the sun, flat and dark (Chad's ECP has one across the strait)
       ctx.fillStyle = 'rgba(40,60,80,0.8)'; ctx.fillRect(S * 0.05, S * 0.496, S * 0.11, S * 0.006);
@@ -919,10 +940,11 @@
         for (let r = 0; r < 4; r++) for (let c = 0; c < 3; c++)
           ctx.fillRect((u + 0.003 + c * (w / 3)) * S, (0.5 - h + 0.004 + r * (h / 4)) * S, S * 0.003, S * 0.002);
       }
-      const rows = [[0.08, 0.30, 0.07, 0.03], [0.2, 0.24, 0.09, 0.04], [0.35, 0.33, 0.08, 0.03], [0.5, 0.27, 0.1, 0.045],
-                    [0.63, 0.36, 0.07, 0.028], [0.76, 0.29, 0.09, 0.04], [0.9, 0.33, 0.08, 0.032], [0.44, 0.41, 0.09, 0.02], [0.82, 0.42, 0.1, 0.018],
-                    [0.14, 0.4, 0.06, 0.016], [0.29, 0.43, 0.07, 0.014], [0.58, 0.44, 0.05, 0.012], [0.97, 0.38, 0.06, 0.02]];
-      for (const [u, v, w, h] of rows) cloud(ctx, S, u * S, v * S, w * S, h * S, '#ffffff', '#b8c4d8', 0.95);
+      // v6.8: fair-weather cumulus — small, scattered, a shaded base under a lit cap
+      const rows = [[0.08, 0.31, 0.040, 0.017], [0.2, 0.25, 0.050, 0.021], [0.35, 0.33, 0.044, 0.017], [0.5, 0.28, 0.056, 0.023],
+                    [0.63, 0.36, 0.038, 0.015], [0.76, 0.30, 0.050, 0.020], [0.9, 0.34, 0.044, 0.018], [0.44, 0.40, 0.034, 0.012],
+                    [0.82, 0.41, 0.036, 0.012], [0.14, 0.39, 0.030, 0.011], [0.29, 0.42, 0.028, 0.010], [0.58, 0.43, 0.026, 0.009], [0.97, 0.38, 0.032, 0.012]];
+      for (const [u, v, w, h] of rows) cloud(ctx, S, u * S, v * S, w * S, h * S, '#ffffff', '#c4ceda', 0.92);
     });
     const P1 = bubble(POCKET_Z[0], 18, skyEvening), P2 = bubble(POCKET_Z[1], 14, skyNight), P3 = bubble(POCKET_Z[2], 20, skyDay);
     P1.userData.p = 0; P2.userData.p = 1; P3.userData.p = 2;
@@ -1258,7 +1280,17 @@
     /* v6.6: in the hand it lies OPEN and FLAT on the palm (Chad: "flat facing
        up in his palm"): the fold group's normal is +y, a quarter turn about x
        points it out of the palm (the bone's +z), and its length runs down the fingers */
-    const noteFoldH = foldedNote(-0.10, true); noteFoldH.scale.setScalar(1.4); noteFoldH.position.set(0, 0.06, 0.010); noteFoldH.rotation.set(Math.PI / 2, 0, 0); noteHand.add(noteFoldH);
+    /* v6.8: ONE FLAT PLANE (Chad: "5 dollar is totally mangled up" — the
+       hinged halves each carried half the picture across their own width
+       and stacked along the fingers, and the curled fingers pierced a note
+       laid on the palm at z 0.010). The hand mesh, measured in the bone's
+       frame (dbg-handmesh): the heel of the palm at z 0.020 (y 0.03), the
+       curled fingertips at z 0.053 (y 0.125) — the note RESTS ON THEM, tilted
+       19°, its length down the fingers, 4 mm clear. 138 x 66 mm, a shade
+       over a real five, on a hand that measures 174 mm. */
+    const noteFlatH = new THREE.Mesh(new THREE.PlaneGeometry(0.138, 0.066), noteMat5);
+    noteFlatH.position.set(0.0, 0.082, 0.042); noteFlatH.rotation.set(0.33, 0, Math.PI / 2);
+    noteHand.add(noteFlatH);
     // the leaf and the bear arrive over nothing — a missing download costs a prop, never the film
     const fitTo = (g, height) => {
       const box = new THREE.Box3().setFromObject(g);
@@ -1291,7 +1323,22 @@
          is the palm, so world-down at that frame is mostly the bone's +x — the
          leaf's own length (+y) goes to +x and its face (+z) to +y, toward a
          lens beyond the fingertips. */
-      const H = mk(); H.position.set(0.0, 0.105, 0.002); H.rotation.set(-Math.PI / 2, 0, -Math.PI / 2 + LEAF_SPIN);
+      /* v6.8: measured, not posed. The rig has NO finger bones (the hand is
+         one rigid mesh in a spread claw), so the pinch is a fixed point in
+         the bone's frame: the thumb tip at (0.054, 0.11, -0.03) and the index
+         at (0.004, 0.15, 0.03) (dbg-handmesh, marker renders) — the stem goes
+         between them, and the blade hangs on world-down as the hand holds
+         it at the hero frame (12.8 s: hand +x = (-0.58, -0.81, -0.06), +y =
+         (-0.11, 0.15, -0.98), +z = (0.80, -0.57, -0.18)), its face toward the
+         lens beyond the fingertips. The leaf's own frame: length along +y
+         from the stem at the origin, face +z. */
+      const H = mk(); H.position.set(0.03, 0.135, -0.005);
+      const ld = new THREE.Vector3(0.81, -0.15, 0.57).normalize();               // world down, in the hand's frame
+      const lc = new THREE.Vector3(0.38, 0.88, 0.27);                            // toward the lens
+      const ln = lc.sub(ld.clone().multiplyScalar(lc.dot(ld))).normalize();     // the face: toward the lens, square to the hang
+      const lx = new THREE.Vector3().crossVectors(ld, ln);
+      H.rotation.setFromRotationMatrix(new THREE.Matrix4().makeBasis(lx, ld, ln));
+      H.rotateOnAxis(new THREE.Vector3(0, 1, 0), LEAF_SPIN);
       leafHand.add(H);
     }, () => {})).catch(() => {});
     assetBytes('teddy', true).then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
@@ -1335,8 +1382,17 @@
     let boyG = null; const boyFeet = [];        // v6.6: the model root and its four foot joints, for grounding
     const _ft = new THREE.Vector3();
     const boyScale = () => boyS;
-    const boyLook = { target: null, w: 0, x: 0, y: 0, k: 0 };
+    /* v6.8: the head bone's FACE is not its +Z. Measured from the BIND pose
+       (the inverse bind matrix, inverted): the bone's +Z points 30° BELOW
+       the character's forward, so aiming +Z at a thing put his face 30°
+       above it — a level paper read as a chin in the air, his own hand as a
+       look past the lens, and the leaf at his feet as a look at the sky
+       (Chad, v6.7: "head tracking totally broken"). `face` is forward in
+       the bone's own frame, R_bind^T (0,0,1); `down`/`up`/`side` are the
+       neck's range in radians, wide enough downward to look at his feet. */
+    const boyLook = { target: null, w: 0, x: 0, y: 0, k: 0, face: new THREE.Vector3(0.011, 0.506, 0.862).normalize(), down: 1.25, up: 0.30, side: 1.2 };
     const _lh = new THREE.Vector3(), _ld = new THREE.Vector3(), _lm = new THREE.Matrix4(), _lq = new THREE.Quaternion(), _lpq = new THREE.Quaternion();
+    const _qfix = new THREE.Quaternion(), _fz = new THREE.Vector3(0, 0, 1);
     const LOOK_UP = new THREE.Vector3(0, 1, 0);
     /* v6.6: the look is ABSOLUTE. v6.4 added a yaw on top of the clip's and
        drove the pitch to a target, and it held only while the take kept the
@@ -1361,14 +1417,16 @@
       boyHead.getWorldPosition(_lh);
       _ld.set(T.x - _lh.x, T.y - _lh.y, T.z - _lh.z);
       const flat = Math.max(0.05, Math.hypot(_ld.x, _ld.z));
-      const pitch = THREE.MathUtils.clamp(Math.atan2(_ld.y, flat), -0.55, 0.25);
+      const pitch = THREE.MathUtils.clamp(Math.atan2(_ld.y, flat), -boyLook.down, boyLook.up);
       let dy = Math.atan2(_ld.x, _ld.z) - boy.rotation.y;
       dy = Math.atan2(Math.sin(dy), Math.cos(dy));
-      const yaw = boy.rotation.y + THREE.MathUtils.clamp(dy, -1.15, 1.15);
+      const yaw = boy.rotation.y + THREE.MathUtils.clamp(dy, -boyLook.side, boyLook.side);
       boyLook.x = pitch; boyLook.y = dy;
       _ld.set(Math.sin(yaw) * Math.cos(pitch), Math.sin(pitch), Math.cos(yaw) * Math.cos(pitch)).add(_lh);
       _lm.lookAt(_ld, _lh, LOOK_UP);                  // an object's lookAt: +Z toward the target
       _lq.setFromRotationMatrix(_lm);
+      _qfix.setFromUnitVectors(boyLook.face, _fz);    // v6.8: the bone's face onto +Z first, so the FACE lands on the aim
+      _lq.multiply(_qfix);
       boyHead.parent.getWorldQuaternion(_lpq);
       _lq.premultiply(_lpq.invert());                 // world aim -> the bone's local frame
       boyHead.quaternion.slerp(_lq, boyLook.k);
@@ -2108,7 +2166,7 @@ function scChant(c, s, api) {                        /* D — palms together */
     sfx(9.85, 'leafpick', 0.7);
     sfx(10.8, 'vpick1');                                // v6.6: "Ooh! Nice." — after vpro2 ends at 10.65
     lookAt(7.6, 9.85, () => LEAF);                      // v6.6: his eyes on the leaf, then on his hand
-    lookAt(9.85, 13.6, handPt, 0.3);
+    lookAt(9.85, 13.2, handPt, 0.3);
     // 1b: low three-quarter from behind the leaf, looking up; then INTO HIS PALM as he lifts it (v6.6)
     shotHand(8.2, 10.6, at(0, 0.78, 0.40, -1.0), at(0, 0.56, 0.34, -0.72), { x: 0, y: 0.04, z: 0 }, smoothK);
     shotFingers(10.6, 14.0, 0.46, 0.36, 0.20, 0.16, -0.09, smoothK);   // the leaf hanging between the lens and his face, the sunset behind
@@ -2116,8 +2174,11 @@ function scChant(c, s, api) {                        /* D — palms together */
     // ---- 14.0–25.2 POCKET TWO · THE TOY
     sfx(13.4, 'stairamb', 0.8);                        // v6.6: the tube's hum, the well's echo
     sfx(13.6, 'memwash', 0.6);
-    fade(13.6, 14.2, 0, 1);
-    tr(13.6, 14.2, k => setLights(0, 1 - k), rawK);
+    /* v6.8: black by 13.7 — the pick take drops the hand toward the pocket
+       from ~13.5 and the fingertip shot, which tracks the hand, slid up
+       under his shirt for the last half-second of the old fade */
+    fade(13.15, 13.7, 0, 1);
+    tr(13.15, 13.7, k => setLights(0, 1 - k), rawK);
     step(14.2, () => {
       lookOff();
       stage.leafHand.visible = false;
@@ -2244,8 +2305,11 @@ function scChant(c, s, api) {                        /* D — palms together */
       stage.flyNote.rotation.set(-Math.PI / 2 + Math.sin(s2 * 1.6) * 0.55, s2 * 0.55, 0.3 + Math.sin(s2 * 1.3) * 0.5);
       noteTarget.set(f.x, f.y, f.z);
       stage.boyLook.target = noteTarget;
-      // v6.6: and the look lets go once the paper has climbed past him
-      stage.boyLook.w = Math.min(1, Math.max(0, (t - 49.0) / 1.5)) * (1 - Math.min(1, Math.max(0, (t - 57.2) / 1.8)));
+      /* v6.8: the paper crosses his eyes at 51.3 while he is still looking
+         ahead; only THEN does his head go after it (Chad: "the hellnote
+         should fly past his face before he starts looking at it"); the
+         look lets go once the paper has climbed past him */
+      stage.boyLook.w = Math.min(1, Math.max(0, (t - 51.5) / 1.1)) * (1 - Math.min(1, Math.max(0, (t - 57.2) / 1.8)));
     }, rawK);
     sfx(51.2, 'strings', 0.6);
     /* the ARC: the lens on a circle about his head, front-left to front-right

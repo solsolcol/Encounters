@@ -2142,11 +2142,44 @@ the head still. The dumbfounded look-around turns the head itself, so the
 same additive yaw faced the paper at one frame (+0.53 x) and away from it
 a second later (−0.41 x, target at +0.86). The look is absolute now: the
 head bone's +Z is its face (measured — at rest it matches the body's
-facing tilted down by the walk's 32°), a world aim is built from the
+facing tilted down by the walk's 32°) — WRONG, corrected at v6.8 below:
+that 32° was the whole answer, and it was read as the pose instead of the
+bone — a world aim is built from the
 clamped yaw and pitch, brought into the bone's local frame through the
 parent's world quaternion, and the clip's pose is slerped toward it by the
 track's own weight — by cine time, never the wall clock, so a seek lands
 on the same head as playback.
+
+## A bone's face is read from the BIND pose, and proven by a render at the lens (v6.8)
+
+v6.6 aimed the head bone's +Z at the target and called +Z the face because
+at rest it "matched the body's facing tilted down 32°". The 32° WAS the
+finding: the bone's +Z sits 30° below the face (from the bind pose —
+`boneInverses[i]` inverted gives the bind rotation, and the face in the
+bone's frame is R_bind^T (0,0,1) = (0.011, 0.506, 0.862) for this
+Mixamo rig). Aiming +Z put the face 30° above every target: a level paper
+gave a raised chin, a hand below gave a look past the lens, a leaf at the
+feet gave a look at the sky, and the yaw clamp about the body then twisted
+the head over the shoulder — Chad's "head spinning to the back". The fix is
+a pre-rotation (`setFromUnitVectors(face, +Z)`) multiplied onto the aim so
+the FACE lands on it. Two rules from it: read a bone's axes from the bind
+matrix, not from how a pose looks; and prove an axis by putting the target
+ON THE CAMERA at full weight and photographing him — one of four candidates
+looked into the lens, and it was not +Z.
+
+## A rig without finger bones has a fixed pinch point (v6.8)
+
+The young master's hand is one rigid mesh in a spread claw — the rig has no
+finger bones at all, so the fingers never close on anything. The pinch is
+therefore a CONSTANT in the hand bone's frame, found from the skinned
+vertices (weight to the hand > 0.7, bind-transformed into the bone's frame,
+scaled by the bone's world scale into metres): the thumb tip at
+(0.054, 0.11, −0.03), the index tip at (0.004, 0.15, 0.03), the curled
+fingertips rising to z 0.053 above a palm heel at z 0.020. A note lies ON
+the curled fingers, tilted 19°, not on the palm under them (where they
+pierced it); a leaf's stem goes between the thumb and index, its blade on
+world-down for the hero frame. Marker discs in the group, photographed from
+the film's own camera, confirmed every point before a prop moved.
 
 ## A palm is measured by a render along the axis, not by a thumb (v6.6)
 
