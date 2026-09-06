@@ -192,7 +192,9 @@ Object.assign(window.__TEXT__, {
   'chapters.chapter':    'Chapter {n}',
   'chapters.inProgress': 'In progress',                         // v6.2: a chapter reached but not yet sealed
   'chapters.here':       'You are here',                        // v6.2: the chapter you are in
-  'chapters.progress':   '{n} of {m} chapters sealed',          // v6.2: the line under the case's name
+  'chapters.progress':   '{n} of {m} chapters completed',       // v6.2: the line under the case's name; v6.5: "completed" (Chad)
+  'chapters.completed':  'Completed',                           // v6.5: a finished chapter's word on the selector (the cards still say Sealed)
+  'chapters.play':       'Play ▸',                              // v6.5: the pill on every chapter you can pick
 
   // --- the EPISODE COMPLETE card (v6.3): after the last chapter of a case
   //     is sealed, before the next case opens

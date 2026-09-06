@@ -3738,7 +3738,7 @@ function paintChapters(smooth = false) {
         for (const x of stops) d.appendChild(mk('i', x.s));
         b.appendChild(d);
       }
-      if (allSealed) b.appendChild(mk('span', 'epStamp', T('complete.sealed')));
+      if (allSealed) b.appendChild(mk('span', 'epStamp', T('episode.stamp')));   // v6.5: CASE CLOSED, the episode card's own stamp
       b.onclick = () => { if (chEpisode !== n) { chEpisode = n; paintChapters(true); snd('uiclick', 0.35); } };
       tabs.appendChild(b);
     }
@@ -3760,6 +3760,13 @@ function paintChapters(smooth = false) {
     const reached = built && stops.some(x => x.s !== 'locked' && x.s !== 'unwritten');
     name.appendChild(mk('span', 'epProg', !built ? T('chapters.unwritten') : !reached ? T('chapters.locked')
       : T('chapters.progress', '{n} of {m}').replace('{n}', String(sealedN)).replace('{m}', String(stops.length))));
+    /* v6.5: the tally as a bar — one segment per chapter, lit for a completed
+       one, jade for the one you are in, hollow for the rest */
+    if (built && reached) {
+      const bar = mk('span', 'epBar'); bar.setAttribute('aria-hidden', 'true');
+      for (const x of stops) bar.appendChild(mk('i', x.s === 'now' ? 'now' : x.sealed ? 'done' : x.s));
+      name.appendChild(bar);
+    }
   }
   list.textContent = '';
   const inRun = state !== 'title' || !!loadCheckpoint();   // a fresh profile's chapter 1 is open, not "in progress"
@@ -3785,8 +3792,9 @@ function paintChapters(smooth = false) {
       txt.appendChild(mk('span', 'name', T('chapters.unwritten')));
     }
     b.appendChild(txt);
-    const word = x.s === 'done' ? T('complete.sealed') : x.s === 'now' ? T('chapters.here') : (x.s === 'open' && inRun) ? T('chapters.inProgress') : '';
+    const word = x.s === 'done' ? T('chapters.completed') : x.s === 'now' ? T('chapters.here') : (x.s === 'open' && inRun) ? T('chapters.inProgress') : '';
     if (word) b.appendChild(mk('span', 'state', word));
+    if (ok) b.appendChild(mk('span', 'go', T('chapters.play')));   // v6.5: the pill that says a row is a button
     list.appendChild(b);
   });
 }
