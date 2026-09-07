@@ -1241,6 +1241,7 @@
        scaled to 11 cm — a birch leaf is four, and four vanishes in a 72°
        lens; the bear to 28 cm; the note is the real thing's size, folded. */
     const LEAF_SPIN = 0;                                             // v6.6: a trim on the hanging leaf's turn (renders)
+    const LEAF_YAW = 0.15;                                           // v6.10: the flat leaf's turn on the palm, about its own normal (renders: 0 and 0.25 both rest on the hand, 0.5 takes the blade off it)
     const LEAF_AT = new THREE.Vector3(0, 0.04, 0);                  // P1 local, above the lawn's 0.02
     const BEAR_AT = new THREE.Vector3(0.3, 0.02, -1.0);             // P2 local
     const NOTE_AT = new THREE.Vector3(0.62, 0.142, 0.02);           // P3 local, on the grate
@@ -1339,7 +1340,24 @@
       const lx = new THREE.Vector3().crossVectors(ld, ln);
       H.rotation.setFromRotationMatrix(new THREE.Matrix4().makeBasis(lx, ld, ln));
       H.rotateOnAxis(new THREE.Vector3(0, 1, 0), LEAF_SPIN);
+      H.name = 'pinch';
       leafHand.add(H);
+      /* v6.10: RESTING FLAT ON THE PALM for the close-up (Chad: "the leaf is
+         resting on his palm ... flat facing up in his palm ... just close up
+         of the palm") — the five's plane exactly: from the heel of the palm
+         (y 0.03, z 0.020) to the curled fingertips (y 0.125, z 0.053) is a
+         19° rise, so the stem sits at (0.012, 0.030, 0.024) and the blade runs
+         down the fingers on rotation.x 0.33, 4 mm clear at both ends. The
+         leaf's own frame: the stem at the origin, its length +y (0.11 m at
+         this scale), its face +z, 0.9 mm thick — the GLB's quantized bounds
+         at the node's 0.025 and mk()'s 2.2; the blade's centre is 13 mm off
+         the stem's line, which the x puts back over the palm. A small turn
+         about its own normal so it lies as a leaf lands, not as a ruler.
+         Shown from the cut to the palm macro (10.6); the pinch carries the
+         lift before it — the take holds its object palm-down there. */
+      const HP = mk(); HP.name = 'palm'; HP.visible = false;
+      HP.position.set(0.012, 0.030, 0.024); HP.rotation.set(0.33, 0, LEAF_YAW);
+      leafHand.add(HP);
     }, () => {})).catch(() => {});
     assetBytes('teddy', true).then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
       if (!alive) return;
@@ -1709,6 +1727,7 @@
          boy (posed by time), the props, the note, the slow motion */
       MEM, POCKET_Z, memRoot, proRoot, memLights, faceFill, boy, flyNote,
       leafGround, leafHand, bearGround, bearHand, noteGround, noteHand,
+      leafShow: (mode) => { leafHand.visible = true; for (const c of leafHand.children) c.visible = c.name === mode; },   // v6.10: 'pinch' | 'palm'
       boyPose, boyLook, boyScale, boyHand: () => boyHand, boyHead: () => boyHead,
       boyActs: () => boyActs,
       get slowMo() { return slowMo; },
@@ -2156,13 +2175,17 @@ function scChant(c, s, api) {                        /* D — palms together */
       const e = e0 + (e1 - e0) * k, drop = drop0 + (drop1 - drop0) * k;
       aimAt(_hp.x + _hf.x * e, _hp.y + _hf.y * e - drop, _hp.z + _hf.z * e, _hp.x, _hp.y - aimDrop, _hp.z);
     }, ease);
-    const shotPalm = (t0, t1, d0, d1, e0, e1, lift0, lift1, ease) => tr(t0, t1, k => {
+    /* v6.10: `aim` is how far down the fingers the shot is centred — 0.05 is
+       the five's (its centre), the leaf's centre lies at 0.085, and on a
+       phone's centre crop three centimetres is the difference between the
+       blade in frame and the blade cut by the right edge */
+    const shotPalm = (t0, t1, d0, d1, e0, e1, lift0, lift1, ease, aim = 0.05) => tr(t0, t1, k => {
       const h = stage.boyHand(); if (!h) return;
       h.getWorldPosition(_hp);
       _hn.set(0, 0, 1).transformDirection(h.matrixWorld);
       _hf.set(0, 1, 0).transformDirection(h.matrixWorld);
       const d = d0 + (d1 - d0) * k, e = e0 + (e1 - e0) * k, lift = lift0 + (lift1 - lift0) * k;   // out from the palm, past the fingertips, up
-      const tx = _hp.x + _hf.x * 0.05, ty = _hp.y + _hf.y * 0.05, tz = _hp.z + _hf.z * 0.05;
+      const tx = _hp.x + _hf.x * aim, ty = _hp.y + _hf.y * aim, tz = _hp.z + _hf.z * aim;
       aimAt(tx + _hn.x * d + _hf.x * e, ty + _hn.y * d + _hf.y * e + lift, tz + _hn.z * d + _hf.z * e, tx, ty, tz);
     }, ease);
     /* where he must STAND for a take's hand to land on a thing: the hand's
@@ -2211,7 +2234,7 @@ function scChant(c, s, api) {                        /* D — palms together */
     // he stops, and bends
     blend(8.0, 8.4, 'walk', 0.2, 'pick', 0.0);
     take(8.4, 15.0, 'pick', 1.0, 0.0);                 // the grab at 8.4 + 1.45; the hand up from ~11.3
-    step(9.85, () => { stage.leafGround.visible = false; stage.leafHand.visible = true; });
+    step(9.85, () => { stage.leafGround.visible = false; stage.leafShow('pinch'); });
     sfx(9.85, 'leafpick', 0.7);
     sfx(10.8, 'vpick1');                                // v6.6: "Ooh! Nice." — after vpro2 ends at 10.65
     /* v6.9: from the walk's own level head, his eyes go down to the leaf
@@ -2222,19 +2245,40 @@ function scChant(c, s, api) {                        /* D — palms together */
        at full weight on the same point the leaf look ended on — the hand IS
        at the leaf at the grab — so nothing jumps. */
     lookAt(7.4, 9.85, () => LEAF, { ramp: 1.8, cone: 0.8 });
-    lookAt(9.85, 13.2, handPt, { ramp: 1.4, w0: 1, cone0: 0.8, cone1: 1.4 });   // the neck widens 46° -> 80° as the hand comes up; the held-up pose (62-66° off rest) is v6.8's
-    // 1b: low three-quarter from behind the leaf, looking up; then INTO HIS PALM as he lifts it (v6.6)
+    lookAt(9.85, 10.6, handPt, { ramp: 1.4, w0: 1, cone0: 0.8, cone1: 1.4 });   // the neck starts widening as the hand comes up; v6.10: to the cut, where the head leaves the frame
+    // 1b: low three-quarter from behind the leaf, looking up, through the grab and the first of the lift
     shotHand(8.2, 10.6, at(0, 0.78, 0.40, -1.0), at(0, 0.56, 0.34, -0.72), { x: 0, y: 0.04, z: 0 }, smoothK);
-    shotFingers(10.6, 14.0, 0.46, 0.36, 0.20, 0.16, -0.09, smoothK);   // the leaf hanging between the lens and his face, the sunset behind
+    /* 1c (v6.10): THE LEAF IN HIS PALM — the five's own shot (Chad: "the
+       leaf resting on his palm ... the camera shows the leaf directly
+       resting flat facing up in his palm ... just close up of the palm").
+       The pick take never turns the palm up after the grab (measured,
+       dbg-palm: the palm's +z is 0.47 up as the hand closes on the leaf,
+       0 by 10.3, and -0.5 to -0.6 through the whole held pose — it carries
+       its object palm-DOWN), so at the cut he takes the walk-pick take's
+       PARKED frame instead — 5.85, +z = (0.65, 0.71, -0.29), the frame the
+       five's macro was measured on — stood where that frame's hand lands
+       on the leaf's spot, the leaf swapped from the pinch to the flat copy,
+       and the lens comes in along the palm's normal from 0.30 to 0.22 m,
+       centred on the leaf (8.5 cm down the fingers; the five's 5 cm and
+       0.20 m put the blade's edge on the phone crop's right edge). Only the
+       hand, the forearm and the lawn are in frame, so the change of pose is
+       hidden under the cut. Replaces v6.6's fingertip shot (the leaf
+       hanging from the pinch between the lens and his face). */
+    const S1b = standFor(LEAF, RY1, 0.58, 1.16); S1b.y = 0.02;
+    step(10.6, () => { lookOff(); stage.boy.position.set(S1b.x, S1b.y, S1b.z); stage.leafShow('palm'); });
+    take(10.6, 14.0, 'walkpick', 0, 5.85);
+    shotPalm(10.6, 14.0, 0.30, 0.22, 0.0, 0.0, 0.02, 0.02, smoothK, 0.085);
 
     // ---- 14.0–25.2 POCKET TWO · THE TOY
     sfx(13.4, 'stairamb', 0.8);                        // v6.6: the tube's hum, the well's echo
     sfx(13.6, 'memwash', 0.6);
-    /* v6.8: black by 13.7 — the pick take drops the hand toward the pocket
-       from ~13.5 and the fingertip shot, which tracks the hand, slid up
-       under his shirt for the last half-second of the old fade */
-    fade(13.15, 13.7, 0, 1);
-    tr(13.15, 13.7, k => setLights(0, 1 - k), rawK);
+    /* v6.8 had black by 13.7 — the pick take dropped the hand toward the
+       pocket from ~13.5 and the fingertip shot, which tracked it, slid up
+       under his shirt. v6.10: the hand is PARKED under the palm macro and
+       never drops, so the fade goes back to 14.0 and the leaf gets the
+       extra half-second. */
+    fade(13.4, 14.0, 0, 1);
+    tr(13.4, 14.0, k => setLights(0, 1 - k), rawK);
     step(14.2, () => {
       lookOff();
       stage.leafHand.visible = false;

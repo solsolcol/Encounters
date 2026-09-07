@@ -2279,3 +2279,32 @@ a 31 KB single-line base64 is cut off near 22,000 characters when read,
 so it is `fold -w 120`'d into lines first — and the last of those lines
 carries no newline, which `wc -l` does not count. The copy came up
 twenty characters short once for exactly that, and `cmp` caught it.
+
+## A palm-up frame is borrowed from the take that has one (v6.10)
+
+Chad wanted the leaf "resting flat facing up in his palm" in a close-up,
+which is the five's shot. The five gets it because the walk-pick take,
+parked a tenth after its grab, holds the palm 0.71 up. The pick take that
+lifts the leaf has no such frame: measured ten times a second over the
+whole lift (`dbg-palm`), the palm is 0.47 up as the hand closes on the
+leaf, level by 10.3, and 0.5–0.6 DOWN from the lift to the pocket — the
+take carries its object palm-down, which is why v6.6 pinched the leaf at
+the fingertips in the first place. The fix is not a wrist twist after the
+mixer (125° of supination on a rig with no forearm twist bone, in a
+macro): under the cut to the close-up he simply takes the other take's
+parked frame, stood where its hand lands on the leaf's spot. A shot that
+shows a hand, a forearm and the lawn does not know which take the body
+is running, so the change costs nothing on screen. Two in-hand copies of
+the leaf, toggled by name at the grab and at the cut, carry the two poses.
+
+## The palm shot is centred on the thing, and the phone crop is the judge (v6.10)
+
+`shotPalm` aimed 5 cm down the fingers — the five's centre — and the leaf
+lies 8.5 cm down them. On the desktop frame the difference read as
+"slightly right of centre"; on the phone's centre crop, a third of the
+width, the blade's edge was cut by the right side of the frame and the
+push-in made it worse. Three centimetres of aim, and stopping the push-in
+at 0.22 m instead of 0.20, put the whole leaf in the crop with air round
+it. The desktop frame is never the last word on a close-up: render the
+420 × 760 crop before calling the framing done (docs/AUDIT-2026-09.md,
+Part One).

@@ -1266,6 +1266,31 @@ What the baseline contains, by release:
   barely heard. Measured through a replica of the chain: narration
   −12.7 dBFS RMS, the whispers −26 to −28.5. Three `secs` moved; sheet v39.
   docs/V6.9-THE-NECK.md.
+- **v6.10** THE LEAF IN HIS PALM — Chad, on v6.9: "instead of the leaf
+  dangling from the hand and his head looking at it, can you just make it
+  so that the leaf is resting on his palm? And the camera shows the leaf
+  directly resting flat facing up in his palm? And just close up of the
+  palm." The five's own shot, given to the leaf. Measured first (dbg-palm,
+  ten times a second): the pick take never turns the palm up after the
+  grab — its +z is 0.47 up as the hand closes on the leaf, 0 by 10.3 and
+  −0.5 to −0.6 through the whole held pose, the object carried palm-DOWN
+  from the lift to the pocket — so no frame of it can hold a leaf lying
+  flat. At the cut (10.6) he takes the walk-pick take's PARKED frame
+  instead (5.85, +z 0.71 up, the frame the five's macro was measured on),
+  stood where that frame's hand lands on the leaf's spot; a second in-hand
+  copy of the leaf lies on the five's exact plane (stem at (0.012, 0.030,
+  0.024), 19° up the fingers, 4 mm clear of the heel and the fingertips,
+  0.9 mm thick, turned 0.15 about its own normal) and the pinch copy
+  carries the lift before the cut (`stage.leafShow('pinch' | 'palm')`);
+  the lens comes in along the palm's normal 0.30 → 0.22 m, CENTRED ON THE
+  LEAF (`shotPalm` gained an `aim`: the five's centre is 5 cm down the
+  fingers, the leaf's 8.5, and on a phone's centre crop those three
+  centimetres are the blade in frame against the blade cut by the right
+  edge); the fade goes back to 14.0, since a parked hand never drops
+  toward the pocket. Only the hand, the forearm, a slipper and the lawn
+  are in frame, so the change of take is hidden under the cut. Read at ten
+  frames a second on desktop and at four points on the phone crop. No
+  engine seam, no word moved; sheet v39 stands. docs/V6.10-THE-LEAF.md.
  *"i'm still
   not satisfied with this voice."* All 79 of the boy's takes regenerated in a
   THIRD voice (Aaron, `B6uUx2p7cRgxseOUyP6P`), under an approved prompt sheet
