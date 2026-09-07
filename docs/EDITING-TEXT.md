@@ -11,11 +11,27 @@ text comes up at all — the reply carries the full URL, not the version
 number alone. He reads these on his phone; a number he has to go hunting
 for in Drive is not a link.
 
-**Master Z's Encounters — GAME TEXT v39 (edit here)** in his Drive
-(id `1wBOZTfb5LjwPq2Ru-ZjMZlBHpegihOM_5sZo7ewxRCE` — the **v39** sheet,
-made at v6.9, tabbed: **UI TEXT** (206 rows, the engine's words),
+**Master Z's Encounters — GAME TEXT v40 (edit here)** in his Drive
+(id `1XTL_XJ64YwVZaTi5eGcWBqs9AB7JAhuFx8IcL-AH-eU` — the **v40** sheet,
+made at v6.15, tabbed: **UI TEXT** (215 rows, the engine's words),
 **EPISODE 1** (110 rows, chapters 1–5's words) and **VOICE LINES** (105).
-<https://docs.google.com/spreadsheets/d/1wBOZTfb5LjwPq2Ru-ZjMZlBHpegihOM_5sZo7ewxRCE/edit>
+<https://docs.google.com/spreadsheets/d/1XTL_XJ64YwVZaTi5eGcWBqs9AB7JAhuFx8IcL-AH-eU/edit>
+
+What changed from v39: **nine rows ADDED, not one cell changed, no spoken
+word.** Chad's three tree models replace every generated tree in the game
+(v6.15, docs/V6.15-TREES.md) and each gets a credits row — `credits.tree1`,
+`credits.tree2`, `credits.tree3` with their `Who` and `Link` cells, nine
+`UI TEXT` rows in all, sitting after the prologue's leaf. EPISODE 1 and
+VOICE LINES are byte-identical to v39, and so is every other UI TEXT cell:
+the v40 workbook was diffed row by row against a v39 export rebuilt from
+commit `274c6aa` — 9 added, 0 removed, 0 changed. v39 (id
+`1wBOZTfb5LjwPq2Ru-ZjMZlBHpegihOM_5sZo7ewxRCE`) is superseded; its metadata
+was checked before v40 went to him (created 05:16:58, modified 05:16:59 —
+the conversion itself), so it holds no edit of his to import. Provenance:
+published from the fresh `.xlsx` export (the base64 written to a file and
+`cmp`'d against the export first — the v38 rule), read back from the
+connector's own saved output rather than retyped, every cell diffed against
+the workbook by `tools/verifytabs.py` — 433 rows, zero differences.
 
 What changed from v38: **three cells changed, no row added, no spoken
 word.** The boy's three pick-up reactions were re-voiced as whispers
@@ -296,6 +312,17 @@ so the CSV, the workbook and the connector's read-back all import alike.
    here)", `contentMimeType` as above and `base64Content` from the .b64.
    The result's `id` is the new sheet; its `mimeType` must come back as
    the Google spreadsheet type, or Drive did not convert it.
+   **Emit the base64 as ONE unbroken string, exactly as the file holds
+   it** (v6.15, two failed uploads): a space slipped in where two folded
+   lines were joined gives "The file content is not a valid base64
+   string", and — the one that wastes a whole attempt — ADDING `==` at
+   the end because base64 usually has padding gives "Invalid conversion
+   requested", which reads like a Drive fault and is not one. The
+   export's base64 is a multiple of four characters with NO padding;
+   `tail -c 20` the .b64 and copy its real ending. Reading the .b64 in
+   two ~16,000-character single-line halves (`cut -c1-16000`,
+   `cut -c16001-`) is easier to copy faithfully than 266 folded lines,
+   because there are no line joins to fumble — one boundary, not 265.
 4. `read_file_content` on that id returns one markdown table per tab with
    a blank line between tables. Save it WHOLE to a file and run
    `python3 tools/verifytabs.py gametext-vNN.xlsx readback.md` — the last

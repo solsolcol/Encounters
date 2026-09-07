@@ -2485,3 +2485,20 @@ playground's two nearest are pushed out. Cousin of v5.05's law (when a new
 thing is placed among existing things, the measure that matters is the one
 the existing things used) — here it is the SET that has to move, not the
 model.
+
+## The sheet's base64 has no padding — do not add any (v6.15)
+
+Publishing a sheet means re-emitting ~32,000 characters of base64 into a
+Drive `create_file` call, and two attempts were lost to the two ways that
+goes wrong. A **space** where two folded lines were joined is rejected
+plainly ("The file content is not a valid base64 string"). Adding a
+trailing **`==`** — a reflex, because base64 usually ends in padding —
+fails as **"Invalid conversion requested"**, which reads like a Drive-side
+conversion fault and sends you looking in the wrong place; the string is
+simply the wrong length, so what Drive receives is not a zip. The
+workbook's base64 happens to be an exact multiple of four characters and
+carries NO padding. Copy the file's real ending (`tail -c 20`), and read
+the string as two ~16,000-character single-line halves rather than 266
+folded lines: one join to get right instead of 265. The cheap insurance
+before any of that is the existing rule — transcribe into a heredoc and
+`cmp` against the .b64 first.
