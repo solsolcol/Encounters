@@ -4209,7 +4209,7 @@ const STING_SAMPLE = {
      turns) and a bed per memory: the sea at East Coast, a stairwell at
      night, a playground by day. All ch1's by the split. */
   vpick1: ['vpick1', 1], vpick2: ['vpick2', 1], vpick3: ['vpick3', 1],   // v6.9: whispered takes on their own quiet stage (WHISPER_TAKES) — the level lives there, not here
-  memtheme: ['memtheme', 0.55],    // the memory theme, under the three memories
+  memtheme: ['memtheme', 0.95],    // v6.14: the memory theme, under the three memories — 0.55 x ch1's cue was under half its nominal level (Chad, twice: "make the starting music louder", "still too soft")
   ecpamb: ['ecpamb', 0.8],         // waves and a sea breeze at East Coast Park
   stairamb: ['stairamb', 0.8],     // a fluorescent tube and a hollow stairwell
   playamb: ['playamb', 0.8],       // children far off, birds, an afternoon

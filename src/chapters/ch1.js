@@ -2281,7 +2281,14 @@ function scChant(c, s, api) {                        /* D — palms together */
     });
     // v6.6: the sea, the cicadas under it, and the memory's own theme
     sfx(0.4, 'ecpamb', 0.8); sfx(0.4, 'memday', 0.3);
-    sfx(0.7, 'memtheme', 0.85);        // v6.13: louder (Chad: "make the starting music louder") — 0.55 sat under the sea's 0.8
+    /* v6.14: at its full row level. A cue's number MULTIPLIES the sound's own
+       row in STING_SAMPLE, so v6.13's 0.85 was 0.55 x 0.85 = 0.47 — under half
+       what the theme is nominally worth, which is why raising the cue alone
+       barely moved it (Chad: "Opening theme is still too soft"). The row is
+       0.95 now and the cue is 1: +6.2 dB on v6.13, +10 dB on v6.12. Measured
+       against the other two beds, the peaks sum to 0.88 of full scale, so
+       nothing clips, and the theme sits ~15 dB over the sea. */
+    sfx(0.7, 'memtheme', 1.0);
     sfx(0.6, 'vpro1');
 
     // ---- 4.4–14.0 POCKET ONE · THE LEAF
@@ -2299,13 +2306,19 @@ function scChant(c, s, api) {                        /* D — palms together */
     take(8.4, 15.0, 'pick', 1.0, 0.0);                 // the grab at 8.4 + 1.45; the hand up from ~11.3
     /* v6.13: THE CUT IS THE TOUCH (Chad: "cut the scene shot right there.
        Do not show him bending back up with the leaf. It should cut the
-       moment his hands touches the leaf"). Everything changes on this one
-       frame: the leaf leaves the lawn and appears flat in his palm, the
-       take parks on its held frame, the wrist is already turned, and the
-       lens is the macro's. The pose either side of the cut is different —
-       which is what a cut is — and the macro shows only the palm, so
-       nothing of the change is on screen. */
-    step(9.85, () => { stage.leafGround.visible = false; stage.leafShow('palm'); });
+       moment his hands touches the leaf").
+       v6.14: and it DIPS THROUGH BLACK rather than slamming (Chad: "the
+       immediate cut to the palm is rather abrupt, why not do a fade").
+       The wide holds his hand on the leaf while the light goes out over
+       0.17 s; the change happens in the dark at 10.02 — the leaf leaves the
+       lawn and lies flat in his palm, the take parks on its held frame, the
+       wrist is already turned, the lens is the macro's — and the palm comes
+       up out of the black over 0.44 s onto the macro's own eased push-in.
+       `leafpick` fires on the touch, under the dip, so the ear hears the
+       pick-up while the eye is between shots. */
+    fade(9.85, 10.02, 0, 1);
+    step(10.02, () => { stage.leafGround.visible = false; stage.leafShow('palm'); });
+    fade(10.02, 10.46, 1, 0);
     /* v6.13: v6.11's hanging-leaf track is GONE with the shot it was written
        for — it kept the pinched leaf's blade on world-down and its face to
        the lens through the lift, and the film no longer shows the lift. The
@@ -2321,7 +2334,7 @@ function scChant(c, s, api) {                        /* D — palms together */
        at the leaf at the grab — so nothing jumps. */
     lookAt(7.4, 9.85, () => LEAF, { ramp: 1.8, cone: 0.8 });
     lookAt(9.85, 13.2, handPt, { ramp: 1.4, w0: 1, cone0: 0.8, cone1: 1.4 });   // the neck widens 46° -> 80° as the hand comes up; the held-up pose (62-66° off rest) is v6.8's
-    // 1b: low three-quarter from behind the leaf, looking up, through the bend — and OUT on the touch (v6.13)
+    // 1b: low three-quarter from behind the leaf, looking up, through the bend — and OUT on the touch (v6.13), the last of it under v6.14's dip
     shotHand(8.2, 9.85, at(0, 0.78, 0.40, -1.0), at(0, 0.56, 0.34, -0.72), { x: 0, y: 0.04, z: 0 }, smoothK);
     /* 1c: THE LEAF IN HIS PALM — the five's own shot (Chad: "the leaf
        resting on his palm ... the camera shows the leaf directly resting
@@ -2340,7 +2353,7 @@ function scChant(c, s, api) {                        /* D — palms together */
        fingers; the five's 5 cm and 0.20 m put the blade's edge on the phone
        crop's right edge). The take is parked on its held frame from 12.8
        so the hand never drops toward the pocket under the macro. */
-    palmUp(9.84, 9.85, 14.0);              // v6.13: already turned when the cut lands (10 ms, under the wide's last frame), held through the macro, released before pocket two
+    palmUp(10.01, 10.02, 14.0);            // already turned when the black lifts (10 ms, in the dark), held through the macro, released before pocket two
     /* THE POSE DOES NOT MOVE UNDER THE MACRO (Chad: "why is the camera
        shaking at the palm shot. Steady it for that shot"). The shake was
        the take still RUNNING: the camera is computed from the hand bone
@@ -2348,7 +2361,7 @@ function scChant(c, s, api) {                        /* D — palms together */
        shot, so the hand's own motion — and the per-frame grounding that
        follows the feet — went straight into the lens. Parked from the cut,
        the hand is still and the only movement left is the push-in. */
-    take(9.85, 14.0, 'pick', 0, 4.4);
+    take(10.02, 14.0, 'pick', 0, 4.4);
     /* v6.12: THE PALM ONLY (Chad: "stop showing his whole arm and body, and
        instead its just a really close close up of his palm only. I said that
        before"). 0.30 -> 0.22 m held the forearm, the shirt and the lawn in
@@ -2361,14 +2374,14 @@ function scChant(c, s, api) {                        /* D — palms together */
        at 11.6 s, 0.067 by 13.6 — the blade shrank to a sliver and vanished).
        The lens is along the palm's normal, which since v6.12 points at his
        face, so the macro is very nearly his own view of his hand. */
-    lens(9.85, 14.0, 50, 44, smoothK);
+    lens(10.02, 14.0, 50, 44, smoothK);
     /* and GIVEN BACK at the cut to black — a track holds its end value for
        the rest of the film, so without this the whole of pockets two, three
        and four played on a 44° lens (caught by rendering 15.5, 19.0 and 31.0
        against the frames from before this work: the same sets, tighter).
        The same trap as the wrist's own hold, one shot later. */
     lens(14.0, 14.0, CAM_FOV, CAM_FOV);
-    shotPalm(9.85, 14.0, 0.26, 0.22, 0.0, 0.0, 0.01, 0.01, smoothK, 0.085);
+    shotPalm(10.02, 14.0, 0.26, 0.22, 0.0, 0.0, 0.01, 0.01, smoothK, 0.085);
 
     // ---- 14.0–25.2 POCKET TWO · THE TOY
     sfx(13.4, 'stairamb', 0.8);                        // v6.6: the tube's hum, the well's echo
