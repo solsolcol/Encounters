@@ -2404,3 +2404,18 @@ share, so composing for the phone sets the desktop framing too, and no
 combination of distance and focal length escapes it. Compose for the
 phone, which is what Chad plays on, and accept the surroundings a desktop
 frame shows around the subject.
+
+## A camera bolted to a bone shakes when the bone is animated (v6.13)
+
+Chad, watching the palm macro: "why is the camera shaking at the palm
+shot". `shotPalm` recomputes the lens position from the hand bone's world
+matrix every frame, so the shot is rock steady RELATIVE to the hand and
+inherits everything the hand does in world space — the take's own motion,
+and the per-frame grounding that lifts the whole body to whichever foot is
+lowest. Under a running take that is a permanent low-amplitude wobble. The
+fix is not smoothing: it is to PARK the take for the duration of the shot,
+which the film already had a way to do (`take(t0, t1, name, 0, frame)`).
+Measured after: 0.000 mm of hand movement across four seconds, and the
+camera's step per tenth of a second a smooth 0.14 -> 1.45 -> 0.20 mm, which
+is the push-in and nothing else. Any shot framed off a bone wants a parked
+pose unless the motion is the point.

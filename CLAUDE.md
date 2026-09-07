@@ -1345,6 +1345,30 @@ What the baseline contains, by release:
   ramp never runs at all (measured, k = 0). Verified by rendering 15.5,
   19.0 and 31.0 against the frames from before this work — same sets, same
   poses, 30-38 dB. No word moved; sheet v39 stands. docs/V6.12-THE-MACRO.md.
+- **v6.13** THE CUT IS THE TOUCH — Chad, on v6.12: "cut the scene shot
+  right there. Do not show him bending back up with the leaf. It should cut
+  the moment his hands touches the leaf. And the next shot immediately shows
+  the leaf in his palm as you did it, unchanged. Also why is the camera
+  shaking at the palm shot." Pocket one's wide now ends at **9.85**, the
+  grab frame, and everything changes on that one frame: the leaf leaves the
+  lawn and lies flat in his palm, the take PARKS on its held frame, the
+  wrist is already turned (`palmUp(9.84, 9.85, 14.0)` — a 10 ms ramp under
+  the wide's last frame), and the macro's lens and distance are the
+  cut's. He is never seen straightening up with it, and the macro itself is
+  the v6.12 shot unchanged, only longer (4.15 s). THE SHAKE had a cause
+  worth keeping: `shotPalm` computes the camera from the HAND BONE every
+  frame, and the pick take was still running under it, so the hand's own
+  motion — and the per-frame grounding that follows the feet — went
+  straight into the lens. Parked from the cut, the hand moves **0.000 mm**
+  across the whole shot (dbg-steady, ten times a second) and the only
+  movement left is the eased push-in (0.14 -> 1.45 -> 0.20 mm a frame).
+  v6.11's hanging-leaf track went with the lift it was written for. And the
+  opening memory theme is LOUDER, 0.55 -> 0.85 (Chad: "make the starting
+  music louder"): measured against the other two beds, the peaks now sum to
+  0.88 of full scale so nothing clips, and the theme sits ~13 dB over the
+  sea instead of ~10. The three later pockets were re-checked frame against
+  frame (38.4 / 28.9 / 38.4 dB). No word moved; sheet v39 stands.
+  docs/V6.13-THE-CUT.md.
  *"i'm still
   not satisfied with this voice."* All 79 of the boy's takes regenerated in a
   THIRD voice (Aaron, `B6uUx2p7cRgxseOUyP6P`), under an approved prompt sheet
