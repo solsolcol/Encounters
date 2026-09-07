@@ -2265,3 +2265,17 @@ against the export found one eight-character run mangled the same way
 both times — a memory error, reproduced faithfully. The rule now: emit
 the base64 into a scratch file, `cmp` it against `base64 -w0` of the
 export, and only a byte-identical copy goes into the Drive call.
+
+## The read-back comes from the harness's saved file, not from memory (v6.9)
+
+`read_file_content` on a three-tab sheet returns 50 KB of markdown, and
+the harness saves an output that size whole to a `tool-results/<id>.txt`
+JSON file and shows a 2 KB preview. Earlier read-backs were written out
+by the session before `verifytabs` ran, so a "mismatch" could as easily
+have been the session's slip as Drive's. The v39 check pulled
+`fileContent` out of that file with three lines of Python and diffed the
+connector's own bytes: 424 rows, zero. The same trap runs the other way:
+a 31 KB single-line base64 is cut off near 22,000 characters when read,
+so it is `fold -w 120`'d into lines first — and the last of those lines
+carries no newline, which `wc -l` does not count. The copy came up
+twenty characters short once for exactly that, and `cmp` caught it.

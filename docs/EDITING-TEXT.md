@@ -11,11 +11,25 @@ text comes up at all — the reply carries the full URL, not the version
 number alone. He reads these on his phone; a number he has to go hunting
 for in Drive is not a link.
 
-**Master Z's Encounters — GAME TEXT v38 (edit here)** in his Drive
-(id `1ky0BOBiGWaMrD4I92LmSDNbkMd7FhBdG4zqBS2jj95Q` — the **v38** sheet,
-made at v6.6, tabbed: **UI TEXT** (206 rows, the engine's words),
+**Master Z's Encounters — GAME TEXT v39 (edit here)** in his Drive
+(id `1wBOZTfb5LjwPq2Ru-ZjMZlBHpegihOM_5sZo7ewxRCE` — the **v39** sheet,
+made at v6.9, tabbed: **UI TEXT** (206 rows, the engine's words),
 **EPISODE 1** (110 rows, chapters 1–5's words) and **VOICE LINES** (105).
-<https://docs.google.com/spreadsheets/d/1ky0BOBiGWaMrD4I92LmSDNbkMd7FhBdG4zqBS2jj95Q/edit>
+<https://docs.google.com/spreadsheets/d/1wBOZTfb5LjwPq2Ru-ZjMZlBHpegihOM_5sZo7ewxRCE/edit>
+
+What changed from v38: **three cells changed, no row added, no spoken
+word.** The boy's three pick-up reactions were re-voiced as whispers
+(v6.9, docs/V6.9-THE-NECK.md) and their measured lengths moved on VOICE
+LINES — `vpick1` 2.35 → 1.96 s, `vpick2` 1.72 → 1.80 s, `vpick3`
+2.27 → 1.65 s. The words are the same words. Every other v38 cell is
+byte-identical. v38 (id `1ky0BOBiGWaMrD4I92LmSDNbkMd7FhBdG4zqBS2jj95Q`)
+is superseded; its metadata was checked before v39 went to him (created
+21:01:26, modified 21:01:27 — the conversion itself), so it holds no edit
+of his to import. Provenance: v39 was published from the fresh `.xlsx`
+export (the base64 written to a file and `cmp`'d against the export
+first — the v38 rule), and the read-back was taken from the connector's
+own saved output rather than retyped, then every cell diffed against the
+workbook by `tools/verifytabs.py` — 424 rows, zero differences.
 
 What changed from v37: **three rows ADDED, none changed; three new spoken
 takes.** The prologue built out (v6.6, docs/V6.6-PLAN.md) brings the boy's
@@ -272,7 +286,12 @@ so the CSV, the workbook and the connector's read-back all import alike.
    one) means Chad edited it — `read_file_content`, save the output whole,
    `textsync import` it, and review that diff FIRST.
 2. `node textsync.mjs export gametext-vNN.xlsx` in the scratchpad, then
-   `base64 -w0 gametext-vNN.xlsx > gametext-vNN.b64`.
+   `base64 -w0 gametext-vNN.xlsx > gametext-vNN.b64`. That string has to
+   be READ to go into the tool call, and a 31 KB single line is cut off
+   near 22,000 characters by the reader — `fold -w 120` it into lines
+   first, read those, write the copy to a file and `tr -d '\n' | cmp` it
+   against the .b64 (the last folded line has no newline, so `wc -l`
+   undercounts it by one — LEARNINGS, v6.9).
 3. `create_file` with `title` "Master Z's Encounters — GAME TEXT vNN (edit
    here)", `contentMimeType` as above and `base64Content` from the .b64.
    The result's `id` is the new sheet; its `mimeType` must come back as
@@ -280,7 +299,12 @@ so the CSV, the workbook and the connector's read-back all import alike.
 4. `read_file_content` on that id returns one markdown table per tab with
    a blank line between tables. Save it WHOLE to a file and run
    `python3 tools/verifytabs.py gametext-vNN.xlsx readback.md` — the last
-   line must be `mismatched cells: 0` (v33: three tabs, 393 rows, zero).
+   line must be `mismatched cells: 0` (v33: three tabs, 393 rows, zero;
+   v39: 424 rows, zero). A read-back this size (50 KB) is saved whole by
+   the harness to a `tool-results/<id>.txt` JSON file and only previewed
+   in the conversation — pull its `fileContent` out with three lines of
+   Python rather than retyping it; a retyped read-back can only add slips
+   of the session's own.
 5. Put the full `https://docs.google.com/spreadsheets/d/<id>/edit` link in
    the reply, and record the new id, its counts and what changed at the
    top of this file.
