@@ -628,7 +628,12 @@ let skyClouds = 0;                         // read by the frame, for the drift
   });
 }
 
-const camera = new THREE.PerspectiveCamera(72, innerWidth / innerHeight, 0.08, 160);
+/* v6.12: the world's lens, named because a cutscene may borrow it (`lens`
+   below) and cineEnd() must know what to give back. 72° is WIDE and the near
+   plane is 8 cm: a macro shot cannot be taken by pushing this lens in, it
+   puts the subject through the near plane (ch1's leaf was sliced away). */
+const CAM_FOV = 72;
+const camera = new THREE.PerspectiveCamera(CAM_FOV, innerWidth / innerHeight, 0.08, 160);
 const yaw = new THREE.Object3D();      // horizontal rotation
 const pitch = new THREE.Object3D();    // vertical rotation
 yaw.add(pitch); pitch.add(camera);
@@ -4490,6 +4495,13 @@ function restoreWorld(s, keep) {
    seconds played in full view, and then its fade-in snapped the screen to
    black and revealed the same shot a second time. An opening that shows you
    the room before it fades in is not an opening.                          */
+/* v6.12: set the world lens, cheaply — a projection matrix is only rebuilt
+   when the angle actually moves, so calling this every cutscene costs nothing */
+function camLens(fov) {
+  if (camera.fov === fov) return;
+  camera.fov = fov;
+  camera.updateProjectionMatrix();
+}
 function playCineFn(sceneFn, onDone, startFade = 0) {
   const snap = snapWorld();
   const c = {
@@ -4501,6 +4513,7 @@ function playCineFn(sceneFn, onDone, startFade = 0) {
   };
   cineDuck = null;                 // a scene starts with the room at full
   cineMusicK = 1;                  // v6.6: and the music at the chapter's level
+  camLens(CAM_FOV);                // v6.12: and on the chapter's own lens
   sceneFn(c, snap, sceneApi(c));
   c.dur = c.tracks.reduce((m, tr) => Math.max(m, tr.t1), 1);
   cine = c;
@@ -4604,6 +4617,7 @@ function cineEnd() {
   if (!c) return;
   cine = null;
   cineDuck = null;                  // the room tone comes back up with the world
+  camLens(CAM_FOV);                 // v6.12: a borrowed lens is always given back
   if (cineMusicK !== 1) { cineMusicK = 1; musicRamp(musicVolNow(), 1.5); }   // v6.6: and the music, if a film held it
   stopCineVoices(!c.skipped);       // v5.30: speech finishes unless the player cut it
   restoreWorld(c.snap, c.keep);
@@ -4687,7 +4701,17 @@ function A(c) {
     ghost.rotation.y = Math.atan2(yaw.position.x - ghost.position.x,
                                   yaw.position.z - ghost.position.z);
   }, rawK);
-  return { tr, step, sfx, fade, camTo, yawTo, pitchTo, bob, ghostGlide, ghostFacePlayer };
+  /* v6.12: A LONGER LENS for one shot — a macro is taken by narrowing the
+     lens from a safe distance, the way a macro lens is, not by pressing a
+     wide one against the subject (the near plane is 8 cm, and it also
+     spares the wide-angle distortion a hand fills a 72° frame with).
+     cineEnd() restores CAM_FOV on the natural end AND on a skip, so a
+     cutscene can never leave the world zoomed. */
+  const lens = (t0, t1, from, to, ease) => tr(t0, t1, k => {
+    camera.fov = from + (to - from) * k;
+    camera.updateProjectionMatrix();
+  }, ease);
+  return { tr, step, sfx, fade, camTo, yawTo, pitchTo, bob, ghostGlide, ghostFacePlayer, lens };
 }
 
 /* Everything a chapter's scene is allowed to touch, in one object built per
@@ -4703,6 +4727,7 @@ function sceneApi(c) {
   return {
     ...A(c),
     rawK, smoothK, mixAngle, faceFrom, THREE, SHRINE, stage,
+    CAM_FOV,                         // v6.12: so a scene that borrows the lens can hand it back by name
     PRAYER_R, PRAYER_L, setHandPrayer, handWidth: () => HAND_W,
     camera, yaw, pitch,
     ghost, ghostLight, ghostOpacity, getReveal: () => reveal,

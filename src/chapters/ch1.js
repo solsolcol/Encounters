@@ -1433,7 +1433,15 @@
        agree (PropertyMixer compares its two accumulators before setValue),
        so a relative twist laid on "whatever the bone holds" stacks up frame
        after frame — the first trial spun the wrist round three times. */
-    const boyPalm = { k: 0, ang: -2.04, split: 0.75 };   // -2.22 turns the palm fully up (dbg-wrist2, every split); 0.92 of it keeps the palm shot's yaw well-conditioned
+    /* v6.12: -3.02, not v6.11's -2.04 (Chad: "you actually need to rotate the
+       arms inwards even more? Palm should be facing his face ... he is staring
+       at the back of his palm"). -2.22 turns the palm at the SKY, which from
+       his eyes is still the back of the hand; the roll has to carry on past it
+       until the palm faces him. Measured against the direction from his hand
+       to his eyes (dbg-palmface, the head bone + 11 cm): -2.04 scored 0.45,
+       and the alignment climbs all the way to the half turn (0.91 at -3.14).
+       -3.02 is a hair inside it, so the sign of the roll stays unambiguous. */
+    const boyPalm = { k: 0, ang: -3.02, split: 0.75 };
     let boyFore = null; const palmIp = {};                                   // one interpolant per take per bone, made on first use
     const _pq1 = new THREE.Quaternion(), _pq2 = new THREE.Quaternion(), _ptw = new THREE.Quaternion(), _pY = new THREE.Vector3(0, 1, 0);
     function palmBase(n, t, bone, out) {
@@ -2123,7 +2131,7 @@ function scChant(c, s, api) {                        /* D — palms together */
      moves are `shot`s: the lens glides A -> B while it looks at P -> Q. */
   function intro(c, s, api) {
     const { tr, step, sfx, fade, faceFrom, rawK, smoothK, duck, music, stage,
-            camera, yaw, pitch, ghostOpacity, handsRoot, armR, THREE } = api;
+            camera, yaw, pitch, ghostOpacity, handsRoot, armR, THREE, lens, CAM_FOV } = api;
     const MEMX = stage.MEM.x, MEMZ = stage.MEM.z, PZ = stage.POCKET_Z;
     const at = (p, x, y, z) => ({ x: MEMX + x, y, z: MEMZ + PZ[p] + z });   // pocket-local -> world
     const lerp3 = (a, b, k) => ({ x: a.x + (b.x - a.x) * k, y: a.y + (b.y - a.y) * k, z: a.z + (b.z - a.z) * k });
@@ -2197,8 +2205,23 @@ function scChant(c, s, api) {                        /* D — palms together */
     };
     const handPt = () => { const h = stage.boyHand(); if (!h) return null; h.getWorldPosition(_hw); return { x: _hw.x, y: _hw.y + 0.03, z: _hw.z }; };
     const lookOff = () => { stage.boyLook.target = null; stage.boyLook.w = 0; stage.boyLook.x = stage.boyLook.y = 0; stage.boyLook.cone = Infinity; };
-    /* v6.11: the wrist turns over — k from k0 to k1 on a smoothstep, held after t1 like every track */
-    const palmUp = (t0, t1, k0 = 0, k1 = 1) => tr(t0, t1, k => { stage.boyPalm.k = k0 + (k1 - k0) * k; }, smoothK);
+    /* v6.11: the wrist turns over — k from k0 to k1 on a smoothstep.
+       v6.12: it STOPS WRITING at t1 (Chad: "why does the palm and arm angle
+       subsequently affected the next few scenes ... it stays fixed that way
+       for subsequent scenes"). cineSeek applies EVERY track whose t0 has
+       passed on EVERY frame, clamped to k = 1 — so this track was re-setting
+       k = 1 for the rest of the film, one frame after `palmOff()` zeroed it
+       at pocket two, and the turned wrist rode through the bear, the five and
+       the present. The same law as v5.07's held glide. So the track takes an
+       explicit HOLD time: it ramps to t1, holds k1 to `hold`, and writes
+       nothing after — a plain `if (t > t1) return` was tried first and was
+       worse, because a SEEK past the window then never runs the ramp at all
+       and the wrist stays untouched (measured: k = 0 at 11.4). */
+    const palmUp = (t0, t1, hold, k0 = 0, k1 = 1) => tr(t0, hold, (k, t) => {
+      if (t > hold) return;                       // past the hold, the value is nobody's business — palmOff() owns it
+      const u = t <= t0 ? 0 : Math.min(1, (t - t0) / Math.max(1e-6, t1 - t0));
+      stage.boyPalm.k = k0 + (k1 - k0) * smoothK(u);
+    }, rawK);
     const palmOff = () => { stage.boyPalm.k = 0; };
     /* v6.6: a shot that looks INTO HIS PALM — the lens sits along the palm's
        normal (the bone's +z: a render along -z showed the knuckles), a little
@@ -2283,8 +2306,8 @@ function scChant(c, s, api) {                        /* D — palms together */
        hand's own orientation and the camera's position, so the leaf dangles
        from the pinch whatever the hand does, until the cut lays it flat. */
     const _hq = new THREE.Quaternion(), _hd = new THREE.Vector3(), _hc = new THREE.Vector3(), _hn2 = new THREE.Vector3(), _hx = new THREE.Vector3(), _hw2 = new THREE.Vector3(), _hm = new THREE.Matrix4();
-    tr(9.85, 11.0, (k, t) => {
-      if (t > 11.0) return;
+    tr(9.85, 11.5, (k, t) => {
+      if (t > 11.5) return;
       const h = stage.boyHand(); if (!h) return;
       const H = stage.leafHand.children.find(c => c.name === 'pinch'); if (!H) return;
       h.getWorldQuaternion(_hq); _hq.invert();
@@ -2307,8 +2330,8 @@ function scChant(c, s, api) {                        /* D — palms together */
        at the leaf at the grab — so nothing jumps. */
     lookAt(7.4, 9.85, () => LEAF, { ramp: 1.8, cone: 0.8 });
     lookAt(9.85, 13.2, handPt, { ramp: 1.4, w0: 1, cone0: 0.8, cone1: 1.4 });   // the neck widens 46° -> 80° as the hand comes up; the held-up pose (62-66° off rest) is v6.8's
-    // 1b: low three-quarter from behind the leaf, looking up, through the grab, the lift and the turn of the wrist
-    shotHand(8.2, 11.0, at(0, 0.78, 0.40, -1.0), at(0, 0.56, 0.34, -0.72), { x: 0, y: 0.04, z: 0 }, smoothK);
+    // 1b: low three-quarter from behind the leaf, looking up, through the grab, the lift and the whole turn of the wrist (v6.12: to 11.5, so the finished pose is seen before the cut)
+    shotHand(8.2, 11.5, at(0, 0.78, 0.40, -1.0), at(0, 0.56, 0.34, -0.72), { x: 0, y: 0.04, z: 0 }, smoothK);
     /* 1c: THE LEAF IN HIS PALM — the five's own shot (Chad: "the leaf
        resting on his palm ... the camera shows the leaf directly resting
        flat facing up in his palm ... just close up of the palm"). The pick
@@ -2326,10 +2349,29 @@ function scChant(c, s, api) {                        /* D — palms together */
        fingers; the five's 5 cm and 0.20 m put the blade's edge on the phone
        crop's right edge). The take is parked on its held frame from 12.8
        so the hand never drops toward the pocket under the macro. */
-    palmUp(10.45, 11.25);
-    step(11.0, () => { stage.leafShow('palm'); });
+    palmUp(10.45, 11.25, 14.0);            // turned by 11.25, held through the macro, released before pocket two
+    step(11.5, () => { stage.leafShow('palm'); });
     take(12.8, 14.0, 'pick', 0, 4.4);
-    shotPalm(11.0, 14.0, 0.30, 0.22, 0.0, 0.0, 0.02, 0.02, smoothK, 0.085);
+    /* v6.12: THE PALM ONLY (Chad: "stop showing his whole arm and body, and
+       instead its just a really close close up of his palm only. I said that
+       before"). 0.30 -> 0.22 m held the forearm, the shirt and the lawn in
+       frame. v6.12 takes it as a MACRO instead of a shove: the lens
+       narrows to 50° -> 44° and the camera sits 0.26 -> 0.22 m out, which
+       fills a phone's centre crop with the palm edge to edge and leaves the
+       forearm out of a desktop frame. Pushing the world's own 72° lens in
+       far enough to do that put the leaf through the 8 cm near plane and
+       SLICED IT AWAY over the shot (measured: the nearest leaf vertex 0.089
+       at 11.6 s, 0.067 by 13.6 — the blade shrank to a sliver and vanished).
+       The lens is along the palm's normal, which since v6.12 points at his
+       face, so the macro is very nearly his own view of his hand. */
+    lens(11.5, 14.0, 50, 44, smoothK);
+    /* and GIVEN BACK at the cut to black — a track holds its end value for
+       the rest of the film, so without this the whole of pockets two, three
+       and four played on a 44° lens (caught by rendering 15.5, 19.0 and 31.0
+       against the frames from before this work: the same sets, tighter).
+       The same trap as the wrist's own hold, one shot later. */
+    lens(14.0, 14.0, CAM_FOV, CAM_FOV);
+    shotPalm(11.5, 14.0, 0.26, 0.22, 0.0, 0.0, 0.01, 0.01, smoothK, 0.085);
 
     // ---- 14.0–25.2 POCKET TWO · THE TOY
     sfx(13.4, 'stairamb', 0.8);                        // v6.6: the tube's hum, the well's echo
