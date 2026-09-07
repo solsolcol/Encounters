@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "6.14"
+VERSION = "6.15"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -243,6 +243,14 @@ ASSETS = {
     'teddy': ('assets/teddy.glb', True, False),        # ch1, the toy
     'leaf': ('assets/leaf.glb', True, False),          # ch1, the leaf
     'note5': ('assets/note5.webp', True, False),       # ch1, the money
+    # v6.15: the four tree kinds (Chad's three models — the low-poly file holds
+    # two). Not preloaded: a chapter stands up with no trees and plants them
+    # when the bytes land, which is a skyline arriving late, never a chapter
+    # that cannot start.
+    'tree1': ('assets/tree1.glb', True, False),        # the big realistic one
+    'tree2': ('assets/tree2.glb', True, False),        # the oak
+    'tree3': ('assets/tree3.glb', True, False),        # low poly, the taller one
+    'tree4': ('assets/tree4.glb', True, False),        # low poly, the round one
     # v5.24: Chad's sofa, the living room's, in chapters 4 and 5. Not
     # preloaded: the primitive it replaces is already sitting there, so a
     # slow download costs a nicer sofa and never an empty wall.

@@ -152,7 +152,7 @@
        deck, chapter 2's bedroom and this car park one place. hellnote is the
        note, which is on the altar table tonight where it should have been
        all along. */
-    assets: ['hdb', 'hellnote', 'seat', 'cars', 'guangong', 'encik',
+    assets: ['hdb', 'hellnote', 'seat', 'cars', 'guangong', 'encik', 'tree1', 'tree2', 'tree3', 'tree4',
              'tangki', 'tangkianim', 'boy', 'shrine', 'sitclap', 'sitangry',
              'standman', 'granny',
              /* v5.29 — the three new seated kinds and the scolding granny */
@@ -208,7 +208,7 @@
     const { THREE, GLTFLoader, cloneSkinned, scene, camera, yaw, LOW,
             assetBytes, rescueTextures, redoShadows,
             cnv, makeSoftDot, makeGround, makeConcrete, makeLacquer,
-            makeHellNote, getState, startDecision, HEAD_RE } = ctx;
+            makeHellNote, getState, startDecision, HEAD_RE, plantTrees } = ctx;
 
     /* SHRINE is her anchor — the middle of the seating. The ALTAR is a
        different thing entirely, nine metres away at the front, and keeping
@@ -415,36 +415,15 @@
       [13, 0], [16, 9], [14, 18], [19, 27], [12.5, 36],
       [-4, 40], [6, 44], [-9, 38], [16, 44]
     ];
-    const trunkGeo = new THREE.CylinderGeometry(0.13, 0.22, 1, 7);
-    const leafGeo = new THREE.IcosahedronGeometry(1, 1);
-    const matTrunk = new THREE.MeshStandardMaterial({
-      color: 0x6a563f, roughness: 0.95, metalness: 0 });
-    const matLeaf = new THREE.MeshStandardMaterial({
-      color: 0xffffff, roughness: 0.92, metalness: 0, flatShading: true });
-    const trunkIM = new THREE.InstancedMesh(trunkGeo, matTrunk, TREE_AT.length);
-    const leafIM = new THREE.InstancedMesh(leafGeo, matLeaf, TREE_AT.length * 3);
-    {
-      const m4 = new THREE.Matrix4(), q0 = new THREE.Quaternion(),
-            sv = new THREE.Vector3(), pv = new THREE.Vector3();
-      const GREENS = [0x5f7f4b, 0x546f45, 0x6a8a55].map(c => new THREE.Color(c));
-      const PUFF = [[0, 0], [0.9, 0.5], [-0.8, 0.6]];
-      TREE_AT.forEach(([tx, tz], i) => {
-        const h = 2.6 + ((i * 37) % 10) * 0.11;        // 2.6-3.7 m, deterministic
-        m4.compose(pv.set(tx, h / 2, tz), q0, sv.set(1, h, 1));
-        trunkIM.setMatrixAt(i, m4);
-        for (let b = 0; b < 3; b++) {
-          const r = 1.5 + ((i * 7 + b * 13) % 9) * 0.13;
-          m4.compose(pv.set(tx + PUFF[b][0], h + 0.55 + b * 0.28, tz + PUFF[b][1]),
-                     q0, sv.set(r * 1.25, r * 0.8, r * 1.25));
-          leafIM.setMatrixAt(i * 3 + b, m4);
-          leafIM.setColorAt(i * 3 + b, GREENS[(i + b) % 3]);
-        }
-      });
-      trunkIM.instanceMatrix.needsUpdate = true;
-      leafIM.instanceMatrix.needsUpdate = true;
-      if (leafIM.instanceColor) leafIM.instanceColor.needsUpdate = true;
-    }
-    world.add(trunkIM, leafIM);
+    /* v6.15: CHAD'S TREES. The fourteen spots are unchanged — every one was
+       picked outside the play bounds, clear of the two parked cars and clear
+       of the corridor the opening film needs empty — but a puffed
+       icosahedron on a cylinder is not a rain tree, and these are the real
+       thing now, dealt from the engine's four kinds. Ten in the morning, so
+       they are barely tinted; the tent is what the eye must hold, so they
+       stay a fraction under the tarmac's brightness. */
+    const treeStands = [plantTrees(world, TREE_AT.map(([x, z], i) => ({ x, z, h: 7.2 + ((i * 37) % 10) * 0.22 })),
+      { seed: 41, tint: new THREE.Color(0.94, 0.98, 0.90), roughness: 0.94 })];
 
     /* ------------------------------------------------------------ the block
        The same model chapter 1 stands under and chapter 2 sees through a
@@ -2381,6 +2360,10 @@
        renderer.info; this discipline is the only thing that passes it. */
     function dispose() {
       alive = false;
+      // v6.15: the tree stands first — their geometry and sheets are the
+      // engine's shared kit, and the sweep below frees everything it reaches
+      for (const g of treeStands) g.userData.disposeTrees?.();
+      treeStands.length = 0;
       const geos = new Set(), mats = new Set();
       world.traverse(o => {
         if (o.geometry) geos.add(o.geometry);
@@ -2390,7 +2373,7 @@
       scene.remove(world);
       for (const o of owned) { o.parent?.remove(o); o.dispose?.(); }
       owned.length = 0;
-      for (const im of [...chairIMs, flying, trunkIM, leafIM]) im.dispose?.();
+      for (const im of [...chairIMs, flying]) im.dispose?.();   // v6.15: the trees' own InstancedMeshes went with the stand, above
       for (const g of geos) g.dispose();
       for (const m of mats) {
         for (const k of ['map', 'roughnessMap', 'normalMap', 'emissiveMap', 'alphaMap']) {

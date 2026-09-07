@@ -105,6 +105,16 @@ Object.assign(window.__TEXT__, {
   'credits.leaf':        'The leaf in the prologue',
   'credits.leafWho':     'Birch leaf · popovs · Sketchfab (CC BY 4.0)',
   'credits.leafLink':    'sketchfab.com · birch-leaf',
+  // v6.15: Chad's three tree models — every tree in the game is one of them
+  'credits.tree1':       'The trees (1 of 3)',
+  'credits.tree1Who':    'Realistic tree · Sketchfab',
+  'credits.tree1Link':   'sketchfab.com · realistic-tree',
+  'credits.tree2':       'The trees (2 of 3)',
+  'credits.tree2Who':    'Oak tree · Sketchfab',
+  'credits.tree2Link':   'sketchfab.com · oak-tree',
+  'credits.tree3':       'The trees (3 of 3)',
+  'credits.tree3Who':    'Trees low poly · Sketchfab',
+  'credits.tree3Link':   'sketchfab.com · trees-low-poly',
   /* v5.29 — Chad's four Meshy characters, all CC0. One row for the set:
      they are one author, one licence, and four names in a credits panel
      that already runs long reads worse than one line that is true. */

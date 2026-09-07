@@ -82,7 +82,7 @@
     // Keys into the engine's asset table. Anything every chapter uses (hands,
     // ghost, logo, music, the sound pack) is the engine's own; these are the
     // files that exist only because this chapter does.
-    assets: ['hdb', 'voice', 'hellnote',
+    assets: ['hdb', 'voice', 'hellnote', 'tree1', 'tree2', 'tree3', 'tree4',
              /* v6.4 — THE PROLOGUE's actor and props: the rigged young master
                 (preloaded; he is the first shot), the bear, the leaf, and the
                 photograph of the five-dollar note (docs/V6.4-PROLOGUE.md) */
@@ -110,7 +110,7 @@
     const { THREE, GLTFLoader, scene, camera, yaw, LOW,
             assetBytes, rescueTextures, redoShadows,
             cnv, makeSoftDot, makeGround, makeGrass, makeConcrete, makeLacquer,
-            makeHellNote, loadImageTexture, getState, startDecision, HEAD_RE } = ctx;
+            makeHellNote, loadImageTexture, getState, startDecision, HEAD_RE, plantTrees } = ctx;
 
     // The burner and everything that belongs to it — light, smoke, embers,
     // notes, the trigger radius — are positioned from this one point, so the
@@ -700,40 +700,13 @@
   }
 
   /* ---------------------------------------------------------- the tree line */
-  /* Low-poly blobs on a trunk: a dozen of them cost less than one of the
-     pillars. They stay out of the corridor between the spawn point and the
-     void deck, so the way in still reads as open.                            */
-  const trunkGeo = new THREE.CylinderGeometry(0.26, 0.42, 5.2, 9);
-  // three canopy blobs, reused and jittered per instance rather than a fresh
-  // geometry per leaf cluster — a hundred one-off geometries is a hundred
-  // buffers to upload for no visible gain
-  const leafGeo = [1.0, 1.22, 1.45].map(r => new THREE.IcosahedronGeometry(r, 0));
-  const leafMat = new THREE.MeshStandardMaterial({ color: 0x1d2b1c, roughness: 1.0, flatShading: true });
-
-  function makeTree(x, z, s = 1) {
-    const g = new THREE.Group();
-    g.position.set(x, 0, z);
-    g.rotation.y = Math.random() * Math.PI * 2;
-    g.scale.setScalar(s);
-    // only trees the shadow camera actually covers pay for a shadow pass
-    const shadowed = Math.abs(x) < 19 && Math.abs(z) < 19;
-    const trunk = new THREE.Mesh(trunkGeo, matDarkWood);
-    trunk.position.y = 2.6; trunk.castShadow = shadowed;
-    g.add(trunk);
-    const n = 6 + ((Math.random() * 3) | 0);
-    for (let i = 0; i < n; i++) {
-      const b = new THREE.Mesh(leafGeo[(Math.random() * leafGeo.length) | 0], leafMat);
-      b.position.set((Math.random() - 0.5) * 2.4, 4.6 + Math.random() * 1.6, (Math.random() - 0.5) * 2.4);
-      b.scale.setScalar(0.85 + Math.random() * 0.4);
-      b.rotation.set(Math.random() * 3, Math.random() * 3, Math.random() * 3);
-      b.castShadow = shadowed;
-      g.add(b);
-    }
-    world.add(g);
-    return g;
-  }
-
-  for (const [tx, tz, ts] of [
+  /* v6.15: CHAD'S TREES, mixed. Twelve stands of low-poly blobs on a
+     cylinder used to be here; the engine's kit deals the four real kinds
+     across the same twelve spots, which were picked to stay out of the
+     corridor between the spawn point and the void deck. Dark, because this
+     is midnight under one moon and the models are lit for daylight. */
+  const treeStands = [];
+  treeStands.push(plantTrees(world, [
     [-13.5, 7.5, 1.00],    // the original, where it always was
     [-21.5, 12.5, 1.14],
     [-9.5, 18.5, 0.92],
@@ -746,7 +719,8 @@
     [-27.0, 20.5, 0.98],
     [26.0, 27.5, 1.12],
     [-4.5, 31.0, 0.90],
-  ]) makeTree(tx, tz, ts);
+  ].map(([x, z, s]) => ({ x, z, h: 7.6 * s })),
+    { seed: 11, tint: new THREE.Color(0.30, 0.34, 0.30), shadow: true, roughness: 0.95 }));
 
   /* ---------------------------------------------------------- atmosphere */
   // drifting smoke from the burner
@@ -948,20 +922,9 @@
     });
     const P1 = bubble(POCKET_Z[0], 18, skyEvening), P2 = bubble(POCKET_Z[1], 14, skyNight), P3 = bubble(POCKET_Z[2], 20, skyDay);
     P1.userData.p = 0; P2.userData.p = 1; P3.userData.p = 2;
-    // shared bits: a fog-free tree in two greens, a bench, a bin
-    const treeAt = (parent, x, z, s, leaf, trunk, seed = 1) => {
-      const g = new THREE.Group(); g.position.set(x, 0, z); g.scale.setScalar(s); g.rotation.y = seed * 1.7;
-      parent.add(g);
-      mesh(g, trunkGeo, trunk, 0, 2.6, 0);
-      for (let i = 0; i < 7; i++) {
-        const b = new THREE.Mesh(leafGeo[(i + seed) % 3], leaf);
-        b.position.set(((i * 5 + seed) % 5 - 2) * 0.62, 4.5 + ((i * 3 + seed) % 4) * 0.45, ((i * 7 + seed) % 5 - 2) * 0.62);
-        b.scale.setScalar(0.9 + ((i + seed) % 3) * 0.16);
-        b.rotation.set(i * 0.7 + seed, i * 1.3, i * 0.4);
-        g.add(b);
-      }
-      return g;
-    };
+    // shared bits: a bench, a bin. The trees are the engine's kit (v6.15),
+    // planted fog-free because a memory bubble stands forty metres out in
+    // the world's midnight fog and must not be dimmed by it.
     const matBenchWood = std({ color: 0x8a5a36, roughness: 0.8 }), matBenchIron = std({ color: 0x2a2a2a, roughness: 0.6, metalness: 0.6 });
     const benchAt = (parent, x, z, ry) => {
       const g = new THREE.Group(); g.position.set(x, 0, z); g.rotation.y = ry; parent.add(g);
@@ -1006,32 +969,24 @@
         boxAt(P1, 2.2 * s, 0.32 * s, 0.4 * s, shipMat, x, 0.18 * s, z);
         boxAt(P1, 0.4 * s, 0.34 * s, 0.34 * s, shipMat, x + 0.7 * s, 0.5 * s, z);
       }
-      // casuarinas: tall, thin, wispy — the tree East Coast is planted with
-      const casLeaf = std({ color: 0x2f5a30, roughness: 1, flatShading: true }), casTrunk = std({ color: 0x4a3a2c, roughness: 0.9 });
-      for (const [x, z, s] of [[-7.2, 6.4, 1.0], [8.4, 5.9, 1.15], [-12.5, 1.2, 0.9], [13.0, 0.5, 1.05], [-3.0, 9.6, 0.8]]) {
-        const g = new THREE.Group(); g.position.set(x, 0, z); g.scale.setScalar(s); P1.add(g);
-        cylAt(g, 0.1, 0.2, 8.0, casTrunk, 0, 4.0, 0, 7);
-        for (let i = 0; i < 6; i++) {
-          const b = new THREE.Mesh(leafGeo[i % 3], casLeaf);
-          b.position.set(((i * 3) % 3 - 1) * 0.8, 5.6 + i * 0.55, ((i * 5) % 3 - 1) * 0.8);
-          b.scale.set(0.9, 1.5, 0.9); b.rotation.set(i, i * 0.6, 0);
-          g.add(b);
-        }
-      }
-      // coconut palms by the path
-      const palmTrunk = std({ color: 0x8a7a62, roughness: 0.95 }), frondMat = std({ color: 0x3f7a2e, roughness: 1, side: THREE.DoubleSide });
-      const frondGeo = new THREE.PlaneGeometry(2.6, 0.5);
-      for (const [x, z, lean, s] of [[-4.0, 5.4, 0.14, 1.0], [5.4, 6.3, -0.1, 1.1], [10.5, 8.5, 0.05, 0.9]]) {
-        const g = new THREE.Group(); g.position.set(x, 0, z); g.rotation.z = lean; g.scale.setScalar(s); P1.add(g);
-        cylAt(g, 0.13, 0.22, 6.0, palmTrunk, 0, 3.0, 0, 8);
-        const crown = new THREE.Group(); crown.position.y = 6.0; g.add(crown);
-        for (let i = 0; i < 9; i++) {
-          const arm = new THREE.Group(); arm.rotation.y = i * (Math.PI * 2 / 9); crown.add(arm);
-          const f = new THREE.Mesh(frondGeo, frondMat); f.position.x = 1.25; f.rotation.z = -0.55 - (i % 2) * 0.2; f.rotation.x = 0.35; arm.add(f);
-        }
-        mesh(g, new THREE.SphereGeometry(0.22, 8, 6), std({ color: 0x6a5a30 }), 0, 5.9, 0);   // coconuts
-      }
-      treeAt(P1, -2.7, -0.8, 1.0, nf(leafMat, { color: new THREE.Color(2.2, 2.4, 2.0) }), nf(matDarkWood, { color: new THREE.Color(1.6, 1.6, 1.6) }), 2);   // the rain tree at the edge of frame, as before
+      /* v6.15: the trees along the path, and the one at the edge of frame.
+         Five stood as blob casuarinas and three as fanned coconut palms;
+         all nine spots are kept and planted from the kit instead, warm for
+         the low sun and fog-free like everything in this bubble. */
+      /* The nine spots MOVED with the models. The blob casuarinas and the
+         fanned palms they replace were thin verticals and could stand in
+         the sea view; a real tree's crown is about as wide as it is tall
+         (measured on the four: 1.22, 1.13, 0.53 and 0.73 of its height),
+         and at the old spots — five to nine metres in front of a lens that
+         looks +z at the water — they closed the sky over the whole shot.
+         So the park is planted along both BANKS and behind him, and the
+         window to the sea, the sun and the path is left open. */
+      treeStands.push(plantTrees(P1, [
+        [-11.0, 2.5, 8.2], [-13.5, -1.5, 7.4], [-9.0, -4.5, 6.8], [-7.5, 1.0, 7.0],
+        [11.5, 2.0, 8.6], [13.5, -2.0, 7.2], [9.5, -5.0, 6.6],
+        [-4.5, -7.5, 7.8], [4.0, -8.0, 7.6],
+      ].map(([x, z, h]) => ({ x, z, h })),
+        { seed: 21, fog: false, tint: new THREE.Color(1.30, 1.16, 0.94), roughness: 0.92 }));
       benchAt(P1, 3.4, 2.3, 0); benchAt(P1, -6.0, 2.5, 0);
       binAt(P1, 4.6, 2.7, std({ color: 0x2c6a3c, roughness: 0.8 }));
       const postMat = nf(matMetal, { color: new THREE.Color(0x8a8a8a) });
@@ -1201,10 +1156,13 @@
       boxAt(P3, 0.9, 0.14, 0.035, green, -6.6, 1.99, -0.9);
       mesh(P3, lampPostGeo, nf(matMetal, { color: new THREE.Color(0x9a9a9a) }), -5.6, 2.8, -1.4);   // out of the middle of the tracking shot
       mesh(P3, lampHeadGeo, nf(lampHeadMat, { emissiveIntensity: 0.2 }), -5.6, 5.7, -1.4);
-      // rain trees, wide and bright
-      const dayLeaf = std({ color: 0x4f8a34, roughness: 1, flatShading: true }), dayTrunk = std({ color: 0x5a4636, roughness: 0.9 });
-      for (const [x, z, s, seed] of [[-10.5, -3.5, 1.35, 1], [10.8, -6.2, 1.25, 2], [-8.2, 7.4, 1.2, 3], [9.4, 8.2, 1.3, 4], [-14.0, 1.5, 1.1, 5], [14.5, 2.0, 1.15, 6]])
-        treeAt(P3, x, z, s, dayLeaf, dayTrunk, seed);
+      /* rain trees, wide and bright (v6.15: the kit, in the noon white).
+         The two that stood closest to the tracking shot are pushed out
+         with them, for the reason pocket one's are: a real crown is as
+         wide as the tree is tall. */
+      treeStands.push(plantTrees(P3, [[-10.5, -3.5, 1.35], [10.8, -6.2, 1.25], [-12.5, 10.5, 1.2], [12.8, 10.0, 1.3], [-15.5, 1.5, 1.1], [15.5, 2.0, 1.15]]
+        .map(([x, z, s]) => ({ x, z, h: 6.6 * s })),
+        { seed: 31, fog: false, tint: new THREE.Color(1.22, 1.26, 1.10), roughness: 0.92 }));
       // two blocks with a void deck under them, at the back and the right; windows as a repeating storey
       const winCanvas = (() => { const s = 256, [c, ctx] = cnv(s);
         ctx.fillStyle = '#e8dcc4'; ctx.fillRect(0, 0, s, s);
@@ -1728,6 +1686,12 @@
        and disposes fifty times and watches renderer.info.                  */
     function dispose() {
       alive = false;
+      /* v6.15: the tree stands go FIRST. Their geometry and their sheets
+         belong to the engine's shared kit, and the sweep below disposes
+         every geometry, material and map it can reach — which would take
+         the kit down with this chapter and leave every later one bare. */
+      for (const g of treeStands) g.userData.disposeTrees?.();
+      treeStands.length = 0;
       const geos = new Set(), mats = new Set();
       world.traverse(o => {
         if (o.geometry) geos.add(o.geometry);

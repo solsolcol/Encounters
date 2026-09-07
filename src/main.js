@@ -101,6 +101,8 @@ const EMBED = {
   motheranim: '__MOTHERANIM_B64__',
   sitclap: '__SITCLAP_B64__', sitangry: '__SITANGRY_B64__',
   standman: '__STANDMAN_B64__',
+  tree1: '__TREE1_B64__', tree2: '__TREE2_B64__',        // v6.15: Chad's trees, the four kinds
+  tree3: '__TREE3_B64__', tree4: '__TREE4_B64__',
   young: '__YOUNG_B64__', teddy: '__TEDDY_B64__', leaf: '__LEAF_B64__', note5: '__NOTE5_B64__',   // v6.4: the prologue
   granny: '__GRANNY_B64__', sofa: '__SOFA_B64__',
   /* v5.29 — the three new seated kinds, the scolding granny at the brazier,
@@ -773,8 +775,124 @@ function loadImageTexture(name, mime = 'image/webp') {
     .catch(() => null);
 }
 
+/* ------------------------------------------------------------- THE TREES
+   v6.15. Chad supplied three tree models and asked for a mixture of them
+   "anywhere that has a tree in the game" — the void deck, both of chapter
+   1's memory places, and chapter 3's car park. There are FOUR kinds: the
+   low-poly file carries two trees (`tree4` and `tree6`), and tools/preptree.mjs
+   splits them.
+
+   The kit is the engine's, not a chapter's, for the same reason the ghost
+   is: every chapter plants from the same four. It is parsed ONCE per
+   session and shared — which is also what keeps leaktest honest, since a
+   cached kind uploads its geometry on the cycle it arrives and never
+   again.
+
+   Every kind is baked to one contract by the prep tool: Y-up, its trunk on
+   the origin, its base on y = 0 and exactly ONE METRE tall. So a chapter
+   plants a tree by saying where it stands and how tall it is, and the four
+   are interchangeable at every spot.
+
+   Each kind is drawn with an InstancedMesh per part (bark, leaves), so a
+   dozen trees cost two draw calls, not two dozen. The instance matrix
+   carries the part's own transform rather than the geometry being rebaked:
+   a quantized attribute is an integer array, and applying a matrix to one
+   corrupts it (the trap the prep tool's baking exists to avoid).         */
+const TREE_KINDS = ['tree1', 'tree2', 'tree3', 'tree4'];
+const TREE_LEAF_RE = /leaf|leaves|crown|branch|foliage/i;
+let treeKitP = null;
+function treeKit() {
+  if (treeKitP) return treeKitP;
+  treeKitP = Promise.all(TREE_KINDS.map(key =>
+    assetBytes(key, true)
+      .then(BUF => new Promise(res => {
+        new GLTFLoader().parse(BUF, '', (gltf) => {
+          rescueTextures(gltf, BUF);
+          const parts = [];
+          gltf.scene.updateMatrixWorld(true);
+          gltf.scene.traverse(o => {
+            if (!o.isMesh) return;
+            parts.push({ geo: o.geometry, mat: o.material, m: o.matrixWorld.clone(),
+                         leaf: TREE_LEAF_RE.test((o.material && o.material.name) || o.name || '') });
+          });
+          res(parts.length ? parts : null);
+        }, () => res(null));
+      }))
+      .catch(() => null)));
+  return treeKitP;
+}
+/* A chapter plants a stand of trees: the group comes back EMPTY and fills
+   itself when the bytes land, so a chapter never waits on a skyline. Spots
+   are { x, z, h } (h in metres, the tree's own height) and everything else
+   — which of the four, how far it is turned, how far it leans, a little
+   height either way — is dealt from `seed`, so the same stand comes out the
+   same way every run and a render is comparable with yesterday's.
+
+   `tint` multiplies the model's own colour (a night void deck and a car
+   park at ten in the morning want very different trees out of one asset),
+   `fog` false takes a stand out of the world's fog, which is what chapter
+   1's memory bubbles need.                                                */
+function plantTrees(parent, spots, opts = {}) {
+  const group = new THREE.Group();
+  group.name = 'trees';
+  parent.add(group);
+  let dead = false;
+  const owned = [];
+  group.userData.disposeTrees = () => {
+    dead = true;
+    for (const m of owned) m.dispose();      // the CLONED materials only: every map belongs to the shared kit
+    owned.length = 0;
+    group.clear();
+  };
+  const seed = opts.seed === undefined ? 1 : opts.seed;
+  treeKit().then(kinds => {
+    if (dead || !kinds) return;
+    const live = kinds.map((k, i) => k && i).filter(i => i !== false && kinds[i]);
+    if (!live.length) return;
+    const tint = opts.tint ? new THREE.Color(opts.tint) : null;
+    const rnd = (i, salt) => {            // one deterministic stream per spot
+      const x = Math.sin((i + 1) * 12.9898 + seed * 78.233 + salt * 43.758) * 43758.5453;
+      return x - Math.floor(x);
+    };
+    const byKind = new Map();
+    spots.forEach((sp, i) => {
+      const k = sp.kind !== undefined ? live[sp.kind % live.length] : live[(i + ((rnd(i, 3) * live.length) | 0)) % live.length];
+      if (!byKind.has(k)) byKind.set(k, []);
+      byKind.get(k).push({ sp, i });
+    });
+    const M = new THREE.Matrix4(), R = new THREE.Matrix4(), q = new THREE.Quaternion(),
+          e = new THREE.Euler(), pv = new THREE.Vector3(), sv = new THREE.Vector3();
+    for (const [k, list] of byKind) {
+      const parts = kinds[k];
+      for (const part of parts) {
+        const mat = part.mat.clone();
+        mat.fog = opts.fog !== false;
+        if (tint) mat.color = mat.color ? mat.color.clone().multiply(tint) : tint.clone();
+        if (opts.roughness !== undefined) mat.roughness = opts.roughness;
+        if (part.leaf) { mat.side = THREE.DoubleSide; if (!(mat.alphaTest > 0)) mat.alphaTest = 0.45; mat.transparent = false; mat.depthWrite = true; }
+        owned.push(mat);
+        const im = new THREE.InstancedMesh(part.geo, mat, list.length);
+        im.frustumCulled = false;          // a tree's own box is a metre tall until the instance matrix scales it
+        im.castShadow = !!opts.shadow && !LOW;
+        im.receiveShadow = false;
+        list.forEach(({ sp, i }, n) => {
+          const h = sp.h * (0.88 + rnd(i, 1) * 0.30);
+          e.set((rnd(i, 4) - 0.5) * 0.06, sp.ry === undefined ? rnd(i, 2) * Math.PI * 2 : sp.ry, (rnd(i, 5) - 0.5) * 0.06);
+          q.setFromEuler(e);
+          M.compose(pv.set(sp.x, sp.y || 0, sp.z), q, sv.set(h, h, h));
+          im.setMatrixAt(n, R.multiplyMatrices(M, part.m));
+        });
+        im.instanceMatrix.needsUpdate = true;
+        group.add(im);
+      }
+    }
+  }).catch(() => {});
+  return group;
+}
+
 const CHCTX = {
   THREE, GLTFLoader, cloneSkinned, scene, camera, yaw, LOW,
+  plantTrees,                      // v6.15: a stand of Chad's trees, mixed and dealt from a seed
   assetBytes, rescueTextures, redoShadows, loadImageTexture,
   cnv, makeSoftDot, makeGround, makeGrass, makeConcrete, makeLacquer, makeHellNote,
   getState: () => state,           // `state` is declared below; read at call time
