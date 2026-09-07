@@ -1388,7 +1388,40 @@ What the baseline contains, by release:
   ~15 dB over the sea. Read at twenty frames a second across the dip on
   both crops; the later pockets re-compared frame against frame (36.8 /
   39.1 dB). No word moved; sheet v39 stands.
- *"i'm still
+- **v6.15** REAL TREES EVERYWHERE — Chad, with three Sketchfab models:
+  "every single possible instance of trees in the game should be replaced by
+  a mixture of these 3 trees ... i dont want to see any old generated ugly
+  trees anymore in the game, anywhere." Every tree in the game was a puffed
+  icosahedron on a cylinder, written in code because there was no model to
+  use; all 41 are gone — chapter 1's twelve at the void deck, the East Coast
+  memory's casuarinas and palms, the playground's six, and chapter 3's
+  fourteen instanced blobs in the car park (chapters 2, 4 and 5 have none: a
+  bedroom and a flat). The three files give FOUR kinds, because the low-poly
+  one carries two trees; 11.8 MB of source to 1.36 MB shipped, 1.9k-12.8k
+  triangles each. One engine seam, `plantTrees(parent, spots, opts)`: the kit
+  is parsed ONCE per session and shared by every stand, a stand is one
+  InstancedMesh per (kind, part) with the mesh's own matrix folded into each
+  instance, and kind, turn, lean and height are dealt from a deterministic
+  per-spot stream so a forest is varied but reproducible (four stands, four
+  seeds). A stand takes `tint` (the same asset serves midnight, an East Coast
+  evening, a playground at noon and ten in the morning), `fog: false` for the
+  memory bubbles that stand outside the world's fog, `shadow` and
+  `roughness`; `disposeTrees()` frees the CLONED MATERIALS ONLY and must run
+  BEFORE a chapter's own geometry sweep, or the sweep walks into the shared
+  kit. `tools/preptree.mjs` is the recipe (metalRough for the two
+  specular-glossiness files, base colour only, leaves as MASK cutouts, then
+  baked Y-up with the trunk on the origin, base at y = 0 and height 1.0
+  before quantization). **The up axis is MEASURED, not assumed** — the first
+  pass looked bad (Chad: "why the trees look so bad?") because `flatten()`
+  had already left some files Y-up and a blind Z-up remap tipped those over
+  and normalised by the wrong span: a 7.9 m tree with a 19.2 m crown. Now the
+  outermost twelfth of each axis end is scored by mean radial distance and
+  the thinnest is the base of the trunk; crowns come out 0.56-1.03 x their
+  own height. The old spots were laid out for small blobs, so pocket one's
+  park is replanted along both banks (the window to the sea and the sun stays
+  open) and the playground's nearest two are pushed out. Three credit rows;
+  sheet v40. docs/V6.15-TREES.md is the build's memory.
+- **v5.28** AARON — Chad, after two rounds of level work on River: *"i'm still
   not satisfied with this voice."* All 79 of the boy's takes regenerated in a
   THIRD voice (Aaron, `B6uUx2p7cRgxseOUyP6P`), under an approved prompt sheet
   that survived four rounds of his correction: the registry's words exactly, no

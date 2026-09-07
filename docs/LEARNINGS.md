@@ -2434,3 +2434,54 @@ nowhere else), and keep the cue for a scene-by-scene trim. And when you
 raise anything in this mix, add up the peaks first: file peak x row x cue,
 summed across everything playing, must stay under 1.0 — nothing downstream
 limits it.
+
+## A model's up axis is measured from its trunk, not assumed (v6.15)
+
+Chad's three tree models all arrive Z-up out of their FBX, so the prep tool
+remapped Z-up to Y-up. It shipped trees lying on their side with crowns two
+and a half times their own height, and Chad asked "why the trees look so
+bad?" — the honest answer being that nothing had checked. `flatten()` runs
+BEFORE the remap and bakes whatever corrective rotation the Sketchfab
+wrapper carried, so some files come out of it **already Y-up**; remapping
+those tips them over, and then normalising to "height 1.0" divides by the
+wrong span, which is where a 7.9 m tree got a 19.2 m crown.
+
+So the axis is found from the model itself. A tree is the easy case, and
+the measure generalises to anything with a thin end: for each of the three
+axes and each of the two directions, take the outermost twelfth of the
+vertices and score them by mean distance from that axis, divided by the
+span. The smallest of the six is the base of the trunk, and up is away from
+it. The tool prints the axis it chose and the resulting crown-to-height
+ratio, so a bad bake is caught in the console before anything is rendered.
+Same family as the arms rig (v3.8) and the mother (v4.7): **never trust a
+bought file's orientation, units or bind pose — measure the thing you are
+about to place.**
+
+## A shared asset kit must be disposed before the chapter's own sweep (v6.15)
+
+`plantTrees` hands a chapter a group of InstancedMeshes whose GEOMETRY and
+TEXTURES belong to a kit parsed once per session and shared by every
+chapter. A chapter's `dispose()` ends with a sweep that walks its world and
+disposes every geometry and material it finds — which, run over a stand,
+takes the shared kit's maps out from under the next chapter (the trees
+render black or vanish on the second visit, and only on the second visit,
+which is exactly the bug `leaktest` was written to catch and a screenshot
+never would). The contract is: the kit's own `disposeTrees()` frees the
+CLONED materials only, clears the group so the sweep finds nothing, and a
+chapter calls it FIRST, before its sweep. Anything shared across chapters
+needs the same shape — an owner that knows what is borrowed and what is its
+own.
+
+## A real crown is as wide as the tree is tall (v6.15)
+
+The tree spots in chapter 1's memories were placed when a tree was a puffed
+icosahedron about a third as wide as it was high. Chad's models measure
+0.56-1.03 crown-to-height, so dropping them on the same spots closed the
+sky over both shots — the East Coast pocket lost the sea, the sun and the
+path it was built around. Placements are made against the thing that was
+there, so when the thing changes size, the placement is part of the change:
+the park is replanted along both banks and behind the camera, and the
+playground's two nearest are pushed out. Cousin of v5.05's law (when a new
+thing is placed among existing things, the measure that matters is the one
+the existing things used) — here it is the SET that has to move, not the
+model.
