@@ -2419,3 +2419,18 @@ Measured after: 0.000 mm of hand movement across four seconds, and the
 camera's step per tenth of a second a smooth 0.14 -> 1.45 -> 0.20 mm, which
 is the push-in and nothing else. Any shot framed off a bone wants a parked
 pose unless the motion is the point.
+
+## A cue's volume multiplies the sound's own row (v6.14)
+
+`sfx(at, kind, vol)` reaches `sting(kind, vol)`, which plays
+`snd(STING_SAMPLE[kind][0], STING_SAMPLE[kind][1] * vol)`. The number a
+scene writes is therefore a TRIM on the row's level, not the level itself,
+and a sound whose row is 0.55 is at 0.47 when a scene asks for 0.85.
+Chapter 1's memory theme was raised at v6.13 from 0.55 to 0.85 in the cue
+and Chad still heard it as too soft — correctly: it had gone from 0.30 to
+0.47, when the row alone would have been 0.55. Decide the level in the row
+when the sound belongs to one place (the theme is cued by chapter 1 and
+nowhere else), and keep the cue for a scene-by-scene trim. And when you
+raise anything in this mix, add up the peaks first: file peak x row x cue,
+summed across everything playing, must stay under 1.0 — nothing downstream
+limits it.

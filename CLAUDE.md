@@ -1369,6 +1369,25 @@ What the baseline contains, by release:
   sea instead of ~10. The three later pockets were re-checked frame against
   frame (38.4 / 28.9 / 38.4 dB). No word moved; sheet v39 stands.
   docs/V6.13-THE-CUT.md.
+- **v6.14** THE DIP, AND THE THEME AT ITS FULL LEVEL — Chad, on v6.13:
+  "the immediate cut to the palm is rather abrupt, why not do a fade, or
+  zoom ease in to the palm or something. Opening theme is still too soft."
+  THE CUT dips through black now instead of slamming: the wide holds his
+  hand on the leaf while the light goes out over 0.17 s, the change is made
+  IN THE DARK at 10.02 (the leaf into the palm, the take parked, the wrist
+  already turned, the macro's lens), and the palm comes up over 0.44 s onto
+  the macro's own eased push-in — about half a second end to end, with
+  `leafpick` firing on the touch so the ear has the pick-up while the eye
+  is between shots. THE THEME was quiet for a reason worth writing down:
+  **a cue's number MULTIPLIES the sound's row in `STING_SAMPLE`**, so
+  v6.13's `sfx(0.7, 'memtheme', 0.85)` came out at 0.55 x 0.85 = 0.47 —
+  under half the theme's nominal level, which is why raising the cue alone
+  barely moved it. The row is 0.95 and the cue is 1 now: +6.2 dB on v6.13,
+  +10 dB on v6.12, the peaks still summing to 0.88 of full scale (memtheme
+  0.642 + ecpamb 0.191 + memday 0.045) so nothing clips, and the theme
+  ~15 dB over the sea. Read at twenty frames a second across the dip on
+  both crops; the later pockets re-compared frame against frame (36.8 /
+  39.1 dB). No word moved; sheet v39 stands.
  *"i'm still
   not satisfied with this voice."* All 79 of the boy's takes regenerated in a
   THIRD voice (Aaron, `B6uUx2p7cRgxseOUyP6P`), under an approved prompt sheet
