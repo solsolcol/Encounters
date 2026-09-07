@@ -1242,6 +1242,30 @@ What the baseline contains, by release:
   size (a 0.09 S ellipse was 32° of sky); pocket one fades by 13.7 so the
   fingertip shot never slides under his shirt; the three reactions at −9 dB.
   No word moved, no sheet; sheet v38 stands. docs/V6.8-THE-FACE.md.
+- **v6.9** THE NECK — Chad, on v6.8: "the head stays fixed and tracked on
+  the object from before picking it up all the way till he picked it up
+  ... his neck is bent and fixed in a static awkward position as his body
+  moves ... the initial position should be the neutral and default one,
+  and slowly change to the final position." Measured ten times a second
+  (`dbg-headtrack`, the clip's own head against the film's): in all three
+  approaches the head was pinned at the 72° clamp — 1.6 s while the body
+  bent under it to the leaf, 1.2 s of walking to the bear, a second of
+  stoop to the five — up to 105° off the neck's rest, on 0.3–0.8 s ramps.
+  Now a look starts on the clip's own head and eases onto the thing on a
+  smoothstep over 1.3–2.0 s (`lookAt` takes `{ ramp, w0, w1, cone }`), and
+  a NECK CONE of 46° about the head's bind rotation in the neck's frame
+  (`boyLook.cone`, `restQ` from the bind matrices) keeps the head on the
+  body until the bend brings the thing within a neck's reach; the hand
+  looks start at full weight on the same point, so nothing jumps; the
+  pass (scene four, "perfect now") is untouched — the cone is off there.
+  The three pick-up reactions are re-voiced as WHISPERS to himself (Aaron,
+  `[whispers]`, chosen by a voicing measure and spectrograms since there is
+  no ear here) and go ROUND the voice bus (`WHISPER_TAKES`, a plain gain
+  onto the same stage): a whisper through a 4:1 compressor with +10.9 dB in
+  front comes out nearly as loud as speech, which is why v6.8's −9 dB was
+  barely heard. Measured through a replica of the chain: narration
+  −12.7 dBFS RMS, the whispers −26 to −28.5. Three `secs` moved; sheet v39.
+  docs/V6.9-THE-NECK.md.
  *"i'm still
   not satisfied with this voice."* All 79 of the boy's takes regenerated in a
   THIRD voice (Aaron, `B6uUx2p7cRgxseOUyP6P`), under an approved prompt sheet

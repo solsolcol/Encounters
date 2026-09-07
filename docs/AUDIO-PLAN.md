@@ -745,3 +745,49 @@ Reused: `memday`, `memwash`, `leafpick`, `toypick`, `take`, `noteslow`,
 `strings`, `dread`, `boom`, `step`. Also new this release, engine-side:
 `vfaint` gets a `STING_SAMPLE` row because the faint SCENE cues it now
 (`lose()` no longer speaks it — see CLAUDE.md v6.6).
+
+## v6.9 — the three reactions re-voiced as whispers, round the bus
+
+Chad: *"his pick up reactions voice should be even softer, like almost
+whispering to himself excitedly."* Same three words each; performed again
+as whispers (Aaron, eleven_v3). Flows `a8b1lEckjM71cSwwg28Z` /
+`Jop4nqO8EoxPrnYKbDX9` / `82cdFKYKCiuwJ0ODMSMo` (two takes each,
+`[whispers][excited]`), then `Obq5cdSyMxkErPmIzOH1` / `GmOqbh0mEWlOHTMDj9jm`
+(four each, `[whispers]`) and `T8rON1Dl5UXnoANTT66t` (four, `[whispers
+softly]`) when the first two lines came back voiced. Masters and
+`encode.mjs` in `masters/v6.9/`, contract as v6.6's, peak-matched to
+`vpile`.
+
+**Chosen by measurement, since there is no ear here:** a voicing count
+(frames with a periodic autocorrelation peak at 80–400 Hz over the speech
+frames; `voicing.py` in the scratchpad) across every take, and the
+spectrograms read for harmonic striations (voiced) against noise bands
+(whispered). Aaron's whisper is a stage whisper — some voice stays on the
+vowels — so the least voiced take per line won:
+
+| id | take | tag | voiced / strongly | secs (was) |
+|---|---|---|---|---|
+| `vpick1` | f | `[whispers]` | 0.26 / 0.15 | 1.96 (2.35) |
+| `vpick2` | c | `[whispers]` | 0.38 / 0.28 | 1.80 (1.72) |
+| `vpick3` | b | `[whispers][excited]` | 0.30 / 0.03 | 1.65 (2.27) |
+
+**They go ROUND the bus.** v6.8 cut the cue volume to 0.35 and Chad still
+heard them loud: the bus (+10.9 dB into a 4:1 compressor and a limiter)
+gives most of an input cut back, and would make a whisper speech-loud.
+`WHISPER_TAKES` in main.js sends these three through a plain gain
+(`WHISPER_GAIN` 0.55) onto the voice stage — mute-able, never ducked,
+ducking the beds like any voice, no compression. Measured through a
+replica of the chain in an OfflineAudioContext (`dbg-whisperbus`):
+
+| | active RMS dBFS |
+|---|---|
+| `vpro2` through the bus (his narration) | −12.7 |
+| `vpile` through the bus | −15.0 |
+| `vpick1` through the bus (what v6.8 would have done at vol 1) | −14.8 |
+| `vpick1` / `vpick2` / `vpick3` through the whisper stage | −28.5 / −25.7 / −26.7 |
+
+Eleven to sixteen decibels under him: a boy whispering to himself beside
+a narrator. The cue rows are back at vol 1; the level lives in the stage.
+The cue times did not move (10.8 / 22.1 / 33.8); every take is shorter
+than the one it replaces except `vpick2` (+0.08 s), and the next line
+after each is seconds away.

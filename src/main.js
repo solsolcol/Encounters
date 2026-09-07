@@ -2438,8 +2438,31 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
   'v3aunt1', 'v3aunt2', 'v3aunt3', 'v3aunt4', 'v3aunt5',
   't5note', 't5teachA', 't5hallA', 't5fearB', 't5disC', 't5learnD1', 't5learnD2']);
 const isVoice = name => JAMES_TAKES.has(name) || CAST_TAKES.has(name);
-// where a sound belongs: his bus, the cast's stage, or the ducked pack
+/* v6.9: his WHISPERS go round the bus. Chad wanted the three pick-up
+   reactions "almost whispering to himself" and they were re-voiced as
+   whispers — but a whisper pushed through a 4:1 compressor with +10.9 dB
+   in front of it comes out nearly as loud as speech (that is what a
+   compressor is for): v6.8 cut the cue volume by 9 dB and the bus gave
+   most of it back. So these few take a plain gain onto the same stage the
+   bus lands on — mute-able, never ducked, ducking the beds like any
+   voice — and keep the dynamics they were performed with. They stay in
+   JAMES_TAKES (the registry's truth) and only the OUTPUT differs. */
+const WHISPER_TAKES = new Set(['vpick1', 'vpick2', 'vpick3']);
+const WHISPER_GAIN = 0.55;           // -5.2 dB: through a replica of the chain (dbg-whisperbus) his narration sits at -12.7 dBFS RMS, the whispers at -26 to -28.5 — 11 to 16 dB under him
+let whisperOut = null;
+function whisperStage() {
+  if (!actx) return null;
+  const out = voiceStage();
+  if (!whisperOut && out) {
+    whisperOut = actx.createGain();
+    whisperOut.gain.value = WHISPER_GAIN;
+    whisperOut.connect(out);
+  }
+  return whisperOut;
+}
+// where a sound belongs: his bus, his whispers' stage, the cast's stage, or the ducked pack
 function outFor(name) {
+  if (WHISPER_TAKES.has(name)) return whisperStage() || packGain;
   if (JAMES_TAKES.has(name)) return voiceBus() || packGain;
   if (CAST_TAKES.has(name)) return voiceStage() || packGain;
   return packGain;
@@ -4180,7 +4203,7 @@ const STING_SAMPLE = {
      (40 s, eleven_music_v2, handed to the dread bed on the line that
      turns) and a bed per memory: the sea at East Coast, a stairwell at
      night, a playground by day. All ch1's by the split. */
-  vpick1: ['vpick1', 0.35], vpick2: ['vpick2', 0.35], vpick3: ['vpick3', 0.35],   // v6.8: -9 dB into the bus — "so loud" (Chad) beside the beds
+  vpick1: ['vpick1', 1], vpick2: ['vpick2', 1], vpick3: ['vpick3', 1],   // v6.9: whispered takes on their own quiet stage (WHISPER_TAKES) — the level lives there, not here
   memtheme: ['memtheme', 0.55],    // the memory theme, under the three memories
   ecpamb: ['ecpamb', 0.8],         // waves and a sea breeze at East Coast Park
   stairamb: ['stairamb', 0.8],     // a fluorescent tube and a hollow stairwell

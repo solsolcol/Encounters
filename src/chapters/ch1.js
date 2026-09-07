@@ -1390,9 +1390,18 @@
        (Chad, v6.7: "head tracking totally broken"). `face` is forward in
        the bone's own frame, R_bind^T (0,0,1); `down`/`up`/`side` are the
        neck's range in radians, wide enough downward to look at his feet. */
-    const boyLook = { target: null, w: 0, x: 0, y: 0, k: 0, face: new THREE.Vector3(0.011, 0.506, 0.862).normalize(), down: 1.25, up: 0.30, side: 1.2 };
+    /* v6.9: `cone` is the NECK's range about its rest pose, in the parent
+       bone's frame — the head may not turn further from the neck than a
+       neck allows, however far the target is; a look set on a leaf at his
+       feet while he still stands turns the head as far as a neck goes, and
+       the rest of the way comes from the body bending (Chad: "his neck is
+       bent and fixed in a static awkward position as his body moves").
+       Infinity is off (the pass keeps v6.8's head exactly). `restQ` is the
+       head's bind rotation relative to its parent; `mute` is for probes. */
+    const boyLook = { target: null, w: 0, x: 0, y: 0, k: 0, face: new THREE.Vector3(0.011, 0.506, 0.862).normalize(), down: 1.25, up: 0.30, side: 1.2,
+                      cone: Infinity, restQ: null, mute: false, bent: 0 };
     const _lh = new THREE.Vector3(), _ld = new THREE.Vector3(), _lm = new THREE.Matrix4(), _lq = new THREE.Quaternion(), _lpq = new THREE.Quaternion();
-    const _qfix = new THREE.Quaternion(), _fz = new THREE.Vector3(0, 0, 1);
+    const _qfix = new THREE.Quaternion(), _fz = new THREE.Vector3(0, 0, 1), _lc = new THREE.Quaternion();
     const LOOK_UP = new THREE.Vector3(0, 1, 0);
     /* v6.6: the look is ABSOLUTE. v6.4 added a yaw on top of the clip's and
        drove the pitch to a target, and it held only while the take kept the
@@ -1407,7 +1416,7 @@
     function boyLookApply() {
       if (!boyHead) return;
       const T = boyLook.target;
-      if (!T) { boyLook.k = 0; boyLook.x = boyLook.y = 0; return; }   // a cut releases the head outright
+      if (!T || boyLook.mute) { boyLook.k = 0; boyLook.x = boyLook.y = 0; boyLook.bent = 0; return; }   // a cut releases the head outright
       /* the weight is the TRACK's, ramped by cine time in lookAt() and the
          pass — not eased here by the wall clock, so a seek lands on the
          same head as playback (v6.4's rule for the whole actor) */
@@ -1429,6 +1438,15 @@
       _lq.multiply(_qfix);
       boyHead.parent.getWorldQuaternion(_lpq);
       _lq.premultiply(_lpq.invert());                 // world aim -> the bone's local frame
+      /* v6.9: the neck's cone — the aim, now in the neck's own frame, may
+         sit no further than `cone` from the head's rest rotation; beyond
+         it the head goes as far as the cone and stops there */
+      boyLook.bent = 0;
+      if (boyLook.restQ && isFinite(boyLook.cone)) {
+        const ang = boyLook.restQ.angleTo(_lq);
+        boyLook.bent = ang;
+        if (ang > boyLook.cone) { _lc.copy(boyLook.restQ).slerp(_lq, boyLook.cone / ang); _lq.copy(_lc); }
+      }
       boyHead.quaternion.slerp(_lq, boyLook.k);
     }
     /* park `a` at time ta (and `b` at tb, blended by k); everything else off */
@@ -1479,8 +1497,9 @@
       }
       g.updateMatrixWorld(true);
       const v = new THREE.Vector3();
-      let toe = Infinity, head = -Infinity;
+      let toe = Infinity, head = -Infinity, skinned = null;
       g.traverse(o => {
+        if (o.isSkinnedMesh && !skinned) skinned = o;
         if (!o.isBone) return;
         o.getWorldPosition(v);
         if (/Toe|Foot/.test(o.name)) toe = Math.min(toe, v.y);
@@ -1488,6 +1507,17 @@
         if (/RightHand$/.test(o.name) && !boyHand) boyHand = o;
         if (/Foot$|ToeBase$/.test(o.name)) boyFeet.push(o);
       });
+      /* v6.9: the head's REST rotation relative to its parent, from the bind
+         matrices (the same source as `face`): neck_bind^-1 * head_bind */
+      if (skinned && boyHead && boyHead.parent && boyHead.parent.isBone) {
+        const sk = skinned.skeleton, hi = sk.bones.indexOf(boyHead), ni = sk.bones.indexOf(boyHead.parent);
+        if (hi >= 0 && ni >= 0) {
+          const m = new THREE.Matrix4().copy(sk.boneInverses[ni]).multiply(new THREE.Matrix4().copy(sk.boneInverses[hi]).invert());
+          const pos = new THREE.Vector3(), sc = new THREE.Vector3();
+          boyLook.restQ = new THREE.Quaternion();
+          m.decompose(pos, boyLook.restQ, sc);
+        }
+      }
       boyG = g;
       if (isFinite(toe) && head > toe) {
         boyS = BOY_H / (head - toe);
@@ -1525,7 +1555,7 @@
       flyNote.visible = false;
       leafHand.visible = bearHand.visible = noteHand.visible = false;
       leafGround.visible = bearGround.visible = noteGround.visible = true;
-      boyLook.target = null; boyLook.w = 0; boyLook.x = boyLook.y = 0;
+      boyLook.target = null; boyLook.w = 0; boyLook.x = boyLook.y = 0; boyLook.cone = Infinity;
       slowMo = 1;
       boy.position.set(0, 0, 17); boy.rotation.y = Math.PI;
     }
@@ -2079,19 +2109,38 @@ function scChant(c, s, api) {                        /* D — palms together */
        a look at a point, or at his own right hand once the thing is in it,
        ramped in; cleared at every cut */
     const _lk = new THREE.Vector3();
-    const lookAt = (t0, t1, get, ramp = 0.6) => tr(t0, t1, (k, t) => {
-      /* a track HOLDS after its end (the engine's rule), and two held looks
-         would fight every frame in registration order — measured: at the pass
-         he looked at his own hand, at the bear he looked at the floor. A look
-         therefore writes only while it runs; the last one written stands
-         until the next, or until a cut's lookOff() */
-      if (t > t1) return;
-      const T = get(); if (!T) return;
-      _lk.set(T.x, T.y, T.z); stage.boyLook.target = _lk;
-      stage.boyLook.w = Math.min(1, Math.max(0, (t - t0) / ramp));
-    }, rawK);
+    /* v6.9: `o` is a ramp in seconds (the old form) or { ramp, w0, w1, cone,
+       ease }: the weight goes from w0 (the clip's own head) to w1 over ramp
+       seconds on a smoothstep — a look that starts with the head already
+       on the thing, and holds it there while the body bends, is the locked
+       neck Chad saw — and `cone` is the neck's range for this look (rad) */
+    const lookAt = (t0, t1, get, o = 0.6) => {
+      const op = typeof o === 'number' ? { ramp: o } : o;
+      const ramp = op.ramp === undefined ? 0.6 : op.ramp, w0 = op.w0 || 0, w1 = op.w1 === undefined ? 1 : op.w1;
+      /* the cone may RAMP too (cone0 -> cone1 over the same seconds): a hand
+         look that follows a cone-limited approach would otherwise let the
+         neck go from 46° to 100° in one frame at the grab (measured) —
+         widened over the lift instead, the head is never seen to snap */
+      const cone1 = op.cone1 !== undefined ? op.cone1 : (op.cone === undefined ? Infinity : op.cone);
+      const cone0 = op.cone0 !== undefined ? op.cone0 : cone1, ease = op.ease || smoothK;
+      const c1 = isFinite(cone1) ? cone1 : Math.PI;
+      return tr(t0, t1, (k, t) => {
+        /* a track HOLDS after its end (the engine's rule), and two held looks
+           would fight every frame in registration order — measured: at the pass
+           he looked at his own hand, at the bear he looked at the floor. A look
+           therefore writes only while it runs; the last one written stands
+           until the next, or until a cut's lookOff() */
+        if (t > t1) return;
+        const T = get(); if (!T) return;
+        _lk.set(T.x, T.y, T.z); stage.boyLook.target = _lk;
+        const u = ramp > 0 ? Math.min(1, Math.max(0, (t - t0) / ramp)) : 1;
+        const e = ease(u);
+        stage.boyLook.w = w0 + (w1 - w0) * e;
+        stage.boyLook.cone = u >= 1 ? cone1 : cone0 + (c1 - cone0) * e;
+      }, rawK);
+    };
     const handPt = () => { const h = stage.boyHand(); if (!h) return null; h.getWorldPosition(_hw); return { x: _hw.x, y: _hw.y + 0.03, z: _hw.z }; };
-    const lookOff = () => { stage.boyLook.target = null; stage.boyLook.w = 0; stage.boyLook.x = stage.boyLook.y = 0; };
+    const lookOff = () => { stage.boyLook.target = null; stage.boyLook.w = 0; stage.boyLook.x = stage.boyLook.y = 0; stage.boyLook.cone = Infinity; };
     /* v6.6: a shot that looks INTO HIS PALM — the lens sits along the palm's
        normal (the bone's +z: a render along -z showed the knuckles), a little
        above it, aimed a few centimetres down the fingers, wherever the take
@@ -2165,8 +2214,15 @@ function scChant(c, s, api) {                        /* D — palms together */
     step(9.85, () => { stage.leafGround.visible = false; stage.leafHand.visible = true; });
     sfx(9.85, 'leafpick', 0.7);
     sfx(10.8, 'vpick1');                                // v6.6: "Ooh! Nice." — after vpro2 ends at 10.65
-    lookAt(7.6, 9.85, () => LEAF);                      // v6.6: his eyes on the leaf, then on his hand
-    lookAt(9.85, 13.2, handPt, 0.3);
+    /* v6.9: from the walk's own level head, his eyes go down to the leaf
+       over 1.8 s (w = 1 at 9.2) inside a 46° neck; the bend brings the
+       rest. Measured before: the head pinned at -71.6° from 8.2 while the
+       body bent under it from -10° to -72° (Chad: "neck bent and fixed in
+       a static awkward position as his body moves"). The hand look starts
+       at full weight on the same point the leaf look ended on — the hand IS
+       at the leaf at the grab — so nothing jumps. */
+    lookAt(7.4, 9.85, () => LEAF, { ramp: 1.8, cone: 0.8 });
+    lookAt(9.85, 13.2, handPt, { ramp: 1.4, w0: 1, cone0: 0.8, cone1: 1.4 });   // the neck widens 46° -> 80° as the hand comes up; the held-up pose (62-66° off rest) is v6.8's
     // 1b: low three-quarter from behind the leaf, looking up; then INTO HIS PALM as he lifts it (v6.6)
     shotHand(8.2, 10.6, at(0, 0.78, 0.40, -1.0), at(0, 0.56, 0.34, -0.72), { x: 0, y: 0.04, z: 0 }, smoothK);
     shotFingers(10.6, 14.0, 0.46, 0.36, 0.20, 0.16, -0.09, smoothK);   // the leaf hanging between the lens and his face, the sunset behind
@@ -2188,7 +2244,10 @@ function scChant(c, s, api) {                        /* D — palms together */
     fade(14.4, 15.2, 1, 0);
     take(14.2, 19.0, 'alert', 1.0, 0.4);                // is anyone watching
     sfx(15.4, 'vpro3');
-    lookAt(16.4, 19.0, () => BEAR, 0.8);                // v6.6: and then his eyes go to it
+    /* v6.9: the alert take's own look-around plays out (its head is back
+       to centre by 17.7); the look at the bear ramps over 1.3 s from 17.3
+       (w = 1 at 18.6), inside a 46° neck — the bear sits 33° below him */
+    lookAt(17.3, 19.0, () => BEAR, { ramp: 1.3, cone: 0.8 });
     // 2a: low, the bear large in the foreground, him small on the steps behind it
     shot(14.2, 19.0, at(1, -1.05, 0.22, -0.10), at(1, -0.85, 0.26, -0.22),
                      at(1, 0.9, 0.42, -1.45), at(1, 1.0, 0.48, -1.5), smoothK);
@@ -2204,8 +2263,14 @@ function scChant(c, s, api) {                        /* D — palms together */
     step(21.95, () => { stage.bearGround.visible = false; stage.bearHand.visible = true; });
     sfx(21.9, 'toypick', 0.7);
     sfx(22.1, 'vpick2');                                // v6.6: "Oh! Hello there."
-    lookAt(19.0, 21.95, () => BEAR, 0.4);               // v6.6: on the bear, then on the bear in his hand
-    lookAt(21.95, 24.8, handPt, 0.3);
+    /* v6.9: after the cut he walks to it looking down at it — three
+       quarters of a look, growing to a whole one by 20.6 as he bends — and
+       the 46° neck keeps the head on the body during the walk; the head is
+       never pinned at -72° while he still stands (measured: it was, from
+       20.1, with the neck 76° off its rest). The hand look, full weight
+       from the grab, is v6.8's exactly. */
+    lookAt(19.0, 21.95, () => BEAR, { ramp: 1.6, w0: 0.75, cone: 0.8 });
+    lookAt(21.95, 24.8, handPt, { ramp: 1.5, w0: 1, cone0: 0.8, cone1: 1.4 });   // as the leaf's: widened over the lift, v6.8's pose once the bear is up
     shot(19.0, 25.2, at(1, 0.9, 3.4, -0.5), at(1, -0.55, 1.35, 0.25),
                      at(1, 0.7, 0.0, -1.0), at(1, 0.55, 0.85, -0.85), smoothK);
 
@@ -2232,8 +2297,14 @@ function scChant(c, s, api) {                        /* D — palms together */
     blend(27.4, 27.7, 'walk', 0.5, 'walkpick', 0.0);
     take(27.7, 33.55, 'walkpick', 1.0, 0.0);            // the stoop at 27.7 + 5.75
     take(33.55, 38.4, 'walkpick', 0, 5.85);              // v6.6: PARKED a beat after the grab, the palm still up (measured: +z = (0.65, 0.71, -0.29)) — the note stays in his palm, not his pocket
-    lookAt(30.2, 33.45, () => NOTE5, 0.8);              // v6.6: he sees it coming
-    lookAt(33.45, 38.4, handPt, 0.4);
+    /* v6.9: the walk-pick take already carries its head down (-60°) on
+       the approach; the look brings its yaw round to the note over 2.0 s
+       from 30.6 (w = 1 at 32.6) inside the 46° neck, and the stoop from
+       ~32.5 lands the eyes on it. Measured before: the head pinned at
+       -71.6° from 32.5 with the neck 61° to 105° off its rest through the
+       stoop. The hand look is v6.8's exactly. */
+    lookAt(30.6, 33.45, () => NOTE5, { ramp: 2.0, cone: 0.8 });
+    lookAt(33.45, 38.4, handPt, { ramp: 1.0, w0: 1, cone0: 0.8, cone1: 2.0 });   // the palm macro from 33.7 never shows the head; the cone is out of the way by 34.45
     // 3a: a TRACKING shot along the kerb that finds the note; his feet arrive
     shot(25.6, 31.5, at(2, -3.0, 0.34, -1.55), at(2, 0.25, 0.30, -1.25),
                      at(2, -1.6, 0.16, -0.10), NOTE5, smoothK);

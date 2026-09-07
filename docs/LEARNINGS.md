@@ -2167,6 +2167,50 @@ matrix, not from how a pose looks; and prove an axis by putting the target
 ON THE CAMERA at full weight and photographing him — one of four candidates
 looked into the lens, and it was not +Z.
 
+## A look ramps in from the clip's head, and a neck has a cone (v6.9)
+
+A look set at full weight on a thing at his feet while he still stands
+pins the head at the pitch clamp, and then the BODY bends under a head
+that does not move — Chad's "neck bent and fixed in a static awkward
+position as his body moves". Measured ten times a second with the look
+muted and unmuted: the film's head sat at −71.6° for 1.6 s while the clip's
+own went from −10° to −72°, up to 105° off the neck's rest. Two rules. A
+look STARTS on the clip's own head (w0 = 0) and eases in on a smoothstep
+over 1.3–2.0 s — a 0.3 s ramp is a snap. And the aim is limited to a CONE
+about the head's rest rotation in the parent's frame (`restQ` from the
+bind matrices, `neck_bind^-1 * head_bind`), 46° here — inside the cone the
+head goes to the thing; outside it the head goes as far as a neck goes and
+the rest of the way comes from the torso, which is what a person does.
+The cone lives per look, so a shot that was already right (the pass) is
+left exactly as it was by leaving its cone off.
+
+## A whisper through a compressor is not quiet (v6.9)
+
+The pick-up reactions were cut by 9 dB at the cue (v6.8) and Chad still
+heard them loud, then asked for whispers. Both problems have the same
+cause: his lines run through a bus with +10.9 dB into a 4:1 compressor
+and a limiter, built (v5.26–v5.28) to make a soft read loud. Attenuate the
+input by 9 dB and the compressor gives back most of it; feed it a whisper
+and it makes the whisper speech-loud. Measured through a replica of the
+chain in an OfflineAudioContext: narration −12.7 dBFS RMS; the whispers
+through the bus −14 to −15; the same whispers round it, on a plain 0.55
+gain into the voice stage, −26 to −28.5. Quiet takes must bypass the
+loudness machinery — `WHISPER_TAKES` — and stay in `JAMES_TAKES` so the
+registry remains the one truth.
+
+## A whisper is judged by its spectrogram, not by its level (v6.9)
+
+Every generated take comes back normalised, so peak and RMS say nothing
+about whether the model whispered. A normalised-autocorrelation voicing
+count (frames with a periodic peak at 80–400 Hz) separated the takes only
+roughly — Aaron's whisper is a stage whisper that keeps voice on some
+vowels — and the low-band/high-band energy ratio did not separate them at
+all (a close whisper carries breath at low frequencies). What settled it
+was LOOKING: `showspectrumpic` shows harmonic striations on a voiced take
+and noise bands on a whispered one. Ten takes of one line were needed to
+get one that reads as a whisper; the tag `[whispers]` alone did better than
+`[whispers][excited]`.
+
 ## A rig without finger bones has a fixed pinch point (v6.8)
 
 The young master's hand is one rigid mesh in a spread claw — the rig has no

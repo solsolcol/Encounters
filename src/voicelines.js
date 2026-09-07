@@ -76,13 +76,15 @@
     { id: "vpro5", who: "james", ch: "ch1", where: "Opening film, over black, before the void deck at night",
       text: "This time however... this time was different.", secs: 3.47 },
     /* v6.6 — the small sounds he makes at each pick-up (Chad: "excited sounds,
-       exclamation, oooh, omg"). Wordless-ish, so the text is what is HEARD. */
+       exclamation, oooh, omg"). Wordless-ish, so the text is what is HEARD.
+       v6.9 — re-voiced as WHISPERS to himself (Chad: "almost whispering to
+       himself excitedly"); same words, on their own quiet stage in main.js. */
     { id: "vpick1", who: "james", ch: "ch1", where: "Opening film, as he picks up the leaf",
-      text: "Ooh! Nice.", secs: 2.35 },
+      text: "Ooh! Nice.", secs: 1.96 },
     { id: "vpick2", who: "james", ch: "ch1", where: "Opening film, as he picks up the bear",
-      text: "Oh! Hello there.", secs: 1.72 },
+      text: "Oh! Hello there.", secs: 1.80 },
     { id: "vpick3", who: "james", ch: "ch1", where: "Opening film, as he finds the five-dollar note",
-      text: "Wah! Five dollars!", secs: 2.27 },
+      text: "Wah! Five dollars!", secs: 1.65 },
     { id: "voice", who: "james", ch: "ch1", where: "A few seconds after chapter 1 begins",
       text: "Almost midnight... and this is the only way home.", secs: 3.97,
       note: "Its own file (assets/voice.mp3), not in the sound pack." },

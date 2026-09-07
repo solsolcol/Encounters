@@ -1,0 +1,32 @@
+[
+ {
+  "id": "vpick1",
+  "src": "masters/v6.9/vpick1-f.mp3",
+  "srcPeak": -4.4,
+  "gain": 1,
+  "peak": -3.9,
+  "rms": -25.9,
+  "secs": 1.96,
+  "kb": "31/14"
+ },
+ {
+  "id": "vpick2",
+  "src": "masters/v6.9/vpick2-c.mp3",
+  "srcPeak": -9.6,
+  "gain": 6.2,
+  "peak": -3.8,
+  "rms": -22.9,
+  "secs": 1.8,
+  "kb": "28/13"
+ },
+ {
+  "id": "vpick3",
+  "src": "masters/v6.9/vpick3-b.mp3",
+  "srcPeak": -1.7,
+  "gain": -1.7,
+  "peak": -3.9,
+  "rms": -23.4,
+  "secs": 1.65,
+  "kb": "26/13"
+ }
+]
