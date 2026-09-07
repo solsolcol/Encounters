@@ -1314,6 +1314,37 @@ What the baseline contains, by release:
   through the build silently, because esbuild bundles main.js only and the
   chapters are copied. Read at ten frames a second and on the phone crop.
   No engine seam, no word moved; sheet v39 stands. docs/V6.11-THE-WRIST.md.
+- **v6.12** THE PALM TURNED TO HIS FACE, AND THE MACRO — Chad, on v6.11:
+  "you actually need to rotate the arms inwards even more? Palm should be
+  facing his face ... he is staring at the back of his palm"; "just a
+  really close close up of his palm only. I said that before"; and "why
+  does the palm and arm angle subsequently affected the next few scenes
+  ... it stays fixed that way for subsequent scenes". Three notes, three
+  causes. THE ROLL stopped at the SKY: v6.11 chose its angle by maximising
+  how far UP the palm pointed (-2.04 rad, 0.97 up), and a palm facing the
+  sky, seen from the eyes above it, is still the back of a hand. Measured
+  against the line from his hand to his eyes (`dbg-palmface`, the head
+  bone + 11 cm), -2.04 scores 0.45 and the alignment climbs to the half
+  turn: **-3.02 rad, 0.87**, the palm 38° above horizontal, which is
+  exactly where his eyes are. THE CLOSE-UP is a MACRO now: the world's
+  lens is 72° WIDE with an 8 cm near plane, so pressing it close enough to
+  fill the frame put the leaf THROUGH that plane and sliced it away over
+  the shot (the nearest leaf vertex 0.089 m at 11.6 s, 0.067 by 13.6 — the
+  blade shrank to a sliver and vanished while the palm behind it stayed).
+  A narrow lens magnifies from a safe distance, the way a macro lens does:
+  **`api.lens` is the SIXTEENTH seam**, 50° -> 44° at 0.26 -> 0.22 m, and
+  `cineEnd()` hands `CAM_FOV` back on a natural end AND on a skip, so a
+  cutscene can never leave the world zoomed. AND THE LEAK into scenes 2-4
+  was real, and is one law twice: **`cineSeek` applies EVERY track whose
+  t0 has passed on EVERY frame, clamped to k = 1** — v5.07's held glide
+  again — so the wrist kept re-asserting its turn for the rest of the
+  film, one frame after the reset at pocket two; and then the new `lens`
+  track did the same thing one shot later. Both now state when they stop
+  (`palmUp(t0, t1, hold)`, and a second `lens` track at the cut). A plain
+  "stop writing past t1" was tried first and is worse: under a SEEK the
+  ramp never runs at all (measured, k = 0). Verified by rendering 15.5,
+  19.0 and 31.0 against the frames from before this work — same sets, same
+  poses, 30-38 dB. No word moved; sheet v39 stands. docs/V6.12-THE-MACRO.md.
  *"i'm still
   not satisfied with this voice."* All 79 of the boy's takes regenerated in a
   THIRD voice (Aaron, `B6uUx2p7cRgxseOUyP6P`), under an approved prompt sheet

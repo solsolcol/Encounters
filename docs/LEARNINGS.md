@@ -2356,3 +2356,51 @@ a patch step that fed node a negative number as a flag) went through
 "wrote dist/" without a word, and only a harness would have caught it. The
 build script now runs `node --check` over every chapter file before
 esbuild; a broken chapter stops it with the line number.
+
+## Every cutscene track holds its end value for the whole film (v5.07, v6.11, v6.12)
+
+`cineSeek` walks every track whose `t0` has passed and calls it with `k`
+clamped to 1 — every frame, to the end of the film. A track is therefore
+not "a thing that happens between t0 and t1"; it is "a thing that happens
+and then keeps being true". v5.07 met this as a held glide. v6.11 met it
+again: the wrist's turn kept re-asserting itself after the reset at pocket
+two and rode through the bear, the five and the present (Chad felt it
+before it was measured: "why does the palm and arm angle subsequently
+affected the next few scenes"). v6.12 met it a THIRD time, inside the fix
+for the second — a new `lens` track held 44° for the rest of the film and
+every later pocket rendered zoomed.
+
+The fix that does NOT work is `if (t > t1) return`: right during playback,
+wrong under a seek, because a seek lands past the window having never run
+the ramp, so the value stays at its start (measured: k = 0 at 11.4 with
+the turn supposedly finished). What works is an explicit hold — ramp to
+`t1`, hold to `hold`, write nothing after — or a second, later track that
+sets the value back, which is the convention `take` already uses. And the
+cheap check that catches all of it: render a few frames from LATER in the
+film and compare them with the same frames from before the change
+(`ffmpeg -filter_complex psnr`). 12-20 dB means something moved; 30-38 dB
+is the render's own noise.
+
+## A macro is a longer lens, not a closer camera (v6.12)
+
+The world's camera is 72° with a near plane at 8 cm. Pushing it in until a
+hand fills the frame puts the subject through that plane: the leaf resting
+on the palm was sliced away over the shot (nearest vertex 0.089 m at
+11.6 s, 0.067 by 13.6 — the blade shrank to a sliver, then vanished, while
+the palm behind it stayed). It also stretches whatever it frames, because
+a 72° lens at 10 cm is a fisheye. `api.lens(t0, t1, from, to)` narrows the
+angle instead, from a distance that keeps everything well beyond the near
+plane. Two things make it safe: `cineEnd()` restores `CAM_FOV` on a
+natural end and on a skip alike (both exits pass through it), and
+`playCineFn` sets it at the start — so no cutscene can leave the world
+zoomed, even one the player interrupts.
+
+## The phone crop decides how tight a close-up can be (v6.12)
+
+The camera's 72° is VERTICAL, so a portrait phone is a centre crop about a
+third of a desktop frame's width (docs/AUDIT-2026-09.md, Part One). That
+fixes a trade in any close-up: the vertical extent is what both crops
+share, so composing for the phone sets the desktop framing too, and no
+combination of distance and focal length escapes it. Compose for the
+phone, which is what Chad plays on, and accept the surroundings a desktop
+frame shows around the subject.
