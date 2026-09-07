@@ -2281,7 +2281,7 @@ function scChant(c, s, api) {                        /* D — palms together */
     });
     // v6.6: the sea, the cicadas under it, and the memory's own theme
     sfx(0.4, 'ecpamb', 0.8); sfx(0.4, 'memday', 0.3);
-    sfx(0.7, 'memtheme', 0.55);
+    sfx(0.7, 'memtheme', 0.85);        // v6.13: louder (Chad: "make the starting music louder") — 0.55 sat under the sea's 0.8
     sfx(0.6, 'vpro1');
 
     // ---- 4.4–14.0 POCKET ONE · THE LEAF
@@ -2297,28 +2297,19 @@ function scChant(c, s, api) {                        /* D — palms together */
     // he stops, and bends
     blend(8.0, 8.4, 'walk', 0.2, 'pick', 0.0);
     take(8.4, 15.0, 'pick', 1.0, 0.0);                 // the grab at 8.4 + 1.45; the hand up from ~11.3
-    step(9.85, () => { stage.leafGround.visible = false; stage.leafShow('pinch'); });
-    /* v6.11: the pinched leaf HANGS. v6.8 fixed its length on world-down and
-       its face toward the lens IN THE HAND'S FRAME, for the 12.8 pose; now
-       the wrist turns over under it, and a hang fixed to the hand swung up
-       with the fingers (rendered: gone behind the palm at 10.8, out past the
-       thumb at 10.9). Both directions are recomputed every frame from the
-       hand's own orientation and the camera's position, so the leaf dangles
-       from the pinch whatever the hand does, until the cut lays it flat. */
-    const _hq = new THREE.Quaternion(), _hd = new THREE.Vector3(), _hc = new THREE.Vector3(), _hn2 = new THREE.Vector3(), _hx = new THREE.Vector3(), _hw2 = new THREE.Vector3(), _hm = new THREE.Matrix4();
-    tr(9.85, 11.5, (k, t) => {
-      if (t > 11.5) return;
-      const h = stage.boyHand(); if (!h) return;
-      const H = stage.leafHand.children.find(c => c.name === 'pinch'); if (!H) return;
-      h.getWorldQuaternion(_hq); _hq.invert();
-      _hd.set(0, -1, 0).applyQuaternion(_hq).normalize();                                   // world down, in the hand's frame
-      H.getWorldPosition(_hw2);
-      _hc.copy(yaw.position).sub(_hw2).applyQuaternion(_hq);                                // toward the lens, in the hand's frame
-      _hn2.copy(_hc).addScaledVector(_hd, -_hc.dot(_hd));                                   // the face: toward the lens, square to the hang
-      if (_hn2.lengthSq() < 1e-6) return;
-      _hn2.normalize(); _hx.crossVectors(_hd, _hn2);
-      H.rotation.setFromRotationMatrix(_hm.makeBasis(_hx, _hd, _hn2));
-    }, rawK);
+    /* v6.13: THE CUT IS THE TOUCH (Chad: "cut the scene shot right there.
+       Do not show him bending back up with the leaf. It should cut the
+       moment his hands touches the leaf"). Everything changes on this one
+       frame: the leaf leaves the lawn and appears flat in his palm, the
+       take parks on its held frame, the wrist is already turned, and the
+       lens is the macro's. The pose either side of the cut is different —
+       which is what a cut is — and the macro shows only the palm, so
+       nothing of the change is on screen. */
+    step(9.85, () => { stage.leafGround.visible = false; stage.leafShow('palm'); });
+    /* v6.13: v6.11's hanging-leaf track is GONE with the shot it was written
+       for — it kept the pinched leaf's blade on world-down and its face to
+       the lens through the lift, and the film no longer shows the lift. The
+       pinch prop itself stays in the stage (`leafShow('pinch')`), unshown. */
     sfx(9.85, 'leafpick', 0.7);
     sfx(10.8, 'vpick1');                                // v6.6: "Ooh! Nice." — after vpro2 ends at 10.65
     /* v6.9: from the walk's own level head, his eyes go down to the leaf
@@ -2330,8 +2321,8 @@ function scChant(c, s, api) {                        /* D — palms together */
        at the leaf at the grab — so nothing jumps. */
     lookAt(7.4, 9.85, () => LEAF, { ramp: 1.8, cone: 0.8 });
     lookAt(9.85, 13.2, handPt, { ramp: 1.4, w0: 1, cone0: 0.8, cone1: 1.4 });   // the neck widens 46° -> 80° as the hand comes up; the held-up pose (62-66° off rest) is v6.8's
-    // 1b: low three-quarter from behind the leaf, looking up, through the grab, the lift and the whole turn of the wrist (v6.12: to 11.5, so the finished pose is seen before the cut)
-    shotHand(8.2, 11.5, at(0, 0.78, 0.40, -1.0), at(0, 0.56, 0.34, -0.72), { x: 0, y: 0.04, z: 0 }, smoothK);
+    // 1b: low three-quarter from behind the leaf, looking up, through the bend — and OUT on the touch (v6.13)
+    shotHand(8.2, 9.85, at(0, 0.78, 0.40, -1.0), at(0, 0.56, 0.34, -0.72), { x: 0, y: 0.04, z: 0 }, smoothK);
     /* 1c: THE LEAF IN HIS PALM — the five's own shot (Chad: "the leaf
        resting on his palm ... the camera shows the leaf directly resting
        flat facing up in his palm ... just close up of the palm"). The pick
@@ -2349,9 +2340,15 @@ function scChant(c, s, api) {                        /* D — palms together */
        fingers; the five's 5 cm and 0.20 m put the blade's edge on the phone
        crop's right edge). The take is parked on its held frame from 12.8
        so the hand never drops toward the pocket under the macro. */
-    palmUp(10.45, 11.25, 14.0);            // turned by 11.25, held through the macro, released before pocket two
-    step(11.5, () => { stage.leafShow('palm'); });
-    take(12.8, 14.0, 'pick', 0, 4.4);
+    palmUp(9.84, 9.85, 14.0);              // v6.13: already turned when the cut lands (10 ms, under the wide's last frame), held through the macro, released before pocket two
+    /* THE POSE DOES NOT MOVE UNDER THE MACRO (Chad: "why is the camera
+       shaking at the palm shot. Steady it for that shot"). The shake was
+       the take still RUNNING: the camera is computed from the hand bone
+       every frame, and until v6.12 the pick take ran to 12.8 under the
+       shot, so the hand's own motion — and the per-frame grounding that
+       follows the feet — went straight into the lens. Parked from the cut,
+       the hand is still and the only movement left is the push-in. */
+    take(9.85, 14.0, 'pick', 0, 4.4);
     /* v6.12: THE PALM ONLY (Chad: "stop showing his whole arm and body, and
        instead its just a really close close up of his palm only. I said that
        before"). 0.30 -> 0.22 m held the forearm, the shirt and the lawn in
@@ -2364,14 +2361,14 @@ function scChant(c, s, api) {                        /* D — palms together */
        at 11.6 s, 0.067 by 13.6 — the blade shrank to a sliver and vanished).
        The lens is along the palm's normal, which since v6.12 points at his
        face, so the macro is very nearly his own view of his hand. */
-    lens(11.5, 14.0, 50, 44, smoothK);
+    lens(9.85, 14.0, 50, 44, smoothK);
     /* and GIVEN BACK at the cut to black — a track holds its end value for
        the rest of the film, so without this the whole of pockets two, three
        and four played on a 44° lens (caught by rendering 15.5, 19.0 and 31.0
        against the frames from before this work: the same sets, tighter).
        The same trap as the wrist's own hold, one shot later. */
     lens(14.0, 14.0, CAM_FOV, CAM_FOV);
-    shotPalm(11.5, 14.0, 0.26, 0.22, 0.0, 0.0, 0.01, 0.01, smoothK, 0.085);
+    shotPalm(9.85, 14.0, 0.26, 0.22, 0.0, 0.0, 0.01, 0.01, smoothK, 0.085);
 
     // ---- 14.0–25.2 POCKET TWO · THE TOY
     sfx(13.4, 'stairamb', 0.8);                        // v6.6: the tube's hum, the well's echo
