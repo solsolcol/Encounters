@@ -2297,6 +2297,14 @@ shows a hand, a forearm and the lawn does not know which take the body
 is running, so the change costs nothing on screen. Two in-hand copies of
 the leaf, toggled by name at the grab and at the cut, carry the two poses.
 
+It lasted a day. Chad: "why cant you make the palm facing up naturally" —
+the borrowed frame had put his hand down by his slipper. Measured
+properly (v6.11, below), a supination of −2.2 rad about the forearm's axis
+turns the palm dead up at every split between forearm and wrist with the
+fingers still forward, and the rig's skin takes it. So the lesson is the
+smaller one: survey the takes first, but when the motion can be ADDED and
+reads, add it — borrowing a frame is a fallback, not the answer.
+
 ## The palm shot is centred on the thing, and the phone crop is the judge (v6.10)
 
 `shotPalm` aimed 5 cm down the fingers — the five's centre — and the leaf
@@ -2308,3 +2316,43 @@ at 0.22 m instead of 0.20, put the whole leaf in the crop with air round
 it. The desktop frame is never the last word on a close-up: render the
 420 × 760 crop before calling the framing done (docs/AUDIT-2026-09.md,
 Part One).
+
+## A post-mixer edit on a parked take must be absolute (v6.11)
+
+`PropertyMixer.apply` compares its two accumulators and calls `setValue`
+only when they differ, so once a parked take has been evaluated twice the
+mixer stops WRITING its bones at all. Anything laid on a bone after the
+mixer then lands on the previous frame's result, not the clip's: a
+relative twist (`quaternion.multiply(...)`) stacks frame after frame — the
+first wrist trial came back with the palm oscillating through three turns
+over a 0.25 rad step — and a slerp toward a target converges in a few
+frames whatever ramp it was given. The head look survives because its
+target is absolute and its ramps run on moving takes. The wrist turn
+evaluates the forearm's and the hand's tracks itself
+(`track.createInterpolant()`, `evaluate(t)`) and sets both bones from that
+base every call, then multiplies the twist on. Never edit a parked bone
+relatively.
+
+## A probe that poses the boy measures inside one call, and the paused film still writes every frame (v6.11)
+
+`__enc.cine.seek()` pauses the clock, not the tracks: every frame, every
+passed track is re-applied at the frozen time. So a probe that sets a bone
+or the camera and then awaits a frame photographs the film's own frame,
+not its change (twelve identical "candidate" renders), and a probe that
+poses two bones in one `evaluate` and reads them in the next has measured
+those two bones on a body the film has put back — the chimera said a
+wrist split could never reach the palm up. Pose the whole body
+(`boyPose`) and measure every candidate inside ONE synchronous call; and
+to photograph a candidate, put it in the chapter behind a stage value the
+film's own tracks read (`stage.boyPalm`), build, and let the film render
+it. A leaf's rotation could be changed across frames (v6.10's turn
+candidates) only because no track touches it.
+
+## The build does not read the chapters (v6.11)
+
+`npm run build` is esbuild on `src/main.js`, then `build.py`, which COPIES
+`src/chapters/*.js` — so a chapter with a syntax error (`ang: ,`, left by
+a patch step that fed node a negative number as a flag) went through
+"wrote dist/" without a word, and only a harness would have caught it. The
+build script now runs `node --check` over every chapter file before
+esbuild; a broken chapter stops it with the line number.

@@ -1291,6 +1291,29 @@ What the baseline contains, by release:
   are in frame, so the change of take is hidden under the cut. Read at ten
   frames a second on desktop and at four points on the phone crop. No
   engine seam, no word moved; sheet v39 stands. docs/V6.10-THE-LEAF.md.
+- **v6.11** THE WRIST TURNS — Chad, on v6.10: "why cant you make the palm
+  facing up naturally". Measured first (dbg-takes): none of his five takes
+  holds a palm up at a standing height (walk 0.71 up at hip height
+  mid-swing, walkpick 0.71 at the grab on the ground, pick 0.5 passing the
+  body on the way down, alert and look never), so the turn is ADDED — a
+  supination about the forearm's own axis, −2.04 rad (0.92 of the −2.22
+  that puts the palm dead vertical, so the palm shot's yaw stays
+  well-conditioned), three quarters on the forearm bone and a quarter at
+  the wrist, on a smoothstep across the lift (10.45–11.25). The held pose
+  is now the pick take's own, at chest height, palm up, the lawn a metre
+  below it in the close-up and his body behind; v6.10's borrowed walk-pick
+  frame is gone, and its leaf plane, aim and fade stand. The turn is
+  ABSOLUTE — the two bones are set from the clip's own tracks on every
+  call — because the mixer stops WRITING a parked take's bones once two
+  updates agree, and a relative twist on "whatever the bone holds" stacks
+  frame after frame (the first trial spun the wrist round three times).
+  The pinched leaf HANGS by physics through the lift (its length on
+  world-down and its face to the lens recomputed every frame) instead of
+  swinging up with the fingers. And `npm run build` now syntax-checks every
+  chapter file before esbuild: a chapter with a broken constant went
+  through the build silently, because esbuild bundles main.js only and the
+  chapters are copied. Read at ten frames a second and on the phone crop.
+  No engine seam, no word moved; sheet v39 stands. docs/V6.11-THE-WRIST.md.
  *"i'm still
   not satisfied with this voice."* All 79 of the boy's takes regenerated in a
   THIRD voice (Aaron, `B6uUx2p7cRgxseOUyP6P`), under an approved prompt sheet

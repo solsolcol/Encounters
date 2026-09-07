@@ -1420,6 +1420,40 @@
                       cone: Infinity, restQ: null, mute: false, bent: 0 };
     const _lh = new THREE.Vector3(), _ld = new THREE.Vector3(), _lm = new THREE.Matrix4(), _lq = new THREE.Quaternion(), _lpq = new THREE.Quaternion();
     const _qfix = new THREE.Quaternion(), _fz = new THREE.Vector3(0, 0, 1), _lc = new THREE.Quaternion();
+    /* v6.11: THE WRIST TURNS (Chad: "why cant you make the palm facing up
+       naturally"). None of his five takes holds a palm up at a standing
+       height (dbg-takes: walk 0.71 up at hip height mid-swing, walkpick
+       0.71 at the grab on the ground, pick 0.5 passing the body on the way
+       down, alert and look never), so the turn is ADDED: a supination about
+       the forearm's own axis — `ang` radians at k = 1, `split` of it on the
+       forearm bone and the rest at the wrist, which is roughly what a real
+       forearm does between the elbow and the hand, on a rig with no twist
+       bone. It is ABSOLUTE, evaluated from the clip's own tracks on every
+       call: the mixer stops WRITING a parked take's bones once two updates
+       agree (PropertyMixer compares its two accumulators before setValue),
+       so a relative twist laid on "whatever the bone holds" stacks up frame
+       after frame — the first trial spun the wrist round three times. */
+    const boyPalm = { k: 0, ang: -2.04, split: 0.75 };   // -2.22 turns the palm fully up (dbg-wrist2, every split); 0.92 of it keeps the palm shot's yaw well-conditioned
+    let boyFore = null; const palmIp = {};                                   // one interpolant per take per bone, made on first use
+    const _pq1 = new THREE.Quaternion(), _pq2 = new THREE.Quaternion(), _ptw = new THREE.Quaternion(), _pY = new THREE.Vector3(0, 1, 0);
+    function palmBase(n, t, bone, out) {
+      const act = boyActs && boyActs[n]; if (!act) return null;
+      const clip = act.getClip(), key = n + '|' + bone.name;
+      if (palmIp[key] === undefined) { const trk = clip.tracks.find(tr => tr.name === bone.name + '.quaternion'); palmIp[key] = trk ? trk.createInterpolant() : null; }
+      const ip = palmIp[key]; if (!ip) return null;
+      ip.evaluate(Math.max(0, Math.min(clip.duration - 1e-4, t)));
+      return out.fromArray(ip.resultBuffer);
+    }
+    function boyPalmApply(a, ta, b, tb, k) {
+      if (!boyHand || !boyFore) return;
+      for (const [bone, share] of [[boyFore, boyPalm.split], [boyHand, 1 - boyPalm.split]]) {
+        const qa = palmBase(a, ta, bone, _pq1); if (!qa) continue;
+        const qb = k > 0.001 && b ? palmBase(b, tb, bone, _pq2) : null;
+        if (qb) qa.slerp(qb, k);
+        bone.quaternion.copy(qa);
+        if (boyPalm.k > 0) bone.quaternion.multiply(_ptw.setFromAxisAngle(_pY, boyPalm.ang * boyPalm.k * share));
+      }
+    }
     const LOOK_UP = new THREE.Vector3(0, 1, 0);
     /* v6.6: the look is ABSOLUTE. v6.4 added a yaw on top of the clip's and
        drove the pitch to a target, and it held only while the take kept the
@@ -1485,6 +1519,7 @@
         act.time = Math.max(0, Math.min(d - 1e-4, tt));
       }
       boyMixer.update(0);
+      boyPalmApply(a, ta, b, tb, k);              // v6.11: the forearm and the hand, set absolutely, turned when a film asks
       /* v6.6: GROUNDED PER FRAME (Chad: "his feet sunken into the ground").
          He was grounded once, from the look take's frame 2.6; the pick take
          plants the toes 4.4 cm lower and the walk rolls them, so every other
@@ -1523,6 +1558,7 @@
         if (/Toe|Foot/.test(o.name)) toe = Math.min(toe, v.y);
         if (HEAD_RE.test(o.name)) { head = Math.max(head, v.y); if (!boyHead) boyHead = o; }
         if (/RightHand$/.test(o.name) && !boyHand) boyHand = o;
+        if (/RightForeArm$/.test(o.name) && !boyFore) boyFore = o;      // v6.11: the wrist turn's other half
         if (/Foot$|ToeBase$/.test(o.name)) boyFeet.push(o);
       });
       /* v6.9: the head's REST rotation relative to its parent, from the bind
@@ -1574,6 +1610,7 @@
       leafHand.visible = bearHand.visible = noteHand.visible = false;
       leafGround.visible = bearGround.visible = noteGround.visible = true;
       boyLook.target = null; boyLook.w = 0; boyLook.x = boyLook.y = 0; boyLook.cone = Infinity;
+      boyPalm.k = 0;                                                       // v6.11
       slowMo = 1;
       boy.position.set(0, 0, 17); boy.rotation.y = Math.PI;
     }
@@ -1728,7 +1765,7 @@
       MEM, POCKET_Z, memRoot, proRoot, memLights, faceFill, boy, flyNote,
       leafGround, leafHand, bearGround, bearHand, noteGround, noteHand,
       leafShow: (mode) => { leafHand.visible = true; for (const c of leafHand.children) c.visible = c.name === mode; },   // v6.10: 'pinch' | 'palm'
-      boyPose, boyLook, boyScale, boyHand: () => boyHand, boyHead: () => boyHead,
+      boyPose, boyLook, boyPalm, boyScale, boyHand: () => boyHand, boyHead: () => boyHead,
       boyActs: () => boyActs,
       get slowMo() { return slowMo; },
       set slowMo(v) { slowMo = v; },
@@ -2160,6 +2197,9 @@ function scChant(c, s, api) {                        /* D — palms together */
     };
     const handPt = () => { const h = stage.boyHand(); if (!h) return null; h.getWorldPosition(_hw); return { x: _hw.x, y: _hw.y + 0.03, z: _hw.z }; };
     const lookOff = () => { stage.boyLook.target = null; stage.boyLook.w = 0; stage.boyLook.x = stage.boyLook.y = 0; stage.boyLook.cone = Infinity; };
+    /* v6.11: the wrist turns over — k from k0 to k1 on a smoothstep, held after t1 like every track */
+    const palmUp = (t0, t1, k0 = 0, k1 = 1) => tr(t0, t1, k => { stage.boyPalm.k = k0 + (k1 - k0) * k; }, smoothK);
+    const palmOff = () => { stage.boyPalm.k = 0; };
     /* v6.6: a shot that looks INTO HIS PALM — the lens sits along the palm's
        normal (the bone's +z: a render along -z showed the knuckles), a little
        above it, aimed a few centimetres down the fingers, wherever the take
@@ -2235,6 +2275,27 @@ function scChant(c, s, api) {                        /* D — palms together */
     blend(8.0, 8.4, 'walk', 0.2, 'pick', 0.0);
     take(8.4, 15.0, 'pick', 1.0, 0.0);                 // the grab at 8.4 + 1.45; the hand up from ~11.3
     step(9.85, () => { stage.leafGround.visible = false; stage.leafShow('pinch'); });
+    /* v6.11: the pinched leaf HANGS. v6.8 fixed its length on world-down and
+       its face toward the lens IN THE HAND'S FRAME, for the 12.8 pose; now
+       the wrist turns over under it, and a hang fixed to the hand swung up
+       with the fingers (rendered: gone behind the palm at 10.8, out past the
+       thumb at 10.9). Both directions are recomputed every frame from the
+       hand's own orientation and the camera's position, so the leaf dangles
+       from the pinch whatever the hand does, until the cut lays it flat. */
+    const _hq = new THREE.Quaternion(), _hd = new THREE.Vector3(), _hc = new THREE.Vector3(), _hn2 = new THREE.Vector3(), _hx = new THREE.Vector3(), _hw2 = new THREE.Vector3(), _hm = new THREE.Matrix4();
+    tr(9.85, 11.0, (k, t) => {
+      if (t > 11.0) return;
+      const h = stage.boyHand(); if (!h) return;
+      const H = stage.leafHand.children.find(c => c.name === 'pinch'); if (!H) return;
+      h.getWorldQuaternion(_hq); _hq.invert();
+      _hd.set(0, -1, 0).applyQuaternion(_hq).normalize();                                   // world down, in the hand's frame
+      H.getWorldPosition(_hw2);
+      _hc.copy(yaw.position).sub(_hw2).applyQuaternion(_hq);                                // toward the lens, in the hand's frame
+      _hn2.copy(_hc).addScaledVector(_hd, -_hc.dot(_hd));                                   // the face: toward the lens, square to the hang
+      if (_hn2.lengthSq() < 1e-6) return;
+      _hn2.normalize(); _hx.crossVectors(_hd, _hn2);
+      H.rotation.setFromRotationMatrix(_hm.makeBasis(_hx, _hd, _hn2));
+    }, rawK);
     sfx(9.85, 'leafpick', 0.7);
     sfx(10.8, 'vpick1');                                // v6.6: "Ooh! Nice." — after vpro2 ends at 10.65
     /* v6.9: from the walk's own level head, his eyes go down to the leaf
@@ -2245,29 +2306,30 @@ function scChant(c, s, api) {                        /* D — palms together */
        at full weight on the same point the leaf look ended on — the hand IS
        at the leaf at the grab — so nothing jumps. */
     lookAt(7.4, 9.85, () => LEAF, { ramp: 1.8, cone: 0.8 });
-    lookAt(9.85, 10.6, handPt, { ramp: 1.4, w0: 1, cone0: 0.8, cone1: 1.4 });   // the neck starts widening as the hand comes up; v6.10: to the cut, where the head leaves the frame
-    // 1b: low three-quarter from behind the leaf, looking up, through the grab and the first of the lift
-    shotHand(8.2, 10.6, at(0, 0.78, 0.40, -1.0), at(0, 0.56, 0.34, -0.72), { x: 0, y: 0.04, z: 0 }, smoothK);
-    /* 1c (v6.10): THE LEAF IN HIS PALM — the five's own shot (Chad: "the
-       leaf resting on his palm ... the camera shows the leaf directly
-       resting flat facing up in his palm ... just close up of the palm").
-       The pick take never turns the palm up after the grab (measured,
-       dbg-palm: the palm's +z is 0.47 up as the hand closes on the leaf,
-       0 by 10.3, and -0.5 to -0.6 through the whole held pose — it carries
-       its object palm-DOWN), so at the cut he takes the walk-pick take's
-       PARKED frame instead — 5.85, +z = (0.65, 0.71, -0.29), the frame the
-       five's macro was measured on — stood where that frame's hand lands
-       on the leaf's spot, the leaf swapped from the pinch to the flat copy,
-       and the lens comes in along the palm's normal from 0.30 to 0.22 m,
-       centred on the leaf (8.5 cm down the fingers; the five's 5 cm and
-       0.20 m put the blade's edge on the phone crop's right edge). Only the
-       hand, the forearm and the lawn are in frame, so the change of pose is
-       hidden under the cut. Replaces v6.6's fingertip shot (the leaf
-       hanging from the pinch between the lens and his face). */
-    const S1b = standFor(LEAF, RY1, 0.58, 1.16); S1b.y = 0.02;
-    step(10.6, () => { lookOff(); stage.boy.position.set(S1b.x, S1b.y, S1b.z); stage.leafShow('palm'); });
-    take(10.6, 14.0, 'walkpick', 0, 5.85);
-    shotPalm(10.6, 14.0, 0.30, 0.22, 0.0, 0.0, 0.02, 0.02, smoothK, 0.085);
+    lookAt(9.85, 13.2, handPt, { ramp: 1.4, w0: 1, cone0: 0.8, cone1: 1.4 });   // the neck widens 46° -> 80° as the hand comes up; the held-up pose (62-66° off rest) is v6.8's
+    // 1b: low three-quarter from behind the leaf, looking up, through the grab, the lift and the turn of the wrist
+    shotHand(8.2, 11.0, at(0, 0.78, 0.40, -1.0), at(0, 0.56, 0.34, -0.72), { x: 0, y: 0.04, z: 0 }, smoothK);
+    /* 1c: THE LEAF IN HIS PALM — the five's own shot (Chad: "the leaf
+       resting on his palm ... the camera shows the leaf directly resting
+       flat facing up in his palm ... just close up of the palm"). The pick
+       take carries its object palm-DOWN from the lift to the pocket
+       (measured, dbg-palm: the palm's +z 0.47 up as the hand closes on the
+       leaf, 0 by 10.3, -0.5 to -0.6 through the whole held pose), and v6.10
+       answered that by borrowing the walk-pick take's parked frame under
+       the cut — a hand low by his slipper. v6.11 (Chad: "why cant you make
+       the palm facing up naturally"): his WRIST TURNS OVER as the hand
+       comes up — `palmUp`, the supination above, on a smoothstep across the
+       lift — so the held pose is the pick take's own, at chest height, with
+       the palm up. The pinch carries the leaf through the lift; at the cut
+       the flat copy takes over, and the lens comes in along the palm's
+       normal from 0.30 to 0.22 m, centred on the leaf (8.5 cm down the
+       fingers; the five's 5 cm and 0.20 m put the blade's edge on the phone
+       crop's right edge). The take is parked on its held frame from 12.8
+       so the hand never drops toward the pocket under the macro. */
+    palmUp(10.45, 11.25);
+    step(11.0, () => { stage.leafShow('palm'); });
+    take(12.8, 14.0, 'pick', 0, 4.4);
+    shotPalm(11.0, 14.0, 0.30, 0.22, 0.0, 0.0, 0.02, 0.02, smoothK, 0.085);
 
     // ---- 14.0–25.2 POCKET TWO · THE TOY
     sfx(13.4, 'stairamb', 0.8);                        // v6.6: the tube's hum, the well's echo
@@ -2280,7 +2342,7 @@ function scChant(c, s, api) {                        /* D — palms together */
     fade(13.4, 14.0, 0, 1);
     tr(13.4, 14.0, k => setLights(0, 1 - k), rawK);
     step(14.2, () => {
-      lookOff();
+      lookOff(); palmOff();
       stage.leafHand.visible = false;
       stage.boy.position.set(TOP2.x, TOP2.y, TOP2.z); stage.boy.rotation.y = RY2a;
     });
