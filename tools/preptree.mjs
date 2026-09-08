@@ -141,6 +141,37 @@ for (const p of prims) {
   }
 }
 
+/* 4b — IS IT STANDING UP? (v6.17)
+
+   v6.16 shipped a tree lying on its side and the review did not catch it,
+   because the review was a wide shot of fourteen trees: at that distance a
+   tree on its side still reads as green. So the tool checks it now, on the
+   baked contract where the numbers mean something (base y = 0, height 1).
+
+   A standing tree has a PROFILE: a thin trunk at the bottom, a wide crown
+   above it. Slice the model into eight horizontal slabs and measure how far
+   each slab's vertices sit from the trunk axis. The bottom slab is the trunk
+   and must be narrow; the widest slab must be somewhere above it. A tree on
+   its side fails both — its bottom slab is a whole flank of crown.        */
+{
+  const N = 8, rad = new Array(N).fill(0), cnt = new Array(N).fill(0);
+  for (const p of prims) {
+    const a = p.getAttribute('POSITION').getArray(); const n = p.getAttribute('POSITION').getCount();
+    for (let i = 0; i < n; i++) {
+      const y = a[i * 3 + 1];
+      const k = Math.min(N - 1, Math.max(0, Math.floor(y * N)));
+      const r = Math.hypot(a[i * 3], a[i * 3 + 2]);
+      if (r > rad[k]) rad[k] = r; cnt[k]++;
+    }
+  }
+  const prof = rad.map(r => r.toFixed(3)).join(' ');
+  const widest = rad.indexOf(Math.max(...rad));
+  console.log(`  profile (base->top, max radius per eighth): ${prof}`);
+  if (rad[0] > 0.30) throw new Error(`base slab is ${rad[0].toFixed(2)} wide — that is not a trunk, the model is on its side`);
+  if (widest === 0) throw new Error('the widest slab is the bottom one — the model is on its side');
+  console.log(`  standing: trunk ${rad[0].toFixed(3)}, widest slab #${widest} at ${rad[widest].toFixed(3)}`);
+}
+
 /* 5 — sheets: leaf cards keep their alpha, bark does not need it.
 
    WHICH SHEET IS WHICH IS DECIDED BY THE MATERIAL THAT USES IT, never by the
