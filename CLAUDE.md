@@ -371,9 +371,11 @@ Attributions must stay in the credits panel; he adds more as they come.
 
 ## Current state and roadmap
 
-**v3.3 is the reference standard for the base game** (Chad's call,
-30 Aug 2026). Everything below it is settled: chapter 1 plays end to
-end and the engine's feel — how she behaves, how she sounds, how the
+**v6.17 is the reference standard for the base game, with EPISODE 1
+COMPLETE** (Chad's call, 8 Sep 2026: "good enough as the base game
+reference with a complete episode 1" — it supersedes v3.3, which was the
+bar while the episode was being built). Everything below it is settled:
+all five chapters play end to end and the engine's feel — how she behaves, how she sounds, how the
 cards perform, how the equipment screen works — is the bar new chapters
 are held to, not a thing to be renegotiated while building them. Treat
 a change that alters base-game feel as its own decision to put to Chad,
@@ -1562,11 +1564,15 @@ What the baseline contains, by release:
   print at this light level collapses into a dark tile and reads worse
   than the flat card it replaced — the opposite of what you would guess.
 
-The anchors for that baseline: tag `v3.3`, commit `c8abf61`, the
-`Encounters-backup.bundle` Chad holds (it carries the tag), and the
-23 harnesses — which are what actually *enforce* the standard. A
-chapter-2 change that reddens a base-game harness is a regression in
-the reference build, not a test that needs relaxing.
+The anchors for that baseline: tag `v6.17` (local only — tags do not
+push from these sessions), commit `55b059f` (its message begins with the
+version, so it is findable on GitHub), the v6.17 Netlify deploy
+(`6a9fc206c7c1970813c5ca3c`), and the 23 harnesses — which are what
+actually *enforce* the standard. The earlier anchor, `v3.3` / `c8abf61`,
+stands in the bundle Chad holds. An episode-2 change that reddens a
+base-game harness is a regression in the reference build, not a test
+that needs relaxing. Episode 2's plan is `docs/V7.0-EPISODE2-PLAN.md`
+(a PROPOSAL until Chad answers its decisions).
 
 Deferred by explicit choice: ghost mesh compression (1.6 MB, the
 biggest download win, but it touches the fragile `rescueTextures` GLB
