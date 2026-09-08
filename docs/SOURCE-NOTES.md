@@ -12,6 +12,8 @@ file:
 |---|---|
 | `source/site-case-files.md` | All 43 published case files — hook, full account, lesson |
 | `source/trial-game-chapters.md` | All 15 trial-game chapters — every choice, score and teaching |
+| `source/video-transcripts.md` | The two army-era case-file VIDEOS (S1·04, S1·05), transcribed and read frame by frame — added 8 Sep 2026; the films SHOW the entity the text leaves unseen |
+| `../MZTRIAL-NOTES.md` | The NEW 2D trial at mztrial.netlify.app (nine episodes, reaction challenges, amulets, critical mistakes, a decision timer) — studied 8 Sep 2026; supersedes the trial described below where they differ |
 
 ---
 
