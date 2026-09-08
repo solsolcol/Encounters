@@ -1421,6 +1421,30 @@ What the baseline contains, by release:
   park is replanted along both banks (the window to the sea and the sun stays
   open) and the playground's nearest two are pushed out. Three credit rows;
   sheet v40. docs/V6.15-TREES.md is the build's memory.
+- **v6.16** THE LEAVES GOT THEIR ALPHA BACK — Chad, on v6.15: "the trees
+  looks way too heavily compressed, cant it look better?" The word was right
+  for the wrong reason: the geometry was barely reduced, and what was missing
+  was the ALPHA. `preptree.mjs` decided which sheet was foliage and which was
+  bark **by the texture's name**, and all three files embed their textures
+  with no name and no URI — so the test matched nothing, every sheet took the
+  bark branch, and every leaf sheet was re-encoded as JPEG, a format with no
+  alpha channel. The materials were right the whole time (MASK, cutoff 0.45)
+  and were testing a channel that no longer existed, so nothing was ever cut
+  out: each crown was a pile of solid textured cards. Measured against the
+  source, where the low-poly leaf sheet's alpha runs 0-255 with **50.9 % of
+  its texels under half** — that half is the gaps between the leaves. Now
+  **the MATERIAL decides**, never the texture's name: a material is foliage
+  if its name says so or if the file shipped it as BLEND (recorded before the
+  prep rewrites the alpha mode), and its base-colour sheet stays PNG with its
+  alpha, palette-quantized because a cutoff discards every partial value
+  anyway. The same law holds in the engine — `treeKit` calls a part foliage
+  when its material carries `alphaTest > 0`, with the name test as fallback.
+  Also: no simplification at all (tree1 back to its full 19,921 triangles
+  from 12,799 — a simplifier is worst on leaf cards, whose silhouette IS the
+  model), 1024-pixel sheets for the two big trees, bark at JPEG 88, and
+  anisotropy on every tree sheet, because a crown is nothing but grazing
+  angles. The kit costs 1.36 MB -> 2.31 MB, once per session for the whole
+  game. docs/V6.16-THE-LEAVES.md is the build's memory.
 - **v5.28** AARON — Chad, after two rounds of level work on River: *"i'm still
   not satisfied with this voice."* All 79 of the boy's takes regenerated in a
   THIRD voice (Aaron, `B6uUx2p7cRgxseOUyP6P`), under an approved prompt sheet

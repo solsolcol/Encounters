@@ -2502,3 +2502,25 @@ the string as two ~16,000-character single-line halves rather than 266
 folded lines: one join to get right instead of 265. The cheap insurance
 before any of that is the existing rule — transcribe into a heredoc and
 `cmp` against the .b64 first.
+
+## JPEG has no alpha — and a texture's NAME is not how you find the leaves (v6.16)
+
+v6.15's tree prep split its sheets with `if (/leaf|leaves|crown|branch/i.test(
+texture.getName() + texture.getURI()))`. Every one of Chad's three files
+embeds its textures **unnamed and with no URI**, so the test matched nothing,
+every sheet fell through to the bark branch, and every leaf sheet was
+re-encoded as JPEG. JPEG cannot carry an alpha channel, so the cut-outs were
+gone: the materials still said `MASK` with a cutoff of 0.45 and were testing a
+channel that no longer existed, which passes everywhere. Each crown rendered
+as a stack of solid textured rectangles, and Chad read that — correctly — as
+"heavily compressed".
+
+Two rules out of it. **Classify a texture by the MATERIAL that uses it**, never
+by its own name: names are optional in glTF and exporters routinely drop them,
+while a material's alpha mode is load-bearing and always present. And **an
+encoder change is a format change**: re-encoding to JPEG silently discards
+alpha, exactly as re-encoding to a smaller size silently discards detail, so
+any prep step that picks a codec must state what each output is allowed to
+lose. The check that would have caught it in seconds is one line — read the
+shipped file back and assert `hasAlpha` on every sheet a material cuts out
+with — and it is now part of the prep's own output.

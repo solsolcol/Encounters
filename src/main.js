@@ -812,8 +812,15 @@ function treeKit() {
           gltf.scene.updateMatrixWorld(true);
           gltf.scene.traverse(o => {
             if (!o.isMesh) return;
-            parts.push({ geo: o.geometry, mat: o.material, m: o.matrixWorld.clone(),
-                         leaf: TREE_LEAF_RE.test((o.material && o.material.name) || o.name || '') });
+            /* FOLIAGE is recognised by the material's own cut-out, not only
+               by its name (v6.16): a leaf sheet ships as MASK with a cutoff,
+               which GLTFLoader turns into alphaTest, and that survives a
+               model whose materials are unnamed. The name test stays as the
+               fallback for a file with no alpha at all. */
+            const mt = o.material;
+            parts.push({ geo: o.geometry, mat: mt, m: o.matrixWorld.clone(),
+                         leaf: (mt && (mt.alphaTest > 0 || mt.transparent))
+                               || TREE_LEAF_RE.test((mt && mt.name) || o.name || '') });
           });
           res(parts.length ? parts : null);
         }, () => res(null));
@@ -870,6 +877,8 @@ function plantTrees(parent, spots, opts = {}) {
         if (tint) mat.color = mat.color ? mat.color.clone().multiply(tint) : tint.clone();
         if (opts.roughness !== undefined) mat.roughness = opts.roughness;
         if (part.leaf) { mat.side = THREE.DoubleSide; if (!(mat.alphaTest > 0)) mat.alphaTest = 0.45; mat.transparent = false; mat.depthWrite = true; }
+        // a crown is nothing but grazing angles; without this the far leaves crawl
+        if (mat.map) { mat.map.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy()); mat.map.needsUpdate = true; }
         owned.push(mat);
         const im = new THREE.InstancedMesh(part.geo, mat, list.length);
         im.frustumCulled = false;          // a tree's own box is a metre tall until the instance matrix scales it

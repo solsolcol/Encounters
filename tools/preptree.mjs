@@ -24,13 +24,13 @@
 */
 import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS, KHRMeshQuantization } from '@gltf-transform/extensions';
-import { weld, simplify, quantize, prune, dedup, flatten, clearNodeTransform, metalRough, textureCompress } from '@gltf-transform/functions';
+import { weld, simplify, quantize, prune, dedup, flatten, clearNodeTransform, metalRough } from '@gltf-transform/functions';
 import { MeshoptSimplifier, MeshoptEncoder, MeshoptDecoder } from 'meshoptimizer';
 import sharp from 'sharp';
 import fs from 'node:fs';
 
 await MeshoptSimplifier.ready; await MeshoptEncoder.ready; await MeshoptDecoder.ready;
-const [inp, outp, ratioS = '1', leafS = '512', barkS = '512', onlyNode = ''] = process.argv.slice(2);
+const [inp, outp, ratioS = '1', leafS = '1024', barkS = '1024', onlyNode = ''] = process.argv.slice(2);
 const RATIO = +ratioS, LEAF = +leafS, BARK = +barkS;
 
 const io = new NodeIO().registerExtensions(ALL_EXTENSIONS)
@@ -63,10 +63,17 @@ for (const m of root.listMaterials()) {
 }
 for (const t of root.listTextures()) if (!keep.has(t)) t.dispose();
 
-/* 3 — leaves cut out, bark solid */
-const isLeaf = (m) => /leaf|leaves|crown|branch|foliage/i.test(m.getName());
+/* 3 — leaves cut out, bark solid.
+
+   A material is FOLIAGE if its name says so or if the file itself shipped it
+   as BLEND — the second half matters, because a model whose materials are
+   unnamed would otherwise have its leaves treated as bark, and bark loses its
+   alpha (below). Recorded here, BEFORE the alpha mode is rewritten. */
+const isLeaf = (m) => /leaf|leaves|crown|branch|foliage/i.test(m.getName())
+                      || m.getAlphaMode() !== 'OPAQUE';
+const leafMats = new Set(root.listMaterials().filter(isLeaf));
 for (const m of root.listMaterials()) {
-  if (isLeaf(m)) { m.setAlphaMode('MASK'); m.setAlphaCutoff(0.45); m.setDoubleSided(true); }
+  if (leafMats.has(m)) { m.setAlphaMode('MASK'); m.setAlphaCutoff(0.45); m.setDoubleSided(true); }
   else { m.setAlphaMode('OPAQUE'); m.setDoubleSided(false); }
 }
 
@@ -134,17 +141,34 @@ for (const p of prims) {
   }
 }
 
-/* 5 — sheets: leaf cards keep their alpha, bark does not need it */
-await doc.transform(textureCompress({
-  encoder: sharp, targetFormat: 'png', resize: [LEAF, LEAF],
-  slots: /baseColorTexture/, pattern: /leaf|leaves|crown|branch/i,
-}));
+/* 5 — sheets: leaf cards keep their alpha, bark does not need it.
+
+   WHICH SHEET IS WHICH IS DECIDED BY THE MATERIAL THAT USES IT, never by the
+   texture's own name (v6.16). All three of Chad's files embed their textures
+   UNNAMED and with no URI, so a name test matched nothing, every sheet took
+   the bark branch, and every leaf sheet was re-encoded as JPEG — a format
+   with no alpha channel. The cut-outs became solid rectangles: half the
+   crown was opaque card, which is what "heavily compressed" looked like.
+   The alpha is the whole point of a leaf sheet, so it is what the split has
+   to protect.
+
+   A leaf sheet stays PNG with its alpha. Palette mode is what keeps that
+   affordable — a foliage sheet is a few greens and a hard alpha edge, and
+   alphaCutoff throws away every partial value anyway, so 256 colours costs
+   nothing visible and roughly a quarter of the bytes. */
+const leafTex = new Set();
+for (const m of leafMats) { const t = m.getBaseColorTexture(); if (t) leafTex.add(t); }
 for (const t of root.listTextures()) {
-  const nm = (t.getName() || '') + ' ' + (t.getURI() || '');
-  if (/leaf|leaves|crown|branch/i.test(nm)) continue;
   const img = t.getImage(); if (!img) continue;
-  const out = await sharp(Buffer.from(img)).resize(BARK, BARK, { fit: 'inside' }).jpeg({ quality: 82 }).toBuffer();
-  t.setImage(out).setMimeType('image/jpeg');
+  const leaf = leafTex.has(t);
+  const px = leaf ? LEAF : BARK;
+  const out = leaf
+    ? await sharp(Buffer.from(img)).ensureAlpha().resize(px, px, { fit: 'inside' })
+        .png({ palette: true, quality: 92, effort: 9 }).toBuffer()
+    : await sharp(Buffer.from(img)).resize(px, px, { fit: 'inside' })
+        .jpeg({ quality: 88 }).toBuffer();
+  t.setImage(out).setMimeType(leaf ? 'image/png' : 'image/jpeg');
+  console.log(`  ${leaf ? 'leaf' : 'bark'} sheet -> ${px}px ${leaf ? 'png(alpha)' : 'jpeg'} ${(out.length / 1024).toFixed(0)} KB`);
 }
 
 /* 6 — weld and (gently) simplify; leaf cards resist and are left mostly alone */
