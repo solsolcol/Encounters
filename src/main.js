@@ -838,7 +838,14 @@ function treeKit() {
    `tint` multiplies the model's own colour (a night void deck and a car
    park at ten in the morning want very different trees out of one asset),
    `fog` false takes a stand out of the world's fog, which is what chapter
-   1's memory bubbles need.                                                */
+   1's memory bubbles need.
+
+   `lowKeep` is the phone's share of the stand (v6.17, when Chad asked for
+   more trees everywhere): a fraction of the spots, chosen by the same
+   deterministic stream so the thinned forest is still the same forest, not
+   a different one. Instancing means the extra trees cost draw calls
+   nothing, but they are real triangles, and a phone should not pay for the
+   back row it can barely see.                                             */
 function plantTrees(parent, spots, opts = {}) {
   const group = new THREE.Group();
   group.name = 'trees';
@@ -862,7 +869,9 @@ function plantTrees(parent, spots, opts = {}) {
       return x - Math.floor(x);
     };
     const byKind = new Map();
+    const keep = LOW && opts.lowKeep !== undefined ? opts.lowKeep : 1;
     spots.forEach((sp, i) => {
+      if (keep < 1 && rnd(i, 7) > keep) return;      // the phone's thinner stand
       const k = sp.kind !== undefined ? live[sp.kind % live.length] : live[(i + ((rnd(i, 3) * live.length) | 0)) % live.length];
       if (!byKind.has(k)) byKind.set(k, []);
       byKind.get(k).push({ sp, i });

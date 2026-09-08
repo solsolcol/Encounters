@@ -719,8 +719,21 @@
     [-27.0, 20.5, 0.98],
     [26.0, 27.5, 1.12],
     [-4.5, 31.0, 0.90],
+    /* v6.17 — Chad asked for more of them everywhere. Twenty more, all of
+       them OUTSIDE the corridor the twelve were picked to leave open
+       (|x| < 7 between the spawn at z = 17 and the void deck at z = 0):
+       a second rank behind the first, then an outer ring that closes the
+       skyline off at the fog's edge. */
+    [-18.5, 4.0, 0.96],  [-11.0, 12.0, 1.08],  [-19.0, 19.0, 0.90],
+    [-9.0, 28.5, 1.04],  [-22.0, 30.0, 1.16],  [-30.0, 11.0, 1.02],
+    [-31.5, 25.0, 1.10],  [-26.0, 35.5, 0.94],
+    [15.5, 10.5, 0.98],  [20.0, 22.0, 1.06],  [10.0, 33.5, 1.12],
+    [17.0, 31.0, 0.92],  [29.5, 8.5, 1.08],  [31.0, 20.0, 1.00],
+    [24.5, 36.0, 1.14],  [13.0, 41.5, 0.96],
+    [-13.0, 40.0, 1.06],  [-2.0, 43.0, 1.10],  [4.0, 37.5, 0.94],
+    [-33.0, 3.0, 1.04],
   ].map(([x, z, s]) => ({ x, z, h: 7.6 * s })),
-    { seed: 11, tint: new THREE.Color(0.30, 0.34, 0.30), shadow: true, roughness: 0.95 }));
+    { seed: 11, tint: new THREE.Color(0.30, 0.34, 0.30), shadow: true, roughness: 0.95, lowKeep: 0.55 }));
 
   /* ---------------------------------------------------------- atmosphere */
   // drifting smoke from the burner
@@ -985,8 +998,14 @@
         [-11.0, 2.5, 8.2], [-13.5, -1.5, 7.4], [-9.0, -4.5, 6.8], [-7.5, 1.0, 7.0],
         [11.5, 2.0, 8.6], [13.5, -2.0, 7.2], [9.5, -5.0, 6.6],
         [-4.5, -7.5, 7.8], [4.0, -8.0, 7.6],
+        /* v6.17 — twelve more, thickening both banks and the lawn behind
+           him. The window stays open: nothing inside |x| < 6.5 forward of
+           z = 0, which is the lens's line to the sea, the sun and the path. */
+        [-15.5, 3.5, 7.8], [-12.0, 6.0, 7.0], [-16.0, -5.0, 6.6], [-10.5, -9.0, 7.4],
+        [15.5, 4.0, 7.6], [12.0, 6.5, 6.9], [16.5, -6.0, 7.2], [10.0, -9.5, 7.9],
+        [-7.0, -12.0, 7.1], [0.5, -12.5, 8.0], [7.5, -12.0, 7.3], [-1.5, -15.5, 6.8],
       ].map(([x, z, h]) => ({ x, z, h })),
-        { seed: 21, fog: false, tint: new THREE.Color(1.30, 1.16, 0.94), roughness: 0.92 }));
+        { seed: 21, fog: false, tint: new THREE.Color(1.30, 1.16, 0.94), roughness: 0.92, lowKeep: 0.6 }));
       benchAt(P1, 3.4, 2.3, 0); benchAt(P1, -6.0, 2.5, 0);
       binAt(P1, 4.6, 2.7, std({ color: 0x2c6a3c, roughness: 0.8 }));
       const postMat = nf(matMetal, { color: new THREE.Color(0x8a8a8a) });
@@ -1160,9 +1179,14 @@
          The two that stood closest to the tracking shot are pushed out
          with them, for the reason pocket one's are: a real crown is as
          wide as the tree is tall. */
-      treeStands.push(plantTrees(P3, [[-10.5, -3.5, 1.35], [10.8, -6.2, 1.25], [-12.5, 10.5, 1.2], [12.8, 10.0, 1.3], [-15.5, 1.5, 1.1], [15.5, 2.0, 1.15]]
+      /* v6.17: nine more round the playground's edge, still clear of the
+         tracking shot along the apron (|x| < 7 near z = 0). */
+      treeStands.push(plantTrees(P3, [[-10.5, -3.5, 1.35], [10.8, -6.2, 1.25], [-12.5, 10.5, 1.2], [12.8, 10.0, 1.3], [-15.5, 1.5, 1.1], [15.5, 2.0, 1.15],
+                                      [-14.0, -8.0, 1.28], [14.5, -9.5, 1.18], [-17.5, 6.5, 1.22], [17.0, 7.0, 1.12],
+                                      [-8.5, 14.0, 1.3], [8.0, 14.5, 1.24], [0.0, 16.5, 1.16],
+                                      [-18.0, -3.0, 1.08], [18.5, -2.0, 1.26]]
         .map(([x, z, s]) => ({ x, z, h: 6.6 * s })),
-        { seed: 31, fog: false, tint: new THREE.Color(1.22, 1.26, 1.10), roughness: 0.92 }));
+        { seed: 31, fog: false, tint: new THREE.Color(1.22, 1.26, 1.10), roughness: 0.92, lowKeep: 0.6 }));
       // two blocks with a void deck under them, at the back and the right; windows as a repeating storey
       const winCanvas = (() => { const s = 256, [c, ctx] = cnv(s);
         ctx.fillStyle = '#e8dcc4'; ctx.fillRect(0, 0, s, s);

@@ -410,10 +410,18 @@
        Every spot is hand-picked OUTSIDE the play bounds, clear of the two
        parked cars, and clear of the corridor out to the middle of the car
        park, which the opening film needs empty for a reason.             */
+    /* v6.17: twenty more (Chad: more trees everywhere). Every one is still
+       outside the play bounds and clear of the corridor the opening film
+       tracks down — a second rank behind the first and a far line that
+       closes the car park's edge off. */
     const TREE_AT = [
       [-13, -2], [-16, 6], [-14, 14], [-19, 22], [-12, 30],
       [13, 0], [16, 9], [14, 18], [19, 27], [12.5, 36],
-      [-4, 40], [6, 44], [-9, 38], [16, 44]
+      [-4, 40], [6, 44], [-9, 38], [16, 44],
+      [-21, -6], [-24, 3], [-22, 12], [-26, 20], [-20, 34], [-25, 42],
+      [21, -5], [24, 4], [22, 14], [26, 23], [20, 33], [25, 41],
+      [-15, 48], [-5, 50], [5, 49], [14, 50], [-30, 12], [29, 12],
+      [-31, 30], [30, 31]
     ];
     /* v6.15: CHAD'S TREES. The fourteen spots are unchanged — every one was
        picked outside the play bounds, clear of the two parked cars and clear
@@ -423,7 +431,7 @@
        they are barely tinted; the tent is what the eye must hold, so they
        stay a fraction under the tarmac's brightness. */
     const treeStands = [plantTrees(world, TREE_AT.map(([x, z], i) => ({ x, z, h: 7.2 + ((i * 37) % 10) * 0.22 })),
-      { seed: 41, tint: new THREE.Color(0.94, 0.98, 0.90), roughness: 0.94 })];
+      { seed: 41, tint: new THREE.Color(0.94, 0.98, 0.90), roughness: 0.94, lowKeep: 0.55 })];
 
     /* ------------------------------------------------------------ the block
        The same model chapter 1 stands under and chapter 2 sees through a

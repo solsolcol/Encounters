@@ -89,11 +89,20 @@ for (const node of root.listNodes()) clearNodeTransform(node);
    wrong span (measured on the first attempt: trees 1.84 units long lying
    down, crowns rendering two and a half times their own height).
 
-   What tells the axes apart is the TRUNK: along the up axis, the far end
-   is a crown and the near end is a stick. So for each axis and each
-   direction, take the outermost twelfth of the model and measure how far
-   its vertices sit from that axis; the smallest of the six is the base of
-   the trunk, and up is away from it.                                     */
+   What tells the axes apart is the TRUNK: along the up axis, the base is a
+   thin stick and the far end is a crown. v6.15 scored that as "how thin is
+   the outermost twelfth", and it put the oak on its side (v6.17), because
+   thinness alone is won by an END WITH ALMOST NOTHING IN IT: along the
+   oak's z the base slab held THIRTEEN stray vertices that happened to sit
+   near the axis, against 299 real ones along its true up. An empty slab is
+   not a trunk.
+
+   So the score asks for both: of the vertices in the bottom tenth, what
+   FRACTION sits within 6 % of the span from the axis — a trunk clusters,
+   a flank of crown does not — scaled down when that slab is too sparse to
+   mean anything. Measured across all four of Chad's trees, the true up
+   wins every time (0.37 / 0.16 / 1.00 / 0.34 against 0.17 / 0.06 / 0.39 /
+   0.17 for the best wrong answer).                                       */
 const prims = [];
 for (const mesh of root.listMeshes()) for (const p of mesh.listPrimitives()) prims.push(p);
 const verts = [];
@@ -103,21 +112,48 @@ for (const p of prims) {
 }
 let raw0 = [Infinity, Infinity, Infinity], raw1 = [-Infinity, -Infinity, -Infinity];
 for (const v of verts) for (let k = 0; k < 3; k++) { if (v[k] < raw0[k]) raw0[k] = v[k]; if (v[k] > raw1[k]) raw1[k] = v[k]; }
-let best = { score: Infinity, axis: 1, dir: 1 };
-for (let axis = 0; axis < 3; axis++) {
-  const span = raw1[axis] - raw0[axis]; if (span <= 0) continue;
+/* the trunk score of one candidate orientation: how much of the bottom tenth
+   clusters on the axis, discounted when that slab is too sparse to trust */
+function trunkScore(pts, lo, hi, axis, dir) {
+  const span = hi[axis] - lo[axis]; if (span <= 0) return 0;
   const o1 = (axis + 1) % 3, o2 = (axis + 2) % 3;
-  const c1 = (raw0[o1] + raw1[o1]) / 2, c2 = (raw0[o2] + raw1[o2]) / 2;
-  for (const dir of [1, -1]) {
-    const edge = dir > 0 ? raw0[axis] + span / 12 : raw1[axis] - span / 12;
-    let sum = 0, n = 0;
-    for (const v of verts) {
-      if (dir > 0 ? v[axis] > edge : v[axis] < edge) continue;
-      sum += Math.hypot(v[o1] - c1, v[o2] - c2); n++;
+  const c1 = (lo[o1] + hi[o1]) / 2, c2 = (lo[o2] + hi[o2]) / 2;
+  let near = 0, all = 0;
+  for (const v of pts) {
+    const u = (dir > 0 ? v[axis] - lo[axis] : hi[axis] - v[axis]) / span;
+    if (u > 0.10) continue;
+    all++;
+    if (Math.hypot(v[o1] - c1, v[o2] - c2) / span < 0.06) near++;
+  }
+  if (!all) return 0;
+  return (near / all) * Math.min(1, all / 50);   // an empty slab is not a trunk
+}
+let best = { score: -1, axis: 1, dir: 1 };
+for (let axis = 0; axis < 3; axis++) for (const dir of [1, -1]) {
+  const score = trunkScore(verts, raw0, raw1, axis, dir);
+  if (score > best.score) best = { score, axis, dir };
+}
+/* TREE_DEBUG=1 prints every candidate, which is how the scoring rule was
+   chosen: v6.16's "thinnest outermost twelfth" put the oak on its side. */
+if (process.env.TREE_DEBUG) {
+  for (let axis = 0; axis < 3; axis++) {
+    const span = raw1[axis] - raw0[axis]; if (span <= 0) continue;
+    const o1 = (axis + 1) % 3, o2 = (axis + 2) % 3;
+    const c1 = (raw0[o1] + raw1[o1]) / 2, c2 = (raw0[o2] + raw1[o2]) / 2;
+    for (const dir of [1, -1]) {
+      // profile in this orientation: 8 slabs, max radius / span
+      const N = 8, rad = new Array(N).fill(0), cnt = new Array(N).fill(0);
+      let baseNear = 0, baseAll = 0;
+      for (const v of verts) {
+        const u = dir > 0 ? (v[axis] - raw0[axis]) : (raw1[axis] - v[axis]);
+        const k = Math.min(N - 1, Math.max(0, Math.floor(u / span * N)));
+        const r = Math.hypot(v[o1] - c1, v[o2] - c2) / span;
+        if (r > rad[k]) rad[k] = r; cnt[k]++;
+        if (u / span < 0.10) { baseAll++; if (r < 0.06) baseNear++; }
+      }
+      const widest = rad.indexOf(Math.max(...rad));
+      console.log(`    cand ${'xyz'[axis]}${dir>0?'+':'-'}: prof ${rad.map(r=>r.toFixed(2)).join(' ')} | trunkfrac ${(baseAll?baseNear/baseAll:0).toFixed(2)} (${baseAll} pts) | widest #${widest} | span/otherMax ${(span / Math.max(raw1[o1]-raw0[o1], raw1[o2]-raw0[o2])).toFixed(2)}`);
     }
-    if (!n) continue;
-    const score = (sum / n) / span;         // a trunk is thin against the tree's own height
-    if (score < best.score) best = { score, axis, dir };
   }
 }
 const AX = best.axis, DIR = best.dir;                       // up is `DIR` along `AX`
@@ -169,7 +205,27 @@ for (const p of prims) {
   console.log(`  profile (base->top, max radius per eighth): ${prof}`);
   if (rad[0] > 0.30) throw new Error(`base slab is ${rad[0].toFixed(2)} wide — that is not a trunk, the model is on its side`);
   if (widest === 0) throw new Error('the widest slab is the bottom one — the model is on its side');
-  console.log(`  standing: trunk ${rad[0].toFixed(3)}, widest slab #${widest} at ${rad[widest].toFixed(3)}`);
+
+  /* and the real check: SCORE THE BAKED MODEL THE SAME WAY AGAIN. If the file
+     is standing, y+ must now be the best of the six orientations by the trunk
+     score. The profile alone cannot catch a tree on its side — the oak's was
+     a perfectly ordinary tree profile while it lay on its back, because
+     slicing a lying tree horizontally also gives thin ends and a fat middle.
+     Re-scoring cannot be fooled that way: it asks where the trunk IS.      */
+  const baked = [];
+  for (const p of prims) {
+    const a = p.getAttribute('POSITION').getArray(); const n = p.getAttribute('POSITION').getCount();
+    for (let i = 0; i < n; i++) baked.push([a[i*3], a[i*3+1], a[i*3+2]]);
+  }
+  let bl = [Infinity, Infinity, Infinity], bh = [-Infinity, -Infinity, -Infinity];
+  for (const v of baked) for (let k = 0; k < 3; k++) { if (v[k] < bl[k]) bl[k] = v[k]; if (v[k] > bh[k]) bh[k] = v[k]; }
+  let win = { score: -1, name: '?' };
+  for (let axis = 0; axis < 3; axis++) for (const dir of [1, -1]) {
+    const sc = trunkScore(baked, bl, bh, axis, dir);
+    if (sc > win.score) win = { score: sc, name: `${'xyz'[axis]}${dir > 0 ? '+' : '-'}` };
+  }
+  if (win.name !== 'y+') throw new Error(`the baked model scores best as ${win.name}, not y+ — it is not standing up`);
+  console.log(`  standing: trunk ${rad[0].toFixed(3)}, widest slab #${widest} at ${rad[widest].toFixed(3)}, re-scored best as y+ (${win.score.toFixed(2)})`);
 }
 
 /* 5 — sheets: leaf cards keep their alpha, bark does not need it.
