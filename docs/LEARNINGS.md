@@ -2524,3 +2524,49 @@ any prep step that picks a codec must state what each output is allowed to
 lose. The check that would have caught it in seconds is one line — read the
 shipped file back and assert `hasAlpha` on every sheet a material cuts out
 with — and it is now part of the prep's own output.
+
+## Thinness alone is a contest an empty region wins (v6.17)
+
+`preptree` decided which end of a tree was the trunk by measuring how thin
+each end was. That is a sound instinct and a broken metric: an end holding
+almost NOTHING scores perfectly. The oak's z-end held 13 stray vertices that
+happened to sit near the centre; its real trunk held 299 and scored worse.
+It shipped on its side.
+
+Any "smallest wins" score over a sampled region needs a floor on how much
+evidence the region holds — here `(near / all) * min(1, all / 50)`, so a
+thirteen-vertex slab cannot beat a three-hundred-vertex one on tidiness. The
+same trap waits in every measurement that ranks candidates by a ratio: check
+the DENOMINATOR before trusting the ratio.
+
+## An assertion that cannot fail on the real defect is not an assertion (v6.17)
+
+The first check written for the sideways oak measured its PROFILE — thin at
+the base, widest above, narrowing at the top — and the lying oak passed it,
+because slicing a fallen tree horizontally also gives thin ends and a fat
+middle. The check that works re-runs the ORIENTATION SCORE on the baked
+model and requires y+ to win: it asks where the trunk *is*, not what the
+silhouette looks like. Before trusting a new assertion, run it against the
+broken input you are fixing. If it passes, it is decoration.
+
+## A wide shot cannot verify a model; photograph each kind alone (v6.17)
+
+v6.16's tree work was "verified" with one wide shot of fourteen trees and one
+look up into a crown. A tree on its side is invisible in both: at that
+distance its foliage still reads as green, and no trunk is near the middle of
+the frame. Chad found it in a single screenshot of his own. When a change
+introduces N variants of a thing, the verification is N photographs, each
+with one variant filling the frame — not one photograph containing all of
+them. The wide shot is for composition and density; it proves nothing about
+the models.
+
+## Photograph a world from PLAY, not from a paused film (v6.17)
+
+Four attempts at framing chapter 1's memory pockets failed the same way,
+because `cineSeek` re-applies every track whose `t0` has passed on EVERY
+frame (v5.07, v5.30 — the same law, twice recorded). Pausing a film stops the
+clock, not the writes: a camera moved by hand is put back before the
+screenshot, and the one frame that came out right was the film's own shot.
+Get to `play`, where nothing owns the camera, and read the subject's world
+position out of the scene graph rather than recomputing it from a chapter's
+constants — the pocket coordinates I derived by hand were wrong twice.

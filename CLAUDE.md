@@ -1445,6 +1445,33 @@ What the baseline contains, by release:
   anisotropy on every tree sheet, because a crown is nothing but grazing
   angles. The kit costs 1.36 MB -> 2.31 MB, once per session for the whole
   game. docs/V6.16-THE-LEAVES.md is the build's memory.
+- **v6.17** THE OAK STOOD UP, AND EVERY STAND GOT THICKER — Chad, with a
+  screenshot: "Do you see the tree floating sideways? how did this pass your
+  review?" It passed because the review could not have caught it: v6.16 was
+  verified with a wide shot of FOURTEEN trees and one look up into a crown,
+  and neither puts a trunk in the middle of the frame — a tree on its side at
+  twenty metres still reads as green. **A tree change is verified by
+  photographing each KIND on its own**, which is how the oak was named in one
+  frame. The bug: `preptree` chose the up axis by asking how THIN the far end
+  was, and thinness alone is won outright by an end that is nearly empty —
+  along the oak's z that end held THIRTEEN stray vertices near the centre
+  against the 299 of its real trunk. The score now asks how much of the
+  bottom tenth CLUSTERS on the trunk axis, discounted when the slab is too
+  sparse to mean anything; the true up wins on all four trees (0.37 / 0.16 /
+  1.00 / 0.34 against 0.17 / 0.06 / 0.39 / 0.17). And the tool RE-SCORES THE
+  BAKED MODEL and refuses to write it unless y+ wins — the profile check
+  written first (thin at the base, widest above) PASSED the lying oak,
+  because a fallen tree sliced horizontally also has thin ends and a fat
+  middle. Density at his ask, everywhere the game has trees: the void deck
+  12 -> 32, the East Coast memory 9 -> 21, the playground memory 6 -> 15, the
+  car park 14 -> 34 — 41 trees to 102, counted off the live scene, every new
+  spot outside the sight-lines the old ones were chosen to protect.
+  `plantTrees` gains `lowKeep`, the phone's share of a stand, dealt from the
+  same stream so a thinned forest is the same forest. One probe law, paid for
+  four times: **photograph a world from PLAY**, because `cineSeek` re-applies
+  every passed track on every frame and a camera moved by hand under a PAUSED
+  film is put back before the screenshot (v5.30's law, walked into again).
+  docs/V6.17-THE-OAK-STOOD-UP.md is the build's memory.
 - **v5.28** AARON — Chad, after two rounds of level work on River: *"i'm still
   not satisfied with this voice."* All 79 of the boy's takes regenerated in a
   THIRD voice (Aaron, `B6uUx2p7cRgxseOUyP6P`), under an approved prompt sheet
