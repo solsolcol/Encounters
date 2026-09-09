@@ -48,11 +48,22 @@ out.titleOpensChapters = !(await hidden('chapters'));
 out.tenTabs = await p.evaluate(() => document.querySelectorAll('#chTabs .chTab').length === 10
   && document.querySelector('#chTabs .chTab.on')?.dataset.ep === '1'
   && document.getElementById('chEpName').textContent.includes('Episode 1'));
-await p.click('#chTabs .chTab[data-ep="2"]'); await p.waitForTimeout(200);
+/* v7.1: episode 2 has a real chapter now (The Worst Bed), so the unwritten
+   episode is 3, and episode 2's row is one real, locked chapter over four
+   unwritten ones — a written chapter in a later case must never open on a
+   fresh game (progress is by PLACE in the run, v6.0). */
+await p.click('#chTabs .chTab[data-ep="3"]'); await p.waitForTimeout(200);
 out.emptyEpisodeRows = await p.evaluate(() => {
   const r = [...document.querySelectorAll('#chList .chTile')];
   return r.length === 5 && r.every(x => x.classList.contains('unwritten') && x.disabled)
-    && document.querySelector('#chTabs .chTab.on')?.dataset.ep === '2'
+    && document.querySelector('#chTabs .chTab.on')?.dataset.ep === '3'
+    && document.getElementById('chEpName').textContent.includes('Episode 3');
+});
+await p.click('#chTabs .chTab[data-ep="2"]'); await p.waitForTimeout(200);
+out.laterEpisodeLocked = await p.evaluate(() => {
+  const r = [...document.querySelectorAll('#chList .chTile')];
+  return r.length === 5 && r[0].classList.contains('locked') && r[0].disabled && !r[0].classList.contains('unwritten')
+    && r.slice(1).every(x => x.classList.contains('unwritten') && x.disabled)
     && document.getElementById('chEpName').textContent.includes('Episode 2');
 });
 await p.click('#chTabs .chTab[data-ep="1"]'); await p.waitForTimeout(200);
@@ -76,7 +87,8 @@ out.caseCardLit = await p.evaluate(() => {
   const a = on.getBoundingClientRect(), s = strip.getBoundingClientRect();
   return on.dataset.ep === '1' && dots === 'done,done,open,locked,locked'
     && a.left >= s.left - 1 && a.right <= s.right + 1      // the open case is in view
-    && document.querySelector('#chTabs .chTab[data-ep="2"]').classList.contains('empty');
+    && document.querySelector('#chTabs .chTab[data-ep="3"]').classList.contains('empty')
+    && !document.querySelector('#chTabs .chTab[data-ep="2"]').classList.contains('empty');   // v7.1: a written case
 });
 out.headingCounts = await p.evaluate(() => /2 of 5/.test(document.getElementById('chEpName').textContent));
 await p.click('#chClose'); await p.waitForTimeout(200);

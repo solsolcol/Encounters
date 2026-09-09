@@ -2600,3 +2600,40 @@ constants — the pocket coordinates I derived by hand were wrong twice.
   serialises as `undefined` is dropped by JSON and breaks the equality.
   Absent is `null`, never `undefined`.
 
+
+## v7.1 — the first chapter on the kit
+
+- **A chapter clock on the frame's `dt` runs at a twentieth of real time
+  on the 1 fps box.** The engine clamps dt to 0.05 s, which is right for
+  physics and wrong for a schedule: 3.4 s of The Worst Bed's day took 68
+  real seconds before the probe caught it. A chapter's own clock runs on
+  WALL time (capped at half a second a frame so a stalled tab never skips
+  a beat) and advances only in play. The kit's own tweens (fade, daylight,
+  pose) still run on dt, so on the slow box they lag a wall clock; on a
+  real machine the two agree.
+- **A sound's name is a global.** Chapter 2 owned `bedcreak`; the new
+  chapter wanted the same name for its own creak and the encoder's install
+  would have overwritten a shipped file with no error anywhere. The
+  encoder now refuses a name `assets/audio/` already has, and the one
+  overwrite that happened was reverted from git before anything else
+  moved. Name a chapter's sound for the chapter (`bunkcreak`).
+- **Lying in the bed, the bed is out of the lens.** `pile.inView()` is a
+  screen test, and at 03:00 the mattress is under the player's eye and
+  below the frame, so the decision was unreachable from the pillow. In the
+  night phase, within 1.3 m, the bed counts as in view and a tap anywhere
+  hits it.
+- **A borrowed rig has no crown bone; a talk take must be a talk take.**
+  The FBO rigs' `Gesture_with_Hand_on_Gun` is a KNEELING hand signal and
+  read as one under the sergeant's line — the encik's two talking takes
+  bake onto the FBO rig unchanged (metres to metres, 0 bones absent,
+  `tools/borrowclips.mjs`), which is what §7 of the plan said and the
+  shipped file did not carry until the film was photographed.
+- **White drops on white tile are no water.** The shower's falling drops
+  were invisible against the cubicle in every frame; a scrolling streak
+  sheet and a light in the cubicle are what read. And from BESIDE a
+  cubicle its partition hides the water — the camera has to stand in the
+  cubicle's own lane.
+- **The MCP tool writes a large result to disk.** A status result over the
+  size cap lands in a file under the session's `tool-results/` instead of
+  the conversation; a harvester that reads those files (and the transcript
+  for the small ones) downloads a hundred takes with nothing retyped.

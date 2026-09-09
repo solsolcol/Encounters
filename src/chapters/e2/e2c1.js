@@ -92,11 +92,44 @@
     musicVol: 0,
     ambience: { beds: [['bunkday', 0.24], ['fanloop', 0.14], ['clocktick', 0.06]] },
 
+    /* every word this chapter puts on the screen outside a card: the five
+       the engine names the pile by, the presence banner, and (v7.1) the
+       kit's words — objectives, hotspot prompts, event titles, conduct
+       notes, the standby bed's eight items. All of them reach the sheet. */
     words: {
       approach: 'your bed',
-      act: 'Lie down', actTouch: 'Lie down',
-      interact: 'E at the bed', interactTouch: 'Tap the bed',
-      presence: 'Something is in the block.'
+      act: 'Lie down',
+      actTouch: 'Lie down',
+      interact: 'E at the bed',
+      interactTouch: 'Tap the bed',
+      presence: 'Something is in the block.',
+      objArrive: 'Find your bed — bed one',
+      objFallIn: 'FALL IN — on the yellow line',
+      objLate: 'FALL IN — get to the line',
+      objStandby: 'Back to your bed — standby bed',
+      objBed: 'STANDBY BED — sixty seconds',
+      objFree: 'Look around the bunk before lights out',
+      objWarn: 'Lights out is coming — get to your bed',
+      objLights: 'Lights out',
+      objFear: 'FEAR CONTROL — keep the beat',
+      hotShower: 'Look into the shower block',
+      hotBuddy: 'Talk to him',
+      hotBoard: 'Read the notice board',
+      hotBunkmate: 'Ask him about bed one',
+      evBed: 'STANDBY BED',
+      evFear: 'FEAR CONTROL',
+      noteOnTime: 'Fell in on time.',
+      noteLate: 'Late to fall in. Push-ups.',
+      noteBedOk: 'A good standby bed.',
+      noteBedFail: 'The bunk did it again because of you.',
+      item1: 'Pillow',
+      item2: 'Bedsheet',
+      item3: 'Blanket',
+      item4: 'Boots',
+      item5: 'Water bottle',
+      item6: 'Mug',
+      item7: 'Toothbrush',
+      item8: 'Locker'
     },
     lines: { near: 'n1near', close: 'n1near', nearAt: 2.4, act: 'n1act' },
     voiceLine: 'n1voice',
@@ -427,11 +460,26 @@
       map: dotTex, color: 0xdde8ff, size: 0.085, transparent: true, opacity: 0.8, depthWrite: false }));
     water.visible = false;
     world.add(water);
+    /* and a falling SHEET behind the drops — white drops vanish against
+       white tile (the scene frames showed a dry cubicle with the loop
+       running), a scrolling streak plane does not */
+    const streakTex = makeStreaks(THREE, cnv);
+    const streak = new THREE.Mesh(new THREE.PlaneGeometry(0.26, 2.1),
+      new THREE.MeshBasicMaterial({ map: streakTex, color: 0x9fb6d0, transparent: true, opacity: 0.7,
+        side: THREE.DoubleSide, depthWrite: false, fog: false }));
+    streak.position.set(WATER_AT.x, 1.05, WATER_AT.z + 0.02);
+    streak.visible = false;
+    world.add(streak);
+    const puddle = new THREE.Mesh(new THREE.CircleGeometry(0.3, 16),
+      new THREE.MeshStandardMaterial({ color: 0x6f7c86, roughness: 0.15, metalness: 0.1, transparent: true, opacity: 0.55 }));
+    puddle.rotation.x = -Math.PI / 2; puddle.position.set(WATER_AT.x, 0.006, WATER_AT.z - 0.1);
+    puddle.visible = false;
+    world.add(puddle);
     const showerLight = new THREE.PointLight(0xa8bce0, 0, 3.4, 2.0);
     showerLight.position.set(WATER_AT.x, 1.6, WATER_AT.z - 0.4);
     scene.add(showerLight); owned.push(showerLight);
     let showerOn = false;
-    function setShower(on) { showerOn = !!on; water.visible = showerOn; showerLight.intensity = showerOn ? 2.4 : 0; }
+    function setShower(on) { showerOn = !!on; water.visible = streak.visible = puddle.visible = showerOn; showerLight.intensity = showerOn ? 2.4 : 0; }
 
     /* ----------------------------------------------------- the balcony --- */
     {
@@ -831,8 +879,8 @@
     const SGT_LINE = { x: BALC.x0 + 0.7, z: -2.4, ry: 0.0 };   // on the balcony, facing along the line
     const LINE_X = BALC.line - 0.35;                           // past this, he is on the line
     const LIE_Y = BED.low + 0.14, LIE_YAW = -Math.PI / 2;      // his eye on the pillow, looking along the bed to the aisle
-    const BED_ITEMS = ['Pillow', 'Bedsheet', 'Blanket', 'Boots', 'Water bottle', 'Mug', 'Toothbrush', 'Locker']
-      .map(label => ({ label, icon: itemIcon(cnv, label) }));
+    const ITEM_GLYPH = ['Pillow', 'Bedsheet', 'Blanket', 'Boots', 'Water bottle', 'Mug', 'Toothbrush', 'Locker'];   // which glyph, whatever the sheet calls it
+    const BED_ITEMS = ITEM_GLYPH.map((g, i) => ({ label: DATA.words['item' + (i + 1)] || g, icon: itemIcon(cnv, g) }));
 
     function putSergeant(at) {
       sergeant.group.position.set(at.x, 0, at.z);
@@ -843,7 +891,7 @@
     function beginArrive() {
       setPhase('arrive');
       if (!kit) return;
-      kit.objective('Find your bed — bed one');
+      kit.objective(DATA.words.objArrive);
       kit.waypoint({ x: PILE_POS.x, y: 1.0, z: PILE_POS.z });
     }
     /* ---- fall in: the whistle, the line, the count */
@@ -856,19 +904,19 @@
       after(1.2, () => sgtSay('s1fallin'));
       after(4.6, () => sayLine('n1fallin'));
       if (!kit) return;
-      kit.objective('FALL IN — on the yellow line');
+      kit.objective(DATA.words.objFallIn);
       kit.waypoint({ x: BALC.line, y: 1.0, z: 0 });
       fallTimer = kit.timer(14, () => {
         fallLate = true; fallTimer = null;
         sgtSay('s1late');
         after(3.6, () => { sayLine('n1late'); if (worldSfx) worldSfx('pushups', 0.8); });
-        kit.conduct({ s: -3, a: -2, note: 'Late to fall in. Push-ups.' });
-        kit.objective('FALL IN — get to the line');
+        kit.conduct({ s: -3, a: -2, note: DATA.words.noteLate });
+        kit.objective(DATA.words.objLate);
       });
     }
     function onTheLine() {
       if (fallTimer) { fallTimer.stop(); fallTimer = null; }
-      if (kit && !fallLate) kit.conduct({ a: 4, note: 'Fell in on time.' });
+      if (kit && !fallLate) kit.conduct({ a: 4, note: DATA.words.noteOnTime });
       beginStandby();
     }
     /* ---- the standby bed: back to the bunk, then the sequence */
@@ -877,16 +925,16 @@
       setPhase('standby');
       after(fallLate ? 6.5 : 1.0, () => putSergeant(SGT_DOOR));
       if (!kit) return;
-      kit.objective('Back to your bed — standby bed');
+      kit.objective(DATA.words.objStandby);
       kit.waypoint({ x: PILE_POS.x, y: 1.0, z: PILE_POS.z });
     }
     function runStandbyBed() {
       if (!kit) { beginFree(); return; }
       kit.waypoint(null);
-      kit.objective('STANDBY BED — sixty seconds');
+      kit.objective(DATA.words.objBed);
       sgtSay('s1standby');
       after(3.4, () => {
-        kit.event({ kind: 'sequence', label: 'STANDBY BED', items: BED_ITEMS,
+        kit.event({ kind: 'sequence', label: DATA.words.evBed, items: BED_ITEMS,
                     each: 1.3, accel: 0.86, minEach: 0.5,
                     award: { stat: 'awareness', lo: 0, hi: 8 } })
           .then(r => {
@@ -894,12 +942,12 @@
             bedTries++;
             if (r && r.ok) {
               sayLine('n1bedok');
-              kit.conduct({ a: 3, note: 'A good standby bed.' });
+              kit.conduct({ a: 3, note: DATA.words.noteBedOk });
               after(SECS.n1bedok + 0.6, beginFree);
             } else if (bedTries < 2 && !(r && (r.skipped || r.aborted))) {
               sgtSay('s1again');
               after(2.3, () => sayLine('n1bedfail'));
-              kit.conduct({ s: -4, note: 'The bunk did it again because of you.' });
+              kit.conduct({ s: -4, note: DATA.words.noteBedFail });
               after(2.3 + SECS.n1bedfail + 0.5, runStandbyBed);
             } else {
               after(0.5, beginFree);
@@ -913,14 +961,14 @@
       setPhase('free');
       freeAt = dayClock.t; freeWarned = false;
       if (!kit) return;
-      kit.objective('Look around the bunk before lights out');
+      kit.objective(DATA.words.objFree);
       kit.waypoint(null);
     }
     /* ---- lights out: the switch, the sky, the beds, and to bed */
     function beginLightsOut() {
       setPhase('lightsout');
       dropTodo();
-      if (kit) { kit.objective('Lights out'); kit.waypoint(null); }
+      if (kit) { kit.objective(DATA.words.objLights); kit.waypoint(null); }
       sgtSay('s1lights');
       after(2.6, () => { if (worldSfx) worldSfx('switchoff', 0.9); });
       after(2.7, () => {
@@ -955,8 +1003,8 @@
       after(8.2, () => { if (kit) kit.presence(0.35); });
       after(8.2 + SECS.n1hear + 0.6, () => {
         if (!kit) { startDecision(); return; }
-        kit.objective('FEAR CONTROL — keep the beat');
-        kit.event({ kind: 'heartbeat', label: 'FEAR CONTROL', n: 5, bpm: 72, win: 0.19,
+        kit.objective(DATA.words.objFear);
+        kit.event({ kind: 'heartbeat', label: DATA.words.evFear, n: 5, bpm: 72, win: 0.19,
                     award: { stat: 'sanity', lo: -8, hi: 2 } })
           .then(r => { if (!alive) return; kit.objective(null); after(0.4, () => { if (getState() === 'play') startDecision(); }); });
       });
@@ -991,7 +1039,7 @@
       return true;
     }
     if (kit) {
-      kit.objective('Find your bed — bed one');
+      kit.objective(DATA.words.objArrive);
       kit.waypoint({ x: PILE_POS.x, y: 1.0, z: PILE_POS.z });
       kit.setPhase('arrive');
     }
@@ -999,10 +1047,10 @@
     /* --------------------------------------------------------- hotspots */
     const seen = new Set();
     const hotspots = [
-      { id: 'shower', pos: { x: DOOR_WC.x, y: 1.0, z: R.z + 0.6 }, radius: 2.0, prompt: 'Look into the shower block',
+      { id: 'shower', pos: { x: DOOR_WC.x, y: 1.0, z: R.z + 0.6 }, radius: 2.0, prompt: DATA.words.hotShower,
         enabled: () => phase === 'free',
         onInteract() { seen.add('shower'); return sayLine('n1shower'); } },
-      { id: 'buddy', pos: { x: -3.05, y: 1.3, z: 1.15 }, radius: 2.2, prompt: 'Talk to him',
+      { id: 'buddy', pos: { x: -3.05, y: 1.3, z: 1.15 }, radius: 2.2, prompt: DATA.words.hotBuddy,
         enabled: () => phase === 'free' && buddy.group.visible,
         onInteract() {
           seen.add('buddy');
@@ -1011,7 +1059,7 @@
           setTimeout(() => { if (alive && buddy.cur === 'Talk_with_Hands_Open') buddy.play('Idle_9', 1, 0.4); }, SECS.b1day * 1000);
           return true;
         } },
-      { id: 'board', pos: { x: 2.0, y: 1.5, z: -R.z + 0.3 }, radius: 2.2, prompt: 'Read the notice board',
+      { id: 'board', pos: { x: 2.0, y: 1.5, z: -R.z + 0.3 }, radius: 2.2, prompt: DATA.words.hotBoard,
         enabled: () => phase === 'free',
         onInteract() {
           seen.add('board');
@@ -1021,7 +1069,7 @@
           setTimeout(() => { if (alive) sayLine('n1board'); }, (SECS.k1board + 0.4) * 1000);
           return true;
         } },
-      { id: 'bunkmate', pos: { x: 1.75, y: 1.3, z: -3.15 }, radius: 2.0, prompt: 'Ask him about bed one',
+      { id: 'bunkmate', pos: { x: 1.75, y: 1.3, z: -3.15 }, radius: 2.0, prompt: DATA.words.hotBunkmate,
         enabled: () => phase === 'free' && bunkmate.group.visible && seen.has('board'),
         onInteract() {
           seen.add('bunkmate');
@@ -1060,7 +1108,7 @@
       else if (phase === 'standby' && pileDist() < 2.0) { setPhase('standbybed'); runStandbyBed(); }
       else if (phase === 'free') {
         const dtFree = dayClock.t - freeAt;
-        if (!freeWarned && dtFree > 45) { freeWarned = true; if (kit) { kit.objective('Lights out is coming — get to your bed'); kit.waypoint({ x: PILE_POS.x, y: 1.0, z: PILE_POS.z }); } }
+        if (!freeWarned && dtFree > 45) { freeWarned = true; if (kit) { kit.objective(DATA.words.objWarn); kit.waypoint({ x: PILE_POS.x, y: 1.0, z: PILE_POS.z }); } }
         if (dtFree > 70) beginLightsOut();
       }
     }
@@ -1072,6 +1120,7 @@
       for (const r of sleepRigs) if (r.mixer && sleeperRoot.visible) r.mixer.update(dt);
       for (const f of fans) f.rotation.y += dt * 7.5 * fanSpeed;
       if (showerOn) {
+        streakTex.offset.y -= dt * 1.6;
         const a = waterGeo.attributes.position.array;
         for (let i = 0; i < WATER_N; i++) {
           a[i * 3 + 1] -= dt * (2.6 + (i % 5) * 0.3);
@@ -1185,7 +1234,7 @@
         m.dispose();
       }
       for (const t of [cTex.map, cTex.rough, grassTex.map, grassTex.rough, wallMap, noteTex, dotTex,
-                       tileTex, tarmacTex, boardTex, clock.tex, terrazzoTex, weaveTex]) t?.dispose?.();
+                       tileTex, tarmacTex, boardTex, clock.tex, terrazzoTex, weaveTex, streakTex]) t?.dispose?.();
       world.clear();
       S = null;
     }
@@ -1303,6 +1352,20 @@
     };
     (shapes[label] || (() => { ctx.beginPath(); ctx.arc(32, 32, 20, 0, 7); ctx.fill(); }))();
     return c;
+  }
+  function makeStreaks(THREE, cnv) {
+    const s = 128, [c, ctx] = cnv(s);
+    ctx.clearRect(0, 0, s, s);
+    for (let i = 0; i < 26; i++) {
+      const x = (i * 37) % s, len = 24 + (i * 53) % 60, y0 = (i * 71) % s;
+      const g = ctx.createLinearGradient(0, y0, 0, y0 + len);
+      g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(0.5, 'rgba(255,255,255,0.85)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = g; ctx.fillRect(x, y0, 2, len);
+      if (y0 + len > s) ctx.fillRect(x, y0 - s, 2, len);     // wraps, so the scroll is seamless
+    }
+    const tex = new THREE.CanvasTexture(c);
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.repeat.set(1, 3);
+    return tex;
   }
   function makeWeave(THREE, cnv) {
     const s = 128, [c, ctx] = cnv(s);
@@ -1469,7 +1532,7 @@
     const STAND = { x: stage.hisBed.x + 1.0, y: 1.62, z: stage.hisBed.z + 0.3 };
     const ATDOOR = { x: stage.DOOR_WC.x, y: 1.62, z: stage.R.z - 0.7 };
     const INSIDE = { x: stage.DOOR_WC.x, y: 1.62, z: 5.1 };
-    const NEAR = { x: stage.WATER_AT.x - 1.0, y: 1.58, z: 6.1 };
+    const NEAR = { x: stage.WATER_AT.x, y: 1.58, z: 5.65 };      // in the far cubicle's own lane: from beside it the partition hides the water
     const END = { x: stage.BLOCK.x0 + 0.45, z: 5.3 };
     const Y_DOOR = faceFrom(STAND.x, STAND.z, stage.DOOR_WC.x, stage.R.z);
     const Y_IN = faceFrom(INSIDE.x, INSIDE.z, stage.WATER_AT.x, stage.WATER_AT.z);

@@ -461,3 +461,19 @@ its feet 1–2 cm under the floor, so the commander is lifted by that much.
 Every ghost beat in the episode — the grey face in C3, the crouched soldier in C4, the cyclist in
 C5 — needs the model Chad has said he will supply. And the player's own hands hold nothing in the
 three chapters built around a rifle.
+
+## 11 · Shipped at v7.1 (E2C1)
+
+`assets/fbosling.glb` carries the encik's `Talk_with_Left_Hand_Raised` and
+`Talk_with_Left_Hand_on_Hip` beside its own six takes — baked by
+`tools/borrowclips.mjs` (metres to metres, hips ×1, 0 bones absent),
+because the FBO's own `Gesture_with_Hand_on_Gun` is a kneeling hand
+signal and the sergeant has lines to say standing up. `assets/admintee.glb`
+is the dressed talking FBX with `Idle_9` and `Talk_with_Hands_Open`
+borrowed from the 4anim rig (×0.01 — the FBX file is the centimetre one).
+`ghostsoldier.glb` is the stand-in at the block's corridor end for scene
+A's one frame, cut at 0.03 / 1024. The sleepers are `sleeper.glb` (six
+clones, quarter-turned onto the mattresses) and `sleepanim.glb` (two rigs
+on Sleep_Normally, measured from the posed skin). The prep level and the
+cast per chapter are as §6 and §9; the chapter's memory is
+docs/V7.1-E2C1-PLAN.md §15.

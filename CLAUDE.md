@@ -89,7 +89,9 @@ One source, two builds, built by `npm run build` (esbuild → `build.py` →
   nothing that belongs to one.
 - `src/chapters/*.js` — THE CHAPTERS (and, since v7.0, `src/chapters/e2/`
   and its siblings: one folder per episode, the key still the file's stem;
-  build.py, textsync and chaptertest recurse). Each is a plain script (no ESM —
+  build.py, textsync and chaptertest recurse; an episode-2 chapter's assets
+  and sounds are HOSTED-ONLY — `E2_ONLY` and `SOUNDS_SINGLE` in build.py —
+  so the single-file build stays episode 1's). Each is a plain script (no ESM —
   file:// tests and the CSP build both choke on module imports) wrapped in
   one closure, registering itself on `window.__CHAPTERS__`. A chapter
   carries its words, choices, stat deltas, teachings, stage positions,
@@ -1489,6 +1491,29 @@ What the baseline contains, by release:
   every passed track on every frame and a camera moved by hand under a PAUSED
   film is put back before the screenshot (v5.30's law, walked into again).
   docs/V6.17-THE-OAK-STOOD-UP.md is the build's memory.
+- **v7.1** EPISODE 2 · CHAPTER 1 · THE WORST BED — the first chapter built
+  on the kit, and the first of the second case file (Chad, 9 Sep 2026:
+  "begin building out episode 2, chapter 1 ... everything ... better than
+  episode 1"). Hawk Company's bunk on Tekong, day one: a 58 s film in his
+  NEW voice (Gabriel — his voice ages with him, EPISODES-PLAN §6) over the
+  ferry, the gates, the boots, the sergeant naming bed one; then a DAY on
+  the chapter's own clock — the whistle and a 14 s fall-in on the balcony's
+  yellow line, the standby bed as a SEQUENCE of eight items, the bunk's
+  four hotspots (the block, the buddy, the board, the bunkmate), lights out
+  (the tubes, the sky, the beds crossed to the night mix, the kit's fade,
+  to bed in the dark), 03:00 and the shower turning itself on in the block,
+  presence, a HEARTBEAT, the decision from the pillow; four scenes (the
+  corridor and the figure at its end for a tenth of a second; stillness and
+  the water stopping by itself; the whisper and the neighbour's roll; the
+  blanket as a weave on the lens). Chad's own soldiers (`fbosling`,
+  `admintee`, `sleeper`, `sleepanim`, `encik2`, a `ghostsoldier` stand-in
+  until his ghost arrives) at ratio 0.10 / 2048, hosted-only; 37 lines in
+  four voices and 21 sounds, all e2c1's by the split. ONE engine seam:
+  `kit.fade(to, secs)`. `textsync` exports every word a chapter's `words`
+  carries, so the kit's words are Chad's. Two laws in LEARNINGS: a chapter
+  clock runs on wall time, not the clamped dt; a sound's name is global
+  (`bunkcreak`, because chapter 2 owns `bedcreak`). Sheet v42.
+  docs/V7.1-E2C1-PLAN.md is the build's memory, checkpoint by checkpoint.
 - **v7.0** THE PLAY KIT — episode 2's first release, and the one that ships
   nothing a player of episode 1 can see (Chad approved the plan on 9 Sep:
   "can you begin building according to your plan?"). Everything a chapter
@@ -1604,8 +1629,10 @@ actually *enforce* the standard. The earlier anchor, `v3.3` / `c8abf61`,
 stands in the bundle Chad holds. An episode-2 change that reddens a
 base-game harness is a regression in the reference build, not a test
 that needs relaxing. Episode 2's plan is `docs/V7.0-EPISODE2-PLAN.md`
-(APPROVED 9 Sep 2026; v7.0 is its first release, the engine kit — next is
-v7.1, rifle mode, then the five chapters, one release each).
+(APPROVED 9 Sep 2026; v7.0 is its first release, the engine kit; v7.1 is
+its first CHAPTER, The Worst Bed — chapter 1 needs no rifle, so it shipped
+before rifle mode, and the plan's numbers shift down by one from there:
+rifle mode next, then chapters 2–5, one release each).
 
 Deferred by explicit choice: ghost mesh compression (1.6 MB, the
 biggest download win, but it touches the fragile `rescueTextures` GLB
@@ -1676,10 +1703,12 @@ fifth chapter has no scare that is not the player's own memory replayed
 and released. `nextChapterKey()` past ch5 is null, so sealing it ends
 the run exactly as it always ended a last chapter.
 
-Next up: **episode 2** (a new location from the case files — the trial
-game has fourteen more episodes' worth of material), and the
-still-outstanding job of replacing chapter 1's placeholder choices with
-the real "THE OFFERINGS" data in
+Next up: **episode 2's rifle mode and chapters 2–5** (chapter 1, The
+Worst Bed, shipped at v7.1 — `src/chapters/e2/e2c1.js`; the rifle
+viewmodel's placement and material are measured in
+docs/E2-SOLDIER-MODELS.md §8, and Chad's ghost and bicycle models are
+still to come), and the still-outstanding job of replacing chapter 1's
+placeholder choices with the real "THE OFFERINGS" data in
 `docs/source/trial-game-chapters.md`.
 
 The sound download is **done** (v4.2, above): split per chapter so it no

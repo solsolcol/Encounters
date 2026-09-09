@@ -423,6 +423,20 @@ carrying `data-t="key"` are filled at boot by `applyText()`, and code calls
 leaves the markup's own text alone, so a half-finished strings file can
 never blank the game.
 
+## Every word a chapter carries reaches the sheet (v7.1)
+
+Until v7.1 a chapter's `words` block reached the sheet through a fixed
+list of five keys — the words that name the pile. A chapter built on the
+play kit puts MORE of its own words on the screen: the objective line, a
+hotspot's prompt, an event's title, a conduct note, the standby bed's
+eight items. `textsync` now exports and imports **every string key a
+chapter's `words` carries** (the five first, in their old order, the
+chapter's own after), so The Worst Bed's thirty-three words are Chad's to
+edit like any other row (`e2c1.words.objArrive`, `e2c1.words.hotBuddy`,
+`e2c1.words.item1` …). Two rules for a chapter author: keep one key per
+line inside `words: { … }` (import writes them back by line), and reach
+them as `DATA.words.x` at the moment of use, not captured at build.
+
 ## The loop
 
 ```

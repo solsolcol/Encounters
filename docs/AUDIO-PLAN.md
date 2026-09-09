@@ -791,3 +791,53 @@ a narrator. The cue rows are back at vol 1; the level lives in the stage.
 The cue times did not move (10.8 / 22.1 / 33.8); every take is shorter
 than the one it replaces except `vpick2` (+0.08 s), and the next line
 after each is seconds away.
+
+## v7.1 — EPISODE 2 · CHAPTER 1, The Worst Bed: 37 lines in four voices, 21 sounds (257 in the packs)
+
+The first chapter of episode 2, and the first time the main character's
+voice AGES (docs/EPISODES-PLAN.md §6): him at eighteen is **Gabriel**
+(`8AMr87HV4PA3NKEl5q4O`, `jamesTeen` in the registry), the first
+Singaporean voice he has had. The bunk: the sergeant **George**
+(`JKX4knVxHRiP0doaLdrj`, every line `[shouting]`), the buddy **Edison**
+(`ZyIwtt7dzBKVYuXxaRw7`), a bunkmate **Kelvin** (`FXMPPfJPpDj0GSwJ6ASO`).
+All eleven_v3, one flow, `YIzLU6JSQUfwgm2KX2ae`, two takes each; the
+session map, the harvester, the encoder and the report are
+`masters/v7.1/`. Prefix `n1` for his 26 (episode 2's chapters are n1..n5),
+`s1`/`b1`/`k1` for the cast. Every id, its text and its measured length is
+in `src/voicelines.js`; the plan that wrote them is
+docs/V7.1-E2C1-PLAN.md §4.
+
+**His takes ride the SAME bus as Aaron's** (`TEEN_TAKES` in main.js — a
+separate set so chaptertest can hold each speaker to its own, both
+directions); `n1C1`, the whisper to the next bed, goes round it through
+`WHISPER_TAKES` like the prologue's three. Gabriel reads at 2.3 words a
+second against the game's median; the take per line was picked by
+measure — a take with an extra opening segment short enough to be a
+spoken tag was rejected, then the pace nearest 2.4 w/s (3.0 for the
+shouts) kept.
+
+The 21 sounds: two pieces (`e2film`, the film's theme, 60 s; `e2bed`, the
+night's explore loop, 50 s — both eleven_music_v2, instrumental), five
+beds (`bunkday`, `bunknight`, `fanloop`, `clocktick`, `showerrun` — all
+`eleven_text_to_sound_v2` with `duration_seconds` + `loop`), fourteen
+one-shots (`whistle`, `bootsrun`, `bootsmarch`, `lockerdoor`, `bunkcreak`,
+`blanket`, `switchoff`, `showeroff`, `drip`, `ferryhorn`, `seawash`,
+`gates`, `dooropen2`, `pushups`). **`bunkcreak`, not `bedcreak`: chapter 2
+owns `bedcreak`**, the encoder's collision check caught the install and it
+was reverted from git before anything else moved — a re-used name is a
+silent cue in the other chapter. All 21 are e2c1's by the split
+(`audiopack_e2c1`, 3.1 MB mp3 / 2.0 MB opus); the shared pack did not
+grow, and the single-file build's pack now carries episode 1's chapters
+only (build.py `SOUNDS_SINGLE`).
+
+**The beds are written by the chapter.** `DATA.ambience.beds` is what the
+engine reads every frame, so the chapter writes the mix there
+(`mixBeds()`): the day's room tone crosses to the night's at lights out,
+the episode's bed comes in under it, and the shower is a bed the night
+turns on to 0.55 — a loop at 0 is never decoded, so nothing is paid for
+before it plays. Cue map: the film (§9 of the plan) `e2film` 0, `seawash`
+0.2, `ferryhorn` 1.2, `n1pro1` 2.0, `gates` 8.4, `bootsmarch` 9.0, `n1pro2`
+10.5, `s1bed` 22.4, `lockerdoor` 30.6, `n1pro3` 37.0, `switchoff` 44.2,
+`n1pro4` 46.0, `bunkcreak` 50.8; the day (§8) through `worldSfx` — the
+whistle, the sergeant's lines on his talk take, push-ups, the switch; the
+four scenes (§10).
