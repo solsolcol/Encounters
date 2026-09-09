@@ -121,8 +121,14 @@ Object.assign(window.__TEXT__, {
   'credits.meshy':       'The tent crowd and the woman at the burner',
   'credits.meshyWho':    'Three seated characters and a scolding granny · Meshy AI (CC0)',
   'credits.meshyLink':   'meshy.ai',
-  'credits.anim':        'Animation and two of the crowd',
-  'credits.animWho':     'The mother’s takes, and two seated characters · Mixamo',
+  /* v7.1 — the rifle in the player's hands from episode 2 (Sketchfab). The
+     soldiers, the sleeper and the encik are Chad's own models and take no
+     row, the v5.23 rule; their takes are Mixamo's, credited below. */
+  'credits.rifle':       'The rifle',
+  'credits.rifleWho':    'KRISS Vector, animated · Sketchfab',
+  'credits.rifleLink':   'sketchfab.com · kriss-vector-animated-free',
+  'credits.anim':        'Animation, two of the crowd, and the soldiers’ takes',
+  'credits.animWho':     'The mother’s takes, two seated characters, and the recruits’ takes · Mixamo',
   'credits.animLink':    'mixamo.com',
   'credits.footer':      'Everything else in the scenes are generated in code.',
 

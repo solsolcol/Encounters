@@ -286,6 +286,20 @@ ASSETS = {
     # is fetched the first time the panel opens.
     'altar': ('assets/altar.glb', True, False),         # ch2, ch4, ch5
     'zav': ('assets/zav.glb', True, False),             # the equipment screen
+    # v7.1: EPISODE 2's people — Chad's own soldiers (docs/E2-SOLDIER-MODELS.md),
+    # prepped at ratio 0.10 on 2048 px sheets, the level his eye set. None
+    # preloaded: every one stands in over a primitive until it lands, and a
+    # bunk with a late sergeant is still a bunk. `ghostsoldier` is the
+    # STAND-IN for the figure at the corridor's end (a separate key so the
+    # model he has promised is a one-line swap), cut far harder because it
+    # is seen for one frame twenty metres off.
+    'fbosling':     ('assets/fbosling.glb', True, False),     # e2c1 the sergeant (rifle slung, six takes)
+    'fbonosling':   ('assets/fbonosling.glb', True, False),   # e2 a soldier without the sling
+    'admintee':     ('assets/admintee.glb', True, False),     # e2c1 the buddy and the bunkmate (talk + idle takes)
+    'sleeper':      ('assets/sleeper.glb', True, False),      # e2c1 a recruit asleep, a statue
+    'sleepanim':    ('assets/sleepanim.glb', True, False),    # e2c1 the rig with the three sleeping takes
+    'ghostsoldier': ('assets/ghostsoldier.glb', True, False), # e2c1 scene A, one frame, far off
+    'encik2':       ('assets/encik2.glb', True, False),       # e2 the older recruit (Chad's model, five takes)
 }
 
 # Hosted-only assets: shipped as a URL, never inlined as base64.
@@ -297,6 +311,17 @@ ASSETS = {
 # is correct for decoration in an offline fallback, and keeps a megabyte of
 # H.264 out of a file that is already 15 MB.
 HOSTED_ONLY = {'titlevid', 'titlevidwebm'}
+
+# v7.1: EPISODE 2's assets are hosted-only too. The single-file build carries
+# episode 1 alone (v7.0, EPISODES-PLAN §9) and inlines everything it carries,
+# so a soldier it can never show would be four megabytes of base64 for
+# nothing — and there are seven of them. A key listed here has no embed token
+# and is reached by URL in dist/, which is the only build that ships the
+# chapter asking for it. The check below keeps the rule honest: an episode-1
+# chapter may never claim one of these.
+E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'sleeper', 'sleepanim',
+           'ghostsoldier', 'encik2'}
+HOSTED_ONLY |= E2_ONLY
 
 # The split packs are hosted-only: there is no __..._B64__ token for them and
 # there must not be, because how many there are depends on how many chapters
@@ -330,6 +355,10 @@ def chapter_assets(key):
 
 
 _claimed = {a for k in chapters for a in chapter_assets(k)}
+for _k in chapters:
+    if chapter_episode(chapters[_k]) == 1:
+        _bad = E2_ONLY & set(chapter_assets(_k))
+        assert not _bad, f'{_k} (episode 1) claims hosted-only episode-2 assets: {sorted(_bad)}'
 for key in ASSETS:
     if key in SHARED_ASSETS or key in _claimed or not ASSETS[key][1]:
         continue
