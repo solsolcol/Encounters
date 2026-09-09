@@ -274,34 +274,46 @@ afterwards (`git diff` clean, `dist/` rebuilt). An orbit render outside the engi
 and the first attempt outside it was wrong: the weapon read fine on an orbit and pointed across the
 screen the moment it was put at the player's eye.
 
-**The placement that works.** Two attempts before this were wrong, and both were wrong the same
-way — a black weapon read against a black scene at midnight. The third attempt measured instead:
+**Why it first rendered as a black silhouette, and what it needs.** Two separate faults, both
+mine, both found by measuring rather than looking:
 
-- **Which way it points is measured, not eyeballed.** The weapon body's two extreme vertices along
-  its own axis, in the viewmodel camera's space, against the right hand bone. The muzzle is the
-  extreme further from the hand and it must be the more NEGATIVE in z. At the orientation shipped
-  in the previous note the muzzle sat **43 cm BEHIND the hand** — the gun was aimed at the player,
-  exactly as Chad said, and no amount of looking at a silhouette would have settled it.
-- **The model's own forward is +Z.** Solved from its geometry: hand to muzzle is (0.109, −0.152,
-  0.982). Its authored camera looks along +Z, and three.js cameras look along −Z, so the model
-  takes a **half turn about Y** and nothing else. The arithmetic I did first said a quarter turn
-  and was wrong.
-- **The camera must sit at the model's own eye.** An FPS viewmodel's forearms are cut off, and the
-  cut has to be behind the camera. Placed 80 cm forward of the authored eye, the player looks down
-  two open tubes — which is what the first working orientation actually showed.
-- **Judged in DAYLIGHT** (chapter 3, ten in the morning), never against chapter 1's midnight.
+1. **The textures never loaded.** Every model loader in this game calls `rescueTextures(gltf, buf)`
+   after `GLTFLoader.parse` — the CSP-safe path that exists precisely because the normal one can
+   fail silently — and the probe did not. Reported per material: `map=n` on all four.
+2. **The weapon's material is FULLY METALLIC** (`Vector_D`, metalness **1.0**, roughness 0.82),
+   and the viewmodel scene runs `environmentIntensity` at **0.025**. Metal with no environment has
+   no diffuse and nothing to reflect, so it renders black. The hands are metalness 0, which is
+   exactly why only they looked right and the fault was easy to mistake for a lighting problem.
+
+So the weapon needs its own material treatment on load, applied to the weapon materials only and
+never to the hands:
 
 ```
-scale     0.01                     (the file is in centimetres)
-rotation  (0, Math.PI, 0)          (its own forward is +Z; the camera's is -Z)
-position  (-0.03, -1.58, -0.34)    in handsRoot, with armR hidden   -- the aim view
-          ( 0.01, -1.44, -0.34)    the same, raised, as a ready carry
+metalness 0.25   roughness 0.55   envMapIntensity 1.6
 ```
 
-At the first of those the weapon reads exactly as Chad's reference does: seen from behind, the
-front post and the rear aperture lined up down the barrel, the receiver running to the bottom
-right, the gloved hand at the bottom of frame. Muzzle 66 cm forward of the eye, grip 23 cm forward,
-the arm cut behind the camera.
+At those values it reads as gunmetal with the rail, the sights and the receiver detail all legible,
+which is what the Sketchfab reference shows.
+
+**Which way it points is measured, never eyeballed.** The weapon body's two extreme vertices along
+its own axis, in the viewmodel camera's space, against the right hand bone: the muzzle is the
+extreme further from the hand and it must be the more NEGATIVE in z. Two earlier attempts shipped
+a weapon whose muzzle sat **43 cm BEHIND the hand** — aimed at the player — because both were
+judged as a black silhouette against chapter 1's black midnight. **Judge this in DAYLIGHT**
+(chapter 3, ten in the morning).
+
+**The model's own forward is +Z.** Solved from its geometry: hand to muzzle is (0.109, −0.152,
+0.982). Its authored camera looks along +Z and three.js cameras look along −Z, so it takes a **half
+turn about Y** and nothing else. Arithmetic said a quarter turn, twice, and was wrong both times.
+
+**The camera sits at the model's own eye.** An FPS viewmodel's forearms are cut off and that cut
+must be behind the camera; placed 80 cm forward, the player looks down two open tubes.
+
+```
+scale     0.01                    (the file is in centimetres)
+rotation  (0, Math.PI, 0)
+position  (0.00, -1.60, -0.32)    in handsRoot, with armR hidden
+```
 
 **One thing for Chad to decide: it is a KRISS Vector submachine gun, not a SAR 21.** The plan's
 range and ambush are written around the rifle an SAF recruit actually carries, and the film's own
