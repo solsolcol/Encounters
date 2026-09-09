@@ -1514,6 +1514,29 @@ What the baseline contains, by release:
   clock runs on wall time, not the clamped dt; a sound's name is global
   (`bunkcreak`, because chapter 2 owns `bedcreak`). Sheet v42.
   docs/V7.1-E2C1-PLAN.md is the build's memory, checkpoint by checkpoint.
+- **v7.2** THE WORST BED, POLISHED — Chad, the moment v7.1 was live: "look
+  at everything that can be objectively improved ... visuals, HUD, UI,
+  minigame, props, mechanics ... without changing the story". Every shipped
+  frame was read on both crops first (docs/V7.2-E2C1-POLISH.md §2 is the
+  list). THE ROOM: a z-fighting stripe down the far wall (the block's walls
+  began coplanar with the bunk wall's inner face); five louvred windows on
+  the blank −x wall, sky by day and blue-black at night with `nightK`; a
+  bedsheet on every mattress, boots under every bed, a pack on every
+  locker, and a WIRE MESH under every top deck — the film's last eight
+  seconds and scenes B and D had looked up at a black slab; the clock's
+  glow 1.3 → 0.55 (it painted every night frame red) and the block's tube
+  1.6 with a fluorescent flicker (3.2 blew the tiles white); an
+  extinguisher, a bin, a broom, a bucket, a doormat over an 8 cm floor gap.
+  Measured, not guessed: the statue sleeper's knees rise 0.53 m, so only
+  the two flat rigs take a blanket. THE HUD (engine, base-game-safe — no
+  event runs in episode 1): an open event hides the badge, the prompt and
+  the presence banner; on a phone the objective line sits under the stat
+  rows instead of across them. TIMING AND FRAMING: the whistle waits 2.6 s
+  for "That's mine. Bed one."; the film holds on the sergeant until his
+  line ends (he was at the phone crop's edge mid-word) and its last shot
+  looks along the bunk's edge (pitch 0.68); scene B likewise (0.95); a
+  light over the neighbour in scene C. No word moved; sheet v42 stands.
+  docs/V7.2-E2C1-POLISH.md §4 is the record.
 - **v7.0** THE PLAY KIT — episode 2's first release, and the one that ships
   nothing a player of episode 1 can see (Chad approved the plan on 9 Sep:
   "can you begin building according to your plan?"). Everything a chapter

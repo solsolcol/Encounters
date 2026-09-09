@@ -250,6 +250,14 @@
         new THREE.MeshStandardMaterial({ color: 0x0c0d0f, roughness: 1, side: THREE.BackSide }));
       dark.position.set(DOOR_IN.x, R.h / 2, z - 1.3);
       world.add(dark);
+      /* v7.2: and a floor of its own, run 24 cm into the room as a rubber
+         DOORMAT — the bunk's floor ends at the wall's inner face and the
+         corridor's began at its outer one, and the square's grass plane
+         showed through the 8 cm between them as a green sliver */
+      const darkFloor = new THREE.Mesh(new THREE.PlaneGeometry(DOOR_IN.w + 0.6, 2.9),
+        new THREE.MeshStandardMaterial({ color: 0x141614, roughness: 1 }));
+      darkFloor.rotation.x = -Math.PI / 2; darkFloor.position.set(DOOR_IN.x, 0.012, z - 1.3 + 0.16);
+      world.add(darkFloor);
     }
     // +z wall with the toilet-block door
     {
@@ -289,8 +297,19 @@
       mat: new THREE.BoxGeometry(BED.len - 0.04, 0.14, BED.wid - 0.04),
       pillow: new THREE.BoxGeometry(0.42, 0.09, 0.62),
       blanketFold: new THREE.BoxGeometry(0.50, 0.12, 0.62),
-      blanketOn: new THREE.BoxGeometry(BED.len - 0.5, 0.09, BED.wid - 0.1)
+      /* v7.2: the blanket over a SLEEPER covers him from the chest to the
+         foot of the bed at a body's height — the flat slab it was lay
+         hidden under the statue, and eight men slept uncovered */
+      blanketOn: new THREE.BoxGeometry(BED.len - 0.62, 0.20, BED.wid - 0.06),
+      sheet: new THREE.BoxGeometry(BED.len - 0.16, 0.012, BED.wid - 0.12),
+      boot: new THREE.BoxGeometry(0.28, 0.11, 0.11),
+      mesh: new THREE.PlaneGeometry(BED.len - 0.06, BED.wid - 0.06)
     };
+    const meshTex = makeMesh(THREE, cnv);
+    const matSheet = new THREE.MeshStandardMaterial({ color: 0xe9e6dc, roughness: 0.92 });
+    const matBoot = new THREE.MeshStandardMaterial({ color: 0x2a2622, roughness: 0.55, metalness: 0.05 });
+    const matMesh = new THREE.MeshStandardMaterial({ map: meshTex, transparent: true, alphaTest: 0.35,
+      color: 0x9aa0a8, roughness: 0.5, metalness: 0.6, side: THREE.DoubleSide });
     function mkBed(x, z, headTowardWall) {
       const g = new THREE.Group();
       g.position.set(x, 0, z);
@@ -305,6 +324,12 @@
         for (const px of [-hx, hx]) { const r = new THREE.Mesh(bedGeo.railEnd, matMetal); r.position.set(px, y - 0.1, 0); g.add(r); }
         const m = new THREE.Mesh(bedGeo.mat, matMattress); m.position.set(0, y - 0.07, 0);
         m.castShadow = !LOW; m.receiveShadow = true; g.add(m);
+        // v7.2: the bedsheet on the mattress (one of the standby bed's eight items, never seen before)
+        const sh = new THREE.Mesh(bedGeo.sheet, matSheet); sh.position.set(0, y + 0.006, 0); sh.receiveShadow = true; g.add(sh);
+        // and the wire mesh under the top deck — what the film's last shot and two scenes look up at
+        if (name === 'high') {
+          const wm = new THREE.Mesh(bedGeo.mesh, matMesh); wm.rotation.x = Math.PI / 2; wm.position.set(0, y - 0.155, 0); g.add(wm);
+        }
         // the pillow at the wall end
         const pw = new THREE.Mesh(bedGeo.pillow, matPillow);
         pw.position.set(headTowardWall * (hx - 0.28), y + 0.045, 0); g.add(pw);
@@ -313,8 +338,13 @@
         bl.position.set(-headTowardWall * (hx - 0.32), y + 0.06, 0); g.add(bl);
         // and one pulled over a sleeper, hidden by day
         const on = new THREE.Mesh(bedGeo.blanketOn, matBlanket);
-        on.position.set(-headTowardWall * 0.15, y + 0.12, 0); on.visible = false; g.add(on);
+        on.position.set(-headTowardWall * 0.29, y + 0.115, 0); on.visible = false; on.castShadow = !LOW; g.add(on);
         decks[name] = { mattress: m, pillow: pw, fold: bl, on, y };
+      }
+      // v7.2: a pair of boots under the bed at the aisle end
+      for (const bz of [-0.09, 0.09]) {
+        const bt = new THREE.Mesh(bedGeo.boot, matBoot);
+        bt.position.set(-headTowardWall * (hx - 0.2), 0.055, bz); bt.castShadow = !LOW; g.add(bt);
       }
       const b = { x, z, group: g, low: decks.low, high: decks.high, head: headTowardWall,
                   his: (x === HIS.x && z === HIS.z) };
@@ -327,6 +357,8 @@
     // lockers between the beds, against the wall
     const lockers = [];
     const lockerGeo = new THREE.BoxGeometry(0.5, 1.8, 0.5);
+    const packGeo = new THREE.BoxGeometry(0.42, 0.26, 0.34);
+    const matPack = new THREE.MeshStandardMaterial({ color: 0x3d4a3a, roughness: 0.95 });
     for (const rx of ROW_X) for (const lz of [-2.25, -0.75, 0.75, 2.25]) {
       const l = new THREE.Mesh(lockerGeo, matLocker);
       l.position.set(rx < 0 ? -R.x + 0.27 : R.x - 0.27, 0.9, lz);
@@ -338,6 +370,65 @@
       seam.position.set(rx < 0 ? -R.x + 0.53 : R.x - 0.53, 0.9, lz);
       seam.rotation.y = rx < 0 ? Math.PI / 2 : -Math.PI / 2;
       world.add(seam);
+      // v7.2: a field pack on top of each locker
+      const pk = new THREE.Mesh(packGeo, matPack);
+      pk.position.set(rx < 0 ? -R.x + 0.27 : R.x - 0.27, 1.8 + 0.13, lz + (lz > 0 ? -0.04 : 0.04));
+      pk.rotation.y = (lz * 0.7) % 0.5; pk.castShadow = !LOW; world.add(pk);
+    }
+
+    /* v7.2: LOUVRED WINDOWS along the −x wall, one above each bed head — a
+       Tekong bunk is lit from both long sides, and this room was a box lit
+       from one. The glass is a pale overcast sky by day and goes to the
+       night's blue-black with the room (`setWindows(k)`, k = nightK). */
+    const matGlass = new THREE.MeshStandardMaterial({ color: 0xcfdfe8, emissive: 0xdfe9ef, emissiveIntensity: 0.9, roughness: 0.3 });
+    const matFrame = new THREE.MeshStandardMaterial({ color: 0xb9bcb6, roughness: 0.6, metalness: 0.3 });
+    const WIN = { w: 1.04, h: 0.8, y: 2.25 };
+    const winGeo = { glass: new THREE.PlaneGeometry(WIN.w, WIN.h), slat: new THREE.BoxGeometry(0.02, 0.07, WIN.w - 0.04),
+                     frameV: new THREE.BoxGeometry(0.03, WIN.h + 0.06, 0.05), frameH: new THREE.BoxGeometry(0.03, 0.05, WIN.w + 0.06) };
+    for (const wzz of ROW_Z) {
+      const gl = new THREE.Mesh(winGeo.glass, matGlass);
+      gl.position.set(-R.x + 0.012, WIN.y, wzz); gl.rotation.y = Math.PI / 2; world.add(gl);
+      for (const dy of [-WIN.h / 2, WIN.h / 2]) { const fr = new THREE.Mesh(winGeo.frameH, matFrame); fr.position.set(-R.x + 0.02, WIN.y + dy, wzz); world.add(fr); }
+      for (const dz of [-WIN.w / 2, WIN.w / 2]) { const fr = new THREE.Mesh(winGeo.frameV, matFrame); fr.position.set(-R.x + 0.02, WIN.y, wzz + dz); world.add(fr); }
+      for (let i = 0; i < 4; i++) {
+        const sl = new THREE.Mesh(winGeo.slat, matFrame);
+        sl.position.set(-R.x + 0.045, WIN.y - WIN.h / 2 + 0.1 + i * 0.2, wzz); sl.rotation.z = 0.55; world.add(sl);
+      }
+    }
+    let winK = 0;
+    const GLASS_DAY = { c: new THREE.Color(0xcfdfe8), e: new THREE.Color(0xdfe9ef), i: 0.9 };
+    const GLASS_NIGHT = { c: new THREE.Color(0x0b1220), e: new THREE.Color(0x14203a), i: 0.35 };
+    function setWindows(k) {
+      winK = Math.max(0, Math.min(1, k));
+      matGlass.color.copy(GLASS_DAY.c).lerp(GLASS_NIGHT.c, winK);
+      matGlass.emissive.copy(GLASS_DAY.e).lerp(GLASS_NIGHT.e, winK);
+      matGlass.emissiveIntensity = GLASS_DAY.i + (GLASS_NIGHT.i - GLASS_DAY.i) * winK;
+    }
+
+    /* v7.2: the dressing a bunk has and a render does not — an extinguisher
+       and a bin by the entrance, a broom in the corner, a bucket by the
+       block door */
+    {
+      const ext = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.075, 0.5, 12),
+        new THREE.MeshStandardMaterial({ color: 0xb8241c, roughness: 0.45, metalness: 0.3 }));
+      // on the far side of the door from the sergeant (his stand is x 1.3; the first try put it in his back)
+      ext.position.set(DOOR_IN.x - 0.85, 0.95, -R.z + 0.14); world.add(ext);
+      const extTop = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.12, 8), matMetal);
+      extTop.position.set(DOOR_IN.x - 0.85, 1.26, -R.z + 0.14); world.add(extTop);
+      const bracket = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.06, 0.06), matMetal);
+      bracket.position.set(DOOR_IN.x - 0.85, 0.75, -R.z + 0.09); world.add(bracket);
+      const bin = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.15, 0.56, 14),
+        new THREE.MeshStandardMaterial({ color: 0x4a5a4e, roughness: 0.7 }));
+      bin.position.set(DOOR_IN.x - 1.4, 0.28, -R.z + 0.36); bin.castShadow = !LOW; world.add(bin);
+      const broom = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 1.3, 6),
+        new THREE.MeshStandardMaterial({ color: 0x8a6a3a, roughness: 0.8 }));
+      broom.position.set(-R.x + 0.16, 0.66, R.z - 0.42); broom.rotation.z = -0.14; broom.rotation.x = 0.06; world.add(broom);
+      const head = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.12, 0.3),
+        new THREE.MeshStandardMaterial({ color: 0x5a4a2a, roughness: 0.95 }));
+      head.position.set(-R.x + 0.25, 0.06, R.z - 0.4); world.add(head);
+      const bucket = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.13, 0.28, 12),
+        new THREE.MeshStandardMaterial({ color: 0xd9b23a, roughness: 0.6 }));
+      bucket.position.set(DOOR_WC.x + 0.85, 0.14, R.z - 0.3); world.add(bucket);
     }
 
     /* ---------------------------------------------------- fans and tubes */
@@ -380,13 +471,18 @@
     }
     setLights(1);
     // the block's own tube, always on (the tiles read under it in scene A)
-    const blockLight = new THREE.PointLight(0xe9f0ff, LOW ? 12 : 8, 9, 1.7);
+    let blockBase = LOW ? 12 : 8, blockFlicker = false, flickT = 0;
+    const blockLight = new THREE.PointLight(0xe9f0ff, blockBase, 9, 1.7);
     blockLight.position.set(-3.2, R.h - 0.3, 5.6);
     scene.add(blockLight); owned.push(blockLight);
     const blockTube = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.05, 0.10), matTube.clone());
     blockTube.position.set(-3.2, R.h - 0.05, 5.6); world.add(blockTube);
     // the clock's red on the wall at night, and the balcony's sodium spill
-    const clockGlow = new THREE.PointLight(0xff2a1a, 0, 3.2, 2.4);
+    /* v7.2: 0.55 at 2.2 m — at 1.3 over 3.2 m it painted the whole door
+       wall and the block's doorway red in every night frame; the digits
+       are unlit and stay bright on their own */
+    const CLOCK_GLOW = 0.55;
+    const clockGlow = new THREE.PointLight(0xff2a1a, 0, 2.2, 2.4);
     clockGlow.position.set(DOOR_WC.x, 2.35, R.z - 0.3);
     scene.add(clockGlow); owned.push(clockGlow);
     const balcLight = new THREE.PointLight(0xffb060, 0, 14, 1.5);
@@ -396,6 +492,10 @@
     const nightLight = new THREE.PointLight(0x7f94c4, 0, 11, 1.6);
     nightLight.position.set(-2.4, 2.6, 1.6);
     scene.add(nightLight); owned.push(nightLight);
+    // v7.2: a light over the NEXT bed for scene C — he was a dark shape beside a white pillow
+    const nbLight = new THREE.PointLight(0x9fb2d8, 0, 4.2, 1.8);
+    nbLight.position.set(HIS.x + 0.55, 2.3, 1.5);
+    scene.add(nbLight); owned.push(nbLight);
 
     /* ---------------------------------------------- the board, the clock */
     const board = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 0.95), matBoard);
@@ -417,12 +517,16 @@
     }
     {
       const bx = (BLOCK.x0 + BLOCK.x1) / 2, bw = BLOCK.x1 - BLOCK.x0, bd = BLOCK.z1 - BLOCK.z0, bz = (BLOCK.z0 + BLOCK.z1) / 2;
+      /* v7.2: the side walls begin at the bunk wall's BACK face — begun at
+         its inner face (z = 4.0) they were coplanar with it and fought it
+         for the pixels: a white stripe down the far wall in every shot */
+      const wz0 = BLOCK.z0 + R.wall, wd = BLOCK.z1 - wz0, wz = (wz0 + BLOCK.z1) / 2;
       const f = new THREE.Mesh(new THREE.PlaneGeometry(bw, bd), matTileFloor);
       f.rotation.x = -Math.PI / 2; f.position.set(bx, 0.002, bz); f.receiveShadow = true; world.add(f);
       const c = new THREE.Mesh(new THREE.PlaneGeometry(bw, bd), matCeil);
       c.rotation.x = Math.PI / 2; c.position.set(bx, R.h, bz); world.add(c);
-      bwall(R.wall, R.h, bd, BLOCK.x0 - R.wall / 2, R.h / 2, bz);            // −x
-      bwall(R.wall, R.h, bd, BLOCK.x1 + R.wall / 2, R.h / 2, bz);            // +x (the partition)
+      bwall(R.wall, R.h, wd, BLOCK.x0 - R.wall / 2, R.h / 2, wz);            // −x
+      bwall(R.wall, R.h, wd, BLOCK.x1 + R.wall / 2, R.h / 2, wz);            // +x (the partition)
       bwall(bw + R.wall * 2, R.h, R.wall, bx, R.h / 2, BLOCK.z1 + R.wall / 2); // far wall
       // the wall the block shares with the bunk faces it in tile
       const back = new THREE.Mesh(new THREE.PlaneGeometry(bw, R.h), matTile);
@@ -693,7 +797,11 @@
         m.rotation.y = (long === 'z' ? Math.PI / 2 : 0) + (b.head < 0 ? Math.PI : 0);
         m.position.set(b.x, b.low.y + 0.02 - box.min.y * sc, b.z);
         sleeperRoot.add(m);
-        b.low.on.visible = true;
+        /* v7.2: NO blanket on a statue — measured, he lies with his knees up
+           and his arms behind his head, 0.53 m off the mattress, and any box
+           that covers him buries him; the two breathing rigs lie flat and
+           take one */
+        b.low.on.visible = false;
         sleepers.push({ bed: b, obj: m });
       });
       redoShadows();
@@ -782,7 +890,7 @@
       new THREE.MeshBasicMaterial({ color: 0x63d6c8, transparent: true, opacity: 0,
         side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false, fog: false }));
     pileRing.rotation.x = -Math.PI / 2;
-    pileRing.position.y = BED.low + 0.01;
+    pileRing.position.y = BED.low + 0.022;      // v7.2: above the bedsheet, which sits 12 mm proud of the mattress
     pileRing.visible = false;
     pile.add(pileRing);
 
@@ -822,6 +930,7 @@
        own clock, which advances only in play, so a menu, a cutscene or a
        card never lets a step fire behind the player's back. */
     let phase = 'arrive';
+    let arrivedAt = 0;                 // v7.2: the moment he reached the bed; the whistle waits on it
     let booted = false;
     const dayClock = { t: 0 };
     const todo = [];
@@ -973,9 +1082,9 @@
       after(2.6, () => { if (worldSfx) worldSfx('switchoff', 0.9); });
       after(2.7, () => {
         tween(() => lightK, v => setLights(v), 0, 0.7);
-        tween(() => nightK, v => { nightK = v; mixBeds(); }, 1, 3.0);
+        tween(() => nightK, v => { nightK = v; mixBeds(); setWindows(v); }, 1, 3.0);
         if (kit) kit.daylight(NIGHT, 3.0);
-        clockGlow.intensity = 1.3; balcLight.intensity = 5;
+        clockGlow.intensity = CLOCK_GLOW; balcLight.intensity = 5;
       });
       after(3.8, () => sayLine('n1lights'));
       after(7.0, () => sayLine('b1sleep'));
@@ -1015,7 +1124,7 @@
       if (p === 'lightsout' || p === 'night') {
         nightK = 1; showerVol = 0.55; mixBeds();
         setLights(0); setNightRoom(true); setShower(true); clock.set('03:00');
-        clockGlow.intensity = 1.3; balcLight.intensity = 5;
+        clockGlow.intensity = CLOCK_GLOW; balcLight.intensity = 5;
         if (kit) {
           kit.daylight(NIGHT, 0);
           yaw.position.x = HIS.x + 0.35; yaw.position.z = HIS.z; yaw.rotation.y = LIE_YAW;
@@ -1103,7 +1212,10 @@
       dayClock.t += d;
       runTodo();
       runTweens(d);
-      if (phase === 'arrive' && pileDist() < 1.8) beginFallIn();
+      /* v7.2: reaching the bed used to fire the whistle on the same frame as
+         his "That's mine. Bed one." — the line lands first now, then the
+         whistle, then the sergeant */
+      if (phase === 'arrive' && pileDist() < 1.8 && !arrivedAt) { arrivedAt = dayClock.t; after(2.6, () => { if (phase === 'arrive') beginFallIn(); }); }
       else if (phase === 'fallin' && yaw.position.x > LINE_X) onTheLine();
       else if (phase === 'standby' && pileDist() < 2.0) { setPhase('standbybed'); runStandbyBed(); }
       else if (phase === 'free') {
@@ -1136,6 +1248,16 @@
         const fl = 1 - (Math.random() < 0.02 ? 0.08 : 0);
         for (const L of tubeLights) L.intensity = TUBE_I * lightK * fl;
       }
+      /* v7.2: the block's tube at night — a slow breathing dip and, now
+         and then, a stutter that nearly goes out; runs in every state (a
+         scene in the block wants it) on the base the snapshot keeps */
+      if (blockFlicker) {
+        flickT = flickT > 0 ? flickT - 1 : (Math.random() < 0.012 ? 2 + Math.floor(Math.random() * 4) : 0);
+        const breathe = 0.92 + 0.08 * Math.sin(t * 1.7) * Math.sin(t * 0.43);
+        const k = breathe * (flickT > 0 ? 0.35 + Math.random() * 0.3 : 1);
+        blockLight.intensity = blockBase * k;
+        blockTube.material.emissiveIntensity = 1.6 * (0.55 + 0.45 * k);
+      }
     }
     function updateSlow(sdt, t) {}
 
@@ -1148,10 +1270,15 @@
       sleeperRoot.visible = on;
       for (const b of beds) { b.low.fold.visible = !on || b.his || !sleepers.find(s => s.bed === b); }
       setLights(on ? 0 : 1);
-      clockGlow.intensity = on ? 1.3 : 0;
+      clockGlow.intensity = on ? CLOCK_GLOW : 0;
       balcLight.intensity = on ? 6 : 0;
       nightLight.intensity = on ? 1.8 : 0;
-      blockLight.intensity = on ? 3.2 : (LOW ? 12 : 8);
+      /* v7.2: 1.6 at night (3.2 blew the tiles to white), and the tube
+         FLICKERS from here — a dying fluorescent is the block's own unease */
+      blockBase = on ? 1.6 : (LOW ? 12 : 8);
+      blockLight.intensity = blockBase;
+      blockFlicker = on;
+      setWindows(on ? 1 : 0);
       clock.set(on ? '03:00' : '21:58');
     }
 
@@ -1162,7 +1289,8 @@
                clockGlow: clockGlow.intensity, balc: balcLight.intensity,
                water: water.material.opacity, blanketHis: hisBed.low.on.visible,
                nightL: nightLight.intensity, blockL: blockLight.intensity, showerL: showerLight.intensity,
-               blanketCam: blanketCam.visible, sleepRot: sleepers.map(o => [o.obj.rotation.x, o.obj.rotation.y, o.obj.rotation.z]) };
+               blanketCam: blanketCam.visible, sleepRot: sleepers.map(o => [o.obj.rotation.x, o.obj.rotation.y, o.obj.rotation.z]),
+               winK, blockBase, blockFlicker, nbL: nbLight.intensity };
     }
     function restore(s) {
       doorPivot.rotation.y = s.door; fanSpeed = s.fan; setLights(s.lightK); setShower(s.shower);
@@ -1172,6 +1300,9 @@
       water.material.opacity = s.water; hisBed.low.on.visible = s.blanketHis;
       blanketCam.visible = s.blanketCam; blanketCam.material.opacity = 0;
       nightLight.intensity = s.nightL; blockLight.intensity = s.blockL; showerLight.intensity = s.showerL;
+      if (s.winK !== undefined) setWindows(s.winK);
+      nbLight.intensity = s.nbL || 0;
+      if (s.blockBase !== undefined) { blockBase = s.blockBase; blockFlicker = !!s.blockFlicker; blockLight.intensity = blockBase; blockTube.material.emissiveIntensity = 1.6; }
       if (s.sleepRot) sleepers.forEach((o, i) => { const r = s.sleepRot[i]; if (r) o.obj.rotation.set(r[0], r[1], r[2]); });
       sergeant.group.visible = buddy.group.visible = bunkmate.group.visible = !s.night;
       for (const r of [sergeant, buddy, bunkmate]) if (r.acts) r.play(r.key === 'fbosling' ? 'Idle_3' : 'Idle_9', 1, 0);
@@ -1184,7 +1315,7 @@
       putSergeant(SGT_DOOR);
       dropTodo(); tweens.length = 0;
       nightK = 0; showerVol = 0; mixBeds();
-      seen.clear(); bedTries = 0; fallLate = false; fallTimer = null;
+      seen.clear(); bedTries = 0; fallLate = false; fallTimer = null; arrivedAt = 0;
       booted = false; dayClock.t = 0;
       if (kit) { kit.daylight(null, 0); kit.presence(0); kit.fade(0, 0.05); }
       beginArrive();
@@ -1234,7 +1365,7 @@
         m.dispose();
       }
       for (const t of [cTex.map, cTex.rough, grassTex.map, grassTex.rough, wallMap, noteTex, dotTex,
-                       tileTex, tarmacTex, boardTex, clock.tex, terrazzoTex, weaveTex, streakTex]) t?.dispose?.();
+                       tileTex, tarmacTex, boardTex, clock.tex, terrazzoTex, weaveTex, streakTex, meshTex]) t?.dispose?.();
       world.clear();
       S = null;
     }
@@ -1255,7 +1386,7 @@
       set noteStorm(v) {},
       beds, hisBed, lockers, fans, tubes, tubeLights, board, clockFace, clock,
       doorPivot, doorLeaf, DOOR_SHUT, DOOR_AJAR, DOOR_OPEN, DOOR_WC, DOOR_IN, OPEN, BLOCK, BALC, R, BED, WATER_AT,
-      water, setShower, setLights, setNightRoom, blockLight, clockGlow, balcLight, blanketCam,
+      water, setShower, setLights, setNightRoom, setWindows, blockLight, clockGlow, CLOCK_GLOW, balcLight, nbLight, blanketCam,
       sergeant, buddy, bunkmate, ghostFig, sleepers, sleepRigs, sleeperRoot,
       sayLine, seen, after, dayClock,
       get phase() { return phase; },
@@ -1367,6 +1498,20 @@
     tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.repeat.set(1, 3);
     return tex;
   }
+  /* v7.2: the wire mesh under a top bunk — a diamond lattice, transparent
+     between the wires, so the mattress above shows through it */
+  function makeMesh(THREE, cnv) {
+    const s = 64, [c, ctx] = cnv(s);
+    ctx.clearRect(0, 0, s, s);
+    ctx.strokeStyle = 'rgba(210,214,220,1)'; ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(0, s / 2); ctx.lineTo(s / 2, 0); ctx.lineTo(s, s / 2); ctx.lineTo(s / 2, s); ctx.closePath();
+    ctx.moveTo(0, 0); ctx.lineTo(0, s / 2); ctx.moveTo(s, 0); ctx.lineTo(s, s / 2);
+    ctx.stroke();
+    const tex = new THREE.CanvasTexture(c);
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.repeat.set(16, 8);
+    return tex;
+  }
   function makeWeave(THREE, cnv) {
     const s = 128, [c, ctx] = cnv(s);
     ctx.fillStyle = '#2a3a30'; ctx.fillRect(0, 0, s, s);
@@ -1426,6 +1571,11 @@
     const Y_IN = faceFrom(OPENING.x, OPENING.z, 0, 0);
     const Y_SGT = faceFrom(AISLE.x, AISLE.z, SGT.x, SGT.z);
     const Y_SGT2 = faceFrom(AISLE2.x, AISLE2.z, SGT.x, SGT.z);
+    /* v7.2: where the camera IS at 27.6 (0.6 of the 24–30 glide, smoothed) —
+       the yaw holds on the sergeant from there until his line ends; turning
+       toward the bed from 27.0 had him at the phone crop's left edge mid-word */
+    const MIDK = 0.648, AISLE_MID = { x: AISLE.x + (AISLE2.x - AISLE.x) * MIDK, z: AISLE.z + (AISLE2.z - AISLE.z) * MIDK };
+    const Y_SGT_MID = faceFrom(AISLE_MID.x, AISLE_MID.z, SGT.x, SGT.z);
     const Y_BED = faceFrom(BYBED.x, BYBED.z, BEDAT.x, BEDAT.z);
     const Y_DOOR = faceFrom(BYBED.x, BYBED.z, DOORAT.x, DOORAT.z);
     const Y_UP = faceFrom(PILLOW.x, PILLOW.z, 0, 2.4);                   // toward the room's middle fan
@@ -1470,9 +1620,9 @@
     sfx(22.4, 's1bed');                       // 4.91 s → 27.3
     step(27.6, () => { stage.sergeant.play('Idle_3', 1, 0.4); });
     camTo(24.0, 30.0, AISLE, AISLE2, smoothK);
-    yawTo(24.0, 27.0, Y_SGT, Y_SGT2, smoothK);
+    yawTo(24.0, 27.6, Y_SGT, Y_SGT_MID, smoothK);
     camTo(30.0, 34.0, AISLE2, BYBED, smoothK);
-    yawTo(27.0, 33.0, Y_SGT2, Y_BED, smoothK);
+    yawTo(27.6, 33.0, Y_SGT_MID, Y_BED, smoothK);
     tr(24.0, 34.0, k => { duck('bunkday', 0.55 + 0.25 * k); duck('clocktick', 0.5 * k); }, rawK);
 
     /* 30–44 bed one: the locker beside it, the toilet door, the clock over
@@ -1490,12 +1640,13 @@
        underside of the bunk above. */
     sfx(44.2, 'switchoff', 0.9);
     tr(44.2, 44.9, k => { stage.setLights(1 - k); }, rawK);
-    step(44.2, () => { if (kit) kit.daylight(NIGHT, 5); stage.clockGlow.intensity = 1.3; stage.balcLight.intensity = 5; });
+    step(44.2, () => { if (kit) kit.daylight(NIGHT, 5); stage.clockGlow.intensity = stage.CLOCK_GLOW; stage.balcLight.intensity = 5; });
+    tr(44.2, 48.0, k => { stage.setWindows(k); }, smoothK);
     tr(44.2, 47.0, k => { duck('bunkday', 0.8 * (1 - k)); duck('fanloop', 0.4 + 0.2 * k); }, rawK);
     sfx(46.0, 'n1pro4');                      // 5.49 s → 51.5
     camTo(46.0, 52.0, BYBED, PILLOW, smoothK);
     yawTo(46.0, 52.0, Y_DOOR, Y_UP, smoothK);
-    pitchTo(46.0, 52.0, 0.34, 0.80, smoothK);     // past the bunk's edge to the ceiling and the fan
+    pitchTo(46.0, 52.0, 0.34, 0.68, smoothK);     // to the bunk's edge, the mesh under it, the ceiling and the fan (v7.2: 0.80 looked into a slab)
     sfx(50.8, 'bunkcreak', 0.6);
 
     /* 54–58 down, and out. Whatever the film did to the day is handed back
@@ -1506,7 +1657,7 @@
       armR.visible = true;
       if (kit) kit.daylight(null, 0);
       stage.clockGlow.intensity = 0; stage.balcLight.intensity = 0;
-      stage.setLights(1);
+      stage.setLights(1); stage.setWindows(0);
       duck('bunkday', 1); duck('fanloop', 1); duck('clocktick', 1);
     });
     c.endFade = 1;
@@ -1582,7 +1733,7 @@
     const { tr, step, sfx, fade, yawTo, pitchTo, rawK, smoothK, duck, stage, handsRoot } = api;
     step(0, () => { handsRoot.visible = false; });
     yawTo(0, 3.0, s.yawRot, stage.LIE_YAW, smoothK);
-    pitchTo(0, 3.0, s.pitchX, 1.15, smoothK);
+    pitchTo(0, 3.0, s.pitchX, 0.95, smoothK);      // v7.2: 1.15 looked into the top bunk's slab; the fan and the clock's spill share this frame
     tr(0, 4.0, k => { duck('showerrun', 1 - 0.35 * k); }, rawK);
     sfx(2.0, 'n1B1');                           // 4.83 s → 6.9
     sfx(14.0, 'showeroff', 0.7);
@@ -1605,6 +1756,7 @@
     const Y_NEXT = faceFrom(P0.x, P0.z, stage.hisBed.x, 1.5);
     const ry0 = nb ? nb.obj.rotation.y : 0, rz0 = nb ? nb.obj.rotation.z : 0;
     step(0, () => { handsRoot.visible = false; });
+    tr(0.5, 2.4, k => { stage.nbLight.intensity = 2.8 * k; }, smoothK);     // v7.2: so the man he whispers to can be seen
     yawTo(0.5, 2.0, s.yawRot, Y_NEXT, smoothK);
     pitchTo(0.5, 2.0, s.pitchX, -0.06, smoothK);
     sfx(2.2, 'n1C1');                           // the whisper, 2.04 s → 4.3
@@ -1614,7 +1766,7 @@
     sfx(8.8, 'blanket', 0.5);
     tr(8.8, 10.8, k => { if (nb) { nb.obj.rotation.y = ry0 + 0.35 * k; nb.obj.rotation.z = rz0 + 0.30 * k; } }, smoothK);
     yawTo(12.0, 15.0, Y_NEXT, stage.LIE_YAW, smoothK);
-    pitchTo(12.0, 15.0, -0.06, 1.1, smoothK);
+    pitchTo(12.0, 15.0, -0.06, 0.95, smoothK);
     fade(16.2, 18.0, 0, 1);
     step(18.2, () => { handsRoot.visible = true; });
     c.endFade = 1;

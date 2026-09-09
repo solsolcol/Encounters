@@ -976,6 +976,11 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
   #stats{width:min(290px,64vw)}
   #brief{font-size:1.16rem} #title .ctrl span{font-size:.9rem}
   .sealed{right:0;top:0}
+  /* v7.2: on a phone the objective line sits UNDER the stat rows and the
+     button column instead of across both of them (it hid SANITY and ran
+     its timer into the volume slider) */
+  #objective{padding-top:calc(max(14px,env(safe-area-inset-top)) + 166px)}
+  .obox{max-width:92vw;font-size:.94rem;padding:7px 12px;gap:10px}
 }
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.01ms !important;transition-duration:.01ms !important}

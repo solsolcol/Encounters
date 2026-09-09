@@ -6621,11 +6621,17 @@ function tick(now = 0) {
       ui.interact.classList.add('hide');
       if (d < 6.2) ui.prompt.classList.remove('hide'); else ui.prompt.classList.add('hide');
     }
+    /* v7.2: an open EVENT owns the middle of the screen — the badge and the
+       approach prompt under its panel were half-hidden noise (The Worst
+       Bed's standby bed over "E at the bed"). Chapters 1–5 never run one. */
+    if (ev) { ui.interact.classList.add('hide'); ui.prompt.classList.add('hide'); }
 
     // she is here, and standing still in front of her costs you
     const gDrain = ghostDrainRate(), pDrain = presenceDrainRate();   // v7.0: hers, or the chapter's unseen thing
     const drain = gDrain + pDrain;
-    showHaunt(drain > 0, gDrain > 0 ? 'ghost' : 'presence');
+    // v7.2: and the banner steps aside for an event too (the drain and the bar's red go on)
+    showHaunt(drain > 0 && !ev, gDrain > 0 ? 'ghost' : 'presence');
+    if (ev && drain > 0) ui.bSan.classList.add('drain');
     if (drain > 0) {
       const lost = Math.min(stats.sanity, drain * dt);
       stats.sanity -= lost;
