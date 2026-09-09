@@ -267,6 +267,27 @@ use this is to **hide the existing arms while the weapon is out and show this mo
 instead** — its animations were authored around these fingers, and re-posing the old arms to match
 is exactly the kind of thing that goes wrong. Swapping back on Hide costs nothing.
 
+**TESTED IN THE ENGINE, not beside it.** The model was loaded into the game's own viewmodel scene —
+its own 52-degree camera, its own two lights, the real canvas, the world composited behind it — at
+desktop and phone aspect, through a temporary `__vmLoad` hook on `__enc` that was reverted
+afterwards (`git diff` clean, `dist/` rebuilt). An orbit render outside the engine is not this test,
+and the first attempt outside it was wrong: the weapon read fine on an orbit and pointed across the
+screen the moment it was put at the player's eye.
+
+**The placement that works**, chosen by rendering four orientations and four distances and looking
+at them, per the v6.17 law:
+
+```
+scale     0.01            (the file is in centimetres)
+rotation  (0, 0, 0)       (its own forward IS the camera's forward — the arithmetic said
+                           otherwise and the arithmetic was wrong)
+position  (0.16, -1.44, -0.80)   in handsRoot, with armR hidden
+```
+
+At those numbers the weapon sits forward and low-ready, the gloved hand reads on the grip, the
+sight rail reads along the top, and nothing crosses the near plane. Verified on desktop and on the
+phone's centre crop.
+
 **One thing for Chad to decide: it is a KRISS Vector submachine gun, not a SAR 21.** The plan's
 range and ambush are written around the rifle an SAF recruit actually carries, and the film's own
 image is the SAR 21. The Vector is a different silhouette — short, boxy, a submachine gun. Held at
