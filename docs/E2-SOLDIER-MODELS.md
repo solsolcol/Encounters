@@ -183,29 +183,48 @@ skin.**
 
 **6 · The FBX carries no textures.** It references external files it never embeds.
 
-## 6 · PREP — the ratio chosen by looking
+## 6 · PREP — the level set by Chad's eye, not by a budget
 
-`tools/prepwoman.mjs` at **ratio 0.06, 1024 px sheets, opaque**. The ratio was chosen the way
-v5.31 says to: by rendering the soldier at the closest distance a player can walk to him.
+`tools/prepwoman.mjs`, rendered at the closest distance a player can walk to the soldier, per
+v5.31. **Chad judged the first pass and rejected everything below ratio 0.10**: "honestly only the
+second one is acceptable, the first one is still the best." So 0.06 and 0.03 are out, and the
+question became how close to the original it is possible to get.
+
+**The answer was mostly TEXTURE, not triangles.** The first pass used 1024 px sheets. The
+soldier's own base-colour atlas is **2048 × 2048**, so 1024 was throwing away half of the
+camouflage — and 4096 is pure upscaling that adds nothing and costs 1.4 MB. **2048 is both the
+floor and the ceiling for these models.**
+
+At 2048, geometry is the only remaining variable:
 
 | ratio | triangles | file | at arm's length |
 |---|---|---|---|
-| original | 593,072 | 45.43 MB | reference |
-| 0.10 | 59,307 | 2785 KB | indistinguishable from the original |
-| **0.06** | **35,583** | **1715 KB** | face and camouflage intact, silhouette clean — **ship this** |
-| 0.03 | 26,807 | 1447 KB | **the face breaks**: the nose collapses, the mouth smears |
+| original | 593,072 | 45.43 MB | the reference |
+| 0.10 | 59,307 | 3430 KB | camouflage crisp, face clean — Chad's acceptable line, now sharper than what he saw |
+| **0.20** | **118,614** | **5356 KB** | vest and pouch edges close on the original |
+| 0.35 | 207,574 | 7931 KB | the last visible step, and a steep one to pay for |
+| 0.06 (rejected) | 35,583 | — | Chad: not acceptable |
+| 0.03 (rejected) | 26,807 | — | the face breaks |
 
-Everything shippable, at 0.06, clips kept:
+**The normal map does not close the remaining gap.** The source carries one, and prepwoman drops
+it because the strict-CSP fallback cannot restore it. Re-attached at 2048 (706 KB) it made no
+visible difference in a lit comparison, so the standing rule stands and the map stays dropped.
+
+Everything shippable at **ratio 0.20, 2048 px sheets**, clips kept — the recommended set:
 
 | asset | source | shipped | triangles |
 |---|---|---|---|
-| `fbosling` | 45.43 MB | 2270 KB | 35,583 |
-| `fbonosling` | 45.39 MB | 2275 KB | 35,537 |
-| `fboaim` (the statue) | 33.14 MB | 1656 KB | 41,534 |
-| `admintee` (built, below) | 49.11 MB | 1485 KB | 35,630 |
-| `sleeper` (the statue) | 24.82 MB | 1081 KB | 35,818 |
-| `sleepanim` (for its clips) | 62.10 MB | 1334 KB | 35,820 |
-| **total** | **~260 MB** | **~10.1 MB** | |
+| `fbosling` | 45.43 MB | ~5.4 MB | 118,614 |
+| `fbonosling` | 45.39 MB | ~5.4 MB | ~118,000 |
+| `fboaim` (the statue) | 33.14 MB | ~5.5 MB | ~118,000 |
+| `admintee` (built, below) | 49.11 MB | ~5.0 MB | ~118,000 |
+| `sleeper` (the statue) | 24.82 MB | ~4.5 MB | ~118,000 |
+| `sleepanim` (for its clips) | 62.10 MB | ~4.5 MB | ~118,000 |
+
+At ratio 0.10 the same six come to roughly 20 MB against roughly 30 MB at 0.20. Both are far
+beyond anything episode 1 downloads, and **how much of it to spend is Chad's call**, chapter by
+chapter: a soldier the player walks up to and a soldier forty metres away in the dark do not need
+the same model, and the same source can be prepped twice at two ratios if that is what it takes.
 
 **`admintee-dressed.glb` had to be built and now exists** (`dbg-dress.mjs`): the rigged copy of the
 bunk character carries no textures and the textured copy carries no rig, so the apose file's
