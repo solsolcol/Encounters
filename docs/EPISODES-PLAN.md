@@ -224,6 +224,8 @@ adds the twenty episode rows and the new selector strings (sheet v32).
   surface `csptest` can drive). **DECISION**: (a) make it EPISODE ONE ONLY —
   the fallback stays real and the CSP test stays honest; (b) drop it.
   Recommendation: (a), a one-line filter in build.py, when episode 2 lands.
+  **DONE at v7.0** — `build.py` filters the single-file build to `episode: 1`
+  chapters (and the folder-per-episode glob of §1 landed with it).
 
 ## 10 · Harnesses — "adding an episode must not add a harness"
 

@@ -22,7 +22,8 @@ const bad = (ch, msg) => errs.push(`${ch}: ${msg}`);
 
 // --- load every chapter the way the browser does ---------------------------
 const chapDir = join(DIR, 'src', 'chapters');
-const files = readdirSync(chapDir).filter(f => f.endsWith('.js')).sort();
+// v7.0: and its subfolders — one folder per episode (src/chapters/e2/)
+const files = readdirSync(chapDir, { recursive: true }).map(String).filter(f => f.endsWith('.js')).sort();
 const win = { __CHAPTERS__: undefined };
 globalThis.window = win;
 for (const f of files) {
@@ -57,6 +58,12 @@ for (const [key, ch] of Object.entries(chapters)) {
   if (ch.episode !== undefined && !(Number.isInteger(ch.episode) && ch.episode >= 1 && ch.episode <= 10)) {
     bad(key, `episode must be an integer from 1 to 10, not ${JSON.stringify(ch.episode)}`);
   }
+
+  // --- v7.0: the play kit's declarations, when a chapter makes them --------
+  if (ch.torch !== undefined && (typeof ch.torch !== 'object' || ch.torch === null)) {
+    bad(key, 'torch must be an object ({ on, angle, color, ... })');
+  }
+  if (ch.words && ch.words.presence !== undefined && !str(ch.words.presence)) bad(key, 'words.presence is empty');
 
   // --- the choices ---------------------------------------------------------
   if (!Array.isArray(ch.choices) || ch.choices.length < 2) {

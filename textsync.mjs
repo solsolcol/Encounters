@@ -41,9 +41,10 @@ const CHAP_DIR = join(DIR, 'src', 'chapters');
    engine's own convention for "not part of the game" — nextChapterKey()
    filters on exactly the same number. */
 function chapterFiles() {
-  return readdirSync(CHAP_DIR).filter(f => f.endsWith('.js')).sort()
+  // v7.0: and in subfolders — src/chapters/e2/e2c1.js; the key is the file's stem
+  return readdirSync(CHAP_DIR, { recursive: true }).map(String).filter(f => f.endsWith('.js')).sort()
     .map(f => {
-      const key = f.slice(0, -3);
+      const key = f.replace(/\\/g, '/').split('/').pop().slice(0, -3);
       const ch = loadGlobals(join(CHAP_DIR, f)).__CHAPTERS__?.[key];
       return ch && (ch.id || 0) < 90 ? { key, ch, path: join(CHAP_DIR, f) } : null;
     })

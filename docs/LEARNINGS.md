@@ -2570,3 +2570,33 @@ screenshot, and the one frame that came out right was the film's own shot.
 Get to `play`, where nothing owns the camera, and read the subject's world
 position out of the scene graph rather than recomputing it from a chapter's
 constants — the pocket coordinates I derived by hand were wrong twice.
+
+## v7.0 — the play kit
+
+- **A verb mutates state; the frame touches the DOM.** A chapter's
+  `build()` runs during module init, before `$`, `ui` or `state` exist, so
+  any kit verb a chapter may call from build() must only write kit state;
+  `kitFrame` (from `tick`) paints. The kit block therefore sits BEFORE
+  `CHCTX` in main.js, and its DOM listeners bind on the first frame.
+- **Two boot paths.** `restart()` and `setChapter()` reset the kit and
+  apply a chapter's declarations; a FRESH boot reaches play through
+  neither. The booting chapter's torch was null until `kitInit()` applied
+  it on the first frame. When adding a per-chapter declaration, ask which
+  of the three paths — boot, restart, advance — will miss it.
+- **Harness timing on a 0.05 s clock.** The game clock is dt-clamped, so
+  on the 1 fps box a second of game time is twenty real seconds. Three
+  races were the harness's, not the engine's: an event that resolves on
+  its first frame is never observed "started" (wait for started OR
+  resolved); a reaction window narrower than a frame cannot be hit (widen
+  it, or step the clock); a thing the harness must tap must be PLACED
+  before the tap (the engine now places a focus dot on the frame the event
+  starts, and the harness waits to see it).
+- **A banner with two owners has a priority.** Her drain and a chapter's
+  unseen presence share the sanity bar and its banner; when both drain,
+  HER words win. The fixture keeps her ghost, so a test of the chapter's
+  words must ask which is draining before it asserts either.
+- **A fresh field in the save must be exact in the round trip.** statetest
+  applies a state and asserts `worldState()` equals it; a new field that
+  serialises as `undefined` is dropped by JSON and breaks the equality.
+  Absent is `null`, never `undefined`.
+

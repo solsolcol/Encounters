@@ -51,11 +51,17 @@
     bounds:    { minX: -11, maxX: 11, minZ: -11, maxZ: 11 },
 
     // nothing heavy at all: the engine's shared files are all this needs
-    assets: []
+    assets: [],
+
+    /* v7.0: the play kit, declared — so `fixturetest` can prove every seam on
+       a world the engine has never seen. A torch (off until asked), and the
+       banner's words for an unseen presence. */
+    torch: { on: false, angle: 0.5 },
+    words: { presence: 'Something is in the room.' }
   };
 
   function build(ctx) {
-    const { THREE, scene, camera, yaw, getState, startDecision } = ctx;
+    const { THREE, scene, camera, yaw, getState, startDecision, kit } = ctx;
     const SHRINE = new THREE.Vector3(DATA.shrine.x, 0, DATA.shrine.z);
     const owned = [];
 
@@ -256,6 +262,37 @@
       return out;
     }
 
+    /* ------------------------------------------------ v7.0: the play kit --
+       Three hotspots, each exercising a different verb, and an objective set
+       from INSIDE build() — which runs during module init, before the HUD
+       exists, and is exactly the call the kit promises to survive.       */
+    const lamp = new THREE.PointLight(0xfff1c8, 0, 12, 1.8);
+    lamp.position.set(-6, 2.4, -6);
+    scene.add(lamp); owned.push(lamp);
+    let lampOn = false;
+    const hotspots = [
+      { id: 'switch', pos: { x: -6, y: 1.2, z: -6 }, radius: 2.4, prompt: 'Flip the switch',
+        onInteract() {
+          lampOn = !lampOn; lamp.intensity = lampOn ? 18 : 0;
+          if (kit) kit.conduct({ a: 3, note: lampOn ? 'You turned the light on.' : 'You turned the light off.' });
+          return true;
+        } },
+      { id: 'bed', pos: { x: 6, y: 0.6, z: 6 }, radius: 2.4, prompt: 'Lie down',
+        onInteract() {
+          if (!kit) return false;
+          kit.pose(kit.getPose() === 'lying' ? 'standing' : 'lying', { y: 0.62 });
+          return true;
+        } },
+      { id: 'panel', pos: { x: 6, y: 1.2, z: -6 }, radius: 2.4, prompt: 'Trace the pipes', once: true,
+        onInteract() {
+          if (!kit) return false;
+          kit.event({ kind: 'sequence', label: 'THE PIPES', items: [{ label: 'feed' }, { label: 'valve' }, { label: 'drain' }],
+                      each: 1.5, award: { stat: 'awareness', lo: 0, hi: 6 } });
+          return true;
+        } }
+    ];
+    if (kit) { kit.objective('Find the marker on the floor'); kit.setPhase('room'); }
+
     function dispose() {
       const geos = new Set(), mats = new Set();
       world.traverse(o => {
@@ -283,7 +320,8 @@
       get noteStorm() { return noteStorm; },
       set noteStorm(v) { noteStorm = v; },
       updateNotes, updatePile, updateFire, updateSlow,
-      snap, restore, reset, dispose
+      snap, restore, reset, dispose,
+      hotspots                                   // v7.0
     });
   }
 

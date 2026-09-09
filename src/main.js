@@ -703,8 +703,7 @@ const SKY_NIGHT = {
 const VM_REST = { hemi: 0.55, key: 0.50 };
 let vmLightsLive = false;                  // they are built later in the file
 let skyStars = 1;                          // read by the frame, to skip the twinkle
-function applyDaylight() {
-  const d = { ...SKY_NIGHT, ...(CH.daylight || {}) };
+function applyDaylightD(d, quiet) {          // v7.0: the body, so the kit can tween it in play
   paintSky(d.stops);
   scene.background.setHex(d.bg);
   scene.fog.color.setHex(d.fog[0]);
@@ -742,8 +741,10 @@ function applyDaylight() {
     vmKey.color.setHex(d.vmKey[0]);
     vmKey.intensity = VM_REST.key;
   }
-  redoShadows();
+  if (!quiet) redoShadows();
 }
+// applyDaylight(over) itself is defined in the play kit below (v7.0) — a
+// function declaration, so calling it here is fine
 applyDaylight();          // whichever chapter booted — ch1's night is the default
 
 /* ------------------------------------------------------ the chapter's world
@@ -908,8 +909,625 @@ function plantTrees(parent, spots, opts = {}) {
   return group;
 }
 
+/* ======================================================= v7.0: THE PLAY KIT
+   Everything a chapter may ask of the engine BETWEEN its film and its
+   decision, so that a chapter is more than a walk to one object. Every seam
+   here is OPTIONAL and DECLARED — chapters 1–5 declare none of it and take
+   exactly the path they always took (the law since v4.0). The verbs reach a
+   chapter as `ctx.kit` (build) and `api.kit` (a scene).
+
+   The rule that shapes the code: a verb MUTATES kit state; the FRAME
+   (kitFrame, called from tick) is the only thing that touches the DOM. That
+   is what lets a chapter call `kit.objective()` from inside build(), which
+   runs during module init, before `$`, `ui` or `state` exist.
+
+   Hotspots    stage.hotspots — many things to act on beside the pile
+   Objective   a HUD line, a countdown, a waypoint diamond in the world
+   Events      tap · timed · mash · hold · stabilise · heartbeat · focus ·
+               sequence — one system, resolves a promise, phone-first; the
+               trial game's five reaction challenges live here (MZTRIAL-NOTES)
+               and move Sanity and Awareness, never Wisdom
+   Torch       a spotlight on the camera, white or red, F / a HUD button
+   Presence    the drain without a ghost mesh (a chapter with ghost: null)
+   Conduct     Sanity/Awareness earned in play, shown on the outcome card
+   Pose        lying down in play (the bed is a hotspot)
+   Daylight    the sky tweened in play — morning to lights-out to 3 AM
+   Clock       one timed decision, a bar that is the thing's approach
+   Phase       a bookmark the chapter keeps, saved with the run            */
+let eyeY = 1.62, pitchLo = -1.2, pitchHi = 1.2;   // the standing values; a pose moves them
+let kitPhase = null;                                // the chapter's bookmark, saved with the run
+const conductAcc = { s: 0, a: 0, notes: [] };
+const CONDUCT_CAP = 10;                             // play tilts a rank; the card decides it
+let runChoices = {};                                // the letter picked per chapter, this run
+let kitObjective = null, kitTimer = null, kitWaypoint = null;
+let kitPose = 'standing', poseFrom = 1.62, poseTo = 1.62, poseT = 1, poseSecs = 0.9;
+let lieYaw = 0, lieSpan = 1.1;
+let chapterPresence = 0;
+let torchLight = null, torchOn = false, torchDecl = null, torchIsRed = false;
+let dayTween = null;
+let decClock = null;
+let ev = null;                                      // the live event, one at a time
+let activeSpot = null;
+let kitInited = false;
+const _hs = new THREE.Vector3(), _c1 = new THREE.Color(), _c2 = new THREE.Color();
+
+/* ---- hotspots ---------------------------------------------------------- */
+function hotspotList() {
+  const h = stage && stage.hotspots;
+  if (!h) return [];
+  const list = typeof h === 'function' ? h() : h;
+  return Array.isArray(list) ? list : [];
+}
+function projectTo(x, y, z) {
+  camera.updateWorldMatrix(true, false);
+  camera.matrixWorldInverse.copy(camera.matrixWorld).invert();
+  return _hs.set(x, y, z).project(camera);
+}
+function hotspotVisible(h) {
+  const n = projectTo(h.pos.x, h.pos.y ?? 1.0, h.pos.z);
+  return n.z < 1 && Math.abs(n.x) < 0.97 && Math.abs(n.y) < 0.97;
+}
+function nearestHotspot() {
+  let best = null, bd = Infinity;
+  for (const h of hotspotList()) {
+    if (!h || !h.pos || h.done || (typeof h.enabled === 'function' && !h.enabled())) continue;
+    const d = Math.hypot(yaw.position.x - h.pos.x, yaw.position.z - h.pos.z);
+    if (d < (h.radius || 2.2) && d < bd && (h.anyView || hotspotVisible(h))) { best = h; bd = d; }
+  }
+  return best;
+}
+function setInteractBadge(spot) {
+  if (spot === activeSpot) return;
+  activeSpot = spot;
+  const el = $('itxt');
+  if (!el) return;
+  el.textContent = spot ? (spot.prompt || '')
+    : (HAS_TOUCH ? chWord('interactTouch', 'world.interactTextTouch')
+                 : chWord('interact', 'world.interactText'));
+}
+/* E, or a tap on the badge: the pile first (its contract is untouched), then
+   the nearest hotspot. A hotspot's onInteract may return false to say
+   "nothing happened"; `once` retires it after it fires. */
+function interactNow() {
+  if (state !== 'play') return false;
+  if (stage.pile.dist() < stage.pile.radius && stage.pile.inView()) return stage.pile.interact();
+  const h = activeSpot;
+  if (!h) return false;
+  const r = typeof h.onInteract === 'function' ? h.onInteract(h) : false;
+  if (r !== false) { snd('uiclick', 0.35); if (h.once) { h.done = true; setInteractBadge(null); } }
+  return r !== false;
+}
+
+/* ---- objective, timer, waypoint ---------------------------------------- */
+function kitObjectiveSet(text) { kitObjective = text ? String(text) : null; }
+function kitTimerStart(secs, onEnd) {
+  kitTimer = secs > 0 ? { left: secs, total: secs, onEnd } : null;
+  return { stop: () => { kitTimer = null; }, left: () => (kitTimer ? kitTimer.left : 0) };
+}
+function kitWaypointSet(pos) {
+  kitWaypoint = pos && Number.isFinite(pos.x) && Number.isFinite(pos.z)
+    ? { x: pos.x, y: pos.y ?? 1.2, z: pos.z } : null;
+}
+const objPainted = { txt: null, tm: null, shown: null };
+function paintObjective() {
+  const box = $('objective'); if (!box) return;
+  const show = (kitObjective || kitTimer) && (state === 'play' || state === 'decide');
+  if (show !== objPainted.shown) { box.classList.toggle('hide', !show); objPainted.shown = show; }
+  if (!show) return;
+  const txt = kitObjective || '';
+  if (txt !== objPainted.txt) { $('objTxt').textContent = txt; objPainted.txt = txt; }
+  let tm = null;
+  if (kitTimer) {
+    const s = Math.max(0, Math.ceil(kitTimer.left));
+    tm = Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+  }
+  if (tm !== objPainted.tm) {
+    const el = $('objTimer');
+    el.classList.toggle('hide', tm === null);
+    if (tm !== null) { el.textContent = tm; el.classList.toggle('low', kitTimer.left <= 10); }
+    objPainted.tm = tm;
+  }
+}
+function paintWaypoint() {
+  const el = $('waypoint'); if (!el) return;
+  if (!kitWaypoint || state !== 'play') { el.classList.add('hide'); return; }
+  const n = projectTo(kitWaypoint.x, kitWaypoint.y, kitWaypoint.z);
+  if (n.z > 1) { el.classList.add('hide'); return; }   // behind the player: no marker
+  let x = n.x, y = n.y;
+  const edge = Math.abs(x) > 0.92 || Math.abs(y) > 0.9;
+  x = Math.max(-0.92, Math.min(0.92, x)); y = Math.max(-0.9, Math.min(0.9, y));
+  el.style.transform = `translate(${((x * 0.5 + 0.5) * innerWidth).toFixed(0)}px, ${((-y * 0.5 + 0.5) * innerHeight).toFixed(0)}px) translate(-50%,-50%)`;
+  el.classList.toggle('edge', edge);
+  el.classList.remove('hide');
+}
+
+/* ---- torch --------------------------------------------------------------- */
+function torchSetup(decl) {
+  torchDecl = { color: 0xfff1d6, red: 0xff3a2a, angle: 0.42, intensity: 26, distance: 30,
+                penumbra: 0.55, decay: 1.6, on: false, ...(decl || {}) };
+  if (!torchLight) {
+    torchLight = new THREE.SpotLight(torchDecl.color, 0, torchDecl.distance, torchDecl.angle,
+                                     torchDecl.penumbra, torchDecl.decay);
+    torchLight.castShadow = false;               // a spotlight in a fogged forest: no shadow pass
+    torchLight.position.set(0.14, -0.12, 0.05);   // a hand's offset from the eye
+    torchLight.target.position.set(0, -0.2, -8);
+    camera.add(torchLight); camera.add(torchLight.target);
+  } else {
+    torchLight.angle = torchDecl.angle; torchLight.distance = torchDecl.distance;
+    torchLight.penumbra = torchDecl.penumbra; torchLight.decay = torchDecl.decay;
+  }
+  torchIsRed = false;
+  torchSet(!!torchDecl.on);
+  document.body.classList.add('hasTorch');
+}
+function torchTeardown() {
+  if (torchLight) { camera.remove(torchLight.target); camera.remove(torchLight); torchLight.dispose?.(); torchLight = null; }
+  torchDecl = null; torchOn = false; torchIsRed = false;
+  document.body.classList.remove('hasTorch');
+  $('torchBtn')?.classList.remove('on');
+}
+function torchSet(on) {
+  if (!torchLight) return;
+  torchOn = !!on;
+  torchLight.visible = torchOn;
+  torchLight.intensity = torchOn ? torchDecl.intensity * (torchIsRed ? 0.55 : 1) : 0;
+  torchLight.color.setHex(torchIsRed ? torchDecl.red : torchDecl.color);
+  $('torchBtn')?.classList.toggle('on', torchOn);
+}
+function torchRed(red) { torchIsRed = !!red; torchSet(torchOn); }
+function torchToggle() { if (torchLight && state === 'play') { torchSet(!torchOn); snd('uiclick', 0.3); } }
+
+/* ---- presence: the drain without a ghost ---------------------------------
+   A chapter with ghost: null says how near the unseen thing is (0..1) and the
+   DRAIN reads it. Her loops, her whisper and her banner stay hers — they read
+   `reveal`/`hauntK`, which a switched-off ghost keeps at zero. The banner's
+   words change for this case: "Something is here", not "Ghost spotted". */
+function presenceDrainRate() {
+  if (state !== 'play' || chapterPresence <= 0.01) return 0;
+  const k = chapterPresence;
+  return (DRAIN_FAR + (DRAIN_NEAR - DRAIN_FAR) * k * k) * k;
+}
+
+/* ---- conduct: what play did, on the card --------------------------------- */
+function kitConduct(d) {
+  if (!d) return;
+  conductAcc.s = Math.max(-CONDUCT_CAP, Math.min(CONDUCT_CAP, conductAcc.s + (+d.s || 0)));
+  conductAcc.a = Math.max(-CONDUCT_CAP, Math.min(CONDUCT_CAP, conductAcc.a + (+d.a || 0)));
+  if (d.note && !conductAcc.notes.includes(String(d.note))) conductAcc.notes.push(String(d.note));
+}
+function conductTake() {
+  const s = Math.round(conductAcc.s), a = Math.round(conductAcc.a);
+  const out = (s || a || conductAcc.notes.length) ? { s, a, notes: conductAcc.notes.slice() } : null;
+  conductAcc.s = 0; conductAcc.a = 0; conductAcc.notes.length = 0;
+  return out;
+}
+function paintConduct(cd) {
+  const el = $('conduct'); if (!el) return;
+  if (!cd) { el.classList.add('hide'); el.textContent = ''; return; }
+  const sg = v => (v >= 0 ? '+' : '') + v;
+  const parts = [];
+  if (cd.s) parts.push(sg(cd.s) + ' ' + T('hud.sanity'));
+  if (cd.a) parts.push(sg(cd.a) + ' ' + T('hud.awareness'));
+  el.textContent = T('card.conduct') + ': ' + (cd.notes.join(' ') || '') + (parts.length ? ' (' + parts.join(', ') + ')' : '');
+  el.classList.remove('hide');
+}
+/* a stat moved by play, with the same tick the drain uses */
+function kitAward(stat, delta) {
+  if (!(stat in stats) || !Number.isFinite(delta) || !delta) return;
+  const before = stats[stat];
+  stats[stat] = Math.max(0, Math.min(100, stats[stat] + delta));
+  const moved = stats[stat] - before;
+  if (stat === 'sanity' && moved < 0) sanityTick(Math.round(-moved));
+  syncBars();
+  if (stats.sanity <= 0 && state === 'play') lose();
+}
+
+/* ---- pose: lying down in play ------------------------------------------ */
+function kitPoseSet(name, opts = {}) {
+  name = name === 'lying' ? 'lying' : 'standing';
+  if (name === kitPose && poseT >= 1) return;
+  kitPose = name;
+  poseFrom = yaw.position.y;
+  poseTo = name === 'lying' ? (opts.y ?? 0.60) : 1.62;
+  poseT = 0; poseSecs = Math.max(0.05, opts.secs ?? 0.9);
+  if (name === 'lying') {
+    lieYaw = Number.isFinite(opts.yaw) ? opts.yaw : yaw.rotation.y;
+    lieSpan = opts.span ?? 1.1;
+    pitchLo = opts.pitchLo ?? -0.35; pitchHi = opts.pitchHi ?? 1.35;
+    vel.set(0, 0, 0);
+  } else { pitchLo = -1.2; pitchHi = 1.2; }
+}
+
+/* ---- daylight, tweened in play ------------------------------------------ */
+let dayNow = null;
+function applyDaylight(over) {
+  dayNow = { ...SKY_NIGHT, ...(CH.daylight || {}), ...(over || {}) };
+  dayTween = null;
+  applyDaylightD(dayNow);
+}
+function daylightTo(preset, secs) {
+  const to = { ...SKY_NIGHT, ...(CH.daylight || {}), ...(preset || {}) };
+  if (!(secs > 0)) { dayNow = to; dayTween = null; applyDaylightD(to); return; }
+  dayTween = { from: dayNow || { ...SKY_NIGHT, ...(CH.daylight || {}) }, to, t: 0, secs };
+}
+function dayMix(a, b, k) {
+  const col = (x, y) => _c1.setHex(x).lerp(_c2.setHex(y), k).getHex();
+  const n = (x, y) => x + (y - x) * k;
+  const arr = (x, y, isCol) => x.map((v, i) => (isCol[i] ? col(v, y[i]) : n(v, y[i])));
+  const stops = a.stops.length === b.stops.length
+    ? a.stops.map((s, i) => [n(s[0], b.stops[i][0]),
+        '#' + _c1.set(s[1]).lerp(_c2.set(b.stops[i][1]), k).getHexString()])
+    : (k < 0.5 ? a.stops : b.stops);
+  return {
+    stops, bg: col(a.bg, b.bg), fog: arr(a.fog, b.fog, [1, 0]),
+    hemi: arr(a.hemi, b.hemi, [1, 1, 0]), key: arr(a.key, b.key, [1, 0, 0, 0, 0]),
+    fill: arr(a.fill, b.fill, [1, 0]), stars: n(a.stars, b.stars), moon: n(a.moon, b.moon),
+    sun: n(a.sun, b.sun), clouds: n(a.clouds, b.clouds),
+    vmHemi: arr(a.vmHemi, b.vmHemi, [1, 1, 0]), vmKey: arr(a.vmKey, b.vmKey, [1, 0])
+  };
+}
+
+/* ---- the decision clock -------------------------------------------------- */
+function decisionClockStart() {
+  const el = $('dclock'); if (!el) return;
+  if (!decClock) { el.classList.add('hide'); return; }
+  decClock.left = decClock.secs; decClock.fired = false;
+  el.querySelector('i').style.width = '100%';
+  el.classList.remove('hide');
+}
+function decisionClockStop() { decClock = null; $('dclock')?.classList.add('hide'); }
+
+/* ---- haptics ------------------------------------------------------------- */
+function haptic(pattern) { try { navigator.vibrate?.(pattern || 40); } catch {} }
+
+/* ---- events -------------------------------------------------------------- */
+const EV_DEFAULT = {
+  tap:       { secs: 4 },
+  timed:     { open: 2.0, close: 3.4, secs: 0 },
+  mash:      { secs: 8, start: 0.55, decay: 0.32, gain: 0.09 },
+  hold:      { secs: 6, grace: 1.5, drift: 28, lookTol: 0.9 },
+  stabilise: { secs: 5, grace: 1.5, tol: 3.0, pass: 0.35 },
+  heartbeat: { n: 5, bpm: 64, win: 0.17, lead: 1.2, pass: 0.6 },
+  focus:     { n: 5, each: 1.6, tol: 90, pass: 0.6 },
+  sequence:  { each: 1.2, accel: 0.86, minEach: 0.45, pass: 0.6 }
+};
+// the literals texttest looks for; the kind picks the row
+const EV_LABEL = { tap: 'event.tap', timed: 'event.timed', mash: 'event.mash', hold: 'event.hold',
+                   stabilise: 'event.stabilise', heartbeat: 'event.heartbeat', focus: 'event.focus',
+                   sequence: 'event.sequence' };
+function kitEvent(opts = {}) {
+  if (ev) evResolve({ ok: false, aborted: true });
+  const kind = EV_DEFAULT[opts.kind] ? opts.kind : 'tap';
+  const o = { ...EV_DEFAULT[kind], ...opts, kind };
+  if (kind === 'timed') o.secs = o.close;
+  return new Promise(res => {
+    ev = { o, kind, t: 0, res, started: false, down: false, downAt: -1, hits: 0, misses: 0,
+           idx: 0, bar: o.start ?? 0, drift: 0, look: 0, downX: 0, downY: 0, each: o.each,
+           layout: (kind === 'tap' || kind === 'timed') ? 'button' : 'full',
+           items: Array.isArray(o.items) ? o.items : [], targets: Array.isArray(o.targets) ? o.targets : [],
+           n: kind === 'sequence' ? (Array.isArray(o.items) ? o.items.length : (o.n || 5))
+            : kind === 'focus' ? (Array.isArray(o.targets) && o.targets.length ? o.targets.length : (o.n || 5))
+            : (o.n || 1),
+           slotT: 0, beat: 0, beatDone: false, over: false };
+  });
+}
+function evActive() { return !!ev; }
+function evEl() { return $('event'); }
+function evStart() {
+  const e = ev, o = e.o, host = evEl();
+  e.started = true;
+  if (!host) return;
+  host.className = 'layer ' + (e.layout === 'full' ? 'full ' : '') + e.kind;
+  $('evLabel').textContent = o.label || '';
+  $('evPrompt').textContent = o.prompt || T(EV_LABEL[e.kind]);
+  $('evNote').textContent = '';
+  const btn = $('evBtn');
+  btn.textContent = o.button || T(EV_LABEL[e.kind]);
+  btn.className = e.kind === 'timed' ? 'wait' : '';
+  btn.classList.toggle('hide', e.layout !== 'button' && e.kind !== 'mash');
+  $('evTrack').classList.toggle('hide', !(e.kind === 'mash' || e.kind === 'hold' || e.kind === 'stabilise' || e.kind === 'tap'));
+  $('evBar').style.width = (e.kind === 'mash' ? e.bar * 100 : 0) + '%';
+  $('evItem').classList.toggle('hide', e.kind !== 'sequence');
+  $('evDot').classList.add('hide');
+  if (e.kind === 'sequence') evShowItem();
+  snd('uiclick', 0.3);
+}
+function evShowItem() {
+  const e = ev, it = e.items[e.idx] || { label: String(e.idx + 1) };
+  const icon = $('evIcon'); icon.textContent = '';
+  if (it.icon && typeof it.icon === 'object' && it.icon.nodeType === 1) icon.appendChild(it.icon);
+  else if (typeof it.icon === 'string' && HOSTED && ASSET_MAP[it.icon]) {
+    const img = document.createElement('img'); img.alt = ''; img.src = ASSET_MAP[it.icon]; icon.appendChild(img);
+  }
+  $('evItemTxt').textContent = it.label || '';
+  e.slotT = 0;
+}
+function evNote(ok) {
+  const host = evEl(); if (!host) return;
+  $('evNote').textContent = ok ? T('event.hit') : T('event.miss');
+  host.classList.toggle('bad', !ok);
+  snd(ok ? 'uiconfirm' : 'uiclick', ok ? 0.35 : 0.2);
+  if (ok && ev && ev.o.haptic !== false) haptic(30);
+}
+function evResolve(extra) {
+  const e = ev; if (!e) return;
+  ev = null;
+  const host = evEl();
+  if (host) { host.className = 'layer hide'; $('evDot').classList.add('hide'); $('evIcon').textContent = ''; }
+  const score = Math.max(0, Math.min(1, extra.score ?? e.score ?? 0));
+  const r = { kind: e.kind, ok: !!extra.ok, score: +score.toFixed(3), hits: e.hits, misses: e.misses,
+              t: +e.t.toFixed(2), early: !!extra.early, skipped: !!extra.skipped, aborted: !!extra.aborted };
+  const aw = e.o.award;
+  if (aw && aw.stat && !r.aborted && !r.skipped) {
+    const lo = +aw.lo || 0, hi = +aw.hi || 0;
+    r.delta = Math.round(lo + (hi - lo) * (r.ok ? r.score : 0));
+    kitAward(aw.stat, r.delta);
+  }
+  if (!r.aborted && !r.skipped) snd(r.ok ? 'uiconfirm' : 'uiclick', r.ok ? 0.5 : 0.25);
+  e.res(r);
+}
+/* a press: from the overlay, the button, a key, or a mouse under pointer lock */
+function evPress(x, y) {
+  const e = ev; if (!e || !e.started || e.down) return;
+  const o = e.o;
+  e.down = true; e.downAt = e.t; e.downX = x; e.downY = y; e.drift = 0; e.look = 0;
+  $('evBtn')?.classList.add('down');
+  switch (e.kind) {
+    case 'tap':
+      evResolve({ ok: true, score: 1 - Math.min(1, e.t / o.secs) * 0.5 }); break;
+    case 'timed':
+      if (e.t < o.open) evResolve({ ok: false, early: true, score: 0 });
+      else evResolve({ ok: true, score: 1 - Math.min(1, (e.t - o.open) / (o.close - o.open)) * 0.5 });
+      break;
+    case 'mash':
+      e.bar = Math.min(1, e.bar + o.gain); e.hits++; snd('uiclick', 0.18, 1.1); break;
+    case 'heartbeat': {
+      const period = 60 / o.bpm, c = o.lead + e.beat * period;
+      if (!e.beatDone && Math.abs(e.t - c) <= o.win) { e.hits++; e.beatDone = true; evNote(true); }
+      else { e.misses++; evNote(false); }
+      break;
+    }
+    case 'focus': {
+      const dot = $('evDot');
+      if (dot && !dot.classList.contains('hide')) {
+        const r = dot.getBoundingClientRect();
+        const d = Math.hypot(x - (r.left + r.width / 2), y - (r.top + r.height / 2));
+        if (d <= o.tol) { e.hits++; evNote(true); evNextTarget(); }
+        else { e.misses++; evNote(false); }
+      }
+      break;
+    }
+    case 'sequence':
+      e.hits++; evNote(true); evNextItem(); break;
+    default: break;   // hold / stabilise: the press is the beginning of the hold
+  }
+}
+function evRelease() {
+  const e = ev; if (!e || !e.down) return;
+  e.down = false;
+  $('evBtn')?.classList.remove('down');
+  if (e.kind === 'hold' && e.t < e.o.secs) evResolve({ ok: false, score: 0 });
+  if (e.kind === 'stabilise' && e.t < e.o.secs) evResolve({ ok: false, score: 0 });
+}
+function evMove(x, y) {
+  const e = ev; if (!e || !e.down) return;
+  e.drift = Math.max(e.drift, Math.hypot(x - e.downX, y - e.downY));
+}
+function evNextTarget() {
+  const e = ev; e.idx++; e.slotT = 0;
+  if (e.idx >= e.n) { e.over = true; return; }
+}
+function evNextItem() {
+  const e = ev; e.idx++;
+  e.each = Math.max(e.o.minEach, e.each * e.o.accel);
+  if (e.idx >= e.n) { e.over = true; return; }
+  evShowItem();
+}
+function evFrame(dt, dLookX, dLookY) {
+  const e = ev; if (!e) return;
+  if (!e.started) evStart();          // and fall through: a focus dot is placed on the frame it starts
+  const o = e.o;
+  e.t += dt;
+  if (e.down) e.look += Math.abs(dLookX) + Math.abs(dLookY);
+  const bar = $('evBar');
+  switch (e.kind) {
+    case 'tap':
+      if (bar) bar.style.width = (100 * (1 - e.t / o.secs)).toFixed(1) + '%';
+      if (e.t >= o.secs) evResolve({ ok: false, score: 0 });
+      break;
+    case 'timed': {
+      const btn = $('evBtn');
+      if (btn) { btn.classList.toggle('wait', e.t < o.open); btn.classList.toggle('go', e.t >= o.open); if (e.t >= o.open && btn.textContent !== T('event.go')) btn.textContent = T('event.go'); }
+      if (e.t >= o.close) evResolve({ ok: false, score: 0 });
+      break;
+    }
+    case 'mash':
+      e.bar -= o.decay * dt;
+      if (bar) bar.style.width = (Math.max(0, e.bar) * 100).toFixed(1) + '%';
+      if (e.bar <= 0) evResolve({ ok: false, score: 0 });
+      else if (e.t >= o.secs) evResolve({ ok: true, score: e.bar });
+      break;
+    case 'hold':
+      if (!e.down) { if (e.t > o.grace && e.downAt < 0) evResolve({ ok: false, score: 0 }); break; }
+      if (bar) bar.style.width = (100 * Math.min(1, (e.t - e.downAt) / o.secs)).toFixed(1) + '%';
+      if (e.drift > o.drift || e.look > o.lookTol) evResolve({ ok: false, score: 0 });
+      else if (e.t - e.downAt >= o.secs) evResolve({ ok: true, score: 1 });
+      break;
+    case 'stabilise': {
+      if (!e.down) { if (e.t > o.grace && e.downAt < 0) evResolve({ ok: false, score: 0 }); break; }
+      const steady = 1 - Math.min(1, e.look / o.tol);
+      if (bar) bar.style.width = (100 * steady).toFixed(1) + '%';
+      if (e.t - e.downAt >= o.secs) evResolve({ ok: steady >= o.pass, score: steady });
+      break;
+    }
+    case 'heartbeat': {
+      const period = 60 / o.bpm, c = o.lead + e.beat * period;
+      // the pulse ring contracts onto the inner ring at each beat's centre
+      const pulse = $('evPulse');
+      if (pulse) {
+        const ph = Math.max(0, Math.min(1, 1 - (c - e.t) / period));
+        pulse.style.transform = 'scale(' + (2.2 - 1.2 * ph).toFixed(3) + ')';
+      }
+      if (e.t > c + o.win) {
+        if (!e.beatDone) { e.misses++; }
+        e.beat++; e.beatDone = false;
+        if (e.beat >= e.n) { const s = e.hits / e.n; evResolve({ ok: s >= o.pass, score: s }); }
+      }
+      break;
+    }
+    case 'focus': {
+      const dot = $('evDot');
+      if (e.over) { const s = e.hits / e.n; evResolve({ ok: s >= o.pass, score: s }); break; }
+      const tg = e.targets[e.idx % Math.max(1, e.targets.length)];
+      let sx, sy, vis = true;
+      if (tg && Number.isFinite(tg.sx)) { sx = tg.sx * innerWidth; sy = tg.sy * innerHeight; }
+      else if (tg && Number.isFinite(tg.x)) {
+        const n = projectTo(tg.x, tg.y ?? 1.2, tg.z);
+        vis = n.z < 1; sx = (n.x * 0.5 + 0.5) * innerWidth; sy = (-n.y * 0.5 + 0.5) * innerHeight;
+      } else { sx = innerWidth * (0.3 + 0.4 * ((e.idx * 0.618) % 1)); sy = innerHeight * (0.3 + 0.4 * ((e.idx * 0.382) % 1)); }
+      if (dot) {
+        dot.classList.toggle('hide', !vis);
+        dot.style.transform = `translate(${sx.toFixed(0)}px, ${sy.toFixed(0)}px) translate(-50%,-50%)`;
+        dot.style.opacity = (1 - e.slotT / e.o.each * 0.7).toFixed(2);
+      }
+      e.slotT += dt;
+      if (e.slotT >= e.o.each) { e.misses++; evNote(false); evNextTarget(); }
+      break;
+    }
+    case 'sequence': {
+      if (e.over) { const s = e.hits / e.n; evResolve({ ok: s >= o.pass, score: s }); break; }
+      e.slotT += dt;
+      const item = $('evItem');
+      if (item) item.style.opacity = (1 - Math.max(0, e.slotT / e.each - 0.5) * 2).toFixed(2);
+      if (e.slotT >= e.each) { e.misses++; evNote(false); evNextItem(); }
+      break;
+    }
+  }
+}
+/* keys: Space / Enter / E are the press while an event is live — they never
+   reach the cutscene skip or the pile while one is */
+function evKey(e, isDown) {
+  if (!ev || !ev.started) return false;
+  if (e.code !== 'Space' && e.code !== 'Enter' && e.code !== 'KeyE') return false;
+  if (isDown && e.repeat) { e.preventDefault(); return true; }
+  e.preventDefault();
+  if (isDown) evPress(innerWidth / 2, innerHeight / 2); else evRelease();
+  return true;
+}
+
+/* ---- the frame ----------------------------------------------------------- */
+function kitInit() {
+  kitInited = true;
+  /* the booting chapter's declarations: restart() and setChapter() run
+     kitReset(), but a fresh boot reaches play through neither, and the HUD
+     the torch button lives in did not exist when build() ran */
+  if (CH.torch && !torchLight) torchSetup(CH.torch);
+  $('interact')?.querySelector('.ibadge')?.addEventListener('click', e => { e.stopPropagation(); interactNow(); });
+  $('torchBtn')?.addEventListener('click', e => { e.stopPropagation(); torchToggle(); });
+  const tb = $('torchBtn'); if (tb) tb.setAttribute('aria-label', T('hud.torch'));
+  const host = $('event');
+  if (host) {
+    const pressFrom = e => {
+      if (!ev) return false;
+      // a touch counts only on the overlay's own surface (the stick is not a press);
+      // a mouse counts anywhere, because under pointer lock it lands on the canvas
+      if (e.pointerType !== 'mouse' && ev.layout === 'button' && !e.target.closest?.('#evBtn')) return false;
+      return true;
+    };
+    host.addEventListener('pointerdown', e => { if (!pressFrom(e)) return; e.preventDefault(); evPress(e.clientX, e.clientY); });
+    host.addEventListener('pointermove', e => { if (ev && ev.down) evMove(e.clientX, e.clientY); });
+    for (const k of ['pointerup', 'pointercancel']) host.addEventListener(k, () => evRelease());
+    // a mouse press under pointer lock never reaches the overlay
+    addEventListener('pointerdown', e => {
+      if (!ev || !ev.started || e.target.closest?.('#event') || e.target.closest?.('.soundBtn')) return;
+      if (e.pointerType === 'mouse') evPress(innerWidth / 2, innerHeight / 2);
+    });
+    addEventListener('pointerup', () => { if (ev && ev.down) evRelease(); });
+  }
+}
+function kitFrame(dt, t, dLookX, dLookY) {
+  if (!kitInited) kitInit();
+  // pose
+  if (poseT < 1) { poseT = Math.min(1, poseT + dt / poseSecs); eyeY = poseFrom + (poseTo - poseFrom) * smoothK(poseT); }
+  if (kitPose === 'lying' && state === 'play') {
+    const d = Math.atan2(Math.sin(yaw.rotation.y - lieYaw), Math.cos(yaw.rotation.y - lieYaw));
+    if (Math.abs(d) > lieSpan) yaw.rotation.y = lieYaw + Math.sign(d) * lieSpan;
+  }
+  // daylight
+  if (dayTween) {
+    dayTween.t = Math.min(1, dayTween.t + dt / dayTween.secs);
+    if (dayTween.t >= 1) { dayNow = dayTween.to; dayTween = null; applyDaylightD(dayNow); }
+    else applyDaylightD(dayMix(dayTween.from, dayTween.to, smoothK(dayTween.t)), true);
+  }
+  // timer, objective, waypoint
+  if (kitTimer && state === 'play') {
+    kitTimer.left -= dt;
+    if (kitTimer.left <= 0) { const f = kitTimer.onEnd; kitTimer = null; if (typeof f === 'function') f(); }
+  }
+  paintObjective();
+  paintWaypoint();
+  // the decision clock
+  if (decClock && state === 'decide' && !decClock.fired) {
+    decClock.left -= dt;
+    const el = $('dclock');
+    if (el) el.querySelector('i').style.width = (100 * Math.max(0, decClock.left / decClock.secs)).toFixed(1) + '%';
+    if (decClock.left <= 0) {
+      decClock.fired = true;
+      const f = decClock.onExpire;
+      if (typeof f === 'function') f(); else kitAward('sanity', -8);
+    }
+  }
+  // events
+  if (ev) evFrame(dt, dLookX, dLookY);
+}
+/* every chapter starts the kit clean; a resume re-seeds phase/conduct/choices
+   through applyState afterwards */
+function kitReset() {
+  if (ev) evResolve({ ok: false, aborted: true });
+  kitPhase = null;
+  conductAcc.s = 0; conductAcc.a = 0; conductAcc.notes.length = 0;
+  kitObjective = null; kitTimer = null; kitWaypoint = null;
+  kitPose = 'standing'; eyeY = 1.62; poseFrom = poseTo = 1.62; poseT = 1; pitchLo = -1.2; pitchHi = 1.2;
+  chapterPresence = 0;
+  dayTween = null;
+  decClock = null; $('dclock')?.classList.add('hide');
+  if (CH.torch) torchSetup(CH.torch); else torchTeardown();
+  activeSpot = null;
+}
+const KIT = {
+  objective: kitObjectiveSet, timer: kitTimerStart, waypoint: kitWaypointSet,
+  event: kitEvent, eventActive: evActive, abortEvent: () => { if (ev) evResolve({ ok: false, aborted: true }); },
+  torch: torchSetup, torchOn: torchSet, torchRed, torchIsOn: () => torchOn,
+  presence: v => { chapterPresence = Math.max(0, Math.min(1, +v || 0)); },
+  getPresence: () => chapterPresence,
+  conduct: kitConduct, award: kitAward,
+  pose: kitPoseSet, getPose: () => kitPose,
+  daylight: daylightTo,
+  decisionClock: (secs, onExpire) => { decClock = secs > 0 ? { secs, left: secs, onExpire, fired: false } : null; },
+  haptic,
+  setPhase: v => { kitPhase = (v === undefined) ? null : v; }, getPhase: () => kitPhase,
+  choices: () => ({ ...runChoices }),
+  interact: () => interactNow(),
+  hotspot: () => activeSpot
+};
+// for the probes and harnesses: the whole kit, read by state
+function kitDebug() {
+  return { phase: kitPhase, pose: kitPose, eyeY: +eyeY.toFixed(3), presence: chapterPresence,
+           torch: torchLight ? { on: torchOn, red: torchIsRed } : null,
+           objective: kitObjective, timer: kitTimer ? +kitTimer.left.toFixed(2) : null,
+           waypoint: kitWaypoint, conduct: { ...conductAcc, notes: conductAcc.notes.slice() },
+           clock: decClock ? { left: +decClock.left.toFixed(2), fired: decClock.fired } : null,
+           daylightTween: dayTween ? +dayTween.t.toFixed(3) : null,
+           event: ev ? { kind: ev.kind, t: +ev.t.toFixed(2), started: ev.started, down: ev.down,
+                         hits: ev.hits, misses: ev.misses, idx: ev.idx, bar: +ev.bar.toFixed(3) } : null,
+           hotspot: activeSpot ? (activeSpot.id || activeSpot.prompt || true) : null,
+           hotspots: hotspotList().length };
+}
+/* ===================================================== end of the play kit */
+
 const CHCTX = {
   THREE, GLTFLoader, cloneSkinned, scene, camera, yaw, LOW,
+  kit: KIT,                        // v7.0: the play kit — declared by a chapter, absent for chapters 1–5
   plantTrees,                      // v6.15: a stand of Chad's trees, mixed and dealt from a seed
   assetBytes, rescueTextures, redoShadows, loadImageTexture,
   cnv, makeSoftDot, makeGround, makeGrass, makeConcrete, makeLacquer, makeHellNote,
@@ -1753,15 +2371,17 @@ let BLOCKERS = stage.blockers;
 /* ------------------------------------------------------------ controls */
 const keys = Object.create(null);
 addEventListener('keydown', e => {
+  if (evKey(e, true)) return;                     // v7.0: a live event owns Space / Enter / E
+  if (e.code === 'KeyF' && state === 'play') { torchToggle(); return; }   // v7.0
   // Escape closes whatever is open: credits first, then the decision panel
   if (e.code === 'Escape' && !$('credits').classList.contains('hide')) {
     showCredits(false); return;
   }
   if (e.code === 'Escape' && state === 'decide') { dismissDecision(); return; }
-  if (e.code === 'KeyE' && state === 'play') { stage.pile.interact(); return; }
+  if (e.code === 'KeyE' && state === 'play') { interactNow(); return; }   // v7.0: the pile, else the nearest hotspot
   keys[e.code] = true;
 });
-addEventListener('keyup', e => { keys[e.code] = false; });
+addEventListener('keyup', e => { if (evKey(e, false)) return; keys[e.code] = false; });
 
 let lookX = 0, lookY = 0;            // accumulated look delta this frame
 let locked = false;                  // pointer lock currently held
@@ -3252,7 +3872,13 @@ function worldState() {
     v: SAVE_V,
     ch: CH_KEY,
     stats: { sanity: stats.sanity, awareness: stats.awareness, wisdom: stats.wisdom },
-    inv: { gear: { ...inv.gear }, bag: [...inv.bag] }
+    inv: { gear: { ...inv.gear }, bag: [...inv.bag] },
+    /* v7.0: the chapter's bookmark, what play earned so far, and the letter
+       picked per chapter — all absent from a save written before v7.0, and
+       all optional to read back */
+    phase: kitPhase,
+    conduct: { s: conductAcc.s, a: conductAcc.a, notes: conductAcc.notes.slice() },
+    choices: { ...runChoices }
   };
 }
 function applyState(st) {
@@ -3293,6 +3919,17 @@ function applyState(st) {
       inv.bag[free] = id;
     }
     if (inv.open) invPaint();
+  }
+  // v7.0: the kit's three fields, each tolerated absent
+  kitPhase = (typeof st.phase === 'string' || (typeof st.phase === 'number' && Number.isFinite(st.phase))) ? st.phase : null;
+  const cd = (st.conduct && typeof st.conduct === 'object') ? st.conduct : {};
+  const cap = v => (typeof v === 'number' && Number.isFinite(v)) ? Math.max(-CONDUCT_CAP, Math.min(CONDUCT_CAP, v)) : 0;
+  conductAcc.s = cap(cd.s); conductAcc.a = cap(cd.a);
+  conductAcc.notes.length = 0;
+  for (const n of (Array.isArray(cd.notes) ? cd.notes : [])) if (typeof n === 'string') conductAcc.notes.push(n);
+  runChoices = {};
+  if (st.choices && typeof st.choices === 'object') {
+    for (const [k, v] of Object.entries(st.choices)) if (typeof v === 'string' && /^[A-D]$/.test(v) && chapterExists(k)) runChoices[k] = v;
   }
   syncBars();
   return true;
@@ -4560,6 +5197,7 @@ function setChapter(key) {
   Object.assign(BOUNDS, CH.bounds);
   applyGhostTerritory();           // her reach is the new chapter's, not the old one's
   applyDaylight();                 // and so is the time of day
+  kitReset();                      // v7.0: and the play kit starts clean for it
   silenceChapterLoops();           // and so is the room tone
   packLoad(key);                   // and its own sounds, if they are not here yet
   /* v5.29: and the right AGE of Master Zav in the equipment panel. Within
@@ -4774,6 +5412,7 @@ const CINE_SKIP_AT = 3.0;   // v6.6: the Skip button (and its keys) open this fa
 function skipCine() {
   const c = cine;
   if (!c) return;
+  if (ev) evResolve({ ok: false, skipped: true });   // v7.0: a skipped film takes its event with it
   c.skipped = true;                 // v5.30: cineEnd() ramps the voices out too
   c.t = c.dur;
   cineSeek(c.dur);
@@ -4795,7 +5434,7 @@ function skipFilmOrScene() {
 }
 skipBtn.addEventListener('click', e => { e.stopPropagation(); skipFilmOrScene(); });
 addEventListener('keydown', e => {
-  if (state === 'cine' && cine && cine.t > CINE_SKIP_AT &&
+  if (state === 'cine' && cine && cine.t > CINE_SKIP_AT && !evActive() &&   // v7.0: a live event owns the keys
       (e.code === 'Escape' || e.code === 'KeyE' || e.code === 'Space' || e.code === 'Enter')) {
     skipFilmOrScene();
   }
@@ -4868,6 +5507,19 @@ function sceneApi(c) {
     camera, yaw, pitch,
     ghost, ghostLight, ghostOpacity, getReveal: () => reveal,
     duck: duckLoop,                  // hold one of the chapter's loops down
+    kit: KIT,                        // v7.0: the play kit, from inside a scene
+    /* v7.0: a reaction event inside a film. `event` starts it at `at` and the
+       film runs on; `eventWait` PAUSES the film until it resolves. The skip
+       keys belong to the event while it is live; the Skip button still ends
+       the film, and a skip resolves the event as skipped. */
+    event: (at, opts, onDone) => step(at, () => { kitEvent(opts).then(r => { if (typeof onDone === 'function') onDone(r); }); }),
+    eventWait: (at, opts, onDone) => step(at, () => {
+      const mine = cine; if (mine) mine.paused = true;
+      kitEvent(opts).then(r => {
+        if (cine === mine && mine) { mine.paused = false; mine.last = performance.now(); }
+        if (typeof onDone === 'function') onDone(r);
+      });
+    }),
     music: cineMusic,                // v6.6: hold the explore music down (a film with its own theme)
     handsRoot, armR, noteProp,
     buildPrayerArm, prayerArm: () => prayerArmL,
@@ -5332,6 +5984,7 @@ function startDecision() {
   edgeTurn = 0;
   ui.decide.classList.remove('hide');
   decideOpenedAt = performance.now();
+  decisionClockStart();                  // v7.0: a bar, only when the chapter armed one
   document.exitPointerLock?.();
 }
 
@@ -5343,6 +5996,7 @@ function dismissDecision() {
   if (state !== 'decide') return;
   snd('uiclick', 0.5);
   ui.decide.classList.add('hide');
+  decisionClockStop();                   // v7.0
   state = 'play';
   const el = $('hintTxt');
   if (el) {
@@ -5481,16 +6135,24 @@ function pick(i) {
   snd('uiconfirm', 0.7);
   const c = CH.choices[i];
   ui.decide.classList.add('hide');
+  decisionClockStop();                   // v7.0
+  runChoices[CH_KEY] = c.k;              // v7.0: the letter, saved with the run (a later chapter may read it)
   // The scene plays first; the numbers and the teaching wait until it is
   // done. The card then rises over whatever the scene left on screen.
   playCine(i, () => {
     const before = { ...stats };           // the bars animate FROM these
     for (const k in c.d) stats[k] += c.d[k];
+    /* v7.0: what play did — Sanity and Awareness only, capped, a second
+       line under the rows. Chapters 1–5 never call kit.conduct, so cd is
+       null there and nothing on their cards moves. */
+    const cd = conductTake();
+    if (cd) { stats.sanity += cd.s; stats.awareness += cd.a; }
     syncBars();                            // the hidden HUD stays truthful
     ui.say.innerHTML = c.say;
     ui.teach.textContent = '';             // it will write itself
     ui.teach.closest('.teachbox').classList.add('veiled');
     ui.deltas.innerHTML = statRowsHTML(before, c.d);
+    paintConduct(cd);                      // v7.0
     ui.hud.classList.add('hide');       // the card's bars ARE the bars now
     ui.result.classList.remove('hide');
     state = 'result';
@@ -5555,10 +6217,14 @@ function noteDrain(amount) {
   sanityTick(n);
 }
 
-let hauntShown = false;
-function showHaunt(on) {
-  if (on === hauntShown) return;
-  hauntShown = on;
+let hauntShown = false, hauntKind = 'ghost';
+function showHaunt(on, kind = 'ghost') {
+  if (on === hauntShown && kind === hauntKind) return;
+  hauntShown = on; hauntKind = kind;
+  /* v7.0: a chapter's unseen presence drains through the same bar; its
+     banner must not say "Ghost spotted" about a thing nobody saw */
+  const alarm = ui.haunt.querySelector('[data-t="hud.ghostAlarm"]');
+  if (alarm) alarm.textContent = kind === 'presence' ? chWord('presence', 'hud.presenceAlarm') : T('hud.ghostAlarm');
   ui.haunt.classList.toggle('hide', !on);
   ui.bSan.classList.toggle('drain', on);
 }
@@ -5737,6 +6403,7 @@ function restart() {
   showHaunt(false);
   drainAcc = 0; lastTickAt = 0;
   chosen = null;
+  kitReset();                      // v7.0: objective, pose, presence, torch, clock — all back to the chapter's declaration
 
   // the soundscape, back to a fresh run: the bed and any half-spoken line
   // stop, and every once-per-run narration trigger re-arms
@@ -5841,7 +6508,7 @@ function tick(now = 0) {
   const dLookX = lookX, dLookY = lookY;
   if (state === 'play') {
     yaw.rotation.y += lookX;
-    pitch.rotation.x = Math.max(-1.2, Math.min(1.2, pitch.rotation.x + lookY));
+    pitch.rotation.x = Math.max(pitchLo, Math.min(pitchHi, pitch.rotation.x + lookY));   // v7.0: a pose narrows the neck
   }
   lookX = lookY = 0;
 
@@ -5856,6 +6523,7 @@ function tick(now = 0) {
     if (keys.KeyA || keys.ArrowLeft) s -= 1;
     if (keys.KeyD || keys.ArrowRight) s += 1;
     f -= stickVec.y; s += stickVec.x;
+    if (kitPose === 'lying') { f = 0; s = 0; }        // v7.0: a man on his back does not walk
     const len = Math.hypot(f, s);
     if (len > 1) { f /= len; s /= len; }
     strafeInput = s;
@@ -5871,7 +6539,7 @@ function tick(now = 0) {
     // head bob
     const sp = playerSpeed = Math.hypot(vel.x, vel.z);
     bob += dt * sp * 8.5;
-    yaw.position.y = 1.62 + Math.sin(bob) * 0.028 * Math.min(sp / 2.5, 1);
+    yaw.position.y = eyeY + Math.sin(bob) * 0.028 * Math.min(sp / 2.5, 1);   // v7.0: eyeY is 1.62 unless a pose moved it
 
     // Distance to the burner, which is still what raises the "something is
     // burning ahead" line. Nothing opens the decision on its own any more:
@@ -5882,7 +6550,11 @@ function tick(now = 0) {
     // the heap: one prompt at a time, and only when it is actually on screen —
     // a key prompt for something behind you is noise
     const reach = stage.pile.dist() < stage.pile.radius && stage.pile.inView();
-    if (reach) {
+    // v7.0: and the nearest hotspot, when the pile is not in reach — the
+    // badge names it; chapters 1–5 declare none, so `spot` is always null there
+    const spot = reach ? null : nearestHotspot();
+    setInteractBadge(reach ? null : spot);
+    if (reach || spot) {
       ui.interact.classList.remove('hide');
       ui.prompt.classList.add('hide');
     } else {
@@ -5891,8 +6563,9 @@ function tick(now = 0) {
     }
 
     // she is here, and standing still in front of her costs you
-    const drain = ghostDrainRate();
-    showHaunt(drain > 0);
+    const gDrain = ghostDrainRate(), pDrain = presenceDrainRate();   // v7.0: hers, or the chapter's unseen thing
+    const drain = gDrain + pDrain;
+    showHaunt(drain > 0, gDrain > 0 ? 'ghost' : 'presence');
     if (drain > 0) {
       const lost = Math.min(stats.sanity, drain * dt);
       stats.sanity -= lost;
@@ -5921,6 +6594,7 @@ function tick(now = 0) {
   updateAudioFrame(t);
   updatePulse(dt);
   stage.updateFire(t);
+  kitFrame(dt, t, dLookX, dLookY);   // v7.0: the play kit's own frame — events, timer, pose, daylight, clock
   autosave();          // throttled, and only ever during play — see autosave()
 
   /* Smoke, embers and the star twinkle run at half rate on a phone. All
@@ -5956,6 +6630,8 @@ function tick(now = 0) {
   }
 }
 window.__enc = { yaw, stats, getState: () => state,
+                 kit: KIT, kitDebug, interactNow,          // v7.0: the play kit, by state
+                 evPress: (x, y) => evPress(x ?? innerWidth / 2, y ?? innerHeight / 2), evRelease,
                  // a getter, not the array: rebuildStage() re-points BLOCKERS
                  // and a captured reference would quietly go stale
                  get blockers() { return BLOCKERS; },

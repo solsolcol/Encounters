@@ -86,6 +86,82 @@ body.finePtr #volWrap{display:flex}
 body.inplay .invBtn,body.inplay .menuBtn{display:grid}
 body.cine .invBtn,body.cine .menuBtn{display:none}   /* a scene owns the screen */
 .invBtn svg,.menuBtn svg{fill:none;stroke:var(--bone);stroke-width:1.8}
+/* v7.0: the torch button — only a chapter that declares a torch shows it */
+.torchBtn{top:calc(max(14px,env(safe-area-inset-top)) + 168px);display:none}
+body.inplay.hasTorch .torchBtn{display:grid}
+body.cine .torchBtn{display:none}
+.torchBtn svg{fill:none;stroke:var(--bone);stroke-width:1.8}
+.torchBtn .beam{opacity:.25;transition:opacity .16s}
+.torchBtn.on{border-color:var(--sodium)}
+.torchBtn.on .beam{opacity:1;stroke:var(--sodium)}
+/* v7.0: the objective line — top centre, clear of the stats and the buttons */
+#objective{align-items:flex-start;justify-content:center;
+  padding-top:calc(max(14px,env(safe-area-inset-top)) + 4px)}
+.obox{display:flex;gap:12px;align-items:baseline;max-width:min(70vw,520px);
+  background:rgba(7,8,11,.66);border:1px solid var(--line);padding:8px 16px;
+  backdrop-filter:blur(6px);font-family:var(--ui);color:var(--bone);font-size:1.02rem}
+.obox .stencil{font-size:.72rem;opacity:.7}
+#objTimer{font-family:var(--mono);font-weight:700;color:var(--sodium);letter-spacing:.04em}
+#objTimer.low{color:#FF5442;animation:breathe 1s ease-in-out infinite}
+#waypoint{position:fixed;left:0;top:0;z-index:4;pointer-events:none;
+  transform:translate(-50%,-50%);transition:opacity .2s}
+#waypoint i{display:block;width:16px;height:16px;border:2px solid var(--sodium);
+  transform:rotate(45deg);box-shadow:0 0 14px rgba(255,179,103,.6);
+  animation:breathe 1.8s ease-in-out infinite}
+#waypoint.edge{opacity:.55}
+/* v7.0: the decision clock — a bar that is the thing's approach */
+#dclock{display:flex;flex-direction:column;gap:6px;padding:0 24px 12px}
+#dclock .track{display:block;height:6px;background:rgba(255,255,255,.08);
+  border:1px solid var(--line)}
+#dclock .track i{display:block;height:100%;width:100%;background:#E24A3A;
+  box-shadow:0 0 10px rgba(226,74,58,.7);transition:width .12s linear}
+/* v7.0: the conduct line under the stat rows */
+#conduct{margin:-10px 0 20px;font-family:var(--ui);font-size:.98rem;color:#CDD2DB;
+  border-left:2px solid var(--sodium);padding:6px 12px;background:rgba(255,179,103,.06)}
+/* v7.0: the event overlay */
+#event{z-index:8;align-items:flex-end;justify-content:center;
+  padding-bottom:clamp(96px,18vh,170px)}
+#event.full{pointer-events:auto;align-items:center;padding-bottom:0;
+  background:rgba(4,5,8,.28)}
+.evpanel{display:flex;flex-direction:column;align-items:center;gap:12px;
+  width:min(92vw,420px);padding:18px 22px;text-align:center;
+  background:rgba(7,8,11,.82);border:1px solid var(--line);backdrop-filter:blur(8px);
+  font-family:var(--ui);color:var(--bone);animation:rise .3s var(--ease)}
+#evLabel{color:var(--sodium)}
+#evPrompt{margin:0;font-size:1.12rem;line-height:1.35;min-height:1.4em}
+.evtrack{display:block;width:100%;height:10px;background:rgba(255,255,255,.08);
+  border:1px solid var(--line)}
+.evtrack i{display:block;height:100%;width:0;background:var(--jade,#63D6C8);
+  box-shadow:0 0 10px rgba(99,214,200,.6);transition:width .08s linear}
+#event.bad .evtrack i{background:#E24A3A;box-shadow:0 0 10px rgba(226,74,58,.7)}
+#evBtn{pointer-events:auto;min-width:min(70vw,260px);padding:18px 26px;
+  font-family:var(--ui);font-size:1.3rem;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--bone);cursor:pointer;
+  background:rgba(22,26,34,.92);border:2px solid var(--sodium);border-radius:6px;
+  box-shadow:0 0 22px rgba(255,179,103,.25);touch-action:none;user-select:none;
+  -webkit-user-select:none;transition:background .12s,transform .08s}
+#evBtn:active,#evBtn.down{background:var(--sodium);color:#07080B;transform:scale(.97)}
+#evBtn.wait{opacity:.45;border-color:var(--line);box-shadow:none}
+#evBtn.go{animation:breathe .5s ease-in-out infinite;border-color:#8FE6DB;
+  box-shadow:0 0 30px rgba(99,214,200,.55)}
+#evRing{position:relative;width:120px;height:120px;border:2px solid rgba(255,255,255,.35);
+  border-radius:50%;display:none;place-items:center}
+#event.heartbeat #evRing{display:grid}
+#evPulse{display:block;width:100%;height:100%;border-radius:50%;
+  border:3px solid #FF5442;box-shadow:0 0 18px rgba(255,84,66,.7);transform:scale(2.2);
+  transform-origin:center}
+#evItem{display:flex;flex-direction:column;align-items:center;gap:8px}
+#evIcon{display:grid;place-items:center;width:96px;height:96px}
+#evIcon canvas,#evIcon img{max-width:96px;max-height:96px;filter:drop-shadow(0 0 12px rgba(255,179,103,.5))}
+#evItemTxt{font-size:1.2rem;font-weight:600;letter-spacing:.03em}
+#evNote{min-height:1em;color:#8FE6DB}
+#event.bad #evNote{color:#FF5442}
+#evDot{position:fixed;left:0;top:0;width:46px;height:46px;border-radius:50%;
+  transform:translate(-50%,-50%);border:2px solid var(--sodium);
+  background:radial-gradient(circle,rgba(255,220,160,.9),rgba(255,179,103,.15) 60%,transparent 70%);
+  box-shadow:0 0 26px rgba(255,200,120,.8);pointer-events:none;animation:breathe .6s ease-in-out infinite}
+/* the interact badge is tappable: hotspots have no mesh under the finger */
+.ibadge{pointer-events:auto;cursor:pointer}
 .invBtn svg path:first-child,.menuBtn svg path:first-child{fill:none}
 /* the label rides inside the button, hanging off its left edge, so the
    words are part of the click target. A phone needs no words: there the
@@ -997,6 +1073,13 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
   </svg>
   <span class="invLabel"><span data-t="inv.button">Inventory</span><kbd data-t="inv.buttonKey">I</kbd></span>
 </button>
+<button id="torchBtn" class="soundBtn torchBtn" type="button" aria-label="Torch" data-t-aria="hud.torch">
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M9 3h6v4l-1.5 2v12h-3V9L9 7z"/>
+    <path d="M9.5 6.5h5"/>
+    <g class="beam"><path d="M4 2.5l2.5 2.2"/><path d="M20 2.5l-2.5 2.2"/><path d="M12 0.8v2.6"/></g>
+  </svg>
+</button>
 <button id="menuBtn" class="soundBtn menuBtn" type="button" aria-label="Menu">
   <svg viewBox="0 0 24 24" aria-hidden="true">
     <path d="M12 8.7a3.3 3.3 0 1 0 0 6.6 3.3 3.3 0 0 0 0-6.6Z"/>
@@ -1321,6 +1404,16 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
   </div>
 </div>
 
+<!-- v7.0: the objective line and its timer — hidden until a chapter sets one -->
+<div id="objective" class="layer hide">
+  <div class="obox">
+    <span class="stencil" data-t="hud.objective">Objective</span>
+    <span id="objTxt"></span>
+    <span id="objTimer" class="hide">0:00</span>
+  </div>
+</div>
+<div id="waypoint" class="hide"><i></i></div>
+
 <!-- proximity prompt -->
 <div id="prompt" class="layer hide"><div data-t="world.burning">Something is burning ahead</div></div>
 
@@ -1332,6 +1425,20 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
   </div>
 </div>
 
+<!-- v7.0: a reaction event — tap, hold, mash, timed, heartbeat, focus, sequence -->
+<div id="event" class="layer hide">
+  <div class="evpanel">
+    <span class="stencil" id="evLabel"></span>
+    <div id="evRing"><i id="evPulse"></i></div>
+    <div id="evItem" class="hide"><span id="evIcon"></span><span id="evItemTxt"></span></div>
+    <p id="evPrompt"></p>
+    <span class="track evtrack" id="evTrack"><i id="evBar"></i></span>
+    <button id="evBtn" type="button"></button>
+    <span id="evNote" class="stencil"></span>
+  </div>
+  <div id="evDot" class="hide"></div>
+</div>
+
 <!-- decision -->
 <div id="decide" class="layer hide">
   <div class="panel">
@@ -1339,6 +1446,7 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
       <span class="stencil" data-t="decide.label">Decision</span>
       <button id="stepBack" class="dclose" type="button" data-t="decide.stepBack">Step back &#10005;</button>
     </div>
+    <div id="dclock" class="hide"><span class="stencil" data-t="decide.clock">It is still coming</span><span class="track"><i></i></span></div>
     <p id="qtext"></p>
     <div id="choices"></div>
   </div>
@@ -1350,6 +1458,7 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
     <span class="stencil" data-t="result.label">Outcome</span>
     <p id="say"></p>
     <div id="deltas"></div>
+    <p id="conduct" class="hide"></p>
     <div class="teachbox">
       <span class="stencil" data-t="result.teachingLabel">Master Z&rsquo;s teaching</span>
       <p id="teach"></p>

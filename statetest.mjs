@@ -161,6 +161,34 @@ out.checkpoint = await p.evaluate(() => {
   return empty && wrote && same && applied && e.loadCheckpoint() === null;
 });
 
+/* 7c. v7.0: the play kit's three fields — the chapter's phase, the conduct
+   banked so far, the letter picked per chapter — ride the same checkpoint,
+   are absent from an older save without harm, and come back clean. */
+out.kitFields = await p.evaluate(() => {
+  const e = window.__enc;
+  e.kit.setPhase('night'); e.kit.conduct({ s: -4, a: 2, note: 'x' });
+  const s = e.worldState();
+  const shape = s.phase === 'night' && s.conduct.s === -4 && s.conduct.a === 2
+    && s.conduct.notes[0] === 'x' && typeof s.choices === 'object';
+  const base = { stats: { sanity: 50, awareness: 50, wisdom: 50 }, inv: { gear: {}, bag: [] } };
+  // an older save: the fields land empty
+  e.applyState({ v: 1, ch: 'ch1', ...base });
+  const w0 = e.worldState();
+  const cleared = w0.phase === null && w0.conduct.s === 0 && w0.conduct.notes.length === 0
+    && Object.keys(w0.choices).length === 0;
+  // a bad one: capped, typed, unknown chapters and letters dropped
+  e.applyState({ v: 2, ch: 'ch1', ...base, phase: { bad: 1 },
+                 conduct: { s: -40, a: 'x', notes: [1, 'ok'] }, choices: { ch1: 'Z', ch2: 'B', nope: 'A' } });
+  const w = e.worldState();
+  const cleaned = w.phase === null && w.conduct.s === -10 && w.conduct.a === 0
+    && w.conduct.notes.length === 1 && w.choices.ch2 === 'B' && !('ch1' in w.choices) && !('nope' in w.choices);
+  // and an exact round trip through JSON
+  const again = JSON.parse(JSON.stringify(w));
+  const round = e.applyState(again) && JSON.stringify(e.worldState()) === JSON.stringify(w);
+  e.applyState({ v: 1, ch: 'ch1', ...base });
+  return shape && cleared && cleaned && round;
+});
+
 /* 8. the ?ch= seam. This used to fake a second chapter with a Proxy, because
    only ch1 existed and "?ch=ch1 boots ch1" would pass even if the selector
    ignored the URL entirely. There is a real second chapter now (chtest, the
@@ -190,7 +218,7 @@ console.log(JSON.stringify(out, null, 1));
 const MUST = ['shape', 'survivesJson', 'seedAccepted', 'seedLanded', 'hudFollows',
   'roundTripBack', 'garbageRejected', 'garbageSoftened', 'nullStatsKept',
   'protoItemsDropped', 'foreignChapterRejected', 'stillPlaying', 'liftGuard',
-  'checkpoint',
+  'checkpoint', 'kitFields',
   'chParamReallySelects', 'altChapterIsDifferent', 'protoChapterFallsBack',
   'badChapterFallsBack'];
 for (const k of MUST) if (out[k] !== true) errs.push(`ERR state promise broken: ${k}`);

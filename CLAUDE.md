@@ -87,7 +87,9 @@ One source, two builds, built by `npm run build` (esbuild → `build.py` →
   hands, ghost system, audio, cutscene engine + its language, UI flow,
   sky, sanity, inventory. It owns everything every chapter shares and
   nothing that belongs to one.
-- `src/chapters/*.js` — THE CHAPTERS. Each is a plain script (no ESM —
+- `src/chapters/*.js` — THE CHAPTERS (and, since v7.0, `src/chapters/e2/`
+  and its siblings: one folder per episode, the key still the file's stem;
+  build.py, textsync and chaptertest recurse). Each is a plain script (no ESM —
   file:// tests and the CSP build both choke on module imports) wrapped in
   one closure, registering itself on `window.__CHAPTERS__`. A chapter
   carries its words, choices, stat deltas, teachings, stage positions,
@@ -131,6 +133,19 @@ The declarations, all optional:
 | `noteArt` | the asset key of the chapter's note art | — (the drawn one) |
 | `intro` | the opening film | — (straight to the card) |
 | `daylight` | the sky, the fog, the three global lights — and since v4.3 the sun (`sun`), the cloud layer (`clouds`) and the viewmodel's own rig (`vmHemi`/`vmKey`), so a bright chapter lights the HANDS too | chapter 1's midnight |
+| `torch` | v7.0: a spotlight on the camera (`on`, `angle`, `color`, `red`, `intensity`, `distance`), F or the HUD button — the play kit's one DATA declaration | — (no torch, no button) |
+| `words.presence` | v7.0: the banner's words when a chapter with `ghost: null` drains through `kit.presence()` | `hud.presenceAlarm` |
+| `stage.hotspots` | v7.0: many things to act on beside the pile — `[{ id, pos, radius, prompt, onInteract(), once, enabled() }]`, returned by build() | — (only the pile) |
+
+**THE PLAY KIT (v7.0)** is everything else a chapter may ask of the engine
+between its film and its decision — objectives, a timer, a waypoint,
+reaction EVENTS of eight kinds, presence, conduct on the card, lying down,
+daylight tweened in play, a timed decision, a saved phase — reached as
+`ctx.kit` in build() and `api.kit` in a scene, every verb optional and
+absent from chapters 1–5. docs/V7.0-PLAY-KIT.md is the reference; the
+fixture chapter declares all of it and `fixturetest` proves it. The rule
+the code is shaped by: a verb mutates kit state, the FRAME touches the DOM,
+so a chapter may call the kit from inside build() before the HUD exists.
 
 `shrine` is the engine's anchor for HER, not for the chapter's warm light.
 Chapter 1's happens to be both; chapter 2's is the gap beside the bed and
@@ -1474,6 +1489,23 @@ What the baseline contains, by release:
   every passed track on every frame and a camera moved by hand under a PAUSED
   film is put back before the screenshot (v5.30's law, walked into again).
   docs/V6.17-THE-OAK-STOOD-UP.md is the build's memory.
+- **v7.0** THE PLAY KIT — episode 2's first release, and the one that ships
+  nothing a player of episode 1 can see (Chad approved the plan on 9 Sep:
+  "can you begin building according to your plan?"). Everything a chapter
+  may ask of the engine BETWEEN its film and its decision, so a chapter can
+  be a day and a night rather than a walk to one object: hotspots beside
+  the pile; an objective line, a countdown and a waypoint; reaction EVENTS
+  of eight kinds (tap, timed, mash, hold, stabilise, heartbeat, focus,
+  sequence — the new trial's five challenges among them, moving Sanity and
+  Awareness, never Wisdom), from play or from inside a film; a torch; an
+  unseen presence that drains through the bar; conduct banked in play and
+  shown on the card; lying down; daylight tweened in play; a timed decision;
+  a phase saved with the run. Every seam is declared and absent from
+  chapters 1–5; the FIXTURE declares all of it and `fixturetest` grew from
+  13 promises to 48. Plumbing: chapters may live in a folder per episode,
+  and the single-file build carries episode 1 only. The base game — v6.17 —
+  was proven untouched by the full suite before the release. Sheet v41 (the
+  kit's UI words). docs/V7.0-PLAY-KIT.md.
 - **v5.28** AARON — Chad, after two rounds of level work on River: *"i'm still
   not satisfied with this voice."* All 79 of the boy's takes regenerated in a
   THIRD voice (Aaron, `B6uUx2p7cRgxseOUyP6P`), under an approved prompt sheet
@@ -1572,7 +1604,8 @@ actually *enforce* the standard. The earlier anchor, `v3.3` / `c8abf61`,
 stands in the bundle Chad holds. An episode-2 change that reddens a
 base-game harness is a regression in the reference build, not a test
 that needs relaxing. Episode 2's plan is `docs/V7.0-EPISODE2-PLAN.md`
-(a PROPOSAL until Chad answers its decisions).
+(APPROVED 9 Sep 2026; v7.0 is its first release, the engine kit — next is
+v7.1, rifle mode, then the five chapters, one release each).
 
 Deferred by explicit choice: ghost mesh compression (1.6 MB, the
 biggest download win, but it touches the fragile `rescueTextures` GLB

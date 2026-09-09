@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "6.17"
+VERSION = "7.0"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -27,9 +27,17 @@ src = (d / 'src' / 'main.js').read_text()
 # chapter is dropping a file in that folder. They are small plain scripts
 # and every one is shipped, because advancing a chapter must not cost a
 # page load — the engine calls the next chapter's build() in place.
+# v7.0: and in its subfolders — episode 2 lives in src/chapters/e2/ (one
+# folder per episode, docs/EPISODES-PLAN.md §1); the KEY is still the file's
+# stem, so e2/e2c1.js registers as e2c1 wherever it sits.
 chap_dir = d / 'src' / 'chapters'
-chapters = {p.stem: p.read_text() for p in sorted(chap_dir.glob('*.js'))}
+chapters = {p.stem: p.read_text() for p in sorted(chap_dir.rglob('*.js'))}
 assert chapters, 'no chapters found in src/chapters/'
+assert len(chapters) == len(list(chap_dir.rglob('*.js'))), 'two chapter files share a name'
+# which episode a chapter belongs to, read off its DATA block (1 when silent)
+def chapter_episode(text):
+    m = re.search(r"\bepisode:\s*(\d+)", text)
+    return int(m.group(1)) if m else 1
 BOOT = 'ch1'          # the chapter a bare URL starts on; must match main.js
 assert BOOT in chapters, f'{BOOT}.js is missing — the engine falls back to it'
 strings = (d / 'src' / 'strings.js').read_text()   # every UI word, loaded first
@@ -349,7 +357,14 @@ for key, (name, wanted, _pre) in ASSETS.items():
     data = base64.b64encode((d / name).read_bytes()).decode() if wanted else ''
     emb = emb.replace(f'__{key.upper()}_B64__', data)
     print(f'  embed {name}: {str(len(data) // 1024) + " KB" if wanted else "skipped"}')
-all_chapters = '\n'.join(guard(t) for t in chapters.values())
+# v7.0: the single-file build carries EPISODE ONE ONLY (docs/EPISODES-PLAN.md
+# §9, Chad's approval of the plan): it inlines everything it carries, so ten
+# episodes would make it hundreds of megabytes and stop it opening on a
+# phone. It stays the offline fallback and the strict-CSP test surface, and
+# it stops growing. dist/ ships every chapter as before.
+single_chapters = {k: t for k, t in chapters.items() if chapter_episode(t) == 1}
+print(f'  single-file build carries episode 1 only: {", ".join(sorted(single_chapters))}')
+all_chapters = '\n'.join(guard(t) for t in single_chapters.values())
 single = shell.replace('<script>/*BUNDLE*/</script>',
                        '<script>\n' + guard(strings) + '\n' + all_chapters
                        + '\n' + guard(emb) + '\n</script>')
