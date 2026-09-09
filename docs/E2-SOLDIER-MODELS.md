@@ -312,7 +312,7 @@ must be behind the camera; placed 80 cm forward, the player looks down two open 
 ```
 scale     0.01                    (the file is in centimetres)
 rotation  (0, Math.PI, 0)
-position  (0.00, -1.506, -0.32)   in handsRoot, with armR hidden
+position  (0.00, -1.528, -0.32)   in handsRoot, with armR hidden   (Chad: 10 % up was a little much, 5 % back down)
 ```
 
 **One thing for Chad to decide: it is a KRISS Vector submachine gun, not a SAR 21.** The plan's
