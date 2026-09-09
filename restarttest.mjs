@@ -123,7 +123,9 @@ const stateOf = p => p.evaluate(() => ({
 /* ---- v6.3: the LAST chapter of a case: complete -> the EPISODE card -> the title.
    Results for chapters 1-4 seeded on the progress store, chapter 5 played to
    its end through finish(): the card must tally the five, rank the mean, light
-   the trail to case 2, and — with no case 2 written — send the run to the title. */
+   the trail to case 2, and — since v7.1 case 2 IS written — Continue into its
+   first chapter the way any chapter arrives: its opening film. (Until v7.1 this
+   path ended on the title, the button reading "Back to the title screen".) */
 {
   const p = await b.newPage({ viewport: { width: 500, height: 700 } });
   p.setDefaultNavigationTimeout(180000); p.setDefaultTimeout(150000);
@@ -162,11 +164,13 @@ const stateOf = p => p.evaluate(() => ({
       && document.querySelectorAll('#epMap g.locked').length === 8;
   });
   out.saysNextCase = await p.evaluate(() => /Episode 2/.test(document.getElementById('epNext').textContent));
-  out.buttonToTitle = await p.evaluate(() => { const b = document.getElementById('epBtn'); return !b.disabled && b.classList.contains('in') && b.textContent === 'Back to the title screen'; });
-  await p.click('#epBtn'); await p.waitForTimeout(800);
-  out.backOnTitle = await p.evaluate(() => window.__enc.getState() === 'title' && !document.getElementById('title').classList.contains('hide')
-    && document.getElementById('episode').classList.contains('hide') && document.getElementById('hud').classList.contains('hide'));
-  out.runMarkedDone = await p.evaluate(() => { const s = window.__enc.loadCheckpoint(); return !!s && s.done === true && s.at === null; });
+  out.buttonContinues = await p.evaluate(() => { const b = document.getElementById('epBtn'); return !b.disabled && b.classList.contains('in') && b.textContent === 'Continue'; });
+  await p.click('#epBtn');
+  await p.waitForFunction(() => window.__enc.getState() === 'cine' && window.__enc.chapterKey() === 'e2c1', null, { timeout: 150000, polling: 120 });
+  await p.waitForTimeout(600);
+  out.intoCaseTwo = await p.evaluate(() => window.__enc.getState() === 'cine' && window.__enc.chapterKey() === 'e2c1'
+    && document.getElementById('episode').classList.contains('hide') && document.getElementById('complete').classList.contains('hide'));
+  out.runNotDone = await p.evaluate(() => { const s = window.__enc.loadCheckpoint(); return !(s && s.done === true); });
   console.log(JSON.stringify(out), '| errors:', errs.length ? errs : 'none');
   /* runtests reads the exit code and an "errors: [" line, not the booleans —
      so a false one here is turned into both, the way menutest reports */
