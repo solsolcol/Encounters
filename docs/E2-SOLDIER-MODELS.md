@@ -274,19 +274,34 @@ afterwards (`git diff` clean, `dist/` rebuilt). An orbit render outside the engi
 and the first attempt outside it was wrong: the weapon read fine on an orbit and pointed across the
 screen the moment it was put at the player's eye.
 
-**The placement that works**, chosen by rendering four orientations and four distances and looking
-at them, per the v6.17 law:
+**The placement that works.** Two attempts before this were wrong, and both were wrong the same
+way — a black weapon read against a black scene at midnight. The third attempt measured instead:
+
+- **Which way it points is measured, not eyeballed.** The weapon body's two extreme vertices along
+  its own axis, in the viewmodel camera's space, against the right hand bone. The muzzle is the
+  extreme further from the hand and it must be the more NEGATIVE in z. At the orientation shipped
+  in the previous note the muzzle sat **43 cm BEHIND the hand** — the gun was aimed at the player,
+  exactly as Chad said, and no amount of looking at a silhouette would have settled it.
+- **The model's own forward is +Z.** Solved from its geometry: hand to muzzle is (0.109, −0.152,
+  0.982). Its authored camera looks along +Z, and three.js cameras look along −Z, so the model
+  takes a **half turn about Y** and nothing else. The arithmetic I did first said a quarter turn
+  and was wrong.
+- **The camera must sit at the model's own eye.** An FPS viewmodel's forearms are cut off, and the
+  cut has to be behind the camera. Placed 80 cm forward of the authored eye, the player looks down
+  two open tubes — which is what the first working orientation actually showed.
+- **Judged in DAYLIGHT** (chapter 3, ten in the morning), never against chapter 1's midnight.
 
 ```
-scale     0.01            (the file is in centimetres)
-rotation  (0, 0, 0)       (its own forward IS the camera's forward — the arithmetic said
-                           otherwise and the arithmetic was wrong)
-position  (0.16, -1.44, -0.80)   in handsRoot, with armR hidden
+scale     0.01                     (the file is in centimetres)
+rotation  (0, Math.PI, 0)          (its own forward is +Z; the camera's is -Z)
+position  (-0.03, -1.58, -0.34)    in handsRoot, with armR hidden   -- the aim view
+          ( 0.01, -1.44, -0.34)    the same, raised, as a ready carry
 ```
 
-At those numbers the weapon sits forward and low-ready, the gloved hand reads on the grip, the
-sight rail reads along the top, and nothing crosses the near plane. Verified on desktop and on the
-phone's centre crop.
+At the first of those the weapon reads exactly as Chad's reference does: seen from behind, the
+front post and the rear aperture lined up down the barrel, the receiver running to the bottom
+right, the gloved hand at the bottom of frame. Muzzle 66 cm forward of the eye, grip 23 cm forward,
+the arm cut behind the camera.
 
 **One thing for Chad to decide: it is a KRISS Vector submachine gun, not a SAR 21.** The plan's
 range and ambush are written around the rifle an SAF recruit actually carries, and the film's own
