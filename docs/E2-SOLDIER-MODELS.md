@@ -312,7 +312,7 @@ must be behind the camera; placed 80 cm forward, the player looks down two open 
 ```
 scale     0.01                    (the file is in centimetres)
 rotation  (0, Math.PI, 0)
-position  (0.00, -1.60, -0.32)    in handsRoot, with armR hidden
+position  (0.00, -1.55, -0.32)    in handsRoot, with armR hidden
 ```
 
 **One thing for Chad to decide: it is a KRISS Vector submachine gun, not a SAR 21.** The plan's
@@ -327,17 +327,48 @@ click-the-circles reaction test. The v7.0 play kit already covers that with no n
 `focus` puts targets up to be hit before they fade, `sequence` shows items one after another at a
 rising pace. Neither needs a rifle that comes apart.
 
-## 9 · WHAT IS STILL MISSING
+## 9 · THE ENCIK — `encik2.glb`
+
+Supplied 9 Sep 2026, and he closes the gap this document opened. An **older man**: moustache,
+**green beret**, sleeves rolled SAF-style, No. 4 camouflage, boots. Next to a recruit in full
+battle order he reads as senior in one frame, which is the whole point — the plan gives him a line
+in chapter 2's bunk conversation and the entirety of that chapter's scene D.
+
+| | |
+|---|---|
+| size | 41.5 MB source → **3027 KB** at ratio 0.10 / 2048 px, 59,591 triangles |
+| rig | Mixamo, 27 joints, raw `mixamorig:` names — **the same skeleton as every other model here** |
+| mesh | 595,928 triangles, 348,500 vertices — welded, decimates normally |
+| textures | base + normal + metallic-roughness, same Blender export as the FBO pair |
+
+**Six clips**, read frame by frame:
+
+| clip | secs | what it is |
+|---|---|---|
+| **Talk_with_Left_Hand_on_Hip** | 5.25 | left hand on the hip, right hand explaining — the confident NCO |
+| **Talk_with_Left_Hand_Raised** | 4.71 | both palms open, a shrug — "and if it's not, don't disturb it" |
+| Idle_9 | 2.08 | standing at ease |
+| Running / Walking | 0.71 / 1.04 | the same generic pair the whole set carries |
+| restpose | 0.08 | the bind pose |
+
+The two talking takes are a gift, because the plan gives him exactly two beats and they are
+different in kind. The hand-on-hip take is the bunk line, *"don't play play with these things"*.
+The open-palmed shrug is scene D, whose answer is deliberately not an answer.
+
+And because he is on the same Mixamo skeleton, he joins the shared clip library of section 4
+without any work: he can kneel and give the field hand signals, sprint, or sleep, and any body in
+the set can borrow his two talking takes.
+
+**Casting change.** Chapter 2's fourth platoon mate is no longer a young recruit standing in for an
+older man. He is the encik, in his own model, in both of his beats.
+
+## 10 · WHAT IS STILL MISSING
 
 1. **The soldier-ghost model** Chad has said he will supply. It carries every supernatural beat in
    the episode: the figure at the end of the corridor in C1, the grey face over the bunk in C3, the
    crouched soldier at the beam's edge in C4, and the cyclist in C5.
 2. **A bicycle.** The ghost cyclist has nothing to ride.
-3. **An older man.** The plan gives the encik — the older re-enlistee — a line in chapter 2's
-   conversation and the whole of its scene D, and every body in the folder is a young recruit.
-   Playable as a fourth bunkmate whose age lives in his voice, but Chad should say whether that is
-   enough.
-4. **The places**: bunk and bunk beds, the shower block, the parade square, the range and its
+3. **The places**: bunk and bunk beds, the shower block, the parade square, the range and its
    towers, the outfield, the harbour, the tonner. None of that is in this folder.
 
 ---
@@ -378,7 +409,7 @@ Grounding: the sleep clips sit at hips 1.16, feet 1.05, so the bunk mattress mus
 | figure | asset | clip | why |
 |---|---|---|---|
 | the four platoon mates you talk to | BUNKMATE ×4 | Talk_with_Hands_Open, the FBX take, Idle_9, Idle_9 | **two distinct talking takes** means two speakers who do not mirror each other; the other two listen |
-| **the older re-enlistee (the encik)** — his line here and his answer in scene D | BUNKMATE | Talk_with_Hands_Open | the plan makes him visibly older than the recruits and **nothing in the folder is an older man**. Cast as a fourth bunkmate his age reads only from his voice and his lines. **Ask Chad whether that is enough** |
+| **the older re-enlistee (the encik)** — his line here and his answer in scene D | ENCIK (`encik2`) | Talk_with_Left_Hand_on_Hip here, Talk_with_Left_Hand_Raised in scene D | his own model, supplied 9 Sep: beret, moustache, rolled sleeves. Two talking takes for his two beats, and the second is a shrug, which is what scene D's non-answer needs |
 | the platoon forming up | TROOPER ×6 | Walking → Idle_3 | |
 | the firing line beside you | **SENTRY statue ×4** | — | the only figures in the set that show a shouldered weapon; on a firing line nobody moves, so a statue is not a compromise, it is correct |
 | the range safety walking behind | CARRIER | Walking | no rifle is right for a safety supervisor |
