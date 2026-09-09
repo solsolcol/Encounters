@@ -121,6 +121,50 @@ for (let i = 0; i < 4; i++) {
   console.log(JSON.stringify(out), '| errors:', errs.length ? errs : 'none');
   await p.close();
 }
+/* v7.1: AND EPISODE 2's FIRST FILM — The Worst Bed. The same contract: black
+   for its fourteen seconds of sound (the ferry, the gates, the boots under
+   his lines) until its own fade at 14.0, in by 16.4. Chapter e2c1 is a
+   hosted-only chapter, so this page never runs against wrapped.html. */
+{
+  const p = await b.newPage({ viewport: { width: 500, height: 340 } });
+  const errs = []; p.on('pageerror', e => errs.push(e.message));
+  p.setDefaultNavigationTimeout(180000); p.setDefaultTimeout(90000);
+  const sep = PAGE.includes('?') ? '&' : '?';
+  await p.goto(PAGE + sep + 'ch=e2c1');
+  await p.waitForTimeout(4000);
+  await p.click('#startBtn');
+  await p.waitForFunction(() => window.__enc && window.__enc.getState() === 'cine',
+                          null, { timeout: 150000, polling: 100 });
+  const out = { film: 'e2c1 opening' };
+  const cover = [];
+  for (const t of [0.15, 5.0, 10.0, 13.6]) {       // all before the fade at 14.0
+    await p.evaluate(tt => window.__enc.cine.seek(tt), t);
+    await p.waitForTimeout(180);
+    cover.push(await p.evaluate(() =>
+      +getComputedStyle(document.getElementById('cineFade')).opacity));
+  }
+  out.coverBeforeFadeIn = cover;
+  out.startsOnBlack = cover.every(v => v > 0.98);
+  await p.evaluate(() => window.__enc.cine.seek(17.5));   // its fade ends at 16.4
+  await p.waitForTimeout(220);
+  out.fadesInAfter = await p.evaluate(() =>
+    +getComputedStyle(document.getElementById('cineFade')).opacity) < 0.05;
+  // the switch: the room's tubes are out by 45 and back for play after the film
+  await p.evaluate(() => window.__enc.cine.seek(46.0));
+  await p.waitForTimeout(220);
+  out.tubesOutAtSwitch = await p.evaluate(() => window.__enc.stage.tubeLights[0].intensity) < 0.5;
+  await p.evaluate(() => window.__enc.cine.skip());
+  await p.waitForFunction(() => window.__enc.getState() !== 'cine', null, { timeout: 30000, polling: 100 });
+  await p.waitForTimeout(300);
+  out.tubesBackAfter = await p.evaluate(() => window.__enc.stage.tubeLights[0].intensity) > 1;
+  if (!out.startsOnBlack)
+    errs.push('ERR the film is visible before its own fade-in: ' + JSON.stringify(cover));
+  if (!out.fadesInAfter) errs.push('ERR the film never fades in');
+  if (!out.tubesOutAtSwitch) errs.push('ERR the switch never killed the tubes');
+  if (!out.tubesBackAfter) errs.push('ERR the room stayed dark after the film');
+  console.log(JSON.stringify(out), '| errors:', errs.length ? errs : 'none');
+  await p.close();
+}
 /* v6.4: AND CHAPTER 1'S FILM — the prologue. The same contract (black until
    its own fade at 4.4, in by 6.2), plus the film's own set: the boy and the
    pockets are on screen while it plays and gone once it is skipped, so play

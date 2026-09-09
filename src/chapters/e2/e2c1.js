@@ -353,12 +353,16 @@
     const blockTube = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.05, 0.10), matTube.clone());
     blockTube.position.set(-3.2, R.h - 0.05, 5.6); world.add(blockTube);
     // the clock's red on the wall at night, and the balcony's sodium spill
-    const clockGlow = new THREE.PointLight(0xff2a1a, 0, 3.5, 2.2);
+    const clockGlow = new THREE.PointLight(0xff2a1a, 0, 3.2, 2.4);
     clockGlow.position.set(DOOR_WC.x, 2.35, R.z - 0.3);
     scene.add(clockGlow); owned.push(clockGlow);
     const balcLight = new THREE.PointLight(0xffb060, 0, 14, 1.5);
     balcLight.position.set(BALC.x1 - 0.4, 2.6, 0);
     scene.add(balcLight); owned.push(balcLight);
+    // and what the night leaves in the room: a cold spill over his end of it
+    const nightLight = new THREE.PointLight(0x7f94c4, 0, 11, 1.6);
+    nightLight.position.set(-2.4, 2.6, 1.6);
+    scene.add(nightLight); owned.push(nightLight);
 
     /* ---------------------------------------------- the board, the clock */
     const board = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 0.95), matBoard);
@@ -420,11 +424,14 @@
     }
     waterGeo.setAttribute('position', new THREE.BufferAttribute(waterPos, 3));
     const water = new THREE.Points(waterGeo, new THREE.PointsMaterial({
-      map: dotTex, color: 0xd8e8ff, size: 0.05, transparent: true, opacity: 0.55, depthWrite: false }));
+      map: dotTex, color: 0xdde8ff, size: 0.085, transparent: true, opacity: 0.8, depthWrite: false }));
     water.visible = false;
     world.add(water);
+    const showerLight = new THREE.PointLight(0xa8bce0, 0, 3.4, 2.0);
+    showerLight.position.set(WATER_AT.x, 1.6, WATER_AT.z - 0.4);
+    scene.add(showerLight); owned.push(showerLight);
     let showerOn = false;
-    function setShower(on) { showerOn = !!on; water.visible = showerOn; }
+    function setShower(on) { showerOn = !!on; water.visible = showerOn; showerLight.intensity = showerOn ? 2.4 : 0; }
 
     /* ----------------------------------------------------- the balcony --- */
     {
@@ -592,14 +599,14 @@
     /* the sergeant by the entrance, rifle slung; the buddy beside the next
        bed; a bunkmate reading the board. Their heights are the plan's (a
        sergeant of 1.74, recruits of 1.70). */
-    const sergeant = mkRig('fbosling', { x: 1.3, z: -2.9, ry: -0.9, height: 1.74, idle: 'Idle_3' });
+    const sergeant = mkRig('fbosling', { x: 1.3, z: -2.9, ry: 0.35, height: 1.74, idle: 'Idle_3' });   // facing down the room
     const buddy = mkRig('admintee', { x: -3.05, z: 1.15, ry: 1.2, height: 1.70, idle: 'Idle_9' });
     const bunkmate = mkRig('admintee', { x: 1.75, z: -3.15, ry: Math.PI, height: 1.68, idle: 'Idle_9',
                                           tint: new THREE.Color(0.86, 0.90, 0.98) });
     /* the figure at the corridor's end — scene A's one frame. A stand-in
        (Chad supplies the ghost); the ghost treatment is the engine's own:
        grey, transparent, no shadow. */
-    const ghostFig = mkRig('ghostsoldier', { x: BLOCK.x0 + 0.65 + 1.35 * 3, z: BLOCK.z1 - 0.55, ry: Math.PI, height: 1.72, idle: 'Idle_6',
+    const ghostFig = mkRig('ghostsoldier', { x: BLOCK.x0 + 0.45, z: 5.3, ry: Math.PI / 2, height: 1.72, idle: 'Idle_6',
       onReady: (rig) => {
         rig.model.traverse(o => {
           if (!o.isMesh) return;
@@ -702,6 +709,17 @@
         .catch(err => console.warn('sleepanim failed to load', err));
     }
 
+    /* THE BLANKET OVER HIS HEAD (scene D): a weave 11 cm from the lens — the
+       world's near plane is 8 cm (v6.12) — on the camera itself, hidden
+       until the scene pulls it up. A chapter prop, like chapter 1's note. */
+    const weaveTex = makeWeave(THREE, cnv);
+    const blanketCam = new THREE.Mesh(new THREE.PlaneGeometry(0.6, 0.42),
+      new THREE.MeshBasicMaterial({ map: weaveTex, color: 0x5e6e62, transparent: true, opacity: 0, fog: false, depthTest: false }));
+    blanketCam.position.set(0, -0.02, -0.11);
+    blanketCam.renderOrder = 990;
+    blanketCam.visible = false;
+    camera.add(blanketCam); owned.push(blanketCam);
+
     /* ------------------------------------------------------------ the pile
        His bed is the thing the chapter turns on: by day it is where he lies
        down (the kit's pose); at three in the morning it is the decision.
@@ -728,11 +746,16 @@
     function pileDist() { return Math.hypot(yaw.position.x - PILE_POS.x, yaw.position.z - PILE_POS.z); }
     function pileScreen() { syncCamera(); return _ndc.set(PILE_POS.x, BED.low, PILE_POS.z).project(camera); }
     function pileInView() {
+      /* lying IN the bed at night, the mattress is under him and out of the
+         lens — the bed is still the thing he acts on (the probe found the
+         decision unreachable from the pillow) */
+      if (phase === 'night' && pileDist() < 1.3) return true;
       const n = pileScreen();
       return n.z < 1 && Math.abs(n.x) < 0.97 && Math.abs(n.y) < 0.97;
     }
     function pointerHitsPile(cx, cy) {
       if (pileDist() > INTERACT_R) return false;
+      if (phase === 'night' && pileDist() < 1.3) return true;
       syncCamera();
       _ptr.set((cx / innerWidth) * 2 - 1, -(cy / innerHeight) * 2 + 1);
       _ray.setFromCamera(_ptr, camera);
@@ -744,30 +767,227 @@
     }
 
     /* ------------------------------------------------------------ the day
-       The chapter's clock, phase by phase (docs/V7.1-E2C1-PLAN.md §8).
+       The chapter's clock, phase by phase (docs/V7.1-E2C1-PLAN.md §8):
+       arrive → fallin → standby → free → lightsout → night → the decision.
        `kit.setPhase` is the bookmark the save keeps; `applyPhase` re-derives
-       the room from it on a resume. CP3 stands the room up and opens the
-       bunk; the whistle, the standby bed and the night arrive with CP5. */
+       the room from it on a resume. Everything timed runs on the chapter's
+       own clock, which advances only in play, so a menu, a cutscene or a
+       card never lets a step fire behind the player's back. */
     let phase = 'arrive';
+    let booted = false;
+    const dayClock = { t: 0 };
+    const todo = [];
+    function after(secs, fn) { todo.push({ at: dayClock.t + secs, fn }); todo.sort((a, b) => a.at - b.at); }
+    function runTodo() { while (todo.length && todo[0].at <= dayClock.t) todo.shift().fn(); }
+    function dropTodo() { todo.length = 0; }
     const speak = { until: 0 };
     function sayLine(name, vol = 1) {
       if (!worldSfx) return false;
-      const now = performance.now() / 1000;
-      if (now < speak.until) return false;
-      speak.until = now + (SECS[name] || 2.5) + 0.25;
+      if (dayClock.t < speak.until) return false;
+      speak.until = dayClock.t + (SECS[name] || 2.5) + 0.25;
       worldSfx(name, vol);
       return true;
     }
+    /* the sergeant's lines ride his talk take; the buddy's and the
+       bunkmate's ride theirs (the admin tee's talking take is `mixamo.com`,
+       the FBX's own name — renaming it buys nothing) */
+    function castSay(rig, name, take, idle) {
+      if (!sayLine(name)) return false;
+      rig.play(take, 1, 0.3);
+      after((SECS[name] || 2.5) + 0.2, () => { if (rig.cur === take) rig.play(idle, 1, 0.4); });
+      return true;
+    }
+    const sgtSay = (name) => castSay(sergeant, name, 'Talk_with_Left_Hand_on_Hip', 'Idle_3');
     function setPhase(p) {
       phase = p;
       if (kit) kit.setPhase(p);
     }
+
+    /* THE BEDS are the chapter's, and the night changes them: the day's room
+       tone crosses to the night's, the episode's bed comes in under it,
+       and the shower is a loop the block turns on. `DATA.ambience.beds` is
+       what the engine reads every frame, so the chapter writes the mix
+       there — a loop at 0 is never even decoded. */
+    let nightK = 0, showerVol = 0;
+    function mixBeds() {
+      DATA.ambience.beds = [
+        ['bunkday', 0.24 * (1 - nightK)], ['bunknight', 0.22 * nightK],
+        ['fanloop', 0.14 - 0.04 * nightK], ['clocktick', 0.06],
+        ['e2bed', 0.30 * nightK], ['showerrun', showerVol]];
+    }
+    mixBeds();
+    const tweens = [];                       // { get, set, to, t, secs }
+    function tween(get, set, to, secs) { tweens.push({ from: get(), to, t: 0, secs: Math.max(0.01, secs), set }); }
+    function runTweens(dt) {
+      for (let i = tweens.length - 1; i >= 0; i--) {
+        const w = tweens[i]; w.t = Math.min(1, w.t + dt / w.secs);
+        const k = w.t * w.t * (3 - 2 * w.t);
+        w.set(w.from + (w.to - w.from) * k);
+        if (w.t >= 1) tweens.splice(i, 1);
+      }
+    }
+
+    const SGT_DOOR = { x: 1.3, z: -2.9, ry: 0.35 };            // by the entrance, facing down the room
+    const SGT_LINE = { x: BALC.x0 + 0.7, z: -2.4, ry: 0.0 };   // on the balcony, facing along the line
+    const LINE_X = BALC.line - 0.35;                           // past this, he is on the line
+    const LIE_Y = BED.low + 0.14, LIE_YAW = -Math.PI / 2;      // his eye on the pillow, looking along the bed to the aisle
+    const BED_ITEMS = ['Pillow', 'Bedsheet', 'Blanket', 'Boots', 'Water bottle', 'Mug', 'Toothbrush', 'Locker']
+      .map(label => ({ label, icon: itemIcon(cnv, label) }));
+
+    function putSergeant(at) {
+      sergeant.group.position.set(at.x, 0, at.z);
+      sergeant.group.rotation.y = at.ry;
+    }
+
+    /* ---- arrive: find bed one */
+    function beginArrive() {
+      setPhase('arrive');
+      if (!kit) return;
+      kit.objective('Find your bed — bed one');
+      kit.waypoint({ x: PILE_POS.x, y: 1.0, z: PILE_POS.z });
+    }
+    /* ---- fall in: the whistle, the line, the count */
+    let fallTimer = null, fallLate = false;
+    function beginFallIn() {
+      setPhase('fallin');
+      fallLate = false;
+      if (worldSfx) worldSfx('whistle', 0.9);
+      putSergeant(SGT_LINE);
+      after(1.2, () => sgtSay('s1fallin'));
+      after(4.6, () => sayLine('n1fallin'));
+      if (!kit) return;
+      kit.objective('FALL IN — on the yellow line');
+      kit.waypoint({ x: BALC.line, y: 1.0, z: 0 });
+      fallTimer = kit.timer(14, () => {
+        fallLate = true; fallTimer = null;
+        sgtSay('s1late');
+        after(3.6, () => { sayLine('n1late'); if (worldSfx) worldSfx('pushups', 0.8); });
+        kit.conduct({ s: -3, a: -2, note: 'Late to fall in. Push-ups.' });
+        kit.objective('FALL IN — get to the line');
+      });
+    }
+    function onTheLine() {
+      if (fallTimer) { fallTimer.stop(); fallTimer = null; }
+      if (kit && !fallLate) kit.conduct({ a: 4, note: 'Fell in on time.' });
+      beginStandby();
+    }
+    /* ---- the standby bed: back to the bunk, then the sequence */
+    let bedTries = 0;
+    function beginStandby() {
+      setPhase('standby');
+      after(fallLate ? 6.5 : 1.0, () => putSergeant(SGT_DOOR));
+      if (!kit) return;
+      kit.objective('Back to your bed — standby bed');
+      kit.waypoint({ x: PILE_POS.x, y: 1.0, z: PILE_POS.z });
+    }
+    function runStandbyBed() {
+      if (!kit) { beginFree(); return; }
+      kit.waypoint(null);
+      kit.objective('STANDBY BED — sixty seconds');
+      sgtSay('s1standby');
+      after(3.4, () => {
+        kit.event({ kind: 'sequence', label: 'STANDBY BED', items: BED_ITEMS,
+                    each: 1.3, accel: 0.86, minEach: 0.5,
+                    award: { stat: 'awareness', lo: 0, hi: 8 } })
+          .then(r => {
+            if (!alive) return;
+            bedTries++;
+            if (r && r.ok) {
+              sayLine('n1bedok');
+              kit.conduct({ a: 3, note: 'A good standby bed.' });
+              after(SECS.n1bedok + 0.6, beginFree);
+            } else if (bedTries < 2 && !(r && (r.skipped || r.aborted))) {
+              sgtSay('s1again');
+              after(2.3, () => sayLine('n1bedfail'));
+              kit.conduct({ s: -4, note: 'The bunk did it again because of you.' });
+              after(2.3 + SECS.n1bedfail + 0.5, runStandbyBed);
+            } else {
+              after(0.5, beginFree);
+            }
+          });
+      });
+    }
+    /* ---- free: the bunk before lights out */
+    let freeAt = 0, freeWarned = false;
+    function beginFree() {
+      setPhase('free');
+      freeAt = dayClock.t; freeWarned = false;
+      if (!kit) return;
+      kit.objective('Look around the bunk before lights out');
+      kit.waypoint(null);
+    }
+    /* ---- lights out: the switch, the sky, the beds, and to bed */
+    function beginLightsOut() {
+      setPhase('lightsout');
+      dropTodo();
+      if (kit) { kit.objective('Lights out'); kit.waypoint(null); }
+      sgtSay('s1lights');
+      after(2.6, () => { if (worldSfx) worldSfx('switchoff', 0.9); });
+      after(2.7, () => {
+        tween(() => lightK, v => setLights(v), 0, 0.7);
+        tween(() => nightK, v => { nightK = v; mixBeds(); }, 1, 3.0);
+        if (kit) kit.daylight(NIGHT, 3.0);
+        clockGlow.intensity = 1.3; balcLight.intensity = 5;
+      });
+      after(3.8, () => sayLine('n1lights'));
+      after(7.0, () => sayLine('b1sleep'));
+      after(9.6, () => { if (kit) kit.fade(1, 1.6); });
+      after(11.4, () => {
+        // in the dark: to bed, the day cast gone, the sleepers in, three in the morning
+        yaw.position.x = HIS.x + 0.35; yaw.position.z = HIS.z; yaw.rotation.y = LIE_YAW;
+        if (kit) kit.pose('lying', { y: LIE_Y, yaw: LIE_YAW, span: 1.2, secs: 0.05 });
+        setNightRoom(true);
+        clock.set('03:00');
+        setPhase('night');
+      });
+      after(14.6, () => beginNight());
+    }
+    /* ---- 03:00 */
+    function beginNight() {
+      setPhase('night');
+      if (kit) { kit.fade(0, 2.2); kit.objective(null); }
+      after(2.6, () => sayLine('n1wake'));
+      after(6.6, () => {
+        setShower(true);
+        tween(() => showerVol, v => { showerVol = v; mixBeds(); }, 0.55, 1.6);
+      });
+      after(8.2, () => sayLine('n1hear'));
+      after(8.2, () => { if (kit) kit.presence(0.35); });
+      after(8.2 + SECS.n1hear + 0.6, () => {
+        if (!kit) { startDecision(); return; }
+        kit.objective('FEAR CONTROL — keep the beat');
+        kit.event({ kind: 'heartbeat', label: 'FEAR CONTROL', n: 5, bpm: 72, win: 0.19,
+                    award: { stat: 'sanity', lo: -8, hi: 2 } })
+          .then(r => { if (!alive) return; kit.objective(null); after(0.4, () => { if (getState() === 'play') startDecision(); }); });
+      });
+    }
+    /* ---- a resume lands in the right part of the day */
+    function applyPhase(p) {
+      if (p === 'free') { beginFree(); return; }
+      if (p === 'lightsout' || p === 'night') {
+        nightK = 1; showerVol = 0.55; mixBeds();
+        setLights(0); setNightRoom(true); setShower(true); clock.set('03:00');
+        clockGlow.intensity = 1.3; balcLight.intensity = 5;
+        if (kit) {
+          kit.daylight(NIGHT, 0);
+          yaw.position.x = HIS.x + 0.35; yaw.position.z = HIS.z; yaw.rotation.y = LIE_YAW;
+          kit.pose('lying', { y: LIE_Y, yaw: LIE_YAW, span: 1.2, secs: 0.05 });
+          kit.presence(0.35); kit.objective(null); kit.waypoint(null);
+        }
+        setPhase('night');
+        return;
+      }
+      beginArrive();
+    }
+
     function interactPile() {
       if (getState() !== 'play' || pileDist() >= INTERACT_R) return false;
       if (phase === 'night') { startDecision(); return true; }
+      if (phase === 'standby') { runStandbyBed(); setPhase('standbybed'); return true; }
+      if (phase === 'free' && kit && kit.getPose() !== 'lying' && seen.size >= 2) { beginLightsOut(); return true; }
       if (!kit) return false;
       if (kit.getPose() === 'lying') kit.pose('standing');
-      else kit.pose('lying', { y: BED.low + 0.12, yaw: Math.PI / 2, span: 1.2 });
+      else kit.pose('lying', { y: LIE_Y, yaw: LIE_YAW, span: 1.2 });
       return true;
     }
     if (kit) {
@@ -775,7 +995,6 @@
       kit.waypoint({ x: PILE_POS.x, y: 1.0, z: PILE_POS.z });
       kit.setPhase('arrive');
     }
-    const arriveWatch = { done: false };
 
     /* --------------------------------------------------------- hotspots */
     const seen = new Set();
@@ -818,16 +1037,35 @@
     function updatePile(t) {
       if (getState() === 'cine') { pileRing.visible = false; return; }
       const near = THREE.MathUtils.clamp((6 - pileDist()) / (6 - INTERACT_R), 0, 1);
-      pileRing.visible = near > 0.01;
+      pileRing.visible = near > 0.01 && phase !== 'lightsout';
       pileRing.material.opacity = near * (0.62 + 0.38 * Math.sin(t * 2.6)) * (phase === 'night' ? 0.7 : 0.45);
-      // CP3: reaching the bed opens the bunk (CP5 puts the whistle here)
-      if (!arriveWatch.done && phase === 'arrive' && pileDist() < 1.8) {
-        arriveWatch.done = true;
-        setPhase('free');
-        if (kit) { kit.objective('Look around the bunk before lights out'); kit.waypoint(null); }
+    }
+    /* the day's watchers, on the chapter's own clock */
+    let dayLast = 0;
+    function updateDay() {
+      if (getState() !== 'play') { dayLast = 0; return; }
+      if (!booted) { booted = true; applyPhase(kit ? kit.getPhase() : null); }
+      /* WALL time, not the frame's dt: the engine clamps dt to 0.05 s, so on a
+         box drawing one frame a second a chapter clock on dt would run at a
+         twentieth of real time (the probe found it: 3.4 s of day took 68 s).
+         Capped at half a second a frame so a stalled tab never skips a beat. */
+      const now = performance.now() / 1000;
+      const d = dayLast ? Math.min(0.5, now - dayLast) : 0;
+      dayLast = now;
+      dayClock.t += d;
+      runTodo();
+      runTweens(d);
+      if (phase === 'arrive' && pileDist() < 1.8) beginFallIn();
+      else if (phase === 'fallin' && yaw.position.x > LINE_X) onTheLine();
+      else if (phase === 'standby' && pileDist() < 2.0) { setPhase('standbybed'); runStandbyBed(); }
+      else if (phase === 'free') {
+        const dtFree = dayClock.t - freeAt;
+        if (!freeWarned && dtFree > 45) { freeWarned = true; if (kit) { kit.objective('Lights out is coming — get to your bed'); kit.waypoint({ x: PILE_POS.x, y: 1.0, z: PILE_POS.z }); } }
+        if (dtFree > 70) beginLightsOut();
       }
     }
     function updateNotes(dt, t) {
+      updateDay();
       /* the CLOCKS run in every state (v5.19): a cutscene owns the poses,
          never the mixers */
       for (const r of [sergeant, buddy, bunkmate, ghostFig]) if (r.mixer && r.group.visible) r.mixer.update(dt);
@@ -861,23 +1099,31 @@
       sleeperRoot.visible = on;
       for (const b of beds) { b.low.fold.visible = !on || b.his || !sleepers.find(s => s.bed === b); }
       setLights(on ? 0 : 1);
-      clockGlow.intensity = on ? 2.2 : 0;
+      clockGlow.intensity = on ? 1.3 : 0;
       balcLight.intensity = on ? 6 : 0;
+      nightLight.intensity = on ? 1.8 : 0;
+      blockLight.intensity = on ? 3.2 : (LOW ? 12 : 8);
       clock.set(on ? '03:00' : '21:58');
     }
 
     /* --------------------------------------------- snap / restore / reset */
     function snap() {
-      return { door: doorPivot.rotation.y, fan: fanSpeed, lightK, shower: showerOn,
+      return { door: doorPivot.rotation.y, fan: fanSpeed, lightK, shower: showerOn, showerVol, nightK,
                night: sleeperRoot.visible, ghost: ghostFig.group.visible,
                clockGlow: clockGlow.intensity, balc: balcLight.intensity,
-               water: water.material.opacity, blanketHis: hisBed.low.on.visible };
+               water: water.material.opacity, blanketHis: hisBed.low.on.visible,
+               nightL: nightLight.intensity, blockL: blockLight.intensity, showerL: showerLight.intensity,
+               blanketCam: blanketCam.visible, sleepRot: sleepers.map(o => [o.obj.rotation.x, o.obj.rotation.y, o.obj.rotation.z]) };
     }
     function restore(s) {
       doorPivot.rotation.y = s.door; fanSpeed = s.fan; setLights(s.lightK); setShower(s.shower);
+      showerVol = s.showerVol; nightK = s.nightK; mixBeds();
       sleeperRoot.visible = s.night; ghostFig.group.visible = s.ghost;
       clockGlow.intensity = s.clockGlow; balcLight.intensity = s.balc;
       water.material.opacity = s.water; hisBed.low.on.visible = s.blanketHis;
+      blanketCam.visible = s.blanketCam; blanketCam.material.opacity = 0;
+      nightLight.intensity = s.nightL; blockLight.intensity = s.blockL; showerLight.intensity = s.showerL;
+      if (s.sleepRot) sleepers.forEach((o, i) => { const r = s.sleepRot[i]; if (r) o.obj.rotation.set(r[0], r[1], r[2]); });
       sergeant.group.visible = buddy.group.visible = bunkmate.group.visible = !s.night;
       for (const r of [sergeant, buddy, bunkmate]) if (r.acts) r.play(r.key === 'fbosling' ? 'Idle_3' : 'Idle_9', 1, 0);
     }
@@ -885,10 +1131,14 @@
       doorPivot.rotation.y = DOOR_AJAR; fanSpeed = 1; setShower(false);
       ghostFig.group.visible = false; water.material.opacity = 0.55; hisBed.low.on.visible = false;
       setNightRoom(false);
-      arriveWatch.done = false;
-      seen.clear();
-      setPhase('arrive');
-      if (kit) { kit.objective('Find your bed — bed one'); kit.waypoint({ x: PILE_POS.x, y: 1.0, z: PILE_POS.z }); }
+      clockGlow.intensity = 0; balcLight.intensity = 0;
+      putSergeant(SGT_DOOR);
+      dropTodo(); tweens.length = 0;
+      nightK = 0; showerVol = 0; mixBeds();
+      seen.clear(); bedTries = 0; fallLate = false; fallTimer = null;
+      booted = false; dayClock.t = 0;
+      if (kit) { kit.daylight(null, 0); kit.presence(0); kit.fade(0, 0.05); }
+      beginArrive();
     }
 
     /* ------------------------------------------------------------ blockers */
@@ -935,7 +1185,7 @@
         m.dispose();
       }
       for (const t of [cTex.map, cTex.rough, grassTex.map, grassTex.rough, wallMap, noteTex, dotTex,
-                       tileTex, tarmacTex, boardTex, clock.tex, terrazzoTex]) t?.dispose?.();
+                       tileTex, tarmacTex, boardTex, clock.tex, terrazzoTex, weaveTex]) t?.dispose?.();
       world.clear();
       S = null;
     }
@@ -956,11 +1206,12 @@
       set noteStorm(v) {},
       beds, hisBed, lockers, fans, tubes, tubeLights, board, clockFace, clock,
       doorPivot, doorLeaf, DOOR_SHUT, DOOR_AJAR, DOOR_OPEN, DOOR_WC, DOOR_IN, OPEN, BLOCK, BALC, R, BED, WATER_AT,
-      water, setShower, setLights, setNightRoom, blockLight, clockGlow, balcLight,
+      water, setShower, setLights, setNightRoom, blockLight, clockGlow, balcLight, blanketCam,
       sergeant, buddy, bunkmate, ghostFig, sleepers, sleepRigs, sleeperRoot,
-      sayLine, seen,
+      sayLine, seen, after, dayClock,
       get phase() { return phase; },
-      setPhase,
+      setPhase, applyPhase, beginFallIn, beginStandby, runStandbyBed, beginFree, beginLightsOut, beginNight,
+      LIE_Y, LIE_YAW, LINE_X, BED_ITEMS,
       get fanSpeed() { return fanSpeed; },
       set fanSpeed(v) { fanSpeed = v; },
       updateNotes, updatePile, updateFire, updateSlow,
@@ -1034,6 +1285,37 @@
     tex.colorSpace = THREE.SRGBColorSpace;
     return tex;
   }
+  /* a 64 px glyph for the standby-bed sequence: a shape per item, the
+     initial over it, drawn in code (no download, no sheet) */
+  function itemIcon(cnv, label) {
+    const s = 64, [c, ctx] = cnv(s);
+    ctx.clearRect(0, 0, s, s);
+    ctx.fillStyle = '#e8e2d2';
+    const shapes = {
+      Pillow: () => { ctx.beginPath(); ctx.roundRect(8, 20, 48, 26, 12); ctx.fill(); },
+      Bedsheet: () => { ctx.fillRect(8, 16, 48, 34); ctx.fillStyle = '#3a5a48'; ctx.fillRect(8, 16, 48, 6); },
+      Blanket: () => { ctx.fillStyle = '#3a5a48'; ctx.fillRect(10, 22, 44, 12); ctx.fillRect(10, 36, 44, 12); },
+      Boots: () => { ctx.fillStyle = '#2a2622'; ctx.fillRect(14, 12, 14, 40); ctx.fillRect(14, 40, 36, 12); },
+      'Water bottle': () => { ctx.fillStyle = '#4c7a55'; ctx.fillRect(24, 14, 16, 40); ctx.fillRect(27, 8, 10, 8); },
+      Mug: () => { ctx.fillRect(16, 20, 30, 30); ctx.beginPath(); ctx.arc(48, 35, 8, -1.2, 1.2); ctx.lineWidth = 5; ctx.strokeStyle = '#e8e2d2'; ctx.stroke(); },
+      Toothbrush: () => { ctx.fillRect(12, 28, 40, 8); ctx.fillStyle = '#c33'; ctx.fillRect(44, 22, 10, 14); },
+      Locker: () => { ctx.fillStyle = '#8a8f8a'; ctx.fillRect(18, 8, 28, 48); ctx.fillStyle = '#2a2d2a'; ctx.fillRect(31, 8, 2, 48); }
+    };
+    (shapes[label] || (() => { ctx.beginPath(); ctx.arc(32, 32, 20, 0, 7); ctx.fill(); }))();
+    return c;
+  }
+  function makeWeave(THREE, cnv) {
+    const s = 128, [c, ctx] = cnv(s);
+    ctx.fillStyle = '#2a3a30'; ctx.fillRect(0, 0, s, s);
+    for (let i = 0; i < s; i += 4) {
+      ctx.fillStyle = (i / 4) % 2 ? '#3d5044' : '#1a2620';
+      ctx.fillRect(i, 0, 2, s); ctx.fillRect(0, i, s, 2);
+    }
+    const tex = new THREE.CanvasTexture(c);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.repeat.set(6, 4);
+    return tex;
+  }
   function makeClock(THREE, cnv) {
     const w = 256, h = 96;
     const [c, ctx] = cnv(w);
@@ -1052,21 +1334,254 @@
     return { tex, set };
   }
 
+  /* ------------------------------------------------------------ THE FILM
+     Sixty seconds, docs/V7.1-E2C1-PLAN.md §9. It begins on BLACK and stays
+     there for fourteen seconds of sound — the ferry, the gates, the boots —
+     under his first two lines; lifts on the balcony over the square; comes
+     in through the opening to the sergeant with the clipboard; tracks down
+     the aisle to bed one as he names it; pans onto the toilet door and the
+     clock; and at the switch the tubes die, the fans keep turning, and the
+     camera settles at his pillow looking up at the bunk above. His fourth
+     line, then black, then the card. Every yaw is faceFrom'd at a named
+     thing (the v4.6 law). The film's theme is `e2film`; the day's beds
+     are held down under it and come up with the room. */
+  function intro(c, s, api) {
+    const { tr, step, sfx, fade, camTo, yawTo, pitchTo, faceFrom, rawK, smoothK,
+            duck, stage, armR, kit } = api;
+    const EYE = 1.62;
+    const BAL = { x: stage.BALC.line - 0.3, y: EYE, z: 0.4 };            // at the parapet's line
+    const OPENING = { x: stage.R.x - 0.6, y: EYE, z: 0.0 };              // just inside the opening
+    const AISLE = { x: 2.4, y: EYE, z: 0.4 };                            // where the sergeant is seen from
+    const AISLE2 = { x: 0.6, y: EYE, z: 0.9 };
+    const BYBED = { x: -2.3, y: 1.22, z: 2.2 };                          // bed one from the aisle, low
+    const PILLOW = { x: stage.hisBed.x + 0.1, y: stage.BED.low + 0.34, z: stage.hisBed.z };   // his pillow end, but clear of the bunk's shadow
+    const SGT = { x: stage.sergeant.group.position.x, z: stage.sergeant.group.position.z };
+    const BEDAT = { x: stage.hisBed.x, z: stage.hisBed.z };
+    const DOORAT = { x: stage.DOOR_WC.x, z: stage.R.z };
+
+    const Y_SQUARE = faceFrom(BAL.x, BAL.z, 30, 0);
+    const Y_IN = faceFrom(OPENING.x, OPENING.z, 0, 0);
+    const Y_SGT = faceFrom(AISLE.x, AISLE.z, SGT.x, SGT.z);
+    const Y_SGT2 = faceFrom(AISLE2.x, AISLE2.z, SGT.x, SGT.z);
+    const Y_BED = faceFrom(BYBED.x, BYBED.z, BEDAT.x, BEDAT.z);
+    const Y_DOOR = faceFrom(BYBED.x, BYBED.z, DOORAT.x, DOORAT.z);
+    const Y_UP = faceFrom(PILLOW.x, PILLOW.z, 0, 2.4);                   // toward the room's middle fan
+
+    step(0, () => {
+      armR.visible = false;
+      stage.doorPivot.rotation.y = stage.DOOR_AJAR;
+      stage.setLights(1);
+      duck('bunkday', 0); duck('fanloop', 0); duck('clocktick', 0);
+      stage.clock.set('21:58');
+    });
+    // the film's own music, under everything
+    sfx(0.0, 'e2film', 1);
+
+    /* 0–14 BLACK. The ferry at seven in the morning; the gates; the boots.
+       Two of his lines over it. */
+    camTo(0, 0.1, BAL, BAL);
+    yawTo(0, 0.1, Y_SQUARE, Y_SQUARE);
+    pitchTo(0, 0.1, -0.12, -0.12);
+    sfx(0.2, 'seawash', 0.9);
+    sfx(1.2, 'ferryhorn', 0.8);
+    sfx(2.0, 'n1pro1');                       // 6.53 s → 8.5
+    sfx(8.4, 'gates', 0.9);
+    sfx(9.0, 'bootsmarch', 0.85);
+    sfx(10.5, 'n1pro2');                      // 7.97 s → 18.5
+
+    /* 14–19 the balcony: the square, the trees, the far block, flat morning
+       light; then in through the opening. The beds come up with the light. */
+    fade(14.0, 16.4, 1, 0);
+    tr(14.0, 16.4, k => { duck('bunkday', 0.55 * k); duck('fanloop', 0.4 * k); }, rawK);
+    camTo(14.0, 17.2, BAL, { x: BAL.x - 0.4, y: EYE, z: BAL.z }, smoothK);
+    camTo(17.2, 20.4, { x: BAL.x - 0.4, y: EYE, z: BAL.z }, OPENING, smoothK);
+    yawTo(17.2, 20.4, Y_SQUARE, Y_IN, smoothK);
+    pitchTo(17.2, 20.4, -0.12, 0.0, smoothK);
+
+    /* 19–30 the bunk: the rows, the fans, the sergeant by the entrance. He
+       talks with the hand-on-gun take under his line; the camera tracks
+       down the aisle toward bed one as he names it. */
+    camTo(20.4, 23.2, OPENING, AISLE, smoothK);
+    yawTo(20.4, 23.2, Y_IN, Y_SGT, smoothK);
+    step(22.0, () => { stage.sergeant.play('Talk_with_Left_Hand_on_Hip', 1, 0.3); });   // the encik's take, baked onto his rig
+    sfx(22.4, 's1bed');                       // 4.91 s → 27.3
+    step(27.6, () => { stage.sergeant.play('Idle_3', 1, 0.4); });
+    camTo(24.0, 30.0, AISLE, AISLE2, smoothK);
+    yawTo(24.0, 27.0, Y_SGT, Y_SGT2, smoothK);
+    camTo(30.0, 34.0, AISLE2, BYBED, smoothK);
+    yawTo(27.0, 33.0, Y_SGT2, Y_BED, smoothK);
+    tr(24.0, 34.0, k => { duck('bunkday', 0.55 + 0.25 * k); duck('clocktick', 0.5 * k); }, rawK);
+
+    /* 30–44 bed one: the locker beside it, the toilet door, the clock over
+       it. His third line over the pan onto the door. */
+    sfx(30.6, 'lockerdoor', 0.7);
+    pitchTo(33.0, 36.0, 0.0, -0.30, smoothK);
+    yawTo(36.0, 40.5, Y_BED, Y_DOOR, smoothK);
+    pitchTo(36.0, 40.5, -0.30, 0.06, smoothK);
+    sfx(37.0, 'n1pro3');                      // 8.28 s → 45.3
+    pitchTo(40.5, 44.0, 0.06, 0.34, smoothK);  // up to the clock
+
+    /* 44–54 the switch. The tubes die; the fans keep turning in the dark;
+       the sky goes with them (the kit's tween, put back at the end); his
+       fourth line; the camera settles at his pillow, looking up at the
+       underside of the bunk above. */
+    sfx(44.2, 'switchoff', 0.9);
+    tr(44.2, 44.9, k => { stage.setLights(1 - k); }, rawK);
+    step(44.2, () => { if (kit) kit.daylight(NIGHT, 5); stage.clockGlow.intensity = 1.3; stage.balcLight.intensity = 5; });
+    tr(44.2, 47.0, k => { duck('bunkday', 0.8 * (1 - k)); duck('fanloop', 0.4 + 0.2 * k); }, rawK);
+    sfx(46.0, 'n1pro4');                      // 5.49 s → 51.5
+    camTo(46.0, 52.0, BYBED, PILLOW, smoothK);
+    yawTo(46.0, 52.0, Y_DOOR, Y_UP, smoothK);
+    pitchTo(46.0, 52.0, 0.34, 0.80, smoothK);     // past the bunk's edge to the ceiling and the fan
+    sfx(50.8, 'bunkcreak', 0.6);
+
+    /* 54–58 down, and out. Whatever the film did to the day is handed back
+       on its last frame (a skip runs every step, so this one too). */
+    fade(54.0, 58.0, 0, 1);
+    tr(54.0, 58.0, k => { duck('fanloop', 0.6 * (1 - k)); duck('clocktick', 0.5 * (1 - k)); }, rawK);
+    step(58.0, () => {
+      armR.visible = true;
+      if (kit) kit.daylight(null, 0);
+      stage.clockGlow.intensity = 0; stage.balcLight.intensity = 0;
+      stage.setLights(1);
+      duck('bunkday', 1); duck('fanloop', 1); duck('clocktick', 1);
+    });
+    c.endFade = 1;
+    c.keepFade = true;
+  }
+
   /* ---------------------------------------------------------- the scenes
-     CP3 stands the world up; the four scenes of docs/V7.1-E2C1-PLAN.md §10
-     land at CP6. These placeholders hold the contract's shape meanwhile. */
-  function placeholder(seconds) {
-    return (c, s, api) => {
-      const { fade, pitchTo, sfx } = api;
-      pitchTo(0, seconds * 0.6, s.pitchX, -0.2);
-      sfx(0.2, 'dread');
-      fade(seconds * 0.7, seconds, 0, 1);
-      c.endFade = 1;
-    };
+     Four, docs/V7.1-E2C1-PLAN.md §10, every one from the pillow at three in
+     the morning with the shower running in the block. The hands go away
+     (the v4.91 rule) and come back on the last step; the engine restores
+     the bed, the door, the water and the sleepers from stage.snap(). */
+  const P = (s) => ({ x: s.yawPos.x, y: s.yawPos.y, z: s.yawPos.z });
+
+  /* A · GET UP AND OPEN THE TOILET DOOR (24.4 s). Up off the pillow, to
+     the door, in; the tiles under one tube; the shower running in the far
+     cubicle; the water stops by itself as he reaches it; nobody; a drop;
+     and turning back, for a tenth of a second at the corridor's end, the
+     figure — then black and his line. */
+  function scOpen(c, s, api) {
+    const { tr, step, sfx, fade, camTo, yawTo, pitchTo, faceFrom, rawK, smoothK,
+            duck, stage, handsRoot } = api;
+    const P0 = P(s);
+    const STAND = { x: stage.hisBed.x + 1.0, y: 1.62, z: stage.hisBed.z + 0.3 };
+    const ATDOOR = { x: stage.DOOR_WC.x, y: 1.62, z: stage.R.z - 0.7 };
+    const INSIDE = { x: stage.DOOR_WC.x, y: 1.62, z: 5.1 };
+    const NEAR = { x: stage.WATER_AT.x - 1.0, y: 1.58, z: 6.1 };
+    const END = { x: stage.BLOCK.x0 + 0.45, z: 5.3 };
+    const Y_DOOR = faceFrom(STAND.x, STAND.z, stage.DOOR_WC.x, stage.R.z);
+    const Y_IN = faceFrom(INSIDE.x, INSIDE.z, stage.WATER_AT.x, stage.WATER_AT.z);
+    const Y_NEAR = faceFrom(NEAR.x, NEAR.z, stage.WATER_AT.x, stage.WATER_AT.z);
+    const Y_END = faceFrom(NEAR.x, NEAR.z, END.x, END.z);
+    step(0, () => { handsRoot.visible = false; stage.ghostFig.group.visible = false; });
+    // 0–2.6 up off the bed
+    sfx(0.6, 'bunkcreak', 0.6);
+    camTo(0.3, 2.6, P0, STAND, smoothK);
+    yawTo(0.3, 2.6, s.yawRot, Y_DOOR, smoothK);
+    pitchTo(0.3, 2.6, s.pitchX, 0.0, smoothK);
+    // 2.8–6.0 to the door, soft
+    sfx(2.8, 'bootsrun', 0.32);
+    camTo(2.8, 6.0, STAND, ATDOOR, smoothK);
+    // 6.2 the door, into the block
+    sfx(6.2, 'dooropen2', 0.8);
+    tr(6.2, 7.4, k => { stage.doorPivot.rotation.y = stage.DOOR_AJAR + (stage.DOOR_OPEN - stage.DOOR_AJAR) * k; }, smoothK);
+    camTo(7.2, 10.5, ATDOOR, INSIDE, smoothK);
+    yawTo(7.2, 10.5, Y_DOOR, Y_IN, smoothK);
+    tr(7.0, 9.0, k => { duck('showerrun', 1 + 0.6 * k); }, rawK);
+    // 10.5–15 down the corridor toward the water
+    camTo(10.5, 15.0, INSIDE, NEAR, smoothK);
+    yawTo(10.5, 15.0, Y_IN, Y_NEAR, smoothK);
+    sfx(11.0, 'n1A1');                          // 5.56 s → 16.6
+    // 15.0 it stops. By itself.
+    sfx(15.0, 'showeroff', 0.9);
+    step(15.0, () => { stage.setShower(false); });
+    tr(15.0, 16.0, k => { duck('showerrun', 1.6 * (1 - k)); }, rawK);
+    sfx(17.6, 'drip', 0.8);
+    // 18.6–21 turning back down the corridor — and the figure at its end
+    yawTo(18.6, 20.8, Y_NEAR, Y_END, smoothK);
+    pitchTo(18.6, 20.8, 0.0, 0.02, smoothK);
+    sfx(20.8, 'dread', 0.9);
+    step(20.95, () => { stage.ghostFig.group.visible = true; });
+    step(21.1, () => { stage.ghostFig.group.visible = false; });
+    fade(21.1, 22.2, 0, 1);
+    sfx(21.6, 'n1A2');                          // 2.35 s → 24.0
+    step(24.4, () => { handsRoot.visible = true; });
+    c.endFade = 1;
+  }
+
+  /* B · STAY STILL AND LISTEN (22.6 s). The ceiling, the fan turning, the
+     clock's red on the wall; the shower held at the block's distance; his
+     line; at fourteen the water stops — by itself; his second line; the
+     long hold; a drop. */
+  function scListen(c, s, api) {
+    const { tr, step, sfx, fade, yawTo, pitchTo, rawK, smoothK, duck, stage, handsRoot } = api;
+    step(0, () => { handsRoot.visible = false; });
+    yawTo(0, 3.0, s.yawRot, stage.LIE_YAW, smoothK);
+    pitchTo(0, 3.0, s.pitchX, 1.15, smoothK);
+    tr(0, 4.0, k => { duck('showerrun', 1 - 0.35 * k); }, rawK);
+    sfx(2.0, 'n1B1');                           // 4.83 s → 6.9
+    sfx(14.0, 'showeroff', 0.7);
+    step(14.0, () => { stage.setShower(false); });
+    tr(14.0, 15.0, k => { duck('showerrun', 0.65 * (1 - k)); }, rawK);
+    sfx(15.4, 'n1B2');                          // 2.77 s → 18.2
+    sfx(19.5, 'drip', 0.7);
+    fade(20.6, 22.4, 0, 1);
+    step(22.6, () => { handsRoot.visible = true; });
+    c.endFade = 1;
+  }
+
+  /* C · WHISPER TO YOUR BUNKMATE (18.2 s). The head turns to the next bed;
+     the whisper; a beat; his blanket shifts; "Huh? ...what? Go sleep lah."
+     He rolls over. The shower runs on. Back to the ceiling. */
+  function scWhisper(c, s, api) {
+    const { tr, step, sfx, fade, yawTo, pitchTo, faceFrom, smoothK, stage, handsRoot } = api;
+    const P0 = P(s);
+    const nb = stage.sleepers.find(o => o.bed.x < 0 && Math.abs(o.bed.z - 1.5) < 0.01) || null;
+    const Y_NEXT = faceFrom(P0.x, P0.z, stage.hisBed.x, 1.5);
+    const ry0 = nb ? nb.obj.rotation.y : 0, rz0 = nb ? nb.obj.rotation.z : 0;
+    step(0, () => { handsRoot.visible = false; });
+    yawTo(0.5, 2.0, s.yawRot, Y_NEXT, smoothK);
+    pitchTo(0.5, 2.0, s.pitchX, -0.06, smoothK);
+    sfx(2.2, 'n1C1');                           // the whisper, 2.04 s → 4.3
+    sfx(5.6, 'blanket', 0.7);
+    tr(5.6, 7.2, k => { if (nb) nb.obj.rotation.z = rz0 + 0.22 * Math.sin(k * Math.PI); }, smoothK);
+    sfx(7.2, 'b1huh');                          // 3.4 s → 10.6
+    sfx(8.8, 'blanket', 0.5);
+    tr(8.8, 10.8, k => { if (nb) { nb.obj.rotation.y = ry0 + 0.35 * k; nb.obj.rotation.z = rz0 + 0.30 * k; } }, smoothK);
+    yawTo(12.0, 15.0, Y_NEXT, stage.LIE_YAW, smoothK);
+    pitchTo(12.0, 15.0, -0.06, 1.1, smoothK);
+    fade(16.2, 18.0, 0, 1);
+    step(18.2, () => { handsRoot.visible = true; });
+    c.endFade = 1;
+  }
+
+  /* D · IT'S A GHOST — BLANKET OVER YOUR HEAD (19.8 s, critical). The
+     blanket up; weave-dark; "It's nothing" twice, the second time quieter;
+     the shower does NOT stop — it comes up, closer; the presence climbs;
+     the boom; black. The −15 is the choice's own delta. */
+  function scBlanket(c, s, api) {
+    const { tr, step, sfx, fade, pitchTo, rawK, smoothK, duck, stage, handsRoot, kit } = api;
+    const bl = stage.blanketCam;
+    step(0, () => { handsRoot.visible = false; });
+    sfx(1.0, 'blanket', 0.9);
+    tr(1.0, 2.2, k => { bl.visible = true; bl.material.opacity = 0.985 * k; }, smoothK);
+    pitchTo(1.0, 2.2, s.pitchX, 0.3, smoothK);
+    sfx(2.8, 'n1D1', 1.0);                      // 2.59 s → 5.4
+    sfx(8.0, 'n1D1', 0.55);
+    tr(2.0, 14.0, k => { duck('showerrun', 1 + 0.9 * k); }, rawK);
+    tr(0, 15.0, k => { if (kit) kit.presence(0.35 + 0.45 * k); }, rawK);
+    tr(4.0, 15.0, k => { bl.position.z = -0.11 + 0.012 * Math.sin(k * 31); }, rawK);   // his breathing against the cloth
+    sfx(15.0, 'boom', 0.9);
+    fade(15.0, 16.6, 0, 1);
+    step(19.6, () => { handsRoot.visible = true; bl.visible = false; bl.material.opacity = 0; bl.position.z = -0.11; if (kit) kit.presence(0.35); });
+    c.endFade = 1;
   }
 
   (window.__CHAPTERS__ = window.__CHAPTERS__ || {}).e2c1 = Object.assign(DATA, {
     build,
-    scenes: [placeholder(2.4), placeholder(2.4), placeholder(2.2), placeholder(2.4)]
+    intro,
+    scenes: [scOpen, scListen, scWhisper, scBlanket]
   });
 })();

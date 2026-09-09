@@ -54,6 +54,15 @@ function chapterFiles() {
 // the chapter fields that are words, in the order they read on screen
 const CH_FIELDS = ['title', 'cardLabel', 'cardTitle', 'brief', 'prompt'];
 const CH_WORDS = ['approach', 'act', 'actTouch', 'interact', 'interactTouch'];
+/* v7.1: a chapter built on the play kit has MORE words of its own — the
+   objective line, a hotspot's prompt, an event's title, a conduct note —
+   and every one of them is Chad's to edit. So the words that reach the
+   sheet are whatever string keys a chapter's `words` carries, the five
+   above first (their order is the sheet's), the chapter's own after. */
+const wordKeys = (ch) => {
+  const own = Object.keys((ch && ch.words) || {}).filter(k => typeof ch.words[k] === 'string');
+  return [...CH_WORDS.filter(k => own.includes(k)), ...own.filter(k => !CH_WORDS.includes(k))];
+};
 
 // what each row means, so the sheet explains itself
 const WHERE = {
@@ -186,10 +195,8 @@ function readRows() {
     }
     // the words that name the thing you can act on, when the chapter has
     // its own rather than falling back to the sheet's
-    for (const f of CH_WORDS) {
-      if (ch.words && typeof ch.words[f] === 'string') {
-        rows.push([`${key}.words.${f}`, ch.words[f]]);
-      }
+    for (const f of wordKeys(ch)) {
+      rows.push([`${key}.words.${f}`, ch.words[f]]);
     }
     for (const c of ch.choices) {
       for (const f of ['text', 'say', 'teach']) rows.push([`${key}.${c.k}.${f}`, c[f]]);
@@ -423,7 +430,7 @@ function writeChapter(map) {
     if (wStart >= 0) {
       const wEnd = s.indexOf('\n    }', wStart);
       let wBlock = s.slice(wStart, wEnd);
-      for (const f of CH_WORDS) {
+      for (const f of wordKeys(ch)) {
         const k2 = `${key}.words.${f}`;
         if (!(k2 in map)) continue;
         const r = setField(wBlock, f, map[k2]);

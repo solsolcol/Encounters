@@ -932,6 +932,7 @@ function plantTrees(parent, spots, opts = {}) {
    Conduct     Sanity/Awareness earned in play, shown on the outcome card
    Pose        lying down in play (the bed is a hotspot)
    Daylight    the sky tweened in play — morning to lights-out to 3 AM
+   Fade        the black between a day and a night, in play (v7.1)
    Clock       one timed decision, a bar that is the thing's approach
    Phase       a bookmark the chapter keeps, saved with the run            */
 let eyeY = 1.62, pitchLo = -1.2, pitchHi = 1.2;   // the standing values; a pose moves them
@@ -945,6 +946,7 @@ let lieYaw = 0, lieSpan = 1.1;
 let chapterPresence = 0;
 let torchLight = null, torchOn = false, torchDecl = null, torchIsRed = false;
 let dayTween = null;
+let kitFade = null, kitFadeNow = 0;              // v7.1: a chapter's own black, in play
 let decClock = null;
 let ev = null;                                      // the live event, one at a time
 let activeSpot = null;
@@ -1459,6 +1461,16 @@ function kitFrame(dt, t, dLookX, dLookY) {
     if (dayTween.t >= 1) { dayNow = dayTween.to; dayTween = null; applyDaylightD(dayNow); }
     else applyDaylightD(dayMix(dayTween.from, dayTween.to, smoothK(dayTween.t)), true);
   }
+  /* v7.1: a FADE in play — the black between the day and the night of a
+     chapter that has both (The Worst Bed lies him down at lights out and
+     wakes him at three). The same element the cutscenes fade; a cutscene
+     that starts mid-fade simply takes it over, as it always has. */
+  if (kitFade && state === 'play') {
+    kitFade.t = Math.min(1, kitFade.t + dt / kitFade.secs);
+    kitFadeNow = kitFade.from + (kitFade.to - kitFade.from) * smoothK(kitFade.t);
+    cineFadeEl.style.opacity = String(kitFadeNow);
+    if (kitFade.t >= 1) kitFade = null;
+  }
   // timer, objective, waypoint
   if (kitTimer && state === 'play') {
     kitTimer.left -= dt;
@@ -1490,6 +1502,7 @@ function kitReset() {
   kitPose = 'standing'; eyeY = 1.62; poseFrom = poseTo = 1.62; poseT = 1; pitchLo = -1.2; pitchHi = 1.2;
   chapterPresence = 0;
   dayTween = null;
+  kitFade = null; kitFadeNow = 0;
   decClock = null; $('dclock')?.classList.add('hide');
   if (CH.torch) torchSetup(CH.torch); else torchTeardown();
   activeSpot = null;
@@ -1503,6 +1516,8 @@ const KIT = {
   conduct: kitConduct, award: kitAward,
   pose: kitPoseSet, getPose: () => kitPose,
   daylight: daylightTo,
+  fade: (to, secs) => { kitFade = { from: kitFadeNow, to: Math.max(0, Math.min(1, +to || 0)), t: 0, secs: Math.max(0.01, +secs || 0.5) }; },
+  getFade: () => kitFadeNow,
   decisionClock: (secs, onExpire) => { decClock = secs > 0 ? { secs, left: secs, onExpire, fired: false } : null; },
   haptic,
   setPhase: v => { kitPhase = (v === undefined) ? null : v; }, getPhase: () => kitPhase,
@@ -1518,6 +1533,7 @@ function kitDebug() {
            waypoint: kitWaypoint, conduct: { ...conductAcc, notes: conductAcc.notes.slice() },
            clock: decClock ? { left: +decClock.left.toFixed(2), fired: decClock.fired } : null,
            daylightTween: dayTween ? +dayTween.t.toFixed(3) : null,
+           fade: +kitFadeNow.toFixed(3),
            event: ev ? { kind: ev.kind, t: +ev.t.toFixed(2), started: ev.started, down: ev.down,
                          hits: ev.hits, misses: ev.misses, idx: ev.idx, bar: +ev.bar.toFixed(3) } : null,
            hotspot: activeSpot ? (activeSpot.id || activeSpot.prompt || true) : null,

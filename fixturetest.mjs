@@ -84,6 +84,17 @@ await p.keyboard.press('KeyF'); await settle();
 K.torchToggles = ((await dbg()).torch || {}).on === true;
 await p.keyboard.press('KeyF'); await settle();
 
+// v7.1: a fade in play — the kit's black goes up and comes down on the cutscene element
+K.fadeInPlay = await p.evaluate(() => { window.__enc.kit.fade(1, 0.2); return true; })
+  .then(() => p.waitForFunction(() => window.__enc.kitDebug().fade > 0.95, null, { timeout: 30000 }))
+  .then(() => p.evaluate(() => +getComputedStyle(document.getElementById('cineFade')).opacity > 0.95))
+  .then(up => p.evaluate(() => { window.__enc.kit.fade(0, 0.2); return true; })
+    .then(() => p.waitForFunction(() => window.__enc.kitDebug().fade < 0.05, null, { timeout: 30000 }))
+    .then(() => p.evaluate(() => +getComputedStyle(document.getElementById('cineFade')).opacity < 0.05))
+    .then(down => up && down))
+  .catch(() => false);
+await settle();
+
 // presence: an unseen thing drains the bar, and the banner uses the chapter's words for it
 K.presenceDrains = await p.evaluate(() => { window.__enc.kit.presence(1); return window.__enc.stats.sanity; })
   .then(s0 => p.waitForFunction(x => window.__enc.stats.sanity < x - 0.3, s0, { timeout: 60000 }))
