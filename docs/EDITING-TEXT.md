@@ -11,13 +11,27 @@ text comes up at all — the reply carries the full URL, not the version
 number alone. He reads these on his phone; a number he has to go hunting
 for in Drive is not a link.
 
-**Master Z's Encounters — GAME TEXT v40 (edit here)** in his Drive
-(id `1XTL_XJ64YwVZaTi5eGcWBqs9AB7JAhuFx8IcL-AH-eU` — the **v40** sheet,
-made at v6.15, tabbed: **UI TEXT** (215 rows, the engine's words),
+**MASTER Z GAME TEXT v41** in his Drive
+(id `1ziT5WDQXJ_YMQFnUOzm9rTzkEmem9UXvOX616Wu970k` — the **v41** sheet,
+made at v7.0, tabbed: **UI TEXT** (231 rows, the engine's words),
 **EPISODE 1** (110 rows, chapters 1–5's words) and **VOICE LINES** (105).
-<https://docs.google.com/spreadsheets/d/1XTL_XJ64YwVZaTi5eGcWBqs9AB7JAhuFx8IcL-AH-eU/edit>
+<https://docs.google.com/spreadsheets/d/1ziT5WDQXJ_YMQFnUOzm9rTzkEmem9UXvOX616Wu970k/edit>
 
-What changed from v39: **nine rows ADDED, not one cell changed, no spoken
+What changed from v40: **sixteen rows ADDED, not one cell changed, no
+spoken word.** The play kit's own words (v7.0, docs/V7.0-PLAY-KIT.md):
+the objective label and the torch button, the banner for an unseen
+presence (`hud.presenceAlarm`), the eight event prompts and their GOOD /
+MISSED / NOW words (`event.*`), the conduct line's label (`card.conduct`)
+and the decision clock's (`decide.clock`). None of them is on screen in
+episode 1; they exist so episode 2's chapters have them in Chad's words.
+EPISODE 1 and VOICE LINES are identical to v40. Provenance: published from
+the fresh `.xlsx` export as one unbroken base64 string (its own `==`
+padding kept — the string was a multiple of four WITH it), read back from
+the connector's own saved output, every cell diffed against the workbook
+by `tools/verifytabs.py` — 449 rows, zero differences. v40 (id
+`1XTL_XJ64YwVZaTi5eGcWBqs9AB7JAhuFx8IcL-AH-eU`) is superseded.
+
+**v40** (made at v6.15) — what changed from v39: **nine rows ADDED, not one cell changed, no spoken
 word.** Chad's three tree models replace every generated tree in the game
 (v6.15, docs/V6.15-TREES.md) and each gets a credits row — `credits.tree1`,
 `credits.tree2`, `credits.tree3` with their `Who` and `Link` cells, nine
