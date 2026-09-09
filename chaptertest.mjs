@@ -236,6 +236,22 @@ if (VOICE && Array.isArray(VOICE.LINES)) {
     }
     console.log(`his voice bus: ${inEngine.size} takes, matching the registry`);
   }
+  /* v7.1: the same contract for him at eighteen. TEEN_TAKES rides the same
+     bus; it is a separate set so that this check can hold each speaker to
+     its own set in both directions. */
+  const teenLit = mainSrc.match(/const TEEN_TAKES = new Set\(\[([\s\S]*?)\]\)/);
+  if (!teenLit) errs.push('voice: main.js has no TEEN_TAKES set');
+  else {
+    const inEngine = new Set([...teenLit[1].matchAll(/'([^']+)'/g)].map(m => m[1]));
+    const inRegistry = new Set(VOICE.LINES.filter(l => l.who === 'jamesTeen').map(l => l.id));
+    for (const id of inRegistry) {
+      if (!inEngine.has(id)) errs.push(`voice: '${id}' is jamesTeen in the registry but missing from TEEN_TAKES in main.js`);
+    }
+    for (const id of inEngine) {
+      if (!inRegistry.has(id)) errs.push(`voice: TEEN_TAKES names '${id}', which is not a jamesTeen row in src/voicelines.js`);
+    }
+    console.log(`his teen bus: ${inEngine.size} takes, matching the registry`);
+  }
   console.log(`voice lines: ${VOICE.LINES.length} rows, ${Object.keys(VOICE.SPEAKERS || {}).length} speakers`);
 } else if (!errs.some(e => e.startsWith('ERR src/voicelines.js'))) {
   errs.push('ERR src/voicelines.js did not register window.__VOICE__');

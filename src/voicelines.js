@@ -56,7 +56,20 @@
        the note in CLAUDE.md that "the workspace has no Southeast Asian voice
        at all" is now out of date by exactly one. */
     granny: { name: "The granny at the brazier (chapter 3)", voice: "TiKM6Oo9KZhmYBsTBA2s", model: "eleven_v3",
-              note: "Lexi — Singapore English. Middle-aged in the library, aged into a grandmother by the prompt's tag. One line: the shout in scene B." }
+              note: "Lexi — Singapore English. Middle-aged in the library, aged into a grandmother by the prompt's tag. One line: the shout in scene B." },
+    /* v7.1 — EPISODE 2. His voice ages with him (docs/EPISODES-PLAN.md §6):
+       the boy of episode 1 is Aaron, and an eighteen-year-old recruit is
+       not a boy. `jamesTeen` is the same character; his files are `n*`
+       (episode 2's chapters are n1..n5) so the sets in main.js stay
+       disjoint by construction. The other three are the bunk. */
+    jamesTeen: { name: "James at eighteen (episode 2)", voice: "8AMr87HV4PA3NKEl5q4O", model: "eleven_v3",
+              note: "Gabriel — calm, Singaporean English, the first Singaporean voice the main character has had. Alternative if Chad dislikes him: Edison (ZyIwtt7dzBKVYuXxaRw7); a swap is this row and a regeneration." },
+    sergeant: { name: "The platoon sergeant (episode 2)", voice: "JKX4knVxHRiP0doaLdrj", model: "eleven_v3",
+              note: "George — adult Singaporean, low and deep, every line under a [shouting] tag." },
+    buddy: { name: "The buddy in the next bed (episode 2)", voice: "ZyIwtt7dzBKVYuXxaRw7", model: "eleven_v3",
+              note: "Edison — young Singaporean, casual. He recurs all episode." },
+    bunkmate: { name: "A bunkmate (episode 2)", voice: "FXMPPfJPpDj0GSwJ6ASO", model: "eleven_v3",
+              note: "Kelvin — Singaporean English. One more voice in the bunk." }
   };
 
   const LINES = [
@@ -294,14 +307,92 @@
     { id: "v5C", who: "james", ch: "ch5", where: "Under the outcome card after choice C",
       text: "I called it paper. She heard me.", secs: 2.27 },
     { id: "v5D", who: "james", ch: "ch5", where: "Under the outcome card after choice D",
-      text: "It's over. [beat] It's really over.", secs: 2.27 }
+      text: "It's over. [beat] It's really over.", secs: 2.27 },
+    /* v7.1 — EPISODE 2 · CHAPTER 1, THE WORST BED. 37 lines, four speakers.
+       Chapter key e2c1; the film, the day, the night, the four scenes and the
+       four card lines (`sayPrefix: 'n1'`). */
+    { id: "n1pro1", who: "jamesTeen", ch: "e2c1", where: "Opening film, over black: the ferry",
+      text: "Eighteen. The ferry to Tekong at seven in the morning, and nobody on it talking.", secs: 6.53 },
+    { id: "n1pro2", who: "jamesTeen", ch: "e2c1", where: "Opening film: the bunk",
+      text: "Hawk Company. Twenty of us to a bunk, two rows of double-deck beds, and the sergeant walking the line with a clipboard.", secs: 7.97 },
+    { id: "n1pro3", who: "jamesTeen", ch: "e2c1", where: "Opening film: bed one",
+      text: "Bed one. Right next to the toilet door. The worst spot in the room, and the one nobody wanted.", secs: 8.28 },
+    { id: "n1pro4", who: "jamesTeen", ch: "e2c1", where: "Opening film: lights out",
+      text: "I told myself it didn't matter where you slept. Lights out was at ten.", secs: 5.49 },
+    { id: "n1voice", who: "jamesTeen", ch: "e2c1", where: "Seconds after play begins",
+      text: "First day. Just get through it.", secs: 2.77 },
+    { id: "n1near", who: "jamesTeen", ch: "e2c1", where: "Nearing his bed",
+      text: "That's mine. Bed one.", secs: 2.04 },
+    { id: "n1act", who: "jamesTeen", ch: "e2c1", where: "The decision opens, 03:00",
+      text: "Nobody else is moving. Nobody else can hear it?", secs: 3.4 },
+    { id: "n1fallin", who: "jamesTeen", ch: "e2c1", where: "The whistle",
+      text: "That's the whistle. Go, go.", secs: 1.96 },
+    { id: "n1late", who: "jamesTeen", ch: "e2c1", where: "Late to the fall-in line",
+      text: "Twenty push-ups. On day one.", secs: 2.93 },
+    { id: "n1bedok", who: "jamesTeen", ch: "e2c1", where: "A good standby bed",
+      text: "Done. Pillow, blanket, boots, all of it.", secs: 4.91 },
+    { id: "n1bedfail", who: "jamesTeen", ch: "e2c1", where: "A failed standby bed",
+      text: "Again. The whole bunk, because of me.", secs: 4.21 },
+    { id: "n1shower", who: "jamesTeen", ch: "e2c1", where: "The shower block by day",
+      text: "Just a shower block. Tiles, a drain, a timer tap.", secs: 4.52 },
+    { id: "n1board", who: "jamesTeen", ch: "e2c1", where: "The notice board",
+      text: "Week two. Live firing.", secs: 2.27 },
+    { id: "n1lights", who: "jamesTeen", ch: "e2c1", where: "Lights out",
+      text: "Ten o'clock. Lights out.", secs: 2.77 },
+    { id: "n1wake", who: "jamesTeen", ch: "e2c1", where: "03:00, waking",
+      text: "...what time is it.", secs: 1.41 },
+    { id: "n1hear", who: "jamesTeen", ch: "e2c1", where: "The shower starts",
+      text: "The shower. Somebody's in the shower. At three in the morning.", secs: 6.03 },
+    { id: "n1A1", who: "jamesTeen", ch: "e2c1", where: "Scene A, at the block door",
+      text: "Nobody. The water's running and there's nobody.", secs: 5.56 },
+    { id: "n1A2", who: "jamesTeen", ch: "e2c1", where: "Scene A, the last frame",
+      text: "...there was someone at the end of the corridor.", secs: 2.35 },
+    { id: "n1B1", who: "jamesTeen", ch: "e2c1", where: "Scene B, lying still",
+      text: "Just listen. Don't decide what it is. Just listen.", secs: 4.83 },
+    { id: "n1B2", who: "jamesTeen", ch: "e2c1", where: "Scene B, the water stops",
+      text: "It stopped. By itself.", secs: 2.77 },
+    { id: "n1C1", who: "jamesTeen", ch: "e2c1", where: "Scene C, a whisper to the next bed",
+      text: "Eh. You awake?", secs: 2.04 },
+    { id: "n1D1", who: "jamesTeen", ch: "e2c1", where: "Scene D, under the blanket",
+      text: "It's nothing. It's nothing. It's nothing.", secs: 2.59 },
+    { id: "n1A", who: "jamesTeen", ch: "e2c1", where: "Under the outcome card after choice A",
+      text: "I got up and looked. I found water, and nothing else, and a corridor I did not like.", secs: 7.71 },
+    { id: "n1B", who: "jamesTeen", ch: "e2c1", where: "Under the outcome card after choice B",
+      text: "I stayed still and listened. What I heard was a sound. What it meant, I did not know yet.", secs: 8.12 },
+    { id: "n1C", who: "jamesTeen", ch: "e2c1", where: "Under the outcome card after choice C",
+      text: "I asked the one person who could tell me. He heard nothing. That was worth knowing.", secs: 6.35 },
+    { id: "n1D", who: "jamesTeen", ch: "e2c1", where: "Under the outcome card after choice D",
+      text: "I decided what it was before I knew anything. Under the blanket, the water kept running.", secs: 6.03 },
+    { id: "s1fallin", who: "sergeant", ch: "e2c1", where: "The whistle",
+      text: "Fall in! Fall in! Move it, move it!", secs: 3.16 },
+    { id: "s1late", who: "sergeant", ch: "e2c1", where: "Late to the line",
+      text: "You! Last one! Twenty push-ups, now!", secs: 3.4 },
+    { id: "s1bed", who: "sergeant", ch: "e2c1", where: "Opening film: bed one",
+      text: "Bed one. Next to the toilet. Nobody wants it, so it's yours.", secs: 4.91 },
+    { id: "s1standby", who: "sergeant", ch: "e2c1", where: "The standby bed",
+      text: "Standby bed! Sixty seconds! Go!", secs: 3.08 },
+    { id: "s1again", who: "sergeant", ch: "e2c1", where: "A failed standby bed",
+      text: "Whole bunk! Do it again!", secs: 1.96 },
+    { id: "s1lights", who: "sergeant", ch: "e2c1", where: "Lights out",
+      text: "Lights out! No talking!", secs: 2.27 },
+    { id: "b1day", who: "buddy", ch: "e2c1", where: "The buddy hotspot, by day",
+      text: "Eh, you kena the toilet bed ah. Good luck, bro.", secs: 3.08 },
+    { id: "b1sleep", who: "buddy", ch: "e2c1", where: "Lights out",
+      text: "Sleep lah. Tomorrow got range.", secs: 2.19 },
+    { id: "b1huh", who: "buddy", ch: "e2c1", where: "Scene C",
+      text: "Huh? ...what? Go sleep lah.", secs: 3.4 },
+    { id: "k1board", who: "bunkmate", ch: "e2c1", where: "The notice board hotspot",
+      text: "Week two, live firing. Confirm plus chop.", secs: 3 },
+    { id: "k1three", who: "bunkmate", ch: "e2c1", where: "The bunkmate hotspot, by day",
+      text: "The three a.m. one? Heard before. Never looked.", secs: 4.05 }
   ];
 
   // What a chapter key means on the sheet.
   const CHAPTERS = {
     ch1: "Chapter 1 · The Hell Note", ch2: "Chapter 2 · The Presence",
     ch3: "Chapter 3 · The Gathering", ch4: "Chapter 4 · Back Home",
-    ch5: "Chapter 5 · The Lesson", haunting: "Chapters 1 and 2 · the haunting"
+    ch5: "Chapter 5 · The Lesson", haunting: "Chapters 1 and 2 · the haunting",
+    e2c1: "Episode 2 · Chapter 1 · The Worst Bed"
   };
 
   window.__VOICE__ = { SPEAKERS, LINES, CHAPTERS };

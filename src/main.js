@@ -3193,12 +3193,26 @@ const JAMES_TAKES = new Set(['voice',
   'vpro1', 'vpro2', 'vpro3', 'vpro4', 'vpro5',
   // v6.6: his three pick-up reactions in the same film
   'vpick1', 'vpick2', 'vpick3']);
+/* v7.1: HIM AT EIGHTEEN. Episode 2's main character is the same person in
+   a different voice (Gabriel, `jamesTeen` in the registry — his voice ages
+   with his figure, docs/EPISODES-PLAN.md §6), so his takes ride the SAME
+   bus as Aaron's: the bus is a dynamics tool, not a voice-specific one.
+   A separate set because chaptertest holds each set to its own speaker,
+   both directions. His files are `n*` — episode 2's chapters are n1..n5. */
+const TEEN_TAKES = new Set([
+  'n1pro1', 'n1pro2', 'n1pro3', 'n1pro4', 'n1voice', 'n1near', 'n1act',
+  'n1fallin', 'n1late', 'n1bedok', 'n1bedfail', 'n1shower', 'n1board',
+  'n1lights', 'n1wake', 'n1hear', 'n1A1', 'n1A2', 'n1B1', 'n1B2', 'n1C1',
+  'n1D1', 'n1A', 'n1B', 'n1C', 'n1D']);
 /* The rest of the cast. They share `voiceOut` and the duck, but not the
    boost — see voiceStage() above. */
 const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
   'v3aunt1', 'v3aunt2', 'v3aunt3', 'v3aunt4', 'v3aunt5',
-  't5note', 't5teachA', 't5hallA', 't5fearB', 't5disC', 't5learnD1', 't5learnD2']);
-const isVoice = name => JAMES_TAKES.has(name) || CAST_TAKES.has(name);
+  't5note', 't5teachA', 't5hallA', 't5fearB', 't5disC', 't5learnD1', 't5learnD2',
+  // v7.1: episode 2's bunk — the sergeant, the buddy, a bunkmate
+  's1fallin', 's1late', 's1bed', 's1standby', 's1again', 's1lights',
+  'b1day', 'b1sleep', 'b1huh', 'k1board', 'k1three']);
+const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || CAST_TAKES.has(name);
 /* v6.9: his WHISPERS go round the bus. Chad wanted the three pick-up
    reactions "almost whispering to himself" and they were re-voiced as
    whispers — but a whisper pushed through a 4:1 compressor with +10.9 dB
@@ -3208,7 +3222,8 @@ const isVoice = name => JAMES_TAKES.has(name) || CAST_TAKES.has(name);
    bus lands on — mute-able, never ducked, ducking the beds like any
    voice — and keep the dynamics they were performed with. They stay in
    JAMES_TAKES (the registry's truth) and only the OUTPUT differs. */
-const WHISPER_TAKES = new Set(['vpick1', 'vpick2', 'vpick3']);
+const WHISPER_TAKES = new Set(['vpick1', 'vpick2', 'vpick3',
+  'n1C1']);   // v7.1: "Eh. You awake?" — whispered to the next bed after lights out
 const WHISPER_GAIN = 0.55;           // -5.2 dB: through a replica of the chain (dbg-whisperbus) his narration sits at -12.7 dBFS RMS, the whispers at -26 to -28.5 — 11 to 16 dB under him
 let whisperOut = null;
 function whisperStage() {
@@ -3224,7 +3239,7 @@ function whisperStage() {
 // where a sound belongs: his bus, his whispers' stage, the cast's stage, or the ducked pack
 function outFor(name) {
   if (WHISPER_TAKES.has(name)) return whisperStage() || packGain;
-  if (JAMES_TAKES.has(name)) return voiceBus() || packGain;
+  if (JAMES_TAKES.has(name) || TEEN_TAKES.has(name)) return voiceBus() || packGain;
   if (CAST_TAKES.has(name)) return voiceStage() || packGain;
   return packGain;
 }
@@ -4989,7 +5004,36 @@ const STING_SAMPLE = {
   memday: ['memday', 0.7],         // a hot afternoon, far off: cicadas and a little wind
   leafpick: ['leafpick', 0.7],     // a dry leaf off the grass
   toypick: ['toypick', 0.7],       // a plush toy off the concrete
-  noteslow: ['noteslow', 0.8]      // the sheet turning past his face, stretched
+  noteslow: ['noteslow', 0.8],     // the sheet turning past his face, stretched
+  /* v7.1 — EPISODE 2 · CHAPTER 1, THE WORST BED. All e2c1's by the split
+     (nothing else asks for them). His 26 lines at 1 (the level lives on
+     the bus), the bunk's 11 at 1 (the cast stage), then the chapter's
+     sounds: two pieces (the film's theme, the night's explore bed), five
+     beds, fourteen one-shots — every one peak-normalised to the level
+     named in docs/V7.1-E2C1-PLAN.md §5, so the row is 1 unless a cue
+     wants it under. `bunkcreak`, not `bedcreak`: chapter 2 already owns
+     that name, and a sound wrongly re-used is a silent cue in the other
+     chapter. */
+  n1pro1: ['n1pro1', 1], n1pro2: ['n1pro2', 1], n1pro3: ['n1pro3', 1], n1pro4: ['n1pro4', 1],
+  n1voice: ['n1voice', 1], n1near: ['n1near', 1], n1act: ['n1act', 1],
+  n1fallin: ['n1fallin', 1], n1late: ['n1late', 1], n1bedok: ['n1bedok', 1],
+  n1bedfail: ['n1bedfail', 1], n1shower: ['n1shower', 1], n1board: ['n1board', 1],
+  n1lights: ['n1lights', 1], n1wake: ['n1wake', 1], n1hear: ['n1hear', 1], n1A1: ['n1A1', 1],
+  n1A2: ['n1A2', 1], n1B1: ['n1B1', 1], n1B2: ['n1B2', 1], n1C1: ['n1C1', 1],
+  n1D1: ['n1D1', 1], n1A: ['n1A', 1], n1B: ['n1B', 1], n1C: ['n1C', 1], n1D: ['n1D', 1],
+  s1fallin: ['s1fallin', 1], s1late: ['s1late', 1], s1bed: ['s1bed', 1],
+  s1standby: ['s1standby', 1], s1again: ['s1again', 1], s1lights: ['s1lights', 1],
+  b1day: ['b1day', 1], b1sleep: ['b1sleep', 1], b1huh: ['b1huh', 1], k1board: ['k1board', 1],
+  k1three: ['k1three', 1],
+  e2film: ['e2film', 1],         // the episode's theme under the film (60 s, eleven_music_v2)
+  e2bed: ['e2bed', 1],           // the night's explore bed (50 s, eleven_music_v2, loop)
+  bunkday: ['bunkday', 1], bunknight: ['bunknight', 1], fanloop: ['fanloop', 1],
+  clocktick: ['clocktick', 1], showerrun: ['showerrun', 1],
+  whistle: ['whistle', 1], bootsrun: ['bootsrun', 1], bootsmarch: ['bootsmarch', 1],
+  lockerdoor: ['lockerdoor', 1], bunkcreak: ['bunkcreak', 1], blanket: ['blanket', 1],
+  switchoff: ['switchoff', 1], showeroff: ['showeroff', 1], drip: ['drip', 1],
+  ferryhorn: ['ferryhorn', 1], seawash: ['seawash', 1], gates: ['gates', 1],
+  dooropen2: ['dooropen2', 1], pushups: ['pushups', 1]
 };
 /* Which kinds the synth below can actually fake. Everything else in
    STING_SAMPLE is sample-only: if its buffer is not decoded yet it stays
