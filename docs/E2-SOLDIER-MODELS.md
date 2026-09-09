@@ -242,16 +242,55 @@ treatment. But the ghost of episode 2 is the CYCLIST, and dressing him in the sa
 living platoon is a story problem rather than a technical one — Chad has already said he intends a
 separate soldier-ghost model, which is the right call.
 
-## 8 · WHAT IS STILL MISSING
+## 8 · THE PLAYER'S OWN WEAPON — `rifle.glb`
 
-1. **A first-person RIFLE.** Three of the five chapters have rifle gameplay — the strip-and-assemble,
-   the range on blanks, the ambush drill on live rounds. The arms rig (`arms.glb`) exists and
-   chapter 1 already parents a prop to a hand bone, so the mechanism is there; the weapon is not,
-   and it cannot be cut out of these files. **This is the biggest gap.**
+Supplied 9 Sep 2026 (Sketchfab, "KRISS Vector animated free"). It closes the biggest gap in
+section 9 and it is a proper first-person viewmodel, not a prop:
+
+| | |
+|---|---|
+| size | **2.7 MB, 12,417 triangles** — already shippable, no prep needed |
+| meshes | four: a bare hand, a gloved hand, the weapon body, and the magazine as its own mesh |
+| rig | 53 joints, **full finger bones on both hands** plus a spine — an FPS arms-and-weapon rig |
+| clips | **Draw** 4.67 s · **Shoot** 3.57 s · **Reload** 3.33 s · **Hide** 4.13 s, all ~30 fps |
+| units | **centimetres** — the model stands 1.58 m tall in its own numbers, so ÷100 |
+| names | not Mixamo — it shares nothing with the soldier rigs and needs nothing from them |
+
+Read frame by frame: **Draw** brings the weapon up into frame from below and settles it;
+**Reload** drops the magazine, brings a fresh one up in the gloved hand and seats it, with the
+magazine mesh moving separately as it should; **Shoot** is the recoil cycle; **Hide** lowers it
+back out of frame. The fingers wrap the grip properly at every frame, which is the thing a
+weapon viewmodel is usually worst at.
+
+**It brings its own hands.** The game's existing viewmodel is `arms.glb` (v3.8). The right way to
+use this is to **hide the existing arms while the weapon is out and show this model's own hands
+instead** — its animations were authored around these fingers, and re-posing the old arms to match
+is exactly the kind of thing that goes wrong. Swapping back on Hide costs nothing.
+
+**One thing for Chad to decide: it is a KRISS Vector submachine gun, not a SAR 21.** The plan's
+range and ambush are written around the rifle an SAF recruit actually carries, and the film's own
+image is the SAR 21. The Vector is a different silhouette — short, boxy, a submachine gun. Held at
+the player's own eye it will read as *a weapon* and most players will not name it, but it is not
+the right weapon. It is entirely usable; the question is whether the wrong outline matters more
+than having working hands.
+
+**Stripping and assembling is no longer a model problem** (Chad's call): it becomes a timed
+click-the-circles reaction test. The v7.0 play kit already covers that with no new engine work —
+`focus` puts targets up to be hit before they fade, `sequence` shows items one after another at a
+rising pace. Neither needs a rifle that comes apart.
+
+## 9 · WHAT IS STILL MISSING
+
+1. **The soldier-ghost model** Chad has said he will supply. It carries every supernatural beat in
+   the episode: the figure at the end of the corridor in C1, the grey face over the bunk in C3, the
+   crouched soldier at the beam's edge in C4, and the cyclist in C5.
 2. **A bicycle.** The ghost cyclist has nothing to ride.
-3. **The soldier-ghost model** Chad has said he will supply.
-4. **The places**: bunk and bunk beds, the shower block, the parade square, the outfield, the
-   harbour, the tonner. None of that is in this folder.
+3. **An older man.** The plan gives the encik — the older re-enlistee — a line in chapter 2's
+   conversation and the whole of its scene D, and every body in the folder is a young recruit.
+   Playable as a fourth bunkmate whose age lives in his voice, but Chad should say whether that is
+   enough.
+4. **The places**: bunk and bunk beds, the shower block, the parade square, the range and its
+   towers, the outfield, the harbour, the tonner. None of that is in this folder.
 
 ---
 
@@ -279,7 +318,9 @@ Four bodies, thirteen takes, three statues. Read against
 | bunkmates during the standby-bed test | BUNKMATE ×3 | Idle_9 / Talk_with_Hands_Open | barefoot in the bunk is exactly right |
 | the other bunks at lights-out | SLEEPER statue ×4 | — | four still bodies; a statue is correct here, sleep barely moves |
 | the one who stirs | SLEEPER rig | Groan_Holding_Stomach_in_Sleep | the only restless take |
+| the buddy who answers in scene C | SLEEPER rig | Cough_While_Sleeping, parked | he is woken, in his own bunk; the clip's head turn is the "huh?" |
 | the shower block, 3 AM | **nobody** | — | the whole point is that no one is there |
+| **the soldier at the end of the corridor**, scene A's last frame | — | — | **the ghost.** One frame, far, but it is the film's own image and must be him |
 
 Grounding: the sleep clips sit at hips 1.16, feet 1.05, so the bunk mattress must be built at
 **1.05 m**, or the figures offset to whatever height the bed model turns out to be.
@@ -288,7 +329,8 @@ Grounding: the sleep clips sit at hips 1.16, feet 1.05, so the bunk mattress mus
 
 | figure | asset | clip | why |
 |---|---|---|---|
-| the three bunkmates you talk to | BUNKMATE ×3 | Talk_with_Hands_Open, the FBX take, Idle_9 | **two distinct talking takes** means two speakers who do not mirror each other |
+| the four platoon mates you talk to | BUNKMATE ×4 | Talk_with_Hands_Open, the FBX take, Idle_9, Idle_9 | **two distinct talking takes** means two speakers who do not mirror each other; the other two listen |
+| **the older re-enlistee (the encik)** — his line here and his answer in scene D | BUNKMATE | Talk_with_Hands_Open | the plan makes him visibly older than the recruits and **nothing in the folder is an older man**. Cast as a fourth bunkmate his age reads only from his voice and his lines. **Ask Chad whether that is enough** |
 | the platoon forming up | TROOPER ×6 | Walking → Idle_3 | |
 | the firing line beside you | **SENTRY statue ×4** | — | the only figures in the set that show a shouldered weapon; on a firing line nobody moves, so a statue is not a compromise, it is correct |
 | the range safety walking behind | CARRIER | Walking | no rifle is right for a safety supervisor |
@@ -327,6 +369,8 @@ its feet 1–2 cm under the floor, so the commander is lifted by that much.
 | figure | asset | clip | why |
 |---|---|---|---|
 | the ambush line | **SENTRY statue ×5–6** | — | an ambush line is motionless by definition; these are the only figures that show a weapon at the shoulder |
+| the enemy party crossing the killing ground | TROOPER ×3 | Walking, then hidden on the volley | nothing in the set falls or dies; they cross, the flash lands, and they are switched off in the dark. At a hundred metres at night that is the shot |
+| the buddy in the next scrape | TROOPER | Idle_3 | **his rifle cannot come up** — the weapon is welded to the body. Play the beat on his voice and keep him a silhouette |
 | the commander giving the order | TROOPER | Gesture_with_Hand_on_Gun | "Shooters, watch your front. Ready." is a hand signal and a voice |
 | the section after the bell | TROOPER ×4 | Running, then Rifle_Charge_inplace | the sprint take is the crash-out |
 | the other platoon crashing out | CARRIER ×3 + TROOPER ×3 | Rifle_Charge_inplace | mixing the two bodies stops six identical men arriving |
