@@ -11,13 +11,34 @@ text comes up at all — the reply carries the full URL, not the version
 number alone. He reads these on his phone; a number he has to go hunting
 for in Drive is not a link.
 
-**MASTER Z GAME TEXT v41** in his Drive
-(id `1ziT5WDQXJ_YMQFnUOzm9rTzkEmem9UXvOX616Wu970k` — the **v41** sheet,
-made at v7.0, tabbed: **UI TEXT** (231 rows, the engine's words),
-**EPISODE 1** (110 rows, chapters 1–5's words) and **VOICE LINES** (105).
-<https://docs.google.com/spreadsheets/d/1ziT5WDQXJ_YMQFnUOzm9rTzkEmem9UXvOX616Wu970k/edit>
+**Master Z's Encounters — GAME TEXT v42 (edit here)** in his Drive
+(id `1bqnbQJPr1O6YslOlcsbVDFlZCohQtyKbPzm9EuY1IpM` — the **v42** sheet,
+made at v7.1, tabbed: **UI TEXT** (234 rows, the engine's words),
+**EPISODE 1** (110 rows, chapters 1–5's words), **EPISODE 2** (51 rows —
+The Worst Bed, the first tab a second episode has had) and **VOICE LINES**
+(142).
+<https://docs.google.com/spreadsheets/d/1bqnbQJPr1O6YslOlcsbVDFlZCohQtyKbPzm9EuY1IpM/edit>
 
-What changed from v40: **sixteen rows ADDED, not one cell changed, no
+What changed from v41: **ninety-one rows ADDED on a fourth tab and two old ones, not one v41 cell changed.**
+Episode 2's first chapter (v7.1, docs/V7.1-E2C1-PLAN.md): a new EPISODE 2
+tab with The Worst Bed's title, choices, outcomes, teachings and its
+thirty-three `words` — the five that name the pile, the presence banner,
+and the kit's objectives, hotspot prompts, event titles, conduct notes and
+the standby bed's eight items (`e2c1.words.*`, every key the chapter's
+`words` block carries — see "Every word a chapter carries reaches the
+sheet" below); thirty-seven VOICE LINES rows for the four new speakers
+(the boy's teenage voice, the sergeant, the buddy, the bunkmate); three
+UI TEXT credit rows for the rifle model. EPISODE 1 is identical to v41.
+Provenance: published from the fresh `.xlsx` export as one unbroken
+base64 string (no padding — the export's string was already a multiple
+of four), read back from the connector's own saved output, every cell
+diffed against the workbook by `tools/verifytabs.py` — 541 rows, zero
+differences. v41 (id `1ziT5WDQXJ_YMQFnUOzm9rTzkEmem9UXvOX616Wu970k`) is
+superseded; its metadata was checked before v42 went to him (created
+15:41:59, modified 15:42:00 — the conversion itself), so it holds no edit
+of his to import.
+
+**v41** (made at v7.0) — what changed from v40: **sixteen rows ADDED, not one cell changed, no
 spoken word.** The play kit's own words (v7.0, docs/V7.0-PLAY-KIT.md):
 the objective label and the torch button, the banner for an unseen
 presence (`hud.presenceAlarm`), the eight event prompts and their GOOD /
