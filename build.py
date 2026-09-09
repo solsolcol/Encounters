@@ -158,7 +158,14 @@ def write_pack(stem, names, folder, ext):
 # the embedded single-file build keeps ONE pack of every mp3: it is the
 # offline fallback, it has no download to save, and mp3 is the encoding every
 # browser can decode.
-_all_kb = write_pack('audiopack-all', SOUNDS, audio_dir, '.mp3') // 1024
+# v7.1: the single-file build carries EPISODE ONE ONLY (v7.0), and its one
+# inlined pack follows the same rule: the shared sounds plus the packs of the
+# chapters it carries. An episode-2 chapter's sounds are reached by URL in
+# dist/ and never inlined — without this, every chapter of every episode
+# would have grown hellnote.html by its whole soundtrack.
+SOUNDS_SINGLE = sorted(set(SHARED_SOUNDS) | {n for _k, v in PACK_OF.items()
+                                             if chapter_episode(chapters[_k]) == 1 for n in v})
+_all_kb = write_pack('audiopack-all', SOUNDS_SINGLE, audio_dir, '.mp3') // 1024
 _sh_mp3 = write_pack('audiopack', SHARED_SOUNDS, audio_dir, '.mp3') // 1024
 _sh_opus = write_pack('opuspack', SHARED_SOUNDS, opus_dir, '.ogg') // 1024
 print(f'  sound packs: {len(SOUNDS)} sounds, {len(SHARED_SOUNDS)} shared '
