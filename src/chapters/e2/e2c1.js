@@ -1009,7 +1009,8 @@
           const cl = gltf.animations.find(a => a.name === (sp.clip || clip)) || gltf.animations[0];
           const act = mixer.clipAction(cl);
           act.play();
-          if (sp.at !== undefined || opts.at !== undefined) { act.time = cl.duration * (sp.at !== undefined ? sp.at : opts.at); act.paused = true; }
+          const parkAt = sp.at !== undefined ? sp.at : opts.at;
+          if (parkAt !== undefined) { act.time = cl.duration * parkAt; act.paused = true; }
           else act.time = cl.duration * hash(i, 2);
           mixer.update(0.0001);
           /* ground the copy: on its own posed feet, or — for a SEATED take,
@@ -1023,8 +1024,15 @@
             let lo2 = Infinity; m.traverse(o => { if (o.isBone) { o.getWorldPosition(v); lo2 = Math.min(lo2, v.y); } });
             if (isFinite(lo2)) m.position.y += -(lo2 - g.position.y) / s;
           }
-          c.rigs.push({ g, m, mixer, act, dur: cl.duration });
+          /* v8.2: a copy could only ever hold the ONE action it was built
+             with, which is why v8.1 said the six bunk recruits must stand:
+             a man parked on a take has nothing to switch to. The clips and
+             the built action are kept now, so `crowdPlay` can put the whole
+             crowd on a different take and back — which is what lets them
+             RUN out to the fall-in rather than be teleported to it. */
+          c.rigs.push({ g, m, mixer, act, rest: act, dur: cl.duration, parkAt, acts: { [cl.name]: act } });
         });
+        c.clips = gltf.animations;
         c.ready = true;
       }, (err) => { console.warn(key + ' crowd failed', err); c.ready = true; }))
         .catch(err => { console.warn(key + ' crowd failed', err); c.ready = true; });
@@ -1109,6 +1117,33 @@
       walkT += dt;
       for (const r of jettyWalkers.rigs) { r.g.position.z += dt * 1.25; if (r.g.position.z > 16) r.g.position.z -= 17; }
     };
+    /* v8.2: put every copy of a crowd on a named take, or (name null) back on
+       the one it was built with — the parked frame and the pause included, so
+       the botak row returns to exactly the standing frame it holds. */
+    function crowdPlay(c, name, fade = 0.25) {
+      if (!c || !c.ready) return;
+      for (const r of c.rigs) {
+        let want = r.rest;
+        if (name) {
+          want = r.acts[name];
+          if (!want) {
+            const cl = (c.clips || []).find(a => a.name === name);
+            if (!cl) continue;
+            want = r.acts[name] = r.mixer.clipAction(cl);
+          }
+        }
+        if (want === r.act) { want.paused = false; continue; }
+        want.reset(); want.paused = false; want.enabled = true;
+        want.setEffectiveWeight(1).fadeIn(fade).play();
+        r.act.fadeOut(fade);
+        r.act = want;
+        /* the rest take may be a PARKED frame; put it back on its frame and
+           stop it again once the fade has had its time */
+        if (!name && r.parkAt !== undefined) setTimeout(() => {
+          if (r.act === r.rest) { r.rest.time = r.dur * r.parkAt; r.rest.paused = true; }
+        }, fade * 1000 + 40);
+      }
+    }
     const crowdTick = (dt, root) => {
       for (const c of crowds) {
         if (!c.ready || !c.group.parent || !c.group.visible) continue;
@@ -1336,12 +1371,52 @@
     }).filter(Boolean);
     /* where each of them is, on the two occasions the chapter moves them:
        at his bed, and in the rank on the balcony's yellow line */
-    function bunkCrowdPlace(onLine) {
-      for (const c of bunkCrowds) c.rigs.forEach((r, i) => {
-        const m = c.men[i]; if (!m) return;
-        if (onLine) { r.g.position.set(BALC.line - 0.2, 0, m.line); r.g.rotation.y = Math.PI / 2; }
-        else { r.g.position.set(m.x, 0, m.z); r.g.rotation.y = m.ry; }
-      });
+    /* v8.2: and they RUN it, rather than being teleported. A crowd copy is
+       driven through `crowdMarch` (the same legs and the same lane as a rig's
+       `marchTo`, over `r.g` instead of `rig.group`), and the whole crowd is
+       put on `Running` for the length of the move and back on its own rest
+       take when the last man arrives. `snap` is the resume and the reset:
+       be there, no run. */
+    const crowdRuns = new Set();
+    function bunkCrowdPlace(onLine, snap, party) {
+      for (const c of bunkCrowds) {
+        if (!c.ready) continue;
+        let moving = 0;
+        c.rigs.forEach((r, i) => {
+          const m = c.men[i]; if (!m) return;
+          const to = onLine ? { x: BALC.line - 0.2, z: m.line, ry: Math.PI / 2 }
+                            : { x: m.x, z: m.z, ry: m.ry };
+          crowdMarchStop(r);
+          if (snap) { r.g.position.set(to.x, 0, to.z); r.g.rotation.y = to.ry; return; }
+          party.push({ r, c, from: { x: r.g.position.x, z: r.g.position.z }, to, spd: RUN_SPD });
+          moving++;
+        });
+        if (snap) { crowdRuns.delete(c); crowdPlay(c, null, 0); }
+        else if (moving) { crowdRuns.add(c); crowdPlay(c, 'Running', 0.2); }
+      }
+    }
+    const crowdMarchers = [];
+    function crowdMarchStop(r) {
+      for (let i = crowdMarchers.length - 1; i >= 0; i--) if (crowdMarchers[i].r === r) crowdMarchers.splice(i, 1);
+    }
+    function crowdMarchTick(d) {
+      for (let i = crowdMarchers.length - 1; i >= 0; i--) {
+        const m = crowdMarchers[i];
+        if (m.wait > 0) { m.wait -= d; continue; }
+        const g = m.r.g, leg = m.legs[m.i];
+        const dx = leg.x - g.position.x, dz = leg.z - g.position.z, dist = Math.hypot(dx, dz);
+        if (dist > 0.02) g.rotation.y = mixAngle(g.rotation.y, Math.atan2(dx, dz), Math.min(1, d * 6));
+        const step = m.spd * d;
+        if (step >= dist) {
+          g.position.set(leg.x, 0, leg.z);
+          if (++m.i >= m.legs.length) { g.rotation.y = m.to.ry; crowdMarchers.splice(i, 1); }
+        } else { g.position.x += dx / dist * step; g.position.z += dz / dist * step; }
+      }
+      // a crowd goes back to its own take once its last man has arrived
+      for (const c of [...crowdRuns]) {
+        if (crowdMarchers.some(m => m.c === c)) continue;
+        crowdRuns.delete(c); crowdPlay(c, null, 0.3);
+      }
     }
     const bunkCrowdShow = (on) => { for (const c of bunkCrowds) c.group.visible = on; };
 
@@ -1673,15 +1748,24 @@
     const ITEM_GLYPH = ['Pillow', 'Bedsheet', 'Blanket', 'Boots', 'Water bottle', 'Mug', 'Toothbrush', 'Locker'];   // which glyph, whatever the sheet calls it
     const BED_ITEMS = ITEM_GLYPH.map((g, i) => ({ label: DATA.words['item' + (i + 1)] || g, icon: itemIcon(cnv, g) }));
 
-    function putSergeant(at) {
+    /* v8.2: this SETS them — the reset, the resume, and the boot. Walking them
+       is `fallOut`'s job, because the sergeant and the encik have to be in the
+       same party as the recruits or they draw a lane somebody else is already
+       standing in (measured: the encik and a recruit at 5.6, -0.84, 0.00 m
+       apart). One sort, one lane deal, ten men. */
+    function putSergeant(at, snap) {
+      marchStop(sergeant);
       sergeant.group.position.set(at.x, 0, at.z);
       sergeant.group.rotation.y = at.ry;
+      if (sergeant.play && sergeant.idle) sergeant.play(sergeant.idle, 1, 0);
       /* v8.2: the encik goes where the sergeant goes — to the parapet for the
          fall-in, back into the bunk after it. He is senior, so he stands
-         BESIDE him rather than in the rank with the recruits. */
+         BESIDE him rather than in the rank with the recruits, and he goes on
+         his own two feet — `Walking`, at 1.35 m/s,
+         down the same lane, because a man of his age and rank walks where a
+         recruit runs. `snap` is the resume and the reset. */
       const e = (at === SGT_LINE) ? ENC_LINE : ENC_DOOR;
-      encik.group.position.set(e.x, 0, e.z);
-      encik.group.rotation.y = e.ry;
+      marchTo(encik, e, 'Walking', WALK_SPD, true);
     }
 
     /* ---- arrive: find bed one */
@@ -1693,15 +1777,18 @@
     }
     /* ---- fall in: the whistle, the line, the count */
     let fallTimer = null, fallLate = false;
-    function beginFallIn() {
+    function beginFallIn(snap) {
       setPhase('fallin');
       /* v7.3: on a RESUME the lateness is read back off the card rather than
          reset — the penalty is already banked, so a second run of the
          fall-in must not hand him the on-time bonus on top of it. */
       fallLate = bankedHas(DATA.words.noteLate);
       if (worldSfx) worldSfx('whistle', 0.9);
-      putSergeant(SGT_LINE);
-      fallOut(true);            // v7.4: everyone else is already on the line
+      /* The sergeant is not marched: he is ALREADY outside when the whistle
+         sounds — that is what the player hears, and he is never seen leaving
+         the room. The encik walks out after the section; a sergeant-major
+         does not run for his own whistle. */
+      fallOut(true, snap);      // v8.2: and everyone else goes out on foot
       after(1.2, () => sgtSay('s1fallin'));
       after(4.6, () => sayLine('n1fallin'));
       if (!kit) return;
@@ -1749,21 +1836,177 @@
       after(DOWN + REP * N, () => buddy.play('push_up_to_idle', 1, 0.2, true));
       after(DOWN + REP * N + UP, () => buddy.play('Idle_9', 1, 0.3));
     }
+    /* ------------------------------------------------- THEY GO ON FOOT (v8.2)
+
+       v7.4 PLACED the section on the line, and said why: "neither rig carries
+       a walk take (the file ships an idle and a talk and nothing else)".
+       Chad's three new models end that — every one of them carries `Walking`
+       and `Running`, and both are measured IN PLACE (the hips travel 0.02 to
+       0.04 m over the cycle), which is exactly the shape ch5's tang-ki has
+       walked on since v5.07: play the take, glide the group.
+
+       THE ROUTE IS THE ONE THE ROOM HAS. A cast path obeys no collision
+       (v5.03), so it is routed by hand rather than trusted:
+
+         out of the bed row to the GANGWAY LANE at z 0 — the lane v7.4 cut
+         through the balcony-side row, which is clear of a bed or a locker
+         for z +/-1.10;
+         east through the balcony opening (z +/-1.2 in the +x wall);
+         then across the open balcony to his place on the yellow line.
+
+       Nobody crosses the long table (z 2.55, x +/-1.80) or a bed row
+       (x +/-4.6), in either direction, because the lane is z 0 and the
+       turn out of it happens at the man's own x.
+
+       Speed is casting, not physics: a recruit hearing that whistle RUNS
+       (2.6 m/s, `Running`), and the sergeant-major who called it WALKS
+       (1.35 m/s, `Walking`). The furthest man covers about 15 m, so he is
+       formed up inside 6 s of a 14 s fall-in. The sergeant himself is not
+       marched: he is already outside when the whistle sounds, which is
+       what the player hears.                                              */
+    /* Each man gets his OWN lane z rather than all sharing z 0: measured with
+       one shared lane, the two recruits at x 3.25 turned into it from opposite
+       sides and stood in the same place, 0.00 m apart. The spread stays well
+       inside the window that is actually clear — the gangway is free of a bed
+       or a locker for z +/-1.10 and the balcony opening is z +/-1.2 — so a
+       lane at +/-0.45 crosses nothing, and three lanes plus the stagger read
+       as a loose file rather than a column of one. */
+    const GATE_OUT = 6.6, GATE_IN = 5.6, WALL_X = 6.0;
+    /* Cycling three lanes was not enough: the two recruits who share x -3.25
+       drew the same lane and stood on the same turn point 0.08 s apart. Every
+       man gets his OWN lane instead — nine of them, 0.21 m apart, spanning
+       +/-0.84, which stays inside both the gangway's clear window (z +/-1.10)
+       and the balcony opening (z +/-1.2). Two men may still CROSS at speed;
+       none of them ever stands where another is standing. */
+    /* LANES ARE DEALT IN ORDER OF WHERE HE STANDS, not in dispatch order. A
+       man deeper in -z is given a deeper -z lane, so two paths can never
+       cross: measured with lanes dealt by dispatch order, the two recruits
+       who share x 3.25 ran at each other's lane from opposite sides and
+       passed through the same point, 0.04 m apart. Eleven lanes across
+       +/-0.98, inside both the gangway's clear window (z +/-1.10) and the
+       balcony opening (z +/-1.2). */
+    const laneOf = (n, of) => {
+      const N = Math.max(1, (of || 11) - 1);
+      return -0.98 + 1.96 * (Math.min(n, N) / N);
+    };
+    const marchers = [];
+    function marchLegs(from, to, lane = 0) {
+      const legs = [];
+      if ((from.x < WALL_X) === (to.x < WALL_X)) { legs.push({ x: to.x, z: to.z }); return legs; }
+      const LANE_Z = lane;
+      /* He only turns into his lane at his own x when he is INSIDE, where
+         there are beds either side of him. Coming off the balcony he heads
+         straight for the door across open floor — measured, that first
+         turn-in-place leg put a man on the yellow line exactly where the
+         next man was still standing. */
+      if (from.x < WALL_X && Math.abs(from.z - LANE_Z) > 0.05) legs.push({ x: from.x, z: LANE_Z });
+      legs.push({ x: from.x < WALL_X ? GATE_OUT : GATE_IN, z: LANE_Z });
+      /* Once he is THROUGH the wall the balcony is open floor, so he cuts
+         straight to his place on the line. Routing that leg through
+         {to.x, LANE_Z} as well put all eight men on the same point before
+         they fanned out — a pile-up, measured. Coming back IN he still turns
+         at his own x, because inside there are beds either side of him. */
+      if (to.x < WALL_X && Math.abs(to.z - LANE_Z) > 0.05) legs.push({ x: to.x, z: LANE_Z });
+      legs.push({ x: to.x, z: to.z });
+      return legs;
+    }
+    function marchStop(rig) {
+      for (let i = marchers.length - 1; i >= 0; i--) if (marchers[i].rig === rig) marchers.splice(i, 1);
+    }
+    /* `snap` puts him at the destination at once — the resume path, and any
+       reset, where a man must simply BE where the phase says he is. */
+    function marchTo(rig, to, take, spd, snap, wait, lane) {
+      if (!rig || !rig.group) return;
+      marchStop(rig);
+      if (snap) {
+        rig.group.position.set(to.x, 0, to.z); rig.group.rotation.y = to.ry;
+        if (rig.play && rig.idle) rig.play(rig.idle, 1, 0);
+        return;
+      }
+      const legs = marchLegs(rig.group.position, to, lane || 0);
+      if (rig.play && take) rig.play(take, 1, 0.25);
+      marchers.push({ rig, legs, i: 0, to, spd, wait: wait || 0, take });
+    }
+    function marchTick(d) {
+      for (let i = marchers.length - 1; i >= 0; i--) {
+        const m = marchers[i];
+        if (m.wait > 0) { m.wait -= d; continue; }      // he has not stepped off yet
+        const g = m.rig.group, leg = m.legs[m.i];
+        let dx = leg.x - g.position.x, dz = leg.z - g.position.z;
+        const dist = Math.hypot(dx, dz);
+        if (dist > 0.02) g.rotation.y = mixAngle(g.rotation.y, Math.atan2(dx, dz), Math.min(1, d * 6));
+        const step = m.spd * d;
+        if (step >= dist) {
+          g.position.set(leg.x, 0, leg.z);
+          if (++m.i >= m.legs.length) {              // arrived: face the way the spot faces, stand
+            g.rotation.y = m.to.ry;
+            if (m.rig.play && m.rig.idle) m.rig.play(m.rig.idle, 1, 0.3);
+            marchers.splice(i, 1);
+          }
+        } else {
+          g.position.x += dx / dist * step;
+          g.position.z += dz / dist * step;
+        }
+      }
+    }
+    // shortest-arc angle mix, so a man never turns the long way round
+    function mixAngle(a, b, k) {
+      let dd = (b - a) % (Math.PI * 2);
+      if (dd > Math.PI) dd -= Math.PI * 2;
+      if (dd < -Math.PI) dd += Math.PI * 2;
+      return a + dd * k;
+    }
+
+    /* Speeds are casting, not physics: a recruit who hears that whistle RUNS,
+       and the sergeant-major who blew it walks. STAGGER is what makes it read
+       as eight men rather than one body — measured without it, all eight
+       stepped off on the same frame and met at the same doorway. */
+    const RUN_SPD = 2.6, WALK_SPD = 1.35, STAGGER = 0.22;
     const BUNK_AT = new Map();
-    function fallOut(on) {
+    /* THE ORDER IS NEAREST-FIRST, and that is not a nicety. Measured with the
+       party dispatched in declaration order, the recruit at the BACK of a bed
+       column ran clean through the one in front of him, who had not stepped
+       off yet — 0.01 m apart. A section files out the way a real one does:
+       the man closest to the door goes first and the man behind him follows
+       into the space he has just left. Sorting by route length gives exactly
+       that, in both directions, with no special case for either. */
+    function fallOut(on, snap) {
+      const party = [];
+      /* The two seniors WALK where the recruits run, and they are the last out
+         and the last back — a sergeant-major does not race his own section. */
+      for (const [r, at] of [[sergeant, on ? SGT_LINE : SGT_DOOR],
+                             [encik, on ? ENC_LINE : ENC_DOOR]]) {
+        if (!r || !r.group) continue;
+        if (snap) { marchTo(r, at, 'Walking', WALK_SPD, true); continue; }
+        party.push({ rig: r, from: { x: r.group.position.x, z: r.group.position.z },
+                     to: at, spd: WALK_SPD, take: 'Walking', last: true });
+      }
       for (const [r, at] of [[buddy, { x: BALC.line - 0.2, z: 0.85, ry: Math.PI / 2 }],
                              [bunkmate, { x: BALC.line - 0.2, z: 1.7, ry: Math.PI / 2 }]]) {
         if (!r || !r.group) continue;
         if (on) {
           if (!BUNK_AT.has(r)) BUNK_AT.set(r, { x: r.group.position.x, z: r.group.position.z, ry: r.group.rotation.y });
-          r.group.position.set(at.x, 0, at.z); r.group.rotation.y = at.ry;
+          if (snap) { marchTo(r, at, 'Running', RUN_SPD, true); continue; }
+          party.push({ rig: r, from: { x: r.group.position.x, z: r.group.position.z }, to: at, spd: RUN_SPD, take: 'Running' });
         } else {
           const b = BUNK_AT.get(r); if (!b) continue;
-          r.group.position.set(b.x, 0, b.z); r.group.rotation.y = b.ry;
-          if (r.idle) r.play(r.idle, 1, 0.25);      // v8.0: never back on his hands
+          if (snap) { marchTo(r, b, 'Running', RUN_SPD, true); continue; }
+          party.push({ rig: r, from: { x: r.group.position.x, z: r.group.position.z }, to: b, spd: RUN_SPD, take: 'Running' });
         }
       }
-      bunkCrowdPlace(on);          // v8.1: and so does everyone else in the room
+      bunkCrowdPlace(on, snap, party);   // v8.1: and so does everyone else in the room
+      // the lane: by where he stands, so no two paths cross
+      const byZ = [...party].sort((a, z) => a.from.z - z.from.z);
+      byZ.forEach((m, i) => { m.lane = laneOf(i, byZ.length); });
+      // the order of stepping off: nearest the door first, rank last
+      party.sort((a, z) => (a.last ? 1 : 0) - (z.last ? 1 : 0)
+                         || Math.hypot(a.to.x - a.from.x, a.to.z - a.from.z)
+                          - Math.hypot(z.to.x - z.from.x, z.to.z - z.from.z));
+      party.forEach((m, n) => {
+        if (m.rig) { marchTo(m.rig, m.to, m.take, m.spd, false, STAGGER * n, m.lane); return; }
+        crowdMarchers.push({ r: m.r, c: m.c, legs: marchLegs(m.from, m.to, m.lane),
+                             i: 0, to: m.to, spd: m.spd, wait: STAGGER * n });
+      });
     }
     function onTheLine() {
       if (fallTimer) { fallTimer.stop(); fallTimer = null; }
@@ -1774,7 +2017,7 @@
     let bedTries = 0;
     function beginStandby() {
       setPhase('standby');
-      after(fallLate ? 6.5 : 1.0, () => { putSergeant(SGT_DOOR); fallOut(false); });
+      after(fallLate ? 6.5 : 1.0, () => fallOut(false));
       if (!kit) return;
       kit.objective(DATA.words.objStandby);
       kit.waypoint({ x: PILE_POS.x, y: 1.0, z: PILE_POS.z });
@@ -1897,7 +2140,7 @@
          again, every award banked a second time. Each phase now resumes
          where it stood; the awards are idempotent above, so the parts that
          DO re-run (the fall-in call, an unfinished bed) cost nothing. */
-      if (p === 'fallin') { beginFallIn(); return; }
+      if (p === 'fallin') { beginFallIn(true); return; }
       if (p === 'standby' || p === 'standbybed') { beginStandby(); return; }
       if (p === 'free') { beginFree(); return; }
       if (p === 'lightsout' || p === 'night' || p === 'decide') {
@@ -2019,6 +2262,7 @@
       dayClock.t += d;
       runTodo();
       runTweens(d);
+      marchTick(d); crowdMarchTick(d);      // v8.2: the section, on real legs
       runSpeak();                 // v8.0: a held line, the moment its bytes land
       /* v7.2: reaching the bed used to fire the whistle on the same frame as
          his "That's mine. Bed one." — the line lands first now, then the
@@ -2118,7 +2362,8 @@
       if (s.sleepRot) sleepers.forEach((o, i) => { const r = s.sleepRot[i]; if (r) o.obj.rotation.set(r[0], r[1], r[2]); });
       sergeant.group.visible = buddy.group.visible = bunkmate.group.visible = !s.night;
       encik.group.visible = !s.night;  // v8.2
-      bunkCrowdShow(!s.night);         // v8.1
+      bunkCrowdShow(!s.night);
+      fallOut(false, true);          // v8.2: a restored room is stood in, never run into         // v8.1
       for (const r of [sergeant, buddy, bunkmate, encik]) if (r.acts && r.idle) r.play(r.idle, 1, 0);
     }
     function reset() {
@@ -2126,7 +2371,7 @@
       doorPivot.rotation.y = DOOR_AJAR; fanSpeed = 1; setShower(false);
       ghostFig.group.visible = false; water.material.opacity = 0.55; hisBed.low.on.visible = false;
       setNightRoom(false);                       // v7.5: leaves the evening lamps lit
-      putSergeant(SGT_DOOR);
+      putSergeant(SGT_DOOR, true);               // v8.2: a reset stands them there, never walks them
       /* v8.2: AND THE SECTION COMES BACK IN. `fallOut(true)` puts eight men
          on the balcony and only `fallOut(false)` brings them back — which
          reset() never called, so a replay taken during or after the fall-in
@@ -2135,7 +2380,7 @@
          bunkmate and all six recruits still at x 7.40 after reset(). Safe
          before the first fall-in, because BUNK_AT is empty and the loop
          simply finds nothing to put back. */
-      fallOut(false);
+      fallOut(false, true);
       dropTodo(); tweens.length = 0;
       nightK = 0; showerVol = 0; mixBeds();
       seen.clear(); bedTries = 0; fallLate = false; fallTimer = null; arrivedAt = 0;
