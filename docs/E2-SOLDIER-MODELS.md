@@ -492,3 +492,62 @@ take, then `prepwoman.mjs` at 0.20 / 2048 keeping all three clips —
 that share a rest pose** (the sergeant's FBO pair and the encik do);
 otherwise retarget. Verified by render at arm's length, front and both
 sides, on both takes.
+
+---
+
+# §12 · THE THREE ANIMATED REPLACEMENTS (v8.2, Chad 10 Sep 2026)
+
+> Replace the existing encik model, with this new encik model with 6 animations
+> included. […] Replace the existing soldier FBO with rifle sling, with this new
+> soldier FBO with rifle sling animated 7 animations included. With New talking
+> animation. Use this animation when the soldier is talking, in options,
+> interactions, or cutscenes, etc. […] You must fully understand all the
+> animations included in these models […] I spent a lot of time manually making
+> all these animations, and you must make sure they are all used and shown to the
+> player whereever possible and needed.
+
+Three files, all one 27-joint `mixamorig:` core, all authored at **1.70 m**,
+all ~595k triangles / 44–48 MB in, prepped at ratio 0.10 / 2048 with
+**every clip explicitly kept**.
+
+| asset | source | shipped | tris | replaces |
+|---|---|---|---|---|
+| `encik2` | 43.9 MB | 3264 KB | 59,591 | the unused five-take encik |
+| `fbosling` | 47.9 MB | 4210 KB | 59,307 | v7.1's file |
+| `fbonosling` | 47.9 MB | 4197 KB | 59,229 | v7.1's file + v8.1's retarget |
+
+**THE PREP TRAP, paid once.** `prepwoman.mjs` DROPS THE CLIP LIBRARY unless
+you hand it a keep-list (the v5.20 rule, written for a background sitter who
+plays one take). Run without one, the first pass silently threw away
+`Talk_with_Left_Hand_Raised` from all three and both of the encik's talk
+takes — the exact clips Chad asked for. **Every future prep of a character
+whose animations are the point must name every clip.** The keep-list costs
+about 150 KB a model.
+
+## The clips, photographed on their own (v6.17's law) before any wiring
+
+| clip | dur | what it actually is | use |
+|---|---|---|---|
+| `Talk_with_Left_Hand_Raised` | 4.71 | a STANDING talk, both hands gesturing at chest height, feet planted | **every spoken line** — hotspots, options, cutscenes |
+| `Talk_with_Left_Hand_on_Hip` | 5.25 | encik only; a second standing talk, weight shifted | the encik's own lines, so he and the sergeant do not talk with the same hands |
+| `Idle_3` / `Idle_6` / `Idle_9` | 10.04 / 7.50 / 2.08 | a standing rest; `Idle_3` (fbosling) is the longest and least loopy-looking | the rest take each rig returns to |
+| `Walking` | 1.04 | a full stride cycle, in place | walk-ons; parked at a low-swing frame for a stand |
+| `Running` | 0.71 | a run cycle, in place | the fall-in, doubling to the line |
+| `Gesture_with_Hand_on_Gun` | 6.25 | **NOT a standing gesture — a KNEEL**, one knee down, both hands forward | kneeling to inspect a bed / a footlocker |
+| `Gun_Hold_Left_Turn` | 3.75 | a crouched braced turn, hands forward and low | a low ready / a search |
+| `Rifle_Charge_inplace` | 0.58 | one charge motion | rifle mode |
+| `restpose` | 0.08 | the bind pose, one frame | reference only, never played |
+
+The two FBO rigs wear **full battle order** — helmet, vest, field pack. The
+encik wears **No. 4s with a green beret and rolled sleeves**, which is why he
+is the right man for a bunk and a parade square and they are not (v8.1 §3).
+
+## Still to wire (v8.2)
+
+- `encik2` at the parade square in the film — he has never been loaded; the
+  "encik" facing the ranks today is `fbosling` on the sergeant's own takes.
+- `encik2` in the bunk beside the two FBO soldiers, and on the fall-in.
+- His voice: an angry Malay uncle (Chad's words), a new speaker in
+  `src/voicelines.js`.
+- `Talk_with_Left_Hand_Raised` replacing the v8.1 RETARGET on the bunkmate —
+  a character's own clip beats a transplant (v5.20's law).

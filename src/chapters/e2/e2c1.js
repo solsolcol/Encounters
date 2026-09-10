@@ -1571,8 +1571,14 @@
        whose skeleton is the same 27 mixamorig bones but whose REST pose is
        up to 22 degrees away at the forearms and feet: measured, which is why
        this went through `tools/retarget.mjs` in world space and not
-       `borrowclips`. The sergeant keeps `Talk_with_Left_Hand_on_Hip`, so the
-       two men do not talk with the same hands. */
+       `borrowclips`.
+       v8.2: and the retarget is RETIRED — Chad's new FBO files carry
+       `Talk_with_Left_Hand_Raised` as their OWN take, authored against their
+       own rest pose, which beats any transplant (v5.20's law). Both soldiers
+       name it now. `Talk_with_Left_Hand_on_Hip` survives only on the ENCIK
+       model, which is why the sergeant moved OFF it here rather than keeping
+       it: a rig sent to a take it does not have is a silent no-op, and that
+       is the bug this very comment was written about. */
     function castSay(rig, name, take, idle) {
       return sayLine(name, 1, () => {
         rig.play(take, 1, 0.3);
@@ -1580,7 +1586,8 @@
       });
     }
     const TALK_NOSL = 'Talk_with_Left_Hand_Raised';   // v8.1: retargeted onto the FBO rig, see above
-    const sgtSay = (name) => castSay(sergeant, name, 'Talk_with_Left_Hand_on_Hip', 'Idle_3');
+    const TALK_SLING = 'Talk_with_Left_Hand_Raised';  // v8.2: the sling FBO's own take
+    const sgtSay = (name) => castSay(sergeant, name, TALK_SLING, 'Idle_3');
     function setPhase(p) {
       phase = p;
       if (kit) kit.setPhase(p);
@@ -2557,7 +2564,7 @@
        down the aisle toward bed one as he names it. */
     camTo(46, 48.8, OPENING, AISLE, smoothK);
     yawTo(46, 48.8, Y_IN, Y_SGT, smoothK);
-    step(47.6, () => { stage.sergeant.play('Talk_with_Left_Hand_on_Hip', 1, 0.3); });   // the encik's take, baked onto his rig
+    step(47.6, () => { stage.sergeant.play('Talk_with_Left_Hand_Raised', 1, 0.3); });   // v8.2: his own talking take
     sfx(48, 's1bed');                       // 4.91 s → 27.3
     step(53.2, () => { stage.sergeant.play('Idle_3', 1, 0.4); });
     camTo(49.6, 55.6, AISLE, AISLE2, smoothK);
