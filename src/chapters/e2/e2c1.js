@@ -2127,6 +2127,15 @@
       ghostFig.group.visible = false; water.material.opacity = 0.55; hisBed.low.on.visible = false;
       setNightRoom(false);                       // v7.5: leaves the evening lamps lit
       putSergeant(SGT_DOOR);
+      /* v8.2: AND THE SECTION COMES BACK IN. `fallOut(true)` puts eight men
+         on the balcony and only `fallOut(false)` brings them back — which
+         reset() never called, so a replay taken during or after the fall-in
+         began the new morning with an empty bunk and the whole section
+         already lined up outside. Measured on the shipped build: buddy,
+         bunkmate and all six recruits still at x 7.40 after reset(). Safe
+         before the first fall-in, because BUNK_AT is empty and the loop
+         simply finds nothing to put back. */
+      fallOut(false);
       dropTodo(); tweens.length = 0;
       nightK = 0; showerVol = 0; mixBeds();
       seen.clear(); bedTries = 0; fallLate = false; fallTimer = null; arrivedAt = 0;
