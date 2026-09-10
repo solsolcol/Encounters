@@ -1588,6 +1588,26 @@ What the baseline contains, by release:
   passes this build. Still open from Chad's list: the mangled admin-tee
   model (used twice), interactable doors, the film's night-into-morning
   jump, the opening's long black and missing ferry, and his voice.
+- **v7.5** THE DOORS, THE EVENING, THE SECOND MODEL, AND WHICH WAY YOU FACE
+  — Chad's second list, the play half (docs/V7.5-E2C1-REBUILD.md is the
+  plan and the record). THE DOORS: the toilet block was never sealed
+  (measured, every cell reachable) — the leaf hung across the opening and
+  nothing could be touched, so it READ as a wall; the door is a hotspot now
+  that swings open with its sound and steps you through from either side,
+  and the entrance answers when asked. THE EVENING: the clock said 21:58
+  and the sky said ten in the morning; the film now crosses a DAY (its own
+  MORNING at the ferry, dusk over 44–48 with the tubes ON — lights out is
+  play's beat, never the film's) and ends on the evening the chapter
+  declares as its daylight, so nothing snaps back. THE SECOND MODEL: the
+  bunkmate is the FBO without the rifle, so one torn file is no longer two
+  characters. WHICH WAY YOU FACE: **`spawn.rot` is a chapter's to declare**
+  — every chapter faced −z, which put episode 2's first frame into the black
+  corridor box; episode 1 declares nothing and keeps 0, and the boot path
+  had its own copy of the rule. Also: the fall-in is staged inside the
+  opening's line of sight (why the sergeant "went missing"), and **hotspot
+  anchors sit at EYE height** — a doorway's floor point is 44° under the
+  lens from a metre away, outside the 36° half-view, so it was never
+  offered. Two words; sheet v43 is CP4's (one sheet, not two).
 - **v7.0** THE PLAY KIT — episode 2's first release, and the one that ships
   nothing a player of episode 1 can see (Chad approved the plan on 9 Sep:
   "can you begin building according to your plan?"). Everything a chapter
