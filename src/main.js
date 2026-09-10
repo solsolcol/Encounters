@@ -1514,6 +1514,12 @@ const KIT = {
   presence: v => { chapterPresence = Math.max(0, Math.min(1, +v || 0)); },
   getPresence: () => chapterPresence,
   conduct: kitConduct, award: kitAward,
+  /* v7.3: what play has BANKED so far. A chapter whose play is a whole
+     day (episode 2) can be resumed in the middle of it, and it needs to
+     know which of its awards are already on the card — `kitConduct`
+     dedupes the NOTES and never did the numbers, so a Continue banked
+     the same +4 twice. Read-only, and nothing in episode 1 asks. */
+  getConduct: () => ({ s: conductAcc.s, a: conductAcc.a, notes: conductAcc.notes.slice() }),
   pose: kitPoseSet, getPose: () => kitPose,
   daylight: daylightTo,
   fade: (to, secs) => { kitFade = { from: kitFadeNow, to: Math.max(0, Math.min(1, +to || 0)), t: 0, secs: Math.max(0.01, +secs || 0.5) }; },
@@ -6704,6 +6710,11 @@ window.__enc = { yaw, stats, getState: () => state,
                  /* v5.29: the live stage, for probes. A getter for the same
                     reason blockers is one — rebuildStage() re-points it. */
                  get stage() { return stage; },
+                 /* v7.3: the renderer and the scene, for probes only — what a
+                    chapter COSTS to draw (renderer.info: calls, triangles,
+                    geometries, textures) is a number, and a number nobody can
+                    read is a number nobody checks. */
+                 get renderer() { return renderer; }, get scene() { return scene; },
                  /* v5.29: which age of Master Zav the panel is showing, and
                     whether his bytes are in. The figure lives in its own
                     renderer's scene, unreachable from the world graph, so a

@@ -905,13 +905,13 @@
       /* lying IN the bed at night, the mattress is under him and out of the
          lens — the bed is still the thing he acts on (the probe found the
          decision unreachable from the pillow) */
-      if (phase === 'night' && pileDist() < 1.3) return true;
+      if (abed() && pileDist() < 1.3) return true;
       const n = pileScreen();
       return n.z < 1 && Math.abs(n.x) < 0.97 && Math.abs(n.y) < 0.97;
     }
     function pointerHitsPile(cx, cy) {
       if (pileDist() > INTERACT_R) return false;
-      if (phase === 'night' && pileDist() < 1.3) return true;
+      if (abed() && pileDist() < 1.3) return true;
       syncCamera();
       _ptr.set((cx / innerWidth) * 2 - 1, -(cy / innerHeight) * 2 + 1);
       _ray.setFromCamera(_ptr, camera);
@@ -959,6 +959,23 @@
       phase = p;
       if (kit) kit.setPhase(p);
     }
+    /* v7.3: THE DAY IS RESUMABLE, so every award it hands out must be
+       idempotent. `kitConduct` dedupes the NOTES and never the numbers, so a
+       Continue in the middle of the day banked the same +4 a second time.
+       Each of the day's awards carries its own note, and the note is the
+       receipt: if it is already on the card, the award has been paid. */
+    function bankedHas(note) {
+      if (!kit || !kit.getConduct || !note) return false;
+      return kit.getConduct().notes.indexOf(String(note)) >= 0;
+    }
+    function bank(d) {
+      if (!kit || !d) return;
+      if (d.note && bankedHas(d.note)) return;
+      kit.conduct(d);
+    }
+    /* lying in bed at three in the morning, before the decision and while it
+       is open — the bed is the thing he acts on in both */
+    const abed = () => phase === 'night' || phase === 'decide';
 
     /* THE BEDS are the chapter's, and the night changes them: the day's room
        tone crosses to the night's, the episode's bed comes in under it,
@@ -1007,25 +1024,29 @@
     let fallTimer = null, fallLate = false;
     function beginFallIn() {
       setPhase('fallin');
-      fallLate = false;
+      /* v7.3: on a RESUME the lateness is read back off the card rather than
+         reset — the penalty is already banked, so a second run of the
+         fall-in must not hand him the on-time bonus on top of it. */
+      fallLate = bankedHas(DATA.words.noteLate);
       if (worldSfx) worldSfx('whistle', 0.9);
       putSergeant(SGT_LINE);
       after(1.2, () => sgtSay('s1fallin'));
       after(4.6, () => sayLine('n1fallin'));
       if (!kit) return;
-      kit.objective(DATA.words.objFallIn);
+      kit.objective(fallLate ? DATA.words.objLate : DATA.words.objFallIn);
       kit.waypoint({ x: BALC.line, y: 1.0, z: 0 });
+      if (fallLate) return;                       // the clock has already run out on him
       fallTimer = kit.timer(14, () => {
         fallLate = true; fallTimer = null;
         sgtSay('s1late');
         after(3.6, () => { sayLine('n1late'); if (worldSfx) worldSfx('pushups', 0.8); });
-        kit.conduct({ s: -3, a: -2, note: DATA.words.noteLate });
+        bank({ s: -3, a: -2, note: DATA.words.noteLate });
         kit.objective(DATA.words.objLate);
       });
     }
     function onTheLine() {
       if (fallTimer) { fallTimer.stop(); fallTimer = null; }
-      if (kit && !fallLate) kit.conduct({ a: 4, note: DATA.words.noteOnTime });
+      if (!fallLate) bank({ a: 4, note: DATA.words.noteOnTime });
       beginStandby();
     }
     /* ---- the standby bed: back to the bunk, then the sequence */
@@ -1039,6 +1060,10 @@
     }
     function runStandbyBed() {
       if (!kit) { beginFree(); return; }
+      /* v7.3: a resume lands back at the bed, and the sequence's award is the
+         engine's, not a note — so the receipt is checked before it re-runs.
+         Standing it up again after it was already passed would pay twice. */
+      if (bankedHas(DATA.words.noteBedOk)) { beginFree(); return; }
       kit.waypoint(null);
       kit.objective(DATA.words.objBed);
       sgtSay('s1standby');
@@ -1051,12 +1076,12 @@
             bedTries++;
             if (r && r.ok) {
               sayLine('n1bedok');
-              kit.conduct({ a: 3, note: DATA.words.noteBedOk });
+              bank({ a: 3, note: DATA.words.noteBedOk });
               after(SECS.n1bedok + 0.6, beginFree);
             } else if (bedTries < 2 && !(r && (r.skipped || r.aborted))) {
               sgtSay('s1again');
               after(2.3, () => sayLine('n1bedfail'));
-              kit.conduct({ s: -4, note: DATA.words.noteBedFail });
+              bank({ s: -4, note: DATA.words.noteBedFail });
               after(2.3 + SECS.n1bedfail + 0.5, runStandbyBed);
             } else {
               after(0.5, beginFree);
@@ -1110,18 +1135,36 @@
       });
       after(8.2, () => sayLine('n1hear'));
       after(8.2, () => { if (kit) kit.presence(0.35); });
-      after(8.2 + SECS.n1hear + 0.6, () => {
-        if (!kit) { startDecision(); return; }
-        kit.objective(DATA.words.objFear);
-        kit.event({ kind: 'heartbeat', label: DATA.words.evFear, n: 5, bpm: 72, win: 0.19,
-                    award: { stat: 'sanity', lo: -8, hi: 2 } })
-          .then(r => { if (!alive) return; kit.objective(null); after(0.4, () => { if (getState() === 'play') startDecision(); }); });
-      });
+      after(8.2 + SECS.n1hear + 0.6, runFear);
+    }
+    /* the fear itself, on its own so a RESUME at three in the morning can run
+       it too. Before v7.3 a Continue into the night restored the room and
+       nothing else: no objective, no challenge, and a player lying in the
+       dark with no idea what the game wanted. `decide` is the bookmark for
+       after it, so the heartbeat's sanity award can never be paid twice. */
+    function runFear() {
+      if (!kit) { startDecision(); return; }
+      kit.objective(DATA.words.objFear);
+      kit.event({ kind: 'heartbeat', label: DATA.words.evFear, n: 5, bpm: 72, win: 0.19,
+                  award: { stat: 'sanity', lo: -8, hi: 2 } })
+        .then(r => {
+          if (!alive) return;
+          kit.objective(null); setPhase('decide');
+          after(0.4, () => { if (getState() === 'play') startDecision(); });
+        });
     }
     /* ---- a resume lands in the right part of the day */
     function applyPhase(p) {
+      /* v7.3: THE WHOLE DAY, not three of its phases. Everything that fell
+         through to `beginArrive()` used to restart the morning — the walk to
+         the bed, the whistle, the fall-in and the standby bed all over
+         again, every award banked a second time. Each phase now resumes
+         where it stood; the awards are idempotent above, so the parts that
+         DO re-run (the fall-in call, an unfinished bed) cost nothing. */
+      if (p === 'fallin') { beginFallIn(); return; }
+      if (p === 'standby' || p === 'standbybed') { beginStandby(); return; }
       if (p === 'free') { beginFree(); return; }
-      if (p === 'lightsout' || p === 'night') {
+      if (p === 'lightsout' || p === 'night' || p === 'decide') {
         nightK = 1; showerVol = 0.55; mixBeds();
         setLights(0); setNightRoom(true); setShower(true); clock.set('03:00');
         clockGlow.intensity = CLOCK_GLOW; balcLight.intensity = 5;
@@ -1132,6 +1175,11 @@
           kit.presence(0.35); kit.objective(null); kit.waypoint(null);
         }
         setPhase('night');
+        /* he wakes into the fear he went to sleep in — unless the decision
+           was already open when the run was saved, in which case the bed is
+           simply his to act on again */
+        if (p === 'decide') setPhase('decide');
+        else after(1.4, () => { if (phase === 'night') runFear(); });
         return;
       }
       beginArrive();
@@ -1139,7 +1187,7 @@
 
     function interactPile() {
       if (getState() !== 'play' || pileDist() >= INTERACT_R) return false;
-      if (phase === 'night') { startDecision(); return true; }
+      if (abed()) { startDecision(); return true; }
       if (phase === 'standby') { runStandbyBed(); setPhase('standbybed'); return true; }
       if (phase === 'free' && kit && kit.getPose() !== 'lying' && seen.size >= 2) { beginLightsOut(); return true; }
       if (!kit) return false;
@@ -1195,7 +1243,7 @@
       if (getState() === 'cine') { pileRing.visible = false; return; }
       const near = THREE.MathUtils.clamp((6 - pileDist()) / (6 - INTERACT_R), 0, 1);
       pileRing.visible = near > 0.01 && phase !== 'lightsout';
-      pileRing.material.opacity = near * (0.62 + 0.38 * Math.sin(t * 2.6)) * (phase === 'night' ? 0.7 : 0.45);
+      pileRing.material.opacity = near * (0.62 + 0.38 * Math.sin(t * 2.6)) * (abed() ? 0.7 : 0.45);
     }
     /* the day's watchers, on the chapter's own clock */
     let dayLast = 0;
