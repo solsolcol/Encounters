@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "7.9"
+VERSION = "8.0"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -302,7 +302,12 @@ ASSETS = {
     # is seen for one frame twenty metres off.
     'fbosling':     ('assets/fbosling.glb', True, False),     # e2c1 the sergeant (rifle slung, six takes)
     'fbonosling':   ('assets/fbonosling.glb', True, False),   # e2 a soldier without the sling
-    'admintee':     ('assets/admintee.glb', True, False),     # e2c1 the buddy and the bunkmate (talk + idle takes)
+    # v8.0: Chad's nine-animation admin tee REPLACES the four-animation one —
+    # walking, running, talking, two sittings, a standing idle and the three
+    # push-up takes, all authored on this rig, so nothing is retargeted onto
+    # it any more (v7.6's tearing cannot come back).
+    'admintee':     ('assets/admintee.glb', True, False),     # e2c1 the buddy (9 takes, his own)
+    'botak':        ('assets/botak.glb', True, False),        # e2 the blue-tee recruit: ferry, jetty, parade square
     'sleeper':      ('assets/sleeper.glb', True, False),      # e2c1 a recruit asleep, a statue
     'sleepanim':    ('assets/sleepanim.glb', True, False),    # e2c1 the rig with the three sleeping takes
     'ghostsoldier': ('assets/ghostsoldier.glb', True, False), # e2c1 scene A, one frame, far off
@@ -326,7 +331,7 @@ HOSTED_ONLY = {'titlevid', 'titlevidwebm'}
 # and is reached by URL in dist/, which is the only build that ships the
 # chapter asking for it. The check below keeps the rule honest: an episode-1
 # chapter may never claim one of these.
-E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'sleeper', 'sleepanim',
+E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim',
            'ghostsoldier', 'encik2'}
 HOSTED_ONLY |= E2_ONLY
 

@@ -1557,6 +1557,12 @@ function kitDebug() {
 }
 /* ===================================================== end of the play kit */
 
+/* v8.0: what a chapter has asked to have DECODED ahead of the player. It is
+   only ever a list here: a chapter is built long before its sound pack has
+   even downloaded, so warming at build time would decode nothing. The pack
+   loader drains this the moment bytes land, and enterWorld drains it again
+   for a chapter whose pack was already in memory (a replay). */
+const WARM_WANT = new Set();
 const CHCTX = {
   THREE, GLTFLoader, cloneSkinned, scene, camera, yaw, LOW,
   kit: KIT,                        // v7.0: the play kit — declared by a chapter, absent for chapters 1–5
@@ -1569,6 +1575,16 @@ const CHCTX = {
      cutscene — footsteps in the kitchen, a chair dragged in an empty room.
      Chapter 4's haunting is never seen, so this is the whole haunting. */
   worldSfx: (name, vol, rate, pan) => snd(name, vol, rate, pan),
+  /* THE SEVENTEENTH SEAM (v8.0): a chapter may DECODE ahead of the player.
+     `snd()` returns null when a sample has not decoded yet — sndBuf kicks the
+     decode and the call plays nothing — and until now only a FILM's cues were
+     warmed (`whenDecoded(introSamples())`). Measured on the shipped v7.9
+     build: at the moment play begins, 46 samples are decoded and every one of
+     episode 2 chapter 1's talk lines is not, so the first press of E at a
+     soldier was silent BY CONSTRUCTION. Chapters 1-5 never call this: their
+     play-time narration is one line on a timer, not something a player asks
+     for at a moment of their choosing. */
+  warmSounds: (names) => { for (const n of (Array.isArray(names) ? names : [names])) WARM_WANT.add(n); },
   /* THE HEAD BONE, named once for everybody (v5.01). Every rigged human in
      this game is a Mixamo skeleton, and glTF SANITIZES its node names:
      `mixamorig:Head_06` in the file is `mixamorigHead_06` in the scene. The
@@ -3349,6 +3365,7 @@ function packLoad(chapterKey) {
       .then(b => {
         const part = JSON.parse(new TextDecoder().decode(b));
         packJson = Object.assign(packJson || Object.create(null), part);
+        packWarm(WARM_WANT);          // v8.0: whatever the chapter asked for, now that it exists
       })
       .catch(() => {
         /* A chapter with no sounds of its own simply has no pack, and that
@@ -5774,6 +5791,7 @@ function enterWorld(place, opts = {}) {
   ui.title.classList.add('hide');
   ui.hud.classList.add('hide');
   if (place) place();
+  packWarm(WARM_WANT);      // v8.0: and a replayed chapter's play lines, whose pack is already in
   /* v5.13: THE FILM WAITS FOR ITS SOUNDS. A chapter's pack is fetched by
      setChapter(), and on the advance path startDecision() fetched it a
      whole decision earlier — but from the chapter selector, and on
@@ -6753,7 +6771,11 @@ window.__enc = { yaw, stats, getState: () => state,
                  chapterKey: () => CH_KEY,
                  episode: () => episodeOf(CH_KEY), episodeOf,     // v6.0
                  stings: () => stingLog.slice(),
-                 audio: () => ({ ctx: actx ? actx.state : 'none', muted, decoded: Object.keys(packBufs) }),
+                 /* v8.0: which of the chapter's SAMPLES have decoded. This was an
+                    `audio` key until now and had been dead since the music one below
+                    was added — two keys of the same name in one object literal, the
+                    later winning, so every probe that asked got the music's shape. */
+                 packDecoded: () => Object.keys(packBufs),
                  /* v5.27: the dialogue duck, observable. A gain node that is
                     wired wrong sounds exactly like one that is wired right
                     until someone speaks, so the probe reads the NODE. */

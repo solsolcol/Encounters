@@ -1561,6 +1561,59 @@ What the baseline contains, by release:
   and the resume lands in `standby`, not `arrive`), one resumes straight into
   03:00 and watches the heartbeat arrive. No word moved; sheet v42 stands.
   docs/V7.2-E2C1-POLISH.md §5 is the record.
+- **v8.0** THE NINE-ANIMATION TEE, THE BOTAK RECRUIT, AND THE PRESS THAT DID
+  NOTHING — Chad's two new models, and the interaction bug he found under
+  them: *"when talking to the soldiers or recruits, nothing happen, and i have
+  to click many times to get their voicelines to play. And it is not always
+  playing."* MEASURED against the shipped v7.9 build at the first frame of
+  play: 46 samples decoded, and every line a hotspot can ask for — `b1day`,
+  `k1board`, `k1three`, `n1shower`, `n1board` — decoded NONE of them, so the
+  first press was **silent by construction** (`snd()` returns null for a
+  sample that has not decoded); and `sayLine` then booked its mute window for
+  the length of the line it had not played, so the next few presses were
+  refused as well. Press, silence, press, silence, press, sound. The badge
+  geometry was checked and cleared — a grid over a hotspot offers it at every
+  distance in radius up to 34° off-aim. Fixed by the SEVENTEENTH SEAM,
+  `ctx.warmSounds(names)`, which only RECORDS (a chapter is built long before
+  its pack downloads; the pack loader drains the set when bytes land, and
+  `enterWorld` again for a replay); by booking the window only when a line
+  actually started; and by HOLDING a cold press until its bytes land rather
+  than eating it, with the talk take riding the line's own `onStart` so voice
+  and animation cannot come apart. 46 decoded -> 68, and 0 of 5 lines on the
+  first press -> 5 of 5. One bug fell out of reading it: the bunkmate is the
+  FBO rig, whose rest take is `Idle_6`, and both his lines sent him back to
+  `Idle_9` — a take he does not have — so since v7.1 he has frozen in the last
+  frame of his talk after every line.
+  THE MODELS. Chad's nine-animation admin tee REPLACES the four-animation one
+  (walking, running, talking, two sittings, a standing idle, and idle-to-
+  push-up / push-up / push-up-to-idle, all authored on its own rig, so nothing
+  is retargeted onto it any more and v7.6's tearing cannot return), and his
+  BOTAK blue-tee recruit is a new asset taking the ferry seats, the jetty walk
+  and the parade square. The tee would not shrink — 593,914 triangles in,
+  592,763 out, 45 MB — and the reason is a law worth keeping: **a flat-shaded
+  export cannot be simplified.** 1,190,700 vertices for 593,914 triangles is
+  297,665 unique POSITIONS duplicated exactly 4.00 times, because 2000 of 2000
+  sampled triangles carry their own normals; `weld()` is bitwise across every
+  attribute and meshopt will not collapse an edge across an attribute seam, so
+  the simplifier was being told the mesh was all seam. `tools/deflatten.mjs`
+  measures whether a mesh is flat, drops NORMAL, welds on position/uv/skin
+  (real UV borders still split; the skinning was checked identical in 60,001
+  of 60,001 duplicate groups first) and recomputes smooth normals BY HAND —
+  gltf-transform's `normals()` unwelds and writes face normals, undoing the
+  whole point. 1.19M -> 342k vertices, and then 44,539 triangles at 2448 KB
+  with all nine clips. Both models were photographed on their own, every clip,
+  front and side, before any of it was wired (v6.17's law).
+  AND WHERE THE RECRUITS WENT: the cabin rendered EMPTY with the riders all
+  present, visible and hips exactly on the seat pans. `Chair_Sit_Idle_M` is
+  not an idle — sampled 40 times, the head sits 0.58 m over the hips for the
+  first eighth and last sixth and COLLAPSES to 0.27 in between (he folds over,
+  head at his knees), so seven of ten parked riders were below the seat backs.
+  Each sitting take now carries its own UPRIGHT WINDOW. The same measuring
+  gave the parade square its stand: the botak has no standing idle and its
+  `restpose` is an A-pose, so the rank stands on `Walking` parked at t = 0.122,
+  the frame where the feet are closest (0.136 m) and the hands lowest. And the
+  buddy now DOES the push-ups the sound has been describing since v7.1.
+  docs/V8.0-MODELS-AND-THE-PRESS.md is the build's memory.
 - **v7.9** THE FERRY FROM INSIDE, TEKONG, THE PARADE SQUARE, THE BUNK —
   Chad, with five reference photographs: *"I dont want to see the outside
   of the ferry and the sea, it should show first person pov within inside

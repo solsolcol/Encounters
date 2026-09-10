@@ -88,7 +88,7 @@
       vmKey: [0xfff2dc, 0.62]
     },
 
-    assets: ['fbosling', 'fbonosling', 'admintee', 'sleeper', 'sleepanim', 'ghostsoldier',
+    assets: ['fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim', 'ghostsoldier',
              'tree1', 'tree2', 'tree3', 'tree4', 'hdb'],
 
     /* the explore music bed is chapter 1's title theme and has no place in a
@@ -186,7 +186,7 @@
     const { THREE, GLTFLoader, cloneSkinned, scene, camera, yaw, LOW, kit, plantTrees,
             assetBytes, rescueTextures, redoShadows,
             cnv, makeSoftDot, makeGrass, makeConcrete,
-            makeHellNote, getState, startDecision, worldSfx, HEAD_RE } = ctx;
+            makeHellNote, getState, startDecision, worldSfx, warmSounds, HEAD_RE } = ctx;
 
     const SHRINE = new THREE.Vector3(DATA.shrine.x, 0, DATA.shrine.z);
     const owned = [];
@@ -1032,26 +1032,66 @@
       return c;
     }
     /* the recruits in the other seats — the pose PARKED, each at his own
-       frame; the seat in front hides the legs the sitting take folds under */
-    const ferryRiders = mkCrowd('admintee', [
-      { x: SEAT_X[2], z: SEAT_Z[6], at: 0.30 }, { x: SEAT_X[0], z: SEAT_Z[5], at: 0.55 },
-      { x: SEAT_X[1], z: SEAT_Z[5], at: 0.20 }, { x: SEAT_X[3], z: SEAT_Z[6], at: 0.70 },
-      { x: SEAT_X[0], z: SEAT_Z[7], at: 0.40 }, { x: SEAT_X[2], z: SEAT_Z[7], at: 0.15 },
-      { x: SEAT_X[1], z: SEAT_Z[8], at: 0.62 }, { x: SEAT_X[3], z: SEAT_Z[9], at: 0.35 },
-      { x: SEAT_X[0], z: SEAT_Z[3], at: 0.50 }, { x: SEAT_X[1], z: SEAT_Z[2], at: 0.25 },
-    ].map(s => ({ ...s, ry: 0 })), 'Sit', { parent: ferryRoot, height: 1.70, hipY: 0.60 });
+       frame; the seat in front hides the legs the sitting take folds under.
+       v8.0: Chad's BOTAK recruit, and his file's own two sitting takes rather
+       than one retargeted `Sit` — `Chair_Sit_Idle_M` sits up with the hands
+       on the knees, `Sit_and_Doze_Off` slumps, so a cabin of ten reads as ten
+       men and not one man copied. Dealt alternately down the rows. */
+    /* WHERE IN A SITTING TAKE A MAN IS ACTUALLY SITTING UP, measured rather
+       than assumed — and the first pass got it wrong, which is the lesson.
+       `Chair_Sit_Idle_M` is not an idle: sampled 40 times, the head sits
+       0.58 m above the hips for the first eighth and the last sixth of it and
+       COLLAPSES to 0.27 in between — he folds right over, head down at his
+       knees, for more than half the clip. Ten riders parked on evenly spread
+       fractions therefore put seven of them face-down below the seat backs,
+       and the cabin rendered empty. `Sit_and_Doze_Off` has no such fold: it
+       holds 0.53-0.55 the whole way through. So each take carries its own
+       UPRIGHT WINDOW and a rider is parked inside his take's, never across
+       the clip at large. */
+    const SIT_TAKES = [
+      { name: 'Chair_Sit_Idle_M', win: [[0.00, 0.12], [0.83, 1.00]] },
+      { name: 'Sit_and_Doze_Off', win: [[0.00, 1.00]] },
+    ];
+    const sitAt = (take, k) => {                 // k in 0..1 across the take's own upright time
+      const w = take.win, span = w.reduce((n, [a, b]) => n + (b - a), 0);
+      let want = k * span;
+      for (const [a, b] of w) { if (want <= b - a) return a + want; want -= b - a; }
+      return w[w.length - 1][1];
+    };
+    const ferryRiders = mkCrowd('botak', [
+      { x: SEAT_X[2], z: SEAT_Z[6] }, { x: SEAT_X[0], z: SEAT_Z[5] },
+      { x: SEAT_X[1], z: SEAT_Z[5] }, { x: SEAT_X[3], z: SEAT_Z[6] },
+      { x: SEAT_X[0], z: SEAT_Z[7] }, { x: SEAT_X[2], z: SEAT_Z[7] },
+      { x: SEAT_X[1], z: SEAT_Z[8] }, { x: SEAT_X[3], z: SEAT_Z[9] },
+      { x: SEAT_X[0], z: SEAT_Z[3] }, { x: SEAT_X[1], z: SEAT_Z[2] },
+    ].map((s, i) => {
+      const take = SIT_TAKES[i % 2];
+      return { ...s, ry: 0, clip: take.name, at: sitAt(take, hash(i, 4)) };
+    }), SIT_TAKES[0].name, { parent: ferryRoot, height: 1.70, hipY: 0.60 });
     /* the file walking in under the sign — the walk take runs, and the whole
        group is carried forward by the film (jettyWalk) */
-    const jettyWalkers = mkCrowd('admintee', [
+    const jettyWalkers = mkCrowd('botak', [
       { x: -0.9, z: 1.0 }, { x: 0.5, z: 2.2 }, { x: -1.6, z: 3.6 }, { x: 1.2, z: 4.4 },
       { x: -0.4, z: 5.8 }, { x: 1.7, z: 7.0 }, { x: -1.9, z: 8.2 }, { x: 0.8, z: 9.4 },
       { x: -1.1, z: 10.8 }, { x: 1.5, z: 12.2 },
     ].map(s => ({ ...s, ry: 0 })), 'Walking', { parent: jettyRoot, height: 1.70 });
     /* the ranks on the square, standing still, facing the encik */
+    /* v8.0: the botak recruit has no standing idle — his file carries a walk,
+       a run and two sittings, and its `restpose` is an A-pose with the arms
+       held out, which is not a man standing on a parade square. So the STAND
+       is a PARKED frame of his walk, and which frame is measured rather than
+       picked: sampling the 1.04 s cycle sixty times, t = 0.122 puts his feet
+       0.136 m apart (the closest they come) with his hands at their lowest
+       (0.880 m) — a man standing with his feet together and his arms down.
+       0.122 / 1.04 = 0.117 as a fraction of the clip. Every rank stands on the
+       SAME frame, because men at attention are meant to match; the life comes
+       from a few centidegrees of yaw, not from four rows of different strides. */
+    const STAND_AT = 0.117;
     const paradeRanks = [];
     for (let r = 0; r < 4; r++) for (let i = 0; i < 7; i++)
-      paradeRanks.push({ x: -6.6 + i * 2.2, z: 2.0 + r * 2.0, ry: Math.PI, at: 0.1 + hash(r * 7 + i, 9) * 0.8 });
-    const paradeCrowd = mkCrowd('admintee', paradeRanks, 'Idle_9', { parent: paradeRoot, height: 1.70 });
+      paradeRanks.push({ x: -6.6 + i * 2.2, z: 2.0 + r * 2.0,
+                         ry: Math.PI + (hash(r * 7 + i, 9) - 0.5) * 0.06, at: STAND_AT });
+    const paradeCrowd = mkCrowd('botak', paradeRanks, 'Walking', { parent: paradeRoot, height: 1.70 });
     const paradeEncik = mkCrowd('fbosling', [{ x: 0.0, z: -3.2, ry: 0, at: 0.2 }], 'Idle_3', { parent: paradeRoot, height: 1.74 });
     let walkT = 0;
     const jettyWalk = (dt) => {                    // the file carried up the walkway
@@ -1384,22 +1424,69 @@
     function after(secs, fn) { todo.push({ at: dayClock.t + secs, fn }); todo.sort((a, b) => a.at - b.at); }
     function runTodo() { while (todo.length && todo[0].at <= dayClock.t) todo.shift().fn(); }
     function dropTodo() { todo.length = 0; }
-    const speak = { until: 0 };
-    function sayLine(name, vol = 1) {
+    /* THE LINE THAT WOULD NOT PLAY (v8.0). Chad: "when talking to the soldiers
+       or recruits, nothing happen, and i have to click many times to get their
+       voicelines to play. And it is not always playing." Measured on the
+       shipped v7.9 build, at the first frame of play: 46 samples decoded, and
+       `b1day`, `k1board`, `k1three`, `n1shower` and `n1board` — every line a
+       hotspot can ask for — decoded NONE of them. `snd()` returns null for a
+       sample that has not decoded, so the FIRST press was silent by
+       construction; and this function then booked `speak.until` for the whole
+       length of the line it had not played, so every press for the next four
+       seconds was refused as well. Press, silence; press, silence; press, and
+       by then the bytes had landed. Exactly the report.
+
+       Three changes, and the first one alone is the fix:
+       - the window is booked only if the sound actually STARTED (worldSfx
+         hands back the source, or null);
+       - a cold press is HELD rather than dropped — the decode is already
+         running, so the line fires the moment it lands (up to three seconds,
+         after which the press is let go rather than arriving out of nowhere);
+       - and what a line was going to make happen — a talk take, a follow-up —
+         rides with it as `onStart`, so the animation and the voice cannot come
+         apart when one of them waits.
+       `kit.warmSounds` above makes the held path rare rather than routine. */
+    /* and the decodes themselves, kicked the moment the chapter is built. The
+       film's cues are warmed by the engine; the DAY's were not, which is what
+       made the first press of E silent. Named rather than globbed, so a new
+       line has to be added here on purpose — the same discipline as the cue
+       table: a sound nobody warms is a press that waits. */
+    const PLAY_LINES = ['b1day', 'b1sleep', 'dooropen2', 'k1board', 'k1three',
+      'n1bedfail', 'n1bedok', 'n1board', 'n1fallin', 'n1hear', 'n1late',
+      'n1lights', 'n1shower', 'n1wake', 'pushups', 's1again', 's1fallin',
+      's1late', 's1lights', 's1standby', 'switchoff', 'whistle'];
+    if (warmSounds) warmSounds(PLAY_LINES);
+
+    const speak = { until: 0, pending: null };
+    function sayLine(name, vol = 1, onStart) {
       if (!worldSfx) return false;
       if (dayClock.t < speak.until) return false;
-      speak.until = dayClock.t + (SECS[name] || 2.5) + 0.25;
-      worldSfx(name, vol);
+      const start = () => {
+        speak.until = dayClock.t + (SECS[name] || 2.5) + 0.25;
+        if (onStart) onStart();
+      };
+      if (worldSfx(name, vol)) { start(); return true; }
+      speak.pending = { name, vol, start, give: dayClock.t + 3 };
+      speak.until = dayClock.t + 0.2;            // a breath, not the line's length
       return true;
     }
+    /* the frame's half of the above: retry a held line until it lands */
+    function runSpeak() {
+      const q = speak.pending;
+      if (!q || dayClock.t < speak.until) return;
+      if (dayClock.t > q.give) { speak.pending = null; return; }
+      if (worldSfx(q.name, q.vol)) { speak.pending = null; q.start(); }
+      else speak.until = dayClock.t + 0.2;
+    }
     /* the sergeant's lines ride his talk take; the buddy's and the
-       bunkmate's ride theirs (the admin tee's talking take is `mixamo.com`,
-       the FBX's own name — renaming it buys nothing) */
+       bunkmate's ride theirs (the admin tee's talking take is
+       `Talk_with_Hands_Open`, the FBO's is `mixamo.com` — the FBX's own name;
+       renaming it buys nothing) */
     function castSay(rig, name, take, idle) {
-      if (!sayLine(name)) return false;
-      rig.play(take, 1, 0.3);
-      after((SECS[name] || 2.5) + 0.2, () => { if (rig.cur === take) rig.play(idle, 1, 0.4); });
-      return true;
+      return sayLine(name, 1, () => {
+        rig.play(take, 1, 0.3);
+        after((SECS[name] || 2.5) + 0.2, () => { if (rig.cur === take) rig.play(idle, 1, 0.4); });
+      });
     }
     const sgtSay = (name) => castSay(sergeant, name, 'Talk_with_Left_Hand_on_Hip', 'Idle_3');
     function setPhase(p) {
@@ -1497,6 +1584,7 @@
       fallTimer = kit.timer(14, () => {
         fallLate = true; fallTimer = null;
         sgtSay('s1late');
+        after(3.4, buddyPushUps);
         after(3.6, () => { sayLine('n1late'); if (worldSfx) worldSfx('pushups', 0.8); });
         bank({ s: -3, a: -2, note: DATA.words.noteLate });
         kit.objective(DATA.words.objLate);
@@ -1516,6 +1604,24 @@
        on the whistle the bunk empties behind you and the squad is already
        forming up, which is also the truth the chapter tells out loud when
        you are last. `BUNK_AT` remembers where each stood so they go back. */
+    /* v8.0: AND SOMEBODY ACTUALLY DOES THEM. Chad, on v7.1: "suddenly it says
+       you the last one with 20 push ups, and there is push up sounds, but im
+       not actually doing anything on my screen." The sound had nothing to look
+       at because no rig in the chapter carried the take; Chad's nine-animation
+       admin tee does, as three of them — down, the reps, and back up. The buddy
+       drops on the line beside you while the sergeant's line lands. Measured
+       against the beat it has to fit inside: the take is 2.71 s down, 1.63 s a
+       rep and 3.21 s up, so three reps is 10.8 s, and the fall-in ends 9.0 s
+       after the penalty with the squad sent back 6.5 s after that — 15.5 s of
+       room. `fallOut(false)` puts him back on his idle whatever happened, so a
+       skipped phase can never leave a man face-down in the bunk. */
+    function buddyPushUps() {
+      if (!buddy || !buddy.play('idle_to_push_up', 1, 0.3, true)) return;
+      const DOWN = 2.71, REP = 1.63, UP = 3.21, N = 3;
+      after(DOWN, () => buddy.play('push_up', 1, 0.15));
+      after(DOWN + REP * N, () => buddy.play('push_up_to_idle', 1, 0.2, true));
+      after(DOWN + REP * N + UP, () => buddy.play('Idle_9', 1, 0.3));
+    }
     const BUNK_AT = new Map();
     function fallOut(on) {
       for (const [r, at] of [[buddy, { x: BALC.line - 0.2, z: 0.85, ry: Math.PI / 2 }],
@@ -1527,6 +1633,7 @@
         } else {
           const b = BUNK_AT.get(r); if (!b) continue;
           r.group.position.set(b.x, 0, b.z); r.group.rotation.y = b.ry;
+          if (r.idle) r.play(r.idle, 1, 0.25);      // v8.0: never back on his hands
         }
       }
     }
@@ -1717,33 +1824,32 @@
       { id: 'shower', pos: { x: DOOR_WC.x + 0.4, y: 1.0, z: R.z + 2.2 }, radius: 1.8, prompt: DATA.words.hotShower,
         enabled: () => phase === 'free',
         onInteract() { seen.add('shower'); return sayLine('n1shower'); } },
+      /* v8.0: every one of these went through `castSay`-shaped code that
+         started the talk take BEFORE knowing whether the line would play, and
+         hung its tail on `setTimeout` rather than the day clock. The take now
+         rides the line's own `onStart`, so a held line brings its animation
+         with it and a refused one moves nothing. */
       { id: 'buddy', pos: { x: -3.05, y: 1.3, z: 1.15 }, radius: 2.2, prompt: DATA.words.hotBuddy,
         enabled: () => phase === 'free' && buddy.group.visible,
         onInteract() {
           seen.add('buddy');
-          if (!sayLine('b1day')) return false;
-          buddy.play('Talk_with_Hands_Open', 1, 0.3);
-          setTimeout(() => { if (alive && buddy.cur === 'Talk_with_Hands_Open') buddy.play('Idle_9', 1, 0.4); }, SECS.b1day * 1000);
-          return true;
+          return castSay(buddy, 'b1day', 'Talk_with_Hands_Open', 'Idle_9');
         } },
       { id: 'board', pos: { x: 2.0, y: 1.5, z: -R.z + 0.3 }, radius: 2.2, prompt: DATA.words.hotBoard,
         enabled: () => phase === 'free',
         onInteract() {
           seen.add('board');
-          if (!sayLine('k1board')) return false;
-          bunkmate.play('mixamo.com', 1, 0.3);
-          setTimeout(() => { if (alive && bunkmate.cur === 'mixamo.com') bunkmate.play('Idle_9', 1, 0.4); }, SECS.k1board * 1000);
-          setTimeout(() => { if (alive) sayLine('n1board'); }, (SECS.k1board + 0.4) * 1000);
-          return true;
+          return sayLine('k1board', 1, () => {
+            bunkmate.play('mixamo.com', 1, 0.3);
+            after((SECS.k1board || 2.5) + 0.2, () => { if (bunkmate.cur === 'mixamo.com') bunkmate.play('Idle_6', 1, 0.4); });
+            after((SECS.k1board || 2.5) + 0.4, () => sayLine('n1board'));
+          });
         } },
       { id: 'bunkmate', pos: { x: 1.75, y: 1.3, z: -3.15 }, radius: 2.0, prompt: DATA.words.hotBunkmate,
         enabled: () => phase === 'free' && bunkmate.group.visible && seen.has('board'),
         onInteract() {
           seen.add('bunkmate');
-          if (!sayLine('k1three')) return false;
-          bunkmate.play('mixamo.com', 1, 0.3);
-          setTimeout(() => { if (alive && bunkmate.cur === 'mixamo.com') bunkmate.play('Idle_9', 1, 0.4); }, SECS.k1three * 1000);
-          return true;
+          return castSay(bunkmate, 'k1three', 'mixamo.com', 'Idle_6');
         } }
     ];
 
@@ -1770,6 +1876,7 @@
       dayClock.t += d;
       runTodo();
       runTweens(d);
+      runSpeak();                 // v8.0: a held line, the moment its bytes land
       /* v7.2: reaching the bed used to fire the whistle on the same frame as
          his "That's mine. Bed one." — the line lands first now, then the
          whistle, then the sergeant */

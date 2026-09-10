@@ -2722,3 +2722,87 @@ blocked cell fills nothing, which is why every other check failed too.
 **Measure furniture against the spawn using the padded box, not the mesh** —
 and note the failure mode: one blocked spawn reads as a whole chapter of
 unreachable places, so the first failing line is the only one to diagnose.
+
+## A flat-shaded export cannot be simplified (v8.0)
+
+Chad's nine-animation admin tee arrived at 593,914 triangles and came out of
+the standing prep recipe at 592,763 — the simplifier removed 0.2 % at a ratio
+asking for 7 %, and the file was 45 MB. The tell is the vertex count:
+1,190,700 vertices for 593,914 triangles, where a closed mesh of that size has
+about 297k. Measured: 297,665 unique POSITIONS, each duplicated exactly 4.00
+times, and 2000 of 2000 sampled triangles flat-shaded — every triangle
+carrying its own normals.
+
+gltf-transform's `weld()` is bitwise across EVERY attribute, so a per-face
+normal makes every vertex unique and nothing welds; meshopt then will not
+collapse an edge across an attribute seam. The simplifier was being told the
+mesh was all seam, and it believed it.
+
+`tools/deflatten.mjs` is the step that has to come first. Three things in it
+are load-bearing:
+
+- it MEASURES whether the mesh is flat before touching it, and copies a smooth
+  one straight through (the botak recruit scores 1 in 2000 and needs nothing);
+- it welds on position/uv/joints/weights, not on position alone — a real UV
+  island border must still split or the texture tears. Before doing it, check
+  that the SKINNING is identical within a duplicate group: here 60,001 of
+  60,001 sampled groups agreed, so welding could not disturb the rig;
+- it recomputes smooth normals BY HAND. `normals({ overwrite: true })` is the
+  obvious tool and is exactly wrong: it UNWELDS the primitive and writes
+  per-face normals, which put the mesh back at 1,781,742 loose vertices with
+  no index buffer and the simplifier back to removing 589 triangles.
+  Area-weighted vertex normals are fifteen lines: accumulate each triangle's
+  cross product at all three corners (its length is twice the area, so the
+  weighting is free), then normalise.
+
+1,190,700 -> 341,992 vertices, and then the ratio does what it was asked.
+
+## A sound that has not decoded plays NOTHING, and the caller must know (v8.0)
+
+`snd()` returns null when a sample has not decoded — `sndBuf()` kicks the
+decode and the call is silent. That is correct and deliberate. What is not
+correct is a caller that assumes it played.
+
+Episode 2 chapter 1's `sayLine` booked its "somebody is talking" window for
+the length of the line it had just failed to play, so the first press of E at
+a soldier was silent AND the next few presses were refused. Measured at the
+first frame of play on the shipped build: 46 samples decoded, and all five
+lines a hotspot can ask for decoded none of them.
+
+Three rules came out of it, and they generalise past this chapter:
+
+- **only book a window when the sound actually started.** `worldSfx`/`snd`
+  hand back the source, or null. Ignoring that return is how a silence
+  becomes a lockout.
+- **warm what a player can ask for.** A FILM's cues are warmed by the engine
+  (`whenDecoded`); anything a player triggers at a moment of their choosing is
+  not, and must be. `ctx.warmSounds(names)` is the seam.
+- **a warm request can only be a REQUEST.** A chapter is built long before its
+  pack has downloaded, so warming at build time decodes nothing; and the first
+  attempt at this threw outright, because the whole audio section is
+  initialised further down main.js than the first chapter build runs
+  (`packBufs` was still undefined). The seam records into a set; the pack
+  loader drains it when bytes land, and `enterWorld` drains it again for a
+  replayed chapter whose pack is already in memory.
+
+And the smaller one beside it: a rig sent back to a take it does not have goes
+nowhere. `rig.play` of a missing take is a no-op BY DESIGN, so the FBO
+bunkmate — whose rest take is `Idle_6` — froze in the last frame of his talk
+after every line from v7.1, because both his handlers asked for `Idle_9`.
+
+## A clip named "idle" may not be one — measure the pose, not the name (v8.0)
+
+The ferry cabin rendered empty with all ten riders present, visible, and their
+hips exactly on the seat pans. `Chair_Sit_Idle_M`, sampled 40 times for
+head-above-hips, holds 0.58 m for the first eighth and the last sixth of its
+10.75 s and COLLAPSES to 0.27 in between: the man folds right over with his
+head down at his knees for more than half the take. Ten riders parked on
+evenly spread fractions put seven of them below the seat backs.
+
+So a parked pose is chosen from the clip's own UPRIGHT WINDOW, per clip —
+`Sit_and_Doze_Off` holds 0.53-0.55 throughout and needs no window at all.
+
+The same measurement is how a model with no standing idle gets one: the botak
+recruit's `restpose` is an A-pose with the arms held out, so his parade-square
+stand is `Walking` parked at t = 0.122, sampled sixty times as the frame where
+his feet are closest (0.136 m) and his hands lowest (0.880 m).
