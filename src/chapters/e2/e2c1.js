@@ -1298,7 +1298,14 @@
     const ENC_DOOR = { x: -1.5, z: -3.05, ry: 0.16 };
     const ENC_LINE = { x: BALC.x1 - 0.5, z: 1.2, ry: -Math.PI / 2 };   // beside the sergeant at the parapet
     const encik = mkRig('encik2', { x: ENC_DOOR.x, z: ENC_DOOR.z, ry: ENC_DOOR.ry, height: 1.72, idle: 'Idle_9' });
-    const encSay = (name) => castSay(encik, name, 'Talk_with_Left_Hand_on_Hip', 'Idle_9');
+    /* v8.2: he has TWO talking takes and uses both, alternating line by line —
+       he is the one man in this episode who will do most of the talking, and a
+       character who gestures the same way every time he opens his mouth reads
+       as a loop rather than a person. Reset with the run so a replay tells it
+       the same way. */
+    const ENC_TALK = ['Talk_with_Left_Hand_on_Hip', 'Talk_with_Left_Hand_Raised'];
+    let encTalkN = 0;
+    const encSay = (name) => castSay(encik, name, ENC_TALK[encTalkN++ % ENC_TALK.length], 'Idle_9');
     /* the figure at the corridor's end — scene A's one frame. A stand-in
        (Chad supplies the ghost); the ghost treatment is the engine's own:
        grey, transparent, no shadow. */
@@ -2385,7 +2392,7 @@
       nightK = 0; showerVol = 0; mixBeds();
       seen.clear(); bedTries = 0; fallLate = false; fallTimer = null; arrivedAt = 0;
       booted = false; dayClock.t = 0;
-      speakReset();                    // v8.1: the mute window is in the clock that just went back to zero
+      speakReset(); encTalkN = 0;      // v8.1: the mute window is in the clock that just went back to zero
       freeWarned = false; freeTimer = null;    // and the evening's countdown belongs to the run that just ended
       if (kit) { kit.daylight(null, 0); kit.presence(0); kit.fade(0, 0.05); }
       beginArrive();

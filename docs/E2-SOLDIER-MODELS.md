@@ -542,12 +542,58 @@ The two FBO rigs wear **full battle order** — helmet, vest, field pack. The
 encik wears **No. 4s with a green beret and rolled sleeves**, which is why he
 is the right man for a bunk and a parade square and they are not (v8.1 §3).
 
-## Still to wire (v8.2)
+## §13 · EVERY CLIP, AND WHERE IT IS SEEN (v8.2)
 
-- `encik2` at the parade square in the film — he has never been loaded; the
-  "encik" facing the ranks today is `fbosling` on the sergeant's own takes.
-- `encik2` in the bunk beside the two FBO soldiers, and on the fall-in.
+Chad, handing the three models over: *"You must fully understand all the
+animations included in these models ... I spent a lot of time manually making
+all these animations, and you must make sure they are all used and shown to
+the player whereever possible and needed."*
+
+This is the ledger. **Measured first** — root motion sampled off the Hips
+track of every clip in all three files — because what a clip IS decides where
+it can go, and two of these are not what their names suggest.
+
+| clip | motion | encik2 | fbosling (sergeant) | fbonosling (bunkmate) |
+|---|---|---|---|---|
+| `Idle_9` / `Idle_3` / `Idle_6` | in place | his rest, everywhere | his rest | his rest |
+| `Talk_with_Left_Hand_on_Hip` | in place | **every other spoken line**; the parade square in the film | — (not in his file) | — |
+| `Talk_with_Left_Hand_Raised` | in place | **the other every-other line** | **every spoken line**, and the film at 47.6 s | **every spoken line** |
+| `Walking` | **in place** (0.04 m) | **out to the fall-in and back**, 1.35 m/s | **the same**, 1.35 m/s | — (he runs) |
+| `Running` | **in place** (0.02 m) | — (rank walks) | — | **out to the fall-in and back**, 2.6 m/s |
+| `Gun_Hold_Left_Turn` | **0.65 m forward** | — (not in his file) | reserved · rifle mode | reserved · rifle mode |
+| `Rifle_Charge_inplace` | in place, 0.58 s | — | reserved · rifle mode | reserved · rifle mode |
+| `Gesture_with_Hand_on_Gun` | still, hips at 0.53 m | reserved | reserved | reserved |
+| `restpose` | one frame | never played — it is the bind pose | " | " |
+
+`Walking` and `Running` being IN PLACE is what made v8.2's marching fall-in
+possible at all: a take that does not travel drives a glide, which is the
+shape ch5's tang-ki has walked on since v5.07. v7.4's "neither rig carries a
+walk take" was true of the OLD files and is retired.
+
+**The three reserved clips are reserved, not forgotten, and the reason is the
+chapter rather than the clip.** All three are weapon handling — `Gun_Hold_
+Left_Turn` is a crouched braced turn, `Rifle_Charge_inplace` is one charge
+motion, and `Gesture_with_Hand_on_Gun` was PHOTOGRAPHED at v8.1 and is a
+KNEEL, not a gesture. The Worst Bed is day one in a bunk: nobody in it has
+been issued a rifle yet, and staging a man crouching with a weapon in a bunk
+at ten to ten at night would read as a different chapter. They belong to
+rifle mode and the chapters after it, which is the next release in the
+episode-2 plan. Wiring them here would be using them, not showing them.
+
+## Done at v8.2
+
+- `encik2` at the parade square in the film, in the bunk beside the two FBO
+  soldiers, and out on the fall-in on his own two feet.
+- `Talk_with_Left_Hand_Raised` from each rig's OWN file, replacing the v8.1
+  retarget on the bunkmate — a character's own clip beats a transplant
+  (v5.20's law).
+- The encik alternates his two talking takes line by line: he does most of
+  the talking in this episode, and one gesture every time reads as a loop.
+
+## Still to wire
+
 - His voice: an angry Malay uncle (Chad's words), a new speaker in
-  `src/voicelines.js`.
-- `Talk_with_Left_Hand_Raised` replacing the v8.1 RETARGET on the bunkmate —
-  a character's own clip beats a transplant (v5.20's law).
+  `src/voicelines.js`. Two rounds of candidates sent; the workspace library
+  carries no Malay or Indonesian male voice tagged `old`, so the choice is
+  between the right accent directed older and a genuinely elderly voice from
+  a neighbouring one.
