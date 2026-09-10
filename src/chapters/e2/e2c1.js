@@ -181,6 +181,19 @@
     const SQUARE = { x0: 8.4, x1: 40, z0: -25, z1: 25 };
     const BED = { len: 1.9, wid: 0.9, low: 0.55, high: 1.55, post: 1.9 };
     const ROW_X = [-4.6, 4.6], ROW_Z = [-3.0, -1.5, 0, 1.5, 3.0];
+    /* v7.4: THE BALCONY-SIDE ROW IS NOT THE WALL-SIDE ROW. The +x wall
+       carries the door to the balcony, and until now a bed and two lockers
+       stood across it: the fall-in line was UNREACHABLE ON FOOT. Measured on
+       the shipped build, the furthest a player could walk was x 5.74 and the
+       line is at 7.25 — 4274 walkable cells out there, none of them reached.
+       A bunk with a door in it has a GANGWAY to that door. The +x row is
+       four beds and two lockers, all clear of z ±1.10, so 2.2 m of open
+       floor leads from the middle aisle straight out onto the balcony. The
+       −x row (and HIS bed, at −4.6, 3.0) is untouched. */
+    const ROW_Z_BALC = [-3.35, -2.2, 2.2, 3.35];
+    const LOCK_Z = [-2.25, -0.75, 0.75, 2.25], LOCK_Z_BALC = [-1.5, 1.5];
+    const bedZs  = rx => (rx < 0 ? ROW_Z : ROW_Z_BALC);
+    const lockZs = rx => (rx < 0 ? LOCK_Z : LOCK_Z_BALC);
     const HIS = { x: -4.6, z: 3.0 };
 
     /* ----------------------------------------------------------- textures */
@@ -351,7 +364,7 @@
       beds.push(b);
       return b;
     }
-    for (const rx of ROW_X) for (const rz of ROW_Z) mkBed(rx, rz, rx < 0 ? -1 : 1);
+    for (const rx of ROW_X) for (const rz of bedZs(rx)) mkBed(rx, rz, rx < 0 ? -1 : 1);
     const hisBed = beds.find(b => b.his);
 
     // lockers between the beds, against the wall
@@ -359,7 +372,7 @@
     const lockerGeo = new THREE.BoxGeometry(0.5, 1.8, 0.5);
     const packGeo = new THREE.BoxGeometry(0.42, 0.26, 0.34);
     const matPack = new THREE.MeshStandardMaterial({ color: 0x3d4a3a, roughness: 0.95 });
-    for (const rx of ROW_X) for (const lz of [-2.25, -0.75, 0.75, 2.25]) {
+    for (const rx of ROW_X) for (const lz of lockZs(rx)) {
       const l = new THREE.Mesh(lockerGeo, matLocker);
       l.position.set(rx < 0 ? -R.x + 0.27 : R.x - 0.27, 0.9, lz);
       l.castShadow = !LOW; l.receiveShadow = true;
@@ -905,13 +918,13 @@
       /* lying IN the bed at night, the mattress is under him and out of the
          lens — the bed is still the thing he acts on (the probe found the
          decision unreachable from the pillow) */
-      if (abed() && pileDist() < 1.3) return true;
+      if ((abed() || lying()) && pileDist() < 1.3) return true;
       const n = pileScreen();
       return n.z < 1 && Math.abs(n.x) < 0.97 && Math.abs(n.y) < 0.97;
     }
     function pointerHitsPile(cx, cy) {
       if (pileDist() > INTERACT_R) return false;
-      if (abed() && pileDist() < 1.3) return true;
+      if ((abed() || lying()) && pileDist() < 1.3) return true;
       syncCamera();
       _ptr.set((cx / innerWidth) * 2 - 1, -(cy / innerHeight) * 2 + 1);
       _ray.setFromCamera(_ptr, camera);
@@ -976,6 +989,12 @@
     /* lying in bed at three in the morning, before the decision and while it
        is open — the bed is the thing he acts on in both */
     const abed = () => phase === 'night' || phase === 'decide';
+    /* v7.4: and LYING DOWN AT ALL, whichever phase. Getting up needs the bed
+       to be the thing you act on, and the bed is what you are lying on — it
+       is under the lens and off screen, so `inView()` said no and there was
+       no way to stand up again. v7.1 special-cased three in the morning and
+       never the daytime, which made the bed a TRAP by day. */
+    const lying = () => !!(kit && kit.getPose && kit.getPose() === 'lying');
 
     /* THE BEDS are the chapter's, and the night changes them: the day's room
        tone crosses to the night's, the episode's bed comes in under it,
@@ -1030,6 +1049,7 @@
       fallLate = bankedHas(DATA.words.noteLate);
       if (worldSfx) worldSfx('whistle', 0.9);
       putSergeant(SGT_LINE);
+      fallOut(true);            // v7.4: everyone else is already on the line
       after(1.2, () => sgtSay('s1fallin'));
       after(4.6, () => sayLine('n1fallin'));
       if (!kit) return;
@@ -1042,7 +1062,35 @@
         after(3.6, () => { sayLine('n1late'); if (worldSfx) worldSfx('pushups', 0.8); });
         bank({ s: -3, a: -2, note: DATA.words.noteLate });
         kit.objective(DATA.words.objLate);
+        /* v7.4: AND THE FALL-IN ENDS. Before this the timer paid out its
+           penalty and then the chapter went on waiting for the line for
+           ever — a player who was slow (or, before the gangway, any player
+           at all) was stuck with nowhere the day could go. The sergeant has
+           you now: the push-ups beat plays out and the day moves on. */
+        after(9.0, () => { if (phase === 'fallin') onTheLine(); });
       });
+    }
+    /* v7.4: the rest of the section falls in TOO. Chad, playing: "shouldnt
+       you make all the bunkmates run outside to fall in too? why are they
+       stuck in the bunk?" — they were, because the whistle only ever moved
+       the sergeant. Neither rig carries a walk take (the file ships an idle
+       and a talk and nothing else), so they are PLACED rather than walked:
+       on the whistle the bunk empties behind you and the squad is already
+       forming up, which is also the truth the chapter tells out loud when
+       you are last. `BUNK_AT` remembers where each stood so they go back. */
+    const BUNK_AT = new Map();
+    function fallOut(on) {
+      for (const [r, at] of [[buddy, { x: BALC.x0 + 1.0, z: -1.5, ry: 0 }],
+                             [bunkmate, { x: BALC.x0 + 1.0, z: 0.6, ry: 0 }]]) {
+        if (!r || !r.group) continue;
+        if (on) {
+          if (!BUNK_AT.has(r)) BUNK_AT.set(r, { x: r.group.position.x, z: r.group.position.z, ry: r.group.rotation.y });
+          r.group.position.set(at.x, 0, at.z); r.group.rotation.y = at.ry;
+        } else {
+          const b = BUNK_AT.get(r); if (!b) continue;
+          r.group.position.set(b.x, 0, b.z); r.group.rotation.y = b.ry;
+        }
+      }
     }
     function onTheLine() {
       if (fallTimer) { fallTimer.stop(); fallTimer = null; }
@@ -1053,7 +1101,7 @@
     let bedTries = 0;
     function beginStandby() {
       setPhase('standby');
-      after(fallLate ? 6.5 : 1.0, () => putSergeant(SGT_DOOR));
+      after(fallLate ? 6.5 : 1.0, () => { putSergeant(SGT_DOOR); fallOut(false); });
       if (!kit) return;
       kit.objective(DATA.words.objStandby);
       kit.waypoint({ x: PILE_POS.x, y: 1.0, z: PILE_POS.z });

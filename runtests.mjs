@@ -36,6 +36,7 @@ const ALL = [
   { name: 'leak',     file: 'leaktest.mjs',  quick: true,  group: 'engine', why: 'a chapter gives the GPU back everything it took' },
   { name: 'chapter',  file: 'chaptertest.mjs', quick: true, group: 'chapter', why: 'every chapter\'s data is complete and in bounds' },
   { name: 'fixture',  file: 'fixturetest.mjs', quick: true, group: 'chapter', why: 'the engine plays a chapter it has never seen' },
+  { name: 'walk',     file: 'walktest.mjs',    quick: true, group: 'chapter', why: 'every place a chapter sends you can be WALKED to' },
   { name: 'title',    file: 'titletest.mjs', quick: false, group: 'release', why: 'logo, button, chapter card' },
   { name: 'final',    file: 'final.mjs',     quick: false, group: 'release', why: 'the whole walk, on a real phone and desktop' },
 ];

@@ -1472,10 +1472,19 @@ function kitFrame(dt, t, dLookX, dLookY) {
     if (kitFade.t >= 1) kitFade = null;
   }
   // timer, objective, waypoint
+  /* v7.4: the countdown runs on WALL TIME, not the frame's dt. `dt` is
+     clamped to 0.05 s so a stutter can never throw the world, which means a
+     device drawing fewer than 20 frames a second runs this clock SLOW — a
+     14-second fall-in becomes eighteen on a weak phone and the number on
+     screen stops being the truth. Same law the chapter clock learned at
+     v7.1, applied to the kit's own timer. `last` is dropped whenever play is
+     not running, so a menu or a cutscene never eats the countdown. */
   if (kitTimer && state === 'play') {
-    kitTimer.left -= dt;
+    const now = performance.now() / 1000;
+    kitTimer.left -= kitTimer.last ? Math.min(0.5, now - kitTimer.last) : 0;
+    kitTimer.last = now;
     if (kitTimer.left <= 0) { const f = kitTimer.onEnd; kitTimer = null; if (typeof f === 'function') f(); }
-  }
+  } else if (kitTimer) kitTimer.last = 0;
   paintObjective();
   paintWaypoint();
   // the decision clock
