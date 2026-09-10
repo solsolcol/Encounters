@@ -5778,6 +5778,14 @@ function enterWorld(place, opts = {}) {
     markReached(CH_KEY);           // and the chapter is open in the selector from now on (v5.12)
   });
 
+  /* v8.2: BEFORE the branch, not inside the film's arm. This used to sit
+     below, on the film path only — so a chapter entered with no film (the
+     RESUME path, and any chapter that declares no `intro`) never drained
+     what its build() asked to warm, and its hotspot lines were silent on
+     the first press exactly as they were before v8.0. Chapters 1-5 warm
+     nothing, so for them this is a no-op on an empty set. */
+  packWarm(WARM_WANT);
+
   // placing happens BEFORE the card, not at its dissolve: the card's
   // fade must never reveal a frame of the world from the old vantage
   if (!intro) { if (place) place(); return card(); }
@@ -5791,7 +5799,6 @@ function enterWorld(place, opts = {}) {
   ui.title.classList.add('hide');
   ui.hud.classList.add('hide');
   if (place) place();
-  packWarm(WARM_WANT);      // v8.0: and a replayed chapter's play lines, whose pack is already in
   /* v5.13: THE FILM WAITS FOR ITS SOUNDS. A chapter's pack is fetched by
      setChapter(), and on the advance path startDecision() fetched it a
      whole decision earlier — but from the chapter selector, and on
