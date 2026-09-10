@@ -1644,6 +1644,21 @@ What the baseline contains, by release:
   async, so a film that opens on them waits for the stand in `ready()`.
   `cinetest` now asks that the ferry be SEEN by five seconds. No word
   moved.
+- **v7.8** AARON, AT EIGHTEEN — Chad, on v7.1's Gabriel: *"the voice for
+  the main character is so bad. Either find a better one, or stick to the
+  same voice we used back in ep 1."* His fallback taken: the eighteen-year-
+  old is AARON again (`jamesTeen.voice` → `B6uUx2p7cRgxseOUyP6P`), so the
+  boy of episode 1 and the recruit of episode 2 are one voice. All 26
+  `TEEN_TAKES` regenerated on one flow under the v5.28 prompt rules (the
+  registry's words exactly — checked by script, 0 mismatches — one tag
+  naming an emotion, no added capitals), two takes each, the take per line
+  chosen by v7.1's measure, peak-matched to `vpile`, both encodings,
+  `secs` re-measured into the registry and the chapter's `SECS`. Aaron is
+  faster on 21 of 26; the five that grew all end clear of the next cue, so
+  no timeline moved. The prompts, sessions, picks and report are
+  `masters/v7.8/`. Sheet v43 (the re-measured voice lines and v7.5's two
+  words). EPISODES-PLAN §6's "his voice ages with him" is now a decision
+  Chad reversed for this episode; a later episode may age him again.
 - **v7.0** THE PLAY KIT — episode 2's first release, and the one that ships
   nothing a player of episode 1 can see (Chad approved the plan on 9 Sep:
   "can you begin building according to your plan?"). Everything a chapter

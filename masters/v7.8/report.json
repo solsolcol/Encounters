@@ -1,0 +1,262 @@
+[
+ {
+  "id": "n1pro1",
+  "src": "masters/v7.8/n1pro1-a.mp3",
+  "srcPeak": -0.8,
+  "gain": -2.6,
+  "peak": -3.9,
+  "oldSecs": 6.53,
+  "secs": 5.88,
+  "kb": "92/52"
+ },
+ {
+  "id": "n1pro2",
+  "src": "masters/v7.8/n1pro2-a.mp3",
+  "srcPeak": -2.5,
+  "gain": -0.9,
+  "peak": -3.7,
+  "oldSecs": 7.97,
+  "secs": 8.28,
+  "kb": "129/74"
+ },
+ {
+  "id": "n1pro3",
+  "src": "masters/v7.8/n1pro3-a.mp3",
+  "srcPeak": -0.7,
+  "gain": -2.7,
+  "peak": -3.8,
+  "oldSecs": 8.28,
+  "secs": 6.27,
+  "kb": "98/56"
+ },
+ {
+  "id": "n1pro4",
+  "src": "masters/v7.8/n1pro4-a.mp3",
+  "srcPeak": -4.2,
+  "gain": 0.8,
+  "peak": -3.8,
+  "oldSecs": 5.49,
+  "secs": 5.15,
+  "kb": "80/43"
+ },
+ {
+  "id": "n1voice",
+  "src": "masters/v7.8/n1voice-a.mp3",
+  "srcPeak": -5,
+  "gain": 1.6,
+  "peak": -3.8,
+  "oldSecs": 2.77,
+  "secs": 2.35,
+  "kb": "37/18"
+ },
+ {
+  "id": "n1near",
+  "src": "masters/v7.8/n1near-a.mp3",
+  "srcPeak": -4.6,
+  "gain": 1.2,
+  "peak": -3.8,
+  "oldSecs": 2.04,
+  "secs": 2.04,
+  "kb": "32/18"
+ },
+ {
+  "id": "n1act",
+  "src": "masters/v7.8/n1act-b.mp3",
+  "srcPeak": -10.9,
+  "gain": 7.5,
+  "peak": -3.9,
+  "oldSecs": 3.4,
+  "secs": 4.21,
+  "kb": "66/32"
+ },
+ {
+  "id": "n1fallin",
+  "src": "masters/v7.8/n1fallin-a.mp3",
+  "srcPeak": -1.1,
+  "gain": -2.3,
+  "peak": -3.8,
+  "oldSecs": 1.96,
+  "secs": 1.8,
+  "kb": "28/14"
+ },
+ {
+  "id": "n1late",
+  "src": "masters/v7.8/n1late-b.mp3",
+  "srcPeak": -2.7,
+  "gain": -0.7,
+  "peak": -3.8,
+  "oldSecs": 2.93,
+  "secs": 2.77,
+  "kb": "43/23"
+ },
+ {
+  "id": "n1bedok",
+  "src": "masters/v7.8/n1bedok-a.mp3",
+  "srcPeak": -2.2,
+  "gain": -1.2,
+  "peak": -3.8,
+  "oldSecs": 4.91,
+  "secs": 3.08,
+  "kb": "48/28"
+ },
+ {
+  "id": "n1bedfail",
+  "src": "masters/v7.8/n1bedfail-b.mp3",
+  "srcPeak": -4.4,
+  "gain": 1,
+  "peak": -3.9,
+  "oldSecs": 4.21,
+  "secs": 2.85,
+  "kb": "44/23"
+ },
+ {
+  "id": "n1shower",
+  "src": "masters/v7.8/n1shower-a.mp3",
+  "srcPeak": -3.6,
+  "gain": 0.2,
+  "peak": -3.8,
+  "oldSecs": 4.52,
+  "secs": 4.05,
+  "kb": "63/36"
+ },
+ {
+  "id": "n1board",
+  "src": "masters/v7.8/n1board-b.mp3",
+  "srcPeak": -0.9,
+  "gain": -2.5,
+  "peak": -3.9,
+  "oldSecs": 2.27,
+  "secs": 2.12,
+  "kb": "33/20"
+ },
+ {
+  "id": "n1lights",
+  "src": "masters/v7.8/n1lights-b.mp3",
+  "srcPeak": -6.8,
+  "gain": 3.4,
+  "peak": -3.8,
+  "oldSecs": 2.77,
+  "secs": 2.04,
+  "kb": "32/17"
+ },
+ {
+  "id": "n1wake",
+  "src": "masters/v7.8/n1wake-b.mp3",
+  "srcPeak": -11.2,
+  "gain": 7.8,
+  "peak": -3.8,
+  "oldSecs": 1.41,
+  "secs": 1.72,
+  "kb": "27/14"
+ },
+ {
+  "id": "n1hear",
+  "src": "masters/v7.8/n1hear-b.mp3",
+  "srcPeak": -7.2,
+  "gain": 3.8,
+  "peak": -3.8,
+  "oldSecs": 6.03,
+  "secs": 4.44,
+  "kb": "69/33"
+ },
+ {
+  "id": "n1A1",
+  "src": "masters/v7.8/n1A1-b.mp3",
+  "srcPeak": -8.4,
+  "gain": 5,
+  "peak": -3.8,
+  "oldSecs": 5.56,
+  "secs": 3.55,
+  "kb": "55/29"
+ },
+ {
+  "id": "n1A2",
+  "src": "masters/v7.8/n1A2-a.mp3",
+  "srcPeak": -8.6,
+  "gain": 5.2,
+  "peak": -3.8,
+  "oldSecs": 2.35,
+  "secs": 2.51,
+  "kb": "39/22"
+ },
+ {
+  "id": "n1B1",
+  "src": "masters/v7.8/n1B1-a.mp3",
+  "srcPeak": -8.4,
+  "gain": 5,
+  "peak": -4,
+  "oldSecs": 4.83,
+  "secs": 4.13,
+  "kb": "64/32"
+ },
+ {
+  "id": "n1B2",
+  "src": "masters/v7.8/n1B2-a.mp3",
+  "srcPeak": -8.3,
+  "gain": 4.9,
+  "peak": -3.9,
+  "oldSecs": 2.77,
+  "secs": 2.51,
+  "kb": "39/19"
+ },
+ {
+  "id": "n1C1",
+  "src": "masters/v7.8/n1C1-b.mp3",
+  "srcPeak": -8,
+  "gain": 4.6,
+  "peak": -3.9,
+  "oldSecs": 2.04,
+  "secs": 1.65,
+  "kb": "26/13"
+ },
+ {
+  "id": "n1D1",
+  "src": "masters/v7.8/n1D1-a.mp3",
+  "srcPeak": -6.3,
+  "gain": 2.9,
+  "peak": -4,
+  "oldSecs": 2.59,
+  "secs": 2.43,
+  "kb": "38/19"
+ },
+ {
+  "id": "n1A",
+  "src": "masters/v7.8/n1A-a.mp3",
+  "srcPeak": -4.1,
+  "gain": 0.7,
+  "peak": -3.9,
+  "oldSecs": 7.71,
+  "secs": 6.69,
+  "kb": "104/58"
+ },
+ {
+  "id": "n1B",
+  "src": "masters/v7.8/n1B-b.mp3",
+  "srcPeak": -4.8,
+  "gain": 1.4,
+  "peak": -3.9,
+  "oldSecs": 8.12,
+  "secs": 7.16,
+  "kb": "112/63"
+ },
+ {
+  "id": "n1C",
+  "src": "masters/v7.8/n1C-a.mp3",
+  "srcPeak": -3.1,
+  "gain": -0.3,
+  "peak": -3.8,
+  "oldSecs": 6.35,
+  "secs": 6.03,
+  "kb": "94/49"
+ },
+ {
+  "id": "n1D",
+  "src": "masters/v7.8/n1D-b.mp3",
+  "srcPeak": -7,
+  "gain": 3.6,
+  "peak": -3.9,
+  "oldSecs": 6.03,
+  "secs": 6.35,
+  "kb": "99/50"
+ }
+]

@@ -177,8 +177,8 @@
   /* the measured length of every line this chapter says outside a cutscene
      (src/voicelines.js is the registry; the chapter cannot import it), so a
      line in play never starts over another */
-  const SECS = { n1shower: 4.52, n1board: 2.27, n1late: 2.93, n1bedok: 4.91, n1bedfail: 4.21,
-                 n1fallin: 1.96, n1lights: 2.77, n1wake: 1.41, n1hear: 6.03,
+  const SECS = { n1shower: 4.05, n1board: 2.12, n1late: 2.77, n1bedok: 3.08, n1bedfail: 2.85,
+                 n1fallin: 1.8, n1lights: 2.04, n1wake: 1.72, n1hear: 4.44,
                  s1fallin: 3.16, s1late: 3.4, s1standby: 3.08, s1again: 1.96, s1lights: 2.27,
                  b1day: 3.08, b1sleep: 2.19, k1board: 3.0, k1three: 4.05 };
 
@@ -1943,7 +1943,7 @@
     tr(0, 9.4, k => stage.ferryApproach(k), rawK);
     sfx(0.2, 'seawash', 0.9);
     sfx(1.2, 'ferryhorn', 0.8);
-    sfx(2.0, 'n1pro1');                       // 6.53 s → 8.5
+    sfx(2.0, 'n1pro1');                       // 5.88 s → 7.9 (v7.8, Aaron)
 
     /* 8.6–12.0 a SHORT dip to black: the gates and the boots under it, his
        second line starting over the dark and finishing on the balcony. The
@@ -1955,7 +1955,7 @@
     pitchTo(9.4, 9.5, -0.12, -0.12);
     sfx(9.4, 'gates', 0.9);
     sfx(10.0, 'bootsmarch', 0.85);
-    sfx(10.5, 'n1pro2');                      // 7.97 s → 18.5
+    sfx(10.5, 'n1pro2');                      // 8.28 s → 18.8
 
     /* 12–19 the balcony: the square, the trees, the far block, flat morning
        light; then in through the opening. The beds come up with the light.
@@ -1988,7 +1988,7 @@
     pitchTo(33.0, 36.0, 0.0, -0.30, smoothK);
     yawTo(36.0, 40.5, Y_BED, Y_DOOR, smoothK);
     pitchTo(36.0, 40.5, -0.30, 0.06, smoothK);
-    sfx(37.0, 'n1pro3');                      // 8.28 s → 45.3
+    sfx(37.0, 'n1pro3');                      // 6.27 s → 43.3
     pitchTo(40.5, 44.0, 0.06, 0.34, smoothK);  // up to the clock
 
     /* 44–54 DUSK (v7.5). The day goes out of the windows and the sky over
@@ -2000,7 +2000,7 @@
     step(44.2, () => { if (kit) kit.daylight(null, 5); stage.clockGlow.intensity = stage.CLOCK_GLOW; stage.balcLight.intensity = 5; });
     tr(44.2, 48.0, k => { stage.setWindows(k); }, smoothK);
     tr(44.2, 47.0, k => { duck('bunkday', 0.8 * (1 - k)); duck('fanloop', 0.4 + 0.2 * k); }, rawK);
-    sfx(46.0, 'n1pro4');                      // 5.49 s → 51.5
+    sfx(46.0, 'n1pro4');                      // 5.15 s → 51.2
     camTo(46.0, 52.0, BYBED, PILLOW, smoothK);
     yawTo(46.0, 52.0, Y_DOOR, Y_UP, smoothK);
     pitchTo(46.0, 52.0, 0.34, 0.68, smoothK);     // to the bunk's edge, the mesh under it, the ceiling and the fan (v7.2: 0.80 looked into a slab)
@@ -2064,7 +2064,7 @@
     // 10.5–15 down the corridor toward the water
     camTo(10.5, 15.0, INSIDE, NEAR, smoothK);
     yawTo(10.5, 15.0, Y_IN, Y_NEAR, smoothK);
-    sfx(11.0, 'n1A1');                          // 5.56 s → 16.6
+    sfx(11.0, 'n1A1');                          // 3.55 s → 14.6
     // 15.0 it stops. By itself.
     sfx(15.0, 'showeroff', 0.9);
     step(15.0, () => { stage.setShower(false); });
@@ -2077,7 +2077,7 @@
     step(20.95, () => { stage.ghostFig.group.visible = true; });
     step(21.1, () => { stage.ghostFig.group.visible = false; });
     fade(21.1, 22.2, 0, 1);
-    sfx(21.6, 'n1A2');                          // 2.35 s → 24.0
+    sfx(21.6, 'n1A2');                          // 2.51 s → 24.1
     step(24.4, () => { handsRoot.visible = true; });
     c.endFade = 1;
   }
@@ -2092,11 +2092,11 @@
     yawTo(0, 3.0, s.yawRot, stage.LIE_YAW, smoothK);
     pitchTo(0, 3.0, s.pitchX, 0.95, smoothK);      // v7.2: 1.15 looked into the top bunk's slab; the fan and the clock's spill share this frame
     tr(0, 4.0, k => { duck('showerrun', 1 - 0.35 * k); }, rawK);
-    sfx(2.0, 'n1B1');                           // 4.83 s → 6.9
+    sfx(2.0, 'n1B1');                           // 4.13 s → 6.1
     sfx(14.0, 'showeroff', 0.7);
     step(14.0, () => { stage.setShower(false); });
     tr(14.0, 15.0, k => { duck('showerrun', 0.65 * (1 - k)); }, rawK);
-    sfx(15.4, 'n1B2');                          // 2.77 s → 18.2
+    sfx(15.4, 'n1B2');                          // 2.51 s → 17.9
     sfx(19.5, 'drip', 0.7);
     fade(20.6, 22.4, 0, 1);
     step(22.6, () => { handsRoot.visible = true; });
@@ -2116,7 +2116,7 @@
     tr(0.5, 2.4, k => { stage.nbLight.intensity = 2.8 * k; }, smoothK);     // v7.2: so the man he whispers to can be seen
     yawTo(0.5, 2.0, s.yawRot, Y_NEXT, smoothK);
     pitchTo(0.5, 2.0, s.pitchX, -0.06, smoothK);
-    sfx(2.2, 'n1C1');                           // the whisper, 2.04 s → 4.3
+    sfx(2.2, 'n1C1');                           // the whisper, 1.65 s → 3.9
     sfx(5.6, 'blanket', 0.7);
     tr(5.6, 7.2, k => { if (nb) nb.obj.rotation.z = rz0 + 0.22 * Math.sin(k * Math.PI); }, smoothK);
     sfx(7.2, 'b1huh');                          // 3.4 s → 10.6
@@ -2140,7 +2140,7 @@
     sfx(1.0, 'blanket', 0.9);
     tr(1.0, 2.2, k => { bl.visible = true; bl.material.opacity = 0.985 * k; }, smoothK);
     pitchTo(1.0, 2.2, s.pitchX, 0.3, smoothK);
-    sfx(2.8, 'n1D1', 1.0);                      // 2.59 s → 5.4
+    sfx(2.8, 'n1D1', 1.0);                      // 2.43 s → 5.2
     sfx(8.0, 'n1D1', 0.55);
     tr(2.0, 14.0, k => { duck('showerrun', 1 + 0.9 * k); }, rawK);
     tr(0, 15.0, k => { if (kit) kit.presence(0.35 + 0.45 * k); }, rawK);

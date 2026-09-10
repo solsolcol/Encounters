@@ -1,0 +1,33 @@
+{
+ "style": "v7.8 — the eighteen-year-old back in Aaron (B6uUx2p7cRgxseOUyP6P, eleven_v3), Chad's fallback after Gabriel ('Either find a better one, or stick to the same voice we used back in ep 1'). The v5.28 prompt rules: the registry's words EXACTLY, no capitals added, at most one tag and it names an EMOTION (a whisper carries a feeling with it), at most one added ellipsis, never prose in brackets. Two takes each on flow bvCh0Bu0vPMwM7w91RGM; the take per line chosen by the v7.1 measure (no spoken-tag segment, pace nearest 2.4 words a second).",
+ "voice": "B6uUx2p7cRgxseOUyP6P",
+ "flow": "bvCh0Bu0vPMwM7w91RGM",
+ "prompts": {
+  "n1pro1": "[quiet, resigned] Eighteen. The ferry to Tekong at seven in the morning, and nobody on it talking.",
+  "n1pro2": "[flat, tired] Hawk Company. Twenty of us to a bunk, two rows of double-deck beds, and the sergeant walking the line with a clipboard.",
+  "n1pro3": "[wry, resigned] Bed one. Right next to the toilet door. The worst spot in the room, and the one nobody wanted.",
+  "n1pro4": "[quiet, unconvinced] I told myself it didn't matter where you slept. Lights out was at ten.",
+  "n1voice": "[tired, steeling himself] First day. Just get through it.",
+  "n1near": "[flat] That's mine. Bed one.",
+  "n1act": "[uneasy whisper] Nobody else is moving. Nobody else can hear it?",
+  "n1fallin": "[startled, urgent] That's the whistle. Go, go.",
+  "n1late": "[sour, muttering] Twenty push-ups. On day one.",
+  "n1bedok": "[relieved] Done. Pillow, blanket, boots, all of it.",
+  "n1bedfail": "[deflated] Again. The whole bunk, because of me.",
+  "n1shower": "[calm, matter-of-fact] Just a shower block. Tiles, a drain, a timer tap.",
+  "n1board": "[grim] Week two. Live firing.",
+  "n1lights": "[tired] Ten o'clock. Lights out.",
+  "n1wake": "[groggy whisper] ...what time is it.",
+  "n1hear": "[uneasy whisper] The shower. Somebody's in the shower. At three in the morning.",
+  "n1A1": "[unnerved whisper] Nobody. The water's running and there's nobody.",
+  "n1A2": "[shaken whisper] ...there was someone at the end of the corridor.",
+  "n1B1": "[tense whisper] Just listen. Don't decide what it is. Just listen.",
+  "n1B2": "[unnerved whisper] It stopped. By itself.",
+  "n1C1": "[hushed, nervous] Eh. You awake?",
+  "n1D1": "[frightened whisper] It's nothing. It's nothing. It's nothing.",
+  "n1A": "[quiet, reflective] I got up and looked. I found water, and nothing else, and a corridor I did not like.",
+  "n1B": "[quiet, reflective] I stayed still and listened. What I heard was a sound. What it meant, I did not know yet.",
+  "n1C": "[quiet, reflective] I asked the one person who could tell me. He heard nothing. That was worth knowing.",
+  "n1D": "[quiet, ashamed] I decided what it was before I knew anything. Under the blanket, the water kept running."
+ }
+}
