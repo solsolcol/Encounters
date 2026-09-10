@@ -1608,6 +1608,23 @@ What the baseline contains, by release:
   anchors sit at EYE height** — a doorway's floor point is 44° under the
   lens from a metre away, outside the 36° half-view, so it was never
   offered. Two words; sheet v43 is CP4's (one sheet, not two).
+- **v7.6** THE ADMIN TEE, RETARGETED — Chad, on v7.1: *"why is the admin
+  tee model mangled up? how did this pass your review?"* It passed because
+  it was reviewed from across the bunk; at arm's length the sleeves and
+  the shirt tore off the buddy on every frame. Measured before anything
+  moved: NOT the simplifier (0.20 and 0.35 tear identically, the
+  unsimplified dressed file tears), not the source (Chad's A-pose and the
+  talking FBX render clean), and the rig on its OWN talking take is whole
+  — only the two takes copied BY NAME from the four-animation file tear
+  the cloth, because two Mixamo rigs can pose a body identically and still
+  hold their bones at different rest orientations (v5.20's law, met again
+  on a rig that IS Mixamo both sides). `Idle_9` and `Talk_with_Hands_Open`
+  now go through `tools/retarget.mjs` in world space (a `mixamo` map built
+  from the target's own bones, and the clip chosen by name), then the
+  0.20 / 2048 prep; verified BY RENDER front and both sides mid-clip, and
+  from the player's eye in the bunk. `borrowclips.mjs` is right for the
+  sergeant (metres to metres, the same rest) and wrong for this rig — the
+  models doc §11 says which is which. No word moved.
 - **v7.0** THE PLAY KIT — episode 2's first release, and the one that ships
   nothing a player of episode 1 can see (Chad approved the plan on 9 Sep:
   "can you begin building according to your plan?"). Everything a chapter

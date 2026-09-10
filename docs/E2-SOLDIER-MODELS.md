@@ -477,3 +477,18 @@ clones, quarter-turned onto the mattresses) and `sleepanim.glb` (two rigs
 on Sleep_Normally, measured from the posed skin). The prep level and the
 cast per chapter are as §6 and §9; the chapter's memory is
 docs/V7.1-E2C1-PLAN.md §15.
+
+**Corrected at v7.6:** the by-name borrow TORE the admin tee. The talking
+FBX's rig (34 bones, fingers) and the 4anim rig (27 bones) hold their
+bones at different rest orientations, so a track copied by name posed the
+cloth against the wrong rest — sleeves and shirt split off the arms on
+every frame of `Idle_9` and `Talk_with_Hands_Open`, while the rig's own
+`mixamo.com` take stayed whole (docs/V7.5-E2C1-REBUILD.md, CP1 record: the
+simplifier and the source were ruled out first). `assets/admintee.glb` now
+carries those two takes RETARGETED in world space (`tools/retarget.mjs
+anim4.glb dressed.glb out.glb Idle_9 mixamo`, then the same for the talk
+take, then `prepwoman.mjs` at 0.20 / 2048 keeping all three clips —
+4.6 MB, 118,779 triangles). The rule: **`borrowclips.mjs` only between rigs
+that share a rest pose** (the sergeant's FBO pair and the encik do);
+otherwise retarget. Verified by render at arm's length, front and both
+sides, on both takes.

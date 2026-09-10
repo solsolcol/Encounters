@@ -128,11 +128,22 @@ function restWorld(doc) {
 }
 
 const [takeF, targetF, outF, clipName = 'sit', mapName] = process.argv.slice(2);
-const MAP = MAPS[mapName];
-if (!MAP) { console.error('unknown map: ' + mapName + ' (have: ' + Object.keys(MAPS) + ')'); process.exit(1); }
-
 const take = await io.read(takeF);
 const dst  = await io.read(targetF);
+
+/* v7.6: `mixamo` — a Mixamo-cored TARGET, mapped from its own bones. Two
+   Mixamo rigs can still hold their bones at different rest orientations
+   (the admin tee's FBX-derived talking rig against its 4-animation glb:
+   copying the takes BY NAME tore the cloth off him, docs/V7.5-E2C1-REBUILD.md
+   CP1 record), so they go through the same world-space path as a rig that
+   is not Mixamo at all. The map is the identity over whatever core names
+   the target actually carries. */
+const MAP = mapName === 'mixamo'
+  ? Object.fromEntries(dst.getRoot().listNodes()
+      .filter(n => /^mixamorig/.test(n.getName()))
+      .map(n => [n.getName().replace(/^mixamorig:?/, '').replace(/_\d+$/, ''), n.getName()]))
+  : MAPS[mapName];
+if (!MAP) { console.error('unknown map: ' + mapName + ' (have: ' + Object.keys(MAPS) + ', mixamo)'); process.exit(1); }
 
 /* the take's animated nodes, by Mixamo core name */
 const core = n => n.replace(/^mixamorig:?/, '').replace(/_\d+$/, '');
@@ -142,7 +153,9 @@ const dstNode = new Map();
 for (const n of dst.getRoot().listNodes()) dstNode.set(n.getName(), n);
 
 const srcRest = restWorld(take), dstRest = restWorld(dst);
-const anim = take.getRoot().listAnimations()[0];
+/* v7.6: the take file may carry several clips — the one NAMED is used,
+   the first only when no clip carries that name */
+const anim = take.getRoot().listAnimations().find(a => a.getName() === clipName) || take.getRoot().listAnimations()[0];
 if (!anim) { console.error('the take has no animation'); process.exit(1); }
 
 /* one shared timeline: every rotation sampler in a Mixamo take shares it */
