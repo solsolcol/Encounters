@@ -673,6 +673,181 @@
     const treeStand = plantTrees(world, TREE_AT.map(([x, z], i) => ({ x, z, h: 6.4 + ((i * 29) % 9) * 0.3 })),
       { seed: 7, tint: new THREE.Color(0.92, 0.96, 0.88), roughness: 0.94, lowKeep: 0.55 });
 
+    /* ------------------------------------------------- the ferry (v7.7) ---
+       Chad, on v7.1: "why is the opening cinematic black for so long? Why is
+       there no ferry crossing the sea animation, or some good starting
+       intro?" The film's first nine seconds are on the FOREDECK of the
+       Tekong ferry: a set sixty metres off the bunk inside its own painted
+       sky (chapter 1's memory-pocket recipe — every material fog-free,
+       because the chapter's fog eats anything that far out), the sea
+       scrolling under the bow, the island's tree-line and its jetty coming
+       closer over the shot, a tanker on the horizon, the deck heaving on a
+       slow swell. Hidden outside the film; the film shows it on its first
+       frame and hides it in the dip to black before the balcony, and
+       reset() hides it again in case a film is cut before that step. */
+    const FERRY = new THREE.Vector3(-70, 0, -60);
+    const ferryRoot = new THREE.Group();
+    ferryRoot.position.copy(FERRY);
+    ferryRoot.visible = false;
+    world.add(ferryRoot);
+    const nfm = (o) => new THREE.MeshStandardMaterial(Object.assign({ fog: false }, o));
+    const fmesh = (parent, geo, mat, x, y, z, rx = 0, ry = 0, rz = 0) => {
+      const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.rotation.set(rx, ry, rz); parent.add(m); return m;
+    };
+    const fbox = (parent, w, h, d, mat, x, y, z, ry = 0) => fmesh(parent, new THREE.BoxGeometry(w, h, d), mat, x, y, z, 0, ry, 0);
+    const hash = (i, k) => { const x = Math.sin(i * 12.9898 + k * 78.233) * 43758.5453; return x - Math.floor(x); };
+    /* the sky: a square canvas on the inside of the bubble — row 0 the
+       zenith, the middle row the horizon; column 0.25 faces +z (the bow),
+       0.5 faces +x. Seven in the morning: a low sun off the starboard bow
+       behind thin cloud, haze on the water, the far coast a dark line. */
+    const skyDawn = (() => {
+      const S = LOW ? 512 : 1024, [c, ctx] = cnv(S);
+      const g = ctx.createLinearGradient(0, 0, 0, S);
+      g.addColorStop(0, '#3a5a92'); g.addColorStop(0.25, '#5f82b8'); g.addColorStop(0.42, '#9db4cc');
+      g.addColorStop(0.475, '#e2c8a2'); g.addColorStop(0.5, '#eccfa6'); g.addColorStop(0.503, '#4f6678');
+      g.addColorStop(0.7, '#3c4f60'); g.addColorStop(1, '#283846');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, S, S);
+      const sx = S * 0.34, sy = S * 0.44;
+      const glow = ctx.createRadialGradient(sx, sy, 0, sx, sy, S * 0.18);
+      glow.addColorStop(0, 'rgba(255,240,205,0.95)'); glow.addColorStop(0.2, 'rgba(255,210,140,0.6)');
+      glow.addColorStop(0.55, 'rgba(255,180,110,0.22)'); glow.addColorStop(1, 'rgba(255,170,110,0)');
+      ctx.fillStyle = glow; ctx.beginPath(); ctx.ellipse(sx, sy, S * 0.30, S * 0.13, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#fff8e6'; ctx.beginPath(); ctx.arc(sx, sy, S * 0.012, 0, Math.PI * 2); ctx.fill();
+      // clouds as clusters of soft puffs (v6.8's recipe), warm near the sun, grey away from it
+      const puff = (x, y, r, rgb, a) => {
+        const gr = ctx.createRadialGradient(x, y, 0, x, y, r);
+        gr.addColorStop(0, `rgba(${rgb},${a})`); gr.addColorStop(0.55, `rgba(${rgb},${a * 0.9})`); gr.addColorStop(1, `rgba(${rgb},0)`);
+        ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+      };
+      const rows = [[0.06, 0.30, 0.05, 0.016], [0.16, 0.35, 0.06, 0.020], [0.27, 0.27, 0.05, 0.017], [0.44, 0.33, 0.07, 0.022],
+                    [0.58, 0.29, 0.05, 0.016], [0.70, 0.36, 0.06, 0.020], [0.84, 0.31, 0.055, 0.018], [0.95, 0.38, 0.045, 0.015],
+                    [0.36, 0.41, 0.045, 0.012], [0.52, 0.43, 0.04, 0.011], [0.12, 0.42, 0.05, 0.012]];
+      rows.forEach(([u, v, w, h], ri) => {
+        const near = Math.abs(u - 0.34) < 0.16;
+        const top = near ? '255,232,205' : '228,232,238', bot = near ? '214,160,120' : '150,160,178';
+        const n = Math.max(3, Math.round(w / (h * 0.8)));
+        for (let i = 0; i < n; i++) { const t = i / (n - 1) - 0.5, j = hash(ri, i) - 0.5;
+          puff((u + t * w * 0.85) * S + j * h * S * 0.2, (v + h * 0.22) * S, h * S * (0.5 + 0.1 * Math.abs(j)), bot, 0.8); }
+        for (let i = 0; i < n - 1; i++) { const t = n === 2 ? 0 : i / (n - 2) - 0.5, j = hash(ri + 9, i) - 0.5;
+          puff((u + t * w * 0.7) * S + j * h * S * 0.25, (v - h * 0.25) * S, h * S * (0.62 + 0.25 * (1 - Math.abs(t) * 1.4)), top, 0.85); }
+      });
+      const hz = ctx.createLinearGradient(0, S * 0.47, 0, S * 0.5);
+      hz.addColorStop(0, 'rgba(240,225,205,0)'); hz.addColorStop(1, 'rgba(240,225,205,0.5)');
+      ctx.fillStyle = hz; ctx.fillRect(0, S * 0.47, S, S * 0.03);
+      ctx.fillStyle = 'rgba(50,66,70,0.85)';
+      for (const [u, w, h] of [[0.02, 0.10, 0.004], [0.55, 0.14, 0.005], [0.72, 0.09, 0.0035], [0.90, 0.08, 0.004]])
+        ctx.fillRect(u * S, (0.5 - h) * S, w * S, h * S);
+      const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = THREE.RepeatWrapping;
+      return t;
+    })();
+    /* the bubble is 120 m: the sky's BACK wall is a depth surface, so a coast
+       must stand inside it — at 48 m the land was clipped to a thirty-metre
+       islet and the sea ended in a hard line */
+    ferryRoot.add(new THREE.Mesh(new THREE.SphereGeometry(120, 40, 24),
+      new THREE.MeshBasicMaterial({ map: skyDawn, side: THREE.BackSide, fog: false })));
+    // the sea: streaks on a canvas, scrolled toward the lens by ferryTick
+    const seaTex = (() => {
+      const s = 256, [c, ctx] = cnv(s);
+      ctx.fillStyle = '#3a6474'; ctx.fillRect(0, 0, s, s);
+      for (let i = 0; i < 300; i++) {
+        ctx.fillStyle = `rgba(${130 + hash(i, 1) * 60 | 0},${175 + hash(i, 2) * 40 | 0},${190 + hash(i, 3) * 40 | 0},${0.10 + hash(i, 4) * 0.25})`;
+        ctx.fillRect(hash(i, 5) * s, hash(i, 6) * s, 6 + hash(i, 7) * 44, 1 + hash(i, 8) * 2);
+      }
+      const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
+      t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(27, 27);
+      return t;
+    })();
+    const SEA_Y = -0.9;
+    fmesh(ferryRoot, new THREE.PlaneGeometry(260, 260), nfm({ map: seaTex, roughness: 0.3, metalness: 0.1, emissive: 0x0c2a36, emissiveIntensity: 0.5 }),
+          0, SEA_Y, 0, -Math.PI / 2);
+    /* the foredeck: the lens stands on it at the origin looking +z over a
+       hand rail, the bulwarks running to the bow eight metres ahead */
+    const deck = new THREE.Group();
+    ferryRoot.add(deck);
+    const matDeck = nfm({ color: 0x66726a, roughness: 0.85 }), matHull = nfm({ color: 0xe6e3da, roughness: 0.6 });
+    const matRail = nfm({ color: 0xd9d6cc, roughness: 0.45, metalness: 0.5 }), matBuoy = nfm({ color: 0xe0562a, roughness: 0.7 });
+    const BOW = { half: 4.5, z0: 2, z1: 10 };
+    /* the hull is ONE outline — square astern, coming to the stem — extruded
+       down into the water, and the deck is the same outline laid flat, so
+       nothing of the boat shows outside its own bulwarks */
+    const hullShape = new THREE.Shape([[-BOW.half, -6], [BOW.half, -6], [BOW.half, BOW.z0], [0, BOW.z1], [-BOW.half, BOW.z0]].map(([x, z]) => new THREE.Vector2(x, z)));
+    const hull = new THREE.Mesh(new THREE.ExtrudeGeometry(hullShape, { depth: 1.4, bevelEnabled: false }), matHull);
+    hull.rotation.x = Math.PI / 2; hull.position.y = -0.02; deck.add(hull);   // extruded along +z, turned to hang down from the deck
+    const deckTop = new THREE.Mesh(new THREE.ShapeGeometry(hullShape), matDeck);
+    deckTop.rotation.x = -Math.PI / 2; deckTop.scale.y = -1; deckTop.position.y = 0; deck.add(deckTop);
+    const bowLen = Math.hypot(BOW.half, BOW.z1 - BOW.z0), bowAng = Math.atan2(BOW.half, BOW.z1 - BOW.z0);
+    for (const sgn of [-1, 1]) {
+      const cx = sgn * BOW.half / 2, cz = (BOW.z0 + BOW.z1) / 2, ry = -sgn * bowAng;
+      fbox(deck, 0.10, 1.05, bowLen, matHull, cx, 0.52, cz, ry);           // the bulwark
+      fmesh(deck, new THREE.CylinderGeometry(0.03, 0.03, bowLen, 8), matRail, cx, 1.08, cz, Math.PI / 2, ry, 0);   // its top rail
+    }
+    fbox(deck, 0.6, 1.05, 0.4, matHull, 0, 0.52, BOW.z1);                   // the stem
+    for (const x of [-3.2, -1.6, 0, 1.6, 3.2])                              // the hand rail across the deck in front of the lens
+      fmesh(deck, new THREE.CylinderGeometry(0.025, 0.025, 1.05, 8), matRail, x, 0.525, 1.9);
+    for (const y of [0.58, 1.05])
+      fmesh(deck, new THREE.CylinderGeometry(0.03, 0.03, 6.6, 8), matRail, 0, y, 1.9, 0, 0, Math.PI / 2);
+    fmesh(deck, new THREE.TorusGeometry(0.30, 0.07, 10, 24), matBuoy, 1.45, 0.72, 1.95);   // a life buoy on the rail
+    for (const a of [0, Math.PI / 2, Math.PI, -Math.PI / 2])                // its white quarters
+      fmesh(deck, new THREE.TorusGeometry(0.30, 0.075, 8, 8, 0.5), nfm({ color: 0xf2f0ea }), 1.45, 0.72, 1.95, 0, 0, a + 0.3);
+    fbox(deck, 0.9, 0.42, 0.5, nfm({ color: 0x9aa39c, roughness: 0.9 }), -3.4, 0.21, 4.2);   // a bench, a coiled rope
+    fmesh(deck, new THREE.TorusGeometry(0.28, 0.09, 8, 20), nfm({ color: 0xb59a6a, roughness: 1 }), 2.8, 0.09, 5.0, Math.PI / 2);
+    // the bow wave: two foam sheets flaring off the hull, pulsed by ferryTick
+    const foam = [];
+    for (const sgn of [-1, 1]) {
+      const f = fmesh(ferryRoot, new THREE.PlaneGeometry(1.8, 9), nfm({ color: 0xf4f8f6, roughness: 1, transparent: true, opacity: 0.5, depthWrite: false }),
+                      sgn * 5.1, SEA_Y + 0.02, 6.5, -Math.PI / 2, 0, sgn * 0.25);
+      foam.push(f);
+    }
+    /* TEKONG: a low land mass whose near shore is the island group's
+       origin, its beach, its tree-line from the kit, a jetty reaching out
+       to us with a shelter at its end, a beacon. The group slides closer
+       over the shot (ferryApproach). */
+    const island = new THREE.Group();
+    island.position.z = 44;
+    ferryRoot.add(island);
+    const matLand = nfm({ color: 0x2c3c2e, roughness: 1 }), matSand = nfm({ color: 0xcdbb93, roughness: 1 });
+    const landMass = fmesh(island, new THREE.CylinderGeometry(28, 30, 1.4, 40), matLand, 0, SEA_Y + 0.9, 28);
+    const beach = fmesh(island, new THREE.CylinderGeometry(29.2, 29.6, 0.3, 40), matSand, 0, SEA_Y + 0.22, 28.4);
+    landMass.scale.x = beach.scale.x = 3.2;                                 // a COAST across the whole view, not an islet
+    const land = new THREE.Group(); land.position.set(0, SEA_Y + 1.6, 0); island.add(land);
+    /* three ranks: a front rank every four metres along the whole coast
+       (the jetty's gap left at x ±3), two thinner ranks behind it */
+    const coastSpots = [];
+    for (let x = -76; x <= 76; x += 4) if (Math.abs(x) > 3) coastSpots.push([x + (hash(x, 21) - 0.5) * 2.4, 4 + hash(x, 22) * 5]);
+    for (let x = -72; x <= 72; x += 7) coastSpots.push([x + (hash(x, 23) - 0.5) * 3, 13 + hash(x, 24) * 5]);
+    for (let x = -66; x <= 66; x += 11) coastSpots.push([x + (hash(x, 25) - 0.5) * 4, 21 + hash(x, 26) * 5]);
+    const ferryTrees = plantTrees(land, coastSpots.map(([x, z], i) => ({ x, z, h: 5.5 + hash(i, 11) * 3.0 })),
+      { seed: 13, fog: false, tint: new THREE.Color(0.62, 0.72, 0.62), roughness: 0.95, lowKeep: 0.5 });
+    const matPlank = nfm({ color: 0x6e5a3e, roughness: 0.95 }), matPost = nfm({ color: 0x4a3c2a, roughness: 1 });
+    fbox(island, 2.2, 0.12, 16, matPlank, 0, 0.42, -8);                     // the jetty, out over the water toward us
+    for (let z = -15; z <= 0; z += 2.5) for (const x of [-0.9, 0.9])
+      fmesh(island, new THREE.CylinderGeometry(0.09, 0.09, 1.5, 6), matPost, x, SEA_Y + 0.65, z);
+    fbox(island, 2.6, 0.08, 2.6, nfm({ color: 0x8a3a30, roughness: 0.8 }), 0, 2.55, -14.5);   // the shelter's roof
+    for (const [x, z] of [[-1.1, -15.6], [1.1, -15.6], [-1.1, -13.4], [1.1, -13.4]])
+      fmesh(island, new THREE.CylinderGeometry(0.05, 0.05, 2.1, 6), matRail, x, 1.53, z);
+    fmesh(island, new THREE.CylinderGeometry(0.06, 0.06, 4.0, 6), nfm({ color: 0xe8e4dc }), 1.6, 1.9, -16.2);   // the beacon
+    fmesh(island, new THREE.SphereGeometry(0.16, 8, 6), nfm({ color: 0xff3a2a, emissive: 0xff3a2a, emissiveIntensity: 1.2 }), 1.6, 4.0, -16.2);
+    // a bumboat crossing under the coast to starboard
+    const bumboat = fbox(ferryRoot, 3.0, 0.9, 1.1, nfm({ color: 0xd8c8a0, roughness: 0.9 }), 22, SEA_Y + 0.4, 30);
+    // the sun, a soft disc on the sky where the painting put it, and its light on the deck
+    const sun = new THREE.Sprite(new THREE.SpriteMaterial({ map: dotTex, fog: false, transparent: true, depthWrite: false }));
+    sun.position.set(24.7, 8.8, 38.8); sun.scale.setScalar(5);   // on the painted sun's line (column 0.34, row 0.44)
+    ferryRoot.add(sun);
+    const sunLight = new THREE.PointLight(0xffd8a8, 30, 80, 1.0); sunLight.position.set(14, 6, 24); ferryRoot.add(sunLight);
+    const skyLight = new THREE.PointLight(0xc8d8f0, 14, 40, 1.0); skyLight.position.set(-4, 9, -6); ferryRoot.add(skyLight);
+    // the approach: the island from forty metres to twenty-six over the shot
+    const ferryApproach = (k) => { island.position.z = 44 - 14 * k; bumboat.position.x = 22 - 10 * k; };
+    let swellT = 0;
+    const ferryTick = (dt, t) => {
+      swellT += dt;
+      deck.position.y = Math.sin(swellT * 0.9) * 0.05;
+      deck.rotation.z = Math.sin(swellT * 0.7) * 0.012;
+      deck.rotation.x = Math.sin(swellT * 1.1 + 1) * 0.008;
+      seaTex.offset.y -= dt * 0.22;                                          // the water runs back under the bow
+      seaTex.offset.x = Math.sin(swellT * 0.3) * 0.01;
+      for (let i = 0; i < foam.length; i++) foam[i].material.opacity = 0.42 + 0.14 * Math.sin(swellT * 2.3 + i * 1.7);
+    };
+
     // the block far off, the same model every chapter has stood under
     let hdbReady = false;
     assetBytes('hdb').then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
@@ -1391,6 +1566,7 @@
         }
         waterGeo.attributes.position.needsUpdate = true;
       }
+      if (ferryRoot.visible) ferryTick(dt, t);
       if (getState() === 'cine') return;
     }
     function updateFire(t) {
@@ -1459,6 +1635,7 @@
       for (const r of [sergeant, buddy, bunkmate]) if (r.acts && r.idle) r.play(r.idle, 1, 0);
     }
     function reset() {
+      ferryRoot.visible = false;                 // v7.7: the film's deck, in case a film was cut before its own step hid it
       doorPivot.rotation.y = DOOR_AJAR; fanSpeed = 1; setShower(false);
       ghostFig.group.visible = false; water.material.opacity = 0.55; hisBed.low.on.visible = false;
       setNightRoom(false);                       // v7.5: leaves the evening lamps lit
@@ -1499,6 +1676,7 @@
     function dispose() {
       alive = false;
       treeStand.userData.disposeTrees?.();      // BEFORE the sweep: the kit's maps are shared (v6.15)
+      ferryTrees.userData.disposeTrees?.();
       const geos = new Set(), mats = new Set();
       world.traverse(o => {
         if (o.geometry) geos.add(o.geometry);
@@ -1523,8 +1701,9 @@
     const readyAt = performance.now();
     return (S = {
       world, noteTex, blockers: blockers(),
-      // the film shows the sergeant and the buddy: wait for them, but never past twelve seconds
-      ready: () => (sergeant.ready && buddy.ready) || performance.now() - readyAt > 12000,
+      // the film shows the sergeant and the buddy — and, since v7.7, opens on the
+      // coast's trees: wait for them, but never past twelve seconds
+      ready: () => (sergeant.ready && buddy.ready && ferryTrees.children.length > 0) || performance.now() - readyAt > 12000,
       pile: { pos: PILE_POS, radius: INTERACT_R, group: pile,
               dist: pileDist, screen: pileScreen, inView: pileInView,
               hits: pointerHitsPile, interact: interactPile,
@@ -1537,6 +1716,7 @@
       beds, hisBed, lockers, fans, tubes, tubeLights, board, clockFace, clock,
       doorPivot, doorLeaf, DOOR_SHUT, DOOR_AJAR, DOOR_OPEN, DOOR_WC, DOOR_IN, OPEN, BLOCK, BALC, R, BED, WATER_AT,
       water, setShower, setLights, setNightRoom, setWindows, blockLight, clockGlow, CLOCK_GLOW, balcLight, nbLight, blanketCam,
+      ferryRoot, ferryApproach, FERRY,
       sergeant, buddy, bunkmate, ghostFig, sleepers, sleepRigs, sleeperRoot,
       sayLine, seen, after, dayClock,
       get phase() { return phase; },
@@ -1742,27 +1922,48 @@
       if (kit) kit.daylight(MORNING, 0);
       stage.setWindows(0);
       stage.clockGlow.intensity = 0; stage.balcLight.intensity = 0;
+      stage.ferryRoot.visible = true; stage.ferryApproach(0);
     });
     // the film's own music, under everything
     sfx(0.0, 'e2film', 1);
 
-    /* 0–14 BLACK. The ferry at seven in the morning; the gates; the boots.
-       Two of his lines over it. */
-    camTo(0, 0.1, BAL, BAL);
-    yawTo(0, 0.1, Y_SQUARE, Y_SQUARE);
-    pitchTo(0, 0.1, -0.12, -0.12);
+    /* 0–9.4 THE FERRY (v7.7 — Chad: "why is the opening cinematic black for
+       so long? Why is there no ferry crossing the sea animation"). On the
+       foredeck at seven in the morning, the rail in front of the lens, the
+       island and its jetty coming in over the shot, the deck on a swell;
+       the horn, the sea, his first line. The film's own fade lifts at 0.3
+       (cinetest asks that a film open on black and be SEEN by five). */
+    const DECK = { x: stage.FERRY.x, y: EYE, z: stage.FERRY.z + 0.2 };
+    const Y_BOW = faceFrom(DECK.x, DECK.z, DECK.x, DECK.z + 30);
+    camTo(0, 9.4, DECK, { x: DECK.x + 0.12, y: EYE, z: DECK.z + 0.5 }, smoothK);
+    yawTo(0, 9.4, Y_BOW + 0.10, Y_BOW - 0.06, smoothK);
+    pitchTo(0, 9.4, -0.04, -0.09, smoothK);
+    fade(0.0, 0.3, 1, 1);                     // the black the film opens on is ITS OWN (a seek back before 0.3 lands on it)
+    fade(0.3, 1.8, 1, 0);
+    tr(0, 9.4, k => stage.ferryApproach(k), rawK);
     sfx(0.2, 'seawash', 0.9);
     sfx(1.2, 'ferryhorn', 0.8);
     sfx(2.0, 'n1pro1');                       // 6.53 s → 8.5
-    sfx(8.4, 'gates', 0.9);
-    sfx(9.0, 'bootsmarch', 0.85);
+
+    /* 8.6–12.0 a SHORT dip to black: the gates and the boots under it, his
+       second line starting over the dark and finishing on the balcony. The
+       deck is hidden in the dark and the lens is already at the parapet. */
+    fade(8.6, 9.4, 0, 1);
+    step(9.4, () => { stage.ferryRoot.visible = false; });
+    camTo(9.4, 9.5, BAL, BAL);
+    yawTo(9.4, 9.5, Y_SQUARE, Y_SQUARE);
+    pitchTo(9.4, 9.5, -0.12, -0.12);
+    sfx(9.4, 'gates', 0.9);
+    sfx(10.0, 'bootsmarch', 0.85);
     sfx(10.5, 'n1pro2');                      // 7.97 s → 18.5
 
-    /* 14–19 the balcony: the square, the trees, the far block, flat morning
-       light; then in through the opening. The beds come up with the light. */
-    fade(14.0, 16.4, 1, 0);
-    tr(14.0, 16.4, k => { duck('bunkday', 0.55 * k); duck('fanloop', 0.4 * k); }, rawK);
-    camTo(14.0, 17.2, BAL, { x: BAL.x - 0.4, y: EYE, z: BAL.z }, smoothK);
+    /* 12–19 the balcony: the square, the trees, the far block, flat morning
+       light; then in through the opening. The beds come up with the light.
+       (v7.7: up from 14.0 — the first glide is two seconds longer and
+       nothing after 17.2 moved.) */
+    fade(12.0, 14.4, 1, 0);
+    tr(12.0, 14.4, k => { duck('bunkday', 0.55 * k); duck('fanloop', 0.4 * k); }, rawK);
+    camTo(12.0, 17.2, BAL, { x: BAL.x - 0.4, y: EYE, z: BAL.z }, smoothK);
     camTo(17.2, 20.4, { x: BAL.x - 0.4, y: EYE, z: BAL.z }, OPENING, smoothK);
     yawTo(17.2, 20.4, Y_SQUARE, Y_IN, smoothK);
     pitchTo(17.2, 20.4, -0.12, 0.0, smoothK);

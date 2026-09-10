@@ -122,8 +122,10 @@ for (let i = 0; i < 4; i++) {
   await p.close();
 }
 /* v7.1: AND EPISODE 2's FIRST FILM — The Worst Bed. The same contract: black
-   for its fourteen seconds of sound (the ferry, the gates, the boots under
-   his lines) until its own fade at 14.0, in by 16.4. Chapter e2c1 is a
+   until its own fade. v7.7: the film OPENS ON THE FERRY — the fade lifts at
+   0.3 and the deck is SEEN by five (Chad: "why is the opening cinematic
+   black for so long?"), a short dip to black at 8.6–12.0 carries the gates
+   and the boots, and the balcony fades in by 14.4. Chapter e2c1 is a
    hosted-only chapter, so this page never runs against wrapped.html. */
 {
   const p = await b.newPage({ viewport: { width: 500, height: 340 } });
@@ -136,19 +138,19 @@ for (let i = 0; i < 4; i++) {
   await p.waitForFunction(() => window.__enc && window.__enc.getState() === 'cine',
                           null, { timeout: 150000, polling: 100 });
   const out = { film: 'e2c1 opening' };
-  const cover = [];
-  for (const t of [0.15, 5.0, 10.0, 13.6]) {       // all before the fade at 14.0
+  const coverAt = async (t) => {
     await p.evaluate(tt => window.__enc.cine.seek(tt), t);
-    await p.waitForTimeout(180);
-    cover.push(await p.evaluate(() =>
-      +getComputedStyle(document.getElementById('cineFade')).opacity));
-  }
+    await p.waitForTimeout(600);                  // past the cover's own .42 s transition
+    return p.evaluate(() => +getComputedStyle(document.getElementById('cineFade')).opacity);
+  };
+  const cover = [await coverAt(0.1)];             // before its own fade at 0.3
   out.coverBeforeFadeIn = cover;
   out.startsOnBlack = cover.every(v => v > 0.98);
-  await p.evaluate(() => window.__enc.cine.seek(17.5));   // its fade ends at 16.4
-  await p.waitForTimeout(220);
-  out.fadesInAfter = await p.evaluate(() =>
-    +getComputedStyle(document.getElementById('cineFade')).opacity) < 0.05;
+  out.ferrySeenByFive = (await coverAt(5.0)) < 0.05 &&
+    await p.evaluate(() => window.__enc.stage.ferryRoot.visible);
+  out.dipIsBlack = (await coverAt(10.2)) > 0.98;
+  out.deckHiddenInTheDip = !(await p.evaluate(() => window.__enc.stage.ferryRoot.visible));
+  out.fadesInAfter = (await coverAt(17.5)) < 0.05;   // the balcony's fade ends at 14.4
   /* v7.5: the film crosses a DAY and ends on the evening play begins in —
      the windows go dark over 44–48 while the tubes stay ON (lights out is
      play's own beat, not the film's). Before v7.5 the film switched the
@@ -164,8 +166,13 @@ for (let i = 0; i < 4; i++) {
   await p.waitForTimeout(300);
   out.tubesBackAfter = await p.evaluate(() => window.__enc.stage.tubeLights[0].intensity) > 1;
   out.windowsDarkAfter = await p.evaluate(() => window.__enc.stage.snap().winK) > 0.95;
+  out.deckGoneAfterSkip = !(await p.evaluate(() => window.__enc.stage.ferryRoot.visible));
+  if (!out.deckGoneAfterSkip) errs.push('ERR play inherited the ferry set');
   if (!out.startsOnBlack)
     errs.push('ERR the film is visible before its own fade-in: ' + JSON.stringify(cover));
+  if (!out.ferrySeenByFive) errs.push('ERR the ferry is not on screen by five seconds (the long black is back)');
+  if (!out.dipIsBlack) errs.push('ERR the dip to black before the balcony is not black');
+  if (!out.deckHiddenInTheDip) errs.push('ERR the ferry set is still visible after the dip hid it');
   if (!out.fadesInAfter) errs.push('ERR the film never fades in');
   if (!out.tubesStayOnAtDusk) errs.push('ERR the film switched the tubes off (lights out is play\'s beat)');
   if (!out.windowsDarkAtDusk) errs.push('ERR the windows never went dark at dusk');

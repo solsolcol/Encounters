@@ -1625,6 +1625,25 @@ What the baseline contains, by release:
   from the player's eye in the bunk. `borrowclips.mjs` is right for the
   sergeant (metres to metres, the same rest) and wrong for this rig — the
   models doc §11 says which is which. No word moved.
+- **v7.7** THE FERRY — Chad, on v7.1: *"why is the opening cinematic black
+  for so long? Why is there no ferry crossing the sea animation, or some
+  good starting intro?"* Fourteen seconds of black under three sounds is
+  now nine seconds on the FOREDECK of the Tekong ferry at seven in the
+  morning: a set sixty metres off the bunk inside its own painted dawn
+  (chapter 1's memory-pocket recipe — a 120 m bubble, every material
+  fog-free), the sea running back under the bow on a scrolling streak
+  sheet, hull and deck one extruded outline with bulwarks, a hand rail and
+  a life buoy in front of the lens, the deck heaving on a slow swell, and
+  Tekong's tree-line — the kit, three ranks across the whole view — with
+  its jetty, shelter and beacon coming in from forty-four metres to thirty
+  over the shot under the horn and his first line. Then a SHORT dip to
+  black (8.6–12.0) carries the gates and the boots, and the balcony fades
+  in at 12.0 instead of 14.0; nothing after 17.2 moved. Two traps: a sky
+  bubble's back wall is a DEPTH surface, so a coast must stand inside its
+  radius (at 48 m it clipped to an islet), and the kit's trees arrive
+  async, so a film that opens on them waits for the stand in `ready()`.
+  `cinetest` now asks that the ferry be SEEN by five seconds. No word
+  moved.
 - **v7.0** THE PLAY KIT — episode 2's first release, and the one that ships
   nothing a player of episode 1 can see (Chad approved the plan on 9 Sep:
   "can you begin building according to your plan?"). Everything a chapter
