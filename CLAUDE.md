@@ -1561,6 +1561,33 @@ What the baseline contains, by release:
   and the resume lands in `standby`, not `arrive`), one resumes straight into
   03:00 and watches the heartbeat arrive. No word moved; sheet v42 stands.
   docs/V7.2-E2C1-POLISH.md §5 is the record.
+- **v7.4** THE WORST BED IS PLAYABLE — Chad, playing: *"it tells me to fall
+  in at the line, but i have no way to get there ... I cannot progress at
+  all."* Measured: the line stands at x 7.25 and **the furthest a player
+  could walk was x 5.74**. The balcony held 4274 walkable cells, none of
+  them reachable. The +x wall carries the door to it and the bed row and
+  locker row ran straight across that door — at x 5.34–5.67 every single z
+  was blocked by a bed or a locker. **A bunk with a door in it has a
+  GANGWAY to that door**: the balcony-side row is four beds and two lockers
+  now, all clear of z ±1.10, so 2.2 m of floor leads out. The −x row and
+  HIS bed are untouched. Why 23 green harnesses never saw it: **every one
+  of them TELEPORTS the camera**, so a sealed route is invisible to all of
+  them — that, not one bad number, is the root cause. Also, and all found
+  underneath it: the fall-in had NO FAILURE STATE (the timer paid its
+  penalty and then waited for the line for ever — it ends either way now);
+  the bunk EMPTIES at the whistle (the buddy and bunkmate stood at their
+  beds through a fall-in, because the whistle only moved the sergeant;
+  neither rig carries a walk take, so they are placed on the line); the bed
+  was a TRAP BY DAY (standing up needs the bed on screen and the bed is
+  what you are lying on — v7.1 special-cased 03:00 and never the daytime);
+  and the kit's COUNTDOWN ran on the clamped frame delta, so a device under
+  twenty frames a second ran it slow — wall time now, the law the chapter
+  clock learned at v7.1. **A 24th harness, `walktest`**, flood-fills the
+  real collision grid the way `collide()` reads it and asserts every place
+  a chapter sends you can be walked to from the spawn; it fails v7.1 and
+  passes this build. Still open from Chad's list: the mangled admin-tee
+  model (used twice), interactable doors, the film's night-into-morning
+  jump, the opening's long black and missing ferry, and his voice.
 - **v7.0** THE PLAY KIT — episode 2's first release, and the one that ships
   nothing a player of episode 1 can see (Chad approved the plan on 9 Sep:
   "can you begin building according to your plan?"). Everything a chapter

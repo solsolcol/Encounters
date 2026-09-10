@@ -2666,3 +2666,27 @@ default is usually "start over".** `applyPhase` handled three of seven and
 fell through to `beginArrive()` for the rest; nothing errored, nothing
 logged, and the chapter simply began again with the player's awards still
 banked. Enumerate every phase, or make the fall-through loud.
+
+
+## A suite that teleports cannot find a wall (v7.4)
+
+Twenty-three harnesses were green on a chapter whose fall-in line could not
+be reached on foot. Not one of them was wrong; every one of them TELEPORTS.
+They set `yaw.position` to where the test wants the player and check what
+follows, which is the right way to test a cutscene, a card or a save — and
+exactly the wrong way to test whether the world is connected.
+
+**A harness that places the player proves nothing about whether the player
+could have got there.** The gap is invisible: reachability is the one
+property that teleporting destroys by construction.
+
+`walktest.mjs` is the answer and it is cheap: read `__enc.blockers` and the
+chapter's own bounds, rebuild the grid `collide()` actually samples (one
+point, y = 1.0), flood-fill from the declared spawn, and assert that the
+pile, every hotspot and every place the chapter's own code sends the player
+falls inside the filled region. It runs in plain Playwright in under two
+minutes and it fails the build that shipped the wall.
+
+The general form, worth applying beyond this game: **when a test fixture
+grants the subject something the real user must earn, the test can no
+longer see whether earning it is possible.**
