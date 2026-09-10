@@ -1257,6 +1257,72 @@
     ghostFig.group.visible = false;
     ghostFig.proxy.visible = false;
 
+    /* ------------------------------------------------- A MAN AT EVERY BED
+       v8.1 (Chad): "there needs to be a bunkmate for every bed in the bunk."
+       The room says twenty of us and had three men in it — the sergeant at
+       the door, the buddy and the bunkmate — with six made beds nobody
+       owned. Every bed but HIS now has a recruit standing at its foot.
+
+       They STAND, all six, and that is a constraint rather than a
+       preference: the whistle empties the bunk onto the balcony (v7.4), and
+       a man parked on a seated take cannot be teleported into a rank
+       without sitting in mid-air — `mkCrowd` gives a copy ONE action, so
+       there is nothing to switch him to. Standing men fall in.
+
+       Two models and two different standing poses (which kinds, and why not
+       three, is the note under the table): the admin tee on its own `Idle_9`,
+       and the botak — which has no standing idle at all — on `Walking` PARKED
+       at t = 0.122, the frame the parade square is built on (feet closest,
+       hands lowest). `mkCrowd` seeds a looping idle at its own phase per
+       copy, so the three admin tees do not breathe in step. Nothing new is
+       downloaded: both files are already in this chapter.
+
+       x = ±3.25 is the foot of the bed and 0.26 m clear of the blocker
+       column `solid()` puts round the mattress (±3.51), so a recruit stands
+       where the player can see him without standing in the walking lane;
+       `walktest` is unchanged by them, since a rig is not a blocker.
+       The pair at z −3.00 and −1.50 face each other across 1.5 m — that is
+       the conversation, told by where they stand rather than by a talking
+       take nobody can hear. */
+    const BUNK_MEN = [
+      { x: -3.25, z: -3.00, ry: 0.12,             kind: 'admintee', line: -1.70, low: true },
+      { x: -3.25, z: -1.50, ry: Math.PI - 0.14,   kind: 'botak',    line: -0.85, low: false },
+      { x: -3.25, z:  0.00, ry: 1.35,             kind: 'botak',    line:  0.00, low: true },
+      { x:  3.25, z: -2.20, ry: -1.32,            kind: 'admintee', line:  2.55, low: false },
+      { x:  3.25, z:  2.20, ry: -1.78,            kind: 'admintee', line:  3.40, low: true },
+      { x:  3.25, z:  3.35, ry: -2.15,            kind: 'botak',    line:  4.25, low: true },
+    ].filter(m => !LOW || m.low);
+    /* the two TEE models only, and that is casting rather than convenience:
+       the FBO wears full battle order — helmet, vest, field pack — and six of
+       him standing about a bunk at ten to ten at night reads as a deployment.
+       The sergeant wears it because he is on duty and the bunkmate has worn
+       it since v7.5; everyone else is in what a recruit wears in his own
+       bunk. Photographed with the FBO in the mix first, which is how the
+       dress problem showed up at all. */
+    const BUNK_KIND = {
+      admintee: { clip: 'Idle_9',  height: 1.72 },
+      botak:    { clip: 'Walking', height: 1.70, at: 0.122 },
+    };
+    const bunkCrowds = Object.keys(BUNK_KIND).map(kind => {
+      const men = BUNK_MEN.filter(m => m.kind === kind);
+      if (!men.length) return null;
+      const k = BUNK_KIND[kind];
+      const c = mkCrowd(kind, men.map(m => ({ x: m.x, z: m.z, ry: m.ry, at: k.at })),
+                        k.clip, { height: k.height });
+      c.men = men;
+      return c;
+    }).filter(Boolean);
+    /* where each of them is, on the two occasions the chapter moves them:
+       at his bed, and in the rank on the balcony's yellow line */
+    function bunkCrowdPlace(onLine) {
+      for (const c of bunkCrowds) c.rigs.forEach((r, i) => {
+        const m = c.men[i]; if (!m) return;
+        if (onLine) { r.g.position.set(BALC.line - 0.2, 0, m.line); r.g.rotation.y = Math.PI / 2; }
+        else { r.g.position.set(m.x, 0, m.z); r.g.rotation.y = m.ry; }
+      });
+    }
+    const bunkCrowdShow = (on) => { for (const c of bunkCrowds) c.group.visible = on; };
+
     /* THE SLEEPERS: six statues (the lying model, cloned) and two rigs on
        their own sleeping takes, in eight of the nine other bottom bunks —
        shown at lights out, hidden by day. The buddy's bed is the one beside
@@ -1457,7 +1523,18 @@
       's1late', 's1lights', 's1standby', 'switchoff', 'whistle'];
     if (warmSounds) warmSounds(PLAY_LINES);
 
+    /* v8.1: and it is CLEARED by reset(), because it is stated in the
+       chapter's own clock and that clock goes back to zero on a replay.
+       Chad: "replaying the chapter disables the interactions with the
+       bunkmates, and sergeants, why?" — measured on the shipped v8.0
+       build, sayLine('b1day') returned true before a reset and false
+       after it, because `until` still held a time from the run just
+       finished and the new day had to catch up to it. A real playthrough
+       banks a minute or two of day, so the whole replayed chapter was
+       mute. `speakReset` is what reset() calls; nothing else may write
+       these two from outside. */
     const speak = { until: 0, pending: null };
+    function speakReset() { speak.until = 0; speak.pending = null; }
     function sayLine(name, vol = 1, onStart) {
       if (!worldSfx) return false;
       if (dayClock.t < speak.until) return false;
@@ -1479,15 +1556,30 @@
       else speak.until = dayClock.t + 0.2;
     }
     /* the sergeant's lines ride his talk take; the buddy's and the
-       bunkmate's ride theirs (the admin tee's talking take is
-       `Talk_with_Hands_Open`, the FBO's is `mixamo.com` — the FBX's own name;
-       renaming it buys nothing) */
+       bunkmate's ride theirs.
+       v8.1: the bunkmate's take was `mixamo.com` and `assets/fbonosling.glb`
+       HAS NO CLIP OF THAT NAME — it ships Running, Walking,
+       Gesture_with_Hand_on_Gun, Gun_Hold_Left_Turn, Idle_6 and
+       Rifle_Charge_inplace and nothing else. `mixamo.com` was the FOUR-
+       animation admin tee's own FBX name, and it was left behind at v7.5
+       when the bunkmate stopped being the admin tee and became the FBO
+       without a rifle; `rig.play` of a take a rig does not have is a no-op
+       by design, so from v7.5 to v8.0 he stood dead still through both of
+       his lines. The FBO carries no talking take at all — its one gesture,
+       `Gesture_with_Hand_on_Gun`, is a CROUCH (photographed) — so
+       `Talk_with_Left_Hand_Raised` is retargeted onto him from `fbosling`,
+       whose skeleton is the same 27 mixamorig bones but whose REST pose is
+       up to 22 degrees away at the forearms and feet: measured, which is why
+       this went through `tools/retarget.mjs` in world space and not
+       `borrowclips`. The sergeant keeps `Talk_with_Left_Hand_on_Hip`, so the
+       two men do not talk with the same hands. */
     function castSay(rig, name, take, idle) {
       return sayLine(name, 1, () => {
         rig.play(take, 1, 0.3);
         after((SECS[name] || 2.5) + 0.2, () => { if (rig.cur === take) rig.play(idle, 1, 0.4); });
       });
     }
+    const TALK_NOSL = 'Talk_with_Left_Hand_Raised';   // v8.1: retargeted onto the FBO rig, see above
     const sgtSay = (name) => castSay(sergeant, name, 'Talk_with_Left_Hand_on_Hip', 'Idle_3');
     function setPhase(p) {
       phase = p;
@@ -1636,6 +1728,7 @@
           if (r.idle) r.play(r.idle, 1, 0.25);      // v8.0: never back on his hands
         }
       }
+      bunkCrowdPlace(on);          // v8.1: and so does everyone else in the room
     }
     function onTheLine() {
       if (fallTimer) { fallTimer.stop(); fallTimer = null; }
@@ -1682,18 +1775,33 @@
           });
       });
     }
-    /* ---- free: the bunk before lights out */
-    let freeAt = 0, freeWarned = false;
+    /* ---- free: the bunk before lights out ---------------------------------
+       v8.1 (Chad): "there should be a clear timer HUD on screen to show how
+       many more minutes or seconds till lights out, so player knows whats
+       going on." The section always ran on a 70-second clock; it just ran it
+       PRIVATELY, off `dayClock` with nothing on screen, so the lights went
+       out with no warning anyone could read. It runs on `kit.timer` now —
+       the same seam the fall-in has used since v7.1, which paints M:SS beside
+       the objective and turns it red under ten seconds — and the timer is
+       what ENDS the phase, so what the player reads is what the chapter
+       obeys rather than a second clock beside it. The warning is the last
+       25 seconds. Going to bed early still cuts it short (`beginLightsOut`
+       clears it), and `applyPhase('free')` restarts it, so a Continue in the
+       middle of the evening comes back with a countdown rather than none. */
+    const FREE_SECS = 70, FREE_WARN = 25;
+    let freeWarned = false, freeTimer = null;
     function beginFree() {
       setPhase('free');
-      freeAt = dayClock.t; freeWarned = false;
+      freeWarned = false;
       if (!kit) return;
       kit.objective(DATA.words.objFree);
       kit.waypoint(null);
+      freeTimer = kit.timer(FREE_SECS, () => { freeTimer = null; beginLightsOut(); });
     }
     /* ---- lights out: the switch, the sky, the beds, and to bed */
     function beginLightsOut() {
       setPhase('lightsout');
+      if (freeTimer) { freeTimer.stop(); freeTimer = null; }   // v8.1: to bed early stops the countdown
       dropTodo();
       if (kit) { kit.objective(DATA.words.objLights); kit.waypoint(null); }
       sgtSay('s1lights');
@@ -1840,8 +1948,8 @@
         onInteract() {
           seen.add('board');
           return sayLine('k1board', 1, () => {
-            bunkmate.play('mixamo.com', 1, 0.3);
-            after((SECS.k1board || 2.5) + 0.2, () => { if (bunkmate.cur === 'mixamo.com') bunkmate.play('Idle_6', 1, 0.4); });
+            bunkmate.play(TALK_NOSL, 1, 0.3);
+            after((SECS.k1board || 2.5) + 0.2, () => { if (bunkmate.cur === TALK_NOSL) bunkmate.play('Idle_6', 1, 0.4); });
             after((SECS.k1board || 2.5) + 0.4, () => sayLine('n1board'));
           });
         } },
@@ -1849,7 +1957,7 @@
         enabled: () => phase === 'free' && bunkmate.group.visible && seen.has('board'),
         onInteract() {
           seen.add('bunkmate');
-          return castSay(bunkmate, 'k1three', 'mixamo.com', 'Idle_6');
+          return castSay(bunkmate, 'k1three', TALK_NOSL, 'Idle_6');
         } }
     ];
 
@@ -1883,10 +1991,9 @@
       if (phase === 'arrive' && pileDist() < 1.8 && !arrivedAt) { arrivedAt = dayClock.t; after(2.6, () => { if (phase === 'arrive') beginFallIn(); }); }
       else if (phase === 'fallin' && yaw.position.x > LINE_X) onTheLine();
       else if (phase === 'standby' && pileDist() < 2.0) { setPhase('standbybed'); runStandbyBed(); }
-      else if (phase === 'free') {
-        const dtFree = dayClock.t - freeAt;
-        if (!freeWarned && dtFree > 45) { freeWarned = true; if (kit) { kit.objective(DATA.words.objWarn); kit.waypoint({ x: PILE_POS.x, y: 1.0, z: PILE_POS.z }); } }
-        if (dtFree > 70) beginLightsOut();
+      else if (phase === 'free' && freeTimer && !freeWarned && freeTimer.left() <= FREE_WARN) {
+        freeWarned = true;
+        if (kit) { kit.objective(DATA.words.objWarn); kit.waypoint({ x: PILE_POS.x, y: 1.0, z: PILE_POS.z }); }
       }
     }
     function updateNotes(dt, t) {
@@ -1935,6 +2042,7 @@
       sergeant.group.visible = !on;
       buddy.group.visible = !on;
       bunkmate.group.visible = !on;
+      bunkCrowdShow(!on);              // v8.1: the six at their beds go with the rest of the day cast
       sleeperRoot.visible = on;
       for (const b of beds) { b.low.fold.visible = !on || b.his || !sleepers.find(s => s.bed === b); }
       setLights(on ? 0 : 1);
@@ -1973,6 +2081,7 @@
       if (s.blockBase !== undefined) { blockBase = s.blockBase; blockFlicker = !!s.blockFlicker; blockLight.intensity = blockBase; blockTube.material.emissiveIntensity = 1.6; }
       if (s.sleepRot) sleepers.forEach((o, i) => { const r = s.sleepRot[i]; if (r) o.obj.rotation.set(r[0], r[1], r[2]); });
       sergeant.group.visible = buddy.group.visible = bunkmate.group.visible = !s.night;
+      bunkCrowdShow(!s.night);         // v8.1
       for (const r of [sergeant, buddy, bunkmate]) if (r.acts && r.idle) r.play(r.idle, 1, 0);
     }
     function reset() {
@@ -1985,6 +2094,8 @@
       nightK = 0; showerVol = 0; mixBeds();
       seen.clear(); bedTries = 0; fallLate = false; fallTimer = null; arrivedAt = 0;
       booted = false; dayClock.t = 0;
+      speakReset();                    // v8.1: the mute window is in the clock that just went back to zero
+      freeWarned = false; freeTimer = null;    // and the evening's countdown belongs to the run that just ended
       if (kit) { kit.daylight(null, 0); kit.presence(0); kit.fade(0, 0.05); }
       beginArrive();
     }
@@ -2063,6 +2174,7 @@
       ferryRoot, jettyRoot, paradeRoot, FERRY, JETTY, PARADE, PLAYER_SEAT, CAB, SEAT_X, SEAT_Z,
       sergeant, buddy, bunkmate, ghostFig, sleepers, sleepRigs, sleeperRoot,
       sayLine, seen, after, dayClock,
+      bunkCrowds, bunkReady: () => bunkCrowds.every(c => c.ready),   // v8.1, for the probes
       get phase() { return phase; },
       setPhase, applyPhase, beginFallIn, beginStandby, runStandbyBed, beginFree, beginLightsOut, beginNight,
       LIE_Y, LIE_YAW, LINE_X, BED_ITEMS,

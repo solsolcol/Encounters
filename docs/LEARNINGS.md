@@ -2806,3 +2806,57 @@ The same measurement is how a model with no standing idle gets one: the botak
 recruit's `restpose` is an A-pose with the arms held out, so his parade-square
 stand is `Walking` parked at t = 0.122, sampled sixty times as the frame where
 his feet are closest (0.136 m) and his hands lowest (0.880 m).
+
+## A value stated in a clock must be cleared by whatever resets that clock (v8.1)
+
+Chad: *"replaying the chapter disables the interactions with the bunkmates,
+and sergeants, why?"* Measured on the shipped v8.0 build before anything was
+changed:
+
+```
+ before replay:  dayClock 2.00   sayLine('b1day')  -> true
+ after  reset :  dayClock 0.80   sayLine('b1day')  -> false
+```
+
+`speak.until` is the "one voice at a time" window and it is stated as a TIME
+on the chapter's own clock. `reset()` set `dayClock.t = 0` for the new run and
+left `until` holding a time from the run that had just ended, so the new day
+had to catch up to it before anything could speak. In a real playthrough the
+day clock reaches a minute or two, so the entire replayed chapter was mute.
+
+Two things generalise:
+
+- **a same-chapter replay does not rebuild the chapter.** `setChapter(key)`
+  returns early when the key is already current, so `build()` never re-runs
+  and the whole closure survives. Only `reset()` puts the world back —
+  anything it forgets, the next run inherits. Every new piece of clock-derived
+  state needs a line in `reset()` on the day it is written, not later.
+- **the bug is invisible to a screenshot and to every harness**, because
+  nothing errors: the line simply does not play, exactly as it does not play
+  while another line is speaking. The only way to see it is to ask the
+  function and read the boolean.
+
+## Two Mixamo rigs are not the same rig — measure the rest, then pick the tool (v8.1)
+
+`assets/fbosling.glb` and `assets/fbonosling.glb` are the same character with
+and without a rifle: both carry all 27 `mixamorig:` joints, same names, same
+order. That is exactly the case where copying a clip BY NAME
+(`tools/borrowclips.mjs`) looks obviously safe.
+
+Measured, their rest ROTATIONS differ by up to **22° at the forearms, 21° at
+the feet, 17° at Spine2, 16° at the shoulders, 13° at the head**. A rotation
+track is in the bone's LOCAL space, so a name-copy across that copies the
+numbers and loses the meaning — the v5.20 law, met again on a pair where both
+sides are Mixamo (and already met once at v7.6, on the admin tee).
+
+So the test is not "are both rigs Mixamo". It is: **compare the two rest
+poses, joint by joint, and use `tools/retarget.mjs` unless they agree.**
+`Talk_with_Left_Hand_Raised` went onto the FBO in world space and rendered
+clean — upright, hands gesturing, geometry intact, front and side, four frames.
+
+And the reason it was needed at all is worth its own line: the bunkmate's
+handlers asked for `mixamo.com`, the FOUR-animation admin tee's own FBX clip
+name, left behind at v7.5 when he stopped being that model. `rig.play` of a
+missing take is a no-op by design, so he stood dead still through every line
+he said for four releases. **When a rig is swapped, every take name aimed at
+it is a fresh claim to check** — the file's clip list is one command away.

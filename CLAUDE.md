@@ -1614,6 +1614,43 @@ What the baseline contains, by release:
   the frame where the feet are closest (0.136 m) and the hands lowest. And the
   buddy now DOES the push-ups the sound has been describing since v7.1.
   docs/V8.0-MODELS-AND-THE-PRESS.md is the build's memory.
+- **v8.1** THE REPLAY, THE CLOCK, AND THE ROOM — Chad's three notes on v8.0,
+  and a fourth thing that reading the first one found. THE REPLAY: *"replaying
+  the chapter disables the interactions with the bunkmates, and sergeants,
+  why?"* Measured on the shipped build — `sayLine('b1day')` true before a
+  reset, false after, with the day clock back at 0.8 s. `speak.until`, the
+  one-voice-at-a-time window, is stated in the CHAPTER'S OWN CLOCK, and
+  `reset()` put that clock back to zero without clearing the window, so the
+  new day had to catch up to a time from the run just finished; a real
+  playthrough banks a minute or two, so the whole replayed chapter was mute.
+  A same-chapter replay hits it and a fresh load does not, because
+  `setChapter` returns early on the key it already has — `build()` never
+  re-runs, so anything `reset()` forgets, the next run inherits.
+  `speakReset()` is the fix and the law is general: **a value stated in a
+  clock must be cleared by whatever resets that clock.** THE CLOCK: the
+  evening always ran on 70 seconds, privately, with nothing on screen — it
+  runs on `kit.timer` now, the seam the fall-in has used since v7.1, which
+  paints M:SS beside the objective and reddens under ten; the timer ENDS the
+  phase, so what the player reads is what the chapter obeys. THE ROOM: *"there
+  needs to be a bunkmate for every bed in the bunk"* — six recruits stand at
+  the feet of the six beds that were nobody's, three `admintee` on `Idle_9`
+  and three `botak` on `Walking` parked at t = 0.122 (the parade square's
+  frame), at x ±3.25, which is 0.26 m clear of the blocker column round each
+  mattress. They ALL STAND, which is forced: `mkCrowd` gives a copy one
+  action, and the whistle teleports the room onto the balcony, where a seated
+  take would sit in mid-air. The FBO was in the mix for one pass and the
+  photographs threw it out — full battle order in a bunk at ten to ten reads
+  as a deployment. Measured: eight men to x 7.40 at the whistle and back,
+  hidden at lights out and on a night resume. AND THE BUNKMATE: both his lines
+  called `bunkmate.play('mixamo.com')` and `fbonosling.glb` has no clip of
+  that name — it was the FOUR-animation admin tee's FBX name, left behind at
+  v7.5 when he stopped being that model, so since v7.5 he has stood dead still
+  through every line. His file carries no talking take at all (its one
+  gesture is a CROUCH, photographed), so `Talk_with_Left_Hand_Raised` is
+  retargeted from `fbosling` — **in world space, not by name**: the two rigs
+  share all 27 mixamorig joints and their rest rotations still differ by up to
+  22°. `src/main.js` is untouched by this release.
+  docs/V8.1-THE-REPLAY-THE-CLOCK-AND-THE-ROOM.md is the build's memory.
 - **v7.9** THE FERRY FROM INSIDE, TEKONG, THE PARADE SQUARE, THE BUNK —
   Chad, with five reference photographs: *"I dont want to see the outside
   of the ferry and the sea, it should show first person pov within inside
