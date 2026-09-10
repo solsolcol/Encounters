@@ -88,7 +88,7 @@
       vmKey: [0xfff2dc, 0.62]
     },
 
-    assets: ['fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim', 'ghostsoldier',
+    assets: ['fbosling', 'fbonosling', 'admintee', 'botak', 'encik2', 'sleeper', 'sleepanim', 'ghostsoldier',
              'tree1', 'tree2', 'tree3', 'tree4', 'hdb'],
 
     /* the explore music bed is chapter 1's title theme and has no place in a
@@ -1092,7 +1092,18 @@
       paradeRanks.push({ x: -6.6 + i * 2.2, z: 2.0 + r * 2.0,
                          ry: Math.PI + (hash(r * 7 + i, 9) - 0.5) * 0.06, at: STAND_AT });
     const paradeCrowd = mkCrowd('botak', paradeRanks, 'Walking', { parent: paradeRoot, height: 1.70 });
-    const paradeEncik = mkCrowd('fbosling', [{ x: 0.0, z: -3.2, ry: 0, at: 0.2 }], 'Idle_3', { parent: paradeRoot, height: 1.74 });
+    /* v8.2 (Chad): "He should also be at the parade square in the intro
+       cutscene". Until now the man facing the ranks was `fbosling` — the
+       SERGEANT's model in full battle order — because `encik2` was registered
+       in build.py and never loaded by anything. Chad's encik is in No. 4s with
+       a green beret, which is what a man taking a parade actually wears, and
+       he is TALKING here rather than standing: the take loops (no `at`), so
+       the shot of the square is a man addressing a company, not a statue in
+       front of one. `Talk_with_Left_Hand_on_Hip` is his, and only his — the
+       sergeant talks with the other take, so the two men never share a
+       gesture. */
+    const paradeEncik = mkCrowd('encik2', [{ x: 0.0, z: -3.2, ry: 0 }], 'Talk_with_Left_Hand_on_Hip',
+                                { parent: paradeRoot, height: 1.74 });
     let walkT = 0;
     const jettyWalk = (dt) => {                    // the file carried up the walkway
       walkT += dt;
@@ -1242,6 +1253,17 @@
        the wall: at x 1.75 the two of them overlapped in the film's own
        shot of the pair (rendered at 52 s), one half behind the other. */
     const bunkmate = mkRig('fbonosling', { x: 2.55, z: -3.05, ry: -0.32, height: 1.70, idle: 'Idle_6' });
+    /* v8.2 (Chad): "and also in the bunk alongside with the 2 soldiers in
+       FBO, and also for the fall in. He will be used regularly throughout
+       this entire episode." He stands on the other side of the entrance from
+       the sergeant, facing down the room — clear of the notice board (x 2.0),
+       the centre table (x ±1.80 at z 2.55, the far half) and both bed rows
+       (|x| 3.65 and out). His own `Idle_9` is the rest take; his talk take is
+       `Talk_with_Left_Hand_on_Hip`, which no other rig in the chapter has. */
+    const ENC_DOOR = { x: -1.5, z: -3.05, ry: 0.16 };
+    const ENC_LINE = { x: BALC.x1 - 0.5, z: 1.2, ry: -Math.PI / 2 };   // beside the sergeant at the parapet
+    const encik = mkRig('encik2', { x: ENC_DOOR.x, z: ENC_DOOR.z, ry: ENC_DOOR.ry, height: 1.72, idle: 'Idle_9' });
+    const encSay = (name) => castSay(encik, name, 'Talk_with_Left_Hand_on_Hip', 'Idle_9');
     /* the figure at the corridor's end — scene A's one frame. A stand-in
        (Chad supplies the ghost); the ghost treatment is the engine's own:
        grey, transparent, no shadow. */
@@ -1654,6 +1676,12 @@
     function putSergeant(at) {
       sergeant.group.position.set(at.x, 0, at.z);
       sergeant.group.rotation.y = at.ry;
+      /* v8.2: the encik goes where the sergeant goes — to the parapet for the
+         fall-in, back into the bunk after it. He is senior, so he stands
+         BESIDE him rather than in the rank with the recruits. */
+      const e = (at === SGT_LINE) ? ENC_LINE : ENC_DOOR;
+      encik.group.position.set(e.x, 0, e.z);
+      encik.group.rotation.y = e.ry;
     }
 
     /* ---- arrive: find bed one */
@@ -2007,7 +2035,7 @@
       updateDay();
       /* the CLOCKS run in every state (v5.19): a cutscene owns the poses,
          never the mixers */
-      for (const r of [sergeant, buddy, bunkmate, ghostFig]) if (r.mixer && r.group.visible) r.mixer.update(dt);
+      for (const r of [sergeant, buddy, bunkmate, encik, ghostFig]) if (r.mixer && r.group.visible) r.mixer.update(dt);
       for (const r of sleepRigs) if (r.mixer && sleeperRoot.visible) r.mixer.update(dt);
       for (const f of fans) f.rotation.y += dt * 7.5 * fanSpeed;
       if (showerOn) {
@@ -2049,6 +2077,7 @@
       sergeant.group.visible = !on;
       buddy.group.visible = !on;
       bunkmate.group.visible = !on;
+      encik.group.visible = !on;       // v8.2
       bunkCrowdShow(!on);              // v8.1: the six at their beds go with the rest of the day cast
       sleeperRoot.visible = on;
       for (const b of beds) { b.low.fold.visible = !on || b.his || !sleepers.find(s => s.bed === b); }
@@ -2088,8 +2117,9 @@
       if (s.blockBase !== undefined) { blockBase = s.blockBase; blockFlicker = !!s.blockFlicker; blockLight.intensity = blockBase; blockTube.material.emissiveIntensity = 1.6; }
       if (s.sleepRot) sleepers.forEach((o, i) => { const r = s.sleepRot[i]; if (r) o.obj.rotation.set(r[0], r[1], r[2]); });
       sergeant.group.visible = buddy.group.visible = bunkmate.group.visible = !s.night;
+      encik.group.visible = !s.night;  // v8.2
       bunkCrowdShow(!s.night);         // v8.1
-      for (const r of [sergeant, buddy, bunkmate]) if (r.acts && r.idle) r.play(r.idle, 1, 0);
+      for (const r of [sergeant, buddy, bunkmate, encik]) if (r.acts && r.idle) r.play(r.idle, 1, 0);
     }
     function reset() {
       ferryRoot.visible = jettyRoot.visible = paradeRoot.visible = false;   // v7.9: the film's three sets, in case a film was cut before its own step hid them
@@ -2147,7 +2177,7 @@
       scene.remove(world);
       for (const o of owned) { o.parent?.remove(o); o.dispose?.(); }
       owned.length = 0;
-      for (const r of [sergeant, buddy, bunkmate, ghostFig]) r.mixer?.stopAllAction();
+      for (const r of [sergeant, buddy, bunkmate, encik, ghostFig]) r.mixer?.stopAllAction();
       for (const r of sleepRigs) r.mixer?.stopAllAction();
       for (const g of geos) g.dispose();
       for (const m of mats) {
@@ -2178,8 +2208,8 @@
       beds, hisBed, lockers, fans, tubes, tubeLights, board, clockFace, clock,
       doorPivot, doorLeaf, DOOR_SHUT, DOOR_AJAR, DOOR_OPEN, DOOR_WC, DOOR_IN, OPEN, BLOCK, BALC, R, BED, WATER_AT,
       water, setShower, setLights, setNightRoom, setWindows, blockLight, clockGlow, CLOCK_GLOW, balcLight, nbLight, blanketCam,
-      ferryRoot, jettyRoot, paradeRoot, FERRY, JETTY, PARADE, PLAYER_SEAT, CAB, SEAT_X, SEAT_Z,
-      sergeant, buddy, bunkmate, ghostFig, sleepers, sleepRigs, sleeperRoot,
+      ferryRoot, jettyRoot, paradeRoot, paradeEncik, paradeCrowd, FERRY, JETTY, PARADE, PLAYER_SEAT, CAB, SEAT_X, SEAT_Z,
+      sergeant, buddy, bunkmate, encik, encSay, ghostFig, sleepers, sleepRigs, sleeperRoot,
       sayLine, seen, after, dayClock,
       bunkCrowds, bunkReady: () => bunkCrowds.every(c => c.ready),   // v8.1, for the probes
       get phase() { return phase; },
