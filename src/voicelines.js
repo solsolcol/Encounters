@@ -311,10 +311,12 @@
     /* v7.1 — EPISODE 2 · CHAPTER 1, THE WORST BED. 37 lines, four speakers.
        Chapter key e2c1; the film, the day, the night, the four scenes and the
        four card lines (`sayPrefix: 'n1'`). */
-    { id: "n1pro1", who: "jamesTeen", ch: "e2c1", where: "Opening film, over black: the ferry",
-      text: "Eighteen. The ferry to Tekong at seven in the morning, and nobody on it talking.", secs: 5.88 },
+    { id: "n1pro1", who: "jamesTeen", ch: "e2c1", where: "Opening film: inside the ferry",
+      text: "Finally eighteen. The biggest and most dreaded milestone in the lives of most young men here, including mine. National Service. I boarded the seven a.m. ferry with the other fresh recruits, begrudgingly. Nobody was talking to anybody. Not yet.", secs: 17.79 },
+    { id: "n1pro1b", who: "jamesTeen", ch: "e2c1", where: "Opening film: the parade square",
+      text: "We got sorted into our companies. I got into Hawk Coy. Whatever that means.", secs: 5.49 },
     { id: "n1pro2", who: "jamesTeen", ch: "e2c1", where: "Opening film: the bunk",
-      text: "Hawk Company. Twenty of us to a bunk, two rows of double-deck beds, and the sergeant walking the line with a clipboard.", secs: 8.28 },
+      text: "Twenty of us to a bunk. Two rows of double-deck beds, and a sergeant walking the line with a clipboard.", secs: 6.69 },
     { id: "n1pro3", who: "jamesTeen", ch: "e2c1", where: "Opening film: bed one",
       text: "Bed one. Right next to the toilet door. The worst spot in the room, and the one nobody wanted.", secs: 6.27 },
     { id: "n1pro4", who: "jamesTeen", ch: "e2c1", where: "Opening film: lights out",

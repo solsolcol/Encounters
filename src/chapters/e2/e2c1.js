@@ -183,7 +183,7 @@
                  b1day: 3.08, b1sleep: 2.19, k1board: 3.0, k1three: 4.05 };
 
   function build(ctx) {
-    const { THREE, GLTFLoader, scene, camera, yaw, LOW, kit, plantTrees,
+    const { THREE, GLTFLoader, cloneSkinned, scene, camera, yaw, LOW, kit, plantTrees,
             assetBytes, rescueTextures, redoShadows,
             cnv, makeSoftDot, makeGrass, makeConcrete,
             makeHellNote, getState, startDecision, worldSfx, HEAD_RE } = ctx;
@@ -247,7 +247,11 @@
     const matBlade = new THREE.MeshStandardMaterial({ color: 0xe0dccf, roughness: 0.7 });
     const matTube = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xfff6e6, emissiveIntensity: 1.6, roughness: 0.4 });
     const matBoard = new THREE.MeshStandardMaterial({ map: boardTex, roughness: 0.9 });
-    const matClock = new THREE.MeshBasicMaterial({ map: clock.tex, fog: false });
+    /* v7.9: the dial is a lit object, not a lamp — the map lights normally
+       and a low emissive copy of it keeps the face readable after lights
+       out without turning a wall clock into a light source. */
+    const matClock = new THREE.MeshStandardMaterial({ map: clock.tex, emissiveMap: clock.tex,
+      emissive: 0xffffff, emissiveIntensity: 0.30, roughness: 0.85, transparent: true, fog: false });
     const matLine = new THREE.MeshStandardMaterial({ color: 0xe6c53a, roughness: 0.8 });
     const matWhite = new THREE.MeshStandardMaterial({ color: 0xe8e8e2, roughness: 0.85 });
     const matDrain = new THREE.MeshStandardMaterial({ color: 0x1a1c1e, roughness: 0.4, metalness: 0.6 });
@@ -414,19 +418,77 @@
        Tekong bunk is lit from both long sides, and this room was a box lit
        from one. The glass is a pale overcast sky by day and goes to the
        night's blue-black with the room (`setWindows(k)`, k = nightK). */
-    const matGlass = new THREE.MeshStandardMaterial({ color: 0xcfdfe8, emissive: 0xdfe9ef, emissiveIntensity: 0.9, roughness: 0.3 });
-    const matFrame = new THREE.MeshStandardMaterial({ color: 0xb9bcb6, roughness: 0.6, metalness: 0.3 });
-    const WIN = { w: 1.04, h: 0.8, y: 2.25 };
-    const winGeo = { glass: new THREE.PlaneGeometry(WIN.w, WIN.h), slat: new THREE.BoxGeometry(0.02, 0.07, WIN.w - 0.04),
-                     frameV: new THREE.BoxGeometry(0.03, WIN.h + 0.06, 0.05), frameH: new THREE.BoxGeometry(0.03, 0.05, WIN.w + 0.06) };
+    /* v7.9 (Chad's Tekong photograph): A LONG TABLE DOWN THE MIDDLE with the
+       chairs stacked on it. It runs along X — the room is 12 m across and 8
+       deep, its two bed rows face each other over the x axis, so the long
+       axis of the open floor is x, not z — and it stands in the FAR half, at
+       z 2.55. Both of those are forced. The entrance is at x 0 on the −z
+       wall and the spawn is 0.6 m inside it, so a table down the z axis
+       stood a stack of chairs in the doorway (rendered from the spawn: a
+       black wall a metre from the lens); and the balcony opening is z ±1.2
+       with v7.4's gangway running through it, which the far half clears by
+       a metre. `walktest` proves the gangway, the toilet, the doors and the
+       corridor still work. */
+    const tables = [];
+    {
+      const TAB = { x: 0, z: 2.55, len: 3.60, dep: 0.75, top: 0.735 };
+      const matTable = new THREE.MeshStandardMaterial({ color: 0xd7cfbb, roughness: 0.7 });
+      const matChair = new THREE.MeshStandardMaterial({ color: 0xb08a52, roughness: 0.8 });
+      const top = new THREE.Mesh(new THREE.BoxGeometry(TAB.len, 0.05, TAB.dep), matTable);
+      top.position.set(TAB.x, TAB.top, TAB.z); top.castShadow = !LOW; top.receiveShadow = true;
+      world.add(top); tables.push(top);
+      for (const lx of [-TAB.len / 2 + 0.18, TAB.len / 2 - 0.18]) for (const lz of [-0.27, 0.27]) {
+        const lg = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.71, 8), matMetal);
+        lg.position.set(TAB.x + lx, 0.355, TAB.z + lz); world.add(lg);
+      }
+      /* three stacks of three, backs to the wall. Only the BOTTOM chair
+         carries legs — that is what a stack looks like: the ones above nest
+         into it, the seat rising 8.5 cm at a time. */
+      const seatGeo = new THREE.BoxGeometry(0.40, 0.035, 0.40);
+      const backGeo = new THREE.BoxGeometry(0.40, 0.36, 0.035);
+      const clegGeo = new THREE.BoxGeometry(0.035, 0.42, 0.035);
+      for (const sx of [-1.15, 0, 1.15]) {
+        for (const cx of [-0.17, 0.17]) for (const cz of [-0.17, 0.17]) {
+          const lg = new THREE.Mesh(clegGeo, matMetal);
+          lg.position.set(TAB.x + sx + cx, 0.97, TAB.z + cz); world.add(lg);
+        }
+        for (let i = 0; i < 3; i++) {
+          const st = new THREE.Mesh(seatGeo, matChair);
+          st.position.set(TAB.x + sx + 0.012 * i, 1.18 + i * 0.085, TAB.z); st.rotation.y = 0.025 * i;
+          st.castShadow = !LOW; world.add(st);
+          const bk = new THREE.Mesh(backGeo, matChair);
+          bk.position.set(TAB.x + sx + 0.012 * i, 1.38 + i * 0.085, TAB.z + 0.185); bk.rotation.y = 0.025 * i;
+          bk.rotation.x = 0.12; bk.castShadow = !LOW; world.add(bk);
+        }
+      }
+    }
+
+    /* v7.9 (Chad's Tekong photograph): the windows are BIG and their frames
+       are BLACK, and there are trees behind them. The wall is one box and
+       cutting a real opening through it would move the blockers, so the view
+       is PAINTED into the pane (`winView`, the memory-pocket trick) — sky
+       over a tree line over a far block — and the pane keeps lerping to
+       night with the room exactly as it did. */
+    const winView = makeWinView(THREE, cnv);
+    const matGlass = new THREE.MeshStandardMaterial({ map: winView, emissiveMap: winView,
+      color: 0xcfdfe8, emissive: 0xdfe9ef, emissiveIntensity: 0.9, roughness: 0.3 });
+    const matFrame = new THREE.MeshStandardMaterial({ color: 0x22262a, roughness: 0.55, metalness: 0.35 });
+    const WIN = { w: 1.30, h: 1.30, y: 1.72 };
+    const winGeo = { glass: new THREE.PlaneGeometry(WIN.w, WIN.h), slat: new THREE.BoxGeometry(0.02, 0.05, WIN.w - 0.05),
+                     frameV: new THREE.BoxGeometry(0.04, WIN.h + 0.09, 0.06), frameH: new THREE.BoxGeometry(0.04, 0.06, WIN.w + 0.09),
+                     mullV: new THREE.BoxGeometry(0.03, WIN.h, 0.045), mullH: new THREE.BoxGeometry(0.03, 0.045, WIN.w) };
     for (const wzz of ROW_Z) {
       const gl = new THREE.Mesh(winGeo.glass, matGlass);
       gl.position.set(-R.x + 0.012, WIN.y, wzz); gl.rotation.y = Math.PI / 2; world.add(gl);
       for (const dy of [-WIN.h / 2, WIN.h / 2]) { const fr = new THREE.Mesh(winGeo.frameH, matFrame); fr.position.set(-R.x + 0.02, WIN.y + dy, wzz); world.add(fr); }
       for (const dz of [-WIN.w / 2, WIN.w / 2]) { const fr = new THREE.Mesh(winGeo.frameV, matFrame); fr.position.set(-R.x + 0.02, WIN.y, wzz + dz); world.add(fr); }
-      for (let i = 0; i < 4; i++) {
+      // the panes: one bar across, one up the middle
+      const mh = new THREE.Mesh(winGeo.mullH, matFrame); mh.position.set(-R.x + 0.02, WIN.y + 0.10, wzz); world.add(mh);
+      const mv = new THREE.Mesh(winGeo.mullV, matFrame); mv.position.set(-R.x + 0.02, WIN.y, wzz); world.add(mv);
+      // the top light's louvres, tilted open
+      for (let i = 0; i < 3; i++) {
         const sl = new THREE.Mesh(winGeo.slat, matFrame);
-        sl.position.set(-R.x + 0.045, WIN.y - WIN.h / 2 + 0.1 + i * 0.2, wzz); sl.rotation.z = 0.55; world.add(sl);
+        sl.position.set(-R.x + 0.045, WIN.y + 0.24 + i * 0.16, wzz); sl.rotation.z = 0.55; world.add(sl);
       }
     }
     let winK = 0;
@@ -483,10 +545,20 @@
       }
       world.add(f); fans.push(f);
     }
+    /* v7.9: PAIRED tubes, as in Chad's photograph — two lamps in one fitting
+       under a backing plate, not four lonely singles. The `tubes` array is
+       still every glowing lamp, so setLights and the flicker are untouched. */
     const tubes = [];
+    const tubeGeo = new THREE.BoxGeometry(1.2, 0.05, 0.09);
+    const trayGeo = new THREE.BoxGeometry(1.3, 0.035, 0.30);
+    const matTray = new THREE.MeshStandardMaterial({ color: 0xdedad0, roughness: 0.8 });
     for (const [tx, tz] of [[-2.6, -2.4], [2.6, -2.4], [-2.6, 2.0], [2.6, 2.0]]) {
-      const t = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.05, 0.10), matTube);
-      t.position.set(tx, R.h - 0.05, tz); world.add(t); tubes.push(t);
+      const tray = new THREE.Mesh(trayGeo, matTray);
+      tray.position.set(tx, R.h - 0.012, tz); world.add(tray);
+      for (const dz of [-0.075, 0.075]) {
+        const t = new THREE.Mesh(tubeGeo, matTube);
+        t.position.set(tx, R.h - 0.055, tz + dz); world.add(t); tubes.push(t);
+      }
     }
     /* the room's light: two points along the aisle (the phone gets one), a
        warm-white the tubes give; `setLights(k)` is the switch */
@@ -517,7 +589,9 @@
        wall and the block's doorway red in every night frame; the digits
        are unlit and stay bright on their own */
     const CLOCK_GLOW = 0.55;
-    const clockGlow = new THREE.PointLight(0xff2a1a, 0, 2.2, 2.4);
+    /* v7.9: was the red of a digital display; the clock is analog now, so
+       this is the small warm practical over the toilet door instead */
+    const clockGlow = new THREE.PointLight(0xffd9a8, 0, 2.2, 2.4);
     clockGlow.position.set(DOOR_WC.x, 2.35, R.z - 0.3);
     scene.add(clockGlow); owned.push(clockGlow);
     const balcLight = new THREE.PointLight(0xffb060, 0, 14, 1.5);
@@ -536,7 +610,7 @@
     const board = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 0.95), matBoard);
     board.position.set(2.0, 1.55, -R.z + 0.01);
     world.add(board);
-    const clockFace = new THREE.Mesh(new THREE.PlaneGeometry(0.62, 0.24), matClock);
+    const clockFace = new THREE.Mesh(new THREE.PlaneGeometry(0.30, 0.30), matClock);
     clockFace.position.set(DOOR_WC.x, 2.55, R.z - 0.01);
     clockFace.rotation.y = Math.PI;
     world.add(clockFace);
@@ -673,179 +747,325 @@
     const treeStand = plantTrees(world, TREE_AT.map(([x, z], i) => ({ x, z, h: 6.4 + ((i * 29) % 9) * 0.3 })),
       { seed: 7, tint: new THREE.Color(0.92, 0.96, 0.88), roughness: 0.94, lowKeep: 0.55 });
 
-    /* ------------------------------------------------- the ferry (v7.7) ---
-       Chad, on v7.1: "why is the opening cinematic black for so long? Why is
-       there no ferry crossing the sea animation, or some good starting
-       intro?" The film's first nine seconds are on the FOREDECK of the
-       Tekong ferry: a set sixty metres off the bunk inside its own painted
-       sky (chapter 1's memory-pocket recipe — every material fog-free,
-       because the chapter's fog eats anything that far out), the sea
-       scrolling under the bow, the island's tree-line and its jetty coming
-       closer over the shot, a tanker on the horizon, the deck heaving on a
-       slow swell. Hidden outside the film; the film shows it on its first
-       frame and hides it in the dip to black before the balcony, and
-       reset() hides it again in case a film is cut before that step. */
-    const FERRY = new THREE.Vector3(-70, 0, -60);
-    const ferryRoot = new THREE.Group();
-    ferryRoot.position.copy(FERRY);
-    ferryRoot.visible = false;
-    world.add(ferryRoot);
+    /* ------------------------------------ the film's three sets (v7.9) ---
+       Chad, on v7.7: "I dont want to see the outside of the ferry and the
+       sea, it should show first person pov within inside the ferry itself
+       ... the player's POV is being seated inside the ferry at one of the
+       seats, while looking at other recruits seating at other seats"; then
+       "briefly show the scene of walking into Tekong, with the words
+       'Welcome to Pulau Tekong'"; then "the Tekong bunk blocks, panning
+       across the parade square ... recruits are all standing still ... with
+       the encik model facing them". Three sets, each parked far outside the
+       playable world in its own pocket (chapter 1's memory-pocket recipe —
+       every material fog-free, because the chapter's fog eats anything that
+       far out), each hidden except while the film shows it, and all three
+       hidden again by reset() in case a film is cut before its own step. */
     const nfm = (o) => new THREE.MeshStandardMaterial(Object.assign({ fog: false }, o));
+    const nbm = (o) => new THREE.MeshBasicMaterial(Object.assign({ fog: false }, o));
     const fmesh = (parent, geo, mat, x, y, z, rx = 0, ry = 0, rz = 0) => {
       const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.rotation.set(rx, ry, rz); parent.add(m); return m;
     };
     const fbox = (parent, w, h, d, mat, x, y, z, ry = 0) => fmesh(parent, new THREE.BoxGeometry(w, h, d), mat, x, y, z, 0, ry, 0);
     const hash = (i, k) => { const x = Math.sin(i * 12.9898 + k * 78.233) * 43758.5453; return x - Math.floor(x); };
-    /* the sky: a square canvas on the inside of the bubble — row 0 the
-       zenith, the middle row the horizon; column 0.25 faces +z (the bow),
-       0.5 faces +x. Seven in the morning: a low sun off the starboard bow
-       behind thin cloud, haze on the water, the far coast a dark line. */
-    const skyDawn = (() => {
-      const S = LOW ? 512 : 1024, [c, ctx] = cnv(S);
-      const g = ctx.createLinearGradient(0, 0, 0, S);
-      g.addColorStop(0, '#3a5a92'); g.addColorStop(0.25, '#5f82b8'); g.addColorStop(0.42, '#9db4cc');
-      g.addColorStop(0.475, '#e2c8a2'); g.addColorStop(0.5, '#eccfa6'); g.addColorStop(0.503, '#4f6678');
-      g.addColorStop(0.7, '#3c4f60'); g.addColorStop(1, '#283846');
-      ctx.fillStyle = g; ctx.fillRect(0, 0, S, S);
-      const sx = S * 0.34, sy = S * 0.44;
-      const glow = ctx.createRadialGradient(sx, sy, 0, sx, sy, S * 0.18);
-      glow.addColorStop(0, 'rgba(255,240,205,0.95)'); glow.addColorStop(0.2, 'rgba(255,210,140,0.6)');
-      glow.addColorStop(0.55, 'rgba(255,180,110,0.22)'); glow.addColorStop(1, 'rgba(255,170,110,0)');
-      ctx.fillStyle = glow; ctx.beginPath(); ctx.ellipse(sx, sy, S * 0.30, S * 0.13, 0, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = '#fff8e6'; ctx.beginPath(); ctx.arc(sx, sy, S * 0.012, 0, Math.PI * 2); ctx.fill();
-      // clouds as clusters of soft puffs (v6.8's recipe), warm near the sun, grey away from it
-      const puff = (x, y, r, rgb, a) => {
-        const gr = ctx.createRadialGradient(x, y, 0, x, y, r);
-        gr.addColorStop(0, `rgba(${rgb},${a})`); gr.addColorStop(0.55, `rgba(${rgb},${a * 0.9})`); gr.addColorStop(1, `rgba(${rgb},0)`);
-        ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
-      };
-      const rows = [[0.06, 0.30, 0.05, 0.016], [0.16, 0.35, 0.06, 0.020], [0.27, 0.27, 0.05, 0.017], [0.44, 0.33, 0.07, 0.022],
-                    [0.58, 0.29, 0.05, 0.016], [0.70, 0.36, 0.06, 0.020], [0.84, 0.31, 0.055, 0.018], [0.95, 0.38, 0.045, 0.015],
-                    [0.36, 0.41, 0.045, 0.012], [0.52, 0.43, 0.04, 0.011], [0.12, 0.42, 0.05, 0.012]];
-      rows.forEach(([u, v, w, h], ri) => {
-        const near = Math.abs(u - 0.34) < 0.16;
-        const top = near ? '255,232,205' : '228,232,238', bot = near ? '214,160,120' : '150,160,178';
-        const n = Math.max(3, Math.round(w / (h * 0.8)));
-        for (let i = 0; i < n; i++) { const t = i / (n - 1) - 0.5, j = hash(ri, i) - 0.5;
-          puff((u + t * w * 0.85) * S + j * h * S * 0.2, (v + h * 0.22) * S, h * S * (0.5 + 0.1 * Math.abs(j)), bot, 0.8); }
-        for (let i = 0; i < n - 1; i++) { const t = n === 2 ? 0 : i / (n - 2) - 0.5, j = hash(ri + 9, i) - 0.5;
-          puff((u + t * w * 0.7) * S + j * h * S * 0.25, (v - h * 0.25) * S, h * S * (0.62 + 0.25 * (1 - Math.abs(t) * 1.4)), top, 0.85); }
-      });
-      const hz = ctx.createLinearGradient(0, S * 0.47, 0, S * 0.5);
-      hz.addColorStop(0, 'rgba(240,225,205,0)'); hz.addColorStop(1, 'rgba(240,225,205,0.5)');
-      ctx.fillStyle = hz; ctx.fillRect(0, S * 0.47, S, S * 0.03);
-      ctx.fillStyle = 'rgba(50,66,70,0.85)';
-      for (const [u, w, h] of [[0.02, 0.10, 0.004], [0.55, 0.14, 0.005], [0.72, 0.09, 0.0035], [0.90, 0.08, 0.004]])
-        ctx.fillRect(u * S, (0.5 - h) * S, w * S, h * S);
-      const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = THREE.RepeatWrapping;
-      return t;
-    })();
-    /* the bubble is 120 m: the sky's BACK wall is a depth surface, so a coast
-       must stand inside it — at 48 m the land was clipped to a thirty-metre
-       islet and the sea ended in a hard line */
-    ferryRoot.add(new THREE.Mesh(new THREE.SphereGeometry(120, 40, 24),
-      new THREE.MeshBasicMaterial({ map: skyDawn, side: THREE.BackSide, fog: false })));
-    // the sea: streaks on a canvas, scrolled toward the lens by ferryTick
-    const seaTex = (() => {
-      const s = 256, [c, ctx] = cnv(s);
-      ctx.fillStyle = '#3a6474'; ctx.fillRect(0, 0, s, s);
-      for (let i = 0; i < 300; i++) {
-        ctx.fillStyle = `rgba(${130 + hash(i, 1) * 60 | 0},${175 + hash(i, 2) * 40 | 0},${190 + hash(i, 3) * 40 | 0},${0.10 + hash(i, 4) * 0.25})`;
-        ctx.fillRect(hash(i, 5) * s, hash(i, 6) * s, 6 + hash(i, 7) * 44, 1 + hash(i, 8) * 2);
-      }
+    /* a canvas painted onto a plane — the ferry's window light, the jetty's
+       sign, the parade square's sky. `cnv` is the engine's CSP-safe one. */
+    const paint = (S, fn, repeat) => {
+      const [c, ctx] = cnv(S); fn(ctx, S);
       const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
-      t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(27, 27);
+      if (repeat) { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(repeat[0], repeat[1]); }
       return t;
-    })();
-    const SEA_Y = -0.9;
-    fmesh(ferryRoot, new THREE.PlaneGeometry(260, 260), nfm({ map: seaTex, roughness: 0.3, metalness: 0.1, emissive: 0x0c2a36, emissiveIntensity: 0.5 }),
-          0, SEA_Y, 0, -Math.PI / 2);
-    /* the foredeck: the lens stands on it at the origin looking +z over a
-       hand rail, the bulwarks running to the bow eight metres ahead */
-    const deck = new THREE.Group();
-    ferryRoot.add(deck);
-    const matDeck = nfm({ color: 0x66726a, roughness: 0.85 }), matHull = nfm({ color: 0xe6e3da, roughness: 0.6 });
-    const matRail = nfm({ color: 0xd9d6cc, roughness: 0.45, metalness: 0.5 }), matBuoy = nfm({ color: 0xe0562a, roughness: 0.7 });
-    const BOW = { half: 4.5, z0: 2, z1: 10 };
-    /* the hull is ONE outline — square astern, coming to the stem — extruded
-       down into the water, and the deck is the same outline laid flat, so
-       nothing of the boat shows outside its own bulwarks */
-    const hullShape = new THREE.Shape([[-BOW.half, -6], [BOW.half, -6], [BOW.half, BOW.z0], [0, BOW.z1], [-BOW.half, BOW.z0]].map(([x, z]) => new THREE.Vector2(x, z)));
-    const hull = new THREE.Mesh(new THREE.ExtrudeGeometry(hullShape, { depth: 1.4, bevelEnabled: false }), matHull);
-    hull.rotation.x = Math.PI / 2; hull.position.y = -0.02; deck.add(hull);   // extruded along +z, turned to hang down from the deck
-    const deckTop = new THREE.Mesh(new THREE.ShapeGeometry(hullShape), matDeck);
-    deckTop.rotation.x = -Math.PI / 2; deckTop.scale.y = -1; deckTop.position.y = 0; deck.add(deckTop);
-    const bowLen = Math.hypot(BOW.half, BOW.z1 - BOW.z0), bowAng = Math.atan2(BOW.half, BOW.z1 - BOW.z0);
+    };
+    const filmTex = [];                       // every canvas made here, for dispose()
+
+    /* ----------------------------------------------- ONE · the ferry cabin */
+    const FERRY = new THREE.Vector3(-70, 0, -60);
+    const ferryRoot = new THREE.Group();
+    ferryRoot.position.copy(FERRY);
+    ferryRoot.visible = false;
+    world.add(ferryRoot);
+    const CAB = { hw: 1.82, h: 2.16, z0: -5.0, z1: 12.0 };
+    const SEAT_X = [-1.32, -0.74, 0.74, 1.32];        // two, the aisle, two
+    const SEAT_Z = [-3.4, -2.55, -1.7, -0.85, 0, 0.85, 1.7, 2.55, 3.4, 4.25, 5.1, 5.95, 6.8, 7.65];
+    const PLAYER_SEAT = { x: 1.32, z: -0.85 };        // his window seat, on the +x side
+    /* the sea and the sky OUTSIDE, seen only through the window band: a
+       bright morning haze over open water, painted once and hung on both
+       sides far enough out that the band never shows its edges */
+    const seaWall = paint(512, (ctx, S) => {
+      const g = ctx.createLinearGradient(0, 0, 0, S);
+      g.addColorStop(0, '#8fb0d0'); g.addColorStop(0.30, '#b9cee2'); g.addColorStop(0.46, '#dde7ee'); g.addColorStop(0.52, '#eef1f0');
+      g.addColorStop(0.545, '#6d93a4'); g.addColorStop(0.75, '#4d7d92'); g.addColorStop(1, '#3d6b80');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, S, S);
+      ctx.fillStyle = 'rgba(60,80,90,0.55)';                       // the far shore, a thin line
+      ctx.fillRect(0, S * 0.529, S, S * 0.008);
+      for (let i = 0; i < 220; i++) {                              // glitter on the water
+        const y = S * (0.56 + hash(i, 3) * 0.42), w = 4 + hash(i, 4) * 26;
+        ctx.fillStyle = `rgba(255,255,255,${0.05 + hash(i, 5) * 0.18})`;
+        ctx.fillRect(hash(i, 6) * S, y, w, 1.5);
+      }
+    }, [3, 1]);
+    filmTex.push(seaWall);
+    const matSea = nbm({ map: seaWall });
+    /* MEASURED, not guessed: the window aperture is 0.64 m tall and the
+       eye sits 0.45 m from it, so it subtends ~70 deg — nearly the whole
+       of the lens's 72. A 11 m sheet at 21 m covers 30, which is why the
+       contemplative shot out of the window showed the sea as a BAND with
+       the void above and below it. 50 m at 15 covers 119. The horizon is
+       0.529 down the sheet, so the centre is placed to put it at the
+       seated eye: 1.30 + 0.029 * 50. */
+    for (const sgn of [-1, 1]) fmesh(ferryRoot, new THREE.PlaneGeometry(120, 50), matSea, sgn * 16, 2.75, 3.0, 0, sgn > 0 ? -Math.PI / 2 : Math.PI / 2);
+    /* the cabin: a dark blue carpet, cream walls with a window band, a white
+       ribbed ceiling with the long light box down the middle, chrome poles */
+    const matCarpet = nfm({ color: 0x2b3550, roughness: 1 });
+    const matPanel = nfm({ color: 0xe8eef1, roughness: 0.75 });
+    const matRib = nfm({ color: 0xf4f7f8, roughness: 0.6 });
+    const matChrome = nfm({ color: 0xc8ced4, roughness: 0.25, metalness: 0.85 });
+    const matPane = nbm({ color: 0xffffff, transparent: true, opacity: 0.10 });
+    const matLight = nbm({ color: 0xfff4dc });
+    const CABL = CAB.z1 - CAB.z0, CABM = (CAB.z0 + CAB.z1) / 2;
+    fmesh(ferryRoot, new THREE.PlaneGeometry(CAB.hw * 2, CABL), matCarpet, 0, 0.01, CABM, -Math.PI / 2);
+    fmesh(ferryRoot, new THREE.PlaneGeometry(CAB.hw * 2, CABL), matRib, 0, CAB.h, CABM, Math.PI / 2);
+    for (let z = CAB.z0 + 0.5; z < CAB.z1; z += 0.6)                     // the ceiling's ribs
+      fbox(ferryRoot, CAB.hw * 2, 0.03, 0.06, matPanel, 0, CAB.h - 0.02, z);
+    fbox(ferryRoot, 0.92, 0.16, CABL - 1.6, matLight, 0, CAB.h - 0.10, CABM);
     for (const sgn of [-1, 1]) {
-      const cx = sgn * BOW.half / 2, cz = (BOW.z0 + BOW.z1) / 2, ry = -sgn * bowAng;
-      fbox(deck, 0.10, 1.05, bowLen, matHull, cx, 0.52, cz, ry);           // the bulwark
-      fmesh(deck, new THREE.CylinderGeometry(0.03, 0.03, bowLen, 8), matRail, cx, 1.08, cz, Math.PI / 2, ry, 0);   // its top rail
+      fbox(ferryRoot, 0.10, 1.06, CABL, matPanel, sgn * CAB.hw, 0.53, CABM);          // under the windows
+      fbox(ferryRoot, 0.10, 0.46, CABL, matPanel, sgn * CAB.hw, 1.93, CABM);          // over them
+      fmesh(ferryRoot, new THREE.PlaneGeometry(CABL, 0.64), matPane, sgn * (CAB.hw - 0.05), 1.38, CABM, 0, sgn > 0 ? -Math.PI / 2 : Math.PI / 2);
+      for (let z = CAB.z0 + 1.7; z < CAB.z1; z += 1.7)                                // the mullions between the panes
+        fbox(ferryRoot, 0.12, 0.66, 0.09, matPanel, sgn * (CAB.hw - 0.01), 1.38, z);
+      for (let z = CAB.z0 + 2.0; z < CAB.z1; z += 3.0)                                // the poles at the aisle
+        fmesh(ferryRoot, new THREE.CylinderGeometry(0.035, 0.035, CAB.h, 10), matChrome, sgn * 0.42, CAB.h / 2, z);
     }
-    fbox(deck, 0.6, 1.05, 0.4, matHull, 0, 0.52, BOW.z1);                   // the stem
-    for (const x of [-3.2, -1.6, 0, 1.6, 3.2])                              // the hand rail across the deck in front of the lens
-      fmesh(deck, new THREE.CylinderGeometry(0.025, 0.025, 1.05, 8), matRail, x, 0.525, 1.9);
-    for (const y of [0.58, 1.05])
-      fmesh(deck, new THREE.CylinderGeometry(0.03, 0.03, 6.6, 8), matRail, 0, y, 1.9, 0, 0, Math.PI / 2);
-    fmesh(deck, new THREE.TorusGeometry(0.30, 0.07, 10, 24), matBuoy, 1.45, 0.72, 1.95);   // a life buoy on the rail
-    for (const a of [0, Math.PI / 2, Math.PI, -Math.PI / 2])                // its white quarters
-      fmesh(deck, new THREE.TorusGeometry(0.30, 0.075, 8, 8, 0.5), nfm({ color: 0xf2f0ea }), 1.45, 0.72, 1.95, 0, 0, a + 0.3);
-    fbox(deck, 0.9, 0.42, 0.5, nfm({ color: 0x9aa39c, roughness: 0.9 }), -3.4, 0.21, 4.2);   // a bench, a coiled rope
-    fmesh(deck, new THREE.TorusGeometry(0.28, 0.09, 8, 20), nfm({ color: 0xb59a6a, roughness: 1 }), 2.8, 0.09, 5.0, Math.PI / 2);
-    // the bow wave: two foam sheets flaring off the hull, pulsed by ferryTick
-    const foam = [];
-    for (const sgn of [-1, 1]) {
-      const f = fmesh(ferryRoot, new THREE.PlaneGeometry(1.8, 9), nfm({ color: 0xf4f8f6, roughness: 1, transparent: true, opacity: 0.5, depthWrite: false }),
-                      sgn * 5.1, SEA_Y + 0.02, 6.5, -Math.PI / 2, 0, sgn * 0.25);
-      foam.push(f);
-    }
-    /* TEKONG: a low land mass whose near shore is the island group's
-       origin, its beach, its tree-line from the kit, a jetty reaching out
-       to us with a shelter at its end, a beacon. The group slides closer
-       over the shot (ferryApproach). */
-    const island = new THREE.Group();
-    island.position.z = 44;
-    ferryRoot.add(island);
-    const matLand = nfm({ color: 0x2c3c2e, roughness: 1 }), matSand = nfm({ color: 0xcdbb93, roughness: 1 });
-    const landMass = fmesh(island, new THREE.CylinderGeometry(28, 30, 1.4, 40), matLand, 0, SEA_Y + 0.9, 28);
-    const beach = fmesh(island, new THREE.CylinderGeometry(29.2, 29.6, 0.3, 40), matSand, 0, SEA_Y + 0.22, 28.4);
-    landMass.scale.x = beach.scale.x = 3.2;                                 // a COAST across the whole view, not an islet
-    const land = new THREE.Group(); land.position.set(0, SEA_Y + 1.6, 0); island.add(land);
-    /* three ranks: a front rank every four metres along the whole coast
-       (the jetty's gap left at x ±3), two thinner ranks behind it */
-    const coastSpots = [];
-    for (let x = -76; x <= 76; x += 4) if (Math.abs(x) > 3) coastSpots.push([x + (hash(x, 21) - 0.5) * 2.4, 4 + hash(x, 22) * 5]);
-    for (let x = -72; x <= 72; x += 7) coastSpots.push([x + (hash(x, 23) - 0.5) * 3, 13 + hash(x, 24) * 5]);
-    for (let x = -66; x <= 66; x += 11) coastSpots.push([x + (hash(x, 25) - 0.5) * 4, 21 + hash(x, 26) * 5]);
-    const ferryTrees = plantTrees(land, coastSpots.map(([x, z], i) => ({ x, z, h: 5.5 + hash(i, 11) * 3.0 })),
-      { seed: 13, fog: false, tint: new THREE.Color(0.62, 0.72, 0.62), roughness: 0.95, lowKeep: 0.5 });
-    const matPlank = nfm({ color: 0x6e5a3e, roughness: 0.95 }), matPost = nfm({ color: 0x4a3c2a, roughness: 1 });
-    fbox(island, 2.2, 0.12, 16, matPlank, 0, 0.42, -8);                     // the jetty, out over the water toward us
-    for (let z = -15; z <= 0; z += 2.5) for (const x of [-0.9, 0.9])
-      fmesh(island, new THREE.CylinderGeometry(0.09, 0.09, 1.5, 6), matPost, x, SEA_Y + 0.65, z);
-    fbox(island, 2.6, 0.08, 2.6, nfm({ color: 0x8a3a30, roughness: 0.8 }), 0, 2.55, -14.5);   // the shelter's roof
-    for (const [x, z] of [[-1.1, -15.6], [1.1, -15.6], [-1.1, -13.4], [1.1, -13.4]])
-      fmesh(island, new THREE.CylinderGeometry(0.05, 0.05, 2.1, 6), matRail, x, 1.53, z);
-    fmesh(island, new THREE.CylinderGeometry(0.06, 0.06, 4.0, 6), nfm({ color: 0xe8e4dc }), 1.6, 1.9, -16.2);   // the beacon
-    fmesh(island, new THREE.SphereGeometry(0.16, 8, 6), nfm({ color: 0xff3a2a, emissive: 0xff3a2a, emissiveIntensity: 1.2 }), 1.6, 4.0, -16.2);
-    // a bumboat crossing under the coast to starboard
-    const bumboat = fbox(ferryRoot, 3.0, 0.9, 1.1, nfm({ color: 0xd8c8a0, roughness: 0.9 }), 22, SEA_Y + 0.4, 30);
-    // the sun, a soft disc on the sky where the painting put it, and its light on the deck
-    const sun = new THREE.Sprite(new THREE.SpriteMaterial({ map: dotTex, fog: false, transparent: true, depthWrite: false }));
-    sun.position.set(24.7, 8.8, 38.8); sun.scale.setScalar(5);   // on the painted sun's line (column 0.34, row 0.44)
-    ferryRoot.add(sun);
-    const sunLight = new THREE.PointLight(0xffd8a8, 30, 80, 1.0); sunLight.position.set(14, 6, 24); ferryRoot.add(sunLight);
-    const skyLight = new THREE.PointLight(0xc8d8f0, 14, 40, 1.0); skyLight.position.set(-4, 9, -6); ferryRoot.add(skyLight);
-    // the approach: the island from forty metres to twenty-six over the shot
-    const ferryApproach = (k) => { island.position.z = 44 - 14 * k; bumboat.position.x = 22 - 10 * k; };
+    fbox(ferryRoot, CAB.hw * 2, CAB.h, 0.12, matPanel, 0, CAB.h / 2, CAB.z1);         // the forward bulkhead
+    fbox(ferryRoot, CAB.hw * 2, CAB.h, 0.12, matPanel, 0, CAB.h / 2, CAB.z0);         // and the one behind him
+    /* the seats: a pan, a raked back, a headrest and a chrome frame, blue and
+       teal alternating down the rows as the photograph has them */
+    /* measured against the photograph and the lens: the seated eye is at
+       1.30 and a seat back tops out at 1.14, so the rows READ as rows —
+       backs, heads over them, the window band clear above. A back that
+       reaches 1.21 (v7.9's first pass) filled the whole frame with blue. */
+    const seatGeo = { pan: new THREE.BoxGeometry(0.50, 0.09, 0.46), back: new THREE.BoxGeometry(0.50, 0.56, 0.11),
+                      head: new THREE.BoxGeometry(0.46, 0.16, 0.13), leg: new THREE.CylinderGeometry(0.022, 0.022, 0.42, 8) };
+    const matSeatA = nfm({ color: 0x3f63a8, roughness: 0.85 }), matSeatB = nfm({ color: 0x2f7f86, roughness: 0.85 });
+    const ferrySeats = [];
+    SEAT_Z.forEach((z, r) => SEAT_X.forEach((x, i) => {
+      const m = ((r + i) % 3 === 0) ? matSeatB : matSeatA;
+      const g = new THREE.Group(); g.position.set(x, 0, z); ferryRoot.add(g);
+      fmesh(g, seatGeo.pan, m, 0, 0.43, 0);
+      fmesh(g, seatGeo.back, m, 0, 0.73, -0.20, -0.12);
+      fmesh(g, seatGeo.head, m, 0, 1.06, -0.24, -0.12);
+      for (const dx of [-0.19, 0.19]) fmesh(g, seatGeo.leg, matChrome, dx, 0.21, 0.05);
+      ferrySeats.push(g);
+    }));
+    const ferryLight = new THREE.PointLight(0xfff2e0, 12, 26, 1.2); ferryLight.position.set(0, 2.0, 1.0); ferryRoot.add(ferryLight);
+    const ferrySun = new THREE.PointLight(0xdfeaf6, 16, 30, 1.1); ferrySun.position.set(3.2, 1.5, 2.0); ferryRoot.add(ferrySun);
     let swellT = 0;
-    const ferryTick = (dt, t) => {
+    const ferryTick = (dt) => {                     // the cabin breathing on a slow swell
       swellT += dt;
-      deck.position.y = Math.sin(swellT * 0.9) * 0.05;
-      deck.rotation.z = Math.sin(swellT * 0.7) * 0.012;
-      deck.rotation.x = Math.sin(swellT * 1.1 + 1) * 0.008;
-      seaTex.offset.y -= dt * 0.22;                                          // the water runs back under the bow
-      seaTex.offset.x = Math.sin(swellT * 0.3) * 0.01;
-      for (let i = 0; i < foam.length; i++) foam[i].material.opacity = 0.42 + 0.14 * Math.sin(swellT * 2.3 + i * 1.7);
+      ferryRoot.rotation.z = Math.sin(swellT * 0.62) * 0.008;
+      ferryRoot.rotation.x = Math.sin(swellT * 0.83 + 1) * 0.005;
+      ferryRoot.position.y = FERRY.y + Math.sin(swellT * 0.9) * 0.03;
+    };
+
+    /* ------------------------------------------- TWO · the Tekong walkway */
+    const JETTY = new THREE.Vector3(-70, 0, 40);
+    const jettyRoot = new THREE.Group();
+    jettyRoot.position.copy(JETTY);
+    jettyRoot.visible = false;
+    world.add(jettyRoot);
+    const matWalk = nfm({ color: 0xc9c4b6, roughness: 0.92 });
+    const matGreen = nfm({ color: 0x2f6b4f, roughness: 0.6, metalness: 0.3 });
+    const matRoofJ = nfm({ color: 0xe6e6e0, roughness: 0.85 });
+    const matRail = nfm({ color: 0xdadfe0, roughness: 0.5, metalness: 0.4 });
+    fmesh(jettyRoot, new THREE.PlaneGeometry(7.0, 44), matWalk, 0, 0.01, 8, -Math.PI / 2);
+    for (const sgn of [-1, 1]) {
+      for (let z = -12; z <= 28; z += 4) {                                   // the columns
+        fbox(jettyRoot, 0.22, 3.5, 0.22, matGreen, sgn * 3.1, 1.75, z);
+        fbox(jettyRoot, 0.14, 0.14, 6.4, matGreen, sgn * 2.9, 3.42, z, 0);   // the trusses across
+      }
+      for (let z = -12; z <= 28; z += 1.6) fbox(jettyRoot, 0.05, 1.0, 0.05, matRail, sgn * 3.0, 0.5, z);
+      for (const y of [0.55, 1.0]) fbox(jettyRoot, 0.06, 0.06, 42, matRail, sgn * 3.0, y, 8);
+      fbox(jettyRoot, 0.7, 0.12, 44, matRoofJ, sgn * 3.1, 3.62, 8, 0);
+    }
+    fbox(jettyRoot, 7.0, 0.14, 44, matRoofJ, 0, 3.70, 8);                    // the roof itself
+    for (let z = -12; z <= 28; z += 2.0) fbox(jettyRoot, 6.6, 0.05, 0.10, matGreen, 0, 3.60, z);
+    /* the sign across the beam, in the photograph's black capitals */
+    const signTex = paint(1024, (ctx, S) => {
+      ctx.fillStyle = '#eceae2'; ctx.fillRect(0, 0, S, S);
+      ctx.fillStyle = '#1b1b1b'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      /* the board is 5.0 x 1.7 and the canvas is SQUARE, so one texel is
+         2.94x wider than it is tall. Type drawn straight onto it comes out
+         stretched — and 'PULAU TEKONG' at 0.20 S ran off both ends of the
+         canvas before it was ever stretched ("ELCOME T / LAU TEKO" on the
+         first render). It is compressed by that ratio and then FITTED to the
+         board by measurement, never by a guessed point size. */
+      const K = 1.7 / 5.0;
+      const line = (text, y) => {
+        let px = Math.round(S * 0.26);
+        ctx.font = 'bold ' + px + 'px Georgia, serif';
+        const w = ctx.measureText(text).width * K;
+        if (w > S * 0.88) { px = Math.floor(px * (S * 0.88) / w); ctx.font = 'bold ' + px + 'px Georgia, serif'; }
+        ctx.save(); ctx.translate(S / 2, y); ctx.scale(K, 1); ctx.fillText(text, 0, 0); ctx.restore();
+      };
+      line('WELCOME TO', S * 0.34);
+      line('PULAU TEKONG', S * 0.66);
+    });
+    filmTex.push(signTex);
+    fmesh(jettyRoot, new THREE.PlaneGeometry(5.0, 1.7), nbm({ map: signTex }), 0, 2.92, 10.0, 0, Math.PI, 0);
+    fbox(jettyRoot, 5.4, 1.9, 0.10, matRoofJ, 0, 2.92, 10.08);
+    /* a bright morning behind it, and the island's trees over the rail */
+    const skyJ = paint(512, (ctx, S) => {
+      const g = ctx.createLinearGradient(0, 0, 0, S);
+      g.addColorStop(0, '#8fb4d8'); g.addColorStop(0.55, '#cfe0ee'); g.addColorStop(1, '#eef2f0');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, S, S);
+    });
+    filmTex.push(skyJ);
+    fmesh(jettyRoot, new THREE.PlaneGeometry(120, 50), nbm({ map: skyJ }), 0, 18, 46, 0, Math.PI, 0);
+    const jettyTrees = plantTrees(jettyRoot, [
+      [-14, 20], [-11, 26], [-8, 33], [12, 22], [15, 28], [9, 34], [-17, 30], [18, 34],
+    ].map(([x, z], i) => ({ x, z, h: 6.5 + hash(i, 8) * 3 })),
+      { seed: 31, fog: false, tint: new THREE.Color(0.7, 0.8, 0.68), roughness: 0.95, lowKeep: 0.6 });
+    const jettyLight = new THREE.PointLight(0xffffff, 14, 60, 1.0); jettyLight.position.set(0, 6, 6); jettyRoot.add(jettyLight);
+
+    /* --------------------------------------- THREE · the parade square */
+    /* v7.9: the square moved OUT to x -200, not up. Its ground has to run
+       to the horizon or the shot shows the void past its edge, and a plane
+       that big at the old x 60 lay inside the camp's own terrain. Out here
+       it overlaps only the other two FILM sets, which are never on screen
+       at the same time. (Lifting it 40 m was tried first and broke the
+       crowd: `mkCrowd` grounds a copy from a WORLD bone position against
+       the group's LOCAL y, so every recruit went 40 m under the tarmac.) */
+    const PARADE = new THREE.Vector3(-200, 0, 0);
+    const paradeRoot = new THREE.Group();
+    paradeRoot.position.copy(PARADE);
+    paradeRoot.visible = false;
+    world.add(paradeRoot);
+    const matSq = nfm({ color: 0xcfcabb, roughness: 0.95 });
+    const matCream = nfm({ color: 0xe9e0cc, roughness: 0.9 });
+    const matOchre = nfm({ color: 0xd79a52, roughness: 0.9 });
+    const matWin = nfm({ color: 0x2a3a44, roughness: 0.35, metalness: 0.3 });
+    fmesh(paradeRoot, new THREE.PlaneGeometry(300, 240), matSq, 0, 0.01, 30, -Math.PI / 2);
+    for (const lx of [-18, 0, 18]) fmesh(paradeRoot, new THREE.PlaneGeometry(0.12, 50), matWhite, lx, 0.02, 0, -Math.PI / 2);
+    /* the block: four storeys of cream with ochre bands and a stair tower,
+       the photograph's own proportions (a long face, a raised centre) */
+    const BLK = { w: 46, h: 15.5, d: 11 };
+    fbox(paradeRoot, BLK.w, BLK.h, BLK.d, matCream, 0, BLK.h / 2, 22);
+    fbox(paradeRoot, 9.0, BLK.h + 3.2, BLK.d + 0.6, matCream, -2.0, (BLK.h + 3.2) / 2, 22);      // the stair tower
+    fbox(paradeRoot, 9.4, 0.6, BLK.d + 1.0, matGreen, -2.0, BLK.h + 3.4, 22);                    // its green cap
+    for (let f = 0; f < 4; f++) {
+      const y = 2.4 + f * 3.6;
+      fbox(paradeRoot, BLK.w + 0.5, 0.35, 0.4, matOchre, 0, y + 1.5, 22 - BLK.d / 2 - 0.05);     // the floor bands
+      for (let i = 0; i < 13; i++) {
+        const x = -BLK.w / 2 + 2.2 + i * 3.5;
+        if (Math.abs(x + 2.0) < 4.6) continue;                                                    // the tower's own face
+        fbox(paradeRoot, 1.7, 1.5, 0.25, matWin, x, y, 22 - BLK.d / 2 - 0.1);
+      }
+    }
+    fbox(paradeRoot, 2.6, 1.8, 0.2, nfm({ color: 0xb03a34, roughness: 0.8 }), -2.0, BLK.h - 1.2, 22 - BLK.d / 2 - 0.16);  // the crest plate
+    const paradeSky = paint(512, (ctx, S) => {
+      const g = ctx.createLinearGradient(0, 0, 0, S);
+      g.addColorStop(0, '#7ea8d4'); g.addColorStop(0.6, '#c6d9e8'); g.addColorStop(1, '#e8eef0');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, S, S);
+    });
+    filmTex.push(paradeSky);
+    /* a BUBBLE, not a sheet — chapter 1's memory-pocket recipe. A flat sky
+       200 m out still left the world's own dome showing as a pale arc in
+       the corner of the pan; a 260 m sphere on BackSide wraps the whole
+       set, and everything in it (the block at 22, the trees at 34, the
+       ground's far corner at 212) stands inside that radius. */
+    fmesh(paradeRoot, new THREE.SphereGeometry(260, 32, 20), nbm({ map: paradeSky, side: THREE.BackSide }), 0, 0, 0);
+    const paradeTrees = plantTrees(paradeRoot, [
+      [-34, 30], [-28, 34], [30, 30], [36, 33], [-40, 24], [42, 26],
+    ].map(([x, z], i) => ({ x, z, h: 7 + hash(i, 12) * 3 })),
+      { seed: 17, fog: false, tint: new THREE.Color(0.72, 0.82, 0.7), roughness: 0.95, lowKeep: 0.6 });
+    const paradeLight = new THREE.PointLight(0xffffff, 18, 90, 1.0); paradeLight.position.set(0, 14, -6); paradeRoot.add(paradeLight);
+
+    /* ------------------------------------------------------- the extras ---
+       One model, many copies: the admin-tee recruit is loaded ONCE and the
+       copies share his skeleton's clips through the engine's `cloneSkinned`
+       (v4.8's law, the crowd of chapter 3). Each copy carries its own mixer
+       so a pose can be PARKED per copy — a seated man on a ferry does not
+       breathe in step with the man across the aisle. */
+    const crowds = [];
+    function mkCrowd(key, spots, clip, opts = {}) {
+      const c = { group: new THREE.Group(), rigs: [], ready: false, key };
+      (opts.parent || world).add(c.group);
+      assetBytes(key).then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
+        if (!alive) return;
+        rescueTextures(gltf, BUF);
+        gltf.scene.traverse(o => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = false; o.frustumCulled = false; } });
+        /* the height is measured ONCE, from the POSED bones of the source */
+        gltf.scene.updateMatrixWorld(true);
+        const v = new THREE.Vector3(); let lo = Infinity, hi = -Infinity, crown = false;
+        gltf.scene.traverse(o => { if (!o.isBone) return; o.getWorldPosition(v); lo = Math.min(lo, v.y); hi = Math.max(hi, v.y); if (/HeadTop_End/.test(o.name)) crown = true; });
+        const span = (hi - lo) / (crown ? 1 : 0.935);
+        const s = (opts.height || 1.70) / (span || 1.7);
+        spots.forEach((sp, i) => {
+          const g = new THREE.Group();
+          g.position.set(sp.x, 0, sp.z); g.rotation.y = sp.ry || 0; g.scale.setScalar(s);
+          const m = cloneSkinned(gltf.scene);
+          g.add(m); c.group.add(g);
+          const mixer = new THREE.AnimationMixer(m);
+          const cl = gltf.animations.find(a => a.name === (sp.clip || clip)) || gltf.animations[0];
+          const act = mixer.clipAction(cl);
+          act.play();
+          if (sp.at !== undefined || opts.at !== undefined) { act.time = cl.duration * (sp.at !== undefined ? sp.at : opts.at); act.paused = true; }
+          else act.time = cl.duration * hash(i, 2);
+          mixer.update(0.0001);
+          /* ground the copy: on its own posed feet, or — for a SEATED take,
+             whose legs fold under because a retarget carries rotations and
+             not the hips' translation — by putting the HIPS on the seat pan */
+          m.updateMatrixWorld(true);
+          if (opts.hipY !== undefined) {
+            let hip = null; m.traverse(o => { if (o.isBone && !hip && /Hips/.test(o.name)) hip = o; });
+            if (hip) { hip.getWorldPosition(v); m.position.y += (opts.hipY - (v.y - g.position.y)) / s; }
+          } else {
+            let lo2 = Infinity; m.traverse(o => { if (o.isBone) { o.getWorldPosition(v); lo2 = Math.min(lo2, v.y); } });
+            if (isFinite(lo2)) m.position.y += -(lo2 - g.position.y) / s;
+          }
+          c.rigs.push({ g, m, mixer, act, dur: cl.duration });
+        });
+        c.ready = true;
+      }, (err) => { console.warn(key + ' crowd failed', err); c.ready = true; }))
+        .catch(err => { console.warn(key + ' crowd failed', err); c.ready = true; });
+      crowds.push(c);
+      return c;
+    }
+    /* the recruits in the other seats — the pose PARKED, each at his own
+       frame; the seat in front hides the legs the sitting take folds under */
+    const ferryRiders = mkCrowd('admintee', [
+      { x: SEAT_X[2], z: SEAT_Z[6], at: 0.30 }, { x: SEAT_X[0], z: SEAT_Z[5], at: 0.55 },
+      { x: SEAT_X[1], z: SEAT_Z[5], at: 0.20 }, { x: SEAT_X[3], z: SEAT_Z[6], at: 0.70 },
+      { x: SEAT_X[0], z: SEAT_Z[7], at: 0.40 }, { x: SEAT_X[2], z: SEAT_Z[7], at: 0.15 },
+      { x: SEAT_X[1], z: SEAT_Z[8], at: 0.62 }, { x: SEAT_X[3], z: SEAT_Z[9], at: 0.35 },
+      { x: SEAT_X[0], z: SEAT_Z[3], at: 0.50 }, { x: SEAT_X[1], z: SEAT_Z[2], at: 0.25 },
+    ].map(s => ({ ...s, ry: 0 })), 'Sit', { parent: ferryRoot, height: 1.70, hipY: 0.60 });
+    /* the file walking in under the sign — the walk take runs, and the whole
+       group is carried forward by the film (jettyWalk) */
+    const jettyWalkers = mkCrowd('admintee', [
+      { x: -0.9, z: 1.0 }, { x: 0.5, z: 2.2 }, { x: -1.6, z: 3.6 }, { x: 1.2, z: 4.4 },
+      { x: -0.4, z: 5.8 }, { x: 1.7, z: 7.0 }, { x: -1.9, z: 8.2 }, { x: 0.8, z: 9.4 },
+      { x: -1.1, z: 10.8 }, { x: 1.5, z: 12.2 },
+    ].map(s => ({ ...s, ry: 0 })), 'Walking', { parent: jettyRoot, height: 1.70 });
+    /* the ranks on the square, standing still, facing the encik */
+    const paradeRanks = [];
+    for (let r = 0; r < 4; r++) for (let i = 0; i < 7; i++)
+      paradeRanks.push({ x: -6.6 + i * 2.2, z: 2.0 + r * 2.0, ry: Math.PI, at: 0.1 + hash(r * 7 + i, 9) * 0.8 });
+    const paradeCrowd = mkCrowd('admintee', paradeRanks, 'Idle_9', { parent: paradeRoot, height: 1.70 });
+    const paradeEncik = mkCrowd('fbosling', [{ x: 0.0, z: -3.2, ry: 0, at: 0.2 }], 'Idle_3', { parent: paradeRoot, height: 1.74 });
+    let walkT = 0;
+    const jettyWalk = (dt) => {                    // the file carried up the walkway
+      walkT += dt;
+      for (const r of jettyWalkers.rigs) { r.g.position.z += dt * 1.25; if (r.g.position.z > 16) r.g.position.z -= 17; }
+    };
+    const crowdTick = (dt, root) => {
+      for (const c of crowds) {
+        if (!c.ready || !c.group.parent || !c.group.visible) continue;
+        let vis = c.group, on = true;
+        while (vis) { if (!vis.visible) { on = false; break; } vis = vis.parent; }
+        if (!on) continue;
+        for (const r of c.rigs) if (!r.act.paused) r.mixer.update(dt);
+      }
     };
 
     // the block far off, the same model every chapter has stood under
@@ -962,14 +1182,26 @@
     /* the sergeant by the entrance, rifle slung; the buddy beside the next
        bed; a bunkmate reading the board. Their heights are the plan's (a
        sergeant of 1.74, recruits of 1.70). */
-    const sergeant = mkRig('fbosling', { x: 1.3, z: -2.9, ry: 0.35, height: 1.74, idle: 'Idle_3' });   // facing down the room
+    /* v7.9 (Chad): "The 2 sergeants should both face the POV of the player."
+       Both rigs are aimed at where the film's camera watches them from —
+       AISLE_MID (1.234, 0.724), the point the yaw holds on while the
+       sergeant speaks. A MODEL's facing is faceFrom(...) + PI (the v5.0
+       law), which from his spot comes out at -0.018: square down the room,
+       into the lens. Play sees the same thing, which is what a sergeant
+       standing at the entrance should look like anyway. */
+    const sergeant = mkRig('fbosling', { x: 1.3, z: -2.9, ry: -0.02, height: 1.74, idle: 'Idle_3' });   // square down the room, at the camera
     const buddy = mkRig('admintee', { x: -3.05, z: 1.15, ry: 1.2, height: 1.70, idle: 'Idle_9' });
     /* v7.5: the bunkmate is Chad's FBO without the rifle. Until now he was a
        tinted second copy of the buddy's model, and that model shipped with a
        torn arm — one broken file, two characters. This one has no talking
        take (the FBO pair carry Idle_6 and field takes), so his lines play
-       over his rest; `rig.play` of a take he lacks is a no-op by design. */
-    const bunkmate = mkRig('fbonosling', { x: 1.75, z: -3.15, ry: Math.PI, height: 1.70, idle: 'Idle_6' });
+       over his rest; `rig.play` of a take he lacks is a no-op by design.
+       v7.9 (Chad): "The other sergeant should not be looking at the notice
+       board." He stood at PI, nose to the board; he faces the room now,
+       aimed at the same point the sergeant is. He also moved 0.8 m along
+       the wall: at x 1.75 the two of them overlapped in the film's own
+       shot of the pair (rendered at 52 s), one half behind the other. */
+    const bunkmate = mkRig('fbonosling', { x: 2.55, z: -3.05, ry: -0.32, height: 1.70, idle: 'Idle_6' });
     /* the figure at the corridor's end — scene A's one frame. A stand-in
        (Chad supplies the ghost); the ghost treatment is the engine's own:
        grey, transparent, no shadow. */
@@ -1222,7 +1454,7 @@
       }
     }
 
-    const SGT_DOOR = { x: 1.3, z: -2.9, ry: 0.35 };            // by the entrance, facing down the room
+    const SGT_DOOR = { x: 1.3, z: -2.9, ry: -0.02 };           // by the entrance, square down the room (v7.9)
     /* v7.5: the fall-in is staged IN VIEW of the opening (z ±1.2), not
        behind the wall segment — that is why the sergeant "went missing" at
        the whistle. He stands at the parapet end facing the section; the
@@ -1566,7 +1798,9 @@
         }
         waterGeo.attributes.position.needsUpdate = true;
       }
-      if (ferryRoot.visible) ferryTick(dt, t);
+      if (ferryRoot.visible) ferryTick(dt);
+      if (jettyRoot.visible) jettyWalk(dt);
+      crowdTick(dt);
       if (getState() === 'cine') return;
     }
     function updateFire(t) {
@@ -1635,7 +1869,7 @@
       for (const r of [sergeant, buddy, bunkmate]) if (r.acts && r.idle) r.play(r.idle, 1, 0);
     }
     function reset() {
-      ferryRoot.visible = false;                 // v7.7: the film's deck, in case a film was cut before its own step hid it
+      ferryRoot.visible = jettyRoot.visible = paradeRoot.visible = false;   // v7.9: the film's three sets, in case a film was cut before its own step hid them
       doorPivot.rotation.y = DOOR_AJAR; fanSpeed = 1; setShower(false);
       ghostFig.group.visible = false; water.material.opacity = 0.55; hisBed.low.on.visible = false;
       setNightRoom(false);                       // v7.5: leaves the evening lamps lit
@@ -1669,6 +1903,7 @@
       for (const w of blockWalls) box(w, 0.16);
       for (const b of beds) solid(b.low.mattress);
       for (const l of lockers) solid(l);
+      for (const t of tables) solid(t);        // v7.9: the centre table, clear of the gangway and the door
       return out;
     }
 
@@ -1676,7 +1911,9 @@
     function dispose() {
       alive = false;
       treeStand.userData.disposeTrees?.();      // BEFORE the sweep: the kit's maps are shared (v6.15)
-      ferryTrees.userData.disposeTrees?.();
+      jettyTrees.userData.disposeTrees?.();
+      paradeTrees.userData.disposeTrees?.();
+      for (const t of filmTex) t.dispose?.();
       const geos = new Set(), mats = new Set();
       world.traverse(o => {
         if (o.geometry) geos.add(o.geometry);
@@ -1693,7 +1930,7 @@
         m.dispose();
       }
       for (const t of [cTex.map, cTex.rough, grassTex.map, grassTex.rough, wallMap, noteTex, dotTex,
-                       tileTex, tarmacTex, boardTex, clock.tex, terrazzoTex, weaveTex, streakTex, meshTex]) t?.dispose?.();
+                       tileTex, tarmacTex, boardTex, clock.tex, winView, terrazzoTex, weaveTex, streakTex, meshTex]) t?.dispose?.();
       world.clear();
       S = null;
     }
@@ -1701,9 +1938,9 @@
     const readyAt = performance.now();
     return (S = {
       world, noteTex, blockers: blockers(),
-      // the film shows the sergeant and the buddy — and, since v7.7, opens on the
-      // coast's trees: wait for them, but never past twelve seconds
-      ready: () => (sergeant.ready && buddy.ready && ferryTrees.children.length > 0) || performance.now() - readyAt > 12000,
+      // the film shows the sergeant and the buddy — and, since v7.9, opens on a
+      // cabin full of seated recruits: wait for them, but never past twelve seconds
+      ready: () => (sergeant.ready && buddy.ready && ferryRiders.ready) || performance.now() - readyAt > 12000,
       pile: { pos: PILE_POS, radius: INTERACT_R, group: pile,
               dist: pileDist, screen: pileScreen, inView: pileInView,
               hits: pointerHitsPile, interact: interactPile,
@@ -1716,7 +1953,7 @@
       beds, hisBed, lockers, fans, tubes, tubeLights, board, clockFace, clock,
       doorPivot, doorLeaf, DOOR_SHUT, DOOR_AJAR, DOOR_OPEN, DOOR_WC, DOOR_IN, OPEN, BLOCK, BALC, R, BED, WATER_AT,
       water, setShower, setLights, setNightRoom, setWindows, blockLight, clockGlow, CLOCK_GLOW, balcLight, nbLight, blanketCam,
-      ferryRoot, ferryApproach, FERRY,
+      ferryRoot, jettyRoot, paradeRoot, FERRY, JETTY, PARADE, PLAYER_SEAT, CAB, SEAT_X, SEAT_Z,
       sergeant, buddy, bunkmate, ghostFig, sleepers, sleepRigs, sleeperRoot,
       sayLine, seen, after, dayClock,
       get phase() { return phase; },
@@ -1854,19 +2091,98 @@
     tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.repeat.set(6, 4);
     return tex;
   }
-  function makeClock(THREE, cnv) {
-    const w = 256, h = 96;
+  /* v7.9: what is outside the bunk's windows in Chad's photograph — an
+     overcast Tekong sky, a tree line, and a far block behind it. Painted
+     into the pane because the wall is one box and cutting an opening in it
+     would move the blockers the whole chapter is walked against. */
+  function makeWinView(THREE, cnv) {
+    const w = 256;
     const [c, ctx] = cnv(w);
-    c.width = w; c.height = h;
+    c.width = w; c.height = w;
+    const sky = ctx.createLinearGradient(0, 0, 0, w);
+    sky.addColorStop(0, '#cfe0ea'); sky.addColorStop(0.55, '#e6eef2'); sky.addColorStop(1, '#dfe6e2');
+    ctx.fillStyle = sky; ctx.fillRect(0, 0, w, w);
+    // a far block, low and pale
+    ctx.fillStyle = 'rgba(196,198,188,0.75)';
+    ctx.fillRect(24, 128, 104, 60);
+    ctx.fillStyle = 'rgba(168,170,162,0.55)';
+    for (let r = 0; r < 4; r++) for (let k = 0; k < 6; k++) ctx.fillRect(32 + k * 16, 136 + r * 14, 9, 8);
+    // the tree line
+    const puff = (x, y, r, g0, g1) => {
+      const gr = ctx.createRadialGradient(x, y, 1, x, y, r);
+      gr.addColorStop(0, g0); gr.addColorStop(1, g1);
+      ctx.fillStyle = gr;
+      ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+    };
+    for (let i = 0; i < 26; i++) {
+      const x = (i * 47 % 280) - 12, y = 176 + ((i * 31) % 26), r = 26 + ((i * 17) % 22);
+      puff(x, y, r, 'rgba(86,118,68,0.96)', 'rgba(70,100,58,0.10)');
+    }
+    for (let i = 0; i < 18; i++) {
+      const x = (i * 71 % 290) - 14, y = 204 + ((i * 23) % 22), r = 30 + ((i * 13) % 18);
+      puff(x, y, r, 'rgba(64,94,54,0.98)', 'rgba(52,80,46,0.12)');
+    }
+    ctx.fillStyle = '#4e6c46'; ctx.fillRect(0, 232, w, w - 232);
     const tex = new THREE.CanvasTexture(c);
     tex.colorSpace = THREE.SRGBColorSpace;
+    return tex;
+  }
+  /* v7.9 (Chad): "the clock, change it to an analog one, not digital." The
+     dial is drawn at 256 square — a white face in a dark rim, twelve marks
+     with the quarters heavier, the twelve numerals, black hour and minute
+     hands and a thin red second hand. `set` keeps taking 'HH:MM', so every
+     call site (build, lights-out, 03:00, the restore) is untouched; the
+     string is parsed into hand angles instead of printed. */
+  function makeClock(THREE, cnv) {
+    const w = 256;
+    const [c, ctx] = cnv(w);
+    c.width = w; c.height = w;
+    const tex = new THREE.CanvasTexture(c);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    const R = w / 2, cx = R, cy = R;
+    const hand = (ang, len, wid, col, back) => {
+      ctx.save(); ctx.translate(cx, cy); ctx.rotate(ang);
+      ctx.strokeStyle = col; ctx.lineWidth = wid; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(0, back || 0); ctx.lineTo(0, -len); ctx.stroke();
+      ctx.restore();
+    };
     const set = (text) => {
-      ctx.fillStyle = '#0a0a0a'; ctx.fillRect(0, 0, w, h);
-      ctx.fillStyle = '#ff2a1a'; ctx.font = 'bold 72px monospace';
+      const m = /^(\d{1,2}):(\d{2})$/.exec(String(text || '')) || [0, 0, 0];
+      const hh = (+m[1] || 0) % 12, mm = +m[2] || 0;
+      ctx.clearRect(0, 0, w, w);
+      // the case, then the face
+      ctx.fillStyle = '#20242a';
+      ctx.beginPath(); ctx.arc(cx, cy, R - 3, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#f2efe6';
+      ctx.beginPath(); ctx.arc(cx, cy, R - 14, 0, Math.PI * 2); ctx.fill();
+      // the marks
+      for (let i = 0; i < 60; i++) {
+        const a = i / 60 * Math.PI * 2, big = i % 5 === 0;
+        const r0 = R - 22, r1 = r0 - (big ? 16 : 7);
+        ctx.strokeStyle = big ? '#1b1f24' : '#8b8f95';
+        ctx.lineWidth = big ? 5 : 2;
+        ctx.beginPath();
+        ctx.moveTo(cx + Math.sin(a) * r0, cy - Math.cos(a) * r0);
+        ctx.lineTo(cx + Math.sin(a) * r1, cy - Math.cos(a) * r1);
+        ctx.stroke();
+      }
+      // the numerals
+      ctx.fillStyle = '#1b1f24'; ctx.font = 'bold 26px sans-serif';
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.shadowColor = '#ff3a2a'; ctx.shadowBlur = 14;
-      ctx.fillText(text, w / 2, h / 2 + 4);
-      ctx.shadowBlur = 0;
+      for (let n = 1; n <= 12; n++) {
+        const a = n / 12 * Math.PI * 2, r = R - 52;
+        ctx.fillText(String(n), cx + Math.sin(a) * r, cy - Math.cos(a) * r + 1);
+      }
+      // the hands
+      const aM = mm / 60 * Math.PI * 2;
+      const aH = (hh + mm / 60) / 12 * Math.PI * 2;
+      hand(aH, R - 92, 11, '#1b1f24', 16);
+      hand(aM, R - 40, 8, '#1b1f24', 20);
+      hand(Math.PI * 1.2, R - 34, 3, '#c0392b', 24);            // the second hand, parked
+      ctx.fillStyle = '#1b1f24';
+      ctx.beginPath(); ctx.arc(cx, cy, 8, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#c0392b';
+      ctx.beginPath(); ctx.arc(cx, cy, 4, 0, Math.PI * 2); ctx.fill();
       tex.needsUpdate = true;
     };
     return { tex, set };
@@ -1922,74 +2238,123 @@
       if (kit) kit.daylight(MORNING, 0);
       stage.setWindows(0);
       stage.clockGlow.intensity = 0; stage.balcLight.intensity = 0;
-      stage.ferryRoot.visible = true; stage.ferryApproach(0);
+      stage.ferryRoot.visible = true;
     });
     // the film's own music, under everything
     sfx(0.0, 'e2film', 1);
 
-    /* 0–9.4 THE FERRY (v7.7 — Chad: "why is the opening cinematic black for
-       so long? Why is there no ferry crossing the sea animation"). On the
-       foredeck at seven in the morning, the rail in front of the lens, the
-       island and its jetty coming in over the shot, the deck on a swell;
-       the horn, the sea, his first line. The film's own fade lifts at 0.3
-       (cinetest asks that a film open on black and be SEEN by five). */
-    const DECK = { x: stage.FERRY.x, y: EYE, z: stage.FERRY.z + 0.2 };
-    const Y_BOW = faceFrom(DECK.x, DECK.z, DECK.x, DECK.z + 30);
-    camTo(0, 9.4, DECK, { x: DECK.x + 0.12, y: EYE, z: DECK.z + 0.5 }, smoothK);
-    yawTo(0, 9.4, Y_BOW + 0.10, Y_BOW - 0.06, smoothK);
-    pitchTo(0, 9.4, -0.04, -0.09, smoothK);
+    /* ===================== 0–20.6 INSIDE THE FERRY (v7.9) =================
+       Chad, on v7.7: "it should show first person pov within inside the
+       ferry itself ... seated inside the ferry at one of the seats, while
+       looking at other recruits seating at other seats ... The camera moves
+       around to look at other recruits, then looks towards the side windows
+       out into the sea in a contemplative way." He has a window seat on the
+       starboard side; the cabin's rows run ahead of him. The film's own fade
+       lifts at 0.3 (cinetest asks that a film open on black and be SEEN by
+       five). His long first line is 17.79 s and runs 1.6 → 19.4. */
+    const SEAT = { x: stage.FERRY.x + stage.PLAYER_SEAT.x, y: stage.FERRY.y + 1.30, z: stage.FERRY.z + stage.PLAYER_SEAT.z };
+    const Y_FWD = faceFrom(SEAT.x, SEAT.z, SEAT.x, SEAT.z + 30);          // up the aisle, over the seat backs
+    const Y_WIN = faceFrom(SEAT.x, SEAT.z, SEAT.x + 30, SEAT.z + 7);      // out of the window, a little forward
+    step(0, () => { stage.ferryRoot.visible = true; });
+    camTo(0, 9.0, { x: SEAT.x, y: SEAT.y, z: SEAT.z }, { x: SEAT.x - 0.07, y: SEAT.y, z: SEAT.z + 0.12 }, smoothK);
+    yawTo(0, 4.6, Y_FWD - 0.44, Y_FWD + 0.34, smoothK);                   // across the aisle, over the others
+    pitchTo(0, 4.6, 0.02, -0.03, smoothK);
+    yawTo(4.6, 9.0, Y_FWD + 0.34, Y_FWD - 0.12, smoothK);
     fade(0.0, 0.3, 1, 1);                     // the black the film opens on is ITS OWN (a seek back before 0.3 lands on it)
-    fade(0.3, 1.8, 1, 0);
-    tr(0, 9.4, k => stage.ferryApproach(k), rawK);
-    sfx(0.2, 'seawash', 0.9);
-    sfx(1.2, 'ferryhorn', 0.8);
-    sfx(2.0, 'n1pro1');                       // 5.88 s → 7.9 (v7.8, Aaron)
+    fade(0.3, 2.0, 1, 0);
+    /* and then away from them, out of the window, and held there */
+    yawTo(9.0, 13.0, Y_FWD - 0.12, Y_WIN, smoothK);
+    pitchTo(9.0, 13.0, -0.03, 0.00, smoothK);
+    /* he leans BACK from the glass over the hold, not into it: at 0.27 m
+       the aperture subtends 70 deg against the lens's 72 and the shot is
+       a full frame of sea with no ferry in it at all. At 0.75 the sill,
+       the head panel and a mullion stay in frame and it reads as a boy
+       looking out of a window. */
+    camTo(9.0, 20.6, { x: SEAT.x - 0.07, y: SEAT.y, z: SEAT.z + 0.12 }, { x: SEAT.x - 0.30, y: SEAT.y + 0.02, z: SEAT.z + 0.20 }, smoothK);
+    yawTo(13.0, 20.6, Y_WIN, Y_WIN + 0.07, smoothK);
+    pitchTo(13.0, 20.6, 0.00, 0.03, smoothK);
+    sfx(0.2, 'seawash', 0.85);
+    sfx(1.0, 'ferryhorn', 0.7);
+    sfx(1.6, 'n1pro1');                       // 17.79 s → 19.4
 
-    /* 8.6–12.0 a SHORT dip to black: the gates and the boots under it, his
-       second line starting over the dark and finishing on the balcony. The
-       deck is hidden in the dark and the lens is already at the parapet. */
-    fade(8.6, 9.4, 0, 1);
-    step(9.4, () => { stage.ferryRoot.visible = false; });
-    camTo(9.4, 9.5, BAL, BAL);
-    yawTo(9.4, 9.5, Y_SQUARE, Y_SQUARE);
-    pitchTo(9.4, 9.5, -0.12, -0.12);
-    sfx(9.4, 'gates', 0.9);
-    sfx(10.0, 'bootsmarch', 0.85);
-    sfx(10.5, 'n1pro2');                      // 8.28 s → 18.8
+    /* 19.6–21.0 a dip to black, and the cabin is struck in the dark */
+    fade(19.6, 20.6, 0, 1);
+    step(21.0, () => { stage.ferryRoot.visible = false; stage.jettyRoot.visible = true; });
 
-    /* 12–19 the balcony: the square, the trees, the far block, flat morning
+    /* ============== 21.0–28.0 WALKING IN UNDER THE SIGN ===================
+       Chad: "briefly show the scene of walking into Tekong, with the words
+       'Welcome to Pulau Tekong' at the top ... Recruits are all walking in a
+       row, in front of the player POV ... enough time to show this walking
+       scene, then fade out." Seven seconds, no narration over it. */
+    const WALKIN = { x: stage.JETTY.x, y: stage.JETTY.y + 1.62, z: stage.JETTY.z - 3.6 };
+    const Y_IN_J = faceFrom(WALKIN.x, WALKIN.z, WALKIN.x, WALKIN.z + 30);
+    camTo(21.0, 28.0, WALKIN, { x: WALKIN.x + 0.10, y: WALKIN.y, z: WALKIN.z + 3.4 }, smoothK);
+    yawTo(21.0, 28.0, Y_IN_J - 0.05, Y_IN_J + 0.04, smoothK);
+    pitchTo(21.0, 24.0, 0.11, -0.02, smoothK);      // the sign overhead, then down to the file ahead
+    pitchTo(24.0, 28.0, -0.02, -0.04, smoothK);
+    fade(21.0, 22.4, 1, 0);
+    sfx(21.2, 'bootsmarch', 0.7);
+    sfx(25.4, 'gates', 0.45);
+
+    /* 27.0–28.4 a dip, and the walkway is struck */
+    fade(27.0, 28.0, 0, 1);
+    step(28.4, () => { stage.jettyRoot.visible = false; stage.paradeRoot.visible = true; });
+
+    /* ================ 28.4–37.0 THE PARADE SQUARE ========================
+       Chad: "the Tekong bunk blocks, panning across the parade square ...
+       recruits are all standing still at the parade square. With the encik
+       model facing them." His line here is the sorting into companies, so
+       the bunk half no longer needs to say Hawk Company at all. */
+    const SQV = { x: stage.PARADE.x - 13.0, y: stage.PARADE.y + 1.62, z: stage.PARADE.z - 15.0 };
+    const SQV2 = { x: stage.PARADE.x + 7.0, y: stage.PARADE.y + 1.62, z: stage.PARADE.z - 12.0 };
+    const Y_SQ1 = faceFrom(SQV.x, SQV.z, stage.PARADE.x - 2.0, stage.PARADE.z + 16.0);
+    const Y_SQ2 = faceFrom(SQV2.x, SQV2.z, stage.PARADE.x - 1.0, stage.PARADE.z + 2.0);
+    camTo(28.4, 37.0, SQV, SQV2, smoothK);
+    yawTo(28.4, 37.0, Y_SQ1, Y_SQ2, smoothK);
+    pitchTo(28.4, 32.4, 0.07, 0.00, smoothK);
+    pitchTo(32.4, 37.0, 0.00, -0.03, smoothK);
+    fade(28.4, 29.8, 1, 0);
+    sfx(28.6, 'bootsrun', 0.32);
+    sfx(29.8, 'n1pro1b');                     // 5.49 s → 35.3
+
+    /* 36.0–37.6 a dip, the square is struck, and the bunk half begins */
+    fade(36.0, 37.0, 0, 1);
+    step(37.0, () => { stage.paradeRoot.visible = false; });
+
+    /* 37.6–44.6 the balcony: the square, the trees, the far block, flat morning
        light; then in through the opening. The beds come up with the light.
        (v7.7: up from 14.0 — the first glide is two seconds longer and
        nothing after 17.2 moved.) */
-    fade(12.0, 14.4, 1, 0);
-    tr(12.0, 14.4, k => { duck('bunkday', 0.55 * k); duck('fanloop', 0.4 * k); }, rawK);
-    camTo(12.0, 17.2, BAL, { x: BAL.x - 0.4, y: EYE, z: BAL.z }, smoothK);
-    camTo(17.2, 20.4, { x: BAL.x - 0.4, y: EYE, z: BAL.z }, OPENING, smoothK);
-    yawTo(17.2, 20.4, Y_SQUARE, Y_IN, smoothK);
-    pitchTo(17.2, 20.4, -0.12, 0.0, smoothK);
+    fade(37.6, 40, 1, 0);
+    sfx(38.6, 'n1pro2');                      // "Twenty of us to a bunk…" — 6.69 s → 45.3 (v7.9: the Hawk Coy half of it is the parade square's line now)
+    tr(37.6, 40, k => { duck('bunkday', 0.55 * k); duck('fanloop', 0.4 * k); }, rawK);
+    camTo(37.6, 42.8, BAL, { x: BAL.x - 0.4, y: EYE, z: BAL.z }, smoothK);
+    camTo(42.8, 46, { x: BAL.x - 0.4, y: EYE, z: BAL.z }, OPENING, smoothK);
+    yawTo(42.8, 46, Y_SQUARE, Y_IN, smoothK);
+    pitchTo(42.8, 46, -0.12, 0.0, smoothK);
 
-    /* 19–30 the bunk: the rows, the fans, the sergeant by the entrance. He
+    /* 39.5–50 the bunk: the rows, the fans, the sergeant by the entrance. He
        talks with the hand-on-gun take under his line; the camera tracks
        down the aisle toward bed one as he names it. */
-    camTo(20.4, 23.2, OPENING, AISLE, smoothK);
-    yawTo(20.4, 23.2, Y_IN, Y_SGT, smoothK);
-    step(22.0, () => { stage.sergeant.play('Talk_with_Left_Hand_on_Hip', 1, 0.3); });   // the encik's take, baked onto his rig
-    sfx(22.4, 's1bed');                       // 4.91 s → 27.3
-    step(27.6, () => { stage.sergeant.play('Idle_3', 1, 0.4); });
-    camTo(24.0, 30.0, AISLE, AISLE2, smoothK);
-    yawTo(24.0, 27.6, Y_SGT, Y_SGT_MID, smoothK);
-    camTo(30.0, 34.0, AISLE2, BYBED, smoothK);
-    yawTo(27.6, 33.0, Y_SGT_MID, Y_BED, smoothK);
-    tr(24.0, 34.0, k => { duck('bunkday', 0.55 + 0.25 * k); duck('clocktick', 0.5 * k); }, rawK);
+    camTo(46, 48.8, OPENING, AISLE, smoothK);
+    yawTo(46, 48.8, Y_IN, Y_SGT, smoothK);
+    step(47.6, () => { stage.sergeant.play('Talk_with_Left_Hand_on_Hip', 1, 0.3); });   // the encik's take, baked onto his rig
+    sfx(48, 's1bed');                       // 4.91 s → 27.3
+    step(53.2, () => { stage.sergeant.play('Idle_3', 1, 0.4); });
+    camTo(49.6, 55.6, AISLE, AISLE2, smoothK);
+    yawTo(49.6, 53.2, Y_SGT, Y_SGT_MID, smoothK);
+    camTo(55.6, 59.6, AISLE2, BYBED, smoothK);
+    yawTo(53.2, 58.6, Y_SGT_MID, Y_BED, smoothK);
+    tr(49.6, 59.6, k => { duck('bunkday', 0.55 + 0.25 * k); duck('clocktick', 0.5 * k); }, rawK);
 
     /* 30–44 bed one: the locker beside it, the toilet door, the clock over
        it. His third line over the pan onto the door. */
-    sfx(30.6, 'lockerdoor', 0.7);
-    pitchTo(33.0, 36.0, 0.0, -0.30, smoothK);
-    yawTo(36.0, 40.5, Y_BED, Y_DOOR, smoothK);
-    pitchTo(36.0, 40.5, -0.30, 0.06, smoothK);
-    sfx(37.0, 'n1pro3');                      // 6.27 s → 43.3
-    pitchTo(40.5, 44.0, 0.06, 0.34, smoothK);  // up to the clock
+    sfx(56.2, 'lockerdoor', 0.7);
+    pitchTo(58.6, 61.6, 0.0, -0.30, smoothK);
+    yawTo(61.6, 66.1, Y_BED, Y_DOOR, smoothK);
+    pitchTo(61.6, 66.1, -0.30, 0.06, smoothK);
+    sfx(62.6, 'n1pro3');                      // 6.27 s → 43.3
+    pitchTo(66.1, 69.6, 0.06, 0.34, smoothK);  // up to the clock
 
     /* 44–54 DUSK (v7.5). The day goes out of the windows and the sky over
        four seconds while the tubes stay on — lights out is PLAY's own beat,
@@ -1997,20 +2362,20 @@
        morning. The balcony lamp and the clock's red come on with the dark;
        his fourth line; the camera settles at his pillow, looking up at the
        underside of the bunk above, lit. */
-    step(44.2, () => { if (kit) kit.daylight(null, 5); stage.clockGlow.intensity = stage.CLOCK_GLOW; stage.balcLight.intensity = 5; });
-    tr(44.2, 48.0, k => { stage.setWindows(k); }, smoothK);
-    tr(44.2, 47.0, k => { duck('bunkday', 0.8 * (1 - k)); duck('fanloop', 0.4 + 0.2 * k); }, rawK);
-    sfx(46.0, 'n1pro4');                      // 5.15 s → 51.2
-    camTo(46.0, 52.0, BYBED, PILLOW, smoothK);
-    yawTo(46.0, 52.0, Y_DOOR, Y_UP, smoothK);
-    pitchTo(46.0, 52.0, 0.34, 0.68, smoothK);     // to the bunk's edge, the mesh under it, the ceiling and the fan (v7.2: 0.80 looked into a slab)
-    sfx(50.8, 'bunkcreak', 0.6);
+    step(69.8, () => { if (kit) kit.daylight(null, 5); stage.clockGlow.intensity = stage.CLOCK_GLOW; stage.balcLight.intensity = 5; });
+    tr(69.8, 73.6, k => { stage.setWindows(k); }, smoothK);
+    tr(69.8, 72.6, k => { duck('bunkday', 0.8 * (1 - k)); duck('fanloop', 0.4 + 0.2 * k); }, rawK);
+    sfx(71.6, 'n1pro4');                      // 5.15 s → 51.2
+    camTo(71.6, 77.6, BYBED, PILLOW, smoothK);
+    yawTo(71.6, 77.6, Y_DOOR, Y_UP, smoothK);
+    pitchTo(71.6, 77.6, 0.34, 0.68, smoothK);     // to the bunk's edge, the mesh under it, the ceiling and the fan (v7.2: 0.80 looked into a slab)
+    sfx(76.4, 'bunkcreak', 0.6);
 
-    /* 54–58 down, and out. Whatever the film did to the day is handed back
+    /* 74.5–78.5 down, and out. Whatever the film did to the day is handed back
        on its last frame (a skip runs every step, so this one too). */
-    fade(54.0, 58.0, 0, 1);
-    tr(54.0, 58.0, k => { duck('fanloop', 0.6 * (1 - k)); duck('clocktick', 0.5 * (1 - k)); }, rawK);
-    step(58.0, () => {
+    fade(79.6, 83.6, 0, 1);
+    tr(79.6, 83.6, k => { duck('fanloop', 0.6 * (1 - k)); duck('clocktick', 0.5 * (1 - k)); }, rawK);
+    step(83.6, () => {
       armR.visible = true;
       if (kit) kit.daylight(null, 0);
       stage.clockGlow.intensity = stage.CLOCK_GLOW; stage.balcLight.intensity = 5;

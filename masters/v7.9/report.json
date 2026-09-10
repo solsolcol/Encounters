@@ -1,0 +1,32 @@
+[
+ {
+  "id": "n1pro1",
+  "src": "masters/v7.9/n1pro1-b.mp3",
+  "srcPeak": -2.4,
+  "gain": -1,
+  "peak": -3.8,
+  "oldSecs": 5.88,
+  "secs": 17.79,
+  "kb": "278/152"
+ },
+ {
+  "id": "n1pro1b",
+  "src": "masters/v7.9/n1pro1b-a.mp3",
+  "srcPeak": -3,
+  "gain": -0.4,
+  "peak": -3.9,
+  "oldSecs": 0,
+  "secs": 5.49,
+  "kb": "86/48"
+ },
+ {
+  "id": "n1pro2",
+  "src": "masters/v7.9/n1pro2-a.mp3",
+  "srcPeak": -1.8,
+  "gain": -1.6,
+  "peak": -3.8,
+  "oldSecs": 8.28,
+  "secs": 6.69,
+  "kb": "104/60"
+ }
+]

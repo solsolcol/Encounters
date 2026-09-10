@@ -148,16 +148,25 @@ for (let i = 0; i < 4; i++) {
   out.startsOnBlack = cover.every(v => v > 0.98);
   out.ferrySeenByFive = (await coverAt(5.0)) < 0.05 &&
     await p.evaluate(() => window.__enc.stage.ferryRoot.visible);
-  out.dipIsBlack = (await coverAt(10.2)) > 0.98;
-  out.deckHiddenInTheDip = !(await p.evaluate(() => window.__enc.stage.ferryRoot.visible));
-  out.fadesInAfter = (await coverAt(17.5)) < 0.05;   // the balcony's fade ends at 14.4
+  /* v7.9: the film is four sets now — the ferry cabin (0–20.6), the jetty
+     under the sign (21–28), the parade square (28.4–37) and the bunk from
+     37.6. Each change is made IN a dip, so the checks read the dip black,
+     the set swapped one frame later, and the next set on screen. */
+  out.dipIsBlack = (await coverAt(20.8)) > 0.98;
+  await p.evaluate(() => window.__enc.cine.seek(21.1));
+  await p.waitForTimeout(220);
+  out.deckHiddenInTheDip = await p.evaluate(() =>
+    !window.__enc.stage.ferryRoot.visible && window.__enc.stage.jettyRoot.visible);
+  out.paradeSeen = (await coverAt(33.0)) < 0.05 && await p.evaluate(() =>
+    window.__enc.stage.paradeRoot.visible && !window.__enc.stage.jettyRoot.visible);
+  out.fadesInAfter = (await coverAt(42.0)) < 0.05;   // the bunk's fade ends at 40.0
   /* v7.5: the film crosses a DAY and ends on the evening play begins in —
      the windows go dark over 44–48 while the tubes stay ON (lights out is
      play's own beat, not the film's). Before v7.5 the film switched the
      tubes off and handed a morning back, which is what Chad saw as "the
      intro cinematic suddenly turn into night, and then gameplay is
      morning again". */
-  await p.evaluate(() => window.__enc.cine.seek(50.0));
+  await p.evaluate(() => window.__enc.cine.seek(74.0));    // v7.9: the dusk tween is 69.8–73.6 now
   await p.waitForTimeout(220);
   out.tubesStayOnAtDusk = await p.evaluate(() => window.__enc.stage.tubeLights[0].intensity) > 1;
   out.windowsDarkAtDusk = await p.evaluate(() => window.__enc.stage.snap().winK) > 0.95;
@@ -166,13 +175,15 @@ for (let i = 0; i < 4; i++) {
   await p.waitForTimeout(300);
   out.tubesBackAfter = await p.evaluate(() => window.__enc.stage.tubeLights[0].intensity) > 1;
   out.windowsDarkAfter = await p.evaluate(() => window.__enc.stage.snap().winK) > 0.95;
-  out.deckGoneAfterSkip = !(await p.evaluate(() => window.__enc.stage.ferryRoot.visible));
+  out.deckGoneAfterSkip = await p.evaluate(() => { const st = window.__enc.stage;
+    return !st.ferryRoot.visible && !st.jettyRoot.visible && !st.paradeRoot.visible; });
   if (!out.deckGoneAfterSkip) errs.push('ERR play inherited the ferry set');
   if (!out.startsOnBlack)
     errs.push('ERR the film is visible before its own fade-in: ' + JSON.stringify(cover));
   if (!out.ferrySeenByFive) errs.push('ERR the ferry is not on screen by five seconds (the long black is back)');
   if (!out.dipIsBlack) errs.push('ERR the dip to black before the balcony is not black');
   if (!out.deckHiddenInTheDip) errs.push('ERR the ferry set is still visible after the dip hid it');
+  if (!out.paradeSeen) errs.push('ERR the parade square is not on screen under its own line');
   if (!out.fadesInAfter) errs.push('ERR the film never fades in');
   if (!out.tubesStayOnAtDusk) errs.push('ERR the film switched the tubes off (lights out is play\'s beat)');
   if (!out.windowsDarkAtDusk) errs.push('ERR the windows never went dark at dusk');

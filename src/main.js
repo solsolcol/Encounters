@@ -3232,7 +3232,7 @@ const JAMES_TAKES = new Set(['voice',
    A separate set because chaptertest holds each set to its own speaker,
    both directions. His files are `n*` — episode 2's chapters are n1..n5. */
 const TEEN_TAKES = new Set([
-  'n1pro1', 'n1pro2', 'n1pro3', 'n1pro4', 'n1voice', 'n1near', 'n1act',
+  'n1pro1', 'n1pro1b', 'n1pro2', 'n1pro3', 'n1pro4', 'n1voice', 'n1near', 'n1act',
   'n1fallin', 'n1late', 'n1bedok', 'n1bedfail', 'n1shower', 'n1board',
   'n1lights', 'n1wake', 'n1hear', 'n1A1', 'n1A2', 'n1B1', 'n1B2', 'n1C1',
   'n1D1', 'n1A', 'n1B', 'n1C', 'n1D']);
@@ -5046,7 +5046,7 @@ const STING_SAMPLE = {
      wants it under. `bunkcreak`, not `bedcreak`: chapter 2 already owns
      that name, and a sound wrongly re-used is a silent cue in the other
      chapter. */
-  n1pro1: ['n1pro1', 1], n1pro2: ['n1pro2', 1], n1pro3: ['n1pro3', 1], n1pro4: ['n1pro4', 1],
+  n1pro1: ['n1pro1', 1], n1pro1b: ['n1pro1b', 1], n1pro2: ['n1pro2', 1], n1pro3: ['n1pro3', 1], n1pro4: ['n1pro4', 1],
   n1voice: ['n1voice', 1], n1near: ['n1near', 1], n1act: ['n1act', 1],
   n1fallin: ['n1fallin', 1], n1late: ['n1late', 1], n1bedok: ['n1bedok', 1],
   n1bedfail: ['n1bedfail', 1], n1shower: ['n1shower', 1], n1board: ['n1board', 1],

@@ -2690,3 +2690,35 @@ minutes and it fails the build that shipped the wall.
 The general form, worth applying beyond this game: **when a test fixture
 grants the subject something the real user must earn, the test can no
 longer see whether earning it is possible.**
+
+
+## An optimised clip is sparsely keyed, per channel (v7.9)
+
+Retargeting `encik.glb`'s Sit take onto the admin tee produced NaN in 39 of
+its 41 channels. Both rest poses measured clean; the bug was in the
+sampler. `tools/retarget.mjs` took ONE timeline — the longest rotation
+input in the file — and sliced every channel's output at that frame index.
+That is only correct when every channel is keyed at the same times, and an
+exported-then-optimised clip is not: **30 of the source's 51 rotation
+channels hold a SINGLE key** (a bone that never moves is stored once), so
+index 7 of a 1-key channel reads off the end of the array and the
+quaternion comes back undefined.
+
+The fix is to sample each channel in ITS OWN time base — keep `{times,
+values}` per node, and for a wanted time clamp, find the segment and nlerp
+— which is what a glTF sampler means in the first place. **Never assume
+channels share a timeline; a "frame index" is only meaningful inside one
+channel.**
+
+## A blocker is padded, so furniture can stand on the spawn (v7.9)
+
+The two centre tables Chad asked for went in at the middle of the room,
+1.0 m in front of a spawn at z −3.4 — and `walktest` came back with EIGHT
+unreachable places, starting with "spawn is on open floor". The table's own
+geometry ended at −3.40; `solid()` expands every furniture box by 0.14, so
+its BLOCKER ended at −3.54 and the player booted into it. Flood-fill from a
+blocked cell fills nothing, which is why every other check failed too.
+
+**Measure furniture against the spawn using the padded box, not the mesh** —
+and note the failure mode: one blocked spawn reads as a whole chapter of
+unreachable places, so the first failing line is the only one to diagnose.

@@ -1561,6 +1561,40 @@ What the baseline contains, by release:
   and the resume lands in `standby`, not `arrive`), one resumes straight into
   03:00 and watches the heartbeat arrive. No word moved; sheet v42 stands.
   docs/V7.2-E2C1-POLISH.md §5 is the record.
+- **v7.9** THE FERRY FROM INSIDE, TEKONG, THE PARADE SQUARE, THE BUNK —
+  Chad, with five reference photographs: *"I dont want to see the outside
+  of the ferry and the sea, it should show first person pov within inside
+  the ferry itself ... Use the admin tshirt models to sit down on those
+  other seats."* The opening is four sets now instead of two. THE CABIN
+  (0–20.6): a 3.6 m interior — carpet, ribbed ceiling with its light box,
+  chrome poles, a window band with the sea painted beyond it, fourteen rows
+  four across — with the player in a starboard window seat, ten `admintee`
+  recruits in the others, and the camera drifting over them and then out to
+  the water under his one long line. THE JETTY (21–28): a covered walkway
+  under a drawn WELCOME TO / PULAU TEKONG sign, a file of ten walking away
+  up the boards. THE PARADE SQUARE (28.4–37): a 46 m cream-and-ochre block
+  with a stair tower and crest, 28 recruits in four ranks, the encik facing
+  them, and a NEW line — "We got sorted into our companies. I got into Hawk
+  Coy. Whatever that means." — which is why the bunk's line begins at
+  "Twenty of us to a bunk" and no longer says Hawk Coy at all. Then the bunk
+  half as it was, shifted 25.6 s later. The model gained two clips
+  (`Sit` retargeted from `encik.glb`, `Walking` from `fbonosling.glb`).
+  AND THE BUNK ITSELF, to his photograph: **both sergeants face the camera**
+  (aimed at the point the film's yaw holds on, `faceFrom(...) + PI` — 0.35 ->
+  −0.02 and PI -> −0.13, the second man off the notice board), **the clock is
+  ANALOG** (a drawn dial whose `set('HH:MM')` parses the same string into
+  hand angles, so all five call sites are untouched; the red LED practical
+  over the door became a warm one, because a wall clock is not a lamp), the
+  windows are BIG and BLACK-framed with the tree line painted into the pane
+  (the wall is one box — cutting an opening would move the blockers the
+  chapter is walked against), the tubes are PAIRED in one fitting, and a
+  LONG TABLE with chairs stacked on it runs down the middle. That table is
+  the checkpoint's one real lesson: it went in along z and `walktest` came
+  back with EIGHT unreachable places, because `solid()` pads a blocker by
+  0.14 and the table's padded edge stood ON the spawn — a blocked spawn
+  fills nothing, so every other check fails with it. It runs along X in the
+  far half now, which is also where the room's long axis actually is.
+  Sheet v43. docs/V7.9-E2C1-OPENING.md is the build's memory.
 - **v7.4** THE WORST BED IS PLAYABLE — Chad, playing: *"it tells me to fall
   in at the line, but i have no way to get there ... I cannot progress at
   all."* Measured: the line stands at x 7.25 and **the furthest a player

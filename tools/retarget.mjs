@@ -158,22 +158,48 @@ const srcRest = restWorld(take), dstRest = restWorld(dst);
 const anim = take.getRoot().listAnimations().find(a => a.getName() === clipName) || take.getRoot().listAnimations()[0];
 if (!anim) { console.error('the take has no animation'); process.exit(1); }
 
-/* one shared timeline: every rotation sampler in a Mixamo take shares it */
+/* v7.9: a take's rotation channels do NOT have to share one timeline. A raw
+   Mixamo export does; a take that has been through an optimiser (every clip
+   in this repo's shipped assets has) is keyed SPARSELY, each channel with
+   its own times and its own frame count — 30 of encik's 51 channels hold a
+   single key. Slicing all of them off one timeline read past the end of the
+   short ones and wrote NaN into 39 of 41 bones. So: the densest channel
+   gives the shared timeline, and every channel is SAMPLED on it, in its own
+   time base, nearest-neighbour with a lerp between the two keys it lies
+   between (a slerp is not needed at these step sizes — the result is
+   normalised straight after). */
+const rotCh = anim.listChannels().filter(ch => ch.getTargetPath() === 'rotation');
+if (!rotCh.length) { console.error('no rotation tracks in the take'); process.exit(1); }
 let times = null;
-for (const ch of anim.listChannels()) {
-  if (ch.getTargetPath() !== 'rotation') continue;
-  times = Array.from(ch.getSampler().getInput().getArray());
-  break;
+for (const ch of rotCh) {
+  const t = Array.from(ch.getSampler().getInput().getArray());
+  if (!times || t.length > times.length) times = t;
 }
-if (!times) { console.error('no rotation tracks in the take'); process.exit(1); }
 const F = times.length;
 
-/* source local rotations per frame, keyed by the node */
+/* source local rotations, keyed by the node: its own times and values */
 const srcTrack = new Map();
-for (const ch of anim.listChannels()) {
-  if (ch.getTargetPath() !== 'rotation') continue;
-  srcTrack.set(ch.getTargetNode(), Array.from(ch.getSampler().getOutput().getArray()));
+for (const ch of rotCh) {
+  srcTrack.set(ch.getTargetNode(), {
+    t: Array.from(ch.getSampler().getInput().getArray()),
+    v: Array.from(ch.getSampler().getOutput().getArray()),
+  });
 }
+/* the track's rotation at time `time`, in its own time base */
+const sampleQ = (tr, time) => {
+  const { t, v } = tr;
+  const n = t.length;
+  if (n === 1) return qNorm(v.slice(0, 4));
+  if (time <= t[0]) return qNorm(v.slice(0, 4));
+  if (time >= t[n - 1]) return qNorm(v.slice((n - 1) * 4, n * 4));
+  let i = 0;
+  while (i < n - 2 && t[i + 1] < time) i++;
+  const k = (time - t[i]) / ((t[i + 1] - t[i]) || 1);
+  const a = v.slice(i * 4, i * 4 + 4), b = v.slice((i + 1) * 4, (i + 1) * 4 + 4);
+  const dot = a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[3] * b[3];
+  const sgn = dot < 0 ? -1 : 1;                    // the short way round
+  return qNorm(a.map((x, j) => x + (b[j] * sgn - x) * k));
+};
 
 /* Parents before children — a child's local rotation is expressed under its
    parent's ALREADY-RETARGETED world rotation, so the order is not optional. */
@@ -196,7 +222,7 @@ for (const { dn, sn } of mapped) {
     /* the source bone's world rotation this frame: its parent's world rest
        (the take's own hierarchy is static apart from these tracks) times its
        animated local */
-    const sLocal = sTrack ? qNorm(sTrack.slice(f * 4, f * 4 + 4)) : qNorm(sn.getRotation());
+    const sLocal = sTrack ? sampleQ(sTrack, times[f]) : qNorm(sn.getRotation());
     const sParentW = srcRest.parent.has(sn) ? srcRest.rot.get(srcRest.parent.get(sn)) : [0, 0, 0, 1];
     const sW = qMul(sParentW, sLocal);
     const delta = qMul(sW, qInv(sRestW));            // what the SOURCE turned through
