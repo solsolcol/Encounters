@@ -343,6 +343,32 @@ so the CSV, the workbook and the connector's read-back all import alike.
    first, read those, write the copy to a file and `tr -d '\n' | cmp` it
    against the .b64 (the last folded line has no newline, so `wc -l`
    undercounts it by one — LEARNINGS, v6.9).
+**THE CEILING, FOUND AT v7.9.** This step has a hard limit and the
+workbook has now crossed it. The base64 of a v43-size export is 39,364
+characters; re-emitted into the tool call it comes back "The file content
+is not a valid base64 string" — twice at v7.8 and again at v7.9 — and the
+error means a WRONG LENGTH (a dropped or doubled character), not a Drive
+fault. A leaner workbook was built to test the boundary — one shared
+string table instead of inline strings, no `r=""` on rows or cells (safe
+only if every sparse cell is filled with `<c/>` first: stripping the refs
+while leaving gaps SHIFTS a row's values one column left, which silently
+blanked twelve cells on the first try) — 29,521 bytes down to 22,702,
+30,272 characters of base64. That failed the same way. The floor is not
+reachable by compression: the sheet's own text gzips to 15.2 KB, so no
+encoding of all four tabs gets near what a single message can carry.
+Below about 20,000 characters is the working range; 1.8 KB uploads fine.
+
+So when the export no longer fits, do NOT push it through anyway, and do
+NOT fall back to the CSV route for the whole sheet either: a CSV is 63,628
+characters of the game's own words, and where a mangled base64 fails
+LOUDLY, a mistyped word in a CSV lands in his sheet silently and can be
+imported back into the game. The honest fallback is to hand Chad the
+current sheet's link, name the lines that changed in the reply, and send
+him the `.xlsx` itself as a file — Drive opens it as a tabbed sheet from
+his phone. The real fix, when it is worth doing, is for `textsync export`
+to write a SPLIT workbook (UI + episodes in one, VOICE LINES in the
+other), each half comfortably inside the range, published as two sheets.
+
 3. `create_file` with `title` "Master Z's Encounters — GAME TEXT vNN (edit
    here)", `contentMimeType` as above and `base64Content` from the .b64.
    The result's `id` is the new sheet; its `mimeType` must come back as

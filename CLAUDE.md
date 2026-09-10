@@ -1594,7 +1594,12 @@ What the baseline contains, by release:
   0.14 and the table's padded edge stood ON the spawn — a blocked spawn
   fills nothing, so every other check fails with it. It runs along X in the
   far half now, which is also where the room's long axis actually is.
-  Sheet v43. docs/V7.9-E2C1-OPENING.md is the build's memory.
+  The three changed lines are exported as sheet v43 but NOT published:
+  the Drive connector takes a workbook only as one base64 string typed
+  into the call, and at this size (30–39 K characters, against a working
+  range under ~20 K) it comes back "not a valid base64 string" every
+  time. v42 stays the current sheet; the fix is a SPLIT export
+  (docs/EDITING-TEXT.md). docs/V7.9-E2C1-OPENING.md is the build's memory.
 - **v7.4** THE WORST BED IS PLAYABLE — Chad, playing: *"it tells me to fall
   in at the line, but i have no way to get there ... I cannot progress at
   all."* Measured: the line stands at x 7.25 and **the furthest a player
