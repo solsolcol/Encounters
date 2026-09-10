@@ -56,7 +56,7 @@
     /* units metres, y up. The bunk is one long room (x −6…6, z −4…4); the
        shower block is off its +z end; a balcony runs along +x with the parade
        square past its parapet. docs/V7.1-E2C1-PLAN.md §6 has the map. */
-    spawn:     { x: 0, y: 1.62, z: -3.4 },        // just inside the entrance, looking down the room
+    spawn:     { x: 0, y: 1.62, z: -3.4, rot: Math.PI },   // just inside the entrance, FACING down the room (v7.5: rot)
     shrine:    { x: -4.6, z: 3.0 },               // the engine's anchor: his bed
     ghostHome: { x: -3.6, z: 6.0 },               // unused (ghost: null): the block's corridor
     bounds:    { minX: -5.7, maxX: 8.1, minZ: -3.7, maxZ: 7.2 },
@@ -66,25 +66,29 @@
        and one figure for one frame in scene A, a chapter prop. */
     ghost: null,
 
-    /* a flat overcast Tekong morning: pale sky, soft high hemisphere, the key
-       from +x (the balcony side, so the light comes in through the opening),
-       no stars, no moon, a weak sun, thin cloud. NIGHT (below) is what the
-       kit tweens to at lights out. */
+    /* v7.5: THE EVENING. The wall clock says 21:58 when play begins, and
+       until now the sky outside said ten in the morning — the film crossed
+       a day and then handed back a morning, which Chad saw as "the intro
+       cinematic suddenly turn into night, and then gameplay is morning
+       again". Play begins in the evening the film ends on: dusk gone to a
+       deep blue, the square under sodium lamps, the room lit by its own
+       tubes (so the HANDS are lit warm, not by the sky). MORNING (below) is
+       what the film opens in; NIGHT is what lights out goes to. */
     daylight: {
-      stops: [[0.00, '#e9e4d6'], [0.22, '#d5dde2'], [0.48, '#b7c9d6'],
-              [0.76, '#98b3c8'], [1.00, '#86a6c0']],
-      bg: 0xb7c9d6,
-      fog: [0xcfd8dc, 0.010],
-      hemi: [0xe6eaee, 0x8a8478, 0.95],
-      key: [0xfff1dc, 0.75, 20, 16, 4],
-      fill: [0xbfcdd8, 0.32],
-      stars: 0, moon: 0,
-      sun: 0.35, clouds: 0.6,
-      vmHemi: [0xeef1f4, 0x9a9488, 0.9],
-      vmKey: [0xfff2dc, 0.65]
+      stops: [[0.00, '#2a2420'], [0.20, '#1a1e30'], [0.45, '#111a30'],
+              [0.75, '#0a1224'], [1.00, '#060b18']],
+      bg: 0x0d1424,
+      fog: [0x10161f, 0.016],
+      hemi: [0x3a4664, 0x1a1a18, 0.75],
+      key: [0x9fb0d0, 0.32, 20, 16, 4],
+      fill: [0x556890, 0.22],
+      stars: 0.55, moon: 0,
+      sun: 0, clouds: 0.3,
+      vmHemi: [0xeef1f4, 0x6a6660, 0.9],
+      vmKey: [0xfff2dc, 0.62]
     },
 
-    assets: ['fbosling', 'admintee', 'sleeper', 'sleepanim', 'ghostsoldier',
+    assets: ['fbosling', 'fbonosling', 'admintee', 'sleeper', 'sleepanim', 'ghostsoldier',
              'tree1', 'tree2', 'tree3', 'tree4', 'hdb'],
 
     /* the explore music bed is chapter 1's title theme and has no place in a
@@ -116,6 +120,8 @@
       hotBuddy: 'Talk to him',
       hotBoard: 'Read the notice board',
       hotBunkmate: 'Ask him about bed one',
+      hotDoor: 'Open the door',
+      hotOut: 'The corridor. Not tonight.',
       evBed: 'STANDBY BED',
       evFear: 'FEAR CONTROL',
       noteOnTime: 'Fell in on time.',
@@ -139,6 +145,21 @@
   /* lights out: the sky the kit tweens to. Darker than chapter 1's midnight
      in the fog (the room's own tubes are what go dark; outside is a camp
      with a few sodium lamps) and no moon disc — the balcony faces a square. */
+  /* v7.5: the morning the FILM opens in (the declaration until v7.4): a
+     flat overcast Tekong morning, the key from the balcony side. */
+  const MORNING = {
+    stops: [[0.00, '#e9e4d6'], [0.22, '#d5dde2'], [0.48, '#b7c9d6'],
+            [0.76, '#98b3c8'], [1.00, '#86a6c0']],
+    bg: 0xb7c9d6,
+    fog: [0xcfd8dc, 0.010],
+    hemi: [0xe6eaee, 0x8a8478, 0.95],
+    key: [0xfff1dc, 0.75, 20, 16, 4],
+    fill: [0xbfcdd8, 0.32],
+    stars: 0, moon: 0,
+    sun: 0.35, clouds: 0.6,
+    vmHemi: [0xeef1f4, 0x9a9488, 0.9],
+    vmKey: [0xfff2dc, 0.65]
+  };
   const NIGHT = {
     stops: [[0.00, '#1a1714'], [0.20, '#121420'], [0.45, '#0b1020'],
             [0.75, '#060912'], [1.00, '#03050a']],
@@ -417,6 +438,7 @@
       matGlass.emissive.copy(GLASS_DAY.e).lerp(GLASS_NIGHT.e, winK);
       matGlass.emissiveIntensity = GLASS_DAY.i + (GLASS_NIGHT.i - GLASS_DAY.i) * winK;
     }
+    setWindows(1);            // v7.5: play begins at 21:58 — dark glass; only the film's dusk drives this 0 -> 1
 
     /* v7.2: the dressing a bunk has and a render does not — an extinguisher
        and a bin by the entrance, a broom in the corner, a bucket by the
@@ -688,7 +710,8 @@
       proxy.position.y = opts.height / 2; proxy.castShadow = !LOW;
       group.add(proxy);
       const rig = { key, group, proxy, model: null, mixer: null, acts: null, cur: null, head: null,
-                    ready: false, height: opts.height, tint: opts.tint || null };
+                    ready: false, height: opts.height, tint: opts.tint || null,
+                    idle: opts.idle || null };        // v7.5: each rig's own rest take
       rig.play = (name, ts = 1, fade = 0.34, once = false, at) => {
         if (!rig.mixer || !rig.acts || !rig.acts[name]) return false;
         if (rig.cur === name && at === undefined) return true;
@@ -766,8 +789,12 @@
        sergeant of 1.74, recruits of 1.70). */
     const sergeant = mkRig('fbosling', { x: 1.3, z: -2.9, ry: 0.35, height: 1.74, idle: 'Idle_3' });   // facing down the room
     const buddy = mkRig('admintee', { x: -3.05, z: 1.15, ry: 1.2, height: 1.70, idle: 'Idle_9' });
-    const bunkmate = mkRig('admintee', { x: 1.75, z: -3.15, ry: Math.PI, height: 1.68, idle: 'Idle_9',
-                                          tint: new THREE.Color(0.86, 0.90, 0.98) });
+    /* v7.5: the bunkmate is Chad's FBO without the rifle. Until now he was a
+       tinted second copy of the buddy's model, and that model shipped with a
+       torn arm — one broken file, two characters. This one has no talking
+       take (the FBO pair carry Idle_6 and field takes), so his lines play
+       over his rest; `rig.play` of a take he lacks is a no-op by design. */
+    const bunkmate = mkRig('fbonosling', { x: 1.75, z: -3.15, ry: Math.PI, height: 1.70, idle: 'Idle_6' });
     /* the figure at the corridor's end — scene A's one frame. A stand-in
        (Chad supplies the ghost); the ghost treatment is the engine's own:
        grey, transparent, no shadow. */
@@ -1021,7 +1048,11 @@
     }
 
     const SGT_DOOR = { x: 1.3, z: -2.9, ry: 0.35 };            // by the entrance, facing down the room
-    const SGT_LINE = { x: BALC.x0 + 0.7, z: -2.4, ry: 0.0 };   // on the balcony, facing along the line
+    /* v7.5: the fall-in is staged IN VIEW of the opening (z ±1.2), not
+       behind the wall segment — that is why the sergeant "went missing" at
+       the whistle. He stands at the parapet end facing the section; the
+       recruits line up on the yellow line facing the square. */
+    const SGT_LINE = { x: BALC.x1 - 0.5, z: -0.5, ry: -Math.PI / 2 };
     const LINE_X = BALC.line - 0.35;                           // past this, he is on the line
     const LIE_Y = BED.low + 0.14, LIE_YAW = -Math.PI / 2;      // his eye on the pillow, looking along the bed to the aisle
     const ITEM_GLYPH = ['Pillow', 'Bedsheet', 'Blanket', 'Boots', 'Water bottle', 'Mug', 'Toothbrush', 'Locker'];   // which glyph, whatever the sheet calls it
@@ -1080,8 +1111,8 @@
        you are last. `BUNK_AT` remembers where each stood so they go back. */
     const BUNK_AT = new Map();
     function fallOut(on) {
-      for (const [r, at] of [[buddy, { x: BALC.x0 + 1.0, z: -1.5, ry: 0 }],
-                             [bunkmate, { x: BALC.x0 + 1.0, z: 0.6, ry: 0 }]]) {
+      for (const [r, at] of [[buddy, { x: BALC.line - 0.2, z: 0.85, ry: Math.PI / 2 }],
+                             [bunkmate, { x: BALC.line - 0.2, z: 1.7, ry: Math.PI / 2 }]]) {
         if (!r || !r.group) continue;
         if (on) {
           if (!BUNK_AT.has(r)) BUNK_AT.set(r, { x: r.group.position.x, z: r.group.position.z, ry: r.group.rotation.y });
@@ -1155,7 +1186,7 @@
       after(2.6, () => { if (worldSfx) worldSfx('switchoff', 0.9); });
       after(2.7, () => {
         tween(() => lightK, v => setLights(v), 0, 0.7);
-        tween(() => nightK, v => { nightK = v; mixBeds(); setWindows(v); }, 1, 3.0);
+        tween(() => nightK, v => { nightK = v; mixBeds(); }, 1, 3.0);   // v7.5: the glass is already night
         if (kit) kit.daylight(NIGHT, 3.0);
         clockGlow.intensity = CLOCK_GLOW; balcLight.intensity = 5;
       });
@@ -1251,8 +1282,32 @@
 
     /* --------------------------------------------------------- hotspots */
     const seen = new Set();
+    /* v7.5: THE DOORS. Chad, from inside the block: "im suddenly stuck there
+       with no way to get out ... make the door interactable with E or tap so
+       that the player can be moved outside or into a different area". The
+       block was never sealed (measured: every cell of it reachable) — the
+       leaf hung across the opening and nothing could be touched, so it READ
+       as a wall. The door is a hotspot now: it swings fully open with its
+       sound and steps you through to the other side, from either side. The
+       entrance is a hotspot too, so the corridor answers when asked. */
+    function useDoor() {
+      if (worldSfx) worldSfx('dooropen2', 0.8);
+      tween(() => doorPivot.rotation.y, v => { doorPivot.rotation.y = v; }, DOOR_OPEN, 0.45);
+      const inBlock = yaw.position.z > R.z;
+      yaw.position.x = DOOR_WC.x;
+      yaw.position.z = inBlock ? R.z - 0.95 : R.z + 0.95;
+      return true;
+    }
     const hotspots = [
-      { id: 'shower', pos: { x: DOOR_WC.x, y: 1.0, z: R.z + 0.6 }, radius: 2.0, prompt: DATA.words.hotShower,
+      /* the anchors sit at EYE height: a hotspot must be on screen to be offered, and a
+         doorway's floor point is 44° under the lens from a metre away — outside the view */
+      { id: 'wcdoor', pos: { x: DOOR_WC.x, y: 1.5, z: R.z }, radius: 2.3, prompt: DATA.words.hotDoor,
+        enabled: () => phase !== 'lightsout' && !lying(),
+        onInteract() { return useDoor(); } },
+      { id: 'out', pos: { x: DOOR_IN.x, y: 1.5, z: -R.z + 0.35 }, radius: 1.6, prompt: DATA.words.hotOut,
+        enabled: () => phase !== 'lightsout' && !lying(),
+        onInteract() { return false; } },
+      { id: 'shower', pos: { x: DOOR_WC.x + 0.4, y: 1.0, z: R.z + 2.2 }, radius: 1.8, prompt: DATA.words.hotShower,
         enabled: () => phase === 'free',
         onInteract() { seen.add('shower'); return sayLine('n1shower'); } },
       { id: 'buddy', pos: { x: -3.05, y: 1.3, z: 1.15 }, radius: 2.2, prompt: DATA.words.hotBuddy,
@@ -1366,15 +1421,15 @@
       sleeperRoot.visible = on;
       for (const b of beds) { b.low.fold.visible = !on || b.his || !sleepers.find(s => s.bed === b); }
       setLights(on ? 0 : 1);
-      clockGlow.intensity = on ? CLOCK_GLOW : 0;
-      balcLight.intensity = on ? 6 : 0;
+      clockGlow.intensity = CLOCK_GLOW;          // v7.5: the clock's red is on all evening
+      balcLight.intensity = on ? 6 : 5;          // and so is the balcony's sodium lamp
       nightLight.intensity = on ? 1.8 : 0;
       /* v7.2: 1.6 at night (3.2 blew the tiles to white), and the tube
          FLICKERS from here — a dying fluorescent is the block's own unease */
       blockBase = on ? 1.6 : (LOW ? 12 : 8);
       blockLight.intensity = blockBase;
       blockFlicker = on;
-      setWindows(on ? 1 : 0);
+      setWindows(1);
       clock.set(on ? '03:00' : '21:58');
     }
 
@@ -1401,13 +1456,12 @@
       if (s.blockBase !== undefined) { blockBase = s.blockBase; blockFlicker = !!s.blockFlicker; blockLight.intensity = blockBase; blockTube.material.emissiveIntensity = 1.6; }
       if (s.sleepRot) sleepers.forEach((o, i) => { const r = s.sleepRot[i]; if (r) o.obj.rotation.set(r[0], r[1], r[2]); });
       sergeant.group.visible = buddy.group.visible = bunkmate.group.visible = !s.night;
-      for (const r of [sergeant, buddy, bunkmate]) if (r.acts) r.play(r.key === 'fbosling' ? 'Idle_3' : 'Idle_9', 1, 0);
+      for (const r of [sergeant, buddy, bunkmate]) if (r.acts && r.idle) r.play(r.idle, 1, 0);
     }
     function reset() {
       doorPivot.rotation.y = DOOR_AJAR; fanSpeed = 1; setShower(false);
       ghostFig.group.visible = false; water.material.opacity = 0.55; hisBed.low.on.visible = false;
-      setNightRoom(false);
-      clockGlow.intensity = 0; balcLight.intensity = 0;
+      setNightRoom(false);                       // v7.5: leaves the evening lamps lit
       putSergeant(SGT_DOOR);
       dropTodo(); tweens.length = 0;
       nightK = 0; showerVol = 0; mixBeds();
@@ -1682,6 +1736,12 @@
       stage.setLights(1);
       duck('bunkday', 0); duck('fanloop', 0); duck('clocktick', 0);
       stage.clock.set('21:58');
+      /* v7.5: the film OPENS in the morning of the ferry and ENDS on the
+         evening play begins in; the chapter's declaration is that evening,
+         so the morning is the film's own and is put on here */
+      if (kit) kit.daylight(MORNING, 0);
+      stage.setWindows(0);
+      stage.clockGlow.intensity = 0; stage.balcLight.intensity = 0;
     });
     // the film's own music, under everything
     sfx(0.0, 'e2film', 1);
@@ -1730,13 +1790,13 @@
     sfx(37.0, 'n1pro3');                      // 8.28 s → 45.3
     pitchTo(40.5, 44.0, 0.06, 0.34, smoothK);  // up to the clock
 
-    /* 44–54 the switch. The tubes die; the fans keep turning in the dark;
-       the sky goes with them (the kit's tween, put back at the end); his
-       fourth line; the camera settles at his pillow, looking up at the
-       underside of the bunk above. */
-    sfx(44.2, 'switchoff', 0.9);
-    tr(44.2, 44.9, k => { stage.setLights(1 - k); }, rawK);
-    step(44.2, () => { if (kit) kit.daylight(NIGHT, 5); stage.clockGlow.intensity = stage.CLOCK_GLOW; stage.balcLight.intensity = 5; });
+    /* 44–54 DUSK (v7.5). The day goes out of the windows and the sky over
+       four seconds while the tubes stay on — lights out is PLAY's own beat,
+       not the film's; putting the switch here was what handed a night to a
+       morning. The balcony lamp and the clock's red come on with the dark;
+       his fourth line; the camera settles at his pillow, looking up at the
+       underside of the bunk above, lit. */
+    step(44.2, () => { if (kit) kit.daylight(null, 5); stage.clockGlow.intensity = stage.CLOCK_GLOW; stage.balcLight.intensity = 5; });
     tr(44.2, 48.0, k => { stage.setWindows(k); }, smoothK);
     tr(44.2, 47.0, k => { duck('bunkday', 0.8 * (1 - k)); duck('fanloop', 0.4 + 0.2 * k); }, rawK);
     sfx(46.0, 'n1pro4');                      // 5.49 s → 51.5
@@ -1752,8 +1812,8 @@
     step(58.0, () => {
       armR.visible = true;
       if (kit) kit.daylight(null, 0);
-      stage.clockGlow.intensity = 0; stage.balcLight.intensity = 0;
-      stage.setLights(1); stage.setWindows(0);
+      stage.clockGlow.intensity = stage.CLOCK_GLOW; stage.balcLight.intensity = 5;
+      stage.setLights(1); stage.setWindows(1);
       duck('bunkday', 1); duck('fanloop', 1); duck('clocktick', 1);
     });
     c.endFade = 1;

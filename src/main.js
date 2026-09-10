@@ -640,6 +640,7 @@ const yaw = new THREE.Object3D();      // horizontal rotation
 const pitch = new THREE.Object3D();    // vertical rotation
 yaw.add(pitch); pitch.add(camera);
 yaw.position.set(CH.spawn.x, CH.spawn.y, CH.spawn.z);   // the chapter decides
+yaw.rotation.y = Number.isFinite(CH.spawn.rot) ? CH.spawn.rot : 0;   // v7.5: and which way it faces (SPAWN clones this below)
 
 // The burner and everything that belongs to it — light, smoke, embers, notes,
 // the trigger radius — are all positioned from this one point, so the shrine
@@ -5287,7 +5288,11 @@ function setChapter(key) {
     g.linearRampToValueAtTime(musicVolNow(), now + 1.2);
   }
   SPAWN.pos.set(CH.spawn.x, CH.spawn.y, CH.spawn.z);
-  SPAWN.rot = 0;
+  /* v7.5: a chapter may say which way its spawn FACES (`spawn.rot`, a
+     yaw). Every chapter used to face −z, which put episode 2's first
+     frame of play into the black of the corridor box behind the
+     entrance. Episode 1 declares nothing and keeps 0. */
+  SPAWN.rot = Number.isFinite(CH.spawn.rot) ? CH.spawn.rot : 0;
   rebuildStage(CH);
   applyChapterText();
   applyChapterWords();             // and the words that name what you act on

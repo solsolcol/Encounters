@@ -149,19 +149,28 @@ for (let i = 0; i < 4; i++) {
   await p.waitForTimeout(220);
   out.fadesInAfter = await p.evaluate(() =>
     +getComputedStyle(document.getElementById('cineFade')).opacity) < 0.05;
-  // the switch: the room's tubes are out by 45 and back for play after the film
-  await p.evaluate(() => window.__enc.cine.seek(46.0));
+  /* v7.5: the film crosses a DAY and ends on the evening play begins in —
+     the windows go dark over 44–48 while the tubes stay ON (lights out is
+     play's own beat, not the film's). Before v7.5 the film switched the
+     tubes off and handed a morning back, which is what Chad saw as "the
+     intro cinematic suddenly turn into night, and then gameplay is
+     morning again". */
+  await p.evaluate(() => window.__enc.cine.seek(50.0));
   await p.waitForTimeout(220);
-  out.tubesOutAtSwitch = await p.evaluate(() => window.__enc.stage.tubeLights[0].intensity) < 0.5;
+  out.tubesStayOnAtDusk = await p.evaluate(() => window.__enc.stage.tubeLights[0].intensity) > 1;
+  out.windowsDarkAtDusk = await p.evaluate(() => window.__enc.stage.snap().winK) > 0.95;
   await p.evaluate(() => window.__enc.cine.skip());
   await p.waitForFunction(() => window.__enc.getState() !== 'cine', null, { timeout: 30000, polling: 100 });
   await p.waitForTimeout(300);
   out.tubesBackAfter = await p.evaluate(() => window.__enc.stage.tubeLights[0].intensity) > 1;
+  out.windowsDarkAfter = await p.evaluate(() => window.__enc.stage.snap().winK) > 0.95;
   if (!out.startsOnBlack)
     errs.push('ERR the film is visible before its own fade-in: ' + JSON.stringify(cover));
   if (!out.fadesInAfter) errs.push('ERR the film never fades in');
-  if (!out.tubesOutAtSwitch) errs.push('ERR the switch never killed the tubes');
+  if (!out.tubesStayOnAtDusk) errs.push('ERR the film switched the tubes off (lights out is play\'s beat)');
+  if (!out.windowsDarkAtDusk) errs.push('ERR the windows never went dark at dusk');
   if (!out.tubesBackAfter) errs.push('ERR the room stayed dark after the film');
+  if (!out.windowsDarkAfter) errs.push('ERR play began with daylight in the windows at 21:58');
   console.log(JSON.stringify(out), '| errors:', errs.length ? errs : 'none');
   await p.close();
 }
