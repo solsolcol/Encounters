@@ -1694,6 +1694,52 @@ What the baseline contains, by release:
   reason written down — day one in a bunk has issued nobody a rifle.
   docs/V8.2-THE-REPLAY-AUDIT-AND-THE-MARCH.md and E2-SOLDIER-MODELS §13 are
   the build's memory.
+- **v8.3** THE PUNISHMENT, AND A HUD YOU CAN SEE — Chad's five notes the day
+  v8.2 went live. THE ENCIK SPEAKS, and the finding that got there is a PROMPT
+  RULE rather than a casting one: Hilmi (`klqxhYh2Np93AvKxFz0b`, Malaysian
+  English, middle-aged) was rejected three times — "none of them sounds old",
+  "zul sounds like a young boy, and yatin sounds 80 years old", "none works,
+  they sound too polished" — and the third was MINE, not the library's. Every
+  take had carried a stage direction (`[a furious sergeant-major in his
+  fifties...]`), and a stage direction gets a professional PERFORMING anger,
+  which is exactly what "polished" names. Written as the bark itself — short
+  bursts, full stops between them, CAPITALS on the stress, no direction at
+  all — the same voice landed on the first take. **That is the OPPOSITE of
+  Aaron's rule** (v5.28: a tag naming an emotion, never a volume) and it lives
+  in `encik`'s registry row so nobody undoes it. Two lines in Chad's own
+  words, peak-matched to the sergeant's shouted takes.
+  ONE MODEL IN THE BUNK: `BUNK_MEN` is six `admintee` (the botak recruit keeps
+  the ferry seats and the parade square, where a blue PT tee among strangers is
+  right), and the BUNKMATE changed rig — he was `fbonosling`, and Chad's
+  "bunkmate is green admin tshirt not the fbo one" settles what he always
+  should have been. That also decided the push-ups: `tools/retarget.mjs`
+  carries ROTATIONS ONLY, no hips translation, and the admin tee's own
+  `push_up` drops the hips 0.668 m, so a retargeted one would have had him
+  doing press-ups standing upright in mid-air. Everyone being one model means
+  everyone plays the model's OWN take. `fbonosling` leaves the chapter.
+  THE PUNISHMENT BEAT: `onTheLine()` no longer runs straight to the bed. Both
+  the on-time and the late branch land in `punishBeat()` — its own phase, its
+  own objective line — where the encik shouts, the whole section drops on
+  "GO!" (`PUNISH_LEAD` 6.9 s is where that word lands in the take, not after
+  the sentence), does three, comes up, and is sent back with the second shout.
+  A resume into `punish` runs `punishBeat(true)`: the shout is spent, so it
+  goes straight to the bed rather than making a player hear it twice or
+  leaving eight men face-down on the balcony.
+  THE HUD (engine, and episode-2-only by construction — episode 1 declares no
+  objective, no timer and no hotspots). The objective box is the SAME SIZE it
+  has always been, deliberately: near 1100 px it sits between the stat rows and
+  the button column with a few pixels of air, and a wider box runs into one of
+  them. Everything else changed — it breathes, a light crosses its face every
+  5.2 s, the timer ticks in scale and beats red under ten seconds, and it
+  FLASHES the moment its words change. And `#hotmarks` is new: a jade diamond
+  with an exclamation mark in it over every ENABLED hotspot in front of the
+  lens out to 16 m, dimmer and smaller with distance, bigger and rippling once
+  you are in reach, 44 px on a phone. Chad's "it is very hard to see now" names
+  a property of the code, not a taste: the interact badge appears only once the
+  player is BOTH inside a hotspot's radius AND aimed at it, so until then
+  nothing says the thing is there. Episode 1's own pile prompt (`.ibadge`) is
+  untouched — it is frozen base-game feel.
+  docs/V8.3-THE-PUNISHMENT-AND-THE-HUD.md is the build's memory.
 - **v7.9** THE FERRY FROM INSIDE, TEKONG, THE PARADE SQUARE, THE BUNK —
   Chad, with five reference photographs: *"I dont want to see the outside
   of the ferry and the sea, it should show first person pov within inside

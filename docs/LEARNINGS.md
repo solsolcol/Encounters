@@ -2924,3 +2924,56 @@ two runs are byte-identical at 14 cues each.
 
 Anything that starts firing the moment a state flips has to be baselined
 before the flip.
+
+## A stage direction gets PERFORMED anger; write the bark itself (v8.3)
+
+The encik needed a shouting voice and Chad rejected three candidates in a row:
+*"none of them sounds old"*, *"zul sounds like a young boy, and yatin sounds 80
+years old"*, and then *"none works, they sound too polished"*.
+
+The third rejection was not the library's fault. Every take had been prompted
+with a stage direction —
+
+```
+[a furious sergeant-major in his fifties, shouting across a parade square]
+Ah! Take your time some more! ...
+```
+
+— and eleven_v3 answers a stage direction with a *performance* of the emotion
+named: a trained voice-over artist doing anger, with the breath control and the
+even level that come with training. "Polished" is exactly the right word for
+it.
+
+Written as the line itself, with nothing in front of it —
+
+```
+Ah! Take your time some more! Whole lot, knock it down! Twenty push-ups! Go!
+```
+
+— short bursts, a full stop between each, CAPITALS on the stressed words, the
+same voice landed on the first take.
+
+**This is the OPPOSITE of Aaron's rule** (v5.28: give him a tag that names an
+EMOTION rather than a volume, because a volume tag gets a flat read at that
+volume). The two rules coexist because the two jobs do: Aaron narrates, and a
+narrator needs to be told what he is feeling; the encik SHOUTS, and a shout is
+a rhythm you write down rather than a feeling you describe. Both rules live in
+the speakers' rows in `src/voicelines.js`, next to the voice ids, so that
+whoever regenerates a cast's lines reads the rule before they write a prompt.
+
+## The chapter clock is capped at half a second a frame — budget probes for it (v8.3)
+
+v7.1 put the episode-2 chapter clock on WALL time rather than the engine's
+clamped `dt`, because a box drawing one frame a second would otherwise run a
+day at a twentieth of real time. The cap it kept is 0.5 s per frame, so a
+stalled tab never skips a beat.
+
+The consequence for a PROBE is the other half of that trade: on this
+GPU-less container, at ~1 fps, the chapter clock advances **at most 0.5 s of
+chapter time per second of wall time**. A 23 s beat needs ~50 s of wall clock,
+not 23.
+
+The first run of `dbg-punish.mjs` gave the beat 46 s and concluded the phase
+never advanced. Nothing was wrong with the beat. **Budget a chapter-clock probe
+at twice the chapter time on this box**, and poll for the phase you expect
+rather than counting seconds.

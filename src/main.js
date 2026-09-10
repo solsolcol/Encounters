@@ -1012,13 +1012,26 @@ function kitWaypointSet(pos) {
     ? { x: pos.x, y: pos.y ?? 1.2, z: pos.z } : null;
 }
 const objPainted = { txt: null, tm: null, shown: null };
+/* v8.3: one bright pulse when the objective's words change. The class is
+   pulled and re-added with a reflow between, because re-adding a class that
+   is already there does not restart a CSS animation. */
+let objFlashT = 0;
+function flashObjective() {
+  const el = $('objective')?.querySelector('.obox'); if (!el) return;
+  el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
+  clearTimeout(objFlashT);
+  objFlashT = setTimeout(() => el.classList.remove('flash'), 950);
+}
 function paintObjective() {
   const box = $('objective'); if (!box) return;
   const show = (kitObjective || kitTimer) && (state === 'play' || state === 'decide');
   if (show !== objPainted.shown) { box.classList.toggle('hide', !show); objPainted.shown = show; }
   if (!show) return;
   const txt = kitObjective || '';
-  if (txt !== objPainted.txt) { $('objTxt').textContent = txt; objPainted.txt = txt; }
+  if (txt !== objPainted.txt) {
+    $('objTxt').textContent = txt; objPainted.txt = txt;
+    flashObjective();     // v8.3: a new order should not slide in unnoticed
+  }
   let tm = null;
   if (kitTimer) {
     const s = Math.max(0, Math.ceil(kitTimer.left));
@@ -1030,6 +1043,54 @@ function paintObjective() {
     if (tm !== null) { el.textContent = tm; el.classList.toggle('low', kitTimer.left <= 10); }
     objPainted.tm = tm;
   }
+}
+/* v8.3: A MARK OVER EVERY LIVE HOTSPOT. Chad: "make all the interactable
+   objects, people, much more obvious with exclamation marks and more effects
+   to show they are interactable. It is very hard to see now." The cause is
+   the badge's own contract — it names a thing only once the player is inside
+   its radius AND has it on screen, so until then nothing says the thing is
+   there at all. These project into the world the way the waypoint does: a
+   mark for every enabled hotspot in front of the lens out to HOTMARK_FAR,
+   dimmer and smaller with distance, and `near` (bigger, brighter, rippling)
+   once you are inside the radius the badge would fire at.
+   Chapters 1-5 declare no hotspots, so `hotspotList()` is empty there and
+   this paints nothing — the base game cannot see it. */
+const HOTMARK_FAR = 16;                 // metres; the bunk is ~12 long
+const hotMarks = [];
+function hotMarkEl(i) {
+  const host = $('hotmarks'); if (!host) return null;
+  while (hotMarks.length <= i) {
+    const el = document.createElement('div');
+    el.className = 'hmark';
+    el.innerHTML = '<span class="hring"></span><span class="hbang">!</span>';
+    el.style.display = 'none';
+    host.appendChild(el);
+    hotMarks.push(el);
+  }
+  return hotMarks[i];
+}
+function paintHotMarks() {
+  if (!$('hotmarks')) return;
+  let n = 0;
+  if (state === 'play' && !ev) {
+    for (const h of hotspotList()) {
+      if (!h || !h.pos || h.done || (typeof h.enabled === 'function' && !h.enabled())) continue;
+      const d = Math.hypot(yaw.position.x - h.pos.x, yaw.position.z - h.pos.z);
+      if (d > HOTMARK_FAR) continue;
+      // the anchors sit at eye height (v7.5); the mark rides above the thing
+      const q = projectTo(h.pos.x, (h.pos.y ?? 1.0) + (h.markY ?? 0.55), h.pos.z);
+      if (q.z > 1 || Math.abs(q.x) > 1.02 || Math.abs(q.y) > 1.02) continue;
+      const el = hotMarkEl(n++); if (!el) break;
+      const near = d < (h.radius || 2.2);
+      const k = near ? 1.15 : THREE.MathUtils.clamp(1.25 - d / HOTMARK_FAR, 0.55, 1);
+      const a = near ? 1 : THREE.MathUtils.clamp(1.15 - d / HOTMARK_FAR, 0.35, 0.9);
+      el.style.display = '';
+      el.style.opacity = a.toFixed(2);
+      el.style.transform = `translate(${((q.x * 0.5 + 0.5) * innerWidth).toFixed(0)}px, ${((-q.y * 0.5 + 0.5) * innerHeight).toFixed(0)}px) scale(${k.toFixed(2)})`;
+      el.classList.toggle('near', near);
+    }
+  }
+  for (let i = n; i < hotMarks.length; i++) hotMarks[i].style.display = 'none';
 }
 function paintWaypoint() {
   const el = $('waypoint'); if (!el) return;
@@ -1488,6 +1549,7 @@ function kitFrame(dt, t, dLookX, dLookY) {
   } else if (kitTimer) kitTimer.last = 0;
   paintObjective();
   paintWaypoint();
+  paintHotMarks();
   // the decision clock
   if (decClock && state === 'decide' && !decClock.fired) {
     decClock.left -= dt;

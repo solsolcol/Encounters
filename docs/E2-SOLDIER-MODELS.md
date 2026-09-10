@@ -590,10 +590,34 @@ episode-2 plan. Wiring them here would be using them, not showing them.
 - The encik alternates his two talking takes line by line: he does most of
   the talking in this episode, and one gesture every time reads as a loop.
 
+## Done at v8.3
+
+- **His voice**: `encik` in `src/voicelines.js` — Hilmi
+  (`klqxhYh2Np93AvKxFz0b`), Malaysian English, middle-aged, Chad's pick after
+  four rounds. The rule that got there is written in his registry row and it
+  is the OPPOSITE of Aaron's: **no stage direction at all** — a
+  `[a furious sergeant-major...]` tag gets a professional PERFORMING anger,
+  which is what "too polished" named. Write the bark: short bursts, full stops
+  between them, capitals on the stress. Two lines, `e1knock` and `e1backbunk`.
+- **The push-up trio is on screen**: `idle_to_push_up`, `push_up`,
+  `push_up_to_idle`, played by the buddy, the bunkmate and all six bunk
+  recruits together at the punishment beat after every fall-in.
+- **`fbonosling` leaves the chapter.** The bunkmate is `admintee` now (Chad:
+  "bunkmate is green admin tshirt not the fbo one"), so he runs the admin
+  tee's own `Idle_9` and `Talk_with_Hands_Open` and the v8.1 retarget onto the
+  FBO rig is retired with him. `fbosling` (with the rifle) stays: he is the
+  sentry in the film.
+  That also settles the push-ups. `tools/retarget.mjs` carries **rotations
+  only, no hips translation**, and the admin tee's own `push_up` drops the
+  hips 0.668 m from its idle — a retargeted push-up would have been press-ups
+  performed standing upright in mid-air. Everyone in the bunk being one model
+  is what lets everyone play the model's own take.
+- **`botak` keeps the ferry seats and the parade square** and leaves the bunk:
+  a blue PT tee among a hundred strangers on day one is right; six roommates
+  in two different uniforms is not.
+
 ## Still to wire
 
-- His voice: an angry Malay uncle (Chad's words), a new speaker in
-  `src/voicelines.js`. Two rounds of candidates sent; the workspace library
-  carries no Malay or Indonesian male voice tagged `old`, so the choice is
-  between the right accent directed older and a genuinely elderly voice from
-  a neighbouring one.
+- The three weapon-handling clips (`Gun_Hold_Left_Turn`,
+  `Rifle_Charge_inplace`, `Gesture_with_Hand_on_Gun`) remain RESERVED for
+  rifle mode — day one in a bunk has issued nobody a rifle.
