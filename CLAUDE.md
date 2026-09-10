@@ -1537,6 +1537,30 @@ What the baseline contains, by release:
   looks along the bunk's edge (pitch 0.68); scene B likewise (0.95); a
   light over the neighbour in scene C. No word moved; sheet v42 stands.
   docs/V7.2-E2C1-POLISH.md §4 is the record.
+- **v7.3** THE DAY IS RESUMABLE — the first pass over the SAVE rather than
+  the screen, and it found what a screenshot cannot. Episode 2 chapter 1 is
+  the first chapter whose play is a whole DAY, and its `applyPhase` covered
+  three of its seven phases; everything else fell through to
+  `beginArrive()`. So a Continue saved during the fall-in or the standby bed
+  RESTARTED THE MORNING and banked every award a second time — the root
+  cause being that `kitConduct` dedupes the NOTES and never did the numbers,
+  which nothing in episode 1 can hit because an episode 1 chapter banks
+  nothing in play. And a Continue at three in the morning restored the room
+  and nothing else: no objective, no fear challenge, a player lying in the
+  dark with no idea what the game wanted. Now: **each award carries its own
+  note and the note is the RECEIPT** (`bank()` pays only what is not already
+  on the card), `applyPhase` covers the whole day, lateness is read back off
+  the card rather than cleared, the bed sequence checks its receipt before
+  standing itself up again, and the fear at 03:00 is its own function so a
+  resume runs it (`decide` is the bookmark after it, because the heartbeat's
+  sanity award is the engine's and cannot carry a receipt). The engine's
+  whole share is one read-only getter, `kit.getConduct()`; `__enc` also gains
+  the renderer and the scene, for probes. Episode 1's five chapters are
+  untouched BY FILE. Proven by two probes against the hosted build — one
+  writes a mid-day run in as a checkpoint and presses Continue (+4 stays +4,
+  and the resume lands in `standby`, not `arrive`), one resumes straight into
+  03:00 and watches the heartbeat arrive. No word moved; sheet v42 stands.
+  docs/V7.2-E2C1-POLISH.md §5 is the record.
 - **v7.0** THE PLAY KIT — episode 2's first release, and the one that ships
   nothing a player of episode 1 can see (Chad approved the plan on 9 Sep:
   "can you begin building according to your plan?"). Everything a chapter

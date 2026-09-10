@@ -2637,3 +2637,32 @@ constants — the pocket coordinates I derived by hand were wrong twice.
   size cap lands in a file under the session's `tool-results/` instead of
   the conversation; a harvester that reads those files (and the transcript
   for the small ones) downloads a hundred takes with nothing retyped.
+
+## A dedupe that covers the label does not cover the number (v7.3)
+
+`kitConduct` has always refused a conduct NOTE it already holds. It never
+refused the `s`/`a` that rides with it, because until episode 2 no chapter
+banked anything during play — an episode 1 chapter's whole conduct is one
+call at the end. Episode 2 chapter 1's day banks four separate awards, and
+its save can land between any two of them, so a Continue re-ran the phase
+and paid again: the note swallowed, the `+4` doubled.
+
+The general shape, worth recognising anywhere state is resumable:
+
+**A resume is a re-run. Anything a re-run pays twice is a bug, and the
+guard has to cover the payment, not the label on it.**
+
+The pattern that fixed it costs nothing and needs no new saved field:
+give every award a note of its own, and treat the note as the RECEIPT —
+`bank()` reads the card back (`kit.getConduct()`) and pays only what is
+not on it. Where the payment is the ENGINE's rather than a note (an
+event's `award:`), a receipt cannot work and the phase itself must move
+past it before the save can catch it — which is what e2c1's `decide`
+phase is for.
+
+And the corollary that found the second half of the bug: **a phase machine
+whose resume handler covers only some of its phases has a default, and the
+default is usually "start over".** `applyPhase` handled three of seven and
+fell through to `beginArrive()` for the rest; nothing errored, nothing
+logged, and the chapter simply began again with the player's awards still
+banked. Enumerate every phase, or make the fall-through loud.
