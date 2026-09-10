@@ -3259,7 +3259,9 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
   't5note', 't5teachA', 't5hallA', 't5fearB', 't5disC', 't5learnD1', 't5learnD2',
   // v7.1: episode 2's bunk — the sergeant, the buddy, a bunkmate
   's1fallin', 's1late', 's1bed', 's1standby', 's1again', 's1lights',
-  'b1day', 'b1sleep', 'b1huh', 'k1board', 'k1three']);
+  'b1day', 'b1sleep', 'b1huh', 'k1board', 'k1three',
+  // v8.3: and the encik, who does most of the shouting
+  'e1knock', 'e1backbunk']);
 const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || CAST_TAKES.has(name);
 /* v6.9: his WHISPERS go round the bus. Chad wanted the three pick-up
    reactions "almost whispering to himself" and they were re-voiced as
@@ -5074,6 +5076,7 @@ const STING_SAMPLE = {
   s1standby: ['s1standby', 1], s1again: ['s1again', 1], s1lights: ['s1lights', 1],
   b1day: ['b1day', 1], b1sleep: ['b1sleep', 1], b1huh: ['b1huh', 1], k1board: ['k1board', 1],
   k1three: ['k1three', 1],
+  e1knock: ['e1knock', 1], e1backbunk: ['e1backbunk', 1],   // v8.3: the encik
   e2film: ['e2film', 1],         // the episode's theme under the film (60 s, eleven_music_v2)
   e2bed: ['e2bed', 1],           // the night's explore bed (50 s, eleven_music_v2, loop)
   bunkday: ['bunkday', 1], bunknight: ['bunknight', 1], fanloop: ['fanloop', 1],

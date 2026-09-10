@@ -69,7 +69,9 @@
     buddy: { name: "The buddy in the next bed (episode 2)", voice: "ZyIwtt7dzBKVYuXxaRw7", model: "eleven_v3",
               note: "Edison — young Singaporean, casual. He recurs all episode." },
     bunkmate: { name: "A bunkmate (episode 2)", voice: "FXMPPfJPpDj0GSwJ6ASO", model: "eleven_v3",
-              note: "Kelvin — Singaporean English. One more voice in the bunk." }
+              note: "Kelvin — Singaporean English. One more voice in the bunk." },
+    encik: { name: "The encik, the sergeant-major (episode 2)", voice: "klqxhYh2Np93AvKxFz0b", model: "eleven_v3",
+              note: "Hilmi — Malaysian English, middle-aged. Chad's brief was 'like an angry malay uncle', and getting there took four rounds: the library's Malay voices are all booth-recorded voice-over artists, and he rejected them in turn as too young (Zul), eighty years old (Yatin) and finally 'too polished'. HIS PROMPT RULE IS THE OPPOSITE OF AARON'S: no descriptive stage direction at all — a '[a furious sergeant-major in his fifties...]' tag gets a professional PERFORMING anger, which is what 'polished' names. Write the line the way he barks it: short bursts, full stops between them, CAPITALS on the stressed words. Same words as this registry, only the shouting written down." }
   };
 
   const LINES = [
@@ -367,6 +369,10 @@
       text: "I decided what it was before I knew anything. Under the blanket, the water kept running.", secs: 6.35 },
     { id: "s1fallin", who: "sergeant", ch: "e2c1", where: "The whistle",
       text: "Fall in! Fall in! Move it, move it!", secs: 3.16 },
+    { id: "e1knock", who: "encik", ch: "e2c1", where: "The fall-in ends: the whole section is knocked down",
+      text: "Ah! Take your time some more! Whole lot, knock it down! Twenty push-ups! Go!", secs: 7.31 },
+    { id: "e1backbunk", who: "encik", ch: "e2c1", where: "The push-ups done: back to the bunk",
+      text: "Now! Go back to your bunk! I want standby bed, now!", secs: 4.44 },
     { id: "s1late", who: "sergeant", ch: "e2c1", where: "Late to the line",
       text: "You! Last one! Twenty push-ups, now!", secs: 3.4 },
     { id: "s1bed", who: "sergeant", ch: "e2c1", where: "Opening film: bed one",

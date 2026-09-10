@@ -88,7 +88,11 @@
       vmKey: [0xfff2dc, 0.62]
     },
 
-    assets: ['fbosling', 'fbonosling', 'admintee', 'botak', 'encik2', 'sleeper', 'sleepanim', 'ghostsoldier',
+    /* v8.3: `fbonosling` is gone from the chapter — the bunkmate wears the
+       admin tee now and nobody else was ever the FBO without a rifle, so it
+       stopped being downloaded (4.1 MB off e2c1's asset bill). The key stays
+       in build.py for a later chapter. */
+    assets: ['fbosling', 'admintee', 'botak', 'encik2', 'sleeper', 'sleepanim', 'ghostsoldier',
              'tree1', 'tree2', 'tree3', 'tree4', 'hdb'],
 
     /* the explore music bed is chapter 1's title theme and has no place in a
@@ -110,6 +114,7 @@
       objArrive: 'Find your bed — bed one',
       objFallIn: 'FALL IN — on the yellow line',
       objLate: 'FALL IN — get to the line',
+      objPunish: 'TWENTY PUSH-UPS — the whole section',
       objStandby: 'Back to your bed — standby bed',
       objBed: 'STANDBY BED — sixty seconds',
       objFree: 'Look around the bunk before lights out',
@@ -180,6 +185,8 @@
   const SECS = { n1shower: 4.05, n1board: 2.12, n1late: 2.77, n1bedok: 3.08, n1bedfail: 2.85,
                  n1fallin: 1.8, n1lights: 2.04, n1wake: 1.72, n1hear: 4.44,
                  s1fallin: 3.16, s1late: 3.4, s1standby: 3.08, s1again: 1.96, s1lights: 2.27,
+                 e1knock: 7.31, e1backbunk: 4.44,
+
                  b1day: 3.08, b1sleep: 2.19, k1board: 3.0, k1three: 4.05 };
 
   function build(ctx) {
@@ -1277,17 +1284,23 @@
        standing at the entrance should look like anyway. */
     const sergeant = mkRig('fbosling', { x: 1.3, z: -2.9, ry: -0.02, height: 1.74, idle: 'Idle_3' });   // square down the room, at the camera
     const buddy = mkRig('admintee', { x: -3.05, z: 1.15, ry: 1.2, height: 1.70, idle: 'Idle_9' });
-    /* v7.5: the bunkmate is Chad's FBO without the rifle. Until now he was a
-       tinted second copy of the buddy's model, and that model shipped with a
-       torn arm — one broken file, two characters. This one has no talking
-       take (the FBO pair carry Idle_6 and field takes), so his lines play
-       over his rest; `rig.play` of a take he lacks is a no-op by design.
+    /* THE BUNKMATE IS A RECRUIT, so he wears what a recruit wears (Chad,
+       v8.3: "bunkmate is green admin tshirt not the fbo one"). He was the FBO
+       without a rifle from v7.5, which put a man in full battle order —
+       helmet, vest, field pack — standing about his own bunk at ten to ten at
+       night; the sergeant wears it because he is on duty, and the bunkmate is
+       not. The admin tee also carries `idle_to_push_up` / `push_up` /
+       `push_up_to_idle` as its OWN takes, which is what lets him drop with
+       the rest of the section (v8.3's punishment beat) — the FBO has no
+       push-up take at all, and a retarget was measured and thrown away:
+       `tools/retarget.mjs` carries rotations, not the hips' translation, so
+       he would have done press-ups standing upright in mid-air.
        v7.9 (Chad): "The other sergeant should not be looking at the notice
        board." He stood at PI, nose to the board; he faces the room now,
        aimed at the same point the sergeant is. He also moved 0.8 m along
        the wall: at x 1.75 the two of them overlapped in the film's own
        shot of the pair (rendered at 52 s), one half behind the other. */
-    const bunkmate = mkRig('fbonosling', { x: 2.55, z: -3.05, ry: -0.32, height: 1.70, idle: 'Idle_6' });
+    const bunkmate = mkRig('admintee', { x: 2.55, z: -3.05, ry: -0.32, height: 1.70, idle: 'Idle_9' });
     /* v8.2 (Chad): "and also in the bunk alongside with the 2 soldiers in
        FBO, and also for the fall in. He will be used regularly throughout
        this entire episode." He stands on the other side of the entrance from
@@ -1327,19 +1340,14 @@
        the door, the buddy and the bunkmate — with six made beds nobody
        owned. Every bed but HIS now has a recruit standing at its foot.
 
-       They STAND, all six, and that is a constraint rather than a
-       preference: the whistle empties the bunk onto the balcony (v7.4), and
-       a man parked on a seated take cannot be teleported into a rank
-       without sitting in mid-air — `mkCrowd` gives a copy ONE action, so
-       there is nothing to switch him to. Standing men fall in.
+       They STAND, all six, which at v8.1 was a constraint — `mkCrowd` gave a
+       copy ONE action, so there was nothing to switch a man to. v8.2's
+       `crowdPlay` lifted that (they run out to the fall-in now) and v8.3
+       spends it: the whole section drops for push-ups on one order.
 
-       Two models and two different standing poses (which kinds, and why not
-       three, is the note under the table): the admin tee on its own `Idle_9`,
-       and the botak — which has no standing idle at all — on `Walking` PARKED
-       at t = 0.122, the frame the parade square is built on (feet closest,
-       hands lowest). `mkCrowd` seeds a looping idle at its own phase per
-       copy, so the three admin tees do not breathe in step. Nothing new is
-       downloaded: both files are already in this chapter.
+       ONE model, the admin tee on its own `Idle_9`. `mkCrowd` seeds a
+       looping idle at its own phase per copy, so six men do not breathe in
+       step. Nothing new is downloaded: the file is already in this chapter.
 
        x = ±3.25 is the foot of the bed and 0.26 m clear of the blocker
        column `solid()` puts round the mattress (±3.51), so a recruit stands
@@ -1350,22 +1358,24 @@
        take nobody can hear. */
     const BUNK_MEN = [
       { x: -3.25, z: -3.00, ry: 0.12,             kind: 'admintee', line: -1.70, low: true },
-      { x: -3.25, z: -1.50, ry: Math.PI - 0.14,   kind: 'botak',    line: -0.85, low: false },
-      { x: -3.25, z:  0.00, ry: 1.35,             kind: 'botak',    line:  0.00, low: true },
+      { x: -3.25, z: -1.50, ry: Math.PI - 0.14,   kind: 'admintee', line: -0.85, low: false },
+      { x: -3.25, z:  0.00, ry: 1.35,             kind: 'admintee', line:  0.00, low: true },
       { x:  3.25, z: -2.20, ry: -1.32,            kind: 'admintee', line:  2.55, low: false },
       { x:  3.25, z:  2.20, ry: -1.78,            kind: 'admintee', line:  3.40, low: true },
-      { x:  3.25, z:  3.35, ry: -2.15,            kind: 'botak',    line:  4.25, low: true },
+      { x:  3.25, z:  3.35, ry: -2.15,            kind: 'admintee', line:  4.25, low: true },
     ].filter(m => !LOW || m.low);
-    /* the two TEE models only, and that is casting rather than convenience:
-       the FBO wears full battle order — helmet, vest, field pack — and six of
-       him standing about a bunk at ten to ten at night reads as a deployment.
-       The sergeant wears it because he is on duty and the bunkmate has worn
-       it since v7.5; everyone else is in what a recruit wears in his own
-       bunk. Photographed with the FBO in the mix first, which is how the
-       dress problem showed up at all. */
+    /* ONE MODEL, the green admin tee (Chad, v8.3: "i want all the bunkmates
+       to be the same green admin tshirt one, not the blue botak one"). It is
+       also what makes the punishment beat possible: the tee is the only rig
+       in the chapter carrying `idle_to_push_up` / `push_up` /
+       `push_up_to_idle`, so a bunk of six of him can all drop together. The
+       botak keeps the ferry seats, the jetty and the parade square, where a
+       different face in every chair is the point.
+       (The FBO was in the mix for one pass at v8.1 and the photographs threw
+       it out: full battle order in a bunk at ten to ten reads as a
+       deployment. The sergeant wears it because he is on duty.) */
     const BUNK_KIND = {
       admintee: { clip: 'Idle_9',  height: 1.72 },
-      botak:    { clip: 'Walking', height: 1.70, at: 0.122 },
     };
     const bunkCrowds = Object.keys(BUNK_KIND).map(kind => {
       const men = BUNK_MEN.filter(m => m.kind === kind);
@@ -1621,7 +1631,8 @@
        made the first press of E silent. Named rather than globbed, so a new
        line has to be added here on purpose — the same discipline as the cue
        table: a sound nobody warms is a press that waits. */
-    const PLAY_LINES = ['b1day', 'b1sleep', 'dooropen2', 'k1board', 'k1three',
+    const PLAY_LINES = ['b1day', 'b1sleep', 'dooropen2', 'e1backbunk', 'e1knock',
+      'k1board', 'k1three',
       'n1bedfail', 'n1bedok', 'n1board', 'n1fallin', 'n1hear', 'n1late',
       'n1lights', 'n1shower', 'n1wake', 'pushups', 's1again', 's1fallin',
       's1late', 's1lights', 's1standby', 'switchoff', 'whistle'];
@@ -1676,20 +1687,21 @@
        up to 22 degrees away at the forearms and feet: measured, which is why
        this went through `tools/retarget.mjs` in world space and not
        `borrowclips`.
-       v8.2: and the retarget is RETIRED — Chad's new FBO files carry
+       v8.2: and the retarget was RETIRED — Chad's new FBO files carry
        `Talk_with_Left_Hand_Raised` as their OWN take, authored against their
-       own rest pose, which beats any transplant (v5.20's law). Both soldiers
-       name it now. `Talk_with_Left_Hand_on_Hip` survives only on the ENCIK
-       model, which is why the sergeant moved OFF it here rather than keeping
-       it: a rig sent to a take it does not have is a silent no-op, and that
-       is the bug this very comment was written about. */
+       own rest pose, which beats any transplant (v5.20's law).
+       v8.3: and the bunkmate left the FBO rig entirely, so his line rides the
+       admin tee's own `Talk_with_Hands_Open`. Every take named here is now a
+       take its own rig actually ships — which matters more than it reads,
+       because a rig sent to a take it does not have is a silent no-op, and
+       that is the bug this whole comment was written about. */
     function castSay(rig, name, take, idle) {
       return sayLine(name, 1, () => {
         rig.play(take, 1, 0.3);
         after((SECS[name] || 2.5) + 0.2, () => { if (rig.cur === take) rig.play(idle, 1, 0.4); });
       });
     }
-    const TALK_NOSL = 'Talk_with_Left_Hand_Raised';   // v8.1: retargeted onto the FBO rig, see above
+    const TALK_NOSL = 'Talk_with_Hands_Open';         // v8.3: the admin tee's own talking take
     const TALK_SLING = 'Talk_with_Left_Hand_Raised';  // v8.2: the sling FBO's own take
     const sgtSay = (name) => castSay(sergeant, name, TALK_SLING, 'Idle_3');
     function setPhase(p) {
@@ -1805,16 +1817,19 @@
       fallTimer = kit.timer(14, () => {
         fallLate = true; fallTimer = null;
         sgtSay('s1late');
-        after(3.4, buddyPushUps);
-        after(3.6, () => { sayLine('n1late'); if (worldSfx) worldSfx('pushups', 0.8); });
+        after(3.6, () => sayLine('n1late'));
         bank({ s: -3, a: -2, note: DATA.words.noteLate });
         kit.objective(DATA.words.objLate);
         /* v7.4: AND THE FALL-IN ENDS. Before this the timer paid out its
            penalty and then the chapter went on waiting for the line for
            ever — a player who was slow (or, before the gangway, any player
            at all) was stuck with nowhere the day could go. The sergeant has
-           you now: the push-ups beat plays out and the day moves on. */
-        after(9.0, () => { if (phase === 'fallin') onTheLine(); });
+           you now: the beat plays out and the day moves on.
+           v8.3: the push-ups moved OUT of here and into `punishBeat`, which
+           runs either way — the section is knocked down whether or not you
+           made the line, so the penalty for being late is the sergeant's line
+           and the numbers, not the exercise. */
+        after(6.0, () => { if (phase === 'fallin') onTheLine(); });
       });
     }
     /* v7.4: the rest of the section falls in TOO. Chad, playing: "shouldnt
@@ -1836,12 +1851,27 @@
        after the penalty with the squad sent back 6.5 s after that — 15.5 s of
        room. `fallOut(false)` puts him back on his idle whatever happened, so a
        skipped phase can never leave a man face-down in the bunk. */
-    function buddyPushUps() {
-      if (!buddy || !buddy.play('idle_to_push_up', 1, 0.3, true)) return;
-      const DOWN = 2.71, REP = 1.63, UP = 3.21, N = 3;
-      after(DOWN, () => buddy.play('push_up', 1, 0.15));
-      after(DOWN + REP * N, () => buddy.play('push_up_to_idle', 1, 0.2, true));
-      after(DOWN + REP * N + UP, () => buddy.play('Idle_9', 1, 0.3));
+    /* v8.3: THE WHOLE SECTION DROPS, not just the buddy (Chad: "They should
+       all be doing push ups"). Every man in the bunk is the admin tee now, and
+       the tee carries the three takes as its own, so the same three beats
+       drive the two named rigs AND the crowd through `crowdPlay`. The clip
+       lengths are the file's, measured: 2.71 s down, 1.63 s a rep, 3.21 s up.
+       Returns how long the whole thing takes, so the beat that follows can be
+       scheduled off it rather than off a number copied by hand. */
+    const PU = { DOWN: 2.71, REP: 1.63, UP: 3.21, N: 3 };
+    const PU_SECS = PU.DOWN + PU.REP * PU.N + PU.UP;
+    function sectionPushUps() {
+      const rigs = [buddy, bunkmate].filter(r => r && r.group && r.group.visible);
+      const drop = (take, fade, once) => {
+        for (const r of rigs) r.play(take, 1, fade, once);
+        for (const c of bunkCrowds) crowdPlay(c, take, fade);
+      };
+      drop('idle_to_push_up', 0.3, true);
+      after(PU.DOWN, () => drop('push_up', 0.15));
+      after(PU.DOWN + PU.REP * PU.N, () => drop('push_up_to_idle', 0.2, true));
+      after(PU_SECS, () => { for (const r of rigs) r.play('Idle_9', 1, 0.3); for (const c of bunkCrowds) crowdPlay(c, null, 0.3); });
+      if (worldSfx) worldSfx('pushups', 0.9);
+      return PU_SECS;
     }
     /* ------------------------------------------------- THEY GO ON FOOT (v8.2)
 
@@ -2018,13 +2048,43 @@
     function onTheLine() {
       if (fallTimer) { fallTimer.stop(); fallTimer = null; }
       if (!fallLate) bank({ a: 4, note: DATA.words.noteOnTime });
-      beginStandby();
+      punishBeat();
+    }
+    /* ---- the punishment: twenty push-ups, whoever you are (v8.3)
+
+       Chad: "The encik should shout angrily 'ah take your time somemore!
+       whole lot knock it down 20 push ups, go!' Even if player manages to
+       fall in on time, i still want this to happen, before everyone returns
+       to the bunk. When returning to bunk, encik should shout 'Now go back to
+       your bunk! I want standby bed now!'"
+
+       So it is not a penalty — it is the morning. Being on time still pays
+       (+4 Awareness, banked above); being late still costs. What the encik
+       does to the section is the same either way, which is the joke and also
+       the truth about the place.
+
+       Its own PHASE, so a Continue lands back in it rather than restarting
+       the fall-in — the day's other six phases have been resumable since
+       v7.3 and this one is no different. */
+    /* they drop on "GO!", which is the shout's last word: the take is 7.31 s
+       and the word lands in its final beat, so the order is heard in full
+       before a man moves. */
+    const PUNISH_LEAD = 6.9;
+    function punishBeat(snap) {
+      setPhase('punish');
+      if (kit) { kit.objective(DATA.words.objPunish); kit.waypoint(null); }
+      if (snap) { beginStandby(); return; }
+      encSay('e1knock');
+      after(PUNISH_LEAD, () => { if (phase === 'punish') sectionPushUps(); });
+      after(PUNISH_LEAD + PU_SECS + 0.5, () => { if (phase === 'punish') encSay('e1backbunk'); });
+      after(PUNISH_LEAD + PU_SECS + 0.5 + (SECS.e1backbunk || 2.5) + 0.4,
+            () => { if (phase === 'punish') beginStandby(); });
     }
     /* ---- the standby bed: back to the bunk, then the sequence */
     let bedTries = 0;
     function beginStandby() {
       setPhase('standby');
-      after(fallLate ? 6.5 : 1.0, () => fallOut(false));
+      after(0.6, () => fallOut(false));    // v8.3: the punishment beat has already played out
       if (!kit) return;
       kit.objective(DATA.words.objStandby);
       kit.waypoint({ x: PILE_POS.x, y: 1.0, z: PILE_POS.z });
@@ -2148,6 +2208,7 @@
          where it stood; the awards are idempotent above, so the parts that
          DO re-run (the fall-in call, an unfinished bed) cost nothing. */
       if (p === 'fallin') { beginFallIn(true); return; }
+      if (p === 'punish') { punishBeat(true); return; }   // v8.3: the shout is spent; go on to the bed
       if (p === 'standby' || p === 'standbybed') { beginStandby(); return; }
       if (p === 'free') { beginFree(); return; }
       if (p === 'lightsout' || p === 'night' || p === 'decide') {
@@ -2234,7 +2295,7 @@
           seen.add('board');
           return sayLine('k1board', 1, () => {
             bunkmate.play(TALK_NOSL, 1, 0.3);
-            after((SECS.k1board || 2.5) + 0.2, () => { if (bunkmate.cur === TALK_NOSL) bunkmate.play('Idle_6', 1, 0.4); });
+            after((SECS.k1board || 2.5) + 0.2, () => { if (bunkmate.cur === TALK_NOSL) bunkmate.play('Idle_9', 1, 0.4); });
             after((SECS.k1board || 2.5) + 0.4, () => sayLine('n1board'));
           });
         } },
@@ -2242,7 +2303,7 @@
         enabled: () => phase === 'free' && bunkmate.group.visible && seen.has('board'),
         onInteract() {
           seen.add('bunkmate');
-          return castSay(bunkmate, 'k1three', TALK_NOSL, 'Idle_6');
+          return castSay(bunkmate, 'k1three', TALK_NOSL, 'Idle_9');
         } }
     ];
 
