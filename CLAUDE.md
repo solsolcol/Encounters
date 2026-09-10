@@ -1651,6 +1651,49 @@ What the baseline contains, by release:
   share all 27 mixamorig joints and their rest rotations still differ by up to
   22°. `src/main.js` is untouched by this release.
   docs/V8.1-THE-REPLAY-THE-CLOCK-AND-THE-ROOM.md is the build's memory.
+- **v8.2** THE REPLAY AUDIT, AND THE SECTION ON REAL LEGS — Chad's queued ask
+  (*"replaying the chapter also causes many voicelines, sfx, music, to be
+  disabled ... Check if its totally fixed"*) answered two ways, because
+  neither alone was enough. THE DYNAMIC PASS runs the same scripted pass twice
+  through the real replay path, unmuted, and diffs every audio surface: the 14
+  film cues, the 8 spoken interactions across the whole day, the loop mix, the
+  music, the duck, the decoded pack — **identical**. v8.1's `speakReset`
+  holds. (One probe law from it: take a cue-log baseline BEFORE the call, not
+  after the state changes — the first version reported a missing `ferryhorn`
+  that was its own race.) THE STATIC PASS read what `reset()` forgets and
+  found two things the dynamic one could not reach. `packWarm(WARM_WANT)` sat
+  below `enterWorld`'s no-film early return, so a chapter entered with no film
+  — the RESUME path, and any chapter that declares no `intro` — never decoded
+  what its build() asked to warm; unreachable by a shipping chapter today, one
+  line up, and the class is gone (`src/main.js`'s only change this release).
+  And `reset()` never called `fallOut(false)`, so a replay taken at the
+  fall-in began the new morning with an empty bunk and eight men still formed
+  up on the balcony (measured: buddy, bunkmate and all six recruits at x 7.40
+  after reset). **A value stated in a clock must be cleared by whatever resets
+  that clock — and so must a POSITION stated by a phase.**
+  AND THE SECTION MARCHES. v7.4 placed them because "neither rig carries a
+  walk take"; Chad's three new models all carry `Walking` and `Running`, both
+  measured IN PLACE (the hips travel 0.02-0.04 m), which is ch5's tang-ki
+  shape since v5.07 — play the take, glide the group. So all ten go out on
+  foot and come back: recruits RUN at 2.6 m/s, the sergeant and the encik WALK
+  at 1.35 and leave last. `crowdPlay` is what made it possible — a crowd copy
+  could only ever hold the ONE action it was built with, which is what forced
+  v8.1's "they all stand". The route is hand-laid (a cast path obeys no
+  collision, v5.03) and four defects were each MEASURED and each fixed by one
+  rule: one funnel point put all eight on (7.4, 0); three shared lanes put two
+  men at (−3.25, −0.45); dispatch order ran the man at the back of a bed
+  column through the man in front (0.01 m); and lanes dealt in dispatch order
+  sent the two who share x 3.25 at each other (0.04 m). **Deal lanes by where
+  a man STANDS** — deeper in −z gets a deeper −z lane — and two paths can
+  never cross. Closest two men now: 0.21 m, the lane pitch, at the doorway.
+  Verified over 191 frames: no contact with the long table or a bed row, every
+  man exactly on his spot and exactly back at his bed. Of the nine clips
+  across the three files, six are on screen; `Gun_Hold_Left_Turn`,
+  `Rifle_Charge_inplace` and `Gesture_with_Hand_on_Gun` (a KNEEL, photographed
+  at v8.1) are weapon handling and are RESERVED for rifle mode, with the
+  reason written down — day one in a bunk has issued nobody a rifle.
+  docs/V8.2-THE-REPLAY-AUDIT-AND-THE-MARCH.md and E2-SOLDIER-MODELS §13 are
+  the build's memory.
 - **v7.9** THE FERRY FROM INSIDE, TEKONG, THE PARADE SQUARE, THE BUNK —
   Chad, with five reference photographs: *"I dont want to see the outside
   of the ferry and the sea, it should show first person pov within inside

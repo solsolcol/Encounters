@@ -2860,3 +2860,67 @@ name, left behind at v7.5 when he stopped being that model. `rig.play` of a
 missing take is a no-op by design, so he stood dead still through every line
 he said for four releases. **When a rig is swapped, every take name aimed at
 it is a fresh claim to check** — the file's clip list is one command away.
+
+## A phase that MOVES people must be undone by reset(), not just a clock (v8.2)
+
+v8.1 wrote down that *a value stated in a clock must be cleared by whatever
+resets that clock*. The same release's own fix was incomplete for the same
+reason one step out: `reset()` cleared every VALUE the run had changed and
+none of the POSITIONS a phase had changed.
+
+`fallOut(true)` moves eight men from their beds to the yellow line. Only
+`fallOut(false)` brings them back, and `reset()` never called it. Measured on
+the shipped build:
+
+```
+  on the line : buddy 7.40  mate 7.40  crowd 7.40 x6
+  after reset : buddy 7.40  mate 7.40  crowd 7.40 x6
+```
+
+So a replay taken during or after the fall-in began the new morning with an
+empty bunk and the whole section already formed up outside. The encik was the
+one exception and only by accident — `putSergeant(SGT_DOOR)` happens to move
+him too, which is exactly the kind of coincidence that hides a bug.
+
+**`reset()` is the list of everything a run can move, and the list is only
+correct if it is re-read every time something new can move.** A dynamic probe
+cannot be trusted to find these: the replay diff that ran the whole day and
+every spoken line came back clean, because it never ran the fall-in before
+resetting.
+
+## Deal lanes by where a man STANDS, not by the order you dispatch him (v8.2)
+
+Routing eight men out of a bunk to a line took four passes, and each failure
+was two men in the same place rather than anything about the route:
+
+| what was tried | measured |
+|---|---|
+| one route with a shared funnel point | all eight men on (7.4, 0) |
+| three lanes, cycled | two men standing at (−3.25, −0.45), 0.00 m |
+| a lane per man, dealt in dispatch order | the two who share x 3.25 ran at each other's lane, 0.04 m |
+| dispatch in declaration order | the man at the back of a bed column ran through the man in front, 0.01 m |
+
+Two rules end it, and both are about ORDER rather than geometry:
+
+- **Nearest the door goes first.** Sort the party by route length. The man
+  closest to the exit steps off first and the man behind him follows into the
+  space he has just left — which is how a real section files out, and it needs
+  no special case in either direction.
+- **Deal lanes in order of where each man STANDS.** Deeper in −z gets a deeper
+  −z lane. Under that invariant two paths cannot cross, so no amount of
+  staggering or speed can put two men in one spot.
+
+After both: the closest two men ever come is the lane pitch itself, at the
+doorway, which is what a doorway is.
+
+## Take a cue-log baseline BEFORE the call, not after the state changes (v8.2)
+
+A replay probe read `__enc.stings().length` after waiting for `state === 'cine'`
+and reported that run 1 was missing the film's first cue while the replay had
+it — which looked exactly like a cold-decode bug worth a release. It was the
+probe: between the wait returning and the read, the film had already fired
+three cues. Re-measured with the baseline taken before `startChapter()`, the
+two runs are byte-identical at 14 cues each.
+
+Anything that starts firing the moment a state flips has to be baselined
+before the flip.
