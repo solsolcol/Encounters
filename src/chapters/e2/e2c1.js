@@ -995,12 +995,74 @@
        breathe in step with the man across the aisle. */
     const crowds = [];
     function mkCrowd(key, spots, clip, opts = {}) {
+    /* ---- v8.4: CULLING BACK ON, WITH BOUNDS THAT COVER THE ANIMATION ----
+
+       Every skinned mesh in this chapter carried `frustumCulled = false`
+       from v7.1, so all ten characters were submitted on EVERY frame
+       whichever way the player faced. Measured on the shipped build at
+       eight headings from his bed: a mean of 16% of the character
+       triangles were actually on screen, so 84% of 475,210 triangles a
+       frame — the chapter's single biggest cost, and the reason the phone
+       cooks (661k tris a frame against chapter 1's 251k).
+
+       The flag was hiding a real hazard rather than being lazy. three.js
+       culls a skinned mesh by a bounding sphere, and `SkinnedMesh` carries
+       its OWN `boundingSphere` which `Frustum.intersectsObject` prefers —
+       computed ONCE, from whatever pose the man happens to be in at that
+       first test, and then cached for ever. A push-up, a walk cycle or an
+       arm swing then reaches outside it and the man BLINKS OUT at the edge
+       of the screen. Setting only `geometry.boundingSphere` would not help:
+       the object's own takes precedence.
+
+       So the sphere is MEASURED, exhaustively and offline:
+       `tools/clipbounds.mjs` loads each rig, plays every clip it owns,
+       steps it across the whole length and skins the vertices at each
+       step, reporting the sphere that contains every pose of every clip
+       plus the bind pose. Those are the numbers below, each in ITS OWN
+       FILE'S UNITS — `sleepanim` arrives through Mixamo's FBX path at
+       x100, so its sphere is in centimetres, which is correct because
+       three.js scales the sphere by the mesh's own matrixWorld.
+
+       Measured, animated radius against what the bind pose alone claims:
+         admintee 1.376 (bind 1.008, 1.36x)   fbosling 1.379 (1.052, 1.31x)
+         encik2   1.253 (bind 1.034, 1.21x)   botak    1.176 (1.026, 1.15x)
+         ghostsoldier 1.045 (bind 1.053)      sleepanim 130.851 (cm)
+
+       MARGIN is deliberately generous. A bigger sphere culls very slightly
+       less often — at six metres the difference is negligible — while a
+       sphere a centimetre too small is a man vanishing in front of the
+       player. It covers the vertex stride the tool samples at and any
+       crossfade between two takes landing a hair outside both.            */
+    const CULL_SPHERE = {
+      admintee:     { x: 0.067, y: 0.870, z: 0.011, r: 1.376 },
+      fbosling:     { x: 0.056, y: 0.837, z: 0.212, r: 1.379 },
+      botak:        { x: 0.003, y: 0.858, z: -0.050, r: 1.176 },
+      encik2:       { x: 0.015, y: 0.832, z: -0.037, r: 1.253 },
+      ghostsoldier: { x: 0.001, y: 0.850, z: -0.010, r: 1.045 },
+      sleepanim:    { x: 0.582, y: 85.062, z: 19.032, r: 130.851 },
+    };
+    const CULL_MARGIN = 1.25;
+    /* A rigid mesh needs no table: its geometry sphere is already right and
+       its node transform carries it. Only a SKINNED one has to be told. */
+    function wideBounds(root, key) {
+      const d = CULL_SPHERE[key];
+      root.traverse(o => {
+        if (!o.isMesh) return;
+        o.frustumCulled = true;
+        if (!d || !o.isSkinnedMesh) return;
+        const sp = new THREE.Sphere(new THREE.Vector3(d.x, d.y, d.z), d.r * CULL_MARGIN);
+        o.boundingSphere = sp.clone();            // the one the renderer reads
+        if (o.geometry) o.geometry.boundingSphere = sp.clone();
+      });
+    }
+
       const c = { group: new THREE.Group(), rigs: [], ready: false, key };
       (opts.parent || world).add(c.group);
       assetBytes(key).then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
         if (!alive) return;
         rescueTextures(gltf, BUF);
-        gltf.scene.traverse(o => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = false; o.frustumCulled = false; } });
+        gltf.scene.traverse(o => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = false; } });
+        wideBounds(gltf.scene, key);              // v8.4: cull by the widest pose
         /* the height is measured ONCE, from the POSED bones of the source */
         gltf.scene.updateMatrixWorld(true);
         const v = new THREE.Vector3(); let lo = Infinity, hi = -Infinity, crown = false;
@@ -1011,6 +1073,7 @@
           const g = new THREE.Group();
           g.position.set(sp.x, 0, sp.z); g.rotation.y = sp.ry || 0; g.scale.setScalar(s);
           const m = cloneSkinned(gltf.scene);
+          wideBounds(m, key);                     // v8.4: the copy gets it too
           g.add(m); c.group.add(g);
           const mixer = new THREE.AnimationMixer(m);
           const cl = gltf.animations.find(a => a.name === (sp.clip || clip)) || gltf.animations[0];
@@ -1228,12 +1291,13 @@
         const g = gltf.scene;
         g.traverse(o => {
           if (!o.isMesh) return;
-          o.castShadow = !LOW; o.receiveShadow = false; o.frustumCulled = false;
+          o.castShadow = !LOW; o.receiveShadow = false;
           if (opts.tint) {
             const mats = Array.isArray(o.material) ? o.material : [o.material];
             for (const m of mats) { if (m.color) m.color.multiply(opts.tint); }
           }
         });
+        wideBounds(g, key);                       // v8.4: cull by the widest pose
         group.add(g);
         rig.model = g;
         if (gltf.animations && gltf.animations.length) {
@@ -1449,7 +1513,7 @@
       if (!alive) return;
       rescueTextures(gltf, BUF);
       const src = gltf.scene;
-      src.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.receiveShadow = false; o.frustumCulled = false; } });
+      src.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.receiveShadow = false; } });
       src.updateMatrixWorld(true);
       const box = new THREE.Box3().setFromObject(src);
       const size = box.getSize(new THREE.Vector3());
@@ -1488,7 +1552,8 @@
         if (!alive) return;
         rescueTextures(gltf, BUF);
         const m = gltf.scene;
-        m.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.receiveShadow = false; o.frustumCulled = false; } });
+        m.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.receiveShadow = false; } });
+        wideBounds(m, 'sleepanim');             // v8.4: cull by the widest pose
         g.add(m);
         if (gltf.animations.length) {
           rig.mixer = new THREE.AnimationMixer(m);
