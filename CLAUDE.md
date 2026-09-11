@@ -1740,6 +1740,60 @@ What the baseline contains, by release:
   nothing says the thing is there. Episode 1's own pile prompt (`.ibadge`) is
   untouched — it is frozen base-game feel.
   docs/V8.3-THE-PUNISHMENT-AND-THE-HUD.md is the build's memory.
+- **v8.4 / v8.5 / v8.6** THE PHONE STOPPED COOKING — Chad: *"episode 2
+  chapter 1 heats up the phone crazily when running it. are there ways to
+  optimize without losing quality or breaking anything?"* Measured before
+  anything moved, and the measuring needed its own fix first: **main.js
+  renders TWICE a frame** (world, then viewmodel with `autoClear` off) and
+  three.js resets `renderer.info` at the top of every `render()`, so reading
+  it after the frame reports the ARMS and nothing else — 1 call, 11,812
+  triangles, for every chapter in the game. Wrapped, the real number is
+  e2c1 **661,410 triangles a frame against chapter 1's 251,000**, and 71 %
+  of it was ten characters that were never culled at all.
+  **v8.4 · THE CULLING.** Every rig in the chapter carried
+  `frustumCulled = false`, because a `SkinnedMesh` keeps its OWN
+  `boundingSphere` — the renderer prefers it over the geometry's — and it is
+  computed ONCE from whatever pose the file happens to load in and cached
+  for ever, so a man who raises his arms pops out of frame. Turning culling
+  back on therefore means giving each rig a sphere that covers **every pose
+  of every clip it can play**: `tools/clipbounds.mjs` plays each take, steps
+  24 poses, skins the vertices (`getVertexPosition`) and reports the
+  containing sphere; `CULL_SPHERE` in e2c1 is that table, widened by
+  `CULL_MARGIN` 1.25 and written to BOTH `mesh.boundingSphere` and
+  `geometry.boundingSphere` (setting only the geometry's does nothing).
+  661,410 → 438,715, −34 %, with episode 1 as the control (ch1 and ch4
+  identical to the frame).
+  **v8.5 · THE CAPSULES.** v8.4 shipped a regression and Chad caught it from
+  a screenshot — *"look at what happened to the characters"* — six men
+  standing as green primitives. `wideBounds` had been declared INSIDE
+  `mkCrowd`, so `mkRig` and the two sleeper loaders threw
+  `ReferenceError`; the throw aborts the GLTF callback one line BEFORE
+  `proxy.visible = false`, which is why a missing model leaves its
+  placeholder standing rather than nothing. Hoisted to build() scope. Two
+  laws, both in LEARNINGS: **a probe must capture `pageerror` and console**,
+  and **a probe that only checks what IS there cannot see what never
+  loaded** — 101 skinned meshes against the expected 108 was the tell from
+  the first run.
+  **v8.6 · FOUR THAT COST NOTHING TO LOOK AT.** The tree stands cull too
+  (`InstancedMesh.computeBoundingSphere()` unions every instance matrix, so
+  real bounds are there for the asking) with a **+3 m ADDITIVE** margin —
+  Chad asked for "generous big bounds" and a multiplicative 1.6 was read
+  first, which on stands spanning 4.3–45.6 m adds eighteen metres and saved
+  3 %; the sweep says exact 29 %, +3 m 24 %, ×1.6 3 %. Static meshes stop
+  recomposing their matrices (`freezeStatic`, released by `snap()` and
+  re-taken by `restore()`, because a cutscene moves the world) — and the
+  lever is `matrixAutoUpdate = false`, NOT `matrixWorldAutoUpdate`:
+  `updateMatrixWorld` always recurses into children in this three.js.
+  `darkLights()` hides a light that has sat at zero intensity for 20 frames
+  and shows it the moment it lifts. And the clock's light is gone (Chad: "why
+  is there a light shining at the analog clock? I dont think that one is
+  needed") — `CLOCK_GLOW` is held at 0 rather than deleted, because ten call
+  sites save, restore and cue it. Verified by invariant, not by eye: 3,348
+  tree checks across e2c1/ch1/ch3 with nothing vanished, the non-bone mover
+  count unchanged at exactly 17, zero light flips over 400 frames, and the
+  full 24-harness suite green. **393,945 → 297,872 a frame, −24 %**, on top
+  of v8.4.
+  docs/V8.4-THE-CULLING.md and docs/V8.6-FOUR-FREE.md are the memory.
 - **v7.9** THE FERRY FROM INSIDE, TEKONG, THE PARADE SQUARE, THE BUNK —
   Chad, with five reference photographs: *"I dont want to see the outside
   of the ferry and the sea, it should show first person pov within inside
