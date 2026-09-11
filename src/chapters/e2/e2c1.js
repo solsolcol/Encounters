@@ -369,7 +369,10 @@
       mesh: new THREE.PlaneGeometry(BED.len - 0.06, BED.wid - 0.06)
     };
     const meshTex = makeMesh(THREE, cnv);
-    const matSheet = new THREE.MeshStandardMaterial({ color: 0xe9e6dc, roughness: 0.92 });
+    /* v9.0: painted at about half what it should read at, because the
+       renderer is ACESFilmic at exposure 1.42 (v8.9's law). Against the
+       model's olive mattress the old 0xe9e6dc came out as a sheet of light. */
+    const matSheet = new THREE.MeshStandardMaterial({ color: 0xc2beb3, roughness: 0.92 });
     const matBoot = new THREE.MeshStandardMaterial({ color: 0x2a2622, roughness: 0.55, metalness: 0.05 });
     const matMesh = new THREE.MeshStandardMaterial({ map: meshTex, transparent: true, alphaTest: 0.35,
       color: 0x9aa0a8, roughness: 0.5, metalness: 0.6, side: THREE.DoubleSide });
@@ -392,6 +395,7 @@
         // and the wire mesh under the top deck — what the film's last shot and two scenes look up at
         if (name === 'high') {
           const wm = new THREE.Mesh(bedGeo.mesh, matMesh); wm.rotation.x = Math.PI / 2; wm.position.set(0, y - 0.155, 0); g.add(wm);
+          decks.highMesh = wm;
         }
         // the pillow at the wall end
         const pw = new THREE.Mesh(bedGeo.pillow, matPillow);
@@ -410,12 +414,104 @@
         bt.position.set(-headTowardWall * (hx - 0.2), 0.055, bz); bt.castShadow = !LOW; g.add(bt);
       }
       const b = { x, z, group: g, low: decks.low, high: decks.high, head: headTowardWall,
-                  his: (x === HIS.x && z === HIS.z) };
+                  mesh: decks.highMesh, his: (x === HIS.x && z === HIS.z) };
+      /* v9.0: THE PARTS CHAD'S MODEL SUPERSEDES, named here where they are
+         made rather than found later by a traverse. The frame, the mattresses
+         and the pillows are the model's now. Everything the model does NOT
+         carry stays: the bedsheet, the folded blanket, the one pulled over a
+         sleeper, the boots — and the WIRE BASE, which is not superseded but
+         MOVED. v7.2 added it at `deck − 0.155` so that the film's last shot
+         and scenes B and D had something other than a black slab to look up
+         at; the model's mattress bottom sits at 1.272, ABOVE that, so left
+         where it was the mesh would hang inside the mattress. It drops to
+         1.260, just under it, and a man lying on the bottom bunk now looks up
+         at a spring base with a mattress resting on it.
+         The meshes are HIDDEN, never removed — `blockers()` boxes
+         `low.mattress` and the bed's tap test raycasts it, and three.js does
+         both to an invisible mesh exactly as it does to a visible one
+         (checked, not assumed). They are the proxies the room is built on. */
+      b.supersede = [...g.children.filter(o => o.geometry === bedGeo.post
+                       || o.geometry === bedGeo.rail || o.geometry === bedGeo.railEnd
+                       || o.geometry === bedGeo.mat || o.geometry === bedGeo.pillow)];
       beds.push(b);
       return b;
     }
     for (const rx of ROW_X) for (const rz of bedZs(rx)) mkBed(rx, rz, rx < 0 ? -1 : 1);
     const hisBed = beds.find(b => b.his);
+
+    /* ------------------------------------------- THE REAL BUNK BED (v9.0)
+       Chad, with a Sketchfab model: "Replace all bunk beds you generated,
+       with this 3d model bunk bed." A tubular army bunk — posts, guard rail,
+       a ladder, two olive mattresses with a pillow on each — where nine beds
+       of boxes and cylinders used to be.
+
+       MEASURED BY `tools/prepbunk.mjs`, which prints these four numbers and
+       asserts them, so nothing here is a guess:
+         length (x) 2.004   width (z) 1.313   height (y) 1.710
+         mattress tops at 0.592 and 1.575, and THE PILLOWS ARE AT THE −x END.
+
+       THE FIT IS TO THE PRIMITIVE, not the other way round, and that is the
+       whole reason this change is safe. Every number the room is built on —
+       `blockers()`, `walktest`'s route, the bed zone, where a sleeper lies,
+       which cells the fall-in can be reached through — comes off the
+       primitive mattress, and the primitive mattress does not move. The model
+       is scaled onto it:
+
+         x  BED.len / 2.004 = 0.948     (1.90 m: barely anything)
+         z  BED.wid / 1.313 = 0.685     (0.90 m: a real squeeze, and forced)
+         y  so the two mattress TOPS land exactly on BED.low and BED.high,
+            which is 1.017 with the frame sunk 5.2 cm into the floor
+
+       The z squeeze is not a preference. The balcony row's beds are 1.15 m
+       apart (`ROW_Z_BALC`), so a bed at the model's own 1.31 m would OVERLAP
+       its neighbour; and scaling uniformly by width instead would leave a
+       1.37 m bed for a 1.72 m man to lie on. Fitting the footprint keeps the
+       room, the collision and the walk exactly as they are, and a tubular
+       frame squeezed across its short axis reads as a narrower bed rather
+       than as a distorted one.
+
+       The y fit is EXACT rather than near, because the sheet, the pillow, the
+       folded blanket and the sleeper's blanket all sit at `deck + a few
+       centimetres` and a 2 cm error is a sheet floating over a mattress.
+       Solving both decks at once gives the 5.2 cm sink; the feet go under the
+       floor plane, where nothing can see them.
+
+       THE PILLOW END is why the bed turns. The model's pillows are at its −x
+       end and `headTowardWall` is −1 on the wall row and +1 on the balcony
+       row, so the balcony row's beds are turned a half circle and both rows
+       put a pillow against their own wall.
+
+       It loads ASYNC over the primitives, which stay standing until the bytes
+       land: a failed download costs a nicer bed, never the chapter. */
+    const BUNK = { len: 2.004, wid: 1.313, deckLo: 0.592, deckHi: 1.575, botLo: 0.319, botHi: 1.302 };
+    const BUNK_SX = BED.len / BUNK.len;
+    const BUNK_SZ = BED.wid / BUNK.wid;
+    const BUNK_SY = (BED.high - BED.low) / (BUNK.deckHi - BUNK.deckLo);
+    const BUNK_DY = BED.low - BUNK.deckLo * BUNK_SY;
+    assetBytes('bunkbed').then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
+      if (!alive) return;
+      rescueTextures(gltf, BUF);
+      const src = gltf.scene;
+      src.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.receiveShadow = true; } });
+      beds.forEach((b, i) => {
+        /* clone() shares geometry and material, so nine beds are one upload
+           and nine draws — and each is its own object, so v8.4's culling
+           drops the ones the lens is not pointed at, which is most of them */
+        const m = i === 0 ? src : src.clone(true);
+        m.scale.set(BUNK_SX, BUNK_SY, BUNK_SZ);
+        m.position.set(0, BUNK_DY, 0);
+        m.rotation.y = b.head > 0 ? Math.PI : 0;
+        b.group.add(m);
+        b.model = m;
+        for (const o of b.supersede) o.visible = false;
+        /* the wire base under the top deck's real mattress (see mkBed). Done
+           HERE rather than at build time, because if the download never
+           lands the primitive bed is what is standing and 1.395 is where its
+           own slab wants it. */
+        if (b.mesh) b.mesh.position.y = BUNK.botHi * BUNK_SY + BUNK_DY - 0.012;   // 1.260: 12 mm under the mattress it holds up
+      });
+      redoShadows();                          // nine new shadow casters, as every other loader here does
+    })).catch(() => {});                      // the primitives are already standing
 
     // lockers between the beds, against the wall
     const lockers = [];

@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "8.9"
+VERSION = "9.0"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -307,6 +307,7 @@ ASSETS = {
     # push-up takes, all authored on this rig, so nothing is retargeted onto
     # it any more (v7.6's tearing cannot come back).
     'admintee':     ('assets/admintee.glb', True, False),     # e2c1 the buddy (9 takes, his own)
+    'bunkbed':      ('assets/bunkbed.glb', True, False),      # e2c1 v9.0: Chad's Sketchfab bunk, every bed in the room
     'botak':        ('assets/botak.glb', True, False),        # e2 the blue-tee recruit: ferry, jetty, parade square
     'sleeper':      ('assets/sleeper.glb', True, False),      # e2c1 a recruit asleep, a statue
     'sleepanim':    ('assets/sleepanim.glb', True, False),    # e2c1 the rig with the three sleeping takes
@@ -332,7 +333,7 @@ HOSTED_ONLY = {'titlevid', 'titlevidwebm'}
 # chapter asking for it. The check below keeps the rule honest: an episode-1
 # chapter may never claim one of these.
 E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim',
-           'ghostsoldier', 'encik2'}
+           'ghostsoldier', 'encik2', 'bunkbed'}
 HOSTED_ONLY |= E2_ONLY
 
 # The split packs are hosted-only: there is no __..._B64__ token for them and

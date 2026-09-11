@@ -62,23 +62,45 @@ K.phaseKept = await p.evaluate(() => window.__enc.kit.getPhase() === 'room' && w
    new one — and both flash. The engine owns it, so the fixture gets it for
    free: nothing in the chapter asks. `{ complete: false }` is the escape
    for a change that is not a completion, and it must skip the banner. */
-/* POLLED, never sampled: the banner is 1.35 s of WALL time but it can only
-   be painted on a frame, and this box draws about one a second under load.
-   A fixed wait here is a coin toss, which is worse than no check at all. */
+/* WATCHED, never polled and never sampled.
+
+   v8.7 replaced two fixed waits here with polling and wrote down that a fixed
+   wait is a coin toss. Polling is a SMALLER coin: the banner is 1.35 s of
+   wall time, and under the runner — which pipes stdout and runs harnesses in
+   pairs — the round trip from `kit.objective()` to the first poll can exceed
+   that, so the beat has already been replaced by the next order and the check
+   reports a banner that did in fact play. Measured: this exact check passed
+   standalone and failed twice under `runtests`, with `objNextLands` true both
+   times, which is the proof that the queue ran and the poll simply arrived
+   late.
+
+   So the observer goes in BEFORE the trigger and records what the box said
+   while it wore the class. A transient DOM state is watched; only a settled
+   one is polled.
+
+   And it records ANY matching mutation, not the first one that carries the
+   class: v8.8 made the words slide out and back in, so the sequence is
+   `done out` (still the OLD order), then `done in` (OBJECTIVE COMPLETE),
+   then `done`. Reading only the first is reading the box mid-swap — measured
+   on the real build, `dbg-objbeat.mjs`. */
 const until = (fn, ms = 30000) => p.waitForFunction(fn, null, { timeout: ms });
-const objBox = () => document.querySelector('#objective .obox');
-await p.evaluate(() => window.__enc.kit.objective('Second order'));
-K.objDoneBanner = await until(() => {
+await p.evaluate(() => {
+  window.__sawBanner = false;
   const box = document.querySelector('#objective .obox');
-  return !!box && box.classList.contains('done')
-    && document.getElementById('objTxt').textContent.toUpperCase().includes('COMPLETE');
-}).then(() => true, () => false);
+  new MutationObserver(() => {
+    if (box.classList.contains('done')
+        && document.getElementById('objTxt').textContent.toUpperCase().includes('COMPLETE'))
+      window.__sawBanner = true;
+  }).observe(box, { attributes: true, attributeFilter: ['class'] });
+  window.__enc.kit.objective('Second order');
+});
 K.objNextLands = await until(() => {
   const box = document.querySelector('#objective .obox');
   return !!box && !box.classList.contains('done')
     && document.getElementById('objTxt').textContent === 'Second order'
     && window.__enc.kitDebug().objective === 'Second order';
 }).then(() => true, () => false);
+K.objDoneBanner = await p.evaluate(() => window.__sawBanner === true);
 // and `complete: false` must skip the banner entirely — watched, because a
 // banner that flickered past between two samples would go unnoticed
 await p.evaluate(() => {

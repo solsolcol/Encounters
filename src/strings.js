@@ -98,6 +98,9 @@ Object.assign(window.__TEXT__, {
   'credits.sofa':        'The living room sofa',
   'credits.sofaWho':     'Sofa · Sketchfab',
   'credits.sofaLink':    'sketchfab.com · sofa',
+  'credits.bunk':        'The bunk beds',
+  'credits.bunkWho':     'Bunk bed · Sketchfab',
+  'credits.bunkLink':    'sketchfab.com · bunk-bed',
   // v6.4 — the two things he picks up in chapter 1's opening film
   'credits.teddy':       'The toy in the prologue',
   'credits.teddyWho':    'Teddybear toy · Sketchfab',
