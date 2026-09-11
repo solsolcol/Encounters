@@ -159,6 +159,13 @@ Object.assign(window.__TEXT__, {
   'event.sequence':      'TAP EACH ONE',
   'event.hit':           'GOOD',
   'event.miss':          'MISSED',
+  // v9.3: the six bands of the graded ladder, worst to best
+  'event.perfect':       'PERFECT',
+  'event.great':         'EXCELLENT',
+  'event.good':          'GOOD TIMING',
+  'event.slight':        'SLIGHT MISS',
+  'event.missed':        'MISSED — SANITY LOST',
+  'event.broken':        'TOO LATE — SANITY LOST',
   'event.start':         'START',
   'event.ready':         'BRIEFING',
   'card.conduct':        'In the field',

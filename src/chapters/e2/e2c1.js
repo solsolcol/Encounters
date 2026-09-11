@@ -3173,10 +3173,21 @@
            starting." Nothing runs until START is pressed — the first item
            used to be named and gone inside 1.3 s, while the player was
            still reading the panel it had arrived in. */
+        /* v9.3 (Chad): "the minigames have no stakes, no damage, no
+           repercussions ... every mistimed tap or click should have
+           penalties or damage." This one had none of either: `sequence`
+           counted ANY tap as a hit, and `lo: 0` meant a total failure cost
+           nothing. Now each item opens a WINDOW (`lead` in, the rest of the
+           slot across) and the press is graded on the engine's ladder;
+           a bad press takes sanity on the spot. `zone` is the difficulty —
+           the trial's LEARNING tier is 0.82 and this is a recruit's first
+           standby bed, so 0.70: tighter than the trial's easiest, nowhere
+           near its hardest. */
         kit.event({ kind: 'sequence', label: DATA.words.evBed, items: BED_ITEMS,
                     brief: DATA.words.bedBrief,
-                    each: 1.3, accel: 0.86, minEach: 0.5,
-                    award: { stat: 'awareness', lo: 0, hi: 8 } })
+                    each: 1.45, lead: 0.34, accel: 0.88, minEach: 0.62, zone: 0.70,
+                    penalty: { stat: 'sanity', per: 1 },
+                    award: { stat: 'awareness', per: 1, lo: -10, hi: 10 } })
           .then(r => {
             if (!alive) return;
             bedTries++;
@@ -3266,8 +3277,14 @@
     function runFear() {
       if (!kit) { startDecision(); return; }
       kit.objective(DATA.words.objFear);
-      kit.event({ kind: 'heartbeat', label: DATA.words.evFear, n: 5, bpm: 72, win: 0.19,
-                  award: { stat: 'sanity', lo: -8, hi: 2 } })
+      /* v9.3: graded, and tighter. `win` was 0.19 s either side of the beat
+         at 72 bpm — a quarter of the whole period, which is not timing, it
+         is a nudge. 0.13 with the ladder's zone at 0.62 means only a press
+         within ~25 ms of the beat reads PERFECT, and a press 90 ms out
+         costs sanity where it used to cost nothing. */
+      kit.event({ kind: 'heartbeat', label: DATA.words.evFear, n: 6, bpm: 72, win: 0.13, zone: 0.62,
+                  penalty: { stat: 'sanity', per: 1 },
+                  award: { stat: 'sanity', per: 1, lo: -14, hi: 6 } })
         .then(r => {
           if (!alive) return;
           kit.objective(null); setPhase('decide');

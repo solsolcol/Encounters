@@ -1432,6 +1432,69 @@ const EV_DEFAULT = {
 const EV_LABEL = { tap: 'event.tap', timed: 'event.timed', mash: 'event.mash', hold: 'event.hold',
                    stabilise: 'event.stabilise', heartbeat: 'event.heartbeat', focus: 'event.focus',
                    sequence: 'event.sequence' };
+/* ------------------------------------------------------ v9.3 · THE LADDER
+   Chad, of the minigames: "no stakes, no damage, no repercussions ... they
+   were supposed to require precise timing to pass, and every mistimed tap or
+   click should have penalties or damage ... Your current one is sloppy work."
+
+   He was right, and the cause was one line: `sequence` scored
+   `case 'sequence': e.hits++;` — ANY tap anywhere counted as a hit, so there
+   was no timing to get wrong — and its award floor was `lo: 0`, so failing
+   cost nothing at all.
+
+   This is the real trial's grading, read out of mztrial.netlify.app's own
+   `app-01.js` (11 Sep) rather than remembered: a SIX-STEP ladder from +3 to
+   -4, keyed on how far off you were as a FRACTION of the difficulty zone.
+   Both its `seal` and its `divine` challenges use exactly these numbers, and
+   the -2 / -4 bands are where "repercussions" live. The trial's own rule
+   comes with them and is adopted as written: an interaction moves Sanity and
+   Awareness, NEVER Wisdom — "Wisdom comes from your decisions, not
+   interaction skill."
+
+   `zone` is the difficulty, 1 being the widest. The trial runs 0.82 at its
+   LEARNING tier down to 0.30 at EXTREME; a chapter declares its own. */
+const EV_BANDS = [
+  { at: 0.03, aw:  3, word: 'event.perfect' },
+  { at: 0.07, aw:  2, word: 'event.great' },
+  { at: 0.12, aw:  1, word: 'event.good' },
+  { at: 0.20, aw:  0, word: 'event.slight' },
+  { at: 0.34, aw: -2, word: 'event.missed' },
+  { at: Infinity, aw: -4, word: 'event.broken' }
+];
+/* err is 0..1, already normalised against the window the kind allows */
+function evGrade(err, zone) {
+  const k = Math.max(0, err) / Math.max(0.02, zone || 1);
+  return EV_BANDS.find(b => k <= b.at) || EV_BANDS[EV_BANDS.length - 1];
+}
+/* ONE graded press. The band is banked on the spot: a negative one takes the
+   stat THERE AND THEN, with the red wash, the fail cue and a hard buzz, so a
+   mistimed tap is felt when it happens rather than totalled up politely at
+   the end. That immediacy is the whole of what Chad asked for. */
+function evScorePress(err) {
+  const e = ev; if (!e) return null;
+  const b = evGrade(err, e.o.zone);
+  e.band.push(b.aw);
+  e.sum += b.aw;
+  if (b.aw > 0) e.hits++; else if (b.aw < 0) e.misses++;
+  const host = evEl();
+  if (host) {
+    $('evNote').textContent = T(b.word);
+    host.classList.toggle('bad', b.aw < 0);
+    host.classList.toggle('great', b.aw >= 2);
+  }
+  if (b.aw < 0) {
+    const st = (e.o.penalty && e.o.penalty.stat) || (e.o.award && e.o.award.stat) || 'sanity';
+    const per = (e.o.penalty && +e.o.penalty.per) || 1;
+    kitAward(st, b.aw * per);                       // the damage, now
+    if (st === ((e.o.award && e.o.award.stat) || 'sanity')) e.paid += b.aw * per;
+    kitFlashSet({ color: 'rgba(150,20,16,0.40)', secs: 0.30 });
+    snd('hudfail', 0.5); haptic([32, 26, 32]);
+  } else {
+    snd(b.aw >= 2 ? 'hudok' : 'uiconfirm', b.aw >= 2 ? 0.42 : 0.3);
+    if (e.o.haptic !== false) haptic(b.aw >= 2 ? 40 : 26);
+  }
+  return b;
+}
 function kitEvent(opts = {}) {
   if (ev) evResolve({ ok: false, aborted: true });
   const kind = EV_DEFAULT[opts.kind] ? opts.kind : 'tap';
@@ -1439,7 +1502,7 @@ function kitEvent(opts = {}) {
   if (kind === 'timed') o.secs = o.close;
   return new Promise(res => {
     ev = { o, kind, t: 0, res, started: false, briefing: false, layoutReal: null,
-           down: false, downAt: -1, hits: 0, misses: 0,
+           down: false, downAt: -1, hits: 0, misses: 0, band: [], sum: 0, paid: 0,
            idx: 0, bar: o.start ?? 0, drift: 0, look: 0, downX: 0, downY: 0, each: o.each,
            layout: (kind === 'tap' || kind === 'timed') ? 'button' : 'full',
            items: Array.isArray(o.items) ? o.items : [], targets: Array.isArray(o.targets) ? o.targets : [],
@@ -1519,6 +1582,16 @@ function evNote(ok) {
   snd(ok ? 'uiconfirm' : 'uiclick', ok ? 0.35 : 0.2);
   if (ok && ev && ev.o.haptic !== false) haptic(30);
 }
+/* v9.3: the result of a GRADED event. The score is the band sum mapped into
+   the ladder's own range, so `ok` means "you came out ahead", not "you
+   pressed the right number of times", and a bad run reports a NEGATIVE
+   delta the chapter can act on. */
+function evBandResult(o) {
+  const e = ev, n = Math.max(1, e.band.length);
+  const best = 3 * n, worst = -4 * n;
+  const norm = (e.sum - worst) / (best - worst);           // 0..1
+  return { ok: e.sum > 0, score: norm };
+}
 function evResolve(extra) {
   const e = ev; if (!e) return;
   ev = null;
@@ -1526,12 +1599,28 @@ function evResolve(extra) {
   if (host) { host.className = 'layer hide'; $('evDot').classList.add('hide'); $('evIcon').textContent = ''; }
   const score = Math.max(0, Math.min(1, extra.score ?? e.score ?? 0));
   const r = { kind: e.kind, ok: !!extra.ok, score: +score.toFixed(3), hits: e.hits, misses: e.misses,
-              t: +e.t.toFixed(2), early: !!extra.early, skipped: !!extra.skipped, aborted: !!extra.aborted };
+              t: +e.t.toFixed(2), early: !!extra.early, skipped: !!extra.skipped, aborted: !!extra.aborted,
+              /* v9.3: the ladder is ALWAYS on the result — which band every press
+                 landed in and what they summed to — so a chapter or a harness can
+                 read how it was played, not just whether it passed. */
+              band: e.band.slice(), sum: e.sum };
   const aw = e.o.award;
   if (aw && aw.stat && !r.aborted && !r.skipped) {
-    const lo = +aw.lo || 0, hi = +aw.hi || 0;
-    r.delta = Math.round(lo + (hi - lo) * (r.ok ? r.score : 0));
-    kitAward(aw.stat, r.delta);
+    if (e.band.length) {
+      /* GRADED (v9.3): the per-press bands were already banked as they
+         happened — the damage is not deferred — so the end pays only what
+         the ladder says is LEFT to pay: the positive remainder, scaled. A
+         chapter may still cap it with lo/hi. */
+      const per = Number.isFinite(+aw.per) ? +aw.per : 1;
+      const owed = Math.round(e.sum * per) - e.paid;
+      r.delta = Number.isFinite(+aw.hi) ? Math.min(+aw.hi, owed) : owed;
+      if (Number.isFinite(+aw.lo)) r.delta = Math.max(+aw.lo, r.delta);
+      kitAward(aw.stat, r.delta);
+    } else {
+      const lo = +aw.lo || 0, hi = +aw.hi || 0;
+      r.delta = Math.round(lo + (hi - lo) * (r.ok ? r.score : 0));
+      kitAward(aw.stat, r.delta);
+    }
   }
   if (!r.aborted && !r.skipped) snd(r.ok ? 'uiconfirm' : 'uiclick', r.ok ? 0.5 : 0.25);
   e.res(r);
@@ -1553,9 +1642,14 @@ function evPress(x, y) {
     case 'mash':
       e.bar = Math.min(1, e.bar + o.gain); e.hits++; snd('uiclick', 0.18, 1.1); break;
     case 'heartbeat': {
+      /* v9.3: GRADED. It was a pass/fail window — inside `win` counted, one
+         millisecond outside counted for nothing and cost nothing. Now the
+         error against the beat is graded on the ladder, so landing ON the
+         beat pays and drifting off it hurts, by degrees. */
       const period = 60 / o.bpm, c = o.lead + e.beat * period;
-      if (!e.beatDone && Math.abs(e.t - c) <= o.win) { e.hits++; e.beatDone = true; evNote(true); }
-      else { e.misses++; evNote(false); }
+      if (e.beatDone) { evScorePress(1); break; }      // a second tap on one beat is a miss
+      e.beatDone = true;
+      evScorePress(Math.abs(e.t - c) / Math.max(0.02, o.win));
       break;
     }
     case 'focus': {
@@ -1568,8 +1662,20 @@ function evPress(x, y) {
       }
       break;
     }
-    case 'sequence':
-      e.hits++; evNote(true); evNextItem(); break;
+    /* v9.3: THE ITEM HAS A WINDOW NOW. This case used to be
+       `e.hits++; evNote(true); evNextItem();` — any tap, anywhere, at any
+       moment, advanced it, which is why the standby bed could not be failed
+       and why Chad called it sloppy. The item is live from `lead` into its
+       slot; a press is graded on how close it lands to the CENTRE of that
+       window, and a press before the window opens is the worst band there
+       is, because jabbing at the screen must not beat reading it. */
+    case 'sequence': {
+      const lead = o.lead ?? 0.28, span = Math.max(0.12, e.each - lead);
+      if (e.slotT < lead) { evScorePress(1); evNextItem(); break; }   // too early: BROKEN
+      const mid = lead + span * 0.5;
+      evScorePress(Math.abs(e.slotT - mid) / (span * 0.5));
+      evNextItem(); break;
+    }
     default: break;   // hold / stabilise: the press is the beginning of the hold
   }
 }
@@ -1590,6 +1696,7 @@ function evNextTarget() {
 }
 function evNextItem() {
   const e = ev; e.idx++;
+  e.slotT = 0;                       // v9.3: the new item's window starts now
   e.each = Math.max(e.o.minEach, e.each * e.o.accel);
   if (e.idx >= e.n) { e.over = true; return; }
   evShowItem();
@@ -1641,9 +1748,13 @@ function evFrame(dt, dLookX, dLookY) {
         pulse.style.transform = 'scale(' + (2.2 - 1.2 * ph).toFixed(3) + ')';
       }
       if (e.t > c + o.win) {
-        if (!e.beatDone) { e.misses++; }
+        /* v9.3: a beat you never answered is BROKEN, not a silent nothing —
+           it grades at the bottom of the ladder and takes its sanity there
+           and then. Before this, missing every beat of the fear test cost
+           the player exactly nothing until the very end. */
+        if (!e.beatDone) evScorePress(1);
         e.beat++; e.beatDone = false;
-        if (e.beat >= e.n) { const s = e.hits / e.n; evResolve({ ok: s >= o.pass, score: s }); }
+        if (e.beat >= e.n) evResolve(evBandResult(o));
       }
       break;
     }
@@ -1667,11 +1778,17 @@ function evFrame(dt, dLookX, dLookY) {
       break;
     }
     case 'sequence': {
-      if (e.over) { const s = e.hits / e.n; evResolve({ ok: s >= o.pass, score: s }); break; }
+      if (e.over) { evResolve(evBandResult(o)); break; }
       e.slotT += dt;
       const item = $('evItem');
-      if (item) item.style.opacity = (1 - Math.max(0, e.slotT / e.each - 0.5) * 2).toFixed(2);
-      if (e.slotT >= e.each) { e.misses++; evNote(false); evNextItem(); }
+      /* the window, drawn: dim until it opens, bright across it, gone after.
+         A player has to be able to SEE what he is timing against. */
+      const lead = o.lead ?? 0.28, span = Math.max(0.12, e.each - lead);
+      const k = (e.slotT - lead) / span;
+      if (item) item.style.opacity = (e.slotT < lead ? 0.30 : Math.max(0.12, 1 - Math.abs(k - 0.5) * 1.4)).toFixed(2);
+      const bar = $('evBar');
+      if (bar) bar.style.width = (100 * Math.max(0, Math.min(1, k))).toFixed(1) + '%';
+      if (e.slotT >= e.each) { evScorePress(1); evNextItem(); }   // never laid: BROKEN
       break;
     }
   }
@@ -1829,7 +1946,10 @@ function kitDebug() {
            daylightTween: dayTween ? +dayTween.t.toFixed(3) : null,
            fade: +kitFadeNow.toFixed(3),
            event: ev ? { kind: ev.kind, t: +ev.t.toFixed(2), started: ev.started, briefing: !!ev.briefing, down: ev.down,
-                         hits: ev.hits, misses: ev.misses, idx: ev.idx, bar: +ev.bar.toFixed(3) } : null,
+                         hits: ev.hits, misses: ev.misses, idx: ev.idx, bar: +ev.bar.toFixed(3),
+                         /* v9.3: the graded ladder, readable — a harness has to be
+                            able to see WHICH band a press landed in, not just a count */
+                         slotT: +(ev.slotT || 0).toFixed(3), band: ev.band.slice(), sum: ev.sum } : null,
            hotspot: activeSpot ? (activeSpot.id || activeSpot.prompt || true) : null,
            hotspots: hotspotList().length };
 }

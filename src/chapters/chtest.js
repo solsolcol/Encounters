@@ -291,7 +291,11 @@
              by the chapter that asked for it. */
           kit.event({ kind: 'sequence', label: 'THE PIPES', items: [{ label: 'feed' }, { label: 'valve' }, { label: 'drain' }],
                       brief: 'Three valves, named one at a time. Tap each one before it goes.',
-                      each: 1.5, award: { stat: 'awareness', lo: 0, hi: 6 } });
+                      /* v9.3: GRADED, so the fixture proves the ladder and its
+                         damage rather than only that an overlay appeared. */
+                      each: 1.5, lead: 0.30, zone: 1,
+                      penalty: { stat: 'sanity', per: 1 },
+                      award: { stat: 'awareness', per: 1, lo: -12, hi: 9 } });
           return true;
         } }
     ];

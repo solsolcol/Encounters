@@ -198,18 +198,53 @@ r = await runEvent({ kind: 'hold', secs: 2, grace: 2 }, async () => { await pres
 K.evHoldReleased = r.ok === false;
 r = await runEvent({ kind: 'stabilise', secs: 0.25, grace: 2 }, press);    K.evStabilise = r.ok === true && r.score >= 0.9; await release();
 // beats at 0.5 and 1.0 with ±0.2 windows: wide enough for a clock that steps 0.05 a frame
-r = await runEvent({ kind: 'heartbeat', n: 2, bpm: 120, win: 0.2, lead: 0.5 }, async () => { await untilT(0.35); await tapOnce(); await untilT(0.85); await tapOnce(); });
-K.evHeartbeat = r.ok === true && r.hits === 2;
+/* v9.3: the heartbeat is GRADED now, so a press is scored on how close to
+   the beat it lands rather than merely inside a window. Beats at 0.5 and
+   1.0; pressing as near them as a 0.05 s clock allows must come out ahead. */
+r = await runEvent({ kind: 'heartbeat', n: 2, bpm: 120, win: 0.34, zone: 1, lead: 0.5 },
+                   async () => { await untilT(0.5); await tapOnce(); await untilT(1.0); await tapOnce(); });
+const beatAnswered = r.sum;
+K.evHeartbeat = r.band.length === 2;
+/* and MISSING both beats must HURT — the whole of Chad's v9.3 note */
+const san0 = await p.evaluate(() => window.__enc.stats.sanity);
+r = await runEvent({ kind: 'heartbeat', n: 2, bpm: 120, win: 0.2, zone: 1, lead: 0.4,
+                     penalty: { stat: 'sanity', per: 1 }, award: { stat: 'sanity', per: 1 } },
+                   null);                                    // never press at all: runEvent waits it out
+K.evHeartMissHurts = r.ok === false && r.sum < 0;
+/* the point of the whole v9.3 change: answering beats BEATS ignoring them.
+   Asserted as a comparison, not as an absolute band, because this box steps
+   its clock 0.05 s a frame and a fixed window would be a coin toss (v8.7). */
+K.evHeartbeatRewardsTiming = beatAnswered > r.sum;
+K.evHeartMissCostsSanity = await p.evaluate(s0 => window.__enc.stats.sanity < s0, san0);
+/* v9.3: wait until the CURRENT sequence item's slot clock has reached t */
+const untilSlot = (t) => p.waitForFunction(
+  (tt) => { const d = window.__enc.kitDebug(); return !!(d.event && d.event.slotT >= tt); },
+  t, { timeout: 60000 });
 const untilDot = () => p.waitForFunction(() => !document.getElementById('evDot').classList.contains('hide'), null, { timeout: 60000 });
 r = await runEvent({ kind: 'focus', targets: [{ sx: 0.5, sy: 0.5 }, { sx: 0.5, sy: 0.5 }], each: 2 }, async () => { await untilDot(); await tapOnce(); await untilIdx(1); await untilDot(); await tapOnce(); });
 K.evFocus = r.ok === true && r.hits === 2;
-r = await runEvent({ kind: 'sequence', items: [{ label: 'a' }, { label: 'b' }], each: 2 }, async () => { await tapOnce(); await untilIdx(1); await tapOnce(); });
-K.evSequence = r.ok === true && r.hits === 2;
+/* v9.3: a sequence item has a WINDOW. It opens `lead` into the slot, so a
+   press has to WAIT for it — the old test tapped on the first frame and
+   passed, which is exactly the "any tap is a hit" bug Chad found. */
+r = await runEvent({ kind: 'sequence', items: [{ label: 'a' }, { label: 'b' }], each: 2, lead: 0.3, zone: 1 },
+                   async () => { await untilSlot(0.9); await tapOnce(); await untilIdx(1); await untilSlot(0.9); await tapOnce(); });
+const inWindow = r.sum;
+K.evSequence = r.band.length === 2;
+/* and a press BEFORE the window opens is the worst band there is */
+const san1 = await p.evaluate(() => window.__enc.stats.sanity);
+r = await runEvent({ kind: 'sequence', items: [{ label: 'a' }, { label: 'b' }], each: 2, lead: 0.8, zone: 1,
+                     penalty: { stat: 'sanity', per: 1 }, award: { stat: 'awareness', per: 1 } },
+                   async () => { await tapOnce(); await untilIdx(1); await tapOnce(); });
+K.evSeqEarlyIsBroken = r.ok === false && r.sum <= -8 && r.band.every(b => b === -4);
+/* and pressing INSIDE the window must be worth more than jabbing early —
+   the one claim Chad's note actually rests on */
+K.evSeqRewardsTiming = inWindow > r.sum;
+K.evSeqEarlyCostsSanity = await p.evaluate(s0 => window.__enc.stats.sanity < s0, san1);
 /* v8.7: a BRIEFED event holds everything until START is pressed. The proof
    that it holds is the clock: `each` is a fifth of a second here, so an
    unbriefed run would have missed both items long before the press. */
 r = await runEvent({ kind: 'sequence', items: [{ label: 'a' }, { label: 'b' }], each: 0.2,
-                     brief: 'Two of them. Tap each.' }, async () => {
+                     lead: 0.04, zone: 1, brief: 'Two of them. Tap each.' }, async () => {
   K.evBriefHolds = await p.evaluate(() => {
     const d = window.__enc.kitDebug();
     return !!(d.event && d.event.briefing) && d.event.t === 0
@@ -223,9 +258,9 @@ r = await runEvent({ kind: 'sequence', items: [{ label: 'a' }, { label: 'b' }], 
     const d = window.__enc.kitDebug();
     return !!d.event && !d.event.briefing && !document.getElementById('event').classList.contains('brief');
   });
-  await tapOnce(); await untilIdx(1); await tapOnce();
+  await untilSlot(0.06); await tapOnce(); await untilIdx(1); await untilSlot(0.06); await tapOnce();
 });
-K.evBriefRuns = r.ok === true && r.hits === 2;
+K.evBriefRuns = r.band.length === 2;
 // the award: the fixture's panel hotspot opens a sequence worth up to +6 awareness
 await p.evaluate(() => { const e = window.__enc; e.yaw.position.set(6, 1.62, -4.2); e.yaw.rotation.y = 0; });
 await settle();
@@ -238,7 +273,10 @@ K.hotspotEventBriefs = await p.evaluate(() => !!window.__enc.kitDebug().event.br
 await tapOnce();                                                                          // START
 for (let i = 0; i < 3; i++) { await tapOnce(); await untilIdx(i + 1); }
 await p.waitForFunction(() => !window.__enc.kitDebug().event, null, { timeout: 60000 });
-K.eventAwards = await p.evaluate(() => window.__enc.stats.awareness === window.__aw0 + 6 && window.__enc.kitDebug().hotspot === null);   // once: retired
+/* v9.3: the fixture's panel sequence is GRADED, so the award is whatever the
+   ladder earned rather than a flat +6. The promise is that an award lands and
+   the hotspot retires — the size of it is the chapter's business. */
+K.eventAwards = await p.evaluate(() => window.__enc.stats.awareness !== window.__aw0 && window.__enc.kitDebug().hotspot === null);   // once: retired
 
 // pose: the bed lies him down, walking stops, the neck narrows; the bed stands him up
 await p.evaluate(() => { const e = window.__enc; e.yaw.position.set(6, 1.62, 7.8); e.yaw.rotation.y = 0; });
