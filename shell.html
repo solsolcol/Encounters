@@ -37,6 +37,15 @@ html,body{height:100%;overflow:hidden;background:var(--void);color:var(--bone);
 /* closes in from the edges as sanity goes — opacity is driven from the game.
    The ::after layer is a second, tighter ring that only beats once things are
    genuinely dangerous, so "low" and "nearly gone" do not look the same. */
+/* v8.7: THE FLASH. Chad, of reaching the bed: "have a nice trigger sound
+   and flashing effect to show the player successfully entered the area".
+   One element, fired through kit.flash(), so a chapter never reaches into
+   the DOM for it — a wash of colour from the edges in, gone in half a
+   second. Chapters 1-5 never call it, so the base game never sees it. */
+#hudflash{position:fixed;inset:0;pointer-events:none;z-index:6;opacity:0;
+  background:radial-gradient(ellipse at center,transparent 22%,var(--fc,#63D6C8) 130%)}
+#hudflash.on{animation:hudFlash var(--fs,.55s) ease-out}
+@keyframes hudFlash{0%{opacity:0}18%{opacity:.62}100%{opacity:0}}
 #panic{position:fixed;inset:0;pointer-events:none;z-index:3;opacity:0;
   transition:opacity .4s linear;
   background:radial-gradient(ellipse at 50% 50%,transparent 12%,
@@ -126,6 +135,31 @@ body.cine .torchBtn{display:none}
     border-color:#FFD9A8;transform:scale(1.035)}
   100%{box-shadow:0 0 0 1px rgba(255,179,103,.12),0 0 14px rgba(255,179,103,.20);
     border-color:rgba(255,179,103,.42);transform:scale(1)}}
+/* v8.7: THE OBJECTIVE IS A BEAT. An order finished is worth as much on
+   screen as an order given, so a change of objective plays COMPLETE first,
+   in jade, and then the new order in sodium — each with its own flash and
+   its own sound (paintObjective drives both). `.done` restyles the whole
+   box, so the complete beat cannot be mistaken for the next instruction. */
+.obox.done{border-color:rgba(99,214,200,.9);
+  background:linear-gradient(180deg,rgba(9,32,30,.86),rgba(7,8,11,.80));
+  animation:objDoneGlow 1.1s ease-in-out infinite}
+.obox.done .stencil,.obox.done #objTxt{color:#8FE6DB;
+  text-shadow:0 0 14px rgba(99,214,200,.75)}
+@keyframes objDoneGlow{
+  0%,100%{box-shadow:0 0 0 1px rgba(99,214,200,.30),0 0 22px rgba(99,214,200,.45)}
+  50%{box-shadow:0 0 0 2px rgba(99,214,200,.60),0 0 40px rgba(99,214,200,.85)}}
+.obox.done.flash{animation:objDoneFlash 1s ease-out}
+@keyframes objDoneFlash{
+  0%{box-shadow:0 0 0 3px rgba(190,255,246,.95),0 0 54px rgba(99,214,200,.95);
+    border-color:#BEFFF6;transform:scale(1.06)}
+  100%{box-shadow:0 0 0 1px rgba(99,214,200,.30),0 0 22px rgba(99,214,200,.45);
+    border-color:rgba(99,214,200,.9);transform:scale(1)}}
+.obox.tflash{animation:objTimeUp 1s ease-out}
+@keyframes objTimeUp{
+  0%{box-shadow:0 0 0 3px rgba(255,138,120,.95),0 0 50px rgba(255,84,66,.9);
+    border-color:#FF8A78;transform:scale(1.05)}
+  100%{box-shadow:0 0 0 1px rgba(255,179,103,.12),0 0 14px rgba(255,179,103,.20);
+    border-color:rgba(255,179,103,.42);transform:scale(1)}}
 .obox .stencil{font-size:.72rem;opacity:.92;color:var(--sodium);
   text-shadow:0 0 10px rgba(255,179,103,.5)}
 #objTxt{font-weight:600;letter-spacing:.012em;text-shadow:0 0 12px rgba(255,201,140,.35)}
@@ -189,6 +223,12 @@ body.cine .torchBtn{display:none}
   background:rgba(7,8,11,.82);border:1px solid var(--line);backdrop-filter:blur(8px);
   font-family:var(--ui);color:var(--bone);animation:rise .3s var(--ease)}
 #evLabel{color:var(--sodium)}
+/* v8.7: the briefing — instructions before a reaction test runs. Roomier
+   than the running panel, because this one is meant to be READ. */
+#event.brief .evpanel{width:min(94vw,480px);gap:16px;padding:22px 24px;
+  border-color:rgba(99,214,200,.55);box-shadow:0 0 34px rgba(99,214,200,.18)}
+#event.brief #evLabel{color:#8FE6DB;text-shadow:0 0 12px rgba(99,214,200,.6)}
+#event.brief #evPrompt{font-size:1.05rem;line-height:1.5;text-align:left;opacity:.95}
 #evPrompt{margin:0;font-size:1.12rem;line-height:1.35;min-height:1.4em}
 .evtrack{display:block;width:100%;height:10px;background:rgba(255,255,255,.08);
   border:1px solid var(--line)}
@@ -1161,6 +1201,8 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
 <canvas id="scene"></canvas>
 <div id="grade"></div>
 <div id="panic"></div>
+<!-- v8.7: one screen flash, fired by the kit — a reached place, a beat landing -->
+<div id="hudflash"></div>
 <div id="cineFade"></div>
 <div id="barTop" class="cineBar"></div>
 <div id="barBot" class="cineBar"></div>

@@ -106,17 +106,23 @@
        notes, the standby bed's eight items. All of them reach the sheet. */
     words: {
       approach: 'your bed',
-      act: 'Lie down',
-      actTouch: 'Lie down',
-      interact: 'E at the bed',
-      interactTouch: 'Tap the bed',
+      /* v8.7: 'Lie down' was the hint for a toggle that no longer exists —
+         and never did anything the chapter needed. The bed now names what
+         it is, and the badge only appears when it has something to do. */
+      act: 'E at your bed',
+      actTouch: 'Tap your bed',
+      interact: 'E at your bed',
+      interactTouch: 'Tap your bed',
       presence: 'Something is in the block.',
       objArrive: 'Find your bed — bed one',
       objFallIn: 'FALL IN — on the yellow line',
       objLate: 'FALL IN — get to the line',
       objPunish: 'TWENTY PUSH-UPS — the whole section',
       objStandby: 'Back to your bed — standby bed',
+      objStood: 'Stand by your bed — wait for orders',
+      objBedTap: 'STANDBY BED — start it at your bed',
       objBed: 'STANDBY BED — sixty seconds',
+      bedBrief: 'Eight items, one at a time. Tap each one the moment it is named. They come faster as you go, and anything you miss counts against you.',
       objFree: 'Look around the bunk before lights out',
       objWarn: 'Lights out is coming — get to your bed',
       objLights: 'Lights out',
@@ -190,7 +196,7 @@
                  b1day: 3.08, b1sleep: 2.19, k1board: 3.0, k1three: 4.05 };
 
   function build(ctx) {
-    const { THREE, GLTFLoader, cloneSkinned, scene, camera, yaw, LOW, kit, plantTrees,
+    const { THREE, GLTFLoader, cloneSkinned, scene, camera, yaw, pitch, LOW, kit, plantTrees,
             assetBytes, rescueTextures, redoShadows,
             cnv, makeSoftDot, makeGrass, makeConcrete,
             makeHellNote, getState, startDecision, worldSfx, warmSounds, HEAD_RE } = ctx;
@@ -1634,23 +1640,64 @@
     pileRing.visible = false;
     pile.add(pileRing);
 
+    /* ================================================== v8.7: THE BED ZONE
+       Chad: "when the current objective is to go to your bed, i want an
+       unmissable circular glowing effect indicating the area of effect that
+       the player must get to, to his bed, to trigger it. when the player
+       enters that circle, have a nice trigger sound and flashing effect to
+       show the player successfully entered the area and reached his bed."
+
+       The circle IS the trigger. `ZONE_R` is both the radius drawn on the
+       floor and the radius `updateDay` tests, so what the player is shown
+       and what actually fires can never drift apart — before this the
+       arrival fired at 1.8 m and the standby bed at 2.0, with nothing on
+       the floor to say where either of them was. It stands on the FLOOR
+       beside the bed rather than on the mattress, because what is being
+       asked for is somewhere to stand. */
+    const ZONE_R = 1.8;
+    const zone = new THREE.Group();
+    zone.position.set(PILE_POS.x, 0.02, PILE_POS.z);
+    zone.visible = false;
+    world.add(zone);
+    const zoneMat = op => new THREE.MeshBasicMaterial({ color: 0x63d6c8, transparent: true,
+      opacity: op, side: THREE.DoubleSide, blending: THREE.AdditiveBlending,
+      depthWrite: false, fog: false });
+    const zoneDisc = new THREE.Mesh(new THREE.CircleGeometry(ZONE_R, 48), zoneMat(0.12));
+    const zoneRim = new THREE.Mesh(new THREE.RingGeometry(ZONE_R - 0.16, ZONE_R, 48), zoneMat(0.8));
+    const zoneWave = new THREE.Mesh(new THREE.RingGeometry(ZONE_R - 0.09, ZONE_R, 48), zoneMat(0.5));
+    for (const m of [zoneDisc, zoneRim, zoneWave]) {
+      m.rotation.x = -Math.PI / 2; m.renderOrder = 3; zone.add(m);
+    }
+    let zoneFlare = 0;          // the blow-out on entry, decayed by the frame
+
     const _ndc = new THREE.Vector3(), _ray = new THREE.Raycaster(), _ptr = new THREE.Vector2();
     const syncCamera = () => {
       camera.updateWorldMatrix(true, false);
       camera.matrixWorldInverse.copy(camera.matrixWorld).invert();
     };
     function pileDist() { return Math.hypot(yaw.position.x - PILE_POS.x, yaw.position.z - PILE_POS.z); }
-    function pileScreen() { syncCamera(); return _ndc.set(PILE_POS.x, BED.low, PILE_POS.z).project(camera); }
+    /* v8.7: the point tested is a bunk's MIDDLE, not its mattress. A hotspot
+       anchor has to sit near eye height or it is never offered (v7.5's law,
+       which the bed itself was exempt from): standing in the circle beside
+       his own bed, the mattress at 0.55 m is 60 degrees under the lens, so
+       `inView()` said no and the badge for the standby bed never appeared. */
+    function pileScreen() { syncCamera(); return _ndc.set(PILE_POS.x, BED.low + 0.45, PILE_POS.z).project(camera); }
     function pileInView() {
-      /* lying IN the bed at night, the mattress is under him and out of the
-         lens — the bed is still the thing he acts on (the probe found the
-         decision unreachable from the pillow) */
-      if ((abed() || lying()) && pileDist() < 1.3) return true;
+      /* v8.7: a bed with nothing to offer is not offered. The badge and the
+         E key both come through here, so this is what keeps a press falling
+         through to the hotspots rather than dying on the mattress. */
+      if (bedWants() === BED_NOTHING) return false;
+      /* Within arm's reach the bed IS what you are looking at, whichever way
+         the head is turned — lying on it at three in the morning (where the
+         mattress is under the lens and off screen entirely, which is how the
+         decision became unreachable from the pillow) and standing in the
+         circle beside it alike. */
+      if (pileDist() < 1.3) return true;
       const n = pileScreen();
       return n.z < 1 && Math.abs(n.x) < 0.97 && Math.abs(n.y) < 0.97;
     }
     function pointerHitsPile(cx, cy) {
-      if (pileDist() > INTERACT_R) return false;
+      if (pileDist() > INTERACT_R || bedWants() === BED_NOTHING) return false;   // v8.7
       if ((abed() || lying()) && pileDist() < 1.3) return true;
       syncCamera();
       _ptr.set((cx / innerWidth) * 2 - 1, -(cy / innerHeight) * 2 + 1);
@@ -1708,7 +1755,8 @@
       'k1board', 'k1three',
       'n1bedfail', 'n1bedok', 'n1board', 'n1fallin', 'n1hear', 'n1late',
       'n1lights', 'n1shower', 'n1wake', 'pushups', 's1again', 's1fallin',
-      's1late', 's1lights', 's1standby', 'switchoff', 'whistle'];
+      's1late', 's1lights', 's1standby', 'switchoff', 'whistle',
+      'uiclick', 'uiconfirm'];      // v8.7: the bed zone's own trigger pair
     if (warmSounds) warmSounds(PLAY_LINES);
 
     /* v8.1: and it is CLEARED by reset(), because it is stated in the
@@ -1860,6 +1908,38 @@
       marchTo(encik, e, 'Walking', WALK_SPD, true);
     }
 
+    /* v8.7: REACHING THE BED IS A MOMENT. Chad: "have a nice trigger sound
+       and flashing effect to show the player successfully entered the area
+       and reached his bed. the camera view should then immediately lock
+       towards facing the room and the fall in area, so the player knows
+       whats going on next." Two sounds a frame apart (a confirm and a low
+       thump under it), the kit's screen flash, the phone buzzing, and the
+       circle blowing out — then the HUD's own two beats, which the engine
+       plays for any objective that changes. */
+    const camFace = (x, z, tx, tz) => Math.atan2(-(tx - x), -(tz - z));
+    function reachedBed(kind) {
+      zoneFlare = 1;
+      if (worldSfx) worldSfx('uiconfirm', 0.62);
+      after(0.05, () => { if (worldSfx) worldSfx('uiclick', 0.34, 0.6); });
+      if (kit) { kit.flash({ color: '#63D6C8', secs: 0.55 }); kit.haptic(70); }
+      if (!kit) return;
+      if (kind === 'arrive') { lookToRoom(); kit.objective(DATA.words.objStood); }
+      else kit.objective(DATA.words.objBedTap);
+    }
+    /* The lens goes to the room and the balcony — where the whistle is about
+       to come from. Over half a second rather than on one frame: a snap at
+       this speed reads as a bug, and the player keeps the mouse throughout
+       (the tween writes an absolute angle, so letting go of it hands control
+       straight back). */
+    function lookToRoom() {
+      const yFrom = yaw.rotation.y;
+      const yTo = camFace(yaw.position.x, yaw.position.z, LINE_X, 0);
+      const d = Math.atan2(Math.sin(yTo - yFrom), Math.cos(yTo - yFrom));   // the short way round
+      tween(() => 0, k => { yaw.rotation.y = yFrom + d * k; }, 1, 0.55);
+      const pFrom = pitch.rotation.x;
+      if (Math.abs(pFrom) > 0.01) tween(() => 0, k => { pitch.rotation.x = pFrom * (1 - k); }, 1, 0.55);
+    }
+
     /* ---- arrive: find bed one */
     function beginArrive() {
       setPhase('arrive');
@@ -1884,7 +1964,10 @@
       after(1.2, () => sgtSay('s1fallin'));
       after(4.6, () => sayLine('n1fallin'));
       if (!kit) return;
-      kit.objective(fallLate ? DATA.words.objLate : DATA.words.objFallIn);
+      /* v8.7: `complete: false` — the whistle INTERRUPTS standing by, and
+          being already late is not an order finished. The HUD must not
+          congratulate a player for either. */
+      kit.objective(fallLate ? DATA.words.objLate : DATA.words.objFallIn, { complete: false });
       kit.waypoint({ x: BALC.line, y: 1.0, z: 0 });
       if (fallLate) return;                       // the clock has already run out on him
       fallTimer = kit.timer(14, () => {
@@ -1892,7 +1975,7 @@
         sgtSay('s1late');
         after(3.6, () => sayLine('n1late'));
         bank({ s: -3, a: -2, note: DATA.words.noteLate });
-        kit.objective(DATA.words.objLate);
+        kit.objective(DATA.words.objLate, { complete: false });   // v8.7: the clock beat him
         /* v7.4: AND THE FALL-IN ENDS. Before this the timer paid out its
            penalty and then the chapter went on waiting for the line for
            ever — a player who was slow (or, before the gangway, any player
@@ -2154,9 +2237,10 @@
             () => { if (phase === 'punish') beginStandby(); });
     }
     /* ---- the standby bed: back to the bunk, then the sequence */
-    let bedTries = 0;
+    let bedTries = 0, stoodBy = false;     // v8.7: has he reached the circle this time round
     function beginStandby() {
       setPhase('standby');
+      stoodBy = false;
       after(0.6, () => fallOut(false));    // v8.3: the punishment beat has already played out
       if (!kit) return;
       kit.objective(DATA.words.objStandby);
@@ -2172,7 +2256,12 @@
       kit.objective(DATA.words.objBed);
       sgtSay('s1standby');
       after(3.4, () => {
+        /* v8.7 (Chad): "The minigame must give instructions first, before
+           starting." Nothing runs until START is pressed — the first item
+           used to be named and gone inside 1.3 s, while the player was
+           still reading the panel it had arrived in. */
         kit.event({ kind: 'sequence', label: DATA.words.evBed, items: BED_ITEMS,
+                    brief: DATA.words.bedBrief,
                     each: 1.3, accel: 0.86, minEach: 0.5,
                     award: { stat: 'awareness', lo: 0, hi: 8 } })
           .then(r => {
@@ -2246,7 +2335,7 @@
     /* ---- 03:00 */
     function beginNight() {
       setPhase('night');
-      if (kit) { kit.fade(0, 2.2); kit.objective(null); }
+      if (kit) { kit.fade(0, 2.2); kit.objective(null, { complete: false }); }   // v8.7: waking is not an order finished
       after(2.6, () => sayLine('n1wake'));
       after(6.6, () => {
         setShower(true);
@@ -2305,15 +2394,40 @@
       beginArrive();
     }
 
+    /* v8.7: WHAT THE BED IS FOR, and nothing else. Chad: "the tap bed
+       function serves absolutely no purpose, and it may make the player
+       stuck." Both halves were true. Tapping the bed by day toggled the
+       LYING POSE — a thing the chapter never needs the player to do (lights
+       out lies him down itself) — and getting back up required the bed to be
+       on screen while the bed was the thing under the lens, which is the trap
+       v7.4 papered over rather than removed. It is gone.
+       What is left is only what the bed can actually DO at that moment, and
+       `bedWants()` below says so in one place: open the decision at three in
+       the morning, begin the standby bed when the section has been sent back
+       to it, and turn in early once the evening has been looked at. When the
+       answer is "nothing", the badge is never offered at all (see
+       pileInView), so a press falls through to the hotspots instead of
+       being swallowed by a bed with nothing to say. */
+    const BED_NOTHING = 0, BED_DECIDE = 1, BED_STANDBY = 2, BED_TURNIN = 3;
+    function bedWants() {
+      if (abed()) return BED_DECIDE;
+      if (phase === 'standby') return BED_STANDBY;
+      if (phase === 'free' && seen.size >= 2) return BED_TURNIN;
+      return BED_NOTHING;      // 'standbybed' included: the event owns the screen
+    }
     function interactPile() {
       if (getState() !== 'play' || pileDist() >= INTERACT_R) return false;
-      if (abed()) { startDecision(); return true; }
-      if (phase === 'standby') { runStandbyBed(); setPhase('standbybed'); return true; }
-      if (phase === 'free' && kit && kit.getPose() !== 'lying' && seen.size >= 2) { beginLightsOut(); return true; }
-      if (!kit) return false;
-      if (kit.getPose() === 'lying') kit.pose('standing');
-      else kit.pose('lying', { y: LIE_Y, yaw: LIE_YAW, span: 1.2 });
-      return true;
+      switch (bedWants()) {
+        case BED_DECIDE: startDecision(); return true;
+        /* v8.7 (Chad): "the player must tap on his bed to officially begin
+           and trigger the standby bed minigame". It used to start itself the
+           moment he was within two metres of the bed, which is why walking
+           back from the balcony could begin a timed test before the player
+           had looked up. */
+        case BED_STANDBY: setPhase('standbybed'); runStandbyBed(); return true;
+        case BED_TURNIN: beginLightsOut(); return true;
+        default: return false;
+      }
     }
     if (kit) {
       kit.objective(DATA.words.objArrive);
@@ -2383,10 +2497,36 @@
     /* ------------------------------------------------------ per frame --- */
     const _v = new THREE.Vector3();
     function updatePile(t) {
-      if (getState() === 'cine') { pileRing.visible = false; return; }
+      if (getState() === 'cine') { pileRing.visible = false; zone.visible = false; return; }
       const near = THREE.MathUtils.clamp((6 - pileDist()) / (6 - INTERACT_R), 0, 1);
       pileRing.visible = near > 0.01 && phase !== 'lightsout';
       pileRing.material.opacity = near * (0.62 + 0.38 * Math.sin(t * 2.6)) * (abed() ? 0.7 : 0.45);
+      drawZone(t);
+    }
+    /* v8.7: the zone breathes and sends a ring out from its centre, so it
+       reads as somewhere to GO rather than a mark on the floor. Everything
+       is driven off the world clock, never a per-frame increment, so it
+       looks the same at 60 frames a second and at 6. */
+    function drawZone(t) {
+      const on = zoneOn();
+      if (zone.visible !== on) zone.visible = on;
+      if (!on) return;
+      if (zoneFlare > 0) zoneFlare = Math.max(0, zoneFlare - 0.05);
+      const br = 0.5 + 0.5 * Math.sin(t * 2.2);
+      zoneDisc.material.opacity = 0.09 + 0.07 * br + 0.35 * zoneFlare;
+      zoneRim.material.opacity = 0.5 + 0.4 * br + 0.6 * zoneFlare;
+      const k = (t * 0.5) % 1;                    // the ring travelling out
+      zoneWave.scale.setScalar(0.10 + 0.90 * k);
+      zoneWave.material.opacity = 0.55 * (1 - k) * (1 - 0.4 * zoneFlare);
+    }
+    /* WHEN the bed is a place to get to: on arrival, when the section has
+       been sent back to it, and once lights out has been called for. The
+       minigame's own phase turns it off — the overlay owns the screen. */
+    function zoneOn() {
+      if (phase === 'arrive') return !arrivedAt;
+      if (phase === 'standby') return true;
+      if (phase === 'free') return freeWarned;
+      return false;
     }
     /* the day's watchers, on the chapter's own clock */
     let dayLast = 0, lastFreeze = 0;
@@ -2413,12 +2553,21 @@
       /* v7.2: reaching the bed used to fire the whistle on the same frame as
          his "That's mine. Bed one." — the line lands first now, then the
          whistle, then the sergeant */
-      if (phase === 'arrive' && pileDist() < 1.8 && !arrivedAt) { arrivedAt = dayClock.t; after(2.6, () => { if (phase === 'arrive') beginFallIn(); }); }
+      if (phase === 'arrive' && pileDist() < ZONE_R && !arrivedAt) {
+        arrivedAt = dayClock.t;
+        reachedBed('arrive');
+        after(2.6, () => { if (phase === 'arrive') beginFallIn(); });
+      }
       else if (phase === 'fallin' && yaw.position.x > LINE_X) onTheLine();
-      else if (phase === 'standby' && pileDist() < 2.0) { setPhase('standbybed'); runStandbyBed(); }
+      /* v8.7 (Chad): "the player must tap on his bed to officially begin and
+         trigger the standby bed minigame". Reaching the circle no longer
+         STARTS it — it confirms the arrival and hands the player the press.
+         Walking back from the balcony used to open a timed reaction test
+         before anyone had looked up. */
+      else if (phase === 'standby' && pileDist() < ZONE_R && !stoodBy) { stoodBy = true; reachedBed('standby'); }
       else if (phase === 'free' && freeTimer && !freeWarned && freeTimer.left() <= FREE_WARN) {
         freeWarned = true;
-        if (kit) { kit.objective(DATA.words.objWarn); kit.waypoint({ x: PILE_POS.x, y: 1.0, z: PILE_POS.z }); }
+        if (kit) { kit.objective(DATA.words.objWarn, { complete: false }); kit.waypoint({ x: PILE_POS.x, y: 1.0, z: PILE_POS.z }); }
       }
     }
     function updateNotes(dt, t) {
@@ -2578,6 +2727,10 @@
       dropTodo(); tweens.length = 0;
       nightK = 0; showerVol = 0; mixBeds();
       seen.clear(); bedTries = 0; fallLate = false; fallTimer = null; arrivedAt = 0;
+      /* v8.7, the v8.1/v8.2 law again: anything a PHASE stated has to be
+         cleared by whatever resets that phase, or the next run inherits it —
+         a replay would begin with the bed already "reached". */
+      stoodBy = false; zoneFlare = 0; zone.visible = false;
       booted = false; dayClock.t = 0;
       speakReset(); encTalkN = 0;      // v8.1: the mute window is in the clock that just went back to zero
       freeWarned = false; freeTimer = null;    // and the evening's countdown belongs to the run that just ended

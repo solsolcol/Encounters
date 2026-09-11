@@ -1034,38 +1034,129 @@ function interactNow() {
 }
 
 /* ---- objective, timer, waypoint ---------------------------------------- */
-function kitObjectiveSet(text) { kitObjective = text ? String(text) : null; }
+/* v8.7: `opts.complete === false` says this change is not a completion —
+   see THE OBJECTIVE IS A BEAT, below. Everything else is unchanged: the
+   text is still whatever the chapter passes, and null still clears it. */
+function kitObjectiveSet(text, opts) {
+  const next = text ? String(text) : null;
+  if (next === kitObjective) return;
+  const had = !!kitObjective;
+  kitObjective = next;
+  if (had && !(opts && opts.complete === false)) objPush('done');
+  if (next) objPush('new');
+}
 function kitTimerStart(secs, onEnd) {
   kitTimer = secs > 0 ? { left: secs, total: secs, onEnd } : null;
+  if (kitTimer) objPush('new');           // v8.7: a countdown appearing is a change too
   return { stop: () => { kitTimer = null; }, left: () => (kitTimer ? kitTimer.left : 0) };
 }
 function kitWaypointSet(pos) {
   kitWaypoint = pos && Number.isFinite(pos.x) && Number.isFinite(pos.z)
     ? { x: pos.x, y: pos.y ?? 1.2, z: pos.z } : null;
 }
-const objPainted = { txt: null, tm: null, shown: null };
+const objPainted = { txt: null, tm: null, shown: null, done: null };
 /* v8.3: one bright pulse when the objective's words change. The class is
    pulled and re-added with a reflow between, because re-adding a class that
    is already there does not restart a CSS animation. */
 let objFlashT = 0;
-function flashObjective() {
+function flashObjective(cls) {
   const el = $('objective')?.querySelector('.obox'); if (!el) return;
-  el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
+  for (const c of ['flash', 'tflash']) el.classList.remove(c);
+  void el.offsetWidth;
+  el.classList.add(cls || 'flash');
   clearTimeout(objFlashT);
-  objFlashT = setTimeout(() => el.classList.remove('flash'), 950);
+  objFlashT = setTimeout(() => { el.classList.remove('flash'); el.classList.remove('tflash'); }, 1000);
+}
+/* ============================ v8.7: THE OBJECTIVE IS A BEAT, NOT A LABEL
+   Chad: "The objective hud display should also have a trigger sound and
+   flash effect showing 'objective complete', before flashing again with
+   sound effect, showing the new next objective. Every subsequent change in
+   objective or timer should always also have these effects. this should be
+   a standard." So it belongs to the ENGINE rather than to any chapter:
+   every objective any chapter sets from here on lands this way, and a
+   chapter says nothing to get it.
+
+   A change of objective is TWO beats, played in order — COMPLETE (jade,
+   its own sound), then the new order (sodium, its own sound) — which is
+   why there is a queue at all. The kit's law holds: a verb may only mutate
+   state, so `kitObjectiveSet` pushes beats and `paintObjective`, which is
+   the frame, plays them. `kitObjective` itself stays the plain target text,
+   so worldState still saves exactly what it always saved.
+
+   `{ complete: false }` is for a change that is NOT a completion — the
+   fall-in going to "get to the line" when the clock runs out, the evening
+   turning into its own warning. Calling a failure a completion would be a
+   lie the HUD tells, which is worse than no banner at all.                */
+const OBJ_DONE_HOLD = 1.35;     // seconds the COMPLETE banner holds the box
+const OBJ_NEW_HOLD = 0.12;      // the new order lands on the next frame but one
+let objQ = [], objBeat = null;
+function objPush(kind) {
+  // the timer starting beside a new objective is ONE flash, not two
+  if (objQ.length && objQ[objQ.length - 1].kind === kind) return;
+  objQ.push({ kind });
+  // orders arriving faster than the beats can play: keep the newest
+  while (objQ.length > 4) objQ.shift();
+}
+function objFire(kind) {
+  if (kind === 'done') { flashObjective('flash'); snd('uiconfirm', 0.55); haptic(45); }
+  else if (kind === 'timeup') { flashObjective('tflash'); snd('uiclick', 0.5, 0.78); haptic(60); }
+  else { flashObjective('flash'); snd('uiconfirm', 0.4, 1.28); haptic(25); }
+}
+/* WALL time, not the frame's dt: dt is clamped to 0.05 s, so on a slow box a
+   1.35 s banner would hold for half a minute (the law the chapter clock and
+   the kit's countdown both learned before this). */
+function objRun() {
+  const now = performance.now() / 1000;
+  if (objBeat && now >= objBeat.until) objBeat = null;
+  if (!objBeat && objQ.length) {
+    objBeat = objQ.shift();
+    objBeat.until = now + (objBeat.kind === 'done' ? OBJ_DONE_HOLD : OBJ_NEW_HOLD);
+    objFire(objBeat.kind);
+  }
+}
+/* v8.7: ONE SCREEN FLASH, fired through the kit. A verb may only mutate
+   state (a chapter can call this from build(), before the HUD exists), so
+   the request is a field and `flashRun` — the frame — is what touches the
+   element. Chapters 1-5 never call it. */
+let kitFlashReq = null, kitFlashT = 0;
+function kitFlashSet(opts) {
+  const o = opts || {};
+  kitFlashReq = { color: o.color || '#63D6C8', secs: Math.max(0.12, +o.secs || 0.55) };
+}
+function flashRun() {
+  if (!kitFlashReq) return;
+  const req = kitFlashReq; kitFlashReq = null;
+  const el = $('hudflash'); if (!el) return;
+  el.style.setProperty('--fc', req.color);
+  el.style.setProperty('--fs', req.secs + 's');
+  el.classList.remove('on'); void el.offsetWidth; el.classList.add('on');
+  clearTimeout(kitFlashT);
+  kitFlashT = setTimeout(() => el.classList.remove('on'), req.secs * 1000 + 60);
+}
+function objReset() {
+  objQ.length = 0; objBeat = null;
+  const el = $('objective')?.querySelector('.obox');
+  if (el) { el.classList.remove('done'); el.classList.remove('flash'); el.classList.remove('tflash'); }
+  objPainted.txt = objPainted.tm = objPainted.shown = objPainted.done = null;
 }
 function paintObjective() {
   const box = $('objective'); if (!box) return;
-  const show = (kitObjective || kitTimer) && (state === 'play' || state === 'decide');
+  const live = state === 'play' || state === 'decide';
+  if (live) objRun();
+  const banner = !!(objBeat && objBeat.kind === 'done');
+  const show = (kitObjective || kitTimer || banner) && live;
   if (show !== objPainted.shown) { box.classList.toggle('hide', !show); objPainted.shown = show; }
   if (!show) return;
-  const txt = kitObjective || '';
-  if (txt !== objPainted.txt) {
-    $('objTxt').textContent = txt; objPainted.txt = txt;
-    flashObjective();     // v8.3: a new order should not slide in unnoticed
+  const obox = box.querySelector('.obox');
+  if (banner !== objPainted.done) {
+    if (obox) obox.classList.toggle('done', banner);
+    objPainted.done = banner;
   }
+  const txt = banner ? T('hud.objDone') : (kitObjective || '');
+  if (txt !== objPainted.txt) { $('objTxt').textContent = txt; objPainted.txt = txt; }
+  // the countdown steps aside while the box is saying COMPLETE
   let tm = null;
-  if (kitTimer) {
+  if (kitTimer && !banner) {
     const s = Math.max(0, Math.ceil(kitTimer.left));
     tm = Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
   }
@@ -1313,7 +1404,8 @@ function kitEvent(opts = {}) {
   const o = { ...EV_DEFAULT[kind], ...opts, kind };
   if (kind === 'timed') o.secs = o.close;
   return new Promise(res => {
-    ev = { o, kind, t: 0, res, started: false, down: false, downAt: -1, hits: 0, misses: 0,
+    ev = { o, kind, t: 0, res, started: false, briefing: false, layoutReal: null,
+           down: false, downAt: -1, hits: 0, misses: 0,
            idx: 0, bar: o.start ?? 0, drift: 0, look: 0, downX: 0, downY: 0, each: o.each,
            layout: (kind === 'tap' || kind === 'timed') ? 'button' : 'full',
            items: Array.isArray(o.items) ? o.items : [], targets: Array.isArray(o.targets) ? o.targets : [],
@@ -1325,9 +1417,41 @@ function kitEvent(opts = {}) {
 }
 function evActive() { return !!ev; }
 function evEl() { return $('event'); }
-function evStart() {
+/* v8.7: AN EVENT MAY BRIEF BEFORE IT RUNS. Chad, of the standby bed: "The
+   minigame must give instructions first, before starting." A reaction test
+   that begins the instant it appears asks the player to read and react on
+   the same frame, and the first item of a sequence is gone before the eye
+   has found it. With `brief` the overlay opens on the instructions and a
+   START button, and NOTHING runs — the clock, the items, the beats all wait
+   on the press. Absent by default, so every event already shipped is
+   untouched; `layout` is forced to 'button' while briefing so a stray tap
+   on the overlay cannot skip what the player is meant to read. */
+function evBrief() {
   const e = ev, o = e.o, host = evEl();
+  e.briefing = true;
+  e.layoutReal = e.layout; e.layout = 'button';
+  host.className = 'layer full brief';
+  $('evLabel').textContent = o.label || T('event.ready');
+  $('evPrompt').textContent = o.brief;
+  $('evNote').textContent = '';
+  const btn = $('evBtn');
+  btn.textContent = o.briefButton || T('event.start');
+  btn.className = 'go';
+  $('evTrack').classList.add('hide');
+  $('evItem').classList.add('hide');
+  $('evDot').classList.add('hide');
+  snd('uiclick', 0.3);
+}
+function evStart() {
+  const e = ev, host = evEl();
   e.started = true;
+  if (!host) return;
+  if (e.o.brief) { evBrief(); return; }
+  evBegin();
+}
+function evBegin() {
+  const e = ev, o = e.o, host = evEl();
+  if (e.briefing) { e.briefing = false; e.layout = e.layoutReal; e.t = 0; }
   if (!host) return;
   host.className = 'layer ' + (e.layout === 'full' ? 'full ' : '') + e.kind;
   $('evLabel').textContent = o.label || '';
@@ -1381,6 +1505,7 @@ function evResolve(extra) {
 /* a press: from the overlay, the button, a key, or a mouse under pointer lock */
 function evPress(x, y) {
   const e = ev; if (!e || !e.started || e.down) return;
+  if (e.briefing) { evBegin(); return; }      // v8.7: START closes the briefing; nothing else counts
   const o = e.o;
   e.down = true; e.downAt = e.t; e.downX = x; e.downY = y; e.drift = 0; e.look = 0;
   $('evBtn')?.classList.add('down');
@@ -1438,6 +1563,7 @@ function evNextItem() {
 function evFrame(dt, dLookX, dLookY) {
   const e = ev; if (!e) return;
   if (!e.started) evStart();          // and fall through: a focus dot is placed on the frame it starts
+  if (e.briefing) return;             // v8.7: a briefing holds the clock, the items and the beats
   const o = e.o;
   e.t += dt;
   if (e.down) e.look += Math.abs(dLookX) + Math.abs(dLookY);
@@ -1593,9 +1719,14 @@ function kitFrame(dt, t, dLookX, dLookY) {
     const now = performance.now() / 1000;
     kitTimer.left -= kitTimer.last ? Math.min(0.5, now - kitTimer.last) : 0;
     kitTimer.last = now;
-    if (kitTimer.left <= 0) { const f = kitTimer.onEnd; kitTimer = null; if (typeof f === 'function') f(); }
+    if (kitTimer.left <= 0) {
+      const f = kitTimer.onEnd; kitTimer = null;
+      objPush('timeup');                  // v8.7: time running out is felt, not merely noticed
+      if (typeof f === 'function') f();   // ...and whatever it sets queues behind that beat
+    }
   } else if (kitTimer) kitTimer.last = 0;
   paintObjective();
+  flashRun();                       // v8.7: the kit's screen flash, if one was asked for
   paintWaypoint();
   paintHotMarks();
   // the decision clock
@@ -1619,6 +1750,8 @@ function kitReset() {
   kitPhase = null;
   conductAcc.s = 0; conductAcc.a = 0; conductAcc.notes.length = 0;
   kitObjective = null; kitTimer = null; kitWaypoint = null;
+  objReset();                       // v8.7: and the beats queued against the old objective
+  kitFlashReq = null;
   kitPose = 'standing'; eyeY = 1.62; poseFrom = poseTo = 1.62; poseT = 1; pitchLo = -1.2; pitchHi = 1.2;
   chapterPresence = 0;
   dayTween = null;
@@ -1646,6 +1779,7 @@ const KIT = {
   getFade: () => kitFadeNow,
   decisionClock: (secs, onExpire) => { decClock = secs > 0 ? { secs, left: secs, onExpire, fired: false } : null; },
   haptic,
+  flash: kitFlashSet,              // v8.7: one wash of colour over the screen
   setPhase: v => { kitPhase = (v === undefined) ? null : v; }, getPhase: () => kitPhase,
   choices: () => ({ ...runChoices }),
   interact: () => interactNow(),
@@ -1660,7 +1794,7 @@ function kitDebug() {
            clock: decClock ? { left: +decClock.left.toFixed(2), fired: decClock.fired } : null,
            daylightTween: dayTween ? +dayTween.t.toFixed(3) : null,
            fade: +kitFadeNow.toFixed(3),
-           event: ev ? { kind: ev.kind, t: +ev.t.toFixed(2), started: ev.started, down: ev.down,
+           event: ev ? { kind: ev.kind, t: +ev.t.toFixed(2), started: ev.started, briefing: !!ev.briefing, down: ev.down,
                          hits: ev.hits, misses: ev.misses, idx: ev.idx, bar: +ev.bar.toFixed(3) } : null,
            hotspot: activeSpot ? (activeSpot.id || activeSpot.prompt || true) : null,
            hotspots: hotspotList().length };
@@ -1674,7 +1808,7 @@ function kitDebug() {
    for a chapter whose pack was already in memory (a replay). */
 const WARM_WANT = new Set();
 const CHCTX = {
-  THREE, GLTFLoader, cloneSkinned, scene, camera, yaw, LOW,
+  THREE, GLTFLoader, cloneSkinned, scene, camera, yaw, pitch, LOW,   // v8.7: `pitch` so a chapter may level the lens as well as turn it
   kit: KIT,                        // v7.0: the play kit — declared by a chapter, absent for chapters 1–5
   plantTrees,                      // v6.15: a stand of Chad's trees, mixed and dealt from a seed
   assetBytes, rescueTextures, redoShadows, loadImageTexture,

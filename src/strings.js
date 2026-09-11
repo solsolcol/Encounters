@@ -143,6 +143,7 @@ Object.assign(window.__TEXT__, {
   'hud.ghostWarning':    'Sanity level dropping until you take action.',
   'hud.presenceAlarm':   'Something is here.',
   'hud.objective':       'Objective',
+  'hud.objDone':         'OBJECTIVE COMPLETE',
   'hud.torch':           'Torch',
   'event.tap':           'TAP',
   'event.timed':         'WAIT FOR IT',
@@ -155,6 +156,8 @@ Object.assign(window.__TEXT__, {
   'event.sequence':      'TAP EACH ONE',
   'event.hit':           'GOOD',
   'event.miss':          'MISSED',
+  'event.start':         'START',
+  'event.ready':         'BRIEFING',
   'card.conduct':        'In the field',
   'decide.clock':        'It is still coming',
 

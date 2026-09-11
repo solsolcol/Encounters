@@ -58,6 +58,42 @@ K.objectiveShown = await p.evaluate(() => {
 });
 K.phaseKept = await p.evaluate(() => window.__enc.kit.getPhase() === 'room' && window.__enc.worldState().phase === 'room');
 
+/* v8.7: A CHANGE OF OBJECTIVE IS TWO BEATS — the old one COMPLETE, then the
+   new one — and both flash. The engine owns it, so the fixture gets it for
+   free: nothing in the chapter asks. `{ complete: false }` is the escape
+   for a change that is not a completion, and it must skip the banner. */
+/* POLLED, never sampled: the banner is 1.35 s of WALL time but it can only
+   be painted on a frame, and this box draws about one a second under load.
+   A fixed wait here is a coin toss, which is worse than no check at all. */
+const until = (fn, ms = 30000) => p.waitForFunction(fn, null, { timeout: ms });
+const objBox = () => document.querySelector('#objective .obox');
+await p.evaluate(() => window.__enc.kit.objective('Second order'));
+K.objDoneBanner = await until(() => {
+  const box = document.querySelector('#objective .obox');
+  return !!box && box.classList.contains('done')
+    && document.getElementById('objTxt').textContent.toUpperCase().includes('COMPLETE');
+}).then(() => true, () => false);
+K.objNextLands = await until(() => {
+  const box = document.querySelector('#objective .obox');
+  return !!box && !box.classList.contains('done')
+    && document.getElementById('objTxt').textContent === 'Second order'
+    && window.__enc.kitDebug().objective === 'Second order';
+}).then(() => true, () => false);
+// and `complete: false` must skip the banner entirely — watched, because a
+// banner that flickered past between two samples would go unnoticed
+await p.evaluate(() => {
+  window.__sawDone = false;
+  const box = document.querySelector('#objective .obox');
+  new MutationObserver(() => { if (box.classList.contains('done')) window.__sawDone = true; })
+    .observe(box, { attributes: true, attributeFilter: ['class'] });
+  window.__enc.kit.objective('Third order', { complete: false });
+});
+await until(() => document.getElementById('objTxt').textContent === 'Third order').catch(() => {});
+K.objNoFalseComplete = await p.evaluate(() =>
+  window.__sawDone === false && document.getElementById('objTxt').textContent === 'Third order');
+await p.evaluate(() => window.__enc.kit.objective('Find the marker on the floor', { complete: false }));
+await until(() => document.getElementById('objTxt').textContent.includes('marker')).catch(() => {});
+
 // hotspots: stand at the switch, facing it — the badge names it, E flips it, conduct is banked
 await p.evaluate(() => { const e = window.__enc; e.yaw.position.set(-6, 1.62, -4.2); e.yaw.rotation.y = 0; });
 await settle();
@@ -147,6 +183,27 @@ r = await runEvent({ kind: 'focus', targets: [{ sx: 0.5, sy: 0.5 }, { sx: 0.5, s
 K.evFocus = r.ok === true && r.hits === 2;
 r = await runEvent({ kind: 'sequence', items: [{ label: 'a' }, { label: 'b' }], each: 2 }, async () => { await tapOnce(); await untilIdx(1); await tapOnce(); });
 K.evSequence = r.ok === true && r.hits === 2;
+/* v8.7: a BRIEFED event holds everything until START is pressed. The proof
+   that it holds is the clock: `each` is a fifth of a second here, so an
+   unbriefed run would have missed both items long before the press. */
+r = await runEvent({ kind: 'sequence', items: [{ label: 'a' }, { label: 'b' }], each: 0.2,
+                     brief: 'Two of them. Tap each.' }, async () => {
+  K.evBriefHolds = await p.evaluate(() => {
+    const d = window.__enc.kitDebug();
+    return !!(d.event && d.event.briefing) && d.event.t === 0
+      && document.getElementById('event').classList.contains('brief')
+      && document.getElementById('evPrompt').textContent === 'Two of them. Tap each.';
+  });
+  await p.waitForTimeout(900);          // the clock must NOT have moved under the briefing
+  K.evBriefStopsClock = await p.evaluate(() => window.__enc.kitDebug().event.t === 0);
+  await tapOnce();                      // START
+  K.evBriefStarts = await p.evaluate(() => {
+    const d = window.__enc.kitDebug();
+    return !!d.event && !d.event.briefing && !document.getElementById('event').classList.contains('brief');
+  });
+  await tapOnce(); await untilIdx(1); await tapOnce();
+});
+K.evBriefRuns = r.ok === true && r.hits === 2;
 // the award: the fixture's panel hotspot opens a sequence worth up to +6 awareness
 await p.evaluate(() => { const e = window.__enc; e.yaw.position.set(6, 1.62, -4.2); e.yaw.rotation.y = 0; });
 await settle();
@@ -155,6 +212,8 @@ K.eventFromHotspot = await p.evaluate(() => {
   return e.kitDebug().hotspot === 'panel' && e.interactNow() === true;
 });
 await p.waitForFunction(() => { const d = window.__enc.kitDebug(); return !!(d.event && d.event.started); }, null, { timeout: 30000 });
+K.hotspotEventBriefs = await p.evaluate(() => !!window.__enc.kitDebug().event.briefing);   // v8.7
+await tapOnce();                                                                          // START
 for (let i = 0; i < 3; i++) { await tapOnce(); await untilIdx(i + 1); }
 await p.waitForFunction(() => !window.__enc.kitDebug().event, null, { timeout: 60000 });
 K.eventAwards = await p.evaluate(() => window.__enc.stats.awareness === window.__aw0 + 6 && window.__enc.kitDebug().hotspot === null);   // once: retired

@@ -286,7 +286,11 @@
       { id: 'panel', pos: { x: 6, y: 1.2, z: -6 }, radius: 2.4, prompt: 'Trace the pipes', once: true,
         onInteract() {
           if (!kit) return false;
+          /* v8.7: and it BRIEFS first — the fixture declares every seam the
+             kit has, so `brief` is proven by fixturetest rather than only
+             by the chapter that asked for it. */
           kit.event({ kind: 'sequence', label: 'THE PIPES', items: [{ label: 'feed' }, { label: 'valve' }, { label: 'drain' }],
+                      brief: 'Three valves, named one at a time. Tap each one before it goes.',
                       each: 1.5, award: { stat: 'awareness', lo: 0, hi: 6 } });
           return true;
         } }
