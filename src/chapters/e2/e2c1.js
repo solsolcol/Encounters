@@ -437,9 +437,17 @@
          1.5 cm under a mattress whose frame carries its own. All three are
          things the model brings, drawn twice.
 
-         What stays is what the model does NOT carry: the BOOTS under the bed,
-         and the blanket pulled over a SLEEPER, which is a man's blanket
-         rather than the bed's and is only ever visible at lights out.
+         v9.2 takes the LAST piece of it — Chad: "why are there still green
+         blocks floating on some of the beds?" The blanket pulled over a
+         sleeper is a 1.28 x 0.20 x 0.84 BOX in blanket green, and measured on
+         the shipped build its underside sat 1.6 cm clear of the model's
+         mattress on exactly the four beds a breathing rig sleeps in — "some
+         of the beds", precisely. A box floating over a man is not a blanket,
+         and the sleeping models are clothed figures that read perfectly well
+         without one, so it goes the way the sheet and the fold went.
+
+         What stays is what the model does NOT carry and what does not pretend
+         to be cloth: the BOOTS under the bed.
 
          The meshes are HIDDEN, never removed — `blockers()` boxes
          `low.mattress` and the bed's tap test raycasts it, and three.js does
@@ -449,12 +457,31 @@
                        || o.geometry === bedGeo.rail || o.geometry === bedGeo.railEnd
                        || o.geometry === bedGeo.mat || o.geometry === bedGeo.pillow
                        || o.geometry === bedGeo.sheet || o.geometry === bedGeo.blanketFold
-                       || o.geometry === bedGeo.mesh)];
+                       || o.geometry === bedGeo.mesh || o.geometry === bedGeo.blanketOn)];
+      /* v9.2: WHERE A MAN LIES. Everything that rests on the bottom bunk is
+         placed from `deckTop` rather than from `BED.low`, and the bunk loader
+         MEASURES that off Chad's model when it lands. The two are 1 mm apart
+         by construction — what actually floated a sleeper was the `+ 0.02`
+         each placement carried, which put every man in this room 2.0 cm off
+         his mattress (measured, all eight). A thing registers itself with the
+         offset it wants from the deck, and `settle()` re-places it, because
+         the bunk model and the two sleeper files land in whatever order the
+         network gives them. */
+      b.deckTop = BED.low;
+      b.restOn = [];
       beds.push(b);
       return b;
     }
     for (const rx of ROW_X) for (const rz of bedZs(rx)) mkBed(rx, rz, rx < 0 ? -1 : 1);
     const hisBed = beds.find(b => b.his);
+    /* v9.2: everything that LIES on a bottom bunk registers itself here with
+       the offset it wants from the deck, and this puts it there. It is called
+       twice for the same man in the ordinary case — once when his own file
+       lands, once when the bunk model lands and the deck is measured — and
+       the order of those two is whatever the network gives, which is exactly
+       why the offset is stored rather than baked into a position. */
+    function restOnDeck(b, obj, dy) { b.restOn.push({ obj, dy }); obj.position.y = b.deckTop + dy; }
+    function settleBed(b) { for (const r of b.restOn) r.obj.position.y = b.deckTop + r.dy; }
 
     /* ------------------------------------------- THE REAL BUNK BED (v9.0)
        Chad, with a Sketchfab model: "Replace all bunk beds you generated,
@@ -521,6 +548,28 @@
         b.group.add(m);
         b.model = m;
         for (const o of b.supersede) o.visible = false;
+        /* v9.2: the deck a man lies on, MEASURED off this bed's own model
+           rather than assumed. The nominal fit puts the lower mattress top on
+           BED.low exactly; the mesh's own top reads 0.549, a millimetre under,
+           and a millimetre is the difference between resting and floating. */
+        {
+          /* THE MATRICES FIRST. `Box3.setFromObject` updates the object it is
+             given and its DESCENDANTS — never its ancestors — so measuring a
+             child of a model that was positioned and scaled a line ago reads
+             the model's STALE matrix. Measured: without this the union came
+             back at 0.591, which is the mattress top in the model's OWN
+             coordinates (BUNK.deckLo 0.592), and every sleeper in the room
+             went from 2.0 cm off his bed to 4.2. */
+          m.updateWorldMatrix(true, true);
+          const bb = new THREE.Box3();
+          m.traverse(o => {
+            if (!o.isMesh) return;
+            const ob = new THREE.Box3().setFromObject(o);
+            if (ob.max.y < 1.0 && ob.max.y > 0.3) bb.union(ob);   // the LOWER mattress: the only part topping out between the floor and the top deck
+          });
+          if (!bb.isEmpty()) b.deckTop = bb.max.y;
+          settleBed(b);
+        }
         /* v9.0 moved the primitive WIRE BASE down to 1.260 here, to sit just
            under the model's top mattress. v9.1 supersedes it instead (see
            mkBed): the model's frame carries its own base, and a second one
@@ -2156,8 +2205,25 @@
     const sleepers = [];              // { bed, obj, rig? }
     const sleepBeds = beds.filter(b => !b.his);
     const RIGGED = [1, 3, 5, 6];      // which of the eight breathe (3 is the bed beside his)
-    const SLEEP_TAKE = ['Sleep_Normally', 'Cough_While_Sleeping', 'Sleep_Normally', 'Groan_Holding_Stomach_in_Sleep'];
-    const SLEEP_RATE = [0.85, 0.72, 1.00, 0.80];
+    const NEIGHBOUR = 3;              // the bed beside the player's, and scene C's man
+    /* WHICH TAKE EACH BREATHING MAN IS ON, keyed by his BED rather than by his
+       place in the list, so re-dealing `RIGGED` cannot silently move a man's
+       character. Chad, v9.2: "use the other sleeping animation for the
+       bunkmate who is closest to the player's bed."
+       Which one is "the other" was measured off the file rather than guessed —
+       the summed spread of every rotation track across each clip:
+         Sleep_Normally                 0.22   (a man breathing, and nothing else)
+         Cough_While_Sleeping           2.29
+         Groan_Holding_Stomach_in_Sleep 4.36   (twenty times Sleep_Normally)
+       The neighbour was on `Cough`, which at 2.29 against 0.22 is a real
+       difference on paper and a small one across a dark room. He takes the
+       GROAN now — the most distinct take in the file, on the one sleeper the
+       chapter ever puts a camera on, and the man scene C has roll over when
+       the player whispers to him. */
+    const SLEEP_TAKE = { 1: 'Sleep_Normally', [NEIGHBOUR]: 'Groan_Holding_Stomach_in_Sleep',
+                         5: 'Sleep_Normally', 6: 'Cough_While_Sleeping' };
+    const SLEEP_RATE = { 1: 0.85, [NEIGHBOUR]: 0.80, 5: 1.00, 6: 0.72 };
+    const REST_TAKE = 'Sleep_Normally';   // the take every copy is measured on (see below)
     const sleeperRoot = new THREE.Group(); sleeperRoot.visible = false; world.add(sleeperRoot);
     assetBytes('sleeper').then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
       if (!alive) return;
@@ -2177,12 +2243,9 @@
         const m = src.clone();
         m.scale.setScalar(sc);
         m.rotation.y = long === 'z' ? -b.head * Math.PI / 2 : (b.head > 0 ? Math.PI : 0);
-        m.position.set(b.x, b.low.y + 0.02 - box.min.y * sc, b.z);
+        m.position.set(b.x, 0, b.z);
         sleeperRoot.add(m);
-        /* v7.2: NO blanket on a statue — measured, he lies with his knees up
-           and his arms behind his head, 0.53 m off the mattress, and any box
-           that covers him buries him; the breathing rigs lie flat and take one */
-        b.low.on.visible = false;
+        restOnDeck(b, m, -box.min.y * sc);      // v9.2: ON the mattress, not 2 cm over it
         sleepers.push({ bed: b, obj: m });
       });
       redoShadows();
@@ -2196,10 +2259,12 @@
     for (const i of RIGGED) {
       const b = sleepBeds[i]; if (!b) continue;
       const g = new THREE.Group();
-      g.position.set(b.x, b.low.y + 0.02, b.z);
+      g.position.set(b.x, 0, b.z);
       g.rotation.y = (b.head < 0 ? Math.PI : 0);
       sleeperRoot.add(g);
-      const rig = { bed: b, group: g, mixer: null, acts: null, ready: false };
+      restOnDeck(b, g, 0);                      // v9.2: the group's origin IS the mattress top
+      const rig = { bed: b, group: g, mixer: null, acts: null, ready: false,
+                    take: SLEEP_TAKE[i] || REST_TAKE, rate: SLEEP_RATE[i] || 0.85 };
       sleepRigs.push(rig);
     }
     assetBytes('sleepanim').then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
@@ -2220,7 +2285,7 @@
         } });
         return bb;
       };
-      const REST = 'Sleep_Normally';
+      const REST = REST_TAKE;
       copies.forEach((m, n) => {
         const rig = sleepRigs[n];
         m.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.receiveShadow = false; } });
@@ -2270,19 +2335,17 @@
         m.rotation.y = TURN;
         // now each man takes his own take, at his own rate, at his own breath
         if (rig.acts) {
-          const want = SLEEP_TAKE[n % SLEEP_TAKE.length];
-          const take = rig.acts[want] || rig.acts[REST] || Object.values(rig.acts)[0];
+          const take = rig.acts[rig.take] || rig.acts[REST] || Object.values(rig.acts)[0];
           for (const k in rig.acts) if (rig.acts[k] !== take) rig.acts[k].stop();
           take.reset();
-          take.setEffectiveTimeScale(SLEEP_RATE[n % SLEEP_RATE.length]);
+          take.setEffectiveTimeScale(rig.rate);
           take.play();
           rig.mixer.update(0.2 + n * 0.7);
         }
         // and only now centre him on the mattress and lay his back on it
         const boxC = skinBox(m, g), cC = boxC.getCenter(new THREE.Vector3());
         m.position.x -= cC.x; m.position.z -= cC.z;
-        m.position.y -= boxC.min.y;             // g's own origin IS the mattress top + 2 cm
-        b.low.on.visible = true;
+        m.position.y -= boxC.min.y;             // g's own origin IS the mattress top
         rig.ready = true;
         sleepers.push({ bed: b, obj: m, rig });
       });
