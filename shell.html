@@ -154,6 +154,29 @@ body.cine .torchBtn{display:none}
     border-color:#BEFFF6;transform:scale(1.06)}
   100%{box-shadow:0 0 0 1px rgba(99,214,200,.30),0 0 22px rgba(99,214,200,.45);
     border-color:rgba(99,214,200,.9);transform:scale(1)}}
+/* v8.8: THE TRANSITION, not a text swap. The old order leaves to the left
+   and dims; a bright scan-line crosses the box behind it; the new order
+   arrives from the right and settles. `objMove` and `objIn` are driven from
+   paintObjective, which sets the class one frame before the text changes, so
+   what slides out is the OLD words and what slides in is the new. */
+#objTxt{display:inline-block;will-change:transform,opacity}
+.obox.out #objTxt{animation:objOut .26s cubic-bezier(.4,0,1,1) forwards}
+.obox.in  #objTxt{animation:objIn .42s cubic-bezier(.16,1,.3,1)}
+@keyframes objOut{to{transform:translateX(-14px);opacity:0;filter:blur(3px)}}
+@keyframes objIn{from{transform:translateX(16px);opacity:0;filter:blur(3px)}
+  to{transform:translateX(0);opacity:1;filter:blur(0)}}
+/* the scan line: one hard bright edge crossing the whole box */
+.obox::before{content:'';position:absolute;top:0;bottom:0;width:38%;left:-40%;
+  pointer-events:none;opacity:0;
+  background:linear-gradient(90deg,transparent,rgba(255,240,214,.85),transparent)}
+.obox.scan::before{animation:objScan .5s cubic-bezier(.3,0,.2,1)}
+@keyframes objScan{0%{left:-40%;opacity:0}12%{opacity:1}88%{opacity:1}100%{left:105%;opacity:0}}
+/* the completion tick, drawn beside the word rather than replacing the label */
+.obox .otick{display:none;font-weight:800;color:#8FE6DB;
+  text-shadow:0 0 14px rgba(99,214,200,.95)}
+.obox.done .otick{display:inline-block;animation:objTick2 .5s cubic-bezier(.16,1,.3,1)}
+@keyframes objTick2{from{transform:scale(0) rotate(-25deg);opacity:0}
+  to{transform:scale(1) rotate(0);opacity:1}}
 .obox.tflash{animation:objTimeUp 1s ease-out}
 @keyframes objTimeUp{
   0%{box-shadow:0 0 0 3px rgba(255,138,120,.95),0 0 50px rgba(255,84,66,.9);
@@ -1526,6 +1549,7 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
 <div id="objective" class="layer hide">
   <div class="obox">
     <span class="stencil" data-t="hud.objective">Objective</span>
+    <span class="otick">&#10003;</span>
     <span id="objTxt"></span>
     <span id="objTimer" class="hide">0:00</span>
   </div>

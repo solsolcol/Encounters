@@ -1061,11 +1061,33 @@ const objPainted = { txt: null, tm: null, shown: null, done: null };
 let objFlashT = 0;
 function flashObjective(cls) {
   const el = $('objective')?.querySelector('.obox'); if (!el) return;
-  for (const c of ['flash', 'tflash']) el.classList.remove(c);
+  for (const c of ['flash', 'tflash', 'scan']) el.classList.remove(c);
   void el.offsetWidth;
   el.classList.add(cls || 'flash');
+  el.classList.add('scan');        // v8.8: and a bright edge crosses the box
   clearTimeout(objFlashT);
-  objFlashT = setTimeout(() => { el.classList.remove('flash'); el.classList.remove('tflash'); }, 1000);
+  objFlashT = setTimeout(() => {
+    for (const c of ['flash', 'tflash', 'scan']) el.classList.remove(c);
+  }, 1000);
+}
+/* v8.8: the words LEAVE before the new ones arrive. The class goes on one
+   frame, the text is replaced on the next, so what slides out is the old
+   order and what slides in is the new — a swap in place reads as a glitch
+   rather than a change of orders. */
+let objSwapT = 0;
+function swapObjText(txt) {
+  const box = $('objective')?.querySelector('.obox'), el = $('objTxt');
+  if (!box || !el) return;
+  clearTimeout(objSwapT);
+  box.classList.remove('in');
+  box.classList.add('out');
+  objSwapT = setTimeout(() => {
+    el.textContent = txt;
+    box.classList.remove('out');
+    void box.offsetWidth;
+    box.classList.add('in');
+    objSwapT = setTimeout(() => box.classList.remove('in'), 460);
+  }, 230);
 }
 /* ============================ v8.7: THE OBJECTIVE IS A BEAT, NOT A LABEL
    Chad: "The objective hud display should also have a trigger sound and
@@ -1097,10 +1119,17 @@ function objPush(kind) {
   // orders arriving faster than the beats can play: keep the newest
   while (objQ.length > 4) objQ.shift();
 }
+/* v8.8: the HUD's own sounds, written for these moments rather than borrowed
+   from the menu — `hudok` (a soft impact and two rising bell notes), `hudnext`
+   (a sharp comms blip over a low whoosh) and `hudfail` (a dull buzzer and a
+   sub drop). And the buzz is a PATTERN, not one flat pulse: a completion is
+   two taps and a settle, a new order is one short tick, time running out is a
+   long dull double. A phone can say which of the three happened without the
+   player looking. */
 function objFire(kind) {
-  if (kind === 'done') { flashObjective('flash'); snd('uiconfirm', 0.55); haptic(45); }
-  else if (kind === 'timeup') { flashObjective('tflash'); snd('uiclick', 0.5, 0.78); haptic(60); }
-  else { flashObjective('flash'); snd('uiconfirm', 0.4, 1.28); haptic(25); }
+  if (kind === 'done') { flashObjective('flash'); snd('hudok', 0.85); haptic([18, 40, 55]); }
+  else if (kind === 'timeup') { flashObjective('tflash'); snd('hudfail', 0.8); haptic([70, 60, 110]); }
+  else { flashObjective('flash'); snd('hudnext', 0.7); haptic(22); }
 }
 /* WALL time, not the frame's dt: dt is clamped to 0.05 s, so on a slow box a
    1.35 s banner would hold for half a minute (the law the chapter clock and
@@ -1135,8 +1164,9 @@ function flashRun() {
 }
 function objReset() {
   objQ.length = 0; objBeat = null;
+  clearTimeout(objSwapT); clearTimeout(objFlashT);
   const el = $('objective')?.querySelector('.obox');
-  if (el) { el.classList.remove('done'); el.classList.remove('flash'); el.classList.remove('tflash'); }
+  if (el) for (const c of ['done', 'flash', 'tflash', 'scan', 'in', 'out']) el.classList.remove(c);
   objPainted.txt = objPainted.tm = objPainted.shown = objPainted.done = null;
 }
 function paintObjective() {
@@ -1153,7 +1183,11 @@ function paintObjective() {
     objPainted.done = banner;
   }
   const txt = banner ? T('hud.objDone') : (kitObjective || '');
-  if (txt !== objPainted.txt) { $('objTxt').textContent = txt; objPainted.txt = txt; }
+  if (txt !== objPainted.txt) {
+    // the FIRST paint lands straight away; every change after it slides
+    if (objPainted.txt === null) $('objTxt').textContent = txt; else swapObjText(txt);
+    objPainted.txt = txt;
+  }
   // the countdown steps aside while the box is saying COMPLETE
   let tm = null;
   if (kitTimer && !banner) {
@@ -1807,6 +1841,13 @@ function kitDebug() {
    loader drains this the moment bytes land, and enterWorld drains it again
    for a chapter whose pack was already in memory (a replay). */
 const WARM_WANT = new Set();
+/* v8.8: AND THE ENGINE WARMS ITS OWN. `warmSounds` was built for a chapter,
+   and the HUD's four sounds are the engine's — so nothing was asking for
+   them and `snd()` returned null on the first objective change of every run
+   (measured: 0 of 4 decoded at the first frame of play). Exactly v8.0's bug
+   in the engine's own house. These are in the SHARED pack, so they are the
+   one set that can be warmed unconditionally at boot. */
+for (const n of ['hudok', 'hudnext', 'hudfail']) WARM_WANT.add(n);
 const CHCTX = {
   THREE, GLTFLoader, cloneSkinned, scene, camera, yaw, pitch, LOW,   // v8.7: `pitch` so a chapter may level the lens as well as turn it
   kit: KIT,                        // v7.0: the play kit — declared by a chapter, absent for chapters 1–5
@@ -7002,7 +7043,7 @@ function tick(now = 0) {
     renderer.autoClear = true;
   }
 }
-window.__enc = { yaw, stats, getState: () => state,
+window.__enc = { yaw, pitch, stats, getState: () => state,   // v8.7: pitch, so a probe can aim the lens at the floor
                  kit: KIT, kitDebug, interactNow,          // v7.0: the play kit, by state
                  evPress: (x, y) => evPress(x ?? innerWidth / 2, y ?? innerHeight / 2), evRelease,
                  // a getter, not the array: rebuildStage() re-points BLOCKERS

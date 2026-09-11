@@ -1643,31 +1643,82 @@
     /* ================================================== v8.7: THE BED ZONE
        Chad: "when the current objective is to go to your bed, i want an
        unmissable circular glowing effect indicating the area of effect that
-       the player must get to, to his bed, to trigger it. when the player
-       enters that circle, have a nice trigger sound and flashing effect to
-       show the player successfully entered the area and reached his bed."
+       the player must get to" — and, on the first attempt: "make it red and
+       glowing, do u fucking understand what is GLOWING? the travelling
+       circle is so jerky, i want it smooth like a radar expanding outwards."
 
-       The circle IS the trigger. `ZONE_R` is both the radius drawn on the
-       floor and the radius `updateDay` tests, so what the player is shown
-       and what actually fires can never drift apart — before this the
-       arrival fired at 1.8 m and the standby bed at 2.0, with nothing on
-       the floor to say where either of them was. It stands on the FLOOR
-       beside the bed rather than on the mattress, because what is being
-       asked for is somewhere to stand. */
-    const ZONE_R = 1.8;
+       GLOWING means a soft RADIAL FALLOFF, not a flat ring with its opacity
+       turned up and down. Everything here is a canvas gradient — white with
+       an alpha curve, tinted red by the material and ADDED to the floor — so
+       the light bleeds out past its own edge the way light does. Three
+       layers: a HALO that reaches 0.9 m beyond the circle and has no hard
+       edge anywhere, a FILL that says which floor is the area, and the radar.
+
+       THE RADAR is three bands at a third of a period apart, so one is always
+       travelling: each grows from the centre to the halo's rim on a smooth
+       curve and fades as it goes. Its phase comes off WALL TIME, not the
+       frame count and not the world clock, so it sweeps at the same speed
+       whatever the frame rate.
+
+       The circle IS the trigger: `ZONE_R` is both the radius the rim sits at
+       and the radius `updateDay` tests. */
+    const ZONE_R = 1.8;                  // what the player must stand inside
+    const GLOW_R = 2.7;                  // how far the light bleeds past it
+    /* a radial alpha curve, painted once. `stops` are [radius 0-1, alpha]. */
+    function glowTex(stops) {
+      /* 512, not 256: the plane is 5.4 m across, so a 256 texture gives 47
+         pixels a metre and a 20 cm rim lands on nine of them — a blur, not
+         an edge. */
+      const sz = 512, [c, g2] = cnv(sz);
+      g2.clearRect(0, 0, sz, sz);
+      const g = g2.createRadialGradient(sz / 2, sz / 2, 0, sz / 2, sz / 2, sz / 2);
+      for (const [r, a] of stops) g.addColorStop(Math.max(0, Math.min(1, r)), `rgba(255,255,255,${a})`);
+      g2.fillStyle = g; g2.fillRect(0, 0, sz, sz);
+      const t = new THREE.CanvasTexture(c);
+      t.colorSpace = THREE.SRGBColorSpace;
+      return t;
+    }
+    const RIM = ZONE_R / GLOW_R;         // where the circle's edge falls in the halo texture
+    /* TWO BLENDS, and the reason is measured rather than chosen: the bunk
+       floor is bright tile, and ADDING red light to something already at
+       0.75 grey lands at (1.0, 0.9, 0.84) — white. The first pass did exactly
+       that and read as a pale smear. So the colour is done by a NORMAL-blended
+       red TINT, which is red on any floor however bright, and the glow is a
+       separate ADDITIVE layer on top: a narrow hot crest at the rim and the
+       radar bands. Tint carries the hue, additive carries the light. */
+    // the ground inside: a steady wash that lifts toward the boundary
+    const zoneFillTex = glowTex([[0, 0.26], [0.55, 0.36], [0.88, 0.72], [0.975, 0.95], [1, 0]]);
+    /* the boundary: a THIN hot core with a long soft bleed outward, which is
+       what makes it read as a light source rather than a painted line */
+    const zoneRimTex  = glowTex([[0, 0], [RIM * 0.93, 0], [RIM * 0.975, 0.75], [RIM, 1],
+                                 [RIM * 1.03, 0.62], [RIM * 1.10, 0.22],
+                                 [RIM * 1.26, 0.07], [1, 0]]);
+    // the radar band: narrow, with the leading edge harder than the trail
+    const zoneWaveTex = glowTex([[0, 0], [0.80, 0], [0.905, 0.30], [0.965, 1],
+                                 [0.99, 0.45], [1, 0]]);
+    const RED_DEEP = 0xb3140b, RED_HOT = 0xff3a1c;
+
     const zone = new THREE.Group();
     zone.position.set(PILE_POS.x, 0.02, PILE_POS.z);
     zone.visible = false;
     world.add(zone);
-    const zoneMat = op => new THREE.MeshBasicMaterial({ color: 0x63d6c8, transparent: true,
-      opacity: op, side: THREE.DoubleSide, blending: THREE.AdditiveBlending,
-      depthWrite: false, fog: false });
-    const zoneDisc = new THREE.Mesh(new THREE.CircleGeometry(ZONE_R, 48), zoneMat(0.12));
-    const zoneRim = new THREE.Mesh(new THREE.RingGeometry(ZONE_R - 0.16, ZONE_R, 48), zoneMat(0.8));
-    const zoneWave = new THREE.Mesh(new THREE.RingGeometry(ZONE_R - 0.09, ZONE_R, 48), zoneMat(0.5));
-    for (const m of [zoneDisc, zoneRim, zoneWave]) {
-      m.rotation.x = -Math.PI / 2; m.renderOrder = 3; zone.add(m);
-    }
+    const zonePlane = (tex, r, op, col, add) => {
+      const m = new THREE.Mesh(
+        new THREE.PlaneGeometry(r * 2, r * 2),
+        new THREE.MeshBasicMaterial({ map: tex, color: col, transparent: true, opacity: op,
+          side: THREE.DoubleSide, depthWrite: false, fog: false,
+          blending: add ? THREE.AdditiveBlending : THREE.NormalBlending }));
+      m.rotation.x = -Math.PI / 2;
+      m.renderOrder = add ? 4 : 3;
+      m.userData.moves = true;      // v8.7: never frozen — see freezeStatic
+      zone.add(m);
+      return m;
+    };
+    const zoneFill = zonePlane(zoneFillTex, ZONE_R, 0.72, RED_DEEP, false);   // the ground turns red
+    const zoneRim  = zonePlane(zoneRimTex, GLOW_R, 0.95, RED_HOT, true);      // and the edge burns
+    const WAVES = 3;
+    const zoneWaves = [];
+    for (let i = 0; i < WAVES; i++) zoneWaves.push(zonePlane(zoneWaveTex, GLOW_R, 0.7, RED_HOT, true));
     let zoneFlare = 0;          // the blow-out on entry, decayed by the frame
 
     const _ndc = new THREE.Vector3(), _ray = new THREE.Raycaster(), _ptr = new THREE.Vector2();
@@ -1756,7 +1807,7 @@
       'n1bedfail', 'n1bedok', 'n1board', 'n1fallin', 'n1hear', 'n1late',
       'n1lights', 'n1shower', 'n1wake', 'pushups', 's1again', 's1fallin',
       's1late', 's1lights', 's1standby', 'switchoff', 'whistle',
-      'uiclick', 'uiconfirm'];      // v8.7: the bed zone's own trigger pair
+      'hudlock'];                   // v8.8: the bed zone's own trigger
     if (warmSounds) warmSounds(PLAY_LINES);
 
     /* v8.1: and it is CLEARED by reset(), because it is stated in the
@@ -1918,10 +1969,12 @@
        plays for any objective that changes. */
     const camFace = (x, z, tx, tz) => Math.atan2(-(tx - x), -(tz - z));
     function reachedBed(kind) {
-      zoneFlare = 1;
-      if (worldSfx) worldSfx('uiconfirm', 0.62);
-      after(0.05, () => { if (worldSfx) worldSfx('uiclick', 0.34, 0.6); });
-      if (kit) { kit.flash({ color: '#63D6C8', secs: 0.55 }); kit.haptic(70); }
+      flareAt = performance.now() / 1000;
+      /* v8.8: `hudlock` — a sub thump, a metal latch and a chord ringing out,
+         written for this moment. The first pass borrowed the menu's confirm
+         beep and it sounded like one. */
+      if (worldSfx) worldSfx('hudlock', 0.95);
+      if (kit) { kit.flash({ color: '#FF2A18', secs: 0.6 }); kit.haptic([30, 45, 90]); }
       if (!kit) return;
       if (kind === 'arrive') { lookToRoom(); kit.objective(DATA.words.objStood); }
       else kit.objective(DATA.words.objBedTap);
@@ -2501,23 +2554,32 @@
       const near = THREE.MathUtils.clamp((6 - pileDist()) / (6 - INTERACT_R), 0, 1);
       pileRing.visible = near > 0.01 && phase !== 'lightsout';
       pileRing.material.opacity = near * (0.62 + 0.38 * Math.sin(t * 2.6)) * (abed() ? 0.7 : 0.45);
-      drawZone(t);
+      drawZone();
     }
-    /* v8.7: the zone breathes and sends a ring out from its centre, so it
-       reads as somewhere to GO rather than a mark on the floor. Everything
-       is driven off the world clock, never a per-frame increment, so it
-       looks the same at 60 frames a second and at 6. */
-    function drawZone(t) {
+    /* v8.7: the glow breathes and the radar sweeps. WALL TIME drives both —
+       not the frame count (which stutters) and not the world clock (which a
+       cutscene or a slow box can stretch) — so the sweep runs at one real
+       speed on every device. Three bands a third of a period apart means one
+       is always on its way out; each eases from the centre and fades as it
+       widens, which is what stops it reading as a ring that restarts. */
+    const WAVE_SECS = 2.1;
+    let flareAt = 0;
+    function drawZone() {
       const on = zoneOn();
       if (zone.visible !== on) zone.visible = on;
       if (!on) return;
-      if (zoneFlare > 0) zoneFlare = Math.max(0, zoneFlare - 0.05);
-      const br = 0.5 + 0.5 * Math.sin(t * 2.2);
-      zoneDisc.material.opacity = 0.09 + 0.07 * br + 0.35 * zoneFlare;
-      zoneRim.material.opacity = 0.5 + 0.4 * br + 0.6 * zoneFlare;
-      const k = (t * 0.5) % 1;                    // the ring travelling out
-      zoneWave.scale.setScalar(0.10 + 0.90 * k);
-      zoneWave.material.opacity = 0.55 * (1 - k) * (1 - 0.4 * zoneFlare);
+      const now = performance.now() / 1000;
+      zoneFlare = Math.max(0, 1 - (now - flareAt) / 0.7);
+      const br = 0.5 + 0.5 * Math.sin(now * 2.0);           // the slow breath
+      zoneFill.material.opacity = 0.50 + 0.16 * br + 0.30 * zoneFlare;
+      zoneRim.material.opacity = 0.70 + 0.28 * br + 0.9 * zoneFlare;
+      for (let i = 0; i < WAVES; i++) {
+        const k = (((now / WAVE_SECS) + i / WAVES) % 1);    // 0..1, one full sweep
+        const e = k * (2 - k);                              // ease out: fast away, settling at the rim
+        zoneWaves[i].scale.setScalar(Math.max(0.001, 0.06 + 0.94 * e));
+        // up quickly out of the centre, then away to nothing at the edge
+        zoneWaves[i].material.opacity = 0.75 * Math.min(1, k * 6) * (1 - k) * (1 - k);
+      }
     }
     /* WHEN the bed is a place to get to: on arrival, when the section has
        been sent back to it, and once lights out has been called for. The
@@ -2669,6 +2731,13 @@
       if (on === frozen) return;
       world.traverse(o => {
         if (!o.isMesh || o.isSkinnedMesh) return;
+        /* v8.7: ...and never anything that MOVES. v8.6 froze every non-skinned
+           mesh in the world, which is right for a wall and catastrophic for
+           the bed zone's radar rings: their scale was written every frame and
+           composed into a matrix only when `refreeze()` ran, six seconds
+           apart, so the ring jumped in six visible steps instead of sweeping.
+           A mesh that animates its own transform declares it. */
+        if (o.userData.moves) { o.matrixAutoUpdate = true; return; }
         if (on) { o.updateMatrix(); o.matrixAutoUpdate = false; }
         else o.matrixAutoUpdate = true;
       });
@@ -2730,7 +2799,7 @@
       /* v8.7, the v8.1/v8.2 law again: anything a PHASE stated has to be
          cleared by whatever resets that phase, or the next run inherits it —
          a replay would begin with the bed already "reached". */
-      stoodBy = false; zoneFlare = 0; zone.visible = false;
+      stoodBy = false; zoneFlare = 0; flareAt = 0; zone.visible = false;
       booted = false; dayClock.t = 0;
       speakReset(); encTalkN = 0;      // v8.1: the mute window is in the clock that just went back to zero
       freeWarned = false; freeTimer = null;    // and the evening's countdown belongs to the run that just ended
