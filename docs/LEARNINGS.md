@@ -2977,3 +2977,45 @@ The first run of `dbg-punish.mjs` gave the beat 46 s and concluded the phase
 never advanced. Nothing was wrong with the beat. **Budget a chapter-clock probe
 at twice the chapter time on this box**, and poll for the phase you expect
 rather than counting seconds.
+
+## A probe that only checks what IS there cannot see what never loaded (v8.5)
+
+v8.4 turned frustum culling back on for episode 2 chapter 1, verified it with
+3,856 checks across play, the whole film and the push-up beat, shipped it —
+and Chad's next screenshot showed two featureless green capsules where the
+sergeant and the buddy should be.
+
+The cause was a scoping slip: `wideBounds` was defined INSIDE `mkCrowd`, so
+`mkRig` and the sleeper loaders threw `ReferenceError: wideBounds is not
+defined`. The throw lands inside the GLTF load callback and aborts it before
+`proxy.visible = false` — the line that retires the primitive stand-in — so
+five characters never loaded and their placeholder capsules stayed standing.
+
+**Why the verification could not catch it.** The invariant tested was *"is
+anyone on screen who was not drawn?"* A character that never loaded is not in
+the scene at all, so it can never be on screen: the test was structurally
+blind to the one failure mode that mattered. It passed with five characters
+missing, and it passed honestly.
+
+Two rules:
+
+- **A visual probe must capture `pageerror` and console warnings.** None of
+  the culling probes did. A ten-line probe that watched the console
+  (`dbg-err.mjs`) found the bug on its first run and printed the offending
+  line number. Every visual probe from here on captures them.
+- **Assert what SHOULD be present, not only that what is present is right.**
+  The evidence was sitting in the numbers all along — 101 skinned meshes with
+  the bug, 108 without — and nothing asserted the count. `dbg-rigs.mjs` now
+  asserts the five named rigs report `loaded` and that no proxy capsule is
+  still visible; either would have failed instantly.
+
+The same slip has a general shape worth remembering: **a chapter's loaders are
+callbacks, so anything that throws inside one fails SILENTLY except for a
+console warning, and leaves the chapter half-built.** The placeholder still
+standing is the visible symptom; the warning is the only place the cause is
+written down.
+
+And a measurement correction rides with it: the v8.4 figures (275,278
+triangles a frame, −58%) were taken on the build with five characters
+missing. With everyone present it is 438,715, a −34% saving against v8.3's
+661,410. Still worth having, but not what was first reported.

@@ -994,7 +994,6 @@
        so a pose can be PARKED per copy — a seated man on a ferry does not
        breathe in step with the man across the aisle. */
     const crowds = [];
-    function mkCrowd(key, spots, clip, opts = {}) {
     /* ---- v8.4: CULLING BACK ON, WITH BOUNDS THAT COVER THE ANIMATION ----
 
        Every skinned mesh in this chapter carried `frustumCulled = false`
@@ -1056,6 +1055,7 @@
       });
     }
 
+    function mkCrowd(key, spots, clip, opts = {}) {
       const c = { group: new THREE.Group(), rigs: [], ready: false, key };
       (opts.parent || world).add(c.group);
       assetBytes(key).then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
