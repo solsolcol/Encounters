@@ -59,7 +59,7 @@
     spawn:     { x: 0, y: 1.62, z: -3.4, rot: Math.PI },   // just inside the entrance, FACING down the room (v7.5: rot)
     shrine:    { x: -4.6, z: 3.0 },               // the engine's anchor: his bed
     ghostHome: { x: -3.6, z: 6.0 },               // unused (ghost: null): the block's corridor
-    bounds:    { minX: -5.7, maxX: 8.1, minZ: -3.7, maxZ: 7.2 },
+    bounds:    { minX: -5.7, maxX: 20.0, minZ: -3.7, maxZ: 7.2 },   // v9.2: out past the balcony onto the parade square, where the fall-in is now
 
     /* the eleventh leak (v4.3): NO haunting from the engine. The presence in
        this chapter is the kit's — a bar that drains while the shower runs —
@@ -210,7 +210,13 @@
     const OPEN = { z0: -1.2, z1: 1.2, h: 2.2 };                // the balcony opening, +x wall
     const BLOCK = { x0: -6.0, x1: -0.5, z0: 4.0, z1: 7.5 };    // the shower block
     const BALC = { x0: 6.0, x1: 8.4, z0: -6.0, z1: 6.0, line: 7.6, parapet: 1.0 };
-    const SQUARE = { x0: 8.4, x1: 40, z0: -25, z1: 25 };
+    const SQUARE = { x0: 8.4, x1: 46, z0: -25, z1: 25 };
+    /* v9.2 · WHERE THE FALL-IN HAPPENS. Chad picked the distance: "go with
+       x14". The line is 5.6 m past the balcony's edge and 19 m short of the
+       other block; the two seniors stand in front of it, facing back down it
+       at the section and at the bunk they all came out of. `slot` is the
+       spacing of a single rank — eight men across 8.4 m. */
+    const SQ = { line: 14.0, sgt: 18.8, enc: 17.6, slot: 1.2 };
     const BED = { len: 1.9, wid: 0.9, low: 0.55, high: 1.55, post: 1.9 };
     const ROW_X = [-4.6, 4.6], ROW_Z = [-3.0, -1.5, 0, 1.5, 3.0];
     /* v7.4: THE BALCONY-SIDE ROW IS NOT THE WALL-SIDE ROW. The +x wall
@@ -953,18 +959,21 @@
       bf.rotation.x = -Math.PI / 2; bf.position.set((BALC.x0 + BALC.x1) / 2, 0.001, 0); bf.receiveShadow = true; world.add(bf);
       const roof = new THREE.Mesh(new THREE.BoxGeometry(BALC.x1 - BALC.x0 + 0.2, 0.25, BALC.z1 - BALC.z0), matCeil);
       roof.position.set((BALC.x0 + BALC.x1) / 2, R.h + 0.12, 0); roof.castShadow = !LOW; world.add(roof);
-      const par = new THREE.Mesh(new THREE.BoxGeometry(0.2, BALC.parapet, BALC.z1 - BALC.z0), matWall);
-      par.position.set(BALC.x1 - 0.1, BALC.parapet / 2, 0); par.castShadow = !LOW; par.receiveShadow = true;
-      world.add(par); walls.push(par);
+      /* v9.2: NO PARAPET. Chad: "remove the parapet entirely instead of just
+         cutting a gate." It was a 1 m wall the whole length of the balcony
+         and it was the only thing between the player and the square, which
+         is where the fall-in happens now. Taking it out rather than cutting
+         a gate in it costs nothing and buys something: the march code needs
+         no new gate at all — `marchLegs` already routes through the bunk's
+         own wall and then runs across open floor, and open floor is now
+         everything from the bed row to the yellow line. The roof columns and
+         the two end walls stay, so the balcony still reads as a storey. */
       // two columns holding the roof, at the ends
       for (const cz of [BALC.z0 + 0.3, BALC.z1 - 0.3]) {
         const col = new THREE.Mesh(new THREE.BoxGeometry(0.3, R.h, 0.3), matWall);
         col.position.set(BALC.x1 - 0.15, R.h / 2, cz); world.add(col); walls.push(col);
       }
       // the outer face of the bunk's +x wall is the balcony's inner wall; it is the same wall
-      // THE FALL-IN LINE, painted yellow
-      const line = new THREE.Mesh(new THREE.PlaneGeometry(0.08, 10), matLine);
-      line.rotation.x = -Math.PI / 2; line.position.set(BALC.line, 0.004, 0); world.add(line);
       // the ends of the balcony: low walls so it reads as a storey, not a stage
       for (const ez of [BALC.z0, BALC.z1]) {
         const e = new THREE.Mesh(new THREE.BoxGeometry(BALC.x1 - BALC.x0, R.h, 0.2), matWall);
@@ -972,21 +981,81 @@
       }
     }
 
-    /* ------------------------------------------------------ the square --- */
+    /* --------------------------------------------- THE PARADE SQUARE (v9.2)
+       Chad: "instead of falling in at the yellow line at the balcony, i want
+       everyone to fall in at the parade square with the carpark type ground.
+       Everyone falls in at the parade square in a single line (with yellow
+       line) and they are facing the other block."
+
+       This square already existed — a flat tarmac plane from the parapet out
+       to x 40, laid at v7.1 as something to LOOK at from the balcony. It is a
+       PLACE now: the parapet is gone (above), the player's bounds reach x 20,
+       and the whole fall-in happens out here.
+
+       What makes a Tekong square read as a car park is not the asphalt, which
+       it already had, but the PAINT — so it gets the v8.9 recipe's bays as
+       real geometry: standard 2.5 m bays, 5.0 m deep, two rows back to back
+       with a shared head line, in ONE InstancedMesh. Geometry rather than a
+       texture for the same reason as v8.9: a 10 cm stripe on an 11.5 m tile is
+       two texels and aliases to nothing.
+
+       THE BAYS START AT x 21, which is past where anyone stands — the line is
+       at 14 and the two seniors at 17.6 and 18.8 — so the inspection happens
+       on clear tarmac with the car park behind it, which is what a square that
+       is a car park six days a week actually looks like.                    */
     {
       const sq = new THREE.Mesh(new THREE.PlaneGeometry(SQUARE.x1 - SQUARE.x0, SQUARE.z1 - SQUARE.z0), matTarmac);
       sq.rotation.x = -Math.PI / 2; sq.position.set((SQUARE.x0 + SQUARE.x1) / 2, -0.02, 0); sq.receiveShadow = true;
       world.add(sq);
-      // white lines: a long edge line and cross-marks every ten metres
-      for (const lx of [10, 20, 30]) {
-        const l = new THREE.Mesh(new THREE.PlaneGeometry(0.12, 40), matWhite);
-        l.rotation.x = -Math.PI / 2; l.position.set(lx, -0.01, 0); world.add(l);
+      // THE FALL-IN LINE, painted yellow, one line across the square
+      const line = new THREE.Mesh(new THREE.PlaneGeometry(0.10, 12), matLine);
+      line.rotation.x = -Math.PI / 2; line.position.set(SQ.line, -0.012, 0); world.add(line);
+      /* the bays: dividers 5 m deep every 2.5 m across two rows, and the head
+         line the two rows share. One draw call for the lot. */
+      {
+        const BAY_W = 2.5, BAY_D = 5.0, X0 = 21, ZN = 22;
+        const divs = [];
+        for (const xc of [X0 + BAY_D / 2, X0 + BAY_D * 1.5]) {
+          for (let z = -ZN; z <= ZN + 0.01; z += BAY_W) divs.push({ x: xc, z, w: BAY_D, d: 0.10 });
+        }
+        divs.push({ x: X0 + BAY_D, z: 0, w: 0.10, d: ZN * 2 });          // the shared head line
+        const bays = new THREE.InstancedMesh(new THREE.PlaneGeometry(1, 1),
+          new THREE.MeshStandardMaterial({ color: 0x8e8f88, roughness: 0.95 }), divs.length);
+        const mtx = new THREE.Matrix4(), q = new THREE.Quaternion();
+        q.setFromAxisAngle(new THREE.Vector3(1, 0, 0), -Math.PI / 2);
+        divs.forEach((d, i) => {
+          mtx.compose(new THREE.Vector3(d.x, -0.011, d.z), q, new THREE.Vector3(d.w, d.d, 1));
+          bays.setMatrixAt(i, mtx);
+        });
+        bays.instanceMatrix.needsUpdate = true;
+        bays.computeBoundingSphere();          // v8.6: so the stand culls like every other one
+        world.add(bays);
       }
-      const l2 = new THREE.Mesh(new THREE.PlaneGeometry(30, 0.12), matWhite);
-      l2.rotation.x = -Math.PI / 2; l2.position.set(24, -0.01, 8); world.add(l2);
+      /* THE OTHER BLOCK — what the line faces. Low and long and 19 m past the
+         line, so it fills the eye without filling the sky: measured from the
+         balcony it stands about 25 degrees tall, a building across a square
+         rather than a wall at the end of one. */
+      const bw = 46, bh = 11, bd = 10, bx = 38;
+      const far = new THREE.Mesh(new THREE.BoxGeometry(bd, bh, bw), matWall);
+      far.position.set(bx, bh / 2, 0); far.receiveShadow = true; world.add(far); walls.push(far);
+      const cap = new THREE.Mesh(new THREE.BoxGeometry(bd + 0.7, 0.5, bw + 0.7),
+        new THREE.MeshStandardMaterial({ color: 0x8a9a7c, roughness: 0.9 }));
+      cap.position.set(bx, bh + 0.25, 0); world.add(cap);
+      // its floor bands and windows, on the face the line looks at
+      const matBand = new THREE.MeshStandardMaterial({ color: 0xd79a52, roughness: 0.9 });
+      const matPane = new THREE.MeshStandardMaterial({ color: 0x2a3a44, roughness: 0.35, metalness: 0.3 });
+      for (let f = 0; f < 3; f++) {
+        const y = 2.4 + f * 3.3;
+        const bnd = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.3, bw + 0.4), matBand);
+        bnd.position.set(bx - bd / 2 - 0.05, y + 1.5, 0); world.add(bnd);
+        for (let i = 0; i < 13; i++) {
+          const w = new THREE.Mesh(new THREE.BoxGeometry(0.22, 1.3, 1.6), matPane);
+          w.position.set(bx - bd / 2 - 0.08, y, -bw / 2 + 2.4 + i * 3.5); world.add(w);
+        }
+      }
       // the grass beyond, and under the trees
-      const gr = new THREE.Mesh(new THREE.PlaneGeometry(140, 140), matGrass);
-      gr.rotation.x = -Math.PI / 2; gr.position.set(40, -0.05, 0); gr.receiveShadow = true;
+      const gr = new THREE.Mesh(new THREE.PlaneGeometry(160, 160), matGrass);
+      gr.rotation.x = -Math.PI / 2; gr.position.set(56, -0.05, 0); gr.receiveShadow = true;
       world.add(gr);
     }
     /* the trees along the far edge of the square, dealt from seed 7 (the
@@ -2010,7 +2079,8 @@
        (|x| 3.65 and out). His own `Idle_9` is the rest take; his talk take is
        `Talk_with_Left_Hand_on_Hip`, which no other rig in the chapter has. */
     const ENC_DOOR = { x: -1.5, z: -3.05, ry: 0.16 };
-    const ENC_LINE = { x: BALC.x1 - 0.5, z: 1.2, ry: -Math.PI / 2 };   // beside the sergeant at the parapet
+    const ENC_LINE = { x: SQ.enc, z: -0.9, ry: -Math.PI / 2,            // v9.2: in front of the rank, beside the sergeant
+                       via: [{ x: 9.6, z: -6.4 }, { x: SQ.enc, z: -6.4 }] };
     const encik = mkRig('encik2', { x: ENC_DOOR.x, z: ENC_DOOR.z, ry: ENC_DOOR.ry, height: 1.72, idle: 'Idle_9' });
     /* v8.2: he has TWO talking takes and uses both, alternating line by line —
        he is the one man in this episode who will do most of the talking, and a
@@ -2078,13 +2148,19 @@
        both are on the aisle now, each canted 0.35 rad toward the other, so
        they read as two men talking rather than as two men who have been
        stood the wrong way round. */
+    /* v9.2: `line` is each man's place in the SINGLE RANK on the square, and
+       the eight slots are dealt in the order the men STAND IN THE BUNK — the
+       v8.2 law, which is what keeps two paths from crossing. Sorted by z the
+       eight are: bunkmate −3.05, [0] −3.00, [3] −2.20, [1] −1.50, [2] 0.00,
+       buddy 1.15, [4] 2.20, [5] 3.35 — so the slots run −4.2 … +4.2 in that
+       order and the whole section fans out of one doorway without a swap. */
     const BUNK_MEN = [
-      { x: -3.25, z: -3.00, ry: Math.PI / 2 - 0.35, kind: 'admintee', line: -1.70 },
-      { x: -3.25, z: -1.50, ry: Math.PI / 2 + 0.35, kind: 'admintee', line: -0.85 },
-      { x: -3.25, z:  0.00, ry: 1.35,               kind: 'admintee', line:  0.00 },
-      { x:  3.25, z: -2.20, ry: -1.32,              kind: 'admintee', line:  2.55 },
-      { x:  3.25, z:  2.20, ry: -1.78,              kind: 'admintee', line:  3.40 },
-      { x:  3.25, z:  3.35, ry: -2.15,              kind: 'admintee', line:  4.25 },
+      { x: -3.25, z: -3.00, ry: Math.PI / 2 - 0.35, kind: 'admintee', line: -3.0 },
+      { x: -3.25, z: -1.50, ry: Math.PI / 2 + 0.35, kind: 'admintee', line: -0.6 },
+      { x: -3.25, z:  0.00, ry: 1.35,               kind: 'admintee', line:  0.6 },
+      { x:  3.25, z: -2.20, ry: -1.32,              kind: 'admintee', line: -1.8 },
+      { x:  3.25, z:  2.20, ry: -1.78,              kind: 'admintee', line:  3.0 },
+      { x:  3.25, z:  3.35, ry: -2.15,              kind: 'admintee', line:  4.2 },
     ];
     /* ONE MODEL, the green admin tee (Chad, v8.3: "i want all the bunkmates
        to be the same green admin tshirt one, not the blue botak one"). It is
@@ -2123,7 +2199,7 @@
         let moving = 0;
         c.rigs.forEach((r, i) => {
           const m = c.men[i]; if (!m) return;
-          const to = onLine ? { x: BALC.line - 0.2, z: m.line, ry: Math.PI / 2 }
+          const to = onLine ? { x: SQ.line, z: m.line, ry: Math.PI / 2 }
                             : { x: m.x, z: m.z, ry: m.ry };
           crowdMarchStop(r);
           if (snap) { r.g.position.set(to.x, 0, to.z); r.g.rotation.y = to.ry; return; }
@@ -2675,8 +2751,20 @@
        behind the wall segment — that is why the sergeant "went missing" at
        the whistle. He stands at the parapet end facing the section; the
        recruits line up on the yellow line facing the square. */
-    const SGT_LINE = { x: BALC.x1 - 0.5, z: -0.5, ry: -Math.PI / 2 };
-    const LINE_X = BALC.line - 0.35;                           // past this, he is on the line
+    /* v9.2: THE INSPECTION. Chad: "The encik and sergeant walks further front,
+       and faces the line of fall-in bunkmates, which means they are facing in
+       the direction of the bunk entrance." So both stand PAST the rank and
+       turn back down it — `ry` −π/2 is facing −x, which is the line, the
+       balcony and the bunk door behind it, exactly as the recruits' +π/2 is
+       facing the other block.
+       They go round the rank's flank rather than through it. Their path out
+       would otherwise cross x 14 between z ±1, which is where two recruits are
+       already standing by the time the seniors step off (they are `last`), so
+       each carries a `via` down the −z flank at a lane of his own — 1.0 m
+       apart — and comes in along the front of the line. */
+    const SGT_LINE = { x: SQ.sgt, z: 0.9, ry: -Math.PI / 2,
+                       via: [{ x: 9.6, z: -5.4 }, { x: SQ.sgt, z: -5.4 }] };
+    const LINE_X = SQ.line - 0.35;                             // past this, he is on the line
     const LIE_Y = BED.low + 0.14, LIE_YAW = -Math.PI / 2;      // his eye on the pillow, looking along the bed to the aisle
     const ITEM_GLYPH = ['Pillow', 'Bedsheet', 'Blanket', 'Boots', 'Water bottle', 'Mug', 'Toothbrush', 'Locker'];   // which glyph, whatever the sheet calls it
     const BED_ITEMS = ITEM_GLYPH.map((g, i) => ({ label: DATA.words['item' + (i + 1)] || g, icon: itemIcon(cnv, g) }));
@@ -2763,9 +2851,13 @@
           being already late is not an order finished. The HUD must not
           congratulate a player for either. */
       kit.objective(fallLate ? DATA.words.objLate : DATA.words.objFallIn, { complete: false });
-      kit.waypoint({ x: BALC.line, y: 1.0, z: 0 });
+      kit.waypoint({ x: SQ.line, y: 1.0, z: 0 });
       if (fallLate) return;                       // the clock has already run out on him
-      fallTimer = kit.timer(14, () => {
+      /* v9.2: 14 s became 17. Chad: "Since the player has to walk further
+         distance to the parade square, add 3 more seconds to the timer." The
+         line moved from x 7.25 to x 14 — about six metres further from the
+         bed than the balcony's was. */
+      fallTimer = kit.timer(17, () => {
         fallLate = true; fallTimer = null;
         sgtSay('s1late');
         after(3.6, () => sayLine('n1late'));
@@ -2889,6 +2981,9 @@
          next man was still standing. */
       if (from.x < WALL_X && Math.abs(from.z - LANE_Z) > 0.05) legs.push({ x: from.x, z: LANE_Z });
       legs.push({ x: from.x < WALL_X ? GATE_OUT : GATE_IN, z: LANE_Z });
+      /* v9.2: a destination may name the way it wants to be reached. The two
+         seniors use it to walk round the rank's flank instead of through it. */
+      if (to.via) for (const v of to.via) legs.push({ x: v.x, z: v.z });
       /* Once he is THROUGH the wall the balcony is open floor, so he cuts
          straight to his place on the line. Routing that leg through
          {to.x, LANE_Z} as well put all eight men on the same point before
@@ -2969,8 +3064,8 @@
         party.push({ rig: r, from: { x: r.group.position.x, z: r.group.position.z },
                      to: at, spd: WALK_SPD, take: 'Walking', last: true });
       }
-      for (const [r, at] of [[buddy, { x: BALC.line - 0.2, z: 0.85, ry: Math.PI / 2 }],
-                             [bunkmate, { x: BALC.line - 0.2, z: 1.7, ry: Math.PI / 2 }]]) {
+      for (const [r, at] of [[buddy, { x: SQ.line, z: 1.8, ry: Math.PI / 2 }],
+                             [bunkmate, { x: SQ.line, z: -4.2, ry: Math.PI / 2 }]]) {
         if (!r || !r.group) continue;
         if (on) {
           if (!BUNK_AT.has(r)) BUNK_AT.set(r, { x: r.group.position.x, z: r.group.position.z, ry: r.group.rotation.y });
