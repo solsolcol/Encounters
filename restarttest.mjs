@@ -146,7 +146,24 @@ const stateOf = p => p.evaluate(() => ({
   out.sealedCardUp = await p.evaluate(() => window.__enc.getState() === 'complete' && !document.getElementById('complete').classList.contains('hide'));
   out.ch5OnRecord = await p.evaluate(() => { const r = window.__enc.sealed().ch5; return !!r && r.rank === 'A' && r.score === 79; });
   await p.click('#againBtn');
-  await p.waitForTimeout(7500);                          // the choreography runs about six seconds
+  /* v9.1: POLL, never a fixed wait. The choreography's steps are setTimeouts
+     (wall clock) but the two rolling numbers are driven by
+     requestAnimationFrame, and this box runs SwiftShader at about one frame a
+     second — so under a loaded runner the score can still be mid-roll when a
+     fixed 7500 ms is up, and the check below reads a number counting toward
+     its target. It failed exactly that way once and passed alone on a re-run.
+     The v8.7 law, applied to a harness written before it: a fixed wait in a
+     harness is a coin toss, which is worse than no check. Waiting for the
+     BUTTON is not enough either — that is a setTimeout and fires whether or
+     not the rAF roll has landed — so this waits for the roll to SETTLE: the
+     same text twice in a row with the button live. */
+  await p.waitForFunction(() => {
+    const s = document.getElementById('epScore'), b = document.getElementById('epBtn');
+    if (!s || !b || b.disabled) return false;
+    const now = s.textContent;
+    const was = window.__epLast; window.__epLast = now;
+    return was === now;
+  }, null, { timeout: 120000, polling: 400 });
   out.episodeCardUp = await p.evaluate(() => window.__enc.getState() === 'complete'
     && !document.getElementById('episode').classList.contains('hide') && document.getElementById('complete').classList.contains('hide'));
   out.tallied = await p.evaluate(() => {
@@ -154,8 +171,12 @@ const stateOf = p => p.evaluate(() => ({
     const ranks = st.map(x => x.querySelector('.r').textContent).join(','), scores = st.map(x => x.querySelector('.s').textContent).join(',');
     return st.length === 5 && ranks === 'S,B,A+,C,A' && scores === '91%,62%,84%,45%,79%' && st.every(x => x.classList.contains('in'));
   });
-  out.episodeScore = await p.evaluate(() => document.getElementById('epScore').textContent === '72%'   // (91+62+84+45+79)/5 = 72.2
-    && document.getElementById('epRank').textContent === 'A' && document.getElementById('epRank').classList.contains('glow'));
+  /* three separate booleans, because an AND of three reports one bit and a
+     failure then cannot name itself (this check went red once and said only
+     "episodeScore") */
+  out.episodeScore = await p.evaluate(() => document.getElementById('epScore').textContent === '72%');   // (91+62+84+45+79)/5 = 72.2
+  out.episodeRank = await p.evaluate(() => document.getElementById('epRank').textContent === 'A');
+  out.episodeRankGlow = await p.evaluate(() => document.getElementById('epRank').classList.contains('glow'));
   out.stamped = await p.evaluate(() => document.getElementById('epStamp').classList.contains('stampin'));
   out.trailToCaseTwo = await p.evaluate(() => {
     const done = [...document.querySelectorAll('#epMap g.done')], next = document.querySelector('#epMap g.next');
