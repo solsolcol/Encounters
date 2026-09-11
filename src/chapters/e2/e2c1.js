@@ -131,7 +131,6 @@
       hotBuddy: 'Talk to him',
       hotBoard: 'Read the notice board',
       hotBunkmate: 'Ask him about bed one',
-      hotDoor: 'Open the door',
       hotOut: 'The corridor. Not tonight.',
       evBed: 'STANDBY BED',
       evFear: 'FEAR CONTROL',
@@ -337,7 +336,20 @@
     doorLeaf.castShadow = !LOW; doorLeaf.receiveShadow = true;
     doorPivot.add(doorLeaf);
     const DOOR_SHUT = 0, DOOR_AJAR = 0.35, DOOR_OPEN = 1.5;      // rotation.y, positive = into the block
-    doorPivot.rotation.y = DOOR_AJAR;
+    /* v8.9 (Chad): "the toilet is very buggy. When i go in, i cannot find my
+       way out. Why not just keep the toilet door open at all times so i can
+       freely walk in and out without interacting with the toilet door?"
+       The block was never sealed — measured at v7.5, every cell of it
+       reachable, and `walktest` has asserted it since — so what trapped him
+       was not collision but the LEAF: at 0.35 rad it hung across most of a
+       0.9 m opening in an unlit block, and a doorway you cannot see is a
+       wall. It stands fully open in play now (`DOOR_PLAY`), and the hotspot
+       that used to swing it and step the player through is gone with it.
+       The two cutscene beats that move the door are untouched: the film
+       shuts it to AJAR at step(0) and scene A swings it open on `dooropen2`,
+       both of which set the angle themselves. */
+    const DOOR_PLAY = DOOR_OPEN;
+    doorPivot.rotation.y = DOOR_PLAY;
 
     /* ------------------------------------------------------------ the beds */
     const beds = [];                 // { x, z, group, low, high, his, sleeperAt }
@@ -799,7 +811,20 @@
     const filmTex = [];                       // every canvas made here, for dispose()
 
     /* ----------------------------------------------- ONE · the ferry cabin */
-    const FERRY = new THREE.Vector3(-70, 0, -60);
+    /* v8.9: the pocket moved from (−70, −60) to (−70, −420), and the reason
+       is the whole reason a pocket exists. v7.9 put it 92 m from the camp,
+       which was fine while the sea was two vertical SHEETS 16 m off each
+       side — they walled the camp out. Open the windows onto real water and
+       the camp is simply there, on the horizon, in the middle of the Johor
+       Strait: the first render of this build had the bunk block and its
+       trees sitting on the sea. **The camera's far plane is 160 m**
+       (`PerspectiveCamera(72, …, 0.08, 160)`), so a set parked past that
+       from everything else cannot have anything of the world behind it —
+       distance does the hiding, with no flags and nothing to remember to
+       switch off. Camp 426 m away, jetty 461, parade 443; every piece of
+       the ferry's own set is inside 155 m of the seat, and fog and the far
+       plane are both measured from the CAMERA, so nothing else changes. */
+    const FERRY = new THREE.Vector3(-70, 0, -420);
     const ferryRoot = new THREE.Group();
     ferryRoot.position.copy(FERRY);
     ferryRoot.visible = false;
@@ -808,52 +833,284 @@
     const SEAT_X = [-1.32, -0.74, 0.74, 1.32];        // two, the aisle, two
     const SEAT_Z = [-3.4, -2.55, -1.7, -0.85, 0, 0.85, 1.7, 2.55, 3.4, 4.25, 5.1, 5.95, 6.8, 7.65];
     const PLAYER_SEAT = { x: 1.32, z: -0.85 };        // his window seat, on the +x side
-    /* the sea and the sky OUTSIDE, seen only through the window band: a
-       bright morning haze over open water, painted once and hung on both
-       sides far enough out that the band never shows its edges */
-    const seaWall = paint(512, (ctx, S) => {
-      const g = ctx.createLinearGradient(0, 0, 0, S);
-      g.addColorStop(0, '#8fb0d0'); g.addColorStop(0.30, '#b9cee2'); g.addColorStop(0.46, '#dde7ee'); g.addColorStop(0.52, '#eef1f0');
-      g.addColorStop(0.545, '#6d93a4'); g.addColorStop(0.75, '#4d7d92'); g.addColorStop(1, '#3d6b80');
-      ctx.fillStyle = g; ctx.fillRect(0, 0, S, S);
-      ctx.fillStyle = 'rgba(60,80,90,0.55)';                       // the far shore, a thin line
-      ctx.fillRect(0, S * 0.529, S, S * 0.008);
-      for (let i = 0; i < 220; i++) {                              // glitter on the water
-        const y = S * (0.56 + hash(i, 3) * 0.42), w = 4 + hash(i, 4) * 26;
-        ctx.fillStyle = `rgba(255,255,255,${0.05 + hash(i, 5) * 0.18})`;
-        ctx.fillRect(hash(i, 6) * S, y, w, 1.5);
+    const CABL = CAB.z1 - CAB.z0, CABM = (CAB.z0 + CAB.z1) / 2;
+    const FWIN = { sill: 0.86, head: 1.92, mid: 1.39 };      // v8.9: the ferry's window band, opened up (§3 below)
+    /* ----------------------------------------------------- THE SEA (v8.9)
+       Chad, on v7.9: "the ferry scene is too barebones and empty, sea does
+       not look like sea." He was right, and the reason is structural rather
+       than a matter of taste: v7.9's sea was a VERTICAL SHEET — one painted
+       gradient with 220 white dashes on it, hung 16 m off each side of the
+       cabin. A gradient standing up in front of a window has no perspective
+       in it at all. Water recedes; a wall does not, so no amount of paint on
+       that sheet could have made it read as water. Photographed on the phone
+       crop at 13 s and 19 s it came out as a flat blue-green band with a few
+       blurred dashes — the frames are in docs/V8.9-THE-SEA.md.
+
+       So the sheet is gone and the sea is REAL GEOMETRY: a horizontal disc
+       at the waterline under a sky dome. A horizontal plane gets its
+       perspective for free — the same tile is metres across close to the
+       hull and compresses to nothing at the horizon, which is exactly what
+       makes water look like water — and it can then be SCROLLED, so the sea
+       streams past a moving ferry instead of hanging there.
+
+       Five layers, near to far:
+         1. the hull side and its gunwale, so the water starts at a boat;
+         2. the WAKE — a foam strip alongside, scrolling fastest (it is the
+            nearest thing, so it carries most of the sense of speed);
+         3. the WATER disc, a seamless crest tile repeated 80 times and
+            scrolled slowly, with a second, larger, slower copy laid over it:
+            two layers at different rates kill the tiling that one layer at
+            this grazing angle always shows;
+         4. the HAZE cylinder, which greys the far water into the sky — and
+            also hides the disc's own rim, the trap the v7.7 ferry paid for
+            once already (a sky bubble's back wall is a DEPTH surface, so
+            everything must stand INSIDE its radius) — and every radius here
+            is set by the CAMERA'S FAR PLANE of 160 m, not by taste: dome
+            155, water 148, haze 136, shore 132, the furthest ship 128. The
+            first pass used 420/400/388 and was simply CLIPPED, which put a
+            hard edge across the sea at 160 m with the camp showing past it;
+         5. the sky dome, the shore's tree line, and four ships out on it.
+       Anisotropy is 8 on both water layers: a crown of leaves and a sheet of
+       water are the same problem, all grazing angles (v6.16). */
+    const SEA_Y = -2.45;                      // the waterline, under a saloon deck at 0
+    const seaTex = paint(512, (ctx, S) => {
+      ctx.fillStyle = '#2b5262'; ctx.fillRect(0, 0, S, S);
+      /* every crest is drawn NINE times, at every wrap of the tile, so the
+         texture is seamless by construction rather than by luck */
+      const wrap = (fn) => { for (let ox = -1; ox <= 1; ox++) for (let oy = -1; oy <= 1; oy++) fn(ox * S, oy * S); };
+      const crest = (i, k, wide, hi, alpha, col) => {
+        const x = hash(i, k) * S, y = hash(i, k + 1) * S;
+        const w = S * wide * (0.6 + hash(i, k + 2) * 0.8), h = w * hi;
+        const a = (hash(i, k + 3) - 0.5) * 0.55;
+        wrap((ox, oy) => {
+          ctx.save(); ctx.translate(x + ox, y + oy); ctx.rotate(a);
+          const g = ctx.createRadialGradient(0, 0, 0, 0, 0, w);
+          g.addColorStop(0, `rgba(${col},${alpha})`); g.addColorStop(0.55, `rgba(${col},${alpha * 0.45})`);
+          g.addColorStop(1, `rgba(${col},0)`);
+          ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(0, 0, w, h, 0, 0, 7); ctx.fill(); ctx.restore();
+        });
+      };
+      for (let i = 0; i < 70; i++) crest(i, 41, 0.20, 0.16, 0.22, '30,68,80');      // the troughs, darker
+      for (let i = 0; i < 90; i++) crest(i, 51, 0.13, 0.13, 0.26, '130,163,171');   // the swell
+      for (let i = 0; i < 120; i++) crest(i, 61, 0.055, 0.20, 0.26, '176,197,201'); // the chop on top of it
+      for (let i = 0; i < 150; i++) {                                               // and the glint on a crest's edge
+        const x = hash(i, 71) * S, y = hash(i, 72) * S;
+        const w = S * (0.010 + hash(i, 73) * 0.030), h = Math.max(1.2, w * 0.16);
+        wrap((ox, oy) => {
+          ctx.fillStyle = `rgba(232,241,243,${0.08 + hash(i, 74) * 0.22})`;
+          ctx.beginPath(); ctx.ellipse(x + ox, y + oy, w, h, (hash(i, 75) - 0.5) * 0.4, 0, 7); ctx.fill();
+        });
       }
-    }, [3, 1]);
-    filmTex.push(seaWall);
-    const matSea = nbm({ map: seaWall });
-    /* MEASURED, not guessed: the window aperture is 0.64 m tall and the
-       eye sits 0.45 m from it, so it subtends ~70 deg — nearly the whole
-       of the lens's 72. A 11 m sheet at 21 m covers 30, which is why the
-       contemplative shot out of the window showed the sea as a BAND with
-       the void above and below it. 50 m at 15 covers 119. The horizon is
-       0.529 down the sheet, so the centre is placed to put it at the
-       seated eye: 1.30 + 0.029 * 50. */
-    for (const sgn of [-1, 1]) fmesh(ferryRoot, new THREE.PlaneGeometry(120, 50), matSea, sgn * 16, 2.75, 3.0, 0, sgn > 0 ? -Math.PI / 2 : Math.PI / 2);
+    }, [34, 34]);                        // 8.7 m of sea per tile; 80 was 3.7 and the near water read as carpet
+    seaTex.anisotropy = 8;
+    filmTex.push(seaTex);
+    const seaTex2 = seaTex.clone();           // the same paint, laid over itself at a different scale and rate
+    seaTex2.repeat.set(9, 9); seaTex2.anisotropy = 8; seaTex2.needsUpdate = true;   // 33 m — the long swell under the chop
+    filmTex.push(seaTex2);
+    const seaDisc = fmesh(ferryRoot, new THREE.CircleGeometry(148, 72),
+      nbm({ map: seaTex, color: 0xa9bcbd }), 0, SEA_Y, 0, -Math.PI / 2);
+    const seaDisc2 = fmesh(ferryRoot, new THREE.CircleGeometry(148, 72),
+      nbm({ map: seaTex2, color: 0xc3cfcd, transparent: true, opacity: 0.38, depthWrite: false }), 0, SEA_Y + 0.02, 0, -Math.PI / 2);
+    /* the wake: streaks that wrap, on a strip that starts where the hull
+       ends. It scrolls four times faster than the sea, because it is four
+       times closer — that difference IS the parallax the eye reads as way
+       being made through water. */
+    const foamTex = paint(256, (ctx, S) => {
+      ctx.clearRect(0, 0, S, S);
+      for (let i = 0; i < 170; i++) {
+        const x = hash(i, 81) * S, y = hash(i, 82) * S;
+        const w = S * (0.03 + hash(i, 83) * 0.20), h = 1 + hash(i, 84) * 4;
+        for (let oy = -1; oy <= 1; oy++) {
+          const g = ctx.createLinearGradient(x, 0, x + w, 0);
+          g.addColorStop(0, 'rgba(255,255,255,0)');
+          g.addColorStop(0.4, `rgba(255,255,255,${0.20 + hash(i, 85) * 0.55})`);
+          g.addColorStop(1, 'rgba(255,255,255,0)');
+          ctx.fillStyle = g; ctx.fillRect(x, y + oy * S, w, h);
+        }
+      }
+      for (let i = 0; i < 900; i++) {                                  // the bubble field in the churn
+        const x = hash(i, 91) * S, y = hash(i, 92) * S;
+        ctx.fillStyle = `rgba(255,255,255,${0.05 + hash(i, 93) * 0.35})`;
+        ctx.beginPath(); ctx.arc(x, y, 0.6 + hash(i, 94) * 1.9, 0, 7); ctx.fill();
+      }
+    }, [2, 14]);
+    foamTex.anisotropy = 8;
+    filmTex.push(foamTex);
+    const wakes = [];
+    for (const sgn of [-1, 1]) {
+      /* densest against the hull and gone by 4 m out: the strip is drawn
+         with its own falloff in the material's opacity rather than in the
+         tile, so one painted tile serves both sides */
+      wakes.push(fmesh(ferryRoot, new THREE.PlaneGeometry(4.2, 150),
+        nbm({ map: foamTex, transparent: true, opacity: 0.62, depthWrite: false }),
+        sgn * 4.2, SEA_Y + 0.05, 3.0, -Math.PI / 2));
+    }
+    /* the hull below the window band, and the gunwale that caps it — without
+       them the water runs straight up to the cabin wall and the boat has no
+       outside at all */
+    /* THE GUNWALE MUST SIT UNDER THE SILL, and this is arithmetic rather
+       than styling. The eye is 3.76 m over the water, so the sea it can see
+       runs from the horizon down to whatever the boat's own side hides. The
+       first pass capped the hull at y 1.12 — 0.19 m under the seated eye —
+       and every ray steeper than **9.6 deg** then landed on the gunwale's
+       deck instead of on water: a ten-degree strip of sea in a 72 deg lens,
+       which is the flat blue band the frame came back with. Capped at 0.80,
+       just under the new sill at 0.86, the same arithmetic gives **30.4 deg**
+       of open water. Three times the sea, for one number. */
+    const matHull = nbm({ color: 0xdfe4e8 });
+    const matHullLow = nbm({ color: 0x2c4f74 });
+    const HULL_TOP = 0.80;
+    for (const sgn of [-1, 1]) {
+      fbox(ferryRoot, 0.24, HULL_TOP + 1.10, CABL + 3.0, matHull, sgn * (CAB.hw + 0.16), (HULL_TOP - 1.10) / 2, CABM);
+      fbox(ferryRoot, 0.30, 2.20, CABL + 3.0, matHullLow, sgn * (CAB.hw + 0.19), -1.45, CABM);
+      fbox(ferryRoot, 0.30, 0.09, CABL + 3.2, matHull, sgn * (CAB.hw + 0.17), HULL_TOP - 0.045, CABM);   // the gunwale cap
+      fbox(ferryRoot, 0.06, 0.05, CABL + 3.2, nbm({ color: 0x2c4f74 }), sgn * (CAB.hw + 0.31), HULL_TOP - 0.16, CABM);  // its rubbing strake
+    }
+    /* the sky: a painted morning, dome-wrapped, its horizon on the texture's
+       equator and the dome centred at the SEATED EYE — which is where the
+       horizon of a real sea always is, whatever the boat is doing */
+    const skyTex = paint(1024, (ctx, S) => {
+      /* PAINT A FILM SET AT HALF THE BRIGHTNESS YOU WANT ON SCREEN. The
+         renderer is ACESFilmic at exposure 1.42, which scales linear
+         radiance by 1.42/0.6 = 2.37 BEFORE the curve, and the curve then
+         rolls everything bright toward white. Measured through the real
+         transform: a sky painted #87b2d6 — a perfectly ordinary blue —
+         arrives on screen as #d5eaf2, which is what the first pass of this
+         build rendered and why the window looked out on a white void. The
+         stops below are the INVERSE: #314c78 lands as a proper #4e8bc8.
+         Nothing else in the set needed it, because everything else is dark
+         (water, hull, tree line) and the curve is nearly linear down there. */
+      const g = ctx.createLinearGradient(0, 0, 0, S * 0.5);
+      g.addColorStop(0, '#314c78'); g.addColorStop(0.42, '#466891'); g.addColorStop(0.78, '#6e8a9c');
+      g.addColorStop(1, '#8ca5a9');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, S, S * 0.5);
+      ctx.fillStyle = '#7d9298'; ctx.fillRect(0, S * 0.5, S, S * 0.5);      // below the horizon, never seen
+      /* clusters of soft puffs a third the size of one blob — v6.8's law,
+         because a single big ellipse is 30 deg of sky and reads as a smear */
+      for (let i = 0; i < 13; i++) {
+        /* the band is 0.14–0.42 down the canvas, which on the dome is 65 deg
+           of elevation down to 14 — the part of the sky a seated passenger
+           can see out of a window. v8.9's first pass put them at 25–72 and
+           the shot looked out at an empty white sky. */
+        const cx = hash(i, 21) * S, cy = S * (0.14 + hash(i, 22) * 0.28), sc = 0.5 + hash(i, 23) * 1.1;
+        for (let j = 0; j < 8; j++) {
+          const dx = (hash(i * 13 + j, 24) - 0.5) * 150 * sc, dy = (hash(i * 13 + j, 25) - 0.5) * 34 * sc;
+          const r = (8 + hash(i * 13 + j, 26) * 18) * sc;
+          for (const ox of [-S, 0, S]) {
+            const gg = ctx.createRadialGradient(cx + dx + ox, cy + dy, 0, cx + dx + ox, cy + dy, r);
+            gg.addColorStop(0, `rgba(174,190,196,${0.16 + hash(i * 13 + j, 27) * 0.28})`);
+            gg.addColorStop(1, 'rgba(174,190,196,0)');
+            ctx.fillStyle = gg; ctx.beginPath(); ctx.arc(cx + dx + ox, cy + dy, r, 0, 7); ctx.fill();
+          }
+        }
+      }
+      const hz = ctx.createLinearGradient(0, S * 0.40, 0, S * 0.5);        // the haze the horizon sits in
+      hz.addColorStop(0, 'rgba(150,168,170,0)'); hz.addColorStop(1, 'rgba(150,168,170,0.92)');
+      ctx.fillStyle = hz; ctx.fillRect(0, S * 0.40, S, S * 0.10);
+    });
+    filmTex.push(skyTex);
+    fmesh(ferryRoot, new THREE.SphereGeometry(155, 40, 24), nbm({ map: skyTex, side: THREE.BackSide }), 0, 1.30, 0);
+    /* Tekong ahead: a tree line on the water, drawn rather than modelled —
+       at 388 m one tree is under a pixel, and what reads is the SILHOUETTE */
+    /* the cylinder is 24 m tall with its base 12 m under its centre, so its
+       waterline is SEA_Y and one unit of v is 24 m at 132 m out. The shore
+       is painted against that: the strand at v 0.10 (2.4 m over the water)
+       and the canopy to v 0.36 (8.6 m), which at this range is 3.7 deg of
+       tree above 1.0 of beach — an island seen from a boat's saloon deck. */
+    const shoreTex = paint(1024, (ctx, S) => {
+      ctx.clearRect(0, 0, S, S);
+      const base = S * 0.90;                        // v 0.10, the waterline of the island
+      for (let i = 0; i < 620; i++) {               // the canopy, clumped, never a single silhouette
+        const x = hash(i, 31) * S, h = S * (0.09 + hash(i, 32) * 0.17), w = S * (0.007 + hash(i, 33) * 0.016);
+        ctx.fillStyle = `rgba(${34 + hash(i, 34) * 22},${52 + hash(i, 35) * 26},${40 + hash(i, 36) * 18},0.92)`;
+        ctx.beginPath(); ctx.ellipse(x, base - h * 0.5, w, h * 0.60, 0, 0, 7); ctx.fill();
+      }
+      ctx.fillStyle = 'rgba(38,50,44,0.95)'; ctx.fillRect(0, base - S * 0.012, S, S * 0.020);  // the tree line's own mass
+      ctx.fillStyle = 'rgba(208,212,196,0.80)'; ctx.fillRect(0, base + S * 0.008, S, S * 0.007);  // and its beach
+      const hz = ctx.createLinearGradient(0, S * 0.58, 0, base + S * 0.016);
+      hz.addColorStop(0, 'rgba(150,166,166,0.12)'); hz.addColorStop(1, 'rgba(150,166,166,0.46)');
+      ctx.fillStyle = hz; ctx.fillRect(0, S * 0.58, S, base + S * 0.016 - S * 0.58);   // distance, painted on
+    }, [6, 1]);
+    filmTex.push(shoreTex);
+    fmesh(ferryRoot, new THREE.CylinderGeometry(132, 132, 24, 64, 1, true),
+      nbm({ map: shoreTex, side: THREE.BackSide, transparent: true, depthWrite: false }), 0, SEA_Y + 12, 0);
+    /* and the haze that takes the far water into it, which is also what
+         hides the disc's own rim */
+    const hazeTex = paint(64, (ctx, S) => {
+      const g = ctx.createLinearGradient(0, S, 0, 0);
+      g.addColorStop(0, 'rgba(147,165,165,1)'); g.addColorStop(0.30, 'rgba(147,165,165,0.62)');
+      g.addColorStop(1, 'rgba(147,165,165,0)');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, S, S);
+    });
+    filmTex.push(hazeTex);
+    fmesh(ferryRoot, new THREE.CylinderGeometry(136, 136, 30, 48, 1, true),
+      nbm({ map: hazeTex, side: THREE.BackSide, transparent: true, depthWrite: false }), 0, SEA_Y + 13, 0);
+    /* four ships on it. A tanker at three hundred metres is a dark bar with
+       a block on one end — anything more is detail nobody can resolve. */
+    const matShip = nbm({ color: 0x38434c }), matShipTop = nbm({ color: 0xb8bfc4});
+    for (const sh of [[116, 0.55, 0.42], [92, 1.25, 0.26], [128, -0.35, 0.50], [104, 2.30, 0.34]]) {
+      const [d, ang, sc] = sh;
+      const g = new THREE.Group();
+      g.position.set(Math.sin(ang) * d, SEA_Y + 1.2 * sc, Math.cos(ang) * d);
+      g.rotation.y = ang + 1.3;
+      ferryRoot.add(g);
+      fbox(g, 74 * sc, 7 * sc, 12 * sc, matShip, 0, 0, 0);
+      fbox(g, 13 * sc, 11 * sc, 11 * sc, matShipTop, -26 * sc, 8 * sc, 0);
+      fbox(g, 2.0 * sc, 9 * sc, 2.0 * sc, matShipTop, -26 * sc, 17 * sc, 0);
+    }
     /* the cabin: a dark blue carpet, cream walls with a window band, a white
        ribbed ceiling with the long light box down the middle, chrome poles */
-    const matCarpet = nfm({ color: 0x2b3550, roughness: 1 });
-    const matPanel = nfm({ color: 0xe8eef1, roughness: 0.75 });
-    const matRib = nfm({ color: 0xf4f7f8, roughness: 0.6 });
+    /* v8.9: the cabin was FLAT — every surface one untextured colour, which
+       on the phone crop read as a white corridor with blue boxes in it
+       (Chad: "too barebones and empty"). Two painted tiles fix most of it:
+       a speckled carpet and a woven seat cloth, both greyscale so one tile
+       serves every colour the cabin uses through the material's own tint. */
+    const carpetTex = paint(256, (ctx, S) => {
+      ctx.fillStyle = '#d8d8dc'; ctx.fillRect(0, 0, S, S);
+      for (let i = 0; i < 5200; i++) {
+        const v = 170 + hash(i, 101) * 85;
+        ctx.fillStyle = `rgba(${v},${v},${v + 4},${0.25 + hash(i, 102) * 0.5})`;
+        ctx.fillRect(hash(i, 103) * S, hash(i, 104) * S, 1 + hash(i, 105) * 2, 1 + hash(i, 106) * 2);
+      }
+    }, [10, 34]);
+    filmTex.push(carpetTex);
+    const clothTex = paint(128, (ctx, S) => {
+      /* NEAR-WHITE on purpose: a map multiplies the material's colour, so a
+         mid-grey weave took the seats' blue down to a third of itself and the
+         first render came back with black seats. The weave is in the alpha of
+         the strokes, not in the base. */
+      ctx.fillStyle = '#ececec'; ctx.fillRect(0, 0, S, S);
+      for (let y = 0; y < S; y += 3) { ctx.fillStyle = 'rgba(255,255,255,0.55)'; ctx.fillRect(0, y, S, 1); }
+      for (let x = 0; x < S; x += 3) { ctx.fillStyle = 'rgba(0,0,0,0.10)'; ctx.fillRect(x, 0, 1, S); }
+      for (let i = 0; i < 1800; i++) {
+        const v = 190 + hash(i, 111) * 60;
+        ctx.fillStyle = `rgba(${v},${v},${v},0.45)`;
+        ctx.fillRect(hash(i, 112) * S, hash(i, 113) * S, 1, 1);
+      }
+    }, [3, 3]);
+    filmTex.push(clothTex);
+    const matCarpet = nfm({ map: carpetTex, color: 0x2f3b60, roughness: 1 });
+    const matPanel = nfm({ color: 0xc9d1d6, roughness: 0.75 });   // v8.9: see the tone-mapping note under skyTex
+    const matRib = nfm({ color: 0xd6dcde, roughness: 0.6 });
     const matChrome = nfm({ color: 0xc8ced4, roughness: 0.25, metalness: 0.85 });
     const matPane = nbm({ color: 0xffffff, transparent: true, opacity: 0.10 });
     const matLight = nbm({ color: 0xfff4dc });
-    const CABL = CAB.z1 - CAB.z0, CABM = (CAB.z0 + CAB.z1) / 2;
     fmesh(ferryRoot, new THREE.PlaneGeometry(CAB.hw * 2, CABL), matCarpet, 0, 0.01, CABM, -Math.PI / 2);
     fmesh(ferryRoot, new THREE.PlaneGeometry(CAB.hw * 2, CABL), matRib, 0, CAB.h, CABM, Math.PI / 2);
     for (let z = CAB.z0 + 0.5; z < CAB.z1; z += 0.6)                     // the ceiling's ribs
       fbox(ferryRoot, CAB.hw * 2, 0.03, 0.06, matPanel, 0, CAB.h - 0.02, z);
     fbox(ferryRoot, 0.92, 0.16, CABL - 1.6, matLight, 0, CAB.h - 0.10, CABM);
     for (const sgn of [-1, 1]) {
-      fbox(ferryRoot, 0.10, 1.06, CABL, matPanel, sgn * CAB.hw, 0.53, CABM);          // under the windows
-      fbox(ferryRoot, 0.10, 0.46, CABL, matPanel, sgn * CAB.hw, 1.93, CABM);          // over them
-      fmesh(ferryRoot, new THREE.PlaneGeometry(CABL, 0.64), matPane, sgn * (CAB.hw - 0.05), 1.38, CABM, 0, sgn > 0 ? -Math.PI / 2 : Math.PI / 2);
+      /* the aperture: sill 0.86, head 1.92, 1.06 m of glass. v7.9 had 0.64
+         between 1.06 and 1.70 — a letterbox, and the reason its window shot
+         showed a strip. From the seated eye 0.64 m away this subtends 83 deg
+         against a 72 deg lens, so the contemplative shot is ALL window. */
+      fbox(ferryRoot, 0.10, FWIN.sill, CABL, matPanel, sgn * CAB.hw, FWIN.sill / 2, CABM);          // under the windows
+      fbox(ferryRoot, 0.10, CAB.h - FWIN.head, CABL, matPanel, sgn * CAB.hw, (CAB.h + FWIN.head) / 2, CABM);   // over them
+      fmesh(ferryRoot, new THREE.PlaneGeometry(CABL, FWIN.head - FWIN.sill), matPane, sgn * (CAB.hw - 0.05), FWIN.mid, CABM, 0, sgn > 0 ? -Math.PI / 2 : Math.PI / 2);
+      fbox(ferryRoot, 0.16, 0.05, CABL, matPanel, sgn * (CAB.hw - 0.04), FWIN.sill + 0.02, CABM);  // the sill's own ledge
       for (let z = CAB.z0 + 1.7; z < CAB.z1; z += 1.7)                                // the mullions between the panes
-        fbox(ferryRoot, 0.12, 0.66, 0.09, matPanel, sgn * (CAB.hw - 0.01), 1.38, z);
+        fbox(ferryRoot, 0.12, FWIN.head - FWIN.sill + 0.02, 0.09, matPanel, sgn * (CAB.hw - 0.01), FWIN.mid, z);
       for (let z = CAB.z0 + 2.0; z < CAB.z1; z += 3.0)                                // the poles at the aisle
         fmesh(ferryRoot, new THREE.CylinderGeometry(0.035, 0.035, CAB.h, 10), matChrome, sgn * 0.42, CAB.h / 2, z);
     }
@@ -867,7 +1124,9 @@
        reaches 1.21 (v7.9's first pass) filled the whole frame with blue. */
     const seatGeo = { pan: new THREE.BoxGeometry(0.50, 0.09, 0.46), back: new THREE.BoxGeometry(0.50, 0.56, 0.11),
                       head: new THREE.BoxGeometry(0.46, 0.16, 0.13), leg: new THREE.CylinderGeometry(0.022, 0.022, 0.42, 8) };
-    const matSeatA = nfm({ color: 0x3f63a8, roughness: 0.85 }), matSeatB = nfm({ color: 0x2f7f86, roughness: 0.85 });
+    const matSeatA = nfm({ map: clothTex, color: 0x4a70b4, roughness: 0.9 }),
+          matSeatB = nfm({ map: clothTex, color: 0x389099, roughness: 0.9 });
+    const matHead = nfm({ map: clothTex, color: 0xd8dde2, roughness: 0.92 });     // the antimacassar every ferry seat has
     const ferrySeats = [];
     SEAT_Z.forEach((z, r) => SEAT_X.forEach((x, i) => {
       const m = ((r + i) % 3 === 0) ? matSeatB : matSeatA;
@@ -875,17 +1134,98 @@
       fmesh(g, seatGeo.pan, m, 0, 0.43, 0);
       fmesh(g, seatGeo.back, m, 0, 0.73, -0.20, -0.12);
       fmesh(g, seatGeo.head, m, 0, 1.06, -0.24, -0.12);
+      /* the antimacassar is a THIN band on the crown, not the whole headrest:
+         made pale all over, the seat in front of the lens filled the 9 s shot
+         with a grey slab, because at a 1.31 m eye a headrest at 1.06 is what
+         the camera is looking at. */
+      fmesh(g, new THREE.BoxGeometry(0.47, 0.05, 0.14), matHead, 0, 1.135, -0.245, -0.12);
       for (const dx of [-0.19, 0.19]) fmesh(g, seatGeo.leg, matChrome, dx, 0.21, 0.05);
       ferrySeats.push(g);
     }));
-    const ferryLight = new THREE.PointLight(0xfff2e0, 12, 26, 1.2); ferryLight.position.set(0, 2.0, 1.0); ferryRoot.add(ferryLight);
-    const ferrySun = new THREE.PointLight(0xdfeaf6, 16, 30, 1.1); ferrySun.position.set(3.2, 1.5, 2.0); ferryRoot.add(ferrySun);
+    /* ------------------------------------- and the things IN a ferry cabin
+       The shot is twenty seconds long and the eye has nothing to do in it
+       but read the room, so the room has to have something to read. Nothing
+       here is a model: it is all boxes, tubes and one painted notice, and
+       all of it stands still, so it costs one pass of geometry that v8.4's
+       culling drops the moment the lens turns away. */
+    {
+      /* NOT `matChrome`: a metal with no environment map has nothing to
+         reflect and renders near black, which is what the first pass's grab
+         rails did. A light dielectric reads as brushed steel here. */
+      const matGrab = nfm({ color: 0xb9c0c6, roughness: 0.35, metalness: 0.12 });
+      const matShelf = nfm({ color: 0xc8d0d4, roughness: 0.7 });
+      const matRing = nbm({ color: 0xe8631f }), matRingW = nbm({ color: 0xf2f2ef });
+      const matBag = nfm({ map: clothTex, color: 0x3d4a3a, roughness: 1 });
+      const matRed = nfm({ color: 0xb32d22, roughness: 0.6 });
+      const matDark = nfm({ color: 0x2e3742, roughness: 0.8 });
+      /* a grab rail across the top of every row — what a standing passenger
+         holds, and what makes a row of seats read as a row rather than a
+         stack of boxes */
+      const railGeo = new THREE.CylinderGeometry(0.018, 0.018, 1.18, 8);
+      for (const z of SEAT_Z) for (const sgn of [-1, 1])
+        fmesh(ferryRoot, railGeo, matGrab, sgn * 1.03, 1.17, z - 0.245, 0, 0, Math.PI / 2);
+      /* the parcel shelf over the windows, both sides, with its lip */
+      for (const sgn of [-1, 1]) {
+        fbox(ferryRoot, 0.40, 0.04, CABL - 0.4, matShelf, sgn * (CAB.hw - 0.22), 1.99, CABM);
+        fmesh(ferryRoot, new THREE.CylinderGeometry(0.014, 0.014, CABL - 0.4, 8), matGrab,
+              sgn * (CAB.hw - 0.42), 2.06, CABM, Math.PI / 2, 0, 0);
+        for (const zz of [-3.0, 0.6, 4.2, 7.4])                       // the bags people put up there
+          fbox(ferryRoot, 0.30, 0.20, 0.46, matBag, sgn * (CAB.hw - 0.24), 2.11, zz);
+        fbox(ferryRoot, 0.08, 0.16, CABL, nfm({ color: 0x59626b, roughness: 0.8 }), sgn * (CAB.hw - 0.03), 0.08, CABM);  // skirting
+      }
+      /* the forward bulkhead: two life rings, a notice, a muster sign */
+      const ringGeo = new THREE.TorusGeometry(0.29, 0.075, 8, 22);
+      for (const dx of [-1.16, 1.16]) {
+        fmesh(ferryRoot, ringGeo, matRing, dx, 1.42, CAB.z1 - 0.12);
+        for (let k = 0; k < 4; k++)                                   // its white quarters
+          fmesh(ferryRoot, new THREE.TorusGeometry(0.29, 0.078, 8, 4, 0.52), matRingW, dx, 1.42, CAB.z1 - 0.12, 0, 0, k * Math.PI / 2 + 0.26);
+      }
+      const noticeTex = paint(512, (ctx, S) => {
+        ctx.fillStyle = '#f2f3ee'; ctx.fillRect(0, 0, S, S);
+        ctx.strokeStyle = '#22303c'; ctx.lineWidth = 7; ctx.strokeRect(10, 10, S - 20, S - 20);
+        ctx.fillStyle = '#22303c'; ctx.textAlign = 'center';
+        ctx.font = 'bold 62px sans-serif'; ctx.fillText('PASSENGERS', S / 2, 118);
+        ctx.font = 'bold 150px sans-serif'; ctx.fillText('56', S / 2, 268);
+        ctx.font = 'bold 44px sans-serif'; ctx.fillText('NO SMOKING', S / 2, 350);
+        ctx.fillStyle = '#8d1f17';
+        ctx.beginPath(); ctx.arc(S / 2, 420, 44, 0, 7); ctx.fill();
+        ctx.fillStyle = '#f2f3ee'; ctx.fillRect(S / 2 - 30, 412, 60, 16);
+      });
+      filmTex.push(noticeTex);
+      fmesh(ferryRoot, new THREE.PlaneGeometry(0.52, 0.52), nbm({ map: noticeTex }), 0, 1.48, CAB.z1 - 0.07, 0, Math.PI, 0);
+      fbox(ferryRoot, 0.60, 0.18, 0.06, nbm({ color: 0x2c8b45 }), 0, 1.98, CAB.z1 - 0.10);   // the muster sign over it
+      fbox(ferryRoot, 0.16, 0.40, 0.16, matRed, -1.60, 0.30, CAB.z1 - 0.18);                 // an extinguisher in the corner
+      fbox(ferryRoot, 0.30, 0.70, 0.16, nbm({ color: 0xf0efe6 }), 1.58, 1.30, CAB.z1 - 0.14); // and a life-jacket locker
+      fbox(ferryRoot, 0.60, 0.16, 0.06, nbm({ color: 0x2c8b45 }), 0, 1.98, CAB.z0 + 0.10);   // EXIT, behind him
+      /* kit on the floor, because twenty recruits do not travel empty-handed */
+      for (const [bx, bz, r] of [[-0.05, -2.2, 0.4], [0.06, 1.1, -0.9], [-0.02, 4.6, 0.2],
+                                 [0.02, 6.9, 1.1], [-0.04, -4.2, -0.5]])
+        fbox(ferryRoot, 0.34, 0.40, 0.52, matBag, bx, 0.20, bz, r);
+      for (const [bx, bz] of [[-1.32, 2.55], [1.32, 5.95], [-0.74, -3.4]])   // and some on the spare seats
+        fbox(ferryRoot, 0.30, 0.34, 0.42, matDark, bx, 0.63, bz, 0.3);
+    }
+    const ferryLight = new THREE.PointLight(0xfff2e0, 8, 26, 1.2); ferryLight.position.set(0, 2.0, 1.0); ferryRoot.add(ferryLight);
+    const ferrySun = new THREE.PointLight(0xdfeaf6, 11, 30, 1.1); ferrySun.position.set(3.2, 1.5, 2.0); ferryRoot.add(ferrySun);
     let swellT = 0;
     const ferryTick = (dt) => {                     // the cabin breathing on a slow swell
       swellT += dt;
       ferryRoot.rotation.z = Math.sin(swellT * 0.62) * 0.008;
       ferryRoot.rotation.x = Math.sin(swellT * 0.83 + 1) * 0.005;
       ferryRoot.position.y = FERRY.y + Math.sin(swellT * 0.9) * 0.03;
+      /* AND THE SEA RUNS. The ferry makes way in +z, so the water has to
+         stream in −z relative to it. The plane is laid down with `rotation.x
+         = −PI/2`, which maps the texture's +v onto world −z; raising
+         `offset.y` samples further along +v, which slides the PATTERN the
+         other way, toward +z. So the offsets go DOWN.
+         Three rates, and the ratios are the point rather than the numbers:
+         the wake is the nearest thing in frame and runs fastest, the fine
+         sea layer next, the broad one slowest. Two layers moving at
+         different speeds is also what breaks up the tiling that any single
+         repeated sheet shows at this grazing an angle. */
+      seaTex.offset.y -= dt * 0.085;
+      seaTex2.offset.y -= dt * 0.026;
+      foamTex.offset.y -= dt * 0.55;
+      foamTex.offset.x = Math.sin(swellT * 0.4) * 0.03;
     };
 
     /* ------------------------------------------- TWO · the Tekong walkway */
@@ -961,12 +1301,76 @@
     paradeRoot.position.copy(PARADE);
     paradeRoot.visible = false;
     world.add(paradeRoot);
-    const matSq = nfm({ color: 0xcfcabb, roughness: 0.95 });
+    /* THE GROUND (v8.9). Chad: "parade square ground should be like a
+       ccarpark ground." It was one flat cream colour with three thin white
+       lines on it, and on the phone crop it read as a white void the block
+       and the ranks were standing in — the frame is in docs/V8.9-THE-SEA.md.
+       A Tekong square IS a car park most of the week, so it gets what one
+       has: asphalt with its aggregate, worn patches and joints, and a grid
+       of painted bays over the half of it the camera pans across.
+       Painted at HALF the brightness it should read at, like the sky — the
+       renderer is ACES at exposure 1.42 (see the note under `skyTex`). */
+    const sqTex = paint(512, (ctx, S) => {
+      ctx.fillStyle = '#3c3e40'; ctx.fillRect(0, 0, S, S);
+      for (let i = 0; i < 9000; i++) {                       // the aggregate
+        const v = 42 + hash(i, 201) * 46;
+        ctx.fillStyle = `rgba(${v},${v},${v + 3},${0.3 + hash(i, 202) * 0.6})`;
+        ctx.fillRect(hash(i, 203) * S, hash(i, 204) * S, 1 + hash(i, 205) * 2, 1 + hash(i, 206) * 2);
+      }
+      for (let i = 0; i < 26; i++) {                         // patches, wrapped so the tile stays seamless
+        const x = hash(i, 211) * S, y = hash(i, 212) * S, r = S * (0.04 + hash(i, 213) * 0.13);
+        for (let ox = -1; ox <= 1; ox++) for (let oy = -1; oy <= 1; oy++) {
+          const g = ctx.createRadialGradient(x + ox * S, y + oy * S, 0, x + ox * S, y + oy * S, r);
+          const k = hash(i, 214) > 0.5 ? '86,88,88' : '50,52,53';
+          g.addColorStop(0, `rgba(${k},${0.10 + hash(i, 215) * 0.16})`); g.addColorStop(1, `rgba(${k},0)`);
+          ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x + ox * S, y + oy * S, r, 0, 7); ctx.fill();
+        }
+      }
+      ctx.strokeStyle = 'rgba(30,31,32,0.55)'; ctx.lineWidth = 2;   // the seal joints, on the tile's own edges
+      ctx.beginPath(); ctx.moveTo(0, 1); ctx.lineTo(S, 1); ctx.moveTo(1, 0); ctx.lineTo(1, S); ctx.stroke();
+    }, [26, 21]);                                            // one tile ≈ 11.5 m of tarmac
+    sqTex.anisotropy = 8;
+    filmTex.push(sqTex);
+    const matSq = nfm({ map: sqTex, color: 0xb9bdbd, roughness: 0.95 });
     const matCream = nfm({ color: 0xe9e0cc, roughness: 0.9 });
     const matOchre = nfm({ color: 0xd79a52, roughness: 0.9 });
     const matWin = nfm({ color: 0x2a3a44, roughness: 0.35, metalness: 0.3 });
     fmesh(paradeRoot, new THREE.PlaneGeometry(300, 240), matSq, 0, 0.01, 30, -Math.PI / 2);
     for (const lx of [-18, 0, 18]) fmesh(paradeRoot, new THREE.PlaneGeometry(0.12, 50), matWhite, lx, 0.02, 0, -Math.PI / 2);
+    /* THE BAYS. Standard marking: a 2.5 m bay, 5.0 m deep, back-to-back in
+       pairs with a 6.0 m aisle between pairs — a 16 m module, laid out from
+       z −46 forward so the rows fall BEHIND and BESIDE the ranks rather than
+       under them. One InstancedMesh for the whole grid (392 dividers and 8
+       head lines), so a car park's worth of paint is ONE draw call; the
+       lines are geometry rather than paint in the tile because a 10 cm
+       stripe on an 11.5 m tile is two texels and would alias to nothing. */
+    {
+      const BAY_W = 2.5, BAY_D = 5.0, MOD = 16.0, X0 = -60, X1 = 60;
+      const rows = [];                                   // [z of the bay's open end, direction]
+      for (let m = 0; m < 4; m++) { const base = -46 + m * MOD; rows.push(base + BAY_D, base + BAY_D); }
+      const divs = [];                                   // { x, z, len, horiz }
+      for (let m = 0; m < 4; m++) {
+        const base = -46 + m * MOD;
+        for (const [z0, z1] of [[base, base + BAY_D], [base + BAY_D, base + 2 * BAY_D]]) {
+          for (let x = X0; x <= X1 + 0.01; x += BAY_W) divs.push({ x, z: (z0 + z1) / 2, len: BAY_D, horiz: false });
+          divs.push({ x: (X0 + X1) / 2, z: z1, len: X1 - X0, horiz: true });
+        }
+      }
+      const bayGeo = new THREE.PlaneGeometry(1, 1);
+      const bays = new THREE.InstancedMesh(bayGeo, nbm({ color: 0x8e8f88 }), divs.length);
+      const mtx = new THREE.Matrix4(), q = new THREE.Quaternion()
+        .setFromEuler(new THREE.Euler(-Math.PI / 2, 0, 0));
+      const sc = new THREE.Vector3(), pos = new THREE.Vector3();
+      divs.forEach((d, i) => {
+        sc.set(d.horiz ? d.len : 0.11, d.horiz ? 0.11 : d.len, 1);
+        pos.set(d.x, 0.02, d.z);
+        mtx.compose(pos, q, sc);
+        bays.setMatrixAt(i, mtx);
+      });
+      bays.instanceMatrix.needsUpdate = true;
+      bays.frustumCulled = false;            // one object spanning 120 m; its own sphere is fine but this costs nothing
+      paradeRoot.add(bays);
+    }
     /* the block: four storeys of cream with ochre bands and a stair tower,
        the photograph's own proportions (a long face, a raised centre) */
     const BLK = { w: 46, h: 15.5, d: 11 };
@@ -1431,17 +1835,38 @@
        column `solid()` puts round the mattress (±3.51), so a recruit stands
        where the player can see him without standing in the walking lane;
        `walktest` is unchanged by them, since a rig is not a blocker.
-       The pair at z −3.00 and −1.50 face each other across 1.5 m — that is
-       the conversation, told by where they stand rather than by a talking
-       take nobody can hear. */
+
+       v8.9 (Chad: "why there are missing bunkmates now?"). Two of them
+       carried `low: false` and a `.filter(m => !LOW || m.low)` dropped them
+       on every PHONE — which is the only device he plays on, so the bunk he
+       saw had four men in it and two made beds nobody owned. The filter is
+       gone. It was written at v8.1 when a rig in this chapter was never
+       culled at all; v8.4 gave every rig a real `CULL_SPHERE` covering every
+       pose of every clip it can play, so a man the lens is NOT pointed at
+       now costs nothing at all. Priced, rather than assumed: one of them in
+       shot is 44,539 triangles, and the bunk looking straight down the −x
+       bed row with all six built peaks at **255,161** — under the 297,872
+       v8.6 already left this chapter at. The room did not get dearer than
+       its own worst frame; it only stopped being half empty.
+
+       v8.9, second half (Chad: "there are also 2 bunkmates facing the wrong
+       way different from everyone else"). He was reading the room correctly:
+       every other man in it turns toward the aisle, and the pair at z −3.00
+       and −1.50 faced each OTHER along the room — v8.1's "conversation, told
+       by where they stand". Measured on the shipped build, their world
+       forward was (0.13, 1.04) and (0.15, −1.04) against the aisle-facing
+       (±1.02, ~0.2) of the other four. The conversation survives as a LEAN:
+       both are on the aisle now, each canted 0.35 rad toward the other, so
+       they read as two men talking rather than as two men who have been
+       stood the wrong way round. */
     const BUNK_MEN = [
-      { x: -3.25, z: -3.00, ry: 0.12,             kind: 'admintee', line: -1.70, low: true },
-      { x: -3.25, z: -1.50, ry: Math.PI - 0.14,   kind: 'admintee', line: -0.85, low: false },
-      { x: -3.25, z:  0.00, ry: 1.35,             kind: 'admintee', line:  0.00, low: true },
-      { x:  3.25, z: -2.20, ry: -1.32,            kind: 'admintee', line:  2.55, low: false },
-      { x:  3.25, z:  2.20, ry: -1.78,            kind: 'admintee', line:  3.40, low: true },
-      { x:  3.25, z:  3.35, ry: -2.15,            kind: 'admintee', line:  4.25, low: true },
-    ].filter(m => !LOW || m.low);
+      { x: -3.25, z: -3.00, ry: Math.PI / 2 - 0.35, kind: 'admintee', line: -1.70 },
+      { x: -3.25, z: -1.50, ry: Math.PI / 2 + 0.35, kind: 'admintee', line: -0.85 },
+      { x: -3.25, z:  0.00, ry: 1.35,               kind: 'admintee', line:  0.00 },
+      { x:  3.25, z: -2.20, ry: -1.32,              kind: 'admintee', line:  2.55 },
+      { x:  3.25, z:  2.20, ry: -1.78,              kind: 'admintee', line:  3.40 },
+      { x:  3.25, z:  3.35, ry: -2.15,              kind: 'admintee', line:  4.25 },
+    ];
     /* ONE MODEL, the green admin tee (Chad, v8.3: "i want all the bunkmates
        to be the same green admin tshirt one, not the blue botak one"). It is
        also what makes the punishment beat possible: the tee is the only rig
@@ -1802,7 +2227,7 @@
        made the first press of E silent. Named rather than globbed, so a new
        line has to be added here on purpose — the same discipline as the cue
        table: a sound nobody warms is a press that waits. */
-    const PLAY_LINES = ['b1day', 'b1sleep', 'dooropen2', 'e1backbunk', 'e1knock',
+    const PLAY_LINES = ['b1day', 'b1sleep', 'e1backbunk', 'e1knock',   // v8.9: 'dooropen2' left with the door hotspot — it is scene A's cue now, and the film warms its own
       'k1board', 'k1three',
       'n1bedfail', 'n1bedok', 'n1board', 'n1fallin', 'n1hear', 'n1late',
       'n1lights', 'n1shower', 'n1wake', 'pushups', 's1again', 's1fallin',
@@ -2490,28 +2915,16 @@
 
     /* --------------------------------------------------------- hotspots */
     const seen = new Set();
-    /* v7.5: THE DOORS. Chad, from inside the block: "im suddenly stuck there
-       with no way to get out ... make the door interactable with E or tap so
-       that the player can be moved outside or into a different area". The
-       block was never sealed (measured: every cell of it reachable) — the
-       leaf hung across the opening and nothing could be touched, so it READ
-       as a wall. The door is a hotspot now: it swings fully open with its
-       sound and steps you through to the other side, from either side. The
-       entrance is a hotspot too, so the corridor answers when asked. */
-    function useDoor() {
-      if (worldSfx) worldSfx('dooropen2', 0.8);
-      tween(() => doorPivot.rotation.y, v => { doorPivot.rotation.y = v; }, DOOR_OPEN, 0.45);
-      const inBlock = yaw.position.z > R.z;
-      yaw.position.x = DOOR_WC.x;
-      yaw.position.z = inBlock ? R.z - 0.95 : R.z + 0.95;
-      return true;
-    }
+    /* v7.5 put a hotspot on the toilet door, because the leaf read as a wall
+       and Chad got stuck behind it. v8.9 removes the hotspot instead of
+       teaching the player to use it: the door simply stands open (see
+       `DOOR_PLAY` above), so walking in and out needs no interaction at all —
+       which is what he asked for, and is one fewer thing between him and the
+       three things in that block he is actually meant to look at.
+       The entrance is still a hotspot, so the corridor answers when asked. */
     const hotspots = [
       /* the anchors sit at EYE height: a hotspot must be on screen to be offered, and a
          doorway's floor point is 44° under the lens from a metre away — outside the view */
-      { id: 'wcdoor', pos: { x: DOOR_WC.x, y: 1.5, z: R.z }, radius: 2.3, prompt: DATA.words.hotDoor,
-        enabled: () => phase !== 'lightsout' && !lying(),
-        onInteract() { return useDoor(); } },
       { id: 'out', pos: { x: DOOR_IN.x, y: 1.5, z: -R.z + 0.35 }, radius: 1.6, prompt: DATA.words.hotOut,
         enabled: () => phase !== 'lightsout' && !lying(),
         onInteract() { return false; } },
@@ -2780,7 +3193,7 @@
     function reset() {
       freezeStatic(false);           // v8.6: thaw before a replay moves anything
       ferryRoot.visible = jettyRoot.visible = paradeRoot.visible = false;   // v7.9: the film's three sets, in case a film was cut before its own step hid them
-      doorPivot.rotation.y = DOOR_AJAR; fanSpeed = 1; setShower(false);
+      doorPivot.rotation.y = DOOR_PLAY; fanSpeed = 1; setShower(false);
       ghostFig.group.visible = false; water.material.opacity = 0.55; hisBed.low.on.visible = false;
       setNightRoom(false);                       // v7.5: leaves the evening lamps lit
       putSergeant(SGT_DOOR, true);               // v8.2: a reset stands them there, never walks them
