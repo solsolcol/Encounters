@@ -3019,3 +3019,54 @@ And a measurement correction rides with it: the v8.4 figures (275,278
 triangles a frame, −58%) were taken on the build with five characters
 missing. With everyone present it is 438,715, a −34% saving against v8.3's
 661,410. Still worth having, but not what was first reported.
+
+## A film set is painted at HALF the brightness it should read at (v8.9)
+
+The renderer is `ACESFilmicToneMapping` with `toneMappingExposure = 1.42`,
+which multiplies linear radiance by 1.42 / 0.6 = **2.37 before the curve**,
+and the curve then rolls everything bright toward white. Worked through the
+real transform: a sky painted `#87b2d6` — an ordinary blue — arrives on screen
+as `#d5eaf2`, near white. To READ as `#4e8bc8` it must be PAINTED `#314c78`.
+
+That is why episode 2 chapter 1's first rebuilt ferry window looked out on a
+white void, and it was found by asking the renderer (`toneMapping`,
+`toneMappingExposure`) rather than by tuning colours until something looked
+right. Only bright surfaces need the inverse — water, hull and tree lines live
+where the curve is nearly linear.
+
+Two smaller members of the same family, both found by render in the same
+build:
+
+- **a greyscale map MULTIPLIES the material's colour.** A mid-grey (0x9a)
+  seat weave took the seats' blue to a third of itself and the cabin rendered
+  with black seats. A tint-carrying tile must be near-white, with its detail
+  in the strokes' alpha rather than in the base fill.
+- **a metal with no environment map has nothing to reflect**, so
+  `metalness: 0.85` renders near black. Chrome-looking trim in a set with no
+  env map is a light dielectric (`roughness` 0.35, `metalness` 0.12).
+
+## The camera's far plane is 160 m, and that is what sizes a film set (v8.9)
+
+`new THREE.PerspectiveCamera(72, aspect, 0.08, 160)`. A pocket set built
+beyond it is silently CLIPPED — episode 2 chapter 1's first real sea was a
+disc of radius 400 under a dome of 420 and rendered as a hard edge across the
+water at 160 m with the rest of the world showing past it.
+
+The same number is a TOOL, not only a limit. Park a pocket set more than 160 m
+from everything else and **distance does the hiding**: nothing of the world
+can appear behind it, with no visibility flags and nothing to remember to
+switch off. e2c1's ferry sits at (−70, −420) for exactly that reason — camp
+426 m, jetty 461, parade 443. Fog and the far plane are both measured from the
+CAMERA, which is inside the set, so moving the pocket changes nothing else.
+
+## How much sea a window shows is arithmetic, not art direction (v8.9)
+
+From an eye `h` above the water, the visible sea runs from the horizon down to
+whatever the hull hides. Cap the gunwale 0.19 m below the seated eye and every
+ray steeper than **9.6°** lands on the boat's own deck — ten degrees of sea in
+a 72° lens, which reads as a flat band whatever is painted on it. Cap it at
+0.80 with the window sill just above at 0.86 and the same arithmetic gives
+**30.4°**. Three times the sea for one number.
+
+The general form: when a shot has too little of something in it, compute the
+angular extent the geometry actually allows before touching the material.

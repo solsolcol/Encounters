@@ -1847,6 +1847,80 @@ What the baseline contains, by release:
   fixed waits and passed standalone while failing under load — **a fixed wait
   in a harness is a coin toss, which is worse than no check.** They poll now.
   docs/V8.7-THE-BED-AND-THE-BEAT.md is the build's memory.
+- **v8.8** THE CIRCLE IS RED AND THE SOUNDS ARE ITS OWN — Chad, on v8.7:
+  *"the sound effects were totally not what i was thinking of / and the circle
+  area of effect, make it red and glowing, do u fucking understand what is
+  GLOWING? the travelling circle is so jerky, i want it smooth like a radar
+  expanding outwards."* Three notes, three causes, and two of them were mine.
+  THE JERK was v8.6's `freezeStatic`: it had frozen the zone's ring MATRICES,
+  so the scale written every frame was only composed at the ~6 s `refreeze()`
+  — measured, 1 distinct value in 40 frames, and 40 of 40 after the ring
+  planes were exempted with `userData.moves`. **Anything that animates its own
+  transform must be exempt from a matrix freeze**, and the exemption belongs
+  beside the freeze, not in a comment somewhere else. THE "NOT GLOWING" was a
+  BLENDING error: additive red over a bright tiled floor sums to WHITE, so the
+  hotter it was drawn the less red it looked. Hue is a NormalBlending tint
+  (`RED_DEEP` 0xb3140b) and glow is a separate additive layer (`RED_HOT`
+  0xff3a1c) over it; the gradient texture went 256 → 512 px, because a 20 cm
+  rim on a 2.7 m disc landed on about nine texels. Three waves travel out on
+  one wall clock at `WAVE_SECS` 2.1, which is the radar. THE SOUNDS were menu
+  beeps borrowed from episode 1 (`uiconfirm`, `uiclick`); four were generated
+  for the job instead — `hudlock` (entering the zone), `hudok` (objective
+  complete), `hudnext` (the next order), `hudfail` (a timer out) — peak-matched
+  to −2.0 dBFS each, both encodings, with their own haptic patterns. And they
+  did not play on the first try, which is the v8.0 law a third time: **the
+  engine warms a CHAPTER's sounds and had no way to warm its own**, so a
+  module-scope `WARM_WANT` now carries the HUD's three. Also the objective's
+  words swap out and in rather than cutting, and a light scans the box.
+- **v8.9** THE SEA, THE CAR PARK, AND THE MEN WHO WERE MISSING — Chad's five
+  notes, all episode 2 chapter 1; `src/main.js` untouched, so episode 1 is
+  unchanged by construction. THE MISSING BUNKMATES: `BUNK_MEN` ended with
+  `.filter(m => !LOW || m.low)` and two of six carried `low: false`, so every
+  PHONE — the only device he plays on — built four men and left two made beds
+  owned by nobody. The filter dates from v8.1, when no rig here was culled at
+  all; v8.4's `CULL_SPHERE` made a man off-camera free, so it went. Priced
+  rather than assumed: one of them in shot is 44,539 triangles and the bunk
+  down the whole −x bed row with all six built peaks at **255,161** — under
+  the 297,872 v8.6 left the chapter at. THE TWO FACING THE WRONG WAY: measured
+  world forwards of (0.13, 1.04) and (0.15, −1.04) against the (±1.02, ~0.2)
+  of the other four. v8.1 meant the pair as a conversation; among a roomful of
+  men all facing the aisle it reads as two men stood the wrong way round. Both
+  are on the aisle now, canted 0.35 rad toward each other, so the conversation
+  survives as a LEAN. THE TOILET DOOR stands open and its hotspot is gone (his
+  ask): the block was never sealed — `walktest` has said so since v7.4 — what
+  trapped him was the LEAF across a 0.9 m opening in an unlit block, and a
+  doorway you cannot see is a wall. Measured after: the open leaf stands clear
+  of the whole aperture, and a flood fill of the real collision grid from the
+  spawn reaches the doorway, the shower and back out. THE SEA: v7.9's was a
+  vertical SHEET, one painted gradient hung 16 m off each side, and **a
+  gradient standing up in front of a window has no perspective in it**, so no
+  amount of paint could have made it water. It is geometry now — hull, a
+  scrolling foam wake, a water disc under a seamless crest tile scrolled at
+  two rates, a haze cylinder, a sky dome, a tree line, four ships — and three
+  measurements got it there. **The camera's far plane is 160 m**: the first
+  pass built the sea at 400 and was simply clipped, putting a hard edge across
+  the water with the camp showing past it; every radius is set by that number
+  now (dome 155, water 148, haze 136, shore 132) and the pocket moved to
+  (−70, −420) so the camp, the jetty and the parade square are all past 160 m
+  — **distance does the hiding**, with no flags and nothing to switch off.
+  **The gunwale must sit under the sill**: capped 0.19 m below the seated eye,
+  every ray steeper than 9.6° landed on the boat's own deck — ten degrees of
+  sea in a 72° lens; capped at 0.80 under a sill dropped 1.06 → 0.86, the same
+  arithmetic gives 30.4°. And **paint a film set at half the brightness you
+  want on screen**: the renderer is ACESFilmic at exposure 1.42, which scales
+  linear radiance by 2.37 before the curve, so a sky painted #87b2d6 arrives
+  as #d5eaf2 — which is why the window looked out on a white void. (Two
+  smaller members of the same family, both found by render: a greyscale map
+  MULTIPLIES the material's colour, so a mid-grey weave took the seats to a
+  third of their blue; and a metal with no environment map has nothing to
+  reflect and renders near black, which is what the first grab rails did.) The
+  cabin is dressed — grab rails, parcel shelves and bags, life rings, a
+  passenger notice, muster and exit signs, an extinguisher, kit on the floor.
+  THE PARADE SQUARE GROUND is asphalt with aggregate, patches and joints plus
+  a grid of car-park bays over the half the camera pans across: 392 dividers
+  in ONE InstancedMesh, geometry rather than paint because a 10 cm stripe on
+  an 11.5 m tile is two texels. It was a flat cream plane and the ranks were
+  standing in a white void. docs/V8.9-THE-SEA.md is the build's memory.
 - **v7.9** THE FERRY FROM INSIDE, TEKONG, THE PARADE SQUARE, THE BUNK —
   Chad, with five reference photographs: *"I dont want to see the outside
   of the ferry and the sea, it should show first person pov within inside
