@@ -131,7 +131,6 @@
       hotBuddy: 'Talk to him',
       hotBoard: 'Read the notice board',
       hotBunkmate: 'Ask him about bed one',
-      hotOut: 'The corridor. Not tonight.',
       evBed: 'STANDBY BED',
       evFear: 'FEAR CONTROL',
       noteOnTime: 'Fell in on time.',
@@ -206,7 +205,7 @@
 
     /* ------------------------------------------------------------- the map */
     const R = { x: 6.0, z: 4.0, h: 3.0, wall: 0.16 };
-    const DOOR_IN = { x: 0, w: 1.0, h: 2.1 };                 // the entrance, −z wall
+    const DOOR_IN = { x: 0, w: 1.0, h: 2.1 };                 // v9.1: the wall is solid; this is kept as the landmark the −z dressing is placed from
     const DOOR_WC = { x: -3.3, w: 0.9, h: 2.05 };              // the toilet-block door, +z wall
     const OPEN = { z0: -1.2, z1: 1.2, h: 2.2 };                // the balcony opening, +x wall
     const BLOCK = { x0: -6.0, x1: -0.5, z0: 4.0, z1: 7.5 };    // the shower block
@@ -289,25 +288,21 @@
     ceil.rotation.x = Math.PI / 2; ceil.position.set(0, R.h, 0);
     world.add(ceil);
 
-    // −z wall with the entrance (a doorway, no leaf: the corridor outside is dark)
+    /* −z wall, SOLID (v9.1). Chad: "remove the dark red corridor and the
+       corridor interaction since it looks useless and pointless. Make that a
+       normal wall and fill it up." It was a doorway into a dark box with a
+       hotspot that said "The corridor. Not tonight." and did nothing — a way
+       out the chapter never lets you take, which is exactly what makes it
+       read as pointless rather than as atmosphere. The doorway, the box, its
+       doormat floor and the `out` hotspot are all gone; the wall runs the
+       full width, so `blockers()` boxes one wall instead of three and the
+       8 cm floor gap the doormat was covering cannot exist. The bunk's own
+       fittings against it — the extinguisher, the bin, the notice board —
+       stay where they were, and it is dressed below so a blank 12 m² of
+       wall does not read as a missing room. */
     {
-      const z = -R.z - R.wall / 2, l = DOOR_IN.x - DOOR_IN.w / 2, r = DOOR_IN.x + DOOR_IN.w / 2;
-      wall(l + R.x, R.h, R.wall, (-R.x + l) / 2, R.h / 2, z);
-      wall(R.x - r, R.h, R.wall, (r + R.x) / 2, R.h / 2, z);
-      wall(DOOR_IN.w, R.h - DOOR_IN.h, R.wall, DOOR_IN.x, (R.h + DOOR_IN.h) / 2, z);
-      // the corridor beyond: a dark box, so the doorway reads as a way out
-      const dark = new THREE.Mesh(new THREE.BoxGeometry(DOOR_IN.w + 0.6, R.h, 2.4),
-        new THREE.MeshStandardMaterial({ color: 0x0c0d0f, roughness: 1, side: THREE.BackSide }));
-      dark.position.set(DOOR_IN.x, R.h / 2, z - 1.3);
-      world.add(dark);
-      /* v7.2: and a floor of its own, run 24 cm into the room as a rubber
-         DOORMAT — the bunk's floor ends at the wall's inner face and the
-         corridor's began at its outer one, and the square's grass plane
-         showed through the 8 cm between them as a green sliver */
-      const darkFloor = new THREE.Mesh(new THREE.PlaneGeometry(DOOR_IN.w + 0.6, 2.9),
-        new THREE.MeshStandardMaterial({ color: 0x141614, roughness: 1 }));
-      darkFloor.rotation.x = -Math.PI / 2; darkFloor.position.set(DOOR_IN.x, 0.012, z - 1.3 + 0.16);
-      world.add(darkFloor);
+      const z = -R.z - R.wall / 2;
+      wall(R.x * 2, R.h, R.wall, 0, R.h / 2, z);
     }
     // +z wall with the toilet-block door
     {
@@ -327,7 +322,20 @@
     }
 
     /* the toilet-block door leaf, hinged on the −x side, swinging INTO the
-       block (+z). A named swing contract, the v4.6 lesson. */
+       block (+z). A named swing contract, the v4.6 lesson.
+
+       v9.1 (Chad): "can you also make the toilet door open the other way? It
+       is colliding with the bed, and also affects the check the toilet
+       cutscene." He was right and the comment above was WRONG — a POSITIVE
+       rotation about y takes the leaf's +x arm toward −z, which is the BUNK,
+       not the block. Measured on the shipped v9.0 build, the open leaf ran
+       from its hinge at (−3.750, 4.080) to (−3.686, 3.182); his bed's frame
+       spans x −5.55…−3.65 and z 2.55…3.45, so the last 27 cm of the door
+       stood inside the bed. The angles are negative now, which swings it the
+       other way — into the block, where the nearest thing is a cubicle
+       partition 2.4 m further on — and AJAR goes with it, so the film's
+       almost-shut door and scene A's swing are one motion in one direction
+       rather than a door that opens through its own frame. */
     const doorPivot = new THREE.Group();
     doorPivot.position.set(DOOR_WC.x - DOOR_WC.w / 2, 0, R.z + R.wall / 2);
     world.add(doorPivot);
@@ -335,7 +343,7 @@
     doorLeaf.position.set(DOOR_WC.w / 2, DOOR_WC.h / 2, 0);
     doorLeaf.castShadow = !LOW; doorLeaf.receiveShadow = true;
     doorPivot.add(doorLeaf);
-    const DOOR_SHUT = 0, DOOR_AJAR = 0.35, DOOR_OPEN = 1.5;      // rotation.y, positive = into the block
+    const DOOR_SHUT = 0, DOOR_AJAR = -0.35, DOOR_OPEN = -1.5;    // rotation.y, NEGATIVE swings into the block (measured, v9.1)
     /* v8.9 (Chad): "the toilet is very buggy. When i go in, i cannot find my
        way out. Why not just keep the toilet door open at all times so i can
        freely walk in and out without interacting with the toilet door?"
@@ -415,24 +423,33 @@
       }
       const b = { x, z, group: g, low: decks.low, high: decks.high, head: headTowardWall,
                   mesh: decks.highMesh, his: (x === HIS.x && z === HIS.z) };
-      /* v9.0: THE PARTS CHAD'S MODEL SUPERSEDES, named here where they are
-         made rather than found later by a traverse. The frame, the mattresses
-         and the pillows are the model's now. Everything the model does NOT
-         carry stays: the bedsheet, the folded blanket, the one pulled over a
-         sleeper, the boots — and the WIRE BASE, which is not superseded but
-         MOVED. v7.2 added it at `deck − 0.155` so that the film's last shot
-         and scenes B and D had something other than a black slab to look up
-         at; the model's mattress bottom sits at 1.272, ABOVE that, so left
-         where it was the mesh would hang inside the mattress. It drops to
-         1.260, just under it, and a man lying on the bottom bunk now looks up
-         at a spring base with a mattress resting on it.
+      /* THE PARTS CHAD'S MODEL SUPERSEDES, named here where they are made
+         rather than found later by a traverse.
+
+         v9.0 hid the frame, the mattresses and the pillows and LEFT the
+         bedding standing — and v9.1 is Chad looking at the result: "why is
+         the old bed/mattress/pillow colliding and floating above the new 3d
+         bed model? Remove the old ones." Photographed from his own eye at
+         the foot of bed one, he is right: the primitive BEDSHEET is a pale
+         slab 1.2 cm proud of an olive mattress that already has its own
+         cover, the folded blanket is a green box standing on the guard rail
+         at the end nearest the lens, and the WIRE BASE is a plane hanging
+         1.5 cm under a mattress whose frame carries its own. All three are
+         things the model brings, drawn twice.
+
+         What stays is what the model does NOT carry: the BOOTS under the bed,
+         and the blanket pulled over a SLEEPER, which is a man's blanket
+         rather than the bed's and is only ever visible at lights out.
+
          The meshes are HIDDEN, never removed — `blockers()` boxes
          `low.mattress` and the bed's tap test raycasts it, and three.js does
          both to an invisible mesh exactly as it does to a visible one
          (checked, not assumed). They are the proxies the room is built on. */
       b.supersede = [...g.children.filter(o => o.geometry === bedGeo.post
                        || o.geometry === bedGeo.rail || o.geometry === bedGeo.railEnd
-                       || o.geometry === bedGeo.mat || o.geometry === bedGeo.pillow)];
+                       || o.geometry === bedGeo.mat || o.geometry === bedGeo.pillow
+                       || o.geometry === bedGeo.sheet || o.geometry === bedGeo.blanketFold
+                       || o.geometry === bedGeo.mesh)];
       beds.push(b);
       return b;
     }
@@ -504,11 +521,12 @@
         b.group.add(m);
         b.model = m;
         for (const o of b.supersede) o.visible = false;
-        /* the wire base under the top deck's real mattress (see mkBed). Done
-           HERE rather than at build time, because if the download never
-           lands the primitive bed is what is standing and 1.395 is where its
-           own slab wants it. */
-        if (b.mesh) b.mesh.position.y = BUNK.botHi * BUNK_SY + BUNK_DY - 0.012;   // 1.260: 12 mm under the mattress it holds up
+        /* v9.0 moved the primitive WIRE BASE down to 1.260 here, to sit just
+           under the model's top mattress. v9.1 supersedes it instead (see
+           mkBed): the model's frame carries its own base, and a second one
+           hanging 1.5 cm below a mattress is one of the three leftovers Chad
+           saw. It is hidden the moment the model lands, and if the download
+           never lands the primitive bed stands untouched, base and all. */
       });
       redoShadows();                          // nine new shadow casters, as every other loader here does
     })).catch(() => {});                      // the primitives are already standing
@@ -647,6 +665,35 @@
       const bucket = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.13, 0.28, 12),
         new THREE.MeshStandardMaterial({ color: 0xd9b23a, roughness: 0.6 }));
       bucket.position.set(DOOR_WC.x + 0.85, 0.14, R.z - 0.3); world.add(bucket);
+
+      /* v9.1: what stands where the entrance used to be. Sealing the −z wall
+         (above) left 12 m² of blank paint in the middle of the shot the film
+         ends on, so the wall is dressed the way a bunk's is: a rail of hooks
+         with two towels on it, and a first-aid box beside them. All
+         primitives, no download, and all of it flat against the wall — the
+         blockers box the WALL, so nothing here is walked into. */
+      const matRail = new THREE.MeshStandardMaterial({ color: 0x8d949a, roughness: 0.5, metalness: 0.5 });
+      const rail = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.035, 0.035), matRail);
+      rail.position.set(0, 1.72, -R.z + 0.07); world.add(rail);
+      for (const hx of [-0.6, -0.3, 0, 0.3, 0.6]) {
+        const hook = new THREE.Mesh(new THREE.BoxGeometry(0.022, 0.09, 0.022), matRail);
+        hook.position.set(hx, 1.67, -R.z + 0.10); world.add(hook);
+      }
+      const matTowel = [0x9fb0a4, 0x6f7f92];
+      [-0.3, 0.3].forEach((tx, i) => {
+        const tw = new THREE.Mesh(new THREE.BoxGeometry(0.30, 0.62, 0.045),
+          new THREE.MeshStandardMaterial({ color: matTowel[i], roughness: 0.95 }));
+        tw.position.set(tx, 1.35, -R.z + 0.10); tw.rotation.z = i ? 0.03 : -0.04; world.add(tw);
+      });
+      const aid = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.30, 0.13),
+        new THREE.MeshStandardMaterial({ color: 0xe6e2d6, roughness: 0.7 }));
+      aid.position.set(1.05, 1.62, -R.z + 0.08); world.add(aid);
+      const cross = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.045, 0.01),
+        new THREE.MeshStandardMaterial({ color: 0xb8241c, roughness: 0.6 }));
+      cross.position.set(1.05, 1.62, -R.z + 0.145); world.add(cross);
+      const crossV = new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.16, 0.01),
+        new THREE.MeshStandardMaterial({ color: 0xb8241c, roughness: 0.6 }));
+      crossV.position.set(1.05, 1.62, -R.z + 0.145); world.add(crossV);
     }
 
     /* ---------------------------------------------------- fans and tubes */
@@ -766,9 +813,36 @@
       bwall(R.wall, R.h, wd, BLOCK.x0 - R.wall / 2, R.h / 2, wz);            // −x
       bwall(R.wall, R.h, wd, BLOCK.x1 + R.wall / 2, R.h / 2, wz);            // +x (the partition)
       bwall(bw + R.wall * 2, R.h, R.wall, bx, R.h / 2, BLOCK.z1 + R.wall / 2); // far wall
-      // the wall the block shares with the bunk faces it in tile
-      const back = new THREE.Mesh(new THREE.PlaneGeometry(bw, R.h), matTile);
-      back.position.set(bx, R.h / 2, BLOCK.z0 + R.wall + 0.01); world.add(back);
+      /* the wall the block shares with the bunk faces it in tile — WITH THE
+         DOORWAY CUT OUT OF IT (v9.1). Chad: "when i walk into the toilet, and
+         then turn back to my bed, i cannot see the entrance/door to get back
+         to my bed." He was describing this plane exactly: it ran the full
+         5.5 m of the shared wall at full height and covered the opening, so
+         from inside the block the way out was a flat sheet of tile. It is not
+         a blocker, so he could always WALK through it — which is worse, not
+         better: the block had no visible exit and the one that worked was
+         invisible. Three pieces now, left of the door, right of it, and the
+         lintel over it, so the lit bunk shows through the hole. */
+      {
+        const bz = BLOCK.z0 + R.wall + 0.01;
+        const dl = DOOR_WC.x - DOOR_WC.w / 2, dr = DOOR_WC.x + DOOR_WC.w / 2;
+        const piece = (w, h, x, y) => {
+          const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), matTile);
+          m.position.set(x, y, bz); world.add(m);
+        };
+        piece(dl - BLOCK.x0, R.h, (BLOCK.x0 + dl) / 2, R.h / 2);
+        piece(BLOCK.x1 - dr, R.h, (dr + BLOCK.x1) / 2, R.h / 2);
+        piece(DOOR_WC.w, R.h - DOOR_WC.h, DOOR_WC.x, (R.h + DOOR_WC.h) / 2);
+        /* and a jamb round the opening, so it still reads as a doorway when
+           the bunk beyond it is dark */
+        const matJamb = new THREE.MeshStandardMaterial({ color: 0x7f8a84, roughness: 0.7 });
+        for (const jx of [dl, dr]) {
+          const j = new THREE.Mesh(new THREE.BoxGeometry(0.05, DOOR_WC.h, 0.05), matJamb);
+          j.position.set(jx, DOOR_WC.h / 2, bz - 0.03); world.add(j);
+        }
+        const head = new THREE.Mesh(new THREE.BoxGeometry(DOOR_WC.w + 0.1, 0.05, 0.05), matJamb);
+        head.position.set(DOOR_WC.x, DOOR_WC.h, bz - 0.03); world.add(head);
+      }
       // four cubicles along the far wall, a low partition each, a shower head each
       for (let i = 0; i < 3; i++) {
         bwall(0.06, 2.0, 1.1, BLOCK.x0 + 1.35 * (i + 1) - 0.02, 1.0, BLOCK.z1 - 0.55);
@@ -2036,13 +2110,54 @@
     }
     const bunkCrowdShow = (on) => { for (const c of bunkCrowds) c.group.visible = on; };
 
-    /* THE SLEEPERS: six statues (the lying model, cloned) and two rigs on
-       their own sleeping takes, in eight of the nine other bottom bunks —
-       shown at lights out, hidden by day. The buddy's bed is the one beside
-       his; he becomes its sleeper. */
+    /* THE SLEEPERS: eight men in the eight other bottom bunks — shown at
+       lights out, hidden by day. The bed beside his is the buddy's.
+
+       v9.1, Chad, on v9.0: "the 3am scene, all the bunkmates are sleeping the
+       wrong way. You have to flip them so their head is on the pillow. Also i
+       previously provided 2 types of sleeping model ... You have to mix both
+       and distribute them, vary between them. The bunkmate sleeping next to
+       the player must be the animated one."
+
+       Both halves were real and both were MEASURED on the shipped v9.0 build
+       before anything moved:
+
+       · THE STATUE lies along its own z, and its head is at that model's −z
+         end. Sliced into ten bins along it, the −z end is 0.80 m across and
+         0.32 m tall (shoulders, with the arms up behind the head) and the +z
+         end is 0.24 m across and the lowest thing in the file (feet). v7.1
+         turned it by `+π/2 (+π when head < 0)`, which puts −z at +x on the
+         balcony row and at −x on the wall row — the OPPOSITE of the pillow in
+         both, so every statue in this bunk has slept with its feet on the
+         pillow since the chapter shipped.
+       · THE RIG was worse and nobody had looked: measured, its world box was
+         0.58 m on x by 1.60 m on z — it lay ACROSS the bed, sticking a third
+         of a metre into the aisle at one end and into the next bed at the
+         other, with the head bone sitting over the middle of the mattress.
+         v7.1's `if (size.x > size.z) m.rotation.y += Math.PI / 2` is the test
+         inverted (the body must be turned when it is long on Z, not on X) and
+         it was applied AFTER the centring, which the turn then invalidated.
+
+       So the facing is not guessed here any more. The statue takes the one
+       angle its measurement gives; the rig is turned by its own HEAD BONE —
+       long axis to the bed's length, head toward the pillow — and only then
+       scaled, centred and grounded, in the bed group's own frame, where the
+       pillow is always at +x (that is what `g.rotation.y` is for).
+
+       And the mix is FOUR AND FOUR, dealt so no two rigs share a wall: the
+       wall row alternates statue, rig, statue, rig and the balcony row runs
+       statue, rig, rig, statue. Index 3 is the bed beside his — Chad's "must
+       be the animated one" — and it is also scene C's neighbour, the man who
+       rolls over when the player whispers, which is the one sleeper in the
+       chapter a cutscene points the camera at. The four rigs come from ONE
+       parse and three `cloneSkinned` copies (shared geometry, one upload),
+       each with its own mixer, its own take out of the file's three and its
+       own rate, so four breathing men are four different men. */
     const sleepers = [];              // { bed, obj, rig? }
     const sleepBeds = beds.filter(b => !b.his);
-    const RIGGED = new Set([1, 6]);   // which of the eight get a breathing take
+    const RIGGED = [1, 3, 5, 6];      // which of the eight breathe (3 is the bed beside his)
+    const SLEEP_TAKE = ['Sleep_Normally', 'Cough_While_Sleeping', 'Sleep_Normally', 'Groan_Holding_Stomach_in_Sleep'];
+    const SLEEP_RATE = [0.85, 0.72, 1.00, 0.80];
     const sleeperRoot = new THREE.Group(); sleeperRoot.visible = false; world.add(sleeperRoot);
     assetBytes('sleeper').then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
       if (!alive) return;
@@ -2052,28 +2167,31 @@
       src.updateMatrixWorld(true);
       const box = new THREE.Box3().setFromObject(src);
       const size = box.getSize(new THREE.Vector3());
-      /* the statue lies along its z; a bed's length is x — a quarter turn,
-         centred on the mattress, its back on the mattress top */
+      /* the statue lies along its z with its HEAD at −z (measured, above); a
+         bed's length is x and its pillow is at `b.head`. Turning local −z
+         onto world +b.head·x is a quarter turn of −b.head. */
       const long = size.z >= size.x ? 'z' : 'x';
       const len = Math.max(size.x, size.z), sc = Math.min(1, (BED.len - 0.25) / len);
       sleepBeds.forEach((b, i) => {
-        if (i >= 8 || RIGGED.has(i)) return;
+        if (i >= 8 || RIGGED.includes(i)) return;
         const m = src.clone();
         m.scale.setScalar(sc);
-        m.rotation.y = (long === 'z' ? Math.PI / 2 : 0) + (b.head < 0 ? Math.PI : 0);
+        m.rotation.y = long === 'z' ? -b.head * Math.PI / 2 : (b.head > 0 ? Math.PI : 0);
         m.position.set(b.x, b.low.y + 0.02 - box.min.y * sc, b.z);
         sleeperRoot.add(m);
         /* v7.2: NO blanket on a statue — measured, he lies with his knees up
            and his arms behind his head, 0.53 m off the mattress, and any box
-           that covers him buries him; the two breathing rigs lie flat and
-           take one */
+           that covers him buries him; the breathing rigs lie flat and take one */
         b.low.on.visible = false;
         sleepers.push({ bed: b, obj: m });
       });
       redoShadows();
     }, (err) => console.warn('sleeper failed to load', err)))
       .catch(err => console.warn('sleeper failed to load', err));
-    // the two breathing ones, each its own parse (two skeletons, two clocks)
+    /* the breathing ones: ONE parse, three clones. `cloneSkinned` is the
+       engine's SkeletonUtils clone (v4.8), so the four share geometry and
+       material and each carries its own skeleton — which is what lets each
+       run its own take on its own clock. */
     const sleepRigs = [];
     for (const i of RIGGED) {
       const b = sleepBeds[i]; if (!b) continue;
@@ -2083,54 +2201,94 @@
       sleeperRoot.add(g);
       const rig = { bed: b, group: g, mixer: null, acts: null, ready: false };
       sleepRigs.push(rig);
-      assetBytes('sleepanim').then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
-        if (!alive) return;
-        rescueTextures(gltf, BUF);
-        const m = gltf.scene;
+    }
+    assetBytes('sleepanim').then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
+      if (!alive) return;
+      rescueTextures(gltf, BUF);
+      /* EVERY COPY IS MADE BEFORE ANY OF THEM IS TOUCHED. `cloneSkinned`
+         copies transforms as well as bones, so cloning inside the loop would
+         have taken each copy from the previous one AFTER it had been scaled,
+         turned and grounded. */
+      const copies = sleepRigs.map((_, n) => n === 0 ? gltf.scene : cloneSkinned(gltf.scene));
+      const v = new THREE.Vector3();
+      const skinBox = (m, g) => {
+        m.updateMatrixWorld(true); g.updateMatrixWorld(true);
+        const bb = new THREE.Box3();
+        m.traverse(o => { if (o.isSkinnedMesh) {
+          const p = o.geometry.attributes.position;
+          for (let k = 0; k < p.count; k += 7) { o.getVertexPosition(k, v); v.applyMatrix4(o.matrixWorld); g.worldToLocal(v); bb.expandByPoint(v); }
+        } });
+        return bb;
+      };
+      const REST = 'Sleep_Normally';
+      copies.forEach((m, n) => {
+        const rig = sleepRigs[n];
         m.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.receiveShadow = false; } });
         wideBounds(m, 'sleepanim');             // v8.4: cull by the widest pose
-        g.add(m);
-        if (gltf.animations.length) {
-          rig.mixer = new THREE.AnimationMixer(m);
-          rig.acts = {};
-          for (const clip of gltf.animations) rig.acts[clip.name] = rig.mixer.clipAction(clip);
-          const take = rig.acts.Sleep_Normally || Object.values(rig.acts)[0];
-          take.setEffectiveTimeScale(0.85 + 0.2 * (i % 2)); take.play();
-          rig.mixer.update(0.2);
+        rig.group.add(m);
+        m.rotation.y = 0;
+        if (!gltf.animations.length) return;
+        rig.mixer = new THREE.AnimationMixer(m);
+        rig.acts = {};
+        for (const clip of gltf.animations) rig.acts[clip.name] = rig.mixer.clipAction(clip);
+        /* EVERY COPY IS PUT ON THE SAME TAKE FIRST, and it has to be: this
+           rig's BIND pose is a Mixamo T-POSE STANDING UP, so a body measured
+           before any take has been applied is 1.7 m TALL and half a metre
+           wide — `max(size.x, size.z)` then reads a shoulder span as the
+           length of a sleeping man and scales him to three times the bed.
+           (Measured: widths of 2.9–3.1 m across a 0.9 m mattress. v7.1's code
+           happened to avoid this by measuring after its own mixer update; the
+           trap is in the order, not the arithmetic.) */
+        (rig.acts[REST] || Object.values(rig.acts)[0]).play();
+        rig.mixer.update(0.2);
+      });
+      /* THE SCALE AND THE TURN ARE MEASURED ONCE, on the first copy on the
+         SHARED take, and given to all four. Measuring each man on his own
+         take would scale them differently — a curled-up cough take is a
+         shorter box, which asks for a bigger man — and the v5.05 law is that
+         when new things are placed among existing things, the measure that
+         matters is the one the existing things used. This rig is centimetres
+         (the FBX family) and has no crown bone, so it is measured from the
+         POSED SKIN (the v5.21 trap), in the bed group's own frame, which is
+         the frame the pillow is always at +x in. */
+      const g0 = sleepRigs[0].group, m0 = copies[0];
+      const boxA = skinBox(m0, g0), sizeA = boxA.getSize(new THREE.Vector3());
+      const SC = (BED.len - 0.3) / Math.max(sizeA.x, sizeA.z, 0.01);
+      m0.scale.setScalar(SC);
+      const boxB = skinBox(m0, g0), cB = boxB.getCenter(new THREE.Vector3()), sizeB = boxB.getSize(new THREE.Vector3());
+      let headBone = null;
+      m0.traverse(o => { if (!headBone && HEAD_RE.test(o.name)) headBone = o; });
+      const hp = new THREE.Vector3();
+      if (headBone) { headBone.getWorldPosition(hp); g0.worldToLocal(hp); } else { hp.copy(cB); hp.z -= 1; }
+      const alongX = sizeB.x >= sizeB.z;
+      const sign = Math.sign((alongX ? hp.x - cB.x : hp.z - cB.z)) || 1;
+      // the long axis onto the bed's length, the HEAD toward the pillow at +x
+      const TURN = alongX ? (sign > 0 ? 0 : Math.PI) : (sign > 0 ? Math.PI / 2 : -Math.PI / 2);
+      sleepRigs.forEach((rig, n) => {
+        const g = rig.group, b = rig.bed, m = copies[n];
+        m.scale.setScalar(SC);
+        m.rotation.y = TURN;
+        // now each man takes his own take, at his own rate, at his own breath
+        if (rig.acts) {
+          const want = SLEEP_TAKE[n % SLEEP_TAKE.length];
+          const take = rig.acts[want] || rig.acts[REST] || Object.values(rig.acts)[0];
+          for (const k in rig.acts) if (rig.acts[k] !== take) rig.acts[k].stop();
+          take.reset();
+          take.setEffectiveTimeScale(SLEEP_RATE[n % SLEEP_RATE.length]);
+          take.play();
+          rig.mixer.update(0.2 + n * 0.7);
         }
-        /* this rig is centimetres (the FBX family) and has no crown bone —
-           measured from the posed skin, the v5.21 trap. Scale so the lying
-           body spans the mattress; then ground its lowest bone on the
-           mattress top. */
-        m.updateMatrixWorld(true);
-        const box = new THREE.Box3();
-        const v = new THREE.Vector3();
-        m.traverse(o => { if (o.isSkinnedMesh) {
-          const p = o.geometry.attributes.position;
-          for (let k = 0; k < p.count; k += 7) { o.getVertexPosition(k, v); v.applyMatrix4(o.matrixWorld); box.expandByPoint(v); }
-        } });
-        const size = box.getSize(new THREE.Vector3());
-        const len = Math.max(size.x, size.z, 0.01), sc = (BED.len - 0.3) / len;
-        m.scale.setScalar(sc);
-        m.updateMatrixWorld(true);
-        const box2 = new THREE.Box3();
-        m.traverse(o => { if (o.isSkinnedMesh) {
-          const p = o.geometry.attributes.position;
-          for (let k = 0; k < p.count; k += 7) { o.getVertexPosition(k, v); v.applyMatrix4(o.matrixWorld); box2.expandByPoint(v); }
-        } });
-        const c = box2.getCenter(new THREE.Vector3());
-        // centre on the mattress in the bed's own frame, back on the mattress top
-        g.worldToLocal(c);
-        m.position.x -= c.x; m.position.z -= c.z;
-        m.position.y -= (box2.min.y - g.position.y);
-        if (size.x > size.z) m.rotation.y += Math.PI / 2;
+        // and only now centre him on the mattress and lay his back on it
+        const boxC = skinBox(m, g), cC = boxC.getCenter(new THREE.Vector3());
+        m.position.x -= cC.x; m.position.z -= cC.z;
+        m.position.y -= boxC.min.y;             // g's own origin IS the mattress top + 2 cm
         b.low.on.visible = true;
         rig.ready = true;
         sleepers.push({ bed: b, obj: m, rig });
-        redoShadows();
-      }, (err) => console.warn('sleepanim failed to load', err)))
-        .catch(err => console.warn('sleepanim failed to load', err));
-    }
+      });
+      redoShadows();
+    }, (err) => console.warn('sleepanim failed to load', err)))
+      .catch(err => console.warn('sleepanim failed to load', err));
 
     /* THE BLANKET OVER HIS HEAD (scene D): a weave 11 cm from the lens — the
        world's near plane is 8 cm (v6.12) — on the camera itself, hidden
@@ -3017,13 +3175,14 @@
        `DOOR_PLAY` above), so walking in and out needs no interaction at all —
        which is what he asked for, and is one fewer thing between him and the
        three things in that block he is actually meant to look at.
-       The entrance is still a hotspot, so the corridor answers when asked. */
+       v9.1 removes the ENTRANCE hotspot too, with the entrance itself (Chad:
+       "remove the dark red corridor and the corridor interaction since it
+       looks useless and pointless"). It offered a prompt and answered it by
+       returning false — a thing to walk up to that does nothing — and the
+       −z wall is solid now, so there is nothing there to ask about. */
     const hotspots = [
       /* the anchors sit at EYE height: a hotspot must be on screen to be offered, and a
          doorway's floor point is 44° under the lens from a metre away — outside the view */
-      { id: 'out', pos: { x: DOOR_IN.x, y: 1.5, z: -R.z + 0.35 }, radius: 1.6, prompt: DATA.words.hotOut,
-        enabled: () => phase !== 'lightsout' && !lying(),
-        onInteract() { return false; } },
       { id: 'shower', pos: { x: DOOR_WC.x + 0.4, y: 1.0, z: R.z + 2.2 }, radius: 1.8, prompt: DATA.words.hotShower,
         enabled: () => phase === 'free',
         onInteract() { seen.add('shower'); return sayLine('n1shower'); } },
@@ -3190,7 +3349,11 @@
       encik.group.visible = !on;       // v8.2
       bunkCrowdShow(!on);              // v8.1: the six at their beds go with the rest of the day cast
       sleeperRoot.visible = on;
-      for (const b of beds) { b.low.fold.visible = !on || b.his || !sleepers.find(s => s.bed === b); }
+      /* v9.1: the folded blanket is Chad's model's now (superseded in mkBed),
+         so a bed that is not slept in shows the model's own made mattress.
+         Never write `.visible = true` here — that would resurrect a
+         superseded mesh the next time the lights went out. */
+      for (const b of beds) { if (!b.model) b.low.fold.visible = !on || b.his || !sleepers.find(s => s.bed === b); }
       setLights(on ? 0 : 1);
       clockGlow.intensity = CLOCK_GLOW;          // v7.5: the clock's red is on all evening
       balcLight.intensity = on ? 6 : 5;          // and so is the balcony's sodium lamp

@@ -1962,6 +1962,70 @@ What the baseline contains, by release:
   written against the first hypothesis was REVERTED the moment measurement
   disproved it. Credit row links the Sketchfab model.
   docs/V9.0-THE-BUNK-BED.md is the build's memory.
+- **v9.1** THE BEDDING, THE DOORWAY, THE WALL AND THE SLEEPERS — Chad's four
+  notes the morning after v9.0, all in `src/chapters/e2/e2c1.js`;
+  `src/main.js` is untouched, so episode 1 is unchanged by construction.
+  **THE BEDDING**: v9.0 hid the frame, the mattresses and the pillows and left
+  the BEDDING standing — *"why is the old bed/mattress/pillow colliding and
+  floating above the new 3d bed model? Remove the old ones."* Photographed
+  from his own eye at the foot of bed one, three things were drawn twice: the
+  sheet 1.2 cm proud of a mattress that has its own cover, the folded blanket
+  a green box on the guard rail at the end nearest the lens, and the wire base
+  a plane hanging 1.5 cm under a mattress whose frame carries its own. All
+  three join `supersede` (16 meshes → 21); the only primitives still drawn in
+  a bed group are the BOOTS and the blanket over a SLEEPER, which is a man's
+  blanket rather than the bed's. And `setNightRoom` was writing
+  `fold.visible = true` on most beds at every light change — it would have
+  **resurrected a superseded mesh**, so it is guarded on `!b.model`.
+  **THE DOORWAY**: v7.5 proved the toilet block reachable and v8.9 left its
+  door permanently open, and Chad still could not get out — *"when i walk into
+  the toilet, and then turn back to my bed, i cannot see the entrance/door to
+  get back to my bed."* One mesh explains it: the block's shared wall was a
+  single `PlaneGeometry(5.5, 3.0)` hung across the whole wall INCLUDING the
+  doorway, so from inside, the way out was a sheet of tile — and because a
+  plane is not a blocker, **the exit that worked was the one you could not
+  see**, which is worse than a wall, not better. Three pieces now (left,
+  right, lintel) with a painted jamb, so the lit bunk shows through the hole.
+  **THE SWING**: the contract's comment said *positive = into the block* and
+  had been wrong since v7.1 — a positive rotation about y takes the leaf's +x
+  arm toward −z, the BUNK. Measured on the shipped build, the open leaf ran
+  from its hinge at (−3.750, 4.080) to (−3.686, 3.182) and bed one spans
+  x −5.55…−3.65, z 2.55…3.45: the last 27 cm of the door stood inside the bed.
+  `DOOR_AJAR`/`DOOR_OPEN` are negative now; both call sites are symbolic, so
+  the film's almost-shut door and scene A's swing became one motion in one
+  direction, and the camera passes 0.42 m clear of the leaf.
+  **THE CORRIDOR**: gone at his ask — *"it looks useless and pointless. Make
+  that a normal wall and fill it up."* The doorway, the dark BackSide box, the
+  doormat and a hotspot whose whole behaviour was `onInteract() { return
+  false; }` all go; the wall runs the full width (one blocker instead of
+  three) and is dressed with a rail of hooks, two towels and a first-aid box,
+  all primitives, no download. `hotOut` leaves the chapter's words.
+  **THE SLEEPERS**: *"all the bunkmates are sleeping the wrong way ... mix
+  both and distribute them ... the bunkmate sleeping next to the player must
+  be the animated one."* Both halves measured first. The STATUE lies along its
+  own z with its head at the −z end (sliced into ten bins, that end is 0.80 m
+  across and the highest thing in the file — shoulders with the arms up behind
+  the head — against 0.24 m and the lowest at +z, the feet); v7.1's turn put
+  it at the aisle on both rows. The RIG was worse and nobody had looked: its
+  world box was **0.58 m on x by 1.60 m on z** — it lay ACROSS the bed,
+  sticking a third of a metre into the aisle and into the next bed, because
+  `if (size.x > size.z) rotate` is the test inverted AND was applied after the
+  centring it invalidates. The rig is turned by its own HEAD BONE now, in the
+  bed group's frame (where the pillow is always at +x), and only then scaled,
+  centred and grounded. The mix is four and four, no two rigs sharing a wall,
+  with index 3 — the bed beside his, and scene C's neighbour — animated; the
+  four come from ONE parse and three `cloneSkinned` copies, each with its own
+  take out of the file's three and its own rate. Three traps, each paid for
+  once: **`cloneSkinned` copies transforms**, so every copy is made before any
+  is touched; **the scale and turn are measured once** on a shared take and
+  given to all (a curled cough take is a shorter box, which asks for a bigger
+  man — the v5.05 law); and **this rig's BIND pose is a Mixamo T-pose STANDING
+  UP**, so measuring before any take is applied reads a shoulder span as the
+  length of a sleeping man and scales him to three times the bed (measured:
+  2.9–3.1 m across a 0.9 m mattress). Verified on the shipped build at lights
+  out: head at the pillow 8 of 8, along the bed 8 of 8, inside the mattress's
+  own z 8 of 8, back on the mattress top 8 of 8.
+  docs/V9.1-THE-BEDDING-THE-DOORWAY-AND-THE-SLEEPERS.md is the build's memory.
 - **v7.9** THE FERRY FROM INSIDE, TEKONG, THE PARADE SQUARE, THE BUNK —
   Chad, with five reference photographs: *"I dont want to see the outside
   of the ferry and the sea, it should show first person pov within inside

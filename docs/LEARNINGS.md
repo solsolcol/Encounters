@@ -3108,3 +3108,55 @@ Watch for ANY matching mutation, not the first one that matches half the
 condition. The general form: when two attributes of a transient state change
 on different frames, a check must be a predicate over the whole episode, not a
 reading taken at its start.
+
+## A plane across a doorway is worse than a wall (v9.1)
+
+The toilet block in e2c1 had been "buggy" for four releases. v7.5 flood-filled
+the real collision grid and proved every cell reachable. v8.9 left the door
+permanently open so nothing had to be interacted with. Chad still could not
+find his way out.
+
+The cause was one mesh: the wall the block shares with the bunk was a single
+`PlaneGeometry(5.5, 3.0)` hung across the whole wall, **doorway included**. It
+is not a blocker, so the player could always walk through it — which is the
+trap. A wall you cannot pass teaches you where the exit is not. A wall you CAN
+pass, with no visible opening, teaches you there is no exit at all.
+
+When a player reports being stuck somewhere the collision says is open, the
+next thing to check is not the collision. It is what the exit LOOKS like.
+
+## Measure the pose, not the bind, before you scale a lying body (v9.1)
+
+`sleepanim.glb` is a Mixamo rig whose BIND pose is a T-pose standing up. Its
+clips lay it down. So a body measured before any take has been applied is
+1.7 m tall and half a metre wide, and `max(size.x, size.z)` — the right
+measure for "how long is this sleeping man" — reads a SHOULDER SPAN. Scaled to
+a 1.6 m mattress, that is a man three times too big: measured, 2.9–3.1 m
+across a 0.9 m bed.
+
+v7.1's code avoided it by accident, because it updated its mixer before
+measuring. A v9.1 refactor that hoisted the measurement above the mixer to
+share it across four copies walked straight into it. **Put the model in the
+pose you are measuring FOR, then measure** — and if several copies share a
+measurement, share the pose too, not just the arithmetic.
+
+Two smaller ones from the same rewrite, both about order:
+
+* `cloneSkinned` copies TRANSFORMS as well as bones. Clone every copy before
+  touching any of them, or each takes the previous one's scale and turn.
+* A test of "which way round is this body" (`if (size.x > size.z) rotate`) is
+  meaningless after the CENTRING it invalidates. Turn first, centre second.
+
+## A superseded mesh needs every writer to know it is superseded (v9.1)
+
+v9.0 hid nine beds' worth of primitives behind `b.supersede` when Chad's bunk
+model landed. v9.1 added the bedding to that list — and `setNightRoom` had
+been writing `b.low.fold.visible = true` on most beds at every light change
+since v7.2. The first lights-out would have put a superseded mesh back on
+screen.
+
+This is the v8.1/v8.2 law in a third costume — *a value stated in a clock must
+be cleared by whatever resets that clock; a position stated by a phase must be
+cleared by whatever resets that phase* — and now: **a mesh retired by one part
+of the code must not be switched back on by another.** Grep for every writer
+of a property before you retire the thing that owns it.
