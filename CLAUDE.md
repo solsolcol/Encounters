@@ -2026,6 +2026,71 @@ What the baseline contains, by release:
   out: head at the pillow 8 of 8, along the bed 8 of 8, inside the mattress's
   own z 8 of 8, back on the mattress top 8 of 8.
   docs/V9.1-THE-BEDDING-THE-DOORWAY-AND-THE-SLEEPERS.md is the build's memory.
+- **v9.2** THE SQUARE, AND THE SOUND — Chad's four notes the morning after
+  v9.1, plus one instruction that decided the shape of the third: *"go with
+  x14. remove the parapet entirely instead of just cutting a gate."*
+  `src/main.js` gains exactly three `STING_SAMPLE` rows and nothing else, so
+  episode 1 is unchanged by construction.
+  **THE GREEN BLOCKS**: v9.1's `supersede` covered the frame, mattresses,
+  pillows, sheets, folded blankets and wire bases — and not the POSTS and
+  RAILS, the only bed parts Chad's model does not restate, which from across
+  a room read as the model's own frame and had survived every pass. Sixteen
+  meshes to twenty-one. **THE FLOAT**: the first attempt made it WORSE (2.0 cm
+  to 4.2) and the number said why — the deck measured **0.591**, which is
+  `BUNK.deckLo` 0.592, the mattress top in the MODEL's own coordinates.
+  **`Box3.setFromObject` refreshes the object and its DESCENDANTS and never
+  its ancestors**, so measuring a child of a freshly placed, freshly scaled
+  parent reads the parent's stale matrix and answers a different question.
+  One `updateWorldMatrix(true, true)`; measured after, statues **0.0 cm** off
+  the mattress and rigs −0.1, and every sleeper re-seated through
+  `restOnDeck`/`settleBed` so one who arrives before the bunk model does is
+  put right the moment it lands. **THE NEIGHBOUR** — the bed beside his, scene
+  C's roll-over — runs `Groan_Holding_Stomach_in_Sleep` rather than the same
+  `Sleep_Normally` as everyone else, with `Cough_While_Sleeping` across the
+  room, so the file's three takes are all in the bunk and the loudest is the
+  nearest. **THE FALL-IN IS ON THE PARADE SQUARE**: the line at x 14.0 facing
+  the far block, the sergeant at 18.8 and the encik at 17.6 PAST the rank and
+  turned back down it (`ry` −π/2 — the line, the balcony and the bunk door
+  behind it), which is the inspection Chad described and the opposite of where
+  they stood; they reach it round the rank's FLANK (`to.via` waypoints in
+  `marchLegs`), never through a man; the timer 14 s → **17 s** at his ask; and
+  the parapet is gone outright, which is what makes the walk possible. The
+  whistle, `s1fallin`, the lateness branch, `punishBeat()`, both shouts, the
+  push-ups and the walk back are the same code — "everything else ... should
+  stay the same". **THE SOUND**, three new (flow `Qa5DO5sUaMlbpNPyD5E8`), two
+  takes each, **picked by measurement because there are no ears in a session**:
+  `platoonmarch` (cadence autocorrelation 0.881 against 0.602, and the SHAPE of
+  a pass-by — 1 s RMS −63 → −32 at six seconds → −71), `campamb` (the other
+  take is 84.4 % of its energy under 120 Hz, which is rumble, not a treeline)
+  and `e2day` (the other puts 86 % in 120–500 Hz, exactly where his voice
+  lives — the v5.27 masking reasoning). `e2day` is the DAY's music at
+  `0.26 * (1 - nightK)` against `e2bed`'s `0.30 * nightK`, so the two cross at
+  lights out; from the end of the film to lights out the chapter had had no
+  music at all. `campamb` is keyed to `outK` (0.150 at his bed, 0.330 on the
+  balcony, 0.410 on the tarmac) because running it flat would say the bunk and
+  the square sound alike, and the fall-in is the walk between them.
+  `platoonmarch` is an EVENT every 46–82 s from the chapter's own deterministic
+  stream, louder the further out he is, and only in the DAY's phases — nobody
+  marches a platoon at three in the morning. Priced against the narration the
+  way v5.27 did: the day rose **+4.5 dB** and the loudest day mix is still
+  **3.9 dB under the night the chapter already ships**, with **12.9 dB** of
+  margin for his voice through the duck. Verified on the shipped build: the
+  first pass-by at day **19.6** (its window is 16–30), the next booked 78.9 s
+  out (the range is 46–82), `outK` 0 to 1 across the walk, and silence at
+  night. Laws paid for here: an SFX model's **duration is a PARAMETER, not a
+  sentence** (all six first takes came back 1.04 s because "14 seconds" was
+  only ever written in English); `eleven_music_v2` has no loop flag, so a music
+  bed is crossfade-looped by hand and its seam checked at the JOINT, not by
+  RMS; **`__enc.stings()` cannot see `worldSfx`**, which calls `snd()` directly
+  — the cue log has been blind to the whistle and the push-ups since v7.1, so
+  `stage.ambient()` is the checkable surface now (v5.29's `seatStats()` move);
+  and **every harness runs MUTED** (`let muted = !HAS_TOUCH`, and headless
+  Chromium has no touch), which is why three sounds shipped since v7.1 —
+  `whistle`, `b1day`, `bunkday` — returned null at the same instant as the new
+  one: **when a new thing fails, ask an old thing the same question**. And
+  `reset()` clears `marchAt`, `marchSeed`, `marchN` and `outK` — the
+  v8.1/v8.2/v8.7 law a fourth time.
+  docs/V9.2-THE-SQUARE-AND-THE-SOUND.md is the build's memory.
 - **v7.9** THE FERRY FROM INSIDE, TEKONG, THE PARADE SQUARE, THE BUNK —
   Chad, with five reference photographs: *"I dont want to see the outside
   of the ferry and the sea, it should show first person pov within inside

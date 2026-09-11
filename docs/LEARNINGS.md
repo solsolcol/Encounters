@@ -3185,3 +3185,69 @@ And the same failure taught a second thing. The check was an AND of three
 conditions reporting one boolean, so when it broke it could only say
 `episodeScore` — and narrowing it cost a whole extra 320 s run. **A check that
 cannot name its own failure is half a check**; split the AND.
+
+## `Box3.setFromObject` updates descendants, never ancestors (v9.2)
+
+Chad: *"the sleeping model is not properly set on the bed model, he's
+floating."* The fix was to stop assuming the mattress height and MEASURE it
+off Chad's bunk model. The first attempt made the float worse — 2.0 cm became
+4.2 — and the number said why: the deck came back at **0.591**, which is
+`BUNK.deckLo` 0.592, the mattress top in the MODEL's own coordinates.
+
+`setFromObject` calls `updateWorldMatrix(true, false)` on the object it is
+given — it refreshes that object and everything under it, and deliberately
+does not walk up. So measuring a child of a parent that was positioned and
+scaled moments ago reads the parent's *stale* matrix and hands back a box in
+the wrong frame entirely. It is not wrong by a little; it is an answer to a
+different question.
+
+One `m.updateWorldMatrix(true, true)` before the traverse. Measured after:
+statues 0.0 cm off the mattress, rigs −0.1. **Before you trust a world-space
+box, ask which matrices were refreshed to produce it.**
+
+## An SFX model's duration is a parameter, not a sentence (v9.2)
+
+Six ambience generations were asked for "14 seconds, even level throughout"
+in the prompt. All six came back **1.04 seconds** long — and byte-different
+from each other, so they were real generations, not a cache. `duration_seconds`
+and `loop` are real fields on `eleven_text_to_sound_v2` and have to be passed
+as `model_parameters`; prose about length is just more prose to condition on.
+Call `creative_get_model_schema` before assuming a model will read an
+instruction rather than take a setting. (`eleven_music_v2` has no loop flag at
+all, which is why a music bed has to be crossfade-looped by hand:
+`acrossfade(S[X:L], S[0:X], d=X)` ends where it began.)
+
+## Two reasons a probe hears nothing, and only one of them is a bug (v9.2)
+
+A probe on the new ambience reported that its pass-by never fired, across
+150 seconds. Chasing it turned up two separate things, and the first hid the
+second.
+
+**One: `__enc.stings()` cannot see `worldSfx`.** The cue log is filled by
+`sting()`; `worldSfx` calls the engine's `snd()` directly and never touches
+`stingLog`. So the log has been blind to the whistle, the push-ups and every
+spoken interaction since v7.1, and was blind to this. A probe reading a
+surface with no connection to the thing under test reports an absence as
+confidently as it would report a presence. The repair is v5.29's
+`seatStats()` move: a small read-only getter on the chapter (`stage.ambient()`)
+so the claim is checkable.
+
+**Two: the game starts MUTED in every harness.** `let muted = !HAS_TOUCH` —
+headless Chromium has no touch, so `snd()` returns null for *everything*. With
+the better surface in place the cue still did not fire, and the decisive test
+was to ask the same question of three sounds that have shipped and played
+since v7.1: `whistle`, `b1day` and `bunkday` all returned null at the same
+instant. **When a new thing fails, ask an old thing the same question** — if
+it fails too, the fault is in the environment, not in what you just wrote. A
+DOM click on `#mute` (the canvas intercepts a real one) and the pass-by fired
+at day 19.6, inside its own 16–30 s window.
+
+Two bad inferences were made on the way and both are worth naming. Concluding
+"it PLAYED" from `sayLine` returning true is wrong: since v8.0 the *held* path
+returns true as well. Concluding it from a follow-up being refused is also
+wrong here, because `speak.until` is stated in the chapter's clock, and that
+clock runs at about 0.28× wall time on this box — so an 800 ms gap is 0.22 s
+of day and cannot separate a 0.2 s hold from a 3 s line. **A test that cannot
+distinguish its two outcomes is not evidence**, however plausible the reading.
+`__enc.audio()` answers `{muted, ctxState}` directly and should have been the
+first call, not the tenth.

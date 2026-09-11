@@ -5364,6 +5364,9 @@ const STING_SAMPLE = {
   e1knock: ['e1knock', 1], e1backbunk: ['e1backbunk', 1],   // v8.3: the encik
   e2film: ['e2film', 1],         // the episode's theme under the film (60 s, eleven_music_v2)
   e2bed: ['e2bed', 1],           // the night's explore bed (50 s, eleven_music_v2, loop)
+  e2day: ['e2day', 1],           // v9.2: and the DAY's, the other side of nightK (23 s, crossfade-looped)
+  campamb: ['campamb', 1],       // v9.2: the camp outside the bunk (22 s, generated seamless)
+  platoonmarch: ['platoonmarch', 1],  // v9.2: another platoon going past, a 16 s pass-by
   bunkday: ['bunkday', 1], bunknight: ['bunknight', 1], fanloop: ['fanloop', 1],
   clocktick: ['clocktick', 1], showerrun: ['showerrun', 1],
   whistle: ['whistle', 1], bootsrun: ['bootsrun', 1], bootsmarch: ['bootsmarch', 1],

@@ -2625,7 +2625,8 @@
       'n1bedfail', 'n1bedok', 'n1board', 'n1fallin', 'n1hear', 'n1late',
       'n1lights', 'n1shower', 'n1wake', 'pushups', 's1again', 's1fallin',
       's1late', 's1lights', 's1standby', 'switchoff', 'whistle',
-      'hudlock'];                   // v8.8: the bed zone's own trigger
+      'hudlock',                    // v8.8: the bed zone's own trigger
+      'platoonmarch'];              // v9.2: the camp's pass-by, fired from ambientTick
     if (warmSounds) warmSounds(PLAY_LINES);
 
     /* v8.1: and it is CLEARED by reset(), because it is stated in the
@@ -2727,12 +2728,34 @@
        and the shower is a loop the block turns on. `DATA.ambience.beds` is
        what the engine reads every frame, so the chapter writes the mix
        there — a loop at 0 is never even decoded. */
-    let nightK = 0, showerVol = 0;
+    /* v9.2, Chad: "Add more ambient music and sound effects throughout this
+       entire ep2 chp1 chapter." Two of the three are BEDS and go here.
+
+       `e2day` is the day's music, and it exists because `e2bed` is the
+       NIGHT's: from the end of the film to lights out the chapter had no
+       music at all, only room tone. It is the same shape as e2bed on the
+       other side of `nightK`, so the two cross at lights out rather than one
+       starting into silence — and it is pitched under e2bed (0.26 against
+       0.30) because the day is the half of the chapter the boy narrates
+       across, and a bed that has to be talked over is a bed that gets turned
+       down. Its energy is below 120 Hz by measurement, which is the same
+       masking reasoning as the v5.27 duck: out of the band his voice lives in.
+
+       `campamb` is the camp OUTSIDE — wind across the tarmac, a treeline,
+       a far building's hum. It is keyed to `outK` (below) rather than run
+       flat, because the bunk is a room and the square is not: standing on
+       the parade square with the same outdoor bed you had by your bed would
+       say the two places sound alike, and the whole of the fall-in is the
+       walk between them. It stays audible indoors (the bunk's windows are
+       louvred and its balcony side is open) and thins at night. */
+    let nightK = 0, showerVol = 0, outK = 0;
     function mixBeds() {
       DATA.ambience.beds = [
         ['bunkday', 0.24 * (1 - nightK)], ['bunknight', 0.22 * nightK],
         ['fanloop', 0.14 - 0.04 * nightK], ['clocktick', 0.06],
-        ['e2bed', 0.30 * nightK], ['showerrun', showerVol]];
+        ['e2bed', 0.30 * nightK], ['e2day', 0.26 * (1 - nightK)],
+        ['campamb', (0.15 + 0.26 * outK) * (1 - 0.55 * nightK)],
+        ['showerrun', showerVol]];
     }
     mixBeds();
     const tweens = [];                       // { get, set, to, t, secs }
@@ -3416,6 +3439,53 @@
       if (phase === 'free') return freeWarned;
       return false;
     }
+    /* ------------------------------------------------- v9.2 · the camp outside
+       Chad: "Maybe ambient sound effects are other platoons marching
+       outside." There are two halves to that and they are different things.
+
+       THE BED is `campamb`, and what it is keyed to is `outK` — 0 at his own
+       bed, 1 once he is out on the square. The ramp runs from the balcony
+       door to the far side of the balcony rather than from the bunk's middle,
+       because that is where the room stops: past BALC.x0 there is no wall
+       between him and the camp. mixBeds() is called only when outK has
+       actually moved a hundredth, because the mix is rewritten into
+       DATA.ambience.beds and the engine's ambient frame re-asserts every
+       declared volume every frame — writing the same numbers on every one of
+       them would be work for nothing.
+
+       THE PLATOON is `platoonmarch`, a 16-second pass-by: measured, it swells
+       from -63 dBFS to -32 at six seconds and recedes to -71, which is a
+       body of men marching past a long way off rather than a loop of boots.
+       So it is fired as an EVENT, not laid in as a bed — occasionally, at a
+       distance, louder when he is outside where he could actually hear it.
+       It runs only in the DAY's phases: nobody marches a platoon at three in
+       the morning, and the night belongs to the shower and to her.
+
+       The interval is dealt from the chapter's own stream so a run is
+       reproducible, and `marchAt` is stated in `dayClock` — which means
+       reset() must clear it, the v8.1/v8.2/v8.7 law a fourth time. */
+    const PLATOON_GAP = [46, 82];        // seconds between pass-bys
+    let marchAt = 0, marchSeed = 7, marchN = 0;
+    const DAY_PHASE = { arrive: 1, fallin: 1, punish: 1, standby: 1, standbybed: 1, free: 1 };
+    function marchRand() {               // a deterministic stream, not Math.random
+      marchSeed = (marchSeed * 1664525 + 1013904223) >>> 0;
+      return marchSeed / 4294967296;
+    }
+    function ambientTick() {
+      /* how far out of the room he is: 0 inside, 1 on the square */
+      const k = Math.max(0, Math.min(1, (yaw.position.x - (R.x - 1.5)) / (BALC.x1 - (R.x - 1.5))));
+      if (Math.abs(k - outK) > 0.01) { outK = k; mixBeds(); }
+      if (!DAY_PHASE[phase]) { marchAt = 0; return; }
+      if (!marchAt) { marchAt = dayClock.t + 16 + marchRand() * 14; return; }
+      if (dayClock.t < marchAt) return;
+      /* worldSfx hands back null when the sample has not decoded; try again
+         shortly rather than losing the pass-by (the v8.0 law) */
+      if (worldSfx && worldSfx('platoonmarch', 0.34 + 0.40 * outK)) {
+        marchN++;
+        marchAt = dayClock.t + PLATOON_GAP[0] + marchRand() * (PLATOON_GAP[1] - PLATOON_GAP[0]);
+      } else marchAt = dayClock.t + 1.5;
+    }
+
     /* the day's watchers, on the chapter's own clock */
     let dayLast = 0, lastFreeze = 0;
     function updateDay() {
@@ -3438,6 +3508,7 @@
       runTweens(d);
       marchTick(d); crowdMarchTick(d);      // v8.2: the section, on real legs
       runSpeak();                 // v8.0: a held line, the moment its bytes land
+      ambientTick();              // v9.2: the camp outside, and the platoons in it
       /* v7.2: reaching the bed used to fire the whistle on the same frame as
          his "That's mine. Bed one." — the line lands first now, then the
          whistle, then the sergeant */
@@ -3632,6 +3703,7 @@
       stoodBy = false; zoneFlare = 0; flareAt = 0; zone.visible = false;
       booted = false; dayClock.t = 0;
       speakReset(); encTalkN = 0;      // v8.1: the mute window is in the clock that just went back to zero
+      marchAt = 0; marchSeed = 7; marchN = 0; outK = 0;   // v9.2: the pass-by's next time is in that same clock
       freeWarned = false; freeTimer = null;    // and the evening's countdown belongs to the run that just ended
       if (kit) { kit.daylight(null, 0); kit.presence(0); kit.fade(0, 0.05); }
       beginArrive();
@@ -3712,6 +3784,14 @@
       sergeant, buddy, bunkmate, encik, encSay, ghostFig, sleepers, sleepRigs, sleeperRoot,
       sayLine, seen, after, dayClock,
       bunkCrowds, bunkReady: () => bunkCrowds.every(c => c.ready),   // v8.1, for the probes
+      /* v9.2, and it exists because a probe CANNOT see this any other way:
+         `worldSfx` calls the engine's `snd()` directly and never touches
+         `stingLog`, so the cue log is blind to the pass-by exactly as it is
+         to the whistle and the push-ups. Reporting it here is the same move
+         as v5.29's `seatStats()` — a claim about the mix that stays
+         checkable instead of being taken on trust. */
+      ambient: () => ({ outK: +outK.toFixed(3), marches: marchN,
+                        nextMarchIn: marchAt ? +(marchAt - dayClock.t).toFixed(1) : null }),
       get phase() { return phase; },
       setPhase, applyPhase, beginFallIn, beginStandby, runStandbyBed, beginFree, beginLightsOut, beginNight,
       LIE_Y, LIE_YAW, LINE_X, BED_ITEMS,
