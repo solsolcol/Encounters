@@ -892,7 +892,6 @@ function plantTrees(parent, spots, opts = {}) {
         if (mat.map) { mat.map.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy()); mat.map.needsUpdate = true; }
         owned.push(mat);
         const im = new THREE.InstancedMesh(part.geo, mat, list.length);
-        im.frustumCulled = false;          // a tree's own box is a metre tall until the instance matrix scales it
         im.castShadow = !!opts.shadow && !LOW;
         im.receiveShadow = false;
         list.forEach(({ sp, i }, n) => {
@@ -903,6 +902,39 @@ function plantTrees(parent, spots, opts = {}) {
           im.setMatrixAt(n, R.multiplyMatrices(M, part.m));
         });
         im.instanceMatrix.needsUpdate = true;
+        /* v8.6: A STAND CULLS, ON BOUNDS READ FROM ITS OWN INSTANCES.
+           Until now this said `im.frustumCulled = false`, because a tree's
+           stored geometry is one metre tall until the instance matrix scales
+           it up — so the geometry's own sphere is far too small and three.js
+           would cull a stand that is filling the screen. But InstancedMesh
+           has `computeBoundingSphere()`, which walks EVERY instance matrix
+           and unions the result: the real bounds were always available, just
+           never asked for. Measured in the bunk, 12 headings: 183,574 tree
+           triangles were drawn on every frame; with real bounds the mean on
+           screen is 68,617, and at seven of the twelve headings the stand is
+           wholly behind the player and draws nothing.
+           GENEROUSLY (Chad's word) — but ADDITIVELY, which is the whole
+           lesson here. A stand's sphere already spans tens of metres (these
+           run 4.3 m to 45.6 m), so a MULTIPLICATIVE margin scales the slack
+           with the stand: x1.6 put eighteen metres of nothing around the big
+           stands and swallowed the win. Measured over 12 headings in the
+           bunk, mean triangles a frame against no culling at all:
+
+             exact bounds  saves 114,957 (29%)     +4 m   saves  86,113 (22%)
+             +1 m          saves 108,404 (28%)     x1.25  saves  35,636  (9%)
+             +2 m          saves 102,462 (26%)     x1.60  saves  12,002  (3%)
+
+           So the margin is a FLAT three metres. What it has to cover is a
+           per-TREE uncertainty — a leaf card reaching past its own instance
+           box, a crown that sways, a stand whose spots are re-dealt — and
+           that is metres, never a proportion of the whole stand. Three is
+           already pure slack: `computeBoundingSphere` unions each instance's
+           real geometry sphere, crown and instance scale included, so the
+           exact bounds are correct and this is only insurance. A stand that
+           blinks at the edge of the screen would be far worse than one drawn
+           a moment longer than it needed to be. */
+        im.computeBoundingSphere();
+        if (im.boundingSphere) im.boundingSphere.radius += 3;
         group.add(im);
       }
     }
@@ -1091,6 +1123,22 @@ function paintHotMarks() {
     }
   }
   for (let i = n; i < hotMarks.length; i++) hotMarks[i].style.display = 'none';
+}
+/* v8.6: hide lights that are contributing nothing — see the call in tick() */
+const DARK_HOLD = 20;              // frames at zero before a light is dropped
+const darkFor = new WeakMap();
+function darkLights() {
+  scene.traverse(o => {
+    if (!o.isLight || o.isAmbientLight || o.isHemisphereLight) return;
+    if (o.intensity > 0.0005) {
+      if (darkFor.get(o)) darkFor.set(o, 0);
+      if (!o.visible) o.visible = true;         // back instantly, never a frame late
+      return;
+    }
+    const n = (darkFor.get(o) || 0) + 1;
+    darkFor.set(o, n);
+    if (n >= DARK_HOLD && o.visible) o.visible = false;
+  });
 }
 function paintWaypoint() {
   const el = $('waypoint'); if (!el) return;
@@ -6769,6 +6817,21 @@ function tick(now = 0) {
   stage.updatePile(t);
   updateAudioFrame(t);
   updatePulse(dt);
+  /* v8.6: A LIGHT AT ZERO STILL COSTS EVERY PIXEL. three.js compiles the
+     shader for the lights it COLLECTS, and it collects a light whether or
+     not its intensity is zero — so a dark lamp is still evaluated for every
+     fragment on screen. Episode 2's bunk carries eleven point lights and
+     five of them sit at zero at any moment (the block, the balcony, the
+     night wash, the notice board, the shower).
+     WITH HYSTERESIS, because the count of lights is part of the shader's
+     identity: flipping one every few frames would recompile the program and
+     stutter. So a light must read zero for DARK_HOLD consecutive frames
+     before it is hidden, and it comes back the instant it is raised. The
+     bunk's tube flicker multiplies its intensity down but never holds at
+     zero, so it never crosses the threshold.
+     Visually this can change nothing: a light contributing no light is the
+     definition of one that need not be collected. */
+  darkLights();
   stage.updateFire(t);
   kitFrame(dt, t, dLookX, dLookY);   // v7.0: the play kit's own frame — events, timer, pose, daylight, clock
   autosave();          // throttled, and only ever during play — see autosave()

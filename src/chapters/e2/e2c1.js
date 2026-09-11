@@ -595,7 +595,15 @@
     /* v7.2: 0.55 at 2.2 m — at 1.3 over 3.2 m it painted the whole door
        wall and the block's doorway red in every night frame; the digits
        are unlit and stay bright on their own */
-    const CLOCK_GLOW = 0.55;
+    /* v8.6: 0, and the light with it. Chad: "why is there a light shining at
+       the analog clock? I dont think that one is needed." He is right, and it
+       is a leftover: it was the RED of a digital display, and when v7.9 made
+       the clock analog the light was kept on as "the small warm practical
+       over the toilet door" — but there is no lamp fitting there, and a wall
+       clock is not one. Held at zero rather than deleted, because ten call
+       sites save, restore and cue it; `darkLights()` then drops it from the
+       shader entirely, so it costs nothing at all. */
+    const CLOCK_GLOW = 0;
     /* v7.9: was the red of a digital display; the clock is analog now, so
        this is the small warm practical over the toilet door instead */
     const clockGlow = new THREE.PointLight(0xffd9a8, 0, 2.2, 2.4);
@@ -2381,7 +2389,7 @@
       pileRing.material.opacity = near * (0.62 + 0.38 * Math.sin(t * 2.6)) * (abed() ? 0.7 : 0.45);
     }
     /* the day's watchers, on the chapter's own clock */
-    let dayLast = 0;
+    let dayLast = 0, lastFreeze = 0;
     function updateDay() {
       if (getState() !== 'play') { dayLast = 0; return; }
       if (!booted) { booted = true; applyPhase(kit ? kit.getPhase() : null); }
@@ -2393,6 +2401,11 @@
       const d = dayLast ? Math.min(0.5, now - dayLast) : 0;
       dayLast = now;
       dayClock.t += d;
+      /* v8.6: models arrive async long after build(), so the freeze is
+         re-applied rather than done once — and only in PLAY, never under a
+         cutscene, which owns the world (see freezeStatic). */
+      if (dayClock.t > 2 && !frozen) freezeStatic(true);
+      else if (frozen && dayClock.t - lastFreeze > 6) { lastFreeze = dayClock.t; refreeze(); }
       runTodo();
       runTweens(d);
       marchTick(d); crowdMarchTick(d);      // v8.2: the section, on real legs
@@ -2472,7 +2485,53 @@
     }
 
     /* --------------------------------------------- snap / restore / reset */
+    /* ---- v8.6: THE STATIC MESHES STOP RECOMPUTING THEIR MATRIX -------
+
+       A mesh with `matrixAutoUpdate` on composes its local matrix from
+       position/quaternion/scale on EVERY frame, and that sets
+       `matrixWorldNeedsUpdate`, which then forces every descendant to
+       recompute its world matrix too. For a bed that has not moved since
+       build() that is pure waste, and this chapter has a lot of them: 3,126
+       objects in the scene, of which the film's three sets alone are 2,136.
+
+       WHICH ONES ARE SAFE was MEASURED, not guessed (`dbg-movers.mjs`):
+       every object's local matrix sampled 130 times across the whole opening
+       film and a full day of play. 569 objects ever changed — and 552 of
+       them are BONES, driven by the mixers. Of the seventeen that are not,
+       every single one is a Group or an Object3D: a cast member's group, a
+       crowd copy's group, the camera rig, the ferry's swell.
+
+       NO MESH EVER MOVES, because this chapter animates by turning GROUPS:
+       the fan is a Group whose blades are fixed inside it, the toilet door
+       is a leaf parented to a rotating pivot, and the wall clock is a
+       redrawn TEXTURE with no moving geometry at all. So the rule is simply
+       "meshes freeze, groups and bones never" — safe by construction rather
+       than by a list that could go stale. Skinned meshes are left alone too,
+       though their nodes are static: they cost 108 composes against the
+       thousands this saves, and their skinning is delicate.
+
+       AND IT LIFTS FOR EVERY CUTSCENE. A scene may move anything it likes,
+       so the freeze is released in snap() — which the engine calls when a
+       cutscene takes the world — and re-applied in restore(). Play is long
+       and a scene is short, so the saving is kept where it matters and the
+       risk is removed where it would bite.                                */
+    let frozen = false;
+    function freezeStatic(on) {
+      if (on === frozen) return;
+      world.traverse(o => {
+        if (!o.isMesh || o.isSkinnedMesh) return;
+        if (on) { o.updateMatrix(); o.matrixAutoUpdate = false; }
+        else o.matrixAutoUpdate = true;
+      });
+      frozen = on;
+    }
+    /* Models arrive async long after build(), so the freeze is re-applied
+       rather than done once: `refreeze()` thaws and re-freezes, and the day
+       clock calls it a few seconds in and after each phase change. */
+    function refreeze() { if (frozen) { freezeStatic(false); freezeStatic(true); } }
+
     function snap() {
+      freezeStatic(false);          // v8.6: a scene may move anything it likes
       return { door: doorPivot.rotation.y, fan: fanSpeed, lightK, shower: showerOn, showerVol, nightK,
                night: sleeperRoot.visible, ghost: ghostFig.group.visible,
                clockGlow: clockGlow.intensity, balc: balcLight.intensity,
@@ -2498,8 +2557,10 @@
       bunkCrowdShow(!s.night);
       fallOut(false, true);          // v8.2: a restored room is stood in, never run into         // v8.1
       for (const r of [sergeant, buddy, bunkmate, encik]) if (r.acts && r.idle) r.play(r.idle, 1, 0);
+      freezeStatic(true);            // v8.6: the scene is done; the room goes still again
     }
     function reset() {
+      freezeStatic(false);           // v8.6: thaw before a replay moves anything
       ferryRoot.visible = jettyRoot.visible = paradeRoot.visible = false;   // v7.9: the film's three sets, in case a film was cut before its own step hid them
       doorPivot.rotation.y = DOOR_AJAR; fanSpeed = 1; setShower(false);
       ghostFig.group.visible = false; water.material.opacity = 0.55; hisBed.low.on.visible = false;
