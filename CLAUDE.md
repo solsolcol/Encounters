@@ -1794,6 +1794,59 @@ What the baseline contains, by release:
   full 24-harness suite green. **393,945 → 297,872 a frame, −24 %**, on top
   of v8.4.
   docs/V8.4-THE-CULLING.md and docs/V8.6-FOUR-FREE.md are the memory.
+- **v8.7** THE BED, AND THE BEAT — Chad's four asks in one message, two of
+  them engine-wide because *"this should be a standard"* is a request for the
+  ENGINE to own a behaviour, not for one chapter to perform it.
+  **THE OBJECTIVE IS A BEAT, NOT A LABEL.** A change of objective now plays
+  OBJECTIVE COMPLETE in jade, with its own flash and its own sound, and then
+  the new order in sodium with its own — every chapter, for free, and the
+  phone buzzes on each. A timer appearing is the same beat; a timer running
+  out is its own, in red. The queue exists because of the kit's law (a verb
+  may only MUTATE state, the FRAME paints), and the banner's hold is read
+  against WALL time, not the clamped `dt`, or a 1.35 s banner would hold for
+  half a minute on a slow box. One escape hatch, `{ complete: false }`, for a
+  change that is NOT a completion — the fall-in clock running out, the
+  evening's warning: **a HUD that congratulates a player for being late is
+  telling a lie, which is worse than no banner.**
+  **AN EVENT MAY BRIEF BEFORE IT RUNS** — `kit.event({ brief })` opens on the
+  instructions with a START button and holds the clock, the items and the
+  beats until it is pressed (Chad: "The minigame must give instructions
+  first"). The standby bed's first item used to be named and gone inside
+  1.3 s while the player was still reading the panel it arrived in. The
+  FIXTURE declares it, so `fixturetest` proves the seam rather than only the
+  chapter that asked. `layout` is forced to 'button' while briefing, or a
+  stray tap on a full-screen overlay skips what the player is meant to read.
+  Also new: `kit.flash({ color, secs })`, one wash of colour over the screen,
+  and `pitch` in `CHCTX` beside `camera` and `yaw`.
+  **THE BED.** The lie-down toggle is GONE (Chad: "serves absolutely no
+  purpose, and it may make the player stuck" — both halves true: it did
+  nothing the chapter needs, since lights out lies him down itself, and
+  standing back up required the bed on screen while the bed was what was
+  under the lens, the trap v7.4 papered over). `bedWants()` says in ONE place
+  what the bed can do — the decision at three, the standby bed, turning in
+  early — and when the answer is nothing the prompt is **not offered at all**,
+  so a press falls through to the hotspots instead of dying on the mattress.
+  Two geometry corrections fell out: the anchor tested is the bunk's MIDDLE
+  rather than its mattress (v7.5's eye-height law, never applied to the bed —
+  standing in the circle, 0.55 m is 60° under the lens, so the standby bed's
+  badge could not appear at all), and within 1.3 m the bed is what you are
+  looking at whichever way the head is turned.
+  **THE BED ZONE**: a glowing disc and a ring travelling out of it, on the
+  FLOOR beside the bed, shown whenever the bed is a place to get to — and
+  `ZONE_R` is BOTH the radius drawn and the radius tested, so what is shown
+  and what fires cannot drift apart (the arrival used to fire at 1.8 m and
+  the standby bed at 2.0, with nothing on the floor to say where either was).
+  Entering it fires a confirm, a low thump under it, the screen flash and a
+  70 ms buzz; on arrival the lens turns to the room and the balcony over
+  0.55 s — measured **0.000 rad off target** — because the whistle is about
+  to come from there. On standby it does NOT start the test: it confirms the
+  arrival and hands the player the press (Chad: "the player must tap on his
+  bed to officially begin"). `reset()` clears it, the v8.1/v8.2 law a third
+  time. 24 harnesses green, episode 1 verified untouched as a control, and
+  one harness lesson: the first version of the new fixture checks SAMPLED at
+  fixed waits and passed standalone while failing under load — **a fixed wait
+  in a harness is a coin toss, which is worse than no check.** They poll now.
+  docs/V8.7-THE-BED-AND-THE-BEAT.md is the build's memory.
 - **v7.9** THE FERRY FROM INSIDE, TEKONG, THE PARADE SQUARE, THE BUNK —
   Chad, with five reference photographs: *"I dont want to see the outside
   of the ferry and the sea, it should show first person pov within inside
