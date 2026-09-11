@@ -3160,3 +3160,28 @@ be cleared by whatever resets that clock; a position stated by a phase must be
 cleared by whatever resets that phase* — and now: **a mesh retired by one part
 of the code must not be switched back on by another.** Grep for every writer
 of a property before you retire the thing that owns it.
+
+## setTimeout finishes; requestAnimationFrame lands (v9.1)
+
+`restarttest`'s episode-card check went red once under a loaded runner and
+passed alone on a re-run. The card's choreography is a chain of `setTimeout`s,
+so on paper everything is done 5.5 s after the click and the harness's fixed
+7.5 s wait had two seconds spare. But the two rolling NUMBERS are driven by
+`requestAnimationFrame`, and this box runs SwiftShader at about one frame a
+second — so the final value, and the `glow` class its `done` callback adds,
+land on whatever frame happens next, not when the timer says.
+
+The obvious repair is the wrong one: **waiting for the Continue button is no
+better than the fixed wait**, because the button is enabled by a `setTimeout`
+too and fires whether or not the roll has landed. What works is waiting for
+the thing itself to SETTLE — the same text twice in a row.
+
+The general rule, beside v8.7's "a fixed wait in a harness is a coin toss":
+when a screen mixes wall-clock timers with frame-driven animation, the timers
+tell you the sequence has been *scheduled*, never that it has been *drawn*.
+Poll the drawn value.
+
+And the same failure taught a second thing. The check was an AND of three
+conditions reporting one boolean, so when it broke it could only say
+`episodeScore` — and narrowing it cost a whole extra 320 s run. **A check that
+cannot name its own failure is half a check**; split the AND.
