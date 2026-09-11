@@ -1921,6 +1921,47 @@ What the baseline contains, by release:
   in ONE InstancedMesh, geometry rather than paint because a 10 cm stripe on
   an 11.5 m tile is two texels. It was a flat cream plane and the ranks were
   standing in a white void. docs/V8.9-THE-SEA.md is the build's memory.
+- **v9.0** CHAD'S BUNK BED, IN EVERY BED IN THE ROOM — *"Replace all bunk beds
+  you generated, with this 3d model bunk bed. Credits to link."* A tubular
+  army bunk with a guard rail, a ladder and two olive mattresses with a pillow
+  on each, where nine beds of boxes and cylinders used to be; `src/main.js`
+  untouched. 5.53 MB and 10,488 triangles in, **286 KB and 4,116 out**, through
+  a new `tools/prepbunk.mjs` — the standing recipe (every map but base colour
+  goes, JPEG sheets, quantization last) plus two steps: the QUARTER TURN is
+  baked into the vertices, because the file's length is on z and every bed here
+  has its length on x and a quantized attribute is an integer array no runtime
+  matrix can touch; and the frame and the mattresses simplify at DIFFERENT
+  rates, since a simplifier eats a round tube's silhouette and the tube is the
+  whole model. Two traps the tool now ASSERTS: the file instances ONE mattress
+  mesh at two nodes and `flatten`/`clearNodeTransform` cannot bake a transform
+  into one mesh twice (first pass: one mattress, a model 2.297 m tall instead
+  of 1.710), and parking the frame's primitives to keep them out of a
+  document-wide `simplify()` let its prune remove the emptied mesh — the first
+  file shipped **two floating mattresses and no frame**, behind a bounding box
+  that looked plausible. **THE FIT IS TO THE PRIMITIVE**, which is the whole
+  reason this is safe: every number the room is built on comes off the
+  primitive mattress and the primitive mattress does not move. x 0.948,
+  z 0.685, y 1.017 with the frame sunk 5.2 cm so both mattress TOPS land
+  exactly on `BED.low` and `BED.high`; measured on the shipped build the
+  model's world box spans 1.900 × 0.900 to the millimetre. The z squeeze is
+  FORCED — the balcony row's beds are 1.15 m apart, so a bed at the model's own
+  1.313 m would overlap its neighbour, and scaling uniformly by width leaves a
+  1.37 m bed for a 1.72 m man. The superseded primitives are HIDDEN, never
+  removed: `blockers()` boxes `low.mattress` and the bed's tap test raycasts
+  it, and three.js does both to an invisible mesh exactly as to a visible one
+  (checked in isolation). The wire base is the exception — not superseded but
+  MOVED to 1.260, just under the model's mattress, so a man on the bottom bunk
+  still looks up at a spring base. Priced: nine real bunks cost 11,856
+  triangles in the worst frame (267,015 down the bed row against 255,159) and
+  nothing at the spawn — under the 297,872 v8.6 left the chapter at, because
+  most of them are culled. One harness fix that is NOT a game change:
+  `fixturetest`'s objDoneBanner failed under the runner, and instrumenting the
+  real build showed the banner DOES paint — v8.8's word-swap means the box
+  wears the `done` class while it still shows the OLD order, so reading the
+  first mutation with the class is reading the box mid-swap. An engine guard
+  written against the first hypothesis was REVERTED the moment measurement
+  disproved it. Credit row links the Sketchfab model.
+  docs/V9.0-THE-BUNK-BED.md is the build's memory.
 - **v7.9** THE FERRY FROM INSIDE, TEKONG, THE PARADE SQUARE, THE BUNK —
   Chad, with five reference photographs: *"I dont want to see the outside
   of the ferry and the sea, it should show first person pov within inside

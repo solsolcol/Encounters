@@ -3070,3 +3070,41 @@ a 72° lens, which reads as a flat band whatever is painted on it. Cap it at
 
 The general form: when a shot has too little of something in it, compute the
 angular extent the geometry actually allows before touching the material.
+
+## A shared mesh must be un-shared before a transform is baked into it (v9.0)
+
+`flatten()` and `clearNodeTransform()` write a node's transform into its mesh.
+A glTF file that INSTANCES one mesh at several nodes — which is how a bunk bed
+carries two identical mattresses at two heights — cannot have that done twice,
+and gltf-transform does not warn: it bakes one and drops the rest. The first
+pass of `tools/prepbunk.mjs` came out with a single mattress and a model
+2.297 m tall instead of 1.710.
+
+Clone the mesh for every node past the first, BEFORE anything is baked. And do
+not run `dedup()` afterwards with meshes in its property types, or it merges
+them straight back.
+
+## `simplify()` prunes, so nothing can be parked while it runs (v9.0)
+
+To keep a tubular frame out of a document-wide simplify, its primitives were
+detached from their meshes and re-added after. `simplify()` prunes internally,
+pruning removed the now-empty mesh AND its node, and the re-add went nowhere:
+the file shipped two floating mattresses and no frame at all — behind a
+bounding box that looked perfectly plausible.
+
+Use `simplifyPrimitive()` on the primitives you actually mean. And have the
+tool ASSERT its own output contract — part counts, base on y = 0, which axis
+the length is on — because an asset tool that cannot fail silently is the
+only kind worth trusting (v6.17's law, applied to parts rather than to up).
+
+## A class and the text inside it need not change on the same mutation (v9.0)
+
+v8.8 made the objective HUD slide its words out and back in. So the box wears
+the `done` class through three states — `done out` with the OLD order,
+`done in` with OBJECTIVE COMPLETE, then `done` — and a MutationObserver that
+records the FIRST mutation carrying the class captures the box mid-swap.
+
+Watch for ANY matching mutation, not the first one that matches half the
+condition. The general form: when two attributes of a transient state change
+on different frames, a check must be a predicate over the whole episode, not a
+reading taken at its start.
