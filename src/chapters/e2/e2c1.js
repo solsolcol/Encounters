@@ -489,6 +489,83 @@
     function restOnDeck(b, obj, dy) { b.restOn.push({ obj, dy }); obj.position.y = b.deckTop + dy; }
     function settleBed(b) { for (const r of b.restOn) r.obj.position.y = b.deckTop + r.dy; }
 
+    /* ---- WHY A SLEEPER MEASURES PERFECT AND STILL LOOKS LIKE HE FLOATS
+
+       Chad, twice: "the bunkmates are still floating on top of the bed."
+       Measured on the shipped build, every one of the eight has his lowest
+       skinned vertex at y 0.548-0.549 against a mattress top of 0.550 — ON
+       it, to a millimetre, each on his own bed. The numbers were never going
+       to find this, and two releases of re-measuring the same way is the
+       tell that the measure is the wrong one.
+
+       What he is seeing is the absence of a CONTACT SHADOW. Every rig in
+       this chapter is built `castShadow = !LOW`, and `LOW = IS_PHONE` —
+       so on the only device Chad plays on, nothing under a sleeping man is
+       darkened at all, and a body touching a surface with no shadow under it
+       reads as hovering over it. It is the oldest cue in the book and the
+       one the phone throws away.
+
+       Two fixes, neither of which costs a light:
+         SLEEP_SINK  a body SINKS into a mattress. Resting exactly on the
+                     undeformed surface is geometrically right and looks
+                     wrong; 3.5 cm of penetration is what a shoulder does to
+                     a bunk mattress and it removes the hairline of daylight.
+         sleepShade  a painted soft ellipse laid on the mattress under him,
+                     sized from his own world box. A drawn shadow, so it is
+                     there on LOW exactly as on desktop. */
+    const SLEEP_SINK = 0.035;
+    let shadeTex = null;
+    /* One soft ellipse per sleeper, laid on the mattress and sized from HIS
+       OWN world box once he is placed — so it fits the man rather than a
+       guess, and a curled sleeper gets a shorter patch than a flat one. */
+    function sleepShade(parent, obj, bed) {
+      if (!shadeTex) {
+        shadeTex = paint(128, (ctx, S) => {
+          const g = ctx.createRadialGradient(S / 2, S / 2, 0, S / 2, S / 2, S / 2);
+          g.addColorStop(0, 'rgba(0,0,0,0.85)');
+          g.addColorStop(0.5, 'rgba(0,0,0,0.42)');
+          g.addColorStop(1, 'rgba(0,0,0,0)');
+          ctx.fillStyle = g; ctx.fillRect(0, 0, S, S);
+        });
+        filmTex.push(shadeTex);
+      }
+      obj.updateWorldMatrix(true, true);
+      /* MEASURED FROM THE POSED SKIN, never from Box3.setFromObject: on a
+         SkinnedMesh that reports the BIND pose, and this rig's bind pose is a
+         Mixamo T-POSE STANDING UP. The first version of this used
+         setFromObject and put every rig's shadow a metre off the bed, sized
+         to a standing man — the v5.21/v8.4 law, met a third time. A statue
+         has no skin, so for it the box IS the body. */
+      const bb = new THREE.Box3();
+      let skinned = false;
+      const vv = new THREE.Vector3();
+      obj.traverse(o => {
+        if (!o.isSkinnedMesh) return;
+        skinned = true;
+        const pa = o.geometry.attributes.position;
+        for (let k = 0; k < pa.count; k += 7) {
+          o.getVertexPosition(k, vv); vv.applyMatrix4(o.matrixWorld); bb.expandByPoint(vv);
+        }
+      });
+      if (!skinned) bb.setFromObject(obj);
+      const w = Math.max(0.5, bb.max.x - bb.min.x) * 1.06;
+      const d = Math.max(0.4, bb.max.z - bb.min.z) * 1.30;
+      const sh = new THREE.Mesh(new THREE.PlaneGeometry(w, d),
+        new THREE.MeshBasicMaterial({ map: shadeTex, transparent: true, opacity: 0.62,
+                                      depthWrite: false })); 
+      sh.rotation.x = -Math.PI / 2;
+      sh.position.set((bb.min.x + bb.max.x) / 2, 0, (bb.min.z + bb.max.z) / 2);
+      sh.renderOrder = 2;
+      parent.add(sh);
+      /* ON THE SETTLE LIST, not at a height copied once: Chad's bunk model
+         arrives long after build() and `settleBed` re-seats everything that
+         rests on that deck. A shadow left at the old deckTop would hang in
+         the air the moment the real mattress landed — the v9.2 trap, one
+         object later. */
+      restOnDeck(bed, sh, 0.004);
+      return sh;
+    }
+
     /* ------------------------------------------- THE REAL BUNK BED (v9.0)
        Chad, with a Sketchfab model: "Replace all bunk beds you generated,
        with this 3d model bunk bed." A tubular army bunk — posts, guard rail,
@@ -1058,12 +1135,27 @@
       gr.rotation.x = -Math.PI / 2; gr.position.set(56, -0.05, 0); gr.receiveShadow = true;
       world.add(gr);
     }
-    /* the trees along the far edge of the square, dealt from seed 7 (the
-       v6.15/v6.17 kit) — Chad's three files, four kinds */
+    /* the trees round the square, dealt from seed 7 (the v6.15/v6.17 kit) —
+       Chad's three files, four kinds.
+
+       v9.3: FIFTEEN OF THE TWENTY-TWO WERE INSIDE THE BUILDING. The far
+       block is a solid box spanning x 33..43, z -23..23, and the stand was
+       laid out along "the far edge of the square" before the block grew to
+       that size — so two thirds of this chapter's trees were parsed, built,
+       instanced and drawn entirely within an opaque box, where nothing could
+       ever see them. Found by photographing the square for the flagpoles:
+       two crowns poke through the block's face in the wide shot.
+
+       They line the SIDES now, just outside the painted bays (z +/-25) with
+       the rest tucked round the block's ends, which is where a camp's trees
+       actually are and which frames the square from the line instead of
+       standing behind a wall. Every spot is checked against the block's box
+       and against the player's bounds (maxX 20, z -3.7..7.2). */
     const TREE_AT = [
-      [34, -22], [36, -18], [33, -14], [37, -10], [35, -6], [38, -2], [34, 2], [36, 6],
-      [33, 10], [37, 14], [35, 18], [38, 22], [42, -20], [44, -12], [43, -4], [45, 4],
-      [42, 12], [44, 20], [30, -26], [31, 27], [48, -26], [49, 26]
+      [14, -25], [20, -25], [26, -25], [32, -25], [38, -25],
+      [14,  25], [20,  25], [26,  25], [32,  25], [38,  25],
+      [44, -25], [46, -18], [46, 18], [44, 25], [50, 0],
+      [44, -12], [45, 4], [44, 20], [30, -26], [31, 27], [48, -26], [49, 26]
     ];
     const treeStand = plantTrees(world, TREE_AT.map(([x, z], i) => ({ x, z, h: 6.4 + ((i * 29) % 9) * 0.3 })),
       { seed: 7, tint: new THREE.Color(0.92, 0.96, 0.88), roughness: 0.94, lowKeep: 0.55 });
@@ -1097,6 +1189,156 @@
       return t;
     };
     const filmTex = [];                       // every canvas made here, for dispose()
+
+    /* ------------------------------- THE SQUARE'S FURNITURE (v9.3) -------
+       Chad: "There needs to be street light at the parade square, and 3 flag
+       poles, one with singapore flag. Go google how its supposed to look
+       like."
+
+       WHERE, and why nothing here needs a blocker: the player's bounds are
+       maxX 20, z -3.7..7.2, so both the poles (x 31.8) and the lamp rows
+       (z +/-12) stand where he can never walk. That is deliberate — it is
+       what keeps `walktest` and the fall-in route exactly as they were.
+
+       The three poles stand in front of the far block, between the last bay
+       divider (x 31) and the block's face (x 33) — which is where a camp
+       actually puts them, and which is dead centre of what the rank looks at:
+       from the line at x 14 facing +x they are 12.7 degrees off axis.
+
+       THE FLAG is drawn, not downloaded (CSP-safe, no bytes): 2:3, the top
+       half red (#EE2536, Pantone 032C) over white, with the white crescent
+       and its ring of five stars in the hoist half of the red band. The two
+       flanking poles carry plain unit colours — a navy and an olive field
+       with a gold fly stripe. They are deliberately NOT anyone's real crest:
+       a made-up insignia on a real parade square is worse than none, and if
+       Chad wants the actual colours he can send them.
+
+       Every flag WAVES by moving its own vertices, never its matrix, so
+       v8.6's freezeStatic has nothing to say about it. */
+    const sqLampMats = [], sqPools = [], sqFlags = [];
+    {
+      const SG_RED = '#ee2536';
+      const flagTex = (fn) => { const t = paint(256, fn, null); filmTex.push(t); return t; };
+      const sgFlag = flagTex((ctx, S) => {
+        const W = S, H = S * 2 / 3, y0 = (S - H) / 2;          // 3:2 inside a square canvas
+        ctx.fillStyle = '#0b0b0b'; ctx.fillRect(0, 0, S, S);
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(0, y0, W, H);
+        ctx.fillStyle = SG_RED;   ctx.fillRect(0, y0, W, H / 2);
+        const cy = y0 + H / 4, k = W / 384;
+        ctx.fillStyle = '#ffffff';                              // the crescent: a disc...
+        ctx.beginPath(); ctx.arc(62 * k, cy, 42 * k, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = SG_RED;                                 // ...with a disc taken out of it
+        ctx.beginPath(); ctx.arc(80 * k, cy, 35 * k, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#ffffff';                              // five stars in a ring, one at the top
+        for (let i = 0; i < 5; i++) {
+          const a = -Math.PI / 2 + i * Math.PI * 2 / 5;
+          const sx = 110 * k + Math.cos(a) * 22 * k, sy = cy + Math.sin(a) * 22 * k;
+          ctx.beginPath();
+          for (let j = 0; j < 10; j++) {
+            const r = (j % 2 ? 4.6 : 10.5) * k, t = -Math.PI / 2 + j * Math.PI / 5;
+            const px = sx + Math.cos(t) * r, py = sy + Math.sin(t) * r;
+            j ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
+          }
+          ctx.closePath(); ctx.fill();
+        }
+      });
+      /* Lighter than a real unit flag would be, on purpose: against an
+         unlit block at dusk a navy field is a black rectangle. Measured by
+         render — the first pass's #1d2f5c and #4a5a2e were both invisible. */
+      const unitFlag = (field) => flagTex((ctx, S) => {
+        const H = S * 2 / 3, y0 = (S - H) / 2;
+        ctx.fillStyle = '#0b0b0b'; ctx.fillRect(0, 0, S, S);
+        ctx.fillStyle = field; ctx.fillRect(0, y0, S, H);
+        ctx.fillStyle = '#c8a23c'; ctx.fillRect(S - S * 0.055, y0, S * 0.055, H);
+      });
+      const matPoleF = new THREE.MeshStandardMaterial({ color: 0xe8e8e2, roughness: 0.5, metalness: 0.2 });
+      const matFinial = new THREE.MeshStandardMaterial({ color: 0xc8a23c, roughness: 0.4, metalness: 0.7 });
+      const matIsland = new THREE.MeshStandardMaterial({ color: 0xbdbcb2, roughness: 0.95 });
+      const island = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.16, 9.2), matIsland);
+      island.position.set(31.8, 0.06, 0); island.receiveShadow = true; world.add(island);
+      const POLES = [{ z:  3.6, h: 7.6, fw: 2.25, tex: unitFlag('#3f5da8') },
+                     { z:  0.0, h: 9.2, fw: 2.70, tex: sgFlag },
+                     { z: -3.6, h: 7.6, fw: 2.25, tex: unitFlag('#84924e') }];
+      POLES.forEach((P, pi) => {
+        const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.085, P.h, 8), matPoleF);
+        pole.position.set(31.8, 0.14 + P.h / 2, P.z); pole.castShadow = !LOW; world.add(pole);
+        const fin = new THREE.Mesh(new THREE.SphereGeometry(0.11, 8, 6), matFinial);
+        fin.position.set(31.8, 0.14 + P.h + 0.10, P.z); world.add(fin);
+        /* the flag: its hoist edge ON the pole, its width running out along
+           -z, its face across the square. The geometry is shifted so local x
+           runs 0..w from the hoist, which is what the wave is pinned to. */
+        const fh = P.fw * 2 / 3;
+        const geo = new THREE.PlaneGeometry(P.fw, fh, 14, 4);
+        geo.translate(P.fw / 2, 0, 0);
+        const fm = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({
+          map: P.tex, roughness: 0.85, side: THREE.DoubleSide,
+          emissive: new THREE.Color(0xffffff), emissiveMap: P.tex, emissiveIntensity: 0.22 }));
+        fm.position.set(31.8, 0.14 + P.h - 0.30 - fh / 2, P.z);
+        fm.rotation.y = Math.PI / 2;
+        world.add(fm);
+        sqFlags.push({ mesh: fm, w: P.fw, base: geo.attributes.position.array.slice(), ph: pi * 1.7 });
+      });
+
+      /* THE STREET LIGHTS: two rows of three down the square at z +/-12, arms
+         reaching in over the tarmac. No real LIGHT is added — v8.4-v8.6 spent
+         three releases getting this chapter's frame cost down and a light is
+         the most expensive thing you can add to it. What makes them read is
+         an EMISSIVE head and a painted pool on the ground, both driven off
+         nightK, which is zero all through the fall-in and one after lights
+         out. */
+      const matLampPole = new THREE.MeshStandardMaterial({ color: 0x9aa0a2, roughness: 0.6, metalness: 0.35 });
+      const poolTex = paint(128, (ctx, S) => {
+        const g = ctx.createRadialGradient(S / 2, S / 2, 0, S / 2, S / 2, S / 2);
+        g.addColorStop(0, 'rgba(255,226,168,0.85)');
+        g.addColorStop(0.45, 'rgba(255,214,140,0.30)');
+        g.addColorStop(1, 'rgba(255,200,120,0)');
+        ctx.fillStyle = g; ctx.fillRect(0, 0, S, S);
+      });
+      filmTex.push(poolTex);
+      for (const lz of [-12, 12]) {
+        const inward = lz > 0 ? -1 : 1;              // the arm reaches over the square
+        for (const lx of [12, 20, 28]) {
+          const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.085, 0.13, 7.0, 8), matLampPole);
+          pole.position.set(lx, 3.5, lz); pole.castShadow = !LOW; world.add(pole);
+          const base = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.28, 0.30, 8), matIsland);
+          base.position.set(lx, 0.15, lz); world.add(base);
+          const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 1.7, 6), matLampPole);
+          arm.position.set(lx, 6.92, lz + inward * 0.80);
+          arm.rotation.x = Math.PI / 2 - inward * 0.18; world.add(arm);
+          const headMat = new THREE.MeshStandardMaterial({ color: 0x8d9294, roughness: 0.5,
+                            emissive: new THREE.Color(0xffd089), emissiveIntensity: 0 });
+          const head = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.16, 0.72), headMat);
+          head.position.set(lx, 6.78, lz + inward * 1.58); head.rotation.x = inward * 0.10; world.add(head);
+          sqLampMats.push(headMat);
+          const pool = new THREE.Mesh(new THREE.PlaneGeometry(7.0, 7.0),
+            new THREE.MeshBasicMaterial({ map: poolTex, transparent: true, opacity: 0,
+                                          depthWrite: false, blending: THREE.AdditiveBlending }));
+          pool.rotation.x = -Math.PI / 2;
+          pool.position.set(lx, -0.006, lz + inward * 1.6); world.add(pool);
+          sqPools.push(pool);
+        }
+      }
+    }
+    /* The lamps are ON, and that is not laziness: this chapter's declared
+       daylight is EVENING (v7.5 — the film crosses a day and hands play the
+       dusk), so the square is dark from the first frame of play to the last.
+       Street lights keyed to nightK would have been dark through the whole
+       fall-in, which is the one beat they exist for; measured on the shipped
+       build, nightK is 0 for every phase up to lights out. They lift a little
+       further once the block goes dark. And the flags never stop moving. */
+    function sqFurnitureTick(t, k) {
+      for (const m of sqLampMats) m.emissiveIntensity = 1.45 + 0.85 * k;   // 1.9 blew the head to flat white
+      for (const p of sqPools) p.material.opacity = 0.40 + 0.20 * k;
+      for (const f of sqFlags) {
+        const a = f.mesh.geometry.attributes.position, arr = a.array, b = f.base;
+        for (let i = 0; i < arr.length; i += 3) {
+          const x = b[i], grip = x / f.w;                  // pinned at the hoist, loose at the fly
+          arr[i + 2] = b[i + 2] + Math.sin(x * 3.4 - t * 2.6 + f.ph) * 0.16 * grip * grip;
+          arr[i + 1] = b[i + 1] - 0.05 * grip * grip;      // and it sags a little as it runs out
+        }
+        a.needsUpdate = true;
+      }
+    }
 
     /* ----------------------------------------------- ONE · the ferry cabin */
     /* v8.9: the pocket moved from (−70, −60) to (−70, −420), and the reason
@@ -1910,6 +2152,7 @@
         }
         if (want === r.act) { want.paused = false; continue; }
         want.reset(); want.paused = false; want.enabled = true;
+        want.setEffectiveTimeScale(1);      // v9.3: the march writes this; a switch gives it back
         want.setEffectiveWeight(1).fadeIn(fade).play();
         r.act.fadeOut(fade);
         r.act = want;
@@ -2219,6 +2462,7 @@
         const m = crowdMarchers[i];
         if (m.wait > 0) { m.wait -= d; continue; }
         const g = m.r.g, leg = m.legs[m.i];
+        if (m.r.act) m.r.act.setEffectiveTimeScale(strideRate('Running', m.spd, d));   // v9.3
         const dx = leg.x - g.position.x, dz = leg.z - g.position.z, dist = Math.hypot(dx, dz);
         if (dist > 0.02) g.rotation.y = mixAngle(g.rotation.y, Math.atan2(dx, dz), Math.min(1, d * 6));
         const step = m.spd * d;
@@ -2321,7 +2565,8 @@
         m.rotation.y = long === 'z' ? -b.head * Math.PI / 2 : (b.head > 0 ? Math.PI : 0);
         m.position.set(b.x, 0, b.z);
         sleeperRoot.add(m);
-        restOnDeck(b, m, -box.min.y * sc);      // v9.2: ON the mattress, not 2 cm over it
+        restOnDeck(b, m, -box.min.y * sc - SLEEP_SINK);   // v9.2 put him ON it; v9.3 sinks him INTO it
+        sleepShade(sleeperRoot, m, b);           // v9.3: the contact the phone's shadows cannot draw
         sleepers.push({ bed: b, obj: m });
       });
       redoShadows();
@@ -2338,7 +2583,7 @@
       g.position.set(b.x, 0, b.z);
       g.rotation.y = (b.head < 0 ? Math.PI : 0);
       sleeperRoot.add(g);
-      restOnDeck(b, g, 0);                      // v9.2: the group's origin IS the mattress top
+      restOnDeck(b, g, -SLEEP_SINK);            // v9.2: the group's origin IS the mattress top; v9.3 sinks it
       const rig = { bed: b, group: g, mixer: null, acts: null, ready: false,
                     take: SLEEP_TAKE[i] || REST_TAKE, rate: SLEEP_RATE[i] || 0.85 };
       sleepRigs.push(rig);
@@ -2422,6 +2667,7 @@
         const boxC = skinBox(m, g), cC = boxC.getCenter(new THREE.Vector3());
         m.position.x -= cC.x; m.position.z -= cC.z;
         m.position.y -= boxC.min.y;             // g's own origin IS the mattress top
+        sleepShade(sleeperRoot, m, b);  // v9.3: the contact the phone's shadows cannot draw
         rig.ready = true;
         sleepers.push({ bed: b, obj: m, rig });
       });
@@ -2626,7 +2872,8 @@
       'n1lights', 'n1shower', 'n1wake', 'pushups', 's1again', 's1fallin',
       's1late', 's1lights', 's1standby', 'switchoff', 'whistle',
       'hudlock',                    // v8.8: the bed zone's own trigger
-      'platoonmarch'];              // v9.2: the camp's pass-by, fired from ambientTick
+      'platoonmarch',               // v9.2: the camp's pass-by, fired from ambientTick
+      'b1hurry', 'k1hurry'];        // v9.3: the two who shout on the run back
     if (warmSounds) warmSounds(PLAY_LINES);
 
     /* v8.1: and it is CLEARED by reset(), because it is stated in the
@@ -3038,6 +3285,19 @@
         const m = marchers[i];
         if (m.wait > 0) { m.wait -= d; continue; }      // he has not stepped off yet
         const g = m.rig.group, leg = m.legs[m.i];
+        /* v9.3: his legs keep up with his body — see STRIDE.
+           And the take is STARTED here, not merely rated: `marchTo` asks for
+           it once, at step-off, and `rig.play` is a no-op on a rig whose
+           model has not landed yet — the loader then puts him on his IDLE,
+           so a man whose bytes arrive mid-march used to glide the entire way
+           with no walk at all. Found by probe: strideRate was called ZERO
+           times in a march the sergeant completed. `rig.play` returns early
+           when he is already on the take, so this costs nothing per frame. */
+        const wact = m.rig.acts && m.take && m.rig.acts[m.take];
+        if (wact) {
+          if (m.rig.cur !== m.take) m.rig.play(m.take, 1, 0.25);
+          wact.setEffectiveTimeScale(strideRate(m.take, m.spd, d));
+        }
         let dx = leg.x - g.position.x, dz = leg.z - g.position.z;
         const dist = Math.hypot(dx, dz);
         if (dist > 0.02) g.rotation.y = mixAngle(g.rotation.y, Math.atan2(dx, dz), Math.min(1, d * 6));
@@ -3067,7 +3327,52 @@
        and the sergeant-major who blew it walks. STAGGER is what makes it read
        as eight men rather than one body — measured without it, all eight
        stepped off on the same frame and met at the same doorway. */
-    const RUN_SPD = 2.6, WALK_SPD = 1.35, STAGGER = 0.22;
+    const RUN_SPD = 2.6, WALK_SPD = 1.95, STAGGER = 0.22;
+
+    /* ---- WHY A MARCHING MAN GLIDES, and the one number that fixes it (v9.3)
+
+       Chad: "why does the sergeant float and glide to the parade square
+       instead of walking? It already has walking animation." He does play it.
+       The glide is a CLOCK MISMATCH, and it is invisible on a fast machine:
+
+         marchTick(d)          runs on WALL time, capped at 0.5 s a frame
+         r.mixer.update(dt)    runs on the ENGINE's dt, CLAMPED to 0.05 s
+                               (src/main.js: Math.min(clock.getDelta(), 0.05))
+
+       Above 20 fps the two agree and the legs keep up. Below it they diverge
+       by exactly d/dt — 1.3x at 15 fps, 2x at 10, 4x at 5 — so the body
+       outruns the stride by that factor and the man skates. It is worst
+       precisely when the phone is hot, which is the only condition Chad
+       plays in.
+
+       So the take's rate is driven from the ground speed the body ACTUALLY
+       covered this frame: the mixer advances the clip by dt * ts seconds,
+       which carries natural * dt * ts metres of stride, and we want that to
+       equal spd * d.
+
+       STRIDE is measured, not guessed — each take isolated (every other
+       action stopped: a clip blended under an idle reads HALF its stride)
+       and stepped by action.time, 48 poses, one foot's travel in the
+       GROUP's own frame, doubled for the two steps in a cycle:
+
+         Walking  sergeant 1.437  encik 1.368  admintee 1.416  botak 1.333
+         Running  sergeant 2.678  encik 2.547  admintee 2.606  botak 2.455
+
+       One number per take: the 4 % spread between rigs is far under what an
+       eye can see, where the mismatch it replaces reached 400 %. Note that
+       RUN_SPD 2.6 already sat dead on the run take's own speed, which is why
+       only the WALKERS were ever reported as gliding. */
+    const STRIDE = { Walking: 1.39, Running: 2.57 };
+    let frameDt = 1 / 60;
+    const rateLog = [];          // what was actually WRITTEN, for stage.marchRate()
+    function strideRate(take, spd, d) {
+      const nat = STRIDE[take]; if (!nat) return 1;
+      const ts = (spd * d) / (nat * Math.max(1e-4, frameDt));
+      const out = Math.max(0.35, Math.min(4, ts));   // a stalled frame never blurs him
+      rateLog.push({ take, spd, d: +d.toFixed(4), dt: +frameDt.toFixed(4), ts: +out.toFixed(3) });
+      if (rateLog.length > 120) rateLog.shift();
+      return out;
+    }
     const BUNK_AT = new Map();
     /* THE ORDER IS NEAREST-FIRST, and that is not a nicety. Measured with the
        party dispatched in declaration order, the recruit at the BACK of a bed
@@ -3142,7 +3447,7 @@
     function punishBeat(snap) {
       setPhase('punish');
       if (kit) { kit.objective(DATA.words.objPunish); kit.waypoint(null); }
-      if (snap) { beginStandby(); return; }
+      if (snap) { beginStandby(true); return; }
       encSay('e1knock');
       after(PUNISH_LEAD, () => { if (phase === 'punish') sectionPushUps(); });
       after(PUNISH_LEAD + PU_SECS + 0.5, () => { if (phase === 'punish') encSay('e1backbunk'); });
@@ -3151,10 +3456,21 @@
     }
     /* ---- the standby bed: back to the bunk, then the sequence */
     let bedTries = 0, stoodBy = false;     // v8.7: has he reached the circle this time round
-    function beginStandby() {
+    function beginStandby(resumed) {
       setPhase('standby');
       stoodBy = false;
       after(0.6, () => fallOut(false));    // v8.3: the punishment beat has already played out
+      /* v9.3, Chad: "When running back to the bunk, i want some bunkmates to
+         shout 'eh hurry up la, later get pushups again'." Two voices, spaced
+         so the second clears the first: `sayLine` refuses a line inside
+         `speak.until`, which is the previous take's length plus a quarter
+         second — b1hurry is 2.16 s, so 1.2 and 3.9 leave 0.54 s of air. Not
+         on a RESUME: the run home has already happened for that player, and
+         being chivvied to hurry while standing at your own bed is nonsense. */
+      if (!resumed) {
+        after(1.2, () => { if (phase === 'standby') sayLine('b1hurry', 0.95); });
+        after(3.9, () => { if (phase === 'standby') sayLine('k1hurry', 0.95); });
+      }
       if (!kit) return;
       kit.objective(DATA.words.objStandby);
       kit.waypoint({ x: PILE_POS.x, y: 1.0, z: PILE_POS.z });
@@ -3301,7 +3617,7 @@
          DO re-run (the fall-in call, an unfinished bed) cost nothing. */
       if (p === 'fallin') { beginFallIn(true); return; }
       if (p === 'punish') { punishBeat(true); return; }   // v8.3: the shout is spent; go on to the bed
-      if (p === 'standby' || p === 'standbybed') { beginStandby(); return; }
+      if (p === 'standby' || p === 'standbybed') { beginStandby(true); return; }
       if (p === 'free') { beginFree(); return; }
       if (p === 'lightsout' || p === 'night' || p === 'decide') {
         nightK = 1; showerVol = 0.55; mixBeds();
@@ -3547,12 +3863,14 @@
       }
     }
     function updateNotes(dt, t) {
+      frameDt = dt;                 // v9.3: the march compensates against it
       updateDay();
       /* the CLOCKS run in every state (v5.19): a cutscene owns the poses,
          never the mixers */
       for (const r of [sergeant, buddy, bunkmate, encik, ghostFig]) if (r.mixer && r.group.visible) r.mixer.update(dt);
       for (const r of sleepRigs) if (r.mixer && sleeperRoot.visible) r.mixer.update(dt);
       for (const f of fans) f.rotation.y += dt * 7.5 * fanSpeed;
+      sqFurnitureTick(t, nightK);      // v9.3: the square's lamps and its flags
       if (showerOn) {
         streakTex.offset.y -= dt * 1.6;
         const a = waterGeo.attributes.position.array;
@@ -3807,6 +4125,7 @@
          to the whistle and the push-ups. Reporting it here is the same move
          as v5.29's `seatStats()` — a claim about the mix that stays
          checkable instead of being taken on trust. */
+      marchRate: () => rateLog.slice(),   // v9.3: the stride compensation, checkable
       ambient: () => ({ outK: +outK.toFixed(3), marches: marchN,
                         nextMarchIn: marchAt ? +(marchAt - dayClock.t).toFixed(1) : null }),
       get phase() { return phase; },

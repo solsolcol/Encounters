@@ -3251,3 +3251,56 @@ of day and cannot separate a 0.2 s hold from a 3 s line. **A test that cannot
 distinguish its two outcomes is not evidence**, however plausible the reading.
 `__enc.audio()` answers `{muted, ctxState}` directly and should have been the
 first call, not the tenth.
+
+## A body that measures perfect can still read as floating — the cue is the SHADOW (v9.3)
+
+Chad reported episode 2's sleepers "floating on top of the bed" twice, and
+twice the measurement said otherwise: every one of the eight has its lowest
+skinned vertex within 2 mm of the mattress top, each on its own bed. **Two
+releases of re-measuring the same way is the tell that the measure is the
+wrong one.**
+
+The cue he was missing is the CONTACT SHADOW. Every rig in that chapter is
+built `castShadow = !LOW`, and `LOW = IS_PHONE` — so on a phone nothing under
+a sleeping man is darkened at all, and a body touching a surface with no
+shadow under it hovers over it. The fix costs no light: sink the body a
+realistic few centimetres INTO the surface it rests on (resting exactly on
+the undeformed surface is geometrically right and looks wrong), and lay a
+PAINTED soft ellipse under it, which is there on LOW exactly as on desktop.
+
+## `Box3.setFromObject` on a SkinnedMesh is the BIND pose, not the body (v9.3)
+
+Third notch, after v5.21 (a rig with no crown bone measured from its bind
+box stood a head over everyone) and v8.4 (a SkinnedMesh keeps its own cached
+boundingSphere from whatever pose it loaded in). The v9.3 contact shadows
+were sized and placed with `setFromObject` and came out fitted to a STANDING
+man a metre off the bed, because that rig's bind pose is a Mixamo T-pose
+standing up. **Measure a posed body from its posed skin** (`getVertexPosition`
+on every SkinnedMesh, into the frame you want), and keep `setFromObject` for
+things that have no skin.
+
+## A value on one clock and an animation on another: why a walking man glides (v9.3)
+
+Episode 2's march moves a man's GROUP on wall time (capped 0.5 s a frame)
+while `mixer.update(dt)` runs on the engine's dt, which `src/main.js` CLAMPS
+to 0.05 s. Above 20 fps the two agree and the legs keep up; below it they
+diverge by exactly `d/dt` — 2× at 10 fps, 4× at 5 — and the body outruns the
+stride. **It is invisible on a fast machine and worst exactly when the phone
+is hot**, which is why it survived nine releases and why it only ever
+appeared in a player's report.
+
+The fix is to drive the take's `timeScale` from the ground actually covered:
+`ts = (spd * d) / (natural * dt)`, clamped. Which means a clip's natural
+speed must be MEASURED — and measured with the take ISOLATED, every other
+action stopped: a walk blended under an idle reads half its stride, which is
+how a first pass came back with numbers exactly 2× too small.
+
+## Let a chapter BOOT before a probe drives one of its phases (v9.3)
+
+Three consecutive probes reported that a new march behaviour never ran. It
+was not the game: `updateDay`'s `if (!booted) { booted = true;
+applyPhase(...) }` runs on the chapter's FIRST frame, so a phase the probe
+set before that frame is re-entered as a RESUME — which snaps every cast
+member to their marks instead of walking them. Give the chapter a few
+seconds of real play before calling `beginFallIn()` and friends, or the
+probe measures the resume path while believing it measures the live one.

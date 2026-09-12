@@ -3666,7 +3666,9 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
   's1fallin', 's1late', 's1bed', 's1standby', 's1again', 's1lights',
   'b1day', 'b1sleep', 'b1huh', 'k1board', 'k1three',
   // v8.3: and the encik, who does most of the shouting
-  'e1knock', 'e1backbunk']);
+  'e1knock', 'e1backbunk',
+  // v9.3: the two who shout on the run back — one line, two voices
+  'b1hurry', 'k1hurry']);
 const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || CAST_TAKES.has(name);
 /* v6.9: his WHISPERS go round the bus. Chad wanted the three pick-up
    reactions "almost whispering to himself" and they were re-voiced as
@@ -5482,6 +5484,7 @@ const STING_SAMPLE = {
   b1day: ['b1day', 1], b1sleep: ['b1sleep', 1], b1huh: ['b1huh', 1], k1board: ['k1board', 1],
   k1three: ['k1three', 1],
   e1knock: ['e1knock', 1], e1backbunk: ['e1backbunk', 1],   // v8.3: the encik
+  b1hurry: ['b1hurry', 1], k1hurry: ['k1hurry', 1],         // v9.3: the run back
   e2film: ['e2film', 1],         // the episode's theme under the film (60 s, eleven_music_v2)
   e2bed: ['e2bed', 1],           // the night's explore bed (50 s, eleven_music_v2, loop)
   e2day: ['e2day', 1],           // v9.2: and the DAY's, the other side of nightK (23 s, crossfade-looped)

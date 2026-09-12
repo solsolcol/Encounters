@@ -392,7 +392,15 @@
     { id: "k1board", who: "bunkmate", ch: "e2c1", where: "The notice board hotspot",
       text: "Week two, live firing. Confirm plus chop.", secs: 3 },
     { id: "k1three", who: "bunkmate", ch: "e2c1", where: "The bunkmate hotspot, by day",
-      text: "The three a.m. one? Heard before. Never looked.", secs: 4.05 }
+      text: "The three a.m. one? Heard before. Never looked.", secs: 4.05 },
+    /* v9.3, Chad: "When running back to the bunk, i want some bunkmates to
+       shout 'eh hurry up la, later get pushups again'." His words exactly,
+       said by TWO of them a beat apart — one clip played twice reads as a
+       bug, and "some bunkmates" is more than one man. */
+    { id: "b1hurry", who: "buddy", ch: "e2c1", where: "Running back to the bunk, after the push-ups",
+      text: "Eh, hurry up la! Later get push-ups again!", secs: 2.16 },
+    { id: "k1hurry", who: "bunkmate", ch: "e2c1", where: "Running back to the bunk, a beat after the buddy",
+      text: "Eh, hurry up la! Later get push-ups again!", secs: 2.72 }
   ];
 
   // What a chapter key means on the sheet.

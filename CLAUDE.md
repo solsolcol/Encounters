@@ -2091,6 +2091,65 @@ What the baseline contains, by release:
   `reset()` clears `marchAt`, `marchSeed`, `marchN` and `outK` — the
   v8.1/v8.2/v8.7 law a fourth time.
   docs/V9.2-THE-SQUARE-AND-THE-SOUND.md is the build's memory.
+- **v9.3** THE WALK, THE SQUARE, AND THE STAKES — Chad's five notes on v9.2.
+  `src/main.js` gains the graded event ladder and two `STING_SAMPLE` rows and
+  nothing else, so episode 1 is unchanged by construction and was run as the
+  control. **THE MINIGAMES HAVE STAKES**: the old sequence test had no timing
+  check at all — the whole press handler was `e.hits++` — which is why it was
+  too easy; it was a counter, not a timing test. Every press is GRADED now
+  (`EV_BANDS`: +3 PERFECT through −4 TOO LATE, keyed to the error as a
+  fraction of the zone), a negative band is **paid on the spot** rather than
+  netted at the end (a penalty the player does not feel while playing is not
+  a penalty) with a red wash, `hudfail` and a triple buzz, an early press is
+  BROKEN rather than free, and a slot that times out unpressed is BROKEN. The
+  final award pays only what the running total still owes, so nothing is
+  charged twice. Both e2c1 tests re-armed against the reference game's tiers
+  (docs/MZTRIAL-NOTES.md); the FIXTURE declares the same shape, so
+  `fixturetest` proves the ladder rather than only the chapter that asked.
+  **THE SLEEPERS**, twice reported as floating and twice measured as resting
+  within 2 mm of the mattress: two releases of re-measuring the same way is
+  the tell that the measure is the wrong one. The cue he was missing is the
+  CONTACT SHADOW — every rig is `castShadow = !LOW` and `LOW = IS_PHONE`, so
+  on the only device he plays on nothing under a sleeping man is darkened at
+  all. Fixed without a light: `SLEEP_SINK` 0.035 (a body sinks into a
+  mattress; resting exactly on the undeformed surface is right and looks
+  wrong) plus a PAINTED ellipse under each, drawn so it is there on LOW
+  exactly as on desktop, and registered on the bed's own `restOn` list
+  because Chad's bunk model lands long after build(). The first version of
+  that shadow sized itself with `Box3.setFromObject` and came out fitted to a
+  STANDING man a metre off the bed — a SkinnedMesh's box is its BIND pose,
+  the v5.21/v8.4 law a third time. **THE MARCH**: he *does* play the walk;
+  the glide is a CLOCK MISMATCH — `marchTick` runs on WALL time while
+  `mixer.update(dt)` runs on the engine's dt, CLAMPED to 0.05 s, so below
+  20 fps the body outruns the stride by exactly `d/dt` (2× at 10 fps, 4× at
+  5) and it is worst precisely when the phone is hot, which is the only
+  condition Chad plays in. The take's rate is driven from the ground actually
+  covered; `STRIDE` is measured with each take ISOLATED (a walk blended under
+  an idle reads HALF its stride) by stepping `action.time` over 48 poses —
+  Walking 1.33–1.44, Running 2.46–2.68, and `RUN_SPD` 2.6 already sat dead on
+  the run take's own speed, which is why only the WALKERS were ever reported.
+  `WALK_SPD` 1.35 → **1.95** at his ask. One latent bug fell out: the walk is
+  STARTED in `marchTick` now, because `rig.play` is a no-op on a rig whose
+  model has not landed and the loader then puts that man on his IDLE — anyone
+  whose bytes arrived mid-march glided the whole way with no walk at all.
+  `stage.marchRate()` reports what was written (the v5.29 `seatStats()` move).
+  **THE SQUARE**: three flagpoles between the last bay divider and the block's
+  face, 12.7° off the rank's axis — the Singapore flag DRAWN, not downloaded
+  (2:3, #EE2536 over white, crescent and five stars in the hoist half), the
+  two flanking poles plain unit colours and deliberately NOT anyone's real
+  crest; six street lights whose heads are emissive and whose pools are
+  painted, ON throughout because this chapter's declared daylight is EVENING
+  and lamps keyed to `nightK` were dark through the one beat they exist for.
+  Nothing added needs a blocker (bounds are maxX 20, z −3.7…7.2), so
+  `walktest` and the fall-in route are untouched. And **fifteen of the
+  square's twenty-two trees were inside the far block** — a solid box the
+  stand predates — parsed, instanced and drawn where nothing could see them;
+  they line the sides now. **THE SHOUT**: his words exactly, in TWO voices a
+  beat apart (`b1hurry` Edison, `k1hurry` Kelvin), on the run home and never
+  on a resume. One probe law paid for four times: a beat fired before the
+  chapter's first frame is re-applied as a RESUME, which snaps the cast to
+  their marks — let a chapter BOOT before driving one of its phases.
+  docs/V9.3-THE-WALK-THE-SQUARE-AND-THE-STAKES.md is the build's memory.
 - **v7.9** THE FERRY FROM INSIDE, TEKONG, THE PARADE SQUARE, THE BUNK —
   Chad, with five reference photographs: *"I dont want to see the outside
   of the ferry and the sea, it should show first person pov within inside
