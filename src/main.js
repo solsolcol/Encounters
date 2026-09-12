@@ -1184,8 +1184,23 @@ function paintObjective() {
   }
   const txt = banner ? T('hud.objDone') : (kitObjective || '');
   if (txt !== objPainted.txt) {
-    // the FIRST paint lands straight away; every change after it slides
-    if (objPainted.txt === null) $('objTxt').textContent = txt; else swapObjText(txt);
+    /* the FIRST paint lands straight away; every change after it slides —
+       EXCEPT the COMPLETE banner, which lands straight away too (v9.4).
+       The slide is a 230 ms setTimeout and the banner is a 1.35 s beat the
+       FRAME takes away, so the words were racing the frame for their own
+       life. Measured on a starved box (a 20 ms interval firing 4 times in
+       3.5 s): the class went on at 69 ms, the frame took it off before the
+       swap timer ever ran, and OBJECTIVE COMPLETE was never shown at all —
+       the sound and the flash fired over the OLD order. A beat has to be
+       able to say what it is on the frame it happens. */
+    if (objPainted.txt === null || banner) {
+      /* and a cancelled slide must not leave the box mid-slide: `out` is
+         removed by the timer this cancels, and the measured timeline showed
+         the box stuck on `done out` — slid away and never slid back. */
+      clearTimeout(objSwapT);
+      if (obox) obox.classList.remove('out', 'in');
+      $('objTxt').textContent = txt;
+    } else swapObjText(txt);
     objPainted.txt = txt;
   }
   // the countdown steps aside while the box is saying COMPLETE
@@ -1424,14 +1439,21 @@ const EV_DEFAULT = {
   mash:      { secs: 8, start: 0.55, decay: 0.32, gain: 0.09 },
   hold:      { secs: 6, grace: 1.5, drift: 28, lookTol: 0.9 },
   stabilise: { secs: 5, grace: 1.5, tol: 3.0, pass: 0.35 },
-  heartbeat: { n: 5, bpm: 64, win: 0.17, lead: 1.2, pass: 0.6 },
+  /* v9.4: a heartbeat SPEEDS UP. Chad: "It should get faster and faster per
+     beat." `accel` multiplies the gap after every beat, floored at
+     `minPeriod` so it cannot outrun a thumb. */
+  heartbeat: { n: 5, bpm: 64, win: 0.17, lead: 1.2, accel: 0.93, minPeriod: 0.40, pass: 0.6 },
+  /* v9.4: DRAG AND MATCH. Items on the left, slots on the right, dragged one
+     onto the other; scored on how FAST the whole set is laid, with a wrong
+     drop costing the stat on the spot. */
+  match:     { secs: 45, wrongCost: 4, fast: 12, slow: 34, pass: 1 },
   focus:     { n: 5, each: 1.6, tol: 90, pass: 0.6 },
   sequence:  { each: 1.2, accel: 0.86, minEach: 0.45, pass: 0.6 }
 };
 // the literals texttest looks for; the kind picks the row
 const EV_LABEL = { tap: 'event.tap', timed: 'event.timed', mash: 'event.mash', hold: 'event.hold',
                    stabilise: 'event.stabilise', heartbeat: 'event.heartbeat', focus: 'event.focus',
-                   sequence: 'event.sequence' };
+                   sequence: 'event.sequence', match: 'event.match' };
 /* ------------------------------------------------------ v9.3 · THE LADDER
    Chad, of the minigames: "no stakes, no damage, no repercussions ... they
    were supposed to require precise timing to pass, and every mistimed tap or
@@ -1475,6 +1497,7 @@ function evScorePress(err) {
   const b = evGrade(err, e.o.zone);
   e.band.push(b.aw);
   e.sum += b.aw;
+  if (b.aw > 0) e.pos += b.aw;        // v9.4: what the HITS earned, on its own
   if (b.aw > 0) e.hits++; else if (b.aw < 0) e.misses++;
   const host = evEl();
   if (host) {
@@ -1483,33 +1506,202 @@ function evScorePress(err) {
     host.classList.toggle('great', b.aw >= 2);
   }
   if (b.aw < 0) {
+    e.combo = 0;
     const st = (e.o.penalty && e.o.penalty.stat) || (e.o.award && e.o.award.stat) || 'sanity';
+    /* v9.4: `missCost` is a FLAT price per miss, which is what Chad asked
+       for — "Missed beats will deal 5 sanity damage each" — and the ladder
+       cannot express it, because its two failing bands are -2 and -4. When a
+       chapter names one, every missed beat costs exactly that, whether it
+       was a near miss or a beat never answered at all. */
+    const flat = +e.o.missCost;
     const per = (e.o.penalty && +e.o.penalty.per) || 1;
-    kitAward(st, b.aw * per);                       // the damage, now
-    if (st === ((e.o.award && e.o.award.stat) || 'sanity')) e.paid += b.aw * per;
+    const cost = Number.isFinite(flat) && flat > 0 ? -flat : b.aw * per;
+    kitAward(st, cost);                             // the damage, now
+    if (st === ((e.o.award && e.o.award.stat) || 'sanity')) e.paid += cost;
     kitFlashSet({ color: 'rgba(150,20,16,0.40)', secs: 0.30 });
-    snd('hudfail', 0.5); haptic([32, 26, 32]);
+    snd('beatmiss', 0.55); haptic([34, 28, 34]);
+    evBurst('bad');
   } else {
-    snd(b.aw >= 2 ? 'hudok' : 'uiconfirm', b.aw >= 2 ? 0.42 : 0.3);
-    if (e.o.haptic !== false) haptic(b.aw >= 2 ? 40 : 26);
+    e.combo++; if (e.combo > e.bestCombo) e.bestCombo = e.combo;
+    snd(b.aw >= 2 ? 'beatperfect' : 'beathit', b.aw >= 2 ? 0.5 : 0.42);
+    /* a PERFECT lands as a double tick under the thumb and a good hit as one:
+       the hand can tell them apart without reading the screen, which is what
+       "haptic feedback when the player accurately taps at the right time"
+       actually means on a phone. */
+    if (e.o.haptic !== false) haptic(b.aw >= 3 ? [18, 40, 18] : b.aw >= 2 ? 38 : 24);
+    evBurst(b.aw >= 2 ? 'great' : 'ok');
   }
+  evCombo();
   return b;
 }
+/* v9.4: the ring flashes its verdict. A rhythm game has to answer the thumb
+   on the frame it lands, in a way the eye catches without reading a word. */
+function evBurst(kind) {
+  const b = $('evBurst'); if (!b) return;
+  b.className = 'burst ' + kind;
+  void b.offsetWidth;                       // restart the animation
+  b.classList.add('go');
+}
+function evCombo() {
+  const c = $('evCombo'), e = ev; if (!c || !e) return;
+  c.textContent = e.combo >= 2 ? (e.combo + '\u00d7') : '';
+  c.classList.toggle('hot', e.combo >= 4);
+}
+/* v9.4 · THE BEAT SCHEDULE. It used to be `lead + beat * period` — one fixed
+   spacing for the whole test, computed on the fly. A heartbeat that speeds up
+   cannot be expressed that way, so the times are laid out ONCE, up front, and
+   everything downstream reads the table: the press grades against
+   `beats[beat]`, the frame draws the ring contracting onto it, and a resume
+   or a slow frame cannot drift the schedule out from under the player. */
+function evBeatTimes(o, n) {
+  const out = [];
+  let t = o.lead, period = 60 / Math.max(1, o.bpm);
+  for (let i = 0; i < n; i++) {
+    out.push(t);
+    period = Math.max(o.minPeriod ?? 0.4, period * (o.accel ?? 1));
+    t += period;
+  }
+  return out;
+}
+/* --------------------------------------------------- v9.4 · DRAG AND MATCH
+   Chad, of the standby bed: "have the player drag item icons on the left to
+   the right, it has to match the right icons. Score based on speed of
+   completion. Award awareness based on speed. Matching wrong icons damages
+   awareness."
+
+   So this kind is NOT on the timing ladder — there is no beat to be early or
+   late for. It is a race: the score is where the finishing time falls
+   between `fast` (full marks) and `slow` (none), a wrong drop takes
+   `wrongCost` off the stat on the spot, and running the clock out pays the
+   award's floor. The columns are shuffled INDEPENDENTLY, so the left and
+   right orders never line up and the player has to read what he is holding.
+
+   An icon may be a function returning a node, a node, or an asset key: a
+   canvas cannot be in two places at once and both columns show every item,
+   so a chapter that draws its icons hands over a FUNCTION and gets a fresh
+   one per use. */
+function evShuffled(a) {
+  const out = a.slice();
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const t = out[i]; out[i] = out[j]; out[j] = t;
+  }
+  return out;
+}
+function evIconNode(icon, cls) {
+  const w = document.createElement('span');
+  w.className = cls;
+  try {
+    if (typeof icon === 'function') { const n = icon(); if (n && n.nodeType === 1) w.appendChild(n); }
+    else if (icon && icon.nodeType === 1) w.appendChild(icon);
+    else if (typeof icon === 'string' && HOSTED && ASSET_MAP[icon]) {
+      const img = document.createElement('img'); img.alt = ''; img.src = ASSET_MAP[icon]; w.appendChild(img);
+    }
+  } catch {}
+  return w;
+}
+function evMatchRow(p, cls, ghost) {
+  const el = document.createElement('div');
+  el.className = cls;
+  el.dataset.id = p.id;
+  el.appendChild(evIconNode(p.icon, 'mico' + (ghost ? ' ghost' : '')));
+  const lb = document.createElement('span'); lb.className = 'mlab'; lb.textContent = p.label || '';
+  el.appendChild(lb);
+  return el;
+}
+function evBuildMatch() {
+  const e = ev, o = e.o;
+  const src = $('evSrc'), dst = $('evDst');
+  if (!src || !dst) return;
+  src.textContent = ''; dst.textContent = '';
+  e.pairs = (Array.isArray(o.pairs) ? o.pairs : []).map((p, i) =>
+    ({ id: String(p.id ?? ('p' + i)), label: p.label || '', icon: p.icon }));
+  e.done = 0; e.wrong = 0; e.drag = null;
+  for (const p of evShuffled(e.pairs)) src.appendChild(evMatchRow(p, 'mtile', false));
+  for (const p of evShuffled(e.pairs)) dst.appendChild(evMatchRow(p, 'mslot', true));
+}
+function evDragTo(x, y) {
+  const g = $('evDrag'); if (!g) return;
+  g.style.transform = 'translate(' + x.toFixed(0) + 'px,' + y.toFixed(0) + 'px) translate(-50%,-50%)';
+}
+function evSlotAt(x, y) {
+  const el = document.elementFromPoint(x, y);
+  return el && el.closest ? el.closest('#evDst .mslot') : null;
+}
+function evMatchHover(x, y) {
+  const hit = evSlotAt(x, y);
+  const dst = $('evDst'); if (!dst) return;
+  for (const n of dst.children) n.classList.toggle('over', n === hit && !n.classList.contains('full'));
+}
+/* ONE drop, resolved where the finger let go. Right: the tile locks into the
+   slot with its cue and a green wash. Wrong: the slot shakes red, the fail
+   cue fires, the stat is taken THERE AND THEN, and the tile goes back — the
+   same immediacy the graded ladder gives the rhythm game. */
+function evMatchDrop(x, y) {
+  const e = ev, o = e.o, d = e.drag;
+  e.drag = null;
+  $('evDrag')?.classList.add('hide');
+  const dst = $('evDst');
+  if (dst) for (const n of dst.children) n.classList.remove('over');
+  if (!d) return;
+  d.el.classList.remove('lift');
+  const slot = evSlotAt(x, y);
+  if (!slot || slot.classList.contains('full')) { snd('uiclick', 0.18); return; }
+  if (slot.dataset.id === d.id) {
+    d.el.classList.add('gone');
+    slot.classList.add('full');
+    slot.querySelector('.mico')?.classList.remove('ghost');
+    e.done++; e.hits++;
+    $('evNote').textContent = T('event.matchOk');
+    evEl()?.classList.remove('bad');
+    snd('matchok', 0.5);
+    if (o.haptic !== false) haptic(32);
+    kitFlashSet({ color: 'rgba(40,150,126,0.18)', secs: 0.18 });
+    evBurst('ok');
+    if (e.done >= e.n) e.over = true;
+  } else {
+    e.wrong++; e.misses++;
+    slot.classList.add('nope');
+    setTimeout(() => slot.classList.remove('nope'), 380);
+    const st = (o.penalty && o.penalty.stat) || (o.award && o.award.stat) || 'awareness';
+    const cost = Math.abs(+o.wrongCost || 0);
+    if (cost) kitAward(st, -cost);
+    $('evNote').textContent = T('event.matchBad');
+    evEl()?.classList.add('bad');
+    snd('matchbad', 0.55);
+    if (o.haptic !== false) haptic([34, 28, 34]);
+    kitFlashSet({ color: 'rgba(150,20,16,0.36)', secs: 0.26 });
+    evBurst('bad');
+  }
+}
+/* v9.4: THE MINIGAME'S OWN CUES, warmed the moment a chapter asks for a test.
+   The v8.0 law twice over: `snd()` returns null for a sample that has not
+   decoded, so the first press of the first beat would be silent. They are NOT
+   on the boot warm list with the HUD's three, because chapters 1-5 declare no
+   events at all and would pay the decode for nothing; a test's own briefing,
+   or its `lead`, is more than enough time. */
+const EV_SOUNDS = ['beathit', 'beatperfect', 'beatmiss', 'matchok', 'matchbad', 'matchdone'];
 function kitEvent(opts = {}) {
   if (ev) evResolve({ ok: false, aborted: true });
   const kind = EV_DEFAULT[opts.kind] ? opts.kind : 'tap';
   const o = { ...EV_DEFAULT[kind], ...opts, kind };
+  for (const n of EV_SOUNDS) WARM_WANT.add(n);
+  packWarm(EV_SOUNDS);
   if (kind === 'timed') o.secs = o.close;
   return new Promise(res => {
     ev = { o, kind, t: 0, res, started: false, briefing: false, layoutReal: null,
-           down: false, downAt: -1, hits: 0, misses: 0, band: [], sum: 0, paid: 0,
+           down: false, downAt: -1, hits: 0, misses: 0, band: [], sum: 0, pos: 0, paid: 0,
            idx: 0, bar: o.start ?? 0, drift: 0, look: 0, downX: 0, downY: 0, each: o.each,
            layout: (kind === 'tap' || kind === 'timed') ? 'button' : 'full',
            items: Array.isArray(o.items) ? o.items : [], targets: Array.isArray(o.targets) ? o.targets : [],
            n: kind === 'sequence' ? (Array.isArray(o.items) ? o.items.length : (o.n || 5))
             : kind === 'focus' ? (Array.isArray(o.targets) && o.targets.length ? o.targets.length : (o.n || 5))
+            : kind === 'match' ? (Array.isArray(o.pairs) ? o.pairs.length : (o.n || 4))
             : (o.n || 1),
-           slotT: 0, beat: 0, beatDone: false, over: false };
+           slotT: 0, beat: 0, beatDone: false, over: false,
+           combo: 0, bestCombo: 0, beats: [],           // v9.4: the rhythm game
+           pairs: [], drag: null, lastX: 0, lastY: 0, done: 0, wrong: 0 };
+    if (kind === 'heartbeat') ev.beats = evBeatTimes(o, ev.n);
   });
 }
 function evActive() { return !!ev; }
@@ -1536,6 +1728,7 @@ function evBrief() {
   btn.className = 'go';
   $('evTrack').classList.add('hide');
   $('evItem').classList.add('hide');
+  $('evMatch').classList.add('hide');
   $('evDot').classList.add('hide');
   snd('uiclick', 0.3);
 }
@@ -1558,11 +1751,21 @@ function evBegin() {
   btn.textContent = o.button || T(EV_LABEL[e.kind]);
   btn.className = e.kind === 'timed' ? 'wait' : '';
   btn.classList.toggle('hide', e.layout !== 'button' && e.kind !== 'mash');
-  $('evTrack').classList.toggle('hide', !(e.kind === 'mash' || e.kind === 'hold' || e.kind === 'stabilise' || e.kind === 'tap'));
-  $('evBar').style.width = (e.kind === 'mash' ? e.bar * 100 : 0) + '%';
+  $('evTrack').classList.toggle('hide', !(e.kind === 'mash' || e.kind === 'hold' || e.kind === 'stabilise' || e.kind === 'tap' || e.kind === 'match'));
+  $('evBar').style.width = (e.kind === 'mash' ? e.bar * 100 : e.kind === 'match' ? 100 : 0) + '%';
   $('evItem').classList.toggle('hide', e.kind !== 'sequence');
+  /* `.hide` is display:none !important, so the kind's own CSS cannot bring
+     the columns back on its own — the class has to come off here */
+  $('evMatch').classList.toggle('hide', e.kind !== 'match');
   $('evDot').classList.add('hide');
+  $('evDrag').classList.add('hide');
+  $('evCombo').textContent = '';
   if (e.kind === 'sequence') evShowItem();
+  /* v9.4: a drag needs a cursor, and under pointer lock there is none - the
+     mouse's clientX/clientY freeze, so the tiles could never be picked up.
+     Hand the pointer back; the next click on the canvas after the event
+     re-locks it through the path that has always done so. */
+  if (e.kind === 'match') { evBuildMatch(); document.exitPointerLock?.(); }
   snd('uiclick', 0.3);
 }
 function evShowItem() {
@@ -1596,7 +1799,13 @@ function evResolve(extra) {
   const e = ev; if (!e) return;
   ev = null;
   const host = evEl();
-  if (host) { host.className = 'layer hide'; $('evDot').classList.add('hide'); $('evIcon').textContent = ''; }
+  if (host) {
+    host.className = 'layer hide';
+    $('evDot').classList.add('hide'); $('evDrag').classList.add('hide');
+    $('evMatch').classList.add('hide');
+    $('evIcon').textContent = ''; $('evCombo').textContent = '';
+    $('evSrc').textContent = ''; $('evDst').textContent = '';
+  }
   const score = Math.max(0, Math.min(1, extra.score ?? e.score ?? 0));
   const r = { kind: e.kind, ok: !!extra.ok, score: +score.toFixed(3), hits: e.hits, misses: e.misses,
               t: +e.t.toFixed(2), early: !!extra.early, skipped: !!extra.skipped, aborted: !!extra.aborted,
@@ -1612,7 +1821,14 @@ function evResolve(extra) {
          the ladder says is LEFT to pay: the positive remainder, scaled. A
          chapter may still cap it with lo/hi. */
       const per = Number.isFinite(+aw.per) ? +aw.per : 1;
-      const owed = Math.round(e.sum * per) - e.paid;
+      /* v9.4: with a FLAT `missCost` the two halves stop being one sum. A miss
+         is priced at missCost and PAID when it happens, and that price is not
+         the ladder's -2/-4 — so netting them (`sum * per - paid`) can come out
+         POSITIVE after a run of misses and hand sanity back for failing. When
+         a chapter names a flat cost, the misses are settled and the end pays
+         only what the HITS earned. */
+      const flat = Number.isFinite(+e.o.missCost) && +e.o.missCost > 0;
+      const owed = flat ? Math.round(e.pos * per) : Math.round(e.sum * per) - e.paid;
       r.delta = Number.isFinite(+aw.hi) ? Math.min(+aw.hi, owed) : owed;
       if (Number.isFinite(+aw.lo)) r.delta = Math.max(+aw.lo, r.delta);
       kitAward(aw.stat, r.delta);
@@ -1642,14 +1858,30 @@ function evPress(x, y) {
     case 'mash':
       e.bar = Math.min(1, e.bar + o.gain); e.hits++; snd('uiclick', 0.18, 1.1); break;
     case 'heartbeat': {
-      /* v9.3: GRADED. It was a pass/fail window — inside `win` counted, one
-         millisecond outside counted for nothing and cost nothing. Now the
-         error against the beat is graded on the ladder, so landing ON the
-         beat pays and drifting off it hurts, by degrees. */
-      const period = 60 / o.bpm, c = o.lead + e.beat * period;
+      /* v9.4: the beat comes off the SCHEDULE, because the gaps shrink. A
+         press is graded on how far it lands from the beat's centre as a
+         fraction of the window, so an UNDERSHOOT and an OVERSHOOT of the
+         same size score the same — which is Chad's "if the player
+         undershoots, or overshoots the circle, it should show missed". */
+      const c = e.beats[e.beat] ?? 1e9;
       if (e.beatDone) { evScorePress(1); break; }      // a second tap on one beat is a miss
       e.beatDone = true;
       evScorePress(Math.abs(e.t - c) / Math.max(0.02, o.win));
+      break;
+    }
+    /* v9.4: a press on a tile PICKS IT UP; the drop is resolved on release,
+       which is where the finger actually chose. */
+    case 'match': {
+      e.lastX = x; e.lastY = y;
+      const el = document.elementFromPoint(x, y);
+      const t = el && el.closest ? el.closest('#evSrc .mtile') : null;
+      if (!t || t.classList.contains('gone')) break;
+      const p = e.pairs.find(q => q.id === t.dataset.id);
+      e.drag = { id: t.dataset.id, el: t };
+      t.classList.add('lift');
+      const g = $('evDrag');
+      if (g) { g.textContent = ''; g.appendChild(evIconNode(p && p.icon, 'mico')); g.classList.remove('hide'); }
+      evDragTo(x, y); evMatchHover(x, y);
       break;
     }
     case 'focus': {
@@ -1683,12 +1915,16 @@ function evRelease() {
   const e = ev; if (!e || !e.down) return;
   e.down = false;
   $('evBtn')?.classList.remove('down');
+  /* the release carries no coordinates, so the drop lands where the last
+     move put it - and evPress seeds those, for a tap that never moved */
+  if (e.kind === 'match') { evMatchDrop(e.lastX, e.lastY); return; }
   if (e.kind === 'hold' && e.t < e.o.secs) evResolve({ ok: false, score: 0 });
   if (e.kind === 'stabilise' && e.t < e.o.secs) evResolve({ ok: false, score: 0 });
 }
 function evMove(x, y) {
   const e = ev; if (!e || !e.down) return;
   e.drift = Math.max(e.drift, Math.hypot(x - e.downX, y - e.downY));
+  if (e.kind === 'match') { e.lastX = x; e.lastY = y; if (e.drag) { evDragTo(x, y); evMatchHover(x, y); } }
 }
 function evNextTarget() {
   const e = ev; e.idx++; e.slotT = 0;
@@ -1740,12 +1976,17 @@ function evFrame(dt, dLookX, dLookY) {
       break;
     }
     case 'heartbeat': {
-      const period = 60 / o.bpm, c = o.lead + e.beat * period;
-      // the pulse ring contracts onto the inner ring at each beat's centre
+      const c = e.beats[e.beat] ?? 1e9;
+      const prev = e.beat > 0 ? e.beats[e.beat - 1] : Math.max(0, c - (60 / o.bpm));
+      const gap = Math.max(0.05, c - prev);
+      /* the pulse ring contracts onto the inner ring at each beat's centre —
+         and because the gaps shrink, it contracts FASTER every beat, which is
+         the whole read of an accelerating rhythm game. */
       const pulse = $('evPulse');
       if (pulse) {
-        const ph = Math.max(0, Math.min(1, 1 - (c - e.t) / period));
+        const ph = Math.max(0, Math.min(1, 1 - (c - e.t) / gap));
         pulse.style.transform = 'scale(' + (2.2 - 1.2 * ph).toFixed(3) + ')';
+        pulse.classList.toggle('near', Math.abs(e.t - c) <= o.win);
       }
       if (e.t > c + o.win) {
         /* v9.3: a beat you never answered is BROKEN, not a silent nothing —
@@ -1756,6 +1997,22 @@ function evFrame(dt, dLookX, dLookY) {
         e.beat++; e.beatDone = false;
         if (e.beat >= e.n) evResolve(evBandResult(o));
       }
+      break;
+    }
+    /* v9.4: the whole of the match's scoring is TIME. `fast` is full marks,
+       `slow` is none, and the award's own lo/hi map that into awareness -
+       "Score based on speed of completion. Award awareness based on speed."
+       The wrong drops were already paid as they happened. */
+    case 'match': {
+      if (e.over) {
+        const span = Math.max(0.1, o.slow - o.fast);
+        const sc = Math.max(0, Math.min(1, 1 - (e.t - o.fast) / span));
+        snd('matchdone', 0.5);
+        evResolve({ ok: true, score: sc });
+        break;
+      }
+      if (bar) bar.style.width = (100 * Math.max(0, 1 - e.t / o.secs)).toFixed(1) + '%';
+      if (e.t >= o.secs) evResolve({ ok: false, score: 0 });
       break;
     }
     case 'focus': {
@@ -1949,7 +2206,10 @@ function kitDebug() {
                          hits: ev.hits, misses: ev.misses, idx: ev.idx, bar: +ev.bar.toFixed(3),
                          /* v9.3: the graded ladder, readable — a harness has to be
                             able to see WHICH band a press landed in, not just a count */
-                         slotT: +(ev.slotT || 0).toFixed(3), band: ev.band.slice(), sum: ev.sum } : null,
+                         slotT: +(ev.slotT || 0).toFixed(3), band: ev.band.slice(), sum: ev.sum,
+                         /* v9.4: the rhythm game's run and the match's progress */
+                         beat: ev.beat, combo: ev.combo, best: ev.bestCombo,
+                         done: ev.done, wrong: ev.wrong } : null,
            hotspot: activeSpot ? (activeSpot.id || activeSpot.prompt || true) : null,
            hotspots: hotspotList().length };
 }
@@ -7172,6 +7432,22 @@ function tick(now = 0) {
 window.__enc = { yaw, pitch, stats, getState: () => state,   // v8.7: pitch, so a probe can aim the lens at the floor
                  kit: KIT, kitDebug, interactNow,          // v7.0: the play kit, by state
                  evPress: (x, y) => evPress(x ?? innerWidth / 2, y ?? innerHeight / 2), evRelease,
+                 /* v9.4: drive one drag-and-match drop by id, so a harness or a
+                    probe can play the standby bed without synthesising pointer
+                    events over a layout it cannot see */
+                 evDrop: (tileId, slotId) => {
+                   if (!ev || ev.kind !== 'match') return false;
+                   const t = document.querySelector('#evSrc .mtile[data-id="' + tileId + '"]');
+                   const sl = document.querySelector('#evDst .mslot[data-id="' + (slotId ?? tileId) + '"]');
+                   if (!t || !sl) return false;
+                   ev.drag = { id: tileId, el: t };
+                   const r = sl.getBoundingClientRect();
+                   evMatchDrop(r.left + r.width / 2, r.top + r.height / 2);
+                   return true;
+                 },
+                 evState: () => ev && ({ kind: ev.kind, t: +ev.t.toFixed(2), n: ev.n, done: ev.done,
+                                         wrong: ev.wrong, beat: ev.beat, band: ev.band.slice(),
+                                         combo: ev.combo, best: ev.bestCombo, beats: ev.beats.slice() }),
                  // a getter, not the array: rebuildStage() re-points BLOCKERS
                  // and a captured reference would quietly go stale
                  get blockers() { return BLOCKERS; },

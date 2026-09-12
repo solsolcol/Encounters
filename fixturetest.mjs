@@ -84,16 +84,32 @@ K.phaseKept = await p.evaluate(() => window.__enc.kit.getPhase() === 'room' && w
    then `done`. Reading only the first is reading the box mid-swap — measured
    on the real build, `dbg-objbeat.mjs`. */
 const until = (fn, ms = 30000) => p.waitForFunction(fn, null, { timeout: ms });
-await p.evaluate(() => {
-  window.__sawBanner = false;
+/* v9.4: SAMPLED ON WALL TIME, every 40 ms. Two earlier shapes were both
+   coin tosses on a loaded box and both are worth writing down:
+   - a MutationObserver callback is batched to a microtask, so it can run
+     after several later mutations have landed and then read a `textContent`
+     that has already moved on from the record that woke it;
+   - a requestAnimationFrame sampler only ever looks ON a frame, and this
+     state lives BETWEEN them. Measured in the engine: `swapObjText` writes
+     the words 230 ms after the beat starts, on a setTimeout — wall time —
+     while the `done` class is cleared by the next PAINT. At 1 fps that
+     overlap is a whole second; below ~0.7 fps the next frame lands after
+     the words and the pair never co-occurs on any frame at all.
+   The banner is correct on any real device; it is this box that cannot be
+   watched frame by frame. So sample the way the thing itself is timed.  */
+const watchObj = () => p.evaluate(() => {
+  window.__sawBanner = false; window.__sawDone = false;
   const box = document.querySelector('#objective .obox');
-  new MutationObserver(() => {
-    if (box.classList.contains('done')
-        && document.getElementById('objTxt').textContent.toUpperCase().includes('COMPLETE'))
-      window.__sawBanner = true;
-  }).observe(box, { attributes: true, attributeFilter: ['class'] });
-  window.__enc.kit.objective('Second order');
+  const txt = document.getElementById('objTxt');
+  window.__objTick = setInterval(() => {
+    if (!box.classList.contains('done')) return;
+    window.__sawDone = true;
+    if (txt.textContent.toUpperCase().includes('COMPLETE')) window.__sawBanner = true;
+  }, 40);
 });
+const stopObj = () => p.evaluate(() => clearInterval(window.__objTick));
+await watchObj();
+await p.evaluate(() => window.__enc.kit.objective('Second order'));
 K.objNextLands = await until(() => {
   const box = document.querySelector('#objective .obox');
   return !!box && !box.classList.contains('done')
@@ -101,18 +117,15 @@ K.objNextLands = await until(() => {
     && window.__enc.kitDebug().objective === 'Second order';
 }).then(() => true, () => false);
 K.objDoneBanner = await p.evaluate(() => window.__sawBanner === true);
-// and `complete: false` must skip the banner entirely — watched, because a
-// banner that flickered past between two samples would go unnoticed
-await p.evaluate(() => {
-  window.__sawDone = false;
-  const box = document.querySelector('#objective .obox');
-  new MutationObserver(() => { if (box.classList.contains('done')) window.__sawDone = true; })
-    .observe(box, { attributes: true, attributeFilter: ['class'] });
-  window.__enc.kit.objective('Third order', { complete: false });
-});
+await stopObj();
+// and `complete: false` must skip the banner entirely — sampled every frame,
+// because a banner that flickered past between two polls would go unnoticed
+await watchObj();
+await p.evaluate(() => window.__enc.kit.objective('Third order', { complete: false }));
 await until(() => document.getElementById('objTxt').textContent === 'Third order').catch(() => {});
 K.objNoFalseComplete = await p.evaluate(() =>
   window.__sawDone === false && document.getElementById('objTxt').textContent === 'Third order');
+await stopObj();
 await p.evaluate(() => window.__enc.kit.objective('Find the marker on the floor', { complete: false }));
 await until(() => document.getElementById('objTxt').textContent.includes('marker')).catch(() => {});
 
@@ -240,6 +253,68 @@ K.evSeqEarlyIsBroken = r.ok === false && r.sum <= -8 && r.band.every(b => b === 
    the one claim Chad's note actually rests on */
 K.evSeqRewardsTiming = inWindow > r.sum;
 K.evSeqEarlyCostsSanity = await p.evaluate(s0 => window.__enc.stats.sanity < s0, san1);
+/* v9.4: A FLAT `missCost` is paid per miss and never refunded. Chad:
+   "Missed beats will deal 5 sanity damage each." The ladder's own failing
+   bands are -2 and -4, so netting a flat cost against them can come out
+   POSITIVE after a run of misses and hand sanity back for failing — which is
+   what this asserts cannot happen. Two beats, never answered: -10 exactly,
+   and the end award adds nothing. */
+/* sanity is PINNED first: a dozen sanity-costing checks have already run by
+   here, `kitAward` clamps at 0, and at 0 `lose()` fires — so an unpinned
+   assertion is both wrong and destructive. `__enc.stats` is the live object. */
+await p.evaluate(() => { window.__enc.stats.sanity = 60; });
+const sanF = await p.evaluate(() => window.__enc.stats.sanity);
+r = await runEvent({ kind: 'heartbeat', n: 2, bpm: 120, win: 0.2, zone: 1, lead: 0.4,
+                     missCost: 5, penalty: { stat: 'sanity' },
+                     award: { stat: 'sanity', per: 1, lo: 0, hi: 8 } }, null);
+/* asserted on the EVENT's own numbers, and on the stat only as an
+   inequality. A stat is not a ledger: measured, sanity fell 14.74 for two
+   missed beats — 10 of flat cost plus 4.74 of the fixture's own continuous
+   drain, which runs under every assertion and in fractions. The ladder's
+   report is the exact thing under test. */
+K.evMissCostFlat = r.band.length === 2 && r.band.every(b => b === -4) && r.sum === -8
+  && await p.evaluate(s0 => window.__enc.stats.sanity <= s0 - 10, sanF);
+K.evMissCostNeverRefunds = r.delta === 0;
+/* v9.4: THE BEATS ACCELERATE. Chad: "It should get faster and faster per
+   beat." The schedule is laid out once, up front, so it is readable — each
+   gap must be strictly shorter than the one before it, floored at
+   `minPeriod`. */
+K.evBeatsAccelerate = await p.evaluate(async () => {
+  const e = window.__enc;
+  const pr = e.kit.event({ kind: 'heartbeat', n: 5, bpm: 60, win: 0.05, lead: 0.5,
+                           accel: 0.8, minPeriod: 0.3 });
+  await new Promise(r => setTimeout(r, 60));
+  const b = e.evState().beats.slice();
+  e.kit.abortEvent(); await pr;
+  const gaps = b.slice(1).map((t, i) => +(t - b[i]).toFixed(3));
+  return b.length === 5 && gaps.length === 4
+    && gaps.every((g, i) => i === 0 || g <= gaps[i - 1] + 1e-6)
+    && gaps[gaps.length - 1] >= 0.299;
+});
+/* v9.4 · DRAG AND MATCH. Chad: "have the player drag item icons on the left
+   to the right ... Matching wrong icons damages awareness." Both halves are
+   asserted: a right drop locks a slot and a wrong one is paid at once. */
+const awM = await p.evaluate(() => window.__enc.stats.awareness);
+r = await runEvent({ kind: 'match', pairs: [{ id: 'a', label: 'a' }, { id: 'b', label: 'b' }],
+                     secs: 30, fast: 0, slow: 0.05, wrongCost: 3,
+                     penalty: { stat: 'awareness' },
+                     award: { stat: 'awareness', lo: -5, hi: 9 } }, async () => {
+  K.evMatchBuilds = await p.evaluate(() =>
+    document.querySelectorAll('#evSrc .mtile').length === 2
+    && document.querySelectorAll('#evDst .mslot').length === 2
+    && document.getElementById('event').classList.contains('match'));
+  // a WRONG drop: 'a' onto b's slot — paid on the spot, nothing locked
+  await p.evaluate(() => window.__enc.evDrop('a', 'b'));
+  K.evMatchWrongCosts = await p.evaluate(a0 =>
+    window.__enc.stats.awareness === a0 - 3
+    && window.__enc.kitDebug().event.wrong === 1
+    && window.__enc.kitDebug().event.done === 0, awM);
+  await p.evaluate(() => { window.__enc.evDrop('a', 'a'); window.__enc.evDrop('b', 'b'); });
+});
+/* `slow` 0.05 s is past before the first drop, so the score floors at 0 and
+   the award pays its floor -- the speed mapping, asserted at one end of it */
+K.evMatchCompletes = r.ok === true && r.hits === 2 && r.misses === 1;
+K.evMatchScoresSpeed = r.score === 0 && r.delta === -5;
 /* v8.7: a BRIEFED event holds everything until START is pressed. The proof
    that it holds is the clock: `each` is a fifth of a second here, so an
    unbriefed run would have missed both items long before the press. */
@@ -297,8 +372,13 @@ K.daylightTweens = await p.evaluate(() => { window.__enc.kit.daylight({ fog: [0x
 K.timerFires = await p.evaluate(() => { window.__tf = false; window.__enc.kit.timer(0.2, () => { window.__tf = true; }); return true; })
   && await p.waitForFunction(() => window.__tf === true && document.getElementById('objTimer').classList.contains('hide'), null, { timeout: 60000 }).then(() => true).catch(() => false);
 await p.evaluate(() => { const e = window.__enc; e.yaw.position.set(0, 1.62, 9); e.yaw.rotation.y = 0; e.kit.waypoint({ x: 0, y: 1, z: 0 }); });
-await settle();
-K.waypointShown = await p.evaluate(() => !document.getElementById('waypoint').classList.contains('hide'));
+/* v9.4: POLLED, not sampled after a fixed wait. The waypoint is painted by
+   the FRAME, and under the full runner this box can take longer than 700 ms
+   to produce one — the check passed standalone and failed in the suite,
+   which is the v8.7 law exactly: a fixed wait in a harness is a coin toss,
+   which is worse than no check. */
+K.waypointShown = await until(() => !document.getElementById('waypoint').classList.contains('hide'))
+  .then(() => true, () => false);
 await p.evaluate(() => window.__enc.kit.waypoint(null));
 
 // the decision clock: armed, it drains under the panel and costs sanity when it runs out

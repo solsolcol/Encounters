@@ -121,8 +121,8 @@
       objStandby: 'Back to your bed — standby bed',
       objStood: 'Stand by your bed — wait for orders',
       objBedTap: 'STANDBY BED — start it at your bed',
-      objBed: 'STANDBY BED — sixty seconds',
-      bedBrief: 'Eight items, one at a time. Tap each one the moment it is named. They come faster as you go, and anything you miss counts against you.',
+      objBed: 'STANDBY BED — lay it out, fast',
+      bedBrief: 'Drag each item on the left onto its place on the right. The faster you lay the whole set out, the better it is inspected — and every item put in the wrong place costs you.',
       objFree: 'Look around the bunk before lights out',
       objWarn: 'Lights out is coming — get to your bed',
       objLights: 'Lights out',
@@ -137,14 +137,10 @@
       noteLate: 'Late to fall in. Push-ups.',
       noteBedOk: 'A good standby bed.',
       noteBedFail: 'The bunk did it again because of you.',
-      item1: 'Pillow',
-      item2: 'Bedsheet',
-      item3: 'Blanket',
-      item4: 'Boots',
-      item5: 'Water bottle',
-      item6: 'Mug',
-      item7: 'Toothbrush',
-      item8: 'Locker'
+      item1: 'Towel',
+      item2: 'Boots',
+      item3: 'Field dressing',
+      item4: 'Cord'
     },
     lines: { near: 'n1near', close: 'n1near', nearAt: 2.4, act: 'n1act' },
     voiceLine: 'n1voice',
@@ -513,7 +509,7 @@
          sleepShade  a painted soft ellipse laid on the mattress under him,
                      sized from his own world box. A drawn shadow, so it is
                      there on LOW exactly as on desktop. */
-    const SLEEP_SINK = 0.035;
+    const SLEEP_SINK = 0.060;   // v9.4, Chad: "lower all the sleeping bunkmates by just a little more"
     let shadeTex = null;
     /* One soft ellipse per sleeper, laid on the mattress and sized from HIS
        OWN world box once he is placed — so it fits the man rather than a
@@ -1254,16 +1250,32 @@
       const matPoleF = new THREE.MeshStandardMaterial({ color: 0xe8e8e2, roughness: 0.5, metalness: 0.2 });
       const matFinial = new THREE.MeshStandardMaterial({ color: 0xc8a23c, roughness: 0.4, metalness: 0.7 });
       const matIsland = new THREE.MeshStandardMaterial({ color: 0xbdbcb2, roughness: 0.95 });
-      const island = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.16, 9.2), matIsland);
-      island.position.set(31.8, 0.06, 0); island.receiveShadow = true; world.add(island);
-      const POLES = [{ z:  3.6, h: 7.6, fw: 2.25, tex: unitFlag('#3f5da8') },
-                     { z:  0.0, h: 9.2, fw: 2.70, tex: sgFlag },
-                     { z: -3.6, h: 7.6, fw: 2.25, tex: unitFlag('#84924e') }];
+      /* v9.4, Chad, with a photograph of a real SAF flag stand: "attached flag
+         pole. Follow similar." What his photo has that v9.3's did not:
+           - the three poles stand CLOSE TOGETHER (a stand, not a row across
+             the square) — 1.35 m apart against the old 3.6;
+           - they rise from a STEPPED PLINTH, a broad kerb with a narrower
+             platform on it, not a flat slab;
+           - they are of similar height, the centre only a little taller;
+           - the flags are LARGE against the pole and fly near the top.
+         The stand keeps x 31.8, so the whole thing is still past the bays,
+         in front of the block, and out of the player's reach. */
+      const PLINTH = { x: 31.8, z: 0, step: 0.19, top: 0.34 };
+      const kerb = new THREE.Mesh(new THREE.BoxGeometry(3.5, PLINTH.step, 6.2), matIsland);
+      kerb.position.set(PLINTH.x, PLINTH.step / 2, PLINTH.z); kerb.receiveShadow = true; world.add(kerb);
+      const deck = new THREE.Mesh(new THREE.BoxGeometry(2.5, PLINTH.top - PLINTH.step, 5.0),
+        new THREE.MeshStandardMaterial({ color: 0xc9c8bd, roughness: 0.9 }));
+      deck.position.set(PLINTH.x, (PLINTH.step + PLINTH.top) / 2, PLINTH.z);
+      deck.receiveShadow = true; world.add(deck);
+      const POLES = [{ z:  1.35, h: 8.6, fw: 2.45, tex: unitFlag('#3f5da8') },
+                     { z:  0.00, h: 9.4, fw: 2.70, tex: sgFlag },
+                     { z: -1.35, h: 8.6, fw: 2.45, tex: unitFlag('#84924e') }];
       POLES.forEach((P, pi) => {
-        const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.085, P.h, 8), matPoleF);
-        pole.position.set(31.8, 0.14 + P.h / 2, P.z); pole.castShadow = !LOW; world.add(pole);
-        const fin = new THREE.Mesh(new THREE.SphereGeometry(0.11, 8, 6), matFinial);
-        fin.position.set(31.8, 0.14 + P.h + 0.10, P.z); world.add(fin);
+        const foot = PLINTH.top;
+        const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.052, 0.082, P.h, 8), matPoleF);
+        pole.position.set(PLINTH.x, foot + P.h / 2, P.z); pole.castShadow = !LOW; world.add(pole);
+        const fin = new THREE.Mesh(new THREE.SphereGeometry(0.10, 8, 6), matFinial);
+        fin.position.set(PLINTH.x, foot + P.h + 0.09, P.z); world.add(fin);
         /* the flag: its hoist edge ON the pole, its width running out along
            -z, its face across the square. The geometry is shifted so local x
            runs 0..w from the hoist, which is what the wave is pinned to. */
@@ -1272,11 +1284,31 @@
         geo.translate(P.fw / 2, 0, 0);
         const fm = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({
           map: P.tex, roughness: 0.85, side: THREE.DoubleSide,
-          emissive: new THREE.Color(0xffffff), emissiveMap: P.tex, emissiveIntensity: 0.22 }));
-        fm.position.set(31.8, 0.14 + P.h - 0.30 - fh / 2, P.z);
+          /* v9.4: a flag stand is FLOODLIT after dark, and this chapter's
+             declared daylight is evening — rendered against the far block the
+             cloth came out nearly black. The light is painted rather than
+             cast: v8.4-v8.6 spent three releases getting the frame down, and
+             the street lights beside these already pay their glow the same
+             way (emissive heads, painted pools). 0.55 is measured against
+             those heads' own 1.45 -- a lit flag, not a lamp. */
+          emissive: new THREE.Color(0xffffff), emissiveMap: P.tex, emissiveIntensity: 0.55 }));
+        fm.position.set(PLINTH.x, foot + P.h - 0.28 - fh / 2, P.z);
         fm.rotation.y = Math.PI / 2;
         world.add(fm);
         sqFlags.push({ mesh: fm, w: P.fw, base: geo.attributes.position.array.slice(), ph: pi * 1.7 });
+        /* the uplight at each pole's foot: a small emissive disc and a wider
+           painted pool on the deck, so the stand reads as lit from below */
+        const lamp = new THREE.Mesh(new THREE.CircleGeometry(0.11, 12),
+          new THREE.MeshBasicMaterial({ color: 0xffe6bb }));
+        lamp.rotation.x = -Math.PI / 2;
+        lamp.position.set(PLINTH.x - 0.45, PLINTH.top + 0.011, P.z);
+        world.add(lamp);
+        const pool = new THREE.Mesh(new THREE.CircleGeometry(0.62, 18),
+          new THREE.MeshBasicMaterial({ color: 0xffdca8, transparent: true, opacity: 0.16,
+                                        blending: THREE.AdditiveBlending, depthWrite: false }));
+        pool.rotation.x = -Math.PI / 2;
+        pool.position.set(PLINTH.x - 0.45, PLINTH.top + 0.006, P.z);
+        world.add(pool);
       });
 
       /* THE STREET LIGHTS: two rows of three down the square at z +/-12, arms
@@ -3036,8 +3068,19 @@
                        via: [{ x: 9.6, z: -5.4 }, { x: SQ.sgt, z: -5.4 }] };
     const LINE_X = SQ.line - 0.35;                             // past this, he is on the line
     const LIE_Y = BED.low + 0.14, LIE_YAW = -Math.PI / 2;      // his eye on the pillow, looking along the bed to the aisle
-    const ITEM_GLYPH = ['Pillow', 'Bedsheet', 'Blanket', 'Boots', 'Water bottle', 'Mug', 'Toothbrush', 'Locker'];   // which glyph, whatever the sheet calls it
-    const BED_ITEMS = ITEM_GLYPH.map((g, i) => ({ label: DATA.words['item' + (i + 1)] || g, icon: itemIcon(cnv, g) }));
+    /* v9.4: THE STANDBY BED IS A LAYOUT, NOT A ROLL CALL. Chad: "have the
+       player drag item icons on the left to the right, it has to match the
+       right icons ... Use the 4 attached images as the items to be dragged."
+       Four items, not eight, because a drag needs a target big enough for a
+       thumb and four rows is what fits a phone twice over.
+       The icon is a FUNCTION: both columns draw every item, and one canvas
+       cannot be in two places at once. */
+    const ITEM_GLYPH = ['Towel', 'Boots', 'Field dressing', 'Cord'];   // which glyph, whatever the sheet calls it
+    const BED_ITEMS = ITEM_GLYPH.map((g, i) => ({
+      id: 'i' + (i + 1),
+      label: DATA.words['item' + (i + 1)] || g,
+      icon: () => itemIcon(cnv, g)
+    }));
 
     /* v8.2: this SETS them — the reset, the resume, and the boot. Walking them
        is `fallOut`'s job, because the sergeant and the encik have to be in the
@@ -3499,11 +3542,18 @@
            the trial's LEARNING tier is 0.82 and this is a recruit's first
            standby bed, so 0.70: tighter than the trial's easiest, nowhere
            near its hardest. */
-        kit.event({ kind: 'sequence', label: DATA.words.evBed, items: BED_ITEMS,
+        /* v9.4: and the test itself is a DRAG AND MATCH, scored on speed.
+           Chad: "Score based on speed of completion. Award awareness based
+           on speed. Matching wrong icons damages awareness."
+           `fast` 11 s is full marks and `slow` 30 s is none — measured
+           against four drags of about 1.2 s each plus the reading; `secs` 40
+           is the clock, and running it out pays the award's floor. A wrong
+           drop costs 4 awareness where it happens. */
+        kit.event({ kind: 'match', label: DATA.words.evBed, pairs: BED_ITEMS,
                     brief: DATA.words.bedBrief,
-                    each: 1.45, lead: 0.34, accel: 0.88, minEach: 0.62, zone: 0.70,
-                    penalty: { stat: 'sanity', per: 1 },
-                    award: { stat: 'awareness', per: 1, lo: -10, hi: 10 } })
+                    secs: 40, fast: 11, slow: 30, wrongCost: 4,
+                    penalty: { stat: 'awareness' },
+                    award: { stat: 'awareness', lo: -6, hi: 12 } })
           .then(r => {
             if (!alive) return;
             bedTries++;
@@ -3598,9 +3648,21 @@
          is a nudge. 0.13 with the ladder's zone at 0.62 means only a press
          within ~25 ms of the beat reads PERFECT, and a press 90 ms out
          costs sanity where it used to cost nothing. */
-      kit.event({ kind: 'heartbeat', label: DATA.words.evFear, n: 6, bpm: 72, win: 0.13, zone: 0.62,
-                  penalty: { stat: 'sanity', per: 1 },
-                  award: { stat: 'sanity', per: 1, lo: -14, hi: 6 } })
+      /* v9.4: A MUSIC GAME. Chad: "Think music game type of feel. Score based
+         on accuracy of beats, or missed/successful beat count. Missed beats
+         will deal 5 sanity damage each. It should get faster and faster per
+         beat."
+         Eight beats from 68 bpm, each gap 0.90 of the last and floored at
+         0.42 s — so the last beats land a little over twice as fast as the
+         first, and a thumb can still reach them. `missCost` 5 is his number,
+         flat, paid the instant a beat is missed or fumbled; the end pays only
+         what the HITS earned, capped at 8, so failing can never hand sanity
+         back. Worst case is -40, which is a faint, and that is the stake. */
+      kit.event({ kind: 'heartbeat', label: DATA.words.evFear, n: 8, bpm: 68,
+                  win: 0.15, zone: 0.55, lead: 1.6, accel: 0.90, minPeriod: 0.42,
+                  missCost: 5,
+                  penalty: { stat: 'sanity' },
+                  award: { stat: 'sanity', per: 1, lo: 0, hi: 8 } })
         .then(r => {
           if (!alive) return;
           kit.objective(null); setPhase('decide');
@@ -4206,21 +4268,72 @@
   }
   /* a 64 px glyph for the standby-bed sequence: a shape per item, the
      initial over it, drawn in code (no download, no sheet) */
+  /* v9.4 · THE FOUR THINGS ON THE BED, drawn at 96 px for the drag-and-match.
+     Chad sent a photograph of each -- a green army towel, black tactical
+     boots, an olive field dressing, a coil of green cord. The photographs
+     themselves could not be reached from this session (not on disk, not in
+     Drive), so these are drawn from them in canvas: no download, CSP-safe,
+     and they read at a thumb's size, which a photograph shrunk to 44 px
+     would not. Swapping a real image in later is one `icon:` line each --
+     evIconNode already takes an asset key.
+     They are drawn at 96 and shown at 44/62, so the phone gets a sharp
+     icon rather than an upscaled one. */
   function itemIcon(cnv, label) {
-    const s = 64, [c, ctx] = cnv(s);
+    const s = 96, [c, ctx] = cnv(s);
     ctx.clearRect(0, 0, s, s);
-    ctx.fillStyle = '#e8e2d2';
-    const shapes = {
-      Pillow: () => { ctx.beginPath(); ctx.roundRect(8, 20, 48, 26, 12); ctx.fill(); },
-      Bedsheet: () => { ctx.fillRect(8, 16, 48, 34); ctx.fillStyle = '#3a5a48'; ctx.fillRect(8, 16, 48, 6); },
-      Blanket: () => { ctx.fillStyle = '#3a5a48'; ctx.fillRect(10, 22, 44, 12); ctx.fillRect(10, 36, 44, 12); },
-      Boots: () => { ctx.fillStyle = '#2a2622'; ctx.fillRect(14, 12, 14, 40); ctx.fillRect(14, 40, 36, 12); },
-      'Water bottle': () => { ctx.fillStyle = '#4c7a55'; ctx.fillRect(24, 14, 16, 40); ctx.fillRect(27, 8, 10, 8); },
-      Mug: () => { ctx.fillRect(16, 20, 30, 30); ctx.beginPath(); ctx.arc(48, 35, 8, -1.2, 1.2); ctx.lineWidth = 5; ctx.strokeStyle = '#e8e2d2'; ctx.stroke(); },
-      Toothbrush: () => { ctx.fillRect(12, 28, 40, 8); ctx.fillStyle = '#c33'; ctx.fillRect(44, 22, 10, 14); },
-      Locker: () => { ctx.fillStyle = '#8a8f8a'; ctx.fillRect(18, 8, 28, 48); ctx.fillStyle = '#2a2d2a'; ctx.fillRect(31, 8, 2, 48); }
+    const shade = (x, y, w, h, a, b) => {
+      const g = ctx.createLinearGradient(x, y, x + w, y + h);
+      g.addColorStop(0, a); g.addColorStop(1, b);
+      ctx.fillStyle = g; return g;
     };
-    (shapes[label] || (() => { ctx.beginPath(); ctx.arc(32, 32, 20, 0, 7); ctx.fill(); }))();
+    const shapes = {
+      /* the towel: folded in three, the darker band across the middle */
+      Towel: () => {
+        shade(14, 22, 68, 52, '#5d7d52', '#3b5636');
+        ctx.beginPath(); ctx.roundRect(14, 22, 68, 52, 5); ctx.fill();
+        ctx.strokeStyle = 'rgba(20,30,18,.55)'; ctx.lineWidth = 2;
+        for (const y of [39, 57]) { ctx.beginPath(); ctx.moveTo(14, y); ctx.lineTo(82, y); ctx.stroke(); }
+        ctx.fillStyle = 'rgba(225,235,215,.22)'; ctx.fillRect(14, 22, 68, 5);
+      },
+      /* the boots: a pair seen from the side, laces and a lugged sole */
+      Boots: () => {
+        for (const [ox, oy] of [[10, 16], [30, 26]]) {
+          shade(ox, oy, 40, 44, '#33312e', '#141312');
+          ctx.beginPath(); ctx.roundRect(ox + 6, oy, 22, 36, 3); ctx.fill();
+          ctx.beginPath(); ctx.roundRect(ox, oy + 30, 46, 12, 4); ctx.fill();
+          ctx.fillStyle = '#0b0b0c'; ctx.fillRect(ox, oy + 38, 46, 5);
+          ctx.strokeStyle = 'rgba(215,215,205,.65)'; ctx.lineWidth = 1.6;
+          for (let i = 0; i < 4; i++) {
+            const y = oy + 5 + i * 6;
+            ctx.beginPath(); ctx.moveTo(ox + 8, y); ctx.lineTo(ox + 26, y + 3); ctx.stroke();
+          }
+        }
+      },
+      /* the field dressing: an olive pouch, its white cross and its tie */
+      'Field dressing': () => {
+        shade(20, 20, 56, 56, '#79763f', '#4c4a24');
+        ctx.beginPath(); ctx.roundRect(20, 20, 56, 56, 4); ctx.fill();
+        ctx.fillStyle = 'rgba(240,240,232,.92)';
+        ctx.fillRect(42, 32, 12, 32); ctx.fillRect(32, 42, 32, 12);
+        ctx.strokeStyle = 'rgba(25,25,18,.6)'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(20, 30); ctx.lineTo(76, 30); ctx.stroke();
+        ctx.fillStyle = '#2b2a1c'; ctx.fillRect(44, 14, 8, 8);
+      },
+      /* the cord: a coil of green rope, three turns and a loose end */
+      Cord: () => {
+        ctx.lineCap = 'round';
+        for (let i = 0; i < 3; i++) {
+          ctx.strokeStyle = i % 2 ? '#4e7a46' : '#3c6337';
+          ctx.lineWidth = 8;
+          ctx.beginPath(); ctx.arc(48, 48, 28 - i * 8, 0.5, 5.9); ctx.stroke();
+        }
+        ctx.strokeStyle = '#4e7a46'; ctx.lineWidth = 8;
+        ctx.beginPath(); ctx.moveTo(70, 62); ctx.quadraticCurveTo(84, 74, 74, 86); ctx.stroke();
+        ctx.strokeStyle = 'rgba(225,235,215,.28)'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(48, 48, 28, 0.6, 2.2); ctx.stroke();
+      }
+    };
+    (shapes[label] || (() => { ctx.fillStyle = '#e8e2d2'; ctx.beginPath(); ctx.arc(48, 48, 30, 0, 7); ctx.fill(); }))();
     return c;
   }
   function makeStreaks(THREE, cnv) {

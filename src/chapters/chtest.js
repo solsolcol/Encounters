@@ -297,6 +297,22 @@
                       penalty: { stat: 'sanity', per: 1 },
                       award: { stat: 'awareness', per: 1, lo: -12, hi: 9 } });
           return true;
+        } },
+      /* v9.4: the DRAG AND MATCH, declared here so `fixturetest` proves the
+         seam rather than only the chapter that asked for it. Its icons are
+         plain labels — a chapter may hand over a canvas or an asset key, and
+         neither is the seam under test. */
+      { id: 'kitlayout', pos: { x: -6, y: 1.2, z: -6 }, radius: 2.4, prompt: 'Lay out the kit', once: true,
+        onInteract() {
+          if (!kit) return false;
+          kit.event({ kind: 'match', label: 'THE KIT',
+                      pairs: [{ id: 'a', label: 'mug' }, { id: 'b', label: 'boots' },
+                              { id: 'c', label: 'cord' }],
+                      brief: 'Drag each thing on the left onto its place on the right.',
+                      secs: 30, fast: 6, slow: 20, wrongCost: 3,
+                      penalty: { stat: 'awareness' },
+                      award: { stat: 'awareness', lo: -5, hi: 9 } });
+          return true;
         } }
     ];
     if (kit) { kit.objective('Find the marker on the floor'); kit.setPhase('room'); }

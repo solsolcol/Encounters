@@ -2150,6 +2150,64 @@ What the baseline contains, by release:
   chapter's first frame is re-applied as a RESUME, which snaps the cast to
   their marks — let a chapter BOOT before driving one of its phases.
   docs/V9.3-THE-WALK-THE-SQUARE-AND-THE-STAKES.md is the build's memory.
+- **v9.4** THE BEAT, THE LAYOUT, AND THE FLAG STAND — Chad's four notes, with
+  five photographs. THE FLAG STAND is rebuilt to his reference: a stepped
+  plinth (a 3.5 × 6.2 m kerb, a 2.5 × 5.0 m deck) with the Singapore flag
+  centre at 9.4 m and two unit flags flanking at 8.6, each pole tapered with a
+  ball finial — and it is LIT WITHOUT A LIGHT, because this chapter's daylight
+  is evening and against the far block the cloth rendered nearly black: the
+  flags' `emissiveIntensity` 0.22 → 0.55 plus an emissive disc and a painted
+  pool at each pole's foot, exactly how the square's six street lights already
+  pay their glow. A real light would have cost a shadow pass on the phone
+  v8.4–v8.6 spent three releases cooling. `SLEEP_SINK` 0.035 → 0.060 at his ask.
+  **THE HEARTBEAT IS A MUSIC GAME.** *"Think music game type of feel ... Missed
+  beats will deal 5 sanity damage each. It should get faster and faster per
+  beat."* The schedule is laid out ONCE up front (`evBeatTimes`) instead of
+  `lead + beat * period`, because an accelerating gap cannot be said that way;
+  e2c1 declares 8 beats from 68 bpm at `accel` 0.90 floored at 0.42 s, measured
+  on the shipped build as gaps 0.794 → 0.422, the last beats a little over
+  twice as fast as the first. A press grades on `|t − beat| / win`, so an
+  undershoot and an overshoot of the same size score the same — his
+  "undershoots, or overshoots". The answer to the thumb is new: `#evBurst`
+  throws a ring of light on the frame the press lands (jade for a hit,
+  white-hot for a PERFECT, red and shaken for a miss), `#evCombo` counts the
+  run beside it, and the buzz is keyed to the BAND — a double tick for a
+  perfect, one firm pulse for a great, a hard triple for a miss, so the hand
+  can tell them apart without reading the screen. **`missCost` is a FLAT price
+  the ladder cannot express** (its failing bands are −2 and −4), taken on the
+  frame it happens — and that forced a real correction: `evResolve` used to pay
+  `sum * per − paid`, which with a flat 5 against a band of −4 comes out
+  POSITIVE and would have HANDED BACK 8 sanity for missing every beat. When a
+  flat cost is named the misses are settled where they happened and the end
+  pays only what the HITS earned. Measured: eight beats never answered,
+  `band [−4 × 8], sum −32, delta 0`, sanity 100 → 60.
+  **THE STANDBY BED IS A LAYOUT** — a new `match` kind: four items on the left,
+  four slots on the right, columns shuffled INDEPENDENTLY so the two orders
+  never line up, dragged one onto the other. A right drop locks with `matchok`
+  and a jade burst; a wrong one shakes the slot red, fires `matchbad` and takes
+  4 awareness ON THE SPOT. The score is TIME (`fast` 11 s full marks, `slow`
+  30 s none, the 40 s clock's floor paying −6). Four items, not eight, because
+  a drag needs a thumb-sized target. They are Chad's four photographs — towel,
+  boots, field dressing, cord — and **the photographs could not be reached from
+  this session** (not on disk, not in Drive), so each is DRAWN in canvas at
+  96 px: no download, CSP-safe, and legible at 44. Swapping a real image in is
+  one `icon:` line each. **Pointer lock is released while a match runs**, since
+  under lock a mouse's clientX/clientY freeze and the tiles could never be
+  picked up. One trap, paid for once: `#evMatch` ships with `class="hide"` and
+  `.hide` is `display:none !important`, which beats `#event.match #evMatch` —
+  the columns built, the slots measured 0 × 0, and every drop silently missed.
+  SIX NEW SOUNDS, picked by measurement: for a rhythm game the measure is
+  DECAY, not character (one candidate was −3 dB at 0.4 s and unusable), and
+  every cue is cut from 20 ms before its own peak, because an attack 100 ms
+  into the file reads as late however short the file is. One base-game fix the
+  harness found: the COMPLETE banner's words were set by `swapObjText`'s 230 ms
+  timer while the banner itself is a 1.35 s beat the FRAME takes away — measured
+  on a starved box, the class went on at 69 ms, the frame took it off before
+  the swap ever ran, and OBJECTIVE COMPLETE was never shown at all while its
+  sound and flash fired over the OLD order. The banner's text lands on its own
+  frame now. Episode 1 declares no objectives and no events, so it is untouched
+  by construction and was run as the control.
+  docs/V9.4-THE-BEAT-AND-THE-LAYOUT.md is the build's memory.
 - **v7.9** THE FERRY FROM INSIDE, TEKONG, THE PARADE SQUARE, THE BUNK —
   Chad, with five reference photographs: *"I dont want to see the outside
   of the ferry and the sea, it should show first person pov within inside

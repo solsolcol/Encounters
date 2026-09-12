@@ -3304,3 +3304,47 @@ set before that frame is re-entered as a RESUME — which snaps every cast
 member to their marks instead of walking them. Give the chapter a few
 seconds of real play before calling `beginFallIn()` and friends, or the
 probe measures the resume path while believing it measures the live one.
+
+## `.hide` is `display:none !important` — a kind's own CSS cannot lift it (v9.4)
+
+The drag-and-match columns built correctly, their DOM was right, and every
+drop silently missed. The slots measured **0 × 0**: `#evMatch` ships with
+`class="hide"`, and `.hide{display:none !important}` beats
+`#event.match #evMatch{display:flex}` outright. `document.elementFromPoint`
+at a zero-size rect returns whatever is behind it, so `closest('.mslot')`
+found nothing and `evMatchDrop` took its early return — no error, no warning,
+the game just ignored the player. **Anything shipped hidden has to have the
+class REMOVED in code**; styling it visible in a more specific rule does not
+work and looks like it should.
+
+Corollary for probes: the first diagnostic printed `evDrop` returning `true`
+and `done` staying `0`, which said the drop ran and did nothing. Printing the
+slot's `getBoundingClientRect()` named the cause in one line. **When a hit
+test misses, measure the target's box before you suspect the hit test.**
+
+## A flat penalty and a graded ladder do not net (v9.4)
+
+The event ladder banks a band per press and pays the remainder at the end:
+`sum * per - paid`. That is exactly right while the per-press cost IS the
+band. Give a chapter a FLAT `missCost` of 5 against failing bands of −2 and
+−4, and `paid` overshoots `sum` — so the closing expression comes out
+POSITIVE and the engine hands sanity BACK for missing every beat. A reward
+for failing, arrived at by arithmetic that was correct the day it was
+written.
+
+The fix is to stop treating them as one sum: when a flat cost is named, the
+misses are settled where they happened and the end pays only what the HITS
+earned. The general shape — **two costing schemes over one total will net
+into nonsense at the extremes; make the end pay one of them, not the
+difference** — is worth carrying to the next one.
+
+## A cue's DECAY is what a rhythm game is picking for (v9.4)
+
+Six UI sounds, two takes each, chosen with no ears in the session. For a
+button the measure is the transient; for a rhythm game whose beats end up
+0.42 s apart it is how fast the sound is GONE — a cue still ringing when the
+next beat lands turns the test to mush. One candidate that sounded (on
+paper) ideal, a bright bell, was −3 dB at 0.4 s and unusable; its sibling was
+−13 dB at 0.35 s and shipped. And every cue is cut from **20 ms before its
+own peak**, because a UI sound whose attack is 100 ms into the file reads as
+late however short the file is.

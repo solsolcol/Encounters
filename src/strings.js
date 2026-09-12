@@ -157,6 +157,9 @@ Object.assign(window.__TEXT__, {
   'event.heartbeat':     'TAP ON THE BEAT',
   'event.focus':         'TAP THE LIGHT',
   'event.sequence':      'TAP EACH ONE',
+  'event.match':         'DRAG EACH ITEM TO ITS PLACE',
+  'event.matchOk':       'MATCHED',
+  'event.matchBad':      'WRONG ITEM',
   'event.hit':           'GOOD',
   'event.miss':          'MISSED',
   // v9.3: the six bands of the graded ladder, worst to best

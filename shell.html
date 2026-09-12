@@ -280,6 +280,68 @@ body.cine .torchBtn{display:none}
 #evItemTxt{font-size:1.2rem;font-weight:600;letter-spacing:.03em}
 #evNote{min-height:1em;color:#8FE6DB}
 #event.bad #evNote{color:#FF5442}
+/* ------------------------------------------------------- v9.4 · THE BEAT
+   Chad, of the fear test: "it doesnt have the haptic feedback when the
+   player accurately taps at the right time, with crisp sound effects. If
+   the player undershoots, or overshoots the circle, it should show missed
+   effect. If the player hits accurately on beat, it should have another
+   effect. Think music game type of feel."
+
+   So the ring answers on the frame the thumb lands: a ring of light thrown
+   outward, jade for a hit, white-hot for a perfect, red and shaken for a
+   miss - and a combo count beside it, because a music game's reward is the
+   run, not the single tap. */
+.evpanel{position:relative}
+#evBurst{position:absolute;left:50%;top:50%;width:150px;height:150px;margin:-75px 0 0 -75px;
+  border-radius:50%;border:3px solid transparent;opacity:0;pointer-events:none}
+#evBurst.go{animation:evBurst .42s var(--ease) forwards}
+#evBurst.ok{border-color:rgba(99,214,200,.9);box-shadow:0 0 28px rgba(99,214,200,.55)}
+#evBurst.great{border-color:#EAFFFB;box-shadow:0 0 46px rgba(200,255,246,.85),inset 0 0 26px rgba(143,230,219,.5)}
+#evBurst.bad{border-color:#FF5442;box-shadow:0 0 34px rgba(255,84,66,.7)}
+@keyframes evBurst{0%{opacity:1;transform:scale(.55)}100%{opacity:0;transform:scale(1.5)}}
+#evBurst.bad.go{animation:evBurstBad .42s var(--ease) forwards}
+@keyframes evBurstBad{0%{opacity:1;transform:scale(1.05) translateX(-7px)}
+  30%{transform:scale(1.12) translateX(7px)}60%{transform:scale(1.18) translateX(-4px)}
+  100%{opacity:0;transform:scale(1.3) translateX(0)}}
+#evCombo{min-height:1.2em;font-family:var(--ui);font-size:1.45rem;font-weight:800;
+  letter-spacing:.06em;color:#8FE6DB;text-shadow:0 0 14px rgba(99,214,200,.7)}
+#evCombo.hot{color:#FFD79A;text-shadow:0 0 20px rgba(255,179,103,.9);
+  animation:breathe .6s ease-in-out infinite}
+#evPulse.near{border-color:#8FE6DB;box-shadow:0 0 30px rgba(99,214,200,.9)}
+/* ---------------------------------------------------- v9.4 · DRAG AND MATCH
+   Chad, of the standby bed: "have the player drag item icons on the left to
+   the right, it has to match the right icons ... There should be sound
+   effects and visual feedback when matching correctly or incorrectly."
+   Two columns, thumb-sized tiles, and a ghost that rides the finger. */
+#evMatch{display:none;width:100%;gap:clamp(10px,4vw,26px);justify-content:center}
+#event.match #evMatch{display:flex}
+#event.match .evpanel{width:min(96vw,520px);gap:10px}
+.mcol{display:flex;flex-direction:column;gap:8px;flex:1 1 0;min-width:0}
+.mtile,.mslot{display:flex;align-items:center;gap:9px;padding:7px 9px;min-height:60px;
+  border:1px solid var(--line);background:rgba(18,21,28,.9);
+  font-family:var(--ui);text-align:left;touch-action:none;user-select:none;
+  -webkit-user-select:none;transition:transform .12s,border-color .15s,background .15s}
+.mtile{cursor:grab;border-color:rgba(255,179,103,.55);box-shadow:0 0 12px rgba(255,179,103,.14)}
+.mtile.lift{opacity:.35;transform:scale(.95)}
+.mtile.gone{visibility:hidden}
+.mslot{border-style:dashed;opacity:.85}
+.mslot.over{border-style:solid;border-color:#8FE6DB;background:rgba(28,62,58,.92);
+  box-shadow:0 0 20px rgba(99,214,200,.45);transform:scale(1.03)}
+.mslot.full{border-style:solid;border-color:rgba(99,214,200,.85);
+  background:rgba(22,52,48,.92);opacity:1}
+.mslot.full .mico{opacity:1}
+.mslot.nope{border-color:#FF5442;background:rgba(70,16,12,.92);animation:mshake .34s}
+@keyframes mshake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}
+  60%{transform:translateX(6px)}}
+.mico{display:grid;place-items:center;width:44px;height:44px;flex:0 0 44px}
+.mico canvas,.mico img{max-width:44px;max-height:44px}
+.mico.ghost{opacity:.32}
+.mlab{font-size:.92rem;font-weight:600;line-height:1.15;color:var(--bone);min-width:0;
+  overflow-wrap:anywhere}
+#evDrag{position:fixed;left:0;top:0;z-index:9;pointer-events:none;
+  transform:translate(-50%,-50%);filter:drop-shadow(0 0 16px rgba(255,179,103,.8))}
+#evDrag .mico{width:62px;height:62px;flex:0 0 62px}
+#evDrag .mico canvas,#evDrag .mico img{max-width:62px;max-height:62px}
 #evDot{position:fixed;left:0;top:0;width:46px;height:46px;border-radius:50%;
   transform:translate(-50%,-50%);border:2px solid var(--sodium);
   background:radial-gradient(circle,rgba(255,220,160,.9),rgba(255,179,103,.15) 60%,transparent 70%);
@@ -1581,12 +1643,18 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
     <span class="stencil" id="evLabel"></span>
     <div id="evRing"><i id="evPulse"></i></div>
     <div id="evItem" class="hide"><span id="evIcon"></span><span id="evItemTxt"></span></div>
+    <!-- v9.4: the rhythm game's answer to the thumb -->
+    <i id="evBurst"></i>
+    <span id="evCombo"></span>
+    <!-- v9.4: drag and match - items on the left, slots on the right -->
+    <div id="evMatch" class="hide"><div class="mcol" id="evSrc"></div><div class="mcol" id="evDst"></div></div>
     <p id="evPrompt"></p>
     <span class="track evtrack" id="evTrack"><i id="evBar"></i></span>
     <button id="evBtn" type="button"></button>
     <span id="evNote" class="stencil"></span>
   </div>
   <div id="evDot" class="hide"></div>
+  <div id="evDrag" class="hide"></div>
 </div>
 
 <!-- decision -->
