@@ -3348,3 +3348,44 @@ paper) ideal, a bright bell, was −3 dB at 0.4 s and unusable; its sibling was
 −13 dB at 0.35 s and shipped. And every cue is cut from **20 ms before its
 own peak**, because a UI sound whose attack is 100 ms into the file reads as
 late however short the file is.
+
+## A real click cannot reach a HUD button while the canvas holds the pointer (v9.5)
+
+A probe spent an entire hour-long run inside one `page.click('#mute')`.
+Playwright resolved the button, reported it "visible, enabled and stable" on
+every retry, and was told each time that `<canvas id="scene">` intercepts
+pointer events — because play holds the pointer lock. Nothing after line one
+ran, and because the run was piped through `tail`, it reported nothing at all
+until it died.
+
+Three rules out of it:
+- dispatch the click IN the page (`el.click()`), or use `__enc`'s own hooks
+  (`evPress()`, `evDrop()`, `stage.*`) — those are what they exist for;
+- never let a probe's `setDefaultTimeout` be minutes: one stuck action then
+  eats the whole run;
+- never pipe a long probe through `tail` — write it to a file and read the
+  file, or a run that dies tells you nothing about where it died.
+
+## Drive the phase, do not play the day (v9.5)
+
+The chapter clock runs at roughly **0.4× wall** on a SwiftShader box (measured:
+24.5 chapter-seconds in 61 wall-seconds), so a thirty-second beat is a
+seventy-five-second wait and a day is an hour. Calling `stage.headcount()`,
+`stage.beginFree()` and `stage.beginLightsOut()` directly against a booted
+chapter read every beat of v9.5 in about five minutes and two, against an hour
+that produced nothing.
+
+Let the chapter BOOT first — v9.3's law: a beat fired before the chapter's
+first frame is re-applied as a RESUME, which snaps the cast to their marks.
+
+## A count-off cannot be laid out with `after()` (v9.5)
+
+`sayLine` refuses a line while another is still speaking, and `runTodo` drains
+every due slot in ONE tick — so on a box drawing a frame a second, a nine-line
+count-off scheduled at nine fixed times speaks the first and swallows the rest.
+Silently: a refused line returns false and nothing logs it.
+
+Anything that is a CADENCE runs off its own queue, gated on the same clock the
+refusal is stated in, and a line whose bytes have not landed HOLDS the queue
+rather than being dropped from it (the v8.0 law). A function in the queue runs
+under the same gate, which is how one line waits for another to finish.

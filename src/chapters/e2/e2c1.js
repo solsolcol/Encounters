@@ -118,9 +118,9 @@
       objFallIn: 'FALL IN — on the yellow line',
       objLate: 'FALL IN — get to the line',
       objPunish: 'TWENTY PUSH-UPS — the whole section',
+      objCount: 'REPORT STRENGTH — number off',
       objStandby: 'Back to your bed — standby bed',
       objStood: 'Stand by your bed — wait for orders',
-      objBedTap: 'STANDBY BED — start it at your bed',
       objBed: 'STANDBY BED — lay it out, fast',
       bedBrief: 'Drag each item on the left onto its place on the right. The faster you lay the whole set out, the better it is inspected — and every item put in the wrong place costs you.',
       objFree: 'Look around the bunk before lights out',
@@ -186,6 +186,12 @@
                  n1fallin: 1.8, n1lights: 2.04, n1wake: 1.72, n1hear: 4.44,
                  s1fallin: 3.16, s1late: 3.4, s1standby: 3.08, s1again: 1.96, s1lights: 2.27,
                  e1knock: 7.31, e1backbunk: 4.44,
+                 /* v9.5: the headcount and the toggle rope. The nine numbers are
+                    short enough that a count-off paces itself off these rather
+                    than off a gap typed in by hand (see `runCount`). */
+                 e1count: 5.25, e1extra: 9.8, e1rope: 6.53, n1rope: 5.72,
+                 n1one: 0.99, c1two: 0.47, c1three: 0.55, c1four: 0.55, c1five: 0.52,
+                 c1six: 0.68, c1seven: 0.55, c1eight: 0.65, c1nine: 0.63, c1ten: 0.81,
 
                  b1day: 3.08, b1sleep: 2.19, k1board: 3.0, k1three: 4.05 };
 
@@ -2368,17 +2374,76 @@
     /* the figure at the corridor's end — scene A's one frame. A stand-in
        (Chad supplies the ghost); the ghost treatment is the engine's own:
        grey, transparent, no shadow. */
+    /* THE GHOST TREATMENT, in one place since v9.5. It was written inline for
+       the figure at the corridor's end and the tenth man on the line (below)
+       needs exactly the same thing — grey, half there, no shadow, and no
+       depth write, so the wall behind him draws through him rather than being
+       cut away by a man who is not solid.
+       The one thing the second use needs that the first did not is a HANDLE:
+       a ghost who fades away in his spot has to write his own alpha every
+       frame, and a material list gathered once is the only way to do that
+       without walking the model on each of them. `mkRig` parses the file
+       afresh per call, so these materials are this rig's own — treating them
+       cannot reach the sergeant, who is the same asset. */
+    const GHOST_A = 0.55;
+    function ghostify(rig) {
+      const mats = [];
+      rig.model.traverse(o => {
+        if (!o.isMesh) return;
+        o.castShadow = false;
+        for (const m of (Array.isArray(o.material) ? o.material : [o.material])) {
+          m.transparent = true; m.opacity = GHOST_A; m.color.setScalar(0.35);
+          m.emissive?.setHex(0x0a0c14); m.depthWrite = false;
+          mats.push(m);
+        }
+      });
+      rig.ghostMats = mats;
+      /* a rig that was already being faded when its bytes landed keeps the
+         alpha the fade had reached, rather than snapping to full */
+      if (rig.ghostA !== undefined) ghostAlpha(rig, rig.ghostA);
+    }
+    /* 0 is gone and 1 is the treatment's own alpha. At 0 the GROUP is hidden
+       outright, so a ghost who has faded away costs nothing to draw; the
+       proxy capsule is hidden at construction, so a fade that starts before
+       the model has landed shows an empty group rather than a green pill. */
+    function ghostAlpha(rig, k) {
+      rig.ghostA = k;
+      if (rig.ghostMats) for (const m of rig.ghostMats) m.opacity = GHOST_A * k;
+      const on = k > 0.002;
+      if (rig.group.visible !== on) rig.group.visible = on;
+    }
     const ghostFig = mkRig('ghostsoldier', { x: BLOCK.x0 + 0.45, z: 5.3, ry: Math.PI / 2, height: 1.72, idle: 'Idle_6',
-      onReady: (rig) => {
-        rig.model.traverse(o => {
-          if (!o.isMesh) return;
-          o.castShadow = false;
-          const mats = Array.isArray(o.material) ? o.material : [o.material];
-          for (const m of mats) { m.transparent = true; m.opacity = 0.55; m.color.setScalar(0.35); m.emissive?.setHex(0x0a0c14); m.depthWrite = false; }
-        });
-      } });
+      onReady: ghostify });
     ghostFig.group.visible = false;
     ghostFig.proxy.visible = false;
+
+    /* ------------------------------------------- THE TENTH MAN ON THE LINE
+       v9.5, Chad: "at fall in, add another FBO soldier who is semi-transparent
+       (set opacity) who's a ghost, next to the line of bunkmates."
+
+       He is `fbosling` — the sergeant's own asset, so he costs no download
+       (`assetBytes` caches by key) and `CULL_SPHERE.fbosling` already covers
+       every pose he can hold. He stands at the +z END of the rank, 1.2 m past
+       the last man, which is the rank's own spacing: the section runs from
+       z -4.2 to 4.2 and he closes it at 5.4. That end is also the one the
+       seniors do NOT use — their route in goes round the -z flank — so
+       nobody walks through him on the way to the inspection.
+
+       He does not run out with the section. He is simply there when they
+       form up: the fade runs at the WHISTLE, while the player is still on
+       his way out of the bunk, so the rank has ten men in it and nobody saw
+       the tenth arrive. */
+    const GHOST_LINE = { x: SQ.line, z: 5.4, ry: Math.PI / 2 };
+    const ghostLine = mkRig('fbosling', { x: GHOST_LINE.x, z: GHOST_LINE.z, ry: GHOST_LINE.ry,
+                                          height: 1.72, idle: 'Idle_3', onReady: ghostify });
+    ghostLine.ghostA = 0;
+    ghostLine.group.visible = false;
+    ghostLine.proxy.visible = false;
+    function ghostLineShow(on, secs) {
+      const to = on ? 1 : 0;
+      if (!secs) { ghostAlpha(ghostLine, to); return; }
+      tween(() => (ghostLine.ghostA || 0), v => ghostAlpha(ghostLine, v), to, secs);
+    }
 
     /* ------------------------------------------------- A MAN AT EVERY BED
        v8.1 (Chad): "there needs to be a bunkmate for every bed in the bunk."
@@ -2905,7 +2970,11 @@
       's1late', 's1lights', 's1standby', 'switchoff', 'whistle',
       'hudlock',                    // v8.8: the bed zone's own trigger
       'platoonmarch',               // v9.2: the camp's pass-by, fired from ambientTick
-      'b1hurry', 'k1hurry'];        // v9.3: the two who shout on the run back
+      'b1hurry', 'k1hurry',          // v9.3: the two who shout on the run back
+      // v9.5: the headcount, the tenth voice, and the toggle rope
+      'e1count', 'e1extra', 'e1rope', 'n1one', 'n1rope',
+      'c1two', 'c1three', 'c1four', 'c1five', 'c1six', 'c1seven', 'c1eight',
+      'c1nine', 'c1ten'];
     if (warmSounds) warmSounds(PLAY_LINES);
 
     /* v8.1: and it is CLEARED by reset(), because it is stated in the
@@ -2940,6 +3009,44 @@
       if (worldSfx(q.name, q.vol)) { speak.pending = null; q.start(); }
       else speak.until = dayClock.t + 0.2;
     }
+    /* ------------------------------------------------ THE COUNT-OFF (v9.5)
+
+       Nine men number off and the answer comes back ten. A count-off is a
+       CADENCE, so it cannot be laid out with `after()` at times typed in by
+       hand: `sayLine` refuses a line while another is still speaking, and on
+       a box drawing one frame a second several `after` slots flush in the
+       same tick — the first would speak and the rest would be swallowed, and
+       a silent count-off is the whole beat gone with no error.
+
+       So the count runs off its own small queue, gated on the SAME clock the
+       refusal is stated in. One item leaves when the last line's window has
+       closed and this item's own gap has passed; a line whose bytes have not
+       landed goes into `speak.pending`, which holds the queue rather than
+       losing the number (the v8.0 law). A function in the queue runs under
+       the same gate, which is how the encik's answer waits for the tenth
+       voice to finish saying a number nobody called.
+
+       GAP is 0.35 s on top of each take's own length, measured: the numbers
+       are 0.47 to 0.99 s, so the onsets land 0.82 to 1.34 s apart — a
+       shouted count-off, not a roll call. */
+    const countQ = [];
+    let countAt = 0;
+    const COUNT_GAP = 0.35;
+    function countReset() { countQ.length = 0; countAt = 0; }
+    function runCount() {
+      if (!countQ.length) return;
+      /* the queue belongs to the punishment beat and to nothing else: if the
+         phase has moved on (a resume, a reset, a menu into a new run), the
+         numbers go with it rather than arriving in the middle of something */
+      if (phase !== 'punish') { countReset(); return; }
+      if (speak.pending) return;
+      if (dayClock.t < countAt || dayClock.t < speak.until) return;
+      const it = countQ.shift();
+      if (typeof it === 'function') { it(); return; }
+      countAt = dayClock.t + (SECS[it] || 1) + COUNT_GAP;
+      sayLine(it);
+    }
+
     /* the sergeant's lines ride his talk take; the buddy's and the
        bunkmate's ride theirs.
        v8.1: the bunkmate's take was `mixamo.com` and `assets/fbonosling.glb`
@@ -3102,6 +3209,18 @@
       marchTo(encik, e, 'Walking', WALK_SPD, true);
     }
 
+    /* v9.5: and this WALKS them there, where `putSergeant` stands them there.
+       Two different things, and the fall-in has needed both since v8.2 —
+       lights out needs the walking one. Their two routes already separate
+       themselves: SGT_LINE's `via` runs down the -z flank at z -5.4 and
+       ENC_LINE's at -6.4, so the lanes only have to keep them apart inside
+       the room, and 0.35 m either side of the gangway's centre does that
+       inside its clear window (z +/-1.10). */
+    function seniorsOut() {
+      marchTo(sergeant, SGT_LINE, 'Walking', WALK_SPD, false, 0, 0.35);
+      marchTo(encik, ENC_LINE, 'Walking', WALK_SPD, false, STAGGER, -0.35);
+    }
+
     /* v8.7: REACHING THE BED IS A MOMENT. Chad: "have a nice trigger sound
        and flashing effect to show the player successfully entered the area
        and reached his bed. the camera view should then immediately lock
@@ -3119,8 +3238,22 @@
       if (worldSfx) worldSfx('hudlock', 0.95);
       if (kit) { kit.flash({ color: '#FF2A18', secs: 0.6 }); kit.haptic([30, 45, 90]); }
       if (!kit) return;
-      if (kind === 'arrive') { lookToRoom(); kit.objective(DATA.words.objStood); }
-      else kit.objective(DATA.words.objBedTap);
+      lookToRoom();
+      if (kind === 'arrive') { kit.objective(DATA.words.objStood); return; }
+      /* v9.5, Chad: "When the player goes back into his bed area of effect, i
+         want it to automatically steer the camera view back to face the bunk
+         (just like the first time the aoe triggers) and automatically trigger
+         the standby bed game menu, and remove the existing 'tap on bed'
+         interaction as it is not needed."
+         The lens turn takes 0.55 s, so the test stands itself up a beat after
+         that rather than on the same frame: the player sees where he is
+         before a panel arrives over it. The panel is the brief, which waits
+         for START (v8.7), so nothing is timed until he presses it. */
+      after(0.9, () => {
+        if (phase !== 'standby') return;
+        setPhase('standbybed');
+        runStandbyBed();
+      });
     }
     /* The lens goes to the room and the balcony — where the whistle is about
        to come from. Over half a second rather than on one frame: a snap at
@@ -3157,6 +3290,12 @@
          the room. The encik walks out after the section; a sergeant-major
          does not run for his own whistle. */
       fallOut(true, snap);      // v8.2: and everyone else goes out on foot
+      /* v9.5: and the tenth man arrives. He fades in over three and a half
+         seconds WHILE the section is still running out — the furthest man is
+         formed up inside six — so by the time anyone can see the line he is
+         simply standing in it. A ghost who fades in under your eye is a
+         special effect; one who is already there is the beat. */
+      ghostLineShow(true, snap ? 0 : 3.5);
       after(1.2, () => sgtSay('s1fallin'));
       after(4.6, () => sayLine('n1fallin'));
       if (!kit) return;
@@ -3493,9 +3632,41 @@
       if (snap) { beginStandby(true); return; }
       encSay('e1knock');
       after(PUNISH_LEAD, () => { if (phase === 'punish') sectionPushUps(); });
-      after(PUNISH_LEAD + PU_SECS + 0.5, () => { if (phase === 'punish') encSay('e1backbunk'); });
-      after(PUNISH_LEAD + PU_SECS + 0.5 + (SECS.e1backbunk || 2.5) + 0.4,
-            () => { if (phase === 'punish') beginStandby(); });
+      after(PUNISH_LEAD + PU_SECS + 0.5, () => { if (phase === 'punish') headcount(); });
+    }
+    /* ---- the headcount: nine men, and the answer is ten (v9.5)
+
+       Chad: "after doing pushups, Encik will shout and ask everyone to report
+       strength (headcount). Everyone counts, one after another, but ends up
+       with one additional headcount. Encik shout, why is there an extra
+       headcount, we only have X recruits! Nevermind, i want standby bed,
+       now!"
+
+       X IS NINE, and it is nine because of who is actually in the room: six
+       recruits at the six beds that are not his, the buddy, the bunkmate, and
+       him. So the count runs one to nine with every number correct — there is
+       no mistake to find in it — and then a tenth voice says a number after
+       the section has run out.
+
+       `e1extra` REPLACES `e1backbunk` as the order back to the bunk, which is
+       what he asked for; the older take stays in the pack and in the registry
+       because a RESUME into this phase has already spent the shout and goes
+       straight to the bed (`punishBeat(true)`), and because nothing is gained
+       by deleting a line that still records what the beat used to say. */
+    const GHOST_BEAT = 0.9;          // the hang before the number nobody called
+    function headcount() {
+      if (kit) kit.objective(DATA.words.objCount);
+      encSay('e1count');
+      countReset();
+      countAt = dayClock.t + (SECS.e1count || 5.25) + 0.6;
+      countQ.push('n1one', 'c1two', 'c1three', 'c1four', 'c1five', 'c1six',
+                  'c1seven', 'c1eight', 'c1nine');
+      /* one beat too long, which is what makes it wrong: every other number
+         lands about a second after the last, and this one waits */
+      countQ.push(() => { countAt = dayClock.t + GHOST_BEAT; });
+      countQ.push('c1ten');
+      countQ.push(() => encSay('e1extra'));
+      countQ.push(() => beginStandby());
     }
     /* ---- the standby bed: back to the bunk, then the sequence */
     let bedTries = 0, stoodBy = false;     // v8.7: has he reached the circle this time round
@@ -3503,6 +3674,12 @@
       setPhase('standby');
       stoodBy = false;
       after(0.6, () => fallOut(false));    // v8.3: the punishment beat has already played out
+      /* v9.5, Chad: "then all the bunkmates run back as set previously, and
+         the ghost fades away in its spot." He does not run home with them —
+         he stays where he stood and stops being there, on the same frame the
+         section steps off. On a resume he is simply gone. */
+      if (resumed) ghostLineShow(false);
+      else after(0.6, () => ghostLineShow(false, 2.6));
       /* v9.3, Chad: "When running back to the bunk, i want some bunkmates to
          shout 'eh hurry up la, later get pushups again'." Two voices, spaced
          so the second clears the first: `sayLine` refuses a line inside
@@ -3560,7 +3737,7 @@
             if (r && r.ok) {
               sayLine('n1bedok');
               bank({ a: 3, note: DATA.words.noteBedOk });
-              after(SECS.n1bedok + 0.6, beginFree);
+              ropeBeat();
             } else if (bedTries < 2 && !(r && (r.skipped || r.aborted))) {
               sgtSay('s1again');
               after(2.3, () => sayLine('n1bedfail'));
@@ -3571,6 +3748,33 @@
             }
           });
       });
+    }
+    /* ---- the extra set of toggle rope (v9.5)
+
+       Chad: "After completing the standby bed game, Encik will shout at the
+       player, 'eh bed one recruit, why your standby bed got an extra set of
+       toggle rope? You better return it to your buddy!' The player then plays
+       an internal monologue voiceline, saying 'I didn't know where this
+       toggle rope came from, I'm sure I only had one...nevermind...'"
+
+       It is the headcount again, in an object: the section counted one man too
+       many and his bed has laid out one item too many, and neither has an
+       explanation. He says "never mind" both times, which is the chapter.
+
+       The beats are stated in the LINES' own measured lengths rather than in
+       numbers typed in, so a re-generated take cannot make two voices talk
+       over each other — `sayLine` would simply refuse the second and the beat
+       would go silent with no error (the v8.0 law). The objective goes back to
+       standing by the bed, which is true: the test is passed and there is
+       nothing to do but be shouted at. */
+    function ropeBeat() {
+      if (kit) kit.objective(DATA.words.objStood);
+      let t = (SECS.n1bedok || 2.5) + 0.7;
+      after(t, () => { if (alive) encSay('e1rope'); });
+      t += (SECS.e1rope || 6.5) + 0.7;
+      after(t, () => { if (alive) sayLine('n1rope'); });
+      t += (SECS.n1rope || 5.7) + 0.5;
+      after(t, () => { if (alive) beginFree(); });
     }
     /* ---- free: the bunk before lights out ---------------------------------
        v8.1 (Chad): "there should be a clear timer HUD on screen to show how
@@ -3585,7 +3789,14 @@
        25 seconds. Going to bed early still cuts it short (`beginLightsOut`
        clears it), and `applyPhase('free')` restarts it, so a Continue in the
        middle of the evening comes back with a countdown rather than none. */
-    const FREE_SECS = 70, FREE_WARN = 25;
+    /* v9.5, Chad: "reduce the waiting length of the timer." 70 s to 45, with
+       the warning at 18 rather than 25 — the evening now carries the toggle
+       rope beat in front of it (about 15 s of it), so the free time that
+       follows is shorter than the wall clock says it used to be either way.
+       There are four things to look at in the bunk and none of them takes
+       more than a few seconds, so 45 is still more than enough to see them
+       all and get back to the bed. */
+    const FREE_SECS = 45, FREE_WARN = 18;
     let freeWarned = false, freeTimer = null;
     function beginFree() {
       setPhase('free');
@@ -3602,6 +3813,16 @@
       dropTodo();
       if (kit) { kit.objective(DATA.words.objLights); kit.waypoint(null); }
       sgtSay('s1lights');
+      /* v9.5, Chad: "When lights out happen, encik and sergeant immediately
+         starts to walk out of the bunk to the parade square to call it a
+         night." They go on their own feet down the route the fall-in already
+         proved — out of the bed rows to the gangway, through the balcony
+         opening, round the rank's flank to the square — which is about twenty
+         metres at 1.95 m/s, so they are still crossing the balcony when the
+         screen fades at 9.6 s. That is the shot: the lights go out behind two
+         men walking away. `setNightRoom` hides them at 11.4 whether or not
+         they have arrived, and `reset()` stands them back at the door. */
+      after(0.4, seniorsOut);
       after(2.6, () => { if (worldSfx) worldSfx('switchoff', 0.9); });
       after(2.7, () => {
         tween(() => lightK, v => setLights(v), 0, 0.7);
@@ -3716,23 +3937,23 @@
        answer is "nothing", the badge is never offered at all (see
        pileInView), so a press falls through to the hotspots instead of
        being swallowed by a bed with nothing to say. */
-    const BED_NOTHING = 0, BED_DECIDE = 1, BED_STANDBY = 2, BED_TURNIN = 3;
+    /* v9.5: BED_STANDBY is gone. v8.7 made the player press the bed to begin
+       the standby bed, because reaching the circle used to start a timed test
+       while he was still walking; v8.7's own brief panel solved that problem
+       properly (nothing is timed until START), so the press had become a
+       thing to do for its own sake. Chad: "remove the existing 'tap on bed'
+       interaction as it is not needed." Entering the circle turns the lens to
+       the room and stands the test up itself — see `reachedBed`. */
+    const BED_NOTHING = 0, BED_DECIDE = 1, BED_TURNIN = 3;
     function bedWants() {
       if (abed()) return BED_DECIDE;
-      if (phase === 'standby') return BED_STANDBY;
       if (phase === 'free' && seen.size >= 2) return BED_TURNIN;
-      return BED_NOTHING;      // 'standbybed' included: the event owns the screen
+      return BED_NOTHING;      // 'standby' and 'standbybed': the zone and the event own it
     }
     function interactPile() {
       if (getState() !== 'play' || pileDist() >= INTERACT_R) return false;
       switch (bedWants()) {
         case BED_DECIDE: startDecision(); return true;
-        /* v8.7 (Chad): "the player must tap on his bed to officially begin
-           and trigger the standby bed minigame". It used to start itself the
-           moment he was within two metres of the bed, which is why walking
-           back from the balcony could begin a timed test before the player
-           had looked up. */
-        case BED_STANDBY: setPhase('standbybed'); runStandbyBed(); return true;
         case BED_TURNIN: beginLightsOut(); return true;
         default: return false;
       }
@@ -3903,6 +4124,7 @@
       runTweens(d);
       marchTick(d); crowdMarchTick(d);      // v8.2: the section, on real legs
       runSpeak();                 // v8.0: a held line, the moment its bytes land
+      runCount();                 // v9.5: the count-off, paced by its own lines
       ambientTick();              // v9.2: the camp outside, and the platoons in it
       /* v7.2: reaching the bed used to fire the whistle on the same frame as
          his "That's mine. Bed one." — the line lands first now, then the
@@ -3929,7 +4151,7 @@
       updateDay();
       /* the CLOCKS run in every state (v5.19): a cutscene owns the poses,
          never the mixers */
-      for (const r of [sergeant, buddy, bunkmate, encik, ghostFig]) if (r.mixer && r.group.visible) r.mixer.update(dt);
+      for (const r of [sergeant, buddy, bunkmate, encik, ghostFig, ghostLine]) if (r.mixer && r.group.visible) r.mixer.update(dt);
       for (const r of sleepRigs) if (r.mixer && sleeperRoot.visible) r.mixer.update(dt);
       for (const f of fans) f.rotation.y += dt * 7.5 * fanSpeed;
       sqFurnitureTick(t, nightK);      // v9.3: the square's lamps and its flags
@@ -4080,6 +4302,12 @@
       ferryRoot.visible = jettyRoot.visible = paradeRoot.visible = false;   // v7.9: the film's three sets, in case a film was cut before its own step hid them
       doorPivot.rotation.y = DOOR_PLAY; fanSpeed = 1; setShower(false);
       ghostFig.group.visible = false; water.material.opacity = 0.55; hisBed.low.on.visible = false;
+      /* v9.5, the v8.1/v8.2/v8.7/v9.2 law a fifth time: the tenth man on the
+         line and the count-off both belong to the run that just ended. A
+         replay that inherited either would open the new morning with a ghost
+         already standing in an empty rank, or with numbers arriving out of
+         nowhere in the middle of the walk to the bed. */
+      ghostLineShow(false); countReset();
       setNightRoom(false);                       // v7.5: leaves the evening lamps lit
       putSergeant(SGT_DOOR, true);               // v8.2: a reset stands them there, never walks them
       /* v8.2: AND THE SECTION COMES BACK IN. `fallOut(true)` puts eight men
@@ -4188,10 +4416,27 @@
          as v5.29's `seatStats()` — a claim about the mix that stays
          checkable instead of being taken on trust. */
       marchRate: () => rateLog.slice(),   // v9.3: the stride compensation, checkable
+      /* v9.5, the same move a third time: a ghost's alpha and two men walking
+         out of a room are CLAIMS, and a claim a probe cannot read is a claim
+         taken on trust. `HIS` and `PILE_POS` go with them because a probe has
+         to be able to stand where the player stands. */
+      ghostLineState: () => ({ a: +(ghostLine.ghostA || 0).toFixed(3),
+                               on: ghostLine.group.visible, ready: ghostLine.ready,
+                               x: +ghostLine.group.position.x.toFixed(2),
+                               z: +ghostLine.group.position.z.toFixed(2) }),
+      castAt: () => ({ sgt: [+sergeant.group.position.x.toFixed(2), +sergeant.group.position.z.toFixed(2)],
+                       enc: [+encik.group.position.x.toFixed(2), +encik.group.position.z.toFixed(2)] }),
+      countInfo: () => ({ left: countQ.length, at: +countAt.toFixed(2),
+                          until: +speak.until.toFixed(2),
+                          pending: speak.pending ? speak.pending.name : null }),
+      marchInfo: () => marchers.map(m => ({ k: m.rig.key, leg: m.i, of: m.legs.length,
+                                            wait: +m.wait.toFixed(2), take: m.take })),
+      HIS, PILE_POS,
       ambient: () => ({ outK: +outK.toFixed(3), marches: marchN,
                         nextMarchIn: marchAt ? +(marchAt - dayClock.t).toFixed(1) : null }),
       get phase() { return phase; },
       setPhase, applyPhase, beginFallIn, beginStandby, runStandbyBed, beginFree, beginLightsOut, beginNight,
+      headcount, ropeBeat, seniorsOut, ghostLineShow,
       LIE_Y, LIE_YAW, LINE_X, BED_ITEMS,
       get fanSpeed() { return fanSpeed; },
       set fanSpeed(v) { fanSpeed = v; },

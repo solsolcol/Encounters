@@ -70,6 +70,20 @@
               note: "Edison — young Singaporean, casual. He recurs all episode." },
     bunkmate: { name: "A bunkmate (episode 2)", voice: "FXMPPfJPpDj0GSwJ6ASO", model: "eleven_v3",
               note: "Kelvin — Singaporean English. One more voice in the bunk." },
+    /* v9.5 — THE TENTH VOICE. Chad: "everyone counts, one after another, but
+       ends up with one additional headcount." The man who says the extra
+       number is not in the section and is not a new cast member: his take is
+       the BUDDY'S own "Ten", treated — pitched down a tenth (asetrate,
+       uncorrected, so it is also a tenth slower), doubled at 60 and 180 ms,
+       and rolled off above 3.4 kHz, which takes the presence out of a voice
+       without taking the man out of it. Measured against the untreated take:
+       dominant 172 Hz against 237, centroid 1107 against 1630, and 9.5 % of
+       its energy above 3 kHz against 18.4 %. It sits 6 dB under the rest of
+       the cast (-9.8 dBFS peak against -3.8) because it is the one voice
+       nobody in the section is sure they heard. Re-generating it is
+       masters/v9.5/make.sh, not a new voice id. */
+    ghost: { name: "The tenth man on the line (episode 2)", voice: "ZyIwtt7dzBKVYuXxaRw7", model: "eleven_v3",
+              note: "Edison's take, TREATED — see masters/v9.5/make.sh. Not a separate library voice: it has to be recognisably a man in that line and unmistakably not one of these men." },
     encik: { name: "The encik, the sergeant-major (episode 2)", voice: "klqxhYh2Np93AvKxFz0b", model: "eleven_v3",
               note: "Hilmi — Malaysian English, middle-aged. Chad's brief was 'like an angry malay uncle', and getting there took four rounds: the library's Malay voices are all booth-recorded voice-over artists, and he rejected them in turn as too young (Zul), eighty years old (Yatin) and finally 'too polished'. HIS PROMPT RULE IS THE OPPOSITE OF AARON'S: no descriptive stage direction at all — a '[a furious sergeant-major in his fifties...]' tag gets a professional PERFORMING anger, which is what 'polished' names. Write the line the way he barks it: short bursts, full stops between them, CAPITALS on the stressed words. Same words as this registry, only the shouting written down." }
   };
@@ -400,7 +414,35 @@
     { id: "b1hurry", who: "buddy", ch: "e2c1", where: "Running back to the bunk, after the push-ups",
       text: "Eh, hurry up la! Later get push-ups again!", secs: 2.16 },
     { id: "k1hurry", who: "bunkmate", ch: "e2c1", where: "Running back to the bunk, a beat after the buddy",
-      text: "Eh, hurry up la! Later get push-ups again!", secs: 2.72 }
+      text: "Eh, hurry up la! Later get push-ups again!", secs: 2.72 },
+    /* v9.5, Chad: "everything in episode 2, despite all these new
+       interactions and minigames, should all still link back to spiritual
+       stuff. I don't want to veer too far off into a military sim game."
+       THE HEADCOUNT is that instruction made into a beat: an ordinary army
+       strength check, counted correctly by nine men, that comes out at ten.
+       `e1extra` REPLACES `e1backbunk` as the order back to the bunk — the
+       older line is kept in the registry and in the pack because it is still
+       what a resume hears when the shout is already spent. */
+    { id: "e1count", who: "encik", ch: "e2c1", where: "The push-ups done: report strength",
+      text: "Stand up! All of you! I want strength! Number off! From the right! Now!", secs: 5.25 },
+    { id: "n1one", who: "jamesTeen", ch: "e2c1", where: "The count-off: he is first",
+      text: "One!", secs: 0.99 },
+    { id: "c1two", who: "buddy", ch: "e2c1", where: "The count-off", text: "Two!", secs: 0.47 },
+    { id: "c1three", who: "bunkmate", ch: "e2c1", where: "The count-off", text: "Three!", secs: 0.55 },
+    { id: "c1four", who: "buddy", ch: "e2c1", where: "The count-off", text: "Four!", secs: 0.55 },
+    { id: "c1five", who: "bunkmate", ch: "e2c1", where: "The count-off", text: "Five!", secs: 0.52 },
+    { id: "c1six", who: "buddy", ch: "e2c1", where: "The count-off", text: "Six!", secs: 0.68 },
+    { id: "c1seven", who: "bunkmate", ch: "e2c1", where: "The count-off", text: "Seven!", secs: 0.55 },
+    { id: "c1eight", who: "buddy", ch: "e2c1", where: "The count-off", text: "Eight!", secs: 0.65 },
+    { id: "c1nine", who: "bunkmate", ch: "e2c1", where: "The count-off: the last man in the section", text: "Nine!", secs: 0.63 },
+    { id: "c1ten", who: "ghost", ch: "e2c1", where: "The count-off: the number nobody called",
+      text: "Ten.", secs: 0.81 },
+    { id: "e1extra", who: "encik", ch: "e2c1", where: "The headcount comes out one too many",
+      text: "Ten? Who say ten? I only got nine recruits in this section. Nine! ...Never mind. Go back to your bunk. I want standby bed. Now!", secs: 9.8 },
+    { id: "e1rope", who: "encik", ch: "e2c1", where: "The standby bed passed: one item too many",
+      text: "Eh! Bed one recruit! Why your standby bed got an extra set of toggle rope? You better return it to your buddy!", secs: 6.53 },
+    { id: "n1rope", who: "jamesTeen", ch: "e2c1", where: "After the encik walks off, to himself",
+      text: "I didn't know where this toggle rope came from. I'm sure I only had one... never mind...", secs: 5.72 }
   ];
 
   // What a chapter key means on the sheet.

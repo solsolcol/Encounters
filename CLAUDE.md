@@ -2208,6 +2208,75 @@ What the baseline contains, by release:
   frame now. Episode 1 declares no objectives and no events, so it is untouched
   by construction and was run as the control.
   docs/V9.4-THE-BEAT-AND-THE-LAYOUT.md is the build's memory.
+- **v9.5** THE HEADCOUNT, THE TOGGLE ROPE, AND THE TENTH MAN — Chad's change of
+  direction, and it is a standing rule rather than a list of asks: *"everything
+  in episode 2, despite all these new interactions and minigames, should all
+  still link back to spiritual stuff. I don't want to veer too far off into a
+  military sim game."* Every mechanic in this episode is a horror beat wearing a
+  soldier's uniform, and v9.5 is that applied to the day e2c1 already had.
+  `src/main.js` gains fourteen `STING_SAMPLE` rows and fourteen names in
+  `TEEN_TAKES`/`CAST_TAKES` and NOTHING else, so episode 1 is unchanged by
+  construction and was run as the control (24 harnesses green).
+  **THE TENTH MAN ON THE LINE** is `fbosling` — the sergeant's own asset, so he
+  costs no download and `CULL_SPHERE` already covers him — standing at the +z
+  end of the rank at (14.0, 5.4), 1.2 m past the last man, which is the rank's
+  own spacing, and at the end the seniors' route does not use. He does not run
+  out with the section: the fade runs at the WHISTLE, while the player is still
+  leaving the bunk (measured: alpha 0.055 → 0.442 at +1.2 s → 0.840 at +4.7 s →
+  1.0, and the furthest recruit is formed up inside six seconds), so the rank
+  has ten men in it and nobody saw the tenth arrive. **A ghost who fades in
+  under your eye is a special effect; one who is already there is the beat.** He
+  fades away in his spot on the frame the section steps off for home. The v4.9
+  ghost treatment is now `ghostify(rig)` in one place, with the material list
+  kept on the rig so a ghost can write its own alpha.
+  **THE COUNT-OFF**: after the push-ups the encik calls for strength and nine
+  men number off correctly — six recruits at the six beds that are not his, the
+  buddy, the bunkmate, and him — and then a tenth voice says a number. X is
+  NINE because that is who is actually in the room. `e1extra` REPLACES
+  `e1backbunk` as the order back to the bunk (the older take stays in the pack:
+  a resume into this phase has already spent the shout). A count-off is a
+  CADENCE and could not be laid out with `after()` at times typed by hand —
+  `sayLine` refuses a line while another speaks, and on a one-frame-a-second box
+  several `after` slots flush in one tick, so the first would speak and the rest
+  would be swallowed: **a silent count-off is the whole beat gone with no
+  error.** It runs off its own queue gated on the SAME clock the refusal is
+  stated in, with a held line holding the queue rather than losing the number
+  (the v8.0 law). Measured in chapter-clock seconds: the order at 1.0, the nine
+  numbers 6.85 → 16.98 about a second apart, a 0.9 s HANG, the tenth at ~18.0
+  (1.9 s after "Nine!", against ~1.0 s between the others), `e1extra` 19.55 →
+  29.35, the run home at 29.55.
+  **THE BED ZONE STARTS THE TEST** (his ask: "automatically steer the camera
+  view back to face the bunk ... and automatically trigger the standby bed game
+  menu, and remove the existing 'tap on bed' interaction"). `reachedBed` turns
+  the lens on both arrivals and stands the test up itself 0.9 s later — the turn
+  takes 0.55 s, so the player sees where he is before a panel arrives over it.
+  Measured: yaw 2.400 → 4.928, which is `camFace(HIS, LINE_X)` to three
+  decimals. `BED_STANDBY` and the word `objBedTap` are gone: v8.7 made the
+  player press the bed because reaching the circle used to start a TIMED test
+  while he was still walking, and v8.7's own brief panel solved that properly,
+  so the press had become a thing to do for its own sake.
+  **THE TOGGLE ROPE**: the standby bed passed, the encik shouts that the set has
+  one item too many and the player answers himself. It is the headcount again in
+  an object — one man too many, one rope too many, and "never mind" both times,
+  which is the chapter. Every gap is stated in the lines' own measured lengths,
+  never in numbers typed in, so a re-generated take cannot make two voices talk
+  over each other. **A SHORTER EVENING**: `FREE_SECS` 70 → 45, `FREE_WARN`
+  25 → 18 (measured: the timer reads 0:45). **LIGHTS OUT EMPTIES THE BUNK**:
+  `seniorsOut()` WALKS the two seniors to the square where `putSergeant` stands
+  them there — two different things the fall-in has needed both of since v8.2 —
+  down the route the fall-in already proved, on lanes ±0.35 inside the gangway's
+  clear window of ±1.10; measured over ten seconds, the sergeant (1.3, −2.9) →
+  (5.59, 0.35) and the encik (−1.5, −3.05) → (2.79, −0.35), 2.8 m apart at every
+  sample. The lights go out behind two men walking away.
+  Fourteen new takes (Hilmi, Aaron, Edison, Kelvin, and a TENTH voice that is
+  Edison's own "Ten" TREATED — pitched down a tenth, doubled at 60 and 180 ms,
+  rolled off above 3.4 kHz: measured dominant 172 Hz against 237, centroid 1107
+  against 1630, 9.5 % of its energy above 3 kHz against 18.4 %, and sitting
+  6 dB under the rest of the cast, because it is the one voice nobody is sure
+  they heard). The eight middle numbers are SLICED from two four-word takes, so
+  the count keeps a real shouted cadence and costs two generations instead of
+  eight. `reset()` clears the queue and the ghost — the v8.1/v8.2/v8.7/v9.2 law
+  a fifth time. Sheet v44. docs/V9.5-THE-HEADCOUNT.md is the build's memory.
 - **v7.9** THE FERRY FROM INSIDE, TEKONG, THE PARADE SQUARE, THE BUNK —
   Chad, with five reference photographs: *"I dont want to see the outside
   of the ferry and the sea, it should show first person pov within inside

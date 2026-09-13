@@ -3916,7 +3916,9 @@ const TEEN_TAKES = new Set([
   'n1pro1', 'n1pro1b', 'n1pro2', 'n1pro3', 'n1pro4', 'n1voice', 'n1near', 'n1act',
   'n1fallin', 'n1late', 'n1bedok', 'n1bedfail', 'n1shower', 'n1board',
   'n1lights', 'n1wake', 'n1hear', 'n1A1', 'n1A2', 'n1B1', 'n1B2', 'n1C1',
-  'n1D1', 'n1A', 'n1B', 'n1C', 'n1D']);
+  'n1D1', 'n1A', 'n1B', 'n1C', 'n1D',
+  // v9.5: the count-off and the toggle rope
+  'n1one', 'n1rope']);
 /* The rest of the cast. They share `voiceOut` and the duck, but not the
    boost — see voiceStage() above. */
 const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
@@ -3928,7 +3930,13 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
   // v8.3: and the encik, who does most of the shouting
   'e1knock', 'e1backbunk',
   // v9.3: the two who shout on the run back — one line, two voices
-  'b1hurry', 'k1hurry']);
+  'b1hurry', 'k1hurry',
+  /* v9.5: the headcount. The eight numbers are the buddy's and the
+     bunkmate's own voices; `c1ten` is a TREATED copy of the buddy's and
+     belongs on the same stage as the rest of the cast — it is a voice in
+     the room, not a sting, so it ducks the beds like any other. */
+  'e1count', 'e1extra', 'e1rope',
+  'c1two', 'c1three', 'c1four', 'c1five', 'c1six', 'c1seven', 'c1eight', 'c1nine', 'c1ten']);
 const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || CAST_TAKES.has(name);
 /* v6.9: his WHISPERS go round the bus. Chad wanted the three pick-up
    reactions "almost whispering to himself" and they were re-voiced as
@@ -5745,6 +5753,13 @@ const STING_SAMPLE = {
   k1three: ['k1three', 1],
   e1knock: ['e1knock', 1], e1backbunk: ['e1backbunk', 1],   // v8.3: the encik
   b1hurry: ['b1hurry', 1], k1hurry: ['k1hurry', 1],         // v9.3: the run back
+  // v9.5: the headcount, the tenth voice, and the toggle rope
+  e1count: ['e1count', 1], e1extra: ['e1extra', 1], e1rope: ['e1rope', 1],
+  n1one: ['n1one', 1], n1rope: ['n1rope', 1],
+  c1two: ['c1two', 1], c1three: ['c1three', 1], c1four: ['c1four', 1],
+  c1five: ['c1five', 1], c1six: ['c1six', 1], c1seven: ['c1seven', 1],
+  c1eight: ['c1eight', 1], c1nine: ['c1nine', 1],
+  c1ten: ['c1ten', 1],           // the number nobody in the section called
   e2film: ['e2film', 1],         // the episode's theme under the film (60 s, eleven_music_v2)
   e2bed: ['e2bed', 1],           // the night's explore bed (50 s, eleven_music_v2, loop)
   e2day: ['e2day', 1],           // v9.2: and the DAY's, the other side of nightK (23 s, crossfade-looped)
