@@ -3918,7 +3918,9 @@ const TEEN_TAKES = new Set([
   'n1lights', 'n1wake', 'n1hear', 'n1A1', 'n1A2', 'n1B1', 'n1B2', 'n1C1',
   'n1D1', 'n1A', 'n1B', 'n1C', 'n1D',
   // v9.5: the count-off and the toggle rope
-  'n1one', 'n1rope']);
+  'n1one', 'n1rope',
+  // v9.6: the man standing in the shower, hours before it turns itself on
+  'n1ghost']);
 /* The rest of the cast. They share `voiceOut` and the duck, but not the
    boost — see voiceStage() above. */
 const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
@@ -5756,6 +5758,7 @@ const STING_SAMPLE = {
   // v9.5: the headcount, the tenth voice, and the toggle rope
   e1count: ['e1count', 1], e1extra: ['e1extra', 1], e1rope: ['e1rope', 1],
   n1one: ['n1one', 1], n1rope: ['n1rope', 1],
+  n1ghost: ['n1ghost', 1],       // v9.6: someone is in the shower block
   c1two: ['c1two', 1], c1three: ['c1three', 1], c1four: ['c1four', 1],
   c1five: ['c1five', 1], c1six: ['c1six', 1], c1seven: ['c1seven', 1],
   c1eight: ['c1eight', 1], c1nine: ['c1nine', 1],

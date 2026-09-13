@@ -442,7 +442,16 @@
     { id: "e1rope", who: "encik", ch: "e2c1", where: "The standby bed passed: one item too many",
       text: "Eh! Bed one recruit! Why your standby bed got an extra set of toggle rope? You better return it to your buddy!", secs: 6.53 },
     { id: "n1rope", who: "jamesTeen", ch: "e2c1", where: "After the encik walks off, to himself",
-      text: "I didn't know where this toggle rope came from. I'm sure I only had one... never mind...", secs: 5.72 }
+      text: "I didn't know where this toggle rope came from. I'm sure I only had one... never mind...", secs: 5.72 },
+    /* v9.6, Chad: "If the player enters the toilet during the free interaction
+       time, make it obvious that the semi-transparent FBO soldier is standing
+       at the shower area that is the same one that will be turned on later at
+       3am ... Player has a voiceline saying 'wait, is there someone in
+       there?'" His words, with one added ellipsis (the v5.28 rule) — and the
+       take was picked for the 0.26 s HESITATION it puts in the middle of the
+       question, because the line is a man stopping in a doorway. */
+    { id: "n1ghost", who: "jamesTeen", ch: "e2c1", where: "The evening: someone is standing in the shower block",
+      text: "Wait... is there someone in there?", secs: 3.16 }
   ];
 
   // What a chapter key means on the sheet.

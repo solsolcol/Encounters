@@ -3389,3 +3389,37 @@ Anything that is a CADENCE runs off its own queue, gated on the same clock the
 refusal is stated in, and a line whose bytes have not landed HOLDS the queue
 rather than being dropped from it (the v8.0 law). A function in the queue runs
 under the same gate, which is how one line waits for another to finish.
+
+## mp3 and Opus move in opposite directions (v9.6)
+
+Peak-matching one WAV and encoding both formats from it does NOT produce two
+files at the same peak. Measured on a 3.16 s spoken take:
+
+| source | libmp3lame 128k | libopus 64k |
+|---|---|---|
+| −3.8 dBFS wav | **−4.3** (loses ~0.5) | **−3.1** (gains ~0.7) |
+| −3.3 dBFS wav | −3.8 | −2.9 |
+
+So a take matched for the mp3 ships an ogg nearly a dB hot, and a take matched
+for the ogg ships a quiet mp3. Feed each encoder its own peak-matched source
+and measure BOTH outputs. This matters more than it sounds: the opus pack is
+what every browser that can decode it actually downloads, so the encoding
+nobody checks is the one most players hear.
+
+The overshoot is also not linear — a 0.5 dB move in the source moved the ogg
+0.2 dB — so compensate, re-measure, and stop when it is inside the pack's own
+spread rather than chasing an exact number.
+
+## "Make it obvious" is usually a lighting or an occlusion problem (v9.6)
+
+A figure was placed dead under the shower head it belongs to, which is correct
+in world space and invisible on screen: the cubicle partitions are 1.1 m deep,
+so anything inside a cubicle is hidden at the grazing angle every approach
+uses. And the standard ghost treatment — 0.35 grey over a near-black emissive —
+is a stain on white tile under a single 1.6 tube.
+
+Neither was findable by arithmetic. Both were one photograph from the doorway
+(the v6.17 law again: photograph the thing from where the player meets it).
+When a request says "make it obvious", check three things before moving
+anything: what occludes it from the approach, what lights it, and whether its
+material was tuned against a different background.

@@ -2277,6 +2277,48 @@ What the baseline contains, by release:
   the count keeps a real shouted cadence and costs two generations instead of
   eight. `reset()` clears the queue and the ghost — the v8.1/v8.2/v8.7/v9.2 law
   a fifth time. Sheet v44. docs/V9.5-THE-HEADCOUNT.md is the build's memory.
+- **v9.6** THE MAN IN THE SHOWER — Chad's six notes on v9.5. `src/main.js` gains
+  one `STING_SAMPLE` row and one name in `TEEN_TAKES` and nothing else, so
+  episode 1 is unchanged by construction. Two item names (**FAD kit**, **toggle
+  rope** — `ITEM_GLYPH` is untouched, because it has been "which glyph, whatever
+  the sheet calls it" since v9.4); the evening 45 s → **30**; `SLEEP_SINK`
+  0.060 → **0.085** (measured at lights out: 8.5–8.6 cm into the mattress, all
+  eight).
+  **THE NOTICE BOARD IS GONE** — *"it doesnt really add anything spiritual"* —
+  and removing it surfaced a bug that would have shipped: the BUNKMATE's hotspot
+  was gated on `seen.has('board')`, so with the board gone he would have been
+  unreachable for the whole chapter, listed and never enabled, with nothing to
+  say so. `k1board` and `n1board` stay in the pack: deleting a recorded take to
+  remove a prompt is a trade with no upside.
+  **THE MAN IN THE SHOWER** is the chapter's premise put where the player can
+  walk into it — the shower that turns itself on at three has someone standing
+  in it at ten at night, and the game never mentions it again. Same asset and
+  same treatment as the tenth man on the line, ARMED at the doorway (2.6 m) so
+  he is there before anyone can see down the cubicle lane, SEEN on entry, which
+  starts `n1ghost` and fades him out. **Where he stands was found by PHOTOGRAPH,
+  not arithmetic**: under his own shower head he was a grey smudge, because the
+  three partitions are 1.1 m DEEP and span z 6.40–7.50 and he was inside that,
+  hidden at the grazing angle every approach uses; he stands 0.35 m clear of
+  their front edge now. And **"make it obvious" was a LIGHTING problem** — the
+  block runs one tube at 1.6 and the standard treatment (0.35 grey, a near-black
+  glow) is a stain on white tile, so `ghostify` takes an optional look and this
+  one is paler and faintly self-lit in cold blue-grey; the defaults are v4.9's
+  numbers exactly, so the other two ghosts are untouched.
+  **THE NEIGHBOUR ANSWERS**: the groan stops being his resting state and becomes
+  his ANSWER — he breathes like everyone else and scene C hands him
+  `Groan_Holding_Stomach_in_Sleep` on the frame his line starts, as a hard cut.
+  A man groaning all night is noise; a man who starts the moment you whisper at
+  him is the beat. `sleepTakeReset()` runs from `restore()` and `reset()`,
+  because **a take a SCENE set must be cleared by whatever ends that scene** —
+  the v8.1 law in its animation form. Measured through the real scene:
+  `Sleep_Normally` at 3.0 s → the groan at 7.6 → `Sleep_Normally` after.
+  One law paid for in the audio: **mp3 and Opus move in OPPOSITE directions**
+  (libmp3lame loses ~0.5 dB, libopus gains ~0.7), so one peak-matched WAV cannot
+  serve both — matched for the mp3, the ogg shipped 0.9 dB hotter than anything
+  else in the pack, to every browser that decodes Opus. Each encoder gets its
+  own source now. And `dispose()` never stopped `ghostLine`'s mixer, which v9.5
+  added; `leaktest` was green either way, which is why it survived a release.
+  docs/V9.6-THE-MAN-IN-THE-SHOWER.md is the build's memory.
 - **v7.9** THE FERRY FROM INSIDE, TEKONG, THE PARADE SQUARE, THE BUNK —
   Chad, with five reference photographs: *"I dont want to see the outside
   of the ferry and the sea, it should show first person pov within inside

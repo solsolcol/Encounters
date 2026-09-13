@@ -129,7 +129,6 @@
       objFear: 'FEAR CONTROL — keep the beat',
       hotShower: 'Look into the shower block',
       hotBuddy: 'Talk to him',
-      hotBoard: 'Read the notice board',
       hotBunkmate: 'Ask him about bed one',
       evBed: 'STANDBY BED',
       evFear: 'FEAR CONTROL',
@@ -139,8 +138,8 @@
       noteBedFail: 'The bunk did it again because of you.',
       item1: 'Towel',
       item2: 'Boots',
-      item3: 'Field dressing',
-      item4: 'Cord'
+      item3: 'FAD kit',
+      item4: 'Toggle rope'
     },
     lines: { near: 'n1near', close: 'n1near', nearAt: 2.4, act: 'n1act' },
     voiceLine: 'n1voice',
@@ -189,7 +188,7 @@
                  /* v9.5: the headcount and the toggle rope. The nine numbers are
                     short enough that a count-off paces itself off these rather
                     than off a gap typed in by hand (see `runCount`). */
-                 e1count: 5.25, e1extra: 9.8, e1rope: 6.53, n1rope: 5.72,
+                 e1count: 5.25, e1extra: 9.8, e1rope: 6.53, n1rope: 5.72, n1ghost: 3.16,
                  n1one: 0.99, c1two: 0.47, c1three: 0.55, c1four: 0.55, c1five: 0.52,
                  c1six: 0.68, c1seven: 0.55, c1eight: 0.65, c1nine: 0.63, c1ten: 0.81,
 
@@ -515,7 +514,7 @@
          sleepShade  a painted soft ellipse laid on the mattress under him,
                      sized from his own world box. A drawn shadow, so it is
                      there on LOW exactly as on desktop. */
-    const SLEEP_SINK = 0.060;   // v9.4, Chad: "lower all the sleeping bunkmates by just a little more"
+    const SLEEP_SINK = 0.085;   // v9.6, Chad's third ask on this: 0.035 (v9.3) -> 0.060 (v9.4) -> 0.085
     let shadeTex = null;
     /* One soft ellipse per sleeper, laid on the mattress and sized from HIS
        OWN world box once he is placed — so it fits the man rather than a
@@ -2386,14 +2385,19 @@
        afresh per call, so these materials are this rig's own — treating them
        cannot reach the sergeant, who is the same asset. */
     const GHOST_A = 0.55;
-    function ghostify(rig) {
+    /* the defaults ARE v4.9's inline numbers, so the corridor figure and the
+       tenth man on the line are untouched; only the shower man passes a look
+       of his own (v9.6, and the reason is in `ghostWC` below) */
+    function ghostify(rig, look) {
+      const grey = look && look.grey !== undefined ? look.grey : 0.35;
+      const glow = look && look.glow !== undefined ? look.glow : 0x0a0c14;
       const mats = [];
       rig.model.traverse(o => {
         if (!o.isMesh) return;
         o.castShadow = false;
         for (const m of (Array.isArray(o.material) ? o.material : [o.material])) {
-          m.transparent = true; m.opacity = GHOST_A; m.color.setScalar(0.35);
-          m.emissive?.setHex(0x0a0c14); m.depthWrite = false;
+          m.transparent = true; m.opacity = GHOST_A; m.color.setScalar(grey);
+          m.emissive?.setHex(glow); m.depthWrite = false;
           mats.push(m);
         }
       });
@@ -2439,6 +2443,84 @@
     ghostLine.ghostA = 0;
     ghostLine.group.visible = false;
     ghostLine.proxy.visible = false;
+    /* ------------------------------------------- THE MAN IN THE SHOWER (v9.6)
+       Chad: "If the player enters the toilet during the free interaction time,
+       make it obvious that the semi-transparent FBO soldier is standing at the
+       shower area that is the same one that will be turned on later at 3am.
+       The soldier fades away after being seen."
+
+       Which is the chapter's whole premise put where the player can walk into
+       it: the shower that turns itself on at three in the morning has someone
+       standing in it at ten at night, and the game never says so again. Same
+       asset and same treatment as the tenth man on the line.
+
+       He stands in the FAR cubicle — `WATER_AT` is the shower, so this is the
+       one place in the block that cannot be a coincidence later — a third of a
+       metre out from the wall, TURNED TO THE DOOR, because a figure facing you
+       is obvious and a figure facing away is a detail. The facing is computed
+       rather than typed: `camFace` aims a camera, so a MODEL facing a point is
+       that plus PI (the v5.0 law), and `camFace` itself is declared further
+       down this file, so the arithmetic is written out here rather than called.
+
+       He is ARMED at the doorway and SEEN inside, which are two different
+       moments on purpose: by the time the player is far enough in to see down
+       the cubicle lane he is already standing there, so nothing pops into
+       existence in front of an eye that was already pointed at it. */
+    /* AT THE MOUTH OF THE CUBICLE, not inside it. Photographed from the
+       doorway with him at `WATER_AT.z - 0.32` he was a grey smudge behind a
+       partition: the three partitions are 1.1 m DEEP centred at
+       `BLOCK.z1 - 0.55`, so they span z 6.40 to 7.50 and he was standing in
+       the middle of that, hidden at the grazing angle every approach uses.
+       0.35 m clear of their front edge puts him in the open, still directly
+       under his own shower head (the x is `WATER_AT.x`, which is the one that
+       turns itself on at three), and visible from the door. */
+    const WC_GHOST = { x: WATER_AT.x, z: 6.05 };
+    const WC_DOOR = { x: DOOR_WC.x, z: R.z + 0.2 };        // where the player comes in
+    const ghostWC = mkRig('fbosling', {
+      x: WC_GHOST.x, z: WC_GHOST.z,
+      ry: Math.atan2(-(WC_DOOR.x - WC_GHOST.x), -(WC_DOOR.z - WC_GHOST.z)) + Math.PI,
+      height: 1.72, idle: 'Idle_3',
+      /* and PALER and faintly self-lit, because "make it obvious" is a
+         lighting problem here: the block's one tube runs at 1.6 and the
+         standard treatment (0.35 grey, a near-black glow) rendered him as a
+         smudge against white tile. A cold blue-grey glow also reads as the
+         wrong kind of thing rather than as a soldier standing in the dark. */
+      onReady: (r) => ghostify(r, { grey: 0.62, glow: 0x2c3a54 }) });
+    ghostWC.ghostA = 0;
+    ghostWC.group.visible = false;
+    ghostWC.proxy.visible = false;
+    function ghostWCShow(on, secs) {
+      const to = on ? 1 : 0;
+      if (!secs) { ghostAlpha(ghostWC, to); return; }
+      tween(() => (ghostWC.ghostA || 0), v => ghostAlpha(ghostWC, v), to, secs);
+    }
+    /* 0 nobody there · 1 standing · 2 seen, saying his line · 3 gone. It runs
+       once a run and `reset()` puts it back to 0 (the v8.1 law). */
+    let wcStage = 0;
+    const WC_ARM = 2.6;          // metres from the doorway: he is there before you are
+    function ghostWCTick() {
+      if (phase !== 'free' || wcStage >= 3) return;
+      const px = yaw.position.x, pz = yaw.position.z;
+      const inBlock = px > BLOCK.x0 + 0.3 && px < BLOCK.x1 - 0.3 && pz > BLOCK.z0 + 0.7;
+      if (wcStage === 0) {
+        if (Math.hypot(px - WC_DOOR.x, pz - WC_DOOR.z) < WC_ARM || inBlock) {
+          wcStage = 1;
+          ghostWCShow(true, 0.5);
+        }
+        return;
+      }
+      if (wcStage === 1 && inBlock) {
+        wcStage = 2;
+        seen.add('wcghost');
+        /* the line waits its turn like every other line in this chapter, and
+           the fade is hung off the day clock so it cannot run while a menu is
+           open */
+        after(0.7, () => { if (wcStage === 2) sayLine('n1ghost'); });
+        after(0.7 + (SECS.n1ghost || 3.2) + 0.5,
+              () => { if (wcStage === 2) { wcStage = 3; ghostWCShow(false, 1.8); } });
+      }
+    }
+
     function ghostLineShow(on, secs) {
       const to = on ? 1 : 0;
       if (!secs) { ghostAlpha(ghostLine, to); return; }
@@ -2637,9 +2719,23 @@
        GROAN now — the most distinct take in the file, on the one sleeper the
        chapter ever puts a camera on, and the man scene C has roll over when
        the player whispers to him. */
-    const SLEEP_TAKE = { 1: 'Sleep_Normally', [NEIGHBOUR]: 'Groan_Holding_Stomach_in_Sleep',
+    /* v9.6, Chad: "for the sleeping bunkmate right next to the player, during
+       the cutscene of talking to him, he should at first be in the more idle
+       animated sleeping animation, and only change to the groaning or moving
+       one when he starts speaking."
+       So the groan is no longer his RESTING state — it is his ANSWER. He
+       breathes like everyone else all night and scene C hands him
+       `Groan_Holding_Stomach_in_Sleep` on the frame his line starts, which is
+       also the frame the whole point of the shot lands on. A man groaning
+       through the whole night is noise; a man who starts the moment you
+       whisper at him is the beat. `sleepTake()` below is how a scene says so,
+       and `sleepTakeReset()` puts every man back on his own take, because a
+       take a SCENE set must be cleared by whatever ends that scene (the
+       v8.1 law, in its animation form). */
+    const SLEEP_TAKE = { 1: 'Sleep_Normally', [NEIGHBOUR]: 'Sleep_Normally',
                          5: 'Sleep_Normally', 6: 'Cough_While_Sleeping' };
-    const SLEEP_RATE = { 1: 0.85, [NEIGHBOUR]: 0.80, 5: 1.00, 6: 0.72 };
+    const NB_WAKE = 'Groan_Holding_Stomach_in_Sleep';   // what scene C gives him
+    const SLEEP_RATE = { 1: 0.85, [NEIGHBOUR]: 0.90, 5: 1.00, 6: 0.72 };
     const REST_TAKE = 'Sleep_Normally';   // the take every copy is measured on (see below)
     const sleeperRoot = new THREE.Group(); sleeperRoot.visible = false; world.add(sleeperRoot);
     assetBytes('sleeper').then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
@@ -2973,6 +3069,7 @@
       'b1hurry', 'k1hurry',          // v9.3: the two who shout on the run back
       // v9.5: the headcount, the tenth voice, and the toggle rope
       'e1count', 'e1extra', 'e1rope', 'n1one', 'n1rope',
+      'n1ghost',                     // v9.6: the man in the shower
       'c1two', 'c1three', 'c1four', 'c1five', 'c1six', 'c1seven', 'c1eight',
       'c1nine', 'c1ten'];
     if (warmSounds) warmSounds(PLAY_LINES);
@@ -3796,7 +3893,7 @@
        There are four things to look at in the bunk and none of them takes
        more than a few seconds, so 45 is still more than enough to see them
        all and get back to the bed. */
-    const FREE_SECS = 45, FREE_WARN = 18;
+    const FREE_SECS = 30, FREE_WARN = 12;
     let freeWarned = false, freeTimer = null;
     function beginFree() {
       setPhase('free');
@@ -3994,23 +4091,44 @@
           seen.add('buddy');
           return castSay(buddy, 'b1day', 'Talk_with_Hands_Open', 'Idle_9');
         } },
-      { id: 'board', pos: { x: 2.0, y: 1.5, z: -R.z + 0.3 }, radius: 2.2, prompt: DATA.words.hotBoard,
-        enabled: () => phase === 'free',
-        onInteract() {
-          seen.add('board');
-          return sayLine('k1board', 1, () => {
-            bunkmate.play(TALK_NOSL, 1, 0.3);
-            after((SECS.k1board || 2.5) + 0.2, () => { if (bunkmate.cur === TALK_NOSL) bunkmate.play('Idle_9', 1, 0.4); });
-            after((SECS.k1board || 2.5) + 0.4, () => sayLine('n1board'));
-          });
-        } },
+      /* v9.6: the NOTICE BOARD hotspot is gone — Chad: "it doesnt really add
+         anything spiritual." It was the one interaction in the bunk that was
+         pure barracks furniture (next week's live firing), and this episode's
+         rule since v9.5 is that every beat earns its place by pointing at the
+         haunting. The board still hangs on the wall; you just cannot ask it
+         anything. `k1board` and `n1board` stay in the pack and the registry —
+         nothing else names them, and deleting a recorded take to remove a
+         prompt is a trade with no upside.
+         The bunkmate no longer waits on it either: his line was gated on
+         `seen.has('board')`, which with the board gone would have locked him
+         out of the chapter entirely. */
       { id: 'bunkmate', pos: { x: 1.75, y: 1.3, z: -3.15 }, radius: 2.0, prompt: DATA.words.hotBunkmate,
-        enabled: () => phase === 'free' && bunkmate.group.visible && seen.has('board'),
+        enabled: () => phase === 'free' && bunkmate.group.visible,
         onInteract() {
           seen.add('bunkmate');
           return castSay(bunkmate, 'k1three', TALK_NOSL, 'Idle_9');
         } }
     ];
+
+    /* v9.6: a scene may hand one sleeper a different take. `at` is a hard cut
+       (a sleeping man changing posture has no blend to make), and the rate is
+       the man's own unless one is named. */
+    function sleepTake(rig, name, rate) {
+      if (!rig || !rig.acts) return false;
+      const nx = rig.acts[name];
+      if (!nx) return false;
+      for (const k in rig.acts) if (rig.acts[k] !== nx) rig.acts[k].stop();
+      nx.reset();
+      nx.setEffectiveTimeScale(rate || rig.rate || 0.85);
+      nx.play();
+      rig.mixer.update(0.001);
+      return true;
+    }
+    /* and every man back on the take he was declared with — called by
+       `restore()` when a cutscene ends and by `reset()` on a replay */
+    function sleepTakeReset() {
+      for (const rig of sleepRigs) sleepTake(rig, rig.take, rig.rate);
+    }
 
     /* ------------------------------------------------------ per frame --- */
     const _v = new THREE.Vector3();
@@ -4126,6 +4244,7 @@
       runSpeak();                 // v8.0: a held line, the moment its bytes land
       runCount();                 // v9.5: the count-off, paced by its own lines
       ambientTick();              // v9.2: the camp outside, and the platoons in it
+      ghostWCTick();              // v9.6: the man standing in the shower, before three o'clock
       /* v7.2: reaching the bed used to fire the whistle on the same frame as
          his "That's mine. Bed one." — the line lands first now, then the
          whistle, then the sergeant */
@@ -4151,7 +4270,7 @@
       updateDay();
       /* the CLOCKS run in every state (v5.19): a cutscene owns the poses,
          never the mixers */
-      for (const r of [sergeant, buddy, bunkmate, encik, ghostFig, ghostLine]) if (r.mixer && r.group.visible) r.mixer.update(dt);
+      for (const r of [sergeant, buddy, bunkmate, encik, ghostFig, ghostLine, ghostWC]) if (r.mixer && r.group.visible) r.mixer.update(dt);
       for (const r of sleepRigs) if (r.mixer && sleeperRoot.visible) r.mixer.update(dt);
       for (const f of fans) f.rotation.y += dt * 7.5 * fanSpeed;
       sqFurnitureTick(t, nightK);      // v9.3: the square's lamps and its flags
@@ -4295,6 +4414,7 @@
       bunkCrowdShow(!s.night);
       fallOut(false, true);          // v8.2: a restored room is stood in, never run into         // v8.1
       for (const r of [sergeant, buddy, bunkmate, encik]) if (r.acts && r.idle) r.play(r.idle, 1, 0);
+      sleepTakeReset();              // v9.6: scene C hands the neighbour a different take
       freezeStatic(true);            // v8.6: the scene is done; the room goes still again
     }
     function reset() {
@@ -4308,6 +4428,8 @@
          already standing in an empty rank, or with numbers arriving out of
          nowhere in the middle of the walk to the bed. */
       ghostLineShow(false); countReset();
+      ghostWCShow(false); wcStage = 0;         // v9.6: and the man in the shower
+      sleepTakeReset();                        // v9.6: a take a SCENE set is the scene's, not the next run's
       setNightRoom(false);                       // v7.5: leaves the evening lamps lit
       putSergeant(SGT_DOOR, true);               // v8.2: a reset stands them there, never walks them
       /* v8.2: AND THE SECTION COMES BACK IN. `fallOut(true)` puts eight men
@@ -4374,7 +4496,7 @@
       scene.remove(world);
       for (const o of owned) { o.parent?.remove(o); o.dispose?.(); }
       owned.length = 0;
-      for (const r of [sergeant, buddy, bunkmate, encik, ghostFig]) r.mixer?.stopAllAction();
+      for (const r of [sergeant, buddy, bunkmate, encik, ghostFig, ghostLine, ghostWC]) r.mixer?.stopAllAction();
       for (const r of sleepRigs) r.mixer?.stopAllAction();
       for (const g of geos) g.dispose();
       for (const m of mats) {
@@ -4426,6 +4548,34 @@
                                z: +ghostLine.group.position.z.toFixed(2) }),
       castAt: () => ({ sgt: [+sergeant.group.position.x.toFixed(2), +sergeant.group.position.z.toFixed(2)],
                        enc: [+encik.group.position.x.toFixed(2), +encik.group.position.z.toFixed(2)] }),
+      ghostWCState: () => ({ a: +(ghostWC.ghostA || 0).toFixed(3), on: ghostWC.group.visible,
+                             stage: wcStage, ready: ghostWC.ready,
+                             x: +ghostWC.group.position.x.toFixed(2),
+                             z: +ghostWC.group.position.z.toFixed(2) }),
+      sleepTake, sleepTakeReset, NB_WAKE,
+      /* which take each sleeper is actually running, and how far off his
+         mattress he is — both claims this release makes, both checkable */
+      sleepInfo: () => sleepers.map((o, i) => {
+        /* half the sleepers are the STATUE, which has no rig at all — the mix
+           is four and four since v9.1, so this must not assume one */
+        const rig = o.rig || null;
+        const run = rig && rig.acts
+          ? Object.keys(rig.acts).find(k => rig.acts[k].isRunning() && rig.acts[k].getEffectiveWeight() > 0)
+          : 'statue';
+        /* the group's own ORIGIN is the mattress top (see the sleeper build),
+           so how deep he lies in it is his skin box against that origin — and
+           the group is refreshed first, because `setFromObject` walks down and
+           never up (the v9.2 law). */
+        /* how deep he lies in the mattress is his lowest SKINNED point against
+           the bed's own `deckTop` — not against his group's origin, which the
+           build already put on him by construction and which would read zero
+           whatever SLEEP_SINK said. The parent is refreshed first because
+           `setFromObject` walks down and never up (the v9.2 law). */
+        o.obj.updateWorldMatrix(true, true);
+        const box = new THREE.Box3().setFromObject(o.obj);
+        return { i, bedZ: +o.bed.z.toFixed(2), take: run || null,
+                 sinkCm: +((o.bed.deckTop - box.min.y) * 100).toFixed(1) };
+      }),
       countInfo: () => ({ left: countQ.length, at: +countAt.toFixed(2),
                           until: +speak.until.toFixed(2),
                           pending: speak.pending ? speak.pending.name : null }),
@@ -5014,6 +5164,13 @@
     sfx(2.2, 'n1C1');                           // the whisper, 1.65 s → 3.9
     sfx(5.6, 'blanket', 0.7);
     tr(5.6, 7.2, k => { if (nb) nb.obj.rotation.z = rz0 + 0.22 * Math.sin(k * Math.PI); }, smoothK);
+    /* v9.6, Chad: he "should at first be in the more idle animated sleeping
+       animation, and only change to the groaning or moving one when he starts
+       speaking." The take changes on the same frame the line does — a hard
+       cut, because a sleeping man shifting has no blend to make — so the
+       groan is his ANSWER rather than a thing he was doing anyway.
+       `restore()` puts him back on his own take when the scene ends. */
+    step(7.2, () => { if (nb) stage.sleepTake(nb.rig, stage.NB_WAKE, 0.85); });
     sfx(7.2, 'b1huh');                          // 3.4 s → 10.6
     sfx(8.8, 'blanket', 0.5);
     tr(8.8, 10.8, k => { if (nb) { nb.obj.rotation.y = ry0 + 0.35 * k; nb.obj.rotation.z = rz0 + 0.30 * k; } }, smoothK);
