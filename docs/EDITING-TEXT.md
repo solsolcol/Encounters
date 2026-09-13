@@ -535,3 +535,31 @@ keeps the promise "everything is in the sheet" true over time.
   `src/voicelines.js` byte-identical; verified at v5.14 for both the CSV
   and the .xlsx), and `chaptertest` fails if a take has no row or a row
   has no take.
+
+## The upload wall, measured (v9.5)
+
+v7.9 found that the tabbed workbook had grown past what the Drive connector
+accepts as one base64 string ("not a valid base64 string", every time), and
+guessed the working range at "under ~20 K characters". The v9.5 export is
+**31,103 bytes → 41,472 base64 characters**, so it is well past it, and the
+file cannot be made materially smaller: it is already a deflated ZIP at about
+7:1 (221,770 bytes of XML → 30,139 compressed), so there is no packing win
+left to take.
+
+The split is therefore forced, and the natural seam is the one the tabs
+already draw:
+
+| workbook | tabs | compressed |
+|---|---|---|
+| the WORDS | UI TEXT, EPISODE 1, EPISODE 2 | ~18 KB (~25 K chars) |
+| the VOICE LINES | VOICE LINES | ~12 KB (~16 K chars) |
+
+That is two Google Sheets rather than one, which is a change to how Chad
+works and therefore **his call, not the tool's** — it costs him a second
+link in exchange for a sheet that can be republished from a session again.
+`textsync export` would need a flag to write each half; `import` already
+reads every tab of whatever it is given, so the reading side needs nothing.
+
+Until he picks, a release whose words have moved says so in the handover and
+hands him the CURRENT sheet's link anyway (his v5.23 rule), naming what the
+sheet is missing.
