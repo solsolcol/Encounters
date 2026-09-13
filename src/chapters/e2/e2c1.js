@@ -92,7 +92,7 @@
        admin tee now and nobody else was ever the FBO without a rifle, so it
        stopped being downloaded (4.1 MB off e2c1's asset bill). The key stays
        in build.py for a later chapter. */
-    assets: ['fbosling', 'admintee', 'botak', 'encik2', 'sleeper', 'sleepanim', 'ghostsoldier',
+    assets: ['fbosling', 'admintee', 'botak', 'encik2', 'sleeper', 'sleepanim',
              'tree1', 'tree2', 'tree3', 'tree4', 'hdb'],
 
     /* the explore music bed is chapter 1's title theme and has no place in a
@@ -190,7 +190,7 @@
                     than off a gap typed in by hand (see `runCount`). */
                  e1count: 5.25, e1extra: 9.8, e1rope: 6.53, n1rope: 5.72, n1ghost: 3.16,
                  n1one: 0.99, c1two: 0.47, c1three: 0.55, c1four: 0.55, c1five: 0.52,
-                 c1six: 0.68, c1seven: 0.55, c1eight: 0.65, c1nine: 0.63, c1ten: 0.81,
+                 c1six: 0.68, c1seven: 0.55, c1eight: 0.65, c1nine: 0.63, c1ten: 2.17,
 
                  b1day: 3.08, b1sleep: 2.19, k1board: 3.0, k1three: 4.05 };
 
@@ -2416,8 +2416,19 @@
       const on = k > 0.002;
       if (rig.group.visible !== on) rig.group.visible = on;
     }
-    const ghostFig = mkRig('ghostsoldier', { x: BLOCK.x0 + 0.45, z: 5.3, ry: Math.PI / 2, height: 1.72, idle: 'Idle_6',
-      onReady: ghostify });
+    /* v9.7, Chad: scene A's figure "should be like the semi-transparent one",
+       and he should RUN. `ghostsoldier.glb` — the stand-in this chapter has
+       carried since v7.1 — ships exactly one clip, `Idle_6`, so it cannot run
+       at all; `fbosling` ships `Running`. So all three ghosts in this chapter
+       are now one asset and one look: the tenth man on the line, the man in
+       the shower, and the figure at the corridor's end. When Chad's own ghost
+       model arrives it replaces this key in three places instead of one.
+       (`ghostsoldier` leaves the chapter's asset list with this change — it is
+       a download nobody was going to fetch for a pose nobody can use.) */
+    const GHOST_FIG_HOME = { x: BLOCK.x0 + 0.45, z: 5.3, ry: Math.PI / 2 };
+    const ghostFig = mkRig('fbosling', { x: GHOST_FIG_HOME.x, z: GHOST_FIG_HOME.z, ry: GHOST_FIG_HOME.ry,
+      height: 1.72, idle: 'Idle_3',
+      onReady: (r) => ghostify(r, { grey: 0.62, glow: 0x2c3a54 }) });
     ghostFig.group.visible = false;
     ghostFig.proxy.visible = false;
 
@@ -3230,7 +3241,26 @@
        the parade square with the same outdoor bed you had by your bed would
        say the two places sound alike, and the whole of the fall-in is the
        walk between them. It stays audible indoors (the bunk's windows are
-       louvred and its balcony side is open) and thins at night. */
+       louvred and its balcony side is open) and thins at night.
+
+       v9.7, Chad: "I also want the entire chapter to have an ominous,
+       dark, unsettling ambient music constantly playing." `e2dread` is
+       that, and it is the one bed here that is keyed to NOTHING — not
+       nightK, not outK, not a phase — because "the entire chapter" is the
+       ask and a dread that comes and goes is a dread the player learns to
+       read. It runs under the film as well as under play.
+
+       The level is 0.26, and it was priced rather than picked. Measured
+       against `n1A1` in the band his voice lives in (120-500 Hz): the
+       narration sits at -27.1 dBFS, and the bed at 0.26 lands at -43.9 —
+       QUIETER there than either e2bed (-39.5) or e2day (-38.9), because
+       80.7 % of this take's energy is under 120 Hz and only 13.8 % is in
+       the speech band. That is why the other candidate was thrown out: it
+       put 36.2 % of itself straight on top of him. Summed with e2day and
+       campamb at their loudest, the day mix reaches -37.2 against his
+       -27.1 — 9.9 dB of margin, and 17.9 once the v5.27 duck takes every
+       non-voice source down 8 dB while anybody speaks. The bed costs
+       1.1 dB of the margin the chapter already had. */
     let nightK = 0, showerVol = 0, outK = 0;
     function mixBeds() {
       DATA.ambience.beds = [
@@ -3238,6 +3268,7 @@
         ['fanloop', 0.14 - 0.04 * nightK], ['clocktick', 0.06],
         ['e2bed', 0.30 * nightK], ['e2day', 0.26 * (1 - nightK)],
         ['campamb', (0.15 + 0.26 * outK) * (1 - 0.55 * nightK)],
+        ['e2dread', 0.26],                    // v9.7: flat, the whole chapter
         ['showerrun', showerVol]];
     }
     mixBeds();
@@ -3976,8 +4007,16 @@
          flat, paid the instant a beat is missed or fumbled; the end pays only
          what the HITS earned, capped at 8, so failing can never hand sanity
          back. Worst case is -40, which is a faint, and that is the stake. */
+      /* v9.7, Chad: "very hard to nail right, it still feels off even when my
+         timing is good." It was not his timing. `win` and `zone` MULTIPLY
+         inside `evGrade`, and 0.15 x 0.55 made PERFECT a 2.5 ms window and
+         graded anything past 28 ms as BROKEN — under a touchscreen's own
+         50-100 ms tap latency, so a flawless player was charged 5 sanity on
+         essentially every beat. 0.26 / 5.8 is the engine default now and the
+         chapter takes it: PERFECT within 45 ms, GREAT 106, GOOD 181, SLIGHT
+         302, and only a beat missed by more than half a second is BROKEN. */
       kit.event({ kind: 'heartbeat', label: DATA.words.evFear, n: 8, bpm: 68,
-                  win: 0.15, zone: 0.55, lead: 1.6, accel: 0.90, minPeriod: 0.42,
+                  win: 0.26, zone: 5.8, lead: 1.6, accel: 0.90, minPeriod: 0.42,
                   missCost: 5,
                   penalty: { stat: 'sanity' },
                   award: { stat: 'sanity', per: 1, lo: 0, hi: 8 } })
@@ -4421,7 +4460,14 @@
       freezeStatic(false);           // v8.6: thaw before a replay moves anything
       ferryRoot.visible = jettyRoot.visible = paradeRoot.visible = false;   // v7.9: the film's three sets, in case a film was cut before its own step hid them
       doorPivot.rotation.y = DOOR_PLAY; fanSpeed = 1; setShower(false);
-      ghostFig.group.visible = false; water.material.opacity = 0.55; hisBed.low.on.visible = false;
+      /* v9.7: the corridor ghost now RUNS and FADES, so a replay has to put
+         back his alpha and his spot as well as his visibility — the same law
+         a sixth time. */
+      ghostAlpha(ghostFig, 0);
+      ghostFig.group.position.set(GHOST_FIG_HOME.x, 0, GHOST_FIG_HOME.z);
+      ghostFig.group.rotation.y = GHOST_FIG_HOME.ry;
+      if (ghostFig.idle) ghostFig.play(ghostFig.idle, 1, 0);
+      water.material.opacity = 0.55; hisBed.low.on.visible = false;
       /* v9.5, the v8.1/v8.2/v8.7/v9.2 law a fifth time: the tenth man on the
          line and the count-off both belong to the run that just ended. A
          replay that inherited either would open the new morning with a ghost
@@ -4528,7 +4574,11 @@
       doorPivot, doorLeaf, DOOR_SHUT, DOOR_AJAR, DOOR_OPEN, DOOR_WC, DOOR_IN, OPEN, BLOCK, BALC, R, BED, WATER_AT,
       water, setShower, setLights, setNightRoom, setWindows, blockLight, clockGlow, CLOCK_GLOW, balcLight, nbLight, blanketCam,
       ferryRoot, jettyRoot, paradeRoot, paradeEncik, paradeCrowd, FERRY, JETTY, PARADE, PLAYER_SEAT, CAB, SEAT_X, SEAT_Z,
-      sergeant, buddy, bunkmate, encik, encSay, ghostFig, sleepers, sleepRigs, sleeperRoot,
+      sergeant, buddy, bunkmate, encik, encSay, sleepers, sleepRigs, sleeperRoot,
+      /* v9.7: scene A drives the corridor ghost itself — it runs him in,
+         fades him into the wall and puts him back where build() left him — so
+         the fade and his rest spot are the stage's, not the scene's. */
+      ghostFig, ghostAlpha, GHOST_FIG_HOME,
       sayLine, seen, after, dayClock,
       bunkCrowds, bunkReady: () => bunkCrowds.every(c => c.ready),   // v8.1, for the probes
       /* v9.2, and it exists because a probe CANNOT see this any other way:
@@ -5091,7 +5141,7 @@
     const Y_IN = faceFrom(INSIDE.x, INSIDE.z, stage.WATER_AT.x, stage.WATER_AT.z);
     const Y_NEAR = faceFrom(NEAR.x, NEAR.z, stage.WATER_AT.x, stage.WATER_AT.z);
     const Y_END = faceFrom(NEAR.x, NEAR.z, END.x, END.z);
-    step(0, () => { handsRoot.visible = false; stage.ghostFig.group.visible = false; });
+    step(0, () => { handsRoot.visible = false; stage.ghostAlpha(stage.ghostFig, 0); });
     // 0–2.6 up off the bed
     sfx(0.6, 'bunkcreak', 0.6);
     camTo(0.3, 2.6, P0, STAND, smoothK);
@@ -5119,11 +5169,44 @@
     yawTo(18.6, 20.8, Y_NEAR, Y_END, smoothK);
     pitchTo(18.6, 20.8, 0.0, 0.02, smoothK);
     sfx(20.8, 'dread', 0.9);
-    step(20.95, () => { stage.ghostFig.group.visible = true; });
-    step(21.1, () => { stage.ghostFig.group.visible = false; });
-    fade(21.1, 22.2, 0, 1);
-    sfx(21.6, 'n1A2');                          // 2.51 s → 24.1
-    step(24.4, () => { handsRoot.visible = true; });
+    /* v9.7, Chad: "I want to change that so that the player can see the
+       soldier running and going into the wall and disappear."
+
+       He fades in mid-stride 2.3 m down the corridor and RUNS away from the
+       lens into the end wall the camera is already pointed at: 2.85 m in
+       1.21 s, which is 2.36 m/s against `Running`'s own measured stride speed
+       of 2.46-2.68 (v9.3), so his feet carry him rather than the group
+       gliding under a take. He is on screen for 1.2 s, against the tenth of
+       a second the old pop-in gave — long enough to be sure of what you saw,
+       which is the whole of Chad's ask. */
+    const RUN_A = { x: END.x + 1.95, z: 5.3 };             // -3.60, 2.3 m down the corridor from the lens
+    const RUN_B = { x: stage.BLOCK.x0 - 0.45, z: 5.3 };    // -6.45, three quarters of a metre INSIDE the tile
+    const RUN_T0 = 20.55, RUN_T1 = 21.76;                  // 2.85 m in 1.21 s = 2.36 m/s
+    step(RUN_T0, () => {
+      const g = stage.ghostFig;
+      g.group.position.set(RUN_A.x, 0, RUN_A.z);
+      g.group.rotation.y = -Math.PI / 2;          // running toward -x, into the end wall
+      stage.ghostAlpha(g, 0);
+      g.play('Running', 1, 0.12);
+    });
+    tr(RUN_T0, RUN_T0 + 0.22, k => { stage.ghostAlpha(stage.ghostFig, k); }, rawK);
+    tr(RUN_T0, RUN_T1, k => {
+      stage.ghostFig.group.position.x = RUN_A.x + (RUN_B.x - RUN_A.x) * k;
+    }, rawK);
+    /* the inner face of the end wall is at BLOCK.x0, which he reaches at 21.55.
+       He still depth-TESTS with `depthWrite` off, so the tile occludes him as
+       he enters it; the alpha only has to finish what the wall has started. */
+    tr(21.50, RUN_T1, k => { stage.ghostAlpha(stage.ghostFig, 1 - k); }, rawK);
+    step(RUN_T1 + 0.05, () => {
+      const g = stage.ghostFig;
+      stage.ghostAlpha(g, 0);
+      if (g.idle) g.play(g.idle, 1, 0);
+      g.group.position.set(stage.GHOST_FIG_HOME.x, 0, stage.GHOST_FIG_HOME.z);
+      g.group.rotation.y = stage.GHOST_FIG_HOME.ry;
+    });
+    fade(22.0, 23.1, 0, 1);
+    sfx(22.5, 'n1A2');                          // 2.51 s → 25.0
+    step(25.3, () => { handsRoot.visible = true; });
     c.endFade = 1;
   }
 

@@ -436,7 +436,7 @@
     { id: "c1eight", who: "buddy", ch: "e2c1", where: "The count-off", text: "Eight!", secs: 0.65 },
     { id: "c1nine", who: "bunkmate", ch: "e2c1", where: "The count-off: the last man in the section", text: "Nine!", secs: 0.63 },
     { id: "c1ten", who: "ghost", ch: "e2c1", where: "The count-off: the number nobody called",
-      text: "Ten.", secs: 0.81 },
+      text: "Ten.", secs: 2.17 },
     { id: "e1extra", who: "encik", ch: "e2c1", where: "The headcount comes out one too many",
       text: "Ten? Who say ten? I only got nine recruits in this section. Nine! ...Never mind. Go back to your bunk. I want standby bed. Now!", secs: 9.8 },
     { id: "e1rope", who: "encik", ch: "e2c1", where: "The standby bed passed: one item too many",

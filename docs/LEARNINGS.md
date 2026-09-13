@@ -3423,3 +3423,65 @@ Neither was findable by arithmetic. Both were one photograph from the doorway
 When a request says "make it obvious", check three things before moving
 anything: what occludes it from the approach, what lights it, and whether its
 material was tuned against a different background.
+
+## A "worst case" sentinel is only the worst at the scale it was written for (v9.7)
+
+Four call sites in the event loop passed `evScorePress(1)` to mean "the worst
+possible press" — one whole window out — and every one of them carried a
+comment saying BROKEN. That is true only while `zone` is under
+`1 / 0.34 = 2.94`, which was true of every event that existed when it was
+written. v9.7 widened the heartbeat's `zone` to 5.8 to make the game playable,
+and `1 / 5.8 = 0.172` lands on the SLIGHT band: **a beat the player never
+answered at all became free**, with `missCost` never charged — the exact
+opposite of what v9.3 built.
+
+It is `EV_WORST = Infinity` now. The general law: a sentinel that means "the
+extreme" must BE the extreme, not a number that currently reaches it. When you
+widen a scale, grep for the magic values that were calibrated against the old
+one.
+
+## A rhythm game's real window is `at × win × zone` SECONDS, and it must clear the hardware (v9.7)
+
+`evGrade` divides the normalised error by `zone`, and the heartbeat normalises
+by `win` first, so the three numbers multiply. e2c1 shipped `win 0.15 /
+zone 0.55`, which makes PERFECT a **2.5 ms** window and grades anything past
+**28 ms** as BROKEN — and the engine's own default, `win 0.17` with no `zone`,
+was 5.1 ms, no better. A touchscreen's own tap latency is 50–100 ms, so the whole
+top of the ladder sat inside the hardware's noise floor and a player with
+flawless timing was graded BROKEN on nearly every beat.
+
+**Before shipping any timing challenge, print its bands in milliseconds and
+compare them to input latency.** The numbers look reasonable as fractions and
+are absurd as durations; only the conversion shows it.
+
+Two more from the same rebuild:
+
+- **A progress ring that CLAMPS at its target cannot show lateness.** One ring
+  contracted to scale 1.0 at the beat and held there through the whole late
+  window, so a press 100 ms late saw perfect alignment and was graded BROKEN —
+  Chad's "the circles dont really align" was that clamp, exactly. A ring must
+  keep going THROUGH the target while the press is still allowed, and an
+  accelerating pattern needs several rings in flight so the next one is already
+  arriving.
+- **The event clock was `e.t += dt`, and `dt` is clamped to 0.05 s.** Below
+  20 fps every event ran in slow motion — worst precisely when the phone is
+  hottest, which is the only condition Chad plays in. Wall time. The chapter
+  clock learned this at v7.1 and the kit's countdown at v7.4; the event loop
+  had not.
+
+## The mp3-vs-Opus encoder delta is PER FILE, not a constant (v9.7)
+
+v9.6 established that libmp3lame loses ~0.5 dB and libopus gains ~0.7, so one
+peak-matched WAV cannot serve both. v9.7 fed `beattick`'s Opus source the +0.7
+compensation and it landed at −2.54 instead of −2.0: this short, low-frequency
+file LOSES 0.8 dB through libopus. The rule is the rule (each encoder gets its
+own source); the OFFSET is measured per file, every time.
+
+## A re-encode with identical audio is still churn — restore it (v9.7)
+
+Re-running a master script rewrote thirteen `.ogg` files whose audio was
+byte-for-byte identical in content (same peak to 0.01 dB, same duration to the
+millisecond) — only the container's encoder tag differed. Restoring them with
+`git checkout HEAD --` keeps the diff honest, which is what makes "read the
+FULL diff and account for every removed line" possible at all. Measure before
+assuming a modified asset changed.

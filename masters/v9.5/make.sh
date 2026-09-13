@@ -62,10 +62,26 @@ done
 python3 slice.py
 
 # ---- the ghost's number --------------------------------------------------
+# v9.6.1, Chad: "For the 10th count voice, it is too soft, make it louder, but
+# make it echoey." Both, and they pull against each other -- an echo tail eats
+# headroom, so the peak has to be set AFTER the echo rather than before it.
+#
+# LOUDER: -9.8 dBFS -> -7.6, which lands the shipped mp3 at -8.07 against the
+# -7.1 to -7.3 every living number in this count-off measures. +5.2 dB, and
+# still the quietest thing in the count by 0.8 dB, which is the point: it
+# answers, it does not announce. (-4.6 was tried and is WRONG by measurement:
+# it puts the ghost 2.2 dB ABOVE the men, so the number nobody called becomes
+# the loudest voice in the room.)
+#
+# ECHOEY: the old treatment was two short slaps (60 and 180 ms) that read as a
+# doubled voice in a small room. It is a corridor now -- four taps out to
+# 620 ms with a long decay, rolled off above 3 kHz so each repeat is duller
+# than the last, the way a real tail loses its top first. The pitch and the
+# low-end body are unchanged, so it is the same man, further away.
 ffmpeg -v error -y -i ten_a.mp3 \
-  -af "atrim=0.06:0.60,asetpts=N/SR/TB,asetrate=44100*0.90,aresample=44100,highpass=f=120,lowpass=f=3400,aecho=0.8:0.7:60|180:0.35|0.2" \
+  -af "atrim=0.06:0.60,asetpts=N/SR/TB,asetrate=44100*0.90,aresample=44100,highpass=f=110,lowpass=f=3400,aecho=0.85:0.72:90|210|380|620:0.42|0.30|0.20|0.12,lowpass=f=3000,apad=pad_dur=0.9" \
   -ar 44100 -ac 1 -f wav w_c1ten.wav
-norm w_c1ten.wav c1ten -9.8
+norm w_c1ten.wav c1ten -7.6
 
 # ---- both encodings, to the standing contract ---------------------------
 for f in e1count e1extra e1rope n1rope n1one c1two c1three c1four c1five c1six c1seven c1eight c1nine c1ten; do

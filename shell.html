@@ -271,9 +271,13 @@ body.cine .torchBtn{display:none}
 #evRing{position:relative;width:120px;height:120px;border:2px solid rgba(255,255,255,.35);
   border-radius:50%;display:none;place-items:center}
 #event.heartbeat #evRing{display:grid}
-#evPulse{display:block;width:100%;height:100%;border-radius:50%;
+.evp{display:block;grid-area:1/1;width:100%;height:100%;border-radius:50%;
   border:3px solid #FF5442;box-shadow:0 0 18px rgba(255,84,66,.7);transform:scale(2.2);
-  transform-origin:center}
+  transform-origin:center;opacity:0}
+/* v9.7: the inner ring is the TARGET and says so — a ring the travelling ones
+   land exactly on, rather than the panel's own border doubling as one */
+#evRing::after{content:'';grid-area:1/1;width:100%;height:100%;border-radius:50%;
+  border:2px dashed rgba(255,255,255,.5);pointer-events:none}
 #evItem{display:flex;flex-direction:column;align-items:center;gap:8px}
 #evIcon{display:grid;place-items:center;width:96px;height:96px}
 #evIcon canvas,#evIcon img{max-width:96px;max-height:96px;filter:drop-shadow(0 0 12px rgba(255,179,103,.5))}
@@ -307,7 +311,8 @@ body.cine .torchBtn{display:none}
   letter-spacing:.06em;color:#8FE6DB;text-shadow:0 0 14px rgba(99,214,200,.7)}
 #evCombo.hot{color:#FFD79A;text-shadow:0 0 20px rgba(255,179,103,.9);
   animation:breathe .6s ease-in-out infinite}
-#evPulse.near{border-color:#8FE6DB;box-shadow:0 0 30px rgba(99,214,200,.9)}
+.evp.near{border-color:#8FE6DB;box-shadow:0 0 34px rgba(99,214,200,.95);border-width:4px}
+.evp.late{border-color:#B0342B;box-shadow:0 0 12px rgba(176,52,43,.5)}
 /* ---------------------------------------------------- v9.4 · DRAG AND MATCH
    Chad, of the standby bed: "have the player drag item icons on the left to
    the right, it has to match the right icons ... There should be sound
@@ -1641,7 +1646,11 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
 <div id="event" class="layer hide">
   <div class="evpanel">
     <span class="stencil" id="evLabel"></span>
-    <div id="evRing"><i id="evPulse"></i></div>
+    <!-- v9.7: THREE rings in flight, not one. A single ring had to both
+         approach the next beat and show that you were late for the last one,
+         and it could do neither: it froze on the target for the whole late
+         window and then snapped back out. Each ring now owns one beat. -->
+    <div id="evRing"><i id="evPulse" class="evp"></i><i id="evPulse2" class="evp"></i><i id="evPulse3" class="evp"></i></div>
     <div id="evItem" class="hide"><span id="evIcon"></span><span id="evItemTxt"></span></div>
     <!-- v9.4: the rhythm game's answer to the thumb -->
     <i id="evBurst"></i>

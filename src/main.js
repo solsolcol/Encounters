@@ -1442,7 +1442,16 @@ const EV_DEFAULT = {
   /* v9.4: a heartbeat SPEEDS UP. Chad: "It should get faster and faster per
      beat." `accel` multiplies the gap after every beat, floored at
      `minPeriod` so it cannot outrun a thumb. */
-  heartbeat: { n: 5, bpm: 64, win: 0.17, lead: 1.2, accel: 0.93, minPeriod: 0.40, pass: 0.6 },
+  /* v9.7: `win` and `zone` together decide the real millisecond windows, and
+     the shipped pair was unplayable — see `evGrade`. 0.26/5.8 gives PERFECT
+     within 45 ms, GREAT 106, GOOD 181, SLIGHT 302, BROKEN only past 513, with
+     the beat's own acceptance window (`win`) closing at 260. `zone` here is
+     far outside the trial's 0.82-0.30 difficulty scale on purpose: for this
+     one kind `win` is a REAL window in SECONDS — it also decides how long the
+     beat stays open and normalises the ring's overshoot — so it cannot be
+     stretched to carry the grading spread, and `zone` carries it instead. */
+  heartbeat: { n: 5, bpm: 64, win: 0.26, zone: 5.8, lead: 1.2, accel: 0.93,
+               minPeriod: 0.55, pass: 0.6, tick: true },
   /* v9.4: DRAG AND MATCH. Items on the left, slots on the right, dragged one
      onto the other; scored on how FAST the whole set is laid, with a wrong
      drop costing the stat on the spot. */
@@ -1483,7 +1492,21 @@ const EV_BANDS = [
   { at: 0.34, aw: -2, word: 'event.missed' },
   { at: Infinity, aw: -4, word: 'event.broken' }
 ];
-/* err is 0..1, already normalised against the window the kind allows */
+/* err is 0..1, already normalised against the window the kind allows, and
+   `zone` scales that into the bands — so the |dt| a band actually allows is
+   `at * win * zone` SECONDS, and those three numbers have to be read together.
+
+   v9.7, and this is worth the paragraph because it shipped and was unplayable:
+   e2c1 declared win 0.15 / zone 0.55, which makes PERFECT a **2.5 ms** window
+   and grades anything past **28 ms** as BROKEN — and the engine's own default
+   (win 0.17, no zone) was 5.1 ms, no better. A touchscreen's own tap latency is
+   50 to 100 ms, so the whole top of the ladder sat inside the hardware's noise
+   floor: a player with flawless timing was graded BROKEN on essentially every
+   beat and charged 5 sanity for it. Chad: "very hard to nail right, it still
+   feels off even when my timing is good." It was not his timing.
+
+   Whenever these numbers move, print the milliseconds they imply and read
+   them against a human: a rhythm game's PERFECT is ~40-50 ms, not ~2. */
 function evGrade(err, zone) {
   const k = Math.max(0, err) / Math.max(0.02, zone || 1);
   return EV_BANDS.find(b => k <= b.at) || EV_BANDS[EV_BANDS.length - 1];
@@ -1492,6 +1515,26 @@ function evGrade(err, zone) {
    stat THERE AND THEN, with the red wash, the fail cue and a hard buzz, so a
    mistimed tap is felt when it happens rather than totalled up politely at
    the end. That immediacy is the whole of what Chad asked for. */
+/* v9.7: what the four "the worst possible" call sites pass. It used to be a
+   literal 1, which means "one whole window out" — and that only LANDS on the
+   BROKEN band while `zone` is under 2.94, which was true of every event that
+   existed when it was written. The heartbeat's zone is 5.8 now, and under it
+   a beat the player never answered at all graded SLIGHT: zero damage, with
+   `missCost` never charged. A sentinel that means "the worst" has to say so. */
+const EV_WORST = Infinity;
+/* v9.7: the event clock AS OF THIS INSTANT, not as of the last frame.
+   `e.t` only advances inside `evFrame`, so grading a press against it makes
+   the press up to one whole frame stale — 100 ms at 10 fps, which is more
+   than the PERFECT window is wide. A rhythm game would then be unwinnable on
+   a slow device no matter how good the player's timing, which is the same
+   class of bug as the clamped dt this release removed. Only the heartbeat
+   needs it: every other kind grades against windows measured in whole
+   seconds. Clamped, so a tab that was backgrounded cannot leap. */
+function evNow() {
+  const e = ev; if (!e) return 0;
+  if (!e.wallLast || e.briefing) return e.t;
+  return e.t + Math.min(0.25, Math.max(0, performance.now() / 1000 - e.wallLast));
+}
 function evScorePress(err) {
   const e = ev; if (!e) return null;
   const b = evGrade(err, e.o.zone);
@@ -1680,7 +1723,8 @@ function evMatchDrop(x, y) {
    on the boot warm list with the HUD's three, because chapters 1-5 declare no
    events at all and would pay the decode for nothing; a test's own briefing,
    or its `lead`, is more than enough time. */
-const EV_SOUNDS = ['beathit', 'beatperfect', 'beatmiss', 'matchok', 'matchbad', 'matchdone'];
+const EV_SOUNDS = ['beathit', 'beatperfect', 'beatmiss', 'matchok', 'matchbad', 'matchdone',
+                   'beattick'];   // v9.7: the heartbeat's metronome — the beat you play TO
 function kitEvent(opts = {}) {
   if (ev) evResolve({ ok: false, aborted: true });
   const kind = EV_DEFAULT[opts.kind] ? opts.kind : 'tap';
@@ -1864,9 +1908,9 @@ function evPress(x, y) {
          same size score the same — which is Chad's "if the player
          undershoots, or overshoots the circle, it should show missed". */
       const c = e.beats[e.beat] ?? 1e9;
-      if (e.beatDone) { evScorePress(1); break; }      // a second tap on one beat is a miss
+      if (e.beatDone) { evScorePress(EV_WORST); break; }   // a second tap on one beat is a miss
       e.beatDone = true;
-      evScorePress(Math.abs(e.t - c) / Math.max(0.02, o.win));
+      evScorePress(Math.abs(evNow() - c) / Math.max(0.02, o.win));
       break;
     }
     /* v9.4: a press on a tile PICKS IT UP; the drop is resolved on release,
@@ -1903,7 +1947,7 @@ function evPress(x, y) {
        is, because jabbing at the screen must not beat reading it. */
     case 'sequence': {
       const lead = o.lead ?? 0.28, span = Math.max(0.12, e.each - lead);
-      if (e.slotT < lead) { evScorePress(1); evNextItem(); break; }   // too early: BROKEN
+      if (e.slotT < lead) { evScorePress(EV_WORST); evNextItem(); break; }   // too early: BROKEN
       const mid = lead + span * 0.5;
       evScorePress(Math.abs(e.slotT - mid) / (span * 0.5));
       evNextItem(); break;
@@ -1940,9 +1984,19 @@ function evNextItem() {
 function evFrame(dt, dLookX, dLookY) {
   const e = ev; if (!e) return;
   if (!e.started) evStart();          // and fall through: a focus dot is placed on the frame it starts
-  if (e.briefing) return;             // v8.7: a briefing holds the clock, the items and the beats
+  if (e.briefing) { e.wallLast = 0; return; }   // v8.7: a briefing holds the clock, the items and the beats (v9.7: and the wall mark, or START would leap)
   const o = e.o;
-  e.t += dt;
+  /* v9.7: WALL time, not the frame's dt. `dt` is clamped to 0.05 s upstream,
+     so on a device under twenty frames a second every event ran in slow
+     motion — and a RHYTHM test graded against a clock that is not the clock
+     its sounds play on is unwinnable by construction. The same law the
+     chapter clock learned at v7.1 and the march at v9.3, in the one place it
+     matters most. A first frame and a resumed briefing seed the mark rather
+     than leaping. */
+  const nowMs = performance.now() / 1000;
+  if (!e.wallLast) e.wallLast = nowMs;
+  e.t += Math.min(0.25, Math.max(0, nowMs - e.wallLast));
+  e.wallLast = nowMs;
   if (e.down) e.look += Math.abs(dLookX) + Math.abs(dLookY);
   const bar = $('evBar');
   switch (e.kind) {
@@ -1977,23 +2031,52 @@ function evFrame(dt, dLookX, dLookY) {
     }
     case 'heartbeat': {
       const c = e.beats[e.beat] ?? 1e9;
-      const prev = e.beat > 0 ? e.beats[e.beat - 1] : Math.max(0, c - (60 / o.bpm));
-      const gap = Math.max(0.05, c - prev);
-      /* the pulse ring contracts onto the inner ring at each beat's centre —
-         and because the gaps shrink, it contracts FASTER every beat, which is
-         the whole read of an accelerating rhythm game. */
-      const pulse = $('evPulse');
-      if (pulse) {
-        const ph = Math.max(0, Math.min(1, 1 - (c - e.t) / gap));
-        pulse.style.transform = 'scale(' + (2.2 - 1.2 * ph).toFixed(3) + ')';
-        pulse.classList.toggle('near', Math.abs(e.t - c) <= o.win);
+      /* v9.7: THREE RINGS IN FLIGHT. One ring could not do this job: it
+         approached the current beat, then CLAMPED at the target for the whole
+         late window — so a press 100 ms late saw a perfectly aligned ring and
+         was graded BROKEN — and then snapped back out when the beat resolved.
+         "the circles dont really align" is exactly that clamp.
+
+         Each ring now owns one beat and does nothing else: it fades in a gap
+         before its own beat, contracts 2.2 -> 1.0 so that it lands ON the
+         dashed target ring at the beat's centre, and then keeps going, through
+         and inside it, while the press is still allowed. So being late LOOKS
+         late, and the next beat's ring is already on its way in behind it —
+         no jump, and an accelerating rhythm reads as rings arriving faster. */
+      const RINGS = ['evPulse', 'evPulse2', 'evPulse3'];
+      for (let r = 0; r < RINGS.length; r++) {
+        const el = $(RINGS[r]); if (!el) continue;
+        const bi = e.beat + r;
+        const bc = e.beats[bi];
+        if (bc === undefined) { el.style.opacity = '0'; continue; }
+        const bp = bi > 0 ? e.beats[bi - 1] : Math.max(0, bc - (60 / o.bpm));
+        const bgap = Math.max(0.05, bc - bp);
+        const lead = Math.min(bgap, 1.15);            // how long before its beat it appears
+        const u = (e.t - (bc - lead)) / lead;         // 0 at the fade-in, 1 at the beat
+        if (u < 0) { el.style.opacity = '0'; continue; }
+        const over = Math.max(0, e.t - bc) / Math.max(0.02, o.win);   // 0..1 past the centre
+        const sc = over > 0 ? 1 - 0.55 * Math.min(1, over)
+                            : 2.2 - 1.2 * Math.min(1, Math.max(0, u));
+        el.style.transform = 'scale(' + sc.toFixed(3) + ')';
+        el.style.opacity = (over > 0 ? Math.max(0, 1 - over) : Math.min(1, u * 3)).toFixed(3);
+        el.classList.toggle('near', bi === e.beat && Math.abs(e.t - bc) <= o.win * 0.7);
+        el.classList.toggle('late', bi === e.beat && e.t > bc);
+      }
+      /* v9.7: and the beat is HEARD. A rhythm game you can only see is a
+         reaction test; hearing the last beat is how a player predicts the
+         next one, which is the whole skill an accelerating pattern asks for. */
+      if (o.tick !== false && !e.ticked) e.ticked = [];
+      if (o.tick !== false && e.t >= c && !e.ticked[e.beat]) {
+        e.ticked[e.beat] = 1;
+        snd('beattick', 0.5);
+        haptic(12);
       }
       if (e.t > c + o.win) {
         /* v9.3: a beat you never answered is BROKEN, not a silent nothing —
            it grades at the bottom of the ladder and takes its sanity there
            and then. Before this, missing every beat of the fear test cost
            the player exactly nothing until the very end. */
-        if (!e.beatDone) evScorePress(1);
+        if (!e.beatDone) evScorePress(EV_WORST);
         e.beat++; e.beatDone = false;
         if (e.beat >= e.n) evResolve(evBandResult(o));
       }
@@ -2045,7 +2128,7 @@ function evFrame(dt, dLookX, dLookY) {
       if (item) item.style.opacity = (e.slotT < lead ? 0.30 : Math.max(0.12, 1 - Math.abs(k - 0.5) * 1.4)).toFixed(2);
       const bar = $('evBar');
       if (bar) bar.style.width = (100 * Math.max(0, Math.min(1, k))).toFixed(1) + '%';
-      if (e.slotT >= e.each) { evScorePress(1); evNextItem(); }   // never laid: BROKEN
+      if (e.slotT >= e.each) { evScorePress(EV_WORST); evNextItem(); }   // never laid: BROKEN
       break;
     }
   }

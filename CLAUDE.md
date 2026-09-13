@@ -2319,6 +2319,75 @@ What the baseline contains, by release:
   own source now. And `dispose()` never stopped `ghostLine`'s mixer, which v9.5
   added; `leaktest` was green either way, which is why it survived a release.
   docs/V9.6-THE-MAN-IN-THE-SHOWER.md is the build's memory.
+- **v9.7** THE BEAT YOU CAN ACTUALLY HIT, AND THE DREAD UNDER THE WHOLE DAY —
+  Chad's four notes on v9.6. `src/main.js` changes only the event system and its
+  warm set, and episode 1 declares no objective, no timer and no event, so it is
+  untouched by construction and was run as the control.
+  **THE HEARTBEAT WAS UNPLAYABLE, AND THE NUMBER SAYS SO.** *"very hard to nail
+  right, it still feels off even when my timing is good."* It was not his timing:
+  `win` and `zone` MULTIPLY inside `evGrade` — the |dt| a band allows is
+  `at × win × zone` SECONDS — and the chapter shipped 0.15 / 0.55, which makes
+  PERFECT a **2.5 ms** window and grades anything past **28 ms** as BROKEN,
+  against a touchscreen's own **50–100 ms** tap latency. A player with flawless
+  timing was charged 5 sanity on essentially every beat. 0.26 / 5.8 now: PERFECT
+  45 ms, GREAT 106, GOOD 181, SLIGHT 302, BROKEN only beyond 513. (`zone` at 5.8
+  is far outside the trial's 0.82–0.30 scale on purpose: for this one kind `win`
+  is a REAL window in seconds — it also decides how long the beat stays open —
+  so `zone` has to carry the grading spread.)
+  Widening it exposed a second bug that would have shipped: four call sites
+  passed `evScorePress(1)` to mean "the worst", and `1` only lands on BROKEN
+  while `zone` is under 2.94 — at 5.8 **a beat the player never answered became
+  free**, `missCost` never charged. `EV_WORST = Infinity` at all four.
+  *"the circles dont really align"* was a CLAMP: one ring contracted to the
+  target at the beat and held there through the whole late window, so a press
+  100 ms late saw perfect alignment, then snapped out. **Three rings in flight**
+  now, each owning one beat, contracting THROUGH the target while the press is
+  still allowed — late looks late, the next ring is already arriving, and an
+  accelerating rhythm reads as rings arriving faster. Two more from the same
+  rebuild: the event clock was `e.t += dt` and `dt` is clamped to 0.05 s, so
+  every event ran in slow motion below 20 fps — worst exactly when the phone is
+  hottest, the only condition Chad plays in; and the beat is HEARD now
+  (`beattick`, in `EV_SOUNDS` so the engine warms its own). The take was picked
+  by measurement: of two generated, one carries THREE transients — a real
+  heartbeat pattern, which as a metronome double-hits every beat — and the other
+  exactly one.
+  **THE DREAD RUNS UNDER EVERYTHING.** `e2dread` is the one bed keyed to
+  NOTHING — not `nightK`, not `outK`, not a phase — because "the entire chapter"
+  is the ask and a dread that comes and goes is one the player learns to read; it
+  plays under the film too. The take was chosen on the MASKING measure, not on
+  taste: it puts **80.7 %** of its energy under 120 Hz and 13.8 % in the band his
+  voice lives in, against the rejected take's 36.2 % sitting straight on top of
+  him. (Note this is the OPPOSITE verdict to v9.2's `campamb`, where 84 % under
+  120 Hz was disqualifying — that bed had to sound like a treeline. Same measure,
+  different job.) `eleven_music_v2` has no loop flag, so 12.0–55.0 s is taken and
+  its last 3 s crossfaded over its head: 40.0 s, seam checked at the JOINT (−46
+  dBFS, 38 dB under its own peak), levelled to the −10.5 dBFS the three shipped
+  beds sit at. The gain was PRICED, not picked: at 0.26 it lands at −43.9 in
+  120–500 Hz, quieter there than e2bed (−39.5) or e2day (−38.9) at the same
+  nominal level, and the day's loudest mix reaches −37.2 against his −27.1 —
+  **9.9 dB of margin, 17.9 through the v5.27 duck**, costing 1.1 dB of what the
+  chapter already had.
+  **THE SOLDIER RUNS INTO THE WALL** — *"the player can see the soldier running
+  and going into the wall and disappear ... like the semi-transparent one."*
+  The model had to change first: `ghostsoldier.glb` ships exactly one clip,
+  `Idle_6`, and cannot run; `fbosling` ships `Running` and is already the tenth
+  man and the man in the shower, so all three ghosts are one asset, one look and
+  no extra download (`CULL_SPHERE.fbosling` covers every pose), and Chad's own
+  ghost model will replace one key in three places. Measured off the corridor:
+  x −3.60 → −6.45, which is 0.45 m INSIDE the end wall, over 20.55–21.76 —
+  2.85 m in 1.21 s = **2.36 m/s** against `Running`'s own 2.46–2.68. On screen
+  1.2 s against the tenth of a second the old pop-in gave. The wall does half
+  the work: a ghost material has `depthWrite` off but still depth-TESTS, so the
+  tile occludes him and the alpha only finishes it.
+  **THE TENTH VOICE** is +5.2 dB and further away — four echo taps at
+  90/210/380/620 ms over a second low-pass — so it sits 0.8–1.1 dB under the
+  living numbers instead of six under them, and what places it elsewhere is the
+  reverb rather than the level. 0.81 s → 2.17 s, `SECS` and the registry both.
+  One encoder law sharpened: **the mp3-vs-Opus delta is PER FILE.** v9.6's
+  +0.7 dB Opus compensation put `beattick` at −2.54 instead of −2.0; this short,
+  low-frequency file LOSES 0.8 dB where a spoken line gains 0.7. Measure the
+  output, every time.
+  docs/V9.7-THE-BEAT-AND-THE-DREAD.md is the build's memory.
 - **v7.9** THE FERRY FROM INSIDE, TEKONG, THE PARADE SQUARE, THE BUNK —
   Chad, with five reference photographs: *"I dont want to see the outside
   of the ferry and the sea, it should show first person pov within inside
