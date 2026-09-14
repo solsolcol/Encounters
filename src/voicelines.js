@@ -373,6 +373,8 @@
       text: "The shower. Somebody's in the shower. At three in the morning.", secs: 4.44 },
     { id: "n1A1", who: "jamesTeen", ch: "e2c1", where: "Scene A, at the block door",
       text: "Nobody. The water's running and there's nobody.", secs: 3.55 },
+    { id: "n1omg", who: "jamesTeen", ch: "e2c1", where: "Scene A: the water stops by itself",
+      text: "Oh my god...", secs: 1.65 },
     { id: "n1A2", who: "jamesTeen", ch: "e2c1", where: "Scene A, the last frame",
       text: "...there was someone at the end of the corridor.", secs: 2.51 },
     { id: "n1B1", who: "jamesTeen", ch: "e2c1", where: "Scene B, lying still",
@@ -469,6 +471,10 @@
        lines to himself; the four card lines. The encik's lines are Chad's
        verbatim, written under his bark rule; the three bunkmates' are his too.
        docs/V10.0-E2C2-PLAN.md. */
+    { id: "n2pro1", who: "jamesTeen", ch: "e2c2", where: "The opening film: the first night, from his pillow",
+      text: "Night after night, this kept happening.", secs: 2.43 },
+    { id: "n2pro2", who: "jamesTeen", ch: "e2c2", where: "The opening film: the fourth night, the clock turning to three",
+      text: "I noticed it only starts when the clock hits 3am... Surely, this is not just my imagination...", secs: 7.71 },
     { id: "n2pro", who: "jamesTeen", ch: "e2c2", where: "The opening film, over black, after the fourth night",
       text: "I've had enough. Today, I decided to bring it up to my bunkmates... and the encik...", secs: 6.72 },
     { id: "b2hear", who: "buddy", ch: "e2c2", where: "Breakfast: asked what he heard (SUPERSEDED at v10.1 by r2hear; the file stays in the pack, nothing cues it)",

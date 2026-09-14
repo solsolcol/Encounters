@@ -841,3 +841,17 @@ before it plays. Cue map: the film (§9 of the plan) `e2film` 0, `seawash`
 `n1pro4` 46.0, `bunkcreak` 50.8; the day (§8) through `worldSfx` — the
 whistle, the sergeant's lines on his talk take, push-ups, the switch; the
 four scenes (§10).
+
+## v10.4 · the eerie bed remade for the phone, the march, the laugh, the run
+
+`e2dread` is a NEW file under the same name (masters/v10.4/make.sh): the v9.7
+bed put 80.7 % of its energy under 120 Hz, which a phone speaker discards, so
+raising its gain never made it louder on Chad's device. The new one is picked
+on the phone-band measure (18.7 % under 120 Hz, 65 % in 120–500), levelled to
+−6.0 dBFS peak and run at 0.85 in both episode-2 chapters. `e2film` (the film
+theme) and `cookmusic` (the cookhouse bed) are RETIRED — files and rows gone,
+the takes kept in masters/v7.1 and masters/v10.2. New: `e2march` (the film's
+opening march, 40 s, 0.55 under the camp), `ghostlaugh` (5.0 s, scenes B and D
+of e2c1), `ghostrun` (2.5 s, scene A's run), and three Aaron takes — `n1omg`
+(1.65 s), `n2pro1` (2.43 s), `n2pro2` (7.71 s, "3am" ends at 3.64 s). Flows:
+xoHMbY1KDrArBCMcAGlB (music + SFX), aYn59tBsc4fmeddok85W (the lines).

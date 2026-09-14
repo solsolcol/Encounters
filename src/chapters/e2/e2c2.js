@@ -101,15 +101,20 @@
     /* v10.1: the cookhouse is LOUD. Four loops layered over the room tone —
        the men talking (`cookchat`), the kitchen behind the hatch
        (`kitchen`, keyed to how close the player stands to the servery), a
-       morning bed (`cookmusic`, the chapter's music — v10.2: a neutral
-       mid-register pad, Chad: "Why is the music so calming?") — and the episode's
-       dread under everything. `showerrun` and `clocktick` are the film's
+       (v10.1–v10.3 a morning bed, `cookmusic`, ran here too; retired at v10.4
+       — the episode's dread bed IS the chapter's music now, at 0.85, Chad's
+       "same loud eerie music ... throughout this entire chapter") — and the
+       episode's dread under everything. `showerrun` and `clocktick` are the film's
        and scene C's, written up by the chapter (a loop at 0 is never decoded
        until it is asked for). The four hall loops are DUCKED to nothing in
        every cut to the bunk. */
     musicVol: 0,
-    ambience: { beds: [['cookamb', 0.26], ['cookchat', 0.30], ['kitchen', 0.24], ['cookmusic', 0.20],
-                       ['e2dread', 0.16], ['showerrun', 0], ['clocktick', 0]] },
+    /* v10.4, Chad: "For ep 2 chp 2 playable scene and throughout this entire
+       chapter, i want the same loud eerie music in the background." The
+       cookhouse's morning bed (`cookmusic`, v10.1/v10.2) is retired and the
+       dread runs at chapter 1's level, keyed to nothing — film, hall, scenes. */
+    ambience: { beds: [['cookamb', 0.26], ['cookchat', 0.30], ['kitchen', 0.24],
+                       ['e2dread', 0.85], ['showerrun', 0], ['clocktick', 0]] },
 
     words: {
       approach: 'the encik',
@@ -1090,7 +1095,6 @@
         if (b[0] === 'clocktick') b[1] = tickVol;
         if (b[0] === 'cookamb') b[1] = 0.26 * hallK;
         if (b[0] === 'cookchat') b[1] = 0.30 * hallK;
-        if (b[0] === 'cookmusic') b[1] = 0.20 * hallK;     // v10.2: the new bed sits in his band (74 % in 120-500 Hz), so a notch lower
         if (b[0] === 'kitchen') b[1] = (0.10 + 0.22 * kitchenK) * hallK;
       }
     }
@@ -1597,6 +1601,11 @@
     /* NIGHT ONE (0.3–10.2) — from his pillow, along the beds, the men
        asleep, to the block door. The water starts at five. */
     fade(0.3, 2.6, 1, 0);
+    /* v10.4, Chad: "there needs to be some narration at the start" — his
+       words, in two takes so the second can be TIMED: `n2pro2`'s "3am" ends
+       3.64 s into the take (measured, the pause before "Surely"), so cued at
+       27.56 it lands on the frame the clock turns and the water starts (31.2). */
+    sfx(3.0, 'n2pro1');                          // "Night after night, this kept happening." 2.43 s -> 5.4
     camTo(0, 10.2, T.PILLOW, T.PILLOW, rawK);
     yawTo(0, 10.2, T.Y_ROOM, T.Y_PIL + 0.10, smoothK);   // the room first, the door last: the +z wall is a metre from his pillow
     pitchTo(0, 10.2, 0.02, 0.05, smoothK);
@@ -1631,6 +1640,7 @@
     yawTo(27.6, 35.0, T.Y_CLOCK, T.Y_CLOCK, rawK);
     pitchTo(27.6, 35.0, 0.03, 0.03, rawK);
     fade(27.6, 28.8, 1, 0);
+    sfx(27.56, 'n2pro2');                        // "I noticed it only starts when the clock hits 3am... Surely, this is not just my imagination..." 7.71 s -> 35.3; "3am" at 31.2
     step(31.2, () => { stage.clock.set('03:00'); stage.setShower(true, 0.8); });
     sfx(31.2, 'boom', 0.28);
     sfx(31.4, 'dread', 0.7);

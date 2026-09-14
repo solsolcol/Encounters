@@ -4023,7 +4023,7 @@ const TEEN_TAKES = new Set([
   'n2pro', 'n2askA', 'n2askB', 'n2askC', 'n2askD', 'n2nobut', 'n2B1', 'n2C1',
   'n2A', 'n2B', 'n2C', 'n2D',
   // v10.2: his thought after the third bunkmate
-  'n2known']);
+  'n2known', 'n1omg', 'n2pro1', 'n2pro2']);
 /* The rest of the cast. They share `voiceOut` and the duck, but not the
    boost — see voiceStage() above. */
 const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
@@ -5872,7 +5872,9 @@ const STING_SAMPLE = {
   c1five: ['c1five', 1], c1six: ['c1six', 1], c1seven: ['c1seven', 1],
   c1eight: ['c1eight', 1], c1nine: ['c1nine', 1],
   c1ten: ['c1ten', 1],           // the number nobody in the section called
-  e2film: ['e2film', 1],         // the episode's theme under the film (60 s, eleven_music_v2)
+  e2march: ['e2march', 1],       // v10.4: a solemn march under the film's ferry, jetty and square (40 s); the old `e2film` theme is retired
+  ghostlaugh: ['ghostlaugh', 1], ghostrun: ['ghostrun', 1],   // v10.4: the block laughs (scenes B and D); the figure's feet on the tile (scene A)
+  n1omg: ['n1omg', 1],           // v10.4: "Oh my god..." when the water stops (scene A)
   e2bed: ['e2bed', 1],           // the night's explore bed (50 s, eleven_music_v2, loop)
   e2day: ['e2day', 1],           // v9.2: and the DAY's, the other side of nightK (23 s, crossfade-looped)
   campamb: ['campamb', 1],       // v9.2: the camp outside the bunk (22 s, generated seamless)
@@ -5892,8 +5894,9 @@ const STING_SAMPLE = {
   e2A: ['e2A', 1], e2saw: ['e2saw', 1], e2cock: ['e2cock', 1], e2ok: ['e2ok', 1], e2D1: ['e2D1', 1], e2D2: ['e2D2', 1],
   b2hear: ['b2hear', 1], k2three: ['k2three', 1], r2siao: ['r2siao', 1],
   // v10.1: the cookhouse livened up — a chatter loop, the kitchen behind the servery, a morning bed, a platoon calling the step past the open side; and the re-voiced ask
-  cookchat: ['cookchat', 1], kitchen: ['kitchen', 1], cookmusic: ['cookmusic', 1], marchcall: ['marchcall', 1], r2hear: ['r2hear', 1],
-  n2known: ['n2known', 1], e2hurry: ['e2hurry', 1]   // v10.2: the beat after the third ask
+  cookchat: ['cookchat', 1], kitchen: ['kitchen', 1], marchcall: ['marchcall', 1], r2hear: ['r2hear', 1],   // (v10.4: `cookmusic` retired — the dread is the chapter's music)
+  n2known: ['n2known', 1], e2hurry: ['e2hurry', 1],  // v10.2: the beat after the third ask
+  n2pro1: ['n2pro1', 1], n2pro2: ['n2pro2', 1]       // v10.4: the film's opening narration, in two takes so the second lands on the clock
 };
 /* Which kinds the synth below can actually fake. Everything else in
    STING_SAMPLE is sample-only: if its buffer is not decoded yet it stays

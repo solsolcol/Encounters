@@ -169,9 +169,14 @@
             [0.75, '#060912'], [1.00, '#03050a']],
     bg: 0x070a10,
     fog: [0x090d14, 0.020],
-    hemi: [0x2c3652, 0x0f1114, 0.55],
-    key: [0x8fa4c8, 0.35, 20, 16, 4],
-    fill: [0x4e6086, 0.18],
+    /* v10.4, Chad: "Make the bunk darker when player wakes up at 3am ... It
+       should be darker, contrasted against the light from the toilet." The
+       three global lights come down by about half; the block's tube (1.6,
+       flickering) and the balcony lamp are untouched, so the light in the
+       room is the light that comes through the door. */
+    hemi: [0x2c3652, 0x0f1114, 0.22],
+    key: [0x8fa4c8, 0.16, 20, 16, 4],
+    fill: [0x4e6086, 0.08],
     stars: 0.9, moon: 0,
     sun: 0, clouds: 0.25,
     vmHemi: [0x2e3a58, 0x0c0e12, 0.5],
@@ -1852,11 +1857,132 @@
     });
     filmTex.push(skyJ);
     fmesh(jettyRoot, new THREE.PlaneGeometry(120, 50), nbm({ map: skyJ }), 0, 18, 46, 0, Math.PI, 0);
+    /* v10.4 · THE TERMINAL. Chad: "improve the welcome to pulau tekong ferry
+       terminal area? it looks too bare now." The walkway had stood on
+       nothing — no water under a jetty, no land at its end, nothing past the
+       rails. Now: the sea on both sides (the ferry's own crest tile, so it
+       moves), piles under the deck, the ferry moored alongside, bollards and
+       life buoys, tube lights under the roof, benches, notice boards, and at
+       the landward end the TERMINAL — a long low building the walkway runs
+       into, its name across the parapet, pillars, a window band, planters
+       and hedges, a guard post with its barrier, a shore fence, two flags.
+       The trees move out to flank the building. All primitives, no download. */
+    const matSeaJ = nfm({ map: seaTex, color: 0x7f9fb0, roughness: 0.32, metalness: 0.08 });
+    fmesh(jettyRoot, new THREE.PlaneGeometry(190, 96), matSeaJ, 0, -0.9, -24, -Math.PI / 2);
+    const matLand = nfm({ color: 0x7d8f52, roughness: 0.95 });
+    fmesh(jettyRoot, new THREE.PlaneGeometry(190, 70), matLand, 0, -0.05, 54, -Math.PI / 2);
+    const matApron = nfm({ color: 0xb9b5a8, roughness: 0.9 });
+    fbox(jettyRoot, 34, 0.06, 16, matApron, 0, -0.03, 33);
+    const matPile = nfm({ color: 0x4a4a46, roughness: 0.9 });
+    for (const sgn of [-1, 1]) for (let z = -12; z <= 16; z += 4)
+      fmesh(jettyRoot, new THREE.CylinderGeometry(0.17, 0.17, 1.3, 8), matPile, sgn * 3.3, -0.55, z);
+    const matBoll = nfm({ color: 0x2c2c2c, roughness: 0.6, metalness: 0.4 });
+    for (const sgn of [-1, 1]) for (let z = -10; z <= 14; z += 8)
+      fmesh(jettyRoot, new THREE.CylinderGeometry(0.11, 0.14, 0.5, 8), matBoll, sgn * 3.35, 0.26, z);
+    const matBuoy = nfm({ color: 0xd8402c, roughness: 0.7 });
+    for (const sgn of [-1, 1]) for (let z = -6; z <= 26; z += 8)
+      fmesh(jettyRoot, new THREE.TorusGeometry(0.24, 0.06, 8, 20), matBuoy, sgn * 3.0, 1.55, z, 0, Math.PI / 2, 0);
+    /* tube lights under the roof, and the light they give */
+    const matTubeJ = nfm({ color: 0xf4f6f0, emissive: 0xf4f6f0, emissiveIntensity: 1.4, roughness: 0.6 });
+    for (let z = -10; z <= 26; z += 6) fbox(jettyRoot, 0.14, 0.07, 1.3, matTubeJ, 0, 3.55, z);
+    /* benches against the columns */
+    const matWood = nfm({ color: 0x7a5a3a, roughness: 0.85 });
+    for (const [sx, z] of [[-1, -6], [1, 0], [-1, 6], [1, 16]]) {
+      fbox(jettyRoot, 0.42, 0.06, 1.7, matWood, sx * 2.55, 0.46, z);
+      fbox(jettyRoot, 0.06, 0.5, 1.7, matWood, sx * 2.76, 0.72, z);
+      for (const dz of [-0.7, 0.7]) fbox(jettyRoot, 0.4, 0.44, 0.06, matBoll, sx * 2.55, 0.22, z + dz);
+    }
+    /* notice boards on the columns, facing the walkway */
+    const boardTexJ = paint(256, (ctx, S) => {
+      ctx.fillStyle = '#d9d3c4'; ctx.fillRect(0, 0, S, S);
+      ctx.fillStyle = '#233b2d'; ctx.fillRect(0, 0, S, S * 0.16);
+      for (let i = 0; i < 6; i++) { ctx.fillStyle = i % 2 ? '#f3f1ea' : '#e8e2d2'; ctx.fillRect(S * (0.08 + (i % 3) * 0.3), S * (0.24 + Math.floor(i / 3) * 0.38), S * 0.26, S * 0.32); }
+      ctx.fillStyle = '#7a7466'; for (let i = 0; i < 6; i++) for (let l = 0; l < 4; l++) ctx.fillRect(S * (0.10 + (i % 3) * 0.3), S * (0.28 + Math.floor(i / 3) * 0.38 + l * 0.06), S * (0.14 + hash(i * 4 + l, 9) * 0.08), S * 0.02);
+    });
+    filmTex.push(boardTexJ);
+    for (const [sx, z] of [[-1, 2], [1, 12], [-1, 20]])
+      fmesh(jettyRoot, new THREE.PlaneGeometry(0.9, 0.9), nbm({ map: boardTexJ }), sx * 2.96, 1.75, z, 0, sx * Math.PI / 2, 0);
+    /* the ferry they just left, moored alongside */
+    const ferryJ = new THREE.Group(); ferryJ.position.set(-12.5, 0, -3); jettyRoot.add(ferryJ);
+    const matHullJ = nfm({ color: 0xe9e9e3, roughness: 0.55 }), matBandJ = nfm({ color: 0x24457a, roughness: 0.5 });
+    fbox(ferryJ, 17, 2.2, 5.2, matHullJ, 0, 0.2, 0);
+    fbox(ferryJ, 17.04, 0.34, 5.24, matBandJ, 0, 0.95, 0);
+    fbox(ferryJ, 12, 2.3, 4.2, matHullJ, -0.5, 2.45, 0);
+    fbox(ferryJ, 12.04, 0.9, 4.24, matBandJ, -0.5, 2.5, 0);       // the window band
+    fbox(ferryJ, 3.6, 1.7, 3.2, matHullJ, 3.2, 4.45, 0);
+    fbox(ferryJ, 0.08, 4.5, 0.08, matRail, 2.0, 7.4, 0);
+    fbox(ferryJ, 12.4, 0.12, 4.6, matHullJ, -0.5, 3.66, 0);
+    /* a shore fence, the guard post and its barrier, hedges in planters */
+    for (const sgn of [-1, 1]) {
+      for (let x = 5; x <= 41; x += 3) fbox(jettyRoot, 0.08, 1.2, 0.08, matRail, sgn * x, 0.6, 18.5);
+      for (const y of [0.55, 1.1]) fbox(jettyRoot, 37, 0.05, 0.05, matRail, sgn * 23, y, 18.5);
+    }
+    const matHut = nfm({ color: 0xd8d4c6, roughness: 0.85 });
+    fbox(jettyRoot, 2.2, 2.6, 2.2, matHut, 6.2, 1.3, 26);
+    fbox(jettyRoot, 2.6, 0.12, 2.6, matBandJ, 6.2, 2.66, 26);
+    fmesh(jettyRoot, new THREE.PlaneGeometry(1.2, 0.8), nbm({ color: 0x1a2a3a }), 5.08, 1.5, 26, 0, -Math.PI / 2, 0);
+    fbox(jettyRoot, 0.14, 1.0, 0.14, matBoll, 4.4, 0.5, 24.2);
+    fbox(jettyRoot, 3.6, 0.08, 0.08, matBuoy, 5.9, 1.0, 24.2);   // the barrier arm, red, across the side path
+    const matPlanter = nfm({ color: 0x8a8378, roughness: 0.9 }), matHedge = nfm({ color: 0x2f5a2c, roughness: 0.95 });
+    for (const x of [-9.5, -5.5, 5.5, 9.5]) {
+      fbox(jettyRoot, 2.6, 0.5, 0.9, matPlanter, x, 0.25, 30.2);
+      fbox(jettyRoot, 2.3, 0.7, 0.7, matHedge, x, 0.85, 30.2);
+    }
+    /* THE TERMINAL BUILDING: the walkway runs into its middle */
+    const matTerm = nfm({ color: 0xe2ddcf, roughness: 0.88 }), matTermDark = nfm({ color: 0x1a1d22, roughness: 0.9, side: THREE.BackSide });
+    const TZ0 = 32, TZ1 = 41;
+    fbox(jettyRoot, 13.5 - 2.9, 4.6, 0.3, matTerm, -(2.9 + (13.5 - 2.9) / 2), 2.3, TZ0);   // the front, either side of the opening
+    fbox(jettyRoot, 13.5 - 2.9, 4.6, 0.3, matTerm, (2.9 + (13.5 - 2.9) / 2), 2.3, TZ0);
+    fbox(jettyRoot, 5.8, 1.3, 0.3, matTerm, 0, 3.95, TZ0);                                 // the lintel over the opening
+    fbox(jettyRoot, 27, 4.6, 0.3, matTerm, 0, 2.3, TZ1);                                   // the back
+    for (const sgn of [-1, 1]) fbox(jettyRoot, 0.3, 4.6, TZ1 - TZ0, matTerm, sgn * 13.5, 2.3, (TZ0 + TZ1) / 2);
+    fmesh(jettyRoot, new THREE.BoxGeometry(26.6, 4.5, TZ1 - TZ0 - 0.4), matTermDark, 0, 2.25, (TZ0 + TZ1) / 2);   // the dark inside
+    fbox(jettyRoot, 28.4, 0.35, TZ1 - TZ0 + 1.6, matRoofJ, 0, 4.78, (TZ0 + TZ1) / 2);      // the roof
+    fbox(jettyRoot, 28.4, 0.9, 0.3, matTerm, 0, 5.35, TZ0 - 0.6);                          // the parapet (photographed: hidden from the walkway by its own roof, so the name goes on the lintel below)
+    for (let x = -12; x <= 12; x += 4) if (Math.abs(x) > 3) fbox(jettyRoot, 0.45, 4.7, 0.45, matTerm, x, 2.35, TZ0 - 1.2);   // the pillars
+    fmesh(jettyRoot, new THREE.PlaneGeometry(9.6, 1.1), nbm({ color: 0x1c2e44 }), -8.2, 2.7, TZ0 - 0.16, 0, Math.PI, 0);       // the window bands
+    fmesh(jettyRoot, new THREE.PlaneGeometry(9.6, 1.1), nbm({ color: 0x1c2e44 }), 8.2, 2.7, TZ0 - 0.16, 0, Math.PI, 0);
+    const termTex = paint(1024, (ctx, S) => {
+      ctx.fillStyle = '#e8e4d8'; ctx.fillRect(0, 0, S, S);
+      ctx.fillStyle = '#1b2a1f'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      const K = 0.9 / 5.0;                        // the board is 5.0 x 0.9 (see the sign above for why the type is compressed)
+      const line = (text, y) => {
+        let px = Math.round(S * 0.30);
+        ctx.font = 'bold ' + px + 'px Georgia, serif';
+        const w = ctx.measureText(text).width * K;
+        if (w > S * 0.9) { px = Math.floor(px * (S * 0.9) / w); ctx.font = 'bold ' + px + 'px Georgia, serif'; }
+        ctx.save(); ctx.translate(S / 2, y); ctx.scale(K, 1); ctx.fillText(text, 0, 0); ctx.restore();
+      };
+      line('PULAU TEKONG FERRY TERMINAL', S * 0.5);
+    });
+    filmTex.push(termTex);
+    /* the terminal's name on a STANDING sign beside the walkway's end, on the
+       apron: from under the walkway's roof the parapet is above the roof line
+       and the lintel sits behind the WELCOME board (both photographed), so the
+       name goes where the lens can reach it — right of the file of recruits */
+    for (const dx of [-1.9, 1.9]) fbox(jettyRoot, 0.1, 2.1, 0.1, matRail, -7.6 + dx, 1.05, 29.4);   // the LEFT side: the guard post stands on the right (photographed)
+    fbox(jettyRoot, 5.2, 1.1, 0.08, matTerm, -7.6, 2.0, 29.46);
+    fmesh(jettyRoot, new THREE.PlaneGeometry(5.0, 0.9), nbm({ map: termTex }), -7.6, 2.0, 29.4, 0, Math.PI, 0);
+    /* two flags at the terminal's front — the Singapore flag, drawn */
+    const flagJ = paint(256, (ctx, S) => {
+      ctx.fillStyle = '#EE2536'; ctx.fillRect(0, 0, S, S / 2);
+      ctx.fillStyle = '#ffffff'; ctx.fillRect(0, S / 2, S, S / 2);
+      ctx.beginPath(); ctx.arc(S * 0.22, S * 0.25, S * 0.15, 0, 7); ctx.fill();
+      ctx.fillStyle = '#EE2536'; ctx.beginPath(); ctx.arc(S * 0.27, S * 0.25, S * 0.13, 0, 7); ctx.fill();
+      ctx.fillStyle = '#ffffff';
+      for (const [dx, dy] of [[0.30, 0.15], [0.24, 0.22], [0.36, 0.22], [0.27, 0.32], [0.33, 0.32]]) { ctx.beginPath(); ctx.arc(S * dx, S * dy, S * 0.018, 0, 7); ctx.fill(); }
+    });
+    filmTex.push(flagJ);
+    for (const x of [-7, 7]) {
+      fmesh(jettyRoot, new THREE.CylinderGeometry(0.04, 0.06, 7.5, 8), matRail, x, 3.75, 28.6);
+      fmesh(jettyRoot, new THREE.PlaneGeometry(1.5, 1.0), nbm({ map: flagJ, side: THREE.DoubleSide }), x + 0.78, 6.9, 28.6, 0, 0, 0);
+    }
     const jettyTrees = plantTrees(jettyRoot, [
-      [-14, 20], [-11, 26], [-8, 33], [12, 22], [15, 28], [9, 34], [-17, 30], [18, 34],
+      [-17, 22], [-20, 28], [-16, 36], [17, 24], [20, 30], [15, 38], [-24, 33], [24, 36], [-12, 45], [11, 46], [-30, 24], [30, 26],
     ].map(([x, z], i) => ({ x, z, h: 6.5 + hash(i, 8) * 3 })),
       { seed: 31, fog: false, tint: new THREE.Color(0.7, 0.8, 0.68), roughness: 0.95, lowKeep: 0.6 });
     const jettyLight = new THREE.PointLight(0xffffff, 14, 60, 1.0); jettyLight.position.set(0, 6, 6); jettyRoot.add(jettyLight);
+    const termLight = new THREE.PointLight(0xffffff, 16, 60, 1.0); termLight.position.set(0, 7, 28); jettyRoot.add(termLight);
 
     /* --------------------------------------- THREE · the parade square */
     /* v7.9: the square moved OUT to x -200, not up. Its ground has to run
@@ -3281,7 +3407,7 @@
         ['fanloop', 0.14 - 0.04 * nightK], ['clocktick', 0.06],
         ['e2bed', 0.30 * nightK], ['e2day', 0.26 * (1 - nightK)],
         ['campamb', (0.15 + 0.26 * outK) * (1 - 0.55 * nightK)],
-        ['e2dread', 0.62],                    // v9.7: flat, the whole chapter (v10.3: 0.26 -> 0.62 at Chad's ask — "much louder throughout")
+        ['e2dread', 0.85],                    // v9.7: flat, the whole chapter. v10.4: a NEW bed (mid-range, the one a phone speaker can carry — masters/v10.4/make.sh) at 0.85: it is THE music now, Chad's third ask
         ['showerrun', showerVol]];
     }
     mixBeds();
@@ -3952,7 +4078,7 @@
        There are four things to look at in the bunk and none of them takes
        more than a few seconds, so 45 is still more than enough to see them
        all and get back to the bed. */
-    const FREE_SECS = 30, FREE_WARN = 12;
+    const FREE_SECS = 33, FREE_WARN = 12;          // v10.4: +3 s at Chad's ask ("3 more seconds to explore the bunk")
     let freeWarned = false, freeTimer = null;
     function beginFree() {
       setPhase('free');
@@ -4069,7 +4195,7 @@
       if (p === 'lightsout' || p === 'night' || p === 'decide') {
         nightK = 1; showerVol = 0.55; mixBeds();
         setLights(0); setNightRoom(true); setShower(true); clock.set('03:00');
-        clockGlow.intensity = CLOCK_GLOW; balcLight.intensity = 5;
+        clockGlow.intensity = CLOCK_GLOW;          // v10.4: the balcony lamp is setNightRoom's (3.5 at night) — a resume used to put it back to 5
         if (kit) {
           kit.daylight(NIGHT, 0);
           yaw.position.x = HIS.x + 0.35; yaw.position.z = HIS.z; yaw.rotation.y = LIE_YAW;
@@ -4399,8 +4525,8 @@
       for (const b of beds) { if (!b.model) b.low.fold.visible = !on || b.his || !sleepers.find(s => s.bed === b); }
       setLights(on ? 0 : 1);
       clockGlow.intensity = CLOCK_GLOW;          // v7.5: the clock's red is on all evening
-      balcLight.intensity = on ? 6 : 5;          // and so is the balcony's sodium lamp
-      nightLight.intensity = on ? 1.8 : 0;
+      balcLight.intensity = on ? 2.8 : 5;        // and so is the balcony's sodium lamp (v10.4: 6 -> 2.8 at night, so the block's tube is the room's light)
+      nightLight.intensity = on ? 0.9 : 0;       // v10.4: 1.8 -> 0.9
       /* v7.2: 1.6 at night (3.2 blew the tiles to white), and the tube
          FLICKERS from here — a dying fluorescent is the block's own unease */
       blockBase = on ? 1.6 : (LOW ? 12 : 8);
@@ -4967,8 +5093,9 @@
      clock; and at the switch the tubes die, the fans keep turning, and the
      camera settles at his pillow looking up at the bunk above. His fourth
      line, then black, then the card. Every yaw is faceFrom'd at a named
-     thing (the v4.6 law). The film's theme is `e2film`; the day's beds
-     are held down under it and come up with the room. */
+     thing (the v4.6 law). The film's music is `e2march` under the camp and
+     the chapter's dread bed from the bunk on (v10.4); the day's beds are
+     held down under it and come up with the room. */
   function intro(c, s, api) {
     const { tr, step, sfx, fade, camTo, yawTo, pitchTo, faceFrom, rawK, smoothK,
             duck, stage, armR, kit } = api;
@@ -5011,7 +5138,15 @@
       stage.ferryRoot.visible = true;
     });
     // the film's own music, under everything
-    sfx(0.0, 'e2film', 1);
+    /* v10.4, Chad: "The cutscene can start with an army style music but make
+       it softer than the loud eerie music, then when the camera starts at the
+       bunk area, it starts quickly transitioning into the loud eerie music."
+       `e2march` (40 s, fades itself out) runs under the ferry, the jetty and
+       the square; the chapter's own dread bed is held down to a fifth under
+       it and comes up to full over the balcony's fade-in at 37.6. `e2film`,
+       the old film theme, is retired. */
+    sfx(0.0, 'e2march', 0.55);
+    step(0, () => { duck('e2dread', 0.2); });
 
     /* ===================== 0–20.6 INSIDE THE FERRY (v7.9) =================
        Chad, on v7.7: "it should show first person pov within inside the
@@ -5097,7 +5232,7 @@
        nothing after 17.2 moved.) */
     fade(37.6, 40, 1, 0);
     sfx(38.6, 'n1pro2');                      // "Nine of us to a bunk…" — 6.84 s → 45.4 (v7.9: the Hawk Coy half of it is the parade square's line now; v10.3: nine, not twenty)
-    tr(37.6, 40, k => { duck('bunkday', 0.55 * k); duck('fanloop', 0.4 * k); }, rawK);
+    tr(37.6, 40, k => { duck('bunkday', 0.55 * k); duck('fanloop', 0.4 * k); duck('e2dread', 0.2 + 0.8 * k); }, rawK);   // v10.4: the eerie music arrives with the bunk
     camTo(37.6, 42.8, BAL, { x: BAL.x - 0.4, y: EYE, z: BAL.z }, smoothK);
     camTo(42.8, 46, { x: BAL.x - 0.4, y: EYE, z: BAL.z }, OPENING, smoothK);
     yawTo(42.8, 46, Y_SQUARE, Y_IN, smoothK);
@@ -5161,7 +5296,7 @@
     yawTo(71.6, 77.6, Y_DOOR, Y_PEEK, smoothK);
     pitchTo(71.6, 77.6, 0.34, 0.02, smoothK);
     sfx(76.4, 'bunkcreak', 0.6);
-    tr(75.6, 79.0, k => { stage.ghostAlpha(stage.ghostWC, 0.34 * k); }, smoothK);
+    tr(75.6, 79.0, k => { stage.ghostAlpha(stage.ghostWC, 0.55 * k); }, smoothK);   // v10.4: 0.34 -> 0.55 ("not visible enough, slightly more opaque")
 
     /* 79.6–83.6 down, and out. Whatever the film did to the day is handed back
        on its last frame (a skip runs every step, so this one too). */
@@ -5172,7 +5307,7 @@
       if (kit) kit.daylight(null, 0);
       stage.clockGlow.intensity = stage.CLOCK_GLOW; stage.balcLight.intensity = 5;
       stage.setLights(1); stage.setWindows(1);
-      duck('bunkday', 1); duck('fanloop', 1); duck('clocktick', 1);
+      duck('bunkday', 1); duck('fanloop', 1); duck('clocktick', 1); duck('e2dread', 1);
       const g = stage.ghostWC.group;
       stage.ghostAlpha(stage.ghostWC, 0);
       g.position.set(stage.WC_GHOST.x, 0, stage.WC_GHOST.z); g.rotation.y = stage.WC_FACE_TAP;
@@ -5229,11 +5364,13 @@
     sfx(15.0, 'showeroff', 0.9);
     step(15.0, () => { stage.setShower(false); });
     tr(15.0, 16.0, k => { duck('showerrun', 1.6 * (1 - k)); }, rawK);
-    sfx(17.6, 'drip', 0.8);
+    sfx(15.7, 'n1omg');                         // v10.4: "Oh my god..." 1.65 s -> 17.3 (Chad: "in a scared voice")
+    sfx(17.8, 'drip', 0.8);
     // 18.6–21 turning back down the corridor — and the figure at its end
     yawTo(18.6, 20.8, Y_NEAR, Y_END, smoothK);
     pitchTo(18.6, 20.8, 0.0, 0.02, smoothK);
     sfx(20.8, 'dread', 0.9);
+    sfx(20.45, 'ghostrun', 0.9);                // v10.4: eerie running footsteps under the run (2.5 s, receding)
     /* v9.7, Chad: "I want to change that so that the player can see the
        soldier running and going into the wall and disappear."
 
@@ -5286,6 +5423,7 @@
     pitchTo(0, 3.0, s.pitchX, 0.95, smoothK);      // v7.2: 1.15 looked into the top bunk's slab; the fan and the clock's spill share this frame
     tr(0, 4.0, k => { duck('showerrun', 1 - 0.35 * k); }, rawK);
     sfx(2.0, 'n1B1');                           // 4.13 s → 6.1
+    sfx(8.4, 'ghostlaugh', 0.85);               // v10.4: an eerie male laugh, echoing in the block, while the water still runs (5.0 s -> 13.4)
     sfx(14.0, 'showeroff', 0.7);
     step(14.0, () => { stage.setShower(false); });
     tr(14.0, 15.0, k => { duck('showerrun', 0.65 * (1 - k)); }, rawK);
@@ -5346,6 +5484,7 @@
     pitchTo(1.0, 2.2, s.pitchX, 0.3, smoothK);
     sfx(2.8, 'n1D1', 1.0);                      // 2.43 s → 5.2
     sfx(7.2, 'n1D1', 0.55);                     // → 9.6
+    sfx(9.8, 'ghostlaugh', 0.8);                // v10.4: the block answers him (5.0 s -> 14.8, under the boom)
     tr(2.0, 11.0, k => { duck('showerrun', 1 + 0.9 * k); }, rawK);
     tr(0, 11.6, k => { if (kit) kit.presence(0.35 + 0.45 * k); }, rawK);
     sfx(11.6, 'boom', 0.9);

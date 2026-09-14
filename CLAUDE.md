@@ -2475,6 +2475,47 @@ What the baseline contains, by release:
   the pack. Two credit rows; sheet v46 exported (not published — the base64
   wall, docs/EDITING-TEXT.md), v44 stays the link. 7 harnesses green.
   docs/V10.0-E2C2-PLAN.md §7 is the build's memory.
+- **v10.4** THE MUSIC A PHONE CAN PLAY, THE TERMINAL, AND THE BLOCK THAT
+  LAUGHS — Chad's nine notes, opened with *"The eerie music must be way
+  louder, it is still too soft, why? ... This is the third time im asking for
+  it."* THE WHY IS A MEASUREMENT: the v9.7 bed put **80.7 % of its energy
+  under 120 Hz** — chosen then for masking, because that band sits under his
+  voice — and a phone speaker reproduces almost none of it, so the two gain
+  raises (0.26 → 0.62) raised what his device cannot play. The bed is NEW
+  (`e2dread`, same name, `masters/v10.4/`): picked by the phone-band measure
+  (18.7 % under 120 Hz, 65 % in 120–500, 16 % in 500–3k against the other
+  take's 43 % of sub-bass), a 59 s loop cut from the flattest 62 s window of
+  a 240 s take (RMS std 0.45 dB, joint −38 dBFS), levelled to **−6.0 dBFS
+  peak** where the beds sit at −10.5, and run at **0.85** in BOTH episode-2
+  chapters, keyed to nothing — film, play, scenes, cards. `cookmusic` and
+  `e2film` are retired (files and rows gone; the takes stay in masters). THE
+  FILM opens on `e2march` (a solemn snare-and-brass march, 40 s, 0.8 %
+  sub-bass, at 0.55) under the ferry, the jetty and the square with the
+  dread held to a fifth, and the dread comes up to full over the balcony's
+  fade-in at 37.6 (the ninth leak, `duck`, driven from inside the film). The
+  silhouette in the last shot 0.34 → 0.55. THE TERMINAL: the jetty stood on
+  nothing — now the sea on both sides (the ferry's own crest tile), piles,
+  bollards, life buoys, tube lights, benches, notice boards, the ferry
+  moored alongside, a shore fence, a guard post with its barrier, planters
+  and hedges, two Singapore flags, and a TERMINAL BUILDING the walkway runs
+  into with PULAU TEKONG FERRY TERMINAL across its parapet; the trees moved
+  out to flank it. All primitives. The evening timer 30 → 33 s. THE BUNK AT
+  THREE is darker: the night's three global lights halved, the balcony lamp
+  6 → 3.5, the night fill 1.8 → 0.9; the block's tube untouched, so the
+  light in the room is the light through the door. THE SCENES: A says "Oh
+  my god..." (`n1omg`, Aaron, terrified, 1.65 s) as the water stops and the
+  figure's run carries eerie footsteps (`ghostrun`, boots on wet tile — the
+  first prompt's takes were 91 % sub-bass thumps and were re-generated); B
+  and D get an eerie male laugh echoing in the block (`ghostlaugh`, 82 % in
+  500–3k, the wet tail) — under the running water in B, after the second
+  "it's nothing" in D. CHAPTER 2's film NARRATES: "Night after night, this
+  kept happening." (`n2pro1`) over the first night, and "I noticed it only
+  starts when the clock hits 3am... Surely, this is not just my
+  imagination..." (`n2pro2`) cued at 27.56 so that "3am" — which ends 3.64 s
+  into the take, measured at the pause before "Surely" — lands on the frame
+  the clock turns and the water starts (31.2). `src/main.js` gains rows and
+  three names in `TEEN_TAKES` and nothing else. Sheet v49 exported (v44
+  stays the link). docs/V10.4-THE-MUSIC-A-PHONE-CAN-PLAY.md is the memory.
 - **v10.3** THE DOOR, THE DREAD, AND THE BED THAT WAITS — Chad's twelve notes
   on episode 2 chapter 1, in one message. `src/main.js` changes three things,
   each base-game-safe by construction: a stat row with a delta of ZERO is
@@ -2869,7 +2910,7 @@ the run exactly as it always ended a last chapter.
 
 Next up: **episode 2's chapters 3–5, and rifle mode for chapter 5**
 (chapter 1, The Worst Bed, shipped at v7.1 — `src/chapters/e2/e2c1.js`;
-chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 1 last revised at v10.3; the rifle
+chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 1 last revised at v10.4; the rifle
 viewmodel's placement and material are measured in
 docs/E2-SOLDIER-MODELS.md §8, and Chad's ghost and bicycle models are
 still to come), and the still-outstanding job of replacing chapter 1's
