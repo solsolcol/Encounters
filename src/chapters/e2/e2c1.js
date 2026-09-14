@@ -1272,9 +1272,9 @@
         new THREE.MeshStandardMaterial({ color: 0xc9c8bd, roughness: 0.9 }));
       deck.position.set(PLINTH.x, (PLINTH.step + PLINTH.top) / 2, PLINTH.z);
       deck.receiveShadow = true; world.add(deck);
-      const POLES = [{ z:  1.35, h: 8.6, fw: 2.45, tex: unitFlag('#3f5da8') },
+      const POLES = [{ z:  1.35, h: 8.6, fw: 2.45, tex: null },
                      { z:  0.00, h: 9.4, fw: 2.70, tex: sgFlag },
-                     { z: -1.35, h: 8.6, fw: 2.45, tex: unitFlag('#84924e') }];
+                     { z: -1.35, h: 8.6, fw: 2.45, tex: null }];
       POLES.forEach((P, pi) => {
         const foot = PLINTH.top;
         const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.052, 0.082, P.h, 8), matPoleF);
@@ -1284,6 +1284,9 @@
         /* the flag: its hoist edge ON the pole, its width running out along
            -z, its face across the square. The geometry is shifted so local x
            runs 0..w from the hoist, which is what the wave is pinned to. */
+        /* v10.2 (Chad): only the Singapore flag flies — the two flanking
+           poles keep their finials and stand bare, the same in both squares */
+        if (pi !== 1) return;
         const fh = P.fw * 2 / 3;
         const geo = new THREE.PlaneGeometry(P.fw, fh, 14, 4);
         geo.translate(P.fw / 2, 0, 0);

@@ -4006,7 +4006,9 @@ const TEEN_TAKES = new Set([
   'n1ghost',
   // v10.0: EPISODE 2 CHAPTER 2, Nobody There: the film line, the four asks, two lines to himself, four card lines
   'n2pro', 'n2askA', 'n2askB', 'n2askC', 'n2askD', 'n2nobut', 'n2B1', 'n2C1',
-  'n2A', 'n2B', 'n2C', 'n2D']);
+  'n2A', 'n2B', 'n2C', 'n2D',
+  // v10.2: his thought after the third bunkmate
+  'n2known']);
 /* The rest of the cast. They share `voiceOut` and the duck, but not the
    boost — see voiceStage() above. */
 const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
@@ -4028,7 +4030,9 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
   // v10.0: the breakfast in chapter 2: the encik (six), the buddy, the bunkmate, and a THIRD recruit (Ronan) for siao eh
   'e2A', 'e2saw', 'e2cock', 'e2ok', 'e2D1', 'e2D2', 'b2hear', 'k2three', 'r2siao',
   // v10.1: the buddy line re-voiced as a Singaporean Chinese uncle (David) at Chad's ask; b2hear stays in the pack
-  'r2hear']);
+  'r2hear',
+  // v10.2: the encik shouts the table back to its breakfast
+  'e2hurry']);
 const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || CAST_TAKES.has(name);
 /* v6.9: his WHISPERS go round the bus. Chad wanted the three pick-up
    reactions "almost whispering to himself" and they were re-voiced as
@@ -5873,7 +5877,8 @@ const STING_SAMPLE = {
   e2A: ['e2A', 1], e2saw: ['e2saw', 1], e2cock: ['e2cock', 1], e2ok: ['e2ok', 1], e2D1: ['e2D1', 1], e2D2: ['e2D2', 1],
   b2hear: ['b2hear', 1], k2three: ['k2three', 1], r2siao: ['r2siao', 1],
   // v10.1: the cookhouse livened up — a chatter loop, the kitchen behind the servery, a morning bed, a platoon calling the step past the open side; and the re-voiced ask
-  cookchat: ['cookchat', 1], kitchen: ['kitchen', 1], cookmusic: ['cookmusic', 1], marchcall: ['marchcall', 1], r2hear: ['r2hear', 1]
+  cookchat: ['cookchat', 1], kitchen: ['kitchen', 1], cookmusic: ['cookmusic', 1], marchcall: ['marchcall', 1], r2hear: ['r2hear', 1],
+  n2known: ['n2known', 1], e2hurry: ['e2hurry', 1]   // v10.2: the beat after the third ask
 };
 /* Which kinds the synth below can actually fake. Everything else in
    STING_SAMPLE is sample-only: if its buffer is not decoded yet it stays

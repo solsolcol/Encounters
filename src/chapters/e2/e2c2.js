@@ -101,13 +101,14 @@
     /* v10.1: the cookhouse is LOUD. Four loops layered over the room tone —
        the men talking (`cookchat`), the kitchen behind the hatch
        (`kitchen`, keyed to how close the player stands to the servery), a
-       morning bed (`cookmusic`, the chapter's music) — and the episode's
+       morning bed (`cookmusic`, the chapter's music — v10.2: a neutral
+       mid-register pad, Chad: "Why is the music so calming?") — and the episode's
        dread under everything. `showerrun` and `clocktick` are the film's
        and scene C's, written up by the chapter (a loop at 0 is never decoded
        until it is asked for). The four hall loops are DUCKED to nothing in
        every cut to the bunk. */
     musicVol: 0,
-    ambience: { beds: [['cookamb', 0.26], ['cookchat', 0.30], ['kitchen', 0.24], ['cookmusic', 0.24],
+    ambience: { beds: [['cookamb', 0.26], ['cookchat', 0.30], ['kitchen', 0.24], ['cookmusic', 0.20],
                        ['e2dread', 0.16], ['showerrun', 0], ['clocktick', 0]] },
 
     words: {
@@ -144,7 +145,7 @@
   /* the measured length of every line said outside a cutscene. v10.1: the
      "it starts at 3am" line is `r2hear` (David, a Singaporean Chinese voice —
      Chad's ask), said by a fourth recruit; `b2hear` stays in the pack unused. */
-  const SECS = { r2hear: 5.25, k2three: 4.64, r2siao: 3.2 };
+  const SECS = { r2hear: 5.25, k2three: 4.64, r2siao: 3.2, n2known: 3.0, e2hurry: 2.93 };
 
   const hash = (i, s) => { const x = Math.sin(i * 127.1 + s * 311.7) * 43758.5453; return x - Math.floor(x); };
 
@@ -673,10 +674,13 @@
       const PLINTH = { x: 0, z: 38.5, step: 0.19, top: 0.34 };
       const kerb = new THREE.Mesh(new THREE.BoxGeometry(6.2, PLINTH.step, 3.5), matIsland); kerb.position.set(PLINTH.x, PLINTH.step / 2, PLINTH.z); world.add(kerb);
       const deck = new THREE.Mesh(new THREE.BoxGeometry(5.0, PLINTH.top - PLINTH.step, 2.5), nfm({ color: 0xc9c8bd, roughness: 0.9 })); deck.position.set(PLINTH.x, (PLINTH.step + PLINTH.top) / 2, PLINTH.z); world.add(deck);
-      const POLES = [{ x: -1.35, h: 8.6, fw: 2.45, tex: unitFlag('#3f5da8') }, { x: 0, h: 9.4, fw: 2.70, tex: sgFlag }, { x: 1.35, h: 8.6, fw: 2.45, tex: unitFlag('#84924e') }];
+      const POLES = [{ x: -1.35, h: 8.6, fw: 2.45, tex: null }, { x: 0, h: 9.4, fw: 2.70, tex: sgFlag }, { x: 1.35, h: 8.6, fw: 2.45, tex: null }];
       POLES.forEach((P, pi) => {
         const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.052, 0.082, P.h, 8), matPoleF); pole.position.set(P.x, PLINTH.top + P.h / 2, PLINTH.z); world.add(pole);
         const fin = new THREE.Mesh(new THREE.SphereGeometry(0.10, 8, 6), matFinial); fin.position.set(P.x, PLINTH.top + P.h + 0.09, PLINTH.z); world.add(fin);
+        /* v10.2 (Chad): only the Singapore flag flies — the two flanking
+           poles keep their finials and stand bare, the same in both squares */
+        if (pi !== 1) return;
         const fh = P.fw * 2 / 3;
         const geo = new THREE.PlaneGeometry(P.fw, fh, 14, 4); geo.translate(P.fw / 2, 0, 0);
         const fm = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ map: P.tex, roughness: 0.85, side: THREE.DoubleSide, emissive: new THREE.Color(0xffffff), emissiveMap: P.tex, emissiveIntensity: 0.25 }));
@@ -1086,7 +1090,7 @@
         if (b[0] === 'clocktick') b[1] = tickVol;
         if (b[0] === 'cookamb') b[1] = 0.26 * hallK;
         if (b[0] === 'cookchat') b[1] = 0.30 * hallK;
-        if (b[0] === 'cookmusic') b[1] = 0.24 * hallK;
+        if (b[0] === 'cookmusic') b[1] = 0.20 * hallK;     // v10.2: the new bed sits in his band (74 % in 120-500 Hz), so a notch lower
         if (b[0] === 'kitchen') b[1] = (0.10 + 0.22 * kitchenK) * hallK;
       }
     }
@@ -1174,7 +1178,26 @@
       if (worldSfx(q.name, q.vol)) { speak.pending = null; q.start(); }
       else speak.until = dayClock.t + 0.2;
     }
-    if (warmSounds) warmSounds(['r2hear', 'k2three', 'r2siao', 'marchcall']);
+    if (warmSounds) warmSounds(['r2hear', 'k2three', 'r2siao', 'marchcall', 'n2known', 'e2hurry',
+                                'e2A', 'e2saw', 'e2cock', 'e2ok', 'e2D1', 'e2D2']);   // v10.2: the encik's six as well, belt and braces
+    /* v10.2: A QUEUE OF LINES, in order, each waiting for the one before it
+       (the v9.5 count-off's shape): `sayLine` refuses a line while another
+       speaks, and on a slow box several `after` slots flush in one tick, so
+       two lines laid out by hand would lose the second. An entry is a line
+       (with what to do on the frame it starts) or a function to run once
+       the queue reaches it. */
+    const lineQ = [];
+    function queueLine(name, onStart) { lineQ.push({ name, onStart }); }
+    function queueFn(fn) { lineQ.push({ fn }); }
+    function queueGap(secs) { lineQ.push({ gap: secs }); }
+    function runQueue() {
+      if (!lineQ.length || speak.pending || dayClock.t < speak.until) return;
+      const q = lineQ[0];
+      if (q.fn) { lineQ.shift(); q.fn(); return; }
+      if (q.gap) { lineQ.shift(); speak.until = dayClock.t + q.gap; return; }
+      lineQ.shift();
+      sayLine(q.name, 1, q.onStart);
+    }
 
     /* v10.1: A PLATOON GOES PAST (Chad: "Outside environment should sometimes
        have soldiers marching sound with 'left, left, left right left...'").
@@ -1216,8 +1239,27 @@
       asked.add(id);
       setPhase('ask');
       objAsk();                                  // 1/3, 2/3, 3/3 — each a beat
-      if (asked.size >= 3) after(1.8, () => { if (phase === 'ask') { setPhase('encik'); objEncik(); } });
+      if (asked.size >= 3) afterThree();
       return true;
+    }
+    /* v10.2 (Chad): "The player should also have an internal voiceline that
+       says 'I think I'm not the only one who knows about this...' right after
+       talking to 3 bunkmates ... first before the encik shouting voiceline
+       plays" — then the encik: "Hurry up and eat, fall in soon!" The third
+       man's own line finishes first (the queue waits on the same window his
+       line booked), his thought lands, the encik shouts on his raised-hand
+       take, and only then does the objective turn to him. A resume into
+       three-asked lands on `encik` directly: the beat is spent. */
+    function afterThree() {
+      queueGap(0.6);
+      queueLine('n2known');
+      queueGap(0.5);
+      queueLine('e2hurry', () => {
+        encik.play(ENC_TALK[1], 1, 0.3);
+        after((SECS.e2hurry || 2.5) + 0.2, () => { if (encik.cur === ENC_TALK[1]) encik.play('Idle_9', 1, 0.4); });
+      });
+      queueGap(0.4);
+      queueFn(() => { if (phase === 'ask') { setPhase('encik'); objEncik(); } });
     }
     function applyPhase(p) {
       asked.clear();
@@ -1275,7 +1317,7 @@
       kitchenK = THREE.MathUtils.clamp(1 - (yaw.position.x - COUNTER.x - 0.6) / 9, 0, 1);
       outK = THREE.MathUtils.clamp((yaw.position.z + 1) / 7.5, 0, 1);
       mixBeds();
-      runTodo(); runSpeak(); marchTick();
+      runTodo(); runSpeak(); runQueue(); marchTick();
     }
     function updatePile(t) {
       if (getState() === 'cine') { pileRing.visible = false; return; }
@@ -1306,7 +1348,7 @@
     function reset() {
       setNight(false); doorPivot.rotation.y = DOOR_AJAR;
       allSitDown(); putEncik(); encik.group.visible = true;
-      dropTodo(); speakReset();
+      dropTodo(); speakReset(); lineQ.length = 0;
       asked.clear(); booted = false; dayClock.t = 0; lastWall = 0;
       marchAt = 0; marchN = 0; marchSeed = (marchSeed + 1) % 97; outK = 0; kitchenK = 0.5; mixBeds();
       if (kit) { kit.daylight(null, 0); kit.presence(0); kit.setPhase('ask:'); }
@@ -1374,7 +1416,7 @@
       get phase() { return phase; },
       setPhase, applyPhase,
       askInfo: () => ({ phase, asked: [...asked], obj: kit && kit.getPhase ? kit.getPhase() : null }),
-      speakInfo: () => ({ t: +dayClock.t.toFixed(2), until: +speak.until.toFixed(2), pending: speak.pending ? speak.pending.name : null }),
+      speakInfo: () => ({ t: +dayClock.t.toFixed(2), until: +speak.until.toFixed(2), pending: speak.pending ? speak.pending.name : null, queued: lineQ.length }),
       ambient: () => ({ hallK, kitchenK, outK, marchAt: +marchAt.toFixed(1), marchN, beds: DATA.ambience.beds.map(b => [b[0], +b[1].toFixed(3)]) }),
       sleepInfo: () => sleepers.map(s => { const bb = new THREE.Box3().setFromObject(s.obj); return { bed: [s.bed.x, s.bed.z], rig: !!s.rig, deck: +s.bed.deckTop.toFixed(3), lo: +bb.min.y.toFixed(3), x: [+bb.min.x.toFixed(2), +bb.max.x.toFixed(2)], z: [+(bb.min.z - PK.z).toFixed(2), +(bb.max.z - PK.z).toFixed(2)] }; }),
       updateNotes, updatePile, updateFire, updateSlow,
@@ -1616,8 +1658,15 @@
      rides one of his two talk takes. The hands go away (the v4.91 rule) and
      come back on the last step. His ask is the first cue of every scene. */
   const P = (s) => ({ x: s.yawPos.x, y: s.yawPos.y, z: s.yawPos.z });
-  const encSay = (stage, sfx, step, after, at, name, secs, take) => {
-    sfx(at, name);
+  /* v10.2: the encik's talk take rides his line. The CUE ITSELF is written
+     as a literal cue with its name quoted in every scene, never passed through this
+     helper — the engine finds a scene's cues by reading its source
+     (`CUE_RE`), and v10.0's helper hid the six encik lines from that scan,
+     so on the FIRST decision of a fresh load none of them had decoded and he
+     mouthed his answer in silence (Chad: "the encik voiceline does not play
+     when i choose the option for the first time, it only plays when i
+     replay the chapter"). */
+  const encTalk = (stage, step, at, secs, take) => {
     step(at, () => { stage.encik.play(take, 1, 0.3); });
     step(at + secs + 0.2, () => { if (stage.encik.cur === take) stage.encik.play('Idle_9', 1, 0.4); });
   };
@@ -1635,7 +1684,7 @@
     yawTo(0, 1.0, s.yawRot, Y_E, smoothK);
     pitchTo(0, 1.0, s.pitchX, 0.04, smoothK);
     sfx(0.5, 'n2askA');                          // 3.52 s → 4.0
-    encSay(stage, sfx, step, null, 4.6, 'e2A', 9.92, stage.ENC_TALK[0]);   // → 14.5
+    sfx(4.6, 'e2A'); encTalk(stage, step, 4.6, 9.92, stage.ENC_TALK[0]);   // → 14.5
     /* 14.9 he goes: a turn, then the walk take along the wall, out of the corner */
     step(14.9, () => { stage.encik.play('Walking', 1, 0.3); });
     tr(14.9, 18.6, k => {
@@ -1665,9 +1714,9 @@
     yawTo(0, 1.0, s.yawRot, Y_E, smoothK);
     pitchTo(0, 1.0, s.pitchX, 0.04, smoothK);
     sfx(0.5, 'n2askB');                          // 2.32 s → 2.8
-    encSay(stage, sfx, step, null, 3.4, 'e2saw', 0.88, stage.ENC_TALK[1]);     // → 4.3
+    sfx(3.4, 'e2saw'); encTalk(stage, step, 3.4, 0.88, stage.ENC_TALK[1]);     // → 4.3
     sfx(4.8, 'n2nobut');                         // 1.68 s → 6.5
-    encSay(stage, sfx, step, null, 6.6, 'e2cock', 3.04, stage.ENC_TALK[0]);    // → 9.6
+    sfx(6.6, 'e2cock'); encTalk(stage, step, 6.6, 3.04, stage.ENC_TALK[0]);    // → 9.6
     /* the room hears it: the talk dies, the kitchen goes on, six heads come up */
     tr(7.4, 9.2, k => { duck('cookchat', 1 - 0.95 * k); duck('cookamb', 1 - 0.7 * k); }, rawK);
     step(8.2, () => { for (let i = 0; i < stage.SEATS.length; i++) stage.sitUp(i, 0, 0.35 + (i % 3) * 0.1); });
@@ -1697,7 +1746,7 @@
     /* the look: a slow push in on him, and nothing from him */
     camTo(3.6, 8.0, P0, NEAR, smoothK);
     pitchTo(3.6, 8.0, 0.04, 0.10, smoothK);
-    encSay(stage, sfx, step, null, 8.2, 'e2ok', 0.64, stage.ENC_TALK[1]);      // → 8.9
+    sfx(8.2, 'e2ok'); encTalk(stage, step, 8.2, 0.64, stage.ENC_TALK[1]);      // → 8.9
     fade(10.2, 11.2, 0, 1);
     /* 11.2 THREE IN THE MORNING, from his pillow */
     step(11.2, () => {
@@ -1731,8 +1780,8 @@
     yawTo(0, 1.0, s.yawRot, Y_E, smoothK);
     pitchTo(0, 1.0, s.pitchX, 0.04, smoothK);
     sfx(0.5, 'n2askD');                          // 1.92 s → 2.4
-    encSay(stage, sfx, step, null, 3.0, 'e2D1', 3.92, stage.ENC_TALK[0]);     // → 6.9
-    encSay(stage, sfx, step, null, 7.6, 'e2D2', 6.24, stage.ENC_TALK[1]);     // → 13.8
+    sfx(3.0, 'e2D1'); encTalk(stage, step, 3.0, 3.92, stage.ENC_TALK[0]);     // → 6.9
+    sfx(7.6, 'e2D2'); encTalk(stage, step, 7.6, 6.24, stage.ENC_TALK[1]);     // → 13.8
     fade(14.4, 15.8, 0, 1);
     step(16.0, () => { handsRoot.visible = true; });
     c.endFade = 1;

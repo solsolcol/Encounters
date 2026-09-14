@@ -3529,3 +3529,16 @@ A scan has no bones to measure, so its HEIGHT is the box and the box is
 scaled to the height the cast is built at; what the box cannot say is which
 way it faces (measured from the head vertices' mean, +z, then confirmed by
 render — the face is toward the hall).
+
+## A scene's cues are read off its SOURCE — never pass a cue name through a helper (v10.2)
+
+`startDecision()` warms every sample a chapter's four scenes will fire by
+scanning the scene functions' source with `CUE_RE` (`sfx(<t>, '<name>')`),
+and `chaptertest` checks the same scan. A helper that takes the name as an
+argument — `encSay(stage, sfx, step, null, 4.6, 'e2A', …)` — hides the cue from
+both: the harness saw six encik lines nowhere and said nothing, and on a
+fresh load the takes had not decoded at the first decision, so the encik
+mouthed every answer in silence until the chapter was replayed. Write the cue
+itself as a literal in the scene and let a helper drive only the animation.
+The same scan also reads COMMENTS: a quoted example name inside one is a cue
+to it (`chaptertest` flagged `'name'` from the fix's own comment).

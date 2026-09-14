@@ -2475,6 +2475,33 @@ What the baseline contains, by release:
   the pack. Two credit rows; sheet v46 exported (not published — the base64
   wall, docs/EDITING-TEXT.md), v44 stays the link. 7 harnesses green.
   docs/V10.0-E2C2-PLAN.md §7 is the build's memory.
+- **v10.2** THE ENCIK WHO WOULD NOT SPEAK, THE BEAT AFTER THE THIRD ASK, ONE
+  FLAG — Chad's four notes on v10.1. **THE ENCIK'S LINES WERE NEVER WARMED ON
+  A FRESH LOAD**: *"the encik voiceline does not play when i choose the option
+  for the first time, it only plays when i replay the chapter."* The engine
+  finds a scene's cues by READING ITS SOURCE (`CUE_RE`, a literal
+  `sfx(t, 'name')`) and warms them at `startDecision()`; v10.0's `encSay`
+  helper passed the name as a VARIABLE, so all six encik takes were invisible
+  to the scan, undecoded at the first decision, and silent — a replay had the
+  pack decoded by then. Every encik cue is a literal now, `encTalk` drives the
+  take only, and build() warms the six as well. **THE BEAT**: after the third
+  bunkmate answers, his own thought — "I think I'm not the only one who knows
+  about this..." (Aaron, `n2known`, 3.0 s) — then the encik across the hall on
+  his raised-hand take: "Hurry up and eat, fall in soon!" (Hilmi under the
+  bark rule, `e2hurry`, 2.93 s), then the objective turns to him. Laid out on
+  a QUEUE gated on the chapter's own speech window (the v9.5 count-off's
+  shape), never on hand-typed times; measured on the hosted build: r2siao
+  117.4–120.6, n2known 125.9–128.9, e2hurry 133.2–136.1, phase `encik` after.
+  A resume into three-asked lands on `encik` — the beat is spent. **THE
+  MUSIC**: *"Why is the music so calming? ... more neutral ... eerie but not
+  too eerie."* Four candidates over two prompts, measured on what a PHONE
+  SPEAKER can carry: the first prompt's two were sub-bass drones (95 % and 81 %
+  under 120 Hz, 2–3 % above 300 — inaudible on his device); the pick is a
+  mid-register pad (2 % under 120, 80 % above 300 Hz), hand-looped to 42 s and
+  run at 0.20 because it sits in his voice's band. **ONE FLAG**: only the
+  Singapore flag flies in BOTH squares; the flanking poles keep their finials
+  and stand bare (chapter 1 too, at his ask). Sheet v47 exported (v44 the
+  link). 7 harnesses green.
 - **v7.9** THE FERRY FROM INSIDE, TEKONG, THE PARADE SQUARE, THE BUNK —
   Chad, with five reference photographs: *"I dont want to see the outside
   of the ferry and the sea, it should show first person pov within inside
@@ -2803,7 +2830,7 @@ the run exactly as it always ended a last chapter.
 
 Next up: **episode 2's chapters 3–5, and rifle mode for chapter 5**
 (chapter 1, The Worst Bed, shipped at v7.1 — `src/chapters/e2/e2c1.js`;
-chapter 2, Nobody There, at v10.0 and built out at v10.1 — `src/chapters/e2/e2c2.js`; the rifle
+chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; the rifle
 viewmodel's placement and material are measured in
 docs/E2-SOLDIER-MODELS.md §8, and Chad's ghost and bicycle models are
 still to come), and the still-outstanding job of replacing chapter 1's
