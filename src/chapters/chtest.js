@@ -309,6 +309,7 @@
                       pairs: [{ id: 'a', label: 'mug' }, { id: 'b', label: 'boots' },
                               { id: 'c', label: 'cord' }],
                       brief: 'Drag each thing on the left onto its place on the right.',
+                      demo: 'drag',      // v10.3: the briefing's looping illustration
                       secs: 30, fast: 6, slow: 20, wrongCost: 3,
                       penalty: { stat: 'awareness' },
                       award: { stat: 'awareness', lo: -5, hi: 9 } });

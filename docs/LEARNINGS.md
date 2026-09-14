@@ -3542,3 +3542,25 @@ mouthed every answer in silence until the chapter was replayed. Write the cue
 itself as a literal in the scene and let a helper drive only the animation.
 The same scan also reads COMMENTS: a quoted example name inside one is a cue
 to it (`chaptertest` flagged `'name'` from the fix's own comment).
+
+## v10.3 · a chapter tween runs on the clamped dt, and a probe must not wait for it on a wall clock
+
+The encik's turn onto the player (`faceRigAt`) is a chapter `tween`, and the
+chapter's tweens advance by the engine's `dt`, which is clamped to 0.05 s. On
+a one-frame-a-second box a 0.6 s tween takes twelve seconds, so a probe that
+waited 1.2 s of wall time read `0.155` against a target of `−0.427` and looked
+like a bug. It was the box. The probe now calls the turn with `secs` 0 to
+check the arithmetic (−0.427 = −0.427) and photographs the result; the same
+family as v9.3's march-rate mismatch, seen from the other side. The rule for
+probes: **a value driven by the frame is checked by counting frames or by
+asking for it instantly, never by waiting a wall-clock second.**
+
+Two smaller ones from the same release. `fixturetest`'s
+`evHeartbeatRewardsTiming` went red once with a probe running beside it and
+green alone — it compares two graded runs and a starved box grades a
+well-timed press as late (v8.7's law: a fixed wait is a coin toss, and so is a
+timed press under load). And the heartbeat's burst was drawn at the PANEL's
+centre while the ring it answers sits above the panel's centre under the
+label: a thing that must land on another thing is positioned from that
+thing's own box (`offsetLeft/offsetTop` inside the same offsetParent), never
+from the container both happen to share.

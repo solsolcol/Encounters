@@ -31,7 +31,7 @@
     title: 'The Worst Bed',
     cardLabel: 'Chapter 1',
     cardTitle: 'The Worst Bed<br>Bed One, Next To The Toilet',
-    brief: 'Day one of Basic Military Training. Twenty recruits to a bunk, and yours is the bottom bed nearest the toilet door. Nobody wanted it. Get through the day; then get through the night.',
+    brief: 'Day one of Basic Military Training. Nine recruits to a bunk, and yours is the bottom bed nearest the toilet door. Nobody wanted it. Get through the day; then get through the night.',
     prompt: 'Three in the morning. The shower in the block next to your bed has turned itself on. What do you do?',
     choices: [
       { k: 'A', text: 'Get up and open the toilet door.',
@@ -2490,9 +2490,15 @@
        turns itself on at three), and visible from the door. */
     const WC_GHOST = { x: WATER_AT.x, z: 6.05 };
     const WC_DOOR = { x: DOOR_WC.x, z: R.z + 0.2 };        // where the player comes in
+    /* v10.3, Chad: "the soldier should also face the shower tap, so his face
+       is facing away from the player. He's standing there at the shower tap
+       in an eerie manner." The tap is straight down +z from him (`WATER_AT`
+       shares his x), and a Mixamo rig at ry 0 faces +z — so his back is to
+       the door and the lane. `WC_FACE_TAP` is the number the film borrows. */
+    const WC_FACE_TAP = Math.atan2(WATER_AT.x - WC_GHOST.x, WATER_AT.z - WC_GHOST.z);
     const ghostWC = mkRig('fbosling', {
       x: WC_GHOST.x, z: WC_GHOST.z,
-      ry: Math.atan2(-(WC_DOOR.x - WC_GHOST.x), -(WC_DOOR.z - WC_GHOST.z)) + Math.PI,
+      ry: WC_FACE_TAP,
       height: 1.72, idle: 'Idle_3',
       /* and PALER and faintly self-lit, because "make it obvious" is a
          lighting problem here: the block's one tube runs at 1.6 and the
@@ -2526,12 +2532,16 @@
       if (wcStage === 1 && inBlock) {
         wcStage = 2;
         seen.add('wcghost');
-        /* the line waits its turn like every other line in this chapter, and
-           the fade is hung off the day clock so it cannot run while a menu is
-           open */
+        /* v10.3, Chad: "the ghost soldier should immediately start fading
+           away, making the player feel as if they saw it wrongly, but it was
+           clearly there." He goes on the frame he is seen — 1.4 s from full
+           to nothing, long enough to be certain of, too short to look at
+           twice — and the line follows, waiting its turn like every other
+           line in this chapter. (v9.6 held him through the whole line and
+           faded after it.) */
+        ghostWCShow(false, 1.4);
         after(0.7, () => { if (wcStage === 2) sayLine('n1ghost'); });
-        after(0.7 + (SECS.n1ghost || 3.2) + 0.5,
-              () => { if (wcStage === 2) { wcStage = 3; ghostWCShow(false, 1.8); } });
+        after(1.5, () => { if (wcStage === 2) wcStage = 3; });
       }
     }
 
@@ -3271,7 +3281,7 @@
         ['fanloop', 0.14 - 0.04 * nightK], ['clocktick', 0.06],
         ['e2bed', 0.30 * nightK], ['e2day', 0.26 * (1 - nightK)],
         ['campamb', (0.15 + 0.26 * outK) * (1 - 0.55 * nightK)],
-        ['e2dread', 0.26],                    // v9.7: flat, the whole chapter
+        ['e2dread', 0.62],                    // v9.7: flat, the whole chapter (v10.3: 0.26 -> 0.62 at Chad's ask — "much louder throughout")
         ['showerrun', showerVol]];
     }
     mixBeds();
@@ -3858,7 +3868,7 @@
            is the clock, and running it out pays the award's floor. A wrong
            drop costs 4 awareness where it happens. */
         kit.event({ kind: 'match', label: DATA.words.evBed, pairs: BED_ITEMS,
-                    brief: DATA.words.bedBrief,
+                    brief: DATA.words.bedBrief, demo: 'drag',    // v10.3: the drag shown under the title while briefing
                     secs: 40, fast: 11, slow: 30, wrongCost: 4,
                     penalty: { stat: 'awareness' },
                     award: { stat: 'awareness', lo: -6, hi: 12 } })
@@ -3898,9 +3908,24 @@
        would go silent with no error (the v8.0 law). The objective goes back to
        standing by the bed, which is true: the test is passed and there is
        nothing to do but be shouted at. */
+    /* v10.3, Chad: "when the encik say 'why you have extra toggle rope' ...
+       His body and face should face the player directly." He is at the door
+       mark, turned into the room at 0.16 rad; the player is at bed one, 6.8 m
+       off to his right. The turn is the shortest arc onto the player's
+       ACTUAL position (not the bed's — a player who wandered is still the one
+       being shouted at), over 0.6 s, and it lands before the line starts. */
+    function faceRigAt(rig, tx, tz, secs) {
+      const g = rig.group;
+      const ty = Math.atan2(tx - g.position.x, tz - g.position.z);
+      let d = ty - g.rotation.y; d = Math.atan2(Math.sin(d), Math.cos(d));
+      const y0 = g.rotation.y;
+      if (!secs) { g.rotation.y = y0 + d; return; }
+      tween(() => 0, v => { g.rotation.y = y0 + d * v; }, 1, secs);
+    }
     function ropeBeat() {
       if (kit) kit.objective(DATA.words.objStood);
       let t = (SECS.n1bedok || 2.5) + 0.7;
+      after(t - 0.7, () => { if (alive) faceRigAt(encik, yaw.position.x, yaw.position.z, 0.6); });
       after(t, () => { if (alive) encSay('e1rope'); });
       t += (SECS.e1rope || 6.5) + 0.7;
       after(t, () => { if (alive) sayLine('n1rope'); });
@@ -4083,9 +4108,18 @@
        thing to do for its own sake. Chad: "remove the existing 'tap on bed'
        interaction as it is not needed." Entering the circle turns the lens to
        the room and stands the test up itself — see `reachedBed`. */
+    /* v10.3, Chad: "do not allow the player to immediately be able to tap E
+       on bed, as that would cut away the shower scene ... once that is all
+       complete, then the options menu pop up on its own. If the player
+       closes the options menu, then they can tap E to open the menu again.
+       The only purpose here of tap E, is only to allow user to recall the
+       options menu." So the bed answers at three in the morning ONLY in
+       `decide` — the phase the heartbeat's own completion sets, a beat before
+       it opens the decision itself — and never in `night`, which is the
+       waking, the water and the fear. A press before then is not offered. */
     const BED_NOTHING = 0, BED_DECIDE = 1, BED_TURNIN = 3;
     function bedWants() {
-      if (abed()) return BED_DECIDE;
+      if (phase === 'decide') return BED_DECIDE;
       if (phase === 'free' && seen.size >= 2) return BED_TURNIN;
       return BED_NOTHING;      // 'standby' and 'standbybed': the zone and the event own it
     }
@@ -4582,6 +4616,7 @@
          fades him into the wall and puts him back where build() left him — so
          the fade and his rest spot are the stage's, not the scene's. */
       ghostFig, ghostAlpha, GHOST_FIG_HOME,
+      ghostWC, WC_GHOST, WC_FACE_TAP,        // v10.3: the film's last shot borrows the man in the shower
       sayLine, seen, after, dayClock,
       bunkCrowds, bunkReady: () => bunkCrowds.every(c => c.ready),   // v8.1, for the probes
       /* v9.2, and it exists because a probe CANNOT see this any other way:
@@ -4600,9 +4635,11 @@
                                x: +ghostLine.group.position.x.toFixed(2),
                                z: +ghostLine.group.position.z.toFixed(2) }),
       castAt: () => ({ sgt: [+sergeant.group.position.x.toFixed(2), +sergeant.group.position.z.toFixed(2)],
-                       enc: [+encik.group.position.x.toFixed(2), +encik.group.position.z.toFixed(2)] }),
+                       enc: [+encik.group.position.x.toFixed(2), +encik.group.position.z.toFixed(2)],
+                       encRy: +encik.group.rotation.y.toFixed(3) }),          // v10.3: which way he faces, checkable
+      faceEncikAt: (x, z, secs) => faceRigAt(encik, x, z, secs),           // v10.3: the rope beat's turn, for the probes
       ghostWCState: () => ({ a: +(ghostWC.ghostA || 0).toFixed(3), on: ghostWC.group.visible,
-                             stage: wcStage, ready: ghostWC.ready,
+                             stage: wcStage, ready: ghostWC.ready, ry: +ghostWC.group.rotation.y.toFixed(3),
                              x: +ghostWC.group.position.x.toFixed(2),
                              z: +ghostWC.group.position.z.toFixed(2) }),
       sleepTake, sleepTakeReset, NB_WAKE,
@@ -5059,7 +5096,7 @@
        (v7.7: up from 14.0 — the first glide is two seconds longer and
        nothing after 17.2 moved.) */
     fade(37.6, 40, 1, 0);
-    sfx(38.6, 'n1pro2');                      // "Twenty of us to a bunk…" — 6.69 s → 45.3 (v7.9: the Hawk Coy half of it is the parade square's line now)
+    sfx(38.6, 'n1pro2');                      // "Nine of us to a bunk…" — 6.84 s → 45.4 (v7.9: the Hawk Coy half of it is the parade square's line now; v10.3: nine, not twenty)
     tr(37.6, 40, k => { duck('bunkday', 0.55 * k); duck('fanloop', 0.4 * k); }, rawK);
     camTo(37.6, 42.8, BAL, { x: BAL.x - 0.4, y: EYE, z: BAL.z }, smoothK);
     camTo(42.8, 46, { x: BAL.x - 0.4, y: EYE, z: BAL.z }, OPENING, smoothK);
@@ -5098,13 +5135,35 @@
     step(69.8, () => { if (kit) kit.daylight(null, 5); stage.clockGlow.intensity = stage.CLOCK_GLOW; stage.balcLight.intensity = 5; });
     tr(69.8, 73.6, k => { stage.setWindows(k); }, smoothK);
     tr(69.8, 72.6, k => { duck('bunkday', 0.8 * (1 - k)); duck('fanloop', 0.4 + 0.2 * k); }, rawK);
-    sfx(71.6, 'n1pro4');                      // 5.15 s → 51.2
-    camTo(71.6, 77.6, BYBED, PILLOW, smoothK);
-    yawTo(71.6, 77.6, Y_DOOR, Y_UP, smoothK);
-    pitchTo(71.6, 77.6, 0.34, 0.68, smoothK);     // to the bunk's edge, the mesh under it, the ceiling and the fan (v7.2: 0.80 looked into a slab)
-    sfx(76.4, 'bunkcreak', 0.6);
+    sfx(71.6, 'n1pro4');                      // "I told myself it didn't matter where you slept... but I was wrong..." — 4.68 s → 76.3 (v10.3)
 
-    /* 74.5–78.5 down, and out. Whatever the film did to the day is handed back
+    /* v10.3 · THE LAST SHOT IS THE DOOR. Chad: "instead of having the camera
+       end at the bed, move the camera to show the toilet, but do not go into
+       the toilet, just look at it from outside from the bed, like peeking
+       into the toilet, and there is the ghost soldier's silhouette just
+       barely visible from that small opening."
+       The lens comes down onto his pillow (where play's lying eye is) and
+       turns to the ajar door. The leaf is hinged on the bed's side and
+       swings INTO the block (v9.1), so from the pillow the opening is the
+       wedge between the leaf's free edge and the far jamb; the man in the
+       shower is put in that wedge for the shot — a film-only spot, his back
+       to the door as in play — and fades up to a third under the line's
+       tail. The film's last step puts him back where play keeps him. */
+    const PEEK = { x: stage.hisBed.x + 0.35, y: stage.BED.low + 0.34, z: stage.hisBed.z + 0.15 };   // his pillow, the head turned to the door's side so the bunk's post clears the opening (photographed)
+    const WC_FILM = { x: -0.85, z: 6.15 };
+    const Y_PEEK = faceFrom(PEEK.x, PEEK.z, WC_FILM.x, WC_FILM.z);
+    step(71.6, () => {
+      const g = stage.ghostWC.group;
+      g.position.set(WC_FILM.x, 0, WC_FILM.z); g.rotation.y = stage.WC_FACE_TAP;
+      stage.ghostAlpha(stage.ghostWC, 0);
+    });
+    camTo(71.6, 77.6, BYBED, PEEK, smoothK);
+    yawTo(71.6, 77.6, Y_DOOR, Y_PEEK, smoothK);
+    pitchTo(71.6, 77.6, 0.34, 0.02, smoothK);
+    sfx(76.4, 'bunkcreak', 0.6);
+    tr(75.6, 79.0, k => { stage.ghostAlpha(stage.ghostWC, 0.34 * k); }, smoothK);
+
+    /* 79.6–83.6 down, and out. Whatever the film did to the day is handed back
        on its last frame (a skip runs every step, so this one too). */
     fade(79.6, 83.6, 0, 1);
     tr(79.6, 83.6, k => { duck('fanloop', 0.6 * (1 - k)); duck('clocktick', 0.5 * (1 - k)); }, rawK);
@@ -5114,6 +5173,9 @@
       stage.clockGlow.intensity = stage.CLOCK_GLOW; stage.balcLight.intensity = 5;
       stage.setLights(1); stage.setWindows(1);
       duck('bunkday', 1); duck('fanloop', 1); duck('clocktick', 1);
+      const g = stage.ghostWC.group;
+      stage.ghostAlpha(stage.ghostWC, 0);
+      g.position.set(stage.WC_GHOST.x, 0, stage.WC_GHOST.z); g.rotation.y = stage.WC_FACE_TAP;
     });
     c.endFade = 1;
     c.keepFade = true;
@@ -5267,25 +5329,27 @@
     c.endFade = 1;
   }
 
-  /* D · IT'S A GHOST — BLANKET OVER YOUR HEAD (19.8 s, critical). The
-     blanket up; weave-dark; "It's nothing" twice, the second time quieter;
-     the shower does NOT stop — it comes up, closer; the presence climbs;
-     the boom; black. The −15 is the choice's own delta. */
+  /* D · IT'S A GHOST — BLANKET OVER YOUR HEAD (14.0 s, critical). The
+     blanket up and the whole screen to BLACK with it; "It's nothing" twice,
+     the second time quieter; the shower does NOT stop — it comes up, closer;
+     the presence climbs; the boom; the card. The −15 is the choice's own
+     delta.
+     v10.3, Chad: "instead of drawing that green overlay, just fade the whole
+     screen black while his 'its nothing' voiceline plays. Then go to the
+     outcomes." The weave (`stage.blanketCam`, v7.1) is no longer raised;
+     the dark is the engine's own fade, and it holds to the card. */
   function scBlanket(c, s, api) {
     const { tr, step, sfx, fade, pitchTo, rawK, smoothK, duck, stage, handsRoot, kit } = api;
-    const bl = stage.blanketCam;
     step(0, () => { handsRoot.visible = false; });
     sfx(1.0, 'blanket', 0.9);
-    tr(1.0, 2.2, k => { bl.visible = true; bl.material.opacity = 0.985 * k; }, smoothK);
+    fade(1.0, 2.4, 0, 1);
     pitchTo(1.0, 2.2, s.pitchX, 0.3, smoothK);
     sfx(2.8, 'n1D1', 1.0);                      // 2.43 s → 5.2
-    sfx(8.0, 'n1D1', 0.55);
-    tr(2.0, 14.0, k => { duck('showerrun', 1 + 0.9 * k); }, rawK);
-    tr(0, 15.0, k => { if (kit) kit.presence(0.35 + 0.45 * k); }, rawK);
-    tr(4.0, 15.0, k => { bl.position.z = -0.11 + 0.012 * Math.sin(k * 31); }, rawK);   // his breathing against the cloth
-    sfx(15.0, 'boom', 0.9);
-    fade(15.0, 16.6, 0, 1);
-    step(19.6, () => { handsRoot.visible = true; bl.visible = false; bl.material.opacity = 0; bl.position.z = -0.11; if (kit) kit.presence(0.35); });
+    sfx(7.2, 'n1D1', 0.55);                     // → 9.6
+    tr(2.0, 11.0, k => { duck('showerrun', 1 + 0.9 * k); }, rawK);
+    tr(0, 11.6, k => { if (kit) kit.presence(0.35 + 0.45 * k); }, rawK);
+    sfx(11.6, 'boom', 0.9);
+    step(14.0, () => { handsRoot.visible = true; if (kit) kit.presence(0.35); });
     c.endFade = 1;
   }
 

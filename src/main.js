@@ -1581,6 +1581,14 @@ function evScorePress(err) {
    on the frame it lands, in a way the eye catches without reading a word. */
 function evBurst(kind) {
   const b = $('evBurst'); if (!b) return;
+  /* v10.3, Chad: "the circular effect is not properly aligned to the actual
+     inner circle." It was centred on the PANEL, and the ring sits above the
+     panel's centre (the label over it, the prompt and the combo under it).
+     When the ring is on screen the burst is centred on the ring itself; for
+     the match game, which has no ring, it stays on the panel. */
+  const r = $('evRing');
+  if (r && r.offsetParent) { b.style.left = (r.offsetLeft + r.offsetWidth / 2) + 'px'; b.style.top = (r.offsetTop + r.offsetHeight / 2) + 'px'; }
+  else { b.style.left = ''; b.style.top = ''; }
   b.className = 'burst ' + kind;
   void b.offsetWidth;                       // restart the animation
   b.classList.add('go');
@@ -1767,6 +1775,12 @@ function evBrief() {
   $('evLabel').textContent = o.label || T('event.ready');
   $('evPrompt').textContent = o.brief;
   $('evNote').textContent = '';
+  /* v10.3: a looping ILLUSTRATION under the title — `demo: 'drag'` plays a
+     tile being dragged from the left column to the right, over and over,
+     so the instructions are shown as well as read (Chad: "a quick animation
+     of the dragging an icon from left to right ... just below the title").
+     Absent by default, so every briefing already shipped is untouched. */
+  $('evDemo').classList.toggle('hide', o.demo !== 'drag');
   const btn = $('evBtn');
   btn.textContent = o.briefButton || T('event.start');
   btn.className = 'go';
@@ -1798,6 +1812,7 @@ function evBegin() {
   $('evTrack').classList.toggle('hide', !(e.kind === 'mash' || e.kind === 'hold' || e.kind === 'stabilise' || e.kind === 'tap' || e.kind === 'match'));
   $('evBar').style.width = (e.kind === 'mash' ? e.bar * 100 : e.kind === 'match' ? 100 : 0) + '%';
   $('evItem').classList.toggle('hide', e.kind !== 'sequence');
+  $('evDemo').classList.add('hide');       // v10.3: the briefing's illustration goes with the briefing
   /* `.hide` is display:none !important, so the kind's own CSS cannot bring
      the columns back on its own — the class has to come off here */
   $('evMatch').classList.toggle('hide', e.kind !== 'match');
@@ -6988,7 +7003,10 @@ const STAT_ROW = {
 };
 function statRowsHTML(before, d) {
   const cl = v => Math.max(0, Math.min(100, v));
-  return STAT_ORDER.filter(k => d[k]).map(k => {
+  /* v10.3: a delta of ZERO still gets its row (Chad, on episode 2's first
+     option: "somehow there is no sanity bar at the outcomes part"). No
+     episode-1 choice carries a zero, so their cards are unchanged. */
+  return STAT_ORDER.filter(k => k in d).map(k => {
     const r = STAT_ROW[k], from = cl(before[k]), to = cl(before[k] + d[k]);
     return `<div class="srow ${r.cls}" data-from="${from.toFixed(0)}" data-to="${to.toFixed(0)}">`
       + `<svg class="sic" aria-hidden="true"><use href="#${r.icon}"/></svg>`

@@ -2475,6 +2475,45 @@ What the baseline contains, by release:
   the pack. Two credit rows; sheet v46 exported (not published — the base64
   wall, docs/EDITING-TEXT.md), v44 stays the link. 7 harnesses green.
   docs/V10.0-E2C2-PLAN.md §7 is the build's memory.
+- **v10.3** THE DOOR, THE DREAD, AND THE BED THAT WAITS — Chad's twelve notes
+  on episode 2 chapter 1, in one message. `src/main.js` changes three things,
+  each base-game-safe by construction: a stat row with a delta of ZERO is
+  still drawn (no episode-1 choice carries a zero; the fixture's does, and
+  `fixturetest` is green), the heartbeat's burst is centred on the RING
+  rather than on the panel (the ring sits above the panel's centre, under
+  the label — measured, the two centres now coincide to the pixel), and a
+  briefing may carry `demo: 'drag'`, a looping CSS illustration of a tile
+  dragged from the left column to the right under the title (the fixture
+  declares it). THE FILM: "Nine of us to a bunk" (`n1pro2`, re-said, 6.84 s
+  — and the card's brief says nine too) and a new last line, "I told myself
+  it didn't matter where you slept... but I was wrong..." (`n1pro4`, 4.68 s),
+  both Aaron, picked by measurement (the flatter read, clean edges, the one
+  real pause); and THE LAST SHOT IS THE DOOR: the lens comes down onto his
+  pillow and turns to the ajar toilet door, and the man in the shower stands
+  in the wedge between the leaf and the far jamb at a third alpha — a
+  film-only spot the film's last step undoes — photographed from the pillow
+  with the head turned 15 cm toward the door so the bunk's post clears the
+  opening. THE DREAD `e2dread` 0.26 → 0.62 ("much louder throughout"). THE
+  TENTH VOICE `c1ten` rebuilt from the v9.5 take with the v9.7 treatment and
+  the recipe on disk this time (`masters/v10.3/make.sh`), peaking 2.3 dB OVER
+  the living numbers where it sat 0.8 under. THE ENCIK turns onto the
+  player's actual position before "why your standby bed got an extra set of
+  toggle rope" (`faceRigAt`, shortest arc, 0.6 s; measured −0.427 rad against
+  −0.427 wanted, and photographed square to the lens). THE MAN IN THE SHOWER
+  faces the TAP (ry 0 — a Mixamo rig at 0 faces +z and the tap is straight
+  down +z from him), his back to the door, and FADES THE MOMENT HE IS SEEN
+  (1.4 s from the doorway, the line following) instead of standing through
+  his line. THREE IN THE MORNING: the bed is not offered in `night` at all —
+  not while waking, not while the water runs, not through the heartbeat —
+  only in `decide`, which the fear's own completion sets a beat before it
+  opens the decision itself; Escape closes it and E is only ever the way
+  back in (measured: `inView` false and the press refused through the whole
+  fear, the decision opening by itself, reopening on the press). THE
+  BLANKET (scene D) fades the whole screen to black under the blanket sound
+  and holds it to the card while "It's nothing" plays twice; the weave
+  overlay is no longer raised and the scene is 14.0 s where it was 19.8.
+  Sheet v48 exported (v44 stays the link — the base64 wall).
+  docs/V10.3-THE-DOOR-AND-THE-DREAD.md is the build's memory.
 - **v10.2** THE ENCIK WHO WOULD NOT SPEAK, THE BEAT AFTER THE THIRD ASK, ONE
   FLAG — Chad's four notes on v10.1. **THE ENCIK'S LINES WERE NEVER WARMED ON
   A FRESH LOAD**: *"the encik voiceline does not play when i choose the option
@@ -2830,7 +2869,7 @@ the run exactly as it always ended a last chapter.
 
 Next up: **episode 2's chapters 3–5, and rifle mode for chapter 5**
 (chapter 1, The Worst Bed, shipped at v7.1 — `src/chapters/e2/e2c1.js`;
-chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; the rifle
+chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 1 last revised at v10.3; the rifle
 viewmodel's placement and material are measured in
 docs/E2-SOLDIER-MODELS.md §8, and Chad's ghost and bicycle models are
 still to come), and the still-outstanding job of replacing chapter 1's
