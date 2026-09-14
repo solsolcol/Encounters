@@ -85,7 +85,11 @@
     ghost: { name: "The tenth man on the line (episode 2)", voice: "ZyIwtt7dzBKVYuXxaRw7", model: "eleven_v3",
               note: "Edison's take, TREATED — see masters/v9.5/make.sh. Not a separate library voice: it has to be recognisably a man in that line and unmistakably not one of these men." },
     encik: { name: "The encik, the sergeant-major (episode 2)", voice: "klqxhYh2Np93AvKxFz0b", model: "eleven_v3",
-              note: "Hilmi — Malaysian English, middle-aged. Chad's brief was 'like an angry malay uncle', and getting there took four rounds: the library's Malay voices are all booth-recorded voice-over artists, and he rejected them in turn as too young (Zul), eighty years old (Yatin) and finally 'too polished'. HIS PROMPT RULE IS THE OPPOSITE OF AARON'S: no descriptive stage direction at all — a '[a furious sergeant-major in his fifties...]' tag gets a professional PERFORMING anger, which is what 'polished' names. Write the line the way he barks it: short bursts, full stops between them, CAPITALS on the stressed words. Same words as this registry, only the shouting written down." }
+              note: "Hilmi — Malaysian English, middle-aged. Chad's brief was 'like an angry malay uncle', and getting there took four rounds: the library's Malay voices are all booth-recorded voice-over artists, and he rejected them in turn as too young (Zul), eighty years old (Yatin) and finally 'too polished'. HIS PROMPT RULE IS THE OPPOSITE OF AARON'S: no descriptive stage direction at all — a '[a furious sergeant-major in his fifties...]' tag gets a professional PERFORMING anger, which is what 'polished' names. Write the line the way he barks it: short bursts, full stops between them, CAPITALS on the stressed words. Same words as this registry, only the shouting written down." },
+    /* v10.0 — a THIRD recruit at the breakfast table, for the one line that
+       laughs at him. Picked to be unmistakably neither Edison nor Kelvin. */
+    recruit3: { name: "Another recruit at the table (episode 2)", voice: "xDM73lGN1cPZSG4X87cj", model: "eleven_v3",
+              note: "Ronan — young, casual. One line in chapter 2; he recurs if the table does." }
   };
 
   const LINES = [
@@ -451,7 +455,56 @@
        take was picked for the 0.26 s HESITATION it puts in the middle of the
        question, because the line is a man stopping in a doorway. */
     { id: "n1ghost", who: "jamesTeen", ch: "e2c1", where: "The evening: someone is standing in the shower block",
-      text: "Wait... is there someone in there?", secs: 3.16 }
+      text: "Wait... is there someone in there?", secs: 3.16 },
+
+    // ---- episode 2 · chapter 2 · NOBODY THERE ---------------------------
+    /* v10.0 — the film's one line, in Chad's words; the four things he says
+       to the encik (the decision's options, spoken as each scene opens); two
+       lines to himself; the four card lines. The encik's lines are Chad's
+       verbatim, written under his bark rule; the three bunkmates' are his too.
+       docs/V10.0-E2C2-PLAN.md. */
+    { id: "n2pro", who: "jamesTeen", ch: "e2c2", where: "The opening film, over black, after the fourth night",
+      text: "I've had enough. Today, I decided to bring it up to my bunkmates... and the encik...", secs: 6.72 },
+    { id: "b2hear", who: "buddy", ch: "e2c2", where: "Breakfast: asked what he heard",
+      text: "Bro, you also heard it? It starts at 3am every night, I swear...", secs: 6.32 },
+    { id: "k2three", who: "bunkmate", ch: "e2c2", where: "Breakfast: asked what he heard",
+      text: "I didn't hear anything, but I heard from others that bed one is the problem...", secs: 4.64 },
+    { id: "r2siao", who: "recruit3", ch: "e2c2", where: "Breakfast: asked what he heard",
+      text: "Siao eh, you think too much la. Where got ghost?", secs: 3.2 },
+    { id: "n2askA", who: "jamesTeen", ch: "e2c2", where: "Scene A opens: what he says to the encik",
+      text: "Encik, something happened. I don't know what.", secs: 3.52 },
+    { id: "e2A", who: "encik", ch: "e2c2", where: "Scene A: the encik's answer, before he walks off",
+      text: "Good. Don't know means don't know. Go eat and don't think too much... Put your focus on the live range tomorrow. I will check your bunk tonight...", secs: 9.92 },
+    { id: "n2askB", who: "jamesTeen", ch: "e2c2", where: "Scene B opens: what he says to the encik",
+      text: "Encik, the bunk is haunted. I'm sure.", secs: 2.32 },
+    { id: "e2saw", who: "encik", ch: "e2c2", where: "Scene B: the encik's challenge",
+      text: "You saw?", secs: 0.88 },
+    { id: "n2nobut", who: "jamesTeen", ch: "e2c2", where: "Scene B: cut off",
+      text: "No, but—", secs: 1.68 },
+    { id: "e2cock", who: "encik", ch: "e2c2", where: "Scene B: the encik shuts it down; the table goes quiet",
+      text: "Don't talk cock! Go back and eat your breakfast!", secs: 3.04 },
+    { id: "n2B1", who: "jamesTeen", ch: "e2c2", where: "Scene B: to himself, the whole table looking",
+      text: "Guess only I know what is happening...", secs: 2.72 },
+    { id: "n2askC", who: "jamesTeen", ch: "e2c2", where: "Scene C opens: what he says to the encik",
+      text: "Never mind encik, I think I was just tired.", secs: 2.96 },
+    { id: "e2ok", who: "encik", ch: "e2c2", where: "Scene C: after a look that lasts a beat too long",
+      text: "Ok.", secs: 0.64 },
+    { id: "n2C1", who: "jamesTeen", ch: "e2c2", where: "Scene C: three in the morning, awake, it has started again",
+      text: "I should have just told him...", secs: 1.76 },
+    { id: "n2askD", who: "jamesTeen", ch: "e2c2", where: "Scene D opens: what he says to the encik",
+      text: "Encik, what do you think it is?", secs: 1.92 },
+    { id: "e2D1", who: "encik", ch: "e2c2", where: "Scene D: the encik's three answers",
+      text: "Old block la.... Plumbing issue.... Or you're just too tired....", secs: 3.92 },
+    { id: "e2D2", who: "encik", ch: "e2c2", where: "Scene D: the shrug, and the rule",
+      text: "And if it's not those two, mind your own business and don't disturb it.", secs: 6.24 },
+    { id: "n2A", who: "jamesTeen", ch: "e2c2", where: "Under outcome card A",
+      text: "I told him what I knew, and only that. He didn't laugh.", secs: 3.76 },
+    { id: "n2B", who: "jamesTeen", ch: "e2c2", where: "Under outcome card B",
+      text: "I said I was sure. I wasn't. Now nobody will listen.", secs: 4.56 },
+    { id: "n2C", who: "jamesTeen", ch: "e2c2", where: "Under outcome card C",
+      text: "I called it nothing. It wasn't nothing. Three a.m. knew that.", secs: 4.48 },
+    { id: "n2D", who: "jamesTeen", ch: "e2c2", where: "Under outcome card D",
+      text: "He gave me three answers and one rule. The rule was the answer.", secs: 6.16 }
   ];
 
   // What a chapter key means on the sheet.
@@ -459,7 +512,8 @@
     ch1: "Chapter 1 · The Hell Note", ch2: "Chapter 2 · The Presence",
     ch3: "Chapter 3 · The Gathering", ch4: "Chapter 4 · Back Home",
     ch5: "Chapter 5 · The Lesson", haunting: "Chapters 1 and 2 · the haunting",
-    e2c1: "Episode 2 · Chapter 1 · The Worst Bed"
+    e2c1: "Episode 2 · Chapter 1 · The Worst Bed",
+    e2c2: "Episode 2 · Chapter 2 · Nobody There"
   };
 
   window.__VOICE__ = { SPEAKERS, LINES, CHAPTERS };

@@ -2388,6 +2388,43 @@ What the baseline contains, by release:
   low-frequency file LOSES 0.8 dB where a spoken line gains 0.7. Measure the
   output, every time.
   docs/V9.7-THE-BEAT-AND-THE-DREAD.md is the build's memory.
+- **v10.0** EPISODE 2 · CHAPTER 2 · NOBODY THERE — the second chapter of
+  the second case file, built to Chad's design after he threw out the range
+  ("everything needs a spiritual reason to exist as a mechanic ... I'm not a
+  fan of repeating the same things"; docs/V10.0-E2C2-PLAN.md has his words).
+  THE FILM is the nights between: the same corner of the bunk shot from four
+  angles on four nights — from the pillow, from the floor, from the ceiling's
+  corner, and the clock itself, 02:59 turning to 03:00 with the water starting
+  on the hour — then black and his line: "I've had enough. Today, I decided to
+  bring it up to my bunkmates... and the encik..." The corner is a POCKET
+  eighty metres off the cookhouse, outside the bounds, built from Chad's bunk
+  bed and the block's door, every material fog-free (chapter 4's diorama
+  recipe). PLAY is the COOKHOUSE at breakfast, to his photograph: pink laminate
+  tables on steel frames with the benches attached, trays, a servery, an open
+  side onto the camp, six `admintee` dozing over their food on
+  `Sit_and_Doze_Off` (v8.0's law — the one sitting take with no fold), the
+  encik standing in the corner watching. The objective is three men — the
+  buddy, the bunkmate, a THIRD recruit (Ronan, a new voice) — one line each,
+  no options, the counter 1/3 · 2/3 · 3/3 as beats, a man who is asked SITS
+  UP for his line and slumps back; then the encik, who IS the chapter's pile,
+  so the decision is the engine's own. Four options are the trial's WHAT CAN
+  YOU CONCLUDE set said to a sergeant-major; the scenes are Chad's lines
+  verbatim: A he doesn't laugh and walks off with the table still noisy; B
+  "You saw?" — "No, but—" — "Don't talk cock!" and every head at the table
+  comes up in the silence; C a look a beat too long, "Ok.", and a cut back to
+  three in the morning; D his three answers and the shrug that is the
+  episode's whole lesson. The men already asked ride in the phase string
+  (`ask:buddy,recruit`), so a resume lands on the same count (v7.3's law). 21
+  lines in five voices and one loop (`cookamb`, 22 s, `duration_seconds` and
+  `loop` as parameters — v9.2's trap, walked into once more and out again);
+  the encik's under his bark rule, the takes picked by measurement. Engine
+  seams: ZERO — `src/main.js` gains its names in the take sets and
+  `STING_SAMPLE` and nothing else, so episode 1 is unchanged by construction.
+  Sheet v45 is EXPORTED (`masters/v10.0/masterz-text-v45.xlsx`, and the
+  tracked CSV) and NOT published: the workbook is past the Drive connector's
+  base64 wall since v43 (docs/EDITING-TEXT.md) and the split export is still
+  to do, so v44 stays the link. docs/V10.0-E2C2-PLAN.md §6 is the build's
+  memory.
 - **v7.9** THE FERRY FROM INSIDE, TEKONG, THE PARADE SQUARE, THE BUNK —
   Chad, with five reference photographs: *"I dont want to see the outside
   of the ferry and the sea, it should show first person pov within inside
@@ -2714,8 +2751,9 @@ fifth chapter has no scare that is not the player's own memory replayed
 and released. `nextChapterKey()` past ch5 is null, so sealing it ends
 the run exactly as it always ended a last chapter.
 
-Next up: **episode 2's rifle mode and chapters 2–5** (chapter 1, The
-Worst Bed, shipped at v7.1 — `src/chapters/e2/e2c1.js`; the rifle
+Next up: **episode 2's chapters 3–5, and rifle mode for chapter 5**
+(chapter 1, The Worst Bed, shipped at v7.1 — `src/chapters/e2/e2c1.js`;
+chapter 2, Nobody There, at v10.0 — `src/chapters/e2/e2c2.js`; the rifle
 viewmodel's placement and material are measured in
 docs/E2-SOLDIER-MODELS.md §8, and Chad's ghost and bicycle models are
 still to come), and the still-outstanding job of replacing chapter 1's

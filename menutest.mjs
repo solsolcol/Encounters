@@ -62,8 +62,12 @@ out.emptyEpisodeRows = await p.evaluate(() => {
 await p.click('#chTabs .chTab[data-ep="2"]'); await p.waitForTimeout(200);
 out.laterEpisodeLocked = await p.evaluate(() => {
   const r = [...document.querySelectorAll('#chList .chTile')];
-  return r.length === 5 && r[0].classList.contains('locked') && r[0].disabled && !r[0].classList.contains('unwritten')
-    && r.slice(1).every(x => x.classList.contains('unwritten') && x.disabled)
+  /* v10.0: however many of episode 2's chapters are WRITTEN (two now), every
+     one of them is a real, locked row and the rest are unwritten */
+  const n = Object.values(window.__CHAPTERS__).filter(c => c.episode === 2 && (c.id || 0) < 90).length;
+  return r.length === 5 && n >= 1
+    && r.slice(0, n).every(x => x.classList.contains('locked') && x.disabled && !x.classList.contains('unwritten'))
+    && r.slice(n).every(x => x.classList.contains('unwritten') && x.disabled)
     && document.getElementById('chEpName').textContent.includes('Episode 2');
 });
 await p.click('#chTabs .chTab[data-ep="1"]'); await p.waitForTimeout(200);

@@ -4003,7 +4003,10 @@ const TEEN_TAKES = new Set([
   // v9.5: the count-off and the toggle rope
   'n1one', 'n1rope',
   // v9.6: the man standing in the shower, hours before it turns itself on
-  'n1ghost']);
+  'n1ghost',
+  // v10.0: EPISODE 2 CHAPTER 2, Nobody There: the film line, the four asks, two lines to himself, four card lines
+  'n2pro', 'n2askA', 'n2askB', 'n2askC', 'n2askD', 'n2nobut', 'n2B1', 'n2C1',
+  'n2A', 'n2B', 'n2C', 'n2D']);
 /* The rest of the cast. They share `voiceOut` and the duck, but not the
    boost — see voiceStage() above. */
 const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
@@ -4021,7 +4024,9 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
      belongs on the same stage as the rest of the cast — it is a voice in
      the room, not a sting, so it ducks the beds like any other. */
   'e1count', 'e1extra', 'e1rope',
-  'c1two', 'c1three', 'c1four', 'c1five', 'c1six', 'c1seven', 'c1eight', 'c1nine', 'c1ten']);
+  'c1two', 'c1three', 'c1four', 'c1five', 'c1six', 'c1seven', 'c1eight', 'c1nine', 'c1ten',
+  // v10.0: the breakfast in chapter 2: the encik (six), the buddy, the bunkmate, and a THIRD recruit (Ronan) for siao eh
+  'e2A', 'e2saw', 'e2cock', 'e2ok', 'e2D1', 'e2D2', 'b2hear', 'k2three', 'r2siao']);
 const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || CAST_TAKES.has(name);
 /* v6.9: his WHISPERS go round the bus. Chad wanted the three pick-up
    reactions "almost whispering to himself" and they were re-voiced as
@@ -5857,7 +5862,14 @@ const STING_SAMPLE = {
   lockerdoor: ['lockerdoor', 1], bunkcreak: ['bunkcreak', 1], blanket: ['blanket', 1],
   switchoff: ['switchoff', 1], showeroff: ['showeroff', 1], drip: ['drip', 1],
   ferryhorn: ['ferryhorn', 1], seawash: ['seawash', 1], gates: ['gates', 1],
-  dooropen2: ['dooropen2', 1], pushups: ['pushups', 1]
+  dooropen2: ['dooropen2', 1], pushups: ['pushups', 1],
+  // v10.0: EPISODE 2 CHAPTER 2, Nobody There. cookamb is the cookhouse room tone (22 s, generated seamless); the rest are its lines
+  cookamb: ['cookamb', 1],
+  n2pro: ['n2pro', 1], n2askA: ['n2askA', 1], n2askB: ['n2askB', 1], n2askC: ['n2askC', 1], n2askD: ['n2askD', 1],
+  n2nobut: ['n2nobut', 1], n2B1: ['n2B1', 1], n2C1: ['n2C1', 1],
+  n2A: ['n2A', 1], n2B: ['n2B', 1], n2C: ['n2C', 1], n2D: ['n2D', 1],
+  e2A: ['e2A', 1], e2saw: ['e2saw', 1], e2cock: ['e2cock', 1], e2ok: ['e2ok', 1], e2D1: ['e2D1', 1], e2D2: ['e2D2', 1],
+  b2hear: ['b2hear', 1], k2three: ['k2three', 1], r2siao: ['r2siao', 1]
 };
 /* Which kinds the synth below can actually fake. Everything else in
    STING_SAMPLE is sample-only: if its buffer is not decoded yet it stays

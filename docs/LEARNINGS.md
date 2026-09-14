@@ -3485,3 +3485,24 @@ millisecond) — only the container's encoder tag differed. Restoring them with
 `git checkout HEAD --` keeps the diff honest, which is what makes "read the
 FULL diff and account for every removed line" possible at all. Measure before
 assuming a modified asset changed.
+
+## `chaptertest` reads the take sets by their QUOTES — no apostrophes in a comment inside one (v10.0)
+
+`TEEN_TAKES` and `CAST_TAKES` are checked against the registry by slicing the
+`Set([...])` literal out of `src/main.js` and pulling every quoted string. A
+block comment written INSIDE the literal — "the film's line, the four things
+he says" — put its apostrophes into that scan, and the harness reported three
+takes named `s line, the four\n things...`, `, ` and `,\n  `. Comments in a
+take set go above it, or carry no apostrophe. The same scan family covers
+`STING_SAMPLE` in `build.py` (`KIND_SAMPLE`), so the rule holds there too.
+
+## A probe that tests a spoken interaction must UNMUTE first (v10.0)
+
+Every harness runs muted (v9.2), and a muted `snd()` returns null. A chapter's
+`sayLine` treats null as "bytes not landed yet", HOLDS the line and books a
+short window — so in a muted probe the man never sits up, the second press is
+refused inside the hold, and a perfectly good chapter reads as broken.
+`window.__enc.setMuted(false)` after reaching play; an AudioContext that has no
+gesture still hands back a source object, which is all the logic needs. And a
+press inside a line's own window is REFUSED by design (one voice at a time):
+a probe waits the line's measured length before the next man.
