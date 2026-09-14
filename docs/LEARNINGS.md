@@ -3506,3 +3506,26 @@ refused inside the hold, and a perfectly good chapter reads as broken.
 gesture still hands back a source object, which is all the logic needs. And a
 press inside a line's own window is REFUSED by design (one voice at a time):
 a probe waits the line's measured length before the next man.
+
+## A pocket that stands in for a room must BE the room (v10.1)
+
+v10.0 shot the bunk at night as a corner — one bed, two walls, a door — on
+chapter 4's diorama precedent, and Chad's first note on it was that the film
+"looks completely different" from chapter 1. He was right for a reason a
+render from the chosen angles could not show: a diorama works when the shots
+are TIGHT (chapter 4's memories are seen through a doorway forty metres off),
+and the film's shots are from a pillow, a floor and a ceiling corner — wide,
+inside the space. From the pillow you see the neighbour's bed, the far row,
+the table, the fans; a corner has none of them. When the set is seen from
+inside, port the room's own numbers and dressing (e2c1's `R`, rows, lockers,
+table, block) rather than a subset; the eighty-metre pocket and the fog-free
+materials are what make that affordable, not a reason to build less.
+
+## A scan's height is not its file's bounds (v10.1)
+
+The cafe-staff scan spans y −0.95…0.95 — 1.9 m — and would have stood a head
+taller than every rigged man in the game (1.70–1.72) if placed at scale 1.
+A scan has no bones to measure, so its HEIGHT is the box and the box is
+scaled to the height the cast is built at; what the box cannot say is which
+way it faces (measured from the head vertices' mean, +z, then confirmed by
+render — the face is toward the hall).

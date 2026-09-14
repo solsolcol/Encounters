@@ -89,7 +89,13 @@
     /* v10.0 — a THIRD recruit at the breakfast table, for the one line that
        laughs at him. Picked to be unmistakably neither Edison nor Kelvin. */
     recruit3: { name: "Another recruit at the table (episode 2)", voice: "xDM73lGN1cPZSG4X87cj", model: "eleven_v3",
-              note: "Ronan — young, casual. One line in chapter 2; he recurs if the table does." }
+              note: "Ronan — young, casual. One line in chapter 2; he recurs if the table does." },
+    /* v10.1 — Chad on v10.0's buddy line: "The voiceline of 'it starts at 3am
+       i swear' is bad, change it to a singaporean chinese sound." A FOURTH
+       recruit says it now, in a Singaporean Chinese voice; the buddy keeps
+       his seat and loses his line. */
+    recruit4: { name: "The recruit who heard it (episode 2)", voice: "XxnXw151E3nb1V85MRlS", model: "eleven_v3",
+              note: "David — the library's 'typical middle-aged Singaporean man', casual. Picked over Louis (an Asian narrator, whose two takes came back at -11 and -14 dBFS peak, rumbling under 120 Hz) by measurement: David's take 2 opens and closes on silence (-72/-86 dB) at 2.9 words a second." }
   };
 
   const LINES = [
@@ -465,8 +471,10 @@
        docs/V10.0-E2C2-PLAN.md. */
     { id: "n2pro", who: "jamesTeen", ch: "e2c2", where: "The opening film, over black, after the fourth night",
       text: "I've had enough. Today, I decided to bring it up to my bunkmates... and the encik...", secs: 6.72 },
-    { id: "b2hear", who: "buddy", ch: "e2c2", where: "Breakfast: asked what he heard",
+    { id: "b2hear", who: "buddy", ch: "e2c2", where: "Breakfast: asked what he heard (SUPERSEDED at v10.1 by r2hear; the file stays in the pack, nothing cues it)",
       text: "Bro, you also heard it? It starts at 3am every night, I swear...", secs: 6.32 },
+    { id: "r2hear", who: "recruit4", ch: "e2c2", where: "Breakfast: asked what he heard",
+      text: "Bro, you also heard it? It starts at 3am every night, I swear...", secs: 5.25 },
     { id: "k2three", who: "bunkmate", ch: "e2c2", where: "Breakfast: asked what he heard",
       text: "I didn't hear anything, but I heard from others that bed one is the problem...", secs: 4.64 },
     { id: "r2siao", who: "recruit3", ch: "e2c2", where: "Breakfast: asked what he heard",

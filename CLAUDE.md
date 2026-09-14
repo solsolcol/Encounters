@@ -2425,6 +2425,56 @@ What the baseline contains, by release:
   base64 wall since v43 (docs/EDITING-TEXT.md) and the split export is still
   to do, so v44 stays the link. docs/V10.0-E2C2-PLAN.md §6 is the build's
   memory.
+- **v10.1** NOBODY THERE, BUILT OUT — Chad's seven notes on v10.0 and two
+  models the next morning. `src/main.js` gains five `STING_SAMPLE` rows and
+  one name in `CAST_TAKES` and nothing else, so episode 1 is unchanged by
+  construction. **THE FILM IS THE BUNK** — *"must look exactly to how it was
+  built in ep2 chp1 with the bunkmates sleeping on the beds"*: v10.0 had built
+  a CORNER (one bed, two walls, a door) and from the pillow a corner is a
+  different room. The pocket is chapter 1's whole room now, to its own
+  numbers — nine of Chad's bunks with the pillows to their walls, the lockers
+  and packs, the long table with the chairs stacked on it, the five windows,
+  the fans, the paired tubes dark, the board, the clock over the block door,
+  the −z dressing, the tiled block with its cubicles and the far shower — and
+  the eight men asleep in it dealt exactly as e2c1 deals them (four statues,
+  four who breathe, `RIGGED [1,3,5,6]`, `SLEEP_SINK` 0.085, the painted
+  contact shadows), every material fog-free, all of it eighty metres off the
+  cookhouse. Measured on the shipped build: 9 of 9 bunk models, 4 of 4 rigs,
+  every sleeper 8.5 cm into his mattress. The pillow shot opens on the ROOM
+  and pans to the door, because from his pillow the door wall is a metre away.
+  **THE COOKHOUSE**: both long sides OPEN (a parapet, a pillar every 3 m, a
+  beam, the roof reaching over a walkway, a wall fan on every second pillar);
+  Chad's FOOD WARMERS on the servery (five warmers with lids, a dish in each,
+  two plate stacks — measured off the file, 5.83 m long with its base at
+  y 1.737, turned a quarter and dropped onto the steel, the primitive wells
+  hidden under it) and his CAFE STAFF behind it (a 221k-triangle scan with no
+  rig, 15 MB → 703 KB, two of them, one at each end, turned to face the hall);
+  a queue rail, a tray-return rack with its sign, a no-wastage notice, a sink
+  and pots, condiments on every table, a notice board, the hall clock at 07:10.
+  OUTSIDE: past the +z parapet the PARADE SQUARE to chapter 1's recipe turned
+  to lie along z — tarmac, the bays as geometry, the far block with its bands
+  and stair tower, the flag stand with the drawn flag, six street lights —
+  and past the −z parapet the BUNK BLOCKS, three storeys of balconies with a
+  water tank; 34 of Chad's trees dealt from seed 11 round all of it. **THE SKY
+  is declared** (blue to the zenith, a light fog so the far block sits in
+  air) — the first pass came out white through the openings and was deepened,
+  because the renderer's exposure pales whatever is painted (v8.9's law).
+  **THE SOUND**: three loops over the room tone — `cookchat` (the men talking),
+  `kitchen` (the wok, the ladle, the plates in the sink; keyed to how close the
+  player stands to the servery), `cookmusic` (a 42 s morning bed, hand
+  crossfade-looped, seam −14.1/−13.8 dBFS either side of the joint) — the
+  dread under everything, all four hall loops written to zero on every cut to
+  the bunk; and `marchcall`, the sergeant calling "LEFT. LEFT. LEFT, RIGHT,
+  LEFT." lowpassed and run through a pass-by envelope over the platoonmarch
+  boots, an EVENT on the chapter's own stream (first at 12–24 s, then every
+  42–78 s, louder toward the open side, never at night). Every pick measured
+  (masters/v10.1/mk.py). **THE VOICE**: "it starts at 3am every night, I swear"
+  is a FOURTH recruit's now — David, the library's "typical middle-aged
+  Singaporean man" (`recruit4`, `r2hear`, 5.25 s), picked over Louis by
+  measurement; the buddy keeps his seat and loses his line, `b2hear` stays in
+  the pack. Two credit rows; sheet v46 exported (not published — the base64
+  wall, docs/EDITING-TEXT.md), v44 stays the link. 7 harnesses green.
+  docs/V10.0-E2C2-PLAN.md §7 is the build's memory.
 - **v7.9** THE FERRY FROM INSIDE, TEKONG, THE PARADE SQUARE, THE BUNK —
   Chad, with five reference photographs: *"I dont want to see the outside
   of the ferry and the sea, it should show first person pov within inside
@@ -2753,7 +2803,7 @@ the run exactly as it always ended a last chapter.
 
 Next up: **episode 2's chapters 3–5, and rifle mode for chapter 5**
 (chapter 1, The Worst Bed, shipped at v7.1 — `src/chapters/e2/e2c1.js`;
-chapter 2, Nobody There, at v10.0 — `src/chapters/e2/e2c2.js`; the rifle
+chapter 2, Nobody There, at v10.0 and built out at v10.1 — `src/chapters/e2/e2c2.js`; the rifle
 viewmodel's placement and material are measured in
 docs/E2-SOLDIER-MODELS.md §8, and Chad's ghost and bicycle models are
 still to come), and the still-outstanding job of replacing chapter 1's

@@ -101,6 +101,13 @@ Object.assign(window.__TEXT__, {
   'credits.bunk':        'The bunk beds',
   'credits.bunkWho':     'Bunk bed · Sketchfab',
   'credits.bunkLink':    'sketchfab.com · bunk-bed',
+  // v10.1 — the cookhouse of episode 2 chapter 2
+  'credits.staff':       'The cookhouse staff',
+  'credits.staffWho':    'Cafe staff uniform portrait · Sketchfab',
+  'credits.staffLink':   'sketchfab.com · cafe-staff-uniform-portrait',
+  'credits.warmer':      'The food at the servery',
+  'credits.warmerWho':   'Buffets food warmer, foods and plates · Sketchfab',
+  'credits.warmerLink':  'sketchfab.com · buffets-food-warmer-foods-and-plates',
   // v6.4 — the two things he picks up in chapter 1's opening film
   'credits.teddy':       'The toy in the prologue',
   'credits.teddyWho':    'Teddybear toy · Sketchfab',

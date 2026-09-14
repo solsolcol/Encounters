@@ -4026,7 +4026,9 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
   'e1count', 'e1extra', 'e1rope',
   'c1two', 'c1three', 'c1four', 'c1five', 'c1six', 'c1seven', 'c1eight', 'c1nine', 'c1ten',
   // v10.0: the breakfast in chapter 2: the encik (six), the buddy, the bunkmate, and a THIRD recruit (Ronan) for siao eh
-  'e2A', 'e2saw', 'e2cock', 'e2ok', 'e2D1', 'e2D2', 'b2hear', 'k2three', 'r2siao']);
+  'e2A', 'e2saw', 'e2cock', 'e2ok', 'e2D1', 'e2D2', 'b2hear', 'k2three', 'r2siao',
+  // v10.1: the buddy line re-voiced as a Singaporean Chinese uncle (David) at Chad's ask; b2hear stays in the pack
+  'r2hear']);
 const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || CAST_TAKES.has(name);
 /* v6.9: his WHISPERS go round the bus. Chad wanted the three pick-up
    reactions "almost whispering to himself" and they were re-voiced as
@@ -5869,7 +5871,9 @@ const STING_SAMPLE = {
   n2nobut: ['n2nobut', 1], n2B1: ['n2B1', 1], n2C1: ['n2C1', 1],
   n2A: ['n2A', 1], n2B: ['n2B', 1], n2C: ['n2C', 1], n2D: ['n2D', 1],
   e2A: ['e2A', 1], e2saw: ['e2saw', 1], e2cock: ['e2cock', 1], e2ok: ['e2ok', 1], e2D1: ['e2D1', 1], e2D2: ['e2D2', 1],
-  b2hear: ['b2hear', 1], k2three: ['k2three', 1], r2siao: ['r2siao', 1]
+  b2hear: ['b2hear', 1], k2three: ['k2three', 1], r2siao: ['r2siao', 1],
+  // v10.1: the cookhouse livened up — a chatter loop, the kitchen behind the servery, a morning bed, a platoon calling the step past the open side; and the re-voiced ask
+  cookchat: ['cookchat', 1], kitchen: ['kitchen', 1], cookmusic: ['cookmusic', 1], marchcall: ['marchcall', 1], r2hear: ['r2hear', 1]
 };
 /* Which kinds the synth below can actually fake. Everything else in
    STING_SAMPLE is sample-only: if its buffer is not decoded yet it stays

@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "10.0"
+VERSION = "10.1"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -313,6 +313,8 @@ ASSETS = {
     'sleepanim':    ('assets/sleepanim.glb', True, False),    # e2c1 the rig with the three sleeping takes
     'ghostsoldier': ('assets/ghostsoldier.glb', True, False), # e2c1 scene A, one frame, far off
     'encik2':       ('assets/encik2.glb', True, False),       # e2 the older recruit (Chad's model, five takes)
+    'cafestaff':    ('assets/cafestaff.glb', True, False),    # e2c2 v10.1: Chad's cafe staff scan, behind the servery
+    'foodwarmer':   ('assets/foodwarmer.glb', True, False),   # e2c2 v10.1: Chad's buffet warmers, food and plates on the counter
 }
 
 # Hosted-only assets: shipped as a URL, never inlined as base64.
@@ -333,7 +335,7 @@ HOSTED_ONLY = {'titlevid', 'titlevidwebm'}
 # chapter asking for it. The check below keeps the rule honest: an episode-1
 # chapter may never claim one of these.
 E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim',
-           'ghostsoldier', 'encik2', 'bunkbed'}
+           'ghostsoldier', 'encik2', 'bunkbed', 'cafestaff', 'foodwarmer'}
 HOSTED_ONLY |= E2_ONLY
 
 # The split packs are hosted-only: there is no __..._B64__ token for them and
