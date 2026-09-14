@@ -842,6 +842,20 @@ before it plays. Cue map: the film (§9 of the plan) `e2film` 0, `seawash`
 whistle, the sergeant's lines on his talk take, push-ups, the switch; the
 four scenes (§10).
 
+## v10.5 · the bed, scarier; the laugh, younger
+
+Chad on v10.4: the new eerie bed was "bad" and he preferred the old one unless
+something scarier could be made; the laugh sounded too old. Both replaced under
+their own names (masters/v10.4/make2.sh), nothing else in the pack moved.
+`e2dread` ← scary-1 (flow xoHMbY1KDrArBCMcAGlB), window 165–227 s: 67 % above
+120 Hz, 44 % in 500–3k, 10 % above 3k, centroid 2.8 kHz, 13 % in 120–500 (his
+band); −6.0 dBFS peak, 59 s loop, 0.85 in both e2 chapters as before. The v10.4
+pad had 65 % in 120–500; the v9.7 drone 17 % above 120 Hz. The measure is
+`scary.py` (phone band, RMS swing, flux, centroid) plus a 62 s window scan;
+scary-3/4 were sub-500 Hz drones with silences, scary-2 swells 13.6 dB in any
+window. `ghostlaugh` ← laugh-3: f0 272 Hz (v10.4: 206), centroid 2016 Hz, 8 %
+above 3 kHz; laugh-4 (f0 345) is 86 % in 120–500 Hz, a hum. Both at −4.0.
+
 ## v10.4 · the eerie bed remade for the phone, the march, the laugh, the run
 
 `e2dread` is a NEW file under the same name (masters/v10.4/make.sh): the v9.7

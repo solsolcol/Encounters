@@ -2516,6 +2516,33 @@ What the baseline contains, by release:
   the clock turns and the water starts (31.2). `src/main.js` gains rows and
   three names in `TEEN_TAKES` and nothing else. Sheet v49 exported (v44
   stays the link). docs/V10.4-THE-MUSIC-A-PHONE-CAN-PLAY.md is the memory.
+- **v10.5** SCARIER, AND YOUNGER — Chad, on v10.4: *"The new eerie music is
+  bad, i prefer the older one unless you can generate something scarier. Also
+  the ghost soldier laughing sound is too old and not eerie enough. It should
+  sound like a young man."* Two files replaced under their own names; no code,
+  no row, no word moved (`build.py`'s VERSION is the only source change), so
+  every chapter plays exactly as it did with two different sounds in the pack.
+  **THE BED** is `e2dread` from a third generation (four takes, two prompts,
+  masters/v10.4/raw/scary-1..4): the v10.4 bed was a mid-register PAD (65 % of
+  its energy in 120–500 Hz — audible on a phone, but a pad, and sitting on his
+  voice), and the v9.7 one Chad preferred was a sub-bass drone a phone cannot
+  play at all. The pick has what neither had — a loopable 62 s passage
+  (165–227 s of the take, placed by hand clear of the take's fade) with **44 %
+  of its energy in 500 Hz–3 kHz and 10 % above 3 kHz**, centroid 2.8 kHz: the
+  shrieking-strings-and-scrapes register, which is the band a phone speaker
+  carries best AND the one his voice is not in (13 % in 120–500 against the
+  v10.4 bed's 65 %). Measured with `masters/v10.4/scary.py` (phone band, 1 s
+  RMS swing, spectral flux, centroid) and a per-window scan: the other prompt's
+  two takes ("Southeast Asian ghost film") came back as sub-500 Hz drones with
+  literal silences (centroid 216–303 Hz, 1 % above 3 kHz, 100 dB swings) — the
+  v9.7 bed again with gaps in it — and scary-2 swells 13.6 dB inside any
+  loopable window. Same level (−6.0 dBFS peak), same gain (0.85), same 59 s
+  loop shape (`mk.py` now takes the file and a forced start). **THE LAUGH** is
+  `ghostlaugh` from laugh-3 of four: median f0 **272 Hz** against the v10.4
+  take's 206 (a younger man laughs higher), centroid 2016 Hz against 1382, and
+  the only take with energy above 3 kHz (8 % — the breath in it). laugh-4, the
+  highest f0 (345), puts 86 % of its energy in 120–500 Hz: a muffled hum, not a
+  laugh. masters/v10.4/make2.sh is the recipe. Sheet v49 stands (v44 the link).
 - **v10.3** THE DOOR, THE DREAD, AND THE BED THAT WAITS — Chad's twelve notes
   on episode 2 chapter 1, in one message. `src/main.js` changes three things,
   each base-game-safe by construction: a stat row with a delta of ZERO is
@@ -2910,7 +2937,7 @@ the run exactly as it always ended a last chapter.
 
 Next up: **episode 2's chapters 3–5, and rifle mode for chapter 5**
 (chapter 1, The Worst Bed, shipped at v7.1 — `src/chapters/e2/e2c1.js`;
-chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 1 last revised at v10.4; the rifle
+chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 1 last revised at v10.5; the rifle
 viewmodel's placement and material are measured in
 docs/E2-SOLDIER-MODELS.md §8, and Chad's ghost and bicycle models are
 still to come), and the still-outstanding job of replacing chapter 1's

@@ -3,9 +3,15 @@
 # is a bed the player learns to read — v9.7's reasoning), skipping the first
 # eight seconds, and crossfades its last 3 s over its head: ~59 s out, the
 # seam checked at the joint. Writes w_loop.wav for make.sh.
-import numpy as np, subprocess
+# v10.5 · takes the source file and, optionally, a forced window start:
+#   python3 mk.py raw/scary-1.mp3 165
+# (scary-1's shrieking-strings section runs 137-228 s and the take fades from
+# 228, so the window is placed by hand to keep the crossfade off the fade.)
+import numpy as np, subprocess, sys
 sr = 48000
-r = subprocess.run(['ffmpeg','-v','error','-i','raw/dread-2.mp3','-f','f32le','-ac','2','-ar',str(sr),'-'], capture_output=True)
+SRC = sys.argv[1] if len(sys.argv) > 1 else 'raw/dread-2.mp3'
+FORCE = int(sys.argv[2]) if len(sys.argv) > 2 else None
+r = subprocess.run(['ffmpeg','-v','error','-i',SRC,'-f','f32le','-ac','2','-ar',str(sr),'-'], capture_output=True)
 x = np.frombuffer(r.stdout, dtype=np.float32).reshape(-1, 2).copy()
 n = len(x) // sr
 rms = np.array([np.sqrt((x[i*sr:(i+1)*sr]**2).mean() + 1e-12) for i in range(n)])
@@ -14,7 +20,7 @@ W = 62; best = None
 for s0 in range(8, n - W):
     seg = db[s0:s0+W]; score = seg.std() + 0.15 * max(0, -22 - seg.mean())   # flat, and not a quiet passage
     if best is None or score < best[0]: best = (score, s0)
-s0 = best[1]
+s0 = FORCE if FORCE is not None else best[1]
 print('window %d-%d s   rms std %.2f dB  mean %.1f dBFS' % (s0, s0+W, db[s0:s0+W].std(), db[s0:s0+W].mean()))
 body = x[s0*sr:(s0+W)*sr]
 XF = 3*sr; L = len(body) - XF
