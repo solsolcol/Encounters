@@ -842,6 +842,15 @@ before it plays. Cue map: the film (§9 of the plan) `e2film` 0, `seawash`
 whistle, the sergeant's lines on his talk take, push-ups, the switch; the
 four scenes (§10).
 
+## v10.7 · the dread levelled by RMS
+
+Chad: still "buried under everything". Bed C peaked −4.4 but averaged −21.1
+dBFS (−24.2 above 120 Hz) — peak-matching left a drone quiet. `e2dread` is
+now compressed 3:1 over −26 dB, normalised to −15 dBFS RMS, limited at −3
+dBFS by `loud.py` (ffmpeg's alimiter would not cap), encoded plain from the WAV; gain 0.85 → 1.0 in
+both chapters. **A bed with a big crest is levelled by RMS, not peak.**
+Recipe: masters/v10.4/make2.sh.
+
 ## v10.6 · bed C, laugh 4, and the theme's bunk half
 
 Chad listened to 30 s previews of all six beds and four laughs and chose:

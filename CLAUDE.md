@@ -2516,6 +2516,26 @@ What the baseline contains, by release:
   the clock turns and the water starts (31.2). `src/main.js` gains rows and
   three names in `TEEN_TAKES` and nothing else. Sheet v49 exported (v44
   stays the link). docs/V10.4-THE-MUSIC-A-PHONE-CAN-PLAY.md is the memory.
+- **v10.7** THE DREAD, LEVELLED BY WHAT IT AVERAGES — Chad, on v10.6: *"The
+  eerie music volume can still be made louder, it feels buried under
+  everything."* Measured before anything moved: bed C peaked at −4.4 dBFS and
+  AVERAGED −21.1 (−24.2 in the band above 120 Hz, the part a phone speaker
+  plays) — 2 dB under the v10.4 pad overall and 4 dB under it where it counts,
+  because **a drone's rare creaks set its peak, and the peak is what every
+  file here is matched on** (the v4.8 rule). Peak-matching says nothing about
+  the average, which is the v5.26 finding met again on a bed instead of a
+  voice — and on top of that the v5.27 duck drops every non-voice sound 8 dB
+  whenever anyone speaks, and chapter 1 speaks most of the time. So the loop is
+  levelled by RMS now: the crest compressed (3:1 over −26 dB), normalised to
+  **−15 dBFS RMS**, a lookahead limiter holding the creaks at −3 dBFS — in
+  numpy (`masters/v10.4/loud.py`), because ffmpeg's `alimiter` peaked at −0.9
+  whatever `limit` it was given, twice — and encoded straight from that WAV
+  rather than through the peak-matching `enc`. Measured: mp3 −15.5 RMS / −3.3
+  peak, ogg −15.0 / −2.5. The gain goes 0.85 → **1.0**
+  in both chapters. About +7.5 dB on average, +7 in the phone band, against
+  v10.6; the loudest bed in the game by design, since it is the music. The
+  film's duck shape (a fifth under the camp, full from the bunk) is untouched.
+  Recipe in masters/v10.4/make2.sh.
 - **v10.6** BED C, LAUGH 4, AND THE SWELL THE BUNK LOST — Chad heard every
   candidate this time (thirty-second previews of all six beds and all four
   laughs, which is what v10.5 should have led with) and chose by ear: *"Use bed
@@ -2967,7 +2987,7 @@ the run exactly as it always ended a last chapter.
 
 Next up: **episode 2's chapters 3–5, and rifle mode for chapter 5**
 (chapter 1, The Worst Bed, shipped at v7.1 — `src/chapters/e2/e2c1.js`;
-chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 1 last revised at v10.6; the rifle
+chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 1 last revised at v10.7; the rifle
 viewmodel's placement and material are measured in
 docs/E2-SOLDIER-MODELS.md §8, and Chad's ghost and bicycle models are
 still to come), and the still-outstanding job of replacing chapter 1's

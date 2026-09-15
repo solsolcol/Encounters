@@ -114,7 +114,7 @@
        cookhouse's morning bed (`cookmusic`, v10.1/v10.2) is retired and the
        dread runs at chapter 1's level, keyed to nothing — film, hall, scenes. */
     ambience: { beds: [['cookamb', 0.26], ['cookchat', 0.30], ['kitchen', 0.24],
-                       ['e2dread', 0.85], ['showerrun', 0], ['clocktick', 0]] },
+                       ['e2dread', 1.0], ['showerrun', 0], ['clocktick', 0]] },   // v10.7: the dread at full (was 0.85), and its file levelled by RMS
 
     words: {
       approach: 'the encik',

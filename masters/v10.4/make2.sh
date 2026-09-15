@@ -44,3 +44,12 @@ enc() { # name src target_mp3 target_ogg opus_bitrate channels
 # meets the bunk's fade-in exactly where it did before v10.4 retired the theme.
 #   ffmpeg -ss 36.0 -i ../v7.1/e2film-a.mp3 -af afade=t=in:d=1.0 -ar 48000 -ac 2 w_filmbunk.wav
 enc e2filmbunk w_filmbunk.wav -4.2 -4.2 96k 2
+# v10.7 · Chad on v10.6: "The eerie music volume can still be made louder, it feels
+# buried under everything." Measured: bed C peaks at -4.4 dBFS but AVERAGES -21.1
+# (-24.2 in the >120 Hz band a phone can play) — 4 dB under the v10.4 pad on average,
+# because a drone's rare creaks set its peak and the peak is what -6.0 matched.
+# loud.py levels the loop by RMS (-15 dBFS, compressed 3:1 over -26, a real lookahead
+# limiter at -3 dBFS — ffmpeg's alimiter would not cap), then plain encodes, no enc:
+#   python3 mk.py raw/scary-3.mp3 20 && python3 loud.py
+ffmpeg -v error -y -i w_loud.wav -map_metadata -1 -c:a libmp3lame -b:a 128k -ar 44100 ../../assets/audio/e2dread.mp3
+ffmpeg -v error -y -i w_loud.wav -map_metadata -1 -c:a libopus   -b:a 96k  -ar 48000 ../../assets/audio-opus/e2dread.ogg

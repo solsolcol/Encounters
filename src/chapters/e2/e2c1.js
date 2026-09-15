@@ -3407,7 +3407,7 @@
         ['fanloop', 0.14 - 0.04 * nightK], ['clocktick', 0.06],
         ['e2bed', 0.30 * nightK], ['e2day', 0.26 * (1 - nightK)],
         ['campamb', (0.15 + 0.26 * outK) * (1 - 0.55 * nightK)],
-        ['e2dread', 0.85],                    // v9.7: flat, the whole chapter. v10.4: a NEW bed (mid-range, the one a phone speaker can carry — masters/v10.4/make.sh) at 0.85: it is THE music now, Chad's third ask
+        ['e2dread', 1.0],                     // v9.7: flat, the whole chapter. v10.4: a NEW bed (mid-range, the one a phone speaker can carry — masters/v10.4/make.sh) at 0.85: it is THE music now, Chad's third ask. v10.7: 1.0, and the file is levelled by RMS (bed C averaged 4 dB under the v10.4 pad when peak-matched — "buried under everything")
         ['showerrun', showerVol]];
     }
     mixBeds();
