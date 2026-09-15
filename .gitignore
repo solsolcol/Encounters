@@ -14,6 +14,8 @@ view/
 **/*.zip
 
 # one-off debug harnesses and unshrunk intermediates
+masters/*/src/*.glb
+masters/*/prep/
 dbg*.mjs
 dbg*.html
 ablate.mjs
