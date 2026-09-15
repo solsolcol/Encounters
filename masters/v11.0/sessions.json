@@ -1,0 +1,43 @@
+{
+ "voiceFlow": "mU7SHYq0WGqx3TWaFzwc",
+ "sfxFlow": "Xa3KQJm41Pg72l2gUGrJ",
+ "voice": {
+  "n3pro1": ["iUC8sNw4juVOxxQrkZk7","oO7ZZcOh4ZVRGztXRBJs"],
+  "n3pro2": ["AFaEQlfP8dVNX6uv5uFv","VuXg6IArQvgQqDYBDj3M"],
+  "n3pro3": ["ImQsV9ClEonoNOzxi80l","l4cnKLVYjSdI0EMMHF53"],
+  "n3pro4": ["rSHUluIH1s9dZzbNXien","M85EEAr2JbI3H6zC3C5x"],
+  "n3spot1": ["uujlzLfqWTudFIdQvfJh","i36tS0k8LjkJhmh98jxU"],
+  "n3spot2": ["ArPrjEmRAxWX7pI439b3","D8Mr5i8VoyeAiHNyg9tG"],
+  "n3spot3": ["lO2WZO2qy2ZESfJkfg5N","RiVE0Qknz9eB0xGVP0gh"],
+  "n3spot5": ["SiORM5U0Z9oZff3D3kGW","X0jKesrLWBHz2fsxmwLF"],
+  "n3spot6": ["VANxqtC4fVlbpVFKTixk","f9GO6AE3byp1jbrs6yiL"],
+  "n3press": ["kLfJNKTDka2mqVxHAm6I","ITw0ZhfJuDfMkseZd63r"],
+  "n3look": ["Ua2b8ObWC0q4swlIITmo","O7zW7rtKh8IKilqlNfiR"],
+  "n3still": ["GDK7pVz59v4m8FohYLZI","pSinqpIai3jLF8J5Geo7"],
+  "n3A1": ["YJYE8l0sdBz2tmFYYmie","3EJAjh7BSxFdTl4KJREc"],
+  "n3A2": ["YruCI5br1hltW0aNLLQj","r9biu0kD2GgBITusRExe"],
+  "n3B1": ["B1CcsWgQLyhQPGl8pP4D","skrHyxyzyJGxHDYR21YJ"],
+  "n3B2": ["ZrBGc5idkSoraiYlLQBJ","JNjmRWWXWvr0oI13mQ3U"],
+  "n3C1": ["CCFkyVarWAUHsGGUhOxj","BG05e3fuXgoqcPl1unSK"],
+  "n3C2": ["sx7LW0lkEakPk4EJjVA8","wNX6I2cBApQP4xKtCJm5"],
+  "n3D1": ["ZUDTVLRWOYBzP0qBUwXV","hu4MMpMcteMBy0r56Fqb"],
+  "n3D2": ["DYvN1C0rcMGXHySBdS7L","ZK9uXNJ0tRXsiDVUx5HA"],
+  "n3A": ["9IgBRF7cBjP3hkjDwvsr","JyUpWsfPMJ3UQTmVN2ZJ"],
+  "n3B": ["eCz95HxPEPGd1oY6u9I5","l65J7Szm1TuFpHZIsNCW"],
+  "n3C": ["IMm42EzmtSxrNL6ckZAq","FyD8Cvs9T23C7ZF7z5az"],
+  "n3D": ["DoQEcXsjBQhOvixYq2Nz","7XfocE85Qjx2hddx8eW9"],
+  "b3here": ["awbB7ozYa4j78lIOmfeE","Oo8JJ1dWOq34T8P2WC3i"],
+  "b3C1": ["Qfa8adPmrTo9q8TGItUG","HITIQbYzOKv3KpSSJ0e1"],
+  "b3C2": ["s4YgMyT22sjG1I1uZU0N","qf4O808FdiiekjpusKdh"],
+  "b3C3": ["Y8u8dKv25RWaAJ4wxiZA","VNT1vwDgW4U04rcMSc1y"],
+  "b3D": ["lIglMKVLjVJ9jP4Hg1BM","eDTduAq39W76zehdGE1T"],
+  "s3brief": ["M0tCkpLv6eKTtmjFSI4r","XSmndWaVZahlb4qSxLY4"],
+  "s3hiss": ["b6qCBp0aygGhuvrkWE0R","naW5Lt7n8P0SDcWx2q3K"]
+ },
+ "sfxNodes": {
+  "tonner": "nzrFqs6NhfjlSxABAwAp", "tailgate": "D6MpHkqdKU9Vg1CPUSpm", "junglenight": "kYejRaakEee0hyCHAGLf",
+  "bootsleaf": "tO04wXHuEoSB1PaUOJLR", "torchclick": "Q5acSgb7MNY5tn4AOqwT", "stingpress": "yBHEn5pCNEC0sBjVY9aS",
+  "ghostrunleaf": "U4Zy5JdrkJjeMWyDjQbg", "leafdraw": "YfxUMYZkDLWH9YVIadzW", "leaflift": "HNls3irrao7pIhxWnjB4",
+  "legpress": "qvOpMZCUWFX4sSNOB6Qg"
+ }
+}

@@ -314,6 +314,16 @@
                       penalty: { stat: 'awareness' },
                       award: { stat: 'awareness', lo: -5, hi: 9 } });
           return true;
+        } },
+      /* v11.0: a hotspot SEEN BY LOOKING — `dwell` seconds with the reticle
+         inside `aim` radians of it fires onInteract with no press. Episode
+         2 chapter 3's torch spots are this; the fixture declares one so
+         fixturetest proves the seam. Wide radius, generous cone: the test
+         aims from across the room. */
+      { id: 'mark', pos: { x: 0, y: 1.6, z: -8 }, radius: 14, dwell: 0.5, aim: 0.25, prompt: 'Look at the mark', once: true,
+        onInteract() {
+          if (kit) kit.conduct({ note: 'You looked at the mark.' });
+          return true;
         } }
     ];
     if (kit) { kit.objective('Find the marker on the floor'); kit.setPhase('room'); }

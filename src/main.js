@@ -1011,6 +1011,41 @@ function nearestHotspot() {
   }
   return best;
 }
+/* v11.0: THE EIGHTEENTH SEAM — a hotspot SEEN BY LOOKING. Episode 2
+   chapter 3's play is a torch: a spot in the jungle is "pressed" when the
+   beam has rested on it, and there is no button for a thing you can only
+   look at. A hotspot that declares `dwell` (seconds) fires its onInteract
+   once the reticle has stayed inside `aim` radians of it (default 0.10, six
+   degrees) for that long — inside its radius, in play, with no event open.
+   The accumulated time leaks away at twice the rate it gains, so a glance
+   is not a look. Chapters 1-5 declare no hotspots, and e2c1 and e2c2 declare
+   none with `dwell`, so nothing shipped before this release can reach it;
+   the fixture declares one and fixturetest proves it. */
+const _dwFwd = new THREE.Vector3(), _dwTo = new THREE.Vector3(), _dwCam = new THREE.Vector3();
+let _dwLast = 0;
+function dwellHotspots() {
+  /* WALL time, not the clamped frame dt (the kit timer's law, v7.4): at
+     one frame a second the clamped dt is 0.05, so a 0.8 s look would take
+     sixteen seconds of staring. Capped at 0.5 s so a stalled tab cannot
+     fire every spot on its first frame back. */
+  const now = performance.now();
+  const dt = _dwLast ? Math.min(0.5, (now - _dwLast) / 1000) : 0;
+  _dwLast = now;
+  if (state !== 'play' || ev) return;
+  let got = false;
+  for (const h of hotspotList()) {
+    if (!h || !h.pos || !(h.dwell > 0) || h.done || (typeof h.enabled === 'function' && !h.enabled())) continue;
+    if (!got) { camera.getWorldDirection(_dwFwd); camera.getWorldPosition(_dwCam); got = true; }
+    const d = Math.hypot(yaw.position.x - h.pos.x, yaw.position.z - h.pos.z);
+    _dwTo.set(h.pos.x - _dwCam.x, (h.pos.y ?? 1.0) - _dwCam.y, h.pos.z - _dwCam.z).normalize();
+    const on = d < (h.radius || 2.2) && Math.acos(THREE.MathUtils.clamp(_dwFwd.dot(_dwTo), -1, 1)) < (h.aim || 0.10);
+    h.dwellT = on ? (h.dwellT || 0) + dt : Math.max(0, (h.dwellT || 0) - dt * 2);
+    if (h.dwellT < h.dwell) continue;
+    h.dwellT = 0;
+    const r = typeof h.onInteract === 'function' ? h.onInteract(h) : false;
+    if (r !== false && h.once) h.done = true;
+  }
+}
 function setInteractBadge(spot) {
   if (spot === activeSpot) return;
   activeSpot = spot;
@@ -4023,7 +4058,11 @@ const TEEN_TAKES = new Set([
   'n2pro', 'n2askA', 'n2askB', 'n2askC', 'n2askD', 'n2nobut', 'n2B1', 'n2C1',
   'n2A', 'n2B', 'n2C', 'n2D',
   // v10.2: his thought after the third bunkmate
-  'n2known', 'n1omg', 'n2pro1', 'n2pro2', 'n2sigh', 'n2alone']);
+  'n2known', 'n1omg', 'n2pro1', 'n2pro2', 'n2sigh', 'n2alone',
+  // v11.0: EPISODE 2 CHAPTER 3, The Pressure: the four film lines, the torch spots, the three pressure lines, the scenes, the cards
+  'n3pro1', 'n3pro2', 'n3pro3', 'n3pro4', 'n3spot1', 'n3spot2', 'n3spot3', 'n3spot5', 'n3spot6',
+  'n3press', 'n3look', 'n3still', 'n3A1', 'n3A2', 'n3B1', 'n3B2', 'n3C1', 'n3C2', 'n3D1', 'n3D2',
+  'n3A', 'n3B', 'n3C', 'n3D']);
 /* The rest of the cast. They share `voiceOut` and the duck, but not the
    boost — see voiceStage() above. */
 const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
@@ -4047,7 +4086,9 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
   // v10.1: the buddy line re-voiced as a Singaporean Chinese uncle (David) at Chad's ask; b2hear stays in the pack
   'r2hear',
   // v10.2: the encik shouts the table back to its breakfast
-  'e2hurry']);
+  'e2hurry',
+  // v11.0: chapter 3 — the buddy in the next scrape, the sergeant's brief and his hiss
+  'b3here', 'b3C1', 'b3C2', 'b3C3', 'b3D', 's3brief', 's3hiss']);
 const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || CAST_TAKES.has(name);
 /* v6.9: his WHISPERS go round the bus. Chad wanted the three pick-up
    reactions "almost whispering to himself" and they were re-voiced as
@@ -4060,7 +4101,8 @@ const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || CAST_TA
    JAMES_TAKES (the registry's truth) and only the OUTPUT differs. */
 const WHISPER_TAKES = new Set(['vpick1', 'vpick2', 'vpick3',
   'n1C1',     // v7.1: "Eh. You awake?" — whispered to the next bed after lights out
-  'n2sigh']); // v10.8: the defeated sigh at three in the morning — a breath through the 4:1 bus comes out as loud as speech (v6.9), so it goes round it
+  'n2sigh',   // v10.8: the defeated sigh at three in the morning — a breath through the 4:1 bus comes out as loud as speech (v6.9), so it goes round it
+  'n3C1', 'n3C2']);   // v11.0: whispered to the next scrape in the jungle (chapter 3, scene C)
 const WHISPER_GAIN = 0.55;           // -5.2 dB: through a replica of the chain (dbg-whisperbus) his narration sits at -12.7 dBFS RMS, the whispers at -26 to -28.5 — 11 to 16 dB under him
 let whisperOut = null;
 function whisperStage() {
@@ -5895,6 +5937,18 @@ const STING_SAMPLE = {
   n2A: ['n2A', 1], n2B: ['n2B', 1], n2C: ['n2C', 1], n2D: ['n2D', 1],
   e2A: ['e2A', 1], e2saw: ['e2saw', 1], e2cock: ['e2cock', 1], e2ok: ['e2ok', 1], e2D1: ['e2D1', 1], e2D2: ['e2D2', 1],
   e2hmm: ['e2hmm', 1], n2sigh: ['n2sigh', 1], n2alone: ['n2alone', 1],   // v10.8: scene C — "Hmmmm.... okay...", the defeated sigh, "Now I'm alone with this..." (e2ok stays in the pack, nothing cues it)
+  // v11.0: EPISODE 2 CHAPTER 3, The Pressure — the film, the torch spots, the pressure, the scenes, the cards
+  tonner: ['tonner', 1], tailgate: ['tailgate', 1], junglenight: ['junglenight', 1], bootsleaf: ['bootsleaf', 1],
+  torchclick: ['torchclick', 1], stingpress: ['stingpress', 1], legpress: ['legpress', 1],
+  ghostrunleaf: ['ghostrunleaf', 1], leafdraw: ['leafdraw', 1], leaflift: ['leaflift', 1],
+  n3pro1: ['n3pro1', 1], n3pro2: ['n3pro2', 1], n3pro3: ['n3pro3', 1], n3pro4: ['n3pro4', 1],
+  n3spot1: ['n3spot1', 1], n3spot2: ['n3spot2', 1], n3spot3: ['n3spot3', 1], n3spot5: ['n3spot5', 1], n3spot6: ['n3spot6', 1],
+  n3press: ['n3press', 1], n3look: ['n3look', 1], n3still: ['n3still', 1],
+  n3A1: ['n3A1', 1], n3A2: ['n3A2', 1], n3B1: ['n3B1', 1], n3B2: ['n3B2', 1],
+  n3C1: ['n3C1', 1], n3C2: ['n3C2', 1], n3D1: ['n3D1', 1], n3D2: ['n3D2', 1],
+  n3A: ['n3A', 1], n3B: ['n3B', 1], n3C: ['n3C', 1], n3D: ['n3D', 1],
+  b3here: ['b3here', 1], b3C1: ['b3C1', 1], b3C2: ['b3C2', 1], b3C3: ['b3C3', 1], b3D: ['b3D', 1],
+  s3brief: ['s3brief', 1], s3hiss: ['s3hiss', 1],
   b2hear: ['b2hear', 1], k2three: ['k2three', 1], r2siao: ['r2siao', 1],
   // v10.1: the cookhouse livened up — a chatter loop, the kitchen behind the servery, a morning bed, a platoon calling the step past the open side; and the re-voiced ask
   cookchat: ['cookchat', 1], kitchen: ['kitchen', 1], marchcall: ['marchcall', 1], r2hear: ['r2hear', 1],   // (v10.4: `cookmusic` retired — the dread is the chapter's music)
@@ -7474,6 +7528,7 @@ function tick(now = 0) {
 
     // the heap: one prompt at a time, and only when it is actually on screen —
     // a key prompt for something behind you is noise
+    dwellHotspots();                   // v11.0: a torch spot counts when LOOKED at
     const reach = stage.pile.dist() < stage.pile.radius && stage.pile.inView();
     // v7.0: and the nearest hotspot, when the pile is not in reach — the
     // badge names it; chapters 1–5 declare none, so `spot` is always null there

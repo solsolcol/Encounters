@@ -145,6 +145,16 @@ K.badgeRestored = await p.evaluate(() => {
   const d = window.__enc.kitDebug();
   return d.hotspot === null && document.getElementById('itxt').textContent !== 'Flip the switch';
 });
+/* v11.0: a hotspot SEEN BY LOOKING — the fixture's `mark` (dwell 0.5 s,
+   aim 0.25 rad) fires with no press once the reticle has rested on it. Aim
+   the lens at it from the spawn, poll for its conduct note (never a fixed
+   wait, v8.7's law), and check that looking AWAY leaves it unfired first. */
+await p.evaluate(() => { const e = window.__enc; e.yaw.position.set(0, 1.62, 2); e.yaw.rotation.y = Math.PI; e.pitch.rotation.x = 0; });
+await settle();
+K.dwellNotYet = await p.evaluate(() => !window.__enc.kitDebug().conduct.notes.includes('You looked at the mark.'));
+await p.evaluate(() => { const e = window.__enc; e.yaw.rotation.y = 0; e.pitch.rotation.x = 0; });
+await until(() => window.__enc.kitDebug().conduct.notes.includes('You looked at the mark.'), 20000).catch(() => {});
+K.dwellFires = await p.evaluate(() => window.__enc.kitDebug().conduct.notes.includes('You looked at the mark.'));
 
 // torch: declared → the button is on the body, F toggles it, off again after
 K.torchDeclared = await p.evaluate(() => {

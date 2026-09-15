@@ -842,6 +842,27 @@ before it plays. Cue map: the film (§9 of the plan) `e2film` 0, `seawash`
 whistle, the sergeant's lines on his talk take, push-ups, the switch; the
 four scenes (§10).
 
+## v11.0 · episode 2 chapter 3, The Pressure — 41 sounds
+
+31 lines: Aaron (`jamesTeen`, 24 — the film's four `n3pro1`–`n3pro4`, five
+spot lines `n3spot1/2/3/5/6`, the pressure's `n3press`/`n3look`/`n3still`,
+the scenes' `n3A1`–`n3D2` with `n3C1`/`n3C2` whispered through
+`WHISPER_TAKES`, and the four card lines `n3A`–`n3D`), the buddy (`b3here`,
+`b3C1`–`b3C3`, `b3D`) and the sergeant (`s3brief`, `s3hiss`). **The card
+lines are `n3A`–`n3D`, NOT `v3A`–`v3D`**: those four names are episode 1
+chapter 3's, the first install overwrote them, and `chaptertest`'s "a sample
+has two rows" caught it — a `sayPrefix` is a namespace. 10 effects: `tonner`
+(the truck, 14 s), `junglenight` (the harbour bed, 20 s), `tailgate`,
+`bootsleaf`, `torchclick`, `ghostrunleaf` (the runner), `leafdraw`,
+`leaflift`, `legpress`, `stingpress` (re-generated with "no bass, no
+sub-bass" — both first takes were 100 % under 120 Hz, which a phone cannot
+play; the pick is 85 % in 500–3k and hits at once). `ghostlaugh` is cued by
+chapters 1 and 3 now, so the split moves it to the SHARED pack. Levels: Aaron
+−6.85/−6.6, cast the same, effects −4.0, the bed −10.5. Six voice takes failed
+at random and were re-run unchanged (the v4.1 law). Flows: voice
+mU7SHYq0WGqx3TWaFzwc, sfx Xa3KQJm41Pg72l2gUGrJ; picks, measurements and the
+recipe in masters/v11.0/make.sh, secs in masters/v11.0/secs.json.
+
 ## v10.8 · scene C's three new takes
 
 `e2hmm` (Hilmi, "Hmmmm.... okay...", 1.92 s, replaces `e2ok` which stays in

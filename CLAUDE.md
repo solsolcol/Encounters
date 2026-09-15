@@ -138,6 +138,7 @@ The declarations, all optional:
 | `torch` | v7.0: a spotlight on the camera (`on`, `angle`, `color`, `red`, `intensity`, `distance`), F or the HUD button — the play kit's one DATA declaration | — (no torch, no button) |
 | `words.presence` | v7.0: the banner's words when a chapter with `ghost: null` drains through `kit.presence()` | `hud.presenceAlarm` |
 | `stage.hotspots` | v7.0: many things to act on beside the pile — `[{ id, pos, radius, prompt, onInteract(), once, enabled() }]`, returned by build() | — (only the pile) |
+| `stage.hotspots[].dwell` / `aim` | v11.0: a hotspot that fires by being LOOKED AT for `dwell` seconds inside `aim` radians (chapter 3's torch spots) — the eighteenth seam | — (a press only) |
 
 **THE PLAY KIT (v7.0)** is everything else a chapter may ask of the engine
 between its film and its decision — objectives, a timer, a waypoint,
@@ -2516,6 +2517,57 @@ What the baseline contains, by release:
   the clock turns and the water starts (31.2). `src/main.js` gains rows and
   three names in `TEEN_TAKES` and nothing else. Sheet v49 exported (v44
   stays the link). docs/V10.4-THE-MUSIC-A-PHONE-CAN-PLAY.md is the memory.
+- **v11.0** EPISODE 2 · CHAPTER 3 · THE PRESSURE — the third chapter of the
+  second case file, to Chad's shape after he threw out the dig ("no need to
+  have those digging and shell scrape stuff ... focus on the pressure
+  experience"; docs/V11.0-E2C3-PLAN.md §0 has his words, §16 what shipped).
+  The episode's order moved with it: c3 THE PRESSURE, c4 THE CYCLIST, c5 THE
+  LAST NIGHT (the payoff — he stops looking and it stops). THE FILM (48.8 s)
+  opens INSIDE the three-tonner at last light, five of the section standing
+  either side and the laterite road unrolling out of the back under his two
+  lines in Chad's words ("I thought the shower incident was going to be the
+  only strange encounter in my army life. It wasn't." / "Months later, I was
+  posted to Infantry... and here we are, on the first night of our outfield
+  exercise..."), the tail-gate dropping, the file forming at the track's mouth
+  under the sergeant's brief, the walk in as the light drains to night, then
+  the real harbour from above coming down into his scrape and the torch
+  clicking on. PLAY is the harbour at night: the section resting by dug
+  scrapes — the buddy, two on the knee, one flat out, the commander under a
+  red chemlight — and the player at the rear, closest to the jungle, with
+  one objective: shine the torch at six spots (a figure-shaped stump, a log,
+  a gap between two trunks, the buddy, the chemlights, his own feet), a line
+  at each and the counter as beats. **THE EIGHTEENTH SEAM** is what that
+  needs: a hotspot may declare `dwell` (seconds) and `aim` (radians), and it
+  fires by being LOOKED AT — the beam rested on it — because there is no
+  button for a thing you can only look at (`dwellHotspots()` in main.js, on
+  WALL time, the v7.4 law; the fixture declares one and `fixturetest` proves
+  it). Six of six and the beat: the lens shakes, a sting with no bass in it
+  (the first two takes were 100 % sub-bass, which a phone cannot play), the
+  eerie laugh panned behind, a weight on his leg, "Something was pressing
+  against my leg. Not just a sensation — there was actual weight to it!",
+  the objective turns to the ground, presence drains, the torch down finds
+  "Nothing around... no one... no footsteps... not even the sound of
+  vegetation moving around me." / "But I still feel the pressure on my
+  leg...", and the decision opens by itself (the ground at his feet IS the
+  pile). Four options; A is his: the 180° turn with the torch, and a
+  TRANSPARENT SOLDIER already running away into the trees before the beam
+  has finished the turn, on running footsteps in leaf litter — the same
+  `fbosling` ghost as the tenth man, the shower and the flagpole, one figure
+  through the whole episode. B reaches into the dark, C asks the buddy (who
+  felt nothing), D "Who's there?" — and it stops the moment he asks. 41 new
+  sounds (31 lines in three voices, 10 effects; `ghostlaugh` moves to the
+  shared pack because two chapters cue it now); the card lines are `n3A`–`n3D`,
+  because `v3A`–`v3D` are EPISODE 1 chapter 3's — the first install overwrote
+  them and `chaptertest`'s "a sample has two rows" is what caught it, so a
+  sound's name is global (the v7.1 law) in its second form: a chapter's
+  `sayPrefix` is a namespace too. Two more found by probe: this chapter
+  parses each model ONCE and clones it, and `SkeletonUtils.clone` shares
+  materials, so treating the runner in place made the five riders in the
+  tonner invisible (opacity 0) — a ghost gets his OWN materials now; and the
+  file stood on the road behind a moving truck until the tail-gate dropped.
+  `src/main.js` gains the seam, the rows and the names and nothing else, so
+  episode 1 is unchanged by construction. Sheet v51 exported (v44 stays the
+  link — the base64 wall). docs/V11.0-E2C3-PLAN.md is the build's memory.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -3025,9 +3077,9 @@ fifth chapter has no scare that is not the player's own memory replayed
 and released. `nextChapterKey()` past ch5 is null, so sealing it ends
 the run exactly as it always ended a last chapter.
 
-Next up: **episode 2's chapters 3–5, and rifle mode for chapter 5**
+Next up: **episode 2's chapters 4–5, and rifle mode for chapter 5**
 (chapter 1, The Worst Bed, shipped at v7.1 — `src/chapters/e2/e2c1.js`;
-chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 1 last revised at v10.8; the rifle
+chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 3, The Pressure, at v11.0 — `src/chapters/e2/e2c3.js`; chapter 1 last revised at v10.8; the rifle
 viewmodel's placement and material are measured in
 docs/E2-SOLDIER-MODELS.md §8, and Chad's ghost and bicycle models are
 still to come), and the still-outstanding job of replacing chapter 1's

@@ -3564,3 +3564,29 @@ centre while the ring it answers sits above the panel's centre under the
 label: a thing that must land on another thing is positioned from that
 thing's own box (`offsetLeft/offsetTop` inside the same offsetParent), never
 from the container both happen to share.
+
+## A `sayPrefix` is a namespace, and a cloned rig shares its materials (v11.0)
+
+Two from episode 2 chapter 3, both caught before release and both general.
+
+**The card lines.** Chapter 3 of episode 2 declared `sayPrefix: 'v3'`, so its
+four outcome-card takes were `v3A`–`v3D` — which are EPISODE 1 chapter 3's
+names, and installing the new files overwrote The Gathering's card lines.
+`chaptertest`'s "a sample has two rows" is what caught it. A sound's name is
+global (v7.1's law) and a chapter's `sayPrefix` is part of the name: episode
+2 uses `n1`/`n2`/`n3`, and any new chapter's prefix must be checked against
+every registry row before a single file is written. Episode 1's four files
+were restored from git byte for byte.
+
+**The materials.** e2c3 parses each model ONCE and clones it with
+`cloneSkinned` (SkeletonUtils.clone), which clones the skeleton and shares
+the MATERIALS by reference. The runner ghost's treatment — grey, transparent,
+opacity written every frame, resting at 0 — was applied to its meshes'
+materials in place, so every other `fbosling` in the chapter (the five riders
+in the tonner, the section) went grey and then invisible. The riders were
+present, posed and in frame with opacity 0, which a screenshot reads as "the
+truck is empty". e2c1 never met this because its mkRig parses afresh per rig.
+Anything that TINTS or FADES one copy of a shared model must clone that
+copy's materials first (`o.material = o.material.clone()`); the maps stay
+shared, and a dispose sweep that collects materials off the world frees the
+clones with everything else.
