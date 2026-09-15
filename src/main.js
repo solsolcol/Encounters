@@ -4023,7 +4023,7 @@ const TEEN_TAKES = new Set([
   'n2pro', 'n2askA', 'n2askB', 'n2askC', 'n2askD', 'n2nobut', 'n2B1', 'n2C1',
   'n2A', 'n2B', 'n2C', 'n2D',
   // v10.2: his thought after the third bunkmate
-  'n2known', 'n1omg', 'n2pro1', 'n2pro2']);
+  'n2known', 'n1omg', 'n2pro1', 'n2pro2', 'n2sigh', 'n2alone']);
 /* The rest of the cast. They share `voiceOut` and the duck, but not the
    boost — see voiceStage() above. */
 const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
@@ -4043,7 +4043,7 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
   'e1count', 'e1extra', 'e1rope',
   'c1two', 'c1three', 'c1four', 'c1five', 'c1six', 'c1seven', 'c1eight', 'c1nine', 'c1ten',
   // v10.0: the breakfast in chapter 2: the encik (six), the buddy, the bunkmate, and a THIRD recruit (Ronan) for siao eh
-  'e2A', 'e2saw', 'e2cock', 'e2ok', 'e2D1', 'e2D2', 'b2hear', 'k2three', 'r2siao',
+  'e2A', 'e2saw', 'e2cock', 'e2ok', 'e2hmm', 'e2D1', 'e2D2', 'b2hear', 'k2three', 'r2siao',
   // v10.1: the buddy line re-voiced as a Singaporean Chinese uncle (David) at Chad's ask; b2hear stays in the pack
   'r2hear',
   // v10.2: the encik shouts the table back to its breakfast
@@ -4059,7 +4059,8 @@ const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || CAST_TA
    voice — and keep the dynamics they were performed with. They stay in
    JAMES_TAKES (the registry's truth) and only the OUTPUT differs. */
 const WHISPER_TAKES = new Set(['vpick1', 'vpick2', 'vpick3',
-  'n1C1']);   // v7.1: "Eh. You awake?" — whispered to the next bed after lights out
+  'n1C1',     // v7.1: "Eh. You awake?" — whispered to the next bed after lights out
+  'n2sigh']); // v10.8: the defeated sigh at three in the morning — a breath through the 4:1 bus comes out as loud as speech (v6.9), so it goes round it
 const WHISPER_GAIN = 0.55;           // -5.2 dB: through a replica of the chain (dbg-whisperbus) his narration sits at -12.7 dBFS RMS, the whispers at -26 to -28.5 — 11 to 16 dB under him
 let whisperOut = null;
 function whisperStage() {
@@ -5893,6 +5894,7 @@ const STING_SAMPLE = {
   n2nobut: ['n2nobut', 1], n2B1: ['n2B1', 1], n2C1: ['n2C1', 1],
   n2A: ['n2A', 1], n2B: ['n2B', 1], n2C: ['n2C', 1], n2D: ['n2D', 1],
   e2A: ['e2A', 1], e2saw: ['e2saw', 1], e2cock: ['e2cock', 1], e2ok: ['e2ok', 1], e2D1: ['e2D1', 1], e2D2: ['e2D2', 1],
+  e2hmm: ['e2hmm', 1], n2sigh: ['n2sigh', 1], n2alone: ['n2alone', 1],   // v10.8: scene C — "Hmmmm.... okay...", the defeated sigh, "Now I'm alone with this..." (e2ok stays in the pack, nothing cues it)
   b2hear: ['b2hear', 1], k2three: ['k2three', 1], r2siao: ['r2siao', 1],
   // v10.1: the cookhouse livened up — a chatter loop, the kitchen behind the servery, a morning bed, a platoon calling the step past the open side; and the re-voiced ask
   cookchat: ['cookchat', 1], kitchen: ['kitchen', 1], marchcall: ['marchcall', 1], r2hear: ['r2hear', 1],   // (v10.4: `cookmusic` retired — the dread is the chapter's music)

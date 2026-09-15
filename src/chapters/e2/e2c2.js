@@ -346,11 +346,38 @@
     }
     box(0.03, 0.03, 8.0, RAIL_X, 0.95, 0, matSteel);
     box(0.03, 0.03, 8.0, RAIL_X, 0.55, 0, matSteel);
-    const rack = box(0.6, 1.7, 1.6, 8.4, 0.85, 4.0, matFrame); solids.push(rack);
-    for (let i = 0; i < 4; i++) box(0.56, 0.02, 1.5, 8.4, 0.3 + i * 0.4, 4.0, matSteel);
-    for (let i = 0; i < 6; i++) box(0.42, 0.02, 0.30, 8.35, 0.32 + (i % 4) * 0.4, 3.5 + (i % 3) * 0.45, matTray);
-    const sign = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 0.35), matSign);
-    sign.position.set(H.x - 0.02, 2.0, 4.0); sign.rotation.y = -Math.PI / 2; world.add(sign);
+    /* v10.8 (Chad): "the return tray shelf doesnt look like a shelf, make it look
+       like a shelf with layers. And have 2 return stations to fill up the empty
+       space." The v10.1 rack was a solid box with four slabs drawn INSIDE it, so
+       from the hall it read as a cabinet. Each station is open steel shelving
+       now — four posts, five shelves you can see between, a lip on every
+       shelf's front, trays stacked on the middle levels — and the BLOCKER is an
+       invisible box of the same footprint (`blockers()` boxes an invisible mesh
+       exactly as a visible one, v9.0). The second station stands down the same
+       wall at z −2.2, clear of the notice board (z 0.6) and the encik's corner. */
+    const matShelfPost = new THREE.MeshStandardMaterial({ color: 0x8f9396, roughness: 0.45, metalness: 0.6 });
+    function mkReturn(z) {
+      const RX = 8.4, W = 0.6, D = 1.6;
+      const blk = box(W, 1.8, D, RX, 0.9, z, matFrame); blk.visible = false; solids.push(blk);
+      for (const sx of [-1, 1]) for (const sz of [-1, 1]) box(0.04, 1.78, 0.04, RX + sx * (W / 2 - 0.02), 0.89, z + sz * (D / 2 - 0.02), matShelfPost);
+      const LEVELS = [0.22, 0.6, 0.98, 1.36, 1.74];
+      LEVELS.forEach((y, li) => {
+        box(W, 0.025, D, RX, y, z, matSteel);                                 // the shelf
+        box(0.02, 0.05, D, RX - W / 2 + 0.01, y + 0.03, z, matShelfPost);    // its lip, hall side
+        if (li === 0 || li === 4) return;
+        // trays on the working levels: two stacks of two or three, a loose one
+        const n = 2 + (li % 2);
+        for (let k = 0; k < n; k++) {
+          const tz = z - D / 2 + 0.28 + k * 0.5 + (hash(li * 3 + k, 17) - 0.5) * 0.06;
+          const stack = 1 + Math.floor(hash(li + k * 5, 19) * 3);
+          for (let t = 0; t < stack; t++) box(0.42, 0.02, 0.30, RX - 0.03, y + 0.025 + t * 0.022, tz, matTray);
+        }
+      });
+      const sg = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 0.35), matSign);
+      sg.position.set(H.x - 0.02, 2.1, z); sg.rotation.y = -Math.PI / 2; world.add(sg);
+    }
+    mkReturn(4.0);
+    mkReturn(-2.2);
     // a notice board and the hall clock on the encik's wall, condiments on the tables
     const board = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 0.95), new THREE.MeshStandardMaterial({ map: boardTex, roughness: 0.9 }));
     board.position.set(H.x - 0.02, 1.6, 0.6); board.rotation.y = -Math.PI / 2; world.add(board);
@@ -430,7 +457,7 @@
       box(0.16, 0.09, 0.1, cx + 0.16, TBL.top + 0.045, z - 0.06, matWhite);
       // trays: every seat at ours, a scatter elsewhere
       for (const s of [-1, 1]) for (const x of [-1.6, 0.6, 2.8]) {
-        const ours = ri === OURS;
+        const ours = ri === OURS || (ri === 1 && x === 0.6);   // v10.8: the two extra diners' seats at the next table get real trays too
         if (ours || hash(ri * 7 + x, 11) < 0.45) mkTray(x + (ours ? 0 : (hash(x, ri) - 0.5) * 0.3), z - s * 0.22, s > 0 ? Math.PI : 0, ours || hash(x, ri + 5) < 0.6);
       }
     });
@@ -445,6 +472,14 @@
     const SEATS = [];                                   // { x, z, ry, id }
     for (const [i, x] of SEAT_X.entries()) SEATS.push({ x, z: OURS_Z - TBL.bench, ry: 0, i });            // facing +z, into the table
     for (const [i, x] of SEAT_X.entries()) SEATS.push({ x, z: OURS_Z + TBL.bench, ry: Math.PI, i: i + 3 });
+    /* v10.8 (Chad): "add 2 more bunkmates seated on another table at the
+       cookhouse, with their food as well, same configuration as the rest.
+       Since we are supposed to have 9 people in total including the player."
+       Two at the next table toward the servery (row 1, z −1.55), facing each
+       other across it — the same dozing take, the same trays, dealt by the
+       same loop. Six at ours + these two + him = nine. */
+    SEATS.push({ x: 0.6, z: ROW_Z[1] - TBL.bench, ry: 0, i: 6 });
+    SEATS.push({ x: 0.6, z: ROW_Z[1] + TBL.bench, ry: Math.PI, i: 7 });
     /* v10.1: which seat is whose. The buddy keeps seat 0 but the "3am" line
        is a FOURTH recruit's now (r2hear, David), at seat 1 beside him; the
        old ids ride in saved phase strings and are simply ignored. */
@@ -453,6 +488,7 @@
     const CULL_SPHERE = {
       admintee:  { x: 0.067, y: 0.870, z: 0.011, r: 1.376 },
       encik2:    { x: 0.015, y: 0.832, z: -0.037, r: 1.253 },
+      fbosling:  { x: 0.056, y: 0.837, z: 0.212, r: 1.379 },   // v10.8: the flagpole ghost (e2c1's table)
       sleepanim: { x: 0.582, y: 85.062, z: 19.032, r: 130.851 },
     };
     function wideBounds(root, key) {
@@ -589,6 +625,7 @@
           g.position.y += -(lo2 - group.position.y);
         }
         proxy.visible = false; rig.ready = true; redoShadows();
+        if (opts.onReady) opts.onReady(rig);                 // v10.8: the flagpole ghost takes its treatment the moment its bytes land
       }, (err) => { console.warn(key + ' failed to load', err); rig.ready = true; }))
         .catch(err => { console.warn(key + ' failed to load', err); rig.ready = true; });
       return rig;
@@ -599,6 +636,51 @@
       encik.group.position.set(ENC.x, 0, ENC.z); encik.group.rotation.y = ENC.ry;
       if (encik.acts && encik.idle) encik.play(encik.idle, 1, 0);
     };
+
+    /* ------------------------------------------- the ghost at the flagpole
+       v10.8 (Chad): "add the ghostly soldier at the parade square flag pole,
+       standing alone and looking into the cookhouse." The tenth man from
+       chapter 1 — the same asset (`fbosling`, so no new download) and the
+       same v9.6 look — stands on the tarmac 0.55 m in front of the flag
+       stand's kerb (the kerb's front edge is z 36.75), just off the flag's
+       own pole line, turned to face DOWN the square at the hall (a Mixamo rig
+       faces +z at ry 0; the hall is at −z). He is simply there, all day, at
+       the treatment's own alpha: a ghost who fades in under your eye is a
+       special effect, one who is already there is the beat (v9.5). */
+    /* At thirty metres a 1.74 m man is three degrees of a 72° lens — about
+       twenty-five pixels on a phone — and the chapter 1 treatment (grey 0.62,
+       alpha 0.55) photographed as a smudge against the block. This one is
+       PALER and MORE OPAQUE (`look.alpha`), self-lit in the same cold blue-grey,
+       so what survives the distance is a pale upright figure and not a stain. */
+    const GHOST_A = 0.55;
+    function ghostify(rig, look) {
+      const grey = look && look.grey !== undefined ? look.grey : 0.35;
+      const glow = look && look.glow !== undefined ? look.glow : 0x0a0c14;
+      rig.ghostBase = look && look.alpha !== undefined ? look.alpha : GHOST_A;
+      const mats = [];
+      rig.model.traverse(o => {
+        if (!o.isMesh) return;
+        o.castShadow = false;
+        for (const m of (Array.isArray(o.material) ? o.material : [o.material])) {
+          m.transparent = true; m.opacity = rig.ghostBase; m.color.setScalar(grey);
+          m.emissive?.setHex(glow); m.depthWrite = false;
+          mats.push(m);
+        }
+      });
+      rig.ghostMats = mats;
+      if (rig.ghostA !== undefined) ghostAlpha(rig, rig.ghostA);
+    }
+    function ghostAlpha(rig, k) {
+      rig.ghostA = k;
+      if (rig.ghostMats) for (const m of rig.ghostMats) m.opacity = (rig.ghostBase || GHOST_A) * k;
+      const on = k > 0.002;
+      if (rig.group.visible !== on) rig.group.visible = on;
+    }
+    const FLAG_GHOST = { x: 0.9, z: 36.2, ry: Math.PI };
+    const ghostFlag = mkRig('fbosling', { x: FLAG_GHOST.x, z: FLAG_GHOST.z, ry: FLAG_GHOST.ry, height: 1.74, idle: 'Idle_3',
+      onReady: (r) => ghostify(r, { grey: 0.92, glow: 0x4a5c80, alpha: 0.82 }) });
+    ghostFlag.proxy.visible = false;                     // never a green pill on the square while the bytes are in flight
+    ghostFlag.ghostA = 1;
 
     /* ------------------------------------------------- OUTSIDE (v10.1) ---
        Chad: "should maybe show the parade square the same way it was built
@@ -1183,7 +1265,7 @@
       else speak.until = dayClock.t + 0.2;
     }
     if (warmSounds) warmSounds(['r2hear', 'k2three', 'r2siao', 'marchcall', 'n2known', 'e2hurry',
-                                'e2A', 'e2saw', 'e2cock', 'e2ok', 'e2D1', 'e2D2']);   // v10.2: the encik's six as well, belt and braces
+                                'e2A', 'e2saw', 'e2cock', 'e2ok', 'e2hmm', 'n2sigh', 'n2alone', 'e2D1', 'e2D2']);   // v10.2: the encik's six as well, belt and braces
     /* v10.2: A QUEUE OF LINES, in order, each waiting for the one before it
        (the v9.5 count-off's shape): `sayLine` refuses a line while another
        speaks, and on a slow box several `after` slots flush in one tick, so
@@ -1292,6 +1374,7 @@
       // the mixers run in every state (v5.19): a cutscene owns the poses, never the clocks
       for (const r of seated.rigs) if (r.mixer && seated.group.visible) r.mixer.update(dt);
       if (encik.mixer && encik.group.visible) encik.mixer.update(dt);
+      if (ghostFlag.mixer && ghostFlag.group.visible) ghostFlag.mixer.update(dt);
       if (pocket.visible) {
         for (const f of fanBlades) f.rotation.y += dt * 6.5;
         for (const r of sleepRigs) if (r.mixer) r.mixer.update(dt);
@@ -1385,6 +1468,7 @@
       for (const o of owned) { o.parent?.remove(o); o.dispose?.(); }
       owned.length = 0;
       encik.mixer?.stopAllAction();
+      ghostFlag.mixer?.stopAllAction();
       for (const r of seated.rigs) r.mixer?.stopAllAction();
       for (const r of sleepRigs) r.mixer?.stopAllAction();
       for (const g of geos) g.dispose();
@@ -1412,7 +1496,7 @@
       set noteStorm(v) {},
       // the chapter's own
       H, TBL, ROW_Z, OURS, SEATS, WHO, ENC, PK, R, BED, HIS, DOOR_WC, BLOCK, DOOR_AJAR, DOOR_OPEN, WATER_AT,
-      encik, ENC_TALK, seated, sitUp, sitDown, allSitDown, staff,
+      encik, ENC_TALK, seated, sitUp, sitDown, allSitDown, staff, ghostFlag, FLAG_GHOST,
       pocket, setNight, setShower, doorPivot, doorLight, nightLight, blockLight, clock, clockFace, blanket, fanBlades,
       beds, hisBed, sleepers, sleepRigs, sleeperRoot, foodModel: () => foodModel,
       tubeLights, tubes,
@@ -1647,18 +1731,18 @@
     fade(34.0, 35.0, 0, 1);
     /* 35–43 black: the water fades, his line. */
     tr(35.0, 37.5, k => { stage.setShower(true, 0.8 * (1 - k)); }, rawK);
-    sfx(36.2, 'n2pro');                          // 6.72 s → 42.9
-    /* 43.2 THE COOKHOUSE, in daylight, the section already at the table */
-    step(43.2, () => {
+    sfx(38.4, 'n2pro');                          // 6.72 s → 45.1 (v10.8: +2.2 s of black first — Chad: "the voicelines are too close to each other")
+    /* 45.4 THE COOKHOUSE, in daylight, the section already at the table (v10.8: every time here is +2.2) */
+    step(45.4, () => {
       stage.setNight(false);
       if (kit) kit.daylight(null, 0);
     });
-    camTo(43.2, 49.4, SPAWN, { x: SPAWN.x + 0.9, y: 1.62, z: SPAWN.z }, smoothK);
-    yawTo(43.2, 49.4, Y_HALL + 0.18, Y_HALL - 0.06, smoothK);
-    pitchTo(43.2, 49.4, -0.02, -0.02, rawK);
-    fade(43.2, 45.4, 1, 0);
-    fade(48.6, 50.2, 0, 1);
-    step(50.4, () => { armR.visible = true; });
+    camTo(45.4, 51.6, SPAWN, { x: SPAWN.x + 0.9, y: 1.62, z: SPAWN.z }, smoothK);
+    yawTo(45.4, 51.6, Y_HALL + 0.18, Y_HALL - 0.06, smoothK);
+    pitchTo(45.4, 51.6, -0.02, -0.02, rawK);
+    fade(45.4, 47.6, 1, 0);
+    fade(50.8, 52.4, 0, 1);
+    step(52.6, () => { armR.visible = true; });
     c.endFade = 1;
     c.keepFade = true;
   }
@@ -1688,7 +1772,11 @@
     const { tr, step, sfx, fade, yawTo, pitchTo, faceFrom, rawK, smoothK, duck, stage, handsRoot, yaw } = api;
     const P0 = P(s);
     const E = stage.ENC;
-    const AWAY = { x: E.x - 5.6, z: E.z + 0.2 };
+    /* v10.8 (Chad: "his legs collides into the chair"): the walk ran at z −5.4,
+       which is INSIDE the −z bench of the −4.6 row (its slab spans −5.44…−5.12
+       for x −2.9…4.1). He keeps to the wall now — z −6.35, 0.9 m clear of the
+       bench's edge and 0.4 m off the parapet's face. */
+    const AWAY = { x: E.x - 5.6, z: E.z - 0.75 };
     const Y_E = faceFrom(P0.x, P0.z, E.x, E.z);
     step(0, () => { handsRoot.visible = false; });
     yawTo(0, 1.0, s.yawRot, Y_E, smoothK);
@@ -1753,28 +1841,36 @@
     yawTo(0, 1.0, s.yawRot, Y_E, smoothK);
     pitchTo(0, 1.0, s.pitchX, 0.04, smoothK);
     sfx(0.5, 'n2askC');                          // 2.96 s → 3.5
-    /* the look: a slow push in on him, and nothing from him */
-    camTo(3.6, 8.0, P0, NEAR, smoothK);
-    pitchTo(3.6, 8.0, 0.04, 0.10, smoothK);
-    sfx(8.2, 'e2ok'); encTalk(stage, step, 8.2, 0.64, stage.ENC_TALK[1]);      // → 8.9
-    fade(10.2, 11.2, 0, 1);
-    /* 11.2 THREE IN THE MORNING, from his pillow */
-    step(11.2, () => {
+    /* the look: a push in on him, and then not a verdict but a "hmmmm...". v10.8
+       (Chad): "the delay before encik says 'ok' is way too long, shorten it, and
+       make the encik go 'hmmmm.... okay...' in a more contemplative tone" — the
+       push-in is 2.6 s where it was 4.4, and the take is 1.92 s of thinking. */
+    camTo(3.6, 6.2, P0, NEAR, smoothK);
+    pitchTo(3.6, 6.2, 0.04, 0.10, smoothK);
+    sfx(6.0, 'e2hmm'); encTalk(stage, step, 6.0, 1.92, stage.ENC_TALK[1]);     // "Hmmmm.... okay..." → 7.9
+    fade(8.6, 9.6, 0, 1);
+    /* 9.6 THREE IN THE MORNING, from his pillow: a defeated sigh, the line, and
+       what backing down bought him (v10.8: "a 'defeated sigh' sound, before his
+       voiceline of 'i should've just told him...' Also have a voiceline after
+       that says 'Now, I'm alone with facing this every single night...'") */
+    step(9.6, () => {
       if (kit) kit.daylight(NIGHT, 0);
       stage.setNight(true);
       stage.doorPivot.rotation.y = stage.DOOR_AJAR;
       stage.clock.set('03:00');
     });
-    camTo(11.2, 20.8, T.PILLOW, T.PILLOW, rawK);
-    yawTo(11.2, 20.8, T.Y_ROOM + 0.3, T.Y_PIL + 0.10, smoothK);
-    pitchTo(11.2, 20.8, 0.02, 0.04, smoothK);
-    fade(11.2, 12.6, 1, 0);
-    step(13.6, () => stage.setShower(true, 0.7));
-    sfx(13.6, 'dread', 0.6);
-    sfx(15.6, 'n2C1');                           // 1.76 s → 17.4
-    sfx(18.2, 'drip', 0.5);
-    fade(18.8, 20.2, 0, 1);
-    step(20.6, () => { handsRoot.visible = true; stage.setNight(false); if (kit) kit.daylight(null, 0); });
+    camTo(9.6, 26.0, T.PILLOW, T.PILLOW, rawK);
+    yawTo(9.6, 26.0, T.Y_ROOM + 0.3, T.Y_PIL + 0.10, smoothK);
+    pitchTo(9.6, 26.0, 0.02, 0.04, smoothK);
+    fade(9.6, 11.0, 1, 0);
+    step(12.0, () => stage.setShower(true, 0.7));
+    sfx(12.0, 'dread', 0.6);
+    sfx(13.2, 'n2sigh');                         // 2.56 s → 15.8 — the sigh
+    sfx(16.2, 'n2C1');                           // 1.76 s → 18.0 — "I should have just told him..."
+    sfx(18.8, 'n2alone');                        // 4.64 s → 23.4 — "Now I'm alone with this... every single night."
+    sfx(24.0, 'drip', 0.5);
+    fade(24.6, 26.0, 0, 1);
+    step(26.4, () => { handsRoot.visible = true; stage.setNight(false); if (kit) kit.daylight(null, 0); });
     c.endFade = 1;
   }
 

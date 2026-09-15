@@ -123,7 +123,7 @@
       objStood: 'Stand by your bed — wait for orders',
       objBed: 'STANDBY BED — lay it out, fast',
       bedBrief: 'Drag each item on the left onto its place on the right. The faster you lay the whole set out, the better it is inspected — and every item put in the wrong place costs you.',
-      objFree: 'Look around the bunk before lights out',
+      objFree: 'Look around the bunk before lights out — check the toilet block',
       objWarn: 'Lights out is coming — get to your bed',
       objLights: 'Lights out',
       objFear: 'FEAR CONTROL — keep the beat',
@@ -4078,14 +4078,18 @@
        There are four things to look at in the bunk and none of them takes
        more than a few seconds, so 45 is still more than enough to see them
        all and get back to the bed. */
-    const FREE_SECS = 33, FREE_WARN = 12;          // v10.4: +3 s at Chad's ask ("3 more seconds to explore the bunk")
+    const FREE_SECS = 40, FREE_WARN = 12;          // v10.4: +3 s at Chad's ask ("3 more seconds to explore the bunk"); v10.8: +7 more ("7 more seconds to explore the bunk")
     let freeWarned = false, freeTimer = null;
     function beginFree() {
       setPhase('free');
       freeWarned = false;
       if (!kit) return;
       kit.objective(DATA.words.objFree);
-      kit.waypoint(null);
+      /* v10.8 (Chad: "Make the toilet interaction more obvious to find, as i think
+         players will miss checking that out"): the evening's waypoint diamond sits
+         on the toilet block's doorway — the one place in the bunk the chapter's
+         premise lives — and the shower hotspot's reach grew 1.8 → 2.6 m. */
+      kit.waypoint({ x: DOOR_WC.x, y: 1.0, z: R.z - 0.25 });
       freeTimer = kit.timer(FREE_SECS, () => { freeTimer = null; beginLightsOut(); });
     }
     /* ---- lights out: the switch, the sky, the beds, and to bed */
@@ -4279,7 +4283,7 @@
     const hotspots = [
       /* the anchors sit at EYE height: a hotspot must be on screen to be offered, and a
          doorway's floor point is 44° under the lens from a metre away — outside the view */
-      { id: 'shower', pos: { x: DOOR_WC.x + 0.4, y: 1.0, z: R.z + 2.2 }, radius: 1.8, prompt: DATA.words.hotShower,
+      { id: 'shower', pos: { x: DOOR_WC.x + 0.4, y: 1.0, z: R.z + 2.2 }, radius: 2.6, prompt: DATA.words.hotShower,
         enabled: () => phase === 'free',
         onInteract() { seen.add('shower'); return sayLine('n1shower'); } },
       /* v8.0: every one of these went through `castSay`-shaped code that

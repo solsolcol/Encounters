@@ -2516,6 +2516,46 @@ What the baseline contains, by release:
   the clock turns and the water starts (31.2). `src/main.js` gains rows and
   three names in `TEEN_TAKES` and nothing else. Sheet v49 exported (v44
   stays the link). docs/V10.4-THE-MUSIC-A-PHONE-CAN-PLAY.md is the memory.
+- **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
+  Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
+  `STING_SAMPLE` rows and three names in the take sets and nothing else, so
+  episode 1 is unchanged by construction. **CHAPTER 1**: the evening 33 → 40 s
+  ("7 more seconds to explore the bunk"); and "make the toilet interaction more
+  obvious" — the evening's objective now NAMES the toilet block and carries the
+  kit's WAYPOINT diamond on its doorway (the one place in the bunk the premise
+  lives), and the shower hotspot's reach grew 1.8 → 2.6 m. Measured on the hosted
+  build: waypoint (−3.3, 1.0, 3.75), timer 39.5 on entry. **CHAPTER 2, THE
+  FILM**: 2.2 s more black before "I've had enough" (36.2 → 38.4, everything
+  after it +2.2). **SCENE A**: the encik's walk-off ran at z −5.4, INSIDE the −z
+  bench of the −4.6 row (its slab spans −5.44…−5.12) — "his legs collides into
+  the chair" — and keeps to the wall at −6.35 now; measured 15.0–18.0 s, z −5.62
+  → −6.23. **SCENE C** is rewritten to his spec: the push-in 4.4 → 2.6 s, "Ok."
+  replaced by a contemplative "Hmmmm.... okay..." (`e2hmm`, Hilmi under the
+  bark rule, 1.92 s — the slowest of four), then at three in the morning a
+  DEFEATED SIGH (`n2sigh`, Aaron, 2.56 s — "[sighs] Haaahh...", a wordless take
+  that still needs voiceable text, v4.8's law, and routed round the voice bus
+  with the whispers because a breath through the 4:1 compressor comes out as
+  loud as speech, v6.9), "I should have just told him...", and a NEW line
+  "Now I'm alone with this... every single night." (`n2alone`, 4.64 s, his
+  wording; the slowest read of four — a hopeless line is a slow one). Measured
+  cue order: e2hmm, dread, n2sigh, n2C1, n2alone, drip. `e2ok` stays in the
+  pack, nothing cues it. **THE GHOST AT THE FLAGPOLE**: `fbosling` again (no
+  new download), the v9.6 treatment made PALER and more opaque (`look.alpha`,
+  grey 0.92, alpha 0.82), standing on the tarmac 0.55 m in front of the flag
+  stand's kerb, off the flag's own pole line, turned to face down the square at
+  the hall — there all day, never fading, because a ghost who is already there
+  is the beat (v9.5). At thirty metres he is three degrees of the lens, which
+  is why the chapter-1 look photographed as a smudge. **THE TRAY RETURN** was a
+  solid box with four slabs drawn INSIDE it, so it read as a cabinet; each
+  station is open shelving now (four posts, five shelves with a lip, trays
+  stacked on the working levels) with an invisible blocker of the same
+  footprint, and there are TWO, the second down the same wall at z −2.2 clear
+  of the notice board. **TWO MORE DINERS** at the next table (row 1, x 0.6,
+  facing each other), the same dozing take and the same trays, dealt by the
+  same loop — six at ours, these two and him: nine. `walktest` green with the
+  new blockers. Sheet v50 exported (`masters/v10.8/masterz-text-v50.xlsx`;
+  v44 stays the link — the base64 wall). masters/v10.8/make.sh is the recipe;
+  the candidate takes went to Chad as previews before shipping (the v10.6 rule).
 - **v10.7** THE DREAD, LEVELLED BY WHAT IT AVERAGES — Chad, on v10.6: *"The
   eerie music volume can still be made louder, it feels buried under
   everything."* Measured before anything moved: bed C peaked at −4.4 dBFS and
@@ -2987,7 +3027,7 @@ the run exactly as it always ended a last chapter.
 
 Next up: **episode 2's chapters 3–5, and rifle mode for chapter 5**
 (chapter 1, The Worst Bed, shipped at v7.1 — `src/chapters/e2/e2c1.js`;
-chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 1 last revised at v10.7; the rifle
+chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 1 last revised at v10.8; the rifle
 viewmodel's placement and material are measured in
 docs/E2-SOLDIER-MODELS.md §8, and Chad's ghost and bicycle models are
 still to come), and the still-outstanding job of replacing chapter 1's

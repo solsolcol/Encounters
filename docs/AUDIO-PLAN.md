@@ -842,6 +842,15 @@ before it plays. Cue map: the film (§9 of the plan) `e2film` 0, `seawash`
 whistle, the sergeant's lines on his talk take, push-ups, the switch; the
 four scenes (§10).
 
+## v10.8 · scene C's three new takes
+
+`e2hmm` (Hilmi, "Hmmmm.... okay...", 1.92 s, replaces `e2ok` which stays in
+the pack), `n2sigh` (Aaron, "[sighs] Haaahh...", 2.56 s — wordless, through
+`WHISPER_TAKES` so the bus does not lift a breath to speech level) and
+`n2alone` (Aaron, "Now I'm alone with this... every single night.", 4.64 s).
+Levels: the encik to e2ok's −7.1, the two Aaron takes to n2C1's −6.85/−6.6.
+Flows in masters/v10.8/urls.txt; recipe masters/v10.8/make.sh.
+
 ## v10.7 · the dread levelled by RMS
 
 Chad: still "buried under everything". Bed C peaked −4.4 but averaged −21.1

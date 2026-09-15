@@ -505,10 +505,22 @@
       text: "Guess only I know what is happening...", secs: 2.72 },
     { id: "n2askC", who: "jamesTeen", ch: "e2c2", where: "Scene C opens: what he says to the encik",
       text: "Never mind encik, I think I was just tired.", secs: 2.96 },
-    { id: "e2ok", who: "encik", ch: "e2c2", where: "Scene C: after a look that lasts a beat too long",
+    { id: "e2ok", who: "encik", ch: "e2c2", where: "Scene C: after a look that lasts a beat too long (SUPERSEDED at v10.8 by e2hmm; the file stays in the pack, nothing cues it)",
       text: "Ok.", secs: 0.64 },
+    /* v10.8 (Chad): "make the encik go 'hmmmm.... okay...' in a more contemplative
+       tone" — under his bark rule (no stage direction), the pause written as dots */
+    { id: "e2hmm", who: "encik", ch: "e2c2", where: "Scene C: after a look that lasts a beat too long — contemplative, not a verdict",
+      text: "Hmmmm.... okay...", secs: 1.92 },
+    /* v10.8 (Chad): "the voiceline should have a 'defeated sigh' sound, before his
+       voiceline of 'i should've just told him...'" — a wordless exhale, which still
+       needs voiceable text for the tag to shape (v4.8's law). Routed round the
+       voice bus with the whispers (WHISPER_TAKES). */
+    { id: "n2sigh", who: "jamesTeen", ch: "e2c2", where: "Scene C: three in the morning, awake — a defeated sigh before the line",
+      text: "[sighs] Haaahh...", secs: 2.56, note: "Wordless. The tag shapes the breath; the text gives eleven_v3 something to voice." },
     { id: "n2C1", who: "jamesTeen", ch: "e2c2", where: "Scene C: three in the morning, awake, it has started again",
       text: "I should have just told him...", secs: 1.76 },
+    { id: "n2alone", who: "jamesTeen", ch: "e2c2", where: "Scene C: after that — what backing down bought him",
+      text: "[quietly, hopeless] Now I'm alone with this... every single night.", secs: 4.64 },
     { id: "n2askD", who: "jamesTeen", ch: "e2c2", where: "Scene D opens: what he says to the encik",
       text: "Encik, what do you think it is?", secs: 1.92 },
     { id: "e2D1", who: "encik", ch: "e2c2", where: "Scene D: the encik's three answers",
