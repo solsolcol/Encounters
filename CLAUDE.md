@@ -2516,6 +2516,36 @@ What the baseline contains, by release:
   the clock turns and the water starts (31.2). `src/main.js` gains rows and
   three names in `TEEN_TAKES` and nothing else. Sheet v49 exported (v44
   stays the link). docs/V10.4-THE-MUSIC-A-PHONE-CAN-PLAY.md is the memory.
+- **v10.6** BED C, LAUGH 4, AND THE SWELL THE BUNK LOST — Chad heard every
+  candidate this time (thirty-second previews of all six beds and all four
+  laughs, which is what v10.5 should have led with) and chose by ear: *"Use bed
+  c ... Use laugh 4."* Bed C is `scary-3`, the "Southeast Asian ghost film"
+  prompt — the cold hollow drone with detuned choir tones and creaks that the
+  v10.5 measure had ranked LAST (centroid 216–303 Hz, 1 % above 3 kHz) — cut
+  20–82 s, clear of the take's silences past 170 s, the same 59 s loop, −6.0
+  dBFS, 0.85 in both chapters. Laugh 4 is the highest-pitched take (f0 345 Hz),
+  the one v10.5 called "a muffled hum". **His ear beats my measure, and the
+  measure was answering the wrong question**: "audible on a phone" and "scary"
+  are not the same axis, and a number cannot rank the second. The previews are
+  the fix, not a better formula. Both files replaced under their own names,
+  recipe in masters/v10.4/make2.sh.
+  AND THE THING HE SAID I BROKE, WHICH I HAD: *"you accidentally removed some
+  sting music in the ep2chp1 intro when the camera turns to inside the bunk."*
+  Read against v10.3's file: the whole 60 s episode theme `e2film` ran under the
+  film from 0.0, building to its climax at 41–46 s — which is the bunk's
+  fade-in (37.6–40) and "Nine of us to a bunk" (38.6–45.4). v10.4 retired the
+  theme for a 40 s march under the ferry, the jetty and the square, as he
+  asked, and the march ends as the bunk arrives — so the bunk's swell went with
+  the theme, unasked. `e2filmbunk` is that theme's last 24 s (36.0 s to its
+  end, cut from the same v7.1 master — envelope correlation 1.000 against the
+  shipped file — with a 1 s fade-in under the film's black at 37.0), cued at
+  36.0 so every sample lands on the frame it did. Measured on the hosted build:
+  resume at 35.2, `e2filmbunk` fires at 36.0 over the march and the dread.
+  The audit of everything else v10.4 removed from both chapters: `drip` in
+  scene A MOVED 17.6 → 17.8 (not removed); `cookmusic`, chapter 2's cookhouse
+  morning bed, RETIRED at his own ask ("the same loud eerie music ... throughout
+  this entire chapter") — the only other music v10.4 took out, and the one to
+  put back if he misses it. `src/main.js` gains one `STING_SAMPLE` row.
 - **v10.5** SCARIER, AND YOUNGER — Chad, on v10.4: *"The new eerie music is
   bad, i prefer the older one unless you can generate something scarier. Also
   the ghost soldier laughing sound is too old and not eerie enough. It should
@@ -2937,7 +2967,7 @@ the run exactly as it always ended a last chapter.
 
 Next up: **episode 2's chapters 3–5, and rifle mode for chapter 5**
 (chapter 1, The Worst Bed, shipped at v7.1 — `src/chapters/e2/e2c1.js`;
-chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 1 last revised at v10.5; the rifle
+chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 1 last revised at v10.6; the rifle
 viewmodel's placement and material are measured in
 docs/E2-SOLDIER-MODELS.md §8, and Chad's ghost and bicycle models are
 still to come), and the still-outstanding job of replacing chapter 1's

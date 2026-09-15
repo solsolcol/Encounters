@@ -5146,6 +5146,7 @@
        it and comes up to full over the balcony's fade-in at 37.6. `e2film`,
        the old film theme, is retired. */
     sfx(0.0, 'e2march', 0.55);
+    sfx(36.0, 'e2filmbunk', 1);              // v10.6: the episode theme's own bunk half (its 36.0 s onward, cut from the same take) — v10.4 retired `e2film` whole and the swell that met the bunk went with it; Chad heard the gap
     step(0, () => { duck('e2dread', 0.2); });
 
     /* ===================== 0–20.6 INSIDE THE FERRY (v7.9) =================

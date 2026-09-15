@@ -30,4 +30,17 @@ enc() { # name src target_mp3 target_ogg opus_bitrate channels
 # runner-up (28 % in 500-3k, but it swells 13.6 dB inside any loopable window);
 # scary-3/4 (the "SEA ghost film" prompt) came out as sub-500 Hz drones with
 # literal silences — centroid 216-303 Hz, 1 % above 3 kHz — the v9.7 bed again.
-enc e2dread w_loop.wav -6.0 -6.0 96k 2
+# enc e2dread w_loop.wav -6.0 -6.0 96k 2   # v10.5: scary-1 165-227 (Chad: no — "use bed c")
+# v10.6 · Chad heard all six beds and all four laughs (30 s previews): "Use bed c ...
+# Use laugh 4." Bed C is scary-3, the "Southeast Asian ghost film" prompt — a cold
+# hollow drone with detuned choir tones and creaks; window 20-82 s (mk.py), std
+# 1.25 dB, clear of the take's silences past 170 s. Laugh 4 is the highest-pitched
+# take (f0 345 Hz). Both his ear over my measure.
+# enc e2dread w_loop.wav -6.0 -6.0 96k 2   # done (bed C: mp3 -6.03, ogg -5.91)
+# enc ghostlaugh raw/laugh-4.mp3 -4.0 -4.0 64k 1   # done (mp3 -4.02, ogg -4.03)
+# v10.6 · e2filmbunk: the v7.1 theme (e2film-a, the take the shipped e2film was
+# cut from — envelope correlation 1.000 against the v10.3 file) from 36.0 s to its
+# end, a 1 s fade-in under the film's black at 37.0, cued at 36.0 so its swell
+# meets the bunk's fade-in exactly where it did before v10.4 retired the theme.
+#   ffmpeg -ss 36.0 -i ../v7.1/e2film-a.mp3 -af afade=t=in:d=1.0 -ar 48000 -ac 2 w_filmbunk.wav
+enc e2filmbunk w_filmbunk.wav -4.2 -4.2 96k 2

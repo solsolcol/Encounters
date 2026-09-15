@@ -5873,6 +5873,7 @@ const STING_SAMPLE = {
   c1eight: ['c1eight', 1], c1nine: ['c1nine', 1],
   c1ten: ['c1ten', 1],           // the number nobody in the section called
   e2march: ['e2march', 1],       // v10.4: a solemn march under the film's ferry, jetty and square (40 s); the old `e2film` theme is retired
+  e2filmbunk: ['e2filmbunk', 1], // v10.6: the theme's LAST 24 s (36.0 s to its end) put back under the bunk — v10.4 retired the whole theme and took the bunk's swell with it; cued at 36.0 so every sample lands where it did
   ghostlaugh: ['ghostlaugh', 1], ghostrun: ['ghostrun', 1],   // v10.4: the block laughs (scenes B and D); the figure's feet on the tile (scene A)
   n1omg: ['n1omg', 1],           // v10.4: "Oh my god..." when the water stops (scene A)
   e2bed: ['e2bed', 1],           // the night's explore bed (50 s, eleven_music_v2, loop)

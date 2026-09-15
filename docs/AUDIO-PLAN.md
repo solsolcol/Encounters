@@ -842,6 +842,17 @@ before it plays. Cue map: the film (§9 of the plan) `e2film` 0, `seawash`
 whistle, the sergeant's lines on his talk take, push-ups, the switch; the
 four scenes (§10).
 
+## v10.6 · bed C, laugh 4, and the theme's bunk half
+
+Chad listened to 30 s previews of all six beds and four laughs and chose:
+`e2dread` ← scary-3 (the "SEA ghost film" drone the measure ranked last),
+20–82 s loop, −6.0 dBFS; `ghostlaugh` ← laugh-4 (f0 345 Hz). Previews before
+picking, from now on. And `e2filmbunk` (24 s, −4.7/−4.1 dBFS): the v7.1
+theme `e2film-a` from 36.0 s to its end, 1 s fade-in, cued at 36.0 in the
+e2c1 film — v10.4 retired `e2film` whole for `e2march` and the theme's climax
+(41–46 s) under the bunk's fade-in went with it. v10.4's only other removal,
+`cookmusic` in e2c2, was Chad's own ask. Recipe: masters/v10.4/make2.sh.
+
 ## v10.5 · the bed, scarier; the laugh, younger
 
 Chad on v10.4: the new eerie bed was "bad" and he preferred the old one unless
