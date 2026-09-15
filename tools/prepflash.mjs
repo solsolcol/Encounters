@@ -26,15 +26,21 @@ const root = doc.getRoot();
 const before = fs.statSync(inp).size;
 
 await doc.transform(metalRough());
+/* v11.3 (Chad: "why is the flashlight texture missing?"): it was never in
+   the base colour. Measured, the file's base sheet averages 33/255 — a
+   black metal torch — and everything that makes it READ as one is in the
+   other two maps: the metal/roughness sheet (knurling on the grip, the
+   bright rings, the matte rubber, mean R 237 G 165 B 89) and the emissive
+   sheet (the lens, factor 0.75). v11.1's prep dropped both and set the
+   metal to 0.15, which is a dark plastic tube. Both maps ship now (JPEG
+   at the same size), the factors are the file's, and the engine turns up
+   the environment on this one material so the metal has something to
+   reflect (v8.9's law). The normal and occlusion maps still go. */
 const keep = new Set();
 for (const m of root.listMaterials()) {
-  const base = m.getBaseColorTexture(); if (base) keep.add(base);
-  m.setNormalTexture(null); m.setMetallicRoughnessTexture(null);
-  m.setOcclusionTexture(null); m.setEmissiveTexture(null);
-  m.setEmissiveFactor([0, 0, 0]);
-  /* a metal with no environment to reflect renders near black (v8.9), and
-     the viewmodel scene carries only a faint one: mostly dielectric */
-  m.setMetallicFactor(0.15); m.setRoughnessFactor(0.62);
+  for (const t of [m.getBaseColorTexture(), m.getMetallicRoughnessTexture(), m.getEmissiveTexture()]) if (t) keep.add(t);
+  m.setNormalTexture(null); m.setOcclusionTexture(null);
+  if (!m.getMetallicRoughnessTexture()) { m.setMetallicFactor(0.15); m.setRoughnessFactor(0.62); }
   m.setAlphaMode('OPAQUE'); m.setDoubleSided(false);
 }
 for (const t of root.listTextures()) if (!keep.has(t)) t.dispose();

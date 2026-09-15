@@ -2677,6 +2677,47 @@ What the baseline contains, by release:
   eye, refined by the measure, is the shape that worked. Two credit rows;
   sheet v53 exported (v44 stays the link). docs/V11.0-E2C3-PLAN.md §18 is
   the build's memory.
+- **v11.3** THE TORCH YOU CAN SEE, THE SWAP, THE THICKER JUNGLE, AND THE
+  BLEED HALVED — Chad's six notes on v11.2, all episode 2 chapter 3;
+  `src/main.js` changes the torch prop's loader and the hand/torch swap, both
+  reachable only from a chapter that declares `torch.model` (episode 1
+  declares no torch), and the hurt frame's class, which only `kit.hurt`
+  sets. **"WHY IS THE FLASHLIGHT TEXTURE MISSING?"** — two causes, both
+  measured. v11.1's prep kept only the base sheet and set metalness 0.15,
+  and the base sheet averages 33/255: the model is a BLACK METAL torch and
+  its whole look lives in the metal-roughness map (orange — roughness ~0.65,
+  metalness ~0.35, the scuffs) and the emissive map (the cream lens), both
+  thrown away. `tools/prepflash.mjs` ships all three now (65 → 112 KB). And
+  that was still a black cut-out in the game, photographed in the shipped
+  placement: 33/255 is ~1.5 % linear albedo, and chapter 3's viewmodel rig
+  is hemi 0.35 / key 0.25 — no lift fixes it honestly (×5 still black), so a
+  small cool FILL rides the prop, bracketed by render (0.06 / 0.12 / 0.22 /
+  1.0 — 1.0 blew the steel to white; 0.22 is where the head ring, the switch
+  and the scuffs read). **THE PLACEMENT**: the rest is −0.86 of the frame's
+  half-height at the prop's depth (was −0.62), the grip under the bottom
+  edge, the head what shows. **THE SWAP** is a weapon switch: 0.42 s on wall
+  time, the thing on screen drops out of frame first (0–0.5), then the other
+  rises (0.5–1), sequential in both directions so a toggle mid-swap reverses
+  — and the arm is written ONLY while a swap runs, because episode 1's
+  scenes own `armR.position` (a per-frame write would have fought chapters 1,
+  3 and 4; LEARNINGS). **THE JUNGLE**: 88 candidate trunks → 230 with a
+  second band from 6 m, under a SIGHT-LINE rule — no trunk within 1.1 m of
+  the line from his scrape to any of the six torch spots, 1.6 m of any man,
+  1.5 m of another trunk; 130 trunks on the shipped build, 19 blockers,
+  `walktest` green. **THE WILDLIFE**: a `junglelife` bed (insects and frogs,
+  keyed to the same `jungleK` as the night bed) and five one-shots — three
+  bush rustles, two night calls — on the chapter's own deterministic stream
+  (rustles every 12–28 s, calls every 24–52 s, panned, never during the
+  press or the torch-down), cleared by `reset()` (the v8.1 law a sixth
+  time); picked by measurement (AUDIO-PLAN v11.3), the previews sent to Chad
+  (the v10.6 rule). **THE BLEED** is 1.5 sanity a second (was 3), and the
+  hurt frame is its own class — a red gradient that starts at 46 % of the
+  radius (was 12 %) and beats to 0.55 (was 0.85), the edges only; the base
+  game's low-sanity frame is untouched. One harness note: `fixture` and
+  `cine` time out under load two-at-a-time on this box and pass alone, which
+  the history shows at every release since v9 — not a game change. No word
+  moved; sheet v53 stands (v44 the link). docs/V11.0-E2C3-PLAN.md §19 is the
+  build's memory.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -3188,7 +3229,7 @@ the run exactly as it always ended a last chapter.
 
 Next up: **episode 2's chapters 4–5, and rifle mode for chapter 5**
 (chapter 1, The Worst Bed, shipped at v7.1 — `src/chapters/e2/e2c1.js`;
-chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 3, The Pressure, at v11.0 and revised at v11.1–v11.2 — `src/chapters/e2/e2c3.js`; chapter 1 last revised at v10.8; the rifle
+chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 3, The Pressure, at v11.0 and revised at v11.1–v11.3 — `src/chapters/e2/e2c3.js`; chapter 1 last revised at v10.8; the rifle
 viewmodel's placement and material are measured in
 docs/E2-SOLDIER-MODELS.md §8, and Chad's ghost and bicycle models are
 still to come), and the still-outstanding job of replacing chapter 1's

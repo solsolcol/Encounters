@@ -889,6 +889,31 @@ the pack), `n2sigh` (Aaron, "[sighs] Haaahh...", 2.56 s — wordless, through
 Levels: the encik to e2ok's −7.1, the two Aaron takes to n2C1's −6.85/−6.6.
 Flows in masters/v10.8/urls.txt; recipe masters/v10.8/make.sh.
 
+## v11.3 · the night jungle's wildlife, and the bushes
+
+Chad: *"Add more natural wildlife sounds in the background, and shuffling
+noises in the bushes."* Six new sounds, all episode 2 chapter 3's by the
+split, flow `KsTC1vS0JU4siGAPuiMc` (eleven_text_to_sound_v2, `duration_seconds`
+and `loop` as PARAMETERS — v9.2's law), four takes each, picked by measurement
+(masters/v11.3/make.sh has the numbers):
+
+| sound | what | pick | why |
+|---|---|---|---|
+| `junglelife` | a 30 s LOOP: frogs near and far, crickets, a night bird, a distant owl, a far monkey | take b | the most of its energy in 500 Hz–3 kHz of the four (9.5 % against 2.7–5.8 — the frogs and the bird, not only the crickets), a 3.1 dB swing, a 0.3 dB loop seam |
+| `bushrustle1/2/3` | something moving in the undergrowth, 4 s | a, b, d | a is the fullest (13 % in 500–3k, the branch), b and d the drier ones; c is 98 % hiss; every take peaks inside its first 0.4 s |
+| `nightcall1/2` | one far animal call, 5 s | b, c | the flattest swings (9.0 / 11.3 dB) of four calls that all sit in 500 Hz–3 kHz |
+
+Levels: the bed −10.5 dBFS (where the beds sit), the effects −4.0. In the
+chapter: `junglelife` is a bed at 0.30 beside `junglenight` at 0.34, both
+keyed to `jungleK` so the pressure's "nothing around" ducks them together;
+the rustles fire every 12–28 s and the calls every 24–52 s from the chapter's
+own deterministic stream, PANNED to a side (a rustle is heard before it is
+looked at — which is the chapter), never in the pressure's own beat, stated
+in `dayClock` and cleared by `reset()` (the v8.1 law). `stage.ambient().bush`
+reports the schedule and the counts, because `__enc.stings()` cannot see
+`worldSfx` (v9.2). The raw takes are in `masters/v11.3/raw/` for Chad's ear
+(the v10.6 rule): a preview of each was sent with the release.
+
 ## v10.7 · the dread levelled by RMS
 
 Chad: still "buried under everything". Bed C peaked −4.4 but averaged −21.1

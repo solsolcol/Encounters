@@ -1388,20 +1388,50 @@ function torchPropLoad(key) {
          jungle (found by render: a red emissive proved the geometry was in
          frame). A faint self-light keeps the body legible; the LENS glow
          below is what actually draws it. */
-      for (const m of (Array.isArray(o.material) ? o.material : [o.material])) { if (m.emissive) { m.emissive.setHex(0x2a2622); m.emissiveIntensity = 1; } m.needsUpdate = true; }
+      for (const m of (Array.isArray(o.material) ? o.material : [o.material])) {
+        /* v11.3: the file's own metal/roughness and emissive sheets ship
+           now (tools/prepflash.mjs) — the torch is black METAL, and its
+           look lives in those maps, not in a base colour that averages
+           33/255. Metal needs something to reflect: the viewmodel scene
+           runs the room environment at 0.025, so this one material turns
+           it up. The base is lifted a little for a midnight lens, and the
+           emissive map (the lens) keeps the file's factor. */
+        if (m.color) m.color.setScalar(2.2);
+        /* the scene's environmentIntensity is 0.025 and a material's
+           envMapIntensity MULTIPLIES it: 30 here is 0.75 of the room, which
+           is what a black metal needs to read as metal (found by render:
+           at 1.4 the body was a black cut-out with a lit lens) */
+        if ('envMapIntensity' in m) m.envMapIntensity = 30;
+        if (m.emissive && !m.emissiveMap) { m.emissive.setHex(0x1a1614); m.emissiveIntensity = 1; }
+        m.needsUpdate = true;
+      }
     });
     g.add(gltf.scene);
     /* a warm glow at the lens: spills back onto the head of the torch and
        the fingers, the way a real one lights the hand holding it */
     const glow = new THREE.PointLight(0xffd9a0, 2.2, 0.55, 1.6);
     glow.position.set(0, 0.01, -0.13); g.add(glow);
+    /* v11.3: and a FILL over the body. Measured off the file: the base sheet
+       is a scuffed blue steel averaging 33/255, which is ~1.5 % linear
+       albedo — under a midnight viewmodel rig (hemi 0.35, key 0.25 in
+       chapter 3) that is black whatever the maps say, and Chad read it as
+       "the texture is missing". A colour lift alone cannot fix it (x5 is
+       still a black cut-out, photographed), and a lift big enough to matter
+       stops being the file's steel. So a small cool light sits above and
+       just in front of the body: bracketed by render at 0.06 / 0.12 / 0.22 /
+       1.0 — 1.0 blows the steel out to white, 0.22 is where the head ring,
+       the switch and the scuffs read and the torch is still a dark thing in
+       a dark place. It travels with the prop, so it only exists while the
+       torch is up, and nothing in episode 1 declares one. */
+    const fill = new THREE.PointLight(0xc9d4ee, 0.22, 0.6, 1.5);
+    fill.position.set(-0.04, 0.16, -0.06); g.add(fill);
     torchProp = g; handsRoot.add(g); layoutHands(); torchPropSync();
   }, () => {})).catch(() => {});
 }
 function torchPropDrop() {
   if (torchProp) {
     handsRoot.remove(torchProp);
-    torchProp.traverse(o => { if (!o.isMesh) return; o.geometry?.dispose?.(); for (const m of (Array.isArray(o.material) ? o.material : [o.material])) { m?.map?.dispose?.(); m?.dispose?.(); } });
+    torchProp.traverse(o => { if (!o.isMesh) return; o.geometry?.dispose?.(); for (const m of (Array.isArray(o.material) ? o.material : [o.material])) { m?.map?.dispose?.(); m?.metalnessMap?.dispose?.(); m?.emissiveMap?.dispose?.(); m?.dispose?.(); } });   // v11.3: the MR and emissive sheets ship too
     torchProp = null;
   }
   torchPropKey = null; torchPropSync();
@@ -1411,10 +1441,37 @@ function torchPropDrop() {
    and `armR.visible`, which a film or a scene sets to take the hands out
    of shot. The first version wrote `armR.visible` here and put the hand
    back into chapter 3's film the moment the prop landed. */
+/* v11.3 (Chad: "make the change more graceful ... the hands can move down
+   and the flashlight comes up, kind of like scroll switching weapons in a
+   fps game"): one number, `swapK`, 0 = the hand up, 1 = the torch up, chased
+   toward its target at SWAP_SECS on WALL time. The two halves are
+   SEQUENTIAL in both directions — the thing on screen drops out of frame
+   first (k 0→0.5), then the other rises into it (0.5→1) — so nothing is
+   ever drawn through anything, and a toggle mid-swap simply reverses. Each
+   is drawn only while it is on its way up or up; a chapter with no torch
+   model never moves `swapK` and its hand never moves. */
+const SWAP_SECS = 0.42, SWAP_DROP = 0.34;
+let swapK = 0, swapLast = 0, swapWas = 0;
+const smooth = (x) => x * x * (3 - 2 * x);
 function torchPropSync() {
   const hold = !!(torchProp && torchOn && torchDecl);
-  if (torchProp) torchProp.visible = hold && armR.visible;
-  if (handModel) handModel.visible = !hold;
+  const now = performance.now();
+  const dt = swapLast ? Math.min(0.1, (now - swapLast) / 1000) : 0; swapLast = now;
+  const target = hold ? 1 : 0;
+  if (!torchProp) swapK = 0;                                   // no prop: the hand stays exactly where it always was
+  else if (swapK !== target) swapK = target > swapK ? Math.min(target, swapK + dt / SWAP_SECS) : Math.max(target, swapK - dt / SWAP_SECS);
+  const handDown = smooth(Math.max(0, Math.min(1, swapK * 2)));          // 0 up .. 1 dropped out of frame
+  const torchUp = smooth(Math.max(0, Math.min(1, (swapK - 0.5) * 2)));   // 0 dropped .. 1 up
+  if (torchProp) {
+    torchProp.visible = torchUp > 0.001 && armR.visible;
+    torchProp.position.set(torchBase.x, torchBase.y - SWAP_DROP * (1 - torchUp), torchBase.z);
+  }
+  if (handModel) handModel.visible = handDown < 0.999;
+  /* the arm is written ONLY while a swap is on (or on the frame it ends,
+     to put it back exactly): episode 1's scenes move `armR.position`
+     themselves (ch1, ch3, ch4), and a per-frame reset would fight them */
+  if (torchProp && (swapK > 0 || swapWas > 0)) armR.position.set(armBase.x, armBase.y - SWAP_DROP * handDown, armBase.z);
+  swapWas = swapK;
 }
 function torchRed(red) { torchIsRed = !!red; torchSet(torchOn); }
 function torchToggle() {
@@ -2370,7 +2427,7 @@ function kitReset() {
    reading. Clearing it hands the frame back to the sanity dread. */
 function kitHurtSet(o) {
   kitHurt = o ? { perSec: Math.max(0, +o.perSec || 0), floor: o.floor === undefined ? 5 : Math.max(0, +o.floor), last: 0 } : null;
-  if (!kitHurt) { const el = $('panic'); if (el) { el.classList.remove('critical'); if (state !== 'play') el.style.opacity = '0'; } }
+  if (!kitHurt) { const el = $('panic'); if (el) { el.classList.remove('critical'); el.classList.remove('hurt'); if (state !== 'play') el.style.opacity = '0'; } }
 }
 const KIT = {
   objective: kitObjectiveSet, timer: kitTimerStart, waypoint: kitWaypointSet,
@@ -2998,9 +3055,16 @@ function layoutHands() {
      nosed a touch inward so the body reads as held, not floated */
   if (torchProp) {
     const PZ = 0.30, hH = Math.tan(THREE.MathUtils.degToRad(vmCam.fov / 2)) * PZ, hW = hH * vmCam.aspect;   // the frame at the PROP's depth, not the hand's
-    torchProp.position.set(Math.min(0.13, hW * 0.55), -hH * 0.62, -PZ); torchProp.rotation.set(-0.03, 0.16, -0.10);
+    /* v11.3 (Chad: "floating on desktop ... show lesser of the body"): the
+       grip sits under the frame's bottom edge and the head is what shows */
+    torchBase.set(Math.min(0.13, hW * 0.55), -hH * 0.86, -PZ);
+    torchProp.position.copy(torchBase); torchProp.rotation.set(0.04, 0.16, -0.10);
   }
+  armBase.copy(armR.position);
 }
+/* v11.3: the rest positions the swap tween works from (layoutHands writes
+   them; torchPropSync offsets them every frame) */
+const armBase = new THREE.Vector3(), torchBase = new THREE.Vector3();
 layoutHands();
 
 let handsReady = false;
@@ -6023,6 +6087,9 @@ const STING_SAMPLE = {
   tonner: ['tonner', 1], tailgate: ['tailgate', 1], junglenight: ['junglenight', 1], bootsleaf: ['bootsleaf', 1],
   torchclick: ['torchclick', 1], stingpress: ['stingpress', 1], legpress: ['legpress', 1],
   ghostrunleaf: ['ghostrunleaf', 1], leafdraw: ['leafdraw', 1], leaflift: ['leaflift', 1],
+  // v11.3: the night jungle's wildlife — a bed and the bushes (e2c3)
+  junglelife: ['junglelife', 1], bushrustle1: ['bushrustle1', 1], bushrustle2: ['bushrustle2', 1], bushrustle3: ['bushrustle3', 1],
+  nightcall1: ['nightcall1', 1], nightcall2: ['nightcall2', 1],
   n3pro1: ['n3pro1', 1], n3pro2: ['n3pro2', 1], n3pro3: ['n3pro3', 1], n3pro4: ['n3pro4', 1],
   n3spot1: ['n3spot1', 1], n3spot2: ['n3spot2', 1], n3spot3: ['n3spot3', 1], n3spot5: ['n3spot5', 1], n3spot6: ['n3spot6', 1],
   n3press: ['n3press', 1], n3look: ['n3look', 1], n3still: ['n3still', 1],
@@ -7661,7 +7728,7 @@ function tick(now = 0) {
       if (lost > 0) { stats.sanity -= lost; noteDrain(lost); syncBars(); if (stats.sanity <= 0 && state === 'play') lose(); }
     }
     ui.panic.style.opacity = '1';
-    ui.panic.classList.add('critical');
+    ui.panic.classList.add('critical'); ui.panic.classList.add('hurt');   // v11.3: `hurt` thins the frame to the edges (shell.html)
   } else if (kitHurt) kitHurt.last = 0;
 
   /* Four separate calls into the chapter rather than one, because the ghost

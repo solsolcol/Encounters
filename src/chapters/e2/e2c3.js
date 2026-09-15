@@ -82,7 +82,7 @@
     musicVol: 0,
     /* the jungle, all night, keyed to nothing; the episode's dread under it
        at chapter 1's level (v10.7); `tonner` is the film's and starts at 0 */
-    ambience: { beds: [['junglenight', 0.34], ['e2dread', 1.0], ['tonner', 0]] },
+    ambience: { beds: [['junglenight', 0.34], ['junglelife', 0.30], ['e2dread', 1.0], ['tonner', 0]] },   // v11.3: the wildlife bed beside the insects
 
     words: {
       approach: 'the ground at your feet',
@@ -272,11 +272,25 @@
        The two trunks either side of GAP are placed by hand — "a gap between
        two trunks, going nowhere". Trunks inside the bounds get a blocker. */
     const TREE_AT = [[4.7, -7.7, 8.2], [6.6, -7.1, 7.6]];
-    for (let i = 0; i < 88; i++) {
-      const a = hash(i, 51) * Math.PI * 2, r = 8.2 + hash(i, 52) * 24 * (hash(i, 53) < 0.5 ? 0.35 : 1);
+    /* v11.3 (Chad: "increase the density of trees, add more trees in the
+       playable night scene"): 88 candidates → 230, with a second, closer
+       band from 6.0 m — and a SIGHT-LINE rule the first stand only had by
+       luck: no trunk within 1.1 m of the line from his scrape to any of the
+       six torch spots (the fig, the log, the gap's two trunks, the buddy,
+       the chemlights), or within 1.6 m of any man, or on the track. A
+       forest that hides what the objective asks him to look at is a puzzle
+       with no answer. Measured after: the stand is 2.4x denser and every
+       spot is still looked at by `dwellFires` in the probe. */
+    const LOOK_AT = [[FIG.x, FIG.z], [LOG.x, LOG.z], [4.7, -7.7], [6.6, -7.1], [BUDDY.x, BUDDY.z], [CMD.x + 0.2, CMD.z + 0.5]];
+    const segDist = (px, pz, ax, az, bx, bz) => { const vx = bx - ax, vz = bz - az, t = Math.max(0, Math.min(1, ((px - ax) * vx + (pz - az) * vz) / (vx * vx + vz * vz || 1))); return Math.hypot(px - (ax + vx * t), pz - (az + vz * t)); };
+    for (let i = 0; i < 230; i++) {
+      const a = hash(i, 51) * Math.PI * 2, r = i < 88 ? 8.2 + hash(i, 52) * 24 * (hash(i, 53) < 0.5 ? 0.35 : 1) : 6.0 + hash(i, 52) * 22 * (hash(i, 53) < 0.6 ? 0.4 : 1);
       const x = CENTRE.x + Math.cos(a) * r, z = CENTRE.z + Math.sin(a) * r;
       if (Math.abs(x) < 2.4 && z > 9) continue;                          // the track
       if (Math.hypot(x - FIG.x, z - FIG.z) < 2.2 || Math.hypot(x - LOG.x, z - LOG.z) < 2.4) continue;
+      if (LOOK_AT.some(([tx, tz]) => segDist(x, z, HIS.x, HIS.z, tx, tz) < 1.1)) continue;
+      if (SCRAPES.some(m => Math.hypot(x - m.x, z - m.z) < 1.6)) continue;
+      if (TREE_AT.some(([tx, tz]) => Math.hypot(x - tx, z - tz) < 1.5)) continue;   // no two trunks in one spot
       TREE_AT.push([x, z, 6.5 + hash(i, 54) * 4.5]);
     }
     const treeStand = plantTrees ? plantTrees(world, TREE_AT.map(([x, z, h]) => ({ x, z, h })),
@@ -679,12 +693,14 @@
     if (warmSounds) warmSounds(['torchclick', 'n3spot1', 'n3spot2', 'n3spot3', 'b3here', 'n3spot5', 'n3spot6',
                                 'stingpress', 'ghostlaugh', 'legpress', 'n3press', 'n3look', 'n3still',
                                 'ghostrunleaf', 'leaflift', 'leafdraw', 'n3A1', 'n3A2', 'n3B1', 'n3B2',
-                                'n3C1', 'n3C2', 'b3C1', 'b3C2', 'b3C3', 'n3D1', 'n3D2', 's3hiss', 'b3D']);
+                                'n3C1', 'n3C2', 'b3C1', 'b3C2', 'b3C3', 'n3D1', 'n3D2', 's3hiss', 'b3D',
+                                'bushrustle1', 'bushrustle2', 'bushrustle3', 'nightcall1', 'nightcall2']);
 
     let jungleK = 1;                                   // the bed, ducked under "nothing around..."
     function mixBeds() {
       for (const b of DATA.ambience.beds) {
         if (b[0] === 'junglenight') b[1] = 0.34 * jungleK;
+        if (b[0] === 'junglelife') b[1] = 0.30 * jungleK;
         if (b[0] === 'tonner') b[1] = 0;
       }
     }
@@ -738,7 +754,7 @@
         kit.haptic([120, 60, 180, 80, 240]);
         kit.root(true);
         if (!resume) { kit.award('sanity', -10); kit.award('awareness', -10); }   // once; a resume has already paid
-        kit.hurt({ perSec: 3 });
+        kit.hurt({ perSec: 1.5 });   // v11.3: halved (Chad: "the sanity damage per second is too fast")
         if (kit.flash) kit.flash({ color: 'rgba(150,20,16,0.55)', secs: 0.7 });
       }
       after(0.25, () => { if (worldSfx) { worldSfx('legpress', 0.7); worldSfx('ghostlaugh', 0.5, 1, 0.65); } });
@@ -808,6 +824,33 @@
         enabled: spotOn(6, 5), onInteract() { return seeSpot(6); } }
     ];
 
+    /* v11.3 (Chad: "shuffling noises in the bushes"): THE BUSHES. Something
+       moves in the undergrowth every 12–28 s and a far animal calls every
+       24–52 s, from the chapter's own deterministic stream (v9.2's
+       platoonmarch shape), PANNED to a side so the ear turns before the
+       torch does — which is the chapter. Stated in `dayClock` and cleared by
+       reset() (the v8.1 law); never during the pressure's own beat, whose
+       silence is the point ("not even the sound of vegetation moving"). */
+    let bushAt = 0, callAt = 0, bushSeed = 13, bushN = 0, callN = 0;
+    const bushRand = () => { bushSeed = (bushSeed * 1664525 + 1013904223) >>> 0; return bushSeed / 4294967296; };
+    const BUSH_GAP = [12, 28], CALL_GAP = [24, 52];
+    function bushTick() {
+      if (!worldSfx) return;
+      if (phase === 'press' || phase === 'down') { bushAt = 0; callAt = 0; return; }
+      if (!bushAt) bushAt = dayClock.t + 6 + bushRand() * 10;
+      if (!callAt) callAt = dayClock.t + 14 + bushRand() * 16;
+      if (dayClock.t >= bushAt) {
+        const name = 'bushrustle' + (1 + Math.floor(bushRand() * 3)), pan = (bushRand() < 0.5 ? -1 : 1) * (0.45 + bushRand() * 0.45);
+        if (worldSfx(name, 0.32 + bushRand() * 0.30, 0.92 + bushRand() * 0.16, pan)) { bushN++; bushAt = dayClock.t + BUSH_GAP[0] + bushRand() * (BUSH_GAP[1] - BUSH_GAP[0]); }
+        else bushAt = dayClock.t + 1.5;
+      }
+      if (dayClock.t >= callAt) {
+        const name = 'nightcall' + (1 + Math.floor(bushRand() * 2)), pan = (bushRand() - 0.5) * 1.4;
+        if (worldSfx(name, 0.18 + bushRand() * 0.14, 0.9 + bushRand() * 0.2, pan)) { callN++; callAt = dayClock.t + CALL_GAP[0] + bushRand() * (CALL_GAP[1] - CALL_GAP[0]); }
+        else callAt = dayClock.t + 1.5;
+      }
+    }
+
     /* ---------------------------------------------------------- per frame */
     function updateNotes(dt, t) {
       for (const r of rigs) if (r.mixer && r.group.visible && (r.group.parent !== truck && r.group.parent !== pocket || pocket.visible)) r.mixer.update(dt);
@@ -820,6 +863,7 @@
       if (lastWall) dayClock.t += Math.min(0.5, now - lastWall);
       lastWall = now;
       if (!booted) { booted = true; applyPhase(kit ? kit.getPhase() : null); }
+      bushTick();
       // the shake: roll and a kick down, decaying — the chapter owns the lens for half a second
       if (shakeT > 0) {
         shakeT = Math.max(0, shakeT - dt);
@@ -877,6 +921,7 @@
       dropTodo(); speakReset(); lineQ.length = 0;
       seen.clear(); booted = false; dayClock.t = 0; lastWall = 0;
       shakeT = 0; downT = 0; looked = false; jungleK = 1; mixBeds(); yawOff = 0; pitchOff = 0;
+      bushAt = 0; callAt = 0; bushSeed = 13; bushN = 0; callN = 0;   // v11.3: the bushes are stated in dayClock too
       if (kit) { if (kit.hurt) kit.hurt(null); if (kit.root) kit.root(false); }
       fileHome();
       if (kit) { kit.daylight(null, 0); kit.presence(0); kit.setPhase('look:'); if (kit.torchOn) kit.torchOn(true); }
@@ -934,7 +979,7 @@
       setPhase, applyPhase, beginPressure,
       lookInfo: () => ({ phase, seen: [...seen], obj: kit && kit.getPhase ? kit.getPhase() : null, downT: +downT.toFixed(2), looked, shakeT: +shakeT.toFixed(2) }),
       speakInfo: () => ({ t: +dayClock.t.toFixed(2), until: +speak.until.toFixed(2), pending: speak.pending ? speak.pending.name : null, queued: lineQ.length }),
-      ambient: () => ({ jungleK, beds: DATA.ambience.beds.map(b => [b[0], +b[1].toFixed(3)]) }),
+      ambient: () => ({ jungleK, beds: DATA.ambience.beds.map(b => [b[0], +b[1].toFixed(3)]), bush: { at: +bushAt.toFixed(1), callAt: +callAt.toFixed(1), fired: bushN, calls: callN, t: +dayClock.t.toFixed(1), trees: TREE_AT.length } }),
       updateNotes, updatePile, updateFire, updateSlow,
       setNoteTexture() {},
       snap, restore, reset, dispose,

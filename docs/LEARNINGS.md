@@ -3669,3 +3669,44 @@ its triangles), because the mesh is displaced and a linear UV fit is not
 it. The measure refines the eye; the eye keeps the measure on the road.
 Smoothed and resampled to 37 points 2.8 m apart, with the heading read over
 a 5 m window at runtime so the polyline's corners never reach the truck.
+
+## A black metal model's look is in its metal-roughness map, not its base colour (v11.3)
+
+Chad: *"Why is the flashlight texture missing?"* It was never missing — it
+was never in the base colour. Measured, the file's base sheet averages
+33/255 (a black torch), and what makes it read as one is the
+metal/roughness sheet (the knurled grip, the bright rings, the matte rubber)
+and the emissive sheet (the lens) with the file's factors (metal 1,
+emissive 0.75). The standing prep recipe drops every map but base colour
+(v5.05: the CSP-safe `rescueTextures()` restores base colour only), and on
+this model that left a dark plastic tube. Two things, both now in
+`tools/prepflash.mjs` and `torchPropLoad`: keep the MR and emissive sheets
+(the hosted build loads them through GLTFLoader itself, no rescue needed),
+and give the METAL something to reflect — the viewmodel scene runs the room
+environment at 0.025, and a material's `envMapIntensity` MULTIPLIES that, so
+the number is 30 (0.75 of the room), not 1.4 (found by render: at 1.4 the
+body was a black cut-out with a lit lens). The base is lifted ×2.2 for a
+midnight lens. **When a bought model looks wrong after prep, read which map
+its look lives in before touching the geometry** — the same shape as v6.16's
+leaves (alpha) and v8.9's rails (a metal with nothing to reflect).
+
+And the maps alone are not enough at night. Shipping the MR and emissive
+sheets put the look back in the file; in the game the body was STILL a
+black cut-out, because the base sheet averages 33/255 — about 1.5 % linear
+albedo — and chapter 3's viewmodel rig is hemi 0.35 / key 0.25. A colour
+lift cannot fix that honestly (×5 was still black, and a lift big enough to
+matter is no longer the file's steel). What worked is a small cool point
+light travelling WITH the prop (0.22 — 1.0 blew it to white). A dark thing
+in a dark place needs its own light, and the light belongs on the prop so
+it exists only while the prop does.
+
+## A per-frame write to the arm fights the chapters that own it (v11.3)
+
+The torch swap drops the hand and raises the torch by offsetting `armR`
+every frame from a rest the layout wrote. Episode 1's scenes (ch1, ch3, ch4)
+also write `armR.position` — the prayer arm, the reach, the handset — and a
+per-frame reset would have undone them silently, a base-game regression a
+chapter-3 probe would never see. So the arm is written only while a swap is
+running (or on the frame it ends, to put it back exactly), and a chapter
+with no torch model never moves it. `grep armR.position` before writing it
+from the engine, every time.

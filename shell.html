@@ -55,6 +55,15 @@ html,body{height:100%;overflow:hidden;background:var(--void);color:var(--bone);
     rgba(196,16,10,.55) 55%,rgba(210,18,10,.9) 100%)}
 #panic.critical::after{animation:panicBeat 1.15s ease-in-out infinite}
 @keyframes panicBeat{0%,100%{opacity:.12}50%{opacity:.85}}
+/* v11.3: the HURT frame (the kit's bleed, episode 2) is the same red kept
+   to the edges — Chad: "covers too much of the screen, make it more subtle".
+   The low-sanity frame above is the base game's and is untouched. */
+#panic.hurt{background:radial-gradient(ellipse at 50% 50%,transparent 46%,
+    rgba(126,10,6,.30) 80%,rgba(150,12,6,.70) 100%)}
+#panic.hurt::after{background:radial-gradient(ellipse at 50% 50%,transparent 44%,
+    rgba(196,16,10,.28) 78%,rgba(210,18,10,.62) 100%)}
+#panic.hurt.critical::after{animation:hurtBeat 1.15s ease-in-out infinite}
+@keyframes hurtBeat{0%,100%{opacity:.10}50%{opacity:.55}}
 
 .layer{position:fixed;inset:0;z-index:5;display:flex;pointer-events:none}
 .hide{display:none !important}
