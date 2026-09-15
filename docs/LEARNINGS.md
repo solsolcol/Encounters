@@ -3590,3 +3590,39 @@ Anything that TINTS or FADES one copy of a shared model must clone that
 copy's materials first (`o.material = o.material.clone()`); the maps stay
 shared, and a dispose sweep that collects materials off the world frees the
 clones with everything else.
+
+## A viewmodel prop is placed at ITS depth, and the chapters' switch is not yours to write (v11.1)
+
+The flashlight went in as the torch's own viewmodel and did not show. Two
+causes, both found by render (a red emissive proved the geometry was in
+frame — then it was not).
+
+**The frame at the wrong depth.** `layoutHands` sizes the hand's offset as a
+fraction of the visible frame at the hand's depth (0.44 m). The prop sits
+nearer (0.30 m), where the frame is smaller, and the same fraction put it
+below the bottom edge. Anything hung off the viewmodel is placed from the
+frame at its OWN depth: `tan(fov/2) * z`.
+
+**The switch with three owners.** `armR.visible` is how a film or a scene
+takes the hands out of shot. The first swap wrote it (`armR.visible =
+!torchOn`), and the moment the prop landed — mid-film — the hand was back in
+chapter 3's opening. Which of hand or torch is drawn is now DERIVED on the
+frame from three switches with three owners: the torch's state, the prop's
+arrival, and `armR.visible`; the hand is hidden by its own root
+(`handModel`), never by the chapters' switch.
+
+**A black thing in the dark.** The body's sheet averages 33/255 and the
+viewmodel rig at midnight barely lights it, so a correctly placed torch was
+still invisible. A prop that has to read in the dark carries its own light
+(a warm point at the lens) or a little emissive; the world's lighting is not
+its problem to solve.
+
+## "Too soft" on a cast line is the FLAT BUS (v11.1)
+
+Aaron's lines ride a bus with +3.5 dB, a compressor and a limiter (v5.26,
+v5.28); every other speaker is flat, by design. So a whispered cast take
+peak-matched to the same −6.85 dBFS sits ~10 dB UNDER him on the ear, and
+"I can't hear him" is the arithmetic, not the take. Level a flat-bus voice
+by RMS (masters/v11.1/level.py, −16 dBFS with a −1.5 limiter), encoded from
+the WAV plainly — the v10.7 finding (peak says nothing about the average),
+met on a voice.

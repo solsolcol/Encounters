@@ -101,6 +101,9 @@ Object.assign(window.__TEXT__, {
   'credits.bunk':        'The bunk beds',
   'credits.bunkWho':     'Bunk bed · Sketchfab',
   'credits.bunkLink':    'sketchfab.com · bunk-bed',
+  'credits.flash':       'The flashlight',
+  'credits.flashWho':    'Flashlight · Sketchfab',
+  'credits.flashLink':   'sketchfab.com · flashlight',
   // v10.1 — the cookhouse of episode 2 chapter 2
   'credits.staff':       'The cookhouse staff',
   'credits.staffWho':    'Cafe staff uniform portrait · Sketchfab',

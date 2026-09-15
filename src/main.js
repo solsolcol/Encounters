@@ -978,6 +978,8 @@ let kitPose = 'standing', poseFrom = 1.62, poseTo = 1.62, poseT = 1, poseSecs = 
 let lieYaw = 0, lieSpan = 1.1;
 let chapterPresence = 0;
 let torchLight = null, torchOn = false, torchDecl = null, torchIsRed = false;
+let torchProp = null, torchPropKey = null;   // v11.1: the torch's own viewmodel (Chad's flashlight), swapped for the hand while it is on
+let kitRooted = false, kitHurt = null;       // v11.1: the player held in place; the red damage frame + a bleed until the player acts
 let dayTween = null;
 let kitFade = null, kitFadeNow = 0;              // v7.1: a chapter's own black, in play
 let decClock = null;
@@ -1345,11 +1347,13 @@ function torchSetup(decl) {
   }
   torchIsRed = false;
   torchSet(!!torchDecl.on);
+  torchPropLoad(torchDecl.model);
   document.body.classList.add('hasTorch');
 }
 function torchTeardown() {
   if (torchLight) { camera.remove(torchLight.target); camera.remove(torchLight); torchLight.dispose?.(); torchLight = null; }
   torchDecl = null; torchOn = false; torchIsRed = false;
+  torchPropDrop();
   document.body.classList.remove('hasTorch');
   $('torchBtn')?.classList.remove('on');
 }
@@ -1360,9 +1364,64 @@ function torchSet(on) {
   torchLight.intensity = torchOn ? torchDecl.intensity * (torchIsRed ? 0.55 : 1) : 0;
   torchLight.color.setHex(torchIsRed ? torchDecl.red : torchDecl.color);
   $('torchBtn')?.classList.toggle('on', torchOn);
+  torchPropSync();
+}
+/* v11.1: THE TORCH IN HIS HAND. A chapter may declare `torch.model`, an
+   asset key; while the torch is ON the hand viewmodel gives way to the
+   model, hung off `handsRoot` so it bobs and sways as the hand did, with
+   its lens (baked to -z by tools/prepflash.mjs) pointing out into the
+   world. Off again, the hand comes back. `torch.click` names the sound
+   a toggle makes (a chapter's own, warmed by the chapter); episode 1
+   declares no torch, so none of this can run there. */
+function torchPropLoad(key) {
+  if (!key || torchPropKey === key) return;
+  torchPropDrop(); torchPropKey = key;
+  assetBytes(key, true).then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
+    if (torchPropKey !== key) return;
+    rescueTextures(gltf, BUF);
+    const g = new THREE.Group();
+    gltf.scene.traverse(o => {
+      if (!o.isMesh) return;
+      o.frustumCulled = false; o.castShadow = false; o.receiveShadow = false;
+      /* the body's sheet is near-black (mean 33/255) and the viewmodel rig
+         at midnight barely lights it, so a real torch vanished into the
+         jungle (found by render: a red emissive proved the geometry was in
+         frame). A faint self-light keeps the body legible; the LENS glow
+         below is what actually draws it. */
+      for (const m of (Array.isArray(o.material) ? o.material : [o.material])) { if (m.emissive) { m.emissive.setHex(0x2a2622); m.emissiveIntensity = 1; } m.needsUpdate = true; }
+    });
+    g.add(gltf.scene);
+    /* a warm glow at the lens: spills back onto the head of the torch and
+       the fingers, the way a real one lights the hand holding it */
+    const glow = new THREE.PointLight(0xffd9a0, 2.2, 0.55, 1.6);
+    glow.position.set(0, 0.01, -0.13); g.add(glow);
+    torchProp = g; handsRoot.add(g); layoutHands(); torchPropSync();
+  }, () => {})).catch(() => {});
+}
+function torchPropDrop() {
+  if (torchProp) {
+    handsRoot.remove(torchProp);
+    torchProp.traverse(o => { if (!o.isMesh) return; o.geometry?.dispose?.(); for (const m of (Array.isArray(o.material) ? o.material : [o.material])) { m?.map?.dispose?.(); m?.dispose?.(); } });
+    torchProp = null;
+  }
+  torchPropKey = null; torchPropSync();
+}
+/* Which of the two is drawn is DERIVED, every frame, from three switches
+   that belong to three owners: the torch's own state, the prop's arrival,
+   and `armR.visible`, which a film or a scene sets to take the hands out
+   of shot. The first version wrote `armR.visible` here and put the hand
+   back into chapter 3's film the moment the prop landed. */
+function torchPropSync() {
+  const hold = !!(torchProp && torchOn && torchDecl);
+  if (torchProp) torchProp.visible = hold && armR.visible;
+  if (handModel) handModel.visible = !hold;
 }
 function torchRed(red) { torchIsRed = !!red; torchSet(torchOn); }
-function torchToggle() { if (torchLight && state === 'play') { torchSet(!torchOn); snd('uiclick', 0.3); } }
+function torchToggle() {
+  if (!torchLight || state !== 'play') return;
+  torchSet(!torchOn);
+  if (torchDecl.click) snd(torchDecl.click, 0.8); else snd('uiclick', 0.3);   // v11.1: a real switch when the chapter names one
+}
 
 /* ---- presence: the drain without a ghost ---------------------------------
    A chapter with ghost: null says how near the unseen thing is (0..1) and the
@@ -2299,7 +2358,19 @@ function kitReset() {
   kitFade = null; kitFadeNow = 0;
   decClock = null; $('dclock')?.classList.add('hide');
   if (CH.torch) torchSetup(CH.torch); else torchTeardown();
+  kitRooted = false; kitHurtSet(null);   // v11.1
   activeSpot = null;
+}
+/* v11.1: HURT. A chapter holds the red damage frame on the screen and bleeds
+   sanity on WALL time until the player acts (chapter 3's pressure: Chad,
+   "red damage animation constantly turned on until player takes action ...
+   -3 sanity per second"). It runs in play AND with the decision open,
+   which is what "until action is taken" means; with the card open the
+   bleed stops at `floor` (5), so nobody faints under a panel they are
+   reading. Clearing it hands the frame back to the sanity dread. */
+function kitHurtSet(o) {
+  kitHurt = o ? { perSec: Math.max(0, +o.perSec || 0), floor: o.floor === undefined ? 5 : Math.max(0, +o.floor), last: 0 } : null;
+  if (!kitHurt) { const el = $('panic'); if (el) { el.classList.remove('critical'); if (state !== 'play') el.style.opacity = '0'; } }
 }
 const KIT = {
   objective: kitObjectiveSet, timer: kitTimerStart, waypoint: kitWaypointSet,
@@ -2321,6 +2392,8 @@ const KIT = {
   decisionClock: (secs, onExpire) => { decClock = secs > 0 ? { secs, left: secs, onExpire, fired: false } : null; },
   haptic,
   flash: kitFlashSet,              // v8.7: one wash of colour over the screen
+  root: on => { kitRooted = !!on; },   // v11.1: hold the player in place (the look and the torch still work)
+  hurt: kitHurtSet,                // v11.1: the red frame held, and a bleed per second, until cleared
   setPhase: v => { kitPhase = (v === undefined) ? null : v; }, getPhase: () => kitPhase,
   choices: () => ({ ...runChoices }),
   interact: () => interactNow(),
@@ -2329,6 +2402,7 @@ const KIT = {
 // for the probes and harnesses: the whole kit, read by state
 function kitDebug() {
   return { phase: kitPhase, pose: kitPose, eyeY: +eyeY.toFixed(3), presence: chapterPresence,
+           rooted: kitRooted, hurt: kitHurt ? { perSec: kitHurt.perSec } : null,   // v11.1
            torch: torchLight ? { on: torchOn, red: torchIsRed } : null,
            objective: kitObjective, timer: kitTimer ? +kitTimer.left.toFixed(2) : null,
            waypoint: kitWaypoint, conduct: { ...conductAcc, notes: conductAcc.notes.slice() },
@@ -2920,10 +2994,17 @@ function layoutHands() {
   const halfH = Math.tan(THREE.MathUtils.degToRad(vmCam.fov / 2)) * HAND_Z;
   const halfW = halfH * vmCam.aspect;
   armR.position.set(Math.min(0.175, halfW * 0.60), -halfH * 1.02, -HAND_Z);
+  /* v11.1: the torch sits where the hand does, a little higher and nearer,
+     nosed a touch inward so the body reads as held, not floated */
+  if (torchProp) {
+    const PZ = 0.30, hH = Math.tan(THREE.MathUtils.degToRad(vmCam.fov / 2)) * PZ, hW = hH * vmCam.aspect;   // the frame at the PROP's depth, not the hand's
+    torchProp.position.set(Math.min(0.13, hW * 0.55), -hH * 0.62, -PZ); torchProp.rotation.set(-0.03, 0.16, -0.10);
+  }
 }
 layoutHands();
 
 let handsReady = false;
+let handModel = null;   // v11.1: the arm rig's own root, so the torch swap can hide the HAND and leave `armR` (the chapters' switch) alone
 assetBytes('hands').then(handsBuf => new GLTFLoader().parse(handsBuf, '', (gltf) => {
   const model = gltf.scene;
 
@@ -2973,6 +3054,7 @@ assetBytes('hands').then(handsBuf => new GLTFLoader().parse(handsBuf, '', (gltf)
   const oriented = new THREE.Group();
   oriented.add(model);
   armR.add(oriented);
+  handModel = oriented;
 
   const bone = {};
   for (const k in BONES) bone[k] = model.getObjectByName(BONES[k]);
@@ -7502,7 +7584,7 @@ function tick(now = 0) {
     if (keys.KeyA || keys.ArrowLeft) s -= 1;
     if (keys.KeyD || keys.ArrowRight) s += 1;
     f -= stickVec.y; s += stickVec.x;
-    if (kitPose === 'lying') { f = 0; s = 0; }        // v7.0: a man on his back does not walk
+    if (kitPose === 'lying' || kitRooted) { f = 0; s = 0; }        // v7.0: a man on his back does not walk; v11.1: nor a rooted one
     const len = Math.hypot(f, s);
     if (len > 1) { f /= len; s /= len; }
     strafeInput = s;
@@ -7568,6 +7650,19 @@ function tick(now = 0) {
     ui.interact.classList.add('hide');
     if (state !== 'lost') showHaunt(false);
   }
+  /* v11.1: the HURT frame, painted after the dread so it wins the frame */
+  if (kitHurt && (state === 'play' || state === 'decide')) {
+    const now = performance.now();
+    const dtw = kitHurt.last ? Math.min(0.5, (now - kitHurt.last) / 1000) : 0;
+    kitHurt.last = now;
+    if (kitHurt.perSec > 0 && dtw > 0) {
+      const floor = state === 'play' ? 0 : kitHurt.floor;
+      const lost = Math.min(Math.max(0, stats.sanity - floor), kitHurt.perSec * dtw);
+      if (lost > 0) { stats.sanity -= lost; noteDrain(lost); syncBars(); if (stats.sanity <= 0 && state === 'play') lose(); }
+    }
+    ui.panic.style.opacity = '1';
+    ui.panic.classList.add('critical');
+  } else if (kitHurt) kitHurt.last = 0;
 
   /* Four separate calls into the chapter rather than one, because the ghost
      and the audio mix are interleaved between them and that order is
@@ -7624,6 +7719,7 @@ function tick(now = 0) {
   // second pass: the viewmodel gets its own fresh depth buffer, so the hands
   // can never poke through a wall however close you stand to one
   if (state !== 'title' && handsReady) {
+    torchPropSync();                       // v11.1: hand or torch, decided on the frame
     renderer.autoClear = false;
     renderer.clearDepth();
     renderer.render(vmScene, vmCam);

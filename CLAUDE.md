@@ -139,6 +139,7 @@ The declarations, all optional:
 | `words.presence` | v7.0: the banner's words when a chapter with `ghost: null` drains through `kit.presence()` | `hud.presenceAlarm` |
 | `stage.hotspots` | v7.0: many things to act on beside the pile — `[{ id, pos, radius, prompt, onInteract(), once, enabled() }]`, returned by build() | — (only the pile) |
 | `stage.hotspots[].dwell` / `aim` | v11.0: a hotspot that fires by being LOOKED AT for `dwell` seconds inside `aim` radians (chapter 3's torch spots) — the eighteenth seam | — (a press only) |
+| `torch.model` / `torch.click` | v11.1: the torch's own viewmodel (an asset key), swapped for the hand while it is on, and the sound its switch makes | — (the hand stays; a UI click) |
 
 **THE PLAY KIT (v7.0)** is everything else a chapter may ask of the engine
 between its film and its decision — objectives, a timer, a waypoint,
@@ -2568,6 +2569,54 @@ What the baseline contains, by release:
   `src/main.js` gains the seam, the rows and the names and nothing else, so
   episode 1 is unchanged by construction. Sheet v51 exported (v44 stays the
   link — the base64 wall). docs/V11.0-E2C3-PLAN.md is the build's memory.
+- **v11.1** THE FLASHLIGHT IN HIS HAND, THE STUMBLE, AND THE BUDDY WHO CAN
+  BE HEARD — Chad's eight notes on v11.0, plus his Sketchfab flashlight.
+  **THE TORCH HAS A BODY NOW**: a chapter may declare `torch.model` (an asset
+  key) and `torch.click` (a sound); while the torch is ON the hand viewmodel
+  gives way to the model, hung off `handsRoot` so it bobs and sways as the
+  hand did, lens baked to −z by `tools/prepflash.mjs` (2352 KB → 65 KB; the
+  lens end is MEASURED as the wider end, never assumed) and pointing out into
+  the world; F or the HUD button toggles it with the chapter's own switch
+  (`torchclick`), and off again the hand comes back. Two things the first
+  pass got wrong, both found by render: the prop was placed with the frame
+  computed at the HAND's depth and sat below the bottom edge at its own
+  nearer one (the frame is computed at the prop's depth now); and the swap
+  wrote `armR.visible`, which FILMS own, and put the hand back into chapter
+  3's film the moment the prop landed — which of the two is drawn is DERIVED
+  on the frame from three switches with three owners (the torch, the prop's
+  arrival, `armR.visible`), and the hand model is hidden by its own root, never
+  the chapters' switch. And the body's sheet is near-black (mean 33/255), so
+  at midnight a real torch vanished into the jungle: a warm glow at the lens
+  and a faint self-light draw it. Credited to Sketchfab. **THE PRESSURE** is a
+  STUMBLE, not a buzz — 0.45 s of 43 Hz jitter is gone; the head drops, the
+  world rolls once and lurches sideways, and it settles over 1.9 s, applied as
+  DELTAS so the mouse still owns the look. On that frame the player is ROOTED
+  (`kit.root`, walking does nothing until he answers), hit for −10 sanity and
+  −10 awareness, and BLEEDS 3 sanity a second under the red damage frame held
+  on the screen (`kit.hurt({ perSec })`, on wall time) until he acts. `hurt`
+  runs in play AND with the decision open — that is what "until action is
+  taken" means — and stops at a floor of 5 under the card so nobody faints
+  under a panel they are reading; every scene clears it on its first frame.
+  Both verbs are episode-2-only by construction: episode 1 never calls them.
+  Measured on the hosted build: rooted 0.000 m with W held 1.5 s, 100/50 →
+  90/40 on the frame, the bleed running, the frame at opacity 1 and beating,
+  the scene clearing all of it at t 0. **SCENE B** switches the torch OFF
+  (with its click) before the hand goes down; **SCENE D** has the ghost
+  soldier run away behind him with the laugh, as A does (measured 6.2–6.7 s,
+  alpha 1, cues `ghostrunleaf`, `ghostlaugh`). **THE BUDDY** of chapter 3 is
+  DAVID now (`buddyC3`; Chad: "the soldier voice is indian, make him chinese
+  voice instead, and he is too soft") — the library's "typical middle-aged
+  Singaporean man", the voice he accepted at v10.1 for the same ask; Lee was
+  generated as the alternative and came back 5–10 dB quieter. And "too soft"
+  had a cause worth writing down: **the cast rides a FLAT bus** (v5.26 left
+  the other speakers flat by design) while Aaron has +3.5 dB, a compressor and
+  a limiter in front of his, so a whispered cast take peak-matched to
+  −6.85 dBFS sat ~10 dB under him. The buddy's five and the sergeant's two are
+  LEVELLED BY RMS now (−16 dBFS, limiter −1.5; `masters/v11.1/level.py`),
+  encoded from the WAV plainly. **THE FILM'S GROUND** is one brown: the road
+  was an orange laterite against a dark verge and a third brown on the track.
+  Sheet v52 exported (v44 stays the link). `src/main.js` gains the torch body,
+  `root` and `hurt`, and nothing else.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -3079,7 +3128,7 @@ the run exactly as it always ended a last chapter.
 
 Next up: **episode 2's chapters 4–5, and rifle mode for chapter 5**
 (chapter 1, The Worst Bed, shipped at v7.1 — `src/chapters/e2/e2c1.js`;
-chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 3, The Pressure, at v11.0 — `src/chapters/e2/e2c3.js`; chapter 1 last revised at v10.8; the rifle
+chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 3, The Pressure, at v11.0 and revised at v11.1 — `src/chapters/e2/e2c3.js`; chapter 1 last revised at v10.8; the rifle
 viewmodel's placement and material are measured in
 docs/E2-SOLDIER-MODELS.md §8, and Chad's ghost and bicycle models are
 still to come), and the still-outstanding job of replacing chapter 1's

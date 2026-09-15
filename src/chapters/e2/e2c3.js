@@ -74,7 +74,8 @@
 
     /* the play kit's one data declaration: a torch, ON, white — this
        chapter is about curiosity, so the player gets the whole beam */
-    torch: { on: true, angle: 0.40, intensity: 24, distance: 26, penumbra: 0.6 },
+    torch: { on: true, angle: 0.40, intensity: 24, distance: 26, penumbra: 0.6,
+             model: 'flashlight', click: 'torchclick' },   // v11.1: Chad's flashlight in the hand while it is on; F or the button, with its switch
 
     assets: ['fbosling', 'sleeper', 'tree1', 'tree2', 'tree3', 'tree4'],
 
@@ -115,7 +116,7 @@
   };
 
   /* the measured length of every line said outside a cutscene (masters/v11.0) */
-  const SECS = { n3spot1: 3.16, n3spot2: 2.69, n3spot3: 2.85, b3here: 3.16, n3spot5: 2.93, n3spot6: 5.49, n3press: 6.77, n3look: 7.16, n3still: 2.69 };
+  const SECS = { n3spot1: 3.16, n3spot2: 2.69, n3spot3: 2.85, b3here: 2.5, n3spot5: 2.93, n3spot6: 5.49, n3press: 6.77, n3look: 7.16, n3still: 2.69 };
 
   const hash = (i, s) => { const x = Math.sin(i * 127.1 + s * 311.7) * 43758.5453; return x - Math.floor(x); };
 
@@ -178,9 +179,12 @@
     }));
     // laterite: orange-brown road with two ruts and gravel
     const roadTex = mt(paint(512, (cx, S) => {
-      cx.fillStyle = '#7a4a2c'; cx.fillRect(0, 0, S, S);
-      for (let i = 0; i < 1800; i++) { const g = hash(i, 11); cx.fillStyle = `rgba(${120 + g * 60},${80 + g * 40},${50 + g * 20},0.5)`; cx.fillRect(hash(i, 12) * S, hash(i, 13) * S, 2 + g * 4, 2 + g * 3); }
-      cx.fillStyle = 'rgba(40,24,14,0.45)'; cx.fillRect(S * 0.28, 0, S * 0.09, S); cx.fillRect(S * 0.63, 0, S * 0.09, S);
+      /* v11.1 (Chad: "the ground brown color is not consistent throughout"):
+         the road was an orange laterite against a dark-brown verge and a
+         third brown on the track; all three are one earth now */
+      cx.fillStyle = '#5c4836'; cx.fillRect(0, 0, S, S);
+      for (let i = 0; i < 1800; i++) { const g = hash(i, 11); cx.fillStyle = `rgba(${96 + g * 50},${76 + g * 36},${52 + g * 20},0.45)`; cx.fillRect(hash(i, 12) * S, hash(i, 13) * S, 2 + g * 4, 2 + g * 3); }
+      cx.fillStyle = 'rgba(28,18,10,0.42)'; cx.fillRect(S * 0.28, 0, S * 0.09, S); cx.fillRect(S * 0.63, 0, S * 0.09, S);
     }, [1, 18]));
     // the wall of jungle beside the road, at dusk: canopy silhouette under a sky
     const wallTex = mt(paint(1024, (cx, S) => {
@@ -520,7 +524,7 @@
     /* THE TRACK MOUTH at the road's +z end: the road stops, a trodden strip
        goes on into real trees, and the file forms there at the drop-off */
     const TRACK_Z0 = 6;
-    const track = new THREE.Mesh(new THREE.PlaneGeometry(2.0, 60), nf({ map: litterTex, color: 0x6a5a44, roughness: 1 }));
+    const track = new THREE.Mesh(new THREE.PlaneGeometry(2.0, 60), nf({ map: litterTex, color: 0x5a4a34, roughness: 1 }));
     track.rotation.x = -Math.PI / 2; track.position.set(0, 0.005, TRACK_Z0 + 30); pocket.add(track);
     const pocketTrees = plantTrees ? plantTrees(pocket, (() => {
       const out = [];
@@ -608,7 +612,7 @@
       lineQ.shift();
       sayLine(q.name, 1, q.onStart);
     }
-    if (warmSounds) warmSounds(['n3spot1', 'n3spot2', 'n3spot3', 'b3here', 'n3spot5', 'n3spot6',
+    if (warmSounds) warmSounds(['torchclick', 'n3spot1', 'n3spot2', 'n3spot3', 'b3here', 'n3spot5', 'n3spot6',
                                 'stingpress', 'ghostlaugh', 'legpress', 'n3press', 'n3look', 'n3still',
                                 'ghostrunleaf', 'leaflift', 'leafdraw', 'n3A1', 'n3A2', 'n3B1', 'n3B2',
                                 'n3C1', 'n3C2', 'b3C1', 'b3C2', 'b3C3', 'n3D1', 'n3D2', 's3hiss', 'b3D']);
@@ -650,14 +654,29 @@
        kick down on the pitch, decaying over 0.45 s), the sting, the laugh
        from behind, the buzz, then his line — then the objective turns to the
        ground and PRESENCE drains until the beam is on it. */
-    let shakeT = 0, shakeBase = 0, pressT = 0;
+    /* v11.1 (Chad): "the shake is way too fast and ends too fast ... more
+       like a camera stumble because the player almost stumbled". 0.45 s of
+       43 Hz jitter is a buzz; this is a body catching itself — the head
+       drops, the world rolls once and lurches sideways, and it all settles
+       over SHAKE_SECS. Applied as DELTAS on yaw and pitch so the mouse still
+       owns the look underneath it. The player is ROOTED, hit for -10/-10 on
+       the frame, and BLEEDS 3 sanity a second under the red frame until he
+       answers (kit.root / kit.hurt, v11.1). */
+    const SHAKE_SECS = 1.9;
+    let shakeT = 0, shakeBase = 0, pressT = 0, yawOff = 0, pitchOff = 0;
     let downT = 0, looked = false;
     function beginPressure(resume) {
       setPhase('pressure');
       if (kit) { kit.objective(null, { complete: false }); kit.waypoint(null); }
-      shakeT = 0.45; shakeBase = pitch.rotation.x; pressT = 0;
+      shakeT = SHAKE_SECS; shakeBase = pitch.rotation.x; pressT = 0; yawOff = 0; pitchOff = 0;
       if (worldSfx) worldSfx('stingpress', 0.95);
-      if (kit) kit.haptic([120, 60, 180]);
+      if (kit) {
+        kit.haptic([120, 60, 180, 80, 240]);
+        kit.root(true);
+        if (!resume) { kit.award('sanity', -10); kit.award('awareness', -10); }   // once; a resume has already paid
+        kit.hurt({ perSec: 3 });
+        if (kit.flash) kit.flash({ color: 'rgba(150,20,16,0.55)', secs: 0.7 });
+      }
       after(0.25, () => { if (worldSfx) { worldSfx('legpress', 0.7); worldSfx('ghostlaugh', 0.5, 1, 0.65); } });
       after(0.55, () => sayLine('n3press'));
       after(0.55 + (SECS.n3press || 5) + 0.3, () => {
@@ -741,11 +760,15 @@
       // the shake: roll and a kick down, decaying — the chapter owns the lens for half a second
       if (shakeT > 0) {
         shakeT = Math.max(0, shakeT - dt);
-        const a = shakeT / 0.45;
         pressT += dt;
-        camera.rotation.z = Math.sin(pressT * 43) * 0.07 * a * a;
-        pitch.rotation.x = shakeBase - 0.10 * Math.sin(Math.PI * (1 - a)) * a + Math.sin(pressT * 31) * 0.03 * a * a;
-        if (shakeT <= 0) camera.rotation.z = 0;
+        const a = shakeT / SHAKE_SECS;                         // 1 -> 0, the settle
+        const k = Math.min(1, pressT / SHAKE_SECS);            // 0 -> 1
+        camera.rotation.z = Math.sin(pressT * 6.5) * 0.11 * a * a + Math.sin(pressT * 2.3) * 0.045 * a;
+        const dip = -0.26 * Math.sin(Math.PI * Math.min(1, k * 1.6)) * (0.35 + 0.65 * a) - Math.sin(pressT * 9) * 0.02 * a * a;
+        const yo = Math.sin(pressT * 4.1) * 0.09 * a;
+        pitch.rotation.x += dip - pitchOff; pitchOff = dip;
+        yaw.rotation.y += yo - yawOff; yawOff = yo;
+        if (shakeT <= 0) { camera.rotation.z = 0; pitch.rotation.x -= pitchOff; yaw.rotation.y -= yawOff; pitchOff = 0; yawOff = 0; }
       }
       // the torch down on the ground, held: the line that answers it
       if (phase === 'pressure' && !looked && kit && kit.getPresence() > 0) {
@@ -790,7 +813,8 @@
       camera.rotation.z = 0;
       dropTodo(); speakReset(); lineQ.length = 0;
       seen.clear(); booted = false; dayClock.t = 0; lastWall = 0;
-      shakeT = 0; downT = 0; looked = false; jungleK = 1; mixBeds();
+      shakeT = 0; downT = 0; looked = false; jungleK = 1; mixBeds(); yawOff = 0; pitchOff = 0;
+      if (kit) { if (kit.hurt) kit.hurt(null); if (kit.root) kit.root(false); }
       for (const r of file) if (r.home) { r.group.position.x = r.home.x; r.group.position.z = r.home.z; }
       if (kit) { kit.daylight(null, 0); kit.presence(0); kit.setPhase('look:'); if (kit.torchOn) kit.torchOn(true); }
       phase = 'look';
@@ -968,7 +992,7 @@
     const AT = { x: P0.x + B.x * 1.35, z: P0.z + B.z * 1.35 };
     const TO = { x: P0.x + B.x * 7.2, z: P0.z + B.z * 7.2 };
     const RUN_T0 = 0.55, RUN_T1 = 2.35;              // 5.85 m in 1.8 s = 3.25 m/s: a sprint
-    step(0, () => { handsRoot.visible = false; if (kit && kit.torchOn) kit.torchOn(true); });
+    step(0, () => { handsRoot.visible = false; if (kit && kit.torchOn) kit.torchOn(true); if (kit && kit.hurt) { kit.hurt(null); kit.root(false); } });
     /* the turn: slow off the mark, then the whip */
     yawTo(0.25, 1.35, s.yawRot, Y1, k => k * k * (3 - 2 * k));
     pitchTo(0.25, 1.35, s.pitchX, -0.58, smoothK);
@@ -1013,9 +1037,13 @@
   function scReach(c, s, api) {
     const { tr, step, sfx, fade, yawTo, pitchTo, rawK, smoothK, stage, handsRoot, kit } = api;
     const P0 = P(s), B = behindOf(s);
-    step(0, () => { handsRoot.visible = false; });
-    yawTo(0, 1.3, s.yawRot, s.yawRot + 0.55, smoothK);
-    pitchTo(0, 1.3, s.pitchX, -1.05, smoothK);
+    step(0, () => { handsRoot.visible = false; if (kit && kit.hurt) { kit.hurt(null); kit.root(false); } });
+    /* v11.1 (Chad): the torch goes OFF before the hand goes down — he reaches
+       into the dark, which is the option's whole name */
+    sfx(0.3, 'torchclick', 0.8);
+    step(0.3, () => { if (kit && kit.torchOn) kit.torchOn(false); });
+    yawTo(0.5, 1.7, s.yawRot, s.yawRot + 0.55, smoothK);
+    pitchTo(0.5, 1.7, s.pitchX, -1.05, smoothK);
     step(0.9, () => {
       stage.patch.position.set(P0.x + B.x * 0.55 - Math.cos(s.yawRot) * 0.35, 0.015, P0.z + B.z * 0.55 + Math.sin(s.yawRot) * 0.35);
       stage.patch.scale.setScalar(1.1); stage.patch.visible = true;
@@ -1040,7 +1068,7 @@
     const { step, sfx, fade, camTo, yawTo, pitchTo, faceFrom, rawK, smoothK, stage, handsRoot, kit } = api;
     const P0 = P(s), BD = stage.BUDDY;
     const Y_B = faceFrom(P0.x, P0.z, BD.x, BD.z);
-    step(0, () => { handsRoot.visible = false; });
+    step(0, () => { handsRoot.visible = false; if (kit && kit.hurt) { kit.hurt(null); kit.root(false); } });
     yawTo(0, 1.2, s.yawRot, Y_B, smoothK);
     pitchTo(0, 1.2, s.pitchX, -0.06, smoothK);
     sfx(1.4, 'n3C1');                            // "Eh. You feel that?"
@@ -1065,20 +1093,26 @@
   function scWho(c, s, api) {
     const { tr, step, sfx, fade, yawTo, pitchTo, rawK, smoothK, stage, handsRoot, kit } = api;
     const P0 = P(s), B = behindOf(s);
-    step(0, () => { handsRoot.visible = false; });
+    step(0, () => { handsRoot.visible = false; if (kit && kit.hurt) { kit.hurt(null); kit.root(false); } });
     pitchTo(0, 0.8, s.pitchX, -0.1, smoothK);
     sfx(0.6, 'n3D1');                            // "Who's there?"
     step(2.3, () => { if (kit) kit.presence(0); });
     sfx(3.2, 's3hiss');                          // "TWO. Shut up." 1.88 s → 5.1
     sfx(5.3, 'b3D');                             // "Siao ah?" 1.49 s → 6.8
-    /* the undergrowth moving away behind him: the litter patch dragged out
-       into the fog, 8 m, never a figure */
+    /* v11.1 (Chad): the ghost soldier runs away behind him with the laugh,
+       as scene A's does — he turns on his own shout and catches the back of
+       a man already going */
+    const AT = { x: P0.x + B.x * 1.35, z: P0.z + B.z * 1.35 }, TO = { x: P0.x + B.x * 7.2, z: P0.z + B.z * 7.2 };
+    const R0 = 5.9, R1 = 7.7;
     yawTo(5.6, 7.0, s.yawRot, s.yawRot + Math.PI, smoothK);
     pitchTo(5.6, 7.0, -0.1, -0.22, smoothK);
-    step(5.8, () => { stage.patch.position.set(P0.x + B.x * 1.2, 0.015, P0.z + B.z * 1.2); stage.patch.scale.setScalar(1); stage.patch.visible = true; });
-    sfx(6.1, 'leafdraw', 0.6);
-    tr(6.1, 9.6, k => { stage.patch.position.x = P0.x + B.x * (1.2 + 7 * k); stage.patch.position.z = P0.z + B.z * (1.2 + 7 * k); }, k => k * k);
-    step(9.6, () => { stage.patch.visible = false; });
+    step(R0, () => { const g = stage.runner; g.group.position.set(AT.x, 0, AT.z); g.group.rotation.y = Math.atan2(B.x, B.z); stage.ghostAlpha(g, 0); g.play('Running', 1, 0.1); });
+    tr(R0, R0 + 0.18, k => { stage.ghostAlpha(stage.runner, k); }, rawK);
+    tr(R0, R1, k => { stage.runner.group.position.x = AT.x + (TO.x - AT.x) * k; stage.runner.group.position.z = AT.z + (TO.z - AT.z) * k; }, rawK);
+    tr(6.9, R1, k => { stage.ghostAlpha(stage.runner, 1 - k); }, rawK);
+    step(R1 + 0.05, () => { const g = stage.runner; stage.ghostAlpha(g, 0); if (g.idle) g.play(g.idle, 1, 0); g.group.position.set(stage.RUN_HOME.x, 0, stage.RUN_HOME.z); });
+    sfx(5.9, 'ghostrunleaf', 0.9);
+    sfx(6.4, 'ghostlaugh', 0.3);
     sfx(7.6, 'n3D2');                            // "It stopped. Right when I asked." 3.16 s → 10.8
     fade(10.9, 12.1, 0, 1);
     step(12.5, () => { handsRoot.visible = true; });

@@ -68,6 +68,16 @@
               note: "George — adult Singaporean, low and deep, every line under a [shouting] tag." },
     buddy: { name: "The buddy in the next bed (episode 2)", voice: "ZyIwtt7dzBKVYuXxaRw7", model: "eleven_v3",
               note: "Edison — young Singaporean, casual. He recurs all episode." },
+    /* v11.1 — the buddy of CHAPTER 3 is David (Chad, on v11.0's scene C: "the
+       soldier voice is indian, make him chinese voice instead, and he is too
+       soft, cant hear him"). David is the library's "typical middle-aged
+       Singaporean man", the voice Chad accepted at v10.1 for the same ask; Lee
+       (aFxDLa1A1dSRlzW8nziT) was generated as the alternative and came back
+       5-10 dB quieter with more air (masters/v11.1). The chapter-1 buddy stays
+       Edison; this row is chapter 3's five lines. LEVELLED BY RMS (-16 dBFS,
+       level.py), not peak-matched: the cast bus is flat. */
+    buddyC3: { name: "The buddy in the next scrape (episode 2, chapter 3)", voice: "XxnXw151E3nb1V85MRlS", model: "eleven_v3",
+              note: "David — casual, middle-aged Singaporean Chinese. Chapter 3 only; the chapter-1 buddy is Edison." },
     bunkmate: { name: "A bunkmate (episode 2)", voice: "FXMPPfJPpDj0GSwJ6ASO", model: "eleven_v3",
               note: "Kelvin — Singaporean English. One more voice in the bunk." },
     /* v9.5 — THE TENTH VOICE. Chad: "everyone counts, one after another, but
@@ -542,20 +552,20 @@
       text: "[quietly] I asked him. He felt nothing. Two of us, one night, two different nights.", secs: 8.12 },
     { id: "n3D", who: "jamesTeen", ch: "e2c3", where: "The outcome card, choice D",
       text: "[quietly] I called out to it. It stopped the moment I did. I gave it my voice.", secs: 6.35 },
-    { id: "b3here", who: "buddy", ch: "e2c3", where: "Play: the torch lands on him, eyes shut",
-      text: "[sleepy] Eh. Torch off, lah. Save battery.", secs: 3.16 },
-    { id: "b3C1", who: "buddy", ch: "e2c3", where: "Scene C: to the whisper",
-      text: "[whispering] Feel what?", secs: 2.43 },
-    { id: "b3C2", who: "buddy", ch: "e2c3", where: "Scene C: his torch on his own legs, then out",
-      text: "[whispering] Nothing there. Maybe root. Or you fell asleep sitting.", secs: 4.36 },
-    { id: "b3C3", who: "buddy", ch: "e2c3", where: "Scene C: not laughing",
-      text: "[quietly, serious] Face the front. I face mine. Relief at four.", secs: 4.83 },
-    { id: "b3D", who: "buddy", ch: "e2c3", where: "Scene D: after the shout",
-      text: "[annoyed, whispering] Siao ah?", secs: 1.49 },
+    { id: "b3here", who: "buddyC3", ch: "e2c3", where: "Play: the torch lands on him, eyes shut",
+      text: "[sleepy] Eh. Torch off, lah. Save battery.", secs: 2.5 },
+    { id: "b3C1", who: "buddyC3", ch: "e2c3", where: "Scene C: to the whisper",
+      text: "[whispering] Feel what?", secs: 0.93 },
+    { id: "b3C2", who: "buddyC3", ch: "e2c3", where: "Scene C: his torch on his own legs, then out",
+      text: "[whispering] Nothing there. Maybe root. Or you fell asleep sitting.", secs: 4.06 },
+    { id: "b3C3", who: "buddyC3", ch: "e2c3", where: "Scene C: not laughing",
+      text: "[quietly, serious] Face the front. I face mine. Relief at four.", secs: 4.85 },
+    { id: "b3D", who: "buddyC3", ch: "e2c3", where: "Scene D: after the shout",
+      text: "[annoyed, whispering] Siao ah?", secs: 1.45 },
     { id: "s3brief", who: "sergeant", ch: "e2c3", where: "The film: the brief at the drop-off, low",
-      text: "[low, firm] Single file. Five metres. Nobody talks. We harbour before dark.", secs: 6.19 },
+      text: "[low, firm] Single file. Five metres. Nobody talks. We harbour before dark.", secs: 6.16 },
     { id: "s3hiss", who: "sergeant", ch: "e2c3", where: "Scene D: the hiss from the far scrape",
-      text: "[angry whisper] TWO. Shut up.", secs: 1.88 },
+      text: "[angry whisper] TWO. Shut up.", secs: 1.84 },
     { id: "n2askA", who: "jamesTeen", ch: "e2c2", where: "Scene A opens: what he says to the encik",
       text: "Encik, something happened. I don't know what.", secs: 3.52 },
     { id: "e2A", who: "encik", ch: "e2c2", where: "Scene A: the encik's answer, before he walks off",

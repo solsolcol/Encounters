@@ -842,6 +842,23 @@ before it plays. Cue map: the film (§9 of the plan) `e2film` 0, `seawash`
 whistle, the sergeant's lines on his talk take, push-ups, the switch; the
 four scenes (§10).
 
+## v11.1 · the chapter-3 buddy re-voiced, and the cast levelled by RMS
+
+`b3here`, `b3C1`, `b3C2`, `b3C3`, `b3D` are David (`buddyC3`,
+XxnXw151E3nb1V85MRlS) — Chad on v11.0: "the soldier voice is indian, make
+him chinese voice instead, and he is too soft, cant hear him". Two takes
+each, picks in masters/v11.1/make.sh; Lee (aFxDLa1A1dSRlzW8nziT) was the
+alternative and is not shipped (5–10 dB quieter, more air). **"Too soft" is
+the FLAT CAST BUS**: Aaron's lines get +3.5 dB, a compressor and a limiter
+(v5.26/v5.28); every other speaker is flat by design, so a whispered take
+peak-matched to −6.85 dBFS sits ~10 dB under him. The five and the
+sergeant's `s3brief`/`s3hiss` are levelled by RMS instead (level.py: a mild
+3:1 over −22 dB, −16 dBFS RMS, lookahead limiter at −1.5, 8/30 ms edges),
+encoded from the WAV plainly — measured mp3 −16.5 RMS, ogg −16.1. Lengths:
+b3here 2.50, b3C1 0.93, b3C2 4.06, b3C3 4.85, b3D 1.45, s3brief 6.16,
+s3hiss 1.84 — none longer than before, so no timeline moved. `torchclick`
+is now also the torch SWITCH in play (`torch.click`).
+
 ## v11.0 · episode 2 chapter 3, The Pressure — 41 sounds
 
 31 lines: Aaron (`jamesTeen`, 24 — the film's four `n3pro1`–`n3pro4`, five
