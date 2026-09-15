@@ -77,7 +77,7 @@
     torch: { on: true, angle: 0.40, intensity: 24, distance: 26, penumbra: 0.6,
              model: 'flashlight', click: 'torchclick' },   // v11.1: Chad's flashlight in the hand while it is on; F or the button, with its switch
 
-    assets: ['fbosling', 'sleeper', 'tree1', 'tree2', 'tree3', 'tree4'],
+    assets: ['fbosling', 'kamaz', 'forest', 'tree1', 'tree2', 'tree3', 'tree4'],   // v11.2: Chad's truck and forest for the film; the sleeper statue is gone (the rig sleeps on its own take)
 
     musicVol: 0,
     /* the jungle, all night, keyed to nothing; the episode's dread under it
@@ -141,6 +141,17 @@
     const CMD    = { x: 0.5, z: 7.7, ry: Math.PI };
     const SCRAPES = [HIS, BUDDY, KNEEL1, KNEEL2, LIE1, CMD];
     const PK = { x: 0, z: -150 };                       // the film's road pocket
+    /* v11.2: the film's set is Chad's forest (assets/forest.glb) at FOREST.S
+       times its file scale. The number is MEASURED against the road: 0.39
+       units wide in the ground sheet, which at x8 is 3.1 m — a laterite
+       track a 2.9 m Kamaz fits with a boot's width to spare; the trees come
+       out 6–16 m, the trunks half a metre. ROAD is the road's centreline in
+       FILE units, traced off the ground sheet (dbg-road: eyeballed waypoints
+       refined to the dark ruts' peak in every eighth row, mapped to world
+       space through the mesh's own UVs, smoothed, resampled to 37 points
+       2.8 m apart). The truck drives it and the file walks the end of it. */
+    const FOREST = { S: 8 };
+    const ROAD = [[1.302,0.079,5.062], [1.032,0.135,4.843], [0.777,0.188,4.607], [0.542,0.138,4.35], [0.294,0.082,4.106], [0.028,0.06,3.883], [-0.241,0.017,3.663], [-0.493,-0.025,3.424], [-0.692,-0.044,3.141], [-0.852,-0.066,2.832], [-1.092,-0.041,2.584], [-1.375,-0.021,2.382], [-1.651,-0.027,2.171], [-1.866,-0.044,1.901], [-2.013,-0.031,1.586], [-2.086,-0.018,1.252], [-1.978,-0.036,0.924], [-1.958,-0.033,0.579], [-1.845,-0.004,0.268], [-1.572,-0.063,0.055], [-1.297,-0.039,-0.156], [-1.099,-0.066,-0.439], [-0.89,-0.031,-0.714], [-0.599,-0.019,-0.902], [-0.291,-0.013,-1.064], [0.02,-0.008,-1.22], [0.33,-0.009,-1.378], [0.638,-0.016,-1.539], [0.942,-0.024,-1.708], [1.236,-0.029,-1.894], [1.512,-0.029,-2.106], [1.765,-0.017,-2.344], [1.985,-0.012,-2.613], [2.133,-0.022,-2.926], [2.247,-0.04,-3.254], [2.385,-0.007,-3.573], [2.384,0.001,-3.916]];
 
     /* ----------------------------------------------------------- textures */
     const noteTex = makeHellNote();                     // the contract wants one
@@ -177,27 +188,6 @@
         }
       }
     }));
-    // laterite: orange-brown road with two ruts and gravel
-    const roadTex = mt(paint(512, (cx, S) => {
-      /* v11.1 (Chad: "the ground brown color is not consistent throughout"):
-         the road was an orange laterite against a dark-brown verge and a
-         third brown on the track; all three are one earth now */
-      cx.fillStyle = '#5c4836'; cx.fillRect(0, 0, S, S);
-      for (let i = 0; i < 1800; i++) { const g = hash(i, 11); cx.fillStyle = `rgba(${96 + g * 50},${76 + g * 36},${52 + g * 20},0.45)`; cx.fillRect(hash(i, 12) * S, hash(i, 13) * S, 2 + g * 4, 2 + g * 3); }
-      cx.fillStyle = 'rgba(28,18,10,0.42)'; cx.fillRect(S * 0.28, 0, S * 0.09, S); cx.fillRect(S * 0.63, 0, S * 0.09, S);
-    }, [1, 18]));
-    // the wall of jungle beside the road, at dusk: canopy silhouette under a sky
-    const wallTex = mt(paint(1024, (cx, S) => {
-      const g = cx.createLinearGradient(0, 0, 0, S * 0.55); g.addColorStop(0, '#4a5a7a'); g.addColorStop(1, '#d8a070');
-      cx.fillStyle = g; cx.fillRect(0, 0, S, S);
-      for (let i = 0; i < 900; i++) {
-        const x = hash(i, 21) * S, h = S * (0.42 + hash(i, 22) * 0.2), w = S * (0.012 + hash(i, 23) * 0.03);
-        cx.fillStyle = `rgba(${14 + hash(i, 24) * 14},${26 + hash(i, 25) * 20},${18 + hash(i, 26) * 10},0.96)`;
-        for (const ox of [-S, 0, S]) { cx.beginPath(); cx.ellipse(x + ox, S - h * 0.6, w * 3, h * 0.45, 0, 0, 7); cx.fill(); cx.fillRect(x + ox - w / 2, S - h * 0.55, w, h * 0.55); }
-      }
-      cx.fillStyle = '#0d1410'; cx.fillRect(0, S * 0.72, S, S * 0.28);
-    }, [10, 1]));
-    wallTex.wrapT = THREE.ClampToEdgeWrapping;
     const duskSky = mt(paint(512, (cx, S) => {
       const g = cx.createLinearGradient(0, 0, 0, S);
       g.addColorStop(0, '#2a3654'); g.addColorStop(0.42, '#6b5a5c'); g.addColorStop(0.5, '#c07a52'); g.addColorStop(0.56, '#e8b27a'); g.addColorStop(1, '#3a2a24');
@@ -385,6 +375,10 @@
             rig.play(opts.idle, rig.rate, 0, false, opts.at);
             if (opts.phase) { rig.acts[opts.idle].time = rig.acts[opts.idle].getClip().duration * opts.phase; }
             rig.mixer.update(0.001);
+          } else if (opts.idle) {
+            /* v11.2: a take a rig does not carry is a bind pose with no error —
+               `Idle_6` was asked of this file for two releases (LEARNINGS) */
+            console.warn(`${key}: no take named ${opts.idle} — it has ${Object.keys(rig.acts).join(', ')}`);
           }
         }
         proxy.visible = false; rig.ready = true; redoShadows();
@@ -399,25 +393,17 @@
        shorter box, which asks for a bigger man — the v5.05 law). */
     const KNEEL = 'Gesture_with_Hand_on_Gun';
     const cmd    = mkRig('fbosling', { x: CMD.x, z: CMD.z, ry: CMD.ry, height: 1.74, idle: KNEEL, rate: 0.5, lift: 0.015 });
-    const buddy  = mkRig('fbosling', { x: BUDDY.x, z: BUDDY.z, ry: BUDDY.ry, height: 1.74, idle: 'Idle_6' });
+    const buddy  = mkRig('fbosling', { x: BUDDY.x, z: BUDDY.z, ry: BUDDY.ry, height: 1.74, idle: 'Idle_3' });   // v11.2: Idle_3 — this rig's idle (Idle_6 is the no-sling file's, and a take a rig does not have is a bind pose with no error)
     const kneel1 = mkRig('fbosling', { x: KNEEL1.x, z: KNEEL1.z, ry: KNEEL1.ry, height: 1.74, idle: KNEEL, rate: 0.35, phase: 0.45, lift: 0.015 });
     const kneel2 = mkRig('fbosling', { x: KNEEL2.x, z: KNEEL2.z, ry: KNEEL2.ry, height: 1.74, idle: KNEEL, rate: 0.4, phase: 0.8, lift: 0.015 });
-    /* one man flat on his back on his pack: the sleeper statue, laid on the
-       ground by its own box (it lies along its z with the head at −z) */
-    const lieRoot = new THREE.Group(); lieRoot.position.set(LIE1.x, 0, LIE1.z); lieRoot.rotation.y = LIE1.ry; world.add(lieRoot);
-    let lieReady = false;
-    loadGltf('sleeper').then(gltf => {
-      if (!alive) return;
-      const m = gltf.scene.clone();
-      m.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.receiveShadow = false; } });
-      m.updateMatrixWorld(true);
-      const bb = new THREE.Box3().setFromObject(m);
-      const size = bb.getSize(new THREE.Vector3());
-      const sc = Math.min(1, 1.75 / Math.max(size.x, size.z));
-      m.scale.setScalar(sc); m.position.y = -bb.min.y * sc + 0.02;
-      if (size.x > size.z) m.rotation.y = Math.PI / 2;
-      lieRoot.add(m); lieReady = true; redoShadows();
-    }).catch(err => { console.warn('sleeper failed', err); lieReady = true; });
+    /* one man flat on his back beside his scrape: the rig's own
+       Sleep_Normally (v11.2 — Chad's nine-take file; the statue is gone).
+       Measured on the take: he lies along the rig's z with the head at −z,
+       face up, arms folded, and the body is held 0.85 m OVER the origin
+       (Mixamo keeps a sleeper's hips at standing height), so `lift` brings
+       the back down onto the litter; a body sinks a little into leaf litter
+       (the v9.3 law), which is where the last few centimetres go. */
+    const lie = mkRig('fbosling', { x: LIE1.x, z: LIE1.z, ry: LIE1.ry, height: 1.74, idle: 'Sleep_Normally', rate: 0.8, lift: -0.58 });   // measured: at −0.80 the field pack under his back went 0.255 m into the litter; he lies ON it
 
     /* THE RUNNER — the same figure as the man in the shower, the tenth man and
        the man at the flagpole (`fbosling`, so no new download), ghostified
@@ -460,7 +446,7 @@
       if (rig.group.visible !== on) rig.group.visible = on;
     }
     const RUN_HOME = { x: 0, z: -30, ry: 0 };
-    const runner = mkRig('fbosling', { x: RUN_HOME.x, z: RUN_HOME.z, ry: 0, height: 1.74, idle: 'Idle_6', noProxy: true,
+    const runner = mkRig('fbosling', { x: RUN_HOME.x, z: RUN_HOME.z, ry: 0, height: 1.74, idle: 'Idle_3', noProxy: true,
       onReady: (r) => ghostify(r, { grey: 0.8, glow: 0x30405a, alpha: 0.6 }) });
     runner.ghostA = 0;
     runner.group.visible = false;
@@ -470,13 +456,15 @@
     patch.rotation.x = -Math.PI / 2; patch.position.y = 0.015; patch.visible = false; patch.userData.moves = true; world.add(patch);
 
     /* ---------------------------------------------- THE ROAD POCKET (film)
-       A stretch of laterite road at last light, 150 m off and inside its own
+       Chad's forest with its road (v11.2), 150 m off and inside its own
        painted dusk (chapter 1's memory-pocket recipe: a bubble whose back
        wall is a depth surface, so the harbour 150 m away never shows through
-       it). The tonner stands on it with the section in the back; the road
-       and the jungle wall either side SCROLL so the truck reads as moving;
-       at the road's +z end the track goes into real trees, where the file
-       forms and walks in. Every material is fog-free. */
+       it). Chad's Kamaz DRIVES the road with the section dozing on its
+       benches and the player on the front of the left one, looking out of
+       the open back; it stops two thirds of the way along, the file forms
+       behind it, and the walk in is the road ahead. Every material is
+       fog-free. Why the forest is the FILM's and not the harbour's:
+       docs/V11.0-E2C3-PLAN.md §18. */
     const pocket = new THREE.Group();
     pocket.position.set(PK.x, 0, PK.z);
     pocket.visible = false;
@@ -484,63 +472,139 @@
     const pbox = (w, h, d, x, y, z, mat) => box(w, h, d, x, y, z, mat, pocket);
     const skyMat = new THREE.MeshBasicMaterial({ map: duskSky, side: THREE.BackSide, fog: false });
     const sky = new THREE.Mesh(new THREE.SphereGeometry(130, 32, 18), skyMat); sky.position.y = 0; pocket.add(sky);
-    const pGround = new THREE.Mesh(new THREE.PlaneGeometry(260, 260), nf({ map: litterTex, color: 0x5a4a34, roughness: 1 }));
-    pGround.rotation.x = -Math.PI / 2; pGround.position.y = -0.03; pocket.add(pGround);
-    const matRoad = nf({ map: roadTex, roughness: 1 });
-    const road = new THREE.Mesh(new THREE.PlaneGeometry(7.5, 220), matRoad); road.rotation.x = -Math.PI / 2; road.position.set(0, 0, -95); pocket.add(road);
-    const matWall = nf({ map: wallTex, roughness: 1, side: THREE.DoubleSide });
-    const wallL = new THREE.Mesh(new THREE.PlaneGeometry(240, 16), matWall); wallL.position.set(-8.5, 7.5, -100); wallL.rotation.y = Math.PI / 2; pocket.add(wallL);
-    const wallR = new THREE.Mesh(new THREE.PlaneGeometry(240, 16), matWall.clone()); wallR.position.set(8.5, 7.5, -100); wallR.rotation.y = -Math.PI / 2; pocket.add(wallR);
-    wallR.material.map = wallTex.clone(); wallR.material.map.needsUpdate = true; madeTex.push(wallR.material.map);
-    // THE TONNER: a cab, a bed, the canvas tilt on hoops, wheels, a tail-gate that drops
-    const matOlive = nf({ color: 0x3d4a32, roughness: 0.85 });
-    const matCanvas = nf({ color: 0x4a5236, roughness: 0.98, side: THREE.DoubleSide });
-    const matTyre = nf({ color: 0x0c0d0d, roughness: 0.9 });
-    const matBedFloor = nf({ color: 0x2c2a22, roughness: 0.95 });
-    const truck = new THREE.Group(); truck.position.set(0, 0, 0); pocket.add(truck);
-    const TB = { w: 2.3, len: 4.6, floor: 1.05, h: 1.95 };
-    const bed = new THREE.Mesh(new THREE.BoxGeometry(TB.w, 0.08, TB.len), matBedFloor); bed.position.set(0, TB.floor, 0); truck.add(bed);
-    box(TB.w, 0.6, 0.05, 0, TB.floor + 0.3, -TB.len / 2, matOlive, truck);
-    for (const sx of [-1, 1]) {
-      box(0.05, 0.5, TB.len, sx * TB.w / 2, TB.floor + 0.25, 0, matOlive, truck);
-      const cw = new THREE.Mesh(new THREE.PlaneGeometry(TB.len, TB.h - 0.5), matCanvas); cw.position.set(sx * (TB.w / 2 + 0.02), TB.floor + 0.5 + (TB.h - 0.5) / 2, 0); cw.rotation.y = Math.PI / 2; truck.add(cw);
-      for (let i = 0; i < 3; i++) { const w = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.32, 14), matTyre); w.rotation.z = Math.PI / 2; w.position.set(sx * 1.15, 0.5, -1.4 + i * 1.5 + (i === 0 ? -1.9 : 0)); truck.add(w); }
+    const pGround = new THREE.Mesh(new THREE.PlaneGeometry(320, 320), nf({ map: litterTex, color: 0x5a4a34, roughness: 1 }));
+    pGround.rotation.x = -Math.PI / 2; pGround.position.y = -2.6; pocket.add(pGround);   // under the forest's deepest dip (−0.31 × FOREST.S)
+    /* THE FOREST: the ground with the road painted into it and 1,480 tree
+       cards, joined to three meshes offline (tools/prepforest.mjs), at
+       FOREST.S, every material fog-free, the leaf cards a MASK cutout
+       (v6.16's law). It lands async and `ready()` waits for it: a film that
+       opens on a bare plane and pops a forest in is worse than a longer
+       black. */
+    const forest = new THREE.Group(); forest.scale.setScalar(FOREST.S); pocket.add(forest);
+    let forestReady = false;
+    loadGltf('forest').then(gltf => {
+      if (!alive) return;
+      const g = gltf.scene;
+      g.traverse(o => {
+        if (!o.isMesh || !o.material) return;
+        const m = o.material;
+        m.fog = false; m.roughness = 0.95; m.metalness = 0;
+        if (m.alphaTest > 0 || m.transparent) { m.transparent = false; m.alphaTest = 0.45; m.side = THREE.DoubleSide; m.depthWrite = true; }
+        if (m.map) m.map.anisotropy = 4;
+        m.needsUpdate = true;
+        o.castShadow = false; o.receiveShadow = false; o.frustumCulled = true;
+      });
+      forest.add(g); forestReady = true;
+    }).catch(err => { console.warn('forest failed', err); forestReady = true; });
+
+    /* THE ROAD, AS NUMBERS: `roadAt(s, off)` is the point s metres along the
+       traced centreline (off metres to the RIGHT of travel) in POCKET
+       coordinates, with the terrain's own height there and the heading a
+       vehicle driving it holds (0 = toward −z, the truck model's forward).
+       The heading is read over a 5 m window rather than off one 2.8 m
+       segment, so a polyline's corners are a steering wheel turning and not
+       a truck snapping its nose. */
+    const roadLen = (() => { let L = 0; for (let i = 1; i < ROAD.length; i++) L += Math.hypot(ROAD[i][0] - ROAD[i - 1][0], ROAD[i][2] - ROAD[i - 1][2]); return L * FOREST.S; })();
+    function roadPos(s) {
+      const S = FOREST.S; let acc = 0; s = Math.max(0, Math.min(roadLen, s));
+      for (let i = 1; i < ROAD.length; i++) {
+        const a = ROAD[i - 1], b = ROAD[i]; const seg = Math.hypot(b[0] - a[0], b[2] - a[2]) * S;
+        if (acc + seg >= s || i === ROAD.length - 1) {
+          const k = Math.max(0, Math.min(1, (s - acc) / seg));
+          return { x: (a[0] + (b[0] - a[0]) * k) * S, y: (a[1] + (b[1] - a[1]) * k) * S, z: (a[2] + (b[2] - a[2]) * k) * S };
+        }
+        acc += seg;
+      }
     }
-    const roofC = new THREE.Mesh(new THREE.PlaneGeometry(TB.w + 0.1, TB.len), matCanvas); roofC.rotation.x = Math.PI / 2; roofC.position.set(0, TB.floor + TB.h, 0); truck.add(roofC);
-    for (let i = 0; i < 4; i++) { const hoop = box(TB.w + 0.12, 0.05, 0.05, 0, TB.floor + TB.h - 0.02, -TB.len / 2 + 0.2 + i * 1.4, matOlive, truck); hoop.visible = true; }
-    box(TB.w, 2.1, 2.0, 0, 1.6, -TB.len / 2 - 1.05, matOlive, truck);                                    // the cab
-    const tailPivot = new THREE.Group(); tailPivot.position.set(0, TB.floor, TB.len / 2); truck.add(tailPivot);
-    box(TB.w, 0.55, 0.05, 0, 0.275, 0, matOlive, tailPivot);
-    tailPivot.rotation.x = 0;                                                                              // up = closed; −π/2 = dropped
-    const benchL = box(0.4, 0.05, TB.len - 0.4, -TB.w / 2 + 0.22, TB.floor + 0.48, 0, matOlive, truck);
-    const benchR = box(0.4, 0.05, TB.len - 0.4, TB.w / 2 - 0.22, TB.floor + 0.48, 0, matOlive, truck);
-    /* the riders: standing in the bed holding the hoops, two rows facing in */
+    function roadAt(s, off = 0) {
+      const p = roadPos(s), q0 = roadPos(s - 2.5), q1 = roadPos(s + 2.5);
+      const dx = q1.x - q0.x, dz = q1.z - q0.z, dh = Math.hypot(dx, dz) || 1;
+      return { x: p.x - dz / dh * off, y: p.y, z: p.z + dx / dh * off,
+               ry: Math.atan2(-dx, -dz), pitch: Math.atan2(q1.y - q0.y, dh) };
+    }
+
+    // THE TONNER: Chad's Kamaz 5330 (assets/kamaz.glb, tools/preptruck.mjs) — cab at −z, open rear at +z, wheels on y = 0
+    const TB = { w: 2.78, len: 4.56, floor: 1.48, seat: 1.93, h: 1.62 };   // the bed, MEASURED off the model: inner width and length, the floor, the bench seats, the headroom
+    const truck = new THREE.Group(); truck.rotation.order = 'YXZ'; pocket.add(truck);
+    let truckReady = false, truckBaseY = 0;
+    loadGltf('kamaz').then(gltf => {
+      if (!alive) return;
+      const g = gltf.scene;
+      g.traverse(o => { if (!o.isMesh || !o.material) return; o.material.fog = false; o.material.needsUpdate = true; if (o.material.map) o.material.map.anisotropy = 4; o.castShadow = false; o.receiveShadow = false; });
+      truck.add(g); truckReady = true;
+    }).catch(err => { console.warn('kamaz failed', err); truckReady = true; });
+    const tailPivot = new THREE.Group(); tailPivot.position.set(0, TB.floor, TB.len / 2); truck.add(tailPivot);   // the model's rear is open; the name the film and restore() know, now empty
+    /* THE RIDERS: seven on the benches, dozing on the rig's own sitting take
+       (Sit_and_Doze_Off — sampled seventeen times across its 17 s, the head
+       stays 0.62 m over the hips throughout: an upright doze with no fold,
+       v8.0's law). Its hips sit 0.54 m over the rig's origin and the bench
+       0.45 over the floor, so a man whose origin is ON THE FLOOR sits on the
+       bench; his hips land 0.05 m ahead of his origin, so x ±1.10 puts them
+       over the bench centres at ±1.05, facing the aisle. The player is the
+       seventh man, on the front of the left bench, and nobody sits within
+       two metres of him on it — found by render: a man one seat along on
+       the same bench is a helmet filling the right of the frame. */
     const riders = [];
-    for (const [rx, rz] of [[-0.62, -1.5], [0.62, -1.7], [-0.62, -0.2], [0.62, 0.0], [-0.62, 1.15]]) {
-      const r = mkRig('fbosling', { parent: truck, x: rx, z: rz, ry: rx < 0 ? Math.PI / 2 : -Math.PI / 2, height: 1.74, idle: 'Idle_6', phase: hash(riders.length, 61) });
-      r.group.position.y = TB.floor + 0.04;
+    for (const [rx, rz] of [[-1.10, 0.35], [-1.10, 1.25], [1.10, -1.45], [1.10, -0.55], [1.10, 0.35], [1.10, 1.25]]) {
+      const r = mkRig('fbosling', { parent: truck, x: rx, z: rz, ry: rx < 0 ? Math.PI / 2 : -Math.PI / 2, height: 1.74,
+                                    idle: 'Sit_and_Doze_Off', phase: hash(riders.length, 61), rate: 0.9 + hash(riders.length, 62) * 0.2 });
+      r.group.position.y = TB.floor;
       riders.push(r);
     }
-    /* THE TRACK MOUTH at the road's +z end: the road stops, a trodden strip
-       goes on into real trees, and the file forms there at the drop-off */
-    const TRACK_Z0 = 6;
-    const track = new THREE.Mesh(new THREE.PlaneGeometry(2.0, 60), nf({ map: litterTex, color: 0x5a4a34, roughness: 1 }));
-    track.rotation.x = -Math.PI / 2; track.position.set(0, 0.005, TRACK_Z0 + 30); pocket.add(track);
-    const pocketTrees = plantTrees ? plantTrees(pocket, (() => {
-      const out = [];
-      for (let i = 0; i < 70; i++) {
-        const z = TRACK_Z0 - 2 + hash(i, 71) * 60, side = hash(i, 72) < 0.5 ? -1 : 1, x = side * (2.6 + hash(i, 73) * 9);
-        out.push({ x, z, h: 6.5 + hash(i, 74) * 5 });
-      }
-      for (let i = 0; i < 20; i++) out.push({ x: (hash(i, 75) - 0.5) * 60, z: TRACK_Z0 + 62 + hash(i, 76) * 10, h: 7 + hash(i, 77) * 4 });
-      return out;
-    })(), { seed: 29, tint: new THREE.Color(0.78, 0.88, 0.72), roughness: 0.96, fog: false, lowKeep: 0.6 }) : null;
-    const cmdFilm = mkRig('fbosling', { parent: pocket, x: 1.3, z: TRACK_Z0 + 1.4, ry: -0.8, height: 1.74, idle: KNEEL, rate: 0.9, lift: 0.015 });
+    const CAM_SEAT = { x: -1.05, y: TB.floor + 1.12, z: -1.55 };   // a seated eye: the bench + 0.67
+    /* THE DRIVE: from just inside the forest's edge to the brakes, 0.64 of
+       the road, over the film's 0.3–17.0 (the film eases it: fast, then
+       slowing to the stop). The camera RIDES: it is computed from the truck's
+       own matrix every frame, so a seek lands on the same frame. */
+    const DRIVE = { s0: 3.0, s1: roadLen * 0.64 };
+    function driveTo(k) {
+      const p = roadAt(DRIVE.s0 + (DRIVE.s1 - DRIVE.s0) * k);
+      truck.position.set(p.x, p.y, p.z); truckBaseY = p.y;
+      truck.rotation.x = p.pitch; truck.rotation.y = p.ry;
+      truck.updateWorldMatrix(true, false);
+    }
+    const _seat = new THREE.Vector3();
+    function rideCam(t) {
+      _seat.set(CAM_SEAT.x, CAM_SEAT.y, CAM_SEAT.z); truck.localToWorld(_seat);
+      yaw.position.copy(_seat);
+      yaw.rotation.y = truck.rotation.y + Math.PI + 0.30 + Math.sin(t * 0.7) * 0.03;   // out of the back, turned to the aisle and the opening
+      pitch.rotation.x = -0.04 - truck.rotation.x + Math.sin(t * 1.3) * 0.01;
+    }
+    /* THE DROP-OFF, all of it deterministic from the stop: the file forms
+       on the road behind the tail-gate facing the truck, the commander
+       kneels off the right verge facing back down the file, the camera
+       stands off the left verge BEHIND the last man and pans up the line
+       to the truck. Heights are the terrain's, off `roadAt`. */
+    const DROP = { cam0: roadAt(DRIVE.s1 - 13.5, -3.0), cam1: roadAt(DRIVE.s1 - 12.0, -2.6), look: roadAt(DRIVE.s1 - 5.0) };   // the whole file AHEAD of the lens (found by render: level with it, the men read as facing away from the truck)
+    const cmdFilm = (() => {
+      const p = roadAt(DRIVE.s1 - 3.4, 1.6);
+      /* a Mixamo rig at ry 0 faces +z (v10.3) and `ry` off roadAt is the
+         truck's, whose forward is −z: ALONG the road is ry + π, back down it
+         is ry. He faces back down the file, turned a little to the road. */
+      const r = mkRig('fbosling', { parent: pocket, x: p.x, z: p.z, ry: p.ry + 0.5, height: 1.74, idle: KNEEL, rate: 0.9, lift: 0.015 });
+      r.group.position.y = p.y; return r;
+    })();
     const file = [];
     for (let i = 0; i < 5; i++) {
-      const r = mkRig('fbosling', { parent: pocket, x: (i % 2 ? 0.25 : -0.25), z: TRACK_Z0 + 2.6 + i * 1.7, ry: 0, height: 1.74, idle: 'Idle_6', phase: hash(i, 81) });
-      r.home = { x: r.group.position.x, z: r.group.position.z };
+      const p = roadAt(DRIVE.s1 - 4.0 - 1.25 * i, i % 2 ? 0.3 : -0.3);
+      const r = mkRig('fbosling', { parent: pocket, x: p.x, z: p.z, ry: p.ry + Math.PI, height: 1.74, idle: 'Idle_3', phase: hash(i, 81) });   // facing the truck
+      r.group.position.y = p.y;
+      r.home = { x: p.x, y: p.y, z: p.z, ry: p.ry + Math.PI };
       file.push(r);
+    }
+    function fileHome() { for (const r of file) if (r.home) { r.group.position.set(r.home.x, r.home.y, r.home.z); r.group.rotation.y = r.home.ry; } }
+    /* THE WALK IN: the road AHEAD of the truck (the cut having put the
+       section past it), 2.2 m between men and the nearest 2.5 m ahead of
+       the lens, the lead man ending 3 m short of the road's end; the camera
+       at the file's tail, on the terrain, looking up the road. Backs to the
+       camera: ry + π (found by render — the first pass had five men
+       moonwalking toward the lens). */
+    const WALK = 14, WALK_S0 = DRIVE.s1 + 7.5;
+    function walkIn(k, t) {
+      file.forEach((r, j) => { const p = roadAt(WALK_S0 + 2.5 + 2.2 * (4 - j) + WALK * k, j % 2 ? 0.25 : -0.25); r.group.position.set(p.x, p.y, p.z); r.group.rotation.y = p.ry + Math.PI; });
+      const c = roadAt(WALK_S0 + WALK * k);
+      yaw.position.set(PK.x + c.x, c.y + 1.60 + Math.sin(t * 6.3) * 0.02, PK.z + c.z);
+      yaw.rotation.y = c.ry + Math.sin(t * 0.9) * 0.03;
     }
     let roadK = 0;                                     // 1 while the truck is "moving" (the road and the walls scroll)
     let skyK = 1;                                      // the pocket's painted sky, darkened over the walk in
@@ -748,8 +812,7 @@
     function updateNotes(dt, t) {
       for (const r of rigs) if (r.mixer && r.group.visible && (r.group.parent !== truck && r.group.parent !== pocket || pocket.visible)) r.mixer.update(dt);
       if (pocket.visible) {
-        if (roadK > 0) { matRoad.map.offset.y -= dt * 0.75 * roadK; wallL.material.map.offset.x -= dt * 0.045 * roadK; wallR.material.map.offset.x += dt * 0.045 * roadK; }
-        truck.rotation.z = Math.sin(t * 3.1) * 0.006 * roadK; truck.position.y = Math.sin(t * 5.3) * 0.012 * roadK;
+        truck.rotation.z = Math.sin(t * 3.1) * 0.006 * roadK; truck.position.y = truckBaseY + Math.sin(t * 5.3) * 0.012 * roadK;
         skyMat.color.setScalar(skyK);
       }
       if (getState() !== 'play') { lastWall = 0; return; }
@@ -803,7 +866,7 @@
       jungleK = s.jungleK ?? 1; mixBeds();
       camera.rotation.z = s.roll || 0;
       tailPivot.rotation.x = 0;
-      for (const r of file) if (r.home) { r.group.position.x = r.home.x; r.group.position.z = r.home.z; if (r.acts) r.play('Idle_6', 1, 0); }
+      fileHome(); for (const r of file) if (r.acts) r.play('Idle_3', 1, 0);
       if (kit) kit.daylight(null, 0);
     }
     function reset() {
@@ -815,7 +878,7 @@
       seen.clear(); booted = false; dayClock.t = 0; lastWall = 0;
       shakeT = 0; downT = 0; looked = false; jungleK = 1; mixBeds(); yawOff = 0; pitchOff = 0;
       if (kit) { if (kit.hurt) kit.hurt(null); if (kit.root) kit.root(false); }
-      for (const r of file) if (r.home) { r.group.position.x = r.home.x; r.group.position.z = r.home.z; }
+      fileHome();
       if (kit) { kit.daylight(null, 0); kit.presence(0); kit.setPhase('look:'); if (kit.torchOn) kit.torchOn(true); }
       phase = 'look';
     }
@@ -830,7 +893,6 @@
     function dispose() {
       alive = false;
       if (treeStand) treeStand.userData.disposeTrees?.();
-      if (pocketTrees) pocketTrees.userData.disposeTrees?.();
       const geos = new Set(), mats = new Set();
       world.traverse(o => {
         if (o.geometry) geos.add(o.geometry);
@@ -853,7 +915,7 @@
     const readyAt = performance.now();
     return (S = {
       world, noteTex, blockers: blockers(),
-      ready: () => (cmd.ready && buddy.ready && riders.every(r => r.ready) && lieReady) || performance.now() - readyAt > 12000,
+      ready: () => (cmd.ready && buddy.ready && lie.ready && riders.every(r => r.ready) && forestReady && truckReady) || performance.now() - readyAt > 20000,
       pile: { pos: PILE_POS, radius: INTERACT_R, group: pile,
               dist: pileDist, screen: pileScreen, inView: pileInView,
               hits: pointerHitsPile, interact: interactPile,
@@ -863,9 +925,9 @@
       get noteStorm() { return 1; },
       set noteStorm(v) {},
       // the chapter's own
-      HIS, CENTRE, BUDDY, KNEEL1, KNEEL2, LIE1, CMD, FIG, LOG, GAP, PK, TB, TRACK_Z0, RUN_HOME,
-      cmd, buddy, kneel1, kneel2, runner, cmdFilm, file, riders, ghostAlpha, patch,
-      pocket, truck, tailPivot, chem,
+      HIS, CENTRE, BUDDY, KNEEL1, KNEEL2, LIE1, CMD, FIG, LOG, GAP, PK, TB, RUN_HOME, FOREST, ROAD, DRIVE, DROP, roadLen,
+      cmd, buddy, kneel1, kneel2, lie, runner, cmdFilm, file, riders, ghostAlpha, patch,
+      pocket, truck, tailPivot, forest, chem, roadAt, driveTo, rideCam, walkIn, fileHome,
       setRoad: (k) => { roadK = k; }, setSky: (k) => { skyK = k; }, setJungle: (k) => { jungleK = k; mixBeds(); },
       sayLine, seen, after, dayClock,
       get phase() { return phase; },
@@ -886,16 +948,16 @@
      at night from above coming down into his scrape, where play begins. */
   function intro(c, s, api) {
     const { tr, step, sfx, fade, camTo, yawTo, pitchTo, faceFrom, rawK, smoothK, duck, stage, armR, kit } = api;
-    const PK = stage.PK, TB = stage.TB, TZ = stage.TRACK_Z0;
+    const PK = stage.PK, D = stage.DROP;
     const P = (x, y, z) => ({ x: PK.x + x, y, z: PK.z + z });
     const HIS = stage.HIS;
     step(0, () => {
       armR.visible = false;
-      stage.pocket.visible = true; stage.setRoad(1); stage.setSky(1);
-      /* the file and the kneeling commander stand at the track's mouth,
-         which is straight out of the back of a truck that is still driving
-         (found by render: five men on the road behind a moving tonner).
-         They are hidden until the tail-gate drops. */
+      stage.pocket.visible = true; stage.setRoad(1); stage.setSky(1); stage.driveTo(0);
+      /* the file and the kneeling commander stand on the road behind the
+         truck's STOP, which is straight out of the back of a truck that is
+         still driving (found by render at v11.0: five men on the road behind
+         a moving tonner). They are hidden until it has stopped. */
       for (const r of stage.file) r.group.visible = false;
       stage.cmdFilm.group.visible = false;
       stage.tailPivot.rotation.x = 0;
@@ -905,14 +967,14 @@
     fade(0.0, 0.3, 1, 1);
     /* the beds: the jungle held down under the truck, the dread at a third */
     tr(0, 0.1, () => { duck('junglenight', 0.15); duck('e2dread', 0.35); }, rawK);
-    /* 0.8 ON THE TONNER (0.8–17): from the front of the bed looking out the
-       back, the section standing either side, the road unrolling behind */
+    /* 0.8 ON THE TONNER (0.8–17): seated on the front of the left bench
+       looking out of the open back, the section dozing either side, the
+       forest road unrolling behind as Chad's Kamaz drives it (v11.2). The
+       camera rides the truck — computed from its matrix every frame — and
+       the drive eases out to the stop. */
     sfx(0.2, 'tonner', 0.85);
     sfx(13.6, 'tonner', 0.85);
-    const CAM_T = P(0, TB.floor + 1.55, -1.9);
-    camTo(0.3, 17.0, CAM_T, P(0.05, TB.floor + 1.52, -1.7), smoothK);
-    yawTo(0.3, 17.0, Math.PI + 0.05, Math.PI - 0.06, smoothK);       // facing +z: out of the back
-    pitchTo(0.3, 17.0, -0.02, 0.02, smoothK);
+    tr(0.3, 17.0, (k, t) => { stage.driveTo(1 - (1 - k) * (1 - k)); stage.rideCam(t); }, rawK);
     fade(0.8, 3.0, 1, 0);
     sfx(1.6, 'n3pro1');                          // "I thought the shower incident was going to be the only strange encounter in my army life. It wasn't."
     sfx(9.6, 'n3pro2');                         // "Months later, I was posted to Infantry... and here we are, on the first night of our outfield exercise..."
@@ -920,12 +982,11 @@
     /* 17 THE DROP-OFF (17.2–26): the brakes, the tail-gate dropping, the
        file forming at the track's mouth, the commander kneeling with his
        hand up, the last light through the leaves */
-    step(17.0, () => { stage.setRoad(0); stage.truck.position.z = 0; for (const r of stage.file) r.group.visible = true; stage.cmdFilm.group.visible = true; });
+    step(17.0, () => { stage.setRoad(0); stage.driveTo(1); stage.fileHome(); for (const r of stage.file) r.group.visible = true; stage.cmdFilm.group.visible = true; });
     sfx(17.1, 'tailgate', 0.9);
-    tr(17.2, 17.9, k => { stage.tailPivot.rotation.x = -Math.PI / 2 * k; }, smoothK);
-    step(17.2, () => { for (const r of stage.file) if (r.acts) r.play('Idle_6', 1, 0); });
-    camTo(17.4, 26.0, P(3.4, 1.55, TZ - 1.2), P(2.9, 1.5, TZ - 0.4), smoothK);
-    yawTo(17.4, 26.0, faceFrom(PK.x + 3.4, PK.z + TZ - 1.2, PK.x + 0.4, PK.z + TZ + 5), faceFrom(PK.x + 2.9, PK.z + TZ - 0.4, PK.x + 0.2, PK.z + TZ + 6), smoothK);
+    step(17.2, () => { for (const r of stage.file) if (r.acts) r.play('Idle_3', 1, 0); });
+    camTo(17.4, 26.0, P(D.cam0.x, D.cam0.y + 1.55, D.cam0.z), P(D.cam1.x, D.cam1.y + 1.5, D.cam1.z), smoothK);
+    yawTo(17.4, 26.0, faceFrom(PK.x + D.cam0.x, PK.z + D.cam0.z, PK.x + D.look.x, PK.z + D.look.z), faceFrom(PK.x + D.cam1.x, PK.z + D.cam1.z, PK.x + D.look.x, PK.z + D.look.z), smoothK);
     pitchTo(17.4, 26.0, -0.04, -0.02, smoothK);
     fade(17.4, 18.6, 1, 0);
     sfx(19.0, 's3brief');                        // "Single file. Five metres. Nobody talks. We harbour before dark."
@@ -934,23 +995,20 @@
        ahead going grey, the light draining to night */
     step(26.0, () => {
       if (kit) kit.daylight(NIGHT_TWEEN, 8.0);
-      for (const r of stage.file) if (r.acts) r.play('Walking', 1, 0.2);
+      for (const r of stage.file) if (r.acts) r.play('Walking', 1.2, 0.2);
     });
     tr(26.0, 34.5, k => { stage.setSky(1 - 0.92 * k); }, smoothK);
     sfx(26.2, 'bootsleaf', 0.75);
     sfx(27.0, 'n3pro3');                         // "We walked in as the light went. Dug our scrapes. Then there was nothing to do but wait for morning."
-    const WALK = 14;
-    tr(26.0, 34.5, k => { for (const r of stage.file) if (r.home) r.group.position.z = r.home.z + WALK * k; }, rawK);
-    camTo(26.0, 34.5, P(0, 1.60, TZ + 0.2), P(0, 1.60, TZ + 0.2 + WALK), rawK);
-    yawTo(26.0, 34.5, Math.PI + 0.03, Math.PI - 0.03, smoothK);
+    tr(26.0, 34.5, (k, t) => stage.walkIn(k, t), rawK);   // the men and the camera up the road ahead of the truck, on the terrain
     pitchTo(26.0, 34.5, -0.03, -0.06, smoothK);
     fade(26.0, 27.2, 1, 0);
     fade(33.6, 34.5, 0, 1);
     /* 34.5 THE HARBOUR (34.5–46.5): the real world at night, from above the
        ring, coming down into his scrape and turning out to the trees */
     step(34.5, () => {
-      stage.pocket.visible = false; stage.setRoad(0);
-      for (const r of stage.file) if (r.acts) r.play('Idle_6', 1, 0);
+      stage.pocket.visible = false; stage.setRoad(0); stage.fileHome();
+      for (const r of stage.file) if (r.acts) r.play('Idle_3', 1, 0);
       if (kit) kit.daylight(null, 0);
     });
     tr(34.5, 36.5, k => { duck('junglenight', 0.15 + 0.85 * k); duck('e2dread', 0.35 + 0.65 * k); }, rawK);

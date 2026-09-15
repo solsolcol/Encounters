@@ -488,7 +488,7 @@
     const CULL_SPHERE = {
       admintee:  { x: 0.067, y: 0.870, z: 0.011, r: 1.376 },
       encik2:    { x: 0.015, y: 0.832, z: -0.037, r: 1.253 },
-      fbosling:  { x: 0.056, y: 0.837, z: 0.212, r: 1.379 },   // v10.8: the flagpole ghost (e2c1's table)
+      fbosling:  { x: 0.056, y: 0.833, z: 0.121, r: 1.439 },   // v10.8: the flagpole ghost (e2c1's table; v11.2: the nine-take file)
       sleepanim: { x: 0.582, y: 85.062, z: 19.032, r: 130.851 },
     };
     function wideBounds(root, key) {

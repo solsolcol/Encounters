@@ -2148,7 +2148,7 @@
        crossfade between two takes landing a hair outside both.            */
     const CULL_SPHERE = {
       admintee:     { x: 0.067, y: 0.870, z: 0.011, r: 1.376 },
-      fbosling:     { x: 0.056, y: 0.837, z: 0.212, r: 1.379 },
+      fbosling:     { x: 0.056, y: 0.833, z: 0.121, r: 1.439 },   // v11.2: the nine-take file (clipbounds, the sitting and sleeping takes in)
       botak:        { x: 0.003, y: 0.858, z: -0.050, r: 1.176 },
       encik2:       { x: 0.015, y: 0.832, z: -0.037, r: 1.253 },
       ghostsoldier: { x: 0.001, y: 0.850, z: -0.010, r: 1.045 },

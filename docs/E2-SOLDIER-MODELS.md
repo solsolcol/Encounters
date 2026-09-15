@@ -621,3 +621,42 @@ episode-2 plan. Wiring them here would be using them, not showing them.
 - The three weapon-handling clips (`Gun_Hold_Left_Turn`,
   `Rifle_Charge_inplace`, `Gesture_with_Hand_on_Gun`) remain RESERVED for
   rifle mode — day one in a bunk has issued nobody a rifle.
+
+
+## §14 · The nine-take FBO files (v11.2)
+
+Chad re-exported both FBO rigs (`fbosling`, `fbonosling`) with NINE takes:
+the seven of §11 plus **`Sit_and_Doze_Off`** (17.38 s) and
+**`Sleep_Normally`** (1.83 s). Both files arrive SMOOTH-shaded this time
+(8 and 2 flat triangles in 2000 sampled), so `deflatten.mjs` measures and
+passes them through untouched; then `prepwoman.mjs` at 0.10 / 2048 with
+every clip named (the §11 trap), and `resampleclips.mjs` at 1e-4.
+
+| asset | source | shipped | tris | clips |
+|---|---|---|---|---|
+| `fbosling` | 46.75 MB | 3820 KB | 59,307 | 9 (Idle_3) |
+| `fbonosling` | 46.72 MB | 3845 KB | 59,229 | 9 (Idle_6) |
+
+The two new takes, MEASURED (dbg-clipmeasure, the rig at file scale):
+
+| clip | what it is | the numbers |
+|---|---|---|
+| `Sit_and_Doze_Off` | seated, hands on the knees, the head sagging and lifting — an upright doze | hips 0.54 m over the origin, head 0.62 over the hips at every one of 17 samples across the take (NO fold — the admin tee's `Chair_Sit_Idle_M` folds to 0.27, §3), knees 0.38 ahead, feet on the origin's plane |
+| `Sleep_Normally` | on his back, face up, arms folded on the chest, the rifle beside him | lies along the rig's z with the head at −z (head z −0.62, feet +0.95), the body held 0.85–1.14 m OVER the origin — Mixamo keeps a sleeper's hips at standing height — so a sleeper is placed with a negative `lift` |
+
+Where they are seen: the riders in chapter 3's Kamaz sit on
+`Sit_and_Doze_Off` (six of them, phases dealt from the chapter's stream,
+rates 0.9–1.1); the man flat beside his scrape in chapter 3's harbour is
+`Sleep_Normally` on `fbosling` at `lift −0.58` (measured: at −0.80 his
+field pack went 0.255 m into the litter; the pack is what he lies on). The
+`sleeper` statue leaves chapter 3 (chapter 1 keeps it for the bunk).
+
+`CULL_SPHERE.fbosling` re-measured with the new takes:
+c = (0.056, 0.833, 0.121), r = 1.439 (was 1.379); `fbonosling`
+c = (0.065, 0.860, 0.169), r = 1.469 — not in any table yet, since no
+chapter builds it.
+
+**The idle trap, now written down**: `fbosling` idles on `Idle_3`,
+`fbonosling` on `Idle_6`, the admin tee on `Idle_9`. Chapter 3 asked
+`fbosling` for `Idle_6` from v11.0 to v11.1 and every one of its soldiers
+stood in the bind pose (LEARNINGS, v11.2).

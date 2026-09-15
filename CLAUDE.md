@@ -2617,6 +2617,66 @@ What the baseline contains, by release:
   was an orange laterite against a dark verge and a third brown on the track.
   Sheet v52 exported (v44 stays the link). `src/main.js` gains the torch body,
   `root` and `hurt`, and nothing else.
+- **v11.2** THE KAMAZ, THE FOREST ROAD, AND THE NINE-TAKE SOLDIERS — Chad's
+  two Sketchfab models and his re-exported FBO rigs, all in episode 2
+  chapter 3's film; `src/main.js` is untouched, so episode 1 is unchanged by
+  construction. **WHERE THE FOREST SERVES, decided**: the FILM only. It is a
+  MINIATURE (a 9.5-unit ground with the road painted into its sheet, 1,480
+  tree cards on one atlas, roughly a tenth of life size) with two metres of
+  relief; the playable harbour is a flat ground the engine walks with one
+  collision sample at y = 1.0, six torch spots at measured places and a ring
+  of scrapes, and re-laying all of that on a hillside of alpha cards would
+  be the whole chapter over again for a set the player sees for 35 s. As
+  the film's set it is exactly right, and the painted road, the two jungle
+  walls and the scrolling are gone. **THE SCALE IS MEASURED, not chosen**:
+  the road is 0.39 units wide in the sheet, which at x8 is 3.1 m — a track a
+  2.9 m Kamaz fits. **THE ROAD IS NUMBERS**: its centreline was traced out
+  of the ground texture (eyeballed waypoints refined to the dark ruts'
+  peak in every eighth row, mapped to world space through the mesh's own
+  UVs, smoothed, resampled to 37 points 2.8 m apart — `ROAD` in the
+  chapter, `masters/v11.2/road.json` for the tool) and `roadAt(s, off)`
+  answers any point along it with the terrain's own height and a heading
+  read over a 5 m window, so a polyline's corners are a steering wheel
+  turning and not a truck snapping its nose. Chad's Kamaz DRIVES it — the
+  camera is computed from the truck's own matrix every frame, seated on the
+  front of the left bench looking out of the open back — eases to a stop
+  at 0.64 of its length, the file forms on the road behind, and the walk in
+  is the road ahead, the men on the terrain with their backs to the lens.
+  Trees within 2.6 m of the centreline are dropped at prep (44 of them):
+  the file plants bushes to the ruts, and a card that overhangs the road is
+  one the truck drives through and the walking camera stands inside.
+  **THE TRUCK** (1.4 MB from 6.8, 19,620 triangles kept, the half turn
+  baked so the cab is at −z like the primitive it replaces) was MEASURED for
+  its bed — floor 1.48, bench seats 1.93, inner width 2.78 — and the riders
+  sit on the rig's own `Sit_and_Doze_Off`, whose hips sit 0.54 m over its
+  origin against a bench 0.45 over the floor, so a man stood ON THE FLOOR
+  sits on the bench. Sampled seventeen times across its 17 s the head stays
+  0.62 m over the hips: an upright doze, no fold (v8.0's law, and the
+  opposite finding to the admin tee's). Six riders, nobody within two
+  metres of the player on his own bench — found by render: a man one seat
+  along is a helmet filling the right of the frame. **THE SOLDIERS**: both
+  FBO rigs re-exported by Chad with nine takes (sitting and sleeping new),
+  smooth-shaded this time so `deflatten` passes them through, prepped at
+  0.10 / 2048 with every clip named, resampled; 3.9 MB each against 4.2
+  with two more takes. The ground sleeper in the harbour is the rig on
+  `Sleep_Normally` — face up, arms folded, on his field pack; the take holds
+  the body 0.85 m over the origin (Mixamo keeps a sleeper's hips at
+  standing height) and the pack is 0.25 m thick under his back, both
+  measured — and the statue leaves the chapter. `CULL_SPHERE.fbosling` is
+  re-measured with the new takes in it (r 1.379 → 1.439), in all three
+  episode-2 chapters. **AND A BUG SINCE v11.0**: the chapter asked this rig
+  for `Idle_6`, which is the NO-sling file's idle (this one has `Idle_3`),
+  and `rig.play` on a take a rig does not have returns false with no error
+  — so the buddy, the runner, the riders and the file had stood in the
+  BIND POSE through two releases. `chaptertest` cannot catch it (a take is
+  not an asset key); the fix is one word in five places and the law is in
+  LEARNINGS. Two prep traps paid for once: `join()` after `flatten()` merges
+  1,480 cards into ONE node's local space (trunks a kilometre away) unless
+  every transform is baked first; and the road's dark-rut tracker seeded on
+  the darkest patch, which was a shadow, not the road — a prior from the
+  eye, refined by the measure, is the shape that worked. Two credit rows;
+  sheet v53 exported (v44 stays the link). docs/V11.0-E2C3-PLAN.md §18 is
+  the build's memory.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -3128,7 +3188,7 @@ the run exactly as it always ended a last chapter.
 
 Next up: **episode 2's chapters 4–5, and rifle mode for chapter 5**
 (chapter 1, The Worst Bed, shipped at v7.1 — `src/chapters/e2/e2c1.js`;
-chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 3, The Pressure, at v11.0 and revised at v11.1 — `src/chapters/e2/e2c3.js`; chapter 1 last revised at v10.8; the rifle
+chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 3, The Pressure, at v11.0 and revised at v11.1–v11.2 — `src/chapters/e2/e2c3.js`; chapter 1 last revised at v10.8; the rifle
 viewmodel's placement and material are measured in
 docs/E2-SOLDIER-MODELS.md §8, and Chad's ghost and bicycle models are
 still to come), and the still-outstanding job of replacing chapter 1's

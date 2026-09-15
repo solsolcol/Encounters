@@ -104,6 +104,12 @@ Object.assign(window.__TEXT__, {
   'credits.flash':       'The flashlight',
   'credits.flashWho':    'Flashlight · Sketchfab',
   'credits.flashLink':   'sketchfab.com · flashlight',
+  'credits.kamaz':       'The tonner',
+  'credits.kamazWho':    'Kamaz 5330 · Sketchfab',
+  'credits.kamazLink':   'sketchfab.com · kamaz-5330',
+  'credits.forest':      'The forest and its road',
+  'credits.forestWho':   'A forest 3 with a road at night for game · Sketchfab',
+  'credits.forestLink':  'sketchfab.com · a-forest-3-with-a-road-at-night-for-game',
   // v10.1 — the cookhouse of episode 2 chapter 2
   'credits.staff':       'The cookhouse staff',
   'credits.staffWho':    'Cafe staff uniform portrait · Sketchfab',

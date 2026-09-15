@@ -3626,3 +3626,46 @@ peak-matched to the same −6.85 dBFS sits ~10 dB UNDER him on the ear, and
 by RMS (masters/v11.1/level.py, −16 dBFS with a −1.5 limiter), encoded from
 the WAV plainly — the v10.7 finding (peak says nothing about the average),
 met on a voice.
+
+## A take a rig does not have is a bind pose with no error (v11.2)
+
+Episode 2 chapter 3 asked `fbosling` for `Idle_6` in five places. `Idle_6`
+is the NO-sling file's idle; this file's is `Idle_3`. `rig.play()` returns
+`false` for a clip the rig does not carry and nothing else happens, so from
+v11.0 to v11.1 the buddy, the runner, the truck's riders and the file stood
+in the BIND POSE — a Mixamo T-pose standing up — and no harness saw it,
+because a take is not an asset key and `chaptertest` checks asset keys. Two
+releases of probes photographed the film and read the numbers and did not
+look at a soldier's arms.
+
+The law: **a clip name in a chapter is checked against the file's clip
+list, and a rig that cannot play its idle should say so.** `mkRig` in e2c3
+now warns on a missing idle; when a model's clip list changes, grep every
+chapter for every clip name it asks for (the `Idle_3` / `Idle_6` / `Idle_9`
+split across the three FBO-family files is the trap: same rig, different
+idle per file).
+
+## `join()` after `flatten()` joins into one node's LOCAL space (v11.2)
+
+gltf-transform's `flatten()` reparents every node to the root and keeps its
+world transform ON the node; `join()` then merges compatible primitives
+into one node's mesh — in that node's local space. On the forest, whose
+1,480 tree cards each carry a 0.003 scale, the first pass joined everything
+into a card's frame and the trunks came out a kilometre away and the ground
+two units wide. `clearNodeTransform()` on every node BEFORE the join bakes
+the transforms into the vertices, and the join happens in world space. The
+tool asserts afterwards that no mesh node still carries a transform.
+
+## Trace a road out of a texture from a prior, not from the darkest pixel (v11.2)
+
+The forest's road is only painted into its ground sheet. A tracker that
+started at the strongest "dark ruts" response locked onto a shadowed patch
+of vegetation and drew a straight line down the sheet. What worked: read
+fourteen waypoints off the sheet BY EYE, interpolate them as a prior, and
+in every eighth row take the peak of the rut-darkness measure within ±26
+pixels of the prior with a small penalty for distance — then map each
+pixel to world space through the ground mesh's own UVs (barycentric, over
+its triangles), because the mesh is displaced and a linear UV fit is not
+it. The measure refines the eye; the eye keeps the measure on the road.
+Smoothed and resampled to 37 points 2.8 m apart, with the heading read over
+a 5 m window at runtime so the polyline's corners never reach the truck.

@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "11.1"
+VERSION = "11.2"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -300,8 +300,8 @@ ASSETS = {
     # STAND-IN for the figure at the corridor's end (a separate key so the
     # model he has promised is a one-line swap), cut far harder because it
     # is seen for one frame twenty metres off.
-    'fbosling':     ('assets/fbosling.glb', True, False),     # e2c1 the sergeant (rifle slung, six takes)
-    'fbonosling':   ('assets/fbonosling.glb', True, False),   # e2 a soldier without the sling
+    'fbosling':     ('assets/fbosling.glb', True, False),     # e2c1 the sergeant (rifle slung; v11.2: nine takes, sitting and sleeping among them)
+    'fbonosling':   ('assets/fbonosling.glb', True, False),   # e2 a soldier without the sling (v11.2: the same nine takes)
     # v8.0: Chad's nine-animation admin tee REPLACES the four-animation one —
     # walking, running, talking, two sittings, a standing idle and the three
     # push-up takes, all authored on this rig, so nothing is retargeted onto
@@ -316,6 +316,8 @@ ASSETS = {
     'cafestaff':    ('assets/cafestaff.glb', True, False),    # e2c2 v10.1: Chad's cafe staff scan, behind the servery
     'foodwarmer':   ('assets/foodwarmer.glb', True, False),   # e2c2 v10.1: Chad's buffet warmers, food and plates on the counter
     'flashlight':   ('assets/flashlight.glb', True, False),   # e2c3 v11.1: Chad's Sketchfab flashlight, the torch viewmodel while it is on
+    'kamaz':        ('assets/kamaz.glb', True, False),        # e2c3 v11.2: Chad's Sketchfab Kamaz 5330, the tonner of the film
+    'forest':       ('assets/forest.glb', True, False),       # e2c3 v11.2: Chad's Sketchfab forest with a road, the film's set (docs/V11.0-E2C3-PLAN.md §18)
 }
 
 # Hosted-only assets: shipped as a URL, never inlined as base64.
@@ -336,7 +338,8 @@ HOSTED_ONLY = {'titlevid', 'titlevidwebm'}
 # chapter asking for it. The check below keeps the rule honest: an episode-1
 # chapter may never claim one of these.
 E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim',
-           'ghostsoldier', 'encik2', 'bunkbed', 'cafestaff', 'foodwarmer', 'flashlight'}
+           'ghostsoldier', 'encik2', 'bunkbed', 'cafestaff', 'foodwarmer', 'flashlight',
+           'kamaz', 'forest'}
 HOSTED_ONLY |= E2_ONLY
 
 # The split packs are hosted-only: there is no __..._B64__ token for them and
