@@ -42,7 +42,7 @@
         say: 'I called out to it. It stopped the moment I did. I gave it my voice.',
         teach: 'Provocation and investigation are not the same thing.' }
     ],
-    core: 'Sometimes you feel something before you see anything at all. That alone proves nothing. Improve your seeing before you act — and do not make the dark darker to prove you are brave.<br><i>Sati — attention, kept where it can see.</i>',
+    core: 'The weight on your leg was real. What it meant was not yet known. When fear and dread came to the Buddha, alone in the forest at night, he did not run and he did not fight: whatever he was doing when the fear arrived — walking, standing, sitting — he kept doing it, and looked at the fear until he understood it. Meet the dark that way. Your light, your eyes and your buddy are the tools; your hand and your voice are not.<br><i>Bhaya-bherava Sutta, MN 4 — fear examined is fear understood.</i>',
 
     /* units metres, y up. The harbour is a clearing about 12 m across at
        the end of a track; the ring of scrapes sits round (0, 4) and HIS is
@@ -74,10 +74,10 @@
 
     /* the play kit's one data declaration: a torch, ON, white — this
        chapter is about curiosity, so the player gets the whole beam */
-    torch: { on: true, angle: 0.40, intensity: 24, distance: 26, penumbra: 0.6,
-             model: 'flashlight', click: 'torchclick' },   // v11.1: Chad's flashlight in the hand while it is on; F or the button, with its switch
+    torch: { on: false, item: 'torch', angle: 0.40, intensity: 24, distance: 26, penumbra: 0.6,
+             model: 'flashlight', click: 'torchclick' },   // v11.1: Chad's flashlight in the hand while it is on; F or the button, with its switch. v11.6: OFF and an ITEM — it lies on the ground until he picks it up and equips it
 
-    assets: ['fbosling', 'kamaz', 'forest', 'tree1', 'tree2', 'tree3', 'tree4'],   // v11.2: Chad's truck and forest for the film; the sleeper statue is gone (the rig sleeps on its own take)
+    assets: ['fbosling', 'kamaz', 'forest', 'tree1', 'tree2', 'tree3', 'tree4', 'flashlight'],   // v11.6: the flashlight is a world prop too   // v11.2: Chad's truck and forest for the film; the sleeper statue is gone (the rig sleeps on its own take)
 
     musicVol: 0,
     /* the jungle, all night, keyed to nothing; the episode's dread under it
@@ -95,7 +95,15 @@
       objDown: 'Shine the torch down. On the ground.',
       hotSpot: 'Hold the torch on it',
       hotBuddy: 'Hold the torch on him',
-      hotFeet: 'Look down at your boots'
+      hotFeet: 'Look down at your boots',
+      /* v11.6 (Chad): the torch is picked up, equipped and switched on
+         before the night begins — three orders, one line each */
+      objPick: 'Pick up the torch on the ground',
+      objEquip: 'Picked up Torch. Equip now to use.',
+      objSwitch: 'Turn on the torch · press F',
+      objSwitchTouch: 'Turn on the torch · tap the torch icon',
+      hotTorch: 'E to pick up the torch',
+      hotTorchTouch: 'Tap to pick up the torch'
     },
     sayPrefix: 'n3'
   };
@@ -116,7 +124,7 @@
   };
 
   /* the measured length of every line said outside a cutscene (masters/v11.0) */
-  const SECS = { n3spot1: 3.16, n3spot2: 2.69, n3spot3: 2.85, b3here: 2.5, n3spot5: 2.93, n3spot6: 5.49, n3press: 6.77, n3look: 7.16, n3still: 2.69, k3bush: 5.51 };   // v11.4: k3bush (masters/v11.4)
+  const SECS = { n3spot1: 3.16, n3spot2: 2.69, n3spot3: 2.85, b3here: 2.5, n3spot5: 2.93, n3spot6: 5.49, n3press: 5.64, n3look: 5.80, n3still: 2.69, k3bush: 5.51 };   // v11.4: k3bush (masters/v11.4); v11.6: n3press and n3look re-said panicked and faster (masters/v11.6)
 
   const hash = (i, s) => { const x = Math.sin(i * 127.1 + s * 311.7) * 43758.5453; return x - Math.floor(x); };
 
@@ -466,6 +474,53 @@
     runner.group.visible = false;
     /* the pressed-down patch of litter the beam lands on where he was, and
        which lifts back by itself (scene A) */
+    /* v11.6 (Chad): THE TORCH ON THE GROUND. Play opens with his bare hands
+       and the torch lying switched ON beside his scrape — a step in front
+       and to the right, its beam grazing the litter toward the spoil heap —
+       so the first thing the chapter asks is to pick it up. Chad's own
+       flashlight model (the viewmodel's file, parsed once more here as a
+       world prop), a spot from its lens, a warm glow at the head and an
+       additive cone so the BEAM reads in the dark from any angle. Hidden
+       the moment it is picked up; the film lights it at 44.2 where the hand
+       torch used to click on. */
+    const GT = { x: 0.30, z: -0.70, ry: -0.60 };
+    const gtorch = new THREE.Group(); gtorch.position.set(GT.x, 0.018, GT.z); gtorch.rotation.y = GT.ry; world.add(gtorch);
+    const gtLight = new THREE.SpotLight(0xfff1d6, 0, 9, 0.46, 0.55, 1.6);
+    gtLight.position.set(0, 0.0, -0.10); gtLight.target.position.set(0, -0.03, -6); gtLight.castShadow = false;
+    gtorch.add(gtLight); gtorch.add(gtLight.target);
+    const gtGlow = new THREE.PointLight(0xffd9a0, 0, 0.9, 1.6); gtGlow.position.set(0, 0.03, -0.14); gtorch.add(gtGlow);
+    /* the beam is a SHORT flare at the lens, not the whole throw: the first
+       cone was four metres, double-sided and flat-alpha, and photographed
+       as a grey slab standing in the dark (LEARNINGS) — the lit ground
+       under the spot is what says "on". A cylinder's v runs 0 at its −y
+       end, which after the quarter turn is the lens, to 1 at the far end;
+       the gradient is bright there and gone by the far rim. */
+    const gtBeamTex = mt((() => { const [c, cx] = cnv(64); const g = cx.createLinearGradient(0, 0, 0, 64);
+      g.addColorStop(0, 'rgba(255,224,176,0)'); g.addColorStop(0.5, 'rgba(255,224,176,0.18)'); g.addColorStop(0.92, 'rgba(255,224,176,0.9)'); g.addColorStop(1, 'rgba(255,224,176,0.3)');
+      cx.fillStyle = g; cx.fillRect(0, 0, 64, 64); return new THREE.CanvasTexture(c); })());
+    const gtBeamMat = new THREE.MeshBasicMaterial({ map: gtBeamTex, color: 0xffffff, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.FrontSide, fog: false });
+    const gtBeam = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.012, 1.6, 18, 1, true), gtBeamMat);
+    gtBeam.rotation.x = -Math.PI / 2; gtBeam.position.set(0, 0.0, -0.10 - 0.8); gtorch.add(gtBeam);
+    let gtOn = false;
+    function gtorchSet(on) { gtOn = !!on; gtLight.intensity = gtOn ? 9 : 0; gtGlow.intensity = gtOn ? 1.6 : 0; gtBeamMat.opacity = gtOn ? 0.22 : 0; }
+    function gtorchShow(v) { gtorch.visible = !!v; if (!v) gtorchSet(false); }
+    gtorchShow(false);
+    loadGltf('flashlight').then(gltf => {
+      if (!alive) return;
+      const m = gltf.scene.clone();
+      m.traverse(o => {
+        if (!o.isMesh) return;
+        o.castShadow = false; o.receiveShadow = false;
+        o.material = (Array.isArray(o.material) ? o.material : [o.material]).map(mm => {
+          const c = mm.clone();
+          if (c.color) c.color.setScalar(2.2);                                   // the v11.3 lift: the body's sheet averages 33/255
+          if (c.emissive && !c.emissiveMap) { c.emissive.setHex(0x1a1614); c.emissiveIntensity = 1; }
+          return c;
+        });
+        if (o.material.length === 1) o.material = o.material[0];
+      });
+      gtorch.add(m);
+    }).catch(err => console.warn('ground torch failed', err));
     const patch = new THREE.Mesh(new THREE.CircleGeometry(0.22, 14), nfm({ map: litterTex, color: 0x3a3226, roughness: 1 }));
     patch.rotation.x = -Math.PI / 2; patch.position.y = 0.015; patch.visible = false; patch.userData.moves = true; world.add(patch);
 
@@ -746,6 +801,8 @@
        `decide`. The chapter's clock runs on wall time (v7.1's law). */
     let phase = 'look';
     let booted = false;
+    let gear = -1;                                     // v11.6: 0 pick it up · 1 equip it · 2 switch it on, derived from the bag each frame
+    const TOUCH = matchMedia('(pointer: coarse)').matches || 'ontouchstart' in window;
     const dayClock = { t: 0 };
     let lastWall = 0;
     const todo = [];
@@ -787,7 +844,7 @@
                                 'stingpress', 'ghostlaugh', 'legpress', 'n3press', 'n3look', 'n3still',
                                 'ghostrunleaf', 'leaflift', 'leafdraw', 'n3A1', 'n3A2', 'n3B1', 'n3B2',
                                 'n3C1', 'n3C2', 'b3C1', 'b3C2', 'b3C3', 'n3D1', 'n3D2', 's3hiss', 'b3D',
-                                'bushrustle1', 'bushrustle2', 'bushrustle3', 'nightcall1', 'nightcall2', 'k3bush']);
+                                'bushrustle1', 'bushrustle2', 'bushrustle3', 'nightcall1', 'nightcall2', 'k3bush', 'torchpick']);
 
     let jungleK = 1;                                   // the bed, ducked under "nothing around..."
     function mixBeds() {
@@ -806,6 +863,45 @@
       kit.objective(DATA.words.objLook.replace('{n}', String(seen.size)));
       kit.waypoint(null);
     }
+    /* v11.6 (Chad): THE TORCH IS EARNED. Play opens on his bare hands with
+       the torch lit on the ground: pick it up (E, or a tap), then open the
+       bag and equip it — the bag button pulses until he does — then switch
+       it on (F, or the torch icon, which only appears once it is in his
+       hand). Each is an order the HUD completes; the third completion is
+       the night's own "Look around". The step is DERIVED from the bag and
+       the switch every frame rather than stored, so a Continue lands on the
+       right order whatever was saved, and unequipping the torch later
+       simply asks again (without a COMPLETE for going backwards — a HUD
+       that congratulates a step undone is lying, v8.7). */
+    function beginGear() {
+      setPhase('gear'); gear = -1;
+      if (kit && kit.take) kit.take('torch');          // a replay finds it on the ground again
+      if (kit && kit.torchOn) kit.torchOn(false);
+      gearStep(true);
+    }
+    function gearStep(first) {
+      if (phase !== 'gear' || !kit) return;
+      const has = kit.has ? kit.has('torch') : true, eq = kit.equipped ? kit.equipped('torch') : true;
+      const want = !has ? 0 : !eq ? 1 : !torchOn() ? 2 : 3;
+      if (want === 3) { gtorchShow(false); beginLook(); return; }
+      if (want === gear) return;
+      const back = want < gear;                        // undone, not completed
+      gear = want;
+      const opts = (first || back) ? { complete: false } : undefined;
+      if (want === 0) { gtorchShow(true); gtorchSet(true); kit.objective(DATA.words.objPick, opts); }
+      else if (want === 1) { gtorchShow(false); kit.objective(DATA.words.objEquip, opts); if (kit.urge) kit.urge('torch'); }
+      else { gtorchShow(false); kit.objective(TOUCH ? DATA.words.objSwitchTouch : DATA.words.objSwitch, opts); }
+      kit.waypoint(null);
+    }
+    function pickTorch() {
+      if (phase !== 'gear' || gear !== 0 || !kit || !kit.give) return false;
+      if (!kit.give('torch')) return false;
+      gtorchShow(false);
+      if (worldSfx) worldSfx('torchpick', 0.9);
+      gearStep();
+      return true;
+    }
+    function beginLook() { setPhase('look'); objLook(); }
     /* THE SIX SPOTS. Seeing one says its line, counts it (1/6 · 2/6 … each
        an OBJECTIVE COMPLETE beat, v8.7) and, on the sixth, starts the
        pressure. Five is the chemlights across the ring and six is the ground
@@ -893,6 +989,13 @@
     }
     function applyPhase(p) {
       seen.clear();
+      if (p == null || p === '') { beginGear(); return; }            // v11.6: a fresh night begins with the torch on the ground
+      if (p === 'gear') { setPhase('gear'); gear = -1; gearStep(true); return; }   // a Continue: the bag says which order stands
+      /* past the pickup — this run, or a save from before the torch was an
+         item — he has it, it is in his hand, and it is on */
+      gtorchShow(false);
+      if (kit && kit.equip) kit.equip('torch');
+      if (kit && kit.torchOn) kit.torchOn(true);
       if (typeof p === 'string' && p.startsWith('look:')) {
         for (const s of p.slice(5).split(',')) { if (s === 'k') { kneelSaid = true; continue; } const n = parseInt(s, 10); if (n >= 1 && n <= 6) seen.add(n); }
       }
@@ -916,6 +1019,11 @@
     const torchOn = () => !kit || !kit.torchIsOn || kit.torchIsOn();
     const spotOn = (n, needs) => () => phase === 'look' && !seen.has(n) && torchOn() && (needs === undefined || seen.has(needs));
     const hotspots = [
+      /* v11.6: the torch on the ground — a PRESS, inside 1.6 m from any
+         view (a thing at your feet is under the lens, the `feet` spot's
+         reason); the hotspot mark stands over it until it is taken */
+      { id: 'torch', pos: { x: GT.x, y: 0.25, z: GT.z }, radius: 1.6, prompt: TOUCH ? DATA.words.hotTorchTouch : DATA.words.hotTorch, markY: 0.22, anyView: true,
+        enabled: () => phase === 'gear' && gear === 0 && gtorch.visible, onInteract() { return pickTorch(); } },
       { id: 'fig', pos: { x: FIG.x, y: 1.4, z: FIG.z }, radius: 12, dwell: 0.8, aim: 0.11, prompt: DATA.words.hotSpot, markY: 0.9,
         enabled: spotOn(1), onInteract() { return seeSpot(1); } },
       { id: 'log', pos: { x: LOG.x, y: 0.5, z: LOG.z }, radius: 12, dwell: 0.8, aim: 0.11, prompt: DATA.words.hotSpot,
@@ -979,6 +1087,7 @@
       lastWall = now;
       if (!booted) { booted = true; applyPhase(kit ? kit.getPhase() : null); }
       bushTick(); farTick();
+      if (phase === 'gear') gearStep();   // v11.6: the bag and the switch decide the order on screen
       // the shake: roll and a kick down, decaying — the chapter owns the lens for half a second
       if (shakeT > 0) {
         shakeT = Math.max(0, shakeT - dt);
@@ -1043,7 +1152,8 @@
       talkReset(); kneelSaid = false; kneelLook.want = 0; kneelLook.w = 0; kneelLook.x = 0; kneelLook.y = 0;
       if (kit) { if (kit.hurt) kit.hurt(null); if (kit.root) kit.root(false); }
       fileHome();
-      if (kit) { kit.daylight(null, 0); kit.presence(0); kit.setPhase('look:'); if (kit.torchOn) kit.torchOn(true); }
+      if (kit) { kit.daylight(null, 0); kit.presence(0); kit.setPhase(null); if (kit.torchOn) kit.torchOn(false); if (kit.take) kit.take('torch'); }   // v11.6: a fresh night starts with the torch on the ground, not in his hand
+      gear = -1; gtorchShow(false);
       phase = 'look';
     }
     function blockers() {
@@ -1096,11 +1206,13 @@
       sayLine, seen, after, dayClock,
       get phase() { return phase; },
       setPhase, applyPhase, beginPressure,
+      gtorchShow, gtorchSet, pickTorch, GT, get gear() { return gear; },   // v11.6
       lookInfo: () => ({ phase, seen: [...seen], obj: kit && kit.getPhase ? kit.getPhase() : null, downT: +downT.toFixed(2), looked, shakeT: +shakeT.toFixed(2) }),
       speakInfo: () => ({ t: +dayClock.t.toFixed(2), until: +speak.until.toFixed(2), pending: speak.pending ? speak.pending.name : null, queued: lineQ.length }),
       ambient: () => ({ jungleK, beds: DATA.ambience.beds.map(b => [b[0], +b[1].toFixed(3)]), bush: { at: +bushAt.toFixed(1), callAt: +callAt.toFixed(1), fired: bushN, calls: callN, t: +dayClock.t.toFixed(1), trees: TREE_AT.length },
                         far: { at: +farAt.toFixed(1), n: farN, run: farRun ? { k: +((dayClock.t - farRun.t0) / farRun.dur).toFixed(2), x: +runner.group.position.x.toFixed(2), z: +runner.group.position.z.toFixed(2), a: +(runner.ghostA || 0).toFixed(2) } : null },
-                        kneel: { said: kneelSaid, w: +kneelLook.w.toFixed(2), y: +kneelLook.y.toFixed(2) }, talking: [...talkers].map(r => r.cur) }),
+                        kneel: { said: kneelSaid, w: +kneelLook.w.toFixed(2), y: +kneelLook.y.toFixed(2) }, talking: [...talkers].map(r => r.cur),
+                        gear: { step: gear, on: gtOn, vis: gtorch.visible } }),
       updateNotes, updatePile, updateFire, updateSlow,
       setNoteTexture() {},
       snap, restore, reset, dispose,
@@ -1183,10 +1295,14 @@
     pitchTo(34.5, 44.2, -0.34, -0.02, smoothK);
     fade(34.5, 36.4, 1, 0);
     sfx(36.0, 'n3pro4');                         // "I was at the very rear of my section. Facing away from the others. Looking out into the dark."
-    step(44.2, () => { if (kit && kit.torchOn) kit.torchOn(true); });
+    /* v11.6: the torch clicks on ON THE GROUND beside the scrape, not in his
+       hand — he has none yet — and the lens drops onto it, the beam out
+       across the litter, which is the first thing play will ask him to
+       pick up */
+    step(44.2, () => { stage.gtorchShow(true); stage.gtorchSet(true); });
     sfx(44.2, 'torchclick', 0.7);
-    yawTo(44.4, 46.6, 0.0, 0.42, smoothK);
-    yawTo(46.6, 48.4, 0.42, -0.12, smoothK);
+    yawTo(44.4, 46.4, 0.0, -0.36, smoothK);
+    pitchTo(44.4, 46.4, -0.02, -0.80, smoothK);
     fade(47.6, 48.6, 0, 1);
     step(48.8, () => { armR.visible = true; });
     c.endFade = 1;

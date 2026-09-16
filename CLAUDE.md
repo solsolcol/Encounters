@@ -2775,6 +2775,41 @@ What the baseline contains, by release:
   last frame's. Measured on the phone build: the head's local yaw settles and
   holds through the line instead of climbing. No word moved; sheet v54 stands
   (v44 the link).
+- **v11.6** THE TORCH IS EARNED, TWO LINES IN A PANIC, AND THE LESSON
+  REWRITTEN — Chad's three notes on v11.5. **THE TORCH IS AN ITEM**: play
+  opens on his bare hands and the torch lying SWITCHED ON beside his scrape,
+  its beam across the litter; the first order is to pick it up (E, or a
+  tap), the second to open the bag and equip it — the bag button breathes
+  sodium and wears a `!` until he does, and the bag opens with the torch's
+  slot lit — and the third to switch it on (F, or the torch icon, which
+  only appears once it is in his hand). The night's own "Look around" is
+  the third completion. Engine: `torch.item` names an inventory id and
+  `hasTorch` on <body> is DERIVED from the hand slot (`torchAvail`), re-read
+  on every inventory change and on a resume; the player's toggle is gated
+  on it, a chapter's `kit.torchOn()` is not (a film owns its light, and a
+  save from before the item existed still plays); unequipping the torch
+  while it is on switches it off. Five bag verbs join the kit — `give`
+  (adds and starts the pulse), `take`, `equip`, `has`, `equipped` — and a
+  new item, `torch`, with its icon. The chapter's step is DERIVED from the
+  bag and the switch every frame rather than stored, so a Continue lands
+  on the right order whatever was saved (phase `gear`), a step undone asks
+  again without a COMPLETE (the v8.7 lie), `reset()` takes the torch back
+  so a replay finds it on the ground (the v8.1 law, in the bag's form), and
+  a resume past the pickup equips it (`applyPhase`). The film's last beat
+  lights the GROUND torch where the hand torch used to click on, and the
+  lens drops onto it. One new sound, `torchpick`, picked by the clink.
+  **THE TWO LINES** — "he does not sound scared at all ... they need to be
+  faster": `n3press` and `n3look` re-said by Aaron under `[panicking]`,
+  the ellipses of "Nothing around" made full stops so the read does not
+  stall, four takes each, the FASTEST with clean edges picked by
+  measurement: 6.77 → 5.64 s and 7.16 → 5.80 s. **THE LESSON**: the core
+  teaching is the Bhaya-bherava Sutta (MN 4) — the Buddha alone in the
+  forest at night, meeting fear in whatever posture it found him and
+  looking at it until it was understood — mapped onto the four options
+  (light, eyes and buddy against hand and voice). Episode 1 declares no
+  torch and calls none of the bag verbs, so it is unchanged by
+  construction. Sheet v55 exported (v44 stays the link).
+  docs/V11.0-E2C3-PLAN.md §22 is the build's memory.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -3286,7 +3321,7 @@ the run exactly as it always ended a last chapter.
 
 Next up: **episode 2's chapters 4–5, and rifle mode for chapter 5**
 (chapter 1, The Worst Bed, shipped at v7.1 — `src/chapters/e2/e2c1.js`;
-chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 3, The Pressure, at v11.0 and revised at v11.1–v11.5 — `src/chapters/e2/e2c3.js`; chapter 1 last revised at v10.8; the rifle
+chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 3, The Pressure, at v11.0 and revised at v11.1–v11.6 — `src/chapters/e2/e2c3.js`; chapter 1 last revised at v10.8; the rifle
 viewmodel's placement and material are measured in
 docs/E2-SOLDIER-MODELS.md §8, and Chad's ghost and bicycle models are
 still to come), and the still-outstanding job of replacing chapter 1's

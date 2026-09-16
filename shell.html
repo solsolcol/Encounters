@@ -409,6 +409,20 @@ body.finePtr .invLabel{display:flex;align-items:center;gap:7px;
 .torchBtn:hover .invLabel,.torchBtn:focus-visible .invLabel{border-color:var(--sodium)}   /* v11.4: the torch's own label, F, like the other two */
 .invBtn,.menuBtn{position:fixed}
 .invBtn.open,.menuBtn.open{border-color:var(--sodium);background:rgba(22,26,34,.95)}
+/* v11.6: THE BAG ASKS. While kit.give() has put something in the bag that
+   is not yet equipped (episode 2 chapter 3's torch), the button breathes
+   sodium and wears a ! — the same mark the hotspots wear — so a player who
+   has never opened the bag knows that is where the torch went. Cleared
+   the moment the item is equipped. */
+.invBtn.urge{border-color:var(--sodium);animation:invUrge 1.5s ease-in-out infinite}
+.invBtn.urge svg{stroke:var(--sodium)}
+.invBtn.urge::after{content:'!';position:absolute;top:-6px;right:-6px;width:20px;height:20px;
+  display:grid;place-items:center;border-radius:50%;background:var(--sodium);color:var(--void);
+  font-family:var(--mono);font-size:.8rem;font-weight:800;line-height:1;
+  box-shadow:0 0 10px rgba(255,179,103,.7);animation:invUrgeBang 1.5s ease-in-out infinite}
+@keyframes invUrge{0%,100%{box-shadow:0 0 0 0 rgba(255,179,103,.55),0 0 10px 0 rgba(255,179,103,.25);transform:scale(1)}
+  50%{box-shadow:0 0 0 9px rgba(255,179,103,0),0 0 22px 2px rgba(255,179,103,.55);transform:scale(1.07)}}
+@keyframes invUrgeBang{0%,100%{transform:scale(.92)}50%{transform:scale(1.12)}}
 
 /* ── the pause menu and the chapter selector (v5.12) ──────────────────── */
 body.menuopen .soundBtn,body.menuopen #volWrap,body.invopen #volWrap{display:none}
@@ -1280,6 +1294,11 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
       stroke-linejoin="round"/>
     <path d="M9 20.4c1 .9 2 .9 3 0s2-.9 3 0" fill="none" stroke="currentColor"
       stroke-width="1.3" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="e-torch" viewBox="0 0 24 24">
+    <path d="M9 3h6v4l-1.5 2v12h-3V9L9 7z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M9.5 6.5h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M4 2.5l2.5 2.2M20 2.5l-2.5 2.2M12 0.8v2.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
   </symbol>
   <symbol id="e-keys" viewBox="0 0 24 24">
     <circle cx="8" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="1.7"/>

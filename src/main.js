@@ -980,6 +980,8 @@ let chapterPresence = 0;
 let torchLight = null, torchOn = false, torchDecl = null, torchIsRed = false;
 let torchProp = null, torchPropKey = null;   // v11.1: the torch's own viewmodel (Chad's flashlight), swapped for the hand while it is on
 let kitRooted = false, kitHurt = null;       // v11.1: the player held in place; the red damage frame + a bleed until the player acts
+let invUrge = null;                          // v11.6: an item the bag button pulses for until it is equipped (kit.give)
+let invBtnEl = null;                         // v11.6: the bag button, looked up once
 let dayTween = null;
 let kitFade = null, kitFadeNow = 0;              // v7.1: a chapter's own black, in play
 let decClock = null;
@@ -1348,7 +1350,7 @@ function torchSetup(decl) {
   torchIsRed = false;
   torchSet(!!torchDecl.on);
   torchPropLoad(torchDecl.model);
-  document.body.classList.add('hasTorch');
+  torchAvailSync();
 }
 function torchTeardown() {
   if (torchLight) { camera.remove(torchLight.target); camera.remove(torchLight); torchLight.dispose?.(); torchLight = null; }
@@ -1474,8 +1476,30 @@ function torchPropSync() {
   swapWas = swapK;
 }
 function torchRed(red) { torchIsRed = !!red; torchSet(torchOn); }
+/* v11.6: THE TORCH IS AN ITEM. A chapter may declare `torch.item`, an
+   inventory id (episode 2 chapter 3 says 'torch'): then the torch exists for
+   the PLAYER only while that item is in his hand slot — no button, no F, no
+   beam until he has picked it up and equipped it from the bag. A scene or a
+   chapter may still call kit.torchOn() whatever the bag says (a film owns
+   its light), which is also what keeps a save from before this release
+   playable. `hasTorch` on <body> is DERIVED from this, never set by hand,
+   and re-read on every inventory change (invPaint, applyState). Episode 1
+   declares no torch; the fixture declares one with no item, so nothing
+   shipped before this release changes. */
+function torchAvail() {
+  if (!torchDecl) return false;
+  const id = torchDecl.item; if (!id) return true;
+  const slot = (ITEM_DEFS[id] && ITEM_DEFS[id].slot) || 'hand';
+  return inv.gear[slot] === id;
+}
+function torchAvailSync() {
+  const ok = torchAvail();
+  document.body.classList.toggle('hasTorch', ok);
+  if (!ok && torchOn && torchDecl && torchDecl.item) torchSet(false);   // unequipped while it was on: the light goes with it
+  if (invUrge && !inv.bag.includes(invUrge)) invUrge = null;         // equipped (or dropped): the bag stops asking
+}
 function torchToggle() {
-  if (!torchLight || state !== 'play') return;
+  if (!torchLight || state !== 'play' || !torchAvail()) return;
   torchSet(!torchOn);
   if (torchDecl.click) snd(torchDecl.click, 0.8); else snd('uiclick', 0.3);   // v11.1: a real switch when the chapter names one
 }
@@ -2342,6 +2366,9 @@ function kitInit() {
 }
 function kitFrame(dt, t, dLookX, dLookY) {
   if (!kitInited) kitInit();
+  /* v11.6: the bag button asks while a given item waits unequipped (a class
+     toggle is a no-op when nothing changed, so this costs the frame nothing) */
+  (invBtnEl || (invBtnEl = $('invBtn')))?.classList.toggle('urge', !!invUrge && state === 'play');
   // pose
   if (poseT < 1) { poseT = Math.min(1, poseT + dt / poseSecs); eyeY = poseFrom + (poseTo - poseFrom) * smoothK(poseT); }
   if (kitPose === 'lying' && state === 'play') {
@@ -2451,6 +2478,24 @@ const KIT = {
   flash: kitFlashSet,              // v8.7: one wash of colour over the screen
   root: on => { kitRooted = !!on; },   // v11.1: hold the player in place (the look and the torch still work)
   hurt: kitHurtSet,                // v11.1: the red frame held, and a bleed per second, until cleared
+  /* v11.6: THE BAG, from a chapter. `give` puts an item in the bag and
+     sets the bag button pulsing until it is equipped; `take` removes it
+     wherever it sits (a replay must find the torch on the ground again);
+     `equip` puts it straight into its slot (a resume past the pickup, or a
+     save from before the item existed); `has`/`equipped` are the reads a
+     chapter's frame asks. Episode 1 calls none of them. */
+  give: id => { const ok = invAdd(id); if (ok) invUrge = id; torchAvailSync(); return ok; },
+  take: id => { const ok = invRemove(id); if (invUrge === id) invUrge = null; torchAvailSync(); return ok; },
+  equip: id => { const def = ITEM_DEFS[id]; if (!def || !def.slot) return false;
+                 if (inv.gear[def.slot] === id) return true;
+                 const i = inv.bag.indexOf(id); const swap = inv.gear[def.slot];
+                 inv.gear[def.slot] = id;
+                 if (i >= 0) inv.bag[i] = swap; else if (swap) { const f = inv.bag.indexOf(null); if (f >= 0) inv.bag[f] = swap; }
+                 if (inv.open) invPaint(); torchAvailSync(); return true; },
+  has: id => invHas(id),
+  equipped: id => { const def = ITEM_DEFS[id]; return !!def && !!def.slot && inv.gear[def.slot] === id; },
+  urge: id => { invUrge = id || null; },
+  torchAvail,
   setPhase: v => { kitPhase = (v === undefined) ? null : v; }, getPhase: () => kitPhase,
   choices: () => ({ ...runChoices }),
   interact: () => interactNow(),
@@ -2460,7 +2505,8 @@ const KIT = {
 function kitDebug() {
   return { phase: kitPhase, pose: kitPose, eyeY: +eyeY.toFixed(3), presence: chapterPresence,
            rooted: kitRooted, hurt: kitHurt ? { perSec: kitHurt.perSec } : null,   // v11.1
-           torch: torchLight ? { on: torchOn, red: torchIsRed } : null,
+           torch: torchLight ? { on: torchOn, red: torchIsRed, avail: torchAvail(), item: torchDecl && torchDecl.item || null } : null,
+           urge: invUrge,   // v11.6
            objective: kitObjective, timer: kitTimer ? +kitTimer.left.toFixed(2) : null,
            waypoint: kitWaypoint, conduct: { ...conductAcc, notes: conductAcc.notes.slice() },
            clock: decClock ? { left: +decClock.left.toFixed(2), fired: decClock.fired } : null,
@@ -4808,7 +4854,8 @@ const ITEM_DEFS = {
   phone: { icon: 'e-light', slot: 'hand' },
   keys:  { icon: 'e-keys', slot: null },
   beads: { icon: 'e-beads', slot: 'hand' },
-  note:  { icon: 'e-note', slot: null }
+  note:  { icon: 'e-note', slot: null },
+  torch: { icon: 'e-torch', slot: 'hand' }    // v11.6: episode 2 chapter 3's flashlight, picked up off the ground and equipped to use
 };
 const itemName = id => T('item.' + id + '.name', id);
 const itemDesc = id => T('item.' + id + '.desc', '');
@@ -4962,6 +5009,7 @@ function applyState(st) {
     }
     if (inv.open) invPaint();
   }
+  torchAvailSync();   // v11.6: a torch that is an item follows the restored bag
   // v7.0: the kit's three fields, each tolerated absent
   kitPhase = (typeof st.phase === 'string' || (typeof st.phase === 'number' && Number.isFinite(st.phase))) ? st.phase : null;
   const cd = (st.conduct && typeof st.conduct === 'object') ? st.conduct : {};
@@ -5034,6 +5082,7 @@ function invPaint() {
   }
   inv.flash = null;   // one paint's worth: the animation runs, the next paint forgets it
   invInfoPaint();
+  torchAvailSync();   // v11.6: the torch button follows the hand slot
 }
 
 function invInfoPaint(id) {
@@ -5357,7 +5406,9 @@ function invOpen() {
   statePrev = state;
   state = 'inventory';                 // freezes movement, drain and the ghost
   document.exitPointerLock?.();
-  inv.sel = null; invCancel();
+  inv.sel = null;
+  if (invUrge && inv.bag.includes(invUrge)) inv.flash = { kind: 'bag', key: String(inv.bag.indexOf(invUrge)) };   // v11.6: the thing the bag was pulsing for lights up
+  invCancel();
   snd('uiclick', 0.5);
 }
 function invClose() {
@@ -6088,6 +6139,7 @@ const STING_SAMPLE = {
   // v11.0: EPISODE 2 CHAPTER 3, The Pressure — the film, the torch spots, the pressure, the scenes, the cards
   tonner: ['tonner', 1], tailgate: ['tailgate', 1], junglenight: ['junglenight', 1], bootsleaf: ['bootsleaf', 1],
   torchclick: ['torchclick', 1], stingpress: ['stingpress', 1], legpress: ['legpress', 1],
+  torchpick: ['torchpick', 0.9],   // v11.6: the torch off the leaf litter (e2c3's pickup)
   ghostrunleaf: ['ghostrunleaf', 1], leafdraw: ['leafdraw', 1], leaflift: ['leaflift', 1],
   // v11.3: the night jungle's wildlife — a bed and the bushes (e2c3)
   junglelife: ['junglelife', 1], bushrustle1: ['bushrustle1', 1], bushrustle2: ['bushrustle2', 1], bushrustle3: ['bushrustle3', 1],

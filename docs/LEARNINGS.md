@@ -3752,3 +3752,30 @@ and never on last frame's. Any per-frame write on top of a mixer needs the
 same undo, or the mixer's write-only-on-change optimisation turns it into
 an integrator.
 
+## A torch a chapter declares may be an ITEM, and the button follows the hand slot (v11.6)
+
+Chad's pickup mechanic ("start without a torch ... only once equipped will
+the torch icon appear") wanted three things the engine did by declaration:
+the torch button's existence, the F key, and the beam. All three now hang
+off ONE derived fact — is `torch.item` in the hand slot — re-read on every
+inventory change and on a resume (`torchAvailSync`). The two traps avoided
+by making it derived rather than stored: a Continue must land on the right
+order whatever the save carried (so the chapter's `gearStep` asks the bag,
+never a flag), and a save from BEFORE the item existed must still play (so
+`kit.torchOn()` from a chapter is never gated, only the player's toggle,
+and `applyPhase` equips on the way in). And the v8.1 law in its bag form:
+**a thing a chapter GIVES must be TAKEN BACK by reset()**, or a replay
+finds the torch already in the hand and the whole opening beat is skipped
+with no error.
+
+## An additive cone lying on the ground reads as a grey slab (v11.6)
+
+The first ground-torch beam was an open double-sided cylinder, additive,
+opacity 0.16, no fog. Photographed, it was a flat grey wedge standing in
+the dark: from above you see the near wall AND the far wall, additive
+stacks them, and a constant alpha along four metres has no falloff to
+suggest light. A beam wants a gradient along its length (bright at the
+lens, gone by the end), front faces only, and to be SHORT — the lit ground
+under the spotlight is what says "on"; the cone is only the flare at the
+lens.
+

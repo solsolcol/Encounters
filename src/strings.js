@@ -322,6 +322,8 @@ Object.assign(window.__TEXT__, {
   'item.keys.desc':      'Home is four floors up. They have never felt this far away.',
   'item.beads.name':     'Prayer Beads',
   'item.beads.desc':     'Your grandmother pressed these into your hand years ago. You have never taken them seriously, and never taken them off.',
+  'item.torch.name':     'Torch',
+  'item.torch.desc':     'Army issue. Found on the ground by your scrape, switched on, pointing at nothing. Equip it to use it.',
   'item.note.name':      'Hell Note',
   'item.note.desc':      'Burned for someone else. It should not be in your pocket.',
 

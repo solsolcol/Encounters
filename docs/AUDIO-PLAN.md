@@ -889,6 +889,33 @@ the pack), `n2sigh` (Aaron, "[sighs] Haaahh...", 2.56 s — wordless, through
 Levels: the encik to e2ok's −7.1, the two Aaron takes to n2C1's −6.85/−6.6.
 Flows in masters/v10.8/urls.txt; recipe masters/v10.8/make.sh.
 
+## v11.6 · the pressure lines in a panic, and the torch off the ground
+
+Chad, on v11.5: *"he does not sound scared at all ... both needs to sound
+anxious, scared, or panicking, and they need to be faster, he talks way too
+long."* Aaron (`B6uUx2p7cRgxseOUyP6P`, eleven_v3, flow `4tm9SCkYFc990jONM6aK`),
+one tag, `[panicking]`, the words his — with the ellipses of "Nothing
+around... no one... no footsteps..." made full stops, because an ellipsis
+is a pause the model honours and the note was speed. Four takes each,
+picked by measurement (`masters/v11.6/measure.py`): the FASTEST with clean
+edges.
+
+| line | shipped v11.0 | takes | picked |
+|---|---|---|---|
+| `n3press` | 6.77 s | 6.64 / **5.60** / 6.40 / 6.16 | b — tail −30.7 dB in its last 40 ms (the voice envelope's 50 ms fade covers it) |
+| `n3look` | 7.16 s | **5.76** / 6.56 / 6.16 / 6.24 | a — tail −44 dB, 0.09 s of head air |
+
+Levels the v11.0 way (−6.85 mp3 / −6.6 ogg, peak-matched). Three of the
+first four "Nothing around" runs failed on the account's five-concurrent
+cap and were re-run alone.
+
+`torchpick`, the torch off the leaf litter (eleven_text_to_sound_v2,
+1.6 s, prompt_influence 0.5), four takes: a is the pick — 24 % of its
+energy in 500 Hz–3 kHz (the metal) against 5–8 % for three that are only
+rustle, the clink landing at 1.26 s after the hand goes into the leaves;
+its 0.12 s of tail air trimmed (`-t 1.48`). −4.0 dBFS, stereo 96k. Cued
+at 0.9 from `pickTorch()` through `worldSfx`; warmed by build().
+
 ## v11.4 · the kneeling man's line
 
 Chad: *"When shining the flashlight on the other soldier who is kneeling on
