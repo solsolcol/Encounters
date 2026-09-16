@@ -164,6 +164,7 @@ Object.assign(window.__TEXT__, {
   'hud.objective':       'Objective',
   'hud.objDone':         'OBJECTIVE COMPLETE',
   'hud.torch':           'Torch',
+  'hud.torchKey':        'F',
   'event.tap':           'TAP',
   'event.timed':         'WAIT FOR IT',
   'event.go':            'NOW',

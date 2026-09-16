@@ -2718,6 +2718,46 @@ What the baseline contains, by release:
   the history shows at every release since v9 — not a game change. No word
   moved; sheet v53 stands (v44 the link). docs/V11.0-E2C3-PLAN.md §19 is the
   build's memory.
+- **v11.4** THE MEN WHO MOVE WHEN THEY SPEAK, THE GHOST IN THE FAR TREES, AND
+  THE BLEED THAT STOPS AT THE MENU — Chad's six notes on v11.3, all episode 2
+  chapter 3. `src/main.js` changes two things: the torch button carries the
+  same F label pill Inventory and Menu carry (`hud.torchKey`, shown only
+  under `body.finePtr`, so a phone sees the icon alone), and `kit.hurt`'s
+  bleed runs in PLAY only — the frame stays up under the decision so the
+  wound is still on screen, but a player reading four options is not charged
+  for reading them (measured: 44.3 at the moment the options opened, 44.3
+  five seconds later). Episode 1 declares no torch and never calls `hurt`,
+  so it is unchanged by construction. **A MAN WHO SPEAKS MOVES**: scene C
+  puts the buddy on the file's own `Talk_with_Left_Hand_Raised` for each of
+  his three lines and back on `Idle_3` between them, to the takes' measured
+  lengths; "Torch off, lah" under the torch rides the line's own `onStart`
+  (`talk(rig, secs)`, the v8.0 shape — voice and take cannot come apart on a
+  cold press), and restore()/reset() put every talker back (the v9.6 law).
+  **THE KNEELING MAN** to his right is a seventh dwell hotspot, off the
+  objective's count, once (`k` in the phase string, so a resume does not
+  repeat him): "There's someone running around in the bushes, but the next
+  section is at least a kilometer away..." — Chad's words, `k3bush`, in the
+  BUNKMATE's voice (Kelvin; he is in the section too, and the buddy is
+  already David), take A of two by measurement (ends on 0.49 s of air where
+  B ends ON signal), levelled by RMS to −16 dBFS for the flat cast bus, 5.51 s.
+  He cannot take the talking take — it is a STANDING one, he would rise and
+  drop (LEARNINGS) — so his HEAD turns to the player for the line, chapter
+  5's head-look laid on after his mixer writes the pose. **THE FAR RUNS**:
+  every ten seconds or so the same runner scenes A and D use crosses the far
+  jungle — a tangent 15–22 m out on his own deterministic stream, never
+  through the ring, 2–3 s at the run take's own 2.6 m/s, in over 15 % and
+  out over 20 %, a faint leaf-litter run panned to his side, the next
+  7.5–9.5 s after the last ends. Measured on the shipped build: the first at
+  (−13.7, 14.7) → (−10.7, 16.6), 19.7 m out, alpha 1.0 at the midpoint —
+  and INVISIBLE in the photograph, because at twenty metres the torch's
+  cone gives him nothing and scene A's close-up glow is a trunk between
+  trunks; the far runs wear a paler self-light (0xa4b4d8, alpha to 0.81)
+  and hand the scenes' one back when they end (LEARNINGS). Stated in
+  dayClock; a run caught under a panel is ENDED on that frame rather than
+  left at half alpha behind the options, and restore()/reset() end one too.
+  Sheet v54 exported (`masters/v11.4/masterz-text-v54.xlsx` — one UI word,
+  one voice line; v44 stays the link). docs/V11.0-E2C3-PLAN.md §20 and
+  AUDIO-PLAN v11.4 are the build's memory.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -3229,7 +3269,7 @@ the run exactly as it always ended a last chapter.
 
 Next up: **episode 2's chapters 4–5, and rifle mode for chapter 5**
 (chapter 1, The Worst Bed, shipped at v7.1 — `src/chapters/e2/e2c1.js`;
-chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 3, The Pressure, at v11.0 and revised at v11.1–v11.3 — `src/chapters/e2/e2c3.js`; chapter 1 last revised at v10.8; the rifle
+chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 3, The Pressure, at v11.0 and revised at v11.1–v11.4 — `src/chapters/e2/e2c3.js`; chapter 1 last revised at v10.8; the rifle
 viewmodel's placement and material are measured in
 docs/E2-SOLDIER-MODELS.md §8, and Chad's ghost and bicycle models are
 still to come), and the still-outstanding job of replacing chapter 1's

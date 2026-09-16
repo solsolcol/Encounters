@@ -4217,6 +4217,7 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
   // v7.1: episode 2's bunk — the sergeant, the buddy, a bunkmate
   's1fallin', 's1late', 's1bed', 's1standby', 's1again', 's1lights',
   'b1day', 'b1sleep', 'b1huh', 'k1board', 'k1three',
+  'k3bush',   // v11.4: the bunkmate again, kneeling in chapter 3's harbour
   // v8.3: and the encik, who does most of the shouting
   'e1knock', 'e1backbunk',
   // v9.3: the two who shout on the run back — one line, two voices
@@ -6051,6 +6052,7 @@ const STING_SAMPLE = {
   s1standby: ['s1standby', 1], s1again: ['s1again', 1], s1lights: ['s1lights', 1],
   b1day: ['b1day', 1], b1sleep: ['b1sleep', 1], b1huh: ['b1huh', 1], k1board: ['k1board', 1],
   k1three: ['k1three', 1],
+  k3bush: ['k3bush', 1],           // v11.4: the kneeling man under the torch (e2c3)
   e1knock: ['e1knock', 1], e1backbunk: ['e1backbunk', 1],   // v8.3: the encik
   b1hurry: ['b1hurry', 1], k1hurry: ['k1hurry', 1],         // v9.3: the run back
   // v9.5: the headcount, the tenth voice, and the toggle rope
@@ -7722,10 +7724,13 @@ function tick(now = 0) {
     const now = performance.now();
     const dtw = kitHurt.last ? Math.min(0.5, (now - kitHurt.last) / 1000) : 0;
     kitHurt.last = now;
-    if (kitHurt.perSec > 0 && dtw > 0) {
-      const floor = state === 'play' ? 0 : kitHurt.floor;
-      const lost = Math.min(Math.max(0, stats.sanity - floor), kitHurt.perSec * dtw);
-      if (lost > 0) { stats.sanity -= lost; noteDrain(lost); syncBars(); if (stats.sanity <= 0 && state === 'play') lose(); }
+    /* v11.4 (Chad: "sanity should stop dropping once the menu options open
+       up on screen"): the bleed runs in PLAY only. The frame stays up under
+       the decision so the wound is still on screen while he chooses, but a
+       player reading four options is not being charged for reading them. */
+    if (kitHurt.perSec > 0 && dtw > 0 && state === 'play') {
+      const lost = Math.min(Math.max(0, stats.sanity), kitHurt.perSec * dtw);
+      if (lost > 0) { stats.sanity -= lost; noteDrain(lost); syncBars(); if (stats.sanity <= 0) lose(); }
     }
     ui.panic.style.opacity = '1';
     ui.panic.classList.add('critical'); ui.panic.classList.add('hurt');   // v11.3: `hurt` thins the frame to the edges (shell.html)

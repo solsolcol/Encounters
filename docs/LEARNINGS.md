@@ -3710,3 +3710,29 @@ chapter-3 probe would never see. So the arm is written only while a swap is
 running (or on the frame it ends, to put it back exactly), and a chapter
 with no torch model never moves it. `grep armR.position` before writing it
 from the engine, every time.
+
+## A ghost at twenty metres wears a different light from one at two (v11.4)
+
+Chad asked for the ghost soldier to cross the far jungle every ten seconds.
+The runner already existed — scene A's, treated for a man crossing the
+torch beam three metres away (grey 0.8, a near-black glow, alpha 0.6) —
+and the first far run was correct in every number the probe could read
+(position on the tangent, alpha 1.0 at the midpoint, the run take playing)
+and INVISIBLE in the photograph: at twenty metres the torch's cone gives
+him nothing and a near-black self-glow between dark trunks is a trunk. The
+v9.6 lesson again (the man in the white-tiled shower needed a paler,
+self-lit look than the man in the dark corridor): a ghost's look is a
+function of where he is SEEN FROM, so the far runs set a pale cold glow on
+his materials and hand the scenes' one back when they end. And the
+measure that catches it is a photograph aimed at the numbers, never the
+numbers alone — the v6.17 law, again.
+
+## The talking take is a standing take (v11.4)
+
+"That soldier should have a talking animation" is one line for a man on
+`Idle_3` and a trap for a man on the kneel: `Talk_with_Left_Hand_Raised`
+is authored standing, so a kneeling rig asked for it RISES to speak and
+drops again after. The kneeling man turns his HEAD instead (chapter 5's
+head-look, laid on after his mixer writes the pose). Before wiring a take
+to a line, ask what pose the take starts in.
+

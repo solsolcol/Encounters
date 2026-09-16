@@ -562,6 +562,8 @@
       text: "[quietly, serious] Face the front. I face mine. Relief at four.", secs: 4.85 },
     { id: "b3D", who: "buddyC3", ch: "e2c3", where: "Scene D: after the shout",
       text: "[annoyed, whispering] Siao ah?", secs: 1.45 },
+    { id: "k3bush", who: "bunkmate", ch: "e2c3", where: "Play: the torch lands on the kneeling man beside him (Chad's words)",
+      text: "[quiet, uneasy] There's someone running around in the bushes, but the next section is at least a kilometer away...", secs: 5.51 },
     { id: "s3brief", who: "sergeant", ch: "e2c3", where: "The film: the brief at the drop-off, low",
       text: "[low, firm] Single file. Five metres. Nobody talks. We harbour before dark.", secs: 6.16 },
     { id: "s3hiss", who: "sergeant", ch: "e2c3", where: "Scene D: the hiss from the far scrape",

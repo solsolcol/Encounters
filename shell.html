@@ -405,7 +405,8 @@ body.finePtr .invLabel{display:flex;align-items:center;gap:7px;
   padding:0 4px;border-radius:5px;background:var(--sodium);color:var(--void);
   font-family:var(--mono);font-size:.72rem;font-weight:700;line-height:1}
 .invBtn:hover .invLabel,.invBtn:focus-visible .invLabel,
-.menuBtn:hover .invLabel,.menuBtn:focus-visible .invLabel{border-color:var(--sodium)}
+.menuBtn:hover .invLabel,.menuBtn:focus-visible .invLabel,
+.torchBtn:hover .invLabel,.torchBtn:focus-visible .invLabel{border-color:var(--sodium)}   /* v11.4: the torch's own label, F, like the other two */
 .invBtn,.menuBtn{position:fixed}
 .invBtn.open,.menuBtn.open{border-color:var(--sodium);background:rgba(22,26,34,.95)}
 
@@ -1316,6 +1317,7 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
     <path d="M9.5 6.5h5"/>
     <g class="beam"><path d="M4 2.5l2.5 2.2"/><path d="M20 2.5l-2.5 2.2"/><path d="M12 0.8v2.6"/></g>
   </svg>
+  <span class="invLabel"><span data-t="hud.torch">Torch</span><kbd data-t="hud.torchKey">F</kbd></span>
 </button>
 <button id="menuBtn" class="soundBtn menuBtn" type="button" aria-label="Menu">
   <svg viewBox="0 0 24 24" aria-hidden="true">

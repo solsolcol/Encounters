@@ -889,6 +889,20 @@ the pack), `n2sigh` (Aaron, "[sighs] Haaahh...", 2.56 s — wordless, through
 Levels: the encik to e2ok's −7.1, the two Aaron takes to n2C1's −6.85/−6.6.
 Flows in masters/v10.8/urls.txt; recipe masters/v10.8/make.sh.
 
+## v11.4 · the kneeling man's line
+
+Chad: *"When shining the flashlight on the other soldier who is kneeling on
+the ground, that soldier should say a voiceline 'There's someone running
+around in the bushes, but the next section is at least a kilometer
+away...'"* One take, `k3bush`, in the BUNKMATE's voice (Kelvin,
+`FXMPPfJPpDj0GSwJ6ASO`, eleven_v3 — he is in the section too, and the buddy
+is already David), flow `ElH7VuIvViVjbzp86K9v`, two takes, A picked by
+measurement: 5.92 s ending on 0.49 s of air where B ends ON signal (tail
+0.00 — the v5.30 click), one 0.48 s pause against B's 0.68. Levelled by RMS
+to −16 dBFS for the flat cast bus (masters/v11.1/level.py — the v11.1
+rule), 5.51 s shipped, both encodings from the WAV. e2c3's by the split;
+`k3bush` in `CAST_TAKES` and `STING_SAMPLE`. masters/v11.4/make.sh.
+
 ## v11.3 · the night jungle's wildlife, and the bushes
 
 Chad: *"Add more natural wildlife sounds in the background, and shuffling

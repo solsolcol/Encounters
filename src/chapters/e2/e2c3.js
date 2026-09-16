@@ -116,7 +116,7 @@
   };
 
   /* the measured length of every line said outside a cutscene (masters/v11.0) */
-  const SECS = { n3spot1: 3.16, n3spot2: 2.69, n3spot3: 2.85, b3here: 2.5, n3spot5: 2.93, n3spot6: 5.49, n3press: 6.77, n3look: 7.16, n3still: 2.69 };
+  const SECS = { n3spot1: 3.16, n3spot2: 2.69, n3spot3: 2.85, b3here: 2.5, n3spot5: 2.93, n3spot6: 5.49, n3press: 6.77, n3look: 7.16, n3still: 2.69, k3bush: 5.51 };   // v11.4: k3bush (masters/v11.4)
 
   const hash = (i, s) => { const x = Math.sin(i * 127.1 + s * 311.7) * 43758.5453; return x - Math.floor(x); };
 
@@ -469,6 +469,88 @@
     const patch = new THREE.Mesh(new THREE.CircleGeometry(0.22, 14), nfm({ map: litterTex, color: 0x3a3226, roughness: 1 }));
     patch.rotation.x = -Math.PI / 2; patch.position.y = 0.015; patch.visible = false; patch.userData.moves = true; world.add(patch);
 
+    /* v11.4 (Chad: "that soldier should have a talking animation"): A MAN WHO
+       SPEAKS MOVES. `talk(rig, secs)` puts a standing rig on the file's own
+       talking take for the length of his line and hands him back to his
+       idle, stated in dayClock through after() — and restore() and reset()
+       put every talker back, because a take a beat set must be cleared by
+       whatever ends that beat (the v9.6 law). The kneeling man cannot use it
+       (the talking take is a STANDING one: he would rise to speak and drop
+       again), so he TURNS HIS HEAD to the player instead — chapter 5's
+       head-look, weight eased in on his line and out after it. */
+    const TALK = 'Talk_with_Left_Hand_Raised';
+    const talkers = new Set();
+    function talk(rig, secs) {
+      if (!rig.acts || !rig.acts[TALK]) return false;
+      rig.play(TALK, 1, 0.25); talkers.add(rig);
+      after(secs, () => talkEnd(rig));
+      return true;
+    }
+    function talkEnd(rig) { if (!talkers.has(rig)) return; talkers.delete(rig); if (rig.idle && rig.acts) rig.play(rig.idle, rig.rate, 0.3); }
+    function talkReset() { for (const r of [...talkers]) talkEnd(r); }
+    const _lookP = new THREE.Vector3(), _lookH = new THREE.Vector3();
+    const kneelLook = { x: 0, y: 0, w: 0, want: 0 };
+    function headLook(rig, st, dt) {
+      const head = rig.head; if (!head) return;
+      const w = st.w;
+      camera.getWorldPosition(_lookP); head.getWorldPosition(_lookH);
+      const dx = _lookP.x - _lookH.x, dz = _lookP.z - _lookH.z, flat = Math.hypot(dx, dz);
+      let dy = Math.atan2(dx, dz) - rig.group.rotation.y; dy = Math.atan2(Math.sin(dy), Math.cos(dy));
+      const YAW = 0.8, PIT = 0.34, EYE_UP = 0.11, DOWN_BIAS = 0.10;
+      const wy = Math.abs(dy) > YAW + 0.9 ? 0 : Math.max(-YAW, Math.min(YAW, dy));
+      const wx = flat < 0.05 ? 0 : Math.max(-PIT, Math.min(PIT, Math.atan2(_lookP.y - (_lookH.y + EYE_UP), flat) - DOWN_BIAS));
+      const k = Math.min(1, dt * 3.5);
+      st.y += (wy * w - st.y) * k; st.x += (wx * w - st.x) * k;
+      head.rotation.y += st.y;
+      head.rotation.x += (-st.x - head.rotation.x) * 0.88 * w;
+    }
+
+    /* v11.4 (Chad: "every 10 seconds in the playable scene, the ghost soldier
+       should be running around the jungle in the very far background, fade
+       in and out while running, each run about 2-3 seconds"): THE FAR RUNS.
+       The same runner scenes A and D use, on his own deterministic stream,
+       crossing the trees 15–22 m out on a tangent — never through the ring —
+       for 2–3 s at the run take's own speed, in over the first 15 % and out
+       over the last 20 %, a faint leaf-litter run panned to his side. Stated
+       in dayClock, so a run never advances under a panel: one caught by the
+       decision opening is ENDED on that frame rather than left hanging at
+       half alpha behind the options, and restore()/reset() end one too. */
+    let farAt = 0, farRun = null, farN = 0, farSeed = 29;
+    const farRand = () => { farSeed = (farSeed * 1664525 + 1013904223) >>> 0; return farSeed / 4294967296; };
+    const FAR_GAP = [7.5, 9.5], FAR_R = [15, 22], FAR_SPD = 2.6;
+    /* at twenty metres the torch's cone gives him nothing and the close-up
+       glow (0x30405a, right for a man crossing the beam in scene A) is a
+       shadow between trunks — photographed from the ring, he was not there.
+       The far runs wear a paler self-light and hand the scenes' one back. */
+    const FAR_GLOW = 0xa4b4d8, NEAR_GLOW = 0x30405a;   // photographed at 0x8a9cc4: a figure, but a faint one
+    const runnerGlow = (hex) => { if (runner.ghostMats) for (const m of runner.ghostMats) m.emissive?.setHex(hex); };
+    function farEnd() {
+      farRun = null; ghostAlpha(runner, 0); runnerGlow(NEAR_GLOW);
+      if (runner.idle && runner.acts) runner.play(runner.idle, 1, 0);
+      runner.group.position.set(RUN_HOME.x, 0, RUN_HOME.z); runner.group.rotation.y = 0;
+    }
+    function farTick() {
+      if (!farAt) { farAt = dayClock.t + 4 + farRand() * 4; return; }
+      if (!farRun) {
+        if (dayClock.t < farAt || !runner.ready || !runner.acts) return;
+        const a = farRand() * Math.PI * 2, r = FAR_R[0] + farRand() * (FAR_R[1] - FAR_R[0]);
+        const cx = Math.sin(a) * r, cz = Math.cos(a) * r;
+        const dur = 2.0 + farRand() * 1.0, L = FAR_SPD * dur, s = farRand() < 0.5 ? -1 : 1;
+        const dx = Math.cos(a) * s, dz = -Math.sin(a) * s;          // the tangent, either way round
+        farRun = { t0: dayClock.t, dur, ax: cx - dx * L / 2, az: cz - dz * L / 2, bx: cx + dx * L / 2, bz: cz + dz * L / 2 };
+        runner.group.position.set(farRun.ax, 0, farRun.az); runner.group.rotation.y = Math.atan2(dx, dz);
+        ghostAlpha(runner, 0.01); runnerGlow(FAR_GLOW); runner.play('Running', 1, 0.1);
+        if (worldSfx) worldSfx('ghostrunleaf', 0.12, 1, Math.sin(a - yaw.rotation.y) * 0.8);
+        farN++;
+        return;
+      }
+      const k = (dayClock.t - farRun.t0) / farRun.dur;
+      if (k >= 1) { farEnd(); farAt = dayClock.t + FAR_GAP[0] + farRand() * (FAR_GAP[1] - FAR_GAP[0]); return; }
+      runner.group.position.x = farRun.ax + (farRun.bx - farRun.ax) * k;
+      runner.group.position.z = farRun.az + (farRun.bz - farRun.az) * k;
+      ghostAlpha(runner, 1.35 * Math.max(0.01, Math.min(1, k / 0.15, (1 - k) / 0.2)));   // 1.35 x the 0.6 base: 0.81 at the crest, still a ghost
+    }
+
     /* ---------------------------------------------- THE ROAD POCKET (film)
        Chad's forest with its road (v11.2), 150 m off and inside its own
        painted dusk (chapter 1's memory-pocket recipe: a bubble whose back
@@ -694,7 +776,7 @@
                                 'stingpress', 'ghostlaugh', 'legpress', 'n3press', 'n3look', 'n3still',
                                 'ghostrunleaf', 'leaflift', 'leafdraw', 'n3A1', 'n3A2', 'n3B1', 'n3B2',
                                 'n3C1', 'n3C2', 'b3C1', 'b3C2', 'b3C3', 'n3D1', 'n3D2', 's3hiss', 'b3D',
-                                'bushrustle1', 'bushrustle2', 'bushrustle3', 'nightcall1', 'nightcall2']);
+                                'bushrustle1', 'bushrustle2', 'bushrustle3', 'nightcall1', 'nightcall2', 'k3bush']);
 
     let jungleK = 1;                                   // the bed, ducked under "nothing around..."
     function mixBeds() {
@@ -706,7 +788,7 @@
     }
     function setPhase(p) {
       phase = p;
-      if (kit) kit.setPhase(p === 'look' ? 'look:' + [...seen].join(',') : p);
+      if (kit) kit.setPhase(p === 'look' ? 'look:' + [...seen].join(',') + (kneelSaid ? ',k' : '') : p);   // v11.4: `k` — the kneeling man has spoken
     }
     function objLook() {
       if (!kit) return;
@@ -722,12 +804,25 @@
     const SPOT_LINE = { 1: 'n3spot1', 2: 'n3spot2', 3: 'n3spot3', 4: 'b3here', 5: 'n3spot5', 6: 'n3spot6' };
     function seeSpot(n) {
       if (phase !== 'look' || seen.has(n)) return false;
-      const ok = sayLine(SPOT_LINE[n], 1);
+      const ok = sayLine(SPOT_LINE[n], 1, n === 4 ? () => talk(buddy, (SECS.b3here || 2.5) + 0.2) : undefined);   // v11.4: he talks through it
       if (!ok) return false;
       seen.add(n);
       setPhase('look');
       objLook();
       if (seen.size >= 6) after((SECS[SPOT_LINE[6]] || 4) + 1.5, () => { if (phase === 'look') beginPressure(); });
+      return true;
+    }
+    /* v11.4 (Chad): THE KNEELING MAN under the torch says his one line —
+       "There's someone running around in the bushes, but the next section is
+       at least a kilometer away..." — once, off the objective's count, head
+       turned to the player for the length of it. He rides the phase string
+       as `k` so a resume does not make him say it twice. */
+    let kneelSaid = false;
+    function seeKneel() {
+      if (phase !== 'look' || kneelSaid) return false;
+      const ok = sayLine('k3bush', 1, () => { kneelLook.want = 1; after((SECS.k3bush || 4) + 0.4, () => { kneelLook.want = 0; }); });
+      if (!ok) return false;
+      kneelSaid = true; setPhase('look');
       return true;
     }
     /* THE PRESSURE. A shake the chapter performs on the lens (roll and a
@@ -788,7 +883,7 @@
     function applyPhase(p) {
       seen.clear();
       if (typeof p === 'string' && p.startsWith('look:')) {
-        for (const s of p.slice(5).split(',')) { const n = parseInt(s, 10); if (n >= 1 && n <= 6) seen.add(n); }
+        for (const s of p.slice(5).split(',')) { if (s === 'k') { kneelSaid = true; continue; } const n = parseInt(s, 10); if (n >= 1 && n <= 6) seen.add(n); }
       }
       if (p === 'decide') {
         setPhase('decide');
@@ -820,6 +915,10 @@
         enabled: spotOn(4), onInteract() { return seeSpot(4); } },
       { id: 'chem', pos: { x: CMD.x + 0.2, y: 0.6, z: CMD.z + 0.5 }, radius: 13, dwell: 0.8, aim: 0.11, prompt: DATA.words.hotSpot, markY: 0.7,
         enabled: spotOn(5, 4), onInteract() { return seeSpot(5); } },
+      /* v11.4: the kneeling man to his right, once, off the count — the anchor
+         at a kneeling man's head (the KNEEL take's hips sit 0.53 m up) */
+      { id: 'kneel', pos: { x: KNEEL1.x, y: 1.0, z: KNEEL1.z }, radius: 9, dwell: 0.8, aim: 0.12, prompt: DATA.words.hotBuddy, markY: 0.75,
+        enabled: () => phase === 'look' && !kneelSaid && torchOn(), onInteract() { return seeKneel(); } },
       { id: 'feet', pos: { x: HIS.x, y: 0.12, z: HIS.z + 0.95 }, radius: 2.6, dwell: 0.8, aim: 0.14, prompt: DATA.words.hotFeet, markY: 0.35, anyView: true,
         enabled: spotOn(6, 5), onInteract() { return seeSpot(6); } }
     ];
@@ -854,6 +953,10 @@
     /* ---------------------------------------------------------- per frame */
     function updateNotes(dt, t) {
       for (const r of rigs) if (r.mixer && r.group.visible && (r.group.parent !== truck && r.group.parent !== pocket || pocket.visible)) r.mixer.update(dt);
+      /* v11.4: the kneeling man's head, laid on AFTER his mixer wrote the pose */
+      kneelLook.w += (kneelLook.want - kneelLook.w) * Math.min(1, dt * 2.2);
+      if (kneelLook.w > 0.002 || Math.abs(kneelLook.y) > 0.002) headLook(kneel1, kneelLook, dt);
+      if (farRun && getState() !== 'play') farEnd();   // v11.4: never a ghost frozen at half alpha behind a panel
       if (pocket.visible) {
         truck.rotation.z = Math.sin(t * 3.1) * 0.006 * roadK; truck.position.y = truckBaseY + Math.sin(t * 5.3) * 0.012 * roadK;
         skyMat.color.setScalar(skyK);
@@ -863,7 +966,7 @@
       if (lastWall) dayClock.t += Math.min(0.5, now - lastWall);
       lastWall = now;
       if (!booted) { booted = true; applyPhase(kit ? kit.getPhase() : null); }
-      bushTick();
+      bushTick(); farTick();
       // the shake: roll and a kick down, decaying — the chapter owns the lens for half a second
       if (shakeT > 0) {
         shakeT = Math.max(0, shakeT - dt);
@@ -912,6 +1015,8 @@
       tailPivot.rotation.x = 0;
       fileHome(); for (const r of file) if (r.acts) r.play('Idle_3', 1, 0);
       if (kit) kit.daylight(null, 0);
+      talkReset(); if (buddy.acts) buddy.play('Idle_3', 1, 0);   // v11.4: a scene's talking take ends with the scene
+      if (farRun) farEnd();
     }
     function reset() {
       pocket.visible = false; roadK = 0; skyK = 1;
@@ -922,6 +1027,8 @@
       seen.clear(); booted = false; dayClock.t = 0; lastWall = 0;
       shakeT = 0; downT = 0; looked = false; jungleK = 1; mixBeds(); yawOff = 0; pitchOff = 0;
       bushAt = 0; callAt = 0; bushSeed = 13; bushN = 0; callN = 0;   // v11.3: the bushes are stated in dayClock too
+      if (farRun) farEnd(); farAt = 0; farN = 0; farSeed = 29;          // v11.4: and the far runs
+      talkReset(); kneelSaid = false; kneelLook.want = 0; kneelLook.w = 0; kneelLook.x = 0; kneelLook.y = 0;
       if (kit) { if (kit.hurt) kit.hurt(null); if (kit.root) kit.root(false); }
       fileHome();
       if (kit) { kit.daylight(null, 0); kit.presence(0); kit.setPhase('look:'); if (kit.torchOn) kit.torchOn(true); }
@@ -979,7 +1086,9 @@
       setPhase, applyPhase, beginPressure,
       lookInfo: () => ({ phase, seen: [...seen], obj: kit && kit.getPhase ? kit.getPhase() : null, downT: +downT.toFixed(2), looked, shakeT: +shakeT.toFixed(2) }),
       speakInfo: () => ({ t: +dayClock.t.toFixed(2), until: +speak.until.toFixed(2), pending: speak.pending ? speak.pending.name : null, queued: lineQ.length }),
-      ambient: () => ({ jungleK, beds: DATA.ambience.beds.map(b => [b[0], +b[1].toFixed(3)]), bush: { at: +bushAt.toFixed(1), callAt: +callAt.toFixed(1), fired: bushN, calls: callN, t: +dayClock.t.toFixed(1), trees: TREE_AT.length } }),
+      ambient: () => ({ jungleK, beds: DATA.ambience.beds.map(b => [b[0], +b[1].toFixed(3)]), bush: { at: +bushAt.toFixed(1), callAt: +callAt.toFixed(1), fired: bushN, calls: callN, t: +dayClock.t.toFixed(1), trees: TREE_AT.length },
+                        far: { at: +farAt.toFixed(1), n: farN, run: farRun ? { k: +((dayClock.t - farRun.t0) / farRun.dur).toFixed(2), x: +runner.group.position.x.toFixed(2), z: +runner.group.position.z.toFixed(2), a: +(runner.ghostA || 0).toFixed(2) } : null },
+                        kneel: { said: kneelSaid, w: +kneelLook.w.toFixed(2), y: +kneelLook.y.toFixed(2) }, talking: [...talkers].map(r => r.cur) }),
       updateNotes, updatePile, updateFire, updateSlow,
       setNoteTexture() {},
       snap, restore, reset, dispose,
@@ -1176,10 +1285,20 @@
     pitchTo(0, 1.2, s.pitchX, -0.06, smoothK);
     sfx(1.4, 'n3C1');                            // "Eh. You feel that?"
     sfx(3.8, 'b3C1');                            // "Feel what?" 2.43 s → 6.2
+    /* v11.4 (Chad: "that soldier should have a talking animation"): the
+       buddy on the file's talking take for each of his three lines, back to
+       his idle between them — measured against the takes' own lengths */
+    const TK = 'Talk_with_Left_Hand_Raised', bd = () => stage.buddy;
+    step(3.8, () => { if (bd().acts) bd().play(TK, 1, 0.25); });
+    step(5.0, () => { if (bd().acts) bd().play('Idle_3', 1, 0.3); });
     sfx(6.5, 'n3C2');                            // "...my leg. Something pressed on it." 2.51 s → 9.0
     sfx(9.4, 'b3C2');                            // "Nothing there. Maybe root. Or you fell asleep sitting." 4.36 s → 13.8
+    step(9.4, () => { if (bd().acts) bd().play(TK, 1, 0.25); });
+    step(13.7, () => { if (bd().acts) bd().play('Idle_3', 1, 0.3); });
     step(10.5, () => { if (kit) kit.presence(0); });
     sfx(14.2, 'b3C3');                           // "Face the front. I face mine. Relief at four." 4.83 s → 19.0
+    step(14.2, () => { if (bd().acts) bd().play(TK, 1, 0.25); });
+    step(19.2, () => { if (bd().acts) bd().play('Idle_3', 1, 0.3); });
     /* the pull up and back over both scrapes */
     camTo(15.0, 20.6, P0, { x: P0.x + 1.2, y: 3.4, z: P0.z + 2.6 }, smoothK);
     yawTo(15.0, 20.6, Y_B, faceFrom(P0.x + 1.2, P0.z + 2.6, (P0.x + BD.x) / 2, (P0.z + BD.z) / 2 - 2), smoothK);
