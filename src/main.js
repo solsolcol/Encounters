@@ -2369,6 +2369,13 @@ function kitFrame(dt, t, dLookX, dLookY) {
   /* v11.6: the bag button asks while a given item waits unequipped (a class
      toggle is a no-op when nothing changed, so this costs the frame nothing) */
   (invBtnEl || (invBtnEl = $('invBtn')))?.classList.toggle('urge', !!invUrge && state === 'play');
+  /* v11.7 (Chad: "why does the torch icon draw over every ui element?"): the
+     round buttons sit at z 9 and the cards at z 5, so the decision, the
+     outcome and the sealed card all had the lit torch button on top of
+     them. `cardup` marks every state that is not the walk, and the torch's
+     CSS hides under it; the bag and menu buttons keep the behaviour episode
+     1 has always had (they are the base game's, and unchanged). */
+  document.body.classList.toggle('cardup', state !== 'play');
   // pose
   if (poseT < 1) { poseT = Math.min(1, poseT + dt / poseSecs); eyeY = poseFrom + (poseTo - poseFrom) * smoothK(poseT); }
   if (kitPose === 'lying' && state === 'play') {

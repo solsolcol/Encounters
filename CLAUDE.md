@@ -2810,6 +2810,27 @@ What the baseline contains, by release:
   torch and calls none of the bag verbs, so it is unchanged by
   construction. Sheet v55 exported (v44 stays the link).
   docs/V11.0-E2C3-PLAN.md §22 is the build's memory.
+- **v11.7** THE TORCH BUTTON KNOWS ITS PLACE — Chad's two notes on v11.6.
+  *"Why does the torch icon draw over every ui element? It draws over even
+  the inventory menu, the outcomes, the cutscenes."* A CSS specificity slip:
+  the torch's show rule (`body.inplay.hasTorch .torchBtn`) counts three
+  classes and every rule that hides the other round buttons under a panel
+  counts two (`body.cine .invBtn`, `body.invopen .soundBtn`,
+  `body.menuopen .soundBtn`), so the torch won over the bag, the menu and
+  every scene. Its hide rules carry three classes now and come after. And
+  the cards: the round buttons sit at z 9 over cards at z 5, so the LIT
+  torch stood on the decision, the outcome and the sealed card — the frame
+  marks every state that is not the walk as `body.cardup` and the torch
+  hides under it; the bag and menu buttons keep the behaviour episode 1 has
+  always had there (base game, unchanged — Chad's call if they should go
+  too). *"On phone, instead of moving the objective hud ui down below the
+  torch icon, why not reduce the horizontal length?"* Done: v11.5's +224
+  drop is gone; with a torch the phone's objective box stays at its
+  original +166, capped at `100vw − 148px` so its right edge clears the
+  button column by 10 px, the OBJECTIVE label stacked over the words so
+  two lines carry what one used to. Measured on a 390 px phone: box
+  90–299, torch 330–376, no overlap. Episode 1 declares no torch, so none
+  of it reaches it. No word moved; sheet v55 stands (v44 the link).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -3321,7 +3342,7 @@ the run exactly as it always ended a last chapter.
 
 Next up: **episode 2's chapters 4–5, and rifle mode for chapter 5**
 (chapter 1, The Worst Bed, shipped at v7.1 — `src/chapters/e2/e2c1.js`;
-chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 3, The Pressure, at v11.0 and revised at v11.1–v11.6 — `src/chapters/e2/e2c3.js`; chapter 1 last revised at v10.8; the rifle
+chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 3, The Pressure, at v11.0 and revised at v11.1–v11.7 — `src/chapters/e2/e2c3.js`; chapter 1 last revised at v10.8; the rifle
 viewmodel's placement and material are measured in
 docs/E2-SOLDIER-MODELS.md §8, and Chad's ghost and bicycle models are
 still to come), and the still-outstanding job of replacing chapter 1's

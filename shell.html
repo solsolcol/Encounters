@@ -107,7 +107,13 @@ body.cine .invBtn,body.cine .menuBtn{display:none}   /* a scene owns the screen 
 /* v7.0: the torch button — only a chapter that declares a torch shows it */
 .torchBtn{top:calc(max(14px,env(safe-area-inset-top)) + 168px);display:none}
 body.inplay.hasTorch .torchBtn{display:grid}
-body.cine .torchBtn{display:none}
+/* v11.7 (Chad: "why does the torch icon draw over every ui element?"): the
+   show rule above counts THREE classes, and every rule that hides the other
+   round buttons under a panel counts two (`body.cine .invBtn`,
+   `body.invopen .soundBtn`, `body.menuopen .soundBtn`) — so the torch won
+   over a scene, the bag and the menu. These carry the same three, and come
+   after, so they win. */
+body.hasTorch.cine .torchBtn,body.hasTorch.invopen .torchBtn,body.hasTorch.menuopen .torchBtn,body.hasTorch.cardup .torchBtn{display:none}
 .torchBtn svg{fill:none;stroke:var(--bone);stroke-width:1.8}
 .torchBtn .beam{opacity:.25;transition:opacity .16s}
 .torchBtn.on{border-color:var(--sodium)}
@@ -1227,8 +1233,11 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
      cleared a column of THREE buttons; a chapter with a torch has four, and
      the fourth sits at +168. Under it, then — only where a torch exists, so
      episode 1's phones are untouched. */
-  body.hasTorch #objective{padding-top:calc(max(14px,env(safe-area-inset-top)) + 224px)}
+  /* v11.7 (Chad): NOT under it — the box stays where it always was and is
+     NARROWER instead, so its right edge clears the button column (46 px at
+     14 px from the edge, plus 10 px of air) and the torch sits beside it */
   .obox{max-width:92vw;font-size:.94rem;padding:7px 12px;gap:10px}
+  body.hasTorch .obox{max-width:calc(100vw - 148px);flex-direction:column;align-items:flex-start;gap:2px}
   /* v8.3: the marks are bigger on a phone — the screen is a third the width
      of a desktop's and the same 34 px diamond reads as a speck on it */
   .hmark{width:44px;height:44px;margin:-22px 0 0 -22px}

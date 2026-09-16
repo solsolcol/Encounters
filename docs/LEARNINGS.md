@@ -3779,3 +3779,18 @@ lens, gone by the end), front faces only, and to be SHORT — the lit ground
 under the spotlight is what says "on"; the cone is only the flare at the
 lens.
 
+## A show rule with one more class than the hide rules wins everywhere (v11.7)
+
+`body.inplay.hasTorch .torchBtn{display:grid}` was written beside
+`body.inplay .invBtn{display:grid}` and looked like its twin. It is not:
+it counts three classes, and every rule that takes the round buttons off
+the screen under a panel — `body.cine .invBtn`, `body.invopen .soundBtn`,
+`body.menuopen .soundBtn` — counts two, so the torch stayed up over the
+bag, the menu, every scene, and (because the buttons are z 9 and the cards
+z 5) over the decision and the outcome as well. Chad saw it on the first
+play. When a new button joins a family that is hidden by class rules, its
+show rule must match the family's SPECIFICITY, or every one of those hide
+rules must be restated at the new one's — and the states the cards own
+needed a body mark of their own (`cardup`), because nothing had ever
+needed to hide a button under a card before.
+
