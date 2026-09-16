@@ -489,9 +489,20 @@
     function talkEnd(rig) { if (!talkers.has(rig)) return; talkers.delete(rig); if (rig.idle && rig.acts) rig.play(rig.idle, rig.rate, 0.3); }
     function talkReset() { for (const r of [...talkers]) talkEnd(r); }
     const _lookP = new THREE.Vector3(), _lookH = new THREE.Vector3();
-    const kneelLook = { x: 0, y: 0, w: 0, want: 0 };
+    const kneelLook = { x: 0, y: 0, w: 0, want: 0, saved: new THREE.Quaternion(), hasSaved: false };
+    /* v11.4 fix (Chad: "spins his head when talking"): the look is laid on
+       AFTER the mixer, and three.js's PropertyMixer only writes a bone whose
+       interpolated value differs from the ORIGINAL it saved — so on a frame
+       where the kneel take's head sits still, the mixer leaves our turned
+       bone alone and the next frame's addition stacks on it. Chapter 5's
+       clips move the head every frame and never met this. The bone is now
+       put back to what the mixer last wrote BEFORE the mixer runs again
+       (`headUndo`), so every frame's offset is added to the clip's pose and
+       never to last frame's. */
+    function headUndo(rig, st) { if (st.hasSaved && rig.head) rig.head.quaternion.copy(st.saved); }
     function headLook(rig, st, dt) {
       const head = rig.head; if (!head) return;
+      st.saved.copy(head.quaternion); st.hasSaved = true;
       const w = st.w;
       camera.getWorldPosition(_lookP); head.getWorldPosition(_lookH);
       const dx = _lookP.x - _lookH.x, dz = _lookP.z - _lookH.z, flat = Math.hypot(dx, dz);
@@ -952,10 +963,11 @@
 
     /* ---------------------------------------------------------- per frame */
     function updateNotes(dt, t) {
+      headUndo(kneel1, kneelLook);   // v11.4: the clip's head back before the mixer writes (or does not)
       for (const r of rigs) if (r.mixer && r.group.visible && (r.group.parent !== truck && r.group.parent !== pocket || pocket.visible)) r.mixer.update(dt);
       /* v11.4: the kneeling man's head, laid on AFTER his mixer wrote the pose */
       kneelLook.w += (kneelLook.want - kneelLook.w) * Math.min(1, dt * 2.2);
-      if (kneelLook.w > 0.002 || Math.abs(kneelLook.y) > 0.002) headLook(kneel1, kneelLook, dt);
+      if (kneelLook.w > 0.002 || Math.abs(kneelLook.y) > 0.002 || Math.abs(kneelLook.x) > 0.002) headLook(kneel1, kneelLook, dt); else kneelLook.hasSaved = false;
       if (farRun && getState() !== 'play') farEnd();   // v11.4: never a ghost frozen at half alpha behind a panel
       if (pocket.visible) {
         truck.rotation.z = Math.sin(t * 3.1) * 0.006 * roadK; truck.position.y = truckBaseY + Math.sin(t * 5.3) * 0.012 * roadK;

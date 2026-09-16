@@ -3736,3 +3736,19 @@ drops again after. The kneeling man turns his HEAD instead (chapter 5's
 head-look, laid on after his mixer writes the pose). Before wiring a take
 to a line, ask what pose the take starts in.
 
+## An additive write after the mixer stacks on the frames the mixer skips (v11.5)
+
+Chapter 5's head-look adds a yaw to the head bone AFTER `mixer.update`,
+trusting the mixer to rewrite the bone every frame so the addition never
+accumulates. It does not: three.js's `PropertyMixer.apply` writes a bone
+only when the interpolated value differs from the ORIGINAL it saved when
+the binding was made. A clip that moves the head every frame (the mother,
+the tang-ki) always differs, so chapter 5 never saw it; a slow kneel idle
+holds the head still for frames at a time, the mixer leaves our turned bone
+alone, and the next frame adds to it — the kneeling man SPUN while he
+spoke. The fix is to put the bone back to what the mixer last wrote before
+the mixer runs again, so every frame's offset is laid on the clip's pose
+and never on last frame's. Any per-frame write on top of a mixer needs the
+same undo, or the mixer's write-only-on-change optimisation turns it into
+an integrator.
+

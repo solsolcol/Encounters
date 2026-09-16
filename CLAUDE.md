@@ -2758,6 +2758,23 @@ What the baseline contains, by release:
   Sheet v54 exported (`masters/v11.4/masterz-text-v54.xlsx` — one UI word,
   one voice line; v44 stays the link). docs/V11.0-E2C3-PLAN.md §20 and
   AUDIO-PLAN v11.4 are the build's memory.
+- **v11.5** THE PHONE'S OBJECTIVE, AND THE HEAD THAT SPUN — Chad's two notes
+  on v11.4, the morning it went live. **THE OVERLAP**: v7.2's phone rule parks
+  the objective box at +166 px, under a button column of THREE (mute, menu,
+  inventory ends at +160); a chapter with a torch has FOUR and the torch sits
+  at +168 — a two-pixel collision nobody re-checked on a phone at v11.1. The
+  objective sits at +224 under `body.hasTorch` only, so episode 1's phones are
+  untouched by construction. **THE SPIN** is a three.js law worth keeping
+  (LEARNINGS): `PropertyMixer` writes a bone only when the interpolated value
+  differs from the ORIGINAL it saved, so on a frame where the kneel take's head
+  holds still the mixer leaves our turned bone alone and the next frame's
+  additive look stacks on it — a head that spins exactly while a slow idle
+  keeps it still. Chapter 5's clips move every frame and never met it. The
+  bone is put back to what the mixer last wrote BEFORE the mixer runs again
+  (`headUndo`), so each frame's offset is added to the clip's pose, never to
+  last frame's. Measured on the phone build: the head's local yaw settles and
+  holds through the line instead of climbing. No word moved; sheet v54 stands
+  (v44 the link).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -3269,7 +3286,7 @@ the run exactly as it always ended a last chapter.
 
 Next up: **episode 2's chapters 4–5, and rifle mode for chapter 5**
 (chapter 1, The Worst Bed, shipped at v7.1 — `src/chapters/e2/e2c1.js`;
-chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 3, The Pressure, at v11.0 and revised at v11.1–v11.4 — `src/chapters/e2/e2c3.js`; chapter 1 last revised at v10.8; the rifle
+chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 3, The Pressure, at v11.0 and revised at v11.1–v11.5 — `src/chapters/e2/e2c3.js`; chapter 1 last revised at v10.8; the rifle
 viewmodel's placement and material are measured in
 docs/E2-SOLDIER-MODELS.md §8, and Chad's ghost and bicycle models are
 still to come), and the still-outstanding job of replacing chapter 1's
