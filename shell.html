@@ -1238,6 +1238,11 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
      14 px from the edge, plus 10 px of air) and the torch sits beside it */
   .obox{max-width:92vw;font-size:.94rem;padding:7px 12px;gap:10px}
   body.hasTorch .obox{max-width:calc(100vw - 148px);flex-direction:column;align-items:flex-start;gap:2px}
+  /* v11.8 (Chad's screenshot): the presence banner sat ACROSS the objective
+     box — its 212 px top was chosen against no box at all. With an
+     objective on screen it stands under the box, whatever the box's
+     height (`--objH`, measured by the frame), with 12 px of air. */
+  body.hasObj #haunt{padding-top:calc(max(14px,env(safe-area-inset-top)) + 166px + var(--objH,0px) + 12px)}
   /* v8.3: the marks are bigger on a phone — the screen is a third the width
      of a desktop's and the same 34 px diamond reads as a speck on it */
   .hmark{width:44px;height:44px;margin:-22px 0 0 -22px}

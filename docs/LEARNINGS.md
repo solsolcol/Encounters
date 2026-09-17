@@ -3794,3 +3794,16 @@ rules must be restated at the new one's — and the states the cards own
 needed a body mark of their own (`cardup`), because nothing had ever
 needed to hide a button under a card before.
 
+## A layout read sampled on the frame is one read on a slow phone (v11.8)
+
+The presence banner had to stand under the objective box, so the frame
+put the box's height on <body> as a CSS variable — read every twentieth
+frame, to keep a layout read off every frame. On the probe's
+one-frame-a-second box that was ONE read in eight seconds, and it landed
+while the box still said OBJECTIVE COMPLETE on a single line: 28 px was
+written, the order wrapped to 47, and the banner stood 8 px into it. The
+same device that made the sampling rare is the one Chad plays on hot.
+A size the CSS depends on comes from a ResizeObserver, which fires after
+every layout that changes the element and costs the frame nothing — the
+frame owns the words, the observer owns the measure. v8.7's law (a fixed
+wait in a harness is a coin toss) in its layout form.

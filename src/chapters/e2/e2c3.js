@@ -42,7 +42,7 @@
         say: 'I called out to it. It stopped the moment I did. I gave it my voice.',
         teach: 'Provocation and investigation are not the same thing.' }
     ],
-    core: 'The weight on your leg was real. What it meant was not yet known. When fear and dread came to the Buddha, alone in the forest at night, he did not run and he did not fight: whatever he was doing when the fear arrived — walking, standing, sitting — he kept doing it, and looked at the fear until he understood it. Meet the dark that way. Your light, your eyes and your buddy are the tools; your hand and your voice are not.<br><i>Bhaya-bherava Sutta, MN 4 — fear examined is fear understood.</i>',
+    core: 'Fear arrives before the facts do. The Buddha, alone in the forest at night, met it by looking at it until he understood it. Do the same: use your light and your buddy, not your hand or your voice.<br><i>Bhaya-bherava Sutta — fear examined is fear understood.</i>',
 
     /* units metres, y up. The harbour is a clearing about 12 m across at
        the end of a track; the ring of scrapes sits round (0, 4) and HIS is

@@ -1214,9 +1214,27 @@ function paintObjective() {
   if (live) objRun();
   const banner = !!(objBeat && objBeat.kind === 'done');
   const show = (kitObjective || kitTimer || banner) && live;
-  if (show !== objPainted.shown) { box.classList.toggle('hide', !show); objPainted.shown = show; }
+  if (show !== objPainted.shown) { box.classList.toggle('hide', !show); objPainted.shown = show; document.body.classList.toggle('hasObj', !!show); }   // v11.8: the presence banner reads this
   if (!show) return;
   const obox = box.querySelector('.obox');
+  /* v11.8 (Chad, a phone screenshot: the presence banner across the
+     objective box): the box's HEIGHT goes onto <body> as `--objH`, and the
+     phone's banner rule stands the banner under the box however many
+     lines it wraps to. A ResizeObserver reports it — the first version
+     read `offsetHeight` every twentieth frame and on a one-frame-a-second
+     box that was ONE read, taken while the box still said OBJECTIVE
+     COMPLETE on a single line, so the banner stood 8 px into a two-line
+     order. The observer fires after every layout that changes the box and
+     costs no read on the frame. Episode 1 shows no objective, so `hasObj`
+     is never set there and its banner is where it always was. */
+  if (obox && !objPainted.ro) {
+    const put = h => { if (h !== objPainted.h) { objPainted.h = h; document.body.style.setProperty('--objH', h + 'px'); } };
+    if (typeof ResizeObserver === 'function') {
+      objPainted.ro = new ResizeObserver(() => put(obox.offsetHeight));
+      objPainted.ro.observe(obox);
+    } else objPainted.ro = { poll: put };
+  }
+  if (objPainted.ro && objPainted.ro.poll && ((objPainted.n = (objPainted.n | 0) + 1) % 4 === 1)) objPainted.ro.poll(obox.offsetHeight);
   if (banner !== objPainted.done) {
     if (obox) obox.classList.toggle('done', banner);
     objPainted.done = banner;

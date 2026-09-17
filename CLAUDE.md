@@ -2831,6 +2831,30 @@ What the baseline contains, by release:
   two lines carry what one used to. Measured on a 390 px phone: box
   90–299, torch 330–376, no overlap. Episode 1 declares no torch, so none
   of it reaches it. No word moved; sheet v55 stands (v44 the link).
+- **v11.8** THE BANNER UNDER THE BOX, AND THE LESSON KEPT LIGHT — Chad's
+  two notes on v11.7, with a phone screenshot: the red presence banner
+  ("Sanity level dropping until you take action") lay ACROSS the objective
+  box. The banner's phone top (v7.2's `clamp(172px,26vh,212px)`) was chosen
+  against no objective at all — episode 1 never shows one — and chapter 3
+  is the first to run a presence drain and an objective at the same time.
+  The frame marks `body.hasObj` while an objective is on screen and puts
+  the box's HEIGHT on <body> as `--objH`, and on a phone the banner stands
+  under the box with 12 px of air, however many lines the order wraps to.
+  The height comes from a ResizeObserver, and that is the release's one
+  lesson: the first version read `offsetHeight` every twentieth frame, and
+  on a one-frame-a-second box that was ONE read, taken while the box still
+  said OBJECTIVE COMPLETE on a single line (28 px against the order's 47),
+  so the banner still stood 8 px into the box. A layout read sampled on
+  the frame is a coin toss on a slow device (v8.7's law, met in CSS);
+  the observer fires after every layout that changes the box and costs
+  the frame nothing. Measured on a 390 px phone: box 179–228, banner from
+  239, gap 11; desktop untouched (gap 132). Episode 1 never sets `hasObj`,
+  so its banner is where it always was. And the core lesson is three
+  sentences — "Fear arrives before the facts do. The Buddha, alone in the
+  forest at night, met it by looking at it until he understood it. Do the
+  same: use your light and your buddy, not your hand or your voice." —
+  with the sutta's name under it, where v11.6's was a paragraph. Sheet v56
+  exported (v44 stays the link).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -3342,7 +3366,7 @@ the run exactly as it always ended a last chapter.
 
 Next up: **episode 2's chapters 4–5, and rifle mode for chapter 5**
 (chapter 1, The Worst Bed, shipped at v7.1 — `src/chapters/e2/e2c1.js`;
-chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 3, The Pressure, at v11.0 and revised at v11.1–v11.7 — `src/chapters/e2/e2c3.js`; chapter 1 last revised at v10.8; the rifle
+chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 3, The Pressure, at v11.0 and revised at v11.1–v11.8 — `src/chapters/e2/e2c3.js`; chapter 1 last revised at v10.8; the rifle
 viewmodel's placement and material are measured in
 docs/E2-SOLDIER-MODELS.md §8, and Chad's ghost and bicycle models are
 still to come), and the still-outstanding job of replacing chapter 1's
