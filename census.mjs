@@ -4,11 +4,15 @@ const errs=[];
 const b = await chromium.launch(LAUNCH);
 const p = await b.newPage({viewport:{width:480,height:320}});
 p.on('pageerror',e=>errs.push('PAGEERROR '+e.message));
-// TUNNEL and ERR_CONNECTION_RESET are both the sandbox refusing the Google
-// Fonts stylesheet (environment noise, different spellings per container);
-// the page itself never fetches over the network in the wrapped build
+// TUNNEL, ERR_CONNECTION_RESET and ERR_CERT_AUTHORITY_INVALID are all the
+// sandbox refusing the Google Fonts stylesheet in shell.html line 2 — the
+// page's ONE outbound request, and environment noise with a different
+// spelling per container (the third arrived at v12.1, from a proxy that
+// terminates TLS with its own certificate). The page itself never fetches
+// over the network in the wrapped build.
 p.on('console',m=>{ if(m.type()==='error'&&!m.text().includes('TUNNEL')
-  &&!m.text().includes('ERR_CONNECTION_RESET')) errs.push('CONSOLE '+m.text().slice(0,120)); });
+  &&!m.text().includes('ERR_CONNECTION_RESET')
+  &&!m.text().includes('ERR_CERT_AUTHORITY_INVALID')) errs.push('CONSOLE '+m.text().slice(0,120)); });
 // the page is 4.5 MB and two of these run at once on a two-core box;
 // the default 30 s navigation timeout is not enough for that
 p.setDefaultNavigationTimeout(180000); p.setDefaultTimeout(60000);

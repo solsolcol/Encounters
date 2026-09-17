@@ -1,0 +1,506 @@
+{
+ "b4float_a": {
+  "prompt": "Eh... it's floating. You see or not?",
+  "secs": 2.16,
+  "model": "eleven_v3",
+  "voice": "XxnXw151E3nb1V85MRlS"
+ },
+ "b4float_b": {
+  "prompt": "Eh... it's floating. You see or not?",
+  "secs": 2.8,
+  "model": "eleven_v3",
+  "voice": "XxnXw151E3nb1V85MRlS"
+ },
+ "b4stag_a": {
+  "prompt": "Eh. Last night. You never say anything after.",
+  "secs": 3.36,
+  "model": "eleven_v3",
+  "voice": "XxnXw151E3nb1V85MRlS"
+ },
+ "b4stag_b": {
+  "prompt": "Eh. Last night. You never say anything after.",
+  "secs": 3.12,
+  "model": "eleven_v3",
+  "voice": "XxnXw151E3nb1V85MRlS"
+ },
+ "b4there_a": {
+  "prompt": "Sergeant! Got someone in the target area!",
+  "secs": 2.4,
+  "model": "eleven_v3",
+  "voice": "XxnXw151E3nb1V85MRlS"
+ },
+ "b4there_b": {
+  "prompt": "Sergeant! Got someone in the target area!",
+  "secs": 2.32,
+  "model": "eleven_v3",
+  "voice": "XxnXw151E3nb1V85MRlS"
+ },
+ "e4down_a": {
+  "prompt": "STOP! Weapons DOWN! Muzzle down the range! DOWN!",
+  "secs": 3.76,
+  "model": "eleven_v3",
+  "voice": "klqxhYh2Np93AvKxFz0b"
+ },
+ "e4down_b": {
+  "prompt": "STOP! Weapons DOWN! Muzzle down the range! DOWN!",
+  "secs": 3.44,
+  "model": "eleven_v3",
+  "voice": "klqxhYh2Np93AvKxFz0b"
+ },
+ "e4line_a": {
+  "prompt": "LANE SIX! GET BACK ON THE LINE! NOW!",
+  "secs": 3.04,
+  "model": "eleven_v3",
+  "voice": "klqxhYh2Np93AvKxFz0b"
+ },
+ "e4line_b": {
+  "prompt": "LANE SIX! GET BACK ON THE LINE! NOW!",
+  "secs": 3.12,
+  "model": "eleven_v3",
+  "voice": "klqxhYh2Np93AvKxFz0b"
+ },
+ "e4wait_a": {
+  "prompt": "WAIT for the order! Nobody fires until the tower says fire! You want to go home or not?",
+  "secs": 5.68,
+  "model": "eleven_v3",
+  "voice": "klqxhYh2Np93AvKxFz0b"
+ },
+ "e4wait_b": {
+  "prompt": "WAIT for the order! Nobody fires until the tower says fire! You want to go home or not?",
+  "secs": 5.84,
+  "model": "eleven_v3",
+  "voice": "klqxhYh2Np93AvKxFz0b"
+ },
+ "k4shout_a": {
+  "prompt": "Eh, what is that? The bicycle! It's floating! Look over there!",
+  "secs": 3.92,
+  "model": "eleven_v3",
+  "voice": "FXMPPfJPpDj0GSwJ6ASO"
+ },
+ "k4shout_b": {
+  "prompt": "Eh, what is that? The bicycle! It's floating! Look over there!",
+  "secs": 4.08,
+  "model": "eleven_v3",
+  "voice": "FXMPPfJPpDj0GSwJ6ASO"
+ },
+ "n4A_a": {
+  "prompt": "I kept my lane. I said what I saw, in the proper words, and then I carried on.",
+  "secs": 5.12,
+  "model": "eleven_v3",
+  "voice": "B6uUx2p7cRgxseOUyP6P"
+ },
+ "n4A_b": {
+  "prompt": "I kept my lane. I said what I saw, in the proper words, and then I carried on.",
+  "secs": 4.88,
+  "model": "eleven_v3",
+  "voice": "B6uUx2p7cRgxseOUyP6P"
+ },
+ "n4B_a": {
+  "prompt": "I went out to look. The ground was empty, and the sound came from behind me.",
+  "secs": 4.8,
+  "model": "eleven_v3",
+  "voice": "B6uUx2p7cRgxseOUyP6P"
+ },
+ "n4B_b": {
+  "prompt": "I went out to look. The ground was empty, and the sound came from behind me.",
+  "secs": 4.8,
+  "model": "eleven_v3",
+  "voice": "B6uUx2p7cRgxseOUyP6P"
+ },
+ "n4C_a": {
+  "prompt": "I put a whole magazine into it. Every round brought it closer.",
+  "secs": 4.24,
+  "model": "eleven_v3",
+  "voice": "B6uUx2p7cRgxseOUyP6P"
+ },
+ "n4C_b": {
+  "prompt": "I put a whole magazine into it. Every round brought it closer.",
+  "secs": 4.72,
+  "model": "eleven_v3",
+  "voice": "B6uUx2p7cRgxseOUyP6P"
+ },
+ "n4D_a": {
+  "prompt": "I ran. Five other men ran with me. Nobody looked back down the range.",
+  "secs": 6.08,
+  "model": "eleven_v3",
+  "voice": "B6uUx2p7cRgxseOUyP6P"
+ },
+ "n4D_b": {
+  "prompt": "I ran. Five other men ran with me. Nobody looked back down the range.",
+  "secs": 5.2,
+  "model": "eleven_v3",
+  "voice": "B6uUx2p7cRgxseOUyP6P"
+ },
+ "n4back_a": {
+  "prompt": "[frightened] It's coming back.",
+  "secs": 1.92,
+  "model": "eleven_v3",
+  "voice": "B6uUx2p7cRgxseOUyP6P"
+ },
+ "n4back_b": {
+  "prompt": "[frightened] It's coming back.",
+  "secs": 1.6,
+  "model": "eleven_v3",
+  "voice": "B6uUx2p7cRgxseOUyP6P"
+ },
+ "n4dawn_a": {
+  "prompt": "By morning, everybody had the story. Five men, one bicycle, floating. I had my own, and I kept it to myself. I stopped looking after that.",
+  "secs": 9.44,
+  "model": "eleven_v3",
+  "voice": "B6uUx2p7cRgxseOUyP6P"
+ },
+ "n4dawn_b": {
+  "prompt": "By morning, everybody had the story. Five men, one bicycle, floating. I had my own, and I kept it to myself. I stopped looking after that.",
+  "secs": 9.84,
+  "model": "eleven_v3",
+  "voice": "B6uUx2p7cRgxseOUyP6P"
+ },
+ "n4notarget_a": {
+  "prompt": "[nervous] That's not a target.",
+  "secs": 1.76,
+  "model": "eleven_v3",
+  "voice": "B6uUx2p7cRgxseOUyP6P"
+ },
+ "n4notarget_b": {
+  "prompt": "[nervous] That's not a target.",
+  "secs": 1.28,
+  "model": "eleven_v3",
+  "voice": "B6uUx2p7cRgxseOUyP6P"
+ },
+ "n4pro1_a": {
+  "prompt": "Night two. The live range. After last night, I was glad to have something to point at.",
+  "secs": 5.68,
+  "model": "eleven_v3",
+  "voice": "B6uUx2p7cRgxseOUyP6P"
+ },
+ "n4pro1_b": {
+  "prompt": "Night two. The live range. After last night, I was glad to have something to point at.",
+  "secs": 5.84,
+  "model": "eleven_v3",
+  "voice": "B6uUx2p7cRgxseOUyP6P"
+ },
+ "n4pro2_a": {
+  "prompt": "Live rounds. Nobody fires until the tower says fire. Simple. Just watch your front.",
+  "secs": 7.04,
+  "model": "eleven_v3",
+  "voice": "B6uUx2p7cRgxseOUyP6P"
+ },
+ "n4pro2_b": {
+  "prompt": "Live rounds. Nobody fires until the tower says fire. Simple. Just watch your front.",
+  "secs": 6.48,
+  "model": "eleven_v3",
+  "voice": "B6uUx2p7cRgxseOUyP6P"
+ },
+ "n4report_a": {
+  "prompt": "[tense] Tower, lane six. Contact in the target area. Negative enemy. Not a target. Over.",
+  "secs": 5.6,
+  "model": "eleven_v3",
+  "voice": "B6uUx2p7cRgxseOUyP6P"
+ },
+ "n4report_b": {
+  "prompt": "[tense] Tower, lane six. Contact in the target area. Negative enemy. Not a target. Over.",
+  "secs": 6,
+  "model": "eleven_v3",
+  "voice": "B6uUx2p7cRgxseOUyP6P"
+ },
+ "r4run_a": {
+  "prompt": "Get off the line! Somebody in the lalang! GO! GO!",
+  "secs": 3.68,
+  "model": "eleven_v3",
+  "voice": "xDM73lGN1cPZSG4X87cj"
+ },
+ "r4run_b": {
+  "prompt": "Get off the line! Somebody in the lalang! GO! GO!",
+  "secs": 3.44,
+  "model": "eleven_v3",
+  "voice": "xDM73lGN1cPZSG4X87cj"
+ },
+ "t4cease_a": {
+  "prompt": "CEASE FIRE. Cease fire. Unload. Clear weapons.",
+  "secs": 5.28,
+  "model": "eleven_v3",
+  "voice": "JKX4knVxHRiP0doaLdrj"
+ },
+ "t4cease_b": {
+  "prompt": "CEASE FIRE. Cease fire. Unload. Clear weapons.",
+  "secs": 5.84,
+  "model": "eleven_v3",
+  "voice": "JKX4knVxHRiP0doaLdrj"
+ },
+ "t4endex_a": {
+  "prompt": "All lanes. Cease fire. Unload, clear weapons. The range is closed.",
+  "secs": 6.16,
+  "model": "eleven_v3",
+  "voice": "JKX4knVxHRiP0doaLdrj"
+ },
+ "t4endex_b": {
+  "prompt": "All lanes. Cease fire. Unload, clear weapons. The range is closed.",
+  "secs": 5.28,
+  "model": "eleven_v3",
+  "voice": "JKX4knVxHRiP0doaLdrj"
+ },
+ "t4fire1_a": {
+  "prompt": "At the one hundred metre target. FIRE.",
+  "secs": 3.28,
+  "model": "eleven_v3",
+  "voice": "JKX4knVxHRiP0doaLdrj"
+ },
+ "t4fire1_b": {
+  "prompt": "At the one hundred metre target. FIRE.",
+  "secs": 2.72,
+  "model": "eleven_v3",
+  "voice": "JKX4knVxHRiP0doaLdrj"
+ },
+ "t4fire2_a": {
+  "prompt": "Pop-up targets, two hundred metres. Watch your front. FIRE at your own time.",
+  "secs": 5.28,
+  "model": "eleven_v3",
+  "voice": "JKX4knVxHRiP0doaLdrj"
+ },
+ "t4fire2_b": {
+  "prompt": "Pop-up targets, two hundred metres. Watch your front. FIRE at your own time.",
+  "secs": 4.56,
+  "model": "eleven_v3",
+  "voice": "JKX4knVxHRiP0doaLdrj"
+ },
+ "t4fire3_a": {
+  "prompt": "Moving target, left to right. Watch your front. FIRE.",
+  "secs": 4.4,
+  "model": "eleven_v3",
+  "voice": "JKX4knVxHRiP0doaLdrj"
+ },
+ "t4fire3_b": {
+  "prompt": "Moving target, left to right. Watch your front. FIRE.",
+  "secs": 4.08,
+  "model": "eleven_v3",
+  "voice": "JKX4knVxHRiP0doaLdrj"
+ },
+ "t4load_a": {
+  "prompt": "Shooters. LOAD. Magazine on. Cock your weapon. Safety catch ON.",
+  "secs": 6.48,
+  "model": "eleven_v3",
+  "voice": "JKX4knVxHRiP0doaLdrj"
+ },
+ "t4load_b": {
+  "prompt": "Shooters. LOAD. Magazine on. Cock your weapon. Safety catch ON.",
+  "secs": 5.76,
+  "model": "eleven_v3",
+  "voice": "JKX4knVxHRiP0doaLdrj"
+ },
+ "t4man_a": {
+  "prompt": "ALL LANES CEASE FIRE! Man on the range! Lane six is forward of the line!",
+  "secs": 5.84,
+  "model": "eleven_v3",
+  "voice": "JKX4knVxHRiP0doaLdrj"
+ },
+ "t4man_b": {
+  "prompt": "ALL LANES CEASE FIRE! Man on the range! Lane six is forward of the line!",
+  "secs": 6.24,
+  "model": "eleven_v3",
+  "voice": "JKX4knVxHRiP0doaLdrj"
+ },
+ "t4neg_a": {
+  "prompt": "Negative. Nobody in the target area. Range party confirms. Nobody forward of the line. Stand fast.",
+  "secs": 7.12,
+  "model": "eleven_v3",
+  "voice": "JKX4knVxHRiP0doaLdrj"
+ },
+ "t4neg_b": {
+  "prompt": "Negative. Nobody in the target area. Range party confirms. Nobody forward of the line. Stand fast.",
+  "secs": 6.4,
+  "model": "eleven_v3",
+  "voice": "JKX4knVxHRiP0doaLdrj"
+ },
+ "t4ready_a": {
+  "prompt": "Shooters. Watch your front. READY.",
+  "secs": 2.16,
+  "model": "eleven_v3",
+  "voice": "JKX4knVxHRiP0doaLdrj"
+ },
+ "t4ready_b": {
+  "prompt": "Shooters. Watch your front. READY.",
+  "secs": 2.56,
+  "model": "eleven_v3",
+  "voice": "JKX4knVxHRiP0doaLdrj"
+ },
+ "t4roger_a": {
+  "prompt": "Roger, lane six. Stand fast. Do not leave your lane.",
+  "secs": 4.08,
+  "model": "eleven_v3",
+  "voice": "JKX4knVxHRiP0doaLdrj"
+ },
+ "t4roger_b": {
+  "prompt": "Roger, lane six. Stand fast. Do not leave your lane.",
+  "secs": 4,
+  "model": "eleven_v3",
+  "voice": "JKX4knVxHRiP0doaLdrj"
+ },
+ "t4who_a": {
+  "prompt": "CEASE FIRE! Who fired? Lane five. What are you firing at?",
+  "secs": 5.2,
+  "model": "eleven_v3",
+  "voice": "JKX4knVxHRiP0doaLdrj"
+ },
+ "t4who_b": {
+  "prompt": "CEASE FIRE! Who fired? Lane five. What are you firing at?",
+  "secs": 5.12,
+  "model": "eleven_v3",
+  "voice": "JKX4knVxHRiP0doaLdrj"
+ },
+ "bikebell_a": {
+  "prompt": "One single ring of an old thumb-lever bicycle bell: a bright clean strike that rings out and decays slowly into silence. Exactly one ring, nothing before it, nothing after. About 3 seconds. No music, no voices.",
+  "secs": 2,
+  "model": "eleven_text_to_sound_v2",
+  "voice": null
+ },
+ "bikebell_b": {
+  "prompt": "One single ring of an old thumb-lever bicycle bell: a bright clean strike that rings out and decays slowly into silence. Exactly one ring, nothing before it, nothing after. About 3 seconds. No music, no voices.",
+  "secs": 1,
+  "model": "eleven_text_to_sound_v2",
+  "voice": null
+ },
+ "chain_a": {
+  "prompt": "An old bicycle chain and freewheel turning slowly: faint regular clicking of the freewheel and a soft dry mechanical whirr, close but quiet, continuous and even throughout. 12 seconds. Nothing else at all \u2014 no wind, no music, no voices.",
+  "secs": 1,
+  "model": "eleven_text_to_sound_v2",
+  "voice": null
+ },
+ "chain_b": {
+  "prompt": "An old bicycle chain and freewheel turning slowly: faint regular clicking of the freewheel and a soft dry mechanical whirr, close but quiet, continuous and even throughout. 12 seconds. Nothing else at all \u2014 no wind, no music, no voices.",
+  "secs": 1,
+  "model": "eleven_text_to_sound_v2",
+  "voice": null
+ },
+ "flarehiss_a": {
+  "prompt": "The steady burning hiss of a parachute flare drifting overhead: a continuous bright sputtering hiss with a faint swing in it, outdoors at night, even and unchanging throughout with no beginning or end. 15 seconds. No music, no voices.",
+  "secs": 2,
+  "model": "eleven_text_to_sound_v2",
+  "voice": null
+ },
+ "flarehiss_b": {
+  "prompt": "The steady burning hiss of a parachute flare drifting overhead: a continuous bright sputtering hiss with a faint swing in it, outdoors at night, even and unchanging throughout with no beginning or end. 15 seconds. No music, no voices.",
+  "secs": 5,
+  "model": "eleven_text_to_sound_v2",
+  "voice": null
+ },
+ "flarepop_a": {
+  "prompt": "A parachute illumination flare fired at night: a hollow thump as it launches, a rushing climb, then a sharp pop as it ignites high overhead. Outdoors, open ground. About 3 seconds. No music, no voices.",
+  "secs": 2,
+  "model": "eleven_text_to_sound_v2",
+  "voice": null
+ },
+ "flarepop_b": {
+  "prompt": "A parachute illumination flare fired at night: a hollow thump as it launches, a rushing climb, then a sharp pop as it ignites high overhead. Outdoors, open ground. About 3 seconds. No music, no voices.",
+  "secs": 2,
+  "model": "eleven_text_to_sound_v2",
+  "voice": null
+ },
+ "moverrail_a": {
+  "prompt": "A small steel trolley rolling along a rail: a rhythmic rolling squeak, a light metallic rattle, moving steadily, continuous and even from start to end. 12 seconds. No music, no voices.",
+  "secs": 2,
+  "model": "eleven_text_to_sound_v2",
+  "voice": null
+ },
+ "moverrail_b": {
+  "prompt": "A small steel trolley rolling along a rail: a rhythmic rolling squeak, a light metallic rattle, moving steadily, continuous and even from start to end. 12 seconds. No music, no voices.",
+  "secs": 2,
+  "model": "eleven_text_to_sound_v2",
+  "voice": null
+ },
+ "rangeamb_a": {
+  "prompt": "Night in open tropical scrubland: steady insects and crickets, a faint diesel generator humming a long way off, a light wind moving through long grass. Even and continuous throughout, no events, no music, no voices. 20 seconds.",
+  "secs": 1,
+  "model": "eleven_text_to_sound_v2",
+  "voice": null
+ },
+ "rangeamb_b": {
+  "prompt": "Night in open tropical scrubland: steady insects and crickets, a faint diesel generator humming a long way off, a light wind moving through long grass. Even and continuous throughout, no events, no music, no voices. 20 seconds.",
+  "secs": 1,
+  "model": "eleven_text_to_sound_v2",
+  "voice": null
+ },
+ "rangepa_a": {
+  "prompt": "An outdoor public address system keying up: a hard click, a short burst of open loudspeaker hum and hiss, then the click of release. Empty, nobody speaking. About 2 seconds. No music, no voices.",
+  "secs": 2,
+  "model": "eleven_text_to_sound_v2",
+  "voice": null
+ },
+ "rangepa_b": {
+  "prompt": "An outdoor public address system keying up: a hard click, a short burst of open loudspeaker hum and hiss, then the click of release. Empty, nobody speaking. About 2 seconds. No music, no voices.",
+  "secs": 2,
+  "model": "eleven_text_to_sound_v2",
+  "voice": null
+ },
+ "riflecock_a": {
+  "prompt": "The metallic cocking of a rifle: a charging handle pulled sharply back and released, close and mechanical, a single clean action. About 1 second. No music, no voices.",
+  "secs": 5,
+  "model": "eleven_text_to_sound_v2",
+  "voice": null
+ },
+ "riflecock_b": {
+  "prompt": "The metallic cocking of a rifle: a charging handle pulled sharply back and released, close and mechanical, a single clean action. About 1 second. No music, no voices.",
+  "secs": 1,
+  "model": "eleven_text_to_sound_v2",
+  "voice": null
+ },
+ "rifledry_a": {
+  "prompt": "A dry metallic click: a rifle's firing pin falling on an empty chamber, close, single, nothing else. Half a second. No music, no voices.",
+  "secs": 2,
+  "model": "eleven_text_to_sound_v2",
+  "voice": null
+ },
+ "rifledry_b": {
+  "prompt": "A dry metallic click: a rifle's firing pin falling on an empty chamber, close, single, nothing else. Half a second. No music, no voices.",
+  "secs": 2,
+  "model": "eleven_text_to_sound_v2",
+  "voice": null
+ },
+ "riflereload_a": {
+  "prompt": "A rifle magazine change: the empty magazine released and pulled out, a fresh magazine pushed in and seated with a firm click. Close, mechanical, handled quickly. About 2 seconds. No music, no voices.",
+  "secs": 3,
+  "model": "eleven_text_to_sound_v2",
+  "voice": null
+ },
+ "riflereload_b": {
+  "prompt": "A rifle magazine change: the empty magazine released and pulled out, a fresh magazine pushed in and seated with a firm click. Close, mechanical, handled quickly. About 2 seconds. No music, no voices.",
+  "secs": 9,
+  "model": "eleven_text_to_sound_v2",
+  "voice": null
+ },
+ "rifleshot_a": {
+  "prompt": "A single sharp rifle shot outdoors at night, fired close to the listener, with a long cracking echo rolling away over open ground. Dry and realistic, no music, no voices. About 3 seconds.",
+  "secs": 14,
+  "model": "eleven_text_to_sound_v2",
+  "voice": null
+ },
+ "rifleshot_b": {
+  "prompt": "A single sharp rifle shot outdoors at night, fired close to the listener, with a long cracking echo rolling away over open ground. Dry and realistic, no music, no voices. About 3 seconds.",
+  "secs": 2,
+  "model": "eleven_text_to_sound_v2",
+  "voice": null
+ },
+ "targetfall_a": {
+  "prompt": "A hinged wooden target board falling backwards and slapping flat onto the ground, with a metal spring rattle after it. About 2 seconds. No music, no voices.",
+  "secs": null,
+  "model": "eleven_text_to_sound_v2",
+  "voice": null
+ },
+ "targetfall_b": {
+  "prompt": "A hinged wooden target board falling backwards and slapping flat onto the ground, with a metal spring rattle after it. About 2 seconds. No music, no voices.",
+  "secs": null,
+  "model": "eleven_text_to_sound_v2",
+  "voice": null
+ },
+ "targethit_a": {
+  "prompt": "A rifle bullet striking a wooden target board far away: a flat distant slap with a faint echo after it. Single hit. About 1 second. No music, no voices.",
+  "secs": null,
+  "model": "eleven_text_to_sound_v2",
+  "voice": null
+ },
+ "targethit_b": {
+  "prompt": "A rifle bullet striking a wooden target board far away: a flat distant slap with a faint echo after it. Single hit. About 1 second. No music, no voices.",
+  "secs": null,
+  "model": "eleven_text_to_sound_v2",
+  "voice": null
+ }
+}

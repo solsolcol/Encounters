@@ -2960,6 +2960,65 @@ What the baseline contains, by release:
   click are the event's, never the gun's (the fixture's heartbeat found it).
   Episode 1 declares no weapon, so none of it can run there. Six strings;
   sheet v60 exported (v44 stays the link).
+- **v12.1** EPISODE 2 · CHAPTER 4 · THE CYCLIST — the chapter rifle mode was
+  built for, and Chad's ghost cyclist standing in it. An outfield live range
+  at night: one firing line, eight lanes, boards out in the dark, a flare
+  every serial. The first half teaches ONE reflex — a shape crossing left to
+  right out there is answered with the rifle — and then sends something
+  across that is not a target while the radio says the target area is empty.
+  `src/main.js` gains rows in `STING_SAMPLE` and names in `TEEN_TAKES` /
+  `CAST_TAKES` and NOTHING else, so episode 1 is unchanged by construction.
+  **THE MODEL IS STATIC AND THAT IS THE BEAT**: Chad's file is one baked mesh
+  with 0 bones and 0 animations, so nothing tries to make it pedal — a rider
+  who does not pedal is more wrong than one who does, and it is why this
+  asset can only be the cyclist and never one of the episode's other three
+  ghost spots (all `fbosling` takes). `tools/prepcyclist.mjs` takes it from
+  **35.0 MB to 401 KB at 29,707 triangles**, and the step that got it there
+  is the **v8.0 attribute-seam law met a second time**: with the file's own
+  normals, `weld()` moved 58 of 440,292 vertices and the simplifier floored
+  at **52,532 triangles at every ratio asked of it** — drop NORMAL, weld on
+  position, simplify, then recompute smooth area-weighted normals by hand.
+  Two traps written into the tool: **the FACING is settled by the RENDER and
+  the measures are only its guard** (two independent measures, the helmet's
+  mean z and which outer eighth stands taller, BOTH said −z and both were
+  wrong — an upright roadster seats its rider behind the bike's midpoint and
+  the taller end is the luggage rack), and **the contract is asserted BEFORE
+  `quantize()`**, because afterwards the wheels read y −27095.
+  **THE RANGE IS COMPRESSED and the tower still says a hundred metres**: the
+  camera's far plane is 160 m (v8.9), so the boards stand at 62, 98 and 132,
+  and every order says a hundred, two hundred, three hundred, because that is
+  what a range officer says. **THE SERIALS ARE PLAYED WITH THE RIFLE**, not
+  through kit panels — a deliberate departure from the plan's §4, which
+  predates rifle mode: the drill the chapter teaches has to be the same verb
+  the ghost exploits. Firing before the order costs 6 sanity on the spot. The
+  one kit EVENT left is the LOAD drill, because loading is a drill and not a
+  shot. Seven resumable phases; `moment` writes the MAGAZINE into the phase
+  string (`moment:r14m1s2`), and `line` derives its step from the BAG rather
+  than storing it (the v11.6 law). Two hotspots, both the premise: a RADIO
+  press (the proper words, which is what option A does and the only way to
+  bank the report before the decision) and TRACK, a `dwell` spot whose `pos`
+  object is MUTATED onto the cyclist every frame — the engine reads `h.pos.x`
+  on the frame, so a moving hotspot cost no engine change at all.
+  **THE FILM** is four shots in the range itself — the back of the parked
+  tonner, the ammo point, the line looking out at nothing, the first flare —
+  ending on a rifle and a torch lying on the table, which is what play asks
+  him to pick up (chapter 3's torch-on-the-ground ending with the drill
+  added). One law from writing it: **`updateNotes` returns early when the
+  state is not `play`, so `flareFrame` does not run under a cutscene** — a
+  film that lights a flare has to burn it itself.
+  **THE SOUND**: 29 lines in six voices and 13 sounds, two takes each, picked
+  by measurement. A NEW SPEAKER, the TOWER (George) — the range officer on
+  the PA and the radio, under the encik's bark rule (v8.3). **The v9.2
+  duration law again**: all four bed takes came back one or two seconds long
+  because the length was only written in English; `duration_seconds` and
+  `loop` are model parameters. And `targethit`'s first take is SILENT at
+  −47.1 dBFS — a take is measured, never assumed. Aaron peak-matched to
+  −6.85; the cast levelled BY RMS to −16 dBFS (the flat bus, v11.1); the
+  chain and the rail hand-looped by flattening the slow drift over a 2 s
+  window and then crossfading, in the source's own channel layout.
+  `n4dawn` runs UNDER the outcome card in all four scenes — the sentence that
+  loads chapter 5. Sheet v61 exported (v44 stays the link).
+  docs/V12.0-E2C4-PLAN.md §17 is the build's memory.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -3469,12 +3528,12 @@ fifth chapter has no scare that is not the player's own memory replayed
 and released. `nextChapterKey()` past ch5 is null, so sealing it ends
 the run exactly as it always ended a last chapter.
 
-Next up: **episode 2's chapters 4–5** (rifle mode is the ENGINE SEAM and shipped at v12.0; chapter 4, The Cyclist on a live range, is the next release — docs/V12.0-E2C4-PLAN.md)
+Next up: **episode 2's chapter 5**, THE LAST NIGHT — the payoff the case file names: he stops looking and it stops (rifle mode shipped at v12.0 and chapter 4, The Cyclist, at v12.1 — docs/V12.0-E2C4-PLAN.md)
 (chapter 1, The Worst Bed, shipped at v7.1 — `src/chapters/e2/e2c1.js`;
-chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 3, The Pressure, at v11.0 and revised at v11.1–v11.9 — `src/chapters/e2/e2c3.js`; chapters 1 and 2's lessons rewritten at v11.10, chapter 1 last revised at v10.8; the rifle
+chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 3, The Pressure, at v11.0 and revised at v11.1–v11.9 — `src/chapters/e2/e2c3.js`; chapter 4, The Cyclist, at v12.1 — `src/chapters/e2/e2c4.js`;
+chapters 1 and 2's lessons rewritten at v11.10, chapter 1 last revised at v10.8; the rifle
 viewmodel's placement and material are measured in
-docs/E2-SOLDIER-MODELS.md §8, and Chad's ghost and bicycle models are
-still to come), and the still-outstanding job of replacing chapter 1's
+docs/E2-SOLDIER-MODELS.md §8), and the still-outstanding job of replacing chapter 1's
 placeholder choices with the real "THE OFFERINGS" data in
 `docs/source/trial-game-chapters.md`.
 

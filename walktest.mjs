@@ -13,7 +13,7 @@ const br = await chromium.launch(LAUNCH);
 const p = await (await br.newContext()).newPage();
 p.setDefaultNavigationTimeout(180000);
 
-for (const key of ['e2c1', 'e2c2', 'e2c3']) {
+for (const key of ['e2c1', 'e2c2', 'e2c3', 'e2c4']) {
   await p.goto(PAGE + '?ch=' + key);
   await p.click('#startBtn');
   await toPlay(p, 180000);

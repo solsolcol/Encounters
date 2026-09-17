@@ -1,0 +1,1470 @@
+/* EPISODE 2 · CHAPTER 4 · THE CYCLIST — v12.1
+   Night two. An outfield live range: one firing line, eight lanes, targets
+   out in the dark at a hundred, two hundred and three hundred metres, and a
+   flare going up every serial to light them. The chapter spends its first
+   half teaching one reflex — a shape crossing left to right out there is
+   answered with the rifle — and then sends something across that is not a
+   target, while the tower says on the radio that there is nobody out there
+   at all.
+
+   Chad's flow (docs/V12.0-E2C4-PLAN.md §0, his words): the drill first so
+   the game trains you to shoot moving shapes; a shape crosses and everyone
+   shouts there is someone there but the radio says nobody is; shoot it and
+   it vanishes and returns nearer, three times, then the bell rings; hold
+   and it crosses slow and close and turns its head; the decision opens with
+   it still coming, on a clock; the other platoon crashes off the line
+   shouting the film's own line; ending narration over the tonner at dawn.
+
+   THE RANGE IS COMPRESSED, and the reason is the camera: its far plane is
+   160 m (v8.9's law), so a target at a true 300 m is simply clipped away.
+   The tower's commands say a hundred, two hundred and three hundred because
+   that is what a range officer says; the geometry puts them at 62, 98 and
+   132 m, which is inside the far plane and reads at the same angular size a
+   real one would through a night sight. Nothing in the game measures it.
+
+   Engine seams: NONE that are new. This is the chapter v12.0's rifle mode
+   was built for, plus the kit as it stood at v11.6.                      */
+(() => {
+  const DATA = {
+    id: 4,
+    episode: 2,
+    title: 'The Cyclist',
+    cardLabel: 'Chapter 4',
+    cardTitle: 'The Cyclist<br>Outfield, Night Two',
+    brief: 'The live range, after dark. Eight lanes, live rounds, and a tower that runs everything. You are on lane six. Nobody fires until the tower says fire, and nobody — nobody — goes forward of the line.',
+    prompt: 'It is still coming. The tower says the target area is empty, and everyone on the line can see it. Your rifle is loaded. What do you do?',
+    choices: [
+      { k: 'A', text: 'Keep your arc. Report it. Carry on.',
+        d: { sanity: 15, awareness: 21, wisdom: 28 }, verdict: 'best',
+        say: 'I kept my lane. I said what I saw, in the proper words, and then I carried on.',
+        teach: 'Carry on with your duties, keep your mind clear, stay grounded.' },
+      { k: 'B', text: 'Put the torch on it and go closer',
+        d: { sanity: -9, awareness: 18, wisdom: -6 }, verdict: 'bad',
+        say: 'I went out to look. The ground was empty, and the sound came from behind me.',
+        teach: 'Not everything needs to be challenged or investigated.' },
+      { k: 'C', text: 'Fire at it until it stops coming',
+        d: { sanity: -24, awareness: 6, wisdom: -30 }, verdict: 'worst',
+        say: 'I put a whole magazine into it. Every round brought it closer.',
+        teach: 'Do not engage, do not provoke, and do not feed your own fear.' },
+      { k: 'D', text: 'Get up and run',
+        d: { sanity: -21, awareness: -15, wisdom: -24 }, verdict: 'bad',
+        say: 'I ran. Five other men ran with me. Nobody looked back down the range.',
+        teach: 'Your own experience and somebody else\'s account are two different things.' }
+    ],
+    core: 'Your own experience and somebody else\'s account are two different things. Not everything needs to be challenged or investigated. Carry on with your duties, keep your mind clear, and stay grounded.',
+
+    /* units metres, y up. The firing line runs along x at z = 0, lanes 1 to
+       8 left to right at 2.6 m spacing; HIS is lane six. Downrange is −z.
+       The berm stands at z = −2.4 and is a blocker across the whole width,
+       so in play there is no way forward of the line at all — which is what
+       the safety brief says and what scene B has to break. */
+    /* BESIDE the ammo table, not on it: the table is 2.2 x 0.9 at
+       (-7.6, 8.6) and `solid()` pads a blocker by 0.14, so its box runs
+       x -8.84..-6.36 — a spawn at -6.5 stands INSIDE it, and a blocked
+       spawn fills nothing, so every walkable check fails with it
+       (v7.9's lesson). -5.6 is 0.76 m clear of the pad. */
+    spawn:     { x: -5.6, y: 1.62, z: 8.2, rot: 0 },   // beside the ammo point, facing downrange
+    shrine:    { x: 3.9, z: -1.2 },                    // the engine's anchor for HER; unused (ghost: null)
+    ghostHome: { x: 3.9, z: -1.2 },
+    bounds:    { minX: -13.0, maxX: 17.0, minZ: -2.0, maxZ: 10.5 },
+
+    ghost: null,
+
+    /* NIGHT on open ground: no moon, a colder and emptier sky than the
+       jungle's, almost no fog because the whole chapter is about seeing a
+       long way. The flare is what light there is, and it is a tween. */
+    daylight: {
+      stops: [[0.00, '#070910'], [0.30, '#05070c'], [1.00, '#020306']],
+      bg: 0x05070c,
+      fog: [0x070a10, 0.012],
+      hemi: [0x26304a, 0x0a0e12, 0.30],
+      key: [0x5a6a8a, 0.06, 10, 20, -6],
+      fill: [0x2a3448, 0.05],
+      stars: 0.55, moon: 0,
+      sun: 0, clouds: 0,
+      vmHemi: [0x262f44, 0x0a0c10, 0.34],
+      vmKey: [0x8ea3cc, 0.24]
+    },
+
+    /* the flare, as a daylight declaration: the whole arc white for its
+       seconds. `kit.daylight(FLARE, secs)` tweens to it and back. */
+    torch: { on: false, item: 'torch', angle: 0.36, intensity: 16, distance: 30, penumbra: 0.6,
+             red: true, color: 0xff3a22, model: 'flashlight', click: 'torchclick' },
+
+    /* RIFLE MODE (v12.0). Issued at the ammo point, so it is in the hand
+       slot from the first frame of play and the HUD has it. Twenty rounds
+       and two magazines is a night shoot's allocation, not a war. */
+    weapon: { model: 'rifle', item: 'rifle', rounds: 20, mags: 2, fireGap: 0.42, kick: 0.016,
+              shot: 'rifleshot', reload: 'riflereload', empty: 'rifledry', cock: 'riflecock' },
+
+    assets: ['fbosling', 'admintee', 'ghostcyclist', 'rifle', 'flashlight', 'kamaz',
+             'tree1', 'tree2', 'tree3', 'tree4'],
+
+    musicVol: 0,
+    ambience: { beds: [['rangeamb', 0.36], ['e2dread', 1.0], ['flarehiss', 0], ['moverrail', 0], ['chain', 0]] },
+
+    words: {
+      approach: 'the target area',
+      act: 'E to raise your rifle',
+      actTouch: 'Tap to raise your rifle',
+      interact: 'E to raise your rifle',
+      interactTouch: 'Tap to raise your rifle',
+      presence: 'It is still coming. Sanity level dropping until you act.',
+      objLine: 'Move to lane six',
+      objLoad: 'Load on the order',
+      objS1: 'Static target, 100 metres. Fire on the order · {n}/3',
+      objS2: 'Pop-up targets, 200 metres · {n}/3',
+      objS3: 'Moving target, 200 metres · {n}/2',
+      objStag: 'Wait on the line. Weapons loaded.',
+      objConfuse: 'Watch your front',
+      objMoment: 'It is in the target area. Decide.',
+      hotRadio: 'E to key the radio',
+      hotRadioTouch: 'Tap to key the radio',
+      hotTrack: 'Keep it in your sight',
+      hotDraw: 'E to draw your rifle and torch',
+      hotDrawTouch: 'Tap to draw your rifle and torch',
+      objDraw: 'Draw your rifle and torch at the ammo point',
+      loadBrief: 'LOAD ON THE ORDER',
+      loadBody: 'Three actions, in order, when the tower calls: magazine on, cock the weapon, safety catch on. Wait for each one.',
+      loadGo: 'READY'
+    },
+    sayPrefix: 'n4'
+  };
+
+  /* the MEASURED length of every line the chapter says outside a cutscene
+     (ffprobe on the shipped mp3, masters/v12.1/secs.json) — `sayLine`
+     states its one-voice-at-a-time window in these, so a re-generated
+     take that got longer cannot make two voices talk over each other */
+  const SECS = {
+    t4load: 5.80, t4ready: 2.59, t4fire1: 2.77, t4fire2: 4.60, t4fire3: 4.44,
+    t4cease: 5.33, t4who: 5.25, t4neg: 6.43, t4roger: 4.05, t4endex: 5.33,
+    t4man: 5.88, e4wait: 5.88, e4down: 3.79, e4line: 3.08, b4stag: 3.13,
+    b4there: 2.35, b4float: 2.85, k4shout: 4.02, r4run: 3.47, n4pro1: 5.72,
+    n4pro2: 6.53, n4report: 6.03, n4notarget: 1.80, n4back: 1.96, n4dawn: 9.48
+  };
+
+  /* the flare's light, as a daylight tween: the arc goes white and the sky
+     with it, and it falls back over its own burn */
+  const FLARE = {
+    stops: [[0.00, '#2a3242'], [0.35, '#3a4152'], [1.00, '#10141c']],
+    bg: 0x2a3242,
+    fog: [0x2a3038, 0.016],
+    hemi: [0xbfd0e8, 0x2a3040, 1.15],
+    key: [0xfff0d8, 0.85, 0, 40, -60],
+    fill: [0x8a9ac0, 0.35],
+    stars: 0.12, moon: 0,
+    sun: 0, clouds: 0,
+    vmHemi: [0xbfd0e8, 0x2a3040, 0.95],
+    vmKey: [0xfff0d8, 0.75]
+  };
+
+  const hash = (i, s) => { const x = Math.sin(i * 127.1 + s * 311.7) * 43758.5453; return x - Math.floor(x); };
+  const LANE = (n) => (n - 4.5) * 2.6;          // lane 1 .. 8, left to right
+
+  function build(ctx) {
+    const { THREE, GLTFLoader, cloneSkinned, scene, camera, yaw, pitch, LOW, kit, plantTrees,
+            assetBytes, rescueTextures, cnv, getState, startDecision, worldSfx, warmSounds, HEAD_RE } = ctx;
+
+    const world = new THREE.Group(); scene.add(world);
+    const owned = [], madeTex = [], rigs = [], solids = [], boxes = [];
+    let alive = true, S = null;
+
+    const nfm = (o) => new THREE.MeshStandardMaterial(Object.assign({}, o));
+    const box = (w, h, d, x, y, z, mat, parent = world) => {
+      const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
+      m.position.set(x, y, z); m.castShadow = !LOW; m.receiveShadow = true;
+      parent.add(m); return m;
+    };
+
+    const HIS = { x: LANE(6), z: 0 };              // his lane
+    const BUD = { x: LANE(5), z: 0 };              // the buddy, lane five
+    const SAFETY = { x: LANE(6) + 1.6, z: 3.1 };   // the safety officer behind the line
+    const TOWER = { x: 14.2, z: 4.6 };
+    const AMMO = { x: -7.6, z: 8.6 };
+    const PILE_POS = new THREE.Vector3(HIS.x, 1.0, -1.35);   // the target area, straight out of his lane
+    const INTERACT_R = 2.6;
+    const RANGE = { s1: -62, s2: -98, s3: -132 };            // the compressed hundred, two hundred, three hundred
+
+    /* ------------------------------------------------------------ the ground
+       Bare laterite and lalang, mown flat on the firing point and rough out
+       along the arc. One big plane with a painted tile — the arc has to read
+       as an open strip a long way out, and a texture does that where a
+       hundred meshes would not. */
+    const gTex = (() => {
+      const [c, g] = cnv(256);
+      g.fillStyle = '#3a3628'; g.fillRect(0, 0, 256, 256);
+      for (let i = 0; i < 2600; i++) {
+        const x = Math.random() * 256, y = Math.random() * 256, r = 0.6 + Math.random() * 2.2;
+        const v = Math.random();
+        g.fillStyle = v < 0.45 ? 'rgba(74,68,48,0.55)' : v < 0.8 ? 'rgba(30,30,22,0.5)' : 'rgba(96,92,64,0.35)';
+        g.beginPath(); g.arc(x, y, r, 0, 7); g.fill();
+      }
+      const t = new THREE.CanvasTexture(c);
+      t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(24, 48); t.anisotropy = 4;
+      madeTex.push(t); return t;
+    })();
+    const ground = new THREE.Mesh(new THREE.PlaneGeometry(320, 340), nfm({ map: gTex, color: 0x9a9a92, roughness: 1 }));
+    ground.rotation.x = -Math.PI / 2; ground.position.set(2, 0, -75); ground.receiveShadow = true; world.add(ground);
+
+    /* the berm: the low mound the line fires over, and the one thing that
+       makes "forward of the line" impossible in play */
+    const matEarth = nfm({ color: 0x4a4436, roughness: 1 });
+    const berm = box(46, 0.9, 1.6, 2, 0.45, -2.4, matEarth); solids.push(berm);
+    for (let i = 0; i < 24; i++) {                       // sandbags along its top
+      const b = box(0.52, 0.2, 0.3, -9.5 + i * 1.0, 0.98, -2.42, nfm({ color: 0x5a5344, roughness: 1 }));
+      b.rotation.y = (hash(i, 3) - 0.5) * 0.3;
+    }
+
+    /* --------------------------------------------------------- the lanes */
+    const matPost = nfm({ color: 0x3c3a30, roughness: 0.95 });
+    const matPaint = nfm({ color: 0xd8d2bc, roughness: 0.9, emissive: 0x2a2620, emissiveIntensity: 0.4 });
+    const lanes = [];
+    for (let n = 1; n <= 8; n++) {
+      const x = LANE(n);
+      const marker = box(0.1, 1.05, 0.1, x - 1.05, 0.52, -0.2, matPost);
+      const plate = box(0.34, 0.24, 0.03, x - 1.05, 1.16, -0.2, matPaint);
+      /* the number, painted */
+      const [c, g] = cnv(64);
+      g.fillStyle = '#d8d2bc'; g.fillRect(0, 0, 64, 64);
+      g.fillStyle = '#1a1a16'; g.font = 'bold 44px system-ui'; g.textAlign = 'center'; g.textBaseline = 'middle';
+      g.fillText(String(n), 32, 35);
+      const t = new THREE.CanvasTexture(c); madeTex.push(t);
+      plate.material = nfm({ map: t, roughness: 0.9, emissive: 0x151412, emissiveIntensity: 0.5 });
+      /* the firing point itself: a mat and a sandbag rest */
+      const mat = box(1.9, 0.04, 1.6, x, 0.02, 0.35, nfm({ color: 0x2e3228, roughness: 1 }));
+      const rest = box(1.0, 0.24, 0.42, x, 0.12, -0.55, nfm({ color: 0x5a5344, roughness: 1 }));
+      lanes.push({ n, x, marker, plate, mat, rest });
+    }
+
+    /* --------------------------------------------------------- the targets
+       A Figure 11 is a printed man on a board. It is DRAWN (no download),
+       one texture shared by every target, and the boards are planes on
+       posts — at sixty metres and beyond nothing else would read. */
+    const figTex = (() => {
+      const [c, g] = cnv(128);
+      g.fillStyle = '#6e7256'; g.fillRect(0, 0, 128, 128);
+      g.translate(16, 0);                                  // the man drawn in a 96-wide column of a 128 square
+      g.fillStyle = '#23251c';
+      g.beginPath(); g.ellipse(48, 30, 15, 18, 0, 0, 7); g.fill();               // head and helmet
+      g.fillRect(30, 46, 36, 50);                                                 // chest
+      g.beginPath(); g.moveTo(30, 48); g.lineTo(14, 84); g.lineTo(24, 88); g.lineTo(38, 58); g.fill();
+      g.beginPath(); g.moveTo(66, 48); g.lineTo(82, 84); g.lineTo(72, 88); g.lineTo(58, 58); g.fill();
+      g.fillStyle = 'rgba(255,255,255,0.10)'; g.fillRect(0, 96, 96, 32);
+      const t = new THREE.CanvasTexture(c); madeTex.push(t); return t;
+    })();
+    const matFig = nfm({ map: figTex, roughness: 1, side: THREE.DoubleSide });
+    function mkTarget(x, z, opts = {}) {
+      const g = new THREE.Group(); g.position.set(x, 0, z); world.add(g);
+      const post = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.7, 0.08), matPost);
+      post.position.y = 0.35; g.add(post);
+      const pivot = new THREE.Group(); pivot.position.y = 0.66; g.add(pivot);
+      const board = new THREE.Mesh(new THREE.PlaneGeometry(1.05, 1.5), matFig);
+      board.position.y = 0.75; pivot.add(board);
+      const T = { group: g, pivot, board, x, z, down: false, hit: false, kind: opts.kind || 'static' };
+      T.set = (down) => { T.down = down; pivot.rotation.x = down ? -Math.PI / 2 : 0; };
+      if (opts.down) T.set(true);
+      return T;
+    }
+    const statics = [4, 5, 6].map(n => mkTarget(LANE(n), RANGE.s1, { kind: 'static' }));
+    const popups  = [5, 6, 7].map(n => mkTarget(LANE(n), RANGE.s2, { kind: 'pop', down: true }));
+    const far     = [3, 6].map(n => mkTarget(LANE(n), RANGE.s3, { kind: 'far' }));
+
+    /* the mover: a Figure 11 on a trolley that runs a rail across the arc */
+    const rail = box(26, 0.06, 0.12, HIS.x, 0.07, RANGE.s2 + 3.0, nfm({ color: 0x2a2a26, roughness: 0.9 }));
+    const mover = mkTarget(HIS.x - 12, RANGE.s2 + 3.0, { kind: 'mover' });
+    mover.group.position.y = 0.16;
+    const MOVER = { x0: HIS.x - 12.5, x1: HIS.x + 12.5, t: 0, on: false, dir: 1 };
+
+    /* --------------------------------------------------- behind the line */
+    const matSteel = nfm({ color: 0x4a4e4a, roughness: 0.7, metalness: 0.2 });
+    /* the tower: a platform on legs with a rail and the PA horn */
+    {
+      const g = new THREE.Group(); g.position.set(TOWER.x, 0, TOWER.z); world.add(g);
+      for (const [dx, dz] of [[-1.1, -1.1], [1.1, -1.1], [-1.1, 1.1], [1.1, 1.1]])
+        { const l = new THREE.Mesh(new THREE.BoxGeometry(0.14, 3.2, 0.14), matSteel); l.position.set(dx, 1.6, dz); g.add(l); }
+      const deck = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.12, 2.8), matSteel); deck.position.y = 3.2; g.add(deck);
+      for (const [dx, dz, w, d] of [[0, -1.35, 2.8, 0.08], [0, 1.35, 2.8, 0.08], [-1.35, 0, 0.08, 2.8], [1.35, 0, 0.08, 2.8]])
+        { const r = new THREE.Mesh(new THREE.BoxGeometry(w, 0.07, d), matSteel); r.position.set(dx, 4.2, dz); g.add(r); }
+      const horn = new THREE.Mesh(new THREE.ConeGeometry(0.26, 0.42, 8, 1, true), nfm({ color: 0x5a5a52, roughness: 0.8, side: THREE.DoubleSide }));
+      horn.position.set(-1.0, 4.0, -1.4); horn.rotation.x = Math.PI / 2 + 0.25; g.add(horn);
+      const lamp = new THREE.PointLight(0xffd0a0, 1.1, 9, 1.8); lamp.position.set(0, 3.6, 0); g.add(lamp);
+      const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.07, 8, 6), nfm({ color: 0xffe0b0, emissive: 0xffc890, emissiveIntensity: 2.2 }));
+      bulb.position.set(0, 3.55, 0); g.add(bulb);
+      boxes.push(new THREE.Box3(new THREE.Vector3(TOWER.x - 1.4, 0, TOWER.z - 1.4), new THREE.Vector3(TOWER.x + 1.4, 3.4, TOWER.z + 1.4)));
+    }
+    /* the ammo point: a table, crates, a shaded lamp */
+    {
+      const t = box(2.2, 0.08, 0.9, AMMO.x, 0.78, AMMO.z, nfm({ color: 0x534e3e, roughness: 0.95 }));
+      solids.push(t);
+      for (const [dx, dz] of [[-1.0, -0.38], [1.0, -0.38], [-1.0, 0.38], [1.0, 0.38]])
+        box(0.07, 0.78, 0.07, AMMO.x + dx, 0.39, AMMO.z + dz, matSteel);
+      for (let i = 0; i < 4; i++) box(0.46, 0.22, 0.3, AMMO.x - 0.8 + i * 0.52, 0.93, AMMO.z, nfm({ color: 0x3e4636, roughness: 1 }));
+      const lamp = new THREE.PointLight(0xff5530, 0.9, 7, 1.9); lamp.position.set(AMMO.x, 1.7, AMMO.z); world.add(lamp); owned.push(lamp);
+    }
+
+    /* --------------------------------------------------------- the trees
+       Either side of the arc and behind the line, and NEVER in the strip:
+       the whole chapter is a long look down an open lane. */
+    const TREE_AT = [];
+    for (let i = 0; i < 64; i++) {
+      const side = i % 2 ? 1 : -1;
+      const x = side * (17 + hash(i, 11) * 16);
+      const z = 9 - hash(i, 17) * 120;
+      TREE_AT.push([x, z, 6.5 + hash(i, 23) * 5]);
+    }
+    for (let i = 0; i < 14; i++) TREE_AT.push([-16 + hash(i, 31) * 34, 12 + hash(i, 37) * 10, 6 + hash(i, 41) * 4]);
+    const treeStand = plantTrees ? plantTrees(world, TREE_AT.map(([x, z, h]) => ({ x, z, h })),
+      { seed: 41, tint: new THREE.Color(0.66, 0.78, 0.66), roughness: 0.97, lowKeep: 0.55 }) : null;
+    const treeBlockers = TREE_AT.filter(([x, z]) => x > DATA.bounds.minX - 1 && x < DATA.bounds.maxX + 1 && z > DATA.bounds.minZ - 1 && z < DATA.bounds.maxZ + 1)
+      .map(([x, z]) => new THREE.Box3(new THREE.Vector3(x - 0.42, 0, z - 0.42), new THREE.Vector3(x + 0.42, 2.5, z + 0.42)));
+
+    /* --------------------------------------------------------- the lights */
+    /* the flare: one moving light high over the arc, its own object, so the
+       shadows on the target boards swing as it drifts. The sky goes with it
+       through kit.daylight — this is only the hot spot under it. */
+    const flare = new THREE.PointLight(0xfff0d0, 0, 190, 1.35);
+    flare.position.set(HIS.x, 48, -70); world.add(flare); owned.push(flare);
+    const flareBall = new THREE.Mesh(new THREE.SphereGeometry(0.5, 8, 6),
+      nfm({ color: 0xfff6e0, emissive: 0xfff0c0, emissiveIntensity: 3, transparent: true, opacity: 0 }));
+    flareBall.position.copy(flare.position); world.add(flareBall);
+    const lineFill = new THREE.PointLight(0x30405a, 0.5, 26, 1.6); lineFill.position.set(HIS.x - 2, 4, 3); world.add(lineFill); owned.push(lineFill);
+
+    /* ------------------------------------------------------------ the cast */
+    const CULL_SPHERE = { fbosling: { x: 0.056, y: 0.837, z: 0.212, r: 1.439 },
+                          admintee: { x: 0.02, y: 0.90, z: 0.06, r: 1.42 } };
+    function wideBounds(root, key) {
+      const d = CULL_SPHERE[key];
+      root.traverse(o => {
+        if (!o.isMesh) return;
+        o.frustumCulled = true;
+        if (!d || !o.isSkinnedMesh) return;
+        const sp = new THREE.Sphere(new THREE.Vector3(d.x, d.y, d.z), d.r * 1.25);
+        o.boundingSphere = sp.clone();
+        if (o.geometry) o.geometry.boundingSphere = sp.clone();
+      });
+    }
+    const gltfCache = {};
+    const loadGltf = (key) => gltfCache[key] || (gltfCache[key] = assetBytes(key).then(BUF => new Promise((res, rej) =>
+      new GLTFLoader().parse(BUF, '', (gltf) => { rescueTextures(gltf, BUF); res(gltf); }, rej))));
+    const matProxy = nfm({ color: 0x2c3328, roughness: 0.9 });
+
+    function mkRig(key, opts) {
+      const group = new THREE.Group();
+      group.position.set(opts.x, 0, opts.z); group.rotation.y = opts.ry || 0;
+      (opts.parent || world).add(group);
+      const proxy = new THREE.Mesh(new THREE.CapsuleGeometry(0.2, opts.height - 0.4, 4, 8), matProxy);
+      proxy.position.y = opts.height / 2; proxy.castShadow = !LOW; group.add(proxy);
+      if (opts.noProxy) proxy.visible = false;
+      const rig = { key, group, proxy, model: null, mixer: null, acts: null, cur: null, head: null,
+                    ready: false, height: opts.height, idle: opts.idle || null };
+      rig.play = (name, ts = 1, fade = 0.34, once = false, at) => {
+        if (!rig.mixer || !rig.acts || !rig.acts[name]) return false;
+        if (rig.cur === name && at === undefined) return true;
+        const nx = rig.acts[name], old = rig.cur && rig.cur !== name && rig.acts[rig.cur];
+        nx.reset(); nx.setEffectiveTimeScale(ts); nx.setEffectiveWeight(1);
+        nx.setLoop(once ? THREE.LoopOnce : THREE.LoopRepeat, Infinity);
+        nx.clampWhenFinished = once;
+        if (at !== undefined) {
+          nx.play(); nx.time = nx.getClip().duration * at; nx.paused = true;
+          for (const a of Object.values(rig.acts)) if (a !== nx) a.stop();
+          rig.mixer.update(0);
+        } else if (fade > 0) { nx.paused = false; nx.fadeIn(fade).play(); if (old) old.fadeOut(fade); }
+        else { nx.paused = false; nx.play(); for (const a of Object.values(rig.acts)) if (a !== nx) a.stop(); rig.mixer.update(0.0001); }
+        rig.cur = name;
+        return true;
+      };
+      loadGltf(key).then(gltf => {
+        if (!alive) return;
+        const g = cloneSkinned(gltf.scene);
+        g.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.receiveShadow = false; } });
+        wideBounds(g, key);
+        group.add(g); rig.model = g;
+        g.updateMatrixWorld(true);
+        const v = new THREE.Vector3(); let lo = Infinity, hi = -Infinity, crown = false;
+        g.traverse(o => {
+          if (!o.isBone) return;
+          o.getWorldPosition(v); lo = Math.min(lo, v.y); hi = Math.max(hi, v.y);
+          if (/HeadTop_End/.test(o.name)) crown = true;
+          if (HEAD_RE.test(o.name) && !rig.head) rig.head = o;
+        });
+        if (isFinite(lo) && hi > lo) {
+          const span = (hi - lo) / (crown ? 1 : 0.935);
+          g.scale.setScalar(opts.height / span); g.updateMatrixWorld(true);
+          let lo2 = Infinity;
+          g.traverse(o => { if (o.isBone) { o.getWorldPosition(v); lo2 = Math.min(lo2, v.y); } });
+          g.position.y += -(lo2 - group.position.y) + (opts.lift || 0);
+        }
+        if (gltf.animations && gltf.animations.length) {
+          rig.mixer = new THREE.AnimationMixer(g);
+          rig.acts = {};
+          for (const c of gltf.animations) rig.acts[c.name] = rig.mixer.clipAction(c);
+          rigs.push(rig);
+        }
+        proxy.visible = false;
+        rig.ready = true;
+        if (opts.onReady) opts.onReady(rig);
+        if (rig.idle) rig.play(rig.idle, opts.rate || 1, 0);
+        if (opts.pose) rig.play(opts.pose, 1, 0, false, opts.at ?? 0.12);
+      }).catch(() => { rig.ready = true; });
+      return rig;
+    }
+
+    /* the buddy on lane five, kneeling at his rest — the reserved rifle clip
+       (E2-SOLDIER-MODELS §13) is finally on screen and it is exactly what a
+       kneeling firing position looks like */
+    const buddy = mkRig('fbosling', { x: BUD.x, z: BUD.z + 0.2, ry: Math.PI, height: 1.74, idle: 'Idle_3',
+                                      pose: 'Gesture_with_Hand_on_Gun', at: 0.35 });
+    /* the safety officer, walking his stretch of the line */
+    const safety = mkRig('fbosling', { x: SAFETY.x, z: SAFETY.z, ry: Math.PI * 0.92, height: 1.76, idle: 'Idle_3' });
+    /* the other detail, lanes one to four */
+    const detail = [1, 2, 3, 4].map((n, i) => mkRig(i % 2 ? 'admintee' : 'fbosling',
+      { x: LANE(n), z: 0.25, ry: Math.PI, height: 1.72 + hash(i, 7) * 0.06,
+        idle: i % 2 ? 'Idle_9' : 'Idle_3', pose: i % 2 ? null : 'Gesture_with_Hand_on_Gun', at: 0.35 }));
+
+    /* -------------------------------------------------- THE GHOST CYCLIST
+       Chad's model: a soldier on a bicycle, one baked mesh, NO rig and no
+       clips (measured: 0 bones, 0 animations). That is the beat rather than
+       a limitation — a rider who does not pedal is more wrong than one who
+       does. It is prepped facing −z with its wheels on y = 0, so it is
+       aimed with a plain rotation.y and placed with nothing to correct. */
+    const GHOST_A = 0.62;
+    const cyc = { group: new THREE.Group(), model: null, mats: [], a: 0, ready: false };
+    cyc.group.position.set(0, 0, -45); cyc.group.visible = false; world.add(cyc.group);
+    const cycGlow = new THREE.PointLight(0xbcd0ff, 0, 14, 1.6); cycGlow.position.set(0, 1.1, 0); cyc.group.add(cycGlow);
+    function cycAlpha(k) {
+      cyc.a = k;
+      for (const m of cyc.mats) m.opacity = GHOST_A * k;
+      cycGlow.intensity = 2.6 * k;
+      const on = k > 0.002;
+      if (cyc.group.visible !== on) cyc.group.visible = on;
+    }
+    loadGltf('ghostcyclist').then(gltf => {
+      if (!alive) return;
+      const g = gltf.scene;
+      g.traverse(o => {
+        if (!o.isMesh) return;
+        o.castShadow = false; o.frustumCulled = false;
+        o.material = Array.isArray(o.material) ? o.material.map(m => m.clone()) : o.material.clone();
+        for (const m of (Array.isArray(o.material) ? o.material : [o.material])) {
+          /* the v9.6 look, paler: on an open range at night with a flare
+             dying overhead, the thing has to carry its own light — the
+             site's own film shows a GLOWING cyclist */
+          m.transparent = true; m.opacity = GHOST_A * cyc.a; m.color.setScalar(0.86);
+          m.emissive?.setHex(0x8fa6d8); m.emissiveIntensity = 0.55;
+          m.depthWrite = false; m.needsUpdate = true;
+          cyc.mats.push(m);
+        }
+      });
+      cyc.group.add(g); cyc.model = g; cyc.ready = true;
+      cycAlpha(cyc.a);
+    }).catch(() => { cyc.ready = true; });
+    /* the primitive fallback under it (v4.7's rule: a failed download costs
+       a nicer prop, never the chapter) — two wheels and a rider's column */
+    {
+      const fb = new THREE.Group(); cyc.group.add(fb);
+      const matFb = nfm({ color: 0xb0bcd8, emissive: 0x8fa6d8, emissiveIntensity: 0.5, transparent: true, opacity: 0.0 });
+      for (const dz of [-0.62, 0.62]) {
+        const w = new THREE.Mesh(new THREE.TorusGeometry(0.34, 0.03, 6, 16), matFb);
+        w.position.set(0, 0.34, dz); w.rotation.y = Math.PI / 2; fb.add(w);
+      }
+      const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.17, 0.66, 4, 8), matFb);
+      body.position.set(0, 1.02, 0.1); fb.add(body);
+      cyc.fallback = fb; cyc.fbMat = matFb;
+    }
+
+    /* ------------------------------------------------ the tonner, parked
+       Chad's Kamaz (v11.2) stands behind the line where the detail came in
+       on it. It is the film's first shot — the camera sits in its bed and
+       looks out at the range — and it dresses the rear of the range for the
+       whole chapter, so it earns the download twice. It is prepped with the
+       cab at −z, so parked nose-out it needs no turn. */
+    const truck = new THREE.Group(); truck.position.set(-14.2, 0, 9.4); world.add(truck);
+    let truckReady = false;
+    {
+      const fb = box(2.4, 2.2, 6.2, 0, 1.3, 0, nfm({ color: 0x3a4032, roughness: 0.95 }), truck);
+      loadGltf('kamaz').then(gltf => {
+        if (!alive) return;
+        const g = gltf.scene;
+        g.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.receiveShadow = true; o.frustumCulled = true; } });
+        truck.add(g); fb.visible = false; truckReady = true;
+      }).catch(() => { truckReady = true; });
+      boxes.push(new THREE.Box3(new THREE.Vector3(-15.6, 0, 6.2), new THREE.Vector3(-12.8, 2.6, 12.6)));
+    }
+    /* the kit on the ammo table: a rifle and a torch lying there, which is
+       what the film ends on and what the first order asks him to pick up.
+       Primitives, because the close-up is two seconds and the real rifle is
+       the VIEWMODEL — a second copy of it on a table is a download for a
+       prop nobody looks at twice. */
+    const filmKit = new THREE.Group(); filmKit.position.set(AMMO.x, 0.83, AMMO.z); world.add(filmKit);
+    {
+      const dark = nfm({ color: 0x1c1f1a, roughness: 0.7, metalness: 0.25 });
+      const body = new THREE.Mesh(new THREE.BoxGeometry(0.66, 0.06, 0.09), dark); body.position.set(-0.28, 0.03, 0); filmKit.add(body);
+      const mag = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.16, 0.05), dark); mag.position.set(-0.30, -0.04, 0); filmKit.add(mag);
+      const stock = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.09, 0.07), dark); stock.position.set(0.14, 0.03, 0); filmKit.add(stock);
+      const tor = new THREE.Mesh(new THREE.CylinderGeometry(0.028, 0.032, 0.20, 10),
+        nfm({ color: 0x24262a, roughness: 0.6, metalness: 0.3 }));
+      tor.rotation.z = Math.PI / 2; tor.position.set(0.30, 0.03, 0.22); filmKit.add(tor);
+      const lens = new THREE.Mesh(new THREE.CircleGeometry(0.026, 10),
+        nfm({ color: 0xffe6bc, emissive: 0xffc98a, emissiveIntensity: 1.1 }));
+      lens.rotation.y = Math.PI / 2; lens.position.set(0.40, 0.03, 0.22); filmKit.add(lens);
+    }
+
+    /* ------------------------------------------------------------- the day
+       Everything below this line runs on the CHAPTER's own clock, which is
+       wall time, not the clamped frame delta (v7.1's law). */
+    const dayClock = { t: 0 };
+    let lastWall = 0, booted = false;
+    let phase = 'line';
+    const todo = [];
+    function after(secs, fn) { todo.push({ at: dayClock.t + secs, fn }); todo.sort((a, b) => a.at - b.at); }
+    function runTodo() { while (todo.length && todo[0].at <= dayClock.t) todo.shift().fn(); }
+    function dropTodo() { todo.length = 0; }
+    const speak = { until: 0, pending: null };
+    function speakReset() { speak.until = 0; speak.pending = null; }
+    function sayLine(name, vol = 1, onStart) {
+      if (!worldSfx) return false;
+      if (dayClock.t < speak.until) return false;
+      const start = () => { speak.until = dayClock.t + (SECS[name] || 2.5) + 0.25; if (onStart) onStart(); };
+      if (worldSfx(name, vol)) { start(); return true; }
+      speak.pending = { name, vol, start, give: dayClock.t + 3 };
+      speak.until = dayClock.t + 0.2;
+      return true;
+    }
+    function runSpeak() {
+      const q = speak.pending;
+      if (!q || dayClock.t < speak.until) return;
+      if (dayClock.t > q.give) { speak.pending = null; return; }
+      if (worldSfx(q.name, q.vol)) { speak.pending = null; q.start(); }
+      else speak.until = dayClock.t + 0.2;
+    }
+    const lineQ = [];
+    function queueLine(name, vol, onStart) { lineQ.push({ name, vol, onStart }); }
+    function queueFn(fn) { lineQ.push({ fn }); }
+    function queueGap(secs) { lineQ.push({ gap: secs }); }
+    function runQueue() {
+      if (!lineQ.length || speak.pending || dayClock.t < speak.until) return;
+      const it = lineQ[0];
+      if (it.fn) { lineQ.shift(); it.fn(); return; }
+      if (it.gap !== undefined) { lineQ.shift(); speak.until = dayClock.t + it.gap; return; }
+      if (sayLine(it.name, it.vol ?? 1, it.onStart)) lineQ.shift();
+    }
+    /* the PA under every tower line: the key-up, then the voice a beat later */
+    function tower(name, vol = 1) {
+      queueFn(() => { if (worldSfx) worldSfx('rangepa', 0.5); });
+      queueGap(0.45);
+      queueLine(name, vol);
+    }
+
+    /* awards carry their own RECEIPT (v7.3): bank() pays only what is not
+       already on the card, so a Continue through a serial cannot pay twice */
+    function bank(o) {
+      if (!kit || !kit.conduct) return;
+      const had = kit.getConduct ? (kit.getConduct().notes || []) : [];
+      if (o.note && had.includes(o.note)) return;
+      kit.conduct(o);
+    }
+
+    function setPhase(p) {
+      phase = p;
+      if (!kit) return;
+      /* the rounds and the magazines ride the phase string, so a Continue in
+         the played moment lands with the same magazine (the plan's §13) */
+      if (p === 'moment') {
+        const am = kit.ammo ? kit.ammo() : { rounds: 0, mags: 0 };
+        kit.setPhase('moment:r' + am.rounds + 'm' + am.mags + 's' + shots);
+      } else kit.setPhase(p);
+    }
+
+    /* ------------------------------------------------------------ the flare
+       One launch, one burn, one death. The sky is the kit's daylight tween;
+       the hot spot over the arc and the burning hiss are the chapter's. */
+    let flareT = 0, flareLife = 0, flareOn = false;
+    function flareUp(secs) {
+      flareOn = true; flareT = 0; flareLife = secs;
+      flare.position.set(HIS.x + (Math.random() - 0.5) * 8, 46, -72);
+      if (worldSfx) worldSfx('flarepop', 0.9);
+      if (kit) kit.daylight(FLARE, 1.2);
+    }
+    function flareDown() {
+      if (!flareOn) return;
+      flareOn = false;
+      if (kit) kit.daylight(null, 2.2);
+    }
+    function flareFrame(dt) {
+      if (flareOn) {
+        flareT += dt;
+        const k = Math.min(1, flareT / Math.max(0.01, flareLife));
+        const up = Math.min(1, flareT / 1.1);                 // the climb to full burn
+        const die = k > 0.82 ? 1 - (k - 0.82) / 0.18 : 1;      // and the fall
+        const amp = up * die;
+        flare.intensity = 260 * amp;
+        flare.position.x += Math.sin(flareT * 0.7) * dt * 1.4;  // the drift under the parachute
+        flare.position.y = 46 - flareT * 0.9;
+        flareBall.position.copy(flare.position);
+        flareBall.material.opacity = amp;
+        flareBall.scale.setScalar(1 + Math.sin(flareT * 9) * 0.06);
+        if (flareT >= flareLife) { flareDown(); }
+      } else {
+        flare.intensity *= Math.max(0, 1 - dt * 2.2);
+        flareBall.material.opacity *= Math.max(0, 1 - dt * 2.2);
+      }
+      mixBeds();
+    }
+
+    /* ------------------------------------------------------------ the mover */
+    function moverFrame(dt) {
+      if (!MOVER.on) return;
+      MOVER.t += dt * 0.085 * MOVER.dir;
+      if (MOVER.t >= 1) { MOVER.t = 1; MOVER.dir = -1; }
+      if (MOVER.t <= 0) { MOVER.t = 0; MOVER.dir = 1; }
+      mover.group.position.x = MOVER.x0 + (MOVER.x1 - MOVER.x0) * MOVER.t;
+    }
+
+    /* ------------------------------------------------------- THE CYCLIST
+       Its whole behaviour is one number: `pass`. 0 is the confusion's first
+       crossing, far out; each shot brings it in. It crosses left to right —
+       the direction the range has spent an hour teaching him to answer. */
+    const PASS_Z = [-46, -33, -22, -8];        // far, nearer, nearer, the foot of the berm
+    const PASS_SPD = [1.35, 1.6, 1.9, 0];      // m/s; the last one has stopped
+    let pass = 0, cycT = 0, cycOn = false, cycStopped = false, shots = 0, tracked = 0, reported = false;
+    let momentT = 0, bellDone = false;
+    function cycStart(p) {
+      pass = Math.max(0, Math.min(PASS_Z.length - 1, p));
+      cycT = 0; cycOn = true; cycStopped = PASS_SPD[pass] === 0;
+      cyc.group.position.set(HIS.x - 26, 0, PASS_Z[pass]);
+      cyc.group.rotation.y = -Math.PI / 2;      // prepped facing −z, so a quarter turn puts him crossing to +x
+      if (cycStopped) {
+        cyc.group.position.set(HIS.x - 1.2, 0, PASS_Z[pass]);
+        cyc.group.rotation.y = Math.PI;          // stopped, facing the line
+      }
+      cycAlpha(1);
+      if (cyc.fbMat) cyc.fbMat.opacity = cyc.ready && cyc.model ? 0 : GHOST_A;
+    }
+    function cycEnd() { cycOn = false; cycAlpha(0); }
+    function cycFrame(dt) {
+      if (!cycOn || cycStopped) return;
+      cycT += dt;
+      cyc.group.position.x += PASS_SPD[pass] * dt;
+      /* off the far edge of the arc: on the last pass that is the end of the
+         hold branch, on the others it simply goes into the trees */
+      if (cyc.group.position.x > HIS.x + 26) { cycEnd(); onCrossed(); }
+    }
+
+    /* the beds: the range's night tone always, the flare's hiss while one
+       burns, the rail while the mover runs, and the chain keyed to how near
+       the cyclist is — the quiet sound that says it is there (the ambient
+       frame re-asserts every declared volume every frame, so this is where
+       a chapter's mix lives) */
+    function mixBeds() {
+      const nearK = cycOn ? Math.max(0, 1 - Math.hypot(cyc.group.position.x - HIS.x, cyc.group.position.z - HIS.z) / 50) : 0;
+      for (const b of DATA.ambience.beds) {
+        if (b[0] === 'flarehiss') b[1] = flareOn ? 0.5 * Math.min(1, flareT / 0.8) : 0;
+        if (b[0] === 'moverrail') b[1] = MOVER.on ? 0.34 : 0;
+        if (b[0] === 'chain') b[1] = 0.55 * nearK * cyc.a;
+      }
+    }
+
+    /* ------------------------------------------------------ the serials
+       The range is played with the RIFLE, not with a panel: the tower gives
+       the order, the targets are `shootables()`, and `onShot` scores. That
+       is the whole point of the chapter — the drill it teaches is the one
+       the ghost exploits, so it has to be the same verb. */
+    let hot = false, serial = 0, hits = 0, early = 0;
+    const SER_TARGETS = [statics, popups, [mover]];
+    const SER_NEED = [3, 3, 2];
+    function objSerial() {
+      if (!kit) return;
+      const w = [DATA.words.objS1, DATA.words.objS2, DATA.words.objS3][serial - 1] || '';
+      kit.objective(w.replace('{n}', String(hits)));
+    }
+    function beginSerial(n) {
+      serial = n; hits = 0; hot = false;
+      setPhase('serial' + n);
+      objSerial();
+      for (const t of statics) t.set(false);
+      for (const t of popups) t.set(true);
+      MOVER.on = false; mover.set(n === 3 ? false : true);
+      flareUp(n === 3 ? 26 : 20);
+      if (n === 1) { tower('t4fire1'); after(4.2, () => { hot = true; }); }
+      if (n === 2) {
+        tower('t4fire2');
+        after(4.6, () => { hot = true; popSeq(0); });
+      }
+      if (n === 3) {
+        tower('t4fire3');
+        after(4.4, () => { hot = true; MOVER.on = true; MOVER.t = 0; MOVER.dir = 1; });
+      }
+      after(n === 3 ? 30 : 24, () => { if (phase === 'serial' + n) endSerial(); });
+    }
+    function popSeq(i) {
+      if (phase !== 'serial2' || i >= popups.length) return;
+      popups[i].set(false);
+      after(3.4, () => { if (phase === 'serial2') { popups[i].set(true); popSeq(i + 1); } });
+    }
+    function endSerial() {
+      hot = false; MOVER.on = false;
+      const n = serial;
+      bank({ a: Math.min(6, hits * 2), note: 'You shot the ' + ['static', 'pop-up', 'moving'][n - 1] + ' serial clean.' });
+      tower('t4cease');
+      flareDown();
+      after(6.0, () => {
+        if (n < 3) beginSerial(n + 1);
+        else beginStag();
+      });
+    }
+
+    /* the shot the chapter scores. The engine raycasts and hands the hit
+       over; nothing here knows how a rifle works. */
+    function shootables() {
+      const out = [];
+      for (const t of statics.concat(popups, far)) if (!t.down) out.push(t.board);
+      if (!mover.down) out.push(mover.board);
+      if (cycOn && cyc.a > 0.2) { if (cyc.model) out.push(cyc.model); out.push(cyc.fallback); }
+      return out;
+    }
+    function targetOf(obj) {
+      for (const t of statics.concat(popups, far, [mover])) {
+        let p = obj; while (p) { if (p === t.board) return t; p = p.parent; }
+      }
+      return null;
+    }
+    function isCyclist(obj) { let p = obj; while (p) { if (p === cyc.group) return true; p = p.parent; } return false; }
+    function onShot(r) {
+      if (!r) return;
+      /* the played moment: a round into the thing in the target area. It is
+         gone on the flash and back on the next flare, NEARER. */
+      if (phase === 'moment' || phase === 'confuse') {
+        if (r.hit && isCyclist(r.object)) onHitCyclist();
+        else if (phase === 'moment') { shots++; onFiredAtIt(); }
+        return;
+      }
+      if (!hot) {
+        /* firing without the order is the one thing the range cannot have */
+        early++;
+        if (early === 1) { lineQ.length = 0; sayLine('e4wait'); }
+        if (kit) { kit.conduct({ s: -6, note: 'You fired before the order.' }); kit.flash({ color: '#ff3a1c', secs: 0.35 }); }
+        return;
+      }
+      if (!r.hit) return;
+      const t = targetOf(r.object);
+      if (!t || t.down || t.hit) return;
+      t.hit = true;
+      if (worldSfx) worldSfx('targethit', 0.8);
+      after(0.25, () => { t.set(true); if (worldSfx) worldSfx('targetfall', 0.6); });
+      if (SER_TARGETS[serial - 1] && SER_TARGETS[serial - 1].indexOf(t) >= 0) {
+        hits++; objSerial();
+        if (hits >= SER_NEED[serial - 1]) after(1.4, () => { if (phase === 'serial' + serial) endSerial(); });
+      }
+    }
+
+    /* ------------------------------------------------------------ the stag
+       The serials are done and the line stands loaded for the last one. The
+       wait in the dark is where the buddy says the thing neither of them has
+       said since last night, and where the presence starts. */
+    function beginStag(resumed) {
+      setPhase('stag');
+      hot = false;
+      if (kit) { kit.objective(DATA.words.objStag); kit.waypoint(null); kit.timer(null); }
+      if (!resumed) {
+        after(3.0, () => sayLine('b4stag'));
+        after(11.0, () => { if (kit) kit.presence(0.18); });
+        after(16.0, () => beginConfuse());
+      } else after(2.0, () => beginConfuse());
+    }
+
+    /* ------------------------------------------------- THE CONFUSION
+       Chad's beat. The flare goes up for the last serial, the mover starts
+       across — and there is a second shape crossing that is not on any rail,
+       giving off its own light, a hand-span off the ground. Lane five fires.
+       The tower asks who fired. The radio says the target area is empty. */
+    function beginConfuse(resumed) {
+      setPhase('confuse');
+      if (kit) { kit.objective(DATA.words.objConfuse); kit.presence(0.3); }
+      flareUp(30);
+      MOVER.on = true; MOVER.t = 0; MOVER.dir = 1; mover.set(false);
+      tower('t4ready');
+      after(3.2, () => { cycStart(0); });
+      after(6.4, () => { sayLine('n4notarget'); });
+      after(8.0, () => { if (worldSfx) worldSfx('rifleshot', 0.75); });          // lane five fires
+      after(8.6, () => { lineQ.length = 0; tower('t4who'); });
+      after(13.0, () => queueLine('b4there'));
+      after(16.5, () => tower('t4neg'));
+      after(24.0, () => { if (phase === 'confuse') beginMoment(); });
+      if (resumed) { dropTodo(); cycStart(Math.min(pass, 1)); after(1.5, () => beginMoment()); }
+    }
+
+    /* ------------------------------------------------- THE PLAYED MOMENT
+       Two things he can do with a loaded rifle and the game measures both.
+       FIRE: it is gone on the flash and back on the next flare, nearer, and
+       after the third it is at the foot of the berm with the bell.
+       HOLD: it crosses the whole arc at walking pace and the bell rings as
+       it passes his lane. Either way the decision opens on a clock. */
+    function beginMoment(resumed) {
+      setPhase('moment');
+      momentT = 0;
+      if (kit) {
+        kit.objective(DATA.words.objMoment);
+        kit.presence(0.55);
+      }
+      if (!cycOn) cycStart(resumed ? pass : 0);
+      if (!resumed) after(2.2, () => sayLine('b4float'));
+      /* the clock: it does not wait for ever. Fourteen seconds without a
+         shot IS the hold branch, and the bell rings on its own. */
+      after(15.0, () => { if (phase === 'moment' && shots === 0) onCrossed(); });
+    }
+    function onFiredAtIt() {
+      /* a round into the target area at a thing the tower says is not there */
+      if (kit) { kit.conduct({ s: -5, note: 'You fired at it.' }); kit.flash({ color: '#ff3a1c', secs: 0.3 }); }
+      if (shots >= 3) { onBell(); return; }
+      cycEnd();
+      sayLine('n4back');
+      after(2.6, () => {
+        if (phase !== 'moment') return;
+        flareUp(16);
+        cycStart(Math.min(PASS_Z.length - 1, shots));
+        if (kit) kit.presence(0.55 + 0.15 * shots);
+      });
+    }
+    function onHitCyclist() { shots++; onFiredAtIt(); }
+    /* it finished its crossing without being fired at — the hold branch */
+    function onCrossed() {
+      if (phase !== 'moment' && phase !== 'confuse') return;
+      cycStart(PASS_Z.length - 1);          // stopped, at the foot of the berm, facing the line
+      onBell();
+    }
+    function onBell() {
+      if (bellDone) return;
+      bellDone = true;
+      cycStart(PASS_Z.length - 1);
+      if (worldSfx) worldSfx('bikebell', 1);
+      if (kit) { kit.presence(0.85); kit.haptic([40, 60, 40]); }
+      after(1.6, () => openDecision());
+    }
+    function openDecision() {
+      if (phase === 'decide') return;
+      setPhase('decide');
+      if (kit) {
+        kit.objective(null);
+        /* the timed decision: the bar IS its approach (the plan's §4.7).
+           Running out costs sanity and never wisdom. */
+        kit.decisionClock(22, () => {
+          if (kit) kit.conduct({ s: -8, note: 'You stood there until it reached the berm.' });
+        });
+      }
+      after(0.4, () => { if (getState() === 'play') startDecision(); });
+    }
+
+    /* --------------------------------------------------------- the phases */
+    /* the walk: the ammo point first (the rifle and the torch are ISSUED —
+       play opens on empty hands), then lane six. Two orders, one phase, and
+       the objective is DERIVED from the bag rather than stored, so a Continue
+       lands on the right one whatever was saved (v11.6's law). */
+    function beginLine(resumed) {
+      setPhase('line');
+      if (!kit) return;
+      if (drawn) { kit.objective(DATA.words.objLine); kit.waypoint({ x: HIS.x, y: 1.0, z: 0.35 }); }
+      else { kit.objective(DATA.words.objDraw); kit.waypoint({ x: AMMO.x, y: 1.0, z: AMMO.z - 0.7 }); }
+    }
+    function reachedLine() {
+      if (phase !== 'line') return;
+      if (kit) { kit.waypoint(null); kit.haptic(60); }
+      if (worldSfx) worldSfx('hudlock', 0.8);
+      beginLoad();
+    }
+    function beginLoad(resumed) {
+      setPhase('load');
+      if (!kit) return;
+      kit.objective(DATA.words.objLoad);
+      kit.waypoint(null);
+      tower('t4load');
+      after(resumed ? 0.5 : 5.4, () => {
+        if (phase !== 'load' || !kit || !kit.event) { beginSerial(1); return; }
+        kit.event({ kind: 'sequence', label: DATA.words.loadBrief,
+                    items: [{ label: 'MAGAZINE' }, { label: 'COCK' }, { label: 'SAFETY' }],
+                    brief: DATA.words.loadBody,
+                    each: 1.6, lead: 0.4, zone: 1,
+                    penalty: { stat: 'awareness', per: 1 },
+                    award: { stat: 'awareness', per: 1, lo: -6, hi: 9 } })
+          .then(r => {
+            if (!alive) return;
+            if (worldSfx) worldSfx('riflecock', 0.8);
+            if (r && r.ok) bank({ a: 3, note: 'You loaded on the order, in order.' });
+            after(1.4, () => beginSerial(1));
+          });
+      });
+    }
+
+    /* a resume lands in the right part of the night (v7.3's law) */
+    function applyPhase(p) {
+      const s = String(p || '');
+      if (s.startsWith('moment')) {
+        const m = /r(\d+)m(\d+)s(\d+)/.exec(s);
+        if (m && kit && kit.ammo) kit.ammo(+m[1], +m[2]);
+        if (m) shots = +m[3];
+        pass = Math.min(PASS_Z.length - 1, shots);
+        beginMoment(true);
+        return;
+      }
+      if (s === 'decide') { setPhase('decide'); cycStart(PASS_Z.length - 1); openDecision(); return; }
+      if (s === 'confuse') { beginConfuse(true); return; }
+      if (s === 'stag') { beginStag(true); return; }
+      if (s.startsWith('serial')) { beginSerial(Math.max(1, Math.min(3, +s.slice(6) || 1))); return; }
+      if (s === 'load') { beginLoad(true); return; }
+      /* `line` derives its step from the BAG, not from the string: a save
+         from before the ammo point still walks there, and one from after it
+         walks to the lane with the rifle already in hand */
+      drawn = !!(kit && kit.has && kit.has('rifle'));
+      filmKit.visible = !drawn;
+      beginLine(true);
+      if (!drawn) return;
+      if (kit && kit.equip) { kit.equip('rifle'); kit.equip('torch'); }
+    }
+
+    /* --------------------------------------------------------- the pile
+       This chapter's "pile" is THE TARGET AREA straight out of his lane: the
+       engine's own decision object, opened by `openDecision()` rather than
+       by a walk-up, because a player who could walk to it would be forward
+       of the line. `pointerHitsPile` answers only in `decide`, so nothing
+       before the bell can trip it. */
+    const pile = new THREE.Group(); pile.position.copy(PILE_POS); world.add(pile);
+    const pileRing = new THREE.Mesh(
+      new THREE.RingGeometry(0.55, 0.70, 24),
+      new THREE.MeshBasicMaterial({ color: 0xff4a2a, transparent: true, opacity: 0,
+        side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false, fog: false }));
+    pileRing.rotation.x = -Math.PI / 2; pileRing.position.y = -0.98; pileRing.visible = false;
+    pile.add(pileRing);
+    const _ndc = new THREE.Vector3();
+    const syncCamera = () => { camera.updateWorldMatrix(true, false); camera.matrixWorldInverse.copy(camera.matrixWorld).invert(); };
+    function pileDist() { return Math.hypot(yaw.position.x - PILE_POS.x, yaw.position.z - PILE_POS.z); }
+    function pileScreen() { syncCamera(); return _ndc.set(PILE_POS.x, PILE_POS.y, PILE_POS.z).project(camera); }
+    function pileInView() { return phase === 'decide'; }
+    function pointerHitsPile() { return phase === 'decide'; }
+    function interactPile() {
+      if (getState() !== 'play' || phase !== 'decide') return false;
+      startDecision();
+      return true;
+    }
+
+    /* ------------------------------------------------------------ hotspots
+       Two, and both are the chapter's premise rather than scenery.
+       THE RADIO is a press at his own lane: the proper words, said once, in
+       the confusion — the thing option A does and the thing the case file
+       says to do. It is the only way to bank the report before the decision.
+       TRACK is a `dwell` spot (the eighteenth seam, v11.0) whose `pos` is
+       MUTATED every frame onto the cyclist: the engine reads h.pos.x on the
+       frame, so a moving hotspot is a moving object and nothing else. It is
+       the drill the range spent an hour teaching — hold the shape in your
+       sight — and the chapter's whole trick is that obeying it is safe. */
+    const TOUCH = matchMedia('(pointer: coarse)').matches || 'ontouchstart' in window;
+    const trackPos = { x: 0, y: 1.1, z: -45 };
+    let drawn = false;
+    const hotspots = [
+      { id: 'radio', pos: { x: HIS.x + 0.55, y: 1.15, z: 0.45 }, radius: 2.4, anyView: true,
+        prompt: TOUCH ? DATA.words.hotRadioTouch : DATA.words.hotRadio, markY: 0.5,
+        enabled: () => (phase === 'confuse' || phase === 'moment') && !reported,
+        onInteract() { return doReport(); } },
+      { id: 'track', pos: trackPos, radius: 60, dwell: 1.2, aim: 0.10,
+        prompt: DATA.words.hotTrack, markY: 0.8,
+        enabled: () => (phase === 'confuse' || phase === 'moment') && cycOn && cyc.a > 0.3 && tracked < 1,
+        onInteract() { return doTrack(); } },
+      /* the ammo point, before the line: the rifle and the torch are ISSUED,
+         so the first frame of play has empty hands and a reason to walk */
+      { id: 'draw', pos: { x: AMMO.x, y: 1.05, z: AMMO.z - 0.7 }, radius: 2.2, anyView: true,
+        prompt: TOUCH ? DATA.words.hotDrawTouch : DATA.words.hotDraw, markY: 0.45,
+        enabled: () => phase === 'line' && !drawn,
+        onInteract() { return drawKit(); } }
+    ];
+
+    function drawKit() {
+      if (drawn || !kit) return false;
+      drawn = true;
+      if (kit.give) { kit.give('rifle'); kit.give('torch'); }
+      if (kit.equip) { kit.equip('rifle'); kit.equip('torch'); }
+      if (kit.ammo) kit.ammo(DATA.weapon.rounds, DATA.weapon.mags);
+      filmKit.visible = false;
+      if (worldSfx) worldSfx('riflecock', 0.7);
+      if (kit.haptic) kit.haptic(50);
+      kit.objective(DATA.words.objLine);
+      kit.waypoint({ x: HIS.x, y: 1.0, z: 0.35 });
+      return true;
+    }
+    /* the proper words, keyed on the radio: what option A does, said before
+       the decision ever opens. It is worth wisdom because it is the drill. */
+    function doReport() {
+      if (reported) return false;
+      reported = true;
+      lineQ.length = 0;
+      if (worldSfx) worldSfx('rangepa', 0.45);
+      queueGap(0.35);
+      queueLine('n4report');
+      queueGap(0.4);
+      queueFn(() => { if (worldSfx) worldSfx('rangepa', 0.45); });
+      queueGap(0.4);
+      queueLine('t4roger');
+      bank({ a: 4, note: 'You reported what you saw, in the proper words.' });
+      return true;
+    }
+    /* the drill obeyed: the shape held in the sight instead of answered */
+    function doTrack() {
+      if (tracked) return false;
+      tracked = 1;
+      bank({ a: 3, note: 'You kept it in your sight and kept your lane.' });
+      if (kit) kit.haptic(40);
+      return true;
+    }
+
+    /* ---------------------------------------------------------- per frame */
+    function updateNotes(dt, t) {
+      for (const r of rigs) if (r.mixer && r.group.visible) r.mixer.update(dt);
+      if (getState() !== 'play') { lastWall = 0; return; }
+      const now = performance.now() / 1000;
+      if (lastWall) dayClock.t += Math.min(0.5, now - lastWall);
+      lastWall = now;
+      if (!booted) { booted = true; applyPhase(kit ? kit.getPhase() : null); }
+      flareFrame(dt); moverFrame(dt); cycFrame(dt);
+      /* the moving hotspot rides the thing it is on */
+      trackPos.x = cyc.group.position.x; trackPos.z = cyc.group.position.z;
+      /* the walk to the line is the first objective, and reaching it is what
+         ends it — the lane, not a button (v8.7's bed zone, at a metre) */
+      if (phase === 'line' && drawn
+          && Math.hypot(yaw.position.x - HIS.x, yaw.position.z - 0.35) < 1.3) reachedLine();
+      if (phase === 'moment') momentT += dt;
+      runTodo(); runSpeak(); runQueue();
+    }
+    /* the marker on the ground out in the target area, while the decision is
+       open: the one thing on the screen that says where it is standing */
+    function updatePile(t) {
+      if (getState() === 'cine') { pileRing.visible = false; return; }
+      const on = phase === 'decide';
+      pileRing.visible = on;
+      pileRing.material.opacity = on ? 0.30 + 0.22 * Math.sin(t * 3.1) : 0;
+    }
+    function updateFire(t) {
+      /* the tower's lamp is the only steady light on the line; the flare is
+         driven by its own frame. A faint sway so the range is never static. */
+      lineFill.intensity = 0.5 + Math.sin(t * 0.7) * 0.06;
+      if (cyc.a > 0) cycGlow.intensity = 2.6 * cyc.a * (0.85 + 0.15 * Math.sin(t * 2.3));
+    }
+    function updateSlow() {}
+
+    /* ---------------------------------------------------------- lifecycle */
+    function snap() {
+      return { cyc: { x: cyc.group.position.x, y: cyc.group.position.y, z: cyc.group.position.z,
+                      ry: cyc.group.rotation.y, a: cyc.a, on: cycOn },
+               mover: { x: mover.group.position.x, t: MOVER.t, on: MOVER.on, down: mover.down },
+               flare: { on: flareOn, t: flareT, life: flareLife, i: flare.intensity,
+                        x: flare.position.x, y: flare.position.y },
+               targets: statics.concat(popups, far, [mover]).map(x => x.down) };
+    }
+    function restore(s) {
+      if (!s) return;
+      cyc.group.position.set(s.cyc.x, s.cyc.y, s.cyc.z); cyc.group.rotation.y = s.cyc.ry;
+      cycOn = !!s.cyc.on; cycAlpha(s.cyc.a || 0);
+      mover.group.position.x = s.mover.x; MOVER.t = s.mover.t; MOVER.on = !!s.mover.on; mover.set(!!s.mover.down);
+      flareOn = !!s.flare.on; flareT = s.flare.t; flareLife = s.flare.life;
+      flare.intensity = s.flare.i; flare.position.x = s.flare.x; flare.position.y = s.flare.y;
+      flareBall.position.copy(flare.position);
+      const all = statics.concat(popups, far, [mover]);
+      if (s.targets) for (let i = 0; i < all.length; i++) all[i].set(!!s.targets[i]);
+      if (kit) { if (kit.daylight) kit.daylight(flareOn ? FLARE : null, 0); if (kit.weaponOut) kit.weaponOut(null); }
+      mixBeds();
+    }
+    /* a replay starts the night again: the flare out, the rail still, the
+       thing gone, the receipts spent, the kit back at the ammo point
+       (the v8.1 / v8.2 / v8.7 / v9.2 / v9.5 law, a sixth time) */
+    function reset() {
+      dropTodo(); speakReset(); lineQ.length = 0;
+      booted = false; dayClock.t = 0; lastWall = 0;
+      flareOn = false; flareT = 0; flareLife = 0; flare.intensity = 0;
+      flare.position.set(HIS.x, 46, -72); flareBall.position.copy(flare.position); flareBall.material.opacity = 0;
+      MOVER.on = false; MOVER.t = 0; MOVER.dir = 1; mover.group.position.x = MOVER.x0; mover.set(true);
+      for (const t of statics.concat(popups, far, [mover])) { t.hit = false; t.set(t.kind === 'pop' || t.kind === 'mover'); }
+      cycEnd(); cyc.group.position.set(0, 0, -45); cyc.group.rotation.y = -Math.PI / 2;
+      pass = 0; cycT = 0; cycStopped = false; shots = 0; tracked = 0; reported = false;
+      momentT = 0; bellDone = false; hot = false; serial = 0; hits = 0; early = 0;
+      drawn = false; filmKit.visible = true;
+      mixBeds();
+      if (kit) {
+        kit.objective(null); kit.timer(null); kit.waypoint(null); kit.presence(0);
+        kit.daylight(null, 0); kit.decisionClock(0); kit.setPhase(null);
+        if (kit.hurt) kit.hurt(null); if (kit.root) kit.root(false);
+        if (kit.torchOn) kit.torchOn(false);
+        if (kit.take) { kit.take('rifle'); kit.take('torch'); }
+        if (kit.weaponOut) kit.weaponOut(null);
+        if (kit.ammo) kit.ammo(DATA.weapon.rounds, DATA.weapon.mags);
+      }
+      phase = 'line';
+    }
+    function blockers() {
+      const out = [];
+      const solid = (o, pad = 0.14) => {
+        o.updateWorldMatrix(true, false);
+        const bb = new THREE.Box3().setFromObject(o); bb.expandByScalar(pad);
+        bb.min.y = 0; bb.max.y = Math.max(bb.max.y, 1.40); out.push(bb);
+      };
+      for (const s of solids) solid(s);
+      for (const b of boxes) out.push(b);
+      for (const b of treeBlockers) out.push(b);
+      /* the men on the line: a column each, so nobody walks through a firer */
+      for (const m of [BUD, SAFETY, { x: LANE(1), z: 0.25 }, { x: LANE(2), z: 0.25 },
+                       { x: LANE(3), z: 0.25 }, { x: LANE(4), z: 0.25 }])
+        out.push(new THREE.Box3(new THREE.Vector3(m.x - 0.45, 0, m.z - 0.45),
+                                new THREE.Vector3(m.x + 0.45, 1.8, m.z + 0.45)));
+      return out;
+    }
+    function dispose() {
+      alive = false;
+      if (treeStand) treeStand.userData.disposeTrees?.();
+      const geos = new Set(), mats = new Set();
+      world.traverse(o => {
+        if (o.geometry) geos.add(o.geometry);
+        if (o.material) for (const m of (Array.isArray(o.material) ? o.material : [o.material])) mats.add(m);
+      });
+      scene.remove(world);
+      for (const o of owned) { o.parent?.remove(o); o.dispose?.(); }
+      owned.length = 0;
+      for (const r of rigs) r.mixer?.stopAllAction();
+      for (const g of geos) g.dispose();
+      for (const m of mats) {
+        for (const k of ['map', 'roughnessMap', 'normalMap', 'emissiveMap', 'alphaMap']) m[k]?.dispose?.();
+        m.dispose();
+      }
+      for (const t of madeTex) t?.dispose?.();
+      world.clear();
+      S = null;
+    }
+
+    /* v8.0's law: a chapter RECORDS what it wants warm; the pack loader
+       drains the set when the bytes land. Every line a hotspot or a phase
+       can ask for on its first press has to be in here, or the first press
+       is silent by construction. */
+    if (warmSounds) warmSounds(['n4pro2', 'n4report', 't4roger', 't4load', 't4ready',
+                                't4fire1', 't4fire2', 't4fire3', 't4cease', 't4who', 't4neg',
+                                'e4wait', 'b4stag', 'b4there', 'b4float', 'n4notarget', 'n4back',
+                                'rangepa', 'rifleshot', 'riflecock', 'flarepop', 'targethit',
+                                'targetfall', 'bikebell']);
+
+    const readyAt = performance.now();
+    return (S = {
+      world, noteTex: null, blockers: blockers(),
+      ready: () => (buddy.ready && safety.ready && detail.every(r => r.ready) && cyc.ready && truckReady)
+                   || performance.now() - readyAt > 20000,
+      pile: { pos: PILE_POS, radius: INTERACT_R, group: pile,
+              dist: pileDist, screen: pileScreen, inView: pileInView,
+              hits: pointerHitsPile, interact: interactPile,
+              glow: () => pileRing.material.opacity },
+      drum: null, ash: null, embers: null, heroNote: null, smoke: null, flying: null,
+      jossTips: [], fireLight: lineFill,
+      get noteStorm() { return 1; },
+      set noteStorm(v) {},
+
+      /* v12.0 rifle mode: what a round can hit, and what a round did */
+      shootables, onShot,
+
+      // the chapter's own, for the scenes and the probes
+      HIS, BUD, SAFETY, TOWER, AMMO, RANGE, LANE, PILE_POS,
+      buddy, safety, detail, cyc, cycGlow, flare, flareBall, lineFill,
+      statics, popups, far, mover, MOVER, rail, berm, lanes,
+      cycStart, cycEnd, cycAlpha, flareUp, flareDown,
+      setMover: (on) => { MOVER.on = !!on; },
+      /* the film and the scenes drive the burn themselves: updateNotes
+         returns early when the state is not `play`, so flareFrame does not
+         run under a cutscene and a flare left to the frame would hang */
+      setFlare: (v) => { flare.intensity = v; flareBall.material.opacity = Math.min(1, v / 260); },
+      FLARE, filmKit, truck,
+      sayLine, after, dayClock, bank, drawKit,
+      get phase() { return phase; },
+      setPhase, applyPhase, beginSerial, beginStag, beginConfuse, beginMoment, openDecision,
+      lookInfo: () => ({ phase, serial, hits, hot, early, shots, tracked, reported, drawn,
+                         pass, cycOn, cycA: +cyc.a.toFixed(2),
+                         cyc: { x: +cyc.group.position.x.toFixed(2), z: +cyc.group.position.z.toFixed(2) },
+                         flare: { on: flareOn, t: +flareT.toFixed(1), i: +flare.intensity.toFixed(0) },
+                         mover: { on: MOVER.on, x: +mover.group.position.x.toFixed(2) },
+                         obj: kit && kit.getPhase ? kit.getPhase() : null }),
+      speakInfo: () => ({ t: +dayClock.t.toFixed(2), until: +speak.until.toFixed(2),
+                          pending: speak.pending ? speak.pending.name : null, queued: lineQ.length }),
+      ambient: () => ({ beds: DATA.ambience.beds.map(b => [b[0], +b[1].toFixed(3)]),
+                        trees: TREE_AT.length, targets: statics.length + popups.length + far.length + 1 }),
+      updateNotes, updatePile, updateFire, updateSlow,
+      setNoteTexture() {},
+      snap, restore, reset, dispose,
+      hotspots
+    });
+  }
+
+  /* ------------------------------------------------------------ THE FILM
+     Four shots, all in the range itself — there is no pocket, because the
+     range at night IS the set and a film that shows it is the safety brief
+     the chapter needs the player to have heard. The tonner they came in on,
+     the ammo point, the line looking out at nothing, the first flare over
+     the arc — and then back to the table, where a rifle and a torch are
+     lying, which is the first thing play will ask him to pick up (chapter
+     3's torch-on-the-ground ending, with the drill added).
+
+     THE FLARE IS DRIVEN BY THE FILM. `updateNotes` returns early when the
+     state is not `play`, so `flareFrame` does not run under a cutscene: a
+     film that lights one has to burn it itself (`stage.setFlare`) and hand
+     the sky back with `kit.daylight(null, …)`. */
+  function intro(c, s, api) {
+    const { tr, step, sfx, fade, camTo, yawTo, pitchTo, faceFrom, rawK, smoothK, stage, armR, kit } = api;
+    const HIS = stage.HIS, AMMO = stage.AMMO, TOWER = stage.TOWER;
+    const TR = stage.truck.position;
+
+    step(0, () => {
+      armR.visible = false;
+      stage.cycEnd(); stage.setFlare(0); stage.setMover(false);
+      stage.filmKit.visible = true;
+      for (const t of stage.statics) t.set(false);
+      for (const t of stage.popups) t.set(true);
+      stage.mover.set(true);
+      if (kit) { kit.daylight(null, 0); if (kit.weaponOut) kit.weaponOut(false); if (kit.torchOn) kit.torchOn(false); }
+    });
+    fade(0.0, 0.3, 1, 1);
+
+    /* 0.3 IN THE BACK OF THE TONNER (0.3–8.4): parked at the rear of the
+       range, tail-gate down, looking out at a strip of dark ground with one
+       lamp on a tower at the far right. The bed floor measures 1.48 and a
+       seated eye sits 0.55 over it (v11.2's numbers). */
+    camTo(0.3, 8.4, { x: TR.x + 0.2, y: 2.03, z: TR.z - 0.6 }, { x: TR.x + 0.2, y: 2.03, z: TR.z + 1.4 }, smoothK);
+    yawTo(0.3, 8.4, Math.PI + 0.22, Math.PI - 0.06, smoothK);
+    pitchTo(0.3, 8.4, -0.04, -0.10, smoothK);
+    tr(0.3, 8.4, (k, t) => { api.camera.rotation.z = Math.sin(t * 1.9) * 0.006; }, rawK);
+    fade(0.4, 2.6, 1, 0);
+    sfx(1.4, 'n4pro1');                    // "Night two. The live range. After last night, I was glad to have something to point at."
+    fade(7.6, 8.4, 0, 1);
+
+    /* 8.6 THE AMMO POINT (8.6–17.8): the table under its red lamp, a rifle
+       and a torch on it, the safety officer beside it. Magazines. */
+    step(8.5, () => { api.camera.rotation.z = 0; });
+    camTo(8.6, 17.8, { x: AMMO.x + 1.5, y: 1.58, z: AMMO.z + 1.9 }, { x: AMMO.x + 0.30, y: 1.30, z: AMMO.z + 1.05 }, smoothK);
+    yawTo(8.6, 17.8, faceFrom(AMMO.x + 1.5, AMMO.z + 1.9, AMMO.x, AMMO.z), faceFrom(AMMO.x + 0.30, AMMO.z + 1.05, AMMO.x, AMMO.z), smoothK);
+    pitchTo(8.6, 17.8, -0.20, -0.42, smoothK);
+    fade(8.6, 10.0, 1, 0);
+    sfx(9.3, 'riflereload', 0.7);
+    sfx(10.3, 'n4pro2');                   // "Live rounds. Nobody fires until the tower says fire. Simple. Just watch your front."
+    sfx(11.4, 'riflecock', 0.65);
+    fade(17.0, 17.8, 0, 1);
+
+    /* 18 ON THE LINE (18–33): behind his own lane, looking out over the berm
+       at ground that has nothing in it. The tower's lamp on the right. Then
+       THE FIRST FLARE — the pop, the climb, the whole arc white, and eight
+       target boards standing out at a hundred metres where a second ago
+       there was nothing at all. */
+    camTo(18.0, 33.0, { x: HIS.x - 1.1, y: 1.62, z: 5.0 }, { x: HIS.x, y: 1.62, z: 1.5 }, smoothK);
+    yawTo(18.0, 22.6, faceFrom(HIS.x - 1.1, 5.0, TOWER.x, TOWER.z), 0, smoothK);
+    pitchTo(18.0, 22.4, -0.02, -0.02, smoothK);
+    fade(18.0, 19.2, 1, 0);
+    sfx(18.7, 'rangepa', 0.5);
+    sfx(19.3, 't4ready');                  // "Shooters. Watch your front. READY."
+    step(22.8, () => { if (kit) kit.daylight(stage.FLARE, 1.2); });
+    sfx(22.8, 'flarepop', 0.95);
+    /* the burn: up over 1.2 s, held, and falling over its last fifth */
+    tr(22.8, 36.8, (k, t) => {
+      const e = t - 22.8;
+      const amp = Math.min(1, e / 1.2) * (k > 0.82 ? Math.max(0, 1 - (k - 0.82) / 0.18) : 1);
+      stage.setFlare(260 * amp);
+    }, rawK);
+    pitchTo(23.0, 26.2, -0.02, 0.44, smoothK);      // up after it
+    pitchTo(26.2, 30.0, 0.44, -0.05, smoothK);      // and down the lit arc
+    step(36.4, () => { if (kit) kit.daylight(null, 2.2); });
+    fade(32.2, 33.0, 0, 1);
+
+    /* 33.2 BACK AT THE TABLE (33.2–43): the light going off the ground again,
+       and the last thing the film shows is the kit lying there. */
+    camTo(33.2, 43.0, { x: AMMO.x + 0.05, y: 1.46, z: AMMO.z + 0.98 }, { x: AMMO.x + 0.02, y: 1.28, z: AMMO.z + 0.64 }, smoothK);
+    yawTo(33.2, 43.0, 0.04, 0.02, smoothK);
+    pitchTo(33.2, 43.0, -0.52, -0.80, smoothK);
+    fade(33.2, 34.6, 1, 0);
+    sfx(35.0, 'riflecock', 0.5);
+    fade(42.2, 43.2, 0, 1);
+    step(43.4, () => { armR.visible = true; stage.setFlare(0); });
+    c.endFade = 1;
+    c.keepFade = true;
+  }
+
+  /* ---------------------------------------------------------- the scenes
+     All four begin where the decision opened: in his lane, facing downrange,
+     the thing stopped at the foot of the berm. `P` and `F` read his real
+     position and facing off the snapshot, so a scene is right whichever way
+     he was standing. Hands hidden in A, B and D; C keeps the rifle, because
+     C is what the rifle does. */
+  const P = (s) => ({ x: s.yawPos.x, y: s.yawPos.y, z: s.yawPos.z });
+
+  /* A · KEEP YOUR ARC. REPORT IT. CARRY ON. (20.8 s)
+     He does not move. It finishes its crossing and goes into the tree line
+     without a sound — and then, from the left, the OTHER detail comes off
+     the line shouting the thing he decided not to shout. The range is
+     closed by the tower. Five men saw it; he has his own, and it is a
+     different thing from theirs, which is the lesson in a picture. */
+  function scArc(c, s, api) {
+    const { tr, step, sfx, fade, camTo, yawTo, pitchTo, rawK, smoothK, stage, handsRoot, kit } = api;
+    const P0 = P(s), HIS = stage.HIS;
+    step(0, () => {
+      handsRoot.visible = false;
+      if (kit) { if (kit.hurt) kit.hurt(null); if (kit.root) kit.root(false); if (kit.weaponOut) kit.weaponOut(false); }
+      stage.cycStart(3);
+      stage.setMover(false);
+    });
+    fade(0, 0.25, 0, 0);
+    /* the dying flare over the whole scene */
+    tr(0, 14.0, k => stage.setFlare(150 * Math.max(0, 1 - k)), rawK);
+    /* 0–7.2 it crosses out to the right and goes into the trees */
+    camTo(0, 7.2, { x: P0.x, y: 1.62, z: P0.z }, { x: P0.x, y: 1.62, z: P0.z }, rawK);
+    yawTo(0, 7.2, 0.0, -0.44, smoothK);
+    pitchTo(0, 7.2, -0.04, -0.02, smoothK);
+    tr(0, 7.2, k => {
+      stage.cyc.group.position.set(HIS.x - 1.2 + k * 17.5, 0, -8 - k * 2.0);
+      stage.cyc.group.rotation.y = -Math.PI / 2;
+      stage.cycAlpha(k > 0.78 ? Math.max(0, (1 - k) / 0.22) : 1);
+    }, rawK);
+    sfx(0.4, 'chain', 0.5);
+    step(7.3, () => stage.cycEnd());
+    /* 7.6 THE OTHER DETAIL COMES OFF THE LINE, to the left */
+    yawTo(7.6, 9.4, -0.44, 1.15, smoothK);
+    sfx(7.8, 'r4run');                     // "Get off the line! Somebody in the lalang! GO! GO!"
+    sfx(11.5, 'k4shout');                  // "Eh, what is that? The bicycle! It's floating! Look over there!"
+    tr(9.4, 12.6, (k, t) => { api.camera.rotation.z = Math.sin(t * 7.5) * 0.018 * (1 - k); }, rawK);
+    sfx(15.8, 'e4down');                   // "STOP! Weapons DOWN! Muzzle down the range! DOWN!"
+    /* 16 the tower closes the range, and the lens comes back to his own lane */
+    yawTo(16.2, 19.8, 1.15, 0.0, smoothK);
+    pitchTo(16.2, 19.8, -0.02, -0.12, smoothK);
+    step(19.6, () => { api.camera.rotation.z = 0; });
+    sfx(19.9, 'rangepa', 0.5);
+    sfx(20.4, 't4endex');                  // "All lanes. Cease fire. Unload, clear weapons. The range is closed."
+    fade(25.9, 26.9, 0, 1);
+    step(27.0, () => { handsRoot.visible = true; });
+    /* THE DAWN. The chapter's last line runs UNDER the outcome card rather
+       than in front of it: the scene ends a beat after it starts, the card
+       comes up, and the card's own line waits its turn (v5.30's rule that
+       nothing of his starts while another voice is live). */
+    sfx(27.2, 'n4dawn');
+    c.endFade = 1;
+  }
+
+  /* B · PUT THE TORCH ON IT AND GO CLOSER (22 s)
+     Forward of the line, which the brief said never to do. The safety
+     officer behind him, the tower calling a man on the range, the walk down
+     the arc under a dying flare — and the ground where it was is empty. The
+     chain starts again BEHIND him, between him and the line. */
+  function scCloser(c, s, api) {
+    const { tr, step, sfx, fade, camTo, yawTo, pitchTo, rawK, smoothK, stage, handsRoot, kit } = api;
+    const P0 = P(s), HIS = stage.HIS;
+    step(0, () => {
+      handsRoot.visible = false;
+      if (kit) { if (kit.hurt) kit.hurt(null); if (kit.root) kit.root(false); if (kit.weaponOut) kit.weaponOut(false); if (kit.torchOn) kit.torchOn(true); }
+      stage.cycStart(3); stage.setMover(false);
+    });
+    fade(0, 0.25, 0, 0);
+    tr(0, 16.0, k => stage.setFlare(120 * Math.max(0, 1 - k * 1.2)), rawK);
+    /* 0–2.4 he stands. 2.4–11 over the berm and down the arc. */
+    sfx(0.6, 'e4line');                    // "LANE SIX! GET BACK ON THE LINE! NOW!"
+    sfx(4.6, 'rangepa', 0.5);
+    sfx(5.2, 't4man');                     // "ALL LANES CEASE FIRE! Man on the range! Lane six is forward of the line!"
+    camTo(0, 2.4, { x: P0.x, y: 1.62, z: P0.z }, { x: HIS.x, y: 1.66, z: -1.4 }, smoothK);
+    camTo(2.4, 12.4, { x: HIS.x, y: 1.66, z: -1.4 }, { x: HIS.x + 0.6, y: 1.62, z: -9.6 }, smoothK);
+    tr(2.4, 12.4, (k, t) => { api.yaw.position.y = 1.62 + Math.sin(t * 5.2) * 0.035; }, rawK);
+    yawTo(0, 12.4, 0.0, 0.06, smoothK);
+    pitchTo(0, 12.4, -0.04, -0.34, smoothK);
+    step(2.5, () => { stage.cycEnd(); });   // it is not there when he gets there
+    /* 12.4–16 the torch on empty ground, tyre tracks that stop */
+    pitchTo(12.4, 16.0, -0.34, -0.62, smoothK);
+    yawTo(12.4, 16.0, 0.06, -0.30, smoothK);
+    /* 16.4 THE CHAIN, BEHIND HIM — and the turn */
+    sfx(16.4, 'chain', 0.85);
+    yawTo(17.2, 20.0, -0.30, Math.PI + 0.04, smoothK);
+    pitchTo(17.2, 20.0, -0.62, -0.06, smoothK);
+    step(19.0, () => { stage.cycStart(3); stage.cyc.group.position.set(HIS.x + 0.4, 0, -2.6); stage.cyc.group.rotation.y = 0; });
+    sfx(20.2, 'bikebell', 0.9);
+    tr(20.2, 22.0, (k, t) => { api.camera.rotation.z = Math.sin(t * 9) * 0.02 * (1 - k); }, rawK);
+    fade(21.4, 22.6, 0, 1);
+    step(22.8, () => { handsRoot.visible = true; api.camera.rotation.z = 0; if (kit && kit.torchOn) kit.torchOn(false); });
+    sfx(23.0, 'n4dawn');                   // the dawn, under the card (scene A's note)
+    c.endFade = 1;
+  }
+
+  /* C · FIRE AT IT UNTIL IT STOPS COMING (21 s)
+     The rifle stays up — this is the one scene the weapon belongs in. Three
+     more rounds; each flash empties the ground and each flare puts it back
+     nearer, until it is close enough to see there is no face on it, and it
+     does not move. Then the whole line is shouting at HIM, and the rifle is
+     taken out of his hands. */
+  function scFire(c, s, api) {
+    const { tr, step, sfx, fade, yawTo, pitchTo, rawK, smoothK, stage, kit } = api;
+    const HIS = stage.HIS;
+    const at = (z, x) => { stage.cycStart(3); stage.cyc.group.position.set(HIS.x + (x || 0), 0, z); stage.cyc.group.rotation.y = Math.PI; };
+    step(0, () => {
+      if (kit) { if (kit.hurt) kit.hurt(null); if (kit.root) kit.root(false); if (kit.weaponOut) kit.weaponOut(true); }
+      stage.setMover(false); at(-8);
+    });
+    fade(0, 0.25, 0, 0);
+    yawTo(0, 21.0, 0.0, 0.0, rawK);
+    pitchTo(0, 2.4, -0.04, -0.02, smoothK);
+    /* three rounds: flash, gone, back nearer, on a flare each time */
+    const round = (t0, z) => {
+      sfx(t0, 'rifleshot', 0.9);
+      step(t0, () => { stage.cycEnd(); stage.setFlare(240); });
+      tr(t0, t0 + 0.14, k => stage.setFlare(240 * (1 - k)), rawK);
+      step(t0 + 1.9, () => { at(z); stage.setFlare(140); });
+      tr(t0 + 1.9, t0 + 3.4, k => stage.setFlare(140 * (1 - 0.55 * k)), rawK);
+      sfx(t0 + 2.0, 'chain', 0.6);
+    };
+    round(1.2, -6.2); round(5.0, -4.6); round(8.8, -3.1);
+    /* 12.6 it is close, and it is not a man */
+    tr(12.6, 17.0, k => stage.setFlare(62 * (1 - k)), rawK);
+    pitchTo(12.6, 15.4, -0.02, 0.02, smoothK);
+    sfx(13.0, 'ghostlaugh', 0.55);
+    sfx(15.6, 't4who');                    // "CEASE FIRE! Who fired? Lane five. What are you firing at?"
+    step(16.0, () => { if (kit && kit.weaponOut) kit.weaponOut(false); });
+    sfx(21.2, 'e4down');                   // "STOP! Weapons DOWN! Muzzle down the range! DOWN!" (t4who runs to 20.85)
+    tr(16.0, 18.4, (k, t) => { api.camera.rotation.z = Math.sin(t * 6.5) * 0.02 * (1 - k); }, rawK);
+    pitchTo(16.0, 20.0, 0.02, -0.34, smoothK);
+    step(20.2, () => { api.camera.rotation.z = 0; });
+    fade(25.2, 26.2, 0, 1);
+    sfx(26.4, 'n4dawn');                   // the dawn, under the card (scene A's note)
+    c.endFade = 1;
+  }
+
+  /* D · GET UP AND RUN (18.6 s)
+     Off the line, the rifle dropped, the lalang — and straight into the
+     other detail running the same way, shouting the same thing. Nobody
+     looks back down the arc. */
+  function scRun(c, s, api) {
+    const { tr, step, sfx, fade, camTo, yawTo, pitchTo, rawK, smoothK, stage, handsRoot, kit } = api;
+    const P0 = P(s), HIS = stage.HIS, AMMO = stage.AMMO;
+    step(0, () => {
+      handsRoot.visible = false;
+      if (kit) { if (kit.hurt) kit.hurt(null); if (kit.root) kit.root(false); if (kit.weaponOut) kit.weaponOut(false); }
+      stage.cycStart(3); stage.setMover(false);
+    });
+    fade(0, 0.25, 0, 0);
+    tr(0, 12.0, k => stage.setFlare(110 * Math.max(0, 1 - k * 1.4)), rawK);
+    sfx(0.3, 'bikebell', 0.85);
+    /* 0.6 the turn and the run back past the ammo point */
+    yawTo(0.6, 2.2, 0.0, Math.PI - 0.2, smoothK);
+    camTo(1.4, 10.6, { x: P0.x, y: 1.62, z: P0.z }, { x: AMMO.x + 1.2, y: 1.62, z: AMMO.z + 2.6 }, rawK);
+    tr(1.4, 10.6, (k, t) => {
+      api.yaw.position.y = 1.62 + Math.abs(Math.sin(t * 8.4)) * 0.075;
+      api.camera.rotation.z = Math.sin(t * 8.4) * 0.028;
+    }, rawK);
+    pitchTo(1.4, 6.0, -0.04, -0.16, smoothK);
+    sfx(2.0, 'r4run');                     // "Get off the line! Somebody in the lalang! GO! GO!"
+    sfx(6.0, 'k4shout');                   // "Eh, what is that? The bicycle! It's floating! Look over there!"
+    yawTo(6.4, 8.6, Math.PI - 0.2, Math.PI + 0.42, smoothK);
+    /* 10.6 he stops at the tonner and nobody turns round */
+    tr(10.6, 12.2, (k, t) => { api.camera.rotation.z = Math.sin(t * 8.4) * 0.028 * (1 - k); api.yaw.position.y = 1.62 + Math.abs(Math.sin(t * 8.4)) * 0.075 * (1 - k); }, rawK);
+    step(12.3, () => { api.camera.rotation.z = 0; api.yaw.position.y = 1.62; });
+    sfx(12.6, 'rangepa', 0.5);
+    sfx(13.2, 't4endex');                  // "All lanes. Cease fire. Unload, clear weapons. The range is closed."
+    pitchTo(12.4, 16.0, -0.16, -0.05, smoothK);
+    fade(18.6, 19.6, 0, 1);
+    step(19.8, () => { handsRoot.visible = true; });
+    sfx(19.9, 'n4dawn');                   // the dawn, under the card (scene A's note)
+    c.endFade = 1;
+  }
+
+  (window.__CHAPTERS__ = window.__CHAPTERS__ || {}).e2c4 = Object.assign(DATA, {
+    build,
+    intro,
+    scenes: [scArc, scCloser, scFire, scRun]
+  });
+})();

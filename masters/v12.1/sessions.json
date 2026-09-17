@@ -1,0 +1,183 @@
+{
+ "flow": "teIrHov7EJrK4BPldIiW",
+ "voices": {
+  "tower": "JKX4knVxHRiP0doaLdrj",
+  "encik": "klqxhYh2Np93AvKxFz0b",
+  "buddyC3": "XxnXw151E3nb1V85MRlS",
+  "bunkmate": "FXMPPfJPpDj0GSwJ6ASO",
+  "recruit3": "xDM73lGN1cPZSG4X87cj",
+  "jamesTeen": "B6uUx2p7cRgxseOUyP6P"
+ },
+ "lines": {
+  "t4load": [
+   "IIeCojAw9cGlsnEkmsbL",
+   "NDl19kHAxDaxGSsSN6Ad"
+  ],
+  "t4ready": [
+   "okaxERNaDHQbJBfurv4C",
+   "uJIuYubcd1GUhAm0pUyy"
+  ],
+  "t4fire1": [
+   "IySsNWn1VwbeRjyRWDuY",
+   "fQJZqNHs0tu19agaJmcb"
+  ],
+  "t4fire2": [
+   "vzsornN4R3PPkDXTy04Y",
+   "iIbma2fT4R03b0SAEfEF"
+  ],
+  "t4fire3": [
+   "G3i7BMPVSQ2oLw5CavTs",
+   "GZxkoJt1pCry2bPnbTXG"
+  ],
+  "t4cease": [
+   "qXLA4b30lhbb2FHIX8vE",
+   "XXkGwN7kNpJ6beJK10b3"
+  ],
+  "t4who": [
+   "swzuHSox3Hc6YduDuY96",
+   "c4OdepDYJHGP5hMKDBUi"
+  ],
+  "t4neg": [
+   "Zs2wYj1HXJ90d5g08GMb",
+   "VfirOIm5Qk6XFCEnyv1h"
+  ],
+  "t4roger": [
+   "4DiRL5hnDGZrzoxgyREZ",
+   "n30L7qbypoBA3c01TJfh"
+  ],
+  "t4endex": [
+   "yWAKJ0CKbh1tcBOUUOtm",
+   "UHqePzIhtoEPuZyInvmn"
+  ],
+  "t4man": [
+   "zbjcTIJbPCnZSlKdipyy",
+   "i4ZuQSFxdUhi8QgEAIf5"
+  ],
+  "e4wait": [
+   "neBWmFZWS5RPuGfzq4lo",
+   "V5aexDusUvqyuJnvQK4o"
+  ],
+  "e4down": [
+   "f39MMCRZ1vy2sFFcfW03",
+   "ViA9nElyDsSXlLDMEDoU"
+  ],
+  "e4line": [
+   "yPo0Se4F7Il61GOYTbct",
+   "jSW074i9hHCLw0UIqJKY"
+  ],
+  "b4stag": [
+   "4ZXbXf30df2UvWg7cyLB",
+   "wPEZf2e93INxJf4gkXEj"
+  ],
+  "b4there": [
+   "mRz90WZpHHO8ulZ1cG0X",
+   "UqBWV6fDk0Muh25fqN57"
+  ],
+  "b4float": [
+   "1cmW1eUYeNviF6iaGloL",
+   "Wk2rM4pRq8dG9HtrQUpr"
+  ],
+  "k4shout": [
+   "4daoZ8RXmz0zdinFCrsx",
+   "Pz7Y5qPlacXUzUMIlKrv"
+  ],
+  "r4run": [
+   "q8PohXUNi0Kb2NgpzrSv",
+   "wqCgQwCQVcxFiDwSbwb5"
+  ],
+  "n4pro1": [
+   "ygI7E5eVPbfdfxbjV2Qe",
+   "XD7nMwS2kLDHjNtzuuYF"
+  ],
+  "n4pro2": [
+   "ibV9kfKevUjhsAAnOepU",
+   "yEkVLaq87dpTvtV6g9R7"
+  ],
+  "n4notarget": [
+   "s6RvDu27f1M7uMvrSXPF",
+   "xcC2CtphIFVqAitVHDat"
+  ],
+  "n4back": [
+   "qXlBNXHHPDOiovUv7Ebt",
+   "kH8ic4RqjZoewcBjtooP"
+  ],
+  "n4A": [
+   "HfeRuiY2R56MkeIuHdrK",
+   "YYZhBLOjNCkaHuRGamcb"
+  ],
+  "n4B": [
+   "k80xnR5btvRUqXYfISAQ",
+   "dViMtf6kVa2qZ1pqUXqc"
+  ],
+  "n4C": [
+   "uPZLpJ2bleMfPTSxcICh",
+   "ISZZeDX69uOXlSJdakfq"
+  ],
+  "n4D": [
+   "TfSe9xQKrhA5KRVDBOiK",
+   "8gwy9LNhZTYPKILvLd07"
+  ],
+  "n4dawn": [
+   "I24E1JXEiLoAUFiniejM",
+   "eIODglduTRSpUg1D7jJK"
+  ],
+  "n4report": [
+   "2DkoNxNeaRajmmNCNCBR",
+   "GD0vA9OqMGKSbZH6Vycx"
+  ]
+ },
+ "sfx": {
+  "rifleshot": [
+   "X72LpPov9IVDjsqjahdm",
+   "g2rfPUDfAROjudAnwo0K"
+  ],
+  "riflecock": [
+   "njTodU3FSaQwdbgpDGuB",
+   "8ywvvdCqDJqlvJqsBOHd"
+  ],
+  "riflereload": [
+   "whWUN0YmqAu3F1SV8IXY",
+   "hTjW6RL6aRPcJwgfObu5"
+  ],
+  "rifledry": [
+   "NKJCSKN1wcDL4cmY9gag",
+   "HPPyvqV2XsLdpQm7ELHW"
+  ],
+  "flarepop": [
+   "GkX0XVqdWfMX24nHyKsF",
+   "08lFPG6u5R2YRaIg93ER"
+  ],
+  "flarehiss": [
+   "G1OAdf6P0e7Or97DprtS",
+   "W6l5EtlC2QW3FfaMj0D8"
+  ],
+  "moverrail": [
+   "Yo6cgKSuDhQyRwFTYlsh",
+   "AcllFtD8TljNhGVp7bM3"
+  ],
+  "targethit": [
+   "wyFc5IMAyS5fUvPPUBup",
+   "3ZiX0g3J2GVGDdDuThLI"
+  ],
+  "targetfall": [
+   "2fzfPpWpoq6tVTgaCGft",
+   "4J8WXTkjPFVyOR6b23dj"
+  ],
+  "rangepa": [
+   "uym4SsFOPapC4BjUu9Ss",
+   "VvsPdEzUVwEg97HXiwgl"
+  ],
+  "chain": [
+   "KcM3hAu53vpE0sYnoNO8",
+   "5D3QxVEC2ZRHs77lDVRu"
+  ],
+  "bikebell": [
+   "CyKH5XUqBg2GsSrlVgrk",
+   "Wwypv1DiS793itznfbHj"
+  ],
+  "rangeamb": [
+   "SE4rZFT7Ja0FVgyNd42k",
+   "DtvFvm2842G35g8wXpPe"
+  ]
+ }
+}

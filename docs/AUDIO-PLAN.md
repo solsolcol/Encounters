@@ -1002,3 +1002,48 @@ opening march, 40 s, 0.55 under the camp), `ghostlaugh` (5.0 s, scenes B and D
 of e2c1), `ghostrun` (2.5 s, scene A's run), and three Aaron takes — `n1omg`
 (1.65 s), `n2pro1` (2.43 s), `n2pro2` (7.71 s, "3am" ends at 3.64 s). Flows:
 xoHMbY1KDrArBCMcAGlB (music + SFX), aYn59tBsc4fmeddok85W (the lines).
+
+## v12.1 · EPISODE 2 · CHAPTER 4 · THE CYCLIST (29 lines, 13 sounds)
+
+A NEW SPEAKER: **the tower** (George, `JKX4knVxHRiP0doaLdrj`) — the range
+officer. Every one of his eleven lines comes over the PA or the radio, keyed
+up with `rangepa` a beat before he speaks, and every one is written under the
+**encik's bark rule** (v8.3): the order itself, short bursts, full stops
+between them, CAPITALS on the stress, and NO stage direction. A direction
+gets a professional PERFORMING an order, which is what reads as fake.
+
+The rest of the cast is the episode's: Aaron (10), the safety officer under
+the same rule (3), the buddy on lane five (3), a bunkmate and a recruit (2).
+
+**Levels.** Aaron peak-matched to −6.85 dBFS mp3 / −6.6 ogg; the cast
+levelled BY RMS to −16 dBFS through `masters/v11.1/level.py`, because the
+cast bus is flat (the v11.1 finding) and a peak-matched cast take sits ten
+decibels under him. Effects −4.0, the four beds −10.5, `rangepa` −8.0.
+
+**The picks, all by measurement** (`masters/v12.1/measure.json`):
+- voice by the cleaner EDGES first (a take that ends on signal clicks
+  through the v5.30 envelope), then by the pace the line wants — the range
+  orders crisp, the frightened lines SLOW (`n4back_a` at 2.08 words a second
+  against b's 2.52), `n4C_b` and `n4D_a` the slower reads of two regretful
+  lines.
+- the four BEDS by evenness (`rangeamb_a` swings 5.3 dB over its length,
+  `moverrail_a` 16.2 against b's 33.9).
+- the one-shots by what a PHONE can play: `flarepop_b` puts 12 % of its
+  energy under 120 Hz against a's 33 %, so its launch thump lands in the
+  band the speaker actually carries (the v10.4 measure).
+
+**Two laws paid for again.**
+1. **A duration is a PARAMETER, not a sentence** (v9.2). All four bed takes
+   came back one or two seconds long — "12 seconds" was only ever written in
+   English. `duration_seconds` and `loop` are model parameters on
+   `eleven_text_to_sound_v2` and the beds were re-generated with them.
+2. **A take is measured, never assumed.** `targethit`'s first take is
+   SILENT: peak −47.1 dBFS, no content at all.
+
+**The loops.** The model's own `loop` flag got `rangeamb` and `flarehiss` to
+0.14 and 0.06 dB across the joint; `chain` and `moverrail` came back at 3.36
+and 2.45 dB, which in a faint bed is an audible pulse every twenty seconds.
+`masters/v12.1/proc.py` flattens the slow DRIFT over a 2 s window (the
+drift, not the texture — a 2 s window keeps every click) and then crossfades
+the tail over the head, **in the source's own channel layout**, so stereo
+stays stereo (the v2.3 contract).

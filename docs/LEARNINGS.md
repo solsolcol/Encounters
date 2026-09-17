@@ -3844,3 +3844,53 @@ Read the keys (gltf-transform's samplers) before choosing a rate, and
 remember the parked rest is the LAST key, which is the only frame that
 looks like the reference render.
 
+
+## The render settles a model's facing; the measures are only its guard (v12.1)
+
+Chad's ghost cyclist had to be baked facing −z, so the prep tool has to
+know which way the file faces. Two independent measures were written for
+it — the helmet's mean z against the mesh's own midpoint, and which outer
+eighth of the z span stands taller — and **both said −z, and both were
+wrong**. An upright roadster seats its rider BEHIND the bike's midpoint,
+so the helmet is aft of centre; and the taller outer eighth is the luggage
+rack over the back wheel, not the handlebars. Two measures agreeing is not
+evidence when they share a wrong prior about the object.
+
+The deg-0 render settled it in one frame: it shows his face. The rule is
+the v6.17 one in a new place — **photograph the model, then make the
+measure agree with the photograph and keep it as an ASSERT** so a later
+file that really does face the other way fails loudly instead of shipping
+backwards. `tools/prepcyclist.mjs` asserts front = +z before it bakes the
+half turn.
+
+## Assert a model's contract BEFORE quantize(), never after (v12.1)
+
+The same tool checked "wheels on y = 0, trunk on the origin" after the
+whole pipeline and reported the wheels at **y −27095**. Nothing was wrong:
+`KHR_mesh_quantization` leaves POSITION as an integer array with the metre
+scale in the node's dequantization matrix, so reading the raw accessor
+after quantization answers a different question. Every geometric contract
+is asserted on the BAKED, un-quantized vertices, and quantization is the
+last step with nothing read after it.
+
+## A cutscene does not run the chapter's frame (v12.1)
+
+`updateNotes` returns early when the state is not `play` — that is correct
+and load-bearing (a cutscene owns the ambient pose writes, v5.19) — but it
+means every per-frame thing a chapter drives from there STOPS under a film
+or a scene. Chapter 4's flare is driven by `flareFrame`, so a film that
+launched one would have hung a frozen light over the range for its whole
+length. A film or a scene that lights something has to burn it ITSELF (a
+`tr` track calling `stage.setFlare`) and hand the sky back with
+`kit.daylight(null, …)`. The general form: **anything the chapter animates
+in `updateNotes` is not animated during a cutscene, and the cutscene must
+either drive it or leave it alone.**
+
+## A moving hotspot costs nothing (v12.1)
+
+`hotspotList()`, `dwellHotspots()` and the marks all read `h.pos.x` on the
+frame they run. So a hotspot that follows a moving object needs no engine
+change at all: give it a plain `{x, y, z}` object and MUTATE that object in
+the chapter's frame. Chapter 4's TRACK spot — hold the thing in your sight
+— is the eighteenth seam (v11.0's `dwell`/`aim`) pointed at a target that
+moves, and the whole cost was two assignments.

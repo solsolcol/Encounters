@@ -94,6 +94,15 @@
        masters/v9.5/make.sh, not a new voice id. */
     ghost: { name: "The tenth man on the line (episode 2)", voice: "ZyIwtt7dzBKVYuXxaRw7", model: "eleven_v3",
               note: "Edison's take, TREATED — see masters/v9.5/make.sh. Not a separate library voice: it has to be recognisably a man in that line and unmistakably not one of these men." },
+    /* v12.1 — the RANGE OFFICER in the tower (episode 2, chapter 4). He is
+       never seen close: every line of his comes over the PA or the radio,
+       keyed up (`rangepa`) a beat before he speaks. Under the encik's BARK
+       RULE (v8.3): the orders are written as the orders themselves, short
+       bursts with full stops between them and CAPITALS on the stress, and
+       NO stage direction — a direction gets a professional performing an
+       order, which is the thing that reads as fake. */
+    tower: { name: "The range officer in the tower (episode 2, chapter 4)", voice: "JKX4knVxHRiP0doaLdrj", model: "eleven_v3",
+             note: "George. Every line is on the PA or the radio. Bark rule: no stage direction, CAPITALS on the stress." },
     encik: { name: "The encik, the sergeant-major (episode 2)", voice: "klqxhYh2Np93AvKxFz0b", model: "eleven_v3",
               note: "Hilmi — Malaysian English, middle-aged. Chad's brief was 'like an angry malay uncle', and getting there took four rounds: the library's Malay voices are all booth-recorded voice-over artists, and he rejected them in turn as too young (Zul), eighty years old (Yatin) and finally 'too polished'. HIS PROMPT RULE IS THE OPPOSITE OF AARON'S: no descriptive stage direction at all — a '[a furious sergeant-major in his fifties...]' tag gets a professional PERFORMING anger, which is what 'polished' names. Write the line the way he barks it: short bursts, full stops between them, CAPITALS on the stressed words. Same words as this registry, only the shouting written down." },
     /* v10.0 — a THIRD recruit at the breakfast table, for the one line that
@@ -613,7 +622,68 @@
     { id: "n2C", who: "jamesTeen", ch: "e2c2", where: "Under outcome card C",
       text: "I called it nothing. It wasn't nothing. Three a.m. knew that.", secs: 4.48 },
     { id: "n2D", who: "jamesTeen", ch: "e2c2", where: "Under outcome card D",
-      text: "He gave me three answers and one rule. The rule was the answer.", secs: 6.16 }
+      text: "He gave me three answers and one rule. The rule was the answer.", secs: 6.16 },
+    /* v12.1 — EPISODE 2 · CHAPTER 4 · THE CYCLIST. Six voices: Aaron,
+       the tower (new), the safety officer, the buddy on lane five, a
+       bunkmate and a recruit off the other detail. */
+    { id: "n4pro1", who: "jamesTeen", ch: "e2c4", where: "The film: in the back of the tonner, arriving at the range",
+      text: "Night two. The live range. After last night, I was glad to have something to point at.", secs: 5.72 },
+    { id: "n4pro2", who: "jamesTeen", ch: "e2c4", where: "The film: the ammo point, the magazines issued",
+      text: "Live rounds. Nobody fires until the tower says fire. Simple. Just watch your front.", secs: 6.53 },
+    { id: "n4report", who: "jamesTeen", ch: "e2c4", where: "Play: keying the radio, in the proper form — what option A does",
+      text: "[tense] Tower, lane six. Contact in the target area. Negative enemy. Not a target. Over.", secs: 6.03 },
+    { id: "n4notarget", who: "jamesTeen", ch: "e2c4", where: "Play: the shape crossing the arc that is not on any rail",
+      text: "[nervous] That's not a target.", secs: 1.80 },
+    { id: "n4back", who: "jamesTeen", ch: "e2c4", where: "Play: a round into it, and it is back on the next flare",
+      text: "[frightened] It's coming back.", secs: 1.96 },
+    { id: "n4dawn", who: "jamesTeen", ch: "e2c4", where: "The ending, over the tonner at dawn — and the line that loads chapter 5",
+      text: "By morning, everybody had the story. Five men, one bicycle, floating. I had my own, and I kept it to myself. I stopped looking after that.", secs: 9.48 },
+    { id: "n4A", who: "jamesTeen", ch: "e2c4", where: "The outcome card, choice A",
+      text: "I kept my lane. I said what I saw, in the proper words, and then I carried on.", secs: 5.15 },
+    { id: "n4B", who: "jamesTeen", ch: "e2c4", where: "The outcome card, choice B",
+      text: "I went out to look. The ground was empty, and the sound came from behind me.", secs: 4.83 },
+    { id: "n4C", who: "jamesTeen", ch: "e2c4", where: "The outcome card, choice C",
+      text: "I put a whole magazine into it. Every round brought it closer.", secs: 4.75 },
+    { id: "n4D", who: "jamesTeen", ch: "e2c4", where: "The outcome card, choice D",
+      text: "I ran. Five other men ran with me. Nobody looked back down the range.", secs: 6.11 },
+    { id: "t4load", who: "tower", ch: "e2c4", where: "Play: the load order on the line",
+      text: "Shooters. LOAD. Magazine on. Cock your weapon. Safety catch ON.", secs: 5.80, note: "Bark rule — no stage direction." },
+    { id: "t4ready", who: "tower", ch: "e2c4", where: "The film's last order, and again before the last serial",
+      text: "Shooters. Watch your front. READY.", secs: 2.59, note: "Bark rule." },
+    { id: "t4fire1", who: "tower", ch: "e2c4", where: "Play: the first serial, the static target",
+      text: "At the one hundred metre target. FIRE.", secs: 2.77, note: "Bark rule. The range is COMPRESSED to 62 m; the order says a hundred because that is what a range officer says." },
+    { id: "t4fire2", who: "tower", ch: "e2c4", where: "Play: the second serial, the pop-ups",
+      text: "Pop-up targets, two hundred metres. Watch your front. FIRE at your own time.", secs: 4.60, note: "Bark rule." },
+    { id: "t4fire3", who: "tower", ch: "e2c4", where: "Play: the third serial, the mover on the rail",
+      text: "Moving target, left to right. Watch your front. FIRE.", secs: 4.44, note: "Bark rule. This is the drill the chapter exists to teach." },
+    { id: "t4cease", who: "tower", ch: "e2c4", where: "Play: the end of every serial",
+      text: "CEASE FIRE. Cease fire. Unload. Clear weapons.", secs: 5.33, note: "Bark rule." },
+    { id: "t4who", who: "tower", ch: "e2c4", where: "Play: lane five fires at the thing, and scene C",
+      text: "CEASE FIRE! Who fired? Lane five. What are you firing at?", secs: 5.25, note: "Bark rule." },
+    { id: "t4neg", who: "tower", ch: "e2c4", where: "Play: the radio, against everything the line can see",
+      text: "Negative. Nobody in the target area. Range party confirms. Nobody forward of the line. Stand fast.", secs: 6.43, note: "Bark rule. The chapter's whole gap is in this line." },
+    { id: "t4roger", who: "tower", ch: "e2c4", where: "Play: the answer to the radio report",
+      text: "Roger, lane six. Stand fast. Do not leave your lane.", secs: 4.05, note: "Bark rule." },
+    { id: "t4endex", who: "tower", ch: "e2c4", where: "Scenes A and D: the range is closed",
+      text: "All lanes. Cease fire. Unload, clear weapons. The range is closed.", secs: 5.33, note: "Bark rule." },
+    { id: "t4man", who: "tower", ch: "e2c4", where: "Scene B: he is forward of the firing line",
+      text: "ALL LANES CEASE FIRE! Man on the range! Lane six is forward of the line!", secs: 5.88, note: "Bark rule." },
+    { id: "e4wait", who: "encik", ch: "e2c4", where: "Play: a round before the order",
+      text: "WAIT for the order! Nobody fires until the tower says fire! You want to go home or not?", secs: 5.88, note: "Bark rule." },
+    { id: "e4down", who: "encik", ch: "e2c4", where: "Scenes A and C: weapons down",
+      text: "STOP! Weapons DOWN! Muzzle down the range! DOWN!", secs: 3.79, note: "Bark rule." },
+    { id: "e4line", who: "encik", ch: "e2c4", where: "Scene B: behind him as he goes over the berm",
+      text: "LANE SIX! GET BACK ON THE LINE! NOW!", secs: 3.08, note: "Bark rule." },
+    { id: "b4stag", who: "buddyC3", ch: "e2c4", where: "Play: the wait on the line, after the serials",
+      text: "Eh. Last night. You never say anything after.", secs: 3.13 },
+    { id: "b4there", who: "buddyC3", ch: "e2c4", where: "Play: lane five answers the tower",
+      text: "Sergeant! Got someone in the target area!", secs: 2.35 },
+    { id: "b4float", who: "buddyC3", ch: "e2c4", where: "Play: the played moment, beside him",
+      text: "Eh... it's floating. You see or not?", secs: 2.85 },
+    { id: "k4shout", who: "bunkmate", ch: "e2c4", where: "Scenes A and D: the other detail comes off the line",
+      text: "Eh, what is that? The bicycle! It's floating! Look over there!", secs: 4.02 },
+    { id: "r4run", who: "recruit4", ch: "e2c4", where: "Scenes A and D: the shout that starts the run",
+      text: "Get off the line! Somebody in the lalang! GO! GO!", secs: 3.47 }
   ];
 
   // What a chapter key means on the sheet.
@@ -623,7 +693,8 @@
     ch5: "Chapter 5 · The Lesson", haunting: "Chapters 1 and 2 · the haunting",
     e2c1: "Episode 2 · Chapter 1 · The Worst Bed",
     e2c2: "Episode 2 · Chapter 2 · Nobody There",
-    e2c3: "Episode 2 · Chapter 3 · The Pressure"
+    e2c3: "Episode 2 · Chapter 3 · The Pressure",
+    e2c4: "Episode 2 · Chapter 4 · The Cyclist"
   };
 
   window.__VOICE__ = { SPEAKERS, LINES, CHAPTERS };

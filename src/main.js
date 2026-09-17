@@ -4550,7 +4550,10 @@ const TEEN_TAKES = new Set([
   // v11.0: EPISODE 2 CHAPTER 3, The Pressure: the four film lines, the torch spots, the three pressure lines, the scenes, the cards
   'n3pro1', 'n3pro2', 'n3pro3', 'n3pro4', 'n3spot1', 'n3spot2', 'n3spot3', 'n3spot5', 'n3spot6',
   'n3press', 'n3look', 'n3still', 'n3A1', 'n3A2', 'n3B1', 'n3B2', 'n3C1', 'n3C2', 'n3D1', 'n3D2',
-  'n3A', 'n3B', 'n3C', 'n3D']);
+  'n3A', 'n3B', 'n3C', 'n3D',
+  // v12.1: EPISODE 2 CHAPTER 4, The Cyclist: the two film lines, the radio report, the two on the line, the four card lines, the dawn
+  'n4pro1', 'n4pro2', 'n4report', 'n4notarget', 'n4back', 'n4dawn',
+  'n4A', 'n4B', 'n4C', 'n4D']);
 /* The rest of the cast. They share `voiceOut` and the duck, but not the
    boost — see voiceStage() above. */
 const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
@@ -4577,7 +4580,13 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
   // v10.2: the encik shouts the table back to its breakfast
   'e2hurry',
   // v11.0: chapter 3 — the buddy in the next scrape, the sergeant's brief and his hiss
-  'b3here', 'b3C1', 'b3C2', 'b3C3', 'b3D', 's3brief', 's3hiss']);
+  'b3here', 'b3C1', 'b3C2', 'b3C3', 'b3D', 's3brief', 's3hiss',
+  /* v12.1: chapter 4 — the TOWER (a new speaker: the range officer on the
+     PA and the radio), the safety officer under the encik's bark rule, the
+     buddy on lane five, and the two who come off the other detail */
+  't4load', 't4ready', 't4fire1', 't4fire2', 't4fire3', 't4cease', 't4who', 't4neg',
+  't4roger', 't4endex', 't4man',
+  'e4wait', 'e4down', 'e4line', 'b4stag', 'b4there', 'b4float', 'k4shout', 'r4run']);
 const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || CAST_TAKES.has(name);
 /* v6.9: his WHISPERS go round the bus. Chad wanted the three pick-up
    reactions "almost whispering to himself" and they were re-voiced as
@@ -6462,7 +6471,26 @@ const STING_SAMPLE = {
   // v10.1: the cookhouse livened up — a chatter loop, the kitchen behind the servery, a morning bed, a platoon calling the step past the open side; and the re-voiced ask
   cookchat: ['cookchat', 1], kitchen: ['kitchen', 1], marchcall: ['marchcall', 1], r2hear: ['r2hear', 1],   // (v10.4: `cookmusic` retired — the dread is the chapter's music)
   n2known: ['n2known', 1], e2hurry: ['e2hurry', 1],  // v10.2: the beat after the third ask
-  n2pro1: ['n2pro1', 1], n2pro2: ['n2pro2', 1]       // v10.4: the film's opening narration, in two takes so the second lands on the clock
+  n2pro1: ['n2pro1', 1], n2pro2: ['n2pro2', 1],      // v10.4: the film's opening narration, in two takes so the second lands on the clock
+  /* v12.1: EPISODE 2 CHAPTER 4, The Cyclist — the range's own noises, the
+     tower on the PA, the safety officer, the two who come off the other
+     detail, and the thing on the bicycle. The four beds (rangeamb,
+     flarehiss, moverrail, chain) are DECLARED by the chapter and mixed by
+     its frame; they carry rows here because a scene may cue one as a
+     one-shot (scene B's chain behind him is exactly that). */
+  rangeamb: ['rangeamb', 1], rangepa: ['rangepa', 1], flarepop: ['flarepop', 1], flarehiss: ['flarehiss', 1],
+  moverrail: ['moverrail', 1], targethit: ['targethit', 1], targetfall: ['targetfall', 1],
+  rifleshot: ['rifleshot', 1], riflecock: ['riflecock', 1], riflereload: ['riflereload', 1], rifledry: ['rifledry', 1],
+  chain: ['chain', 1], bikebell: ['bikebell', 1],
+  t4load: ['t4load', 1], t4ready: ['t4ready', 1], t4fire1: ['t4fire1', 1], t4fire2: ['t4fire2', 1],
+  t4fire3: ['t4fire3', 1], t4cease: ['t4cease', 1], t4who: ['t4who', 1], t4neg: ['t4neg', 1],
+  t4roger: ['t4roger', 1], t4endex: ['t4endex', 1], t4man: ['t4man', 1],
+  e4wait: ['e4wait', 1], e4down: ['e4down', 1], e4line: ['e4line', 1],
+  b4stag: ['b4stag', 1], b4there: ['b4there', 1], b4float: ['b4float', 1],
+  k4shout: ['k4shout', 1], r4run: ['r4run', 1],
+  n4pro1: ['n4pro1', 1], n4pro2: ['n4pro2', 1], n4notarget: ['n4notarget', 1], n4back: ['n4back', 1],
+  n4report: ['n4report', 1], n4dawn: ['n4dawn', 1],
+  n4A: ['n4A', 1], n4B: ['n4B', 1], n4C: ['n4C', 1], n4D: ['n4D', 1]
 };
 /* Which kinds the synth below can actually fake. Everything else in
    STING_SAMPLE is sample-only: if its buffer is not decoded yet it stays

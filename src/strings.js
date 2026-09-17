@@ -146,6 +146,8 @@ Object.assign(window.__TEXT__, {
   'credits.rifle':       'The rifle',
   'credits.rifleWho':    'KRISS Vector, animated · Sketchfab',
   'credits.rifleLink':   'sketchfab.com · kriss-vector-animated-free',
+  /* v12.1 — Chad's ghost cyclist is his own model and takes no row (the
+     v5.23 rule); the Kamaz and the flashlight already have theirs above. */
   'credits.anim':        'Animation, two of the crowd, and the soldiers’ takes',
   'credits.animWho':     'The mother’s takes, two seated characters, and the recruits’ takes · Mixamo',
   'credits.animLink':    'mixamo.com',
