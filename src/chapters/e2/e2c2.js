@@ -56,7 +56,7 @@
         say: 'He gave me three answers and one rule. The rule was the answer.',
         teach: 'Good guidance expands your thinking; it does not replace your judgement.' }
     ],
-    core: 'What you say about a thing becomes what is known about it. Say what you know — not less, and not more.<br><i>Sammā vācā — right speech: true, useful, and in its time.</i>',
+    core: '"Haunted, I\'m sure" and "it was nothing" are the same grip on opposite sides. "Something happened, I don\'t know what" is the mind held open until it has enough.<br><i>Diṭṭhupādāna — clinging to a view. Either certainty stops you looking.</i>',
 
     /* units metres, y up. The cookhouse hall is x −9…9, z −7…7; the servery
        runs along the −x wall, BOTH long sides (±z) are open to the camp

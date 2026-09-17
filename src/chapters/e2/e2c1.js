@@ -51,7 +51,7 @@
         say: 'I decided what it was before I knew anything. Under the blanket, the water kept running.',
         teach: 'Fear is a signal, not proof.' }
     ],
-    core: 'A sound is a fact. What made it is a story you have not checked.<br><i>Sati — bare attention, before the mind adds its tale.</i>',
+    core: 'Attention is not neutral. To acknowledge a presence is to open a connection that was not there. If nothing is asking anything of you, give it nothing.<br><i>Manasikāra — what you attend to, attends to you.</i>',
 
     /* units metres, y up. The bunk is one long room (x −6…6, z −4…4); the
        shower block is off its +z end; a balcony runs along +x with the parade
