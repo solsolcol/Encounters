@@ -388,6 +388,23 @@ scoring model (only wisdom decides passing; sanity is a cost, not a fail
 state) differs from ours — a deliberate divergence to revisit with Chad.
 Attributions must stay in the credits panel; he adds more as they come.
 
+**THE LESSON LINE (Chad, v11.9 — "why is it that i can think of a better
+lesson than you quickly").** A chapter's `core` is held to a test, not a
+taste. (1) The case file's own lesson comes FIRST — the site already says
+what this story teaches, in Master Z's voice; start from it verbatim.
+(2) A dhamma term or sutta may be added only when it NAMES THE STRUCTURE
+of what the player just did or felt in that chapter (v11.9: the weight is
+vedanā, the fear built on it is saṅkhāra, and the four options are which
+of the two you act on). A story that merely resembles the setting is an
+analogy, and an analogy never fits as tightly as an analysis — the
+Bhaya-bherava Sutta was picked at v11.6 because "fear, forest, night"
+matched the scene, and it was wrong. (3) If the line would be equally true
+of any scary night, it is too generic. (4) Breadth is the trap: with many
+plausible candidates, the famous one gets picked because there is no
+standard to select against — so PROPOSE two or three with the reason each
+fits, and let Chad pick, before anything ships. Words are cheap to propose
+and expensive to redeploy.
+
 ## Current state and roadmap
 
 **v6.17 is the reference standard for the base game, with EPISODE 1
