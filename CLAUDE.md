@@ -2886,6 +2886,21 @@ What the baseline contains, by release:
   line; sheet v57 exported (v44 stays the link). The law is the standing
   one, restated: **read the case file's own lesson before reaching for a
   sutta** — the material is already in Master Z's voice.
+- **v11.10** THE OTHER TWO LESSONS — Chad, on my claim that chapters 1 and
+  2's lines passed the new test: *"No they do not pass and represents a
+  shallow understanding of dhamma."* Chapter 1's used *sati* as a label for
+  "don't jump to conclusions" — critical thinking wearing a Pali word, and
+  "bare attention" a modern manual's gloss — while the case file's own
+  thesis (acknowledging a presence opens a connection; when he stopped
+  attending to it, it stopped attending to him) went unused. Chapter 2's
+  right-speech line was canonical and generic: true of any conversation in
+  any building. Now, his picks from two candidates each, then cut shorter at
+  his ask: chapter 1 is **manasikāra** — attention is not neutral, "what you
+  attend to, attends to you"; chapter 2 is **diṭṭhupādāna** — "haunted, I'm
+  sure" and "it was nothing" are the same grip on opposite sides, and "I
+  don't know what" is the mind held open. Both name the structure of the
+  chapter's four options. Two `core` lines; sheet v58 exported (v44 stays
+  the link).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -3397,7 +3412,7 @@ the run exactly as it always ended a last chapter.
 
 Next up: **episode 2's chapters 4–5, and rifle mode for chapter 5**
 (chapter 1, The Worst Bed, shipped at v7.1 — `src/chapters/e2/e2c1.js`;
-chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 3, The Pressure, at v11.0 and revised at v11.1–v11.9 — `src/chapters/e2/e2c3.js`; chapter 1 last revised at v10.8; the rifle
+chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 3, The Pressure, at v11.0 and revised at v11.1–v11.9 — `src/chapters/e2/e2c3.js`; chapters 1 and 2's lessons rewritten at v11.10, chapter 1 last revised at v10.8; the rifle
 viewmodel's placement and material are measured in
 docs/E2-SOLDIER-MODELS.md §8, and Chad's ghost and bicycle models are
 still to come), and the still-outstanding job of replacing chapter 1's
