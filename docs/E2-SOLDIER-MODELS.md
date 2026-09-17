@@ -670,3 +670,51 @@ chapter builds it.
 `fbonosling` on `Idle_6`, the admin tee on `Idle_9`. Chapter 3 asked
 `fbosling` for `Idle_6` from v11.0 to v11.1 and every one of its soldiers
 stood in the bind pose (LEARNINGS, v11.2).
+
+---
+
+## 14 · `fboaim` SHIPPED (v12.2)
+
+§107 and §424 specified the static aiming soldier as **`fboaim`** at v7.0 and
+cast it on episode 2 chapter 4's firing line — *"the only figures in the set
+that show a shouldered weapon; on a firing line nobody moves, so a statue is
+not a compromise, it is correct."* It was **never prepped**, so v12.1 dressed
+a live range with `fbosling` and `admintee` instead: men standing about with
+their rifles slung. Chad caught it the first time he played the chapter.
+
+`tools/prepaim.mjs` is the recipe. `assets/fboaim.glb`:
+
+| | source | shipped |
+|---|---|---|
+| bytes | 33.93 MB | **1.84 MB** |
+| triangles | 591,484 | **47,318** |
+| textures | 2048 base + 4096 metallic-roughness (14 MB) | 1024 JPEG base only |
+| rig | none (0 bones, 0 clips) | unchanged — a statue, which is the point |
+
+Three things decided it, all measured rather than assumed:
+
+1. **metalness 1 with the MR sheet dropped renders NEAR BLACK** (v8.9's law).
+   `setMetallicFactor(0)` is mandatory, not tidying.
+2. **He aims diagonally in his own frame.** The muzzle runs out toward +x+z
+   at **38°**, so neither axis of the bounding box is the aim and neither is
+   the body's depth. The tool measures the aim from a chest slab against the
+   legs' own axis (muzzle 0.866 m out against the pack's 0.385 m back, two
+   independent measures agreeing to 1.000) and BAKES the turn.
+3. **The origin goes under the BODY, not the box.** A rifle held out in front
+   pushes the bounding box a quarter of a metre downrange, and a firing line
+   is spaced by shoulders.
+
+Shipped contract, asserted on the baked vertices and BEFORE `quantize()`:
+Y-up, boots on y = 0, origin under the body, **rifle aiming down −z**, height
+1.900 m. A chapter scales it by `height / 1.900` and the boots stay on the
+floor. Verified in the engine: seven on the line, all seven `model.position.y`
+= 0.000, all seven `rotation.y` within 0.022 rad of downrange.
+
+One law from writing it, and it is why the tool RE-MEASURES instead of
+trusting its own arithmetic: the turn was written as `atan2(x, −z)` when it
+wanted `π − atan2(x, z)`, which put him **104° off**, and nothing but the
+re-measurement would have caught it before a render.
+
+`admintee` is no longer used by chapter 4 at all — **2.5 MB off that
+chapter's download**. `fbosling` stays for the safety officer, who is the
+only man behind the line and the only one not shooting.

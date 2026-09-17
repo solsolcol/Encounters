@@ -88,16 +88,53 @@
 
     /* the flare, as a daylight declaration: the whole arc white for its
        seconds. `kit.daylight(FLARE, secs)` tweens to it and back. */
+    /* THE TORCH IS DECLARED AND NEVER ISSUED (v12.2). It keeps `item`
+       precisely so that `torchAvail()` stays FALSE for the player — no
+       `hasTorch` on <body>, so no torch button, no F, no beam and no way to
+       put the rifle down for it — while `kit.torchOn()` from a scene is
+       ungated by design (v11.6: "a film owns its light"), which is what
+       scene B still needs when he walks out with it. */
     torch: { on: false, item: 'torch', angle: 0.36, intensity: 16, distance: 30, penumbra: 0.6,
              red: true, color: 0xff3a22, model: 'flashlight', click: 'torchclick' },
 
-    /* RIFLE MODE (v12.0). Issued at the ammo point, so it is in the hand
-       slot from the first frame of play and the HUD has it. Twenty rounds
-       and two magazines is a night shoot's allocation, not a war. */
-    weapon: { model: 'rifle', item: 'rifle', rounds: 20, mags: 2, fireGap: 0.42, kick: 0.016,
+    /* RIFLE MODE (v12.0), and v12.2: THE RIFLE NEVER LEAVES HIS HANDS.
+       Chad: "it should immediately start with the rifle equipped in hand, and
+       on screen the rifle is already there. Player should not be allowed to
+       unequip the rifle. Player should not be able to use the torch, or
+       switch to normal hands. Just for this chapter, the rifle stays on at
+       all times."
+
+       That is ONE deleted word — `item`. `weaponAvail()` reads
+       "const id = weaponDecl.item; if (!id) return true;", so a weapon with
+       no inventory id is ALWAYS available: out from the first frame of play,
+       nothing in the bag to unequip, and no path back to bare hands, since
+       the weapon's own arms replace the hand and the torch whenever it is
+       up. No engine change, and episode 1 declares no weapon at all.
+
+       `kick` was 0.016 rad — 0.9 degrees, with no recovery, so it read as
+       nothing per shot and as an 18-degree drift up the range over a
+       magazine. The real recoil is the chapter's now (`recoil()` below), so
+       the engine's is off. */
+    weapon: { model: 'rifle', rounds: 20, mags: 2, fireGap: 0.42, kick: 0,
+              /* THE KICK, measured against the lens rather than guessed:
+                 0.032 rad is 1.8 degrees, which on the 72-degree lens is
+                 21 pixels of a 844-tall phone and on the 30-degree aim is
+                 51 — a punch you see, and it springs all the way home in a
+                 fifth of a second, so the next shot starts from the same
+                 sight picture. 0.010 of sideways scatter stops a magazine
+                 climbing in a dead straight line. */
+              recoil: 0.032, recoilYaw: 0.010, recover: 0.20,
+              /* THE CONE. A board is 1.05 x 1.5 m and the nearest bank is
+                 62 m out: 11 x 16 pixels on a phone, 5 x 8 at the far bank.
+                 1.7 degrees of assist is what turns "aim at the speck" into
+                 "aim at the shape". */
+              assist: 0.030,
+              /* AND THE AIM: 72 degrees down to 30 is 2.4x, which makes the
+                 near boards 39 px tall and the far ones 18 — visible. */
+              zoom: 30,
               shot: 'rifleshot', reload: 'riflereload', empty: 'rifledry', cock: 'riflecock' },
 
-    assets: ['fbosling', 'admintee', 'ghostcyclist', 'rifle', 'flashlight', 'kamaz',
+    assets: ['fboaim', 'fbosling', 'ghostcyclist', 'rifle', 'flashlight', 'kamaz',
              'tree1', 'tree2', 'tree3', 'tree4'],
 
     musicVol: 0,
@@ -105,13 +142,20 @@
 
     words: {
       approach: 'the target area',
-      act: 'E to raise your rifle',
-      actTouch: 'Tap to raise your rifle',
-      interact: 'E to raise your rifle',
-      interactTouch: 'Tap to raise your rifle',
+      /* v12.2: these said "raise your rifle", which was true when play
+         opened on empty hands and is a lie now that it is already up —
+         photographed at the spawn, the boot hint read "Left thumb walks ·
+         right thumb looks · Tap to raise your rifle" over a rifle that was
+         plainly in shot. `act`/`actTouch` are the boot hint; `interact` is
+         the badge on the decision object, which only appears in `decide`. */
+      act: 'E to act',
+      actTouch: 'Tap to act',
+      interact: 'E to answer it',
+      interactTouch: 'Tap to answer it',
       presence: 'It is still coming. Sanity level dropping until you act.',
       objLine: 'Move to lane six',
       objLoad: 'Load on the order',
+      objHold: 'On the line. Do NOT fire until the tower gives the order.',
       objS1: 'Static target, 100 metres. Fire on the order · {n}/3',
       objS2: 'Pop-up targets, 200 metres · {n}/3',
       objS3: 'Moving target, 200 metres · {n}/2',
@@ -121,9 +165,6 @@
       hotRadio: 'E to key the radio',
       hotRadioTouch: 'Tap to key the radio',
       hotTrack: 'Keep it in your sight',
-      hotDraw: 'E to draw your rifle and torch',
-      hotDrawTouch: 'Tap to draw your rifle and torch',
-      objDraw: 'Draw your rifle and torch at the ammo point',
       loadBrief: 'LOAD ON THE ORDER',
       loadBody: 'Three actions, in order, when the tower calls: magazine on, cock the weapon, safety catch on. Wait for each one.',
       loadGo: 'READY'
@@ -252,7 +293,12 @@
       g.fillStyle = 'rgba(255,255,255,0.10)'; g.fillRect(0, 96, 96, 32);
       const t = new THREE.CanvasTexture(c); madeTex.push(t); return t;
     })();
-    const matFig = nfm({ map: figTex, roughness: 1, side: THREE.DoubleSide });
+    /* a faint self-light on the boards: the range between flares is very
+       dark and an olive board at a hundred metres was a black rectangle on
+       black tarmac. A real target area is lit; this is the cheap version of
+       lit, and it costs no light and no shadow pass. */
+    const matFig = nfm({ map: figTex, roughness: 1, side: THREE.DoubleSide,
+                         emissive: 0x6e7256, emissiveIntensity: 0.48 });
     function mkTarget(x, z, opts = {}) {
       const g = new THREE.Group(); g.position.set(x, 0, z); world.add(g);
       const post = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.7, 0.08), matPost);
@@ -330,8 +376,10 @@
     const lineFill = new THREE.PointLight(0x30405a, 0.5, 26, 1.6); lineFill.position.set(HIS.x - 2, 4, 3); world.add(lineFill); owned.push(lineFill);
 
     /* ------------------------------------------------------------ the cast */
-    const CULL_SPHERE = { fbosling: { x: 0.056, y: 0.837, z: 0.212, r: 1.439 },
-                          admintee: { x: 0.02, y: 0.90, z: 0.06, r: 1.42 } };
+    /* only the safety officer is skinned now, so this is his sphere alone
+       (v8.4: a SkinnedMesh keeps its own, computed once from whatever pose
+       the file loads in, so a rig that raises its arms pops out of frame) */
+    const CULL_SPHERE = { fbosling: { x: 0.056, y: 0.837, z: 0.212, r: 1.439 } };
     function wideBounds(root, key) {
       const d = CULL_SPHERE[key];
       root.traverse(o => {
@@ -409,17 +457,69 @@
       return rig;
     }
 
-    /* the buddy on lane five, kneeling at his rest — the reserved rifle clip
-       (E2-SOLDIER-MODELS §13) is finally on screen and it is exactly what a
-       kneeling firing position looks like */
-    const buddy = mkRig('fbosling', { x: BUD.x, z: BUD.z + 0.2, ry: Math.PI, height: 1.74, idle: 'Idle_3',
-                                      pose: 'Gesture_with_Hand_on_Gun', at: 0.35 });
-    /* the safety officer, walking his stretch of the line */
+    /* ------------------------------------------------------- THE FIRING LINE
+       v12.2, Chad: "i thought i previously provided a static standing soldier
+       who is in an aiming pose with rifle pointing outwards? All the shooters
+       should use this model."
+
+       He did, at v7.0, and docs/E2-SOLDIER-MODELS.md §107 specified it as
+       `fboaim` and cast it at exactly this position — "the only figures in the
+       set that show a shouldered weapon; on a firing line nobody moves, so a
+       statue is not a compromise, it is correct." It was never prepped, so
+       v12.1 dressed the line with `fbosling` and `admintee`: men standing
+       about on a live range with their rifles slung, which is the one thing a
+       range never looks like. `tools/prepaim.mjs` ships it now.
+
+       It has NO RIG and NO CLIPS, and nothing on this line ever needed one —
+       not one scene drove `buddy`, `safety` or `detail`, so the six of them
+       have been standing still since v12.1 anyway, just in the wrong pose.
+       Being static also makes them nearly free: one parse, seven clones that
+       SHARE the geometry and the material.
+
+       The prep's contract is what makes the placement trivial: boots on
+       y = 0, the origin under the BODY (never under the box — a rifle held
+       out in front pushes the bounding box a quarter of a metre downrange and
+       a line is spaced by shoulders), and the RIFLE AIMING DOWN -Z, which is
+       where the targets are, so every man is placed at ry = 0.
+
+       Seven of them, one per lane except his own: the line is full now where
+       it used to stop at lane four. Height, yaw and depth are dealt from the
+       chapter's own stream so the row is not a photocopy — at night, with one
+       model, that is the whole of the variation available and it is enough. */
+    const AIM_H = 1.900;                       // the prepped model's own height, measured
+    const aimKit = { geo: null };
+    function mkAim(x, z, opts = {}) {
+      const height = opts.height || 1.74;
+      const group = new THREE.Group();
+      group.position.set(x, 0, z); group.rotation.y = opts.ry || 0;
+      world.add(group);
+      const proxy = new THREE.Mesh(new THREE.CapsuleGeometry(0.2, height - 0.4, 4, 8), matProxy);
+      proxy.position.y = height / 2; proxy.castShadow = !LOW; group.add(proxy);
+      const man = { group, proxy, model: null, ready: false, height };
+      loadGltf('fboaim').then(gltf => {
+        if (!alive) return;
+        /* a plain clone: with no skin, three.js shares the geometry and the
+           material across every copy, which is the whole reason seven men on
+           the line cost one man's memory */
+        const g = gltf.scene.clone(true);
+        g.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.receiveShadow = false; o.frustumCulled = true; } });
+        g.scale.setScalar(height / AIM_H);     // boots stay on y = 0: the prep grounded him
+        group.add(g); man.model = g;
+        proxy.visible = false; man.ready = true;
+      }).catch(() => { man.ready = true; });
+      return man;
+    }
+
+    /* every lane but his own, and lane five is the buddy who speaks */
+    const LINE_LANES = [1, 2, 3, 4, 5, 7, 8];
+    const lineMen = LINE_LANES.map((n, i) => mkAim(
+      LANE(n), 0.20 + (hash(i, 19) - 0.5) * 0.16,
+      { ry: (hash(i, 23) - 0.5) * 0.05, height: 1.70 + hash(i, 7) * 0.08 }));
+    const buddy = lineMen[4];                  // lane five, the man who talks in the stag
+    /* the safety officer keeps a RIG: he is the only man behind the line and
+       the only one not shooting, so a slung rifle and a breathing idle are
+       right on him and wrong on everybody else */
     const safety = mkRig('fbosling', { x: SAFETY.x, z: SAFETY.z, ry: Math.PI * 0.92, height: 1.76, idle: 'Idle_3' });
-    /* the other detail, lanes one to four */
-    const detail = [1, 2, 3, 4].map((n, i) => mkRig(i % 2 ? 'admintee' : 'fbosling',
-      { x: LANE(n), z: 0.25, ry: Math.PI, height: 1.72 + hash(i, 7) * 0.06,
-        idle: i % 2 ? 'Idle_9' : 'Idle_3', pose: i % 2 ? null : 'Gesture_with_Hand_on_Gun', at: 0.35 }));
 
     /* -------------------------------------------------- THE GHOST CYCLIST
        Chad's model: a soldier on a bicycle, one baked mesh, NO rig and no
@@ -428,7 +528,7 @@
        does. It is prepped facing −z with its wheels on y = 0, so it is
        aimed with a plain rotation.y and placed with nothing to correct. */
     const GHOST_A = 0.62;
-    const cyc = { group: new THREE.Group(), model: null, mats: [], a: 0, ready: false };
+    const cyc = { group: new THREE.Group(), model: null, mats: [], meshes: [], a: 0, ready: false };
     cyc.group.position.set(0, 0, -45); cyc.group.visible = false; world.add(cyc.group);
     const cycGlow = new THREE.PointLight(0xbcd0ff, 0, 14, 1.6); cycGlow.position.set(0, 1.1, 0); cyc.group.add(cycGlow);
     function cycAlpha(k) {
@@ -456,6 +556,12 @@
         }
       });
       cyc.group.add(g); cyc.model = g; cyc.ready = true;
+      /* v12.2: the shootable list gets the MESHES, not the group. The engine's
+         plain ray is recursive and finds either, but the aim-assist cone
+         measures a bounding sphere and a Group has no geometry to measure —
+         so the one thing in the chapter the player most needs to be able to
+         hit would have been the one thing assist could not help him hit. */
+      g.traverse(o => { if (o.isMesh) cyc.meshes.push(o); });
       cycAlpha(cyc.a);
     }).catch(() => { cyc.ready = true; });
     /* the primitive fallback under it (v4.7's rule: a failed download costs
@@ -495,7 +601,9 @@
        Primitives, because the close-up is two seconds and the real rifle is
        the VIEWMODEL — a second copy of it on a table is a download for a
        prop nobody looks at twice. */
-    const filmKit = new THREE.Group(); filmKit.position.set(AMMO.x, 0.83, AMMO.z); world.add(filmKit);
+    const filmKit = new THREE.Group(); filmKit.position.set(AMMO.x, 0.83, AMMO.z);
+    filmKit.visible = false;   // v12.2: the film shows it; play has it in his hands
+    world.add(filmKit);
     {
       const dark = nfm({ color: 0x1c1f1a, roughness: 0.7, metalness: 0.25 });
       const body = new THREE.Mesh(new THREE.BoxGeometry(0.66, 0.06, 0.09), dark); body.position.set(-0.28, 0.03, 0); filmKit.add(body);
@@ -625,7 +733,14 @@
        crossing, far out; each shot brings it in. It crosses left to right —
        the direction the range has spent an hour teaching him to answer. */
     const PASS_Z = [-46, -33, -22, -8];        // far, nearer, nearer, the foot of the berm
-    const PASS_SPD = [1.35, 1.6, 1.9, 0];      // m/s; the last one has stopped
+    /* v12.2, Chad: "The ghost cyclist should also move faster." He was right
+       and the numbers say why: 1.35 m/s is a slow WALK, and the model is a
+       man on a bicycle, so it read as a statue being dragged sideways — 52 m
+       at that speed is thirty-eight seconds of one pass. A bicycle is 4 to
+       6 m/s; these are 3.6 to 4.8, which puts a pass at eleven to fourteen
+       seconds and still leaves the last one standing still, which is the
+       beat. */
+    const PASS_SPD = [3.6, 4.2, 4.8, 0];       // m/s; the last one has stopped
     let pass = 0, cycT = 0, cycOn = false, cycStopped = false, shots = 0, tracked = 0, reported = false;
     let momentT = 0, bellDone = false;
     function cycStart(p) {
@@ -680,26 +795,51 @@
     function beginSerial(n) {
       serial = n; hits = 0; hot = false;
       setPhase('serial' + n);
-      objSerial();
-      for (const t of statics) t.set(false);
-      for (const t of popups) t.set(true);
+      /* WAIT FOR THE ORDER is its own objective, not a silence. The tower
+         takes four seconds to give it and every round fired inside those
+         four seconds costs six sanity, so the screen has to say so — and it
+         says it WITHOUT a completion banner (`complete: false`), because a
+         HUD that congratulates you for a beat you have not done yet is the
+         v8.7 lie in its other direction. It is also the drill the whole
+         chapter turns on: the thing the ghost exploits at the end is that
+         you were taught to wait to be told. */
+      if (kit) kit.objective(DATA.words.objHold, { complete: false });
+      for (const t of statics) { t.hit = false; t.set(false); }
+      for (const t of popups) { t.hit = false; t.set(true); }
+      mover.hit = false;
       MOVER.on = false; mover.set(n === 3 ? false : true);
       flareUp(n === 3 ? 26 : 20);
-      if (n === 1) { tower('t4fire1'); after(4.2, () => { hot = true; }); }
+      if (n === 1) { tower('t4fire1'); after(4.2, () => { if (phase === 'serial1') { hot = true; objSerial(); } }); }
       if (n === 2) {
         tower('t4fire2');
-        after(4.6, () => { hot = true; popSeq(0); });
+        after(4.6, () => { if (phase === 'serial2') { hot = true; objSerial(); popSeq(0); } });
       }
       if (n === 3) {
         tower('t4fire3');
-        after(4.4, () => { hot = true; MOVER.on = true; MOVER.t = 0; MOVER.dir = 1; });
+        after(4.4, () => {
+          if (phase !== 'serial3') return;
+          hot = true; objSerial(); MOVER.on = true; MOVER.t = 0; MOVER.dir = 1;
+        });
       }
-      after(n === 3 ? 30 : 24, () => { if (phase === 'serial' + n) endSerial(); });
+      after(n === 3 ? 34 : 28, () => { if (phase === 'serial' + n) endSerial(); });
     }
+    /* THE POP-UPS CYCLE. v12.1 raised one target for 3.4 s, then the next,
+       then the third, and then stopped for ever — so a serial that needs
+       three hits gave the player exactly three windows of three seconds
+       each at 98 m, and a single miss made the count unreachable. It ran
+       out the 24-second clock instead, which is what "nothing advances"
+       looks like from the firing point. Now the sequence LOOPS while the
+       serial is live, each board comes back up with its hit cleared, and
+       the window is 4.6 s. */
     function popSeq(i) {
-      if (phase !== 'serial2' || i >= popups.length) return;
-      popups[i].set(false);
-      after(3.4, () => { if (phase === 'serial2') { popups[i].set(true); popSeq(i + 1); } });
+      if (phase !== 'serial2' || !hot) return;
+      const t = popups[i % popups.length];
+      t.hit = false; t.set(false);
+      after(4.6, () => {
+        if (phase !== 'serial2') return;
+        t.set(true);
+        after(0.9, () => popSeq(i + 1));
+      });
     }
     function endSerial() {
       hot = false; MOVER.on = false;
@@ -715,11 +855,27 @@
 
     /* the shot the chapter scores. The engine raycasts and hands the hit
        over; nothing here knows how a rifle works. */
+    /* WHAT IS SHOOTABLE IS THE SERIAL'S OWN BANK, and that is a fix rather
+       than a flourish. Measured on the shipped build: a shot aimed at the
+       far bank (132 m) and a shot aimed at the pop-ups (98 m) both reported
+       a hit at 62 m — the 1.7-degree assist cone at sixty metres is 1.85 m
+       across, and a static board standing straight down the lane sits well
+       inside it. So a player doing serial two correctly would have had his
+       rounds silently stolen by serial one's boards, which are still up
+       because he never shot them.
+       A range runs one bank at a time and says so over the PA, so the
+       shootable set is that bank and nothing else; outside a serial only the
+       thing in the target area answers. The far pair are scenery and were
+       never in SER_TARGETS at all. */
     function shootables() {
       const out = [];
-      for (const t of statics.concat(popups, far)) if (!t.down) out.push(t.board);
-      if (!mover.down) out.push(mover.board);
-      if (cycOn && cyc.a > 0.2) { if (cyc.model) out.push(cyc.model); out.push(cyc.fallback); }
+      const bank = SER_TARGETS[serial - 1];
+      if (hot && bank) for (const t of bank) { if (!t.down) out.push(t.board); }
+      if (cycOn && cyc.a > 0.2) {
+        if (cyc.meshes.length) for (const m of cyc.meshes) out.push(m);
+        else if (cyc.model) out.push(cyc.model);
+        out.push(cyc.fallback);
+      }
       return out;
     }
     function targetOf(obj) {
@@ -753,7 +909,20 @@
       after(0.25, () => { t.set(true); if (worldSfx) worldSfx('targetfall', 0.6); });
       if (SER_TARGETS[serial - 1] && SER_TARGETS[serial - 1].indexOf(t) >= 0) {
         hits++; objSerial();
+        if (kit && kit.haptic) kit.haptic([15, 30, 15]);
         if (hits >= SER_NEED[serial - 1]) after(1.4, () => { if (phase === 'serial' + serial) endSerial(); });
+        /* THE MOVER COMES BACK UP. Serial three asks for two hits and there
+           is exactly ONE moving target, and `t.hit` latches — so the second
+           hit was unreachable and the serial could only ever end on its own
+           clock. A real moving-target serial sends the trolley back across;
+           so does this one. */
+        else if (t === mover && phase === 'serial3') {
+          after(2.4, () => {
+            if (phase !== 'serial3') return;
+            mover.hit = false; mover.set(false);
+            MOVER.on = true;
+          });
+        }
       }
     }
 
@@ -855,15 +1024,17 @@
     }
 
     /* --------------------------------------------------------- the phases */
-    /* the walk: the ammo point first (the rifle and the torch are ISSUED —
-       play opens on empty hands), then lane six. Two orders, one phase, and
-       the objective is DERIVED from the bag rather than stored, so a Continue
-       lands on the right one whatever was saved (v11.6's law). */
+    /* the walk to lane six, and that is the whole of it. v12.1 opened on
+       empty hands and made him fetch his kit from the ammo point first;
+       Chad's call at v12.2 is that the rifle is already in his hands when
+       play begins, so the fetch is gone and the first order is the one that
+       matters. */
     function beginLine(resumed) {
       setPhase('line');
       if (!kit) return;
-      if (drawn) { kit.objective(DATA.words.objLine); kit.waypoint({ x: HIS.x, y: 1.0, z: 0.35 }); }
-      else { kit.objective(DATA.words.objDraw); kit.waypoint({ x: AMMO.x, y: 1.0, z: AMMO.z - 0.7 }); }
+      if (kit.ammo) kit.ammo(DATA.weapon.rounds, DATA.weapon.mags);
+      kit.objective(DATA.words.objLine);
+      kit.waypoint({ x: HIS.x, y: 1.0, z: 0.35 });
     }
     function reachedLine() {
       if (phase !== 'line') return;
@@ -910,14 +1081,8 @@
       if (s === 'stag') { beginStag(true); return; }
       if (s.startsWith('serial')) { beginSerial(Math.max(1, Math.min(3, +s.slice(6) || 1))); return; }
       if (s === 'load') { beginLoad(true); return; }
-      /* `line` derives its step from the BAG, not from the string: a save
-         from before the ammo point still walks there, and one from after it
-         walks to the lane with the rifle already in hand */
-      drawn = !!(kit && kit.has && kit.has('rifle'));
-      filmKit.visible = !drawn;
+      filmKit.visible = false;
       beginLine(true);
-      if (!drawn) return;
-      if (kit && kit.equip) { kit.equip('rifle'); kit.equip('torch'); }
     }
 
     /* --------------------------------------------------------- the pile
@@ -935,7 +1100,17 @@
     pile.add(pileRing);
     const _ndc = new THREE.Vector3();
     const syncCamera = () => { camera.updateWorldMatrix(true, false); camera.matrixWorldInverse.copy(camera.matrixWorld).invert(); };
-    function pileDist() { return Math.hypot(yaw.position.x - PILE_POS.x, yaw.position.z - PILE_POS.z); }
+    /* v12.2: the approach prompt is the DECISION's or it is nothing.
+       Photographed on a 390 px phone during serial one: "the target area"
+       sat across the weapon HUD row, over the FIRE button, all the way
+       through the shooting — because the engine offers the approach word on
+       DISTANCE alone and the pile stands 1.7 m in front of the firing point.
+       `pileInView` and `pointerHitsPile` were already decide-only; the
+       distance was not. */
+    function pileDist() {
+      if (phase !== 'decide') return 999;
+      return Math.hypot(yaw.position.x - PILE_POS.x, yaw.position.z - PILE_POS.z);
+    }
     function pileScreen() { syncCamera(); return _ndc.set(PILE_POS.x, PILE_POS.y, PILE_POS.z).project(camera); }
     function pileInView() { return phase === 'decide'; }
     function pointerHitsPile() { return phase === 'decide'; }
@@ -943,6 +1118,66 @@
       if (getState() !== 'play' || phase !== 'decide') return false;
       startDecision();
       return true;
+    }
+
+    /* --------------------------------------------------------- THE LANE ZONE
+       v12.2. The walk to lane six used to be a waypoint diamond and a
+       1.3 m radius that existed only in `updateDay` — nothing on the ground
+       said where the firing point was, and nothing said you had arrived. It
+       is v8.7's bed zone here: `ZONE_R` is BOTH the radius the rim is drawn
+       at and the radius tested, so what is shown and what fires cannot drift
+       apart, and the wave phase comes off WALL time so it sweeps at the same
+       speed however slow the frame rate is.
+
+       Sodium, not e2c1's red: the objective HUD says the next order in
+       sodium and a completion in jade, and on a live range a red circle on
+       the ground means something else entirely. Two blends for the v8.8
+       reason — a NORMAL-blended tint carries the hue on any ground, an
+       ADDITIVE layer on top carries the light. */
+    const ZONE_R = 1.35, GLOW_R = 2.1, RIM = ZONE_R / GLOW_R;
+    const LINE_ZONE = { x: HIS.x, z: 0.35 };
+    const SOD_DEEP = 0xb06000, SOD_HOT = 0xffab3a;
+    function glowTex(stops) {
+      const sz = 512, [c, g2] = cnv(sz);
+      g2.clearRect(0, 0, sz, sz);
+      const g = g2.createRadialGradient(sz / 2, sz / 2, 0, sz / 2, sz / 2, sz / 2);
+      for (const [r, a] of stops) g.addColorStop(Math.max(0, Math.min(1, r)), `rgba(255,255,255,${a})`);
+      g2.fillStyle = g; g2.fillRect(0, 0, sz, sz);
+      const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
+      madeTex.push(t); return t;
+    }
+    const zone = new THREE.Group();
+    zone.position.set(LINE_ZONE.x, 0.02, LINE_ZONE.z); zone.visible = false; world.add(zone);
+    const zonePlane = (tex, r, op, col, add) => {
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(r * 2, r * 2),
+        new THREE.MeshBasicMaterial({ map: tex, color: col, transparent: true, opacity: op,
+          side: THREE.DoubleSide, depthWrite: false, fog: false,
+          blending: add ? THREE.AdditiveBlending : THREE.NormalBlending }));
+      m.rotation.x = -Math.PI / 2; m.renderOrder = add ? 4 : 3;
+      m.userData.moves = true;        // v8.8: anything that animates its own transform is never frozen
+      zone.add(m); return m;
+    };
+    const zoneFill = zonePlane(glowTex([[0, 0.26], [0.55, 0.36], [0.88, 0.72], [0.975, 0.95], [1, 0]]),
+                               ZONE_R, 0.72, SOD_DEEP, false);
+    const zoneRim = zonePlane(glowTex([[0, 0], [RIM * 0.93, 0], [RIM * 0.975, 0.75], [RIM, 1],
+                                       [RIM * 1.03, 0.62], [RIM * 1.10, 0.22], [RIM * 1.26, 0.07], [1, 0]]),
+                              GLOW_R, 0.95, SOD_HOT, true);
+    const WAVES = 3, WAVE_SECS = 2.1, zoneWaves = [];
+    const waveTex = glowTex([[0, 0], [0.80, 0], [0.905, 0.30], [0.965, 1], [0.99, 0.45], [1, 0]]);
+    for (let i = 0; i < WAVES; i++) zoneWaves.push(zonePlane(waveTex, GLOW_R, 0.7, SOD_HOT, true));
+    function drawZone() {
+      const on = phase === 'line';
+      if (zone.visible !== on) zone.visible = on;
+      if (!on) return;
+      const now = performance.now() / 1000;
+      const br = 0.5 + 0.5 * Math.sin(now * 2.0);
+      zoneFill.material.opacity = 0.50 + 0.16 * br;
+      zoneRim.material.opacity = 0.70 + 0.28 * br;
+      for (let i = 0; i < WAVES; i++) {
+        const k = (((now / WAVE_SECS) + i / WAVES) % 1), e = k * (2 - k);
+        zoneWaves[i].scale.setScalar(Math.max(0.001, 0.06 + 0.94 * e));
+        zoneWaves[i].material.opacity = 0.75 * Math.min(1, k * 6) * (1 - k) * (1 - k);
+      }
     }
 
     /* ------------------------------------------------------------ hotspots
@@ -957,7 +1192,6 @@
        sight — and the chapter's whole trick is that obeying it is safe. */
     const TOUCH = matchMedia('(pointer: coarse)').matches || 'ontouchstart' in window;
     const trackPos = { x: 0, y: 1.1, z: -45 };
-    let drawn = false;
     const hotspots = [
       { id: 'radio', pos: { x: HIS.x + 0.55, y: 1.15, z: 0.45 }, radius: 2.4, anyView: true,
         prompt: TOUCH ? DATA.words.hotRadioTouch : DATA.words.hotRadio, markY: 0.5,
@@ -967,27 +1201,7 @@
         prompt: DATA.words.hotTrack, markY: 0.8,
         enabled: () => (phase === 'confuse' || phase === 'moment') && cycOn && cyc.a > 0.3 && tracked < 1,
         onInteract() { return doTrack(); } },
-      /* the ammo point, before the line: the rifle and the torch are ISSUED,
-         so the first frame of play has empty hands and a reason to walk */
-      { id: 'draw', pos: { x: AMMO.x, y: 1.05, z: AMMO.z - 0.7 }, radius: 2.2, anyView: true,
-        prompt: TOUCH ? DATA.words.hotDrawTouch : DATA.words.hotDraw, markY: 0.45,
-        enabled: () => phase === 'line' && !drawn,
-        onInteract() { return drawKit(); } }
     ];
-
-    function drawKit() {
-      if (drawn || !kit) return false;
-      drawn = true;
-      if (kit.give) { kit.give('rifle'); kit.give('torch'); }
-      if (kit.equip) { kit.equip('rifle'); kit.equip('torch'); }
-      if (kit.ammo) kit.ammo(DATA.weapon.rounds, DATA.weapon.mags);
-      filmKit.visible = false;
-      if (worldSfx) worldSfx('riflecock', 0.7);
-      if (kit.haptic) kit.haptic(50);
-      kit.objective(DATA.words.objLine);
-      kit.waypoint({ x: HIS.x, y: 1.0, z: 0.35 });
-      return true;
-    }
     /* the proper words, keyed on the radio: what option A does, said before
        the decision ever opens. It is worth wisdom because it is the drill. */
     function doReport() {
@@ -1018,17 +1232,37 @@
       for (const r of rigs) if (r.mixer && r.group.visible) r.mixer.update(dt);
       if (getState() !== 'play') { lastWall = 0; return; }
       const now = performance.now() / 1000;
-      if (lastWall) dayClock.t += Math.min(0.5, now - lastWall);
+      /* WALL TIME, for everything that MOVES. `dt` is clamped to 0.05 s, so
+         a phone under twenty frames a second ran the flare, the trolley and
+         the cyclist at half speed or less — and it is hottest exactly when
+         the chapter is busiest (v9.3's clock-mismatch law). The chapter's
+         own clock has been on wall time since v7.1; these three were not. */
+      const wdt = lastWall ? Math.min(0.5, now - lastWall) : 0.016;
+      if (lastWall) dayClock.t += wdt;
       lastWall = now;
       if (!booted) { booted = true; applyPhase(kit ? kit.getPhase() : null); }
-      flareFrame(dt); moverFrame(dt); cycFrame(dt);
+      flareFrame(wdt); moverFrame(wdt); cycFrame(wdt);
       /* the moving hotspot rides the thing it is on */
       trackPos.x = cyc.group.position.x; trackPos.z = cyc.group.position.z;
-      /* the walk to the line is the first objective, and reaching it is what
-         ends it — the lane, not a button (v8.7's bed zone, at a metre) */
-      if (phase === 'line' && drawn
-          && Math.hypot(yaw.position.x - HIS.x, yaw.position.z - 0.35) < 1.3) reachedLine();
-      if (phase === 'moment') momentT += dt;
+      /* THE WALK TO THE LINE, and reaching it is what ends it — the lane,
+         not a button (v8.7's bed zone).
+
+         v12.2: this used to read `phase === 'line' && drawn && ...`, and
+         `drawn` only became true when the player found the ammo point's
+         hotspot and pressed it. So a player who walked straight to lane six —
+         which is what the objective's waypoint was pointing at as soon as he
+         had his kit, and the only thing on a range anyone wants to do —
+         arrived at the firing point and NOTHING HAPPENED: no load drill, no
+         serial, no tower, and a rifle that could not fire either, because
+         `weaponAvail()` was false with nothing in the hand slot. One
+         conjunct, and it gated the whole chapter. It is gone with the beat
+         it belonged to, and ZONE_R is both the circle drawn on the ground
+         and the radius tested, so what is shown and what fires cannot drift
+         apart (v8.7's law). */
+      drawZone();
+      if (phase === 'line'
+          && Math.hypot(yaw.position.x - LINE_ZONE.x, yaw.position.z - LINE_ZONE.z) < ZONE_R) reachedLine();
+      if (phase === 'moment') momentT += wdt;
       runTodo(); runSpeak(); runQueue();
     }
     /* the marker on the ground out in the target area, while the decision is
@@ -1067,6 +1301,7 @@
       const all = statics.concat(popups, far, [mover]);
       if (s.targets) for (let i = 0; i < all.length; i++) all[i].set(!!s.targets[i]);
       if (kit) { if (kit.daylight) kit.daylight(flareOn ? FLARE : null, 0); if (kit.weaponOut) kit.weaponOut(null); }
+      filmKit.visible = false;   // the film borrowed it; play never has it
       mixBeds();
     }
     /* a replay starts the night again: the flare out, the rail still, the
@@ -1082,14 +1317,13 @@
       cycEnd(); cyc.group.position.set(0, 0, -45); cyc.group.rotation.y = -Math.PI / 2;
       pass = 0; cycT = 0; cycStopped = false; shots = 0; tracked = 0; reported = false;
       momentT = 0; bellDone = false; hot = false; serial = 0; hits = 0; early = 0;
-      drawn = false; filmKit.visible = true;
+      filmKit.visible = false;
       mixBeds();
       if (kit) {
         kit.objective(null); kit.timer(null); kit.waypoint(null); kit.presence(0);
         kit.daylight(null, 0); kit.decisionClock(0); kit.setPhase(null);
         if (kit.hurt) kit.hurt(null); if (kit.root) kit.root(false);
         if (kit.torchOn) kit.torchOn(false);
-        if (kit.take) { kit.take('rifle'); kit.take('torch'); }
         if (kit.weaponOut) kit.weaponOut(null);
         if (kit.ammo) kit.ammo(DATA.weapon.rounds, DATA.weapon.mags);
       }
@@ -1106,8 +1340,7 @@
       for (const b of boxes) out.push(b);
       for (const b of treeBlockers) out.push(b);
       /* the men on the line: a column each, so nobody walks through a firer */
-      for (const m of [BUD, SAFETY, { x: LANE(1), z: 0.25 }, { x: LANE(2), z: 0.25 },
-                       { x: LANE(3), z: 0.25 }, { x: LANE(4), z: 0.25 }])
+      for (const m of lineMen.map(x => ({ x: x.group.position.x, z: x.group.position.z })).concat([SAFETY]))
         out.push(new THREE.Box3(new THREE.Vector3(m.x - 0.45, 0, m.z - 0.45),
                                 new THREE.Vector3(m.x + 0.45, 1.8, m.z + 0.45)));
       return out;
@@ -1147,7 +1380,7 @@
     const readyAt = performance.now();
     return (S = {
       world, noteTex: null, blockers: blockers(),
-      ready: () => (buddy.ready && safety.ready && detail.every(r => r.ready) && cyc.ready && truckReady)
+      ready: () => (safety.ready && lineMen.every(m => m.ready) && cyc.ready && truckReady)
                    || performance.now() - readyAt > 20000,
       pile: { pos: PILE_POS, radius: INTERACT_R, group: pile,
               dist: pileDist, screen: pileScreen, inView: pileInView,
@@ -1163,7 +1396,7 @@
 
       // the chapter's own, for the scenes and the probes
       HIS, BUD, SAFETY, TOWER, AMMO, RANGE, LANE, PILE_POS,
-      buddy, safety, detail, cyc, cycGlow, flare, flareBall, lineFill,
+      buddy, safety, lineMen, cyc, cycGlow, flare, flareBall, lineFill,
       statics, popups, far, mover, MOVER, rail, berm, lanes,
       cycStart, cycEnd, cycAlpha, flareUp, flareDown,
       setMover: (on) => { MOVER.on = !!on; },
@@ -1172,10 +1405,10 @@
          run under a cutscene and a flare left to the frame would hang */
       setFlare: (v) => { flare.intensity = v; flareBall.material.opacity = Math.min(1, v / 260); },
       FLARE, filmKit, truck,
-      sayLine, after, dayClock, bank, drawKit,
+      sayLine, after, dayClock, bank,
       get phase() { return phase; },
       setPhase, applyPhase, beginSerial, beginStag, beginConfuse, beginMoment, openDecision,
-      lookInfo: () => ({ phase, serial, hits, hot, early, shots, tracked, reported, drawn,
+      lookInfo: () => ({ phase, serial, hits, hot, early, shots, tracked, reported,
                          pass, cycOn, cycA: +cyc.a.toFixed(2),
                          cyc: { x: +cyc.group.position.x.toFixed(2), z: +cyc.group.position.z.toFixed(2) },
                          flare: { on: flareOn, t: +flareT.toFixed(1), i: +flare.intensity.toFixed(0) },

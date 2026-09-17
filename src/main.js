@@ -984,6 +984,7 @@ let torchProp = null, torchPropKey = null;   // v11.1: the torch's own viewmodel
    rig (it brings its own hands), driven by its own clips; the rounds and
    magazines are engine state a chapter reads through the kit. */
 let weaponDecl = null, weaponProp = null, weaponPropKey = null, weaponMixer = null, weaponActs = null;
+let weaponClipT0 = {};                       // v12.2: where each take's first key sits, measured at load
 let weaponForce = null;                      // null: follow the bag; true/false: a film or a scene has said
 let weaponRounds = 0, weaponMags = 0, weaponBusy = null, weaponFlash = null, weaponFlashT = 0;
 let weaponShown = false, weaponLastFire = 0;
@@ -1556,8 +1557,19 @@ function torchToggle() {
    declares one with no model, so the seam is proved without the download. */
 const WEAPON_DEFAULTS = {
   rounds: 30, mags: 3, fireGap: 0.34, kick: 0.012,
+  /* v12.2 — RECOIL, ASSIST AND THE AIM. All five default to nothing, so the
+     fixture and anything shipped before this release behave exactly as they
+     did; episode 1 declares no weapon at all.
+       recoil / recoilYaw  the impulse, in radians, up and sideways
+       recover             seconds for it to come back; it returns in FULL,
+                           because a permanent climb on targets this small is
+                           a punishment, not a feel
+       assist              the half-angle of the cone a shot may be off by
+                           and still count (see weaponAssistHit)
+       zoom                the field of view AIM mode narrows to; 0 = none  */
+  recoil: 0, recoilYaw: 0, recover: 0.22, assist: 0, zoom: 0,
   clips: { draw: 'Draw', shoot: 'Shoot', reload: 'Reload', hide: 'Hide' },
-  rates: { draw: 2.6, shoot: 3.2, reload: 1.6, hide: 2.6 },
+  rates: { draw: 2.6, shoot: 1.6, reload: 1.6, hide: 2.6 },
   /* §8's measured placement: scale 0.01 (centimetres), a half turn about Y
      (the file's forward is +Z), and the camera at the model's own eye so
      the cut forearms sit behind the lens */
@@ -1570,6 +1582,7 @@ function weaponSetup(decl) {
                  rates: { ...WEAPON_DEFAULTS.rates, ...((decl && decl.rates) || {}) } };
   weaponRounds = Math.max(0, weaponDecl.rounds | 0); weaponMags = Math.max(0, weaponDecl.mags | 0);
   weaponForce = null; weaponBusy = null; weaponLog.length = 0;
+  weaponRecoilReset(); weaponAdsOff(); recSeed = 20250917;
   if (!weaponFlash) {
     weaponFlash = new THREE.PointLight(0xffd28a, 0, 9, 1.8);
     weaponFlash.position.set(0.12, -0.10, -0.7);
@@ -1581,6 +1594,7 @@ function weaponSetup(decl) {
 }
 function weaponTeardown() {
   weaponDecl = null; weaponForce = null; weaponBusy = null; weaponRounds = 0; weaponMags = 0;
+  weaponRecoilReset(); weaponAdsOff(); camLens(CAM_FOV);
   if (weaponFlash) { camera.remove(weaponFlash); weaponFlash.dispose?.(); weaponFlash = null; }
   weaponPropDrop();
   document.body.classList.remove('hasWeapon', 'weaponUp');
@@ -1629,6 +1643,27 @@ function weaponPropLoad(key) {
       if (!clip) continue;
       const a = weaponMixer.clipAction(clip);
       a.setLoop(THREE.LoopOnce, 1); a.clampWhenFinished = true; a.timeScale = d.rates[k] || 1;
+      /* WHERE THE TAKE ACTUALLY MOVES. v12.0 found that this file's Draw
+         holds every one of its twelve tracks still until 4.17 s of a 4.67 s
+         clip, and set the rate for "the half-second that moves" — but an
+         action still has to TRAVERSE the dead 4.17 s to get there, which at
+         rate 2.6 is 1.6 s of a frozen rifle.
+         Shoot is worse, and it is what Chad felt: its keys run 3.37 s to
+         3.57 s, so at the shipped rate 3.2 the rifle would first move 1.05 s
+         after the trigger — and `fireGap` is 0.42 s, so every shot RESET the
+         clip to zero and the moving fifth of a second was never once
+         reached. The gun did not budge, at any rate of fire.
+         So every take now starts at its own first key, MEASURED here rather
+         than assumed, and Shoot's 0.20 s of motion plays in 0.125 s. */
+      let t0 = Infinity;
+      for (const tr of clip.tracks) if (tr.times && tr.times.length) t0 = Math.min(t0, tr.times[0]);
+      /* a MODULE map, not `a.userData`: THREE.AnimationAction has no
+         userData, so `a.userData.t0 = ...` is a TypeError — thrown inside
+         the GLTFLoader callback, one line before `weaponProp = g`, and
+         swallowed whole by the `.catch(() => {})` this loader ends with. The
+         rifle simply never appeared and nothing said why (measured: the GLB
+         fetched 200, the mixer existed, the prop was null). */
+      weaponClipT0[k] = isFinite(t0) ? Math.max(0, t0 - 0.001) : 0;
       weaponActs[k] = a;
     }
     /* a take that ends hands the pose to the DRAWN rest (the draw take's
@@ -1641,7 +1676,8 @@ function weaponPropLoad(key) {
     });
     weaponProp = g; g.visible = false; handsRoot.add(g); layoutHands();
     weaponPropSync();
-  }, () => {})).catch(() => {});
+  }, e => console.error('weapon model parse failed', e)))
+    .catch(e => console.error('weapon model load failed', e));
 }
 function weaponPropDrop() {
   if (weaponProp) {
@@ -1650,12 +1686,15 @@ function weaponPropDrop() {
     weaponProp.traverse(o => { if (!o.isMesh) return; o.geometry?.dispose?.(); for (const m of (Array.isArray(o.material) ? o.material : [o.material])) { m?.map?.dispose?.(); m?.metalnessMap?.dispose?.(); m?.dispose?.(); } });
     weaponProp = null;
   }
-  weaponMixer = null; weaponActs = null; weaponPropKey = null; weaponShown = false;
+  weaponMixer = null; weaponActs = null; weaponPropKey = null; weaponShown = false; weaponClipT0 = {};
 }
 function weaponPlay(k) {
   if (!weaponActs || !weaponActs[k]) return false;
   for (const a of Object.values(weaponActs)) a.stop();
-  weaponActs[k].reset().play();
+  const a = weaponActs[k];
+  a.reset().play();
+  a.time = weaponClipT0[k] || 0;   // v12.2: begin where the take moves
+  weaponMixer.update(0);
   return true;
 }
 function weaponPark() {   // the drawn rest: the draw take's last frame, held
@@ -1693,6 +1732,15 @@ function weaponPropSync() {
 }
 function weaponFrame(dt) {
   if (!weaponDecl) return;
+  /* v12.2: DERIVED ON THE FRAME (v11.1's law). `weaponUp` was set only by
+     weaponAvailSync/weaponSetup, and neither runs on the transition INTO
+     play — so a chapter whose weapon needs no inventory item arrived in play
+     with no `weaponUp` on <body>, which means no weapon HUD, no FIRE button
+     and no reticle, measured on the shipped build: body was
+     "finePtr hasWeapon cardup inplay" at the first frame with weaponIsOut()
+     already true. A phone player had the rifle in his hands and no way to
+     pull the trigger. The sync is idempotent and only acts on a change. */
+  weaponPropSync();
   if (weaponMixer && weaponShown) weaponMixer.update(Math.min(dt, 0.1));
   if (weaponFlash) {
     weaponFlashT = Math.max(0, weaponFlashT - dt);
@@ -1717,7 +1765,96 @@ function weaponFrame(dt) {
     pill.classList.toggle('empty', weaponRounds === 0);
   }
 }
+/* v12.2 — RECOIL. Chad: "there is no proper recoil when shooting."
+   v12.0's whole answer was one line: `pitch.rotation.x += weaponDecl.kick`
+   at 0.016 rad. That is 0.9 of a degree, which on a 72-degree lens is ten
+   pixels of a phone screen — imperceptible as a kick — and it NEVER CAME
+   BACK, so twenty rounds walked the aim 18 degrees up the range while each
+   individual shot felt like nothing. Both halves wrong.
+
+   What a kick actually is: a hard impulse and a spring back. The offset is
+   held here and applied to the camera as a DELTA every frame, so the
+   player's own look still owns the base and the sum of the deltas is zero
+   by the time it has settled — the shot punches and the sights come home. */
+let recP = 0, recY = 0, recPrevP = 0, recPrevY = 0, recSeed = 20250917;
+function weaponRecoilFire() {
+  const d = weaponDecl; if (!d) return;
+  recP += d.recoil || 0;
+  /* a deterministic sideways scatter: a probe that fires ten rounds has to
+     be able to read the same ten numbers back */
+  recSeed = (recSeed * 1103515245 + 12345) & 0x7fffffff;
+  recY += ((recSeed / 0x7fffffff) * 2 - 1) * (d.recoilYaw || 0);
+}
+/* returns this frame's delta and advances the spring. WALL time, because
+   `dt` is clamped to 0.05 s and a recoil on the clamped clock would take
+   four times as long to settle on a hot phone as on a desktop — and the
+   phone is the one device it has to feel right on (v9.3's clock law). */
+function weaponRecoilStep(dtWall) {
+  if (!weaponDecl || (!recP && !recY && !recPrevP && !recPrevY)) return null;
+  const k = Math.exp(-dtWall / Math.max(0.02, weaponDecl.recover || 0.22));
+  recP *= k; recY *= k;
+  if (Math.abs(recP) < 1e-5) recP = 0;
+  if (Math.abs(recY) < 1e-5) recY = 0;
+  const dp = recP - recPrevP, dy = recY - recPrevY;
+  recPrevP = recP; recPrevY = recY;
+  return { dp, dy };
+}
+function weaponRecoilReset() { recP = recY = recPrevP = recPrevY = 0; }
+
+/* v12.2 — AIM MODE. The boards on episode 2 chapter 4's range stand at 62,
+   98 and 132 metres and are 1.05 m by 1.5 m, which through a 72-degree
+   VERTICAL lens on a 390x844 phone is 11x16 pixels at the near bank and
+   5x8 at the far one. No amount of steadiness makes that aimable, so a
+   chapter with a `zoom` gets a second field of view. The look's own
+   sensitivity scales with it in the frame, or a narrow lens is unusably
+   twitchy. */
+let weaponAds = false;
+function weaponAdsSync() {
+  const on = weaponAds && !!weaponDecl && weaponDecl.zoom > 0 && state === 'play' && weaponWant();
+  document.body.classList.toggle('weaponAds', on);
+  camLens(on ? weaponDecl.zoom : CAM_FOV);
+}
+function weaponAdsToggle() {
+  if (!weaponDecl || !(weaponDecl.zoom > 0) || state !== 'play' || !weaponWant()) return;
+  weaponAds = !weaponAds;
+  weaponAdsSync();
+  snd('uiclick', 0.28);
+}
+function weaponAdsOff() { if (weaponAds) { weaponAds = false; document.body.classList.remove('weaponAds'); } }
 const weaponRay = new THREE.Raycaster();
+const _asA = new THREE.Vector3(), _asB = new THREE.Vector3(), _asS = new THREE.Sphere();
+/* THE ASSIST. A single ray through the exact centre pixel is the right model
+   for a thing you can see; it is the wrong one for a five-pixel figure in
+   the dark. When the ray itself misses, every listed target is measured for
+   how far OFF-AXIS its centre is, in radians, and the nearest one inside the
+   cone counts. It is the standard console answer and it is invisible: the
+   player aims at the shape and the shape falls. */
+function weaponAssistHit(list, cone) {
+  if (!cone || !list || !list.length) return null;
+  const o = weaponRay.ray.origin, dir = weaponRay.ray.direction;
+  let best = null, bestAng = cone;
+  for (const obj of list) {
+    if (!obj || obj.visible === false || !obj.geometry) continue;
+    if (!obj.geometry.boundingSphere) obj.geometry.computeBoundingSphere();
+    if (!obj.geometry.boundingSphere) continue;
+    _asS.copy(obj.geometry.boundingSphere);
+    obj.updateWorldMatrix(true, false);
+    _asS.applyMatrix4(obj.matrixWorld);
+    _asA.copy(_asS.center).sub(o);
+    const dist = _asA.length();
+    if (dist < 0.001) continue;
+    /* the angle off the line of sight, LESS the angle the target itself
+       subtends — a big near thing is easier to hit than a small far one,
+       which is what a player expects */
+    const ang = Math.max(0, _asA.angleTo(dir) - Math.atan2(_asS.radius, dist));
+    if (ang < bestAng) {
+      bestAng = ang;
+      best = { object: obj, distance: dist,
+               point: _asB.copy(dir).multiplyScalar(dist).add(o).clone() };
+    }
+  }
+  return best;
+}
 function weaponFire() {
   if (!weaponDecl || state !== 'play' || !weaponWant()) return false;
   if (weaponBusy && weaponBusy !== 'draw') return false;   // a reload or a holster owns the hands; the draw does not stop a shot
@@ -1735,8 +1872,8 @@ function weaponFire() {
   if (weaponDecl.shot) snd(weaponDecl.shot, 1);
   haptic([30, 20, 40]);
   weaponFlashT = 0.09;
-  /* the kick: a small pitch up, applied as a DELTA so the look stays the player's */
-  pitch.rotation.x = Math.min(pitchHi, pitch.rotation.x + weaponDecl.kick);
+  if (weaponDecl.kick) pitch.rotation.x = Math.min(pitchHi, pitch.rotation.x + weaponDecl.kick);
+  weaponRecoilFire();
   weaponRay.setFromCamera({ x: 0, y: 0 }, camera);
   const list = (stage && typeof stage.shootables === 'function') ? (stage.shootables() || []) : null;
   let hit = null;
@@ -1744,9 +1881,18 @@ function weaponFire() {
     const hits = list ? weaponRay.intersectObjects(list, true) : weaponRay.intersectObjects(scene.children, true);
     hit = hits.find(h => h.object && h.object.visible !== false) || null;
   } catch { hit = null; }
+  /* the ray missed: give the shot the cone the chapter asked for */
+  if (!hit && list && weaponDecl.assist) hit = weaponAssistHit(list, weaponDecl.assist);
   const report = { hit: !!hit, object: hit ? hit.object : null, point: hit ? hit.point.clone() : null,
                    distance: hit ? hit.distance : Infinity, ray: weaponRay.ray.clone(), rounds: weaponRounds, mags: weaponMags };
   weaponLog.push({ t: now, hit: hit ? (hit.object.name || hit.object.type) : null, dist: hit ? +hit.distance.toFixed(2) : null });
+  /* v12.2: the reticle answers. On a range where the target is sixteen
+     pixels tall there is otherwise no way to tell a hit from a miss until
+     the board falls a quarter of a second later. */
+  if (hit) {
+    const ret = $('reticle');
+    if (ret) { ret.classList.remove('hit'); void ret.offsetWidth; ret.classList.add('hit'); }
+  }
   if (stage && typeof stage.onShot === 'function') { try { stage.onShot(report); } catch (e) { console.error(e); } }
   return true;
 }
@@ -2603,6 +2749,8 @@ function kitInit() {
   $('interact')?.querySelector('.ibadge')?.addEventListener('click', e => { e.stopPropagation(); interactNow(); });
   $('torchBtn')?.addEventListener('click', e => { e.stopPropagation(); torchToggle(); });
   /* v12.0: the fire and reload buttons — a phone's trigger; a mouse's is the click */
+  const ab = $('aimBtn');
+  if (ab) { ab.addEventListener('click', e => { e.stopPropagation(); weaponAdsToggle(); }); ab.setAttribute('aria-label', T('hud.aim')); }
   const fb = $('fireBtn'), rb = $('reloadBtn');
   if (fb) { fb.addEventListener('pointerdown', e => { e.stopPropagation(); e.preventDefault(); weaponFire(); }); fb.setAttribute('aria-label', T('hud.fire')); }
   if (rb) { rb.addEventListener('click', e => { e.stopPropagation(); weaponReload(); }); rb.setAttribute('aria-label', T('hud.reload')); }
@@ -2774,6 +2922,7 @@ const KIT = {
   weapon: weaponSetup,
   weaponOut: v => { weaponForce = (v === null || v === undefined) ? null : !!v; weaponPropSync(); },
   weaponIsOut: () => weaponWant(),
+  weaponAds: v => { if (v === undefined) return weaponAds; weaponAds = !!v; weaponAdsSync(); return weaponAds; },
   weaponAvail,
   fire: weaponFire, reload: weaponReload,
   ammo: (rounds, mags) => { if (rounds !== undefined) weaponRounds = Math.max(0, rounds | 0); if (mags !== undefined) weaponMags = Math.max(0, mags | 0); return { rounds: weaponRounds, mags: weaponMags }; },
@@ -3712,11 +3861,13 @@ addEventListener('keydown', e => {
   if (e.code === 'KeyE' && state === 'play') { interactNow(); return; }   // v7.0: the pile, else the nearest hotspot
   if (e.code === 'Space' && state === 'play' && weaponWant() && !e.repeat) { e.preventDefault(); weaponFire(); return; }   // v12.0
   if (e.code === 'KeyR' && state === 'play' && weaponWant()) { weaponReload(); return; }   // v12.0
+  if (e.code === 'KeyQ' && state === 'play' && weaponWant()) { weaponAdsToggle(); return; }   // v12.2: aim
   keys[e.code] = true;
 });
 addEventListener('keyup', e => { if (evKey(e, false)) return; keys[e.code] = false; });
 
 let lookX = 0, lookY = 0;            // accumulated look delta this frame
+let lastWallLook = 0;                // v12.2: the recoil spring runs on WALL time
 let locked = false;                  // pointer lock currently held
 let lockBlocked = false;             // the page is not allowed to lock at all
 const lastMouse = { x: 0, y: 0 };
@@ -3747,7 +3898,9 @@ canvas.addEventListener('mouseenter', () => { pointerInside = true; });
 canvas.addEventListener('mouseleave', () => { pointerInside = false; edgeTurn = 0; });
 addEventListener('blur', () => { edgeTurn = 0; });
 
+canvas.addEventListener('contextmenu', e => { if (state === 'play' && weaponWant()) e.preventDefault(); });
 canvas.addEventListener('mousedown', e => {
+  if (e.button === 2 && state === 'play' && weaponWant()) { e.preventDefault(); weaponAdsToggle(); return; }   // v12.2
   if (e.button !== 0) return;
   if (locked && state === 'play' && weaponWant()) { weaponFire(); return; }   // v12.0: under lock the click is the trigger
   // With no pointer lock there is a real cursor, so clicking the heap works
@@ -5319,6 +5472,7 @@ function applyState(st) {
     if (inv.open) invPaint();
   }
   torchAvailSync();   // v11.6: a torch that is an item follows the restored bag
+  weaponAvailSync();  // v12.2: a resume must paint the weapon HUD too
   weaponAvailSync();  // v12.0: and so does the weapon
   if (weaponDecl && st.weapon && typeof st.weapon === 'object') {   // v12.0: the rounds and mags ride the save, tolerated absent
     const n = (v, fb) => (typeof v === 'number' && Number.isFinite(v)) ? Math.max(0, v | 0) : fb;
@@ -5397,6 +5551,8 @@ function invPaint() {
   inv.flash = null;   // one paint's worth: the animation runs, the next paint forgets it
   invInfoPaint();
   torchAvailSync();   // v11.6: the torch button follows the hand slot
+  weaponAvailSync();  // v12.2: and so does the rifle, on every way into play
+  weaponAdsOff(); weaponRecoilReset(); camLens(CAM_FOV);
   weaponAvailSync();  // v12.0
 }
 
@@ -8023,9 +8179,22 @@ function tick(now = 0) {
   if (edgeTurn) lookX += Math.sign(edgeTurn) * edgeTurn * edgeTurn * 2.6 * dt;
   const dLookX = lookX, dLookY = lookY;
   if (state === 'play') {
-    yaw.rotation.y += lookX;
-    pitch.rotation.x = Math.max(pitchLo, Math.min(pitchHi, pitch.rotation.x + lookY));   // v7.0: a pose narrows the neck
-  }
+    /* v12.2: a narrowed lens turns the same swipe into a far bigger angle on
+       screen, so the look is scaled by the zoom ratio — without this, aiming
+       down a 30-degree lens is unusable. And the recoil spring rides on top
+       as a DELTA, so the player's own look still owns the base. */
+    const zk = camera.fov / CAM_FOV;
+    /* the spring's delta is clamped at HALF A SECOND, not a tenth: a tenth
+       makes the recovery frame-rate dependent (measured on a one-frame-a-
+       second box, the kick was still 1.75 deg a second after the shot), and
+       half a second is only there so a backgrounded tab does not come back
+       with the whole spring discharged in one step. */
+    const rec = weaponRecoilStep(lastWallLook ? Math.min(0.5, (t - lastWallLook) / 1000) : 0.016);
+    lastWallLook = t;
+    yaw.rotation.y += lookX * zk + (rec ? rec.dy : 0);
+    pitch.rotation.x = Math.max(pitchLo, Math.min(pitchHi,
+      pitch.rotation.x + lookY * zk + (rec ? rec.dp : 0)));   // v7.0: a pose narrows the neck
+  } else { weaponRecoilReset(); lastWallLook = 0; }
   lookX = lookY = 0;
 
   if (state === 'cine') cineUpdate(t);

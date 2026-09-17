@@ -3019,6 +3019,77 @@ What the baseline contains, by release:
   `n4dawn` runs UNDER the outcome card in all four scenes — the sentence that
   loads chapter 5. Sheet v61 exported (v44 stays the link).
   docs/V12.0-E2C4-PLAN.md §17 is the build's memory.
+- **v12.2** THE RANGE THAT WORKS, AND THE MEN WHO ARE AIMING — Chad's
+  playtest of v12.1: *"the entire range programming is broken, aiming is
+  broken, targets dont drop when shot, nothing advances, shooting does not
+  seem to work, there is no proper recoil when shooting, and it is not
+  obvious what the player should do ... i thought i previously provided a
+  static standing soldier who is in an aiming pose ... The ghost cyclist
+  should also move faster."* Six complaints, and the thing worth writing
+  down first is that they are SIX SEPARATE BUGS that happened to land in the
+  same forty seconds of play. **NOTHING ADVANCES** was one conjunct:
+  `if (phase === 'line' && drawn && ...)` — `drawn` only became true if the
+  player found the AMMO POINT's hotspot, so walking straight to lane six,
+  which is the only thing anyone wants to do on a range, reached the firing
+  point and did nothing at all; and since nothing was then in the hand slot,
+  `weaponAvail()` was false and `weaponFire()` returned at its first gate, so
+  "nothing advances" and "shooting does not seem to work" are the same line.
+  **THE RIFLE NEVER LEAVES HIS HANDS** is one deleted word: `weaponAvail()`
+  reads `const id = weaponDecl.item; if (!id) return true;`, so dropping
+  `item: 'rifle'` makes it out from the first frame, unremovable, and with no
+  path back to bare hands; the TORCH keeps its item and is never issued,
+  which makes `torchAvail()` false for the player while a scene's
+  `kit.torchOn()` stays ungated (v11.6). Zero engine change for either.
+  **NO PROPER RECOIL** had two causes, both measured: the rifle's Shoot take
+  holds every one of its eleven tracks still until **3.37 s of a 3.57 s
+  clip**, so at the shipped rate the gun first moved 1.05 s after the trigger
+  and `fireGap` 0.42 s reset it first — it never moved at any rate of fire
+  (every take starts at its own measured first key now); and the camera's
+  whole kick was `pitch += 0.016` — 0.9°, ten pixels on a phone, and it never
+  came back, so a magazine walked the aim 18° up the range. There is a real
+  spring now: 0.032 rad plus 0.010 of deterministic scatter, applied as a
+  DELTA so the player's look owns the base, decaying on WALL time.
+  **AIMING IS BROKEN** was arithmetic: a 1.05 × 1.5 m board at 62/98/132 m
+  through a 72° VERTICAL lens on a 390 × 844 phone is **11 × 16, 7 × 10 and
+  5 × 8 pixels**, with no reticle on screen at all. Three answers — a
+  RETICLE that flashes red on a hit, an AIM mode (`weapon.zoom` 30°, 2.4×,
+  right mouse / Q / a HUD button, with the look's sensitivity scaled to the
+  lens), and an ASSIST cone (`weapon.assist` 1.7°, nearest-to-axis less the
+  angle the target subtends) — all three defaulting to nothing, so the
+  fixture and episode 1 are untouched by construction. **TARGETS DON'T DROP**
+  was two unfinishable serials: serial 3 wanted two hits on ONE mover whose
+  `hit` flag latches, and serial 2 raised each pop-up once for 3.4 s and then
+  stopped for ever. The mover comes back up; the sequence loops. Also: the
+  flare, the trolley and the cyclist were on the CLAMPED `dt` and are on wall
+  time; `PASS_SPD` 1.35–1.9 m/s (a slow WALK) → 3.6–4.8, measured on the
+  chapter's own clock at 4.21 against 4.2 declared; the shootable set is
+  scoped to the live serial's bank, because a 1.7° cone at sixty metres is
+  1.85 m across and was stealing shots aimed at the far banks (measured: two
+  shots aimed at 132 m and 98 m both reported a hit at 62 m).
+  **THE MEN ARE AIMING**: `docs/E2-SOLDIER-MODELS.md` §107 specified Chad's
+  static aiming soldier as `fboaim` at v7.0 and cast it at exactly this
+  position — *"on a firing line nobody moves, so a statue is not a
+  compromise, it is correct"* — and it was **never prepped**, which is why
+  v12.1 dressed a live range with men standing about with slung rifles.
+  `tools/prepaim.mjs` ships it: 33.9 MB → **1.84 MB, 47,318 triangles**,
+  metalness forced to 0 (its whole look lives in a 4096 px metallic-roughness
+  sheet that goes, and metal with no environment renders black — v8.9), the
+  AIM measured from the chest slab and the turn baked (he aims 38° off his
+  own axes; written the wrong way round first and caught only because the
+  assert re-measures), boots on y = 0 and the origin under the BODY, not the
+  box. Seven of them, one per lane but his own; the safety officer keeps a
+  rig; `admintee` leaves the chapter, **2.5 MB off the download**.
+  **WHAT TO DO** is a glowing zone on the firing point (`ZONE_R` is both the
+  radius drawn and the radius tested), WAIT FOR THE ORDER as its own
+  objective with `{ complete: false }` so the HUD never congratulates a beat
+  not yet done, brighter boards, and the approach prompt gated on the phase
+  rather than on distance (photographed: "the target area" lay across the
+  FIRE button through a whole serial). One engine bug found on the way and
+  worth its own line: `THREE.AnimationAction` has NO `userData`, so the
+  clip-start measurement threw a TypeError inside a GLTFLoader callback that
+  ends `.catch(() => {})` — **the rifle silently never loaded**, and an
+  asset loader's catch is never silent again. Sheet v62.
+  docs/V12.2-THE-RANGE-THAT-WORKS.md is the build's memory.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -3528,9 +3599,9 @@ fifth chapter has no scare that is not the player's own memory replayed
 and released. `nextChapterKey()` past ch5 is null, so sealing it ends
 the run exactly as it always ended a last chapter.
 
-Next up: **episode 2's chapter 5**, THE LAST NIGHT — the payoff the case file names: he stops looking and it stops (rifle mode shipped at v12.0 and chapter 4, The Cyclist, at v12.1 — docs/V12.0-E2C4-PLAN.md)
+Next up: **episode 2's chapter 5**, THE LAST NIGHT — the payoff the case file names: he stops looking and it stops (rifle mode shipped at v12.0, chapter 4, The Cyclist, at v12.1, and its range made playable at v12.2 — docs/V12.0-E2C4-PLAN.md, docs/V12.2-THE-RANGE-THAT-WORKS.md)
 (chapter 1, The Worst Bed, shipped at v7.1 — `src/chapters/e2/e2c1.js`;
-chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 3, The Pressure, at v11.0 and revised at v11.1–v11.9 — `src/chapters/e2/e2c3.js`; chapter 4, The Cyclist, at v12.1 — `src/chapters/e2/e2c4.js`;
+chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 3, The Pressure, at v11.0 and revised at v11.1–v11.9 — `src/chapters/e2/e2c3.js`; chapter 4, The Cyclist, at v12.1 and rebuilt at v12.2 — `src/chapters/e2/e2c4.js`;
 chapters 1 and 2's lessons rewritten at v11.10, chapter 1 last revised at v10.8; the rifle
 viewmodel's placement and material are measured in
 docs/E2-SOLDIER-MODELS.md §8), and the still-outstanding job of replacing chapter 1's

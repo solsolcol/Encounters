@@ -3894,3 +3894,86 @@ change at all: give it a plain `{x, y, z}` object and MUTATE that object in
 the chapter's frame. Chapter 4's TRACK spot — hold the thing in your sight
 — is the eighteenth seam (v11.0's `dwell`/`aim`) pointed at a target that
 moves, and the whole cost was two assignments.
+
+## `THREE.AnimationAction` has no `userData`, and the loader ate the error (v12.2)
+
+Storing a measured per-take value as `a.userData.t0 = …` on an
+`AnimationAction` is a `TypeError`: the class has no `userData`. It was
+thrown inside the GLTFLoader callback in `weaponPropLoad`, one line before
+`weaponProp = g`, and the loader ends `}, () => {})).catch(() => {})` — so
+the whole failure was swallowed and the symptom was simply that **the rifle
+never appeared**. The HUD was up, the mixer existed, the GLB fetched 200,
+the `weaponUp` class was on, and `weaponProp()` was null.
+
+Two things out of it. Per-take values live in a MODULE map keyed by take
+name, not on the action. And **an asset loader's catch is never silent** —
+`catch(e => console.error(…))`, because the difference between "the network
+failed" and "your code threw" is the difference between a ten-minute hunt
+and a one-line fix.
+
+## A Sketchfab take's keys can live in its last fraction of a second (v12.2)
+
+Measured on `assets/rifle.glb`: Draw's twelve tracks hold still until 4.17 s
+of a 4.67 s clip, Shoot's eleven until **3.37 s of 3.57 s**, Hide's until
+3.60 s of 4.13 s. v12.0 found this for the Draw and answered it with a
+RATE — which does not work, because an action still has to TRAVERSE the
+dead time: at rate 2.6 that is 1.6 s of frozen rifle. Shoot was worse and
+it is what Chad felt as "there is no proper recoil": at rate 3.2 the gun
+first moved 1.05 s after the trigger, and `fireGap` is 0.42 s, so every
+shot reset the clip and the moving fifth of a second was **never once
+reached at any rate of fire**.
+
+**Measure each clip's first key at load and start the action there.** The
+general form: a clip's DURATION tells you nothing about when it moves.
+
+## A probe that aims and fires in one block fires along the last frame (v12.2)
+
+`camera.matrixWorld` is refreshed by the render loop, and `weaponFire()`
+reads it through `Raycaster.setFromCamera`. So a probe that sets
+`yaw.rotation.y` and dispatches the trigger in the same synchronous
+`evaluate` shoots down the PREVIOUS frame's axis. Measured: three shots
+aimed at three different lanes all landed on the one the camera happened to
+be pointing at, and the numbers looked like an aim-assist bug for an hour.
+**Two `requestAnimationFrame`s between the aim and the trigger**, every
+time. (Same family as v5.30's `cineSeek` law: what you set is not what is
+rendered until a frame has run.)
+
+## Measure a chapter's speed on the CHAPTER's clock (v12.2)
+
+A per-frame wall delta is capped (e2c4 caps at 0.5 s so a long frame cannot
+skip the night), so on a one-frame-every-two-seconds box a thing declared at
+4.2 m/s measures at 0.84 — a fifth of its speed, purely because four fifths
+of the wall time was discarded by the cap. The honest measure is **distance
+moved divided by how much of the chapter's OWN clock passed**: 4.21 against
+4.2 declared. Wall time is the wrong denominator whenever the thing being
+measured is driven by a capped delta.
+
+## An aim-assist cone steals from the nearest thing to the axis (v12.2)
+
+A cone that accepts "the target nearest the line of sight" does exactly
+that, including targets the player was not aiming at. Measured on the range:
+a shot aimed at the 132 m bank and a shot aimed at the 98 m bank both
+reported a hit at **62 m**, because a 1.7-degree cone at sixty metres is
+1.85 m across and a nearer board standing down the same lane sits well
+inside it. Assist is only safe when the shootable set is scoped to what the
+beat is about — here, the serial's own bank and nothing else.
+
+## A body class that gates the HUD must be DERIVED on the frame (v12.2)
+
+`weaponUp` was set only by `weaponAvailSync()` and `weaponSetup()`, and
+neither runs on the transition INTO play. A chapter whose weapon needs no
+inventory item therefore arrived in play with the rifle out, the ammo
+counted and **no weapon HUD, no FIRE button and no reticle** — measured,
+`body` was `hasWeapon cardup inplay` with `weaponIsOut()` already true. The
+fix is v11.1's law applied one level up: `weaponFrame` syncs it every frame,
+and the sync is idempotent. A lifecycle hook you have to remember to call
+from every path is a hook you will forget on one of them.
+
+## The approach prompt is offered on DISTANCE alone (v12.2)
+
+`pileInView()` and `pointerHitsPile()` being phase-gated is not enough: the
+engine shows `words.approach` from `pileDist()`, which a chapter that keeps
+its decision object near the player will satisfy all chapter long.
+Photographed on a 390 px phone during a live-fire serial, "the target area"
+sat across the weapon HUD row over the FIRE button. **Gate the distance,
+not just the view.**

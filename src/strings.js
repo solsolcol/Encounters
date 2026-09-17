@@ -171,6 +171,8 @@ Object.assign(window.__TEXT__, {
   'hud.fireKey':         'Space',
   'hud.reload':          'Reload',
   'hud.reloadKey':       'R',
+  'hud.aim':             'AIM',
+  'hud.aimKey':          'Q',
   'event.tap':           'TAP',
   'event.timed':         'WAIT FOR IT',
   'event.go':            'NOW',

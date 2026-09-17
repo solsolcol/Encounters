@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "12.1"
+VERSION = "12.2"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -320,6 +320,7 @@ ASSETS = {
     'forest':       ('assets/forest.glb', True, False),       # e2c3 v11.2: Chad's Sketchfab forest with a road, the film's set (docs/V11.0-E2C3-PLAN.md §18)
     'ghostcyclist': ('assets/ghostcyclist.glb', True, False), # e2c4 v12.1: Chad's soldier on a bicycle — one baked mesh, NO rig and no clips, which IS the beat
     'rifle':        ('assets/rifle.glb', True, False),        # e2c4 v12.0: the rifle viewmodel (Sketchfab KRISS Vector, its own hands and four takes) — docs/E2-SOLDIER-MODELS.md §8
+    'fboaim':       ('assets/fboaim.glb', True, False),       # e2c4 v12.2: Chad's static aiming soldier — every shooter on the firing line (docs/E2-SOLDIER-MODELS.md §107; tools/prepaim.mjs)
 }
 
 # Hosted-only assets: shipped as a URL, never inlined as base64.
@@ -341,7 +342,7 @@ HOSTED_ONLY = {'titlevid', 'titlevidwebm'}
 # chapter may never claim one of these.
 E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim',
            'ghostsoldier', 'encik2', 'bunkbed', 'cafestaff', 'foodwarmer', 'flashlight',
-           'kamaz', 'forest', 'rifle', 'ghostcyclist'}
+           'kamaz', 'forest', 'rifle', 'ghostcyclist', 'fboaim'}
 HOSTED_ONLY |= E2_ONLY
 
 # The split packs are hosted-only: there is no __..._B64__ token for them and
