@@ -42,7 +42,7 @@
         say: 'I called out to it. It stopped the moment I did. I gave it my voice.',
         teach: 'Provocation and investigation are not the same thing.' }
     ],
-    core: 'Fear arrives before the facts do. The Buddha, alone in the forest at night, met it by looking at it until he understood it. Do the same: use your light and your buddy, not your hand or your voice.<br><i>Bhaya-bherava Sutta — fear examined is fear understood.</i>',
+    core: 'A feeling is not proof. The weight on your leg is vedanā, a sensation. The fear that follows it is saṅkhāra, the story your mind builds on top. Look for the ordinary first, and do not feed the story.<br><i>Vedanā-khandha · Saṅkhāra-khandha — the feeling, and what the mind makes of it. Do not engage. Do not provoke. Observe.</i>',
 
     /* units metres, y up. The harbour is a clearing about 12 m across at
        the end of a track; the ring of scrapes sits round (0, 4) and HIS is

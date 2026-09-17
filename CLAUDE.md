@@ -2855,6 +2855,20 @@ What the baseline contains, by release:
   same: use your light and your buddy, not your hand or your voice." —
   with the sutta's name under it, where v11.6's was a paragraph. Sheet v56
   exported (v44 stays the link).
+- **v11.9** THE LESSON, FROM THE CASE FILE — Chad, on v11.8: *"My fear is
+  that it is not appropriate to use that lesson as it is not remotely the
+  same thing."* He was right: the Bhaya-bherava Sutta is the Buddha going
+  INTO fearful forests to master fear as a training, and a recruit with a
+  weight on his leg is not doing that — a big story on a small beat. The
+  right source was on his own site the whole time: the case file's lesson
+  (docs/source/site-case-files.md — a pressure proves nothing on its own,
+  consider the ordinary first, do not engage, do not provoke, do not feed
+  your own fear), which maps onto the four options exactly. His ask to fold
+  in the aggregates fits it: the weight is vedanā (a sensation) and the fear
+  that follows is saṅkhāra (the story the mind builds on it). One `core`
+  line; sheet v57 exported (v44 stays the link). The law is the standing
+  one, restated: **read the case file's own lesson before reaching for a
+  sutta** — the material is already in Master Z's voice.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -3366,7 +3380,7 @@ the run exactly as it always ended a last chapter.
 
 Next up: **episode 2's chapters 4–5, and rifle mode for chapter 5**
 (chapter 1, The Worst Bed, shipped at v7.1 — `src/chapters/e2/e2c1.js`;
-chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 3, The Pressure, at v11.0 and revised at v11.1–v11.8 — `src/chapters/e2/e2c3.js`; chapter 1 last revised at v10.8; the rifle
+chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 3, The Pressure, at v11.0 and revised at v11.1–v11.9 — `src/chapters/e2/e2c3.js`; chapter 1 last revised at v10.8; the rifle
 viewmodel's placement and material are measured in
 docs/E2-SOLDIER-MODELS.md §8, and Chad's ghost and bicycle models are
 still to come), and the still-outstanding job of replacing chapter 1's
