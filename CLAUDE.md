@@ -404,6 +404,20 @@ plausible candidates, the famous one gets picked because there is no
 standard to select against — so PROPOSE two or three with the reason each
 fits, and let Chad pick, before anything ships. Words are cheap to propose
 and expensive to redeploy.
+(5) **THE TERM COMES FROM CHAD** (v11.10, after four proposed tags for
+episode 1 — refuge for a boy calling his mother, the good friend, faith
+with a reason, dependent origination for a note that followed him home —
+were each "logically irrelevant and a stretch"). A Pali term has a precise
+referent: refuge is the Triple Gem, the good friend is a teacher on the
+path, dependent origination is how suffering arises. Matching a scene's
+SURFACE to a term's English gloss is a pun, and a wrong tag in this game is
+wrong teaching with a Pali stamp on it — worse than no tag. So: describe
+the beat's structure in plain words, and Chad names the term or says there
+is none; the line is written around HIS term (vedanā/saṅkhāra at v11.9 is
+the shape that worked). Episode 1's lines stay in Master Z's own voice with
+no invented tag — the precept under chapter 1 is the act itself and stays;
+Chad removed the Pali from chapters 2 and 3 himself at v5.15 and that was
+the standard, not a gap.
 
 ## Current state and roadmap
 
