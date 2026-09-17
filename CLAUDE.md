@@ -2915,6 +2915,16 @@ What the baseline contains, by release:
   don't know what" is the mind held open. Both name the structure of the
   chapter's four options. Two `core` lines; sheet v58 exported (v44 stays
   the link).
+- **v11.11** THE TAG THAT WAS HIS THESIS — Chad: *"Why couldn't you figure
+  out on your own?"* The check is one sentence per term: state what it
+  DENOTES, then ask whether that thing is literally on screen. Run at last:
+  chapter 2's *diṭṭhupādāna* (clinging to a fixed view) is on screen in
+  "haunted, I'm sure" and "it was nothing", and holds; chapter 1's
+  *manasikāra* was relevant (attention is the beat) but the gloss under it,
+  "what you attend to, attends to you", is Master Z's own claim about a
+  presence, not what the term teaches — a Pali stamp on his thesis, the
+  episode-1 error in miniature. The sentence stands as his; the tag is
+  gone. One line; sheet v59 exported (v44 stays the link).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
