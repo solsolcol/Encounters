@@ -57,6 +57,11 @@
        a world the engine has never seen. A torch (off until asked), and the
        banner's words for an unseen presence. */
     torch: { on: false, angle: 0.5 },
+    /* v12.0: RIFLE MODE, declared with NO model — the seam (out while the
+       item is in the hand slot, fire spends a round, the ray reaches the
+       chapter's target, reload costs a magazine) is proved without the
+       download. Three rounds and one spare magazine, so `empty` is reachable. */
+    weapon: { item: 'rifle', rounds: 3, mags: 1, fireGap: 0.05, shot: 'uiclick', reload: 'uiclick', empty: 'uiclick' },
     words: { presence: 'Something is in the room.' }
   };
 
@@ -328,6 +333,20 @@
     ];
     if (kit) { kit.objective('Find the marker on the floor'); kit.setPhase('room'); }
 
+    /* v12.0: a TARGET for the rifle — a board straight down the spawn's
+       line of sight, and the two verbs the seam reaches a chapter through:
+       shootables() names what a round may hit, onShot() is told about every
+       round, hit or miss, and here writes each as conduct. */
+    const target = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 1.6),
+      new THREE.MeshStandardMaterial({ color: 0xd8c8a0, roughness: 0.9, side: THREE.DoubleSide }));
+    target.name = 'target'; target.position.set(0, 1.4, 1); world.add(target);
+    const shots = [];
+    function shootables() { return [target]; }
+    function onShot(r) {
+      shots.push({ hit: r.hit, name: r.object ? r.object.name : null, dist: r.distance, rounds: r.rounds });
+      if (kit) kit.conduct({ note: r.hit ? 'You hit the target.' : 'You missed.' });
+    }
+
     function dispose() {
       const geos = new Set(), mats = new Set();
       world.traverse(o => {
@@ -356,7 +375,8 @@
       set noteStorm(v) { noteStorm = v; },
       updateNotes, updatePile, updateFire, updateSlow,
       snap, restore, reset, dispose,
-      hotspots                                   // v7.0
+      hotspots,                                  // v7.0
+      shootables, onShot, shots                  // v12.0: rifle mode
     });
   }
 

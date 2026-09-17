@@ -165,6 +165,39 @@ await p.keyboard.press('KeyF'); await settle();
 K.torchToggles = ((await dbg()).torch || {}).on === true;
 await p.keyboard.press('KeyF'); await settle();
 
+/* v12.0: RIFLE MODE. The fixture declares a weapon with no model on the item
+   `rifle`: nothing is out until the item is in the hand slot; equipping it
+   puts `weaponUp` on the body; a shot from the spawn's line of sight hits
+   the fixture's target and the chapter is told; three rounds run out; a
+   reload costs the one spare magazine; taking the item away holsters it. */
+K.weaponDeclared = await p.evaluate(() => {
+  const d = window.__enc.kitDebug();
+  return !!d.weapon && d.weapon.avail === false && d.weapon.rounds === 3 && d.weapon.mags === 1
+    && !document.body.classList.contains('weaponUp');
+});
+K.weaponNotOutUnequipped = await p.evaluate(() => window.__enc.kit.fire() === false);
+await p.evaluate(() => { window.__enc.kit.give('rifle'); window.__enc.kit.equip('rifle'); });
+await until(() => document.body.classList.contains('weaponUp') && document.body.classList.contains('hasWeapon'), 15000).catch(() => {});
+K.weaponOutWhenEquipped = await p.evaluate(() => document.body.classList.contains('weaponUp') && window.__enc.kitDebug().weapon.avail === true);
+await p.evaluate(() => { const e = window.__enc; e.yaw.position.set(0, 1.62, 9); e.yaw.rotation.y = 0; e.pitch.rotation.x = 0; });
+await settle();
+K.weaponHits = await p.evaluate(() => {
+  const e = window.__enc; const ok = e.kit.fire();
+  const d = e.kitDebug();
+  return ok === true && d.weapon.rounds === 2 && d.conduct.notes.includes('You hit the target.');
+});
+await p.waitForTimeout(120);
+await p.keyboard.press('Space'); await p.waitForTimeout(120);
+await p.keyboard.press('Space'); await p.waitForTimeout(120);
+K.weaponRunsDry = await p.evaluate(() => { const d = window.__enc.kitDebug(); return d.weapon.rounds === 0 && document.getElementById('ammo').classList.contains('empty'); });
+K.weaponEmptyRefuses = await p.evaluate(() => window.__enc.kit.fire() === false && window.__enc.kitDebug().weapon.rounds === 0);
+await p.keyboard.press('KeyR'); await settle();
+K.weaponReloads = await p.evaluate(() => { const d = window.__enc.kitDebug(); return d.weapon.rounds === 3 && d.weapon.mags === 0; });
+K.weaponInSave = await p.evaluate(() => { const st = window.__enc.worldState(); return !!st.weapon && st.weapon.rounds === 3 && st.weapon.mags === 0; });
+await p.evaluate(() => window.__enc.kit.take('rifle'));
+await until(() => !document.body.classList.contains('weaponUp'), 15000).catch(() => {});
+K.weaponHolsters = await p.evaluate(() => !document.body.classList.contains('weaponUp') && window.__enc.kitDebug().weapon.avail === false);
+
 // v7.1: a fade in play — the kit's black goes up and comes down on the cutscene element
 K.fadeInPlay = await p.evaluate(() => { window.__enc.kit.fade(1, 0.2); return true; })
   .then(() => p.waitForFunction(() => window.__enc.kitDebug().fade > 0.95, null, { timeout: 30000 }))

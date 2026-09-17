@@ -979,6 +979,15 @@ let lieYaw = 0, lieSpan = 1.1;
 let chapterPresence = 0;
 let torchLight = null, torchOn = false, torchDecl = null, torchIsRed = false;
 let torchProp = null, torchPropKey = null;   // v11.1: the torch's own viewmodel (Chad's flashlight), swapped for the hand while it is on
+/* v12.0: THE WEAPON (rifle mode, the nineteenth seam — docs/V12.0-E2C4-PLAN.md §12).
+   A chapter declares `weapon`; the prop is the model's own arms-and-weapon
+   rig (it brings its own hands), driven by its own clips; the rounds and
+   magazines are engine state a chapter reads through the kit. */
+let weaponDecl = null, weaponProp = null, weaponPropKey = null, weaponMixer = null, weaponActs = null;
+let weaponForce = null;                      // null: follow the bag; true/false: a film or a scene has said
+let weaponRounds = 0, weaponMags = 0, weaponBusy = null, weaponFlash = null, weaponFlashT = 0;
+let weaponShown = false, weaponLastFire = 0;
+const weaponLog = [];                        // for the probes: every shot, hit or miss
 let kitRooted = false, kitHurt = null;       // v11.1: the player held in place; the red damage frame + a bleed until the player acts
 let invUrge = null;                          // v11.6: an item the bag button pulses for until it is equipped (kit.give)
 let invBtnEl = null;                         // v11.6: the bag button, looked up once
@@ -1482,11 +1491,12 @@ function torchPropSync() {
   else if (swapK !== target) swapK = target > swapK ? Math.min(target, swapK + dt / SWAP_SECS) : Math.max(target, swapK - dt / SWAP_SECS);
   const handDown = smooth(Math.max(0, Math.min(1, swapK * 2)));          // 0 up .. 1 dropped out of frame
   const torchUp = smooth(Math.max(0, Math.min(1, (swapK - 0.5) * 2)));   // 0 dropped .. 1 up
+  const weaponVis = !!(weaponProp && weaponShown);   // v12.0: the weapon's own hands replace both
   if (torchProp) {
-    torchProp.visible = torchUp > 0.001 && armR.visible;
+    torchProp.visible = torchUp > 0.001 && armR.visible && !weaponVis;
     torchProp.position.set(torchBase.x, torchBase.y - SWAP_DROP * (1 - torchUp), torchBase.z);
   }
-  if (handModel) handModel.visible = handDown < 0.999;
+  if (handModel) handModel.visible = handDown < 0.999 && !weaponVis;
   /* the arm is written ONLY while a swap is on (or on the frame it ends,
      to put it back exactly): episode 1's scenes move `armR.position`
      themselves (ch1, ch3, ch4), and a per-frame reset would fight them */
@@ -1520,6 +1530,236 @@ function torchToggle() {
   if (!torchLight || state !== 'play' || !torchAvail()) return;
   torchSet(!torchOn);
   if (torchDecl.click) snd(torchDecl.click, 0.8); else snd('uiclick', 0.3);   // v11.1: a real switch when the chapter names one
+}
+
+/* ---- v12.0: RIFLE MODE — the weapon in his hands ------------------------
+   The shape is the torch's (v11.1, v11.6), extended. A chapter declares
+
+     weapon: { model, item, rounds, mags, clips: { draw, shoot, reload, hide },
+               rates: { draw, shoot, reload, hide }, shot, reload, empty, cock,
+               fireGap, kick }
+
+   `model` is an asset key (docs/E2-SOLDIER-MODELS.md §8: the file is in
+   CENTIMETRES, its forward is +Z, and it brings its OWN hands, so while it
+   is up the hand viewmodel — and the torch prop — give way to it); `item`
+   an inventory id, so the weapon is ISSUED as an item (the v11.6 recipe)
+   and is OUT for the player exactly while that item is in his hand slot;
+   a film or a scene may force it either way with kit.weaponOut(bool)
+   whatever the bag says. FIRE (a click under pointer lock, Space, or the
+   HUD button) plays the shoot take from its first frame, spends a round,
+   flashes a light on the world for a few frames, and RAYCASTS from the
+   lens: the hit goes to the chapter as stage.onShot({ hit, object, point,
+   distance, ray }), against stage.shootables() when the chapter lists them
+   (else the whole world) — a target is the chapter's to score and the
+   ghost the chapter's to answer. RELOAD (R, or the button) costs a magazine.
+   Episode 1 declares no weapon, so none of this can run there; the fixture
+   declares one with no model, so the seam is proved without the download. */
+const WEAPON_DEFAULTS = {
+  rounds: 30, mags: 3, fireGap: 0.34, kick: 0.012,
+  clips: { draw: 'Draw', shoot: 'Shoot', reload: 'Reload', hide: 'Hide' },
+  rates: { draw: 2.6, shoot: 3.2, reload: 1.6, hide: 2.6 },
+  /* §8's measured placement: scale 0.01 (centimetres), a half turn about Y
+     (the file's forward is +Z), and the camera at the model's own eye so
+     the cut forearms sit behind the lens */
+  scale: 0.01, rot: [0, Math.PI, 0], pos: [0.00, -1.528, -0.32],
+  metalness: 0.25, roughness: 0.55, envMapIntensity: 1.6
+};
+function weaponSetup(decl) {
+  weaponDecl = { ...WEAPON_DEFAULTS, ...(decl || {}),
+                 clips: { ...WEAPON_DEFAULTS.clips, ...((decl && decl.clips) || {}) },
+                 rates: { ...WEAPON_DEFAULTS.rates, ...((decl && decl.rates) || {}) } };
+  weaponRounds = Math.max(0, weaponDecl.rounds | 0); weaponMags = Math.max(0, weaponDecl.mags | 0);
+  weaponForce = null; weaponBusy = null; weaponLog.length = 0;
+  if (!weaponFlash) {
+    weaponFlash = new THREE.PointLight(0xffd28a, 0, 9, 1.8);
+    weaponFlash.position.set(0.12, -0.10, -0.7);
+    camera.add(weaponFlash);
+  }
+  weaponPropLoad(weaponDecl.model);
+  for (const k of ['shot', 'reload', 'empty', 'cock']) if (weaponDecl[k]) WARM_WANT.add(weaponDecl[k]);
+  weaponAvailSync();
+}
+function weaponTeardown() {
+  weaponDecl = null; weaponForce = null; weaponBusy = null; weaponRounds = 0; weaponMags = 0;
+  if (weaponFlash) { camera.remove(weaponFlash); weaponFlash.dispose?.(); weaponFlash = null; }
+  weaponPropDrop();
+  document.body.classList.remove('hasWeapon', 'weaponUp');
+  weaponAvailSync();
+}
+function weaponPropLoad(key) {
+  if (!key || weaponPropKey === key) return;
+  weaponPropDrop(); weaponPropKey = key;
+  assetBytes(key, true).then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
+    if (weaponPropKey !== key) return;
+    rescueTextures(gltf, BUF);
+    const d = weaponDecl || WEAPON_DEFAULTS;
+    const g = new THREE.Group();
+    gltf.scene.traverse(o => {
+      if (!o.isMesh) return;
+      o.frustumCulled = false; o.castShadow = false; o.receiveShadow = false;
+      for (const m of (Array.isArray(o.material) ? o.material : [o.material])) {
+        /* §8: the weapon's material is FULLY METALLIC (metalness 1.0) and the
+           viewmodel scene has almost no environment, so it rendered black;
+           the hands are metalness 0 and are left exactly as the file has
+           them. The weapon materials only. */
+        if (m.metalness !== undefined && m.metalness > 0.5) {
+          m.metalness = d.metalness; m.roughness = d.roughness;
+          if ('envMapIntensity' in m) m.envMapIntensity = d.envMapIntensity;
+        }
+        m.needsUpdate = true;
+      }
+    });
+    gltf.scene.scale.setScalar(d.scale);
+    gltf.scene.rotation.set(d.rot[0], d.rot[1], d.rot[2]);
+    gltf.scene.position.set(d.pos[0], d.pos[1], d.pos[2]);
+    g.add(gltf.scene);
+    /* a small fill on the steel, the torch's recipe (v11.3): the file's
+       gunmetal is dark and the viewmodel rig at midnight barely lights it */
+    /* bracketed by render on the night harbour (v12.0: 0.18 / 0.6 / 1.2 /
+       2.0, each after a guaranteed rendered frame): at 0.18 the rifle is a
+       silhouette with one lit sight; at 0.6 the rail, the receiver and the
+       fingers read and it is still a dark thing in a dark place. 0.6. */
+    const fill = new THREE.PointLight(0xc9d4ee, 0.6, 0.9, 1.5);
+    fill.position.set(-0.05, 0.12, -0.20); g.add(fill);
+    weaponMixer = new THREE.AnimationMixer(gltf.scene);
+    weaponActs = {};
+    for (const k of ['draw', 'shoot', 'reload', 'hide']) {
+      const name = d.clips[k];
+      const clip = gltf.animations.find(a => a.name === name) || gltf.animations.find(a => a.name.toLowerCase().includes(k));
+      if (!clip) continue;
+      const a = weaponMixer.clipAction(clip);
+      a.setLoop(THREE.LoopOnce, 1); a.clampWhenFinished = true; a.timeScale = d.rates[k] || 1;
+      weaponActs[k] = a;
+    }
+    /* a take that ends hands the pose to the DRAWN rest (the draw take's
+       last frame), a hard cut — the v5.07 law: a parked take is a pose */
+    weaponMixer.addEventListener('finished', e => {
+      if (!weaponActs) return;
+      if (e.action === weaponActs.hide) { weaponShown = false; weaponBusy = null; weaponPropSync(); return; }
+      if (e.action !== weaponActs.draw) weaponPark();
+      weaponBusy = null;
+    });
+    weaponProp = g; g.visible = false; handsRoot.add(g); layoutHands();
+    weaponPropSync();
+  }, () => {})).catch(() => {});
+}
+function weaponPropDrop() {
+  if (weaponProp) {
+    handsRoot.remove(weaponProp);
+    weaponMixer?.stopAllAction();
+    weaponProp.traverse(o => { if (!o.isMesh) return; o.geometry?.dispose?.(); for (const m of (Array.isArray(o.material) ? o.material : [o.material])) { m?.map?.dispose?.(); m?.metalnessMap?.dispose?.(); m?.dispose?.(); } });
+    weaponProp = null;
+  }
+  weaponMixer = null; weaponActs = null; weaponPropKey = null; weaponShown = false;
+}
+function weaponPlay(k) {
+  if (!weaponActs || !weaponActs[k]) return false;
+  for (const a of Object.values(weaponActs)) a.stop();
+  weaponActs[k].reset().play();
+  return true;
+}
+function weaponPark() {   // the drawn rest: the draw take's last frame, held
+  if (!weaponActs || !weaponActs.draw) return;
+  for (const a of Object.values(weaponActs)) a.stop();
+  const a = weaponActs.draw; a.reset().play(); a.time = a.getClip().duration - 0.001; a.paused = true;
+  weaponMixer.update(0);
+}
+function weaponAvail() {
+  if (!weaponDecl) return false;
+  const id = weaponDecl.item; if (!id) return true;
+  const slot = (ITEM_DEFS[id] && ITEM_DEFS[id].slot) || 'hand';
+  return inv.gear[slot] === id;
+}
+function weaponWant() { return !!weaponDecl && (weaponForce === null ? weaponAvail() : !!weaponForce); }
+function weaponAvailSync() {
+  document.body.classList.toggle('hasWeapon', weaponAvail());
+  weaponPropSync();
+}
+/* which of hand / torch / weapon is drawn is DERIVED on the frame (v11.1's
+   law): the weapon's own arms replace both the hand and the torch prop while
+   it is up; a film's `armR.visible = false` takes it out of shot too */
+function weaponPropSync() {
+  const want = weaponWant();
+  document.body.classList.toggle('weaponUp', want && state === 'play');
+  if (!weaponProp) { weaponShown = false; return; }
+  if (want && !weaponShown) {
+    weaponShown = true; weaponBusy = 'draw';
+    if (!weaponPlay('draw')) { weaponBusy = null; }
+  } else if (!want && weaponShown && weaponBusy !== 'hide') {
+    weaponBusy = 'hide';
+    if (!weaponPlay('hide')) { weaponShown = false; weaponBusy = null; }
+  }
+  weaponProp.visible = weaponShown && armR.visible;
+}
+function weaponFrame(dt) {
+  if (!weaponDecl) return;
+  if (weaponMixer && weaponShown) weaponMixer.update(Math.min(dt, 0.1));
+  if (weaponFlash) {
+    weaponFlashT = Math.max(0, weaponFlashT - dt);
+    weaponFlash.intensity = weaponFlashT > 0 ? 34 * (weaponFlashT / 0.09) : 0;
+    weaponFlash.visible = weaponFlash.intensity > 0;
+  }
+  /* the busy flag is stated in the TAKE's clock, never the wall's: the
+     first version timed it out on wall time and a probe box that draws a
+     frame every six seconds cleared a 2.3 s reload on the frame after it
+     began (v9.3's clock-mismatch law, on a flag). A take that is no longer
+     running — finished, or never started because the rig has no such clip —
+     releases the hands; the 'finished' listener below does the same a frame
+     earlier for the common case. */
+  if (weaponBusy && weaponBusy !== 'hide') {
+    const a = weaponActs && weaponActs[weaponBusy];
+    if (!a || !a.isRunning()) weaponBusy = null;
+  }
+  const pill = $('ammo');
+  if (pill) {
+    const txt = weaponRounds + ' / ' + weaponMags;
+    if (pill.textContent !== txt) pill.textContent = txt;
+    pill.classList.toggle('empty', weaponRounds === 0);
+  }
+}
+const weaponRay = new THREE.Raycaster();
+function weaponFire() {
+  if (!weaponDecl || state !== 'play' || !weaponWant()) return false;
+  if (weaponBusy && weaponBusy !== 'draw') return false;   // a reload or a holster owns the hands; the draw does not stop a shot
+  const now = performance.now();
+  if (now - weaponLastFire < weaponDecl.fireGap * 1000) return false;
+  weaponLastFire = now;
+  if (weaponRounds <= 0) {
+    if (weaponDecl.empty) snd(weaponDecl.empty, 0.7); else snd('uiclick', 0.3);
+    haptic(20);
+    weaponLog.push({ t: now, hit: null, empty: true });
+    return false;
+  }
+  weaponRounds--;
+  if (weaponActs && weaponActs.shoot) { for (const a of Object.values(weaponActs)) a.stop(); weaponActs.shoot.reset().play(); weaponBusy = null; }
+  if (weaponDecl.shot) snd(weaponDecl.shot, 1);
+  haptic([30, 20, 40]);
+  weaponFlashT = 0.09;
+  /* the kick: a small pitch up, applied as a DELTA so the look stays the player's */
+  pitch.rotation.x = Math.min(pitchHi, pitch.rotation.x + weaponDecl.kick);
+  weaponRay.setFromCamera({ x: 0, y: 0 }, camera);
+  const list = (stage && typeof stage.shootables === 'function') ? (stage.shootables() || []) : null;
+  let hit = null;
+  try {
+    const hits = list ? weaponRay.intersectObjects(list, true) : weaponRay.intersectObjects(scene.children, true);
+    hit = hits.find(h => h.object && h.object.visible !== false) || null;
+  } catch { hit = null; }
+  const report = { hit: !!hit, object: hit ? hit.object : null, point: hit ? hit.point.clone() : null,
+                   distance: hit ? hit.distance : Infinity, ray: weaponRay.ray.clone(), rounds: weaponRounds, mags: weaponMags };
+  weaponLog.push({ t: now, hit: hit ? (hit.object.name || hit.object.type) : null, dist: hit ? +hit.distance.toFixed(2) : null });
+  if (stage && typeof stage.onShot === 'function') { try { stage.onShot(report); } catch (e) { console.error(e); } }
+  return true;
+}
+function weaponReload() {
+  if (!weaponDecl || state !== 'play' || !weaponWant()) return false;
+  if (weaponBusy && weaponBusy !== 'draw') return false;
+  if (weaponMags <= 0 || weaponRounds >= (weaponDecl.rounds | 0)) { if (weaponDecl.empty) snd(weaponDecl.empty, 0.5); return false; }
+  weaponMags--; weaponRounds = weaponDecl.rounds | 0;
+  if (weaponDecl.reload) snd(weaponDecl.reload, 0.9);
+  haptic(40);
+  weaponBusy = 'reload';
+  if (!weaponPlay('reload')) weaponBusy = null;
+  return true;
 }
 
 /* ---- presence: the drain without a ghost ---------------------------------
@@ -2359,8 +2599,13 @@ function kitInit() {
      kitReset(), but a fresh boot reaches play through neither, and the HUD
      the torch button lives in did not exist when build() ran */
   if (CH.torch && !torchLight) torchSetup(CH.torch);
+  if (CH.weapon && !weaponDecl) weaponSetup(CH.weapon);   // v12.0
   $('interact')?.querySelector('.ibadge')?.addEventListener('click', e => { e.stopPropagation(); interactNow(); });
   $('torchBtn')?.addEventListener('click', e => { e.stopPropagation(); torchToggle(); });
+  /* v12.0: the fire and reload buttons — a phone's trigger; a mouse's is the click */
+  const fb = $('fireBtn'), rb = $('reloadBtn');
+  if (fb) { fb.addEventListener('pointerdown', e => { e.stopPropagation(); e.preventDefault(); weaponFire(); }); fb.setAttribute('aria-label', T('hud.fire')); }
+  if (rb) { rb.addEventListener('click', e => { e.stopPropagation(); weaponReload(); }); rb.setAttribute('aria-label', T('hud.reload')); }
   const tb = $('torchBtn'); if (tb) tb.setAttribute('aria-label', T('hud.torch'));
   const host = $('event');
   if (host) {
@@ -2394,6 +2639,7 @@ function kitFrame(dt, t, dLookX, dLookY) {
      CSS hides under it; the bag and menu buttons keep the behaviour episode
      1 has always had (they are the base game's, and unchanged). */
   document.body.classList.toggle('cardup', state !== 'play');
+  weaponFrame(dt);   // v12.0: the weapon's clips, its flash and its rounds
   // pose
   if (poseT < 1) { poseT = Math.min(1, poseT + dt / poseSecs); eyeY = poseFrom + (poseTo - poseFrom) * smoothK(poseT); }
   if (kitPose === 'lying' && state === 'play') {
@@ -2467,6 +2713,7 @@ function kitReset() {
   kitFade = null; kitFadeNow = 0;
   decClock = null; $('dclock')?.classList.add('hide');
   if (CH.torch) torchSetup(CH.torch); else torchTeardown();
+  if (CH.weapon) weaponSetup(CH.weapon); else weaponTeardown();   // v12.0
   kitRooted = false; kitHurtSet(null);   // v11.1
   activeSpot = null;
 }
@@ -2509,18 +2756,27 @@ const KIT = {
      `equip` puts it straight into its slot (a resume past the pickup, or a
      save from before the item existed); `has`/`equipped` are the reads a
      chapter's frame asks. Episode 1 calls none of them. */
-  give: id => { const ok = invAdd(id); if (ok) invUrge = id; torchAvailSync(); return ok; },
-  take: id => { const ok = invRemove(id); if (invUrge === id) invUrge = null; torchAvailSync(); return ok; },
+  give: id => { const ok = invAdd(id); if (ok) invUrge = id; torchAvailSync(); weaponAvailSync(); return ok; },
+  take: id => { const ok = invRemove(id); if (invUrge === id) invUrge = null; torchAvailSync(); weaponAvailSync(); return ok; },
   equip: id => { const def = ITEM_DEFS[id]; if (!def || !def.slot) return false;
                  if (inv.gear[def.slot] === id) return true;
                  const i = inv.bag.indexOf(id); const swap = inv.gear[def.slot];
                  inv.gear[def.slot] = id;
                  if (i >= 0) inv.bag[i] = swap; else if (swap) { const f = inv.bag.indexOf(null); if (f >= 0) inv.bag[f] = swap; }
-                 if (inv.open) invPaint(); torchAvailSync(); return true; },
+                 if (inv.open) invPaint(); torchAvailSync(); weaponAvailSync(); return true; },
   has: id => invHas(id),
   equipped: id => { const def = ITEM_DEFS[id]; return !!def && !!def.slot && inv.gear[def.slot] === id; },
   urge: id => { invUrge = id || null; },
   torchAvail,
+  /* v12.0: the weapon — a film or a scene forces it out or away (null
+     hands it back to the bag), a chapter fires or reloads through its own
+     button, sets the ammo (a resume), and reads what is left */
+  weapon: weaponSetup,
+  weaponOut: v => { weaponForce = (v === null || v === undefined) ? null : !!v; weaponPropSync(); },
+  weaponIsOut: () => weaponWant(),
+  weaponAvail,
+  fire: weaponFire, reload: weaponReload,
+  ammo: (rounds, mags) => { if (rounds !== undefined) weaponRounds = Math.max(0, rounds | 0); if (mags !== undefined) weaponMags = Math.max(0, mags | 0); return { rounds: weaponRounds, mags: weaponMags }; },
   setPhase: v => { kitPhase = (v === undefined) ? null : v; }, getPhase: () => kitPhase,
   choices: () => ({ ...runChoices }),
   interact: () => interactNow(),
@@ -2532,6 +2788,7 @@ function kitDebug() {
            rooted: kitRooted, hurt: kitHurt ? { perSec: kitHurt.perSec } : null,   // v11.1
            torch: torchLight ? { on: torchOn, red: torchIsRed, avail: torchAvail(), item: torchDecl && torchDecl.item || null } : null,
            urge: invUrge,   // v11.6
+           weapon: weaponDecl ? { out: weaponWant(), avail: weaponAvail(), shown: weaponShown, busy: weaponBusy, rounds: weaponRounds, mags: weaponMags, item: weaponDecl.item || null, prop: !!weaponProp, shots: weaponLog.slice(-8) } : null,   // v12.0
            objective: kitObjective, timer: kitTimer ? +kitTimer.left.toFixed(2) : null,
            waypoint: kitWaypoint, conduct: { ...conductAcc, notes: conductAcc.notes.slice() },
            clock: decClock ? { left: +decClock.left.toFixed(2), fired: decClock.fired } : null,
@@ -3131,6 +3388,17 @@ function layoutHands() {
     torchBase.set(Math.min(0.13, hW * 0.55), -hH * 0.86, -PZ);
     torchProp.position.copy(torchBase); torchProp.rotation.set(0.04, 0.16, -0.10);
   }
+  /* v12.0: the weapon's placement (§8) was measured at desktop aspect,
+     where the body's centre (x 0.12 at 0.30 m) sits at 0.51 of the frame's
+     half-width. A portrait phone is a CENTRE CROP (AUDIT Part One) with a
+     half-width of 0.067 at that depth, and the same x is past the edge —
+     photographed: the front sight and nothing else. So the group is nosed
+     inward by whatever it takes to keep the body at 0.55 of the half-width,
+     and never outward (desktop stays exactly at the measured numbers). */
+  if (weaponProp) {
+    const WZ = 0.30, wH = Math.tan(THREE.MathUtils.degToRad(vmCam.fov / 2)) * WZ, wW = wH * vmCam.aspect;
+    weaponProp.position.x = Math.min(0, wW * 0.55 - 0.12);
+  }
   armBase.copy(armR.position);
 }
 /* v11.3: the rest positions the swap tween works from (layoutHands writes
@@ -3442,6 +3710,8 @@ addEventListener('keydown', e => {
   }
   if (e.code === 'Escape' && state === 'decide') { dismissDecision(); return; }
   if (e.code === 'KeyE' && state === 'play') { interactNow(); return; }   // v7.0: the pile, else the nearest hotspot
+  if (e.code === 'Space' && state === 'play' && weaponWant() && !e.repeat) { e.preventDefault(); weaponFire(); return; }   // v12.0
+  if (e.code === 'KeyR' && state === 'play' && weaponWant()) { weaponReload(); return; }   // v12.0
   keys[e.code] = true;
 });
 addEventListener('keyup', e => { if (evKey(e, false)) return; keys[e.code] = false; });
@@ -3479,6 +3749,7 @@ addEventListener('blur', () => { edgeTurn = 0; });
 
 canvas.addEventListener('mousedown', e => {
   if (e.button !== 0) return;
+  if (locked && state === 'play' && weaponWant()) { weaponFire(); return; }   // v12.0: under lock the click is the trigger
   // With no pointer lock there is a real cursor, so clicking the heap works
   // the same way tapping it does on a phone. Locked, there is no cursor and
   // E is the way in.
@@ -4880,7 +5151,8 @@ const ITEM_DEFS = {
   keys:  { icon: 'e-keys', slot: null },
   beads: { icon: 'e-beads', slot: 'hand' },
   note:  { icon: 'e-note', slot: null },
-  torch: { icon: 'e-torch', slot: 'hand' }    // v11.6: episode 2 chapter 3's flashlight, picked up off the ground and equipped to use
+  torch: { icon: 'e-torch', slot: 'hand' },   // v11.6: episode 2 chapter 3's flashlight, picked up off the ground and equipped to use
+  rifle: { icon: 'e-rifle', slot: 'hand' }    // v12.0: the issued weapon (episode 2 chapter 4) — in the hand slot, it is OUT
 };
 const itemName = id => T('item.' + id + '.name', id);
 const itemDesc = id => T('item.' + id + '.desc', '');
@@ -4992,7 +5264,10 @@ function worldState() {
        all optional to read back */
     phase: kitPhase,
     conduct: { s: conductAcc.s, a: conductAcc.a, notes: conductAcc.notes.slice() },
-    choices: { ...runChoices }
+    choices: { ...runChoices },
+    /* v12.0: the weapon's rounds and magazines, absent from every save
+       before this release and from every chapter without a weapon */
+    ...(weaponDecl ? { weapon: { rounds: weaponRounds, mags: weaponMags } } : {})
   };
 }
 function applyState(st) {
@@ -5035,6 +5310,11 @@ function applyState(st) {
     if (inv.open) invPaint();
   }
   torchAvailSync();   // v11.6: a torch that is an item follows the restored bag
+  weaponAvailSync();  // v12.0: and so does the weapon
+  if (weaponDecl && st.weapon && typeof st.weapon === 'object') {   // v12.0: the rounds and mags ride the save, tolerated absent
+    const n = (v, fb) => (typeof v === 'number' && Number.isFinite(v)) ? Math.max(0, v | 0) : fb;
+    weaponRounds = n(st.weapon.rounds, weaponRounds); weaponMags = n(st.weapon.mags, weaponMags);
+  }
   // v7.0: the kit's three fields, each tolerated absent
   kitPhase = (typeof st.phase === 'string' || (typeof st.phase === 'number' && Number.isFinite(st.phase))) ? st.phase : null;
   const cd = (st.conduct && typeof st.conduct === 'object') ? st.conduct : {};
@@ -5108,6 +5388,7 @@ function invPaint() {
   inv.flash = null;   // one paint's worth: the animation runs, the next paint forgets it
   invInfoPaint();
   torchAvailSync();   // v11.6: the torch button follows the hand slot
+  weaponAvailSync();  // v12.0
 }
 
 function invInfoPaint(id) {
@@ -7869,6 +8150,7 @@ function tick(now = 0) {
   // can never poke through a wall however close you stand to one
   if (state !== 'title' && handsReady) {
     torchPropSync();                       // v11.1: hand or torch, decided on the frame
+    weaponPropSync();                      // v12.0: or the weapon, over both
     renderer.autoClear = false;
     renderer.clearDepth();
     renderer.render(vmScene, vmCam);
@@ -7877,6 +8159,7 @@ function tick(now = 0) {
 }
 window.__enc = { yaw, pitch, stats, getState: () => state,   // v8.7: pitch, so a probe can aim the lens at the floor
                  kit: KIT, kitDebug, interactNow,          // v7.0: the play kit, by state
+                 weaponFire, weaponReload, weaponLog, weaponProp: () => weaponProp, weaponMixer: () => weaponMixer,      // v12.0, probes
                  evPress: (x, y) => evPress(x ?? innerWidth / 2, y ?? innerHeight / 2), evRelease,
                  /* v9.4: drive one drag-and-match drop by id, so a harness or a
                     probe can play the standby bed without synthesising pointer

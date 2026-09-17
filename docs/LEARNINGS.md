@@ -3807,3 +3807,40 @@ A size the CSS depends on comes from a ResizeObserver, which fires after
 every layout that changes the element and costs the frame nothing — the
 frame owns the words, the observer owns the measure. v8.7's law (a fixed
 wait in a harness is a coin toss) in its layout form.
+
+## A screenshot after a fixed wait can precede ANY rendered frame (v12.0)
+
+The rifle was "not drawn": four probes photographed an empty lower-right
+while every number — the prop visible, 12,417 triangles in the viewmodel
+pass, the box in camera space — said it was there. Even a red emissive at
+1.5 photographed as nothing. The probe box draws a frame every one to six
+seconds, and `waitForTimeout(1200)` before a screenshot is the v8.7 coin
+toss in its photographic form: the shot landed before the frame that
+would have shown the change. A screenshot that must show a change waits
+on `requestAnimationFrame` twice (`frames(n)` in dbg-rifle6/7), never on
+a clock. The same box's mixer runs at 0.05 s a frame, so "wait 3.5 s for
+a 1.8 s take to park" is thirty-five seconds of wall time — drive the
+mixer (`weaponMixer().update(3)`) and then wait for a frame.
+
+## A busy flag on the wall clock expires inside one slow frame (v12.0)
+
+The reload's "busy" had a wall-clock safety net (the take's length plus
+200 ms) meant for a rig with no such clip. On the probe box one frame
+takes longer than a reload, so the net fired on the frame after the
+reload began and released the hands mid-take — and a hot phone under
+twenty frames a second is the same shape (v9.3's clock mismatch, on a
+flag instead of a stride). A state that belongs to an animation is stated
+in the animation's clock: `action.isRunning()`, which is false both when
+the take finishes and when it never started.
+
+## A Sketchfab clip's keys may begin seconds in (v12.0)
+
+`rifle.glb`'s Draw is 4.67 s long, and every one of its twelve tracks
+holds its first key until 4.17 — the motion is the last half-second; the
+Shoot take is the same shape (keys 3.37–3.57 of 3.57). A rate chosen from
+the clip's DURATION plays four seconds of nothing; a probe that steps the
+mixer 0.5 s twice and sees no bone move is not seeing a broken mixer.
+Read the keys (gltf-transform's samplers) before choosing a rate, and
+remember the parked rest is the LAST key, which is the only frame that
+looks like the reference render.
+

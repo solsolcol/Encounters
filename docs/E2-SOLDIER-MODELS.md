@@ -327,6 +327,16 @@ click-the-circles reaction test. The v7.0 play kit already covers that with no n
 `focus` puts targets up to be hit before they fade, `sequence` shows items one after another at a
 rising pace. Neither needs a rifle that comes apart.
 
+**Shipped at v12.0** as `assets/rifle.glb`, 2776 KB → **973 KB** through `tools/preprifle.mjs`
+(the three PNG sheets re-encoded as JPEG 86, dedup and prune, NO quantization and no
+simplification — the fingers are the model). The placement above stands to the millimetre and was
+photographed in the engine at chapter 3's ten in the morning; on the night harbour the fill light
+that rides the prop was bracketed by render to **0.6** (0.18 a silhouette, 1.2 a grey gun). On a
+phone `layoutHands` noses the group inward (x −0.083 at aspect 0.462) so the body stays at 0.55 of
+the centre crop's half-width. The takes' keys begin late — Draw 4.17–4.67 s, Shoot 3.37–3.57 s,
+Reload the whole 3.33 s — so the rates (2.6 / 3.2 / 1.6 / 2.6) are set for the part that moves and
+the drawn rest is the Draw's last key. Credited in the panel (`credits.rifle*`).
+
 ## 9 · THE ENCIK — `encik2.glb`
 
 Supplied 9 Sep 2026, and he closes the gap this document opened. An **older man**: moustache,

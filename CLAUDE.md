@@ -140,6 +140,7 @@ The declarations, all optional:
 | `stage.hotspots` | v7.0: many things to act on beside the pile — `[{ id, pos, radius, prompt, onInteract(), once, enabled() }]`, returned by build() | — (only the pile) |
 | `stage.hotspots[].dwell` / `aim` | v11.0: a hotspot that fires by being LOOKED AT for `dwell` seconds inside `aim` radians (chapter 3's torch spots) — the eighteenth seam | — (a press only) |
 | `torch.model` / `torch.click` | v11.1: the torch's own viewmodel (an asset key), swapped for the hand while it is on, and the sound its switch makes | — (the hand stays; a UI click) |
+| `weapon` | v12.0: RIFLE MODE — `{ model, item, rounds, mags, fireGap, kick, shot, reload, empty, clips, rates }`. The model's OWN hands replace the hand and the torch while it is out (out = the `item` is in the hand slot, or `kit.weaponOut(bool)` forces it); FIRE (click under lock, Space, the HUD button) spends a round, flashes, kicks, and RAYCASTS from the lens into `stage.shootables()`, reporting to `stage.onShot(report)`; RELOAD (R, the button) costs a magazine; rounds and magazines ride the save | — (no weapon, no HUD) |
 
 **THE PLAY KIT (v7.0)** is everything else a chapter may ask of the engine
 between its film and its decision — objectives, a timer, a waypoint,
@@ -2925,6 +2926,40 @@ What the baseline contains, by release:
   presence, not what the term teaches — a Pali stamp on his thesis, the
   episode-1 error in miniature. The sentence stands as his; the tag is
   gone. One line; sheet v59 exported (v44 stays the link).
+- **v12.0** RIFLE MODE — the engine seam for episode 2 chapter 4, released
+  ALONE before the chapter (docs/V12.0-E2C4-PLAN.md §12: "a seam proved by
+  the fixture first is a seam the chapter cannot hide a bug in"). A chapter
+  declares `weapon` (the table above); the fixture declares one with NO
+  model and a target board, and `fixturetest` proves nine promises — not out
+  until the item is in the hand slot, `weaponUp` when it is, a shot from the
+  spawn hits the board and the chapter is told, three rounds run dry and the
+  pill goes red, an empty press is refused, a reload costs the spare
+  magazine, rounds and mags ride the save, taking the item holsters it.
+  The model is Chad's Sketchfab KRISS Vector (docs/E2-SOLDIER-MODELS.md §8),
+  2.7 MB → **973 KB** through `tools/preprifle.mjs` (JPEG sheets, no
+  quantization — an FPS rig's fingers are the whole model), with its own
+  hands and four takes; §8's measured placement stands to the millimetre
+  and was photographed in the engine at chapter 3's ten in the morning. The
+  night was the work: on the harbour it was a black cut-out, and the fill
+  was BRACKETED by render (0.18 / 0.6 / 1.2 / 2.0) to **0.6**, where the
+  rail, the sights and the fingers read and it is still a dark thing in a
+  dark place. On a phone the body sat past the right edge of the centre
+  crop (photographed: the front sight and nothing else), so `layoutHands`
+  noses the group inward to keep the body at 0.55 of the frame's half-width
+  and never outward — desktop stays at the measured numbers; the HUD is a
+  ROW there (rounds, reload, FIRE) with the interact badge lifted over it.
+  Three laws paid for: **a screenshot after a fixed wait can precede any
+  rendered frame on a ~1 fps box** — the first four probes photographed a
+  rifle that was not yet drawn and every number said it was there; **a busy
+  flag stated on the wall clock expires inside one slow frame** (a 2.3 s
+  reload cleared on the frame after it began), so the flag reads the take's
+  own `isRunning()`; and **a Sketchfab clip's keys may begin seconds in** —
+  the Draw take is 4.67 s long and its twelve tracks hold their first key
+  until 4.17, so its rate is set for the half-second that moves, and the
+  parked rest is its LAST key. Also: while an event is open, Space and the
+  click are the event's, never the gun's (the fixture's heartbeat found it).
+  Episode 1 declares no weapon, so none of it can run there. Six strings;
+  sheet v60 exported (v44 stays the link).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -3434,7 +3469,7 @@ fifth chapter has no scare that is not the player's own memory replayed
 and released. `nextChapterKey()` past ch5 is null, so sealing it ends
 the run exactly as it always ended a last chapter.
 
-Next up: **episode 2's chapters 4–5, and rifle mode for chapter 5**
+Next up: **episode 2's chapters 4–5** (rifle mode is the ENGINE SEAM and shipped at v12.0; chapter 4, The Cyclist on a live range, is the next release — docs/V12.0-E2C4-PLAN.md)
 (chapter 1, The Worst Bed, shipped at v7.1 — `src/chapters/e2/e2c1.js`;
 chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 3, The Pressure, at v11.0 and revised at v11.1–v11.9 — `src/chapters/e2/e2c3.js`; chapters 1 and 2's lessons rewritten at v11.10, chapter 1 last revised at v10.8; the rifle
 viewmodel's placement and material are measured in

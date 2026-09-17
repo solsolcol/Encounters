@@ -118,6 +118,48 @@ body.hasTorch.cine .torchBtn,body.hasTorch.invopen .torchBtn,body.hasTorch.menuo
 .torchBtn .beam{opacity:.25;transition:opacity .16s}
 .torchBtn.on{border-color:var(--sodium)}
 .torchBtn.on .beam{opacity:1;stroke:var(--sodium)}
+/* v12.0: RIFLE MODE's HUD — only while a chapter's weapon is OUT
+   (`body.weaponUp`, derived on the frame from the hand slot). A big round
+   FIRE button under the right thumb, RELOAD above it, the rounds pill beside
+   them. The show rule counts three classes, so its hide rules carry three
+   and come after (v11.7's lesson, applied before it bites this time). */
+#weaponHud{position:fixed;right:max(16px,env(safe-area-inset-right));
+  bottom:calc(max(18px,env(safe-area-inset-bottom)) + 56px);z-index:9;display:none;
+  flex-direction:column;align-items:flex-end;gap:12px;pointer-events:none}
+body.inplay.weaponUp #weaponHud{display:flex}
+body.weaponUp.cine #weaponHud,body.weaponUp.invopen #weaponHud,body.weaponUp.menuopen #weaponHud,body.weaponUp.cardup #weaponHud{display:none}
+.wpnBtn{pointer-events:auto;touch-action:none;-webkit-user-select:none;user-select:none;cursor:pointer;
+  display:grid;place-items:center;border-radius:50%;color:var(--bone);
+  background:rgba(7,8,11,.62);border:1.5px solid rgba(232,226,212,.42);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  box-shadow:0 2px 14px rgba(0,0,0,.5);font-family:var(--ui);font-weight:700;letter-spacing:.08em}
+.wpnBtn:active{background:rgba(232,226,212,.22)}
+.fireBtn{width:82px;height:82px;font-size:1.02rem;border-color:rgba(255,92,72,.6);
+  box-shadow:0 0 22px rgba(255,92,72,.18),0 2px 14px rgba(0,0,0,.5)}
+.fireBtn:active{background:rgba(255,92,72,.32)}
+.reloadBtn{width:54px;height:54px}
+.reloadBtn svg{width:26px;height:26px;fill:none;stroke:var(--bone);stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.wpnKey{display:none}
+body.finePtr .wpnKey{display:block;position:absolute;left:50%;transform:translateX(-50%);bottom:-20px;
+  font-size:.66rem;letter-spacing:.06em;color:#B4BAC6;white-space:nowrap}
+body.finePtr .wpnBtn{position:relative;margin-bottom:12px}
+.wpnKey kbd{font-family:var(--ui);font-weight:700;border:1px solid rgba(232,226,212,.32);border-radius:4px;padding:1px 5px}
+#ammo{pointer-events:none;font-family:var(--ui);font-variant-numeric:tabular-nums;font-weight:700;
+  font-size:1.06rem;letter-spacing:.06em;color:var(--bone);background:rgba(7,8,11,.62);
+  border:1px solid rgba(232,226,212,.32);border-radius:999px;padding:5px 13px;
+  text-shadow:0 1px 3px rgba(0,0,0,.85)}
+#ammo.empty{color:#ff7a66;border-color:rgba(255,92,72,.7);animation:breathe 1.1s ease-in-out infinite}
+/* a phone (photographed at 390 px): the column stood ON the weapon's grip.
+   A row — rounds, reload, FIRE — keeps only the fire button over the gun,
+   which is where a thumb expects it. */
+@media (max-width:640px){
+  #weaponHud{flex-direction:row;align-items:center;gap:10px;bottom:calc(max(18px,env(safe-area-inset-bottom)) + 44px)}
+  .fireBtn{width:76px;height:76px}
+  /* and the interact badge stands ABOVE that row (photographed: "Tap to
+     pick up the torch" lay across the rounds and the reload button) — the
+     row's bottom, its 76 px, and 12 px of air */
+  body.weaponUp #interact{padding-bottom:calc(max(18px,env(safe-area-inset-bottom)) + 44px + 76px + 12px)}
+}
 /* v7.0: the objective line — top centre, clear of the stats and the buttons */
 #objective{align-items:flex-start;justify-content:center;
   padding-top:calc(max(14px,env(safe-area-inset-top)) + 4px)}
@@ -1314,6 +1356,10 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
     <path d="M9.5 6.5h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
     <path d="M4 2.5l2.5 2.2M20 2.5l-2.5 2.2M12 0.8v2.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
   </symbol>
+  <symbol id="e-rifle" viewBox="0 0 24 24">
+    <path d="M2.5 13.5h13l4-3h2v3.5l-2 1v2.5h-3l-1-2.5h-5l-1.5 3.5h-3l1.5-3.5h-5z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M15.5 13.5V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+  </symbol>
   <symbol id="e-keys" viewBox="0 0 24 24">
     <circle cx="8" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="1.7"/>
     <path d="M10.9 10.9 20 20M17 17l2-2M14.5 14.5l2-2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
@@ -1357,6 +1403,20 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
   </svg>
   <span class="invLabel"><span data-t="hud.torch">Torch</span><kbd data-t="hud.torchKey">F</kbd></span>
 </button>
+<div id="weaponHud">
+  <div id="ammo">30 / 3</div>
+  <button id="reloadBtn" class="wpnBtn reloadBtn" type="button" aria-label="Reload" data-t-aria="hud.reload">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M19 12a7 7 0 1 1-2.05-4.95"/>
+      <path d="M19 3v5h-5"/>
+    </svg>
+    <span class="wpnKey"><kbd data-t="hud.reloadKey">R</kbd></span>
+  </button>
+  <button id="fireBtn" class="wpnBtn fireBtn" type="button" aria-label="Fire" data-t-aria="hud.fire">
+    <span data-t="hud.fire">FIRE</span>
+    <span class="wpnKey"><kbd data-t="hud.fireKey">Space</kbd></span>
+  </button>
+</div>
 <button id="menuBtn" class="soundBtn menuBtn" type="button" aria-label="Menu">
   <svg viewBox="0 0 24 24" aria-hidden="true">
     <path d="M12 8.7a3.3 3.3 0 1 0 0 6.6 3.3 3.3 0 0 0 0-6.6Z"/>
