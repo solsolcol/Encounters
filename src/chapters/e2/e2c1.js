@@ -385,7 +385,6 @@
          hidden under the statue, and eight men slept uncovered */
       blanketOn: new THREE.BoxGeometry(BED.len - 0.62, 0.20, BED.wid - 0.06),
       sheet: new THREE.BoxGeometry(BED.len - 0.16, 0.012, BED.wid - 0.12),
-      boot: new THREE.BoxGeometry(0.28, 0.11, 0.11),
       mesh: new THREE.PlaneGeometry(BED.len - 0.06, BED.wid - 0.06)
     };
     const meshTex = makeMesh(THREE, cnv);
@@ -393,7 +392,6 @@
        renderer is ACESFilmic at exposure 1.42 (v8.9's law). Against the
        model's olive mattress the old 0xe9e6dc came out as a sheet of light. */
     const matSheet = new THREE.MeshStandardMaterial({ color: 0xc2beb3, roughness: 0.92 });
-    const matBoot = new THREE.MeshStandardMaterial({ color: 0x2a2622, roughness: 0.55, metalness: 0.05 });
     const matMesh = new THREE.MeshStandardMaterial({ map: meshTex, transparent: true, alphaTest: 0.35,
       color: 0x9aa0a8, roughness: 0.5, metalness: 0.6, side: THREE.DoubleSide });
     function mkBed(x, z, headTowardWall) {
@@ -428,11 +426,7 @@
         on.position.set(-headTowardWall * 0.29, y + 0.115, 0); on.visible = false; on.castShadow = !LOW; g.add(on);
         decks[name] = { mattress: m, pillow: pw, fold: bl, on, y };
       }
-      // v7.2: a pair of boots under the bed at the aisle end
-      for (const bz of [-0.09, 0.09]) {
-        const bt = new THREE.Mesh(bedGeo.boot, matBoot);
-        bt.position.set(-headTowardWall * (hx - 0.2), 0.055, bz); bt.castShadow = !LOW; g.add(bt);
-      }
+      // v13.0: the boots under each bed are gone at Chad's ask
       const b = { x, z, group: g, low: decks.low, high: decks.high, head: headTowardWall,
                   mesh: decks.highMesh, his: (x === HIS.x && z === HIS.z) };
       /* THE PARTS CHAD'S MODEL SUPERSEDES, named here where they are made
@@ -672,8 +666,6 @@
     // lockers between the beds, against the wall
     const lockers = [];
     const lockerGeo = new THREE.BoxGeometry(0.5, 1.8, 0.5);
-    const packGeo = new THREE.BoxGeometry(0.42, 0.26, 0.34);
-    const matPack = new THREE.MeshStandardMaterial({ color: 0x3d4a3a, roughness: 0.95 });
     for (const rx of ROW_X) for (const lz of lockZs(rx)) {
       const l = new THREE.Mesh(lockerGeo, matLocker);
       l.position.set(rx < 0 ? -R.x + 0.27 : R.x - 0.27, 0.9, lz);
@@ -685,10 +677,7 @@
       seam.position.set(rx < 0 ? -R.x + 0.53 : R.x - 0.53, 0.9, lz);
       seam.rotation.y = rx < 0 ? Math.PI / 2 : -Math.PI / 2;
       world.add(seam);
-      // v7.2: a field pack on top of each locker
-      const pk = new THREE.Mesh(packGeo, matPack);
-      pk.position.set(rx < 0 ? -R.x + 0.27 : R.x - 0.27, 1.8 + 0.13, lz + (lz > 0 ? -0.04 : 0.04));
-      pk.rotation.y = (lz * 0.7) % 0.5; pk.castShadow = !LOW; world.add(pk);
+      // v13.0: the green pack on top of each locker is gone at Chad's ask
     }
 
     /* v7.2: LOUVRED WINDOWS along the −x wall, one above each bed head — a
@@ -1879,9 +1868,20 @@
     const matBoll = nfm({ color: 0x2c2c2c, roughness: 0.6, metalness: 0.4 });
     for (const sgn of [-1, 1]) for (let z = -10; z <= 14; z += 8)
       fmesh(jettyRoot, new THREE.CylinderGeometry(0.11, 0.14, 0.5, 8), matBoll, sgn * 3.35, 0.26, z);
+    /* v13.0 (Chad: "the lifefloat ... is floating in the air, why? Shouldnt
+       it be tied to the ledge?"). It was, measured: the walkway's top rail is
+       at y 1.00 and the buoy's centre was at 1.55, so it hung 0.55 m of clear
+       air above the only thing it could be tied to. The ring's hole is
+       0.18 m in radius about its centre, so a centre at 0.86 puts the rail
+       (0.97-1.03) inside the hole's upper part — the rail passes THROUGH the
+       ring, which is what hanging on a rail looks like — and a lashing strap
+       over the top closes it. */
     const matBuoy = nfm({ color: 0xd8402c, roughness: 0.7 });
-    for (const sgn of [-1, 1]) for (let z = -6; z <= 26; z += 8)
-      fmesh(jettyRoot, new THREE.TorusGeometry(0.24, 0.06, 8, 20), matBuoy, sgn * 3.0, 1.55, z, 0, Math.PI / 2, 0);
+    const matLash = nfm({ color: 0xe8e4d8, roughness: 0.9 });
+    for (const sgn of [-1, 1]) for (let z = -6; z <= 26; z += 8) {
+      fmesh(jettyRoot, new THREE.TorusGeometry(0.24, 0.06, 8, 20), matBuoy, sgn * 3.02, 0.86, z, 0, Math.PI / 2, 0);
+      fbox(jettyRoot, 0.05, 0.22, 0.05, matLash, sgn * 3.02, 1.03, z);   // the strap over the rail
+    }
     /* tube lights under the roof, and the light they give */
     const matTubeJ = nfm({ color: 0xf4f6f0, emissive: 0xf4f6f0, emissiveIntensity: 1.4, roughness: 0.6 });
     for (let z = -10; z <= 26; z += 6) fbox(jettyRoot, 0.14, 0.07, 1.3, matTubeJ, 0, 3.55, z);

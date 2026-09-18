@@ -8403,7 +8403,13 @@ function tick(now = 0) {
       ui.prompt.classList.add('hide');
     } else {
       ui.interact.classList.add('hide');
-      if (d < 6.2 && onScreen) ui.prompt.classList.remove('hide'); else ui.prompt.classList.add('hide');
+      /* v13.0: and only when the chapter HAS a word for it. An empty
+         `words.approach` is the sheet's own "remove that text" (EDITING-TEXT),
+         and an empty floating box is not a removal. Episode 1's five and the
+         other episode-2 chapters all declare one, so nothing there moves. */
+      if (d < 6.2 && onScreen && chWord('approach', 'world.burning'))
+        ui.prompt.classList.remove('hide');
+      else ui.prompt.classList.add('hide');
     }
     /* v7.2: an open EVENT owns the middle of the screen — the badge and the
        approach prompt under its panel were half-hidden noise (The Worst

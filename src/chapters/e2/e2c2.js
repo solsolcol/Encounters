@@ -117,7 +117,12 @@
                        ['e2dread', 1.0], ['showerrun', 0], ['clocktick', 0]] },   // v10.7: the dread at full (was 0.85), and its file levelled by RMS
 
     words: {
-      approach: 'the encik',
+      /* v13.0 (Chad: "the 'the encik' label still appears when player is near
+         to him and looking at him. I dont think this serves any real purpose").
+         An EMPTY approach word means no floating label at all — the engine
+         shows the prompt only when a chapter has given it something to say,
+         which is the sheet's own rule for an empty cell. */
+      approach: '',
       act: 'E to speak to the encik',
       actTouch: 'Tap to speak to the encik',
       interact: 'E to speak to the encik',
@@ -484,7 +489,7 @@
        is a FOURTH recruit's now (r2hear, David), at seat 1 beside him; the
        old ids ride in saved phase strings and are simply ignored. */
     const WHO = { recruit4: 1, recruit3: 2, bunkmate: 4 };
-    const DOZE = 'Sit_and_Doze_Off', SITUP = 'Chair_Sit_Idle_M';
+    const DOZE = 'Sit_and_Doze_Off';   // v13.0: the sit-up take is gone — see sitUp()
     const CULL_SPHERE = {
       admintee:  { x: 0.067, y: 0.870, z: 0.011, r: 1.376 },
       encik2:    { x: 0.015, y: 0.832, z: -0.037, r: 1.253 },
@@ -518,7 +523,6 @@
       gltf.scene.traverse(o => { if (!o.isBone) return; o.getWorldPosition(v); lo = Math.min(lo, v.y); hi = Math.max(hi, v.y); if (/HeadTop_End/.test(o.name)) crown = true; });
       const s = 1.70 / (((hi - lo) / (crown ? 1 : 0.935)) || 1.7);
       const dozeClip = gltf.animations.find(a => a.name === DOZE) || gltf.animations[0];
-      const sitClip = gltf.animations.find(a => a.name === SITUP) || dozeClip;
       SEATS.forEach((sp, i) => {
         const g = new THREE.Group();
         g.position.set(sp.x, 0, sp.z); g.rotation.y = sp.ry; g.scale.setScalar(s);
@@ -526,7 +530,8 @@
         wideBounds(m, 'admintee');
         g.add(m); seated.group.add(g);
         const mixer = new THREE.AnimationMixer(m);
-        const doze = mixer.clipAction(dozeClip), sit = mixer.clipAction(sitClip);
+        const doze = mixer.clipAction(dozeClip);
+        let hd = null; m.traverse(o => { if (o.isBone && !hd && HEAD_RE.test(o.name)) hd = o; });
         doze.play(); doze.time = dozeClip.duration * hash(i, 4);
         mixer.update(0.0001);
         /* hips on the bench: a seated take's legs fold under, so the man is
@@ -535,34 +540,80 @@
         let hip = null; m.traverse(o => { if (o.isBone && !hip && /Hips/.test(o.name)) hip = o; });
         if (hip) { hip.getWorldPosition(v); m.position.y += (TBL.seat + 0.10 - (v.y - g.position.y)) / s; }
         proxies[i].visible = false;
-        seated.rigs.push({ g, m, mixer, doze, sit, up: false, rate: 0.85 + hash(i, 9) * 0.3 });
+        seated.rigs.push({ g, m, mixer, doze, up: false, rate: 0.85 + hash(i, 9) * 0.3,
+                           head: hd, group: g,
+                           look: { want: 0, w: 0, x: 0, y: 0, saved: new THREE.Quaternion(), hasSaved: false } });
         doze.setEffectiveTimeScale(seated.rigs[i].rate);
       });
       seated.ready = true;
       redoShadows();
     }, (err) => { console.warn('admintee failed', err); seated.ready = true; }))
       .catch(err => { console.warn('admintee failed', err); seated.ready = true; });
-    /* sit up for `secs`, then slump back. A hard cut to a frame inside the
-       upright window, because a doze-to-sit crossfade passes through the
-       fold the idle take carries. */
+    /* v13.0 (Chad: "when player talks to each bunkmate, their body position
+       twitches and causes their legs to cut into the bench"). He is right and
+       the cause is one clip change, measured on the shipped asset:
+
+         Sit_and_Doze_Off    hips 0.641-0.647   lowest vertex 0.071 @ z 0.23
+         Chair_Sit_Idle_M    hips 0.708-0.719   lowest vertex 0.100 @ z 0.02
+
+       So the cut LIFTED THE WHOLE MAN 7.0 cm — that is the twitch — and pulled
+       his feet 21 cm back under him into the bench he is sitting at. And a
+       third defect neither of us had seen: Chair_Sit_Idle_M's head sits 0.52 m
+       over its hips only in its first and last sixth and COLLAPSES to 0.26 in
+       between (v8.0 measured this and called the take "not an idle"), so at
+       rate 0.55 a line longer than ~2.9 s had him folding his head to his
+       knees mid-sentence.
+
+       Three defects, one cause, so the cure is to stop changing the clip. The
+       doze take holds the hips rock-steady and the feet out where no bench is;
+       a man who is asked ANSWERS WITH HIS HEAD — he turns it to the player for
+       the length of his line, which is chapter 3's kneeling man (v11.4) — and
+       stirs, because `rate` now nudges the doze rather than starting a second
+       take. The API, the call sites and every timeline are unchanged. */
     function sitUp(i, secs, rate) {
       const r = seated.rigs[i];
       if (!r) return;
-      r.sit.reset(); r.sit.setEffectiveTimeScale(rate || 0.55); r.sit.setEffectiveWeight(1);
-      r.sit.play(); r.sit.time = r.sit.getClip().duration * 0.02;
-      r.doze.stop(); r.mixer.update(0.0001);
+      r.look.want = 1;
+      r.doze.setEffectiveTimeScale(r.rate * (1 + (rate || 0.55) * 0.5));
       r.up = true;
       if (secs > 0) after(secs, () => { if (r.up) sitDown(i); });
     }
     function sitDown(i) {
       const r = seated.rigs[i];
       if (!r) return;
-      r.doze.reset(); r.doze.setEffectiveTimeScale(r.rate); r.doze.setEffectiveWeight(1);
-      r.doze.play(); r.doze.time = r.doze.getClip().duration * hash(i, 4);
-      r.sit.stop(); r.mixer.update(0.0001);
+      r.look.want = 0;
+      r.doze.setEffectiveTimeScale(r.rate);
       r.up = false;
     }
     function allSitDown() { seated.rigs.forEach((r, i) => { if (r.up) sitDown(i); }); }
+    /* v13.0: the answer, as a head turn. Ported from chapter 3's kneeling man
+       (v11.4) with v11.5's law: a mixer only writes a bone when the value
+       CHANGES, so last frame's offset has to be undone before the mixer runs
+       or the additive turn stacks and the head spins. */
+    const _lookP = new THREE.Vector3(), _lookH = new THREE.Vector3();
+    function headUndo(r) { if (r.look.hasSaved && r.head) r.head.quaternion.copy(r.look.saved); }
+    function headLook(r, dt) {
+      const head = r.head; if (!head) return;
+      r.look.saved.copy(head.quaternion); r.look.hasSaved = true;
+      camera.getWorldPosition(_lookP); head.getWorldPosition(_lookH);
+      const dx = _lookP.x - _lookH.x, dz = _lookP.z - _lookH.z, flat = Math.hypot(dx, dz);
+      let dy = Math.atan2(dx, dz) - r.group.rotation.y; dy = Math.atan2(Math.sin(dy), Math.cos(dy));
+      const YAW = 0.85, PIT = 0.36, EYE_UP = 0.11, DOWN_BIAS = 0.08;
+      const w = r.look.w;
+      const wy = Math.abs(dy) > YAW + 0.9 ? 0 : Math.max(-YAW, Math.min(YAW, dy));
+      const wx = flat < 0.05 ? 0 : Math.max(-PIT, Math.min(PIT, Math.atan2(_lookP.y - (_lookH.y + EYE_UP), flat) - DOWN_BIAS));
+      const k = Math.min(1, dt * 3.5);
+      r.look.y += (wy * w - r.look.y) * k; r.look.x += (wx * w - r.look.x) * k;
+      head.rotation.y += r.look.y;
+      head.rotation.x += (-r.look.x - head.rotation.x) * 0.88 * w;
+    }
+    function seatLooks(dt) {
+      for (const r of seated.rigs) {
+        r.look.w += (r.look.want - r.look.w) * Math.min(1, dt * 2.4);
+        if (r.look.w > 0.002 || Math.abs(r.look.y) > 0.002 || Math.abs(r.look.x) > 0.002) headLook(r, dt);
+        else r.look.hasSaved = false;
+      }
+    }
 
     /* ----------------------------------------------------------- the encik */
     function mkRig(key, opts) {
@@ -875,8 +926,6 @@
     const pTube = nf({ color: 0xffffff, emissive: 0xfff6e6, emissiveIntensity: 0, roughness: 0.4 });
     const pDoor = nf({ color: 0x6f7a72, roughness: 0.7 });
     const pDrain = nf({ color: 0x1a1c1e, roughness: 0.4, metalness: 0.6 });
-    const pBoot = nf({ color: 0x2a2622, roughness: 0.55, metalness: 0.05 });
-    const pPack = nf({ color: 0x3d4a3a, roughness: 0.95 });
     const pClock = nf({ map: clock.tex, emissiveMap: clock.tex, emissive: 0xffffff, emissiveIntensity: 0.30, roughness: 0.85, transparent: true });
     const pBoard = nf({ map: boardTex, roughness: 0.9 });
     const pGlass = nf({ map: winView, emissiveMap: winView, color: 0x0b1220, emissive: 0x14203a, emissiveIntensity: 0.35, roughness: 0.3 });
@@ -906,7 +955,7 @@
        deck registered on `restOn` so the loaders may land in any order. */
     const beds = [];
     const bedGeo = { post: new THREE.BoxGeometry(0.05, BED.post, 0.05), rail: new THREE.BoxGeometry(BED.len, 0.05, 0.05), railEnd: new THREE.BoxGeometry(0.05, 0.05, BED.wid),
-                     mat: new THREE.BoxGeometry(BED.len - 0.04, 0.14, BED.wid - 0.04), pillow: new THREE.BoxGeometry(0.42, 0.09, 0.62), boot: new THREE.BoxGeometry(0.28, 0.11, 0.11) };
+                     mat: new THREE.BoxGeometry(BED.len - 0.04, 0.14, BED.wid - 0.04), pillow: new THREE.BoxGeometry(0.42, 0.09, 0.62) };
     function mkBed(x, z, head) {
       const g = new THREE.Group(); g.position.set(x, 0, z); pocket.add(g);
       const hx = BED.len / 2, hz = BED.wid / 2;
@@ -920,7 +969,7 @@
         const pw = new THREE.Mesh(bedGeo.pillow, pPillow); pw.position.set(head * (hx - 0.28), y + 0.045, 0); g.add(pw); sup.push(pw);
         decks[name] = { mattress: m, pillow: pw, y };
       }
-      for (const bz of [-0.09, 0.09]) { const bt = new THREE.Mesh(bedGeo.boot, pBoot); bt.position.set(-head * (hx - 0.2), 0.055, bz); g.add(bt); }
+      // v13.0: no boots under the beds — the room this pocket copies has none
       const b = { x, z, group: g, low: decks.low, high: decks.high, head, his: (x === HIS.x && z === HIS.z), supersede: sup, deckTop: BED.low, restOn: [], model: null };
       beds.push(b); return b;
     }
@@ -953,13 +1002,12 @@
       });
       redoShadows();
     })).catch(() => {});
-    // lockers with a pack on each, between the beds
+    // lockers between the beds (v13.0: no pack on top — see e2c1)
     for (const rx of ROW_X) for (const lz of lockZs(rx)) {
       const lx = rx < 0 ? -R.x + 0.27 : R.x - 0.27;
       pbox(0.5, 1.8, 0.5, lx, 0.9, lz, pLocker);
       const seam = new THREE.Mesh(new THREE.PlaneGeometry(0.02, 1.7), nf({ color: 0x2a2d2a, roughness: 0.9 }));
       seam.position.set(rx < 0 ? -R.x + 0.53 : R.x - 0.53, 0.9, lz); seam.rotation.y = rx < 0 ? Math.PI / 2 : -Math.PI / 2; pocket.add(seam);
-      const pk = pbox(0.42, 0.26, 0.34, lx, 1.93, lz + (lz > 0 ? -0.04 : 0.04), pPack); pk.rotation.y = (lz * 0.7) % 0.5;
     }
     // the long table down the middle with three stacks of chairs (v7.9)
     { const TAB = { x: 0, z: 2.55, len: 3.60, dep: 0.75, top: 0.735 };
@@ -1372,7 +1420,9 @@
     /* ---------------------------------------------------------- per frame */
     function updateNotes(dt, t) {
       // the mixers run in every state (v5.19): a cutscene owns the poses, never the clocks
+      for (const r of seated.rigs) headUndo(r);                     // v13.0, the v11.5 law
       for (const r of seated.rigs) if (r.mixer && seated.group.visible) r.mixer.update(dt);
+      if (seated.group.visible) seatLooks(dt);                      // v13.0: laid on after the mixer
       if (encik.mixer && encik.group.visible) encik.mixer.update(dt);
       if (ghostFlag.mixer && ghostFlag.group.visible) ghostFlag.mixer.update(dt);
       if (pocket.visible) {
