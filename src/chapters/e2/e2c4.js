@@ -579,7 +579,17 @@
     const cycGlow = new THREE.PointLight(0xbcd0ff, 0, 14, 1.6); cycGlow.position.set(0, 1.1, 0); cyc.group.add(cycGlow);
     function cycAlpha(k) {
       cyc.a = k;
-      for (const m of cyc.mats) m.opacity = GHOST_A * k;
+      /* v12.4: OPAQUE whenever he is actually being looked at. This model is
+         not drawn correctly as a transparent object (see the loader), and he
+         stands at full strength for the whole of play — only one scene fades
+         him out at its end, and a figure on its way to nothing is the one
+         moment the loss does not read. So the flag follows k rather than
+         being set once, and it is only re-compiled when it actually flips. */
+      const see = k < 0.999;
+      for (const m of cyc.mats) {
+        if (m.transparent !== see) { m.transparent = see; m.needsUpdate = true; }
+        m.opacity = see ? k : 1;
+      }
       cycGlow.intensity = 2.6 * k;
       const on = k > 0.002;
       if (cyc.group.visible !== on) cyc.group.visible = on;
@@ -592,12 +602,26 @@
         o.castShadow = false; o.frustumCulled = false;
         o.material = Array.isArray(o.material) ? o.material.map(m => m.clone()) : o.material.clone();
         for (const m of (Array.isArray(o.material) ? o.material : [o.material])) {
-          /* the v9.6 look, paler: on an open range at night with a flare
-             dying overhead, the thing has to carry its own light — the
-             site's own film shows a GLOWING cyclist */
-          m.transparent = true; m.opacity = GHOST_A * cyc.a; m.color.setScalar(0.86);
-          m.emissive?.setHex(0x8fa6d8); m.emissiveIntensity = 0.55;
-          m.depthWrite = false; m.needsUpdate = true;
+          /* v12.4, Chad: "why cant u just use the ghost cyclist model the way
+             i gave it to you?" — and he is right, because the ghost treatment
+             was DESTROYING the model. Proven by changing ONE property on one
+             material in one frame, with opacity at 1.0 in both:
+               transparent: false -> the whole rider, head, torso, arms, legs
+               transparent: true  -> the head and the torso are not drawn
+             Alpha is not involved (it is 1.0 either way). Ruled out one render
+             at a time: the model itself (solid it is perfect), lighting and
+             normals (an UNLIT copy has the identical hole; all 14,463 normals
+             are unit length), back-face culling (DoubleSide is the same), the
+             base colour map (there is none — this file ships no maps at all),
+             depth writing, depth precision (polygonOffset changes nothing),
+             and anything behind him (lifted against open sky the torso is
+             still simply absent). So this file will not survive being made
+             transparent, and the fix is to stop making it transparent: it
+             keeps the materials it was delivered with.
+             The v12.3 depth pre-pass that used to sit below this is GONE with
+             it — rendered in red on its own it draws a complete, correct
+             silhouette, which proves it was never occluding anything. It was
+             a no-op, and it was reported as a fix; it is not one. */
           cyc.mats.push(m);
         }
       });
@@ -608,33 +632,6 @@
          so the one thing in the chapter the player most needs to be able to
          hit would have been the one thing assist could not help him hit. */
       g.traverse(o => { if (o.isMesh) cyc.meshes.push(o); });
-      /* v12.3, Chad: "when the ghost cyclist comes nearer and nearer, the
-         model looks wrong." A DEPTH PRE-PASS, and the reason is one property.
-         `depthWrite: false` is right for a ghost AGAINST THE WORLD — the
-         material still depth-TESTS, so the berm or a tree in front of it
-         still occludes it and the alpha only finishes the job (v9.7). It is
-         wrong for the object against ITSELF: this file is ONE baked mesh
-         (measured: cyc.meshes.length === 1, 29,707 triangles, 0 bones), so
-         with nothing writing depth every triangle blends in buffer order and
-         the far side of the rider, the inside of the frame and the far wheel
-         all come through the near side. Photographed from play: at 24 m a
-         faint figure, at 12 m still readable, at 6 m a smear with a helmet
-         floating off the shoulders.
-         So a colour-less copy of the geometry lays the silhouette's depth
-         down FIRST — renderOrder 2, after every default-0 opaque mesh in the
-         world, so the tarmac behind it is already painted and cannot be
-         punched out — and the ghost itself then depth-TESTS against it, so
-         only its nearest surface is drawn. It is a child of the mesh, so it
-         rides the same world matrix with nothing to keep in step, and it
-         goes invisible with the group like everything else. */
-      const depthMat = new THREE.MeshBasicMaterial({ colorWrite: false, depthWrite: true, fog: false });
-      owned.push(depthMat);
-      for (const m of cyc.meshes) {
-        const d = new THREE.Mesh(m.geometry, depthMat);
-        d.renderOrder = 2; d.frustumCulled = false; d.castShadow = false;
-        m.renderOrder = 3;
-        m.add(d);
-      }
       cycAlpha(cyc.a);
     }).catch(() => { cyc.ready = true; });
     /* the primitive fallback under it (v4.7's rule: a failed download costs
