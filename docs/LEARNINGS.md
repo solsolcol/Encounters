@@ -4126,3 +4126,50 @@ with identical lighting, normals, side, depth write and everything drawn
 behind. Nothing short of flipping that one flag in one frame would have
 isolated it, because the treatment that set it also set six other things. When
 a model looks wrong, bisect the TREATMENT before blaming the file.
+
+**The session ids are the only handle on a generation.** ElevenLabs'
+`creative_get_flow_run_status` takes a flow id and SESSION ids; the flow
+itself will happily tell you that six nodes completed and give you no way to
+reach what they produced. At v13.0 six finished generations had to be re-run —
+paid for twice — because their session ids had never been written down.
+Write them to `masters/<version>/sessions.json` the moment a run starts,
+before measuring, before downloading, before anything.
+
+**A framing number is measured in NDC, not in degrees on paper.** v13.0's
+flare launch was placed by arithmetic at 17.2 degrees off the lane, inside a
+portrait phone's ~21-degree horizontal half-view — and photographed at
+**ndc.x 1.44**, 44 % past the right edge, because the shot's own yaw settle
+(+0.16 rad) turned the lens the other way and the arithmetic had only asked
+about the world. Project the thing onto the camera the shot actually uses at
+the frame it matters, and read the number.
+
+**A fixed world size is not a size.** The same flare, once it was in frame and
+fully opaque, was **seven pixels** on a 390 px phone: a 0.5 m ball at 88 m is
+0.3 degrees. Anything that has to READ at a range of distances — a light in
+the sky, a marker, a spark — is scaled by its distance from the camera, not
+given a world radius. The first contact sheet showed an empty sky while every
+number said the flare was there, which is the shape of this mistake: correct
+placement, correct opacity, invisible.
+
+**A flare bursts; it does not fade up.** v13.0's burn ramp took 1.1 s to reach
+full from ZERO, so after the climb the spark went dark for a frame and then
+faded in — measured, opacity 0 at the burst frame. An event that IS a flash
+starts at half its light on the frame it lights and reaches full a quarter of
+a second later.
+
+**A live event owns the mouse, not only the keyboard.** `evKey` has said
+"a live event owns Space / Enter / E" since v7.0 and nothing said it for the
+click. The window's own `pointerdown` routes a mouse press to `evPress` (a
+mouse under pointer lock never reaches the overlay) and the canvas's
+`mousedown` fired the rifle from the same click, so every press of episode 2
+chapter 4's load drill also sent a live round downrange — and on that range
+firing before the order costs six sanity. When a surface claims an input,
+claim every path to it, and check the ones you did not write.
+
+**An ADS offset is a place, not a delta.** A viewmodel's rest is already
+nudged by the layout on a portrait phone (v12.0 noses the weapon inward to
+keep its body in frame). Adding the aim's offset to that stacks the two: at
+390 px the rifle landed at x −0.2028 and its sights sat off the left edge with
+the reticle alone in the middle. The aim's x is where the weapon has to BE, so
+the frame interpolates from the rest TO it and both crops land on the same
+sight picture.

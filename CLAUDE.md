@@ -3235,6 +3235,57 @@ What the baseline contains, by release:
   (e2c4 has cleared it since v12.3 — the chapter where the seam was written
   never did). Harnesses: chapter, pile, fixture, walk, leak, cine, text, csp.
   docs/V12.5-THE-LABEL-AND-THE-TREE.md is the build's memory.
+- **v13.0** THE TWENTY-TWO — Chad's whole feedback list in one message, with
+  one process demand under it ("checkpoints, milestones, record progress,
+  record the plan, steps, so that you survive any potential memory loss").
+  `docs/V13.0-PLAN.md` is that record, checkpoint by checkpoint;
+  docs/V13.0-THE-TWENTY-TWO.md is the release's own summary. **THE TITLES**:
+  episode 2 is *The 3 AM Shower & The Ghost Cyclist* everywhere, and each of
+  its four chapters' cards says its own title instead of "Night One".
+  **THE ENGINE'S SHARE, all four pieces unreachable from episode 1 BY
+  CONSTRUCTION**: a chapter may declare `unlimited` ammunition (default
+  false, so the fixture's nine promises stand) and then neither the count nor
+  the reload button is drawn and RELOAD is a no-op; the AIM is an ANIMATION
+  (`adsK` eased on WALL time over `adsSecs`, the lens smoothstepping
+  CAM_FOV → zoom and the weapon coming onto the sight line under it, because
+  the rifle carries no aiming take — measured, it has Draw / Shoot / Reload /
+  Hide and nothing else); a briefing's `demo` may be `'bar'` as well as
+  `'drag'`; and **the canvas's mousedown returns early while a kit event is
+  open** — the window's own pointerdown routes a mouse press to `evPress`,
+  and this handler fired the rifle from the SAME click, so every press of the
+  load drill also sent a live round downrange and cost six sanity for firing
+  before the order. `evKey` had said "a live event owns Space / Enter / E"
+  since v7.0 and nothing ever said it for the mouse. **THE FILM** is 43.4 s →
+  35.2: the tonner shot is gone (on a phone it was a black rectangle with a
+  lamp in the corner), it opens on a PAN across the range, the flare is FIRED
+  on screen — `flarelaunch`, a spark climbing for 1.55 s on `flarePlace(k)`,
+  and only at the apex the pop and the sky — and it ends on the pan onto lane
+  six, with the flare sky handed back at 33.4 INSIDE the film (the old one
+  handed it back at 36.4 of a 43.4 timeline, so a shorter film would have
+  left play under it). **THE RANGE**: two serials instead of three (statics,
+  then straight to the mover — everything table-driven, so the count is one
+  array length); every bank DOWN from the chapter's first frame and between
+  waves, the serial's own coming up on the frame the order lands; the live
+  rounds are brass in a tray with magazines and steel boxes instead of four
+  olive bricks; the safety officer stands AT the ammo table, which is what
+  the film's second shot has claimed since v12.1 while he was eleven metres
+  away; and the watchtower has a roof, a ladder, a kick plate, bracing, an
+  obstruction light, the range's red flag and a MAN on it. **THE CYCLIST**:
+  the red banner and its new sting land on the frame he is SEEN rather than
+  eight seconds before he exists; he fades in and out and is scaled by how
+  far out he is (1.85 at 46 m down to 1.00 at the berm, which is the size the
+  four scenes were framed against); a crossing finished with no round fired
+  brings him back NEARER instead of ringing the bell, so a player who holds
+  his sight — the correct answer — sees him twice; and EVERYONE SHOUTS, three
+  of Chad's own lines in three different voices, on one queue so the gaps are
+  the takes' own lengths. Six new sounds and a re-said `n3press` under
+  `[terrified]`. Three laws paid for, all three in LEARNINGS: **the session
+  ids are the only handle on a generation**; **a framing number is measured in
+  NDC, not in degrees on paper** (the launch was 17.2° off by arithmetic and
+  ndc.x 1.44 — off the phone's right edge — because the camera's own yaw
+  settle turned the other way); and **a fixed world size is not a size** (the
+  climbing flare was in frame, correctly placed, fully opaque, and SEVEN
+  PIXELS). Sheet v64.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -3747,7 +3798,9 @@ the run exactly as it always ended a last chapter.
 Next up: **episode 2's chapter 5**, THE LAST NIGHT — the payoff the case file names: he stops looking and it stops (rifle mode shipped at v12.0, chapter 4, The Cyclist, at v12.1, and its range made playable at v12.2 — docs/V12.0-E2C4-PLAN.md, docs/V12.2-THE-RANGE-THAT-WORKS.md)
 (chapter 1, The Worst Bed, shipped at v7.1 — `src/chapters/e2/e2c1.js`;
 chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 3, The Pressure, at v11.0 and revised at v11.1–v11.9 and v12.5 — `src/chapters/e2/e2c3.js`; chapter 4, The Cyclist, at v12.1, rebuilt at v12.2 and its ghost given back its body at v12.4 — `src/chapters/e2/e2c4.js`;
-chapters 1 and 2's lessons rewritten at v11.10, chapter 1 last revised at v10.8; the rifle
+chapters 1 and 2's lessons rewritten at v11.10, chapter 1 last revised at v10.8;
+ALL FOUR episode-2 chapters were revised at v13.0 against Chad's twenty-two
+notes — docs/V13.0-PLAN.md and docs/V13.0-THE-TWENTY-TWO.md; the rifle
 viewmodel's placement and material are measured in
 docs/E2-SOLDIER-MODELS.md §8), and the still-outstanding job of replacing chapter 1's
 placeholder choices with the real "THE OFFERINGS" data in
@@ -3757,6 +3810,13 @@ The sound download is **done** (v4.2, above): split per chapter so it no
 longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
+
+**THE SHEET IS v64** (`masters/v13.0/masterz-text-v64.xlsx`, four tabs: UI
+TEXT, EPISODE 1, EPISODE 2, VOICE LINES). It is EXPORTED and not published —
+the workbook has been past the Drive connector's base64 wall since v43, and
+the split export is still to do (docs/EDITING-TEXT.md). **v44 is still the
+link to give Chad** until that is fixed:
+https://docs.google.com/spreadsheets/d/1bqnbQJPr1O6YslOlcsbVDFlZCohQtyKbPzm9EuY1IpM/edit
 
 `docs/LEARNINGS.md` is the catalog of every hard-won lesson (CSP traps,
 audio traps, cutscene staging, test flakiness). When something in this
