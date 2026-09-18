@@ -313,6 +313,17 @@ body.finePtr .wpnBtn{position:relative;margin-bottom:12px}
   border:2px solid rgba(99,214,200,.7);animation:hmRipple 1.5s ease-out infinite}
 @keyframes hmRipple{0%{opacity:.8;transform:rotate(45deg) scale(.7)}
   100%{opacity:0;transform:rotate(45deg) scale(1.7)}}
+/* v12.5: a LOOK spot (one that fires by being looked at, not pressed) wears
+   a round eye instead of the exclamation, and an arc round it fills with the
+   look itself (--p, written from the spot's own dwell). The glyph is drawn,
+   never typed, so no font has to carry it. */
+.hmark.look .hbang{font-size:0;width:9px;height:9px;border-radius:50%;
+  background:#CFFFF8;box-shadow:0 0 10px rgba(99,214,200,.95)}
+.hmark.look .hring{border-radius:7px}
+.hmark.look::before{content:'';position:absolute;inset:-7px;border-radius:50%;
+  background:conic-gradient(#8FE6DB calc(var(--p,0) * 360deg),rgba(143,230,219,.14) 0);
+  -webkit-mask:radial-gradient(circle,transparent 60%,#000 62%);
+  mask:radial-gradient(circle,transparent 60%,#000 62%)}
 /* v7.0: the decision clock — a bar that is the thing's approach */
 #dclock{display:flex;flex-direction:column;gap:6px;padding:0 24px 12px}
 #dclock .track{display:block;height:6px;background:rgba(255,255,255,.08);

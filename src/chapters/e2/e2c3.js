@@ -596,6 +596,9 @@
       runner.group.position.set(RUN_HOME.x, 0, RUN_HOME.z); runner.group.rotation.y = 0;
     }
     function farTick() {
+      /* v12.5: and neither does anything RUN out there while he is saying so.
+         The far pass carries `ghostrunleaf` — vegetation moving, by name. */
+      if (phase === 'pressure' || phase === 'decide') { if (farRun) farEnd(); farAt = 0; return; }
       if (!farAt) { farAt = dayClock.t + 4 + farRand() * 4; return; }
       if (!farRun) {
         if (dayClock.t < farAt || !runner.ready || !runner.acts) return;
@@ -1013,9 +1016,17 @@
     }
 
     /* ------------------------------------------------------------ hotspots
-       Torch spots: `dwell` 0.8 s inside `aim` of the reticle, no press —
-       the eighteenth seam. Enabled only while the torch is on: no beam, no
-       looking, and the marks vanish with it (the objective says why). */
+       Torch spots: `dwell` 0.8 s inside `aim` of the reticle — the eighteenth
+       seam. Enabled only while the torch is on: no beam, no looking, and the
+       marks vanish with it (the objective says why).
+       v12.5: the cones were a QUARTER of the beam they are aimed with — the
+       torch's own half-angle is 0.40 rad, so a tree could be lit square in
+       the middle of the light and still count for nothing, which is what "the
+       tree cannot be clicked" felt like from the player's side. Each is about
+       half the beam now, so a thing plainly IN the light counts. Measured
+       from the scrape, the closest two of the seven anchors are 47° apart
+       (the three trees; the people and the ground are further), against the
+       23° two 0.20 cones would need to touch — no look can answer two. */
     const torchOn = () => !kit || !kit.torchIsOn || kit.torchIsOn();
     const spotOn = (n, needs) => () => phase === 'look' && !seen.has(n) && torchOn() && (needs === undefined || seen.has(needs));
     const hotspots = [
@@ -1024,21 +1035,21 @@
          reason); the hotspot mark stands over it until it is taken */
       { id: 'torch', pos: { x: GT.x, y: 0.25, z: GT.z }, radius: 1.6, prompt: TOUCH ? DATA.words.hotTorchTouch : DATA.words.hotTorch, markY: 0.22, anyView: true,
         enabled: () => phase === 'gear' && gear === 0 && gtorch.visible, onInteract() { return pickTorch(); } },
-      { id: 'fig', pos: { x: FIG.x, y: 1.4, z: FIG.z }, radius: 12, dwell: 0.8, aim: 0.11, prompt: DATA.words.hotSpot, markY: 0.9,
+      { id: 'fig', pos: { x: FIG.x, y: 1.4, z: FIG.z }, radius: 12, dwell: 0.8, aim: 0.20, prompt: DATA.words.hotSpot, markY: 0.9,
         enabled: spotOn(1), onInteract() { return seeSpot(1); } },
-      { id: 'log', pos: { x: LOG.x, y: 0.5, z: LOG.z }, radius: 12, dwell: 0.8, aim: 0.11, prompt: DATA.words.hotSpot,
+      { id: 'log', pos: { x: LOG.x, y: 0.5, z: LOG.z }, radius: 12, dwell: 0.8, aim: 0.20, prompt: DATA.words.hotSpot,
         enabled: spotOn(2), onInteract() { return seeSpot(2); } },
-      { id: 'gap', pos: { x: GAP.x, y: 1.5, z: GAP.z }, radius: 13, dwell: 0.8, aim: 0.11, prompt: DATA.words.hotSpot,
+      { id: 'gap', pos: { x: GAP.x, y: 1.5, z: GAP.z }, radius: 13, dwell: 0.8, aim: 0.20, prompt: DATA.words.hotSpot,
         enabled: spotOn(3), onInteract() { return seeSpot(3); } },
-      { id: 'buddy', pos: { x: BUDDY.x, y: 1.15, z: BUDDY.z }, radius: 9, dwell: 0.8, aim: 0.12, prompt: DATA.words.hotBuddy,
+      { id: 'buddy', pos: { x: BUDDY.x, y: 1.15, z: BUDDY.z }, radius: 9, dwell: 0.8, aim: 0.22, prompt: DATA.words.hotBuddy,
         enabled: spotOn(4), onInteract() { return seeSpot(4); } },
-      { id: 'chem', pos: { x: CMD.x + 0.2, y: 0.6, z: CMD.z + 0.5 }, radius: 13, dwell: 0.8, aim: 0.11, prompt: DATA.words.hotSpot, markY: 0.7,
+      { id: 'chem', pos: { x: CMD.x + 0.2, y: 0.6, z: CMD.z + 0.5 }, radius: 13, dwell: 0.8, aim: 0.20, prompt: DATA.words.hotSpot, markY: 0.7,
         enabled: spotOn(5, 4), onInteract() { return seeSpot(5); } },
       /* v11.4: the kneeling man to his right, once, off the count — the anchor
          at a kneeling man's head (the KNEEL take's hips sit 0.53 m up) */
-      { id: 'kneel', pos: { x: KNEEL1.x, y: 1.0, z: KNEEL1.z }, radius: 9, dwell: 0.8, aim: 0.12, prompt: DATA.words.hotBuddy, markY: 0.75,
+      { id: 'kneel', pos: { x: KNEEL1.x, y: 1.0, z: KNEEL1.z }, radius: 9, dwell: 0.8, aim: 0.22, prompt: DATA.words.hotBuddy, markY: 0.75,
         enabled: () => phase === 'look' && !kneelSaid && torchOn(), onInteract() { return seeKneel(); } },
-      { id: 'feet', pos: { x: HIS.x, y: 0.12, z: HIS.z + 0.95 }, radius: 2.6, dwell: 0.8, aim: 0.14, prompt: DATA.words.hotFeet, markY: 0.35, anyView: true,
+      { id: 'feet', pos: { x: HIS.x, y: 0.12, z: HIS.z + 0.95 }, radius: 2.6, dwell: 0.8, aim: 0.28, prompt: DATA.words.hotFeet, markY: 0.35, anyView: true,
         enabled: spotOn(6, 5), onInteract() { return seeSpot(6); } }
     ];
 
@@ -1054,7 +1065,13 @@
     const BUSH_GAP = [12, 28], CALL_GAP = [24, 52];
     function bushTick() {
       if (!worldSfx) return;
-      if (phase === 'press' || phase === 'down') { bushAt = 0; callAt = 0; return; }
+      /* v12.5: THIS GUARD NAMED TWO PHASES THAT DO NOT EXIST. The chapter's
+         phases are gear, look, pressure and decide; `press` and `down` were
+         never any of them, so since v11.3 the bushes have rustled and the
+         animals called straight through the beat whose whole point is that
+         they do not — under "Nothing around... no one... no footsteps... not
+         even the sound of vegetation moving around me." */
+      if (phase === 'pressure' || phase === 'decide') { bushAt = 0; callAt = 0; return; }
       if (!bushAt) bushAt = dayClock.t + 6 + bushRand() * 10;
       if (!callAt) callAt = dayClock.t + 14 + bushRand() * 16;
       if (dayClock.t >= bushAt) {
@@ -1150,6 +1167,11 @@
       bushAt = 0; callAt = 0; bushSeed = 13; bushN = 0; callN = 0;   // v11.3: the bushes are stated in dayClock too
       if (farRun) farEnd(); farAt = 0; farN = 0; farSeed = 29;          // v11.4: and the far runs
       talkReset(); kneelSaid = false; kneelLook.want = 0; kneelLook.w = 0; kneelLook.x = 0; kneelLook.y = 0;
+      /* v12.5: the accumulated LOOK is run state, the v8.1 law again — and
+         visible now that the mark draws it, so a replay would open on a
+         half-filled ring. e2c4 has cleared it since v12.3; this chapter,
+         which is where the seam was written, never did. */
+      for (const h of hotspots) { h.dwellT = 0; h.done = false; }
       if (kit) { if (kit.hurt) kit.hurt(null); if (kit.root) kit.root(false); }
       fileHome();
       if (kit) { kit.daylight(null, 0); kit.presence(0); kit.setPhase(null); if (kit.torchOn) kit.torchOn(false); if (kit.take) kit.take('torch'); }   // v11.6: a fresh night starts with the torch on the ground, not in his hand

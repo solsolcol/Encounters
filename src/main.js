@@ -1020,12 +1020,17 @@ function nearestHotspot() {
   let best = null, bd = Infinity;
   for (const h of hotspotList()) {
     if (!h || !h.pos || h.done || (typeof h.enabled === 'function' && !h.enabled())) continue;
-    /* v12.3: a DWELL spot is answered by looking and by nothing else. It was
-       also offered as a press — badge, key glyph and all — and on a phone the
-       badge said "Tap", which is an instruction the spot does not obey: the
-       press fired it early, out of order, and skipped the look it exists to
-       measure (episode 2 chapter 3's torch spots and chapter 4's track). */
-    if (h.dwell > 0) continue;
+    /* v12.3 excluded a DWELL spot from the badge entirely, because a press
+       used to fire whichever spot was NEAREST — so a tap while looking at a
+       tree twelve metres off answered the ground at the player's feet, out of
+       order and skipping the look the spot exists to measure.
+       v12.5 (Chad, a player's report: "the 1/6 ... looking at the tree cannot
+       be clicked"): the fix for that was the ordering, not the press. A dwell
+       spot is offered to a press ONLY while the reticle is already inside its
+       own `aim` — the same test the look itself is graded on — so a press can
+       only ever fire the exact spot the look was about to, and a player who
+       taps what the game has marked is answered instead of ignored. */
+    if (h.dwell > 0 && !hotspotAimed(h)) continue;
     const d = Math.hypot(yaw.position.x - h.pos.x, yaw.position.z - h.pos.z);
     if (d < (h.radius || 2.2) && d < bd && (h.anyView || hotspotVisible(h))) { best = h; bd = d; }
   }
@@ -1043,6 +1048,14 @@ function nearestHotspot() {
    the fixture declares one and fixturetest proves it. */
 const _dwFwd = new THREE.Vector3(), _dwTo = new THREE.Vector3(), _dwCam = new THREE.Vector3();
 let _dwLast = 0;
+/* v12.5: is the reticle ON this spot? One test, used by the dwell that grades
+   the look and by the badge that offers the press, so the two can never
+   disagree about what the player is looking at. */
+function hotspotAimed(h) {
+  camera.getWorldDirection(_dwFwd); camera.getWorldPosition(_dwCam);
+  _dwTo.set(h.pos.x - _dwCam.x, (h.pos.y ?? 1.0) - _dwCam.y, h.pos.z - _dwCam.z).normalize();
+  return Math.acos(THREE.MathUtils.clamp(_dwFwd.dot(_dwTo), -1, 1)) < (h.aim || 0.10);
+}
 function dwellHotspots() {
   /* WALL time, not the clamped frame dt (the kit timer's law, v7.4): at
      one frame a second the clamped dt is 0.05, so a 0.8 s look would take
@@ -1052,13 +1065,10 @@ function dwellHotspots() {
   const dt = _dwLast ? Math.min(0.5, (now - _dwLast) / 1000) : 0;
   _dwLast = now;
   if (state !== 'play' || ev) return;
-  let got = false;
   for (const h of hotspotList()) {
     if (!h || !h.pos || !(h.dwell > 0) || h.done || (typeof h.enabled === 'function' && !h.enabled())) continue;
-    if (!got) { camera.getWorldDirection(_dwFwd); camera.getWorldPosition(_dwCam); got = true; }
     const d = Math.hypot(yaw.position.x - h.pos.x, yaw.position.z - h.pos.z);
-    _dwTo.set(h.pos.x - _dwCam.x, (h.pos.y ?? 1.0) - _dwCam.y, h.pos.z - _dwCam.z).normalize();
-    const on = d < (h.radius || 2.2) && Math.acos(THREE.MathUtils.clamp(_dwFwd.dot(_dwTo), -1, 1)) < (h.aim || 0.10);
+    const on = d < (h.radius || 2.2) && hotspotAimed(h);
     h.dwellT = on ? (h.dwellT || 0) + dt : Math.max(0, (h.dwellT || 0) - dt * 2);
     if (h.dwellT < h.dwell) continue;
     h.dwellT = 0;
@@ -1340,6 +1350,16 @@ function paintHotMarks() {
       el.style.opacity = a.toFixed(2);
       el.style.transform = `translate(${((q.x * 0.5 + 0.5) * innerWidth).toFixed(0)}px, ${((-q.y * 0.5 + 0.5) * innerHeight).toFixed(0)}px) scale(${k.toFixed(2)})`;
       el.classList.toggle('near', near);
+      /* v12.5: A LOOK SPOT SAYS SO, AND SHOWS THE LOOK LANDING. Every mark
+         wore the same exclamation, which on a phone is an instruction to
+         tap; a spot answered by the beam resting on it got no cue that the
+         beam was on it at all, so a player holding the torch perfectly still
+         on the right tree saw nothing happen for 0.8 s and moved on. The
+         ring FILLS with the spot's own `dwellT`, which is the one number the
+         grading uses — what is drawn and what fires cannot drift apart. */
+      const look = h.dwell > 0;
+      el.classList.toggle('look', look);
+      if (look) el.style.setProperty('--p', (Math.min(1, (h.dwellT || 0) / h.dwell)).toFixed(2));
     }
   }
   for (let i = n; i < hotMarks.length; i++) hotMarks[i].style.display = 'none';
@@ -8357,7 +8377,23 @@ function tick(now = 0) {
     // the heap: one prompt at a time, and only when it is actually on screen —
     // a key prompt for something behind you is noise
     dwellHotspots();                   // v11.0: a torch spot counts when LOOKED at
-    const reach = stage.pile.dist() < stage.pile.radius && stage.pile.inView();
+    /* v12.5: THE APPROACH PROMPT OBEYS THE COMMENT ABOVE IT. "only when it is
+       actually on screen" has been the stated rule since v2.1 and the code
+       never tested it — the label showed on DISTANCE alone, so it named the
+       decision object with your back to it, and in every chapter whose
+       object is where the player already is it simply never went away:
+       "the bed" through the small hours of episode 2 chapter 1, "the encik"
+       across breakfast in chapter 2, "the ground at your feet" through the
+       whole torch sweep of chapter 3 (Chad, from players: "it seems to be
+       some kind of recurring bug ... it may affect the entire game").
+       `inView()` is the test, and it is the chapter's own: episode 1's five
+       ask whether the thing projects onto the screen, and episode 2's four
+       fold in whether it is live at all (the bed with nothing to offer, the
+       encik before the third answer, the ground before the pressure). One
+       call, shared with `reach` below, which used to compute it and throw
+       it away whenever the player was out of arm's reach. */
+    const onScreen = stage.pile.inView();
+    const reach = stage.pile.dist() < stage.pile.radius && onScreen;
     // v7.0: and the nearest hotspot, when the pile is not in reach — the
     // badge names it; chapters 1–5 declare none, so `spot` is always null there
     const spot = reach ? null : nearestHotspot();
@@ -8367,7 +8403,7 @@ function tick(now = 0) {
       ui.prompt.classList.add('hide');
     } else {
       ui.interact.classList.add('hide');
-      if (d < 6.2) ui.prompt.classList.remove('hide'); else ui.prompt.classList.add('hide');
+      if (d < 6.2 && onScreen) ui.prompt.classList.remove('hide'); else ui.prompt.classList.add('hide');
     }
     /* v7.2: an open EVENT owns the middle of the screen — the badge and the
        approach prompt under its panel were half-hidden noise (The Worst
