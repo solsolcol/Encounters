@@ -1811,10 +1811,18 @@ function weaponFlashLoad(key) {
     gltf.scene.traverse(o => {
       if (!o.isMesh) return;
       const src = Array.isArray(o.material) ? o.material[0] : o.material;
+      /* depthTest FALSE, deliberately. The weapon is drawn first and writes
+         depth, and the flash's apex sits AT the barrel — measured off the
+         mesh, the most-forward vertex is the muzzle's own face, so parts of
+         a cone opening from it are behind the gun's silhouette from the
+         lens and were being occluded by the thing that fired them. That is
+         also just what a muzzle flash is: light, not an object the barrel
+         can hide. renderOrder 8 puts it after the weapon in the same pass,
+         so it lays over the gun and nothing else. */
       const b = new THREE.MeshBasicMaterial({
         map: src && src.map ? src.map : null, color: 0xffffff,
         blending: THREE.AdditiveBlending, transparent: true, opacity: 1,
-        depthWrite: false, depthTest: true, side: THREE.DoubleSide,
+        depthWrite: false, depthTest: false, side: THREE.DoubleSide,
         toneMapped: false, fog: false,
       });
       if (src) mine.set(src, b);
@@ -3266,6 +3274,10 @@ function kitDebug() {
            weapon: weaponDecl ? { out: weaponWant(), avail: weaponAvail(), shown: weaponShown, busy: weaponBusy, rounds: weaponRounds, mags: weaponMags, item: weaponDecl.item || null, prop: !!weaponProp,
                                                   /* v13.1: the muzzle flash, for the fixture's absence check and the probes */
                                                   flash: weaponDecl.flash || '', flashCards: weaponFlashCards.length, flashLit: weaponFlashT > 0,
+                                                  /* flashOn is the FRAME's own answer — the cone is up on screen right
+                                                     now — where flashLit only says the trigger was pulled. A probe on a
+                                                     one-frame-a-second box must poll the first, never the second. */
+                                                  flashOn: !!(weaponFlashObj && weaponFlashObj.visible),
                                                   shots: weaponLog.slice(-8) } : null,   // v12.0
            objective: kitObjective, timer: kitTimer ? +kitTimer.left.toFixed(2) : null,
            waypoint: kitWaypoint, conduct: { ...conductAcc, notes: conductAcc.notes.slice() },
