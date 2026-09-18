@@ -30,7 +30,7 @@
     episode: 2,
     title: 'The Worst Bed',
     cardLabel: 'Chapter 1',
-    cardTitle: 'The Worst Bed<br>Bed One, Next To The Toilet',
+    cardTitle: 'The Worst Bed',
     brief: 'Day one of Basic Military Training. Nine recruits to a bunk, and yours is the bottom bed nearest the toilet door. Nobody wanted it. Get through the day; then get through the night.',
     prompt: 'Three in the morning. The shower in the block next to your bed has turned itself on. What do you do?',
     choices: [

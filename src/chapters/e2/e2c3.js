@@ -21,7 +21,7 @@
     episode: 2,
     title: 'The Pressure',
     cardLabel: 'Chapter 3',
-    cardTitle: 'The Pressure<br>Outfield, Night One',
+    cardTitle: 'The Pressure',
     brief: 'Infantry. The first night of the outfield exercise, in a harbour dug into the jungle. You have the rear scrape, the one facing out into the dark. Nothing to do but wait for morning — so look around.',
     prompt: 'Something is pressing on your leg. Not a feeling: weight. The torch is on the ground at your feet and there is nothing there. What do you do?',
     choices: [

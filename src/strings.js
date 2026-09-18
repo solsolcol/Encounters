@@ -277,7 +277,7 @@ Object.assign(window.__TEXT__, {
   'episode.tallyLabel':  'Five chapters, tallied',
   'episode.mapLabel':    'The ten cases',
   'episode.unlocked':    'Unlocked',                             // the flag on the next case
-  'episode.next':        'Next · {episode}',                      // {episode} = "Episode 2 · The 3 AM Shower"
+  'episode.next':        'Next · {episode}',                      // {episode} = "Episode 2 · The 3 AM Shower & The Ghost Cyclist"
   'episode.nextUnwritten': '{episode} is unlocked. It is not yet written — come back for it.',
   'episode.allDone':     'Every case is closed.',
   'episode.continue':    'Continue',
@@ -290,7 +290,7 @@ Object.assign(window.__TEXT__, {
   'ep1.label':           'Episode 1',
   'ep1.title':           'The Hell Note I Should Never Have Taken',
   'ep2.label':           'Episode 2',
-  'ep2.title':           'The 3 AM Shower',
+  'ep2.title':           'The 3 AM Shower & The Ghost Cyclist',
   'ep3.label':           'Episode 3',
   'ep3.title':           'The Room That Didn\'t Want Us There',
   'ep4.label':           'Episode 4',

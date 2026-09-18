@@ -28,9 +28,9 @@
   const DATA = {
     id: 4,
     episode: 2,
-    title: 'The Cyclist',
+    title: 'The Ghost Cyclist',
     cardLabel: 'Chapter 4',
-    cardTitle: 'The Cyclist<br>Outfield, Night Two',
+    cardTitle: 'The Ghost Cyclist',
     brief: 'The live range, after dark. Eight lanes, live rounds, and a tower that runs everything. You are on lane six. Nobody fires until the tower says fire, and nobody — nobody — goes forward of the line.',
     prompt: 'It is still coming. The tower says the target area is empty, and everyone on the line can see it. Your rifle is loaded. What do you do?',
     choices: [

@@ -35,7 +35,7 @@
     episode: 2,
     title: 'Nobody There',
     cardLabel: 'Chapter 2',
-    cardTitle: 'Nobody There<br>Breakfast, The Cookhouse',
+    cardTitle: 'Nobody There',
     brief: 'Night after night, at three in the morning, the shower beside bed one turns itself on. This morning you have decided to say something. Ask three bunkmates what they heard. Then tell the encik.',
     prompt: 'The encik is watching the recruits eat. You have asked three men. Now you are standing in front of him. What do you say?',
     choices: [
