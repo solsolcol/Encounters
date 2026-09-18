@@ -765,32 +765,76 @@
     /* ------------------------------------------------------------ the flare
        One launch, one burn, one death. The sky is the kit's daylight tween;
        the hot spot over the arc and the burning hiss are the chapter's. */
-    let flareT = 0, flareLife = 0, flareOn = false;
+    /* v13.0 (Chad: "when the scene lights up, please show the flare going up,
+       with sound effects") — the flare USED to appear at 46 m already
+       burning, so the light arrived with nothing on screen to explain it.
+       It is fired now: a spark leaves the ground short of the berm and
+       CLIMBS for RISE seconds on `flarelaunch`, decelerating the way a
+       rocket does, and only at the apex does `flarepop` fire and the sky
+       open. The launch is off to his right and downrange, which is where a
+       man at the firing point is already looking — a launch behind him
+       would be a sound with no picture, which is the bug being fixed.
+       `flarePlace(k)` is the ONE copy of that arc, so the film (whose
+       `flareFrame` never runs — updateNotes returns early under a cutscene)
+       draws exactly the climb play draws. */
+    const FLARE_RISE = 1.55;
+    /* WHERE it is fired from is a framing number, not a taste: from the
+       firing point the launch has to be inside a PORTRAIT PHONE's horizontal
+       half-view, which the 72-degree VERTICAL lens makes about 21 degrees
+       (AUDIT Part One). At (HIS.x + 5.2, -4.2) it sat 36.6 degrees off the
+       lane and a phone player would have heard a launch he could not see —
+       the bug being fixed, in a different form. 2.2 m right and 6 m out is
+       17.2 degrees: in frame on a phone, still clearly off his own lane. */
+    const FLARE_FROM = { x: HIS.x + 2.2, y: 1.1, z: -6.0 };
+    let flareApexX = HIS.x;
+    function flarePlace(k) {
+      const e = 1 - Math.pow(1 - Math.min(1, Math.max(0, k)), 2);
+      flare.position.set(FLARE_FROM.x + (flareApexX - FLARE_FROM.x) * e,
+                         FLARE_FROM.y + (46 - FLARE_FROM.y) * e,
+                         FLARE_FROM.z + (-72 - FLARE_FROM.z) * e);
+      flareBall.position.copy(flare.position);
+      flareBall.scale.setScalar(0.35 + 0.65 * e);
+    }
+    let flareT = 0, flareLife = 0, flareOn = false, flareBurst = false;
     function flareUp(secs) {
-      flareOn = true; flareT = 0; flareLife = secs;
-      flare.position.set(HIS.x + (Math.random() - 0.5) * 8, 46, -72);
-      if (worldSfx) worldSfx('flarepop', 0.9);
-      if (kit) kit.daylight(FLARE, 1.2);
+      flareOn = true; flareT = 0; flareLife = secs; flareBurst = false;
+      flareApexX = HIS.x + (Math.random() - 0.5) * 8;
+      flarePlace(0);
+      if (worldSfx) worldSfx('flarelaunch', 0.85);
+      // the pop and the sky wait for the apex — see flareFrame
     }
     function flareDown() {
       if (!flareOn) return;
-      flareOn = false;
+      flareOn = false; flareBurst = false;
       if (kit) kit.daylight(null, 2.2);
     }
     function flareFrame(dt) {
       if (flareOn) {
         flareT += dt;
-        const k = Math.min(1, flareT / Math.max(0.01, flareLife));
-        const up = Math.min(1, flareT / 1.1);                 // the climb to full burn
+        if (flareT < FLARE_RISE) {                            // THE CLIMB
+          flarePlace(flareT / FLARE_RISE);
+          flare.intensity = 10 + 46 * (flareT / FLARE_RISE);
+          flareBall.material.opacity = 0.85;
+          mixBeds();
+          return;
+        }
+        if (!flareBurst) {                                    // THE BURST
+          flareBurst = true;
+          if (worldSfx) worldSfx('flarepop', 0.9);
+          if (kit) kit.daylight(FLARE, 1.2);
+        }
+        const b = flareT - FLARE_RISE;                        // the burn's own clock
+        const k = Math.min(1, b / Math.max(0.01, flareLife));
+        const up = Math.min(1, b / 1.1);                      // the climb to full burn
         const die = k > 0.82 ? 1 - (k - 0.82) / 0.18 : 1;      // and the fall
         const amp = up * die;
         flare.intensity = 260 * amp;
-        flare.position.x += Math.sin(flareT * 0.7) * dt * 1.4;  // the drift under the parachute
-        flare.position.y = 46 - flareT * 0.9;
+        flare.position.x += Math.sin(b * 0.7) * dt * 1.4;      // the drift under the parachute
+        flare.position.y = 46 - b * 0.9;
         flareBall.position.copy(flare.position);
         flareBall.material.opacity = amp;
-        flareBall.scale.setScalar(1 + Math.sin(flareT * 9) * 0.06);
-        if (flareT >= flareLife) { flareDown(); }
+        flareBall.scale.setScalar(1 + Math.sin(b * 9) * 0.06);
+        if (b >= flareLife) { flareDown(); }
       } else {
         flare.intensity *= Math.max(0, 1 - dt * 2.2);
         flareBall.material.opacity *= Math.max(0, 1 - dt * 2.2);
@@ -1627,7 +1671,7 @@
     if (warmSounds) warmSounds(['n4pro2', 'n4report', 't4roger', 't4load', 't4ready',
                                 't4fire1', 't4fire2', 't4fire3', 't4cease', 't4who', 't4neg',
                                 'e4wait', 'b4stag', 'b4there', 'b4float', 'n4notarget', 'n4back',
-                                'rangepa', 'rifleshot', 'riflecock', 'flarepop', 'targethit',
+                                'rangepa', 'rifleshot', 'riflecock', 'flarepop', 'flarelaunch', 'targethit',
                                 /* v12.3: `hudlock` is the arrival at the lane, and it is the
                                    FIRST world sound the chapter asks for — the engine warms its
                                    own HUD cues but this one is played through `worldSfx`, so
@@ -1657,6 +1701,9 @@
       buddy, safety, lineMen, cyc, cycGlow, flare, flareBall, lineFill,
       statics, popups, far, mover, MOVER, rail, berm, lanes,
       cycStart, cycEnd, cycAlpha, flareUp, flareDown,
+      /* v13.0: the film draws the same climb play draws (`flareFrame` never
+         runs under a cutscene), so it borrows the arc rather than copying it */
+      flarePlace, FLARE_RISE, FLARE_FROM,
       setMover: (on) => { MOVER.on = !!on; },
       /* the film and the scenes drive the burn themselves: updateNotes
          returns early when the state is not `play`, so flareFrame does not
@@ -1684,22 +1731,41 @@
   }
 
   /* ------------------------------------------------------------ THE FILM
-     Four shots, all in the range itself — there is no pocket, because the
+     THREE shots, all in the range itself — there is no pocket, because the
      range at night IS the set and a film that shows it is the safety brief
-     the chapter needs the player to have heard. The tonner they came in on,
-     the ammo point, the line looking out at nothing, the first flare over
-     the arc — and then back to the table, where a rifle and a torch are
-     lying, which is the first thing play will ask him to pick up (chapter
-     3's torch-on-the-ground ending, with the drill added).
+     the chapter needs the player to have heard.
+
+     v13.0, Chad's items 8, 11 and 12, which between them reshaped it:
+       8 · "the intro cutscene should start from the live range area panning,
+           and not the truck. Because on phone, the viewport doesnt see much
+           of anything at the start." The tonner shot is GONE. It opened on a
+           strip of dark ground framed by a tail-gate, which on a portrait
+           phone's centre crop is a black rectangle with a lamp in the corner.
+           The film opens on a PAN across the whole range instead — the line,
+           the men on it, the berm, the dark beyond — so the first thing a
+           phone sees is a moving picture of the place.
+       11 · "when the scene lights up, please show the flare going up, with
+           sound effects." It is fired on screen now: `flarelaunch`, the
+           spark climbing on the chapter's own `flarePlace` arc with the lens
+           following it up, and only at the apex the pop and the sky.
+       12 · "should just end at the pan to lane 6 after tower says 'shooters
+           watch your front, ready'. No need to have another view of the live
+           rounds after." The fourth shot, back at the ammo table, is GONE,
+           and the film ends on the pan that settles down his own lane.
+     43.4 s -> 35.2 s.
 
      THE FLARE IS DRIVEN BY THE FILM. `updateNotes` returns early when the
      state is not `play`, so `flareFrame` does not run under a cutscene: a
-     film that lights one has to burn it itself (`stage.setFlare`) and hand
-     the sky back with `kit.daylight(null, …)`. */
+     film that lights one has to burn it itself (`stage.setFlare`,
+     `stage.flarePlace`) and hand the sky back with `kit.daylight(null, …)`
+     BEFORE its own last frame — the old film handed it back at 36.4 s of a
+     43.4 s timeline, and a shorter film would simply have left play under a
+     flare sky. */
   function intro(c, s, api) {
     const { tr, step, sfx, fade, camTo, yawTo, pitchTo, faceFrom, rawK, smoothK, stage, armR, kit } = api;
     const HIS = stage.HIS, AMMO = stage.AMMO, TOWER = stage.TOWER;
-    const TR = stage.truck.position;
+    const RISE = stage.FLARE_RISE;
+    const APEX = 24.2 + RISE;                    // 25.75 — the burst
 
     step(0, () => {
       armR.visible = false;
@@ -1712,63 +1778,71 @@
     });
     fade(0.0, 0.3, 1, 1);
 
-    /* 0.3 IN THE BACK OF THE TONNER (0.3–8.4): parked at the rear of the
-       range, tail-gate down, looking out at a strip of dark ground with one
-       lamp on a tower at the far right. The bed floor measures 1.48 and a
-       seated eye sits 0.55 over it (v11.2's numbers). */
-    camTo(0.3, 8.4, { x: TR.x + 0.2, y: 2.03, z: TR.z - 0.6 }, { x: TR.x + 0.2, y: 2.03, z: TR.z + 1.4 }, smoothK);
-    yawTo(0.3, 8.4, Math.PI + 0.22, Math.PI - 0.06, smoothK);
-    pitchTo(0.3, 8.4, -0.04, -0.10, smoothK);
-    tr(0.3, 8.4, (k, t) => { api.camera.rotation.z = Math.sin(t * 1.9) * 0.006; }, rawK);
-    fade(0.4, 2.6, 1, 0);
-    sfx(1.4, 'n4pro1');                    // "Night two. The live range. After last night, I was glad to have something to point at."
-    fade(7.6, 8.4, 0, 1);
+    /* 0.3 THE RANGE, PANNING (0.3–9.9): from behind the firing line and a
+       little above it, the lens crossing the lanes, the men already lying on
+       them, and the berm — and coming to rest looking out at ground with
+       nothing in it. The camera drifts forward and left under the pan so the
+       shot is never a still. */
+    camTo(0.3, 9.9, { x: HIS.x + 5.0, y: 3.30, z: 9.8 }, { x: HIS.x + 1.2, y: 3.05, z: 8.4 }, smoothK);
+    yawTo(0.3, 9.9, faceFrom(HIS.x + 5.0, 9.8, TOWER.x, TOWER.z),
+                    faceFrom(HIS.x + 1.2, 8.4, HIS.x - 11.0, -26.0), smoothK);
+    pitchTo(0.3, 9.9, -0.16, -0.05, smoothK);
+    fade(0.4, 2.4, 1, 0);
+    sfx(1.5, 'n4pro1');                    // "Night two. The live range. After last night, I was glad to have something to point at." (5.72 s)
+    fade(9.1, 9.9, 0, 1);
 
-    /* 8.6 THE AMMO POINT (8.6–17.8): the table under its red lamp, a rifle
-       and a torch on it, the safety officer beside it. Magazines. */
-    step(8.5, () => { api.camera.rotation.z = 0; });
-    camTo(8.6, 17.8, { x: AMMO.x + 1.5, y: 1.58, z: AMMO.z + 1.9 }, { x: AMMO.x + 0.30, y: 1.30, z: AMMO.z + 1.05 }, smoothK);
-    yawTo(8.6, 17.8, faceFrom(AMMO.x + 1.5, AMMO.z + 1.9, AMMO.x, AMMO.z), faceFrom(AMMO.x + 0.30, AMMO.z + 1.05, AMMO.x, AMMO.z), smoothK);
-    pitchTo(8.6, 17.8, -0.20, -0.42, smoothK);
-    fade(8.6, 10.0, 1, 0);
-    sfx(9.3, 'riflereload', 0.7);
-    sfx(10.3, 'n4pro2');                   // "Live rounds. Nobody fires until the tower says fire. Simple. Just watch your front."
-    sfx(11.4, 'riflecock', 0.65);
-    fade(17.0, 17.8, 0, 1);
+    /* 10.1 THE AMMO POINT (10.1–19.3): the table under its red lamp, a rifle
+       and a torch on it, the safety officer beside it. Magazines. (The old
+       shot, unchanged, 1.5 s later.) */
+    camTo(10.1, 19.3, { x: AMMO.x + 1.5, y: 1.58, z: AMMO.z + 1.9 }, { x: AMMO.x + 0.30, y: 1.30, z: AMMO.z + 1.05 }, smoothK);
+    yawTo(10.1, 19.3, faceFrom(AMMO.x + 1.5, AMMO.z + 1.9, AMMO.x, AMMO.z), faceFrom(AMMO.x + 0.30, AMMO.z + 1.05, AMMO.x, AMMO.z), smoothK);
+    pitchTo(10.1, 19.3, -0.20, -0.42, smoothK);
+    fade(10.1, 11.5, 1, 0);
+    sfx(10.8, 'riflereload', 0.7);
+    sfx(11.8, 'n4pro2');                   // "Live rounds. Nobody fires until the tower says fire. Simple. Just watch your front." (6.53 s)
+    sfx(12.9, 'riflecock', 0.65);
+    fade(18.5, 19.3, 0, 1);
 
-    /* 18 ON THE LINE (18–33): behind his own lane, looking out over the berm
-       at ground that has nothing in it. The tower's lamp on the right. Then
-       THE FIRST FLARE — the pop, the climb, the whole arc white, and eight
-       target boards standing out at a hundred metres where a second ago
-       there was nothing at all. */
-    camTo(18.0, 33.0, { x: HIS.x - 1.1, y: 1.62, z: 5.0 }, { x: HIS.x, y: 1.62, z: 1.5 }, smoothK);
-    yawTo(18.0, 22.6, faceFrom(HIS.x - 1.1, 5.0, TOWER.x, TOWER.z), 0, smoothK);
-    pitchTo(18.0, 22.4, -0.02, -0.02, smoothK);
-    fade(18.0, 19.2, 1, 0);
-    sfx(18.7, 'rangepa', 0.5);
-    sfx(19.3, 't4ready');                  // "Shooters. Watch your front. READY."
-    step(22.8, () => { if (kit) kit.daylight(stage.FLARE, 1.2); });
-    sfx(22.8, 'flarepop', 0.95);
-    /* the burn: up over 1.2 s, held, and falling over its last fifth */
-    tr(22.8, 36.8, (k, t) => {
-      const e = t - 22.8;
+    /* 19.5 ON THE LINE, THE FLARE, AND THE PAN TO LANE SIX (19.5–35.2):
+       behind his own lane looking out over the berm at ground that has
+       nothing in it; the tower's order; THE FLARE FIRED, climbing on the
+       same arc play uses, the lens riding up with it on the arc's OWN ease
+       (a rocket decelerates, so a smoothstep would lag it at the start and
+       overshoot at the end); the pop, the whole arc white, eight boards
+       standing at a hundred metres where a second ago there was nothing —
+       and then down and across the lit range, settling on lane six. */
+    camTo(19.5, 35.2, { x: HIS.x - 1.1, y: 1.62, z: 5.0 }, { x: HIS.x, y: 1.62, z: 1.2 }, smoothK);
+    yawTo(19.5, 24.1, faceFrom(HIS.x - 1.1, 5.0, TOWER.x, TOWER.z), 0.16, smoothK);
+    pitchTo(19.5, 23.9, -0.02, -0.02, smoothK);
+    fade(19.5, 20.7, 1, 0);
+    sfx(20.2, 'rangepa', 0.5);
+    sfx(20.8, 't4ready');                  // "Shooters. Watch your front. READY." (2.59 s)
+
+    /* THE LAUNCH. `flarePlace(k)` is the chapter's own arc, so what the film
+       shows and what play shows are the same climb. */
+    step(24.2, () => { stage.flarePlace(0); stage.setFlare(10); });
+    sfx(24.2, 'flarelaunch', 0.85);
+    tr(24.2, APEX, (k) => { stage.flarePlace(k); stage.setFlare(10 + 46 * k); }, rawK);
+    yawTo(24.1, APEX, 0.16, 0.10, smoothK);
+    pitchTo(24.2, APEX, -0.02, 0.52, k => 1 - (1 - k) * (1 - k));   // the arc's own ease
+
+    /* THE BURST, and the burn: up over 1.2 s, held, and falling over its
+       last fifth, exactly as flareFrame burns one in play. */
+    step(APEX, () => { if (kit) kit.daylight(stage.FLARE, 1.2); });
+    sfx(APEX, 'flarepop', 0.95);
+    tr(APEX, 35.2, (k, t) => {
+      const e = t - APEX;
       const amp = Math.min(1, e / 1.2) * (k > 0.82 ? Math.max(0, 1 - (k - 0.82) / 0.18) : 1);
       stage.setFlare(260 * amp);
     }, rawK);
-    pitchTo(23.0, 26.2, -0.02, 0.44, smoothK);      // up after it
-    pitchTo(26.2, 30.0, 0.44, -0.05, smoothK);      // and down the lit arc
-    step(36.4, () => { if (kit) kit.daylight(null, 2.2); });
-    fade(32.2, 33.0, 0, 1);
-
-    /* 33.2 BACK AT THE TABLE (33.2–43): the light going off the ground again,
-       and the last thing the film shows is the kit lying there. */
-    camTo(33.2, 43.0, { x: AMMO.x + 0.05, y: 1.46, z: AMMO.z + 0.98 }, { x: AMMO.x + 0.02, y: 1.28, z: AMMO.z + 0.64 }, smoothK);
-    yawTo(33.2, 43.0, 0.04, 0.02, smoothK);
-    pitchTo(33.2, 43.0, -0.52, -0.80, smoothK);
-    fade(33.2, 34.6, 1, 0);
-    sfx(35.0, 'riflecock', 0.5);
-    fade(42.2, 43.2, 0, 1);
-    step(43.4, () => { armR.visible = true; stage.setFlare(0); });
+    pitchTo(APEX + 0.15, 29.1, 0.52, -0.05, smoothK);   // down the lit arc onto the range
+    yawTo(APEX + 0.25, 29.4, 0.10, -0.22, smoothK);     // across the lit boards
+    /* THE PAN TO LANE SIX — where the film ends (item 12) */
+    yawTo(29.4, 33.6, -0.22, 0, smoothK);
+    pitchTo(29.4, 33.6, -0.05, -0.02, smoothK);
+    step(33.4, () => { if (kit) kit.daylight(null, 2.0); });
+    fade(33.8, 34.8, 0, 1);
+    step(35.0, () => { armR.visible = true; stage.setFlare(0); });
     c.endFade = 1;
     c.keepFade = true;
   }
