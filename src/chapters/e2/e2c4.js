@@ -184,7 +184,9 @@
       objLoad: 'Load on the order',
       objHold: 'On the line. Do NOT fire until the tower gives the order.',
       objS1: 'Static target, 100 metres. Fire on the order · {n}/3',
-      objS2: 'Pop-up targets, 200 metres · {n}/3',
+      /* v13.0: `objS2` (the pop-up serial) went with the serial — item 19.
+         objS3 keeps its key so the mover's words are the words it has always
+         had and Chad's sheet edits to it are not silently dropped. */
       objS3: 'Moving target, 200 metres · {n}/2',
       objCease: 'Cease fire. Stand fast.',
       objStag: 'Wait on the line. Weapons loaded.',
@@ -371,13 +373,17 @@
       if (opts.down) T.set(true);
       return T;
     }
-    const statics = [4, 5, 6].map(n => mkTarget(LANE(n), RANGE.s1, { kind: 'static' }));
+    /* v13.0 (item 17): EVERY bank is built DOWN. "All targets should be down,
+       until the wave starts" holds from the chapter's first frame, not only
+       between waves — the film opens on an arc with nothing standing in it,
+       and so does play. `far` is scenery at 132 m and has always been down. */
+    const statics = [4, 5, 6].map(n => mkTarget(LANE(n), RANGE.s1, { kind: 'static', down: true }));
     const popups  = [5, 6, 7].map(n => mkTarget(LANE(n), RANGE.s2, { kind: 'pop', down: true }));
-    const far     = [3, 6].map(n => mkTarget(LANE(n), RANGE.s3, { kind: 'far' }));
+    const far     = [3, 6].map(n => mkTarget(LANE(n), RANGE.s3, { kind: 'far', down: true }));
 
     /* the mover: a Figure 11 on a trolley that runs a rail across the arc */
     const rail = box(26, 0.06, 0.12, HIS.x, 0.07, RANGE.s2 + 3.0, nfm({ color: 0x2a2a26, roughness: 0.9 }));
-    const mover = mkTarget(HIS.x - 12, RANGE.s2 + 3.0, { kind: 'mover' });
+    const mover = mkTarget(HIS.x - 12, RANGE.s2 + 3.0, { kind: 'mover', down: true });
     mover.group.position.y = 0.16;
     const MOVER = { x0: HIS.x - 12.5, x1: HIS.x + 12.5, t: 0, on: false, dir: 1 };
 
@@ -1037,11 +1043,25 @@
        is the whole point of the chapter — the drill it teaches is the one
        the ghost exploits, so it has to be the same verb. */
     let hot = false, serial = 0, hits = 0, early = 0;
-    const SER_TARGETS = [statics, popups, [mover]];
-    const SER_NEED = [3, 3, 2];
+    /* v13.0, Chad: "the first wave of targets can be static, then straight to
+       the moving targets after. Remove the 2nd wave of static targets, to
+       quicken the chapter." So TWO serials, not three: the statics, then the
+       mover. The pop-up bank is still built — it is scenery at 98 m and the
+       film lowers it with everything else — but no serial runs on it, and
+       `popSeq` went with the serial it existed for. Everything the serials do
+       is table-driven now, so the number of them is one array length rather
+       than a run of `if (n === 2)` branches. */
+    const moverBank = [mover];
+    const SER_TARGETS = [statics, moverBank];
+    const SER_NEED    = [3, 2];
+    const SER_KIND    = ['static', 'moving'];
+    const SER_ORDER   = ['t4fire1', 't4fire3'];   // the mover keeps its own order
+    const SER_LEAD    = [4.2, 4.4];               // how long the order takes
+    const SER_SECS    = [28, 34];
+    const SER_FLARE   = [20, 26];
     function objSerial() {
       if (!kit) return;
-      const w = [DATA.words.objS1, DATA.words.objS2, DATA.words.objS3][serial - 1] || '';
+      const w = [DATA.words.objS1, DATA.words.objS3][serial - 1] || '';
       /* `complete: false` — the count is a REFRESH, not a completion. Without
          it every scoring hit changed the objective text and so fired the
          v8.7 OBJECTIVE COMPLETE banner, which covers the running count for
@@ -1075,49 +1095,39 @@
          on purpose at the cease-fire.
          A range runs ONE bank at a time: each serial raises its own and
          leaves the others flat. */
-      for (const t of statics) { t.hit = false; t.set(n !== 1); }
-      for (const t of popups) { t.hit = false; t.set(true); }   // down; popSeq raises them one at a time
-      mover.hit = false;
-      MOVER.on = false; mover.set(n !== 3);
-      flareUp(n === 3 ? 26 : 20);
-      if (n === 1) { tower('t4fire1'); after(4.2, () => { if (phase === 'serial1') { hot = true; objSerial(); } }); }
-      if (n === 2) {
-        tower('t4fire2');
-        after(4.6, () => { if (phase === 'serial2') { hot = true; objSerial(); popSeq(0); } });
-      }
-      if (n === 3) {
-        tower('t4fire3');
-        after(4.4, () => {
-          if (phase !== 'serial3') return;
-          hot = true; objSerial(); MOVER.on = true; MOVER.t = 0; MOVER.dir = 1;
-        });
-      }
+      /* v13.0, Chad: "the targets are already standing before the shooting
+         starts. All targets should be down, until the wave starts, and then
+         they go down again when the wave ends, and only the next wave's
+         targets flip up." Every bank goes DOWN here and the serial's own
+         comes up on the frame the order lands — which is also what a range
+         does, and it makes the flare's light arrive on an empty arc and the
+         boards flip up under it. (v12.3's finding stands underneath: a range
+         runs ONE bank at a time, because `shootables()` is scoped to the live
+         bank and a board standing in front of it steals the rounds.) */
+      for (const t of statics) { t.hit = false; t.set(true); }
+      for (const t of popups)  { t.hit = false; t.set(true); }
+      mover.hit = false; MOVER.on = false; mover.set(true);
+      flareUp(SER_FLARE[n - 1] || 20);
+      tower(SER_ORDER[n - 1]);
+      after(SER_LEAD[n - 1] || 4.2, () => {
+        if (phase !== 'serial' + n) return;
+        hot = true; objSerial();
+        for (const t of (SER_TARGETS[n - 1] || [])) { t.hit = false; t.set(false); }   // THE WAVE FLIPS UP
+        if (SER_TARGETS[n - 1] === moverBank) { MOVER.on = true; MOVER.t = 0; MOVER.dir = 1; }
+      });
       /* v12.3: the clock that ENDS the serial is the clock on screen. It ran
          privately for 28 or 34 seconds with nothing in the HUD, so a player
          who missed had no way to know the beat was running out — the same
          thing v8.1 fixed for the bunk's evening. `kit.timer` paints M:SS
          beside the objective and reddens under ten. */
-      if (kit) kit.timer(n === 3 ? 34 : 28);
-      after(n === 3 ? 34 : 28, () => { if (phase === 'serial' + n) endSerial(); });
+      if (kit) kit.timer(SER_SECS[n - 1] || 28);
+      after(SER_SECS[n - 1] || 28, () => { if (phase === 'serial' + n) endSerial(); });
     }
-    /* THE POP-UPS CYCLE. v12.1 raised one target for 3.4 s, then the next,
-       then the third, and then stopped for ever — so a serial that needs
-       three hits gave the player exactly three windows of three seconds
-       each at 98 m, and a single miss made the count unreachable. It ran
-       out the 24-second clock instead, which is what "nothing advances"
-       looks like from the firing point. Now the sequence LOOPS while the
-       serial is live, each board comes back up with its hit cleared, and
-       the window is 4.6 s. */
-    function popSeq(i) {
-      if (phase !== 'serial2' || !hot) return;
-      const t = popups[i % popups.length];
-      t.hit = false; t.set(false);
-      after(4.6, () => {
-        if (phase !== 'serial2') return;
-        t.set(true);
-        after(0.9, () => popSeq(i + 1));
-      });
-    }
+    /* v13.0: `popSeq` is GONE with the pop-up serial it existed for (item 19).
+       What it knew — that a board raised once and never again makes a count
+       unreachable, so the sequence has to loop — is written into v12.3's
+       record and into the mover's own come-back-up below, which is the same
+       law in the one serial that still needs it. */
     /* ONCE. `endSerial` does not change `phase`, so the hit-count path and
        the serial's own timeout both saw `phase === 'serial' + n` and both
        fired: the cease-fire was called twice, the award banked twice and the
@@ -1134,8 +1144,8 @@
       if (hits > 0) {
         bank({ a: Math.min(6, hits * 2),
                note: hits >= SER_NEED[n - 1]
-                 ? 'You shot the ' + ['static', 'pop-up', 'moving'][n - 1] + ' serial clean.'
-                 : 'You got rounds on the ' + ['static', 'pop-up', 'moving'][n - 1] + ' serial.' });
+                 ? 'You shot the ' + SER_KIND[n - 1] + ' serial clean.'
+                 : 'You got rounds on the ' + SER_KIND[n - 1] + ' serial.' });
       }
       tower('t4cease');
       if (kit) { kit.timer(null); kit.objective(DATA.words.objCease, { complete: false }); }
@@ -1144,9 +1154,15 @@
          leaves its un-hit boards standing in the target area while the next
          serial's scoping makes them unshootable — the biggest, nearest thing
          on the range, and rounds at it do nothing. */
-      for (const t of SER_TARGETS[n - 1] || []) t.set(true);
+      /* v13.0: EVERY bank, not just this serial's — "they go down again when
+         the wave ends" (item 17). The others are already flat, so this only
+         costs the loop, and it means one place says what the range looks like
+         between waves. */
+      for (const t of statics) t.set(true);
+      for (const t of popups) t.set(true);
+      mover.set(true);
       after(6.0, () => {
-        if (n < 3) beginSerial(n + 1);
+        if (n < SER_TARGETS.length) beginSerial(n + 1);
         else beginStag();
       });
     }
@@ -1230,13 +1246,14 @@
            hit was unreachable and the serial could only ever end on its own
            clock. A real moving-target serial sends the trolley back across;
            so does this one. */
-        else if (t === mover && phase === 'serial3') {
+        else if (t === mover && phase === 'serial' + serial) {
+          const sn = serial;
           after(2.4, () => {
             /* `ending` too, not just the phase: the cease-fire keeps the
-               phase at serial3 for six seconds, and without this the trolley
-               (and its rail loop) started up again under the tower's
+               phase at the serial for six seconds, and without this the
+               trolley (and its rail loop) started up again under the tower's
                cease-fire and ran on into the stag. */
-            if (phase !== 'serial3' || ending) return;
+            if (phase !== 'serial' + sn || ending) return;
             mover.hit = false; mover.set(false);
             MOVER.on = true;
           });
@@ -1385,6 +1402,11 @@
        matters. */
     function beginLine(resumed) {
       setPhase('line');
+      /* v13.0 (item 17): nothing stands in the target area until a wave says
+         so — including on a resume, which never plays the film */
+      for (const t of statics) { t.hit = false; t.set(true); }
+      for (const t of popups)  { t.hit = false; t.set(true); }
+      mover.hit = false; MOVER.on = false; mover.set(true);
       if (!kit) return;
       if (kit.ammo) kit.ammo(DATA.weapon.rounds, DATA.weapon.mags);
       kit.objective(DATA.words.objLine);
@@ -1462,7 +1484,7 @@
       if (s === 'decide') { bellDone = true; cycStart(PASS_Z.length - 1); openDecision(); return; }
       if (s === 'confuse') { beginConfuse(true); return; }
       if (s === 'stag') { beginStag(true); return; }
-      if (s.startsWith('serial')) { beginSerial(Math.max(1, Math.min(3, +s.slice(6) || 1))); return; }
+      if (s.startsWith('serial')) { beginSerial(Math.max(1, Math.min(SER_TARGETS.length, +s.slice(6) || 1))); return; }
       if (s === 'load') { beginLoad(true); return; }
       filmKit.visible = false;
       beginLine(true);
@@ -1715,7 +1737,10 @@
       flareOn = false; flareT = 0; flareLife = 0; flare.intensity = 0;
       flare.position.set(HIS.x, 46, -72); flareBall.position.copy(flare.position); flareBall.material.opacity = 0;
       MOVER.on = false; MOVER.t = 0; MOVER.dir = 1; mover.group.position.x = MOVER.x0; mover.set(true);
-      for (const t of statics.concat(popups, far, [mover])) { t.hit = false; t.set(t.kind === 'pop' || t.kind === 'mover'); }
+      /* v13.0: DOWN, all of them — item 17's rule holds from the first frame
+         of the chapter, not only between waves. (`far` is scenery and is what
+         `set(true)` has always left it as.) */
+      for (const t of statics.concat(popups, far, [mover])) { t.hit = false; t.set(true); }
       cycEnd(); cyc.group.position.set(0, 0, -45); cyc.group.rotation.y = -Math.PI / 2;
       pass = 0; cycT = 0; cycStopped = false; shots = 0; tracked = 0; reported = false;
       momentT = 0; bellDone = false; hot = false; serial = 0; hits = 0; early = 0; ending = false;
@@ -1954,7 +1979,18 @@
     pitchTo(29.4, 33.6, -0.05, -0.02, smoothK);
     step(33.4, () => { if (kit) kit.daylight(null, 2.0); });
     fade(33.8, 34.8, 0, 1);
-    step(35.0, () => { armR.visible = true; stage.setFlare(0); });
+    /* v13.0 (item 17): and it puts the arc back EMPTY. The film raises the
+       statics for its flare reveal, and nothing after it lowered them — so
+       play began with three boards standing at a hundred metres before a
+       single order had been given, which is exactly the "already standing"
+       Chad reported. `beginLine` lowers them too, for a resume that never
+       plays the film. */
+    step(35.0, () => {
+      armR.visible = true; stage.setFlare(0);
+      for (const t of stage.statics) t.set(true);
+      for (const t of stage.popups) t.set(true);
+      stage.mover.set(true);
+    });
     c.endFade = 1;
     c.keepFade = true;
   }
