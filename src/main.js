@@ -1655,14 +1655,19 @@ const WEAPON_DEFAULTS = {
        flashPos   the apex, in `weaponProp`'s own frame, which is plain
                   viewmodel metres. The default is the KRISS Vector's barrel
                   tip MEASURED off its skinned vertices at the engine's own
-                  rest pose (0.135, -0.227, -0.671) — a SkinnedMesh's Box3 is
-                  its BIND pose, so this came from getVertexPosition and the
-                  18-vertex cluster at the most-negative-Z face, never from a
-                  bounding box (the v5.21 / v8.4 law).
+                  rest pose — getVertexPosition per vertex, never a Box3,
+                  because a SkinnedMesh's box is its BIND pose (the v5.21 /
+                  v8.4 law). It is measured PER MESH and taken from the gun
+                  body alone: the first pass swept the whole prop and landed
+                  on the forward HAND, which photographed as a flash over the
+                  player's knuckles with the barrel dark above it. The gun
+                  body's own most-forward vertex is (0.135, -0.091, -0.741),
+                  which projects to (789, 501) on a 1280x800 frame — the
+                  muzzle, in the picture, not only in the numbers.
        flashSize  the cone's LENGTH in metres; its rim is 1.09x that across.
        flashSecs  how long it is on screen. `weaponFlashT` already ran the
                   light for 0.09 s and the cone shares that clock. */
-  flash: '', flashPos: [0.135, -0.227, -0.671], flashSize: 0.18, flashSecs: 0.09,
+  flash: '', flashPos: [0.135, -0.091, -0.741], flashSize: 0.18, flashSecs: 0.09,
   clips: { draw: 'Draw', shoot: 'Shoot', reload: 'Reload', hide: 'Hide' },
   rates: { draw: 2.6, shoot: 1.6, reload: 1.6, hide: 2.6 },
   /* §8's measured placement: scale 0.01 (centimetres), a half turn about Y

@@ -3301,10 +3301,19 @@ What the baseline contains, by release:
   on the flash's OWN deterministic stream — deliberately its own, so the
   recoil's scatter stays bit-identical to v13.0 and the feel Chad signed off
   on is not perturbed by a cosmetic addition. `flashPos` is MEASURED, not
-  chosen: the KRISS Vector's barrel tip read off `main_Vector_D_0`'s SKINNED
-  vertices at the engine's own rest pose (a SkinnedMesh's Box3 is its BIND
-  pose — the v5.21/v8.4 law), the most-negative-Z face's 18-vertex cluster
-  averaged for the bore axis. The cone is a child of `weaponProp`, so it
+  chosen: the KRISS Vector's barrel tip read off the gun body's own SKINNED
+  vertices at the engine's rest pose with `getVertexPosition` (a SkinnedMesh's
+  Box3 is its BIND pose — the v5.21/v8.4 law). And measured PER MESH, which
+  is the release's fourth law: the first pass swept the WHOLE PROP for its
+  most-forward vertex and landed on the forward HAND — every number about it
+  right (the front of the viewmodel, in frame, 0.67 m out) and the photograph
+  a burst over the player's knuckles with the barrel dark above it.
+  **The most-forward vertex of a first-person weapon rig is a hand**, because
+  that rig's hands reach past its barrel by design. The gun body's own answer
+  is (0.135, −0.091, −0.741), which projects to (789, 501) on a 1280×800
+  frame, and `flashSize` is 0.15 in e2c4 rather than the default 0.18 because
+  at 0.18 the burst swallowed the front sight. The cone is a child of
+  `weaponProp`, so it
   inherits the aim's slide and the v11.3 swap for free; three lifecycle traps
   are handled rather than hoped (either half may land first, `weaponPropDrop`
   disposes everything it can reach, and the CSP rescue writes to the PARSER's
@@ -3319,7 +3328,14 @@ What the baseline contains, by release:
   the base centre, so every number in the chapter is a place and none is a
   scale factor; the primitives stay standing until EVERY model has landed, so
   a failed download costs a nicer prop and never the chapter (v4.7).
-  **Three laws paid for**, all in LEARNINGS: `flatten()` does NOT bake (the
+  **The flash was PHOTOGRAPHED, never inferred** — four probes in a row said
+  it had loaded, was mapped, was visible and was placed, and caught nothing,
+  which is the exact shape of v12.3's depth pre-pass that turned out to be a
+  no-op. Three separate causes stood between the numbers and a frame: the
+  clock, the probe (two round trips, so the flag rose and fell between the
+  poll and the shot — re-fired from `requestAnimationFrame` and polling the
+  group's own `visible`, five of six desktop frames and three of five phone
+  frames carry it) and the place. **Laws paid for**, all in LEARNINGS: `flatten()` does NOT bake (the
   crate first measured 0.480 × 0.813 × 0.620 m — standing on end — because
   gltf-transform leaves each node's own transform behind; `clearNodeTransform`
   is the bake, and the tool now asserts identity AND that the thing is wider

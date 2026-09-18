@@ -4204,3 +4204,25 @@ an alpha channel. A flash painted on black drawn ADDITIVELY needs no alpha at
 all: black adds nothing and the core glows. 1.66 MB became 94 KB with both
 variants kept. Before shrinking a texture, ask what each channel is actually
 being asked to do.
+
+**The most-forward vertex of a first-person weapon rig is a HAND.** v13.1's
+muzzle flash was placed by sweeping the whole viewmodel prop for its
+most-negative-Z vertex — a correct measurement of the wrong thing. That rig's
+forward hand reaches past its own barrel, because that is what holding a gun
+looks like, so the flash came out over the player's knuckles with the barrel
+dark above it, and every number about it was right: it was the front of the
+prop, it was in frame, it was 0.67 m out. Swept PER MESH and taken from the
+gun body alone it is (0.135, −0.091, −0.741), which projects to (789, 501) on
+a 1280×800 frame. When a measurement can only be checked by looking, do the
+sweep per part and then PROJECT the answer to a pixel before believing it.
+
+**A one-frame state cannot be caught by polling it and then screenshotting.**
+Playwright's `evaluate` and its `screenshot` are two round trips, and on a box
+drawing a frame a second the flag can go up and the frame can be drawn and the
+flag can come down between them — so a probe that waited for `flashLit` and
+then photographed caught nothing four times running, while the state log said
+the flash had fired every time. Two things fix it together: drive the event
+from `requestAnimationFrame` so SEVERAL consecutive drawn frames carry it, and
+take several shots a second apart rather than one. The same probe that saw
+nothing saw it in two of six frames once it re-fired every rAF. And poll the
+thing that is DRAWN (the group's own `visible`), never the clock behind it.

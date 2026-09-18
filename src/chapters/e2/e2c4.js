@@ -154,12 +154,15 @@
                  near boards 39 px tall and the far ones 18 — visible. */
               zoom: 30,
               /* v13.1 — THE MUZZLE FLASH (Chad's Sketchfab cone). `flashPos` is
-                 the engine's default, which IS this rifle's barrel tip: it
-                 was measured off `main_Vector_D_0`'s skinned vertices at the
-                 engine's own rest pose, so the number belongs there rather
-                 than here. `flashSize` 0.18 m and `flashSecs` 0.07 are the
-                 chapter's, bracketed by render on the night range. */
-              flash: 'muzzle', flashSize: 0.18, flashSecs: 0.07,
+                 the engine's default, which IS this rifle's barrel tip,
+                 measured off the gun body's own skinned vertices at the
+                 engine's rest pose, so the number belongs there rather than
+                 here. `flashSize` 0.15 m and `flashSecs` 0.07 are the
+                 chapter's, bracketed by render on the night range: at 0.18
+                 the burst swallowed the front sight, and a flash that hides
+                 the thing you aim with is a flash that costs the player a
+                 serial. */
+              flash: 'muzzle', flashSize: 0.15, flashSecs: 0.07,
               shot: 'rifleshot', reload: 'riflereload', empty: 'rifledry', cock: 'riflecock' },
 
     assets: ['fboaim', 'fbosling', 'ghostcyclist', 'rifle', 'flashlight', 'kamaz',
