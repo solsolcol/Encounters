@@ -367,11 +367,26 @@ body.finePtr .wpnBtn{position:relative;margin-bottom:12px}
   86%,100%{transform:translate(160px,24px);opacity:0}}
 @keyframes dslotGlow{0%,60%{box-shadow:0 0 12px rgba(99,214,200,.18)}
   70%,86%{box-shadow:0 0 22px rgba(99,214,200,.6);border-color:#8FE6DB}100%{box-shadow:0 0 12px rgba(99,214,200,.18)}}
-.evtrack{display:block;width:100%;height:10px;background:rgba(255,255,255,.08);
+.evtrack{display:block;position:relative;width:100%;height:10px;background:rgba(255,255,255,.08);
   border:1px solid var(--line)}
 .evtrack i{display:block;height:100%;width:0;background:var(--jade,#63D6C8);
   box-shadow:0 0 10px rgba(99,214,200,.6);transition:width .08s linear}
 #event.bad .evtrack i{background:#E24A3A;box-shadow:0 0 10px rgba(226,74,58,.7)}
+/* v12.3 · THE TARGET, DRAWN. Chad, of the load drill: "The minigame seems
+   broken and im not sure what its supposed to do." The bar filled and the
+   player was expected to work out on his own that the middle of it was the
+   moment to press. Nothing on screen said so. The band is the window a press
+   still scores in and the line is dead centre — its half-width is written
+   from the grade ladder by evShowItem, so what is drawn and what is scored
+   cannot drift apart (the v8.7 law about the bed zone's one radius, in a
+   HUD). It is drawn for a sequence only; no other kind aims at a centre. */
+#event.sequence .evtrack::before{content:'';position:absolute;top:0;bottom:0;
+  left:calc(50% - var(--evwin, 15%));width:calc(var(--evwin, 15%) * 2);
+  background:rgba(99,214,200,.16);border-left:1px solid rgba(99,214,200,.35);
+  border-right:1px solid rgba(99,214,200,.35);pointer-events:none}
+#event.sequence .evtrack::after{content:'';position:absolute;top:-4px;bottom:-4px;
+  left:calc(50% - 1px);width:2px;background:#8FE6DB;
+  box-shadow:0 0 8px rgba(143,230,219,.9);pointer-events:none}
 #evBtn{pointer-events:auto;min-width:min(70vw,260px);padding:18px 26px;
   font-family:var(--ui);font-size:1.3rem;font-weight:700;letter-spacing:.08em;
   text-transform:uppercase;color:var(--bone);cursor:pointer;

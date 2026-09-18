@@ -718,3 +718,24 @@ re-measurement would have caught it before a render.
 `admintee` is no longer used by chapter 4 at all — **2.5 MB off that
 chapter's download**. `fbosling` stays for the safety officer, who is the
 only man behind the line and the only one not shooting.
+
+## 15 · v12.3 · THE GHOST CYCLIST UP CLOSE
+
+Chad, on v12.2: *"when the ghost cyclist comes nearer and nearer, the model
+looks wrong."*
+
+Measured first: `ghostcyclist.glb` is **one mesh** (`cyc.meshes.length === 1`
+on the shipped build — one baked body, 29,707 triangles, 0 bones). The ghost
+treatment sets `transparent = true` and `depthWrite = false`, which is right
+for a ghost *against the world* — a material with depthWrite off still
+depth-TESTS, so the tile or the berm in front of it still occludes it, and
+the alpha only finishes the job (the v9.7 note).
+
+It is wrong for the object *against itself*. With depthWrite off, every
+triangle of a single mesh is blended in buffer order with no depth rejection,
+so the far side of the rider, the inside of the frame and the far wheel all
+show through the near side. At twenty metres that reads as a faint figure; at
+six it reads as a jumble. The other three ghost spots in the episode are
+`fbosling`, which is many small meshes and mostly seen at distance, which is
+why this only showed up on the one asset that comes close.
+

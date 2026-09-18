@@ -282,5 +282,75 @@ if (VOICE && Array.isArray(VOICE.LINES)) {
     if (!str(TEXT[k])) errs.push(`strings: ${k} is missing or empty`);
   }
 }
+/* --- v12.3: NO CUE MAY BE WRITTEN PAST ITS OWN CUTSCENE ------------------
+   `playCineFn` computes a cutscene's length as the maximum t1 of its TRACKS
+   (`c.dur = c.tracks.reduce((m, tr) => Math.max(m, tr.t1), 1)`), and a sting
+   is not a track. So `sfx(27.2, 'n4dawn')` written after a last `step(27.0)`
+   is simply never reached — the frame clamps `c.t` to `c.dur` and calls
+   `cineEnd()`, and the cue sits there for ever, silent, with no error. All
+   four endings of episode 2 chapter 4 had their closing narration written
+   0.1-0.2 s late, so the sentence that loads chapter 5 had never once played
+   in any of them, through two releases.
+   This runs every film and every scene in the game against a recording stub:
+   the verbs are the real ones from A(c), and everything else a scene touches
+   (stage, kit, THREE, the camera, a rig) is a proxy that survives being
+   called, indexed and read as a number. A scene that throws is REPORTED
+   rather than skipped quietly, because a scene this cannot run is a scene
+   this cannot defend. It is the v9.2 law in its timing form: a mistyped cue
+   is silent with no error, and that is not a bug a screenshot can catch.  */
+{
+  const anyProxy = () => {
+    const f = function () { return anyProxy(); };
+    return new Proxy(f, {
+      get(t, k) {
+        if (k === Symbol.toPrimitive) return () => 0;
+        if (k === Symbol.iterator) return function* () {};
+        if (k === 'then') return undefined;
+        if (k === 'length') return 0;
+        if (typeof k === 'symbol') return undefined;
+        return anyProxy();
+      },
+      set() { return true; },
+      apply() { return anyProxy(); },
+      has() { return true; },
+    });
+  };
+  const rawK = k => k, smoothK = k => k * k * (3 - 2 * k);
+  let scanned = 0;
+  for (const [key, ch] of Object.entries(chapters)) {
+    const list = [];
+    if (typeof ch.intro === 'function') list.push(['intro', ch.intro]);
+    (ch.scenes || []).forEach((fn, i) => { if (typeof fn === 'function') list.push([`scene ${'ABCD'[i] || i}`, fn]); });
+    for (const [label, fn] of list) {
+      const tracks = [], cues = [];
+      const T = (t0, t1) => { tracks.push(Math.max(+t0 || 0, (t1 === undefined ? +t0 : +t1) || 0)); };
+      const api = {
+        tr: T, step: t0 => T(t0, t0), fade: T, camTo: T, yawTo: T, pitchTo: T,
+        bob: T, ghostGlide: T, ghostFacePlayer: T, lens: T,
+        event: at => T(at, at), eventWait: at => T(at, at),
+        sfx: (at, kind) => cues.push({ at: +at || 0, kind: String(kind) }),
+        music: () => {}, duck: () => {},
+        rawK, smoothK, mixAngle: (a, b, k) => a + (b - a) * k, faceFrom: () => 0,
+        CAM_FOV: 72, handWidth: () => 0.1, getReveal: () => 0,
+        ghostOpacity: () => {}, setHandPrayer: () => {},
+      };
+      for (const k of ['THREE', 'SHRINE', 'stage', 'camera', 'yaw', 'pitch', 'ghost', 'ghostLight',
+                       'kit', 'handsRoot', 'armR', 'armL', 'rightHandModel', 'prayerArmL',
+                       'PRAYER_R', 'PRAYER_L']) api[k] = anyProxy();
+      try { fn(anyProxy(), anyProxy(), api); }
+      catch (e) { bad(key, `${label} could not be walked for its cue times — ${e.message}`); continue; }
+      scanned++;
+      const dur = Math.max(1, ...tracks);
+      for (const q of cues) {
+        if (q.at > dur + 1e-9) {
+          bad(key, `${label}: sfx('${q.kind}') is cued at ${q.at.toFixed(2)} s but the cutscene is ` +
+                   `${dur.toFixed(2)} s long (its last track ends there), so it can never play`);
+        }
+      }
+    }
+  }
+  console.log(`cue timing: ${scanned} cutscenes walked, every cue inside its own length`);
+}
+
 console.log('errors:', errs.length ? errs : 'none');
 if (errs.length) process.exit(1);

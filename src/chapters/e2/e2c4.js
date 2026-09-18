@@ -63,7 +63,14 @@
        x -8.84..-6.36 — a spawn at -6.5 stands INSIDE it, and a blocked
        spawn fills nothing, so every walkable check fails with it
        (v7.9's lesson). -5.6 is 0.76 m clear of the pad. */
-    spawn:     { x: -5.6, y: 1.62, z: 8.2, rot: 0 },   // beside the ammo point, facing downrange
+    /* v12.3: facing the FIRING POINT, which is the only thing the first
+       objective asks for. rot 0 faces -z and the lane zone lies at
+       (3.9, 0.35), i.e. 50 degrees off to the right — and the 72-degree lens
+       is VERTICAL, so a portrait phone's horizontal half-view is about 21
+       degrees: the glowing circle the player is told to walk into was not on
+       his screen at the frame play began. atan2(-dx, -dz) puts it dead
+       centre (forward is (-sin y, -cos y)). */
+    spawn:     { x: -5.6, y: 1.62, z: 8.2, rot: -0.880 },   // beside the ammo point, facing the firing point
     shrine:    { x: 3.9, z: -1.2 },                    // the engine's anchor for HER; unused (ghost: null)
     ghostHome: { x: 3.9, z: -1.2 },
     bounds:    { minX: -13.0, maxX: 17.0, minZ: -2.0, maxZ: 10.5 },
@@ -88,13 +95,19 @@
 
     /* the flare, as a daylight declaration: the whole arc white for its
        seconds. `kit.daylight(FLARE, secs)` tweens to it and back. */
-    /* THE TORCH IS DECLARED AND NEVER ISSUED (v12.2). It keeps `item`
-       precisely so that `torchAvail()` stays FALSE for the player — no
-       `hasTorch` on <body>, so no torch button, no F, no beam and no way to
-       put the rifle down for it — while `kit.torchOn()` from a scene is
-       ungated by design (v11.6: "a film owns its light"), which is what
-       scene B still needs when he walks out with it. */
-    torch: { on: false, item: 'torch', angle: 0.36, intensity: 16, distance: 30, penumbra: 0.6,
+    /* THE TORCH IS THE SCENES' AND NOBODY ELSE'S (v12.2, said properly at
+       v12.3). v12.2 tried to say it by declaring an inventory item the
+       chapter never issues, so `torchAvail()` would stay false. That was
+       wrong for the one player who matters: the BAG CARRIES ACROSS A
+       CHAPTER (restart() puts the run's numbers back, never the inventory)
+       and chapter 3 forces the torch into the hand slot to be playable at
+       all — so anyone arriving here the way the episode is played arrived
+       with it equipped, and the torch button, F and the hand swap were all
+       live on a live range, which is exactly what Chad said must not
+       happen. `player: false` says it outright; `kit.torchOn()` from a
+       scene is still ungated (v11.6: "a film owns its light"), which is
+       what scene B needs when he walks out with it. */
+    torch: { on: false, player: false, angle: 0.36, intensity: 16, distance: 30, penumbra: 0.6,
              red: true, color: 0xff3a22, model: 'flashlight', click: 'torchclick' },
 
     /* RIFLE MODE (v12.0), and v12.2: THE RIFLE NEVER LEAVES HIS HANDS.
@@ -152,21 +165,28 @@
       actTouch: 'Tap to act',
       interact: 'E to answer it',
       interactTouch: 'Tap to answer it',
-      presence: 'It is still coming. Sanity level dropping until you act.',
+      /* v12.3: an OBSERVATION, not an order. The drain starts in the stag,
+         where the objective correctly says to wait on the line and there is
+         nothing on the range to act on — a banner telling the player to act
+         while the HUD above it tells him to wait is the v8.7 lie in its
+         third direction. What is true at every moment this banner is up is
+         that something is out there. */
+      presence: 'Something is out there. Sanity level dropping.',
       objLine: 'Move to lane six',
       objLoad: 'Load on the order',
       objHold: 'On the line. Do NOT fire until the tower gives the order.',
       objS1: 'Static target, 100 metres. Fire on the order · {n}/3',
       objS2: 'Pop-up targets, 200 metres · {n}/3',
       objS3: 'Moving target, 200 metres · {n}/2',
+      objCease: 'Cease fire. Stand fast.',
       objStag: 'Wait on the line. Weapons loaded.',
-      objConfuse: 'Watch your front',
-      objMoment: 'It is in the target area. Decide.',
+      objConfuse: 'Hold it in your sight. Do not fire.',
+      objMoment: 'It is in the target area. Hold your sight on it, or decide.',
       hotRadio: 'E to key the radio',
       hotRadioTouch: 'Tap to key the radio',
       hotTrack: 'Keep it in your sight',
       loadBrief: 'LOAD ON THE ORDER',
-      loadBody: 'Three actions, in order, when the tower calls: magazine on, cock the weapon, safety catch on. Wait for each one.',
+      loadBody: 'Magazine on, cock the weapon, safety catch on. Each one gets a bar: TAP THE SCREEN (or press SPACE) as the bar reaches the marked band in the middle. Wait for each bar - pressing early counts against you.',
       loadGo: 'READY'
     },
     sayPrefix: 'n4'
@@ -189,7 +209,14 @@
   const FLARE = {
     stops: [[0.00, '#2a3242'], [0.35, '#3a4152'], [1.00, '#10141c']],
     bg: 0x2a3242,
-    fog: [0x2a3038, 0.016],
+    /* v12.3: the flare lights the range and must NEVER thicken it. This
+       declared 0.016 against the night's 0.012, so `applyDaylight` tweened
+       the fog UP for exactly the seconds the boards are meant to be visible:
+       at the pop-up bank the FogExp2 fraction went 74.9 % to 91.4 %, and at
+       the far bank 91.9 % to 98.8 %. The light arrived and the air closed
+       with it. At 0.009 the flare thins the air, which is what a flare
+       looks like. */
+    fog: [0x2a3038, 0.009],
     hemi: [0xbfd0e8, 0x2a3040, 1.15],
     key: [0xfff0d8, 0.85, 0, 40, -60],
     fill: [0x8a9ac0, 0.35],
@@ -299,14 +326,33 @@
        lit, and it costs no light and no shadow pass. */
     const matFig = nfm({ map: figTex, roughness: 1, side: THREE.DoubleSide,
                          emissive: 0x6e7256, emissiveIntensity: 0.48 });
+    /* v12.3, Chad: "make all targets bigger, its quite hard to aim them."
+       He is right, and the arithmetic says how much. A Figure 11 is 1.05 x
+       1.5 m, and this lens is 72 degrees VERTICAL: on a 390 x 844 phone a
+       board 1.5 m tall subtends 844 * 1.5 / (2 * tan(36) * d) pixels — 14 px
+       at 62 m, 9 at 98, 7 at 132. Under AIM's 30-degree lens that is 34 / 21
+       / 16. A thumb cannot aim at nine pixels.
+       So the board is scaled, and by DISTANCE rather than by a flat number,
+       because a flat multiplier leaves the far bank exactly as unreadable as
+       it was relative to the near one. `BOARD_K` is the base and the rest is
+       d / 62, so every bank subtends the same angle and all three read alike:
+       25 px on a phone at rest, 60 in AIM. It costs nothing in believability
+       because there is not one object in the target area to judge a size
+       against — the whole range is compressed already (the tower still calls
+       them a hundred, two hundred and three hundred metres).
+       The board's own y is half its height, so its bottom stays exactly on
+       the pivot and the drop still folds it flat to the ground. */
+    const BOARD_K = 1.8, BOARD_W = 1.05, BOARD_H = 1.5;
     function mkTarget(x, z, opts = {}) {
       const g = new THREE.Group(); g.position.set(x, 0, z); world.add(g);
-      const post = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.7, 0.08), matPost);
+      const k = BOARD_K * Math.max(1, Math.abs(z) / Math.abs(RANGE.s1));
+      const w = BOARD_W * k, h = BOARD_H * k;
+      const post = new THREE.Mesh(new THREE.BoxGeometry(0.08 * k, 0.7, 0.08 * k), matPost);
       post.position.y = 0.35; g.add(post);
       const pivot = new THREE.Group(); pivot.position.y = 0.66; g.add(pivot);
-      const board = new THREE.Mesh(new THREE.PlaneGeometry(1.05, 1.5), matFig);
-      board.position.y = 0.75; pivot.add(board);
-      const T = { group: g, pivot, board, x, z, down: false, hit: false, kind: opts.kind || 'static' };
+      const board = new THREE.Mesh(new THREE.PlaneGeometry(w, h), matFig);
+      board.position.y = h / 2; pivot.add(board);
+      const T = { group: g, pivot, board, x, z, w, h, down: false, hit: false, kind: opts.kind || 'static' };
       T.set = (down) => { T.down = down; pivot.rotation.x = down ? -Math.PI / 2 : 0; };
       if (opts.down) T.set(true);
       return T;
@@ -562,6 +608,33 @@
          so the one thing in the chapter the player most needs to be able to
          hit would have been the one thing assist could not help him hit. */
       g.traverse(o => { if (o.isMesh) cyc.meshes.push(o); });
+      /* v12.3, Chad: "when the ghost cyclist comes nearer and nearer, the
+         model looks wrong." A DEPTH PRE-PASS, and the reason is one property.
+         `depthWrite: false` is right for a ghost AGAINST THE WORLD — the
+         material still depth-TESTS, so the berm or a tree in front of it
+         still occludes it and the alpha only finishes the job (v9.7). It is
+         wrong for the object against ITSELF: this file is ONE baked mesh
+         (measured: cyc.meshes.length === 1, 29,707 triangles, 0 bones), so
+         with nothing writing depth every triangle blends in buffer order and
+         the far side of the rider, the inside of the frame and the far wheel
+         all come through the near side. Photographed from play: at 24 m a
+         faint figure, at 12 m still readable, at 6 m a smear with a helmet
+         floating off the shoulders.
+         So a colour-less copy of the geometry lays the silhouette's depth
+         down FIRST — renderOrder 2, after every default-0 opaque mesh in the
+         world, so the tarmac behind it is already painted and cannot be
+         punched out — and the ghost itself then depth-TESTS against it, so
+         only its nearest surface is drawn. It is a child of the mesh, so it
+         rides the same world matrix with nothing to keep in step, and it
+         goes invisible with the group like everything else. */
+      const depthMat = new THREE.MeshBasicMaterial({ colorWrite: false, depthWrite: true, fog: false });
+      owned.push(depthMat);
+      for (const m of cyc.meshes) {
+        const d = new THREE.Mesh(m.geometry, depthMat);
+        d.renderOrder = 2; d.frustumCulled = false; d.castShadow = false;
+        m.renderOrder = 3;
+        m.add(d);
+      }
       cycAlpha(cyc.a);
     }).catch(() => { cyc.ready = true; });
     /* the primitive fallback under it (v4.7's rule: a failed download costs
@@ -576,6 +649,7 @@
       const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.17, 0.66, 4, 8), matFb);
       body.position.set(0, 1.02, 0.1); fb.add(body);
       cyc.fallback = fb; cyc.fbMat = matFb;
+      cyc.fbMeshes = fb.children.filter(o => o.isMesh);   // v12.3: what the assist cone can measure
     }
 
     /* ------------------------------------------------ the tonner, parked
@@ -741,6 +815,13 @@
        seconds and still leaves the last one standing still, which is the
        beat. */
     const PASS_SPD = [3.6, 4.2, 4.8, 0];       // m/s; the last one has stopped
+    /* v12.3: the tracking cone OPENS as the thing speeds up. The dwell is
+       1.2 s and the cone is a half-angle about the lens, so the time a pass
+       spends inside a fixed cone falls with its speed: at PASS_Z -22 and
+       4.8 m/s, 0.10 rad is 0.93 s of cone — under the dwell, so a player
+       holding the sight perfectly still could not finish the drill on the
+       third pass. These are the angles that keep every pass answerable. */
+    const PASS_AIM = [0.10, 0.12, 0.15, 0.18];
     let pass = 0, cycT = 0, cycOn = false, cycStopped = false, shots = 0, tracked = 0, reported = false;
     let momentT = 0, bellDone = false;
     function cycStart(p) {
@@ -770,11 +851,21 @@
        the cyclist is — the quiet sound that says it is there (the ambient
        frame re-asserts every declared volume every frame, so this is where
        a chapter's mix lives) */
+    /* v12.3: AND THEY GO QUIET WHEN PLAY DOES. `mixBeds` was only ever
+       reached from `flareFrame`, which sits under updateNotes's
+       `getState() !== 'play'` guard — while the ENGINE's ambient frame
+       re-asserts every declared volume in every state that is in the world.
+       So the last values written in play were held through the cutscene,
+       the outcome card and the sealed card: a trolley rail grinding under
+       the teaching, a flare hissing over the rank. These three are pure
+       play mechanics and none of them exists once the options are up; the
+       range's own night tone and the dread are the chapter's and stay. */
     function mixBeds() {
-      const nearK = cycOn ? Math.max(0, 1 - Math.hypot(cyc.group.position.x - HIS.x, cyc.group.position.z - HIS.z) / 50) : 0;
+      const playing = getState() === 'play';
+      const nearK = (playing && cycOn) ? Math.max(0, 1 - Math.hypot(cyc.group.position.x - HIS.x, cyc.group.position.z - HIS.z) / 50) : 0;
       for (const b of DATA.ambience.beds) {
-        if (b[0] === 'flarehiss') b[1] = flareOn ? 0.5 * Math.min(1, flareT / 0.8) : 0;
-        if (b[0] === 'moverrail') b[1] = MOVER.on ? 0.34 : 0;
+        if (b[0] === 'flarehiss') b[1] = (playing && flareOn) ? 0.5 * Math.min(1, flareT / 0.8) : 0;
+        if (b[0] === 'moverrail') b[1] = (playing && MOVER.on) ? 0.34 : 0;
         if (b[0] === 'chain') b[1] = 0.55 * nearK * cyc.a;
       }
     }
@@ -795,7 +886,10 @@
          v8.7 OBJECTIVE COMPLETE banner, which covers the running count for
          1.35 s and congratulates the player for a serial he is in the middle
          of. The same lie in the same direction as the one v8.7 named. */
-      kit.objective(w.replace('{n}', String(hits)), { complete: false });
+      /* v12.3: clamped, because serial two can bank a fourth hit inside the
+         ~0.5 s the next board is up before endSerial's 1.4 s lands, and
+         "4/3" is a HUD telling a lie about its own rule. */
+      kit.objective(w.replace('{n}', String(Math.min(hits, SER_NEED[serial - 1] || hits))), { complete: false });
     }
     function beginSerial(n) {
       serial = n; hits = 0; hot = false; ending = false;
@@ -809,10 +903,21 @@
          chapter turns on: the thing the ghost exploits at the end is that
          you were taught to wait to be told. */
       if (kit) kit.objective(DATA.words.objHold, { complete: false });
-      for (const t of statics) { t.hit = false; t.set(false); }
-      for (const t of popups) { t.hit = false; t.set(true); }
+      /* v12.3, Chad: "the first round of targets come back up after they are
+         all shot down, this made it hard to shoot the targets of subsequent
+         rounds." He is right and it is one word. This loop raised EVERY
+         static at the start of EVERY serial, so the three boards at 62 m
+         stood back up for serials two and three — the biggest, nearest thing
+         on the range, standing in front of the bank that is actually live and
+         not shootable, because `shootables()` is scoped to the serial's own
+         bank. It also contradicted `endSerial`, which had just lowered them
+         on purpose at the cease-fire.
+         A range runs ONE bank at a time: each serial raises its own and
+         leaves the others flat. */
+      for (const t of statics) { t.hit = false; t.set(n !== 1); }
+      for (const t of popups) { t.hit = false; t.set(true); }   // down; popSeq raises them one at a time
       mover.hit = false;
-      MOVER.on = false; mover.set(n === 3 ? false : true);
+      MOVER.on = false; mover.set(n !== 3);
       flareUp(n === 3 ? 26 : 20);
       if (n === 1) { tower('t4fire1'); after(4.2, () => { if (phase === 'serial1') { hot = true; objSerial(); } }); }
       if (n === 2) {
@@ -826,6 +931,12 @@
           hot = true; objSerial(); MOVER.on = true; MOVER.t = 0; MOVER.dir = 1;
         });
       }
+      /* v12.3: the clock that ENDS the serial is the clock on screen. It ran
+         privately for 28 or 34 seconds with nothing in the HUD, so a player
+         who missed had no way to know the beat was running out — the same
+         thing v8.1 fixed for the bunk's evening. `kit.timer` paints M:SS
+         beside the objective and reddens under ten. */
+      if (kit) kit.timer(n === 3 ? 34 : 28);
       after(n === 3 ? 34 : 28, () => { if (phase === 'serial' + n) endSerial(); });
     }
     /* THE POP-UPS CYCLE. v12.1 raised one target for 3.4 s, then the next,
@@ -866,6 +977,7 @@
                  : 'You got rounds on the ' + ['static', 'pop-up', 'moving'][n - 1] + ' serial.' });
       }
       tower('t4cease');
+      if (kit) { kit.timer(null); kit.objective(DATA.words.objCease, { complete: false }); }
       flareDown();
       /* the bank comes DOWN at the cease-fire. Otherwise the serial just shot
          leaves its un-hit boards standing in the target area while the next
@@ -899,7 +1011,12 @@
       if (cycOn && cyc.a > 0.2) {
         if (cyc.meshes.length) for (const m of cyc.meshes) out.push(m);
         else if (cyc.model) out.push(cyc.model);
-        out.push(cyc.fallback);
+        /* v12.3: the fallback's MESHES, for the same reason as the model's.
+           `weaponAssistHit` measures a bounding sphere and skips anything
+           without geometry of its own, so a Group got the plain ray and no
+           assist — and the fallback is what stands here when the download
+           fails, i.e. exactly when the player needs the help most. */
+        for (const m of (cyc.fbMeshes || [])) out.push(m);
       }
       return out;
     }
@@ -915,6 +1032,13 @@
       /* the played moment: a round into the thing in the target area. It is
          gone on the flash and back on the next flare, NEARER. */
       if (phase === 'moment' || phase === 'confuse') {
+        /* v12.3: once the bell has gone the beat is OVER — the thing is
+           stood at the foot of the berm and the decision is 1.6 s away.
+           A round fired into that gap used to spend a life on the
+           escalation ladder and take the cyclist off the range with
+           `cycEnd()`, so the four options opened on empty tarmac with the
+           presence banner still saying it was out there. */
+        if (bellDone) return;
         if (r.hit && isCyclist(r.object)) onHitCyclist();
         else if (phase === 'moment') { shots++; onFiredAtIt(); }
         return;
@@ -922,7 +1046,11 @@
       if (!hot) {
         /* firing without the order is the one thing the range cannot have */
         early++;
-        if (early === 1) { lineQ.length = 0; sayLine('e4wait'); }
+        /* v12.3: QUEUED, not dropped. The one moment a player fires early is
+           while the tower is still giving the order — and `sayLine` refuses a
+           line while another speaks, so the reprimand that explains the six
+           sanity he just lost was silent exactly when it was earned. */
+        if (early === 1) { lineQ.length = 0; queueLine('e4wait'); }
         if (kit) { kit.conduct({ s: -6, note: 'You fired before the order.' }); kit.flash({ color: '#ff3a1c', secs: 0.35 }); }
         return;
       }
@@ -935,7 +1063,7 @@
       if (SER_TARGETS[serial - 1] && SER_TARGETS[serial - 1].indexOf(t) >= 0) {
         hits++; objSerial();
         if (kit && kit.haptic) kit.haptic([15, 30, 15]);
-        if (hits >= SER_NEED[serial - 1]) after(1.4, () => { if (phase === 'serial' + serial) endSerial(); });
+        if (hits === SER_NEED[serial - 1]) after(1.4, () => { if (phase === 'serial' + serial) endSerial(); });
         /* THE MOVER COMES BACK UP. Serial three asks for two hits and there
            is exactly ONE moving target, and `t.hit` latches — so the second
            hit was unreachable and the serial could only ever end on its own
@@ -1027,10 +1155,24 @@
       /* a round into the target area at a thing the tower says is not there */
       if (kit) { kit.conduct({ s: -5, note: 'You fired at it.' }); kit.flash({ color: '#ff3a1c', secs: 0.3 }); }
       if (shots >= 3) { onBell(); return; }
+      /* v12.3: RE-STAMP THE RECEIPT. `moment:r14m1s2` is written by
+         setPhase, and beginMoment was its only caller — so the phase string
+         was stamped once, at entry, with shots 0 and a full magazine. A
+         Continue taken after two rounds therefore restored the FIRST pass
+         with the rounds back, and the escalation the chapter is built on ran
+         again from the start. setPhase is idempotent but for the string, so
+         calling it here is the whole fix (v7.3's law: a resume lands where
+         the player actually was). */
+      setPhase('moment');
       cycEnd();
       sayLine('n4back');
       after(2.6, () => {
-        if (phase !== 'moment') return;
+        /* v12.3: and 'confuse' too. The confusion is the first pass and the
+           player CAN put a round into it there — onShot accepts the hit and
+           spends a life for it — but the re-show was gated on 'moment'
+           alone, so the one thing the chapter is about vanished for the rest
+           of the beat and the hand-over arrived at an empty range. */
+        if (phase !== 'moment' && phase !== 'confuse') return;
         flareUp(16);
         cycStart(Math.min(PASS_Z.length - 1, shots));
         if (kit) kit.presence(0.55 + 0.15 * shots);
@@ -1054,6 +1196,15 @@
     function openDecision() {
       if (phase === 'decide') return;
       setPhase('decide');
+      /* v12.3: the range's own voices stop at the decision. A queued tower
+         line still working through `t4who` (5.25 s) or `t4neg` (6.43 s) when
+         the bell came early — three rounds into the thing rings it around
+         t 11-13, and the queue is laid out for t 12 — ran on under the four
+         options and into the cutscene's first line, which is the overlap
+         v5.30 spent a release removing everywhere else. Dropping the queue
+         and the window is the chapter's half; `playCineFn` already stops
+         play-time narration when a scene begins (v4.91). */
+      dropTodo(); lineQ.length = 0; speakReset();
       if (kit) {
         kit.objective(null);
         /* the timed decision: the bar IS its approach (the plan's §4.7).
@@ -1092,14 +1243,36 @@
       tower('t4load');
       after(resumed ? 0.5 : 5.4, () => {
         if (phase !== 'load' || !kit || !kit.event) { beginSerial(1); return; }
+        /* v12.3, Chad: "The minigame seems broken and im not sure what its
+           supposed to do." Two causes, and the second is v9.7's bug met in a
+           second kind. THE WORDS said what a soldier does and never what a
+           PLAYER does, and nothing on the track marked the moment to press —
+           `loadBody` names the action now and the band is drawn (shell.html).
+           THE WINDOWS sat inside a touchscreen's own latency: a press grades
+           on |slotT - mid| / (span / 2), and at each 1.6 / lead 0.4 the
+           half-span is 0.60 s, so with zone 1 PERFECT was 18 ms, GOOD 72 ms
+           and anything past 204 ms BROKEN at -4 awareness — against a phone's
+           own 50-100 ms tap latency. A player with flawless timing was
+           charged for all three items.
+           zone 2.5 puts the ladder where v9.7 put the heartbeat's: PERFECT
+           45 ms, GREAT 105, GOOD 180, SLIGHT 300, BROKEN only past 510 ms.
+           `each` 2.0 gives the first item a 1.6 s span to read, and the
+           default accel 0.86 still tightens the two after it. Print the
+           milliseconds whenever these move — that is the v9.7 rule. */
         kit.event({ kind: 'sequence', label: DATA.words.loadBrief,
                     items: [{ label: 'MAGAZINE' }, { label: 'COCK' }, { label: 'SAFETY' }],
                     brief: DATA.words.loadBody,
-                    each: 1.6, lead: 0.4, zone: 1,
+                    each: 2.0, lead: 0.4, zone: 2.5,
                     penalty: { stat: 'awareness', per: 1 },
                     award: { stat: 'awareness', per: 1, lo: -6, hi: 9 } })
           .then(r => {
             if (!alive) return;
+            /* v12.3: kitReset resolves an open event as ABORTED, and the
+               .then is a microtask — so it lands after restart() has already
+               rebuilt the run, and the old drill scheduled the new run's
+               first serial 1.4 s in, on top of whatever phase the replay was
+               actually in. A replay taken at the drill got two serial ones. */
+            if (!r || r.aborted) return;
             if (worldSfx) worldSfx('riflecock', 0.8);
             if (r && r.ok) bank({ a: 3, note: 'You loaded on the order, in order.' });
             after(1.4, () => beginSerial(1));
@@ -1118,7 +1291,14 @@
         beginMoment(true);
         return;
       }
-      if (s === 'decide') { setPhase('decide'); cycStart(PASS_Z.length - 1); openDecision(); return; }
+      /* v12.3: DO NOT pre-set the phase. `openDecision` opens with
+         `if (phase === 'decide') return;`, so stamping it first made the
+         resume a no-op: the autosave runs while the state is still 'play'
+         for the 0.4 s between `setPhase('decide')` and `startDecision()`, and
+         a Continue taken in that window came back to the range with no card,
+         no clock, no objective and nothing to do. `bellDone` so the bell is
+         not rung a second time. */
+      if (s === 'decide') { bellDone = true; cycStart(PASS_Z.length - 1); openDecision(); return; }
       if (s === 'confuse') { beginConfuse(true); return; }
       if (s === 'stag') { beginStag(true); return; }
       if (s.startsWith('serial')) { beginSerial(Math.max(1, Math.min(3, +s.slice(6) || 1))); return; }
@@ -1235,11 +1415,28 @@
     const TOUCH = matchMedia('(pointer: coarse)').matches || 'ontouchstart' in window;
     const trackPos = { x: 0, y: 1.1, z: -45 };
     const hotspots = [
+      /* v12.3: the radio waits for the THING. `beginConfuse` starts the
+         cyclist at 3.2 s, and the radio was live from the phase's first
+         frame — so the proper words could be said, and the award banked,
+         about something that was not on the range yet, and the tower's
+         reply landed on an empty arc. It is gated on the same condition the
+         track spot uses, which is also the truth: there is nothing to
+         report until there is something to report. */
       { id: 'radio', pos: { x: HIS.x + 0.55, y: 1.15, z: 0.45 }, radius: 2.4, anyView: true,
         prompt: TOUCH ? DATA.words.hotRadioTouch : DATA.words.hotRadio, markY: 0.5,
-        enabled: () => (phase === 'confuse' || phase === 'moment') && !reported,
+        enabled: () => (phase === 'confuse' || phase === 'moment') && cycOn && cyc.a > 0.3 && !reported,
         onInteract() { return doReport(); } },
-      { id: 'track', pos: trackPos, radius: 60, dwell: 1.2, aim: 0.10,
+      /* v12.3: `markFar` 60, because the drill had no cue on screen at any
+         distance the cyclist is ever at — the marker walk clips at 16 m and
+         the thing crosses between 22 and 46 — while the badge was owned by
+         the radio at half a metre. At thirty metres the diamond renders
+         small and dim, which is the right weight for an aid on a ghost.
+         `aim` is per-pass for the same reason PASS_Z and PASS_SPD are: at
+         4.2 m/s the third pass crosses a fixed 0.10 rad cone in 0.93 s
+         against a 1.2 s dwell, so a player holding the sight perfectly
+         still could not complete it. The cone opens as the thing speeds up.  */
+      { id: 'track', pos: trackPos, radius: 60, markFar: 60, dwell: 1.2,
+        get aim() { return PASS_AIM[Math.min(PASS_AIM.length - 1, pass)]; },
         prompt: DATA.words.hotTrack, markY: 0.8,
         enabled: () => (phase === 'confuse' || phase === 'moment') && cycOn && cyc.a > 0.3 && tracked < 1,
         onInteract() { return doTrack(); } },
@@ -1249,7 +1446,6 @@
     function doReport() {
       if (reported) return false;
       reported = true;
-      lineQ.length = 0;
       if (worldSfx) worldSfx('rangepa', 0.45);
       queueGap(0.35);
       queueLine('n4report');
@@ -1272,6 +1468,9 @@
     /* ---------------------------------------------------------- per frame */
     function updateNotes(dt, t) {
       for (const r of rigs) if (r.mixer && r.group.visible) r.mixer.update(dt);
+      /* ABOVE the guard, the v5.19 shape: a guard meant to own the POSES
+         must not silently own the mix as well. */
+      mixBeds();
       if (getState() !== 'play') { lastWall = 0; return; }
       const now = performance.now() / 1000;
       /* WALL TIME, for everything that MOVES. `dt` is clamped to 0.05 s, so
@@ -1358,7 +1557,14 @@
       for (const t of statics.concat(popups, far, [mover])) { t.hit = false; t.set(t.kind === 'pop' || t.kind === 'mover'); }
       cycEnd(); cyc.group.position.set(0, 0, -45); cyc.group.rotation.y = -Math.PI / 2;
       pass = 0; cycT = 0; cycStopped = false; shots = 0; tracked = 0; reported = false;
-      momentT = 0; bellDone = false; hot = false; serial = 0; hits = 0; early = 0;
+      momentT = 0; bellDone = false; hot = false; serial = 0; hits = 0; early = 0; ending = false;
+      /* v12.3: the accumulated LOOK is run state too. `dwellT` is the
+         engine's counter on the chapter's own hotspot object, and reset()
+         left it wherever the last run stopped — so a player looking at the
+         thing when the bell rang banked the tracking award a few frames
+         into the replay, for a look he had not taken (the v8.1 / v8.2 /
+         v8.7 / v9.2 / v9.5 law, a seventh time). */
+      for (const h of hotspots) { h.dwellT = 0; h.done = false; }
       filmKit.visible = false;
       mixBeds();
       if (kit) {
@@ -1417,7 +1623,12 @@
                                 't4fire1', 't4fire2', 't4fire3', 't4cease', 't4who', 't4neg',
                                 'e4wait', 'b4stag', 'b4there', 'b4float', 'n4notarget', 'n4back',
                                 'rangepa', 'rifleshot', 'riflecock', 'flarepop', 'targethit',
-                                'targetfall', 'bikebell']);
+                                /* v12.3: `hudlock` is the arrival at the lane, and it is the
+                                   FIRST world sound the chapter asks for — the engine warms its
+                                   own HUD cues but this one is played through `worldSfx`, so
+                                   nothing decoded it and the one time it fires was silent
+                                   (the v8.0 law, a fourth time). */
+                                'targetfall', 'bikebell', 'hudlock']);
 
     const readyAt = performance.now();
     return (S = {
@@ -1608,11 +1819,15 @@
     sfx(20.4, 't4endex');                  // "All lanes. Cease fire. Unload, clear weapons. The range is closed."
     fade(25.9, 26.9, 0, 1);
     step(27.0, () => { handsRoot.visible = true; });
-    /* THE DAWN. The chapter's last line runs UNDER the outcome card rather
-       than in front of it: the scene ends a beat after it starts, the card
-       comes up, and the card's own line waits its turn (v5.30's rule that
-       nothing of his starts while another voice is live). */
-    sfx(27.2, 'n4dawn');
+    /* THE DAWN — and it has to fire INSIDE the scene's own length. `c.dur` is
+       the maximum t1 of the TRACKS (playCineFn), and a sting is not a track,
+       so a cue written past the last track is simply never reached: all four
+       endings cued n4dawn 0.1-0.2 s after their last step, so the chapter's
+       closing line — the sentence that loads chapter 5 — has never once
+       played. It starts under the fade to black now and runs on under the
+       card, which is what the note below always described, and chaptertest
+       fails the build if any cue in any chapter is ever late again. */
+    sfx(26.6, 'n4dawn');
     c.endFade = 1;
   }
 
@@ -1653,7 +1868,7 @@
     tr(20.2, 22.0, (k, t) => { api.camera.rotation.z = Math.sin(t * 9) * 0.02 * (1 - k); }, rawK);
     fade(21.4, 22.6, 0, 1);
     step(22.8, () => { handsRoot.visible = true; api.camera.rotation.z = 0; if (kit && kit.torchOn) kit.torchOn(false); });
-    sfx(23.0, 'n4dawn');                   // the dawn, under the card (scene A's note)
+    sfx(22.4, 'n4dawn');                   // the dawn, under the card (scene A's note)
     c.endFade = 1;
   }
 
@@ -1695,7 +1910,7 @@
     pitchTo(16.0, 20.0, 0.02, -0.34, smoothK);
     step(20.2, () => { api.camera.rotation.z = 0; });
     fade(25.2, 26.2, 0, 1);
-    sfx(26.4, 'n4dawn');                   // the dawn, under the card (scene A's note)
+    sfx(25.8, 'n4dawn');                   // the dawn, under the card (scene A's note)
     c.endFade = 1;
   }
 
@@ -1733,7 +1948,7 @@
     pitchTo(12.4, 16.0, -0.16, -0.05, smoothK);
     fade(18.6, 19.6, 0, 1);
     step(19.8, () => { handsRoot.visible = true; });
-    sfx(19.9, 'n4dawn');                   // the dawn, under the card (scene A's note)
+    sfx(19.4, 'n4dawn');                   // the dawn, under the card (scene A's note)
     c.endFade = 1;
   }
 

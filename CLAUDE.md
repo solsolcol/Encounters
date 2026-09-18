@@ -3090,6 +3090,75 @@ What the baseline contains, by release:
   ends `.catch(() => {})` — **the rifle silently never loaded**, and an
   asset loader's catch is never silent again. Sheet v62.
   docs/V12.2-THE-RANGE-THAT-WORKS.md is the build's memory.
+- **v12.3** THE SWEEP FINISHED, AND FOUR MORE FROM THE RANGE — two jobs in
+  one release. Chad: *"Finish the sweep"*, and the same morning *"The
+  minigame seems broken and im not sure what its supposed to do ... the first
+  round of targets come back up after they are all shot down ... make all
+  targets bigger ... when the ghost cyclist comes nearer and nearer, the model
+  looks wrong."* **THE SWEEP**: v12.2's audit raised 63 findings, 34 of them
+  duplicates of what that release already fixed; the other **29 were never
+  adversarially verified** because the workflow was stopped when it starved
+  the test box, and a list of unverified claims is a list of LEADS, not of
+  bugs. Read against the current code in six themed groups under one rule
+  (default to REFUTED, quote the line as it stands today): **13 CONFIRMED, 5
+  PARTIAL, 3 already fixed, 8 did not survive** — roughly three in five were
+  real, which is the number to remember about any audit that has not been
+  verified. Every CONFIRMED and PARTIAL one is fixed here.
+  **THE ONE THAT HAD NEVER PLAYED**: `c.dur` is the maximum t1 of a cutscene's
+  TRACKS and a sting is not a track, so a cue written after the last track is
+  never reached — all four endings cued `n4dawn`, the closing narration and
+  the sentence that loads chapter 5, 0.1–0.2 s late. It had never once played
+  in any ending, through two releases. Each cue now starts under the fade to
+  black, and **`chaptertest` walks every film and scene in the game against a
+  recording stub** and fails the build on a late cue (49 cutscenes, no
+  browser, no new harness — the rule holds).
+  **CHAD'S FOUR.** The banks: `beginSerial` raised EVERY static at the start of
+  EVERY serial, so the three boards at 62 m stood back up in front of the bank
+  that was actually live and not shootable — and it contradicted `endSerial`,
+  which had just lowered them on purpose. A range runs one bank at a time. The
+  size: a Figure 11 through a 72° VERTICAL lens on a 390 × 844 phone is 14, 9
+  and 7 px tall at 62 / 98 / 132 m, so every board is scaled **by its own
+  distance** (`BOARD_K` 1.8 × d/62) rather than by a flat number — a flat one
+  leaves the far bank exactly as unreadable relative to the near one — and all
+  three banks now subtend the same ~25 px, 60 under AIM. The minigame had
+  three causes and the first is the whole answer: **the bar was never on
+  screen.** `evFrame` has painted `#evBar` for the sequence kind since v9.3
+  and `#evTrack` was never taken off `hide` (`display:none !important`), so
+  the drill showed a name and a blank panel and asked a player to time a press
+  against nothing. Also: a jade TARGET BAND is drawn, its half-width written
+  from the grade ladder (`--evwin`) so what is shown and what is scored cannot
+  drift; `zone` 1 → 2.5, because at `each` 1.6 / `lead` 0.4 PERFECT was **18
+  ms** and BROKEN began at 204 against a touchscreen's own 50–100 (v9.7's bug
+  in a second kind — 45 / 105 / 180 / 300 / 510 now); and the slot clock runs
+  on wall time. The cyclist: `depthWrite: false` is right for a ghost AGAINST
+  THE WORLD and wrong for one against ITSELF — this file is ONE baked mesh, so
+  every interior triangle blended through the near side. Photographed from
+  play at 24 / 12 / 6 / 3 m: fine far out, a smear at six. A colour-less
+  **depth pre-pass** at renderOrder 2 (after every opaque mesh, so the tarmac
+  behind it is already painted) lays the silhouette's depth down and the ghost
+  depth-TESTS against it.
+  **THE THIRTEEN**, all unreachable from episode 1 by construction: `torch.player:
+  false` — the chapter kept the torch away by declaring an item it never
+  issues, and **the bag carries across a chapter** while chapter 3 forces the
+  torch into the hand, so everyone arrived holding one; the weapon mixer and
+  flash on wall time; `weaponAdsSync` on the frame, handing back only the lens
+  it took; the recoil spring SETTLES before it is forgotten; a `dwell` hotspot
+  is never offered as a press; `markFar`, so a look-only spot can be marked at
+  the distance it lives at. And in the chapter: the radio waits for the thing;
+  the track cone opens per pass (a fixed 0.10 rad was 0.93 s against a 1.2 s
+  dwell at 4.8 m/s); `reset()` clears the accumulated dwell; the played moment
+  re-stamps its receipt; a hit during the confusion brings it back; nothing
+  happens between the bell and the card; the serial's clock is on screen; the
+  count cannot read 4/3; the flare THINS the air it lights (it declared fog
+  0.016 against the night's 0.012, so the boards dissolved from 74.9 % to
+  91.4 % exactly while lit); the mechanic beds go quiet when play does; the
+  tower stops talking at the decision; a save in the 0.4 s `decide` window
+  resumes into the decision; an aborted drill does not schedule the next run's
+  serial; `e4wait` is queued rather than dropped; `hudlock` is warmed; the
+  spawn faces the firing point (rot 0 put the glowing circle 50° off a
+  portrait phone's ~21° half-view); and the presence banner OBSERVES rather
+  than ordering action in a beat whose objective says to wait.
+  Sheet v63. docs/V12.3-THE-SWEEP-FINISHED.md is the build's memory.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so

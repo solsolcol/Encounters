@@ -4021,3 +4021,58 @@ changes. A serial that writes its own live count into the objective
 (`... · 2/3`) therefore fires a full completion banner on every scoring hit,
 covering the count it just updated for 1.35 s. `{ complete: false }` is
 v8.7's own escape hatch and a per-frame counter is exactly what it is for.
+
+---
+
+## v12.3 · A CUE IS NOT A TRACK, AND FIVE MORE
+
+**A sting cued past a cutscene's last TRACK never plays, and says nothing.**
+`playCineFn` computes `c.dur = c.tracks.reduce((m, tr) => Math.max(m, tr.t1), 1)`
+and `c.stings` are not tracks — so `sfx(27.2, …)` written after a final
+`step(27.0)` sits there for ever: the frame clamps `c.t` to `c.dur` and calls
+`cineEnd()` before it can be reached. All four endings of episode 2 chapter 4
+cued their closing narration 0.1–0.2 s late, so the line that loads the next
+chapter had never once played, through two releases. `chaptertest` now walks
+every film and scene in the game against a recording stub and fails the build
+on a late cue — 49 cutscenes, no browser, no new harness.
+
+**A HUD element whose frame writes it is not necessarily on screen.**
+`evFrame`'s `sequence` case has painted `#evBar` since v9.3, and `#evTrack`
+was never taken off `hide` for that kind. `.hide` is `display:none !important`,
+so the code was faithfully animating an invisible bar, and the load drill
+asked the player to time a press against nothing. *When a mechanic "does not
+make sense", check that the thing that explains it is being DRAWN before
+re-tuning the thing that computes it.*
+
+**Draw the target from the number that scores it.** The sequence's jade band
+is `0.12 × zone` of the track's half-width — the GOOD band, written as a CSS
+variable by `evShowItem`. The v8.7 bed-zone rule (one radius, drawn and
+tested) generalises to any HUD that asks for timing.
+
+**The BAG carries across a chapter; the run's numbers do not.** `restart()`
+resets stats, the ghost, the kit and the phase, and never touches `inv`. So
+a chapter cannot keep an item away from the player by declaring an id it does
+not issue — the player may arrive holding one from the chapter before. Say it
+outright (`torch.player: false`) rather than inferring it from the bag.
+
+**A material with `depthWrite: false` is transparent to ITSELF.** Right for a
+ghost against the world (it still depth-TESTS, so the scene occludes it);
+wrong for a single solid mesh, whose far side, interior and back faces then
+blend through the near side in buffer order. It reads as a faint figure at
+twenty metres and as a jumble at six, which is why it can ship unnoticed until
+something comes close.
+
+**`zone` is the only spread a graded press has.** `evGrade` divides the
+normalised error by `zone`, so the milliseconds a band allows are
+`at × (the kind's own half-window) × zone`. Print the milliseconds whenever
+one of those three moves and read them against a human — a rhythm game's
+PERFECT is 40–50 ms, and a touchscreen's own tap latency is 50–100. v9.7 wrote
+this down for the heartbeat; the load drill shipped at 18 ms anyway, because
+the rule was written about ONE kind rather than about the formula.
+
+**An unverified audit is a list of leads, not a list of bugs.** Of 29 findings
+carried forward from v12.2's sweep and read against the current code, 13 were
+CONFIRMED, 5 PARTIAL (real mechanism, overstated consequence), 3 had already
+been fixed by the release the finding was raised against, and 8 did not
+survive. Roughly three in five. Verify before fixing, and quote the line as it
+stands today rather than the one the finding quoted.

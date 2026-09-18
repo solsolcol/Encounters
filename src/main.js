@@ -1020,6 +1020,12 @@ function nearestHotspot() {
   let best = null, bd = Infinity;
   for (const h of hotspotList()) {
     if (!h || !h.pos || h.done || (typeof h.enabled === 'function' && !h.enabled())) continue;
+    /* v12.3: a DWELL spot is answered by looking and by nothing else. It was
+       also offered as a press — badge, key glyph and all — and on a phone the
+       badge said "Tap", which is an instruction the spot does not obey: the
+       press fired it early, out of order, and skipped the look it exists to
+       measure (episode 2 chapter 3's torch spots and chapter 4's track). */
+    if (h.dwell > 0) continue;
     const d = Math.hypot(yaw.position.x - h.pos.x, yaw.position.z - h.pos.z);
     if (d < (h.radius || 2.2) && d < bd && (h.anyView || hotspotVisible(h))) { best = h; bd = d; }
   }
@@ -1315,14 +1321,21 @@ function paintHotMarks() {
     for (const h of hotspotList()) {
       if (!h || !h.pos || h.done || (typeof h.enabled === 'function' && !h.enabled())) continue;
       const d = Math.hypot(yaw.position.x - h.pos.x, yaw.position.z - h.pos.z);
-      if (d > HOTMARK_FAR) continue;
+      /* v12.3: `markFar` — a spot answered by LOOKING is not answered by
+         walking to it, so the walk-up cap is the wrong measure for one. The
+         track spot in episode 2 chapter 4 rides the cyclist, which is never
+         closer than about twenty metres, so its mark was clipped at every
+         distance it is ever at and the drill had no on-screen cue at all.
+         A chapter names its own reach; the default is unchanged. */
+      const far = h.markFar || HOTMARK_FAR;
+      if (d > far) continue;
       // the anchors sit at eye height (v7.5); the mark rides above the thing
       const q = projectTo(h.pos.x, (h.pos.y ?? 1.0) + (h.markY ?? 0.55), h.pos.z);
       if (q.z > 1 || Math.abs(q.x) > 1.02 || Math.abs(q.y) > 1.02) continue;
       const el = hotMarkEl(n++); if (!el) break;
       const near = d < (h.radius || 2.2);
-      const k = near ? 1.15 : THREE.MathUtils.clamp(1.25 - d / HOTMARK_FAR, 0.55, 1);
-      const a = near ? 1 : THREE.MathUtils.clamp(1.15 - d / HOTMARK_FAR, 0.35, 0.9);
+      const k = near ? 1.15 : THREE.MathUtils.clamp(1.25 - d / far, 0.55, 1);
+      const a = near ? 1 : THREE.MathUtils.clamp(1.15 - d / far, 0.35, 0.9);
       el.style.display = '';
       el.style.opacity = a.toFixed(2);
       el.style.transform = `translate(${((q.x * 0.5 + 0.5) * innerWidth).toFixed(0)}px, ${((-q.y * 0.5 + 0.5) * innerHeight).toFixed(0)}px) scale(${k.toFixed(2)})`;
@@ -1517,6 +1530,19 @@ function torchRed(red) { torchIsRed = !!red; torchSet(torchOn); }
    shipped before this release changes. */
 function torchAvail() {
   if (!torchDecl) return false;
+  /* v12.3: `player: false` — the light is the SCENES' and nobody else's.
+     Episode 2 chapter 4's rifle never leaves his hands (Chad's call at
+     v12.2: "Player should not be able to use the torch, or switch to normal
+     hands"), and the chapter tried to say so by declaring an inventory item
+     it never issued. That held only for a player who arrived without one —
+     and the bag carries across a chapter change (restart() resets the run's
+     numbers, never the inventory), while episode 2 chapter 3 FORCES the
+     torch into the hand slot to be playable at all. So anyone who reached
+     chapter 4 the way the episode is played arrived with `inv.gear.hand ===
+     'torch'`, and the torch button, F and the whole hand swap were live on
+     a live range. A chapter says it outright now; a scene's kit.torchOn()
+     is still ungated, because a film owns its own light. */
+  if (torchDecl.player === false) return false;
   const id = torchDecl.item; if (!id) return true;
   const slot = (ITEM_DEFS[id] && ITEM_DEFS[id].slot) || 'hand';
   return inv.gear[slot] === id;
@@ -1730,8 +1756,9 @@ function weaponPropSync() {
   }
   weaponProp.visible = weaponShown && armR.visible;
 }
+let weaponWall = 0;
 function weaponFrame(dt) {
-  if (!weaponDecl) return;
+  if (!weaponDecl) { weaponWall = 0; return; }
   /* v12.2: DERIVED ON THE FRAME (v11.1's law). `weaponUp` was set only by
      weaponAvailSync/weaponSetup, and neither runs on the transition INTO
      play — so a chapter whose weapon needs no inventory item arrived in play
@@ -1741,9 +1768,23 @@ function weaponFrame(dt) {
      already true. A phone player had the rifle in his hands and no way to
      pull the trigger. The sync is idempotent and only acts on a change. */
   weaponPropSync();
-  if (weaponMixer && weaponShown) weaponMixer.update(Math.min(dt, 0.1));
+  /* v12.3: AND THE AIM. `weaponAdsSync` was called only from the toggle, so
+     nothing put the lens back when the state left play: aim down the sights,
+     let the bell ring, and the decision card opened over a 2.4x zoomed range
+     with `body.weaponAds` still on. It is idempotent and camLens is a no-op
+     at an unchanged fov, so calling it on the frame is the whole fix. */
+  weaponAdsSync();
+  /* v12.3: the take and the muzzle flash run on WALL time. `dt` is clamped
+     to 0.05 s, so on a phone under 20 fps the mixer advanced at half real
+     speed or less and a 2.3 s reload locked the hands for four or five real
+     seconds — and that is worst exactly when the phone is hot, the only
+     condition Chad plays in (the v9.3 march law, met on the viewmodel). */
+  const wnow = clock.getElapsed();
+  const wdt = weaponWall ? Math.min(0.5, wnow - weaponWall) : 0.016;
+  weaponWall = wnow;
+  if (weaponMixer && weaponShown) weaponMixer.update(Math.min(wdt, 0.1));
   if (weaponFlash) {
-    weaponFlashT = Math.max(0, weaponFlashT - dt);
+    weaponFlashT = Math.max(0, weaponFlashT - wdt);
     weaponFlash.intensity = weaponFlashT > 0 ? 34 * (weaponFlashT / 0.09) : 0;
     weaponFlash.visible = weaponFlash.intensity > 0;
   }
@@ -1809,10 +1850,18 @@ function weaponRecoilReset() { recP = recY = recPrevP = recPrevY = 0; }
    sensitivity scales with it in the frame, or a narrow lens is unusably
    twitchy. */
 let weaponAds = false;
+/* v12.3: it hands back only the lens it TOOK. This runs on every frame now
+   (weaponFrame), and `tick` keeps running the world block under a cutscene —
+   so an unconditional `camLens(CAM_FOV)` would re-assert the wide lens on
+   every frame of a film and fight `api.lens`, the v6.12 macro seam. No
+   episode-2 scene uses `lens` today and episode 1 declares no weapon, so
+   nothing shipping could have hit it; `adsLens` is what keeps it that way. */
+let adsLens = false;
 function weaponAdsSync() {
   const on = weaponAds && !!weaponDecl && weaponDecl.zoom > 0 && state === 'play' && weaponWant();
   document.body.classList.toggle('weaponAds', on);
-  camLens(on ? weaponDecl.zoom : CAM_FOV);
+  if (on) { camLens(weaponDecl.zoom); adsLens = true; }
+  else if (adsLens) { camLens(CAM_FOV); adsLens = false; }
 }
 function weaponAdsToggle() {
   if (!weaponDecl || !(weaponDecl.zoom > 0) || state !== 'play' || !weaponWant()) return;
@@ -1820,7 +1869,7 @@ function weaponAdsToggle() {
   weaponAdsSync();
   snd('uiclick', 0.28);
 }
-function weaponAdsOff() { if (weaponAds) { weaponAds = false; document.body.classList.remove('weaponAds'); } }
+function weaponAdsOff() { if (weaponAds) { weaponAds = false; document.body.classList.remove('weaponAds'); } adsLens = false; }
 let retHitT = 0;
 const weaponRay = new THREE.Raycaster();
 const _asA = new THREE.Vector3(), _asB = new THREE.Vector3(), _asS = new THREE.Sphere();
@@ -2398,7 +2447,14 @@ function evBegin() {
   btn.textContent = o.button || T(EV_LABEL[e.kind]);
   btn.className = e.kind === 'timed' ? 'wait' : '';
   btn.classList.toggle('hide', e.layout !== 'button' && e.kind !== 'mash');
-  $('evTrack').classList.toggle('hide', !(e.kind === 'mash' || e.kind === 'hold' || e.kind === 'stabilise' || e.kind === 'tap' || e.kind === 'match'));
+  /* v12.3: AND 'sequence'. Its frame has written `evBar` since v9.3 — the
+     window drawn as a filling bar, which is the only thing that says WHEN to
+     press — and the track was never taken off `hide`, which is
+     display:none !important. So the load drill showed an item's name and a
+     blank panel, and a player was asked to time a press against nothing:
+     Chad, of it, "The minigame seems broken and im not sure what its
+     supposed to do." Episode 1 declares no events, so it cannot reach this. */
+  $('evTrack').classList.toggle('hide', !(e.kind === 'mash' || e.kind === 'hold' || e.kind === 'stabilise' || e.kind === 'tap' || e.kind === 'match' || e.kind === 'sequence'));
   $('evBar').style.width = (e.kind === 'mash' ? e.bar * 100 : e.kind === 'match' ? 100 : 0) + '%';
   $('evItem').classList.toggle('hide', e.kind !== 'sequence');
   $('evDemo').classList.add('hide');       // v10.3: the briefing's illustration goes with the briefing
@@ -2424,6 +2480,15 @@ function evShowItem() {
     const img = document.createElement('img'); img.alt = ''; img.src = ASSET_MAP[it.icon]; icon.appendChild(img);
   }
   $('evItemTxt').textContent = it.label || '';
+  /* v12.3: THE TARGET IS DRAWN FROM THE LADDER IT IS SCORED BY. The press
+     grades on |slotT - mid| / (span / 2), and the band that still earns
+     something is GOOD at 0.12 * zone of that half-span — so the jade band on
+     the track is exactly that fraction of the track's half-width, written as
+     a CSS variable. Drawing a target a player can see, and drawing it from
+     the same number that decides the score, is the v8.7 bed-zone rule in a
+     HUD: what is shown and what fires cannot drift apart. */
+  const win = 0.12 * Math.max(0.02, e.o.zone || 1);
+  evEl()?.style.setProperty('--evwin', (Math.min(0.48, win * 0.5) * 100).toFixed(1) + '%');
   e.slotT = 0;
 }
 function evNote(ok) {
@@ -2724,6 +2789,17 @@ function evFrame(dt, dLookX, dLookY) {
     }
     case 'sequence': {
       if (e.over) { evResolve(evBandResult(o)); break; }
+      /* v12.3: and the slot clock stays on the CLAMPED `dt`, deliberately.
+         Wall time was tried and reverted, and `fixturetest` is what found
+         the reason: a sequence has no sound-timed beat — the bar is drawn
+         from `slotT` and the press is graded against `slotT`, so the two
+         agree under either clock, and the only thing the choice decides is
+         how much REAL time a player gets per item. On wall time a 2 s slot
+         is two frames on a one-frame-a-second box and nobody could answer
+         it; on the clamped dt the player always sees the whole sweep,
+         however slow the device. v9.7's law is about a beat that must line
+         up with a SOUND (the heartbeat) — it does not generalise to a kind
+         that has none. */
       e.slotT += dt;
       const item = $('evItem');
       /* the window, drawn: dim until it opens, bright across it, gone after.
@@ -8217,7 +8293,20 @@ function tick(now = 0) {
     yaw.rotation.y += lookX * zk + (rec ? rec.dy : 0);
     pitch.rotation.x = Math.max(pitchLo, Math.min(pitchHi,
       pitch.rotation.x + lookY * zk + (rec ? rec.dp : 0)));   // v7.0: a pose narrows the neck
-  } else { weaponRecoilReset(); lastWallLook = 0; }
+  } else {
+    /* v12.3: SETTLE BEFORE FORGETTING. `weaponRecoilReset` zeroes the spring
+       AND its `recPrev`, so whatever offset the last frame had already
+       pushed into `pitch`/`yaw` was simply abandoned there. Fire, let the
+       bell ring, and the decision card opens on a view sitting up to the
+       full kick off the aim — and it stays there into the cutscene's first
+       frames and into the next run, because nothing ever repays it. Hand
+       the offset back first; then forget. */
+    if (recPrevP || recPrevY) {
+      yaw.rotation.y -= recPrevY;
+      pitch.rotation.x = Math.max(pitchLo, Math.min(pitchHi, pitch.rotation.x - recPrevP));
+    }
+    weaponRecoilReset(); lastWallLook = 0;
+  }
   lookX = lookY = 0;
 
   if (state === 'cine') cineUpdate(t);
