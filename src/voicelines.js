@@ -532,7 +532,8 @@
     { id: "n3spot6", who: "jamesTeen", ch: "e2c3", where: "Play: the torch on the ground at his own feet — the last spot",
       text: "[tired] Just a scrape. Just a night. Sleep when you can, they said.", secs: 5.49 },
     { id: "n3press", who: "jamesTeen", ch: "e2c3", where: "Play: THE PRESSURE, on the frame the shake ends (Chad's words)",
-      text: "[panicking] Something was pressing against my leg! Not just a sensation — there was actual weight to it!", secs: 5.64 },
+      text: "[terrified] Something was pressing against my leg! Not just a sensation — there was actual weight to it!", secs: 6.35,
+      note: "v13.0: re-said under [terrified] (Chad: \"needs to sound more scared\"). The take is the cleanest-edged of four." },
     { id: "n3look", who: "jamesTeen", ch: "e2c3", where: "Play: the torch held on the ground at his feet (Chad's words)",
       text: "[panicking] Nothing around. No one. No footsteps. Not even the sound of vegetation moving around me.", secs: 5.80 },
     { id: "n3still", who: "jamesTeen", ch: "e2c3", where: "Play: the line the decision opens on (Chad's words)",
@@ -683,7 +684,18 @@
     { id: "k4shout", who: "bunkmate", ch: "e2c4", where: "Scenes A and D: the other detail comes off the line",
       text: "Eh, what is that? The bicycle! It's floating! Look over there!", secs: 4.02 },
     { id: "r4run", who: "recruit4", ch: "e2c4", where: "Scenes A and D: the shout that starts the run",
-      text: "Get off the line! Somebody in the lalang! GO! GO!", secs: 3.47 }
+      text: "Get off the line! Somebody in the lalang! GO! GO!", secs: 3.47 },
+    /* v13.0 · THE THREE SHOUTS when the cyclist is first seen (Chad's item 22:
+       "everyone should be shouting ... with different voicelines"). His own
+       example lines, on three DISTINCT voices — "different voicelines" has to
+       mean different voices too, which is why the third is recruit3 (Ronan)
+       and not recruit4, who shares the buddy's voice id. */
+    { id: "b4cyc", who: "buddyC3", ch: "e2c4", where: "Play: the frame the ghost cyclist is first seen — lane five",
+      text: "[shouting, alarmed] Oh my god! What's that?!", secs: 2.12 },
+    { id: "k4cyc", who: "bunkmate", ch: "e2c4", where: "Play: the frame the ghost cyclist is first seen — down the line",
+      text: "[shouting urgently] There's someone at the range! Don't shoot! DON'T SHOOT!", secs: 3.42 },
+    { id: "r4cyc", who: "recruit3", ch: "e2c4", where: "Play: the frame the ghost cyclist is first seen — the far end",
+      text: "[shouting, panicked] Sergeant! There's someone cycling in the range!", secs: 2.35 }
   ];
 
   // What a chapter key means on the sheet.

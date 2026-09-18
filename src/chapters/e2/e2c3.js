@@ -124,7 +124,7 @@
   };
 
   /* the measured length of every line said outside a cutscene (masters/v11.0) */
-  const SECS = { n3spot1: 3.16, n3spot2: 2.69, n3spot3: 2.85, b3here: 2.5, n3spot5: 2.93, n3spot6: 5.49, n3press: 5.64, n3look: 5.80, n3still: 2.69, k3bush: 5.51 };   // v11.4: k3bush (masters/v11.4); v11.6: n3press and n3look re-said panicked and faster (masters/v11.6)
+  const SECS = { n3spot1: 3.16, n3spot2: 2.69, n3spot3: 2.85, b3here: 2.5, n3spot5: 2.93, n3spot6: 5.49, n3press: 6.35, n3look: 5.80, n3still: 2.69, k3bush: 5.51 };   // v11.4: k3bush (masters/v11.4); v11.6: n3press and n3look re-said panicked and faster (masters/v11.6); v13.0: n3press re-said [terrified], 5.64 -> 6.35 (masters/v13.0) — the beat after it is stated in SECS.n3press, so it moves with the take
 
   const hash = (i, s) => { const x = Math.sin(i * 127.1 + s * 311.7) * 43758.5453; return x - Math.floor(x); };
 

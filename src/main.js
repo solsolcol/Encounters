@@ -4903,7 +4903,9 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
      buddy on lane five, and the two who come off the other detail */
   't4load', 't4ready', 't4fire1', 't4fire2', 't4fire3', 't4cease', 't4who', 't4neg',
   't4roger', 't4endex', 't4man',
-  'e4wait', 'e4down', 'e4line', 'b4stag', 'b4there', 'b4float', 'k4shout', 'r4run']);
+  'e4wait', 'e4down', 'e4line', 'b4stag', 'b4there', 'b4float', 'k4shout', 'r4run',
+  /* v13.0: the three shouts on the frame the cyclist is seen, in three voices */
+  'b4cyc', 'k4cyc', 'r4cyc']);
 const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || CAST_TAKES.has(name);
 /* v6.9: his WHISPERS go round the bus. Chad wanted the three pick-up
    reactions "almost whispering to himself" and they were re-voiced as
@@ -6808,7 +6810,12 @@ const STING_SAMPLE = {
   k4shout: ['k4shout', 1], r4run: ['r4run', 1],
   n4pro1: ['n4pro1', 1], n4pro2: ['n4pro2', 1], n4notarget: ['n4notarget', 1], n4back: ['n4back', 1],
   n4report: ['n4report', 1], n4dawn: ['n4dawn', 1],
-  n4A: ['n4A', 1], n4B: ['n4B', 1], n4C: ['n4C', 1], n4D: ['n4D', 1]
+  n4A: ['n4A', 1], n4B: ['n4B', 1], n4C: ['n4C', 1], n4D: ['n4D', 1],
+  /* v13.0: the flare LEAVING the tube and climbing (Chad's item 11 — the
+     launch was never shown or heard, only the pop and the burn), the sting on
+     the frame the cyclist is SEEN (item 20), and the three shouts (item 22) */
+  flarelaunch: ['flarelaunch', 1], stingcyc: ['stingcyc', 1],
+  b4cyc: ['b4cyc', 1], k4cyc: ['k4cyc', 1], r4cyc: ['r4cyc', 1]
 };
 /* Which kinds the synth below can actually fake. Everything else in
    STING_SAMPLE is sample-only: if its buffer is not decoded yet it stays
