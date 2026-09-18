@@ -254,7 +254,13 @@
 
     const HIS = { x: LANE(6), z: 0 };              // his lane
     const BUD = { x: LANE(5), z: 0 };              // the buddy, lane five
-    const SAFETY = { x: LANE(6) + 1.6, z: 3.1 };   // the safety officer behind the line
+    /* v13.0 (Chad: "You can also place the encik at the table with the live
+       rounds"): the safety officer stands at the AMMO POINT, which is where a
+       range's safety officer actually stands and what the film's second shot
+       has claimed since v12.1 — it said "the safety officer beside it" while
+       he was eleven metres away behind the firing line. The −x end of the
+       table, so his blocker column is 3.5 m clear of the spawn. */
+    const SAFETY = { x: -9.15, z: 8.75 };         // the safety officer at the ammo point
     const TOWER = { x: 14.2, z: 4.6 };
     const AMMO = { x: -7.6, z: 8.6 };
     const PILE_POS = new THREE.Vector3(HIS.x, 1.0, -1.35);   // the target area, straight out of his lane
@@ -377,28 +383,121 @@
 
     /* --------------------------------------------------- behind the line */
     const matSteel = nfm({ color: 0x4a4e4a, roughness: 0.7, metalness: 0.2 });
-    /* the tower: a platform on legs with a rail and the PA horn */
+    /* THE TOWER. v13.0, Chad: "the watch tower looks incomplete, can you make
+       it look like a proper watch tower?" It was four legs, a deck, two rails
+       and a horn — a table on stilts. A range control tower has a ROOF over
+       the man in it, a LADDER he got up by, a kick plate so nothing rolls off
+       the deck, a red obstruction light, the range's own red flag, and a MAN.
+       All primitives; the only download is the soldier, and he is `fbosling`,
+       which the chapter already parses for the safety officer. */
+    const TOWER_DECK = 3.26;                     // the deck's top surface
     {
       const g = new THREE.Group(); g.position.set(TOWER.x, 0, TOWER.z); world.add(g);
       for (const [dx, dz] of [[-1.1, -1.1], [1.1, -1.1], [-1.1, 1.1], [1.1, 1.1]])
         { const l = new THREE.Mesh(new THREE.BoxGeometry(0.14, 3.2, 0.14), matSteel); l.position.set(dx, 1.6, dz); g.add(l); }
+      /* cross-bracing on the two sides a player can see from the line */
+      for (const dz of [-1.1, 1.1]) for (const sgn of [-1, 1]) {
+        const br = new THREE.Mesh(new THREE.BoxGeometry(2.24, 0.07, 0.06), matSteel);
+        br.position.set(0, 1.6, dz); br.rotation.z = sgn * 0.96; g.add(br);
+      }
       const deck = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.12, 2.8), matSteel); deck.position.y = 3.2; g.add(deck);
+      /* a kick plate all the way round, and the rail above it */
+      for (const [dx, dz, w, d] of [[0, -1.38, 2.8, 0.05], [0, 1.38, 2.8, 0.05], [-1.38, 0, 0.05, 2.8], [1.38, 0, 0.05, 2.8]]) {
+        const kp = new THREE.Mesh(new THREE.BoxGeometry(w, 0.34, d), nfm({ color: 0x40453e, roughness: 0.9 }));
+        kp.position.set(dx, TOWER_DECK + 0.17, dz); g.add(kp);
+      }
       for (const [dx, dz, w, d] of [[0, -1.35, 2.8, 0.08], [0, 1.35, 2.8, 0.08], [-1.35, 0, 0.08, 2.8], [1.35, 0, 0.08, 2.8]])
         { const r = new THREE.Mesh(new THREE.BoxGeometry(w, 0.07, d), matSteel); r.position.set(dx, 4.2, dz); g.add(r); }
+      /* four corner posts and a roof with a small overhang */
+      for (const [dx, dz] of [[-1.3, -1.3], [1.3, -1.3], [-1.3, 1.3], [1.3, 1.3]])
+        { const p2 = new THREE.Mesh(new THREE.BoxGeometry(0.09, 2.0, 0.09), matSteel); p2.position.set(dx, TOWER_DECK + 1.0, dz); g.add(p2); }
+      const roof = new THREE.Mesh(new THREE.BoxGeometry(3.15, 0.10, 3.15), nfm({ color: 0x4e534a, roughness: 0.92 }));
+      roof.position.y = TOWER_DECK + 2.05; g.add(roof);
+      const cap = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.09, 2.4), nfm({ color: 0x585d52, roughness: 0.92 }));
+      cap.position.y = TOWER_DECK + 2.14; g.add(cap);
+      /* the ladder, up the +z face, where the line cannot see through it */
+      for (const dx of [-0.24, 0.24]) {
+        const st = new THREE.Mesh(new THREE.BoxGeometry(0.05, 3.42, 0.05), matSteel);
+        st.position.set(dx, 1.71, 1.52); g.add(st);
+      }
+      for (let i = 0; i < 10; i++) {
+        const r = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.035, 0.035), matSteel);
+        r.position.set(0, 0.28 + i * 0.33, 1.52); g.add(r);
+      }
       const horn = new THREE.Mesh(new THREE.ConeGeometry(0.26, 0.42, 8, 1, true), nfm({ color: 0x5a5a52, roughness: 0.8, side: THREE.DoubleSide }));
       horn.position.set(-1.0, 4.0, -1.4); horn.rotation.x = Math.PI / 2 + 0.25; g.add(horn);
+      /* the red obstruction light on the roof, and the range's red flag */
+      const obs = new THREE.Mesh(new THREE.SphereGeometry(0.075, 8, 6),
+        nfm({ color: 0xff3b22, emissive: 0xff2a10, emissiveIntensity: 2.6 }));
+      obs.position.set(0, TOWER_DECK + 2.26, 0); g.add(obs);
+      const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.028, 0.034, 1.5, 6), matSteel);
+      mast.position.set(1.34, TOWER_DECK + 2.9, -1.34); g.add(mast);
+      const flag = new THREE.Mesh(new THREE.PlaneGeometry(0.62, 0.40),
+        nfm({ color: 0xc41f14, roughness: 0.95, side: THREE.DoubleSide, emissive: 0x3a0603, emissiveIntensity: 0.8 }));
+      flag.position.set(1.34 + 0.31, TOWER_DECK + 3.42, -1.34); g.add(flag);
       const lamp = new THREE.PointLight(0xffd0a0, 1.1, 9, 1.8); lamp.position.set(0, 3.6, 0); g.add(lamp);
       const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.07, 8, 6), nfm({ color: 0xffe0b0, emissive: 0xffc890, emissiveIntensity: 2.2 }));
       bulb.position.set(0, 3.55, 0); g.add(bulb);
       boxes.push(new THREE.Box3(new THREE.Vector3(TOWER.x - 1.4, 0, TOWER.z - 1.4), new THREE.Vector3(TOWER.x + 1.4, 3.4, TOWER.z + 1.4)));
     }
-    /* the ammo point: a table, crates, a shaded lamp */
+    /* THE AMMO POINT: a table, and on it the thing the chapter is about.
+       v13.0, Chad: "the props of the live rounds dont look like anything like
+       it." They were four olive boxes 46 cm long — at the film's one-metre
+       shot that is four bricks. What a man actually sees on an ammo table is
+       BRASS: loose rounds standing in a tray, magazines beside them, and the
+       steel boxes they came out of. The rounds are near their real size
+       (5.56 x 45 is 5.7 mm across and 57 mm long; these are 9 mm by 48, a
+       shade fat so they still read on a phone), brass, metallic and lit by
+       the red lamp that is already there — the one light in the shot. */
     {
       const t = box(2.2, 0.08, 0.9, AMMO.x, 0.78, AMMO.z, nfm({ color: 0x534e3e, roughness: 0.95 }));
       solids.push(t);
       for (const [dx, dz] of [[-1.0, -0.38], [1.0, -0.38], [-1.0, 0.38], [1.0, 0.38]])
         box(0.07, 0.78, 0.07, AMMO.x + dx, 0.39, AMMO.z + dz, matSteel);
-      for (let i = 0; i < 4; i++) box(0.46, 0.22, 0.3, AMMO.x - 0.8 + i * 0.52, 0.93, AMMO.z, nfm({ color: 0x3e4636, roughness: 1 }));
+      const TOP = 0.82;                                   // the table's own surface
+      const matBrass = nfm({ color: 0xb08a3c, roughness: 0.32, metalness: 0.85 });
+      const matLead  = nfm({ color: 0x8a6a46, roughness: 0.55, metalness: 0.3 });
+      const matMag   = nfm({ color: 0x24261f, roughness: 0.82, metalness: 0.15 });
+      const matCan   = nfm({ color: 0x3c4434, roughness: 0.94 });
+      const matCanLid = nfm({ color: 0x323a2c, roughness: 0.94 });
+      const matTray  = nfm({ color: 0x5c5f55, roughness: 0.7, metalness: 0.25 });
+
+      /* two steel ammo boxes at the far end, lids up, with a handle each */
+      for (const dx of [-0.82, -0.44]) {
+        box(0.32, 0.17, 0.20, AMMO.x + dx, TOP + 0.085, AMMO.z - 0.16, matCan);
+        box(0.33, 0.025, 0.21, AMMO.x + dx, TOP + 0.182, AMMO.z - 0.16, matCanLid);
+        const h = new THREE.Mesh(new THREE.TorusGeometry(0.045, 0.008, 5, 10), matSteel);
+        h.position.set(AMMO.x + dx, TOP + 0.205, AMMO.z - 0.16); h.rotation.y = Math.PI / 2; world.add(h);
+        box(0.20, 0.012, 0.012, AMMO.x + dx, TOP + 0.13, AMMO.z - 0.262, nfm({ color: 0xb9b199, roughness: 1 }));   // the stencil
+      }
+
+      /* THE ROUNDS: a shallow open tray with six by three standing in it */
+      box(0.30, 0.012, 0.19, AMMO.x + 0.08, TOP + 0.006, AMMO.z + 0.02, matTray);
+      for (const [ddx, ddz, w, d] of [[0, -0.095, 0.30, 0.012], [0, 0.095, 0.30, 0.012],
+                                      [-0.15, 0, 0.012, 0.19], [0.15, 0, 0.012, 0.19]])
+        box(w, 0.036, d, AMMO.x + 0.08 + ddx, TOP + 0.024, AMMO.z + 0.02 + ddz, matTray);
+      const caseGeo = new THREE.CylinderGeometry(0.0045, 0.0048, 0.040, 7);
+      const tipGeo  = new THREE.ConeGeometry(0.0045, 0.013, 7);
+      for (let i = 0; i < 18; i++) {
+        const cx = AMMO.x + 0.08 + (-0.115 + (i % 6) * 0.046);
+        const cz = AMMO.z + 0.02 + (-0.055 + Math.floor(i / 6) * 0.055);
+        const c = new THREE.Mesh(caseGeo, matBrass); c.position.set(cx, TOP + 0.026, cz); world.add(c);
+        const tp = new THREE.Mesh(tipGeo, matLead);  tp.position.set(cx, TOP + 0.0525, cz); world.add(tp);
+      }
+      /* four rounds lying loose beside the tray, because nobody's table is tidy */
+      for (let i = 0; i < 4; i++) {
+        const cx = AMMO.x + 0.42 + i * 0.026, cz = AMMO.z + 0.19 - i * 0.012;
+        const c = new THREE.Mesh(caseGeo, matBrass);
+        c.position.set(cx, TOP + 0.0048, cz); c.rotation.z = Math.PI / 2; c.rotation.y = 0.2 + i * 0.13; world.add(c);
+      }
+
+      /* MAGAZINES: four standing in a row at the near end, slightly tapered */
+      for (let i = 0; i < 4; i++) {
+        const mx = AMMO.x + 0.66 + i * 0.05;
+        const m = new THREE.Mesh(new THREE.BoxGeometry(0.030, 0.185, 0.072), matMag);
+        m.position.set(mx, TOP + 0.093, AMMO.z - 0.10); m.rotation.z = 0.05 - i * 0.02; world.add(m);
+        box(0.032, 0.014, 0.074, mx, TOP + 0.190, AMMO.z - 0.10, matSteel);   // the feed lips
+      }
       const lamp = new THREE.PointLight(0xff5530, 0.9, 7, 1.9); lamp.position.set(AMMO.x, 1.7, AMMO.z); world.add(lamp); owned.push(lamp);
     }
 
@@ -573,7 +672,20 @@
     /* the safety officer keeps a RIG: he is the only man behind the line and
        the only one not shooting, so a slung rifle and a breathing idle are
        right on him and wrong on everybody else */
-    const safety = mkRig('fbosling', { x: SAFETY.x, z: SAFETY.z, ry: Math.PI * 0.92, height: 1.76, idle: 'Idle_3' });
+    /* ry = pi/2 faces +x (a Mixamo rig at 0 faces +z), so he looks along the
+       table at whoever is drawing from it; 0.85 of it turns him a little
+       toward the man in front of it. */
+    const safety = mkRig('fbosling', { x: SAFETY.x, z: SAFETY.z, ry: Math.PI * 0.425, height: 1.76, idle: 'Idle_3' });
+    /* v13.0: and a man ON the tower, at the downrange rail, looking out over
+       the range — Chad's "add a fbo soldier standing on top of it". Same
+       asset as the safety officer, so `loadGltf` parses it once and this
+       costs one `cloneSkinned`; `CULL_SPHERE.fbosling` already covers every
+       pose he can take. The GROUP carries the deck height rather than a
+       `lift`, because mkRig grounds the model to `group.position.y` and the
+       primitive proxy rides the group too — with a lift the placeholder
+       would stand on the ground under the tower until the bytes landed. */
+    const towerMan = mkRig('fbosling', { x: TOWER.x - 0.05, z: TOWER.z - 0.85, ry: Math.PI, height: 1.76, idle: 'Idle_3' });
+    towerMan.group.position.y = TOWER_DECK;
 
     /* -------------------------------------------------- THE GHOST CYCLIST
        Chad's model: a soldier on a bicycle, one baked mesh, NO rig and no
@@ -1682,7 +1794,7 @@
     const readyAt = performance.now();
     return (S = {
       world, noteTex: null, blockers: blockers(),
-      ready: () => (safety.ready && lineMen.every(m => m.ready) && cyc.ready && truckReady)
+      ready: () => (safety.ready && towerMan.ready && lineMen.every(m => m.ready) && cyc.ready && truckReady)
                    || performance.now() - readyAt > 20000,
       pile: { pos: PILE_POS, radius: INTERACT_R, group: pile,
               dist: pileDist, screen: pileScreen, inView: pileInView,
@@ -1698,7 +1810,7 @@
 
       // the chapter's own, for the scenes and the probes
       HIS, BUD, SAFETY, TOWER, AMMO, RANGE, LANE, PILE_POS,
-      buddy, safety, lineMen, cyc, cycGlow, flare, flareBall, lineFill,
+      buddy, safety, towerMan, lineMen, cyc, cycGlow, flare, flareBall, lineFill,
       statics, popups, far, mover, MOVER, rail, berm, lanes,
       cycStart, cycEnd, cycAlpha, flareUp, flareDown,
       /* v13.0: the film draws the same climb play draws (`flareFrame` never
