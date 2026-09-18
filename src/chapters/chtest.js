@@ -296,6 +296,7 @@
              by the chapter that asked for it. */
           kit.event({ kind: 'sequence', label: 'THE PIPES', items: [{ label: 'feed' }, { label: 'valve' }, { label: 'drain' }],
                       brief: 'Three valves, named one at a time. Tap each one before it goes.',
+                      demo: 'bar',      // v13.0: the briefing's OTHER illustration — a bar into a band
                       /* v9.3: GRADED, so the fixture proves the ladder and its
                          damage rather than only that an overlay appeared. */
                       each: 1.5, lead: 0.30, zone: 1,

@@ -361,6 +361,31 @@ body.finePtr .wpnBtn{position:relative;margin-bottom:12px}
    the right one by a fingertip, on a loop, so the drag is SHOWN under the
    title before it is asked for */
 #evDemo{position:relative;width:220px;height:64px;margin:-2px auto 2px;flex:none}
+/* v13.0: a SECOND illustration, `demo: 'bar'` — a bar filling into the marked
+   band with a tap landing on it, which is the LOAD drill's own picture (Chad:
+   "the minigame instructions must have a looping demo animation ... just like
+   the standby bed one"). One element, two sets of children, chosen by the
+   class the briefing puts on it; every briefing that declares no demo is
+   untouched, because the whole element stays hidden. */
+#evDemo .dbar,#evDemo .dfill,#evDemo .dband,#evDemo .dtap{display:none}
+#evDemo.bar .dslot,#evDemo.bar .dtile,#evDemo.bar .dhand{display:none}
+#evDemo.bar .dbar,#evDemo.bar .dfill,#evDemo.bar .dband,#evDemo.bar .dtap{display:block}
+#evDemo .dbar{position:absolute;left:10px;right:10px;top:22px;height:16px;border-radius:8px;
+  background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.22)}
+#evDemo .dfill{position:absolute;left:11px;top:23px;height:14px;width:0;border-radius:7px;
+  background:linear-gradient(90deg,rgba(99,214,200,.32),rgba(99,214,200,.88));
+  box-shadow:0 0 10px rgba(99,214,200,.30);animation:dfill 2.2s linear infinite}
+#evDemo .dband{position:absolute;left:50%;margin-left:-16px;top:18px;width:32px;height:24px;border-radius:6px;
+  border:2px solid rgba(99,214,200,.80);background:rgba(99,214,200,.13);
+  box-shadow:0 0 12px rgba(99,214,200,.24)}
+#evDemo .dtap{position:absolute;top:42px;left:50%;margin-left:-12px;width:24px;height:24px;border-radius:50%;
+  background:rgba(255,255,255,.92);box-shadow:0 0 0 4px rgba(255,255,255,.22),0 0 14px rgba(255,255,255,.5);
+  opacity:0;animation:dtap 2.2s linear infinite}
+@keyframes dfill{0%{width:0}100%{width:198px}}
+@keyframes dtap{0%,40%{opacity:0;transform:scale(.6)}
+  50%{opacity:1;transform:scale(1)}
+  62%{opacity:.4;transform:scale(1.35)}
+  70%,100%{opacity:0;transform:scale(.6)}}
 #evDemo .dslot{position:absolute;top:8px;width:48px;height:48px;border:2px dashed rgba(255,255,255,.35);
   border-radius:8px;left:12px}
 #evDemo .dslot.dst{left:160px;border-color:rgba(99,214,200,.6);box-shadow:0 0 12px rgba(99,214,200,.18);
@@ -1891,7 +1916,7 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
     <span class="stencil" id="evLabel"></span>
     <!-- v10.3: the briefing's looping illustration - a tile dragged from the
          left column onto its slot on the right (shown for demo: 'drag') -->
-    <div id="evDemo" class="hide" aria-hidden="true"><i class="dslot"></i><i class="dslot dst"></i><b class="dtile"></b><span class="dhand"></span></div>
+    <div id="evDemo" class="hide" aria-hidden="true"><i class="dslot"></i><i class="dslot dst"></i><b class="dtile"></b><span class="dhand"></span><i class="dbar"></i><i class="dfill"></i><i class="dband"></i><span class="dtap"></span></div>
     <!-- v9.7: THREE rings in flight, not one. A single ring had to both
          approach the next beat and show that you were late for the last one,
          and it could do neither: it froze on the target for the whole late

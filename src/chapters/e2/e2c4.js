@@ -196,7 +196,9 @@
       hotRadioTouch: 'Tap to key the radio',
       hotTrack: 'Keep it in your sight',
       loadBrief: 'LOAD ON THE ORDER',
-      loadBody: 'Magazine on, cock the weapon, safety catch on. Each one gets a bar: TAP THE SCREEN (or press SPACE) as the bar reaches the marked band in the middle. Wait for each bar - pressing early counts against you.',
+      /* v13.0 (Chad: "the instructions in text can also be shorter") — 240
+         characters to 122, because the picture above it now says most of it */
+      loadBody: 'Magazine on. Cock. Safety catch on. TAP (or SPACE) as each bar reaches the band. Early counts against you.',
       loadGo: 'READY'
     },
     sayPrefix: 'n4'
@@ -1519,6 +1521,7 @@
         kit.event({ kind: 'sequence', label: DATA.words.loadBrief,
                     items: [{ label: 'MAGAZINE' }, { label: 'COCK' }, { label: 'SAFETY' }],
                     brief: DATA.words.loadBody,
+                    demo: 'bar',        // v13.0: the briefing SHOWS the timing before it asks for it
                     each: 2.0, lead: 0.4, zone: 2.5,
                     penalty: { stat: 'awareness', per: 1 },
                     award: { stat: 'awareness', per: 1, lo: -6, hi: 9 } })

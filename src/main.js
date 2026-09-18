@@ -2491,7 +2491,12 @@ function evBrief() {
      so the instructions are shown as well as read (Chad: "a quick animation
      of the dragging an icon from left to right ... just below the title").
      Absent by default, so every briefing already shipped is untouched. */
-  $('evDemo').classList.toggle('hide', o.demo !== 'drag');
+  /* v13.0: any declared demo, not only 'drag' — the class picks which set of
+     children shell.html draws ('drag' the tile and the slots, 'bar' a filling
+     bar and a tap landing in the band). No demo at all keeps it hidden, so
+     every briefing shipped before this release is untouched. */
+  const dm = $('evDemo');
+  dm.className = o.demo ? String(o.demo) : 'hide';
   const btn = $('evBtn');
   btn.textContent = o.briefButton || T('event.start');
   btn.className = 'go';
@@ -4064,6 +4069,16 @@ addEventListener('blur', () => { edgeTurn = 0; });
 
 canvas.addEventListener('contextmenu', e => { if (state === 'play' && weaponWant()) e.preventDefault(); });
 canvas.addEventListener('mousedown', e => {
+  /* v13.0, Chad, of the load drill: "on desktop, when im playing it, the left
+     click gestures fires the gun, which must not happen." It did: the window's
+     own pointerdown routes a mouse press to `evPress` (a mouse under pointer
+     lock never reaches the overlay), and THIS handler fired the rifle from the
+     same click — so every press of the drill also sent a live round downrange,
+     which on this range costs six sanity for firing before the order. A kit
+     event owns the screen: `evKey` has said so for the keyboard since v7.0 and
+     nothing ever said it for the mouse. Episode 1 declares no events and no
+     weapon, so it cannot reach either half. */
+  if (ev) return;
   if (e.button === 2 && state === 'play' && weaponWant()) { e.preventDefault(); weaponAdsToggle(); return; }   // v12.2
   if (e.button !== 0) return;
   if (locked && state === 'play' && weaponWant()) { weaponFire(); return; }   // v12.0: under lock the click is the trigger
