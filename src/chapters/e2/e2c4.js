@@ -790,10 +790,15 @@
     function objSerial() {
       if (!kit) return;
       const w = [DATA.words.objS1, DATA.words.objS2, DATA.words.objS3][serial - 1] || '';
-      kit.objective(w.replace('{n}', String(hits)));
+      /* `complete: false` — the count is a REFRESH, not a completion. Without
+         it every scoring hit changed the objective text and so fired the
+         v8.7 OBJECTIVE COMPLETE banner, which covers the running count for
+         1.35 s and congratulates the player for a serial he is in the middle
+         of. The same lie in the same direction as the one v8.7 named. */
+      kit.objective(w.replace('{n}', String(hits)), { complete: false });
     }
     function beginSerial(n) {
-      serial = n; hits = 0; hot = false;
+      serial = n; hits = 0; hot = false; ending = false;
       setPhase('serial' + n);
       /* WAIT FOR THE ORDER is its own objective, not a silence. The tower
          takes four seconds to give it and every round fired inside those
@@ -841,12 +846,32 @@
         after(0.9, () => popSeq(i + 1));
       });
     }
+    /* ONCE. `endSerial` does not change `phase`, so the hit-count path and
+       the serial's own timeout both saw `phase === 'serial' + n` and both
+       fired: the cease-fire was called twice, the award banked twice and the
+       next serial begun twice. `ending` is the guard and it is cleared by
+       whatever starts the next serial. */
+    let ending = false;
     function endSerial() {
+      if (ending) return;
+      ending = true;
       hot = false; MOVER.on = false;
       const n = serial;
-      bank({ a: Math.min(6, hits * 2), note: 'You shot the ' + ['static', 'pop-up', 'moving'][n - 1] + ' serial clean.' });
+      /* and the note is the truth: a serial that timed out with no hits at
+         all used to bank "You shot the ... serial clean." onto the card */
+      if (hits > 0) {
+        bank({ a: Math.min(6, hits * 2),
+               note: hits >= SER_NEED[n - 1]
+                 ? 'You shot the ' + ['static', 'pop-up', 'moving'][n - 1] + ' serial clean.'
+                 : 'You got rounds on the ' + ['static', 'pop-up', 'moving'][n - 1] + ' serial.' });
+      }
       tower('t4cease');
       flareDown();
+      /* the bank comes DOWN at the cease-fire. Otherwise the serial just shot
+         leaves its un-hit boards standing in the target area while the next
+         serial's scoping makes them unshootable — the biggest, nearest thing
+         on the range, and rounds at it do nothing. */
+      for (const t of SER_TARGETS[n - 1] || []) t.set(true);
       after(6.0, () => {
         if (n < 3) beginSerial(n + 1);
         else beginStag();
@@ -918,7 +943,11 @@
            so does this one. */
         else if (t === mover && phase === 'serial3') {
           after(2.4, () => {
-            if (phase !== 'serial3') return;
+            /* `ending` too, not just the phase: the cease-fire keeps the
+               phase at serial3 for six seconds, and without this the trolley
+               (and its rail loop) started up again under the tower's
+               cease-fire and ran on into the stag. */
+            if (phase !== 'serial3' || ending) return;
             mover.hit = false; mover.set(false);
             MOVER.on = true;
           });
@@ -932,7 +961,7 @@
        said since last night, and where the presence starts. */
     function beginStag(resumed) {
       setPhase('stag');
-      hot = false;
+      hot = false; ending = false; MOVER.on = false;
       if (kit) { kit.objective(DATA.words.objStag); kit.waypoint(null); kit.timer(null); }
       if (!resumed) {
         after(3.0, () => sayLine('b4stag'));
@@ -952,13 +981,26 @@
       flareUp(30);
       MOVER.on = true; MOVER.t = 0; MOVER.dir = 1; mover.set(false);
       tower('t4ready');
+      /* THE HAND-OVER IS DERIVED FROM THE SPEED, not typed in. The arc is
+         52 m wide and `cycFrame` calls `onCrossed()` — which rings the bell
+         and opens the decision — the instant the thing reaches the far side.
+         At v12.1's 1.35 m/s that took 38.5 s, comfortably past the hard-coded
+         24.0 s hand-over; at v12.2's 3.6 m/s it takes 14.4 s, so the crossing
+         finished at 17.6 s and rang the bell while the chapter was still in
+         `confuse` — skipping the played MOMENT entirely, which is the
+         chapter's signature beat and the only place the radio, the tracking
+         drill, "It is in the target area. Decide." and n4dawn's setup live.
+         Three quarters of the way across is the hand-over now, so the beat
+         survives whatever the speed becomes. */
+      const CROSS_M = 52, crossSecs = CROSS_M / Math.max(0.1, PASS_SPD[0]);
+      const handOver = 3.2 + crossSecs * 0.72;                                   // 13.6 s at 3.6 m/s
       after(3.2, () => { cycStart(0); });
-      after(6.4, () => { sayLine('n4notarget'); });
-      after(8.0, () => { if (worldSfx) worldSfx('rifleshot', 0.75); });          // lane five fires
-      after(8.6, () => { lineQ.length = 0; tower('t4who'); });
-      after(13.0, () => queueLine('b4there'));
-      after(16.5, () => tower('t4neg'));
-      after(24.0, () => { if (phase === 'confuse') beginMoment(); });
+      after(4.8, () => { sayLine('n4notarget'); });
+      after(6.4, () => { if (worldSfx) worldSfx('rifleshot', 0.75); });          // lane five fires
+      after(7.0, () => { lineQ.length = 0; tower('t4who'); });
+      after(9.8, () => queueLine('b4there'));
+      after(12.0, () => tower('t4neg'));
+      after(handOver, () => { if (phase === 'confuse') beginMoment(); });
       if (resumed) { dropTodo(); cycStart(Math.min(pass, 1)); after(1.5, () => beginMoment()); }
     }
 

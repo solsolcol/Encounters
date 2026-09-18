@@ -127,7 +127,11 @@ body.hasTorch.cine .torchBtn,body.hasTorch.invopen .torchBtn,body.hasTorch.menuo
   bottom:calc(max(18px,env(safe-area-inset-bottom)) + 56px);z-index:9;display:none;
   flex-direction:column;align-items:flex-end;gap:12px;pointer-events:none}
 body.inplay.weaponUp #weaponHud{display:flex}
-body.weaponUp.cine #weaponHud,body.weaponUp.invopen #weaponHud,body.weaponUp.menuopen #weaponHud,body.weaponUp.cardup #weaponHud{display:none}
+body.weaponUp.cine #weaponHud,body.weaponUp.invopen #weaponHud,body.weaponUp.menuopen #weaponHud,body.weaponUp.cardup #weaponHud,body.weaponUp.evopen #weaponHud{display:none}
+/* v12.2: and the reticle with it — a kit event owns the screen, and a FIRE
+   button sitting on top of the load drill lets a thumb tap send a live round
+   downrange while the tower is still giving the order. */
+body.weaponUp.evopen #reticle{display:none}
 .wpnBtn{pointer-events:auto;touch-action:none;-webkit-user-select:none;user-select:none;cursor:pointer;
   display:grid;place-items:center;border-radius:50%;color:var(--bone);
   background:rgba(7,8,11,.62);border:1.5px solid rgba(232,226,212,.42);

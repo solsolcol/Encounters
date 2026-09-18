@@ -3977,3 +3977,47 @@ its decision object near the player will satisfy all chapter long.
 Photographed on a 390 px phone during a live-fire serial, "the target area"
 sat across the weapon HUD row over the FIRE button. **Gate the distance,
 not just the view.**
+
+## A thing that MOVES is not a thing that RECOVERS (v12.2)
+
+The recoil spring was handed `(t - lastWallLook) / 1000` where `t` is
+`clock.getElapsed()` — SECONDS. A thousandfold units error, so
+`exp(-dt/recover)` was ~1 every frame and the kick came home over half a
+minute. It was probed, the numbers came back 1.753° → 1.183° over ten
+frames, and that was read as "the spring works" — when what it actually
+showed was a spring being fed 1/1000 of its input. The tell was there in the
+number: at a 0.2 s time constant, ten frames of a one-frame-a-second box
+should have collapsed it to nothing, not shaved a third off.
+
+**When a probe confirms a thing is moving, check the RATE against what the
+maths predicts.** A decay that is 125× too slow looks exactly like a decay.
+Six independent auditors found this from the source in the time one probe
+took to mis-measure it.
+
+## A fix that does not sit on the code path is not a fix (v12.2)
+
+v12.2 made every weapon take start at its own measured first key — in
+`weaponPlay()`. But `weaponFire()` had its own inline
+`weaponActs.shoot.reset().play()` and never called `weaponPlay`, so the one
+take the fix existed for was the one take it never reached. The rifle still
+did not move when fired, and the release notes said it did.
+
+**After fixing a helper, grep for every other caller that does the same job
+by hand.** The second implementation is where the bug lives.
+
+## Gate the number the ENGINE reads, not the one the chapter exports (v12.2)
+
+The approach prompt shows on `d < 6.2`, and `d` was
+`Math.hypot(yaw.position - OFFER_POS)` computed in the engine — not the
+chapter's own `pileDist()`. Gating `pileDist()` therefore changed nothing,
+and "the target area" stayed across the FIRE button for the whole chapter
+(photographed). Two functions that answer the same question and only one of
+them is on the path.
+
+## A changed objective is a COMPLETION unless you say it is not (v12.2)
+
+`kitObjectiveSet` pushes the OBJECTIVE COMPLETE beat whenever the text
+changes. A serial that writes its own live count into the objective
+(`... · 2/3`) therefore fires a full completion banner on every scoring hit,
+covering the count it just updated for 1.35 s. `{ complete: false }` is
+v8.7's own escape hatch and a per-frame counter is exactly what it is for.

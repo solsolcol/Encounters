@@ -186,9 +186,20 @@ K.weaponHits = await p.evaluate(() => {
   const d = e.kitDebug();
   return ok === true && d.weapon.rounds === 2 && d.conduct.notes.includes('You hit the target.');
 });
-await p.waitForTimeout(120);
-await p.keyboard.press('Space'); await p.waitForTimeout(120);
-await p.keyboard.press('Space'); await p.waitForTimeout(120);
+/* v12.2: POLLED, not waited. The rounds go to zero inside weaponFire(), but
+   the pill's `empty` class is painted by weaponFrame — so on a box drawing
+   about one frame a second a 120 ms wait can land BEFORE any frame has run
+   and read a pill that is correct but not yet repainted. Measured: rounds 0
+   and `weaponEmptyRefuses` true in the same breath, with the class still
+   off. That is v8.7's law (a fixed wait in a harness is a coin toss) met in
+   the one check written after it. The assertion is unchanged — both halves
+   still have to be true — it is only given a frame to happen on.
+   `fireGap` is 0.34 s, so the presses are spaced past it as well. */
+await p.waitForTimeout(400);
+await p.keyboard.press('Space'); await p.waitForTimeout(400);
+await p.keyboard.press('Space'); await p.waitForTimeout(400);
+await until(() => { const d = window.__enc.kitDebug(); return d.weapon.rounds === 0
+  && document.getElementById('ammo').classList.contains('empty'); }, 20000).catch(() => {});
 K.weaponRunsDry = await p.evaluate(() => { const d = window.__enc.kitDebug(); return d.weapon.rounds === 0 && document.getElementById('ammo').classList.contains('empty'); });
 K.weaponEmptyRefuses = await p.evaluate(() => window.__enc.kit.fire() === false && window.__enc.kitDebug().weapon.rounds === 0);
 await p.keyboard.press('KeyR'); await settle();

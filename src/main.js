@@ -1821,6 +1821,7 @@ function weaponAdsToggle() {
   snd('uiclick', 0.28);
 }
 function weaponAdsOff() { if (weaponAds) { weaponAds = false; document.body.classList.remove('weaponAds'); } }
+let retHitT = 0;
 const weaponRay = new THREE.Raycaster();
 const _asA = new THREE.Vector3(), _asB = new THREE.Vector3(), _asS = new THREE.Sphere();
 /* THE ASSIST. A single ray through the exact centre pixel is the right model
@@ -1868,7 +1869,11 @@ function weaponFire() {
     return false;
   }
   weaponRounds--;
-  if (weaponActs && weaponActs.shoot) { for (const a of Object.values(weaponActs)) a.stop(); weaponActs.shoot.reset().play(); weaponBusy = null; }
+  /* THROUGH weaponPlay, not around it: this line used to reset and play the
+     action itself, which meant it started at time 0 and never reached the
+     Shoot take's first key at 3.37 s — so v12.2's whole clip-start fix was
+     inert on the one take it was written for. */
+  if (weaponPlay('shoot')) weaponBusy = null;
   if (weaponDecl.shot) snd(weaponDecl.shot, 1);
   haptic([30, 20, 40]);
   weaponFlashT = 0.09;
@@ -1891,7 +1896,11 @@ function weaponFire() {
      the board falls a quarter of a second later. */
   if (hit) {
     const ret = $('reticle');
-    if (ret) { ret.classList.remove('hit'); void ret.offsetWidth; ret.classList.add('hit'); }
+    if (ret) {
+      ret.classList.remove('hit'); void ret.offsetWidth; ret.classList.add('hit');
+      clearTimeout(retHitT);
+      retHitT = setTimeout(() => ret.classList.remove('hit'), 280);   // or it stays red for the rest of the chapter
+    }
   }
   if (stage && typeof stage.onShot === 'function') { try { stage.onShot(report); } catch (e) { console.error(e); } }
   return true;
@@ -2320,6 +2329,7 @@ function kitEvent(opts = {}) {
   packWarm(EV_SOUNDS);
   if (kind === 'timed') o.secs = o.close;
   return new Promise(res => {
+    document.body.classList.add('evopen');   // v12.2: a kit event owns the screen (the weapon HUD and the reticle go)
     ev = { o, kind, t: 0, res, started: false, briefing: false, layoutReal: null,
            down: false, downAt: -1, hits: 0, misses: 0, band: [], sum: 0, pos: 0, paid: 0,
            idx: 0, bar: o.start ?? 0, drift: 0, look: 0, downX: 0, downY: 0, each: o.each,
@@ -2436,6 +2446,7 @@ function evBandResult(o) {
 function evResolve(extra) {
   const e = ev; if (!e) return;
   ev = null;
+  document.body.classList.remove('evopen');
   const host = evEl();
   if (host) {
     host.className = 'layer hide';
@@ -5551,8 +5562,6 @@ function invPaint() {
   inv.flash = null;   // one paint's worth: the animation runs, the next paint forgets it
   invInfoPaint();
   torchAvailSync();   // v11.6: the torch button follows the hand slot
-  weaponAvailSync();  // v12.2: and so does the rifle, on every way into play
-  weaponAdsOff(); weaponRecoilReset(); camLens(CAM_FOV);
   weaponAvailSync();  // v12.0
 }
 
@@ -7306,6 +7315,11 @@ function playChapterCard(then) {
    to be moved BEFORE the fade out, or the player watches themselves being
    teleported.                                                            */
 function enterWorld(place, opts = {}) {
+  /* v12.2: every way into a chapter starts on the chapter's own lens with
+     no aim held and no recoil owed. `weaponUp` itself is DERIVED on the
+     frame (weaponFrame), so there is nothing to sync here — only state to
+     give back. */
+  weaponAdsOff(); weaponRecoilReset(); camLens(CAM_FOV);
   // the title's backdrop stops when the title does — a hidden video still
   // decodes every frame, and the deck needs those frames more
   titleVideo?.el.pause();
@@ -8189,7 +8203,16 @@ function tick(now = 0) {
        second box, the kick was still 1.75 deg a second after the shot), and
        half a second is only there so a backgrounded tab does not come back
        with the whole spring discharged in one step. */
-    const rec = weaponRecoilStep(lastWallLook ? Math.min(0.5, (t - lastWallLook) / 1000) : 0.016);
+    /* `t` is clock.getElapsed() — SECONDS, not milliseconds. Dividing by a
+       thousand fed the spring a delta a thousand times too small, so
+       exp(-dt/recover) was ~1 every frame and the kick came home over about
+       half a minute instead of a fifth of a second: every round walked the
+       aim up the range permanently, which is the exact defect v12.2 set out
+       to fix. It was measured as "decaying" (1.75 deg to 1.18 over ten
+       frames) and called working — a thing that MOVES is not a thing that
+       RECOVERS. The half-second clamp is only so a backgrounded tab does not
+       come back with the whole spring discharged in one step. */
+    const rec = weaponRecoilStep(lastWallLook ? Math.min(0.5, t - lastWallLook) : 0.016);
     lastWallLook = t;
     yaw.rotation.y += lookX * zk + (rec ? rec.dy : 0);
     pitch.rotation.x = Math.max(pitchLo, Math.min(pitchHi,
@@ -8230,7 +8253,17 @@ function tick(now = 0) {
     // burning ahead" line. Nothing opens the decision on its own any more:
     // the heap is the only way in, so looking at the note is always a choice
     // the player made rather than something that happened to them.
-    const d = Math.hypot(yaw.position.x - OFFER_POS.x, yaw.position.z - OFFER_POS.z);
+    /* v12.2: the APPROACH prompt asks the CHAPTER how far its decision object
+       is, not the engine's own OFFER_POS. Every chapter defines pile.dist()
+       and episode 1's returns exactly this number, so nothing there moves —
+       but a chapter whose decision object stands near the player all along
+       (episode 2 chapter 4's target area, 1.7 m in front of the firing point)
+       can now say "not yet", which gating pileInView alone could not do.
+       Photographed on a phone: "the target area" lay across the FIRE button
+       through an entire live-fire serial. */
+    const d = (stage && stage.pile && typeof stage.pile.dist === 'function')
+      ? stage.pile.dist()
+      : Math.hypot(yaw.position.x - OFFER_POS.x, yaw.position.z - OFFER_POS.z);
 
     // the heap: one prompt at a time, and only when it is actually on screen —
     // a key prompt for something behind you is noise
