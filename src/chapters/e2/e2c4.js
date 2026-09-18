@@ -170,7 +170,14 @@
              'tree1', 'tree2', 'tree3', 'tree4'],
 
     musicVol: 0,
-    ambience: { beds: [['rangeamb', 0.36], ['e2dread', 1.0], ['flarehiss', 0], ['moverrail', 0], ['chain', 0]] },
+    /* v13.2, Chad: "Any time the cyclist appears, there should be the cycling
+       bell ding sound that keeps playing. Always." `bikebell` is a single
+       3.34 s ding, so as a BED it repeats about every three seconds — which
+       is what a bell rung by somebody riding sounds like, and it costs no new
+       download. It is keyed to his ALPHA rather than to play, deliberately:
+       the scenes fade him in and out too, and Chad asked for the ding there
+       as well. */
+    ambience: { beds: [['rangeamb', 0.36], ['e2dread', 1.0], ['flarehiss', 0], ['moverrail', 0], ['chain', 0], ['bikebell', 0]] },
 
     words: {
       approach: 'the target area',
@@ -245,6 +252,26 @@
     sun: 0, clouds: 0,
     vmHemi: [0xbfd0e8, 0x2a3040, 0.95],
     vmKey: [0xfff0d8, 0.75]
+  };
+  /* v13.2, Chad: "... shooting into the sky, LIGHTING UP the sky." The sky
+     used to do nothing at all until the burst, so the climb was a spark
+     against unchanged black. This is the same shape as FLARE at about a
+     third of its strength and pushed red, tweened in over the climb and
+     handed straight on to FLARE at the pop — so the sky reddens under the
+     rocket and then opens white when it bursts. Its fog is the night's
+     0.012 exactly: a flare must NEVER thicken the air (the v12.3 finding),
+     and a climb that is not yet lighting the range must not thin it either. */
+  const FLARE_CLIMB = {
+    stops: [[0.00, '#3a2028'], [0.35, '#40222a'], [1.00, '#150d12']],
+    bg: 0x3a2028,
+    fog: [0x2e1a1e, 0.012],
+    hemi: [0xd08a78, 0x2a1418, 0.55],
+    key: [0xff9a70, 0.30, 0, 40, -60],
+    fill: [0x9a5a58, 0.18],
+    stars: 0.35, moon: 0,
+    sun: 0, clouds: 0,
+    vmHemi: [0xd08a78, 0x2a1418, 0.45],
+    vmKey: [0xff9a70, 0.28]
   };
 
   const hash = (i, s) => { const x = Math.sin(i * 127.1 + s * 311.7) * 43758.5453; return x - Math.floor(x); };
@@ -555,6 +582,98 @@
     const flareBall = new THREE.Mesh(new THREE.SphereGeometry(0.5, 8, 6),
       nfm({ color: 0xfff6e0, emissive: 0xfff0c0, emissiveIntensity: 3, transparent: true, opacity: 0 }));
     flareBall.position.copy(flare.position); world.add(flareBall);
+    /* v13.2, Chad: "the thing that shoots into the air, make it look more
+       like a smokey bright red trail shooting into the sky, lighting up the
+       sky." The climb had a white spark and nothing behind it, so what the
+       eye got was a dot that moved — a trail is what says something was
+       FIRED. It is a pool of billboards carrying one canvas-drawn puff (no
+       download, CSP-safe), laid down along the arc as the spark climbs and
+       aged on WALL time; the ones nearest the head keep the flare's own red
+       and the old ones grey out and spread, which is what smoke lit from
+       inside looks like. NormalBlending, never additive: additive smoke over
+       a night sky is a bright streak, not smoke (the v8.8 law). */
+    const puffTex = (() => {
+      const c = document.createElement('canvas'); c.width = c.height = 64;
+      const g = c.getContext('2d');
+      const rg = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+      rg.addColorStop(0.00, 'rgba(255,255,255,0.95)');
+      rg.addColorStop(0.35, 'rgba(255,255,255,0.45)');
+      rg.addColorStop(0.72, 'rgba(255,255,255,0.12)');
+      rg.addColorStop(1.00, 'rgba(255,255,255,0)');
+      g.fillStyle = rg; g.fillRect(0, 0, 64, 64);
+      const t = new THREE.CanvasTexture(c);
+      t.colorSpace = THREE.SRGBColorSpace;
+      return t;
+    })();
+    const TRAIL_N = 40, TRAIL_LIFE = 3.2;
+    const trail = [];
+    {
+      const geo = new THREE.PlaneGeometry(1, 1);
+      owned.push(geo); owned.push(puffTex);
+      for (let i = 0; i < TRAIL_N; i++) {
+        /* BASIC, not Standard: at midnight a lit smoke puff is black, and
+           the whole point is that this smoke is lit from INSIDE by the
+           motor — which is what `TRAIL_HOT` -> `TRAIL_COLD` says. */
+        const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: puffTex, color: 0xffffff,
+          transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide, fog: false }));
+        m.visible = false; m.renderOrder = 3;
+        /* it animates its own transform every frame, so it must never be
+           caught by a matrix freeze (the v8.8 law, stated beside the thing
+           it protects) */
+        m.userData.moves = true;
+        world.add(m); trail.push({ m, t: 1e9, s0: 1, hot: 0 });
+      }
+    }
+    let trailN = 0, trailWall = 0, trailDrop = 0;
+    const TRAIL_HOT = new THREE.Color(0xff5a2a), TRAIL_COLD = new THREE.Color(0x6b6f78);
+    const _tc = new THREE.Color(), _tv = new THREE.Vector3(), _tp = new THREE.Vector3();
+    /* one tick, on WALL time and idempotent within a frame, because it is
+       driven from three places: `flareClimb` (play AND the film's climb
+       track), `flareFrame` (play's burn) and `setFlare` (the film's burn).
+       A film gets no `flareFrame` at all — updateNotes returns early under a
+       cutscene — so a trail aged only there would hang frozen in the sky for
+       the rest of the film. */
+    function trailTick() {
+      const now = performance.now() / 1000;
+      const dt = trailWall ? Math.min(0.12, now - trailWall) : 0;
+      trailWall = now;
+      if (!dt) return;
+      for (const p of trail) {
+        if (p.t >= TRAIL_LIFE) { if (p.m.visible) p.m.visible = false; continue; }
+        p.t += dt;
+        const k = Math.min(1, p.t / TRAIL_LIFE);
+        if (k >= 1) { p.m.visible = false; continue; }
+        p.m.scale.setScalar(p.s0 * (1 + 2.6 * k));          // smoke spreads
+        p.m.material.opacity = 0.70 * (1 - k) * (1 - k * 0.35);
+        _tc.copy(TRAIL_HOT).lerp(TRAIL_COLD, Math.min(1, k / 0.45));
+        p.m.material.color.copy(_tc);
+        p.m.position.y += dt * 1.6;                          // it rises as it cools
+        p.m.lookAt(camera.getWorldPosition(_tv));            // billboard
+      }
+    }
+    function trailDropAt(x, y, z, k) {
+      const p = trail[trailN++ % TRAIL_N];
+      p.t = 0;
+      /* SIZED BY ITS DISTANCE, exactly as `flareBallSize` sizes the spark and
+         for the same reason (v13.0: a fixed world size is not a size). The
+         first pass used `2.2 + 9 * k` — bigger the higher it went — and
+         photographed as one fat cloud at the apex over a column of specks,
+         because a 2.2 m puff eight metres away and an 11 m puff eighty-eight
+         metres away are not the same picture. Set from the camera at the
+         moment it is dropped, every puff subtends about the same angle and
+         the column reads as one width all the way up. */
+      p.s0 = Math.max(0.55, Math.min(4.0, camera.getWorldPosition(_tv).distanceTo(_tp.set(x, y, z)) * 0.040));
+      p.m.position.set(x + (Math.random() - 0.5) * 0.7, y, z + (Math.random() - 0.5) * 0.7);
+      p.m.scale.setScalar(p.s0);
+      p.m.material.opacity = 0.70;
+      p.m.material.color.copy(TRAIL_HOT);
+      p.m.rotation.z = Math.random() * Math.PI * 2;
+      p.m.visible = true;
+    }
+    function trailClear() {
+      for (const p of trail) { p.t = 1e9; p.m.visible = false; }
+      trailN = 0; trailDrop = 0;
+    }
     const lineFill = new THREE.PointLight(0x30405a, 0.5, 26, 1.6); lineFill.position.set(HIS.x - 2, 4, 3); world.add(lineFill); owned.push(lineFill);
 
     /* ------------------------------------------------------------ the cast */
@@ -977,9 +1096,10 @@
        holds it at roughly 38–50 px the whole way up: a bright spark you can
        watch climb, which is what item 11 asked for. */
     const _fv = new THREE.Vector3();
+    let flareHeadK = 1;
     function flareBallSize() {
       const d = flare.position.distanceTo(camera.getWorldPosition(_fv));
-      flareBall.scale.setScalar(Math.max(0.6, Math.min(4.2, d * 0.045)));
+      flareBall.scale.setScalar(Math.max(0.6, Math.min(4.2, d * 0.045)) * flareHeadK);
     }
     /* WHERE it is fired from is a framing number, not a taste: from the
        firing point the launch has to be inside a PORTRAIT PHONE's horizontal
@@ -990,26 +1110,74 @@
        17.2 degrees: in frame on a phone, still clearly off his own lane. */
     const FLARE_FROM = { x: HIS.x + 2.2, y: 1.1, z: -6.0 };
     let flareApexX = HIS.x;
-    function flarePlace(k) {
+    /* THE ARC IS A FUNCTION, not a side effect on `flare.position`. The smoke
+       has to be laid down at the k each puff belongs to, and `flarePlace` has
+       already moved the head to the CURRENT k by the time the catch-up loop
+       runs — so asking the light where it is answers the wrong question for
+       every puff but the last. Photographed at one frame a second (which is
+       what a hot phone is, and the only device Chad plays on): the whole
+       column landed in ONE place at the head, the v13.0 "fixed world size"
+       failure in its position form. Every number said there were 23 puffs. */
+    const _fa = new THREE.Vector3();
+    function flarePointAt(k, out) {
       const e = 1 - Math.pow(1 - Math.min(1, Math.max(0, k)), 2);
-      flare.position.set(FLARE_FROM.x + (flareApexX - FLARE_FROM.x) * e,
-                         FLARE_FROM.y + (46 - FLARE_FROM.y) * e,
-                         FLARE_FROM.z + (-72 - FLARE_FROM.z) * e);
+      return (out || _fa).set(FLARE_FROM.x + (flareApexX - FLARE_FROM.x) * e,
+                              FLARE_FROM.y + (46 - FLARE_FROM.y) * e,
+                              FLARE_FROM.z + (-72 - FLARE_FROM.z) * e);
+    }
+    function flarePlace(k) {
+      flare.position.copy(flarePointAt(k));
       flareBall.position.copy(flare.position);
       flareBallSize();
     }
     /* the launch's whole LOOK, one copy — the film borrows it exactly as it
        borrows the arc, because `flareFrame` never runs under a cutscene */
     function flareClimb(k) {
-      flarePlace(k);
-      flare.intensity = 40 + 120 * Math.max(0, Math.min(1, k));
+      const kk = Math.max(0, Math.min(1, k));
+      flarePlace(kk);
+      /* v13.2: the climbing motor is RED and the burst is white — the light
+         is tinted here rather than at the burst, because `flare` is one
+         PointLight the burn reuses and `flareFrame` puts it back to
+         `FLARE_WHITE` on the frame it pops. */
+      flare.color.copy(FLARE_RED);
+      flare.intensity = 40 + 120 * kk;
+      /* the BALL is deliberately left white-hot. Driving its emissive red as
+         well was tried and photographed, and it rendered as a DARK DISC at
+         the head of the trail — the plume is what carries the colour, and a
+         motor's core is white anyway. The light and the smoke are red; the
+         spark is not. */
+      /* v13.2: HALF AGAIN as big while it climbs. Photographed against the
+         new smoke column the spark read as a lozenge rather than a head,
+         because the puffs nearest it are lit and larger than it is; the
+         motor has to be the brightest thing in the picture. */
+      flareHeadK = 1.6;
       flareBall.material.opacity = 0.92;
+      /* the smoke, laid down along the arc rather than attached to it: a
+         puff every ~4 % of the climb, which at RISE 1.55 s is one every
+         60-odd milliseconds and reads as a continuous column. `trailDrop`
+         is the last k a puff was left at, so a SEEK (the film's track is
+         re-applied every frame from t0 — v5.30's law) refills the column
+         instead of leaving gaps. */
+      if (kk < trailDrop) trailDrop = 0;                   // the arc restarted
+      while (kk - trailDrop >= 0.028 || (trailDrop === 0 && kk > 0)) {
+        trailDrop = Math.min(kk, trailDrop + 0.028);
+        const q = flarePointAt(trailDrop);                 // where the rocket WAS at that k
+        trailDropAt(q.x, q.y, q.z, trailDrop);
+        if (trailDrop >= kk) break;
+      }
+      trailTick();
     }
+    const FLARE_RED = new THREE.Color(0xff3714), FLARE_WHITE = new THREE.Color(0xfff0d0);
     let flareT = 0, flareLife = 0, flareOn = false, flareBurst = false;
     function flareUp(secs) {
       flareOn = true; flareT = 0; flareLife = secs; flareBurst = false;
       flareApexX = HIS.x + (Math.random() - 0.5) * 8;
+      trailClear();
       flarePlace(0);
+      /* the sky comes up RED under the climb and is handed to FLARE at the
+         pop; the tween is the climb's own length, so it arrives exactly as
+         the rocket does */
+      if (kit) kit.daylight(FLARE_CLIMB, FLARE_RISE);
       if (worldSfx) worldSfx('flarelaunch', 0.85);
       // the pop and the sky wait for the apex — see flareFrame
     }
@@ -1028,6 +1196,10 @@
         }
         if (!flareBurst) {                                    // THE BURST
           flareBurst = true;
+          flareHeadK = 1;
+          flare.color.copy(FLARE_WHITE);
+          flareBall.material.emissive.set(0xfff0c0);
+          flareBall.material.color.set(0xfff6e0);
           if (worldSfx) worldSfx('flarepop', 0.9);
           if (kit) kit.daylight(FLARE, 1.2);
         }
@@ -1052,6 +1224,7 @@
         flare.intensity *= Math.max(0, 1 - dt * 2.2);
         flareBall.material.opacity *= Math.max(0, 1 - dt * 2.2);
       }
+      trailTick();
       mixBeds();
     }
 
@@ -1103,11 +1276,23 @@
     let cycWant = 0;
     let pass = 0, cycT = 0, cycOn = false, cycStopped = false, shots = 0, tracked = 0;
     let momentT = 0, bellDone = false;
+    /* v13.2, Chad: "at first, it goes left to right, player shoots one time,
+       cyclist appears again but this time right to left, and nearer to the
+       player. Keep shooting, and it keeps coming nearer and changing
+       direction again." The direction is the PASS's parity, not a stored
+       flag, so it cannot drift out of step with the distance: pass 0 and 2
+       cross to +x, pass 1 crosses to −x, and pass 3 has stopped. That also
+       means a resume, which restores `pass` and nothing else, restores the
+       direction with it (the v7.3 law). */
+    const passDir = (p) => (p % 2 ? -1 : 1);
     function cycStart(p, fadeIn) {
       pass = Math.max(0, Math.min(PASS_Z.length - 1, p));
       cycT = 0; cycOn = true; cycStopped = PASS_SPD[pass] === 0;
-      cyc.group.position.set(HIS.x - 26, 0, PASS_Z[pass]);
-      cyc.group.rotation.y = -Math.PI / 2;      // prepped facing −z, so a quarter turn puts him crossing to +x
+      const d = passDir(pass);
+      cyc.group.position.set(HIS.x - 26 * d, 0, PASS_Z[pass]);
+      /* prepped facing −z, so a quarter turn puts him crossing to +x and the
+         other quarter turn puts him crossing to −x */
+      cyc.group.rotation.y = -Math.PI / 2 * d;
       cyc.group.scale.setScalar(PASS_SCALE[pass] || 1);
       if (cycStopped) {
         cyc.group.position.set(HIS.x - 1.2, 0, PASS_Z[pass]);
@@ -1127,7 +1312,7 @@
       }
       if (!cycOn || cycStopped) return;
       cycT += dt;
-      cyc.group.position.x += PASS_SPD[pass] * dt;
+      cyc.group.position.x += PASS_SPD[pass] * dt * passDir(pass);
       /* OFF THE FAR EDGE. v13.0: on the HOLD branch it used to ring the bell
          the instant the first crossing finished — 14.4 s after the sighting —
          which gave the whole confusion (his line, the three shouts, lane
@@ -1139,11 +1324,12 @@
          trees and BRINGS IT BACK NEARER a moment later, and the bell is the
          moment's own fifteen-second clock. The last pass is the stopped one
          and still ends the beat. */
-      if (cyc.group.position.x > HIS.x + 26) {
+      const d = passDir(pass);
+      if (d > 0 ? cyc.group.position.x > HIS.x + 26 : cyc.group.position.x < HIS.x - 26) {
         cycEnd(true);
         if (phase === 'moment' && shots === 0 && pass < PASS_Z.length - 2) {
           const p2 = pass + 1;
-          after(1.6, () => { if (phase === 'moment' && shots === 0 && !bellDone) cycStart(p2, true); });
+          after(1.5, () => { if (phase === 'moment' && shots === 0 && !bellDone) cycStart(p2, true); });
         } else onCrossed();
       }
     }
@@ -1169,6 +1355,10 @@
         if (b[0] === 'flarehiss') b[1] = (playing && flareOn) ? 0.5 * Math.min(1, flareT / 0.8) : 0;
         if (b[0] === 'moverrail') b[1] = (playing && MOVER.on) ? 0.34 : 0;
         if (b[0] === 'chain') b[1] = 0.55 * nearK * cyc.a;
+        /* not gated on `playing`: a scene puts him up through `cycAlpha` and
+           the ding has to go with him. `cyc.a` is 0 everywhere else, so
+           nothing else can hear it. */
+        if (b[0] === 'bikebell') b[1] = 0.62 * cyc.a;
       }
     }
 
@@ -1278,9 +1468,11 @@
          all used to bank "You shot the ... serial clean." onto the card */
       if (hits > 0) {
         bank({ a: Math.min(6, hits * 2),
+               /* v13.2: SHORT. These are list items now, not clauses in a
+                  run-on sentence, so they read as what they are. */
                note: hits >= SER_NEED[n - 1]
-                 ? 'You shot the ' + SER_KIND[n - 1] + ' serial clean.'
-                 : 'You got rounds on the ' + SER_KIND[n - 1] + ' serial.' });
+                 ? 'Shot the ' + SER_KIND[n - 1] + ' serial clean.'
+                 : 'Put rounds on the ' + SER_KIND[n - 1] + ' serial.' });
       }
       tower('t4cease');
       if (kit) { kit.timer(null); kit.objective(DATA.words.objCease, { complete: false }); }
@@ -1363,7 +1555,7 @@
            line while another speaks, so the reprimand that explains the six
            sanity he just lost was silent exactly when it was earned. */
         if (early === 1) { lineQ.length = 0; queueLine('e4wait'); }
-        if (kit) { kit.conduct({ s: -6, note: 'You fired before the order.' }); kit.flash({ color: '#ff3a1c', secs: 0.35 }); }
+        if (kit) { kit.conduct({ s: -6, note: 'Fired before the order.' }); kit.flash({ color: '#ff3a1c', secs: 0.35 }); }
         return;
       }
       if (!r.hit) return;
@@ -1506,8 +1698,15 @@
     }
     function onFiredAtIt() {
       /* a round into the target area at a thing the tower says is not there */
-      if (kit) { kit.conduct({ s: -5, note: 'You fired at it.' }); kit.flash({ color: '#ff3a1c', secs: 0.3 }); }
-      if (shots >= 3) { onBell(); return; }
+      if (kit) { kit.conduct({ s: -5, note: 'Fired at it.' }); kit.flash({ color: '#ff3a1c', secs: 0.3 }); }
+      /* v13.2, Chad: "When player shoots the cyclist, there should be the
+         eerie laughing sound and the ghost cyclist fades away instead of
+         disappearing immediately." Both halves are here: the laugh on the
+         frame the round lands, and `cycEnd(true)` — the FADE — where v12.3
+         called `cycEnd()` and took him off the range between two frames.
+         A thing that vanishes is a sprite being switched off; a thing that
+         fades is the chapter. */
+      if (worldSfx) worldSfx('ghostlaugh', 0.9);
       /* v12.3: RE-STAMP THE RECEIPT. `moment:r14m1s2` is written by
          setPhase, and beginMoment was its only caller — so the phase string
          was stamped once, at entry, with shots 0 and a full magazine. A
@@ -1517,9 +1716,13 @@
          calling it here is the whole fix (v7.3's law: a resume lands where
          the player actually was). */
       setPhase('moment');
-      cycEnd();
+      cycEnd(true);
       sayLine('n4back');
-      after(2.6, () => {
+      /* 1.5 s, Chad's number: "the ghost cyclist fades away, then return 1.5
+         second later, nearer to the player this time, but going in the
+         opposite direction." The pass index IS both of those — PASS_Z brings
+         him in and `passDir` turns him round. */
+      after(1.5, () => {
         /* v12.3: and 'confuse' too. The confusion is the first pass and the
            player CAN put a round into it there — onShot accepts the hit and
            spends a life for it — but the re-show was gated on 'moment'
@@ -1527,21 +1730,35 @@
            of the beat and the hand-over arrived at an empty range. */
         if (phase !== 'moment' && phase !== 'confuse') return;
         flareUp(16);
-        cycStart(Math.min(PASS_Z.length - 1, shots), true);
+        const p2 = Math.min(PASS_Z.length - 1, shots);
+        cycStart(p2, true);
         if (kit) kit.presence(0.55 + 0.15 * shots);
+        /* "Then, finally, the cyclist reappears close to the player's view
+           this time, looking directly at the player." That is the stopped
+           pass, and it has to be SHOWN before the bell: v12.3 rang the bell
+           on the third shot instead, so the one appearance the escalation
+           was building to never happened. He stands there for three and a
+           half seconds — long enough to be looked at — and then it ends. */
+        if (p2 >= PASS_Z.length - 1) after(3.5, () => { if (phase === 'moment') onBell(); });
       });
     }
     function onHitCyclist() { shots++; onFiredAtIt(); }
     /* it finished its crossing without being fired at — the hold branch */
     function onCrossed() {
       if (phase !== 'moment' && phase !== 'confuse') return;
-      cycStart(PASS_Z.length - 1);          // stopped, at the foot of the berm, facing the line
+      /* v13.2: he FADES IN there rather than appearing there — "every
+         appearance and exit of the cyclist should always be in a fading
+         manner to be more eerie" */
+      cycStart(PASS_Z.length - 1, true);    // stopped, at the foot of the berm, facing the line
       onBell();
     }
     function onBell() {
       if (bellDone) return;
       bellDone = true;
-      cycStart(PASS_Z.length - 1);
+      /* and he is not re-placed if he is ALREADY standing there — restarting
+         the pass would snap him to full alpha and undo the fade that just
+         brought him in */
+      if (!cycOn || pass !== PASS_Z.length - 1) cycStart(PASS_Z.length - 1, true);
       if (worldSfx) worldSfx('bikebell', 1);
       if (kit) { kit.presence(0.85); kit.haptic([40, 60, 40]); }
       after(1.6, () => openDecision());
@@ -1631,7 +1848,7 @@
                actually in. A replay taken at the drill got two serial ones. */
             if (!r || r.aborted) return;
             if (worldSfx) worldSfx('riflecock', 0.8);
-            if (r && r.ok) bank({ a: 3, note: 'You loaded on the order, in order.' });
+            if (r && r.ok) bank({ a: 3, note: 'Loaded on the order, in order.' });
             after(1.4, () => beginSerial(1));
           });
       });
@@ -1797,7 +2014,7 @@
     function doTrack() {
       if (tracked) return false;
       tracked = 1;
-      bank({ a: 3, note: 'You kept it in your sight and kept your lane.' });
+      bank({ a: 3, note: 'Held it in your sight. Kept your lane.' });
       if (kit) kit.haptic(40);
       return true;
     }
@@ -1890,6 +2107,12 @@
       booted = false; dayClock.t = 0; lastWall = 0;
       flareOn = false; flareT = 0; flareLife = 0; flare.intensity = 0;
       flare.position.set(HIS.x, 46, -72); flareBall.position.copy(flare.position); flareBall.material.opacity = 0;
+      /* v13.2: the smoke column is run state — a replay must not open with
+         the last run's trail hanging in the sky (the v8.1 law, an eighth
+         time). The light and the ball go back to their burst colours too,
+         or a replay's first burst would be red. */
+      trailClear(); flareHeadK = 1; flare.color.copy(FLARE_WHITE);
+      flareBall.material.emissive.set(0xfff0c0); flareBall.material.color.set(0xfff6e0);
       MOVER.on = false; MOVER.t = 0; MOVER.dir = 1; mover.group.position.x = MOVER.x0; mover.set(true);
       /* v13.0: DOWN, all of them — item 17's rule holds from the first frame
          of the chapter, not only between waves. (`far` is scenery and is what
@@ -1973,7 +2196,7 @@
                                    own HUD cues but this one is played through `worldSfx`, so
                                    nothing decoded it and the one time it fires was silent
                                    (the v8.0 law, a fourth time). */
-                                'targetfall', 'bikebell', 'hudlock']);
+                                'targetfall', 'bikebell', 'ghostlaugh', 'hudlock']);
 
     const readyAt = performance.now();
     return (S = {
@@ -2004,8 +2227,25 @@
       /* the film and the scenes drive the burn themselves: updateNotes
          returns early when the state is not `play`, so flareFrame does not
          run under a cutscene and a flare left to the frame would hang */
-      setFlare: (v) => { flare.intensity = v; flareBall.material.opacity = Math.min(1, v / 260); flareBallSize(); },
-      FLARE, filmKit, truck,
+      setFlare: (v) => {
+        /* the film's own burn. It also has to age the smoke the climb laid
+           down, because a cutscene never reaches `flareFrame`; and the light
+           goes back to WHITE here, since the film bursts by calling this. */
+        if (v > 0) { flareHeadK = 1; flare.color.copy(FLARE_WHITE); flareBall.material.emissive.set(0xfff0c0); flareBall.material.color.set(0xfff6e0); }
+        flare.intensity = v; flareBall.material.opacity = Math.min(1, v / 260); flareBallSize();
+        trailTick();
+      },
+      trailClear,
+      /* what the smoke column actually IS on the frame, so "there is a trail"
+         is a number a probe can read rather than a claim (v5.29's
+         `seatStats()` move) */
+      trailInfo: () => {
+        const live = trail.filter(p => p.m.visible && p.m.material.opacity > 0.02);
+        return { live: live.length,
+                 lo: live.length ? +Math.min(...live.map(p => p.m.position.y)).toFixed(1) : 0,
+                 hi: live.length ? +Math.max(...live.map(p => p.m.position.y)).toFixed(1) : 0 };
+      },
+      FLARE, FLARE_CLIMB, filmKit, truck,
       sayLine, after, dayClock, bank,
       get phase() { return phase; },
       setPhase, applyPhase, beginSerial, beginStag, beginConfuse, beginMoment, openDecision,
@@ -2065,7 +2305,7 @@
 
     step(0, () => {
       armR.visible = false;
-      stage.cycEnd(); stage.setFlare(0); stage.setMover(false);
+      stage.cycEnd(); stage.setFlare(0); stage.setMover(false); stage.trailClear();
       stage.filmKit.visible = true;
       for (const t of stage.statics) t.set(false);
       for (const t of stage.popups) t.set(true);
@@ -2122,7 +2362,14 @@
 
     /* THE LAUNCH. `flarePlace(k)` is the chapter's own arc, so what the film
        shows and what play shows are the same climb. */
-    step(24.2, () => stage.flareClimb(0));
+    /* v13.2: the climb reddens the sky as it goes, exactly as play does —
+       `flareUp` raises FLARE_CLIMB there, and a film burns its own flare
+       (the v12.1 law), so it raises the same sky here. The tween is the
+       climb's own length, so it lands with the rocket. */
+    step(24.2, () => {
+      stage.trailClear(); stage.flareClimb(0);
+      if (kit) kit.daylight(stage.FLARE_CLIMB, RISE);
+    });
     sfx(24.2, 'flarelaunch', 0.85);
     tr(24.2, APEX, (k) => stage.flareClimb(k), rawK);
     yawTo(24.1, APEX, -0.16, -0.10, smoothK);
@@ -2151,7 +2398,7 @@
        Chad reported. `beginLine` lowers them too, for a resume that never
        plays the film. */
     step(35.0, () => {
-      armR.visible = true; stage.setFlare(0);
+      armR.visible = true; stage.setFlare(0); stage.trailClear();
       for (const t of stage.statics) t.set(true);
       for (const t of stage.popups) t.set(true);
       stage.mover.set(true);
@@ -2168,12 +2415,18 @@
      C is what the rifle does. */
   const P = (s) => ({ x: s.yawPos.x, y: s.yawPos.y, z: s.yawPos.z });
 
-  /* A · KEEP YOUR ARC. REPORT IT. CARRY ON. (20.8 s)
-     He does not move. It finishes its crossing and goes into the tree line
-     without a sound — and then, from the left, the OTHER detail comes off
-     the line shouting the thing he decided not to shout. The range is
-     closed by the tower. Five men saw it; he has his own, and it is a
-     different thing from theirs, which is the lesson in a picture. */
+  /* A · KEEP YOUR ARC. REPORT IT. CARRY ON. (21.5 s)
+     He does not move. It finishes its crossing and FADES into the tree line
+     — and then, from the left, the OTHER detail comes off the line shouting
+     the thing he decided not to shout. The range is closed by the tower.
+     Five men saw it; he has his own, and it is a different thing from
+     theirs, which is the lesson in a picture.
+     v13.2, Chad: "why are there so many voicelines for that? It talks too
+     long." There were FIVE — the recruit's shout, the bunkmate's shout, the
+     encik's weapons-down, the tower's endex and the dawn — and two of them
+     say what another has just said. The bunkmate's echo and the encik's
+     order are cut; what is left is the shout he chose not to make, the
+     range being closed, and his own last line. 26.9 s -> 21.5. */
   function scArc(c, s, api) {
     const { tr, step, sfx, fade, camTo, yawTo, pitchTo, rawK, smoothK, stage, handsRoot, kit } = api;
     const P0 = P(s), HIS = stage.HIS;
@@ -2193,24 +2446,25 @@
     tr(0, 7.2, k => {
       stage.cyc.group.position.set(HIS.x - 1.2 + k * 17.5, 0, -8 - k * 2.0);
       stage.cyc.group.rotation.y = -Math.PI / 2;
-      stage.cycAlpha(k > 0.78 ? Math.max(0, (1 - k) / 0.22) : 1);
+      /* v13.2: the fade starts earlier and finishes into nothing — "every
+         appearance and exit of the cyclist should always be in a fading
+         manner to be more eerie" */
+      stage.cycAlpha(k > 0.58 ? Math.max(0, (1 - k) / 0.42) : 1);
     }, rawK);
     sfx(0.4, 'chain', 0.5);
     step(7.3, () => stage.cycEnd());
     /* 7.6 THE OTHER DETAIL COMES OFF THE LINE, to the left */
     yawTo(7.6, 9.4, -0.44, 1.15, smoothK);
     sfx(7.8, 'r4run');                     // "Get off the line! Somebody in the lalang! GO! GO!"
-    sfx(11.5, 'k4shout');                  // "Eh, what is that? The bicycle! It's floating! Look over there!"
     tr(9.4, 12.6, (k, t) => { api.camera.rotation.z = Math.sin(t * 7.5) * 0.018 * (1 - k); }, rawK);
-    sfx(15.8, 'e4down');                   // "STOP! Weapons DOWN! Muzzle down the range! DOWN!"
-    /* 16 the tower closes the range, and the lens comes back to his own lane */
-    yawTo(16.2, 19.8, 1.15, 0.0, smoothK);
-    pitchTo(16.2, 19.8, -0.02, -0.12, smoothK);
-    step(19.6, () => { api.camera.rotation.z = 0; });
-    sfx(19.9, 'rangepa', 0.5);
-    sfx(20.4, 't4endex');                  // "All lanes. Cease fire. Unload, clear weapons. The range is closed."
-    fade(25.9, 26.9, 0, 1);
-    step(27.0, () => { handsRoot.visible = true; });
+    /* 12.4 the tower closes the range, and the lens comes back to his own lane */
+    yawTo(12.4, 16.0, 1.15, 0.0, smoothK);
+    pitchTo(12.4, 16.0, -0.02, -0.12, smoothK);
+    step(15.8, () => { api.camera.rotation.z = 0; });
+    sfx(12.6, 'rangepa', 0.5);
+    sfx(13.1, 't4endex');                  // "All lanes. Cease fire. Unload, clear weapons. The range is closed."
+    fade(20.5, 21.5, 0, 1);
+    step(21.6, () => { handsRoot.visible = true; });
     /* THE DAWN — and it has to fire INSIDE the scene's own length. `c.dur` is
        the maximum t1 of the TRACKS (playCineFn), and a sting is not a track,
        so a cue written past the last track is simply never reached: all four
@@ -2219,15 +2473,24 @@
        played. It starts under the fade to black now and runs on under the
        card, which is what the note below always described, and chaptertest
        fails the build if any cue in any chapter is ever late again. */
-    sfx(26.6, 'n4dawn');
+    sfx(21.2, 'n4dawn');
     c.endFade = 1;
   }
 
-  /* B · PUT THE TORCH ON IT AND GO CLOSER (22 s)
+  /* B · PUT THE TORCH ON IT AND GO CLOSER (17.6 s)
      Forward of the line, which the brief said never to do. The safety
      officer behind him, the tower calling a man on the range, the walk down
      the arc under a dying flare — and the ground where it was is empty. The
-     chain starts again BEHIND him, between him and the line. */
+     bell starts again BEHIND him, between him and the line.
+     v13.2, Chad: "player needs a voiceline as he walks into the range and
+     say something like 'Somehow I feel drawn to investigate more, surely my
+     eyes werent playing tricks on me', ghost cyclist needs to have its ding
+     sound and laughing sound. And shorten it as he walks for too long. Make
+     it quicker. Encik has a voiceline that panic shouts 'get back here!
+     now!' before the scene fades into black." All five: `n4draw` in his own
+     words as he steps off, the bell riding his alpha (the bed), the laugh
+     when the turn finds him, the walk 10 s -> 6.4, and `e4back` under the
+     black. 22 s -> 17.6. */
   function scCloser(c, s, api) {
     const { tr, step, sfx, fade, camTo, yawTo, pitchTo, rawK, smoothK, stage, handsRoot, kit } = api;
     const P0 = P(s), HIS = stage.HIS;
@@ -2239,108 +2502,187 @@
     fade(0, 0.25, 0, 0);
     tr(0, 16.0, k => stage.setFlare(120 * Math.max(0, 1 - k * 1.2)), rawK);
     /* 0–2.4 he stands. 2.4–11 over the berm and down the arc. */
-    sfx(0.6, 'e4line');                    // "LANE SIX! GET BACK ON THE LINE! NOW!"
-    sfx(4.6, 'rangepa', 0.5);
-    sfx(5.2, 't4man');                     // "ALL LANES CEASE FIRE! Man on the range! Lane six is forward of the line!"
-    camTo(0, 2.4, { x: P0.x, y: 1.62, z: P0.z }, { x: HIS.x, y: 1.66, z: -1.4 }, smoothK);
-    camTo(2.4, 12.4, { x: HIS.x, y: 1.66, z: -1.4 }, { x: HIS.x + 0.6, y: 1.62, z: -9.6 }, smoothK);
-    tr(2.4, 12.4, (k, t) => { api.yaw.position.y = 1.62 + Math.sin(t * 5.2) * 0.035; }, rawK);
-    yawTo(0, 12.4, 0.0, 0.06, smoothK);
-    pitchTo(0, 12.4, -0.04, -0.34, smoothK);
-    step(2.5, () => { stage.cycEnd(); });   // it is not there when he gets there
-    /* 12.4–16 the torch on empty ground, tyre tracks that stop */
-    pitchTo(12.4, 16.0, -0.34, -0.62, smoothK);
-    yawTo(12.4, 16.0, 0.06, -0.30, smoothK);
-    /* 16.4 THE CHAIN, BEHIND HIM — and the turn */
-    sfx(16.4, 'chain', 0.85);
-    yawTo(17.2, 20.0, -0.30, Math.PI + 0.04, smoothK);
-    pitchTo(17.2, 20.0, -0.62, -0.06, smoothK);
-    step(19.0, () => { stage.cycStart(3); stage.cyc.group.position.set(HIS.x + 0.4, 0, -2.6); stage.cyc.group.rotation.y = 0; });
-    sfx(20.2, 'bikebell', 0.9);
-    tr(20.2, 22.0, (k, t) => { api.camera.rotation.z = Math.sin(t * 9) * 0.02 * (1 - k); }, rawK);
-    fade(21.4, 22.6, 0, 1);
-    step(22.8, () => { handsRoot.visible = true; api.camera.rotation.z = 0; if (kit && kit.torchOn) kit.torchOn(false); });
-    sfx(22.4, 'n4dawn');                   // the dawn, under the card (scene A's note)
+    sfx(0.6, 'e4line');                    // "LANE SIX! GET BACK ON THE LINE! NOW!" (3.08 s -> 3.68)
+    sfx(4.0, 'n4draw');                    // "Somehow I feel drawn to investigate more..." (5.15 s -> 9.15)
+    /* v13.2: THE WALK IS 6.4 s, not 10. Chad's "shorten it as he walks for
+       too long. Make it quicker." — same start, same end, 1.56x the pace,
+       and the head-bob frequency goes with it so the stride still reads. */
+    camTo(0, 2.0, { x: P0.x, y: 1.62, z: P0.z }, { x: HIS.x, y: 1.66, z: -1.4 }, smoothK);
+    camTo(2.0, 8.4, { x: HIS.x, y: 1.66, z: -1.4 }, { x: HIS.x + 0.6, y: 1.62, z: -9.6 }, smoothK);
+    tr(2.0, 8.4, (k, t) => { api.yaw.position.y = 1.62 + Math.sin(t * 6.4) * 0.035; }, rawK);
+    yawTo(0, 8.4, 0.0, 0.06, smoothK);
+    pitchTo(0, 8.4, -0.04, -0.34, smoothK);
+    /* it is not there when he gets there — and it FADES out rather than
+       being switched off (Chad: every exit fades) */
+    step(2.1, () => { stage.cycEnd(true); });
+    sfx(9.4, 'rangepa', 0.5);
+    sfx(9.9, 't4man');                     // "ALL LANES CEASE FIRE! Man on the range!..." (5.88 s -> 15.78)
+    /* 8.4–11 the torch on empty ground, tyre tracks that stop */
+    pitchTo(8.4, 11.0, -0.34, -0.62, smoothK);
+    yawTo(8.4, 11.0, 0.06, -0.30, smoothK);
+    /* 11.4 THE BELL, BEHIND HIM — and the turn. `cycStart(3, true)` fades
+       him IN where v12.1 snapped him on, and the bed puts the ding under
+       him for as long as he is there. */
+    sfx(11.4, 'chain', 0.85);
+    yawTo(12.0, 14.6, -0.30, Math.PI + 0.04, smoothK);
+    pitchTo(12.0, 14.6, -0.62, -0.06, smoothK);
+    step(13.6, () => { stage.cycStart(3, true); stage.cyc.group.position.set(HIS.x + 0.4, 0, -2.6); stage.cyc.group.rotation.y = 0; });
+    sfx(14.8, 'bikebell', 0.9);
+    sfx(15.2, 'ghostlaugh', 0.75);         // Chad: "ghost cyclist needs to have its ding sound and laughing sound"
+    tr(14.8, 17.0, (k, t) => { api.camera.rotation.z = Math.sin(t * 9) * 0.02 * (1 - k); }, rawK);
+    /* and the encik, from the line behind him, as the light goes */
+    sfx(15.9, 'e4back');                   // "GET BACK HERE! NOW!" (1.88 s -> 17.78)
+    fade(16.6, 17.6, 0, 1);
+    step(17.8, () => { handsRoot.visible = true; api.camera.rotation.z = 0; if (kit && kit.torchOn) kit.torchOn(false); });
+    sfx(17.3, 'n4dawn');                   // the dawn, under the card (scene A's note)
     c.endFade = 1;
   }
 
-  /* C · FIRE AT IT UNTIL IT STOPS COMING (21 s)
-     The rifle stays up — this is the one scene the weapon belongs in. Three
-     more rounds; each flash empties the ground and each flare puts it back
-     nearer, until it is close enough to see there is no face on it, and it
-     does not move. Then the whole line is shouting at HIM, and the rifle is
-     taken out of his hands. */
+  /* C · FIRE AT IT UNTIL IT STOPS COMING (18.4 s)
+     The rifle stays up — this is the one scene the weapon belongs in.
+     v13.2, Chad: "the rifle shooting has no recoil or effects, and the
+     ghost cyclist needs to fade in and out too, with its ding sound, and
+     follow the rhythm i mentioned above, the change in direction, the
+     cyclist coming closer... But make this cutscene quicker and limit to
+     just 2 shots, before the third one, where the cyclist appears behind
+     the player, and the player camera does a 180 turn, sees the cyclist and
+     gives a shocked gasp sound."
+     So: TWO rounds, each a real shot (`kit.weaponShot` — the Shoot take,
+     the muzzle flash, the light and the camera kick, which is what "no
+     recoil or effects" named); each one FADES him out and he fades back
+     NEARER and going the OTHER way, which is play's own rhythm shown to a
+     player who chose not to find it out; and then the third press finds
+     nothing downrange because he is BEHIND, the lens whips round, and the
+     gasp. 21 s -> 18.4. */
   function scFire(c, s, api) {
     const { tr, step, sfx, fade, yawTo, pitchTo, rawK, smoothK, stage, kit } = api;
     const HIS = stage.HIS;
-    const at = (z, x) => { stage.cycStart(3); stage.cyc.group.position.set(HIS.x + (x || 0), 0, z); stage.cyc.group.rotation.y = Math.PI; };
+    /* `at(z, x, ry)`: fade him IN there, facing the line unless a shot has
+       turned him. The `true` is the whole of Chad's "fade in and out". */
+    const at = (z, x, ry) => {
+      stage.cycStart(3, true);
+      stage.cyc.group.position.set(HIS.x + (x || 0), 0, z);
+      stage.cyc.group.rotation.y = (ry === undefined) ? Math.PI : ry;
+    };
     step(0, () => {
       if (kit) { if (kit.hurt) kit.hurt(null); if (kit.root) kit.root(false); if (kit.weaponOut) kit.weaponOut(true); }
       stage.setMover(false); at(-8);
     });
     fade(0, 0.25, 0, 0);
-    yawTo(0, 21.0, 0.0, 0.0, rawK);
+    yawTo(0, 12.6, 0.0, 0.0, rawK);
     pitchTo(0, 2.4, -0.04, -0.02, smoothK);
-    /* three rounds: flash, gone, back nearer, on a flare each time */
-    const round = (t0, z) => {
-      sfx(t0, 'rifleshot', 0.9);
-      step(t0, () => { stage.cycEnd(); stage.setFlare(240); });
+    /* A ROUND: a real shot out of the engine, then he fades out, and fades
+       back nearer and turned the other way. `kit.weaponShot()` is the visual
+       half of `weaponFire` — the take, the flash, the light and the kick —
+       because a scene must not spend a round or raycast a serial. */
+    const round = (t0, z, x, ry) => {
+      sfx(t0, 'rifleshot', 0.9);            // the report is the scene's, always
+      step(t0, () => {
+        if (kit && kit.weaponShot) kit.weaponShot();   // the take, the flash, the kick
+        stage.cycEnd(true); stage.setFlare(240);
+      });
       tr(t0, t0 + 0.14, k => stage.setFlare(240 * (1 - k)), rawK);
-      step(t0 + 1.9, () => { at(z); stage.setFlare(140); });
-      tr(t0 + 1.9, t0 + 3.4, k => stage.setFlare(140 * (1 - 0.55 * k)), rawK);
-      sfx(t0 + 2.0, 'chain', 0.6);
+      sfx(t0 + 0.5, 'ghostlaugh', 0.6);     // he laughs when he is shot at
+      step(t0 + 1.6, () => { at(z, x, ry); stage.setFlare(140); });
+      tr(t0 + 1.6, t0 + 3.0, k => stage.setFlare(140 * (1 - 0.55 * k)), rawK);
+      sfx(t0 + 1.9, 'bikebell', 0.8);       // and the bell comes back with him
     };
-    round(1.2, -6.2); round(5.0, -4.6); round(8.8, -3.1);
-    /* 12.6 it is close, and it is not a man */
-    tr(12.6, 17.0, k => stage.setFlare(62 * (1 - k)), rawK);
-    pitchTo(12.6, 15.4, -0.02, 0.02, smoothK);
-    sfx(13.0, 'ghostlaugh', 0.55);
-    sfx(15.6, 't4who');                    // "CEASE FIRE! Who fired? Lane five. What are you firing at?"
-    step(16.0, () => { if (kit && kit.weaponOut) kit.weaponOut(false); });
-    sfx(21.2, 'e4down');                   // "STOP! Weapons DOWN! Muzzle down the range! DOWN!" (t4who runs to 20.85)
-    tr(16.0, 18.4, (k, t) => { api.camera.rotation.z = Math.sin(t * 6.5) * 0.02 * (1 - k); }, rawK);
-    pitchTo(16.0, 20.0, 0.02, -0.34, smoothK);
-    step(20.2, () => { api.camera.rotation.z = 0; });
-    fade(25.2, 26.2, 0, 1);
-    sfx(25.8, 'n4dawn');                   // the dawn, under the card (scene A's note)
+    /* nearer each time, and the second one turned a quarter so the change of
+       direction reads even standing still */
+    round(1.2, -5.6, 1.1, Math.PI);
+    round(5.0, -3.4, -0.9, Math.PI - 0.6);
+    /* 8.8 THE THIRD PRESS — and the arc is empty. He is behind. */
+    sfx(8.8, 'rifleshot', 0.9);
+    step(8.8, () => {
+      if (kit && kit.weaponShot) kit.weaponShot();
+      stage.cycEnd(true); stage.setFlare(200);
+    });
+    tr(8.8, 8.98, k => stage.setFlare(200 * (1 - k)), rawK);
+    tr(9.0, 14.0, k => stage.setFlare(70 * (1 - k)), rawK);
+    sfx(9.9, 'bikebell', 0.95);             // BEHIND him
+    /* the 180. `yawTo` takes the short way, so this is written as one turn
+       to PI and not as two. */
+    yawTo(10.2, 11.4, 0.0, Math.PI, smoothK);
+    step(10.9, () => { at(2.4, 0.5, 0); });  // standing between him and the line, facing him
+    sfx(11.5, 'n4gasp');                    // the shocked gasp (1.07 s)
+    tr(11.4, 13.2, (k, t) => { api.camera.rotation.z = Math.sin(t * 9) * 0.026 * (1 - k); }, rawK);
+    sfx(12.6, 'ghostlaugh', 0.8);
+    sfx(13.4, 't4who');                     // "CEASE FIRE! Who fired? Lane five..." (5.25 s -> 18.65)
+    step(13.8, () => { if (kit && kit.weaponOut) kit.weaponOut(false); });
+    pitchTo(13.4, 16.6, 0.02, -0.30, smoothK);
+    step(16.8, () => { api.camera.rotation.z = 0; });
+    fade(17.4, 18.4, 0, 1);
+    sfx(18.0, 'n4dawn');                    // the dawn, under the card (scene A's note)
     c.endFade = 1;
   }
 
-  /* D · GET UP AND RUN (18.6 s)
-     Off the line, the rifle dropped, the lalang — and straight into the
-     other detail running the same way, shouting the same thing. Nobody
-     looks back down the arc. */
+  /* D · GET UP AND RUN (13.4 s)
+     v13.2, Chad: "the player should sound scared while running, heavy
+     breathing, with voiceline. The player runs a few steps away and then
+     faints the same way he would faint if his sanity went to 0. The
+     cutscene then fades into black."
+     So the run is SHORT — six metres, not the whole way back to the ammo
+     point — and it ends in the engine's own faint, beat for beat: the whip
+     up, the decaying judder, the fall under gravity, the settle onto his
+     side with the horizon vertical, and the dark. The two shouts from the
+     other detail are gone with the long run they were paced against; what
+     is left is his own voice, his breathing, and the ground.
+     The faint here is a COPY of `scFaint`'s shape, not a call to it: the
+     engine's faint ends a run at sanity zero, and this is a chapter ending
+     at a choice. Same picture, different meaning. 18.6 s -> 13.4. */
   function scRun(c, s, api) {
     const { tr, step, sfx, fade, camTo, yawTo, pitchTo, rawK, smoothK, stage, handsRoot, kit } = api;
-    const P0 = P(s), HIS = stage.HIS, AMMO = stage.AMMO;
+    const P0 = P(s);
     step(0, () => {
       handsRoot.visible = false;
       if (kit) { if (kit.hurt) kit.hurt(null); if (kit.root) kit.root(false); if (kit.weaponOut) kit.weaponOut(false); }
       stage.cycStart(3); stage.setMover(false);
     });
     fade(0, 0.25, 0, 0);
-    tr(0, 12.0, k => stage.setFlare(110 * Math.max(0, 1 - k * 1.4)), rawK);
+    tr(0, 8.0, k => stage.setFlare(110 * Math.max(0, 1 - k * 1.4)), rawK);
     sfx(0.3, 'bikebell', 0.85);
-    /* 0.6 the turn and the run back past the ammo point */
-    yawTo(0.6, 2.2, 0.0, Math.PI - 0.2, smoothK);
-    camTo(1.4, 10.6, { x: P0.x, y: 1.62, z: P0.z }, { x: AMMO.x + 1.2, y: 1.62, z: AMMO.z + 2.6 }, rawK);
-    tr(1.4, 10.6, (k, t) => {
+    /* 0.6 the turn, and SIX METRES of running — long enough to be a run,
+       short enough that the faint is the thing the scene is about */
+    yawTo(0.6, 2.0, 0.0, Math.PI - 0.2, smoothK);
+    camTo(1.2, 6.9, { x: P0.x, y: 1.62, z: P0.z }, { x: P0.x - 1.6, y: 1.62, z: P0.z + 6.0 }, rawK);
+    tr(1.2, 6.9, (k, t) => {
       api.yaw.position.y = 1.62 + Math.abs(Math.sin(t * 8.4)) * 0.075;
       api.camera.rotation.z = Math.sin(t * 8.4) * 0.028;
     }, rawK);
-    pitchTo(1.4, 6.0, -0.04, -0.16, smoothK);
-    sfx(2.0, 'r4run');                     // "Get off the line! Somebody in the lalang! GO! GO!"
-    sfx(6.0, 'k4shout');                   // "Eh, what is that? The bicycle! It's floating! Look over there!"
-    yawTo(6.4, 8.6, Math.PI - 0.2, Math.PI + 0.42, smoothK);
-    /* 10.6 he stops at the tonner and nobody turns round */
-    tr(10.6, 12.2, (k, t) => { api.camera.rotation.z = Math.sin(t * 8.4) * 0.028 * (1 - k); api.yaw.position.y = 1.62 + Math.abs(Math.sin(t * 8.4)) * 0.075 * (1 - k); }, rawK);
-    step(12.3, () => { api.camera.rotation.z = 0; api.yaw.position.y = 1.62; });
-    sfx(12.6, 'rangepa', 0.5);
-    sfx(13.2, 't4endex');                  // "All lanes. Cease fire. Unload, clear weapons. The range is closed."
-    pitchTo(12.4, 16.0, -0.16, -0.05, smoothK);
-    fade(18.6, 19.6, 0, 1);
-    step(19.8, () => { handsRoot.visible = true; });
-    sfx(19.4, 'n4dawn');                   // the dawn, under the card (scene A's note)
+    pitchTo(1.2, 5.0, -0.04, -0.16, smoothK);
+    /* his own voice, then his breathing — laid out against their MEASURED
+       lengths so the two cannot stack (n4runD 2.51 -> 3.51, n4pant 3.16 ->
+       6.96, and the faint's own line at 7.5) */
+    sfx(1.0, 'n4runD');                    // "No. No, no— I'm not staying out here!"
+    sfx(3.8, 'n4pant');                    // the breathing
+    /* 6.9 THE FAINT — the engine's own shape (scFaint), in the chapter */
+    step(6.9, () => { api.camera.rotation.z = 0; api.yaw.position.y = 1.62; });
+    sfx(7.0, 'boom');
+    pitchTo(7.0, 7.38, -0.16, 0.62, k => k * k);          // the whip: eyes roll skyward
+    tr(7.0, 8.7, (k, t) => {                               // the decaying judder
+      const e = t - 7.0, decay = Math.exp(-2.2 * e);
+      api.yaw.rotation.y = (Math.PI - 0.2) + Math.sin(e * 31) * 0.05 * decay;
+      api.camera.rotation.z = Math.sin(e * 23 + 1.7) * 0.10 * decay;
+    }, rawK);
+    tr(7.45, 8.35, k => { api.yaw.position.y = 1.62 - (1.62 - 0.42) * k * k; }, rawK);   // the fall
+    sfx(8.28, 'kick');
+    pitchTo(7.9, 8.5, 0.62, -0.12);
+    tr(8.35, 8.75, k => { api.yaw.position.y = 0.42 + Math.sin(Math.PI * k) * 0.06; }, rawK);
+    /* onto his side: the horizon goes vertical, cheek on the sand */
+    tr(8.6, 10.1, k => { api.camera.rotation.z = 0.02 + 1.30 * k; }, rawK);
+    pitchTo(8.6, 10.1, -0.12, -0.05);
+    tr(8.7, 10.2, k => { api.yaw.position.y = 0.48 - 0.13 * k; }, rawK);
+    tr(10.1, 11.9, (k, t) => { api.camera.rotation.z = 1.32 + Math.sin(t * 1.4) * 0.02; }, rawK);
+    fade(11.6, 12.8, 0, 1);
+    /* and everything the faint moved is put BACK — a scene that leaves the
+       lens on its side and the eye at 0.35 m hands play a man lying down
+       (the v8.1 law in its camera form; `restore()` owns the world, not the
+       camera the scene drove) */
+    step(13.0, () => {
+      handsRoot.visible = true;
+      api.camera.rotation.z = 0; api.yaw.position.y = 1.62;
+    });
+    sfx(12.4, 'n4dawn');                   // the dawn, under the card (scene A's note)
     c.endFade = 1;
   }
 

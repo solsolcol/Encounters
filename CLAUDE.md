@@ -3350,6 +3350,76 @@ What the baseline contains, by release:
   8.4 MB + 3.1 MB + 1.7 MB of source → 609 + 184 + 94 KB. Three credit rows.
   docs/V13.1-THE-FLASH-AND-THE-AMMO.md is the build's memory;
   `tools/prepmuzzle.mjs` and `tools/prepammo.mjs` are the recipes.
+- **v13.2** THE FLARE, THE RHYTHM, AND THE FOUR SCENES — Chad's nine notes on
+  v13.1, all episode 2 chapter 4 but the outcome card's conduct block.
+  `src/main.js` changes exactly three things — `kit.weaponShot`, the conduct
+  block's markup, and rows in `STING_SAMPLE` and the take sets — and episode 1
+  declares no weapon and banks no conduct in play, so it is unchanged by
+  construction and was run as the control.
+  **THE FLARE IS A SMOKY RED TRAIL** (*"make it look more like a smokey bright
+  red trail shooting into the sky, lighting up the sky"*): a pool of 40
+  canvas-drawn billboards (no download, CSP-safe) laid down along the arc every
+  2.8 % of the climb and aged on WALL time, hot near the head and greying and
+  spreading behind it, NormalBlending because additive smoke over a night sky
+  is a bright streak and not smoke (the v8.8 law); the light red through the
+  climb and white at the pop; and `FLARE_CLIMB`, a third-strength red-pushed
+  sky tweened in over the climb's own length and handed to `FLARE` at the
+  burst, at the night's own fog of 0.012 exactly — a flare must never thicken
+  the air (v12.3) and a climb that is not yet lighting the range must not thin
+  it either. Two things were photographed and changed: the BALL stays white,
+  because driving its emissive red rendered it a dark disc at the head of its
+  own plume, and it is 1.6x while it climbs so the motor is the brightest thing
+  in the picture. And one law, paid for by a photograph after every number said
+  the trail was there: **the arc is a FUNCTION, not a side effect on
+  `flare.position`.** The catch-up loop asked the light where it was, and
+  `flarePlace` had already moved it to the CURRENT k — so at one frame a
+  second, which is what a hot phone is and the only device Chad plays on, all
+  23 puffs landed in ONE place at the head. `flarePointAt(k)` answers where the
+  rocket WAS, and the column is a column at any frame rate.
+  **THE CYCLIST'S RHYTHM** is Chad's, beat for beat: a `bikebell` BED keyed to
+  his alpha and nothing else (so the ding rides him in play AND in the scenes,
+  which is what "always" means), `ghostlaugh` on the frame a round lands, a
+  FADE instead of a switch at every appearance and every exit, and 1.5 s later
+  he is back one pass NEARER and going the OTHER way. The direction is the
+  pass's PARITY (`passDir`), not a stored flag, so it cannot drift out of step
+  with the distance and a resume — which restores `pass` and nothing else —
+  restores the direction with it (the v7.3 law). Measured on the shipped build:
+  pass 0 from x −22.1 at z −46 facing +x, pass 1 from x +29.9 at z −33 facing
+  −x, pass 2 from −22.1 at z −22, and pass 3 the STOPPED one at z −8 facing the
+  player, scales 1.85 / 1.55 / 1.25 / 1.00. That last one is now SHOWN before
+  the bell — v12.3 rang the bell on the third shot instead, so the one
+  appearance the whole escalation was building to never happened.
+  **THREE CUTS**: the decision's timer is gone (*"it does nothing to the
+  gameplay"*), the radio hotspot is gone with its two words and its report (his
+  call — the other shooters' lines carry the beat), and the wait after the
+  buddy's "you never say anything after" is 16 s -> 8.
+  **THE CONDUCT BLOCK** was every banked note joined into one run-on sentence
+  behind a heading that named nothing (*"so long and meaningless ... I dont
+  even understand what it is trying to say"*). It is a LIST now — a heading
+  that says **What you did**, one short line per thing he did, the stat total
+  on its own line — built with `createElement`, because a note is chapter text
+  and the sheet can put anything in it.
+  **AND THE FOUR SCENES**, each to his spec. A: 26.9 s -> 21.5, two of five
+  voice lines cut (the bunkmate's echo and the encik's order both say what
+  another line has just said). B: 22 -> 17.6, with `n4draw` in his own words as
+  he steps off the line, the walk 10 s -> 6.4 at the same start and end, the
+  bell and the laugh behind him, and the encik's `e4back` — "GET BACK HERE!
+  NOW!" — under the black. C: 21 -> 18.4, TWO rounds instead of three and each
+  one a REAL shot through the new `kit.weaponShot` (the Shoot take, the muzzle
+  flash, the light, the weapon's own spring), then a third press that finds an
+  empty arc because he is BEHIND, a 180 turn and `n4gasp`. D: 18.6 -> 13.4, six
+  metres of running on `n4runD` and `n4pant`, and then the engine's own FAINT
+  beat for beat — the whip, the judder, the fall, the settle onto his side —
+  a COPY of `scFaint`'s shape rather than a call to it, because the engine's
+  faint ends a run at sanity zero and this is a chapter ending at a choice.
+  `kit.weaponShot` exists because a cutscene CANNOT call `weaponFire` — that
+  spends a round, raycasts the live bank and reports a hit — and it is
+  deliberately silent (the report stays a scheduled cue, where the cue log sees
+  it and `chaptertest` times it, and where a rifle whose bytes never arrived
+  still makes a noise) and deliberately does not apply `weapon.kick` (that
+  writes the pitch a cutscene owns and re-applies every frame, v5.30). Five new
+  takes; sheet v66. docs/V13.2-THE-FLARE-THE-RHYTHM-AND-THE-SCENES.md is the
+  build's memory.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -3862,11 +3932,13 @@ the run exactly as it always ended a last chapter.
 Next up: **episode 2's chapter 5**, THE LAST NIGHT — the payoff the case file names: he stops looking and it stops (rifle mode shipped at v12.0, chapter 4, The Cyclist, at v12.1, and its range made playable at v12.2 — docs/V12.0-E2C4-PLAN.md, docs/V12.2-THE-RANGE-THAT-WORKS.md)
 (chapter 1, The Worst Bed, shipped at v7.1 — `src/chapters/e2/e2c1.js`;
 chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 3, The Pressure, at v11.0 and revised at v11.1–v11.9 and v12.5 — `src/chapters/e2/e2c3.js`; chapter 4, The Cyclist, at v12.1, rebuilt at v12.2 and its ghost given back its body at v12.4 — `src/chapters/e2/e2c4.js`;
+its flare, its cyclist's rhythm and all four outcome scenes rebuilt at v13.2
+(docs/V13.2-THE-FLARE-THE-RHYTHM-AND-THE-SCENES.md);
 chapters 1 and 2's lessons rewritten at v11.10, chapter 1 last revised at v10.8;
 ALL FOUR episode-2 chapters were revised at v13.0 against Chad's twenty-two
 notes — docs/V13.0-PLAN.md and docs/V13.0-THE-TWENTY-TWO.md — and chapter 4
 gained its muzzle flash and a real ammo point at v13.1
-(docs/V13.1-THE-FLASH-AND-THE-AMMO.md); the rifle
+(docs/V13.1-THE-FLASH-AND-THE-AMMO.md) and Chad's nine notes at v13.2; the rifle
 viewmodel's placement and material are measured in
 docs/E2-SOLDIER-MODELS.md §8), and the still-outstanding job of replacing chapter 1's
 placeholder choices with the real "THE OFFERINGS" data in

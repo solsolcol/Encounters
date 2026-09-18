@@ -338,8 +338,20 @@ body.finePtr .wpnBtn{position:relative;margin-bottom:12px}
 #dclock .track i{display:block;height:100%;width:100%;background:#E24A3A;
   box-shadow:0 0 10px rgba(226,74,58,.7);transition:width .12s linear}
 /* v7.0: the conduct line under the stat rows */
+/* v13.2, Chad: "why is there the 'in the field' text that is so long and
+   meaningless? ... I dont even understand what it is trying to say." It was
+   every banked note joined into ONE run-on sentence behind a heading that
+   named nothing. It is a LIST now — a heading, one line per thing he did,
+   and the stat total on its own line — and the heading says what it is. */
 #conduct{margin:-10px 0 20px;font-family:var(--ui);font-size:.98rem;color:#CDD2DB;
-  border-left:2px solid var(--sodium);padding:6px 12px;background:rgba(255,179,103,.06)}
+  border-left:2px solid var(--sodium);padding:8px 12px;background:rgba(255,179,103,.06)}
+#conduct .chead{display:block;font-size:.76rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--sodium);opacity:.9;margin-bottom:5px}
+#conduct ul{margin:0;padding:0 0 0 16px;list-style:none}
+#conduct li{position:relative;margin:2px 0;line-height:1.35}
+#conduct li:before{content:'';position:absolute;left:-12px;top:.55em;width:5px;height:5px;
+  border-radius:50%;background:var(--sodium);opacity:.75}
+#conduct .ctot{display:block;margin-top:6px;font-size:.88rem;color:#9BA3B0}
 /* v7.0: the event overlay */
 #event{z-index:8;align-items:flex-end;justify-content:center;
   padding-bottom:clamp(96px,18vh,170px)}

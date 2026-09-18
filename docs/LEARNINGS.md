@@ -4226,3 +4226,58 @@ from `requestAnimationFrame` so SEVERAL consecutive drawn frames carry it, and
 take several shots a second apart rather than one. The same probe that saw
 nothing saw it in two of six frames once it re-fired every rAF. And poll the
 thing that is DRAWN (the group's own `visible`), never the clock behind it.
+
+## v13.2 · An arc is a function, not a side effect on the thing that rides it
+
+The flare's smoke trail lays a puff every 2.8 % of the climb. At 30 fps the
+climb advances about 1.9 % a frame, so the catch-up loop usually drops one
+puff, at the head — and reading `flare.position` for where to put it is
+right. At ONE FRAME A SECOND, which is what a hot phone is and the only
+device Chad plays on, `k` jumps by 0.65 in a frame and the loop drops
+twenty-three puffs — all of them at `flare.position`, which `flarePlace` had
+already moved to the CURRENT k. The whole column landed in one blob at the
+head.
+
+Every number said it was fine: `trailInfo()` reported 23 live puffs, and it
+was telling the truth. Only the PHOTOGRAPH showed the trail was a dot.
+
+The fix is the general form: **anything laid down ALONG a path takes its
+position from a function of the path parameter, never from the object that
+is travelling it** — that object is already somewhere else. `flarePointAt(k)`
+is that function and `flarePlace` is now written in terms of it, so the arc
+the head takes and the arc the smoke marks cannot diverge.
+
+Same family as v13.0's "a fixed world size is not a size" and v8.8's "what is
+drawn and what is tested must be the same number": a value that is correct
+for the common case and silently wrong for the slow one.
+
+## v13.2 · A verb a CUTSCENE calls must not own the sound
+
+`kit.weaponShot()` gives a scene the visual half of firing — the take, the
+muzzle flash, the light, the weapon's own recoil spring — because a cutscene
+cannot call `weaponFire` (that spends a round, raycasts the live bank and
+reports a hit to the chapter). The first version also played the report, and
+the scene carried `else sfx(t0, 'rifleshot')` as a fallback. Both were wrong:
+
+- `sfx(t, name)` inside a `step` callback SCHEDULES a cue at a time that has
+  already passed, so the fallback could never fire. A fallback that cannot
+  run is worse than none, because it reads as cover.
+- A sound owned by the verb is invisible to `__enc.stings()` and to
+  `chaptertest`'s cue-timing walk, and it disappears entirely if the weapon's
+  bytes never arrived — a failed download would cost the chapter its gunshot
+  (v4.7: a failed download costs a nicer prop, never the chapter).
+
+So the report stays a scheduled `sfx` cue in the scene and the verb is
+silent. It also does NOT apply `weapon.kick`: that writes `pitch.rotation.x`,
+which a cutscene owns and re-applies from its own tracks every frame
+(v5.30's law), so the kick would be erased on the next frame and fight the
+shot's framing while it lasted. **The gun moves; the lens is the scene's.**
+
+## v13.2 · `pkill -f <pattern>` matches the shell that runs it
+
+`pkill -f dbg-v132c; node runtests.mjs ...` killed the harness batch, because
+the background shell's own command line contains the pattern. The same trap
+took out five watcher loops earlier in the session (`until ! pgrep -f "node
+dbg..."` never exits, because pgrep sees itself). Use `ps -eo args | grep
+"[r]untests"` — the bracket keeps the pattern from matching its own grep —
+or run the kill in a command of its own.

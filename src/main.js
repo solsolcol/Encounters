@@ -2244,7 +2244,22 @@ function paintConduct(cd) {
   const parts = [];
   if (cd.s) parts.push(sg(cd.s) + ' ' + T('hud.sanity'));
   if (cd.a) parts.push(sg(cd.a) + ' ' + T('hud.awareness'));
-  el.textContent = T('card.conduct') + ': ' + (cd.notes.join(' ') || '') + (parts.length ? ' (' + parts.join(', ') + ')' : '');
+  /* v13.2: a LIST, not a paragraph. Built with createElement rather than
+     innerHTML because a note is chapter text and the sheet can put anything
+     in it — the same reason every other string in this file reaches the
+     screen through textContent. */
+  el.textContent = '';
+  const h = document.createElement('span'); h.className = 'chead'; h.textContent = T('card.conduct');
+  el.appendChild(h);
+  if (cd.notes.length) {
+    const ul = document.createElement('ul');
+    for (const n of cd.notes) { const li = document.createElement('li'); li.textContent = n; ul.appendChild(li); }
+    el.appendChild(ul);
+  }
+  if (parts.length) {
+    const t = document.createElement('span'); t.className = 'ctot'; t.textContent = parts.join(' · ');
+    el.appendChild(t);
+  }
   el.classList.remove('hide');
 }
 /* a stat moved by play, with the same tick the drain uses */
@@ -3264,6 +3279,34 @@ const KIT = {
   weaponAds: v => { if (v === undefined) return weaponAds; weaponAds = !!v; weaponAdsSync(); return weaponAds; },
   weaponAvail,
   fire: weaponFire, reload: weaponReload,
+  /* v13.2, Chad on e2c4's scene C: "the rifle shooting has no recoil or
+     effects." It had none because a CUTSCENE cannot call `weaponFire` —
+     that is the player's path: it spends a round, raycasts into the live
+     serial's bank and reports a hit to the chapter, none of which a scene
+     wants. The visual half is its own verb now: the Shoot take, the shot,
+     the muzzle flash, the light and the camera kick, and nothing else. It
+     is a no-op unless the weapon is actually out, so a scene that hid the
+     rifle cannot fire an invisible one.
+     It is deliberately SILENT: the report stays a scheduled `sfx` cue in the
+     scene, where the cue log can see it and `chaptertest` checks its timing,
+     and where a rifle whose bytes never arrived still makes a noise. A verb
+     that carried the sound would have to be the only thing that could, and a
+     failed download would cost the chapter its gunshot (v4.7's rule). */
+  weaponShot: () => {
+    if (!weaponDecl || !weaponProp || !weaponShown) return false;
+    if (weaponPlay('shoot')) weaponBusy = null;
+    haptic([30, 20, 40]);
+    weaponFlashT = weaponDecl.flashSecs || 0.09;
+    weaponFlashDrawn = false;
+    weaponFlashFire();
+    /* the WEAPON's own spring, and deliberately not `weaponDecl.kick`: the
+       camera kick writes `pitch.rotation.x`, which a cutscene owns and
+       re-applies from its own tracks on every frame (v5.30's law), so it
+       would be erased on the next frame and fight the shot's framing while
+       it lasted. The gun moves; the lens is the scene's. */
+    weaponRecoilFire();
+    return true;
+  },
   ammo: (rounds, mags) => { if (rounds !== undefined) weaponRounds = Math.max(0, rounds | 0); if (mags !== undefined) weaponMags = Math.max(0, mags | 0); return { rounds: weaponRounds, mags: weaponMags }; },
   setPhase: v => { kitPhase = (v === undefined) ? null : v; }, getPhase: () => kitPhase,
   choices: () => ({ ...runChoices }),
@@ -5066,7 +5109,10 @@ const TEEN_TAKES = new Set([
   'n3A', 'n3B', 'n3C', 'n3D',
   // v12.1: EPISODE 2 CHAPTER 4, The Cyclist: the two film lines, the radio report, the two on the line, the four card lines, the dawn
   'n4pro1', 'n4pro2', 'n4report', 'n4notarget', 'n4back', 'n4dawn',
-  'n4A', 'n4B', 'n4C', 'n4D']);
+  'n4A', 'n4B', 'n4C', 'n4D',
+  // v13.2: the rebuilt outcome scenes — the walk forward, the gasp on the
+  // turn, the run, and the breathing under it
+  'n4draw', 'n4gasp', 'n4runD', 'n4pant']);
 /* The rest of the cast. They share `voiceOut` and the duck, but not the
    boost — see voiceStage() above. */
 const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
@@ -5099,7 +5145,7 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
      buddy on lane five, and the two who come off the other detail */
   't4load', 't4ready', 't4fire1', 't4fire2', 't4fire3', 't4cease', 't4who', 't4neg',
   't4roger', 't4endex', 't4man',
-  'e4wait', 'e4down', 'e4line', 'b4stag', 'b4there', 'b4float', 'k4shout', 'r4run',
+  'e4wait', 'e4down', 'e4line', 'e4back', 'b4stag', 'b4there', 'b4float', 'k4shout', 'r4run',
   /* v13.0: the three shouts on the frame the cyclist is seen, in three voices */
   'b4cyc', 'k4cyc', 'r4cyc']);
 const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || CAST_TAKES.has(name);
@@ -7002,6 +7048,9 @@ const STING_SAMPLE = {
   t4fire3: ['t4fire3', 1], t4cease: ['t4cease', 1], t4who: ['t4who', 1], t4neg: ['t4neg', 1],
   t4roger: ['t4roger', 1], t4endex: ['t4endex', 1], t4man: ['t4man', 1],
   e4wait: ['e4wait', 1], e4down: ['e4down', 1], e4line: ['e4line', 1],
+  /* v13.2: the four new takes for the rebuilt outcome scenes */
+  e4back: ['e4back', 1], n4draw: ['n4draw', 1], n4gasp: ['n4gasp', 1],
+  n4runD: ['n4runD', 1], n4pant: ['n4pant', 1],
   b4stag: ['b4stag', 1], b4there: ['b4there', 1], b4float: ['b4float', 1],
   k4shout: ['k4shout', 1], r4run: ['r4run', 1],
   n4pro1: ['n4pro1', 1], n4pro2: ['n4pro2', 1], n4notarget: ['n4notarget', 1], n4back: ['n4back', 1],

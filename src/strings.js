@@ -205,7 +205,7 @@ Object.assign(window.__TEXT__, {
   'event.broken':        'TOO LATE — SANITY LOST',
   'event.start':         'START',
   'event.ready':         'BRIEFING',
-  'card.conduct':        'In the field',
+  'card.conduct':        'What you did',
   'decide.clock':        'It is still coming',
 
   // --- in the world --------------------------------------------------------
