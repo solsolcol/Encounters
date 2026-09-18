@@ -153,9 +153,17 @@
               /* AND THE AIM: 72 degrees down to 30 is 2.4x, which makes the
                  near boards 39 px tall and the far ones 18 — visible. */
               zoom: 30,
+              /* v13.1 — THE MUZZLE FLASH (Chad's Sketchfab cone). `flashPos` is
+                 the engine's default, which IS this rifle's barrel tip: it
+                 was measured off `main_Vector_D_0`'s skinned vertices at the
+                 engine's own rest pose, so the number belongs there rather
+                 than here. `flashSize` 0.18 m and `flashSecs` 0.07 are the
+                 chapter's, bracketed by render on the night range. */
+              flash: 'muzzle', flashSize: 0.18, flashSecs: 0.07,
               shot: 'rifleshot', reload: 'riflereload', empty: 'rifledry', cock: 'riflecock' },
 
     assets: ['fboaim', 'fbosling', 'ghostcyclist', 'rifle', 'flashlight', 'kamaz',
+             'muzzle', 'ammocrate', 'ammomags',
              'tree1', 'tree2', 'tree3', 'tree4'],
 
     musicVol: 0,
@@ -267,6 +275,12 @@
     const SAFETY = { x: -9.15, z: 8.75 };         // the safety officer at the ammo point
     const TOWER = { x: 14.2, z: 4.6 };
     const AMMO = { x: -7.6, z: 8.6 };
+    const AMMO_TOP = 0.82;                        // the ammo table's own surface
+    /* v13.1: build() scope, NOT the block below — a variable declared inside
+       a block and read from a GLTF callback outside it throws a
+       ReferenceError the loader's own catch then swallows whole, which is
+       exactly how v8.4 shipped six men as green capsules (v8.5's law). */
+    let ammoOld = null;                           // the primitives Chad's two models supersede
     const PILE_POS = new THREE.Vector3(HIS.x, 1.0, -1.35);   // the target area, straight out of his lane
     const INTERACT_R = 2.6;
     const RANGE = { s1: -62, s2: -98, s3: -132 };            // the compressed hundred, two hundred, three hundred
@@ -462,7 +476,13 @@
       solids.push(t);
       for (const [dx, dz] of [[-1.0, -0.38], [1.0, -0.38], [-1.0, 0.38], [1.0, 0.38]])
         box(0.07, 0.78, 0.07, AMMO.x + dx, 0.39, AMMO.z + dz, matSteel);
-      const TOP = 0.82;                                   // the table's own surface
+      const TOP = AMMO_TOP;
+      /* v13.1: everything the two Sketchfab models supersede goes in ONE
+         group, so the swap is a single flag rather than a list of meshes
+         somebody has to keep in step (the v9.1/v9.2 `supersede` lesson,
+         where the posts and rails were missed twice). The table, its legs
+         and the red lamp are NOT in here — they are not superseded. */
+      ammoOld = new THREE.Group(); world.add(ammoOld);
       const matBrass = nfm({ color: 0xb08a3c, roughness: 0.32, metalness: 0.85 });
       const matLead  = nfm({ color: 0x8a6a46, roughness: 0.55, metalness: 0.3 });
       const matMag   = nfm({ color: 0x24261f, roughness: 0.82, metalness: 0.15 });
@@ -472,39 +492,39 @@
 
       /* two steel ammo boxes at the far end, lids up, with a handle each */
       for (const dx of [-0.82, -0.44]) {
-        box(0.32, 0.17, 0.20, AMMO.x + dx, TOP + 0.085, AMMO.z - 0.16, matCan);
-        box(0.33, 0.025, 0.21, AMMO.x + dx, TOP + 0.182, AMMO.z - 0.16, matCanLid);
+        box(0.32, 0.17, 0.20, AMMO.x + dx, TOP + 0.085, AMMO.z - 0.16, matCan, ammoOld);
+        box(0.33, 0.025, 0.21, AMMO.x + dx, TOP + 0.182, AMMO.z - 0.16, matCanLid, ammoOld);
         const h = new THREE.Mesh(new THREE.TorusGeometry(0.045, 0.008, 5, 10), matSteel);
-        h.position.set(AMMO.x + dx, TOP + 0.205, AMMO.z - 0.16); h.rotation.y = Math.PI / 2; world.add(h);
-        box(0.20, 0.012, 0.012, AMMO.x + dx, TOP + 0.13, AMMO.z - 0.262, nfm({ color: 0xb9b199, roughness: 1 }));   // the stencil
+        h.position.set(AMMO.x + dx, TOP + 0.205, AMMO.z - 0.16); h.rotation.y = Math.PI / 2; ammoOld.add(h);
+        box(0.20, 0.012, 0.012, AMMO.x + dx, TOP + 0.13, AMMO.z - 0.262, nfm({ color: 0xb9b199, roughness: 1 }), ammoOld);   // the stencil
       }
 
       /* THE ROUNDS: a shallow open tray with six by three standing in it */
-      box(0.30, 0.012, 0.19, AMMO.x + 0.08, TOP + 0.006, AMMO.z + 0.02, matTray);
+      box(0.30, 0.012, 0.19, AMMO.x + 0.08, TOP + 0.006, AMMO.z + 0.02, matTray, ammoOld);
       for (const [ddx, ddz, w, d] of [[0, -0.095, 0.30, 0.012], [0, 0.095, 0.30, 0.012],
                                       [-0.15, 0, 0.012, 0.19], [0.15, 0, 0.012, 0.19]])
-        box(w, 0.036, d, AMMO.x + 0.08 + ddx, TOP + 0.024, AMMO.z + 0.02 + ddz, matTray);
+        box(w, 0.036, d, AMMO.x + 0.08 + ddx, TOP + 0.024, AMMO.z + 0.02 + ddz, matTray, ammoOld);
       const caseGeo = new THREE.CylinderGeometry(0.0045, 0.0048, 0.040, 7);
       const tipGeo  = new THREE.ConeGeometry(0.0045, 0.013, 7);
       for (let i = 0; i < 18; i++) {
         const cx = AMMO.x + 0.08 + (-0.115 + (i % 6) * 0.046);
         const cz = AMMO.z + 0.02 + (-0.055 + Math.floor(i / 6) * 0.055);
-        const c = new THREE.Mesh(caseGeo, matBrass); c.position.set(cx, TOP + 0.026, cz); world.add(c);
-        const tp = new THREE.Mesh(tipGeo, matLead);  tp.position.set(cx, TOP + 0.0525, cz); world.add(tp);
+        const c = new THREE.Mesh(caseGeo, matBrass); c.position.set(cx, TOP + 0.026, cz); ammoOld.add(c);
+        const tp = new THREE.Mesh(tipGeo, matLead);  tp.position.set(cx, TOP + 0.0525, cz); ammoOld.add(tp);
       }
       /* four rounds lying loose beside the tray, because nobody's table is tidy */
       for (let i = 0; i < 4; i++) {
         const cx = AMMO.x + 0.42 + i * 0.026, cz = AMMO.z + 0.19 - i * 0.012;
         const c = new THREE.Mesh(caseGeo, matBrass);
-        c.position.set(cx, TOP + 0.0048, cz); c.rotation.z = Math.PI / 2; c.rotation.y = 0.2 + i * 0.13; world.add(c);
+        c.position.set(cx, TOP + 0.0048, cz); c.rotation.z = Math.PI / 2; c.rotation.y = 0.2 + i * 0.13; ammoOld.add(c);
       }
 
       /* MAGAZINES: four standing in a row at the near end, slightly tapered */
       for (let i = 0; i < 4; i++) {
         const mx = AMMO.x + 0.66 + i * 0.05;
         const m = new THREE.Mesh(new THREE.BoxGeometry(0.030, 0.185, 0.072), matMag);
-        m.position.set(mx, TOP + 0.093, AMMO.z - 0.10); m.rotation.z = 0.05 - i * 0.02; world.add(m);
-        box(0.032, 0.014, 0.074, mx, TOP + 0.190, AMMO.z - 0.10, matSteel);   // the feed lips
+        m.position.set(mx, TOP + 0.093, AMMO.z - 0.10); m.rotation.z = 0.05 - i * 0.02; ammoOld.add(m);
+        box(0.032, 0.014, 0.074, mx, TOP + 0.190, AMMO.z - 0.10, matSteel, ammoOld);   // the feed lips
       }
       const lamp = new THREE.PointLight(0xff5530, 0.9, 7, 1.9); lamp.position.set(AMMO.x, 1.7, AMMO.z); world.add(lamp); owned.push(lamp);
     }
@@ -616,6 +636,55 @@
         if (opts.pose) rig.play(opts.pose, 1, 0, false, opts.at ?? 0.12);
       }).catch(() => { rig.ready = true; });
       return rig;
+    }
+
+    /* ------------------------------------------- v13.1 THE AMMO POINT, REAL
+       Chad: "Also use a mix of these 2 models, one is ammo crate, one is a
+       bunch of magazines and bullets."
+
+       Both arrive from `tools/prepammo.mjs` in REAL METRES with their origin
+       on the base centre, so every number here is a place on the table and
+       nothing is a scale factor: the crate is 0.620 long x 0.365 deep x
+       0.167 high and the magazine pair 0.353 x 0.150 x 0.112, both measured
+       off the shipped files. The crate's length is on its own Z, so a
+       quarter turn lays it along the table's long axis — a NODE rotation,
+       which quantization permits where a write to the vertices would not
+       (the v9.0 law, used the other way round).
+
+       TWO CRATES, STACKED, because that is what an ammo point looks like and
+       because the top one's lid carries the model's own loose rounds where
+       the film's second shot can see them. The upper is skewed 0.09 rad:
+       nobody stacks a crate square.
+
+       The primitives they supersede are HIDDEN, never removed (v9.0) — and
+       hidden as ONE GROUP rather than as a list of meshes, because the list
+       is what v9.1 and v9.2 each missed a piece of. They also stay standing
+       until the bytes actually land, so a failed download costs a nicer prop
+       and never the chapter (v4.7). */
+    {
+      const CRATE_H = 0.167;                      // the shipped crate's own height
+      const placeAmmo = (key, x, y, z, ry) => loadGltf(key).then(gltf => {
+        if (!alive) return null;
+        const g = gltf.scene.clone(true);
+        g.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.receiveShadow = true; o.frustumCulled = true; } });
+        g.position.set(x, y, z); g.rotation.y = ry;
+        world.add(g);
+        return g;
+      });
+      Promise.all([
+        /* the two crates, at the -x end where the steel boxes stood */
+        placeAmmo('ammocrate', AMMO.x - 0.62, AMMO_TOP, AMMO.z - 0.08, Math.PI / 2),
+        placeAmmo('ammocrate', AMMO.x - 0.58, AMMO_TOP + CRATE_H, AMMO.z - 0.06, Math.PI / 2 + 0.09),
+        /* and two sets of magazines along the near half, where a man draws
+           them: 0.353 m long on their own x, so a small turn each keeps them
+           inside the table's 2.2 x 0.9 and off each other */
+        placeAmmo('ammomags', AMMO.x + 0.28, AMMO_TOP, AMMO.z + 0.02, 0.16),
+        placeAmmo('ammomags', AMMO.x + 0.70, AMMO_TOP, AMMO.z - 0.12, -0.42),
+      ]).then(g => {
+        /* only once EVERY piece is standing — a half-dressed table with the
+           primitives already gone is worse than either state */
+        if (alive && g.every(Boolean) && ammoOld) ammoOld.visible = false;
+      }).catch(e => console.error('ammo point models failed', e));
     }
 
     /* ------------------------------------------------------- THE FIRING LINE

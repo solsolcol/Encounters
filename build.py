@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "13.0"
+VERSION = "13.1"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -321,6 +321,9 @@ ASSETS = {
     'ghostcyclist': ('assets/ghostcyclist.glb', True, False), # e2c4 v12.1: Chad's soldier on a bicycle — one baked mesh, NO rig and no clips, which IS the beat
     'rifle':        ('assets/rifle.glb', True, False),        # e2c4 v12.0: the rifle viewmodel (Sketchfab KRISS Vector, its own hands and four takes) — docs/E2-SOLDIER-MODELS.md §8
     'fboaim':       ('assets/fboaim.glb', True, False),       # e2c4 v12.2: Chad's static aiming soldier — every shooter on the firing line (docs/E2-SOLDIER-MODELS.md §107; tools/prepaim.mjs)
+    'muzzle':       ('assets/muzzle.glb', True, False),       # e2c4 v13.1: Chad's Sketchfab muzzle flash — two cone fans, a star and a burst (tools/prepmuzzle.mjs)
+    'ammocrate':    ('assets/ammocrate.glb', True, False),    # e2c4 v13.1: Chad's Sketchfab 5.56 ammunition crate, loose rounds on its lid (tools/prepammo.mjs)
+    'ammomags':     ('assets/ammomags.glb', True, False),     # e2c4 v13.1: Chad's Sketchfab 5.56 pickup — two magazines, one open (tools/prepammo.mjs)
 }
 
 # Hosted-only assets: shipped as a URL, never inlined as base64.
@@ -342,7 +345,8 @@ HOSTED_ONLY = {'titlevid', 'titlevidwebm'}
 # chapter may never claim one of these.
 E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim',
            'ghostsoldier', 'encik2', 'bunkbed', 'cafestaff', 'foodwarmer', 'flashlight',
-           'kamaz', 'forest', 'rifle', 'ghostcyclist', 'fboaim'}
+           'kamaz', 'forest', 'rifle', 'ghostcyclist', 'fboaim',
+           'muzzle', 'ammocrate', 'ammomags'}
 HOSTED_ONLY |= E2_ONLY
 
 # The split packs are hosted-only: there is no __..._B64__ token for them and

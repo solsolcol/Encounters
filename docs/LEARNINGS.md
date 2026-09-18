@@ -4173,3 +4173,34 @@ keep its body in frame). Adding the aim's offset to that stacks the two: at
 the reticle alone in the middle. The aim's x is where the weapon has to BE, so
 the frame interpolates from the rest TO it and both crops land on the same
 sight picture.
+
+**`flatten()` does not bake — `clearNodeTransform()` does.** gltf-transform's
+`flatten()` removes the HIERARCHY and leaves every mesh node holding its own
+local transform. Measuring raw POSITION accessors after it therefore answers a
+question about some other model: v13.1's first pass read Chad's ammo crate as
+0.480 × 0.813 × 0.620 m — a crate standing on end — because both Sketchfab
+files hang their meshes off a root with a quarter turn about X. The prep tool
+now bakes with `clearNodeTransform()` and then ASSERTS that every node is
+identity, because a model that comes out on its side passes every other check
+a tool is likely to have (base on y = 0, centred, the right length). The
+cheap catch is a SHAPE assertion: a crate, or a pair of magazines, is wider
+than it is tall.
+
+**Wall time alone cannot express a thing that must be SEEN.** The v9.3 law
+says a timed behaviour runs on the wall clock, not the clamped `dt` — and that
+is right, and it is not enough. A 0.07 s muzzle flash on the wall clock
+EXPIRES BEFORE THE NEXT FRAME IS DRAWN on a box rendering a frame a second:
+photographed after a shot, the rifle was there and the cone was not, with
+every number saying it had fired. That is a starved probe, and it is also a
+phone that has got hot enough — the only condition Chad plays in. Anything
+whose whole job is to be seen for an instant is owed ONE DRAWN FRAME at full
+strength before its clock is allowed to start. A flash that is sometimes
+skipped is not a shorter flash, it is a bug.
+
+**An alpha channel that duplicates the colour is not carrying anything.**
+Chad's muzzle flash shipped three 1024 px PNGs for two materials, and measured
+by hashing the RGB, two of them were IDENTICAL — one was simply the other plus
+an alpha channel. A flash painted on black drawn ADDITIVELY needs no alpha at
+all: black adds nothing and the core glows. 1.66 MB became 94 KB with both
+variants kept. Before shrinking a texture, ask what each channel is actually
+being asked to do.

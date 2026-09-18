@@ -987,6 +987,15 @@ let weaponDecl = null, weaponProp = null, weaponPropKey = null, weaponMixer = nu
 let weaponClipT0 = {};                       // v12.2: where each take's first key sits, measured at load
 let weaponForce = null;                      // null: follow the bag; true/false: a film or a scene has said
 let weaponRounds = 0, weaponMags = 0, weaponBusy = null, weaponFlash = null, weaponFlashT = 0;
+/* v13.1 — THE MUZZLE FLASH (Chad: "See if you can use this muzzle flash
+   effect when shooting the rifle, it should show this for a split second").
+   `weaponFlash` above is the POINT LIGHT that has thrown the world's flash
+   since v12.0; these are the CONE the player actually sees, and the two are
+   deliberately different objects in different scenes — the light hangs off
+   the world camera and lights the range, the cone hangs off `weaponProp` in
+   the viewmodel scene and lights nothing. Both run off the one `weaponFlashT`
+   clock, so they can never disagree about when a shot happened. */
+let weaponFlashObj = null, weaponFlashKey = null, weaponFlashCards = [], weaponFlashN = 0, weaponFlashDrawn = false;
 let weaponShown = false, weaponLastFire = 0;
 const weaponLog = [];                        // for the probes: every shot, hit or miss
 let kitRooted = false, kitHurt = null;       // v11.1: the player held in place; the red damage frame + a bleed until the player acts
@@ -1635,6 +1644,25 @@ const WEAPON_DEFAULTS = {
                            sights on the lens axis.                        */
   recoil: 0, recoilYaw: 0, recover: 0.22, assist: 0, zoom: 0,
   unlimited: false, adsSecs: 0.20, adsPos: [-0.12, 0.028, -0.035],
+  /* v13.1 — THE MUZZLE FLASH, Chad's Sketchfab cone. All four default to
+     nothing, so the fixture (which declares a weapon with no model at all)
+     and episode 1 (which declares no weapon) cannot reach any of it.
+       flash      the asset key. The file is two nine-vertex CONE FANS, apex
+                  on the origin, opening along -Z, length exactly 1.0, one
+                  carrying a four-pointed STAR and the other a rounder
+                  BURST — dealt alternately so a magazine's worth of shots
+                  is not one picture repeated.
+       flashPos   the apex, in `weaponProp`'s own frame, which is plain
+                  viewmodel metres. The default is the KRISS Vector's barrel
+                  tip MEASURED off its skinned vertices at the engine's own
+                  rest pose (0.135, -0.227, -0.671) — a SkinnedMesh's Box3 is
+                  its BIND pose, so this came from getVertexPosition and the
+                  18-vertex cluster at the most-negative-Z face, never from a
+                  bounding box (the v5.21 / v8.4 law).
+       flashSize  the cone's LENGTH in metres; its rim is 1.09x that across.
+       flashSecs  how long it is on screen. `weaponFlashT` already ran the
+                  light for 0.09 s and the cone shares that clock. */
+  flash: '', flashPos: [0.135, -0.227, -0.671], flashSize: 0.18, flashSecs: 0.09,
   clips: { draw: 'Draw', shoot: 'Shoot', reload: 'Reload', hide: 'Hide' },
   rates: { draw: 2.6, shoot: 1.6, reload: 1.6, hide: 2.6 },
   /* §8's measured placement: scale 0.01 (centimetres), a half turn about Y
@@ -1649,13 +1677,14 @@ function weaponSetup(decl) {
                  rates: { ...WEAPON_DEFAULTS.rates, ...((decl && decl.rates) || {}) } };
   weaponRounds = Math.max(0, weaponDecl.rounds | 0); weaponMags = Math.max(0, weaponDecl.mags | 0);
   weaponForce = null; weaponBusy = null; weaponLog.length = 0;
-  weaponRecoilReset(); weaponAdsOff(); recSeed = 20250917;
+  weaponRecoilReset(); weaponAdsOff(); recSeed = 20250917; flashSeed = 20250918;
   if (!weaponFlash) {
     weaponFlash = new THREE.PointLight(0xffd28a, 0, 9, 1.8);
     weaponFlash.position.set(0.12, -0.10, -0.7);
     camera.add(weaponFlash);
   }
   weaponPropLoad(weaponDecl.model);
+  weaponFlashLoad(weaponDecl.flash);
   for (const k of ['shot', 'reload', 'empty', 'cock']) if (weaponDecl[k]) WARM_WANT.add(weaponDecl[k]);
   /* v13.0: a chapter with unlimited ammunition draws neither the count nor
      the reload button — the HUD says what the mechanic is, so a player is
@@ -1667,6 +1696,7 @@ function weaponTeardown() {
   weaponDecl = null; weaponForce = null; weaponBusy = null; weaponRounds = 0; weaponMags = 0;
   weaponRecoilReset(); weaponAdsOff(); camLens(CAM_FOV);
   if (weaponFlash) { camera.remove(weaponFlash); weaponFlash.dispose?.(); weaponFlash = null; }
+  weaponFlashDrop();
   weaponPropDrop();
   document.body.classList.remove('hasWeapon', 'weaponUp', 'wpnNoAmmo');
   weaponAvailSync();
@@ -1746,12 +1776,103 @@ function weaponPropLoad(key) {
       weaponBusy = null;
     });
     weaponProp = g; g.visible = false; handsRoot.add(g); layoutHands();
+    weaponFlashPlace();          // either half may land first
     weaponPropSync();
   }, e => console.error('weapon model parse failed', e)))
     .catch(e => console.error('weapon model load failed', e));
 }
+/* ------------------------------------------------- v13.1 the muzzle flash
+   The cone is loaded on its own and hung off `weaponProp`, so it inherits
+   the aim's slide and the v11.3 weapon swap for free. Either half may land
+   first — the model is a separate fetch — so `weaponFlashPlace()` is
+   idempotent and both loaders call it.
+
+   The materials are REPLACED with unlit additive ones. A flash is not a
+   thing the scene lights; it is the thing lighting the scene, and the two
+   sheets are paintings on BLACK, which is exactly what additive blending
+   wants (black adds nothing, the core glows) — which is also why the prep
+   tool could throw the alpha channel away. `toneMapped: false` keeps the
+   renderer's ACES curve off it, or a flash meant to be white arrives grey.
+
+   The rescue is the awkward part and is handled rather than hoped: under
+   the strict CSP `rescueTextures` writes `.map` onto the material objects
+   the PARSER made, asynchronously, and by then the meshes are wearing ours.
+   So we keep a parser-material -> ours map and its `onMap` callback carries
+   the texture across; the synchronous path (`src.map` already set) is taken
+   at build time. Neither alone is enough. */
+function weaponFlashLoad(key) {
+  if (!key) { weaponFlashDrop(); return; }
+  if (weaponFlashKey === key) return;
+  weaponFlashDrop(); weaponFlashKey = key;
+  assetBytes(key, true).then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
+    if (weaponFlashKey !== key) return;       // a chapter changed under the fetch
+    const mine = new Map();
+    const cards = [];
+    gltf.scene.traverse(o => {
+      if (!o.isMesh) return;
+      const src = Array.isArray(o.material) ? o.material[0] : o.material;
+      const b = new THREE.MeshBasicMaterial({
+        map: src && src.map ? src.map : null, color: 0xffffff,
+        blending: THREE.AdditiveBlending, transparent: true, opacity: 1,
+        depthWrite: false, depthTest: true, side: THREE.DoubleSide,
+        toneMapped: false, fog: false,
+      });
+      if (src) mine.set(src, b);
+      o.material = b;
+      o.frustumCulled = false; o.castShadow = false; o.receiveShadow = false;
+      o.renderOrder = 8;                      // after the rifle, which writes depth
+      o.visible = false;
+      cards.push(o);
+    });
+    rescueTextures(gltf, BUF, (mat) => {
+      const b = mine.get(mat);
+      if (b && mat.map) { b.map = mat.map; b.needsUpdate = true; }
+    });
+    const g = new THREE.Group();
+    g.add(gltf.scene); g.visible = false;
+    weaponFlashObj = g; weaponFlashCards = cards; weaponFlashN = 0;
+    weaponFlashPlace();
+  }, e => console.error('muzzle flash parse failed', e)))
+    /* NEVER a silent catch on an asset loader (the v12.2 law: a TypeError
+       inside a GLTFLoader callback made the rifle simply not exist) */
+    .catch(e => console.error('muzzle flash load failed', e));
+}
+function weaponFlashPlace() {
+  if (!weaponFlashObj || !weaponProp) return;
+  if (weaponFlashObj.parent !== weaponProp) weaponProp.add(weaponFlashObj);
+  const d = weaponDecl || WEAPON_DEFAULTS;
+  weaponFlashObj.position.fromArray(d.flashPos);
+  weaponFlashObj.scale.setScalar(d.flashSize);
+}
+function weaponFlashDrop() {
+  if (weaponFlashObj) {
+    if (weaponFlashObj.parent) weaponFlashObj.parent.remove(weaponFlashObj);
+    weaponFlashObj.traverse(o => {
+      if (!o.isMesh) return;
+      o.geometry?.dispose?.();
+      for (const m of (Array.isArray(o.material) ? o.material : [o.material])) { m?.map?.dispose?.(); m?.dispose?.(); }
+    });
+  }
+  weaponFlashObj = null; weaponFlashKey = null; weaponFlashCards = []; weaponFlashN = 0;
+}
+/* one shot's worth: deal the NEXT card, roll it about the bore, show it.
+   The roll and the deal are both deterministic so a probe can reproduce a
+   magazine exactly — on the flash's OWN stream, deliberately, so that the
+   recoil's sideways scatter comes out bit-identical to v13.0 and the feel
+   Chad already signed off on is not perturbed by a cosmetic addition. */
+let flashSeed = 20250918;
+function weaponFlashFire() {
+  if (!weaponFlashCards.length) return;
+  const i = weaponFlashN++ % weaponFlashCards.length;
+  for (let k = 0; k < weaponFlashCards.length; k++) weaponFlashCards[k].visible = (k === i);
+  flashSeed = (flashSeed * 1103515245 + 12345) & 0x7fffffff;
+  weaponFlashCards[i].rotation.z = (flashSeed / 0x7fffffff) * Math.PI * 2;
+}
 function weaponPropDrop() {
   if (weaponProp) {
+    /* the flash is a CHILD of the prop and outlives it — take it out before
+       the sweep below, which disposes every mesh it can reach */
+    if (weaponFlashObj && weaponFlashObj.parent) weaponFlashObj.parent.remove(weaponFlashObj);
     handsRoot.remove(weaponProp);
     weaponMixer?.stopAllAction();
     weaponProp.traverse(o => { if (!o.isMesh) return; o.geometry?.dispose?.(); for (const m of (Array.isArray(o.material) ? o.material : [o.material])) { m?.map?.dispose?.(); m?.metalnessMap?.dispose?.(); m?.dispose?.(); } });
@@ -1829,10 +1950,38 @@ function weaponFrame(dt) {
   weaponWall = wnow;
   weaponAdsStep(wdt);          // v13.0: the aim eases in and out on that same clock
   if (weaponMixer && weaponShown) weaponMixer.update(Math.min(wdt, 0.1));
-  if (weaponFlash) {
-    weaponFlashT = Math.max(0, weaponFlashT - wdt);
-    weaponFlash.intensity = weaponFlashT > 0 ? 34 * (weaponFlashT / 0.09) : 0;
-    weaponFlash.visible = weaponFlash.intensity > 0;
+  {
+    const fSecs = (weaponDecl.flashSecs || 0.09);
+    /* THE FLASH IS OWED ONE FRAME. `wdt` is WALL time, so on a box drawing a
+       frame a second — a starved probe, and a phone that has got hot enough,
+       which is the only condition Chad plays in — a 0.07 s flash expires
+       before the next frame is ever drawn, and the player pulls the trigger
+       and sees nothing. Measured: photographed after a shot on this box, the
+       rifle was there and the cone was not. So the first frame after a shot
+       draws at full and does not decay; the clock only starts on the second.
+       A flash that is sometimes skipped is not a shorter flash, it is a bug.
+       (This is the v9.3 clock law in its third form: not "use wall time" but
+       "wall time alone cannot express a thing that must be SEEN".) */
+    if (weaponFlashT > 0 && !weaponFlashDrawn) weaponFlashDrawn = true;
+    else weaponFlashT = Math.max(0, weaponFlashT - wdt);
+    const k = weaponFlashT > 0 ? weaponFlashT / fSecs : 0;     // 1 at the trigger, 0 when it is over
+    if (weaponFlash) {
+      weaponFlash.intensity = 34 * k;
+      weaponFlash.visible = k > 0;
+    }
+    /* v13.1: the CONE. It comes on at full and falls away over the same
+       window — `k ** 0.55` holds it bright and then drops, which is how a
+       flash actually reads, where a linear fade reads as a lamp switched
+       off. It also grows a little as it goes, because the gas does. */
+    if (weaponFlashObj) {
+      weaponFlashObj.visible = k > 0 && weaponProp !== null && weaponShown;
+      if (weaponFlashObj.visible) {
+        const o = Math.pow(k, 0.55);
+        const d = weaponDecl.flashSize || WEAPON_DEFAULTS.flashSize;
+        weaponFlashObj.scale.setScalar(d * (1 + 0.18 * (1 - k)));
+        for (const c of weaponFlashCards) if (c.visible) c.material.opacity = o;
+      }
+    }
   }
   /* the busy flag is stated in the TAKE's clock, never the wall's: the
      first version timed it out on wall time and a probe box that draws a
@@ -2005,7 +2154,9 @@ function weaponFire() {
   if (weaponPlay('shoot')) weaponBusy = null;
   if (weaponDecl.shot) snd(weaponDecl.shot, 1);
   haptic([30, 20, 40]);
-  weaponFlashT = 0.09;
+  weaponFlashT = weaponDecl.flashSecs || 0.09;
+  weaponFlashDrawn = false;                   // v13.1: it owes the screen one frame
+  weaponFlashFire();                          // and the cone the player sees
   if (weaponDecl.kick) pitch.rotation.x = Math.min(pitchHi, pitch.rotation.x + weaponDecl.kick);
   weaponRecoilFire();
   weaponRay.setFromCamera({ x: 0, y: 0 }, camera);
@@ -3112,7 +3263,10 @@ function kitDebug() {
            rooted: kitRooted, hurt: kitHurt ? { perSec: kitHurt.perSec } : null,   // v11.1
            torch: torchLight ? { on: torchOn, red: torchIsRed, avail: torchAvail(), item: torchDecl && torchDecl.item || null } : null,
            urge: invUrge,   // v11.6
-           weapon: weaponDecl ? { out: weaponWant(), avail: weaponAvail(), shown: weaponShown, busy: weaponBusy, rounds: weaponRounds, mags: weaponMags, item: weaponDecl.item || null, prop: !!weaponProp, shots: weaponLog.slice(-8) } : null,   // v12.0
+           weapon: weaponDecl ? { out: weaponWant(), avail: weaponAvail(), shown: weaponShown, busy: weaponBusy, rounds: weaponRounds, mags: weaponMags, item: weaponDecl.item || null, prop: !!weaponProp,
+                                                  /* v13.1: the muzzle flash, for the fixture's absence check and the probes */
+                                                  flash: weaponDecl.flash || '', flashCards: weaponFlashCards.length, flashLit: weaponFlashT > 0,
+                                                  shots: weaponLog.slice(-8) } : null,   // v12.0
            objective: kitObjective, timer: kitTimer ? +kitTimer.left.toFixed(2) : null,
            waypoint: kitWaypoint, conduct: { ...conductAcc, notes: conductAcc.notes.slice() },
            clock: decClock ? { left: +decClock.left.toFixed(2), fired: decClock.fired } : null,

@@ -146,6 +146,15 @@ Object.assign(window.__TEXT__, {
   'credits.rifle':       'The rifle',
   'credits.rifleWho':    'KRISS Vector, animated · Sketchfab',
   'credits.rifleLink':   'sketchfab.com · kriss-vector-animated-free',
+  /* v13.1 — the rifle's muzzle flash and the ammo point's dressing, all
+     three Sketchfab (tools/prepmuzzle.mjs, tools/prepammo.mjs). */
+  'credits.muzzle':      'The muzzle flash',
+  'credits.muzzleWho':   'Muzzle meshes · Sketchfab',
+  'credits.muzzleLink':  'sketchfab.com · muzzle-meshes',
+  'credits.ammo':        'The ammunition on the range',
+  'credits.ammoWho':     'Ammo crate, and a 5.56 mm ammo pickup · Sketchfab',
+  'credits.ammoLink':    'sketchfab.com · ammo-crate',
+  'credits.ammo2Link':   'sketchfab.com · 556mm-ammo-pickup',
   /* v12.1 — Chad's ghost cyclist is his own model and takes no row (the
      v5.23 rule); the Kamaz and the flashlight already have theirs above. */
   'credits.anim':        'Animation, two of the crowd, and the soldiers’ takes',

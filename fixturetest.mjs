@@ -176,6 +176,17 @@ K.weaponDeclared = await p.evaluate(() => {
     && !document.body.classList.contains('weaponUp');
 });
 K.weaponNotOutUnequipped = await p.evaluate(() => window.__enc.kit.fire() === false);
+/* v13.1: the MUZZLE FLASH defaults to nothing. The fixture declares no
+   `flash` key, so the engine must create no cone at all — which is the
+   whole proof that the seam is opt-in and that episode 1, which declares
+   no weapon whatever, cannot reach it. (A flash is checked here by its
+   ABSENCE because the fixture's weapon has no model to hang one on; the
+   cone itself is verified by render on the chapter that declares it.) */
+K.weaponNoFlashByDefault = await p.evaluate(() => {
+  const w = window.__enc.weaponProp && window.__enc.weaponProp();
+  if (w) { let n = 0; w.traverse(o => { if (o.isMesh && o.material && o.material.blending === 2) n++; }); if (n) return false; }
+  return !window.__enc.kitDebug().weapon.flash;
+});
 await p.evaluate(() => { window.__enc.kit.give('rifle'); window.__enc.kit.equip('rifle'); });
 await until(() => document.body.classList.contains('weaponUp') && document.body.classList.contains('hasWeapon'), 15000).catch(() => {});
 K.weaponOutWhenEquipped = await p.evaluate(() => document.body.classList.contains('weaponUp') && window.__enc.kitDebug().weapon.avail === true);

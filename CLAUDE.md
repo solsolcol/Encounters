@@ -3286,6 +3286,54 @@ What the baseline contains, by release:
   settle turned the other way); and **a fixed world size is not a size** (the
   climbing flare was in frame, correctly placed, fully opaque, and SEVEN
   PIXELS). Sheet v64.
+- **v13.1** THE MUZZLE FLASH, AND THE AMMO POINT THAT IS REAL — Chad, with
+  three Sketchfab models: *"See if you can use this muzzle flash effect when
+  shooting the rifle, it should show this for a split second"* and *"use a mix
+  of these 2 models, one is ammo crate, one is a bunch of magazines and
+  bullets."* All three land in episode 2 chapter 4; `src/main.js` gains the
+  flash seam and nothing else, and episode 1 declares no weapon at all, so it
+  cannot reach any of it. **THE FLASH** is FOUR fields on `WEAPON_DEFAULTS`,
+  all defaulting to nothing (`flash` the asset key, `flashPos`, `flashSize`,
+  `flashSecs`) — the FIXTURE declares a weapon with no flash and
+  `fixturetest` asserts no cone is ever created, which is the proof the seam
+  is opt-in. The file is two nine-vertex CONE FANS carrying a four-pointed
+  STAR and a rounder BURST, dealt alternately and each rolled about the bore
+  on the flash's OWN deterministic stream — deliberately its own, so the
+  recoil's scatter stays bit-identical to v13.0 and the feel Chad signed off
+  on is not perturbed by a cosmetic addition. `flashPos` is MEASURED, not
+  chosen: the KRISS Vector's barrel tip read off `main_Vector_D_0`'s SKINNED
+  vertices at the engine's own rest pose (a SkinnedMesh's Box3 is its BIND
+  pose — the v5.21/v8.4 law), the most-negative-Z face's 18-vertex cluster
+  averaged for the bore axis. The cone is a child of `weaponProp`, so it
+  inherits the aim's slide and the v11.3 swap for free; three lifecycle traps
+  are handled rather than hoped (either half may land first, `weaponPropDrop`
+  disposes everything it can reach, and the CSP rescue writes to the PARSER's
+  materials after ours are already on the meshes — a parser-material map plus
+  `rescueTextures`' `onMap` carries the texture across). **THE AMMO POINT**:
+  v13.0's primitives now live in ONE group and the swap is a single flag —
+  the shape v9.1 and v9.2 each learned the hard way by enumerating a list and
+  missing a piece. Two crates STACKED at the −x end (the upper skewed 0.09
+  rad; nobody stacks a crate square) with the model's own loose rounds on the
+  top lid where the film's second shot sees them, and two sets of magazines
+  along the near half. Both models arrive in real METRES with their origin on
+  the base centre, so every number in the chapter is a place and none is a
+  scale factor; the primitives stay standing until EVERY model has landed, so
+  a failed download costs a nicer prop and never the chapter (v4.7).
+  **Three laws paid for**, all in LEARNINGS: `flatten()` does NOT bake (the
+  crate first measured 0.480 × 0.813 × 0.620 m — standing on end — because
+  gltf-transform leaves each node's own transform behind; `clearNodeTransform`
+  is the bake, and the tool now asserts identity AND that the thing is wider
+  than it is tall); **wall time alone cannot express a thing that must be
+  SEEN** (a 0.07 s flash on the wall clock expires before the next frame is
+  drawn on a box rendering a frame a second — photographed, the rifle was
+  there and the cone was not — so the flash is owed ONE DRAWN FRAME at full
+  before its clock starts, which is also a phone that has got hot enough);
+  and an alpha channel that DUPLICATES the colour is carrying nothing (the
+  flash's tex1 and tex2 hash identically over RGB, and additive blending
+  wants no alpha at all — 1.66 MB to 94 KB with both variants kept).
+  8.4 MB + 3.1 MB + 1.7 MB of source → 609 + 184 + 94 KB. Three credit rows.
+  docs/V13.1-THE-FLASH-AND-THE-AMMO.md is the build's memory;
+  `tools/prepmuzzle.mjs` and `tools/prepammo.mjs` are the recipes.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -3800,7 +3848,9 @@ Next up: **episode 2's chapter 5**, THE LAST NIGHT — the payoff the case file 
 chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 3, The Pressure, at v11.0 and revised at v11.1–v11.9 and v12.5 — `src/chapters/e2/e2c3.js`; chapter 4, The Cyclist, at v12.1, rebuilt at v12.2 and its ghost given back its body at v12.4 — `src/chapters/e2/e2c4.js`;
 chapters 1 and 2's lessons rewritten at v11.10, chapter 1 last revised at v10.8;
 ALL FOUR episode-2 chapters were revised at v13.0 against Chad's twenty-two
-notes — docs/V13.0-PLAN.md and docs/V13.0-THE-TWENTY-TWO.md; the rifle
+notes — docs/V13.0-PLAN.md and docs/V13.0-THE-TWENTY-TWO.md — and chapter 4
+gained its muzzle flash and a real ammo point at v13.1
+(docs/V13.1-THE-FLASH-AND-THE-AMMO.md); the rifle
 viewmodel's placement and material are measured in
 docs/E2-SOLDIER-MODELS.md §8), and the still-outstanding job of replacing chapter 1's
 placeholder choices with the real "THE OFFERINGS" data in
