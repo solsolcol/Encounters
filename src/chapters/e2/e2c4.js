@@ -898,6 +898,19 @@
        `flareFrame` never runs — updateNotes returns early under a cutscene)
        draws exactly the climb play draws. */
     const FLARE_RISE = 1.55;
+    /* THE BALL IS SIZED BY DISTANCE, and that is measured rather than chosen.
+       At the tube it is ten metres away and at the apex eighty-eight, so a
+       fixed world size is either a lantern in his face or (measured on the
+       shipped build, radius 0.5 m) SEVEN PIXELS on a 390 px phone — which is
+       why the first pass of the climb was invisible in the photograph even
+       though every number said the flare was in frame. Scaling with distance
+       holds it at roughly 38–50 px the whole way up: a bright spark you can
+       watch climb, which is what item 11 asked for. */
+    const _fv = new THREE.Vector3();
+    function flareBallSize() {
+      const d = flare.position.distanceTo(camera.getWorldPosition(_fv));
+      flareBall.scale.setScalar(Math.max(0.6, Math.min(4.2, d * 0.045)));
+    }
     /* WHERE it is fired from is a framing number, not a taste: from the
        firing point the launch has to be inside a PORTRAIT PHONE's horizontal
        half-view, which the 72-degree VERTICAL lens makes about 21 degrees
@@ -913,7 +926,14 @@
                          FLARE_FROM.y + (46 - FLARE_FROM.y) * e,
                          FLARE_FROM.z + (-72 - FLARE_FROM.z) * e);
       flareBall.position.copy(flare.position);
-      flareBall.scale.setScalar(0.35 + 0.65 * e);
+      flareBallSize();
+    }
+    /* the launch's whole LOOK, one copy — the film borrows it exactly as it
+       borrows the arc, because `flareFrame` never runs under a cutscene */
+    function flareClimb(k) {
+      flarePlace(k);
+      flare.intensity = 40 + 120 * Math.max(0, Math.min(1, k));
+      flareBall.material.opacity = 0.92;
     }
     let flareT = 0, flareLife = 0, flareOn = false, flareBurst = false;
     function flareUp(secs) {
@@ -932,9 +952,7 @@
       if (flareOn) {
         flareT += dt;
         if (flareT < FLARE_RISE) {                            // THE CLIMB
-          flarePlace(flareT / FLARE_RISE);
-          flare.intensity = 10 + 46 * (flareT / FLARE_RISE);
-          flareBall.material.opacity = 0.85;
+          flareClimb(flareT / FLARE_RISE);
           mixBeds();
           return;
         }
@@ -945,7 +963,12 @@
         }
         const b = flareT - FLARE_RISE;                        // the burn's own clock
         const k = Math.min(1, b / Math.max(0.01, flareLife));
-        const up = Math.min(1, b / 1.1);                      // the climb to full burn
+        /* v13.0: a flare BURSTS. The old ramp took 1.1 s to reach full from
+           ZERO, which after the climb meant the spark went dark for a frame
+           and then faded up — measured on the shipped build, opacity 0 at the
+           burst frame. Half its light on the frame it lights, full a quarter
+           of a second later. */
+        const up = Math.min(1, 0.5 + b / 0.25);
         const die = k > 0.82 ? 1 - (k - 0.82) / 0.18 : 1;      // and the fall
         const amp = up * die;
         flare.intensity = 260 * amp;
@@ -953,7 +976,7 @@
         flare.position.y = 46 - b * 0.9;
         flareBall.position.copy(flare.position);
         flareBall.material.opacity = amp;
-        flareBall.scale.setScalar(1 + Math.sin(b * 9) * 0.06);
+        flareBallSize();
         if (b >= flareLife) { flareDown(); }
       } else {
         flare.intensity *= Math.max(0, 1 - dt * 2.2);
@@ -1922,12 +1945,12 @@
       cycStart, cycEnd, cycAlpha, flareUp, flareDown,
       /* v13.0: the film draws the same climb play draws (`flareFrame` never
          runs under a cutscene), so it borrows the arc rather than copying it */
-      flarePlace, FLARE_RISE, FLARE_FROM,
+      flarePlace, flareClimb, FLARE_RISE, FLARE_FROM,
       setMover: (on) => { MOVER.on = !!on; },
       /* the film and the scenes drive the burn themselves: updateNotes
          returns early when the state is not `play`, so flareFrame does not
          run under a cutscene and a flare left to the frame would hang */
-      setFlare: (v) => { flare.intensity = v; flareBall.material.opacity = Math.min(1, v / 260); },
+      setFlare: (v) => { flare.intensity = v; flareBall.material.opacity = Math.min(1, v / 260); flareBallSize(); },
       FLARE, filmKit, truck,
       sayLine, after, dayClock, bank,
       get phase() { return phase; },
@@ -2031,7 +2054,13 @@
        standing at a hundred metres where a second ago there was nothing —
        and then down and across the lit range, settling on lane six. */
     camTo(19.5, 35.2, { x: HIS.x - 1.1, y: 1.62, z: 5.0 }, { x: HIS.x, y: 1.62, z: 1.2 }, smoothK);
-    yawTo(19.5, 24.1, faceFrom(HIS.x - 1.1, 5.0, TOWER.x, TOWER.z), 0.16, smoothK);
+    /* the settle is NEGATIVE, which turns the lens toward the launch: forward
+       is (−sin yaw, −cos yaw), so a positive yaw looks LEFT of downrange and
+       a negative one right, where the flare is fired from. Measured on the
+       shipped build with +0.16 the spark projected to ndc.x 1.44 at the frame
+       it left the tube — 44 % past the right edge of a portrait phone, i.e.
+       exactly the bug being fixed, in its third form. */
+    yawTo(19.5, 24.1, faceFrom(HIS.x - 1.1, 5.0, TOWER.x, TOWER.z), -0.16, smoothK);
     pitchTo(19.5, 23.9, -0.02, -0.02, smoothK);
     fade(19.5, 20.7, 1, 0);
     sfx(20.2, 'rangepa', 0.5);
@@ -2039,10 +2068,10 @@
 
     /* THE LAUNCH. `flarePlace(k)` is the chapter's own arc, so what the film
        shows and what play shows are the same climb. */
-    step(24.2, () => { stage.flarePlace(0); stage.setFlare(10); });
+    step(24.2, () => stage.flareClimb(0));
     sfx(24.2, 'flarelaunch', 0.85);
-    tr(24.2, APEX, (k) => { stage.flarePlace(k); stage.setFlare(10 + 46 * k); }, rawK);
-    yawTo(24.1, APEX, 0.16, 0.10, smoothK);
+    tr(24.2, APEX, (k) => stage.flareClimb(k), rawK);
+    yawTo(24.1, APEX, -0.16, -0.10, smoothK);
     pitchTo(24.2, APEX, -0.02, 0.52, k => 1 - (1 - k) * (1 - k));   // the arc's own ease
 
     /* THE BURST, and the burn: up over 1.2 s, held, and falling over its
@@ -2051,13 +2080,13 @@
     sfx(APEX, 'flarepop', 0.95);
     tr(APEX, 35.2, (k, t) => {
       const e = t - APEX;
-      const amp = Math.min(1, e / 1.2) * (k > 0.82 ? Math.max(0, 1 - (k - 0.82) / 0.18) : 1);
+      const amp = Math.min(1, 0.5 + e / 0.25) * (k > 0.82 ? Math.max(0, 1 - (k - 0.82) / 0.18) : 1);
       stage.setFlare(260 * amp);
     }, rawK);
     pitchTo(APEX + 0.15, 29.1, 0.52, -0.05, smoothK);   // down the lit arc onto the range
-    yawTo(APEX + 0.25, 29.4, 0.10, -0.22, smoothK);     // across the lit boards
+    yawTo(APEX + 0.25, 29.4, -0.10, 0.22, smoothK);     // across the lit boards, left
     /* THE PAN TO LANE SIX — where the film ends (item 12) */
-    yawTo(29.4, 33.6, -0.22, 0, smoothK);
+    yawTo(29.4, 33.6, 0.22, 0, smoothK);
     pitchTo(29.4, 33.6, -0.05, -0.02, smoothK);
     step(33.4, () => { if (kit) kit.daylight(null, 2.0); });
     fade(33.8, 34.8, 0, 1);

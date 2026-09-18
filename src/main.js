@@ -1929,8 +1929,18 @@ function weaponAdsStep(dtWall) {
     adsLens = true;
   } else if (adsLens) { camLens(CAM_FOV); adsLens = false; }
   if (weaponProp) {
+    /* v13.0: the aim's X is an ABSOLUTE place, not an offset — `adsPos[0]` is
+       where the weapon has to BE for its sights to sit on the lens axis, and
+       `layoutHands` has already nosed the rest inward on a portrait phone
+       (v12.0). Added, the two stacked: photographed at 390 px the rifle sat at
+       −0.2028 and the sights were off the left edge with the reticle alone in
+       the middle. Interpolating from the rest TO the place lands both crops on
+       the same sight picture. Y and Z stay deltas, because the rest is 0 in
+       both and the two readings are the same number there. */
     const o = weaponDecl.adsPos || [0, 0, 0];
-    weaponProp.position.set(weaponBase.x + o[0] * e, weaponBase.y + o[1] * e, weaponBase.z + o[2] * e);
+    weaponProp.position.set(weaponBase.x + (o[0] - weaponBase.x) * e,
+                            weaponBase.y + o[1] * e,
+                            weaponBase.z + o[2] * e);
   }
 }
 function weaponAdsToggle() {
