@@ -989,28 +989,68 @@
        holding the sight perfectly still could not finish the drill on the
        third pass. These are the angles that keep every pass answerable. */
     const PASS_AIM = [0.10, 0.12, 0.15, 0.18];
+    /* v13.0, Chad: "make it bigger when it passes by from left to right,
+       since the player may be aiming in and may not see it at all." A man on
+       a bicycle 46 m out is about 1.8 m of a frame 67 m tall at that
+       distance — 1.2 % of the screen, ten pixels on an 844-tall phone, and
+       less than half that through the 30-degree aim. Each pass is scaled by
+       how FAR OUT it is, so the far one reads and the one stopped at the foot
+       of the berm is left at its own size — which is also the size the four
+       scenes were framed against, so they are untouched by construction. */
+    const PASS_SCALE = [1.85, 1.55, 1.25, 1.00];
+    /* AND HE FADES. He used to snap to full alpha and snap to nothing, so a
+       player looking the other way saw an object that had simply always been
+       there. `cycWant` is the target and the frame walks `cyc.a` to it; a
+       SCENE still sets the alpha outright through `cycAlpha`, because
+       `cycFrame` does not run under a cutscene and a ramp there would never
+       advance. */
+    const CYC_FADE = 1.1;                      // alpha per second
+    let cycWant = 0;
     let pass = 0, cycT = 0, cycOn = false, cycStopped = false, shots = 0, tracked = 0, reported = false;
     let momentT = 0, bellDone = false;
-    function cycStart(p) {
+    function cycStart(p, fadeIn) {
       pass = Math.max(0, Math.min(PASS_Z.length - 1, p));
       cycT = 0; cycOn = true; cycStopped = PASS_SPD[pass] === 0;
       cyc.group.position.set(HIS.x - 26, 0, PASS_Z[pass]);
       cyc.group.rotation.y = -Math.PI / 2;      // prepped facing −z, so a quarter turn puts him crossing to +x
+      cyc.group.scale.setScalar(PASS_SCALE[pass] || 1);
       if (cycStopped) {
         cyc.group.position.set(HIS.x - 1.2, 0, PASS_Z[pass]);
         cyc.group.rotation.y = Math.PI;          // stopped, facing the line
       }
-      cycAlpha(1);
+      cycWant = 1;
+      cycAlpha(fadeIn ? 0.02 : 1);               // a scene gets him whole on its first frame
       if (cyc.fbMat) cyc.fbMat.opacity = cyc.ready && cyc.model ? 0 : GHOST_A;
     }
-    function cycEnd() { cycOn = false; cycAlpha(0); }
+    function cycEnd(fadeOut) { cycOn = false; cycWant = 0; if (!fadeOut) cycAlpha(0); }
     function cycFrame(dt) {
+      /* the fade runs whether or not he is crossing — it is what takes him
+         off the range at the end of a pass */
+      if (cyc.a !== cycWant) {
+        const step = CYC_FADE * dt, d = cycWant - cyc.a;
+        cycAlpha(Math.abs(d) <= step ? cycWant : cyc.a + Math.sign(d) * step);
+      }
       if (!cycOn || cycStopped) return;
       cycT += dt;
       cyc.group.position.x += PASS_SPD[pass] * dt;
-      /* off the far edge of the arc: on the last pass that is the end of the
-         hold branch, on the others it simply goes into the trees */
-      if (cyc.group.position.x > HIS.x + 26) { cycEnd(); onCrossed(); }
+      /* OFF THE FAR EDGE. v13.0: on the HOLD branch it used to ring the bell
+         the instant the first crossing finished — 14.4 s after the sighting —
+         which gave the whole confusion (his line, the three shouts, lane
+         five's shot and the tower) fourteen seconds to happen in and cut
+         whatever was still speaking. And it meant a player who held his
+         sight, which is the correct answer, saw the thing exactly ONCE,
+         which is the other half of Chad's "may not see it at all".
+         So a crossing that finishes with no round fired now takes it into the
+         trees and BRINGS IT BACK NEARER a moment later, and the bell is the
+         moment's own fifteen-second clock. The last pass is the stopped one
+         and still ends the beat. */
+      if (cyc.group.position.x > HIS.x + 26) {
+        cycEnd(true);
+        if (phase === 'moment' && shots === 0 && pass < PASS_Z.length - 2) {
+          const p2 = pass + 1;
+          after(1.6, () => { if (phase === 'moment' && shots === 0 && !bellDone) cycStart(p2, true); });
+        } else onCrossed();
+      }
     }
 
     /* the beds: the range's night tone always, the flare's hiss while one
@@ -1271,7 +1311,12 @@
       if (kit) { kit.objective(DATA.words.objStag); kit.waypoint(null); kit.timer(null); }
       if (!resumed) {
         after(3.0, () => sayLine('b4stag'));
-        after(11.0, () => { if (kit) kit.presence(0.18); });
+        /* v13.0, Chad: "the hud label 'something is out there' comes out even
+           before the ghost cyclist appears." It did: the presence — and with
+           it the red banner — was raised here, eight seconds before the
+           thing was on the range, so the HUD announced a presence the player
+           could not find. It is raised on the FRAME he is first seen now
+           (beginConfuse), with its own sting. */
         after(16.0, () => beginConfuse());
       } else after(2.0, () => beginConfuse());
     }
@@ -1283,7 +1328,8 @@
        The tower asks who fired. The radio says the target area is empty. */
     function beginConfuse(resumed) {
       setPhase('confuse');
-      if (kit) { kit.objective(DATA.words.objConfuse); kit.presence(0.3); }
+      /* the presence is NOT raised here — see the sighting below (item 20) */
+      if (kit) kit.objective(DATA.words.objConfuse);
       flareUp(30);
       MOVER.on = true; MOVER.t = 0; MOVER.dir = 1; mover.set(false);
       tower('t4ready');
@@ -1300,14 +1346,37 @@
          survives whatever the speed becomes. */
       const CROSS_M = 52, crossSecs = CROSS_M / Math.max(0.1, PASS_SPD[0]);
       const handOver = 3.2 + crossSecs * 0.72;                                   // 13.6 s at 3.6 m/s
-      after(3.2, () => { cycStart(0); });
-      after(4.8, () => { sayLine('n4notarget'); });
-      after(6.4, () => { if (worldSfx) worldSfx('rifleshot', 0.75); });          // lane five fires
-      after(7.0, () => { lineQ.length = 0; tower('t4who'); });
-      after(9.8, () => queueLine('b4there'));
-      after(12.0, () => tower('t4neg'));
+      /* THE SIGHTING. Everything that says "there is something out there"
+         happens on this frame and not before it (item 20): he fades up on the
+         arc, the sting lands, the phone buzzes, and only THEN does the red
+         banner come on. And EVERYONE SHOUTS (item 22, Chad's own three
+         lines, in three different voices) — his own "That's not a target."
+         first, because he is the one looking down the lane, then the buddy,
+         the man at the far end and the bunkmate.
+
+         It is ONE QUEUE, so every gap is the takes' own measured length and a
+         re-generated take cannot make two voices talk over each other (the
+         v9.5 count-off's law). `b4there` is dropped from this beat: it said
+         "Sergeant! Got someone in the target area!" and `r4cyc` says the same
+         thing in Chad's words, so keeping both would be the same man shouting
+         it twice. The take stays in the pack. */
+      after(3.2, () => {
+        cycStart(0, true);
+        if (worldSfx) worldSfx('stingcyc', 0.95);
+        if (kit) { kit.presence(0.3); kit.haptic([40, 70, 40]); }
+        lineQ.length = 0;
+        queueLine('n4notarget');                                                // 1.80 s
+        queueLine('b4cyc');                                                     // 2.12 s — the buddy
+        queueLine('r4cyc');                                                     // 2.35 s — the far end
+        queueLine('k4cyc');                                                     // 3.42 s — "DON'T SHOOT"
+        queueFn(() => { if (worldSfx) worldSfx('rifleshot', 0.75); });          // and lane five fires anyway
+        queueGap(0.5);
+        tower('t4who');
+        queueGap(0.35);
+        tower('t4neg');
+      });
       after(handOver, () => { if (phase === 'confuse') beginMoment(); });
-      if (resumed) { dropTodo(); cycStart(Math.min(pass, 1)); after(1.5, () => beginMoment()); }
+      if (resumed) { dropTodo(); cycStart(Math.min(pass, 1), true); after(1.5, () => beginMoment()); }
     }
 
     /* ------------------------------------------------- THE PLAYED MOMENT
@@ -1323,8 +1392,13 @@
         kit.objective(DATA.words.objMoment);
         kit.presence(0.55);
       }
-      if (!cycOn) cycStart(resumed ? pass : 0);
-      if (!resumed) after(2.2, () => sayLine('b4float'));
+      if (!cycOn) cycStart(resumed ? pass : 0, true);
+      /* v13.0: QUEUED, not said. The sighting's three shouts and the tower's
+         two radio lines are still running when the moment opens, and
+         `sayLine` refuses a line while another speaks — so a `sayLine` here
+         was a line DROPPED exactly when the beat was busiest (the v8.0 law:
+         hold a line, never eat it). */
+      if (!resumed) { queueGap(0.4); queueLine('b4float'); }
       /* the clock: it does not wait for ever. Fourteen seconds without a
          shot IS the hold branch, and the bell rings on its own. */
       after(15.0, () => { if (phase === 'moment' && shots === 0) onCrossed(); });
@@ -1352,7 +1426,7 @@
            of the beat and the hand-over arrived at an empty range. */
         if (phase !== 'moment' && phase !== 'confuse') return;
         flareUp(16);
-        cycStart(Math.min(PASS_Z.length - 1, shots));
+        cycStart(Math.min(PASS_Z.length - 1, shots), true);
         if (kit) kit.presence(0.55 + 0.15 * shots);
       });
     }
@@ -1717,7 +1791,7 @@
     function restore(s) {
       if (!s) return;
       cyc.group.position.set(s.cyc.x, s.cyc.y, s.cyc.z); cyc.group.rotation.y = s.cyc.ry;
-      cycOn = !!s.cyc.on; cycAlpha(s.cyc.a || 0);
+      cycOn = !!s.cyc.on; cycAlpha(s.cyc.a || 0); cycWant = cyc.a;
       mover.group.position.x = s.mover.x; MOVER.t = s.mover.t; MOVER.on = !!s.mover.on; mover.set(!!s.mover.down);
       flareOn = !!s.flare.on; flareT = s.flare.t; flareLife = s.flare.life;
       flare.intensity = s.flare.i; flare.position.x = s.flare.x; flare.position.y = s.flare.y;
@@ -1741,7 +1815,7 @@
          of the chapter, not only between waves. (`far` is scenery and is what
          `set(true)` has always left it as.) */
       for (const t of statics.concat(popups, far, [mover])) { t.hit = false; t.set(true); }
-      cycEnd(); cyc.group.position.set(0, 0, -45); cyc.group.rotation.y = -Math.PI / 2;
+      cycEnd(); cyc.group.position.set(0, 0, -45); cyc.group.rotation.y = -Math.PI / 2; cyc.group.scale.setScalar(1);
       pass = 0; cycT = 0; cycStopped = false; shots = 0; tracked = 0; reported = false;
       momentT = 0; bellDone = false; hot = false; serial = 0; hits = 0; early = 0; ending = false;
       /* v12.3: the accumulated LOOK is run state too. `dwellT` is the
@@ -1809,6 +1883,11 @@
                                 't4fire1', 't4fire2', 't4fire3', 't4cease', 't4who', 't4neg',
                                 'e4wait', 'b4stag', 'b4there', 'b4float', 'n4notarget', 'n4back',
                                 'rangepa', 'rifleshot', 'riflecock', 'flarepop', 'flarelaunch', 'targethit',
+                                /* v13.0: the sting on the frame the cyclist is SEEN and the three
+                                   shouts that land on it — all four are first-press sounds in the
+                                   strictest sense: they play once, on one frame, and a cold one
+                                   would simply be silent (the v8.0 law). */
+                                'stingcyc', 'b4cyc', 'k4cyc', 'r4cyc',
                                 /* v12.3: `hudlock` is the arrival at the lane, and it is the
                                    FIRST world sound the chapter asks for — the engine warms its
                                    own HUD cues but this one is played through `worldSfx`, so
