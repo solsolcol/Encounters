@@ -143,10 +143,16 @@ body.weaponUp.evopen #reticle{display:none}
 .fireBtn:active{background:rgba(255,92,72,.32)}
 .reloadBtn{width:54px;height:54px}
 .reloadBtn svg{width:26px;height:26px;fill:none;stroke:var(--bone);stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
-.aimBtn{width:54px;height:54px}
-.aimBtn svg{width:26px;height:26px;fill:none;stroke:var(--bone);stroke-width:1.9;stroke-linecap:round}
-body.weaponAds .aimBtn{border-color:var(--sodium);background:rgba(255,171,58,.20)}
-body.weaponAds .aimBtn svg{stroke:var(--sodium)}
+/* v13.0 (Chad: "make the aim button as big as the fire button, and also says
+   'AIM' rather than an icon, just like the 'FIRE' icon") — the same 82 px
+   and the same word treatment, sodium where FIRE is red. */
+.aimBtn{width:82px;height:82px;font-size:1.02rem;border-color:rgba(255,171,58,.55);
+  box-shadow:0 0 22px rgba(255,171,58,.14),0 2px 14px rgba(0,0,0,.5)}
+.aimBtn:active{background:rgba(255,171,58,.30)}
+body.weaponAds .aimBtn{border-color:var(--sodium);background:rgba(255,171,58,.22);color:var(--sodium)}
+/* v13.0: a chapter with unlimited ammunition draws neither. Three classes,
+   so these beat the two-class show rules above them (v11.7's lesson). */
+body.weaponUp.wpnNoAmmo #ammo,body.weaponUp.wpnNoAmmo #reloadBtn{display:none}
 /* the reticle: same three-class show rule and three-class hide rules as the
    weapon HUD (v11.7's lesson) */
 #reticle{position:fixed;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;
@@ -184,6 +190,7 @@ body.finePtr .wpnBtn{position:relative;margin-bottom:12px}
 @media (max-width:640px){
   #weaponHud{flex-direction:row;align-items:center;gap:10px;bottom:calc(max(18px,env(safe-area-inset-bottom)) + 44px)}
   .fireBtn{width:76px;height:76px}
+  .aimBtn{width:76px;height:76px}   /* v13.0: as big as FIRE, on the phone too */
   /* and the interact badge stands ABOVE that row (photographed: "Tap to
      pick up the torch" lay across the rounds and the reload button) — the
      row's bottom, its 76 px, and 12 px of air */
@@ -1468,10 +1475,7 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
     <span class="wpnKey"><kbd data-t="hud.reloadKey">R</kbd></span>
   </button>
   <button id="aimBtn" class="wpnBtn aimBtn" type="button" aria-label="Aim" data-t-aria="hud.aim">
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <circle cx="12" cy="12" r="6.4"/>
-      <path d="M12 1.6v4M12 18.4v4M1.6 12h4M18.4 12h4"/>
-    </svg>
+    <span data-t="hud.aim">AIM</span>
     <span class="wpnKey"><kbd data-t="hud.aimKey">Q</kbd></span>
   </button>
   <button id="fireBtn" class="wpnBtn fireBtn" type="button" aria-label="Fire" data-t-aria="hud.fire">

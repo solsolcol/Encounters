@@ -128,7 +128,15 @@
        nothing per shot and as an 18-degree drift up the range over a
        magazine. The real recoil is the chapter's now (`recoil()` below), so
        the engine's is off. */
-    weapon: { model: 'rifle', rounds: 20, mags: 2, fireGap: 0.42, kick: 0,
+    /* v13.0 (Chad: "you can remove the reload system, ammo count system,
+       those are unnecessary and overcomplicate the shooting mechanics,
+       without having any impact on the game, just give the player unlimited
+       ammo with no need for reload"). `rounds`/`mags` stay declared because
+       the phase string still carries them and a resume still parses them —
+       they simply never move, and neither the count nor the reload button is
+       drawn. The engine's default is unlimited: false, so the fixture and
+       episode 1 are untouched by construction. */
+    weapon: { model: 'rifle', unlimited: true, rounds: 20, mags: 2, fireGap: 0.42, kick: 0,
               /* THE KICK, measured against the lens rather than guessed:
                  0.032 rad is 1.8 degrees, which on the 72-degree lens is
                  21 pixels of a 844-tall phone and on the 30-degree aim is

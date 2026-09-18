@@ -1612,8 +1612,29 @@ const WEAPON_DEFAULTS = {
                            a punishment, not a feel
        assist              the half-angle of the cone a shot may be off by
                            and still count (see weaponAssistHit)
-       zoom                the field of view AIM mode narrows to; 0 = none  */
+       zoom                the field of view AIM mode narrows to; 0 = none
+     v13.0 (Chad: "you can remove the reload system, ammo count system,
+     those are unnecessary and overcomplicate the shooting mechanics ...
+     just give the player unlimited ammo with no need for reload"):
+       unlimited           the rounds never run out, RELOAD is a no-op and
+                           neither the count nor the reload button is drawn.
+                           Default false, so the fixture's nine promises and
+                           anything shipped before this release are untouched
+                           by construction.
+       adsSecs             how long the aim takes to come up and go down.
+                           v12.2 SNAPPED the lens (Chad: "instead of the view
+                           immediately changing to zoomed in, have a real
+                           zooming in animation effect"); the rifle carries
+                           only Draw / Shoot / Reload / Hide — MEASURED, there
+                           is no aim take in the file — so the animation is an
+                           eased lens tween with the weapon brought onto the
+                           sight line under it, not a clip.
+       adsPos              where the weapon goes while the aim is up, in the
+                           viewmodel's own metres: the body's centre sits at
+                           x 0.12 at its 0.30 m depth (§8), so -0.12 puts the
+                           sights on the lens axis.                        */
   recoil: 0, recoilYaw: 0, recover: 0.22, assist: 0, zoom: 0,
+  unlimited: false, adsSecs: 0.20, adsPos: [-0.12, 0.028, -0.035],
   clips: { draw: 'Draw', shoot: 'Shoot', reload: 'Reload', hide: 'Hide' },
   rates: { draw: 2.6, shoot: 1.6, reload: 1.6, hide: 2.6 },
   /* §8's measured placement: scale 0.01 (centimetres), a half turn about Y
@@ -1636,6 +1657,10 @@ function weaponSetup(decl) {
   }
   weaponPropLoad(weaponDecl.model);
   for (const k of ['shot', 'reload', 'empty', 'cock']) if (weaponDecl[k]) WARM_WANT.add(weaponDecl[k]);
+  /* v13.0: a chapter with unlimited ammunition draws neither the count nor
+     the reload button — the HUD says what the mechanic is, so a player is
+     never shown a number that cannot change. */
+  document.body.classList.toggle('wpnNoAmmo', !!weaponDecl.unlimited);
   weaponAvailSync();
 }
 function weaponTeardown() {
@@ -1643,7 +1668,7 @@ function weaponTeardown() {
   weaponRecoilReset(); weaponAdsOff(); camLens(CAM_FOV);
   if (weaponFlash) { camera.remove(weaponFlash); weaponFlash.dispose?.(); weaponFlash = null; }
   weaponPropDrop();
-  document.body.classList.remove('hasWeapon', 'weaponUp');
+  document.body.classList.remove('hasWeapon', 'weaponUp', 'wpnNoAmmo');
   weaponAvailSync();
 }
 function weaponPropLoad(key) {
@@ -1802,6 +1827,7 @@ function weaponFrame(dt) {
   const wnow = clock.getElapsed();
   const wdt = weaponWall ? Math.min(0.5, wnow - weaponWall) : 0.016;
   weaponWall = wnow;
+  weaponAdsStep(wdt);          // v13.0: the aim eases in and out on that same clock
   if (weaponMixer && weaponShown) weaponMixer.update(Math.min(wdt, 0.1));
   if (weaponFlash) {
     weaponFlashT = Math.max(0, weaponFlashT - wdt);
@@ -1820,7 +1846,7 @@ function weaponFrame(dt) {
     if (!a || !a.isRunning()) weaponBusy = null;
   }
   const pill = $('ammo');
-  if (pill) {
+  if (pill && !weaponDecl.unlimited) {
     const txt = weaponRounds + ' / ' + weaponMags;
     if (pill.textContent !== txt) pill.textContent = txt;
     pill.classList.toggle('empty', weaponRounds === 0);
@@ -1877,11 +1903,35 @@ let weaponAds = false;
    episode-2 scene uses `lens` today and episode 1 declares no weapon, so
    nothing shipping could have hit it; `adsLens` is what keeps it that way. */
 let adsLens = false;
-function weaponAdsSync() {
-  const on = weaponAds && !!weaponDecl && weaponDecl.zoom > 0 && state === 'play' && weaponWant();
-  document.body.classList.toggle('weaponAds', on);
-  if (on) { camLens(weaponDecl.zoom); adsLens = true; }
-  else if (adsLens) { camLens(CAM_FOV); adsLens = false; }
+/* v13.0 — THE AIM IS AN ANIMATION. Chad: "instead of the view immediately
+   changing to zoomed in, have a real zooming in animation effect. If the gun
+   has an aiming animation, use that." The gun has no aiming animation — the
+   file carries exactly four takes, Draw / Shoot / Reload / Hide (measured;
+   E2-SOLDIER-MODELS 8) — so the animation is made of the two things that are
+   actually there: the LENS eases from the world's own field of view to the
+   chapter's `zoom` over `adsSecs`, and the weapon is brought onto the sight
+   line under it (`adsPos`). `adsK` is the one number both read, stepped on
+   WALL time because `dt` is clamped to 0.05 s and an aim that takes four
+   times as long on a hot phone is the v9.3 clock bug in a third place. */
+let adsK = 0;
+function adsWantK() {
+  return (weaponAds && !!weaponDecl && weaponDecl.zoom > 0 && state === 'play' && weaponWant()) ? 1 : 0;
+}
+function weaponAdsSync() { document.body.classList.toggle('weaponAds', adsWantK() === 1); }
+function weaponAdsStep(dtWall) {
+  if (!weaponDecl) return;
+  const want = adsWantK();
+  const step = dtWall / Math.max(0.01, weaponDecl.adsSecs || 0.2);
+  adsK = want > adsK ? Math.min(want, adsK + step) : Math.max(want, adsK - step);
+  const e = adsK * adsK * (3 - 2 * adsK);          // smoothstep: it leaves and arrives at rest
+  if (adsK > 0 && weaponDecl.zoom > 0) {
+    camLens(CAM_FOV + (weaponDecl.zoom - CAM_FOV) * e);
+    adsLens = true;
+  } else if (adsLens) { camLens(CAM_FOV); adsLens = false; }
+  if (weaponProp) {
+    const o = weaponDecl.adsPos || [0, 0, 0];
+    weaponProp.position.set(weaponBase.x + o[0] * e, weaponBase.y + o[1] * e, weaponBase.z + o[2] * e);
+  }
 }
 function weaponAdsToggle() {
   if (!weaponDecl || !(weaponDecl.zoom > 0) || state !== 'play' || !weaponWant()) return;
@@ -1889,7 +1939,7 @@ function weaponAdsToggle() {
   weaponAdsSync();
   snd('uiclick', 0.28);
 }
-function weaponAdsOff() { if (weaponAds) { weaponAds = false; document.body.classList.remove('weaponAds'); } adsLens = false; }
+function weaponAdsOff() { if (weaponAds) { weaponAds = false; document.body.classList.remove('weaponAds'); } adsLens = false; adsK = 0; }
 let retHitT = 0;
 const weaponRay = new THREE.Raycaster();
 const _asA = new THREE.Vector3(), _asB = new THREE.Vector3(), _asS = new THREE.Sphere();
@@ -1931,13 +1981,13 @@ function weaponFire() {
   const now = performance.now();
   if (now - weaponLastFire < weaponDecl.fireGap * 1000) return false;
   weaponLastFire = now;
-  if (weaponRounds <= 0) {
+  if (!weaponDecl.unlimited && weaponRounds <= 0) {
     if (weaponDecl.empty) snd(weaponDecl.empty, 0.7); else snd('uiclick', 0.3);
     haptic(20);
     weaponLog.push({ t: now, hit: null, empty: true });
     return false;
   }
-  weaponRounds--;
+  if (!weaponDecl.unlimited) weaponRounds--;
   /* THROUGH weaponPlay, not around it: this line used to reset and play the
      action itself, which meant it started at time 0 and never reached the
      Shoot take's first key at 3.37 s — so v12.2's whole clip-start fix was
@@ -1976,6 +2026,9 @@ function weaponFire() {
 }
 function weaponReload() {
   if (!weaponDecl || state !== 'play' || !weaponWant()) return false;
+  /* v13.0: silently, not with the empty click — there is nothing to reload
+     and nothing on screen asking for it */
+  if (weaponDecl.unlimited) return false;
   if (weaponBusy && weaponBusy !== 'draw') return false;
   if (weaponMags <= 0 || weaponRounds >= (weaponDecl.rounds | 0)) { if (weaponDecl.empty) snd(weaponDecl.empty, 0.5); return false; }
   weaponMags--; weaponRounds = weaponDecl.rounds | 0;
@@ -3651,15 +3704,19 @@ function layoutHands() {
      photographed: the front sight and nothing else. So the group is nosed
      inward by whatever it takes to keep the body at 0.55 of the half-width,
      and never outward (desktop stays exactly at the measured numbers). */
-  if (weaponProp) {
+  /* v13.0: written into `weaponBase`, the REST the aim offsets from — the
+     torch's precedent (v11.3), so a per-frame aim and a per-resize layout
+     cannot fight over one position. */
+  {
     const WZ = 0.30, wH = Math.tan(THREE.MathUtils.degToRad(vmCam.fov / 2)) * WZ, wW = wH * vmCam.aspect;
-    weaponProp.position.x = Math.min(0, wW * 0.55 - 0.12);
+    weaponBase.set(Math.min(0, wW * 0.55 - 0.12), 0, 0);
+    if (weaponProp) weaponProp.position.copy(weaponBase);
   }
   armBase.copy(armR.position);
 }
 /* v11.3: the rest positions the swap tween works from (layoutHands writes
    them; torchPropSync offsets them every frame) */
-const armBase = new THREE.Vector3(), torchBase = new THREE.Vector3();
+const armBase = new THREE.Vector3(), torchBase = new THREE.Vector3(), weaponBase = new THREE.Vector3();
 layoutHands();
 
 let handsReady = false;

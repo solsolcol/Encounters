@@ -1,0 +1,26 @@
+{
+  "flow": "6x6iIs2TXPX9pxCRLAdX",
+  "note": "v13.0 CP3. Six nodes, four takes each. Re-run 18 Sep 2026 because the FIRST run's session ids were never written down and the status tool needs them - THE SESSION IDS ARE THE ONLY HANDLE ON A GENERATION, write them here the moment a run starts.",
+  "voices": {
+    "jamesTeen": "B6uUx2p7cRgxseOUyP6P",
+    "buddyC3": "XxnXw151E3nb1V85MRlS",
+    "bunkmate": "FXMPPfJPpDj0GSwJ6ASO",
+    "recruit3": "xDM73lGN1cPZSG4X87cj"
+  },
+  "nodes": {
+    "n3press": "IG8pcv1sqeZMs4cWwr6M",
+    "b4cyc": "QjkmyyxNR9NIPi4fJqQj",
+    "k4cyc": "FDkEjo0X1DOBJIrnb3rZ",
+    "r4cyc": "gYFwetOhL8hfSwbJsEdP",
+    "flarelaunch": "2QSncIpC7pHC5bCQO4bw",
+    "stingcyc": "liKtY0EJd3jIUtdA6lQ7"
+  },
+  "sessions": {
+    "n3press":     ["b0CxsNkvl7Os2kdF8vlj", "zcn7XDVr4aKPoTPJbkXQ", "5QawtfBvAUCvzTekof3h", "Z24ZTx07QCXTIij3jrZn"],
+    "b4cyc":       ["gWeWtbWM4pPTKGDBrlIa", "AlMcQ3xEgy2XIpeUaR9l", "9akIEFcb63CuN9E7eKrJ", "wqLUelylTc0N7g0uz1rn"],
+    "k4cyc":       ["XbexlonVRrGL1j4kuvnT", "wiF2afAWHur4HdwcxDjG", "4CByr6O8d4Ph2SAPgPUe", "JBvLETCbIhuGLKPfsqCv"],
+    "r4cyc":       ["IWdT28orMYYyWyBntAcw", "0dNWxJtUJesS94rmNOLA", "Kft34DfVMPZjxwNjpk9D", "haSAwxPaKbRoASYRuGVK"],
+    "flarelaunch": ["SMzu6vU3AXISzi5uaEkj", "7uK96dyRaZedGypdzTJb", "QRTSugGuwmuEG1Uyyu5X", "2VgNOhKgjhi6EWxOpFsX"],
+    "stingcyc":    ["Wj5SvLssoah4HIBbWH6X", "2B1RE0fTJ6h4jFr7fzQR", "P0xfp1ztMhFrrK7ntLVu", "qhXGyuVxdi4bxyjamzXi"]
+  }
+}
