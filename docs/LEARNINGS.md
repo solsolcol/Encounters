@@ -4076,3 +4076,53 @@ CONFIRMED, 5 PARTIAL (real mechanism, overstated consequence), 3 had already
 been fixed by the release the finding was raised against, and 8 did not
 survive. Roughly three in five. Verify before fixing, and quote the line as it
 stands today rather than the one the finding quoted.
+
+**A COMMENT IS NOT A TEST.** The approach prompt's block has been headed
+"only when it is actually on screen" since v2.1, and the line under it read
+`if (d < 6.2)` — distance alone. It survived eleven major versions because in
+episode 1 the decision object stands across a void deck, where distance and
+visibility almost always agree; episode 2 put the object where the player
+already is and the two came apart in every chapter at once. When a comment
+states a rule, grep for the code that enforces it before trusting it — and if
+the enforcement is missing, the bug is as old as the comment, not as old as
+the report.
+
+**A guard may name a phase that does not exist, and nothing will say so.**
+`bushTick` in episode 2 chapter 3 read
+`if (phase === 'press' || phase === 'down') return;` for three releases. The
+chapter's phases are `gear`, `look`, `pressure`, `decide`: the guard never
+once fired, so the silence it existed to protect — the beat built on "not even
+the sound of vegetation moving around me" — never happened. A string compared
+against a value that is never produced is a dead branch with no error and no
+test that can see it. When a chapter's phases are a small closed set, compare
+every literal in the file against `setPhase`'s callers; it is one grep.
+
+**On a phone, the interact badge IS the hotspot.** A touch tap reaches
+`stage.pile.hits()` and nothing else — the badge's own click handler is the
+only path a hotspot has. So anything that withholds the badge withholds the
+whole interaction on the only device Chad plays on, while desktop keeps
+working through E. v12.3 took dwell spots off the badge to fix an ordering
+bug and made them unreachable by touch; v12.5 put them back, gated on the aim.
+Before removing an affordance, ask which input paths it is the last one for.
+
+**Size a look cone against the thing that aims it.** Episode 2 chapter 3's
+torch spots asked for 0.11 rad while the torch's own half-angle is 0.40, so a
+tree could be lit square in the middle of the beam and count for nothing —
+which from the player's side is "it doesn't work". Roughly half the aiming
+instrument's spread is the honest number, bounded by the angular separation of
+the neighbouring anchors (47° here, against the 23° two 0.20 cones would need
+to touch).
+
+**A `visible = false` mesh takes its children with it, and a WebGL canvas
+reads back blank without `preserveDrawingBuffer`.** Two ways a probe can
+report a clean negative that means nothing: the first hid the very thing it
+was rendering to look at, the second returned an all-zero pixel grid that
+looked like a black screen. Both cost a round at v12.4. A probe that returns
+"nothing there" has to be able to show you something when there IS.
+
+**One material property, one frame, everything else held.** The ghost cyclist
+lost its head and torso because of `transparent: true` alone — at opacity 1.0,
+with identical lighting, normals, side, depth write and everything drawn
+behind. Nothing short of flipping that one flag in one frame would have
+isolated it, because the treatment that set it also set six other things. When
+a model looks wrong, bisect the TREATMENT before blaming the file.

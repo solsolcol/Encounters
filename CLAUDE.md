@@ -3159,6 +3159,82 @@ What the baseline contains, by release:
   portrait phone's ~21° half-view); and the presence banner OBSERVES rather
   than ordering action in a beat whose objective says to wait.
   Sheet v63. docs/V12.3-THE-SWEEP-FINISHED.md is the build's memory.
+- **v12.4** THE CYCLIST IS THE MODEL HE WAS GIVEN — Chad, with a phone
+  screenshot of a rider with no torso: *"You see the problem with the ghost
+  cyclist model? The body is missing, and this happens across many outcome
+  cutscenes too."* Proven by changing ONE property on one material in one
+  frame, with opacity at 1.0 in both: `transparent: false` draws the whole
+  rider, `transparent: true` drops the head and the torso. Independent of
+  alpha, lighting, normals, culling side, depth write, depth precision, the
+  texture maps and anything drawn behind — this one baked 29,707-triangle
+  mesh is simply not drawn correctly through the transparent path. So the
+  ghost TREATMENT is what was destroying the model, and the answer is Chad's
+  ("why cant u just use the ghost cyclist model the way i gave it to you?"):
+  the cyclist is drawn exactly as delivered, and `cycAlpha` turns
+  `transparent` ON only for the frames it is actually fading, opaque at
+  every other. And v12.3's depth pre-pass, which I reported to Chad as the
+  fix, was a NO-OP — proven by rendering it in red and seeing nothing; it is
+  deleted. **The other three ghosts are untouched** (Chad: "Dont touch the
+  previous ghosts, you are regressing") — they are `fbosling`, a different
+  asset that has always drawn correctly through the same treatment. Two probe
+  laws: `visible = false` on a mesh hides its CHILDREN too, which invalidated
+  the first pre-pass probe; and a canvas read-back is blank without
+  `preserveDrawingBuffer`, so a pixel grid that returns all zeros is a void
+  measurement, not a black screen.
+- **v12.5** THE LABEL THAT NEVER WENT AWAY, AND THE TREE THAT COULD NOT BE
+  CLICKED — two bugs from players, one of them mine, and three more found
+  reading the chapter they pointed at.
+  **THE LABEL** (Chad: *"that label 'the ground at your feet' ... also appears
+  all the way back from ep2 chp 1 ... as the label 'the bed' ... ep2 chp2 ...
+  'the encik'. It seems to be some kind of recurring bug ... it may affect the
+  entire game globally"* — and he was right). The approach prompt's own
+  comment has said **"only when it is actually on screen"** since v2.1 and the
+  code never tested it: it showed on DISTANCE alone, so it named the decision
+  object with your back to it, and in every chapter whose object is where the
+  player already stands it never went away at all. The frame asks the
+  chapter's own `inView()` now, which is the one function that already knows —
+  episode 1's five ask whether the thing projects onto the screen, episode
+  2's four fold in whether it is LIVE (the bed with nothing to offer, the
+  encik before the third answer, the ground before the pressure), so all four
+  episode-2 reports are fixed by the same line with no new seam and no chapter
+  edit. It is shared with `reach`, which used to compute it and throw it away
+  whenever the player was out of arm's reach. Measured in all nine chapters,
+  facing the object and turned away from it. **This DOES change episode 1**:
+  the label now goes when you turn away. Put to Chad as his call, and approved
+  ("its fine, episode 1 can follow this behaviour") — so the base game's
+  behaviour here is the comment's, deliberately, from v12.5 on.
+  **THE TREE** (*"the 1/6 screenshot of looking at the tree cannot be
+  clicked"*) is MINE, from v12.3, which added `if (h.dwell > 0) continue;` to
+  `nearestHotspot()` and took look-spots off the interact badge entirely — and
+  on a phone **that badge is the only tap target a hotspot has** (a touch tap
+  reaches `stage.pile.hits()` and nothing else), so there was nothing to
+  press. What v12.3 actually needed to fix was the ORDERING: a press used to
+  fire whichever spot was nearest, so a tap while looking at a tree twelve
+  metres off answered the ground at the player's feet. A look-spot is offered
+  to a press only while the reticle is already inside its own `aim` — the same
+  test the look is graded on, lifted into one `hotspotAimed()` so the two can
+  never disagree — which means a press can only ever fire the spot the look
+  was about to.
+  And the look was aimed with a torch FOUR TIMES WIDER than the cone that
+  counted it: the beam's half-angle is 0.40 rad against cones of 0.11, so a
+  tree lit square in the middle of the light counted for nothing. About half
+  the beam now (0.20 / 0.22 / 0.28); the closest two of the seven anchors are
+  47° apart against the 23° two cones would need to touch, so no look can
+  answer two. Measured on the shipped build: 8.6° off centre fires (it was
+  dead), 19° off still does not. A look-spot's marker also stops wearing the
+  exclamation mark, which on a phone is an instruction to tap, and its ring
+  FILLS with the spot's own `dwellT` — what is drawn and what fires are the
+  same number (the v8.8 `ZONE_R` rule).
+  **THREE MORE IN CHAPTER 3**, all from v11.3 and all mine: `bushTick` guarded
+  on `phase === 'press' || phase === 'down'` and **NEITHER PHASE EXISTS** (the
+  chapter's are gear, look, pressure, decide), so the bushes have rustled and
+  the animals called straight through the beat built on "not even the sound of
+  vegetation moving around me"; the far ghost runs, which carry leaf-litter
+  footsteps BY NAME, had no guard at all; and `reset()` never cleared the
+  accumulated look, so a replay opened with credit banked from the run before
+  (e2c4 has cleared it since v12.3 — the chapter where the seam was written
+  never did). Harnesses: chapter, pile, fixture, walk, leak, cine, text, csp.
+  docs/V12.5-THE-LABEL-AND-THE-TREE.md is the build's memory.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -3670,7 +3746,7 @@ the run exactly as it always ended a last chapter.
 
 Next up: **episode 2's chapter 5**, THE LAST NIGHT — the payoff the case file names: he stops looking and it stops (rifle mode shipped at v12.0, chapter 4, The Cyclist, at v12.1, and its range made playable at v12.2 — docs/V12.0-E2C4-PLAN.md, docs/V12.2-THE-RANGE-THAT-WORKS.md)
 (chapter 1, The Worst Bed, shipped at v7.1 — `src/chapters/e2/e2c1.js`;
-chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 3, The Pressure, at v11.0 and revised at v11.1–v11.9 — `src/chapters/e2/e2c3.js`; chapter 4, The Cyclist, at v12.1 and rebuilt at v12.2 — `src/chapters/e2/e2c4.js`;
+chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 3, The Pressure, at v11.0 and revised at v11.1–v11.9 and v12.5 — `src/chapters/e2/e2c3.js`; chapter 4, The Cyclist, at v12.1, rebuilt at v12.2 and its ghost given back its body at v12.4 — `src/chapters/e2/e2c4.js`;
 chapters 1 and 2's lessons rewritten at v11.10, chapter 1 last revised at v10.8; the rifle
 viewmodel's placement and material are measured in
 docs/E2-SOLDIER-MODELS.md §8), and the still-outstanding job of replacing chapter 1's
