@@ -203,8 +203,6 @@
       objStag: 'Wait on the line. Weapons loaded.',
       objConfuse: 'Hold it in your sight. Do not fire.',
       objMoment: 'It is in the target area. Hold your sight on it, or decide.',
-      hotRadio: 'E to key the radio',
-      hotRadioTouch: 'Tap to key the radio',
       hotTrack: 'Keep it in your sight',
       loadBrief: 'LOAD ON THE ORDER',
       /* v13.0 (Chad: "the instructions in text can also be shorter") — 240
@@ -1103,7 +1101,7 @@
        advance. */
     const CYC_FADE = 1.1;                      // alpha per second
     let cycWant = 0;
-    let pass = 0, cycT = 0, cycOn = false, cycStopped = false, shots = 0, tracked = 0, reported = false;
+    let pass = 0, cycT = 0, cycOn = false, cycStopped = false, shots = 0, tracked = 0;
     let momentT = 0, bellDone = false;
     function cycStart(p, fadeIn) {
       pass = Math.max(0, Math.min(PASS_Z.length - 1, p));
@@ -1414,7 +1412,13 @@
            thing was on the range, so the HUD announced a presence the player
            could not find. It is raised on the FRAME he is first seen now
            (beginConfuse), with its own sting. */
-        after(16.0, () => beginConfuse());
+        /* v13.2, Chad: "after the 'last night you never say anything after'
+           voiceline, the delay before the next action is too long." It was
+           9.9 s of nothing: the line runs 3.0 to 6.13 (its own measured
+           3.13 s) and the flare went up at 16.0. 8.0 leaves a beat under two
+           seconds after he stops talking, which is the pause the line wants
+           and not a wait. */
+        after(8.0, () => beginConfuse());
       } else after(2.0, () => beginConfuse());
     }
 
@@ -1554,14 +1558,12 @@
          and the window is the chapter's half; `playCineFn` already stops
          play-time narration when a scene begins (v4.91). */
       dropTodo(); lineQ.length = 0; speakReset();
-      if (kit) {
-        kit.objective(null);
-        /* the timed decision: the bar IS its approach (the plan's §4.7).
-           Running out costs sanity and never wisdom. */
-        kit.decisionClock(22, () => {
-          if (kit) kit.conduct({ s: -8, note: 'You stood there until it reached the berm.' });
-        });
-      }
+      /* v13.2, Chad: "when the options menu appear, why is there a timer in
+         it? there is no need for a timer." The clock was the plan's §4.7 —
+         the bar as the thing's approach — and it cost 8 sanity on a timeout.
+         Gone: a countdown on a menu the player is reading is pressure on the
+         reading, not on the decision. */
+      if (kit) kit.objective(null);
       after(0.4, () => { if (getState() === 'play') startDecision(); });
     }
 
@@ -1767,20 +1769,15 @@
        frame, so a moving hotspot is a moving object and nothing else. It is
        the drill the range spent an hour teaching — hold the shape in your
        sight — and the chapter's whole trick is that obeying it is safe. */
-    const TOUCH = matchMedia('(pointer: coarse)').matches || 'ontouchstart' in window;
     const trackPos = { x: 0, y: 1.1, z: -45 };
     const hotspots = [
-      /* v12.3: the radio waits for the THING. `beginConfuse` starts the
-         cyclist at 3.2 s, and the radio was live from the phase's first
-         frame — so the proper words could be said, and the award banked,
-         about something that was not on the range yet, and the tower's
-         reply landed on an empty arc. It is gated on the same condition the
-         track spot uses, which is also the truth: there is nothing to
-         report until there is something to report. */
-      { id: 'radio', pos: { x: HIS.x + 0.55, y: 1.15, z: 0.45 }, radius: 2.4, anyView: true,
-        prompt: TOUCH ? DATA.words.hotRadioTouch : DATA.words.hotRadio, markY: 0.5,
-        enabled: () => (phase === 'confuse' || phase === 'moment') && cycOn && cyc.a > 0.3 && !reported,
-        onInteract() { return doReport(); } },
+      /* v13.2, Chad: "remove the E to 'call radio' interaction, it is not
+         needed. The other voicelines we have now from the other shooters are
+         good enough." Lane five's shout and the tower's reply already say
+         the target area is empty, which was the beat the radio existed to
+         deliver; a second way to say it was a prompt to press, not a thing
+         to find out. `n4report` and `t4roger` stay in the pack — deleting a
+         recorded take to remove a prompt is a trade with no upside (v9.6). */
       /* v12.3: `markFar` 60, because the drill had no cue on screen at any
          distance the cyclist is ever at — the marker walk clips at 16 m and
          the thing crosses between 22 and 46 — while the badge was owned by
@@ -1796,21 +1793,6 @@
         enabled: () => (phase === 'confuse' || phase === 'moment') && cycOn && cyc.a > 0.3 && tracked < 1,
         onInteract() { return doTrack(); } },
     ];
-    /* the proper words, keyed on the radio: what option A does, said before
-       the decision ever opens. It is worth wisdom because it is the drill. */
-    function doReport() {
-      if (reported) return false;
-      reported = true;
-      if (worldSfx) worldSfx('rangepa', 0.45);
-      queueGap(0.35);
-      queueLine('n4report');
-      queueGap(0.4);
-      queueFn(() => { if (worldSfx) worldSfx('rangepa', 0.45); });
-      queueGap(0.4);
-      queueLine('t4roger');
-      bank({ a: 4, note: 'You reported what you saw, in the proper words.' });
-      return true;
-    }
     /* the drill obeyed: the shape held in the sight instead of answered */
     function doTrack() {
       if (tracked) return false;
@@ -1914,7 +1896,7 @@
          `set(true)` has always left it as.) */
       for (const t of statics.concat(popups, far, [mover])) { t.hit = false; t.set(true); }
       cycEnd(); cyc.group.position.set(0, 0, -45); cyc.group.rotation.y = -Math.PI / 2; cyc.group.scale.setScalar(1);
-      pass = 0; cycT = 0; cycStopped = false; shots = 0; tracked = 0; reported = false;
+      pass = 0; cycT = 0; cycStopped = false; shots = 0; tracked = 0;
       momentT = 0; bellDone = false; hot = false; serial = 0; hits = 0; early = 0; ending = false;
       /* v12.3: the accumulated LOOK is run state too. `dwellT` is the
          engine's counter on the chapter's own hotspot object, and reset()
@@ -1977,7 +1959,7 @@
        drains the set when the bytes land. Every line a hotspot or a phase
        can ask for on its first press has to be in here, or the first press
        is silent by construction. */
-    if (warmSounds) warmSounds(['n4pro2', 'n4report', 't4roger', 't4load', 't4ready',
+    if (warmSounds) warmSounds(['n4pro2', 't4load', 't4ready',
                                 't4fire1', 't4fire2', 't4fire3', 't4cease', 't4who', 't4neg',
                                 'e4wait', 'b4stag', 'b4there', 'b4float', 'n4notarget', 'n4back',
                                 'rangepa', 'rifleshot', 'riflecock', 'flarepop', 'flarelaunch', 'targethit',
@@ -2027,7 +2009,7 @@
       sayLine, after, dayClock, bank,
       get phase() { return phase; },
       setPhase, applyPhase, beginSerial, beginStag, beginConfuse, beginMoment, openDecision,
-      lookInfo: () => ({ phase, serial, hits, hot, early, shots, tracked, reported,
+      lookInfo: () => ({ phase, serial, hits, hot, early, shots, tracked,
                          pass, cycOn, cycA: +cyc.a.toFixed(2),
                          cyc: { x: +cyc.group.position.x.toFixed(2), z: +cyc.group.position.z.toFixed(2) },
                          flare: { on: flareOn, t: +flareT.toFixed(1), i: +flare.intensity.toFixed(0) },
