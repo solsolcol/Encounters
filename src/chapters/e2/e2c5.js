@@ -600,16 +600,39 @@
     }
     function applyPhase(p) {
       done.clear();
+      /* THE PHASE STRING IS THE RECEIPT. setPhase writes `clear:` plus the
+         list every time a counter is done, so it already names exactly what
+         has been handed in — and it is the ONLY thing that can, because the
+         office form is not an item and the bag can never account for it.
+         THE BAG IS NEVER READ AS A RECEIPT. It was, and it was wrong in
+         exactly the case that matters most: on the first frame of a fresh
+         run nothing has issued anything yet, so an empty bag read as two
+         counters already handed in, the phase string was rewritten to say
+         so, and the arms and stores hotspots were dead for the whole
+         chapter. An empty bag means "he has not been given his kit", never
+         "he has handed it in". */
       if (typeof p === 'string' && p.startsWith('clear:')) {
         for (const id of p.slice(6).split(',')) if (CLEAR_NOTE[id]) done.add(id);
       }
-      /* the bag is the other half of the receipt: an item that is no longer
-         carried was handed in, whatever the phase string says */
-      if (kit && kit.has) {
-        if (!kit.has('rifle')) done.add('arms');
-        if (!kit.has('torch')) done.add('stores');
+      /* AND THE BAG IS MADE TO MATCH IT, both ways: he carries whatever he
+         has not yet handed in and nothing he has. That is what ISSUES his
+         kit on the first frame of a fresh run, where nothing has called
+         reset() and the bag arrives empty. */
+      if (kit && kit.has && kit.give && kit.take) {
+        for (const [id, item] of [['arms', 'rifle'], ['stores', 'torch']]) {
+          const want = !done.has(id) && p !== 'talk' && p !== 'decide' && p !== 'spot';
+          if (want && !kit.has(item)) kit.give(item);
+          if (!want && kit.has(item)) kit.take(item);
+        }
       }
-      if (p === 'talk' || p === 'decide' || done.size >= 3) {
+      /* `spot` IS a receipt in itself: the phase is only ever set once all
+         three counters are done, so a save that names it means the clearance
+         is over even though the bag can only ever account for two of the
+         three (the office form is not an item). Without this a resume taken
+         after the clearance landed back in `clear` with the office still to
+         do, and the player was sent to hand in a form he had already
+         handed in. */
+      if (p === 'talk' || p === 'decide' || p === 'spot' || done.size >= 3) {
         done.add('arms'); done.add('stores'); done.add('office');
         /* THE CONVERSATION IS SPENT on a resume: nobody hears the turn twice,
            and nobody is left standing rooted with no dialogue running. */
