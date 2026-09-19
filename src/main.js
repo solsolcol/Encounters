@@ -5112,7 +5112,13 @@ const TEEN_TAKES = new Set([
   'n4A', 'n4B', 'n4C', 'n4D',
   // v13.2: the rebuilt outcome scenes — the walk forward, the gasp on the
   // turn, the run, and the breathing under it
-  'n4draw', 'n4gasp', 'n4runD', 'n4pant']);
+  'n4draw', 'n4gasp', 'n4runD', 'n4pant',
+  /* v14.0: EPISODE 2 CHAPTER 5, The Last Question: the four film lines, the
+     two of small talk, the four replies, the four card lines, and the
+     closing narration that ends the episode */
+  'n5pro1', 'n5pro2', 'n5pro3', 'n5pro4', 'n5hi', 'n5ord',
+  'n5askA', 'n5askB', 'n5askC', 'n5askD',
+  'n5A', 'n5B', 'n5C', 'n5D', 'n5close']);
 /* The rest of the cast. They share `voiceOut` and the duck, but not the
    boost — see voiceStage() above. */
 const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
@@ -5147,7 +5153,11 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
   't4roger', 't4endex', 't4man',
   'e4wait', 'e4down', 'e4line', 'e4back', 'b4stag', 'b4there', 'b4float', 'k4shout', 'r4run',
   /* v13.0: the three shouts on the frame the cyclist is seen, in three voices */
-  'b4cyc', 'k4cyc', 'r4cyc']);
+  'b4cyc', 'k4cyc', 'r4cyc',
+  /* v14.0: chapter 5 — the encik out of Hawk Company, and the storeman */
+  'e5hi', 'e5ord', 'e5turn', 'e5A1', 'e5A2', 'e5A3', 'e5A4', 'e5A5',
+  'e5B1', 'e5B2', 'e5B3', 'e5B4', 'e5C', 'e5D1', 'e5D2', 'e5D3',
+  'c5arms', 'c5store', 'c5form']);
 const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || CAST_TAKES.has(name);
 /* v6.9: his WHISPERS go round the bus. Chad wanted the three pick-up
    reactions "almost whispering to himself" and they were re-voiced as
@@ -7051,6 +7061,23 @@ const STING_SAMPLE = {
   /* v13.2: the four new takes for the rebuilt outcome scenes */
   e4back: ['e4back', 1], n4draw: ['n4draw', 1], n4gasp: ['n4gasp', 1],
   n4runD: ['n4runD', 1], n4pant: ['n4pant', 1],
+  /* v14.0 · EPISODE 2 CHAPTER 5 · THE LAST QUESTION. `campamb` is e2c1's and
+     is cued here too, which is what moves it into the SHARED pack — build.py
+     COMPUTES the split, so a second chapter asking for a sound is the whole
+     declaration. `e5theme` is the closing bed under the last teaching. */
+  n5pro1: ['n5pro1', 1], n5pro2: ['n5pro2', 1], n5pro3: ['n5pro3', 1],
+  n5pro4: ['n5pro4', 1], n5hi: ['n5hi', 1], n5ord: ['n5ord', 1],
+  n5askA: ['n5askA', 1], n5askB: ['n5askB', 1], n5askC: ['n5askC', 1],
+  n5askD: ['n5askD', 1], n5close: ['n5close', 1],
+  e5hi: ['e5hi', 1], e5ord: ['e5ord', 1], e5turn: ['e5turn', 1],
+  e5A1: ['e5A1', 1], e5A2: ['e5A2', 1], e5A3: ['e5A3', 1], e5A4: ['e5A4', 1],
+  e5A5: ['e5A5', 1], e5B1: ['e5B1', 1], e5B2: ['e5B2', 1], e5B3: ['e5B3', 1],
+  e5B4: ['e5B4', 1], e5C: ['e5C', 1], e5D1: ['e5D1', 1], e5D2: ['e5D2', 1],
+  e5D3: ['e5D3', 1],
+  c5arms: ['c5arms', 1], c5store: ['c5store', 1], c5form: ['c5form', 1],
+  storecount: ['storecount', 0.8], riflerack: ['riflerack', 0.9],
+  armsdoor: ['armsdoor', 0.7], storedesk: ['storedesk', 0.7],
+  e5theme: ['e5theme', 0.95],
   b4stag: ['b4stag', 1], b4there: ['b4there', 1], b4float: ['b4float', 1],
   k4shout: ['k4shout', 1], r4run: ['r4run', 1],
   n4pro1: ['n4pro1', 1], n4pro2: ['n4pro2', 1], n4notarget: ['n4notarget', 1], n4back: ['n4back', 1],

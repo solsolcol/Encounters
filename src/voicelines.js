@@ -114,7 +114,14 @@
        recruit says it now, in a Singaporean Chinese voice; the buddy keeps
        his seat and loses his line. */
     recruit4: { name: "The recruit who heard it (episode 2)", voice: "XxnXw151E3nb1V85MRlS", model: "eleven_v3",
-              note: "David — the library's 'typical middle-aged Singaporean man', casual. Picked over Louis (an Asian narrator, whose two takes came back at -11 and -14 dBFS peak, rumbling under 120 Hz) by measurement: David's take 2 opens and closes on silence (-72/-86 dB) at 2.9 words a second." }
+              note: "David — the library's 'typical middle-aged Singaporean man', casual. Picked over Louis (an Asian narrator, whose two takes came back at -11 and -14 dBFS peak, rumbling under 120 Hz) by measurement: David's take 2 opens and closes on silence (-72/-86 dB) at 2.9 words a second." },
+    /* v14.0 — the STOREMAN behind the armskote and stores counters, and the
+       clerk in the company office (episode 2, chapter 5). THREE LINES, so no
+       new speaker was cast: he is recruit4's David, the library's "typical
+       middle-aged Singaporean man", which is exactly what a camp storeman is.
+       A player last heard that voice three chapters ago, at a breakfast table. */
+    clerk: { name: "The storeman and the company clerk (episode 2, chapter 5)", voice: "XxnXw151E3nb1V85MRlS", model: "eleven_v3",
+              note: "David again - recruit4's voice, reused rather than cast, for three counter lines. Flat cast bus, levelled by RMS to -16 dBFS." }
   };
 
   const LINES = [
@@ -706,7 +713,83 @@
     { id: "k4cyc", who: "bunkmate", ch: "e2c4", where: "Play: the frame the ghost cyclist is first seen — down the line",
       text: "[shouting urgently] There's someone at the range! Don't shoot! DON'T SHOOT!", secs: 3.42 },
     { id: "r4cyc", who: "recruit3", ch: "e2c4", where: "Play: the frame the ghost cyclist is first seen — the far end",
-      text: "[shouting, panicked] Sergeant! There's someone cycling in the range!", secs: 2.35 }
+      text: "[shouting, panicked] Sergeant! There's someone cycling in the range!", secs: 2.35 },
+    /* ---- v14.0 · EPISODE 2 · CHAPTER 5 · THE LAST QUESTION ------------------
+       Days from ORD, at his infantry camp, he bumps into his Tekong encik and
+       takes the chance to speak to him. Halfway through, the encik brings the
+       Hawk Company bunk up himself. Aaron under the v5.28 prompt rules (one
+       tag naming an EMOTION, never a volume); the encik under the v8.3 BARK
+       RULE (no stage direction at all) but in a SOFTER register, which is
+       carried by the WORDS - short sentences, full stops, no capitals for
+       stress - because he is not in charge of this boy any more. */
+    { id: "n5pro1", who: "jamesTeen", ch: "e2c5", where: "Opening film, over black",
+      text: "Months later. Days away from ORD.", secs: 3.08 },
+    { id: "n5pro2", who: "jamesTeen", ch: "e2c5", where: "Opening film, the company line in the afternoon",
+      text: "The outfield was behind me. I hadn't thought about any of it in a long time. I wasn't trying not to. It just went.", secs: 7.55 },
+    { id: "n5pro3", who: "jamesTeen", ch: "e2c5", where: "Opening film, the clearance form, the tilt to the stores",
+      text: "Last week in camp. Clear your kit, sign your papers, go home.", secs: 4.44 },
+    { id: "n5pro4", who: "jamesTeen", ch: "e2c5", where: "Opening film, the push-in on the figure by the stores",
+      text: "Then I saw him.", secs: 1.96 },
+    { id: "c5arms", who: "clerk", ch: "e2c5", where: "Play: the armskote counter, handing the rifle in",
+      text: "Rifle. Serial number... okay. In the rack, end one.", secs: 5.04 },
+    { id: "c5store", who: "clerk", ch: "e2c5", where: "Play: the stores counter, handing the torch in",
+      text: "Torch, one. Sign here.", secs: 2.25 },
+    { id: "c5form", who: "clerk", ch: "e2c5", where: "Play: the company office, the form signed",
+      text: "All clear. Three more days only ah. Congratulations.", secs: 3.24 },
+    { id: "n5hi", who: "jamesTeen", ch: "e2c5", where: "Play: walking up to the encik",
+      text: "Encik? Encik, it's me. Hawk Company.", secs: 3.16 },
+    { id: "e5hi", who: "encik", ch: "e2c5", where: "Play: he recognises him",
+      text: "Eh. You. Still alive.", secs: 1.80 },
+    { id: "n5ord", who: "jamesTeen", ch: "e2c5", where: "Play: the small talk",
+      text: "Three more days, encik. Then I ORD.", secs: 3.40 },
+    { id: "e5ord", who: "encik", ch: "e2c5", where: "Play: the small talk",
+      text: "Good. Go home. Eat properly, sleep properly.", secs: 3.32 },
+    { id: "e5turn", who: "encik", ch: "e2c5", where: "Play: the turn — unprompted, halfway through",
+      text: "Eh. You remember the question you asked me? In the cookhouse. About the three o'clock shower.", secs: 4.83 },
+    { id: "n5askA", who: "jamesTeen", ch: "e2c5", where: "The decision, option A",
+      text: "Who was it, encik? What was his story?", secs: 2.04 },
+    { id: "n5askB", who: "jamesTeen", ch: "e2c5", where: "The decision, option B",
+      text: "I don't think about it anymore, encik.", secs: 1.72 },
+    { id: "n5askC", who: "jamesTeen", ch: "e2c5", where: "The decision, option C",
+      text: "I think I was just too stressed.", secs: 1.96 },
+    { id: "n5askD", who: "jamesTeen", ch: "e2c5", where: "The decision, option D",
+      text: "Why didn't you tell me then, encik?", secs: 2.04 },
+    { id: "e5A1", who: "encik", ch: "e2c5", where: "Scene A: the recruit in bed one",
+      text: "Before my time. One recruit, bed one. Quiet boy. Every night he's the last one in the shower. He don't like people see him wash.", secs: 8.75 },
+    { id: "e5A2", who: "encik", ch: "e2c5", where: "Scene A: the morning they found him",
+      text: "One morning, first parade, he's not there. They find him inside. Water still running.", secs: 5.41 },
+    { id: "e5A3", who: "encik", ch: "e2c5", where: "Scene A: after",
+      text: "No note. No reason. His family come and take him back. The bunk close for one month. Then they open it again like nothing.", secs: 8.75 },
+    { id: "e5A4", who: "encik", ch: "e2c5", where: "Scene A: the attachment line — the episode's teaching",
+      text: "Since then, every batch, bed one, three o'clock. Sometimes the departed are still stuck at the places they have attachments to. That shower was his.", secs: 9.40 },
+    { id: "e5A5", who: "encik", ch: "e2c5", where: "Scene A: and he closes it",
+      text: "You asked, so I told you. But don't go and make it into something. He's not your business.", secs: 5.56 },
+    { id: "e5B1", who: "encik", ch: "e2c5", where: "Scene B: the nod",
+      text: "Good. Better than me.", secs: 1.65 },
+    { id: "e5B2", who: "encik", ch: "e2c5", where: "Scene B: his own night in that bunk",
+      text: "I was in that bunk also. I went to look once. Water running. Somebody standing under it, back facing me. I went back to bed and never look again. One month, then nothing.", secs: 12.36 },
+    { id: "e5B3", who: "encik", ch: "e2c5", where: "Scene B: why he said nothing in the cookhouse",
+      text: "That morning in the cookhouse I say nothing, because if I tell you, you check every night until ORD. You didn't.", secs: 7.71 },
+    { id: "e5B4", who: "encik", ch: "e2c5", where: "Scene B: the line that closes the episode",
+      text: "After your batch posted out. Quiet. First time in years.", secs: 4.52 },
+    { id: "e5C", who: "encik", ch: "e2c5", where: "Scene C: the whole scene",
+      text: "I know it is easier to brush things off with logic and reason. But there are many things you simply won't fully understand.", secs: 8.12 },
+    { id: "e5D1", who: "encik", ch: "e2c5", where: "Scene D: the boy he told once",
+      text: "Because I told one boy before you. Same question. After that he checked every night. Two months later he's out. Not sick. Not injured. Just cannot anymore.", secs: 10.42 },
+    { id: "e5D2", who: "encik", ch: "e2c5", where: "Scene D: the rule he made after",
+      text: "After him I decide. Nobody gets told until they are leaving.", secs: 4.52 },
+    { id: "e5D3", who: "encik", ch: "e2c5", where: "Scene D: and the quiet",
+      text: "After your batch posted out. Quiet. First time in years. Now you know. Now it cannot hurt you.", secs: 7.00 },
+    { id: "n5A", who: "jamesTeen", ch: "e2c5", where: "Under outcome card A",
+      text: "I asked who he was. Encik told me, and then told me to leave it there.", secs: 5.33 },
+    { id: "n5B", who: "jamesTeen", ch: "e2c5", where: "Under outcome card B",
+      text: "I had already let it go. He only confirmed I was right to.", secs: 3.55 },
+    { id: "n5C", who: "jamesTeen", ch: "e2c5", where: "Under outcome card C",
+      text: "I called it stress. He wouldn't let me.", secs: 3.16 },
+    { id: "n5D", who: "jamesTeen", ch: "e2c5", where: "Under outcome card D",
+      text: "I wanted a reason I was owed. He gave me one. It didn't help.", secs: 4.68 },
+    { id: "n5close", who: "jamesTeen", ch: "e2c5", where: "The closing narration, to camera, in all four outcomes",
+      text: "The departed stay where their attachments are. So do the living. His was that shower. Mine was the question. When I put it down, so did he.", secs: 11.47 }
   ];
 
   // What a chapter key means on the sheet.
@@ -717,7 +800,8 @@
     e2c1: "Episode 2 · Chapter 1 · The Worst Bed",
     e2c2: "Episode 2 · Chapter 2 · Nobody There",
     e2c3: "Episode 2 · Chapter 3 · The Pressure",
-    e2c4: "Episode 2 · Chapter 4 · The Cyclist"
+    e2c4: "Episode 2 · Chapter 4 · The Cyclist",
+    e2c5: "Episode 2 · Chapter 5 · The Last Question"
   };
 
   window.__VOICE__ = { SPEAKERS, LINES, CHAPTERS };
