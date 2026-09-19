@@ -221,7 +221,7 @@ matches.
 
 ## Testing
 
-23 harnesses, listed in `runtests.mjs` with one-line purposes and a
+24 harnesses, listed in `runtests.mjs` with one-line purposes and a
 group tag (`node runtests.mjs @engine` / `@release` / `@chapter`).
 **The rule that stops the suite growing with the game: adding a chapter
 must not add a harness — and neither must adding an episode (v6.0).** Per-chapter correctness is one data-driven
@@ -3420,6 +3420,35 @@ What the baseline contains, by release:
   writes the pitch a cutscene owns and re-applies every frame, v5.30). Five new
   takes; sheet v66. docs/V13.2-THE-FLARE-THE-RHYTHM-AND-THE-SCENES.md is the
   build's memory.
+- **v14.0** EPISODE 2 · CHAPTER 5 · DAYS BEFORE ORD — the chapter that CLOSES
+  the second case file, and the first release in which the episode-complete
+  card runs on a case that is not episode 1. Chad's design, after five of
+  mine were thrown out: months later, days from ORD, he meets his TEKONG
+  encik at a mainland infantry camp, and the encik raises the Hawk Company
+  bunk himself. PLAY is a clearance round on a camp apron in the late
+  afternoon (rifle, torch, form, in any order, one award for doing it before
+  you speak to him); the encik IS the pile, so the decision costs no seam.
+  THE FOUR OPTIONS ARE HIS WORDS and each answer is a different KIND of
+  answer — the story, the confirmation, one flat line that refuses the
+  premise, the reason — which is the house style his "why does the encik tell
+  the same thing in every option?" was naming. 34 takes in four voices and 5
+  sounds; `src/main.js` gains only rows in `STING_SAMPLE` and names in the
+  take sets, so episode 1 is unchanged by construction and was run as the
+  control. THREE BUGS ON THE WAY, none of them visible on screen and all
+  three found by probes: a chapter may now declare **`fireLight: null`** (an
+  afternoon apron has no fire, and `updateViewmodel` had read its position
+  unconditionally since v2.1 — a TypeError sixty times a second, and **not
+  one of the 24 harnesses was listening for `pageerror`**, so all 24 were
+  green over it); `walktest` captures it now, attributes each throw to the
+  chapter that was running and fails with a count, which caught a second one
+  the same run (`makeConcrete()` hands back `{ map, rough }` and the whole
+  object had gone in as `map`); and **an empty bag is not a receipt** —
+  `applyPhase` had read "not carrying the rifle" as "handed the rifle in",
+  which on the first frame of a fresh run marked two counters done and left
+  them dead for the whole chapter, so the PHASE STRING is the only receipt
+  now and the bag is made to match it. The e2c4 range NCO also stops being
+  the Tekong encik, which chapter 5 makes necessary. Sheet v67.
+  docs/V14.0-E2C5-PLAN.md is the build's memory.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -3929,7 +3958,37 @@ fifth chapter has no scare that is not the player's own memory replayed
 and released. `nextChapterKey()` past ch5 is null, so sealing it ends
 the run exactly as it always ended a last chapter.
 
-Next up: **episode 2's chapter 5**, THE LAST NIGHT — the payoff the case file names: he stops looking and it stops (rifle mode shipped at v12.0, chapter 4, The Cyclist, at v12.1, and its range made playable at v12.2 — docs/V12.0-E2C4-PLAN.md, docs/V12.2-THE-RANGE-THAT-WORKS.md)
+**EPISODE 2 IS COMPLETE** (v14.0). Chapter 5, DAYS BEFORE ORD, closes the
+second case file: months after the outfield, days from ORD, he bumps into
+his TEKONG encik at a mainland infantry camp, and halfway through the small
+talk the encik brings the Hawk Company bunk up himself — "Remember the
+question you asked me? About the 3am shower?" The design is Chad's, after he
+threw out five proposals (docs/V14.0-E2C5-PLAN.md §0 records why each
+failed; the short version is that a fifth haunting is not a resolution, and
+episode 1 closes by DAYLIGHT, someone who knows more, and one physical final
+act). PLAY is a clearance round on a camp apron in the late afternoon —
+the rifle back at the armskote, the torch at the stores, a form signed at
+the company office, in any order, with one award for doing it before you
+speak to him — and then the encik, who IS the chapter's pile, so the
+decision is the engine's own. THE FOUR OPTIONS ARE HIS WORDS VERBATIM, and
+each answer is a different KIND of answer rather than four versions of one
+speech: A is the story (the man, and that the departed can stay attached to
+a place — the teaching the episode ends on), B is the confirmation kept
+short, C is one flat line that refuses the premise and ends there, D is the
+reason, also short. B best, A good, D bad, C worst — his verdicts. 34 takes
+in four voices, 5 sounds, and ZERO engine seams for the chapter itself.
+Three things the release fixed on the way, each found by a probe rather than
+by eye: a chapter may now declare `fireLight: null` (an afternoon apron has
+no fire, and the viewmodel read its position every frame); `walktest`
+CAPTURES `pageerror` now, which is what caught that and a texture object
+assigned where a texture belonged; and the clearance is ISSUED at the start
+of play rather than inferred from an empty bag, which had left both counters
+dead from the chapter's first frame (docs/LEARNINGS.md).
+
+Next up: **episode 3**, which has no chapters yet — the selector already
+shows its case file and the episode-complete card already says it is not yet
+written. Everything the architecture needs for it is in
+docs/EPISODES-PLAN.md.
 (chapter 1, The Worst Bed, shipped at v7.1 — `src/chapters/e2/e2c1.js`;
 chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 3, The Pressure, at v11.0 and revised at v11.1–v11.9 and v12.5 — `src/chapters/e2/e2c3.js`; chapter 4, The Cyclist, at v12.1, rebuilt at v12.2 and its ghost given back its body at v12.4 — `src/chapters/e2/e2c4.js`;
 its flare, its cyclist's rhythm and all four outcome scenes rebuilt at v13.2
@@ -3940,7 +3999,9 @@ notes — docs/V13.0-PLAN.md and docs/V13.0-THE-TWENTY-TWO.md — and chapter 4
 gained its muzzle flash and a real ammo point at v13.1
 (docs/V13.1-THE-FLASH-AND-THE-AMMO.md) and Chad's nine notes at v13.2; the rifle
 viewmodel's placement and material are measured in
-docs/E2-SOLDIER-MODELS.md §8), and the still-outstanding job of replacing chapter 1's
+docs/E2-SOLDIER-MODELS.md §8; chapter 5, Days Before ORD, at v14.0 —
+`src/chapters/e2/e2c5.js`, docs/V14.0-E2C5-PLAN.md), and the
+still-outstanding job of replacing chapter 1's
 placeholder choices with the real "THE OFFERINGS" data in
 `docs/source/trial-game-chapters.md`.
 
@@ -3949,8 +4010,8 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v66** (`masters/v13.2/masterz-text-v66.xlsx`, four tabs: UI
-TEXT 282, EPISODE 1 110, EPISODE 2 151, VOICE LINES 261). It is EXPORTED and not published —
+**THE SHEET IS v67** (`masters/v14.0/masterz-text-v67.xlsx`, four tabs: UI
+TEXT 282, EPISODE 1 110, EPISODE 2 179, VOICE LINES 295). It is EXPORTED and not published —
 the workbook has been past the Drive connector's base64 wall since v43, and
 the split export is still to do (docs/EDITING-TEXT.md). **v44 is still the
 link to give Chad** until that is fixed:

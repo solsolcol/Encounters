@@ -4281,3 +4281,60 @@ took out five watcher loops earlier in the session (`until ! pgrep -f "node
 dbg..."` never exits, because pgrep sees itself). Use `ps -eo args | grep
 "[r]untests"` — the bracket keeps the pattern from matching its own grep —
 or run the kill in a command of its own.
+
+## v14.0 · No harness listened for `pageerror`, so a throw every frame was invisible
+
+Episode 2's fifth chapter is an afternoon camp apron with no fire in it,
+so it declared `fireLight: null` — honestly, and for the first time in the
+game. `updateViewmodel` has read `stage.fireLight.position` unconditionally
+since v2.1 to warm the hands near a burner, and every chapter until this one
+had something warm to name (a burner, a candle, an altar lamp, a chemlight,
+a fill on the firing line). The chapter threw a `TypeError` sixty times a
+second. Nothing on screen said so, and **not one of the 24 harnesses was
+listening**, so all 24 were green over it.
+
+Two things came out of that, and the second is the durable one:
+
+- The engine takes a null: no fire means no warm light, which is what
+  `warm = 0` already meant at range.
+- **`walktest` captures `pageerror` now**, attributes each to whichever
+  chapter was loading or playing, and fails with a count per distinct
+  message. It is the right harness for it because it is the one that walks
+  INTO every episode-2 chapter and lets it run — a per-frame throw needs a
+  frame. The v8.5 rule ("a probe must capture `pageerror` and console") was
+  already written down; it had just never been applied to a HARNESS.
+
+It caught a second one the same run: `makeConcrete()` hands back
+`{ map, rough }` — the same shape `makeGrass()` has, one line above in the
+same file — and the whole object had gone in as `map`. three.js then copied
+a matrix that was not there, on every frame that drew the block.
+
+## v14.0 · An empty bag is not a receipt
+
+Episode 2 chapter 5 opens on a clearance round: hand the rifle back at the
+armskote, the torch at the stores, sign a form at the office. `applyPhase`
+treated the BAG as half the receipt — an item he is not carrying is one he
+handed in — and on the first frame of a fresh run nothing has issued
+anything, so an empty bag read as two counters already done. It then wrote
+that into the phase string, which made it permanent. **Both counters were
+dead for the whole chapter**, and only `reset()` ever issued the kit, which
+a first entry never calls.
+
+The two states look identical from the bag and are opposites:
+
+| the bag says | it can mean |
+|---|---|
+| no rifle | he handed it in |
+| no rifle | he was never given one |
+
+So: **the phase string is the only receipt** — `setPhase` already writes
+`clear:` plus the list, and it is the only thing that can, because the
+office form is not an item — and the bag is made to MATCH it, both ways,
+which is what issues his kit at the start. Derive-don't-store (v11.6) is
+right about the direction of the arrow; it does not mean any observable
+state will do as the source.
+
+A second bug of the same family, in the same function: a save written at
+`spot` landed back in `clear` with the office still to do, because the bag
+can only ever account for two of the three. `spot` is itself a receipt —
+the phase is only ever set once all three are done.

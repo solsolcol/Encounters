@@ -71,3 +71,32 @@ already signed off. Session ids under `_rangenco_not_installed`. Chad's call.
   advancing. It checks the tally (the mean of five), the five stops, the
   trail (2 done carrying its rank, 3 next and unwritten), the wording and
   the button.
+
+## CP6 — verification, DONE
+
+All 24 harnesses green, episode 1 as the control. Three bugs found and
+fixed, each by a probe and none visible on screen: `fireLight: null` threw
+every frame (engine now takes a null); `makeConcrete()`'s `{ map, rough }`
+went in as `map` (caught by walktest's new `pageerror` capture); and the
+clearance was dead from the first frame because an empty bag was read as a
+receipt. Three probes beyond the suite — forward play, resume at all five
+phases, and the EPISODE COMPLETE card on case file 2 (its first run on a
+non-episode-1 case, and the first time `epBtn` takes the end-the-run
+branch). Details in docs/V14.0-E2C5-PLAN.md §16.
+
+## CP7 — RELEASED v14.0
+
+- build.py VERSION 13.2 -> 14.0, both builds green.
+- commit `7426b09`, pushed to claude/new-session-bampns; tag v14.0 local
+  only (tags do not push from these sessions).
+- **DEPLOYED FIRST**: deploy `6aaf0fe40ac5211d8baff25d`, live at
+  masterz-encounters-game.netlify.app, byte-verified against `dist/` —
+  index.html, the engine, e2c5.js and audiopack_e2c5.json all match, and
+  the live engine carries "14.0".
+- Sheet v67 exported (masters/v14.0/masterz-text-v67.xlsx + .csv, and the
+  tracked masterz-text.csv). NOT published: 48 KB is far past the Drive
+  connector's base64 wall. **v44 stays the link.**
+- Docs: CLAUDE.md (the v14.0 entry, EPISODE 2 IS COMPLETE, sheet v67, 24
+  harnesses), docs/LEARNINGS.md (three new laws),
+  docs/V14.0-E2C5-PLAN.md §16.
+- Backup bundle refreshed — chapter milestone.
