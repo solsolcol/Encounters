@@ -20,14 +20,24 @@ context can pick up from the last ticked box.
 
 ## Checkpoints
 - [x] CP0 · plan doc (`df2c5c7`, `ccde492`, `33e0337`)
-- [ ] CP1 · sound — 27 voice takes, 6 sounds
-- [ ] CP2 · `src/chapters/e2/e2c5.js` DATA + build()
-- [ ] CP3 · the film
-- [ ] CP4 · play — clearance, encik, conversation, decision
-- [ ] CP5 · the four scenes
+- [x] CP1 · sound — 34 voice takes, 5 sounds (`a2d30ac`)
+- [x] CP2 · `src/chapters/e2/e2c5.js` DATA + build()
+- [x] CP3 · the film
+- [x] CP4 · play — clearance, encik, conversation, decision
+- [x] CP5 · the four scenes
 - [ ] CP6 · verify — episode card, resume, walktest, full suite, ep1 control
 - [ ] CP7 · RELEASE — build, harnesses, push, DEPLOY from dist/, byte-verify, bundle
 
 ## Log
 - CP0 done. Options and the encik's four answers are Chad's (plan §5, §6);
   verdicts B best / A good / D bad / C worst are his call of 19 Sep.
+- CP1 done. `campday` dropped on the v9.2 phone-band measure; `campamb`
+  reused, which build.py moves to the shared pack by itself.
+- CP2-CP5 done in one file, `src/chapters/e2/e2c5.js` (~740 lines).
+  chaptertest GREEN: 54 cutscenes walked, every cue inside its own length,
+  both voice buses matching the registry, 2 episodes x 5 chapters.
+  ZERO engine seams: main.js changed only by STING_SAMPLE rows and take-set
+  names, so episode 1 is untouched by construction.
+- The film is 33 s and ends ON THE RECOGNITION. `n5close` is cued under the
+  FADE in all four scenes so it carries on under the outcome card (e2c4's
+  `n4dawn` shape) instead of adding 11 s to every scene.
