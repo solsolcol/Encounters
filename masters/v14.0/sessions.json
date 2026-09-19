@@ -159,5 +159,24 @@
  "storedesk": [
   "KS4MfzRM0yHATI60QVc8",
   "dO1BTsbCdeR2yNRVOybk"
- ]
+ ],
+ "_rangenco_not_installed": {
+  "why": "Louis (rOVKXrU0YcQMzmTNwaDq) takes for e4wait/e4down/e4line/e4back. NOT installed at v14.0: the new lengths (6.32/5.28/2.80/2.08) differ from the shipped ones (5.88/3.79/3.08/1.88) and e4down/e4line/e4back are cued INSIDE e2c4's scenes A, B and C, so installing them forces a re-timing pass on a chapter Chad has already signed off. The rename is the half that costs nothing and is done; the re-voice is his call.",
+  "e4wait": [
+   "whCZYnbpj0TYCRubRStP",
+   "cdjiVYed4US2si5WpIY0"
+  ],
+  "e4down": [
+   "WC1YNDW46kba3dK8n9OZ",
+   "uZ2fFBsJ7AF8Ui3xMmC0"
+  ],
+  "e4line": [
+   "NClBzjZAI76t3pRLJylF",
+   "mjY1uMIz9aES8QRaWB7X"
+  ],
+  "e4back": [
+   "APNO3dzzHJOlCghjE6lt",
+   "TffgYMuySUgr5jpT95DA"
+  ]
+ }
 }

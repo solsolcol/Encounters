@@ -103,6 +103,19 @@
        order, which is the thing that reads as fake. */
     tower: { name: "The range officer in the tower (episode 2, chapter 4)", voice: "JKX4knVxHRiP0doaLdrj", model: "eleven_v3",
              note: "George. Every line is on the PA or the radio. Bark rule: no stage direction, CAPITALS on the stress." },
+    /* v14.0 — THE RANGE SAFETY NCO (episode 2, chapter 4). He was written as
+       "the encik" at v12.1, and chapter 5 makes that impossible: the encik is
+       a TEKONG man, and the whole premise of chapter 5 is bumping into him
+       again, months later, at a mainland infantry camp. This is a different
+       man — the NCO who walks the firing line. Under the same BARK RULE.
+       HE STILL SPEAKS IN HILMI'S VOICE for now, deliberately and not by
+       oversight: four replacement takes exist (Louis, rOVKXrU0YcQMzmTNwaDq —
+       masters/v14.0/sessions.json), and they are NOT installed because their
+       lengths differ from the shipped ones and three of the four are cued
+       inside e2c4's scenes, which would force a re-timing pass on a chapter
+       that is already signed off. Chad's call. */
+    rangenco: { name: "The range safety NCO (episode 2, chapter 4)", voice: "klqxhYh2Np93AvKxFz0b", model: "eleven_v3",
+             note: "Hilmi for now - see the note above. Bark rule: no stage direction, CAPITALS on the stress." },
     encik: { name: "The encik, the sergeant-major (episode 2)", voice: "klqxhYh2Np93AvKxFz0b", model: "eleven_v3",
               note: "Hilmi — Malaysian English, middle-aged. Chad's brief was 'like an angry malay uncle', and getting there took four rounds: the library's Malay voices are all booth-recorded voice-over artists, and he rejected them in turn as too young (Zul), eighty years old (Yatin) and finally 'too polished'. HIS PROMPT RULE IS THE OPPOSITE OF AARON'S: no descriptive stage direction at all — a '[a furious sergeant-major in his fifties...]' tag gets a professional PERFORMING anger, which is what 'polished' names. Write the line the way he barks it: short bursts, full stops between them, CAPITALS on the stressed words. Same words as this registry, only the shouting written down." },
     /* v10.0 — a THIRD recruit at the breakfast table, for the one line that
@@ -685,13 +698,13 @@
       text: "All lanes. Cease fire. Unload, clear weapons. The range is closed.", secs: 5.33, note: "Bark rule." },
     { id: "t4man", who: "tower", ch: "e2c4", where: "Scene B: he is forward of the firing line",
       text: "ALL LANES CEASE FIRE! Man on the range! Lane six is forward of the line!", secs: 5.88, note: "Bark rule." },
-    { id: "e4wait", who: "encik", ch: "e2c4", where: "Play: a round before the order",
+    { id: "e4wait", who: "rangenco", ch: "e2c4", where: "Play: a round before the order",
       text: "WAIT for the order! Nobody fires until the tower says fire! You want to go home or not?", secs: 5.88, note: "Bark rule." },
-    { id: "e4down", who: "encik", ch: "e2c4", where: "Scenes A and C: weapons down",
+    { id: "e4down", who: "rangenco", ch: "e2c4", where: "Scenes A and C: weapons down",
       text: "STOP! Weapons DOWN! Muzzle down the range! DOWN!", secs: 3.79, note: "Bark rule." },
-    { id: "e4line", who: "encik", ch: "e2c4", where: "Scene B: behind him as he goes over the berm",
+    { id: "e4line", who: "rangenco", ch: "e2c4", where: "Scene B: behind him as he goes over the berm",
       text: "LANE SIX! GET BACK ON THE LINE! NOW!", secs: 3.08, note: "Bark rule." },
-    { id: "e4back", who: "encik", ch: "e2c4", where: "Scene B: the panic shout as he keeps walking, just before the black",
+    { id: "e4back", who: "rangenco", ch: "e2c4", where: "Scene B: the panic shout as he keeps walking, just before the black",
       text: "GET BACK HERE! NOW!", secs: 1.88, note: "Bark rule — no stage direction." },
     { id: "b4stag", who: "buddyC3", ch: "e2c4", where: "Play: the wait on the line, after the serials",
       text: "Eh. Last night. You never say anything after.", secs: 3.13 },
