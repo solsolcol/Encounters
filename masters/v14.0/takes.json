@@ -1,0 +1,206 @@
+[
+ {
+  "id": "n5pro1",
+  "who": "jamesTeen",
+  "where": "Opening film, over black",
+  "text": "Months later. Days away from ORD."
+ },
+ {
+  "id": "n5pro2",
+  "who": "jamesTeen",
+  "where": "Opening film, the company line in the afternoon",
+  "text": "The outfield was behind me. I hadn't thought about any of it in a long time. I wasn't trying not to. It just went."
+ },
+ {
+  "id": "n5pro3",
+  "who": "jamesTeen",
+  "where": "Opening film, the clearance form, the tilt to the stores",
+  "text": "Last week in camp. Clear your kit, sign your papers, go home."
+ },
+ {
+  "id": "n5pro4",
+  "who": "jamesTeen",
+  "where": "Opening film, the push-in on the figure by the stores",
+  "text": "Then I saw him."
+ },
+ {
+  "id": "c5arms",
+  "who": "clerk",
+  "where": "Play: the armskote counter, handing the rifle in",
+  "text": "Rifle. Serial number... okay. In the rack, end one."
+ },
+ {
+  "id": "c5store",
+  "who": "clerk",
+  "where": "Play: the stores counter, handing the torch in",
+  "text": "Torch, one. Sign here."
+ },
+ {
+  "id": "c5form",
+  "who": "clerk",
+  "where": "Play: the company office, the form signed",
+  "text": "All clear. Three more days only ah. Congratulations."
+ },
+ {
+  "id": "n5hi",
+  "who": "jamesTeen",
+  "where": "Play: walking up to the encik",
+  "text": "Encik? Encik, it's me. Hawk Company."
+ },
+ {
+  "id": "e5hi",
+  "who": "encik",
+  "where": "Play: he recognises him",
+  "text": "Eh. You. Still alive."
+ },
+ {
+  "id": "n5ord",
+  "who": "jamesTeen",
+  "where": "Play: the small talk",
+  "text": "Three more days, encik. Then I ORD."
+ },
+ {
+  "id": "e5ord",
+  "who": "encik",
+  "where": "Play: the small talk",
+  "text": "Good. Go home. Eat properly, sleep properly."
+ },
+ {
+  "id": "e5turn",
+  "who": "encik",
+  "where": "Play: the turn — unprompted, halfway through",
+  "text": "Eh. You remember the question you asked me? In the cookhouse. About the three o'clock shower."
+ },
+ {
+  "id": "n5askA",
+  "who": "jamesTeen",
+  "where": "The decision, option A",
+  "text": "Who was it, encik? What was his story?"
+ },
+ {
+  "id": "n5askB",
+  "who": "jamesTeen",
+  "where": "The decision, option B",
+  "text": "I don't think about it anymore, encik."
+ },
+ {
+  "id": "n5askC",
+  "who": "jamesTeen",
+  "where": "The decision, option C",
+  "text": "I think I was just too stressed."
+ },
+ {
+  "id": "n5askD",
+  "who": "jamesTeen",
+  "where": "The decision, option D",
+  "text": "Why didn't you tell me then, encik?"
+ },
+ {
+  "id": "e5A1",
+  "who": "encik",
+  "where": "Scene A: the recruit in bed one",
+  "text": "Before my time. One recruit, bed one. Quiet boy. Every night he's the last one in the shower. He don't like people see him wash."
+ },
+ {
+  "id": "e5A2",
+  "who": "encik",
+  "where": "Scene A: the morning they found him",
+  "text": "One morning, first parade, he's not there. They find him inside. Water still running."
+ },
+ {
+  "id": "e5A3",
+  "who": "encik",
+  "where": "Scene A: after",
+  "text": "No note. No reason. His family come and take him back. The bunk close for one month. Then they open it again like nothing."
+ },
+ {
+  "id": "e5A4",
+  "who": "encik",
+  "where": "Scene A: the attachment line — the episode's teaching",
+  "text": "Since then, every batch, bed one, three o'clock. Sometimes the departed are still stuck at the places they have attachments to. That shower was his."
+ },
+ {
+  "id": "e5A5",
+  "who": "encik",
+  "where": "Scene A: and he closes it",
+  "text": "You asked, so I told you. But don't go and make it into something. He's not your business."
+ },
+ {
+  "id": "e5B1",
+  "who": "encik",
+  "where": "Scene B: the nod",
+  "text": "Good. Better than me."
+ },
+ {
+  "id": "e5B2",
+  "who": "encik",
+  "where": "Scene B: his own night in that bunk",
+  "text": "I was in that bunk also. I went to look once. Water running. Somebody standing under it, back facing me. I went back to bed and never look again. One month, then nothing."
+ },
+ {
+  "id": "e5B3",
+  "who": "encik",
+  "where": "Scene B: why he said nothing in the cookhouse",
+  "text": "That morning in the cookhouse I say nothing, because if I tell you, you check every night until ORD. You didn't."
+ },
+ {
+  "id": "e5B4",
+  "who": "encik",
+  "where": "Scene B: the line that closes the episode",
+  "text": "After your batch posted out. Quiet. First time in years."
+ },
+ {
+  "id": "e5C",
+  "who": "encik",
+  "where": "Scene C: the whole scene",
+  "text": "I know it is easier to brush things off with logic and reason. But there are many things you simply won't fully understand."
+ },
+ {
+  "id": "e5D1",
+  "who": "encik",
+  "where": "Scene D: the boy he told once",
+  "text": "Because I told one boy before you. Same question. After that he checked every night. Two months later he's out. Not sick. Not injured. Just cannot anymore."
+ },
+ {
+  "id": "e5D2",
+  "who": "encik",
+  "where": "Scene D: the rule he made after",
+  "text": "After him I decide. Nobody gets told until they are leaving."
+ },
+ {
+  "id": "e5D3",
+  "who": "encik",
+  "where": "Scene D: and the quiet",
+  "text": "After your batch posted out. Quiet. First time in years. Now you know. Now it cannot hurt you."
+ },
+ {
+  "id": "n5A",
+  "who": "jamesTeen",
+  "where": "Under outcome card A",
+  "text": "I asked who he was. Encik told me, and then told me to leave it there."
+ },
+ {
+  "id": "n5B",
+  "who": "jamesTeen",
+  "where": "Under outcome card B",
+  "text": "I had already let it go. He only confirmed I was right to."
+ },
+ {
+  "id": "n5C",
+  "who": "jamesTeen",
+  "where": "Under outcome card C",
+  "text": "I called it stress. He wouldn't let me."
+ },
+ {
+  "id": "n5D",
+  "who": "jamesTeen",
+  "where": "Under outcome card D",
+  "text": "I wanted a reason I was owed. He gave me one. It didn't help."
+ },
+ {
+  "id": "n5close",
+  "who": "jamesTeen",
+  "where": "The closing narration, to camera, in all four outcomes",
+  "text": "The departed stay where their attachments are. So do the living. His was that shower. Mine was the question. When I put it down, so did he."
+ }
+]
