@@ -100,3 +100,18 @@ branch). Details in docs/V14.0-E2C5-PLAN.md §16.
   harnesses), docs/LEARNINGS.md (three new laws),
   docs/V14.0-E2C5-PLAN.md §16.
 - Backup bundle refreshed — chapter milestone.
+
+### The bundle
+
+Rebuilt and VERIFIED — `git bundle verify` reports a complete history at
+`62b7ec6` — 336 MB, which splits into 17 parts of 20 MB. It is NOT
+delivered from this session and could not be: the Drive connector's base64
+wall already blocks a 48 KB workbook, so 17 × 20 MB is out of the question,
+and the file is gitignored, so it does not ride the push either. It lives
+only on this container's disk, which is ephemeral.
+
+What the bundle uniquely buys is an OFFLINE copy in Chad's own hands, and
+the two durable copies are both in place: GitHub holds the branch and its
+whole history (pushed), and Netlify holds the published build with two-tap
+rollback (deployed and byte-verified). The bundle is the one part of the
+milestone checklist that needs Chad or a different transport.
