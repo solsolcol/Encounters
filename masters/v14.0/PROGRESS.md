@@ -41,3 +41,33 @@ context can pick up from the last ticked box.
 - The film is 33 s and ends ON THE RECOGNITION. `n5close` is cued under the
   FADE in all four scenes so it carries on under the outcome card (e2c4's
   `n4dawn` shape) instead of adding 11 s to every scene.
+
+## CP5b — the range NCO (commit 1a413a4, pushed)
+
+Chapter 5 makes the shouting man on chapter 4's range a DIFFERENT man from
+the Tekong encik, because the whole premise of chapter 5 is meeting the
+Tekong encik again months later at a mainland camp. `src/voicelines.js`
+gains a `rangenco` speaker and `e4wait`/`e4down`/`e4line`/`e4back` move to
+him. He still speaks in Hilmi's voice, deliberately: four Louis takes were
+generated and measure 6.32 / 5.28 / 2.80 / 2.08 s against the shipped
+5.88 / 3.79 / 3.08 / 1.88, and three of the four are cued INSIDE e2c4's
+scenes A, B and C — installing them forces a re-timing pass on a chapter
+already signed off. Session ids under `_rangenco_not_installed`. Chad's call.
+
+## CP6 — verification (in progress)
+
+- `npm run build` green; `dist/` carries `e2c5.*.js`, `audiopack_e2c5` and
+  `opuspack_e2c5`; the single-file build still carries episode 1 only.
+- `chaptertest`: 11 chapters, e2c5 at 28 cues / 23 distinct, every cue's
+  sample exists, **54 cutscenes walked and every cue inside its own
+  length** (the v12.3 check — `n5close` under the fade in all four scenes
+  lands), 295 registry rows, 17 speakers, both episodes 5 chapters.
+- `walktest` gained `e2c5` (its chapter list is hardcoded and had stopped
+  at e2c4 — that is why the first green run never mentioned the chapter).
+- `/tmp/epcard.mjs` — the CP6 probe for the EPISODE COMPLETE card on case
+  file 2. It is the first run of that card on a case that is not episode 1,
+  and the first time `epBtn` takes its OTHER branch: `nextChapterKey()`
+  past e2c5 is null, so the button ends the run at the title instead of
+  advancing. It checks the tally (the mean of five), the five stops, the
+  trail (2 done carrying its rank, 3 next and unwritten), the wording and
+  the button.

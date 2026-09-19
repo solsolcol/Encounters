@@ -160,7 +160,11 @@
 
     const matTarmac = new THREE.MeshStandardMaterial({ map: tarmacTex, roughness: 0.95 });
     const matGrass = new THREE.MeshStandardMaterial(grassTex ? { map: grassTex.map, roughnessMap: grassTex.rough, color: 0x9fb37a, roughness: 1 } : { color: 0x7d9a5c, roughness: 1 });
-    const matBlock = new THREE.MeshStandardMaterial(cTex ? { map: cTex, color: 0xdfd8c4, roughness: 0.95 } : { color: 0xdfd8c4, roughness: 0.95 });
+    /* makeConcrete() hands back { map, rough }, NOT a texture — the same
+       shape makeGrass() has one line above. Assigning the whole object as
+       `map` gave three.js something with no `.matrix`, and
+       refreshMaterialUniforms threw on every frame that drew the block. */
+    const matBlock = new THREE.MeshStandardMaterial(cTex ? { map: cTex.map, roughnessMap: cTex.rough, color: 0xdfd8c4, roughness: 0.95 } : { color: 0xdfd8c4, roughness: 0.95 });
     const matBand = new THREE.MeshStandardMaterial({ color: 0x8e9b74, roughness: 0.9 });
     const matWhite = new THREE.MeshStandardMaterial({ color: 0xe9e6dc, roughness: 0.9 });
     const matSteel = new THREE.MeshStandardMaterial({ color: 0x9aa0a6, roughness: 0.4, metalness: 0.7 });

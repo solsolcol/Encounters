@@ -4226,10 +4226,20 @@ function updateViewmodel(dt, t, speed, strafe, dLookX, dLookY) {
                          vm.sway.x * 1.9,
                          bobRoll + vm.lean * 1.5);
 
-  // the burner throws warm light on the hands as you get close to it
-  const dFire = Math.hypot(yaw.position.x - stage.fireLight.position.x,
-                           yaw.position.z - stage.fireLight.position.z);
-  const warm = Math.max(0, 1 - dFire / 7) ** 2;
+  /* The burner throws warm light on the hands as you get close to it.
+     v14.0: `fireLight` may be NULL. Every chapter until episode 2's fifth
+     had something warm to name here — a burner, a candle, an altar lamp, a
+     chemlight, a fill on the firing line — and this line read its position
+     unconditionally. An afternoon camp apron has no fire in it at all, and
+     a chapter that says so honestly threw a TypeError on EVERY FRAME, which
+     is silent to the player, invisible to all 24 harnesses (none of them
+     listens for `pageerror`) and found only by a probe that does. No fire
+     means no warm light, which is what `warm = 0` already meant at range.
+     Episode 1's five all declare one, so nothing there is touched.        */
+  const fire = stage.fireLight;
+  const dFire = fire ? Math.hypot(yaw.position.x - fire.position.x,
+                                  yaw.position.z - fire.position.z) : Infinity;
+  const warm = fire ? Math.max(0, 1 - dFire / 7) ** 2 : 0;
   vmFire.intensity = warm * 2.4 * (0.82 + Math.sin(t * 11.3) * 0.12 + Math.random() * 0.06);
   vmHemi.intensity = VM_REST.hemi - warm * 0.16;
 }

@@ -13,7 +13,19 @@ const br = await chromium.launch(LAUNCH);
 const p = await (await br.newContext()).newPage();
 p.setDefaultNavigationTimeout(180000);
 
-for (const key of ['e2c1', 'e2c2', 'e2c3', 'e2c4']) {
+/* v14.0: this harness walks INTO every episode-2 chapter and lets it run,
+   which makes it the one place a PER-FRAME throw can be caught. It was not
+   being caught: e2c5 declared `fireLight: null` — honest, an afternoon camp
+   apron has no fire — and updateViewmodel read its position every frame, so
+   the chapter threw a TypeError sixty times a second. Silent on screen, and
+   invisible to all 24 harnesses, because not one of them listened. Now one
+   does. Errors are attributed to whichever chapter is loading or playing. */
+let where = 'boot';
+const errs = [];
+p.on('pageerror', e => errs.push(where + ': ' + e.message));
+
+for (const key of ['e2c1', 'e2c2', 'e2c3', 'e2c4', 'e2c5']) {
+  where = key;
   await p.goto(PAGE + '?ch=' + key);
   await p.click('#startBtn');
   await toPlay(p, 180000);
@@ -64,5 +76,12 @@ for (const key of ['e2c1', 'e2c2', 'e2c3', 'e2c4']) {
 }
 
 await br.close();
-console.log(bad ? `\n${bad} unreachable` : '\nevery target is walkable');
+
+/* one line per distinct message, with how many frames threw it */
+const tally = new Map();
+for (const e of errs) tally.set(e, (tally.get(e) || 0) + 1);
+ok('no chapter throws while it plays', tally.size === 0);
+for (const [msg, n] of tally) console.log(`     ${n}x  ${msg}`);
+
+console.log(bad ? `\n${bad} FAILED` : '\nevery target is walkable, and nothing throws');
 process.exit(bad ? 1 : 0);
