@@ -3949,8 +3949,8 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v64** (`masters/v13.0/masterz-text-v64.xlsx`, four tabs: UI
-TEXT, EPISODE 1, EPISODE 2, VOICE LINES). It is EXPORTED and not published —
+**THE SHEET IS v66** (`masters/v13.2/masterz-text-v66.xlsx`, four tabs: UI
+TEXT 282, EPISODE 1 110, EPISODE 2 151, VOICE LINES 261). It is EXPORTED and not published —
 the workbook has been past the Drive connector's base64 wall since v43, and
 the split export is still to do (docs/EDITING-TEXT.md). **v44 is still the
 link to give Chad** until that is fixed:
