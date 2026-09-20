@@ -122,8 +122,16 @@
     words: {
       /* an EMPTY approach word means no floating label on a person (v13.0) */
       approach: '',
-      act: 'E to speak to the encik',
-      actTouch: 'Tap to speak to the encik',
+      /* v14.2: `act`/`actTouch` are the BOOT HINT along the bottom of the
+         screen (`setHint`), not the badge — and they said "E to speak to
+         the encik" from the chapter's first frame, while the HUD was
+         ordering the player to the armskote and the encik would not answer
+         until all three counters were done. e2c4 hit the same thing at
+         v12.2 and settled it the same way: the hint stays neutral and the
+         BADGE (`interact`) names the thing, because the badge only appears
+         on something that is actually live. */
+      act: 'E to act',
+      actTouch: 'Tap to act',
       interact: 'E to speak to the encik',
       interactTouch: 'Tap to speak to the encik',
       objClear: 'Clear your kit · {n}/3',
@@ -627,6 +635,17 @@
       if (!marchAt) marchBook(true);
       if (dayClock.t < marchAt) return;
       if (phase === 'spot' || phase === 'talk' || phase === 'decide') { marchAt = dayClock.t + 12; return; }
+      /* v14.2: AND NOT WHEN HE IS ALMOST AT THE ENCIK. The phase gate above
+         stops a pass-by STARTING during the talk, and cannot stop one
+         already in flight — `platoonmarch` is a 16 s one-shot, so a pass-by
+         begun a second before `spot` plays its whole tail over "Encik? Encik,
+         it's me. Hawk Company.", which is the quiet two-man exchange the
+         chapter is built on. There is no way to know the future, but there
+         is a good proxy for it: a player within 8 m of him is about to speak
+         to him. Holding off there closes almost the whole window, and costs
+         nothing — the apron is 30 m across, so the pass-bys still run
+         wherever the player actually spends the clearance. */
+      if (pileDist() < 8.0) { marchAt = dayClock.t + 6; return; }
       /* v14.1: and the BOOKING follows the sound, not the other way round —
          `worldSfx` hands back null for a sample that has not decoded, so a
          pass-by that never played used to count as one and push the next
@@ -983,10 +1002,19 @@
     const A = { x: -11.5, y: 1.80, z: -1.2 };          // the apron, wide
     /* v14.1: B was (-8.0, -3.6), which is INSIDE the third parked truck's
        footprint (x -8.3..-6.1, z -7.7..-3.1) — the shot skimmed 33 cm over
-       a cargo deck and looked into a cab two metres away. It runs along the
-       open tarmac in front of the row now, so the trucks are the mid-ground
-       they were always meant to be. */
-    const B = { x: -8.2,  y: 1.70, z: -1.9 };          // along the company line
+       a cargo deck and looked into a cab two metres away.
+       v14.2: AND MOVING IT OUT IN Z ALONE WAS NOT ENOUGH. Photographed at
+       t=9 from (-8.2, -1.9), the camera was clear of the footprint and the
+       centre ray missed both the cargo roof and the cab — every number said
+       it was fixed — and the frame still had the truck's flank filling its
+       whole left half at 1.3 m, because x -8.2 sits INSIDE the truck's own
+       x-slab, so the thing was beside the lens rather than in front of it.
+       On a phone, which crops to the centre third, that is worse, not
+       better: ~70 % of the frame width. The lens is clear of the row in X
+       as well now, and the pan runs AWAY from it onto the two men, so the
+       trucks are the receding row on the left they were dressed to be.
+       A centre-ray miss is not a clear frame — photograph it (v6.17). */
+    const B = { x: -6.4,  y: 1.70, z: -0.2 };          // clear of the parked row, looking down the line
     const C = { x: -2.0,  y: 1.45, z: 1.4 };           // the form, then the tilt to the stores
     const D = { x:  1.0,  y: 1.66, z: 0.6 };           // across the apron
     const D2 = { x: 3.6,  y: 1.66, z: 1.8 };           // the push-in
@@ -1009,10 +1037,11 @@
     step(8.6, () => {});
     /* v14.1: and it PANS ALONG the line rather than into it. Photographed at
        t=9, the old start aimed 6 m dead into the block's face and filled the
-       frame with balcony rail; it opens on the parked row with the line
-       behind it and sweeps 21 degrees onto the two men. */
-    camTo(8.6, 13.0, B, { x: -6.0, y: 1.70, z: -1.6 }, rawK);
-    yawTo(8.6, 13.0, faceFrom(B.x, B.z, -4.0, -6.5), faceFrom(-6.0, -1.6, 1.2, -5.2), rawK);
+       frame with balcony rail; it opens looking DOWN the company line with
+       the parked row at the left edge, and sweeps 14 degrees onto the two
+       men — away from the trucks, so they leave frame as the pan lands. */
+    camTo(8.6, 13.0, B, { x: -3.8, y: 1.70, z: -0.5 }, rawK);
+    yawTo(8.6, 13.0, faceFrom(B.x, B.z, -2.6, -6.2), faceFrom(-3.8, -0.5, 1.2, -5.2), rawK);
     sfx(4.60, 'n5pro2');                               // 7.55 s → 12.15
 
     // 3 · the clearance form in his hands, and the tilt up to the stores

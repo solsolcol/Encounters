@@ -340,9 +340,9 @@ Object.assign(window.__TEXT__, {
   'item.beads.name':     'Prayer Beads',
   'item.beads.desc':     'Your grandmother pressed these into your hand years ago. You have never taken them seriously, and never taken them off.',
   'item.torch.name':     'Torch',
-  'item.torch.desc':     'Army issue. Found on the ground by your scrape, switched on, pointing at nothing. Equip it to use it.',
+  'item.torch.desc':     'Army issue. A wide, hard beam and a heavy switch. Equip it to use it.',
   'item.rifle.name':     'Rifle',
-  'item.rifle.desc':     'Issued. Thirty rounds a magazine, three magazines. It is out while it is in your hand.',
+  'item.rifle.desc':     'Army issue. Signed out to you by serial number, and signed back in the same way.',
   'item.note.name':      'Hell Note',
   'item.note.desc':      'Burned for someone else. It should not be in your pocket.',
 
