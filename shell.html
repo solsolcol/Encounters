@@ -160,6 +160,32 @@ body.weaponUp.wpnNoAmmo #ammo,body.weaponUp.wpnNoAmmo #reloadBtn{display:none}
   transition:transform .14s ease-out,opacity .14s ease-out}
 body.inplay.weaponUp #reticle{display:block}
 body.weaponUp.cine #reticle,body.weaponUp.invopen #reticle,body.weaponUp.menuopen #reticle,body.weaponUp.cardup #reticle{display:none}
+/* v14.3: THE REFUSED SHOT (Chad, on the live range: "disable shooting until
+   the player actually reaches lane 6. The HUD ui should say something like
+   'Shooting only allowed at lane 6' if player tries to shoot anywhere
+   else."). The words are the CHAPTER's, through kit.weaponBlock, because
+   what is forbidden and why is a chapter's business and the sheet has to be
+   able to reach it. Under the reticle, never over the FIRE button, and it
+   re-runs its own entry animation on every refusal so a second press is
+   visibly answered. The hide rules carry the same two classes as the show
+   rule and come after it (v11.7's lesson). */
+#nofire{position:fixed;left:50%;top:50%;margin-top:44px;z-index:7;
+  display:none;pointer-events:none;max-width:min(76vw,400px);text-align:center;
+  transform:translateX(-50%);
+  font-size:.80rem;font-weight:700;letter-spacing:.16em;line-height:1.4;color:#ffb8a8;
+  background:rgba(12,6,6,.74);border:1px solid rgba(255,92,72,.62);border-radius:6px;
+  padding:7px 14px;text-shadow:0 1px 3px rgba(0,0,0,.9);
+  box-shadow:0 0 22px rgba(255,92,72,.20),0 2px 14px rgba(0,0,0,.55);
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+body.inplay #nofire.on{display:block;animation:noFire .30s ease-out}
+body.cardup #nofire.on,body.evopen #nofire.on{display:none}
+@keyframes noFire{0%{opacity:0;transform:translateX(-50%) translateY(7px) scale(.94)}
+  45%{opacity:1;transform:translateX(-50%) translateY(0) scale(1.03)}
+  100%{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}}
+/* and the FIRE button says the rule BEFORE it is tested, so a player who
+   looks at the HUD never has to discover it by pressing */
+body.wpnBlocked .fireBtn{opacity:.40;border-color:rgba(232,226,212,.26);
+  box-shadow:0 2px 14px rgba(0,0,0,.5)}
 #reticle i{position:absolute;background:var(--bone);box-shadow:0 0 0 1px rgba(0,0,0,.72),0 0 6px rgba(0,0,0,.6)}
 #reticle .rdot{left:50%;top:50%;width:2px;height:2px;margin:-1px 0 0 -1px;border-radius:50%}
 #reticle .rt{width:2px;height:9px;left:50%;margin-left:-1px}
@@ -1530,6 +1556,11 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
   <i class="rdot"></i>
   <i class="rt rt-u"></i><i class="rt rt-d"></i><i class="rt rt-l"></i><i class="rt rt-r"></i>
 </div>
+<!-- v14.3: the refused shot says WHY. A chapter may forbid firing
+     (kit.weaponBlock) and a trigger that does nothing reads as a broken
+     game, so the reason lands under the reticle - which is where the eye
+     already is when the trigger is pressed. -->
+<div id="nofire" class="stencil" aria-live="polite"></div>
 <button id="menuBtn" class="soundBtn menuBtn" type="button" aria-label="Menu">
   <svg viewBox="0 0 24 24" aria-hidden="true">
     <path d="M12 8.7a3.3 3.3 0 1 0 0 6.6 3.3 3.3 0 0 0 0-6.6Z"/>

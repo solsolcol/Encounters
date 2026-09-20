@@ -190,6 +190,11 @@
                  n1fallin: 1.8, n1lights: 2.04, n1wake: 1.72, n1hear: 4.44,
                  s1fallin: 3.16, s1late: 3.4, s1standby: 3.08, s1again: 1.96, s1lights: 2.27,
                  e1knock: 7.31, e1backbunk: 4.44,
+                 /* v14.3: the two shouts on the run home (v9.3) were queued
+                    and never entered here, so both booked the 2.5 s fallback —
+                    and `k1hurry` is 2.72, so the second voice released the
+                    window before the first had finished. */
+                 b1hurry: 2.16, k1hurry: 2.72,
                  /* v9.5: the headcount and the toggle rope. The nine numbers are
                     short enough that a count-off paces itself off these rather
                     than off a gap typed in by hand (see `runCount`). */

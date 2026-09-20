@@ -197,6 +197,31 @@ K.weaponHits = await p.evaluate(() => {
   const d = e.kitDebug();
   return ok === true && d.weapon.rounds === 2 && d.conduct.notes.includes('You hit the target.');
 });
+/* v14.3: THE REFUSED SHOT. A chapter may forbid firing (Chad, on the live
+   range: "disable shooting until the player actually reaches lane 6 ... The
+   HUD ui should say something like 'Shooting only allowed at lane 6' if
+   player tries to shoot anywhere else"), and the promise is not only that
+   the press is eaten but that the reason is ON THE SCREEN — a dead trigger
+   with nothing to read is what v12.2 spent a release fixing. Nothing is
+   spent either: the round count must be exactly where it was. The fixture
+   proves the seam so the chapter cannot hide a bug in it (v12.0's rule),
+   and episode 1 declares no weapon, so none of it can run there. */
+K.weaponBlockRefuses = await p.evaluate(() => {
+  const e = window.__enc;
+  e.kit.weaponBlock('NOT FROM HERE');
+  const ok = e.kit.fire();
+  const d = e.kitDebug(), el = document.getElementById('nofire');
+  return ok === false && d.weapon.rounds === 2 && d.weapon.block === 'NOT FROM HERE'
+    && document.body.classList.contains('wpnBlocked')
+    && !!el && el.classList.contains('on') && el.textContent === 'NOT FROM HERE';
+});
+K.weaponBlockClears = await p.evaluate(() => {
+  const e = window.__enc;
+  e.kit.weaponBlock(null);
+  const el = document.getElementById('nofire');
+  return e.kitDebug().weapon.block === null && !document.body.classList.contains('wpnBlocked')
+    && !!el && !el.classList.contains('on');
+});
 /* v12.2: POLLED, not waited. The rounds go to zero inside weaponFire(), but
    the pill's `empty` class is painted by weaponFrame — so on a box drawing
    about one frame a second a 120 ms wait can land BEFORE any frame has run

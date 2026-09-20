@@ -199,6 +199,12 @@
          that something is out there. */
       presence: 'Something is out there. Sanity level dropping.',
       objLine: 'Move to lane six',
+      /* v14.3, Chad: "disable shooting until the player actually reaches
+         lane 6. The HUD ui should say something like 'Shooting only allowed
+         at lane 6' if player tries to shoot anywhere else." The words are
+         the chapter's, through `kit.weaponBlock`, so they are on his sheet
+         and the engine never hard-codes a lane. */
+      noFire: 'Shooting only allowed at lane six',
       objLoad: 'Load on the order',
       objHold: 'On the line. Do NOT fire until the tower gives the order.',
       objS1: 'Static target, 100 metres. Fire on the order · {n}/3',
@@ -226,9 +232,16 @@
      take that got longer cannot make two voices talk over each other */
   const SECS = {
     t4load: 5.80, t4ready: 2.59, t4fire1: 2.77, t4fire2: 4.60, t4fire3: 4.44,
-    t4cease: 5.33, t4who: 5.25, t4neg: 6.43, t4roger: 4.05, t4endex: 5.33,
+    t4cease: 5.33, t4who: 4.72, t4neg: 6.43, t4roger: 4.05, t4endex: 5.33,
     t4man: 5.88, e4wait: 5.88, e4down: 3.79, e4line: 3.08, b4stag: 3.13,
     b4there: 2.35, b4float: 2.85, k4shout: 4.02, r4run: 3.47, n4pro1: 5.72,
+    /* v14.3: THE THREE SIGHTING SHOUTS. Added at v13.0 and queued ever
+       since, never entered here — so `sayLine` booked the 2.5 s fallback
+       for all three, and `k4cyc` (3.42 s, "DON'T SHOOT!") released the
+       queue 0.67 s before it finished, putting the PA key-up over its
+       last word. The numbers are the registry's, and they were already
+       written in the comments beside the queue calls. */
+    b4cyc: 2.12, r4cyc: 2.35, k4cyc: 3.42,
     n4pro2: 6.53, n4report: 6.03, n4notarget: 1.80, n4back: 1.96, n4dawn: 9.48
   };
 
@@ -1011,6 +1024,7 @@
     const dayClock = { t: 0 };
     let lastWall = 0, booted = false;
     let phase = 'line';
+    let blockNow = null;                 // v14.3: the fire rule the engine was last told, so the verb is called only on a change
     const todo = [];
     function after(secs, fn) { todo.push({ at: dayClock.t + secs, fn }); todo.sort((a, b) => a.at - b.at); }
     function runTodo() { while (todo.length && todo[0].at <= dayClock.t) todo.shift().fn(); }
@@ -1352,13 +1366,30 @@
       const playing = getState() === 'play';
       const nearK = (playing && cycOn) ? Math.max(0, 1 - Math.hypot(cyc.group.position.x - HIS.x, cyc.group.position.z - HIS.z) / 50) : 0;
       for (const b of DATA.ambience.beds) {
-        if (b[0] === 'flarehiss') b[1] = (playing && flareOn) ? 0.5 * Math.min(1, flareT / 0.8) : 0;
+        /* v14.3: KEYED TO THE LIGHT, not to the state. A film and a scene
+           drive the flare through `stage.setFlare` and never set `flareOn`,
+           and `mixBeds` runs with `playing` false under a cutscene — so the
+           flare the opening film FIRES ON SCREEN, and the dying flare that
+           is the only light in all four endings, burned in total silence,
+           while the identical flare in play hisses. The cards stay quiet
+           because every scene tweens the intensity to zero before it ends. */
+        if (b[0] === 'flarehiss') b[1] = (playing && flareOn) ? 0.5 * Math.min(1, flareT / 0.8)
+                                       : (flare.intensity > 4 ? 0.5 : 0);
         if (b[0] === 'moverrail') b[1] = (playing && MOVER.on) ? 0.34 : 0;
         if (b[0] === 'chain') b[1] = 0.55 * nearK * cyc.a;
         /* not gated on `playing`: a scene puts him up through `cycAlpha` and
            the ding has to go with him. `cyc.a` is 0 everywhere else, so
            nothing else can hear it. */
-        if (b[0] === 'bikebell') b[1] = 0.62 * cyc.a;
+        /* v14.3: AND ONLY WHILE THERE IS A WORLD. The invariant above —
+           "`cyc.a` is 0 everywhere else" — is broken by `restore()`, which
+           puts the alpha back to the snapshot taken AT THE DECISION, where
+           `onBell` had already faded him up to 1. So every ending came back
+           from its scene with `cyc.a` at 1 and the bell dinging behind the
+           outcome card, the teaching and the rank screen — including scene
+           A, whose whole point is that the thing goes away. `flarehiss`,
+           `moverrail` and `chain` are gated for this reason; this one was
+           not, on the strength of an invariant that does not hold. */
+        if (b[0] === 'bikebell') b[1] = (playing || getState() === 'cine') ? 0.62 * cyc.a : 0;
       }
     }
 
@@ -1488,6 +1519,18 @@
       for (const t of statics) t.set(true);
       for (const t of popups) t.set(true);
       mover.set(true);
+      /* v14.3: AND THE CEASE-FIRE IS ITS OWN BOOKMARK. `endSerial`
+         deliberately does not call `setPhase` (the note above says why), so
+         from the cease-fire to the next beat the save still read
+         `serial1`/`serial2` — a serial the player had already finished and
+         already been paid for — and `applyPhase` restarted it from the
+         tower's order. The receipt cannot stop the second payment, because
+         ONE serial has TWO possible notes: a replay that scores differently
+         banks the OTHER note and is paid in full on top. Six seconds against
+         an eight-second autosave means most runs have a save in that window.
+         `beginSerial` and `beginStag` both stamp their own phase, so this
+         only has to hold the gap. */
+      setPhase('cease' + n);
       after(6.0, () => {
         if (n < SER_TARGETS.length) beginSerial(n + 1);
         else beginStag();
@@ -1543,6 +1586,23 @@
            `cycEnd()`, so the four options opened on empty tarmac with the
            presence banner still saying it was out there. */
         if (bellDone) return;
+        /* v14.3: AND THE ROUND ENTERS THE MOMENT. `onFiredAtIt` calls
+           `setPhase('moment')` only to re-stamp the ammo receipt (v12.3),
+           and `setPhase` also assigns `phase` — so a round put into the
+           thing during the CONFUSION took the chapter to 'moment' behind
+           the hand-over's back, and `after(handOver, () => { if (phase ===
+           'confuse') beginMoment(); })` then did nothing. Everything
+           `beginMoment` does was skipped for the rest of the chapter: the
+           objective stayed on "Hold it in your sight. Do not fire." while
+           the player kept firing and the thing kept coming nearer, the
+           presence never rose to 0.55, and `b4float` — the only line in the
+           beat that says somebody ELSE sees it — was never heard. The
+           intended path was the one path most players will not take.
+           It also closes the arm below: a MISS during the confusion matched
+           neither branch and returned, so the identical trigger pull was
+           scored as if it had never happened — no penalty, no escalation,
+           no receipt. With the phase already moved it is a full shot. */
+        if (phase === 'confuse') beginMoment();
         if (r.hit && isCyclist(r.object)) onHitCyclist();
         else if (phase === 'moment') { shots++; onFiredAtIt(); }
         return;
@@ -1554,7 +1614,16 @@
            while the tower is still giving the order — and `sayLine` refuses a
            line while another speaks, so the reprimand that explains the six
            sanity he just lost was silent exactly when it was earned. */
-        if (early === 1) { lineQ.length = 0; queueLine('e4wait'); }
+        /* v14.3: IN FRONT OF the queue, not INSTEAD OF it. `lineQ.length = 0`
+           discarded whatever was pending — and the comment above names the
+           trigger window as "while the tower is still giving the order",
+           which is exactly when the order is sitting in the queue unspoken.
+           `tower()` pushes three items and `runQueue` consumes one a frame,
+           so a round in that half-second deleted "At the one hundred metre
+           target. FIRE." — the drill the whole chapter turns on — in the
+           serial the player was being punished in. Same hole at the
+           cease-fire. An unshift reprimands first and keeps the order. */
+        if (early === 1) lineQ.unshift({ name: 'e4wait', vol: 1 });
         if (kit) { kit.conduct({ s: -6, note: 'Fired before the order.' }); kit.flash({ color: '#ff3a1c', secs: 0.35 }); }
         return;
       }
@@ -1617,8 +1686,10 @@
     /* ------------------------------------------------- THE CONFUSION
        Chad's beat. The flare goes up for the last serial, the mover starts
        across — and there is a second shape crossing that is not on any rail,
-       giving off its own light, a hand-span off the ground. Lane five fires.
-       The tower asks who fired. The radio says the target area is empty. */
+       giving off its own light, a hand-span off the ground. The line shouts.
+       The radio says the target area is empty. (v14.3: lane five no longer
+       fires a scripted round here, and the tower's challenge went with it
+       to `onFiredAtIt`, where the man who fired is the player.) */
     function beginConfuse(resumed) {
       setPhase('confuse');
       /* the presence is NOT raised here — see the sighting below (item 20) */
@@ -1653,7 +1724,7 @@
          "Sergeant! Got someone in the target area!" and `r4cyc` says the same
          thing in Chad's words, so keeping both would be the same man shouting
          it twice. The take stays in the pack. */
-      after(3.2, () => {
+      const sighting = () => {
         cycStart(0, true);
         if (worldSfx) worldSfx('stingcyc', 0.95);
         if (kit) { kit.presence(0.3); kit.haptic([40, 70, 40]); }
@@ -1662,14 +1733,45 @@
         queueLine('b4cyc');                                                     // 2.12 s — the buddy
         queueLine('r4cyc');                                                     // 2.35 s — the far end
         queueLine('k4cyc');                                                     // 3.42 s — "DON'T SHOOT"
-        queueFn(() => { if (worldSfx) worldSfx('rifleshot', 0.75); });          // and lane five fires anyway
+        /* v14.3: AND LANE FIVE NO LONGER FIRES. Chad: "the voicelines keep
+           referring to lane 5, when it should say lane 6 at the player
+           instead." He is describing `t4who`, which sat here and said
+           "Who fired? Lane five." — and it was internally true, because a
+           scripted round went downrange one line above it. From the
+           player's seat it is not: he hears a rifle, and then the range
+           officer challenging a lane he is not standing on, which reads as
+           the game addressing the wrong man.
+           The challenge is the PLAYER's now (see `onFiredAtIt`), so it
+           names his lane and is true when it is said. The scripted shot
+           goes with it: a round nobody can be held to answer for is a
+           loose end, and `k4cyc`'s "DON'T SHOOT! DON'T SHOOT!" is a better
+           line said TO the only man on the range who can. What is left
+           here is the three shouts and the tower's negative — the gap the
+           whole chapter is built on, untouched. */
         queueGap(0.5);
-        tower('t4who');
-        queueGap(0.35);
         tower('t4neg');
-      });
+      };
+      /* v14.3: A CONTINUE IN THE CONFUSION REPLAYS THE SIGHTING RATHER THAN
+         DISCARDING IT. The resumed branch used to be
+         `dropTodo(); cycStart(...); after(1.5, beginMoment)` — and
+         `dropTodo()` empties the schedule, which is where the entire reveal
+         lives: the sting, the buzz, the presence, his own "That's not a
+         target.", the three shouts, and the tower's "Negative. Nobody in the
+         target area. Range party confirms." `t4neg`'s own registry row says
+         it plainly — "The chapter's whole gap is in this line" — and the
+         four options are written to answer exactly that. The confusion runs
+         13.6 s against an eight-second autosave, so a save inside it is
+         close to certain, and a player who took one arrived at the decision
+         having never been told the range party says there is nobody there.
+         The whole beat is one named function now, run on both paths. */
+      if (resumed) {
+        dropTodo();
+        after(0.6, sighting);
+        after(0.6 + (handOver - 3.2), () => { if (phase === 'confuse') beginMoment(); });
+        return;
+      }
+      after(3.2, sighting);
       after(handOver, () => { if (phase === 'confuse') beginMoment(); });
-      if (resumed) { dropTodo(); cycStart(Math.min(pass, 1), true); after(1.5, () => beginMoment()); }
     }
 
     /* ------------------------------------------------- THE PLAYED MOMENT
@@ -1686,6 +1788,16 @@
         kit.presence(0.55);
       }
       if (!cycOn) cycStart(resumed ? pass : 0, true);
+      /* v14.3: AND A RESUME LIGHTS THE RANGE. Every other phase that puts
+         something in the target area calls `flareUp` — `beginSerial` does,
+         `beginConfuse` does, and each escalation step does inside
+         `onFiredAtIt`. `beginMoment` never did, because live it is only ever
+         entered under the confusion's own 30 s flare. On a Continue there is
+         no flare burning and none was fired, so the chapter's climax ran on
+         a black range: the declared daylight here is hemi 0.30 / key 0.06 /
+         fill 0.05, and `cycGlow` is a 14 m light at the thing's own feet, so
+         at PASS_Z -46..-22 it lights nothing between it and the line. */
+      if (resumed && !flareOn) flareUp(16);
       /* v13.0: QUEUED, not said. The sighting's three shouts and the tower's
          two radio lines are still running when the moment opens, and
          `sayLine` refuses a line while another speaks — so a `sayLine` here
@@ -1695,6 +1807,23 @@
       /* the clock: it does not wait for ever. Fourteen seconds without a
          shot IS the hold branch, and the bell rings on its own. */
       after(15.0, () => { if (phase === 'moment' && shots === 0) onCrossed(); });
+      /* v14.3: AND THE RESUMED LAST PASS, or the chapter cannot be finished.
+         There are exactly two live ways to ring the bell in the moment.
+         `cycFrame`'s far-edge test is one, and it is unreachable for the
+         last pass — `cycStart` sets `cycStopped = PASS_SPD[pass] === 0` and
+         PASS_SPD[3] is 0, and `cycFrame` returns on `cycStopped`. The
+         backstop above is the other, and it is gated on `shots === 0`. In a
+         LIVE run the third round's bell comes from a THIRD place,
+         `onFiredAtIt`'s own `after(3.5, ...)`, and that timer lives in
+         `todo`, which no save carries. So a Continue taken in the ~5 s
+         between the third round and the bell restored `shots = 3`, computed
+         `pass = 3`, and handed `beginMoment(true)` a stopped cyclist with
+         every bell path dead: no decision, no prompt (`pointerHitsPile`
+         answers only in 'decide'), and `kit.presence(0.55)` draining until
+         he faints — at which point `lose()` rewrites the save to the START
+         of the chapter and the whole range is lost. This is the live path's
+         own timer, armed on the resumed path only. */
+      if (resumed && shots >= PASS_Z.length - 1) after(3.5, () => { if (phase === 'moment' && !bellDone) onBell(); });
     }
     function onFiredAtIt() {
       /* a round into the target area at a thing the tower says is not there */
@@ -1717,7 +1846,27 @@
          the player actually was). */
       setPhase('moment');
       cycEnd(true);
-      sayLine('n4back');
+      /* v14.3: QUEUED, not said. `sayLine` refuses while another voice is
+         live and hands back false, and this fires in the busiest window the
+         chapter has: traced in chapter-clock seconds, the confusion's queue
+         runs `t4ready` 0.48-3.32, the four shouts 3.32-13.62, and `t4neg`
+         to 21.28 — while the hand-over into the moment is at 13.6. So for
+         the whole first eleven seconds of the played moment, and past every
+         round a normal player fires, "It's coming back" could not possibly
+         start. Every other call site in this chapter was converted for
+         exactly this reason (`b4float`, `e4wait`) and this one was missed. */
+      queueLine('n4back');
+      /* v14.3: AND THE TOWER CHALLENGES HIM. A live round into a target
+         area the range party has just called empty is the one thing a
+         range officer cannot let pass, and until now nobody said a word
+         about it — the challenge was spent on a scripted shot from lane
+         five in the confusion above. It is his round, so it is his lane,
+         which is what makes "Lane six" true rather than merely what Chad
+         asked for. Once only: three challenges for three rounds would be
+         a machine, not a man. QUEUED, so it lands after his own "It's
+         coming back" and after whatever radio traffic is still running,
+         and `openDecision` drops it if the bell comes first (v12.3). */
+      if (shots <= 1) { queueGap(0.6); tower('t4who'); }
       /* 1.5 s, Chad's number: "the ghost cyclist fades away, then return 1.5
          second later, nearer to the player this time, but going in the
          opposite direction." The pass index IS both of those — PASS_Z brings
@@ -1875,6 +2024,11 @@
       if (s === 'decide') { bellDone = true; cycStart(PASS_Z.length - 1); openDecision(); return; }
       if (s === 'confuse') { beginConfuse(true); return; }
       if (s === 'stag') { beginStag(true); return; }
+      if (s.startsWith('cease')) {          // v14.3: the serial is DONE and paid for — go on to the next beat
+        const n = Math.max(1, Math.min(SER_TARGETS.length, +s.slice(5) || 1));
+        if (n < SER_TARGETS.length) beginSerial(n + 1); else beginStag(true);
+        return;
+      }
       if (s.startsWith('serial')) { beginSerial(Math.max(1, Math.min(SER_TARGETS.length, +s.slice(6) || 1))); return; }
       if (s === 'load') { beginLoad(true); return; }
       filmKit.visible = false;
@@ -1932,6 +2086,17 @@
        ADDITIVE layer on top carries the light. */
     const ZONE_R = 1.35, GLOW_R = 2.1, RIM = ZONE_R / GLOW_R;
     const LINE_ZONE = { x: HIS.x, z: 0.35 };
+    /* v14.3: AND THE RADIUS A ROUND MAY BE FIRED FROM. Chad: "disable
+       shooting until the player actually reaches lane 6 ... if player tries
+       to shoot anywhere else." 3.0 m is deliberately wider than the 1.35 m
+       arrival circle and than the 2.1 m glow drawn round it: arriving is a
+       moment and has to be precise, but standing on your lane is a state
+       the player holds for the whole of five serials, and a rule that
+       punishes a shuffle is a rule that reads as a bug. It is still well
+       inside the 2.6 m lane pitch, so a man who has wandered onto his
+       neighbour's lane is refused - which is the range's own rule and the
+       one the chapter's whole drill is about. */
+    const FIRE_R = 3.0;
     const SOD_DEEP = 0xb06000, SOD_HOT = 0xffab3a;
     function glowTex(stops) {
       const sz = 512, [c, g2] = cnv(sz);
@@ -2055,8 +2220,18 @@
          and the radius tested, so what is shown and what fires cannot drift
          apart (v8.7's law). */
       drawZone();
-      if (phase === 'line'
-          && Math.hypot(yaw.position.x - LINE_ZONE.x, yaw.position.z - LINE_ZONE.z) < ZONE_R) reachedLine();
+      const offLine = Math.hypot(yaw.position.x - LINE_ZONE.x, yaw.position.z - LINE_ZONE.z);
+      if (phase === 'line' && offLine < ZONE_R) reachedLine();
+      /* v14.3: THE TRIGGER IS DEAD UNTIL HE IS ON HIS LANE, and the HUD says
+         so. DERIVED here rather than set by a phase (the v11.6 law): a
+         resume, a replay, a reset or a cutscene that puts him somewhere else
+         all land on the right answer on the next frame, because there is no
+         stored flag to leave behind. `blockNow` only exists so the verb is
+         called on a CHANGE - it paints a class and would otherwise run sixty
+         times a second for nothing. */
+      const wantBlock = (!kit || !kit.weaponBlock) ? null
+        : (phase === 'line' || offLine > FIRE_R) ? DATA.words.noFire : null;
+      if (wantBlock !== blockNow) { blockNow = wantBlock; kit.weaponBlock(wantBlock); }
       if (phase === 'moment') momentT += wdt;
       runTodo(); runSpeak(); runQueue();
     }
@@ -2137,7 +2312,12 @@
         if (kit.torchOn) kit.torchOn(false);
         if (kit.weaponOut) kit.weaponOut(null);
         if (kit.ammo) kit.ammo(DATA.weapon.rounds, DATA.weapon.mags);
+        /* v14.3: and the fire rule. It is re-derived on the next frame, but
+           the CACHE has to go with it or the first frame of a replay would
+           think the engine already knows (the v8.1 law, an eighth time). */
+        if (kit.weaponBlock) kit.weaponBlock(null);
       }
+      blockNow = null;
       phase = 'line';
     }
     function blockers() {
@@ -2307,7 +2487,18 @@
       armR.visible = false;
       stage.cycEnd(); stage.setFlare(0); stage.setMover(false); stage.trailClear();
       stage.filmKit.visible = true;
-      for (const t of stage.statics) t.set(false);
+      /* v14.3: DOWN, all of them. `T.set(down)` folds a board when true and
+         stands it when false, so `set(false)` here stood the near bank up on
+         the film's FIRST FRAME and left it there — through the opening pan,
+         which rests at pitch -0.05 looking straight out at 62 m, and through
+         the whole ammo shot. The boards are not dark while they wait:
+         `matFig` carries emissive 0x6e7256 at 0.48 precisely so an olive
+         board reads at a hundred metres with no light on it. So the one beat
+         the entire flare sequence exists for — boards standing at a hundred
+         metres where a second ago there was nothing — revealed three boards
+         the player had been looking at for twenty-four seconds. They stand
+         at the BURST now (see APEX). */
+      for (const t of stage.statics) t.set(true);
       for (const t of stage.popups) t.set(true);
       stage.mover.set(true);
       if (kit) { kit.daylight(null, 0); if (kit.weaponOut) kit.weaponOut(false); if (kit.torchOn) kit.torchOn(false); }
@@ -2344,7 +2535,7 @@
        nothing in it; the tower's order; THE FLARE FIRED, climbing on the
        same arc play uses, the lens riding up with it on the arc's OWN ease
        (a rocket decelerates, so a smoothstep would lag it at the start and
-       overshoot at the end); the pop, the whole arc white, eight boards
+       overshoot at the end); the pop, the whole arc white, the near bank
        standing at a hundred metres where a second ago there was nothing —
        and then down and across the lit range, settling on lane six. */
     camTo(19.5, 35.2, { x: HIS.x - 1.1, y: 1.62, z: 5.0 }, { x: HIS.x, y: 1.62, z: 1.2 }, smoothK);
@@ -2377,7 +2568,10 @@
 
     /* THE BURST, and the burn: up over 1.2 s, held, and falling over its
        last fifth, exactly as flareFrame burns one in play. */
-    step(APEX, () => { if (kit) kit.daylight(stage.FLARE, 1.2); });
+    step(APEX, () => {
+      if (kit) kit.daylight(stage.FLARE, 1.2);
+      for (const t of stage.statics) t.set(false);   // v14.3: and the reveal is a reveal
+    });
     sfx(APEX, 'flarepop', 0.95);
     tr(APEX, 35.2, (k, t) => {
       const e = t - APEX;
@@ -2441,8 +2635,25 @@
     tr(0, 14.0, k => stage.setFlare(150 * Math.max(0, 1 - k)), rawK);
     /* 0–7.2 it crosses out to the right and goes into the trees */
     camTo(0, 7.2, { x: P0.x, y: 1.62, z: P0.z }, { x: P0.x, y: 1.62, z: P0.z }, rawK);
-    yawTo(0, 7.2, 0.0, -0.44, smoothK);
     pitchTo(0, 7.2, -0.04, -0.02, smoothK);
+    /* v14.3: THE LENS FOLLOWS THE THING IT IS WATCHING. The camera is nailed
+       to his own spot while the subject travels 17.5 m across and 2 out, and
+       the pan was a hand-typed -0.44 rad against a bearing that runs to
+       -1.005: measured, the subject ends 32.4 degrees off the lens axis and
+       is already past 18.6 degrees — a portrait phone's horizontal half-view
+       — one and a third seconds in. So on the only device Chad plays on, the
+       whole of this scene's beat, including the FADE he asked for ("every
+       appearance and exit of the cyclist should always be in a fading
+       manner"), happened off the right-hand edge. The yaw is the subject's
+       own bearing now, at 0.92 of it so the lens trails a fast crossing the
+       way a head does rather than locking onto it like a turret. */
+    const FOLLOW = 0.92;
+    const bearing = (k) => {
+      const sx = HIS.x - 1.2 + k * 17.5, sz = -8 - k * 2.0;
+      return Math.atan2(-(sx - P0.x), -(sz - P0.z)) * FOLLOW;
+    };
+    const ARC_END = bearing(1);
+    tr(0, 7.2, k => { api.yaw.rotation.y = bearing(k); }, rawK);
     tr(0, 7.2, k => {
       stage.cyc.group.position.set(HIS.x - 1.2 + k * 17.5, 0, -8 - k * 2.0);
       stage.cyc.group.rotation.y = -Math.PI / 2;
@@ -2454,7 +2665,7 @@
     sfx(0.4, 'chain', 0.5);
     step(7.3, () => stage.cycEnd());
     /* 7.6 THE OTHER DETAIL COMES OFF THE LINE, to the left */
-    yawTo(7.6, 9.4, -0.44, 1.15, smoothK);
+    yawTo(7.6, 9.4, ARC_END, 1.15, smoothK);   // v14.3: from where the follow left it, not from the old -0.44
     sfx(7.8, 'r4run');                     // "Get off the line! Somebody in the lalang! GO! GO!"
     tr(9.4, 12.6, (k, t) => { api.camera.rotation.z = Math.sin(t * 7.5) * 0.018 * (1 - k); }, rawK);
     /* 12.4 the tower closes the range, and the lens comes back to his own lane */
@@ -2513,28 +2724,61 @@
     yawTo(0, 8.4, 0.0, 0.06, smoothK);
     pitchTo(0, 8.4, -0.04, -0.34, smoothK);
     /* it is not there when he gets there — and it FADES out rather than
-       being switched off (Chad: every exit fades) */
-    step(2.1, () => { stage.cycEnd(true); });
+       being switched off (Chad: every exit fades).
+
+       v14.3: AS A TRACK, because `cycEnd(true)` cannot fade inside a scene.
+       `cycEnd(fadeOut)` deliberately SKIPS the one line that clears the
+       alpha and leaves the ramp to `cycFrame` — and `cycFrame` is called
+       from `updateNotes` BELOW `if (getState() !== 'play') return`, so under
+       a cutscene it never runs. The chapter's own comment at `cycStart` says
+       this outright ("a SCENE still sets the alpha outright through
+       `cycAlpha`, because `cycFrame` does not run under a cutscene and a
+       ramp there would never advance") and v13.2 then wrote three scene
+       calls that rely on exactly that ramp. Measured consequence here: he
+       stood at FULL alpha, bell ringing, through the whole walk to the
+       "empty ground" the outcome card describes. 0.9 s is play's own rate
+       (CYC_FADE 1.1 alpha a second), so a scene exit looks like a play exit. */
+    tr(2.1, 3.0, k => stage.cycAlpha(Math.max(0, 1 - k)), rawK);
+    step(3.02, () => { stage.cycEnd(); });
     sfx(9.4, 'rangepa', 0.5);
     sfx(9.9, 't4man');                     // "ALL LANES CEASE FIRE! Man on the range!..." (5.88 s -> 15.78)
     /* 8.4–11 the torch on empty ground, tyre tracks that stop */
     pitchTo(8.4, 11.0, -0.34, -0.62, smoothK);
     yawTo(8.4, 11.0, 0.06, -0.30, smoothK);
-    /* 11.4 THE BELL, BEHIND HIM — and the turn. `cycStart(3, true)` fades
-       him IN where v12.1 snapped him on, and the bed puts the ding under
-       him for as long as he is there. */
+    /* 11.4 THE BELL, BEHIND HIM — and the turn. He fades IN where v12.1
+       snapped him on, and the bed puts the ding under him for as long as he
+       is there.
+       v14.3: the fade is a TRACK. `cycStart(3, true)` set the alpha to 0.02
+       and left it for `cycFrame` to walk up — and `cycFrame` does not run
+       under a cutscene, so the scene's payoff frame, the thing standing
+       behind him at the end of the 180, was drawn at TWO PER CENT for its
+       whole two and a half seconds. (Worse than invisible: v12.4 measured
+       that this model is not drawn correctly through the transparent path at
+       all, so what little was there had no head and no torso.) He is full by
+       14.5, which is before the bell at 14.8. */
     sfx(11.4, 'chain', 0.85);
     yawTo(12.0, 14.6, -0.30, Math.PI + 0.04, smoothK);
     pitchTo(12.0, 14.6, -0.62, -0.06, smoothK);
-    step(13.6, () => { stage.cycStart(3, true); stage.cyc.group.position.set(HIS.x + 0.4, 0, -2.6); stage.cyc.group.rotation.y = 0; });
+    step(13.6, () => {
+      stage.cycStart(3); stage.cyc.group.position.set(HIS.x + 0.4, 0, -2.6); stage.cyc.group.rotation.y = 0;
+      stage.cycAlpha(0.02);
+    });
+    tr(13.6, 14.5, k => stage.cycAlpha(0.02 + 0.98 * k), rawK);
     sfx(14.8, 'bikebell', 0.9);
     sfx(15.2, 'ghostlaugh', 0.75);         // Chad: "ghost cyclist needs to have its ding sound and laughing sound"
     tr(14.8, 17.0, (k, t) => { api.camera.rotation.z = Math.sin(t * 9) * 0.02 * (1 - k); }, rawK);
     /* and the encik, from the line behind him, as the light goes */
     sfx(15.9, 'e4back');                   // "GET BACK HERE! NOW!" (1.88 s -> 17.78)
     fade(16.6, 17.6, 0, 1);
-    step(17.8, () => { handsRoot.visible = true; api.camera.rotation.z = 0; if (kit && kit.torchOn) kit.torchOn(false); });
-    sfx(17.3, 'n4dawn');                   // the dawn, under the card (scene A's note)
+    step(17.95, () => { handsRoot.visible = true; api.camera.rotation.z = 0; if (kit && kit.torchOn) kit.torchOn(false); });
+    /* v14.3: 17.3 -> 17.85. The cue's own comment did the arithmetic and then
+       ignored it — `e4back` runs to 17.78, so the sentence that loads chapter
+       5 opened 0.48 s UNDER a shouted bark at full level, and `cineEnd` keeps
+       speech on a natural end, so both ran on together under the card. The
+       same defect this release fixed in scene C; scene B had not been
+       re-checked (v5.30: nothing of his starts while another voice is live).
+       The step moves to 17.95 so `c.dur` still lands after the cue. */
+    sfx(17.85, 'n4dawn');                  // the dawn, under the card (scene A's note)
     c.endFade = 1;
   }
 
@@ -2557,17 +2801,45 @@
   function scFire(c, s, api) {
     const { tr, step, sfx, fade, yawTo, pitchTo, rawK, smoothK, stage, kit } = api;
     const HIS = stage.HIS;
-    /* `at(z, x, ry)`: fade him IN there, facing the line unless a shot has
-       turned him. The `true` is the whole of Chad's "fade in and out". */
-    const at = (z, x, ry) => {
-      stage.cycStart(3, true);
-      stage.cyc.group.position.set(HIS.x + (x || 0), 0, z);
-      stage.cyc.group.rotation.y = (ry === undefined) ? Math.PI : ry;
+    /* THE ALPHA IS THE SCENE'S, and it has to be — v14.3.
+       v13.2 wrote `cycStart(3, true)` here, which sets the alpha to 0.02 and
+       leaves the walk up to `cycFrame`. `cycFrame` is called from
+       `updateNotes` BELOW `if (getState() !== 'play') return`, so under a
+       cutscene it never runs, and this scene's every appearance — the
+       opener, both returns and the reveal behind him — was drawn at TWO PER
+       CENT for its whole length. Not merely faint: v12.4 measured that this
+       one baked mesh is not drawn correctly through the transparent path at
+       all (the head and the torso are simply absent), so the scene in which
+       the player fires three rounds, whips round and gasps had nothing to
+       fire at, turn to, or gasp at. `cycStart`'s own comment said the rule
+       and v13.2 wrote against it.
+
+       `show(t0, ...)` and `hide(t0)` are the same beats with the ramp
+       written as a TRACK, which is the only thing that runs in a cutscene.
+       0.55 s rather than play's 0.9: the beats here are 1.6 s apart.
+       Registered in chronological order, because `cineSeek` re-applies every
+       passed track on every frame clamped to k = 1 (v6.12) — so the LAST
+       registered track wins at any moment, and chronological order is what
+       makes that the right one. */
+    const FADE = 0.55;
+    const show = (t0, z, x, ry) => {
+      step(t0, () => {
+        stage.cycStart(3);                                 // alpha 1, position and scale set
+        stage.cyc.group.position.set(HIS.x + (x || 0), 0, z);
+        stage.cyc.group.rotation.y = (ry === undefined) ? Math.PI : ry;
+        stage.cycAlpha(0.02);                              // and the track takes it up from here
+      });
+      tr(t0, t0 + FADE, k => stage.cycAlpha(0.02 + 0.98 * k), rawK);
+    };
+    const hide = (t0) => {
+      tr(t0, t0 + FADE, k => stage.cycAlpha(Math.max(0, 1 - k)), rawK);
+      step(t0 + FADE + 0.02, () => stage.cycEnd());
     };
     step(0, () => {
       if (kit) { if (kit.hurt) kit.hurt(null); if (kit.root) kit.root(false); if (kit.weaponOut) kit.weaponOut(true); }
-      stage.setMover(false); at(-8);
+      stage.setMover(false);
     });
+    show(0, -8);
     fade(0, 0.25, 0, 0);
     yawTo(0, 12.6, 0.0, 0.0, rawK);
     pitchTo(0, 2.4, -0.04, -0.02, smoothK);
@@ -2579,11 +2851,13 @@
       sfx(t0, 'rifleshot', 0.9);            // the report is the scene's, always
       step(t0, () => {
         if (kit && kit.weaponShot) kit.weaponShot();   // the take, the flash, the kick
-        stage.cycEnd(true); stage.setFlare(240);
+        stage.setFlare(240);
       });
+      hide(t0);
       tr(t0, t0 + 0.14, k => stage.setFlare(240 * (1 - k)), rawK);
       sfx(t0 + 0.5, 'ghostlaugh', 0.6);     // he laughs when he is shot at
-      step(t0 + 1.6, () => { at(z, x, ry); stage.setFlare(140); });
+      step(t0 + 1.6, () => { stage.setFlare(140); });
+      show(t0 + 1.6, z, x, ry);
       tr(t0 + 1.6, t0 + 3.0, k => stage.setFlare(140 * (1 - 0.55 * k)), rawK);
       sfx(t0 + 1.9, 'bikebell', 0.8);       // and the bell comes back with him
     };
@@ -2595,19 +2869,26 @@
     sfx(8.8, 'rifleshot', 0.9);
     step(8.8, () => {
       if (kit && kit.weaponShot) kit.weaponShot();
-      stage.cycEnd(true); stage.setFlare(200);
+      stage.setFlare(200);
     });
+    hide(8.8);
     tr(8.8, 8.98, k => stage.setFlare(200 * (1 - k)), rawK);
     tr(9.0, 14.0, k => stage.setFlare(70 * (1 - k)), rawK);
     sfx(9.9, 'bikebell', 0.95);             // BEHIND him
     /* the 180. `yawTo` takes the short way, so this is written as one turn
        to PI and not as two. */
     yawTo(10.2, 11.4, 0.0, Math.PI, smoothK);
-    step(10.9, () => { at(2.4, 0.5, 0); });  // standing between him and the line, facing him
+    show(10.9, 2.4, 0.5, 0);                // standing between him and the line, facing him
     sfx(11.5, 'n4gasp');                    // the shocked gasp (1.07 s)
     tr(11.4, 13.2, (k, t) => { api.camera.rotation.z = Math.sin(t * 9) * 0.026 * (1 - k); }, rawK);
     sfx(12.6, 'ghostlaugh', 0.8);
-    sfx(13.4, 't4who');                     // "CEASE FIRE! Who fired? Lane five..." (5.25 s -> 18.65)
+    /* v14.3: "Who fired? LANE SIX" — and here it was always the player who
+       fired, three times, which is exactly the report Chad made. The take is
+       0.53 s shorter than the lane-five one it replaces, so the cue comes
+       0.3 s forward to 13.1 and its tail now lands at 17.85, CLEAR of
+       `n4dawn` at 18.0 where the old one ran 0.65 s into it (v5.30: nothing
+       of his starts while another voice is live). */
+    sfx(13.1, 't4who');                     // "CEASE FIRE! Who fired? Lane six..." (4.72 s -> 17.82)
     step(13.8, () => { if (kit && kit.weaponOut) kit.weaponOut(false); });
     pitchTo(13.4, 16.6, 0.02, -0.30, smoothK);
     step(16.8, () => { api.camera.rotation.z = 0; });

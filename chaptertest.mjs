@@ -135,6 +135,39 @@ for (const [key, ch] of Object.entries(chapters)) {
   }
 }
 
+/* --- every line a chapter SPEAKS has a measured length ---------------------
+   v14.3. `sayLine` states its one-voice-at-a-time window in the chapter's own
+   `SECS` table — `speak.until = dayClock.t + (SECS[name] || 2.5) + 0.25` — so
+   a line the table does not carry books 2.5 s whatever its take actually is.
+   A take LONGER than that releases the queue early and the next voice starts
+   over its last word; there is no error and no harness hears it. Two of these
+   were live when the check was written: e2c4's three v13.0 sighting shouts
+   (k4cyc is 3.42 s) and e2c1's two v9.3 shouts on the run home (k1hurry is
+   2.72). Both were measured at the time and simply never entered.
+
+   Read statically, like the cue scan below: the names are all literals, and
+   the table is one object per chapter. A chapter that speaks nothing outside
+   a cutscene needs no table and is skipped.                                */
+{
+  let spoke = 0;
+  for (const f of files) {
+    const src = readFileSync(join(chapDir, f), 'utf8');
+    const used = [...new Set([...src.matchAll(/(?:sayLine|queueLine)\(\s*'([A-Za-z0-9_]+)'/g)].map(m => m[1]))];
+    if (!used.length) continue;
+    const i = src.indexOf('const SECS = {');
+    if (i < 0) { bad(f, `speaks ${used.length} lines in play but declares no SECS table of their lengths`); continue; }
+    let j = i + 'const SECS = {'.length, depth = 1;
+    while (j < src.length && depth) { const c = src[j]; if (c === '{') depth++; else if (c === '}') depth--; j++; }
+    const body = src.slice(i, j).replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/[^\n]*/g, '');
+    const have = new Set([...body.matchAll(/([A-Za-z0-9_]+)\s*:/g)].map(m => m[1]));
+    for (const n of used.sort()) {
+      if (!have.has(n)) bad(f, `speaks '${n}' but SECS has no measured length for it — sayLine books the 2.5 s fallback`);
+    }
+    spoke += used.length;
+  }
+  console.log(`spoken lines: ${spoke} play-time lines across the chapters, every one with a measured length in its SECS`);
+}
+
 /* --- every cutscene cue is a sound that actually exists -------------------
    A sting whose kind is not in the engine's STING_SAMPLE, or whose sample
    has no file in assets/audio/, is SILENT — no error, no warning, just a

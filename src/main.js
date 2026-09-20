@@ -1010,6 +1010,21 @@ let weaponRounds = 0, weaponMags = 0, weaponBusy = null, weaponFlash = null, wea
    clock, so they can never disagree about when a shot happened. */
 let weaponFlashObj = null, weaponFlashKey = null, weaponFlashCards = [], weaponFlashN = 0, weaponFlashDrawn = false;
 let weaponShown = false, weaponLastFire = 0;
+/* v14.3: A CHAPTER MAY FORBID THE SHOT, and the refusal has to SAY WHY.
+   Chad, on the live range: "disable shooting until the player actually
+   reaches lane 6. The HUD ui should say something like 'Shooting only
+   allowed at lane 6' if player tries to shoot anywhere else." A trigger
+   that does nothing is indistinguishable from a broken game, which is the
+   same failure `#nofire` answers as v12.2's "shooting does not seem to
+   work" — there it was a real bug, here it is a rule, and the difference
+   has to be on the screen.
+   The MESSAGE is the chapter's (kit.weaponBlock), never the engine's: what
+   is forbidden and why is a chapter's business, and a chapter's word goes
+   through its own `words`, where textsync puts it in front of Chad.
+   null (the default) is no block at all, so the fixture's nine promises
+   and episode 1 — which declares no weapon — are untouched by
+   construction. */
+let weaponBlock = null, weaponBlockShown = 0, weaponBlockEl = null, weaponBlockT = 0;
 const weaponLog = [];                        // for the probes: every shot, hit or miss
 let kitRooted = false, kitHurt = null;       // v11.1: the player held in place; the red damage frame + a bleed until the player acts
 let invUrge = null;                          // v11.6: an item the bag button pulses for until it is equipped (kit.give)
@@ -1695,6 +1710,7 @@ function weaponSetup(decl) {
                  rates: { ...WEAPON_DEFAULTS.rates, ...((decl && decl.rates) || {}) } };
   weaponRounds = Math.max(0, weaponDecl.rounds | 0); weaponMags = Math.max(0, weaponDecl.mags | 0);
   weaponForce = null; weaponBusy = null; weaponLog.length = 0;
+  weaponBlockSet(null);                 // v14.3: and a chapter's fire rule is never inherited
   weaponRecoilReset(); weaponAdsOff(); recSeed = 20250917; flashSeed = 20250918;
   if (!weaponFlash) {
     weaponFlash = new THREE.PointLight(0xffd28a, 0, 9, 1.8);
@@ -1712,6 +1728,7 @@ function weaponSetup(decl) {
 }
 function weaponTeardown() {
   weaponDecl = null; weaponForce = null; weaponBusy = null; weaponRounds = 0; weaponMags = 0;
+  weaponBlockSet(null);
   weaponRecoilReset(); weaponAdsOff(); camLens(CAM_FOV);
   if (weaponFlash) { camera.remove(weaponFlash); weaponFlash.dispose?.(); weaponFlash = null; }
   weaponFlashDrop();
@@ -2160,8 +2177,41 @@ function weaponAssistHit(list, cone) {
   }
   return best;
 }
+/* the refusal: the words under the reticle, a sound and a hard buzz, and
+   the press eaten. It is RATE-LIMITED rather than fired on every press —
+   a held trigger would otherwise restart the entry animation sixty times a
+   second and read as a flicker — but the element's animation IS restarted
+   on each refusal past that window, so a second, deliberate press is
+   visibly answered rather than silently ignored. On WALL time, because a
+   hot phone's dt is clamped (the v7.4 law). */
+function weaponBlockSay() {
+  const el = weaponBlockEl || (weaponBlockEl = $('nofire'));
+  if (!el) return;
+  const now = performance.now();
+  if (now - weaponBlockShown < 900) return;
+  weaponBlockShown = now;
+  el.textContent = weaponBlock;
+  el.classList.remove('on'); void el.offsetWidth; el.classList.add('on');
+  clearTimeout(weaponBlockT);
+  weaponBlockT = setTimeout(() => el.classList.remove('on'), 2200);
+  snd('hudfail', 0.55);
+  haptic([28, 50, 28]);
+}
+function weaponBlockSet(msg) {
+  weaponBlock = (msg === null || msg === undefined || msg === '') ? null : String(msg);
+  document.body.classList.toggle('wpnBlocked', !!weaponBlock);
+  if (!weaponBlock) {
+    const el = weaponBlockEl || (weaponBlockEl = $('nofire'));
+    if (el) el.classList.remove('on');
+    clearTimeout(weaponBlockT);
+    weaponBlockShown = 0;
+  }
+}
 function weaponFire() {
   if (!weaponDecl || state !== 'play' || !weaponWant()) return false;
+  /* the chapter's own rule, before anything is spent: no round, no take,
+     no flash, no raycast — and the reason on the screen */
+  if (weaponBlock) { weaponBlockSay(); return false; }
   if (weaponBusy && weaponBusy !== 'draw') return false;   // a reload or a holster owns the hands; the draw does not stop a shot
   const now = performance.now();
   if (now - weaponLastFire < weaponDecl.fireGap * 1000) return false;
@@ -3291,6 +3341,10 @@ const KIT = {
   weaponIsOut: () => weaponWant(),
   weaponAds: v => { if (v === undefined) return weaponAds; weaponAds = !!v; weaponAdsSync(); return weaponAds; },
   weaponAvail,
+  /* v14.3: a string forbids firing and is what the HUD says; null allows it
+     again. A chapter DERIVES it on the frame rather than storing it, so a
+     resume, a replay or a reset cannot leave the trigger locked (v11.6). */
+  weaponBlock: weaponBlockSet,
   fire: weaponFire, reload: weaponReload,
   /* v13.2, Chad on e2c4's scene C: "the rifle shooting has no recoil or
      effects." It had none because a CUTSCENE cannot call `weaponFire` —
@@ -3333,6 +3387,7 @@ function kitDebug() {
            torch: torchLight ? { on: torchOn, red: torchIsRed, avail: torchAvail(), item: torchDecl && torchDecl.item || null } : null,
            urge: invUrge,   // v11.6
            weapon: weaponDecl ? { out: weaponWant(), avail: weaponAvail(), shown: weaponShown, busy: weaponBusy, rounds: weaponRounds, mags: weaponMags, item: weaponDecl.item || null, prop: !!weaponProp,
+                                                  block: weaponBlock,    // v14.3
                                                   /* v13.1: the muzzle flash, for the fixture's absence check and the probes */
                                                   flash: weaponDecl.flash || '', flashCards: weaponFlashCards.length, flashLit: weaponFlashT > 0,
                                                   /* flashOn is the FRAME's own answer — the cone is up on screen right
