@@ -103,6 +103,11 @@ body.finePtr #volWrap{display:flex}
 .invBtn{top:calc(max(14px,env(safe-area-inset-top)) + 112px);display:none}
 body.inplay .invBtn,body.inplay .menuBtn{display:grid}
 body.cine .invBtn,body.cine .menuBtn{display:none}   /* a scene owns the screen */
+/* v14.4: and so does a kit event. These were drawn OVER the drill panel
+   (.soundBtn is z-index 9, #event is 8) and were clickable, so the gear and
+   the bag opened on top of a running minigame that kept scoring underneath
+   them. Episode 1 never sets evopen. */
+body.evopen .invBtn,body.evopen .menuBtn,body.evopen .soundBtn{display:none}
 .invBtn svg,.menuBtn svg{fill:none;stroke:var(--bone);stroke-width:1.8}
 /* v7.0: the torch button — only a chapter that declares a torch shows it */
 .torchBtn{top:calc(max(14px,env(safe-area-inset-top)) + 168px);display:none}
@@ -130,8 +135,13 @@ body.inplay.weaponUp #weaponHud{display:flex}
 body.weaponUp.cine #weaponHud,body.weaponUp.invopen #weaponHud,body.weaponUp.menuopen #weaponHud,body.weaponUp.cardup #weaponHud,body.weaponUp.evopen #weaponHud{display:none}
 /* v12.2: and the reticle with it — a kit event owns the screen, and a FIRE
    button sitting on top of the load drill lets a thumb tap send a live round
-   downrange while the tower is still giving the order. */
-body.weaponUp.evopen #reticle{display:none}
+   downrange while the tower is still giving the order.
+   v14.4: the rule that used to sit HERE never did anything. It counts the
+   same specificity as the show rule below (1 id, 2 classes, 1 type) and came
+   BEFORE it, so the later rule won and the crosshair was drawn through every
+   drill — the v11.7 lesson, which shell.html:112 already records, met again
+   twelve lines from where it is written down. It is on the hide list below
+   with its three siblings now. */
 .wpnBtn{pointer-events:auto;touch-action:none;-webkit-user-select:none;user-select:none;cursor:pointer;
   display:grid;place-items:center;border-radius:50%;color:var(--bone);
   background:rgba(7,8,11,.62);border:1.5px solid rgba(232,226,212,.42);
@@ -159,7 +169,7 @@ body.weaponUp.wpnNoAmmo #ammo,body.weaponUp.wpnNoAmmo #reloadBtn{display:none}
   z-index:6;display:none;pointer-events:none;opacity:.88;
   transition:transform .14s ease-out,opacity .14s ease-out}
 body.inplay.weaponUp #reticle{display:block}
-body.weaponUp.cine #reticle,body.weaponUp.invopen #reticle,body.weaponUp.menuopen #reticle,body.weaponUp.cardup #reticle{display:none}
+body.weaponUp.cine #reticle,body.weaponUp.invopen #reticle,body.weaponUp.menuopen #reticle,body.weaponUp.cardup #reticle,body.weaponUp.evopen #reticle{display:none}   /* v14.4: evopen was above the show rule at equal specificity, so it lost */
 /* v14.3: THE REFUSED SHOT (Chad, on the live range: "disable shooting until
    the player actually reaches lane 6. The HUD ui should say something like
    'Shooting only allowed at lane 6' if player tries to shoot anywhere

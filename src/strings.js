@@ -340,7 +340,14 @@ Object.assign(window.__TEXT__, {
   'item.beads.name':     'Prayer Beads',
   'item.beads.desc':     'Your grandmother pressed these into your hand years ago. You have never taken them seriously, and never taken them off.',
   'item.torch.name':     'Torch',
-  'item.torch.desc':     'Army issue. A wide, hard beam and a heavy switch. Equip it to use it.',
+  /* v14.4: the last clause was false wherever it could be read. The bag
+     carries across a chapter and e2c3 forces the torch into the hand to be
+     playable, so a player arrives in e2c4 with it already equipped — and
+     e2c4 declares `torch.player: false`, which kills F, the button and the
+     swap for the whole chapter. Both halves wrong at once: it is equipped,
+     and equipping it does not let you use it. The same class v14.2 fixed
+     for e2c5's rifle. What is left is true everywhere. */
+  'item.torch.desc':     'Army issue. A wide, hard beam and a heavy switch.',
   'item.rifle.name':     'Rifle',
   'item.rifle.desc':     'Army issue. Signed out to you by serial number, and signed back in the same way.',
   'item.note.name':      'Hell Note',

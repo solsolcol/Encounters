@@ -1109,7 +1109,16 @@ function dwellHotspots() {
     h.dwellT = on ? (h.dwellT || 0) + dt : Math.max(0, (h.dwellT || 0) - dt * 2);
     if (h.dwellT < h.dwell) continue;
     h.dwellT = 0;
+    /* v14.4: SAY THAT THIS ONE CAME FROM A LOOK. `nearestHotspot` offers a
+       dwell spot to a press as soon as the reticle is inside its own cone
+       (v12.5, so a phone has a tap target at all), which is right where a
+       press and a look are equivalent — chapter 3's torch spots — and wrong
+       where the HOLD is the mechanic, as it is for e2c4's tracking drill,
+       whose 1.2 s dwell one tap of E could skip entirely. A chapter that
+       cares reads `h.byLook`; one that does not is unaffected. */
+    h.byLook = true;
     const r = typeof h.onInteract === 'function' ? h.onInteract(h) : false;
+    h.byLook = false;
     if (r !== false && h.once) h.done = true;
   }
 }
@@ -1380,7 +1389,15 @@ function paintHotMarks() {
       const q = projectTo(h.pos.x, (h.pos.y ?? 1.0) + (h.markY ?? 0.55), h.pos.z);
       if (q.z > 1 || Math.abs(q.x) > 1.02 || Math.abs(q.y) > 1.02) continue;
       const el = hotMarkEl(n++); if (!el) break;
-      const near = d < (h.radius || 2.2);
+      /* v14.4: `radius` was doing double duty — the reach a press answers
+         at AND the distance at which a mark reads as "in reach", which for
+         e2c4's tracking spot (radius 60, so a look works at any range) meant
+         the marker was drawn at full brightness with its ripple on every
+         frame it existed, 46 m out as at 6. Its own comment claims the
+         opposite: "at thirty metres the diamond renders small and dim". A
+         spot may now say where NEAR begins; every other spot keeps radius,
+         so nothing else moves. */
+      const near = d < (h.nearR != null ? h.nearR : (h.radius || 2.2));
       const k = near ? 1.15 : THREE.MathUtils.clamp(1.25 - d / far, 0.55, 1);
       const a = near ? 1 : THREE.MathUtils.clamp(1.15 - d / far, 0.35, 0.9);
       el.style.display = '';
@@ -1912,6 +1929,7 @@ function weaponFlashFire() {
   weaponFlashCards[i].rotation.z = (flashSeed / 0x7fffffff) * Math.PI * 2;
 }
 function weaponPropDrop() {
+  wpnRestRotX = null;   // v14.4: the next prop reads its own rest, not this one's
   if (weaponProp) {
     /* the flash is a CHILD of the prop and outlives it — take it out before
        the sweep below, which disposes every mesh it can reach */
@@ -1992,6 +2010,29 @@ function weaponFrame(dt) {
   const wdt = weaponWall ? Math.min(0.5, wnow - weaponWall) : 0.016;
   weaponWall = wnow;
   weaponAdsStep(wdt);          // v13.0: the aim eases in and out on that same clock
+  /* v14.4: AND IN A CUTSCENE THE SPRING DRIVES THE GUN. `kit.weaponShot`'s
+     comment says it fires "the WEAPON's own spring, and deliberately not
+     `weaponDecl.kick`" — but there was no weapon spring: `weaponRecoilFire`
+     only accumulates `recP`/`recY`, and the single consumer sits inside the
+     main loop's `if (state === 'play')` branch and writes the CAMERA. In a
+     cutscene the `else` branch ran instead, and it ran BEFORE `cineUpdate`,
+     so every impulse a scene set on frame N was zeroed on frame N+1 with
+     `recPrevP` still 0 — nothing was ever applied anywhere. Scene C's three
+     rifle shots had the flash, the light, the take and the report, and the
+     gun did not move.
+     Here it is the PROP that moves, which is what the comment always meant:
+     rotation written ABSOLUTELY from the model's own rest (so nothing
+     accumulates) and the body pushed back along its own z, on top of the
+     place `weaponAdsStep` has just set. In play this is a no-op — the
+     camera path at the bottom of the frame owns the spring there and the
+     feel Chad signed off on at v12.2 is untouched. */
+  if (state === 'cine') weaponRecoilStep(wdt);
+  if (weaponProp) {
+    if (wpnRestRotX === null) wpnRestRotX = weaponProp.rotation.x;
+    const k = state === 'cine' ? recP : 0;
+    weaponProp.rotation.x = wpnRestRotX - k * 1.6;
+    if (k) weaponProp.position.z += k * 0.10;
+  }
   if (weaponMixer && weaponShown) weaponMixer.update(Math.min(wdt, 0.1));
   {
     const fSecs = (weaponDecl.flashSecs || 0.09);
@@ -2056,6 +2097,7 @@ function weaponFrame(dt) {
    player's own look still owns the base and the sum of the deltas is zero
    by the time it has settled — the shot punches and the sights come home. */
 let recP = 0, recY = 0, recPrevP = 0, recPrevY = 0, recSeed = 20250917;
+let wpnRestRotX = null;   // v14.4: the prop's own rest pitch, read once from the model
 function weaponRecoilFire() {
   const d = weaponDecl; if (!d) return;
   recP += d.recoil || 0;
@@ -3179,6 +3221,12 @@ function kitInit() {
       // a touch counts only on the overlay's own surface (the stick is not a press);
       // a mouse counts anywhere, because under pointer lock it lands on the canvas
       if (e.pointerType !== 'mouse' && ev.layout === 'button' && !e.target.closest?.('#evBtn')) return false;
+      /* v14.4: and only the PRIMARY button. `canvas.mousedown` has filtered
+         `e.button !== 0` since v12.0, and v12.2 gave the rifle right-click
+         as its AIM toggle — which `if (ev) return;` correctly suppresses
+         during an event, so the aim button was disabled and still SCORED a
+         graded press. Middle-click and the back/forward buttons likewise. */
+      if (e.pointerType === 'mouse' && e.button !== 0) return false;
       return true;
     };
     host.addEventListener('pointerdown', e => { if (!pressFrom(e)) return; e.preventDefault(); evPress(e.clientX, e.clientY); });
@@ -3187,7 +3235,7 @@ function kitInit() {
     // a mouse press under pointer lock never reaches the overlay
     addEventListener('pointerdown', e => {
       if (!ev || !ev.started || e.target.closest?.('#event') || e.target.closest?.('.soundBtn')) return;
-      if (e.pointerType === 'mouse') evPress(innerWidth / 2, innerHeight / 2);
+      if (e.pointerType === 'mouse' && e.button === 0) evPress(innerWidth / 2, innerHeight / 2);   // v14.4: primary only
     });
     addEventListener('pointerup', () => { if (ev && ev.down) evRelease(); });
   }
@@ -4564,7 +4612,14 @@ const hint = $('hint');
    moves. */
 const chWord = (k, fallbackKey) =>
   (CH.words && CH.words[k] !== undefined) ? CH.words[k] : T(fallbackKey);
-const ACT_LINE = HAS_TOUCH ? T('world.actLineTouch') : T('world.actLineKey');
+/* v14.4: A FUNCTION, because a chapter's decision object is not a pile of
+   notes. This was evaluated ONCE at module load and never went through
+   `chWord`, so Step back on the decision printed "Press E at the glowing
+   pile to look again" on a night live range and on a camp apron. Episode 1
+   declares no `actLine`, so it still reads the same two strings it always
+   did — the fallback IS the old expression. */
+const actLine = () => (HAS_TOUCH ? chWord('actLineTouch', 'world.actLineTouch')
+                                 : chWord('actLine', 'world.actLineKey'));
 function setHint() {
   const el = $('hintTxt');
   if (!el) return;
@@ -6372,7 +6427,7 @@ function zavFrame() {
 }
 
 function invOpen() {
-  if (inv.open || state !== 'play') return;   // the bag belongs to the walk, not the cards
+  if (inv.open || state !== 'play' || ev) return;   // the bag belongs to the walk, not the cards (v14.4: nor to a live event)
   inv.open = true;
   invEl().classList.remove('hide');
   zavInit(); zavLoad();
@@ -6514,7 +6569,14 @@ function unlockedKeys() {
 
 const menuEl = () => $('menu');
 function menuOpen() {
-  if (state !== 'play' || inv.open || fainting) return;   // a faint is not a moment to pause in
+  /* v14.4: AND NOT OVER A LIVE EVENT. `kitFrame` runs unconditionally and
+     ends in `if (ev) evFrame(...)`, so the drill's clock kept running under
+     the panel and self-failed item by item — three BROKEN presses at -4
+     awareness each while the player sat in a menu he was told he could
+     open. The round buttons are hidden under `body.evopen` in shell.html
+     for the same reason. Episode 1 declares no events, so `ev` is always
+     null there and neither guard can fire. */
+  if (state !== 'play' || inv.open || fainting || ev) return;   // a faint is not a moment to pause in
   for (const k in keys) keys[k] = false;      // a held W does not keep walking under the panel
   state = 'menu';
   menuEl().classList.remove('hide');
@@ -8205,7 +8267,7 @@ function dismissDecision() {
   state = 'play';
   const el = $('hintTxt');
   if (el) {
-    el.textContent = ACT_LINE;
+    el.textContent = actLine();
     hint.classList.remove('hide');
     clearTimeout(hintTimer);
     hintTimer = setTimeout(() => { hint.classList.add('hide'); setHint(); }, 5000);
@@ -8433,6 +8495,15 @@ function showHaunt(on, kind = 'ghost') {
      banner must not say "Ghost spotted" about a thing nobody saw */
   const alarm = ui.haunt.querySelector('[data-t="hud.ghostAlarm"]');
   if (alarm) alarm.textContent = kind === 'presence' ? chWord('presence', 'hud.presenceAlarm') : T('hud.ghostAlarm');
+  /* v14.4: AND THE SECOND SPAN IS THE CHAPTER'S TOO. `hud.ghostWarning` —
+     "Sanity level is dropping until you take action." — was the one line on
+     the banner no chapter could replace, so a chapter whose beat is to WAIT
+     (e2c4's stag, where the objective says to stand fast) had the HUD
+     ordering an action directly under an objective forbidding one: the v8.7
+     lie in its third direction. Every chapter that declares nothing keeps
+     the engine's sentence exactly, so episode 1 is untouched. */
+  const warn = ui.haunt.querySelector('[data-t="hud.ghostWarning"]');
+  if (warn) warn.textContent = kind === 'presence' ? chWord('presenceWarn', 'hud.ghostWarning') : T('hud.ghostWarning');
   ui.haunt.classList.toggle('hide', !on);
   ui.bSan.classList.toggle('drain', on);
 }
@@ -8751,7 +8822,13 @@ function tick(now = 0) {
       yaw.rotation.y -= recPrevY;
       pitch.rotation.x = Math.max(pitchLo, Math.min(pitchHi, pitch.rotation.x - recPrevP));
     }
-    weaponRecoilReset(); lastWallLook = 0;
+    /* v14.4: but a CUTSCENE is using it — `weaponFrame` steps the same
+       spring for the gun there, so zeroing it here killed every kick a
+       scene asked for. The camera hand-back above still runs (a scene
+       drives the lens from its own tracks, so it costs nothing), and the
+       spring is left alone until the scene is over. */
+    if (state !== 'cine') weaponRecoilReset();
+    lastWallLook = 0;
   }
   lookX = lookY = 0;
 
