@@ -4411,3 +4411,33 @@ in a band from 0.44 m to the radius, which a player crosses on the way in.
 Put the anchor ON the thing, at 1.55. Then the closest legal standing spot
 is 0.70 m out and 0.07 m under the eye — dead ahead — and it stays offered
 all the way in.
+
+## A CENTRE-RAY MISS IS NOT A CLEAR FRAME (v14.2)
+
+e2c5's second film shot was staged inside a parked truck at v14.0. v14.1 moved
+the camera out of the truck's footprint in Z and checked it three ways, all
+clean:
+
+- the lens stood **1.3 m clear** of the cargo's near face;
+- the centre ray at pitch 0 passed **above** the cargo roof (1.375 against an
+  eye at 1.70);
+- the centre ray **left the cab's x-slab before reaching its z-slab**, so it
+  missed the cab outright.
+
+The photograph showed the truck's flank filling the whole left half of the
+frame. The camera's x sat INSIDE the truck's own x-slab: the truck was not in
+front of the lens, it was *beside* it, and **no centre-ray test can see a
+thing that is beside the camera.** Worse on a phone, which crops to the centre
+third — ~70 % of the frame width — so the "fix" regressed the only device Chad
+plays on.
+
+Frame coverage is a property of the whole FRUSTUM, not of one ray. Clearance
+from a footprint, and a centre ray that misses every face, prove nothing about
+what is in shot. **Photograph it** (v6.17's law, met in a new disguise: there
+it was a tree on its side that a wide shot could not show, here it is a truck
+that arithmetic could not).
+
+A corollary worth keeping for audits: a finding can be REAL and its proposed
+fix still be INSUFFICIENT. When a verifier says "moving it in Z alone is not
+enough", check that claim as carefully as the finding itself — here it was
+right, and I had already shipped the Z-only move.

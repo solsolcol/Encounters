@@ -3551,6 +3551,41 @@ What the baseline contains, by release:
   `marchTick` counted bookings rather than sounds and let a pass-by start
   while the player was walking over to him. docs/V14.1-THE-DEBUG-PASS.md is
   the build's memory; five new laws are in docs/LEARNINGS.md.
+- **v14.2** FOUR MORE IN THE LAST QUESTION — a second, deeper hunt over the
+  same chapter (52 candidates, adversarially verified down to **8 confirmed,
+  44 refuted**) read it at v14.0, before the debug pass. Five of the eight
+  v14.1 had already fixed, and THREE OF THOSE WERE RE-VERIFIED BY PHOTOGRAPH
+  rather than assumed — shot 3's pitch sign, the outcome-scene standoff, and
+  the storeman now visible behind the armskote grille. Four were still open.
+  **THE SECOND SHOT, AND THE LAW UNDER IT.** v14.1 had moved that camera out
+  of the parked truck's footprint in Z, and checked it three ways: the lens
+  stood 1.3 m clear of the cargo's near face, the centre ray passed ABOVE the
+  cargo roof, and it left the cab's x-slab before reaching the cab's z-slab.
+  All three clean. The PHOTOGRAPH showed the truck's flank filling the whole
+  left half of the frame — because x -8.2 sits INSIDE the truck's own x-slab,
+  so the thing was BESIDE the lens rather than in front of it, and no
+  centre-ray test can see that. On a phone, cropped to the centre third, ~70 %
+  of the frame width: the fix regressed the only device Chad plays on.
+  **A CENTRE-RAY MISS IS NOT A CLEAR FRAME** — coverage is a property of the
+  whole frustum, not of one ray (v6.17's photograph law in a new disguise).
+  B is clear of the row in X as well now and the pan runs AWAY from it onto
+  the two men; photographed after, the phone frame has no truck in it at all
+  and the desktop frame has it as a narrow wedge at the far-left edge.
+  THE REST: a pass-by cannot START while the player is within 8 m of the encik
+  (the phase gate stops one starting during the talk and cannot stop a 16 s
+  one-shot already in flight, which played its tail over the quiet two-man
+  exchange the chapter is built on); the BOOT HINT stops lying (`act`/
+  `actTouch` are `setHint`'s words, not the badge's, and said "E to speak to
+  the encik" from the first frame while the HUD ordered the player to the
+  armskote — neutral now, as e2c4 settled it at v12.2); and the BAG stops
+  lying (the torch's description described chapter 3's jungle harbour, the
+  rifle's said "It is out while it is in your hand" and e2c5 declares no
+  weapon, so there it is a plain bag item and the clause is false — checked
+  before rewriting that the rifle is a bag item in e2c5 ALONE and the torch in
+  e2c3 and e2c5, so both are now true everywhere they can be read).
+  Verified: cine, chapter, text, walk 4/4, on top of a green 24/24 full suite
+  taken immediately before the edits. Sheet v68, its diff against v67 exactly
+  the four cells changed. docs/V14.1-THE-DEBUG-PASS.md §7 is the memory.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -4060,7 +4095,7 @@ fifth chapter has no scare that is not the player's own memory replayed
 and released. `nextChapterKey()` past ch5 is null, so sealing it ends
 the run exactly as it always ended a last chapter.
 
-**EPISODE 2 IS COMPLETE** (v14.1). Chapter 5, THE LAST QUESTION, closes the
+**EPISODE 2 IS COMPLETE** (v14.2). Chapter 5, THE LAST QUESTION, closes the
 second case file: months after the outfield, days from ORD, he bumps into
 his TEKONG encik at a mainland infantry camp, and halfway through the small
 talk the encik brings the Hawk Company bunk up himself — "Remember the
@@ -4103,7 +4138,7 @@ gained its muzzle flash and a real ammo point at v13.1
 viewmodel's placement and material are measured in
 docs/E2-SOLDIER-MODELS.md §8; chapter 5, The Last Question, at v14.0 and
 debugged at v14.1 — `src/chapters/e2/e2c5.js`, docs/V14.0-E2C5-PLAN.md,
-docs/V14.1-THE-DEBUG-PASS.md), and the
+docs/V14.1-THE-DEBUG-PASS.md — and four more at v14.2, §7 of the same doc), and the
 still-outstanding job of replacing chapter 1's
 placeholder choices with the real "THE OFFERINGS" data in
 `docs/source/trial-game-chapters.md`.
@@ -4113,7 +4148,7 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v67** (`masters/v14.0/masterz-text-v67.xlsx`, four tabs: UI
+**THE SHEET IS v68** (`masters/v14.2/masterz-text-v68.xlsx`, four tabs: UI
 TEXT 282, EPISODE 1 110, EPISODE 2 179, VOICE LINES 295). It is EXPORTED and not published —
 the workbook has been past the Drive connector's base64 wall since v43, and
 the split export is still to do (docs/EDITING-TEXT.md). **v44 is still the
