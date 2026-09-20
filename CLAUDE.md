@@ -3420,7 +3420,7 @@ What the baseline contains, by release:
   writes the pitch a cutscene owns and re-applies every frame, v5.30). Five new
   takes; sheet v66. docs/V13.2-THE-FLARE-THE-RHYTHM-AND-THE-SCENES.md is the
   build's memory.
-- **v14.0** EPISODE 2 · CHAPTER 5 · DAYS BEFORE ORD — the chapter that CLOSES
+- **v14.0** EPISODE 2 · CHAPTER 5 · THE LAST QUESTION — the chapter that CLOSES
   the second case file, and the first release in which the episode-complete
   card runs on a case that is not episode 1. Chad's design, after five of
   mine were thrown out: months later, days from ORD, he meets his TEKONG
@@ -3449,6 +3449,108 @@ What the baseline contains, by release:
   now and the bag is made to match it. The e2c4 range NCO also stops being
   the Tekong encik, which chapter 5 makes necessary. Sheet v67.
   docs/V14.0-E2C5-PLAN.md is the build's memory.
+- **v14.1** THE DEBUG PASS — Chad: *"Debug this chapter"*, on episode 2
+  chapter 5 the day it shipped. Twenty defects, found by reading the code, by
+  measuring the live build and by PHOTOGRAPHING it, and the two that matter
+  most were invisible to all twenty-four harnesses.
+  **THE FIFTY-ONE TREES WERE NaN.** `plantTrees` composes each instance with
+  `sp.h * jitter`; this chapter alone passed `s`, meaning a scale, so every
+  matrix composed with `undefined * jitter` — not a small tree or a missing
+  one, but GARBAGE GEOMETRY, black shards, one clump of which stood in the
+  film. And a NaN matrix makes `computeBoundingSphere` return null, which hid
+  the stand from the culling checks too. Measured: e2c5 **0 finite instances,
+  51 NaN**, all nine spheres null, against e2c4's 173 finite and 0 NaN. Fixed
+  in three places, because the class is what matters: the chapter passes `h`
+  in metres, the engine defaults a bad height AND says so on the console, and
+  **`walktest` now fails any chapter whose instance matrices or mesh positions
+  go non-finite**.
+  **AND THE APRON WAS SAYING "SOMETHING IS BURNING AHEAD..."** `chWord` read a
+  chapter's own word as `(CH.words && CH.words[k]) || T(fb)`, and `''` is
+  falsy — so a DECLARED EMPTY word fell through to chapter 1's fallback. Two
+  chapters declare `approach: ''` to mean "no floating label on a person":
+  episode 2's cookhouse, since v10.0, and its apron, since v14.0. Both have
+  been naming a fire that does not exist in either. The intent was written
+  down THREE times and never implemented — the two chapters' comments and the
+  engine's own gate, added at v13.0 against a helper that could not express
+  it. A presence test, not a truthiness test; it is also the sheet's contract
+  (*"An empty cell removes that text"*), and every other chapter declares
+  non-empty words, so nothing else moves.
+  **THE MAN NOBODY COULD SEE.** The stores block's face was one solid 19 m box
+  from z 7.50 to 8.40, and the armskote's rifle rack, the stores shelves and
+  the STOREMAN who speaks all three clearance lines were built at z 7.95-8.65
+  — inside the concrete. A grille over a flat wall, and a voice from nowhere.
+  The face is cut the way v9.1 cut the toilet doorway: left, right and between
+  segments, a sill under each hatch and a lintel over it, a dark back panel
+  0.88 m in, and an emissive strip under the lintel so the recess reads
+  without a fourth shadow-casting lamp (v9.4's flag stand: lit without a
+  light). Photographed after: he is there, chest-up, behind the bars.
+  **THE COUNTERS WENT DEAD AT POINT-BLANK.** Their anchors sat 0.7 m in FRONT
+  of each counter at y 1.30 — and 0.7 m in front is z 6.20, the exact maxZ the
+  chapter's own bounds stop the player at. So walking up to a counter put the
+  anchor directly under the lens, `hotspotVisible` projected it off the frame,
+  the badge went out and the press fell through. The v7.5 eye-height law,
+  walked into a second time. On the counter at 1.55 now, and measured at the
+  closest legal standing spot all three offer their badge.
+  **AND TWO OF THE THREE CLERK LINES WERE DROPPED.** `sayLine` REFUSES a line
+  while another is playing and hands back false; `handIn` ignored it, so on
+  the natural left-to-right route the armskote's 5.04 s line was still running
+  when the player reached the stores two seconds later. They go through the
+  chapter's own queue now (the v9.5 count-off's shape).
+  **THE FILM.** It was the only intro in the game with no `c.keepFade`, so
+  `cineEnd` dissolved its own black and showed the apron under the chapter
+  card. Shot 2 was staged INSIDE the third parked truck's footprint, skimming
+  33 cm over a cargo deck, and opened aimed six metres dead into a wall; it
+  runs along the open tarmac now and pans 21 degrees onto the two men. Shot
+  3's pitch was SIGN-INVERTED — `pitch.rotation.x` positive is looking UP, so
+  +0.55 opened on 31.5 degrees of empty sky and then tilted DOWN, the opposite
+  of its own comments. And its last eleven seconds were room tone and nothing
+  else: a platoon goes past at the far end, already in the pack and already
+  warmed.
+  **THE LIGHT, AGAINST THE CHAPTER'S OWN PREMISE.** It says "the brightest,
+  most ordinary light in the episode" and it photographed as dusk. Two causes
+  compounding: the key sat at 23 degrees of elevation, so the tarmac took
+  cos(67) = 0.39 of an already-low 1.05 — about a third of what chapter 3's
+  ten in the morning puts on its car park — and it came from +z, the STORES
+  side, so the walkway roof at y 4.30 shaded every counter, every recess and
+  the encik, which is the half of the apron the chapter is played in. It comes
+  over the company line now (−20, 11, −14) at 1.55, with hemi 1.25 and fill
+  0.42, and the tarmac is a shade up from 6 % albedo with its scratch tile
+  four times finer.
+  **THE FOUR OUTCOME SCENES** framed him as `P0 + (E − P0) * k`, so the shot's
+  distance was k times whatever the player happened to leave between himself
+  and the man — the same scene played as a medium two-shot or as a face
+  filling the frame depending on where you stopped walking. A stated standoff
+  in metres along the line the player is already on: the ANGLE is still his
+  approach, only the distance is the director's. `encGo` snapped him 66
+  degrees in one frame and he never took a pace, for the last three seconds of
+  every scene; `encik2.glb` ships `Walking`, so he turns over 0.7 s and walks
+  three metres away from the camera. And **the closing theme of the whole
+  episode played for 3.4 seconds** — every cue a scene fires joins
+  `cineVoices` and `cineEnd` keeps only the voice takes, so a 44 s bed cued
+  0.2 s before the fade was ramped out almost at once, in three endings, and
+  was never cued at all in the fourth (the worst option — the one player who
+  reached the end with no music was the one who got it wrong). It comes in
+  under his last answer now, in all four.
+  **AND THE REST**: the walkway posts stood within a metre of all three
+  counter centres, one dead across the stores hatch — they sit between the
+  counters now; the first apron extra stood inside a truck and his shoulder
+  filled the right of shot 2, the second looped `Walking` on the spot for ever
+  (parked at e2c1's measured standing frame, 0.117); `admintee` was GLTF-parsed
+  TWICE, so the chapter held two copies of a 44.5k-triangle rig — one parse per
+  asset, every rig a clone, the original never touched; the company office's
+  own fake window sat 1.5 cm in front of its own DOOR and hid the top metre of
+  it, and put a black slab behind the encik in all four outcome scenes (gone —
+  the office is a door, a board and a counter); its notice
+  board was a `PlaneGeometry` facing +z, away from the player,
+  back-face culled and never once drawn; the last facade window hung 0.85 m
+  past the end of the block in mid-air; the hose reel floated 0.51 m off the
+  wall; the office waypoint was planted inside the bench's own blocker;
+  `armsdoor` was generated, packed, decoded and warmed and no cue in the game
+  played it; `kit.give` left the bag button pulsing "equip me" for the whole
+  clearance, for the two things the chapter is about handing back; and
+  `marchTick` counted bookings rather than sounds and let a pass-by start
+  while the player was walking over to him. docs/V14.1-THE-DEBUG-PASS.md is
+  the build's memory; five new laws are in docs/LEARNINGS.md.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -3958,7 +4060,7 @@ fifth chapter has no scare that is not the player's own memory replayed
 and released. `nextChapterKey()` past ch5 is null, so sealing it ends
 the run exactly as it always ended a last chapter.
 
-**EPISODE 2 IS COMPLETE** (v14.0). Chapter 5, DAYS BEFORE ORD, closes the
+**EPISODE 2 IS COMPLETE** (v14.1). Chapter 5, THE LAST QUESTION, closes the
 second case file: months after the outfield, days from ORD, he bumps into
 his TEKONG encik at a mainland infantry camp, and halfway through the small
 talk the encik brings the Hawk Company bunk up himself — "Remember the
@@ -3999,8 +4101,9 @@ notes — docs/V13.0-PLAN.md and docs/V13.0-THE-TWENTY-TWO.md — and chapter 4
 gained its muzzle flash and a real ammo point at v13.1
 (docs/V13.1-THE-FLASH-AND-THE-AMMO.md) and Chad's nine notes at v13.2; the rifle
 viewmodel's placement and material are measured in
-docs/E2-SOLDIER-MODELS.md §8; chapter 5, Days Before ORD, at v14.0 —
-`src/chapters/e2/e2c5.js`, docs/V14.0-E2C5-PLAN.md), and the
+docs/E2-SOLDIER-MODELS.md §8; chapter 5, The Last Question, at v14.0 and
+debugged at v14.1 — `src/chapters/e2/e2c5.js`, docs/V14.0-E2C5-PLAN.md,
+docs/V14.1-THE-DEBUG-PASS.md), and the
 still-outstanding job of replacing chapter 1's
 placeholder choices with the real "THE OFFERINGS" data in
 `docs/source/trial-game-chapters.md`.

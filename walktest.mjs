@@ -70,6 +70,29 @@ for (const key of ['e2c1', 'e2c2', 'e2c3', 'e2c4', 'e2c5']) {
              spawnFree: !blocked[cell(D.spawn.x, D.spawn.z)] };
   });
 
+  /* v14.1: NOTHING IN THE WORLD MAY BE NaN. An InstancedMesh composed with a
+     non-finite scale renders as shards and reports a null bounding sphere, so
+     it is invisible to every other check — e2c5 shipped 51 NaN trees that way.
+     This is the one harness that has a live scene per chapter. */
+  const nan = await p.evaluate(() => {
+    const bad = [];
+    window.__enc.scene.traverse(o => {
+      if (o.isInstancedMesh && o.instanceMatrix) {
+        const a = o.instanceMatrix.array;
+        let n = 0;
+        for (let i = 0; i < a.length; i++) if (!Number.isFinite(a[i])) n++;
+        if (n) bad.push(((o.parent && o.parent.name) || o.name || o.type) + ' ' + n + '/' + a.length);
+      }
+      if (o.isMesh || o.isInstancedMesh) {
+        const v = o.position;
+        if (!Number.isFinite(v.x) || !Number.isFinite(v.y) || !Number.isFinite(v.z))
+          bad.push((o.name || o.type) + ' position');
+      }
+    });
+    return bad;
+  });
+  ok(`${key}: nothing in the world is NaN`, nan.length === 0, nan.slice(0, 4).join(', '));
+
   ok(`${key}: spawn is on open floor`, r.spawnFree);
   for (const t of r.targets)
     ok(`${key}: can WALK to ${t.what}`, t.reach, t.reach ? '' : `(${t.x.toFixed(2)}, ${t.z.toFixed(2)}) unreachable on foot`);

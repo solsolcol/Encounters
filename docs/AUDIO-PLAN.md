@@ -1047,3 +1047,45 @@ and 2.45 dB, which in a faint bed is an audible pulse every twenty seconds.
 drift, not the texture — a 2 s window keeps every click) and then crossfades
 the tail over the head, **in the source's own channel layout**, so stereo
 stays stereo (the v2.3 contract).
+
+---
+
+## v14.1 · the closing theme, moved back, and two cues that never played
+
+No new audio in this release — the same files, cued differently.
+
+**`e5theme` was dying 3.4 s in.** A 44-second bed cued 0.2 s before each
+outcome scene's fade. Every cue a scene fires joins `cineVoices`, and
+`cineEnd` → `stopCineVoices(!skipped)` keeps only the sources in
+`liveVoices`, which are the voice takes; so the bed was ramped to zero over
+0.30 s and stopped, in three of the four endings — and scene C, the worst
+option, never cued it at all. It now comes in under the encik's last answer:
+
+| scene | cue | scene ends | heard |
+|---|---|---|---|
+| A · the story | 34.20 | 48.0 | 13.8 s |
+| B · the confirmation | 24.00 | 35.6 | 11.6 s |
+| C · the one line | 7.40 | 15.8 | 8.4 s |
+| D · the reason | 18.00 | 30.9 | 12.9 s |
+
+Measured first, so the move is not a guess: the take is flat at about
+−24 dBFS RMS for its first 36 s and only fades after 37, so there is no swell
+to miss and nothing to re-cut. At `vol 0.75` (was 0.9) against the row's 0.95
+it sits about 17 dB under the cast through the v5.27 duck — the encik's takes
+are RMS-levelled to −16 dBFS on the flat bus (v11.1).
+
+**`armsdoor`** was generated, encoded in both formats, packed into
+`audiopack_e2c5`, listed in `warmSounds` and decoded on every entry to the
+chapter — and **no cue in the game played it**. It is the armskote's second
+beat now: the grille, 1.1 s after the rifle goes into the rack.
+
+**`platoonmarch`** in the film. The opening film's last eleven seconds were
+`campamb` and nothing else, under a slow push-in onto the encik. The camp's
+one self-made sound goes past at the far end at 23.50, at 0.22 — already in
+the chapter's pack, already warmed, no new bytes.
+
+And `marchTick` in play now books the NEXT pass-by only when `worldSfx`
+actually returned a source, so `stage.ambient().marchN` means "passes heard"
+as it does in e2c1 (the v9.2 shape), and it refuses to start one once the
+player is on his way over to the man (`phase === 'spot'`), not just once the
+conversation has begun.

@@ -84,9 +84,20 @@
               [0.64, '#83a3c0'], [1.00, '#4d80b5']],
       bg: 0xcac2ac,
       fog: [0xd9cdb6, 0.0060],
-      hemi: [0xffe6c4, 0x8a7f66, 1.0],
-      key: [0xffd6a0, 1.05, -18, 8, 5],
-      fill: [0xc9d6e6, 0.30],
+      /* v14.1: MEASURED AGAINST ITS OWN PREMISE. The chapter says "the
+         brightest, most ordinary light in the episode" and it photographed
+         as dusk, for two reasons that compound. The key sat at (-18, 8, 5) —
+         23 degrees of elevation, so the tarmac took cos(67) = 0.39 of an
+         already-low 1.05, about a third of what chapter 3's ten-in-the-
+         morning puts on its car park. And it came from +z, the STORES side,
+         so the walkway roof at y 4.30 shaded every counter, the recesses and
+         the encik, which is the half of the apron the chapter is played in.
+         It comes over the company line now, at a low warm 24 degrees, so it
+         lights the stores block's face and throws the long shadows the
+         chapter was written for; hemi and fill lift the rest. */
+      hemi: [0xffe6c4, 0x8a7f66, 1.25],
+      key: [0xffd6a0, 1.55, -20, 11, -14],
+      fill: [0xc9d6e6, 0.42],
       stars: 0, moon: 0,
       sun: 0.85, clouds: 0.35,
       vmHemi: [0xfff0dc, 0x9a8f78, 0.95],
@@ -170,6 +181,10 @@
     const matSteel = new THREE.MeshStandardMaterial({ color: 0x9aa0a6, roughness: 0.4, metalness: 0.7 });
     const matFrame = new THREE.MeshStandardMaterial({ color: 0x4d5257, roughness: 0.55, metalness: 0.6 });
     const matDark  = new THREE.MeshStandardMaterial({ color: 0x23262a, roughness: 0.95 });
+    // the inside of a stores hatch: dark, but not a hole (v14.1)
+    const matRecess = new THREE.MeshStandardMaterial({ color: 0x6b6357, roughness: 0.95 });
+    const matStrip = new THREE.MeshStandardMaterial({ color: 0xf2f4f0, emissive: 0xd8e2ea,
+                                                      emissiveIntensity: 0.9, roughness: 0.6 });
     const matShut  = new THREE.MeshStandardMaterial({ map: shutTex, roughness: 0.6, metalness: 0.35 });
     const matWood  = new THREE.MeshStandardMaterial({ color: 0x8a6b4a, roughness: 0.8 });
     const matGreen = new THREE.MeshStandardMaterial({ color: 0x4f5a3c, roughness: 0.9 });
@@ -214,8 +229,13 @@
         box(len, 0.08, 0.06, cx, y + (o.h / storeys) - 0.42, o.z + 0.12, matWhite);
         for (let x = o.x0 + 0.9; x < o.x1; x += 1.8) box(0.06, 0.9, 0.06, x, y + (o.h / storeys) - 0.85, o.z + 0.12, matWhite);
       }
-      // doors and louvred windows along the face
-      for (let x = o.x0 + 1.4; x < o.x1 - 0.8; x += 3.2) {
+      /* doors and louvred windows along the face. v14.1: the guard was
+         `o.x1 - 0.8`, but the widest thing this loop DRAWS is the window at
+         `x + 1.6` (half-width 0.65), so the last one hung 0.85 m past the end
+         of the block in mid-air — and one step earlier it would have been
+         buried in the stair tower (x1-3 … x1). The guard is the window's own
+         far edge plus the tower's footprint. */
+      for (let x = o.x0 + 1.4; x < o.x1 - 4.6; x += 3.2) {
         for (let s = 0; s < storeys; s++) {
           const y = 0.1 + s * (o.h / storeys);
           box(0.95, 2.05, 0.05, x, y + 1.02, o.z + 0.03, matDark);
@@ -229,10 +249,43 @@
     }
     mkBlock(LINE, 2, true);
     /* the stores block: single storey, a long roof over a walkway */
-    const storeFace = box(STORE.x1 - STORE.x0, STORE.h, 0.9, (STORE.x0 + STORE.x1) / 2, STORE.h / 2, STORE.z + 0.45, matBlock);
-    walls.push(storeFace);
+    /* v14.1: THE FACE HAS REAL HOLES IN IT NOW. It was one solid 19 m box
+       from z 7.50 to 8.40, and everything the counters were dressed with —
+       the rifle rack, the stores shelves, and the STOREMAN who speaks all
+       three clearance lines — was built at z 7.95-8.65, i.e. inside the
+       concrete. The armskote grille stood over a flat wall and the clerk was
+       a voice from nowhere. This is v9.1's toilet doorway again: left, right
+       and between segments, a sill under each opening and a lintel over it,
+       and a dark back panel 0.88 m in so the hole is a recess and not a view
+       of the sky. The player can never pass z 6.2 (the chapter's own bound),
+       so none of this changes where anyone can walk. */
+    const OPEN = { y0: 1.06, y1: 2.66, hw: 1.45 };          // the hatch, in world y
+    const HOLES = [ARMS.x, STORES.x];                       // the office is a door in a solid wall
+    const segs = [[STORE.x0, HOLES[0] - OPEN.hw], [HOLES[0] + OPEN.hw, HOLES[1] - OPEN.hw],
+                  [HOLES[1] + OPEN.hw, STORE.x1]];
+    for (const [a, b2] of segs) {
+      if (b2 - a < 0.02) continue;
+      walls.push(box(b2 - a, STORE.h, 0.9, (a + b2) / 2, STORE.h / 2, STORE.z + 0.45, matBlock));
+    }
+    for (const hx of HOLES) {
+      // the sill — a BLOCKER too, so the wall is still a wall at the engine's
+      // one collision sample (y = 1.00, and the sill's top is 1.06)
+      walls.push(box(OPEN.hw * 2, OPEN.y0, 0.9, hx, OPEN.y0 / 2, STORE.z + 0.45, matBlock));
+      box(OPEN.hw * 2, STORE.h - OPEN.y1, 0.9, hx, (STORE.h + OPEN.y1) / 2, STORE.z + 0.45, matBlock); // the lintel
+      box(OPEN.hw * 2 + 0.1, OPEN.y1 - OPEN.y0 + 0.2, 0.06, hx, (OPEN.y0 + OPEN.y1) / 2, STORE.z + 0.86, matRecess);  // the recess back
+      /* and a strip light under the lintel — EMISSIVE, not a real light, so
+         the hatch reads without a fourth shadow-casting lamp on a phone
+         (v9.4's flag stand: lit without a light) */
+      box(OPEN.hw * 1.7, 0.05, 0.10, hx, OPEN.y1 - 0.09, STORE.z + 0.30, matStrip);
+    }
     box(STORE.x1 - STORE.x0 + 1.6, 0.20, 2.8, (STORE.x0 + STORE.x1) / 2, STORE.h + 0.1, STORE.z - 0.6, matBand);   // the walkway roof
-    for (let x = STORE.x0 + 1.0; x < STORE.x1; x += 3.4) {
+    /* v14.1: PLACED TO MISS THE COUNTERS. The old run started at x -6.0 and
+       stepped 3.4 m, which put a post within a metre of all three counter
+       centres — photographed, one stood dead across the stores hatch, and a
+       post between the player and the thing he has to act on is the one
+       place a post must not be. These sit between the counters instead, no
+       nearer than 2.6 m to any of them. */
+    for (const x of [-6.4, -1.0, 5.0, 11.4]) {
       const p = box(0.24, STORE.h, 0.24, x, STORE.h / 2, STORE.z - 1.8, matWhite); solids.push(p);
     }
 
@@ -245,8 +298,14 @@
       const g = new THREE.Group(); g.position.set(at.x, 0, at.z); world.add(g);
       const top = box(2.6, 0.10, 0.62, 0, 0.98, 0, matSteel, g); solids.push(top);
       box(2.6, 0.92, 0.50, 0, 0.46, 0.08, matFrame, g);
-      // the opening in the block's face above the counter
-      box(2.9, 1.55, 0.08, 0, 1.86, 0.62, matDark, g);
+      /* v14.1: THE FAKE OPENING IS GONE. Every counter used to draw a
+         2.9 x 1.55 m dark panel on the wall to suggest a hatch. The armskote
+         and the stores have a REAL hole now (see the face above), and at the
+         office the panel was doing active harm: photographed, it sat 1.5 cm
+         in FRONT of the office's own wooden door and hid the top metre of
+         it, and since the encik stands right there it put a black slab
+         behind him in all four outcome scenes. The office is a door, a
+         notice board and a counter, which is what a company office is. */
       if (kind === 'arms') {
         // a steel grille, and a rifle rack behind it in the dark
         for (let k = 0; k < 11; k++) box(0.05, 1.45, 0.05, -1.30 + k * 0.26, 1.82, 0.56, matSteel, g);
@@ -254,23 +313,28 @@
         box(2.6, 0.06, 0.06, 0, 2.52, 0.56, matSteel, g);
         for (let k = 0; k < 9; k++) {
           const r = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.82, 0.07), matGreen);
-          r.position.set(-1.0 + k * 0.25, 1.75, 1.05); r.rotation.z = 0.05; g.add(r);
+          r.position.set(-1.0 + k * 0.25, 1.75, 0.95); r.rotation.z = 0.05; g.add(r);
         }
-        box(2.4, 0.06, 0.4, 0, 1.30, 1.05, matFrame, g);
+        box(2.4, 0.06, 0.4, 0, 1.30, 0.95, matFrame, g);
       } else if (kind === 'stores') {
         // a roller shutter, half up
         box(2.9, 0.95, 0.06, 0, 2.62, 0.58, matShut, g);
         box(2.9, 0.10, 0.12, 0, 2.12, 0.58, matFrame, g);
-        for (const z of [1.15, 1.75]) for (let k = 0; k < 4; k++) box(2.2, 0.05, 0.40, 0, 1.25 + k * 0.42, z, matFrame, g);
+        for (const z of [0.95, 1.32]) for (let k = 0; k < 4; k++) box(2.2, 0.05, 0.40, 0, 1.25 + k * 0.42, z, matFrame, g);
         // a tray of torches on the counter, and a clipboard
         for (let k = 0; k < 6; k++) box(0.05, 0.05, 0.20, -0.75 + k * 0.10, 1.06, -0.12, matDark, g);
         box(0.46, 0.02, 0.32, 0.85, 1.05, -0.05, matWood, g);
       } else {
         // the company office: a door, a notice board beside it, a bench outside
-        box(1.05, 2.15, 0.07, -0.2, 1.08, 0.60, matWood, g);
-        box(0.07, 0.07, 0.10, 0.22, 1.05, 0.52, matSteel, g);
+        // the wall's front plane is z 7.50 = local 0.60, so the door sat
+        // exactly in it and z-fought along its whole face (v14.1)
+        box(1.05, 2.15, 0.07, -0.2, 1.08, 0.545, matWood, g);
+        box(0.07, 0.07, 0.10, 0.22, 1.05, 0.45, matSteel, g);
+        /* a PlaneGeometry faces +z, and the player is always on the -z side
+           of this block, so this board was back-face culled and never once
+           drawn (v14.1) */
         const nb = new THREE.Mesh(new THREE.PlaneGeometry(1.15, 0.82), matBoard);
-        nb.position.set(1.35, 1.60, 0.55); g.add(nb);
+        nb.position.set(1.35, 1.60, 0.52); nb.rotation.y = Math.PI; g.add(nb);
         box(1.5, 0.06, 0.34, 0.4, 0.44, -1.15, matWood, g); solids.push(box(1.5, 0.44, 0.34, 0.4, 0.22, -1.15, matFrame, g));
         // the clearance form, face up on the counter
         const fm = new THREE.Mesh(new THREE.PlaneGeometry(0.30, 0.42), matForm);
@@ -299,7 +363,8 @@
     // bins and a hose reel against the stores block
     solids.push(box(0.62, 0.95, 0.62, -6.0, 0.475, 6.4, matGreen));
     solids.push(box(0.62, 0.95, 0.62, -5.2, 0.475, 6.4, matGreen));
-    box(0.5, 0.5, 0.18, 11.2, 1.30, 6.9, matFrame);
+    // v14.1: on the wall (face at z 7.50), not floating 0.51 m off it
+    box(0.5, 0.5, 0.18, 11.2, 1.30, STORE.z - 0.09, matFrame);
     // a flagpole at the +x end of the apron, bare (episode 2's convention since v10.2)
     const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.09, 8.0, 10), matWhite);
     pole.position.set(12.4, 4.0, -1.0); world.add(pole);
@@ -319,7 +384,13 @@
         const x = -26 + hash(i, 11) * 52;
         const z = side > 0 ? 13.0 + r * 16 : -15.0 - r * 16;
         if (Math.abs(x) < 15 && side > 0 && z < 15) continue;
-        spots.push({ x, z, s: 0.85 + hash(i, 17) * 0.5 });
+        /* `h` IS THE HEIGHT IN METRES, and it is the key plantTrees reads.
+           This said `s` and meant a scale, so every instance composed with
+           `undefined * jitter` = NaN and all 51 trees in the chapter were
+           garbage geometry — black shards, one clump of which stood in the
+           film. The trees are normalised to height 1.0 at prep (v6.15), so
+           the author's 0.85-1.35 spread is kept by scaling a real height. */
+        spots.push({ x, z, h: 7.2 * (0.85 + hash(i, 17) * 0.5) });
       }
       treeStand = plantTrees(world, spots, { tint: 0xd8c9a4, shadow: !LOW, lowKeep: 0.45, roughness: 0.92 });
     }
@@ -340,6 +411,23 @@
         o.boundingSphere = sp.clone();
         if (o.geometry) o.geometry.boundingSphere = sp.clone();
       });
+    }
+    /* v14.1: ONE PARSE PER ASSET. `admintee` was GLTF-parsed twice — once for
+       the storeman and once for the apron extra — so the chapter held two full
+       copies of a 44.5k-triangle rig and its 2048 px sheets, and `cloneSkinned`
+       sat destructured out of ctx and unused. Every rig now takes a CLONE and
+       the parsed original is never added to the scene and never touched, which
+       is the v9.1 law ("every copy is made before any is touched") in the form
+       that cannot be got wrong: no copy is ever taken from a mutated one.
+       SkeletonUtils.clone shares geometry and materials, so dispose()'s sweep
+       over `world` still frees them. */
+    const parsedGlb = new Map();
+    function parseOnce(key) {
+      if (!parsedGlb.has(key)) {
+        parsedGlb.set(key, assetBytes(key).then(BUF => new Promise((res, rej) =>
+          new GLTFLoader().parse(BUF, '', (gltf) => { rescueTextures(gltf, BUF); res(gltf); }, rej))));
+      }
+      return parsedGlb.get(key);
     }
     function mkRig(key, opts) {
       const group = new THREE.Group();
@@ -371,10 +459,9 @@
         rig.cur = name;
         return true;
       };
-      assetBytes(key).then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
+      parseOnce(key).then((gltf) => {
         if (!alive) return;
-        rescueTextures(gltf, BUF);
-        const g = gltf.scene;
+        const g = cloneSkinned(gltf.scene);
         g.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.receiveShadow = false; } });
         wideBounds(g, key);
         group.add(g); rig.model = g;
@@ -382,7 +469,13 @@
           rig.mixer = new THREE.AnimationMixer(g);
           rig.acts = {};
           for (const clip of gltf.animations) rig.acts[clip.name] = rig.mixer.clipAction(clip);
-          if (opts.idle && rig.acts[opts.idle]) { rig.play(opts.idle, 1, 0); rig.mixer.update(0.001); }
+          /* v14.1: an idle may be PARKED on one frame (`at`, a fraction of the
+             clip). The apron's second man was given `Walking` and played it at
+             full rate standing still — a recruit marching for ever and going
+             nowhere, in the middle of the chapter's only open space. 0.117 is
+             e2c1's measured standing frame for this rig (v8.0): the feet
+             closest together and the hands lowest. */
+          if (opts.idle && rig.acts[opts.idle]) { rig.play(opts.idle, 1, 0, false, opts.at); rig.mixer.update(0.001); }
         }
         g.updateMatrixWorld(true);
         const v = new THREE.Vector3(); let lo = Infinity, hi = -Infinity, crown = false;
@@ -401,8 +494,7 @@
           g.position.y += -(lo2 - group.position.y);
         }
         proxy.visible = false; rig.ready = true; redoShadows();
-      }, (err) => { console.warn(key + ' failed to load', err); rig.ready = true; }))
-        .catch(err => { console.warn(key + ' failed to load', err); rig.ready = true; });
+      }).catch(err => { console.warn(key + ' failed to load', err); rig.ready = true; });
       return rig;
     }
 
@@ -413,11 +505,22 @@
       if (encik.acts && encik.idle) encik.play(encik.idle, 1, 0);
     };
 
-    /* the storeman behind the armskote grille, and two men crossing the apron */
-    const storeman = mkRig('admintee', { x: ARMS.x + 0.2, z: ARMS.z + 1.5, ry: Math.PI, height: 1.70, idle: 'Idle_9' });
-    const EXTRA = [{ x: -6.5, z: -3.2, ry: -1.2 }, { x: 3.4, z: -4.6, ry: 2.1 }];
-    const extras = EXTRA.map((p, i) => mkRig(i ? 'botak' : 'admintee',
-      { x: p.x, z: p.z, ry: p.ry, height: 1.70, idle: i ? 'Walking' : 'Idle_9' }));
+    /* THE STOREMAN behind the armskote grille. v14.1: he stood at z 8.40,
+       which is the BACK plane of the block — outside the building, with 0.9 m
+       of concrete between him and the player. He is in the recess now, 0.55 m
+       behind the hatch and 0.31 m off its back panel, so he reads from the
+       chest up over the counter, which is what a man behind a counter looks
+       like. And the two men on the apron: the first stood inside the third
+       parked truck (its padded box runs x -8.30..-6.10, z -7.70..-3.10). */
+    const storeman = mkRig('admintee', { x: ARMS.x + 0.2, z: ARMS.z + 1.15, ry: Math.PI, height: 1.70, idle: 'Idle_9' });
+    /* v14.1: photographed at t=9 and t=12, the first man's shoulder and arm
+       filled the right of the frame — the shot-2 camera passes 1.2 m from
+       where he stood. Both are out on the line now, 5-8 m from the lens,
+       which is where "men crossing" reads as men crossing. */
+    const EXTRA = [{ x: -2.0, z: -4.2, ry: -1.2, idle: 'Idle_9', key: 'admintee' },
+                   { x: 1.2, z: -5.2, ry: 2.1, idle: 'Walking', at: 0.117, key: 'botak' }];
+    const extras = EXTRA.map((p) => mkRig(p.key,
+      { x: p.x, z: p.z, ry: p.ry, height: 1.70, idle: p.idle, at: p.at }));
 
     /* ----------------------------------------------------------- the pile
        THE ENCIK IS THE PILE: walk up, act, four choices. Offered only once
@@ -516,16 +619,21 @@
        talking is the whole chapter. */
     let marchAt = 0, marchSeed = 0, marchN = 0;
     function marchBook(first) {
-      marchN++;
+      if (!first) marchN++;
       const r = hash(marchN, 71 + marchSeed);
       marchAt = dayClock.t + (first ? 14 + 14 * r : 48 + 40 * r);
     }
     function marchTick() {
       if (!marchAt) marchBook(true);
       if (dayClock.t < marchAt) return;
-      if (phase === 'talk' || phase === 'decide') { marchAt = dayClock.t + 12; return; }
-      if (worldSfx) worldSfx('platoonmarch', 0.30);
-      marchBook(false);
+      if (phase === 'spot' || phase === 'talk' || phase === 'decide') { marchAt = dayClock.t + 12; return; }
+      /* v14.1: and the BOOKING follows the sound, not the other way round —
+         `worldSfx` hands back null for a sample that has not decoded, so a
+         pass-by that never played used to count as one and push the next
+         one a minute out. `marchN` now means "passes heard", as it does in
+         e2c1 (v9.2). */
+      if (worldSfx && worldSfx('platoonmarch', 0.30)) marchBook(false);
+      else marchAt = dayClock.t + 1.5;
     }
 
     function setPhase(p) {
@@ -537,7 +645,11 @@
       if (!kit) return;
       kit.objective(DATA.words.objClear.replace('{n}', String(done.size)));
       const next = !done.has('arms') ? ARMS : !done.has('stores') ? STORES : OFFICE;
-      kit.waypoint({ x: next.x, y: 1.2, z: next.z - 1.3 });
+      /* v14.1: the office has a BENCH outside it (mkCounter's `office` branch,
+         local (0.4, -1.15), a 1.5 x 0.34 solid) and the diamond was planted
+         inside its blocker — a waypoint on a spot nobody can stand on. */
+      kit.waypoint(next === OFFICE ? { x: next.x - 1.5, y: 1.2, z: next.z - 1.3 }
+                                   : { x: next.x, y: 1.2, z: next.z - 1.3 });
     }
     function objEncik() {
       if (!kit) return;
@@ -551,7 +663,16 @@
       if (kit && item && kit.has && kit.has(item)) kit.take(item);
       done.add(id);
       if (worldSfx && snd) worldSfx(snd, 0.9);
-      sayLine(line);
+      if (id === 'arms' && worldSfx) after(1.1, () => worldSfx('armsdoor', 0.7));
+      /* v14.1: QUEUED, not said. `sayLine` REFUSES a line while another is
+         still playing and hands back false, and this ignored it — so on the
+         natural left-to-right route the armskote's 5.04 s line was still
+         running when the player reached the stores counter two seconds later
+         and `c5store` was dropped on the floor with no error. The queue is
+         the one the conversation already uses (the v9.5 count-off's shape):
+         a held line lands as soon as the mouth is free, which reads as the
+         previous clerk finishing behind your shoulder. */
+      queueLine(line);
       if (kit) kit.conduct({ note: CLEAR_NOTE[id], s: 0, a: 0 });
       setPhase('clear');
       if (done.size >= 3) {
@@ -581,7 +702,12 @@
       if (phase !== 'spot') return;
       setPhase('talk');
       if (kit) { kit.root(true); kit.objective(''); kit.waypoint(null); }
-      lineQ.length = 0;
+      /* v14.1: the queue is NOT emptied here. It used to be, and the only
+         thing that can be in it at this point is a clerk line the player
+         walked away from — binning it is the very bug the queue was added
+         to fix. `beginTalk` can only run once (it returns unless the phase
+         is `spot`, and sets `talk` on its first line), so nothing stale can
+         be carried in. */
       queueLine('n5hi');
       queueGap(0.35);
       queueLine('e5hi', () => encTalk(ENC_TALK[0], SECS.e5hi));
@@ -624,6 +750,11 @@
           if (want && !kit.has(item)) kit.give(item);
           if (!want && kit.has(item)) kit.take(item);
         }
+        /* v14.1: `kit.give` starts the bag button's equip pulse, which is
+           right for a torch a chapter OFFERS (e2c3) and wrong for kit a
+           chapter ISSUES so it can be handed back. It was telling the player
+           to equip the two things he is here to get rid of. */
+        if (kit.urge) kit.urge(null);
       }
       /* `spot` IS a receipt in itself: the phase is only ever set once all
          three counters are done, so a save that names it means the clearance
@@ -642,15 +773,24 @@
       setPhase('clear'); objClear();
     }
 
-    /* ------------------------------------------------------------ hotspots */
+    /* ------------------------------------------------------------ hotspots
+       v14.1: THE ANCHORS SIT AT EYE HEIGHT, ON THE COUNTER. They used to sit
+       0.7 m in FRONT of each counter at y 1.30 — which is z 6.20, the exact
+       maxZ the chapter's own bounds stop the player at. So walking straight
+       up to a counter, which is the only thing anyone does, put the anchor
+       DIRECTLY UNDER THE LENS: `hotspotVisible` projects it to NDC and it
+       left the frame, the badge went out, and the press fell through. This
+       is the v7.5 law ("a doorway's floor point is 44 degrees under the lens
+       from a metre away") met a second time. From the bound the anchor is
+       now 0.70 m out and 0.07 m under the eye — dead ahead. */
     const hotspots = [
-      { id: 'arms', pos: { x: ARMS.x, y: 1.30, z: ARMS.z - 0.7 }, radius: 2.4, prompt: DATA.words.hotArms,
+      { id: 'arms', pos: { x: ARMS.x, y: 1.55, z: ARMS.z }, radius: 2.4, prompt: DATA.words.hotArms,
         enabled: () => phase === 'clear' && !done.has('arms'),
         onInteract() { return handIn('arms', 'rifle', 'c5arms', 'riflerack'); } },
-      { id: 'stores', pos: { x: STORES.x, y: 1.30, z: STORES.z - 0.7 }, radius: 2.4, prompt: DATA.words.hotStores,
+      { id: 'stores', pos: { x: STORES.x, y: 1.55, z: STORES.z }, radius: 2.4, prompt: DATA.words.hotStores,
         enabled: () => phase === 'clear' && !done.has('stores'),
         onInteract() { return handIn('stores', 'torch', 'c5store', 'storedesk'); } },
-      { id: 'office', pos: { x: OFFICE.x, y: 1.30, z: OFFICE.z - 0.7 }, radius: 2.4, prompt: DATA.words.hotOffice,
+      { id: 'office', pos: { x: OFFICE.x, y: 1.55, z: OFFICE.z }, radius: 2.4, prompt: DATA.words.hotOffice,
         enabled: () => phase === 'clear' && !done.has('office'),
         onInteract() { return handIn('office', null, 'c5form', 'storecount'); } }
     ];
@@ -697,6 +837,7 @@
         /* the kit goes back in the bag, so a replay has something to hand in
            (the v8.1 law, in the bag's form) */
         if (kit.give) { if (!kit.has('rifle')) kit.give('rifle'); if (!kit.has('torch')) kit.give('torch'); }
+        if (kit.urge) kit.urge(null);
         kit.setPhase('clear:');
       }
       phase = 'clear';
@@ -715,6 +856,9 @@
       // the encik: nobody walks through him
       out.push(new THREE.Box3(new THREE.Vector3(ENC.x - 0.42, 0, ENC.z - 0.42),
                               new THREE.Vector3(ENC.x + 0.42, 1.8, ENC.z + 0.42)));
+      // v14.1: nor through the two men on the line
+      for (const e of EXTRA) out.push(new THREE.Box3(new THREE.Vector3(e.x - 0.40, 0, e.z - 0.40),
+                                                     new THREE.Vector3(e.x + 0.40, 1.8, e.z + 0.40)));
       return out;
     }
     function dispose() {
@@ -775,19 +919,23 @@
   /* ------------------------------------------------------------- textures */
   function makeTarmac(THREE, cnv) {
     const [c, x] = cnv(256);
-    x.fillStyle = '#3e4044'; x.fillRect(0, 0, 256, 256);
+    // v14.1: a shade up. #3e4044 is about 6 % linear albedo, which under a
+    // low sun is a black hole with white kerb lines painted on it.
+    x.fillStyle = '#54565c'; x.fillRect(0, 0, 256, 256);
     for (let i = 0; i < 9000; i++) {
-      const g = 40 + Math.random() * 60;
+      const g = 56 + Math.random() * 62;
       x.fillStyle = 'rgba(' + g + ',' + g + ',' + (g + 4) + ',0.5)';
       x.fillRect(Math.random() * 256, Math.random() * 256, 1.4, 1.4);
     }
-    for (let i = 0; i < 26; i++) {
-      x.strokeStyle = 'rgba(28,30,33,0.35)'; x.lineWidth = 1 + Math.random();
+    for (let i = 0; i < 16; i++) {
+      x.strokeStyle = 'rgba(40,42,46,0.20)'; x.lineWidth = 1 + Math.random();
       x.beginPath(); x.moveTo(Math.random() * 256, Math.random() * 256);
       x.lineTo(Math.random() * 256, Math.random() * 256); x.stroke();
     }
     const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
-    t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(14, 8);
+    /* v14.1: 14 x 8 over a 32 m apron made each tile 2.3 m, so the 26 random
+       strokes read from the player's own eye as scribbles a metre long. */
+    t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(34, 18);
     return t;
   }
   function makeForm(THREE, cnv) {
@@ -833,7 +981,12 @@
     const E = stage.ENC;
 
     const A = { x: -11.5, y: 1.80, z: -1.2 };          // the apron, wide
-    const B = { x: -8.0,  y: 1.70, z: -3.6 };          // along the company line
+    /* v14.1: B was (-8.0, -3.6), which is INSIDE the third parked truck's
+       footprint (x -8.3..-6.1, z -7.7..-3.1) — the shot skimmed 33 cm over
+       a cargo deck and looked into a cab two metres away. It runs along the
+       open tarmac in front of the row now, so the trucks are the mid-ground
+       they were always meant to be. */
+    const B = { x: -8.2,  y: 1.70, z: -1.9 };          // along the company line
     const C = { x: -2.0,  y: 1.45, z: 1.4 };           // the form, then the tilt to the stores
     const D = { x:  1.0,  y: 1.66, z: 0.6 };           // across the apron
     const D2 = { x: 3.6,  y: 1.66, z: 1.8 };           // the push-in
@@ -852,17 +1005,27 @@
     pitchTo(0.0, 2.0, 0.10, 0.0, smoothK);
     sfx(0.85, 'n5pro1');                               // 3.08 s → 3.93
 
-    // 2 · the company line, men crossing
+    // 2 · the company line, and two men out on the apron
     step(8.6, () => {});
-    camTo(8.6, 13.0, B, { x: -6.4, y: 1.70, z: -3.2 }, rawK);
-    yawTo(8.6, 13.0, faceFrom(B.x, B.z, -6.0, -7.4), faceFrom(-6.4, -3.2, -2.6, -7.4), rawK);
+    /* v14.1: and it PANS ALONG the line rather than into it. Photographed at
+       t=9, the old start aimed 6 m dead into the block's face and filled the
+       frame with balcony rail; it opens on the parked row with the line
+       behind it and sweeps 21 degrees onto the two men. */
+    camTo(8.6, 13.0, B, { x: -6.0, y: 1.70, z: -1.6 }, rawK);
+    yawTo(8.6, 13.0, faceFrom(B.x, B.z, -4.0, -6.5), faceFrom(-6.0, -1.6, 1.2, -5.2), rawK);
     sfx(4.60, 'n5pro2');                               // 7.55 s → 12.15
 
     // 3 · the clearance form in his hands, and the tilt up to the stores
     camTo(13.0, 19.4, C, { x: -0.6, y: 1.60, z: 2.2 }, smoothK);
     yawTo(13.0, 19.4, faceFrom(C.x, C.z, -1.4, 5.4), faceFrom(-0.6, 2.2, 0.6, 6.6), smoothK);
-    pitchTo(13.0, 15.4, 0.55, 0.52, smoothK);          // down on the form
-    pitchTo(15.6, 19.4, 0.52, 0.02, smoothK);          // and up to the block
+    /* v14.1: THE SIGN WAS INVERTED. `pitch.rotation.x` positive is looking
+       UP (e2c3's torch-down beat is -0.80), so +0.55 opened this shot on
+       31.5 degrees of empty sky and then tilted DOWN, the opposite of what
+       its own comments said. It starts on the tarmac ahead of his boots —
+       there is no form prop, because the film hides the hands at step 0 —
+       and lifts to the block. */
+    pitchTo(13.0, 15.4, -0.40, -0.36, smoothK);        // down, at the ground ahead
+    pitchTo(15.6, 19.4, -0.36, 0.02, smoothK);         // and up to the block
     sfx(13.30, 'n5pro3');                              // 4.44 s → 17.74
 
     // 4 · across the apron: a figure by the stores block, and the push-in
@@ -871,10 +1034,22 @@
     yawTo(19.4, 28.6, faceFrom(D.x, D.z, E.x, E.z), faceFrom(D2.x, D2.z, E.x, E.z), smoothK);
     pitchTo(19.4, 22.0, 0.02, -0.02, smoothK);
     sfx(20.60, 'n5pro4');                              // 1.96 s → 22.56
+    /* v14.1: and the camp carries on somewhere else while he looks at him.
+       The last eleven seconds of this film were the room tone and nothing
+       else, under a slow push-in; a platoon going past at the far end is the
+       one sound this camp makes on its own, it is already in the chapter's
+       pack and already warmed, and it costs nothing. */
+    sfx(23.50, 'platoonmarch', 0.22);
 
     fade(29.4, 32.4, 0, 1);
     step(33.2, () => { armR.visible = true; });
     c.endFade = 1;
+    /* v14.1: and THE BLACK STAYS. Every other intro in the game sets this
+       and this one did not, so `cineEnd`'s `clearCineFade()` dissolved the
+       film's own black and showed the apron for a beat under the chapter
+       card. `playChapterCard`'s cover() clears the overlay once the card is
+       opaque. */
+    c.keepFade = true;
   }
 
   /* ------------------------------------------------------------ the scenes
@@ -889,6 +1064,23 @@
 
   const P = (s) => ({ x: s.yawPos.x, y: s.yawPos.y, z: s.yawPos.z });
 
+  /* v14.1: A FIXED STANDOFF, not a fraction of wherever the player stopped.
+     All four scenes framed the encik as `P0 + (E - P0) * k`, so the shot's
+     distance was k times whatever the player happened to leave between
+     himself and the man — anywhere from 0.75 m (pressed against his blocker)
+     to 2.6 m (the edge of the interact radius). The same scene played as a
+     medium two-shot or as a face filling the frame depending on where you
+     stopped walking, and no framing decision in any of them could be trusted.
+     This puts the lens a stated number of metres from him along the line the
+     player is already on, so the ANGLE is still his approach and only the
+     distance is the director's. e2c2's precedent. */
+  function shot(P0, E, d, y = 1.62) {
+    const dx = P0.x - E.x, dz = P0.z - E.z;
+    const L = Math.hypot(dx, dz) || 1;
+    return { x: E.x + dx / L * d, y, z: E.z + dz / L * d };
+  }
+  const IN = 1.55, WIDE = 2.40;
+
   /* his talk take rides his line. THE CUE ITSELF is always written as a
      literal quoted name in the scene — the engine finds a scene's cues by
      READING ITS SOURCE (`CUE_RE`), and a name passed through a helper is
@@ -898,12 +1090,27 @@
     step(at, () => stage.encik.play(take, 1, 0.30));
     step(at + secs + 0.15, () => { if (stage.encik.cur === take) stage.encik.play('Idle_9', 1, 0.40); });
   }
-  /* and he goes: a quarter turn away, then out of frame down the walkway */
-  function encGo(stage, step, at) {
-    step(at, () => {
-      stage.encik.play('Idle_9', 1, 0.3);
-      stage.encik.group.rotation.y = stage.ENC.ry + 1.15;
-    });
+  /* AND HE GOES. v14.1: this used to be one `step` that snapped him 66
+     degrees in a single frame and left him standing there for the last three
+     seconds of every scene — the comment promised "out of frame down the
+     walkway" and he never took a pace. `encik2.glb` ships `Walking`, so he
+     turns over 0.7 s and walks three metres in place while the group glides
+     under him (the v5.07/v8.2 shape: play the take, glide the group), at
+     1.15 m/s against the take's own ~1.38 m stride, which is why the rate is
+     0.85. He leaves AWAY from the camera, so he never walks into the lens,
+     and along the apron rather than into the block or the walkway pillars at
+     z 5.70. `restore()`/`reset()` put him back — `putEncik` already did. */
+  function encGo(stage, api, at, camX) {
+    const { step, tr, rawK, smoothK } = api;
+    const E = stage.ENC;
+    const dir = camX <= E.x ? 1 : -1;
+    const ry0 = E.ry, ry1 = dir > 0 ? Math.PI / 2 : -Math.PI / 2;
+    let d = ry1 - ry0;
+    while (d > Math.PI) d -= Math.PI * 2;
+    while (d < -Math.PI) d += Math.PI * 2;
+    step(at, () => { stage.encik.play('Walking', 0.85, 0.30); });
+    tr(at, at + 0.70, k => { stage.encik.group.rotation.y = ry0 + d * k; }, smoothK);
+    tr(at + 0.70, at + 3.30, k => { stage.encik.group.position.x = E.x + dir * 3.0 * k; }, rawK);
   }
 
   /* A · THE STORY (good) — the recruit in bed one, and the line that is the
@@ -919,16 +1126,25 @@
     sfx(0.55, 'n5askA');                                        // 2.04 → 2.59
     sfx(3.10, 'e5A1'); encTalk(stage, step, 3.10, 8.75, stage.ENC_TALK[0]);   // → 11.85
     // in on him for the story
-    camTo(3.10, 12.4, P0, { x: P0.x + (E.x - P0.x) * 0.30, y: 1.62, z: P0.z + (E.z - P0.z) * 0.30 }, smoothK);
+    camTo(3.10, 12.4, P0, shot(P0, E, IN), smoothK);
     sfx(12.50, 'e5A2'); encTalk(stage, step, 12.50, 5.41, stage.ENC_TALK[1]); // → 17.91
     sfx(18.50, 'e5A3'); encTalk(stage, step, 18.50, 8.75, stage.ENC_TALK[0]); // → 27.25
     // and wider again for the attachment line, so the camp is around it
-    camTo(27.0, 37.6, { x: P0.x + (E.x - P0.x) * 0.30, y: 1.62, z: P0.z + (E.z - P0.z) * 0.30 },
-                      { x: P0.x + (E.x - P0.x) * 0.06, y: 1.66, z: P0.z + (E.z - P0.z) * 0.06 }, smoothK);
+    camTo(27.0, 37.6, shot(P0, E, IN), shot(P0, E, WIDE, 1.66), smoothK);
     sfx(27.90, 'e5A4'); encTalk(stage, step, 27.90, 9.40, stage.ENC_TALK[1]); // → 37.30  · the teaching
+    /* v14.1: THE CLOSING THEME IS 44 SECONDS LONG AND IT WAS CUED 0.2 s
+       BEFORE THE FADE. Every cue a scene fires joins `cineVoices`, and
+       `cineEnd`'s `stopCineVoices` keeps only the sources in `liveVoices` —
+       the voice takes — so the theme that closes the whole episode was
+       ramped out 3.4 s after it started, in three of the four endings, and
+       was never cued at all in the fourth. It comes in under his last
+       answer now, where the bed is what a closing theme is for, and hands
+       over to `n5close` and the card. Measured flat at about -24 dBFS RMS
+       for its first 36 s, so there is no swell to miss and nothing to
+       re-cut; at 0.75 under the v5.27 duck it sits ~17 dB below the cast. */
+    sfx(34.20, 'e5theme', 0.75);
     sfx(38.10, 'e5A5'); encTalk(stage, step, 38.10, 5.56, stage.ENC_TALK[0]); // → 43.66
-    encGo(stage, step, 44.2);
-    sfx(44.60, 'e5theme', 0.9);
+    encGo(stage, api, 44.2, P0.x);
     sfx(45.10, 'n5close');                                      // runs on under the card
     fade(44.8, 47.4, 0, 1);
     step(48.0, () => { handsRoot.visible = true; });
@@ -947,14 +1163,13 @@
 
     sfx(0.55, 'n5askB');                                        // 1.72 → 2.27
     sfx(2.90, 'e5B1'); encTalk(stage, step, 2.90, 1.65, stage.ENC_TALK[0]);   // → 4.55
-    camTo(2.90, 18.0, P0, { x: P0.x + (E.x - P0.x) * 0.34, y: 1.62, z: P0.z + (E.z - P0.z) * 0.34 }, smoothK);
+    camTo(2.90, 18.0, P0, shot(P0, E, IN), smoothK);
     sfx(5.20, 'e5B2'); encTalk(stage, step, 5.20, 12.36, stage.ENC_TALK[1]);  // → 17.56
     sfx(18.20, 'e5B3'); encTalk(stage, step, 18.20, 7.71, stage.ENC_TALK[0]); // → 25.91
-    camTo(25.8, 32.6, { x: P0.x + (E.x - P0.x) * 0.34, y: 1.62, z: P0.z + (E.z - P0.z) * 0.34 },
-                      { x: P0.x + (E.x - P0.x) * 0.10, y: 1.66, z: P0.z + (E.z - P0.z) * 0.10 }, smoothK);
+    camTo(25.8, 32.6, shot(P0, E, IN), shot(P0, E, WIDE, 1.66), smoothK);
+    sfx(24.00, 'e5theme', 0.75);                                // the close, under his last answer
     sfx(26.60, 'e5B4'); encTalk(stage, step, 26.60, 4.52, stage.ENC_TALK[1]); // → 31.12  · quiet, first time in years
-    encGo(stage, step, 31.9);
-    sfx(32.20, 'e5theme', 0.9);
+    encGo(stage, api, 31.9, P0.x);
     sfx(32.70, 'n5close');
     fade(32.4, 35.0, 0, 1);
     step(35.6, () => { handsRoot.visible = true; });
@@ -974,9 +1189,13 @@
 
     sfx(0.55, 'n5askC');                                        // 1.96 → 2.51
     // a beat of nothing: he does not answer that straight away
-    camTo(2.6, 12.4, P0, { x: P0.x + (E.x - P0.x) * 0.26, y: 1.62, z: P0.z + (E.z - P0.z) * 0.26 }, smoothK);
+    camTo(2.6, 12.4, P0, shot(P0, E, 1.75), smoothK);
     sfx(3.60, 'e5C'); encTalk(stage, step, 3.60, 8.12, stage.ENC_TALK[0]);    // → 11.72
-    encGo(stage, step, 12.5);
+    /* v14.1: and THIS scene had no `e5theme` at all — a player who picks the
+       worst option was the one player who reached the end of the episode
+       with no music under it. */
+    sfx(7.40, 'e5theme', 0.75);
+    encGo(stage, api, 12.5, P0.x);
     sfx(13.00, 'n5close');
     fade(12.8, 15.2, 0, 1);
     step(15.8, () => { handsRoot.visible = true; });
@@ -995,13 +1214,12 @@
 
     sfx(0.55, 'n5askD');                                        // 2.04 → 2.59
     sfx(3.10, 'e5D1'); encTalk(stage, step, 3.10, 10.42, stage.ENC_TALK[1]);  // → 13.52
-    camTo(3.10, 14.2, P0, { x: P0.x + (E.x - P0.x) * 0.32, y: 1.62, z: P0.z + (E.z - P0.z) * 0.32 }, smoothK);
+    camTo(3.10, 14.2, P0, shot(P0, E, IN), smoothK);
     sfx(14.30, 'e5D2'); encTalk(stage, step, 14.30, 4.52, stage.ENC_TALK[0]); // → 18.82
-    camTo(19.0, 27.4, { x: P0.x + (E.x - P0.x) * 0.32, y: 1.62, z: P0.z + (E.z - P0.z) * 0.32 },
-                      { x: P0.x + (E.x - P0.x) * 0.10, y: 1.66, z: P0.z + (E.z - P0.z) * 0.10 }, smoothK);
+    camTo(19.0, 27.4, shot(P0, E, IN), shot(P0, E, WIDE, 1.66), smoothK);
+    sfx(18.00, 'e5theme', 0.75);                                // the close, under his last answer
     sfx(19.50, 'e5D3'); encTalk(stage, step, 19.50, 7.00, stage.ENC_TALK[1]); // → 26.50
-    encGo(stage, step, 27.2);
-    sfx(27.50, 'e5theme', 0.9);
+    encGo(stage, api, 27.2, P0.x);
     sfx(28.00, 'n5close');
     fade(27.7, 30.3, 0, 1);
     step(30.9, () => { handsRoot.visible = true; });

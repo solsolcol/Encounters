@@ -4338,3 +4338,76 @@ A second bug of the same family, in the same function: a save written at
 `spot` landed back in `clear` with the office still to do, because the bag
 can only ever account for two of the three. `spot` is itself a receipt —
 the phase is only ever set once all three are done.
+
+## v14.1 · `||` is not "was it declared"
+
+`chWord` read a chapter's own word as `(CH.words && CH.words[k]) || T(fb)`,
+and `''` is falsy, so a DECLARED EMPTY word fell through to chapter 1's
+fallback. Two chapters declare `approach: ''` to mean "no floating label on
+a person" — episode 2's cookhouse since v10.0 and its apron since v14.0 —
+and both have been telling the player **"Something is burning ahead..."**
+with nothing burning anywhere in either.
+
+What makes it worth writing down is that the INTENT was written down three
+times and never implemented: the two chapters' own comments say it, and the
+engine's gate at the approach prompt says *"only when the chapter HAS a word
+for it. An empty `words.approach` is the sheet's own 'remove that text'"* —
+added at v13.0, against a helper that could not express it. **A comment
+stating a behaviour is not the behaviour**; that is v12.5's label bug
+("only when it is actually on screen", since v2.1, never tested) in its
+second form, and the check is the same one: read the line the comment sits
+over and ask whether it does what the comment claims.
+
+The fix is a presence test, not a truthiness test, and it holds for every
+word the helper serves, because that is also the sheet's contract —
+EDITING-TEXT: *"An empty cell removes that text."*
+
+## v14.1 · A tree's height is `h`, and it is in METRES
+
+`plantTrees` composes each instance with `sp.h * jitter`. Episode 2 chapter
+5 passed `s: 0.85…1.35`, meaning a scale — so every one of its 51 trees
+composed with `undefined * jitter` = **NaN**, which is not a small tree or a
+missing tree but garbage geometry, and a NaN matrix makes
+`computeBoundingSphere` return null, which hid the stand from the culling
+checks too. Nothing on screen said "tree", no harness failed, and it shipped.
+
+Three things now stand between that and a release: the engine defaults a bad
+height and **says so on the console**; `walktest` fails any chapter whose
+instance matrices or mesh positions go non-finite; and the general rule —
+**when a chapter hands the engine a number, the unit is part of the name**.
+The trees are normalised to height 1.0 at prep (v6.15), so a per-spot
+multiplier is only a multiplier of something, and the something has to be
+stated in metres.
+
+## v14.1 · A long bed cued inside a cutscene dies with the cutscene
+
+Every cue a scene fires joins `cineVoices`, and `cineEnd`'s
+`stopCineVoices(keepSpeech)` keeps only the sources in `liveVoices` — the
+voice takes. So `e5theme`, the 44-second bed that closes the whole of
+episode 2, cued 0.2 s before each scene's fade, was ramped out **3.4 s after
+it started** in three of the four endings, and was never cued at all in the
+fourth (the worst option, so the one player who reached the end with no
+music was the one who got it wrong).
+
+A scene cannot hand a sound over to the outcome card unless that sound is a
+voice take. So a closing bed has to be cued far enough back that the part
+you want heard is heard INSIDE the scene — under the last answer, which is
+where a closing bed belongs anyway. Measured first: this one is flat at
+about −24 dBFS RMS for its first 36 s, so there is no swell to miss and
+nothing to re-cut.
+
+## v14.1 · The anchor of a thing you walk up to sits at EYE height
+
+v7.5 learned it on a doorway ("a doorway's floor point is 44 degrees under
+the lens from a metre away, outside the 36-degree half-view, so it was never
+offered") and e2c5 walked into it again: its three counter hotspots were
+anchored 0.7 m in FRONT of each counter at y 1.30, and 0.7 m in front is
+z 6.20 — **the exact maxZ the chapter's own bounds stop the player at**. So
+walking straight up to a counter, which is the only thing anyone does, put
+the anchor directly under the lens, `hotspotVisible` projected it off the
+frame, the badge went out and the press fell through. The badge only lived
+in a band from 0.44 m to the radius, which a player crosses on the way in.
+
+Put the anchor ON the thing, at 1.55. Then the closest legal standing spot
+is 0.70 m out and 0.07 m under the eye — dead ahead — and it stays offered
+all the way in.

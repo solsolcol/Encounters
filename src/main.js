@@ -895,7 +895,20 @@ function plantTrees(parent, spots, opts = {}) {
         im.castShadow = !!opts.shadow && !LOW;
         im.receiveShadow = false;
         list.forEach(({ sp, i }, n) => {
-          const h = sp.h * (0.88 + rnd(i, 1) * 0.30);
+          /* v14.1: a spot whose `h` is missing or not a number used to compose
+             a matrix with a NaN scale, which is not a small tree — it is
+             garbage geometry, and its bounding sphere comes back null so the
+             stand's culling goes arbitrary too. Episode 2 chapter 5 shipped
+             like that: it passed `s` instead of `h`, and all 51 of its trees
+             were black shards. Nothing on screen and no harness said so.
+             A bad height now takes a sane default AND says so out loud, and
+             walktest fails any chapter whose instance matrices go non-finite. */
+          if (!Number.isFinite(sp.h) && !plantTrees.__warned) {
+            plantTrees.__warned = true;
+            console.error('plantTrees: spot ' + i + ' has no finite `h` (got ' + sp.h +
+                          ') — a tree\'s height is in METRES and the key is `h`.');
+          }
+          const h = (Number.isFinite(sp.h) ? sp.h : 6.0) * (0.88 + rnd(i, 1) * 0.30);
           e.set((rnd(i, 4) - 0.5) * 0.06, sp.ry === undefined ? rnd(i, 2) * Math.PI * 2 : sp.ry, (rnd(i, 5) - 0.5) * 0.06);
           q.setFromEuler(e);
           M.compose(pv.set(sp.x, sp.y || 0, sp.z), q, sv.set(h, h, h));
@@ -4483,7 +4496,19 @@ const hint = $('hint');
    A chapter declares `words: {...}`; anything it leaves out falls back to
    the string sheet, which is where chapter 1's live and where they stay. So
    chapter 1 and the sheet are untouched by this. */
-const chWord = (k, fallbackKey) => (CH.words && CH.words[k]) || T(fallbackKey);
+/* v14.1: A DECLARED WORD WINS, EVEN WHEN IT IS EMPTY. `||` treated '' as
+   "not declared" and handed back chapter 1's fallback, so the two chapters
+   that declare `approach: ''` to mean "no floating label on a person" —
+   episode 2's cookhouse (since v10.0) and its apron (since v14.0) — have
+   both been telling the player "Something is burning ahead..." with nothing
+   burning anywhere. Their own comments, and the engine's at the gate below,
+   have said since v13.0 that an empty word removes the text; this is the
+   line that makes it true. It is also the sheet's contract — EDITING-TEXT:
+   "An empty cell removes that text" — so it holds for every word here, and
+   every other chapter declares non-empty ones, which is why nothing else
+   moves. */
+const chWord = (k, fallbackKey) =>
+  (CH.words && CH.words[k] !== undefined) ? CH.words[k] : T(fallbackKey);
 const ACT_LINE = HAS_TOUCH ? T('world.actLineTouch') : T('world.actLineKey');
 function setHint() {
   const el = $('hintTxt');
