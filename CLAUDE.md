@@ -139,6 +139,7 @@ The declarations, all optional:
 | `words.presence` | v7.0: the banner's words when a chapter with `ghost: null` drains through `kit.presence()` | `hud.presenceAlarm` |
 | `stage.hotspots` | v7.0: many things to act on beside the pile — `[{ id, pos, radius, prompt, onInteract(), once, enabled() }]`, returned by build() | — (only the pile) |
 | `stage.hotspots[].dwell` / `aim` | v11.0: a hotspot that fires by being LOOKED AT for `dwell` seconds inside `aim` radians (chapter 3's torch spots) — the eighteenth seam | — (a press only) |
+| `kit.weaponBlock(msg)` | v14.3: a chapter FORBIDS the shot and the HUD says why — `weaponFire` refuses before anything is spent, `#nofire` carries the chapter's own sentence under the reticle with `hudfail` and a buzz, and `body.wpnBlocked` dims FIRE before the rule is ever tested. `null` allows it again. The words are the CHAPTER's, so they are on the sheet | — (nothing is forbidden) |
 | `torch.model` / `torch.click` | v11.1: the torch's own viewmodel (an asset key), swapped for the hand while it is on, and the sound its switch makes | — (the hand stays; a UI click) |
 | `weapon` | v12.0: RIFLE MODE — `{ model, item, rounds, mags, fireGap, kick, shot, reload, empty, clips, rates }`. The model's OWN hands replace the hand and the torch while it is out (out = the `item` is in the hand slot, or `kit.weaponOut(bool)` forces it); FIRE (click under lock, Space, the HUD button) spends a round, flashes, kicks, and RAYCASTS from the lens into `stage.shootables()`, reporting to `stage.onShot(report)`; RELOAD (R, the button) costs a magazine; rounds and magazines ride the save | — (no weapon, no HUD) |
 
@@ -3586,6 +3587,77 @@ What the baseline contains, by release:
   Verified: cine, chapter, text, walk 4/4, on top of a green 24/24 full suite
   taken immediately before the edits. Sheet v68, its diff against v67 exactly
   the four cells changed. docs/V14.1-THE-DEBUG-PASS.md §7 is the memory.
+- **v14.3** THE LANE, AND THE CYCLIST NOBODY COULD SEE — Chad's two reports on
+  episode 2 chapter 4, and the deep debug pass under them.
+  **THE LANE**: `t4who` said "Who fired? **Lane five**" and was cued twice —
+  once in the confusion, where a scripted round from lane five made it
+  internally true, and once in **scene C**, where the PLAYER has just fired
+  three rounds and it was a plain lie. The challenge belongs to his own first
+  round now, so it names his lane, and so `onFiredAtIt` finally has the answer
+  it never had: a live round into a target area the range party has just
+  called empty drew complete silence from the range through three releases.
+  The scripted shot goes with it, which turns "DON'T SHOOT! DON'T SHOOT!" into
+  a line said to the only man who can. Re-said in the tower's voice under the
+  bark rule and picked on the EDGES (head −47.3 dBFS against −31.3, −35.2,
+  −39.2 — the pace was the same in all four), levelled by RMS to −16 dBFS
+  where the other tower lines sit; 5.25 s → 4.72, and scene C's cue 0.3 s
+  forward so its tail lands clear of the closing narration instead of 0.65 s
+  inside it.
+  **THE TRIGGER**: `kit.weaponBlock(msg)` — a chapter forbids the shot and the
+  HUD says why, under the reticle, with a sound, a buzz and the FIRE button
+  dimmed before the rule is ever tested; the message is the CHAPTER's, so the
+  engine hard-codes no lane and the sheet can reach it. The fixture declares
+  it and `fixturetest` proves it (a blocked press spends nothing and puts the
+  words on the screen). e2c4 DERIVES the rule on the frame from the phase and
+  the distance, so a resume, a replay or a reset cannot leave the trigger
+  locked. Measured on the hosted build: blocked at the spawn and 5 m off the
+  lane, allowed on it, the boundary at 3.0 m exactly, rounds unchanged, no
+  page errors.
+  **AND THE CYCLIST NOBODY COULD SEE.** `cycStart(p, fadeIn)` sets the alpha
+  to 0.02 and leaves the ramp to `cycFrame`, which runs only in play — the
+  chapter's own comment says so — and v13.2 then wrote three scene calls that
+  rely on that ramp. Measured over the shipped timelines: **scene C drew him
+  at TWO PER CENT for its whole 18.4 s**, so the scene where the player fires
+  three rounds, whips round and gasps had no subject in it; **scene B** held
+  him at FULL alpha through the walk to the "empty ground" its own card
+  describes, then put the payoff frame behind the 180 at two per cent. Both
+  inverted, both now explicit fade tracks, both re-measured — and fixing it
+  exposed a second defect nobody could have seen: scene B's payoff stood 1.55
+  of its 1.91 m inside the berm, with a sandbag through the saddle.
+  **THE REST OF THE PASS**, each read against the code and then measured: a
+  Continue after the third round left the chapter UNFINISHABLE (every bell
+  path dead, presence draining to a faint that rewinds the whole range); a
+  round fired during the confusion took the phase to 'moment' behind the
+  hand-over's back, so the HUD ordered "Do not fire" for the rest of the
+  chapter and `b4float` was never heard, while a MISS there scored nothing at
+  all; the cease-fire had no bookmark, so a Continue in its six seconds
+  replayed a paid serial and could bank a second award; a Continue in the
+  confusion discarded the whole reveal, including the line the four options
+  answer; a resumed moment fired no flare, so the climax ran on a black
+  range; "It's coming back" was said with `sayLine` in the busiest window the
+  chapter has and could never start; the first early shot wiped the queue and
+  deleted the fire order it was punishing the player for not waiting for; the
+  bicycle bell rang through the outcome card, the teaching and the rank
+  screen; the flare burned in silence in the film and all four endings; the
+  film raised the near bank on its FIRST frame, so the flare's reveal
+  revealed three boards that had been standing for twenty-four seconds; the
+  film's rifle was buried 0.30 m inside the ammo crates in the one close-up
+  that tells the player what to pick up; scene A's lens panned a third as far
+  as the thing it was watching (measured, the cyclist ended **32.4 degrees**
+  off axis and left a portrait phone's frame 1.3 s in, taking the fade Chad
+  asked for with it — 4.6 degrees now); scene C framed from wherever the
+  player happened to stop; scene B's closing narration opened 0.48 s under a
+  shouted bark; the parked tonner's blocker was the primitive's, not the
+  model's, so the player could stand inside the cab; the lane-six arrival
+  glow had 53 % of its disc punched out by the firing mat two centimetres
+  above it; and the decision marker was 38 % inside the berm, 6.65 m short of
+  the thing it describes itself as marking.
+  **AND THREE SIGHTING SHOUTS IN e2c4 PLUS TWO IN e2c1 HAD NO MEASURED
+  LENGTH**, so `sayLine` booked 2.5 s for takes up to 3.42 — `chaptertest`
+  now fails any chapter that speaks a line its own `SECS` table does not
+  carry. Episode 1 declares no weapon and none of the chapter work reaches
+  it. Sheet v69. docs/V14.3-THE-LANE.md is the build's memory; five new laws
+  are in docs/LEARNINGS.md.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -4129,7 +4201,8 @@ docs/EPISODES-PLAN.md.
 (chapter 1, The Worst Bed, shipped at v7.1 — `src/chapters/e2/e2c1.js`;
 chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 3, The Pressure, at v11.0 and revised at v11.1–v11.9 and v12.5 — `src/chapters/e2/e2c3.js`; chapter 4, The Cyclist, at v12.1, rebuilt at v12.2 and its ghost given back its body at v12.4 — `src/chapters/e2/e2c4.js`;
 its flare, its cyclist's rhythm and all four outcome scenes rebuilt at v13.2
-(docs/V13.2-THE-FLARE-THE-RHYTHM-AND-THE-SCENES.md);
+(docs/V13.2-THE-FLARE-THE-RHYTHM-AND-THE-SCENES.md), and the lane, the fire
+gate and a deep debug pass at v14.3 (docs/V14.3-THE-LANE.md);
 chapters 1 and 2's lessons rewritten at v11.10, chapter 1 last revised at v10.8;
 ALL FOUR episode-2 chapters were revised at v13.0 against Chad's twenty-two
 notes — docs/V13.0-PLAN.md and docs/V13.0-THE-TWENTY-TWO.md — and chapter 4
@@ -4148,8 +4221,10 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v68** (`masters/v14.2/masterz-text-v68.xlsx`, four tabs: UI
-TEXT 282, EPISODE 1 110, EPISODE 2 179, VOICE LINES 295). It is EXPORTED and not published —
+**THE SHEET IS v69** (`masters/v14.3/masterz-text-v69.xlsx`, four tabs: UI
+TEXT 282, EPISODE 1 110, EPISODE 2 180, VOICE LINES 295). Its diff against
+v68 is exactly three cells: one new row (`e2c4.words.noFire`) and the two
+`t4who` cells the lane change moved. It is EXPORTED and not published —
 the workbook has been past the Drive connector's base64 wall since v43, and
 the split export is still to do (docs/EDITING-TEXT.md). **v44 is still the
 link to give Chad** until that is fixed:

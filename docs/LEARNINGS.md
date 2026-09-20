@@ -4441,3 +4441,87 @@ A corollary worth keeping for audits: a finding can be REAL and its proposed
 fix still be INSUFFICIENT. When a verifier says "moving it in Z alone is not
 enough", check that claim as carefully as the finding itself — here it was
 right, and I had already shipped the Z-only move.
+
+## A RAMP THAT ONLY RUNS IN PLAY CANNOT FADE ANYTHING IN A CUTSCENE (v14.3)
+
+e2c4's ghost cyclist fades with `cycWant` and a per-frame walk inside
+`cycFrame` — and `cycFrame` is called from `updateNotes`, BELOW
+`if (getState() !== 'play') { lastWall = 0; return; }`. Under a cutscene it
+never runs. `cycStart`'s own comment says so in as many words:
+
+> a SCENE still sets the alpha outright through `cycAlpha`, because
+> `cycFrame` does not run under a cutscene and a ramp there would never
+> advance.
+
+v13.2 then wrote three scene calls that rely on exactly that ramp. Measured
+over the shipped timelines (a plain-Node replay of `cineSeek` against the
+scenes' real tracks — no browser needed): **scene C drew him at alpha 0.02
+for its whole 18.4 s**, so the scene in which the player fires three rounds,
+whips round and gasps had no subject in it at all; scene B held him at FULL
+alpha through the walk to the "empty ground" its own card describes and then
+put the payoff frame at two per cent. Both exactly inverted.
+
+Three things generalise.
+
+**A scene's only per-frame mechanism is a TRACK.** `step()` fires once;
+anything that has to change over time has to be `tr(t0, t1, fn)`, because
+`cineSeek` is the only thing running.
+
+**When tracks fight over one value, the LAST REGISTERED wins.** `cineSeek`
+applies every track whose `t0` has passed, in array order, clamped to k = 1
+— so a finished fade-out keeps re-asserting 0 for ever, and a later fade-in
+only beats it by being registered after it. Register them in chronological
+order and the right one wins at every moment; register them out of order and
+the scene plays the wrong value with no error. (v6.12's held-glide law, in
+its ordering form.)
+
+**And when a fix makes something visible for the first time, look behind
+it.** Scene B's payoff was placed at z −2.6 with the berm at z −3.2…−1.6 and
+0.9 m tall: 1.55 m of his 1.91 m length and 0.9 m of his 1.58 m height were
+inside the earth. Nobody had ever seen it, because he had been drawn at two
+per cent there since v13.2. The alpha fix is what made it the shot.
+
+## A LINE'S LENGTH HAS TO BE IN THE TABLE THE SPEECH WINDOW IS STATED IN (v14.3)
+
+`sayLine` books the one-voice-at-a-time window as
+`speak.until = dayClock.t + (SECS[name] || 2.5) + 0.25`. A name the chapter's
+`SECS` table does not carry therefore books **2.5 s**, whatever its take
+actually is — and a take longer than that releases the queue early, so the
+next voice starts over its last word. There is no error and no harness hears
+it.
+
+Two live cases, both added long after the table was written and both
+measured at the time: e2c4's three v13.0 sighting shouts (`k4cyc` is 3.42 s,
+so the PA key-up landed 0.67 s early) and e2c1's two v9.3 shouts on the run
+home (`k1hurry` is 2.72). The values existed — they were in the registry and
+in the comments beside the queue calls — and were simply never entered into
+the table that uses them.
+
+`chaptertest` now scans every chapter's source for the names it passes to
+`sayLine`/`queueLine` and fails if its `SECS` does not carry one. No new
+harness; it is the v9.2 cue-scan in a second form, and it catches the class
+rather than the two instances.
+
+## A BLOCKER SIZED FROM THE PRIMITIVE IS NOT A BLOCKER FOR THE MODEL (v14.3)
+
+e2c4's parked tonner kept the Box3 written for its primitive fallback —
+`fb` plus 0.2 of pad. `kamaz.glb` is 2.930 × 3.353 × 7.083 m with its origin
+**not centred in z** (local −4.674…+2.408), so the blocker began **1.47 m
+behind the truck's own front face** and was 6.5 cm narrower on each side.
+`collide()` samples one point at y = 1.0 and nothing else stops him, so the
+player could stand inside the cab and look out through the back-face-culled
+bodywork.
+
+`walktest` cannot see this by construction: it asserts that every place a
+chapter sends you is REACHABLE, never that a reachable cell is outside a
+model. When a model supersedes a primitive, the blocker is part of the swap.
+
+## AN ADDITIVE GROUND DECAL LOSES TO ANYTHING OPAQUE AT THE SAME HEIGHT (v14.3)
+
+e2c4's lane-six arrival glow sits at `LINE_ZONE`, which is lane six's firing
+mat centre — and the mat is an opaque 1.9 × 1.6 box whose TOP face is at
+y 0.04, while the zone's planes sat at y 0.02. They are `depthWrite: false`
+but they still depth-TEST, so every pixel inside that rectangle was rejected:
+53 % of the fill disc and a notch at each of the four corners of the bright
+rim, on the first thing the chapter asks the player to walk into. `depthWrite:
+false` says "do not occlude others", not "do not be occluded".

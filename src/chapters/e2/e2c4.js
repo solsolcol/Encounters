@@ -915,6 +915,18 @@
          him out at its end, and a figure on its way to nothing is the one
          moment the loss does not read. So the flag follows k rather than
          being set once, and it is only re-compiled when it actually flips. */
+      /* v14.3, A CORRECTION, MEASURED. v12.4's note below says this model
+         "will not survive being made transparent", and on the shipped build
+         it does. Photographed on one frame with one property changed at a
+         time, the rider side-on and lit: `transparent: false` and
+         `transparent: true` at opacity 1 are IDENTICAL (whole rider), and
+         opacity 0.5 draws the whole rider with `depthWrite` either on or
+         off. So a FADE is safe here — which matters, because the scene
+         fades this release added run him through exactly that path, and an
+         audit called them a regression on the strength of the old note.
+         The v12.4 behaviour stays anyway: it costs nothing, and holding a
+         fully-visible figure opaque is right whether or not the alternative
+         is broken. What is retired is the CLAIM, not the code. */
       const see = k < 0.999;
       for (const m of cyc.mats) {
         if (m.transparent !== see) { m.transparent = see; m.needsUpdate = true; }
@@ -995,7 +1007,17 @@
         g.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.receiveShadow = true; o.frustumCulled = true; } });
         truck.add(g); fb.visible = false; truckReady = true;
       }).catch(() => { truckReady = true; });
-      boxes.push(new THREE.Box3(new THREE.Vector3(-15.6, 0, 6.2), new THREE.Vector3(-12.8, 2.6, 12.6)));
+      /* v14.3: SIZED FROM THE MODEL, not from the primitive it replaced. The
+         old box was `fb` plus 0.2 of pad, and `kamaz.glb` is 2.930 x 3.353 x
+         7.083 with its origin NOT centred in z (local z -4.674..+2.408) — so
+         at truck.position it occupies world x -15.665..-12.735, z
+         4.726..11.808, and the blocker began 1.47 m BEHIND the truck's own
+         front face. `collide()` samples one point at y = 1.0 and nothing
+         else stops him, so the player could stand inside the cab and see
+         out through the back-face-culled bodywork. `walktest` cannot see
+         this: it asserts that places are REACHABLE, never that a reachable
+         cell is outside a model. */
+      boxes.push(new THREE.Box3(new THREE.Vector3(-15.75, 0, 4.60), new THREE.Vector3(-12.65, 3.40, 11.95)));
     }
     /* the kit on the ammo table: a rifle and a torch lying there, which is
        what the film ends on and what the first order asks him to pick up.
@@ -1007,9 +1029,21 @@
     world.add(filmKit);
     {
       const dark = nfm({ color: 0x1c1f1a, roughness: 0.7, metalness: 0.25 });
-      const body = new THREE.Mesh(new THREE.BoxGeometry(0.66, 0.06, 0.09), dark); body.position.set(-0.28, 0.03, 0); filmKit.add(body);
-      const mag = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.16, 0.05), dark); mag.position.set(-0.30, -0.04, 0); filmKit.add(mag);
-      const stock = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.09, 0.07), dark); stock.position.set(0.14, 0.03, 0); filmKit.add(stock);
+      /* v14.3: THE RIFLE IS ON THE NEAR EDGE, not inside the crates.
+         Photographed in the film's own 9.2 s ammo close-up — the shot that
+         tells the player what to pick up — the butt end simply stopped dead
+         at a wooden crate wall. Measured on the shipped build: v13.1 put the
+         crate stack at the table's -x end (world x -8.53..-7.91, z
+         8.34..8.70) and the rifle body runs x -8.21..-7.55 at z 8.555..8.645,
+         so 0.30 m of it was enclosed, with the crate's lid above it. The
+         table is 2.2 x 0.9 (z 8.15..9.05) and the band past z 8.73 is clear
+         of both the crates and the two sets of magazines, so the rifle moves
+         0.27 m toward the camera and lies beside the torch, which was
+         already there. Nothing else on the table moves. */
+      const KIT_Z = 0.27;
+      const body = new THREE.Mesh(new THREE.BoxGeometry(0.66, 0.06, 0.09), dark); body.position.set(-0.28, 0.03, KIT_Z); filmKit.add(body);
+      const mag = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.16, 0.05), dark); mag.position.set(-0.30, -0.04, KIT_Z); filmKit.add(mag);
+      const stock = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.09, 0.07), dark); stock.position.set(0.14, 0.03, KIT_Z); filmKit.add(stock);
       const tor = new THREE.Mesh(new THREE.CylinderGeometry(0.028, 0.032, 0.20, 10),
         nfm({ color: 0x24262a, roughness: 0.6, metalness: 0.3 }));
       tor.rotation.z = Math.PI / 2; tor.position.set(0.30, 0.03, 0.22); filmKit.add(tor);
@@ -2046,7 +2080,18 @@
       new THREE.RingGeometry(0.55, 0.70, 24),
       new THREE.MeshBasicMaterial({ color: 0xff4a2a, transparent: true, opacity: 0,
         side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false, fog: false }));
-    pileRing.rotation.x = -Math.PI / 2; pileRing.position.y = -0.98; pileRing.visible = false;
+    /* v14.3: THE RING GOES WHERE THE THING IS. Its own description says it
+       is "the one thing on the screen that says where it is standing", and
+       it sat at PILE_POS — 6.65 m short of `PASS_Z[3]`, the foot of the
+       berm where the cyclist actually stops — with 38 % of its annulus
+       inside the berm's own solid box (z -3.2..-1.6, y 0..0.9) and occluded
+       by it. `PILE_POS` itself does not move: it is the decision object's
+       anchor and `pointerHitsPile`, `pileScreen` and `pileInView` all read
+       it. Only the marker moves, as a local offset onto the spot
+       `cycStart(3)` parks him at. */
+    pileRing.rotation.x = -Math.PI / 2;
+    pileRing.position.set(-1.2, -0.98, -6.65);
+    pileRing.visible = false;
     pile.add(pileRing);
     const _ndc = new THREE.Vector3();
     const syncCamera = () => { camera.updateWorldMatrix(true, false); camera.matrixWorldInverse.copy(camera.matrixWorld).invert(); };
@@ -2108,7 +2153,17 @@
       madeTex.push(t); return t;
     }
     const zone = new THREE.Group();
-    zone.position.set(LINE_ZONE.x, 0.02, LINE_ZONE.z); zone.visible = false; world.add(zone);
+    /* v14.3: y 0.02 -> 0.05. LINE_ZONE is lane six's firing mat centre, and
+       the mat is a 1.9 x 1.6 opaque box whose TOP is y 0.04 — so the zone's
+       planes sat 2 cm UNDER it, and every pixel inside that rectangle was
+       depth-rejected (the planes are `depthWrite: false` but they still
+       depth-TEST). The mat's half-diagonal is 1.24 m, inside the fill's
+       1.35 m radius, so 53 % of the disc and a notch at each of the four
+       corners of the bright rim were simply not drawn: the first thing the
+       chapter asks the player to walk into read as a ring with a black
+       rectangle in it. 0.05 clears the mat and stays under the 0.12
+       sandbag rest. */
+    zone.position.set(LINE_ZONE.x, 0.05, LINE_ZONE.z); zone.visible = false; world.add(zone);
     const zonePlane = (tex, r, op, col, add) => {
       const m = new THREE.Mesh(new THREE.PlaneGeometry(r * 2, r * 2),
         new THREE.MeshBasicMaterial({ map: tex, color: col, transparent: true, opacity: op,
@@ -2760,7 +2815,17 @@
     yawTo(12.0, 14.6, -0.30, Math.PI + 0.04, smoothK);
     pitchTo(12.0, 14.6, -0.62, -0.06, smoothK);
     step(13.6, () => {
-      stage.cycStart(3); stage.cyc.group.position.set(HIS.x + 0.4, 0, -2.6); stage.cyc.group.rotation.y = 0;
+      /* v14.3: -2.6 -> -5.2, because the berm is at z -3.2..-1.6 and 0.9 m
+         tall. `ghostcyclist.glb` is 0.720 x 1.575 x 1.906 with its length on
+         z, so at -2.6 he stood with 1.55 m of his 1.91 m length and 0.9 m of
+         his 1.58 m height INSIDE the earth mound, with a sandbag through the
+         saddle — a head and shoulders over a bank, and a front wheel out
+         through its face. Nobody had seen it, because he has been drawn at
+         two per cent here since v13.2 (above); the alpha fix is what makes
+         this the shot. At -5.2 his whole length is downrange of the berm's
+         face and he is 4.4 m from the lens, still between the camera at
+         -9.6 and the line, which is what the beat asks for. */
+      stage.cycStart(3); stage.cyc.group.position.set(HIS.x + 0.4, 0, -5.2); stage.cyc.group.rotation.y = 0;
       stage.cycAlpha(0.02);
     });
     tr(13.6, 14.5, k => stage.cycAlpha(0.02 + 0.98 * k), rawK);
@@ -2799,8 +2864,8 @@
      nothing downrange because he is BEHIND, the lens whips round, and the
      gasp. 21 s -> 18.4. */
   function scFire(c, s, api) {
-    const { tr, step, sfx, fade, yawTo, pitchTo, rawK, smoothK, stage, kit } = api;
-    const HIS = stage.HIS;
+    const { tr, step, sfx, fade, camTo, yawTo, pitchTo, rawK, smoothK, stage, kit } = api;
+    const HIS = stage.HIS, P0 = P(s);
     /* THE ALPHA IS THE SCENE'S, and it has to be — v14.3.
        v13.2 wrote `cycStart(3, true)` here, which sets the alpha to 0.02 and
        leaves the walk up to `cycFrame`. `cycFrame` is called from
@@ -2841,6 +2906,18 @@
     });
     show(0, -8);
     fade(0, 0.25, 0, 0);
+    /* v14.3: AND THE LENS GOES TO HIS LANE. Every `show()` here places the
+       ghost at an ABSOLUTE world x (HIS.x plus an offset) and the yaw is
+       driven to an absolute 0, but the camera was left wherever the player
+       happened to be standing — and nothing roots him during the moment, so
+       he is free to walk two lanes over before the bell. Measured from lane
+       eight (9.1, 1.2), which is reachable, the ghost fades in 29.5 degrees
+       off frame centre against a portrait phone's ~19-degree half-view: the
+       player fires three rounds, whips round and gasps at ground he can see
+       is empty the whole time. Scene B already teleports its camera to the
+       lane for the same reason; this is the same two lines, under the
+       opening fade so the move is never seen. */
+    camTo(0, 0.6, { x: P0.x, y: 1.62, z: P0.z }, { x: HIS.x, y: 1.62, z: 0.35 }, smoothK);
     yawTo(0, 12.6, 0.0, 0.0, rawK);
     pitchTo(0, 2.4, -0.04, -0.02, smoothK);
     /* A ROUND: a real shot out of the engine, then he fades out, and fades
