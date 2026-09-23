@@ -3658,6 +3658,40 @@ What the baseline contains, by release:
   carry. Episode 1 declares no weapon and none of the chapter work reaches
   it. Sheet v69. docs/V14.3-THE-LANE.md is the build's memory; five new laws
   are in docs/LEARNINGS.md.
+- **v14.4** TWENTY-SEVEN, AND THREE OF THEM WERE MINE — the deep hunt over
+  episode 2 chapter 4, adversarially verified, every confirmed finding fixed,
+  three of them v14.3 regressions (the confusion window's sighting wipe, the
+  flare hiss under the cards, the fire gate's radius). Commit 39e9ca5.
+- **v14.5** THE APRON, FILLED — Chad on episode 2 chapter 5: *"looks too
+  plain, the encik doesnt turn his whole body to face the player when
+  talking, and just feels too sparse and empty, and no music?"* and *"you
+  could have used the 3d truck model that you already have"*. All in
+  `src/chapters/e2/e2c5.js`; `src/main.js` untouched, so episode 1 is
+  unchanged by construction. THE TRUCKS are two of his Kamaz (v11.2),
+  reversed into painted bays, blocked by the MODEL's footprint (the v14.3
+  law); the film's first shot moved 3.8 m off their noses. THE ENCIK'S BODY
+  TURNS to the player within 6.5 m and through the whole talk and decision —
+  derived every frame, eased on wall time, stepping round on his walk take for
+  a big turn and never cutting a talk take — and the four endings finish the
+  turn onto the lens (`encFace`) and walk off from THAT heading (encGo used
+  to start from his fixed one and snap him back first). THE MUSIC is
+  `e5march`: the episode's own opening march (v10.4 master) cut into a
+  beat-matched 32 s loop (masters/v14.5), chosen because a phone plays it —
+  0.8 % under 120 Hz, where `e2day` is 65 % — up while he clears his kit,
+  down under the conversation, out under the endings so `e5theme` lands on
+  silence. THE CAMP: three drawn-facade blocks and a gabled hall on the
+  skyline (one textured box each), a gate with a guardhouse, a boom and a
+  fence with a concertina helix, signs over the three counters, BRAVO COY on
+  the stair tower, a slogan board, a hose cabinet, lamp posts, laundry, the
+  Singapore flag flying and waving on the pole that stood bare, birds, a
+  thicker tree ring kept out of the buildings, two men doing push-ups (the
+  admin tee's own take, sized standing then posed — `opts.then`) with a
+  corporal over them, and a pair walking the line on the same dt as their
+  mixers. PRICED AS A REAL PHONE (touch on — `LOW` is false without it, so a
+  390 px window is not a phone): busiest view ~181k triangles, the phone
+  keeping one push-up man and one walker. Harnesses chapter, walk, leak,
+  cine, text green; deploy `6ab365f2447dcb9f961d7b03`, byte-verified. No
+  word on the sheet moved (the signs are world art, like e2c1's jetty sign).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so

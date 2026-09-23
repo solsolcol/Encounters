@@ -4525,3 +4525,32 @@ but they still depth-TEST, so every pixel inside that rectangle was rejected:
 53 % of the fill disc and a notch at each of the four corners of the bright
 rim, on the first thing the chapter asks the player to walk into. `depthWrite:
 false` says "do not occlude others", not "do not be occluded".
+
+## A CONST READ BEFORE ITS LINE THROWS, EVEN THROUGH A HOISTED FUNCTION (v14.5)
+
+e2c5's `parseOnce()` is a function declaration, so it is callable from
+anywhere in build() — but its cache, `const parsedGlb = new Map()`, sat below
+it, and the new truck loader called `parseOnce('kamaz')` two hundred lines
+earlier. A hoisted function reading a `const` in its temporal dead zone
+throws a ReferenceError, and inside build() that is a chapter that does not
+load. The cache moved to the top of build(). Where a helper's STATE lives is
+part of the helper.
+
+## A PHONE PROBE MUST BE A TOUCH DEVICE (v14.5)
+
+`LOW = IS_PHONE = HAS_TOUCH && max(innerWidth, innerHeight) < 1100`. A
+390 x 844 Playwright window without `hasTouch` is a narrow DESKTOP: full tree
+stands, every optional cast member, shadows. The first triangle count of the
+filled apron read 365k "on a phone" and was a desktop at phone size; with
+`hasTouch: true, isMobile: true` the same view is 181k. Price the phone as a
+phone, or the number is about a device nobody owns.
+
+## A RIG MEASURED IN A LYING POSE IS SIZED AS A GIANT (v14.5)
+
+mkRig scales a rig by its posed bone span divided by the height asked for.
+In `push_up` the span is the body lying flat — half a metre tall — so the
+man comes out three times life size. A rig shown in a non-standing pose is
+sized on its standing idle first and handed the real take afterwards
+(`opts.then`), then re-grounded on that take's own lowest bone. The v5.21
+law — measure the pose you will show — has a corollary: measure HEIGHT on a
+pose that has one.
