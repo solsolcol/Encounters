@@ -104,7 +104,7 @@
       vmKey: [0xffe2b4, 0.80]
     },
 
-    assets: ['encik2', 'admintee', 'botak', 'tree1', 'tree2', 'tree3', 'tree4'],
+    assets: ['encik2', 'admintee', 'botak', 'kamaz', 'tree1', 'tree2', 'tree3', 'tree4'],
 
     /* ONE BED, and it is e2c1's `campamb` rather than a new one. Both takes of
        the sound generated for this chapter came back with 73 % and 81 % of
@@ -115,9 +115,22 @@
        SHARED pack, with no duplicate bytes.
 
        AND NO `e2dread`. It has been under every frame of this episode since
-       v10.4. Its absence is the chapter. */
+       v10.4. Its absence is the chapter.
+
+       v14.5, Chad: "no music?" — and he was right that silence under a
+       whole chapter reads as missing, not as meant. `e5march` is the
+       episode's OWN opening march (the v10.4 master that plays under the
+       ferry, the jetty and the square in chapter 1's film) cut into a
+       seamless 32 s loop, beat-matched at the splice (masters/v14.5/). It
+       is the episode's first music played again on its last afternoon,
+       which is the bookend the chapter is. Chosen by what a PHONE can play:
+       `e2day` puts 65 % of its energy under 120 Hz (the v10.4 lesson), the
+       march 0.8 %. `e5theme` stays the endings' own. The level is not a
+       constant — `mixBeds()` writes it every frame by phase: up while he
+       clears his kit, down under the conversation, and out under the four
+       endings so `e5theme` comes in over silence, not over a march. */
     musicVol: 0,
-    ambience: { beds: [['campamb', 0.30]] },
+    ambience: { beds: [['campamb', 0.30], ['e5march', 0]] },
 
     words: {
       /* an EMPTY approach word means no floating label on a person (v13.0) */
@@ -156,6 +169,7 @@
 
     const owned = [];
     let alive = true;
+    const parsedGlb = new Map();                // parseOnce()'s cache — see the cast
 
     /* ------------------------------------------------------------- the map */
     const APRON = { x: 14.0, z0: -8.0, z1: 7.5 };
@@ -196,6 +210,7 @@
     const matShut  = new THREE.MeshStandardMaterial({ map: shutTex, roughness: 0.6, metalness: 0.35 });
     const matWood  = new THREE.MeshStandardMaterial({ color: 0x8a6b4a, roughness: 0.8 });
     const matGreen = new THREE.MeshStandardMaterial({ color: 0x4f5a3c, roughness: 0.9 });
+    const matYellow = new THREE.MeshStandardMaterial({ color: 0xe0b23a, roughness: 0.8 });
     const matProxy = new THREE.MeshStandardMaterial({ color: 0x3b4238, roughness: 0.9 });
     const matForm  = new THREE.MeshStandardMaterial({ map: formTex, roughness: 0.92 });
     const matBoard = new THREE.MeshStandardMaterial({ map: boardTex, roughness: 0.92 });
@@ -355,18 +370,46 @@
     const cOffice = mkCounter(OFFICE, 'office');
 
     /* ------------------------------------------------------------ dressing */
-    // a few parked vehicles at the −x end, nose in to the line
-    for (let i = 0; i < 3; i++) {
-      const x = -12.4 + i * 2.6, z = -5.4;
-      const v = new THREE.Group(); v.position.set(x, 0, z); world.add(v);
-      box(2.0, 0.95, 4.4, 0, 0.90, 0, matGreen, v);
-      box(1.9, 0.75, 1.9, 0, 1.70, -1.0, matGreen, v);
-      for (const s of [-1, 1]) for (const zz of [-1.5, 1.5]) {
-        const w = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 0.3, 12), matDark);
-        w.rotation.z = Math.PI / 2; w.position.set(s * 1.0, 0.42, zz); v.add(w);
+    /* THE TRUCKS. v14.5, Chad: "you could have used the 3d truck model that
+       you already have" — and three green boxes on wheels stood here while
+       his Kamaz (v11.2, the tonner of chapter 3's film and chapter 4's range)
+       sat in the asset table. Two of them now, REVERSED IN the way a transport
+       line parks them: tail to the company line, nose out to the apron, so
+       the cabs are what the player sees stepping out of his block. The model
+       is prepped with the cab at −z (e2c4), so nose-out is a half turn, and
+       its origin is NOT centred in z (local z −4.674..+2.408), which with the
+       half turn puts the truck at world z  z0 − 2.408 … z0 + 4.674.
+       Blockers are the MODEL's footprint, not the primitive's (the v14.3
+       law: the player could stand inside e2c4's cab). The primitive stands
+       until the model lands, so a failed download costs a nicer prop and
+       never the chapter (v4.7). */
+    const TRUCKS = [{ x: -12.35, z: -5.45 }, { x: -8.95, z: -5.45 }];
+    const truckBoxes = [];
+    for (const T of TRUCKS) {
+      const v = new THREE.Group(); v.position.set(T.x, 0, T.z); v.rotation.y = Math.PI; world.add(v);
+      const fb = new THREE.Group(); v.add(fb);
+      box(2.6, 1.10, 5.0, 0, 1.05, 1.55, matGreen, fb);           // the cargo bed, toward the line
+      box(2.4, 1.60, 1.9, 0, 1.45, -2.9, matGreen, fb);           // the cab, toward the apron
+      T.group = v; T.fb = fb;
+      truckBoxes.push(new THREE.Box3(new THREE.Vector3(T.x - 1.55, 0, T.z - 2.50),
+                                     new THREE.Vector3(T.x + 1.55, 3.40, T.z + 4.76)));
+    }
+    parseOnce('kamaz').then(gltf => {
+      if (!alive) return;
+      for (const T of TRUCKS) {
+        const g = gltf.scene.clone(true);
+        g.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.receiveShadow = true; o.frustumCulled = true; } });
+        T.group.add(g); T.fb.visible = false;
       }
-      solids.push(box(2.2, 1.4, 4.6, x, 0.7, z, matGreen));
-      solids[solids.length - 1].visible = false;
+      redoShadows();
+    }).catch(err => console.warn('kamaz failed to load', err));
+    // their bays, painted: a yellow box round each one, as a transport line marks them
+    for (const T of TRUCKS) {
+      const zc = T.z + 1.13, L = 7.9, W = 3.25;
+      box(W, 0.012, 0.10, T.x, 0.007, zc - L / 2, matYellow);
+      box(W, 0.012, 0.10, T.x, 0.007, zc + L / 2, matYellow);
+      box(0.10, 0.012, L, T.x - W / 2, 0.007, zc, matYellow);
+      box(0.10, 0.012, L, T.x + W / 2, 0.007, zc, matYellow);
     }
     // bins and a hose reel against the stores block
     solids.push(box(0.62, 0.95, 0.62, -6.0, 0.475, 6.4, matGreen));
@@ -386,12 +429,20 @@
     let treeStand = null;
     if (plantTrees) {
       const spots = [];
-      for (let i = 0; i < 26; i++) {
+      /* v14.5: the ring was thickened (26 draws -> 48) and it has buildings
+         in it now, so a draw that lands inside one — or on the camp road —
+         is thrown away rather than planted through a roof (v9.3: fifteen of
+         e2c1's square's trees were inside its far block). */
+      const KEEP_OUT = [[-28, 8, 13.5, 27.5], [-36, 4, -29, -17], [8, 32, -24, -11],
+                        [19, 35, -13, 13], [-44, -16, -4, 4.5]];
+      const clear = (x, z) => !KEEP_OUT.some(([x0, x1, z0, z1]) => x > x0 && x < x1 && z > z0 && z < z1);
+      for (let i = 0; i < 48; i++) {
         const r = hash(i, 5);
         const side = i % 2 ? 1 : -1;
         const x = -26 + hash(i, 11) * 52;
         const z = side > 0 ? 13.0 + r * 16 : -15.0 - r * 16;
         if (Math.abs(x) < 15 && side > 0 && z < 15) continue;
+        if (!clear(x, z)) continue;
         /* `h` IS THE HEIGHT IN METRES, and it is the key plantTrees reads.
            This said `s` and meant a scale, so every instance composed with
            `undefined * jitter` = NaN and all 51 trees in the chapter were
@@ -400,7 +451,217 @@
            the author's 0.85-1.35 spread is kept by scaling a real height. */
         spots.push({ x, z, h: 7.2 * (0.85 + hash(i, 17) * 0.5) });
       }
-      treeStand = plantTrees(world, spots, { tint: 0xd8c9a4, shadow: !LOW, lowKeep: 0.45, roughness: 0.92 });
+      /* and the two ends, which were bare: a clump either side of the hall
+         and either side of the gate, so neither building stands on a lawn */
+      for (const [x, z, h] of [[18.5, -9.5, 8.2], [21.5, -12.5, 7.0], [18.0, 9.5, 7.6], [22.0, 13.0, 8.8],
+                               [-15.8, -10.5, 7.8], [-17.5, -14.0, 6.9], [-16.0, 9.0, 8.4], [-18.0, 12.5, 7.2],
+                               [36.0, -6.0, 9.4], [37.0, 7.0, 8.6]]) spots.push({ x, z, h });
+      treeStand = plantTrees(world, spots, { tint: 0xd8c9a4, shadow: !LOW, lowKeep: 0.36, roughness: 0.92 });   // v14.5: 0.45 -> 0.36, the ring is thicker
+    }
+
+    /* ------------------------------------------------------- the camp around it
+       v14.5, Chad: "looks too plain ... just feels too sparse and empty".
+       Photographed from play before any of this: the apron ran to a bare
+       horizon at both ends, the company line and the stores block were the
+       only buildings in the camp, and nothing moved but the encik. A camp is
+       a town. What follows is the rest of it — all primitives and drawn
+       textures (CSP-safe, no download), none of it inside the chapter's
+       bounds (x ±13.2, z -7.2…6.2) except the painted lines, the signs and
+       the lamp posts, which are blockers where they stand. */
+    const signTex = [];
+    function sign(text, w, h, bg, fg, x, y, z, ry = 0) {
+      const t = makeSign(THREE, cnv, text, w / h, bg, fg); signTex.push(t);
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h),
+        new THREE.MeshStandardMaterial({ map: t, roughness: 0.8 }));
+      m.position.set(x, y, z); m.rotation.y = ry; world.add(m);
+      return m;
+    }
+    // what each hatch IS, over it — the three counters the objective names
+    sign('ARMSKOTE', 2.0, 0.46, '#1f3b2a', '#f1ecd8', ARMS.x, 3.30, STORE.z - 0.01, Math.PI);
+    sign('Q-STORE', 2.0, 0.46, '#1f3b2a', '#f1ecd8', STORES.x, 3.30, STORE.z - 0.01, Math.PI);
+    sign('COY OFFICE', 1.9, 0.40, '#1f3b2a', '#f1ecd8', OFFICE.x - 0.2, 2.62, STORE.z - 0.02, Math.PI);
+    // the company's own name across the line, and the slogan every camp carries
+    // (on the stair tower, whose face is clear of the balcony rails: tower front z -7.80)
+    sign('BRAVO COY', 2.5, 0.62, '#e9e4d2', '#2c4a33', LINE.x1 - 1.5, 5.6, LINE.z + 0.215);
+    {
+      const gs = sign('SAFETY IS EVERYONE\'S RESPONSIBILITY', 3.4, 0.62, '#1d4f8f', '#ffffff', 11.2, 2.05, -7.05);
+      for (const dx of [-1.5, 1.5]) solids.push(box(0.08, 2.4, 0.08, 11.2 + dx, 1.2, -7.12, matFrame));
+      box(3.5, 0.72, 0.04, 11.2, 2.05, -7.10, matFrame);
+      gs.position.z = -7.07;
+    }
+    // a red fire-hose cabinet and an extinguisher on the line's face
+    const matRed = new THREE.MeshStandardMaterial({ color: 0xb3261e, roughness: 0.55 });
+    // (in the one clear stretch of the face, between the last window, x 2.45,
+    // and the stair tower, x 5.0)
+    box(0.7, 0.9, 0.22, 3.0, 1.25, LINE.z + 0.11, matRed);
+    box(0.18, 0.5, 0.18, 3.75, 0.30, LINE.z + 0.18, matRed);
+
+    /* THE DRYING: shirts and towels on the upper balcony rail, which is what a
+       company line looks like at four in the afternoon on any day of the
+       week. Olive, white and the PT blue, dealt from the chapter's hash. */
+    {
+      const cols = [0x55603f, 0xe8e6de, 0x2f5f9e, 0x4b5638, 0xd9d4c4];
+      const mats = cols.map(c => new THREE.MeshStandardMaterial({ color: c, roughness: 0.95, side: THREE.DoubleSide }));
+      for (let i = 0; i < 16; i++) {
+        const x = LINE.x0 + 1.0 + hash(i, 41) * (LINE.x1 - LINE.x0 - 5.5);
+        const w = 0.42 + hash(i, 43) * 0.3, h = 0.5 + hash(i, 47) * 0.35;
+        const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mats[Math.floor(hash(i, 53) * mats.length)]);
+        m.position.set(x, 3.33 - h / 2, LINE.z + 0.16); m.rotation.x = 0.04; world.add(m);
+      }
+    }
+
+    // lamp posts down the line's side of the apron, unlit in the afternoon
+    const matLamp = new THREE.MeshStandardMaterial({ color: 0x9aa0a2, roughness: 0.6, metalness: 0.35 });
+    for (const x of [-4.8, 4.45]) {
+      solids.push(box(0.16, 6.2, 0.16, x, 3.1, -7.35, matLamp));
+      box(0.10, 0.10, 1.5, x, 6.1, -6.7, matLamp);
+      box(0.34, 0.14, 0.62, x, 6.0, -6.0, matLamp);
+    }
+
+    /* THE SKYLINE, three blocks and a hall. Each face is ONE textured box
+       (makeFacade: storeys and bays drawn, repeated), not hundreds of window
+       boxes — a building nobody walks to costs twelve triangles. */
+    const facadeTex = makeFacade(THREE, cnv); signTex.push(facadeTex);
+    const facadeMats = [];
+    function block(x0, x1, z0, z1, h, storeys, faceZ, roof = 0xcfc9b6) {
+      const tex = facadeTex.clone(); tex.needsUpdate = true;
+      const bays = Math.max(1, Math.round(Math.abs(x1 - x0) / 3.4));
+      tex.repeat.set(bays, storeys); signTex.push(tex);
+      const face = new THREE.MeshStandardMaterial({ map: tex, roughness: 0.92 });
+      const plain = new THREE.MeshStandardMaterial({ color: 0xd9d2bd, roughness: 0.95 });
+      const top = new THREE.MeshStandardMaterial({ color: roof, roughness: 0.95 });
+      facadeMats.push(face, plain, top);
+      // BoxGeometry material order: +x, -x, +y, -y, +z, -z
+      const mats = [plain, plain, top, plain, faceZ > 0 ? face : plain, faceZ < 0 ? face : plain];
+      const m = new THREE.Mesh(new THREE.BoxGeometry(x1 - x0, h, z1 - z0), mats);
+      m.position.set((x0 + x1) / 2, h / 2, (z0 + z1) / 2); m.castShadow = false; m.receiveShadow = true;
+      world.add(m);
+      return m;
+    }
+    block(-26, 6, 15.5, 25.5, 13.6, 4, -1);               // the barracks behind the stores block
+    block(-34, 2, -27, -19, 16.8, 5, 1);                  // and the tall one behind the company line
+    block(10, 30, -22, -13, 10.4, 3, 1);                  // past the line's +x end
+    // a water tank on the barracks' roof
+    box(3.2, 2.2, 2.4, -8.0, 14.7, 20.0, matWhite);
+    box(3.4, 0.14, 2.6, -8.0, 15.85, 20.0, matBand);
+
+    /* THE HALL at the +x end — the first thing the player sees: the spawn
+       faces straight down the apron at it, and before v14.5 that was grass
+       and sky. A multi-purpose hall with a gabled roof and its doors open. */
+    {
+      const HX = 27.0, HZ = 0.0, HW = 12.0, HL = 22.0, HH = 7.0;
+      const hall = new THREE.MeshStandardMaterial({ color: 0xe2dccb, roughness: 0.92 });
+      const roof = new THREE.MeshStandardMaterial({ color: 0x6f3a2c, roughness: 0.85 });
+      box(HW, HH, HL, HX, HH / 2, HZ, hall);
+      for (const s2 of [-1, 1]) {
+        const r = box(HW / 2 + 0.9, 0.22, HL + 1.4, HX + s2 * HW / 4.3, HH + 1.35, HZ, roof);
+        r.rotation.z = -s2 * 0.46;
+      }
+      // the ridge runs along z, so the gables are the two z ends
+      const tri = new THREE.Shape();
+      tri.moveTo(-HW / 2, 0); tri.lineTo(HW / 2, 0); tri.lineTo(0, 2.95); tri.closePath();
+      const gm = new THREE.MeshStandardMaterial({ color: 0xe2dccb, roughness: 0.92, side: THREE.DoubleSide });
+      for (const zz of [HZ - HL / 2, HZ + HL / 2]) {
+        const g = new THREE.Mesh(new THREE.ShapeGeometry(tri), gm);
+        g.position.set(HX, HH, zz); world.add(g);
+      }
+      // the long wall facing the apron, and its big doors
+      for (const dz of [-6.5, 0, 6.5]) box(0.06, 3.6, 3.2, HX - HW / 2 - 0.02, 1.8, dz, matDark);
+      box(0.08, 0.9, 7.0, HX - HW / 2 - 0.03, 5.2, 0, matBand);
+      sign('MULTI-PURPOSE HALL', 6.4, 0.8, '#e2dccb', '#2c4a33', HX - HW / 2 - 0.05, 5.2, 0, -Math.PI / 2);
+      // a covered linkway from the apron's end to the hall
+      box(0.18, 2.8, 0.18, 17.0, 1.4, 2.6, matWhite); box(0.18, 2.8, 0.18, 17.0, 1.4, 5.0, matWhite);
+      box(0.18, 2.8, 0.18, 20.9, 1.4, 2.6, matWhite); box(0.18, 2.8, 0.18, 20.9, 1.4, 5.0, matWhite);
+      box(4.4, 0.16, 3.0, 18.95, 2.86, 3.8, matBand);
+      box(4.2, 0.03, 2.6, 18.95, 0.015, 3.8, matWhite);
+    }
+
+    /* THE GATE behind the spawn: a guardhouse and a boom across the camp
+       road, and the perimeter fence running off it both ways with a coil of
+       concertina along the top. The road the tonners came in on. */
+    {
+      const GX = -20.0;
+      const road = new THREE.Mesh(new THREE.PlaneGeometry(22, 6.5), matTarmac);
+      road.rotation.x = -Math.PI / 2; road.position.set(GX - 3, 0.004, 0.2); road.receiveShadow = true; world.add(road);
+      box(3.2, 2.9, 3.0, GX - 2.2, 1.45, -5.2, matBlock);
+      box(3.8, 0.2, 3.6, GX - 2.2, 3.0, -5.2, matBand);
+      box(1.6, 0.9, 0.05, GX - 0.58, 1.75, -5.2, matDark);                 // its window
+      box(0.4, 1.1, 0.4, GX - 0.4, 0.55, -3.1, matWhite);                    // the boom's post
+      const boom = box(6.0, 0.12, 0.12, GX - 0.4, 1.0, 0.0, matWhite);
+      boom.rotation.y = Math.PI / 2;
+      for (let k = 0; k < 6; k++) box(0.13, 0.13, 0.52, GX - 0.4, 1.0, -2.35 + k * 1.0, matRed);
+      const fenceTex = makeChainLink(THREE, cnv); signTex.push(fenceTex);
+      const fm = new THREE.MeshStandardMaterial({ map: fenceTex, alphaTest: 0.5, side: THREE.DoubleSide,
+                                                  roughness: 0.6, metalness: 0.4 });
+      facadeMats.push(fm);
+      for (const [z0, z1] of [[-30, -3.4], [3.4, 30]]) {
+        const L = z1 - z0;
+        const ft = fenceTex.clone(); ft.needsUpdate = true; ft.repeat.set(L / 2.4, 1); signTex.push(ft);
+        const f = new THREE.Mesh(new THREE.PlaneGeometry(L, 2.4), fm.clone());
+        f.material.map = ft;
+        f.position.set(GX + 1.0, 1.2, (z0 + z1) / 2); f.rotation.y = Math.PI / 2; world.add(f);
+        for (let z = z0; z <= z1 + 0.01; z += 3.0) box(0.07, 2.7, 0.07, GX + 1.0, 1.35, z, matFrame);
+        // the concertina: one helix along the top, a tube, never a torus per coil
+        const pts = [];
+        for (let i = 0; i <= L * 4; i++) {
+          const t = i / 4, a = t * Math.PI * 2 / 0.55;
+          pts.push(new THREE.Vector3(GX + 1.0 + Math.cos(a) * 0.28, 2.72 + Math.sin(a) * 0.28, z0 + t));
+        }
+        const coil = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), pts.length * 3, 0.012, 3, false), matSteel);
+        world.add(coil);
+      }
+    }
+
+    /* THE FLAG. The pole at the apron's +x end stood bare — and episode 2's
+       convention since v10.2 is not bare poles, it is that ONLY the
+       Singapore flag flies. Drawn exactly as e2c1 draws it (2:3, #EE2536 over
+       white, the crescent and five stars in the hoist half), and it waves by
+       moving its own vertices. */
+    const flags = [];
+    {
+      const fw = 1.8, fh = fw * 2 / 3;
+      const t = makeSgFlag(THREE, cnv); signTex.push(t);
+      const geo = new THREE.PlaneGeometry(fw, fh, 12, 4); geo.translate(fw / 2, 0, 0);
+      const fm2 = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ map: t, roughness: 0.85, side: THREE.DoubleSide }));
+      fm2.position.set(12.4, 8.0 - 0.2 - fh / 2, -1.0 + 0.07);
+      fm2.rotation.y = -Math.PI / 2;           // its fly runs off along +z, across the apron's end
+      world.add(fm2);
+      flags.push({ mesh: fm2, w: fw, base: geo.attributes.position.array.slice() });
+    }
+
+    /* BIRDS. Four mynahs' worth of dark specks turning over the camp — the
+       cheapest thing in the chapter and the one that says the air is alive. */
+    const birds = [];
+    {
+      const bm = new THREE.MeshBasicMaterial({ color: 0x2a2a2a, side: THREE.DoubleSide });
+      const wing = new THREE.PlaneGeometry(0.34, 0.12); wing.translate(0.17, 0, 0);
+      for (let i = 0; i < 5; i++) {
+        const g = new THREE.Group();
+        const l = new THREE.Mesh(wing, bm), r = new THREE.Mesh(wing, bm);
+        l.rotation.x = r.rotation.x = -Math.PI / 2; r.scale.x = -1;
+        g.add(l, r); world.add(g);
+        birds.push({ g, l, r, cx: -6 + hash(i, 61) * 18, cz: -4 + hash(i, 67) * 10,
+                     rad: 9 + hash(i, 71) * 9, y: 16 + hash(i, 73) * 10,
+                     sp: (0.16 + hash(i, 79) * 0.1) * (i % 2 ? 1 : -1), ph: hash(i, 83) * 6.3 });
+      }
+    }
+    function updateWorldLife(t) {
+      for (const f of flags) {
+        const a = f.mesh.geometry.attributes.position, arr = a.array, b = f.base;
+        for (let i = 0; i < arr.length; i += 3) {
+          const x = b[i], grip = x / f.w;
+          arr[i + 2] = b[i + 2] + Math.sin(x * 3.4 - t * 2.4) * 0.13 * grip * grip;
+          arr[i + 1] = b[i + 1] - 0.05 * grip * grip;
+        }
+        a.needsUpdate = true;
+      }
+      for (const B of birds) {
+        const a = B.ph + t * B.sp;
+        B.g.position.set(B.cx + Math.cos(a) * B.rad, B.y + Math.sin(t * 0.7 + B.ph) * 0.8, B.cz + Math.sin(a) * B.rad);
+        B.g.rotation.y = -a + (B.sp > 0 ? 0 : Math.PI);
+        const flap = Math.sin(t * 9 + B.ph) * 0.55;
+        B.l.rotation.z = flap; B.r.rotation.z = -flap;
+      }
     }
 
     /* ------------------------------------------------------------- the cast */
@@ -429,7 +690,8 @@
        that cannot be got wrong: no copy is ever taken from a mutated one.
        SkeletonUtils.clone shares geometry and materials, so dispose()'s sweep
        over `world` still frees them. */
-    const parsedGlb = new Map();
+    // `parsedGlb` is declared at the top of build(): the trucks ask for a parse
+    // before this line runs, and a const read in its TDZ throws (v14.5)
     function parseOnce(key) {
       if (!parsedGlb.has(key)) {
         parsedGlb.set(key, assetBytes(key).then(BUF => new Promise((res, rej) =>
@@ -501,6 +763,15 @@
           g.traverse(o => { if (o.isBone) { o.getWorldPosition(v); lo2 = Math.min(lo2, v.y); } });
           g.position.y += -(lo2 - group.position.y);
         }
+        /* v14.5: a rig that must be MEASURED standing and then shown in some
+           other pose (the push-ups) is sized on its idle above and handed its
+           real take here, then re-grounded on that take's own lowest bone */
+        if (opts.then && rig.acts) {
+          opts.then(rig); rig.mixer.update(0.0001); g.updateMatrixWorld(true);
+          let lo3 = Infinity;
+          g.traverse(o => { if (o.isBone) { o.getWorldPosition(v); lo3 = Math.min(lo3, v.y); } });
+          if (isFinite(lo3)) g.position.y += -(lo3 - group.position.y);
+        }
         proxy.visible = false; rig.ready = true; redoShadows();
       }).catch(err => { console.warn(key + ' failed to load', err); rig.ready = true; });
       return rig;
@@ -510,6 +781,7 @@
     const ENC_TALK = ['Talk_with_Left_Hand_on_Hip', 'Talk_with_Left_Hand_Raised'];
     const putEncik = () => {
       encik.group.position.set(ENC.x, 0, ENC.z); encik.group.rotation.y = ENC.ry;
+      encStep = false;
       if (encik.acts && encik.idle) encik.play(encik.idle, 1, 0);
     };
 
@@ -529,6 +801,87 @@
                    { x: 1.2, z: -5.2, ry: 2.1, idle: 'Walking', at: 0.117, key: 'botak' }];
     const extras = EXTRA.map((p) => mkRig(p.key,
       { x: p.x, z: p.z, ry: p.ry, height: 1.70, idle: p.idle, at: p.at }));
+
+    /* v14.5: THE APRON IS NOT EMPTY. Two men doing push-ups at the +x end
+       with a corporal standing over them — the admin tee's own `push_up`
+       take, which drops the hips 0.668 m and so can only ever be played on
+       the rig it was authored for (v8.3) — and a pair walking the line's
+       side of the apron, turning at each end. The walkers are glided on the
+       SAME dt their mixer is given, so the stride and the ground covered
+       cannot come apart (the v9.3 glide was a wall clock against a clamped
+       one); the rate is the ground speed over the take's measured stride
+       (STRIDE 1.39 m/s at rate 1, e2c1). THE PHONE keeps one walker, one man
+       doing push-ups and no corporal: every admin tee on screen is 44.5k
+       triangles, and measured from the spawn on a 390 px phone the full cast
+       took the view from ~200k to ~365k. Trimmed, it is back near the ~300k
+       e2c1 settled at in v8.6. */
+    const PUSH = LOW ? [{ x: 11.0, z: -5.1 }] : [{ x: 11.0, z: -5.7 }, { x: 11.0, z: -4.5 }];
+    const pushers = PUSH.map((p, i) => mkRig('admintee', { x: p.x, z: p.z, ry: -Math.PI / 2, height: 1.70, idle: 'Idle_9',
+      then: (r) => { r.play('push_up', 0.9 + i * 0.17, 0); r.acts.push_up.time = i * 0.6; } }));
+    const CORP = { x: 8.35, z: -5.1 };
+    const corporal = LOW ? null : mkRig('admintee', { x: CORP.x, z: CORP.z, ry: Math.PI / 2, height: 1.72, idle: 'Talk_with_Hands_Open' });
+    const WALK = { x0: -3.8, x1: 6.4, spd: 1.15, turn: 0.9 };
+    const walkers = [{ z: -5.95, rig: extras[1], x: 1.2, dir: 1, t: 0 }];
+    if (!LOW) walkers.push({ z: -6.65, rig: mkRig('botak', { x: 1.2, z: -6.65, ry: Math.PI / 2, height: 1.74, idle: 'Walking' }), x: 1.2, dir: 1, t: 0 });
+    for (const w of walkers) { w.rig.group.position.set(w.x, 0, w.z); w.rig.group.rotation.y = Math.PI / 2; }
+    function walkTick(dt) {
+      for (const w of walkers) {
+        const r = w.rig; if (!r.acts) continue;
+        if (r.cur !== 'Walking' || r.acts.Walking.paused) { r.play('Walking', 1, 0.2); r.acts.Walking.paused = false; }
+        if (w.t > 0) {                                     // turning on the spot at an end
+          w.t = Math.max(0, w.t - dt);
+          const k = 1 - w.t / WALK.turn, from = w.dir > 0 ? -Math.PI / 2 : Math.PI / 2;
+          r.group.rotation.y = from + Math.PI * (k * k * (3 - 2 * k));
+          r.acts.Walking.setEffectiveTimeScale(0.55);
+          continue;
+        }
+        w.x += w.dir * WALK.spd * dt;
+        if (w.x > WALK.x1 || w.x < WALK.x0) {
+          w.x = THREE.MathUtils.clamp(w.x, WALK.x0, WALK.x1); w.dir = -w.dir; w.t = WALK.turn;
+        }
+        r.group.position.x = w.x;
+        r.group.rotation.y = w.dir > 0 ? Math.PI / 2 : -Math.PI / 2;
+        r.acts.Walking.setEffectiveTimeScale(WALK.spd / 1.39);
+      }
+    }
+    function walkReset() {
+      for (const w of walkers) {
+        w.x = 1.2; w.dir = 1; w.t = 0;
+        w.rig.group.position.set(w.x, 0, w.z); w.rig.group.rotation.y = Math.PI / 2;
+      }
+    }
+
+    /* v14.5: HE TURNS TO YOU. Chad: "the encik doesnt turn his whole body to
+       face the player when talking". He stood at one fixed heading, aimed back
+       down the apron, for the whole chapter — including the whole
+       conversation, so the man you are speaking to talked past your
+       shoulder. Now his BODY turns to the player once the player is close
+       enough to be spoken to, and for the whole of the talk and the decision,
+       and back to his own heading when the player walks off. It is DERIVED
+       every frame from where the player stands (the v11.6 law), eased on WALL
+       time (the v9.3 law), shortest arc, at most 2.2 rad/s; a turn of more than
+       ~20 degrees steps his feet round on the walk take at a slow rate — a
+       man turning on the spot, not a statue on a turntable — and a talk take
+       is never interrupted for it. The cutscenes start from this heading and
+       finish the turn onto the lens (encFace below). */
+    const ENC_NEAR = 6.5, ENC_TURN = 2.2;
+    let encStep = false;
+    const wrapA = (a) => { while (a > Math.PI) a -= Math.PI * 2; while (a < -Math.PI) a += Math.PI * 2; return a; };
+    function encFaceTick(wdt) {
+      const g = encik.group;
+      const dx = yaw.position.x - g.position.x, dz = yaw.position.z - g.position.z;
+      const d = Math.hypot(dx, dz);
+      const engaged = phase === 'talk' || phase === 'decide' || d < ENC_NEAR;
+      const want = engaged && d > 0.3 ? Math.atan2(dx, dz) : ENC.ry;
+      const diff = wrapA(want - g.rotation.y);
+      const turn = Math.sign(diff) * Math.min(Math.abs(diff) * (1 - Math.exp(-wdt * 5)), ENC_TURN * wdt);
+      g.rotation.y = wrapA(g.rotation.y + turn);
+      if (!encik.acts) return;
+      const idle = encik.cur === 'Idle_9' || (encStep && encik.cur === 'Walking');
+      if (!idle) { encStep = false; return; }
+      if (!encStep && Math.abs(diff) > 0.35) { encik.play('Walking', 0.55, 0.25); encStep = true; }
+      else if (encStep && Math.abs(diff) < 0.08) { encik.play('Idle_9', 1, 0.35); encStep = false; }
+    }
 
     /* ----------------------------------------------------------- the pile
        THE ENCIK IS THE PILE: walk up, act, four choices. Offered only once
@@ -815,11 +1168,39 @@
     ];
 
     /* ---------------------------------------------------------- per frame */
+    /* v14.5: THE MUSIC'S LEVEL, BY PHASE. Up while he clears his kit, down
+       under the conversation, and OUT under the four endings, where `e5theme`
+       has to come in over nothing rather than over a march. The film runs it
+       under the narration. Eased on wall time, written into the declaration
+       the engine reads every frame (e2c1's shape, v9.2). */
+    let marchK = 0, lastMix = 0;
+    function mixBeds(wdt) {
+      const st = getState();
+      const talked = phase === 'talk' || phase === 'decide';
+      let want;
+      if (st === 'play') want = phase === 'clear' ? 0.42 : phase === 'spot' ? 0.30 : 0.16;
+      else if (st === 'decide') want = 0.16;
+      else want = talked ? 0 : 0.30;                 // the film; and the endings, cards and rank
+      marchK += (want - marchK) * (1 - Math.exp(-wdt / 1.1));
+      DATA.ambience.beds[1][1] = marchK;
+    }
     function updateNotes(dt, t) {
       // the mixers run in every state (v5.19): a cutscene owns the poses, never the clocks
       if (encik.mixer && encik.group.visible) encik.mixer.update(dt);
       if (storeman.mixer && storeman.group.visible) storeman.mixer.update(dt);
       for (const e of extras) if (e.mixer && e.group.visible) e.mixer.update(dt);
+      for (const r of pushers) if (r.mixer) r.mixer.update(dt);
+      if (corporal && corporal.mixer) corporal.mixer.update(dt);
+      for (const w of walkers) if (w.rig.mixer && w.rig !== extras[1]) w.rig.mixer.update(dt);
+      const nowW = performance.now() / 1000;
+      const wdt = lastMix ? Math.min(0.5, nowW - lastMix) : 0;
+      lastMix = nowW;
+      walkTick(dt);                                   // the same dt the walkers' mixers were given
+      updateWorldLife(t);
+      mixBeds(wdt);
+      /* a card or a scene arriving mid-turn must not leave him stepping on
+         the spot underneath it: the turn is play's, and so is its walk take */
+      if (getState() !== 'play' && encStep) { encStep = false; if (encik.cur === 'Walking') encik.play('Idle_9', 1, 0.3); }
       if (getState() !== 'play') { lastWall = 0; return; }
       // the chapter's clock runs on WALL time (v7.1's law), only in play
       const now = performance.now() / 1000;
@@ -827,6 +1208,7 @@
       lastWall = now;
       if (!booted) { booted = true; applyPhase(kit ? kit.getPhase() : null); }
       runTodo(); runSpeak(); runQueue(); marchTick();
+      encFaceTick(wdt);
     }
     function updatePile(t) {
       if (getState() === 'cine') { pileRing.visible = false; return; }
@@ -850,6 +1232,7 @@
       dropTodo(); speakReset(); lineQ.length = 0;
       done.clear(); booted = false; dayClock.t = 0; lastWall = 0;
       marchAt = 0; marchN = 0; marchSeed = (marchSeed + 1) % 97;
+      walkReset();
       if (kit) {
         kit.root(false);
         kit.daylight(null, 0); kit.presence(0);
@@ -867,6 +1250,8 @@
       const solid = (o, pad = 0.14) => { o.updateWorldMatrix(true, false); const bb = new THREE.Box3().setFromObject(o); bb.expandByScalar(pad); bb.min.y = 0; bb.max.y = Math.max(bb.max.y, 1.40); out.push(bb); };
       for (const w of walls) b(w);
       for (const s of solids) solid(s);
+      // the Kamaz pair, from the model's own footprint (v14.5)
+      for (const bb of truckBoxes) out.push(bb.clone());
       // the three counters are columns, so the player stops at them rather than in them
       for (const c of [ARMS, STORES, OFFICE]) {
         out.push(new THREE.Box3(new THREE.Vector3(c.x - 1.45, 0, c.z - 0.45),
@@ -876,8 +1261,12 @@
       out.push(new THREE.Box3(new THREE.Vector3(ENC.x - 0.42, 0, ENC.z - 0.42),
                               new THREE.Vector3(ENC.x + 0.42, 1.8, ENC.z + 0.42)));
       // v14.1: nor through the two men on the line
-      for (const e of EXTRA) out.push(new THREE.Box3(new THREE.Vector3(e.x - 0.40, 0, e.z - 0.40),
+      // (v14.5: the second walks now, and a man who moves is not a wall)
+      for (const e of EXTRA) if (e.idle !== 'Walking') out.push(new THREE.Box3(new THREE.Vector3(e.x - 0.40, 0, e.z - 0.40),
                                                      new THREE.Vector3(e.x + 0.40, 1.8, e.z + 0.40)));
+      // v14.5: the push-up pair, bodies along x from the feet at x 11.0, and the corporal over them
+      out.push(new THREE.Box3(new THREE.Vector3(9.35, 0, PUSH[0].z - 0.45), new THREE.Vector3(11.5, 1.40, PUSH[PUSH.length - 1].z + 0.45)));
+      out.push(new THREE.Box3(new THREE.Vector3(CORP.x - 0.40, 0, CORP.z - 0.40), new THREE.Vector3(CORP.x + 0.40, 1.8, CORP.z + 0.40)));
       return out;
     }
     function dispose() {
@@ -894,12 +1283,16 @@
       encik.mixer?.stopAllAction();
       storeman.mixer?.stopAllAction();
       for (const e of extras) e.mixer?.stopAllAction();
+      for (const r of pushers) r.mixer?.stopAllAction();
+      corporal?.mixer?.stopAllAction();
+      for (const w of walkers) w.rig.mixer?.stopAllAction();
       for (const g of geos) g.dispose();
       for (const m of mats) {
         for (const k of ['map', 'roughnessMap', 'normalMap', 'emissiveMap', 'alphaMap']) m[k]?.dispose?.();
         m.dispose();
       }
       for (const t of madeTex) t?.dispose?.();
+      for (const t of signTex) t?.dispose?.();
       world.clear();
       S = null;
     }
@@ -920,6 +1313,9 @@
       // the chapter's own
       APRON, LINE, STORE, ARMS, STORES, OFFICE, ENC,
       encik, ENC_TALK, storeman, extras, putEncik,
+      pushers, corporal, walkers, TRUCKS,
+      encInfo: () => ({ ry: +encik.group.rotation.y.toFixed(3), cur: encik.cur, step: encStep,
+                        want: +Math.atan2(yaw.position.x - ENC.x, yaw.position.z - ENC.z).toFixed(3) }),
       cArms, cStores, cOffice,
       sayLine, after, dayClock, done,
       get phase() { return phase; },
@@ -927,7 +1323,7 @@
       clearInfo: () => ({ phase, done: [...done], obj: kit && kit.getPhase ? kit.getPhase() : null }),
       speakInfo: () => ({ t: +dayClock.t.toFixed(2), until: +speak.until.toFixed(2),
                           pending: speak.pending ? speak.pending.name : null, queued: lineQ.length }),
-      ambient: () => ({ marchAt: +marchAt.toFixed(1), marchN,
+      ambient: () => ({ marchAt: +marchAt.toFixed(1), marchN, music: +marchK.toFixed(3),
                         beds: DATA.ambience.beds.map(b => [b[0], +b[1].toFixed(3)]) }),
       hotspots,
       updateNotes, updatePile, updateFire, updateSlow,
@@ -990,6 +1386,93 @@
     return t;
   }
 
+  /* v14.5: a painted sign. The canvas is square and the plane is not, so
+     the lettering is drawn squashed by the plane's own aspect and the
+     stretch across the plane undoes it. */
+  function makeSign(THREE, cnv, text, aspect, bg, fg) {
+    const S = 512, [c, x] = cnv(S);
+    x.fillStyle = bg; x.fillRect(0, 0, S, S);
+    x.save(); x.scale(1, aspect);
+    const H = S / aspect;
+    x.strokeStyle = fg; x.lineWidth = Math.max(2, H * 0.05);
+    x.strokeRect(H * 0.08, H * 0.08, S - H * 0.16, H - H * 0.16);
+    let px = Math.floor(H * 0.56);
+    x.font = 'bold ' + px + 'px sans-serif';
+    while (x.measureText(text).width > S * 0.9 && px > 6) { px -= 2; x.font = 'bold ' + px + 'px sans-serif'; }
+    x.fillStyle = fg; x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.fillText(text, S / 2, H * 0.54);
+    x.restore();
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+    return t;
+  }
+  /* one bay by one storey of a camp block: a cream wall, the slab band, a
+     louvred window and its frame — repeated across a face by the caller */
+  function makeFacade(THREE, cnv) {
+    const S = 256, [c, x] = cnv(S);
+    x.fillStyle = '#dcd5c0'; x.fillRect(0, 0, S, S);
+    for (let i = 0; i < 1400; i++) {
+      const g = 200 + Math.random() * 30;
+      x.fillStyle = 'rgba(' + g + ',' + (g - 6) + ',' + (g - 22) + ',0.35)';
+      x.fillRect(Math.random() * S, Math.random() * S, 2, 2);
+    }
+    x.fillStyle = '#8e9b74'; x.fillRect(0, S - 22, S, 22);             // the slab band
+    x.fillStyle = '#b9b19b'; x.fillRect(0, S - 26, S, 4);
+    x.fillStyle = '#4d5257'; x.fillRect(46, 64, 164, 116);             // the frame
+    x.fillStyle = '#2b3036'; x.fillRect(54, 72, 148, 100);             // the dark behind the louvres
+    for (let y = 78; y < 168; y += 12) {                               // the louvres
+      x.fillStyle = '#c9cfd2'; x.fillRect(54, y, 148, 5);
+      x.fillStyle = 'rgba(255,255,255,0.35)'; x.fillRect(54, y, 148, 1);
+    }
+    x.fillStyle = '#e9e4d6'; x.fillRect(40, 180, 176, 7);              // the sill
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
+    t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 4;
+    return t;
+  }
+  function makeChainLink(THREE, cnv) {
+    const S = 128, [c, x] = cnv(S);
+    x.clearRect(0, 0, S, S);
+    x.strokeStyle = '#8f969a'; x.lineWidth = 2.2;
+    const n = 12, step = S / n;
+    for (let i = -n; i < 2 * n; i++) {
+      x.beginPath(); x.moveTo(i * step, 0); x.lineTo(i * step + S, S); x.stroke();
+      x.beginPath(); x.moveTo(i * step, S); x.lineTo(i * step + S, 0); x.stroke();
+    }
+    x.fillStyle = '#7d8488'; x.fillRect(0, 0, S, 4); x.fillRect(0, S - 4, S, 4);   // the top and bottom rails
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
+    t.wrapS = t.wrapT = THREE.RepeatWrapping;
+    return t;
+  }
+  /* the Singapore flag, exactly as e2c1 draws it (v9.3): 2:3, #EE2536 over
+     white, the crescent and its ring of five stars in the hoist half */
+  function makeSgFlag(THREE, cnv) {
+    const S = 256, [c, ctx] = cnv(S), SG_RED = '#ee2536';
+    const W = S, H = S * 2 / 3, y0 = (S - H) / 2;
+    ctx.fillStyle = '#0b0b0b'; ctx.fillRect(0, 0, S, S);
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, y0, W, H);
+    ctx.fillStyle = SG_RED;   ctx.fillRect(0, y0, W, H / 2);
+    const cy = y0 + H / 4, k = W / 384;
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath(); ctx.arc(62 * k, cy, 42 * k, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = SG_RED;
+    ctx.beginPath(); ctx.arc(80 * k, cy, 35 * k, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#ffffff';
+    for (let i = 0; i < 5; i++) {
+      const a = -Math.PI / 2 + i * Math.PI * 2 / 5;
+      const sx = 110 * k + Math.cos(a) * 22 * k, sy = cy + Math.sin(a) * 22 * k;
+      ctx.beginPath();
+      for (let j = 0; j < 10; j++) {
+        const r = (j % 2 ? 4.6 : 10.5) * k, t = -Math.PI / 2 + j * Math.PI / 5;
+        const px = sx + Math.cos(t) * r, py = sy + Math.sin(t) * r;
+        j ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
+      }
+      ctx.closePath(); ctx.fill();
+    }
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
+    // the plane is 3:2 and the flag sits in the middle two thirds of the square
+    t.repeat.set(1, 2 / 3); t.offset.set(0, 1 / 6);
+    return t;
+  }
+
   /* ------------------------------------------------------------- the film
      35 s, one set, no pocket. It ends ON THE RECOGNITION, so play opens with
      the encik already standing there and the player deciding when to walk
@@ -999,7 +1482,11 @@
     const { step, sfx, fade, camTo, yawTo, pitchTo, faceFrom, rawK, smoothK, stage, armR, kit } = api;
     const E = stage.ENC;
 
-    const A = { x: -11.5, y: 1.80, z: -1.2 };          // the apron, wide
+    /* v14.5: A was (-11.5, -1.2) — inside the first Kamaz, which is 7 m
+       long where the box it replaced was 4.4. It stands in front of the
+       noses now, looking down the apron past them — 3.8 m off them, because
+       photographed from 2.2 m the first cab filled a quarter of the frame. */
+    const A = { x: -11.5, y: 1.80, z: 3.0 };           // the apron, wide
     /* v14.1: B was (-8.0, -3.6), which is INSIDE the third parked truck's
        footprint (x -8.3..-6.1, z -7.7..-3.1) — the shot skimmed 33 cm over
        a cargo deck and looked into a cab two metres away.
@@ -1028,8 +1515,8 @@
     fade(0.55, 2.40, 1, 0);
 
     // 1 · the apron in the afternoon, a slow drift
-    camTo(0.0, 8.6, A, { x: -9.4, y: 1.74, z: -0.4 }, rawK);
-    yawTo(0.0, 8.6, faceFrom(A.x, A.z, 6.0, -1.0), faceFrom(-9.4, -0.4, 8.0, -0.6), rawK);
+    camTo(0.0, 8.6, A, { x: -9.4, y: 1.74, z: 3.2 }, rawK);
+    yawTo(0.0, 8.6, faceFrom(A.x, A.z, 6.0, -1.0), faceFrom(-9.4, 3.2, 8.0, -0.6), rawK);
     pitchTo(0.0, 2.0, 0.10, 0.0, smoothK);
     sfx(0.85, 'n5pro1');                               // 3.08 s → 3.93
 
@@ -1129,11 +1616,27 @@
      0.85. He leaves AWAY from the camera, so he never walks into the lens,
      and along the apron rather than into the block or the walkway pillars at
      z 5.70. `restore()`/`reset()` put him back — `putEncik` already did. */
-  function encGo(stage, api, at, camX) {
+  /* v14.5: HE FACES THE LENS. Play turns his body to the player (encFaceTick),
+     so a scene opens with him already most of the way round; this finishes
+     the turn onto the camera over the scene's first 0.6 s — the camera IS the
+     player — and hands the heading to encGo, which used to start its walk-off
+     turn from his OLD fixed heading and so snapped him back to it first. It
+     is read when the scene is built, which is the frame the scene starts. */
+  function encFace(stage, api, P0) {
+    const { tr, smoothK } = api;
+    const g = stage.encik.group, E = stage.ENC;
+    const ry0 = g.rotation.y, ry1 = Math.atan2(P0.x - E.x, P0.z - E.z);
+    let d = ry1 - ry0;
+    while (d > Math.PI) d -= Math.PI * 2;
+    while (d < -Math.PI) d += Math.PI * 2;
+    tr(0, 0.6, k => { g.rotation.y = ry0 + d * k; }, smoothK);
+    return ry1;
+  }
+  function encGo(stage, api, at, camX, ryFrom) {
     const { step, tr, rawK, smoothK } = api;
     const E = stage.ENC;
     const dir = camX <= E.x ? 1 : -1;
-    const ry0 = E.ry, ry1 = dir > 0 ? Math.PI / 2 : -Math.PI / 2;
+    const ry0 = ryFrom, ry1 = dir > 0 ? Math.PI / 2 : -Math.PI / 2;
     let d = ry1 - ry0;
     while (d > Math.PI) d -= Math.PI * 2;
     while (d < -Math.PI) d += Math.PI * 2;
@@ -1148,6 +1651,7 @@
     const { step, sfx, fade, camTo, yawTo, pitchTo, faceFrom, smoothK, stage, handsRoot } = api;
     const P0 = P(s), E = stage.ENC;
     const Y_E = faceFrom(P0.x, P0.z, E.x, E.z);
+    const RY = encFace(stage, api, P0);
     step(0, () => { handsRoot.visible = false; });
     yawTo(0, 1.0, s.yawRot, Y_E, smoothK);
     pitchTo(0, 1.0, s.pitchX, 0.03, smoothK);
@@ -1173,7 +1677,7 @@
        re-cut; at 0.75 under the v5.27 duck it sits ~17 dB below the cast. */
     sfx(34.20, 'e5theme', 0.75);
     sfx(38.10, 'e5A5'); encTalk(stage, step, 38.10, 5.56, stage.ENC_TALK[0]); // → 43.66
-    encGo(stage, api, 44.2, P0.x);
+    encGo(stage, api, 44.2, P0.x, RY);
     sfx(45.10, 'n5close');                                      // runs on under the card
     fade(44.8, 47.4, 0, 1);
     step(48.0, () => { handsRoot.visible = true; });
@@ -1186,6 +1690,7 @@
     const { step, sfx, fade, camTo, yawTo, pitchTo, faceFrom, smoothK, stage, handsRoot } = api;
     const P0 = P(s), E = stage.ENC;
     const Y_E = faceFrom(P0.x, P0.z, E.x, E.z);
+    const RY = encFace(stage, api, P0);
     step(0, () => { handsRoot.visible = false; });
     yawTo(0, 1.0, s.yawRot, Y_E, smoothK);
     pitchTo(0, 1.0, s.pitchX, 0.03, smoothK);
@@ -1198,7 +1703,7 @@
     camTo(25.8, 32.6, shot(P0, E, IN), shot(P0, E, WIDE, 1.66), smoothK);
     sfx(24.00, 'e5theme', 0.75);                                // the close, under his last answer
     sfx(26.60, 'e5B4'); encTalk(stage, step, 26.60, 4.52, stage.ENC_TALK[1]); // → 31.12  · quiet, first time in years
-    encGo(stage, api, 31.9, P0.x);
+    encGo(stage, api, 31.9, P0.x, RY);
     sfx(32.70, 'n5close');
     fade(32.4, 35.0, 0, 1);
     step(35.6, () => { handsRoot.visible = true; });
@@ -1212,6 +1717,7 @@
     const { step, sfx, fade, camTo, yawTo, pitchTo, faceFrom, smoothK, stage, handsRoot } = api;
     const P0 = P(s), E = stage.ENC;
     const Y_E = faceFrom(P0.x, P0.z, E.x, E.z);
+    const RY = encFace(stage, api, P0);
     step(0, () => { handsRoot.visible = false; });
     yawTo(0, 1.0, s.yawRot, Y_E, smoothK);
     pitchTo(0, 1.0, s.pitchX, 0.03, smoothK);
@@ -1224,7 +1730,7 @@
        worst option was the one player who reached the end of the episode
        with no music under it. */
     sfx(7.40, 'e5theme', 0.75);
-    encGo(stage, api, 12.5, P0.x);
+    encGo(stage, api, 12.5, P0.x, RY);
     sfx(13.00, 'n5close');
     fade(12.8, 15.2, 0, 1);
     step(15.8, () => { handsRoot.visible = true; });
@@ -1237,6 +1743,7 @@
     const { step, sfx, fade, camTo, yawTo, pitchTo, faceFrom, smoothK, stage, handsRoot } = api;
     const P0 = P(s), E = stage.ENC;
     const Y_E = faceFrom(P0.x, P0.z, E.x, E.z);
+    const RY = encFace(stage, api, P0);
     step(0, () => { handsRoot.visible = false; });
     yawTo(0, 1.0, s.yawRot, Y_E, smoothK);
     pitchTo(0, 1.0, s.pitchX, 0.03, smoothK);
@@ -1248,7 +1755,7 @@
     camTo(19.0, 27.4, shot(P0, E, IN), shot(P0, E, WIDE, 1.66), smoothK);
     sfx(18.00, 'e5theme', 0.75);                                // the close, under his last answer
     sfx(19.50, 'e5D3'); encTalk(stage, step, 19.50, 7.00, stage.ENC_TALK[1]); // → 26.50
-    encGo(stage, api, 27.2, P0.x);
+    encGo(stage, api, 27.2, P0.x, RY);
     sfx(28.00, 'n5close');
     fade(27.7, 30.3, 0, 1);
     step(30.9, () => { handsRoot.visible = true; });
