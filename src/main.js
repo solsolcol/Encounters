@@ -1147,6 +1147,27 @@ function interactNow() {
   if (r !== false) { snd('uiclick', 0.35); if (h.once) { h.done = true; setInteractBadge(null); } }
   return r !== false;
 }
+/* v14.7: A HOTSPOT YOU CAN TAP. Until now the pile was the one thing a tap
+   on the world could reach (`stage.pile.hits`, v2.1); a hotspot was pressed
+   through the badge. Chad, of the amulet: "the player can interact with it
+   (E or tap on it)". So a hotspot may declare `hits(clientX, clientY)` — the
+   chapter's own raycast onto its own mesh — and a tap or an unlocked click
+   that lands on it fires it, inside its radius and on the same terms as the
+   badge. Only a hotspot that DECLARES hits can be reached this way, and no
+   hotspot before v14.7 declares one, so nothing that shipped can change. */
+function hotspotTap(x, y) {
+  if (state !== 'play' || ev) return false;
+  for (const h of hotspotList()) {
+    if (!h || !h.pos || typeof h.hits !== 'function' || h.done
+        || (typeof h.enabled === 'function' && !h.enabled())) continue;
+    const d = Math.hypot(yaw.position.x - h.pos.x, yaw.position.z - h.pos.z);
+    if (d >= (h.radius || 2.2) || !h.hits(x, y)) continue;
+    const r = typeof h.onInteract === 'function' ? h.onInteract(h) : false;
+    if (r !== false) { snd('uiclick', 0.35); if (h.once) { h.done = true; if (activeSpot === h) setInteractBadge(null); } }
+    return r !== false;
+  }
+  return false;
+}
 
 /* ---- objective, timer, waypoint ---------------------------------------- */
 /* v8.7: `opts.complete === false` says this change is not a completion —
@@ -1630,6 +1651,10 @@ function torchAvailSync() {
   document.body.classList.toggle('hasTorch', ok);
   if (!ok && torchOn && torchDecl && torchDecl.item) torchSet(false);   // unequipped while it was on: the light goes with it
   if (invUrge && !inv.bag.includes(invUrge)) invUrge = null;         // equipped (or dropped): the bag stops asking
+  /* v14.7: every change to what is worn passes through here (the panel's
+     paint, the kit's bag verbs, a restore, a new game), and putting the
+     amulet on or taking it off is one: its yellow comes and goes with it */
+  wardPaint();
 }
 function torchToggle() {
   if (!torchLight || state !== 'play' || !torchAvail()) return;
@@ -2374,6 +2399,7 @@ function paintConduct(cd) {
 /* a stat moved by play, with the same tick the drain uses */
 function kitAward(stat, delta) {
   if (!(stat in stats) || !Number.isFinite(delta) || !delta) return;
+  if (stat === 'sanity' && delta < 0) delta = -wardSoak(-delta, true);   // v14.7: the amulet takes it first
   const before = stats[stat];
   stats[stat] = Math.max(0, Math.min(100, stats[stat] + delta));
   const moved = stats[stat] - before;
@@ -3333,6 +3359,7 @@ function kitReset() {
   if (CH.weapon) weaponSetup(CH.weapon); else weaponTeardown();   // v12.0
   kitRooted = false; kitHurtSet(null);   // v11.1
   activeSpot = null;
+  if (unl.id) unlockClose('force');      // v14.7: a splash never outlives the run it opened in
 }
 /* v11.1: HURT. A chapter holds the red damage frame on the screen and bleeds
    sanity on WALL time until the player acts (chapter 3's pressure: Chad,
@@ -3384,6 +3411,17 @@ const KIT = {
   has: id => invHas(id),
   equipped: id => { const def = ITEM_DEFS[id]; return !!def && !!def.slot && inv.gear[def.slot] === id; },
   urge: id => { invUrge = id || null; },
+  /* v14.7: THE NINETEENTH SEAM — the Item Unlocked splash (see kitUnlock).
+     `unlock(id, { onClose })` opens it from play and answers false if it
+     cannot; `unlockOpen()` is the read; `itemWarm(id)` starts an item's icon
+     and model loading ahead of the moment they are needed, so the splash
+     opens on the model rather than on its stand-in. Episode 1's other four
+     chapters and all of episode 2 call none of them. */
+  unlock: kitUnlock,
+  unlockOpen: () => !!unl.id,
+  itemWarm: id => { if (ITEM_DEFS[id]) { itemArtGet(id); ivModel(id); } },
+  /* v14.7: what the worn ward holds right now (0 when none is worn) */
+  wardLeft: () => wardLeft(),
   torchAvail,
   /* v12.0: the weapon — a film or a scene forces it out or away (null
      hands it back to the bag), a chapter fires or reloads through its own
@@ -3854,9 +3892,12 @@ function beginAppearance() {
 function applyChunk(v) {
   if (state !== 'play') return;
   const n = CHUNK[v] || 4;
-  stats.sanity -= n;
+  /* v14.7: the amulet takes the bite first; only what is left reaches
+     sanity. With no ward worn `rest` is exactly n, so this is v14.6 */
+  const rest = wardSoak(n, true);
+  stats.sanity -= rest;
   syncBars();
-  sanityTick(n);
+  if (Math.round(rest) > 0) sanityTick(Math.round(rest));
   if (stats.sanity <= 0) lose();
 }
 
@@ -4447,6 +4488,7 @@ canvas.addEventListener('mousedown', e => {
     stage.pile.interact();
     return;
   }
+  if (!locked && hotspotTap(e.clientX, e.clientY)) return;   // v14.7: a hotspot that can be clicked on
   tryLock();                         // upgrade to real free look where allowed
 });
 
@@ -4520,8 +4562,9 @@ function onTouchEnd(e) {
     touchStarts.delete(t.identifier);
     if (s && performance.now() - s.at < 380
         && Math.hypot(t.clientX - s.x, t.clientY - s.y) < 15
-        && state === 'play' && stage.pile.hits(t.clientX, t.clientY)
-        && stage.pile.interact()) {
+        && state === 'play'
+        && ((stage.pile.hits(t.clientX, t.clientY) && stage.pile.interact())
+            || hotspotTap(t.clientX, t.clientY))) {   // v14.7: or a hotspot that can be tapped on
       // The browser follows an unprevented touchend with a synthetic click at
       // the same point — which by then lands on the panel this tap just
       // opened, and picks whichever choice is under your finger. Swallow it.
@@ -5905,7 +5948,13 @@ const ITEM_DEFS = {
      torch is the only item in the game for now), but it stays DEFINED —
      rifle mode's seam is "the weapon is out while its item is in the hand
      slot", and the fixture chapter proves that seam with it. */
-  rifle: { icon: 'e-rifle', slot: 'hand' }
+  rifle: { icon: 'e-rifle', slot: 'hand' },
+  /* v14.7: Chad's LP Phiboon Rian (small), which chapter 3's auntie gives
+     the boy. Worn in the AMULET box (the neck slot). `ward` is what it
+     protects: fifteen points of sanity damage taken before sanity is, once
+     per EPISODE — see THE WARD, below. No `view`: the model is baked with
+     its face to +z, toward the lens. */
+  amulet: { icon: 'e-amulet', slot: 'neck', art: 'iconamulet', model: 'phiboon', ward: 15 }
 };
 const itemName = id => T('item.' + id + '.name', id);
 const itemDesc = id => T('item.' + id + '.desc', '');
@@ -5918,6 +5967,75 @@ const inv = {
   open: false
 };
 // v14.6: a new game starts with nothing — no beads worn, nothing carried
+
+/* ── v14.7: THE WARD — an item that takes sanity damage first ────────────
+   Chad: "When equipped, the sanity bar of the player should have an
+   additional +15 as a yellow bar ... Anytime the player takes sanity damage
+   ... it will first deduct from this yellow armour bar fully before
+   deducting from the actual red sanity value. When the amulet has used up
+   its 15 value, it will remain powerless for the entire episode's subsequent
+   chapters, until the very end of the episode. When player moves into the
+   next episode, the amulet will be recharged back to its original value
+   again ... If the player unequips the amulet at any time, its effect will
+   be removed."
+
+   So an item may declare `ward: N`, and the charge is ONE pool that belongs
+   to the EPISODE — not to the chapter, and not to the stats, which go back
+   to their start at every chapter:
+     charge — what is left; a float, because the drain takes it a fraction
+              of a point a frame
+     ep     — the episode it was charged for; entering another refills it
+     enter  — its value when this chapter was ENTERED, so a faint and a Retry
+              rewind it exactly as they rewind the stats (a faint must not
+              be a way to lose the amulet's charge, nor a way to refill it)
+   It protects only while a ward item is WORN. Taking it off keeps what is
+   left and removes the effect; wearing it again brings the effect back
+   with what was left — it never refills by being put back on. Every sanity
+   DECREASE in the engine goes through wardSoak() — the ghost's chunks, the
+   drain, the hurt bleed, every kit award, a choice's delta and the banked
+   conduct — and nothing else can reach sanity (chapters never write the
+   stats). With no ward worn, wardSoak() hands back exactly what it was
+   given, so every player who does not wear one plays v14.6 to the number.
+   One pool, sized by the largest ward in ITEM_DEFS: there is one ward item
+   today, and a second would need its own pool. */
+const WARD_FULL = Object.values(ITEM_DEFS).reduce((m, d) => Math.max(m, +d.ward || 0), 0);
+const ward = { charge: WARD_FULL, ep: episodeOf(CH_KEY), enter: WARD_FULL };
+/* the ward item being worn, or null */
+function wardItem() {
+  for (const k of GEAR_SLOTS) {
+    const id = inv.gear[k];
+    if (id && ITEM_DEFS[id] && ITEM_DEFS[id].ward > 0) return id;
+  }
+  return null;
+}
+/* what protects RIGHT NOW: the charge while one is worn, else nothing */
+const wardLeft = () => (wardItem() ? Math.max(0, ward.charge) : 0);
+/* the charge belongs to an episode: entering another one refills it */
+function wardEpisode() {
+  const ep = episodeOf(CH_KEY);
+  if (ward.ep !== ep) { ward.ep = ep; ward.charge = WARD_FULL; ward.enter = WARD_FULL; }
+}
+/* n points of sanity damage arrive: the ward takes what it can, and what is
+   returned is what reaches sanity. `instant` throws the ward's share as a
+   tick at once (a chunk, an award, a choice); a drain batches it like the
+   red ticks do. */
+let wardAcc = 0, wardTickAt = 0;
+function wardSoak(n, instant) {
+  if (!(n > 0) || !wardItem() || !(ward.charge > 0)) return n;
+  const took = Math.min(ward.charge, n);
+  ward.charge -= took;
+  if (ward.charge < 1e-6) ward.charge = 0;
+  if (instant) { const r = Math.round(took); if (r > 0) sanityTick(r, 'w'); }
+  else {
+    wardAcc += took;
+    const now = performance.now();
+    if (wardAcc >= 1 && now - wardTickAt >= 460) {
+      const r = Math.floor(wardAcc); wardAcc -= r; wardTickAt = now;
+      sanityTick(r, 'w');
+    }
+  }
+  return n - took;
+}
 
 /* ── the state seam ─────────────────────────────────────────────────────
    Everything a run IS, as plain JSON: the chapter key, the three stats,
@@ -5963,6 +6081,7 @@ function saveCheckpoint(extra) {
     };
     const base = worldState();
     if (extra && extra.stats) base.stats = { ...extra.stats };
+    if (extra && extra.ward) base.ward = { ...extra.ward };   // v14.7: a faint and a boundary say what the amulet holds
     if (extra && extra.ch && chapterExists(extra.ch)) base.ch = extra.ch;
     localStorage.setItem(SAVE_KEY, JSON.stringify({
       ...base, at, done: !!(extra && extra.done), t: Date.now()
@@ -6016,6 +6135,9 @@ function worldState() {
     phase: kitPhase,
     conduct: { s: conductAcc.s, a: conductAcc.a, notes: conductAcc.notes.slice() },
     choices: { ...runChoices },
+    /* v14.7: the amulet's charge, the episode it belongs to and its value at
+       this chapter's entry — absent from every save before v14.7 */
+    ward: { charge: ward.charge, ep: ward.ep, enter: ward.enter },
     /* v12.0: the weapon's rounds and magazines, absent from every save
        before this release and from every chapter without a weapon */
     ...(weaponDecl ? { weapon: { rounds: weaponRounds, mags: weaponMags } } : {})
@@ -6078,6 +6200,18 @@ function applyState(st) {
   if (st.choices && typeof st.choices === 'object') {
     for (const [k, v] of Object.entries(st.choices)) if (typeof v === 'string' && /^[A-D]$/.test(v) && chapterExists(k)) runChoices[k] = v;
   }
+  /* v14.7: the amulet's charge, tolerated absent (a save from before it
+     existed leaves the ward as the chapter entry set it). A save written at
+     an episode boundary carries the old episode, and the rule then refills
+     it — entering a new episode recharges the amulet. */
+  if (st.ward && typeof st.ward === 'object') {
+    const wn = v => (typeof v === 'number' && Number.isFinite(v)) ? Math.max(0, Math.min(WARD_FULL, v)) : null;
+    const c = wn(st.ward.charge), e = wn(st.ward.enter), ep = Number(st.ward.ep);
+    if (c !== null) ward.charge = c;
+    ward.enter = e !== null ? e : ward.charge;
+    if (Number.isInteger(ep) && ep >= 1) ward.ep = ep;
+  }
+  wardEpisode();
   syncBars();
   return true;
 }
@@ -6178,11 +6312,20 @@ function invInfoPaint(id) {
     ? `<button class="ivZoom" type="button" data-zoom="${showing}" aria-label="${T('inv.zoom')}"><svg aria-hidden="true"><use href="#e-zoom"/></svg></button>`
     : '';
   box.classList.add('has');
-  box.innerHTML = `<div class="ivPane">${view}${zoom}</div><div class="ivText"><h4>${itemName(showing)}</h4><p>${itemDesc(showing)}</p></div>`;
+  box.innerHTML = `<div class="ivPane">${view}${zoom}</div><div class="ivText"><h4>${itemName(showing)}</h4><p>${itemDesc(showing)}</p>${wardLine(showing)}</div>`;
   paintArt(box);
   if (def.model) ivModel(showing);
 }
 
+/* v14.7: a ward item says what it has left — the one number the player
+   cannot otherwise see once its yellow is gone from the bar */
+function wardLine(id) {
+  const def = ITEM_DEFS[id]; if (!def || !(def.ward > 0)) return '';
+  const n = Math.round(Math.max(0, ward.charge));
+  const txt = n > 0 ? T('inv.wardLeft', 'Protection left: {n} of {max}').replace('{n}', n).replace('{max}', def.ward)
+                    : T('inv.wardSpent', 'Spent for this episode. It recharges when the next episode begins.');
+  return txt ? `<p class="ward${n > 0 ? '' : ' spent'}">${txt}</p>` : '';
+}
 const slotGet = (kind, key) => kind === 'gear' ? inv.gear[key] : inv.bag[+key];
 const slotSet = (kind, key, v) => { if (kind === 'gear') inv.gear[key] = v; else inv.bag[+key] = v; };
 const fits = (id, kind, key) => kind === 'bag' || ITEM_DEFS[id]?.slot === key;
@@ -6458,9 +6601,19 @@ function ivBlit(cv, id, yawA, pitchA, k, renderPx) {
 }
 function ivFrame(now) {
   iv.raf = 0;
-  if (!inv.open) return;
+  if (!inv.open && !unl.id) return;
   iv.raf = requestAnimationFrame(ivFrame);
   const t = (now || performance.now()) / 1000;
+  /* v14.7: the Item Unlocked splash owns the renderer while it is up (the
+     panel cannot be open under it). It turns on WALL time, face first: a
+     full turn in about ten seconds, the "slowly" Chad asked for, and the
+     same speed on a phone that draws a frame a second as on a laptop. */
+  if (unl.id) {
+    const cv = $('unCv');
+    const secs = ((now || performance.now()) - unl.t0) / 1000;
+    if (cv) ivBlit(cv, unl.id, secs * 0.6, 0.1, 1, 0);
+    return;
+  }
   const z = iv.zoom;
   if (z.id) {
     const cv = $('ivZoomCv');
@@ -6545,6 +6698,85 @@ function ivZoomClose() {
   $('izClose')?.addEventListener('click', ivZoomClose);
   $('invZoom')?.addEventListener('click', e => { if (e.target === $('invZoom')) ivZoomClose(); });
 }
+
+/* ── v14.7: ITEM UNLOCKED — the NINETEENTH SEAM, `kit.unlock(id)` ─────────
+   Chad: "The moment the player picks it up, i want a nice special 'Item
+   unlocked' effect on the middle of the screen like a window frame, but not
+   really a window frame, kind of like a semi-opaque splash screen that
+   momentarily takes over the screen ... with nice sound effects. In this
+   splash screen, the player can see the full 3d model of the amulet
+   spinning/rotating slowly in the middle, with a close button at the bottom
+   in the middle."
+   So: a dark, see-through takeover with slow gold rays behind the item, ITEM
+   UNLOCKED over it, the item's MODEL turning in the middle (the item views'
+   own renderer, `iv` — no new WebGL context), its name, "Added to your bag",
+   and Close at the bottom. It is a screen STATE of its own, `unlock`, so
+   every "is it play?" gate in the engine closes under it — no walking, no
+   drain, no ghost, no hotspot, no menu, no bag; the mouse is released so
+   Close can be clicked and taken back when it goes. Enter, Space, Esc and E
+   close it too, but not in its first 0.6 s: the E that picked the thing up
+   must not also dismiss the moment it earned. `onClose` is the chapter's —
+   what happens next is the story's business. Any chapter may call it; only
+   chapter 3 does, so nothing shipped before v14.7 can reach it. */
+const UNLOCK_GUARD = 600;
+const unl = { id: null, t0: 0, onClose: null, outT: 0 };
+function kitUnlock(id, opts = {}) {
+  if (!ITEM_DEFS[id] || unl.id || state !== 'play' || fainting) return false;
+  const el = $('unlock'); if (!el) return false;
+  clearTimeout(unl.outT);
+  unl.id = id; unl.onClose = typeof opts.onClose === 'function' ? opts.onClose : null;
+  for (const k in keys) keys[k] = false;       // a held W does not keep walking under it
+  state = 'unlock';
+  $('unName').textContent = itemName(id);
+  el.classList.remove('hide', 'out');
+  el.classList.toggle('flat', !ITEM_DEFS[id].model || iv.state[id] === 'none');
+  document.body.classList.add('unlockopen');
+  document.exitPointerLock?.();
+  itemArtGet(id); ivModel(id);                 // the icon stands in until the model is ready
+  const cv = $('unCv');
+  if (cv) { const g = cv.getContext('2d'); if (g) g.clearRect(0, 0, cv.width, cv.height); }
+  ivStart();
+  snd('itemunlock', 0.9);
+  haptic([24, 60, 90]);
+  /* the guard's clock starts HERE, after the work above: the first splash of
+     a session creates the item renderer (ivInit renders a room environment),
+     which is milliseconds on a phone and seconds on a software-rendered box,
+     and a guard measured from before it could have expired before the
+     splash was ever drawn */
+  unl.t0 = performance.now();
+  return true;
+}
+function unlockClose(how) {
+  if (!unl.id) return false;
+  if (how !== 'force' && performance.now() - unl.t0 < UNLOCK_GUARD) return false;
+  const el = $('unlock');
+  unl.id = null;
+  document.body.classList.remove('unlockopen');
+  if (el) {
+    if (how === 'force') el.classList.add('hide');
+    else { el.classList.add('out'); unl.outT = setTimeout(() => el.classList.add('hide'), 240); }
+  }
+  const cb = unl.onClose; unl.onClose = null;
+  if (how === 'force') return true;            // torn down with the run (kitReset): no story, no sound
+  state = 'play';
+  snd('uiconfirm', 0.45);
+  /* the mouse goes back to looking — from a click or a key, which are real
+     gestures. Not from Esc: the browser does not count it as one, a refused
+     lock marks the page as unable to lock at all, and the next click on the
+     world takes it back anyway (mousedown's tryLock). */
+  if (how !== 'esc') tryLock();
+  if (cb) { try { cb(); } catch (e) { console.warn('unlock onClose failed', e); } }
+  return true;
+}
+$('unClose')?.addEventListener('click', () => unlockClose('click'));
+addEventListener('keydown', e => {
+  if (!unl.id) return;
+  if (['Enter', 'Space', 'Escape', 'KeyE', 'NumpadEnter'].includes(e.code)) {
+    e.preventDefault();
+    if (e.repeat) return;                      // an E still held from the pickup is not a second press
+    unlockClose(e.code === 'Escape' ? 'esc' : 'key');
+  }
+});
 
 /* ── MASTER ZAV, in three dimensions (v5.08) ──────────────────────────
    Chad's Guild Wars screen: the character himself turns in the middle of
@@ -7786,6 +8018,8 @@ function setChapter(key) {
   if (key === CH_KEY) return true;                 // already there; not an error
   CH_KEY = key;
   CH = window.__CHAPTERS__[key];
+  wardEpisode();                   // v14.7: a new episode recharges the amulet ...
+  ward.enter = ward.charge;        // ... and this chapter is entered with what it holds
   SHRINE.set(CH.shrine.x, 0, CH.shrine.z);
   GHOST_HOME.set(CH.ghostHome.x, 0, CH.ghostHome.z);
   Object.assign(BOUNDS, CH.bounds);
@@ -8384,8 +8618,9 @@ function newGame(wipe = true) {
      into episode 2 in the same sitting kept the torch. Chad: "The player
      should start episode 1 with no items at all." */
   invClearAll();
-  syncBars();
   if (wipe && CH_KEY !== BOOT_CH) setChapter(BOOT_CH);
+  ward.ep = episodeOf(CH_KEY); ward.charge = ward.enter = WARD_FULL;   // v14.7: a new game, a full amulet
+  syncBars();
   enterWorld(() => {
     yaw.position.copy(SPAWN.pos);
     yaw.rotation.y = SPAWN.rot;
@@ -8552,6 +8787,28 @@ function syncBars() {
   ui.vSan.textContent = Math.round(cl(stats.sanity));
   ui.vAwa.textContent = Math.round(cl(stats.awareness));
   ui.vWis.textContent = Math.round(cl(stats.wisdom));
+  wardPaint();
+}
+function wardPaint() {
+  const cl = v => Math.max(0, Math.min(100, v));
+  /* v14.7: THE AMULET'S YELLOW. Laid OVER the right end of the red rather
+     than added after it, so the bar is always exactly as long as sanity —
+     Chad: "the total length of the sanity bar should not be changed at all
+     ... you cut out part of the red bar to replace it with this yellow".
+     A hit the amulet takes leaves the length where it was and narrows the
+     yellow, which is the truth: sanity did not move. `+N` beside the number
+     says what it has left. None of it exists while no ward is worn or its
+     charge is spent, so the bar is v14.6's for everyone else. */
+  const bArm = ui.bArm || (ui.bArm = $('bArm'));
+  const w = wardLeft(), s = cl(stats.sanity), wv = Math.min(w, s);
+  if (bArm) {
+    const on = wv > 0.01;
+    bArm.classList.toggle('on', on);
+    if (on) { bArm.style.left = (s - wv) + '%'; bArm.style.width = wv + '%'; }
+  }
+  const lbl = w >= 0.5 ? '+' + Math.round(w) : null;
+  if (lbl) { if (ui.vSan.dataset.arm !== lbl) ui.vSan.dataset.arm = lbl; }
+  else if (ui.vSan.dataset.arm) delete ui.vSan.dataset.arm;
 }
 syncBars();
 
@@ -8680,6 +8937,9 @@ function animateStatRow(row) {
     snd('uiclick', 0.3);
     const bar = row.querySelector('.track i'), val = row.querySelector('.v');
     const from = +row.dataset.from, to = +row.dataset.to;
+    /* v14.7: the amulet's yellow on the sanity row, moving with the red */
+    const arm = row.querySelector('.track i.fArm');
+    const wFrom = +row.dataset.wfrom || 0, wTo = +row.dataset.wto || 0;
     const t0 = performance.now(), mySeq = cardSeq;
     const step = now => {
       if (mySeq !== cardSeq) return res();
@@ -8687,6 +8947,10 @@ function animateStatRow(row) {
       const e = 1 - Math.pow(1 - k, 3);
       const v = from + (to - from) * e;
       bar.style.width = Math.max(0, Math.min(100, v)) + '%';
+      if (arm) {
+        const vv = Math.max(0, Math.min(100, v)), w = Math.min(vv, wFrom + (wTo - wFrom) * e);
+        arm.style.left = (vv - w) + '%'; arm.style.width = w + '%';
+      }
       val.textContent = Math.round(v);
       if (k >= 1) { snd('uiconfirm', 0.25); return setTimeout(res, cardHurry ? 0 : 140); }
       requestAnimationFrame(step);
@@ -8701,19 +8965,33 @@ const STAT_ROW = {
   awareness: { cls: 'sAwa', fill: 'fAwa', icon: 'i-awa' },
   wisdom:    { cls: 'sWis', fill: 'fWis', icon: 'i-wis' }
 };
-function statRowsHTML(before, d) {
+function statRowsHTML(before, d, w) {
   const cl = v => Math.max(0, Math.min(100, v));
   /* v10.3: a delta of ZERO still gets its row (Chad, on episode 2's first
      option: "somehow there is no sanity bar at the outcomes part"). No
      episode-1 choice carries a zero, so their cards are unchanged. */
   return STAT_ORDER.filter(k => k in d).map(k => {
     const r = STAT_ROW[k], from = cl(before[k]), to = cl(before[k] + d[k]);
-    return `<div class="srow ${r.cls}" data-from="${from.toFixed(0)}" data-to="${to.toFixed(0)}">`
+    /* v14.7: `w` is the amulet on the sanity row — {from, to}, what it held
+       before the choice and after — drawn as the HUD draws it: a yellow
+       stretch laid over the right end of the red. Its own chip says what it
+       took, so "−4" beside "Amulet −8" reads as the cost of a −12 choice.
+       Absent (no ward worn, or spent) the row is exactly v14.6's. */
+    const wr = k === 'sanity' && w ? w : null;
+    const dv = Math.round(d[k] * 100) / 100;
+    const took = wr ? Math.round(wr.from - wr.to) : 0;
+    const wAttr = wr ? ` data-wfrom="${wr.from.toFixed(2)}" data-wto="${wr.to.toFixed(2)}"` : '';
+    const wLeft = wr ? Math.min(wr.from, from) : 0;
+    return `<div class="srow ${r.cls}" data-from="${from.toFixed(0)}" data-to="${to.toFixed(0)}"${wAttr}>`
       + `<svg class="sic" aria-hidden="true"><use href="#${r.icon}"/></svg>`
-      + `<span class="n">${(T('hud.' + k) || k).toUpperCase()}</span>`
-      + `<span class="chip ${d[k] >= 0 ? 'up' : 'dn'}">${d[k] >= 0 ? '+' : ''}${d[k]}</span>`
+      + `<span class="n">${(T('hud.' + k) || k).toUpperCase()}`
+      + (took > 0 ? `<span class="wchip">${T('card.ward', 'Amulet −{n}').replace('{n}', took)}</span>` : '')
+      + `</span>`
+      + `<span class="chip ${dv >= 0 ? 'up' : 'dn'}">${dv >= 0 ? '+' : ''}${Math.round(dv)}</span>`
       + `<span class="v">${from.toFixed(0)}</span>`
-      + `<span class="track"><i class="${r.fill}" style="width:${from.toFixed(0)}%"></i></span>`
+      + `<span class="track"><i class="${r.fill}" style="width:${from.toFixed(0)}%"></i>`
+      + (wr ? `<i class="fArm" style="left:${(from - wLeft).toFixed(2)}%;width:${wLeft.toFixed(2)}%"></i>` : '')
+      + `</span>`
       + `</div>`;
   }).join('');
 }
@@ -8760,17 +9038,25 @@ function pick(i) {
   // done. The card then rises over whatever the scene left on screen.
   playCine(i, () => {
     const before = { ...stats };           // the bars animate FROM these
-    for (const k in c.d) stats[k] += c.d[k];
+    /* v14.7: a choice that costs sanity pays the amulet first, and the card
+       shows it: the sanity row moves by what sanity actually lost, and its
+       yellow narrows by what the amulet took. `eff` is the delta that really
+       happened; with no ward worn it IS c.d, and the card is v14.6's. */
+    const wBefore = wardLeft();
+    const eff = { ...c.d };
+    if (eff.sanity < 0) eff.sanity = -wardSoak(-eff.sanity, false);
+    for (const k in eff) stats[k] += eff[k];
+    const wCard = wBefore > 0 ? { from: wBefore, to: wardLeft() } : null;
     /* v7.0: what play did — Sanity and Awareness only, capped, a second
        line under the rows. Chapters 1–5 never call kit.conduct, so cd is
        null there and nothing on their cards moves. */
     const cd = conductTake();
-    if (cd) { stats.sanity += cd.s; stats.awareness += cd.a; }
+    if (cd) { stats.sanity += cd.s < 0 ? -wardSoak(-cd.s, false) : cd.s; stats.awareness += cd.a; }   // v14.7: a banked cost too
     syncBars();                            // the hidden HUD stays truthful
     ui.say.innerHTML = c.say;
     ui.teach.textContent = '';             // it will write itself
     ui.teach.closest('.teachbox').classList.add('veiled');
-    ui.deltas.innerHTML = statRowsHTML(before, c.d);
+    ui.deltas.innerHTML = statRowsHTML(before, eff, wCard);
     paintConduct(cd);                      // v7.0
     ui.hud.classList.add('hide');       // the card's bars ARE the bars now
     ui.result.classList.remove('hide');
@@ -8818,11 +9104,12 @@ function ghostDrainRate() {
    of. They are batched on a minimum interval, so a fast drain reads "-2"
    rather than flickering two "-1"s in the same breath.                      */
 let drainAcc = 0, lastTickAt = 0;
-function sanityTick(n) {
+function sanityTick(n, cls) {
   const host = $('ticks');
   if (!host) return;
   const el = document.createElement('span');
   el.textContent = '−' + n;               // a real minus sign, not a hyphen
+  if (cls) el.className = cls;            // v14.7: 'w' — the amulet's share, in its yellow
   el.addEventListener('animationend', () => el.remove());
   host.appendChild(el);
 }
@@ -8917,7 +9204,8 @@ function lose() {
      Retry does. Leaving the last autosave in place would instead drop the
      player back three seconds before it with two sanity left: both a cheat
      and a trap.                                                          */
-  saveCheckpoint({ at: null, stats: STATS_AT_START });
+  saveCheckpoint({ at: null, stats: STATS_AT_START,
+                   ward: { charge: ward.enter, ep: ward.ep, enter: ward.enter } });   // v14.7: and the amulet's charge to what it held when the chapter began
   // the line goes down WITH him — cut anything mid-sentence first
   if (narSrc) { try { narSrc.stop(); } catch {} narSrc = null; }
   /* v6.6: his faint line is the faint SCENE's cue (scFaint), not a speak()
@@ -8959,8 +9247,11 @@ function finish() {
      is nothing after it. Position is cleared either way: you resume at the
      start of a chapter, never at the spot where the last one ended.     */
   const nxt = nextChapterKey();
-  saveCheckpoint(nxt ? { at: null, done: false, ch: nxt }
-                     : { at: null, done: true });
+  /* v14.7: the next chapter is entered with what the amulet holds NOW, so its
+     `enter` is today's charge; a new episode refills it on the way in */
+  const wNext = { charge: ward.charge, ep: ward.ep, enter: ward.charge };
+  saveCheckpoint(nxt ? { at: null, done: false, ch: nxt, ward: wNext }
+                     : { at: null, done: true, ward: wNext });
   if (nxt) markReached(nxt);       // finished this one: the next is open in the selector (v5.12)
   markSealed(CH_KEY, score, r);    // and its result is on record: the rank on its stop in the selector (v6.2), the tally at the episode's end (v6.3)
   if (isLastOfEpisode(CH_KEY)) packWarm(['epfanfare', 'uiclick', 'uiconfirm']);   // the episode card's sounds decode under this card (v6.3)
@@ -9027,6 +9318,8 @@ function restart() {
 
   // the numbers
   Object.assign(stats, STATS_AT_START);
+  ward.charge = ward.enter;        // v14.7: and the amulet holds what it held when this chapter began
+  wardAcc = 0; wardTickAt = 0;
   syncBars();
   showHaunt(false);
   drainAcc = 0; lastTickAt = 0;
@@ -9275,7 +9568,7 @@ function tick(now = 0) {
     showHaunt(drain > 0 && !ev, gDrain > 0 ? 'ghost' : 'presence');
     if (ev && drain > 0) ui.bSan.classList.add('drain');
     if (drain > 0) {
-      const lost = Math.min(stats.sanity, drain * dt);
+      const lost = Math.min(stats.sanity, wardSoak(drain * dt, false));   // v14.7: the amulet first
       stats.sanity -= lost;
       noteDrain(lost);
       syncBars();
@@ -9300,8 +9593,10 @@ function tick(now = 0) {
        the decision so the wound is still on screen while he chooses, but a
        player reading four options is not being charged for reading them. */
     if (kitHurt.perSec > 0 && dtw > 0 && state === 'play') {
-      const lost = Math.min(Math.max(0, stats.sanity), kitHurt.perSec * dtw);
+      const had = wardLeft();
+      const lost = Math.min(Math.max(0, stats.sanity), wardSoak(kitHurt.perSec * dtw, false));   // v14.7: the amulet first
       if (lost > 0) { stats.sanity -= lost; noteDrain(lost); syncBars(); if (stats.sanity <= 0) lose(); }
+      else if (wardLeft() !== had) syncBars();          // all of it went to the amulet: its yellow still moved
     }
     ui.panic.style.opacity = '1';
     ui.panic.classList.add('critical'); ui.panic.classList.add('hurt');   // v11.3: `hurt` thins the frame to the edges (shell.html)
@@ -9416,6 +9711,13 @@ window.__enc = { yaw, pitch, stats, getState: () => state,   // v8.7: pitch, so 
                  dismissDecision, ghostDrainRate, lose, setMuted, showCredits,
                  snd, say, loopVol, sting, updateAudioFrame, pulseSpike,
                  worldState, applyState,
+                 /* v14.7: the amulet's ward and the unlock splash, for probes and
+                    harnesses — the charge is a number the HUD only draws */
+                 ward: () => ({ charge: +ward.charge.toFixed(3), ep: ward.ep, enter: +ward.enter.toFixed(3),
+                                worn: wardItem(), left: +wardLeft().toFixed(3), full: WARD_FULL }),
+                 unlockState: () => ({ id: unl.id, state }),
+                 unlockClose: how => unlockClose(how || 'click'),
+                 hotspotTap, kitAward, applyChunk,
                  saveCheckpoint, loadCheckpoint, clearCheckpoint,
                  invOpen, invClose, invToggle, invAdd, invHas, invRemove,
                  menuOpen, menuClose, menuToggle, openChapters, closeChapters,

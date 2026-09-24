@@ -1468,6 +1468,99 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
   .hmark{width:44px;height:44px;margin:-22px 0 0 -22px}
   .hmark .hbang{font-size:1.34rem}
 }
+/* ── v14.7: THE AMULET'S YELLOW — a ward item, worn ──────────────────────
+   Laid OVER the right end of the sanity red (wardPaint() sets its left and
+   width), so the bar keeps exactly sanity's length and the last N points of
+   the red become yellow. Hidden until a ward is worn, so every player
+   without one sees the bar as it always was. `.track i` is (0,1,1), so the
+   card's `.fArm` is written as `.track i.fArm` to win. */
+.sSan .track{position:relative}
+#bArm,.track i.fArm{position:absolute;top:0;bottom:0;height:auto;border-radius:0 4px 4px 0;
+  background-image:linear-gradient(100deg,#6A4E0B,#F2C230 30%,#FFF1B0 50%,#F2C230 70%,#6A4E0B);
+  box-shadow:0 0 10px rgba(242,194,48,.55);animation-duration:2.9s}
+#bArm{display:none;transition:left .5s var(--ease),width .5s var(--ease)}
+#bArm.on{display:block}
+/* the protection left, in its yellow, beside the sanity number */
+#vSan[data-arm]::after{content:attr(data-arm);margin-left:4px;font-size:.6em;vertical-align:.45em;
+  color:#F6CB3E;text-shadow:0 0 8px rgba(246,203,62,.6)}
+/* the amulet's share of a hit, thrown in its yellow beside sanity's red */
+#ticks span.w{color:#FFD447;-webkit-text-stroke:1px rgba(60,40,0,.9);
+  text-shadow:0 0 26px rgba(255,200,40,.95),0 0 9px rgba(255,230,140,.9),0 2px 4px rgba(0,0,0,.95)}
+.srow .wchip{margin-left:8px;font-family:var(--mono);font-size:.78rem;letter-spacing:.02em;
+  color:#F6CB3E;text-transform:none;white-space:nowrap;font-weight:700}
+
+/* ── v14.7: ITEM UNLOCKED ─────────────────────────────────────────────────
+   Not a window: a see-through takeover. Slow gold rays turning behind the
+   item, a burst of light when it lands, motes rising, the model turning in
+   the middle, and Close at the bottom. Everything enters in a short stagger
+   so the eye goes label -> item -> name -> Close. */
+#unlock{align-items:center;justify-content:center;pointer-events:auto;z-index:12;overflow:hidden;
+  padding:max(16px,env(safe-area-inset-top)) 16px max(18px,env(safe-area-inset-bottom));
+  background:radial-gradient(ellipse at 50% 44%,rgba(60,42,10,.58) 0%,rgba(9,9,11,.80) 55%,rgba(3,4,7,.93) 100%);
+  backdrop-filter:blur(3px);animation:unFade .35s var(--ease)}
+#unlock.out{opacity:0;transition:opacity .22s linear;pointer-events:none}
+@keyframes unFade{from{opacity:0}}
+body.unlockopen .soundBtn,body.unlockopen #volWrap{display:none}
+body.hasTorch.unlockopen .torchBtn{display:none}
+.unRays{position:absolute;left:50%;top:44%;width:150vmax;height:150vmax;margin:-75vmax 0 0 -75vmax;
+  pointer-events:none;animation:unRaysIn 1.1s var(--ease) both;
+  -webkit-mask-image:radial-gradient(circle,#000 0%,rgba(0,0,0,.5) 13%,transparent 34%);
+          mask-image:radial-gradient(circle,#000 0%,rgba(0,0,0,.5) 13%,transparent 34%)}
+.unRays::before{content:"";position:absolute;inset:0;border-radius:50%;
+  background:repeating-conic-gradient(from 0deg,rgba(255,200,96,.14) 0deg 2.6deg,transparent 2.6deg 18deg);
+  animation:unSpin 80s linear infinite}
+@keyframes unSpin{to{transform:rotate(360deg)}}
+@keyframes unRaysIn{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:none}}
+.unBox{position:relative;width:min(560px,100%);height:min(92vh,720px);display:flex;flex-direction:column;
+  align-items:center;justify-content:space-between;text-align:center;gap:8px}
+.unLabel{display:flex;align-items:center;gap:14px;font-family:var(--ui);font-weight:700;
+  font-size:clamp(.92rem,3.4vw,1.16rem);letter-spacing:.34em;text-transform:uppercase;color:var(--sodium);
+  text-shadow:0 0 18px rgba(255,179,103,.65);margin-top:6px;animation:unLabelIn .7s var(--ease) backwards}
+.unLabel::before,.unLabel::after{content:"";width:min(64px,11vw);height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,179,103,.85))}
+.unLabel::after{transform:scaleX(-1)}
+@keyframes unLabelIn{from{opacity:0;letter-spacing:.7em;transform:translateY(-10px)}}
+.unStage{position:relative;flex:1 1 auto;width:100%;min-height:0;display:grid;place-items:center}
+.unGlow{position:absolute;inset:0;margin:auto;width:min(80vw,52vh,440px);height:min(80vw,52vh,440px);
+  border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,rgba(255,214,120,.40) 0%,rgba(255,170,60,.15) 36%,transparent 68%);
+  animation:unBreathe 3.4s ease-in-out infinite}
+.unGlow::after{content:"";position:absolute;inset:20%;border-radius:50%;
+  border:2px solid rgba(255,236,190,.9);
+  box-shadow:0 0 30px rgba(255,200,90,.8),inset 0 0 30px rgba(255,200,90,.6);
+  animation:unRing 1.15s var(--ease) .05s both}
+@keyframes unBreathe{0%,100%{transform:scale(.94);opacity:.85}50%{transform:scale(1.04);opacity:1}}
+@keyframes unRing{from{transform:scale(.2);opacity:1}to{transform:scale(1.7);opacity:0}}
+.unMotes{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.unMotes i{position:absolute;bottom:16%;width:4px;height:4px;border-radius:50%;opacity:0;
+  background:#FFE7A8;box-shadow:0 0 8px 2px rgba(255,200,90,.8);animation:unMote 4.8s ease-in infinite}
+.unMotes i:nth-child(1){left:24%;animation-delay:.1s}
+.unMotes i:nth-child(2){left:31%;animation-delay:1.9s;animation-duration:5.6s}
+.unMotes i:nth-child(3){left:38%;animation-delay:.9s;width:3px;height:3px}
+.unMotes i:nth-child(4){left:45%;animation-delay:2.8s;animation-duration:4.2s}
+.unMotes i:nth-child(5){left:52%;animation-delay:.4s;width:5px;height:5px}
+.unMotes i:nth-child(6){left:58%;animation-delay:3.4s;animation-duration:5.2s}
+.unMotes i:nth-child(7){left:64%;animation-delay:1.3s;width:3px;height:3px}
+.unMotes i:nth-child(8){left:70%;animation-delay:2.3s;animation-duration:4.4s}
+.unMotes i:nth-child(9){left:76%;animation-delay:.7s;animation-duration:5.8s}
+.unMotes i:nth-child(10){left:41%;animation-delay:4.1s;width:3px;height:3px}
+@keyframes unMote{0%{opacity:0;transform:translateY(0) scale(.6)}15%{opacity:1}
+  100%{opacity:0;transform:translateY(-36vh) scale(1.1)}}
+#unCv{position:relative;width:min(72vw,46vh,380px);height:min(72vw,46vh,380px);display:block;
+  animation:unPop .8s cubic-bezier(.2,1.5,.4,1) .08s backwards}
+@keyframes unPop{from{opacity:0;transform:scale(.5)}}
+#unName{font-family:"Cormorant Garamond",Georgia,serif;font-weight:600;margin:0;
+  font-size:clamp(1.4rem,5.4vw,2.2rem);line-height:1.14;color:var(--bone);max-width:18em;text-wrap:balance;
+  text-shadow:0 0 22px rgba(255,190,90,.35),0 2px 6px rgba(0,0,0,.85);animation:unUp .6s var(--ease) .32s backwards}
+.unSub{font-family:var(--ui);font-size:.92rem;letter-spacing:.06em;color:#A9AFBB;margin:0;
+  animation:unUp .6s var(--ease) .5s backwards}
+@keyframes unUp{from{opacity:0;transform:translateY(12px)}}
+#unClose{margin:10px 0 4px;font-family:var(--ui);font-size:1.02rem;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--void);background:var(--bone);border:0;padding:14px 48px;cursor:pointer;
+  box-shadow:0 0 0 1px rgba(255,179,103,.45),0 10px 30px rgba(0,0,0,.6);
+  transition:background .18s,transform .18s var(--ease);animation:unUp .5s var(--ease) .62s backwards}
+#unClose:hover,#unClose:focus-visible{background:var(--sodium);transform:translateY(-2px);outline:none}
+
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.01ms !important;transition-duration:.01ms !important}
   #grade::after{animation:none}
@@ -1991,7 +2084,7 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
   <div id="stats">
     <div class="stat sSan"><svg class="sic" aria-hidden="true"><use href="#i-san"/></svg>
       <span class="n" data-t="hud.sanity">Sanity</span><canvas id="ecg"></canvas><span class="v" id="vSan">100</span>
-      <span class="track"><i id="bSan" style="width:100%"></i></span>
+      <span class="track"><i id="bSan" style="width:100%"></i><i id="bArm" aria-hidden="true"></i></span>
       <span id="ticks"></span></div>
     <div class="stat sAwa"><svg class="sic" aria-hidden="true"><use href="#i-awa"/></svg>
       <span class="n" data-t="hud.awareness">Awareness</span><span class="v" id="vAwa">50</span>
@@ -2179,6 +2272,23 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
   </div>
 </div>
 <div id="invDrag" aria-hidden="true"></div>
+
+<!-- v14.7: ITEM UNLOCKED — the splash an item arrives on (kit.unlock). The
+     model turns in #unCv, drawn by the item views' own renderer. -->
+<div id="unlock" class="layer hide" role="dialog" aria-modal="true" aria-labelledby="unName">
+  <div class="unRays" aria-hidden="true"></div>
+  <div class="unBox">
+    <span class="unLabel" data-t="unlock.label">Item unlocked</span>
+    <div class="unStage">
+      <div class="unGlow" aria-hidden="true"></div>
+      <div class="unMotes" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <canvas id="unCv" aria-hidden="true"></canvas>
+    </div>
+    <h3 id="unName"></h3>
+    <p class="unSub" data-t="unlock.sub">Added to your bag</p>
+    <button id="unClose" type="button" data-t="unlock.close">Close</button>
+  </div>
+</div>
 
 <div id="hint" class="hide"><span class="stencil" id="hintTxt" data-t="world.hintWalk">Walk toward the light</span></div>
 

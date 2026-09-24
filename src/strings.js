@@ -206,6 +206,7 @@ Object.assign(window.__TEXT__, {
   'event.start':         'START',
   'event.ready':         'BRIEFING',
   'card.conduct':        'What you did',
+  'card.ward':           'Amulet −{n}',       // v14.7: what the amulet took of a choice's cost, beside the sanity row
   'decide.clock':        'It is still coming',
 
   // --- in the world --------------------------------------------------------
@@ -351,6 +352,16 @@ Object.assign(window.__TEXT__, {
   'item.torch.desc':     'Army issue. A wide, hard beam and a heavy switch.',
   'item.rifle.name':     'Rifle',
   'item.rifle.desc':     'Army issue. Signed out to you by serial number, and signed back in the same way.',
+  /* v14.7: the amulet chapter 3's auntie gives the boy — Chad's words, both */
+  'item.amulet.name':    'LP Phiboon Second Batch Rian Amulet (Small)',
+  'item.amulet.desc':    'Powerful against danger, negative energies, black magic and bad spirits. Provides +15 protection against sanity damage. Also boosts Metta Mahaniyom. Made by the powerful Luang Pu PhiBoon (PhiBoon Sae Tan), born during the reign of King Rama 4 in Thailand.',
+  // what its protection has left, under the words ({n} and {max} are numbers)
+  'inv.wardLeft':        'Protection left: {n} of {max}',
+  'inv.wardSpent':       'Spent for this episode. It recharges when the next episode begins.',
+  // the Item Unlocked splash (v14.7)
+  'unlock.label':        'Item unlocked',
+  'unlock.sub':          'Added to your bag',
+  'unlock.close':        'Close',
 
   // --- spoken by screen readers, never seen on screen ----------------------
   'a11y.soundButton':    'Sound on or off',
