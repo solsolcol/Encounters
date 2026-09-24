@@ -2143,15 +2143,25 @@
     altarRing.visible = false;
     altar.add(altarRing);
 
+    /* v14.7 (Chad: "The exclamation mark on the tangki altar is way too
+       small, and not very visible"): the mark is the SAME jade diamond with
+       a "!" that the engine puts over the amulet and every hotspot, so the
+       player reads the next place to go in the language the last one used;
+       it is drawn OVER the tent (no depth test, a late render order),
+       because from the back of the aisle forty-eight chairs and thirty
+       heads stand between him and the altar; and updatePile keeps its SIZE
+       ON SCREEN steady by growing it with distance. */
     const markGlow = new THREE.Sprite(new THREE.SpriteMaterial({
       map: makeSoftDot('rgba(99,214,200,0.85)', 'rgba(99,214,200,0)'),
-      transparent: true, depthWrite: false, fog: false,
+      transparent: true, depthWrite: false, depthTest: false, fog: false,
       blending: THREE.AdditiveBlending }));
     markGlow.scale.setScalar(0.9);
+    markGlow.renderOrder = 20;
     const mark = new THREE.Sprite(new THREE.SpriteMaterial({
-      map: makeMark(cnv), transparent: true, depthWrite: false, fog: false,
+      map: makeMark(cnv), transparent: true, depthWrite: false, depthTest: false, fog: false,
       sizeAttenuation: true }));
     mark.scale.setScalar(0.30);
+    mark.renderOrder = 21;
     const markRoot = new THREE.Group();
     markRoot.position.set(0, 2.05, 0.30);
     markRoot.visible = false;
@@ -2310,22 +2320,33 @@
         markRoot.visible = altarRing.visible = false;
         return;
       }
+      /* v14.7 (Chad: "the blue glowing colour ring around the altar/tangki
+         does not appear until player is near to it. It should always be
+         visible ... so that player knows where to go next. But it should
+         only appear after the entire amulet flow is completed."). Since
+         v4.1 both faded in by distance — the mark from MARK_R 13 m, the ring
+         from HIGHLIGHT_R 6.6 m — the rule every episode-1 chapter shares,
+         written for a walk toward one thing from where you stand. Chapter 3
+         now sends the player away first, to the auntie's table 8.75 m off
+         (and he starts 19.8 m out), so the rule hid the next place to go at
+         the one moment he needs it. Once the amulet is worn both are ON at
+         any distance: the mark at full strength and a steady size on screen
+         (about 0.09 of its distance, never under 0.5 m), the ring pulsing,
+         brighter as he closes in. The return above is the gate: nothing at
+         all until the flow is done. */
       const dist = pileDist();
-      const m = THREE.MathUtils.clamp(
-        (MARK_R - dist) / (MARK_R - INTERACT_R) * 1.9, 0, 1);
-      markRoot.visible = m > 0.01;
-      if (markRoot.visible) {
-        const beat = 0.72 + 0.28 * Math.sin(t * 3.1);
-        markRoot.position.y = 2.05 + Math.sin(t * 1.9) * 0.10;
-        mark.material.opacity = m;
-        mark.scale.setScalar(0.30 * (0.93 + beat * 0.11));
-        markGlow.material.opacity = m * beat * 0.5;
-      }
+      markRoot.visible = true;
+      const beat = 0.72 + 0.28 * Math.sin(t * 3.1);
+      const size = Math.max(0.5, dist * 0.09);
+      markRoot.position.y = 2.75 + size * 0.5 + Math.sin(t * 1.9) * 0.06 * size;   // clear of Guan Gong's head behind him
+      mark.material.opacity = 1;
+      mark.scale.setScalar(size * (0.93 + beat * 0.11));
+      markGlow.scale.setScalar(size * 2.2);
+      markGlow.material.opacity = 0.35 + 0.35 * beat;
       const near = THREE.MathUtils.clamp(
         (HIGHLIGHT_R - dist) / (HIGHLIGHT_R - INTERACT_R), 0, 1);
-      const on = near > 0.01;
-      altarRing.visible = on;
-      if (on) altarRing.material.opacity = near * (0.62 + 0.38 * Math.sin(t * 2.6)) * 0.5;
+      altarRing.visible = true;
+      altarRing.material.opacity = (0.55 + 0.30 * Math.sin(t * 2.6)) * (0.75 + 0.25 * near);
     }
 
     /* ================================================================== */
@@ -2796,20 +2817,38 @@
   }
 
   // the interact mark, the same exclamation the other two chapters float
+  /* v14.7: the altar's mark is drawn as the engine's own hotspot mark (the
+     jade diamond with a "!" — shell.html's .hmark), which is what the
+     player has just followed to the amulet; the thin bare "!" before it
+     read as a speck from the aisle. */
   function makeMark(cnv) {
-    const s = 128, [c, ctx] = cnv(s);
+    const s = 256, [c, ctx] = cnv(s);
     ctx.clearRect(0, 0, s, s);
-    ctx.fillStyle = '#dffaf4';
+    const h = s * 0.34;                                   // half the diamond's diagonal
+    const diamond = () => {
+      ctx.beginPath();
+      ctx.moveTo(s / 2, s / 2 - h); ctx.lineTo(s / 2 + h, s / 2);
+      ctx.lineTo(s / 2, s / 2 + h); ctx.lineTo(s / 2 - h, s / 2);
+      ctx.closePath();
+    };
     ctx.shadowColor = 'rgba(99,214,200,0.95)';
-    ctx.shadowBlur = 16;
+    ctx.shadowBlur = 22;
+    diamond();
+    ctx.fillStyle = 'rgba(8,22,24,0.72)';
+    ctx.fill();
+    ctx.lineWidth = s * 0.035;
+    ctx.strokeStyle = '#8FE6DB';
+    ctx.stroke();
+    ctx.shadowBlur = 12;
+    ctx.fillStyle = '#e8fffa';
     ctx.beginPath();
-    ctx.moveTo(s * 0.5 - s * 0.075, s * 0.16);
-    ctx.lineTo(s * 0.5 + s * 0.075, s * 0.16);
-    ctx.lineTo(s * 0.5 + s * 0.045, s * 0.60);
-    ctx.lineTo(s * 0.5 - s * 0.045, s * 0.60);
+    ctx.moveTo(s * 0.5 - s * 0.045, s * 0.33);
+    ctx.lineTo(s * 0.5 + s * 0.045, s * 0.33);
+    ctx.lineTo(s * 0.5 + s * 0.027, s * 0.57);
+    ctx.lineTo(s * 0.5 - s * 0.027, s * 0.57);
     ctx.closePath(); ctx.fill();
     ctx.beginPath();
-    ctx.arc(s * 0.5, s * 0.76, s * 0.072, 0, Math.PI * 2);
+    ctx.arc(s * 0.5, s * 0.645, s * 0.036, 0, Math.PI * 2);
     ctx.fill();
     return finishTex(c);
   }

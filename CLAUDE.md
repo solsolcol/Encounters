@@ -3806,6 +3806,29 @@ What the baseline contains, by release:
   on this box (it failed on an untouched v14.6 worktree and passed in the
   full run). Sheet v71. Deploy `6ab588d90619c4c0a918bd07`, byte-verified:
   index.html and all 102 build files identical on the live site.
+- **v14.8** THE ALTAR, MARKED FROM ANYWHERE — Chad, on v14.7: *"The
+  exclamation mark on the tangki altar is way too small, and not very
+  visible ... the blue glowing colour ring ... does not appear until player is
+  near to it. It should always be visible ... so that player knows where to go
+  next. But it should only appear after the entire amulet flow is completed.
+  ... Was it intended?"* It was: since v4.1 chapter 3's mark faded in from
+  13 m (`MARK_R`) and its ring from 6.6 m (`HIGHLIGHT_R`) — the rule every
+  episode-1 chapter shares, written for a walk toward one thing from where
+  you stand. v14.7 sent the player AWAY first (the auntie's table is 8.75 m
+  from the altar, the spawn 19.8 m), so the rule hid the next place to go at
+  the moment he needed it. Once the amulet is worn, chapter 3's mark is the
+  engine's own jade diamond with a "!" (what he just followed to the amulet),
+  drawn over the tent (no depth test — forty-eight chairs and thirty heads
+  stand in the way), sized to its distance so it holds ~5° on screen (never
+  under 0.5 m), above Guan Gong's head; the ring is on at any distance,
+  brighter as he closes in. Before the amulet: neither. Chapters 1, 2, 4 and
+  5 are NOT changed and did not have the problem: each has one thing to walk
+  to from the moment play starts — ch2's bedroom, ch4's and ch5's flat are
+  small enough that the mark is up almost anywhere in them (4.2–4.4 m against
+  rooms of 3.6–6 m), and ch1's target is a burning pile that is its own
+  beacon, the mark taking over from 15 m. Episode 2 names every next target in
+  its objective line. `src/main.js` untouched; no word moved (sheet v71
+  stands). Harnesses chapter, cine, walk.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
