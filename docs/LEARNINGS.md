@@ -4658,3 +4658,15 @@ condition and the stop let several of them through — enough to faint the run,
 which then failed `decisionOpens` two sections later, far from any decision
 code. The sampler that watches the condition now stops the bleed itself, in
 the page, on the interval tick after the frame that met it.
+
+## v14.9 — `updateWorldMatrix` does not refresh a SkinnedMesh's bind
+
+Measuring a skinned clone with `getVertexPosition` + `matrixWorld` after
+`obj.updateWorldMatrix(true, true)` placed the sleeping admin tee in e2c2's
+film EIGHTY METRES off, at the cookhouse where the clone was made. Only
+`updateMatrixWorld` reaches `SkinnedMesh`'s override, which (in attached
+mode) refreshes `bindMatrixInverse` from the current world; `updateWorldMatrix`
+updates the matrices and skips it, so `getVertexPosition` answers in the frame
+the mesh last had. Call `updateMatrixWorld(true)` before measuring a skin.
+And a body is laid down by its ROOT BONE (the hips' quaternion), not by a
+rotated group above it — the bones are what the skin is drawn from.

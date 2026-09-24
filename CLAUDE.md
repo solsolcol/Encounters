@@ -3830,6 +3830,21 @@ What the baseline contains, by release:
   its objective line. `src/main.js` untouched; no word moved (sheet v71
   stands). Harnesses chapter, cine, walk. Deploy `6ab596e8e4d263c77c9e4f25`,
   byte-verified (index.html and all 102 build files).
+- **v14.9** HIM, ASLEEP IN BED ONE — Chad: *"in episode 2, chp2 intro
+  cutscene, when the camera pans and say night after night..., all the
+  various camera angles, should also have a sleeping admin tee model on bed
+  one. This is to illustrate the player being bothered by it every night."*
+  One more clone of the cookhouse's `admintee` parse (no new download),
+  parked on `Idle_9`'s first frame and laid on his back BY THE HIPS BONE,
+  head on bed one's pillow, measured on the posed skin; no blanket (Chad:
+  "No need for blanket, it looks weird"). Shown by the film only
+  (`stage.showHim`), hidden by `setNight(false)`, never in scene C (shot from
+  his pillow). Two camera moves: night one is over his head instead of from
+  the pillow, and the clock's night turns down onto him at the foot of the
+  bed after the hour turns (31.9–34.7; the fade 34.4–35.3). The floor and
+  ceiling nights already had bed one in frame, desktop and phone. One law in
+  LEARNINGS (updateMatrixWorld before measuring a skin). `src/main.js`
+  untouched; no word moved. Harnesses chapter, cine, leak.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so

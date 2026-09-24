@@ -547,6 +547,7 @@
       });
       seated.ready = true;
       redoShadows();
+      try { dressHim(gltf, s); } catch (e) { console.warn('the sleeping admin tee failed', e); }   // v14.9 (a throw in a loader callback is silent — v12.2)
     }, (err) => { console.warn('admintee failed', err); seated.ready = true; }))
       .catch(err => { console.warn('admintee failed', err); seated.ready = true; });
     /* v13.0 (Chad: "when player talks to each bunkmate, their body position
@@ -980,6 +981,67 @@
     // the blanket over HIM, from the pillow, for the shots from his pillow
     const blanket = pbox(0.95, 0.06, BED.wid - 0.06, -hisBed.head * 0.32, 0, 0, pBlanket, hisBed.group);
     blanket.visible = false; restOnDeck(hisBed, blanket, 0.07);
+    /* v14.9 HIM, ASLEEP IN BED ONE — for the FILM only (Chad: "all the
+       various camera angles, should also have a sleeping admin tee model on
+       bed one. This is to illustrate the player being bothered by it every
+       night"). The admin tee, one more clone of the cookhouse's parse (made
+       in its loader, `dressHim`), parked on its standing idle and laid on his
+       back, head on the pillow, and NO blanket (Chad: "No need for blanket,
+       it looks weird") — the flat one hides while he shows. `himRoot`
+       is at the pocket's origin so the painted shadow can share it; nothing
+       but the film shows it — scene C's cut back to three in the morning is
+       shot FROM his pillow, where a body would be around the lens. */
+    const HIM_TILT = 0.06, HIM_CROWN = 0.10, HIM_SINK = 0.04;   // head a touch up the pillow; crown 10 cm off the bed's end
+    const himRoot = new THREE.Group(); himRoot.visible = false; pocket.add(himRoot);
+    const himBody = new THREE.Group(); himBody.position.set(HIS.x, 0, HIS.z); himRoot.add(himBody);
+    restOnDeck(hisBed, himBody, 0);
+    const him = { model: null, mixer: null, body: himBody };
+    function showHim(on) { himRoot.visible = !!on; blanket.visible = !on && pocket.visible; }   // the flat blanket would lie through him
+    function dressHim(gltf, s) {
+      if (!alive) return;
+      const m = cloneSkinned(gltf.scene);
+      wideBounds(m, 'admintee');
+      m.traverse(o => {
+        if (!o.isMesh) return;
+        o.castShadow = !LOW; o.receiveShadow = false;
+        o.material = Array.isArray(o.material) ? o.material.map(mm => { const c = mm.clone(); c.fog = false; return c; })
+                                               : Object.assign(o.material.clone(), { fog: false });
+      });
+      const turn = new THREE.Group(); turn.rotation.y = -hisBed.head * Math.PI / 2; turn.scale.setScalar(s);
+      turn.add(m); himBody.add(turn);
+      /* the standing idle's first frame, applied ONCE and never ticked again */
+      const idle = gltf.animations.find(a => a.name === 'Idle_9');
+      if (idle) { him.mixer = new THREE.AnimationMixer(m); him.mixer.clipAction(idle).play(); him.mixer.update(0); }
+      /* laid down BY THE HIPS: a skinned body is drawn from its bones, so the
+         turn goes on the root bone, never on a group above the mesh. A
+         Mixamo rig stands on +y facing +z; −π/2 about the turn's own x puts
+         his face to the ceiling and his head toward −z, and the turn about y
+         takes that end to the pillow (−x on this row). */
+      himBody.updateWorldMatrix(true, true);
+      let hips = null; m.traverse(o => { if (!hips && o.isBone && /Hips/.test(o.name)) hips = o; });
+      if (hips) {
+        const Q = THREE.Quaternion;
+        const axis = new THREE.Vector3(1, 0, 0).applyQuaternion(turn.getWorldQuaternion(new Q()));
+        const qLie = new Q().setFromAxisAngle(axis, -Math.PI / 2 + HIM_TILT);
+        const qw = hips.getWorldQuaternion(new Q());
+        const pq = hips.parent.getWorldQuaternion(new Q()).invert();
+        hips.quaternion.copy(pq.multiply(qLie.multiply(qw)));
+      }
+      /* measured on the POSED skin (never a box — v5.21), in the bed's frame.
+         `updateMatrixWorld`, NOT `updateWorldMatrix`: only the former reaches
+         SkinnedMesh's override that refreshes `bindMatrixInverse`, and with it
+         stale `getVertexPosition` answers in the frame the clone was MADE in —
+         the first placement put him eighty metres off, at the cookhouse. */
+      himBody.updateWorldMatrix(true, false); himBody.updateMatrixWorld(true);
+      const v = new THREE.Vector3(), bb = new THREE.Box3();
+      m.traverse(o => { if (!o.isSkinnedMesh) return; const pa = o.geometry.attributes.position; for (let k = 0; k < pa.count; k += 5) { o.getVertexPosition(k, v); v.applyMatrix4(o.matrixWorld); himBody.worldToLocal(v); bb.expandByPoint(v); } });
+      const crown = hisBed.head < 0 ? bb.min.x : bb.max.x;
+      turn.position.set(hisBed.head * (BED.len / 2 - HIM_CROWN) - crown, -bb.min.y - HIM_SINK, -(bb.min.z + bb.max.z) / 2);
+      him.model = m; him.box = { len: +(bb.max.x - bb.min.x).toFixed(3), wid: +(bb.max.z - bb.min.z).toFixed(3), thick: +(bb.max.y - bb.min.y).toFixed(3) };
+      himBody.updateMatrixWorld(true);
+      sleepShade(himRoot, himBody, hisBed);
+      redoShadows();
+    }
     const BUNK = { len: 2.004, wid: 1.313, deckLo: 0.592, deckHi: 1.575 };
     const BUNK_SX = BED.len / BUNK.len, BUNK_SZ = BED.wid / BUNK.wid;
     const BUNK_SY = (BED.high - BED.low) / (BUNK.deckHi - BUNK.deckLo);
@@ -1232,6 +1294,7 @@
       pocket.visible = on;
       sleeperRoot.visible = on;
       blanket.visible = on;
+      if (!on) showHim(false);
       nightLight.intensity = on ? 1.8 : 0;
       blockLight.intensity = on ? 1.6 : 0;
       nbLight.intensity = on ? 1.4 : 0;
@@ -1521,6 +1584,7 @@
       ghostFlag.mixer?.stopAllAction();
       for (const r of seated.rigs) r.mixer?.stopAllAction();
       for (const r of sleepRigs) r.mixer?.stopAllAction();
+      him.mixer?.stopAllAction();
       for (const g of geos) g.dispose();
       for (const m of mats) {
         for (const k of ['map', 'roughnessMap', 'normalMap', 'emissiveMap', 'alphaMap']) m[k]?.dispose?.();
@@ -1547,7 +1611,7 @@
       // the chapter's own
       H, TBL, ROW_Z, OURS, SEATS, WHO, ENC, PK, R, BED, HIS, DOOR_WC, BLOCK, DOOR_AJAR, DOOR_OPEN, WATER_AT,
       encik, ENC_TALK, seated, sitUp, sitDown, allSitDown, staff, ghostFlag, FLAG_GHOST,
-      pocket, setNight, setShower, doorPivot, doorLight, nightLight, blockLight, clock, clockFace, blanket, fanBlades,
+      pocket, setNight, setShower, showHim, him, himInfo: () => ({ shown: himRoot.visible, ready: !!him.model, box: him.box || null, y: +himBody.position.y.toFixed(3) }), doorPivot, doorLight, nightLight, blockLight, clock, clockFace, blanket, fanBlades,
       beds, hisBed, sleepers, sleepRigs, sleeperRoot, foodModel: () => foodModel,
       tubeLights, tubes,
       sayLine, asked, after, dayClock,
@@ -1702,7 +1766,9 @@
      the hour. v10.1: shot in THE BUNK (chapter 1's room, rebuilt in the
      pocket) with the seven men asleep in it. Then black, his line, and the
      cookhouse in daylight with the section already at the table. It begins
-     on BLACK and lifts on its own fade (cinetest's contract). */
+     on BLACK and lifts on its own fade (cinetest's contract). v14.9: HE is in
+     every night of it, asleep in bed one — so the first night is shot over his
+     head rather than from his pillow, and the clock's night ends on him. */
   const pk = (stage, x, y, z) => ({ x: stage.PK.x + x, y, z: stage.PK.z + z });
   function shots(stage, faceFrom) {
     const DOOR = pk(stage, stage.DOOR_WC.x, 1.0, stage.R.z);
@@ -1713,10 +1779,25 @@
     const HIGH = pk(stage, 4.0, 2.65, 3.2);
     const ATCLOCK = pk(stage, stage.DOOR_WC.x, 2.5, stage.R.z - 0.8);
     const BEDAT = pk(stage, stage.HIS.x, 0, stage.HIS.z);
-    return { DOOR, CLOCK, PILLOW, FLOOR, HIGH, ATCLOCK, BEDAT,
+    /* v14.9: the film's first night is no longer FROM his pillow — he is lying
+       on it. Over his head instead, between the bunk's end and the wall, under
+       the top deck: his body down the lower half of the frame, the room and
+       then the door past his feet. */
+    const OVERHEAD = pk(stage, stage.HIS.x - 1.12, 1.22, stage.HIS.z);
+    /* and the clock's night ends ON him: from the dial back and down over the
+       foot of the bed onto him, under the top deck, which would hide him from any higher */
+    const REVEAL = pk(stage, stage.HIS.x + 1.6, 1.12, stage.HIS.z - 0.35);
+    const CHEST = pk(stage, stage.HIS.x - 0.25, 0.75, stage.HIS.z);
+    const Y_CLOCK = faceFrom(ATCLOCK.x, ATCLOCK.z, CLOCK.x, CLOCK.z);
+    let Y_REVEAL = faceFrom(REVEAL.x, REVEAL.z, CHEST.x, CHEST.z);
+    while (Y_REVEAL - Y_CLOCK > Math.PI) Y_REVEAL -= Math.PI * 2;      // the short way round
+    while (Y_REVEAL - Y_CLOCK < -Math.PI) Y_REVEAL += Math.PI * 2;
+    const P_REVEAL = -Math.atan2(REVEAL.y - CHEST.y, Math.hypot(REVEAL.x - CHEST.x, REVEAL.z - CHEST.z));
+    return { REVEAL, Y_REVEAL, P_REVEAL, DOOR, CLOCK, PILLOW, FLOOR, HIGH, ATCLOCK, BEDAT, OVERHEAD,
+      Y_OVER: faceFrom(OVERHEAD.x, OVERHEAD.z, DOOR.x, DOOR.z), Y_OVROOM: faceFrom(OVERHEAD.x, OVERHEAD.z, ROOM.x, ROOM.z),
       Y_PIL: faceFrom(PILLOW.x, PILLOW.z, DOOR.x, DOOR.z), Y_ROOM: faceFrom(PILLOW.x, PILLOW.z, ROOM.x, ROOM.z), Y_FLOOR: faceFrom(FLOOR.x, FLOOR.z, DOOR.x, DOOR.z),
       Y_HIGH: faceFrom(HIGH.x, HIGH.z, BEDAT.x, BEDAT.z), Y_HIGH2: faceFrom(HIGH.x, HIGH.z, DOOR.x, DOOR.z),
-      Y_CLOCK: faceFrom(ATCLOCK.x, ATCLOCK.z, CLOCK.x, CLOCK.z) };
+      Y_CLOCK };
   }
   function intro(c, s, api) {
     const { tr, step, sfx, fade, camTo, yawTo, pitchTo, faceFrom, rawK, smoothK, stage, armR, kit } = api;
@@ -1728,6 +1809,7 @@
       armR.visible = false;
       if (kit) kit.daylight(NIGHT, 0);
       stage.setNight(true);
+      stage.showHim(true);                       // v14.9: him, asleep in bed one, every night of the film
       stage.doorPivot.rotation.y = stage.DOOR_AJAR;
       stage.clock.set('03:00');
     });
@@ -1740,9 +1822,9 @@
        3.64 s into the take (measured, the pause before "Surely"), so cued at
        27.56 it lands on the frame the clock turns and the water starts (31.2). */
     sfx(3.0, 'n2pro1');                          // "Night after night, this kept happening." 2.43 s -> 5.4
-    camTo(0, 10.2, T.PILLOW, T.PILLOW, rawK);
-    yawTo(0, 10.2, T.Y_ROOM, T.Y_PIL + 0.10, smoothK);   // the room first, the door last: the +z wall is a metre from his pillow
-    pitchTo(0, 10.2, 0.02, 0.05, smoothK);
+    camTo(0, 10.2, T.OVERHEAD, T.OVERHEAD, rawK);
+    yawTo(0, 10.2, T.Y_OVROOM, T.Y_OVER + 0.10, smoothK);   // the room first, the door last: the +z wall is a metre from his pillow
+    pitchTo(0, 10.2, -0.42, -0.34, smoothK);           // down onto him: his body is the bottom of every frame of this night
     step(5.0, () => stage.setShower(true, 0.55));
     sfx(5.0, 'drip', 0.5);
     sfx(6.6, 'bunkcreak', 0.35);
@@ -1770,15 +1852,21 @@
     /* NIGHT FOUR (27.6–35.0) — the clock over the block door, full frame.
        02:59; the minute hand moves; the water starts on the hour. */
     step(27.6, () => { stage.setShower(false); stage.doorPivot.rotation.y = stage.DOOR_AJAR; stage.blockLight.intensity = 1.2; stage.clock.set('02:59'); });
-    camTo(27.6, 35.0, T.ATCLOCK, { x: T.ATCLOCK.x, y: T.ATCLOCK.y, z: T.ATCLOCK.z + 0.12 }, smoothK);
-    yawTo(27.6, 35.0, T.Y_CLOCK, T.Y_CLOCK, rawK);
-    pitchTo(27.6, 35.0, 0.03, 0.03, rawK);
+    /* v14.9: the dial until the hour has turned, then back and down onto him
+       in bed one under "Surely, this is not just my imagination..." */
+    const AT2 = { x: T.ATCLOCK.x, y: T.ATCLOCK.y, z: T.ATCLOCK.z + 0.07 };
+    camTo(27.6, 31.9, T.ATCLOCK, AT2, smoothK);
+    yawTo(27.6, 31.9, T.Y_CLOCK, T.Y_CLOCK, rawK);
+    pitchTo(27.6, 31.9, 0.03, 0.03, rawK);
+    camTo(31.9, 34.7, AT2, T.REVEAL, smoothK);
+    yawTo(31.9, 34.7, T.Y_CLOCK, T.Y_REVEAL, smoothK);
+    pitchTo(31.9, 34.7, 0.03, T.P_REVEAL, smoothK);
     fade(27.6, 28.8, 1, 0);
     sfx(27.56, 'n2pro2');                        // "I noticed it only starts when the clock hits 3am... Surely, this is not just my imagination..." 7.71 s -> 35.3; "3am" at 31.2
     step(31.2, () => { stage.clock.set('03:00'); stage.setShower(true, 0.8); });
     sfx(31.2, 'boom', 0.28);
     sfx(31.4, 'dread', 0.7);
-    fade(34.0, 35.0, 0, 1);
+    fade(34.4, 35.3, 0, 1);
     /* 35–43 black: the water fades, his line. */
     tr(35.0, 37.5, k => { stage.setShower(true, 0.8 * (1 - k)); }, rawK);
     sfx(38.4, 'n2pro');                          // 6.72 s → 45.1 (v10.8: +2.2 s of black first — Chad: "the voicelines are too close to each other")
