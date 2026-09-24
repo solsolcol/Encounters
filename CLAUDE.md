@@ -3844,7 +3844,8 @@ What the baseline contains, by release:
   bed after the hour turns (31.9–34.7; the fade 34.4–35.3). The floor and
   ceiling nights already had bed one in frame, desktop and phone. One law in
   LEARNINGS (updateMatrixWorld before measuring a skin). `src/main.js`
-  untouched; no word moved. Harnesses chapter, cine, leak.
+  untouched; no word moved. Harnesses chapter, cine, leak. Deploy
+  `6ab5a57ef03aebcfff65d9eb`, byte-verified (index.html and all 102 build files).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
