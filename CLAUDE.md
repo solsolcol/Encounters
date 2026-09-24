@@ -3828,7 +3828,8 @@ What the baseline contains, by release:
   rooms of 3.6–6 m), and ch1's target is a burning pile that is its own
   beacon, the mark taking over from 15 m. Episode 2 names every next target in
   its objective line. `src/main.js` untouched; no word moved (sheet v71
-  stands). Harnesses chapter, cine, walk.
+  stands). Harnesses chapter, cine, walk. Deploy `6ab596e8e4d263c77c9e4f25`,
+  byte-verified (index.html and all 102 build files).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
