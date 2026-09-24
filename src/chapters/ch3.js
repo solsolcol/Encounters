@@ -190,10 +190,19 @@
        the front of a tent you have to walk up an aisle to see properly. */
     words: {
       approach: 'The whole tent is watching the front...',
-      act: 'E at the altar',
-      actTouch: 'tap the altar',
+      /* v14.7: the boot hint along the bottom names no place any more — the
+         altar is LOCKED until the amulet is worn, and a hint that points at
+         a locked thing lies (v14.2's law). Episode 2's neutral words. */
+      act: 'E to act',
+      actTouch: 'Tap to act',
       interact: 'Watch the ritual at the altar',
-      interactTouch: 'the altar'
+      interactTouch: 'the altar',
+      /* v14.7 — THE AMULET (Chad): the auntie's table first, then the altar.
+         The press over it, and the two orders the HUD gives. */
+      hotAmulet: 'E to take the amulet',
+      hotAmuletTouch: 'Tap to take the amulet',
+      objAmulet: 'Take the amulet on the auntie\'s table',
+      objEquip: 'Open your bag and equip the amulet'
     },
     lines: { close: 'v3altar' },
     sayPrefix: 'v3'
@@ -210,7 +219,8 @@
     const { THREE, GLTFLoader, cloneSkinned, scene, camera, yaw, LOW,
             assetBytes, rescueTextures, redoShadows,
             cnv, makeSoftDot, makeGround, makeConcrete, makeLacquer,
-            makeHellNote, getState, startDecision, HEAD_RE, plantTrees } = ctx;
+            makeHellNote, getState, startDecision, HEAD_RE, plantTrees,
+            kit, worldSfx, warmSounds } = ctx;   // v14.7: the amulet — the bag, her line, and its decode
 
     /* SHRINE is her anchor — the middle of the seating. The ALTAR is a
        different thing entirely, nine metres away at the front, and keeping
@@ -856,6 +866,122 @@
     }
 
     /* ================================================================== */
+    /* v14.7 · THE AMULET ON HER TABLE                                    */
+    /* ================================================================== */
+    /* Chad: "On the table where the auntie model is, there should be an
+       amulet placed on the table, that has exclamation mark and the glowing
+       effect to obviously show it can be interacted." It stands on a small
+       red cushion against a little wooden easel at the table's NEAR end —
+       the end the player walks up to from the back of the tent, clear of her
+       stacks — face to him, leaning back so it looks up at a standing eye.
+       The `!` is the engine's hotspot mark; the glow is this chapter's: a
+       warm halo behind it that breathes, a ring of light on the wood, motes
+       rising, and the amulet's own colours lit from within. All of that is
+       shown in PLAY only — the film and the scenes see a thing on a table,
+       not a game's marker. It is larger than the real thing (a small Rian is
+       about three centimetres) because it has to read from the aisle. The
+       table copy is shown exactly while the player does not hold the amulet
+       (updateAmulet), so a resume, a replay and a pickup all agree. */
+    const AM = { x: PAPER.x, z: PAPER.z + 0.78 };
+    const AM_TOP = 0.79;                              // the table's top surface
+    const AM_H = 0.105;                               // the model's height on the table, m (photographed from the aisle)
+    const AM_TILT = -0.22;                            // leaning back, face up to the eye
+    const cushion = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.026, 0.12), matCloth);
+    cushion.position.set(AM.x, AM_TOP + 0.013, AM.z);
+    cushion.castShadow = !LOW; cushion.receiveShadow = true;
+    world.add(cushion);
+    /* smaller than the amulet and right behind it, so from the front it is
+       hidden and it only explains, from above, why the thing stands up */
+    const easel = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.055, 0.006), matWood);
+    easel.position.set(AM.x, AM_TOP + 0.026 + 0.026, AM.z - 0.02);
+    easel.rotation.x = AM_TILT;
+    world.add(easel);
+    const amuletRoot = new THREE.Group();             // what she gives: hidden while he holds it
+    amuletRoot.position.set(AM.x, AM_TOP, AM.z);
+    world.add(amuletRoot);
+    const amTilt = new THREE.Group();                 // pivots at the amulet's foot, on the cushion
+    amTilt.position.y = 0.026;
+    amTilt.rotation.x = AM_TILT;
+    amuletRoot.add(amTilt);
+    // the stand-in until the model lands: a gold oval the same size
+    const amStandIn = new THREE.Mesh(new THREE.CylinderGeometry(0.026, 0.026, 0.008, 24), matGold);
+    amStandIn.rotation.x = Math.PI / 2;
+    amStandIn.scale.set(1, 1, 1.55);
+    amStandIn.position.y = AM_H / 2;
+    amTilt.add(amStandIn);
+    const amMats = [];                                 // the model's own, lit from within while it waits
+    /* the model lands through loadGLB, which is declared with the bought
+       models below — called from there (a const this early is still in its
+       temporal dead zone while build() runs down to it) */
+    function amuletModelLanded(gltf) {
+      const m = gltf.scene;
+      m.scale.setScalar(AM_H);                        // baked to a unit height (tools/prepamulet.mjs)
+      m.position.y = AM_H / 2;                        // and centred: its foot on the cushion
+      m.traverse(o => {
+        if (!o.isMesh) return;
+        o.castShadow = !LOW;
+        for (const mt of (Array.isArray(o.material) ? o.material : [o.material])) {
+          if (mt && mt.emissive) { mt.emissive.set(0xffffff); mt.emissiveIntensity = 0; amMats.push(mt); }
+        }
+      });
+      amTilt.add(m);
+      amStandIn.visible = false;
+    }
+    /* small and warm: additive light over her cream paper stacks sums to
+       white, so the first, 40 cm halo blew the stack behind it out (seen in
+       the photograph from the aisle); this one is a glow ROUND the amulet */
+    const amHalo = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: makeSoftDot('rgba(255,190,92,0.75)', 'rgba(255,150,40,0)'),
+      transparent: true, depthWrite: false, fog: false, blending: THREE.AdditiveBlending }));
+    amHalo.position.set(0, 0.026 + AM_H * 0.5, -0.012);
+    amHalo.scale.setScalar(0.22);
+    amuletRoot.add(amHalo);
+    const amRing = new THREE.Mesh(new THREE.RingGeometry(0.105, 0.15, 40), new THREE.MeshBasicMaterial({
+      color: 0xffc65a, transparent: true, opacity: 0, side: THREE.DoubleSide,
+      depthWrite: false, fog: false, blending: THREE.AdditiveBlending }));
+    amRing.rotation.x = -Math.PI / 2;
+    amRing.position.y = 0.004;
+    amuletRoot.add(amRing);
+    const moteMat = new THREE.SpriteMaterial({
+      map: makeSoftDot('rgba(255,236,178,1)', 'rgba(255,200,90,0)'), color: 0xffffff,
+      transparent: true, depthWrite: false, fog: false, blending: THREE.AdditiveBlending });
+    const amMotes = [];
+    for (let i = 0; i < 7; i++) {
+      const s = new THREE.Sprite(moteMat);
+      s.userData.ph = i / 7; s.userData.a = i * 2.39;
+      amuletRoot.add(s); amMotes.push(s);
+    }
+    /* what a tap or an unlocked click lands on: a ball round the amulet a
+       little bigger than it, because at arm's length on a phone the thing
+       itself is a thumbnail. Never drawn; a raycast still finds it. */
+    const amProxy = new THREE.Mesh(new THREE.SphereGeometry(0.15, 10, 8),
+      new THREE.MeshBasicMaterial({ visible: false }));
+    amProxy.position.y = 0.026 + AM_H * 0.5;
+    amuletRoot.add(amProxy);
+    function updateAmulet(t) {
+      amuletRoot.visible = !(kit && kit.has && kit.has('amulet'));
+      const show = amuletRoot.visible && getState() === 'play';
+      amHalo.visible = amRing.visible = show;
+      for (const s of amMotes) s.visible = show;
+      for (const mt of amMats) {
+        // under the strict CSP the sheet arrives after the parse (rescueTextures)
+        if (!mt.emissiveMap && mt.map) { mt.emissiveMap = mt.map; mt.needsUpdate = true; }
+      }
+      if (!show) { for (const mt of amMats) mt.emissiveIntensity = 0; return; }
+      const beat = 0.5 + 0.5 * Math.sin(t * 2.6);
+      amHalo.material.opacity = 0.38 + 0.32 * beat;
+      amHalo.scale.setScalar(0.19 + 0.05 * beat);
+      amRing.material.opacity = 0.12 + 0.24 * beat;
+      for (const mt of amMats) mt.emissiveIntensity = 0.16 + 0.30 * beat;
+      for (const s of amMotes) {
+        const k = (t * 0.26 + s.userData.ph) % 1, a = s.userData.a + t * 0.6;
+        const r = 0.05 + 0.03 * Math.sin(s.userData.a * 3 + t);
+        s.position.set(Math.cos(a) * r, 0.03 + k * 0.36, Math.sin(a) * r * 0.6);
+        s.scale.setScalar(0.024 * Math.sin(Math.PI * k));
+      }
+    }
+
+    /* ================================================================== */
     /* PEOPLE                                                             */
     /* ================================================================== */
     /* A figure is five boxes and a sphere. At this light level, under a
@@ -1310,6 +1436,9 @@
       }, (err) => console.warn(key + ' failed to load', err)))
         .catch(err => console.warn(key + ' failed to load', err));
     };
+
+    /* v14.7: Chad's amulet on the auntie's table (built with the table, above) */
+    loadGLB('phiboon', amuletModelLanded);
 
     /* THE CHAIR — one 710-triangle mesh, instanced over every seat, and the
        three primitive instanced-meshes go dark. placeChair() already drives
@@ -2042,11 +2171,12 @@
       return _ndc.set(PILE_POS.x, 1.10, PILE_POS.z).project(camera);
     }
     function pileInView() {
+      if (!amuletWorn()) return false;        // v14.7: locked until the amulet is worn (v12.5: inView says LIVE)
       const n = pileScreen();
       return n.z < 1 && Math.abs(n.x) < 0.97 && Math.abs(n.y) < 0.97;
     }
     function pointerHitsPile(cx, cy) {
-      if (pileDist() > INTERACT_R) return false;
+      if (!amuletWorn() || pileDist() > INTERACT_R) return false;
       syncCamera();
       _ptr.set((cx / innerWidth) * 2 - 1, -(cy / innerHeight) * 2 + 1);
       _ray.setFromCamera(_ptr, camera);
@@ -2056,15 +2186,127 @@
       const sx = (n.x * 0.5 + 0.5) * innerWidth, sy = (-n.y * 0.5 + 0.5) * innerHeight;
       return Math.hypot(cx - sx, cy - sy) < Math.min(innerWidth, innerHeight) * 0.11;
     }
-    function canInteract() { return getState() === 'play' && pileDist() < INTERACT_R; }
+    function canInteract() { return getState() === 'play' && pileDist() < INTERACT_R && amuletWorn(); }
     function interactPile() {
       if (!canInteract()) return false;
       startDecision();
       return true;
     }
 
+    /* ================================================================== */
+    /* v14.7 · THE AMULET FLOW                                            */
+    /* ================================================================== */
+    /* Chad: "the player must go through this amulet flow completely, before
+       the player can talk to the tangki to proceed." So the altar is LOCKED
+       — no mark, no ring, no badge, no tap, no decision — until the amulet
+       is worn, and the HUD walks him through it: take it off her table (E,
+       the badge, or a tap on the amulet itself), the Item Unlocked splash
+       (the engine's), her line, the bag pulsing (kit.give), equip it in the
+       AMULET box, OBJECTIVE COMPLETE — and the chapter is its own again.
+       The step is DERIVED from the bag every frame (e2c3's torch rule,
+       v11.6), never stored: a Continue lands on the right order whatever
+       was saved, a player who takes it off before the altar is asked again
+       without a COMPLETE for going backwards (v8.7: a HUD that congratulates
+       a step undone is lying), and one who already wears it on arrival has
+       no flow at all. A fresh run of this chapter (reset) puts it back on
+       her table — the auntie gives it every time the chapter is played, the
+       way e2c3's torch lies on the ground every time. */
+    const TOUCH = matchMedia('(pointer: coarse)').matches || 'ontouchstart' in window;
+    const amuletWorn = () => !kit || !kit.equipped || kit.equipped('amulet');
+    let amStep = -2;                  // -2 not begun, 0 take it, 1 equip it, 2 worn
+    function amuletStep() {
+      if (!kit || !kit.objective || getState() !== 'play') return;
+      const has = kit.has('amulet'), worn = kit.equipped('amulet');
+      const want = !has ? 0 : !worn ? 1 : 2;
+      if (want === amStep) return;
+      const first = amStep === -2, back = !first && want < amStep;
+      if (first && want === 2) { amStep = 2; return; }          // worn on arrival: no flow at all
+      amStep = want;
+      const opts = (first || back) ? { complete: false } : undefined;
+      if (want === 0) {
+        kit.objective(DATA.words.objAmulet, opts);
+        if (kit.itemWarm) kit.itemWarm('amulet');               // the splash opens on the model, not its stand-in
+      } else if (want === 1) {
+        kit.objective(DATA.words.objEquip, opts);
+        if (kit.urge) kit.urge('amulet');                       // the bag pulses until it is worn
+      } else kit.objective(null, opts);                         // OBJECTIVE COMPLETE, and the altar is open
+    }
+    function takeAmulet() {
+      if (!kit || !kit.give || getState() !== 'play' || kit.has('amulet')) return false;
+      if (!kit.give('amulet')) return false;
+      amuletRoot.visible = false;
+      if (kit.unlock) kit.unlock('amulet');
+      giftBegin();
+      return true;
+    }
+    function pointerHitsAmulet(cx, cy) {
+      if (!amuletRoot.visible) return false;
+      syncCamera();
+      _ptr.set((cx / innerWidth) * 2 - 1, -(cy / innerHeight) * 2 + 1);
+      _ray.setFromCamera(_ptr, camera);
+      return _ray.intersectObject(amProxy, false).length > 0;
+    }
+    /* the press: inside 1.8 m from any view (a thing on a table at arm's
+       length is under the lens — e2c3's torch reason), its anchor above the
+       amulet so the engine's `!` stands over it */
+    const amuletSpot = { id: 'amulet', pos: { x: AM.x, y: 0.95, z: AM.z }, radius: 1.8, anyView: true,
+      markY: 0.14, prompt: TOUCH ? DATA.words.hotAmuletTouch : DATA.words.hotAmulet,
+      enabled: () => amuletRoot.visible && getState() === 'play',
+      hits: pointerHitsAmulet, onInteract() { return takeAmulet(); } };
+
+    /* HER LINE. "Ah boy, you like this one? Auntie give it to you, keep it
+       well!" — a beat after the pickup (under the splash, which is see-
+       through), on her talking take, turned from her table to the boy, and
+       back to her papers when she is done. On WALL time: the chapter's dt
+       is clamped and this is a sentence, not an animation. The turn and the
+       talking take are timed from the moment the LINE STARTS, not from the
+       pickup: the first splash of a session builds the item renderer, and a
+       long frame there (measured: six seconds on a software-rendered box)
+       used to spend the whole beat before her voice had begun, so she
+       turned back and fell silent-bodied under her own sentence. The audio
+       and the wall clock both run through a stall, so from the line's start
+       they stay together. If the decision or a scene opens while she is
+       still turned to him (a player who equips it and reaches the altar in
+       under seven seconds), she is put back at her table on that frame and
+       the beat ends: the story is the chapter's again, and a scene's snap()
+       must not record her mid-turn and hand that back at its end. */
+    const GIFT_AT = 0.9, GIFT_LINE = 4.99, GIFT_TURN = 0.6, GIFT_BACK = 0.8;
+    let gift = null;
+    const turnTo = (a, b, k) => {
+      let d = (b - a) % (Math.PI * 2);
+      if (d > Math.PI) d -= Math.PI * 2;
+      if (d < -Math.PI) d += Math.PI * 2;
+      return a + d * k;
+    };
+    const ease = k => k * k * (3 - 2 * k);
+    function giftBegin() { gift = { t0: performance.now(), tLine: 0, from: auntie.rotation.y, to: auntie.rotation.y }; }
+    function updateGift() {
+      if (!gift) return;
+      const st = getState();
+      if (st === 'cine' || st === 'decide') {
+        auntie.rotation.y = gift.from;
+        if (auntTalk) auntSet(false);
+        gift = null;
+        return;
+      }
+      const now = performance.now();
+      if (!gift.tLine) {
+        if ((now - gift.t0) / 1000 < GIFT_AT) return;
+        gift.tLine = now;
+        gift.to = Math.atan2(yaw.position.x - auntie.position.x, yaw.position.z - auntie.position.z);
+        auntSet(true);
+        if (worldSfx) worldSfx('v3aunt6', 1.0);
+      }
+      const u = (now - gift.tLine) / 1000;
+      if (u < GIFT_LINE) { auntie.rotation.y = turnTo(gift.from, gift.to, ease(Math.min(1, u / GIFT_TURN))); return; }
+      if (auntTalk) auntSet(false);
+      const k = Math.min(1, (u - GIFT_LINE) / GIFT_BACK);
+      auntie.rotation.y = turnTo(gift.to, gift.from, ease(k));
+      if (k >= 1) { auntie.rotation.y = gift.from; gift = null; }
+    }
+
     function updatePile(t) {
-      if (getState() === 'cine') {
+      if (getState() === 'cine' || !amuletWorn()) {   // v14.7: no mark, no ring, while the altar is locked
         markRoot.visible = altarRing.visible = false;
         return;
       }
@@ -2142,6 +2384,13 @@
         auntSlide(auntTalkAct.getEffectiveWeight());
       }
       if (brazMixer) brazMixer.update(brazTalk ? dt : 0);   // frame 0 held until a scene asks
+
+      /* v14.7: the amulet — its table copy and glow, the HUD's order, and
+         her line — before the return, because the copy's visibility and the
+         end of her beat must be settled in every state */
+      updateAmulet(t);
+      amuletStep();
+      updateGift();
 
       /* THE RITUAL, and a cutscene owns it outright while one is running.
          Without this, a scene that poses the medium or throws his flags up
@@ -2288,6 +2537,12 @@
     };
     function reset() {
       noteStorm = 1; drumBeat = 1; crowdLife = 1; medRate = null;
+      /* v14.7: a fresh run of the chapter puts the amulet back on her table,
+         and the order back to its start (the v8.1 law: whatever a run
+         changed, the reset changes back — here in the bag's form, as e2c3
+         takes its torch back) */
+      if (kit && kit.take && kit.has && kit.has('amulet')) kit.take('amulet');
+      amStep = -2; gift = null;
       auntIdle();
       brazIdle();
       medPlay('idle3', 1, 0);        // v5.19: never restart him mid-spell
@@ -2399,9 +2654,17 @@
       S = null;
     }
 
+    /* v14.7: her line decodes ahead of the pickup (v8.0: a sample that has
+       not decoded plays nothing), and the splash's sting with it */
+    if (warmSounds) warmSounds(['v3aunt6', 'itemunlock']);
+
     return (S = {
       world, noteTex, blockers: blockers(),
       ready: () => hdbReady,
+      hotspots: [amuletSpot],                    // v14.7: the amulet on her table
+      /* v14.7, for probes: the flow's step and the table copy */
+      amulet: { root: amuletRoot, proxy: amProxy, pos: AM, cushion,
+                get step() { return amStep; }, get gift() { return !!gift; } },
       pile: {
         pos: PILE_POS, radius: INTERACT_R, group: altar,
         dist: pileDist, screen: pileScreen, inView: pileInView,

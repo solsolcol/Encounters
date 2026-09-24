@@ -1312,7 +1312,19 @@ function paintObjective() {
   const banner = !!(objBeat && objBeat.kind === 'done');
   const show = (kitObjective || kitTimer || banner) && live;
   if (show !== objPainted.shown) { box.classList.toggle('hide', !show); objPainted.shown = show; document.body.classList.toggle('hasObj', !!show); }   // v11.8: the presence banner reads this
-  if (!show) return;
+  if (!show) {
+    /* v14.7: a box that has GONE AWAY has nothing to slide out. When the
+       last order is completed the box hides still holding "OBJECTIVE
+       COMPLETE", and the next order to arrive used to slide those stale
+       words out first — which, after a step UNDONE (chapter 3's amulet
+       taken off again before the altar), read as a congratulation for going
+       backwards: the v8.7 lie, in the words rather than the banner. So once
+       there is no order left, the next one is a first paint and lands
+       straight away (its own beat still flashes and sounds). A box that is
+       only hidden for a moment (the bag, a card) keeps its words. */
+    if (!kitObjective && !banner) objPainted.txt = null;
+    return;
+  }
   const obox = box.querySelector('.obox');
   /* v11.8 (Chad, a phone screenshot: the presence banner across the
      objective box): the box's HEIGHT goes onto <body> as `--objH`, and the
