@@ -4554,3 +4554,17 @@ sized on its standing idle first and handed the real take afterwards
 (`opts.then`), then re-grounded on that take's own lowest bone. The v5.21
 law — measure the pose you will show — has a corollary: measure HEIGHT on a
 pose that has one.
+
+## A CANVAS PAINTED BEFORE IT IS SHOWN STAYS BLANK (v14.6)
+
+The inventory's painted icons draw into a `<canvas>` sized from its own
+`clientWidth`/`clientHeight`. The drag ghost is `display:none` until it wears
+`on`, and `invLift` painted it first and showed it second — so the canvas
+measured 0 × 0, `drawArt` returned before drawing, and the ghost that follows
+the finger was an empty box. The line drawings it replaced were SVG, which
+has no pixel size to get wrong, so the order never mattered before. Show,
+THEN paint; anything drawn at its layout size is drawn after it has a layout.
+And one offscreen WebGL renderer copied into 2D canvases serves every item
+view — the worn box, the description pane, the zoom window — so three views
+cost one GL context, not three (a phone caps contexts, and Zav already holds
+one).

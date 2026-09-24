@@ -328,17 +328,18 @@ Object.assign(window.__TEXT__, {
   'inv.emptyDesc':       'Tap an item to look at it.',
   'inv.hintTouch':       'Tap an item, then tap where it goes · double-tap to equip',
   'inv.hintDesktop':     'Drag items, or click it and click where it goes · double-click to equip · I or Esc closes',
+  // v14.6: the zoom window over an item's 3D model
+  'inv.zoom':            'Look closer',
+  'inv.zoomClose':       'Close ✕',
+  'inv.zoomHint':        'Drag to turn it · pinch or scroll to zoom',
   // slot labels name what the place takes; WHERE it is, the figure shows
   'slot.head':           'Divine Eyes',
   'slot.neck':           'Amulet',
   'slot.body':           'Sak Yant',
   'slot.hand':           'Hand',
-  'item.phone.name':     'Phone',
-  'item.phone.desc':     'Two percent battery and a light source that works. Enough to see your feet, not enough to see far.',
-  'item.keys.name':      'House Keys',
-  'item.keys.desc':      'Home is four floors up. They have never felt this far away.',
-  'item.beads.name':     'Prayer Beads',
-  'item.beads.desc':     'Your grandmother pressed these into your hand years ago. You have never taken them seriously, and never taken them off.',
+  /* v14.6: the phone, the house keys, the prayer beads and the hell note are
+     gone from the game (Chad: "they serve no gameplay purpose"), and their
+     words with them — the torch is the only item for now */
   'item.torch.name':     'Torch',
   /* v14.4: the last clause was false wherever it could be read. The bag
      carries across a chapter and e2c3 forces the torch into the hand to be
@@ -350,8 +351,6 @@ Object.assign(window.__TEXT__, {
   'item.torch.desc':     'Army issue. A wide, hard beam and a heavy switch.',
   'item.rifle.name':     'Rifle',
   'item.rifle.desc':     'Army issue. Signed out to you by serial number, and signed back in the same way.',
-  'item.note.name':      'Hell Note',
-  'item.note.desc':      'Burned for someone else. It should not be in your pocket.',
 
   // --- spoken by screen readers, never seen on screen ----------------------
   'a11y.soundButton':    'Sound on or off',

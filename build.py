@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "14.5"
+VERSION = "14.6"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -317,6 +317,7 @@ ASSETS = {
     'foodwarmer':   ('assets/foodwarmer.glb', True, False),   # e2c2 v10.1: Chad's buffet warmers, food and plates on the counter
     'flashlight':   ('assets/flashlight.glb', True, False),   # e2c3 v11.1: Chad's Sketchfab flashlight, the torch viewmodel while it is on
     'kamaz':        ('assets/kamaz.glb', True, False),        # e2c3 v11.2: Chad's Sketchfab Kamaz 5330, the tonner of the film
+    'icontorch':    ('assets/icontorch.jpg', True, False),    # v14.6: Chad's painted torch icon for the inventory (masters/v14.6, 1254 px PNG -> 384 px JPEG)
     'forest':       ('assets/forest.glb', True, False),       # e2c3 v11.2: Chad's Sketchfab forest with a road, the film's set (docs/V11.0-E2C3-PLAN.md §18)
     'ghostcyclist': ('assets/ghostcyclist.glb', True, False), # e2c4 v12.1: Chad's soldier on a bicycle — one baked mesh, NO rig and no clips, which IS the beat
     'rifle':        ('assets/rifle.glb', True, False),        # e2c4 v12.0: the rifle viewmodel (Sketchfab KRISS Vector, its own hands and four takes) — docs/E2-SOLDIER-MODELS.md §8
@@ -346,7 +347,7 @@ HOSTED_ONLY = {'titlevid', 'titlevidwebm'}
 E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim',
            'ghostsoldier', 'encik2', 'bunkbed', 'cafestaff', 'foodwarmer', 'flashlight',
            'kamaz', 'forest', 'rifle', 'ghostcyclist', 'fboaim',
-           'muzzle', 'ammocrate', 'ammomags'}
+           'muzzle', 'ammocrate', 'ammomags', 'icontorch'}
 HOSTED_ONLY |= E2_ONLY
 
 # The split packs are hosted-only: there is no __..._B64__ token for them and

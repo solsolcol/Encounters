@@ -878,15 +878,51 @@ body.invopen .soundBtn{display:none}
   background:rgba(12,16,22,.95);border:1px solid var(--sodium);border-radius:8px;
   box-shadow:0 10px 26px rgba(0,0,0,.6)}
 #invDrag svg{width:62%;height:62%;color:var(--sodium)}
+/* v14.6: an item's painted icon fills its box edge to edge — the art is a
+   framed tile of its own — and a worn item's 3D view fills its box the same */
+.slot canvas.item{width:100%;height:100%;border-radius:inherit;display:block}
+.slot canvas.item.art{filter:none}
+.slot.gear canvas.item.model{filter:drop-shadow(0 0 8px rgba(99,214,200,.30))}
+.slot.lifted canvas.item{opacity:.25}
+#invDrag canvas{width:100%;height:100%;border-radius:7px;display:block}
 #invDrag.on{display:grid}
 
 .invSub{font-family:var(--mono);font-size:.66rem;letter-spacing:.16em;
   text-transform:uppercase;color:#5E6675;margin:12px 0 2px}
 .invInfo{margin-top:12px;padding-top:10px;border-top:1px solid var(--line);
-  min-height:56px}
+  min-height:119px}   /* v14.6: room for the model pane, so picking an item up never moves the panel under the pointer */
 .invInfo h4{font-family:var(--ui);font-size:1.06rem;font-weight:600;
   color:var(--bone);margin-bottom:4px}
 .invInfo p{font-size:.95rem;line-height:1.5;color:#8A91A0}
+/* v14.6: an item in the description area — its 3D view on the LEFT with the
+   magnifying glass on it, the name and the words on the RIGHT */
+.invInfo.has{display:flex;align-items:center;gap:14px}
+.ivPane{position:relative;flex:0 0 auto;width:108px;height:108px;cursor:zoom-in;
+  border:1px solid #262D39;border-radius:8px;overflow:hidden;
+  background:radial-gradient(circle at 50% 45%,#161C26,#090C11 72%)}
+.ivPane .ivView{position:absolute;inset:0;width:100%;height:100%;display:block}
+.ivPane svg.ivView{inset:22%;width:56%;height:56%;color:var(--sodium)}
+.ivZoom{position:absolute;right:4px;bottom:4px;width:30px;height:30px;
+  display:grid;place-items:center;padding:0;cursor:pointer;
+  background:rgba(8,11,16,.82);border:1px solid var(--sodium);border-radius:50%;
+  color:var(--sodium);box-shadow:0 2px 10px rgba(0,0,0,.6)}
+.ivZoom svg{width:17px;height:17px}
+.ivZoom:hover,.ivZoom:focus-visible{background:#1A1710;outline:none;color:var(--bone)}
+.ivText{flex:1 1 auto;min-width:0}
+/* the zoom window: over the equipment screen, the item alone and big */
+#invZoom{position:fixed;inset:0;z-index:13;display:flex;align-items:center;
+  justify-content:center;padding:16px;background:rgba(3,4,7,.82);backdrop-filter:blur(3px)}
+#invZoom.hide{display:none}
+.izBox{width:min(620px,100%);max-height:94vh;display:flex;flex-direction:column;
+  background:linear-gradient(180deg,#12151C,#0C0F14);border:1px solid #2E3542;
+  border-top:2px solid var(--sodium);box-shadow:0 24px 70px rgba(0,0,0,.75);
+  padding:14px 16px 12px;animation:fadeup .28s var(--ease)}
+.izHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+#ivZoomCv{width:100%;height:min(62vh,520px);display:block;touch-action:none;cursor:grab;
+  border:1px solid #262D39;border-radius:8px;
+  background:radial-gradient(circle at 50% 46%,#18202B,#07090D 70%)}
+#ivZoomCv:active{cursor:grabbing}
+.izDesc{margin-top:10px;font-size:.92rem;line-height:1.5;color:#8A91A0}
 .invHint{margin-top:10px;font-family:var(--mono);font-size:.62rem;
   letter-spacing:.1em;color:#4C5464;text-align:center}
 
@@ -902,7 +938,14 @@ body.invopen .soundBtn{display:none}
   .gslot .cap{font-size:.55rem;max-width:72px}
   .slot{max-width:54px}          /* both bag rows fit a 664px screen */
   .invSub{margin:7px 0 2px}
-  .invInfo{min-height:44px;margin-top:8px;padding-top:8px}
+  .invInfo{min-height:79px;margin-top:8px;padding-top:8px}
+  .ivPane{width:70px;height:70px}   /* the whole pane opens the zoom; the button is its sign */
+  .ivZoom{width:26px;height:26px;right:3px;bottom:3px} .ivZoom svg{width:15px;height:15px}
+  .invInfo.has h4{margin-bottom:2px}
+  .invInfo.has{gap:11px}
+  .invInfo p{font-size:.86rem;line-height:1.42}
+  #invZoom{padding:10px}
+  #ivZoomCv{height:min(56vh,460px)}
 }
 
 /* ── shared type devices ────────────────────────────────────────────── */
@@ -1485,6 +1528,12 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
       stroke-linejoin="round"/>
     <path d="M9 20.4c1 .9 2 .9 3 0s2-.9 3 0" fill="none" stroke="currentColor"
       stroke-width="1.3" stroke-linecap="round"/>
+  </symbol>
+  <!-- v14.6: the magnifying glass on an item's view in the equipment panel -->
+  <symbol id="e-zoom" viewBox="0 0 24 24">
+    <circle cx="10.5" cy="10.5" r="6" fill="none" stroke="currentColor" stroke-width="2"/>
+    <path d="M15 15l5.5 5.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+    <path d="M10.5 7.8v5.4M7.8 10.5h5.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
   </symbol>
   <symbol id="e-torch" viewBox="0 0 24 24">
     <path d="M9 3h6v4l-1.5 2v12h-3V9L9 7z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
@@ -2115,6 +2164,18 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
     </div>
     <div class="invInfo" id="invInfo"></div>
     <div class="invHint" id="invHint" data-t="inv.hintTouch">Tap an item, then tap where it goes · double-tap to equip</div>
+  </div>
+  <!-- v14.6: the zoom window — one item, big, turned by the player -->
+  <div id="invZoom" class="hide" role="dialog" aria-modal="true">
+    <div class="izBox">
+      <div class="izHead">
+        <span class="stencil" id="izName"></span>
+        <button id="izClose" class="invClose" type="button" data-t="inv.zoomClose">Close ✕</button>
+      </div>
+      <canvas id="ivZoomCv" aria-hidden="true"></canvas>
+      <p class="izDesc" id="izDesc"></p>
+      <div class="invHint izHint" data-t="inv.zoomHint">Drag to turn it · pinch or scroll to zoom</div>
+    </div>
   </div>
 </div>
 <div id="invDrag" aria-hidden="true"></div>

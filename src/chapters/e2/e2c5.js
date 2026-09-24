@@ -1117,11 +1117,18 @@
          kit on the first frame of a fresh run, where nothing has called
          reset() and the bag arrives empty. */
       if (kit && kit.has && kit.give && kit.take) {
-        for (const [id, item] of [['arms', 'rifle'], ['stores', 'torch']]) {
+        /* v14.6: the torch only. Chad: "for the entire game, at least for now,
+           there is only the torch" — the rifle is still handed back at the
+           armskote (the counter, its line and its sound are the story), it
+           simply is not an item in the bag. handIn() takes a rifle only if
+           the bag has one, so an old save that still carries it hands it in. */
+        for (const [id, item] of [['stores', 'torch']]) {
           const want = !done.has(id) && p !== 'talk' && p !== 'decide' && p !== 'spot';
           if (want && !kit.has(item)) kit.give(item);
           if (!want && kit.has(item)) kit.take(item);
         }
+        // and a rifle a save from before v14.6 still carries goes back quietly
+        if (done.has('arms') && kit.has('rifle')) kit.take('rifle');
         /* v14.1: `kit.give` starts the bag button's equip pulse, which is
            right for a torch a chapter OFFERS (e2c3) and wrong for kit a
            chapter ISSUES so it can be handed back. It was telling the player
@@ -1238,7 +1245,7 @@
         kit.daylight(null, 0); kit.presence(0);
         /* the kit goes back in the bag, so a replay has something to hand in
            (the v8.1 law, in the bag's form) */
-        if (kit.give) { if (!kit.has('rifle')) kit.give('rifle'); if (!kit.has('torch')) kit.give('torch'); }
+        if (kit.give) { if (!kit.has('torch')) kit.give('torch'); }   // v14.6: the torch is the only item
         if (kit.urge) kit.urge(null);
         kit.setPhase('clear:');
       }

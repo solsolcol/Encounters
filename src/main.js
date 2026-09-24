@@ -5869,15 +5869,34 @@ const GEAR_SLOTS = ['head', 'neck', 'body', 'hand'];
 const SLOT_ICON = { head: 'e-eye', neck: 'e-amulet', body: 'e-yant', hand: 'e-hand' };
 const BAG_SIZE = 10;   // two rows of five (v5.09; three rows before)
 
-// what an item is: an id, the words (from the sheet), an icon, and the one
-// equipment slot it fits — null means it can only be carried
+/* what an item is: an id, the words (from the sheet), and the one equipment
+   slot it fits — null means it can only be carried. v14.6 (Chad): "Each item
+   in inventory needs to have a proper graphic icon ... When equipped ...
+   show the 3d model of the item slowly rotating in the equipped box." So an
+   item may also name
+     art   — an asset key: the item's painted ICON (Chad supplies them), shown
+             in the bag and on the piece that follows the pointer
+     model — an asset key: the item's 3D MODEL, turning in the box it is worn
+             in, in the description area, and in the zoom window
+     view  — how the model is presented: `tilt` (a lean toward the lens, so a
+             long thing is not seen end-on) and `lens` (an extra turn so the
+             first thing seen is its front)
+   `icon` is the old line-drawn SVG, kept as the fallback for the moment
+   before the art has loaded and for a build that cannot reach it.
+
+   And the list is SHORT on purpose (v14.6): the phone, the house keys, the
+   prayer beads and the hell note are gone — "they serve no gameplay purpose"
+   — and a new game begins with an empty bag. A save that still holds one of
+   them simply loses it, because applyState() drops any id not in this table
+   (it always has; that is how a bad id is refused). */
 const ITEM_DEFS = {
-  phone: { icon: 'e-light', slot: 'hand' },
-  keys:  { icon: 'e-keys', slot: null },
-  beads: { icon: 'e-beads', slot: 'hand' },
-  note:  { icon: 'e-note', slot: null },
-  torch: { icon: 'e-torch', slot: 'hand' },   // v11.6: episode 2 chapter 3's flashlight, picked up off the ground and equipped to use
-  rifle: { icon: 'e-rifle', slot: 'hand' }    // v12.0: the issued weapon (episode 2 chapter 4) — in the hand slot, it is OUT
+  torch: { icon: 'e-torch', slot: 'hand', art: 'icontorch', model: 'flashlight',   // v11.6: episode 2 chapter 3's flashlight, picked up off the ground and equipped to use
+           view: { tilt: 0.42, lens: 0.9 } },
+  /* v12.0: the issued weapon. No chapter hands it out any more (v14.6: the
+     torch is the only item in the game for now), but it stays DEFINED —
+     rifle mode's seam is "the weapon is out while its item is in the hand
+     slot", and the fixture chapter proves that seam with it. */
+  rifle: { icon: 'e-rifle', slot: 'hand' }
 };
 const itemName = id => T('item.' + id + '.name', id);
 const itemDesc = id => T('item.' + id + '.desc', '');
@@ -5889,9 +5908,7 @@ const inv = {
   sel: null,           // the slot the keyboard is on
   open: false
 };
-inv.gear.hand = 'beads';
-inv.bag[0] = 'phone';
-inv.bag[1] = 'keys';
+// v14.6: a new game starts with nothing — no beads worn, nothing carried
 
 /* ── the state seam ─────────────────────────────────────────────────────
    Everything a run IS, as plain JSON: the chapter key, the three stats,
@@ -6064,6 +6081,14 @@ function invAdd(id) {
   inv.bag[i] = id; if (inv.open) invPaint();
   return true;
 }
+function invClearAll() {
+  inv.held = null;
+  for (const k of GEAR_SLOTS) inv.gear[k] = null;
+  inv.bag.fill(null);
+  dragEl()?.classList.remove('on');
+  if (inv.open) invPaint();
+  torchAvailSync(); weaponAvailSync();
+}
 function invHas(id) { return inv.bag.includes(id) || Object.values(inv.gear).includes(id); }
 function invRemove(id) {
   const i = inv.bag.indexOf(id);
@@ -6079,7 +6104,11 @@ const iconSvg = (icon, cls) =>
 
 function slotHTML(kind, key, id) {
   const def = id ? ITEM_DEFS[id] : null;
-  const inner = def ? iconSvg(def.icon, 'item')
+  /* v14.6: a WORN item with a model turns in its box as a live 3D view (its
+     icon stands in until the model lands); a carried one shows its icon */
+  const inner = def ? (kind === 'gear' && def.model && iv.state[id] !== 'none'
+        ? `<canvas class="item model" data-iv="${id}" data-art="${id}"></canvas>`
+        : itemVisHTML(id, 'item'))
     : kind === 'gear' ? iconSvg(SLOT_ICON[key], 'ghost') : '';
   const btn = `<button class="slot ${kind === 'gear' ? 'gear' : ''}" type="button"
       data-kind="${kind}" data-key="${key}"
@@ -6112,18 +6141,37 @@ function invPaint() {
     if (here) el.dataset.item = here;
   }
   inv.flash = null;   // one paint's worth: the animation runs, the next paint forgets it
+  paintArt(bag); paintArt(gearL); paintArt(gearR);
+  for (const id of [...inv.bag, ...Object.values(inv.gear)]) if (id && ITEM_DEFS[id].model) ivModel(id);
   invInfoPaint();
   torchAvailSync();   // v11.6: the torch button follows the hand slot
   weaponAvailSync();  // v12.0
 }
 
+/* v14.6: the description area. An item is shown as its 3D model on the
+   LEFT (its icon if it has no model, or until the model lands) with the
+   magnifying-glass button on the view, and its name and words to the RIGHT.
+   The view is a canvas the preview frame fills; the button opens the zoom. */
 function invInfoPaint(id) {
   const box = $('invInfo'); if (!box) return;
   const showing = id || inv.held?.id ||
     (inv.sel && (inv.sel.kind === 'gear' ? inv.gear[inv.sel.key] : inv.bag[+inv.sel.key]));
-  box.innerHTML = showing
-    ? `<h4>${itemName(showing)}</h4><p>${itemDesc(showing)}</p>`
-    : `<h4>${T('inv.empty')}</h4><p>${T('inv.emptyDesc')}</p>`;
+  if (!showing) {
+    box.classList.remove('has');
+    box.innerHTML = `<h4>${T('inv.empty')}</h4><p>${T('inv.emptyDesc')}</p>`;
+    return;
+  }
+  const def = ITEM_DEFS[showing];
+  const view = def.model && iv.state[showing] !== 'none'
+    ? `<canvas class="ivView" data-iv="${showing}" data-art="${showing}" data-phase="1.3"></canvas>`
+    : (def.art ? `<canvas class="ivView" data-art="${showing}"></canvas>` : iconSvg(def.icon, 'ivView'));
+  const zoom = (def.model || def.art)
+    ? `<button class="ivZoom" type="button" data-zoom="${showing}" aria-label="${T('inv.zoom')}"><svg aria-hidden="true"><use href="#e-zoom"/></svg></button>`
+    : '';
+  box.classList.add('has');
+  box.innerHTML = `<div class="ivPane">${view}${zoom}</div><div class="ivText"><h4>${itemName(showing)}</h4><p>${itemDesc(showing)}</p></div>`;
+  paintArt(box);
+  if (def.model) ivModel(showing);
 }
 
 const slotGet = (kind, key) => kind === 'gear' ? inv.gear[key] : inv.bag[+key];
@@ -6135,8 +6183,8 @@ function invLift(kind, key) {
   if (!id) return;
   inv.held = { id, from: { kind, key } };
   const d = dragEl();
-  d.innerHTML = iconSvg(ITEM_DEFS[id].icon, '');
   d.classList.add('on');
+  dragPaint(id);                                 // v14.6: the painted icon follows the pointer (painted once it has a size)
   invPaint();
 }
 function invDropAt(kind, key) {
@@ -6177,6 +6225,10 @@ function invQuickMove(kind, key) {
 /* pointer handling — one path for mouse and touch */
 let ptr = null;
 function invPointerDown(e) {
+  /* the zoom opens on the CLICK, not here: opened on the press, the window
+     would be under the finger when it lifts, and the click that follows is
+     then delivered to the panel's own backdrop — which closes the panel */
+  if (e.target.closest?.('.ivZoom, .ivPane')) return;
   const el = e.target.closest?.('.slot'); if (!el) return;
   const kind = el.dataset.kind, key = el.dataset.key;
   ptr = { kind, key, x: e.clientX, y: e.clientY, moved: false, hadHeld: !!inv.held };
@@ -6212,6 +6264,277 @@ function invPointerUp(e) {
     return;
   }
   if (slotGet(p.kind, p.key)) { invLift(p.kind, p.key); invPointerMove(e); }
+}
+
+/* ── THE ITEMS THEMSELVES (v14.6) ─────────────────────────────────────────
+   Chad: "Each item in inventory needs to have a proper graphic icon to it,
+   instead of drawn with lines ... When equipped ... show the 3d model of the
+   item slowly rotating in the equipped box ... When the player clicks on an
+   item in the bag, they can also see the 3d model of the item in the
+   description area, left aligned, and description text sits right to the 3d
+   model ... a magnifying glass zoom button ... a new window frame to show the
+   full 3d model in a much bigger size and can be rotated by the user."
+
+   THE ICON is a painted image (the item's `art`), decoded once to an
+   ImageBitmap and DRAWN onto a <canvas> wherever it appears. Not an <img>:
+   the single-file build runs under a CSP that forbids blob: and data: URLs,
+   and a bitmap drawn to a canvas needs neither — the same reason the logo
+   and the hell note load the way they do (loadImageTexture).
+
+   THE MODEL is drawn by ONE small renderer of its own, on a canvas that is
+   never in the page, and copied into each place that shows it with
+   drawImage. One WebGL context rather than one per box: a phone allows only
+   a handful, and Master Zav's panel already holds one. The small views (the
+   worn box and the description) share one 256 px drawing size; the zoom
+   window gets its own and is the only thing drawn while it is open, so the
+   drawing buffer is never resized twice in a frame. Nothing here runs unless
+   the panel is open. */
+const itemArt = {};                 // id -> ImageBitmap | 'loading' | 'none'
+function itemArtGet(id) {
+  const def = ITEM_DEFS[id]; if (!def || !def.art) return null;
+  const a = itemArt[id];
+  if (a && a !== 'loading' && a !== 'none') return a;
+  if (!a) {
+    itemArt[id] = 'loading';
+    assetBytes(def.art, true)
+      .then(bytes => createImageBitmap(new Blob([bytes], { type: def.artType || 'image/jpeg' })))
+      .then(bmp => {
+        itemArt[id] = bmp;
+        if (inv.open) invPaint();
+        if (inv.held && inv.held.id === id) dragPaint(id);
+      })
+      .catch(() => { itemArt[id] = 'none'; });
+  }
+  return null;
+}
+/* what stands for an item in a box: the painted icon when it has one (a
+   canvas the next paint fills), the line drawing until then or without it */
+function itemVisHTML(id, cls) {
+  const def = ITEM_DEFS[id];
+  if (def.art && itemArt[id] !== 'none') return `<canvas class="${cls} art" data-art="${id}"></canvas>`;
+  return iconSvg(def.icon, cls);
+}
+function drawArt(cv, id) {
+  const bmp = itemArtGet(id);
+  const w = cv.clientWidth, h = cv.clientHeight; if (!w || !h) return false;
+  const dpr = Math.min(devicePixelRatio || 1, 2);
+  const W = Math.round(w * dpr), H = Math.round(h * dpr);
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const g = cv.getContext('2d'); if (!g) return false;
+  g.clearRect(0, 0, W, H);
+  if (!bmp) return false;
+  g.imageSmoothingQuality = 'high';
+  g.drawImage(bmp, 0, 0, W, H);
+  return true;
+}
+function paintArt(root) {
+  if (!root) return;
+  for (const cv of root.querySelectorAll('canvas[data-art]')) drawArt(cv, cv.dataset.art);
+}
+function dragPaint(id) {
+  const d = dragEl(); if (!d) return;
+  d.innerHTML = itemVisHTML(id, '');
+  paintArt(d);
+}
+
+const IV_FOV = 26;
+const iv = { r: null, scene: null, cam: null, models: {}, state: {}, raf: 0, size: '',
+             zoom: { id: null, yaw: 0.6, pitch: 0.32, k: 1, drag: null, pinch: null, auto: true, ramp: 1 } };
+function ivInit() {
+  if (iv.r !== null) return !!iv.r;
+  try {
+    const cv = document.createElement('canvas');
+    iv.r = new THREE.WebGLRenderer({ canvas: cv, antialias: true, alpha: true,
+                                     preserveDrawingBuffer: true, powerPreference: 'low-power' });
+  } catch { iv.r = false; return false; }
+  iv.r.setPixelRatio(1);
+  iv.r.setClearColor(0x000000, 0);
+  iv.r.outputColorSpace = THREE.SRGBColorSpace;
+  iv.r.toneMapping = THREE.ACESFilmicToneMapping;
+  iv.r.toneMappingExposure = 1.38;   // a near-black metal torch reads at 64 px only with some lift
+  iv.scene = new THREE.Scene();
+  iv.cam = new THREE.PerspectiveCamera(IV_FOV, 1, 0.01, 50);
+  iv.scene.add(new THREE.HemisphereLight(0xe8eeff, 0x2a2420, 0.9));
+  const key = new THREE.DirectionalLight(0xfff0dc, 2.4); key.position.set(1.4, 2.2, 2.6);
+  const rim = new THREE.DirectionalLight(0x63d6c8, 1.3); rim.position.set(-2.0, 1.4, -2.2);
+  iv.scene.add(key, rim);
+  /* the room environment Master Zav's panel lights him with: an item made of
+     black metal (the torch) is nothing but its reflections */
+  try {
+    const pmrem = new THREE.PMREMGenerator(iv.r);
+    iv.scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+    iv.scene.environmentIntensity = 1.0;
+    pmrem.dispose();
+  } catch { /* the lamps alone */ }
+  return true;
+}
+/* An item's model, parsed once and kept: centred on its own middle, scaled
+   so its longest side is one unit, and turned by its `view` so the first
+   thing seen is the side worth seeing. The pivot is what a view spins. */
+function ivModel(id) {
+  const def = ITEM_DEFS[id]; if (!def || !def.model) return null;
+  if (iv.state[id] === 'ready') return iv.models[id];
+  if (iv.state[id]) return null;                       // loading, or it never will
+  if (!ivInit()) { iv.state[id] = 'none'; return null; }
+  iv.state[id] = 'loading';
+  assetBytes(def.model, true).then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
+    rescueTextures(gltf, BUF);
+    const inner = gltf.scene;
+    inner.traverse(o => {
+      if (!o.isMesh) return;
+      o.frustumCulled = false;
+      for (const m of (Array.isArray(o.material) ? o.material : [o.material])) {
+        if (m && 'envMapIntensity' in m) { m.envMapIntensity = 1.4; m.needsUpdate = true; }
+      }
+    });
+    inner.updateMatrixWorld(true);
+    const box = new THREE.Box3().setFromObject(inner);
+    const size = box.getSize(new THREE.Vector3()), c = box.getCenter(new THREE.Vector3());
+    const longest = Math.max(size.x, size.y, size.z);
+    if (!(longest > 0)) { iv.state[id] = 'none'; return; }
+    inner.position.sub(c);
+    const holder = new THREE.Group(); holder.add(inner);
+    holder.scale.setScalar(1 / longest);
+    const v = def.view || {};
+    holder.rotation.set(v.tilt || 0, v.lens || 0, 0);
+    const pivot = new THREE.Group(); pivot.add(holder);
+    pivot.visible = false;
+    iv.scene.add(pivot);
+    pivot.updateMatrixWorld(true);
+    /* the framing radius, measured after the turn and the scale: a long thin
+       thing framed by its sphere would be a speck, so the radius is taken
+       from the box as the view actually sees it, the widest the spin can
+       make it (half the diagonal of the footprint, and the height) */
+    const b2 = new THREE.Box3().setFromObject(pivot);
+    const s2 = b2.getSize(new THREE.Vector3());
+    pivot.userData.r = Math.max(Math.hypot(s2.x, s2.z) / 2, s2.y / 2, 0.1);
+    iv.models[id] = pivot; iv.state[id] = 'ready';
+    if (inv.open) invPaint();
+  }, () => { iv.state[id] = 'none'; })).catch(() => { iv.state[id] = 'none'; });
+  return null;
+}
+/* one frame of one item into the offscreen canvas; false when it cannot */
+function ivRender(id, W, H, yawA, pitchA, k) {
+  const pivot = ivModel(id); if (!pivot) return false;
+  for (const [key, g] of Object.entries(iv.models)) g.visible = key === id;
+  const sz = W + 'x' + H;
+  if (iv.size !== sz) { iv.r.setSize(W, H, false); iv.size = sz; }
+  iv.cam.aspect = W / H; iv.cam.updateProjectionMatrix();
+  pivot.rotation.set(pitchA, yawA, 0, 'XYZ');
+  /* back far enough that the widest the item can turn fits the SHORTER side
+     of the frame, with a little air; `k` is the zoom window's pinch */
+  const half = THREE.MathUtils.degToRad(IV_FOV / 2);
+  const fitH = pivot.userData.r / Math.sin(half);
+  const fitW = pivot.userData.r / Math.sin(Math.atan(Math.tan(half) * iv.cam.aspect));
+  const d = Math.max(fitH, fitW) * 1.02 * k;
+  iv.cam.position.set(0, 0, d); iv.cam.lookAt(0, 0, 0);
+  iv.cam.near = d / 50; iv.cam.far = d * 4; iv.cam.updateProjectionMatrix();
+  try { iv.r.render(iv.scene, iv.cam); } catch { return false; }
+  return true;
+}
+function ivBlit(cv, id, yawA, pitchA, k, renderPx) {
+  const w = cv.clientWidth, h = cv.clientHeight; if (!w || !h) return;
+  const dpr = Math.min(devicePixelRatio || 1, 2);
+  const W = Math.round(w * dpr), H = Math.round(h * dpr);
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const g = cv.getContext('2d'); if (!g) return;
+  const RW = renderPx ? Math.min(renderPx, W) : W, RH = renderPx ? Math.round(RW * H / W) : H;
+  if (ivRender(id, RW, RH, yawA, pitchA, k)) {
+    g.clearRect(0, 0, W, H);
+    g.imageSmoothingQuality = 'high';
+    g.drawImage(iv.r.domElement, 0, 0, RW, RH, 0, 0, W, H);
+  } else if (!drawArt(cv, id)) {
+    g.clearRect(0, 0, W, H);
+  }
+}
+function ivFrame(now) {
+  iv.raf = 0;
+  if (!inv.open) return;
+  iv.raf = requestAnimationFrame(ivFrame);
+  const t = (now || performance.now()) / 1000;
+  const z = iv.zoom;
+  if (z.id) {
+    const cv = $('ivZoomCv');
+    if (z.auto) { z.ramp = Math.min(1, z.ramp + 1 / 20); z.yaw += 0.006 * z.ramp; }
+    if (cv) ivBlit(cv, z.id, z.yaw, z.pitch, z.k, 0);
+    return;
+  }
+  /* the small views: the worn box and the description, all at one drawing
+     size so the renderer's buffer is set once, not per box */
+  for (const cv of invEl().querySelectorAll('canvas[data-iv]')) {
+    const spin = t * 0.55 + (cv.dataset.phase ? +cv.dataset.phase : 0);
+    ivBlit(cv, cv.dataset.iv, spin, 0.34, 1, 256);
+  }
+}
+function ivStart() { if (!iv.raf) iv.raf = requestAnimationFrame(ivFrame); }
+
+/* THE ZOOM WINDOW: the item alone, big, turned by the player — a drag turns
+   it and tilts it, a pinch or the wheel brings it nearer, and it keeps
+   turning on its own until a finger takes it (Master Zav's rule, v5.11:
+   straight back to turning when let go). Esc, the Close button or a tap on
+   the dark around it takes the player back to the equipment screen. */
+function ivZoomOpen(id) {
+  if (!id || !ITEM_DEFS[id]) return;
+  if (inv.held) invCancel(true);                 // nothing follows the pointer under it
+  const z = iv.zoom;
+  z.id = id; z.yaw = 0.6; z.pitch = 0.32; z.k = 1; z.auto = true; z.ramp = 1; z.drag = null; z.pinch = null;
+  const el = $('invZoom'); if (!el) return;
+  $('izName').textContent = itemName(id);
+  $('izDesc').textContent = itemDesc(id);
+  el.classList.remove('hide');
+  el.classList.toggle('flat', !ITEM_DEFS[id].model || iv.state[id] === 'none');
+  ivStart();
+  snd('uiclick', 0.5);
+}
+function ivZoomClose() {
+  if (!iv.zoom.id) return false;
+  iv.zoom.id = null; iv.zoom.drag = null; iv.zoom.pinch = null;
+  $('invZoom')?.classList.add('hide');
+  snd('uiclick', 0.45);
+  return true;
+}
+{
+  const cv = $('ivZoomCv');
+  const pts = new Map();
+  const z = iv.zoom;
+  cv?.addEventListener('pointerdown', e => {
+    pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    try { cv.setPointerCapture?.(e.pointerId); } catch {}   // a pointer already gone throws
+    z.auto = false;
+    if (pts.size === 2) {
+      const [a, b] = [...pts.values()];
+      z.pinch = { d: Math.hypot(a.x - b.x, a.y - b.y), k: z.k }; z.drag = null;
+    } else z.drag = { x: e.clientX, y: e.clientY };
+    e.preventDefault();
+  });
+  cv?.addEventListener('pointermove', e => {
+    if (!pts.has(e.pointerId)) return;
+    pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (z.pinch && pts.size >= 2) {
+      const [a, b] = [...pts.values()];
+      const d = Math.hypot(a.x - b.x, a.y - b.y);
+      if (d > 0) z.k = THREE.MathUtils.clamp(z.pinch.k * z.pinch.d / d, 0.45, 1.6);
+      return;
+    }
+    if (!z.drag) return;
+    z.yaw += (e.clientX - z.drag.x) * 0.012;
+    z.pitch = THREE.MathUtils.clamp(z.pitch + (e.clientY - z.drag.y) * 0.010, -1.35, 1.35);
+    z.drag = { x: e.clientX, y: e.clientY };
+  });
+  const up = e => {
+    pts.delete(e.pointerId);
+    if (pts.size < 2) z.pinch = null;
+    if (pts.size === 1) { const [a] = [...pts.values()]; z.drag = { x: a.x, y: a.y }; }
+    if (pts.size === 0) { z.drag = null; z.auto = true; z.ramp = 0; }
+  };
+  cv?.addEventListener('pointerup', up);
+  cv?.addEventListener('pointercancel', up);
+  cv?.addEventListener('wheel', e => {
+    e.preventDefault();
+    z.k = THREE.MathUtils.clamp(z.k * Math.exp(e.deltaY * 0.0012), 0.45, 1.6);
+  }, { passive: false });
+  $('izClose')?.addEventListener('click', ivZoomClose);
+  $('invZoom')?.addEventListener('click', e => { if (e.target === $('invZoom')) ivZoomClose(); });
 }
 
 /* ── MASTER ZAV, in three dimensions (v5.08) ──────────────────────────
@@ -6432,6 +6755,7 @@ function invOpen() {
   invEl().classList.remove('hide');
   zavInit(); zavLoad();
   if (!zav.raf) zav.raf = requestAnimationFrame(zavFrame);
+  ivStart();                           // v14.6: the items' own views
   document.body.classList.add('invopen');   // the round buttons step aside
   $('invBtn')?.classList.add('open');
   $('invHint').textContent = HAS_TOUCH ? T('inv.hintTouch') : T('inv.hintDesktop');
@@ -6445,6 +6769,7 @@ function invOpen() {
 }
 function invClose() {
   if (!inv.open) return;
+  ivZoomClose();                       // v14.6: the zoom window goes with the panel
   inv.open = false;
   invCancel();
   invEl().classList.add('hide');
@@ -6459,7 +6784,12 @@ const invToggle = () => (inv.open ? invClose() : invOpen());
 
 $('invBtn')?.addEventListener('click', invToggle);
 $('invCloseBtn')?.addEventListener('click', invClose);
-invEl()?.addEventListener('click', e => { if (e.target === invEl()) invClose(); });
+invEl()?.addEventListener('click', e => {
+  // v14.6: the magnifying glass, or the view itself, opens the zoom window
+  const zb = e.target.closest?.('.ivPane');
+  if (zb) { const b = zb.querySelector('[data-zoom]'); if (b) ivZoomOpen(b.dataset.zoom); return; }
+  if (e.target === invEl()) invClose();
+});
 invEl()?.addEventListener('pointerdown', invPointerDown);
 addEventListener('pointermove', invPointerMove);
 addEventListener('pointerup', invPointerUp);
@@ -6481,6 +6811,10 @@ addEventListener('keydown', e => {
     e.preventDefault(); invToggle(); return;
   }
   if (!inv.open) return;
+  /* v14.6: while the zoom window is up it owns the keyboard: Esc closes it
+     and goes back to the equipment screen, and nothing walks the slots
+     underneath it */
+  if (iv.zoom.id) { if (e.code === 'Escape') { e.preventDefault(); ivZoomClose(); } return; }
   if (e.code === 'Escape') { e.preventDefault(); inv.held ? invCancel() : invClose(); return; }
   const slots = [...invEl().querySelectorAll('.slot')];
   if (!slots.length) return;
@@ -8035,6 +8369,11 @@ function resumeRun() {
 function newGame(wipe = true) {
   if (wipe) clearCheckpoint();
   Object.assign(stats, STATS_AT_START);
+  /* v14.6: and an EMPTY bag. The inventory was never reset here — it only
+     ever started as the page's default — so a new game begun after playing
+     into episode 2 in the same sitting kept the torch. Chad: "The player
+     should start episode 1 with no items at all." */
+  invClearAll();
   syncBars();
   if (wipe && CH_KEY !== BOOT_CH) setChapter(BOOT_CH);
   enterWorld(() => {

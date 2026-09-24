@@ -8,7 +8,14 @@
    first place.
 
    The second guard is that no move ever loses an item: after every lift,
-   drop, double-click and drag, the same four items are still somewhere.    */
+   drop, double-click and drag, the same items are still somewhere.
+
+   v14.6: a new game starts with NOTHING, so the harness hands the run the
+   two items the game has (the torch and the fixture's rifle) through the
+   state seam, and it now also proves the 3D views: the worn torch is drawn
+   as a model in the hand box, the description area carries the model and a
+   zoom button, and the zoom window opens over the panel and closes back to
+   it.                                                                      */
 import { chromium, devices } from 'playwright';
 import { LAUNCH, PAGE, toPlay } from './testlib.mjs';
 
@@ -53,6 +60,13 @@ ck(label + ':badge matches device', out.keyBadge === !touch);
 out.lockedInPlay = await locked();
 ck(label + ':lock only with a mouse', out.lockedInPlay === !touch);
 
+// v14.6: the run starts empty — prove it, then hand it the game's two items
+out.startsEmpty = (await census()) === '';
+ck(label + ':a new game carries nothing', out.startsEmpty);
+await p.evaluate(() => {
+  const e = window.__enc, w = e.worldState();
+  e.applyState({ v: 2, ch: w.ch, stats: w.stats, inv: { gear: {}, bag: ['torch', 'rifle'] } });
+});
 const before = await census();
 
 // --- opening. These are two genuinely different routes, and each device
@@ -83,19 +97,38 @@ ck(label + ':info and hint fit the screen', out.readableBottom);
 const bag = i => `#invBag .slot:nth-child(${i + 1})`;
 const gear = k => `#invGear .slot[data-key="${k}"]`;
 
-// --- pick up, put down: the phone fits the hand slot
+// --- pick up, put down: the torch fits the hand slot
 await hit(bag(0)); await p.waitForTimeout(300);
-out.liftedShowsHeld = (await st()).held === 'phone';
+out.liftedShowsHeld = (await st()).held === 'torch';
 ck(label + ':a tap lifts', out.liftedShowsHeld);
 await hit(gear('hand')); await p.waitForTimeout(400);
-out.equipped = (await st()).gear.hand === 'phone';
+out.equipped = (await st()).gear.hand === 'torch';
 ck(label + ':it goes where it fits', out.equipped);
+
+// --- v14.6: worn, it is a turning model in the box, not a drawing
+out.modelInBox = await p.isVisible(gear('hand') + ' canvas[data-iv="torch"]');
+ck(label + ':the worn torch is a 3D view', out.modelInBox);
+
+// --- v14.6: picked, the description carries the model and a zoom button;
+// the zoom opens over the panel and closes back to it
+await hit(gear('hand')); await p.waitForTimeout(400);
+out.infoHasModel = await p.isVisible('#invInfo .ivPane canvas[data-iv="torch"]')
+  && await p.isVisible('#invInfo .ivText h4');
+ck(label + ':the description shows the model', out.infoHasModel);
+await hit('#invInfo .ivZoom'); await p.waitForTimeout(600);
+out.zoomOpens = await p.isVisible('#invZoom') && (await st()).held === null
+  && (await st()).gear.hand === 'torch';
+ck(label + ':the zoom window opens, nothing lost', out.zoomOpens);
+if (touch) await p.tap('#izClose'); else await p.keyboard.press('Escape');
+await p.waitForTimeout(500);
+out.zoomCloses = !(await p.isVisible('#invZoom')) && await shown('#inv');
+ck(label + ':the zoom closes back to the panel', out.zoomCloses);
 
 // --- a slot it does not fit simply refuses and puts it back
 await hit(gear('hand')); await p.waitForTimeout(250);
 await hit(gear('neck')); await p.waitForTimeout(350);
 const s2 = await st();
-out.wrongSlotRefused = s2.gear.neck === null && s2.gear.hand === 'phone';
+out.wrongSlotRefused = s2.gear.neck === null && s2.gear.hand === 'torch';
 ck(label + ':a wrong slot refuses', out.wrongSlotRefused);
 
 // --- double tap sends it home again.
@@ -135,7 +168,7 @@ if (touch) {
   await p.mouse.move(...c(dst), { steps: 12 }); await p.mouse.up();
 }
 await p.waitForTimeout(450);
-out.movedWithinBag = (await st()).bag[7] === 'keys';
+out.movedWithinBag = (await st()).bag[7] === 'rifle';
 ck(label + ':an item moves inside the bag', out.movedWithinBag);
 
 out.nothingLost = (await census()) === before;

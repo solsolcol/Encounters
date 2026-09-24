@@ -32,8 +32,9 @@ const out = await p.evaluate(() => {
   const s0 = e.worldState();
   log.shape = s0.v === 2 && s0.ch === 'ch1'
     && s0.stats.sanity === 100 && s0.stats.awareness === 50 && s0.stats.wisdom === 50
-    && s0.inv.gear.hand === 'beads'
-    && s0.inv.bag[0] === 'phone' && s0.inv.bag[1] === 'keys';
+    // v14.6: a new game starts with nothing — no beads worn, nothing carried
+    && s0.inv.gear.hand === null
+    && s0.inv.bag.length === 10 && s0.inv.bag.every(x => x === null);
   log.survivesJson = eq(JSON.parse(JSON.stringify(s0)), s0);
 
   /* 3+5. seed a different run; unspecified gear/bag places come back empty.
@@ -43,12 +44,12 @@ const out = await p.evaluate(() => {
      leftover from before the bump.                                       */
   log.seedAccepted = e.applyState({ v: 1, ch: 'ch1',
     stats: { sanity: 37.5, awareness: 80, wisdom: 12 },
-    inv: { gear: { leftHand: 'phone' }, bag: ['note', 'beads'] } });
+    inv: { gear: { leftHand: 'torch' }, bag: ['rifle'] } });
   const s1 = e.worldState();
   log.seedLanded = s1.stats.sanity === 37.5 && s1.stats.awareness === 80
-    && s1.stats.wisdom === 12 && s1.inv.gear.hand === 'phone'   // v5.09: the old leftHand folds into the one hand slot
-    && s1.inv.bag[0] === 'note' && s1.inv.bag[1] === 'beads'
-    && s1.inv.bag[2] === null && s1.inv.bag.length === 10;
+    && s1.stats.wisdom === 12 && s1.inv.gear.hand === 'torch'   // v5.09: the old leftHand folds into the one hand slot
+    && s1.inv.bag[0] === 'rifle'
+    && s1.inv.bag[1] === null && s1.inv.bag.length === 10;
   log.hudFollows = document.getElementById('vSan').textContent === '38'
     && document.getElementById('vWis').textContent === '12';
 
@@ -97,11 +98,19 @@ const out = await p.evaluate(() => {
   // first hand takes the one hand slot; the other hand and the bag's tail
   // fold into the two rows — nothing an old save held is lost
   e.applyState({ v: 1, ch: 'ch1', stats: { sanity: 50, awareness: 50, wisdom: 50 },
-    inv: { gear: { rightHand: 'beads', leftHand: 'phone' },
-           bag: [null, null, null, null, null, null, null, null, null, null, null, null, 'note', null, 'keys'] } });
+    inv: { gear: { rightHand: 'torch' },
+           bag: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, 'rifle'] } });
   const old = e.worldState().inv;
-  log.oldSaveFolded = old.gear.hand === 'beads' && old.bag.length === 10
-    && ['phone', 'note', 'keys'].every(id => old.bag.includes(id));
+  log.oldSaveFolded = old.gear.hand === 'torch' && old.bag.length === 10
+    && old.bag.includes('rifle');
+
+  // v14.6: the beads, the phone, the keys and the note left the game. A
+  // save that still carries them loads, and they are simply not there
+  e.applyState({ v: 2, ch: 'ch1', stats: { sanity: 50, awareness: 50, wisdom: 50 },
+    inv: { gear: { hand: 'beads' }, bag: ['phone', 'keys', 'note', 'torch'] } });
+  const ret = e.worldState().inv;
+  log.retiredItemsDropped = ret.gear.hand === null
+    && ret.bag.filter(Boolean).join() === 'torch';
 
   // a checkpoint stamped for another chapter is not applicable here
   log.foreignChapterRejected =
@@ -116,26 +125,26 @@ const out = await p.evaluate(() => {
 // 7. a lifted item cannot be duplicated by a restore
 await p.evaluate(() => window.__enc.applyState({ v: 1, ch: 'ch1',
   stats: { sanity: 90, awareness: 50, wisdom: 50 },
-  inv: { gear: {}, bag: ['phone'] } }));
+  inv: { gear: {}, bag: ['torch'] } }));
 await p.evaluate(() => window.__enc.invOpen());
 await p.waitForTimeout(400);
 out.liftGuard = await p.evaluate(() => {
   const e = window.__enc;
-  const slot = document.querySelector('#invBag .slot');       // holds the phone
+  const slot = document.querySelector('#invBag .slot');       // holds the torch
   const at = slot.getBoundingClientRect();
   const ev = t => new PointerEvent(t, { bubbles: true, cancelable: true,
     clientX: at.x + at.width / 2, clientY: at.y + at.height / 2,
     pointerId: 1, pointerType: 'touch', isPrimary: true });
   slot.dispatchEvent(ev('pointerdown'));
   slot.dispatchEvent(ev('pointerup'));                        // tap = lift
-  const lifted = e.inv().held === 'phone';
+  const lifted = e.inv().held === 'torch';
   e.applyState({ v: 1, ch: 'ch1',
     stats: { sanity: 90, awareness: 50, wisdom: 50 },
-    inv: { gear: {}, bag: ['phone'] } });
+    inv: { gear: {}, bag: ['torch'] } });
   const s = e.worldState();
-  const phones = [...Object.values(s.inv.gear), ...s.inv.bag]
-    .filter(x => x === 'phone').length;
-  return lifted && phones === 1 && e.inv().held === null;
+  const torches = [...Object.values(s.inv.gear), ...s.inv.bag]
+    .filter(x => x === 'torch').length;
+  return lifted && torches === 1 && e.inv().held === null;
 });
 await p.evaluate(() => window.__enc.invClose());
 
@@ -147,12 +156,12 @@ out.checkpoint = await p.evaluate(() => {
   e.clearCheckpoint();
   const empty = e.loadCheckpoint() === null;
   e.applyState({ v: 1, ch: 'ch1', stats: { sanity: 71, awareness: 62, wisdom: 43 },
-                 inv: { gear: {}, bag: ['keys'] } });
+                 inv: { gear: {}, bag: ['torch'] } });
   const wrote = e.saveCheckpoint();
   const back = e.loadCheckpoint();
   const same = !!back && back.v === 2 && back.ch === 'ch1'
     && back.stats.sanity === 71 && back.stats.awareness === 62 && back.stats.wisdom === 43
-    && back.inv.bag.includes('keys');
+    && back.inv.bag.includes('torch');
   // and it applies cleanly, because it is just state
   e.applyState({ v: 1, ch: 'ch1', stats: { sanity: 5, awareness: 5, wisdom: 5 },
                  inv: { gear: {}, bag: [] } });
@@ -217,7 +226,7 @@ out.badChapterFallsBack = await p.evaluate(() =>
 console.log(JSON.stringify(out, null, 1));
 const MUST = ['shape', 'survivesJson', 'seedAccepted', 'seedLanded', 'hudFollows',
   'roundTripBack', 'garbageRejected', 'garbageSoftened', 'nullStatsKept',
-  'protoItemsDropped', 'foreignChapterRejected', 'stillPlaying', 'liftGuard',
+  'protoItemsDropped', 'oldSaveFolded', 'retiredItemsDropped', 'foreignChapterRejected', 'stillPlaying', 'liftGuard',
   'checkpoint', 'kitFields',
   'chParamReallySelects', 'altChapterIsDifferent', 'protoChapterFallsBack',
   'badChapterFallsBack'];

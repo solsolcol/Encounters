@@ -3692,6 +3692,34 @@ What the baseline contains, by release:
   keeping one push-up man and one walker. Harnesses chapter, walk, leak,
   cine, text green; deploy `6ab365f2447dcb9f961d7b03`, byte-verified. No
   word on the sheet moved (the signs are world art, like e2c1's jetty sign).
+- **v14.6** THE INVENTORY, REVAMPED — Chad: *"Remove the items like prayer
+  beads, house keys, and phone from the game, as they serve no gameplay
+  purpose ... The player should start episode 1 with no items at all. Each
+  item in inventory needs to have a proper graphic icon ... show the 3d model
+  of the item slowly rotating in the equipped box ... in the description
+  area, left aligned ... a magnifying glass zoom button ... a new window frame
+  ... can be rotated by the user."* **THIS CHANGES EPISODE 1, BY HIS CALL**: a
+  new game starts with nothing (`invClearAll()` in `newGame()`), and the
+  beads, keys, phone and note are gone from `ITEM_DEFS` and the sheet; an old
+  save still carrying them loads and they are simply absent (applyState's
+  known-id filter, `statetest` asserts it). The TORCH is the game's one item
+  (the rifle stays defined because the fixture's weapon is it — no chapter
+  gives it now; e2c5's clearance stops issuing one). An item may declare
+  `art` (an asset key — Chad's painted icon, `icontorch`, 384 px JPEG from his
+  1254 px PNG, the master kept in masters/v14.6) and `model` (an asset key
+  plus a `view` turn): the art is drawn through `createImageBitmap` onto a
+  canvas (CSP-safe, no blob: URL) with the line drawing as the fallback — the
+  single-file build is one of those, the icon being hosted-only (`E2_ONLY`);
+  the model is drawn by ONE offscreen renderer (`iv`) shared by every small
+  view and copied into 2D canvases, so the worn box, the description pane and
+  the zoom window cost one GL context, not three. Worn, the item turns in its
+  box; picked, the description pane shows it on the left, the words on the
+  right and a magnifier bottom-right; the zoom window (`#invZoom`) is drag to
+  turn, pinch or wheel to zoom, and Close, Esc or a tap outside goes back to
+  the panel. One bug the photograph caught: the drag ghost was painted
+  BEFORE it was shown, so its canvas had no size and stayed blank — painted
+  after `on` now. Harnesses: inv (rewritten to seed the torch and prove the
+  model, the pane and the zoom), state, fixture, text, chapter, csp, leak.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
