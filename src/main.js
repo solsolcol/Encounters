@@ -112,7 +112,11 @@ const EMBED = {
   zavyoung: '__ZAVYOUNG_B64__',
   bed: '__BED_B64__', wardrobe: '__WARDROBE_B64__',
   table: '__TABLE_B64__', chair: '__CHAIR_B64__', curtain: '__CURTAIN_B64__',
-  altar: '__ALTAR_B64__', zav: '__ZAV_B64__'
+  altar: '__ALTAR_B64__', zav: '__ZAV_B64__',
+  /* v14.7: Chad's LP Phiboon amulet (the model and its icon) — episode 1's,
+     so the single-file build carries them. Not `amulet`, which is the parked
+     chapter-1 cased amulet above. */
+  phiboon: '__PHIBOON_B64__', iconamulet: '__ICONAMULET_B64__'
 };
 
 function b64ToBuffer(b64) {
@@ -3474,6 +3478,10 @@ const WARM_WANT = new Set();
    in the engine's own house. These are in the SHARED pack, so they are the
    one set that can be warmed unconditionally at boot. */
 for (const n of ['hudok', 'hudnext', 'hudfail']) WARM_WANT.add(n);
+/* v14.7: and the Item Unlocked splash's sting, for the same reason — it is
+   the ENGINE's (`kit.unlock`), in the shared pack, and the frame it plays on
+   is the frame the player picked the thing up. */
+WARM_WANT.add('itemunlock');
 const CHCTX = {
   THREE, GLTFLoader, cloneSkinned, scene, camera, yaw, pitch, LOW,   // v8.7: `pitch` so a chapter may level the lens as well as turn it
   kit: KIT,                        // v7.0: the play kit — declared by a chapter, absent for chapters 1–5
@@ -5268,6 +5276,7 @@ const TEEN_TAKES = new Set([
    boost — see voiceStage() above. */
 const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
   'v3aunt1', 'v3aunt2', 'v3aunt3', 'v3aunt4', 'v3aunt5',
+  'v3aunt6',   // v14.7: the auntie gives him the amulet
   't5note', 't5teachA', 't5hallA', 't5fearB', 't5disC', 't5learnD1', 't5learnD2',
   // v7.1: episode 2's bunk — the sergeant, the buddy, a bunkmate
   's1fallin', 's1late', 's1bed', 's1standby', 's1again', 's1lights',
@@ -7394,6 +7403,7 @@ const STING_SAMPLE = {
   // the auntie at the paper table — the one voice in the game that is calm
   v3aunt1: ['v3aunt1', 1], v3aunt2: ['v3aunt2', 1], v3aunt3: ['v3aunt3', 1],
   v3aunt4: ['v3aunt4', 1], v3aunt5: ['v3aunt5', 1],
+  v3aunt6: ['v3aunt6', 1],   // v14.7: "Ah boy, you like this one?" — played in PLAY by chapter 3; the row lets a scene cue it too
   // v4.3: the revision's fresh palette — the ceremony's own instruments,
   // its dread layer, and the lines the ghost-free chapter runs on
   suona: ['suona', 0.9], bellring: ['bellring', 0.85],

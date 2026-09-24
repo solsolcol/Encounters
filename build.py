@@ -293,6 +293,17 @@ ASSETS = {
     # is fetched the first time the panel opens.
     'altar': ('assets/altar.glb', True, False),         # ch2, ch4, ch5
     'zav': ('assets/zav.glb', True, False),             # the equipment screen
+    # v14.7: THE AMULET — Chad's LP Phiboon Rian (small), the item chapter 3's
+    # auntie gives the boy. `phiboon` is his model (36.9 MB of source ->
+    # 1.97 MB by tools/prepamulet.mjs), on her table and in every inventory
+    # view and the Item Unlocked splash; `iconamulet` is his painted icon.
+    # The model's key is NOT 'amulet': that name belongs to the cased amulet
+    # parked in chapter 1 (SHOW_AMULET, amulet.glb at the root), kept exactly
+    # as it is. Neither preloaded: the table copy stands in over a primitive
+    # until it lands. EPISODE 1's, so not E2_ONLY — the single-file build
+    # carries both.
+    'phiboon':    ('assets/phiboon.glb', True, False),     # ch3's table + the item views
+    'iconamulet': ('assets/iconamulet.jpg', True, False),  # the amulet's inventory icon
     # v7.1: EPISODE 2's people — Chad's own soldiers (docs/E2-SOLDIER-MODELS.md),
     # prepped at ratio 0.10 on 2048 px sheets, the level his eye set. None
     # preloaded: every one stands in over a primitive until it lands, and a

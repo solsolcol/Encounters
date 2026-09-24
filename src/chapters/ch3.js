@@ -156,7 +156,9 @@
              'tangki', 'tangkianim', 'boy', 'shrine', 'sitclap', 'sitangry',
              'standman', 'granny',
              /* v5.29 — the three new seated kinds and the scolding granny */
-             'sitman', 'sitwoman', 'sitshout', 'scold'],
+             'sitman', 'sitwoman', 'sitshout', 'scold',
+             /* v14.7 — Chad's LP Phiboon amulet, on the auntie's table */
+             'phiboon'],
     noteArt: 'hellnote',
 
     /* The tent's own sound, in FOUR beds since v4.3 — and the loudest is
