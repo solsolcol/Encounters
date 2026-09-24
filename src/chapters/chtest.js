@@ -275,6 +275,28 @@
     lamp.position.set(-6, 2.4, -6);
     scene.add(lamp); owned.push(lamp);
     let lampOn = false;
+    /* v14.7: a RELIC on a plinth, and the ball a tap on it lands on (never
+       drawn; a raycast still finds it). Episode 1 chapter 3's amulet is the
+       real one; this is the seam without the staging. */
+    const RELIC = { x: -6, z: 6 };
+    const plinth = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.9, 0.4), pileMat);
+    plinth.position.set(RELIC.x, 0.45, RELIC.z);
+    world.add(plinth);
+    const relic = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.16, 0.03),
+      new THREE.MeshStandardMaterial({ color: 0xd8b04a, roughness: 0.4, metalness: 0.3 }));
+    relic.position.set(RELIC.x, 0.99, RELIC.z);
+    world.add(relic);
+    const relicProxy = new THREE.Mesh(new THREE.SphereGeometry(0.22, 10, 8),
+      new THREE.MeshBasicMaterial({ visible: false }));
+    relicProxy.position.copy(relic.position);
+    world.add(relicProxy);
+    function pointerHitsRelic(cx, cy) {
+      if (!relic.visible) return false;
+      syncCamera();
+      _ptr.set((cx / innerWidth) * 2 - 1, -(cy / innerHeight) * 2 + 1);
+      _ray.setFromCamera(_ptr, camera);
+      return _ray.intersectObject(relicProxy, false).length > 0;
+    }
     const hotspots = [
       { id: 'switch', pos: { x: -6, y: 1.2, z: -6 }, radius: 2.4, prompt: 'Flip the switch',
         onInteract() {
@@ -329,6 +351,20 @@
       { id: 'mark', pos: { x: 0, y: 1.6, z: -8 }, radius: 14, dwell: 0.5, aim: 0.25, prompt: 'Look at the mark', once: true,
         onInteract() {
           if (kit) kit.conduct({ note: 'You looked at the mark.' });
+          return true;
+        } },
+      /* v14.7: a hotspot answered by a TAP ON THE THING — `hits(x, y)`,
+         reached through the engine's hotspotTap from a touch or an unlocked
+         click — whose press hands over an item and opens the ITEM UNLOCKED
+         splash (kit.unlock). The amulet on the auntie's table in episode 1
+         chapter 3 is both; fixturetest proves them here. */
+      { id: 'relic', pos: { x: RELIC.x, y: 1.1, z: RELIC.z }, radius: 1.8, prompt: 'Take the relic', once: true,
+        hits: pointerHitsRelic,
+        onInteract() {
+          if (!kit) return false;
+          if (!kit.has('amulet') && !kit.give('amulet')) return false;
+          relic.visible = false;
+          if (kit.unlock) kit.unlock('amulet');
           return true;
         } }
     ];

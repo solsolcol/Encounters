@@ -198,6 +198,54 @@ out.kitFields = await p.evaluate(() => {
   return shape && cleared && cleaned && round;
 });
 
+/* 7d. v14.7: THE AMULET'S CHARGE. It belongs to the EPISODE, not the chapter
+   (Chad: spent, it "will remain powerless for the entire episode's subsequent
+   chapters ... When player moves into the next episode, the amulet will be
+   recharged"). So it rides the save; a save from ANOTHER episode's boundary
+   refills it; garbage is clamped; a save from before it existed leaves it
+   alone; and a Retry and a faint both rewind it to what the chapter began
+   with, exactly as they rewind the stats — a faint must be neither a way to
+   lose the charge nor a way to refill it. */
+const wardOut = await p.evaluate(() => {
+  const e = window.__enc;
+  const base = { stats: { sanity: 50, awareness: 50, wisdom: 50 }, inv: { gear: {}, bag: [] } };
+  const W = () => e.worldState().ward;
+  const r = {};
+  const w0 = W();
+  r.shape = !!w0 && w0.charge === 15 && w0.ep === 1 && w0.enter === 15;
+  e.applyState({ v: 2, ch: 'ch1', ...base, ward: { charge: 7, ep: 1, enter: 12 } });
+  r.exact = W().charge === 7 && W().ep === 1 && W().enter === 12;
+  e.applyState({ v: 2, ch: 'ch1', ...base, ward: { charge: 0, ep: 2, enter: 0 } });
+  r.otherEpisodeRefills = W().charge === 15 && W().ep === 1 && W().enter === 15;
+  e.applyState({ v: 2, ch: 'ch1', ...base, ward: { charge: -9, ep: 'x', enter: 900 } });
+  r.garbageClamped = W().charge === 0 && W().ep === 1 && W().enter === 15;
+  e.applyState({ v: 2, ch: 'ch1', ...base, ward: { charge: 9, ep: 1, enter: 9 } });
+  e.applyState({ v: 1, ch: 'ch1', ...base });
+  r.absentTolerated = W().charge === 9 && W().enter === 9;
+  // worn, a bite, then Retry: back to what the chapter began with
+  e.applyState({ v: 2, ch: 'ch1', ...base, inv: { gear: { neck: 'amulet' }, bag: [] },
+                 ward: { charge: 12, ep: 1, enter: 12 } });
+  r.worn = e.ward().worn === 'amulet' && e.ward().left === 12;
+  e.kitAward('sanity', -5);
+  r.bitten = e.ward().charge === 7 && e.stats.sanity === 50;
+  e.restart();
+  r.retryRewinds = e.ward().charge === 12 && e.ward().enter === 12 && e.ward().worn === 'amulet';
+  return r;
+});
+out.ward = Object.values(wardOut).every(v => v === true);
+if (!out.ward) console.log('ward:', JSON.stringify(wardOut));
+// and the faint: the save it writes carries the charge the chapter began with
+await p.waitForFunction(() => window.__enc.getState() === 'play', null, { timeout: 60000 }).catch(() => {});
+out.wardFaint = await p.evaluate(() => {
+  const e = window.__enc;
+  e.kitAward('sanity', -4);                       // 12 -> 8 on the amulet
+  const bit = e.ward().charge === 8;
+  e.lose();                                        // the faint rewrites the save to the chapter's start
+  const s = e.loadCheckpoint();
+  e.clearCheckpoint();
+  return bit && !!s && !!s.ward && s.ward.charge === 12 && s.ward.enter === 12 && s.ward.ep === 1;
+});
+
 /* 8. the ?ch= seam. This used to fake a second chapter with a Proxy, because
    only ch1 existed and "?ch=ch1 boots ch1" would pass even if the selector
    ignored the URL entirely. There is a real second chapter now (chtest, the
@@ -227,7 +275,7 @@ console.log(JSON.stringify(out, null, 1));
 const MUST = ['shape', 'survivesJson', 'seedAccepted', 'seedLanded', 'hudFollows',
   'roundTripBack', 'garbageRejected', 'garbageSoftened', 'nullStatsKept',
   'protoItemsDropped', 'oldSaveFolded', 'retiredItemsDropped', 'foreignChapterRejected', 'stillPlaying', 'liftGuard',
-  'checkpoint', 'kitFields',
+  'checkpoint', 'kitFields', 'ward', 'wardFaint',
   'chParamReallySelects', 'altChapterIsDifferent', 'protoChapterFallsBack',
   'badChapterFallsBack'];
 for (const k of MUST) if (out[k] !== true) errs.push(`ERR state promise broken: ${k}`);

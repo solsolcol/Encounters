@@ -24,7 +24,10 @@ let where = 'boot';
 const errs = [];
 p.on('pageerror', e => errs.push(where + ': ' + e.message));
 
-for (const key of ['e2c1', 'e2c2', 'e2c3', 'e2c4', 'e2c5']) {
+/* v14.7: and episode 1 chapter 3, the first base-game chapter with a HOTSPOT
+   (the amulet on the auntie's table, which must be reached before the altar
+   opens) and with new per-frame code to catch a throw in */
+for (const key of ['ch3', 'e2c1', 'e2c2', 'e2c3', 'e2c4', 'e2c5']) {
   where = key;
   await p.goto(PAGE + '?ch=' + key);
   await p.click('#startBtn');

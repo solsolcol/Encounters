@@ -139,6 +139,8 @@ The declarations, all optional:
 | `words.presence` | v7.0: the banner's words when a chapter with `ghost: null` drains through `kit.presence()` | `hud.presenceAlarm` |
 | `stage.hotspots` | v7.0: many things to act on beside the pile — `[{ id, pos, radius, prompt, onInteract(), once, enabled() }]`, returned by build() | — (only the pile) |
 | `stage.hotspots[].dwell` / `aim` | v11.0: a hotspot that fires by being LOOKED AT for `dwell` seconds inside `aim` radians (chapter 3's torch spots) — the eighteenth seam | — (a press only) |
+| `stage.hotspots[].hits(x, y)` | v14.7: a hotspot PRESSED BY A TAP (or an unlocked click) ON THE THING ITSELF — `hits` answers whether that screen point is on it, and the engine's `hotspotTap` fires it; episode 1 chapter 3's amulet on the auntie's table | — (the badge and the key only) |
+| `kit.unlock(id, { onClose })` | v14.7: the ITEM UNLOCKED splash — the item's model turning in the middle (the `iv` renderer), its name, a Close button, its own sting; a screen state of its own (`unlock`) that closes every "is it play?" gate, with a 0.6 s guard so the press that took the item cannot also close it | — |
 | `kit.weaponBlock(msg)` | v14.3: a chapter FORBIDS the shot and the HUD says why — `weaponFire` refuses before anything is spent, `#nofire` carries the chapter's own sentence under the reticle with `hudfail` and a buzz, and `body.wpnBlocked` dims FIRE before the rule is ever tested. `null` allows it again. The words are the CHAPTER's, so they are on the sheet | — (nothing is forbidden) |
 | `torch.model` / `torch.click` | v11.1: the torch's own viewmodel (an asset key), swapped for the hand while it is on, and the sound its switch makes | — (the hand stays; a UI click) |
 | `weapon` | v12.0: RIFLE MODE — `{ model, item, rounds, mags, fireGap, kick, shot, reload, empty, clips, rates }`. The model's OWN hands replace the hand and the torch while it is out (out = the `item` is in the hand slot, or `kit.weaponOut(bool)` forces it); FIRE (click under lock, Space, the HUD button) spends a round, flashes, kicks, and RAYCASTS from the lens into `stage.shootables()`, reporting to `stage.onShot(report)`; RELOAD (R, the button) costs a magazine; rounds and magazines ride the save | — (no weapon, no HUD) |
@@ -3720,6 +3722,89 @@ What the baseline contains, by release:
   BEFORE it was shown, so its canvas had no size and stayed blank — painted
   after `on` now. Harnesses: inv (rewritten to seed the torch and prove the
   model, the pane and the zoom), state, fixture, text, chapter, csp, leak.
+- **v14.7** THE AMULET — Chad, back in episode 1 chapter 3: *"On the table
+  where the auntie model is, there should be an amulet ... When the player
+  picks it up, the auntie has a voiceline ... a nice special 'Item unlocked'
+  effect ... the full 3d model of the amulet spinning ... Objective is only
+  complete once the player equips the item successfully ... the player must go
+  through this amulet flow completely, before the player can talk to the
+  tangki ... When equipped, the sanity bar of the player should have an
+  additional +15 as a yellow bar ... it will first deduct from this yellow
+  armour bar ... it will remain powerless for the entire episode's subsequent
+  chapters ... recharged back to its original value [in the next episode] ...
+  If the player unequips the amulet at any time, its effect will be
+  removed."* **THIS CHANGES EPISODE 1, BY HIS CALL**: chapter 3 is the first
+  base-game chapter with an objective and a hotspot. docs/V14.7-THE-AMULET.md
+  is the build's memory, written before the code and updated at every
+  checkpoint (CP0–CP4).
+  THE MODEL is Chad's LP Phiboon Second Batch Rian Amulet, 36.9 MB → 1967 KB
+  (28,720 triangles, `tools/prepamulet.mjs`), and its key is **`phiboon`, not
+  `amulet`**: that key is the cased amulet PARKED in chapter 1 since v3.x
+  (`SHOW_AMULET = false`, `amulet.glb` at the root) and reusing it would have
+  silently swapped a parked feature's asset — a key is global (the v7.1 law,
+  in the asset table). His icon is `iconamulet` (384 px JPEG). Both ship in the
+  single-file build (not `E2_ONLY`: episode 1 needs them). ON HER TABLE: the
+  near end, on a red cushion against a hidden easel, 10.5 cm tall (a small
+  Rian is ~3 cm; it must read from the aisle), lit from within, a halo that
+  breathes, a ring on the wood, motes, and the engine's `!` over it — no
+  waypoint, because the `!` IS his exclamation mark and is drawn from the
+  spawn (13.3 m, inside `HOTMARK_FAR`). The first halo (40 cm, additive)
+  blew her cream paper stacks to white in the photograph; it is 19–24 cm now.
+  THE FLOW, derived from the bag every frame (e2c3's torch law, v11.6): "Take
+  the amulet on the auntie's table" → E, the badge, or a TAP ON THE AMULET
+  (the new `hits` seam) → the ITEM UNLOCKED splash (the new `kit.unlock`) and,
+  0.9 s later, her line — "Ah boy, you like this one? Auntie give it to you,
+  keep it well!" (`v3aunt6`, Alice, 4.99 s) — on her talking take, turned to
+  the boy and back → "Open your bag and equip the amulet" with the bag
+  pulsing → OBJECTIVE COMPLETE when it is worn, and the objective clears. Until
+  then the tang-ki's altar is LOCKED: no mark, no ring, no badge, no tap, no
+  decision. Taking it off asks again with no COMPLETE (the v8.7 lie); a fresh
+  run of the chapter (Retry, the selector, Continue from chapter 2) takes it
+  back and she gives it again (the torch precedent); a resume restores the
+  bag as saved (worn → no flow at all). The boot hint's words are neutral
+  ("E to act", e2c4's) so it never points at a locked altar.
+  THE WARD is the engine's (`ITEM_DEFS.amulet.ward = 15`): one pool
+  `ward = { charge, ep, enter }` that belongs to the EPISODE, not the
+  chapter — every sanity decrease (a sighting, the drain, the hurt bleed,
+  every kit award, a choice's delta, the banked conduct) goes through
+  `wardSoak()` first, only while it is WORN; off, it protects nothing and
+  loses nothing; spent, it stays spent until a chapter of another episode is
+  entered (`setChapter` and `applyState` refill it); a faint and a Retry
+  rewind it to what the chapter began with (`enter`), exactly as they rewind
+  the stats; a new game fills it; it rides the save. With no ward worn,
+  `wardSoak` hands back exactly what it was given, so a player without it
+  plays v14.6 to the number. THE BAR: of three readings of "the total length
+  should not be changed ... cut out part of the red bar", the yellow is laid
+  OVER the red's right end (`#bArm`), so the bar is always exactly as long
+  as sanity and a hit the amulet takes narrows the yellow while the length
+  stands — the truth: sanity did not move. `+15` beside the number, yellow
+  ticks for its share; the outcome card's sanity row carries the same
+  segment and an "Amulet −N" chip. THE SPLASH: a screen state of its own, the
+  model turned by v14.6's one offscreen renderer, the pointer released and
+  taken back, Enter/Space/E/Esc or the button after a 0.6 s guard whose clock
+  starts AFTER the setup (the first splash builds the renderer; on a
+  software box that alone outlasted a guard measured from the top). And one
+  engine fix the flow found: the objective box hid still holding "OBJECTIVE
+  COMPLETE" and the next order slid those words out first — after taking the
+  amulet off, a congratulation for going backwards; a box that hides with no
+  order left now forgets its words. Harnesses: fixture (a tap-to-take RELIC in
+  the fixture chapter proves `hits`, the splash, its guard and both closes,
+  and the ward: carried protects nothing, worn takes an award whole, off
+  keeps the charge, back on is not refilled, a sighting spills, the bleed
+  never touches sanity while it holds), state (the charge rides the save, a
+  save from another episode refills it, garbage clamps, an old save leaves
+  it, Retry and the faint rewind it), walk (chapter 3 added: the altar and
+  the amulet are walkable and nothing throws). THE FULL SUITE, 24 of 24, two
+  of them after repairs to the HARNESS, not the game: `resume` had put a NOTE
+  in the bag since v6.4 and v14.6 took the note out of the game, so
+  `resumedExactly` had failed on an exact resume ever since (v14.6 ran a
+  subset) — it carries the torch now, plus a worn, bitten amulet whose charge
+  must be back on the first play frame after a real reload; and the fixture's
+  new bleed check stopped the bleed from the harness side, which on a loaded
+  box let enough half-second frames through to faint the run — it stops
+  itself in the page now. Fixture's `evHeartbeatRewardsTiming` is a coin toss
+  on this box (it failed on an untouched v14.6 worktree and passed in the
+  full run). Sheet v71.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -4283,10 +4368,13 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v69** (`masters/v14.3/masterz-text-v69.xlsx`, four tabs: UI
-TEXT 282, EPISODE 1 110, EPISODE 2 180, VOICE LINES 295). Its diff against
-v68 is exactly three cells: one new row (`e2c4.words.noFire`) and the two
-`t4who` cells the lane change moved. It is EXPORTED and not published —
+**THE SHEET IS v71** (`masters/v14.7/masterz-text-v71.xlsx`, four tabs: UI
+TEXT 285, EPISODE 1 114, EPISODE 2 193, VOICE LINES 296). Its diff against
+v70 (v14.6's, `masters/v14.6/`) is thirteen new rows — the amulet's name and
+Chad's description, the two protection lines of the bag, the splash's three
+words, the card's "Amulet −{n}", chapter 3's four amulet words and the
+auntie's `v3aunt6` — chapter 3's two boot-hint cells made neutral, and one
+description cell (`card.conduct` now says where it appears). It is EXPORTED and not published —
 the workbook has been past the Drive connector's base64 wall since v43, and
 the split export is still to do (docs/EDITING-TEXT.md). **v44 is still the
 link to give Chad** until that is fixed:

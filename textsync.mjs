@@ -77,7 +77,9 @@ const WHERE = {
   ep: 'The episodes — the ten case files (v6.0)',
   a11y: 'Screen readers only',
   inv: 'Equipment panel', slot: 'Equipment panel — slot names',
-  item: 'Equipment panel — the items'
+  item: 'Equipment panel — the items',
+  card: 'Outcome + teaching card — under the stat rows',
+  unlock: 'The ITEM UNLOCKED splash (v14.7)'
 };
 /* v6.0: where a chapter's rows belong — episode 1's `chN` as always, and a
    later episode's `eNcM` (docs/EPISODES-PLAN.md) — and the notes for the

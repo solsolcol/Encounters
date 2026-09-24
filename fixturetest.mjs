@@ -487,6 +487,111 @@ await settle();
 K.clockGone = await p.evaluate(() => window.__enc.getState() === 'play' && window.__enc.kitDebug().clock === null);
 // and the conduct banked at the switch is still there for the card
 K.conductWaits = (await dbg()).conduct.a === 3;
+
+/* ---- v14.7: THE AMULET -----------------------------------------------------
+   Three engine seams, on a chapter the engine has never seen: a hotspot
+   answered by a TAP ON THE THING (`hits`, through hotspotTap), the ITEM
+   UNLOCKED splash (kit.unlock) with its guard, and the WARD a worn amulet
+   puts in front of sanity. Every check that reads a number does it inside
+   ONE evaluate: a frame between two reads could let the fixture's own ghost
+   take a bite, and a check that passes by luck is worse than none. */
+await p.evaluate(() => { const e = window.__enc; e.yaw.position.set(-6, 1.62, 7.5); e.yaw.rotation.y = 0; e.pitch.rotation.x = -0.5; });
+await settle();
+const relicAt = await p.evaluate(() => {
+  const h = window.__enc.stage.hotspots.find(x => x.id === 'relic');
+  for (let y = 0.05; y < 0.97; y += 0.02) for (let x = 0.05; x < 0.97; x += 0.02) {
+    const cx = x * innerWidth, cy = y * innerHeight;
+    if (h.hits(cx, cy)) return { cx, cy };
+  }
+  return null;
+});
+K.tapMissesElsewhere = await p.evaluate(() => window.__enc.hotspotTap(3, 3) === false && window.__enc.getState() === 'play');
+/* the tap and the guard in ONE evaluate: the press that took it must not also
+   close it, and on a box that takes seconds over the splash's first frame a
+   second round trip could arrive after the guard has run out */
+K.tapTakesTheThing = !!relicAt && await p.evaluate(a => {
+  const e = window.__enc;
+  window.__guarded = false;
+  const took = e.hotspotTap(a.cx, a.cy) === true;
+  window.__guarded = took && e.unlockClose('key') === false && e.getState() === 'unlock';
+  return took;
+}, relicAt);
+K.unlockGuards = await p.evaluate(() => window.__guarded === true);
+K.unlockOpens = await p.evaluate(() => {
+  const e = window.__enc;
+  return e.getState() === 'unlock' && e.unlockState().id === 'amulet' && e.kit.has('amulet')
+    && !document.getElementById('unlock').classList.contains('hide')
+    && document.getElementById('unName').textContent.length > 0;
+});
+await p.waitForTimeout(900);
+await p.keyboard.press('Enter');
+K.unlockClosesOnKey = await until(() => window.__enc.getState() === 'play' && window.__enc.unlockState().id === null)
+  .then(() => true, () => false);
+K.tapRetires = !!relicAt && await p.evaluate(a => window.__enc.hotspotTap(a.cx, a.cy) === false, relicAt);   // `once`
+// a second splash, closed by its own button
+await p.evaluate(() => window.__enc.kit.unlock('amulet'));
+await p.waitForTimeout(900);
+await p.click('#unClose', { force: true });
+K.unlockClosesOnButton = await until(() => window.__enc.getState() === 'play' && window.__enc.unlockState().id === null)
+  .then(() => true, () => false);
+// carried is not worn: no protection, no yellow
+K.wardNotWhileCarried = await p.evaluate(() => {
+  const e = window.__enc;
+  return e.ward().worn === null && e.ward().left === 0 && e.kit.wardLeft() === 0
+    && !document.getElementById('bArm').classList.contains('on') && !document.getElementById('vSan').dataset.arm;
+});
+/* worn: fifteen, drawn over the red's right end with `+15`; an award is taken
+   by the amulet whole; off again the effect goes and the charge STAYS (a
+   carried amulet protects nothing and loses nothing); back on it is where it
+   was, never refilled; a sighting spills what the amulet cannot hold into
+   sanity; spent, everything reaches sanity */
+K.wardTakesFirst = await p.evaluate(() => {
+  const e = window.__enc, bar = document.getElementById('bArm'), num = document.getElementById('vSan');
+  e.kit.equip('amulet');
+  const drawn = e.ward().left === 15 && bar.classList.contains('on') && num.dataset.arm === '+15';
+  const s0 = e.stats.sanity;
+  e.kitAward('sanity', -6);
+  const soaked = e.stats.sanity === s0 && e.ward().left === 9 && num.dataset.arm === '+9';
+  e.kit.take('amulet'); e.kit.give('amulet');                  // off, into the bag
+  e.kitAward('sanity', -2);
+  const offKeeps = e.ward().left === 0 && e.ward().charge === 9 && Math.abs(e.stats.sanity - (s0 - 2)) < 1e-6
+    && !bar.classList.contains('on');
+  e.kit.equip('amulet');
+  const backOn = e.ward().left === 9;
+  e.applyChunk('close');                                       // 10: nine to the amulet, one to sanity
+  const spills = e.ward().left === 0 && Math.abs(e.stats.sanity - (s0 - 3)) < 1e-6 && !num.dataset.arm;
+  e.kitAward('sanity', -2);
+  const spent = Math.abs(e.stats.sanity - (s0 - 5)) < 1e-6;
+  return drawn && soaked && offKeeps && backOn && spills && spent;
+});
+/* the bleed (kit.hurt) is per frame: sampled every 30 ms, sanity may not
+   move while the amulet still holds anything. The sampler STOPS the bleed
+   itself, in the page, the moment the amulet is empty and sanity has moved:
+   stopped from here, a loaded box let several half-second frames of bleed
+   through before the stop arrived and fainted the run (decisionOpens then
+   failed, far from any decision code). */
+await p.evaluate(() => {
+  const e = window.__enc, st = e.worldState();
+  st.ward = { charge: 15, ep: st.ward.ep, enter: 15 };         // full again, as a save would bring it
+  st.stats.sanity = Math.max(st.stats.sanity, 60);             // and far from a faint, whatever came before
+  e.applyState(st);
+  window.__s0 = e.stats.sanity; window.__bleed = []; window.__bleedDone = false;
+  window.__bleedT = setInterval(() => {
+    const c = e.ward().charge, s = e.stats.sanity;
+    window.__bleed.push([c, s]);
+    if (c === 0 && s < window.__s0 - 0.5) { e.kit.hurt(null); clearInterval(window.__bleedT); window.__bleedDone = true; }
+  }, 30);
+  e.kit.hurt({ perSec: 10 });
+});
+await until(() => window.__bleedDone === true, 90000).catch(() => {});
+K.wardBleedsFirst = await p.evaluate(() => {
+  const e = window.__enc; e.kit.hurt(null); clearInterval(window.__bleedT);
+  const b = window.__bleed;
+  return window.__bleedDone === true && b.length > 0 && b.every(([c, s]) => s >= window.__s0 - 1e-6 || c === 0)
+    && e.ward().charge === 0 && e.stats.sanity < window.__s0 && e.getState() === 'play';
+});
+// the lens level again, as the block found it: the walk to the pile below sets only the yaw
+await p.evaluate(() => { window.__enc.pitch.rotation.x = 0; });
 out.kit = K;
 
 // walk to the thing (teleport: this is not a movement test)

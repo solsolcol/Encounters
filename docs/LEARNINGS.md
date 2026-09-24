@@ -4568,3 +4568,93 @@ And one offscreen WebGL renderer copied into 2D canvases serves every item
 view — the worn box, the description pane, the zoom window — so three views
 cost one GL context, not three (a phone caps contexts, and Zav already holds
 one).
+
+## AN ASSET KEY IS GLOBAL — AND SO IS A PARKED ONE (v14.7)
+
+Chad's amulet wanted the key `amulet`, and `amulet` was already taken: the
+cased amulet PARKED in chapter 1 (`SHOW_AMULET = false`, `amulet.glb` at the
+repo root). Nothing on screen uses it, so nothing would have looked wrong —
+until the day the parked feature is switched back on and draws a Thai
+medallion where a cased one belongs. A parked feature's key is as live as a
+shipping one; the new model is `phiboon`. (The v7.1 sound-name law —
+`bunkcreak` because chapter 2 owns `bedcreak` — in the asset table.)
+
+## A GUARD'S CLOCK STARTS AFTER THE WORK IT GUARDS (v14.7)
+
+The ITEM UNLOCKED splash refuses to close for 0.6 s, so the E that took the
+amulet cannot also close it. Measured from the top of `kitUnlock`, the guard
+was spent before the splash was ever drawn: the first splash of a session
+builds the item renderer (a PMREM room environment), which on a software-
+rendered box took longer than the guard itself. The stamp moved to the END
+of the function. A window that protects something visible starts when the
+thing is there, not when someone asked for it.
+
+## A BEAT IS TIMED FROM ITS LINE, NOT FROM ITS TRIGGER (v14.7)
+
+The auntie turns to the boy and takes her talking take for the length of her
+line, then turns back. Timed from the pickup, a six-second stall on the first
+splash spent the whole beat before her voice began: she turned back and stood
+still-mouthed under her own sentence. The wall clock and the audio both run
+through a stall, so they stay together only from a shared start — the moment
+the line STARTS (`gift.tLine`). A beat that exists to accompany a sound is
+anchored to the sound.
+
+## THE FIRST SIGHT OF A MATERIAL COMPILES A SHADER, AND SWIFTSHADER TAKES SECONDS (v14.7)
+
+Three new programs (the amulet's own material, its halo, its ring — the
+renderer's count went 55 → 58) cost this box TWENTY-ONE SECONDS the first
+time the auntie's table came into view. A probe that teleported there and
+pressed E on a timer pressed into a world that had not drawn a frame: no
+badge, no hotspot, nothing taken — and it read as "the auntie never turns".
+Frame by frame (`S.updateNotes` wrapped to log each call) it was one frame in
+twenty seconds, then everything exactly as designed. After a teleport, POLL
+for something only a frame produces (the badge) before acting. On a phone
+the same compile is tens of milliseconds.
+
+## A HIDDEN BOX KEEPS ITS WORDS (v14.7)
+
+When the last objective is completed the box hides still holding "OBJECTIVE
+COMPLETE" (and the `done` class), and the next order to appear SLID those
+stale words out before sliding itself in. Going forward that is invisible;
+after a step UNDONE — the amulet taken off again before the altar — it read
+as a congratulation for going backwards, the v8.7 lie in the words rather
+than the banner. `paintObjective` forgets its painted words when the box
+hides with no order left, so the next one is a first paint. A probe that
+reads a hidden element's classes will find stale ones; read `hide` first.
+
+## A HARNESS BLOCK PUTS BACK WHAT IT MOVED (v14.7)
+
+The fixture's amulet block tilted the lens down to find the relic, and the
+section after it sets only the YAW before opening the decision — so the pile
+was under the frame and `decisionOpens` failed on a change that touched no
+decision code. A block that moves the camera restores it.
+
+## RUN A RED CHECK AGAINST THE BASELINE BEFORE BELIEVING IT (v14.7)
+
+`evHeartbeatRewardsTiming` failed with this release, twice, standalone. A
+worktree of the v14.6 commit, built and run the same way, failed it
+identically — and then it passed in the full suite: on a box this slow the
+answered beats land late enough, some runs, to grade no better than ignored
+ones. That makes it the box, not the release — and the only way to know was
+to run the old build, not to reason about whether the new code could have
+reached the heartbeat.
+
+## A HARNESS THAT ASSERTS ON A RETIRED THING FAILS FOR RELEASES (v14.7)
+
+`resumetest` put a NOTE in the bag and checked it came back after Continue.
+v14.6 took the note out of the game, `invAdd('note')` has returned false
+ever since without a word, and `resumedExactly` failed on a resume that was
+exact in every other respect — unnoticed, because v14.6 ran a subset of the
+suite. When something leaves the game, grep the HARNESSES for it too; and a
+release that changes the engine runs the whole suite, because the one
+harness nobody thought of is where the stale assumption lives.
+
+## A DAMAGE-OVER-TIME IS STOPPED FROM INSIDE THE PAGE (v14.7)
+
+The fixture's bleed check waited (from Playwright) for the amulet to empty
+and sanity to move, then sent `kit.hurt(null)`. On a loaded box each frame
+carries up to half a second of bleed, and the round trip between the
+condition and the stop let several of them through — enough to faint the run,
+which then failed `decisionOpens` two sections later, far from any decision
+code. The sampler that watches the condition now stops the bleed itself, in
+the page, on the interval tick after the frame that met it.

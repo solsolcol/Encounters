@@ -67,7 +67,15 @@ await p.evaluate(() => {
   window.__enc.yaw.rotation.y = 1.1;
   window.__enc.stats.awareness = 73;
   window.__enc.stats.wisdom = 61;
-  window.__enc.invAdd('note');
+  /* v14.7: the TORCH, because v14.6 took the note out of the game and
+     `invAdd('note')` has quietly added nothing since — which failed
+     `resumedExactly` on a resume that was in fact exact. And the AMULET,
+     worn and bitten into, so a real reload proves its charge comes back
+     (statetest proves the JSON; only this proves the Continue). */
+  window.__enc.invAdd('torch');
+  window.__enc.kit.give('amulet');
+  window.__enc.kit.equip('amulet');
+  window.__enc.kitAward('sanity', -4);      // the amulet takes it: 15 -> 11
 });
 // force one rather than waiting out the throttle; the throttle itself is
 // checked below by letting the loop write one unaided
@@ -100,11 +108,17 @@ await boot();
    moment later — that is play, not a restore. What resume must never do is
    put her back mid-appearance, so the thing to measure is the instant the
    run begins, not a second and a half into it. */
+/* v14.7: what the save holds for the amulet, read before Continue — the ghost
+   is live in the deck, so the charge is compared on the FIRST play frame,
+   before she can take a bite, against exactly what was written */
+const savedWard = await p.evaluate(() => { const s = window.__enc.loadCheckpoint(); return s && s.ward; });
 await p.evaluate(() => {
   window.__firstReveal = null; window.__playFrames = [];   // v6.4: the first frames, for the record
+  window.__firstWard = null;
   const tick = () => {
     if (window.__firstReveal === null && window.__enc.getState() === 'play') {
       window.__firstReveal = window.__enc.getReveal();
+      window.__firstWard = window.__enc.ward();
     }
     if (window.__enc.getState() === 'play' && window.__playFrames.length < 4)
       window.__playFrames.push([+performance.now().toFixed(0), +window.__enc.getReveal().toFixed(3)]);
@@ -123,8 +137,14 @@ out.resumedExactly = await p.evaluate(() => {
   const e = window.__enc, y = e.yaw;
   return Math.abs(y.position.x - 1.0) < 0.05 && Math.abs(y.position.z + 2.0) < 0.05
     && e.stats.awareness === 73 && e.stats.wisdom === 61
-    && e.inv().bag.includes('note');
+    && e.inv().bag.includes('torch');
 });
+out.amuletResumed = await p.evaluate(w => {
+  const f = window.__firstWard;
+  return !!w && !!f && f.worn === 'amulet' && window.__enc.inv().gear.neck === 'amulet'
+    && Math.abs(f.charge - w.charge) < 0.0011 && w.charge < 15 && f.enter === w.enter;
+}, savedWard);
+if (!out.amuletResumed) console.log('amulet:', JSON.stringify({ saved: savedWard, first: await p.evaluate(() => window.__firstWard) }));
 out.ghostRearmed = await p.evaluate(() => window.__firstReveal === 0);
 if (!out.ghostRearmed) console.log('first reveal:', await p.evaluate(() => JSON.stringify({ first: window.__firstReveal, frames: window.__playFrames }))); // v6.4
 
@@ -216,7 +236,7 @@ console.log(JSON.stringify(out, null, 1));
 const MUST = ['freshSaysStart', 'freshHidesNewGame', 'freshHidesNote', 'freshHasNoSave',
   'savedOnEnteringPlay', 'saveHasPosition', 'autosaveRunsUnaided',
   'reloadSaysContinue', 'reloadShowsNewGame', 'reloadNamesChapter',
-  'resumedExactly', 'ghostRearmed', 'confirmAppears', 'cancelKeepsSave',
+  'resumedExactly', 'amuletResumed', 'ghostRearmed', 'confirmAppears', 'cancelKeepsSave',
   'newGameResets', 'newGameBackAtSpawn', 'faintSavesChapterStart',
   'deepLinkIgnoresSave', 'deepLinkPlaysItsChapter', 'deepLinkKeptTheSave',
   'goneChapterFallsBack', 'stillPlayableAfterGoneChapter'];
