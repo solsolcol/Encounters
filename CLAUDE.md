@@ -3804,7 +3804,8 @@ What the baseline contains, by release:
   box let enough half-second frames through to faint the run — it stops
   itself in the page now. Fixture's `evHeartbeatRewardsTiming` is a coin toss
   on this box (it failed on an untouched v14.6 worktree and passed in the
-  full run). Sheet v71.
+  full run). Sheet v71. Deploy `6ab588d90619c4c0a918bd07`, byte-verified:
+  index.html and all 102 build files identical on the live site.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
