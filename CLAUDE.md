@@ -3858,6 +3858,8 @@ What the baseline contains, by release:
   nights show him on bed one; the clock's night is the clock. **An ask to
   ADD a thing to a shot is not an ask to re-stage the shot** — if the thing
   does not fit the shot as it stands, say so and ask; do not move the camera.
+  Harnesses chapter, cine. Deploy `6ab601127c58cb63e39e67ea`, byte-verified
+  (index.html and all 102 build files).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
