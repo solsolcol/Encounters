@@ -1767,8 +1767,7 @@
      pocket) with the seven men asleep in it. Then black, his line, and the
      cookhouse in daylight with the section already at the table. It begins
      on BLACK and lifts on its own fade (cinetest's contract). v14.9: HE is in
-     every night of it, asleep in bed one — so the first night is shot over his
-     head rather than from his pillow, and the clock's night ends on him. */
+     every night of it, asleep in bed one; not one shot moved for him. */
   const pk = (stage, x, y, z) => ({ x: stage.PK.x + x, y, z: stage.PK.z + z });
   function shots(stage, faceFrom) {
     const DOOR = pk(stage, stage.DOOR_WC.x, 1.0, stage.R.z);
@@ -1779,25 +1778,10 @@
     const HIGH = pk(stage, 4.0, 2.65, 3.2);
     const ATCLOCK = pk(stage, stage.DOOR_WC.x, 2.5, stage.R.z - 0.8);
     const BEDAT = pk(stage, stage.HIS.x, 0, stage.HIS.z);
-    /* v14.9: the film's first night is no longer FROM his pillow — he is lying
-       on it. Over his head instead, between the bunk's end and the wall, under
-       the top deck: his body down the lower half of the frame, the room and
-       then the door past his feet. */
-    const OVERHEAD = pk(stage, stage.HIS.x - 1.12, 1.22, stage.HIS.z);
-    /* and the clock's night ends ON him: from the dial back and down over the
-       foot of the bed onto him, under the top deck, which would hide him from any higher */
-    const REVEAL = pk(stage, stage.HIS.x + 1.6, 1.12, stage.HIS.z - 0.35);
-    const CHEST = pk(stage, stage.HIS.x - 0.25, 0.75, stage.HIS.z);
-    const Y_CLOCK = faceFrom(ATCLOCK.x, ATCLOCK.z, CLOCK.x, CLOCK.z);
-    let Y_REVEAL = faceFrom(REVEAL.x, REVEAL.z, CHEST.x, CHEST.z);
-    while (Y_REVEAL - Y_CLOCK > Math.PI) Y_REVEAL -= Math.PI * 2;      // the short way round
-    while (Y_REVEAL - Y_CLOCK < -Math.PI) Y_REVEAL += Math.PI * 2;
-    const P_REVEAL = -Math.atan2(REVEAL.y - CHEST.y, Math.hypot(REVEAL.x - CHEST.x, REVEAL.z - CHEST.z));
-    return { REVEAL, Y_REVEAL, P_REVEAL, DOOR, CLOCK, PILLOW, FLOOR, HIGH, ATCLOCK, BEDAT, OVERHEAD,
-      Y_OVER: faceFrom(OVERHEAD.x, OVERHEAD.z, DOOR.x, DOOR.z), Y_OVROOM: faceFrom(OVERHEAD.x, OVERHEAD.z, ROOM.x, ROOM.z),
+    return { DOOR, CLOCK, PILLOW, FLOOR, HIGH, ATCLOCK, BEDAT,
       Y_PIL: faceFrom(PILLOW.x, PILLOW.z, DOOR.x, DOOR.z), Y_ROOM: faceFrom(PILLOW.x, PILLOW.z, ROOM.x, ROOM.z), Y_FLOOR: faceFrom(FLOOR.x, FLOOR.z, DOOR.x, DOOR.z),
       Y_HIGH: faceFrom(HIGH.x, HIGH.z, BEDAT.x, BEDAT.z), Y_HIGH2: faceFrom(HIGH.x, HIGH.z, DOOR.x, DOOR.z),
-      Y_CLOCK };
+      Y_CLOCK: faceFrom(ATCLOCK.x, ATCLOCK.z, CLOCK.x, CLOCK.z) };
   }
   function intro(c, s, api) {
     const { tr, step, sfx, fade, camTo, yawTo, pitchTo, faceFrom, rawK, smoothK, stage, armR, kit } = api;
@@ -1822,9 +1806,9 @@
        3.64 s into the take (measured, the pause before "Surely"), so cued at
        27.56 it lands on the frame the clock turns and the water starts (31.2). */
     sfx(3.0, 'n2pro1');                          // "Night after night, this kept happening." 2.43 s -> 5.4
-    camTo(0, 10.2, T.OVERHEAD, T.OVERHEAD, rawK);
-    yawTo(0, 10.2, T.Y_OVROOM, T.Y_OVER + 0.10, smoothK);   // the room first, the door last: the +z wall is a metre from his pillow
-    pitchTo(0, 10.2, -0.42, -0.34, smoothK);           // down onto him: his body is the bottom of every frame of this night
+    camTo(0, 10.2, T.PILLOW, T.PILLOW, rawK);
+    yawTo(0, 10.2, T.Y_ROOM, T.Y_PIL + 0.10, smoothK);   // the room first, the door last: the +z wall is a metre from his pillow
+    pitchTo(0, 10.2, 0.02, 0.05, smoothK);
     step(5.0, () => stage.setShower(true, 0.55));
     sfx(5.0, 'drip', 0.5);
     sfx(6.6, 'bunkcreak', 0.35);
@@ -1852,21 +1836,15 @@
     /* NIGHT FOUR (27.6–35.0) — the clock over the block door, full frame.
        02:59; the minute hand moves; the water starts on the hour. */
     step(27.6, () => { stage.setShower(false); stage.doorPivot.rotation.y = stage.DOOR_AJAR; stage.blockLight.intensity = 1.2; stage.clock.set('02:59'); });
-    /* v14.9: the dial until the hour has turned, then back and down onto him
-       in bed one under "Surely, this is not just my imagination..." */
-    const AT2 = { x: T.ATCLOCK.x, y: T.ATCLOCK.y, z: T.ATCLOCK.z + 0.07 };
-    camTo(27.6, 31.9, T.ATCLOCK, AT2, smoothK);
-    yawTo(27.6, 31.9, T.Y_CLOCK, T.Y_CLOCK, rawK);
-    pitchTo(27.6, 31.9, 0.03, 0.03, rawK);
-    camTo(31.9, 34.7, AT2, T.REVEAL, smoothK);
-    yawTo(31.9, 34.7, T.Y_CLOCK, T.Y_REVEAL, smoothK);
-    pitchTo(31.9, 34.7, 0.03, T.P_REVEAL, smoothK);
+    camTo(27.6, 35.0, T.ATCLOCK, { x: T.ATCLOCK.x, y: T.ATCLOCK.y, z: T.ATCLOCK.z + 0.12 }, smoothK);
+    yawTo(27.6, 35.0, T.Y_CLOCK, T.Y_CLOCK, rawK);
+    pitchTo(27.6, 35.0, 0.03, 0.03, rawK);
     fade(27.6, 28.8, 1, 0);
     sfx(27.56, 'n2pro2');                        // "I noticed it only starts when the clock hits 3am... Surely, this is not just my imagination..." 7.71 s -> 35.3; "3am" at 31.2
     step(31.2, () => { stage.clock.set('03:00'); stage.setShower(true, 0.8); });
     sfx(31.2, 'boom', 0.28);
     sfx(31.4, 'dread', 0.7);
-    fade(34.4, 35.3, 0, 1);
+    fade(34.0, 35.0, 0, 1);
     /* 35–43 black: the water fades, his line. */
     tr(35.0, 37.5, k => { stage.setShower(true, 0.8 * (1 - k)); }, rawK);
     sfx(38.4, 'n2pro');                          // 6.72 s → 45.1 (v10.8: +2.2 s of black first — Chad: "the voicelines are too close to each other")

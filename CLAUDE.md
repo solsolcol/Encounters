@@ -3846,6 +3846,18 @@ What the baseline contains, by release:
   LEARNINGS (updateMatrixWorld before measuring a skin). `src/main.js`
   untouched; no word moved. Harnesses chapter, cine, leak. Deploy
   `6ab5a57ef03aebcfff65d9eb`, byte-verified (index.html and all 102 build files).
+- **v14.10** THE SHOTS PUT BACK — Chad, on v14.9: *"Why did you change the
+  camera angles and sequence? I did not ask for that, i only asked for the
+  model to be on bed one, while retaining everything that was in that intro
+  in the way it was."* He was right: v14.9 moved night one's camera off the
+  pillow and added a turn down onto him in the clock's night, neither asked
+  for. The film is v14.8's again to the line — every camera, every timing,
+  the fade at 34.0–35.0 — and the ONLY difference is `stage.showHim(true)`.
+  The pillow shot needed nothing: it is his own eyes, so the body lies below
+  the lens and reads as his chest, hands and feet; the floor and ceiling
+  nights show him on bed one; the clock's night is the clock. **An ask to
+  ADD a thing to a shot is not an ask to re-stage the shot** — if the thing
+  does not fit the shot as it stands, say so and ask; do not move the camera.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
