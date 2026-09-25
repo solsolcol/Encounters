@@ -157,8 +157,9 @@
              'standman', 'granny',
              /* v5.29 — the three new seated kinds and the scolding granny */
              'sitman', 'sitwoman', 'sitshout', 'scold',
-             /* v14.7 — Chad's LP Phiboon amulet, on the auntie's table */
-             'phiboon'],
+             /* v14.7 — Chad's LP Phiboon amulet, on the auntie's table
+                (v14.14: and its full-detail self, for close up) */
+             'phiboon', 'phiboonhd'],
     noteArt: 'hellnote',
 
     /* The tent's own sound, in FOUR beds since v4.3 — and the loudest is
@@ -903,6 +904,17 @@
     amTilt.position.y = 0.026;
     amTilt.rotation.x = AM_TILT;
     amuletRoot.add(amTilt);
+    /* v14.14: TWO LEVELS OF ONE AMULET. Chad: "ALL amulets must always show
+       full quality." The full scan is 957k triangles, and the table is in
+       view from most of the tent — drawn all the time it would be a
+       phone-heating cost for a thing a few pixels wide. So the light
+       `phiboon` is what stands there from afar and the full `phiboonhd` takes
+       over inside AM_NEAR, where the amulet is big enough on screen for the
+       difference to be seen. three's LOD picks by distance to whatever camera
+       is drawing, so a cutscene close-up gets the full one too. */
+    const AM_NEAR = 1.6;
+    const amLod = new THREE.LOD();
+    amTilt.add(amLod);
     // the stand-in until the model lands: a gold oval the same size
     const amStandIn = new THREE.Mesh(new THREE.CylinderGeometry(0.026, 0.026, 0.008, 24), matGold);
     amStandIn.rotation.x = Math.PI / 2;
@@ -913,18 +925,18 @@
     /* the model lands through loadGLB, which is declared with the bought
        models below — called from there (a const this early is still in its
        temporal dead zone while build() runs down to it) */
-    function amuletModelLanded(gltf) {
+    function amuletModelLanded(gltf, near) {
       const m = gltf.scene;
       m.scale.setScalar(AM_H);                        // baked to a unit height (tools/prepamulet.mjs)
       m.position.y = AM_H / 2;                        // and centred: its foot on the cushion
       m.traverse(o => {
         if (!o.isMesh) return;
-        o.castShadow = !LOW;
+        o.castShadow = !LOW && !near;                 // one shadow caster is plenty; the far level casts it
         for (const mt of (Array.isArray(o.material) ? o.material : [o.material])) {
           if (mt && mt.emissive) { mt.emissive.set(0xffffff); mt.emissiveIntensity = 0; amMats.push(mt); }
         }
       });
-      amTilt.add(m);
+      amLod.addLevel(m, near ? 0 : AM_NEAR);          // v14.14: the near level is the full scan
       amStandIn.visible = false;
     }
     /* small and warm: additive light over her cream paper stacks sums to
@@ -1438,7 +1450,8 @@
     };
 
     /* v14.7: Chad's amulet on the auntie's table (built with the table, above) */
-    loadGLB('phiboon', amuletModelLanded);
+    loadGLB('phiboon', g => amuletModelLanded(g, false));
+    loadGLB('phiboonhd', g => amuletModelLanded(g, true));   // v14.14: full detail, close up
 
     /* THE CHAIR — one 710-triangle mesh, instanced over every seat, and the
        three primitive instanced-meshes go dark. placeChair() already drives

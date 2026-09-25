@@ -3,6 +3,14 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 import { clone as cloneSkinned } from 'three/examples/jsm/utils/SkeletonUtils.js';
+/* v14.14: every loader the engine hands out READS MESHOPT. Chad's amulets
+   ship at full detail (every triangle of the scan, "ALL amulets must always
+   show full quality"), which is only a sane download packed with meshopt —
+   and chapter 3 parses its table amulet with the loader it is given. The
+   decoder is a plain WebAssembly module (allowed by the strict CSP, v5.10)
+   and is only ever touched by a file that declares EXT_meshopt_compression,
+   so every other model parses exactly as before. */
+class GLTFLoaderMO extends GLTFLoader { constructor(m) { super(m); this.setMeshoptDecoder(MeshoptDecoder); } }
 
 // The page is embedded in a wrapper we do not control — make sure mobile gets a
 // real device-width viewport (and safe-area insets) either way.
@@ -116,7 +124,7 @@ const EMBED = {
   /* v14.7: Chad's LP Phiboon amulet (the model and its icon) — episode 1's,
      so the single-file build carries them. Not `amulet`, which is the parked
      chapter-1 cased amulet above. */
-  phiboon: '__PHIBOON_B64__', iconamulet: '__ICONAMULET_B64__',
+  phiboon: '__PHIBOON_B64__', iconamulet: '__ICONAMULET_B64__', phiboonhd: '__PHIBOONHD_B64__',   // v14.14: the full-detail Phiboon
   timkp: '__TIMKP_B64__', icontimkp: '__ICONTIMKP_B64__'   // v14.13
 };
 
@@ -3545,7 +3553,7 @@ WARM_WANT.add('itemunlock');
 /* v14.11: the amulet's crack and its shatter, the engine's for the same reason */
 WARM_WANT.add('wardcrack'); WARM_WANT.add('wardbreak');
 const CHCTX = {
-  THREE, GLTFLoader, cloneSkinned, scene, camera, yaw, pitch, LOW,   // v8.7: `pitch` so a chapter may level the lens as well as turn it
+  THREE, GLTFLoader: GLTFLoaderMO, cloneSkinned, scene, camera, yaw, pitch, LOW,   // v8.7: `pitch` so a chapter may level the lens as well as turn it
   kit: KIT,                        // v7.0: the play kit — declared by a chapter, absent for chapters 1–5
   plantTrees,                      // v6.15: a stand of Chad's trees, mixed and dealt from a seed
   assetBytes, rescueTextures, redoShadows, loadImageTexture,
@@ -5978,7 +5986,11 @@ const ITEM_DEFS = {
      protects: fifteen points of sanity damage taken before sanity is, once
      per EPISODE — see THE WARD, below. No `view`: the model is baked with
      its face to +z, toward the lens. */
-  amulet: { icon: 'e-amulet', slot: 'neck', art: 'iconamulet', model: 'phiboon', ward: 15, rarity: 'rare' },
+  /* v14.14: its views (the worn box, the description, the zoom, the unlock
+     splash) draw `phiboonhd`, every triangle of the scan; the world's table
+     keeps the light `phiboon` for distance and swaps to the full one close
+     up (ch3's LOD). */
+  amulet: { icon: 'e-amulet', slot: 'neck', art: 'iconamulet', model: 'phiboonhd', ward: 15, rarity: 'rare' },
   /* v14.13: Chad's LP Tim Khun Paen (Lode Series, Wat Lahanrai). DEFINED AND
      READY, GIVEN BY NO CHAPTER YET — Chad: "i have not decided where in the
      game i will introduce this amulet, but i want you to save it first ready
@@ -6291,26 +6303,7 @@ function applyState(st) {
   stats.sanity = num(st.stats.sanity, stats.sanity);
   stats.awareness = num(st.stats.awareness, stats.awareness);
   stats.wisdom = num(st.stats.wisdom, stats.wisdom);
-  if (st.inv && typeof st.inv === 'object') {
-    const ok = id => (typeof id === 'string' && hasOwn(ITEM_DEFS, id)) ? id : null;
-    const g = (st.inv.gear && typeof st.inv.gear === 'object') ? st.inv.gear : {};
-    for (const k of GEAR_SLOTS) inv.gear[k] = ok(g[k]);
-    const bag = (Array.isArray(st.inv.bag) ? st.inv.bag : []).map(ok);
-    /* a save from before v5.09 wore TWO hands and carried three rows: the
-       first hand that held something takes the one hand slot, and whatever
-       has no place left goes into the bag — nothing an old save held is lost */
-    const spare = [];
-    for (const k of ['rightHand', 'leftHand']) {
-      const id = ok(g[k]); if (!id) continue;
-      if (!inv.gear.hand && ITEM_DEFS[id].slot === 'hand') inv.gear.hand = id; else spare.push(id);
-    }
-    for (let i = 0; i < BAG_SIZE; i++) inv.bag[i] = bag[i] || null;
-    for (const id of [...bag.slice(BAG_SIZE).filter(Boolean), ...spare]) {
-      const free = inv.bag.indexOf(null); if (free < 0) break;
-      inv.bag[free] = id;
-    }
-    if (inv.open) invPaint();
-  }
+  invLoad(st.inv);
   torchAvailSync();   // v11.6: a torch that is an item follows the restored bag
   weaponAvailSync();  // v12.2: a resume must paint the weapon HUD too
   weaponAvailSync();  // v12.0: and so does the weapon
@@ -6333,16 +6326,42 @@ function applyState(st) {
      existed leaves the ward as the chapter entry set it). A save written at
      an episode boundary carries the old episode, and the rule then refills
      it — entering a new episode recharges the amulet. */
-  if (st.ward && typeof st.ward === 'object') {
-    const wn = v => (typeof v === 'number' && Number.isFinite(v)) ? Math.max(0, Math.min(WARD_FULL, v)) : null;
-    const c = wn(st.ward.charge), e = wn(st.ward.enter), ep = Number(st.ward.ep);
-    if (c !== null) ward.charge = c;
-    ward.enter = e !== null ? e : ward.charge;
-    if (Number.isInteger(ep) && ep >= 1) ward.ep = ep;
-  }
+  wardLoad(st.ward);
   wardEpisode();
   syncBars();
   return true;
+}
+/* the bag and the amulet's charge out of a save, each tolerated absent or
+   malformed. Split out of applyState at v14.14 because the TITLE needs them
+   too — see the boot, below paintTitle(). */
+function invLoad(si) {
+  if (!si || typeof si !== 'object') return;
+  const ok = id => (typeof id === 'string' && hasOwn(ITEM_DEFS, id)) ? id : null;
+  const g = (si.gear && typeof si.gear === 'object') ? si.gear : {};
+  for (const k of GEAR_SLOTS) inv.gear[k] = ok(g[k]);
+  const bag = (Array.isArray(si.bag) ? si.bag : []).map(ok);
+  /* a save from before v5.09 wore TWO hands and carried three rows: the
+     first hand that held something takes the one hand slot, and whatever
+     has no place left goes into the bag — nothing an old save held is lost */
+  const spare = [];
+  for (const k of ['rightHand', 'leftHand']) {
+    const id = ok(g[k]); if (!id) continue;
+    if (!inv.gear.hand && ITEM_DEFS[id].slot === 'hand') inv.gear.hand = id; else spare.push(id);
+  }
+  for (let i = 0; i < BAG_SIZE; i++) inv.bag[i] = bag[i] || null;
+  for (const id of [...bag.slice(BAG_SIZE).filter(Boolean), ...spare]) {
+    const free = inv.bag.indexOf(null); if (free < 0) break;
+    inv.bag[free] = id;
+  }
+  if (inv.open) invPaint();
+}
+function wardLoad(sw) {
+  if (!sw || typeof sw !== 'object') return;
+  const wn = v => (typeof v === 'number' && Number.isFinite(v)) ? Math.max(0, Math.min(WARD_FULL, v)) : null;
+  const c = wn(sw.charge), e = wn(sw.enter), ep = Number(sw.ep);
+  if (c !== null) ward.charge = c;
+  ward.enter = e !== null ? e : ward.charge;
+  if (Number.isInteger(ep) && ep >= 1) ward.ep = ep;
 }
 
 /* the game gives items out; chapters and scenes call these */
@@ -6662,14 +6681,21 @@ function ivModel(id) {
   if (iv.state[id]) return null;                       // loading, or it never will
   if (!ivInit()) { iv.state[id] = 'none'; return null; }
   iv.state[id] = 'loading';
-  assetBytes(def.model, true).then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
-    rescueTextures(gltf, BUF);
+  assetBytes(def.model, true).then(BUF => new GLTFLoaderMO().parse(BUF, '', (gltf) => {
+    /* v14.14: every map at the sharpest filtering the device has — a zoomed,
+       tilted amulet is nothing but oblique texels — including a map the
+       strict-CSP rescue hands over late */
+    const aniso = iv.r.capabilities.getMaxAnisotropy ? iv.r.capabilities.getMaxAnisotropy() : 1;
+    const sharpen = m => { for (const k of ['map', 'normalMap', 'roughnessMap', 'metalnessMap', 'emissiveMap']) {
+      const t = m && m[k]; if (t && t.anisotropy !== aniso) { t.anisotropy = aniso; t.needsUpdate = true; } } };
+    rescueTextures(gltf, BUF, sharpen);
     const inner = gltf.scene;
     inner.traverse(o => {
       if (!o.isMesh) return;
       o.frustumCulled = false;
       for (const m of (Array.isArray(o.material) ? o.material : [o.material])) {
         if (m && 'envMapIntensity' in m) { m.envMapIntensity = 1.4; m.needsUpdate = true; }
+        sharpen(m);
       }
     });
     inner.updateMatrixWorld(true);
@@ -7050,9 +7076,10 @@ function zavLoad() {
   zav.loading = true;
   zav.key = key;
   assetBytes(key).then(BUF => zavLoader().parse(BUF, '', (gltf) => {
-    rescueTextures(gltf, BUF, zavNoMip);
+    const tex = ZAV_MIPS.has(key) ? zavMips : zavNoMip;   // v14.14: per figure
+    rescueTextures(gltf, BUF, tex);
     const g = gltf.scene;
-    g.traverse(o => { if (o.isMesh) { o.frustumCulled = false; zavNoMip(o.material); } });
+    g.traverse(o => { if (o.isMesh) { o.frustumCulled = false; tex(o.material); } });
     /* size and ground from the MESH — there are no bones to measure — to a
        man's 1.75 m, feet at the pivot's origin, centred on his own middle */
     const box = new THREE.Box3().setFromObject(g);
@@ -7083,6 +7110,24 @@ function zavLoad() {
 function zavNoMip(m) {
   const t = m && m.map; if (!t) return;
   t.generateMipmaps = false; t.minFilter = THREE.LinearFilter; t.needsUpdate = true;
+}
+/* v14.14: THE SOLDIER IS THE OPPOSITE CASE. Chad, from his phone: "the
+   soldier model also looks bad on phone." His camouflage is fine,
+   high-contrast detail, and without mipmaps a phone that draws him ~600
+   pixels tall samples it several texels apart — the camo and the face
+   shimmer into noise. His atlas DILATES every island into the fill around
+   it (measured, tools/prepzavsoldier.mjs), so the shrunken copies do not
+   average a patch with its neighbour the way the adult scan's did: he gets
+   mipmaps, and the sharpest anisotropic filtering the device has, on every
+   map. The adult and the young figure keep zavNoMip, untouched. */
+const ZAV_MIPS = new Set(['zavsoldier']);
+function zavMips(m) {
+  if (!m) return;
+  const aniso = zav.r && zav.r.capabilities.getMaxAnisotropy ? zav.r.capabilities.getMaxAnisotropy() : 1;
+  for (const k of ['map', 'normalMap', 'roughnessMap', 'metalnessMap']) {
+    const t = m[k]; if (!t) continue;
+    t.generateMipmaps = true; t.minFilter = THREE.LinearMipmapLinearFilter; t.anisotropy = aniso; t.needsUpdate = true;
+  }
 }
 /* one off-screen frame at 64 px: shaders compiled, geometry and texture on
    the GPU, so the first frame the player sees is not the slow one */
@@ -8789,6 +8834,18 @@ function paintTitle() {
 }
 paintTitle();
 { const s = loadCheckpoint(); if (s && s.ch) markReached(s.ch); }   // a run already past chapter 1 opens what it reached (v5.12)
+/* v14.14: THE BAG IS THE SAVE'S FROM THE FIRST FRAME. Chad: "when the
+   player equips it and switch to episode 2 chapter 3 immediately, the
+   amulet is gone from inventory." Measured: the bag and the amulet's charge
+   were only ever put back by Continue (applyState). After a reload — which
+   a phone browser does to a background tab on its own — the title started
+   on an EMPTY bag, and the other way out of the title, the chapter
+   selector, kept it empty: a player who picked a chapter there lost
+   everything he carried. So the save's bag and charge are loaded at boot.
+   Continue still applies the whole run on top (the same values), New game
+   still empties it (invClearAll), and the selector now keeps what the
+   player owns, as it always did within one sitting. */
+{ const s = loadCheckpoint(); if (s) { invLoad(s.inv); wardLoad(s.ward); torchAvailSync(); weaponAvailSync(); syncBars(); } }
 
 /* ------------------------------------------------------ the title backdrop
    Pure decoration, so every step is written to fail quietly: no source until
@@ -9857,6 +9914,7 @@ window.__enc = { yaw, pitch, stats, getState: () => state,   // v8.7: pitch, so 
                  evGuard: () => ({ guard: evGuard(), cuts: evCuts }),   // v14.13: the minigame guard, for probes
                  saveCheckpoint, loadCheckpoint, clearCheckpoint,
                  invOpen, invClose, invToggle, invAdd, invHas, invRemove,
+                 ivZoomOpen, ivZoomClose,             // v14.14: the zoom window, for probes
                  menuOpen, menuClose, menuToggle, openChapters, closeChapters,
                  startChapter, returnToTitle, unlockedKeys, markReached,
                  sealed: sealedResults, markSealed,               // v6.2

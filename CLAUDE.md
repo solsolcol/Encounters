@@ -3935,6 +3935,34 @@ What the baseline contains, by release:
   never stack: that, and whether it should, is Chad's call when he places it.
   Sheet v73 (three rows). docs/V14.13-LP-TIM-KHUN-PAEN.md is the memory, with
   his words and the rule for every future minigame.
+- **v14.14** FULL QUALITY, AND THE BAG THAT CAME BACK — Chad, from his phone:
+  *"why does the amulet look like that on phone? it is supposed to have full
+  quality. ALL amulets must always show full quality. this is critically
+  important. the soldier model also looks bad on phone. And when the player
+  equips it and switch to episode 2 chapter 3 immediately, the amulet is gone
+  from inventory."* And: *"The correct name should be Wat Lahanrai
+  everywhere."* **THE RULE, standing: every amulet ships at FULL detail** —
+  every triangle of the scan, meshopt-packed, every map at its own size
+  (`HD=1 tools/prepamulet.mjs … 1`). The Phiboon's item views draw
+  `phiboonhd` (957,344 tris, 10 MB); ch3's table is a THREE.LOD — the light
+  `phiboon` from afar, `phiboonhd` inside 1.6 m, because the table is in view
+  from most of the tent and a million triangles always drawn would cook a
+  phone. `timkp` is 832,444 tris, 4096 colour, 11.3 MB. Why the old ones
+  looked cheap: their normal maps were baked against the full mesh, so at 3 %
+  of it each big triangle shaded as a flat plane (LEARNINGS). Every loader the
+  engine hands out now reads meshopt (`GLTFLoaderMO`, including CHCTX's
+  `GLTFLoader`) — the decoder only touches files that declare it; item-view
+  maps get max anisotropy. **The soldier**: every triangle (594,511), 2048
+  maps (his face is a ~120-texel island; 1024 made it a smear), and MIPMAPS
+  with anisotropy (`ZAV_MIPS`: his atlas is dilated, so they do not bleed —
+  the adult and young figures keep `zavNoMip`), 7.9 MB. **The bag**: after a
+  reload the title had an empty bag and only Continue restored it, so the
+  chapter selector started a chapter with nothing; the save's bag and ward
+  charge now load at boot (`invLoad`/`wardLoad`, split out of applyState).
+  Photographed at phone size (390 wide, DPR 2.4): both amulets in the zoom,
+  the soldier in the panel; the LOD measured switching at 1.21 m. The single-
+  file build is 131 MB now (it carries both full amulets for episode 1).
+  Sheet v74 (one cell: the name). docs/LEARNINGS.md has both laws.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -4498,8 +4526,9 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v73** (`masters/v14.13/masterz-text-v73.xlsx`, four tabs: UI
-TEXT 292, EPISODE 1 114, EPISODE 2 193, VOICE LINES 296). v73 adds three rows
+**THE SHEET IS v74** (`masters/v14.14/masterz-text-v74.xlsx`, four tabs: UI
+TEXT 292, EPISODE 1 114, EPISODE 2 193, VOICE LINES 296). v74 changes one cell
+of v73 — the amulet's name, "Wat Lahanrai" at Chad's word. v73 adds three rows
 to v72 (v14.11's, the amulet's crack/break banner and the rarities): the LP
 Tim Khun Paen's name and description and "Ultra Rare". v71's diff against
 v70 (v14.6's, `masters/v14.6/`) is thirteen new rows — the amulet's name and

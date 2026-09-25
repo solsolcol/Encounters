@@ -4684,3 +4684,32 @@ hidden by its own `animationend`, not by the timer (which stays only as a
 60 s backstop for a page that draws nothing). Measure a notification's life
 IN THE PAGE; a probe's round trips on a slow box take longer than the thing
 being measured.
+
+## v14.14 — a simplified scan shades as facets on a phone; judge at the device's size
+
+Chad, from his phone: the Phiboon in the zoom window "looks like that" —
+flat triangles over the red cloth, a plastic shine, the monk mushy. Every
+review had been a desktop render of a small view. The cause is structural,
+not a setting: the scan's NORMAL MAP was baked against the full 957k-triangle
+mesh, and shipped at 3 % of it, each large triangle is shaded as its own
+plane (three.js builds the tangent frame from screen-space derivatives when a
+file carries no tangents, so the frame is constant per triangle). The fix is
+the full mesh — every triangle, meshopt-packed (10 MB instead of 2) — and a
+render AT PHONE SIZE (390 wide, DPR 2.4) to judge it. The same shape hit the
+soldier figure twice over: his face is a ~120-texel island in the atlas, so a
+1024 sheet left it ~60 texels (a smear), and the panel's no-mipmap rule —
+right for the adult scan's gutterless atlas — made his fine camouflage
+shimmer into noise on a phone. Measure the ATLAS before choosing its size:
+what matters is how many texels the face gets, not the sheet's side.
+
+## v14.14 — the bag came back only through Continue
+
+"Equip it and switch to episode 2 chapter 3 — the amulet is gone." Not the
+switch: within one sitting the bag survived every path. After a RELOAD (a
+phone browser reloads a background tab on its own), the save still held the
+amulet, but the title started on an empty bag and only Continue (applyState)
+put it back — so the other way out of the title, the chapter selector, started
+the chapter with nothing. The bag and the amulet's charge are loaded from the
+save at boot now (`invLoad`, `wardLoad`). Reproduce with a reload in the
+probe: a single-page probe cannot see a bug whose first step is losing the
+page.

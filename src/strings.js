@@ -358,10 +358,10 @@ Object.assign(window.__TEXT__, {
   /* v14.7: the amulet chapter 3's auntie gives the boy — Chad's words, both */
   'item.amulet.name':    'LP Phiboon Second Batch Rian Amulet (Small)',
   'item.amulet.desc':    'Powerful against danger, negative energies, black magic and bad spirits. Provides +15 protection against sanity damage. Also boosts Metta Mahaniyom. Made by the powerful Luang Pu PhiBoon (PhiBoon Sae Tan), born during the reign of King Rama 4 in Thailand.',
-  /* v14.13: Chad's LP Tim Khun Paen — his words, both, verbatim (the name says
-     Wat Lanharai and the description Wat Lahanrai, as he wrote them). Ready
-     for use; no chapter gives it yet. */
-  'item.timkp.name':     'LP Tim Khun Paen Lode Series, Wat Lanharai',
+  /* v14.13: Chad's LP Tim Khun Paen — his words, both, verbatim, with the
+     temple's name corrected by him at v14.14 ("The correct name should be
+     Wat Lahanrai everywhere"). Ready for use; no chapter gives it yet. */
+  'item.timkp.name':     'LP Tim Khun Paen Lode Series, Wat Lahanrai',
   'item.timkp.desc':     'Made by the renowned LP Tim Issariko of Wat Lahanrai, this amulet is imbued with the powers from its Phong Prai Kuman powder, granting the wearer prosperity and enhancing charm. Reduce all kinds of damage from minigame events by 50%.',
   // what its protection has left, under the words ({n} and {max} are numbers)
   // v14.11: short, in the bar's yellow ({n} and {max} are numbers, shown bold)

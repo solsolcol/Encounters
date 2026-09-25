@@ -24,19 +24,32 @@
    the asset key 'amulet' already belongs to the cased amulet parked in
    chapter 1 (SHOW_AMULET, amulet.glb at the repo root), which is kept.
 
+   v14.14 — FULL QUALITY (Chad: "ALL amulets must always show full quality.
+   this is critically important"). At 3 % of its triangles the Phiboon read on
+   a phone as flat facets and plastic shine: its normal map was baked against
+   the FULL mesh, and on a 28k-triangle one it shades each large triangle as
+   its own flat plane. HD=1 keeps EVERY triangle (ratio 1, no simplifier) and
+   packs them with meshopt — the engine's loaders all carry the decoder since
+   v14.14 — and every sheet ships at the size asked, JPEG q 92.
+     HD=1 node tools/prepamulet.mjs masters/v14.7/src/amulet.glb assets/phiboonhd.glb 1 2048 2048
+     HD=1 node tools/prepamulet.mjs masters/v14.13/src/timkp.glb assets/timkp.glb 1 4096 2048
+
    Usage: node tools/prepamulet.mjs in.glb out.glb [ratio] [basePx] [otherPx]
    v14.7: node tools/prepamulet.mjs masters/v14.7/src/amulet.glb assets/phiboon.glb 0.03 2048 1024
           -> 1967 KB, 28,720 triangles                                     */
 import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
-import { weld, quantize, prune, dedup, flatten, clearNodeTransform, metalRough, simplify } from '@gltf-transform/functions';
-import { MeshoptSimplifier } from 'meshoptimizer';
+import { weld, quantize, prune, dedup, flatten, clearNodeTransform, metalRough, simplify, meshopt } from '@gltf-transform/functions';
+import { MeshoptSimplifier, MeshoptEncoder, MeshoptDecoder } from 'meshoptimizer';
 import sharp from 'sharp';
 import fs from 'node:fs';
 
 const [inp, outp, ratioS = '0.10', baseS = '2048', otherS = '1024'] = process.argv.slice(2);
 const RATIO = +ratioS, BASE_PX = +baseS, OTHER_PX = +otherS;
-const io = new NodeIO().registerExtensions(ALL_EXTENSIONS);
+const HD = process.env.HD === '1';
+await Promise.all([MeshoptEncoder.ready, MeshoptDecoder.ready]);
+const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({
+  'meshopt.encoder': MeshoptEncoder, 'meshopt.decoder': MeshoptDecoder });
 const doc = await io.read(inp);
 const root = doc.getRoot();
 const before = fs.statSync(inp).size;
@@ -108,7 +121,7 @@ const mat = root.listMaterials()[0];
 const baseT = mat.getBaseColorTexture(), mrT = mat.getMetallicRoughnessTexture(), nT = mat.getNormalTexture();
 for (const t of root.listTextures()) {
   const px = t === baseT ? BASE_PX : OTHER_PX;
-  const buf = await sharp(Buffer.from(t.getImage())).resize(px, px, { fit: 'fill' }).jpeg({ quality: t === baseT ? 84 : 88 }).toBuffer();
+  const buf = await sharp(Buffer.from(t.getImage())).resize(px, px, { fit: 'fill' }).jpeg({ quality: HD ? 92 : t === baseT ? 84 : 88 }).toBuffer();
   t.setImage(buf).setMimeType('image/jpeg');
 }
 mat.setOcclusionTexture(null);
@@ -132,7 +145,9 @@ if (RATIO < 1) await doc.transform(simplify({ simplifier: MeshoptSimplifier, rat
   if (Math.abs((l2[1] + h2[1]) / 2) > 0.02) throw new Error('not centred on y');
   console.log(`  baked box ${l2.map(v => v.toFixed(3))} .. ${h2.map(v => v.toFixed(3))}`);
 }
-await doc.transform(prune(), quantize({ quantizePosition: 14, quantizeNormal: 10, quantizeTexcoord: 14 }));
+if (HD) await doc.transform(prune(), meshopt({ encoder: MeshoptEncoder, level: 'medium',
+  quantizePosition: 16, quantizeNormal: 12, quantizeTexcoord: 16 }));
+else await doc.transform(prune(), quantize({ quantizePosition: 14, quantizeNormal: 10, quantizeTexcoord: 14 }));
 await io.write(outp, doc);
 let tris = 0;
 const d2 = await io.read(outp);
