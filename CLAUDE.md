@@ -4041,8 +4041,9 @@ What the baseline contains, by release:
   equipment panel (a feel change), sharing ch3's two Phiboon parses,
   rebuilding an episode-2 chapter on a selector replay, an engine-owned clock
   for episode 3, and moving CLAUDE.md's history out (~84k tokens loaded every
-  session). No word moved; sheet v74 stands.
-  docs/V14.16-THE-AUDIT.md is the build's memory.
+  session). No word moved; sheet v74 stands. Deploy
+  `6ab6faa87189d8aed14df67e`, byte-verified (index.html and all 107 build
+  files). docs/V14.16-THE-AUDIT.md is the build's memory.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
