@@ -6087,9 +6087,20 @@ function wardBroke() {
   const el = $('wardBreak'); if (!el) return;
   el.classList.remove('on', 'hide'); void el.offsetWidth;   // restart the animation if it is already up
   el.classList.add('on');
+  /* it goes when its OWN fade-out has played (wbOut), never on a wall-clock
+     timer alone: on a phone running a frame a second the animation starts
+     late, and a timer hid it before it had ever been drawn (measured on
+     this box: opacity 0 at 0.7 s, gone at 1.6). The timer stays only as the
+     backstop for a page whose animations never run at all. */
   clearTimeout(wardBrokeTimer);
-  wardBrokeTimer = setTimeout(() => { el.classList.remove('on'); el.classList.add('hide'); }, 4200);
+  wardBrokeTimer = setTimeout(wardBreakHide, 12000);
 }
+function wardBreakHide() {
+  const el = $('wardBreak'); if (!el) return;
+  clearTimeout(wardBrokeTimer);
+  el.classList.remove('on'); el.classList.add('hide');
+}
+$('wardBreak')?.addEventListener('animationend', e => { if (e.animationName === 'wbOut') wardBreakHide(); });
 
 /* ── the state seam ─────────────────────────────────────────────────────
    Everything a run IS, as plain JSON: the chapter key, the three stats,
