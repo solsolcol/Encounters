@@ -34,6 +34,9 @@
   let S = null;
 
   const DATA = {
+    /* v14.15: the items this chapter can hand out (kit.give), so the engine prepares
+       their models behind the entry curtain rather than in play. chaptertest checks it. */
+    items: ['torch'],
     id: 5,
     episode: 2,
     title: 'The Last Question',

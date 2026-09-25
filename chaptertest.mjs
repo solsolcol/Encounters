@@ -188,6 +188,28 @@ const STING_TO_SAMPLE = Object.fromEntries(
 if (!Object.keys(STING_TO_SAMPLE).length) {
   errs.push('ERR could not read STING_SAMPLE out of src/main.js');
 }
+/* v14.15: WHAT A CHAPTER HANDS OUT, IT DECLARES. The engine prepares an
+   item's model behind the entry curtain only if the chapter lists it in
+   `items` (its build() is closed over, so the engine cannot read it for
+   kit.give calls). A chapter that gives an item it did not declare shows
+   that model loading in the middle of play — the stutter v14.15 exists to
+   remove. So: every literal kit.give('x') in a chapter file names an item
+   in that chapter's `items`, and every declared item exists in ITEM_DEFS. */
+{
+  const idBlock = mainJs.slice(mainJs.indexOf('const ITEM_DEFS = {'), mainJs.indexOf('\n};', mainJs.indexOf('const ITEM_DEFS = {')));
+  const ITEM_IDS = new Set([...idBlock.matchAll(/^  (\w+): \{/gm)].map(m => m[1]));
+  if (!ITEM_IDS.size) errs.push('ERR could not read ITEM_DEFS out of src/main.js');
+  for (const f of files) {
+    const key = f.split('/').pop().replace(/\.js$/, '');
+    const ch = chapters[key]; if (!ch) continue;
+    const src = readFileSync(join(chapDir, f), 'utf8');
+    const declared = Array.isArray(ch.items) ? ch.items : [];
+    for (const m of src.matchAll(/\.give\(\s*'([a-zA-Z0-9_]+)'\s*\)/g)) {
+      if (!declared.includes(m[1])) bad(key, `kit.give('${m[1]}') but '${m[1]}' is not in the chapter's items: [...] (v14.15 — its model would load in the middle of play)`);
+    }
+    for (const id of declared) if (ITEM_IDS.size && !ITEM_IDS.has(id)) bad(key, `items names '${id}', which is not in ITEM_DEFS`);
+  }
+}
 // 'step' is the one kind with no STING_SAMPLE row: it is routed to the
 // four-sample footstep rotation before the table is ever consulted.
 const SPECIAL_KINDS = new Set(['step']);

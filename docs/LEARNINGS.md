@@ -4713,3 +4713,16 @@ the chapter with nothing. The bag and the amulet's charge are loaded from the
 save at boot now (`invLoad`, `wardLoad`). Reproduce with a reload in the
 probe: a single-page probe cannot see a bug whose first step is losing the
 page.
+
+## v14.15 — a chapter's `build` is a wrapper; and a probe must not wait on its own name
+
+Two small traps from the smart-loading build. Every chapter registers
+`Object.assign(DATA, { build(ctx) { const st = build(ctx); … } })`, so
+`CH.build.toString()` is the WRAPPER — scanning it for `kit.give('x')` found
+nothing, and the entry curtain never prepared ch3's amulet. What a chapter
+does inside its closure has to be DECLARED on its data (`items`), and a
+static check (chaptertest) keeps the declaration honest. And a shell wait of
+`until ! pgrep -f probe.mjs` never ends when it runs inside a shell whose own
+command line contains `probe.mjs` — wait on the probe's OUTPUT, not its name.
+Measure "is the loading smart" as a number: a load that lands after the world
+was uncovered is a pop-in, and the tracker (`__enc.loads()`) counts them.

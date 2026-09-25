@@ -26,6 +26,9 @@
   let S = null;
 
   const DATA = {
+    /* v14.15: the items this chapter can hand out (kit.give), so the engine prepares
+       their models behind the entry curtain rather than in play. chaptertest checks it. */
+    items: ['amulet'],
     id: 99,
     episode: 1,            // the fixture rides with episode 1 (v6.0)
     title: 'The Empty Room',

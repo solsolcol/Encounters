@@ -10,7 +10,90 @@ import { clone as cloneSkinned } from 'three/examples/jsm/utils/SkeletonUtils.js
    decoder is a plain WebAssembly module (allowed by the strict CSP, v5.10)
    and is only ever touched by a file that declares EXT_meshopt_compression,
    so every other model parses exactly as before. */
-class GLTFLoaderMO extends GLTFLoader { constructor(m) { super(m); this.setMeshoptDecoder(MeshoptDecoder); } }
+/* v14.15: THE DECODE, OFF THE MAIN THREAD. The full-detail amulets and the
+   soldier figure are 8-11 MB of meshopt each, and decoding them on the main
+   thread is a stall of a few hundred milliseconds on a phone — a stutter, if
+   it happens in play. On the hosted build two Web Workers do it instead,
+   but ONLY once a self-test decode through them has come back right
+   (meshoptWorkerTest, below): a worker is made from a blob: URL, which the
+   single-file build's strict CSP forbids, and a worker that never answers
+   would hang every model forever. Until the test passes, and whenever it
+   fails, the decode runs on the main thread exactly as it always did. */
+let meshoptWorkers = 'off';          // 'off' | 'testing' | 'ok' | 'failed'
+const MeshoptSmart = {
+  supported: true,
+  ready: MeshoptDecoder.ready,
+  decodeGltfBufferAsync(count, size, source, mode, filter) {
+    if (meshoptWorkers === 'ok') return MeshoptDecoder.decodeGltfBufferAsync(count, size, source, mode, filter);
+    return MeshoptDecoder.ready.then(() => {
+      const t = new Uint8Array(count * size);
+      MeshoptDecoder.decodeGltfBuffer(t, count, size, source, mode, filter);
+      return t;
+    });
+  }
+};
+function meshoptWorkerTest() {
+  if (typeof Worker !== 'function' || meshoptWorkers !== 'off') return;
+  meshoptWorkers = 'testing';
+  /* sixteen 4-byte vertices, byte i = (i * 37 + 11) & 255, packed by the
+     meshoptimizer encoder offline: the answer is known exactly */
+  const ENC = new Uint8Array([160,3,0,215,215,215,215,215,215,215,215,215,215,215,215,215,215,215,3,0,215,215,215,215,215,215,215,215,215,215,215,215,215,215,215,3,0,215,215,215,215,215,215,215,215,215,215,215,215,215,215,215,3,0,215,215,215,215,215,215,215,215,215,215,215,215,215,215,215,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11,48,85,122]);
+  try {
+    MeshoptDecoder.useWorkers(2);
+    /* no deadline that turns a slow YES into a no: until the answer comes
+       back the main thread decodes (the state is not 'ok'), and a right
+       answer however late switches the workers on; a wrong one, or an
+       error, switches them off for good */
+    MeshoptDecoder.decodeGltfBufferAsync(16, 4, ENC, 'ATTRIBUTES', 'NONE').then(out => {
+      const good = out && out.length === 64 && out.every((v, i) => v === ((i * 37 + 11) & 255));
+      meshoptWorkers = good ? 'ok' : 'failed';
+      if (!good) { try { MeshoptDecoder.useWorkers(0); } catch {} }
+    }, () => { meshoptWorkers = 'failed'; try { MeshoptDecoder.useWorkers(0); } catch {} });
+  } catch { meshoptWorkers = 'failed'; }
+}
+class GLTFLoaderMO extends GLTFLoader {
+  constructor(m) { super(m); this.setMeshoptDecoder(MeshoptSmart); }
+  /* v14.15: every parse is TRACKED (see THE LOAD TRACKER below): the world
+     is not shown while one is in flight, and a probe can read what landed
+     when. The chapter's own onLoad runs first — it is what puts the model in
+     the world — and the load counts as landed only once it has returned. */
+  parse(data, path, onLoad, onError) {
+    const r = loadBegin(_bufKey.get(data) || '?', 'parse');
+    const t0 = performance.now();
+    const done = (fn, arg) => {
+      const c0 = performance.now();
+      try { if (fn) fn(arg); } finally { r.cbMs = Math.round(performance.now() - c0); loadEnd(r); }
+    };
+    try {
+      return super.parse(data, path, g => done(onLoad, g), e => done(onError, e));
+    } finally { r.syncMs = Math.round(performance.now() - t0); }
+  }
+}
+/* ── v14.15: THE LOAD TRACKER ────────────────────────────────────────────
+   Chad: "make sure the entire game has very smart loading so there is no
+   sudden stutters or delays before showing full res models." What that asks
+   for is measurable: every file the world is made of — fetched through
+   assetBytes, parsed through GLTFLoaderMO — is a LOAD, in flight until it
+   has landed in the world. `loadPending` is how many are in flight; the
+   curtain (whenWorldReady) lifts only at zero. `revealAt` is the moment the
+   world was last uncovered; a load that lands after it was a POP-IN, and
+   `late` says so. Sound packs are not tracked: the film waits for its own
+   sounds (v5.13) and a sound is not a model. `__enc.loads()` reads it. */
+const loadLog = [];
+let loadPending = 0, revealAt = 0, loadSeq = 0;   // loadSeq only ever grows: how many loads have ever begun
+const _bufKey = new WeakMap();                  // an asset's bytes -> its key
+function loadBegin(key, kind) {
+  loadPending++; loadSeq++;
+  const r = { key, kind, t0: performance.now(), t1: 0, late: false };
+  loadLog.push(r); if (loadLog.length > 600) loadLog.shift();
+  return r;
+}
+function loadEnd(r) {
+  if (r.t1) return;
+  loadPending = Math.max(0, loadPending - 1);
+  r.t1 = performance.now();
+  r.late = revealAt > 0 && r.t1 > revealAt;
+}
 
 // The page is embedded in a wrapper we do not control — make sure mobile gets a
 // real device-width viewport (and safe-area insets) either way.
@@ -97,6 +180,13 @@ function chapterLabel(key) {
    which build it is in.                                                    */
 const ASSET_MAP = JSON.parse(atob('__ASSET_MAP_B64__'));
 const HOSTED = Object.keys(ASSET_MAP).length > 0;
+/* v14.15: tested once the page has settled — at module time the main thread
+   is busy starting the game and the answer cannot be read in time — and the
+   single-file build keeps the main-thread decode */
+if (HOSTED) {
+  const t = () => meshoptWorkerTest();
+  if (window.requestIdleCallback) requestIdleCallback(t, { timeout: 5000 }); else setTimeout(t, 1500);
+}
 const EMBED = {
   hands: '__HANDS_B64__', ghost: '__GHOST_B64__', hdb: '__HDB_B64__',
   logo: '__LOGO_B64__', music: '__MUSIC_B64__', voice: '__VOICE_B64__',
@@ -169,6 +259,10 @@ function assetBytes(name, lowPriority) {       // -> Promise<ArrayBuffer>
       : Promise.reject(new Error(`${name}: not embedded`));
   }
   p.catch(() => { delete _assetCache[name]; });   // a failed fetch may retry
+  if (!/pack/.test(name)) {                        // v14.15: tracked (THE LOAD TRACKER)
+    const r = loadBegin(name, 'fetch');
+    p.then(buf => { _bufKey.set(buf, name); r.bytes = buf.byteLength; loadEnd(r); }, () => loadEnd(r));
+  }
   return _assetCache[name] = p;
 }
 
@@ -821,7 +915,7 @@ function treeKit() {
   treeKitP = Promise.all(TREE_KINDS.map(key =>
     assetBytes(key, true)
       .then(BUF => new Promise(res => {
-        new GLTFLoader().parse(BUF, '', (gltf) => {
+        new GLTFLoaderMO().parse(BUF, '', (gltf) => {
           rescueTextures(gltf, BUF);
           const parts = [];
           gltf.scene.updateMatrixWorld(true);
@@ -1539,7 +1633,7 @@ function torchSet(on) {
 function torchPropLoad(key) {
   if (!key || torchPropKey === key) return;
   torchPropDrop(); torchPropKey = key;
-  assetBytes(key, true).then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
+  assetBytes(key, true).then(BUF => new GLTFLoaderMO().parse(BUF, '', (gltf) => {
     if (torchPropKey !== key) return;
     rescueTextures(gltf, BUF);
     const g = new THREE.Group();
@@ -1806,7 +1900,7 @@ function weaponTeardown() {
 function weaponPropLoad(key) {
   if (!key || weaponPropKey === key) return;
   weaponPropDrop(); weaponPropKey = key;
-  assetBytes(key, true).then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
+  assetBytes(key, true).then(BUF => new GLTFLoaderMO().parse(BUF, '', (gltf) => {
     if (weaponPropKey !== key) return;
     rescueTextures(gltf, BUF);
     const d = weaponDecl || WEAPON_DEFAULTS;
@@ -1906,7 +2000,7 @@ function weaponFlashLoad(key) {
   if (!key) { weaponFlashDrop(); return; }
   if (weaponFlashKey === key) return;
   weaponFlashDrop(); weaponFlashKey = key;
-  assetBytes(key, true).then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
+  assetBytes(key, true).then(BUF => new GLTFLoaderMO().parse(BUF, '', (gltf) => {
     if (weaponFlashKey !== key) return;       // a chapter changed under the fetch
     const mine = new Map();
     const cards = [];
@@ -3696,7 +3790,7 @@ const ghostMats = [];
 let reveal = 0;                                        // 0 = not there, 1 = fully present
 ghost.visible = false;
 
-assetBytes('ghost').then(GHOST_BUF => new GLTFLoader().parse(GHOST_BUF, '', (gltf) => {
+assetBytes('ghost').then(GHOST_BUF => new GLTFLoaderMO().parse(GHOST_BUF, '', (gltf) => {
   rescueTextures(gltf, GHOST_BUF);
   const g = gltf.scene;
   g.traverse(o => {
@@ -4147,7 +4241,7 @@ layoutHands();
 
 let handsReady = false;
 let handModel = null;   // v11.1: the arm rig's own root, so the torch swap can hide the HAND and leave `armR` (the chapters' switch) alone
-assetBytes('hands').then(handsBuf => new GLTFLoader().parse(handsBuf, '', (gltf) => {
+assetBytes('hands').then(handsBuf => new GLTFLoaderMO().parse(handsBuf, '', (gltf) => {
   const model = gltf.scene;
 
   /* Both arms ride in ONE skinned mesh, so the left cannot simply be hidden
@@ -7021,7 +7115,7 @@ function zavInit() {
    'unsafe-eval' permits. And the model is fetched and parsed WITHOUT the
    renderer, at boot in idle time (zavPrefetch), so the panel opens with him
    already standing there instead of a silhouette that fills in later. */
-const zavLoader = () => { const l = new GLTFLoader(); l.setMeshoptDecoder(MeshoptDecoder); return l; };
+const zavLoader = () => new GLTFLoaderMO();   // v14.15: the one tracked, meshopt-reading loader
 /* ------------------------------------------------------------------------
    WHICH MASTER ZAV TURNS IN THE PANEL — v5.29, and it is a TABLE because it
    changes with the story rather than with the code.
@@ -8195,6 +8289,7 @@ function rebuildStage(next) {
 function setChapter(key) {
   if (!chapterExists(key)) return false;
   if (key === CH_KEY) return true;                 // already there; not an error
+  revealAt = 0;                    // v14.15: a new world is covered until the curtain lifts
   CH_KEY = key;
   CH = window.__CHAPTERS__[key];
   wardEpisode();                   // v14.7: a new episode recharges the amulet ...
@@ -8576,16 +8671,133 @@ const CARD_FADE = 900, CARD_HOLD = 2300;
    over one is a camera move through an empty room. Capped, because a fetch
    that never lands must not hold the game forever; past the cap we proceed
    and models pop in late, exactly as before.                             */
-function whenWorldReady(then, capMs = 12000) {
+/* ── v14.15: THE CURTAIN ──────────────────────────────────────────────────
+   Every way into a chapter — the film, the card after it, Continue, a
+   replay — comes through here while the screen is covered, and the world is
+   uncovered only once nothing heavy is left to do. Chad: "very smart loading
+   so there is no sudden stutters or delays before showing full res models."
+   Before v14.15 this waited for the chapter's one or two KEY models (its
+   `ready()`), the hands and the ghost; everything else popped in whenever
+   it landed, and its parse, its texture upload and its shader compile fell
+   on whatever frame of play that was. Now, under the cover:
+     1. every tracked load is in and has been put in the world (loadPending
+        is 0 twice in a row, so a load that starts another is not missed),
+        and the chapter's own ready() holds as before;
+     2. the equipment figure and every item model this chapter can show —
+        the ones the player carries, and the ones the chapter declares it
+        hands out (`items`; curtainItems) — are parsed in their renderers;
+     3. warmWorld(): every texture uploaded to the GPU, every program
+        compiled (compileAsync covers HIDDEN objects too — a cutscene's props
+        and a far LOD level included), the figure and the items drawn once
+        offscreen, and two frames drawn under the cover;
+   then the curtain lifts. The loading word counts up while it waits. The
+   cap is long because a late model is exactly what Chad asked not to see,
+   and past it the world is shown anyway, as it always was.              */
+const WORLD_CAP = HOSTED ? 90000 : 30000;
+/* ── v14.15: DOWNLOAD AHEAD ─────────────────────────────────────────────
+   While a chapter is being played, what the NEXT one is made of is fetched
+   in idle time, at low priority, one file at a time — into the browser's
+   HTTP cache only: the bytes are read and dropped, never parsed and never
+   held (every asset is served immutable for a year, so the next curtain's
+   fetch is a disk read). The next chapter's own files, its episode's
+   equipment figure, and any item model it names. At the title, the chapter
+   Continue would open, the same way. Hosted build only; the single-file
+   build has everything inline already. */
+const prefetched = new Set();
+let prefetchQ = [], prefetchBusy = false;
+function chapterFiles(key) {
+  const c = window.__CHAPTERS__[key]; if (!c) return [];
+  const out = new Set(Array.isArray(c.assets) ? c.assets : []);
+  const fig = ZAV_FIGURE[episodeOf(key)] || ZAV_ADULT; out.add(fig);
+  for (const id of (Array.isArray(c.items) ? c.items : [])) {
+    const d = ITEM_DEFS[id];
+    if (d && d.model) { out.add(d.model); if (d.art) out.add(d.art); }
+  }
+  return [...out].filter(k => HOSTED && ASSET_MAP[k] && !_assetCache[k] && !prefetched.has(k));
+}
+function prefetchAhead(key) {
+  if (!HOSTED || !key) return;
+  for (const k of chapterFiles(key)) if (!prefetchQ.includes(k)) prefetchQ.push(k);
+  prefetchPump();
+}
+function prefetchPump() {
+  if (prefetchBusy || !prefetchQ.length) return;
+  /* never while the world is being put together: the curtain's own loads
+     come first, and a download ahead must not slow them */
+  if (loadPending > 0) { setTimeout(prefetchPump, 2000); return; }
+  const k = prefetchQ.shift();
+  if (_assetCache[k] || prefetched.has(k)) return prefetchPump();
+  prefetchBusy = true; prefetched.add(k);
+  const go = () => fetch(ASSET_MAP[k], { priority: 'low' })
+    .then(r => (r.ok ? r.arrayBuffer() : null)).catch(() => null)
+    .then(() => { prefetchBusy = false; setTimeout(prefetchPump, 400); });
+  if (window.requestIdleCallback) requestIdleCallback(go, { timeout: 4000 }); else setTimeout(go, 300);
+}
+function curtainItems() {
+  const ids = new Set();
+  for (const k of GEAR_SLOTS) if (inv.gear[k]) ids.add(inv.gear[k]);
+  for (const id of inv.bag) if (id) ids.add(id);
+  /* and what the chapter declares it can hand out (`items`, v14.15 — the
+     chapter's own build() is closed over, so it cannot be read for them;
+     chaptertest fails a chapter whose kit.give names an item it did not
+     declare) */
+  for (const id of (Array.isArray(CH.items) ? CH.items : [])) ids.add(id);
+  return [...ids].filter(id => ITEM_DEFS[id] && ITEM_DEFS[id].model);
+}
+async function warmWorld(items) {
+  const cap = (p, ms) => Promise.race([p, new Promise(r => setTimeout(r, ms))]);
+  const up = (r, root) => {
+    const tex = new Set();
+    root.traverse(o => {
+      const ms = o.material ? (Array.isArray(o.material) ? o.material : [o.material]) : [];
+      for (const m of ms) for (const k in m) { const v = m[k]; if (v && v.isTexture) tex.add(v); }
+    });
+    for (const t of tex) { try { r.initTexture(t); } catch { /* one bad texture must not stop the rest */ } }
+  };
+  try { up(renderer, scene); up(renderer, vmScene); } catch {}
+  try { await cap(Promise.all([renderer.compileAsync(scene, camera), renderer.compileAsync(vmScene, vmCam)]), 15000); } catch {}
+  try { zavWarm(); } catch {}
+  for (const id of items) {
+    if (iv.state[id] !== 'ready') continue;
+    try { up(iv.r, iv.models[id]); ivRender(id, 64, 64, 0.6, 0.3, 1); } catch {}
+  }
+  // two frames drawn under the cover: the first draw of everything (shadow
+  // maps, the render lists) happens here and not in the first visible frame
+  await cap(new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))), 3000);
+}
+function whenWorldReady(then, capMs = WORLD_CAP) {
   const t0 = performance.now();
   const load = $('chapLoad');
+  const items = curtainItems();
+  try { zavInit(); zavLoad(); } catch {}
+  for (const id of items) { try { ivModel(id); itemArtGet(id); } catch {} }   // the model and the painted icon
+  const seen = new Set(loadLog.filter(r => !r.t1));    // what this wait counts, for the percentage
+  let calm = 0, warming = false, warmedAt = -1;
+  const lift = () => {
+    load?.classList.add('hide');
+    if (!revealAt) revealAt = performance.now();         // the world is uncovered from here (THE LOAD TRACKER)
+    then();
+    setTimeout(() => prefetchAhead(nextChapterKey()), 8000);   // and the next chapter starts arriving (DOWNLOAD AHEAD)
+  };
   const gate = () => {
-    if ((stage.ready() && handsReady && ghostReady)
-        || performance.now() - t0 > capMs) {
-      load?.classList.add('hide');
-      return then();
+    const now = performance.now();
+    if (now - t0 > capMs) return lift();
+    for (const r of loadLog) if (r.t0 >= t0 || !r.t1) seen.add(r);
+    const extras = !zav.loading && items.every(id => iv.state[id] === 'ready' || iv.state[id] === 'none');
+    const quiet = stage.ready() && handsReady && ghostReady && loadPending === 0 && extras;
+    calm = quiet ? calm + 1 : 0;
+    if (calm >= 2 && !warming) {
+      if (warmedAt >= 0 && loadSeq === warmedAt) return lift();   // warmed, and nothing new since
+      warming = true;
+      warmWorld(items).then(() => { warming = false; warmedAt = loadSeq; calm = 0; setTimeout(gate, 30); });
+      return;
     }
-    load?.classList.remove('hide');
+    if (now - t0 > 500 && load) {                       // no flash of the word on an instant entry
+      const done = [...seen].filter(r => r.t1).length;
+      const pct = seen.size ? Math.min(99, Math.round(100 * done / seen.size)) : 99;
+      load.textContent = `${T('chapter.loading', 'Loading…')} ${pct}%`;
+      load.classList.remove('hide');
+    }
     setTimeout(gate, 180);
   };
   gate();
@@ -8661,6 +8873,7 @@ function enterWorld(place, opts = {}) {
      frame (weaponFrame), so there is nothing to sync here — only state to
      give back. */
   weaponAdsOff(); weaponRecoilReset(); camLens(CAM_FOV);
+  revealAt = 0;                    // v14.15: covered until the curtain lifts (THE LOAD TRACKER)
   // the title's backdrop stops when the title does — a hidden video still
   // decodes every frame, and the deck needs those frames more
   titleVideo?.el.pause();
@@ -8846,6 +9059,9 @@ paintTitle();
    still empties it (invClearAll), and the selector now keeps what the
    player owns, as it always did within one sitting. */
 { const s = loadCheckpoint(); if (s) { invLoad(s.inv); wardLoad(s.ward); torchAvailSync(); weaponAvailSync(); syncBars(); } }
+/* v14.15: at the title, the chapter Continue would open starts downloading
+   (DOWNLOAD AHEAD); a new player's chapter 1 is preloaded by the page */
+{ const s = loadCheckpoint(); if (s && s.ch && s.ch !== CH_KEY) setTimeout(() => prefetchAhead(s.ch), 1500); }
 
 /* ------------------------------------------------------ the title backdrop
    Pure decoration, so every step is written to fail quietly: no source until
@@ -9915,6 +10131,10 @@ window.__enc = { yaw, pitch, stats, getState: () => state,   // v8.7: pitch, so 
                  saveCheckpoint, loadCheckpoint, clearCheckpoint,
                  invOpen, invClose, invToggle, invAdd, invHas, invRemove,
                  ivZoomOpen, ivZoomClose,             // v14.14: the zoom window, for probes
+                 loads: () => ({ pending: loadPending, revealAt, now: performance.now(), workers: meshoptWorkers,
+                                 prefetched: [...prefetched], queued: prefetchQ.slice(),
+                                 log: loadLog.map(r => ({ key: r.key, kind: r.kind, t0: Math.round(r.t0), t1: Math.round(r.t1),
+                                   bytes: r.bytes || 0, syncMs: r.syncMs, cbMs: r.cbMs, late: r.late })) }),   // v14.15
                  menuOpen, menuClose, menuToggle, openChapters, closeChapters,
                  startChapter, returnToTitle, unlockedKeys, markReached,
                  sealed: sealedResults, markSealed,               // v6.2

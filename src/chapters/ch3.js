@@ -37,6 +37,9 @@
   let S = null;
 
   const DATA = {
+    /* v14.15: the items this chapter can hand out (kit.give), so the engine prepares
+       their models behind the entry curtain rather than in play. chaptertest checks it. */
+    items: ['amulet'],
     id: 3,
     episode: 1,            // v6.0: the case file this chapter belongs to — docs/EPISODES-PLAN.md
     title: 'The Gathering',

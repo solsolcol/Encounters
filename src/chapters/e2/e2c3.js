@@ -17,6 +17,9 @@
    Everything else is the kit as it stood at v10.8.                        */
 (() => {
   const DATA = {
+    /* v14.15: the items this chapter can hand out (kit.give), so the engine prepares
+       their models behind the entry curtain rather than in play. chaptertest checks it. */
+    items: ['torch'],
     id: 3,
     episode: 2,
     title: 'The Pressure',

@@ -142,6 +142,7 @@ The declarations, all optional:
 | `stage.hotspots[].hits(x, y)` | v14.7: a hotspot PRESSED BY A TAP (or an unlocked click) ON THE THING ITSELF — `hits` answers whether that screen point is on it, and the engine's `hotspotTap` fires it; episode 1 chapter 3's amulet on the auntie's table | — (the badge and the key only) |
 | `kit.unlock(id, { onClose })` | v14.7: the ITEM UNLOCKED splash — the item's model turning in the middle (the `iv` renderer), its name, a Close button, its own sting; a screen state of its own (`unlock`) that closes every "is it play?" gate, with a 0.6 s guard so the press that took the item cannot also close it | — |
 | `ITEM_DEFS[id].evGuard` | v14.13: while the item is WORN, every stat decrease a MINIGAME causes is multiplied by `1 − evGuard` (`evCut()`: graded presses, missed beats, wrong drops, a losing payout, and a chapter's own price marked `{ minigame: true }` on `kit.award`/`kit.conduct`) — the LP Tim Khun Paen's 50 % | — (0: nothing is cut) |
+| `items` | v14.15: the item ids the chapter can hand out with `kit.give` — the entry curtain prepares their models (and the next chapter's download ahead fetches them) so an item never loads in the middle of play. `chaptertest` fails a literal `kit.give('x')` that is not declared | — (none) |
 | `kit.weaponBlock(msg)` | v14.3: a chapter FORBIDS the shot and the HUD says why — `weaponFire` refuses before anything is spent, `#nofire` carries the chapter's own sentence under the reticle with `hudfail` and a buzz, and `body.wpnBlocked` dims FIRE before the rule is ever tested. `null` allows it again. The words are the CHAPTER's, so they are on the sheet | — (nothing is forbidden) |
 | `torch.model` / `torch.click` | v11.1: the torch's own viewmodel (an asset key), swapped for the hand while it is on, and the sound its switch makes | — (the hand stays; a UI click) |
 | `weapon` | v12.0: RIFLE MODE — `{ model, item, rounds, mags, fireGap, kick, shot, reload, empty, clips, rates }`. The model's OWN hands replace the hand and the torch while it is out (out = the `item` is in the hand slot, or `kit.weaponOut(bool)` forces it); FIRE (click under lock, Space, the HUD button) spends a round, flashes, kicks, and RAYCASTS from the lens into `stage.shootables()`, reporting to `stage.onShot(report)`; RELOAD (R, the button) costs a magazine; rounds and magazines ride the save | — (no weapon, no HUD) |
@@ -3963,6 +3964,33 @@ What the baseline contains, by release:
   the soldier in the panel; the LOD measured switching at 1.21 m. The single-
   file build is 131 MB now (it carries both full amulets for episode 1).
   Sheet v74 (one cell: the name). docs/LEARNINGS.md has both laws.
+- **v14.15** SMART LOADING — Chad: *"You need to make sure the entire game has
+  very smart loading so there is no sudden stutters or delays before showing
+  full res models."* **The law, engine-wide: nothing heavy happens while the
+  world is on screen.** MEASURED FIRST with a new LOAD TRACKER (every GLB
+  fetched by `assetBytes` and parsed by the one loader class `GLTFLoaderMO`
+  is recorded; one that lands after the world was uncovered is a POP-IN;
+  `__enc.loads()`): on Continue, e2c1 popped in **17** models (the bunks,
+  the recruits, both sergeants), ch3 7, e2c3 6, and in EVERY chapter the
+  equipment figure was parsed 20–57 s into play. After: **0 in all ten
+  chapters, both paths.** THE CURTAIN (`whenWorldReady`, both the film and
+  the card): the world stays covered until nothing is in flight (twice in a
+  row), the figure and every item the player carries or the chapter declares
+  (`items`, a new optional field) are parsed, and `warmWorld()` has uploaded
+  every texture (`initTexture`), compiled every program (`compileAsync`,
+  which covers hidden props and far LOD levels) and drawn two frames under
+  the cover; the loading word counts a percentage; cap 90 s hosted. THE
+  DECODE OFF THE MAIN THREAD: on the hosted build meshopt runs in two Web
+  Workers once a self-test decode has come back right (`MeshoptSmart`,
+  `meshoptWorkerTest` — at idle, no deadline; until then, and in the
+  strict-CSP single-file build, the main thread decodes as before). DOWNLOAD
+  AHEAD: 8 s after the curtain lifts, the next chapter's files, its
+  episode's figure and its items are fetched at low priority into the HTTP
+  cache (read and dropped, never held); at the title, the chapter Continue
+  would open. The cost, stated: a chapter's entry screen holds a little
+  longer (the work that used to stutter mid-play is done there), and the
+  figure and a chapter's items sit in GPU memory from the start.
+  docs/V14.15-SMART-LOADING.md is the build's memory, before and after.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
