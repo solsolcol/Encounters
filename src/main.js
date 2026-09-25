@@ -3532,6 +3532,8 @@ for (const n of ['hudok', 'hudnext', 'hudfail']) WARM_WANT.add(n);
    the ENGINE's (`kit.unlock`), in the shared pack, and the frame it plays on
    is the frame the player picked the thing up. */
 WARM_WANT.add('itemunlock');
+/* v14.11: the amulet's crack and its shatter, the engine's for the same reason */
+WARM_WANT.add('wardcrack'); WARM_WANT.add('wardbreak');
 const CHCTX = {
   THREE, GLTFLoader, cloneSkinned, scene, camera, yaw, pitch, LOW,   // v8.7: `pitch` so a chapter may level the lens as well as turn it
   kit: KIT,                        // v7.0: the play kit — declared by a chapter, absent for chapters 1–5
@@ -5955,19 +5957,25 @@ const BAG_SIZE = 10;   // two rows of five (v5.09; three rows before)
    (it always has; that is how a bad id is refused). */
 const ITEM_DEFS = {
   torch: { icon: 'e-torch', slot: 'hand', art: 'icontorch', model: 'flashlight',   // v11.6: episode 2 chapter 3's flashlight, picked up off the ground and equipped to use
-           view: { tilt: 0.42, lens: 0.9 } },
+           view: { tilt: 0.42, lens: 0.9 }, rarity: 'common' },
   /* v12.0: the issued weapon. No chapter hands it out any more (v14.6: the
      torch is the only item in the game for now), but it stays DEFINED —
      rifle mode's seam is "the weapon is out while its item is in the hand
      slot", and the fixture chapter proves that seam with it. */
-  rifle: { icon: 'e-rifle', slot: 'hand' },
+  rifle: { icon: 'e-rifle', slot: 'hand', rarity: 'common' },
   /* v14.7: Chad's LP Phiboon Rian (small), which chapter 3's auntie gives
      the boy. Worn in the AMULET box (the neck slot). `ward` is what it
      protects: fifteen points of sanity damage taken before sanity is, once
      per EPISODE — see THE WARD, below. No `view`: the model is baked with
      its face to +z, toward the lens. */
-  amulet: { icon: 'e-amulet', slot: 'neck', art: 'iconamulet', model: 'phiboon', ward: 15 }
+  amulet: { icon: 'e-amulet', slot: 'neck', art: 'iconamulet', model: 'phiboon', ward: 15, rarity: 'rare' }
 };
+/* v14.11: every item has a RARITY (Chad: "Torch is common rarity with grey
+   colour coding, the lp phiboon amulet is rare rarity with blue colour
+   coding"). The word is the sheet's (`rarity.<id>`), the colour is the
+   class `r-<id>` in shell.html; an item that declares none is common. */
+const RARITIES = ['common', 'rare'];
+const itemRarity = id => { const r = ITEM_DEFS[id] && ITEM_DEFS[id].rarity; return RARITIES.includes(r) ? r : 'common'; };
 const itemName = id => T('item.' + id + '.name', id);
 const itemDesc = id => T('item.' + id + '.desc', '');
 
@@ -6037,16 +6045,50 @@ function wardSoak(n, instant) {
   const took = Math.min(ward.charge, n);
   ward.charge -= took;
   if (ward.charge < 1e-6) ward.charge = 0;
-  if (instant) { const r = Math.round(took); if (r > 0) sanityTick(r, 'w'); }
+  const broke = ward.charge === 0;   // it had charge to reach here, so this is the one hit that empties it
+  if (instant) { const r = Math.round(took); if (r > 0) { sanityTick(r, 'w'); if (!broke) wardCrack(); } }
   else {
     wardAcc += took;
     const now = performance.now();
-    if (wardAcc >= 1 && now - wardTickAt >= 460) {
+    if (broke) {                       // the last of it: throw what the batch still holds, then the break
+      const r = Math.round(wardAcc); wardAcc = 0; wardTickAt = now;
+      if (r > 0) sanityTick(r, 'w');
+    } else if (wardAcc >= 1 && now - wardTickAt >= 460) {
       const r = Math.floor(wardAcc); wardAcc -= r; wardTickAt = now;
       sanityTick(r, 'w');
+      wardCrack();
     }
   }
+  if (broke) wardBroke();
   return n - took;
+}
+/* v14.11 (Chad: "Add a breaking or cracking sound effect everytime the
+   amulet takes damage. When the amulet took all of its damage and lost all
+   its powers, have an obvious crashing glass sound, with a HUD UI
+   notification popping up to tell the player that the amulet has broken").
+   A crack on every yellow tick the amulet throws — the ticks are already
+   batched to one per 460 ms under a drain, so the crack is too — and on the
+   hit that empties it the shatter INSTEAD, with its own banner. Both sounds
+   are the engine's, in the shared pack, and warmed at boot (WARM_WANT). */
+let wardCrackAt = 0;
+const wardFx = { cracks: 0, breaks: 0 };          // counted for the harnesses: a muted sound leaves no other trace
+function wardCrack() {
+  const now = performance.now();
+  if (now - wardCrackAt < 140) return;           // two hits on one frame are one crack
+  wardCrackAt = now; wardFx.cracks++;
+  snd('wardcrack', 0.8);
+  haptic(22);
+}
+let wardBrokeTimer = 0;
+function wardBroke() {
+  wardFx.breaks++;
+  snd('wardbreak', 1);
+  haptic([60, 40, 140]);
+  const el = $('wardBreak'); if (!el) return;
+  el.classList.remove('on', 'hide'); void el.offsetWidth;   // restart the animation if it is already up
+  el.classList.add('on');
+  clearTimeout(wardBrokeTimer);
+  wardBrokeTimer = setTimeout(() => { el.classList.remove('on'); el.classList.add('hide'); }, 4200);
 }
 
 /* ── the state seam ─────────────────────────────────────────────────────
@@ -6324,7 +6366,8 @@ function invInfoPaint(id) {
     ? `<button class="ivZoom" type="button" data-zoom="${showing}" aria-label="${T('inv.zoom')}"><svg aria-hidden="true"><use href="#e-zoom"/></svg></button>`
     : '';
   box.classList.add('has');
-  box.innerHTML = `<div class="ivPane">${view}${zoom}</div><div class="ivText"><h4>${itemName(showing)}</h4><p>${itemDesc(showing)}</p>${wardLine(showing)}</div>`;
+  const rar = itemRarity(showing);
+  box.innerHTML = `<div class="ivPane">${view}${zoom}</div><div class="ivText"><h4>${itemName(showing)}</h4><span class="rar r-${rar}">${T('rarity.' + rar, rar)}</span>${wardLine(showing)}<p>${itemDesc(showing)}</p></div>`;
   paintArt(box);
   if (def.model) ivModel(showing);
 }
@@ -6334,9 +6377,12 @@ function invInfoPaint(id) {
 function wardLine(id) {
   const def = ITEM_DEFS[id]; if (!def || !(def.ward > 0)) return '';
   const n = Math.round(Math.max(0, ward.charge));
-  const txt = n > 0 ? T('inv.wardLeft', 'Protection left: {n} of {max}').replace('{n}', n).replace('{max}', def.ward)
-                    : T('inv.wardSpent', 'Spent for this episode. It recharges when the next episode begins.');
-  return txt ? `<p class="ward${n > 0 ? '' : ' spent'}">${txt}</p>` : '';
+  /* v14.11: short, and in the bar's own yellow — the number in bold, the
+     word after it; spent, one line in red (Chad: "shortened and direct and
+     concise, and also colour coded") */
+  const txt = n > 0 ? T('inv.wardLeft', '{n}/{max} Protection').replace('{n}', `<b>${n}</b>`).replace('{max}', `<b>${def.ward}</b>`)
+                    : T('inv.wardSpent', 'Broken · recharges next episode');
+  return txt ? `<p class="ward${n > 0 ? '' : ' spent'}"><svg aria-hidden="true"><use href="#${n > 0 ? 'e-amulet' : 'e-amuletBroken'}"/></svg>${txt}</p>` : '';
 }
 const slotGet = (kind, key) => kind === 'gear' ? inv.gear[key] : inv.bag[+key];
 const slotSet = (kind, key, v) => { if (kind === 'gear') inv.gear[key] = v; else inv.bag[+key] = v; };
@@ -9726,7 +9772,9 @@ window.__enc = { yaw, pitch, stats, getState: () => state,   // v8.7: pitch, so 
                  /* v14.7: the amulet's ward and the unlock splash, for probes and
                     harnesses — the charge is a number the HUD only draws */
                  ward: () => ({ charge: +ward.charge.toFixed(3), ep: ward.ep, enter: +ward.enter.toFixed(3),
-                                worn: wardItem(), left: +wardLeft().toFixed(3), full: WARD_FULL }),
+                                worn: wardItem(), left: +wardLeft().toFixed(3), full: WARD_FULL,
+                                cracks: wardFx.cracks, breaks: wardFx.breaks,
+                                banner: !!$('wardBreak')?.classList.contains('on') }),
                  unlockState: () => ({ id: unl.id, state }),
                  unlockClose: how => unlockClose(how || 'click'),
                  hotspotTap, kitAward, applyChunk,

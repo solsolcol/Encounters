@@ -171,6 +171,9 @@ Object.assign(window.__TEXT__, {
   'hud.wisdom':          'Wisdom',
   'hud.ghostAlarm':      'Ghost spotted!',
   'hud.ghostWarning':    'Sanity level dropping until you take action.',
+  // v14.11: the banner when a worn amulet's protection runs out
+  'hud.wardBroke':       'Amulet broken',
+  'hud.wardBrokeSub':    'Its protection is spent until the next episode.',
   'hud.presenceAlarm':   'Something is here.',
   'hud.objective':       'Objective',
   'hud.objDone':         'OBJECTIVE COMPLETE',
@@ -356,8 +359,12 @@ Object.assign(window.__TEXT__, {
   'item.amulet.name':    'LP Phiboon Second Batch Rian Amulet (Small)',
   'item.amulet.desc':    'Powerful against danger, negative energies, black magic and bad spirits. Provides +15 protection against sanity damage. Also boosts Metta Mahaniyom. Made by the powerful Luang Pu PhiBoon (PhiBoon Sae Tan), born during the reign of King Rama 4 in Thailand.',
   // what its protection has left, under the words ({n} and {max} are numbers)
-  'inv.wardLeft':        'Protection left: {n} of {max}',
-  'inv.wardSpent':       'Spent for this episode. It recharges when the next episode begins.',
+  // v14.11: short, in the bar's yellow ({n} and {max} are numbers, shown bold)
+  'inv.wardLeft':        '{n}/{max} Protection',
+  'inv.wardSpent':       'Broken · recharges next episode',
+  // v14.11: an item's rarity, under its name — the colour is fixed per rarity
+  'rarity.common':       'Common',
+  'rarity.rare':         'Rare',
   // the Item Unlocked splash (v14.7)
   'unlock.label':        'Item unlocked',
   'unlock.sub':          'Added to your bag',

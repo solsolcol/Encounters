@@ -3860,6 +3860,34 @@ What the baseline contains, by release:
   does not fit the shot as it stands, say so and ask; do not move the camera.
   Harnesses chapter, cine. Deploy `6ab601127c58cb63e39e67ea`, byte-verified
   (index.html and all 102 build files).
+- **v14.11** THE AMULET CRACKS, AND BREAKS; RARITY — Chad: *"Add a breaking
+  or cracking sound effect everytime the amulet takes damage. When the amulet
+  took all of its damage and lost all its powers, have an obvious crashing
+  glass sound, with a HUD UI notification popping up to tell the player that
+  the amulet has broken. In the inventory ui, make the item description text
+  font slightly smaller. Add rarity value with colour coding ... Torch is
+  common rarity with grey ... the lp phiboon amulet is rare rarity with blue
+  ... the protection count text needs to be shortened and direct and concise,
+  and also colour coded."* All in the ENGINE and all reachable only through a
+  worn ward item or the equipment panel. `wardSoak()` now cracks on every
+  yellow tick it throws (`wardCrack()`, `wardcrack` at 0.8, a 22 ms buzz; the
+  drain's ticks are already batched to one per 460 ms and two hits in 140 ms
+  are one crack) and on the hit that EMPTIES it plays `wardbreak` instead,
+  buzzes, and raises `#wardBreak` — a banner upper-middle ("Amulet broken /
+  Its protection is spent until the next episode."), a split-amulet icon,
+  landing with a jolt and gone after four seconds. Both sounds are the
+  engine's, shared-pack, warmed at boot, ElevenLabs takes picked by
+  measurement (AUDIO-PLAN v14.11, masters/v14.11/make.sh). RARITY is
+  `ITEM_DEFS[id].rarity` (`RARITIES`, `itemRarity()`; none declared reads
+  common) shown as a chip under the name — COMMON grey, RARE blue, the words
+  the sheet's (`rarity.*`). The protection line is `{n}/{max} Protection` in
+  the bar's yellow with the numbers bold, and spent `Broken · recharges next
+  episode` in red with the split icon; the description text is .86rem
+  (.95 before), .78 on a phone. `__enc.ward()` reports `cracks`, `breaks` and
+  `banner`, and the fixture proves a hit that leaves charge cracks once, the
+  emptying hit breaks once with the banner up and does not crack, a spent
+  amulet does neither, and a bleed cracks on its ticks and breaks exactly
+  once. Sheet v72 exported (six rows; v44 stays the link).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so

@@ -549,20 +549,28 @@ K.wardTakesFirst = await p.evaluate(() => {
   const e = window.__enc, bar = document.getElementById('bArm'), num = document.getElementById('vSan');
   e.kit.equip('amulet');
   const drawn = e.ward().left === 15 && bar.classList.contains('on') && num.dataset.arm === '+15';
-  const s0 = e.stats.sanity;
+  const s0 = e.stats.sanity, fx0 = e.ward();
   e.kitAward('sanity', -6);
   const soaked = e.stats.sanity === s0 && e.ward().left === 9 && num.dataset.arm === '+9';
+  // v14.11: that hit CRACKED it (once) and did not break it
+  const cracked = e.ward().cracks === fx0.cracks + 1 && e.ward().breaks === fx0.breaks && !e.ward().banner;
   e.kit.take('amulet'); e.kit.give('amulet');                  // off, into the bag
   e.kitAward('sanity', -2);
   const offKeeps = e.ward().left === 0 && e.ward().charge === 9 && Math.abs(e.stats.sanity - (s0 - 2)) < 1e-6
     && !bar.classList.contains('on');
   e.kit.equip('amulet');
   const backOn = e.ward().left === 9;
+  const fx1 = e.ward();
   e.applyChunk('close');                                       // 10: nine to the amulet, one to sanity
   const spills = e.ward().left === 0 && Math.abs(e.stats.sanity - (s0 - 3)) < 1e-6 && !num.dataset.arm;
+  // v14.11: the emptying hit BREAKS it — once, with the banner up — and does not crack it too
+  const broke = e.ward().breaks === fx1.breaks + 1 && e.ward().cracks === fx1.cracks && e.ward().banner;
   e.kitAward('sanity', -2);
   const spent = Math.abs(e.stats.sanity - (s0 - 5)) < 1e-6;
-  return drawn && soaked && offKeeps && backOn && spills && spent;
+  // and a spent amulet neither cracks nor breaks again
+  const quiet = e.ward().breaks === fx1.breaks + 1 && e.ward().cracks === fx1.cracks;
+  window.__wardFx = { drawn, soaked, cracked, offKeeps, backOn, spills, broke, spent, quiet };
+  return drawn && soaked && cracked && offKeeps && backOn && spills && broke && spent && quiet;
 });
 /* the bleed (kit.hurt) is per frame: sampled every 30 ms, sanity may not
    move while the amulet still holds anything. The sampler STOPS the bleed
@@ -575,7 +583,7 @@ await p.evaluate(() => {
   st.ward = { charge: 15, ep: st.ward.ep, enter: 15 };         // full again, as a save would bring it
   st.stats.sanity = Math.max(st.stats.sanity, 60);             // and far from a faint, whatever came before
   e.applyState(st);
-  window.__s0 = e.stats.sanity; window.__bleed = []; window.__bleedDone = false;
+  window.__s0 = e.stats.sanity; window.__bleed = []; window.__bleedDone = false; window.__fxB = e.ward();
   window.__bleedT = setInterval(() => {
     const c = e.ward().charge, s = e.stats.sanity;
     window.__bleed.push([c, s]);
@@ -588,7 +596,9 @@ K.wardBleedsFirst = await p.evaluate(() => {
   const e = window.__enc; e.kit.hurt(null); clearInterval(window.__bleedT);
   const b = window.__bleed;
   return window.__bleedDone === true && b.length > 0 && b.every(([c, s]) => s >= window.__s0 - 1e-6 || c === 0)
-    && e.ward().charge === 0 && e.stats.sanity < window.__s0 && e.getState() === 'play';
+    && e.ward().charge === 0 && e.stats.sanity < window.__s0 && e.getState() === 'play'
+    // v14.11: a bleed cracks it on its batched ticks, and breaks it exactly once
+    && e.ward().cracks > window.__fxB.cracks && e.ward().breaks === window.__fxB.breaks + 1;
 });
 // the lens level again, as the block found it: the walk to the pile below sets only the yaw
 await p.evaluate(() => { window.__enc.pitch.rotation.x = 0; });

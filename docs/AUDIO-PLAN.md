@@ -1089,3 +1089,25 @@ actually returned a source, so `stage.ambient().marchN` means "passes heard"
 as it does in e2c1 (the v9.2 shape), and it refuses to start one once the
 player is on his way over to the man (`phase === 'spot'`), not just once the
 conversation has begun.
+
+## v14.11 · the amulet cracks, and breaks
+
+Chad: *"Add a breaking or cracking sound effect everytime the amulet takes
+damage. When the amulet took all of its damage and lost all its powers, have
+an obvious crashing glass sound."* Two engine sounds, both in the SHARED pack
+(the engine asks for them, so build.py keeps them shared) and warmed at boot
+through `WARM_WANT` (the v8.8 law). Flow `Gs8fKVVMocfz1aorEclO`,
+eleven_text_to_sound_v2 with `duration_seconds` and `prompt_influence` 0.6 as
+PARAMETERS, four takes each; masters/v14.11/make.sh has the recipe and
+sessions.json every session id.
+
+| sound | what | pick | why |
+|---|---|---|---|
+| `wardcrack` | one small crystal crack, 0.8 s asked, cut to 0.50 | c | peak at 0.02 s and over by 0.14 s — the crispest of four; clean edges (head −21, tail −63 dBFS); d starts ON signal (head −2, a click); a and b ring to 0.26–0.28 s |
+| `wardbreak` | a glass shatter, 2.5 s | c | 18 % of its energy under 500 Hz against 3.5–5.6 % for the others: the IMPACT that makes it a crash, not a tinkle; peak at 0.07 s; a 4 ms fade-in over its hot head, 0.4 s out |
+
+Both peak-matched to the HUD's −2.0 dBFS with each encoder given its own
+source (v9.6/v9.7): landed at mp3 −1.33 / ogg −2.32 and mp3 −1.54 / ogg −2.13.
+`wardCrack()` plays at 0.8 on every yellow tick the amulet throws (a drain's
+ticks are already batched to one per 460 ms, and two hits on one frame are one
+crack); the hit that EMPTIES it plays `wardbreak` at 1.0 instead of a crack.
