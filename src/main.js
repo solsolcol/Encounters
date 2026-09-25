@@ -1032,8 +1032,9 @@ function treeKit() {
 /* v15: every engine optimization has a switch, ON by default, so a probe can
    draw the SAME frozen frame with it off and on and compare every pixel —
    the proof that an optimization changed nothing on screen. */
-const OPT = { instCull: true, sphereCull: true };
+const OPT = { instCull: true, sphereCull: true, shadowTrim: true };
 const instCull = new Set();
+let shadowSyncTick = 0;
 const _icPV = new THREE.Matrix4(), _icLocal = new THREE.Matrix4(), _icFr = new THREE.Frustum(),
       _icM = new THREE.Matrix4(), _icV = new THREE.Vector3();
 function cullEachInstance(im) {
@@ -1104,6 +1105,33 @@ function cullSpheres(cam, shadowFrame, frustum) {
       u.out = true;
     }
   }
+}
+/* v15: A SHADOW NOBODY CASTS. A light that casts shadows puts a shadow-map
+   lookup (PCF: nine compares) into the shader of every material that
+   receives them, for every lit pixel on screen, and redraws its map whenever
+   the shadows are dirtied. On a phone every model in episode 2 is
+   `castShadow = !LOW` — measured: ZERO casters in all five chapters, with
+   95 to 493 receiving meshes still sampling the moon's empty map. An empty
+   map compares as fully lit everywhere, which is exactly what a light with
+   no shadow computes, so switching the light's shadow off when the world
+   holds no caster is the same picture with the lookups gone. Decided under
+   the curtain (before the programs are compiled), counted over hidden meshes
+   too (a cutscene prop may cast later), and re-checked every couple of
+   seconds so a caster that appears puts the shadow straight back. */
+function shadowCasterSync() {
+  let casters = 0;
+  const lights = [];
+  scene.traverse(o => {
+    if (o.isLight && o.shadow) {
+      if (o.userData.__cast === undefined) o.userData.__cast = o.castShadow;   // what the chapter (or the engine) declared
+      if (o.userData.__cast) lights.push(o);
+    } else if (o.castShadow && (o.isMesh || o.isPoints || o.isLine)) casters++;
+  });
+  const want = !(OPT.shadowTrim && casters === 0);
+  let back = false;
+  for (const l of lights) if (l.castShadow !== want) { l.castShadow = want; if (want) back = true; }
+  if (back) redoShadows();
+  return casters;
 }
 function sphereCullAll(show) { for (const root of sphereCull) if (show) sphereCullShow(root); }
 const _scFr = new THREE.Frustum();
@@ -9148,6 +9176,7 @@ function whenWorldReady(then, capMs = WORLD_CAP) {
     if (calm >= 2 && !warming) {
       if (warmedAt >= 0 && loadSeq === warmedAt) return lift();   // warmed, and nothing new since
       warming = true;
+      try { shadowCasterSync(); } catch {}          // v15: before the programs are compiled
       warmWorld(items).then(() => { warming = false; warmedAt = loadSeq; calm = 0; setTimeout(gate, 30); });
       return;
     }
@@ -10429,6 +10458,7 @@ function tick(now = 0) {
   if (state === 'cine') cineHands(dt, t);
   else updateViewmodel(dt, t, playerSpeed, strafeInput, dLookX, dLookY);
 
+  if ((shadowSyncTick = (shadowSyncTick + 1) % 120) === 0) shadowCasterSync();   // v15: a caster that appears gets its shadow back
   cullInstances(camera, renderer.shadowMap.needsUpdate || renderer.shadowMap.autoUpdate);   // v15: INSTANCE CULLING
   renderer.render(scene, camera);
 
@@ -10475,7 +10505,7 @@ window.__enc = { yaw, pitch, stats, getState: () => state,   // v8.7: pitch, so 
                     read is a number nobody checks. */
                  get renderer() { return renderer; }, get scene() { return scene; },
                  /* v15: the optimization switches and the passes they gate, for the pixel-identity probe */
-                 opt: OPT, cullInstances: (sh) => cullInstances(camera, !!sh), get camera() { return camera; },
+                 opt: OPT, cullInstances: (sh) => cullInstances(camera, !!sh), get camera() { return camera; }, shadowCasterSync,
                  /* v5.29: which age of Master Zav the panel is showing, and
                     whether his bytes are in. The figure lives in its own
                     renderer's scene, unreachable from the world graph, so a
