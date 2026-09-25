@@ -1010,6 +1010,105 @@ function treeKit() {
    a different one. Instancing means the extra trees cost draw calls
    nothing, but they are real triangles, and a phone should not pay for the
    back row it can barely see.                                             */
+/* v15: INSTANCE CULLING. A stand of trees is one InstancedMesh per (kind,
+   part), and three.js culls an InstancedMesh as a WHOLE — one sphere round
+   every instance (v8.6). A stand that surrounds the player is therefore
+   always "in view", and every tree in it was drawn on every frame, the ones
+   behind the camera included: measured in episode 2 chapter 3's harbour,
+   1.09 million of the 1.1 million triangles a frame were trees, the same in
+   all four directions. So each registered mesh keeps its FULL instance list,
+   and before the world is drawn the instances whose own bounding sphere is
+   inside the camera's frustum are packed to the front — in their ORIGINAL
+   order, so the draw order of what is drawn is unchanged — and only those
+   are drawn. An instance outside the frustum produces no fragment, so the
+   picture is the same pixel for pixel; only the vertex work goes.
+   SHADOWS are drawn from the full list: the shadow map is on demand
+   (shadowDirty), and on a frame that redraws it every instance is restored,
+   because a tree behind the camera can still cast a shadow into view. The
+   sphere is the geometry's own (it bounds every vertex; no tree moves in its
+   shader) under the instance's matrix, with a small margin for float error.
+   The test is done in the MESH's local space (the frustum is carried into
+   it), so an instance is tested without being transformed. */
+/* v15: every engine optimization has a switch, ON by default, so a probe can
+   draw the SAME frozen frame with it off and on and compare every pixel —
+   the proof that an optimization changed nothing on screen. */
+const OPT = { instCull: true };
+const instCull = new Set();
+const _icPV = new THREE.Matrix4(), _icLocal = new THREE.Matrix4(), _icFr = new THREE.Frustum(),
+      _icM = new THREE.Matrix4(), _icV = new THREE.Vector3();
+function cullEachInstance(im) {
+  const n = im.count;
+  if (!(n > 1)) return;
+  const g = im.geometry;
+  if (!g.boundingSphere) g.computeBoundingSphere();
+  const gs = g.boundingSphere;
+  if (!gs || !Number.isFinite(gs.radius)) return;
+  const full = im.instanceMatrix.array.slice(0, n * 16);
+  const fullColor = im.instanceColor ? im.instanceColor.array.slice(0, n * 3) : null;
+  const cs = new Float32Array(n * 4);
+  for (let i = 0; i < n; i++) {
+    _icM.fromArray(full, i * 16);
+    _icV.copy(gs.center).applyMatrix4(_icM);
+    if (!Number.isFinite(_icV.x + _icV.y + _icV.z)) return;   // a bad matrix: leave the mesh to three's own culling
+    cs[i * 4] = _icV.x; cs[i * 4 + 1] = _icV.y; cs[i * 4 + 2] = _icV.z;
+    cs[i * 4 + 3] = gs.radius * _icM.getMaxScaleOnAxis() * 1.02 + 0.05;
+  }
+  im.userData.__ic = { n, full, fullColor, cs, vis: new Uint8Array(n).fill(1), count: n, whole: true };
+  im.instanceMatrix.setUsage(THREE.DynamicDrawUsage);     // a driver hint: this buffer is rewritten as the view turns
+  if (im.instanceColor) im.instanceColor.setUsage(THREE.DynamicDrawUsage);
+  instCull.add(im);
+}
+function cullInstances(cam, shadowFrame) {
+  if (!instCull.size) return;
+  cam.updateWorldMatrix(true, false);
+  _icPV.multiplyMatrices(cam.projectionMatrix, cam.matrixWorldInverse);
+  for (const im of instCull) {
+    const u = im.userData.__ic;
+    if (!u || !im.parent) { instCull.delete(im); continue; }
+    let shown = true;
+    for (let q = im; q; q = q.parent) if (!q.visible) { shown = false; break; }
+    if (!shown) continue;                         // three will not draw it; its list can wait
+    const arr = im.instanceMatrix.array;
+    if ((shadowFrame && im.castShadow) || !OPT.instCull) {   // the shadow map is redrawn this frame (every tree casts), or the switch is off
+      if (!u.whole) {
+        arr.set(u.full);
+        if (u.fullColor) im.instanceColor.array.set(u.fullColor);
+        im.count = u.n; u.whole = true; u.vis.fill(1);
+        im.instanceMatrix.clearUpdateRanges(); im.instanceMatrix.needsUpdate = true;
+        if (u.fullColor) { im.instanceColor.clearUpdateRanges(); im.instanceColor.needsUpdate = true; }
+      }
+      continue;
+    }
+    im.updateWorldMatrix(true, false);
+    _icLocal.multiplyMatrices(_icPV, im.matrixWorld);
+    _icFr.setFromProjectionMatrix(_icLocal);
+    const P = _icFr.planes, cs = u.cs;
+    let changed = u.whole;
+    for (let i = 0; i < u.n; i++) {
+      const x = cs[i * 4], y = cs[i * 4 + 1], z = cs[i * 4 + 2], r = cs[i * 4 + 3];
+      let inside = 1;
+      for (let k = 0; k < 6; k++) {
+        const pl = P[k];
+        if (pl.normal.x * x + pl.normal.y * y + pl.normal.z * z + pl.constant < -r) { inside = 0; break; }
+      }
+      if (inside !== u.vis[i]) { u.vis[i] = inside; changed = true; }
+    }
+    if (!changed) continue;
+    let k = 0;
+    for (let i = 0; i < u.n; i++) {          // EVERY visible slot is written: a slot's last tenant is not known
+      if (!u.vis[i]) continue;
+      arr.set(u.full.subarray(i * 16, i * 16 + 16), k * 16);
+      if (u.fullColor) im.instanceColor.array.set(u.fullColor.subarray(i * 3, i * 3 + 3), k * 3);
+      k++;
+    }
+    im.count = k; u.whole = false;
+    if (k > 0) {                              // only the packed front of the buffer goes to the GPU
+      im.instanceMatrix.clearUpdateRanges(); im.instanceMatrix.addUpdateRange(0, k * 16);
+      im.instanceMatrix.needsUpdate = true;
+      if (u.fullColor) { im.instanceColor.clearUpdateRanges(); im.instanceColor.addUpdateRange(0, k * 3); im.instanceColor.needsUpdate = true; }
+    }
+  }
+}
 function plantTrees(parent, spots, opts = {}) {
   const group = new THREE.Group();
   group.name = 'trees';
@@ -1018,6 +1117,7 @@ function plantTrees(parent, spots, opts = {}) {
   const owned = [];
   group.userData.disposeTrees = () => {
     dead = true;
+    for (const c of group.children) instCull.delete(c);   // v15: out of the per-instance culling set
     for (const m of owned) m.dispose();      // the CLONED materials only: every map belongs to the shared kit
     owned.length = 0;
     group.clear();
@@ -1110,6 +1210,7 @@ function plantTrees(parent, spots, opts = {}) {
            a moment longer than it needed to be. */
         im.computeBoundingSphere();
         if (im.boundingSphere) im.boundingSphere.radius += 3;
+        cullEachInstance(im);        // v15: and each TREE culls on its own (INSTANCE CULLING)
         group.add(im);
       }
     }
@@ -10273,6 +10374,7 @@ function tick(now = 0) {
   if (state === 'cine') cineHands(dt, t);
   else updateViewmodel(dt, t, playerSpeed, strafeInput, dLookX, dLookY);
 
+  cullInstances(camera, renderer.shadowMap.needsUpdate || renderer.shadowMap.autoUpdate);   // v15: INSTANCE CULLING
   renderer.render(scene, camera);
 
   // second pass: the viewmodel gets its own fresh depth buffer, so the hands
@@ -10317,6 +10419,8 @@ window.__enc = { yaw, pitch, stats, getState: () => state,   // v8.7: pitch, so 
                     geometries, textures) is a number, and a number nobody can
                     read is a number nobody checks. */
                  get renderer() { return renderer; }, get scene() { return scene; },
+                 /* v15: the optimization switches and the passes they gate, for the pixel-identity probe */
+                 opt: OPT, cullInstances: (sh) => cullInstances(camera, !!sh), get camera() { return camera; },
                  /* v5.29: which age of Master Zav the panel is showing, and
                     whether his bytes are in. The figure lives in its own
                     renderer's scene, unreachable from the world graph, so a
