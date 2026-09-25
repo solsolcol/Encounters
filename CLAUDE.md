@@ -141,6 +141,7 @@ The declarations, all optional:
 | `stage.hotspots[].dwell` / `aim` | v11.0: a hotspot that fires by being LOOKED AT for `dwell` seconds inside `aim` radians (chapter 3's torch spots) — the eighteenth seam | — (a press only) |
 | `stage.hotspots[].hits(x, y)` | v14.7: a hotspot PRESSED BY A TAP (or an unlocked click) ON THE THING ITSELF — `hits` answers whether that screen point is on it, and the engine's `hotspotTap` fires it; episode 1 chapter 3's amulet on the auntie's table | — (the badge and the key only) |
 | `kit.unlock(id, { onClose })` | v14.7: the ITEM UNLOCKED splash — the item's model turning in the middle (the `iv` renderer), its name, a Close button, its own sting; a screen state of its own (`unlock`) that closes every "is it play?" gate, with a 0.6 s guard so the press that took the item cannot also close it | — |
+| `ITEM_DEFS[id].evGuard` | v14.13: while the item is WORN, every stat decrease a MINIGAME causes is multiplied by `1 − evGuard` (`evCut()`: graded presses, missed beats, wrong drops, a losing payout, and a chapter's own price marked `{ minigame: true }` on `kit.award`/`kit.conduct`) — the LP Tim Khun Paen's 50 % | — (0: nothing is cut) |
 | `kit.weaponBlock(msg)` | v14.3: a chapter FORBIDS the shot and the HUD says why — `weaponFire` refuses before anything is spent, `#nofire` carries the chapter's own sentence under the reticle with `hudfail` and a buzz, and `body.wpnBlocked` dims FIRE before the rule is ever tested. `null` allows it again. The words are the CHAPTER's, so they are on the sheet | — (nothing is forbidden) |
 | `torch.model` / `torch.click` | v11.1: the torch's own viewmodel (an asset key), swapped for the hand while it is on, and the sound its switch makes | — (the hand stays; a UI click) |
 | `weapon` | v12.0: RIFLE MODE — `{ model, item, rounds, mags, fireGap, kick, shot, reload, empty, clips, rates }`. The model's OWN hands replace the hand and the torch while it is out (out = the `item` is in the hand slot, or `kit.weaponOut(bool)` forces it); FIRE (click under lock, Space, the HUD button) spends a round, flashes, kicks, and RAYCASTS from the lens into `stage.shootables()`, reporting to `stage.onShot(report)`; RELOAD (R, the button) costs a magazine; rounds and magazines ride the save | — (no weapon, no HUD) |
@@ -3913,6 +3914,27 @@ What the baseline contains, by release:
   chapters, desktop and phone, with ch1 as the control (still `zavyoung`).
   Chad's own model, so no credits row (the v5.23 rule). `src/main.js` gains
   one row and a comment; episode 1 is unchanged by construction.
+- **v14.13** THE LP TIM KHUN PAEN, READY AND NOT YET GIVEN — Chad's second
+  amulet (*"i have not decided where in the game i will introduce this amulet,
+  but i want you to save it first ready for use"*). `ITEM_DEFS.timkp`: the
+  AMULET box, rarity ULTRA RARE in pink (a third rarity, `r-ultrarare`), his
+  name and description verbatim, his model (72 MB → 1.8 MB, 29k triangles,
+  `tools/prepamulet.mjs`) and his painted icon (`icontimkp`). NO CHAPTER GIVES
+  IT — `kit.give('timkp')` / `kit.unlock('timkp')` the day he picks the place.
+  Its power is the new `evGuard: 0.5`: *"Reduce all kinds of damage from
+  minigame events by 50% ... across all minigames globally ... whether it is
+  sanity, awareness, or wisdom."* One function, `evCut()`, sits in every place
+  a minigame charges the player — graded presses and missed beats
+  (`evScorePress`), wrong drops, a losing payout (`evResolve`, which nets the
+  ladder at FULL price and cuts only what is still owed, so it applies once)
+  — plus a chapter's own price for failing one, marked `{ minigame: true }` on
+  `kit.award`/`kit.conduct` (e2c1's failed standby bed is the one there is).
+  Not worn, it hands back what it was given, so nobody plays a different
+  number. `fixturetest` proves it with nine checks on awareness (exact —
+  nothing drains it). It shares the neck slot with the Phiboon, so the two
+  never stack: that, and whether it should, is Chad's call when he places it.
+  Sheet v73 (three rows). docs/V14.13-LP-TIM-KHUN-PAEN.md is the memory, with
+  his words and the rule for every future minigame.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -4476,8 +4498,10 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v71** (`masters/v14.7/masterz-text-v71.xlsx`, four tabs: UI
-TEXT 285, EPISODE 1 114, EPISODE 2 193, VOICE LINES 296). Its diff against
+**THE SHEET IS v73** (`masters/v14.13/masterz-text-v73.xlsx`, four tabs: UI
+TEXT 292, EPISODE 1 114, EPISODE 2 193, VOICE LINES 296). v73 adds three rows
+to v72 (v14.11's, the amulet's crack/break banner and the rarities): the LP
+Tim Khun Paen's name and description and "Ultra Rare". v71's diff against
 v70 (v14.6's, `masters/v14.6/`) is thirteen new rows — the amulet's name and
 Chad's description, the two protection lines of the bag, the splash's three
 words, the card's "Amulet −{n}", chapter 3's four amulet words and the

@@ -116,7 +116,8 @@ const EMBED = {
   /* v14.7: Chad's LP Phiboon amulet (the model and its icon) — episode 1's,
      so the single-file build carries them. Not `amulet`, which is the parked
      chapter-1 cased amulet above. */
-  phiboon: '__PHIBOON_B64__', iconamulet: '__ICONAMULET_B64__'
+  phiboon: '__PHIBOON_B64__', iconamulet: '__ICONAMULET_B64__',
+  timkp: '__TIMKP_B64__', icontimkp: '__ICONTIMKP_B64__'   // v14.13
 };
 
 function b64ToBuffer(b64) {
@@ -2373,8 +2374,11 @@ function presenceDrainRate() {
 /* ---- conduct: what play did, on the card --------------------------------- */
 function kitConduct(d) {
   if (!d) return;
-  conductAcc.s = Math.max(-CONDUCT_CAP, Math.min(CONDUCT_CAP, conductAcc.s + (+d.s || 0)));
-  conductAcc.a = Math.max(-CONDUCT_CAP, Math.min(CONDUCT_CAP, conductAcc.a + (+d.a || 0)));
+  /* v14.13: a chapter's own price for a failed minigame, marked so, is cut
+     by the minigame guard like the engine's own (evCut) */
+  const cut = v => (d.minigame ? evCut(v) : v);
+  conductAcc.s = Math.max(-CONDUCT_CAP, Math.min(CONDUCT_CAP, conductAcc.s + cut(+d.s || 0)));
+  conductAcc.a = Math.max(-CONDUCT_CAP, Math.min(CONDUCT_CAP, conductAcc.a + cut(+d.a || 0)));
   if (d.note && !conductAcc.notes.includes(String(d.note))) conductAcc.notes.push(String(d.note));
 }
 function conductTake() {
@@ -2409,8 +2413,9 @@ function paintConduct(cd) {
   el.classList.remove('hide');
 }
 /* a stat moved by play, with the same tick the drain uses */
-function kitAward(stat, delta) {
+function kitAward(stat, delta, opts) {
   if (!(stat in stats) || !Number.isFinite(delta) || !delta) return;
+  if (opts && opts.minigame) delta = evCut(delta);   // v14.13: a chapter's minigame price, cut by the guard
   if (stat === 'sanity' && delta < 0) delta = -wardSoak(-delta, true);   // v14.7: the amulet takes it first
   const before = stats[stat];
   stats[stat] = Math.max(0, Math.min(100, stats[stat] + delta));
@@ -2605,7 +2610,9 @@ function evScorePress(err) {
     const flat = +e.o.missCost;
     const per = (e.o.penalty && +e.o.penalty.per) || 1;
     const cost = Number.isFinite(flat) && flat > 0 ? -flat : b.aw * per;
-    kitAward(st, cost);                             // the damage, now
+    kitAward(st, evCut(cost));                      // the damage, now (v14.13: halved by the guard)
+    /* `paid` stays the FULL price: evResolve nets the ladder against it and
+       cuts whatever is still owed itself, so the guard applies once */
     if (st === ((e.o.award && e.o.award.stat) || 'sanity')) e.paid += cost;
     kitFlashSet({ color: 'rgba(150,20,16,0.40)', secs: 0.30 });
     snd('beatmiss', 0.55); haptic([34, 28, 34]);
@@ -2762,7 +2769,7 @@ function evMatchDrop(x, y) {
     setTimeout(() => slot.classList.remove('nope'), 380);
     const st = (o.penalty && o.penalty.stat) || (o.award && o.award.stat) || 'awareness';
     const cost = Math.abs(+o.wrongCost || 0);
-    if (cost) kitAward(st, -cost);
+    if (cost) kitAward(st, evCut(-cost));           // v14.13: halved by the guard
     $('evNote').textContent = T('event.matchBad');
     evEl()?.classList.add('bad');
     snd('matchbad', 0.55);
@@ -2959,12 +2966,15 @@ function evResolve(extra) {
       const owed = flat ? Math.round(e.pos * per) : Math.round(e.sum * per) - e.paid;
       r.delta = Number.isFinite(+aw.hi) ? Math.min(+aw.hi, owed) : owed;
       if (Number.isFinite(+aw.lo)) r.delta = Math.max(+aw.lo, r.delta);
-      kitAward(aw.stat, r.delta);
     } else {
       const lo = +aw.lo || 0, hi = +aw.hi || 0;
       r.delta = Math.round(lo + (hi - lo) * (r.ok ? r.score : 0));
-      kitAward(aw.stat, r.delta);
     }
+    /* v14.13: a payout that is a LOSS is cut by the minigame guard; r.delta
+       is what was actually applied, r.full what it would have been */
+    r.full = r.delta;
+    r.delta = evCut(r.delta);
+    kitAward(aw.stat, r.delta);
   }
   if (!r.aborted && !r.skipped) snd(r.ok ? 'uiconfirm' : 'uiclick', r.ok ? 0.5 : 0.25);
   e.res(r);
@@ -5968,13 +5978,22 @@ const ITEM_DEFS = {
      protects: fifteen points of sanity damage taken before sanity is, once
      per EPISODE — see THE WARD, below. No `view`: the model is baked with
      its face to +z, toward the lens. */
-  amulet: { icon: 'e-amulet', slot: 'neck', art: 'iconamulet', model: 'phiboon', ward: 15, rarity: 'rare' }
+  amulet: { icon: 'e-amulet', slot: 'neck', art: 'iconamulet', model: 'phiboon', ward: 15, rarity: 'rare' },
+  /* v14.13: Chad's LP Tim Khun Paen (Lode Series, Wat Lahanrai). DEFINED AND
+     READY, GIVEN BY NO CHAPTER YET — Chad: "i have not decided where in the
+     game i will introduce this amulet, but i want you to save it first ready
+     for use." A chapter hands it out with kit.give('timkp'). Worn in the
+     AMULET box, so it and the Phiboon are one-or-the-other. `evGuard` is what
+     it does: the fraction of MINIGAME damage it takes away (0.5 = half) —
+     see evCut(), below. Baked face to +z like the Phiboon, so no `view`. */
+  timkp: { icon: 'e-amulet', slot: 'neck', art: 'icontimkp', model: 'timkp', evGuard: 0.5, rarity: 'ultrarare' }
 };
 /* v14.11: every item has a RARITY (Chad: "Torch is common rarity with grey
    colour coding, the lp phiboon amulet is rare rarity with blue colour
    coding"). The word is the sheet's (`rarity.<id>`), the colour is the
-   class `r-<id>` in shell.html; an item that declares none is common. */
-const RARITIES = ['common', 'rare'];
+   class `r-<id>` in shell.html; an item that declares none is common.
+   v14.13: 'ultrarare', pink (Chad), for the LP Tim Khun Paen. */
+const RARITIES = ['common', 'rare', 'ultrarare'];
 const itemRarity = id => { const r = ITEM_DEFS[id] && ITEM_DEFS[id].rarity; return RARITIES.includes(r) ? r : 'common'; };
 const itemName = id => T('item.' + id + '.name', id);
 const itemDesc = id => T('item.' + id + '.desc', '');
@@ -6028,6 +6047,41 @@ function wardItem() {
   }
   return null;
 }
+/* ── v14.13: THE MINIGAME GUARD ──────────────────────────────────────────
+   Chad, of the LP Tim Khun Paen: "Reduce all kinds of damage from minigame
+   events by 50% ... across all minigames globally, once equipped. Whenever
+   the player takes damage due to not playing well in minigames, whether it
+   is sanity, awareness, or wisdom, with this amulet equipped, the damage is
+   reduced by 50%."
+   So an item may declare `evGuard: f` (0..1), and while it is WORN every
+   stat DECREASE a minigame causes is multiplied by (1 - f). "A minigame" is
+   a kit EVENT, all eight kinds and the match, and every place one charges
+   the player goes through evCut(): a badly graded press or a missed beat
+   (evScorePress), a wrong drop (evMatchDrop), the payout when the event
+   ends (evResolve), and — because a chapter may punish a failed event with
+   its own words — a kit.award or kit.conduct marked `{ minigame: true }`
+   (episode 2 chapter 1's failed standby bed is the one there is today).
+   Gains are never touched, and nothing that is not a minigame is: the
+   ghost, the drain, the hurt bleed, a choice, the decision clock. Not
+   worn, evCut() hands back exactly what it was given. The halved amount
+   is exact (a flat 5 becomes 2.5); the bars round what they show. It comes
+   BEFORE the Phiboon's ward in kitAward, but the two share the neck slot,
+   so they never stack today. */
+function evGuard() {
+  let g = 0;
+  for (const k of GEAR_SLOTS) {
+    const d = inv.gear[k] && ITEM_DEFS[inv.gear[k]];
+    if (d && d.evGuard > 0) g = Math.max(g, Math.min(1, +d.evGuard));
+  }
+  return g;
+}
+function evCut(delta) {
+  if (!(delta < 0)) return delta;
+  const g = evGuard();
+  if (g > 0) evCuts++;
+  return g > 0 ? delta * (1 - g) : delta;
+}
+let evCuts = 0;                      // how many charges the guard has cut, for probes
 /* what protects RIGHT NOW: the charge while one is worn, else nothing */
 const wardLeft = () => (wardItem() ? Math.max(0, ward.charge) : 0);
 /* the charge belongs to an episode: entering another one refills it */
@@ -9800,6 +9854,7 @@ window.__enc = { yaw, pitch, stats, getState: () => state,   // v8.7: pitch, so 
                  unlockState: () => ({ id: unl.id, state }),
                  unlockClose: how => unlockClose(how || 'click'),
                  hotspotTap, kitAward, applyChunk,
+                 evGuard: () => ({ guard: evGuard(), cuts: evCuts }),   // v14.13: the minigame guard, for probes
                  saveCheckpoint, loadCheckpoint, clearCheckpoint,
                  invOpen, invClose, invToggle, invAdd, invHas, invRemove,
                  menuOpen, menuClose, menuToggle, openChapters, closeChapters,

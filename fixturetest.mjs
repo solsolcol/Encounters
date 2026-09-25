@@ -600,6 +600,65 @@ K.wardBleedsFirst = await p.evaluate(() => {
     // v14.11: a bleed cracks it on its batched ticks, and breaks it exactly once
     && e.ward().cracks > window.__fxB.cracks && e.ward().breaks === window.__fxB.breaks + 1;
 });
+/* v14.13 · THE MINIGAME GUARD. Chad, of the LP Tim Khun Paen: "Reduce all
+   kinds of damage from minigame events by 50% ... across all minigames
+   globally, once equipped ... whether it is sanity, awareness, or wisdom."
+   Proven on AWARENESS, which nothing drains, so every number is exact: a
+   chapter's own minigame price, a wrong drop, a run of flat-priced misses,
+   graded early presses with the ladder's end-netting, a losing payout, and
+   a chapter's banked price — each half with the amulet worn and whole
+   without it. Gains, and anything that is not a minigame, are untouched. */
+const guardAw = v => p.evaluate(x => { window.__enc.stats.awareness = x; }, v);
+const aw = () => p.evaluate(() => window.__enc.stats.awareness);
+K.guardOffIsWhole = await p.evaluate(() => {
+  const e = window.__enc; e.stats.awareness = 50;
+  e.kitAward('awareness', -4, { minigame: true });
+  return e.evGuard().guard === 0 && e.stats.awareness === 46;
+});
+K.guardWorn = await p.evaluate(() => {
+  const e = window.__enc; e.kit.give('timkp'); e.kit.equip('timkp');
+  return e.kit.equipped('timkp') && e.evGuard().guard === 0.5;
+});
+K.guardHalvesOnlyMinigame = await p.evaluate(() => {
+  const e = window.__enc; e.stats.awareness = 50;
+  e.kitAward('awareness', -4, { minigame: true }); const half = e.stats.awareness === 48;
+  e.kitAward('awareness', -4); const whole = e.stats.awareness === 44;          // not a minigame
+  e.kitAward('awareness', 4, { minigame: true }); const gain = e.stats.awareness === 48;   // a gain
+  e.stats.wisdom = 50; e.kitAward('wisdom', -6, { minigame: true });
+  return half && whole && gain && e.stats.wisdom === 47;
+});
+await guardAw(50);
+r = await runEvent({ kind: 'match', pairs: [{ id: 'a', label: 'a' }, { id: 'b', label: 'b' }],
+                     secs: 30, fast: 0, slow: 0.05, wrongCost: 4,
+                     penalty: { stat: 'awareness' }, award: { stat: 'awareness', lo: -6, hi: 9 } }, async () => {
+  await p.evaluate(() => window.__enc.evDrop('a', 'b'));
+  K.guardMatchWrongHalf = (await aw()) === 48;
+  await p.evaluate(() => { window.__enc.evDrop('a', 'a'); window.__enc.evDrop('b', 'b'); });
+});
+K.guardPayoutHalf = r.full === -6 && r.delta === -3 && (await aw()) === 45;
+await guardAw(50);
+r = await runEvent({ kind: 'heartbeat', n: 2, bpm: 120, win: 0.2, zone: 1, lead: 0.4,
+                     missCost: 4, penalty: { stat: 'awareness' },
+                     award: { stat: 'awareness', per: 1, lo: 0, hi: 8 } }, null);
+K.guardMissCostHalf = r.band.length === 2 && r.delta === 0 && (await aw()) === 46;
+await guardAw(50);
+r = await runEvent({ kind: 'sequence', items: [{ label: 'a' }, { label: 'b' }], each: 2, lead: 0.8, zone: 1,
+                     penalty: { stat: 'awareness', per: 1 }, award: { stat: 'awareness', per: 1 } },
+                   async () => { await tapOnce(); await untilIdx(1); await tapOnce(); });
+/* two BROKEN presses, -4 each on the ladder: -2 each paid on the spot, and
+   the end nets the FULL ladder against the FULL price, so owes nothing more */
+K.guardGradedHalf = r.sum === -8 && r.delta === 0 && (await aw()) === 46;
+K.guardConductHalf = await p.evaluate(() => {
+  const e = window.__enc, a0 = e.kit.getConduct().a;
+  e.kit.conduct({ a: -4, minigame: true }); const half = e.kit.getConduct().a === a0 - 2;
+  e.kit.conduct({ a: 2 });                                     // put the card back as it was
+  return half && e.kit.getConduct().a === a0;
+});
+K.guardOffAgain = await p.evaluate(() => {
+  const e = window.__enc; e.kit.take('timkp'); e.stats.awareness = 50;
+  e.kitAward('awareness', -4, { minigame: true });
+  return e.evGuard().guard === 0 && e.stats.awareness === 46 && !e.kit.has('timkp');
+});
 // the lens level again, as the block found it: the walk to the pile below sets only the yaw
 await p.evaluate(() => { window.__enc.pitch.rotation.x = 0; });
 out.kit = K;

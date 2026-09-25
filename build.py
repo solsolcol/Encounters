@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "14.12"
+VERSION = "14.13"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -305,6 +305,14 @@ ASSETS = {
     # carries both.
     'phiboon':    ('assets/phiboon.glb', True, False),     # ch3's table + the item views
     'iconamulet': ('assets/iconamulet.jpg', True, False),  # the amulet's inventory icon
+    # v14.13 — Chad's LP Tim Khun Paen (Lode Series), defined and ready but
+    # given by no chapter yet. `timkp` is his model (72 MB of source -> 1.8 MB,
+    # tools/prepamulet.mjs at 0.035 / 2048 / 1024); `icontimkp` his painted
+    # icon (masters/v14.13, 1254 px PNG -> 384 px JPEG). Not E2_ONLY: where it
+    # is introduced is his call, and the single-file build must be able to
+    # show it if that is episode 1.
+    'timkp':      ('assets/timkp.glb', True, False),
+    'icontimkp':  ('assets/icontimkp.jpg', True, False),
     # v7.1: EPISODE 2's people — Chad's own soldiers (docs/E2-SOLDIER-MODELS.md),
     # prepped at ratio 0.10 on 2048 px sheets, the level his eye set. None
     # preloaded: every one stands in over a primitive until it lands, and a

@@ -4013,7 +4013,7 @@
             } else if (bedTries < 2 && !(r && (r.skipped || r.aborted))) {
               sgtSay('s1again');
               after(2.3, () => sayLine('n1bedfail'));
-              bank({ s: -4, note: DATA.words.noteBedFail });
+              bank({ s: -4, note: DATA.words.noteBedFail, minigame: true });   // v14.13: a failed minigame's price, so the LP Tim Khun Paen halves it
               after(2.3 + SECS.n1bedfail + 0.5, runStandbyBed);
             } else {
               after(0.5, beginFree);
