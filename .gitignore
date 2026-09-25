@@ -18,6 +18,7 @@ masters/*/src/*.glb
 masters/*/prep/
 dbg*.mjs
 dbg*.html
+dbg*.log
 ablate.mjs
 bench.mjs
 fps.mjs
