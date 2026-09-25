@@ -66,6 +66,10 @@ const composed = new Set();
 if (main.includes("T('slot.' + key")) slots.forEach(k => composed.add('slot.' + k));
 if (main.includes("T('item.' + id + '.name'")) items.forEach(k => composed.add('item.' + k + '.name'));
 if (main.includes("T('item.' + id + '.desc'")) items.forEach(k => composed.add('item.' + k + '.desc'));
+/* v14.11: an item's rarity word, T('rarity.' + rar), for each entry of the
+   engine's own RARITIES list — so a rarity nothing can have still fails */
+const rarities = [...listOf(/const RARITIES = \[([^\]]*)\]/).matchAll(/'([^']+)'/g)].map(m => m[1]);
+if (main.includes("T('rarity.' + rar")) rarities.forEach(k => composed.add('rarity.' + k));
 /* v6.0: the episodes' words are composed too -- T(`ep${n}.label`) on the
    chapter card and the selector, T(`ep${n}.title`) under the tabs -- for
    n in 1..EPISODE_COUNT, which is the engine's own constant. So a sheet
