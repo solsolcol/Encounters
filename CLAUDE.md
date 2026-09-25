@@ -209,7 +209,7 @@ well"). The rotating Master Zav in the inventory is the man the player is
 | episode | chapters | figure | asset |
 |---|---|---|---|
 | 1 | ch1-ch5 | young | `zavyoung` — shipping now |
-| 2 | ch1-ch5 | teenager | `zavteen` — **Chad supplies the model** |
+| 2 | ch1-ch5 | soldier | `zavsoldier` — shipping since v14.12 (Chad's model, in place of the teenager first planned; hosted-only) |
 | later | the adult phase | adult | `zav`, the 990k-tri scan |
 
 `ZAV_FIGURE` in main.js is that table and `zavKey()` reads it; the adult
@@ -218,7 +218,7 @@ no-mipmap rule for his atlas, the seam padding) is **kept, not deleted** —
 it returns when the adult phase does, and `ZAV_ADULT` is the fallback for
 any episode not listed. Since v6.0 it is keyed by EPISODE (`episodeOf()`),
 because the engine knows what an episode is now; episode 2 is one row
-(`2: 'zavteen'`) the day Chad's model arrives. Swapping ages is a real
+(`2: 'zavsoldier'` since v14.12). Swapping ages is a real
 swap — `zavLoad()` disposes the standing figure when `zav.key` no longer
 matches.
 
@@ -3894,6 +3894,25 @@ What the baseline contains, by release:
   fixture, inv, state, text (taught the composed `rarity.*` keys), csp,
   chapter, sanity, resume. Deploy `6ab61e9380609f20944cb4d3`, byte-verified
   (index.html and all 102 build files).
+- **v14.12** MASTER ZAV, THE SOLDIER — Chad: *"This is the 3d model of master
+  zav as a soldier. Use this 3d model across the entire episode 2's inventory
+  menu from chp 1 to 5, swap out the white adult model for this soldier model.
+  the white adult model will be used in future episodes."* One row in
+  `ZAV_FIGURE` (`2: 'zavsoldier'`); the adult `zav` stays the fallback for
+  every episode not listed, untouched. His file is a static Meshy-style scan
+  (one mesh, base colour + normal + metal-roughness, no rig), 38.9 MB and
+  594,511 triangles, shrunk to **3.7 MB at 297,255** by
+  `tools/prepzavsoldier.mjs` — weld, simplify to half, meshopt + quantization
+  (zavLoader() carries the decoder), every sheet 1024 px WebP — the shape
+  `zavyoung.glb` ships in. One trap written into the tool: `textureCompress`
+  declares `EXT_texture_webp`, which moves an image's source under the
+  extension where `rescueTextures()` (the strict-CSP path) never looks, so the
+  extension is dropped and the WebP rides a plain source, as zavyoung's does.
+  Hosted-only (`E2_ONLY`): the single-file build carries episode 1 alone and
+  never asks for him. Photographed in the panel in all five episode-2
+  chapters, desktop and phone, with ch1 as the control (still `zavyoung`).
+  Chad's own model, so no credits row (the v5.23 rule). `src/main.js` gains
+  one row and a comment; episode 1 is unchanged by construction.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so

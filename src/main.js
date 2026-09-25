@@ -6961,7 +6961,8 @@ const zavLoader = () => { const l = new GLTFLoader(); l.setMeshoptDecoder(Meshop
    gets him, so a future episode needs no engine change at all, only a row.
 
      episode 1  (ch1-ch5)   young     — shipping now
-     episode 2  (ch1-ch5)   teenager  — 'zavteen', when Chad supplies it
+     episode 2  (ch1-ch5)   soldier   — 'zavsoldier' (v14.12: Chad's model,
+                                         in place of the teenager he first planned)
      later                  adult     — 'zav', the scan, still here
 
    Keyed by EPISODE since v6.0 — the engine knows what an episode is now
@@ -6971,7 +6972,7 @@ const zavLoader = () => { const l = new GLTFLoader(); l.setMeshoptDecoder(Meshop
    listed here is the adult, which is the "kept" the contract asks for. */
 const ZAV_FIGURE = {
   1: 'zavyoung',                      // episode 1, chapters 1-5 (and the fixture, which declares episode 1)
-  // 2: 'zavteen',                    // episode 2 — Chad supplies the model
+  2: 'zavsoldier',                    // episode 2, chapters 1-5: Master Zav as a soldier (v14.12, Chad's model; hosted-only, E2_ONLY)
 };
 const ZAV_ADULT = 'zav';              // kept, and the fallback for anything unlisted
 function zavKey() { return ZAV_FIGURE[episodeOf(CH_KEY)] || ZAV_ADULT; }

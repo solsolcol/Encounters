@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "14.11"
+VERSION = "14.12"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -247,6 +247,7 @@ ASSETS = {
     # The adult scan below stays: ZAV_FIGURE in main.js picks by chapter and
     # falls back to him, so episode 2's teenager is a table row, not a swap.
     'zavyoung': ('assets/zavyoung.glb', True, False),  # the panel, ch1-ch5
+    'zavsoldier': ('assets/zavsoldier.glb', True, False),  # v14.12: the panel, episode 2 (Chad's soldier scan, tools/prepzavsoldier.mjs)
     # v6.4 — THE PROLOGUE, chapter 1's opening film. The young master again,
     # this time RIGGED with five Mixamo takes baked in (Chad's file, shrunk by
     # prepwoman + resampleclips: 17.4 MB -> 2.2 MB), the two things he picks
@@ -358,7 +359,7 @@ HOSTED_ONLY = {'titlevid', 'titlevidwebm'}
 E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim',
            'ghostsoldier', 'encik2', 'bunkbed', 'cafestaff', 'foodwarmer', 'flashlight',
            'kamaz', 'forest', 'rifle', 'ghostcyclist', 'fboaim',
-           'muzzle', 'ammocrate', 'ammomags', 'icontorch'}
+           'muzzle', 'ammocrate', 'ammomags', 'icontorch', 'zavsoldier'}
 HOSTED_ONLY |= E2_ONLY
 
 # The split packs are hosted-only: there is no __..._B64__ token for them and
