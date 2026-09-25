@@ -4670,3 +4670,17 @@ updates the matrices and skips it, so `getVertexPosition` answers in the frame
 the mesh last had. Call `updateMatrixWorld(true)` before measuring a skin.
 And a body is laid down by its ROOT BONE (the hips' quaternion), not by a
 rotated group above it — the bones are what the skin is drawn from.
+
+## v14.11 — a notification is owed its frames, not only its seconds
+
+The amulet's "broken" banner first lived on a 4.2 s `setTimeout`. Sampled in
+the page every 100 ms on the test box, the page froze 6.8 s right after the
+hit (the first tick's work), and the banner's whole CSS animation — in, hold,
+out — ran on the compositor clock inside that freeze: it was added, faded and
+hidden without one frame ever drawn. A CSS animation's clock is wall time too.
+The fix is the v13.1 law in its HUD form: the banner fades out only once it
+has been up for 3.4 s AND twenty `requestAnimationFrame` ticks, and it is
+hidden by its own `animationend`, not by the timer (which stays only as a
+60 s backstop for a page that draws nothing). Measure a notification's life
+IN THE PAGE; a probe's round trips on a slow box take longer than the thing
+being measured.

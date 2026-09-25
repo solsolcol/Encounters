@@ -3875,7 +3875,10 @@ What the baseline contains, by release:
   are one crack) and on the hit that EMPTIES it plays `wardbreak` instead,
   buzzes, and raises `#wardBreak` — a banner upper-middle ("Amulet broken /
   Its protection is spent until the next episode."), a split-amulet icon,
-  landing with a jolt and gone after four seconds. Both sounds are the
+  landing with a jolt and gone once it has been SEEN — 3.4 s of wall time
+  AND twenty drawn frames, then its own fade-out hides it (a wall-clock
+  timer alone was measured hiding it inside a 6.8 s page freeze before it
+  was ever drawn; on the phone probe it stands 0.3–4.4 s). Both sounds are the
   engine's, shared-pack, warmed at boot, ElevenLabs takes picked by
   measurement (AUDIO-PLAN v14.11, masters/v14.11/make.sh). RARITY is
   `ITEM_DEFS[id].rarity` (`RARITIES`, `itemRarity()`; none declared reads
