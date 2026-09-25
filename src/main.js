@@ -60,12 +60,37 @@ class GLTFLoaderMO extends GLTFLoader {
   parse(data, path, onLoad, onError) {
     const r = loadBegin(_bufKey.get(data) || '?', 'parse');
     const t0 = performance.now();
-    const done = (fn, arg) => {
+    const done = (fn, arg, isError) => {
       const c0 = performance.now();
-      try { if (fn) fn(arg); } finally { r.cbMs = Math.round(performance.now() - c0); loadEnd(r); }
+      /* v14.16: A LOADER THAT FAILS IS NEVER SILENT (the v12.2 law, which
+         until now depended on fifteen hand-written catch sites, most of them
+         `() => {}`). A parse failure, or a chapter's own onLoad throwing
+         half-way through placing its model, is written into the load's
+         record and onto the console — and the throw goes on exactly as it
+         did, so nothing downstream behaves differently. walktest reads the
+         records of every chapter it walks and fails on any. */
+      if (isError) { r.err = String((arg && arg.message) || arg); console.error('[load] ' + r.key + ' failed:', arg); }
+      try {
+        if (fn) fn(arg);
+        /* v14.16: a caller that gave no onError got, from three itself, an
+           UNHANDLED rejection — which is what a harness's pageerror
+           listener catches (walktest, since v14.0). Wrapping the callbacks
+           must not make that silent, so it is raised the same way here. */
+        else if (isError) Promise.reject(arg);
+      } catch (e) {
+        if (!isError) { r.err = String((e && e.message) || e); console.error('[load] ' + r.key + ' callback threw:', e); }
+        throw e;
+      } finally { r.cbMs = Math.round(performance.now() - c0); loadEnd(r); }
     };
     try {
-      return super.parse(data, path, g => done(onLoad, g), e => done(onError, e));
+      return super.parse(data, path, g => done(onLoad, g), e => done(onError, e, true));
+    } catch (e) {
+      /* v14.16: three's parse can throw SYNCHRONOUSLY (a GLB whose JSON
+         chunk does not parse is not inside its try) and then calls neither
+         callback — the record must end here or loadPending never returns
+         to 0 and every later curtain waits its whole cap */
+      loadEnd(r);
+      throw e;
     } finally { r.syncMs = Math.round(performance.now() - t0); }
   }
 }
@@ -225,6 +250,29 @@ function b64ToBuffer(b64) {
 }
 
 const _assetCache = {};
+/* v14.16: which cached entries have RESOLVED (so may be released once the
+   world is built — assetsRelease), and every name fetched this session (so
+   the download-ahead never fetches a file twice) */
+const _assetDone = new Set(), _assetSeen = new Set();
+const isAudioAsset = name => /\.(mp3|ogg|opus|wav|m4a|aac)$/i.test((HOSTED && ASSET_MAP[name]) || '');
+/* ── v14.16: RELEASE WHAT IS BUILT ────────────────────────────────────────
+   Every file assetBytes fetched stayed in _assetCache for the whole session.
+   GLTFLoader COPIES what it keeps (loadBufferView slices, meshopt decodes
+   into new buffers, images go through a Blob), so once a chapter's world is
+   built its files are dead weight — measured, the heap after visiting ch3,
+   ch4, e2c1 and e2c3 and coming back to ch2 was 173 MB against a fresh
+   ch2's ~80, and the difference was those chapters' files. At the moment
+   the curtain lifts (nothing in flight) every resolved entry is dropped from
+   the cache; the bytes go when nothing else holds them. A later request —
+   a replay, a chapter entered again — fetches from the browser's HTTP cache
+   (every asset is immutable for a year) or re-decodes the inline base64, and
+   it happens behind the next curtain. A sound pack's bytes go too: once
+   parsed into packJson they are a duplicate, and packLoad keeps its own
+   promise, so nothing asks assetBytes for a pack twice. */
+function assetsRelease() {
+  for (const n of _assetDone) delete _assetCache[n];
+  _assetDone.clear();
+}
 /* The URL of an asset, for the one thing that must NOT come through
    assetBytes: a <video>. Bytes would have to reach it as a blob: or data:
    URL, and the strict CSP that shaped every other loader forbids both — so
@@ -259,9 +307,16 @@ function assetBytes(name, lowPriority) {       // -> Promise<ArrayBuffer>
       : Promise.reject(new Error(`${name}: not embedded`));
   }
   p.catch(() => { delete _assetCache[name]; });   // a failed fetch may retry
-  if (!/pack/.test(name)) {                        // v14.15: tracked (THE LOAD TRACKER)
+  _assetSeen.add(name);                            // v14.16: it is on disk now (DOWNLOAD AHEAD skips it)
+  p.then(() => { if (_assetCache[name] === p) _assetDone.add(name); }, () => {});
+  /* v14.15: tracked (THE LOAD TRACKER) — v14.16: but never a SOUND. The
+     explore music (3.8 MB) and a chapter's voice line were counted as world
+     loads, so a curtain waited for a song to download; the film already
+     waits for its own sounds (v5.13), and a sound is not a model. */
+  if (!/pack/.test(name) && !isAudioAsset(name)) {
     const r = loadBegin(name, 'fetch');
-    p.then(buf => { _bufKey.set(buf, name); r.bytes = buf.byteLength; loadEnd(r); }, () => loadEnd(r));
+    p.then(buf => { _bufKey.set(buf, name); r.bytes = buf.byteLength; loadEnd(r); },
+           e => { r.err = String((e && e.message) || e); console.warn('[load] ' + name + ':', r.err); loadEnd(r); });
   }
   return _assetCache[name] = p;
 }
@@ -5027,7 +5082,7 @@ function musicSetup() {
   musicGain.gain.value = musicVolNow();
   musicGain.connect(bgOut());
   assetBytes('music', true)
-    .then(bytes => actx.decodeAudioData(bytes))
+    .then(bytes => actx.decodeAudioData(bytes.slice(0)))   // v14.16: decoding DETACHES the buffer; decode a copy
     .then(buf => { musicBuf = buf; if (musicWanted) musicStart(); })
     .catch(() => { /* no file or no decoder; the game is fine without */ });
 }
@@ -5104,7 +5159,10 @@ musicSetup();
 musicStart();
 // pull the spoken line down early too; it decodes on a gesture later
 // warm the booting chapter's own opening line at low priority
-if (CH.voiceLine) assetBytes(CH.voiceLine, true).catch(() => {});
+/* v14.16: only when the line IS its own file — every other opening line is in
+   a sound pack, and asking assetBytes for it could only fail (walktest now
+   reads every failed load) */
+if (CH.voiceLine && (HOSTED ? ASSET_MAP[CH.voiceLine] : EMBED[CH.voiceLine])) assetBytes(CH.voiceLine, true).catch(() => {});
 
 /* iOS suspends — or "interrupts" — the context when the tab is backgrounded,
    a call comes in, or Siri speaks, and does not reliably hand the audio
@@ -5147,11 +5205,20 @@ function voiceDecode() {
   if (!key || voiceBuf || voiceDecoding) return;
   if (!actx) musicSetup();
   if (!actx) return;
+  /* v14.16: only a line that IS its own file is fetched here (chapter 1's
+     'voice'); every other opening line lives in a sound pack, and asking
+     assetBytes for it was a request that could only ever fail */
+  if (!(HOSTED ? ASSET_MAP[key] : EMBED[key])) return;
   voiceDecoding = true;
+  /* v14.16: decodeAudioData DETACHES the buffer it is given, and this one is
+     the cached one — so the second visit to a chapter in a session decoded
+     an empty buffer and its opening line never played (measured: chapter
+     1's "voice" on the first visit, and never after ch2 and back). A copy. */
   assetBytes(key)
-    .then(bytes => actx.decodeAudioData(bytes))
+    .then(bytes => actx.decodeAudioData(bytes.slice(0)))
     .then(buf => { if (CH.voiceLine === key) voiceBuf = buf; })
-    .catch(() => { /* no file or no decoder; the game is fine without */ });
+    .catch(() => { /* no file or no decoder; the game is fine without */ })
+    .finally(() => { if (voiceKey === key) voiceDecoding = false; });
 }
 
 /* Called whenever a fresh run enters the playable scene. It checks the world
@@ -5266,7 +5333,11 @@ function queueVoice() {
        error — the probe box lost it every run. Bounded, so a pack that
        never arrives cannot hold the near line hostage. */
     if (!buf) {
-      const stillComing = CH.voiceLine ? (packJson && packJson[CH.voiceLine]) : voiceDecoding;
+      /* v14.16: and a line that is its own FILE is waited for while it
+         decodes, as a pack line is while its pack arrives — since the
+         curtain stopped holding for sound files, chapter 1's 'voice' can
+         still be on the wire when this timer first fires */
+      const stillComing = (CH.voiceLine && packJson && packJson[CH.voiceLine]) || voiceDecoding;
       if (stillComing && (voiceWaits = (voiceWaits || 0) + 1) < 80) { voiceTimer = setTimeout(fire, 250); return; }
       voicePending = false; return;
     }
@@ -5298,6 +5369,20 @@ function queueVoice() {
    ramp with it, and nothing new fires while muted.                        */
 let packJson = null, packGain = null, ambGain = null, bedSrc = null, narSrc = null;
 const packBufs = {}, packPending = {}, packLoops = {}, narrated = {};
+const packNames = {};             // v14.16: pack ('' = shared, else a chapter key) -> the names it brought
+const packOwner = {};             // v14.16: a chapter-pack name -> its chapter (shared names are absent)
+/* v14.16: LEAVING A CHAPTER LETS ITS SOUNDS GO. A chapter's own pack holds
+   only what that chapter can ask for (build.py's rule: exactly one chapter
+   asks for it and the engine never does), so once it is left nothing can
+   play them — yet every one it had decoded stayed decoded for the whole
+   session, tens of megabytes of float audio a chapter, on a phone that
+   reloads the tab when memory runs short. The compressed bytes stay (in
+   packJson), so coming back decodes them again exactly as a fresh load
+   does. A sound that is PLAYING keeps its own buffer to its end. */
+function releaseChapterSounds(key) {
+  const names = key && packNames[key]; if (!names) return;
+  for (const n of names) { delete packBufs[n]; delete packPending[n]; }
+}
 
 function packSetup() {
   if (!actx) musicSetup();
@@ -5587,6 +5672,8 @@ function packLoad(chapterKey) {
     return (packLoaded[key] = assetBytes(key, true)
       .then(b => {
         const part = JSON.parse(new TextDecoder().decode(b));
+        packNames[chapterKey || ''] = Object.keys(part);   // v14.16: so a chapter's own can be let go
+        if (chapterKey) for (const n in part) packOwner[n] = chapterKey;
         packJson = Object.assign(packJson || Object.create(null), part);
         packWarm(WARM_WANT);          // v8.0: whatever the chapter asked for, now that it exists
       })
@@ -5609,13 +5696,18 @@ function sndBuf(name) {              // AudioBuffer if ready, else kick a decode
   if (!packJson || !packJson[name] || packPending[name]) return null;
   packSetup();
   if (!actx) return null;
-  packPending[name] = true;
+  /* v14.16: the pending mark is a TOKEN, so a decode that lands after its
+     chapter was left (releaseChapterSounds) is dropped rather than kept */
+  const tok = packPending[name] = {};
   actx.decodeAudioData(b64ToBuffer(packJson[name]))
-    .then(buf => { packBufs[name] = buf; })
-    .catch(() => { delete packPending[name]; });
+    .then(buf => { if (packPending[name] === tok) packBufs[name] = buf; })
+    .catch(() => { if (packPending[name] === tok) delete packPending[name]; });
   return null;
 }
-function packWarm(names) { for (const n of names) sndBuf(n); }
+/* v14.16: a warm list is never a reason to decode ANOTHER chapter's own
+   sounds — WARM_WANT keeps every name a chapter ever asked for this session,
+   and without this each entry would re-decode what releaseChapterSounds let go */
+function packWarm(names) { for (const n of names) { const o = packOwner[n]; if (!o || o === CH_KEY) sndBuf(n); } }
 
 function snd(name, vol = 1, rate = 1, pan = 0) {        // one-shot
   if (muted) return null;
@@ -5667,6 +5759,7 @@ function loopVol(name, vol) {
     s.connect(g);
     s.start(0, 0.06);
     L.gain = g;
+    L.src = s;                                   // v14.16: so a chapter left can STOP it (loopRetire)
   }
   if (L.gain) L.gain.gain.setTargetAtTime(L.want, actx.currentTime, 0.3);
 }
@@ -5809,7 +5902,22 @@ function silenceChapterLoops() {
   const amb = CH.ambience || AMBIENCE_DEFAULT;
   const keep = new Set((amb.beds || []).map(b => b[0]));
   if (amb.atShrine) keep.add(amb.atShrine[0]);
-  for (const n of liveLoops) if (!keep.has(n)) loopVol(n, 0);
+  for (const n of [...liveLoops]) if (!keep.has(n)) { loopVol(n, 0); loopRetire(n); }
+}
+/* v14.16: a loop the new chapter does not use is STOPPED once it has faded,
+   not left running at zero. A source at gain 0 is still mixed on the audio
+   thread every block, so every bed of every chapter visited — thirty-odd by
+   the end of episode 2 — ran silently for the rest of the session, costing
+   a phone battery and holding its decoded audio. Coming back to the chapter
+   starts the bed afresh (under the card, where nobody hears where a loop
+   begins). */
+function loopRetire(n) {
+  const L = packLoops[n];
+  delete packLoops[n]; liveLoops.delete(n);
+  if (!L || !L.src || !actx) return;
+  const t = actx.currentTime, src = L.src, g = L.gain, pan = L.pan;
+  try { g.gain.setValueAtTime(0, t + 1.9); src.stop(t + 2.0); } catch { return; }
+  src.onended = () => { try { src.disconnect(); g.disconnect(); if (pan) pan.disconnect(); } catch {} };
 }
 
 function updateAudioFrame(t) {
@@ -7161,7 +7269,19 @@ function zavLoad() {
       if (o.isMesh) {
         o.geometry?.dispose();
         const mats = Array.isArray(o.material) ? o.material : [o.material];
-        for (const m of mats) { m?.map?.dispose(); m?.dispose(); }
+        /* v14.16: every map the figure carries, not only its colour — the
+           adult this was written for had one map, the young and the soldier
+           carry a normal and a metal-roughness map too, and those (and their
+           decoded bitmaps) outlived every episode swap */
+        for (const m of mats) {
+          if (!m) continue;
+          for (const k of ['map', 'normalMap', 'roughnessMap', 'metalnessMap', 'emissiveMap', 'aoMap', 'alphaMap', 'bumpMap']) {
+            const t = m[k]; if (!t || !t.isTexture) continue;
+            t.dispose();
+            if (t.image && typeof t.image.close === 'function') { try { t.image.close(); } catch {} }
+          }
+          m.dispose();
+        }
       }
     });
     zav.model = null; zav.warm = false;
@@ -7647,6 +7767,12 @@ function startChapter(key) {
   for (const el of [ui.complete, ui.result, ui.over, ui.episode]) el?.classList.add('hide');
   document.body.classList.remove('inplay');
   setChapter(key);
+  /* v14.16: setChapter returns early for the chapter already loaded, and
+     after a reload that is chapter 1 whatever the save's episode — so the
+     amulet's charge, loaded from the save at boot, could stay counted against
+     the save's episode inside episode 1. The rule is setChapter's own: a
+     chapter of another episode refills it. */
+  wardEpisode();
   restart();
   enterWorld(() => {
     yaw.position.copy(SPAWN.pos);
@@ -8290,6 +8416,7 @@ function setChapter(key) {
   if (!chapterExists(key)) return false;
   if (key === CH_KEY) return true;                 // already there; not an error
   revealAt = 0;                    // v14.15: a new world is covered until the curtain lifts
+  const leaving = CH_KEY;          // v14.16: whose sounds can be let go (below)
   CH_KEY = key;
   CH = window.__CHAPTERS__[key];
   wardEpisode();                   // v14.7: a new episode recharges the amulet ...
@@ -8301,6 +8428,7 @@ function setChapter(key) {
   applyDaylight();                 // and so is the time of day
   kitReset();                      // v7.0: and the play kit starts clean for it
   silenceChapterLoops();           // and so is the room tone
+  releaseChapterSounds(leaving);   // v14.16: and the chapter left lets its decoded sounds go
   packLoad(key);                   // and its own sounds, if they are not here yet
   /* v5.29: and the right AGE of Master Zav in the equipment panel. Within
      episode 1 every chapter names the same figure, so this is a no-op
@@ -8713,10 +8841,13 @@ function chapterFiles(key) {
     const d = ITEM_DEFS[id];
     if (d && d.model) { out.add(d.model); if (d.art) out.add(d.art); }
   }
-  return [...out].filter(k => HOSTED && ASSET_MAP[k] && !_assetCache[k] && !prefetched.has(k));
+  return [...out].filter(k => HOSTED && ASSET_MAP[k] && !_assetSeen.has(k) && !prefetched.has(k));
 }
 function prefetchAhead(key) {
-  if (!HOSTED || !key) return;
+  /* v14.16: a phone with its DATA SAVER on has said it does not want bytes
+     it did not ask for; the next chapter then loads behind its own curtain */
+  const saver = !!(navigator.connection && navigator.connection.saveData);
+  if (!HOSTED || !key || saver) return;
   for (const k of chapterFiles(key)) if (!prefetchQ.includes(k)) prefetchQ.push(k);
   prefetchPump();
 }
@@ -8726,7 +8857,7 @@ function prefetchPump() {
      come first, and a download ahead must not slow them */
   if (loadPending > 0) { setTimeout(prefetchPump, 2000); return; }
   const k = prefetchQ.shift();
-  if (_assetCache[k] || prefetched.has(k)) return prefetchPump();
+  if (_assetSeen.has(k) || prefetched.has(k)) return prefetchPump();
   prefetchBusy = true; prefetched.add(k);
   const go = () => fetch(ASSET_MAP[k], { priority: 'low' })
     .then(r => (r.ok ? r.arrayBuffer() : null)).catch(() => null)
@@ -8744,6 +8875,43 @@ function curtainItems() {
   for (const id of (Array.isArray(CH.items) ? CH.items : [])) ids.add(id);
   return [...ids].filter(id => ITEM_DEFS[id] && ITEM_DEFS[id].model);
 }
+/* v14.16: DRAW EVERYTHING ONCE, UNDER THE COVER. compile() builds programs
+   for hidden objects too, but a mesh's GEOMETRY reaches the GPU only when
+   it is first drawn — so a thing hidden when the curtain lifts (ch3's
+   full-detail table amulet, the near level of its LOD, a cutscene's props,
+   a ghost) uploaded its buffers on the frame it first appeared, which on a
+   phone is the hitch v14.15 was built to remove. So one frame is drawn with
+   every mesh forced visible, every LOD level shown and nothing culled —
+   onto the real canvas, because the cover over it is opaque and a render
+   TARGET would compile a second set of programs (no tone mapping) that
+   nothing uses. The LIGHTS are exactly the frame's own (a light under a
+   forced-visible group is held dark), so the programs drawn are the ones
+   play will use; the frozen shadow maps are not redrawn with the hidden
+   things in them; and every flag is put back in a finally. */
+function warmGeometry(r, root, cam) {
+  const flips = [], culled = [], lods = [];
+  const walk = (o, hiddenAbove) => {
+    const hidden = hiddenAbove || !o.visible;
+    if (o.isLight) { if (hidden && o.visible) { flips.push(o); o.visible = false; } }
+    else if (!o.visible) { flips.push(o); o.visible = true; }
+    if (o.isLOD) { lods.push([o, o.autoUpdate]); o.autoUpdate = false; }
+    if ((o.isMesh || o.isPoints || o.isLine || o.isSprite) && o.frustumCulled) { culled.push(o); o.frustumCulled = false; }
+    for (const c of o.children) walk(c, hidden);
+  };
+  const sm = r.shadowMap, smAuto = sm.autoUpdate, smNeed = sm.needsUpdate, clr = r.autoClear;
+  try {
+    walk(root, false);
+    sm.autoUpdate = false; sm.needsUpdate = false;
+    r.autoClear = true;
+    r.render(root, cam);
+  } catch { /* a warm frame that fails costs a hitch later, never the chapter */ }
+  finally {
+    for (const o of flips) o.visible = !o.visible;
+    for (const o of culled) o.frustumCulled = true;
+    for (const [o, a] of lods) o.autoUpdate = a;
+    sm.autoUpdate = smAuto; sm.needsUpdate = smNeed; r.autoClear = clr;
+  }
+}
 async function warmWorld(items) {
   const cap = (p, ms) => Promise.race([p, new Promise(r => setTimeout(r, ms))]);
   const up = (r, root) => {
@@ -8755,7 +8923,17 @@ async function warmWorld(items) {
     for (const t of tex) { try { r.initTexture(t); } catch { /* one bad texture must not stop the rest */ } }
   };
   try { up(renderer, scene); up(renderer, vmScene); } catch {}
-  try { await cap(Promise.all([renderer.compileAsync(scene, camera), renderer.compileAsync(vmScene, vmCam)]), 15000); } catch {}
+  /* v14.16: compileAsync only where the driver can compile in the
+     background (KHR_parallel_shader_compile); without it three blocks on
+     each program anyway and says so on the console, so the plain compile
+     does the same work without the warning */
+  try {
+    const par = renderer.extensions && renderer.extensions.has && renderer.extensions.has('KHR_parallel_shader_compile');
+    if (par) await cap(Promise.all([renderer.compileAsync(scene, camera), renderer.compileAsync(vmScene, vmCam)]), 15000);
+    else { renderer.compile(scene, camera); renderer.compile(vmScene, vmCam); }
+  } catch {}
+  warmGeometry(renderer, scene, camera);       // v14.16: the geometry of what is hidden, too
+  warmGeometry(renderer, vmScene, vmCam);
   try { zavWarm(); } catch {}
   for (const id of items) {
     if (iv.state[id] !== 'ready') continue;
@@ -8767,15 +8945,31 @@ async function warmWorld(items) {
 }
 function whenWorldReady(then, capMs = WORLD_CAP) {
   const t0 = performance.now();
-  const load = $('chapLoad');
+  /* v14.16: the word goes where the player can see it — on the chapter card
+     when the card is up, and over the black before an opening film, where
+     the card is hidden and the wait used to be a silent black screen */
+  const cardUp = ui.chapter && !ui.chapter.classList.contains('hide');
+  const load = cardUp ? $('chapLoad') : $('worldLoad');
+  const other = cardUp ? $('worldLoad') : $('chapLoad');
+  other?.classList.add('hide');
   const items = curtainItems();
   try { zavInit(); zavLoad(); } catch {}
   for (const id of items) { try { ivModel(id); itemArtGet(id); } catch {} }   // the model and the painted icon
   const seen = new Set(loadLog.filter(r => !r.t1));    // what this wait counts, for the percentage
-  let calm = 0, warming = false, warmedAt = -1;
+  let calm = 0, warming = false, warmedAt = -1, quietSince = -1;
+  /* v14.16: and its SOUNDS. Since the dialogue left the shared pack (build.py,
+     the bus tables), a chapter's lines — its opening line a few seconds into
+     play, every hotspot's answer — live in its own pack, and a line whose
+     pack has not arrived is dropped, not delayed. Both packs resolve on a
+     failure too (packLoad forgets a failed fetch and says so by resolving),
+     so this can only wait for bytes that are actually coming. */
+  let packsIn = false;
+  Promise.all([packLoad(), packLoad(CH_KEY)]).then(() => { packsIn = true; }, () => { packsIn = true; });
+  setTimeout(() => { packsIn = true; }, 20000);   // and never longer than this: sound is not worth a stuck curtain
   const lift = () => {
     load?.classList.add('hide');
     if (!revealAt) revealAt = performance.now();         // the world is uncovered from here (THE LOAD TRACKER)
+    assetsRelease();                                    // v14.16: the world is built; its files are dead weight
     then();
     setTimeout(() => prefetchAhead(nextChapterKey()), 8000);   // and the next chapter starts arriving (DOWNLOAD AHEAD)
   };
@@ -8783,8 +8977,17 @@ function whenWorldReady(then, capMs = WORLD_CAP) {
     const now = performance.now();
     if (now - t0 > capMs) return lift();
     for (const r of loadLog) if (r.t0 >= t0 || !r.t1) seen.add(r);
-    const extras = !zav.loading && items.every(id => iv.state[id] === 'ready' || iv.state[id] === 'none');
-    const quiet = stage.ready() && handsReady && ghostReady && loadPending === 0 && extras;
+    const extras = packsIn && !zav.loading && items.every(id => iv.state[id] === 'ready' || iv.state[id] === 'none');
+    /* v14.16: SETTLED is nothing in flight; the world is READY when the
+       chapter, the hands and the ghost say so. A key model whose download
+       FAILED is settled and never ready — it used to hold the curtain the
+       whole cap (90 s, and on the film path twice); now six quiet seconds
+       with nothing left to arrive is taken as the answer, as the old 12 s
+       cap took it. */
+    const settled = loadPending === 0 && extras;
+    if (settled) { if (quietSince < 0) quietSince = now; } else quietSince = -1;
+    const world = stage.ready() && handsReady && ghostReady;
+    const quiet = settled && (world || now - quietSince > 6000);
     calm = quiet ? calm + 1 : 0;
     if (calm >= 2 && !warming) {
       if (warmedAt >= 0 && loadSeq === warmedAt) return lift();   // warmed, and nothing new since
@@ -8944,8 +9147,19 @@ function enterWorld(place, opts = {}) {
   packWait.then(() => {
     warmIntroSet();
     whenDecoded(introSamples(), () => whenWorldReady(() => {
-      playCineFn(intro, card, 1);
-      cine.film = true;            // v6.4: a skip by gesture may re-lock the mouse (skipFilmOrScene)
+      /* v14.16: and again once the world is ready. The pack wait above gives
+         up at 12 s, and a chapter's LINES live in its own pack now (the bus
+         tables no longer pin them to the shared one) — so on a slow
+         connection the pack could land after the warm, and a film cue with
+         it would find its sample undecoded and play nothing (measured:
+         chapter 2's first line, from the selector, on a busy box). The
+         curtain now waits for the pack, so this warm finds it; and when
+         everything is already decoded, this is immediate. */
+      warmIntroSet();
+      whenDecoded(introSamples(), () => {
+        playCineFn(intro, card, 1);
+        cine.film = true;          // v6.4: a skip by gesture may re-lock the mouse (skipFilmOrScene)
+      });
     }));
   });
 }
@@ -10134,7 +10348,8 @@ window.__enc = { yaw, pitch, stats, getState: () => state,   // v8.7: pitch, so 
                  loads: () => ({ pending: loadPending, revealAt, now: performance.now(), workers: meshoptWorkers,
                                  prefetched: [...prefetched], queued: prefetchQ.slice(),
                                  log: loadLog.map(r => ({ key: r.key, kind: r.kind, t0: Math.round(r.t0), t1: Math.round(r.t1),
-                                   bytes: r.bytes || 0, syncMs: r.syncMs, cbMs: r.cbMs, late: r.late })) }),   // v14.15
+                                   bytes: r.bytes || 0, syncMs: r.syncMs, cbMs: r.cbMs, late: r.late,
+                                   err: r.err || '' })) }),   // v14.15; err v14.16
                  menuOpen, menuClose, menuToggle, openChapters, closeChapters,
                  startChapter, returnToTitle, unlockedKeys, markReached,
                  sealed: sealedResults, markSealed,               // v6.2
@@ -10167,6 +10382,8 @@ window.__enc = { yaw, pitch, stats, getState: () => state,   // v8.7: pitch, so 
                    packs: Object.keys(packLoaded),
                    names: packJson ? Object.keys(packJson).length : 0,
                    decoded: Object.keys(packBufs).length,
+                   /* v14.16: whose decoded sounds are held — a chapter left must hold none */
+                   decodedBy: Object.keys(packBufs).reduce((o, n) => { const k = packOwner[n] || 'shared'; o[k] = (o[k] || 0) + 1; return o; }, {}),
                    loops: Object.fromEntries(Object.entries(packLoops)
                      .map(([k, v]) => [k, +v.want.toFixed(3)])),
                    bed: !!bedSrc, nar: !!narSrc,

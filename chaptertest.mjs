@@ -372,7 +372,48 @@ if (VOICE && Array.isArray(VOICE.LINES)) {
   };
   const rawK = k => k, smoothK = k => k * k * (3 - 2 * k);
   let scanned = 0;
+  /* v14.16: AND EVERY CUE A CUTSCENE FIRES IS ONE THE ENGINE WARMS. The
+     engine decodes a scene's sounds before it can start by READING THE
+     SCENE'S OWN SOURCE (cuesOf, CUE_RE) — so a cue fired from a helper the
+     scene calls is invisible to it, and a sample-only cue that has not
+     decoded plays nothing. This is the v10.2 law (the encik's lines, silent
+     on a fresh load), and it was live in episode 1: chapter 5's sitDown()
+     fired 'sitdown' from outside scene A's source and was silent after any
+     reload. The model below is the engine's, read out of main.js, so the
+     check cannot drift from what the engine really warms. */
+  const cueReLit = mainJs.match(/const CUE_RE = (\/.*\/g);/);
+  const CUE_RE_SRC = cueReLit ? (0, eval)(cueReLit[1]) : null;
+  if (!CUE_RE_SRC) errs.push('ERR could not read CUE_RE out of src/main.js');
+  const quoted = s => [...String(s).matchAll(/'([a-zA-Z0-9_]+)'/g)].map(m => m[1]);
+  const bedLit = mainJs.match(/const INTRO_BED = \[([\s\S]*?)\];/);
+  const INTRO_BED = new Set(bedLit ? quoted(bedLit[1]) : []);
+  if (!INTRO_BED.size) errs.push('ERR could not read INTRO_BED out of src/main.js');
+  const sdAt = mainJs.indexOf('function startDecision()');
+  const sdEnd = mainJs.indexOf('for (const sc of (CH.scenes', sdAt);
+  const DECISION_WARM = new Set(sdAt > 0 && sdEnd > sdAt ? quoted(mainJs.slice(sdAt, sdEnd)) : []);
+  if (!DECISION_WARM.size) errs.push('ERR could not read startDecision\'s warm list out of src/main.js');
+  const samplesOf = kinds => {
+    const out = new Set();
+    for (const k of kinds) {
+      if (k === 'step') { ['step1', 'step2', 'step3', 'step4'].forEach(n => out.add(n)); continue; }
+      if (STING_TO_SAMPLE[k]) out.add(STING_TO_SAMPLE[k]);
+    }
+    return out;
+  };
+  const cuesOfSrc = fn => (CUE_RE_SRC && typeof fn === 'function')
+    ? [...Function.prototype.toString.call(fn).matchAll(CUE_RE_SRC)].map(m => m[1]) : [];
+  const chapSrcOf = {};
+  for (const f of files) chapSrcOf[f.split('/').pop().replace(/\.js$/, '')] = readFileSync(join(chapDir, f), 'utf8');
+  let warmChecked = 0;
   for (const [key, ch] of Object.entries(chapters)) {
+    /* what the chapter warms itself: warmSounds('x') / warmSounds(['x', ...]) */
+    const csrc = chapSrcOf[key] || '';
+    const ownWarm = new Set();
+    for (const m of csrc.matchAll(/warmSounds\(\s*(\[[^\]]*\]|'[a-zA-Z0-9_]+')/g)) quoted(m[1]).forEach(n => ownWarm.add(n));
+    const sceneWarm = new Set([...DECISION_WARM, ...ownWarm,
+      ...samplesOf((ch.scenes || []).flatMap(cuesOfSrc)),
+      ...(ch.choices || []).map(c => (ch.sayPrefix || 'v') + c.k)]);
+    const introWarm = new Set([...INTRO_BED, ...samplesOf(cuesOfSrc(ch.intro))]);   // a film WAITS for these (whenDecoded); a warmSounds name it does not wait for
     const list = [];
     if (typeof ch.intro === 'function') list.push(['intro', ch.intro]);
     (ch.scenes || []).forEach((fn, i) => { if (typeof fn === 'function') list.push([`scene ${'ABCD'[i] || i}`, fn]); });
@@ -395,6 +436,14 @@ if (VOICE && Array.isArray(VOICE.LINES)) {
       try { fn(anyProxy(), anyProxy(), api); }
       catch (e) { bad(key, `${label} could not be walked for its cue times — ${e.message}`); continue; }
       scanned++;
+      const warm = label === 'intro' ? introWarm : sceneWarm;
+      for (const n of samplesOf(cues.map(q => q.kind))) {
+        warmChecked++;
+        if (!warm.has(n)) bad(key, `${label} fires '${n}' but nothing warms it before it plays — ` +
+                                   `the engine reads cues from the ${label === 'intro' ? 'film' : 'scene'}'s own source, ` +
+                                   `so a cue fired from a helper is silent until something else has decoded it ` +
+                                   `(write the sfx literally in the ${label === 'intro' ? 'film' : 'scene'}, or ctx.warmSounds it in build())`);
+      }
       const dur = Math.max(1, ...tracks);
       for (const q of cues) {
         if (q.at > dur + 1e-9) {
@@ -405,6 +454,85 @@ if (VOICE && Array.isArray(VOICE.LINES)) {
     }
   }
   console.log(`cue timing: ${scanned} cutscenes walked, every cue inside its own length`);
+  console.log(`cue warming: ${warmChecked} fired samples checked against what the engine warms`);
+}
+
+/* --- v14.16: WHAT A CHAPTER LOADS, IT DECLARES; WHAT A RIG PLAYS, ITS FILE HAS --
+   (1) The download ahead (v14.15) fetches the next chapter's `assets` list
+   into the HTTP cache while this one is played. A model a chapter loads but
+   never lists is simply not fetched ahead, and loads behind the next
+   curtain instead — chapter 2's whole bedroom (v5.17), e2c1's bunks (v9.0)
+   and e2c2's flagpole ghost (v10.8) had been doing that. So every literal
+   model or picture a chapter asks a loader for is in its own list.
+   (2) `rig.play('X')` on a take the rig's file does not carry returns false
+   with no error, and the man stands in his bind pose: v8.0 ('Idle_9'), v8.1
+   ('mixamo.com') and v11.2 ('Idle_6', two releases) all shipped that way,
+   and a take was said to be uncheckable because it is not an asset key. It
+   is checkable: a GLB's clip names are in its JSON chunk. Every literal
+   `idle:` a mkRig call names, and every `v.play('X')` on a variable bound to
+   a mkRig, must be a clip in that rig's own file; and every literal take a
+   chapter names anywhere must be in SOME model the chapter declares. */
+{
+  const assetPath = {};
+  for (const m of buildPy.matchAll(/'(\w+)':\s*\('([^']+)'/g)) assetPath[m[1]] = m[2];
+  const LOADERS = ['assetBytes', 'loadImageTexture', 'loadGLB', 'loadGltf', 'mkCrowd', 'mkRig', 'placeAmmo', 'parseOnce'];
+  /* a load that is written but parked on purpose, with the reason */
+  const PARKED = { ch1: new Set(['amulet']) };   // SHOW_AMULET = false since v3.x: built, verified, kept out
+  const clipsOf = {};
+  for (const [k, p] of Object.entries(assetPath)) {
+    if (!p.endsWith('.glb') || !existsSync(join(DIR, p))) continue;
+    try {
+      const b = readFileSync(join(DIR, p));
+      if (b.readUInt32LE(0) !== 0x46546C67) continue;
+      const j = JSON.parse(b.subarray(20, 20 + b.readUInt32LE(12)).toString('utf8'));
+      clipsOf[k] = new Set((j.animations || []).map(a => a.name));
+    } catch (e) { bad('build.py', `${p} could not be read for its clips — ${e.message}`); }
+  }
+  let loadsChecked = 0, takesChecked = 0;
+  for (const f of files) {
+    const key = f.split('/').pop().replace(/\.js$/, '');
+    const ch = chapters[key]; if (!ch) continue;
+    const src = readFileSync(join(chapDir, f), 'utf8');
+    const decl = new Set(ch.assets || []);
+    for (const m of src.matchAll(new RegExp(`\\b(${LOADERS.join('|')})\\(\\s*'(\\w+)'`, 'g'))) {
+      const k = m[2];
+      if (!assetPath[k] || !/\.(glb|webp|jpe?g|png)$/.test(assetPath[k])) continue;
+      loadsChecked++;
+      if (!decl.has(k) && !(PARKED[key] && PARKED[key].has(k))) {
+        bad(key, `${m[1]}('${k}') loads a model or picture the chapter's assets list does not name — ` +
+                 `the download ahead never fetches it, so it loads behind the next curtain instead`);
+      }
+    }
+    const consts = Object.fromEntries([...src.matchAll(/const ([A-Z_][A-Z0-9_]*)\s*=\s*'([^']+)'/g)].map(m => [m[1], m[2]]));
+    const rigOf = {};
+    for (const m of src.matchAll(/(?:const|let)\s+(\w+)\s*=\s*mkRig\('(\w+)'/g)) rigOf[m[1]] = m[2];
+    const has = (k, take) => clipsOf[k] && clipsOf[k].has(take);
+    for (const m of src.matchAll(/mkRig\('(\w+)'\s*,\s*\{([^}]*)\}/g)) {
+      const im = m[2].match(/\bidle:\s*(?:'([^']+)'|([A-Z_][A-Z0-9_]*)\b)/);
+      if (!im || !clipsOf[m[1]]) continue;
+      const take = im[1] || consts[im[2]];
+      if (take === undefined) continue;
+      takesChecked++;
+      if (!has(m[1], take)) bad(key, `mkRig('${m[1]}') idles on '${take}', which ${assetPath[m[1]]} does not carry — he would stand in his bind pose`);
+    }
+    for (const m of src.matchAll(/\b(\w+)\.play\('([^']+)'/g)) {
+      const k = rigOf[m[1]]; if (!k || !clipsOf[k]) continue;
+      takesChecked++;
+      if (!has(k, m[2])) bad(key, `${m[1]}.play('${m[2]}') — ${assetPath[k]} has no such take`);
+    }
+    const union = new Set();
+    for (const a of decl) for (const c of (clipsOf[a] || [])) union.add(c);
+    if (union.size) {
+      const names = new Set();
+      for (const m of src.matchAll(/\.play\('([^']+)'/g)) names.add(m[1]);
+      for (const m of src.matchAll(/\bidle:\s*'([^']+)'/g)) names.add(m[1]);
+      for (const n of names) {
+        takesChecked++;
+        if (!union.has(n)) bad(key, `the take '${n}' is in no model this chapter declares`);
+      }
+    }
+  }
+  console.log(`declared loads: ${loadsChecked} literal loads checked; takes: ${takesChecked} checked against the models' own clips`);
 }
 
 console.log('errors:', errs.length ? errs : 'none');

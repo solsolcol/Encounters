@@ -96,6 +96,13 @@ for (const key of ['ch3', 'e2c1', 'e2c2', 'e2c3', 'e2c4', 'e2c5']) {
   });
   ok(`${key}: nothing in the world is NaN`, nan.length === 0, nan.slice(0, 4).join(', '));
 
+  /* v14.16: and no model it loads failed — the loader records a parse that
+     failed, or a chapter's own onLoad that threw half-way through placing
+     its model, and says so on the console; a chapter's `() => {}` onError
+     used to be the end of it (the v12.2 rifle, the v8.5 capsules) */
+  const lerr = await p.evaluate(() => window.__enc.loads().log.filter(l => l.err).map(l => `${l.key} (${l.kind}): ${l.err}`));
+  ok(`${key}: every model it loads lands`, lerr.length === 0, lerr.slice(0, 4).join(' | '));
+
   ok(`${key}: spawn is on open floor`, r.spawnFree);
   for (const t of r.targets)
     ok(`${key}: can WALK to ${t.what}`, t.reach, t.reach ? '' : `(${t.x.toFixed(2)}, ${t.z.toFixed(2)}) unreachable on foot`);

@@ -83,7 +83,7 @@ from his **phone**. Consequences:
 One source, two builds, built by `npm run build` (esbuild → `build.py` →
 `wrap.py`):
 
-- `src/main.js` — THE ENGINE (~3400 lines): renderer, input, viewmodel
+- `src/main.js` — THE ENGINE (~10,400 lines since v14; ~3400 at v4.1): renderer, input, viewmodel
   hands, ghost system, audio, cutscene engine + its language, UI flow,
   sky, sanity, inventory. It owns everything every chapter shares and
   nothing that belongs to one.
@@ -3991,6 +3991,58 @@ What the baseline contains, by release:
   longer (the work that used to stutter mid-play is done there), and the
   figure and a chapter's items sit in GPU memory from the start.
   docs/V14.15-SMART-LOADING.md is the build's memory, before and after.
+- **v14.16** THE AUDIT — Chad: *"How sure are you that your improvements have
+  not silently broken anything? … If a change is a clear and objectively
+  superior solution, then the objectively superior solution should be
+  adopted … But you have to be very sure about it."* Three angles, so none had
+  to be right alone: an adversarial review of v14.12–v14.15 (eight seams, every
+  removed line, each finding traced twice — is it real, can a player reach
+  it), three idea rounds, and measurement on the hosted build before and after
+  every change. SEVENTEEN defects fixed, eleven of them from v14.12–v14.15 and
+  so mine: a throwing model callback swallowed by the v14.15 wrapper; a
+  synchronous parse throw leaving a load in flight for ever; the 3.8 MB music
+  counted as a world load; a FAILED download holding the curtain its whole
+  90 s (six quiet seconds now); the film path's wait a silent black screen
+  (`#worldLoad`); hidden things' GEOMETRY uploading mid-play — ch3's
+  full-detail amulet, ~21 MB, on the frame the player reached for it
+  (`warmGeometry`: one covered frame with everything forced visible, measured
+  2 uploads → 0); `compileAsync` where the driver cannot compile in the
+  background; every file's raw bytes kept all session (`assetsRelease` at the
+  lift: a six-chapter journey's heap 204 → 147 MB at e2c1, 173 → 106 at ch2);
+  the download ahead ignoring Save-Data; episode 2's spent amulet carried into
+  an episode-1 chapter picked from the selector after a reload; ch3's amulet
+  losing its shadow after a Continue at the table; the soldier's normal and
+  metal maps outliving an episode swap. And six older ones:
+  **`decodeAudioData` DETACHES its buffer**, so chapter 1's opening line never
+  played on a return visit in one sitting (since v2.x); ch5 scene A's chair
+  scrape, fired from a helper the warm-up cannot read (since v5.0); three
+  chapters loading models they never declared, so the download ahead missed
+  them; an opening film warming its sounds after at most 12 s of waiting for
+  its pack (harmless until the lines moved — menutest caught it, and the film
+  now warms again once the curtain is down); and the boot asking for every
+  chapter's opening line as a FILE, though only chapter 1's is one. THE ARCHITECTURE: **the dialogue left the shared sound pack** —
+  build.py read the four BUS tables (which bus a line plays through) as "the
+  engine plays these" and pinned all 273 spoken lines to it, so it had grown
+  from v4.2's 3.9 MB to **19.6 MB opus / 33.2 MB mp3**, every player's boot
+  download; it is **6.4 / 9.4 MB** now, each line in the one chapter that
+  speaks it, the curtain waiting for the shared and the chapter's pack (never
+  more than 20 s); the single-file build 134 → 112 MB. A chapter LEFT lets its
+  sounds go: its loops are STOPPED (a source at gain 0 still plays — thirty-odd
+  ran silently by the end of episode 2), its decoded audio released, and a
+  warm list never re-decodes another chapter's (`packOwner`). A loader that
+  fails is never silent (`r.err`, the console, and walktest fails on it). And
+  chaptertest checks three things said to be uncheckable, no new harness:
+  every cue a cutscene fires is one the engine warms (54 cutscenes, 422 cues),
+  every model a chapter loads is in its `assets` (91 loads), every take a rig
+  plays is a clip in its own file (59 takes, read from the GLB's JSON) — each
+  proven by breaking what it guards. Left for Chad, with the reasons
+  (docs/V14.16-THE-AUDIT.md §4): pausing sound in the background (Android;
+  cannot be tested on an iPhone here), a lower frame rate behind the
+  equipment panel (a feel change), sharing ch3's two Phiboon parses,
+  rebuilding an episode-2 chapter on a selector replay, an engine-owned clock
+  for episode 3, and moving CLAUDE.md's history out (~84k tokens loaded every
+  session). No word moved; sheet v74 stands.
+  docs/V14.16-THE-AUDIT.md is the build's memory.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so

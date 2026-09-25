@@ -96,7 +96,8 @@
        models — the bunks, the two sleeper files — and the trees outside;
        the cookhouse gets Chad's staff and his food warmers. */
     assets: ['admintee', 'encik2', 'bunkbed', 'sleeper', 'sleepanim',
-             'tree1', 'tree2', 'tree3', 'tree4', 'cafestaff', 'foodwarmer'],
+             'tree1', 'tree2', 'tree3', 'tree4', 'cafestaff', 'foodwarmer',
+             'fbosling'],   // v14.16: the flagpole ghost (v10.8), declared
 
     /* v10.1: the cookhouse is LOUD. Four loops layered over the room tone —
        the men talking (`cookchat`), the kitchen behind the hatch

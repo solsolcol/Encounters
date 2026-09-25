@@ -934,7 +934,13 @@
       m.position.y = AM_H / 2;                        // and centred: its foot on the cushion
       m.traverse(o => {
         if (!o.isMesh) return;
-        o.castShadow = !LOW && !near;                 // one shadow caster is plenty; the far level casts it
+        /* v14.16: BOTH levels cast. The shadow map is drawn on demand, in
+           whatever frame comes next, and LOD shows only one level in it — so
+           a redraw taken while the camera stood inside AM_NEAR (a Continue
+           saved at the table) used to leave the amulet with no shadow for
+           the rest of the chapter. Only one level is ever visible, and an
+           on-demand map costs nothing per frame. */
+        o.castShadow = !LOW;
         for (const mt of (Array.isArray(o.material) ? o.material : [o.material])) {
           if (mt && mt.emissive) { mt.emissive.set(0xffffff); mt.emissiveIntensity = 0; amMats.push(mt); }
         }

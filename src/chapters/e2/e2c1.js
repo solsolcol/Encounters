@@ -93,7 +93,7 @@
        stopped being downloaded (4.1 MB off e2c1's asset bill). The key stays
        in build.py for a later chapter. */
     assets: ['fbosling', 'admintee', 'botak', 'encik2', 'sleeper', 'sleepanim',
-             'tree1', 'tree2', 'tree3', 'tree4', 'hdb'],
+             'tree1', 'tree2', 'tree3', 'tree4', 'hdb', 'bunkbed'],   // v14.16: bunkbed declared (v9.0 loaded it undeclared)
 
     /* the explore music bed is chapter 1's title theme and has no place in a
        bunk; this chapter's own bed (e2bed) is a loop the night starts. */

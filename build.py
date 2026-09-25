@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "14.15"
+VERSION = "14.16"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -88,6 +88,20 @@ def _brace_span(text, pat):
 _ta, _tb = _brace_span(src, r"const STING_SAMPLE\s*=\s*\{")
 KIND_SAMPLE = dict(re.findall(r"(\w+)\s*:\s*\[\s*'([a-z0-9_]+)'", src[_ta:_tb]))
 _engine_src = re.sub(r"packWarm\(\[[^\]]*\]", "packWarm([", src[:_ta] + src[_tb:], flags=re.S)
+# v14.16: and the four BUS tables are excluded for the same reason. JAMES_TAKES,
+# TEEN_TAKES, CAST_TAKES and WHISPER_TAKES say which audio bus a line plays
+# through WHEN it plays; they play nothing. Because they name every spoken line
+# in the game, reading them as "the engine plays these" pinned all 273 lines to
+# the SHARED pack — so every player downloaded every chapter's dialogue at boot
+# (the shared pack had grown to 19.6 MB opus / 33.2 MB mp3 against the 3.9 MB
+# v4.2 split it to). A line the engine really plays by name (the scares, the
+# faint, the lost line) is named elsewhere in main.js and stays shared. Each
+# table must be FOUND, so renaming one breaks the build instead of quietly
+# moving every line back.
+for _tbl in ('JAMES_TAKES', 'TEEN_TAKES', 'CAST_TAKES', 'WHISPER_TAKES'):
+    _engine_src, _n = re.subn(r"const %s = new Set\(\[[^\]]*\]\)" % _tbl,
+                              "const %s = new Set([])" % _tbl, _engine_src, flags=re.S)
+    assert _n == 1, f'{_tbl} not found in main.js (build.py blanks it out of the engine scan)'
 
 audio_dir = d / 'assets' / 'audio'          # the mp3s, exactly as they shipped
 opus_dir = d / 'assets' / 'audio-opus'      # the same sounds, smaller

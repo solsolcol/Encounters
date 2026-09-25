@@ -114,7 +114,8 @@
        new, and the most Singaporean thing in the shot. hellnote is the note
        itself, sitting on the desk where he left it: the thread out of chapter
        one, and also what the engine's in-hand note prop is textured from. */
-    assets: ['hdb', 'hellnote', 'mother', 'motheranim', 'altar'],
+    assets: ['hdb', 'hellnote', 'mother', 'motheranim', 'altar',
+             'bed', 'wardrobe', 'table', 'chair', 'curtain'],   // v14.16: the v5.17 bedroom, declared so the download ahead fetches it
     noteArt: 'hellnote',
 
     /* No `voiceLine`. Chapter 1 opens on silence and gives him a line three

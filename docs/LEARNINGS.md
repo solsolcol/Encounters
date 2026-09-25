@@ -4726,3 +4726,67 @@ static check (chaptertest) keeps the declaration honest. And a shell wait of
 command line contains `probe.mjs` — wait on the probe's OUTPUT, not its name.
 Measure "is the loading smart" as a number: a load that lands after the world
 was uncovered is a pop-in, and the tracker (`__enc.loads()`) counts them.
+
+## v14.16 — decodeAudioData DETACHES the buffer it is given
+
+`actx.decodeAudioData(bytes)` takes ownership of the ArrayBuffer: afterwards
+it is zero bytes long. `assetBytes` hands every caller the SAME cached
+promise, so the second decode of a cached file (chapter 1's opening line on a
+return visit in one sitting — the selector, New game) decoded nothing, the
+empty `.catch` swallowed the error, and the line never played again until the
+page was reloaded. Never hand a decoder cached bytes: decode `bytes.slice(0)`.
+The same law for anything else that transfers a buffer (a worker's
+`postMessage` with a transfer list).
+
+## v14.16 — a mesh reaches the GPU when it is first DRAWN, not when it is compiled
+
+`compile()`/`compileAsync()` walk every material, hidden ones included, and
+build the PROGRAMS. They upload no geometry: three creates a mesh's vertex and
+index buffers inside the render list, for meshes that are visible and in the
+frustum. So everything hidden when a curtain lifts — the near level of a LOD,
+a cutscene's props, a ghost — uploaded its buffers on the frame it first
+appeared (ch3's full-detail amulet: ~21 MB, on the frame the player reached
+for it). The fix draws ONE frame under the cover with every mesh forced
+visible, every LOD level shown and nothing culled, the lights exactly as play
+has them (a light under a forced-visible group is held dark, or the light
+count changes and the frame compiles programs play never uses), the frozen
+shadow maps not redrawn, and every flag restored in a `finally`. Measured with
+`renderer.info.memory.geometries`: 2 → 0 new geometries uploaded on the walk
+to the table.
+
+## v14.16 — a routing table is not usage; measure the download every release
+
+build.py decides which pack a sound lives in by reading who can ASK for it,
+and it read every quoted sound name in main.js as "the engine plays this".
+The four BUS tables (JAMES_TAKES, TEEN_TAKES, CAST_TAKES, WHISPER_TAKES) name
+every spoken line in the game so the engine knows which bus to send it
+through — they play nothing — and they pinned all 273 lines to the SHARED
+pack. Over ten releases the shared pack grew from v4.2's 3.9 MB to 19.6 MB
+(opus; 33.2 MB mp3), every new line of every chapter downloaded by every
+player at boot, and no harness noticed because none measured it. A table
+that names things is not a table that uses them; and a size that matters
+(the first download) is a number to print and compare at every release.
+
+## v14.16 — a source at gain 0 is still playing
+
+`silenceChapterLoops()` set a left chapter's beds to zero and kept them
+RUNNING: a looping AudioBufferSourceNode at gain 0 is still mixed on the audio
+thread every block, and holds its decoded buffer. By the end of episode 2 a
+long session carried thirty-odd inaudible loops. Silencing is not stopping:
+retire the source (fade, then `stop()`, then disconnect) when nothing will
+ask for it again. The same for decoded audio: a chapter's own pack is asked
+for by that chapter alone, so leaving it lets its buffers go, and coming back
+decodes them again exactly as a fresh load does — a state every harness
+already tests.
+
+## v14.16 — a wrapper must keep its callee's failure mode
+
+v14.15 wrapped every GLTF parse's callbacks to count loads. three's
+`GLTFParser.parse` ends `.then(onLoad).catch(onError)`, so a caller that
+passed NO onError used to get an unhandled rejection when its own onLoad
+threw — which is what walktest's pageerror net catches. The wrapper always
+passed an onError, and the throw vanished. A wrapper for bookkeeping has to
+reproduce the error path it replaced (here: re-raise as an unhandled
+rejection when the caller had no handler), and three's `parse` can also
+throw SYNCHRONOUSLY (a GLB whose JSON chunk will not parse is outside its
+try), which must end the load's record or the tracker waits for ever.

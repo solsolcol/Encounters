@@ -136,9 +136,15 @@
     const { THREE, GLTFLoader, scene, camera, yaw, LOW,
             assetBytes, rescueTextures, redoShadows,
             cnv, makeSoftDot, makeConcrete, makeLacquer,
-            makeHellNote, getState, startDecision, worldSfx, HEAD_RE } = ctx;
+            makeHellNote, getState, startDecision, worldSfx, HEAD_RE, warmSounds } = ctx;
 
     const SHRINE = new THREE.Vector3(DATA.shrine.x, 0, DATA.shrine.z);
+    /* v14.16: scene A's chair scrape is fired from sitDown(), a helper, and
+       the engine finds a scene's sounds by reading the scene's own source —
+       so it was never decoded for this chapter, and after any reload (or a
+       Continue that skipped chapter 4's decision) scene A sat down in
+       silence. Warmed here the way chapter 3 warms its amulet line. */
+    if (warmSounds) warmSounds(['sitdown']);
 
     const owned = [];
     let alive = true;

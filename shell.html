@@ -1129,6 +1129,7 @@ body.invopen .soundBtn{display:none}
    it dissolves and the night shows through the card — which is what makes
    every card read as glass, not just the one scene that ended clear. */
 #cineFade.clearing{transition:opacity .42s var(--ease);opacity:0}
+#worldLoad{position:fixed;left:0;right:0;bottom:max(12vh,calc(env(safe-area-inset-bottom) + 64px));text-align:center;z-index:5;opacity:.6;pointer-events:none}   /* v14.16 */
 .cineBar{position:fixed;left:0;right:0;height:11vh;background:#000;z-index:4;
   transition:transform .55s var(--ease);pointer-events:none}
 #barTop{top:0;transform:translateY(-101%)}
@@ -1787,6 +1788,8 @@ body.hasTorch.unlockopen .torchBtn{display:none}
 <!-- v8.7: one screen flash, fired by the kit — a reached place, a beat landing -->
 <div id="hudflash"></div>
 <div id="cineFade"></div>
+<!-- v14.16: the loading word over the black before an opening film (the chapter card is hidden there) -->
+<span class="stencil hide" id="worldLoad" data-t="chapter.loading">Loading&hellip;</span>
 <div id="barTop" class="cineBar"></div>
 <div id="barBot" class="cineBar"></div>
 <button id="cineSkip" class="hide" type="button" data-t="cine.skip">Skip &#9656;</button>
