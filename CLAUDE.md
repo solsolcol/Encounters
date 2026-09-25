@@ -3890,7 +3890,10 @@ What the baseline contains, by release:
   `banner`, and the fixture proves a hit that leaves charge cracks once, the
   emptying hit breaks once with the banner up and does not crack, a spent
   amulet does neither, and a bleed cracks on its ticks and breaks exactly
-  once. Sheet v72 exported (six rows; v44 stays the link).
+  once. Sheet v72 exported (six rows; v44 stays the link). Harnesses
+  fixture, inv, state, text (taught the composed `rarity.*` keys), csp,
+  chapter, sanity, resume. Deploy `6ab61e9380609f20944cb4d3`, byte-verified
+  (index.html and all 102 build files).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
