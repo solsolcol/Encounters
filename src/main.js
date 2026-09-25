@@ -6085,20 +6085,30 @@ function wardBroke() {
   snd('wardbreak', 1);
   haptic([60, 40, 140]);
   const el = $('wardBreak'); if (!el) return;
-  el.classList.remove('on', 'hide'); void el.offsetWidth;   // restart the animation if it is already up
+  el.classList.remove('on', 'out', 'hide'); void el.offsetWidth;   // restart the animation if it is already up
   el.classList.add('on');
-  /* it goes when its OWN fade-out has played (wbOut), never on a wall-clock
-     timer alone: on a phone running a frame a second the animation starts
-     late, and a timer hid it before it had ever been drawn (measured on
-     this box: opacity 0 at 0.7 s, gone at 1.6). The timer stays only as the
-     backstop for a page whose animations never run at all. */
+  /* it must be SEEN (the v13.1 law): it stays until it has been up for 3.4 s
+     of wall time AND twenty drawn frames, then fades out and hides when that
+     fade has played. A wall-clock timer alone hid it before it was ever
+     drawn — measured on this box: the page froze 6.8 s after the hit and a
+     timed banner had come and gone inside the freeze. The long timer is
+     only the backstop for a page whose frames and animations never run. */
+  wbShownAt = performance.now(); wbFrames = 0;
+  cancelAnimationFrame(wbRaf); wbRaf = requestAnimationFrame(wbTick);
   clearTimeout(wardBrokeTimer);
-  wardBrokeTimer = setTimeout(wardBreakHide, 12000);
+  wardBrokeTimer = setTimeout(wardBreakHide, 60000);
+}
+let wbShownAt = 0, wbFrames = 0, wbRaf = 0;
+function wbTick() {
+  const el = $('wardBreak'); if (!el || !el.classList.contains('on')) return;
+  wbFrames++;
+  if (wbFrames >= 20 && performance.now() - wbShownAt >= 3400) { el.classList.add('out'); return; }
+  wbRaf = requestAnimationFrame(wbTick);
 }
 function wardBreakHide() {
   const el = $('wardBreak'); if (!el) return;
-  clearTimeout(wardBrokeTimer);
-  el.classList.remove('on'); el.classList.add('hide');
+  clearTimeout(wardBrokeTimer); cancelAnimationFrame(wbRaf);
+  el.classList.remove('on', 'out'); el.classList.add('hide');
 }
 $('wardBreak')?.addEventListener('animationend', e => { if (e.animationName === 'wbOut') wardBreakHide(); });
 

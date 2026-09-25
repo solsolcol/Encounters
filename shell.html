@@ -200,7 +200,8 @@ body.inplay #nofire.on{display:block;animation:noFire .30s ease-out}
   box-shadow:0 0 34px rgba(255,90,72,.35),0 0 60px rgba(246,203,62,.18),0 8px 28px rgba(0,0,0,.6);
   backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
 #wardBreak.hide{display:none}
-#wardBreak.on{animation:wbIn .55s cubic-bezier(.2,1.6,.4,1) both,wbOut .6s ease-in 3.4s forwards}
+#wardBreak.on{animation:wbIn .55s cubic-bezier(.2,1.6,.4,1) both}
+#wardBreak.on.out{animation:wbOut .6s ease-in forwards}   /* added by wbTick() once it has been seen */
 #wardBreak .wbIcon{width:40px;height:40px;flex:0 0 auto;color:#F6CB3E;
   filter:drop-shadow(0 0 8px rgba(246,203,62,.7));animation:wbIcon .9s ease-out both}
 #wardBreak .wbText{display:flex;flex-direction:column;gap:2px;min-width:0}
