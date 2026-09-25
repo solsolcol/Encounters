@@ -1032,7 +1032,7 @@ function treeKit() {
 /* v15: every engine optimization has a switch, ON by default, so a probe can
    draw the SAME frozen frame with it off and on and compare every pixel —
    the proof that an optimization changed nothing on screen. */
-const OPT = { instCull: true };
+const OPT = { instCull: true, sphereCull: true };
 const instCull = new Set();
 const _icPV = new THREE.Matrix4(), _icLocal = new THREE.Matrix4(), _icFr = new THREE.Frustum(),
       _icM = new THREE.Matrix4(), _icV = new THREE.Vector3();
@@ -1058,10 +1058,60 @@ function cullEachInstance(im) {
   if (im.instanceColor) im.instanceColor.setUsage(THREE.DynamicDrawUsage);
   instCull.add(im);
 }
+/* v15: SPHERE CULLING, for the things three.js cannot cull by itself. A
+   skinned clone that draws a pose from a skeleton somewhere else (chapter 3's
+   seated crowd: 'detached' bind mode, one offstage skeleton per pose) has no
+   bounds of its own that mean anything, so it is marked frustumCulled=false
+   and drawn whichever way the player looks — 70 meshes and 255 k triangles
+   in the tent, all of them skinned. The chapter hands the engine a root and a
+   generous sphere in the root's own space; while that sphere is wholly
+   outside the camera's frustum, every mesh under the root is taken off the
+   camera's LAYERS. Not its visibility (a chapter owns that) and not its
+   boundingSphere (three sorts by that sphere's centre, and a changed sort key
+   can change what a transparent pass blends): a layer the camera does not
+   draw is exactly what frustum culling is, and nothing else moves. Shadow-map
+   frames and the loading warm-up restore everything. */
+const sphereCull = new Set();
+const _scV = new THREE.Vector3();
+function cullBySphere(root, cx, cy, cz, radius) {
+  const meshes = [];
+  root.traverse(o => { if (o.isMesh || o.isPoints || o.isLine || o.isSprite) meshes.push(o); });
+  if (!meshes.length || !(radius > 0)) return;
+  root.userData.__sc = { c: new THREE.Vector3(cx, cy, cz), r: radius, meshes, masks: meshes.map(m => m.layers.mask), out: false,
+                         casts: meshes.some(m => m.castShadow) };
+  sphereCull.add(root);
+}
+function sphereCullShow(root) {
+  const u = root.userData.__sc;
+  if (!u || !u.out) return;
+  u.meshes.forEach((m, i) => { m.layers.mask = u.masks[i]; });
+  u.out = false;
+}
+function cullSpheres(cam, shadowFrame, frustum) {
+  for (const root of sphereCull) {
+    const u = root.userData.__sc;
+    if (!u || !root.parent) { if (u) sphereCullShow(root); sphereCull.delete(root); continue; }
+    let inside = true;
+    if (OPT.sphereCull && !(shadowFrame && u.casts)) {
+      root.updateWorldMatrix(true, false);
+      _scV.copy(u.c).applyMatrix4(root.matrixWorld);
+      const r = u.r * root.matrixWorld.getMaxScaleOnAxis();
+      for (const pl of frustum.planes) if (pl.distanceToPoint(_scV) < -r) { inside = false; break; }
+    }
+    if (inside) { if (u.out) sphereCullShow(root); }
+    else if (!u.out) {
+      u.meshes.forEach((m, i) => { u.masks[i] = m.layers.mask; m.layers.mask = 0; });   // remember whatever it had
+      u.out = true;
+    }
+  }
+}
+function sphereCullAll(show) { for (const root of sphereCull) if (show) sphereCullShow(root); }
+const _scFr = new THREE.Frustum();
 function cullInstances(cam, shadowFrame) {
-  if (!instCull.size) return;
+  if (!instCull.size && !sphereCull.size) return;
   cam.updateWorldMatrix(true, false);
   _icPV.multiplyMatrices(cam.projectionMatrix, cam.matrixWorldInverse);
+  if (sphereCull.size) { _scFr.setFromProjectionMatrix(_icPV); cullSpheres(cam, shadowFrame, _scFr); }
   for (const im of instCull) {
     const u = im.userData.__ic;
     if (!u || !im.parent) { instCull.delete(im); continue; }
@@ -3824,6 +3874,10 @@ const CHCTX = {
      play-time narration is one line on a timer, not something a player asks
      for at a moment of their choosing. */
   warmSounds: (names) => { for (const n of (Array.isArray(names) ? names : [names])) WARM_WANT.add(n); },
+  /* v15: SPHERE CULLING — a root whose meshes three cannot cull (a skinned
+     clone posed from a skeleton elsewhere), culled by a generous sphere in
+     the root's own space: (root, cx, cy, cz, radius) */
+  cullBySphere,
   /* THE HEAD BONE, named once for everybody (v5.01). Every rigged human in
      this game is a Mixamo skeleton, and glTF SANITIZES its node names:
      `mixamorig:Head_06` in the file is `mixamorigHead_06` in the scene. The
@@ -8990,6 +9044,7 @@ function curtainItems() {
    play will use; the frozen shadow maps are not redrawn with the hidden
    things in them; and every flag is put back in a finally. */
 function warmGeometry(r, root, cam) {
+  sphereCullAll(true);                 // v15: everything the sphere culling took off the camera goes back for the warm frame
   const flips = [], culled = [], lods = [];
   const walk = (o, hiddenAbove) => {
     const hidden = hiddenAbove || !o.visible;

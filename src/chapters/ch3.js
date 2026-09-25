@@ -224,7 +224,7 @@
             assetBytes, rescueTextures, redoShadows,
             cnv, makeSoftDot, makeGround, makeConcrete, makeLacquer,
             makeHellNote, getState, startDecision, HEAD_RE, plantTrees,
-            kit, worldSfx, warmSounds } = ctx;   // v14.7: the amulet — the bag, her line, and its decode
+            kit, worldSfx, warmSounds, cullBySphere } = ctx;   // v14.7: the amulet — the bag, her line, and its decode
 
     /* SHRINE is her anchor — the middle of the seating. The ALTAR is a
        different thing entirely, nine metres away at the front, and keeping
@@ -1691,6 +1691,12 @@
           f.userData.seat = i;
           f.userData.kind = key;
           crowdRoot.add(f);
+          /* v15: a sitter is drawn only while a generous sphere round him is
+             in view — floor to crown is 1.30 m and a clap reaches ~0.6 m, so
+             1.6 m about his middle is twice what he can fill (SPHERE CULLING
+             in main.js; he is posed from a skeleton elsewhere, so three
+             cannot cull him itself) */
+          if (cullBySphere) cullBySphere(f, 0, 0.75, 0, 1.6);
           /* only now does THIS seat's placeholder go: the chair is never empty */
           for (let k = crowd.length - 1; k >= 0; k--) {
             if (crowd[k].userData.seat === i) { crowd[k].visible = false; crowd.splice(k, 1); }
