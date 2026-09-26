@@ -11186,6 +11186,7 @@ window.__enc = { yaw, pitch, stats, getState: () => state,   // v8.7: pitch, so 
                    packs: Object.keys(packLoaded),
                    names: packJson ? Object.keys(packJson).length : 0,
                    decoded: Object.keys(packBufs).length,
+                   decodedNames: Object.keys(packBufs),
                    /* v14.16: whose decoded sounds are held — a chapter left must hold none */
                    decodedBy: Object.keys(packBufs).reduce((o, n) => { const k = packOwner[n] || 'shared'; o[k] = (o[k] || 0) + 1; return o; }, {}),
                    loops: Object.fromEntries(Object.entries(packLoops)

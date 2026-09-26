@@ -18,11 +18,14 @@ await p.waitForTimeout(12000);
 const snap = async (label) => {
   const r = await p.evaluate(() => {
     const e = window.__enc, pk = e.pack(), l = e.loads();
+    const au = e.audio(), her = ['strings', 'whisper', 'swoosh', 'sobbing', 'gscream', 'ghostloop', 'gwail', 'gsigh', 'vghost', 'vscare1', 'vscare2', 'vscare3', 'vscare4'];
     return { ch: e.chapterKey(), loops: Object.keys(pk.loops), decodedBy: pk.decodedBy,
+             music: (au.decoded ? 'decoded' : 'released') + '/' + (au.playing ? 'playing' : 'stopped') + ' gain ' + au.gain,
+             her: e.pack().decodedNames ? her.filter(n => e.pack().decodedNames.includes(n)).length : -1,
              voices: e.voices().map(v => v.name), errs: l.log.filter(x => x.err).map(x => x.key + ':' + x.err),
              heap: performance.memory ? Math.round(performance.memory.usedJSHeapSize / 1048576) : -1 };
   });
-  console.log(`${label}: ch ${r.ch} | loops [${r.loops.join(',')}] | decodedBy ${JSON.stringify(r.decodedBy)} | load errors ${r.errs.length ? r.errs.join(';') : 'none'} | heap ${r.heap} MB`);
+  console.log(`${label}: ch ${r.ch} | music ${r.music} | her sounds decoded ${r.her} | loops [${r.loops.join(',')}] | decodedBy ${JSON.stringify(r.decodedBy)} | load errors ${r.errs.length ? r.errs.join(';') : 'none'} | heap ${r.heap} MB`);
   return r;
 };
 let r = await snap('ch5 fresh, in play');
