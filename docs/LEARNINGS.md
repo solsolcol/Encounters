@@ -4790,3 +4790,39 @@ reproduce the error path it replaced (here: re-raise as an unhandled
 rejection when the caller had no handler), and three's `parse` can also
 throw SYNCHRONOUSLY (a GLB whose JSON chunk will not parse is outside its
 try), which must end the load's record or the tracker waits for ever.
+
+## v15.0 — three refreshes a child only when the CHILD is flagged
+
+A matrix skip that stops recomposing an object whose position, rotation,
+scale and parent have not changed looks exact and is not, on three r185:
+`updateWorldMatrix(parents, children)` recomputes a child's world matrix only
+when that child is flagged `matrixWorldNeedsUpdate` (or forced), and stock
+three survives it only because `updateMatrix()` flags EVERY object EVERY
+frame. Skip the recompose — and so the flag — and a camera under a moving
+rig keeps last frame's world matrix: `tools/probes/mat.mjs` found 102 stale
+matrices in chapter 1's film. The fix is a STAMP: every world-matrix
+computation takes a sequence number and records its parent's, and a node
+recomputes when flagged, forced, or when its parent's stamp has moved. Proven
+against three's forced full recompute, bit for bit (`Object.is`, which also
+tells −0 from +0 — so the skip compares sign-exact at zero too): 0 of 683 /
+3,664 / 2,172 / 512 matrices differ in films and in play.
+
+## v15.0 — a compile is not a draw
+
+`renderer.compile()` links every program a light state needs, and at her
+first appearance in chapter 1 that took the in-play compiles from 8 to 0 —
+and the worst frame only from 8.6 s to 4.1 s. The rest went when each warmed
+state was also DRAWN once, into a 1×1 scissor under the cover (2.0 s): a
+driver may build a program's pipeline at its first draw rather than at link
+(ANGLE on Metal does, which is the iPhone). Warm-up means compile AND draw.
+
+## v15.0 — what nobody can see does not have to be drawn, but its matrices do
+
+While an OPAQUE layer covers the canvas — the title's gradient, a chapter card
+forced solid, a film held on black — nothing drawn under it reaches the
+screen, so the engine skips the GPU submission and still brings every world
+matrix up to date (a probe, a raycast or a chapter may read one). Two things
+had to learn it: a shadow redraw asked for under the card waits for a drawn
+frame, and `leaktest`, which counted uploads made by the engine's own frames
+under the title, now lifts the title first. The harness assumption changed,
+not the game.
