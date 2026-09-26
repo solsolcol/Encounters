@@ -537,8 +537,28 @@ function glbChunks(buf) {
 }
 
 function rescueTextures(gltf, buf, onMap) {   // onMap(material): optional, called once a rescued map lands (v5.11)
-  let json, bin;
-  try { ({ json, bin } = glbChunks(buf)); } catch { return; }
+  /* v15: LOOK BEFORE COPYING. This ran glbChunks FIRST — a full copy of the
+     model's binary chunk and a second JSON.parse — and only then found, on
+     the hosted build, that every material already had its map: pure waste
+     after every model load (29 MB of copying at chapter 3's entry, 10 MB for
+     the amulet alone). So: is there a material that should have a colour map
+     and does not? If not, touch no bytes. If so (the strict-CSP build), use
+     the JSON and the binary chunk the loader ALREADY holds, and fall back to
+     cutting them out of the file only when a loader does not expose them. */
+  const parser = gltf && gltf.parser;
+  let json = parser && parser.json, bin = null;
+  if (json && json.materials && parser.associations) {
+    let need = false;
+    for (const [obj, assoc] of parser.associations) {
+      if (!obj || !obj.isMaterial || assoc.materials === undefined || obj.map) continue;
+      const md = json.materials[assoc.materials];
+      if (md && md.pbrMetallicRoughness && md.pbrMetallicRoughness.baseColorTexture) { need = true; break; }
+    }
+    if (!need) return;
+    const ext = parser.extensions && parser.extensions.KHR_binary_glTF;
+    bin = ext && ext.body instanceof ArrayBuffer ? ext.body : null;
+  }
+  if (!json || !bin) { try { ({ json, bin } = glbChunks(buf)); } catch { return; } }
   if (!json || !bin || !json.images || !json.images.length) return;
 
   const cache = new Map();                     // one decode per image, not per material
@@ -1032,7 +1052,7 @@ function treeKit() {
 /* v15: every engine optimization has a switch, ON by default, so a probe can
    draw the SAME frozen frame with it off and on and compare every pixel —
    the proof that an optimization changed nothing on screen. */
-const OPT = { instCull: true, sphereCull: true, shadowTrim: true };
+const OPT = { instCull: true, sphereCull: true, shadowTrim: true, coverSkip: true, vmSkip: true, letterbox: true };
 const instCull = new Set();
 let shadowSyncTick = 0;
 const _icPV = new THREE.Matrix4(), _icLocal = new THREE.Matrix4(), _icFr = new THREE.Frustum(),
@@ -5856,6 +5876,29 @@ const packCodecReady = (() => {
 const packLoaded = Object.create(null);
 /* Load one pack and MERGE it in. Chapter packs exist only in the hosted
    build; asking for one anywhere else is a no-op rather than a rejection. */
+/* v15: a pack is either the BINARY one the hosted build ships ('MZP1', a
+   small JSON index, then the sound files byte for byte — build.py
+   write_pack_bin) or the JSON-of-base64 the single-file build inlines. A
+   binary pack's sounds are VIEWS into its one buffer: nothing is copied or
+   decoded until a sound is actually prepared (sndBuf), and then only that
+   sound's own bytes. The old path parsed a multi-megabyte JSON string on the
+   main thread at boot, held every sound as base64 text all session, and
+   base64-decoded each one on the main thread as it was prepared. */
+function packParse(b) {
+  const u8 = new Uint8Array(b);
+  if (u8.length >= 8 && u8[0] === 0x4D && u8[1] === 0x5A && u8[2] === 0x50 && u8[3] === 0x31) {
+    const n = new DataView(b).getUint32(4, true);
+    const index = JSON.parse(new TextDecoder().decode(u8.subarray(8, 8 + n)));
+    const base = 8 + n, part = Object.create(null);
+    for (const k in index) {
+      const [off, len] = index[k];
+      if (base + off + len > u8.length) continue;          // a truncated pack loses that sound, never the rest
+      part[k] = u8.subarray(base + off, base + off + len);
+    }
+    return part;
+  }
+  return JSON.parse(new TextDecoder().decode(b));
+}
 function packLoad(chapterKey) {
   if (chapterKey && !HOSTED) return Promise.resolve();
   return packCodecReady.then(() => {
@@ -5864,7 +5907,7 @@ function packLoad(chapterKey) {
     if (packLoaded[key]) return packLoaded[key];
     return (packLoaded[key] = assetBytes(key, true)
       .then(b => {
-        const part = JSON.parse(new TextDecoder().decode(b));
+        const part = packParse(b);
         packNames[chapterKey || ''] = Object.keys(part);   // v14.16: so a chapter's own can be let go
         if (chapterKey) for (const n in part) packOwner[n] = chapterKey;
         packJson = Object.assign(packJson || Object.create(null), part);
@@ -5892,7 +5935,10 @@ function sndBuf(name) {              // AudioBuffer if ready, else kick a decode
   /* v14.16: the pending mark is a TOKEN, so a decode that lands after its
      chapter was left (releaseChapterSounds) is dropped rather than kept */
   const tok = packPending[name] = {};
-  actx.decodeAudioData(b64ToBuffer(packJson[name]))
+  const src = packJson[name];
+  /* a view into a binary pack is COPIED (decodeAudioData detaches what it is
+     given — v14.16's law), a base64 string decoded, as before */
+  actx.decodeAudioData(typeof src === 'string' ? b64ToBuffer(src) : src.slice().buffer)
     .then(buf => { if (packPending[name] === tok) packBufs[name] = buf; })
     .catch(() => { if (packPending[name] === tok) delete packPending[name]; });
   return null;
@@ -8735,6 +8781,7 @@ function playCineFn(sceneFn, onDone, startFade = 0) {
   ui.interact.classList.add('hide');
   hint.classList.add('hide');
   document.body.classList.add('cine');
+  letterboxArm();                            // v15: once the bars are in, only the band between them is shaded
   cineFadeEl.classList.remove('clearing');   // a scene owns the fade outright
   cineFadeEl.style.opacity = String(startFade);
   document.exitPointerLock?.();
@@ -8836,6 +8883,7 @@ function cineEnd() {
      over it — says so with `keepFade`, and the black stays until whatever
      comes next puts something in front of it.                            */
   if (!c.keepFade) clearCineFade();
+  letterboxOff();                          // v15: the whole frame again, before the bars start to move
   document.body.classList.remove('cine');
   skipBtn.classList.add('hide');
   ui.hud.classList.remove('hide');
@@ -9059,8 +9107,20 @@ function prefetchPump() {
   const k = prefetchQ.shift();
   if (_assetSeen.has(k) || prefetched.has(k)) return prefetchPump();
   prefetchBusy = true; prefetched.add(k);
+  /* v15: DRAINED, not materialised. The bytes are only here to land in the
+     HTTP cache; `arrayBuffer()` built each file as one contiguous buffer on
+     the page (a 10 MB amulet, an 8 MB figure) just to drop it — mid-play, a
+     big allocation and a copy that brings the next garbage collection
+     closer. Reading the stream to its end fills the cache the same way in
+     small chunks. A browser without body streams keeps the old way. */
+  const drain = async r => {
+    if (!r.ok) return;
+    const rd = r.body && r.body.getReader ? r.body.getReader() : null;
+    if (!rd) { await r.arrayBuffer(); return; }
+    for (;;) { const c = await rd.read(); if (c.done) break; }
+  };
   const go = () => fetch(ASSET_MAP[k], { priority: 'low' })
-    .then(r => (r.ok ? r.arrayBuffer() : null)).catch(() => null)
+    .then(drain).catch(() => null)
     .then(() => { prefetchBusy = false; setTimeout(prefetchPump, 400); });
   if (window.requestIdleCallback) requestIdleCallback(go, { timeout: 4000 }); else setTimeout(go, 300);
 }
@@ -9142,6 +9202,7 @@ async function warmWorld(items) {
   }
   // two frames drawn under the cover: the first draw of everything (shadow
   // maps, the render lists) happens here and not in the first visible frame
+  forceDraw = 3;                             // v15: drawn although covered — that is what they are for
   await cap(new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))), 3000);
 }
 function whenWorldReady(then, capMs = WORLD_CAP) {
@@ -10122,6 +10183,7 @@ function restart() {
     el?.classList.add('hide');
   }
   ui.hud.classList.remove('hide');
+  letterboxOff();                          // v15
   document.body.classList.remove('cine');
   // drop the dissolve before forcing the value, or a restart taken mid-fade
   // keeps transitioning and the new run starts under a clearing black
@@ -10242,8 +10304,9 @@ function tick(now = 0) {
   const dt = Math.min(clock.getDelta(), 0.05);
   const t = clock.getElapsed();
 
-  // the shadow maps are static; redraw them only when asked
-  if (shadowDirty > 0) { renderer.shadowMap.needsUpdate = true; shadowDirty--; }
+  // the shadow maps are static; redraw them only when asked — v15: on a frame
+  // that is actually drawn (COVERED FRAMES, below), or a redraw asked for
+  // under the card would be spent on a frame that never reaches the GPU
 
   // look — keep this frame's delta, the viewmodel needs it for sway.
   // Only the player's own state consumes it: during a cutscene the timeline
@@ -10476,19 +10539,81 @@ function tick(now = 0) {
   else updateViewmodel(dt, t, playerSpeed, strafeInput, dLookX, dLookY);
 
   if ((shadowSyncTick = (shadowSyncTick + 1) % 120) === 0) shadowCasterSync();   // v15: a caster that appears gets its shadow back
-  cullInstances(camera, renderer.shadowMap.needsUpdate || renderer.shadowMap.autoUpdate);   // v15: INSTANCE CULLING
-  renderer.render(scene, camera);
-
-  // second pass: the viewmodel gets its own fresh depth buffer, so the hands
-  // can never poke through a wall however close you stand to one
   if (state !== 'title' && handsReady) {
     torchPropSync();                       // v11.1: hand or torch, decided on the frame
     weaponPropSync();                      // v12.0: or the weapon, over both
+  }
+  /* v15: COVERED FRAMES. While an OPAQUE layer covers the whole canvas — the
+     title, the chapter card once it is forced solid, a film or a scene held
+     on black, the episode card — nothing drawn under it can reach the
+     screen, so nothing is drawn. Every piece of logic above has run exactly
+     as before (the clocks, the cues, the chapter's frame); only the GPU
+     submission is skipped, and the world matrices are still brought up to
+     date so anything that reads them sees them as fresh as ever. The warm
+     frames under the curtain are FORCED (forceDraw), because drawing under
+     the cover is their whole purpose. */
+  if (worldCovered()) {
+    scene.updateMatrixWorld();
+    return;
+  }
+  if (forceDraw > 0) forceDraw--;
+  if (shadowDirty > 0) { renderer.shadowMap.needsUpdate = true; shadowDirty--; }
+  cullInstances(camera, renderer.shadowMap.needsUpdate || renderer.shadowMap.autoUpdate);   // v15: INSTANCE CULLING
+  const band = letterbox && document.body.classList.contains('cine');
+  if (band) { renderer.setScissor(0, letterbox.y, letterbox.w, letterbox.h); renderer.setScissorTest(true); }
+  try {
+  renderer.render(scene, camera);
+
+  // second pass: the viewmodel gets its own fresh depth buffer, so the hands
+  // can never poke through a wall however close you stand to one — v15: and
+  // only when there is a hand (or a torch, or a rifle) to draw: a pass with
+  // nothing visible in it clears a depth buffer and draws nothing
+  if (state !== 'title' && handsReady && (!OPT.vmSkip || anyVisibleMesh(handsRoot))) {
     renderer.autoClear = false;
     renderer.clearDepth();
     renderer.render(vmScene, vmCam);
     renderer.autoClear = true;
   }
+  } finally { if (band) renderer.setScissorTest(false); }   // never left on, whatever a pass did
+}
+/* v15: THE LETTERBOX IS NOT SHADED. Every film and scene draws two opaque
+   black bars (11vh each, over the canvas) — 22 % of the frame nobody can
+   see, shaded by both passes on every frame of every cutscene. Once the
+   bars have finished sliding in (measured from their own rects, never
+   computed: 11vh is not 0.11·innerHeight on iOS), both passes are
+   scissored to the band between them, one CSS pixel into each bar so no
+   edge row is ever left unshaded; the bars start to leave only after the
+   scissor is gone (letterboxOff runs before `cine` is removed). */
+let letterbox = null, letterboxTimer = 0;
+function letterboxArm(tries = 6) {
+  clearTimeout(letterboxTimer); letterbox = null; letterboxTimer = 0;
+  if (!OPT.letterbox) return;
+  letterboxTimer = setTimeout(() => {
+    letterboxTimer = 0;
+    if (!document.body.classList.contains('cine')) return;
+    const a = $('barTop').getBoundingClientRect(), b = $('barBot').getBoundingClientRect(), c = canvas.getBoundingClientRect();
+    const inPlace = a.top <= c.top + 0.5 && b.bottom >= c.bottom - 0.5 && a.height > 1 && b.height > 1;
+    if (!inPlace) { if (tries > 0) letterboxArm(tries - 1); return; }   // still sliding (a stalled frame): look again
+    const top = Math.max(0, Math.floor(a.bottom - c.top) - 1), bot = Math.min(c.height, Math.ceil(b.top - c.top) + 1);
+    if (bot - top < c.height * 0.5) return;
+    letterbox = { y: c.height - bot, h: bot - top, w: c.width };
+  }, 650);
+}
+function letterboxOff() { clearTimeout(letterboxTimer); letterboxTimer = 0; letterbox = null; }
+let forceDraw = 0;
+function worldCovered() {
+  if (!OPT.coverSkip || forceDraw > 0) return false;
+  if (!ui.title.classList.contains('hide')) return true;
+  if (ui.episode && !ui.episode.classList.contains('hide')) return true;
+  if (!ui.chapter.classList.contains('hide') && ui.chapter.style.opacity === '1') return true;
+  if (cineFadeEl.style.opacity === '1' && !cineFadeEl.classList.contains('clearing')) return true;
+  return false;
+}
+function anyVisibleMesh(o) {
+  if (!o.visible) return false;
+  if ((o.isMesh || o.isPoints || o.isLine || o.isSprite) && o.layers.test(vmCam.layers)) return true;
+  for (const c of o.children) if (anyVisibleMesh(c)) return true;
+  return false;
 }
 window.__enc = { yaw, pitch, stats, getState: () => state,   // v8.7: pitch, so a probe can aim the lens at the floor
                  kit: KIT, kitDebug, interactNow,          // v7.0: the play kit, by state
@@ -10523,6 +10648,8 @@ window.__enc = { yaw, pitch, stats, getState: () => state,   // v8.7: pitch, so 
                  get renderer() { return renderer; }, get scene() { return scene; },
                  /* v15: the optimization switches and the passes they gate, for the pixel-identity probe */
                  opt: OPT, cullInstances: (sh) => cullInstances(camera, !!sh), get camera() { return camera; }, shadowCasterSync,
+                 worldCovered: () => worldCovered(), forceDraw: (n) => { forceDraw = n | 0; },
+                 letterbox: () => letterbox, vmVisible: () => anyVisibleMesh(handsRoot),
                  /* v5.29: which age of Master Zav the panel is showing, and
                     whether his bytes are in. The figure lives in its own
                     renderer's scene, unreachable from the world graph, so a
@@ -10647,4 +10774,5 @@ addEventListener('resize', () => {
   vmCam.updateProjectionMatrix();
   layoutHands();
   renderer.setSize(innerWidth, innerHeight);
+  if (letterbox || letterboxTimer) { letterboxOff(); if (document.body.classList.contains('cine')) letterboxArm(); }   // v15: re-measured, never stale
 });

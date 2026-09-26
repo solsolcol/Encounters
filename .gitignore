@@ -75,3 +75,6 @@ assets/audiopack*.json
 assets/opuspack*.json
 # the backup bundle split for delivery (the whole bundle is ignored above)
 Encounters-backup.bundle.part*
+# v15: and their binary twins, which the hosted build ships
+assets/audiopack*.bin
+assets/opuspack*.bin

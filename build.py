@@ -166,6 +166,30 @@ def write_pack(stem, names, folder, ext):
             for n in names}
     out = d / 'assets' / f'{stem}.json'
     out.write_text(json.dumps(body))
+    write_pack_bin(stem, names, folder, ext)
+    return out.stat().st_size
+
+
+# v15: THE BINARY PACK, for the hosted build. The same sound files, byte for
+# byte, laid end to end behind a small index — no base64 (a third larger, and
+# decoded on the main thread for every sound the game prepares) and no JSON
+# around it (a multi-megabyte string parsed on the main thread at boot, then
+# held as JavaScript strings for the whole session). Netlify already
+# brotli-compresses the JSON in transit, so this is not a smaller download;
+# it is work and memory taken off the phone. Layout:
+#   'MZP1' | uint32 LE index length | index JSON {name: [offset, length]} | bytes
+# The single-file build keeps the JSON pack (it is base64 inside the HTML
+# anyway), and the engine reads either.
+def write_pack_bin(stem, names, folder, ext):
+    blobs, index, off = [], {}, 0
+    for n in names:
+        b = (folder / f'{n}{ext}').read_bytes()
+        index[n] = [off, len(b)]
+        blobs.append(b)
+        off += len(b)
+    idx = json.dumps(index, separators=(',', ':')).encode()
+    out = d / 'assets' / f'{stem}.bin'
+    out.write_bytes(b'MZP1' + len(idx).to_bytes(4, 'little') + idx + b''.join(blobs))
     return out.stat().st_size
 
 
@@ -204,7 +228,7 @@ ASSETS = {
     'hellnote': ('assets/hellnote.webp', True, False),
     'music':  ('assets/music.mp3', True, False),
     'voice':  ('assets/voice.mp3', True, False),
-    'audiopack': ('assets/audiopack.json', True, False),
+    'audiopack': ('assets/audiopack.bin', True, False),   # v15: binary when hosted (EMBED_SRC keeps the JSON inline)
     # two encodes of the same clip; the browser takes the first it can play.
     # VP9 is smaller and is what Chrome, Firefox and Edge get (and what the
     # test Chromium can decode at all — Playwright's build ships without the
@@ -397,10 +421,10 @@ HOSTED_ONLY |= E2_ONLY
 # than its hosted ones — shared-only when fetched, everything when inlined.
 EMBED_SRC = {'audiopack': 'assets/audiopack-all.json'}
 for _k in sorted(PACK_OF):
-    ASSETS[f'audiopack_{_k}'] = (f'assets/audiopack_{_k}.json', True, False)
-    ASSETS[f'opuspack_{_k}'] = (f'assets/opuspack_{_k}.json', True, False)
+    ASSETS[f'audiopack_{_k}'] = (f'assets/audiopack_{_k}.bin', True, False)
+    ASSETS[f'opuspack_{_k}'] = (f'assets/opuspack_{_k}.bin', True, False)
     HOSTED_ONLY |= {f'audiopack_{_k}', f'opuspack_{_k}'}
-ASSETS['opuspack'] = ('assets/opuspack.json', True, False)
+ASSETS['opuspack'] = ('assets/opuspack.bin', True, False)
 HOSTED_ONLY.add('opuspack')
 PACK_KEYS = {k for k in ASSETS if k.endswith('pack') or 'pack_' in k}
 
