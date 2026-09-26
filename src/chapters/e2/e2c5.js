@@ -698,7 +698,13 @@
     function parseOnce(key) {
       if (!parsedGlb.has(key)) {
         parsedGlb.set(key, assetBytes(key).then(BUF => new Promise((res, rej) =>
-          new GLTFLoader().parse(BUF, '', (gltf) => { rescueTextures(gltf, BUF); res(gltf); }, rej))));
+          new GLTFLoader().parse(BUF, '', (gltf) => {
+        rescueTextures(gltf, BUF);
+        /* v15: the scene and the takes, not the parser — a resolved gltf holds
+           its parser, and the parser a whole copy of the file's binary chunk
+           and its image slices, for as long as the cache lives */
+        res({ scene: gltf.scene, animations: gltf.animations });
+      }, rej))));
       }
       return parsedGlb.get(key);
     }

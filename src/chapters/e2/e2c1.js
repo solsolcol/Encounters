@@ -2174,28 +2174,52 @@
       });
     }
 
+    /* v15: ONE PARSE PER CHARACTER. The chapter used to parse `botak` three
+       times, `encik2` twice, `admintee` three times and `fbosling` four —
+       twelve parses of four files — and every parse made its own copy of the
+       file's 2048² sheet on the GPU: eight duplicate textures, ~22 MB each
+       with mips, ~179 MB of a phone's graphics memory holding the same
+       texels. Each file is parsed ONCE now and every crowd copy and every rig
+       is a clone of that untouched original (e2c3's and e2c5's shape since
+       v11.0 and v14.1): the same bytes, the same geometry, the same materials
+       — a clone shares them — so nothing drawn changes; only the copies go.
+       Whatever a user changes it changes on its OWN clone (the shadow flags,
+       the culling sphere, the pose), and the one user that changes MATERIALS
+       — `ghostify` — clones them first, so the sergeant is never turned into
+       a ghost by the three men who share his file. */
+    const parsed = new Map();
+    function parseOnce(key) {
+      let p = parsed.get(key);
+      if (!p) {
+        p = assetBytes(key).then(BUF => new Promise((res, rej) => new GLTFLoader().parse(BUF, '', (gltf) => {
+          rescueTextures(gltf, BUF);
+          res({ scene: gltf.scene, animations: gltf.animations });
+        }, rej)));
+        parsed.set(key, p);
+      }
+      return p;
+    }
     function mkCrowd(key, spots, clip, opts = {}) {
       const c = { group: new THREE.Group(), rigs: [], ready: false, key };
       (opts.parent || world).add(c.group);
-      assetBytes(key).then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
+      parseOnce(key).then((src) => {
         if (!alive) return;
-        rescueTextures(gltf, BUF);
-        gltf.scene.traverse(o => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = false; } });
-        wideBounds(gltf.scene, key);              // v8.4: cull by the widest pose
-        /* the height is measured ONCE, from the POSED bones of the source */
-        gltf.scene.updateMatrixWorld(true);
+        /* the height is measured ONCE, from the POSED bones of the source —
+           the original, which nobody poses or draws */
+        src.scene.updateMatrixWorld(true);
         const v = new THREE.Vector3(); let lo = Infinity, hi = -Infinity, crown = false;
-        gltf.scene.traverse(o => { if (!o.isBone) return; o.getWorldPosition(v); lo = Math.min(lo, v.y); hi = Math.max(hi, v.y); if (/HeadTop_End/.test(o.name)) crown = true; });
+        src.scene.traverse(o => { if (!o.isBone) return; o.getWorldPosition(v); lo = Math.min(lo, v.y); hi = Math.max(hi, v.y); if (/HeadTop_End/.test(o.name)) crown = true; });
         const span = (hi - lo) / (crown ? 1 : 0.935);
         const s = (opts.height || 1.70) / (span || 1.7);
         spots.forEach((sp, i) => {
           const g = new THREE.Group();
           g.position.set(sp.x, 0, sp.z); g.rotation.y = sp.ry || 0; g.scale.setScalar(s);
-          const m = cloneSkinned(gltf.scene);
-          wideBounds(m, key);                     // v8.4: the copy gets it too
+          const m = cloneSkinned(src.scene);
+          m.traverse(o => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = false; } });
+          wideBounds(m, key);                     // v8.4: cull by the widest pose
           g.add(m); c.group.add(g);
           const mixer = new THREE.AnimationMixer(m);
-          const cl = gltf.animations.find(a => a.name === (sp.clip || clip)) || gltf.animations[0];
+          const cl = src.animations.find(a => a.name === (sp.clip || clip)) || src.animations[0];
           const act = mixer.clipAction(cl);
           act.play();
           const parkAt = sp.at !== undefined ? sp.at : opts.at;
@@ -2221,10 +2245,9 @@
              RUN out to the fall-in rather than be teleported to it. */
           c.rigs.push({ g, m, mixer, act, rest: act, dur: cl.duration, parkAt, acts: { [cl.name]: act } });
         });
-        c.clips = gltf.animations;
+        c.clips = src.animations;
         c.ready = true;
-      }, (err) => { console.warn(key + ' crowd failed', err); c.ready = true; }))
-        .catch(err => { console.warn(key + ' crowd failed', err); c.ready = true; });
+      }).catch(err => { console.warn(key + ' crowd failed', err); c.ready = true; });
       crowds.push(c);
       return c;
     }
@@ -2405,14 +2428,14 @@
         rig.cur = name;
         return true;
       };
-      assetBytes(key).then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
+      parseOnce(key).then((src) => {
         if (!alive) return;
-        rescueTextures(gltf, BUF, opts.tint ? (m) => { m.color.multiply(opts.tint); } : undefined);
-        const g = gltf.scene;
+        const g = cloneSkinned(src.scene);        // v15: a clone of the one parse, never the original
         g.traverse(o => {
           if (!o.isMesh) return;
           o.castShadow = !LOW; o.receiveShadow = false;
-          if (opts.tint) {
+          if (opts.tint) {                        // its OWN materials: the file's are shared by every clone
+            o.material = Array.isArray(o.material) ? o.material.map(m => m.clone()) : o.material.clone();
             const mats = Array.isArray(o.material) ? o.material : [o.material];
             for (const m of mats) { if (m.color) m.color.multiply(opts.tint); }
           }
@@ -2420,10 +2443,10 @@
         wideBounds(g, key);                       // v8.4: cull by the widest pose
         group.add(g);
         rig.model = g;
-        if (gltf.animations && gltf.animations.length) {
+        if (src.animations && src.animations.length) {
           rig.mixer = new THREE.AnimationMixer(g);
           rig.acts = {};
-          for (const clip of gltf.animations) rig.acts[clip.name] = rig.mixer.clipAction(clip);
+          for (const clip of src.animations) rig.acts[clip.name] = rig.mixer.clipAction(clip);
           if (opts.idle && rig.acts[opts.idle]) { rig.play(opts.idle, opts.idleRate || 1, 0); rig.mixer.update(0.001); }
         }
         /* size and ground from the POSED bones */
@@ -2451,8 +2474,7 @@
         rig.ready = true;
         redoShadows();
         if (opts.onReady) opts.onReady(rig);
-      }, (err) => { console.warn(key + ' failed to load', err); rig.ready = true; }))
-        .catch(err => { console.warn(key + ' failed to load', err); rig.ready = true; });
+      }).catch(err => { console.warn(key + ' failed to load', err); rig.ready = true; });
       return rig;
     }
 
@@ -2529,6 +2551,9 @@
       rig.model.traverse(o => {
         if (!o.isMesh) return;
         o.castShadow = false;
+        /* v15: his OWN materials first — the file is parsed once and the
+           sergeant is a clone of the same original, sharing every material */
+        o.material = Array.isArray(o.material) ? o.material.map(m => m.clone()) : o.material.clone();
         for (const m of (Array.isArray(o.material) ? o.material : [o.material])) {
           m.transparent = true; m.opacity = GHOST_A; m.color.setScalar(grey);
           m.emissive?.setHex(glow); m.depthWrite = false;

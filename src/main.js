@@ -561,14 +561,28 @@ function rescueTextures(gltf, buf, onMap) {   // onMap(material): optional, call
   if (!json || !bin) { try { ({ json, bin } = glbChunks(buf)); } catch { return; } }
   if (!json || !bin || !json.images || !json.images.length) return;
 
-  const cache = new Map();                     // one decode per image, not per material
-  const bitmap = (i) => {
-    if (!cache.has(i)) {
-      const img = json.images[i], bv = json.bufferViews[img.bufferView];
+  /* one decode AND ONE TEXTURE per image's bytes, not per material and not
+     per image entry — v15: a file may list the same bytes under many image
+     entries (hdb.glb names ONE buffer view fourteen times), and a Texture per
+     material made each its own GPU copy of identical texels. three's own
+     loader keys the same way (by buffer view); every rescued texture has the
+     same settings, so sharing one changes nothing drawn. */
+  const cache = new Map();
+  const texture = (i) => {
+    const img = json.images[i], key = img.bufferView;
+    if (!cache.has(key)) {
+      const bv = json.bufferViews[img.bufferView];
       const bytes = new Uint8Array(bin, bv.byteOffset || 0, bv.byteLength);
-      cache.set(i, createImageBitmap(new Blob([bytes], { type: img.mimeType || 'image/jpeg' })));
+      cache.set(key, createImageBitmap(new Blob([bytes], { type: img.mimeType || 'image/jpeg' })).then((bmp) => {
+        const t = new THREE.Texture(bmp);
+        t.flipY = false;                       // glTF images are already top-left
+        t.colorSpace = THREE.SRGBColorSpace;
+        t.wrapS = t.wrapT = THREE.RepeatWrapping;
+        t.needsUpdate = true;
+        return t;
+      }));
     }
-    return cache.get(i);
+    return cache.get(key);
   };
 
   for (const [obj, assoc] of gltf.parser.associations) {
@@ -579,12 +593,7 @@ function rescueTextures(gltf, buf, onMap) {   // onMap(material): optional, call
     if (!ref) continue;
     const src = json.textures[ref.index] && json.textures[ref.index].source;
     if (src === undefined) continue;
-    bitmap(src).then((bmp) => {
-      const t = new THREE.Texture(bmp);
-      t.flipY = false;                         // glTF images are already top-left
-      t.colorSpace = THREE.SRGBColorSpace;
-      t.wrapS = t.wrapT = THREE.RepeatWrapping;
-      t.needsUpdate = true;
+    texture(src).then((t) => {
       obj.map = t;
       obj.needsUpdate = true;
       if (onMap) onMap(obj);
@@ -1053,6 +1062,10 @@ function treeKit() {
    draw the SAME frozen frame with it off and on and compare every pixel —
    the proof that an optimization changed nothing on screen. */
 const OPT = { instCull: true, sphereCull: true, shadowTrim: true, coverSkip: true, vmSkip: true, letterbox: true, lightWarm: true, matSkip: true, boneSkip: true, warmTiny: true };
+/* a probe may switch any of them off from the address (`?opt=boneSkip:0,warmTiny:0`),
+   so a switch that acts at LOAD time can be compared build against itself */
+{ const m = /[?&]opt=([^&]*)/.exec(location.search);
+  if (m) for (const kv of decodeURIComponent(m[1]).split(',')) { const [k, v] = kv.split(':'); if (k in OPT) OPT[k] = v !== '0'; } }
 /* v15: A MATRIX IS COMPOSED ONLY WHEN WHAT IT IS MADE OF CHANGED. three.js
    recomposes every object's local matrix from its position, rotation and
    scale on every frame and flags its world matrix dirty — so the root of
@@ -8752,6 +8765,13 @@ function ghostOpacity(o) {
    and worldState()/applyState() are how they travel.                     */
 function rebuildStage(next) {
   const ch = next || CH;
+  /* v15: she is the ENGINE's and outlives every chapter, so she leaves the
+     world BEFORE its sweep. Riding it, she was swept with it: her geometry,
+     her materials and her four textures freed at every chapter change, and
+     uploaded and linked again under the next curtain — identical bytes,
+     every time. The JS objects never went anywhere, so what is drawn cannot
+     change; only the round trip to the GPU goes. */
+  if (ghost.parent) ghost.parent.remove(ghost);
   stage.dispose();
   stage = ch.build(CHCTX);
   stage.world.add(ghost);            // she is the engine's, but rides the world
@@ -9303,7 +9323,24 @@ function warmGeometry(r, root, cam, tiny = false) {
    she is never drawn with the variant compiled for the other transparency. */
 function warmLightStates() {
   if (!OPT.lightWarm) return;
-  const states = [];
+  /* every state is compiled on top of the SETTLED one — the set darkLights
+     arrives at twenty frames into play, with every light at zero dropped —
+     because that is the set her light, the torch or the flash is added to
+     when it comes on. A state whose light counts (and her transparency) are
+     ones already compiled is skipped: the programs are the same programs. */
+  const lights = [];
+  scene.traverse(o => { if (o.isLight && !o.isAmbientLight && !o.isHemisphereLight) lights.push(o); });
+  const sig = () => {
+    const n = [0, 0, 0, 0, 0, 0];
+    scene.traverseVisible(o => {
+      if (!o.isLight || o.isAmbientLight || o.isHemisphereLight) return;
+      const k = o.isDirectionalLight ? 0 : o.isPointLight ? 1 : o.isSpotLight ? 2 : 3;
+      n[k]++; if (o.castShadow) n[k + 3 > 5 ? 5 : k + 3]++;
+    });
+    return n.join(',') + (ghostMats.length && ghostMats[0].transparent ? 't' : 'o');
+  };
+  const done = new Set([sig()]);             // the state the main compile just covered
+  const states = ['settled'];
   if (CH.ghost !== null) states.push('ghost', 'ghostSolid');
   if (torchDecl && torchLight) states.push('torch');
   if (weaponDecl && weaponFlash) states.push('flash');
@@ -9311,11 +9348,16 @@ function warmLightStates() {
     const undo = [];
     const set = (o, k, v) => { if (o[k] !== v) { undo.push([o, k, o[k]]); o[k] = v; } };
     try {
-      if (st === 'ghost' || st === 'ghostSolid') {
+      for (const o of lights) if (o.intensity <= 0.0005 && o.visible) set(o, 'visible', false);
+      if (st === 'settled') { /* nothing more */ }
+      else if (st === 'ghost' || st === 'ghostSolid') {
         set(ghost, 'visible', true); set(ghostLight, 'visible', true);
         for (const m of ghostMats) set(m, 'transparent', st === 'ghost');
       } else if (st === 'torch') set(torchLight, 'visible', true);
       else if (st === 'flash') set(weaponFlash, 'visible', true);
+      const k = sig();
+      if (done.has(k)) continue;              // (the finally still restores)
+      done.add(k);
       renderer.compile(scene, camera);
       /* and DRAWN once, into one pixel under the cover: a driver may build a
          program's pipeline at its first draw rather than at link (ANGLE on
@@ -10744,8 +10786,9 @@ function tick(now = 0) {
    computed: 11vh is not 0.11·innerHeight on iOS), both passes are
    scissored to the band between them, two CSS pixels into each bar so no
    edge row is ever left unshaded (the scissor is in buffer pixels, CSS × the
-   pixel ratio, rounded, so one CSS pixel can round down to a single row); the bars start to leave only after the
-   scissor is gone (letterboxOff runs before `cine` is removed). */
+   pixel ratio, rounded, so one CSS pixel can round down to a single row);
+   the bars start to leave only after the scissor is gone (letterboxOff runs
+   before `cine` is removed). */
 let letterbox = null, letterboxTimer = 0;
 function letterboxArm(tries = 20) {
   clearTimeout(letterboxTimer); letterbox = null; letterboxTimer = 0;
