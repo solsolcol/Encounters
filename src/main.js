@@ -1082,7 +1082,7 @@ function treeKit() {
 /* v15: every engine optimization has a switch, ON by default, so a probe can
    draw the SAME frozen frame with it off and on and compare every pixel —
    the proof that an optimization changed nothing on screen. */
-const OPT = { instCull: true, sphereCull: true, shadowTrim: true, coverSkip: true, vmSkip: true, letterbox: true, lightWarm: true, matSkip: true, boneSkip: true, warmTiny: true, lightSets: true, ctxRestore: true };
+const OPT = { instCull: true, sphereCull: true, shadowTrim: true, coverSkip: true, vmSkip: true, letterbox: true, lightWarm: true, matSkip: true, boneSkip: true, warmTiny: true, lightSets: true, ctxRestore: true, herSounds: true };
 /* a probe may switch any of them off from the address (`?opt=boneSkip:0,warmTiny:0`),
    so a switch that acts at LOAD time can be compared build against itself */
 { const m = /[?&]opt=([^&]*)/.exec(location.search);
@@ -6094,7 +6094,40 @@ function sndBuf(name) {              // AudioBuffer if ready, else kick a decode
 /* v14.16: a warm list is never a reason to decode ANOTHER chapter's own
    sounds — WARM_WANT keeps every name a chapter ever asked for this session,
    and without this each entry would re-decode what releaseChapterSounds let go */
-function packWarm(names) { for (const n of names) { const o = packOwner[n]; if (!o || o === CH_KEY) sndBuf(n); } }
+function packWarm(names) { for (const n of names) { const o = packOwner[n]; if ((!o || o === CH_KEY) && herCanSound(n)) sndBuf(n); } }
+/* v15: HER SOUNDS WHERE SHE CANNOT BE. Her cries, her scream, the whisper
+   and the low bed that follow her, the chord of her first sight and his four
+   frightened reactions are played by her state machine and nothing else —
+   and a chapter that declares `ghost: null` parks that machine for good. Yet
+   every entry into play, every decision and every film decoded them anyway
+   (the warm lists were written for chapter 1): ~21 MB of audio held, and
+   decoded on the phone's one decoder thread under the curtain, in eight
+   chapters of ten, for sounds that cannot play there. A chapter that names
+   one of them in its own code (a scene's cue, a bed) still gets it — the
+   chapter's words and functions are read for the name, the way the cue scan
+   reads a scene — and anything that ASKS for one still decodes it on the
+   spot, exactly as before; only the warm lists stop asking on her behalf. */
+const HER_ONLY = new Set(['strings', 'whisper', 'swoosh', 'sobbing', 'gscream', 'ghostloop', 'gwail', 'gsigh',
+                          'vghost', 'vscare1', 'vscare2', 'vscare3', 'vscare4']);
+let herSrcKey = null, herSrc = '';
+function herNamed(n) {
+  if (herSrcKey !== CH_KEY) {
+    herSrcKey = CH_KEY;
+    const parts = [], seen = new Set(), text = (v) => {
+      if (typeof v === 'function') parts.push(String(v));
+      else if (v && typeof v === 'object') { if (seen.has(v)) return; seen.add(v); for (const k in v) text(v[k]); }
+      else if (typeof v === 'string') parts.push("'" + v + "'");
+    };
+    try { text(CH); } catch { /* an unreadable part names nothing */ }
+    herSrc = parts.join('\n');
+  }
+  return herSrc.includes("'" + n + "'") || herSrc.includes('"' + n + '"') || herSrc.includes('`' + n + '`');
+}
+function herCanSound(n) { return !OPT.herSounds || CH.ghost !== null || !HER_ONLY.has(n) || herNamed(n); }
+function herRelease() {             // setChapter: into a chapter where she cannot sound, let hers go
+  if (!OPT.herSounds || CH.ghost !== null) return;
+  for (const n of HER_ONLY) if (!herCanSound(n)) { delete packBufs[n]; delete packPending[n]; }
+}
 
 function snd(name, vol = 1, rate = 1, pan = 0) {        // one-shot
   if (muted) return null;
@@ -8836,6 +8869,7 @@ function setChapter(key) {
   kitReset();                      // v7.0: and the play kit starts clean for it
   silenceChapterLoops();           // and so is the room tone
   releaseChapterSounds(leaving);   // v14.16: and the chapter left lets its decoded sounds go
+  herRelease();                    // v15: and her own, where she cannot be
   packLoad(key);                   // and its own sounds, if they are not here yet
   /* v5.29: and the right AGE of Master Zav in the equipment panel. Within
      episode 1 every chapter names the same figure, so this is a no-op
