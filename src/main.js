@@ -9549,8 +9549,8 @@ function warmLightStates() {
      of their own. `compile` covers every material in the scene, hidden or
      not, so one state per distinct set of light counts is enough — the
      duplicates are skipped by `sig`. */
-  const groups = new Map(), darkTop = [], darkKinds = new Map();
-  const top = new Set([scene, stage && stage.world]);
+  const groups = new Map(), darkKinds = new Map();
+  const top = new Set([scene, stage && stage.world, camera]);   // the camera's own (torch, flash) have states of their own
   for (const o of lights) {
     let hidden = false;
     for (let a = o.parent; a && a !== scene; a = a.parent) if (!a.visible) hidden = true;
@@ -9558,7 +9558,6 @@ function warmLightStates() {
     const g = o.parent;
     if (g && !top.has(g)) { if (!groups.has(g)) groups.set(g, []); groups.get(g).push(o); continue; }
     if (hidden) continue;
-    darkTop.push(o);
     const kind = (o.isDirectionalLight ? 'd' : o.isPointLight ? 'p' : o.isSpotLight ? 's' : 'r') + (o.castShadow ? 'S' : '');
     if (!darkKinds.has(kind)) darkKinds.set(kind, o);
   }
@@ -9581,10 +9580,11 @@ function warmLightStates() {
       list.sort((a, b) => b[1].length - a[1].length);
       states.push({ show: list[0][0], also: list[1][0], lights: [...list[0][1], ...list[1][1]] });
     }
-    /* the room's own dark lamps: all of them at once (a flat whose lights come
-       on as the film opens), and one of each kind alone (a flare, a torch on
-       the ground, one lamp at lights-out) */
-    if (darkTop.length > 1) states.push({ lights: darkTop });
+    /* and one of the room's dark lamps of each kind alone (a flare, a torch on
+       the ground, one lamp at lights-out). Not all of them at once: measured,
+       that combination is one no film reaches, and a state no film reaches is
+       only curtain time — what a film does that no rule guesses, the light
+       memory below learns. */
     for (const o of darkKinds.values()) states.push({ lights: [o] });
   }
   /* her, where she haunts — and where a FILM or a scene shows her in a
