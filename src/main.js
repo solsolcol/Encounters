@@ -3,6 +3,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 import { clone as cloneSkinned } from 'three/examples/jsm/utils/SkeletonUtils.js';
+import LIGHT_SEEDS from './lightseeds.json';   // v15.1: the light counts each chapter's films and scenes reach (THE LIGHT COUNTS)
 /* v14.14: every loader the engine hands out READS MESHOPT. Chad's amulets
    ship at full detail (every triangle of the scan, "ALL amulets must always
    show full quality"), which is only a sane download packed with meshopt —
@@ -1082,7 +1083,7 @@ function treeKit() {
 /* v15: every engine optimization has a switch, ON by default, so a probe can
    draw the SAME frozen frame with it off and on and compare every pixel —
    the proof that an optimization changed nothing on screen. */
-const OPT = { instCull: true, sphereCull: true, shadowTrim: true, coverSkip: true, vmSkip: true, letterbox: true, lightWarm: true, matSkip: true, boneSkip: true, warmTiny: true, lightSets: true, ctxRestore: true, herSounds: true, musicPark: true, lightMem: true };
+const OPT = { instCull: true, sphereCull: true, shadowTrim: true, coverSkip: true, vmSkip: true, letterbox: true, lightWarm: true, matSkip: true, boneSkip: true, warmTiny: true, lightSets: true, ctxRestore: true, herSounds: true, musicPark: true, lightMem: true, lightSeeds: true };
 /* a probe may switch any of them off from the address (`?opt=boneSkip:0,warmTiny:0`),
    so a switch that acts at LOAD time can be compared build against itself */
 { const m = /[?&]opt=([^&]*)/.exec(location.search);
@@ -9467,9 +9468,17 @@ function lightCounts() {             // [dir, point, spot, rect, hemi, dirShadow
   return n;
 }
 const lightMemKey = () => CH_KEY + (LOW ? ':low' : '');
+/* ... and the counts every film and scene of every chapter reaches, recorded
+   ONCE by tools/probes/seedlights.mjs (desktop and phone) and shipped in
+   src/lightseeds.json, so even a first viewing on a new device is warmed.
+   Stale seeds cost only curtain time; a missing one is learned by the device
+   memory above. */
 function lightMemRead() {
-  try { const all = JSON.parse(localStorage.getItem(LIGHTMEM_KEY) || '{}'); const l = all[lightMemKey()]; return Array.isArray(l) ? l : []; }
-  catch { return []; }
+  const out = [];
+  if (OPT.lightSeeds) { const l = LIGHT_SEEDS[lightMemKey()]; if (Array.isArray(l)) out.push(...l); }
+  try { const all = JSON.parse(localStorage.getItem(LIGHTMEM_KEY) || '{}'); const l = all[lightMemKey()]; if (Array.isArray(l)) out.push(...l); }
+  catch { /* storage blocked: the seeds alone */ }
+  return [...new Set(out)];
 }
 function lightMemAdd(sigStr) {
   try {
@@ -9477,7 +9486,7 @@ function lightMemAdd(sigStr) {
     const list = Array.isArray(all[lightMemKey()]) ? all[lightMemKey()] : [];
     if (list.includes(sigStr)) return;
     list.push(sigStr);
-    all[lightMemKey()] = list.slice(-8);
+    all[lightMemKey()] = list.slice(-16);
     localStorage.setItem(LIGHTMEM_KEY, JSON.stringify(all));
   } catch { /* storage blocked: nothing is remembered, nothing breaks */ }
 }
@@ -11119,6 +11128,8 @@ window.__enc = { yaw, pitch, stats, getState: () => state,   // v8.7: pitch, so 
                  /* v15: the optimization switches and the passes they gate, for the pixel-identity probe */
                  opt: OPT, cullInstances: (sh) => cullInstances(camera, !!sh), get camera() { return camera; }, shadowCasterSync,
                  worldCovered: () => worldCovered(), forceDraw: (n) => { forceDraw = n | 0; },
+                 decide: () => { if (state === 'play') startDecision(); },   // v15: probes open any chapter's decision
+                 lightMem: () => lightMemRead(),
                  get shadowDirty() { return shadowDirty; },
                  letterbox: () => letterbox, vmVisible: () => anyVisibleMesh(handsRoot),
                  /* v5.29: which age of Master Zav the panel is showing, and
