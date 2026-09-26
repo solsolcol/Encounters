@@ -1795,18 +1795,28 @@ function paintHotMarks() {
 /* v8.6: hide lights that are contributing nothing — see the call in tick() */
 const DARK_HOLD = 20;              // frames at zero before a light is dropped
 const darkFor = new WeakMap();
+/* v15: the lights are LISTED, not searched for — this ran a traversal of the
+   whole scene graph (thousands of objects) every frame to find about a dozen
+   lights. The list is refreshed every 30 frames and whenever the stage is
+   rebuilt; a light added in between is still drawn exactly as three draws it
+   (visible by default), and every light this function ever HID is in the
+   list, because it was in the list when it was hidden. */
+let darkList = [], darkListAge = 1e9, darkListStage = null;
 function darkLights() {
-  scene.traverse(o => {
-    if (!o.isLight || o.isAmbientLight || o.isHemisphereLight) return;
+  if (++darkListAge > 30 || darkListStage !== stage) {
+    darkList = []; darkListAge = 0; darkListStage = stage;
+    scene.traverse(o => { if (o.isLight && !o.isAmbientLight && !o.isHemisphereLight) darkList.push(o); });
+  }
+  for (const o of darkList) {
     if (o.intensity > 0.0005) {
       if (darkFor.get(o)) darkFor.set(o, 0);
       if (!o.visible) o.visible = true;         // back instantly, never a frame late
-      return;
+      continue;
     }
     const n = (darkFor.get(o) || 0) + 1;
     darkFor.set(o, n);
     if (n >= DARK_HOLD && o.visible) o.visible = false;
-  });
+  }
 }
 function paintWaypoint() {
   const el = $('waypoint'); if (!el) return;
@@ -5944,12 +5954,19 @@ function loopVol(name, vol) {
     L.gain = g;
     L.src = s;                                   // v14.16: so a chapter left can STOP it (loopRetire)
   }
-  if (L.gain) L.gain.gain.setTargetAtTime(L.want, actx.currentTime, 0.3);
+  /* v15: only when the target MOVES. This runs for every bed every frame, and
+     re-aiming an exponential approach at the SAME target from wherever it
+     has got to is the same curve (the approach is memoryless) — so a repeat
+     only queued another automation event for the audio thread to walk. */
+  if (L.gain && L.set !== L.want) { L.gain.gain.setTargetAtTime(L.want, actx.currentTime, 0.3); L.set = L.want; }
 }
 function loopPan(name, v) {
   const L = packLoops[name];
-  if (L && L.pan) L.pan.pan.setTargetAtTime(THREE.MathUtils.clamp(v, -1, 1),
-                                            actx.currentTime, 0.15);
+  const c = THREE.MathUtils.clamp(v, -1, 1);
+  if (L && L.pan && L.panSet !== c) {           // v15: only when it moves (loopVol)
+    L.pan.pan.setTargetAtTime(c, actx.currentTime, 0.15);
+    L.panSet = c;
+  }
 }
 // her bearing on the player's screen, -1 left ... +1 right
 const _pp = new THREE.Vector3();
