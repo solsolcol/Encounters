@@ -4,7 +4,8 @@
    headings, and prints every step at which the renderer's program count went
    up — with the light counts that frame drew with, since the number of lights
    of each kind is part of every lit shader.
-   Usage: node tools/probes/progs.mjs <chapter…>   (STEP=0.5 seconds of film) */
+   Usage: node tools/probes/progs.mjs <chapter…>   (STEP=0.5 seconds of film;
+   OPT=lightSets:0 switches an OPT off for the run) */
 import { chromium } from 'playwright';
 import { LAUNCH, PAGE } from '../../testlib.mjs';
 const chs = process.argv.slice(2), STEP = +(process.env.STEP || 0.5);
@@ -15,7 +16,7 @@ for (const ch of chs) {
   const errs = [];
   p.on('pageerror', e => errs.push(e.message));
   try {
-    await p.goto(PAGE + '?ch=' + ch, { waitUntil: 'load', timeout: 240000 });
+    await p.goto(PAGE + '?ch=' + ch + (process.env.OPT ? '&opt=' + process.env.OPT : ''), { waitUntil: 'load', timeout: 240000 });
     await p.waitForFunction(() => !!window.__enc, null, { timeout: 120000 });
     await p.click('#startBtn', { timeout: 120000 });
     await p.waitForFunction(() => ['cine', 'play'].includes(window.__enc.getState()), null, { timeout: 900000, polling: 200 });
@@ -50,7 +51,7 @@ for (const ch of chs) {
         return { n: E.renderer.info.programs.length, l: window.__lights() }; }, h);
       if (r.n > base) { out.push(`play heading ${h} +${r.n - base} [${r.l}]`); base = r.n; }
     }
-    console.log(`${ch}: film ${film ? film.toFixed(1) + 's' : 'none'} made ${filmMade}, play made ${base - playStart}, total programs ${base}` +
+    console.log(`${ch}: at the lift ${start} programs; film ${film ? film.toFixed(1) + 's' : 'none'} made ${filmMade}, play made ${base - playStart}, total programs ${base}` +
                 (out.length ? '\n   ' + out.join('\n   ') : '') + (errs.length ? '\n   ERRORS ' + errs.slice(0, 3).join(' | ') : ''));
   } catch (e) { console.log(ch + ': PROBE FAILED ' + e.message.split('\n')[0]); }
   await ctx.close();

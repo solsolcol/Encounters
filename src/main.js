@@ -631,6 +631,27 @@ const scene = new THREE.Scene();
   scene.environmentIntensity = 0.05;   // just enough to keep metal from going black
   pmrem.dispose();
 }
+/* v15: WHEN THE GRAPHICS COME BACK. iOS drops a page's WebGL context under
+   memory pressure — an app switch, a long lock — and three restores it by
+   uploading again everything it still holds on the CPU. Which is everything
+   but a RENDER TARGET: the room environment every material reflects (drawn
+   by a PMREM pass) and the shadow maps (drawn on demand, v2.x) exist on the
+   GPU and nowhere else, so a restored game came back with black reflections
+   and shadows sampled from an empty map. Both are drawn again the moment the
+   context is back. Nothing here runs unless that failure happens, and each
+   renderer's own listener (three's) has already rebuilt its state first. */
+function roomEnvAgain(r, sc) {
+  const pm = new THREE.PMREMGenerator(r), old = sc.environment;
+  sc.environment = pm.fromScene(new RoomEnvironment(), 0.04).texture;
+  pm.dispose();
+  if (old && old !== sc.environment) old.dispose();
+  return sc.environment;
+}
+canvas.addEventListener('webglcontextrestored', () => {
+  if (!OPT.ctxRestore) return;
+  try { vmScene.environment = roomEnvAgain(renderer, scene); } catch { /* the lamps alone */ }
+  redoShadows();
+}, false);
 scene.background = new THREE.Color(0x070a10);
 scene.fog = new THREE.FogExp2(0x0b1018, 0.021);
 
@@ -1061,7 +1082,7 @@ function treeKit() {
 /* v15: every engine optimization has a switch, ON by default, so a probe can
    draw the SAME frozen frame with it off and on and compare every pixel —
    the proof that an optimization changed nothing on screen. */
-const OPT = { instCull: true, sphereCull: true, shadowTrim: true, coverSkip: true, vmSkip: true, letterbox: true, lightWarm: true, matSkip: true, boneSkip: true, warmTiny: true };
+const OPT = { instCull: true, sphereCull: true, shadowTrim: true, coverSkip: true, vmSkip: true, letterbox: true, lightWarm: true, matSkip: true, boneSkip: true, warmTiny: true, lightSets: true, ctxRestore: true };
 /* a probe may switch any of them off from the address (`?opt=boneSkip:0,warmTiny:0`),
    so a switch that acts at LOAD time can be compared build against itself */
 { const m = /[?&]opt=([^&]*)/.exec(location.search);
@@ -7244,6 +7265,9 @@ function ivInit() {
     iv.scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
     iv.scene.environmentIntensity = 1.0;
     pmrem.dispose();
+    iv.r.domElement.addEventListener('webglcontextrestored', () => {   // v15: see roomEnvAgain
+      if (OPT.ctxRestore) try { roomEnvAgain(iv.r, iv.scene); } catch {}
+    }, false);
   } catch { /* the lamps alone */ }
   return true;
 }
@@ -7551,6 +7575,9 @@ function zavInit() {
     zav.scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
     zav.scene.environmentIntensity = 0.45;
     pmrem.dispose();
+    zav.r.domElement.addEventListener('webglcontextrestored', () => {  // v15: see roomEnvAgain
+      if (OPT.ctxRestore) try { roomEnvAgain(zav.r, zav.scene); } catch {}
+    }, false);
   } catch { /* no environment: the three lamps still light him */ }
   zav.pivot = new THREE.Group();
   zav.scene.add(zav.pivot);
@@ -9341,6 +9368,30 @@ function warmLightStates() {
   };
   const done = new Set([sig()]);             // the state the main compile just covered
   const states = ['settled'];
+  /* v15: a chapter's own lights too, found rather than declared. A FILM SET
+     is a hidden group with its lights inside it (episode 2 chapter 1's ferry,
+     jetty and parade square): the frame it is shown, the light counts change
+     and every lit material drawn that frame is compiled on screen — measured,
+     25 programs at four cuts of that film (9 of them on the cut to the
+     parade square). So each hidden group that holds a switched-on light is a
+     state of its own; and one dark light of each kind coming on (a lamp at
+     lights-out, a flare, a torch on the ground) is another. `compile` covers
+     every material in the scene, hidden or not, so one state per distinct
+     set of light counts is enough — the duplicates are skipped by `sig`. */
+  const sets = new Set(), darkKinds = new Map();
+  for (const o of lights) {
+    let top = null;
+    for (let a = o.parent; a && a !== scene; a = a.parent) if (!a.visible) top = a;
+    if (top) { if (o.visible && o.intensity > 0.0005) sets.add(top); continue; }
+    if (o.intensity <= 0.0005) {
+      const kind = (o.isDirectionalLight ? 'd' : o.isPointLight ? 'p' : o.isSpotLight ? 's' : 'r') + (o.castShadow ? 'S' : '');
+      if (!darkKinds.has(kind)) darkKinds.set(kind, o);
+    }
+  }
+  if (OPT.lightSets) {
+    for (const g of sets) states.push({ set: g });
+    for (const o of darkKinds.values()) states.push({ light: o });
+  }
   if (CH.ghost !== null) states.push('ghost', 'ghostSolid');
   if (torchDecl && torchLight) states.push('torch');
   if (weaponDecl && weaponFlash) states.push('flash');
@@ -9350,6 +9401,8 @@ function warmLightStates() {
     try {
       for (const o of lights) if (o.intensity <= 0.0005 && o.visible) set(o, 'visible', false);
       if (st === 'settled') { /* nothing more */ }
+      else if (st.set) set(st.set, 'visible', true);
+      else if (st.light) set(st.light, 'visible', true);
       else if (st === 'ghost' || st === 'ghostSolid') {
         set(ghost, 'visible', true); set(ghostLight, 'visible', true);
         for (const m of ghostMats) set(m, 'transparent', st === 'ghost');
@@ -10858,6 +10911,7 @@ window.__enc = { yaw, pitch, stats, getState: () => state,   // v8.7: pitch, so 
                  /* v15: the optimization switches and the passes they gate, for the pixel-identity probe */
                  opt: OPT, cullInstances: (sh) => cullInstances(camera, !!sh), get camera() { return camera; }, shadowCasterSync,
                  worldCovered: () => worldCovered(), forceDraw: (n) => { forceDraw = n | 0; },
+                 get shadowDirty() { return shadowDirty; },
                  letterbox: () => letterbox, vmVisible: () => anyVisibleMesh(handsRoot),
                  /* v5.29: which age of Master Zav the panel is showing, and
                     whether his bytes are in. The figure lives in its own
