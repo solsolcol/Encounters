@@ -1082,7 +1082,7 @@ function treeKit() {
 /* v15: every engine optimization has a switch, ON by default, so a probe can
    draw the SAME frozen frame with it off and on and compare every pixel —
    the proof that an optimization changed nothing on screen. */
-const OPT = { instCull: true, sphereCull: true, shadowTrim: true, coverSkip: true, vmSkip: true, letterbox: true, lightWarm: true, matSkip: true, boneSkip: true, warmTiny: true, lightSets: true, ctxRestore: true, herSounds: true, musicPark: true };
+const OPT = { instCull: true, sphereCull: true, shadowTrim: true, coverSkip: true, vmSkip: true, letterbox: true, lightWarm: true, matSkip: true, boneSkip: true, warmTiny: true, lightSets: true, ctxRestore: true, herSounds: true, musicPark: true, lightMem: true };
 /* a probe may switch any of them off from the address (`?opt=boneSkip:0,warmTiny:0`),
    so a switch that acts at LOAD time can be compared build against itself */
 { const m = /[?&]opt=([^&]*)/.exec(location.search);
@@ -9393,7 +9393,7 @@ function curtainItems() {
    forced-visible group is held dark), so the programs drawn are the ones
    play will use; the frozen shadow maps are not redrawn with the hidden
    things in them; and every flag is put back in a finally. */
-function warmGeometry(r, root, cam, tiny = false) {
+function warmGeometry(r, root, cam, tiny = false, shadows = false) {
   sphereCullAll(true);                 // v15: everything the sphere culling took off the camera goes back for the warm frame
   const flips = [], culled = [], lods = [];
   const walk = (o, hiddenAbove) => {
@@ -9407,7 +9407,18 @@ function warmGeometry(r, root, cam, tiny = false) {
   const sm = r.shadowMap, smAuto = sm.autoUpdate, smNeed = sm.needsUpdate, clr = r.autoClear;
   try {
     walk(root, false);
-    sm.autoUpdate = false; sm.needsUpdate = false;
+    /* v15: with `shadows`, the shadow maps are drawn in the same pass. A
+       material that samples a shadow map drawn before its light's map exists
+       gets three's 1×1 stand-in bound — and that stand-in is never uploaded,
+       so the driver REJECTS the draw (measured: 257 rejected draws under
+       chapter 1's curtain once v15 stopped drawing covered frames, which had
+       made the maps as a side effect). The maps drawn here see everything
+       forced visible, and only when some drawn light has none yet;
+       `redoShadows()` after the warm draws them true on the next frames, which
+       are drawn under the cover too. */
+    let noMap = false;                   // only when some light that is drawn has no map yet
+    if (shadows && sm.enabled) root.traverseVisible(o => { if (o.isLight && o.castShadow && !(o.shadow && o.shadow.map)) noMap = true; });
+    sm.autoUpdate = false; sm.needsUpdate = noMap;
     r.autoClear = true;
     if (tiny) { r.setScissor(0, 0, 1, 1); r.setScissorTest(true); }
     r.render(root, cam);
@@ -9432,6 +9443,88 @@ function warmGeometry(r, root, cam, tiny = false) {
    moment in play is a lookup, not a compile. Every flag is restored in a
    finally, and her materials are marked for a program check afterwards so
    she is never drawn with the variant compiled for the other transparency. */
+/* v15: THE LIGHT COUNTS THIS DEVICE HAS SEEN. A film or a scene can switch
+   lights in combinations no rule can guess (chapter 4's film opens on a
+   flat whose lamps are OFF), and each new combination compiles every lit
+   material drawn that frame, on screen. But a program depends on how MANY
+   lights of each kind are drawn, not on which — so a combination can be
+   reproduced exactly with stand-in lights at zero intensity. Every frame
+   after the curtain that compiled a program records the counts it drew
+   with, per chapter and per profile (a phone's lights are not a desktop's),
+   in this device's storage; the next curtain for that chapter compiles them.
+   A new device pays once, and only where the rules below did not already
+   cover it. */
+const LIGHTMEM_KEY = 'mz.encounters.lightsets';
+function lightCounts() {             // [dir, point, spot, rect, hemi, dirShadow, pointShadow, spotShadow] drawn now
+  const n = [0, 0, 0, 0, 0, 0, 0, 0];
+  scene.traverseVisible(o => {
+    if (!o.isLight || o.isAmbientLight) return;
+    const k = o.isDirectionalLight ? 0 : o.isPointLight ? 1 : o.isSpotLight ? 2 : o.isRectAreaLight ? 3 : o.isHemisphereLight ? 4 : -1;
+    if (k < 0) return;
+    n[k]++;
+    if (o.castShadow && k < 3) n[5 + k]++;
+  });
+  return n;
+}
+const lightMemKey = () => CH_KEY + (LOW ? ':low' : '');
+function lightMemRead() {
+  try { const all = JSON.parse(localStorage.getItem(LIGHTMEM_KEY) || '{}'); const l = all[lightMemKey()]; return Array.isArray(l) ? l : []; }
+  catch { return []; }
+}
+function lightMemAdd(sigStr) {
+  try {
+    const all = JSON.parse(localStorage.getItem(LIGHTMEM_KEY) || '{}');
+    const list = Array.isArray(all[lightMemKey()]) ? all[lightMemKey()] : [];
+    if (list.includes(sigStr)) return;
+    list.push(sigStr);
+    all[lightMemKey()] = list.slice(-8);
+    localStorage.setItem(LIGHTMEM_KEY, JSON.stringify(all));
+  } catch { /* storage blocked: nothing is remembered, nothing breaks */ }
+}
+let progSeen = -1;
+function lightMemTick() {             // after each drawn frame
+  const n = renderer.info.programs.length;
+  if (!revealAt || progSeen < 0) { progSeen = n; return; }
+  if (n <= progSeen) return;
+  progSeen = n;
+  lightMemAdd(lightCounts().join(','));
+}
+/* reproduce remembered counts over the settled state: shadow casters by
+   showing or hiding real ones (a stand-in cannot cast without a map), the
+   rest by hiding real lights or adding stand-ins. False when the counts
+   cannot be reached; every change goes through `set`/`extra`, so the
+   caller's finally takes it all back. */
+function lightMemApply(target, lights, set, extra) {
+  const T = target.split(',').map(Number);
+  if (T.length !== 8 || T.some(v => !Number.isFinite(v) || v < 0 || v > 64)) return false;
+  const kindOf = o => o.isDirectionalLight ? 0 : o.isPointLight ? 1 : o.isSpotLight ? 2 : o.isRectAreaLight ? 3 : o.isHemisphereLight ? 4 : -1;
+  const shown = o => { for (let a = o.parent; a && a !== scene; a = a.parent) if (!a.visible) return false; return true; };
+  for (let k = 0; k < 3; k++) {                         // the shadow counts first, with real lights
+    let C = lightCounts();
+    for (const o of lights) {
+      if (C[5 + k] === T[5 + k]) break;
+      if (kindOf(o) !== k || !o.castShadow || !shown(o)) continue;
+      if (C[5 + k] > T[5 + k] && o.visible) { set(o, 'visible', false); C = lightCounts(); }
+      else if (C[5 + k] < T[5 + k] && !o.visible) { set(o, 'visible', true); C = lightCounts(); }
+    }
+    if (C[5 + k] !== T[5 + k]) return false;
+  }
+  for (let k = 0; k < 5; k++) {                          // then the totals, never touching a caster
+    let C = lightCounts();
+    for (const o of lights) {
+      if (C[k] <= T[k]) break;
+      if (kindOf(o) === k && !o.castShadow && o.visible && shown(o)) { set(o, 'visible', false); C = lightCounts(); }
+    }
+    while (C[k] < T[k]) {
+      const L = k === 0 ? new THREE.DirectionalLight(0xffffff, 0) : k === 1 ? new THREE.PointLight(0xffffff, 0, 1)
+              : k === 2 ? new THREE.SpotLight(0xffffff, 0, 1) : k === 4 ? new THREE.HemisphereLight(0xffffff, 0x000000, 0) : null;
+      if (!L) return false;                              // no rect-area stand-in: not reproducible
+      extra(L); C = lightCounts();
+    }
+    if (C[k] !== T[k]) return false;
+  }
+  return lightCounts().join(',') === T.join(',');
+}
 function warmLightStates() {
   if (!OPT.lightWarm) return;
   /* every state is compiled on top of the SETTLED one — the set darkLights
@@ -9441,15 +9534,7 @@ function warmLightStates() {
      ones already compiled is skipped: the programs are the same programs. */
   const lights = [];
   scene.traverse(o => { if (o.isLight && !o.isAmbientLight && !o.isHemisphereLight) lights.push(o); });
-  const sig = () => {
-    const n = [0, 0, 0, 0, 0, 0];
-    scene.traverseVisible(o => {
-      if (!o.isLight || o.isAmbientLight || o.isHemisphereLight) return;
-      const k = o.isDirectionalLight ? 0 : o.isPointLight ? 1 : o.isSpotLight ? 2 : 3;
-      n[k]++; if (o.castShadow) n[k + 3 > 5 ? 5 : k + 3]++;
-    });
-    return n.join(',') + (ghostMats.length && ghostMats[0].transparent ? 't' : 'o');
-  };
+  const sig = () => lightCounts().join(',') + (ghostMats.length && ghostMats[0].transparent ? 't' : 'o');
   const done = new Set([sig()]);             // the state the main compile just covered
   const states = ['settled'];
   /* v15: a chapter's own lights too, found rather than declared. A FILM SET
@@ -9481,6 +9566,21 @@ function warmLightStates() {
     /* a GROUP's lights come on together — a film set, a memory's pocket, a
        diorama: shown with its hidden ancestors, every light in it on */
     for (const [g, ls] of groups) states.push({ show: g, lights: ls });
+    /* and two SIBLING groups at once — a crossfade: chapter 1's prologue
+       dissolves one memory's pocket into the next, and for that second both
+       are lit (measured: 20 programs at 14.5 s, the only compiles left in
+       the film). The two largest under each shared parent. */
+    const kids = new Map();
+    for (const [g, ls] of groups) {
+      const pa = g.parent; if (!pa || top.has(pa)) continue;
+      if (!kids.has(pa)) kids.set(pa, []);
+      kids.get(pa).push([g, ls]);
+    }
+    for (const list of kids.values()) {
+      if (list.length < 2) continue;
+      list.sort((a, b) => b[1].length - a[1].length);
+      states.push({ show: list[0][0], also: list[1][0], lights: [...list[0][1], ...list[1][1]] });
+    }
     /* the room's own dark lamps: all of them at once (a flat whose lights come
        on as the film opens), and one of each kind alone (a flare, a torch on
        the ground, one lamp at lights-out) */
@@ -9492,14 +9592,19 @@ function warmLightStates() {
   if (CH.ghost !== null || (OPT.lightSets && chText().includes('ghostOpacity('))) states.push('ghost', 'ghostSolid');
   if (torchDecl && torchLight) states.push('torch');
   if (weaponDecl && weaponFlash) states.push('flash');
+  if (OPT.lightMem) for (const m of lightMemRead()) states.push({ mem: m });
+  const allLights = [];
+  if (OPT.lightMem) scene.traverse(o => { if (o.isLight && !o.isAmbientLight) allLights.push(o); });
   for (const st of states) {
-    const undo = [];
+    const undo = [], added = [];
     const set = (o, k, v) => { if (o[k] !== v) { undo.push([o, k, o[k]]); o[k] = v; } };
+    const extra = (L) => { scene.add(L); added.push(L); };
     try {
       for (const o of lights) if (o.intensity <= 0.0005 && o.visible) set(o, 'visible', false);
       if (st === 'settled') { /* nothing more */ }
       else if (st.lights) {
         for (let a = st.show; a && a !== scene; a = a.parent) set(a, 'visible', true);
+        for (let a = st.also; a && a !== scene; a = a.parent) set(a, 'visible', true);
         for (const o of st.lights) set(o, 'visible', true);
       }
       else if (st === 'ghost' || st === 'ghostSolid') {
@@ -9507,6 +9612,7 @@ function warmLightStates() {
         for (const m of ghostMats) set(m, 'transparent', st === 'ghost');
       } else if (st === 'torch') set(torchLight, 'visible', true);
       else if (st === 'flash') set(weaponFlash, 'visible', true);
+      else if (st.mem && !lightMemApply(st.mem, allLights, set, extra)) continue;
       const k = sig();
       if (done.has(k)) continue;              // (the finally still restores)
       done.add(k);
@@ -9514,9 +9620,10 @@ function warmLightStates() {
       /* and DRAWN once, into one pixel under the cover: a driver may build a
          program's pipeline at its first draw rather than at link (ANGLE on
          Metal does), so a compile alone can leave part of the stall in play */
-      warmGeometry(renderer, scene, camera, true);
+      warmGeometry(renderer, scene, camera, true, true);   // with shadows: a light turned on may have no map yet
     } finally {
       for (let i = undo.length - 1; i >= 0; i--) { const [o, k, v] = undo[i]; o[k] = v; }
+      for (const L of added) { scene.remove(L); L.dispose?.(); }
       for (const m of ghostMats) m.needsUpdate = true;   // re-picks the variant for her real transparency
     }
   }
@@ -9547,8 +9654,9 @@ async function warmWorld(items) {
      whatever it covers; shading the whole canvas under the cover, with
      everything forced visible, was work nobody saw (the frames drawn under
      the cover after it still draw the full frame) */
-  warmGeometry(renderer, scene, camera, OPT.warmTiny);
+  warmGeometry(renderer, scene, camera, OPT.warmTiny, true);
   warmGeometry(renderer, vmScene, vmCam, OPT.warmTiny);
+  redoShadows();                             // v15: and true again on the covered frames below
   try { zavWarm(); } catch {}
   for (const id of items) {
     if (iv.state[id] !== 'ready') continue;
@@ -10929,6 +11037,7 @@ function tick(now = 0) {
     renderer.render(vmScene, vmCam);
     renderer.autoClear = true;
   } else vmScene.updateMatrixWorld();    // nothing to draw, but whatever reads a hand's matrix reads it fresh
+  if (OPT.lightMem) lightMemTick();      // v15: a compile on screen is remembered for the next curtain
   } finally { if (band) renderer.setScissorTest(false); }   // never left on, whatever a pass did
 }
 /* v15: THE LETTERBOX IS NOT SHADED. Every film and scene draws two opaque

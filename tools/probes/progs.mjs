@@ -10,8 +10,10 @@ import { chromium } from 'playwright';
 import { LAUNCH, PAGE } from '../../testlib.mjs';
 const chs = process.argv.slice(2), STEP = +(process.env.STEP || 0.5);
 const b = await chromium.launch(LAUNCH);
+const RUNS = process.env.REPEAT ? 2 : 1;       // REPEAT=1: the same chapter twice in one browser profile (the light memory)
 for (const ch of chs) {
   const ctx = await b.newContext({ viewport: { width: 1280, height: 800 } });
+  for (let run = 0; run < RUNS; run++) {
   const p = await ctx.newPage();
   const errs = [];
   p.on('pageerror', e => errs.push(e.message));
@@ -51,9 +53,11 @@ for (const ch of chs) {
         return { n: E.renderer.info.programs.length, l: window.__lights() }; }, h);
       if (r.n > base) { out.push(`play heading ${h} +${r.n - base} [${r.l}]`); base = r.n; }
     }
-    console.log(`${ch}: at the lift ${start} programs; film ${film ? film.toFixed(1) + 's' : 'none'} made ${filmMade}, play made ${base - playStart}, total programs ${base}` +
+    console.log(`${ch}${RUNS > 1 ? ' run ' + (run + 1) : ''}: at the lift ${start} programs; film ${film ? film.toFixed(1) + 's' : 'none'} made ${filmMade}, play made ${base - playStart}, total programs ${base}` +
                 (out.length ? '\n   ' + out.join('\n   ') : '') + (errs.length ? '\n   ERRORS ' + errs.slice(0, 3).join(' | ') : ''));
   } catch (e) { console.log(ch + ': PROBE FAILED ' + e.message.split('\n')[0]); }
+  await p.close();
+  }
   await ctx.close();
 }
 await b.close();
