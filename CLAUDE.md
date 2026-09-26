@@ -4106,6 +4106,39 @@ What the baseline contains, by release:
   v74 stands. Deploy `6ab72afd8a010dab98a15c3a`, byte-verified (index.html
   and all 107 build files). docs/V15.0-ENGINE-PLAN.md is the build's memory,
   checkpoint by checkpoint.
+- **v15.1** NO SHADER BUILT ON SCREEN, AND THE AUDIT OF WHAT CAME BEFORE —
+  the second half of Chad's engine ask, and his check: *"make sure the
+  previous few versions' fixes and improvements … were not accidentally
+  undone."* THE STUTTERS: a lit material's shader is keyed by how MANY lights
+  of each kind are drawn, so a film that cuts to a set with its own lamps,
+  or turns a flat's lamps off, built shaders on screen (LEARNINGS). The
+  curtain now compiles and draws, under its cover, every light state a
+  chapter can reach — each hidden group of lights, one dark lamp of each
+  kind, her own states where a film shows her — plus every count the game
+  has ever had to build on screen: the engine REMEMBERS those per chapter
+  and device class (`mz.encounters.lightsets`), and the build SHIPS the ones
+  every film and ending reaches (`src/lightseeds.json`, 37 states, recorded
+  by `tools/probes/seedlights.mjs`), reproduced with stand-in lights at zero.
+  Measured on a fresh profile: chapter 4 18 → 1, episode 2 chapter 2's film
+  39 → 4 (desktop) / 29 → 0 (phone), episode 2 chapter 4's film and endings
+  42 → 4 / 43 → 1; the cost is curtain time. ALSO: v15.0's covered frames
+  had made the curtain's warm draw the FIRST draw, before any shadow map
+  existed, and three's stand-in depth texture is never uploaded — 257 draws
+  the driver rejected, all under the cover, found by
+  `tools/probes/glerrors.mjs` and fixed (the warm draws the maps first);
+  the room environments and shadow maps are rebuilt if the browser drops the
+  graphics context; her 13 sounds are not decoded (~21 MB) in a chapter
+  where she cannot sound, and the explore music (46 MB decoded) is stopped
+  and let go where a chapter declares it silent, faded back in where one
+  does not. THE AUDIT: a workflow checked every claim v14.7–v14.16 makes
+  against the source — **all intact** — and found eight defects in v15's own
+  work, all fixed: the cull sets kept a disposed chapter's culled crowd; a
+  model whose placement throws after it loaded was only a console warning
+  (`ctx.loadFail`, which walktest fails on); her light was warmed as a
+  "group" in chapters without her; her loops ran on at gain 0 after her
+  sounds were released; a session starting in a silent-music chapter cut the
+  music in rather than fading it. No word moved; sheet v74 stands.
+  docs/V15.0-ENGINE-PLAN.md CP17–CP19 is the build's memory.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
