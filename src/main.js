@@ -1052,7 +1052,39 @@ function treeKit() {
 /* v15: every engine optimization has a switch, ON by default, so a probe can
    draw the SAME frozen frame with it off and on and compare every pixel —
    the proof that an optimization changed nothing on screen. */
-const OPT = { instCull: true, sphereCull: true, shadowTrim: true, coverSkip: true, vmSkip: true, letterbox: true };
+const OPT = { instCull: true, sphereCull: true, shadowTrim: true, coverSkip: true, vmSkip: true, letterbox: true, lightWarm: true, matSkip: true };
+/* v15: A MATRIX IS COMPOSED ONLY WHEN WHAT IT IS MADE OF CHANGED. three.js
+   recomposes every object's local matrix from its position, rotation and
+   scale on every frame and flags its world matrix dirty — so the root of
+   every chapter recomposed, which FORCED a world-matrix multiply onto every
+   node under it, every frame: 3,126 nodes in episode 2 chapter 1, of which
+   ~2,500 never move (v8.6's freezeStatic saved the compose on meshes, never
+   the multiply, and only there). The profile's largest script cost per frame
+   was exactly this (updateMatrixWorld, multiplyMatrices, the traversal).
+   Now updateMatrix remembers the ten numbers (and the parent) it composed
+   from, and when all ten are bitwise the same and the object has not been
+   re-parented, the matrix already says exactly this — so it neither
+   recomposes nor flags the world matrix, and a subtree where nothing moved
+   costs a comparison per node. Anything that moves (a bone, a door, the
+   camera) composes as before and forces its descendants as before, so
+   every matrix comes out BIT-IDENTICAL to three's own; `dbgmat.mjs` checks
+   that against a forced full recompute. A pivot always composes. */
+{
+  const O = THREE.Object3D.prototype, composeFull = O.updateMatrix;
+  O.updateMatrix = function () {
+    const p = this.position, q = this.quaternion, s = this.scale;
+    let t = this.__mzT;
+    if (t !== undefined && OPT.matSkip && this.pivot === null && this.__mzPa === this.parent
+        && t[0] === p.x && t[1] === p.y && t[2] === p.z
+        && t[3] === q._x && t[4] === q._y && t[5] === q._z && t[6] === q._w
+        && t[7] === s.x && t[8] === s.y && t[9] === s.z) return;
+    composeFull.call(this);
+    if (t === undefined) t = this.__mzT = new Float64Array(10);
+    t[0] = p.x; t[1] = p.y; t[2] = p.z; t[3] = q._x; t[4] = q._y; t[5] = q._z; t[6] = q._w;
+    t[7] = s.x; t[8] = s.y; t[9] = s.z;
+    this.__mzPa = this.parent;
+  };
+}
 const instCull = new Set();
 let shadowSyncTick = 0;
 const _icPV = new THREE.Matrix4(), _icLocal = new THREE.Matrix4(), _icFr = new THREE.Frustum(),
@@ -9173,6 +9205,40 @@ function warmGeometry(r, root, cam) {
     sm.autoUpdate = smAuto; sm.needsUpdate = smNeed; r.autoClear = clr;
   }
 }
+/* v15: THE LIGHT STATES PLAY WILL REACH, COMPILED UNDER THE CURTAIN. The
+   number of lights of each kind is part of every lit material's shader, so
+   the first frame a light switches ON compiles a new variant of every lit
+   material drawn that frame — measured in chapter 1: HER FIRST APPEARANCE
+   (her own light going up) compiled 8 programs mid-play, and the worst frame
+   was 8.6 s on the probe box. The engine knows which of its own lights come
+   and go: her light (and her materials going from see-through to solid), the
+   torch, the rifle's muzzle flash. Each such state is compiled here, under
+   the cover, and three keeps every variant a material has ever used, so the
+   moment in play is a lookup, not a compile. Every flag is restored in a
+   finally, and her materials are marked for a program check afterwards so
+   she is never drawn with the variant compiled for the other transparency. */
+function warmLightStates() {
+  if (!OPT.lightWarm) return;
+  const states = [];
+  if (CH.ghost !== null) states.push('ghost', 'ghostSolid');
+  if (torchDecl && torchLight) states.push('torch');
+  if (weaponDecl && weaponFlash) states.push('flash');
+  for (const st of states) {
+    const undo = [];
+    const set = (o, k, v) => { if (o[k] !== v) { undo.push([o, k, o[k]]); o[k] = v; } };
+    try {
+      if (st === 'ghost' || st === 'ghostSolid') {
+        set(ghost, 'visible', true); set(ghostLight, 'visible', true);
+        for (const m of ghostMats) set(m, 'transparent', st === 'ghost');
+      } else if (st === 'torch') set(torchLight, 'visible', true);
+      else if (st === 'flash') set(weaponFlash, 'visible', true);
+      renderer.compile(scene, camera);
+    } finally {
+      for (let i = undo.length - 1; i >= 0; i--) { const [o, k, v] = undo[i]; o[k] = v; }
+      for (const m of ghostMats) m.needsUpdate = true;   // re-picks the variant for her real transparency
+    }
+  }
+}
 async function warmWorld(items) {
   const cap = (p, ms) => Promise.race([p, new Promise(r => setTimeout(r, ms))]);
   const up = (r, root) => {
@@ -9193,6 +9259,7 @@ async function warmWorld(items) {
     if (par) await cap(Promise.all([renderer.compileAsync(scene, camera), renderer.compileAsync(vmScene, vmCam)]), 15000);
     else { renderer.compile(scene, camera); renderer.compile(vmScene, vmCam); }
   } catch {}
+  try { warmLightStates(); } catch {}           // v15: the light counts play will reach, compiled now
   warmGeometry(renderer, scene, camera);       // v14.16: the geometry of what is hidden, too
   warmGeometry(renderer, vmScene, vmCam);
   try { zavWarm(); } catch {}
@@ -10585,15 +10652,19 @@ function tick(now = 0) {
    edge row is ever left unshaded; the bars start to leave only after the
    scissor is gone (letterboxOff runs before `cine` is removed). */
 let letterbox = null, letterboxTimer = 0;
-function letterboxArm(tries = 6) {
+function letterboxArm(tries = 20) {
   clearTimeout(letterboxTimer); letterbox = null; letterboxTimer = 0;
   if (!OPT.letterbox) return;
   letterboxTimer = setTimeout(() => {
     letterboxTimer = 0;
     if (!document.body.classList.contains('cine')) return;
     const a = $('barTop').getBoundingClientRect(), b = $('barBot').getBoundingClientRect(), c = canvas.getBoundingClientRect();
-    const inPlace = a.top <= c.top + 0.5 && b.bottom >= c.bottom - 0.5 && a.height > 1 && b.height > 1;
-    if (!inPlace) { if (tries > 0) letterboxArm(tries - 1); return; }   // still sliding (a stalled frame): look again
+    /* each bar must actually COVER its edge — flush with it and reaching into
+       the frame. A bar still translated away (a stalled frame, mid-slide) is
+       also "flush" with nothing and would arm a band of the whole canvas. */
+    const inPlace = Math.abs(a.top - c.top) <= 0.5 && Math.abs(b.bottom - c.bottom) <= 0.5
+      && a.bottom > c.top + 2 && b.top < c.bottom - 2;
+    if (!inPlace) { if (tries > 0) letterboxArm(tries - 1); return; }   // still sliding: look again
     const top = Math.max(0, Math.floor(a.bottom - c.top) - 1), bot = Math.min(c.height, Math.ceil(b.top - c.top) + 1);
     if (bot - top < c.height * 0.5) return;
     letterbox = { y: c.height - bot, h: bot - top, w: c.width };
