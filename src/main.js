@@ -1061,16 +1061,26 @@ const OPT = { instCull: true, sphereCull: true, shadowTrim: true, coverSkip: tru
    ~2,500 never move (v8.6's freezeStatic saved the compose on meshes, never
    the multiply, and only there). The profile's largest script cost per frame
    was exactly this (updateMatrixWorld, multiplyMatrices, the traversal).
-   Now updateMatrix remembers the ten numbers (and the parent) it composed
-   from, and when all ten are bitwise the same and the object has not been
-   re-parented, the matrix already says exactly this — so it neither
-   recomposes nor flags the world matrix, and a subtree where nothing moved
-   costs a comparison per node. Anything that moves (a bone, a door, the
-   camera) composes as before and forces its descendants as before, so
-   every matrix comes out BIT-IDENTICAL to three's own; `dbgmat.mjs` checks
-   that against a forced full recompute. A pivot always composes. */
+   Now:
+   - updateMatrix remembers the ten numbers (and the parent) it composed
+     from; bitwise the same (and not re-parented) → the matrix already says
+     exactly this, so it neither recomposes nor flags the world matrix;
+   - every world-matrix computation takes a fresh STAMP, and records the
+     stamp its parent had; a node recomputes its world matrix when it is
+     flagged, forced, OR its parent's stamp is not the one it last used.
+   The stamps are what make it exact on every path. three's own
+   updateWorldMatrix (the "where is this now" walk up a chain) refreshes a
+   child only when the child is FLAGGED — stock three.js gets away with it
+   because every object flags itself every frame. Without the stamps a child
+   whose parent moved could be left stale: the first version of this, with
+   the composed-numbers check alone, left the CAMERA stale in the films
+   (dbgmat.mjs, against three's forced full recompute), and the stamps close
+   it. Everything else is three r185's own code, unchanged in order and in
+   arithmetic, so every matrix comes out BIT-IDENTICAL to a full recompute.
+   A pivot always composes. */
 {
   const O = THREE.Object3D.prototype, composeFull = O.updateMatrix;
+  let seq = 0;
   O.updateMatrix = function () {
     const p = this.position, q = this.quaternion, s = this.scale;
     let t = this.__mzT;
@@ -1083,6 +1093,33 @@ const OPT = { instCull: true, sphereCull: true, shadowTrim: true, coverSkip: tru
     t[0] = p.x; t[1] = p.y; t[2] = p.z; t[3] = q._x; t[4] = q._y; t[5] = q._z; t[6] = q._w;
     t[7] = s.x; t[8] = s.y; t[9] = s.z;
     this.__mzPa = this.parent;
+  };
+  const stale = (o, pa) => pa !== null && pa.__mzW !== o.__mzPW;
+  const compute = (o, pa) => {
+    if (o.matrixWorldAutoUpdate === true) {
+      if (pa === null) o.matrixWorld.copy(o.matrix);
+      else o.matrixWorld.multiplyMatrices(pa.matrixWorld, o.matrix);
+    }
+    o.matrixWorldNeedsUpdate = false;
+    o.__mzW = ++seq;
+    o.__mzPW = pa !== null ? pa.__mzW : 0;
+  };
+  O.updateMatrixWorld = function (force) {
+    if (this.matrixAutoUpdate) this.updateMatrix();
+    const pa = this.parent;
+    if (this.matrixWorldNeedsUpdate || force || stale(this, pa)) { compute(this, pa); force = true; }
+    const children = this.children;
+    for (let i = 0, l = children.length; i < l; i++) children[i].updateMatrixWorld(force);
+  };
+  O.updateWorldMatrix = function (updateParents, updateChildren, force = false) {
+    const pa = this.parent;
+    if (updateParents === true && pa !== null) pa.updateWorldMatrix(true, false);
+    if (this.matrixAutoUpdate) this.updateMatrix();
+    if (this.matrixWorldNeedsUpdate || force || stale(this, pa)) { compute(this, pa); force = true; }
+    if (updateChildren === true) {
+      const children = this.children;
+      for (let i = 0, l = children.length; i < l; i++) children[i].updateWorldMatrix(false, true, force);
+    }
   };
 }
 const instCull = new Set();

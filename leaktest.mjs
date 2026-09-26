@@ -64,6 +64,13 @@ const out = await p.evaluate(async ({ CYCLES, WARM }) => {
      left behind and a leak walks straight past. */
   const drawn = () => new Promise(r =>
     requestAnimationFrame(() => requestAnimationFrame(r)));
+  /* v15: the world is NOT drawn under an opaque cover any more (COVERED
+     FRAMES — the title is one), so a world rebuilt under the title would
+     never be uploaded and every count here would read an empty GPU. This
+     harness measures what drawing puts on the GPU and what a rebuild gives
+     back, so the title is taken off the canvas first and the engine's own
+     tick draws exactly as it does in play. */
+  document.getElementById('title').classList.add('hide');
 
   /* The BASELINE has to be warm too, and one cycle is not enough to make it
      so. renderer.info counts uploads, and an upload only happens when the
