@@ -4826,3 +4826,47 @@ had to learn it: a shadow redraw asked for under the card waits for a drawn
 frame, and `leaktest`, which counted uploads made by the engine's own frames
 under the title, now lifts the title first. The harness assumption changed,
 not the game.
+
+## v15.1 — a shadow sampler with no map is a draw the driver throws away
+
+three binds a 1×1 DEPTH texture stand-in to every shadow sampler whose map
+does not exist yet — and that stand-in is a `DepthTexture` at version 0, which
+three never uploads. Sampling it is `GL_INVALID_OPERATION` ("mismatch between
+texture format and sampler type") and the draw is REJECTED: no picture, no
+exception, one console line from the driver. Stock three never meets it,
+because its first frame draws the shadow maps before anything samples them.
+v15.0's covered frames broke that order: under the curtain nothing was drawn,
+so the warm draw became the first draw, before any map existed — 257 rejected
+draws under chapter 1's curtain, all hidden by the cover, all of them warm-ups
+that warmed nothing. Found only because `tools/probes/glerrors.mjs` counts the
+driver's own complaints by phase, and bisected by switching each change off
+from the address (`?opt=coverSkip:0`). The warm now draws the maps in the
+same pass whenever a drawn light has none. **A frame the engine decides not
+to draw can change the ORDER of the frames it does draw** — and the driver,
+not three, is where that shows.
+
+## v15.1 — a shader program is keyed by how MANY lights, not which
+
+three links a lit material's program for the scene's light COUNTS per kind
+(directional, point, spot, rect, hemisphere, and the shadow-casting ones of
+each) — not for the lights themselves. So a film that shows a set with its
+own lamps compiles every lit material again on that cut, and a lamp turned
+off (at zero intensity the engine hides it) compiles them again the other
+way. Two consequences worth keeping. Any state can be reproduced for a
+compile with STAND-IN lights at intensity 0 — nothing is drawn by them, and
+the program is the one the real state will ask for. And the states a chapter
+reaches cannot all be guessed from its scene graph (a film turns the flat's
+lamps OFF; a crossfade shows two sets at once), so the engine REMEMBERS every
+count it had to compile on screen (`mz.encounters.lightsets`), and the build
+ships the counts every film and scene reaches, recorded by
+`tools/probes/seedlights.mjs` on desktop and phone (their counts differ:
+nothing casts a shadow on a phone). A new chapter's seeds are recorded the
+same way; without them it is still correct, it only compiles on first view.
+
+## v15.1 — a set that forgets by PARENT forgets nothing a sweep leaves behind
+
+The sphere-cull set dropped a root once it had no parent. A disposed chapter's
+roots keep theirs — the old world group, which is simply no longer in the
+scene — so every rebuild left the last chapter's culled crowd in the set with
+its saved layer masks. A registry of scene objects is emptied when the stage
+is torn down, not when an object happens to be detached.

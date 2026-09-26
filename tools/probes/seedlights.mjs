@@ -8,14 +8,19 @@
    per-step compiles are logged — which is also the measurement of what a
    first viewing costs WITHOUT seeds (run it on a build with the seeds
    switched off: OPT=lightSeeds:0).
-   Usage: [PROFILE=phone] [OPT=…] node tools/probes/seedlights.mjs <chapter…> > out */
+   Usage: [PROFILE=phone] [VIEW=640x400] [OUT=file.json] [OPT=…] node tools/probes/seedlights.mjs <chapter…> > out
+   VIEW shrinks the desktop window: the counts do not depend on its size and
+   a software renderer pays for every pixel. OUT is rewritten after every
+   chapter, so a run cut short keeps what it recorded. */
+import { writeFileSync } from 'node:fs';
 import { chromium } from 'playwright';
 import { LAUNCH, PAGE } from '../../testlib.mjs';
 const chs = process.argv.slice(2), phone = process.env.PROFILE === 'phone';
 const STEP = +(process.env.STEP || 0.5);
 const b = await chromium.launch(LAUNCH);
 const ctx = await b.newContext(phone ? { viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true, deviceScaleFactor: 1 }
-                                     : { viewport: { width: 1280, height: 800 } });
+                                     : { viewport: process.env.VIEW ? { width: +process.env.VIEW.split('x')[0], height: +process.env.VIEW.split('x')[1] }
+                                                                    : { width: 1280, height: 800 } });
 const log = (...a) => console.error(...a);
 let dump = {};
 for (const ch of chs) {
@@ -58,6 +63,7 @@ for (const ch of chs) {
       await p.waitForFunction(() => window.__enc.getState() === 'play', null, { timeout: 600000, polling: 200 });
     }
     dump = await p.evaluate(() => { try { return JSON.parse(localStorage.getItem('mz.encounters.lightsets') || '{}'); } catch { return {}; } });
+    if (process.env.OUT) writeFileSync(process.env.OUT, JSON.stringify(dump));
     if (errs.length) log(`  ${ch} page errors: ${errs.slice(0, 3).join(' | ')}`);
   } catch (e) { log(`${ch}: PROBE FAILED ${e.message.split('\n')[0]}`); }
   await p.close();
