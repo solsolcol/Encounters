@@ -4138,6 +4138,8 @@ What the baseline contains, by release:
   "group" in chapters without her; her loops ran on at gain 0 after her
   sounds were released; a session starting in a silent-music chapter cut the
   music in rather than fading it. No word moved; sheet v74 stands.
+  Full suite 24/24 in 2331 s. Deploy `6ab78f47ee525732110c536d`,
+  byte-verified (index.html and all 107 build files).
   docs/V15.0-ENGINE-PLAN.md CP17–CP19 is the build's memory.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
