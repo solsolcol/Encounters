@@ -2247,7 +2247,7 @@
         });
         c.clips = src.animations;
         c.ready = true;
-      }).catch(err => { console.warn(key + ' crowd failed', err); c.ready = true; });
+      }).catch(err => { console.warn(key + ' crowd failed', err); ctx.loadFail && ctx.loadFail(key, err); c.ready = true; });
       crowds.push(c);
       return c;
     }
@@ -2474,7 +2474,7 @@
         rig.ready = true;
         redoShadows();
         if (opts.onReady) opts.onReady(rig);
-      }).catch(err => { console.warn(key + ' failed to load', err); rig.ready = true; });
+      }).catch(err => { console.warn(key + ' failed to load', err); ctx.loadFail && ctx.loadFail(key, err); rig.ready = true; });
       return rig;
     }
 

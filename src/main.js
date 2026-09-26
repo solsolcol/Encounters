@@ -114,6 +114,23 @@ function loadBegin(key, kind) {
   loadLog.push(r); if (loadLog.length > 600) loadLog.shift();
   return r;
 }
+/* v15.1: a model that ARRIVED but could not be put in the world. Where a
+   chapter parses once and places from the parse's PROMISE (episode 2's
+   caches), its placement runs after loadEnd has already counted the file as
+   landed — outside the loader's own callback guard — and a throw there left the placeholder
+   standing with nothing but a console.warn to say why (v8.5's green
+   capsules). It is logged beside the loads now — `err` set, which walktest
+   fails on — without touching the in-flight count, which the file already
+   settled. */
+function loadFail(key, e) {
+  /* the FILE failed (a download, a parse): the loader has already logged it
+     under the same key, and the placement never ran — say it once */
+  for (let i = loadLog.length - 1; i >= 0 && i >= loadLog.length - 80; i--) if (loadLog[i].key === key && loadLog[i].err) return;
+  const t = performance.now();
+  loadLog.push({ key, kind: 'place', t0: t, t1: t, late: revealAt > 0 && t > revealAt, err: String((e && e.message) || e) });
+  if (loadLog.length > 600) loadLog.shift();
+  console.error('v15.1: ' + key + ' landed but could not be placed', e);
+}
 function loadEnd(r) {
   if (r.t1) return;
   loadPending = Math.max(0, loadPending - 1);
@@ -1297,6 +1314,7 @@ function shadowCasterSync() {
   return casters;
 }
 function sphereCullAll(show) { for (const root of sphereCull) if (show) sphereCullShow(root); }
+function inScene(o) { for (let q = o; q; q = q.parent) if (q === scene) return true; return false; }
 const _scFr = new THREE.Frustum();
 function cullInstances(cam, shadowFrame) {
   if (!instCull.size && !sphereCull.size) return;
@@ -4085,6 +4103,7 @@ const CHCTX = {
      clone posed from a skeleton elsewhere), culled by a generous sphere in
      the root's own space: (root, cx, cy, cz, radius) */
   cullBySphere,
+  loadFail,                           // v15.1: a model landed but its placement threw
   /* THE HEAD BONE, named once for everybody (v5.01). Every rigged human in
      this game is a Mixamo skeleton, and glTF SANITIZES its node names:
      `mixamorig:Head_06` in the file is `mixamorigHead_06` in the scene. The
@@ -5443,7 +5462,7 @@ function musicSetup() {
   musicGain = actx.createGain();
   musicGain.gain.value = musicVolNow();
   musicGain.connect(bgOut());
-  if (!musicParked()) musicDecode();
+  if (!musicParked()) musicDecode(); else musicFadeIn = true;   // v15.1: whenever it does start, it fades in
 }
 /* v15: MUSIC THAT CANNOT SOUND IS NOT PLAYING. The explore bed is 120 s of
    stereo — 46 MB once decoded — and a chapter that declares `musicVol: 0`
@@ -6171,6 +6190,10 @@ function herCanSound(n) { return !OPT.herSounds || CH.ghost !== null || !HER_ONL
 function herRelease() {             // setChapter: into a chapter where she cannot sound, let hers go
   if (!OPT.herSounds || CH.ghost !== null) return;
   for (const n of HER_ONLY) if (!herCanSound(n)) { delete packBufs[n]; delete packPending[n]; }
+  /* and her two LOOPS stop: a loop's source holds its own reference to the
+     buffer, so deleting the table entry freed nothing while the source ran
+     on at gain 0 — the v14.16 law, which loopRetire already obeys */
+  for (const n of ['ghostloop', 'whisper']) if (packLoops[n] && !herCanSound(n)) loopRetire(n);
 }
 
 function snd(name, vol = 1, rate = 1, pan = 0) {        // one-shot
@@ -8882,7 +8905,15 @@ function rebuildStage(next) {
      every time. The JS objects never went anywhere, so what is drawn cannot
      change; only the round trip to the GPU goes. */
   if (ghost.parent) ghost.parent.remove(ghost);
+  /* v15.1: the cull sets let go of the old world. A culled root was only
+     ever dropped from `sphereCull` once it had no PARENT — and a disposed
+     chapter's roots keep theirs (the old world group), so every rebuild
+     kept the last chapter's culled crowd alive in the set, masks and all.
+     Shown back first (its layers are its own again), then forgotten; the
+     trees the sweep left detached go the same way. */
+  sphereCullAll(true); sphereCull.clear();
   stage.dispose();
+  for (const im of instCull) if (!inScene(im)) instCull.delete(im);
   stage = ch.build(CHCTX);
   stage.world.add(ghost);            // she is the engine's, but rides the world
   BLOCKERS = stage.blockers;
@@ -9553,13 +9584,16 @@ function warmLightStates() {
      25 programs at four cuts of that film (9 of them on the cut to the
      parade square) — and chapter 1's prologue compiled 44 as each memory's
      pocket lit up. So every light not drawn now is put with the others of its
-     GROUP (lights that come on together live together), and each group, the
-     room's dark lamps all at once, and one lamp of each kind alone are states
-     of their own. `compile` covers every material in the scene, hidden or
-     not, so one state per distinct set of light counts is enough — the
-     duplicates are skipped by `sig`. */
+     GROUP (lights that come on together live together), and each group and
+     one lamp of each kind alone are states of their own (v15.1: no longer
+     every dark lamp at once — a guess no chapter ever played; what no rule
+     guesses, the light MEMORY below learns and the shipped seeds carry).
+     `compile` covers every material in the scene, hidden or not, so one
+     state per distinct set of light counts is enough — the duplicates are
+     skipped by `sig`. HER light is hers: the ghost is not a group, it has
+     the 'ghost' states. */
   const groups = new Map(), darkKinds = new Map();
-  const top = new Set([scene, stage && stage.world, camera]);   // the camera's own (torch, flash) have states of their own
+  const top = new Set([scene, stage && stage.world, camera, ghost]);   // the camera's own (torch, flash) and HER light have states of their own
   for (const o of lights) {
     let hidden = false;
     for (let a = o.parent; a && a !== scene; a = a.parent) if (!a.visible) hidden = true;

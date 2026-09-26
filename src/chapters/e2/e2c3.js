@@ -414,7 +414,7 @@
         }
         proxy.visible = false; rig.ready = true; redoShadows();
         if (opts.onReady) opts.onReady(rig);
-      }).catch(err => { console.warn(key + ' failed to load', err); rig.ready = true; });
+      }).catch(err => { console.warn(key + ' failed to load', err); ctx.loadFail && ctx.loadFail(key, err); rig.ready = true; });
       rigs.push(rig);
       return rig;
     }
@@ -529,7 +529,7 @@
         if (o.material.length === 1) o.material = o.material[0];
       });
       gtorch.add(m);
-    }).catch(err => console.warn('ground torch failed', err));
+    }).catch(err => { console.warn('ground torch failed', err); ctx.loadFail && ctx.loadFail('flashlight', err); });
     const patch = new THREE.Mesh(new THREE.CircleGeometry(0.22, 14), nfm({ map: litterTex, color: 0x3a3226, roughness: 1 }));
     patch.rotation.x = -Math.PI / 2; patch.position.y = 0.015; patch.visible = false; patch.userData.moves = true; world.add(patch);
 
@@ -669,7 +669,7 @@
         o.castShadow = false; o.receiveShadow = false; o.frustumCulled = true;
       });
       forest.add(g); forestReady = true;
-    }).catch(err => { console.warn('forest failed', err); forestReady = true; });
+    }).catch(err => { console.warn('forest failed', err); ctx.loadFail && ctx.loadFail('forest', err); forestReady = true; });
 
     /* THE ROAD, AS NUMBERS: `roadAt(s, off)` is the point s metres along the
        traced centreline (off metres to the RIGHT of travel) in POCKET
@@ -706,7 +706,7 @@
       const g = gltf.scene;
       g.traverse(o => { if (!o.isMesh || !o.material) return; o.material.fog = false; o.material.needsUpdate = true; if (o.material.map) o.material.map.anisotropy = 4; o.castShadow = false; o.receiveShadow = false; });
       truck.add(g); truckReady = true;
-    }).catch(err => { console.warn('kamaz failed', err); truckReady = true; });
+    }).catch(err => { console.warn('kamaz failed', err); ctx.loadFail && ctx.loadFail('kamaz', err); truckReady = true; });
     const tailPivot = new THREE.Group(); tailPivot.position.set(0, TB.floor, TB.len / 2); truck.add(tailPivot);   // the model's rear is open; the name the film and restore() know, now empty
     /* THE RIDERS: seven on the benches, dozing on the rig's own sitting take
        (Sit_and_Doze_Off — sampled seventeen times across its 17 s, the head

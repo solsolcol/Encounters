@@ -828,7 +828,7 @@
         if (opts.onReady) opts.onReady(rig);
         if (rig.idle) rig.play(rig.idle, opts.rate || 1, 0);
         if (opts.pose) rig.play(opts.pose, 1, 0, false, opts.at ?? 0.12);
-      }).catch(() => { rig.ready = true; });
+      }).catch(err => { ctx.loadFail && ctx.loadFail(key, err); rig.ready = true; });
       return rig;
     }
 
@@ -878,7 +878,7 @@
         /* only once EVERY piece is standing — a half-dressed table with the
            primitives already gone is worse than either state */
         if (alive && g.every(Boolean) && ammoOld) ammoOld.visible = false;
-      }).catch(e => console.error('ammo point models failed', e));
+      }).catch(e => { console.error('ammo point models failed', e); ctx.loadFail && ctx.loadFail('ammocrate', e); });
     }
 
     /* ------------------------------------------------------- THE FIRING LINE

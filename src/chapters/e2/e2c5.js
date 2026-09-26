@@ -405,7 +405,7 @@
         T.group.add(g); T.fb.visible = false;
       }
       redoShadows();
-    }).catch(err => console.warn('kamaz failed to load', err));
+    }).catch(err => { console.warn('kamaz failed to load', err); ctx.loadFail && ctx.loadFail('kamaz', err); });
     // their bays, painted: a yellow box round each one, as a transport line marks them
     for (const T of TRUCKS) {
       const zc = T.z + 1.13, L = 7.9, W = 3.25;
@@ -782,7 +782,7 @@
           if (isFinite(lo3)) g.position.y += -(lo3 - group.position.y);
         }
         proxy.visible = false; rig.ready = true; redoShadows();
-      }).catch(err => { console.warn(key + ' failed to load', err); rig.ready = true; });
+      }).catch(err => { console.warn(key + ' failed to load', err); ctx.loadFail && ctx.loadFail(key, err); rig.ready = true; });
       return rig;
     }
 
