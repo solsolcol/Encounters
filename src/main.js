@@ -1082,7 +1082,7 @@ function treeKit() {
 /* v15: every engine optimization has a switch, ON by default, so a probe can
    draw the SAME frozen frame with it off and on and compare every pixel —
    the proof that an optimization changed nothing on screen. */
-const OPT = { instCull: true, sphereCull: true, shadowTrim: true, coverSkip: true, vmSkip: true, letterbox: true, lightWarm: true, matSkip: true, boneSkip: true, warmTiny: true, lightSets: true, ctxRestore: true, herSounds: true };
+const OPT = { instCull: true, sphereCull: true, shadowTrim: true, coverSkip: true, vmSkip: true, letterbox: true, lightWarm: true, matSkip: true, boneSkip: true, warmTiny: true, lightSets: true, ctxRestore: true, herSounds: true, musicPark: true };
 /* a probe may switch any of them off from the address (`?opt=boneSkip:0,warmTiny:0`),
    so a switch that acts at LOAD time can be compared build against itself */
 { const m = /[?&]opt=([^&]*)/.exec(location.search);
@@ -5442,10 +5442,34 @@ function musicSetup() {
   musicGain = actx.createGain();
   musicGain.gain.value = musicVolNow();
   musicGain.connect(bgOut());
+  if (!musicParked()) musicDecode();
+}
+/* v15: MUSIC THAT CANNOT SOUND IS NOT PLAYING. The explore bed is 120 s of
+   stereo — 46 MB once decoded — and a chapter that declares `musicVol: 0`
+   (chapter 3's ceremony, all five of episode 2) can never make it audible:
+   every write of the music gain reads `musicVolNow()`, which is 0 there. It
+   used to play on regardless, at gain 0, for the whole of such a chapter: a
+   source still mixed on the audio thread every block (v14.16's law) and 46 MB
+   held for a sound nobody could hear. Now it is STOPPED and let go three
+   seconds after such a chapter begins (its own 1.2 s ramp to zero is long
+   over by then), never decoded at all for a session that starts in one, and
+   decoded again the moment a chapter with music is entered — from the top,
+   faded in over the same 1.2 s, under that chapter's card. Mute, a duck, a
+   film holding it down and the title never park it: only a chapter's own
+   declaration does. */
+let musicDecoding = false, musicFadeIn = false, musicParkAt = 0;
+const musicParked = () => OPT.musicPark && Number.isFinite(CH.musicVol) && CH.musicVol <= 0;
+function musicDecode() {
+  if (musicBuf || musicDecoding || !actx) return;
+  musicDecoding = true;
   assetBytes('music', true)
     .then(bytes => actx.decodeAudioData(bytes.slice(0)))   // v14.16: decoding DETACHES the buffer; decode a copy
-    .then(buf => { musicBuf = buf; if (musicWanted) musicStart(); })
-    .catch(() => { /* no file or no decoder; the game is fine without */ });
+    .then(buf => { musicDecoding = false; if (musicParked()) { musicFadeIn = true; return; } musicBuf = buf; if (musicWanted) musicStart(); })
+    .catch(() => { musicDecoding = false; /* no file or no decoder; the game is fine without */ });
+}
+function musicPark() {
+  if (musicSrc) { try { musicSrc.stop(); musicSrc.disconnect(); } catch {} musicSrc = null; musicFadeIn = true; }
+  musicBuf = null;
 }
 
 function musicStart() {
@@ -5453,7 +5477,15 @@ function musicStart() {
   if (!actx) musicSetup();
   if (!actx) return;
   if (actx.state === 'suspended') actx.resume().catch(() => {});
-  if (!musicBuf || musicSrc) return;
+  if (!musicBuf) { if (!musicParked()) musicDecode(); return; }   // v15: parked, or coming back
+  if (musicSrc) return;
+  if (musicFadeIn) {                   // v15: back from a park — faded in from silence, never cut in
+    musicFadeIn = false;
+    const g = musicGain.gain, now = actx.currentTime;
+    g.cancelScheduledValues(now);
+    g.setValueAtTime(0, now);
+    g.linearRampToValueAtTime(musicVolNow(), now + 1.2);
+  }
   musicSrc = actx.createBufferSource();
   musicSrc.buffer = musicBuf;
   musicSrc.loop = true;
@@ -5506,7 +5538,7 @@ if (volEl) {
    with silence until someone happens to press the sound button.            */
 function nudgeMusic() {
   musicStart();
-  if (actx && actx.state === 'running' && musicSrc) {
+  if (actx && actx.state === 'running' && (musicSrc || musicParked())) {   // v15: parked counts as started
     for (const ev of ['pointerdown', 'pointerup', 'touchstart', 'touchend',
                       'keydown', 'click', 'wheel'])
       removeEventListener(ev, nudgeMusic);
@@ -5667,7 +5699,7 @@ function warmIntroSet() { packWarm(introSamples()); }
 function whenDecoded(names, then, capMs = 4000) {
   const t0 = performance.now();
   const tick = () => {
-    const pending = names.filter(n => packJson && packJson[n] && !packBufs[n]);
+    const pending = names.filter(n => packJson && packJson[n] && !packBufs[n] && warmable(n));
     if (!pending.length || performance.now() - t0 > capMs) then();
     else setTimeout(tick, 60);
   };
@@ -6094,7 +6126,11 @@ function sndBuf(name) {              // AudioBuffer if ready, else kick a decode
 /* v14.16: a warm list is never a reason to decode ANOTHER chapter's own
    sounds — WARM_WANT keeps every name a chapter ever asked for this session,
    and without this each entry would re-decode what releaseChapterSounds let go */
-function packWarm(names) { for (const n of names) { const o = packOwner[n]; if ((!o || o === CH_KEY) && herCanSound(n)) sndBuf(n); } }
+function packWarm(names) { for (const n of names) if (warmable(n)) sndBuf(n); }
+/* what a warm list may decode here — and so what a film may WAIT for: a
+   name the warm skips will never decode, so waiting on it only spends the
+   whole cap (v15: whenDecoded asks this too) */
+function warmable(n) { const o = packOwner[n]; return (!o || o === CH_KEY) && herCanSound(n); }
 /* v15: HER SOUNDS WHERE SHE CANNOT BE. Her cries, her scream, the whisper
    and the low bed that follow her, the chord of her first sight and his four
    frightened reactions are played by her state machine and nothing else —
@@ -6348,6 +6384,12 @@ function loopRetire(n) {
 }
 
 function updateAudioFrame(t) {
+  /* v15: the park (musicDecode above) — three seconds into a chapter that
+     declares its music silent, the source stops and the 46 MB go */
+  if (musicParked() && (musicSrc || musicBuf)) {
+    if (!musicParkAt) musicParkAt = t + 3;
+    else if (t > musicParkAt) { musicPark(); musicParkAt = 0; }
+  } else musicParkAt = 0;
   if (!packJson) return;
   const inWorld = state !== 'title' && state !== 'chapter';
 
@@ -8882,6 +8924,7 @@ function setChapter(key) {
     g.setValueAtTime(g.value, now);
     g.linearRampToValueAtTime(musicVolNow(), now + 1.2);
   }
+  if (musicWanted && !musicParked()) musicStart();   // v15: a chapter with music after one that parked it
   SPAWN.pos.set(CH.spawn.x, CH.spawn.y, CH.spawn.z);
   /* v7.5: a chapter may say which way its spawn FACES (`spawn.rot`, a
      yaw). Every chapter used to face −z, which put episode 2's first
