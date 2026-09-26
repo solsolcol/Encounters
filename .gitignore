@@ -19,6 +19,7 @@ masters/*/prep/
 dbg*.mjs
 dbg*.html
 dbg*.log
+prof-*.json
 ablate.mjs
 bench.mjs
 fps.mjs
