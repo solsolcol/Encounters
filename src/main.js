@@ -1052,7 +1052,7 @@ function treeKit() {
 /* v15: every engine optimization has a switch, ON by default, so a probe can
    draw the SAME frozen frame with it off and on and compare every pixel —
    the proof that an optimization changed nothing on screen. */
-const OPT = { instCull: true, sphereCull: true, shadowTrim: true, coverSkip: true, vmSkip: true, letterbox: true, lightWarm: true, matSkip: true };
+const OPT = { instCull: true, sphereCull: true, shadowTrim: true, coverSkip: true, vmSkip: true, letterbox: true, lightWarm: true, matSkip: true, boneSkip: true, warmTiny: true };
 /* v15: A MATRIX IS COMPOSED ONLY WHEN WHAT IT IS MADE OF CHANGED. three.js
    recomposes every object's local matrix from its position, rotation and
    scale on every frame and flags its world matrix dirty — so the root of
@@ -1081,13 +1081,17 @@ const OPT = { instCull: true, sphereCull: true, shadowTrim: true, coverSkip: tru
 {
   const O = THREE.Object3D.prototype, composeFull = O.updateMatrix;
   let seq = 0;
+  /* the same number BIT FOR BIT: === alone calls +0 and −0 equal, and a −0
+     composes a −0 into the matrix, so a coordinate that flips sign at zero
+     must recompose for the result to stay identical to a full recompute */
+  const eq = (a, b) => a === b && (a !== 0 || 1 / a === 1 / b);
   O.updateMatrix = function () {
     const p = this.position, q = this.quaternion, s = this.scale;
     let t = this.__mzT;
     if (t !== undefined && OPT.matSkip && this.pivot === null && this.__mzPa === this.parent
-        && t[0] === p.x && t[1] === p.y && t[2] === p.z
-        && t[3] === q._x && t[4] === q._y && t[5] === q._z && t[6] === q._w
-        && t[7] === s.x && t[8] === s.y && t[9] === s.z) return;
+        && eq(t[0], p.x) && eq(t[1], p.y) && eq(t[2], p.z)
+        && eq(t[3], q._x) && eq(t[4], q._y) && eq(t[5], q._z) && eq(t[6], q._w)
+        && eq(t[7], s.x) && eq(t[8], s.y) && eq(t[9], s.z)) return;
     composeFull.call(this);
     if (t === undefined) t = this.__mzT = new Float64Array(10);
     t[0] = p.x; t[1] = p.y; t[2] = p.z; t[3] = q._x; t[4] = q._y; t[5] = q._z; t[6] = q._w;
@@ -1120,6 +1124,41 @@ const OPT = { instCull: true, sphereCull: true, shadowTrim: true, coverSkip: tru
       const children = this.children;
       for (let i = 0, l = children.length; i < l; i++) children[i].updateWorldMatrix(false, true, force);
     }
+  };
+}
+/* v15: A SKELETON THAT DID NOT MOVE IS NOT RE-UPLOADED. three computes every
+   bone's matrix into the skeleton's float array each frame and then flags the
+   bone TEXTURE for upload whether or not a single number changed — a
+   texSubImage2D per skinned character per frame, for a man held on one frame
+   of his take, a copy parked in a film, a crowd frozen at a beat. The same
+   arithmetic runs here (the same multiplyMatrices, the same float32 store),
+   compared as it is stored: the first bone whose value differs — bit for bit,
+   −0 against +0 included — is written, every bone after it too, and only then
+   is the texture flagged. An animated rig differs at its first bone and pays
+   one comparison; a still one uploads nothing, and the GPU already holds
+   exactly the numbers it would have been sent. */
+{
+  const S = THREE.Skeleton.prototype, updateFull = S.update;
+  const off = new THREE.Matrix4(), ident = new THREE.Matrix4();
+  S.update = function () {
+    if (!OPT.boneSkip) return updateFull.call(this);
+    const bones = this.bones, inv = this.boneInverses, arr = this.boneMatrices, tex = this.boneTexture;
+    let changed = tex !== null && tex.version === 0;
+    for (let i = 0, il = bones.length; i < il; i++) {
+      const b = bones[i];
+      off.multiplyMatrices(b ? b.matrixWorld : ident, inv[i]);
+      const o = i * 16;
+      if (!changed) {
+        const e = off.elements;
+        for (let k = 0; k < 16; k++) {
+          const v = Math.fround(e[k]), w = arr[o + k];
+          if (v !== w || (v === 0 && 1 / v !== 1 / w)) { changed = true; break; }
+        }
+        if (!changed) continue;
+      }
+      off.toArray(arr, o);
+    }
+    if (changed && tex !== null) tex.needsUpdate = true;
   };
 }
 const instCull = new Set();
@@ -1318,7 +1357,13 @@ function plantTrees(parent, spots, opts = {}) {
         if (opts.roughness !== undefined) mat.roughness = opts.roughness;
         if (part.leaf) { mat.side = THREE.DoubleSide; if (!(mat.alphaTest > 0)) mat.alphaTest = 0.45; mat.transparent = false; mat.depthWrite = true; }
         // a crown is nothing but grazing angles; without this the far leaves crawl
-        if (mat.map) { mat.map.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy()); mat.map.needsUpdate = true; }
+        /* v15: set once — the map is the kit's, SHARED by every stand, and
+           flagging it for every stand re-uploaded and re-mipped the same
+           texels at every chapter entry */
+        if (mat.map) {
+          const a = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+          if (mat.map.anisotropy !== a) { mat.map.anisotropy = a; mat.map.needsUpdate = true; }
+        }
         owned.push(mat);
         const im = new THREE.InstancedMesh(part.geo, mat, list.length);
         im.castShadow = !!opts.shadow && !LOW;
@@ -9217,7 +9262,7 @@ function curtainItems() {
    forced-visible group is held dark), so the programs drawn are the ones
    play will use; the frozen shadow maps are not redrawn with the hidden
    things in them; and every flag is put back in a finally. */
-function warmGeometry(r, root, cam) {
+function warmGeometry(r, root, cam, tiny = false) {
   sphereCullAll(true);                 // v15: everything the sphere culling took off the camera goes back for the warm frame
   const flips = [], culled = [], lods = [];
   const walk = (o, hiddenAbove) => {
@@ -9233,9 +9278,11 @@ function warmGeometry(r, root, cam) {
     walk(root, false);
     sm.autoUpdate = false; sm.needsUpdate = false;
     r.autoClear = true;
+    if (tiny) { r.setScissor(0, 0, 1, 1); r.setScissorTest(true); }
     r.render(root, cam);
   } catch { /* a warm frame that fails costs a hitch later, never the chapter */ }
   finally {
+    if (tiny) r.setScissorTest(false);
     for (const o of flips) o.visible = !o.visible;
     for (const o of culled) o.frustumCulled = true;
     for (const [o, a] of lods) o.autoUpdate = a;
@@ -9270,6 +9317,10 @@ function warmLightStates() {
       } else if (st === 'torch') set(torchLight, 'visible', true);
       else if (st === 'flash') set(weaponFlash, 'visible', true);
       renderer.compile(scene, camera);
+      /* and DRAWN once, into one pixel under the cover: a driver may build a
+         program's pipeline at its first draw rather than at link (ANGLE on
+         Metal does), so a compile alone can leave part of the stall in play */
+      warmGeometry(renderer, scene, camera, true);
     } finally {
       for (let i = undo.length - 1; i >= 0; i--) { const [o, k, v] = undo[i]; o[k] = v; }
       for (const m of ghostMats) m.needsUpdate = true;   // re-picks the variant for her real transparency
@@ -9297,8 +9348,13 @@ async function warmWorld(items) {
     else { renderer.compile(scene, camera); renderer.compile(vmScene, vmCam); }
   } catch {}
   try { warmLightStates(); } catch {}           // v15: the light counts play will reach, compiled now
-  warmGeometry(renderer, scene, camera);       // v14.16: the geometry of what is hidden, too
-  warmGeometry(renderer, vmScene, vmCam);
+  /* v14.16: the geometry of what is hidden, too — v15: into ONE pixel. The
+     warm draw exists to upload buffers and build pipelines, which a draw does
+     whatever it covers; shading the whole canvas under the cover, with
+     everything forced visible, was work nobody saw (the frames drawn under
+     the cover after it still draw the full frame) */
+  warmGeometry(renderer, scene, camera, OPT.warmTiny);
+  warmGeometry(renderer, vmScene, vmCam, OPT.warmTiny);
   try { zavWarm(); } catch {}
   for (const id of items) {
     if (iv.state[id] !== 'ready') continue;
@@ -10658,6 +10714,7 @@ function tick(now = 0) {
      the cover is their whole purpose. */
   if (worldCovered()) {
     scene.updateMatrixWorld();
+    vmScene.updateMatrixWorld();
     return;
   }
   if (forceDraw > 0) forceDraw--;
@@ -10677,7 +10734,7 @@ function tick(now = 0) {
     renderer.clearDepth();
     renderer.render(vmScene, vmCam);
     renderer.autoClear = true;
-  }
+  } else vmScene.updateMatrixWorld();    // nothing to draw, but whatever reads a hand's matrix reads it fresh
   } finally { if (band) renderer.setScissorTest(false); }   // never left on, whatever a pass did
 }
 /* v15: THE LETTERBOX IS NOT SHADED. Every film and scene draws two opaque
@@ -10685,8 +10742,9 @@ function tick(now = 0) {
    see, shaded by both passes on every frame of every cutscene. Once the
    bars have finished sliding in (measured from their own rects, never
    computed: 11vh is not 0.11·innerHeight on iOS), both passes are
-   scissored to the band between them, one CSS pixel into each bar so no
-   edge row is ever left unshaded; the bars start to leave only after the
+   scissored to the band between them, two CSS pixels into each bar so no
+   edge row is ever left unshaded (the scissor is in buffer pixels, CSS × the
+   pixel ratio, rounded, so one CSS pixel can round down to a single row); the bars start to leave only after the
    scissor is gone (letterboxOff runs before `cine` is removed). */
 let letterbox = null, letterboxTimer = 0;
 function letterboxArm(tries = 20) {
@@ -10702,7 +10760,7 @@ function letterboxArm(tries = 20) {
     const inPlace = Math.abs(a.top - c.top) <= 0.5 && Math.abs(b.bottom - c.bottom) <= 0.5
       && a.bottom > c.top + 2 && b.top < c.bottom - 2;
     if (!inPlace) { if (tries > 0) letterboxArm(tries - 1); return; }   // still sliding: look again
-    const top = Math.max(0, Math.floor(a.bottom - c.top) - 1), bot = Math.min(c.height, Math.ceil(b.top - c.top) + 1);
+    const top = Math.max(0, Math.floor(a.bottom - c.top) - 2), bot = Math.min(c.height, Math.ceil(b.top - c.top) + 2);
     if (bot - top < c.height * 0.5) return;
     letterbox = { y: c.height - bot, h: bot - top, w: c.width };
   }, 650);

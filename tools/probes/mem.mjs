@@ -1,0 +1,11 @@
+import { chromium } from 'playwright';
+import { LAUNCH, PAGE, toPlay } from '../../testlib.mjs';
+const b = await chromium.launch({ ...LAUNCH, args: [...(LAUNCH.args || []), '--enable-precise-memory-info'] });
+const p = await b.newPage({ viewport: { width: 1280, height: 800 } });
+const cdp = await p.context().newCDPSession(p);
+await p.goto(PAGE + '?ch=ch2', { waitUntil: 'load', timeout: 240000 });
+await p.waitForFunction(() => !!window.__enc, null, { timeout: 120000 });
+await p.click('#startBtn', { timeout: 400000 }); await toPlay(p, 900000); await p.waitForTimeout(8000);
+await cdp.send('HeapProfiler.collectGarbage'); await p.waitForTimeout(500); await cdp.send('HeapProfiler.collectGarbage');
+console.log('fresh ch2 in play: heap', await p.evaluate(() => (performance.memory.usedJSHeapSize / 1048576).toFixed(0)), 'MB');
+await b.close();
