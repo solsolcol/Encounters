@@ -6146,7 +6146,10 @@ function warmable(n) { const o = packOwner[n]; return (!o || o === CH_KEY) && he
 const HER_ONLY = new Set(['strings', 'whisper', 'swoosh', 'sobbing', 'gscream', 'ghostloop', 'gwail', 'gsigh',
                           'vghost', 'vscare1', 'vscare2', 'vscare3', 'vscare4']);
 let herSrcKey = null, herSrc = '';
-function herNamed(n) {
+/* the playing chapter's words and code as one text, read once per chapter:
+   what it NAMES is what it can ask for (the cue scan's reasoning, applied
+   to the whole chapter) */
+function chText() {
   if (herSrcKey !== CH_KEY) {
     herSrcKey = CH_KEY;
     const parts = [], seen = new Set(), text = (v) => {
@@ -6157,7 +6160,11 @@ function herNamed(n) {
     try { text(CH); } catch { /* an unreadable part names nothing */ }
     herSrc = parts.join('\n');
   }
-  return herSrc.includes("'" + n + "'") || herSrc.includes('"' + n + '"') || herSrc.includes('`' + n + '`');
+  return herSrc;
+}
+function herNamed(n) {
+  const t = chText();
+  return t.includes("'" + n + "'") || t.includes('"' + n + '"') || t.includes('`' + n + '`');
 }
 function herCanSound(n) { return !OPT.herSounds || CH.ghost !== null || !HER_ONLY.has(n) || herNamed(n); }
 function herRelease() {             // setChapter: into a chapter where she cannot sound, let hers go
@@ -9450,26 +9457,39 @@ function warmLightStates() {
      jetty and parade square): the frame it is shown, the light counts change
      and every lit material drawn that frame is compiled on screen — measured,
      25 programs at four cuts of that film (9 of them on the cut to the
-     parade square). So each hidden group that holds a switched-on light is a
-     state of its own; and one dark light of each kind coming on (a lamp at
-     lights-out, a flare, a torch on the ground) is another. `compile` covers
-     every material in the scene, hidden or not, so one state per distinct
-     set of light counts is enough — the duplicates are skipped by `sig`. */
-  const sets = new Set(), darkKinds = new Map();
+     parade square) — and chapter 1's prologue compiled 44 as each memory's
+     pocket lit up. So every light not drawn now is put with the others of its
+     GROUP (lights that come on together live together), and each group, the
+     room's dark lamps all at once, and one lamp of each kind alone are states
+     of their own. `compile` covers every material in the scene, hidden or
+     not, so one state per distinct set of light counts is enough — the
+     duplicates are skipped by `sig`. */
+  const groups = new Map(), darkTop = [], darkKinds = new Map();
+  const top = new Set([scene, stage && stage.world]);
   for (const o of lights) {
-    let top = null;
-    for (let a = o.parent; a && a !== scene; a = a.parent) if (!a.visible) top = a;
-    if (top) { if (o.visible && o.intensity > 0.0005) sets.add(top); continue; }
-    if (o.intensity <= 0.0005) {
-      const kind = (o.isDirectionalLight ? 'd' : o.isPointLight ? 'p' : o.isSpotLight ? 's' : 'r') + (o.castShadow ? 'S' : '');
-      if (!darkKinds.has(kind)) darkKinds.set(kind, o);
-    }
+    let hidden = false;
+    for (let a = o.parent; a && a !== scene; a = a.parent) if (!a.visible) hidden = true;
+    if (!hidden && o.visible && o.intensity > 0.0005) continue;        // drawn now: the main compile has it
+    const g = o.parent;
+    if (g && !top.has(g)) { if (!groups.has(g)) groups.set(g, []); groups.get(g).push(o); continue; }
+    if (hidden) continue;
+    darkTop.push(o);
+    const kind = (o.isDirectionalLight ? 'd' : o.isPointLight ? 'p' : o.isSpotLight ? 's' : 'r') + (o.castShadow ? 'S' : '');
+    if (!darkKinds.has(kind)) darkKinds.set(kind, o);
   }
   if (OPT.lightSets) {
-    for (const g of sets) states.push({ set: g });
-    for (const o of darkKinds.values()) states.push({ light: o });
+    /* a GROUP's lights come on together — a film set, a memory's pocket, a
+       diorama: shown with its hidden ancestors, every light in it on */
+    for (const [g, ls] of groups) states.push({ show: g, lights: ls });
+    /* the room's own dark lamps: all of them at once (a flat whose lights come
+       on as the film opens), and one of each kind alone (a flare, a torch on
+       the ground, one lamp at lights-out) */
+    if (darkTop.length > 1) states.push({ lights: darkTop });
+    for (const o of darkKinds.values()) states.push({ lights: [o] });
   }
-  if (CH.ghost !== null) states.push('ghost', 'ghostSolid');
+  /* her, where she haunts — and where a FILM or a scene shows her in a
+     chapter she cannot haunt (chapter 3's opening: her, out on the tarmac) */
+  if (CH.ghost !== null || (OPT.lightSets && chText().includes('ghostOpacity('))) states.push('ghost', 'ghostSolid');
   if (torchDecl && torchLight) states.push('torch');
   if (weaponDecl && weaponFlash) states.push('flash');
   for (const st of states) {
@@ -9478,8 +9498,10 @@ function warmLightStates() {
     try {
       for (const o of lights) if (o.intensity <= 0.0005 && o.visible) set(o, 'visible', false);
       if (st === 'settled') { /* nothing more */ }
-      else if (st.set) set(st.set, 'visible', true);
-      else if (st.light) set(st.light, 'visible', true);
+      else if (st.lights) {
+        for (let a = st.show; a && a !== scene; a = a.parent) set(a, 'visible', true);
+        for (const o of st.lights) set(o, 'visible', true);
+      }
       else if (st === 'ghost' || st === 'ghostSolid') {
         set(ghost, 'visible', true); set(ghostLight, 'visible', true);
         for (const m of ghostMats) set(m, 'transparent', st === 'ghost');
