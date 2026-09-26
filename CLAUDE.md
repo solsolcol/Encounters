@@ -4044,6 +4044,68 @@ What the baseline contains, by release:
   session). No word moved; sheet v74 stands. Deploy
   `6ab6faa87189d8aed14df67e`, byte-verified (index.html and all 107 build
   files). docs/V14.16-THE-AUDIT.md is the build's memory.
+- **v15.0** THE ENGINE PASS — Chad: *"think of how to dramatically optimize
+  the game without resorting to compromising visual quality or fidelity in
+  any way ... real technical improvements to the core engine."* Held to one
+  rule, proven rather than argued: THE SAME PIXELS. Every change is behind
+  an `OPT` switch (`?opt=name:0` in the address turns one off, so a load-time
+  change can be compared build against itself), and each was PROVEN with the
+  probes now kept in `tools/probes/` (README there): the same frozen frame
+  drawn with a switch off and on in one task, every pixel compared, at eight
+  headings, desktop and phone (`pix.mjs`); every world matrix against
+  three's own forced full recompute, bit for bit (`mat.mjs`). What is GONE:
+  **triangles nobody sees** — a tree stand was culled as ONE object, so the
+  whole forest round the player was drawn in every direction; each tree is
+  culled on its own now (`cullEachInstance`, instances packed to the front in
+  their own order, the full list on a shadow frame): e2c3's harbour 1.09–1.39 M
+  → 0.32–0.95 M triangles a frame; chapter 3's seated crowd (skinned, posed
+  from skeletons elsewhere, so three cannot cull it) leaves the camera's
+  layers while a generous sphere round each sitter is off screen
+  (`cullBySphere`, a CHCTX seam): 59–63 % fewer facing away from the tent;
+  **shadow lookups for a map that holds nothing** — on a phone every episode-2
+  chapter has ZERO casters (`castShadow = !LOW`) while every lit pixel still
+  ran nine PCF compares on the moon's empty map (`shadowCasterSync`);
+  **frames nobody sees** — the title, a chapter card forced solid, a film held
+  on black and the episode card are opaque, so nothing is drawn under them
+  (`worldCovered`; the logic and the matrices still run); the LETTERBOX bars
+  in every film and scene cover 22 % of the frame, so both passes are
+  scissored to the band between them (measured from the bars' own rects,
+  2 CSS px into each); the hand pass is skipped when there is no hand;
+  **work repeated every frame for the same answer** — `updateMatrix` stops
+  recomposing an object whose position, rotation, scale and parent are
+  bit-identical to last time, and a STAMP law keeps it exact (three r185
+  refreshes a child only when the CHILD is flagged — the first version left
+  the camera stale in films, 102 matrices, caught by `mat.mjs`; now 0 of
+  683 / 3,664 / 2,172 / 512 differ); a skeleton that did not move does not
+  re-upload its bone texture; `darkLights` walks a list instead of the whole
+  scene; an audio param is re-aimed only when its target moves; the shared
+  tree kit is uploaded once instead of once per stand; **stalls** — the light
+  states the engine reaches (her light, the torch, the flash, and the SETTLED
+  set darkLights arrives at) are compiled AND drawn once under the curtain: her first appearance in chapter 1 compiled
+  8 programs mid-play with an 8.6 s worst frame on the probe box, 0 and 2.0 s
+  now; **memory** — episode 2 chapter 1 parsed its four characters TWELVE
+  times, each parse its own 2048² sheet on the GPU: parsed once and cloned,
+  textures 194 → 186, **395 → 224 MB** of texture images; the ghost no longer
+  freed and re-uploaded at every chapter change; e2c3/e2c4/e2c5's caches hold
+  the scene, not the parser's copy of the file; the strict-CSP build makes
+  one texture per image's bytes (hdb.glb names one image fourteen times);
+  the SOUND PACKS are binary on the hosted build (a 6 MB JSON.parse and every
+  base64 decode off the phone's main thread; heap at e2c1 133 → 89 MB; every
+  one of 1,177 sounds checked byte for byte). Threads, honestly: meshopt
+  already decodes in two workers, audio on the browser's decoder thread,
+  shaders in the background where the driver allows — what heats a phone is
+  total work, mostly the GPU, and moving work to another core removes none of
+  it; deleting it does, which is what every change here does. NOT done, with
+  reasons (docs/V15.0-ENGINE-PLAN.md): merging meshes (not pixel-identical),
+  SharedArrayBuffer (blocks the font sheet, can never serve the single-file
+  build), OffscreenCanvas (iOS 17+ only), suspending audio while muted
+  (freezes tails). Chad's to decide: the skeleton merge for episode 1's ghost
+  and chapter 3's crowd, recovering after iOS drops the graphics context,
+  self-hosted fonts. Full suite 24/24 in 1772 s (v14.16's took 2794 — the
+  software renderer no longer draws under the covers). No word moved; sheet
+  v74 stands. Deploy `6ab72afd8a010dab98a15c3a`, byte-verified (index.html
+  and all 107 build files). docs/V15.0-ENGINE-PLAN.md is the build's memory,
+  checkpoint by checkpoint.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
