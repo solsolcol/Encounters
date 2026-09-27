@@ -4178,7 +4178,9 @@ What the baseline contains, by release:
   what the device gave each renderer and two colour rows a forced dark mode
   pulls apart — the screenshot Chad can send from his Samsung. hostedtest now
   fails on its network checks (two had read false for months, both the check
-  being wrong). docs/V15.2-PLAN.md is the build's memory.
+  being wrong). Full suite 24/24 in 2386 s. Deploy `6ab924d584f6d6ebb5619ecf`,
+  byte-verified (index.html and all 181 build files). No word moved; sheet
+  v74 stands. docs/V15.2-PLAN.md is the build's memory.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
