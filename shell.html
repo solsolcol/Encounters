@@ -18,6 +18,16 @@
      key caps only, where its even width is the point. */
   --ui:Inter,"Helvetica Neue",Arial,system-ui,-apple-system,sans-serif;
   --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  /* v15.2: the game is dark by design, and a browser's FORCED dark mode —
+     Samsung Internet's follows the phone's dark mode, repainting colours and
+     toning down images — has nothing to make darker. `only light` is the
+     standard's "do not override this", and Samsung documents that its
+     adaptive dark mode leaves alone a page that declares a scheme. It is a
+     REQUEST: Chromium's own forced dark (141, tested) ignores every value.
+     It changes nothing else — light is what a browser draws its own
+     controls in when a page declares nothing. The hosted page carries the
+     matching <meta> in its head (build.py). */
+  color-scheme:only light;
 }
 
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}

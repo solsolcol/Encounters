@@ -170,7 +170,11 @@ the safest object in the room the source of the haunting.
   inline base64. `HOSTED` = the map is non-empty. Loaders never know
   which build they are in.
 - **Outputs**: `dist/` (Netlify: real doctype document, preloads, engine
-  + chapter + assets all content-hashed under `assets/`, `_headers` with
+  + chapter + assets all content-hashed under `assets/` — since v15.2 the
+  fonts too, `assets/fonts/`, one stylesheet per class of browser picked by
+  an inline selector, Google's link for any other; re-take them with
+  `node tools/fontsnap.mjs` if shell.html's font link ever changes, which
+  the build asserts — `_headers` with
   year-long immutable caching, only `index.html` revalidates) zipped as
   `masterz-encounters-vN.N.zip`; and `hellnote.html` (everything inlined
   — built for the retired claude.ai preview, kept because it is the
@@ -4141,6 +4145,40 @@ What the baseline contains, by release:
   Full suite 24/24 in 2331 s. Deploy `6ab78f47ee525732110c536d`,
   byte-verified (index.html and all 107 build files).
   docs/V15.0-ENGINE-PLAN.md CP17–CP19 is the build's memory.
+- **v15.2** THE SKELETONS MERGED, THE FONTS AT HOME, AND THE ITEM VIEWS AT
+  FULL SHARPNESS — Chad's two decisions from v15.1 ("Ok do both, cleanly. Are
+  you sure it wont cause issues? Especially the merging?") and his Samsung
+  report ("rendering quality issues on Samsung browser. Especially the amulet
+  full size model and inventory models"). THE MERGE: three's GLTFLoader makes
+  a Skeleton per skin and SkeletonUtils.clone one per MESH, and each is
+  recomputed and uploaded every frame it is drawn — her file is 46 skeletons
+  over 28 bones. `unifySkeletons(root)` gives a freshly parsed model ONE
+  skeleton whose rows are the distinct (bone object, inverse-bind bits)
+  pairs, remapping skinIndex; `cloneSkinned` (the engine's name for cloning
+  now wraps SkeletonUtils) re-shares after a clone. Called on her, on chapter
+  3's loader and chapter 5's tang-ki; on CHCTX. PROVEN, not argued:
+  `__enc.skelLab` + tools/probes/skelproof.mjs parse each model twice, merge
+  one, pose both, and compare — 17 models, 5.4 M skinned vertices bit for bit
+  and 1,632 rendered frame pairs pixel for pixel, all equal. Per drawn frame:
+  chapter 1 with her in view 23.5 skeleton updates → 1, chapter 3 51 → 11.
+  THE FONTS: Google answers the one stylesheet URL with different files per
+  browser (and a Mac's Safari class not even the same way every time), so
+  tools/fontsnap.mjs asked it as 86 browsers, asserted each class, and keeps
+  five classes' own files in assets/fonts/ (69 files, 1.5 MB); the hosted
+  page picks with src/fontpick.js inlined, and any browser it does not
+  recognise keeps Google's link. tools/probes/fontproof.mjs: 0 of 498,300
+  pixels differ against Google's own files, as four browsers. THE ITEM VIEWS:
+  capped at 2x on 3x screens, anti-aliasing requested and never checked,
+  and a drawing buffer reallocated every frame — now at the screen's own
+  ratio, supersampled where the browser refuses anti-aliasing (simulated with
+  `?opt=ivMsaa:0`: the old path stair-steps, the new is smooth), one
+  grow-only buffer. `color-scheme: only light` (CSS + meta) asks a forced
+  dark mode to leave the dark game alone (a no-op on every native control,
+  measured; ignored by Chromium's own forced dark, tested). `?diag` shows
+  what the device gave each renderer and two colour rows a forced dark mode
+  pulls apart — the screenshot Chad can send from his Samsung. hostedtest now
+  fails on its network checks (two had read false for months, both the check
+  being wrong). docs/V15.2-PLAN.md is the build's memory.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so

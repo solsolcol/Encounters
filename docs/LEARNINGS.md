@@ -4870,3 +4870,81 @@ roots keep theirs — the old world group, which is simply no longer in the
 scene — so every rebuild left the last chapter's culled crowd in the set with
 its saved layer masks. A registry of scene objects is emptied when the stage
 is torn down, not when an object happens to be detached.
+
+## v15.2 — one person on screen can be forty-six skeletons, and a clone makes it worse
+
+three's GLTFLoader makes one Skeleton per SKIN, and a Sketchfab export may
+give every mesh its own skin: her file is 46 meshes on 46 skeletons over 28
+bones, chapter 3's Mixamo sitters 7 on 7. Each Skeleton is recomputed and
+uploaded as its own float texture on every frame it is drawn. And
+SkeletonUtils.clone gives every cloned MESH a skeleton of its own, even where
+the source's meshes shared one — so a model merged once and then cloned is
+back to one skeleton per mesh, each now the size of the union. The exact
+merge keys a row by (bone OBJECT, inverse-bind matrix compared bit for bit):
+the texture then holds the same float bits at another address, the shader
+reads rows by exact integer, and the CPU path reads the same two objects —
+nothing to prove by eye, everything to prove by count, which is what
+`__enc.skelLab` does (5.4 million vertices and 1,632 frame pairs, all equal).
+A bone two skins bind DIFFERENTLY keeps both rows (the standing man: 660 rows
+either way, one upload instead of ten). It must run on a FRESH parse: a clone
+made earlier shares the geometry whose indices it rewrites.
+
+## v15.2 — guard the script BODY, never the tag
+
+`guard()` turns `</script` into `<\/script` so a string inside inline code
+cannot end the tag early. Wrapped round the WHOLE `<script>…</script>`
+string, it escaped the closing tag itself: the element never closed, the rest
+of the page parsed as JavaScript ("Unexpected token '<'") and nothing booted.
+The probe that caught it timed out waiting for `__enc`, which is the only
+symptom — a page that does not boot throws one line and then says nothing.
+
+## v15.2 — Google Fonts answers per browser, and not always the same
+
+One stylesheet URL, different font files for different browsers: hinted for
+Windows and Linux, unhinted for Apple and phones, a woff for three Cormorant
+italics on a Mac outside Chrome, a whole TTF for anything it does not know.
+Self-hosting ONE set would change how text is drawn somewhere, so the game
+keeps Google's answer per class of browser and a narrow selector picks it;
+anything the selector does not recognise keeps Google's link. And Google is
+not deterministic: asked the same question ten times, a Mac's Safari/Firefox
+class is about once answered with on-the-fly "kit" fonts (`/l/font?kit=…`,
+the variable fonts cut to the weights asked) instead of its usual files. A
+snapshot tool that asks once can be fooled by that; `tools/fontsnap.mjs` asks
+each class thirteen times and ships the answer given most. In THIS sandbox the
+proxy also drops some of Chromium's own connections to Google, so a probe
+that needs Google's bytes in the browser fetches them with curl, as that
+browser's user agent, and hands them over with `route.fulfill`.
+
+## v15.2 — anti-aliasing is a request, and a buffer that changes size is reallocated
+
+`antialias: true` asks; the browser may refuse (a "low-power" context, a GPU
+driver's workaround list). `getContextAttributes().antialias` and
+`gl.getParameter(gl.SAMPLES)` say what was given — the item views and the
+figure now ask, and one refused draws at twice the size and lets the copy
+average it. Separately: a WebGL canvas whose `setSize` alternates between two
+sizes REALLOCATES its drawing buffer every time, and the item views drew a
+worn box and the description at different sizes every frame. A buffer that
+only grows, with each view drawn into its own corner through the viewport and
+the scissor, costs one allocation. And the item views were capped at twice
+the page's resolution on screens that are three and a half times it.
+
+## v15.2 — Chromium's forced dark ignores every colour-scheme declaration
+
+Tested on Chromium 141 with `forceDarkModeEnabled` and with
+`WebContentsForceDark`: a white page is painted 18,18,18 whatever the page
+declares — nothing, `only light`, `dark`, `light dark`, `only dark`. Samsung
+documents that its ADAPTIVE dark mode leaves alone a page that declares a
+scheme, so the game declares `only light` (a request, and measured to draw
+every native control byte-for-byte as no declaration does). What a page
+cannot do is detect a forced dark mode — the media query still says light —
+so `?diag` shows two rows of colours, one painted by the page and one by a
+canvas: under a forced dark mode they do not match, and a person can see it.
+
+## v15.2 — a harness that prints false and exits 0 checks nothing
+
+`hostedtest` printed its checks as JSON and the runner reads exit codes (the
+v6.3 lesson, in another file): `noDoubleDownloads` had read false since
+v14.15 because the two meshopt workers start from one blob: URL, and
+`chapterFromFile` since v6.4 because chapter 1's asset list grew. Both were
+the check being wrong, not the game — and neither was seen for months. Its
+network-level checks now fail the harness.

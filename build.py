@@ -597,6 +597,7 @@ print(f'  preload for {BOOT}: logo + {", ".join(preload_keys)}'
     '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
     '<meta name="viewport" content="width=device-width,initial-scale=1,'
     'maximum-scale=1,viewport-fit=cover">\n'
+    '<meta name="color-scheme" content="only light">\n'   # v15.2: no forced dark mode (shell.html :root)
     + '\n'.join(preloads) + '\n</head>\n<body>\n'
     + shell.replace(GF_LINK.group(0), font_script).replace('<script>/*BUNDLE*/</script>',
                     f'<script defer src="{st_out}"></script>\n'

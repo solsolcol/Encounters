@@ -1100,7 +1100,7 @@ function treeKit() {
 /* v15: every engine optimization has a switch, ON by default, so a probe can
    draw the SAME frozen frame with it off and on and compare every pixel —
    the proof that an optimization changed nothing on screen. */
-const OPT = { instCull: true, sphereCull: true, shadowTrim: true, coverSkip: true, vmSkip: true, letterbox: true, lightWarm: true, matSkip: true, boneSkip: true, warmTiny: true, lightSets: true, ctxRestore: true, herSounds: true, musicPark: true, lightMem: true, lightSeeds: true, skelMerge: true };
+const OPT = { instCull: true, sphereCull: true, shadowTrim: true, coverSkip: true, vmSkip: true, letterbox: true, lightWarm: true, matSkip: true, boneSkip: true, warmTiny: true, lightSets: true, ctxRestore: true, herSounds: true, musicPark: true, lightMem: true, lightSeeds: true, skelMerge: true, ivSharp: true, ivMsaa: true };
 /* a probe may switch any of them off from the address (`?opt=boneSkip:0,warmTiny:0`),
    so a switch that acts at LOAD time can be compared build against itself */
 { const m = /[?&]opt=([^&]*)/.exec(location.search);
@@ -7433,7 +7433,7 @@ function itemVisHTML(id, cls) {
 function drawArt(cv, id) {
   const bmp = itemArtGet(id);
   const w = cv.clientWidth, h = cv.clientHeight; if (!w || !h) return false;
-  const dpr = Math.min(devicePixelRatio || 1, 2);
+  const dpr = ivDpr();                                 // v15.2: the screen's own sharpness
   const W = Math.round(w * dpr), H = Math.round(h * dpr);
   if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
   const g = cv.getContext('2d'); if (!g) return false;
@@ -7455,15 +7455,48 @@ function dragPaint(id) {
 
 const IV_FOV = 26;
 const iv = { r: null, scene: null, cam: null, models: {}, state: {}, raf: 0, size: '',
+             msaa: true, buf: { w: 0, h: 0 },    // v15.2: see THE ITEM VIEWS, AT THE SCREEN'S OWN SHARPNESS
              zoom: { id: null, yaw: 0.6, pitch: 0.32, k: 1, drag: null, pinch: null, auto: true, ramp: 1 } };
+/* v15.2: THE ITEM VIEWS, AT THE SCREEN'S OWN SHARPNESS. Chad: "rendering
+   quality issues on Samsung browser ... especially the amulet full size model
+   and inventory models" — the one place in the game drawn by a renderer of
+   its own and then COPIED onto the page. Three things stood between that
+   copy and "full quality" (his rule since v14.14):
+   - it was drawn at twice the page's resolution at most, and every phone on
+     sale is sharper than that (an iPhone is 3x, a Galaxy 2.6-3.5x), so the
+     browser stretched it by up to 1.75 — the pane and the zoom window were
+     soft on exactly the screens that show detail best. Now at the screen's
+     own pixel ratio (to 4);
+   - its anti-aliasing is a REQUEST the browser may refuse (a renderer made
+     "low-power", one GPU driver or another) and where it is refused every
+     edge of a 957,000-triangle amulet stair-steps and crawls as it turns.
+     Now the context is asked what it got (`antialias` and SAMPLES), and one
+     that got none draws twice as wide and tall and lets the copy average it;
+   - the small views (the worn boxes, the description) came in different
+     sizes, so the drawing buffer was REALLOCATED for each box, every frame.
+     Now it only grows, and each view draws into its own corner of it.
+   `?opt=ivSharp:0` draws the way v15.1 did; `?opt=ivMsaa:0` asks for no
+   anti-aliasing at all, which is what a refusing browser hands back — with
+   both, the proof photographs the old path on such a browser. */
+function ivDpr() {
+  return OPT.ivSharp ? Math.min(Math.max(devicePixelRatio || 1, 1), 4) : Math.min(devicePixelRatio || 1, 2);
+}
+/* what a WebGL renderer was actually given: anti-aliasing is a request */
+function glGotMsaa(r) {
+  try {
+    const gl = r.getContext(), a = gl.getContextAttributes && gl.getContextAttributes();
+    return !!(a && a.antialias) && (gl.getParameter(gl.SAMPLES) | 0) > 0;
+  } catch { return false; }
+}
 function ivInit() {
   if (iv.r !== null) return !!iv.r;
   try {
     const cv = document.createElement('canvas');
-    iv.r = new THREE.WebGLRenderer({ canvas: cv, antialias: true, alpha: true,
+    iv.r = new THREE.WebGLRenderer({ canvas: cv, antialias: OPT.ivMsaa, alpha: true,   // v15.2: ivMsaa:0 plays a browser that refuses it
                                      preserveDrawingBuffer: true, powerPreference: 'low-power' });
   } catch { iv.r = false; return false; }
   iv.r.setPixelRatio(1);
+  iv.msaa = OPT.ivMsaa && glGotMsaa(iv.r);   // v15.2
   iv.r.setClearColor(0x000000, 0);
   iv.r.outputColorSpace = THREE.SRGBColorSpace;
   iv.r.toneMapping = THREE.ACESFilmicToneMapping;
@@ -7543,8 +7576,20 @@ function ivModel(id) {
 function ivRender(id, W, H, yawA, pitchA, k) {
   const pivot = ivModel(id); if (!pivot) return false;
   for (const [key, g] of Object.entries(iv.models)) g.visible = key === id;
-  const sz = W + 'x' + H;
-  if (iv.size !== sz) { iv.r.setSize(W, H, false); iv.size = sz; }
+  if (OPT.ivSharp) {
+    /* v15.2: one buffer that only grows (in steps of 64, so a pinch does not
+       reallocate it frame after frame); each view draws into its bottom-left
+       corner, and the scissor keeps the clear to that corner */
+    if (iv.buf.w < W || iv.buf.h < H) {
+      iv.buf.w = Math.max(iv.buf.w, Math.ceil(W / 64) * 64);
+      iv.buf.h = Math.max(iv.buf.h, Math.ceil(H / 64) * 64);
+      iv.r.setSize(iv.buf.w, iv.buf.h, false);
+    }
+    iv.r.setViewport(0, 0, W, H); iv.r.setScissor(0, 0, W, H); iv.r.setScissorTest(true);
+  } else {
+    const sz = W + 'x' + H;
+    if (iv.size !== sz) { iv.r.setSize(W, H, false); iv.size = sz; }
+  }
   iv.cam.aspect = W / H; iv.cam.updateProjectionMatrix();
   pivot.rotation.set(pitchA, yawA, 0, 'XYZ');
   /* back far enough that the widest the item can turn fits the SHORTER side
@@ -7560,22 +7605,37 @@ function ivRender(id, W, H, yawA, pitchA, k) {
 }
 function ivBlit(cv, id, yawA, pitchA, k, renderPx) {
   const w = cv.clientWidth, h = cv.clientHeight; if (!w || !h) return;
-  const dpr = Math.min(devicePixelRatio || 1, 2);
+  const dpr = ivDpr();
   const W = Math.round(w * dpr), H = Math.round(h * dpr);
   if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
   const g = cv.getContext('2d'); if (!g) return;
-  const RW = renderPx ? Math.min(renderPx, W) : W, RH = renderPx ? Math.round(RW * H / W) : H;
+  let RW, RH;
+  if (OPT.ivSharp) {
+    /* the view's own size, doubled where the context got no anti-aliasing,
+       and never past 2048 on a side (a pinched zoom on a 4x screen) */
+    const ss = ivInit() && !iv.msaa ? 2 : 1;
+    const f = ss * Math.min(1, 2048 / (ss * Math.max(W, H)));
+    RW = Math.max(1, Math.round(W * f)); RH = Math.max(1, Math.round(H * f));
+  } else {
+    RW = renderPx ? Math.min(renderPx, W) : W; RH = renderPx ? Math.round(RW * H / W) : H;
+  }
   if (ivRender(id, RW, RH, yawA, pitchA, k)) {
     g.clearRect(0, 0, W, H);
+    g.imageSmoothingEnabled = true;
     g.imageSmoothingQuality = 'high';
-    g.drawImage(iv.r.domElement, 0, 0, RW, RH, 0, 0, W, H);
+    g.drawImage(iv.r.domElement, 0, OPT.ivSharp ? iv.buf.h - RH : 0, RW, RH, 0, 0, W, H);
   } else if (!drawArt(cv, id)) {
     g.clearRect(0, 0, W, H);
   }
 }
 function ivFrame(now) {
   iv.raf = 0;
-  if (!inv.open && !unl.id) return;
+  if (!inv.open && !unl.id) {
+    /* v15.2: nothing is looking — the grown buffer goes back (a 4x zoom's
+       anti-aliased buffer is tens of megabytes of GPU memory) */
+    if (iv.r && iv.buf.w > 1) { iv.r.setSize(1, 1, false); iv.buf.w = iv.buf.h = 1; }
+    return;
+  }
   iv.raf = requestAnimationFrame(ivFrame);
   const t = (now || performance.now()) / 1000;
   /* v14.7: the Item Unlocked splash owns the renderer while it is up (the
@@ -7769,10 +7829,15 @@ function zavInit() {
   const cv = $('zavCanvas');
   if (!cv || zav.r) return;
   try {
-    zav.r = new THREE.WebGLRenderer({ canvas: cv, antialias: true, alpha: true,
+    zav.r = new THREE.WebGLRenderer({ canvas: cv, antialias: OPT.ivMsaa, alpha: true,   // v15.2: see ivInit
                                       powerPreference: 'low-power' });
   } catch { zav.r = null; return; }
-  zav.r.setPixelRatio(Math.min(devicePixelRatio, 2));
+  /* v15.2: at the screen's own sharpness, and supersampled where the context
+     was refused anti-aliasing (THE ITEM VIEWS, AT THE SCREEN'S OWN SHARPNESS):
+     he is drawn straight onto the page, so a doubled buffer is shrunk by the
+     browser as it composites — never past 2048 on a side */
+  zav.msaa = OPT.ivMsaa && glGotMsaa(zav.r);
+  zav.r.setPixelRatio(zavPr());
   zav.r.setClearColor(0x000000, 0);
   zav.r.outputColorSpace = THREE.SRGBColorSpace;
   zav.r.toneMapping = THREE.ACESFilmicToneMapping;
@@ -7977,12 +8042,19 @@ function zavPrefetch() {
   const go = () => { zavInit(); zavLoad(); zavWarm(); };
   if (window.requestIdleCallback) requestIdleCallback(go, { timeout: 8000 }); else setTimeout(go, 2500);
 }
+function zavPr(w, h) {
+  if (!OPT.ivSharp) return Math.min(devicePixelRatio, 2);
+  const pr = ivDpr() * (zav.msaa === false ? 2 : 1);
+  return w && h ? Math.min(pr, 2048 / Math.max(w, h)) : pr;
+}
 function zavFrame() {
   if (!inv.open || !zav.r) { zav.raf = 0; return; }
   zav.raf = requestAnimationFrame(zavFrame);
   const cv = zav.r.domElement;
   const w = cv.clientWidth, h = cv.clientHeight;
   if (!w || !h) return;
+  const want = zavPr(w, h);
+  if (zav.r.getPixelRatio() !== want) zav.r.setPixelRatio(want);   // v15.2 (setSize below takes it)
   const pr = zav.r.getPixelRatio();
   if (cv.width !== Math.round(w * pr) || cv.height !== Math.round(h * pr)) {
     zav.r.setSize(w, h, false);
@@ -11250,6 +11322,78 @@ function anyVisibleMesh(o) {
    shows the skinned normals too). `lit` is how many pixels a frame drew:
    a blank frame compares equal to anything, so a frame that drew nothing is
    reported, not passed. */
+/* v15.2: `?diag` — WHAT THIS DEVICE GIVES THE GAME, ON ONE SCREEN. Some
+   things cannot be seen from here: a Samsung phone's GPU, its browser's own
+   dark mode, whether a renderer was refused anti-aliasing. Opened with ?diag
+   on the address, this lays out what each of the game's three renderers was
+   actually given, the screen, and two rows of colour — the top row painted by
+   the page, the bottom by a canvas, which is what the item views are: a
+   browser that repaints images in dark mode shows two rows that do not
+   match. A player never sees it; it is for a screenshot to be sent. */
+function showDiag() {
+  if (document.getElementById('diagBox')) return;
+  const rows = [];
+  const add = (k, v) => rows.push([k, String(v)]);
+  add('Version', BUILD_VERSION);
+  add('Browser', navigator.userAgent);
+  add('Screen', `${screen.width} x ${screen.height}, pixel ratio ${devicePixelRatio}, window ${innerWidth} x ${innerHeight}`);
+  add('Asks for dark', matchMedia('(prefers-color-scheme: dark)').matches ? 'yes' : 'no');
+  const glFacts = (name, r, asked) => {
+    if (!r) { add(name, 'not made'); return; }
+    try {
+      const gl = r.getContext(), a = gl.getContextAttributes() || {};
+      const dbg = gl.getExtension('WEBGL_debug_renderer_info');
+      const hp = gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.HIGH_FLOAT);
+      add(name, `anti-aliasing ${!asked ? 'not asked (' + (a.antialias ? 'on' : 'off') + ')' : a.antialias ? 'asked and GIVEN' : 'asked but REFUSED'}` +
+                ` (samples ${gl.getParameter(gl.SAMPLES)}` +
+                ` of ${gl.getParameter(gl.MAX_SAMPLES)}), buffer ${gl.drawingBufferWidth} x ${gl.drawingBufferHeight}` +
+                `, pixel ratio ${r.getPixelRatio()}`);
+      if (name === 'World') {
+        add('GPU', dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER));
+        add('Limits', `texture ${gl.getParameter(gl.MAX_TEXTURE_SIZE)}, anisotropy ${r.capabilities.getMaxAnisotropy()}` +
+                      `, fragment highp ${hp && hp.precision ? hp.precision + ' bits' : 'NONE'}`);
+      }
+    } catch (e) { add(name, 'error ' + e.message); }
+  };
+  glFacts('World', renderer, !LOW);
+  glFacts('Item views', ivInit() ? iv.r : null, OPT.ivMsaa);
+  zavInit();
+  glFacts('Figure', zav.r, OPT.ivMsaa);
+  add('Item views drawn at', `${ivDpr()}x the page` + (iv.r && !iv.msaa ? ', doubled for anti-aliasing' : ''));
+  const box = document.createElement('div');
+  box.id = 'diagBox';
+  box.style.cssText = 'position:fixed;inset:0;z-index:2147483647;overflow:auto;background:#07080B;color:#E8E2D4;' +
+                      'font:13px/1.45 ui-monospace,Menlo,monospace;padding:16px;-webkit-user-select:text;user-select:text;touch-action:pan-y';
+  const h = document.createElement('div');
+  h.textContent = 'Diagnostics — screenshot this and send it';
+  h.style.cssText = 'font-weight:700;font-size:15px;margin-bottom:10px;color:#FFB367';
+  box.appendChild(h);
+  for (const [k, v] of rows) {
+    const d = document.createElement('div'); d.style.cssText = 'margin:0 0 6px;word-break:break-word';
+    const b = document.createElement('b'); b.textContent = k + ': '; d.appendChild(b);
+    d.appendChild(document.createTextNode(v)); box.appendChild(d);
+  }
+  const COLS = ['#ffffff', '#d4af37', '#c0392b', '#63d6c8', '#808080', '#000000'];
+  const t = document.createElement('div');
+  t.textContent = 'Colour check — these two rows should look exactly alike:';
+  t.style.cssText = 'margin:14px 0 6px';
+  box.appendChild(t);
+  const row = document.createElement('div'); row.style.cssText = 'display:flex;gap:0';
+  for (const c of COLS) { const q = document.createElement('div'); q.style.cssText = `width:44px;height:44px;background:${c}`; row.appendChild(q); }
+  box.appendChild(row);
+  const cv = document.createElement('canvas'); cv.width = COLS.length * 44; cv.height = 44;
+  cv.style.cssText = `width:${COLS.length * 44}px;height:44px;display:block;margin-top:6px`;
+  const g = cv.getContext('2d');
+  COLS.forEach((c, i) => { g.fillStyle = c; g.fillRect(i * 44, 0, 44, 44); });
+  box.appendChild(cv);
+  const x = document.createElement('button');
+  x.textContent = 'Close';
+  x.style.cssText = 'margin-top:16px;padding:8px 18px;background:#1B1F28;color:#E8E2D4;border:1px solid #2A303C;border-radius:8px;font:inherit';
+  x.onclick = () => box.remove();
+  box.appendChild(x);
+  document.body.appendChild(box);
+}
+if (/[?&]diag\b/.test(location.search)) setTimeout(() => { try { showDiag(); } catch (e) { console.warn('diag', e); } }, 1200);
 async function skelLab(key, o = {}) {
   const times = o.times || [0, 0.41, 1.13, 2.37];
   const turns = o.turns || [0, 1.9, 3.5, 5.2];
