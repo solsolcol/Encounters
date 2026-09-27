@@ -17,6 +17,15 @@ build over testlib's server, so `npm run build` first. Run from the repo root.
 | `popins.mjs` | the Continue path: which models land after the world was uncovered | `node tools/probes/popins.mjs <chapter…>` |
 | `sound.mjs` | a journey through five chapters: opening lines said once, loops, decoded sounds, load errors | `node tools/probes/sound.mjs` |
 | `mem.mjs` | the JS heap across a journey | `node tools/probes/mem.mjs` |
+| `skelproof.mjs` | v15.2: the skeleton merge is exact — each model parsed twice, one merged, both posed at four times; every skinned vertex (bit for bit) and rendered frame pairs (pixel for pixel) for the parse, a clone and 'detached' copies; a blank frame fails | `node tools/probes/skelproof.mjs [key[:clipsKey]…]` |
+| `skins.mjs` | skeletons per model (meshes, skeletons, rows, bones bound more than one way) and skeleton updates / bone uploads per drawn frame, with her held on screen | `[OPT=skelMerge:0] node tools/probes/skins.mjs <chapter…>` |
+| `fontproof.mjs` | v15.2: the self-hosted fonts draw the same pixels as Google's own (fetched by curl AS the browser); the built page asks Google for nothing | `node tools/probes/fontproof.mjs [--as=<label from tools/fontuas.txt>]` |
+
+The fonts themselves are taken by `node tools/fontsnap.mjs` (in `tools/`, not
+here): it asks Google as every browser in `tools/fontuas.txt`, fails unless
+each class of browser src/fontpick.js names was answered alike, and writes
+`assets/fonts/`. `?diag` on the game's address is the on-device counterpart:
+what the renderers were given, and a forced-dark colour check.
 
 This box renders on SwiftShader at 0.1–1 fps: judge by counts and by pixels,
 never by frame rate.
