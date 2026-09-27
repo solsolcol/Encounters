@@ -56,7 +56,8 @@ const _ROOT = join(DIR, 'dist');
 const _MIME = { '.html': 'text/html', '.js': 'text/javascript',
                 '.glb': 'model/gltf-binary', '.webp': 'image/webp',
                 '.mp3': 'audio/mpeg', '.json': 'application/json',
-                '.mp4': 'video/mp4' };
+                '.mp4': 'video/mp4', '.css': 'text/css',        // v15.2: the self-hosted fonts
+                '.woff2': 'font/woff2', '.woff': 'font/woff', '.ttf': 'font/ttf' };
 const _srv = createServer((req, res) => {
   try {
     const path = normalize(decodeURIComponent(req.url.split('?')[0]));

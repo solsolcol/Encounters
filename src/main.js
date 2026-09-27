@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
-import { clone as cloneSkinned } from 'three/examples/jsm/utils/SkeletonUtils.js';
+import { clone as skeletonClone } from 'three/examples/jsm/utils/SkeletonUtils.js';   // v15.2: wrapped by cloneSkinned() below
 import LIGHT_SEEDS from './lightseeds.json';   // v15.1: the light counts each chapter's films and scenes reach (THE LIGHT COUNTS)
 /* v14.14: every loader the engine hands out READS MESHOPT. Chad's amulets
    ship at full detail (every triangle of the scan, "ALL amulets must always
@@ -1100,7 +1100,7 @@ function treeKit() {
 /* v15: every engine optimization has a switch, ON by default, so a probe can
    draw the SAME frozen frame with it off and on and compare every pixel —
    the proof that an optimization changed nothing on screen. */
-const OPT = { instCull: true, sphereCull: true, shadowTrim: true, coverSkip: true, vmSkip: true, letterbox: true, lightWarm: true, matSkip: true, boneSkip: true, warmTiny: true, lightSets: true, ctxRestore: true, herSounds: true, musicPark: true, lightMem: true, lightSeeds: true };
+const OPT = { instCull: true, sphereCull: true, shadowTrim: true, coverSkip: true, vmSkip: true, letterbox: true, lightWarm: true, matSkip: true, boneSkip: true, warmTiny: true, lightSets: true, ctxRestore: true, herSounds: true, musicPark: true, lightMem: true, lightSeeds: true, skelMerge: true };
 /* a probe may switch any of them off from the address (`?opt=boneSkip:0,warmTiny:0`),
    so a switch that acts at LOAD time can be compared build against itself */
 { const m = /[?&]opt=([^&]*)/.exec(location.search);
@@ -1212,6 +1212,114 @@ const OPT = { instCull: true, sphereCull: true, shadowTrim: true, coverSkip: tru
     }
     if (changed && tex !== null) tex.needsUpdate = true;
   };
+}
+/* v15.2: ONE SKELETON PER MODEL, EXACTLY. three's GLTFLoader makes a Skeleton
+   per SKIN, and a Sketchfab export may carry a skin per mesh: her file is 46
+   meshes on 46 skeletons over 28 bones, chapter 3's Mixamo sitters are 7 on 7,
+   the tang-ki 3 on 3 — and every Skeleton is recomputed and uploaded as its
+   own float texture on every frame it is drawn (measured, tools/probes/
+   skins.mjs: chapter 3 at the spawn, 28 a frame).
+   The merge gives a model ONE Skeleton whose rows are the distinct pairs of
+   (bone OBJECT, inverse-bind matrix compared bit for bit), and remaps every
+   mesh's skinIndex onto those rows. A row's matrix is bone.matrixWorld ×
+   inverse-bind, computed from the SAME two objects as before (or from an
+   inverse-bind whose sixteen floats are bit-identical), so the bone texture
+   holds the same float bits at a different address; the shader fetches a row
+   by exact integer, and the CPU (`getVertexPosition`, every bounds and every
+   sizing measure) reads bones[i] and boneInverses[i], the same objects. A
+   bone that two skins bind DIFFERENTLY keeps both rows — nothing is averaged,
+   nothing is re-bound: bindMatrix, bindMatrixInverse, positions, weights,
+   materials and the program are not touched. It touches NOTHING and returns
+   null on anything it does not expect (a geometry two skins would remap
+   differently, an index out of range, a missing bone, over 65535 rows), and
+   it must run on a FRESH parse, before anything draws it or clones it — a
+   clone made earlier shares the geometry whose indices it rewrites. Proven,
+   not argued: `__enc.skelLab` (below) poses a merged and an unmerged parse of
+   the same bytes and compares every skinned vertex and a rendered frame. */
+const _ibmSame = (a, b) => {
+  const x = a.elements, y = b.elements;
+  for (let i = 0; i < 16; i++) if (!Object.is(x[i], y[i])) return false;
+  return true;
+};
+function unifySkeletons(root) {
+  if (!OPT.skelMerge || !root) return null;
+  const meshes = [];
+  root.traverse(o => { if (o.isSkinnedMesh && o.skeleton) meshes.push(o); });
+  const skels = [...new Set(meshes.map(m => m.skeleton))];
+  if (skels.length < 2) return null;
+  const bones = [], ibms = [], rowsOf = new Map();
+  const rowFor = (bn, ibm) => {
+    let list = rowsOf.get(bn);
+    if (!list) rowsOf.set(bn, list = []);
+    for (const r of list) if (_ibmSame(ibms[r], ibm)) return r;
+    bones.push(bn); ibms.push(ibm); list.push(bones.length - 1);
+    return bones.length - 1;
+  };
+  const maps = new Map();
+  for (const sk of skels) {
+    const bs = sk.bones, iv = sk.boneInverses;
+    if (!bs.length || bs.length !== iv.length) return null;
+    const map = new Int32Array(bs.length);
+    for (let i = 0; i < bs.length; i++) {
+      if (!bs[i] || !bs[i].isObject3D || !iv[i] || !iv[i].isMatrix4) return null;
+      map[i] = rowFor(bs[i], iv[i]);
+    }
+    maps.set(sk, map);
+  }
+  if (bones.length > 65535) return null;
+  const sameMap = (a, b) => a === b || (a.length === b.length && a.every((v, i) => v === b[i]));
+  const byGeo = new Map();
+  for (const m of meshes) {
+    const map = maps.get(m.skeleton), g = m.geometry, si = g && g.getAttribute('skinIndex');
+    if (!si || si.itemSize !== 4 || si.normalized) return null;
+    const had = byGeo.get(g);
+    if (had) { if (!sameMap(had.map, map)) return null; continue; }
+    const n = si.count, small = si.array instanceof Uint8Array && bones.length <= 255;
+    const out = small ? new Uint8Array(n * 4) : new Uint16Array(n * 4);
+    for (let v = 0; v < n; v++) {
+      for (let c = 0; c < 4; c++) {
+        const old = si.getComponent(v, c);
+        if (!(old >= 0 && old < map.length) || old !== Math.floor(old)) return null;
+        out[v * 4 + c] = map[old];
+      }
+    }
+    byGeo.set(g, { map, attr: new THREE.BufferAttribute(out, 4, false) });
+  }
+  /* every old row must BE its new row: the same bone object, the same bits */
+  for (const sk of skels) {
+    const map = maps.get(sk);
+    for (let i = 0; i < map.length; i++)
+      if (bones[map[i]] !== sk.bones[i] || !_ibmSame(ibms[map[i]], sk.boneInverses[i])) return null;
+  }
+  const union = new THREE.Skeleton(bones, ibms);
+  for (const [g, e] of byGeo) g.setAttribute('skinIndex', e.attr);
+  for (const m of meshes) m.skeleton = union;
+  return { skeletons: skels.length, rows: bones.length, geometries: byGeo.size };
+}
+/* SkeletonUtils.clone gives EVERY cloned mesh a Skeleton of its own, even
+   where the source's meshes shared one — so a merged model cloned for
+   chapter 3's crowd would be seven 65-row skeletons again, worse than before.
+   After the clone, meshes whose sources shared a skeleton share the first
+   clone's, when its bones and its inverse-bind array are exactly the ones
+   the others were given (they are: every clone of one source skeleton maps
+   the same bones through the same lookup and keeps the source's inverse-bind
+   array by reference). Every chapter reaches cloning through this name. */
+function cloneSkinned(src) {
+  const out = skeletonClone(src);
+  if (!OPT.skelMerge) return out;
+  const first = new Map();
+  (function walk(a, b) {
+    if (!b) return;
+    if (a.isSkinnedMesh && b.isSkinnedMesh && a.skeleton && b.skeleton) {
+      const s = first.get(a.skeleton);
+      if (!s) first.set(a.skeleton, b.skeleton);
+      else if (s !== b.skeleton && s.boneInverses === b.skeleton.boneInverses
+               && s.bones.length === b.skeleton.bones.length
+               && s.bones.every((x, i) => x === b.skeleton.bones[i])) b.skeleton = s;
+    }
+    for (let i = 0; i < a.children.length; i++) walk(a.children[i], b.children[i]);
+  })(src, out);
+  return out;
 }
 const instCull = new Set();
 let shadowSyncTick = 0;
@@ -4104,6 +4212,7 @@ const CHCTX = {
      the root's own space: (root, cx, cy, cz, radius) */
   cullBySphere,
   loadFail,                           // v15.1: a model landed but its placement threw
+  unifySkeletons,                     // v15.2: one exact skeleton per freshly parsed model
   /* THE HEAD BONE, named once for everybody (v5.01). Every rigged human in
      this game is a Mixamo skeleton, and glTF SANITIZES its node names:
      `mixamorig:Head_06` in the file is `mixamorigHead_06` in the scene. The
@@ -4229,6 +4338,7 @@ ghost.visible = false;
 assetBytes('ghost').then(GHOST_BUF => new GLTFLoaderMO().parse(GHOST_BUF, '', (gltf) => {
   rescueTextures(gltf, GHOST_BUF);
   const g = gltf.scene;
+  unifySkeletons(g);                                   // v15.2: 46 skeletons -> one (EXACTLY, above)
   g.traverse(o => {
     if (!o.isMesh) return;
     o.frustumCulled = false;                           // skinned bounds are unreliable
@@ -11128,7 +11238,153 @@ function anyVisibleMesh(o) {
   for (const c of o.children) if (anyVisibleMesh(c)) return true;
   return false;
 }
+/* v15.2: THE MERGE, PROVEN (probes only — tools/probes/skelproof.mjs). Parses
+   one model's bytes TWICE, merges one parse, and poses both with their own
+   mixers at several times; then compares, for the parse itself, for a clone of
+   each (the unmerged one through SkeletonUtils, the merged one through
+   cloneSkinned — chapter 3's pose clones) and for 'detached' copies of the
+   clones' meshes (chapter 3's sitters): every skinned vertex on the CPU
+   (`getVertexPosition`, bit for bit) and a rendered frame of each on THIS
+   renderer at several turns, once with the file's own materials (shared by
+   both, so a texture cannot differ) and once with normals as colour (which
+   shows the skinned normals too). `lit` is how many pixels a frame drew:
+   a blank frame compares equal to anything, so a frame that drew nothing is
+   reported, not passed. */
+async function skelLab(key, o = {}) {
+  const times = o.times || [0, 0.41, 1.13, 2.37];
+  const turns = o.turns || [0, 1.9, 3.5, 5.2];
+  const W = o.px || 160;
+  const buf = await assetBytes(key);
+  const parse = () => new Promise((res, rej) =>
+    new GLTFLoaderMO().parse(buf.slice(0), '', (g) => { rescueTextures(g, buf); res(g); }, rej));
+  const A = await parse(), B = await parse();
+  /* a rig whose takes live in another file (the tang-ki's, the mother's) is posed with those */
+  if (o.anim) {
+    const ab = await assetBytes(o.anim);
+    const G = await new Promise((res, rej) => new GLTFLoaderMO().parse(ab.slice(0), '', res, rej));
+    A.animations = G.animations; B.animations = G.animations;
+  }
+  const was = OPT.skelMerge;
+  OPT.skelMerge = true;
+  const merged = unifySkeletons(B.scene);
+  const cA = skeletonClone(A.scene), cB = cloneSkinned(B.scene);
+  OPT.skelMerge = was;
+  const skinnedOf = (r) => { const l = []; r.traverse(x => { if (x.isSkinnedMesh) l.push(x); }); return l; };
+  const skCount = (r) => new Set(skinnedOf(r).map(m => m.skeleton)).size;
+  const rowCount = (r) => [...new Set(skinnedOf(r).map(m => m.skeleton))].reduce((s, k) => s + k.bones.length, 0);
+  /* the file's own materials, shared: B's meshes draw with A's */
+  const bMats = [];
+  const pair = (ra, rb, fn) => (function walk(a, b) {
+    if (!a || !b) return;
+    if (a.isMesh && b.isMesh) fn(a, b);
+    for (let i = 0; i < a.children.length; i++) walk(a.children[i], b.children[i]);
+  })(ra, rb);
+  pair(A.scene, B.scene, (a, b) => { bMats.push(b.material); b.material = a.material; });
+  pair(cA, cB, (a, b) => { b.material = a.material; });
+  /* chapter 3's sitters: 'detached' copies of the clones' skinned meshes, bind matrices identity */
+  const detach = (root) => {
+    const grp = new THREE.Group();
+    for (const m of skinnedOf(root)) {
+      const d = m.clone();
+      d.bindMode = 'detached'; d.bindMatrix.identity(); d.bindMatrixInverse.identity();
+      grp.add(d);
+    }
+    grp.position.set(0.37, 0, -0.21); grp.rotation.y = 0.6;
+    return grp;
+  };
+  const dA = detach(cA), dB = detach(cB);
+  const clipA = A.animations[o.clip || 0], clipB = B.animations[o.clip || 0];
+  const rig = (root, clip) => {
+    if (!clip) return null;
+    const mx = new THREE.AnimationMixer(root);
+    mx.clipAction(clip).play();
+    return mx;
+  };
+  const mixers = [[rig(A.scene, clipA), A.scene], [rig(B.scene, clipB), B.scene],
+                  [rig(cA, clipA), cA], [rig(cB, clipB), cB]];
+  const variants = [['parse', A.scene, B.scene], ['clone', cA, cB], ['detached', dA, dB]];
+  const lab = new THREE.Scene();
+  lab.add(new THREE.HemisphereLight(0xffffff, 0x3a3a3a, 1.3));
+  const dl = new THREE.DirectionalLight(0xffffff, 1.6); dl.position.set(2, 3, 4); lab.add(dl);
+  const cam = new THREE.PerspectiveCamera(30, 1, 0.01, 1000);
+  const rt = new THREE.WebGLRenderTarget(W, W, { depthBuffer: true });
+  const normalMat = new THREE.MeshNormalMaterial();
+  const pxA = new Uint8Array(W * W * 4), pxB = new Uint8Array(W * W * 4);
+  const cpu = [], gpu = [];
+  const va = new THREE.Vector3(), vb = new THREE.Vector3(), box = new THREE.Box3();
+  const prevTarget = renderer.getRenderTarget();
+  const prevClear = renderer.getClearColor(new THREE.Color()), prevAlpha = renderer.getClearAlpha();
+  for (const [, ra, rb] of variants) for (const r of [ra, rb]) r.traverse(x => { if (x.isMesh) x.frustumCulled = false; });
+  for (const t of times) {
+    for (const [mx, root] of mixers) { if (mx) mx.setTime(t); root.updateMatrixWorld(true); }
+    for (const [name, ra, rb] of variants) {
+      ra.updateMatrixWorld(true); rb.updateMatrixWorld(true);
+      const la = skinnedOf(ra), lb = skinnedOf(rb);
+      let verts = 0, diff = 0;
+      box.makeEmpty();
+      for (let i = 0; i < la.length && i < lb.length; i++) {
+        const n = la[i].geometry.getAttribute('position').count;
+        for (let v = 0; v < n; v++) {
+          la[i].getVertexPosition(v, va); lb[i].getVertexPosition(v, vb);
+          if (la[i].parent) va.applyMatrix4(la[i].matrixWorld);   // world space, as drawn (identity for 'attached')
+          if (lb[i].parent) vb.applyMatrix4(lb[i].matrixWorld);
+          verts++;
+          if (!Object.is(va.x, vb.x) || !Object.is(va.y, vb.y) || !Object.is(va.z, vb.z)) diff++;
+          box.expandByPoint(va);
+        }
+      }
+      cpu.push({ variant: name, t, meshes: [la.length, lb.length], verts, diff });
+      if (box.isEmpty()) continue;
+      const c = box.getCenter(new THREE.Vector3()), r = box.getSize(new THREE.Vector3()).length() * 0.5 || 1;
+      for (const matMode of ['own', 'normal']) {
+        const swap = [];
+        if (matMode === 'normal') for (const m of [...la, ...lb]) { swap.push([m, m.material]); m.material = normalMat; }
+        for (const turn of turns) {
+          cam.position.set(c.x + Math.sin(turn) * r * 3.9, c.y + r * 0.6, c.z + Math.cos(turn) * r * 3.9);
+          cam.lookAt(c); cam.updateMatrixWorld(true);
+          const shot = (root, px) => {
+            const parent = root.parent;
+            lab.add(root);
+            renderer.setRenderTarget(rt);
+            renderer.setClearColor(0x000000, 0);
+            renderer.clear(true, true, true);
+            renderer.render(lab, cam);
+            renderer.readRenderTargetPixels(rt, 0, 0, W, W, px);
+            lab.remove(root);
+            if (parent) parent.add(root);
+          };
+          shot(ra, pxA); shot(rb, pxB);
+          let d = 0, lit = 0;
+          for (let i = 0; i < pxA.length; i += 4) {
+            if (pxA[i + 3] || pxA[i] || pxA[i + 1] || pxA[i + 2]) lit++;
+            if (pxA[i] !== pxB[i] || pxA[i + 1] !== pxB[i + 1] || pxA[i + 2] !== pxB[i + 2] || pxA[i + 3] !== pxB[i + 3]) d++;
+          }
+          gpu.push({ variant: name, mat: matMode, t, turn, lit, diff: d });
+        }
+        for (const [m, mat] of swap) m.material = mat;
+      }
+    }
+  }
+  renderer.setRenderTarget(prevTarget);
+  renderer.setClearColor(prevClear, prevAlpha);
+  const out = { key, merged, skeletons: { A: skCount(A.scene), B: skCount(B.scene), cA: skCount(cA), cB: skCount(cB) },
+                rows: { A: rowCount(A.scene), B: rowCount(B.scene), cA: rowCount(cA), cB: rowCount(cB) },
+                clip: clipA ? clipA.name : null, cpu, gpu };
+  /* let everything go: this is a probe, not a scene */
+  const seen = new Set();
+  for (const r of [A.scene, B.scene, cA, cB, dA, dB]) r.traverse(x => {
+    if (x.geometry && !seen.has(x.geometry)) { seen.add(x.geometry); x.geometry.dispose(); }
+    if (x.skeleton && !seen.has(x.skeleton)) { seen.add(x.skeleton); x.skeleton.dispose(); }
+  });
+  for (const m of bMats) if (m) (Array.isArray(m) ? m : [m]).forEach(q => q.dispose());
+  A.scene.traverse(x => { if (x.material) (Array.isArray(x.material) ? x.material : [x.material]).forEach(q => {
+    for (const k of ['map', 'normalMap', 'emissiveMap', 'roughnessMap', 'metalnessMap', 'aoMap']) if (q[k]) q[k].dispose();
+    q.dispose(); }); });
+  normalMat.dispose(); rt.dispose();
+  return out;
+}
 window.__enc = { yaw, pitch, stats, getState: () => state,   // v8.7: pitch, so a probe can aim the lens at the floor
+                 skelLab,                                  // v15.2: the merge, proven
                  kit: KIT, kitDebug, interactNow,          // v7.0: the play kit, by state
                  weaponFire, weaponReload, weaponLog, weaponProp: () => weaponProp, weaponMixer: () => weaponMixer,      // v12.0, probes
                  evPress: (x, y) => evPress(x ?? innerWidth / 2, y ?? innerHeight / 2), evRelease,

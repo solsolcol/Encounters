@@ -224,7 +224,7 @@
             assetBytes, rescueTextures, redoShadows,
             cnv, makeSoftDot, makeGround, makeConcrete, makeLacquer,
             makeHellNote, getState, startDecision, HEAD_RE, plantTrees,
-            kit, worldSfx, warmSounds, cullBySphere } = ctx;   // v14.7: the amulet — the bag, her line, and its decode
+            kit, worldSfx, warmSounds, cullBySphere, unifySkeletons } = ctx;   // v14.7: the amulet — the bag, her line, and its decode; v15.2: one exact skeleton per model
 
     /* SHRINE is her anchor — the middle of the seating. The ALTAR is a
        different thing entirely, nine metres away at the front, and keeping
@@ -1452,6 +1452,7 @@
       assetBytes(key).then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
         if (!alive) return;                    // disposed while the bytes flew
         rescueTextures(gltf, BUF);
+        if (unifySkeletons) unifySkeletons(gltf.scene);   // v15.2: before any clone or draw (main.js)
         fn(gltf);
         redoShadows();
       }, (err) => console.warn(key + ' failed to load', err)))

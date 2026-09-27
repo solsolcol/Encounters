@@ -136,7 +136,7 @@
     const { THREE, GLTFLoader, scene, camera, yaw, LOW,
             assetBytes, rescueTextures, redoShadows,
             cnv, makeSoftDot, makeConcrete, makeLacquer,
-            makeHellNote, getState, startDecision, worldSfx, HEAD_RE, warmSounds } = ctx;
+            makeHellNote, getState, startDecision, worldSfx, HEAD_RE, warmSounds, unifySkeletons } = ctx;
 
     const SHRINE = new THREE.Vector3(DATA.shrine.x, 0, DATA.shrine.z);
     /* v14.16: scene A's chair scrape is fired from sitDown(), a helper, and
@@ -985,6 +985,7 @@
     assetBytes('tangki').then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
       if (!alive) return;
       rescueTextures(gltf, BUF);
+      if (unifySkeletons) unifySkeletons(gltf.scene);   // v15.2: three skeletons -> one, exactly (main.js)
       const g = gltf.scene;
       g.traverse(o => {
         if (!o.isMesh) return;

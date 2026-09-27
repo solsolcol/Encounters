@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "15.1"
+VERSION = "15.2"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -516,6 +516,50 @@ hosted = bundle.replace('__ASSET_MAP_B64__',
 for key in ASSETS:                                        # no bytes ride along
     hosted = hosted.replace(f'__{key.upper()}_B64__', '')
 
+# v15.2: THE FONTS, AT HOME (docs/V15.2-PLAN.md §2). Google answers the one
+# stylesheet URL in shell.html with different font files per browser, so
+# tools/fontsnap.mjs asked it as 86 browsers and kept its answer for the five
+# classes that cover the common ones (asserting every member of a class was
+# answered the same). Each class's stylesheet and files go under
+# assets/fonts/, fingerprinted like everything else; the page picks its class
+# with src/fontpick.js inlined, and a browser that function does not
+# recognise gets Google's own link, exactly as before. `?fonts=google` forces
+# Google's link (the pixel probe compares the two). The single-file build
+# keeps Google's link untouched (csptest's strict policy names Google's hosts).
+GF_LINK = re.search(r'<link rel="stylesheet" href="https://fonts\.googleapis\.com/css2\?[^"]+">', shell)
+assert GF_LINK and shell.count(GF_LINK.group(0)) == 1, 'the Google Fonts link is not in shell.html exactly once'
+gf_url = re.search(r'href="([^"]+)"', GF_LINK.group(0)).group(1).replace('&amp;', '&')
+fonts_dir = d / 'assets' / 'fonts'
+fman = json.loads((fonts_dir / 'manifest.json').read_text())
+assert fman['source'] == gf_url, 'assets/fonts/ was taken for another Google Fonts URL: run tools/fontsnap.mjs'
+(dist / 'assets' / 'fonts').mkdir()
+font_out, font_css = {}, {}
+def _font_file(m):
+    name = m.group(1)
+    if name not in font_out:
+        body = (fonts_dir / name).read_bytes()
+        assert hashlib.sha256(body).hexdigest() == fman['files'][name]['sha256'], f'{name} changed since the snapshot'
+        stem, ext = name.rsplit('.', 1)
+        font_out[name] = f'{stem}.{hashlib.md5(body).hexdigest()[:10]}.{ext}'
+        (dist / 'assets' / 'fonts' / font_out[name]).write_bytes(body)
+    return f'url({font_out[name]})'
+for cls in sorted(fman['classes']):
+    css = re.sub(r'url\(([A-Za-z0-9_-]+\.(?:woff2|woff|ttf))\)', _font_file, (fonts_dir / f'{cls}.css').read_text())
+    assert 'url(' in css and 'gstatic' not in css and 'googleapis' not in css, f'{cls}.css still points at Google'
+    out = f'assets/fonts/{cls}.{hashlib.md5(css.encode()).hexdigest()[:10]}.css'
+    (dist / out).write_text(css)
+    font_css[cls] = out
+_pick = (d / 'src' / 'fontpick.js').read_text()
+font_script = '<script>' + guard(
+    '(function(){var G=' + json.dumps(gf_url) + ',C=' + json.dumps(font_css) + ',h=G;'
+    'try{if(!/[?&]fonts=google(&|$)/.test(location.search)){var k=fontClass(navigator.userAgent);'
+    'if(k&&C[k])h=C[k];}}catch(e){}'
+    'try{document.write(\'<link rel="stylesheet" href="\'+h.replace(/&/g,"&amp;")+\'">\');}'
+    'catch(e){var l=document.createElement("link");l.rel="stylesheet";l.href=h;document.head.appendChild(l);}\n'
+    + _pick[_pick.index('function fontClass('):] + '})();') + '</script>'
+print(f'  fonts: {len(font_css)} classes ({", ".join(sorted(font_css))}), {len(font_out)} files self-hosted; '
+      f'any other browser keeps Google\'s link')
+
 st_out = f'assets/strings.{hashlib.md5(strings.encode()).hexdigest()[:10]}.js'
 (dist / st_out).write_text(strings)
 # one hashed file per chapter, the boot chapter first so it parses first
@@ -554,7 +598,7 @@ print(f'  preload for {BOOT}: logo + {", ".join(preload_keys)}'
     '<meta name="viewport" content="width=device-width,initial-scale=1,'
     'maximum-scale=1,viewport-fit=cover">\n'
     + '\n'.join(preloads) + '\n</head>\n<body>\n'
-    + shell.replace('<script>/*BUNDLE*/</script>',
+    + shell.replace(GF_LINK.group(0), font_script).replace('<script>/*BUNDLE*/</script>',
                     f'<script defer src="{st_out}"></script>\n'
                     + ''.join(f'<script defer src="{c}"></script>\n' for c in ch_outs)
                     + f'<script defer src="{js_out}"></script>')

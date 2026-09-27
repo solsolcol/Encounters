@@ -15,7 +15,8 @@ import { LAUNCH, toPlay } from './testlib.mjs';
 
 const ROOT = fileURLToPath(new URL('./dist/', import.meta.url));
 const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.glb': 'model/gltf-binary',
-               '.webp': 'image/webp', '.mp3': 'audio/mpeg' };
+               '.webp': 'image/webp', '.mp3': 'audio/mpeg', '.css': 'text/css',   // v15.2: the self-hosted fonts
+               '.woff2': 'font/woff2', '.woff': 'font/woff', '.ttf': 'font/ttf' };
 const srv = createServer(async (req, res) => {
   try {
     const path = normalize(decodeURIComponent(req.url.split('?')[0]));
@@ -46,8 +47,10 @@ out.nothingFailed = hits.every(h => h.ok);
 // the preload hints must HAND OVER their bytes, not race the engine's own
 // fetch — a mismatched preload shows up here as the same URL twice
 const dupes = {};
-for (const h of hits) dupes[h.url] = (dupes[h.url] || 0) + 1;
+// a blob: URL is not a download (v14.15's two meshopt workers start from one)
+for (const h of hits) if (!h.url.startsWith('blob:')) dupes[h.url] = (dupes[h.url] || 0) + 1;
 out.noDoubleDownloads = Object.values(dupes).every(n => n === 1);
+if (!out.noDoubleDownloads) out.doubled = Object.keys(dupes).filter(u => dupes[u] > 1);
 // the doctype is real: quirks mode would say BackCompat
 out.standardsMode = await p.evaluate(() => document.compatMode === 'CSS1Compat');
 
@@ -61,6 +64,14 @@ out.logoPainted = await p.evaluate(() => {
   return false;
 });
 out.hostedMode = await p.evaluate(() => window.__enc.ready().hosted);
+// v15.2: the fonts come from the game's own site — the stylesheet the page
+// picked for this browser (headless Chrome on Linux is the WIN/LINUX class),
+// its font files, and nothing asked of Google
+await p.waitForFunction(() => [...document.fonts].some(f => f.status === 'loaded'), null, { timeout: 60000 }).catch(() => {});
+out.fontsSheetHome = hits.some(h => /^\/assets\/fonts\/winlinux\.[0-9a-f]{10}\.css$/.test(h.url) && h.ok);
+out.fontFilesHome = hits.some(h => /^\/assets\/fonts\/[\w-]+\.[0-9a-f]{10}\.woff2$/.test(h.url) && h.ok);
+out.noGoogleFonts = !hits.some(h => /googleapis|gstatic/.test(h.url));
+out.fontsInUse = await p.evaluate(() => [...document.fonts].some(f => f.status === 'loaded' && /Archivo|Inter|Cormorant|JetBrains/.test(f.family)));
 
 // start the chapter: the card gates on the world being ready, then play
 await p.click('#startBtn');
@@ -73,9 +84,13 @@ await p.waitForTimeout(5200);
 out.voice = await p.evaluate(() => window.__enc.voice());
 
 // the chapter data came from chapters/ch1.js and still runs the loop
-out.chapterFromFile = await p.evaluate(() =>
+// (v15.2: against the list the file itself declares — the literal 'hdb,ghost,voice'
+// went stale when the prologue added its assets, and the check read false since)
+const ch1Assets = [...(/assets:\s*\[([^\]]*)\]/.exec(await readFile(new URL('./src/chapters/ch1.js', import.meta.url), 'utf8'))[1])
+  .matchAll(/'([a-z0-9_]+)'/g)].map(m => m[1]).join();
+out.chapterFromFile = await p.evaluate((want) =>
   window.__enc.chapter.id === 1 && window.__enc.chapter.choices.length === 4
-  && window.__enc.chapter.assets.join() === 'hdb,ghost,voice');
+  && window.__enc.chapter.assets.join() === want, ch1Assets);
 await p.evaluate(() => { const e = window.__enc;
   e.yaw.position.set(-0.4, 1.62, -3.4);
   e.yaw.rotation.y = Math.atan2(-(e.PILE_POS.x + 0.4), -(e.PILE_POS.z + 3.4));
@@ -95,6 +110,13 @@ out.sceneAndCard = await p.$eval('#result', e => !e.classList.contains('hide'));
 
 console.log(JSON.stringify(out, null, 1));
 console.log('errors:', errs.length ? errs : 'none');
+/* v15.2: the network-level checks FAIL the harness (runtests reads the exit
+   code, not a printed false — LEARNINGS v6.3); the timing-bound ones above
+   stay informational, as they always were */
+const STRICT = ['splitFilesFetched', 'nothingFailed', 'noDoubleDownloads', 'standardsMode', 'hostedMode',
+                'fontsSheetHome', 'fontFilesHome', 'noGoogleFonts', 'fontsInUse'];
+const failed = STRICT.filter(k => out[k] !== true);
+if (failed.length) { console.log('FAILED CHECKS: ' + failed.join(', ')); process.exitCode = 1; }
 console.log('requests:', hits.length,
   '| failed:', hits.filter(h => !h.ok).map(h => h.url).join(' ') || 'none');
 await b.close();
