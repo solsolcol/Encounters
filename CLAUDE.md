@@ -4268,7 +4268,10 @@ What the baseline contains, by release:
   reaches that); unlit film paint washed out by ACES; a probe's synthetic
   `.click()` does not press the event's START (the game listens for real
   pointer presses — players are unaffected). Sheet v75 exported (5 tabs,
-  EPISODE 3 new; v44 stays the link). docs/V16.0-E3C1-PLAN.md is the memory.
+  EPISODE 3 new; v44 stays the link). Harnesses chapter, walk, leak, fixture,
+  cine, text, menu, hosted, csp green. Deploy `6abc45f53403efe4f2700656`,
+  byte-verified (index.html and all 184 build files); milestone bundle made.
+  docs/V16.0-E3C1-PLAN.md is the memory.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
