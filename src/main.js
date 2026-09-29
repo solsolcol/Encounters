@@ -3069,6 +3069,23 @@ function kitAward(stat, delta, opts) {
 /* ---- pose: lying down in play ------------------------------------------ */
 function kitPoseSet(name, opts = {}) {
   name = name === 'lying' ? 'lying' : 'standing';
+  /* v16.0: A REPEAT 'lying' RE-AIMS THE NECK. It used to be ignored once the
+     eye had settled, so a chapter could never turn a seated player's view
+     (episode 3 chapter 1 turns him round on the yant stool to face the Ajarn)
+     — the clamp stayed on the first heading and pulled the lens back to it.
+     The eye's ease restarts only if the height itself changed, so repeating
+     the same call mid-ease no longer restarts it either. Episode 1 never
+     calls pose(); episode 2 only ever repeats identical values. */
+  if (name === kitPose && name === 'lying') {
+    if (Number.isFinite(opts.yaw)) lieYaw = opts.yaw;
+    if (opts.span !== undefined) lieSpan = opts.span;
+    if (opts.pitchLo !== undefined) pitchLo = opts.pitchLo;
+    if (opts.pitchHi !== undefined) pitchHi = opts.pitchHi;
+    const y = opts.y ?? 0.60;
+    if (Math.abs(y - poseTo) < 1e-3) return;
+    poseFrom = yaw.position.y; poseTo = y; poseT = 0; poseSecs = Math.max(0.05, opts.secs ?? 0.9);
+    return;
+  }
   if (name === kitPose && poseT >= 1) return;
   kitPose = name;
   poseFrom = yaw.position.y;

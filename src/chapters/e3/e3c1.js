@@ -164,9 +164,9 @@
     /* the yant stool is ON the dais, right in front of him: a Sak Yant master
        works at arm's length behind you (photographed at v16.0 CP2 with the
        stool on the floor 2.4 m out, the rod could not have reached) */
-    const CUSH = { x: 4.4, z: -8.08 };
+    const CUSH = { x: 4.4, z: -7.86 };                  // flush with the dais's front edge, 1.1 m in front of him
     const WAIT = { x: -1.2, z: -5.2 };                  // the waiting mat
-    const WAI  = { x: 0.0, z: -8.55 };                  // kneel before the altar
+    const WAI  = { x: 0.0, z: -7.55 };                  // kneel before the altar, 1.6 m off its front step (CP3: at 0.6 m the lens was in the steps)
     const RACK = { x: 2.75, z: -0.55 };                 // the shoe rack at the foot of the steps
     const STALL = { x: -9.6, z: 4.4 };                  // the offering stall, facing +x
     const BODHI = { x: 6.2, z: 4.6 };
@@ -607,6 +607,9 @@
       pm.rotation.x = -Math.PI / 2; pm.position.y = DAIS.h + 0.005; dais.add(pm);
       const seat = box(0.62, 0.34, 0.52, AJ.x - DAIS.x, DAIS.h + 0.17, AJ.z - DAIS.z - 0.06, matWoodD, dais);
       void seat;
+      // the raised block he sits on, and his feet rest on
+      box(1.0, 0.36, 0.95, AJ.x - DAIS.x, DAIS.h + 0.18, AJ.z - DAIS.z + 0.05, matRed, dais);
+      box(1.04, 0.04, 0.99, AJ.x - DAIS.x, DAIS.h + 0.36, AJ.z - DAIS.z + 0.05, matGold, dais);
       box(0.66, 0.06, 0.56, AJ.x - DAIS.x, DAIS.h + 0.37, AJ.z - DAIS.z - 0.06, new THREE.MeshStandardMaterial({ color: 0xc7a24e, roughness: 0.8 }), dais);
       // the lacquer tray, the rods, the ink pots, the lamp
       const trayX = 0.78, trayZ = -0.2;
@@ -738,9 +741,14 @@
         const x0 = -1.5 + i * 0.5;
         for (let k = 0; k <= 10; k++) { const t = k / 10; pts.push(new THREE.Vector3(x0 + Math.sin(t * Math.PI) * 0.03, 2.12 - t * 0.38, 0.9)); }
         const col = [0xf6c228, 0xf5f0de, 0xf2a11a][i % 3];
-        const gm = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 10, 0.016, 6, false),
-          new THREE.MeshStandardMaterial({ color: col, roughness: 0.8 }));
-        g.add(gm);
+        /* a string of flower beads, jasmine and marigold, not a tube: a tube
+           this thick read as a row of bananas from the path (CP2) */
+        const bm = new THREE.MeshStandardMaterial({ color: col, roughness: 0.8 });
+        const curve = new THREE.CatmullRomCurve3(pts);
+        for (let k = 0; k <= 12; k++) {
+          const bead = new THREE.Mesh(new THREE.SphereGeometry(0.02, 6, 4), bm);
+          bead.position.copy(curve.getPoint(k / 12)); g.add(bead);
+        }
         // a tassel of a rose at the foot of each
         const tas = new THREE.Mesh(new THREE.SphereGeometry(0.035, 8, 6), new THREE.MeshStandardMaterial({ color: 0xc8243a, roughness: 0.7 }));
         tas.position.copy(pts[pts.length - 1]); g.add(tas);
@@ -1121,7 +1129,11 @@
       });
     }
     const DAIS_TOP = SALA.floor + DAIS.h;
-    const ajarn = mkRig('admintee', { x: AJ.x, y: DAIS_TOP, z: AJ.z, ry: 0, height: 1.66,
+    /* HE SITS RAISED — on a lacquered block on the dais, so the man in front
+       of him looks UP at him when he turns round (CP3: level with the stool,
+       the decision opened on the top of his head) */
+    const AJ_RISE = 0.36;
+    const ajarn = mkRig('admintee', { x: AJ.x, y: DAIS_TOP + AJ_RISE, z: AJ.z, ry: 0, height: 1.66,
                                       sizeOn: 'Idle_9', idle: 'Sit_and_Doze_Off', rate: 0.45, seated: true, recolor: whiten,
                                       then: (r) => seatUnder(r, ajSeat) });
     const ajSeat = dais.children.find(c => c.geometry && c.geometry.parameters && c.geometry.parameters.width === 0.62);
@@ -1191,8 +1203,10 @@
        from the stall to the Ajarn. It lives on the camera, like chapter 1's
        note, and only in play. */
     const handTray = mkTray();
-    handTray.scale.setScalar(1.15);
-    handTray.position.set(0.02, -0.40, -0.62); handTray.rotation.set(0.35, 0.2, 0);
+    /* carried low and to the left, the hand beside it: at 1.15x and 0.62 m it
+       filled the lower half of the frame (CP3) */
+    handTray.scale.setScalar(0.72);
+    handTray.position.set(-0.17, -0.40, -0.70); handTray.rotation.set(0.62, 0.25, 0);
     handTray.traverse(o => { if (o.isMesh) { o.castShadow = false; o.renderOrder = 2; } });
     handTray.visible = false;
     camera.add(handTray); owned.push(handTray);
@@ -1335,7 +1349,8 @@
     function beginWai() {
       if (phase !== 'wai' || kneel) return false;
       yaw.position.x = WAI.x; yaw.position.z = WAI.z;
-      if (kit) { kit.root(true); kit.pose('lying', { y: SALA.floor + 0.98, yaw: 0, span: 0.7, pitchLo: -0.9, pitchHi: 0.8, secs: 0.8 }); }
+      if (kit) kit.root(true);
+      turnTo(0, 0.8, { y: SALA.floor + 0.98, span: 0.7, lo: -0.9, hi: 0.8 });
       kneel = { t0: dayClock.t };
       // he lights three sticks from the altar candle, and the bell is struck
       if (worldSfx) { worldSfx('incenselit', 0.7); after(0.9, () => worldSfx('e3bell', 0.55, 1, 0)); }
@@ -1376,7 +1391,8 @@
       seated = 'mat'; syncProps();
       yaw.position.x = WAIT.x; yaw.position.z = WAIT.z;
       const face = Math.atan2(-(CUSH.x - WAIT.x), -(CUSH.z - WAIT.z));
-      if (kit) { kit.root(true); kit.pose('lying', { y: SALA.floor + 0.86, yaw: face, span: 1.5, pitchLo: -0.7, pitchHi: 0.7, secs: 0.9 }); }
+      if (kit) kit.root(true);
+      turnTo(face, 1.1, { y: SALA.floor + 0.86, span: 1.5, lo: -0.7, hi: 0.7 });
       if (worldSfx) worldSfx('barestep', 0.5, 0.85);
       waitSeq();
     }
@@ -1429,7 +1445,8 @@
     function sitStool() {
       seated = 'stool'; syncProps();
       yaw.position.x = CUSH.x; yaw.position.z = CUSH.z;
-      if (kit) { kit.root(true); kit.pose('lying', { y: STOOL_TOP + 0.80, yaw: Math.PI, span: 0.9, pitchLo: -0.6, pitchHi: 0.55, secs: 0.9 }); }
+      if (kit) kit.root(true);
+      turnTo(Math.PI, 1.1, { y: STOOL_TOP + 0.80, span: 0.9, lo: -0.6, hi: 0.55 });
       if (worldSfx) worldSfx('barestep', 0.5, 0.9);
       setPhase('yant');
       queueGap(0.6);
@@ -1482,28 +1499,41 @@
       after(8.0, () => {
         queueLine('aj1done', () => { ajarn.nod = SECS.aj1done; });
         queueGap(0.3);
-        queueFn(() => { turning = { t: 0, from: yaw.rotation.y, to: faceAjarn() }; });
+        queueFn(() => turnRound());
       });
     }
     const faceAjarn = () => Math.atan2(-(AJ.x - yaw.position.x), -(AJ.z - yaw.position.z));
     let turning = null, warmK = 0;
+    /* THE LENS TURNS FOR HIM when he sits, kneels or turns round: eased on
+       wall time, the neck held narrow while it turns, and the pose's own
+       clamp set on the new heading when it lands (CP3: a player who sat on the
+       mat with his back to the dais watched a wall through the whole wait) */
+    function turnTo(to, secs, o, done) {
+      turning = { t: 0, from: yaw.rotation.y, to, secs, y: o.y, span: o.span, lo: o.lo, hi: o.hi, done };
+    }
     function turnTick(wdt) {
       if (!turning) return;
-      turning.t += wdt / 1.6;
-      const k = smooth(Math.min(1, turning.t));
-      let d = turning.to - turning.from; while (d > Math.PI) d -= Math.PI * 2; while (d < -Math.PI) d += Math.PI * 2;
-      if (kit) kit.pose('lying', { y: STOOL_TOP + 0.80, yaw: turning.from + d * k, span: 0.02, pitchLo: -0.6, pitchHi: 0.6, secs: 0.05 });
-      yaw.rotation.y = turning.from + d * k;
-      if (worldSfx && !turning.stepped && k > 0.2) { turning.stepped = true; worldSfx('barestep', 0.45, 0.8); }
-      if (turning.t >= 1) {
+      const T = turning;
+      T.t += wdt / T.secs;
+      const k = smooth(Math.min(1, T.t));
+      let d = T.to - T.from; while (d > Math.PI) d -= Math.PI * 2; while (d < -Math.PI) d += Math.PI * 2;
+      yaw.rotation.y = T.from + d * k;
+      if (kit) kit.pose('lying', { y: T.y, yaw: yaw.rotation.y, span: 0.02, pitchLo: T.lo, pitchHi: T.hi, secs: 0.9 });
+      if (T.t >= 1) {
         turning = null;
-        if (kit) kit.pose('lying', { y: STOOL_TOP + 0.80, yaw: faceAjarn(), span: 0.8, pitchLo: -0.5, pitchHi: 0.6, secs: 0.05 });
-        ajarn.lookAt = true;
+        if (kit) kit.pose('lying', { y: T.y, yaw: T.to, span: T.span, pitchLo: T.lo, pitchHi: T.hi, secs: 0.05 });
+        if (T.done) T.done();
+      }
+    }
+    function turnRound() {
+      if (worldSfx) worldSfx('barestep', 0.45, 0.8);
+      turnTo(faceAjarn(), 1.6, { y: STOOL_TOP + 0.80, span: 0.8, lo: -0.5, hi: 0.6 }, () => {
+        pitch.rotation.x = 0.16;                       // and up, to his face
         queueGap(0.5);
         queueLine('aj1ask', () => { ajarn.nod = SECS.aj1ask; });
         queueGap(0.7);
         queueFn(() => { setPhase('decide'); if (kit) kit.root(false); startDecision(); });
-      }
+      });
     }
 
     /* the Ajarn at work: bursts of strikes and a pause to re-ink, the rod's
@@ -1522,7 +1552,7 @@
       }
       // the rod: from his right hand to the man's shoulder blade, tapping
       const tip = new THREE.Vector3(CUSH.x + 0.07, STOOL_TOP + 0.58, CUSH.z - 0.17);
-      const butt = new THREE.Vector3(AJ.x + 0.2, STOOL_TOP + 0.66, AJ.z + 0.32);
+      const butt = new THREE.Vector3(AJ.x + 0.2, SALA.floor + (ajarn.seatTop ?? 1.2) + 0.28, AJ.z + 0.45);
       const dir = tip.clone().sub(butt).normalize();
       // held at the middle, the tip 6 cm off the skin, driven in on each strike
       rodG.position.copy(tip).addScaledVector(dir, -0.72 + strikeK * 0.06 - 0.06);
@@ -1602,8 +1632,12 @@
       const chantWant = st === 'play' || st === 'decide' ? (0.10 + 0.20 * THREE.MathUtils.clamp((x + 8) / 16, 0, 1)) * (under ? 0.7 : 1) : 0.10;
       const i = pIdx(phase);
       let musicWant = 0;
-      if (st === 'play') musicWant = i >= 4 && i <= 6 ? (i === 6 ? 0.36 : 0.30) : i === 7 ? 0.22 : 0;
-      else if (st === 'decide') musicWant = 0.18;
+      /* e3wait is levelled to -19 dBFS RMS (masters/v16.0), so 0.45 puts it
+         near -26 in the room: over the dawn bed (-25 body x 0.26-0.34) and
+         the chant, under every voice — the episode-2 lesson that a bed the
+         player cannot hear is not a bed (v9.7, v10.4, v10.7) */
+      if (st === 'play') musicWant = i >= 4 && i <= 6 ? (i === 6 ? 0.52 : 0.45) : i === 7 ? 0.36 : 0;
+      else if (st === 'decide') musicWant = 0.30;
       mixK.chant += (chantWant - mixK.chant) * (1 - Math.exp(-wdt / 1.2));
       mixK.music += (musicWant - mixK.music) * (1 - Math.exp(-wdt / 1.6));
       DATA.ambience.beds[0][1] = under ? 0.26 : 0.34;
@@ -1720,6 +1754,7 @@
     function dispose() {
       alive = false;
       if (treeStand) treeStand.userData.disposeTrees?.();   // BEFORE the sweep: the kit's maps are shared (v6.15)
+      if (ordTrees) ordTrees.userData.disposeTrees?.();
       camera.remove(handTray);
       const geos = new Set(), mats = new Set();
       const sweep = (root) => root.traverse(o => {
@@ -1748,6 +1783,7 @@
        does the hiding). Every material is UNLIT and fog-free (the v4.9 recipe:
        the fog and the dawn lights are the wat's, and a memory has its own
        light painted into it). Nothing here casts a shadow. */
+    let ordTrees = null;
     const film = buildFilm();
     function buildFilm() {
       const root = new THREE.Group(); world.add(root);
@@ -1759,12 +1795,16 @@
       /* ---- 1 · THE CAMP GATE AT NOON (ORD) ---- */
       const ord = new THREE.Group(); ord.position.set(400, 0, 0); root.add(ord);
       {
+        /* painted at about half the brightness it should read at: the
+           renderer's ACES curve at exposure 1.42 lifts everything (v8.9) */
         const sky = new THREE.Mesh(new THREE.SphereGeometry(80, 32, 16),
-          basic({ map: tex(makeSkyGrad(THREE, cnv, ['#9fc9ef', '#cfe3f3', '#eef3ef'])), side: THREE.BackSide, depthWrite: false }));
+          basic({ map: tex(makeSkyGrad(THREE, cnv, ['#3f78b4', '#86b2d4', '#b9c9c2'])), side: THREE.BackSide, depthWrite: false }));
         sky.position.y = 0; ord.add(sky);
-        const gnd = new THREE.Mesh(new THREE.CircleGeometry(78, 40), basic({ color: 0x86a45e }));
-        gnd.rotation.x = -Math.PI / 2; gnd.position.y = 0.0; ord.add(gnd);
-        const road = fplane(7, 150, 0, 0.01, 0, basic({ map: tex(makeRoad(THREE, cnv)) }), ord, 0, -Math.PI / 2);
+        const lit = (o) => new THREE.MeshStandardMaterial({ fog: false, roughness: 0.9, ...o });
+        const gnd = new THREE.Mesh(new THREE.CircleGeometry(78, 40), lit(grassTex ? { map: grassTex.map, color: 0xd6e0a8 } : { color: 0x7d9a5c }));
+        if (grassTex) { grassTex.map.wrapS = grassTex.map.wrapT = THREE.RepeatWrapping; }
+        gnd.rotation.x = -Math.PI / 2; gnd.position.y = 0.0; gnd.receiveShadow = true; ord.add(gnd);
+        const road = fplane(7, 150, 0, 0.01, 0, lit({ map: tex(makeRoad(THREE, cnv)) }), ord, 0, -Math.PI / 2);
         road.material.map.repeat.set(1, 20);
         // the fence both sides of the gate, chain-link on posts, concertina on top
         const link = tex(makeLink(THREE, cnv));
@@ -1775,16 +1815,16 @@
           for (let x = 4; x <= 44; x += 3) fbox(0.08, 2.9, 0.08, s * x, 1.45, 0, basic({ color: 0x6a7074 }), ord);
         }
         // the guardhouse to the right of the road, its window, the boom across
-        fbox(3.2, 2.8, 3.0, 5.4, 1.4, 1.6, basic({ color: 0xd8d1bf }), ord);
-        fbox(3.6, 0.25, 3.4, 5.4, 2.93, 1.6, basic({ color: 0x5d6a4a }), ord);
-        fbox(0.05, 0.9, 1.6, 3.78, 1.7, 1.6, basic({ color: 0x2c3a44 }), ord);
-        fbox(0.4, 1.1, 0.4, 3.6, 0.55, 0.0, basic({ color: 0xe8e4d8 }), ord);
+        fbox(3.2, 2.8, 3.0, 5.4, 1.4, 1.6, lit({ color: 0xd8d1bf }), ord);
+        fbox(3.6, 0.25, 3.4, 5.4, 2.93, 1.6, lit({ color: 0x5d6a4a }), ord);
+        fbox(0.05, 0.9, 1.6, 3.78, 1.7, 1.6, lit({ color: 0x2c3a44, roughness: 0.3 }), ord);
+        fbox(0.4, 1.1, 0.4, 3.6, 0.55, 0.0, lit({ color: 0xe8e4d8 }), ord);
         const boom = new THREE.Group(); boom.position.set(3.6, 1.05, 0); ord.add(boom);
-        fbox(7.2, 0.14, 0.14, -3.6, 0, 0, basic({ color: 0xf1ede2 }), boom);
-        for (let k = 0; k < 7; k++) fbox(0.5, 0.15, 0.15, -0.6 - k * 1.0, 0, 0, basic({ color: 0xc0271f }), boom);
+        fbox(7.2, 0.14, 0.14, -3.6, 0, 0, lit({ color: 0xf1ede2 }), boom);
+        for (let k = 0; k < 7; k++) fbox(0.5, 0.15, 0.15, -0.6 - k * 1.0, 0, 0, lit({ color: 0xc0271f }), boom);
         // the camp behind: two blocks either side, the flagpole, a sign
-        fbox(24, 9, 8, -22, 4.5, 16, basic({ map: tex(makeCampFacade(THREE, cnv)) }), ord);
-        fbox(18, 7, 8, 22, 3.5, 18, basic({ color: 0xd9d2bd }), ord);
+        fbox(24, 9, 8, -22, 4.5, 16, lit({ map: tex(makeCampFacade(THREE, cnv)) }), ord);
+        fbox(18, 7, 8, 22, 3.5, 18, lit({ color: 0xd9d2bd }), ord);
         const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.08, 9, 8), basic({ color: 0xe6e6e0 }));
         pole.position.set(-7, 4.5, 6); ord.add(pole);
         const flag = fplane(1.8, 1.2, -6.1, 8.3, 6.02, basic({ map: tex(makeSgFlag(THREE, cnv)), side: THREE.DoubleSide }), ord);
@@ -1793,16 +1833,21 @@
         void sg;
         fbox(0.1, 2.4, 0.1, -6.6, 1.2, 0.25, basic({ color: 0x4d5257 }), ord);
         fbox(0.1, 2.4, 0.1, -3.8, 1.2, 0.25, basic({ color: 0x4d5257 }), ord);
-        // outside: a row of trees on the far side of the road, and a bus stop
-        for (let i = 0; i < 9; i++) {
-          const x = -30 + i * 7.5 + hash(i, 2) * 2, z = -26 - hash(i, 3) * 8;
-          const tr = new THREE.Mesh(new THREE.SphereGeometry(3.2 + hash(i, 5) * 1.5, 12, 8), basic({ color: shade(0x4d7a3a, 0.8 + hash(i, 6) * 0.3) }));
-          tr.position.set(x, 4.5, z); tr.scale.y = 0.85; ord.add(tr);
-          fbox(0.4, 3.2, 0.4, x, 1.6, z, basic({ color: 0x5a4636 }), ord);
+        /* outside: Chad's trees along both sides of the road (the game's own
+           kit, not blobs — v6.15's rule: no generated trees anywhere), a bus
+           stop, and the road running off into them */
+        if (plantTrees) {
+          const spots = [];
+          for (let i = 0; i < 16; i++) {
+            const side = i % 2 ? 1 : -1;
+            spots.push({ x: side * (6.5 + hash(i, 4) * 5), z: -8 - i * 3.6 - hash(i, 3) * 2, h: 7 + hash(i, 5) * 4 });
+          }
+          for (let i = 0; i < 8; i++) spots.push({ x: -30 + i * 8, z: 26 + hash(i, 6) * 6, h: 8 + hash(i, 7) * 3 });
+          ordTrees = plantTrees(ord, spots, { tint: 0xe8e0c8, fog: false, shadow: false, lowKeep: 0.6 });
         }
-        fbox(4, 0.15, 1.6, 8, 2.6, -8, basic({ color: 0x607f8c }), ord);
-        fbox(0.1, 2.6, 0.1, 6.2, 1.3, -8.7, basic({ color: 0x777777 }), ord);
-        fbox(0.1, 2.6, 0.1, 9.8, 1.3, -8.7, basic({ color: 0x777777 }), ord);
+        fbox(4, 0.15, 1.6, 8, 2.6, -8, lit({ color: 0x607f8c }), ord);
+        fbox(0.1, 2.6, 0.1, 6.2, 1.3, -8.7, lit({ color: 0x777777 }), ord);
+        fbox(0.1, 2.6, 0.1, 9.8, 1.3, -8.7, lit({ color: 0x777777 }), ord);
         root.userData.boom = boom;
       }
 
@@ -1868,9 +1913,12 @@
       /* ---- 3 · THE WAREHOUSE ---- */
       const ware = new THREE.Group(); ware.position.set(1000, 0, 0); root.add(ware);
       {
-        const shell = new THREE.Mesh(new THREE.BoxGeometry(20, 6.5, 14), basic({ color: 0x55585c, side: THREE.BackSide }));
+        /* LIT, unlike the night pockets: a warehouse is strip-lit and flat, and
+           unlit paint made every rack face the same colour (CP4) */
+        const wl = (o) => new THREE.MeshStandardMaterial({ fog: false, roughness: 0.75, ...o });
+        const shell = new THREE.Mesh(new THREE.BoxGeometry(20, 6.5, 14), wl({ color: 0x8a8c90, side: THREE.BackSide }));
         shell.position.y = 3.25; ware.add(shell);
-        const flo = fplane(20, 14, 0, 0.005, 0, basic({ map: tex(makeWareFloor(THREE, cnv)) }), ware, 0, -Math.PI / 2);
+        const flo = fplane(20, 14, 0, 0.005, 0, wl({ map: tex(makeWareFloor(THREE, cnv)), roughness: 0.5 }), ware, 0, -Math.PI / 2);
         flo.material.map.repeat.set(4, 3);
         // strip lights, bright
         for (let x = -7; x <= 7; x += 3.5) for (const z of [-3, 3]) fbox(2.2, 0.08, 0.2, x, 6.2, z, basic({ color: 0xf4f7ff }), ware);
@@ -1879,8 +1927,8 @@
         fplane(6, 0.12, 0, 0.06, -6.9, basic({ color: 0xfff2cc }), ware);
         // THE RACKS: three rows, orange uprights, blue beams, stacked with his boxes
         const boxTex = tex(makeDashBox(THREE, cnv));
-        const boxM = basic({ map: boxTex });
-        const upM = basic({ color: 0xd8691f }), beamM = basic({ color: 0x2a55a0 });
+        const boxM = wl({ map: boxTex });
+        const upM = wl({ color: 0xd8691f, roughness: 0.5 }), beamM = wl({ color: 0x2a55a0, roughness: 0.5 });
         const n = LOW ? 150 : 260;
         const inst = new THREE.InstancedMesh(new THREE.BoxGeometry(0.46, 0.3, 0.34), boxM, n);
         let k = 0; const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), sc = new THREE.Vector3(1, 1, 1), p = new THREE.Vector3();
@@ -1937,15 +1985,15 @@
         room.position.y = 1.5; desk.add(room);
         const top = fplane(1.6, 0.8, 0, 0.75, 0, basic({ map: tex(makeDeskWood(THREE, cnv)) }), desk, 0, -Math.PI / 2);
         void top;
-        fbox(1.6, 0.04, 0.8, 0, 0.73, 0, basic({ color: 0x1a120c }), desk);
+        fbox(1.6, 0.04, 0.8, 0, 0.725, 0, basic({ color: 0x1a120c }), desk);   // its top 5 mm under the wood (CP4: coplanar, it striped)
         // the candle's light, painted: a warm pool on the wood, a glow in the air
         fplane(1.1, 0.75, 0.2, 0.752, 0.0, basic({ color: 0xffa650, transparent: true, opacity: 0.30, blending: THREE.AdditiveBlending, depthWrite: false }), desk, 0, -Math.PI / 2);
-        const glow = new THREE.Mesh(new THREE.SphereGeometry(0.22, 16, 12),
-          basic({ color: 0xff9a40, transparent: true, opacity: 0.14, blending: THREE.AdditiveBlending, depthWrite: false }));
+        const glow = new THREE.Mesh(new THREE.SphereGeometry(0.09, 16, 12),
+          basic({ color: 0xff8a30, transparent: true, opacity: 0.10, blending: THREE.AdditiveBlending, depthWrite: false }));
         glow.position.set(0.32, 0.92, -0.12); desk.add(glow);
-        const cnd = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.12, 12), basic({ color: 0xe8dcc0 }));
+        const cnd = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.12, 12), basic({ color: 0x8a7c62 }));
         cnd.position.set(0.32, 0.81, -0.12); desk.add(cnd);
-        candleFl = new THREE.Mesh(new THREE.SphereGeometry(0.012, 8, 6), basic({ color: 0xffd08a }));
+        candleFl = new THREE.Mesh(new THREE.SphereGeometry(0.009, 8, 6), basic({ color: 0xffb040 }));
         candleFl.scale.set(1, 2.2, 1); candleFl.position.set(0.32, 0.895, -0.12); desk.add(candleFl);
         // a red cloth, and on it, the amulet — episode 1's Phiboon
         const cloth = fplane(0.22, 0.22, -0.02, 0.753, 0.02, basic({ color: 0x8a1a14 }), desk, 0, -Math.PI / 2);
@@ -1963,7 +2011,7 @@
           if (!alive) return;
           const g = gltf.scene.clone(true);
           const bb = new THREE.Box3().setFromObject(g), sz = bb.getSize(new THREE.Vector3());
-          const s = 0.07 / Math.max(sz.x, sz.y, sz.z);
+          const s = 0.075 / Math.max(sz.x, sz.y, sz.z);
           g.scale.setScalar(s);
           const c = bb.getCenter(new THREE.Vector3());
           g.position.set(-c.x * s, -bb.min.y * s, -c.z * s);
@@ -1975,7 +2023,7 @@
             if (!o.isMesh) return;
             o.castShadow = false;
             const m = o.material.clone();
-            if (m.map) { m.emissiveMap = m.map; m.emissive = new THREE.Color(0xffb070); m.emissiveIntensity = 0.85; }
+            if (m.map) { m.emissiveMap = m.map; m.emissive = new THREE.Color(0xffc080); m.emissiveIntensity = 1.1; }
             m.fog = false; o.material = m; owned.push({ dispose: () => m.dispose() });
           });
           amuletSpin.add(lie);
@@ -1989,13 +2037,19 @@
         const out = new THREE.Mesh(new THREE.CylinderGeometry(60, 60, 60, 40, 1, true, Math.PI / 2 - 1.2, 2.4),
           basic({ map: tex(makeCloudSea(THREE, cnv)), side: THREE.BackSide }));
         out.position.set(0, 1.4, 0); plane.add(out);
-        // the wing, reaching back and out below the window
+        /* the wing, reaching out and swept back below the window. Drawn in the
+           plane of the ground: with rotation.x = -PI/2 a shape point (x, y)
+           lands at world (x, 0, -y), so the outline is written as (x, -z) */
         const wing = new THREE.Shape();
-        wing.moveTo(0, 0); wing.lineTo(16, -5.5); wing.lineTo(16.5, -6.6); wing.lineTo(0.4, -3.4); wing.closePath();
-        const wm = new THREE.Mesh(new THREE.ShapeGeometry(wing), basic({ color: 0x9aa4ae, side: THREE.DoubleSide }));
-        wm.rotation.x = -Math.PI / 2; wm.position.set(1.6, 0.35, 2.2); wm.rotation.z = -1.25; plane.add(wm);
-        const tip = new THREE.Mesh(new THREE.PlaneGeometry(0.4, 1.4), basic({ color: 0x3a5a8a, side: THREE.DoubleSide }));
-        tip.position.set(14.2, 1.0, -12.6); plane.add(tip);
+        wing.moveTo(0.9, 0.6); wing.lineTo(14.0, -6.0); wing.lineTo(14.4, -7.6); wing.lineTo(0.9, -3.6); wing.closePath();
+        const wm = new THREE.Mesh(new THREE.ShapeGeometry(wing), basic({ color: 0x6f757c, side: THREE.DoubleSide }));
+        wm.rotation.x = -Math.PI / 2; wm.position.y = 0.15; plane.add(wm);
+        // a lighter leading edge catching the dawn, and the winglet at the tip
+        const le = new THREE.Shape(); le.moveTo(0.9, 0.6); le.lineTo(14.0, -6.0); le.lineTo(14.0, -6.25); le.lineTo(0.9, 0.3); le.closePath();
+        const lem = new THREE.Mesh(new THREE.ShapeGeometry(le), basic({ color: 0xb8a898, side: THREE.DoubleSide }));
+        lem.rotation.x = -Math.PI / 2; lem.position.y = 0.16; plane.add(lem);
+        const tip = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 1.2), basic({ color: 0x2c3e5c, side: THREE.DoubleSide }));
+        tip.position.set(14.2, 0.75, 6.8); tip.rotation.y = Math.PI / 2; plane.add(tip);
         // the cabin wall around the window: a panel with a rounded hole in it
         const panel = new THREE.Shape();
         panel.moveTo(-1.2, -1.0); panel.lineTo(1.2, -1.0); panel.lineTo(1.2, 1.3); panel.lineTo(-1.2, 1.3); panel.closePath();
@@ -2005,17 +2059,18 @@
         hole.lineTo(rw, rh - r); hole.quadraticCurveTo(rw, rh, rw - r, rh); hole.lineTo(-rw + r, rh);
         hole.quadraticCurveTo(-rw, rh, -rw, rh - r); hole.lineTo(-rw, -rh + r); hole.quadraticCurveTo(-rw, -rh, -rw + r, -rh);
         panel.holes.push(hole);
-        const wall = new THREE.Mesh(new THREE.ShapeGeometry(panel), basic({ color: 0xd9d6cf, side: THREE.DoubleSide }));
+        const wall = new THREE.Mesh(new THREE.ShapeGeometry(panel), basic({ color: 0x4a4744, side: THREE.DoubleSide }));   // a dim cabin: the light is outside
         wall.position.set(0, 1.3, 0); wall.rotation.y = -Math.PI / 2; wall.position.x = 0.62; plane.add(wall);
         // the shade, half up, and the window's own inner frame
-        const shadeP = fplane(0.4, 0.3, 0.6, 1.47, 0, basic({ color: 0xece8e0, side: THREE.DoubleSide }), plane, -Math.PI / 2);
+        const shadeP = fplane(0.4, 0.3, 0.61, 1.52, 0, basic({ color: 0x6a655e, side: THREE.DoubleSide }), plane, -Math.PI / 2);
         void shadeP;
         const frame = new THREE.Mesh(new THREE.TorusGeometry(0.29, 0.03, 6, 28), basic({ color: 0xbdb8ae }));
+        frame.material.color.setHex(0x6e6a63);
         frame.scale.set(0.72, 1.05, 1); frame.rotation.y = Math.PI / 2; frame.position.set(0.6, 1.3, 0); plane.add(frame);
         // the seat in front, the armrest, the overhead's glow
         fbox(0.12, 0.9, 0.55, 0.3, 0.8, -0.72, basic({ color: 0x2a3550 }), plane);
         fbox(0.5, 0.08, 0.08, 0.3, 0.64, 0.35, basic({ color: 0x6a6a6a }), plane);
-        fplane(2.4, 0.3, 0.1, 2.3, 0, basic({ color: 0xf2eee4 }), plane, -Math.PI / 2, 0);
+        fplane(2.4, 0.3, 0.1, 2.3, 0, basic({ color: 0x3c3a37 }), plane, -Math.PI / 2, 0);
       }
       return { root, ord, off, ware, desk, plane, amuletSpin: () => amuletSpin, candleFl: () => candleFl,
                boom: root.userData.boom, P: { ord: ord.position, off: off.position, ware: ware.position, desk: desk.position, plane: plane.position } };
@@ -2410,6 +2465,8 @@
         x.fillStyle = gr; x.fillRect(cx - rr, y - rr, rr * 2, rr * 2);
       }
     }
+    // painted at half the brightness it should read at (ACES at 1.42, v8.9)
+    x.fillStyle = 'rgba(28,20,40,0.42)'; x.fillRect(0, 0, S, S);
     return done(THREE, c, false);
   }
 
@@ -2442,9 +2499,9 @@
     // 2 · THE OFFICE AT NIGHT (9.4 – 19.4)
     const HD = at(P.off, 1.3, 1.0, 0);
     fade(9.6, 10.6, 1, 0);
-    camTo(9.4, 19.4, at(P.off, 5.6, 1.55, 4.4), at(P.off, 2.6, 1.28, 1.7), smoothK);
-    yawTo(9.4, 19.4, faceFrom(P.off.x + 5.6, P.off.z + 4.4, HD.x, HD.z - 0.6), faceFrom(P.off.x + 2.6, P.off.z + 1.7, HD.x, HD.z - 0.2), smoothK);
-    pitchTo(9.4, 19.4, -0.12, -0.22, smoothK);
+    camTo(9.4, 19.4, at(P.off, 4.8, 1.55, 3.9), at(P.off, 1.95, 1.22, 1.15), smoothK);
+    yawTo(9.4, 19.4, faceFrom(P.off.x + 4.8, P.off.z + 3.9, HD.x, HD.z - 0.4), faceFrom(P.off.x + 1.95, P.off.z + 1.15, HD.x - 0.05, HD.z - 0.25), smoothK);
+    pitchTo(9.4, 19.4, -0.10, -0.16, smoothK);
     sfx(9.7, 'officehum', 0.55);
     sfx(10.3, 'keytype', 0.55);
     sfx(11.0, 'z1pro2');                              // 4.13 s → 15.13
@@ -2456,9 +2513,9 @@
     camTo(19.4, 27.0, at(P.ware, 8.0, 2.1, 2.2), at(P.ware, 1.6, 1.8, 2.2), rawK);
     yawTo(19.4, 27.0, faceFrom(P.ware.x + 8, P.ware.z + 2.2, P.ware.x - 8, P.ware.z + 2.0), faceFrom(P.ware.x + 1.6, P.ware.z + 2.2, P.ware.x - 6, P.ware.z + 2.6), rawK);
     pitchTo(19.4, 27.0, 0.05, -0.02, smoothK);
-    camTo(27.0, 33.6, at(P.ware, 1.6, 1.8, 2.2), at(P.ware, 2.3, 1.42, 6.5), smoothK);
-    yawTo(27.0, 33.6, faceFrom(P.ware.x + 1.6, P.ware.z + 2.2, P.ware.x - 6, P.ware.z + 2.6), faceFrom(P.ware.x + 2.3, P.ware.z + 6.5, P.ware.x + 1.6, P.ware.z + 5.3), smoothK);
-    pitchTo(27.0, 33.6, -0.02, -0.52, smoothK);
+    camTo(27.0, 33.6, at(P.ware, 1.6, 1.8, 2.2), at(P.ware, 2.55, 1.30, 6.2), smoothK);
+    yawTo(27.0, 33.6, faceFrom(P.ware.x + 1.6, P.ware.z + 2.2, P.ware.x - 6, P.ware.z + 2.6), faceFrom(P.ware.x + 2.55, P.ware.z + 6.2, P.ware.x + 1.75, P.ware.z + 5.35), smoothK);
+    pitchTo(27.0, 33.6, -0.02, -0.42, smoothK);
     sfx(19.8, 'wareamb', 0.6);
     sfx(20.4, 'taperip', 0.7);
     sfx(20.6, 'z1pro3');                              // 5.88 s → 26.48
@@ -2474,8 +2531,9 @@
     fade(33.8, 35.0, 1, 0);
     sfx(33.9, 'candlelit', 0.7);
     tr(33.6, 42.4, k => {
-      const a = 0.9 - k * 0.9, r = 0.55 - k * 0.17;
-      const x = AM.x + Math.sin(a) * r, z = AM.z + Math.cos(a) * r, y = 1.12 - k * 0.14;
+      // close on it: 32 cm out to 19, the lens coming down toward the cloth
+      const a = 0.9 - k * 0.9, r = 0.30 - k * 0.16;
+      const x = AM.x + Math.sin(a) * r, z = AM.z + Math.cos(a) * r, y = 0.98 - k * 0.1;
       api.yaw.position.set(x, y, z);
       api.yaw.rotation.y = faceFrom(x, z, AM.x, AM.z);
       api.pitch.rotation.x = -Math.atan2(y - AM.y, Math.hypot(x - AM.x, z - AM.z));
@@ -2487,8 +2545,8 @@
     // 5 · THE PLANE WINDOW AT DAWN (42.4 – 50.2)
     fade(42.6, 43.6, 1, 0);
     camTo(42.4, 50.2, at(P.plane, 0.05, 1.28, 0.26), at(P.plane, 0.22, 1.31, 0.12), smoothK);
-    yawTo(42.4, 50.2, faceFrom(P.plane.x, P.plane.z + 0.26, P.plane.x + 3, P.plane.z - 0.9), faceFrom(P.plane.x + 0.22, P.plane.z + 0.12, P.plane.x + 3, P.plane.z - 0.4), smoothK);
-    pitchTo(42.4, 50.2, -0.14, -0.08, smoothK);
+    yawTo(42.4, 50.2, faceFrom(P.plane.x, P.plane.z + 0.26, P.plane.x + 3, P.plane.z - 0.2), faceFrom(P.plane.x + 0.22, P.plane.z + 0.12, P.plane.x + 3, P.plane.z + 0.3), smoothK);
+    pitchTo(42.4, 50.2, -0.30, -0.22, smoothK);
     tr(42.4, 50.2, k => { api.yaw.position.y += Math.sin(k * 40) * 0.0012; });
     sfx(42.5, 'cabinhum', 0.6);
     sfx(43.3, 'seatchime', 0.5);
@@ -2530,11 +2588,16 @@
     pitchTo(T, T + 0.8, s.pitchX, -0.55, smoothK);
     pitchTo(T + 0.8, T + 1.7, -0.55, 0.0, smoothK);
     sfx(T + 0.3, 'e3bell', 0.4);
-    // he stands, and turns to the steps
-    camTo(T + 1.9, T + 3.1, p0, { x: p0.x - 0.2, y: 1.62, z: p0.z + 0.3 }, smoothK);
+    /* he stands — ON the dais, so the eye is the dais's height over a
+       standing man's — turns to the steps, and steps down off the front edge
+       to the sala floor before he walks */
+    const up = { x: p0.x - 0.15, y: stage.DAIS_TOP + 1.58, z: p0.z + 0.25 };
+    const down = { x: p0.x - 0.35, y: 1.62, z: stage.DAIS.z + stage.DAIS.d / 2 + 0.55 };
+    camTo(T + 1.9, T + 3.1, p0, up, smoothK);
     yawTo(T + 1.9, T + 3.4, s.yawRot, faceFrom(p0.x, p0.z, top.x, top.z), smoothK);
     sfx(T + 2.0, 'barestep', 0.5);
-    camTo(T + 3.1, T + 8.4, { x: p0.x - 0.2, y: 1.62, z: p0.z + 0.3 }, top, rawK);
+    camTo(T + 3.1, T + 3.9, up, down, smoothK);
+    camTo(T + 3.9, T + 8.4, down, top, rawK);
     sfx(T + 3.5, 'barestep', 0.45); sfx(T + 4.3, 'barestep', 0.45); sfx(T + 5.1, 'barestep', 0.45);
     sfx(T + 5.9, 'barestep', 0.45); sfx(T + 6.7, 'barestep', 0.45); sfx(T + 7.5, 'barestep', 0.45);
     // down the steps to the rack, and his shoes
