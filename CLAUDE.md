@@ -4218,7 +4218,9 @@ What the baseline contains, by release:
   version rose under the walkway roof (y 4.2–4.4, z 5.5–8.3) and its edge
   filled the right of the frame; the lens now stays at z ≤ 3.6 and moves away
   before it tilts. A 62.2 / 49.9 / 30.5 / 45.2 s. No word moved; sheet v74
-  stands.
+  stands. Harnesses chapter, text, cine, menu, restart, resume, title, csp,
+  fixture, hosted green (chaptertest's stub learned `sfxFade`). Deploy
+  `6abc067496cf642545dd29fe`, byte-verified (index.html and all 181 build files).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
