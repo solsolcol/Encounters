@@ -305,7 +305,7 @@ Object.assign(window.__TEXT__, {
   'ep2.label':           'Episode 2',
   'ep2.title':           'The 3 AM Shower & The Ghost Cyclist',
   'ep3.label':           'Episode 3',
-  'ep3.title':           'The Room That Didn\'t Want Us There',
+  'ep3.title':           'How It All Began',                 // v16.0: Chad's title — Season 1 · 6–10 condensed
   'ep4.label':           'Episode 4',
   'ep4.title':           'The Love Spell That Followed Me Home',
   'ep5.label':           'Episode 5',

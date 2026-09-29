@@ -98,7 +98,7 @@ _engine_src = re.sub(r"packWarm\(\[[^\]]*\]", "packWarm([", src[:_ta] + src[_tb:
 # faint, the lost line) is named elsewhere in main.js and stays shared. Each
 # table must be FOUND, so renaming one breaks the build instead of quietly
 # moving every line back.
-for _tbl in ('JAMES_TAKES', 'TEEN_TAKES', 'CAST_TAKES', 'WHISPER_TAKES'):
+for _tbl in ('JAMES_TAKES', 'TEEN_TAKES', 'ADULT_TAKES', 'CAST_TAKES', 'WHISPER_TAKES'):   # v16.0: the man's
     _engine_src, _n = re.subn(r"const %s = new Set\(\[[^\]]*\]\)" % _tbl,
                               "const %s = new Set([])" % _tbl, _engine_src, flags=re.S)
     assert _n == 1, f'{_tbl} not found in main.js (build.py blanks it out of the engine scan)'

@@ -3803,7 +3803,10 @@ function evFrame(dt, dLookX, dLookY) {
       if (o.tick !== false && !e.ticked) e.ticked = [];
       if (o.tick !== false && e.t >= c && !e.ticked[e.beat]) {
         e.ticked[e.beat] = 1;
-        snd('beattick', 0.5);
+        /* v16.0: a chapter may name the beat's own sound (episode 3 chapter
+           1's Sak Yant rod: `tick: 'yantap'`); `true`, the default, keeps the
+           metronome every heartbeat shipped with. The chapter warms its own. */
+        snd(typeof o.tick === 'string' ? o.tick : 'beattick', typeof o.tick === 'string' ? (o.tickVol ?? 0.8) : 0.5);
         haptic(12);
       }
       if (e.t > c + o.win) {
@@ -6049,6 +6052,16 @@ const TEEN_TAKES = new Set([
   'n5pro1', 'n5pro2', 'n5pro3', 'n5pro4', 'n5hi', 'n5ord',
   'n5askA', 'n5askB', 'n5askC', 'n5askD',
   'n5A', 'n5B', 'n5C', 'n5D', 'n5close']);
+/* v16.0: EPISODE 3 — THE MAN. Chad: "Change voice to an adult male voice
+   now." He rides the SAME bus as the boy and the recruit (the bus is a
+   dynamics tool, not a voice-specific one); a set of his own because
+   chaptertest holds each set to its own speaker (`jamesAdult`), both ways.
+   His files are `z*` — episode 3's chapters are z1..z5. */
+const ADULT_TAKES = new Set([
+  'z1pro1', 'z1pro2', 'z1pro3', 'z1pro4', 'z1pro5', 'z1pro6',
+  'z1arrive', 'z1wai', 'z1wait', 'z1warm', 'z1close', 'z1next',
+  'z1askA', 'z1askB', 'z1askC', 'z1askD', 'z1A', 'z1B',
+  'z1C', 'z1D']);
 /* The rest of the cast. They share `voiceOut` and the duck, but not the
    boost — see voiceStage() above. */
 const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
@@ -6088,8 +6101,11 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
   /* v14.0: chapter 5 — the encik out of Hawk Company, and the storeman */
   'e5hi', 'e5ord', 'e5turn', 'e5A1', 'e5A2', 'e5A3', 'e5A4', 'e5A5',
   'e5B1', 'e5B2', 'e5B3', 'e5B4', 'e5C', 'e5D1', 'e5D2', 'e5D3',
-  'c5arms', 'c5store', 'c5form']);
-const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || CAST_TAKES.has(name);
+  'c5arms', 'c5store', 'c5form',
+  /* v16.0 · episode 3 chapter 1: the Ajarn (Toto) and the stall auntie (Anna) */
+  'aj1next', 'aj1sit', 'aj1breathe', 'aj1katha', 'aj1done', 'aj1ask',
+  'aj1A', 'aj1B', 'aj1C', 'aj1D1', 'aj1D2', 'au1hi', 'au1sell', 'au1shoes']);
+const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || ADULT_TAKES.has(name) || CAST_TAKES.has(name);
 /* v6.9: his WHISPERS go round the bus. Chad wanted the three pick-up
    reactions "almost whispering to himself" and they were re-voiced as
    whispers — but a whisper pushed through a 4:1 compressor with +10.9 dB
@@ -6118,7 +6134,7 @@ function whisperStage() {
 // where a sound belongs: his bus, his whispers' stage, the cast's stage, or the ducked pack
 function outFor(name) {
   if (WHISPER_TAKES.has(name)) return whisperStage() || packGain;
-  if (JAMES_TAKES.has(name) || TEEN_TAKES.has(name)) return voiceBus() || packGain;
+  if (JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || ADULT_TAKES.has(name)) return voiceBus() || packGain;
   if (CAST_TAKES.has(name)) return voiceStage() || packGain;
   return packGain;
 }
@@ -6468,6 +6484,11 @@ function scaredGasp() {
 }
 const STEP_TAKES = ['step1', 'step2', 'step3', 'step4'];
 function stepSnd(vol) {
+  /* v16.0: a stage may name its own footfall (episode 3 chapter 1: BAREFOOT
+     on the sala's planks, `stepSound()`); null or absent keeps the shod four.
+     Every chapter before it names none, so none of them changes. */
+  const own = stage && stage.stepSound && stage.stepSound();
+  if (own && sndBuf(own)) { snd(own, vol, 0.88 + Math.random() * 0.22); return; }
   const n = STEP_TAKES[stepIdx++ % STEP_TAKES.length];
   snd(sndBuf(n) ? n : STEP_TAKES[0], vol, 0.94 + Math.random() * 0.12);
 }
@@ -8949,7 +8970,25 @@ const STING_SAMPLE = {
      launch was never shown or heard, only the pop and the burn), the sting on
      the frame the cyclist is SEEN (item 20), and the three shouts (item 22) */
   flarelaunch: ['flarelaunch', 1], stingcyc: ['stingcyc', 1],
-  b4cyc: ['b4cyc', 1], k4cyc: ['k4cyc', 1], r4cyc: ['r4cyc', 1]
+  b4cyc: ['b4cyc', 1], k4cyc: ['k4cyc', 1], r4cyc: ['r4cyc', 1],
+  /* v16.0 · EPISODE 3 · CHAPTER 1 · THE LUCK I WENT LOOKING FOR — his adult
+     voice (Louis), the Ajarn, the stall auntie, the rod, the wat, the film's
+     five memories, and the three music cues (e3film, e3wait, e3close) */
+  z1pro1: ['z1pro1', 1], z1pro2: ['z1pro2', 1], z1pro3: ['z1pro3', 1], z1pro4: ['z1pro4', 1],
+  z1pro5: ['z1pro5', 1], z1pro6: ['z1pro6', 1], z1arrive: ['z1arrive', 1], z1wai: ['z1wai', 1],
+  z1wait: ['z1wait', 1], z1warm: ['z1warm', 1], z1close: ['z1close', 1], z1next: ['z1next', 1],
+  z1askA: ['z1askA', 1], z1askB: ['z1askB', 1], z1askC: ['z1askC', 1], z1askD: ['z1askD', 1],
+  z1A: ['z1A', 1], z1B: ['z1B', 1], z1C: ['z1C', 1], z1D: ['z1D', 1],
+  aj1next: ['aj1next', 1], aj1sit: ['aj1sit', 1], aj1breathe: ['aj1breathe', 1], aj1katha: ['aj1katha', 1],
+  aj1done: ['aj1done', 1], aj1ask: ['aj1ask', 1], aj1A: ['aj1A', 1], aj1B: ['aj1B', 1],
+  aj1C: ['aj1C', 1], aj1D1: ['aj1D1', 1], aj1D2: ['aj1D2', 1], au1hi: ['au1hi', 1],
+  au1sell: ['au1sell', 1], au1shoes: ['au1shoes', 1],
+  yantap: ['yantap', 1], yantblow: ['yantblow', 1], yantwarm: ['yantwarm', 1], e3bell: ['e3bell', 1],
+  e3gong: ['e3gong', 1], boomgate: ['boomgate', 1], keytype: ['keytype', 1], taperip: ['taperip', 1],
+  orderchime: ['orderchime', 1], seatchime: ['seatchime', 1], candlelit: ['candlelit', 1], shoesoff: ['shoesoff', 1],
+  barestep: ['barestep', 1], trayset: ['trayset', 1], incenselit: ['incenselit', 1], coins: ['coins', 1],
+  watamb: ['watamb', 1], e3chant: ['e3chant', 1], officehum: ['officehum', 1], wareamb: ['wareamb', 1],
+  cabinhum: ['cabinhum', 1], e3film: ['e3film', 1], e3wait: ['e3wait', 1], e3close: ['e3close', 1]
 };
 /* Which kinds the synth below can actually fake. Everything else in
    STING_SAMPLE is sample-only: if its buffer is not decoded yet it stays

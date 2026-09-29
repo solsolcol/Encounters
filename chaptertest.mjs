@@ -307,6 +307,20 @@ if (VOICE && Array.isArray(VOICE.LINES)) {
     }
     console.log(`his teen bus: ${inEngine.size} takes, matching the registry`);
   }
+  /* v16.0: and the man, episode 3 on — the same bus, his own set (`jamesAdult`) */
+  const adultLit = mainSrc.match(/const ADULT_TAKES = new Set\(\[([\s\S]*?)\]\)/);
+  if (!adultLit) errs.push('voice: main.js has no ADULT_TAKES set');
+  else {
+    const inEngine = new Set([...adultLit[1].matchAll(/'([^']+)'/g)].map(m => m[1]));
+    const inRegistry = new Set(VOICE.LINES.filter(l => l.who === 'jamesAdult').map(l => l.id));
+    for (const id of inRegistry) {
+      if (!inEngine.has(id)) errs.push(`voice: '${id}' is jamesAdult in the registry but missing from ADULT_TAKES in main.js`);
+    }
+    for (const id of inEngine) {
+      if (!inRegistry.has(id)) errs.push(`voice: ADULT_TAKES names '${id}', which is not a jamesAdult row in src/voicelines.js`);
+    }
+    console.log(`his adult bus: ${inEngine.size} takes, matching the registry`);
+  }
   console.log(`voice lines: ${VOICE.LINES.length} rows, ${Object.keys(VOICE.SPEAKERS || {}).length} speakers`);
 } else if (!errs.some(e => e.startsWith('ERR src/voicelines.js'))) {
   errs.push('ERR src/voicelines.js did not register window.__VOICE__');

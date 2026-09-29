@@ -134,7 +134,18 @@
        middle-aged Singaporean man", which is exactly what a camp storeman is.
        A player last heard that voice three chapters ago, at a breakfast table. */
     clerk: { name: "The storeman and the company clerk (episode 2, chapter 5)", voice: "XxnXw151E3nb1V85MRlS", model: "eleven_v3",
-              note: "David again - recruit4's voice, reused rather than cast, for three counter lines. Flat cast bus, levelled by RMS to -16 dBFS." }
+              note: "David again - recruit4's voice, reused rather than cast, for three counter lines. Flat cast bus, levelled by RMS to -16 dBFS." },
+    /* v16.0 — EPISODE 3, "How It All Began". Chad: "Change voice to an adult
+       male voice now." `jamesAdult` is the same character grown up; his files
+       are `z*`. Picked by measurement from four voices never heard in episode
+       2 (docs/V16.0-E3C1-PLAN.md §9); previews went to Chad, and his pick
+       overrides. */
+    jamesAdult: { name: "James, grown (episode 3)", voice: "rOVKXrU0YcQMzmTNwaDq", model: "eleven_v3",
+              note: "Louis — 'Asian, Natural Narrator', Singaporean, middle-aged. Aaron's prompt rules: the registry's words exactly, one tag naming an EMOTION, never a volume." },
+    ajarn: { name: "The Ajarn (episode 3, chapter 1)", voice: "RJIgSLB4fDJZtYZRUxqo", model: "eleven_v3",
+              note: "Toto — 'Warm Thai Storyteller', natural English with a Thai accent, aged by the prompt's tag ([old man, calm, Thai accent]). Thin English, on purpose: it is his second language." },
+    auntie2: { name: "The offering-stall auntie (episode 3, chapter 1)", voice: "brM9iIbwDREZaWL8luun", model: "eleven_v3",
+              note: "Anna — a Thai woman's voice, middle-aged by the tag. Three lines." },
   };
 
   const LINES = [
@@ -805,7 +816,75 @@
     { id: "n5D", who: "jamesTeen", ch: "e2c5", where: "Under outcome card D",
       text: "I wanted a reason I was owed. He gave me one. It didn't help.", secs: 4.68 },
     { id: "n5close", who: "jamesTeen", ch: "e2c5", where: "The closing narration, to camera, in all four outcomes",
-      text: "The departed stay where their attachments are. So do the living. His was that shower. Mine was the question. When I put it down, so did he.", secs: 11.47 }
+      text: "The departed stay where their attachments are. So do the living. His was that shower. Mine was the question. When I put it down, so did he.", secs: 11.47 },
+    { id: "z1pro1", who: "jamesAdult", ch: "e3c1", where: "Opening film: the camp gate, the day he left NS",
+      text: "[reflective] After National Service, I did what everyone around me did. I got a job.", secs: 4.28 },
+    { id: "z1pro2", who: "jamesAdult", ch: "e3c1", where: "Opening film: the office at night",
+      text: "Software engineer. Computers, programming, building a career.", secs: 4.13 },
+    { id: "z1pro3", who: "jamesAdult", ch: "e3c1", where: "Opening film: the warehouse",
+      text: "Then a side business, selling in-car cameras. It grew... and I left engineering to run it full time.", secs: 5.88 },
+    { id: "z1pro4", who: "jamesAdult", ch: "e3c1", where: "Opening film: the warehouse, the orders coming in",
+      text: "And like every businessman, I wanted it to do better. More opportunities. Better luck.", secs: 6.27 },
+    { id: "z1pro5", who: "jamesAdult", ch: "e3c1", where: "Opening film: the desk and the amulet",
+      text: "That question led me to Thai spirituality. Amulets. Blessings.", secs: 6.43 },
+    { id: "z1pro6", who: "jamesAdult", ch: "e3c1", where: "Opening film: the plane window at dawn",
+      text: "And then, to a temple in Thailand... for something more permanent.", secs: 5.15 },
+    { id: "z1arrive", who: "jamesAdult", ch: "e3c1", where: "Seconds after play begins, inside the gate",
+      text: "Five in the morning, and the temple was already awake.", secs: 3.79 },
+    { id: "z1wai", who: "jamesAdult", ch: "e3c1", where: "Kneeling at the altar",
+      text: "[a little sheepish] I didn't really know what I was doing. I copied the man beside me.", secs: 4.13 },
+    { id: "z1wait", who: "jamesAdult", ch: "e3c1", where: "Sitting on the mat, waiting his turn",
+      text: "I told myself it was for the business. Nothing more.", secs: 3.00 },
+    { id: "z1warm", who: "jamesAdult", ch: "e3c1", where: "The yant is finished, and it warms",
+      text: "[unsettled] It went warm. Not the sting... something under it.", secs: 4.60 },
+    { id: "z1askA", who: "jamesAdult", ch: "e3c1", where: "Scene A: what he asks of it",
+      text: "Luck. For my business.", secs: 2.59 },
+    { id: "z1askB", who: "jamesAdult", ch: "e3c1", where: "Scene B: what he asks of it",
+      text: "[uneasy] Protection. From whatever's out there.", secs: 3.40 },
+    { id: "z1askC", who: "jamesAdult", ch: "e3c1", where: "Scene C: what he asks of it",
+      text: "[eager] Next time... give me the strongest one you have.", secs: 4.28 },
+    { id: "z1askD", who: "jamesAdult", ch: "e3c1", where: "Scene D: what he asks of it",
+      text: "[sincere] What does it ask of me?", secs: 3.08 },
+    { id: "z1close", who: "jamesAdult", ch: "e3c1", where: "The closing narration, walking out, in all four outcomes",
+      text: "[reflective] Software engineer. Business owner. Amulets. Blessings. Sak Yant. Looking back now, I can see how quietly one step led to the next.", secs: 14.11 },
+    { id: "z1next", who: "jamesAdult", ch: "e3c1", where: "Over the black at the end of all four outcomes",
+      text: "But before any of that meant anything... something else had to happen first.", secs: 4.99 },
+    { id: "z1A", who: "jamesAdult", ch: "e3c1", where: "Under outcome card A",
+      text: "I asked for luck. He told me what it would cost.", secs: 3.32 },
+    { id: "z1B", who: "jamesAdult", ch: "e3c1", where: "Under outcome card B",
+      text: "I asked for protection. He pointed at my own chest.", secs: 4.21 },
+    { id: "z1C", who: "jamesAdult", ch: "e3c1", where: "Under outcome card C",
+      text: "I asked for more. He showed me I hadn't understood the first.", secs: 4.83 },
+    { id: "z1D", who: "jamesAdult", ch: "e3c1", where: "Under outcome card D",
+      text: "I asked what it wanted from me. That was the right question.", secs: 4.68 },
+    { id: "aj1next", who: "ajarn", ch: "e3c1", where: "The man before you is done",
+      text: "[old man, calm, Thai accent] Next. You. Come.", secs: 1.72 },
+    { id: "aj1sit", who: "ajarn", ch: "e3c1", where: "You reach the stool",
+      text: "[old man, calm, Thai accent] Sit here. Back to me.", secs: 1.57 },
+    { id: "aj1breathe", who: "ajarn", ch: "e3c1", where: "Before the first strike",
+      text: "[old man, calm, Thai accent] When the needle go in, you breathe out. Don't move.", secs: 3.63 },
+    { id: "aj1katha", who: "ajarn", ch: "e3c1", where: "Murmured under his breath while he works",
+      text: "[murmuring a chant under his breath] Namo tassa bhagavato arahato sammasambuddhassa. Namo tassa bhagavato arahato sammasambuddhassa.", secs: 10.61 },
+    { id: "aj1done", who: "ajarn", ch: "e3c1", where: "The last strike",
+      text: "[old man, calm, Thai accent] Finish. Turn around.", secs: 1.65 },
+    { id: "aj1ask", who: "ajarn", ch: "e3c1", where: "The question: the decision opens",
+      text: "[old man, slow, Thai accent] Now it is on you. What you ask of it?", secs: 3.08 },
+    { id: "aj1A", who: "ajarn", ch: "e3c1", where: "Scene A: his answer to luck",
+      text: "[old man, amused, Thai accent] Luck come, luck go. Business is business. The yant is not for money. You keep five precepts... it will look after you.", secs: 8.20 },
+    { id: "aj1B", who: "ajarn", ch: "e3c1", where: "Scene B: his answer to protection",
+      text: "[old man, gentle, Thai accent] Out there? What you afraid of, you bring with you. Protection start here.", secs: 4.99 },
+    { id: "aj1C", who: "ajarn", ch: "e3c1", where: "Scene C: his answer to the strongest",
+      text: "[old man, stern, Thai accent] Strong for what? Yant is not a weapon. The man who want the strongest... cannot keep even the first one.", secs: 6.43 },
+    { id: "aj1D1", who: "ajarn", ch: "e3c1", where: "Scene D: the long look, and then",
+      text: "[old man, pleased, Thai accent] Good. First one who ask me this today.", secs: 2.93 },
+    { id: "aj1D2", who: "ajarn", ch: "e3c1", where: "Scene D: what it asks of him",
+      text: "[old man, slow, Thai accent] No lying. No stealing. No hurting people. No drunk. Do good. Then later... it will ask more of you. You will see.", secs: 9.33 },
+    { id: "au1hi", who: "auntie2", ch: "e3c1", where: "Nearing the offering stall",
+      text: "[friendly middle-aged woman] Sawasdee ka! You come see Ajarn, right?", secs: 3.97 },
+    { id: "au1sell", who: "auntie2", ch: "e3c1", where: "Buying the offering set",
+      text: "[friendly middle-aged woman] This one for Ajarn. Flower, candle, incense. Put some money inside the envelope, okay?", secs: 8.59 },
+    { id: "au1shoes", who: "auntie2", ch: "e3c1", where: "If he walks into the sala in his shoes",
+      text: "[calling out, scolding a little] Eh! Shoes! Take off your shoes first!", secs: 4.36 }
   ];
 
   // What a chapter key means on the sheet.
@@ -817,7 +896,8 @@
     e2c2: "Episode 2 · Chapter 2 · Nobody There",
     e2c3: "Episode 2 · Chapter 3 · The Pressure",
     e2c4: "Episode 2 · Chapter 4 · The Cyclist",
-    e2c5: "Episode 2 · Chapter 5 · The Last Question"
+    e2c5: "Episode 2 · Chapter 5 · The Last Question",
+    e3c1: "Episode 3 · Chapter 1 · The Luck I Went Looking For"
   };
 
   window.__VOICE__ = { SPEAKERS, LINES, CHAPTERS };

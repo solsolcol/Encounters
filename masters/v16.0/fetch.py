@@ -5,7 +5,7 @@ sessions.json maps a take name -> [session ids]; each session may hold several
 generations, saved as raw/<name>_<a|b|c|d>.<ext> in the order they appear.
 Usage: python3 fetch.py [name ...]   (default: every name not yet on disk)"""
 import json, glob, os, re, subprocess, sys
-T = sorted(glob.glob('/root/.claude/projects/-home-user-Encounters/*.jsonl'), key=os.path.getmtime)
+T = sorted(glob.glob('/root/.claude/projects/-home-user-Encounters/*.jsonl') + glob.glob('/root/.claude/projects/-home-user-Encounters/*/tool-results/*.txt'), key=os.path.getmtime)
 urls = {}   # session -> {gen: url}
 pat = re.compile(r'https://storage\.googleapis\.com/[^"\\\s]*?/content_generation/([A-Za-z0-9]+)/([A-Za-z0-9]+)/content\.(mp3|wav|mp4)\?[^"\\\s]*')
 for f in T:
