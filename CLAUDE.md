@@ -4181,6 +4181,44 @@ What the baseline contains, by release:
   being wrong). Full suite 24/24 in 2386 s. Deploy `6ab924d584f6d6ebb5619ecf`,
   byte-verified (index.html and all 181 build files). No word moved; sheet
   v74 stands. docs/V15.2-PLAN.md is the build's memory.
+- **v15.3** THE WAIT SAYS SO, AND THE LAST QUESTION BREATHES — Chad's two
+  notes on v15.2. THE WAIT: *"a long black screen delay (with the control
+  instructions text present at the bottom) for quite some time even before
+  the loading text appears ... The loading text should always appear and be
+  present whenever the player waits"*. Traced: the selector and Continue into
+  the next chapter both go through `restart()`, which puts the walking hint
+  ("W A S D to walk") up for seven seconds, and then `enterWorld()` raised the
+  film's black and waited for the chapter's pack and its decodes with no word
+  on screen — the curtain's "Loading…" came only once `whenWorldReady` had run
+  half a second, and read 99 % while nothing was counted yet. Now the hint
+  goes with the black, the word is on it from the first frame (`worldWord`),
+  it stays through the film's own last wait and goes on the frame the film
+  starts, and it has no percentage until there is something counted. AND THE
+  SWAP GOES DARK FIRST (`goDark`): picking a chapter or Continue into the next
+  one fades a black cover (`#swapCover`, z 30, over every card) up with the
+  word at #worldLoad's exact place, draws two frames at full black, and only
+  then runs `setChapter()`'s synchronous rebuild — which used to freeze the
+  sealed card or the selector on screen for a second or more on a phone; the
+  chapter's pack is asked for at the press, so it downloads under the fade.
+  The film's black is already underneath when the cover goes, so it goes in
+  one frame with nothing changing. A second press during the fade is ignored.
+  THE ENDINGS (episode 2 chapter 5): *"the ending of encik walking away cuts
+  to black too suddenly while the closing voiceline is still talking ... bleed
+  into the outcomes card"*. `n5close` (11.47 s) was cued under the fade on
+  purpose (v14.0), so it ran on under the card and held the card's own line
+  back until it finished. All four endings now: he walks 8.6 m instead of 3
+  (same speed, same take; the line along the apron measured clear to a post
+  at x 16.9), the lens pulls back, rises to 3.2 m, turns 30° to follow him
+  away from the stores block and tilts up 0.62 rad onto the blocks, the flag
+  and the sky (`craneOut`), `n5close` is said INSIDE the scene, the theme runs
+  at full once his voice releases the duck, and the picture and the music go
+  down together over 2.8 s (`sfxFade`, a new cutscene verb: a cue's live
+  sources ramp to silence with the black — unused by every other chapter).
+  Photographed on desktop and phone, from both sides of him: the first
+  version rose under the walkway roof (y 4.2–4.4, z 5.5–8.3) and its edge
+  filled the right of the frame; the lens now stays at z ≤ 3.6 and moves away
+  before it tilts. A 62.2 / 49.9 / 30.5 / 45.2 s. No word moved; sheet v74
+  stands.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so

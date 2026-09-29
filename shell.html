@@ -1140,6 +1140,18 @@ body.invopen .soundBtn{display:none}
    every card read as glass, not just the one scene that ended clear. */
 #cineFade.clearing{transition:opacity .42s var(--ease);opacity:0}
 #worldLoad{position:fixed;left:0;right:0;bottom:max(12vh,calc(env(safe-area-inset-bottom) + 64px));text-align:center;z-index:5;opacity:.6;pointer-events:none}   /* v14.16 */
+/* v15.3: THE CHANGE OF CHAPTER GOES DARK FIRST. Picking a chapter, or
+   Continue into the next one, rebuilds the whole world in one go — on a phone
+   that is a second or more with no frame drawn, and it used to happen with the
+   card or the selector frozen on screen. This black comes up over EVERYTHING
+   (the cards sit at z5–13), carrying the loading word at exactly #worldLoad's
+   place, and the rebuild runs only once it is fully up; the black the film
+   waits on is then already there underneath, so it is taken away in one frame
+   with nothing to see change. */
+#swapCover{position:fixed;inset:0;background:#000;z-index:30;opacity:0;
+  transition:opacity .45s var(--ease);pointer-events:auto}
+#swapCover.on{opacity:1}
+#swapLoad{position:absolute;left:0;right:0;bottom:max(12vh,calc(env(safe-area-inset-bottom) + 64px));text-align:center;opacity:.6}
 .cineBar{position:fixed;left:0;right:0;height:11vh;background:#000;z-index:4;
   transition:transform .55s var(--ease);pointer-events:none}
 #barTop{top:0;transform:translateY(-101%)}
@@ -1800,6 +1812,7 @@ body.hasTorch.unlockopen .torchBtn{display:none}
 <div id="cineFade"></div>
 <!-- v14.16: the loading word over the black before an opening film (the chapter card is hidden there) -->
 <span class="stencil hide" id="worldLoad" data-t="chapter.loading">Loading&hellip;</span>
+<div id="swapCover" class="hide"><span class="stencil" id="swapLoad" data-t="chapter.loading">Loading&hellip;</span></div>
 <div id="barTop" class="cineBar"></div>
 <div id="barBot" class="cineBar"></div>
 <button id="cineSkip" class="hide" type="button" data-t="cine.skip">Skip &#9656;</button>

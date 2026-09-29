@@ -1590,9 +1590,11 @@
      and no ghost anywhere: the figure that ran through chapters 1–4 is simply
      not in this chapter, and nothing says so.
 
-     `n5close` — the closing teaching of the whole episode — is cued under the
-     fade in all four, so it carries on UNDER THE OUTCOME CARD (e2c4's `n4dawn`
-     shape) instead of adding eleven seconds to every scene. */
+     `n5close` — the closing teaching of the whole episode — was cued under the
+     fade in all four, so it carried on UNDER THE OUTCOME CARD (e2c4's `n4dawn`
+     shape) instead of adding eleven seconds to every scene. v15.3 gave the
+     eleven seconds back at Chad's word: it now ends inside the scene, over
+     the sky (craneOut), and the card's own line follows with nothing under it. */
 
   const P = (s) => ({ x: s.yawPos.x, y: s.yawPos.y, z: s.yawPos.z });
 
@@ -1648,7 +1650,7 @@
     tr(0, 0.6, k => { g.rotation.y = ry0 + d * k; }, smoothK);
     return ry1;
   }
-  function encGo(stage, api, at, camX, ryFrom) {
+  function encGo(stage, api, at, camX, ryFrom, metres = 3.0, secs = 2.6) {
     const { step, tr, rawK, smoothK } = api;
     const E = stage.ENC;
     const dir = camX <= E.x ? 1 : -1;
@@ -1658,13 +1660,52 @@
     while (d < -Math.PI) d += Math.PI * 2;
     step(at, () => { stage.encik.play('Walking', 0.85, 0.30); });
     tr(at, at + 0.70, k => { stage.encik.group.rotation.y = ry0 + d * k; }, smoothK);
-    tr(at + 0.70, at + 3.30, k => { stage.encik.group.position.x = E.x + dir * 3.0 * k; }, rawK);
+    tr(at + 0.70, at + 0.70 + secs, k => { stage.encik.group.position.x = E.x + dir * metres * k; }, rawK);
+    /* v15.3: a long walk ends on his idle — by then the lens is on the sky
+       (craneOut), so this is never seen; it only stops a walk take treading
+       on the spot */
+    if (metres > 3.0) step(at + 0.70 + secs + 0.1, () => stage.encik.play('Idle_9', 1, 0.40));
+  }
+  /* v15.3 · THE ENDINGS BREATHE (Chad: "the ending of encik walking away cuts
+     to black too suddenly while the closing voiceline is still talking. This
+     causes it to bleed into the outcomes card ... extending the encik walking
+     away duration, while camera slowly zooms out, looks up to the environment
+     and sky in a cinematic way, with the nice closing music ... more
+     prominent, and the voiceline having more time to complete within the
+     scene, before slowly fading into black"). He walks 8.6 m instead of 3 —
+     the same 1.15 m/s on the same take, so his stride is unchanged — along a
+     line measured clear from x -6 to 16.9 at his z (the nearest thing is a
+     post at x 16.9; the walk ends at 15.6 or -1.6). The lens pulls back 1.8 m
+     and rises to 3.2 m, never past z 3.6 (the walkway roof) nor out of the
+     apron, turns to follow him, and tilts up 0.62 rad onto the blocks and the
+     sky: at that pitch the frame's lower edge is the horizon, so from 3.2 m up he
+     has left the bottom of the picture before his walk ends — on a phone too,
+     since the 72-degree lens is vertical and a portrait phone crops only its
+     sides. `n5close` is said INSIDE the scene now, the theme is up at full
+     once his voice lets the duck go, and the black comes last, slowly. */
+  function craneOut(api, E, from, t0, T, camX, yawFrom) {
+    const { camTo, pitchTo, yawTo, faceFrom, smoothK } = api;
+    const dx = from.x - E.x, dz = from.z - E.z, L = Math.hypot(dx, dz) || 1;
+    /* never nearer the stores block than z 3.6: its walkway roof (y 4.2-4.4,
+       z 5.5-8.3) runs the whole length of the apron beside the lens, and a
+       rising camera close under it filled the right of the frame with its
+       edge (photographed, first version) */
+    const to = { x: Math.max(-12.4, Math.min(12.4, from.x + dx / L * 1.8)), y: 3.2,
+                 z: Math.max(-6.6, Math.min(3.6, from.z + dz / L * 1.8)) };
+    camTo(t0, T + 7.5, from, to, smoothK);      // away from the roof first ...
+    /* and it turns to follow him down the apron, 30 degrees off his line
+       toward the open side, so the block and its roof go out past the frame's
+       edge as it looks up */
+    const dir = camX <= E.x ? 1 : -1;
+    const yawEnd = faceFrom(to.x, to.z, to.x + dir * 8.66, to.z - 5.0);
+    yawTo(T + 0.8, T + 8.4, yawFrom, yawEnd, smoothK);
+    pitchTo(T + 2.8, T + 8.8, 0.03, 0.62, smoothK);   // ... then up
   }
 
   /* A · THE STORY (good) — the recruit in bed one, and the line that is the
      episode's teaching: the departed stay where their attachments are. */
   function scStory(c, s, api) {
-    const { step, sfx, fade, camTo, yawTo, pitchTo, faceFrom, smoothK, stage, handsRoot } = api;
+    const { step, sfx, sfxFade, fade, camTo, yawTo, pitchTo, faceFrom, smoothK, stage, handsRoot } = api;
     const P0 = P(s), E = stage.ENC;
     const Y_E = faceFrom(P0.x, P0.z, E.x, E.z);
     const RY = encFace(stage, api, P0);
@@ -1691,19 +1732,21 @@
        over to `n5close` and the card. Measured flat at about -24 dBFS RMS
        for its first 36 s, so there is no swell to miss and nothing to
        re-cut; at 0.75 under the v5.27 duck it sits ~17 dB below the cast. */
-    sfx(34.20, 'e5theme', 0.75);
+    sfx(34.20, 'e5theme', 1.0);
     sfx(38.10, 'e5A5'); encTalk(stage, step, 38.10, 5.56, stage.ENC_TALK[0]); // → 43.66
-    encGo(stage, api, 44.2, P0.x, RY);
-    sfx(45.10, 'n5close');                                      // runs on under the card
-    fade(44.8, 47.4, 0, 1);
-    step(48.0, () => { handsRoot.visible = true; });
+    encGo(stage, api, 44.2, P0.x, RY, 8.6, 7.5);
+    craneOut(api, E, shot(P0, E, WIDE, 1.66), 44.5, 44.2, P0.x, Y_E);
+    sfx(45.00, 'n5close');                                      // v15.3: → 56.47, inside the scene
+    fade(59.0, 61.8, 0, 1);                                     // the theme alone for 2.5 s, then slowly black
+    sfxFade(59.0, 61.8, 'e5theme');                             // and the music goes down with the picture
+    step(62.2, () => { handsRoot.visible = true; });
     c.endFade = 1;
   }
 
   /* B · THE CONFIRMATION (best) — he says it first, and the encik tells him
      the whole of it because he has earned it. */
   function scLetGo(c, s, api) {
-    const { step, sfx, fade, camTo, yawTo, pitchTo, faceFrom, smoothK, stage, handsRoot } = api;
+    const { step, sfx, sfxFade, fade, camTo, yawTo, pitchTo, faceFrom, smoothK, stage, handsRoot } = api;
     const P0 = P(s), E = stage.ENC;
     const Y_E = faceFrom(P0.x, P0.z, E.x, E.z);
     const RY = encFace(stage, api, P0);
@@ -1717,12 +1760,14 @@
     sfx(5.20, 'e5B2'); encTalk(stage, step, 5.20, 12.36, stage.ENC_TALK[1]);  // → 17.56
     sfx(18.20, 'e5B3'); encTalk(stage, step, 18.20, 7.71, stage.ENC_TALK[0]); // → 25.91
     camTo(25.8, 32.6, shot(P0, E, IN), shot(P0, E, WIDE, 1.66), smoothK);
-    sfx(24.00, 'e5theme', 0.75);                                // the close, under his last answer
+    sfx(24.00, 'e5theme', 1.0);                                 // the close, under his last answer
     sfx(26.60, 'e5B4'); encTalk(stage, step, 26.60, 4.52, stage.ENC_TALK[1]); // → 31.12  · quiet, first time in years
-    encGo(stage, api, 31.9, P0.x, RY);
-    sfx(32.70, 'n5close');
-    fade(32.4, 35.0, 0, 1);
-    step(35.6, () => { handsRoot.visible = true; });
+    encGo(stage, api, 31.9, P0.x, RY, 8.6, 7.5);
+    craneOut(api, E, shot(P0, E, WIDE, 1.66), 32.6, 31.9, P0.x, Y_E);    // from where the widening above ends
+    sfx(32.70, 'n5close');                                      // v15.3: → 44.17, inside the scene
+    fade(46.7, 49.5, 0, 1);
+    sfxFade(46.7, 49.5, 'e5theme');
+    step(49.9, () => { handsRoot.visible = true; });
     c.endFade = 1;
   }
 
@@ -1730,7 +1775,7 @@
      answer that. One sentence, and he goes. The shortest scene in the
      episode, by design. */
   function scStress(c, s, api) {
-    const { step, sfx, fade, camTo, yawTo, pitchTo, faceFrom, smoothK, stage, handsRoot } = api;
+    const { step, sfx, sfxFade, fade, camTo, yawTo, pitchTo, faceFrom, smoothK, stage, handsRoot } = api;
     const P0 = P(s), E = stage.ENC;
     const Y_E = faceFrom(P0.x, P0.z, E.x, E.z);
     const RY = encFace(stage, api, P0);
@@ -1745,18 +1790,20 @@
     /* v14.1: and THIS scene had no `e5theme` at all — a player who picks the
        worst option was the one player who reached the end of the episode
        with no music under it. */
-    sfx(7.40, 'e5theme', 0.75);
-    encGo(stage, api, 12.5, P0.x, RY);
-    sfx(13.00, 'n5close');
-    fade(12.8, 15.2, 0, 1);
-    step(15.8, () => { handsRoot.visible = true; });
+    sfx(7.40, 'e5theme', 1.0);
+    encGo(stage, api, 12.5, P0.x, RY, 8.6, 7.5);
+    craneOut(api, E, shot(P0, E, 1.75), 12.8, 12.5, P0.x, Y_E);
+    sfx(13.30, 'n5close');                                      // v15.3: → 24.77, inside the scene
+    fade(27.3, 30.1, 0, 1);
+    sfxFade(27.3, 30.1, 'e5theme');
+    step(30.5, () => { handsRoot.visible = true; });
     c.endFade = 1;
   }
 
   /* D · THE REASON (bad) — he asks to be owed an answer, and gets one: the
      boy the encik told once, and what it cost him. */
   function scWhy(c, s, api) {
-    const { step, sfx, fade, camTo, yawTo, pitchTo, faceFrom, smoothK, stage, handsRoot } = api;
+    const { step, sfx, sfxFade, fade, camTo, yawTo, pitchTo, faceFrom, smoothK, stage, handsRoot } = api;
     const P0 = P(s), E = stage.ENC;
     const Y_E = faceFrom(P0.x, P0.z, E.x, E.z);
     const RY = encFace(stage, api, P0);
@@ -1769,12 +1816,14 @@
     camTo(3.10, 14.2, P0, shot(P0, E, IN), smoothK);
     sfx(14.30, 'e5D2'); encTalk(stage, step, 14.30, 4.52, stage.ENC_TALK[0]); // → 18.82
     camTo(19.0, 27.4, shot(P0, E, IN), shot(P0, E, WIDE, 1.66), smoothK);
-    sfx(18.00, 'e5theme', 0.75);                                // the close, under his last answer
+    sfx(18.00, 'e5theme', 1.0);                                 // the close, under his last answer
     sfx(19.50, 'e5D3'); encTalk(stage, step, 19.50, 7.00, stage.ENC_TALK[1]); // → 26.50
-    encGo(stage, api, 27.2, P0.x, RY);
-    sfx(28.00, 'n5close');
-    fade(27.7, 30.3, 0, 1);
-    step(30.9, () => { handsRoot.visible = true; });
+    encGo(stage, api, 27.2, P0.x, RY, 8.6, 7.5);
+    craneOut(api, E, shot(P0, E, WIDE, 1.66), 27.4, 27.2, P0.x, Y_E);    // from where the widening above ends
+    sfx(28.00, 'n5close');                                      // v15.3: → 39.47, inside the scene
+    fade(42.0, 44.8, 0, 1);
+    sfxFade(42.0, 44.8, 'e5theme');
+    step(45.2, () => { handsRoot.visible = true; });
     c.endFade = 1;
   }
 

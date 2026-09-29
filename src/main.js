@@ -8443,12 +8443,59 @@ function askChapter(key) {
   $('chList')?.classList.add('hide');
   $('chAsk')?.classList.remove('hide');
 }
+/* v15.3: GO DARK, THEN CHANGE THE WORLD (Chad: "Some loading time also can
+   be hidden smartly behind the fade to black animation time. To look more
+   seamless."). setChapter() disposes one world and builds the next in a
+   single synchronous stretch — a second or more on a phone with no frame
+   drawn — and it used to run with the sealed card or the selector frozen on
+   screen, then cut to black. Now a black cover fades up over everything with
+   the loading word on it, two frames are drawn at full black so the word is
+   really on the glass, and only then does the rebuild run. enterWorld() puts
+   the film's own black and the same word underneath before this returns, so
+   the cover is taken away in one frame with nothing on screen changing. A
+   second press while it fades does nothing: one change of chapter at a time. */
+let goingDark = false;
+function goDark(run) {
+  if (goingDark) return true;
+  const el = $('swapCover');
+  if (!el) { run(); return true; }
+  goingDark = true;
+  hint.classList.add('hide');
+  el.classList.remove('hide');
+  requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('on')));
+  let went = false;
+  const go = () => {
+    if (went) return;
+    went = true;
+    el.style.transition = 'none'; el.style.opacity = '1';   // at full black whether or not the fade got there
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      try { run(); }
+      finally {
+        goingDark = false;
+        el.classList.remove('on');
+        const film = cineFadeEl.style.opacity === '1';
+        if (film) { el.classList.add('hide'); el.style.opacity = ''; el.style.transition = ''; }
+        else {                                      // no film's black beneath (a chapter with no opening): dissolve
+          el.style.transition = ''; void el.offsetWidth; el.style.opacity = '';
+          setTimeout(() => el.classList.add('hide'), 500);
+        }
+      }
+    }));
+  };
+  el.addEventListener('transitionend', go, { once: true });
+  setTimeout(go, 700);
+  return true;
+}
 /* Start a chapter from its beginning, from the title or from mid-play.
    restart() is the one piece of code that knows everything a fresh run has
    to put back, and enterWorld() then takes the player out again in the
    same tick — the film, the card, the night — exactly as advancing does. */
 function startChapter(key) {
   if (!unlockedKeys().includes(key)) return false;
+  packLoad(key);                   // v15.3: its sounds start arriving under the fade below
+  return goDark(() => startChapterNow(key));
+}
+function startChapterNow(key) {
   closeChapters();
   if (state === 'menu') menuClose(false);
   if (inv.open) invClose();
@@ -8958,7 +9005,7 @@ function sting(kind, vol = 1) {
   const smp = STING_SAMPLE[kind];
   if (smp) {
     const src = snd(smp[0], smp[1] * vol);
-    if (src) { if (cine) cineVoices.push(src); rec.how = 'sample'; return; }
+    if (src) { src.__kind = kind; if (cine) cineVoices.push(src); rec.how = 'sample'; return; }   // v15.3: named, for sfxFade
     rec.how = packBufs[smp[0]] ? 'ctx-' + (actx ? actx.state : 'none') : (packJson && packJson[smp[0]] ? 'decoding' : 'no-pack');
   }
   if (!STING_SYNTH.has(kind)) { if (!rec.how) rec.how = 'no-sample'; return; }
@@ -9395,6 +9442,23 @@ function A(c) {
   const tr = (t0, t1, fn, ease) => c.tracks.push({ t0, t1, fn, ease });
   const step = (t0, fn) => c.tracks.push({ t0, t1: t0, fn, once: true });
   const sfx = (at, kind, vol) => c.stings.push({ at, kind, vol });
+  /* v15.3: A CUE THAT FADES WITH THE PICTURE. A scene's sounds are cut at
+     its end (stopCineVoices, a 0.3 s ramp), which is right for a sting and
+     wrong for a closing theme that should go down WITH the black — episode 2
+     chapter 5's endings are the first to ask for it. From t0, every live
+     source this scene started for `kind` ramps to silence over t1 - t0 on the
+     audio clock. Unused by every other chapter, so none of them changes. */
+  const sfxFade = (t0, t1, kind) => c.tracks.push({ t0, t1: t0, once: true, fn: () => {
+    if (!actx) return;
+    const t = actx.currentTime, d = Math.max(0.05, t1 - t0);
+    for (const src of cineVoices) {
+      if (src.__kind !== kind || !src.__g) continue;
+      try {
+        const g = src.__g.gain;
+        g.cancelScheduledValues(t); g.setValueAtTime(g.value, t); g.linearRampToValueAtTime(0.0001, t + d);
+      } catch { /* already finished */ }
+    }
+  } });
   const fade = (t0, t1, from, to) =>
     tr(t0, t1, k => { cineFadeEl.style.opacity = String(from + (to - from) * k); }, rawK);
   const camTo = (t0, t1, from, to, ease) => tr(t0, t1, k => {
@@ -9427,7 +9491,7 @@ function A(c) {
     camera.fov = from + (to - from) * k;
     camera.updateProjectionMatrix();
   }, ease);
-  return { tr, step, sfx, fade, camTo, yawTo, pitchTo, bob, ghostGlide, ghostFacePlayer, lens };
+  return { tr, step, sfx, sfxFade, fade, camTo, yawTo, pitchTo, bob, ghostGlide, ghostFacePlayer, lens };
 }
 
 /* Everything a chapter's scene is allowed to touch, in one object built per
@@ -9892,7 +9956,7 @@ async function warmWorld(items) {
   forceDraw = 3;                             // v15: drawn although covered — that is what they are for
   await cap(new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))), 3000);
 }
-function whenWorldReady(then, capMs = WORLD_CAP) {
+function whenWorldReady(then, capMs = WORLD_CAP, keepWord = false) {
   const t0 = performance.now();
   /* v14.16: the word goes where the player can see it — on the chapter card
      when the card is up, and over the black before an opening film, where
@@ -9916,7 +9980,9 @@ function whenWorldReady(then, capMs = WORLD_CAP) {
   Promise.all([packLoad(), packLoad(CH_KEY)]).then(() => { packsIn = true; }, () => { packsIn = true; });
   setTimeout(() => { packsIn = true; }, 20000);   // and never longer than this: sound is not worth a stuck curtain
   const lift = () => {
-    load?.classList.add('hide');
+    /* v15.3: the film path keeps the word up through its own last wait (the
+       intro's decodes) and takes it down on the frame the film starts */
+    if (!keepWord) load?.classList.add('hide');
     if (!revealAt) revealAt = performance.now();         // the world is uncovered from here (THE LOAD TRACKER)
     assetsRelease();                                    // v14.16: the world is built; its files are dead weight
     then();
@@ -9945,10 +10011,15 @@ function whenWorldReady(then, capMs = WORLD_CAP) {
       warmWorld(items).then(() => { warming = false; warmedAt = loadSeq; calm = 0; setTimeout(gate, 30); });
       return;
     }
-    if (now - t0 > 500 && load) {                       // no flash of the word on an instant entry
+    /* v15.3 (Chad: "The loading text should always appear and be present
+       whenever the player waits"): from the FIRST moment of the wait, not
+       half a second in — and with no percentage until there is something
+       counted, where an empty count used to read as 99 % */
+    if (load) {
       const done = [...seen].filter(r => r.t1).length;
-      const pct = seen.size ? Math.min(99, Math.round(100 * done / seen.size)) : 99;
-      load.textContent = `${T('chapter.loading', 'Loading…')} ${pct}%`;
+      load.textContent = seen.size
+        ? `${T('chapter.loading', 'Loading…')} ${Math.min(99, Math.round(100 * done / seen.size))}%`
+        : T('chapter.loading', 'Loading…');
       load.classList.remove('hide');
     }
     setTimeout(gate, 180);
@@ -10083,6 +10154,16 @@ function enterWorld(place, opts = {}) {
   cineFadeEl.style.opacity = '1';
   ui.title.classList.add('hide');
   ui.hud.classList.add('hide');
+  /* v15.3 (Chad: "a long black screen delay (with the control instructions
+     text present at the bottom) for quite some time even before the loading
+     text appears"): restart() puts the walking hint up for seven seconds, and
+     the selector and Continue both come through restart() into here — so the
+     black the film waits on carried "W A S D to walk" and nothing else until
+     the curtain's word arrived, after the pack and the decodes. The hint goes,
+     and the word is on the black from its first frame. */
+  hint.classList.add('hide');
+  clearTimeout(hintTimer);
+  worldWord();
   if (place) place();
   /* v5.13: THE FILM WAITS FOR ITS SOUNDS. A chapter's pack is fetched by
      setChapter(), and on the advance path startDecision() fetched it a
@@ -10107,11 +10188,21 @@ function enterWorld(place, opts = {}) {
          everything is already decoded, this is immediate. */
       warmIntroSet();
       whenDecoded(introSamples(), () => {
+        worldWord(false);          // v15.3: the word stays until the film is actually starting
         playCineFn(intro, card, 1);
         cine.film = true;          // v6.4: a skip by gesture may re-lock the mouse (skipFilmOrScene)
       });
-    }));
+    }, WORLD_CAP, true));
   });
+}
+/* v15.3: the loading word over the black a film waits on — plain until the
+   curtain has something to count (whenWorldReady then writes the percentage
+   into the same element) */
+function worldWord(on = true) {
+  const w = $('worldLoad');
+  if (!w) return;
+  if (on) { w.textContent = T('chapter.loading', 'Loading…'); w.classList.remove('hide'); $('chapLoad')?.classList.add('hide'); }
+  else w.classList.add('hide');
 }
 
 /* Continue: the default, and what the big button does whenever there is
@@ -10281,6 +10372,10 @@ $('nextBtn').onclick = () => { ui.result.classList.add('hide'); finish(); };
 /* Advancing into a chapter: what Continue on a sealed card has done since
    v3.6, and since v6.3 also what the episode card's Continue does. */
 function advanceTo(nxt) {
+  packLoad(nxt);                   // v15.3: (fetched a decision ago; this only ever finds it)
+  goDark(() => advanceToNow(nxt));
+}
+function advanceToNow(nxt) {
   setChapter(nxt);
   for (const el of [ui.complete, ui.result, ui.over, ui.episode]) el?.classList.add('hide');
   /* restart() puts the run's state back — the props, the ghost, the hands,

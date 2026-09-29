@@ -423,6 +423,8 @@ if (VOICE && Array.isArray(VOICE.LINES)) {
       const api = {
         tr: T, step: t0 => T(t0, t0), fade: T, camTo: T, yawTo: T, pitchTo: T,
         bob: T, ghostGlide: T, ghostFacePlayer: T, lens: T,
+        sfxFade: T,                                           // v15.3: a cue fading with the picture — a timed track
+
         event: at => T(at, at), eventWait: at => T(at, at),
         sfx: (at, kind) => cues.push({ at: +at || 0, kind: String(kind) }),
         music: () => {}, duck: () => {},
