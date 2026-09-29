@@ -4221,6 +4221,54 @@ What the baseline contains, by release:
   stands. Harnesses chapter, text, cine, menu, restart, resume, title, csp,
   fixture, hosted green (chaptertest's stub learned `sfxFade`). Deploy
   `6abc067496cf642545dd29fe`, byte-verified (index.html and all 181 build files).
+- **v16.0** EPISODE 3 · CHAPTER 1 · THE LUCK I WENT LOOKING FOR — the first
+  chapter of case file 3, "How It All Began" (Chad's title, and his five
+  decisions on docs/V16.0-EPISODE3-PLAN.md: an adult voice now, episode 1's
+  tang-ki never again, the LP Tim in chapter 4's shop, a different house in
+  chapter 5, Buddha Day in Singapore; he is finding the models). S1·06, kept
+  short: after NS a job, a side business in dashcams, "better luck", amulets,
+  and a temple in Thailand at five in the morning for his first Sak Yant. THE
+  FILM (62 s, his voice over five memories — the camp gate the day he left NS,
+  the office at night with code scrolling on three screens, a warehouse of his
+  own ROADEYE boxes, the desk by one candle with episode 1's Phiboon on a
+  cloth, a plane window at dawn — then through the wat's gate). PLAY is the
+  wat at dawn, in order: buy the offering set at the stall (the auntie greets
+  you, and scolds you if you walk into the sala in your shoes), shoes off at
+  the rack (barefoot on the planks from there — a stage may name its own
+  footstep now, `stepSound()`), kneel and bow three times at the altar, give
+  the tray to the Ajarn, sit on the mat and WATCH him work on the man before
+  you (bursts of rod strikes, the katha murmured, the man wais and walks out),
+  "Next. You. Come.", sit on the stool with your back to him, and hold still
+  through the rod — the heartbeat kind whose TICK IS THE ROD (a heartbeat's
+  `tick` may name a sound; the default is untouched): 14 strikes from 66 bpm,
+  a flinch costs sanity. On the last strike he blows on it and IT WARMS (a
+  gold wash, a shimmer, the morning a shade brighter, "Not the sting...
+  something under it"), he says "Finish. Turn around.", the lens turns you
+  round to him on his raised seat, and "Now it is on you. What you ask of it?"
+  opens the decision by itself. Four answers (luck / protection / the
+  strongest / "what does it ask of me?"), four different replies, and one
+  shared ending: he wais, stands on the dais, steps down, puts his shoes back
+  on, walks into the courtyard, looks back — and the lens rises over the wat
+  while his closing line finishes INSIDE the scene (v15.3's shape) and
+  "something else had to happen first" is said over the black. THE VOICE is
+  Louis (`jamesAdult`, ADULT_TAKES on his bus, high-passed at 70 Hz because he
+  puts a third of his energy under 120 Hz); the Ajarn is Toto, the stall
+  auntie Anna. 34 lines, 21 sounds, 3 music cues, all picked by measurement
+  (masters/v16.0/make.sh). STAND-IN CAST until Chad's models land: the Ajarn
+  is the admin tee recoloured to a white shirt (a hue test on a copy of its
+  own texture), sitting; the auntie is ch3's granny; the man under the needle
+  the botak recruit; a waiter the admin tee; the assistant the standing man;
+  the Buddha a primitive. ONE ENGINE FIX besides the two seams: a repeat
+  `kit.pose('lying', …)` now RE-AIMS the neck (it was ignored once the eye had
+  settled, so no chapter could turn a seated player). Found by photograph and
+  written into docs/V16.0-E3C1-PLAN.md §9: the roof planes rotated about Y
+  (flat sheets); a 3-tier roof's third tier hides behind the second from
+  standing height (two gables, measured in pixels from the spawn); sun specks
+  through roof gaps (the ceiling casts); the stool 2.4 m from the Ajarn (no rod
+  reaches that); unlit film paint washed out by ACES; a probe's synthetic
+  `.click()` does not press the event's START (the game listens for real
+  pointer presses — players are unaffected). Sheet v75 exported (5 tabs,
+  EPISODE 3 new; v44 stays the link). docs/V16.0-E3C1-PLAN.md is the memory.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -4757,9 +4805,9 @@ assigned where a texture belonged; and the clearance is ISSUED at the start
 of play rather than inferred from an empty bag, which had left both counters
 dead from the chapter's first frame (docs/LEARNINGS.md).
 
-Next up: **episode 3**, which has no chapters yet — the selector already
-shows its case file and the episode-complete card already says it is not yet
-written. Everything the architecture needs for it is in
+Next up: **episode 3 chapter 2**, The Hands That Moved (v16.0 shipped chapter 1,
+The Luck I Went Looking For — `src/chapters/e3/e3c1.js`; the whole episode's
+plan is docs/V16.0-EPISODE3-PLAN.md and its model list docs/E3-MODELS.md). Everything the architecture needs for it is in
 docs/EPISODES-PLAN.md.
 (chapter 1, The Worst Bed, shipped at v7.1 — `src/chapters/e2/e2c1.js`;
 chapter 2, Nobody There, at v10.0 and built out at v10.1–v10.2 — `src/chapters/e2/e2c2.js`; chapter 3, The Pressure, at v11.0 and revised at v11.1–v11.9 and v12.5 — `src/chapters/e2/e2c3.js`; chapter 4, The Cyclist, at v12.1, rebuilt at v12.2 and its ghost given back its body at v12.4 — `src/chapters/e2/e2c4.js`;
@@ -4784,8 +4832,10 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v74** (`masters/v14.14/masterz-text-v74.xlsx`, four tabs: UI
-TEXT 292, EPISODE 1 114, EPISODE 2 193, VOICE LINES 296). v74 changes one cell
+**THE SHEET IS v75** (`masters/v16.0/masterz-text-v75.xlsx`, five tabs: UI
+TEXT 292, EPISODE 1 114, EPISODE 2 193, EPISODE 3 37, VOICE LINES 330 — v75
+adds episode 3 chapter 1's words and 34 voice lines, and the episode's title).
+Was v74 v74 changes one cell
 of v73 — the amulet's name, "Wat Lahanrai" at Chad's word. v73 adds three rows
 to v72 (v14.11's, the amulet's crack/break banner and the rarities): the LP
 Tim Khun Paen's name and description and "Ultra Rare". v71's diff against

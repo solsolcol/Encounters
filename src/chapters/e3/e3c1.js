@@ -1529,6 +1529,7 @@
       if (worldSfx) worldSfx('barestep', 0.45, 0.8);
       turnTo(faceAjarn(), 1.6, { y: STOOL_TOP + 0.80, span: 0.8, lo: -0.5, hi: 0.6 }, () => {
         pitch.rotation.x = 0.16;                       // and up, to his face
+        ajarnFace(true);
         queueGap(0.5);
         queueLine('aj1ask', () => { ajarn.nod = SECS.aj1ask; });
         queueGap(0.7);
@@ -1705,6 +1706,7 @@
         seated = 'stool';
         if (kit) { kit.pose('lying', { y: STOOL_TOP + 0.80, yaw: faceAjarn(), span: 0.8, pitchLo: -0.5, pitchHi: 0.6, secs: 0.05 }); kit.root(false); }
         yaw.rotation.y = faceAjarn();
+        ajarnFace(true);
         setPhase('decide');
         return;
       }
@@ -1716,6 +1718,15 @@
     function putAjarn() {
       ajarn.group.visible = true; ajarn.nod = 0; ajarn.lookYaw = 0; ajarn.lookPitch = 0;
       if (ajarn.acts) ajarn.play('Sit_and_Doze_Off', 0.45, 0);
+    }
+    /* WHEN HE SPEAKS TO YOU he sits up: the same rig's other sitting take,
+       parked on its upright opening frame (v8.0 measured it: the head is over
+       the hips for the first eighth of the clip, then it folds), and his head
+       lifted to the man in front of him. The doze is for when he works. */
+    function ajarnFace(on) {
+      if (!ajarn.acts) return;
+      if (on) { ajarn.play('Chair_Sit_Idle_M', 1, 0.6, false, 0.04); ajarn.lookPitch = -0.12; }
+      else putAjarn();
     }
     function snap() { return { phase }; }
     function restore() {
@@ -1996,7 +2007,7 @@
         candleFl = new THREE.Mesh(new THREE.SphereGeometry(0.009, 8, 6), basic({ color: 0xffb040 }));
         candleFl.scale.set(1, 2.2, 1); candleFl.position.set(0.32, 0.895, -0.12); desk.add(candleFl);
         // a red cloth, and on it, the amulet — episode 1's Phiboon
-        const cloth = fplane(0.22, 0.22, -0.02, 0.753, 0.02, basic({ color: 0x8a1a14 }), desk, 0, -Math.PI / 2);
+        const cloth = fplane(0.22, 0.22, -0.02, 0.753, 0.02, basic({ color: 0x4a0c08 }), desk, 0, -Math.PI / 2);   // velvet, painted dark (ACES)
         cloth.rotation.z = 0.3;
         amuletSpin = new THREE.Group(); amuletSpin.position.set(-0.02, 0.757, 0.02); desk.add(amuletSpin);
         // three more amulets at the edge of the cloth, a collector's desk
@@ -2023,7 +2034,7 @@
             if (!o.isMesh) return;
             o.castShadow = false;
             const m = o.material.clone();
-            if (m.map) { m.emissiveMap = m.map; m.emissive = new THREE.Color(0xffc080); m.emissiveIntensity = 1.1; }
+            if (m.map) { m.emissiveMap = m.map; m.emissive = new THREE.Color(0xffb070); m.emissiveIntensity = 0.55; }   // the candle, not a lamp: at 1.1 its relief washed out (CP4)
             m.fog = false; o.material = m; owned.push({ dispose: () => m.dispose() });
           });
           amuletSpin.add(lie);
@@ -2137,7 +2148,7 @@
          engine asks every footfall (stepSound); null keeps its own. */
       stepSound: () => (pIdx(phase) >= 2 && inSala(yaw.position.x, yaw.position.z)) ? 'barestep' : null,
       // the chapter's own
-      SALA, DAIS, AJ, CUSH, WAIT, WAI, RACK, STALL, GATE, ALT, BODHI, DAIS_TOP,
+      SALA, DAIS, AJ, CUSH, WAIT, WAI, RACK, STALL, GATE, ALT, BODHI, DAIS_TOP, ajarnFace,
       get STOOL_TOP() { return STOOL_TOP; },
       ajarn, other, waiter, auntie, assistant, putAjarn, putOther, myShoes, handTray, film,
       get phase() { return phase; },
@@ -2582,7 +2593,7 @@
      READING ITS SOURCE, v10.2). */
   function walkOut(api, s, T) {
     const { step, sfx, camTo, yawTo, pitchTo, faceFrom, rawK, smoothK, stage, tr } = api;
-    const p0 = P0(s), top = { x: 0.35, y: 1.62, z: -1.2 }, rack = { x: 2.1, y: 1.62, z: 0.55 },
+    const p0 = P0(s), top = { x: 0.35, y: 1.62, z: -1.2 }, rack = { x: 2.85, y: 1.62, z: 0.85 },   // clear of the naga at x 1.9 (CP5)
           yard = { x: 0.6, y: 1.62, z: 5.4 };
     // the wai: the head goes down and comes up
     pitchTo(T, T + 0.8, s.pitchX, -0.55, smoothK);
@@ -2629,7 +2640,7 @@
   function opening(api, s) {
     const { step, yawTo, pitchTo, faceFrom, smoothK, stage, handsRoot } = api;
     const p0 = P0(s), A = stage.AJ;
-    step(0, () => { handsRoot.visible = false; stage.putAjarn(); stage.myShoes.visible = true; });
+    step(0, () => { handsRoot.visible = false; stage.ajarnFace(true); stage.myShoes.visible = true; });
     yawTo(0, 1.0, s.yawRot, faceFrom(p0.x, p0.z, A.x, A.z), smoothK);
     pitchTo(0, 1.0, s.pitchX, 0.14, smoothK);
     s.yawRot = faceFrom(p0.x, p0.z, A.x, A.z); s.pitchX = 0.14;
