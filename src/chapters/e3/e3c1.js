@@ -1802,8 +1802,9 @@
       /* round the naga's NECK (a loop about it, dipping at the front), not
          hung in the air in front of it */
       for (const sx of [-1, 1]) {
-        const c = new THREE.Vector3(sx * 1.9, 1.2, STAIR.foot + 0.46), pts = [];
-        for (let k = 0; k <= 16; k++) { const a = k / 16 * Math.PI * 2; pts.push(new THREE.Vector3(c.x + Math.cos(a) * 0.13, c.y - Math.max(0, Math.sin(a)) * 0.09, c.z + Math.sin(a) * 0.13)); }
+        /* v16.6: on Chad's naga the neck rises at z ~0.86, a slimmer one */
+        const c = new THREE.Vector3(sx * 1.9, 0.86, 0.87), pts = [];
+        for (let k = 0; k <= 16; k++) { const a = k / 16 * Math.PI * 2; pts.push(new THREE.Vector3(c.x + Math.cos(a) * 0.125, c.y - Math.max(0, Math.sin(a)) * 0.07, c.z + Math.sin(a) * 0.125)); }
         string(pts, 24, [O, O, Y]);
       }
       for (const px of [-6.75, -2.4, 2.4, 6.75]) string([new THREE.Vector3(px, SALA.floor + 2.5, -1.68), new THREE.Vector3(px + 0.02, SALA.floor + 2.0, -1.68), new THREE.Vector3(px, SALA.floor + 1.55, -1.68)], 22, [O, Y, O, W]);
