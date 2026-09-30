@@ -4527,7 +4527,7 @@ What the baseline contains, by release:
   — with gold and lacquer glossy per pixel. Still every triangle (473,896,
   2.96 MB). Five Khon masks on a stepped stand beside the Ajarn's shrine
   (`khonmask`, 93k of 1.0M triangles, credited). Deploy
-  `6abd8a215a2466c5e13b863b`, byte-verified (193 files) before the
+  `6abd8dd5989d2ee235140312`, byte-verified (193 files) before the
   harnesses. Sheet v80 exported (v44 stays the link).
   docs/V17.0-THE-TEMPLE-COLOURED.md is the build's memory.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
