@@ -29,6 +29,8 @@ new GLTFLoader().load(new URLSearchParams(location.search).get('f'), g => {
     const R = s.length() * (dist || 0.9); const t = new THREE.Vector3(c.x + (fx || 0) * s.x, c.y + (fy || 0) * s.y, c.z + (fz || 0) * s.z);
     cam.position.set(t.x + R * Math.cos(el) * Math.sin(az), t.y + R * Math.sin(el), t.z + R * Math.cos(el) * Math.cos(az)); cam.lookAt(t); r.render(scene, cam); return true;
   };
+  // shootAt(eye xyz, target xyz, fov): a camera placed in world units (for interiors)
+  window.shootAt = (e, t, fov) => { cam.position.set(...e); cam.fov = fov || 60; cam.updateProjectionMatrix(); cam.lookAt(new THREE.Vector3(...t)); r.render(scene, cam); cam.fov = 40; cam.updateProjectionMatrix(); return true; };
   window.ready = true;
 });
 </script></body></html>
