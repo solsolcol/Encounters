@@ -45,8 +45,14 @@ from his **phone**. Consequences:
    push the branch, hand Chad the dist zip. **THE DEPLOY COMES FIRST**
    (Chad, v6.6, after a Drive upload held a finished build for hours:
    "the most important thing is making sure the build is live on netlify").
-   Order of a release: build → harnesses → commit/push → DEPLOY and
-   byte-verify → then the sheet, the docs' sheet link, any Drive tidy-up.
+   Order of a release: build → DEPLOY and byte-verify → harnesses →
+   commit/push → then the sheet, the docs' sheet link, any Drive tidy-up.
+   **DEPLOY BEFORE THE TESTS** (Chad, v16.6: "always deploy first before
+   starting tests, this way i can test it as soon as possible even before
+   your tests are complete"): the build he can play goes live the moment it
+   is built and photographed, and the harnesses run while he plays it. A
+   harness that then fails is fixed and redeployed — Netlify's two-tap
+   rollback is the safety net, not the wait.
    Nothing that talks to Google Drive may stand between a green build and
    Netlify; if the sheet upload fails, the build still ships and the sheet
    is retried afterwards.
@@ -4434,7 +4440,9 @@ What the baseline contains, by release:
   file, so the prep SHEARS it down the stair (`BEND`): a shear keeps
   vertical lines vertical, so the head still rears upright. One credit row
   (the packs; Chad's own models get none). Sheet v78 exported (v44 the
-  link). docs/V16.6-THE-THAI-KIT.md is the build's memory.
+  link). docs/V16.6-THE-THAI-KIT.md is the build's memory. Deploy
+  `6abd4959eda727984ba997b1`, byte-verified (index.html and all 188 build
+  files) — deployed BEFORE the harnesses, Chad's new order.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
