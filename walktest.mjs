@@ -27,7 +27,7 @@ p.on('pageerror', e => errs.push(where + ': ' + e.message));
 /* v14.7: and episode 1 chapter 3, the first base-game chapter with a HOTSPOT
    (the amulet on the auntie's table, which must be reached before the altar
    opens) and with new per-frame code to catch a throw in */
-for (const key of ['ch3', 'e2c1', 'e2c2', 'e2c3', 'e2c4', 'e2c5']) {
+for (const key of ['ch3', 'e2c1', 'e2c2', 'e2c3', 'e2c4', 'e2c5', 'e3c1']) {
   where = key;
   await p.goto(PAGE + '?ch=' + key);
   await p.click('#startBtn');
@@ -37,9 +37,13 @@ for (const key of ['ch3', 'e2c1', 'e2c2', 'e2c3', 'e2c4', 'e2c5']) {
   const r = await p.evaluate(() => {
     const E = window.__enc, B = E.blockers, S = E.stage, D = window.__CHAPTERS__[E.chapterKey()];
     const BN = D.bounds, ST = 0.06;
+    /* v16.4: the ground (the engine's groundAt seam) — collision samples 1.0 m
+       above the ground, and no step may rise more than STEP_UP (0.4) */
+    const G = E.groundAt || (() => 0);
     const hit = (x, z) => {
       if (x < BN.minX || x > BN.maxX || z < BN.minZ || z > BN.maxZ) return true;
-      for (const b of B) if (x >= b.min.x && x <= b.max.x && z >= b.min.z && z <= b.max.z && 1.0 >= b.min.y && 1.0 <= b.max.y) return true;
+      const y = 1.0 + G(x, z);
+      for (const b of B) if (x >= b.min.x && x <= b.max.x && z >= b.min.z && z <= b.max.z && y >= b.min.y && y <= b.max.y) return true;
       return false;
     };
     const nx = Math.floor((BN.maxX - BN.minX) / ST) + 1, nz = Math.floor((BN.maxZ - BN.minZ) / ST) + 1;
@@ -52,7 +56,9 @@ for (const key of ['ch3', 'e2c1', 'e2c2', 'e2c3', 'e2c4', 'e2c5']) {
       const k = q[h], i = (k / nz) | 0, j = k % nz;
       for (const [di, dj] of [[1,0],[-1,0],[0,1],[0,-1]]) {
         const a = i + di, b2 = j + dj; if (a < 0 || a >= nx || b2 < 0 || b2 >= nz) continue;
-        const m = a * nz + b2; if (seen[m] || blocked[m]) continue; seen[m] = 1; q.push(m);
+        const m = a * nz + b2; if (seen[m] || blocked[m]) continue;
+        if (G(BN.minX + a * ST, BN.minZ + b2 * ST) - G(BN.minX + i * ST, BN.minZ + j * ST) > 0.4) continue;
+        seen[m] = 1; q.push(m);
       }
     }
     /* can the player stand within `r` of this point? */

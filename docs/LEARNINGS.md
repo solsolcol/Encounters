@@ -4969,3 +4969,22 @@ to the chant's `onStart`, so in the probe the monk never lifted his arm and the
 sequence ran on without him. A beat that must happen stamps its own time when
 the queue REACHES it and holds the queue for the line's measured length —
 the line is the sound over the beat, not the beat's clock.
+
+## v16.4 — a floor above zero is an engine seam, not a chapter's box
+
+The engine had no ground: the eye was `eyeY` (1.62) above ZERO and `collide()`
+sampled one point at y 1.0. Raising episode 3 chapter 1's sala onto a 1.1 m
+base therefore broke three things at once, none of them visible in a
+screenshot taken from a probe that teleports: the eye would have walked at a
+kneeling man's height over the planks, every blocker column on the raised
+floor (0 → 1.4) would have passed UNDER the collision sample, and the base's
+walls could have been walked up from anywhere. The seam (`stage.groundAt`)
+fixes all three in one place — the eye rides the ground, the sample is taken
+1.0 above the ground at the step's destination, and no step may rise more
+than 0.4 — and it applies the ground ONLY TO STANDING: `kit.pose` heights are
+absolute (every chapter's call sites pass them that way), so the ground's
+weight eases out and back in with the pose. A chapter that declares no
+`groundAt` is at zero everywhere, which is every chapter before it. And a
+chapter's own blocker helper must measure its column from the ground its
+centre stands on, or a table on a raised floor is walk-through again (the
+v5.03 lesson, one floor up).

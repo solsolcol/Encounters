@@ -267,6 +267,24 @@ K.warmUnderBlack = await p.evaluate(() => { window.__enc.kit.fade(1, 0.1); retur
   .catch(() => false);
 await settle();
 
+// v16.4: THE GROUND — the stage's groundAt: the eye rides a platform, a ramp is walkable, a wall is not
+K.groundSeam = await p.evaluate(async () => {
+  const E = window.__enc, near = (a, b, e = 0.03) => Math.abs(a - b) < e;
+  const read = E.groundAt(9.3, 0) === 0.9 && near(E.groundAt(7.1, 0), 0.45) && E.groundAt(0, 9) === 0;
+  E.yaw.position.set(9.3, 1.62, 0);
+  const frames = (n) => new Promise(r => { let k = 0; const f = () => (++k >= n ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); });
+  await frames(4);
+  const rides = near(E.yaw.position.y, 0.9 + 1.62, 0.06);
+  E.yaw.position.set(7.9, 1.62, 0);   await frames(2);
+  const ramp = !E.collideAt(8.3, 0);                 // up the ramp onto the platform: 0.12 m, a step
+  E.yaw.position.set(8.0, 1.62, 1.0); await frames(2);
+  const wall = E.collideAt(8.35, 1.0);               // straight at its side from the floor: 0.9 m, a wall
+  E.yaw.position.set(0, 1.62, 9);     await frames(4);
+  const back = near(E.yaw.position.y, 1.62, 0.06);
+  return read && rides && ramp && wall && back;
+}).catch(() => false);
+await settle();
+
 // presence: an unseen thing drains the bar, and the banner uses the chapter's words for it
 K.presenceDrains = await p.evaluate(() => { window.__enc.kit.presence(1); return window.__enc.stats.sanity; })
   .then(s0 => p.waitForFunction(x => window.__enc.stats.sanity < x - 0.3, s0, { timeout: 60000 }))

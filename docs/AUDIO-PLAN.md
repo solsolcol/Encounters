@@ -1111,3 +1111,14 @@ source (v9.6/v9.7): landed at mp3 −1.33 / ogg −2.32 and mp3 −1.54 / ogg �
 `wardCrack()` plays at 0.8 on every yellow tick the amulet throws (a drain's
 ticks are already batched to one per 460 ms, and two hits on one frame are one
 crack); the hit that EMPTIES it plays `wardbreak` at 1.0 instead of a crack.
+
+## v16.4 · two sounds for the dressed wat (episode 3 chapter 1)
+
+Flow `PJyc5vOYJNLJd2owf8Ae`, sessions in masters/v16.4/sessions.json, recipe
+masters/v16.4/make.sh, both peak -4 dBFS, e3c1's own pack.
+- `eavebells` — take b of two: 95 % of its energy above 3 kHz (a tinkle a
+  phone plays), a clean tail. The tool returned 0.48 s and 2.0 s — neither
+  loops — so it rings as a ONE-SHOT from the nearest eave every 3.5–8.5 s.
+- `wingflap` — take a of two: its energy spread 33/26/32/9 % across the bands;
+  take b was 91.5 % under 120 Hz, a thump a phone cannot play. Played once
+  when the pigeons go up.

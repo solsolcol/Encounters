@@ -139,6 +139,7 @@ The declarations, all optional:
 | `words.presence` | v7.0: the banner's words when a chapter with `ghost: null` drains through `kit.presence()` | `hud.presenceAlarm` |
 | `stage.hotspots` | v7.0: many things to act on beside the pile — `[{ id, pos, radius, prompt, onInteract(), once, enabled() }]`, returned by build() | — (only the pile) |
 | `stage.hotspots[].dwell` / `aim` | v11.0: a hotspot that fires by being LOOKED AT for `dwell` seconds inside `aim` radians (chapter 3's torch spots) — the eighteenth seam | — (a press only) |
+| `stage.groundAt(x, z)` | v16.4: the height of the FLOOR under a point — the eye rides it when standing (eased; snapped on a teleport; a pose keeps its absolute height), collision samples 1.0 m above it, and no step rises more than 0.4 m, so a raised base is climbed only by its stairs. Episode 3 chapter 1's sala on its 1.1 m base; the fixture's platform proves it (`groundSeam`); walktest reads it — the twenty-first seam | — (0 everywhere) |
 | `stage.hotspots[].hits(x, y)` | v14.7: a hotspot PRESSED BY A TAP (or an unlocked click) ON THE THING ITSELF — `hits` answers whether that screen point is on it, and the engine's `hotspotTap` fires it; episode 1 chapter 3's amulet on the auntie's table | — (the badge and the key only) |
 | `kit.unlock(id, { onClose })` | v14.7: the ITEM UNLOCKED splash — the item's model turning in the middle (the `iv` renderer), its name, a Close button, its own sting; a screen state of its own (`unlock`) that closes every "is it play?" gate, with a 0.6 s guard so the press that took the item cannot also close it | — |
 | `ITEM_DEFS[id].evGuard` | v14.13: while the item is WORN, every stat decrease a MINIGAME causes is multiplied by `1 − evGuard` (`evCut()`: graded presses, missed beats, wrong drops, a losing payout, and a chapter's own price marked `{ minigame: true }` on `kit.award`/`kit.conduct`) — the LP Tim Khun Paen's 50 % | — (0: nothing is cut) |
@@ -4325,6 +4326,40 @@ What the baseline contains, by release:
   The three water flicks moved onto the chant's own three breaths (3.0, 6.3,
   9.8 s — measured with silencedetect), played through on the chapter clock.
   Sheet v77 exported (three voice-line cells; v44 stays the link).
+- **v16.4** THE WAT, DRESSED, AND THE SALA ON ITS BASE — Chad asked for "more
+  ways to visually improve the temple and its surroundings", took all sixteen
+  ("all of it"), and steered it five times while it was built. What shipped:
+  the dawn's sun lower and warmer (14 degrees), a pinker horizon, painted
+  light shafts through the incense; a third, lowest PORCH GABLE stepping
+  forward over the steps on two white posts, so the roofs step up three
+  times from the gate; every bargeboard a naga, with saw-toothed gold blades
+  (one instanced mesh per roof) and a rearing head at each eave; the gables
+  kept in the red-and-gold carving at his word (a mosaic-and-Garuda panel was
+  built and taken out: "the previous red gold roof pattern was better"); the
+  ceiling plain pale teak ("the star pattern ... too much"); the mural built
+  and removed ("it looks bad"); a 25 m white CHEDI with a gold ringed spire
+  outside the west wall; gold lotus buds on every wall pier and a tiered
+  spire on the gate; a path of big slabs, grass verges, celadon lotus jars; a
+  covered Buddha gallery on the west wall (six gold images in gold niches on
+  blue glass, a candle each); long Lanna banners, small gold eave bells with
+  leaf clappers that swing (and ring, a one-shot from the nearest eave); the
+  bodhi's trunk wound in coloured cloths; a bronze incense URN on the axis
+  with a tall smoke column; marigold strings; the naga in green-and-gold
+  glass mosaic; the altar fuller (a front step of candles, two seven-tier
+  gold umbrellas, bowls of marigolds); a MONK SWEEPING along the ordination
+  hall, beyond reach; PIGEONS that go up when you walk close and come back
+  later. The flagpoles went ("there are no flags in temples"). AND THE SALA
+  STANDS ON A 1.1 m BASE ("elevate the temple grounds, with stairs at the
+  front ... the existing naga should align on the left and right of the
+  stairs"): six risers between white cheek walls, the nagas running down
+  them and rearing at the foot — which needed the TWENTY-FIRST SEAM,
+  `stage.groundAt` (table above; LEARNINGS), proven by the fixture's
+  platform (`groundSeam`), read by walktest (which gained e3c1). The walkway,
+  the kuti and the private room rose with `SALA.floor` for free; ten typed
+  heights gained LIFT; the ending walks down the middle of the flight. Two new
+  sounds, picked by measurement (masters/v16.4/make.sh). Episode 1 and 2
+  declare no ground, so they are unchanged by construction.
+  docs/V16.4-THE-WAT-DRESSED.md is the build's memory.
 - **v16.3** A THAI WAT, NOT A CHINESE ONE — Chad: *"the temple is too red, it
   looks more like a chinese temple than a thai temple. I think thai temple has
   more white, yellow, and gold elements, with some red."* Colour only, nothing

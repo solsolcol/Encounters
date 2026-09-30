@@ -257,6 +257,23 @@
       ash.visible = true; heroNote.visible = true; noteStorm = 1;
     }
 
+    /* v16.4 · THE GROUND (the twenty-first seam): a platform 0.9 m high on the
+       east side with a ramp up to it from the west — the eye rides it, the ramp
+       is walkable and the platform's wall is not (fixturetest proves all three) */
+    const PLAT = { x0: 8.2, x1: 10.4, z0: -1.2, z1: 1.2, h: 0.9, rx0: 6.0 };
+    {
+      const pm = new THREE.MeshStandardMaterial({ color: 0x8a8a90, roughness: 0.9 });
+      const pl = new THREE.Mesh(new THREE.BoxGeometry(PLAT.x1 - PLAT.x0, PLAT.h, PLAT.z1 - PLAT.z0), pm);
+      pl.position.set((PLAT.x0 + PLAT.x1) / 2, PLAT.h / 2, 0); world.add(pl);
+      const L = PLAT.x0 - PLAT.rx0, ramp = new THREE.Mesh(new THREE.BoxGeometry(Math.hypot(L, PLAT.h), 0.05, 1.2), pm);
+      ramp.position.set((PLAT.x0 + PLAT.rx0) / 2, PLAT.h / 2, 0); ramp.rotation.z = Math.atan2(PLAT.h, L); world.add(ramp);
+    }
+    function groundAt(x, z) {
+      if (x >= PLAT.x0 && x <= PLAT.x1 && z >= PLAT.z0 && z <= PLAT.z1) return PLAT.h;
+      if (x > PLAT.rx0 && x < PLAT.x0 && Math.abs(z) <= 0.6) return PLAT.h * (x - PLAT.rx0) / (PLAT.x0 - PLAT.rx0);
+      return 0;
+    }
+
     function blockers() {
       const out = [];
       world.traverse(o => {
@@ -404,7 +421,7 @@
     }
 
     return (S = {
-      world, noteTex, blockers: blockers(),
+      world, noteTex, blockers: blockers(), groundAt,
       ready: () => true,                       // nothing to wait for
       pile: { pos: PILE_POS, radius: INTERACT_R, group: pile,
               dist: pileDist, screen: pileScreen, inView: pileInView,

@@ -11138,8 +11138,39 @@ const tmp = new THREE.Vector3();
 const OFFER_POS = SHRINE;
 let bob = 0;
 
+/* v16.4 · THE GROUND — the twenty-first seam. A stage may declare
+   `groundAt(x, z)`, the height of the floor under a point (episode 3
+   chapter 1's sala stands on a 1.1 m base with a staircase up its front).
+   Three rules follow from it, and all three are no-ops for a stage that
+   declares nothing (the ground is 0 everywhere, so every chapter before it
+   is unchanged by construction):
+   - the eye rides the ground when STANDING, eased so a staircase reads as
+     one, and snapped on a teleport; a pose keeps its own absolute height
+     (the ground's weight eases out and in with the pose, so sitting down on
+     a raised floor and standing up again never jump);
+   - collision samples 1.0 m above the ground at the spot being stepped to,
+     so a stage's blockers are columns from the floor they stand on;
+   - no step up of more than STEP_UP: a wall of a base cannot be walked up,
+     only its stairs (their ramp rises a few centimetres a frame). */
+let groundY = 0, groundLX = NaN, groundLZ = NaN;
+const STEP_UP = 0.4;
+function groundAt(x, z) {
+  const f = stage && stage.groundAt;
+  if (typeof f !== 'function') return 0;
+  const g = f(x, z);
+  return Number.isFinite(g) ? g : 0;
+}
+function groundFollow(dt) {
+  const x = yaw.position.x, z = yaw.position.z, g = groundAt(x, z);
+  if (!(Math.hypot(x - groundLX, z - groundLZ) < 1.5)) groundY = g;
+  else groundY += (g - groundY) * (1 - Math.exp(-dt * 14));
+  groundLX = x; groundLZ = z;
+  return groundY;
+}
 function collide(nx, nz) {
-  const p = new THREE.Vector3(nx, 1.0, nz);
+  const g = groundAt(nx, nz);
+  if (g - groundAt(yaw.position.x, yaw.position.z) > STEP_UP) return true;
+  const p = new THREE.Vector3(nx, 1.0 + g, nz);
   for (const b of BLOCKERS) if (b.containsPoint(p)) return true;
   return nx < BOUNDS.minX || nx > BOUNDS.maxX || nz < BOUNDS.minZ || nz > BOUNDS.maxZ;
 }
@@ -11253,7 +11284,8 @@ function tick(now = 0) {
     // head bob
     const sp = playerSpeed = Math.hypot(vel.x, vel.z);
     bob += dt * sp * 8.5;
-    yaw.position.y = eyeY + Math.sin(bob) * 0.028 * Math.min(sp / 2.5, 1);   // v7.0: eyeY is 1.62 unless a pose moved it
+    const gw = kitPose === 'standing' ? smoothK(poseT) : 0;           // v16.4: a pose keeps its own height
+    yaw.position.y = eyeY + gw * groundFollow(dt) + Math.sin(bob) * 0.028 * Math.min(sp / 2.5, 1);   // v7.0: eyeY is 1.62 unless a pose moved it
 
     // Distance to the burner, which is still what raises the "something is
     // burning ahead" line. Nothing opens the decision on its own any more:
@@ -11706,7 +11738,7 @@ async function skelLab(key, o = {}) {
   normalMat.dispose(); rt.dispose();
   return out;
 }
-window.__enc = { yaw, pitch, stats, getState: () => state,   // v8.7: pitch, so a probe can aim the lens at the floor
+window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () => state,   // v8.7: pitch, so a probe can aim the lens at the floor
                  skelLab,                                  // v15.2: the merge, proven
                  kit: KIT, kitDebug, interactNow,          // v7.0: the play kit, by state
                  weaponFire, weaponReload, weaponLog, weaponProp: () => weaponProp, weaponMixer: () => weaponMixer,      // v12.0, probes
