@@ -1427,7 +1427,14 @@
           const gb = new THREE.Mesh(new THREE.ShapeGeometry(tri), matGoldC);
           gb.position.set(cx, eave, zz); if (zz === zz0) gb.rotation.y = Math.PI; world.add(gb);
           /* v16.4: the naga blades up its edges (the south end faces the courtyard) */
-          if (zz === zz1) for (const s of [-1, 1]) nagaEdge(uboFins, cx + s * (hw + 0.1), eave + 0.05, cx, ridge + 0.15, zz + 0.06, s);
+          /* the south gable's edges: a gold bargeboard and the naga blades on
+             it — without the board the blades floated over the bare roof edge
+             (Chad's screenshot: "Look at the floating elements") */
+          if (zz === zz1) for (const s of [-1, 1]) {
+            const b = box(slope + 0.35, 0.22, 0.12, cx + s * hw / 2, (eave + ridge) / 2 + 0.1, zz + 0.06, matGold);
+            b.rotation.z = -s * ang;
+            nagaEdge(uboFins, cx + s * (hw + 0.1), eave + 0.05, cx, ridge + 0.15, zz + 0.06, s);
+          }
           const cf = [];
           for (let i = 0; i <= 10; i++) { const k = i / 10; cf.push(new THREE.Vector3(cx, ridge + k * 1.2, zz + (zz === zz0 ? -1 : 1) * k * k * 0.7)); }
           world.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(cf), 16, 0.07, 6, false), matGold));
@@ -1586,27 +1593,19 @@
       const un = new THREE.Mesh(new THREE.PlaneGeometry(sl, L + 0.8), matCeilP); un.rotation.copy(rf.rotation);
       un.position.copy(rf.position); un.position.y -= 0.05; world.add(un);
       box(0.08, 0.1, L + 0.8, x1, y1 - 0.02, cz, matGold);
+      box(0.1, y0 - 2.4, L + 0.8, GAL.x0 - 0.04, (y0 + 2.4) / 2, cz, matWhite);   // its back wall, up to the roof (no gap over the compound wall)
       for (const z of [GAL.z0 - 0.3, cz, GAL.z1 + 0.3]) solids.push(cyl(0.08, 0.09, y1, GAL.x1 + 0.45, y1 / 2, z, matWhite, 10));
       solids.push(hid(box(D, 1.2, L, GAL.x0 + D / 2, 0.6, cz, matStone, world, false)));
     }
 
-    /* ------------------------------------------- v16.4 · BANNERS, BELLS
-       Long Lanna banners (tung) hanging from the walkway, the porch posts and
-       the gate; small gold bells with leaf clappers along every eave. Both
-       move in dressTick(). (The flagpoles along the path went at Chad's word:
-       "Remove the flags, there are no flags in temples".) */
+    /* ---------------------------------------------------- v16.4 · BELLS
+       Small gold bells with leaf clappers along every eave, swinging in
+       dressTick(). (The flagpoles went at Chad's word — "Remove the flags,
+       there are no flags in temples" — and the long Lanna banners after them:
+       "Remove all of these long colourful banners ... Thai temples dont
+       usually have this". `tungs` is left holding the bodhi cloth's tail.) */
     const tungs = [], bellHang = [];
     {
-      const tTex = tex(makeTung(THREE, cnv));
-      const tm = new THREE.MeshStandardMaterial({ map: tTex, roughness: 0.85, side: THREE.DoubleSide, alphaTest: 0.5 });
-      const tung = (x, y, z, ry, L) => {
-        const geo = new THREE.PlaneGeometry(0.34, L); geo.translate(0, -L / 2, 0);
-        const m = new THREE.Mesh(geo, tm); m.position.set(x, y, z); m.rotation.y = ry; world.add(m);
-        tungs.push({ m, ph: x * 1.7 + z });
-      };
-      for (const x of [-8.6, -10.1, -11.6]) tung(x, SALA.floor + 2.56, WALK.z - WALK.hw - 0.04, 0, 1.7);
-      for (const sx of [-1, 1]) tung(sx * 3.95, 3.2 + LIFT, 0.64, 0, 1.9);
-      for (const sx of [-1, 1]) tung(sx * (GATE.hw + 0.3), 3.9, GATE.z - 0.5, Math.PI, 2.2);
       // the bells: where they hang, along the eaves
       for (const sx of [-1, 1]) {
         for (let z = -1.7; z > -11.4; z -= 1.2) bellHang.push(new THREE.Vector3(sx * 7.95, 3.9 + LIFT, z));
@@ -1614,7 +1613,7 @@
       }
       for (const z of [GAL.z0, (GAL.z0 + GAL.z1) / 2, GAL.z1]) bellHang.push(new THREE.Vector3(GAL.x1 + 0.55, 2.5, z));
     }
-    const bellG = new THREE.LatheGeometry([[0, 0], [0.03, -0.005], [0.045, -0.04], [0.06, -0.1], [0.064, -0.11], [0, -0.11]].map(([a, b2]) => new THREE.Vector2(a, b2)), 10);
+    const bellG = new THREE.LatheGeometry([[0, 0.09], [0.005, 0.09], [0.005, 0.0], [0.03, -0.005], [0.045, -0.04], [0.06, -0.1], [0.064, -0.11], [0, -0.11]].map(([a, b2]) => new THREE.Vector2(a, b2)), 10);
     const leafG = new THREE.PlaneGeometry(0.09, 0.13); leafG.translate(0, -0.22, 0);
     const matLeaf = new THREE.MeshStandardMaterial({ color: 0xd9a63c, roughness: 0.35, metalness: 0.45, side: THREE.DoubleSide, emissive: 0x3a2406, emissiveIntensity: 0.5 });
     const bellIM = new THREE.InstancedMesh(bellG, matGold, bellHang.length);
@@ -1634,51 +1633,14 @@
       const tail = new THREE.Mesh(new THREE.PlaneGeometry(0.12, 0.62), new THREE.MeshStandardMaterial({ color: 0xe06a9a, roughness: 0.85, side: THREE.DoubleSide }));
       tail.position.set(BODHI.x - 0.2, 0.98, BODHI.z + 0.22); tail.rotation.set(0.15, -0.8, 0.1); world.add(tail);
       tungs.push({ m: tail, ph: 3.1, tail: true });
-      mkBuddha(BODHI.x - 0.7, 0.56, BODHI.z + 0.55, 0.12).rotation.y = -0.6;
       // and a small vase of lotus on the soil
       cyl(0.05, 0.04, 0.14, BODHI.x + 0.5, 0.63, BODHI.z + 0.6, matGold, 10);
       for (let k = 0; k < 3; k++) { const b = new THREE.Mesh(new THREE.SphereGeometry(0.035, 8, 6), new THREE.MeshStandardMaterial({ color: 0xf2b6c6, roughness: 0.6 })); b.scale.set(1, 1.5, 1); b.position.set(BODHI.x + 0.46 + k * 0.04, 0.8 + (k % 2) * 0.03, BODHI.z + 0.6); world.add(b); }
     }
 
-    /* ---------------------------------------- v16.4 · THE INCENSE URN
-       On the axis in front of the steps: a bronze urn on a stone base, full
-       of sand and burning sticks, a tall pale column of smoke, and a yellow
-       candle on each side. */
-    const URN = { x: 0, z: 3.4 };
-    let urnSmoke = null;
-    {
-      box(1.1, 0.34, 1.1, URN.x, 0.17, URN.z, matStone);
-      const bronze = new THREE.MeshStandardMaterial({ color: 0x6a4a22, roughness: 0.35, metalness: 0.75 });
-      const up = [[0, 0], [0.28, 0], [0.36, 0.08], [0.5, 0.3], [0.52, 0.46], [0.46, 0.58], [0.5, 0.62], [0.5, 0.66]].map(([a, b2]) => new THREE.Vector2(a, b2));
-      const u = new THREE.Mesh(new THREE.LatheGeometry(up, 24), bronze); u.position.set(URN.x, 0.34, URN.z); u.castShadow = !LOW; world.add(u);
-      for (const sx of [-1, 1]) { const h = new THREE.Mesh(new THREE.TorusGeometry(0.1, 0.022, 6, 12), bronze); h.position.set(URN.x + sx * 0.54, 0.84, URN.z); h.rotation.y = Math.PI / 2; world.add(h); }
-      const sand = new THREE.Mesh(new THREE.CircleGeometry(0.46, 20), new THREE.MeshStandardMaterial({ color: 0x9a8a70, roughness: 1 }));
-      sand.rotation.x = -Math.PI / 2; sand.position.set(URN.x, 0.92, URN.z); world.add(sand);
-      const stickG = new THREE.CylinderGeometry(0.005, 0.005, 0.34, 3); stickG.translate(0, 0.17, 0);
-      const tipG = new THREE.SphereGeometry(0.009, 5, 4); tipG.translate(0, 0.34, 0);
-      const N = 26, sIM = new THREE.InstancedMesh(stickG, new THREE.MeshStandardMaterial({ color: 0x8a3a22, roughness: 0.9 }), N);
-      const tIM = new THREE.InstancedMesh(tipG, new THREE.MeshBasicMaterial({ color: 0xff8a3a, fog: false }), N);
-      const d = new THREE.Object3D();
-      for (let i = 0; i < N; i++) {
-        const a = hash(i, 5) * Math.PI * 2, r = Math.sqrt(hash(i, 6)) * 0.36;
-        d.position.set(URN.x + Math.cos(a) * r, 0.92, URN.z + Math.sin(a) * r); d.rotation.set((hash(i, 8) - 0.5) * 0.3, 0, (hash(i, 9) - 0.5) * 0.3); d.updateMatrix();
-        sIM.setMatrixAt(i, d.matrix); tIM.setMatrixAt(i, d.matrix);
-      }
-      for (const im of [sIM, tIM]) { im.instanceMatrix.needsUpdate = true; im.computeBoundingSphere(); world.add(im); }
-      for (const sx of [-1, 1]) {
-        cyl(0.05, 0.05, 0.9, URN.x + sx * 0.85, 0.34 + 0.45, URN.z, new THREE.MeshStandardMaterial({ color: 0xf2c230, roughness: 0.6 }), 10);
-        const fl = new THREE.Mesh(new THREE.SphereGeometry(0.028, 8, 6), new THREE.MeshBasicMaterial({ color: 0xffc46a, transparent: true, opacity: 0.95, fog: false }));
-        fl.scale.set(1, 1.8, 1); fl.position.set(URN.x + sx * 0.85, 1.3, URN.z); world.add(fl); candles.push(fl);
-      }
-      if (makeSoftDot) {
-        const dot = makeSoftDot(); madeTex.push(dot);
-        const M = LOW ? 16 : 30, geo = new THREE.BufferGeometry();
-        geo.setAttribute('position', new THREE.Float32BufferAttribute(new Float32Array(M * 3), 3));
-        urnSmoke = new THREE.Points(geo, new THREE.PointsMaterial({ map: dot, size: 0.55, transparent: true, opacity: 0.22, depthWrite: false, color: 0xe6ddd0 }));
-        urnSmoke.frustumCulled = false; urnSmoke.userData.seed = Array.from({ length: M }, (_, i) => hash(i, 21)); world.add(urnSmoke);
-      }
-      solids.push(hid(cyl(0.95, 0.95, 1.0, URN.x, 0.5, URN.z, matStone, 10)));
-    }
+    /* (v16.4 · the incense urn on the axis — pot, sticks, smoke, candles and
+       its stone base — was built and taken out at Chad's word: "Remove this
+       incense burner and the candles, and the square platform".) */
 
     /* ---------------------------------------------- v16.4 · MARIGOLDS
        Strings of marigold and jasmine: a swag on each naga's neck, a
@@ -1691,7 +1653,13 @@
         const cv = new THREE.CatmullRomCurve3(pts);
         for (let k = 0; k <= n; k++) { beads.push(cv.getPoint(k / n)); bcol.push(pal[k % pal.length]); }
       };
-      for (const sx of [-1, 1]) string([new THREE.Vector3(sx * 1.9 - 0.17, 1.3, STAIR.foot + 0.52), new THREE.Vector3(sx * 1.9, 1.08, STAIR.foot + 0.62), new THREE.Vector3(sx * 1.9 + 0.17, 1.3, STAIR.foot + 0.52)], 16, [O, O, Y]);
+      /* round the naga's NECK (a loop about it, dipping at the front), not
+         hung in the air in front of it */
+      for (const sx of [-1, 1]) {
+        const c = new THREE.Vector3(sx * 1.9, 1.2, STAIR.foot + 0.46), pts = [];
+        for (let k = 0; k <= 16; k++) { const a = k / 16 * Math.PI * 2; pts.push(new THREE.Vector3(c.x + Math.cos(a) * 0.13, c.y - Math.max(0, Math.sin(a)) * 0.09, c.z + Math.sin(a) * 0.13)); }
+        string(pts, 24, [O, O, Y]);
+      }
       for (const px of [-6.75, -2.4, 2.4, 6.75]) string([new THREE.Vector3(px, SALA.floor + 2.5, -1.68), new THREE.Vector3(px + 0.02, SALA.floor + 2.0, -1.68), new THREE.Vector3(px, SALA.floor + 1.55, -1.68)], 22, [O, Y, O, W]);
       for (const sx of [-1, 1]) string([new THREE.Vector3(sx * 3.95, 2.8, 0.63), new THREE.Vector3(sx * 3.95, 2.1, 0.63)], 16, [O, O, W]);
       string([new THREE.Vector3(-1.9, SALA.floor + 0.3, ALT.z + 1.42), new THREE.Vector3(0, SALA.floor + 0.18, ALT.z + 1.46), new THREE.Vector3(1.9, SALA.floor + 0.3, ALT.z + 1.42)], 40, [O, Y]);
@@ -1746,7 +1714,10 @@
         if (Math.hypot(x - CHEDI.x, z - CHEDI.z) < 9) continue;      // v16.4: nothing grows against the chedi
         spots.push({ x, z, h: 8.5 * (0.8 + hash(i, 17) * 0.6) });
       }
-      spots.push({ x: BODHI.x, z: BODHI.z, h: 11.5 });               // the bodhi's crown
+      /* the bodhi's crown — `always`: on a phone the stand is thinned to 45 %
+         and the bodhi went with it, leaving a planter of cloths round nothing
+         (Chad: "What is this round thing supposed to be?") */
+      spots.push({ x: BODHI.x, z: BODHI.z, h: 11.5, always: true });
       spots.push({ x: -4.6, z: 17.2, h: 5.2 }, { x: 4.6, z: 17.4, h: 4.8 });   // the frangipani outside the gate
       /* v16.1: the tree that stood at (-12.4, -10.6) is where the kuti is now */
       /* v16.4: the tree at (-13.4, -2.2) stood where the Buddha gallery is; it grows by the south-west corner now */
@@ -2428,6 +2399,9 @@
       const face = Math.atan2(-(MON.x - BLESS.x), -(MON.z - BLESS.z));
       turnTo(face, 0.9, { y: SALA.floor + 0.98, span: 0.6, lo: -0.9, hi: 0.8 });
       blessing = { t0: dayClock.t, chantAt: -1, bowAt: -1, flick: 0, mark: 0 };
+      /* v16.5 (Chad: "his hands should switch to the same exact praying
+         hands pose that was used back in episode 1 chapter 1 option 4") */
+      if (kit && kit.pray) kit.pray(true, { secs: 1.4 });
       monkFace(true);
       syncProps();
       if (worldSfx) worldSfx('barestep', 0.45, 0.85);
@@ -2457,6 +2431,7 @@
       if (!blessing) return;
       blessing = null;
       if (kit) {
+        if (kit.pray) kit.pray(false, { secs: 0.9 });   // v16.5: the hands come down as he stands
         kit.pose('standing', { secs: 0.7 }); kit.root(false);
         kit.conduct({ note: 'Knelt for the monk\'s blessing, and heard what it asks of you.', s: 3, a: 2 });
       }
@@ -2714,6 +2689,9 @@
       seated = 'stool'; syncProps();
       yaw.position.x = CUSH.x; yaw.position.z = CUSH.z;
       if (kit) kit.root(true);
+      /* v16.5 (Chad: "Same for the sakyant part, hands should be praying"):
+         together from the moment he sits until a scene takes the hands */
+      if (kit && kit.pray) kit.pray(true, { secs: 1.4 });
       turnTo(Math.PI, 1.1, { y: STOOL_TOP + 0.80, span: 0.9, lo: -0.6, hi: 0.55 });
       if (worldSfx) worldSfx('barestep', 0.5, 0.9);
       setPhase('yant');
@@ -2925,7 +2903,7 @@
       DATA.ambience.beds[2][1] = mixK.music;
       DATA.ambience.beds[3][1] = room && (st === 'play' || st === 'decide') ? 0.55 : 0;
     }
-    /* v16.4: the banners sway, the bells swing, the urn smokes */
+    /* v16.4: the bodhi cloth's tail sways, the bells swing */
     const bellQ = new THREE.Quaternion(), bellE = new THREE.Euler(), bellM = new THREE.Matrix4(), bellS = new THREE.Vector3(1, 1, 1);
     function dressTick(t) {
       for (const g of tungs) {
@@ -2941,16 +2919,6 @@
         leafIM.setMatrixAt(i, bellM);
       }
       bellIM.instanceMatrix.needsUpdate = true; leafIM.instanceMatrix.needsUpdate = true;
-      if (urnSmoke) {
-        const a = urnSmoke.geometry.attributes.position, seed = urnSmoke.userData.seed, N = seed.length;
-        for (let i = 0; i < N; i++) {
-          const k = ((t * 0.07 + seed[i]) % 1);
-          a.array[i * 3] = URN.x + Math.sin(k * 7 + i) * 0.08 * (1 + k * 4) - k * 0.6;
-          a.array[i * 3 + 1] = 1.25 + k * 3.6;
-          a.array[i * 3 + 2] = URN.z + Math.cos(k * 5 + i) * 0.07 * (1 + k * 3);
-        }
-        a.needsUpdate = true;
-      }
     }
     function lifeTick(t, wdt) {
       for (const f of fans) f.rotation.y += wdt * 2.2;
@@ -3037,12 +3005,13 @@
         yaw.position.x = CUSH.x; yaw.position.z = CUSH.z;
         seated = 'stool';
         if (kit) { kit.pose('lying', { y: STOOL_TOP + 0.80, yaw: faceAjarn(), span: 0.8, pitchLo: -0.5, pitchHi: 0.6, secs: 0.05 }); kit.root(false); }
+        if (kit && kit.pray) kit.pray(true, { secs: 0 });   // v16.5: still on the stool, hands still together
         yaw.rotation.y = faceAjarn();
         ajarnFace(true);
         setPhase('decide');
         return;
       }
-      if (kit) { kit.pose('standing', { secs: 0.05 }); kit.root(false); }
+      if (kit) { kit.pose('standing', { secs: 0.05 }); kit.root(false); if (kit.pray) kit.pray(false, { secs: 0 }); }
       setPhase(p);
       if (p === 'go') goCall();                     // told again where the Ajarn is
     }
@@ -3086,6 +3055,7 @@
       putAjarn(); putOther(true);
       if (kit) {
         kit.root(false); kit.pose('standing', { secs: 0.05 });
+        if (kit.pray) kit.pray(false, { secs: 0 });      // v16.5
         kit.daylight(null, 0); kit.presence(0);
         kit.setPhase('stall');
       }
@@ -3780,24 +3750,6 @@
     x.strokeStyle = '#e2b04a'; x.lineWidth = 2;
     for (let row = 0; row < 4; row++) for (let col = 0; col < 5; col++) { x.beginPath(); x.arc(col * 32 + (row % 2) * 16, row * 32 + 20, 14, Math.PI, Math.PI * 2); x.stroke(); }
     return done(THREE, c, true);
-  }
-  /* a Lanna TUNG: a long hanging banner in coloured bands with cut
-     triangles and a fringe, alpha-tested */
-  function makeTung(THREE, cnv) {
-    const [c, x] = cnv(64); c.width = 64; c.height = 512;
-    x.clearRect(0, 0, 64, 512);
-    const bands = ['#f3ecdc', '#f2c230', '#e8912a', '#3f9a5a', '#f3ecdc', '#e06a9a', '#f2c230'];
-    for (let i = 0; i < 7; i++) {
-      const y0 = 20 + i * 64;
-      x.fillStyle = bands[i]; x.fillRect(4, y0, 56, 60);
-      x.fillStyle = 'rgba(0,0,0,0)';
-      x.clearRect(4, y0 + 20, 12, 12); x.clearRect(48, y0 + 20, 12, 12);
-      x.strokeStyle = '#d9a63c'; x.lineWidth = 2; x.strokeRect(8, y0 + 4, 48, 52);
-      x.fillStyle = '#d9a63c'; x.beginPath(); x.moveTo(32, y0 + 14); x.lineTo(42, y0 + 30); x.lineTo(32, y0 + 46); x.lineTo(22, y0 + 30); x.closePath(); x.fill();
-    }
-    x.fillStyle = '#d9a63c'; x.fillRect(0, 0, 64, 20);            // the rod it hangs from
-    for (let k = 0; k < 8; k++) { x.fillStyle = bands[k % 7]; x.fillRect(4 + k * 7, 468, 5, 40); }   // the fringe
-    return done(THREE, c, false);
   }
   /* the gallery's backing: blue glass with a gold pointed niche behind each image */
   function makeNiches(THREE, cnv) {

@@ -285,6 +285,26 @@ K.groundSeam = await p.evaluate(async () => {
 }).catch(() => false);
 await settle();
 
+// v16.5: THE PRAYING HANDS — kit.pray brings both hands to scChant's clasp and takes them back to the rest exactly
+K.praySeam = await p.evaluate(async () => {
+  const E = window.__enc;
+  const frames = (n) => new Promise(r => { let k = 0; const f = () => (++k >= n ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); });
+  await frames(2);
+  const rest = E.prayDebug();
+  E.kit.pray(true, { secs: 0.05 });
+  const t0 = performance.now();
+  while (E.prayDebug().k < 1 && performance.now() - t0 < 30000) await frames(1);
+  const up = E.prayDebug();
+  const clasp = up.k === 1 && up.left && Math.abs(up.ay - (-0.235)) < 0.002 && E.kit.praying();
+  E.kit.pray(false, { secs: 0.05 });
+  const t1 = performance.now();
+  while ((E.prayDebug().k > 0 || E.prayDebug().left) && performance.now() - t1 < 30000) await frames(1);
+  await frames(2);
+  const down = E.prayDebug();
+  return clasp && !down.left && !E.kit.praying() && down.ax === rest.ax && down.ay === rest.ay;
+}).catch(() => false);
+await settle();
+
 // presence: an unseen thing drains the bar, and the banner uses the chapter's words for it
 K.presenceDrains = await p.evaluate(() => { window.__enc.kit.presence(1); return window.__enc.stats.sanity; })
   .then(s0 => p.waitForFunction(x => window.__enc.stats.sanity < x - 0.3, s0, { timeout: 60000 }))

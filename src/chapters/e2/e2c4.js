@@ -638,7 +638,10 @@
     for (let i = 0; i < 14; i++) TREE_AT.push([-16 + hash(i, 31) * 34, 12 + hash(i, 37) * 10, 6 + hash(i, 41) * 4]);
     const treeStand = plantTrees ? plantTrees(world, TREE_AT.map(([x, z, h]) => ({ x, z, h })),
       { seed: 41, tint: new THREE.Color(0.66, 0.78, 0.66), roughness: 0.97, lowKeep: 0.55 }) : null;
-    const treeBlockers = TREE_AT.filter(([x, z]) => x > DATA.bounds.minX - 1 && x < DATA.bounds.maxX + 1 && z > DATA.bounds.minZ - 1 && z < DATA.bounds.maxZ + 1)
+    /* v16.5: blockers from the trees this device actually PLANTED — built
+       from TREE_AT, every trunk a phone thinned away was an invisible wall */
+    const treeBlockers = (treeStand ? treeStand.userData.planted : []).map(sp => [sp.x, sp.z])
+      .filter(([x, z]) => x > DATA.bounds.minX - 1 && x < DATA.bounds.maxX + 1 && z > DATA.bounds.minZ - 1 && z < DATA.bounds.maxZ + 1)
       .map(([x, z]) => new THREE.Box3(new THREE.Vector3(x - 0.42, 0, z - 0.42), new THREE.Vector3(x + 0.42, 2.5, z + 0.42)));
 
     /* --------------------------------------------------------- the lights */

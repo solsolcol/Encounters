@@ -1490,19 +1490,34 @@ function plantTrees(parent, spots, opts = {}) {
     group.clear();
   };
   const seed = opts.seed === undefined ? 1 : opts.seed;
+  const rnd = (i, salt) => {            // one deterministic stream per spot
+    const x = Math.sin((i + 1) * 12.9898 + seed * 78.233 + salt * 43.758) * 43758.5453;
+    return x - Math.floor(x);
+  };
+  /* v16.5: WHICH TREES THIS DEVICE DRAWS IS DECIDED HERE, ONCE, NOW — and
+     handed back as `group.userData.planted` (the spots, in order), before a
+     byte of the kit has landed. The phone's thinning (`lowKeep`, v6.17)
+     used to be decided inside the loader and told nobody, so a chapter that
+     built anything ON a tree — a blocker round its trunk, a planter, a torch
+     spot aimed at it — built it on every spot, drawn or not. On a phone that
+     was: the bodhi's planter and cloths round no tree (e3c1), a "gap between
+     two trunks" torch spot with BOTH trunks thinned away (e2c3, since v11.0),
+     and a blocker at every thinned trunk inside the play area — invisible
+     walls (e2c3, e2c4). Two rules make the class impossible:
+       - a spot the chapter DEPENDS on is marked `always` and is never thinned;
+       - anything built per tree is built from `planted`, never from the list
+         the chapter passed in, so it cannot disagree with what is drawn. */
+  const keep = LOW && opts.lowKeep !== undefined ? opts.lowKeep : 1;
+  const kept = spots.map((sp, i) => keep >= 1 || !!sp.always || rnd(i, 7) <= keep);
+  group.userData.planted = spots.filter((sp, i) => kept[i]);
   treeKit().then(kinds => {
     if (dead || !kinds) return;
     const live = kinds.map((k, i) => k && i).filter(i => i !== false && kinds[i]);
     if (!live.length) return;
     const tint = opts.tint ? new THREE.Color(opts.tint) : null;
-    const rnd = (i, salt) => {            // one deterministic stream per spot
-      const x = Math.sin((i + 1) * 12.9898 + seed * 78.233 + salt * 43.758) * 43758.5453;
-      return x - Math.floor(x);
-    };
     const byKind = new Map();
-    const keep = LOW && opts.lowKeep !== undefined ? opts.lowKeep : 1;
     spots.forEach((sp, i) => {
-      if (keep < 1 && rnd(i, 7) > keep) return;      // the phone's thinner stand
+      if (!kept[i]) return;      // the phone's thinner stand, decided above
       const k = sp.kind !== undefined ? live[sp.kind % live.length] : live[(i + ((rnd(i, 3) * live.length) | 0)) % live.length];
       if (!byKind.has(k)) byKind.set(k, []);
       byKind.get(k).push({ sp, i });
@@ -1662,6 +1677,66 @@ let weaponShown = false, weaponLastFire = 0;
    construction. */
 let weaponBlock = null, weaponBlockShown = 0, weaponBlockEl = null, weaponBlockT = 0;
 const weaponLog = [];                        // for the probes: every shot, hit or miss
+/* v16.5: THE PRAYING HANDS, in play (the twenty-second seam). Chad: "When
+   player kneel for the monk, his hands should switch to the same exact
+   praying hands pose that was used back in episode 1 chapter 1 option 4.
+   Same for the sakyant part." That pose lived only inside ch1's scene D
+   (scChant), written in the cutscene language — so `kit.pray(on, { secs })`
+   is that scene's clasp lifted into the engine, number for number: the same
+   PRAYER_R / PRAYER_L bases, the same half-palm gap (HAND_W * 0.085), the
+   same height (-0.235) and depth (-0.375), the same setHandPrayer fingers,
+   the right arm rising from its rest and the mirrored left from under the
+   frame. Eased on WALL time (the v7.4 law), written only while it is on or
+   easing out, so no other chapter's frame is touched; a cutscene takes the
+   hands back on its first frame (the scene owns them), and kitReset clears
+   it. Nothing before e3c1 calls it. */
+const PRAY = { y: -0.235, z: -0.375, low: -0.46 };
+const pray = { k: 0, to: 0, secs: 1.4, last: 0, was: 0 };
+let prayRestQ = null;
+const PRAY_Q0 = new THREE.Quaternion();
+function kitPraySet(on, opts = {}) {
+  pray.to = on ? 1 : 0;
+  pray.secs = Math.max(0.01, opts.secs !== undefined ? +opts.secs : 1.4);
+  if (opts.secs === 0) pray.k = pray.to;
+  pray.last = performance.now();
+}
+function prayOff() {
+  const was = pray.k > 0 || pray.was > 0;
+  pray.k = pray.to = 0; pray.was = 0;
+  if (was) prayPut(0, true);
+}
+function prayPut(k, done) {
+  if (!prayRestQ) prayRestQ = new THREE.Quaternion().setFromEuler(new THREE.Euler(0.50, 0.28, -0.48));
+  const e = k * k * (3 - 2 * k);                 // the scene's own tr() eases like this
+  const half = HAND_W * 0.085;
+  if (done) {                                    // back exactly as the rest of the engine leaves it
+    armR.rotation.set(0.50, 0.28, -0.48);
+    armR.position.copy(armBase);
+    if (prayerArmL) prayerArmL.visible = false;
+    if (rightHandModel) setHandCurl(rightHandModel, 1);
+    return;
+  }
+  armR.position.set(armBase.x + (half - armBase.x) * e, armBase.y + (PRAY.y - armBase.y) * e, armBase.z + (PRAY.z - armBase.z) * e);
+  armR.quaternion.slerpQuaternions(prayRestQ, PRAYER_R, e);
+  const L = buildPrayerArm();
+  if (L) {
+    L.visible = e > 0.001;
+    L.position.set(-half, PRAY.low + (PRAY.y - PRAY.low) * e, PRAY.z);
+    L.quaternion.slerpQuaternions(PRAY_Q0, PRAYER_L, e);   // from the arm's own built rest, as scChant's startL
+    setHandPrayer(L.userData.model, e);
+  }
+  if (rightHandModel) setHandPrayer(rightHandModel, e);
+}
+function prayFrame() {
+  if (!handsReady || !rightOriented) return;
+  if (pray.k === 0 && pray.to === 0 && pray.was === 0) return;
+  const now = performance.now();
+  const dt = pray.last ? Math.min(0.1, (now - pray.last) / 1000) : 0; pray.last = now;
+  if (pray.k !== pray.to) pray.k = pray.to > pray.k ? Math.min(pray.to, pray.k + dt / pray.secs) : Math.max(pray.to, pray.k - dt / pray.secs);
+  if (pray.k === 0) { if (pray.was > 0) prayPut(0, true); pray.was = 0; return; }
+  prayPut(pray.k, false);
+  pray.was = pray.k;
+}
 let kitRooted = false, kitHurt = null;       // v11.1: the player held in place; the red damage frame + a bleed until the player acts
 let invUrge = null;                          // v11.6: an item the bag button pulses for until it is equipped (kit.give)
 let invBtnEl = null;                         // v11.6: the bag button, looked up once
@@ -4041,6 +4116,7 @@ function kitReset() {
   if (CH.torch) torchSetup(CH.torch); else torchTeardown();
   if (CH.weapon) weaponSetup(CH.weapon); else weaponTeardown();   // v12.0
   kitRooted = false; kitHurtSet(null);   // v11.1
+  prayOff();                             // v16.5: a run never starts with the hands still together
   activeSpot = null;
   if (unl.id) unlockClose('force');      // v14.7: a splash never outlives the run it opened in
 }
@@ -4099,6 +4175,8 @@ const KIT = {
   haptic,
   flash: kitFlashSet,              // v8.7: one wash of colour over the screen
   root: on => { kitRooted = !!on; },   // v11.1: hold the player in place (the look and the torch still work)
+  pray: kitPraySet,                // v16.5: the hands into añjali in PLAY — episode 1 chapter 1's scene D pose, exactly
+  praying: () => pray.to > 0,
   hurt: kitHurtSet,                // v11.1: the red frame held, and a bleed per second, until cleared
   /* v11.6: THE BAG, from a chapter. `give` puts an item in the bag and
      sets the bag button pulsing until it is equipped; `take` removes it
@@ -9355,6 +9433,7 @@ function playCineFn(sceneFn, onDone, startFade = 0) {
     ghostMix: null,            // t => animation speed for her walk cycle
     keep: {}, endFade: 0, snap, onDone
   };
+  prayOff();                       // v16.5: a scene takes the hands back from kit.pray, on its first frame
   cineDuck = null;                 // a scene starts with the room at full
   cineMusicK = 1;                  // v6.6: and the music at the chapter's level
   camLens(CAM_FOV);                // v6.12: and on the chapter's own lens
@@ -11440,6 +11519,7 @@ function tick(now = 0) {
   if (state !== 'title' && handsReady) {
     torchPropSync();                       // v11.1: hand or torch, decided on the frame
     weaponPropSync();                      // v12.0: or the weapon, over both
+    if (state !== 'cine') prayFrame();     // v16.5: the praying hands (a scene owns the hands itself)
   }
   /* v15: COVERED FRAMES. While an OPAQUE layer covers the whole canvas — the
      title, the chapter card once it is forced solid, a film or a scene held
@@ -11741,6 +11821,7 @@ async function skelLab(key, o = {}) {
 window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () => state,   // v8.7: pitch, so a probe can aim the lens at the floor
                  skelLab,                                  // v15.2: the merge, proven
                  kit: KIT, kitDebug, interactNow,          // v7.0: the play kit, by state
+                 prayDebug: () => ({ k: pray.k, to: pray.to, left: !!(prayerArmL && prayerArmL.visible), ax: +armR.position.x.toFixed(4), ay: +armR.position.y.toFixed(4) }),   // v16.5
                  weaponFire, weaponReload, weaponLog, weaponProp: () => weaponProp, weaponMixer: () => weaponMixer,      // v12.0, probes
                  evPress: (x, y) => evPress(x ?? innerWidth / 2, y ?? innerHeight / 2), evRelease,
                  /* v9.4: drive one drag-and-match drop by id, so a harness or a

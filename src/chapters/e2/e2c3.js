@@ -304,9 +304,15 @@
       if (TREE_AT.some(([tx, tz]) => Math.hypot(x - tx, z - tz) < 1.5)) continue;   // no two trunks in one spot
       TREE_AT.push([x, z, 6.5 + hash(i, 54) * 4.5]);
     }
-    const treeStand = plantTrees ? plantTrees(world, TREE_AT.map(([x, z, h]) => ({ x, z, h })),
+    /* v16.5: the GAP's two trunks are `always` — they are a torch spot, and
+       on a phone (lowKeep 0.6) BOTH had been thinned away since v11.0, so
+       "a gap between two trunks" pointed at an empty patch of dark. And the
+       blockers are built from the trees this device actually PLANTED: from
+       TREE_AT, every thinned trunk inside the bounds was an invisible wall. */
+    const treeStand = plantTrees ? plantTrees(world, TREE_AT.map(([x, z, h], i) => ({ x, z, h, always: i < 2 })),
       { seed: 23, tint: new THREE.Color(0.72, 0.86, 0.70), roughness: 0.97, lowKeep: 0.6 }) : null;
-    const treeBlockers = TREE_AT.filter(([x, z]) => x > DATA.bounds.minX - 0.5 && x < DATA.bounds.maxX + 0.5 && z > DATA.bounds.minZ - 0.5 && z < DATA.bounds.maxZ + 0.5)
+    const treeBlockers = (treeStand ? treeStand.userData.planted : []).map(sp => [sp.x, sp.z])
+      .filter(([x, z]) => x > DATA.bounds.minX - 0.5 && x < DATA.bounds.maxX + 0.5 && z > DATA.bounds.minZ - 0.5 && z < DATA.bounds.maxZ + 0.5)
       .map(([x, z]) => new THREE.Box3(new THREE.Vector3(x - 0.42, 0, z - 0.42), new THREE.Vector3(x + 0.42, 2.5, z + 0.42)));
 
     /* --------------------------------------------------------- the lights */

@@ -4988,3 +4988,26 @@ weight eases out and back in with the pose. A chapter that declares no
 chapter's own blocker helper must measure its column from the ground its
 centre stands on, or a table on a raised floor is walk-through again (the
 v5.03 lesson, one floor up).
+
+## v16.5 — an optimization that REMOVES things must say what it removed
+
+The phone draws a thinned stand of trees (`lowKeep`, v6.17): each spot is
+kept or dropped by a deterministic draw inside `plantTrees`. The draw was
+made inside the loader and told nobody, so every chapter that built something
+ON a tree built it on every spot, drawn or not — and the desktop, where
+nothing is thinned, is where every review photograph was taken. On a phone
+(the only device Chad plays on): episode 3 chapter 1's bodhi was thinned away
+and its planter and cloths stood round nothing ("What is this round thing
+supposed to be?"); episode 2 chapter 3's torch spot "a gap between two
+trunks" had BOTH trunks thinned away since v11.0; and e2c3 and e2c4 kept a
+blocker at every thinned trunk inside the play area — invisible walls.
+
+The class is closed by construction, not by care: `plantTrees` decides the
+thinning up front and hands it back as `group.userData.planted`; a spot the
+chapter depends on is marked `always` and is never thinned; anything built
+per tree (a blocker, a planter, a torch spot) is built from `planted`, never
+from the list the chapter passed in, so it cannot disagree with what is
+drawn. The rule generalises to every `LOW` cut: **a cut that removes a thing
+on the phone must be visible to everything that depends on that thing, and
+a change is reviewed on the PHONE (touch on — without it `LOW` is false),
+aimed at every object the change touches.**
