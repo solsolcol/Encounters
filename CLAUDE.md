@@ -4401,7 +4401,9 @@ What the baseline contains, by release:
   in episode 1 chapter 1 option 4. Same for the sakyant part"* — the
   twenty-second seam, `kit.pray` (table above), on from kneeling to standing
   at the blessing and from sitting on the stool until the scene; the fixture
-  proves it (`praySeam`).
+  proves it (`praySeam`). Harnesses chapter, fixture, walk, leak, cine green.
+  Deploy `6abcfc1136060112bb66b0dc`, byte-verified (index.html and all 184
+  build files).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
