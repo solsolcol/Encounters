@@ -4361,7 +4361,8 @@ What the baseline contains, by release:
   declare no ground, so they are unchanged by construction.
   walktest also learned `pileVia` (a pile behind a scene change is reached at
   its door). Harnesses chapter, walk, fixture, leak, cine, csp, hosted, text
-  green. docs/V16.4-THE-WAT-DRESSED.md is the build's memory.
+  green. Deploy `6abcbd38f6b2933c490070e2`, byte-verified (index.html and all
+  184 build files). docs/V16.4-THE-WAT-DRESSED.md is the build's memory.
 - **v16.3** A THAI WAT, NOT A CHINESE ONE — Chad: *"the temple is too red, it
   looks more like a chinese temple than a thai temple. I think thai temple has
   more white, yellow, and gold elements, with some red."* Colour only, nothing
