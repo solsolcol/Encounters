@@ -4359,7 +4359,9 @@ What the baseline contains, by release:
   heights gained LIFT; the ending walks down the middle of the flight. Two new
   sounds, picked by measurement (masters/v16.4/make.sh). Episode 1 and 2
   declare no ground, so they are unchanged by construction.
-  docs/V16.4-THE-WAT-DRESSED.md is the build's memory.
+  walktest also learned `pileVia` (a pile behind a scene change is reached at
+  its door). Harnesses chapter, walk, fixture, leak, cine, csp, hosted, text
+  green. docs/V16.4-THE-WAT-DRESSED.md is the build's memory.
 - **v16.3** A THAI WAT, NOT A CHINESE ONE — Chad: *"the temple is too red, it
   looks more like a chinese temple than a thai temple. I think thai temple has
   more white, yellow, and gold elements, with some red."* Colour only, nothing

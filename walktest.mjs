@@ -72,7 +72,11 @@ for (const key of ['ch3', 'e2c1', 'e2c2', 'e2c3', 'e2c4', 'e2c5', 'e3c1']) {
       return false;
     };
     const targets = [];
-    targets.push({ what: 'the pile (his bed)', x: S.pile ? S.pile.pos.x : D.stage.pile.x, z: S.pile ? S.pile.pos.z : D.stage.pile.z, r: 1.6 });
+    /* v16.4: a chapter whose decision object is behind a scene change (e3c1's
+       Ajarn is in the private room, entered through a door) names where it is
+       REACHED from — the door must be walkable, the room is a teleport */
+    if (S.pileVia) targets.push({ what: 'the pile, via ' + S.pileVia.what, x: S.pileVia.x, z: S.pileVia.z, r: 1.2 });
+    else targets.push({ what: 'the pile (his bed)', x: S.pile ? S.pile.pos.x : D.stage.pile.x, z: S.pile ? S.pile.pos.z : D.stage.pile.z, r: 1.6 });
     if (typeof S.LINE_X === 'number') targets.push({ what: 'the fall-in line', x: S.LINE_X + 0.2, z: 0, r: 1.2 });
     for (const h of (S.hotspots || [])) targets.push({ what: 'hotspot ' + (h.id || h.prompt), x: h.pos.x, z: h.pos.z, r: Math.max(0.8, (h.radius || 1.5) - 0.3) });
     return { targets: targets.map(t => ({ ...t, reach: near(t.x, t.z, t.r) })),

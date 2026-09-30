@@ -3493,6 +3493,7 @@
     const readyAt = performance.now();
     return (S = {
       world, noteTex, blockers: blockers(), groundAt, STAIR,
+      pileVia: { what: "the private room's door", x: KDOOR.x + 0.4, z: KDOOR.z },   // the Ajarn is behind a scene change (walktest)
       ready: () => (ajarn.ready && other.ready && monk.ready) || performance.now() - readyAt > 12000,
       pile: { pos: PILE_POS, radius: INTERACT_R, group: pile,
               dist: pileDist, screen: pileScreen, inView: pileInView,
