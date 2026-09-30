@@ -4443,6 +4443,18 @@ What the baseline contains, by release:
   link). docs/V16.6-THE-THAI-KIT.md is the build's memory. Deploy
   `6abd4959eda727984ba997b1`, byte-verified (index.html and all 188 build
   files) — deployed BEFORE the harnesses, Chad's new order.
+- **v16.7** THE NAGA, MUCH BIGGER — Chad: "the naga is too small, and has
+  something hung around its neck, remove that thing from the naga, make the
+  naga much bigger, adjust the stairs to match if necessary." The marigold
+  swag on its neck is gone; the naga is ×2.3 (was ×1.38) — the head rears
+  1.2 m off its pedestal, 1.7 m to the crown; the staircase is EIGHT risers
+  over 3.0 m (was six over 1.92) with a 1.25 m pedestal at the foot
+  (`STAIR.ped`), and the file is re-baked for those numbers
+  (`BEND=-0.861,0.443,0.478`, ramp −0.367, exactly the cheek wall's). Every
+  stair consumer derives from `STAIR` (the treads, the cheek walls, the
+  blockers, `groundAt`, the ending's walk down), so nothing else moved.
+  Deploy `6abd4e1e35adc25ce0d36512`, byte-verified (188 files), BEFORE the
+  harnesses; walk, cine, leak green after.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
