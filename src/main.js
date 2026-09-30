@@ -4051,6 +4051,28 @@ function kitReset() {
    which is what "until action is taken" means; with the card open the
    bleed stops at `floor` (5), so nobody faints under a panel they are
    reading. Clearing it hands the frame back to the sanity dread. */
+/* v16.1: THE TWENTIETH SEAM — A SCENE CHANGE, WARMED. Chad, on episode 3
+   chapter 1's private room: "a scene change with a fade to black and fade to
+   scene ... load all the assets first while fading before the room shows
+   up". The chapter raises its own black (`kit.fade`), moves the player, and
+   asks for this: the curtain's own warm (every texture uploaded, every
+   program compiled with the light states play reaches, one frame drawn with
+   everything forced visible) run again on demand, so the room is never
+   built on screen. The loading word comes up over the black if it takes
+   longer than a moment (Chad, v15.3: "the loading text should always appear
+   whenever the player waits"). Resolves with the milliseconds it took; a
+   warm that fails costs a hitch later, never the chapter. Episodes 1 and 2
+   never call it. */
+function kitWarm(o = {}) {
+  const t0 = performance.now();
+  let shown = false;
+  const tw = o.word === false ? 0 : setTimeout(() => { shown = true; worldWord(true); }, 450);
+  try { shadowCasterSync(); } catch {}
+  return warmWorld([]).catch(() => {}).then(() => {
+    clearTimeout(tw); if (shown) worldWord(false);
+    return performance.now() - t0;
+  });
+}
 function kitHurtSet(o) {
   kitHurt = o ? { perSec: Math.max(0, +o.perSec || 0), floor: o.floor === undefined ? 5 : Math.max(0, +o.floor), last: 0 } : null;
   if (!kitHurt) { const el = $('panic'); if (el) { el.classList.remove('critical'); el.classList.remove('hurt'); if (state !== 'play') el.style.opacity = '0'; } }
@@ -4072,6 +4094,7 @@ const KIT = {
   daylight: daylightTo,
   fade: (to, secs) => { kitFade = { from: kitFadeNow, to: Math.max(0, Math.min(1, +to || 0)), t: 0, secs: Math.max(0.01, +secs || 0.5) }; },
   getFade: () => kitFadeNow,
+  warm: kitWarm,                   // v16.1: the curtain's warm, on demand, under a chapter's own black
   decisionClock: (secs, onExpire) => { decClock = secs > 0 ? { secs, left: secs, onExpire, fired: false } : null; },
   haptic,
   flash: kitFlashSet,              // v8.7: one wash of colour over the screen
@@ -6078,7 +6101,7 @@ const ADULT_TAKES = new Set([
   'z1pro1', 'z1pro2', 'z1pro3', 'z1pro4', 'z1pro5', 'z1pro6',
   'z1arrive', 'z1wai', 'z1wait', 'z1warm', 'z1close', 'z1next',
   'z1askA', 'z1askB', 'z1askC', 'z1askD', 'z1A', 'z1B',
-  'z1C', 'z1D']);
+  'z1C', 'z1D', 'z1sadhu', 'z1room']);
 /* The rest of the cast. They share `voiceOut` and the duck, but not the
    boost — see voiceStage() above. */
 const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
@@ -6121,7 +6144,8 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
   'c5arms', 'c5store', 'c5form',
   /* v16.0 · episode 3 chapter 1: the Ajarn (Toto) and the stall auntie (Anna) */
   'aj1next', 'aj1sit', 'aj1breathe', 'aj1katha', 'aj1done', 'aj1ask',
-  'aj1A', 'aj1B', 'aj1C', 'aj1D1', 'aj1D2', 'au1hi', 'au1sell', 'au1shoes']);
+  'aj1A', 'aj1B', 'aj1C', 'aj1D1', 'aj1D2', 'au1hi', 'au1sell', 'au1shoes',
+  'mk1come', 'mk1chant', 'mk1teach', 'hp1room', 'aj1mat']);
 const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || ADULT_TAKES.has(name) || CAST_TAKES.has(name);
 /* v6.9: his WHISPERS go round the bus. Chad wanted the three pick-up
    reactions "almost whispering to himself" and they were re-voiced as
@@ -9005,7 +9029,11 @@ const STING_SAMPLE = {
   orderchime: ['orderchime', 1], seatchime: ['seatchime', 1], candlelit: ['candlelit', 1], shoesoff: ['shoesoff', 1],
   barestep: ['barestep', 1], trayset: ['trayset', 1], incenselit: ['incenselit', 1], coins: ['coins', 1],
   watamb: ['watamb', 1], e3chant: ['e3chant', 1], officehum: ['officehum', 1], wareamb: ['wareamb', 1],
-  cabinhum: ['cabinhum', 1], e3film: ['e3film', 1], e3wait: ['e3wait', 1], e3close: ['e3close', 1]
+  cabinhum: ['cabinhum', 1], e3film: ['e3film', 1], e3wait: ['e3wait', 1], e3close: ['e3close', 1],
+  /* v16.1 · the monk in the sala, the man by the walkway, the private room */
+  mk1come: ['mk1come', 1], mk1chant: ['mk1chant', 1], mk1teach: ['mk1teach', 1], hp1room: ['hp1room', 1],
+  aj1mat: ['aj1mat', 1], z1sadhu: ['z1sadhu', 1], z1room: ['z1room', 1],
+  roomdoor: ['roomdoor', 1], watersprinkle: ['watersprinkle', 1], roomamb: ['roomamb', 1]
 };
 /* Which kinds the synth below can actually fake. Everything else in
    STING_SAMPLE is sample-only: if its buffer is not decoded yet it stays

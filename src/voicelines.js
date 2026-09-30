@@ -146,6 +146,14 @@
               note: "Toto — 'Warm Thai Storyteller', natural English with a Thai accent, aged by the prompt's tag ([old man, calm, Thai accent]). Thin English, on purpose: it is his second language." },
     auntie2: { name: "The offering-stall auntie (episode 3, chapter 1)", voice: "brM9iIbwDREZaWL8luun", model: "eleven_v3",
               note: "Anna — a Thai woman's voice, middle-aged by the tag. Three lines." },
+    /* v16.1 — the sala's MONK and the man by the walkway (Chad: "instead of
+       ajarn sitting at the temple area, it should be a monk ... a man tells the
+       player that if he wants to do sakyant, the ajarn is in the private event
+       room"). Both Thai voices; masters/v16.1/make.sh has the picks. */
+    monk: { name: "The monk in the sala (episode 3, chapter 1)", voice: "XLXcyPK1jTjw1pYLLcM9", model: "eleven_v3",
+              note: "Somchai — a Thai baritone, serious and unhurried. The blessing chant is given to him in THAI SCRIPT, so the Pali comes out as a Thai monk says it. Flat cast bus, RMS -16." },
+    helper: { name: "The man by the walkway (episode 3, chapter 1)", voice: "FaUQoAqt8WX5mfvrvb3A", model: "eleven_v3",
+              note: "Preecha — a patient, friendly Thai voice. One line. Flat cast bus, RMS -16." },
   };
 
   const LINES = [
@@ -884,7 +892,21 @@
     { id: "au1sell", who: "auntie2", ch: "e3c1", where: "Buying the offering set",
       text: "[friendly middle-aged woman] This one for Ajarn. Flower, candle, incense. Put some money inside the envelope, okay?", secs: 8.59 },
     { id: "au1shoes", who: "auntie2", ch: "e3c1", where: "If he walks into the sala in his shoes",
-      text: "[calling out, scolding a little] Eh! Shoes! Take off your shoes first!", secs: 4.36 }
+      text: "[calling out, scolding a little] Eh! Shoes! Take off your shoes first!", secs: 4.36 },
+    { id: "mk1come", who: "monk", ch: "e3c1", where: "The offering given, the monk calls him forward",
+      text: "[calmly] Come. Kneel here, and receive the blessing.", secs: 2.87 },
+    { id: "mk1chant", who: "monk", ch: "e3c1", where: "The blessing, chanted as he sprinkles the water (Pali: Sabbītiyo vivajjantu, sabba-rogo vinassatu, mā te bhavatvantarāyo, sukhī dīghāyuko bhava)",
+      text: "[chanting slowly in a low monotone] สัพพีติโย วิวัชชันตุ... สัพพะโรโค วินัสสะตุ... มา เต ภะวัตวันตะราโย... สุขี ทีฆายุโก ภะวะ...", secs: 9.17 },
+    { id: "mk1teach", who: "monk", ch: "e3c1", where: "After the blessing — Chad's words",
+      text: "[gently] Blessings don't replace hard work and merit. Both hard work and merit will create the true foundation for the blessings to work. And don't forget to keep your Buddhist five precepts.", secs: 12.36 },
+    { id: "z1sadhu", who: "jamesAdult", ch: "e3c1", where: "He thanks the monk",
+      text: "[reverent] Sadhu... thank you, Luang Phor.", secs: 2.04 },
+    { id: "hp1room", who: "helper", ch: "e3c1", where: "The man by the walkway, after the blessing",
+      text: "[friendly] If you want a Sak Yant, the Ajarn is in the private room. Down the walkway, the door at the end. Please, go ahead.", secs: 6.19 },
+    { id: "z1room", who: "jamesAdult", ch: "e3c1", where: "Inside the private room",
+      text: "[quietly, in awe] So this is where they do it.", secs: 1.88 },
+    { id: "aj1mat", who: "ajarn", ch: "e3c1", where: "The Ajarn, as he comes into the room",
+      text: "[calmly, without looking up] Sit there. Wait.", secs: 1.88 }
   ];
 
   // What a chapter key means on the sheet.

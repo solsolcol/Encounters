@@ -256,6 +256,17 @@ K.fadeInPlay = await p.evaluate(() => { window.__enc.kit.fade(1, 0.2); return tr
   .catch(() => false);
 await settle();
 
+// v16.1: a scene change warmed under the black — kit.warm() resolves with a time, and the loading word is gone after
+K.warmUnderBlack = await p.evaluate(() => { window.__enc.kit.fade(1, 0.1); return true; })
+  .then(() => p.waitForFunction(() => window.__enc.kitDebug().fade > 0.95, null, { timeout: 30000 }))
+  .then(() => p.evaluate(() => window.__enc.kit.warm().then(ms => Number.isFinite(ms) && ms >= 0)))
+  .then(ok => p.evaluate(() => document.getElementById('worldLoad').classList.contains('hide')).then(h => ok && h))
+  .then(ok => p.evaluate(() => { window.__enc.kit.fade(0, 0.1); return true; })
+    .then(() => p.waitForFunction(() => window.__enc.kitDebug().fade < 0.05, null, { timeout: 30000 }))
+    .then(() => ok))
+  .catch(() => false);
+await settle();
+
 // presence: an unseen thing drains the bar, and the banner uses the chapter's words for it
 K.presenceDrains = await p.evaluate(() => { window.__enc.kit.presence(1); return window.__enc.stats.sanity; })
   .then(s0 => p.waitForFunction(x => window.__enc.stats.sanity < x - 0.3, s0, { timeout: 60000 }))
