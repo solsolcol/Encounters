@@ -4409,6 +4409,32 @@ What the baseline contains, by release:
   default) and e3c1 holds the clasp at −0.37, swept on the phone crop until
   only the joined fingertips rise into frame. Deploy `6abd02ee2592264d5a68c92b`,
   byte-verified (all 184 build files).
+- **v16.6** THE THAI KIT, THE GUARDIANS AND THE NAGA — Chad's two Sketchfab
+  "Tailandia" packs ("see how you can make use of these throughout the
+  environment"; he chose the wat now, the house furniture for chapter 5
+  later), then his red and green Thao Wessuwan and his naga. All in e3c1;
+  episodes 1 and 2 untouched by construction. `tools/prepthai.mjs` takes 42
+  of the packs' 126 objects BY THEIR PLACE in each file into one 2.27 MB
+  kit (`thaikit`), each a node `thai_<name>` on its base centre in metres,
+  the mesh on a child so meshopt's dequantizing transform and the chapter's
+  position never share a node; simplified per object (74k triangles), alpha
+  kept where the MATERIAL is MASK/BLEND (v6.16), the ceiling fan centred on
+  its ROD (its box is 0.118 m off the hub, and it spins). `thai(name, x, y,
+  z, o)` stands a clone and hides the primitive it replaces ONLY WHEN IT HAS
+  LANDED (v4.7); collision never moves, new pieces on walkable ground bring
+  their own (`o.block`). In: the altar's Buddhas (tinted to the altar's gold
+  — the pack's gilt read as stone at dawn), orchids, candles, incense pot,
+  trays, marigold strings; the sala's fans and cushions; the room's shrine,
+  fan, a desk fan turning on the cabinet (`standHead` is whatever turns),
+  an oil lamp, a tea set; the spirit house with rooster figurines, the lotus
+  bowls, the gallery's six Buddhas, plants in the verges, water jars, two
+  roosters. The GUARDIANS (`wessred`/`wessgreen`, Chad's own scans, 575k →
+  ~105k triangles, 4 MB each, `tools/prepwess.mjs`) stand on the old
+  plinths at 3.75 m. The NAGA (`naga`, 743k → 119k, 2.8 MB) lies flat in its
+  file, so the prep SHEARS it down the stair (`BEND`): a shear keeps
+  vertical lines vertical, so the head still rears upright. One credit row
+  (the packs; Chad's own models get none). Sheet v78 exported (v44 the
+  link). docs/V16.6-THE-THAI-KIT.md is the build's memory.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -4972,7 +4998,7 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v77** (`masters/v16.1/masterz-text-v77.xlsx`, v76 with the monk's three voice lines re-said by Arthur at v16.2. v76 was `masters/v16.1/masterz-text-v76.xlsx`, five tabs: UI
+**THE SHEET IS v78** (`masters/v16.6/masterz-text-v78.xlsx`, v77 plus v16.6's four credit rows for the Tailandia packs. v77 was `masters/v16.1/masterz-text-v77.xlsx`, v76 with the monk's three voice lines re-said by Arthur at v16.2. v76 was `masters/v16.1/masterz-text-v76.xlsx`, five tabs: UI
 TEXT 292, EPISODE 1 114, EPISODE 2 193, EPISODE 3 41, VOICE LINES 337 — v76
 adds v16.1's four words, two changed cells and seven voice lines to v75).
 Was v75 (`masters/v16.0/masterz-text-v75.xlsx`, which added episode 3

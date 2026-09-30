@@ -155,6 +155,10 @@ Object.assign(window.__TEXT__, {
   'credits.ammoWho':     'Ammo crate, and a 5.56 mm ammo pickup · Sketchfab',
   'credits.ammoLink':    'sketchfab.com · ammo-crate',
   'credits.ammo2Link':   'sketchfab.com · 556mm-ammo-pickup',
+  'credits.thai':        'The temple’s offerings, plants and furnishings',
+  'credits.thaiWho':     'Tailandia low polygon packs 1 and 2 · Sketchfab',
+  'credits.thaiLink':    'sketchfab.com · tailandia-low-polygon-pack-1',
+  'credits.thai2Link':   'sketchfab.com · tailandia-low-polygon-pack-2',
   /* v12.1 — Chad's ghost cyclist is his own model and takes no row (the
      v5.23 rule); the Kamaz and the flashlight already have theirs above. */
   'credits.anim':        'Animation, two of the crowd, and the soldiers’ takes',

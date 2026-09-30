@@ -120,7 +120,7 @@
        man; the
        amulet in the film is episode 1's Phiboon (the auntie gave it to him
        when he was a boy, a callback nobody has to notice). */
-    assets: ['admintee', 'botak', 'granny', 'standman', 'phiboon', 'tree1', 'tree2', 'tree3', 'tree4'],
+    assets: ['admintee', 'botak', 'granny', 'standman', 'phiboon', 'tree1', 'tree2', 'tree3', 'tree4', 'thaikit', 'wessred', 'wessgreen', 'naga'],
 
     /* THE SOUND. `watamb` is the dawn temple (birds, a far road, a broom on
        stone, wind chimes); `e3chant` is the monks' morning chanting from the
@@ -315,6 +315,40 @@
       parent.add(m); return m;
     };
 
+    /* v16.6 · THE THAI KIT — Chad's two "Tailandia" Sketchfab packs, made into
+       one file of forty-two pieces by tools/prepthai.mjs: each a node named
+       `thai_<name>`, its origin on its base centre, in metres. thai() stands a
+       clone of one at (x, y, z) and ONLY WHEN IT HAS LANDED hides `o.hide` —
+       the primitive it replaces stays drawn until then, so a failed download
+       costs a nicer prop and never the chapter (v4.7). Collision never moves:
+       blockers are the primitives' boxes, and a new piece that stands where
+       the player walks brings its own (`o.block`). */
+    const GOLD_T = 0xffd88c;          // the pack's Buddha, warmed from a stone-pale gilt to the altar's gold
+    function thai(name, x, y, z, o = {}) {
+      const g = new THREE.Group(); g.position.set(x, y, z); g.rotation.y = o.ry || 0;
+      if (o.s) g.scale.setScalar(o.s);
+      (o.parent || world).add(g);
+      if (o.block) solids.push(hid(cyl(o.block[0], o.block[0], o.block[1], x, (y || 0) + o.block[1] / 2, z, matProxy, o.parent || world)));
+      parseOnce('thaikit').then(gltf => {
+        if (!alive) return;
+        const src = gltf.scene.getObjectByName('thai_' + name);
+        if (!src) throw new Error('thaikit has no thai_' + name);
+        const m = src.clone(true);
+        m.position.set(0, 0, 0);
+        m.traverse(q => {
+          if (!q.isMesh) return;
+          q.castShadow = o.cast !== false && !LOW; q.receiveShadow = true;
+          /* a tint is a per-piece material (the kit's own are shared by
+             every clone); the sweep in dispose() frees it with the rest */
+          if (o.tint) { q.material = q.material.clone(); q.material.color.multiply(new THREE.Color(o.tint)); if (o.glow) { q.material.emissive = new THREE.Color(o.tint); q.material.emissiveIntensity = o.glow; if (q.material.map) q.material.emissiveMap = q.material.map; } }
+        });
+        g.add(m);
+        for (const h of (o.hide || [])) if (h) h.visible = false;
+        if (o.then) o.then(g, m);
+      }).catch(err => { console.warn('thaikit failed to load', err); ctx.loadFail && ctx.loadFail('thaikit', err); });
+      return g;
+    }
+
     /* ------------------------------------------------------------ the ground */
     const ground = new THREE.Mesh(new THREE.PlaneGeometry(260, 260), matGrass);
     ground.rotation.x = -Math.PI / 2; ground.position.y = -0.02; ground.receiveShadow = true; world.add(ground);
@@ -394,9 +428,9 @@
         pt.position.set(0, y0 + 2.9, GATE.z); pt.castShadow = !LOW; world.add(pt);
       }
       // the guardians, just inside the gate, facing the road
-      for (const s of [-1, 1]) mkYak(s * 3.9, GATE.z - 1.3, s < 0 ? 0x3f7a4c : 0xa2352a);
+      for (const s of [-1, 1]) mkYak(s * 3.9, GATE.z - 1.3, s < 0 ? 0x3f7a4c : 0xa2352a, s < 0 ? 'wessgreen' : 'wessred');
     }
-    function mkYak(x, z, col) {
+    function mkYak(x, z, col, key) {
       const g = new THREE.Group(); g.position.set(x, 0, z); g.rotation.y = Math.PI; world.add(g);
       const skin = new THREE.MeshStandardMaterial({ color: col, roughness: 0.5 });
       box(1.3, 0.7, 1.3, 0, 0.35, 0, matWhite, g);                           // the plinth
@@ -426,6 +460,20 @@
       }
       cyl(0.07, 0.12, 2.2, 0, 1.85, 0.42, matGold, 10, g);
       solids.push(hid(box(1.3, 0.7, 1.3, x, 0.35, z, matWhite, world, false)));
+      /* v16.6: Chad's Thao Wessuwan scan (tools/prepwess.mjs) takes the
+         giant's place on the same plinth, the same height to the spire tip
+         (3.75 m over the gold), facing the same way; the primitive giant is
+         drawn until the scan has landed (v4.7), the plinth stays */
+      const giant = g.children.slice(2);
+      parseOnce(key).then(gltf => {
+        if (!alive) return;
+        const m = gltf.scene.clone(true);
+        const bb = new THREE.Box3().setFromObject(m), k = 3.75 / (bb.max.y - bb.min.y);
+        m.scale.setScalar(k); m.position.y = 0.77 - bb.min.y * k;
+        m.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.receiveShadow = true; } });
+        g.add(m);
+        for (const o of giant) o.visible = false;
+      }).catch(err => { console.warn(key + ' failed to load', err); ctx.loadFail && ctx.loadFail(key, err); });
     }
 
     /* ------------------------------------------------------------ the sala
@@ -507,7 +555,7 @@
       body.castShadow = !LOW; world.add(body);
       // a gold spine along its back
       const spine = pts.map(v => new THREE.Vector3(v.x, v.y + 0.1, v.z));
-      world.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(spine), 48, 0.03, 6, false), matGold));
+      const spineM = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(spine), 48, 0.03, 6, false), matGold); world.add(spineM);
       /* THE HOOD: a fan standing up and facing out at the courtyard — green
          scales ringed in gold — with five heads along its crown, the middle
          one tallest, each a snout, two gold eyes and a gold crest */
@@ -528,6 +576,20 @@
       }
       hood.traverse(o => { if (o.isMesh) o.castShadow = !LOW; });
       solids.push(hid(box(0.36, 1.8, STAIR.foot + 0.5 - STAIR.top, x, 0.9, (STAIR.top + STAIR.foot + 0.5) / 2, matStone, world, false)));
+      /* v16.6: Chad's naga (tools/prepwess.mjs with BEND): lying along the
+         cheek wall, the body sheared down the flight in the file itself and
+         the head rearing upright off the pedestal at its foot. At ×1.38 its
+         nose is at z 1.07, the neck on the pedestal (z 0.62…), the ramp
+         exactly the wall's (-0.573) and the tail on the wall's top at the
+         sala end. The primitive serpent stays drawn until it lands (v4.7). */
+      parseOnce('naga').then(gltf => {
+        if (!alive) return;
+        const m = gltf.scene.clone(true);
+        m.scale.setScalar(1.38); m.position.set(x, 0.5, -0.238);
+        m.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.receiveShadow = true; } });
+        world.add(m);
+        for (const o of [body, spineM, hood]) o.visible = false;
+      }).catch(err => { console.warn('naga failed to load', err); ctx.loadFail && ctx.loadFail('naga', err); });
     }
 
     /* THE ROOF — three stacked gables, the front one lowest. Each tier is two
@@ -637,6 +699,10 @@
         b.position.set(Math.cos(i * 2.094) * 0.38, 0, Math.sin(i * 2.094) * 0.38); b.rotation.y = -i * 2.094;
       }
       fans.push(blades);
+      // v16.6: the kit's five-blade fan, hung from the ceiling (0.73 m of rod
+      // and hub at 0.6), turning in the primitive's place once it lands
+      const kf = thai('ceilfan', -1.8, SALA.floor + 4.0 - 0.73, z, { s: 0.6, cast: false, hide: [g],
+                               then: () => { fans[fans.indexOf(blades)] = kf; } });
     }
     for (const z of [-3.0, -6.2, -9.4]) {
       cyl(0.006, 0.006, 0.7, 2.2, SALA.floor + 3.65, z, matDark, 4);
@@ -666,21 +732,26 @@
       arch.position.set(ALT.x, SALA.floor + 2.4, SALA.z0 + 0.32); world.add(arch);
       // the Buddha (a stand-in until Chad's model lands: a lathe-built seated
       // figure in gold, in the earth-touching pose's silhouette)
-      mkBuddha(ALT.x, SALA.floor + 1.14, SALA.z0 + 0.72, 1.0);
-      for (const s of [-1, 1]) mkBuddha(ALT.x + s * 1.25, SALA.floor + 0.76, SALA.z0 + 1.02, 0.42);
+      /* v16.6: the pack's seated gold Buddha (0.53 m in the file) in the
+         primitive's place and at its height, 1.85 m to the flame */
+      thai('buddha', ALT.x, SALA.floor + 1.14, SALA.z0 + 0.78, { s: 3.5, tint: GOLD_T, glow: 0.12, hide: [mkBuddha(ALT.x, SALA.floor + 1.14, SALA.z0 + 0.72, 1.0)] });
+      for (const s of [-1, 1]) thai('buddha', ALT.x + s * 1.25, SALA.floor + 0.76, SALA.z0 + 1.02, { s: 1.5, tint: GOLD_T, glow: 0.12, hide: [mkBuddha(ALT.x + s * 1.25, SALA.floor + 0.76, SALA.z0 + 1.02, 0.42)] });
       // vases of lotus, candles, the incense pot, garlands
       for (const s of [-1, 1]) {
         const vx = ALT.x + s * 1.55, vy = SALA.floor + 0.76, vz = ALT.z + 0.55;
-        cyl(0.09, 0.07, 0.3, vx, vy + 0.15, vz, matGold, 12);
+        const vase = [cyl(0.09, 0.07, 0.3, vx, vy + 0.15, vz, matGold, 12)];
         for (let k = 0; k < 3; k++) {
           const st = cyl(0.008, 0.008, 0.42, vx + (k - 1) * 0.05, vy + 0.5, vz, matGreen, 4); st.rotation.z = (k - 1) * 0.18;
           const bud = new THREE.Mesh(new THREE.SphereGeometry(0.055, 8, 6), new THREE.MeshStandardMaterial({ color: 0xf2b6c6, roughness: 0.6 }));
           bud.scale.set(1, 1.5, 1); bud.position.set(vx + (k - 1) * 0.12, vy + 0.74, vz); world.add(bud);
+          vase.push(st, bud);
         }
+        thai('orchid', vx, vy, vz, { s: 0.55, hide: vase });          // v16.6: orchids in a white vase
         const cz = ALT.z + 0.62;
         for (const dx of [0.35, 0.55]) {
           const cx = ALT.x + s * dx;
-          cyl(0.025, 0.025, 0.24, cx, SALA.floor + 0.88, cz, new THREE.MeshStandardMaterial({ color: 0xf3e4b0, roughness: 0.6 }), 8);
+          // v16.6: the pack's candle on its turned stand; the flame stays ours
+          thai('candle', cx, SALA.floor + 0.76, cz, { s: 0.6, hide: [cyl(0.025, 0.025, 0.24, cx, SALA.floor + 0.88, cz, new THREE.MeshStandardMaterial({ color: 0xf3e4b0, roughness: 0.6 }), 8)] });
           const fl = new THREE.Mesh(new THREE.SphereGeometry(0.018, 8, 6),
             new THREE.MeshBasicMaterial({ color: 0xffc46a, transparent: true, opacity: 0.95, fog: false }));
           fl.scale.set(1, 1.8, 1); fl.position.set(cx, SALA.floor + 1.03, cz); world.add(fl);
@@ -688,10 +759,18 @@
         }
       }
       // the incense pot, front and centre, and its smoke
-      cyl(0.16, 0.12, 0.16, ALT.x, SALA.floor + 0.84, ALT.z + 0.72, matGold, 16);
-      for (let k = 0; k < 5; k++) {
-        const st = cyl(0.004, 0.004, 0.3, ALT.x - 0.06 + k * 0.03, SALA.floor + 1.02, ALT.z + 0.72, matRedD, 3);
-        st.rotation.z = (k - 2) * 0.06;
+      {
+        const pot = [cyl(0.16, 0.12, 0.16, ALT.x, SALA.floor + 0.84, ALT.z + 0.72, matGold, 16)];
+        for (let k = 0; k < 5; k++) {
+          const st = cyl(0.004, 0.004, 0.3, ALT.x - 0.06 + k * 0.03, SALA.floor + 1.02, ALT.z + 0.72, matRedD, 3);
+          st.rotation.z = (k - 2) * 0.06; pot.push(st);
+        }
+        thai('incense', ALT.x, SALA.floor + 0.76, ALT.z + 0.72, { s: 0.6, hide: pot });   // v16.6
+        // two pedestal trays on the lowest tier, and marigold strings on the screen's edges
+        for (const sx of [-1, 1]) {
+          thai('phan', ALT.x + sx * 0.95, SALA.floor + 0.38, ALT.z + 0.77, { s: 0.8 });
+          thai('garland', ALT.x + sx * 1.66, SALA.floor + 1.72, SALA.z0 + 0.34, { s: 0.75, cast: false });
+        }
       }
       if (makeSoftDot) {
         const dot = makeSoftDot(); madeTex.push(dot);
@@ -922,8 +1001,12 @@
       box(3.24, 0.03, 0.48, sx, F + 1.76, sz, matGold, roomG, false);
       box(3.2, 0.07, 0.36, sx, F + 2.34, sz - 0.05, matRed, roomG, false);
       for (const ex of [-1.5, 1.5]) box(0.06, 0.7, 0.06, sx + ex, F + 2.05, sz - 0.12, matWoodD, roomG, false);
-      mkBuddha(sx, F + 1.76, sz - 0.02, 0.36, roomG);
-      for (const ex of [-0.55, 0.55]) mkBuddha(sx + ex, F + 1.76, sz + 0.04, 0.22, roomG);
+      /* v16.6: the pack's Buddha, sized to clear the shelf above (its flame
+         stops a hair under the board at F + 2.305) */
+      thai('buddha', sx, F + 1.76, sz - 0.02, { s: 1.02, tint: GOLD_T, glow: 0.2, parent: roomG, hide: [mkBuddha(sx, F + 1.76, sz - 0.02, 0.36, roomG)] });
+      for (const ex of [-0.55, 0.55]) thai('buddha', sx + ex, F + 1.76, sz + 0.04, { s: 0.78, tint: GOLD_T, glow: 0.2, parent: roomG, hide: [mkBuddha(sx + ex, F + 1.76, sz + 0.04, 0.22, roomG)] });
+      // gold standing images at the ends of the top shelf
+      for (const ex of [-1.35, 1.35]) thai('deity', sx + ex, F + 2.378, sz - 0.05, { s: 0.3, parent: roomG, cast: false });
       mkRuesi(sx - 1.15, F + 1.76, sz, roomG);
       // the old masters, framed, on the top shelf
       const abbot = new THREE.MeshStandardMaterial({ map: tex(makeAbbot(THREE, cnv)), roughness: 0.6 });
@@ -933,14 +1016,18 @@
       }
       // candles, a vase of lotus, the incense pot and its smoke, garlands
       for (const ex of [-0.95, -0.8, 0.8, 0.95]) {
-        cyl(0.018, 0.018, 0.16, sx + ex, F + 1.84, sz + 0.14, new THREE.MeshStandardMaterial({ color: 0xf3e4b0, roughness: 0.6 }), 8, roomG);
+        thai('candle', sx + ex, F + 1.76, sz + 0.14, { s: 0.4, parent: roomG, cast: false,
+          hide: [cyl(0.018, 0.018, 0.16, sx + ex, F + 1.84, sz + 0.14, new THREE.MeshStandardMaterial({ color: 0xf3e4b0, roughness: 0.6 }), 8, roomG)] });
         const f = new THREE.Mesh(new THREE.SphereGeometry(0.014, 8, 6), new THREE.MeshBasicMaterial({ color: 0xffc46a, transparent: true, opacity: 0.95, fog: false }));
         f.scale.set(1, 1.8, 1); f.position.set(sx + ex, F + 1.94, sz + 0.14); roomG.add(f); candles.push(f);
       }
-      cyl(0.1, 0.08, 0.1, sx + 1.25, F + 1.81, sz + 0.1, matGold, 14, roomG);
-      for (let k = 0; k < 4; k++) {
-        const st = cyl(0.004, 0.004, 0.26, sx + 1.22 + k * 0.02, F + 1.96, sz + 0.1, matRedD, 3, roomG);
-        st.rotation.z = (k - 1.5) * 0.08;
+      {
+        const pot = [cyl(0.1, 0.08, 0.1, sx + 1.25, F + 1.81, sz + 0.1, matGold, 14, roomG)];
+        for (let k = 0; k < 4; k++) {
+          const st = cyl(0.004, 0.004, 0.26, sx + 1.22 + k * 0.02, F + 1.96, sz + 0.1, matRedD, 3, roomG);
+          st.rotation.z = (k - 1.5) * 0.08; pot.push(st);
+        }
+        thai('incense', sx + 1.25, F + 1.76, sz + 0.1, { s: 0.42, parent: roomG, cast: false, hide: pot });   // v16.6
       }
       if (makeSoftDot) {
         const dot = makeSoftDot(); madeTex.push(dot);
@@ -1010,6 +1097,9 @@
           b.position.set(Math.cos(i * 2.094) * 0.37, 0, Math.sin(i * 2.094) * 0.37); b.rotation.y = -i * 2.094;
         }
         roomFans.push(blades);
+        // v16.6: the kit's fan, hung from the beam, turning in roomFans[0]'s place
+        const kf = thai('ceilfan', -0.9, F + H - 0.66, 0.9, { s: 0.55, parent: roomG, cast: false, hide: [g],
+                                 then: () => { roomFans[0] = kf; } });
       }
       // the standing fan in the corner by the door, its head turning
       {
@@ -1023,6 +1113,13 @@
         for (let i = 0; i < 3; i++) { const b = box(0.07, 0.17, 0.01, 0, 0.09, 0, new THREE.MeshStandardMaterial({ color: 0x5c8fc0, roughness: 0.5, transparent: true, opacity: 0.8 }), bl, false); b.position.set(Math.sin(i * 2.094) * 0.09, Math.cos(i * 2.094) * 0.09, 0); b.rotation.z = -i * 2.094; }
         roomFans.push(bl); standHead.userData.blades = bl;
         solids.push(hid(box(0.4, 1.2, 0.4, -HW + 0.45, 0.6, Z1 - 0.5, matProxy, roomG, false)));
+        /* v16.6: the pack's fan is an old DESK fan, so it stands on the
+           cabinet and turns there (standHead is whatever turns); the corner
+           it leaves keeps its blocker and gets a tall vase of papyrus */
+        const pivot = new THREE.Group(); pivot.position.set(-HW + 0.3, F + 1.1, -2.35); roomG.add(pivot);
+        thai('standfan', 0, 0, 0, { s: 0.6, ry: Math.PI / 2, parent: pivot, cast: false, hide: [g], then: () => { standHead = pivot; } });
+        thai('vasereed', -HW + 0.45, F, Z1 - 0.5, { s: 0.75, parent: roomG, cast: false });
+        thai('oillamp', -HW + 0.3, F + 1.1, -2.82, { s: 0.55, parent: roomG, cast: false });
       }
       // the waiting mat, a cushion, a low table with a jug and two cups
       {
@@ -1031,12 +1128,14 @@
         mat.rotation.x = -Math.PI / 2; mat.rotation.z = 0.5; mat.position.set(mx, F + 0.01, mz); mat.receiveShadow = true; roomG.add(mat);
         const cu = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.08, 0.46), new THREE.MeshStandardMaterial({ color: 0x7a2a22, roughness: 0.85 }));
         cu.position.set(mx - 0.1, F + 0.05, mz + 0.35); roomG.add(cu);
+        thai('cushflat', mx - 0.1, F + 0.01, mz + 0.35, { s: 1.0, parent: roomG, ry: 0.5, hide: [cu] });   // v16.6
         const tb = new THREE.Group(); tb.position.set(-HW + 0.55, F, -0.9); roomG.add(tb);
         box(0.62, 0.05, 0.42, 0, 0.3, 0, matWoodD, tb, false);
         for (const a of [-1, 1]) for (const c of [-1, 1]) box(0.04, 0.3, 0.04, a * 0.27, 0.15, c * 0.17, matWoodD, tb, false);
-        cyl(0.06, 0.05, 0.2, -0.12, 0.43, 0, new THREE.MeshStandardMaterial({ color: 0xb8d0d8, roughness: 0.1, transparent: true, opacity: 0.6 }), 12, tb);
-        for (const cx of [0.1, 0.2]) cyl(0.03, 0.025, 0.07, cx, 0.36, 0.05, new THREE.MeshStandardMaterial({ color: 0xece6d8, roughness: 0.5 }), 10, tb);
-        const t2 = mkTray(); t2.scale.setScalar(0.8); t2.position.set(0.12, 0.33, -0.12); tb.add(t2);
+        const tea = [cyl(0.06, 0.05, 0.2, -0.12, 0.43, 0, new THREE.MeshStandardMaterial({ color: 0xb8d0d8, roughness: 0.1, transparent: true, opacity: 0.6 }), 12, tb)];
+        for (const cx of [0.1, 0.2]) tea.push(cyl(0.03, 0.025, 0.07, cx, 0.36, 0.05, new THREE.MeshStandardMaterial({ color: 0xece6d8, roughness: 0.5 }), 10, tb));
+        const t2 = mkTray(); t2.scale.setScalar(0.8); t2.position.set(0.12, 0.33, -0.12); tb.add(t2); tea.push(t2);
+        thai('teaset', 0, 0.325, 0, { s: 0.6, parent: tb, cast: false, hide: tea });   // v16.6: a brass tea set in place of the jug and cups
         solids.push(hid(box(0.62, 0.35, 0.42, -HW + 0.55, 0.18, -0.9, matProxy, roomG, false)));
       }
       // a cabinet on the west wall, and a calendar by the door
@@ -1372,6 +1471,12 @@
       gar.position.set(0.25, 1.44, 0.34); gar.rotation.x = Math.PI / 2; g.add(gar);
       solids.push(cyl(0.3, 0.3, 1.4, SPIRIT.x, 0.7, SPIRIT.z, matWhite, 8));
       solids[solids.length - 1].visible = false;
+      /* v16.6: the pack's spirit house, carved teak on its post, in the
+         primitive's place and facing the same way; and at its foot what
+         people really leave there — a row of small rooster figurines */
+      thai('spirit', SPIRIT.x, 0, SPIRIT.z, { s: 1.2, ry: Math.PI * 0.85, hide: [g] });
+      const foot = new THREE.Group(); foot.position.set(SPIRIT.x, 0, SPIRIT.z); foot.rotation.y = Math.PI * 0.85; world.add(foot);
+      for (let i = 0; i < 4; i++) thai('rooster', -0.33 + i * 0.22, 0, 0.5 + (i % 2) * 0.1, { s: 0.26, ry: 1.3 - i * 0.2, parent: foot, cast: false });
     }
     // THE DOG, asleep in the planter's shade, breathing
     const dog = new THREE.Group();
@@ -1547,17 +1652,20 @@
       for (const [jx, jz] of [[-4.2, 6.2], [-4.2, 10.2], [3.9, 10.3]]) {
         const j = new THREE.Mesh(jarGeo, glaze); j.position.set(jx, 0, jz); j.castShadow = !LOW; j.receiveShadow = true; world.add(j);
         const w = new THREE.Mesh(new THREE.CircleGeometry(0.4, 20), water); w.rotation.x = -Math.PI / 2; w.position.set(jx, 0.76, jz); world.add(w);
+        const jar = [j, w];
         for (let k = 0; k < 4; k++) {
           const a = k * 1.7 + jx, lp = new THREE.Mesh(new THREE.CircleGeometry(0.14, 12, 0.3, Math.PI * 2 - 0.6), pad);
-          lp.rotation.x = -Math.PI / 2; lp.position.set(jx + Math.cos(a) * 0.2, 0.775, jz + Math.sin(a) * 0.2); world.add(lp);
+          lp.rotation.x = -Math.PI / 2; lp.position.set(jx + Math.cos(a) * 0.2, 0.775, jz + Math.sin(a) * 0.2); world.add(lp); jar.push(lp);
         }
         for (let k = 0; k < 3; k++) {
           const a = k * 2.2 + jz, fx = jx + Math.cos(a) * 0.12, fz = jz + Math.sin(a) * 0.12, h = 0.25 + k * 0.12;
-          cyl(0.008, 0.008, h, fx, 0.76 + h / 2, fz, matGreen, 4);
+          jar.push(cyl(0.008, 0.008, h, fx, 0.76 + h / 2, fz, matGreen, 4));
           const fl = new THREE.Mesh(k === 2 ? new THREE.SphereGeometry(0.05, 8, 6) : lotusGeo, petal);
           if (k === 2) fl.scale.set(1, 1.6, 1);
-          fl.position.set(fx, 0.76 + h, fz); world.add(fl);
+          fl.position.set(fx, 0.76 + h, fz); world.add(fl); jar.push(fl);
         }
+        // v16.6: the pack's footed lotus bowl, the same footprint (1.0 m)
+        thai('lotusbowl', jx, 0, jz, { s: 1.0, ry: jx + jz, hide: jar });
         solids.push(hid(cyl(0.55, 0.55, 0.9, jx, 0.45, jz, matStone, 8)));
       }
     }
@@ -1580,6 +1688,7 @@
       for (let i = 0; i < n; i++) {
         const z = GAL.z0 + 0.45 + i * (L - 0.9) / (n - 1);
         const b = mkBuddha(GAL.x0 + 0.46, 0.62, z, 0.34); b.rotation.y = Math.PI / 2;
+        thai('buddha', GAL.x0 + 0.46, 0.62, z, { s: 1.2, ry: Math.PI / 2, tint: GOLD_T, glow: 0.12, hide: [b] });   // v16.6
         cyl(0.016, 0.016, 0.1, GAL.x1 - 0.12, 0.68, z, new THREE.MeshStandardMaterial({ color: 0xf3e4b0, roughness: 0.6 }), 6);
         const fl = new THREE.Mesh(new THREE.SphereGeometry(0.014, 6, 5),
           new THREE.MeshBasicMaterial({ color: 0xffc46a, transparent: true, opacity: 0.95, fog: false }));
@@ -1636,6 +1745,43 @@
       // and a small vase of lotus on the soil
       cyl(0.05, 0.04, 0.14, BODHI.x + 0.5, 0.63, BODHI.z + 0.6, matGold, 10);
       for (let k = 0; k < 3; k++) { const b = new THREE.Mesh(new THREE.SphereGeometry(0.035, 8, 6), new THREE.MeshStandardMaterial({ color: 0xf2b6c6, roughness: 0.6 })); b.scale.set(1, 1.5, 1); b.position.set(BODHI.x + 0.46 + k * 0.04, 0.8 + (k % 2) * 0.03, BODHI.z + 0.6); world.add(b); }
+    }
+
+    /* ---------------------------------------- v16.6 · THE GARDEN, FROM THE KIT
+       What grows under a wat's walls — banana, traveller's palm, elephant ear,
+       fern, a clipped hedge — in the grass verges where nothing stood; the
+       big earthen water jars by the gate and at the kuti; two roosters loose
+       in the courtyard; a stack of floor cushions against the sala's east
+       rail. A plant with a TRUNK brings a thin blocker for the trunk only (a
+       leaf you walk into is a leaf; a trunk you walk through is a bug); a jar
+       brings one its own size. */
+    {
+      const P = [
+        // the south wall, west of the gate
+        ['elephear', -12.6, 14.15, 0.3, 1.0], ['fern', -11.0, 14.25, 0, 1.0], ['banana', -8.0, 14.2, 1.1, 1.0, 0.18],
+        ['travpalm', -5.8, 14.35, 0, 0.9, 0.15], ['elephear', -4.3, 14.15, 2.0, 0.8],
+        // the south wall, east of the gate
+        ['hedge', 3.9, 14.3, Math.PI / 2, 1.0], ['fern', 7.9, 14.2, 0.7, 0.9],
+        // the west wall
+        ['banana', -14.25, 4.2, 0.4, 1.1, 0.18], ['fern', -14.2, 7.4, 2.2, 1.0], ['travpalm', -14.35, 10.6, Math.PI / 2, 1.0, 0.15],
+        ['elephear', -14.1, 12.9, 1.2, 0.9], ['elephear', -14.1, -4.7, 0.2, 0.85],
+        // between the sala and the ubosot's flank
+        ['banana', 9.3, -10.4, 2.6, 1.05, 0.18], ['travpalm', 9.6, -6.6, Math.PI / 2, 0.95, 0.15], ['fern', 9.3, -2.6, 1.4, 1.0],
+      ];
+      for (const [k, x, z, ry, sc, trunk] of P) thai(k, x, 0, z, { s: sc, ry, block: trunk ? [trunk, 1.6] : null });
+      // the water jars: a big glazed ong by the gate with two clay pots, and two at the kuti
+      thai('waterjar', -2.4, 0, 12.95, { s: 1.0, ry: 0.4, block: [0.6, 1.1] });
+      thai('claypot', -3.55, 0, 13.35, { s: 0.9, block: [0.3, 0.7] });
+      thai('claypot2', 2.75, 0, 13.3, { s: 0.85, ry: 1.2, block: [0.32, 0.7] });
+      thai('claypot2', -12.2, 0, -11.7, { s: 0.9, ry: 2.1, block: [0.33, 0.75] });
+      thai('claypot', -12.15, 0, -7.75, { s: 0.9, ry: 0.6, block: [0.3, 0.7] });
+      // two roosters, loose
+      thai('rooster', BODHI.x - 3.4, 0, BODHI.z + 3.0, { s: 0.62, ry: 2.2 });
+      thai('rooster', -7.2, 0, 9.6, { s: 0.58, ry: -0.8 });
+      // floor cushions stacked against the sala's east rail, and a triangle one
+      thai('cush6', 6.3, SALA.floor, -2.5, { s: 1.0, ry: 0.2, block: [0.32, 0.5] });
+      thai('cush4', 6.3, SALA.floor, -3.15, { s: 1.0, ry: -0.3, block: [0.3, 0.4] });
+      thai('cushtri', 6.35, SALA.floor, -4.3, { s: 0.55, ry: -Math.PI / 2, block: [0.32, 0.5] });
     }
 
     /* (v16.4 · the incense urn on the axis — pot, sticks, smoke, candles and

@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "16.5"
+VERSION = "16.6"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -389,6 +389,10 @@ ASSETS = {
     'muzzle':       ('assets/muzzle.glb', True, False),       # e2c4 v13.1: Chad's Sketchfab muzzle flash — two cone fans, a star and a burst (tools/prepmuzzle.mjs)
     'ammocrate':    ('assets/ammocrate.glb', True, False),    # e2c4 v13.1: Chad's Sketchfab 5.56 ammunition crate, loose rounds on its lid (tools/prepammo.mjs)
     'ammomags':     ('assets/ammomags.glb', True, False),     # e2c4 v13.1: Chad's Sketchfab 5.56 pickup — two magazines, one open (tools/prepammo.mjs)
+    'thaikit':      ('assets/thaikit.glb', True, False),      # e3c1 v16.6: Chad's two Tailandia packs, 42 temple pieces in one file (tools/prepthai.mjs)
+    'wessred':      ('assets/wessred.glb', True, False),      # e3c1 v16.6: Chad's red Thao Wessuwan, the gate's east guardian (tools/prepwess.mjs)
+    'wessgreen':    ('assets/wessgreen.glb', True, False),    # e3c1 v16.6: Chad's green Thao Wessuwan, the gate's west guardian
+    'naga':         ('assets/naga.glb', True, False),         # e3c1 v16.6: Chad's naga, the sala's staircase balustrades (tools/prepwess.mjs, BEND)
 }
 
 # Hosted-only assets: shipped as a URL, never inlined as base64.
@@ -411,7 +415,8 @@ HOSTED_ONLY = {'titlevid', 'titlevidwebm'}
 E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim',
            'ghostsoldier', 'encik2', 'bunkbed', 'cafestaff', 'foodwarmer', 'flashlight',
            'kamaz', 'forest', 'rifle', 'ghostcyclist', 'fboaim',
-           'muzzle', 'ammocrate', 'ammomags', 'icontorch', 'zavsoldier'}
+           'muzzle', 'ammocrate', 'ammomags', 'icontorch', 'zavsoldier',
+           'thaikit', 'wessred', 'wessgreen', 'naga'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone
 HOSTED_ONLY |= E2_ONLY
 
 # The split packs are hosted-only: there is no __..._B64__ token for them and
