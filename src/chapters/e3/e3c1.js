@@ -82,11 +82,11 @@
        ROOM in build()). The spawn is just inside the gate, looking up the
        courtyard at the sala's gables. */
     spawn:     { x: 0, y: 1.62, z: 12.4, rot: 0 },
-    shrine:    { x: 4.4, z: -8.6 },          // the engine's anchor: the monk's dais
-    ghostHome: { x: 4.4, z: -8.6 },          // unused (ghost: null)
+    shrine:    { x: 4.1, z: -10.2 },         // the engine's anchor: the monk's dais (v16.9: on the temple's east wall)
+    ghostHome: { x: 4.1, z: -10.2 },         // unused (ghost: null)
     /* minX reaches the room (v16.1). In the wat the west compound wall at
        x -15 still stops the player, a metre past the old bound of -13.6. */
-    bounds:    { minX: -262, maxX: 8.2, minZ: -10.2, maxZ: 13.8 },
+    bounds:    { minX: -262, maxX: 9.8, minZ: -22.9, maxZ: 13.8 },     // v16.9: round the temple to the moved north wall
 
     /* NO HAUNTING (the eleventh leak, v4.3). This is the chapter where he
        goes looking, and nothing comes looking for him — yet. */
@@ -120,7 +120,7 @@
        man; the
        amulet in the film is episode 1's Phiboon (the auntie gave it to him
        when he was a boy, a callback nobody has to notice). */
-    assets: ['admintee', 'botak', 'granny', 'standman', 'phiboon', 'tree1', 'tree2', 'tree3', 'tree4', 'thaikit', 'wessred', 'wessgreen', 'naga', 'monk', 'ajarn'],
+    assets: ['admintee', 'botak', 'granny', 'standman', 'phiboon', 'tree1', 'tree2', 'tree3', 'tree4', 'thaikit', 'wessred', 'wessgreen', 'naga', 'monk', 'ajarn', 'temple', 'slipper'],
 
     /* THE SOUND. `watamb` is the dawn temple (birds, a far road, a broom on
        stone, wind chimes); `e3chant` is the monks' morning chanting from the
@@ -161,6 +161,36 @@
 
   /* the measured length of every line said OUTSIDE a cutscene (CP6 fills
      the real numbers; chaptertest fails a line spoken with none) */
+  /* v16.9 · THE TEMPLE'S COLLISION, derived from its mesh (masters/v16.9/
+     blockgrid.mjs over assets/temple.glb): a 10 cm grid over its floor, a
+     cell solid where the temple is within 0.2 m of it at knee or chest height
+     or less than 2.3 m over it, merged into [x0, z0, x1, z1] rectangles in
+     world metres. Rebuild it whenever the temple file changes. */
+  const TEMPLE_BLOCK = [
+    [-2.8,-18.1,-2.4,-15.7],[2.6,-18.1,2.9,-15.7],[2.5,-18,2.6,-15.7],[2.9,-18,3,-15.7],[-2.9,-17.9,-2.8,-15.7],[-2.4,-17.9,-2.3,-15.7],
+    [3,-17.9,3.1,-15.7],[-3,-17.8,-2.9,-15.7],[-2.3,-17.8,-2.2,-15.7],[2.4,-17.8,2.5,-15.7],[3.1,-17.8,3.2,-15.7],[-2.2,-17.7,-2.1,-15.6],
+    [2.3,-17.7,2.4,-15.6],[-3.1,-17.6,-3,-15.7],[3.2,-17.5,3.3,-15.7],[-6.3,-16.3,-5.8,-9],[-4.5,-16.3,-3.9,-15.5],[-2.1,-16.3,-1.5,-15.5],
+    [1.7,-16.3,2.3,-15.5],[4.1,-16.3,4.6,-15.5],[5.9,-16.3,6.4,-15.5],[-6.4,-16.2,-6.3,-15.6],[-5.8,-16.2,-4.5,-15.7],[-3.9,-16.2,-3.1,-15.7],
+    [-1.5,-16.2,-1.4,-15.6],[1.6,-16.2,1.7,-15.6],[3.3,-16.2,4.1,-15.7],[4.6,-16.2,5.9,-15.7],[6.4,-16.2,6.5,-15.6],[-6.5,-16.1,-6.4,-15.7],
+    [6.5,-16.1,6.6,-15.8],[-1.4,-16,-1.3,-15.8],[1.5,-15.9,1.6,-15.8],[-5.8,-15.7,-5.7,-15.6],[-4.6,-15.7,-4.5,-15.6],[-3.9,-15.7,-3.8,-15.6],
+    [4,-15.7,4.1,-15.6],[4.6,-15.7,4.7,-15.6],[5.8,-15.7,5.9,-0.9],[-2,-15.5,-1.6,-15.4],[1.9,-15.5,2.2,-15.4],[5.9,-15.5,6.3,-0.9],
+    [-1.3,-15.2,-0.7,-13.9],[0.9,-15.2,1.4,-13.9],[-3.9,-15.1,-2.1,-14.9],[-1.5,-15.1,-1.3,-14.7],[-0.7,-15.1,-0.6,-13.9],[0.7,-15.1,0.9,-14.7],
+    [1.4,-15.1,1.6,-14.7],[2.3,-15.1,4.1,-14.9],[-0.6,-15,-0.5,-14.8],[-1.4,-14.7,-1.3,-13.9],[0.8,-14.7,0.9,-13.9],[1.4,-14.7,1.5,-13.9],
+    [-5.8,-14.6,-1.4,-13.9],[1.5,-14.6,5.6,-13.9],[0.7,-14.5,0.8,-14],[5.6,-14.5,5.7,-2.4],[-0.6,-14.4,-0.5,-14.1],[-5.8,-13.9,-5.2,-9],
+    [5,-13.9,5.6,-2.3],[5.7,-13.1,5.8,-10.9],[5.7,-9.5,5.8,-7.4],[-6,-9,-5.9,-8.9],[-5.5,-9,-5.4,-8.9],[-6.2,-7.9,-5.9,-0.9],[-5.5,-7.9,-5.4,-2.3],
+    [-5.9,-7.8,-5.5,-2.3],[-5.4,-7.8,-5.2,-2.3],[-6.3,-7.6,-6.2,-0.9],[5.7,-5.9,5.8,-3.7],[-5.2,-3,-0.7,-2.3],[0.9,-3,5,-2.3],[-0.7,-2.9,-0.6,-2.1],
+    [0.7,-2.9,0.9,-2.2],[-0.6,-2.8,-0.5,-2.3],[-5.9,-2.3,-5.8,-0.9],[-3.9,-2.3,-2.1,-2.1],[-1.5,-2.3,-0.7,-2.2],[0.9,-2.3,1.6,-2.2],
+    [2.3,-2.3,4.1,-2.1],[-1.4,-2.2,-0.7,-2.1],[0.8,-2.2,1.5,-2.1],[-1.9,-1.8,-1.7,-0.8],[1.9,-1.8,2.1,-0.8],[-4.5,-1.7,-4,-0.9],[-2.1,-1.7,-1.9,-0.9],
+    [-1.7,-1.7,-1.5,-0.9],[1.7,-1.7,1.9,-0.9],[2.1,-1.7,2.3,-0.9],[4.1,-1.7,4.6,-0.9],[6.3,-1.7,6.4,-0.9],[-6.4,-1.6,-6.3,-1],[-5.8,-1.6,-5.7,-0.9],
+    [-4.6,-1.6,-4.5,-1],[-4,-1.6,-3.9,-0.9],[-2.2,-1.6,-2.1,0],[-1.5,-1.6,-1.4,-1],[1.6,-1.6,1.7,-1],[2.3,-1.6,2.4,-1],[4,-1.6,4.1,-1],
+    [4.6,-1.6,4.7,-0.9],[6.4,-1.6,6.5,-1],[-5.7,-1.5,-5.5,-1],[-5.4,-1.5,-5.2,-1],[-5.1,-1.5,-4.9,-1],[-4.7,-1.5,-4.6,-1],[-3.9,-1.5,-3.7,-1],
+    [-3.5,-1.5,-3.4,-1],[-3.2,-1.5,-3.1,-1],[-2.9,-1.5,-2.8,-1],[-2.6,-1.5,-2.5,-1],[-2.3,-1.5,-2.2,0],[2.5,-1.5,2.6,-1],[2.8,-1.5,2.9,-1],
+    [3.1,-1.5,3.2,-1],[3.4,-1.5,3.5,-1],[3.7,-1.5,3.8,-1],[3.9,-1.5,4,-1],[4.7,-1.5,4.8,-1],[4.9,-1.5,5.1,-1],[5.2,-1.5,5.4,-1],[5.5,-1.5,5.8,-1],
+    [-6.5,-1.4,-6.4,-1.1],[-5.5,-1.4,-5.4,-1],[-5.2,-1.4,-5.1,-1],[-4.9,-1.4,-4.7,-1],[-3.7,-1.4,-3.5,-1],[-3.4,-1.4,-3.2,-1],[-3.1,-1.4,-2.9,-1],
+    [-2.8,-1.4,-2.6,-1],[-2.5,-1.4,-2.3,0],[-1.4,-1.4,-1.3,-1.2],[1.5,-1.4,1.6,-1.2],[2.4,-1.4,2.5,-1],[2.6,-1.4,2.8,-1],[2.9,-1.4,3.1,-1],
+    [3.2,-1.4,3.4,-1],[3.5,-1.4,3.7,-1],[3.8,-1.4,3.9,-1],[4.8,-1.4,4.9,-1],[5.1,-1.4,5.2,-1],[5.4,-1.4,5.5,-1],[6.5,-1.4,6.6,-1.1],
+    [-6.1,-0.9,-5.9,-0.8],[-4.3,-0.9,-4.1,-0.8],[4.3,-0.9,4.5,-0.8],[6,-0.9,6.2,-0.8]
+  ];
   const SECS = { z1arrive: 3.79, z1wai: 4.13, z1wait: 3.00, z1warm: 4.60, au1hi: 3.97, au1sell: 8.59, au1shoes: 4.36, aj1next: 1.72, aj1sit: 1.57, aj1breathe: 3.63, aj1katha: 10.61, aj1done: 1.65, aj1ask: 3.08,
                  /* v16.1 */ mk1come: 3.40, mk1chant: 12.77, mk1teach: 14.37, hp1room: 6.19, aj1mat: 1.88, z1sadhu: 2.04, z1room: 1.88 };
 
@@ -185,12 +215,25 @@
        between the two nagas. Everything built at `SALA.floor + …` rose with
        it (the walkway, the kuti, the private room); LIFT is what the few
        heights that were typed as numbers gained. STAIR is the flight. */
-    const SALA = { x0: -7.0, x1: 7.0, z0: -11.0, z1: -1.6, floor: 1.10 };
+    /* v16.9 · THE TEMPLE (Chad: "replace the main temple you built, with this
+       new temple model"). SALA is the HALL now — the inner faces of the Lanna
+       temple's four walls, in world metres (tools/preptemple.mjs: x = mx·0.2,
+       y = (my − 21.15)·0.2, z = (mz + 9.5)·0.2) — and its floor, 2.456 m up
+       on the model's own base. Everything built at `SALA.floor + …` rose
+       with it again (the walkway, the kuti, the private room). */
+    const SALA = { x0: -5.374, x1: 5.228, z0: -14.078, z1: -2.776, floor: 2.456 };
+    const FDOOR = { x0: -0.7, x1: 1.0, z0: -2.776, z1: -2.1 };          // the front door, and its threshold
+    const WDOOR = { x: -5.62, z0: -9.08, z1: -7.72 };                   // the west door, cut where the middle window pair was
+    const TBASE = { x0: -7.0, x1: 7.1, z0: -18.2 };                     // the temple's base (its front edge is the landing's, z 0)
     const LIFT = SALA.floor - 0.16;
     /* v16.7: eight gentler risers over 3.0 m (were six over 1.92) and a 1.25 m
        pedestal at the foot, so Chad's naga can lie at ×2.3 — "make the naga
        much bigger, adjust the stairs to match" */
-    const STAIR = { top: SALA.z1 + 0.3, foot: 1.7, hw: 1.7, n: 8, ped: 1.25 };
+    /* v16.9: the model's own stair (four giant blocks) is cut from the mesh;
+       this is a real one in its opening — fourteen risers of 17.5 cm over
+       3.9 m, and 0.8 m cheek walls carrying Chad's naga at ×2.8 (re-baked,
+       BEND=-0.93,0.463,0.877), its head rearing off a 1.45 m pedestal */
+    const STAIR = { top: 0.0, foot: 3.9, hw: 2.4, n: 14, ped: 1.45, cw: 0.8 };
     /* v16.1 · THE PRIVATE ROOM is a pocket 250 m west of the wat: the far plane
        is 160 m, so neither is ever drawn from the other (v8.9's law: distance
        does the hiding). Its floor stands at the sala's height, so every
@@ -207,22 +250,29 @@
     const WAIT = { x: ROOM.x - 1.9, z: ROOM.z + 0.2 };  // the waiting mat
     const RDOOR = { x: ROOM.x - 1.6, z: ROOM.z + ROOM.z1 };   // the room's door, in its front wall
     const RIN = { x: RDOOR.x, z: RDOOR.z - 0.8 };             // where he stands when the black lifts
-    /* the sala's dais is the MONK's: v16.0's dais, where it always stood */
-    const MD  = { x: 4.4, z: -8.7, w: 2.6, d: 2.2, h: 0.42 };
-    const MON = { x: 4.4, z: -8.95 };                   // the monk's seat
-    const BLESS = { x: MON.x, z: MD.z + MD.d / 2 + 0.62 };   // kneel before him, under the raised seat (CP6: at 0.95 he was small in the frame)
+    /* the MONK's dais, v16.9: on the EAST wall, facing into the hall (Chad:
+       "the monk sitting area should not be right beside the buddha on the
+       same wall, it should be on the side wall instead, for respect towards
+       the principal buddha image"). Built as it always was, facing its own
+       +z, and TURNED (ry): mdW(lx, lz) is a point on it in the world. MONL is
+       his seat on it; MON the same in the world. */
+    const MD  = { x: 4.1, z: -10.2, w: 2.6, d: 2.2, h: 0.42, ry: -Math.PI / 2 };
+    const mdW = (lx, lz) => ({ x: MD.x + lx * Math.cos(MD.ry) + lz * Math.sin(MD.ry), z: MD.z - lx * Math.sin(MD.ry) + lz * Math.cos(MD.ry) });
+    const MONL = { x: 0, z: -0.25 };
+    const MON = mdW(MONL.x, MONL.z);                    // the monk's seat
+    const BLESS = mdW(0, MD.d / 2 + 0.62);              // kneel before him, under the raised seat (CP6: at 0.95 he was small in the frame)
     /* the covered walkway: out of the sala's west side between its two back
        pillars, to the kuti against the west wall, whose door is the room's */
-    const WALK = { z: -9.7, x0: -7.3, x1: -12.6, hw: 0.9 };
-    const KUTI = { x0: -14.8, x1: -12.6, z0: -12.6, z1: -6.8, h: 3.2 };
+    const WALK = { z: -8.4, x0: -5.85, x1: -12.6, hw: 0.9 };              // v16.9: out of the west door
+    const KUTI = { x0: -14.8, x1: -12.6, z0: WALK.z - 2.9, z1: WALK.z + 2.9, h: 3.2 };
     const KDOOR = { x: KUTI.x1, z: WALK.z };
-    const HELP = { x: -5.9, z: -9.9 };                  // the man by the walkway
-    const WAI  = { x: 0.0, z: -7.55 };                  // kneel before the altar, 1.6 m off its front step (CP3: at 0.6 m the lens was in the steps)
-    const RACK = { x: 2.75, z: -0.55 };                 // the shoe rack at the foot of the steps
+    const HELP = { x: -4.55, z: -9.75 };                // the man by the west door, inside the hall
+    const WAI  = { x: 0.15, z: SALA.z0 + 3.45 };        // kneel before the altar, 1.6 m off its front step (CP3: at 0.6 m the lens was in the steps)
+    const RACK = { x: -4.9, z: 4.6 };                   // the shoe rack by the foot of the steps (v16.9: the old spot is under the temple)
     const STALL = { x: -9.6, z: 4.4 };                  // the offering stall, facing +x
     const BODHI = { x: 6.2, z: 4.6 };
     const GATE = { z: 15.0, hw: 2.2 };
-    const UBO = { x0: 10.2, x1: 21.0, z0: -9.0, z1: 6.0 };
+    const UBO = { x0: 10.6, x1: 21.0, z0: -9.0, z1: 6.0 };             // v16.9: 0.4 m east, clear of the temple's eaves
     const CHEDI = { x: -22, z: -16 };                    // v16.4: outside the west wall, left of the sala from the gate
     const GAL = { x0: -14.82, x1: -13.9, z0: -3.4, z1: 1.8 };   // v16.4: the Buddha gallery on the west wall
 
@@ -352,13 +402,64 @@
       return g;
     }
 
+    /* v16.9 · CHAD'S SLIPPERS (Sketchfab "slipper", tools/prepslipper.mjs:
+       `one` a single flip-flop, toe +z, `pair` the pair kicked off as his
+       file lays it). Every pair at the wat is his model now — "Replace all
+       your generated slippers, with this slipper model, but change the
+       colour to vary it on the shelf". A spot is recorded with its parent,
+       and drawn as a box pair until the file lands (v4.7); then each parent
+       gets instanced meshes, one colour per pair (instanceColor): a left
+       foot, a right foot (the left mirrored, its winding turned so it is
+       not culled inside out) and the kicked-off pairs. */
+    const SLIP = [];
+    const SLIP_PAL = [0x1f2a4a, 0x1d1d1f, 0xb3261e, 0x2d6fb0, 0xd97aa5, 0x3f7a4c, 0xe8b830, 0x7a4a2a, 0xe6e1d6, 0xe0762a, 0x6a3aa0, 0x2a8a8a];
+    const slipBoxM = new THREE.MeshStandardMaterial({ color: 0x5a4a3a, roughness: 0.8 });
+    function slipperPair(parent, x, y, z, ry, col, kicked) {
+      const boxes = [];
+      for (const d of [-0.055, 0.055]) {
+        const sh = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.03, 0.27), slipBoxM);
+        sh.position.set(x + d * Math.cos(ry), y + 0.015, z - d * Math.sin(ry)); sh.rotation.y = ry; parent.add(sh); boxes.push(sh);
+      }
+      SLIP.push({ parent, x, y, z, ry, col, kicked, boxes });
+    }
+    function plantSlippers() {
+      parseOnce('slipper').then(gltf => {
+        if (!alive) return;
+        const geo = {};
+        gltf.scene.traverse(o => { if (o.isMesh) { const g = o.geometry.clone(); o.updateWorldMatrix(true, false); g.applyMatrix4(o.matrixWorld); g.computeVertexNormals(); geo[o.name] = g; } });
+        if (!geo.one || !geo.pair) throw new Error('slipper file has no one/pair');
+        const right = geo.one.clone(); right.scale(-1, 1, 1);
+        const ix = right.index.array; for (let i = 0; i < ix.length; i += 3) { const t = ix[i + 1]; ix[i + 1] = ix[i + 2]; ix[i + 2] = t; }
+        right.index.needsUpdate = true; right.computeVertexNormals();
+        const mat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.62 });
+        const byParent = new Map();
+        for (const sp of SLIP) { if (!byParent.has(sp.parent)) byParent.set(sp.parent, []); byParent.get(sp.parent).push(sp); }
+        const d = new THREE.Object3D(), col = new THREE.Color();
+        for (const [parent, list] of byParent) {
+          const parts = [['L', geo.one, list.filter(q => !q.kicked), -0.056], ['R', right, list.filter(q => !q.kicked), 0.056], ['P', geo.pair, list.filter(q => q.kicked), 0]];
+          for (const [, g, items, off] of parts) {
+            if (!items.length) continue;
+            const im = new THREE.InstancedMesh(g, mat, items.length);
+            items.forEach((q, i) => {
+              d.position.set(q.x + off * Math.cos(q.ry), q.y + 0.002, q.z - off * Math.sin(q.ry)); d.rotation.set(0, q.ry, 0); d.updateMatrix();
+              im.setMatrixAt(i, d.matrix); im.setColorAt(i, col.setHex(q.col));
+            });
+            im.instanceMatrix.needsUpdate = true; im.instanceColor.needsUpdate = true; im.computeBoundingSphere();
+            im.castShadow = !LOW; im.receiveShadow = true; parent.add(im);
+          }
+          for (const q of list) for (const b of q.boxes) b.visible = false;
+        }
+        redoShadows();
+      }).catch(err => { console.warn('slipper failed to load', err); ctx.loadFail && ctx.loadFail('slipper', err); });
+    }
+
     /* ------------------------------------------------------------ the ground */
     const ground = new THREE.Mesh(new THREE.PlaneGeometry(260, 260), matGrass);
     ground.rotation.x = -Math.PI / 2; ground.position.y = -0.02; ground.receiveShadow = true; world.add(ground);
     {
-      const W = 36, D = 28;                           // x -15…21, z -13…15
+      const W = 36, D = 38.5;                         // x -15…21, z -23.5…15 (v16.9: the north wall moved back)
       const pv = new THREE.Mesh(new THREE.PlaneGeometry(W, D), matPave);
-      pv.rotation.x = -Math.PI / 2; pv.position.set(3, 0.004, 1); pv.receiveShadow = true; world.add(pv);
+      pv.rotation.x = -Math.PI / 2; pv.position.set(3, 0.004, -4.25); pv.receiveShadow = true; world.add(pv);
       paveTex.repeat.set(W / 2.4, D / 2.4);
       // the road outside the gate, where the film walks in
       const road = new THREE.Mesh(new THREE.PlaneGeometry(10, 60), new THREE.MeshStandardMaterial({ color: 0x8a7e6c, roughness: 1 }));
@@ -384,9 +485,11 @@
     const budM = [];
     wallRun(-15, 15, -GATE.hw - 0.6, 15);
     wallRun(GATE.hw + 0.6, 15, 21.5, 15);
-    wallRun(-15, -13, -15, 15);
-    wallRun(-15, -13, 21.5, -13);
-    wallRun(21.5, -13, 21.5, 15);
+    /* v16.9: the north wall 10.5 m further back — the temple is 20.6 m deep
+       behind its landing (it stood at z −13, through the new hall) */
+    wallRun(-15, -23.5, -15, 15);
+    wallRun(-15, -23.5, 21.5, -23.5);
+    wallRun(21.5, -23.5, 21.5, 15);
     {
       const pts = [[0, 0], [0.22, 0.02], [0.26, 0.12], [0.2, 0.32], [0.1, 0.5], [0.02, 0.62], [0, 0.66]].map(([a, b]) => new THREE.Vector2(a, b));
       const im = new THREE.InstancedMesh(new THREE.LatheGeometry(pts, 12), matGold, budM.length);
@@ -479,24 +582,66 @@
       }).catch(err => { console.warn(key + ' failed to load', err); ctx.loadFail && ctx.loadFail(key, err); });
     }
 
-    /* ------------------------------------------------------------ the sala
-       An open pavilion on a low stone plinth: a polished plank floor, ten red
-       pillars with gold bands, a low balustrade round three sides, the steps
-       in the middle of the front, and three tiers of gabled roof whose ridge
-       runs north–south, so the courtyard sees the gables stacked one behind
-       another — the Thai silhouette, from the spawn. */
-    const SW = SALA.x1 - SALA.x0, SD = SALA.z1 - SALA.z0, SCX = 0, SCZ = (SALA.z0 + SALA.z1) / 2;
+    /* ------------------------------------------------------------ THE TEMPLE
+       v16.9: Chad's Lanna temple where the open sala stood (Chad: "replace
+       the main temple you built, with this new temple model, and move
+       everything interior that you built for the old temple model into this
+       new temple model"). masters/v16.8/temple/bake.mjs turned every face
+       outward, classed it and baked its ambient occlusion; tools/preptemple
+       .mjs cut out the model's own stair (the staircase below and Chad's
+       nagas are in its opening) and a door in the west wall (the walkway to
+       the Ajarn's room leaves from it — the model has no veranda to walk
+       round), and placed it in metres. EVERY TRIANGLE of the model ships
+       (Chad: "why did u cut the temple down? now it loses all its details").
+       Until it lands a plain shell of its size stands in (v4.7). Its
+       collision is TEMPLE_BLOCK, derived from the mesh itself
+       (masters/v16.9/blockgrid.mjs). The old sala's pillars, rails, three
+       roofs, porch, back wall and ceiling are gone with it. */
+    const SW = SALA.x1 - SALA.x0, SD = SALA.z1 - SALA.z0, SCX = (SALA.x0 + SALA.x1) / 2, SCZ = (SALA.z0 + SALA.z1) / 2;
+    const templeProxy = new THREE.Group(); world.add(templeProxy);
     {
-      box(SW + 0.6, SALA.floor, SD + 0.6, SCX, SALA.floor / 2, SCZ, matWhite, world, false);   // the base (v16.4: 1.1 m, white)
-      // its mouldings: a stone foot course, and a gold rule under the floor's edge
-      box(SW + 0.8, 0.22, SD + 0.8, SCX, 0.11, SCZ, matStone, world, false);
-      box(SW + 0.66, 0.06, SD + 0.66, SCX, SALA.floor - 0.08, SCZ, matGold, world, false);
+      const P = templeProxy, T = 0.3, wh = 4.6, Y = SALA.floor + wh / 2;
+      box(TBASE.x1 - TBASE.x0, SALA.floor, -TBASE.z0, (TBASE.x0 + TBASE.x1) / 2, SALA.floor / 2, TBASE.z0 / 2, matWhite, P, false);
       const fl = new THREE.Mesh(new THREE.PlaneGeometry(SW, SD), matWood);
-      fl.rotation.x = -Math.PI / 2; fl.position.set(SCX, SALA.floor + 0.004, SCZ); fl.receiveShadow = true; world.add(fl);
+      fl.rotation.x = -Math.PI / 2; fl.position.set(SCX, SALA.floor + 0.004, SCZ); P.add(fl);
       woodTex.repeat.set(SW / 1.6, SD / 1.6);
-      /* v16.4 · THE STAIRCASE: six risers up the front of the base, pale
-         stone treads with a gold nosing, a white cheek wall each side (the
-         naga lies along its top and rears up off the pedestal at its foot) */
+      box(SW + 2 * T, wh, T, SCX, Y, SALA.z0 - T / 2, matWall, P);
+      box(T, wh, SD, SALA.x1 + T / 2, Y, SCZ, matWall, P);
+      box(T, wh, SALA.z1 - WDOOR.z1, SALA.x0 - T / 2, Y, (SALA.z1 + WDOOR.z1) / 2, matWall, P);
+      box(T, wh, WDOOR.z0 - SALA.z0, SALA.x0 - T / 2, Y, (WDOOR.z0 + SALA.z0) / 2, matWall, P);
+      box(FDOOR.x0 - SALA.x0 + T, wh, T, (SALA.x0 - T + FDOOR.x0) / 2, Y, SALA.z1 + T / 2, matWall, P);
+      box(SALA.x1 + T - FDOOR.x1, wh, T, (SALA.x1 + T + FDOOR.x1) / 2, Y, SALA.z1 + T / 2, matWall, P);
+      const rise = 5.0, run = SW / 2 + 1.6, slope = Math.hypot(rise, run), ang = Math.atan2(rise, run);
+      for (const sd of [-1, 1]) {
+        const r = new THREE.Mesh(new THREE.PlaneGeometry(slope, SD + 4.0), matTile);
+        r.rotation.order = 'ZYX'; r.rotation.x = -Math.PI / 2; r.rotation.z = -sd * ang;
+        r.position.set(SCX + sd * run / 2, SALA.floor + wh + rise / 2, SCZ); P.add(r);
+      }
+    }
+    /* (the old sala set these two repeats; the bell tower's and the ubosot's
+       green tiers and the gallery's underside still use them) */
+    tileTex2.repeat.set(3, 2);
+    ceilTex.repeat.set(6, 4);
+    const templeMat = templeMats(THREE);
+    parseOnce('temple').then(gltf => {
+      if (!alive) return;
+      const m = gltf.scene;
+      m.traverse(o => {
+        if (!o.isMesh) return;
+        const k = (o.name || '').replace(/^temple_/, '').replace(/_\d+$/, '');
+        o.material = templeMat[k] || templeMat.white;
+        o.castShadow = !LOW; o.receiveShadow = true;
+      });
+      world.add(m);
+      templeProxy.visible = false;
+      redoShadows();                                     // the shadows are drawn on demand: a new caster asks
+    }).catch(err => { console.warn('temple failed to load', err); ctx.loadFail && ctx.loadFail('temple', err); });
+
+    /* THE STAIRCASE in the model's own opening: pale stone treads with a gold
+       nosing, and a white cheek wall each side 0.8 m thick (as broad as the
+       model's own were) — Chad's naga lies along its top and rears up off the
+       pedestal at its foot */
+    {
       const rh = SALA.floor / STAIR.n, td = (STAIR.foot - STAIR.top) / STAIR.n;
       for (let k = 0; k < STAIR.n; k++) {
         const zf = STAIR.foot - k * td, d = zf - STAIR.top;
@@ -506,49 +651,22 @@
       for (const sx of [-1, 1]) {
         const sh = new THREE.Shape();
         sh.moveTo(STAIR.top, 0); sh.lineTo(STAIR.foot + STAIR.ped, 0); sh.lineTo(STAIR.foot + STAIR.ped, 0.5);
-        sh.lineTo(STAIR.foot, 0.5); sh.lineTo(STAIR.top, SALA.floor + 0.5); sh.closePath();
-        const cw = new THREE.Mesh(new THREE.ExtrudeGeometry(sh, { depth: 0.36, bevelEnabled: false }), matWhite);
-        cw.rotation.y = -Math.PI / 2; cw.position.set(sx * 1.9 + 0.18, 0, 0); cw.castShadow = !LOW; cw.receiveShadow = true; world.add(cw);
+        sh.lineTo(STAIR.foot, 0.5); sh.lineTo(STAIR.top, SALA.floor + 0.5); sh.lineTo(STAIR.top - 1.1, SALA.floor + 0.5); sh.lineTo(STAIR.top - 1.1, 0);   // back along the landing's side, where the model's own cheek walls were cut sh.closePath();
+        const cw = new THREE.Mesh(new THREE.ExtrudeGeometry(sh, { depth: STAIR.cw, bevelEnabled: false }), matWhite);
+        cw.rotation.y = -Math.PI / 2; cw.position.set(sx * (STAIR.hw + STAIR.cw / 2) + STAIR.cw / 2, 0, 0); cw.castShadow = !LOW; cw.receiveShadow = true; world.add(cw);
       }
     }
-    // the pillars
-    const PIL = [];
-    for (const x of [SALA.x0 + 0.25, SALA.x1 - 0.25]) for (const z of [-1.9, -4.2, -6.5, -8.8, -10.75]) PIL.push({ x, z });
-    for (const z of [-1.9]) for (const x of [-2.4, 2.4]) PIL.push({ x, z });
-    for (const p of PIL) {
-      const c = cyl(0.17, 0.19, 4.0, p.x, SALA.floor + 2.0, p.z, matWhite, 16); solids.push(c);   // v16.3: white, gold bands and a lotus capital
-      for (const y of [0.35, 3.55]) cyl(0.2, 0.2, 0.2, p.x, SALA.floor + y, p.z, matGoldC, 16);
-      // a lotus capital
-      cyl(0.28, 0.2, 0.18, p.x, SALA.floor + 3.95, p.z, matGold, 16);
-    }
-    // the balustrade: west and east sides, and the front either side of the steps
-    function rail(x0, z0, x1, z1) {
-      const L = Math.hypot(x1 - x0, z1 - z0), a = Math.atan2(z1 - z0, x1 - x0);
-      const cx = (x0 + x1) / 2, cz = (z0 + z1) / 2;
-      const top = box(L, 0.08, 0.16, cx, SALA.floor + 0.78, cz, matGold); top.rotation.y = -a;
-      const bot = box(L, 0.1, 0.18, cx, SALA.floor + 0.06, cz, matWhite); bot.rotation.y = -a;
-      for (let s = 0.25; s < L; s += 0.28) {
-        const px = x0 + Math.cos(a) * s, pz = z0 + Math.sin(a) * s;
-        cyl(0.03, 0.03, 0.66, px, SALA.floor + 0.44, pz, matWhite, 6);
-      }
-      solids.push(top);
-    }
-    /* v16.1: the west rail stops at the pillar at z -8.8 — between it and the
-       back pillar is the way out onto the walkway to the private room */
-    rail(SALA.x0 + 0.25, -2.1, SALA.x0 + 0.25, -8.6);
-    rail(SALA.x1 - 0.25, -2.1, SALA.x1 - 0.25, -10.6);
-    rail(SALA.x0 + 0.4, -1.75, -1.85, -1.75);
-    rail(1.85, -1.75, SALA.x1 - 0.4, -1.75);
     /* the NAGA balustrades either side of the steps: a serpent's body running
        down to the paving and rearing up at the foot, hood fanned, green and
-       gold. A tube along a curve, a hood of cones. */
+       gold. A tube along a curve, a hood of cones. (The stand-in until
+       Chad's naga lands.) */
     for (const s of [-1, 1]) {
-      const x = s * 1.9;
+      const x = s * (STAIR.hw + STAIR.cw / 2);
       const pts = [];
       /* v16.4: down the cheek wall of the staircase, the way a Thai temple's
-         nagas run: the tail on the sala floor at the rail, the body along the
-         flight, the head rearing up at its foot */
-      pts.push(new THREE.Vector3(x, SALA.floor + 0.64, -1.75));
+         nagas run: the tail on the temple's floor at the rail, the body along
+         the flight, the head rearing up at its foot */
+      pts.push(new THREE.Vector3(x, SALA.floor + 0.64, STAIR.top - 0.2));
       for (let i = 0; i <= 20; i++) {
         const k = i / 20, z = STAIR.top + k * (STAIR.foot - STAIR.top);
         pts.push(new THREE.Vector3(x, 0.5 + SALA.floor * (1 - k) + 0.14 + Math.sin(k * Math.PI * 4) * 0.035, z));
@@ -578,113 +696,35 @@
         const cr = new THREE.Mesh(new THREE.ConeGeometry(0.025, 0.11 + (h === 0 ? 0.06 : 0), 6), matGold); cr.position.set(0, 0.1, -0.01); head.add(cr);
       }
       hood.traverse(o => { if (o.isMesh) o.castShadow = !LOW; });
-      solids.push(hid(box(0.36, 1.8, STAIR.foot + STAIR.ped - STAIR.top, x, 0.9, (STAIR.top + STAIR.foot + STAIR.ped) / 2, matStone, world, false)));
-      /* v16.6: Chad's naga (tools/prepwess.mjs with BEND): lying along the
-         cheek wall, the body sheared down the flight in the file itself and
-         the head rearing upright off the pedestal at its foot. v16.7: at
-         ×2.3 (Chad: "much bigger") its nose is at z 2.86, the ramp ends on
-         the stair's foot (z 1.7) and is exactly the wall's (-0.367), the
-         head rears 1.2 m off the pedestal and the tail lies on the wall's
-         top at the sala end. The file is baked for these numbers
-         (BEND=-0.861,0.443,0.478). The primitive serpent stays drawn until
-         it lands (v4.7). */
+      solids.push(hid(box(STAIR.cw, 1.8, STAIR.foot + STAIR.ped - STAIR.top, x, 0.9, (STAIR.top + STAIR.foot + STAIR.ped) / 2, matStone, world, false)));
+      solids.push(hid(box(STAIR.cw, 0.6, 1.1, x, SALA.floor + 0.3, STAIR.top - 0.55, matStone, world, false)));   // its parapet along the landing
+      /* Chad's naga (tools/prepwess.mjs with BEND): lying along the cheek
+         wall, the body sheared down the flight in the file itself and the
+         head rearing upright off the pedestal at its foot. v16.9: at ×2.8 for
+         the temple's 2.46 m flight (v16.7's ×2.3 was for a 1.1 m one) — the
+         file is re-baked with BEND=-0.93,0.463,0.877, so its ramp starts on
+         the landing's edge (z 0) and ends on the stair's foot (3.9), exactly
+         the wall's slope, and the head (1.4 m) rears off the pedestal. */
       parseOnce('naga').then(gltf => {
         if (!alive) return;
         const m = gltf.scene.clone(true);
-        m.scale.setScalar(2.3); m.position.set(x, 0.5, 0.68);
+        m.scale.setScalar(2.8); m.position.set(x, 0.5, STAIR.foot - 0.463 * 2.8);
         m.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.receiveShadow = true; } });
         world.add(m);
         for (const o of [body, spineM, hood]) o.visible = false;
+        redoShadows();
       }).catch(err => { console.warn('naga failed to load', err); ctx.loadFail && ctx.loadFail('naga', err); });
     }
-
-    /* THE ROOF — three stacked gables, the front one lowest. Each tier is two
-       sloping planes of tiles and a gable triangle filled with a carved gilded
-       pediment; its edges carry the gold bargeboards (lamyong) ending in the
-       hooked hang hong at the eaves, and the ridge's front end the chofa, the
-       bird's-horn finial every Thai roof is recognised by. */
-    const TIERS = [
-      /* the SKIRT: one low roof the whole length, so the taller rear tiers never
-         leave daylight between the column tops and their own eaves */
-      { z0: -1.0, z1: -11.8, eave: LIFT + 3.95, ridge: LIFT + 5.3, hw: 7.9, mat: matTile, skirt: true },
-      /* two gables, the rear one clearly the taller: from the spawn (14 m out,
-         eye 1.62) the front apex sits 243 px above the frame's centre on a
-         1280x800 frame and the rear one 317 px — a 74 px band of the second
-         gable over the first, which is the stacked Thai silhouette. Three
-         tiers of this width put the third exactly behind the second in
-         perspective (measured, CP2) */
-      { z0: -0.8, z1: -4.8, eave: LIFT + 3.95, ridge: LIFT + 7.8, hw: 7.9, mat: matTile },
-      { z0: -3.2, z1: -11.8, eave: LIFT + 4.6, ridge: LIFT + 10.6, hw: 7.2, mat: matTile2 },
-      /* v16.4: the PORCH — a third, lowest gable stepping forward over the
-         steps on two white posts, so from the gate the roofs step up and back
-         three times, which is the Thai silhouette. It stops at z -0.9, short of
-         the skirt (z -1.0), whose ridge it would otherwise poke through. */
-      { z0: 0.6, z1: -0.9, eave: LIFT + 3.45, ridge: LIFT + 5.95, hw: 4.3, mat: matTile, porch: true }
-    ];
-    const salaFins = [];
-    const chofas = [];   // (v16.4: every tier stands LIFT higher, on the raised base)
-    for (const T of TIERS) {
-      const len = T.z1 - T.z0, cz = (T.z0 + T.z1) / 2;
-      const rise = T.ridge - T.eave, run = T.hw;
-      const slope = Math.hypot(rise, run), ang = Math.atan2(rise, run);
-      for (const s of [-1, 1]) {
-        const p = new THREE.Mesh(new THREE.PlaneGeometry(slope, Math.abs(len)), T.mat);
-        p.rotation.order = 'ZYX';
-        p.rotation.x = -Math.PI / 2; p.rotation.z = -s * ang;   // tilted about the RIDGE (z), not turned about y
-        p.position.set(s * run / 2, (T.eave + T.ridge) / 2, cz);
-        p.castShadow = !LOW; p.receiveShadow = true; world.add(p);
-        const under = new THREE.Mesh(new THREE.PlaneGeometry(slope, Math.abs(len)), matCeilP);
-        under.rotation.copy(p.rotation); under.position.copy(p.position); under.position.y -= 0.06; world.add(under);
-      }
-      box(0.16, 0.2, Math.abs(len), 0, T.ridge + 0.05, cz, matGold);        // the ridge
-      if (T.skirt) continue;
-      // the gable at the front end, and the bargeboards up its two edges
-      const tri = new THREE.Shape();
-      tri.moveTo(-run * 0.94, 0); tri.lineTo(run * 0.94, 0); tri.lineTo(0, rise * 0.94); tri.closePath();
-      const gab = new THREE.Mesh(new THREE.ShapeGeometry(tri), matGoldC);   // the red-and-gold carving (Chad kept it over v16.4's mosaic)
-      gab.position.set(0, T.eave + 0.02, T.z0 + 0.02); world.add(gab);
-      const back = new THREE.Mesh(new THREE.ShapeGeometry(tri), matWhite);
-      back.position.set(0, T.eave + 0.02, T.z0 - 0.02); back.rotation.y = Math.PI; world.add(back);
-      for (const s of [-1, 1]) {
-        const b = box(slope + 0.35, 0.22, 0.12, s * run / 2, (T.eave + T.ridge) / 2 + 0.1, T.z0 + 0.08, matGold);
-        b.rotation.z = -s * ang;
-        /* v16.4: the bargeboard is a NAGA — the saw-toothed gold blades up its
-           edge and its head rearing at the eave (the hang hong) */
-        nagaEdge(salaFins, s * (run + 0.1), T.eave + 0.05, 0, T.ridge + 0.15, T.z0 + 0.08, s);
-      }
-      // the chofa at the apex: a slender curved horn rising and bending forward
-      const cf = [];
-      for (let i = 0; i <= 10; i++) { const k = i / 10; cf.push(new THREE.Vector3(0, T.ridge + k * 0.95, T.z0 + 0.1 + k * k * 0.55)); }
-      const ch = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(cf), 16, 0.045, 6, false), matGold);
-      world.add(ch); chofas.push(ch);
-      // the eave line, a fringe of gold
-      box(run * 2 + 0.4, 0.08, 0.08, 0, T.eave - 0.02, T.z0 + 0.1, matGold);
-    }
-    finMesh(salaFins);
-    // the porch's two posts, white with a gold lotus capital, either side of the steps
-    for (const s of [-1, 1]) {
-      const ph = 3.45 + LIFT;
-      solids.push(cyl(0.14, 0.16, ph, s * 3.95, ph / 2, 0.45, matWhite, 14));
-      for (const y of [0.3, ph - 0.4]) cyl(0.17, 0.17, 0.16, s * 3.95, y, 0.45, matGoldC, 14);
-      cyl(0.24, 0.16, 0.16, s * 3.95, ph - 0.07, 0.45, matGold, 14);
-    }
-    tileTex2.repeat.set(3, 2);
-    // the ceiling boards over the floor, and the back wall behind the altar
-    walls.push(box(SW, 4.6, 0.3, SCX, SALA.floor + 2.3, SALA.z0 + 0.05, matWall));   // v16.3: limewash; the screen behind the Buddha keeps the red
-    /* the ceiling CASTS: without it the sun came through the hairline gaps
-       between the roof planes and lay on the floor as a trail of bright specks
-       (photographed, CP2) */
-    box(SW - 0.6, 0.06, SD - 0.4, SCX, SALA.floor + 4.02, SCZ, matCeilP, world, true);
-    ceilTex.repeat.set(6, 4);
-    /* v16.4 · THE LIGHT THROUGH THE SMOKE: painted shafts of the low sun,
-       slanting in under the porch across the planks (no light — v9.4) */
+    /* v16.4 · THE LIGHT THROUGH THE SMOKE: painted shafts of the low sun
+       (no light — v9.4). v16.9: in through the temple's front door and its
+       first east window, onto the runner before the altar */
     {
       const sd = new THREE.Vector3(16, 6.5, 18).normalize();
       const shTex = tex(makeShaftTex(THREE, cnv));
       const shm = new THREE.MeshBasicMaterial({ map: shTex, color: 0xffd6a0, transparent: true, opacity: 0.15, blending: THREE.AdditiveBlending,
                                                 depthWrite: false, fog: false, side: THREE.DoubleSide });
-      for (const [fx, fz, w] of [[-3.4, -4.6, 0.7], [-0.6, -5.4, 0.5], [2.2, -4.2, 0.8], [0.8, -7.0, 0.45]]) {
-        const L = 5.6, mid = new THREE.Vector3(fx, SALA.floor, fz).addScaledVector(sd, L / 2);
+      for (const [fx, fz, w, L] of [[-2.3, -5.3, 0.7, 6.0], [-3.2, -6.6, 0.45, 6.4], [0.74, -9.85, 0.8, 8.6]]) {
+        const mid = new THREE.Vector3(fx, SALA.floor, fz).addScaledVector(sd, L / 2);
         for (const turn of [0, Math.PI / 2]) {
           const sh = new THREE.Mesh(new THREE.PlaneGeometry(w, L), shm);
           sh.position.copy(mid);
@@ -694,9 +734,13 @@
       }
     }
     // two ceiling fans, turning, and pendant lamps (off: it is light)
+    /* v16.9: in the temple's hall, over the runner, hung on long rods from
+       the ceiling's ridge (9.7 m up; the hall is 7.3 m to its ridge) */
     const fans = [];
-    for (const z of [-3.6, -7.4]) {
-      const g = new THREE.Group(); g.position.set(-1.8, SALA.floor + 3.62, z); world.add(g);
+    const CEIL = 9.7;
+    for (const z of [-5.2, -9.4]) {
+      cyl(0.012, 0.012, CEIL - (SALA.floor + 3.3), 0.15, (CEIL + SALA.floor + 3.3) / 2, z, matDark, 6);
+      const g = new THREE.Group(); g.position.set(0.15, SALA.floor + 3.62, z); world.add(g);
       cyl(0.015, 0.015, 0.36, 0, 0.2, 0, matDark, 6, g);
       cyl(0.09, 0.09, 0.08, 0, 0, 0, matWhite, 10, g);
       const blades = new THREE.Group(); g.add(blades);
@@ -707,19 +751,19 @@
       fans.push(blades);
       // v16.6: the kit's five-blade fan, hung from the ceiling (0.73 m of rod
       // and hub at 0.6), turning in the primitive's place once it lands
-      const kf = thai('ceilfan', -1.8, SALA.floor + 4.0 - 0.73, z, { s: 0.6, cast: false, hide: [g],
+      const kf = thai('ceilfan', 0.15, SALA.floor + 4.0 - 0.73, z, { s: 0.6, cast: false, hide: [g],
                                then: () => { fans[fans.indexOf(blades)] = kf; } });
     }
-    for (const z of [-3.0, -6.2, -9.4]) {
-      cyl(0.006, 0.006, 0.7, 2.2, SALA.floor + 3.65, z, matDark, 4);
-      const sh = cyl(0.16, 0.24, 0.2, 2.2, SALA.floor + 3.25, z, matGold, 12); void sh;
+    for (const [x, z] of [[-2.6, -4.6], [2.6, -4.6], [-2.6, -8.2], [2.6, -8.2], [-2.6, -11.6], [2.6, -11.6]]) {
+      cyl(0.006, 0.006, 9.0 - (SALA.floor + 3.35), x, (9.0 + SALA.floor + 3.35) / 2, z, matDark, 4);
+      const sh = cyl(0.16, 0.24, 0.2, x, SALA.floor + 3.25, z, matGold, 12); void sh;
     }
 
     /* THE ALTAR against the back wall: a stepped red-and-gold throne, the
        seated golden Buddha on top under a gilded screen with a halo, smaller
        images either side, lotus in vases, candles, an incense pot with smoke
        rising, jasmine garlands, and a framed photograph of the old abbot. */
-    const ALT = { x: 0, z: SALA.z0 + 0.95 };
+    const ALT = { x: 0.15, z: SALA.z0 + 0.95 };          // v16.9: on the front door's axis, against the temple's back wall
     const candles = [];
     let smokeP = null;
     {
@@ -872,7 +916,7 @@
        sized to his hips when he lands, `seatUnder`), and the day's offerings
        piled at its front edge. */
     function mkDais(D, SEAT, parent) {
-      const g = new THREE.Group(); g.position.set(D.x - parent.position.x, SALA.floor, D.z - parent.position.z); parent.add(g);
+      const g = new THREE.Group(); g.position.set(D.x - parent.position.x, SALA.floor, D.z - parent.position.z); g.rotation.y = D.ry || 0; parent.add(g);
       const pile = new THREE.Group(); pile.position.set(-0.85, D.h + 0.01, 0.82); g.add(pile);
       box(D.w, D.h, D.d, 0, D.h / 2, 0, matWood, g);
       box(D.w + 0.05, 0.05, D.d + 0.05, 0, D.h, 0, matGold, g);
@@ -895,20 +939,24 @@
        the silver bowl of lustral water with its whisk of grass stalks (what he
        blesses you with), the ceremonial fan leaning at his side, a spool of
        white string, his thermos and glass */
-    const monkD = mkDais(MD, MON, world);
+    /* v16.9: the dais is TURNED to face the hall from the east wall, so the
+       seat is given in its own frame (MONL) and everything on it is placed
+       in that frame too (L); bowlPos is the world point, through mdW */
+    const monkD = mkDais(MD, { x: MD.x + MONL.x, z: MD.z + MONL.z }, world);
     const offerPile = monkD.pile;
-    const bowlPos = new THREE.Vector3(MON.x + 0.42, SALA.floor + MD.h + 0.04, MON.z + 0.62);
+    const bowlW = mdW(MONL.x + 0.42, MONL.z + 0.62);
+    const bowlPos = new THREE.Vector3(bowlW.x, SALA.floor + MD.h + 0.04, bowlW.z);
     let whisk = null;
     {
-      const g = monkD.g, L = (x, z) => [x - MD.x, z - MD.z];
-      const [ax, az] = L(MON.x - 0.72, MON.z + 0.35);
+      const g = monkD.g, L = (x, z) => [x, z];
+      const [ax, az] = L(MONL.x - 0.72, MONL.z + 0.35);
       cyl(0.09, 0.07, 0.12, ax, MD.h + 0.06, az, matGold, 14, g);                       // the alms bowl's stand
       const bowl = new THREE.Mesh(new THREE.SphereGeometry(0.14, 18, 10, 0, Math.PI * 2, 0, Math.PI * 0.62), new THREE.MeshStandardMaterial({ color: 0x141210, roughness: 0.35 }));
       bowl.rotation.x = Math.PI; bowl.position.set(ax, MD.h + 0.24, az); bowl.castShadow = !LOW; g.add(bowl);
       const lid = new THREE.Mesh(new THREE.SphereGeometry(0.13, 18, 8, 0, Math.PI * 2, 0, Math.PI * 0.35), bowl.material);
       lid.position.set(ax, MD.h + 0.2, az); g.add(lid);
       // the lustral water: a silver bowl, the water in it, the whisk resting across it
-      const [bx, bz] = L(bowlPos.x, bowlPos.z);
+      const [bx, bz] = L(MONL.x + 0.42, MONL.z + 0.62);
       const silver = new THREE.MeshStandardMaterial({ color: 0xd4d6d8, roughness: 0.25, metalness: 0.85 });
       const kb = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.09, 0.09, 22, 1, true), silver);
       kb.material.side = THREE.DoubleSide; kb.position.set(bx, MD.h + 0.05, bz); g.add(kb);
@@ -929,16 +977,16 @@
       band.rotation.x = Math.PI / 2; band.position.z = 0.03; whisk.add(band);
       whisk.userData.tip = new THREE.Vector3(0, 0, 0.34);
       // the ceremonial fan (talapat): a disc on a long handle, leaning on the seat
-      const fan = new THREE.Group(); const [fx, fz] = L(MON.x + 0.62, MON.z - 0.05);
+      const fan = new THREE.Group(); const [fx, fz] = L(MONL.x + 0.62, MONL.z - 0.05);
       fan.position.set(fx, MD.h, fz); fan.rotation.z = -0.28; g.add(fan);
       cyl(0.012, 0.012, 1.1, 0, 0.55, 0, matWoodD, 6, fan);
       const disc = new THREE.Mesh(new THREE.CircleGeometry(0.22, 24), new THREE.MeshStandardMaterial({ color: 0xa8541c, roughness: 0.6, side: THREE.DoubleSide }));
       disc.position.set(0, 1.18, 0.01); fan.add(disc);
       const rim = new THREE.Mesh(new THREE.TorusGeometry(0.22, 0.012, 6, 24), matGold); rim.position.copy(disc.position); fan.add(rim);
       // the white string, the thermos and the glass
-      const [sx, sz] = L(MON.x - 0.45, MON.z + 0.72);
+      const [sx, sz] = L(MONL.x - 0.45, MONL.z + 0.72);
       cyl(0.035, 0.035, 0.05, sx, MD.h + 0.025, sz, new THREE.MeshStandardMaterial({ color: 0xf6f3ea, roughness: 0.9 }), 12, g);
-      const [tx, tz] = L(MON.x + 0.9, MON.z - 0.25);
+      const [tx, tz] = L(MONL.x + 0.9, MONL.z - 0.25);
       cyl(0.05, 0.05, 0.3, tx, MD.h + 0.15, tz, new THREE.MeshStandardMaterial({ color: 0x8a2a24, roughness: 0.4, metalness: 0.3 }), 12, g);
       cyl(0.03, 0.028, 0.09, tx - 0.12, MD.h + 0.045, tz + 0.08, new THREE.MeshStandardMaterial({ color: 0xc8dce0, roughness: 0.1, transparent: true, opacity: 0.6 }), 10, g);
     }
@@ -1204,16 +1252,17 @@
       box(L, SALA.floor, WALK.hw * 2 + 0.3, cx, SALA.floor / 2, Z, matStone, world, false);
       const wood3 = woodTex.clone(); wood3.needsUpdate = true; wood3.repeat.set(L / 1.6, 1.2); madeTex.push(wood3);
       const fl = new THREE.Mesh(new THREE.PlaneGeometry(L, WALK.hw * 2), new THREE.MeshStandardMaterial({ map: wood3, roughness: 0.45 }));
-      fl.rotation.x = -Math.PI / 2; fl.position.set(cx, SALA.floor + 0.004, Z); fl.receiveShadow = true; world.add(fl);
+      fl.rotation.x = -Math.PI / 2; fl.position.set(cx, SALA.floor + 0.012, Z); fl.receiveShadow = true; world.add(fl);   // (v16.9: over the temple's ledge, clear of it)
+      /* v16.9: the posts 3.4 m (were 2.6) so the roof clears the west door's head */
       for (let x = WALK.x0 - 0.5; x >= WALK.x1 + 0.2; x -= 1.6) {
         for (const sd of [-1, 1]) {
-          const post = cyl(0.08, 0.09, 2.6, x, SALA.floor + 1.3, Z + sd * (WALK.hw + 0.02), matWhite, 10); solids.push(post);
+          const post = cyl(0.08, 0.09, 3.4, x, SALA.floor + 1.7, Z + sd * (WALK.hw + 0.02), matWhite, 10); solids.push(post);
           cyl(0.1, 0.1, 0.12, x, SALA.floor + 0.3, Z + sd * (WALK.hw + 0.02), matGoldC, 10);
         }
       }
       for (const sd of [-1, 1]) {
         const zr = Z + sd * (WALK.hw + 0.02);
-        box(L, 0.1, 0.14, cx, SALA.floor + 2.62, zr, matGold);                 // the beam along the posts
+        box(L, 0.1, 0.14, cx, SALA.floor + 3.42, zr, matGold);                 // the beam along the posts
         const top = box(L - 0.4, 0.07, 0.12, cx - 0.2, SALA.floor + 0.62, zr, matGold); solids.push(top);
         box(L - 0.4, 0.08, 0.14, cx - 0.2, SALA.floor + 0.06, zr, matWhite);
         for (let x = WALK.x0 - 0.3; x > WALK.x1 + 0.1; x -= 0.26) cyl(0.025, 0.025, 0.52, x, SALA.floor + 0.34, zr, matWhite, 6);
@@ -1225,11 +1274,11 @@
       for (const sd of [-1, 1]) {
         const p = new THREE.Mesh(new THREE.PlaneGeometry(L + 0.4, slope), mT);
         p.rotation.order = 'YXZ'; p.rotation.x = -Math.PI / 2 + sd * ang;
-        p.position.set(cx, SALA.floor + 2.72 + rise / 2, Z + sd * run / 2); p.castShadow = !LOW; world.add(p);
+        p.position.set(cx, SALA.floor + 3.52 + rise / 2, Z + sd * run / 2); p.castShadow = !LOW; world.add(p);
         const u = new THREE.Mesh(new THREE.PlaneGeometry(L + 0.4, slope), matCeil);
         u.rotation.copy(p.rotation); u.position.copy(p.position); u.position.y -= 0.05; world.add(u);
       }
-      box(L + 0.4, 0.1, 0.1, cx, SALA.floor + 2.72 + rise + 0.03, Z, matGold);
+      box(L + 0.4, 0.1, 0.1, cx, SALA.floor + 3.52 + rise + 0.03, Z, matGold);
       // lanterns under it
       // v16.3: Lanna lanterns, yellow and white — a round red one is a Chinese temple's
       const lm = new THREE.MeshStandardMaterial({ color: 0xf2c230, roughness: 0.6, emissive: 0x5a3c06, emissiveIntensity: 0.6 });
@@ -1237,12 +1286,27 @@
          the sala and the sign over the door (CP6: the centre one did) */
       for (const [x, sd] of [[WALK.x0 - 1.3, 1], [cx, -1], [WALK.x1 + 1.3, 1]]) {
         const lz = Z + sd * (WALK.hw - 0.12);
-        cyl(0.004, 0.004, 0.3, x, SALA.floor + 2.5, lz, matDark, 4);
-        const l = new THREE.Mesh(new THREE.SphereGeometry(0.14, 10, 8), lm); l.scale.set(1, 1.25, 1); l.position.set(x, SALA.floor + 2.2, lz); world.add(l);
+        cyl(0.004, 0.004, 0.5, x, SALA.floor + 3.2, lz, matDark, 4);
+        const l = new THREE.Mesh(new THREE.SphereGeometry(0.14, 10, 8), lm); l.scale.set(1, 1.25, 1); l.position.set(x, SALA.floor + 2.8, lz); world.add(l);
       }
       // the sign at the sala's end: the way to the Ajarn
       const sg = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.34), new THREE.MeshStandardMaterial({ map: tex(makeSignTex(THREE, cnv, 'SAK YANT  →', '#6d140e', '#f6e6b8', 2.65)), roughness: 0.7, side: THREE.DoubleSide }));
-      sg.position.set(WALK.x0 - 0.9, SALA.floor + 2.35, Z + WALK.hw - 0.02); world.add(sg);
+      sg.position.set(WALK.x0 - 1.3, SALA.floor + 2.9, Z + WALK.hw - 0.02); world.add(sg);
+      /* v16.9 · THE WEST DOOR, where the walkway meets the temple: the
+         middle window pair of the west wall was cut to the floor (tools/
+         preptemple.mjs); lacquered red jambs with a gold edge cover the cut,
+         and its two leaves stand open, flat against the hall's wall */
+      const DH = 3.7, jz = [WDOOR.z0, WDOOR.z1];
+      for (const [k, zj] of jz.entries()) {
+        const zc = zj + (k ? 0.05 : -0.05);
+        box(0.62, DH, 0.1, WDOOR.x, SALA.floor + DH / 2, zc, matRedD, world, false);
+        box(0.64, DH, 0.02, WDOOR.x, SALA.floor + DH / 2, zc + (k ? -0.06 : 0.06), matGold, world, false);
+        const lf = new THREE.Group(); lf.position.set(SALA.x0 + 0.04, SALA.floor, zj + (k ? 0.1 : -0.1)); world.add(lf);
+        const w = 0.66;
+        box(0.05, DH - 0.12, w, 0, (DH - 0.12) / 2, (k ? 1 : -1) * w / 2, matRed, lf, false);
+        box(0.02, DH - 0.5, w - 0.14, 0.03, (DH - 0.12) / 2, (k ? 1 : -1) * w / 2, matGoldC, lf, false);
+      }
+      box(0.62, 0.12, WDOOR.z1 - WDOOR.z0 + 0.2, WDOOR.x, SALA.floor + DH + 0.06, (WDOOR.z0 + WDOOR.z1) / 2, matRedD, world, false);
     }
     {
       const K = KUTI, cx = (K.x0 + K.x1) / 2, cz = (K.z0 + K.z1) / 2, L = K.z1 - K.z0, Wd = K.x1 - K.x0;
@@ -1303,10 +1367,7 @@
       box(0.02, 0.14, 0.08, X + 0.01, SALA.floor + 2.12, KDOOR.z + 0.78, matDark, world, false);
       const kr = new THREE.Group(); kr.position.set(X + 0.35, 0, KDOOR.z - 0.95); world.add(kr);
       box(0.3, 0.3, 0.7, 0, SALA.floor + 0.15, 0, matWoodL, kr, false);
-      for (const dz of [-0.16, 0.16]) for (const d of [-0.055, 0.055]) {
-        const sh = new THREE.Mesh(new THREE.BoxGeometry(0.27, 0.07, 0.1), new THREE.MeshStandardMaterial({ color: dz < 0 ? 0x2c3e66 : 0x8a6a4a, roughness: 0.8 }));
-        sh.position.set(0, SALA.floor + 0.34, dz + d); kr.add(sh);
-      }
+      for (const dz of [-0.16, 0.16]) slipperPair(kr, 0, SALA.floor + 0.3, dz, Math.PI / 2, dz < 0 ? 0x2c3e66 : 0xb3261e);   // v16.9: Chad's slippers
     }
 
     function mkTray() {
@@ -1333,46 +1394,43 @@
       return g;
     }
 
-    /* the mats, in rows on the west half, and a bench along the west rail
-       where men wait who cannot sit on the floor for an hour */
-    for (let r = 0; r < 3; r++) for (let c = 0; c < 3; c++) {
+    /* the mats, in rows facing the altar either side of the runner, and a
+       bench along the west wall where men wait who cannot sit on the floor
+       for an hour (v16.9: in the temple's hall — two columns west of the
+       runner, one east of it, clear of the monk's dais) */
+    for (const [mx, mz] of [[-3.7, -4.4], [-2.3, -4.4], [-3.7, -6.3], [-2.3, -6.3], [-3.7, -8.2], [-2.3, -8.2], [2.3, -4.4], [2.3, -6.3]]) {
       const m = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 1.6), matMat);
-      m.rotation.x = -Math.PI / 2; m.position.set(-4.6 + c * 1.45, SALA.floor + 0.012, -3.4 - r * 2.0);
+      m.rotation.x = -Math.PI / 2; m.position.set(mx, SALA.floor + 0.012, mz);
       m.receiveShadow = true; world.add(m);
     }
-    const BENCH = { x: -6.15, z0: -3.2, z1: -7.6 };
+    const BENCH = { x: -4.95, z0: -3.3, z1: -7.0 };
     box(0.5, 0.06, BENCH.z0 - BENCH.z1, BENCH.x, SALA.floor + 0.44, (BENCH.z0 + BENCH.z1) / 2, matWoodL);
     for (const z of [BENCH.z0 - 0.2, BENCH.z1 + 0.2]) solids.push(box(0.44, 0.44, 0.08, BENCH.x, SALA.floor + 0.22, z, matWoodD));
     // the waiting mat glows when it is where the player should go (the zone)
     const zone = mkZone(WAIT.x, WAIT.z); const zoneSeat = mkZone(CUSH.x, DAIS.z + DAIS.d / 2 + 0.55);
     const zoneBless = mkZone(BLESS.x, BLESS.z);          // v16.1: where to kneel before the monk
-    // a low table of amulets and water bottles by the east rail
+    // a low table of amulets and water bottles along the east wall (v16.9)
     {
-      box(1.4, 0.36, 0.5, 6.0, SALA.floor + 0.18, -4.0, matWoodD);
+      box(0.5, 0.36, 1.4, 4.8, SALA.floor + 0.18, -5.2, matWoodD);
       for (let i = 0; i < 6; i++) {
-        const b = cyl(0.03, 0.03, 0.2, 5.5 + i * 0.2, SALA.floor + 0.46, -3.92, new THREE.MeshStandardMaterial({ color: 0xb8d8e8, transparent: true, opacity: 0.7, roughness: 0.1 }), 8);
+        const b = cyl(0.03, 0.03, 0.2, 4.72, SALA.floor + 0.46, -5.7 + i * 0.2, new THREE.MeshStandardMaterial({ color: 0xb8d8e8, transparent: true, opacity: 0.7, roughness: 0.1 }), 8);
         void b;
       }
-      solids.push(hid(box(1.4, 0.36, 0.5, 6.0, SALA.floor + 0.18, -4.0, matWoodD, world, false)));
+      solids.push(hid(box(0.5, 0.36, 1.4, 4.8, SALA.floor + 0.18, -5.2, matWoodD, world, false)));
     }
 
     /* ------------------------------------------------ the steps and the shoes
        A wooden rack at the foot of the steps with a dozen pairs on it and more
        on the paving beside it, and the sign every temple has. */
-    const shoeMats = [0x3a2a20, 0x1d1d1f, 0x8a6a4a, 0xe6e1d6, 0x2c3e66, 0xa33a2a].map(c => new THREE.MeshStandardMaterial({ color: c, roughness: 0.8 }));
     const myShoes = new THREE.Group(); world.add(myShoes);
     {
       const g = new THREE.Group(); g.position.set(RACK.x, 0, RACK.z); g.rotation.y = 0; world.add(g);
       for (const y of [0.05, 0.32, 0.6]) box(1.5, 0.04, 0.36, 0, y, 0, matWoodL, g);
       for (const s of [-1, 1]) for (const z of [-0.16, 0.16]) box(0.05, 0.75, 0.05, s * 0.73, 0.37, z, matWoodD, g);
-      const pair = (px, py, pz, m, ry = 0, parent = g) => {
-        for (const d of [-0.055, 0.055]) {
-          const sh = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.07, 0.27), m);
-          sh.position.set(px + d, py + 0.035, pz); sh.rotation.y = ry; parent.add(sh);
-        }
-      };
-      for (let i = 0; i < 10; i++) pair(-0.58 + (i % 5) * 0.29, i < 5 ? 0.07 : 0.34, 0, shoeMats[i % shoeMats.length]);
-      for (let i = 0; i < 5; i++) pair(-1.3 - (i % 3) * 0.3, 0, 0.25 + Math.floor(i / 3) * 0.33, shoeMats[(i + 2) % 6], hash(i, 4) - 0.5);
+      /* v16.9: Chad's slippers, a colour a pair (slipperPair) — ten on the
+         rack's two lower shelves, and five kicked off on the paving beside it */
+      for (let i = 0; i < 10; i++) slipperPair(g, -0.58 + (i % 5) * 0.29, i < 5 ? 0.07 : 0.34, 0, (hash(i, 6) - 0.5) * 0.12, SLIP_PAL[(i * 5) % SLIP_PAL.length]);
+      for (let i = 0; i < 5; i++) slipperPair(g, -1.3 - (i % 3) * 0.45, 0, 0.35 + Math.floor(i / 3) * 0.5 + (i % 2) * 0.12, (hash(i, 4) - 0.5) * 2.2, SLIP_PAL[(i * 7 + 3) % SLIP_PAL.length], true);
       solids.push(hid(box(1.5, 0.75, 0.4, RACK.x, 0.37, RACK.z, matWoodL, world, false)));
       // the sign, on a post
       const sg = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.5),
@@ -1381,8 +1439,9 @@
       box(0.06, 1.3, 0.06, RACK.x + 1.05, 0.65, RACK.z, matWoodD);
       box(0.96, 0.56, 0.03, RACK.x + 1.05, 1.35, RACK.z + 0.03, matWoodD);
       // HIS pair, which appears on the rack when he takes them off
-      pair(0.0, 0.62, 0.02, shoeMats[1], 0, myShoes);
+      slipperPair(myShoes, 0.0, 0.62, 0.02, 0, 0x2a2622);
       myShoes.position.set(RACK.x + 0.35, 0, RACK.z); myShoes.visible = false;
+      plantSlippers();                                   // every pair recorded by now (the kuti's came first)
     }
 
     /* ------------------------------------------------------ the offering stall
@@ -1487,7 +1546,7 @@
     // THE DOG, asleep in the planter's shade, breathing
     const dog = new THREE.Group();
     {
-      dog.position.set(BODHI.x - 2.35, 0, BODHI.z + 1.2); dog.rotation.y = 0.8; world.add(dog);
+      dog.position.set(BODHI.x - 2.1, 0, BODHI.z + 1.9); dog.rotation.y = 0.8; world.add(dog);   // (v16.9: clear of the naga's pedestal)
       const fur = new THREE.MeshStandardMaterial({ color: 0xb9895a, roughness: 0.95 });
       const body = new THREE.Mesh(new THREE.SphereGeometry(0.3, 14, 10), fur); body.scale.set(1.5, 0.55, 0.75);
       body.position.set(0, 0.17, 0); dog.add(body); dog.userData.body = body;
@@ -1556,7 +1615,7 @@
 
     /* the lanterns, strung from the stall's awning across to the sala's corner */
     {
-      const pts = [new THREE.Vector3(-8.4, 2.6, 3.2), new THREE.Vector3(-7.4, 2.35, -0.2)];
+      const pts = [new THREE.Vector3(-8.4, 2.6, 3.2), new THREE.Vector3(-10.62, 3.05, -3.82)];   // v16.9: to the bell tower (the sala's corner is gone)
       // v16.3: yellow, white and saffron Lanna lanterns — the round red ones read as a Chinese temple
       const lms = [0xf2c230, 0xf3ecdc, 0xe8912a].map(c => new THREE.MeshStandardMaterial({ color: c, roughness: 0.6, emissive: c, emissiveIntensity: 0.12 }));
       for (let i = 0; i <= 5; i++) {
@@ -1583,7 +1642,7 @@
       const pot = new THREE.MeshStandardMaterial({ color: 0x9b4a2a, roughness: 0.9 });
       const bloom = [0xd9337a, 0xe0569a, 0xc02468].map(c => new THREE.MeshStandardMaterial({ color: c, roughness: 0.9 }));
       const leaf = new THREE.MeshStandardMaterial({ color: 0x3f6b35, roughness: 0.9 });
-      for (const [x, z] of [[-4.6, 0.3], [-6.2, 0.3], [4.6, 0.6], [6.4, 0.6], [-2.8, 8.6], [2.8, 8.6]]) {
+      for (const [x, z] of [[-4.4, 0.95], [-6.2, 0.95], [4.4, 0.95], [6.2, 0.95], [-2.8, 8.6], [2.8, 8.6]]) {   // (v16.9: along the temple's base)
         cyl(0.3, 0.22, 0.46, x, 0.23, z, pot, 12);
         const mound = new THREE.Mesh(new THREE.SphereGeometry(0.34, 12, 8), leaf);
         mound.scale.set(1, 0.8, 1); mound.position.set(x, 0.72, z); world.add(mound);
@@ -1642,10 +1701,10 @@
         const ax = w < d;
         box(ax ? 0.1 : w, 0.06, ax ? d : 0.1, ax ? x + (x < 0 ? w / 2 : -w / 2) : x, 0.03, ax ? z : z + (z < 0 ? d / 2 : -d / 2), matStone, world, false);
       };
-      verge(1.1, 26.6, -14.27, 1.0);            // the west wall
+      verge(1.1, 37.1, -14.27, -4.25);          // the west wall (v16.9: to the moved north wall)
       verge(10.9, 1.1, -8.95, 14.27);           // the south wall, west of the gate
       verge(6.0, 1.1, 5.8, 14.27);              // the south wall, east of the gate (to the spirit house)
-      verge(8.6, 1.1, -2.0, -12.27);            // the north wall, behind the sala
+      verge(14.2, 1.1, 0.0, -22.77);            // the north wall, behind the temple (v16.9: moved back with it)
       // the lotus jars: glazed, a pad of leaves, two flowers and a bud
       const glaze = new THREE.MeshStandardMaterial({ color: 0x8aa89c, roughness: 0.22, metalness: 0.05 });   // celadon: a dark glaze read as a black blob (CP2)
       const water = new THREE.MeshStandardMaterial({ color: 0x3a4a3a, roughness: 0.1, metalness: 0.2 });
@@ -1723,8 +1782,9 @@
     {
       // the bells: where they hang, along the eaves
       for (const sx of [-1, 1]) {
-        for (let z = -1.7; z > -11.4; z -= 1.2) bellHang.push(new THREE.Vector3(sx * 7.95, 3.9 + LIFT, z));
-        for (const z of [0.4, -0.5]) bellHang.push(new THREE.Vector3(sx * 4.35, 3.4 + LIFT, z));
+        /* v16.9: under the temple's side eaves (measured on the placed model:
+           the lower roof's edge at x ±8.0, 6.76 m, from z −0.5 to −17.5) */
+        for (let z = -1.0; z > -17.2; z -= 1.35) bellHang.push(new THREE.Vector3(sx * 7.95, 6.66, z));
       }
       for (const z of [GAL.z0, (GAL.z0 + GAL.z1) / 2, GAL.z1]) bellHang.push(new THREE.Vector3(GAL.x1 + 0.55, 2.5, z));
     }
@@ -1779,15 +1839,16 @@
       thai('waterjar', -2.4, 0, 12.95, { s: 1.0, ry: 0.4, block: [0.6, 1.1] });
       thai('claypot', -3.55, 0, 13.35, { s: 0.9, block: [0.3, 0.7] });
       thai('claypot2', 2.75, 0, 13.3, { s: 0.85, ry: 1.2, block: [0.32, 0.7] });
-      thai('claypot2', -12.2, 0, -11.7, { s: 0.9, ry: 2.1, block: [0.33, 0.75] });
-      thai('claypot', -12.15, 0, -7.75, { s: 0.9, ry: 0.6, block: [0.3, 0.7] });
+      thai('claypot2', -12.2, 0, WALK.z - 2.3, { s: 0.9, ry: 2.1, block: [0.33, 0.75] });   // (v16.9: beside the kuti, clear of the walkway's base)
+      thai('claypot', -12.15, 0, WALK.z + 1.4, { s: 0.9, ry: 0.6, block: [0.3, 0.7] });
       // two roosters, loose
       thai('rooster', BODHI.x - 3.4, 0, BODHI.z + 3.0, { s: 0.62, ry: 2.2 });
       thai('rooster', -7.2, 0, 9.6, { s: 0.58, ry: -0.8 });
       // floor cushions stacked against the sala's east rail, and a triangle one
-      thai('cush6', 6.3, SALA.floor, -2.5, { s: 1.0, ry: 0.2, block: [0.32, 0.5] });
-      thai('cush4', 6.3, SALA.floor, -3.15, { s: 1.0, ry: -0.3, block: [0.3, 0.4] });
-      thai('cushtri', 6.35, SALA.floor, -4.3, { s: 0.55, ry: -Math.PI / 2, block: [0.32, 0.5] });
+      // (v16.9: inside the temple, against its east wall by the door)
+      thai('cush6', 4.8, SALA.floor, -3.3, { s: 1.0, ry: 0.2, block: [0.32, 0.5] });
+      thai('cush4', 4.8, SALA.floor, -3.95, { s: 1.0, ry: -0.3, block: [0.3, 0.4] });
+      thai('cushtri', 4.85, SALA.floor, -6.6, { s: 0.55, ry: -Math.PI / 2, block: [0.32, 0.5] });
     }
 
     /* (v16.4 · the incense urn on the axis — pot, sticks, smoke, candles and
@@ -1807,9 +1868,10 @@
       };
       /* v16.7: no swag on the naga's neck any more (Chad: "has something
          hung around its neck, remove that thing") */
-      for (const px of [-6.75, -2.4, 2.4, 6.75]) string([new THREE.Vector3(px, SALA.floor + 2.5, -1.68), new THREE.Vector3(px + 0.02, SALA.floor + 2.0, -1.68), new THREE.Vector3(px, SALA.floor + 1.55, -1.68)], 22, [O, Y, O, W]);
-      for (const sx of [-1, 1]) string([new THREE.Vector3(sx * 3.95, 2.8, 0.63), new THREE.Vector3(sx * 3.95, 2.1, 0.63)], 16, [O, O, W]);
-      string([new THREE.Vector3(-1.9, SALA.floor + 0.3, ALT.z + 1.42), new THREE.Vector3(0, SALA.floor + 0.18, ALT.z + 1.46), new THREE.Vector3(1.9, SALA.floor + 0.3, ALT.z + 1.42)], 40, [O, Y]);
+      /* v16.9: on the temple's two columns either side of the door (the old
+         sala's four front pillars and its porch posts are gone) */
+      for (const px of [-1.8, 2.0]) string([new THREE.Vector3(px, SALA.floor + 2.5, -0.82), new THREE.Vector3(px + 0.02, SALA.floor + 2.0, -0.82), new THREE.Vector3(px, SALA.floor + 1.55, -0.82)], 22, [O, Y, O, W]);
+      string([new THREE.Vector3(ALT.x - 1.9, SALA.floor + 0.3, ALT.z + 1.42), new THREE.Vector3(ALT.x, SALA.floor + 0.18, ALT.z + 1.46), new THREE.Vector3(ALT.x + 1.9, SALA.floor + 0.3, ALT.z + 1.42)], 40, [O, Y]);
       const im = new THREE.InstancedMesh(new THREE.SphereGeometry(0.028, 6, 5), new THREE.MeshStandardMaterial({ roughness: 0.85 }), beads.length);
       const d = new THREE.Object3D();
       beads.forEach((p, i) => { d.position.copy(p); d.updateMatrix(); im.setMatrixAt(i, d.matrix); im.setColorAt(i, bcol[i]); });
@@ -1848,6 +1910,65 @@
       }
     }
 
+    /* ------------------------------------ v16.9 · THE HALL'S OTHER THINGS
+       The temple's hall is bigger than the sala was, and a hall like it is
+       never empty (Chad: "fill up the interior space of this new temple
+       appropriately and make use of the extra space too"): a scripture
+       cabinet in black lacquer and gold against the west wall, a gong on its
+       red frame in the back corner past the monk, rows of small Buddha images
+       on low stands either side of the altar, and a donation box by the door. */
+    {
+      const lacq = new THREE.MeshStandardMaterial({ color: 0x14100c, roughness: 0.28, metalness: 0.1 });
+      // the scripture cabinet (tu phra tham): splayed legs, gilt panels on black
+      {
+        const g = new THREE.Group(); g.position.set(SALA.x0 + 0.34, SALA.floor, -12.3); g.rotation.y = Math.PI / 2; world.add(g);
+        box(1.2, 1.05, 0.52, 0, 0.3 + 0.525, 0, lacq, g);
+        box(1.28, 0.06, 0.6, 0, 1.38, 0, matGold, g);
+        box(1.3, 0.1, 0.62, 0, 0.3, 0, lacq, g);
+        for (const sx of [-1, 1]) for (const sz of [-1, 1]) { const l = box(0.07, 0.34, 0.07, sx * 0.55, 0.15, sz * 0.22, lacq, g); l.rotation.z = -sx * 0.12; }
+        for (const sx of [-1, 1]) {
+          box(0.5, 0.86, 0.01, sx * 0.28, 0.83, 0.265, matGoldC, g);
+          box(0.52, 0.02, 0.012, sx * 0.28, 1.27, 0.266, matGold, g);
+        }
+        solids.push(hid(box(0.62, 1.4, 1.3, SALA.x0 + 0.34, SALA.floor + 0.7, -12.3, matProxy, world, false)));
+      }
+      // the gong (khong): a bronze disc with its boss, hung in a red frame, facing into the hall
+      {
+        const g = new THREE.Group(); g.position.set(SALA.x1 - 0.5, SALA.floor, -12.85); g.rotation.y = -Math.PI / 2; world.add(g);
+        for (const sx of [-1, 1]) { cyl(0.05, 0.06, 1.75, sx * 0.55, 0.875, 0, matRed, 10, g); box(0.24, 0.08, 0.34, sx * 0.55, 0.04, 0, matRedD, g); }
+        box(1.3, 0.1, 0.1, 0, 1.78, 0, matRed, g); box(1.36, 0.04, 0.12, 0, 1.85, 0, matGold, g);
+        const bronze = new THREE.MeshStandardMaterial({ color: 0x8a6a2a, roughness: 0.35, metalness: 0.6, emissive: 0x241604, emissiveIntensity: 0.4 });
+        const disc = cyl(0.38, 0.38, 0.05, 0, 1.08, 0, bronze, 32, g); disc.rotation.x = Math.PI / 2;
+        const boss = new THREE.Mesh(new THREE.SphereGeometry(0.1, 16, 10), bronze); boss.position.set(0, 1.08, 0.04); boss.scale.z = 0.6; g.add(boss);
+        for (const sx of [-1, 1]) { const c = cyl(0.006, 0.006, 0.34, sx * 0.2, 1.58, 0, matDark, 4, g); c.rotation.z = sx * 0.5; }
+        const mallet = cyl(0.02, 0.02, 0.5, 0.45, 0.62, 0.1, matWoodD, 8, g); mallet.rotation.z = 0.4;
+        const head = new THREE.Mesh(new THREE.SphereGeometry(0.06, 10, 8), new THREE.MeshStandardMaterial({ color: 0xece6d8, roughness: 0.9 })); head.position.set(0.55, 0.86, 0.1); g.add(head);
+        solids.push(hid(box(0.5, 1.8, 1.3, SALA.x1 - 0.5, SALA.floor + 0.9, -12.85, matProxy, world, false)));
+      }
+      // the small images: a low stand either side of the altar, against the back wall
+      for (const [x0, n] of [[-4.75, 4], [2.75, 2]]) {
+        const w = n * 0.5 + 0.1, cx = x0 + w / 2, z = SALA.z0 + 0.35;
+        box(w, 0.5, 0.5, cx, SALA.floor + 0.25, z, matRed);
+        box(w + 0.04, 0.04, 0.54, cx, SALA.floor + 0.5, z, matGold);
+        for (let i = 0; i < n; i++) {
+          const bx = x0 + 0.3 + i * 0.5;
+          thai('buddha', bx, SALA.floor + 0.52, z - 0.02, { s: 0.85, tint: GOLD_T, glow: 0.12, hide: [mkBuddha(bx, SALA.floor + 0.52, z - 0.02, 0.24)] });
+          const fl = new THREE.Mesh(new THREE.SphereGeometry(0.012, 6, 5), new THREE.MeshBasicMaterial({ color: 0xffc46a, transparent: true, opacity: 0.95, fog: false }));
+          cyl(0.014, 0.014, 0.08, bx, SALA.floor + 0.56, z + 0.19, new THREE.MeshStandardMaterial({ color: 0xf3e4b0, roughness: 0.6 }), 6);
+          fl.scale.set(1, 1.8, 1); fl.position.set(bx, SALA.floor + 0.62, z + 0.19); world.add(fl); candles.push(fl);
+        }
+        solids.push(hid(box(w, 0.9, 0.5, cx, SALA.floor + 0.45, z, matProxy, world, false)));
+      }
+      // the donation box, by the door
+      {
+        box(0.42, 0.62, 0.34, 1.55, SALA.floor + 0.31, SALA.z1 - 0.45, matWoodD);
+        box(0.44, 0.04, 0.36, 1.55, SALA.floor + 0.63, SALA.z1 - 0.45, matGold);
+        box(0.16, 0.012, 0.02, 1.55, SALA.floor + 0.652, SALA.z1 - 0.45, matDark);
+        box(0.3, 0.22, 0.005, 1.55, SALA.floor + 0.42, SALA.z1 - 0.28, new THREE.MeshStandardMaterial({ map: tex(makeSignTex(THREE, cnv, 'ทำบุญ', '#6d140e', '#f6e6b8', 1.4)), roughness: 0.7 }));
+        solids.push(hid(box(0.42, 0.62, 0.34, 1.55, SALA.floor + 0.31, SALA.z1 - 0.45, matProxy, world, false)));
+      }
+    }
+
     /* ---------------------------------------------------------------- trees
        Round the outside of the walls, and two frangipani by the gate; the
        bodhi's crown is the tree kit's biggest kind over our trunk. */
@@ -1858,6 +1979,7 @@
         const a = hash(i, 7) * Math.PI * 2, r = 24 + hash(i, 13) * 20;
         const x = 3 + Math.cos(a) * r, z = 1 + Math.sin(a) * r * 0.9;
         if (Math.abs(x) < 7 && z > 14) continue;                     // keep the road and the film's walk-in clear
+        if (x > -16 && x < 22.5 && z > -24.5 && z < 16) continue;    // v16.9: not inside the compound (its north wall moved back 10.5 m)
         if (Math.hypot(x - CHEDI.x, z - CHEDI.z) < 9) continue;      // v16.4: nothing grows against the chedi
         spots.push({ x, z, h: 8.5 * (0.8 + hash(i, 17) * 0.6) });
       }
@@ -2074,7 +2196,7 @@
       });
     }
     const DAIS_TOP = SALA.floor + DAIS.h;
-    const HELP_RY = Math.PI / 2 + 0.5;                 // at rest he faces into the sala, toward the monk
+    const HELP_RY = Math.atan2(MON.x - HELP.x, MON.z - HELP.z);   // at rest he faces across the hall, toward the monk
     /* HE SITS RAISED — on a lacquered block on the dais, so the man in front
        of him looks UP at him when he turns round (CP3: level with the stool,
        the decision opened on the top of his head) */
@@ -2212,7 +2334,7 @@
        The procedural arm lift is the stand-in's and is not given to him
        (no `arm`); the whisk still rides his right hand through the chant. */
     const MONK_REST = 'Sit_Thumbs_Up_Right', MONK_TALK = 'Sitting_Answering_Questions', MONK_BLESS = 'Sit_Thumbs_Up_Right';
-    const monk = mkRig('monk', { x: MON.x, y: MD_TOP + AJ_RISE, z: MON.z, ry: 0, height: 1.68,
+    const monk = mkRig('monk', { x: MON.x, y: MD_TOP + AJ_RISE, z: MON.z, ry: MD.ry, height: 1.68,   // v16.9: facing the hall from the east wall
                                   sizeOn: 'Walking', sizeAt: 0, idle: MONK_REST, at: 0, seated: true,
                                   then: (r) => {
                                     seatOnSkin(r, monkD.seat);
@@ -2268,7 +2390,7 @@
     /* A MAN WAITING on the bench along the west rail — the admin tee in his
        own olive, dozing upright, as one does at half past five in the morning. */
     const bench = new THREE.Group(); world.add(bench);
-    const waiter = mkRig('admintee', { x: BENCH.x + 0.1, y: SALA.floor, z: -5.6, ry: Math.PI / 2, height: 1.70,
+    const waiter = mkRig('admintee', { x: BENCH.x + 0.1, y: SALA.floor, z: (BENCH.z0 + BENCH.z1) / 2 - 0.4, ry: Math.PI / 2, height: 1.70,
                                        sizeOn: 'Idle_9', idle: 'Sit_and_Doze_Off', rate: 0.3, seated: true,
                                        then: (r) => {
                                          if (!r.hips) return;
@@ -2294,7 +2416,7 @@
        and the flock goes up with a burst of wings and away over the wall;
        some time later, when he is well away, they come back down. On wall
        time; only in play. */
-    const PIG = { x: -3.1, z: 5.4 };
+    const PIG = { x: -3.3, z: 8.0 };                  // (v16.9: out from the new staircase's foot)
     const pigeons = [];
     let pigState = 'ground', pigT = 0;
     {
@@ -2496,7 +2618,7 @@
       const wp = { stall: { x: STALL.x + 1.1, y: 1.4, z: STALL.z },
                    shoes: { x: RACK.x, y: 1.2, z: RACK.z + 0.4 },
                    wai: { x: WAI.x, y: 1.3 + LIFT, z: WAI.z - 0.6 },
-                   present: { x: MD.x - 1.0, y: 1.3 + LIFT, z: MD.z + 1.0 },
+                   present: { x: mdW(-1.0, 1.0).x, y: 1.3 + LIFT, z: mdW(-1.0, 1.0).z },
                    bless: { x: BLESS.x, y: 1.0 + LIFT, z: BLESS.z },
                    go: { x: KDOOR.x + 0.3, y: 1.7 + LIFT, z: KDOOR.z },
                    wait: { x: WAIT.x, y: 1.0 + LIFT, z: WAIT.z },
@@ -2733,8 +2855,9 @@
         camera.getWorldPosition(_to);
         whisk.lookAt(_to.x, _hp.y + 0.35 + monkArmFlick * 0.3, _to.z);
       } else {
-        whisk.position.set(bowlPos.x - 0.14, bowlPos.y + 0.07, bowlPos.z);
-        whisk.rotation.set(0, Math.PI / 2 + 0.2, 0);
+        const wr = mdW(MONL.x + 0.42 - 0.14, MONL.z + 0.62);           // v16.9: across the bowl, in the turned dais's frame
+        whisk.position.set(wr.x, bowlPos.y + 0.07, wr.z);
+        whisk.rotation.set(0, Math.PI / 2 + 0.2 + MD.ry, 0);
         whisk.rotateX(-0.12);
       }
     }
@@ -3032,7 +3155,7 @@
         enabled: () => phase === 'shoes', onInteract() { return shoesOff(); } },
       { id: 'wai', pos: { x: WAI.x, y: 1.35 + LIFT, z: WAI.z - 0.9 }, radius: 2.2, prompt: DATA.words.hotWai,
         enabled: () => phase === 'wai' && !kneel, onInteract() { return beginWai(); } },
-      { id: 'present', pos: { x: MD.x - 0.7, y: 1.2 + LIFT, z: MD.z + 0.95 }, radius: 2.4, prompt: DATA.words.hotPresent,
+      { id: 'present', pos: { x: mdW(-0.7, 0.95).x, y: 1.2 + LIFT, z: mdW(-0.7, 0.95).z }, radius: 2.4, prompt: DATA.words.hotPresent,
         enabled: () => phase === 'present', onInteract() { return present(); } },
       { id: 'bless', pos: { x: BLESS.x, y: 1.25 + LIFT, z: BLESS.z - 0.5 }, radius: 2.3, prompt: DATA.words.hotBless,
         enabled: () => phase === 'bless' && !blessing, onInteract() { return beginBless(); } },
@@ -3300,11 +3423,16 @@
        base and the walkway at the floor's height, the staircase a ramp from
        the base's edge down to its foot, the private room at the floor's
        height, and the courtyard at zero */
+    /* v16.9: the temple's base (its landing, the hall and the ledges the
+       collision keeps him off), the staircase in front of it, the front
+       door's threshold (0.26 m, then 0.18 — measured off the model), the
+       walkway out of its west door */
     function groundAt(x, z) {
       if (x < -200) return SALA.floor;
-      if (x >= SALA.x0 - 0.3 && x <= SALA.x1 + 0.3 && z >= SALA.z0 - 0.3 && z <= STAIR.top) return SALA.floor;
       if (Math.abs(x) <= STAIR.hw && z > STAIR.top && z < STAIR.foot) return SALA.floor * (STAIR.foot - z) / (STAIR.foot - STAIR.top);
-      if (x < SALA.x0 && x >= WALK.x1 - 0.1 && Math.abs(z - WALK.z) <= WALK.hw + 0.15) return SALA.floor;
+      if (x > FDOOR.x0 - 0.1 && x < FDOOR.x1 + 0.1 && z > FDOOR.z0 && z < FDOOR.z1) return SALA.floor + (z > -2.45 ? 0.26 : 0.18);
+      if (x >= TBASE.x0 && x <= TBASE.x1 && z >= TBASE.z0 && z <= STAIR.top) return SALA.floor;
+      if (x < TBASE.x0 && x >= WALK.x1 - 0.1 && Math.abs(z - WALK.z) <= WALK.hw + 0.15) return SALA.floor;
       return 0;
     }
     function blockers() {
@@ -3317,9 +3445,14 @@
         bb.max.y = Math.max(bb.max.y, groundAt((bb.min.x + bb.max.x) / 2, (bb.min.z + bb.max.z) / 2) + 1.40); out.push(bb); };
       for (const w of walls) b(w);
       for (const s of solids) solid(s);
+      // v16.9: the temple, from its own mesh — and its back door, behind the altar
+      for (const [x0, z0, x1, z1] of TEMPLE_BLOCK) out.push(new THREE.Box3(new THREE.Vector3(x0, 0, z0), new THREE.Vector3(x1, SALA.floor + 1.8, z1)));
+      out.push(new THREE.Box3(new THREE.Vector3(-1.2, 0, SALA.z0 - 1.4), new THREE.Vector3(1.5, SALA.floor + 1.8, SALA.z0 + 0.05)));
       // both daises, the man by the walkway, the waiting man
-      for (const D of [DAIS, MD]) out.push(new THREE.Box3(new THREE.Vector3(D.x - D.w / 2 - 0.14, 0, D.z - D.d / 2 - 0.14),
-                                                          new THREE.Vector3(D.x + D.w / 2 + 0.14, SALA.floor + 1.4, D.z + D.d / 2 + 0.14)));
+      for (const D of [DAIS, MD]) {
+        const turned = Math.abs(Math.sin(D.ry || 0)) > 0.5, hx = (turned ? D.d : D.w) / 2, hz = (turned ? D.w : D.d) / 2;   // v16.9: the monk's is turned
+        out.push(new THREE.Box3(new THREE.Vector3(D.x - hx - 0.14, 0, D.z - hz - 0.14), new THREE.Vector3(D.x + hx + 0.14, SALA.floor + 1.4, D.z + hz + 0.14)));
+      }
       out.push(new THREE.Box3(new THREE.Vector3(HELP.x - 0.35, 0, HELP.z - 0.35), new THREE.Vector3(HELP.x + 0.35, SALA.floor + 1.8, HELP.z + 0.35)));
       out.push(new THREE.Box3(new THREE.Vector3(BENCH.x - 0.4, 0, BENCH.z1), new THREE.Vector3(BENCH.x + 0.75, SALA.floor + 1.4, BENCH.z0)));
       return out;
@@ -3967,6 +4100,151 @@
   }
   /* ---- v16.4 · the wat, dressed ---- */
   /* the sala's ceiling: plain, pale teak boards (Chad: "simple and clean") */
+  /* ---- v16.9 · THE TEMPLE'S MATERIALS ----
+     The model has no UVs and no maps: one material per class of face (the
+     bake's), its ambient occlusion from COLOR_0, and a pattern per class
+     drawn in the shader in the MODEL's own units (vMP: the file is placed at
+     x = mx·0.2, y = (my − 21.15)·0.2, z = (mz + 9.5)·0.2, so the shader
+     undoes that; the patterns were tuned in model units in the refinement
+     viewer, masters/v16.8/temple/tmats.js). Inside the hall, Chad's
+     standing rulings: the plain pale teak ceiling (v16.4 — "the star
+     pattern ... too much"), no mural (v16.4 — "it looks bad"); a lacquered
+     red wainscot with a gold rule, limewash above, a red-and-gold frieze
+     under the ceiling, the teak floor and the runner to the altar.
+     Each class its own customProgramCacheKey: three keys its program cache
+     on the onBeforeCompile SOURCE, the same text for every class here, so
+     without it every class would draw with the first class's pattern. */
+  function templeMats(THREE) {
+    const COMMON = `
+varying vec3 vMP; varying vec3 vWN;
+float h21(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+float vnoise(vec2 p){ vec2 i = floor(p), f = fract(p); f = f*f*(3.0-2.0*f);
+  return mix(mix(h21(i), h21(i+vec2(1,0)), f.x), mix(h21(i+vec2(0,1)), h21(i+vec2(1,1)), f.x), f.y); }
+float fbm(vec2 p){ float a = 0.5, s = 0.0; for (int i = 0; i < 4; i++) { s += a * vnoise(p); p *= 2.03; a *= 0.5; } return s; }
+float tH = 0.0; float tHk = 0.0;
+vec3 bumpN(vec3 sp, vec3 sn, float h, float k){
+  vec3 sx = dFdx(sp), sy = dFdy(sp); vec3 r1 = cross(sy, sn), r2 = cross(sn, sx);
+  float det = dot(sx, r1); vec2 dh = vec2(dFdx(h), dFdy(h)) * k;
+  vec3 g = sign(det) * (dh.x * r1 + dh.y * r2); return normalize(abs(det) * sn - g); }
+bool inHall(vec3 p){ return p.x > -27.3 && p.x < 26.6 && p.z < -23.1 && p.z > -80.2 && p.y > 32.0; }
+vec2 tri(vec3 p, vec3 n){ vec3 a = abs(n); return a.y > max(a.x, a.z) ? p.xz : (a.x > a.z ? p.zy : p.xy); }
+`;
+    const PAT = {
+      roof: `
+        float row = vMP.y / 0.95; float fr = fract(row);
+        float col = (abs(vWN.x) > abs(vWN.z) ? vMP.z : vMP.x) / 1.25 + mod(floor(row), 2.0) * 0.5; float fc = fract(col);
+        float tip = 0.30 * (1.0 - abs(fc - 0.5) * 2.0);
+        float body = smoothstep(tip - 0.03, tip + 0.03, fr);
+        float seam = smoothstep(0.0, 0.05, fc) * smoothstep(0.0, 0.05, 1.0 - fc);
+        float tone = 0.80 + 0.22 * h21(floor(vec2(col, row)));
+        float shade = mix(0.45, 1.0, body) * mix(0.75, 1.0, seam) * mix(1.12, 1.0, smoothstep(tip, tip + 0.18, fr));
+        float aa = 1.0 - smoothstep(0.18, 0.45, max(fwidth(row), fwidth(col)));
+        shade = mix(0.82, shade, aa); tone = mix(0.9, tone, aa);
+        tH = (body * (0.35 + 0.65 * smoothstep(tip, 1.0, fr)) + (1.0 - seam) * -0.25) * aa; tHk = 0.9;
+        diffuseColor.rgb *= shade * tone * (0.9 + 0.2 * fbm(vMP.xz * 0.08));`,
+      white: `
+        vec2 q = tri(vMP, vWN);
+        /* limewash, WHITE (v16.3: "more white, yellow, and gold"): the
+           viewer's grain read as grey granite in the game's light */
+        float m = fbm(q * 0.35) * 0.05 + fbm(vec2(q.x * 0.6, q.y * 0.05)) * 0.04;
+        float foot = 1.0 - (1.0 - smoothstep(21.0, 27.0, vMP.y)) * 0.12;
+        diffuseColor.rgb *= (1.0 + m) * foot;
+        tH = fbm(q * 2.2) * 0.5; tHk = 0.015;
+        /* the window reveals: INSIDE the side walls' thickness and not their
+           room-facing faces (the first version painted the whole upper wall) */
+        bool reveal = abs(abs(vMP.x + 0.37) - 27.27) < 0.83 && abs(vWN.x) < 0.5 && vMP.y > 39.4 && vMP.y < 54.8 && vMP.z < -23.1 && vMP.z > -80.2;
+        if (reveal) {
+          diffuseColor.rgb = vec3(0.38, 0.06, 0.04) * vColor.r * vec3(0.8, 0.72, 0.62);
+          tHk = 0.0;
+        } else if (inHall(vMP) && abs(vWN.y) < 0.5) {
+          float y = vMP.y - 33.1;
+          vec2 wq = vec2(abs(vWN.x) > abs(vWN.z) ? vMP.z : vMP.x, y);
+          if (y < 5.6) {                                // the lacquered wainscot, a gold rule on top
+            diffuseColor.rgb = mix(vec3(0.34, 0.05, 0.03), vec3(0.78, 0.56, 0.20), step(5.1, y)) * vColor.r * (0.9 + 0.12 * fbm(wq * 2.0));
+          } else if (y < 21.5) {                        // limewash, warm, a little candle-soot toward the top
+            diffuseColor.rgb = vec3(0.93, 0.88, 0.78) * (0.92 + m) * mix(1.0, 0.86, smoothstep(12.0, 21.5, y)) * mix(1.0, vColor.r, 0.5);
+          } else {                                      // the frieze under the ceiling: red, gold lattice
+            vec2 c = fract(wq / 2.2) - 0.5; float g = 1.0 - smoothstep(0.04, 0.07, abs(abs(c.x) + abs(c.y) - 0.5));
+            diffuseColor.rgb = mix(vec3(0.42, 0.06, 0.04), vec3(0.80, 0.58, 0.22), g) * vColor.r;
+          }
+          tHk = 0.0;
+        }`,
+      base: `
+        vec2 q = tri(vMP, vWN);
+        float course = smoothstep(0.0, 0.05, fract(q.y / 2.2)) * smoothstep(0.0, 0.05, 1.0 - fract(q.y / 2.2));
+        diffuseColor.rgb *= (0.88 + fbm(q * 0.5) * 0.18) * mix(0.8, 1.0, course);
+        if (inHall(vMP)) diffuseColor.rgb = vec3(0.30, 0.05, 0.03) * vColor.r;`,
+      red: `
+        vec2 q = tri(vMP, vWN) / 3.2; vec2 c = fract(q) - 0.5;
+        float dia = abs(c.x) + abs(c.y);
+        float line = 1.0 - smoothstep(0.035, 0.06, abs(dia - 0.5));
+        float ros = 1.0 - smoothstep(0.10, 0.13, length(c));
+        float petal = 1.0 - smoothstep(0.03, 0.05, abs(length(c) - 0.22) - 0.035 * cos(atan(c.y, c.x) * 8.0));
+        float gold = max(max(line, ros), petal * 0.9);
+        diffuseColor.rgb = mix(diffuseColor.rgb * (0.9 + 0.12 * fbm(q * 3.0)), vec3(0.80, 0.58, 0.20) * vColor.r, gold * 0.92);`,
+      gold: `
+        float ao = vColor.r;
+        float raised = smoothstep(0.18, 0.46, ao);
+        vec3 cell = floor(vMP * 3.0); float hc = h21(cell.xy + cell.z * 7.13);
+        vec3 glass = hc > 0.92 ? vec3(0.10, 0.42, 0.30) : hc > 0.86 ? vec3(0.12, 0.22, 0.52) : vec3(0.36, 0.05, 0.03);
+        vec3 gilt = diffuseColor.rgb * (0.86 + 0.22 * fbm(vMP.xz * 0.9 + vMP.y * 0.3));
+        diffuseColor.rgb = mix(glass * vColor.r * 2.2, gilt, raised);`,
+      soffit: `
+        vec2 q = tri(vMP, vWN); float along = abs(vWN.x) > abs(vWN.z) ? q.x : q.y;
+        float pl = fract(along / 1.3); float seam = smoothstep(0.0, 0.05, pl) * smoothstep(0.0, 0.05, 1.0 - pl);
+        float grain = fbm(vec2(along * 0.6, (abs(vWN.x) > abs(vWN.z) ? q.y : q.x) * 6.0));
+        diffuseColor.rgb *= mix(0.55, 1.0, seam) * (0.82 + grain * 0.35) * (0.9 + 0.2 * h21(vec2(floor(along / 1.3), 3.0)));
+        if (inHall(vMP)) {                              // the hall's ceiling: plain pale teak boards (v16.4's)
+          vec3 teak = vec3(0.69, 0.54, 0.38) * (0.86 + grain * 0.24) * (0.94 + 0.1 * h21(vec2(floor(along / 1.6), 5.0)));
+          diffuseColor.rgb = teak * mix(0.7, 1.0, smoothstep(0.0, 0.03, fract(along / 1.6)) * smoothstep(0.0, 0.03, 1.0 - fract(along / 1.6))) * mix(1.0, vColor.r, 0.4);
+        }`,
+      floor: `
+        if (inHall(vMP)) {
+          float pl = fract(vMP.x / 1.6); float seam = smoothstep(0.0, 0.04, pl) * smoothstep(0.0, 0.04, 1.0 - pl);
+          float board = floor(vMP.x / 1.6), endj = fract(vMP.z / 9.0 + h21(vec2(board, 1.0)));
+          float grain = fbm(vec2(vMP.x * 3.0, vMP.z * 0.3));
+          vec3 teak = vec3(0.36, 0.20, 0.10) * (0.8 + 0.35 * grain) * (0.85 + 0.3 * h21(vec2(board, 2.0)));
+          teak *= mix(0.6, 1.0, seam) * mix(0.7, 1.0, smoothstep(0.0, 0.01, endj));
+          float run = step(abs(vMP.x - 0.75), 4.2);       // the runner, door to altar
+          float rb = step(3.7, abs(vMP.x - 0.75)) * run;
+          diffuseColor.rgb = mix(teak, mix(vec3(0.46, 0.06, 0.05), vec3(0.78, 0.56, 0.20), rb), run) * vColor.r;
+        } else {
+          vec2 q = vMP.xz / 3.4; vec2 f = fract(q);
+          float seam = smoothstep(0.0, 0.025, f.x) * smoothstep(0.0, 0.025, 1.0 - f.x) * smoothstep(0.0, 0.025, f.y) * smoothstep(0.0, 0.025, 1.0 - f.y);
+          diffuseColor.rgb *= mix(0.72, 1.0, seam) * (0.88 + 0.16 * h21(floor(q))) * (0.94 + 0.1 * fbm(vMP.xz * 0.4));
+        }`
+    };
+    const BASE = {
+      roof:   { color: 0xa2472a, roughness: 0.62, metalness: 0.0 },
+      white:  { color: 0xf1ebdf, roughness: 0.92, metalness: 0.0 },
+      base:   { color: 0xd8d0c0, roughness: 0.95, metalness: 0.0 },
+      red:    { color: 0x7a1a12, roughness: 0.45, metalness: 0.05 },
+      gold:   { color: 0xd9a63c, roughness: 0.34, metalness: 0.4, emissive: 0x3a2406, emissiveIntensity: 0.55, flatShading: true },
+      soffit: { color: 0x6a4228, roughness: 0.7,  metalness: 0.0 },
+      floor:  { color: 0xcfc4b0, roughness: 0.85, metalness: 0.0 },
+    };
+    const out = {};
+    for (const k of Object.keys(BASE)) {
+      const m = new THREE.MeshStandardMaterial({ ...BASE[k], vertexColors: true });
+      m.customProgramCacheKey = () => 'e3temple_' + k;
+      m.onBeforeCompile = sh => {
+        sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vMP; varying vec3 vWN;')
+          .replace('#include <worldpos_vertex>', `#include <worldpos_vertex>
+            vMP = (modelMatrix * vec4(transformed, 1.0)).xyz * 5.0 + vec3(0.0, 21.15, -9.5);
+            vWN = normalize(mat3(modelMatrix) * objectNormal + vec3(0.0, 1e-5, 0.0));`);
+        sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\n' + COMMON)
+          .replace('#include <normal_fragment_maps>', `#include <normal_fragment_maps>
+            if (tHk > 0.0) normal = bumpN(-vViewPosition, normal, tH, tHk);`)
+          .replace('#include <color_fragment>', `#include <color_fragment>
+            diffuseColor.rgb *= mix(1.0, vColor.r, 0.6);
+            ${PAT[k]}
+            /* a hall is lit by its door and windows: a little dimmer and warmer than the day */
+            if (inHall(vMP)) diffuseColor.rgb *= vec3(0.86, 0.80, 0.72);`);
+      };
+      out[k] = m;
+    }
+    return out;
+  }
   function makeCeilPlain(THREE, cnv) {
     const S = 256, [c, x] = cnv(S), r = rng(41);
     x.fillStyle = '#b08a60'; x.fillRect(0, 0, S, S);
@@ -4283,8 +4561,12 @@
        at the floor's height, `foot` the paving below it between the nagas'
        heads, and the rack is reached from out in front of them */
     const EYE = stage.SALA.floor + 1.46, ST = stage.STAIR;
-    const p0 = P0(s), top = { x: 0.35, y: EYE, z: ST.top + 0.1 }, foot = { x: 0.35, y: 1.62, z: ST.foot + 1.0 },
-          rack = { x: 2.85, y: 1.62, z: 1.35 }, yard = { x: 0.6, y: 1.62, z: 5.4 };
+    /* v16.9: `top` is the temple's landing, the flight is 14 risers now, the
+       rack stands west of the stair's foot, and the yard is further out —
+       the temple is twice the sala's height, so the last look needs room */
+    const R = stage.RACK;
+    const p0 = P0(s), top = { x: 0.35, y: EYE, z: ST.top - 0.4 }, foot = { x: 0.35, y: 1.62, z: ST.foot + 1.0 },
+          rack = { x: R.x + 0.15, y: 1.62, z: R.z + 1.4 }, yard = { x: 0.6, y: 1.62, z: 8.6 };
     const RD = stage.RDOOR, door = { x: RD.x + 0.05, y: EYE, z: RD.z - 0.6 };      // just inside the room's door
     // the wai: the head goes down and comes up
     pitchTo(T, T + 0.8, s.pitchX, -0.55, smoothK);
@@ -4314,29 +4596,30 @@
     pitchTo(T + 7.6, T + 8.2, 0.0, 0.0, rawK);
     fade(T + 7.7, T + 8.6, 1, 0);
     // down the staircase between the nagas, then across to the rack, and his shoes
-    camTo(T + 8.4, T + 10.0, top, foot, rawK);
-    sfx(T + 8.6, 'barestep', 0.45); sfx(T + 9.1, 'barestep', 0.45); sfx(T + 9.6, 'barestep', 0.45);
-    camTo(T + 10.0, T + 11.0, foot, rack, smoothK);
-    yawTo(T + 9.8, T + 10.8, outYaw, faceFrom(rack.x, rack.z, 2.75, -0.55), smoothK);
-    pitchTo(T + 10.2, T + 11.0, 0.0, -0.72, smoothK);
-    sfx(T + 11.4, 'shoesoff', 0.8);
-    step(T + 11.8, () => { stage.myShoes.visible = false; });
-    pitchTo(T + 12.4, T + 13.2, -0.72, 0.0, smoothK);
+    camTo(T + 8.4, T + 11.6, top, foot, rawK);
+    sfx(T + 8.7, 'barestep', 0.45); sfx(T + 9.3, 'barestep', 0.45); sfx(T + 9.9, 'barestep', 0.45); sfx(T + 10.5, 'barestep', 0.45); sfx(T + 11.1, 'barestep', 0.45);
+    camTo(T + 11.6, T + 12.5, foot, rack, smoothK);
+    yawTo(T + 11.4, T + 12.3, outYaw, faceFrom(rack.x, rack.z, R.x, R.z), smoothK);
+    pitchTo(T + 12.0, T + 12.6, 0.0, -0.72, smoothK);
+    sfx(T + 12.8, 'shoesoff', 0.8);
+    step(T + 13.1, () => { stage.myShoes.visible = false; });
+    pitchTo(T + 13.4, T + 14.0, -0.72, 0.0, smoothK);
     // out across the courtyard, toward the gate and the sun
-    yawTo(T + 12.8, T + 14.2, faceFrom(rack.x, rack.z, 2.75, -0.55), Math.PI + 0.05, smoothK);
-    camTo(T + 13.4, T + 20.6, rack, yard, rawK);
-    sfx(T + 13.8, 'step', 0.5); sfx(T + 14.6, 'step', 0.5); sfx(T + 15.4, 'step', 0.5); sfx(T + 16.2, 'step', 0.5);
+    yawTo(T + 13.6, T + 14.6, faceFrom(rack.x, rack.z, R.x, R.z), Math.PI + 0.05, smoothK);
+    camTo(T + 14.2, T + 20.6, rack, yard, rawK);
+    sfx(T + 14.6, 'step', 0.5); sfx(T + 15.4, 'step', 0.5); sfx(T + 16.2, 'step', 0.5);
     sfx(T + 17.0, 'step', 0.5); sfx(T + 17.8, 'step', 0.5); sfx(T + 18.6, 'step', 0.5); sfx(T + 19.4, 'step', 0.5);
-    // one last look back at the sala
-    yawTo(T + 20.4, T + 22.4, Math.PI + 0.05, faceFrom(yard.x, yard.z, 0.2, -6), smoothK);
-    pitchTo(T + 20.4, T + 22.4, 0.0, 0.10, smoothK);
+    // one last look back at the temple
+    const look = { x: 0.15, z: -8.0 };
+    yawTo(T + 20.4, T + 22.4, Math.PI + 0.05, faceFrom(yard.x, yard.z, look.x, look.z), smoothK);
+    pitchTo(T + 20.4, T + 22.4, 0.0, 0.16, smoothK);
     // and the lens leaves him, rising and drawing back over the courtyard
-    const hi = { x: 0.3, y: 6.4, z: 12.2 };
+    const hi = { x: 0.3, y: 7.4, z: 13.4 };
     tr(T + 22.4, T + 30.9, k => {
       const e = smooth(k);
       api.yaw.position.set(yard.x + (hi.x - yard.x) * e, yard.y + (hi.y - yard.y) * e, yard.z + (hi.z - yard.z) * e);
-      api.yaw.rotation.y = faceFrom(api.yaw.position.x, api.yaw.position.z, 0.2, -6);
-      api.pitch.rotation.x = 0.10 + 0.14 * e;
+      api.yaw.rotation.y = faceFrom(api.yaw.position.x, api.yaw.position.z, look.x, look.z);
+      api.pitch.rotation.x = 0.16 + 0.10 * e;
     }, rawK);
     return T + 30.9;
   }
