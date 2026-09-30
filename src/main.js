@@ -1731,7 +1731,10 @@ function prayFrame() {
   if (!handsReady || !rightOriented) return;
   if (pray.k === 0 && pray.to === 0 && pray.was === 0) return;
   const now = performance.now();
-  const dt = pray.last ? Math.min(0.1, (now - pray.last) / 1000) : 0; pray.last = now;
+  /* WALL time and NOT capped per frame: a hot phone at five frames a second
+     must still close the hands in the 1.4 s asked (the first photographs,
+     on a one-frame-a-second box, caught the clasp half-formed seconds in) */
+  const dt = pray.last ? Math.min(1, (now - pray.last) / 1000) : 0; pray.last = now;
   if (pray.k !== pray.to) pray.k = pray.to > pray.k ? Math.min(pray.to, pray.k + dt / pray.secs) : Math.max(pray.to, pray.k - dt / pray.secs);
   if (pray.k === 0) { if (pray.was > 0) prayPut(0, true); pray.was = 0; return; }
   prayPut(pray.k, false);
