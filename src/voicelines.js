@@ -150,8 +150,8 @@
        ajarn sitting at the temple area, it should be a monk ... a man tells the
        player that if he wants to do sakyant, the ajarn is in the private event
        room"). Both Thai voices; masters/v16.1/make.sh has the picks. */
-    monk: { name: "The monk in the sala (episode 3, chapter 1)", voice: "XLXcyPK1jTjw1pYLLcM9", model: "eleven_v3",
-              note: "Somchai — a Thai baritone, serious and unhurried. The blessing chant is given to him in THAI SCRIPT, so the Pali comes out as a Thai monk says it. Flat cast bus, RMS -16." },
+    monk: { name: "The monk in the sala (episode 3, chapter 1)", voice: "tX4zpyB6s34no1FgD0Mm", model: "eleven_v3",
+              note: "Arthur — a wise, older Southeast Asian narrator, slow and warm (Chad's pick over Somchai, v16.2). The blessing chant is given to him ROMANISED as a Thai monk sounds it. Flat cast bus, RMS -16." },
     helper: { name: "The man by the walkway (episode 3, chapter 1)", voice: "FaUQoAqt8WX5mfvrvb3A", model: "eleven_v3",
               note: "Preecha — a patient, friendly Thai voice. One line. Flat cast bus, RMS -16." },
   };
@@ -894,11 +894,11 @@
     { id: "au1shoes", who: "auntie2", ch: "e3c1", where: "If he walks into the sala in his shoes",
       text: "[calling out, scolding a little] Eh! Shoes! Take off your shoes first!", secs: 4.36 },
     { id: "mk1come", who: "monk", ch: "e3c1", where: "The offering given, the monk calls him forward",
-      text: "[calmly] Come. Kneel here, and receive the blessing.", secs: 2.87 },
+      text: "[calmly] Come. Kneel here, and receive the blessing.", secs: 3.40 },
     { id: "mk1chant", who: "monk", ch: "e3c1", where: "The blessing, chanted as he sprinkles the water (Pali: Sabbītiyo vivajjantu, sabba-rogo vinassatu, mā te bhavatvantarāyo, sukhī dīghāyuko bhava)",
-      text: "[chanting slowly in a low monotone] สัพพีติโย วิวัชชันตุ... สัพพะโรโค วินัสสะตุ... มา เต ภะวัตวันตะราโย... สุขี ทีฆายุโก ภะวะ...", secs: 9.17 },
+      text: "[chanting slowly in a low monotone] Sabbee-tiyo wiwatchantu... sabba-rogo winassatu... maa tay pawatwantarayo... sukhee deekha-yuko pawa...", secs: 12.77 },
     { id: "mk1teach", who: "monk", ch: "e3c1", where: "After the blessing — Chad's words",
-      text: "[gently] Blessings don't replace hard work and merit. Both hard work and merit will create the true foundation for the blessings to work. And don't forget to keep your Buddhist five precepts.", secs: 12.36 },
+      text: "[gently] Blessings don't replace hard work and merit. Both hard work and merit will create the true foundation for the blessings to work. And don't forget to keep your Buddhist five precepts.", secs: 14.37 },
     { id: "z1sadhu", who: "jamesAdult", ch: "e3c1", where: "He thanks the monk",
       text: "[reverent] Sadhu... thank you, Luang Phor.", secs: 2.04 },
     { id: "hp1room", who: "helper", ch: "e3c1", where: "The man by the walkway, after the blessing",

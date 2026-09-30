@@ -4318,6 +4318,13 @@ What the baseline contains, by release:
   Harnesses chapter, leak, cine, text, menu, hosted, csp, inv, fixture green.
   Deploy `6abc996d6c2043881a28111f`, byte-verified (index.html and all 184
   build files). docs/V16.1-THE-PRIVATE-ROOM.md is the memory.
+- **v16.2** THE MONK IN ARTHUR'S VOICE — Chad: *"Arthur voice is better for
+  monk."* The three monk lines are Arthur's takes (`tX4zpyB6s34no1FgD0Mm`,
+  generated at v16.1 as the alternative, picked by the same edge measures):
+  the chant romanised, 12.77 s; the teaching 14.37; "Come. Kneel here" 3.40.
+  The three water flicks moved onto the chant's own three breaths (3.0, 6.3,
+  9.8 s — measured with silencedetect), played through on the chapter clock.
+  Sheet v77 exported (three voice-line cells; v44 stays the link).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -4881,7 +4888,7 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v76** (`masters/v16.1/masterz-text-v76.xlsx`, five tabs: UI
+**THE SHEET IS v77** (`masters/v16.1/masterz-text-v77.xlsx`, v76 with the monk's three voice lines re-said by Arthur at v16.2. v76 was `masters/v16.1/masterz-text-v76.xlsx`, five tabs: UI
 TEXT 292, EPISODE 1 114, EPISODE 2 193, EPISODE 3 41, VOICE LINES 337 — v76
 adds v16.1's four words, two changed cells and seven voice lines to v75).
 Was v75 (`masters/v16.0/masterz-text-v75.xlsx`, which added episode 3

@@ -159,7 +159,7 @@
   /* the measured length of every line said OUTSIDE a cutscene (CP6 fills
      the real numbers; chaptertest fails a line spoken with none) */
   const SECS = { z1arrive: 3.79, z1wai: 4.13, z1wait: 3.00, z1warm: 4.60, au1hi: 3.97, au1sell: 8.59, au1shoes: 4.36, aj1next: 1.72, aj1sit: 1.57, aj1breathe: 3.63, aj1katha: 10.61, aj1done: 1.65, aj1ask: 3.08,
-                 /* v16.1 */ mk1come: 2.87, mk1chant: 9.17, mk1teach: 12.36, hp1room: 6.19, aj1mat: 1.88, z1sadhu: 2.04, z1room: 1.88 };
+                 /* v16.1 */ mk1come: 3.40, mk1chant: 12.77, mk1teach: 14.37, hp1room: 6.19, aj1mat: 1.88, z1sadhu: 2.04, z1room: 1.88 };
 
   const hash = (i, s) => { const x = Math.sin(i * 127.1 + s * 311.7) * 43758.5453; return x - Math.floor(x); };
   const smooth = k => k * k * (3 - 2 * k);
@@ -1896,7 +1896,7 @@
        queue so no line is dropped on a slow frame; the flicks are timed from
        the moment the chant actually starts. */
     let blessing = null;                          // { t0, chantAt, bowAt } while kneeling
-    const FLICKS = [1.4, 3.5, 5.6];               // seconds into the chant
+    const FLICKS = [3.0, 6.3, 9.8];               // seconds into the chant: its three breaths (v16.2, Arthur)
     function beginBless() {
       if (phase !== 'bless' || blessing) return false;
       yaw.position.x = BLESS.x; yaw.position.z = BLESS.z;

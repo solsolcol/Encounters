@@ -43,9 +43,12 @@ V=-6.85; O=-6.6; E=-4.0
 
 him z1sadhu raw/z1sadhu_b.mp3
 him z1room raw/z1room_b.mp3
-cast mk1chant raw/mk1chant_som_b.mp3
-cast mk1teach raw/mk1teach_som_a.mp3
-trim raw/mk1come_som_b.mp3 w_mk1come.wav 0.0 2.88 0.06;  cast mk1come w_mk1come.wav
+# v16.1b — Chad: "Arthur voice is better for monk." Arthur's takes, picked by
+# the same measures: chant b (clean both ends, 12.8 s), teach a (head -54,
+# end -38), come b (head -48, end -38).
+cast mk1chant raw/mk1chant_art_b.mp3
+cast mk1teach raw/mk1teach_art_a.mp3
+cast mk1come raw/mk1come_art_b.mp3
 cast hp1room raw/hp1room_b.mp3
 cast aj1mat raw/aj1mat_b.mp3
 trim raw/roomdoor1_b.mp3 w_roomdoor.wav 0.0 1.9 0.4;     enc roomdoor w_roomdoor.wav $E $E 96k 2
