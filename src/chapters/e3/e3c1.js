@@ -187,7 +187,10 @@
        heights that were typed as numbers gained. STAIR is the flight. */
     const SALA = { x0: -7.0, x1: 7.0, z0: -11.0, z1: -1.6, floor: 1.10 };
     const LIFT = SALA.floor - 0.16;
-    const STAIR = { top: SALA.z1 + 0.3, foot: 0.62, hw: 1.7, n: 6 };
+    /* v16.7: eight gentler risers over 3.0 m (were six over 1.92) and a 1.25 m
+       pedestal at the foot, so Chad's naga can lie at ×2.3 — "make the naga
+       much bigger, adjust the stairs to match" */
+    const STAIR = { top: SALA.z1 + 0.3, foot: 1.7, hw: 1.7, n: 8, ped: 1.25 };
     /* v16.1 · THE PRIVATE ROOM is a pocket 250 m west of the wat: the far plane
        is 160 m, so neither is ever drawn from the other (v8.9's law: distance
        does the hiding). Its floor stands at the sala's height, so every
@@ -502,7 +505,7 @@
       }
       for (const sx of [-1, 1]) {
         const sh = new THREE.Shape();
-        sh.moveTo(STAIR.top, 0); sh.lineTo(STAIR.foot + 0.5, 0); sh.lineTo(STAIR.foot + 0.5, 0.5);
+        sh.moveTo(STAIR.top, 0); sh.lineTo(STAIR.foot + STAIR.ped, 0); sh.lineTo(STAIR.foot + STAIR.ped, 0.5);
         sh.lineTo(STAIR.foot, 0.5); sh.lineTo(STAIR.top, SALA.floor + 0.5); sh.closePath();
         const cw = new THREE.Mesh(new THREE.ExtrudeGeometry(sh, { depth: 0.36, bevelEnabled: false }), matWhite);
         cw.rotation.y = -Math.PI / 2; cw.position.set(sx * 1.9 + 0.18, 0, 0); cw.castShadow = !LOW; cw.receiveShadow = true; world.add(cw);
@@ -575,17 +578,20 @@
         const cr = new THREE.Mesh(new THREE.ConeGeometry(0.025, 0.11 + (h === 0 ? 0.06 : 0), 6), matGold); cr.position.set(0, 0.1, -0.01); head.add(cr);
       }
       hood.traverse(o => { if (o.isMesh) o.castShadow = !LOW; });
-      solids.push(hid(box(0.36, 1.8, STAIR.foot + 0.5 - STAIR.top, x, 0.9, (STAIR.top + STAIR.foot + 0.5) / 2, matStone, world, false)));
+      solids.push(hid(box(0.36, 1.8, STAIR.foot + STAIR.ped - STAIR.top, x, 0.9, (STAIR.top + STAIR.foot + STAIR.ped) / 2, matStone, world, false)));
       /* v16.6: Chad's naga (tools/prepwess.mjs with BEND): lying along the
          cheek wall, the body sheared down the flight in the file itself and
-         the head rearing upright off the pedestal at its foot. At ×1.38 its
-         nose is at z 1.07, the neck on the pedestal (z 0.62…), the ramp
-         exactly the wall's (-0.573) and the tail on the wall's top at the
-         sala end. The primitive serpent stays drawn until it lands (v4.7). */
+         the head rearing upright off the pedestal at its foot. v16.7: at
+         ×2.3 (Chad: "much bigger") its nose is at z 2.86, the ramp ends on
+         the stair's foot (z 1.7) and is exactly the wall's (-0.367), the
+         head rears 1.2 m off the pedestal and the tail lies on the wall's
+         top at the sala end. The file is baked for these numbers
+         (BEND=-0.861,0.443,0.478). The primitive serpent stays drawn until
+         it lands (v4.7). */
       parseOnce('naga').then(gltf => {
         if (!alive) return;
         const m = gltf.scene.clone(true);
-        m.scale.setScalar(1.38); m.position.set(x, 0.5, -0.238);
+        m.scale.setScalar(2.3); m.position.set(x, 0.5, 0.68);
         m.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.receiveShadow = true; } });
         world.add(m);
         for (const o of [body, spineM, hood]) o.visible = false;
@@ -1789,7 +1795,7 @@
        incense burner and the candles, and the square platform".) */
 
     /* ---------------------------------------------- v16.4 · MARIGOLDS
-       Strings of marigold and jasmine: a swag on each naga's neck, a
+       Strings of marigold and jasmine (v16.7: no longer on the naga), a
        hanging strand on the front pillars and the porch posts, and one
        along the altar's new front step. One instanced mesh of beads. */
     {
@@ -1799,14 +1805,8 @@
         const cv = new THREE.CatmullRomCurve3(pts);
         for (let k = 0; k <= n; k++) { beads.push(cv.getPoint(k / n)); bcol.push(pal[k % pal.length]); }
       };
-      /* round the naga's NECK (a loop about it, dipping at the front), not
-         hung in the air in front of it */
-      for (const sx of [-1, 1]) {
-        /* v16.6: on Chad's naga the neck rises at z ~0.86, a slimmer one */
-        const c = new THREE.Vector3(sx * 1.9, 0.86, 0.87), pts = [];
-        for (let k = 0; k <= 16; k++) { const a = k / 16 * Math.PI * 2; pts.push(new THREE.Vector3(c.x + Math.cos(a) * 0.125, c.y - Math.max(0, Math.sin(a)) * 0.07, c.z + Math.sin(a) * 0.125)); }
-        string(pts, 24, [O, O, Y]);
-      }
+      /* v16.7: no swag on the naga's neck any more (Chad: "has something
+         hung around its neck, remove that thing") */
       for (const px of [-6.75, -2.4, 2.4, 6.75]) string([new THREE.Vector3(px, SALA.floor + 2.5, -1.68), new THREE.Vector3(px + 0.02, SALA.floor + 2.0, -1.68), new THREE.Vector3(px, SALA.floor + 1.55, -1.68)], 22, [O, Y, O, W]);
       for (const sx of [-1, 1]) string([new THREE.Vector3(sx * 3.95, 2.8, 0.63), new THREE.Vector3(sx * 3.95, 2.1, 0.63)], 16, [O, O, W]);
       string([new THREE.Vector3(-1.9, SALA.floor + 0.3, ALT.z + 1.42), new THREE.Vector3(0, SALA.floor + 0.18, ALT.z + 1.46), new THREE.Vector3(1.9, SALA.floor + 0.3, ALT.z + 1.42)], 40, [O, Y]);
