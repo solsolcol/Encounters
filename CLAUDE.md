@@ -4272,6 +4272,50 @@ What the baseline contains, by release:
   cine, text, menu, hosted, csp green. Deploy `6abc45f53403efe4f2700656`,
   byte-verified (index.html and all 184 build files); milestone bundle made.
   docs/V16.0-E3C1-PLAN.md is the memory.
+- **v16.1** THE MONK, THE WALKWAY, AND THE PRIVATE ROOM — Chad, on v16.0:
+  *"Sakyants performed by ajarns are typically done in a private room or area
+  and definitely not at the temple area where monks sit ... Do not remove
+  anything you already built in terms of the flow, simply replace ajarn with
+  monk, added with things i just mentioned."* Nothing of v16.0's flow is
+  removed; two beats are added and the yant moves room. THE SALA'S DAIS IS THE
+  MONK'S: the tray is presented to him ("Come. Kneel here, and receive the
+  blessing."), he is knelt before (a hotspot and a glowing mark), he chants
+  the blessing — the Pali given to a Thai voice in THAI SCRIPT so it comes out
+  as a Thai monk says it — his right arm lifts the whisk from the silver bowl
+  and flicks lustral water three times (drops thrown at the lens, a cold glint,
+  the sound), then Chad's own teaching line, and he answers "Sadhu... thank
+  you, Luang Phor." THE MAN BY THE WALKWAY (v16.0's assistant, moved) turns to
+  him: "If you want a Sak Yant, the Ajarn is in the private room. Down the
+  walkway, the door at the end." A COVERED WALKWAY leaves the sala's west side
+  between its two back pillars (the west rail now stops at z -8.6) for a kuti
+  against the west wall — gable, shutters, a sign, a lamp, someone's shoes —
+  and its DOOR is a hotspot. THE SCENE CHANGE: the door swings, the black comes
+  up, and IN THE BLACK he is put inside the room, the room's light applied,
+  the man under the needle on the stool — then `kit.warm()` (THE TWENTIETH
+  SEAM: the curtain's own warm on demand — every texture, every program with
+  the light states, one frame drawn everything-visible — with the loading
+  word if it takes a moment) and every rig landed, and only then does the
+  black lift. THE ROOM is a pocket at x -250 (the far plane is 160 m, so
+  neither side is ever drawn from the other; `bounds.minX` -262, the wat's
+  west wall still stops him), floored at the sala's height so every
+  `SALA.floor + …` of the yant stayed true: the Ajarn's dais with every tool
+  (it moved whole: `mkDais` builds both daises), a shelf-shrine behind him
+  (Buddhas, the hermit Ruesi, the old masters, candles, incense), drawn yant
+  cloths on the walls, a shuttered window with a painted shaft of dawn, a
+  ceiling fan and a standing fan, the waiting mat, a jug and cups, the door;
+  lit without a light (ROOMLIGHT, a daylight preset, and the stirring's warmth
+  is now the room's warmed). Then the whole v16.0 sequence as it was: "Sit
+  there. Wait.", the mat, the man leaving (by the room's door now), "Next.
+  You. Come.", the rod, the warmth, the question. THE ENDINGS walk him across
+  the room and out of its door into the black, and bring him up on the sala's
+  front steps in the dawn, where the v16.0 walk out resumes. Phases by NAME
+  now (`stall … present, bless, go, wait …`): a resume into a room phase lands
+  in the room in its light. Seven new lines (a Thai monk, Somchai; the man,
+  Preecha; two of his; one of the Ajarn's) and three sounds, picked by
+  measurement (masters/v16.1/make.sh). The monk is a stand-in (the botak
+  recruit recoloured saffron, his hair to a shaven scalp) until Chad's model;
+  docs/E3-MODELS.md lists him. Sheet v76 exported (v44 stays the link).
+  docs/V16.1-THE-PRIVATE-ROOM.md is the memory.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -4835,9 +4879,11 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v75** (`masters/v16.0/masterz-text-v75.xlsx`, five tabs: UI
-TEXT 292, EPISODE 1 114, EPISODE 2 193, EPISODE 3 37, VOICE LINES 330 — v75
-adds episode 3 chapter 1's words and 34 voice lines, and the episode's title).
+**THE SHEET IS v76** (`masters/v16.1/masterz-text-v76.xlsx`, five tabs: UI
+TEXT 292, EPISODE 1 114, EPISODE 2 193, EPISODE 3 41, VOICE LINES 337 — v76
+adds v16.1's four words, two changed cells and seven voice lines to v75).
+Was v75 (`masters/v16.0/masterz-text-v75.xlsx`, which added episode 3
+chapter 1's words and 34 voice lines, and the episode's title).
 Was v74 v74 changes one cell
 of v73 — the amulet's name, "Wat Lahanrai" at Chad's word. v73 adds three rows
 to v72 (v14.11's, the amulet's crack/break banner and the rarities): the LP

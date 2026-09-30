@@ -17,6 +17,14 @@ scene. Priority ★ = the chapter looks wrong without it.
   a temple building (ubosot) and a temple gate. Even one good building helps.
 - ★ **Two or three Thai men**, rigged, casual clothes — waiting devotees and the
   Ajarn's assistants. One SHIRTLESS man, seated (having his tattoo done).
+- ★ **A Thai Buddhist monk** (v16.1), rigged, in a saffron robe with the right
+  shoulder bare, shaven head — seen SEATED on the sala's dais, blessing the
+  player with a whisk of lustral water. A sitting idle and a talking clip help;
+  a blessing/sprinkling arm gesture would be ideal (the stand-in's arm is lifted
+  in code).
+- **The private Sak Yant room** (v16.1) — optional: a small shrine room, a Ruesi
+  (hermit) head statue, framed yant cloths. The room is built from primitives
+  now and looks complete; real props would only improve it.
 - **A Thai woman**, rigged, standing — the offering stall auntie.
 - Props: a temple bell · lotus flowers / an offering tray · a shoe rack · a stray
   dog (lying down) · a dashcam (for the film) · Thai temple guardian statues (yak).

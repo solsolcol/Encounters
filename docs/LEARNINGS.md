@@ -4948,3 +4948,24 @@ v14.15 because the two meshopt workers start from one blob: URL, and
 `chapterFromFile` since v6.4 because chapter 1's asset list grew. Both were
 the check being wrong, not the game — and neither was seen for months. Its
 network-level checks now fail the harness.
+
+## v16.1 — the kit's fade runs on the frame's clamped dt: wait for the black, never for the clock
+
+`kit.fade(1, 0.6)` advances by `dt / secs` and `dt` is clamped to 0.05 s, so on
+a device drawing a frame a second the "0.6 s" black takes twelve frames — twelve
+seconds. The first version of episode 3 chapter 1's door moved the player into
+the private room 1.25 s (chapter clock, which is wall time capped at 0.5 s a
+frame) after the door opened, and on the probe box the room was swapped in with
+the screen still part-lit. A scene change must poll `kit.getFade() >= 0.99`
+before it moves anything. (The engine's fade was left on dt: episode 2 chapter
+1's lights-out is built on it, and changing a verb every chapter shares is its
+own decision.)
+
+## v16.1 — a sequence keyed to a line SOUNDING stops dead in every harness
+
+Every harness runs muted (v9.2), and a line whose bytes have not arrived is
+dropped (`sayLine` gives up after 3 s). The blessing's water flicks were keyed
+to the chant's `onStart`, so in the probe the monk never lifted his arm and the
+sequence ran on without him. A beat that must happen stamps its own time when
+the queue REACHES it and holds the queue for the line's measured length —
+the line is the sound over the beat, not the beat's clock.
