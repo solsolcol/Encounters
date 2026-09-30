@@ -140,7 +140,7 @@ The declarations, all optional:
 | `stage.hotspots` | v7.0: many things to act on beside the pile — `[{ id, pos, radius, prompt, onInteract(), once, enabled() }]`, returned by build() | — (only the pile) |
 | `stage.hotspots[].dwell` / `aim` | v11.0: a hotspot that fires by being LOOKED AT for `dwell` seconds inside `aim` radians (chapter 3's torch spots) — the eighteenth seam | — (a press only) |
 | `stage.groundAt(x, z)` | v16.4: the height of the FLOOR under a point — the eye rides it when standing (eased; snapped on a teleport; a pose keeps its absolute height), collision samples 1.0 m above it, and no step rises more than 0.4 m, so a raised base is climbed only by its stairs. Episode 3 chapter 1's sala on its 1.1 m base; the fixture's platform proves it (`groundSeam`); walktest reads it — the twenty-first seam | — (0 everywhere) |
-| `kit.pray(on, { secs })` | v16.5: the hands into añjali IN PLAY — episode 1 chapter 1 scene D's clasp lifted into the engine number for number (PRAYER_R/L, the half-palm gap, −0.235 / −0.375, setHandPrayer), eased on wall time, taken back by a scene's first frame and by kitReset; episode 3 chapter 1's blessing and Sak Yant — the twenty-second seam | — (the hands as they were) |
+| `kit.pray(on, { secs, y })` | v16.5: the hands into añjali IN PLAY — episode 1 chapter 1 scene D's clasp lifted into the engine number for number (PRAYER_R/L, the half-palm gap, −0.235 / −0.375, setHandPrayer), eased on wall time, taken back by a scene's first frame and by kitReset; episode 3 chapter 1's blessing and Sak Yant — the twenty-second seam | — (the hands as they were) |
 | `stage.hotspots[].hits(x, y)` | v14.7: a hotspot PRESSED BY A TAP (or an unlocked click) ON THE THING ITSELF — `hits` answers whether that screen point is on it, and the engine's `hotspotTap` fires it; episode 1 chapter 3's amulet on the auntie's table | — (the badge and the key only) |
 | `kit.unlock(id, { onClose })` | v14.7: the ITEM UNLOCKED splash — the item's model turning in the middle (the `iv` renderer), its name, a Close button, its own sting; a screen state of its own (`unlock`) that closes every "is it play?" gate, with a 0.6 s guard so the press that took the item cannot also close it | — |
 | `ITEM_DEFS[id].evGuard` | v14.13: while the item is WORN, every stat decrease a MINIGAME causes is multiplied by `1 − evGuard` (`evCut()`: graded presses, missed beats, wrong drops, a losing payout, and a chapter's own price marked `{ minigame: true }` on `kit.award`/`kit.conduct`) — the LP Tim Khun Paen's 50 % | — (0: nothing is cut) |
@@ -4404,6 +4404,10 @@ What the baseline contains, by release:
   proves it (`praySeam`). Harnesses chapter, fixture, walk, leak, cine green.
   Deploy `6abcfc1136060112bb66b0dc`, byte-verified (index.html and all 184
   build files).
+  Then *"move the prayer hands down even more so that i cannot see that
+  protruding thumbs"*: `kit.pray` takes a height (`y`, chapter 1's −0.235 the
+  default) and e3c1 holds the clasp at −0.37, swept on the phone crop until
+  only the joined fingertips rise into frame.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so

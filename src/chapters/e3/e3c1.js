@@ -2391,6 +2391,13 @@
        queue so no line is dropped on a slow frame; the flicks are timed from
        the moment the chant actually starts. */
     let blessing = null;                          // { t0, chantAt, bowAt } while kneeling
+    /* v16.5: the praying hands held LOWER than chapter 1's −0.235 (Chad: "move
+       the prayer hands down even more so that i cannot see that protruding
+       thumbs"). Swept on the phone crop: at −0.34 the thumbs still show, at
+       −0.36 a sliver touches the bottom edge, at −0.37 only the tips of the
+       joined fingers rise into frame. The lens's vertical angle is fixed, so
+       the phone and the desktop agree. */
+    const PRAY_Y = -0.37;
     const FLICKS = [3.0, 6.3, 9.8];               // seconds into the chant: its three breaths (v16.2, Arthur)
     function beginBless() {
       if (phase !== 'bless' || blessing) return false;
@@ -2401,7 +2408,7 @@
       blessing = { t0: dayClock.t, chantAt: -1, bowAt: -1, flick: 0, mark: 0 };
       /* v16.5 (Chad: "his hands should switch to the same exact praying
          hands pose that was used back in episode 1 chapter 1 option 4") */
-      if (kit && kit.pray) kit.pray(true, { secs: 1.4 });
+      if (kit && kit.pray) kit.pray(true, { secs: 1.4, y: PRAY_Y });
       monkFace(true);
       syncProps();
       if (worldSfx) worldSfx('barestep', 0.45, 0.85);
@@ -2691,7 +2698,7 @@
       if (kit) kit.root(true);
       /* v16.5 (Chad: "Same for the sakyant part, hands should be praying"):
          together from the moment he sits until a scene takes the hands */
-      if (kit && kit.pray) kit.pray(true, { secs: 1.4 });
+      if (kit && kit.pray) kit.pray(true, { secs: 1.4, y: PRAY_Y });
       turnTo(Math.PI, 1.1, { y: STOOL_TOP + 0.80, span: 0.9, lo: -0.6, hi: 0.55 });
       if (worldSfx) worldSfx('barestep', 0.5, 0.9);
       setPhase('yant');
@@ -3005,7 +3012,7 @@
         yaw.position.x = CUSH.x; yaw.position.z = CUSH.z;
         seated = 'stool';
         if (kit) { kit.pose('lying', { y: STOOL_TOP + 0.80, yaw: faceAjarn(), span: 0.8, pitchLo: -0.5, pitchHi: 0.6, secs: 0.05 }); kit.root(false); }
-        if (kit && kit.pray) kit.pray(true, { secs: 0 });   // v16.5: still on the stool, hands still together
+        if (kit && kit.pray) kit.pray(true, { secs: 0, y: PRAY_Y });   // v16.5: still on the stool, hands still together
         yaw.rotation.y = faceAjarn();
         ajarnFace(true);
         setPhase('decide');

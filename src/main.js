@@ -1691,12 +1691,16 @@ const weaponLog = [];                        // for the probes: every shot, hit 
    hands back on its first frame (the scene owns them), and kitReset clears
    it. Nothing before e3c1 calls it. */
 const PRAY = { y: -0.235, z: -0.375, low: -0.46 };
-const pray = { k: 0, to: 0, secs: 1.4, last: 0, was: 0 };
+const pray = { k: 0, to: 0, secs: 1.4, last: 0, was: 0, y: PRAY.y };
 let prayRestQ = null;
 const PRAY_Q0 = new THREE.Quaternion();
 function kitPraySet(on, opts = {}) {
   pray.to = on ? 1 : 0;
   pray.secs = Math.max(0.01, opts.secs !== undefined ? +opts.secs : 1.4);
+  /* v16.5: `y` — how high the clasp is held. Chapter 1's −0.235 is the
+     default; a chapter may hold it LOWER (Chad, on e3c1: "move the prayer
+     hands down even more so that i cannot see that protruding thumbs") */
+  if (on) pray.y = Number.isFinite(opts.y) ? +opts.y : PRAY.y;
   if (opts.secs === 0) pray.k = pray.to;
   pray.last = performance.now();
 }
@@ -1716,12 +1720,12 @@ function prayPut(k, done) {
     if (rightHandModel) setHandCurl(rightHandModel, 1);
     return;
   }
-  armR.position.set(armBase.x + (half - armBase.x) * e, armBase.y + (PRAY.y - armBase.y) * e, armBase.z + (PRAY.z - armBase.z) * e);
+  armR.position.set(armBase.x + (half - armBase.x) * e, armBase.y + (pray.y - armBase.y) * e, armBase.z + (PRAY.z - armBase.z) * e);
   armR.quaternion.slerpQuaternions(prayRestQ, PRAYER_R, e);
   const L = buildPrayerArm();
   if (L) {
     L.visible = e > 0.001;
-    L.position.set(-half, PRAY.low + (PRAY.y - PRAY.low) * e, PRAY.z);
+    L.position.set(-half, PRAY.low + (pray.y - PRAY.low) * e, PRAY.z);
     L.quaternion.slerpQuaternions(PRAY_Q0, PRAYER_L, e);   // from the arm's own built rest, as scChant's startL
     setHandPrayer(L.userData.model, e);
   }
@@ -11825,6 +11829,7 @@ window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () =
                  skelLab,                                  // v15.2: the merge, proven
                  kit: KIT, kitDebug, interactNow,          // v7.0: the play kit, by state
                  prayDebug: () => ({ k: pray.k, to: pray.to, left: !!(prayerArmL && prayerArmL.visible), ax: +armR.position.x.toFixed(4), ay: +armR.position.y.toFixed(4) }),   // v16.5
+                 vmCam, handsRoot, rightHand: () => rightHandModel, prayArm: () => prayerArmL,   // v16.5: probes measure the clasp on screen
                  weaponFire, weaponReload, weaponLog, weaponProp: () => weaponProp, weaponMixer: () => weaponMixer,      // v12.0, probes
                  evPress: (x, y) => evPress(x ?? innerWidth / 2, y ?? innerHeight / 2), evRelease,
                  /* v9.4: drive one drag-and-match drop by id, so a harness or a
