@@ -217,7 +217,7 @@
     const paveTex = tex(makePaving(THREE, cnv));
     const woodTex = tex(makePlanks(THREE, cnv));
     const goldTex = tex(makeGoldCarve(THREE, cnv));
-    const tileTex = tex(makeRoofTiles(THREE, cnv, '#8e2a1e', '#5a1a12'));
+    const tileTex = tex(makeRoofTiles(THREE, cnv, '#dc7b34', '#6e3a16'));   // v16.3: Thai orange terracotta, not a Chinese red
     const tileTex2 = tex(makeRoofTiles(THREE, cnv, '#2f6a45', '#1c4029'));
     const wallTex = tex(makeLimewash(THREE, cnv));
     const matGrass = new THREE.MeshStandardMaterial(grassTex ? { map: grassTex.map, roughnessMap: grassTex.rough, color: 0xa7b27c, roughness: 1 } : { color: 0x7d9a5c, roughness: 1 });
@@ -278,12 +278,12 @@
       const L = Math.hypot(x1 - x0, z1 - z0), a = Math.atan2(z1 - z0, x1 - x0);
       const cx = (x0 + x1) / 2, cz = (z0 + z1) / 2;
       const w = box(L, 2.4, 0.36, cx, 1.2, cz, matWall); w.rotation.y = -a; walls.push(w);
-      const cap = box(L + 0.1, 0.16, 0.62, cx, 2.48, cz, matRedD); cap.rotation.y = -a;
+      const cap = box(L + 0.1, 0.16, 0.62, cx, 2.48, cz, matStone); cap.rotation.y = -a;
       // a pier every 4.5 m, the wall's rhythm
       for (let s = 0; s <= L; s += 4.5) {
         const px = x0 + Math.cos(a) * s, pz = z0 + Math.sin(a) * s;
         const p = box(0.56, 2.7, 0.56, px, 1.35, pz, matWhite);
-        const cp = box(0.66, 0.14, 0.66, px, 2.77, pz, matRedD);
+        const cp = box(0.66, 0.14, 0.66, px, 2.77, pz, matGold);
         void p; void cp;
       }
     }
@@ -303,7 +303,7 @@
         const fin = cyl(0.02, 0.26, 0.9, px, 4.9, GATE.z, matGold, 8);
         void fin;
       }
-      box(GATE.hw * 2 + 1.9, 0.5, 1.0, 0, 4.2, GATE.z, matRed);                // the lintel
+      box(GATE.hw * 2 + 1.9, 0.5, 1.0, 0, 4.2, GATE.z, matWhite);              // the lintel (v16.3: white, gold under it)
       box(GATE.hw * 2 + 1.7, 0.18, 1.05, 0, 3.9, GATE.z, matGoldC);
       // a two-tier little roof over it
       for (let i = 0; i < 2; i++) {
@@ -370,7 +370,7 @@
     for (const x of [SALA.x0 + 0.25, SALA.x1 - 0.25]) for (const z of [-1.9, -4.2, -6.5, -8.8, -10.75]) PIL.push({ x, z });
     for (const z of [-1.9]) for (const x of [-2.4, 2.4]) PIL.push({ x, z });
     for (const p of PIL) {
-      const c = cyl(0.17, 0.19, 4.0, p.x, SALA.floor + 2.0, p.z, matRed, 16); solids.push(c);
+      const c = cyl(0.17, 0.19, 4.0, p.x, SALA.floor + 2.0, p.z, matWhite, 16); solids.push(c);   // v16.3: white, gold bands and a lotus capital
       for (const y of [0.35, 3.55]) cyl(0.2, 0.2, 0.2, p.x, SALA.floor + y, p.z, matGoldC, 16);
       // a lotus capital
       cyl(0.28, 0.2, 0.18, p.x, SALA.floor + 3.95, p.z, matGold, 16);
@@ -379,7 +379,7 @@
     function rail(x0, z0, x1, z1) {
       const L = Math.hypot(x1 - x0, z1 - z0), a = Math.atan2(z1 - z0, x1 - x0);
       const cx = (x0 + x1) / 2, cz = (z0 + z1) / 2;
-      const top = box(L, 0.08, 0.16, cx, SALA.floor + 0.78, cz, matRed); top.rotation.y = -a;
+      const top = box(L, 0.08, 0.16, cx, SALA.floor + 0.78, cz, matGold); top.rotation.y = -a;
       const bot = box(L, 0.1, 0.18, cx, SALA.floor + 0.06, cz, matWhite); bot.rotation.y = -a;
       for (let s = 0.25; s < L; s += 0.28) {
         const px = x0 + Math.cos(a) * s, pz = z0 + Math.sin(a) * s;
@@ -470,7 +470,7 @@
       tri.moveTo(-run * 0.94, 0); tri.lineTo(run * 0.94, 0); tri.lineTo(0, rise * 0.94); tri.closePath();
       const gab = new THREE.Mesh(new THREE.ShapeGeometry(tri), matGoldC);
       gab.position.set(0, T.eave + 0.02, T.z0 + 0.02); world.add(gab);
-      const back = new THREE.Mesh(new THREE.ShapeGeometry(tri), matRedD);
+      const back = new THREE.Mesh(new THREE.ShapeGeometry(tri), matWhite);
       back.position.set(0, T.eave + 0.02, T.z0 - 0.02); back.rotation.y = Math.PI; world.add(back);
       for (const s of [-1, 1]) {
         const b = box(slope + 0.35, 0.22, 0.12, s * run / 2, (T.eave + T.ridge) / 2 + 0.1, T.z0 + 0.08, matGold);
@@ -490,7 +490,7 @@
     }
     tileTex2.repeat.set(3, 2);
     // the ceiling boards over the floor, and the back wall behind the altar
-    walls.push(box(SW, 4.6, 0.3, SCX, SALA.floor + 2.3, SALA.z0 + 0.05, matRedD));
+    walls.push(box(SW, 4.6, 0.3, SCX, SALA.floor + 2.3, SALA.z0 + 0.05, matWall));   // v16.3: limewash; the screen behind the Buddha keeps the red
     /* the ceiling CASTS: without it the sun came through the hairline gaps
        between the roof planes and lay on the floor as a trail of bright specks
        (photographed, CP2) */
@@ -659,7 +659,7 @@
     function mkDais(D, SEAT, parent) {
       const g = new THREE.Group(); g.position.set(D.x - parent.position.x, SALA.floor, D.z - parent.position.z); parent.add(g);
       const pile = new THREE.Group(); pile.position.set(-0.85, D.h + 0.01, 0.82); g.add(pile);
-      box(D.w, D.h, D.d, 0, D.h / 2, 0, matRed, g);
+      box(D.w, D.h, D.d, 0, D.h / 2, 0, matWood, g);
       box(D.w + 0.05, 0.05, D.d + 0.05, 0, D.h, 0, matGold, g);
       box(D.w + 0.05, 0.08, D.d + 0.05, 0, 0.04, 0, matGold, g);
       const pm = new THREE.Mesh(new THREE.PlaneGeometry(D.w - 0.2, D.d - 0.2), matMat);
@@ -972,14 +972,14 @@
       fl.rotation.x = -Math.PI / 2; fl.position.set(cx, SALA.floor + 0.004, Z); fl.receiveShadow = true; world.add(fl);
       for (let x = WALK.x0 - 0.5; x >= WALK.x1 + 0.2; x -= 1.6) {
         for (const sd of [-1, 1]) {
-          const post = cyl(0.08, 0.09, 2.6, x, SALA.floor + 1.3, Z + sd * (WALK.hw + 0.02), matRed, 10); solids.push(post);
+          const post = cyl(0.08, 0.09, 2.6, x, SALA.floor + 1.3, Z + sd * (WALK.hw + 0.02), matWhite, 10); solids.push(post);
           cyl(0.1, 0.1, 0.12, x, SALA.floor + 0.3, Z + sd * (WALK.hw + 0.02), matGoldC, 10);
         }
       }
       for (const sd of [-1, 1]) {
         const zr = Z + sd * (WALK.hw + 0.02);
-        box(L, 0.1, 0.14, cx, SALA.floor + 2.62, zr, matRedD);                 // the beam along the posts
-        const top = box(L - 0.4, 0.07, 0.12, cx - 0.2, SALA.floor + 0.62, zr, matRed); solids.push(top);
+        box(L, 0.1, 0.14, cx, SALA.floor + 2.62, zr, matGold);                 // the beam along the posts
+        const top = box(L - 0.4, 0.07, 0.12, cx - 0.2, SALA.floor + 0.62, zr, matGold); solids.push(top);
         box(L - 0.4, 0.08, 0.14, cx - 0.2, SALA.floor + 0.06, zr, matWhite);
         for (let x = WALK.x0 - 0.3; x > WALK.x1 + 0.1; x -= 0.26) cyl(0.025, 0.025, 0.52, x, SALA.floor + 0.34, zr, matWhite, 6);
       }
@@ -996,7 +996,8 @@
       }
       box(L + 0.4, 0.1, 0.1, cx, SALA.floor + 2.72 + rise + 0.03, Z, matGold);
       // lanterns under it
-      const lm = new THREE.MeshStandardMaterial({ color: 0xc4261c, roughness: 0.6, emissive: 0x5a0c06, emissiveIntensity: 0.6 });
+      // v16.3: Lanna lanterns, yellow and white — a round red one is a Chinese temple's
+      const lm = new THREE.MeshStandardMaterial({ color: 0xf2c230, roughness: 0.6, emissive: 0x5a3c06, emissiveIntensity: 0.6 });
       /* hung from the beams along the sides, so none of them stands between
          the sala and the sign over the door (CP6: the centre one did) */
       for (const [x, sd] of [[WALK.x0 - 1.3, 1], [cx, -1], [WALK.x1 + 1.3, 1]]) {
@@ -1012,7 +1013,7 @@
       const K = KUTI, cx = (K.x0 + K.x1) / 2, cz = (K.z0 + K.z1) / 2, L = K.z1 - K.z0, Wd = K.x1 - K.x0;
       box(Wd + 0.3, SALA.floor, L + 0.3, cx, SALA.floor / 2, cz, matStone, world, false);
       walls.push(box(Wd, K.h, L, cx, SALA.floor + K.h / 2, cz, matWall));
-      box(Wd + 0.02, 0.5, L + 0.02, cx, SALA.floor + 0.25, cz, matRedD, world, false);     // the base band
+      box(Wd + 0.02, 0.5, L + 0.02, cx, SALA.floor + 0.25, cz, matStone, world, false);    // the base band
       /* the gable faces the walkway: a roof whose ridge runs east–west, built
          with its ridge along a local z and turned a quarter */
       const rg = new THREE.Group(); rg.position.set(cx + 0.3, 0, cz); rg.rotation.y = Math.PI / 2; world.add(rg);
@@ -1206,7 +1207,7 @@
        flank with its gold windows and stacked roof. */
     {
       cyl(1.85, 1.95, 0.55, BODHI.x, 0.275, BODHI.z, matWhite, 28);
-      cyl(1.95, 1.95, 0.08, BODHI.x, 0.58, BODHI.z, matRedD, 28);
+      cyl(1.95, 1.95, 0.08, BODHI.x, 0.58, BODHI.z, matGold, 28);
       const soil = new THREE.Mesh(new THREE.CircleGeometry(1.8, 28), new THREE.MeshStandardMaterial({ color: 0x5a4632, roughness: 1 }));
       soil.rotation.x = -Math.PI / 2; soil.position.set(BODHI.x, 0.56, BODHI.z); world.add(soil);
       /* the tree is the kit's biggest kind (its own trunk); what devotees
@@ -1302,16 +1303,17 @@
     /* the lanterns, strung from the stall's awning across to the sala's corner */
     {
       const pts = [new THREE.Vector3(-8.4, 2.6, 3.2), new THREE.Vector3(-7.4, 2.35, -0.2)];
-      const lm = new THREE.MeshStandardMaterial({ color: 0xc4261c, roughness: 0.6, emissive: 0x3a0804, emissiveIntensity: 0.5 });
+      // v16.3: yellow, white and saffron Lanna lanterns — the round red ones read as a Chinese temple
+      const lms = [0xf2c230, 0xf3ecdc, 0xe8912a].map(c => new THREE.MeshStandardMaterial({ color: c, roughness: 0.6, emissive: c, emissiveIntensity: 0.12 }));
       for (let i = 0; i <= 5; i++) {
         const k = i / 5, p = pts[0].clone().lerp(pts[1], k); p.y -= Math.sin(k * Math.PI) * 0.35;
-        const l = new THREE.Mesh(new THREE.SphereGeometry(0.16, 10, 8), lm); l.scale.set(1, 1.2, 1); l.position.copy(p); world.add(l);
+        const l = new THREE.Mesh(new THREE.SphereGeometry(0.16, 10, 8), lms[i % 3]); l.scale.set(1, 1.2, 1); l.position.copy(p); world.add(l);
       }
     }
     // THE BELL TOWER: four posts and a little tiered roof, the bell hanging in it
     const BELL = { x: -11.4, z: -4.6 };
     {
-      for (const dx of [-0.8, 0.8]) for (const dz of [-0.8, 0.8]) solids.push(cyl(0.1, 0.1, 3.2, BELL.x + dx, 1.6, BELL.z + dz, matRed, 10));
+      for (const dx of [-0.8, 0.8]) for (const dz of [-0.8, 0.8]) solids.push(cyl(0.1, 0.1, 3.2, BELL.x + dx, 1.6, BELL.z + dz, matWhite, 10));
       box(2.0, 0.1, 2.0, BELL.x, 3.25, BELL.z, matGold);
       for (let i = 0; i < 2; i++) {
         for (const s of [-1, 1]) { const r = box(2.4 - i * 0.8, 0.06, 1.4 - i * 0.4, BELL.x, 3.7 + i * 0.55, BELL.z + s * 0.45, i ? matTile2 : matTile); r.rotation.x = s * 0.65; }
@@ -3185,10 +3187,10 @@
     // a tall window with a pointed gilded crown above it, red shutters open
     x.fillStyle = '#d9a63c';
     x.beginPath(); x.moveTo(40, 80); x.lineTo(128, 6); x.lineTo(216, 80); x.closePath(); x.fill();
-    x.fillStyle = '#8a1a12'; x.beginPath(); x.moveTo(62, 76); x.lineTo(128, 24); x.lineTo(194, 76); x.closePath(); x.fill();
+    x.fillStyle = '#b8862c'; x.beginPath(); x.moveTo(62, 76); x.lineTo(128, 24); x.lineTo(194, 76); x.closePath(); x.fill();
     x.fillStyle = '#d9a63c'; x.fillRect(58, 80, 140, 172);
     x.fillStyle = '#1a1210'; x.fillRect(74, 94, 108, 150);
-    x.fillStyle = '#9c1f16'; x.fillRect(34, 94, 38, 150); x.fillRect(184, 94, 38, 150);
+    x.fillStyle = '#3e1a12'; x.fillRect(34, 94, 38, 150); x.fillRect(184, 94, 38, 150);
     x.strokeStyle = '#d9a63c'; x.lineWidth = 3; x.strokeRect(38, 100, 30, 138); x.strokeRect(188, 100, 30, 138);
     return done(THREE, c, false);
   }

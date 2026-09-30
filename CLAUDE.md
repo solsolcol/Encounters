@@ -4325,6 +4325,21 @@ What the baseline contains, by release:
   The three water flicks moved onto the chant's own three breaths (3.0, 6.3,
   9.8 s — measured with silencedetect), played through on the chapter clock.
   Sheet v77 exported (three voice-line cells; v44 stays the link).
+- **v16.3** A THAI WAT, NOT A CHINESE ONE — Chad: *"the temple is too red, it
+  looks more like a chinese temple than a thai temple. I think thai temple has
+  more white, yellow, and gold elements, with some red."* Colour only, nothing
+  moved: the sala's pillars, the walkway posts, the bell tower's posts and the
+  gate lintel WHITE (the gold bands and lotus capitals stand out on them); the
+  rails, the walkway beams, the pier caps and the bodhi ring GOLD; the back
+  wall behind the altar limewash; the gable backs white; the compound coping
+  and the kuti's base stone; both daises wood; the roof tiles orange
+  terracotta instead of dark red (the upper tier stays green); the round red
+  paper lanterns — the most Chinese thing in the set — Lanna lanterns in
+  yellow, white and saffron; the ordination hall's window crowns gold and its
+  shutters dark lacquer. Red is kept as the accent: the screen behind the
+  Buddha, the altar's tiers, the pillar bands, cushions, the guardian giant.
+  Photographed from the gate, the courtyard, the bodhi tree and inside the
+  sala. Harnesses chapter, leak.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
