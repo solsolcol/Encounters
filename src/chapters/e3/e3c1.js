@@ -120,7 +120,7 @@
        man; the
        amulet in the film is episode 1's Phiboon (the auntie gave it to him
        when he was a boy, a callback nobody has to notice). */
-    assets: ['admintee', 'botak', 'granny', 'standman', 'phiboon', 'tree1', 'tree2', 'tree3', 'tree4', 'thaikit', 'wessred', 'wessgreen', 'naga', 'monk'],
+    assets: ['admintee', 'botak', 'granny', 'standman', 'phiboon', 'tree1', 'tree2', 'tree3', 'tree4', 'thaikit', 'wessred', 'wessgreen', 'naga', 'monk', 'ajarn'],
 
     /* THE SOUND. `watamb` is the dawn temple (birds, a far road, a broom on
        stone, wind chimes); `e3chant` is the monks' morning chanting from the
@@ -2079,9 +2079,19 @@
        of him looks UP at him when he turns round (CP3: level with the stool,
        the decision opened on the top of his head) */
     const AJ_RISE = 0.36;
-    const ajarn = mkRig('admintee', { x: AJ.x, y: DAIS_TOP + AJ_RISE, z: AJ.z, ry: 0, height: 1.66,
-                                      sizeOn: 'Idle_9', idle: 'Sit_and_Doze_Off', rate: 0.45, seated: true, recolor: whiten,
-                                      then: (r) => seatUnder(r, ajSeat) });
+    /* v16.8: CHAD'S AJARN (tools/prepmonk.mjs, as the monk: his skin weights
+       diffused, normals shared across the seams) — tattooed, in white, a
+       top-knot and beads. His own takes (Chad's direction): Sitting_Answering_
+       Questions while he works on the man before you, the rod in his right
+       hand; Sit_Thumbs_Up_Right once when he is done — the slap on the back
+       and the blessing; Chair_Sit_Idle_M at rest and when he speaks to you. */
+    const AJ_WORK = 'Sitting_Answering_Questions', AJ_BLESS = 'Sit_Thumbs_Up_Right', AJ_REST = 'Chair_Sit_Idle_M';
+    const ajarn = mkRig('ajarn', { x: AJ.x, y: DAIS_TOP + AJ_RISE, z: AJ.z, ry: 0, height: 1.68,
+                                   sizeOn: 'Walking', sizeAt: 0, idle: AJ_WORK, seated: true,
+                                   then: (r) => {
+                                     seatUnder(r, ajSeat);
+                                     r.model.traverse(o => { if (o.isBone && /RightHand(_\d+)?$/.test(o.name) && !r.hand) r.hand = o; });
+                                   } });
     const ajSeat = dais.children.find(c => c.geometry && c.geometry.parameters && c.geometry.parameters.width === 0.62);
     /* the seat goes under the hips: its top 0.10 below the hip joint, centred
        under it in x and z, in the dais's own frame (both daises: mkDais marks
@@ -2935,6 +2945,7 @@
        tip on the man's upper back, heard from wherever the player is */
     let workOn = true, strikeAt = 0, burst = 0, strikeK = 0;
     function workTick(wdt) {
+      ajarnTakeTick();
       const onOther = workOn === true && other.group.visible && !otherLeaving;
       rodG.visible = onOther && getState() !== 'cine';
       if (!onOther) return;
@@ -2947,11 +2958,22 @@
       }
       // the rod: from his right hand to the man's shoulder blade, tapping
       const tip = new THREE.Vector3(CUSH.x + 0.07, STOOL_TOP + 0.58, CUSH.z - 0.17);
-      const butt = new THREE.Vector3(AJ.x + 0.2, SALA.floor + (ajarn.seatTop ?? 1.2) + 0.28, AJ.z + 0.45);
-      const dir = tip.clone().sub(butt).normalize();
-      // held at the middle, the tip 6 cm off the skin, driven in on each strike
-      rodG.position.copy(tip).addScaledVector(dir, -0.72 + strikeK * 0.06 - 0.06);
-      rodG.lookAt(tip);
+      if (ajarn.hand) {
+        /* v16.8 (Chad: "put the rod on his right hand while he is doing it"):
+           the butt IN his hand, the tip on the man's back 6 cm off the skin
+           and driven in on each strike; the rod keeps to between 0.45 and
+           1.1 of its length as his hand moves with the take */
+        ajarn.hand.getWorldPosition(_hp);
+        const aim = tip.clone().addScaledVector(tip.clone().sub(_hp).normalize(), -0.06 + strikeK * 0.06);
+        const L = Math.min(1.1, Math.max(0.45, _hp.distanceTo(aim) / 0.74));
+        rodG.position.copy(_hp); rodG.scale.set(1, 1, L); rodG.lookAt(aim);
+      } else {
+        const butt = new THREE.Vector3(AJ.x + 0.2, SALA.floor + (ajarn.seatTop ?? 1.2) + 0.28, AJ.z + 0.45);
+        const dir = tip.clone().sub(butt).normalize();
+        // held at the middle, the tip 6 cm off the skin, driven in on each strike
+        rodG.position.copy(tip).addScaledVector(dir, -0.72 + strikeK * 0.06 - 0.06);
+        rodG.lookAt(tip);
+      }
     }
 
     /* ------------------------------------------------------------- hotspots
@@ -3164,7 +3186,24 @@
     /* ---------------------------------------------------------- lifecycle */
     function putAjarn() {
       ajarn.group.visible = true; ajarn.nod = 0; ajarn.lookYaw = 0; ajarn.lookPitch = 0;
-      if (ajarn.acts) ajarn.play('Sit_and_Doze_Off', 0.45, 0);
+      ajBlessUntil = 0; ajWas = !!workOn;
+      if (ajarn.acts) ajarn.play(workOn ? AJ_WORK : AJ_REST, 1, 0);
+    }
+    /* v16.8: the take follows the work — the answering take while the rod is
+       going, the thumbs-up ONCE on the frame the work stops (the slap on the
+       back), then the idle. Read in workTick every frame, so a resume, a
+       replay or a skipped scene cannot leave him in the wrong one. */
+    let ajBlessUntil = 0, ajWas = true;
+    function ajarnTakeTick() {
+      if (!ajarn.acts) return;
+      const working = !!workOn;
+      if (working && !ajWas) { ajBlessUntil = 0; ajarn.play(AJ_WORK, 1, 0.5); }
+      if (!working && ajWas) {
+        ajarn.play(AJ_BLESS, 1, 0.4, true);
+        ajBlessUntil = dayClock.t + ajarn.acts[AJ_BLESS].getClip().duration;
+      }
+      if (!working && ajBlessUntil && dayClock.t >= ajBlessUntil) { ajBlessUntil = 0; ajarn.play(AJ_REST, 1, 0.6); }
+      ajWas = working;
     }
     /* WHEN HE SPEAKS TO YOU he sits up: the same rig's other sitting take,
        parked on its upright opening frame (v8.0 measured it: the head is over
@@ -3172,7 +3211,9 @@
        lifted to the man in front of him. The doze is for when he works. */
     function ajarnFace(on) {
       if (!ajarn.acts) return;
-      if (on) { ajarn.play('Chair_Sit_Idle_M', 1, 0.6, false, 0.04); ajarn.lookPitch = -0.12; }
+      /* he looks up at you; the idle is his rest take, and a blessing still
+         in its gesture is let finish (ajarnTakeTick hands over to the idle) */
+      if (on) { if (!ajBlessUntil && !workOn) ajarn.play(AJ_REST, 1, 0.6); ajarn.lookPitch = -0.12; }
       else putAjarn();
     }
     function snap() { return { phase }; }

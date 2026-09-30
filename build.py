@@ -394,6 +394,7 @@ ASSETS = {
     'wessgreen':    ('assets/wessgreen.glb', True, False),    # e3c1 v16.6: Chad's green Thao Wessuwan, the gate's west guardian
     'naga':         ('assets/naga.glb', True, False),         # e3c1 v16.6: Chad's naga, the sala's staircase balustrades (tools/prepwess.mjs, BEND)
     'monk':         ('assets/monk.glb', True, False),         # e3c1 v16.8: Chad's monk, five takes, skin weights diffused (tools/prepmonk.mjs)
+    'ajarn':        ('assets/ajarn.glb', True, False),        # e3c1 v16.8: Chad's Sak Yant Ajarn, seven takes, the same prep
 }
 
 # Hosted-only assets: shipped as a URL, never inlined as base64.
@@ -417,7 +418,7 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'ghostsoldier', 'encik2', 'bunkbed', 'cafestaff', 'foodwarmer', 'flashlight',
            'kamaz', 'forest', 'rifle', 'ghostcyclist', 'fboaim',
            'muzzle', 'ammocrate', 'ammomags', 'icontorch', 'zavsoldier',
-           'thaikit', 'wessred', 'wessgreen', 'naga', 'monk'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone
+           'thaikit', 'wessred', 'wessgreen', 'naga', 'monk', 'ajarn'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone
 HOSTED_ONLY |= E2_ONLY
 
 # The split packs are hosted-only: there is no __..._B64__ token for them and
