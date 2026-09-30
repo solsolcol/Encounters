@@ -4407,7 +4407,8 @@ What the baseline contains, by release:
   Then *"move the prayer hands down even more so that i cannot see that
   protruding thumbs"*: `kit.pray` takes a height (`y`, chapter 1's −0.235 the
   default) and e3c1 holds the clasp at −0.37, swept on the phone crop until
-  only the joined fingertips rise into frame.
+  only the joined fingertips rise into frame. Deploy `6abd02ee2592264d5a68c92b`,
+  byte-verified (all 184 build files).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
