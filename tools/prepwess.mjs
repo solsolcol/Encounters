@@ -73,7 +73,7 @@ if (!process.env.LONG && !(size[1] > size[0] && size[1] > size[2])) throw new Er
 /* the sheets: base colour 2048, normal 1024, WebP on a PLAIN source (no
    EXT_texture_webp — rescueTextures reads json.textures[i].source, v14.12) */
 for (const mat of root.listMaterials()) {
-  for (const [tex, px, q] of [[mat.getBaseColorTexture(), 2048, 90], [mat.getNormalTexture(), 1024, 92]]) {
+  for (const [tex, px, q] of [[mat.getBaseColorTexture(), +(process.env.TEXPX || 2048), 90], [mat.getNormalTexture(), 1024, 92]]) {
     if (!tex) continue;
     const img = await sharp(Buffer.from(tex.getImage())).resize(px, px, { fit: 'fill' }).webp({ quality: q }).toBuffer();
     tex.setImage(img).setMimeType('image/webp').setURI('');

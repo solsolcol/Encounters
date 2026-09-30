@@ -5053,3 +5053,29 @@ aimed at every object the change touches.**
 - **Ask Chad before thinning a model he chose.** A 5× triangle cut to spare
   phones read to him as losing the model's detail. Full detail is the
   default for his models; say what a cut would cost and let him choose.
+
+## v17.0 — the temple, coloured by part
+
+- **Label by PIECE, not by triangle.** A bought model with no textures has
+  to be coloured by us, and a per-triangle classifier (height, slope,
+  density) splits one column into six classes and paints it six ways — no
+  tuning of the patterns can fix wrong labels. Split the mesh into its
+  connected pieces (weld by position, union-find), name each piece for what
+  it is, and give every triangle its piece's part
+  (`masters/v16.9/temple/relabel.mjs`). Guard the named ids against a
+  re-bake that renumbers them.
+- **Carry the piece's own frame in a vertex attribute.** COLOR_0 = (AO,
+  distance from the piece's top, distance from its bottom) lets the shader
+  put a capital, a band and a foot on a column exactly, with no guessed
+  heights. Remember that `vertexColors: true` multiplies `diffuseColor` by
+  the WHOLE `vColor` — once it stops being a grey AO, replace the
+  `color_fragment` chunk rather than include it.
+- **A band decided per pixel cannot saw-tooth.** The hall's wainscot
+  followed triangle labels and ended in teeth; decided by the fragment's
+  height it is a straight line.
+- **Big flat gold reads as white in sun.** A gilded valance panel painted
+  flat gold came out pale cream under ACES at dawn; a fine gold stencil on
+  lacquer reads as gilt.
+- **Photograph a list of asks against the shipped build.** A model prepared
+  and placed in code (the masks) is not shipped until it is in a deploy —
+  audit every ask in the conversation before reporting a release done.

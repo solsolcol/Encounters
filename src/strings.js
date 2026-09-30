@@ -166,6 +166,9 @@ Object.assign(window.__TEXT__, {
   'credits.slipper':     'The slippers at the wat',
   'credits.slipperWho':  'Slipper · Sketchfab',
   'credits.slipperLink': 'sketchfab.com · slipper',
+  'credits.mask':        'The masks in the Ajarn’s room',
+  'credits.maskWho':     'Khon Mask · Sketchfab',
+  'credits.maskLink':    'sketchfab.com · khon-mask',
   /* v12.1 — Chad's ghost cyclist is his own model and takes no row (the
      v5.23 rule); the Kamaz and the flashlight already have theirs above. */
   'credits.anim':        'Animation, two of the crowd, and the soldiers’ takes',

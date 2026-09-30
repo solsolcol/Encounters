@@ -45,6 +45,9 @@ const CUTS = [
    pass took the carving from 451k to 72k and the rosettes lost their
    filigree). Ratio 1 skips the class; the gold's own path below is kept for
    the day a far LOD is wanted, and is skipped at 1 too. */
+/* the classes drawn flatShading, shipped with no NORMAL: 'gold' in the v16.8
+   bake's classes, 'carve' in v17.0's parts (masters/v16.9/temple/relabel.mjs) */
+const FLAT = new Set(['gold', 'carve']);
 const SIMP = { gold: [1, 0], roof: [1, 0], soffit: [1, 0], white: [1, 0], base: [1, 0], red: [1, 0], floor: [1, 0] };
 
 /* Sutherland–Hodgman against one plane: keep the part where s·(p[ax] − v) >= 0 */
@@ -123,7 +126,7 @@ for (const node of root.listNodes()) {
        so with its normals it floors at a third of its triangles (the v8.0
        law, again). The gold ships without NORMAL and is drawn flatShading,
        which the carving wants anyway: its facets are its relief. */
-    prim.setAttribute('NORMAL', cls === 'gold' ? null : doc.createAccessor().setType('VEC3').setArray(nrm).setBuffer(buffer));
+    prim.setAttribute('NORMAL', FLAT.has(cls) ? null : doc.createAccessor().setType('VEC3').setArray(nrm).setBuffer(buffer));
     prim.setAttribute('COLOR_0', doc.createAccessor().setType(nc === 4 ? 'VEC4' : 'VEC3').setArray(col).setBuffer(buffer));
     prim.setIndices(doc.createAccessor().setType('SCALAR').setArray(idx).setBuffer(buffer));
     node.setExtras({ cls });

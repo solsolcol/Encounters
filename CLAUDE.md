@@ -4506,6 +4506,30 @@ What the baseline contains, by release:
   his own. Two credit rows; sheet v79 exported (v44 stays the link). Deploy `6abd7cab1f84ce591012c066`,
   byte-verified (all 192 build files) before the harnesses.
   docs/V16.9-THE-NEW-TEMPLE.md is the build's memory.
+- **v17.0** THE TEMPLE, COLOURED PART BY PART, AND THE MASKS — Chad: *"where
+  is the mask i told u? What else did you miss? ... the temple still has a
+  lot of missing colours and textures ... See how sloppy your colouring is."*
+  An audit of every ask since the swap found ONE missed (the Khon masks,
+  prepared and never shipped) and one unfinished (the colouring). The cause
+  of the sloppiness was the LABELS, not the patterns: the model has no
+  textures and one material, and the v16.8 bake classed each TRIANGLE on its
+  own, so one column carried six classes and was painted six ways, the
+  wainscot saw-toothed, and every bracket and frame came out plain white.
+  `masters/v16.9/temple/relabel.mjs` splits the mesh into its 2,572 connected
+  PIECES and names each one (column, beam, gable screen, bargeboard, mosaic
+  layer, roof, wall, frame, rail, base, carving) with a guard against
+  renumbering; COLOR_0 carries (AO, distance from the piece's top, from its
+  bottom), so a column knows its capital; `templeMats` paints each part to
+  its Lanna finish — gilt lotus capitals and stencil bands, lacquer-and-gold
+  brackets, gilt window frames with a pointed crown over each, red reveals
+  with a gold lip, gable lattice, glass-mosaic bargeboard layers, orange
+  tiles with a green glazed eave row and a gold ridge, a per-pixel wainscot
+  — with gold and lacquer glossy per pixel. Still every triangle (473,896,
+  2.96 MB). Five Khon masks on a stepped stand beside the Ajarn's shrine
+  (`khonmask`, 93k of 1.0M triangles, credited). Deploy
+  `6abd8a215a2466c5e13b863b`, byte-verified (193 files) before the
+  harnesses. Sheet v80 exported (v44 stays the link).
+  docs/V17.0-THE-TEMPLE-COLOURED.md is the build's memory.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -5069,7 +5093,7 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v79** (`masters/v16.9/masterz-text-v79.xlsx`, v78 plus v16.9's six credit strings — the temple and the slippers. v78 was `masters/v16.6/masterz-text-v78.xlsx`, v77 plus v16.6's four credit rows for the Tailandia packs. v77 was `masters/v16.1/masterz-text-v77.xlsx`, v76 with the monk's three voice lines re-said by Arthur at v16.2. v76 was `masters/v16.1/masterz-text-v76.xlsx`, five tabs: UI
+**THE SHEET IS v80** (`masters/v17.0/masterz-text-v80.xlsx`, v79 plus v17.0's three credit strings for the Khon masks. v79 was `masters/v16.9/masterz-text-v79.xlsx`, v78 plus v16.9's six credit strings — the temple and the slippers. v78 was `masters/v16.6/masterz-text-v78.xlsx`, v77 plus v16.6's four credit rows for the Tailandia packs. v77 was `masters/v16.1/masterz-text-v77.xlsx`, v76 with the monk's three voice lines re-said by Arthur at v16.2. v76 was `masters/v16.1/masterz-text-v76.xlsx`, five tabs: UI
 TEXT 292, EPISODE 1 114, EPISODE 2 193, EPISODE 3 41, VOICE LINES 337 — v76
 adds v16.1's four words, two changed cells and seven voice lines to v75).
 Was v75 (`masters/v16.0/masterz-text-v75.xlsx`, which added episode 3

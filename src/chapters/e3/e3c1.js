@@ -120,7 +120,7 @@
        man; the
        amulet in the film is episode 1's Phiboon (the auntie gave it to him
        when he was a boy, a callback nobody has to notice). */
-    assets: ['admintee', 'botak', 'granny', 'standman', 'phiboon', 'tree1', 'tree2', 'tree3', 'tree4', 'thaikit', 'wessred', 'wessgreen', 'naga', 'monk', 'ajarn', 'temple', 'slipper'],
+    assets: ['admintee', 'botak', 'granny', 'standman', 'phiboon', 'tree1', 'tree2', 'tree3', 'tree4', 'thaikit', 'wessred', 'wessgreen', 'naga', 'monk', 'ajarn', 'temple', 'slipper', 'khonmask'],
 
     /* THE SOUND. `watamb` is the dawn temple (birds, a far road, a broom on
        stone, wind chimes); `e3chant` is the monks' morning chanting from the
@@ -629,7 +629,7 @@
       m.traverse(o => {
         if (!o.isMesh) return;
         const k = (o.name || '').replace(/^temple_/, '').replace(/_\d+$/, '');
-        o.material = templeMat[k] || templeMat.white;
+        o.material = templeMat[k] || templeMat.wall;
         o.castShadow = !LOW; o.receiveShadow = true;
       });
       world.add(m);
@@ -1174,6 +1174,42 @@
         thai('standfan', 0, 0, 0, { s: 0.6, ry: Math.PI / 2, parent: pivot, cast: false, hide: [g], then: () => { standHead = pivot; } });
         thai('vasereed', -HW + 0.45, F, Z1 - 0.5, { s: 0.75, parent: roomG, cast: false });
         thai('oillamp', -HW + 0.3, F + 1.1, -2.82, { s: 0.55, parent: roomG, cast: false });
+      }
+      /* v16.9 · THE MASKS (Chad: "a 3d model of a mask that can be placed
+         inside the sakyant ajahn room, maybe on his shelf? typically we will
+         see many lersi masks on the shelves of ajahn rooms"). His Khon mask
+         (Sketchfab "Khon Mask"; tools/prepwess.mjs at 93k of its 1.0M
+         triangles — the painted texture carries the detail, and side by side
+         with the original at close range it is the same mask), five of them
+         on a stepped red-and-gold stand against the back wall west of the
+         shrine, three tiers, facing into the room. A primitive head stands in
+         for each until the file lands (v4.7). */
+      {
+        const MX = -1.9, mz = Z0 + 0.3, tiers = [[0.62, 0.34, 3, 0.5], [1.18, 0.30, 2, 0.46]];
+        for (let t = 0; t < 2; t++) {
+          const [top, depth] = tiers[t];
+          box(2.1 - t * 0.6, top, depth, MX, F + top / 2, mz + (t ? -0.02 : 0.02), t ? matRedD : matRed, roomG, false);
+          box(2.14 - t * 0.6, 0.04, depth + 0.04, MX, F + top + 0.02, mz + (t ? -0.02 : 0.02), matGold, roomG, false);
+        }
+        const spots = [[MX - 0.68, 0.64, 0.12, 0.66], [MX, 0.64, 0.12, 0.72], [MX + 0.68, 0.64, 0.12, 0.66], [MX - 0.34, 1.20, -0.04, 0.62], [MX + 0.34, 1.20, -0.04, 0.62]];
+        const heads = [];
+        for (const [x, y, dz, h] of spots) {
+          const hd = new THREE.Group(); hd.position.set(x, F + y, mz + dz); roomG.add(hd);
+          cyl(0.1, 0.12, h * 0.5, 0, h * 0.25, 0, new THREE.MeshStandardMaterial({ color: 0x3f7a4c, roughness: 0.6 }), 12, hd);
+          const cr = new THREE.Mesh(new THREE.ConeGeometry(0.1, h * 0.5, 12), matGold); cr.position.y = h * 0.75; hd.add(cr);
+          heads.push({ hd, x, y, z: mz + dz, h });
+        }
+        parseOnce('khonmask').then(gltf => {
+          if (!alive) return;
+          const b = new THREE.Box3().setFromObject(gltf.scene), H = b.max.y - b.min.y;
+          heads.forEach((q, i) => {
+            const m = gltf.scene.clone(true);
+            m.scale.setScalar(q.h / H); m.position.set(q.x, F + q.y - b.min.y * q.h / H, q.z); m.rotation.y = (i - 2) * 0.08;
+            m.traverse(o => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = true; } });
+            roomG.add(m); q.hd.visible = false;
+          });
+        }).catch(err => { console.warn('khonmask failed to load', err); ctx.loadFail && ctx.loadFail('khonmask', err); });
+        solids.push(hid(box(2.1, 1.4, 0.4, MX, F + 0.7, mz, matProxy, roomG, false)));
       }
       // the waiting mat, a cushion, a low table with a jug and two cups
       {
@@ -4101,8 +4137,11 @@
   /* ---- v16.4 · the wat, dressed ---- */
   /* the sala's ceiling: plain, pale teak boards (Chad: "simple and clean") */
   /* ---- v16.9 · THE TEMPLE'S MATERIALS ----
-     The model has no UVs and no maps: one material per class of face (the
-     bake's), its ambient occlusion from COLOR_0, and a pattern per class
+     The model has no UVs and no maps: one material per PART (v17.0 — the
+     column, beam, gable screen, bargeboard, mosaic layer, roof, wall, frame,
+     rail, base and carving pieces, named by masters/v16.9/temple/relabel.mjs;
+     COLOR_0 is AO and the distances from the piece's top and bottom), and a
+     pattern per part
      drawn in the shader in the MODEL's own units (vMP: the file is placed at
      x = mx·0.2, y = (my − 21.15)·0.2, z = (mz + 9.5)·0.2, so the shader
      undoes that; the patterns were tuned in model units in the refinement
@@ -4121,125 +4160,258 @@ float h21(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 float vnoise(vec2 p){ vec2 i = floor(p), f = fract(p); f = f*f*(3.0-2.0*f);
   return mix(mix(h21(i), h21(i+vec2(1,0)), f.x), mix(h21(i+vec2(0,1)), h21(i+vec2(1,1)), f.x), f.y); }
 float fbm(vec2 p){ float a = 0.5, s = 0.0; for (int i = 0; i < 4; i++) { s += a * vnoise(p); p *= 2.03; a *= 0.5; } return s; }
-float tH = 0.0; float tHk = 0.0;
+float tH = 0.0; float tHk = 0.0; float gAmt = 0.0; float lAmt = 0.0;
 vec3 bumpN(vec3 sp, vec3 sn, float h, float k){
   vec3 sx = dFdx(sp), sy = dFdy(sp); vec3 r1 = cross(sy, sn), r2 = cross(sn, sx);
   float det = dot(sx, r1); vec2 dh = vec2(dFdx(h), dFdy(h)) * k;
   vec3 g = sign(det) * (dh.x * r1 + dh.y * r2); return normalize(abs(det) * sn - g); }
 bool inHall(vec3 p){ return p.x > -27.3 && p.x < 26.6 && p.z < -23.1 && p.z > -80.2 && p.y > 32.0; }
 vec2 tri(vec3 p, vec3 n){ vec3 a = abs(n); return a.y > max(a.x, a.z) ? p.xz : (a.x > a.z ? p.zy : p.xy); }
+/* the palette, linear: gold leaf, red lacquer, limewash, pale teak */
+const vec3 GOLD = vec3(0.80, 0.55, 0.16);
+const vec3 LAC  = vec3(0.34, 0.05, 0.03);
+const vec3 LIME = vec3(0.90, 0.86, 0.77);
+float aaK(vec2 q){ return 1.0 - smoothstep(0.25, 0.6, max(fwidth(q.x), fwidth(q.y))); }
+/* the lacquer stencil (lai kham): a diamond lattice with a rosette in each cell */
+float stencil(vec2 q){ vec2 c = fract(q) - 0.5; float dia = abs(c.x) + abs(c.y);
+  float line = 1.0 - smoothstep(0.035, 0.06, abs(dia - 0.5));
+  float ros = 1.0 - smoothstep(0.10, 0.13, length(c));
+  float petal = 1.0 - smoothstep(0.03, 0.05, abs(length(c) - 0.22) - 0.035 * cos(atan(c.y, c.x) * 8.0));
+  float k = aaK(q); return max(max(line, ros), petal * 0.9) * k + 0.22 * (1.0 - k); }
+vec3 gilt(vec2 q){ return GOLD * (0.84 + 0.26 * fbm(q * 0.9)); }
+vec3 lacq(vec2 q){ return LAC * (0.9 + 0.14 * fbm(q * 1.7)); }
+vec3 limew(vec2 q){ return LIME * (1.0 + fbm(q * 0.35) * 0.05 + fbm(vec2(q.x * 0.6, q.y * 0.05)) * 0.04); }
+/* the floor: teak boards and the runner in the hall, stone slabs outside it */
+vec3 floorCol(vec3 p){
+  if (inHall(p)) {
+    float pl = fract(p.x / 1.6); float seam = smoothstep(0.0, 0.04, pl) * smoothstep(0.0, 0.04, 1.0 - pl);
+    float board = floor(p.x / 1.6), endj = fract(p.z / 9.0 + h21(vec2(board, 1.0)));
+    float grain = fbm(vec2(p.x * 3.0, p.z * 0.3));
+    vec3 teak = vec3(0.36, 0.20, 0.10) * (0.8 + 0.35 * grain) * (0.85 + 0.3 * h21(vec2(board, 2.0)));
+    teak *= mix(0.6, 1.0, seam) * mix(0.7, 1.0, smoothstep(0.0, 0.01, endj));
+    float run = step(abs(p.x - 0.75), 4.2), rb = step(3.7, abs(p.x - 0.75)) * run;
+    return mix(teak, mix(vec3(0.46, 0.06, 0.05), GOLD, rb), run);
+  }
+  vec2 q = p.xz / 3.4; vec2 f = fract(q);
+  float seam = smoothstep(0.0, 0.025, f.x) * smoothstep(0.0, 0.025, 1.0 - f.x) * smoothstep(0.0, 0.025, f.y) * smoothstep(0.0, 0.025, 1.0 - f.y);
+  return vec3(0.80, 0.76, 0.68) * mix(0.72, 1.0, seam) * (0.88 + 0.16 * h21(floor(q))) * (0.94 + 0.1 * fbm(p.xz * 0.4));
+}
+/* the side windows in the model's (z, y): three a side, sill 41.1, head 52
+   (the west middle one is the chapter's door); a signed distance */
+float winSD(vec2 zy){
+  vec2 q1 = abs(zy - vec2(-33.5, 46.55)) - vec2(3.5, 5.45);
+  vec2 q2 = abs(zy - vec2(-51.5, 46.55)) - vec2(3.5, 5.45);
+  vec2 q3 = abs(zy - vec2(-69.75, 46.55)) - vec2(3.75, 5.45);
+  float d1 = length(max(q1, 0.0)) + min(max(q1.x, q1.y), 0.0);
+  float d2 = length(max(q2, 0.0)) + min(max(q2.x, q2.y), 0.0);
+  float d3 = length(max(q3, 0.0)) + min(max(q3.x, q3.y), 0.0);
+  return min(d1, min(d2, d3)); }
+/* the doors in the end walls, in the model's (x, y) */
+float doorSD(vec2 xy){ vec2 q = abs(xy - vec2(0.75, 41.45)) - vec2(4.25, 8.05); return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0); }
+/* a frame round an opening: gold, a red line, gold (0 at the opening's edge) */
+vec3 frameCol(float d, vec2 q, float w){ float t = d / w;
+  float g = 1.0 - step(0.30, t) * step(t, 0.62); gAmt = g; lAmt = 1.0 - g;
+  return g > 0.5 ? gilt(q) : lacq(q); }
 `;
     const PAT = {
+      /* the twelve columns: a limewashed shaft, a gilded lotus capital (the top
+         3.25 units, where the radius flares 1.46 -> 1.85), a lacquer band with
+         the gold stencil under it, and a gold foot */
+      column: `
+        vec2 q = vec2(abs(n.x) > abs(n.z) ? vMP.z : vMP.x, vMP.y);
+        c = limew(q); aok = 0.4;
+        if (dT < 3.25) { float pet = smoothstep(0.30, 0.45, abs(fract(q.x / 0.95) - 0.5)); c = gilt(q) * mix(1.0, 0.72, pet); gAmt = 1.0; }
+        else if (dT < 3.6) { c = lacq(q); lAmt = 1.0; }
+        else if (dT < 7.0) { float s = stencil(vec2(q.x / 1.15, (dT - 3.6) / 1.15)); c = mix(lacq(q), gilt(q), s); gAmt = s; lAmt = 1.0 - s; }
+        else if (dT < 7.4) { c = gilt(q); gAmt = 1.0; }
+        if (dB < 0.7) { c = gilt(q); gAmt = 1.0; lAmt = 0.0; }
+        else if (dB < 1.05) { c = lacq(q); gAmt = 0.0; lAmt = 1.0; }`,
+      /* the brackets from the flank columns and the tie beams across the
+         gables: red lacquer, the gold stencil on their faces, gilt arrises */
+      beam: `
+        vec2 q = tri(vMP, n);
+        float s = abs(n.y) < 0.5 ? stencil(q / 1.3) : 0.0;
+        c = mix(lacq(q), gilt(q), s); gAmt = s; lAmt = 1.0 - s;
+        if (dT < 0.3 || dB < 0.3) { c = gilt(q); gAmt = 1.0; lAmt = 0.0; }`,
+      /* the gable ends: the scalloped valance under the eaves gilt on red, the
+         gable board above it red lacquer with the gold lattice; the back of
+         the board (seen only from under the porch roof) plain lacquer */
+      screen: `
+        vec2 q = vec2(vMP.x, vMP.y);
+        bool front = vMP.z > -50.0; bool face = front ? n.z > 0.3 : n.z < -0.3;
+        if (abs(n.z) < 0.3) { c = gilt(q); gAmt = 1.0; }
+        else if (!face) { c = lacq(q) * 0.8; lAmt = 1.0; }
+        else if (vMP.y < 63.0) { float s = stencil(q / 1.5); c = mix(lacq(q), gilt(q), s); gAmt = s; lAmt = 1.0 - s; }
+        else { float s = stencil(q / 3.0); c = mix(lacq(q), gilt(q), s); gAmt = s; lAmt = 1.0 - s; }`,
+      /* the bargeboards: gilt on the face, lacquer behind */
+      barge: `
+        vec2 q = vec2(vMP.x + vMP.z, vMP.y);
+        bool front = vMP.z > -50.0; bool face = front ? n.z > 0.3 : n.z < -0.3;
+        if (face || abs(n.z) < 0.3) { c = gilt(q); gAmt = 1.0; } else { c = lacq(q) * 0.85; lAmt = 1.0; }`,
+      /* the bargeboards' inner layer: green and blue glass mosaic with gold chips */
+      mosaic: `
+        vec2 q = vec2(vMP.x, vMP.y) / 0.42; vec2 cell = floor(q); float hc = h21(cell);
+        vec2 f = fract(q); float grout = smoothstep(0.0, 0.08, f.x) * smoothstep(0.0, 0.08, 1.0 - f.x) * smoothstep(0.0, 0.08, f.y) * smoothstep(0.0, 0.08, 1.0 - f.y);
+        vec3 glass = hc > 0.88 ? GOLD : hc > 0.55 ? vec3(0.03, 0.20, 0.10) : hc > 0.3 ? vec3(0.04, 0.12, 0.28) : vec3(0.05, 0.28, 0.16);
+        float k = aaK(q);
+        c = mix(vec3(0.05, 0.18, 0.14), glass * mix(0.55, 1.0, grout), k); gAmt = hc > 0.88 ? k : 0.0; lAmt = 1.0 - gAmt;
+        bool front = vMP.z > -50.0; bool face = front ? n.z > 0.3 : n.z < -0.3;
+        if (!face) { c = lacq(q) * 0.85; gAmt = 0.0; lAmt = 1.0; }`,
+      /* the roof: orange terracotta, two rows of green glaze along the eaves,
+         a gold ridge; the underside teak boards; the tiers' fascias lacquer */
       roof: `
-        float row = vMP.y / 0.95; float fr = fract(row);
-        float col = (abs(vWN.x) > abs(vWN.z) ? vMP.z : vMP.x) / 1.25 + mod(floor(row), 2.0) * 0.5; float fc = fract(col);
-        float tip = 0.30 * (1.0 - abs(fc - 0.5) * 2.0);
-        float body = smoothstep(tip - 0.03, tip + 0.03, fr);
-        float seam = smoothstep(0.0, 0.05, fc) * smoothstep(0.0, 0.05, 1.0 - fc);
-        float tone = 0.80 + 0.22 * h21(floor(vec2(col, row)));
-        float shade = mix(0.45, 1.0, body) * mix(0.75, 1.0, seam) * mix(1.12, 1.0, smoothstep(tip, tip + 0.18, fr));
-        float aa = 1.0 - smoothstep(0.18, 0.45, max(fwidth(row), fwidth(col)));
-        shade = mix(0.82, shade, aa); tone = mix(0.9, tone, aa);
-        tH = (body * (0.35 + 0.65 * smoothstep(tip, 1.0, fr)) + (1.0 - seam) * -0.25) * aa; tHk = 0.9;
-        diffuseColor.rgb *= shade * tone * (0.9 + 0.2 * fbm(vMP.xz * 0.08));`,
-      white: `
-        vec2 q = tri(vMP, vWN);
-        /* limewash, WHITE (v16.3: "more white, yellow, and gold"): the
-           viewer's grain read as grey granite in the game's light */
-        float m = fbm(q * 0.35) * 0.05 + fbm(vec2(q.x * 0.6, q.y * 0.05)) * 0.04;
-        float foot = 1.0 - (1.0 - smoothstep(21.0, 27.0, vMP.y)) * 0.12;
-        diffuseColor.rgb *= (1.0 + m) * foot;
-        tH = fbm(q * 2.2) * 0.5; tHk = 0.015;
-        /* the window reveals: INSIDE the side walls' thickness and not their
-           room-facing faces (the first version painted the whole upper wall) */
-        bool reveal = abs(abs(vMP.x + 0.37) - 27.27) < 0.83 && abs(vWN.x) < 0.5 && vMP.y > 39.4 && vMP.y < 54.8 && vMP.z < -23.1 && vMP.z > -80.2;
-        if (reveal) {
-          diffuseColor.rgb = vec3(0.38, 0.06, 0.04) * vColor.r * vec3(0.8, 0.72, 0.62);
-          tHk = 0.0;
-        } else if (inHall(vMP) && abs(vWN.y) < 0.5) {
-          float y = vMP.y - 33.1;
-          vec2 wq = vec2(abs(vWN.x) > abs(vWN.z) ? vMP.z : vMP.x, y);
-          if (y < 5.6) {                                // the lacquered wainscot, a gold rule on top
-            diffuseColor.rgb = mix(vec3(0.34, 0.05, 0.03), vec3(0.78, 0.56, 0.20), step(5.1, y)) * vColor.r * (0.9 + 0.12 * fbm(wq * 2.0));
-          } else if (y < 21.5) {                        // limewash, warm, a little candle-soot toward the top
-            diffuseColor.rgb = vec3(0.93, 0.88, 0.78) * (0.92 + m) * mix(1.0, 0.86, smoothstep(12.0, 21.5, y)) * mix(1.0, vColor.r, 0.5);
-          } else {                                      // the frieze under the ceiling: red, gold lattice
-            vec2 c = fract(wq / 2.2) - 0.5; float g = 1.0 - smoothstep(0.04, 0.07, abs(abs(c.x) + abs(c.y) - 0.5));
-            diffuseColor.rgb = mix(vec3(0.42, 0.06, 0.04), vec3(0.80, 0.58, 0.22), g) * vColor.r;
-          }
-          tHk = 0.0;
-        }`,
-      base: `
-        vec2 q = tri(vMP, vWN);
-        float course = smoothstep(0.0, 0.05, fract(q.y / 2.2)) * smoothstep(0.0, 0.05, 1.0 - fract(q.y / 2.2));
-        diffuseColor.rgb *= (0.88 + fbm(q * 0.5) * 0.18) * mix(0.8, 1.0, course);
-        if (inHall(vMP)) diffuseColor.rgb = vec3(0.30, 0.05, 0.03) * vColor.r;`,
-      red: `
-        vec2 q = tri(vMP, vWN) / 3.2; vec2 c = fract(q) - 0.5;
-        float dia = abs(c.x) + abs(c.y);
-        float line = 1.0 - smoothstep(0.035, 0.06, abs(dia - 0.5));
-        float ros = 1.0 - smoothstep(0.10, 0.13, length(c));
-        float petal = 1.0 - smoothstep(0.03, 0.05, abs(length(c) - 0.22) - 0.035 * cos(atan(c.y, c.x) * 8.0));
-        float gold = max(max(line, ros), petal * 0.9);
-        diffuseColor.rgb = mix(diffuseColor.rgb * (0.9 + 0.12 * fbm(q * 3.0)), vec3(0.80, 0.58, 0.20) * vColor.r, gold * 0.92);`,
-      gold: `
-        float ao = vColor.r;
-        float raised = smoothstep(0.18, 0.46, ao);
-        vec3 cell = floor(vMP * 3.0); float hc = h21(cell.xy + cell.z * 7.13);
-        vec3 glass = hc > 0.92 ? vec3(0.10, 0.42, 0.30) : hc > 0.86 ? vec3(0.12, 0.22, 0.52) : vec3(0.36, 0.05, 0.03);
-        vec3 gilt = diffuseColor.rgb * (0.86 + 0.22 * fbm(vMP.xz * 0.9 + vMP.y * 0.3));
-        diffuseColor.rgb = mix(glass * vColor.r * 2.2, gilt, raised);`,
-      soffit: `
-        vec2 q = tri(vMP, vWN); float along = abs(vWN.x) > abs(vWN.z) ? q.x : q.y;
-        float pl = fract(along / 1.3); float seam = smoothstep(0.0, 0.05, pl) * smoothstep(0.0, 0.05, 1.0 - pl);
-        float grain = fbm(vec2(along * 0.6, (abs(vWN.x) > abs(vWN.z) ? q.y : q.x) * 6.0));
-        diffuseColor.rgb *= mix(0.55, 1.0, seam) * (0.82 + grain * 0.35) * (0.9 + 0.2 * h21(vec2(floor(along / 1.3), 3.0)));
-        if (inHall(vMP)) {                              // the hall's ceiling: plain pale teak boards (v16.4's)
-          vec3 teak = vec3(0.69, 0.54, 0.38) * (0.86 + grain * 0.24) * (0.94 + 0.1 * h21(vec2(floor(along / 1.6), 5.0)));
-          diffuseColor.rgb = teak * mix(0.7, 1.0, smoothstep(0.0, 0.03, fract(along / 1.6)) * smoothstep(0.0, 0.03, 1.0 - fract(along / 1.6))) * mix(1.0, vColor.r, 0.4);
-        }`,
-      floor: `
-        if (inHall(vMP)) {
-          float pl = fract(vMP.x / 1.6); float seam = smoothstep(0.0, 0.04, pl) * smoothstep(0.0, 0.04, 1.0 - pl);
-          float board = floor(vMP.x / 1.6), endj = fract(vMP.z / 9.0 + h21(vec2(board, 1.0)));
-          float grain = fbm(vec2(vMP.x * 3.0, vMP.z * 0.3));
-          vec3 teak = vec3(0.36, 0.20, 0.10) * (0.8 + 0.35 * grain) * (0.85 + 0.3 * h21(vec2(board, 2.0)));
-          teak *= mix(0.6, 1.0, seam) * mix(0.7, 1.0, smoothstep(0.0, 0.01, endj));
-          float run = step(abs(vMP.x - 0.75), 4.2);       // the runner, door to altar
-          float rb = step(3.7, abs(vMP.x - 0.75)) * run;
-          diffuseColor.rgb = mix(teak, mix(vec3(0.46, 0.06, 0.05), vec3(0.78, 0.56, 0.20), rb), run) * vColor.r;
+        if (n.y > 0.3) {
+          float row = vMP.y / 0.95; float fr = fract(row);
+          float col = (abs(n.x) > abs(n.z) ? vMP.z : vMP.x) / 1.25 + mod(floor(row), 2.0) * 0.5; float fc = fract(col);
+          float tip = 0.30 * (1.0 - abs(fc - 0.5) * 2.0);
+          float body = smoothstep(tip - 0.03, tip + 0.03, fr);
+          float seam = smoothstep(0.0, 0.05, fc) * smoothstep(0.0, 0.05, 1.0 - fc);
+          float tone = 0.82 + 0.22 * h21(floor(vec2(col, row)));
+          float shade = mix(0.45, 1.0, body) * mix(0.75, 1.0, seam) * mix(1.12, 1.0, smoothstep(tip, tip + 0.18, fr));
+          float aa = 1.0 - smoothstep(0.18, 0.45, max(fwidth(row), fwidth(col)));
+          shade = mix(0.82, shade, aa); tone = mix(0.9, tone, aa);
+          tH = (body * (0.35 + 0.65 * smoothstep(tip, 1.0, fr)) + (1.0 - seam) * -0.25) * aa; tHk = 0.9;
+          vec3 tile = dB < 2.2 ? vec3(0.03, 0.19, 0.08) : vec3(0.62, 0.21, 0.06);
+          c = tile * shade * tone * (0.9 + 0.2 * fbm(vMP.xz * 0.08));
+          lAmt = dB < 2.2 ? 0.6 : 0.0;
+          if (dT < 0.7) { c = gilt(vMP.xz); gAmt = 1.0; tHk = 0.0; }
+        } else if (n.y < -0.3) {
+          vec2 q = tri(vMP, n); float along = abs(n.x) > abs(n.z) ? q.x : q.y;
+          float pl = fract(along / 1.3); float seam = smoothstep(0.0, 0.05, pl) * smoothstep(0.0, 0.05, 1.0 - pl);
+          float grain = fbm(vec2(along * 0.6, (abs(n.x) > abs(n.z) ? q.y : q.x) * 6.0));
+          c = vec3(0.30, 0.15, 0.07) * mix(0.55, 1.0, seam) * (0.82 + grain * 0.35) * (0.9 + 0.2 * h21(vec2(floor(along / 1.3), 3.0)));
         } else {
-          vec2 q = vMP.xz / 3.4; vec2 f = fract(q);
-          float seam = smoothstep(0.0, 0.025, f.x) * smoothstep(0.0, 0.025, 1.0 - f.x) * smoothstep(0.0, 0.025, f.y) * smoothstep(0.0, 0.025, 1.0 - f.y);
-          diffuseColor.rgb *= mix(0.72, 1.0, seam) * (0.88 + 0.16 * h21(floor(q))) * (0.94 + 0.1 * fbm(vMP.xz * 0.4));
-        }`
+          vec2 q = tri(vMP, n); c = lacq(q); lAmt = 1.0;
+          if (fract(vMP.y) < 0.18) { c = gilt(q); gAmt = 1.0; lAmt = 0.0; }
+        }`,
+      /* the walls: limewash outside with gilt window frames and a pointed
+         lacquer crown over each window, the reveals red lacquer with a gold
+         lip; inside, a lacquered wainscot with a gold rule, limewash, gilt
+         frames round the windows and the doors, and the red-and-gold frieze
+         under the ceiling; the ceiling plain pale teak (Chad, v16.4) */
+      wall: `
+        vec2 q = tri(vMP, n);
+        bool hall = inHall(vMP);
+        c = limew(q); aok = 0.35;
+        tH = fbm(q * 2.2) * 0.5; tHk = 0.012;
+        float wt = abs(abs(vMP.x + 0.37) - 27.27);
+        bool reveal = wt < 0.83 && abs(n.x) < 0.5 && vMP.y > 39.4 && vMP.y < 54.8 && vMP.z < -23.1 && vMP.z > -80.2;
+        if (n.y > 0.5 && vMP.y < 33.9) { c = floorCol(vMP); tHk = 0.0; }
+        else if (wt < 0.9 && winSD(vec2(vMP.z, vMP.y)) < 0.0) {    // the mullion and anything else standing in an opening
+          c = lacq(q); lAmt = 1.0; tHk = 0.0;
+          if (abs(n.x) > 0.5 && wt > 0.55) { c = gilt(q); gAmt = 1.0; lAmt = 0.0; }
+        } else if (reveal) {
+          c = lacq(q); lAmt = 1.0; tHk = 0.0;
+          if (wt > 0.62) { c = gilt(q); gAmt = 1.0; lAmt = 0.0; }
+        } else if (hall && n.y < -0.5) {
+          vec2 w = vMP.xz; float along = w.x;
+          float grain = fbm(vec2(along * 0.6, w.y * 6.0));
+          vec3 teak = vec3(0.86, 0.68, 0.47) * (0.86 + grain * 0.24) * (0.94 + 0.1 * h21(vec2(floor(along / 1.6), 5.0)));
+          c = teak * mix(0.72, 1.0, smoothstep(0.0, 0.03, fract(along / 1.6)) * smoothstep(0.0, 0.03, 1.0 - fract(along / 1.6)));
+          tHk = 0.0;
+        } else if (hall && abs(n.y) < 0.5) {
+          float y = vMP.y - 33.1;
+          vec2 wq = vec2(abs(n.x) > abs(n.z) ? vMP.z : vMP.x, y);
+          float fd = abs(n.x) > abs(n.z) ? winSD(vec2(vMP.z, vMP.y)) : doorSD(vec2(vMP.x, vMP.y));
+          tHk = 0.0;
+          if (y < 5.6) {
+            c = lacq(wq); lAmt = 1.0;
+            if (y > 5.1) { c = gilt(wq); gAmt = 1.0; lAmt = 0.0; }
+            else if (y > 1.0 && y < 4.6) { float s = stencil(vec2(wq.x / 2.4, (y - 1.0) / 3.6)); c = mix(c, gilt(wq), s * 0.85); gAmt = s * 0.85; }
+          } else if (y < 21.5) {
+            c = LIME * (0.97 + fbm(wq * 0.35) * 0.05) * mix(1.0, 0.9, smoothstep(12.0, 21.5, y));
+          } else {
+            float s = stencil(wq / 2.2); c = mix(lacq(wq), gilt(wq), s); gAmt = s; lAmt = 1.0 - s;
+            if (y < 22.0) { c = gilt(wq); gAmt = 1.0; lAmt = 0.0; }
+          }
+          if (fd > 0.0 && fd < 0.95) c = frameCol(fd, wq, 0.95);
+        } else if (!hall && abs(n.y) < 0.5) {
+          vec2 wq = vec2(abs(n.x) > abs(n.z) ? vMP.z : vMP.x, vMP.y);
+          float fd = 9.0;
+          if (abs(n.x) > abs(n.z) && abs(vMP.x) > 26.0) {
+            fd = winSD(vec2(vMP.z, vMP.y));
+            /* the crown: a pointed gable over each window */
+            float zc = vMP.z > -42.5 ? -33.5 : vMP.z > -60.6 ? -51.5 : -69.75, hw = vMP.z > -60.6 ? 4.6 : 4.85;
+            float yy = vMP.y - 52.95, w = hw * (1.0 - yy / 3.6), dz = abs(vMP.z - zc);
+            if (yy > 0.0 && yy < 3.6 && dz < w) {
+              float edge = min(w - dz, yy) * 1.0;
+              if (edge < 0.38 || (yy > 3.0 && dz < 0.3)) { c = gilt(wq); gAmt = 1.0; }
+              else { float s = stencil(vec2((vMP.z - zc) / 1.1, yy / 1.1)); c = mix(lacq(wq), gilt(wq), s); gAmt = s; lAmt = 1.0 - s; }
+              tHk = 0.0;
+            }
+          } else if (abs(n.z) > 0.5 && (vMP.z > -25.0 || vMP.z < -78.0)) {
+            fd = doorSD(vec2(vMP.x, vMP.y));
+          }
+          if (fd > 0.0 && fd < 1.05) { c = frameCol(fd, wq, 1.05); tHk = 0.0; }
+          /* the plinth band along the foot of the walls */
+          if (vMP.y < 35.2 && vMP.y > 33.3) { c = vMP.y > 34.85 ? gilt(wq) : LIME * 0.86; gAmt = vMP.y > 34.85 ? 1.0 : 0.0; }
+        } else if (n.y < -0.5) { c = lacq(q); lAmt = 1.0; tHk = 0.0; }`,
+      /* the back door's surround and the west windows' frames: gilt, the depth lacquer */
+      frame: `
+        vec2 q = tri(vMP, n);
+        if (abs(n.x) > 0.5 && abs(vMP.x) > 26.0) { float fd = winSD(vec2(vMP.z, vMP.y)); c = frameCol(max(fd, 0.0), vec2(vMP.z, vMP.y), 1.05); }
+        else if (abs(n.z) > 0.5) { float r = smoothstep(0.25, 0.45, ao); c = mix(lacq(q), gilt(q), max(r, 0.6)); gAmt = max(r, 0.6); lAmt = 1.0 - gAmt; }
+        else { c = lacq(q); lAmt = 1.0; }`,
+      /* the balustrade: limewashed balusters, a gilt capping, a stone foot */
+      rail: `
+        vec2 q = tri(vMP, n);
+        c = limew(q); aok = 0.4;
+        if (dT < 0.45) { c = gilt(q); gAmt = 1.0; }
+        else if (dB < 0.4) { c = LIME * 0.8; }`,
+      /* the base: stone courses, a lacquer band with a gold rule under the
+         floor's edge, the floor and the paving on top */
+      base: `
+        vec2 q = tri(vMP, n);
+        if (n.y > 0.5) { c = vMP.y > 33.3 ? floorCol(vMP) : vec3(0.78, 0.74, 0.66) * (0.88 + 0.16 * fbm(vMP.xz * 0.5)); }
+        else {
+          float course = smoothstep(0.0, 0.05, fract(q.y / 2.2)) * smoothstep(0.0, 0.05, 1.0 - fract(q.y / 2.2));
+          c = vec3(0.86, 0.82, 0.74) * (0.9 + fbm(q * 0.5) * 0.14) * mix(0.82, 1.0, course);
+          if (n.y > -0.5 && vMP.y > 31.9 && vMP.y < 33.45 && !inHall(vMP)) {
+            c = (vMP.y > 33.05 || vMP.y < 32.15) ? gilt(q) : lacq(q); gAmt = (vMP.y > 33.05 || vMP.y < 32.15) ? 1.0 : 0.0; lAmt = 1.0 - gAmt;
+          }
+          if (inHall(vMP)) c = LAC * 0.9;
+        }`,
+      /* the carving: gilt where it stands proud, deep lacquer in its hollows
+         with a chip of coloured glass here and there */
+      carve: `
+        float raised = smoothstep(0.16, 0.44, ao);
+        vec3 cell = floor(vMP * 3.0); float hc = h21(cell.xy + cell.z * 7.13);
+        vec3 glass = hc > 0.93 ? vec3(0.06, 0.34, 0.20) : hc > 0.87 ? vec3(0.07, 0.14, 0.44) : LAC;
+        c = mix(glass * (0.7 + 1.2 * ao), gilt(vMP.xz + vMP.y * 0.3) * (0.9 + 0.2 * ao), raised);
+        gAmt = raised; lAmt = 1.0 - raised; aok = 0.8;`,
     };
     const BASE = {
-      roof:   { color: 0xa2472a, roughness: 0.62, metalness: 0.0 },
-      white:  { color: 0xf1ebdf, roughness: 0.92, metalness: 0.0 },
-      base:   { color: 0xd8d0c0, roughness: 0.95, metalness: 0.0 },
-      red:    { color: 0x7a1a12, roughness: 0.45, metalness: 0.05 },
-      gold:   { color: 0xd9a63c, roughness: 0.34, metalness: 0.4, emissive: 0x3a2406, emissiveIntensity: 0.55, flatShading: true },
-      soffit: { color: 0x6a4228, roughness: 0.7,  metalness: 0.0 },
-      floor:  { color: 0xcfc4b0, roughness: 0.85, metalness: 0.0 },
+      column: { roughness: 0.9 }, beam: { roughness: 0.6 }, screen: { roughness: 0.6 }, barge: { roughness: 0.5 },
+      mosaic: { roughness: 0.3 }, roof: { roughness: 0.62 }, wall: { roughness: 0.92 }, frame: { roughness: 0.5 },
+      rail: { roughness: 0.9 }, base: { roughness: 0.93 }, carve: { roughness: 0.4, flatShading: true },
     };
     const out = {};
     for (const k of Object.keys(BASE)) {
-      const m = new THREE.MeshStandardMaterial({ ...BASE[k], vertexColors: true });
-      m.customProgramCacheKey = () => 'e3temple_' + k;
+      const m = new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.0, ...BASE[k], vertexColors: true });
+      m.customProgramCacheKey = () => 'e3temple2_' + k;
       m.onBeforeCompile = sh => {
         sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vMP; varying vec3 vWN;')
           .replace('#include <worldpos_vertex>', `#include <worldpos_vertex>
             vMP = (modelMatrix * vec4(transformed, 1.0)).xyz * 5.0 + vec3(0.0, 21.15, -9.5);
             vWN = normalize(mat3(modelMatrix) * objectNormal + vec3(0.0, 1e-5, 0.0));`);
         sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\n' + COMMON)
-          .replace('#include <normal_fragment_maps>', `#include <normal_fragment_maps>
-            if (tHk > 0.0) normal = bumpN(-vViewPosition, normal, tH, tHk);`)
-          .replace('#include <color_fragment>', `#include <color_fragment>
-            diffuseColor.rgb *= mix(1.0, vColor.r, 0.6);
+          .replace('#include <color_fragment>', `
+            /* COLOR_0 is (AO, the distance from the piece's top, from its bottom) / 25 — not a colour */
+            float ao = vColor.r, dT = vColor.g * 25.0, dB = vColor.b * 25.0;
+            vec3 n = vWN;
+            ${k === 'carve' ? 'n = normalize(cross(dFdx(vMP), dFdy(vMP)));' : ''}
+            vec3 c = LIME; float aok = 0.9;
             ${PAT[k]}
+            c *= mix(1.0, ao * (0.4 + 0.6 * ao), aok);          // the baked occlusion, per part (a wall greys under a full dose)
             /* a hall is lit by its door and windows: a little dimmer and warmer than the day */
-            if (inHall(vMP)) diffuseColor.rgb *= vec3(0.86, 0.80, 0.72);`);
+            if (inHall(vMP)) c *= vec3(0.86, 0.80, 0.72);
+            diffuseColor.rgb = c;
+            totalEmissiveRadiance += gAmt * vec3(0.125, 0.078, 0.013) * ao;`)
+          .replace('#include <metalnessmap_fragment>', `#include <metalnessmap_fragment>
+            metalnessFactor = mix(metalnessFactor, 0.4, gAmt);
+            roughnessFactor = mix(mix(roughnessFactor, 0.36, lAmt), 0.32, gAmt);`)
+          .replace('#include <normal_fragment_maps>', `#include <normal_fragment_maps>
+            if (tHk > 0.0) normal = bumpN(-vViewPosition, normal, tH, tHk);`);
       };
       out[k] = m;
     }
