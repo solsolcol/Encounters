@@ -2089,7 +2089,7 @@
     const ajarn = mkRig('ajarn', { x: AJ.x, y: DAIS_TOP + AJ_RISE, z: AJ.z, ry: 0, height: 1.68,
                                    sizeOn: 'Walking', sizeAt: 0, idle: AJ_WORK, seated: true,
                                    then: (r) => {
-                                     seatUnder(r, ajSeat);
+                                     seatOnSkin(r, ajSeat);
                                      r.model.traverse(o => { if (o.isBone && /RightHand(_\d+)?$/.test(o.name) && !r.hand) r.hand = o; });
                                    } });
     const ajSeat = dais.children.find(c => c.geometry && c.geometry.parameters && c.geometry.parameters.width === 0.62);
@@ -2102,6 +2102,53 @@
       r.hips.getWorldPosition(_v);
       const local = seat.parent.worldToLocal(_v.clone());
       const top = local.y - 0.10, h = Math.max(0.12, top - (seat.userData.base || 0));
+      seat.scale.y = h / seat.geometry.parameters.height;
+      seat.position.set(local.x, top - h / 2, local.z);
+      if (seat.userData.cushion) seat.userData.cushion.position.set(local.x, top + 0.03, local.z);
+      r.seatTop = top;
+    }
+
+    /* v16.8 · SEATED ON THE BODY, NOT THE BONES (Chad: "both the monk and
+       ajahn sinks into their seats, look at the leg area"). seatUnder puts
+       the seat's top 10 cm under the HIP JOINT and the rig is grounded on its
+       LOWEST JOINT — right for the stand-ins, wrong for two men in thick
+       robes: the underside of a robed thigh hangs well below 10 cm under the
+       joint, and a sole is below the toe joint. So for Chad's two, the POSED
+       SKIN is measured (the v5.21 law: a rig with a real body is measured from
+       its skin): the soles are put on the floor, and the seat's top is put at
+       the underside of the thighs, in a box round the hips. */
+    const _sv = new THREE.Vector3();
+    function skinLow(r, keep) {
+      let lo = Infinity;
+      r.model.updateMatrixWorld(true);
+      r.model.traverse(o => {
+        if (!o.isSkinnedMesh) return;
+        o.skeleton.update();
+        const n = o.geometry.attributes.position.count;
+        for (let i = 0; i < n; i += 5) {
+          o.getVertexPosition(i, _sv); _sv.applyMatrix4(o.matrixWorld);
+          if ((!keep || keep(_sv)) && _sv.y < lo) lo = _sv.y;
+        }
+      });
+      return lo;
+    }
+    function seatOnSkin(r, seat) {
+      if (!r.hips || !seat) return;
+      r.model.updateMatrixWorld(true);
+      // the soles on the floor he sits over
+      const feet = skinLow(r);
+      if (isFinite(feet)) { r.model.position.y += r.group.position.y - feet; r.model.updateMatrixWorld(true); }
+      // the underside of the thighs, in a box round the hips (he faces his +z)
+      r.hips.getWorldPosition(_v);
+      const hx = _v.x, hy = _v.y, hz = _v.z, fwd = new THREE.Vector3(0, 0, 1).applyQuaternion(r.group.quaternion);
+      const under = skinLow(r, p => {
+        const dx = p.x - hx, dz = p.z - hz, along = dx * fwd.x + dz * fwd.z, side = Math.abs(dx * fwd.z - dz * fwd.x);
+        return side < 0.22 && along > -0.18 && along < 0.22 && p.y < hy + 0.05 && p.y > hy - 0.45;
+      });
+      const cush = seat.userData.cushion ? 0.06 : 0;              // the cushion lies ON the seat: its top is what he sits on
+      const topW = isFinite(under) ? under - cush - 0.005 : hy - 0.10;
+      const local = seat.parent.worldToLocal(new THREE.Vector3(hx, topW, hz));
+      const top = local.y, h = Math.max(0.12, top - (seat.userData.base || 0));
       seat.scale.y = h / seat.geometry.parameters.height;
       seat.position.set(local.x, top - h / 2, local.z);
       if (seat.userData.cushion) seat.userData.cushion.position.set(local.x, top + 0.03, local.z);
@@ -2168,7 +2215,7 @@
     const monk = mkRig('monk', { x: MON.x, y: MD_TOP + AJ_RISE, z: MON.z, ry: 0, height: 1.68,
                                   sizeOn: 'Walking', sizeAt: 0, idle: MONK_REST, at: 0, seated: true,
                                   then: (r) => {
-                                    seatUnder(r, monkD.seat);
+                                    seatOnSkin(r, monkD.seat);
                                     r.model.traverse(o => {
                                       if (!o.isBone) return;
                                       if (/RightHand(_\d+)?$/.test(o.name) && !r.hand) r.hand = o;
