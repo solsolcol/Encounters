@@ -120,7 +120,7 @@
        man; the
        amulet in the film is episode 1's Phiboon (the auntie gave it to him
        when he was a boy, a callback nobody has to notice). */
-    assets: ['admintee', 'botak', 'granny', 'standman', 'phiboon', 'tree1', 'tree2', 'tree3', 'tree4', 'thaikit', 'wessred', 'wessgreen', 'naga'],
+    assets: ['admintee', 'botak', 'granny', 'standman', 'phiboon', 'tree1', 'tree2', 'tree3', 'tree4', 'thaikit', 'wessred', 'wessgreen', 'naga', 'monk'],
 
     /* THE SOUND. `watamb` is the dawn temple (birds, a far road, a broom on
        stone, wind chimes); `e3chant` is the monks' morning chanting from the
@@ -2146,16 +2146,40 @@
       });
     }
     const MD_TOP = SALA.floor + MD.h;
-    const monk = mkRig('botak', { x: MON.x, y: MD_TOP + AJ_RISE, z: MON.z, ry: 0, height: 1.62,
-                                  sizeOn: 'restpose', idle: 'Chair_Sit_Idle_M', at: 0.04, seated: true, recolor: saffron,
+    /* v16.8: CHAD'S MONK (tools/prepmonk.mjs — his skin weights diffused, so
+       the robe no longer shears into a staircase under the arms when he
+       moves), sized standing on his own Walking take and seated on his own
+       chair-sit takes: at rest on the first frame of Sit_Thumbs_Up_Right
+       (seated, hands on his knees), `Sitting_Answering_Questions` while he
+       talks, the thumbs-up take itself while he blesses (Chad's direction).
+       The procedural arm lift is the stand-in's and is not given to him
+       (no `arm`); the whisk still rides his right hand through the chant. */
+    const MONK_REST = 'Sit_Thumbs_Up_Right', MONK_TALK = 'Sitting_Answering_Questions', MONK_BLESS = 'Sit_Thumbs_Up_Right';
+    const monk = mkRig('monk', { x: MON.x, y: MD_TOP + AJ_RISE, z: MON.z, ry: 0, height: 1.68,
+                                  sizeOn: 'Walking', sizeAt: 0, idle: MONK_REST, at: 0, seated: true,
                                   then: (r) => {
                                     seatUnder(r, monkD.seat);
                                     r.model.traverse(o => {
                                       if (!o.isBone) return;
-                                      if (/RightArm(_\d+)?$/.test(o.name) && !r.arm) r.arm = o;
                                       if (/RightHand(_\d+)?$/.test(o.name) && !r.hand) r.hand = o;
                                     });
                                   } });
+    /* a take for the length of a line, then back to rest. The rest IS the
+       thumbs-up take's first frame, so a blessing cannot "go back to rest" by
+       switching takes: it is let finish the cycle it is in — the take begins
+       and ends on the same seated pose, hands on the knees — and holds. */
+    let monkBack = null;
+    function monkDo(take, secs) {
+      if (!monk.play(take, 1, 0.45)) return;
+      if (monkBack) monkBack.cancel = true;
+      const tok = monkBack = { cancel: false };
+      after(Math.max(0.5, secs), () => {
+        if (tok.cancel || monkBack !== tok) return;
+        monkBack = null;
+        if (take === MONK_REST) { const a = monk.acts[take]; a.setLoop(THREE.LoopOnce, 1); a.clampWhenFinished = true; }
+        else monk.play(MONK_REST, 0, 0.6);
+      });
+    }
 
     /* THE MAN UNDER THE NEEDLE — the botak recruit, on the yant stool, facing
        out, with the Ajarn behind him. When he is done he wais, stands and
@@ -2205,42 +2229,9 @@
     const assistant = mkRig('standman', { x: HELP.x, y: SALA.floor, z: HELP.z, ry: HELP_RY, height: 1.70,
                                           idle: 'mixamo.com', rate: 0.8 });
 
-    /* v16.4 · A MONK SWEEPING along the ordination hall's wall, beyond where
-       the player can walk (x 9, the bound is 8.2), so nobody walks into him:
-       the saffron stand-in standing on the rig's measured standing frame
-       (`Walking` parked at 0.122 — episode 2's), a long Thai broom of bamboo
-       and ribs in front of him, the sweep and his slow drift done in code */
-    const SWEEP = { x: 9.05, z0: -5.2, z1: 0.8 };
-    const sweeper = mkRig('botak', { x: SWEEP.x, y: 0, z: SWEEP.z0, ry: -Math.PI / 2, height: 1.62,
-                                     sizeOn: 'restpose', idle: 'Walking', at: 0.122, recolor: saffron });
-    const broom = new THREE.Group();
-    {
-      const pole = cyl(0.014, 0.016, 1.1, 0, -0.55, 0, new THREE.MeshStandardMaterial({ color: 0xc9a86a, roughness: 0.7 }), 6, broom);
-      void pole;
-      const rib = new THREE.MeshStandardMaterial({ color: 0x8a6a3a, roughness: 0.9 });
-      for (let i = 0; i < 11; i++) {
-        const a = (i - 5) * 0.07, st = new THREE.Mesh(new THREE.CylinderGeometry(0.004, 0.006, 0.42, 3), rib);
-        st.position.set(Math.sin(a) * 0.2, -1.3, 0); st.rotation.z = -a; broom.add(st);
-      }
-      box(0.08, 0.06, 0.05, 0, -1.1, 0, matWoodD, broom, false);
-      /* held at the hands and leaning FORWARD (his local +z) so its head is on
-         the paving a metre in front of him: 1.5 m of broom at 0.75 rad from
-         upright comes down 1.10 — the hands' height (CP4: hung straight down
-         from them, the head was under the ground) */
-      broom.rotation.order = 'YXZ';
-      broom.position.set(0.12, 1.1, 0.28);
-      sweeper.group.add(broom);
-    }
-    let sweepT = 0;
-    function sweepTick(wdt) {
-      if (!sweeper.group.visible) return;
-      sweepT += wdt;
-      const L = SWEEP.z1 - SWEEP.z0, u = (sweepT * 0.09) % (2 * L), z = SWEEP.z0 + (u < L ? u : 2 * L - u);
-      sweeper.group.position.z = z;
-      const k = Math.sin(sweepT * 2.3);
-      sweeper.group.rotation.y = -Math.PI / 2 + k * 0.12;          // his shoulders turn with the stroke
-      broom.rotation.set(-0.75, k * 0.5, 0);                           // the broom's foot sweeps across in front of him
-    }
+    /* v16.8: the SWEEPING MONK is gone (Chad: "remove the sweeping monk from
+       the temple to save render costs") — a second skinned man, a broom and a
+       per-frame walk, for someone beyond the player's reach. */
 
     /* v16.4 · PIGEONS on the paving by the path. They peck; walk within 3.2 m
        and the flock goes up with a burst of wings and away over the wall;
@@ -2527,7 +2518,7 @@
       if (kit) kit.conduct({ note: 'Gave the offering to the monk with both hands.', s: 0, a: 2 });
       setPhase('bless');
       queueGap(0.7);
-      queueLine('mk1come', () => { monkFace(true); monk.nod = SECS.mk1come; });
+      queueLine('mk1come', () => { monkFace(true); monk.nod = SECS.mk1come; monkDo(MONK_TALK, SECS.mk1come); });
       return true;
     }
     /* 4b · THE BLESSING (v16.1). He kneels under the monk's raised seat and
@@ -2567,11 +2558,11 @@
       const hold = (secs) => queueFn(() => { if (blessing) speak.until = Math.max(speak.until, blessing.mark + secs); });
       queueGap(2.2);
       queueFn(() => { if (blessing) blessing.chantAt = blessing.mark = dayClock.t; });
-      queueLine('mk1chant', () => { monk.nod = SECS.mk1chant * 0.6; });
+      queueLine('mk1chant', () => { monk.nod = SECS.mk1chant * 0.6; monkDo(MONK_BLESS, SECS.mk1chant); });
       hold(SECS.mk1chant + 0.3);
       queueGap(0.9);
       queueFn(() => { if (blessing) blessing.mark = dayClock.t; });
-      queueLine('mk1teach', () => { monk.nod = SECS.mk1teach; });
+      queueLine('mk1teach', () => { monk.nod = SECS.mk1teach; monkDo(MONK_TALK, SECS.mk1teach); });
       hold(SECS.mk1teach + 0.3);
       queueGap(0.5);
       queueFn(() => { if (blessing) blessing.bowAt = dayClock.t; });
@@ -3104,7 +3095,7 @@
         }
         a.needsUpdate = true;
       }
-      dressTick(t); sweepTick(wdt); pigeonTick(wdt, t); bellSoundTick(wdt);
+      dressTick(t); pigeonTick(wdt, t); bellSoundTick(wdt);
       zoneTick(zone, t); zoneTick(zoneSeat, t); zoneTick(zoneBless, t);
       warmK = Math.max(0, warmK - wdt * 0.25);
     }
@@ -3204,6 +3195,7 @@
       kutiK = 0; roomDoorK = 0; roomDoorWant = 0;
       if (kutiLeaf) kutiLeaf.rotation.y = 0; if (roomLeaf) roomLeaf.rotation.y = 0;
       assistant.group.rotation.y = HELP_RY; monkFace(false);
+      monkBack = null; if (monk.acts) monk.play(MONK_REST, 0, 0, false, 0);   // v16.8: a replay finds him at rest (the v8.1 law)
       for (const d of drops) d.life = 0;
       for (const t of stallTrays) t.visible = true;
       putAjarn(); putOther(true);
@@ -3256,7 +3248,7 @@
       });
       sweep(world); sweep(handTray);
       scene.remove(world);
-      for (const r of [ajarn, other, waiter, auntie, assistant, monk, sweeper]) r.mixer?.stopAllAction();
+      for (const r of [ajarn, other, waiter, auntie, assistant, monk]) r.mixer?.stopAllAction();
       for (const o of owned) { if (o.parent) o.parent.remove(o); o.dispose?.(); }
       owned.length = 0;
       for (const g of geos) g.dispose();
