@@ -4315,7 +4315,9 @@ What the baseline contains, by release:
   measurement (masters/v16.1/make.sh). The monk is a stand-in (the botak
   recruit recoloured saffron, his hair to a shaven scalp) until Chad's model;
   docs/E3-MODELS.md lists him. Sheet v76 exported (v44 stays the link).
-  docs/V16.1-THE-PRIVATE-ROOM.md is the memory.
+  Harnesses chapter, leak, cine, text, menu, hosted, csp, inv, fixture green.
+  Deploy `6abc996d6c2043881a28111f`, byte-verified (index.html and all 184
+  build files). docs/V16.1-THE-PRIVATE-ROOM.md is the memory.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
