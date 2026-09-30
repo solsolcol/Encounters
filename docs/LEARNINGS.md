@@ -5011,3 +5011,24 @@ drawn. The rule generalises to every `LOW` cut: **a cut that removes a thing
 on the phone must be visible to everything that depends on that thing, and
 a change is reviewed on the PHONE (touch on — without it `LOW` is false),
 aimed at every object the change touches.**
+
+## v16.8 — a scanned character in a robe
+
+- **"Rough edges when he animates" is skin weights, not texture.** Meshy's
+  auto-rig writes weights that change in BLOCKS, so a bent arm shears a
+  robe into a saw-tooth staircase down the flanks. Diffuse the weights over
+  the mesh graph (tools/prepmonk.mjs: 24 passes of half-own, half-neighbours),
+  with every UV-seam copy of a position sharing ONE set (copies with
+  different weights tear apart when posed), then keep the four strongest and
+  renormalise. Do it on the FULL mesh, before the simplify. Proof is a render
+  mid-take from the side, before and after.
+- **Seat a robed man on his skin, not his skeleton.** "10 cm under the hip
+  joint" and "the lowest joint on the floor" are right for a thin rig and
+  sink a thick robe into the seat and the soles into the floor. Measure the
+  POSED SKIN (`getVertexPosition` + matrixWorld): the soles to the floor, the
+  seat's top (and any cushion on it) to the underside of the thighs in a box
+  round the hips (`seatOnSkin`).
+- **The same take cannot "go back to" itself.** When a rest pose is frame 0
+  of the take a gesture uses, returning to rest is letting the gesture finish
+  its cycle (LoopOnce + clamp), not switching takes — `play(sameName)` only
+  changes the time scale, freezing it mid-gesture.

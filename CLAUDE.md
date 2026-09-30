@@ -4455,6 +4455,26 @@ What the baseline contains, by release:
   blockers, `groundAt`, the ending's walk down), so nothing else moved.
   Deploy `6abd4e1e35adc25ce0d36512`, byte-verified (188 files), BEFORE the
   harnesses; walk, cine, leak green after.
+- **v16.8** THE MONK AND THE AJARN ARE CHAD'S — his two Meshy scans on
+  Mixamo skeletons (597k / 595k triangles, five and seven takes), through a
+  new `tools/prepmonk.mjs`. "Rough at the edges ... when he starts
+  animating, under his arms" was the auto-rig's BLOCKY SKIN WEIGHTS, which
+  shear a robe into a saw-tooth staircase when an arm moves: the weights
+  are DIFFUSED over the full mesh (24 passes, every UV-seam copy of a
+  position sharing one set, cut back to four and renormalised) BEFORE the
+  simplify, and the normals are shared across the seams (the creases round
+  the eyes were shading, not paint). The monk rests on the first frame of
+  Sit_Thumbs_Up_Right, talks on Sitting_Answering_Questions, blesses on the
+  thumbs-up (Chad's direction). The Ajarn works on the answering take with
+  the rod in his RIGHT HAND (butt on the hand bone, tip on the man's back),
+  plays the thumbs-up ONCE on the frame the work stops (the slap and the
+  blessing), then Chair_Sit_Idle_M — `ajarnTakeTick` derives the take every
+  frame. Then "both sink into their seats": seated on their POSED SKIN, not
+  their bones (`seatOnSkin`: soles on the floor, the seat and its cushion
+  under the underside of the thighs). The sweeping monk is removed (render
+  cost). Deploys `6abd5e5786bae1d3b2d71f70` (monk), `6abd60850522f0628c0fc1cc`
+  (Ajarn), `6abd6263abc23f6d6b52078b` (seating), each byte-verified before
+  the harnesses; walk, cine, leak green on the last.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
