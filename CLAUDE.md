@@ -4475,6 +4475,37 @@ What the baseline contains, by release:
   cost). Deploys `6abd5e5786bae1d3b2d71f70` (monk), `6abd60850522f0628c0fc1cc`
   (Ajarn), `6abd6263abc23f6d6b52078b` (seating), each byte-verified before
   the harnesses; walk, cine, leak green on the last.
+- **v16.9** THE NEW TEMPLE, CHAD'S NAGAS ON A REAL STAIR, AND HIS SLIPPERS —
+  *"replace the main temple you built, with this new temple model, and move
+  everything interior ... into this new temple model ... what will happen
+  to my naga models? what about the walkway to the ajahn room? ... the monk
+  sitting area should not be right beside the buddha on the same wall"*.
+  Chad's Lanna temple (Sketchfab; the v16.8 bake + `tools/preptemple.mjs`)
+  stands where the open sala stood, at scale 0.2 in metres (hall 10.6 ×
+  11.3 m, floor 2.456 m up), and **ships every triangle** (473,896 — the
+  original less its own stair): Chad stopped a simplified first pass,
+  *"why did u cut the temple down? now it loses all its details"*. The
+  model's own four-block stair and stylised nagas are CUT from the mesh
+  (clipped against a box, never culled by centroid) and a real 14-riser
+  flight stands in the opening with Chad's naga re-baked at ×2.8 on 0.8 m
+  cheek walls. The model has no walkable veranda, so the walkway leaves
+  from a DOOR cut in the hall's west wall where the middle window pair was
+  (lacquered jambs, the leaves open against the wall). Its collision is
+  DERIVED from its mesh (`masters/v16.9/blockgrid.mjs` → `TEMPLE_BLOCK`,
+  148 rectangles). Inside: the altar on the back wall on the door's axis,
+  the monk's dais TURNED onto the east wall (`MD.ry`, `mdW()`), mats either
+  side of a runner, the bench, the amulet table, fans and lamps on long rods
+  from the 9.7 m ridge, and the extra space used — a scripture cabinet, a
+  gong, rows of small images, a donation box. Interior colours follow Chad's
+  standing rulings (plain pale teak ceiling, no mural). The north wall moved
+  10.5 m back; the rack, pots, bells, marigolds, pigeons, dog and lanterns
+  moved with the building; the walk out and the film's last shot re-aimed.
+  And Chad's SLIPPER model (Sketchfab) replaces every generated shoe —
+  `tools/prepslipper.mjs` splits his kicked-off pair into one slipper,
+  instanced with a colour per pair on the rack, the paving, the kuti and
+  his own. Two credit rows; sheet v79 exported (v44 stays the link). Deploy `6abd7cab1f84ce591012c066`,
+  byte-verified (all 192 build files) before the harnesses.
+  docs/V16.9-THE-NEW-TEMPLE.md is the build's memory.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -5038,7 +5069,7 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v78** (`masters/v16.6/masterz-text-v78.xlsx`, v77 plus v16.6's four credit rows for the Tailandia packs. v77 was `masters/v16.1/masterz-text-v77.xlsx`, v76 with the monk's three voice lines re-said by Arthur at v16.2. v76 was `masters/v16.1/masterz-text-v76.xlsx`, five tabs: UI
+**THE SHEET IS v79** (`masters/v16.9/masterz-text-v79.xlsx`, v78 plus v16.9's six credit strings — the temple and the slippers. v78 was `masters/v16.6/masterz-text-v78.xlsx`, v77 plus v16.6's four credit rows for the Tailandia packs. v77 was `masters/v16.1/masterz-text-v77.xlsx`, v76 with the monk's three voice lines re-said by Arthur at v16.2. v76 was `masters/v16.1/masterz-text-v76.xlsx`, five tabs: UI
 TEXT 292, EPISODE 1 114, EPISODE 2 193, EPISODE 3 41, VOICE LINES 337 — v76
 adds v16.1's four words, two changed cells and seven voice lines to v75).
 Was v75 (`masters/v16.0/masterz-text-v75.xlsx`, which added episode 3

@@ -4533,8 +4533,11 @@ vec2 tri(vec3 p, vec3 n){ vec3 a = abs(n); return a.y > max(a.x, a.z) ? p.xz : (
     sfx(50.6, 'e3chant', 0.45);
     camTo(50.2, 60.4, { x: 0.2, y: 1.62, z: 26.0 }, { x: 0, y: 1.62, z: 12.4 }, smoothK);
     yawTo(50.2, 60.4, faceFrom(0.2, 26, 0.6, 0), 0, smoothK);
-    pitchTo(50.2, 56.0, 0.20, 0.10, smoothK);
-    pitchTo(56.0, 60.4, 0.10, 0.02, smoothK);
+    /* v16.9: tilted UP through the gate — the temple is twice the old sala's
+       height (its spire is 21 m), and at 0.10 → 0.02 the gate and then the
+       frame's top cut it in half */
+    pitchTo(50.2, 56.0, 0.26, 0.30, smoothK);
+    pitchTo(56.0, 60.4, 0.30, 0.24, smoothK);
     sfx(53.2, 'e3bell', 0.55);
     fade(60.2, 61.9, 0, 1);
     step(62.0, () => { armR.visible = true; });

@@ -5032,3 +5032,24 @@ aimed at every object the change touches.**
   of the take a gesture uses, returning to rest is letting the gesture finish
   its cycle (LoopOnce + clamp), not switching takes — `play(sameName)` only
   changes the time scale, freezing it mid-gesture.
+
+## v16.9 — the temple swap
+
+- **Cut a mesh by CLIPPING, not by centroid.** Removing a region of a baked
+  model (its own stair, a wall under a window) with a box test on each
+  triangle's centroid tears holes wider than the box, because a big wall
+  triangle straddles it. `tools/preptemple.mjs` subtracts the box from each
+  triangle (Sutherland–Hodgman against the six faces in turn) and keeps
+  exactly the part outside; attributes are interpolated.
+- **Collision can be DERIVED.** For a bought building, a grid over its floor
+  tested against the real mesh (within 0.2 m horizontally at knee and chest
+  height, or a surface under 2.3 m overhead = inside a wall shell) and merged
+  into rectangles is faster to get right than typing boxes, and follows the
+  model exactly (`masters/v16.9/blockgrid.mjs`). Rebuild it with the file.
+- **A mask by position needs the NORMAL too.** The window-reveal paint was a
+  band of x covering the wall's thickness — which includes the wall's own
+  room-facing face, so the whole upper wall was painted as reveal. The
+  refinement viewer had the same bug; only a game photograph showed it.
+- **Ask Chad before thinning a model he chose.** A 5× triangle cut to spare
+  phones read to him as losing the model's detail. Full detail is the
+  default for his models; say what a cut would cost and let him choose.
