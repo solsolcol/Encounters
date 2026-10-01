@@ -2317,6 +2317,24 @@
        the seat runs from behind him to a hand short of his knees; the
        footrest from behind the seat to past his toes; and a back stands
        just clear of his back. */
+    /* each take's recorded seat offset cancelled, weighted by the takes now
+       playing (a take not measured counts as no offset — the old behaviour) */
+    function rootComp(r) {
+      if (!r.rootOff || !r.model || !r.acts) return;
+      let wx = 0, wz = 0, ws = 0;
+      for (const [name, a] of Object.entries(r.acts)) {
+        if (!a.isScheduled()) continue;                    // playing, fading or parked on a frame
+        const w = a.getEffectiveWeight(); if (!(w > 0)) continue;
+        const o = r.rootOff[name]; ws += w;
+        if (o) { wx += o[0] * w; wz += o[1] * w; }
+      }
+      if (ws <= 0) return;
+      /* the offset is in the group's frame; the model is the group's child, so
+         its position is in that frame too — scaled by nothing (the model's own
+         scale applies below it) */
+      r.model.position.x = r.rootBase.x - wx / ws;
+      r.model.position.z = r.rootBase.z - wz / ws;
+    }
     function seatOnSkin(r, seat, takes, restore) {
       if (!r.hips || !seat) return;
       const U = seat.userData, P = seat.parent;
@@ -2348,14 +2366,35 @@
         }
         return m;
       };
-      const all = [], seats = [];
+      const all = [], seats = [], hipAt = {};
+      const hipLocal = () => { r.model.updateMatrixWorld(true); r.hips.getWorldPosition(_v); return r.group.worldToLocal(_v.clone()); };
       for (const take of (takes || []).filter(t => r.acts && r.acts[t])) {
-        const s = [];
-        for (const k of [0, 0.2, 0.4, 0.6, 0.8]) { r.play(take, 1, 0, false, k); r.mixer.update(0); const m = sample(); s.push(m.seat); all.push(m); }
+        const s = []; let hx = 0, hz = 0;
+        for (const k of [0, 0.2, 0.4, 0.6, 0.8]) {
+          r.play(take, 1, 0, false, k); r.mixer.update(0);
+          const hl = hipLocal(); hx += hl.x / 5; hz += hl.z / 5;
+          const m = sample(); s.push(m.seat); all.push(m);
+        }
         seats.push(s.reduce((a, b) => a + b, 0) / s.length);
+        hipAt[take] = [hx, hz];
       }
       if (restore) { r.cur = null; restore(); r.mixer.update(0); }
       const cur = sample(); if (!all.length) { all.push(cur); seats.push(cur.seat); }
+      /* v17.1b (Chad: "When the monk speaks, he moves, and causes his legs to
+         collide into the seat"): the takes were not recorded in one chair.
+         Measured in the group's frame, Sitting_Answering_Questions sits his
+         hips 0.30 m further BACK and 0.14 m to one side of where
+         Sit_Thumbs_Up_Right sits them (and the Ajarn's Chair_Sit_Idle_M 0.31
+         back and 0.17 the other way), so every change of take slid the whole
+         man across the throne and his legs through the seat. Each take's
+         offset from the take the seat was built on is kept, and rootComp()
+         cancels it every frame, weighted by the takes playing — so he sits in
+         the same place whatever he is doing, and a crossfade glides nothing. */
+      const ref0 = takes && hipAt[takes[0]];                   // the take the seat is built round
+      const ref = ref0 ? { x: ref0[0], z: ref0[1] } : hipLocal();
+      r.rootOff = {};
+      for (const [take, [hx, hz]] of Object.entries(hipAt)) r.rootOff[take] = [hx - ref.x, hz - ref.z];
+      r.rootBase = { x: r.model.position.x, z: r.model.position.z };
       // the soles on the footrest he sits over (the group's height IS its top)
       if (isFinite(cur.sole)) {
         const dy = r.group.position.y - cur.sole; r.model.position.y += dy;
@@ -2963,7 +3002,7 @@
       if (r.tip) { r.tip.getWorldPosition(_tg); out.lerp(_tg, k); }
       return out;
     }
-    const _tg = new THREE.Vector3(), _wUp = new THREE.Vector3(0, 0.03, 0);
+    const _tg = new THREE.Vector3(), _wUp = new THREE.Vector3(0, -0.035, 0);   // v17.1b (Chad: "The stick should be below his palm, not on top of it"): under the hand
     function monkArmPre() { if (monk.arm && monk.armWrote) monk.arm.quaternion.copy(monk.armWrote); }
     function monkArmPost(wdt) {
       const want = blessing && blessing.chantAt >= 0 && dayClock.t - blessing.chantAt < FLICKS[2] + 1.6 ? 1 : 0;
@@ -2988,8 +3027,9 @@
            makes no sense"): it hung off the WRIST bone pointing at the lens,
            a bundle floating beside a hand that was not holding it. His rig has
            no finger bones (one tip bone), so it cannot close a fist round a
-           handle, and his takes hold the palms up — so the whisk LIES ACROSS
-           THE OPEN PALM, its bound handle at the middle of the palm and the
+           handle, and his takes hold the palms up — so the whisk lies UNDER
+           THE OPEN HAND (Chad: "below his palm, not on top of it"), its bound
+           handle under the middle of the hand and the
            stalks running out past the fingertips the way the hand points, as a
            loosely held brush does; each throw of water tips the stalks up
            toward the one being blessed. */
@@ -2998,7 +3038,7 @@
         const fdir = _hp.clone().sub(_to).normalize();
         camera.getWorldPosition(_to);
         const toCam = _to.sub(_hp).setY(0).normalize();
-        const dir = fdir.clone().addScaledVector(new THREE.Vector3(0, 1, 0), 0.22 + monkArmFlick * 0.8).addScaledVector(toCam, monkArmFlick * 0.3).normalize();
+        const dir = fdir.clone().addScaledVector(new THREE.Vector3(0, 1, 0), 0.06 + monkArmFlick * 0.8).addScaledVector(toCam, monkArmFlick * 0.3).normalize();
         whisk.position.copy(_hp).add(_wUp).addScaledVector(dir, -0.04);
         whisk.lookAt(whisk.position.clone().add(dir));
       } else {
@@ -3452,7 +3492,7 @@
       for (const r of [ajarn, other, waiter, auntie, assistant, monk]) {
         if (!r.mixer || !r.group.visible) continue;
         headPre(r); if (r === monk) monkArmPre();
-        r.mixer.update(dt); r.model && r.model.updateMatrixWorld(true);
+        r.mixer.update(dt); rootComp(r); r.model && r.model.updateMatrixWorld(true);
         headPost(r, wdt); if (r === monk) monkArmPost(wdt);
       }
       lifeTick(t, wdt);

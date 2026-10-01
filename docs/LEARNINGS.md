@@ -5103,3 +5103,8 @@ aimed at every object the change touches.**
   stand's upper tier covered all but 6 cm of the lower one's top, so the
   front row stood inside the upper tier's face. A step's depth is what is
   left in front of the next.
+- **Two seated takes are not recorded in one chair.** A bought rig's sitting
+  takes can each sit the hips somewhere different relative to the root (here
+  0.30 m apart), so switching take slides the whole body. Measure each take's
+  hips in the parent's frame and cancel the difference every frame, weighted
+  by the takes playing (`rootComp`) — and only then build furniture round him.

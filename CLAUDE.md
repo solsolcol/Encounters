@@ -4554,6 +4554,15 @@ What the baseline contains, by release:
   palm (his rig has no finger bones, his takes hold the palms up); the mask
   stand is a real step (its tiers overlapped, so the front row stood inside
   the upper tier). docs/V17.1-THE-OPENINGS-AND-THE-THRONES.md.
+- **v17.2** THE WHISK UNDER THE HAND, AND THE MONK WHO SLID — Chad: "The stick
+  should be below his palm" (it is, 3.5 cm under the hand) and "When the monk
+  speaks, he moves, and causes his legs to collide into the seat". His takes
+  were each recorded in their own chair: the talking take sits his hips 0.30 m
+  further back and 0.14 m aside of the resting one (the Ajarn's idle 0.31 back,
+  0.17 the other way), so every change of take slid him through the throne.
+  `seatOnSkin` records each take's offset and `rootComp()` cancels it every
+  frame, weighted by the takes playing — hips now move 1.5 cm between rest and
+  talk (were 33). Deploy `6abe0685e57e0da715d669f7`, byte-verified.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
