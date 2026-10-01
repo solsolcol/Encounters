@@ -924,10 +924,17 @@
       const pm = new THREE.Mesh(new THREE.PlaneGeometry(D.w - 0.2, D.d - 0.2), matMat);
       pm.rotation.x = -Math.PI / 2; pm.position.y = D.h + 0.005; g.add(pm);
       const seat = box(0.62, 0.34, 0.52, SEAT.x - D.x, D.h + 0.17, SEAT.z - D.z - 0.06, matWoodD, g);
-      box(1.0, 0.36, 0.95, SEAT.x - D.x, D.h + 0.18, SEAT.z - D.z + 0.05, matRed, g);
-      box(1.04, 0.04, 0.99, SEAT.x - D.x, D.h + 0.36, SEAT.z - D.z + 0.05, matGold, g);
+      const riser = box(1.0, 0.36, 0.95, SEAT.x - D.x, D.h + 0.18, SEAT.z - D.z + 0.05, matRed, g);
+      const riserTop = box(1.04, 0.04, 0.99, SEAT.x - D.x, D.h + 0.36, SEAT.z - D.z + 0.05, matGold, g);
       const cushion = box(0.66, 0.06, 0.56, SEAT.x - D.x, D.h + 0.37, SEAT.z - D.z - 0.06, new THREE.MeshStandardMaterial({ color: 0xc7a24e, roughness: 0.8 }), g);
+      /* v17.1: the seat's gilt lip and its back — a low throne, sized to the
+         man who sits on it once he has landed (seatOnSkin) */
+      const seatLip = box(0.64, 0.03, 0.54, SEAT.x - D.x, D.h + 0.35, SEAT.z - D.z - 0.06, matGold, g);
+      const back = box(0.66, 0.6, 0.06, SEAT.x - D.x, D.h + 0.7, SEAT.z - D.z - 0.36, matRed, g);
+      const backTop = box(0.7, 0.04, 0.09, SEAT.x - D.x, D.h + 1.0, SEAT.z - D.z - 0.36, matGold, g);
+      back.visible = backTop.visible = false;
       seat.userData.base = D.h; seat.userData.cushion = cushion;
+      Object.assign(seat.userData, { riser, riserTop, seatLip, back, backTop });
       for (let i = 0; i < 4; i++) {
         const t = mkTray(); t.position.set((i % 2) * 0.42, 0, Math.floor(i / 2) * -0.34);
         t.rotation.y = hash(i + D.x, 9) * 0.6 - 0.3; pile.add(t);
@@ -1185,13 +1192,20 @@
          shrine, three tiers, facing into the room. A primitive head stands in
          for each until the file lands (v4.7). */
       {
-        const MX = -1.9, mz = Z0 + 0.3, tiers = [[0.62, 0.34, 3, 0.5], [1.18, 0.30, 2, 0.46]];
+        /* v17.1 (Chad: "See how the mask penetrate through the platform?"):
+           the two tiers overlapped — the upper box stood over all but the
+           front 6 cm of the lower one's top, so the front row of masks stood
+           half inside the upper tier's face — and every mask stood 2 cm into
+           its tier's gilt lip. A real STEP now (the lower tier 0.70 deep, the
+           upper 0.30 on its back half), each mask on the lip's top and inside
+           its own step's depth. */
+        const MX = -1.9, mz = Z0 + 0.3, tiers = [[0.62, 0.70, 0.07], [1.18, 0.30, -0.13]];
         for (let t = 0; t < 2; t++) {
-          const [top, depth] = tiers[t];
-          box(2.1 - t * 0.6, top, depth, MX, F + top / 2, mz + (t ? -0.02 : 0.02), t ? matRedD : matRed, roomG, false);
-          box(2.14 - t * 0.6, 0.04, depth + 0.04, MX, F + top + 0.02, mz + (t ? -0.02 : 0.02), matGold, roomG, false);
+          const [top, depth, cz] = tiers[t];
+          box(2.1 - t * 0.6, top, depth, MX, F + top / 2, mz + cz, t ? matRedD : matRed, roomG, false);
+          box(2.14 - t * 0.6, 0.04, depth + 0.04, MX, F + top + 0.02, mz + cz, matGold, roomG, false);
         }
-        const spots = [[MX - 0.68, 0.64, 0.12, 0.66], [MX, 0.64, 0.12, 0.72], [MX + 0.68, 0.64, 0.12, 0.66], [MX - 0.34, 1.20, -0.04, 0.62], [MX + 0.34, 1.20, -0.04, 0.62]];
+        const spots = [[MX - 0.68, 0.66, 0.22, 0.66], [MX, 0.66, 0.22, 0.72], [MX + 0.68, 0.66, 0.22, 0.66], [MX - 0.34, 1.22, -0.13, 0.62], [MX + 0.34, 1.22, -0.13, 0.62]];
         const heads = [];
         for (const [x, y, dz, h] of spots) {
           const hd = new THREE.Group(); hd.position.set(x, F + y, mz + dz); roomG.add(hd);
@@ -1209,7 +1223,7 @@
             roomG.add(m); q.hd.visible = false;
           });
         }).catch(err => { console.warn('khonmask failed to load', err); ctx.loadFail && ctx.loadFail('khonmask', err); });
-        solids.push(hid(box(2.1, 1.4, 0.4, MX, F + 0.7, mz, matProxy, roomG, false)));
+        solids.push(hid(box(2.1, 1.4, 0.72, MX, F + 0.7, mz + 0.07, matProxy, roomG, false)));
       }
       // the waiting mat, a cushion, a low table with a jug and two cups
       {
@@ -1673,22 +1687,15 @@
       cap.position.set(BELL.x, 2.95, BELL.z); world.add(cap);
       box(1.7, 0.08, 0.08, BELL.x, 3.15, BELL.z, matWoodD);
     }
-    // potted bougainvillea along the sala's front and the path
+    /* the bowls of lotus along the temple's base and the path (v17.1, Chad:
+       "Remove all of these green/pink plants you created ... Replace with the
+       lotus model from the asset pack" — the potted bougainvillea, a ball of
+       green with pink spheres, is gone; the kit's footed lotus bowl stands in
+       each spot, its blocker the pot's) */
     {
-      const pot = new THREE.MeshStandardMaterial({ color: 0x9b4a2a, roughness: 0.9 });
-      const bloom = [0xd9337a, 0xe0569a, 0xc02468].map(c => new THREE.MeshStandardMaterial({ color: c, roughness: 0.9 }));
-      const leaf = new THREE.MeshStandardMaterial({ color: 0x3f6b35, roughness: 0.9 });
-      for (const [x, z] of [[-4.4, 0.95], [-6.2, 0.95], [4.4, 0.95], [6.2, 0.95], [-2.8, 8.6], [2.8, 8.6]]) {   // (v16.9: along the temple's base)
-        cyl(0.3, 0.22, 0.46, x, 0.23, z, pot, 12);
-        const mound = new THREE.Mesh(new THREE.SphereGeometry(0.34, 12, 8), leaf);
-        mound.scale.set(1, 0.8, 1); mound.position.set(x, 0.72, z); world.add(mound);
-        for (let k = 0; k < 22; k++) {
-          const a = hash(k, x * 3) * Math.PI * 2, el = hash(k, z * 5) * 1.2, r = 0.32;
-          const b = new THREE.Mesh(new THREE.SphereGeometry(0.06 + hash(k + x, 2) * 0.04, 6, 5), bloom[k % 3]);
-          b.position.set(x + Math.cos(a) * Math.cos(el) * r, 0.72 + Math.sin(el) * r * 0.85, z + Math.sin(a) * Math.cos(el) * r); world.add(b);
-        }
-        solids.push(cyl(0.3, 0.3, 0.5, x, 0.25, z, pot, 8));
-        solids[solids.length - 1].visible = false;
+      for (const [x, z] of [[-4.4, 0.95], [-6.2, 0.95], [4.4, 0.95], [6.2, 0.95], [-2.8, 8.6], [2.8, 8.6]]) {
+        thai('lotusbowl', x, 0, z, { s: 0.72, ry: x * 1.7 + z });
+        solids.push(hid(cyl(0.36, 0.36, 0.6, x, 0.3, z, matProxy, 8)));
       }
     }
 
@@ -1844,9 +1851,8 @@
       const tail = new THREE.Mesh(new THREE.PlaneGeometry(0.12, 0.62), new THREE.MeshStandardMaterial({ color: 0xe06a9a, roughness: 0.85, side: THREE.DoubleSide }));
       tail.position.set(BODHI.x - 0.2, 0.98, BODHI.z + 0.22); tail.rotation.set(0.15, -0.8, 0.1); world.add(tail);
       tungs.push({ m: tail, ph: 3.1, tail: true });
-      // and a small vase of lotus on the soil
-      cyl(0.05, 0.04, 0.14, BODHI.x + 0.5, 0.63, BODHI.z + 0.6, matGold, 10);
-      for (let k = 0; k < 3; k++) { const b = new THREE.Mesh(new THREE.SphereGeometry(0.035, 8, 6), new THREE.MeshStandardMaterial({ color: 0xf2b6c6, roughness: 0.6 })); b.scale.set(1, 1.5, 1); b.position.set(BODHI.x + 0.46 + k * 0.04, 0.8 + (k % 2) * 0.03, BODHI.z + 0.6); world.add(b); }
+      // and a small bowl of lotus on the soil (v17.1: the kit's, in place of three pink spheres)
+      thai('lotusbowl', BODHI.x + 0.5, 0.56, BODHI.z + 0.6, { s: 0.28, ry: 0.6 });
     }
 
     /* ---------------------------------------- v16.6 · THE GARDEN, FROM THE KIT
@@ -1858,19 +1864,23 @@
        leaf you walk into is a leaf; a trunk you walk through is a bug); a jar
        brings one its own size. */
     {
+      /* v17.1, Chad: "Why are there so many plant types all over? Just
+         standardize everything to use the same shortest bush all over the
+         temple grounds" — every spot is the kit's clipped hedge now (1.0 m, the
+         shortest bush in the pack), its long side laid along the wall it
+         stands against (the hedge is 2.2 m along its own z) */
+      const ALONG_X = Math.PI / 2, ALONG_Z = 0;
       const P = [
         // the south wall, west of the gate
-        ['elephear', -12.6, 14.15, 0.3, 1.0], ['fern', -11.0, 14.25, 0, 1.0], ['banana', -8.0, 14.2, 1.1, 1.0, 0.18],
-        ['travpalm', -5.8, 14.35, 0, 0.9, 0.15], ['elephear', -4.3, 14.15, 2.0, 0.8],
+        [-12.6, 14.15, ALONG_X], [-10.4, 14.15, ALONG_X], [-8.0, 14.15, ALONG_X], [-5.8, 14.15, ALONG_X],
         // the south wall, east of the gate
-        ['hedge', 3.9, 14.3, Math.PI / 2, 1.0], ['fern', 7.9, 14.2, 0.7, 0.9],
+        [3.9, 14.3, ALONG_X], [7.9, 14.2, ALONG_X],
         // the west wall
-        ['banana', -14.25, 4.2, 0.4, 1.1, 0.18], ['fern', -14.2, 7.4, 2.2, 1.0], ['travpalm', -14.35, 10.6, Math.PI / 2, 1.0, 0.15],
-        ['elephear', -14.1, 12.9, 1.2, 0.9], ['elephear', -14.1, -4.7, 0.2, 0.85],
+        [-14.2, 4.2, ALONG_Z], [-14.2, 7.4, ALONG_Z], [-14.2, 10.6, ALONG_Z], [-14.2, 12.9, ALONG_Z], [-14.2, -4.7, ALONG_Z],
         // between the sala and the ubosot's flank
-        ['banana', 9.3, -10.4, 2.6, 1.05, 0.18], ['travpalm', 9.6, -6.6, Math.PI / 2, 0.95, 0.15], ['fern', 9.3, -2.6, 1.4, 1.0],
+        [9.4, -10.4, ALONG_Z], [9.4, -6.6, ALONG_Z], [9.4, -2.6, ALONG_Z],
       ];
-      for (const [k, x, z, ry, sc, trunk] of P) thai(k, x, 0, z, { s: sc, ry, block: trunk ? [trunk, 1.6] : null });
+      for (const [x, z, ry] of P) thai('hedge', x, 0, z, { s: 0.9, ry });
       // the water jars: a big glazed ong by the gate with two clay pots, and two at the kuti
       thai('waterjar', -2.4, 0, 12.95, { s: 1.0, ry: 0.4, block: [0.6, 1.1] });
       thai('claypot', -3.55, 0, 13.35, { s: 0.9, block: [0.3, 0.7] });
@@ -2236,7 +2246,7 @@
     /* HE SITS RAISED — on a lacquered block on the dais, so the man in front
        of him looks UP at him when he turns round (CP3: level with the stool,
        the decision opened on the top of his head) */
-    const AJ_RISE = 0.36;
+    const AJ_RISE = 0.38;          // v17.1: the footrest's gilt top (seatOnSkin puts his soles on it)
     /* v16.8: CHAD'S AJARN (tools/prepmonk.mjs, as the monk: his skin weights
        diffused, normals shared across the seams) — tattooed, in white, a
        top-knot and beads. His own takes (Chad's direction): Sitting_Answering_
@@ -2247,8 +2257,9 @@
     const ajarn = mkRig('ajarn', { x: AJ.x, y: DAIS_TOP + AJ_RISE, z: AJ.z, ry: 0, height: 1.68,
                                    sizeOn: 'Walking', sizeAt: 0, idle: AJ_WORK, seated: true,
                                    then: (r) => {
-                                     seatOnSkin(r, ajSeat);
-                                     r.model.traverse(o => { if (o.isBone && /RightHand(_\d+)?$/.test(o.name) && !r.hand) r.hand = o; });
+                                     seatOnSkin(r, ajSeat, [AJ_WORK, AJ_BLESS, AJ_REST], () => r.play(AJ_WORK, 1, 0));
+                                     r.model.traverse(o => { if (o.isBone && /RightHand(_\d+)?$/.test(o.name) && !r.hand) r.hand = o;
+                                                             if (o.isBone && /RightHandMiddle\d/.test(o.name) && !r.tip) r.tip = o; });
                                    } });
     const ajSeat = dais.children.find(c => c.geometry && c.geometry.parameters && c.geometry.parameters.width === 0.62);
     /* the seat goes under the hips: its top 0.10 below the hip joint, centred
@@ -2290,27 +2301,105 @@
       });
       return lo;
     }
-    function seatOnSkin(r, seat) {
+    /* v17.1 · THE THRONE, BUILT ROUND HIM (Chad: "the monk is floating and
+       his feet cutting into the platform, cant you redesign the chair or
+       platform to fit him properly?" — and the same of the Ajarn). Two
+       measures were wrong. The seat's height was read from the LOWEST skin
+       near his hips, and on a man in a robe that is the cloth hanging
+       between his knees — 15 cm under where he actually sits, so the seat
+       stood a hand's width under him and he hovered over it. And the
+       footrest's gold lip stood 2 cm over the height his soles were put at,
+       and was only as deep as a stand-in's feet. Now every take he sits in
+       is measured (posed skin, every frame of a few): the soles go on the
+       footrest's top; the seat's cushion top is the middle of the takes'
+       SEAT (the skin behind the hip joint, where he sits — the
+       cushion takes the few centimetres between them, as a cushion does);
+       the seat runs from behind him to a hand short of his knees; the
+       footrest from behind the seat to past his toes; and a back stands
+       just clear of his back. */
+    function seatOnSkin(r, seat, takes, restore) {
       if (!r.hips || !seat) return;
-      r.model.updateMatrixWorld(true);
-      // the soles on the floor he sits over
-      const feet = skinLow(r);
-      if (isFinite(feet)) { r.model.position.y += r.group.position.y - feet; r.model.updateMatrixWorld(true); }
-      // the underside of the thighs, in a box round the hips (he faces his +z)
-      r.hips.getWorldPosition(_v);
-      const hx = _v.x, hy = _v.y, hz = _v.z, fwd = new THREE.Vector3(0, 0, 1).applyQuaternion(r.group.quaternion);
-      const under = skinLow(r, p => {
-        const dx = p.x - hx, dz = p.z - hz, along = dx * fwd.x + dz * fwd.z, side = Math.abs(dx * fwd.z - dz * fwd.x);
-        return side < 0.22 && along > -0.18 && along < 0.22 && p.y < hy + 0.05 && p.y > hy - 0.45;
-      });
-      const cush = seat.userData.cushion ? 0.06 : 0;              // the cushion lies ON the seat: its top is what he sits on
-      const topW = isFinite(under) ? under - cush - 0.005 : hy - 0.10;
-      const local = seat.parent.worldToLocal(new THREE.Vector3(hx, topW, hz));
-      const top = local.y, h = Math.max(0.12, top - (seat.userData.base || 0));
-      seat.scale.y = h / seat.geometry.parameters.height;
-      seat.position.set(local.x, top - h / 2, local.z);
-      if (seat.userData.cushion) seat.userData.cushion.position.set(local.x, top + 0.03, local.z);
+      const U = seat.userData, P = seat.parent;
+      const fwd = new THREE.Vector3(0, 0, 1).applyQuaternion(r.group.quaternion);
+      const sides = new THREE.Vector3(fwd.z, 0, -fwd.x);
+      const sample = () => {
+        r.model.updateMatrixWorld(true);
+        r.hips.getWorldPosition(_v);
+        const hx = _v.x, hy = _v.y, hz = _v.z;
+        const m = { sole: Infinity, seat: Infinity, toe: -Infinity, side: 0, back: Infinity, hx, hz };
+        const pts = [];
+        r.model.traverse(o => {
+          if (!o.isSkinnedMesh) return;
+          o.skeleton.update();
+          const n = o.geometry.attributes.position.count;
+          for (let i = 0; i < n; i += 6) {
+            o.getVertexPosition(i, _sv); _sv.applyMatrix4(o.matrixWorld);
+            const dx = _sv.x - hx, dz = _sv.z - hz, along = dx * fwd.x + dz * fwd.z, side = dx * sides.x + dz * sides.z;
+            pts.push(_sv.y, along, side);
+            if (_sv.y < m.sole) m.sole = _sv.y;
+            // where he sits: the skin under and just behind the hip joint
+            if (Math.abs(side) < 0.2 && along > -0.22 && along < 0.04 && _sv.y < hy + 0.05 && _sv.y > hy - 0.45 && _sv.y < m.seat) m.seat = _sv.y;
+          }
+        });
+        for (let i = 0; i < pts.length; i += 3) {
+          const y = pts[i], along = pts[i + 1], side = pts[i + 2];
+          if (y < m.sole + 0.14) { if (along > m.toe) m.toe = along; m.side = Math.max(m.side, Math.abs(side)); }
+          if (Math.abs(side) < 0.24 && y > m.seat + 0.14 && y < m.seat + 0.62 && along < m.back) m.back = along;
+        }
+        return m;
+      };
+      const all = [], seats = [];
+      for (const take of (takes || []).filter(t => r.acts && r.acts[t])) {
+        const s = [];
+        for (const k of [0, 0.2, 0.4, 0.6, 0.8]) { r.play(take, 1, 0, false, k); r.mixer.update(0); const m = sample(); s.push(m.seat); all.push(m); }
+        seats.push(s.reduce((a, b) => a + b, 0) / s.length);
+      }
+      if (restore) { r.cur = null; restore(); r.mixer.update(0); }
+      const cur = sample(); if (!all.length) { all.push(cur); seats.push(cur.seat); }
+      // the soles on the footrest he sits over (the group's height IS its top)
+      if (isFinite(cur.sole)) {
+        const dy = r.group.position.y - cur.sole; r.model.position.y += dy;
+        for (const m of all) { m.sole += dy; m.seat += dy; }
+        for (let i = 0; i < seats.length; i++) seats[i] += dy;
+      }
+      const cushTop = (Math.min(...seats) + Math.max(...seats)) / 2;
+      const toe = Math.max(...all.map(m => m.toe)), wide = Math.max(...all.map(m => m.side));
+      const back = Math.min(...all.map(m => m.back));
+      const hx = cur.hx, hz = cur.hz;
+      const toL = (along, y) => P.worldToLocal(new THREE.Vector3(hx + fwd.x * along, y, hz + fwd.z * along));
+      const base = U.base || 0, CU = 0.08;
+      // the seat: from 0.10 behind his back's line to a hand short of his knees
+      const knee = Math.max(...all.map(m => m.toe)) - 0.2;
+      const s0 = Math.max(isFinite(back) ? back - 0.03 : -0.28, -0.32), s1 = Math.min(0.42, Math.max(0.2, knee - 0.12));
+      const top = P.worldToLocal(new THREE.Vector3(hx, cushTop - CU, hz)).y;
+      const h = Math.max(0.12, top - base), mid = toL((s0 + s1) / 2, 0);
+      const depth = s1 - s0;
+      seat.scale.set(1, h / seat.geometry.parameters.height, depth / seat.geometry.parameters.depth);
+      seat.position.set(mid.x, base + h / 2, mid.z);
+      if (U.seatLip) { U.seatLip.scale.set(1, 1, (depth + 0.02) / U.seatLip.geometry.parameters.depth); U.seatLip.position.set(mid.x, top - 0.012, mid.z); }
+      if (U.cushion) {
+        U.cushion.scale.set(1, CU / U.cushion.geometry.parameters.height, (depth - 0.02) / U.cushion.geometry.parameters.depth);
+        U.cushion.position.set(mid.x, top + CU / 2, mid.z);
+      }
+      // the footrest: the group's height, under the seat and past his toes
+      if (U.riser) {
+        const fy = P.worldToLocal(new THREE.Vector3(hx, r.group.position.y, hz)).y;
+        const f0 = s0 - 0.04, f1 = Math.max(s1 + 0.1, toe + 0.14), fm = toL((f0 + f1) / 2, 0), W = Math.max(1.0, wide * 2 + 0.16);
+        const rh = fy - 0.04 - base;
+        U.riser.scale.set(W / 1.0, rh / U.riser.geometry.parameters.height, (f1 - f0) / U.riser.geometry.parameters.depth);
+        U.riser.position.set(fm.x, base + rh / 2, fm.z);
+        U.riserTop.scale.set((W + 0.04) / 1.04, 1, (f1 - f0 + 0.04) / U.riserTop.geometry.parameters.depth);
+        U.riserTop.position.set(fm.x, fy - 0.02, fm.z);
+      }
+      // the back, just clear of his own
+      if (U.back && isFinite(back)) {
+        const bp = toL(s0 - 0.03, 0), bh = 0.6;
+        U.back.position.set(bp.x, top + CU + bh / 2 - 0.04, bp.z);
+        U.backTop.position.set(bp.x, top + CU + bh - 0.02, bp.z);
+        U.back.visible = U.backTop.visible = true;
+      }
       r.seatTop = top;
+      r.seatInfo = { cushTop: +cushTop.toFixed(3), seats: seats.map(v => +v.toFixed(3)), toe: +toe.toFixed(3), back: +back.toFixed(3), s0: +s0.toFixed(3), s1: +s1.toFixed(3) };
     }
 
     /* THE MONK (v16.1) — on the dais that was the Ajarn's: the botak recruit,
@@ -2373,10 +2462,11 @@
     const monk = mkRig('monk', { x: MON.x, y: MD_TOP + AJ_RISE, z: MON.z, ry: MD.ry, height: 1.68,   // v16.9: facing the hall from the east wall
                                   sizeOn: 'Walking', sizeAt: 0, idle: MONK_REST, at: 0, seated: true,
                                   then: (r) => {
-                                    seatOnSkin(r, monkD.seat);
+                                    seatOnSkin(r, monkD.seat, [MONK_REST, MONK_TALK], () => r.play(MONK_REST, 1, 0, false, 0));
                                     r.model.traverse(o => {
                                       if (!o.isBone) return;
                                       if (/RightHand(_\d+)?$/.test(o.name) && !r.hand) r.hand = o;
+                                      if (/RightHandMiddle\d/.test(o.name) && !r.tip) r.tip = o;
                                     });
                                   } });
     /* a take for the length of a line, then back to rest. The rest IS the
@@ -2866,6 +2956,14 @@
     let monkArmK = 0, monkArmFlick = 0;
     const _qa = new THREE.Quaternion(), _qp = new THREE.Quaternion(), _qw = new THREE.Quaternion(), _ax = new THREE.Vector3(1, 0, 0);
     const _hp = new THREE.Vector3();
+    /* a point IN a hand: k of the way from the wrist (the hand bone) to the
+       middle fingertip — the fingers' grip, not the wrist (v17.1) */
+    function handGrip(r, k, out) {
+      r.hand.getWorldPosition(out);
+      if (r.tip) { r.tip.getWorldPosition(_tg); out.lerp(_tg, k); }
+      return out;
+    }
+    const _tg = new THREE.Vector3(), _wUp = new THREE.Vector3(0, 0.03, 0);
     function monkArmPre() { if (monk.arm && monk.armWrote) monk.arm.quaternion.copy(monk.armWrote); }
     function monkArmPost(wdt) {
       const want = blessing && blessing.chantAt >= 0 && dayClock.t - blessing.chantAt < FLICKS[2] + 1.6 ? 1 : 0;
@@ -2886,10 +2984,23 @@
       }
       // the whisk: in his hand while he blesses, across the bowl when not
       if (monk.hand && monkArmK > 0.02) {
-        monk.hand.getWorldPosition(_hp);
-        whisk.position.copy(_hp);
+        /* v17.1 (Chad: "Why is the stick item on his hand like that? It
+           makes no sense"): it hung off the WRIST bone pointing at the lens,
+           a bundle floating beside a hand that was not holding it. His rig has
+           no finger bones (one tip bone), so it cannot close a fist round a
+           handle, and his takes hold the palms up — so the whisk LIES ACROSS
+           THE OPEN PALM, its bound handle at the middle of the palm and the
+           stalks running out past the fingertips the way the hand points, as a
+           loosely held brush does; each throw of water tips the stalks up
+           toward the one being blessed. */
+        handGrip(monk, 0.42, _hp);
+        monk.hand.getWorldPosition(_to);
+        const fdir = _hp.clone().sub(_to).normalize();
         camera.getWorldPosition(_to);
-        whisk.lookAt(_to.x, _hp.y + 0.35 + monkArmFlick * 0.3, _to.z);
+        const toCam = _to.sub(_hp).setY(0).normalize();
+        const dir = fdir.clone().addScaledVector(new THREE.Vector3(0, 1, 0), 0.22 + monkArmFlick * 0.8).addScaledVector(toCam, monkArmFlick * 0.3).normalize();
+        whisk.position.copy(_hp).add(_wUp).addScaledVector(dir, -0.04);
+        whisk.lookAt(whisk.position.clone().add(dir));
       } else {
         const wr = mdW(MONL.x + 0.42 - 0.14, MONL.z + 0.62);           // v16.9: across the bowl, in the turned dais's frame
         whisk.position.set(wr.x, bowlPos.y + 0.07, wr.z);
@@ -3169,8 +3280,14 @@
            the butt IN his hand, the tip on the man's back 6 cm off the skin
            and driven in on each strike; the rod keeps to between 0.45 and
            1.1 of its length as his hand moves with the take */
-        ajarn.hand.getWorldPosition(_hp);
+        /* v17.1 (Chad: "Fix the rod to his fingers not his wrist"): the hand
+           bone IS the wrist; the rod is gripped in the fingers, 60 % of the
+           way from the wrist to the middle fingertip, its butt standing 6 cm
+           out of the back of the grip as a held rod's does */
+        handGrip(ajarn, 0.6, _hp);
         const aim = tip.clone().addScaledVector(tip.clone().sub(_hp).normalize(), -0.06 + strikeK * 0.06);
+        const dir = aim.clone().sub(_hp).normalize();
+        _hp.addScaledVector(dir, -0.06);
         const L = Math.min(1.1, Math.max(0.45, _hp.distanceTo(aim) / 0.74));
         rodG.position.copy(_hp); rodG.scale.set(1, 1, L); rodG.lookAt(aim);
       } else {
@@ -4219,13 +4336,18 @@ vec3 frameCol(float d, vec2 q, float w){ float t = d / w;
          the gold stencil under it, and a gold foot */
       column: `
         vec2 q = vec2(abs(n.x) > abs(n.z) ? vMP.z : vMP.x, vMP.y);
+        /* v17.1, Chad: first "The pillars should be red all over", then, on
+           seeing it, "better for the pillar to be white instead of red, now it
+           looks like a chinese temple". White limewash, gold only: the gilt
+           lotus capital, a gold ring, a band of gold stencil on the white, a
+           gold rule, a gold line over the gilt foot — no red on a pillar. */
         c = limew(q); aok = 0.4;
         if (dT < 3.25) { float pet = smoothstep(0.30, 0.45, abs(fract(q.x / 0.95) - 0.5)); c = gilt(q) * mix(1.0, 0.72, pet); gAmt = 1.0; }
-        else if (dT < 3.6) { c = lacq(q); lAmt = 1.0; }
-        else if (dT < 7.0) { float s = stencil(vec2(q.x / 1.15, (dT - 3.6) / 1.15)); c = mix(lacq(q), gilt(q), s); gAmt = s; lAmt = 1.0 - s; }
+        else if (dT < 3.6) { c = gilt(q) * 0.8; gAmt = 1.0; }
+        else if (dT < 7.0) { float s = stencil(vec2(q.x / 1.15, (dT - 3.6) / 1.15)); c = mix(limew(q), gilt(q), s); gAmt = s; }
         else if (dT < 7.4) { c = gilt(q); gAmt = 1.0; }
-        if (dB < 0.7) { c = gilt(q); gAmt = 1.0; lAmt = 0.0; }
-        else if (dB < 1.05) { c = lacq(q); gAmt = 0.0; lAmt = 1.0; }`,
+        if (dB < 0.7) { c = gilt(q); gAmt = 1.0; }
+        else if (dB < 0.82) { c = gilt(q) * 0.85; gAmt = 1.0; }`,
       /* the brackets from the flank columns and the tie beams across the
          gables: red lacquer, the gold stencil on their faces, gilt arrises */
       beam: `
@@ -4250,11 +4372,13 @@ vec3 frameCol(float d, vec2 q, float w){ float t = d / w;
         if (face || abs(n.z) < 0.3) { c = gilt(q); gAmt = 1.0; } else { c = lacq(q) * 0.85; lAmt = 1.0; }`,
       /* the bargeboards' inner layer: green and blue glass mosaic with gold chips */
       mosaic: `
-        vec2 q = vec2(vMP.x, vMP.y) / 0.42; vec2 cell = floor(q); float hc = h21(cell);
+        vec2 q = vec2(vMP.x, vMP.y) / 0.22; vec2 cell = floor(q); float hc = h21(cell);
         vec2 f = fract(q); float grout = smoothstep(0.0, 0.08, f.x) * smoothstep(0.0, 0.08, 1.0 - f.x) * smoothstep(0.0, 0.08, f.y) * smoothstep(0.0, 0.08, 1.0 - f.y);
-        vec3 glass = hc > 0.88 ? GOLD : hc > 0.55 ? vec3(0.03, 0.20, 0.10) : hc > 0.3 ? vec3(0.04, 0.12, 0.28) : vec3(0.05, 0.28, 0.16);
+        /* v17.1: one glass, small chips that vary only in tone — the gold and
+           blue chips of v17.0 made a staircase of the bargeboard's diagonal */
+        vec3 glass = vec3(0.04, 0.22, 0.13) * (0.8 + 0.4 * hc);
         float k = aaK(q);
-        c = mix(vec3(0.05, 0.18, 0.14), glass * mix(0.55, 1.0, grout), k); gAmt = hc > 0.88 ? k : 0.0; lAmt = 1.0 - gAmt;
+        c = mix(vec3(0.045, 0.21, 0.125), glass * mix(0.7, 1.0, grout), k); gAmt = 0.0; lAmt = 1.0;
         bool front = vMP.z > -50.0; bool face = front ? n.z > 0.3 : n.z < -0.3;
         if (!face) { c = lacq(q) * 0.85; gAmt = 0.0; lAmt = 1.0; }`,
       /* the roof: orange terracotta, two rows of green glaze along the eaves,
@@ -4341,6 +4465,10 @@ vec3 frameCol(float d, vec2 q, float w){ float t = d / w;
             }
           } else if (abs(n.z) > 0.5 && (vMP.z > -25.0 || vMP.z < -78.0)) {
             fd = doorSD(vec2(vMP.x, vMP.y));
+            /* v17.1: the end walls above the doors' carving — the white wedges
+               Chad found between the gable's valances — red, the gold stencil */
+            if (vMP.y > 50.5) { float s = stencil(wq / 1.6); c = mix(lacq(wq), gilt(wq), s); gAmt = s; lAmt = 1.0 - s; tHk = 0.0;
+              if (vMP.y < 51.0) { c = gilt(wq); gAmt = 1.0; lAmt = 0.0; } }
           }
           if (fd > 0.0 && fd < 1.05) { c = frameCol(fd, wq, 1.05); tHk = 0.0; }
           /* the plinth band along the foot of the walls */
@@ -4350,8 +4478,10 @@ vec3 frameCol(float d, vec2 q, float w){ float t = d / w;
       frame: `
         vec2 q = tri(vMP, n);
         if (abs(n.x) > 0.5 && abs(vMP.x) > 26.0) { float fd = winSD(vec2(vMP.z, vMP.y)); c = frameCol(max(fd, 0.0), vec2(vMP.z, vMP.y), 1.05); }
-        else if (abs(n.z) > 0.5) { float r = smoothstep(0.25, 0.45, ao); c = mix(lacq(q), gilt(q), max(r, 0.6)); gAmt = max(r, 0.6); lAmt = 1.0 - gAmt; }
-        else { c = lacq(q); lAmt = 1.0; }`,
+        else {                                               // the doors' surrounds, front and back (v17.1: gilt all over, like the back door's)
+          float r = smoothstep(0.18, 0.40, ao); float g = mix(0.25, 1.0, r);
+          c = mix(lacq(q), gilt(q) * (abs(n.z) > 0.5 ? 1.0 : 0.9), g); gAmt = g; lAmt = 1.0 - g;
+        }`,
       /* the balustrade: limewashed balusters, a gilt capping, a stone foot */
       rail: `
         vec2 q = tri(vMP, n);
@@ -4387,7 +4517,7 @@ vec3 frameCol(float d, vec2 q, float w){ float t = d / w;
     };
     const out = {};
     for (const k of Object.keys(BASE)) {
-      const m = new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.0, ...BASE[k], vertexColors: true });
+      const m = new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.0, ...BASE[k], vertexColors: true, side: THREE.DoubleSide });
       m.customProgramCacheKey = () => 'e3temple2_' + k;
       m.onBeforeCompile = sh => {
         sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vMP; varying vec3 vWN;')
@@ -4398,7 +4528,10 @@ vec3 frameCol(float d, vec2 q, float w){ float t = d / w;
           .replace('#include <color_fragment>', `
             /* COLOR_0 is (AO, the distance from the piece's top, from its bottom) / 25 — not a colour */
             float ao = vColor.r, dT = vColor.g * 25.0, dB = vColor.b * 25.0;
-            vec3 n = vWN;
+            /* v17.1: drawn two-sided (the bake turned some faces inward, and a
+               one-sided face seen from behind is a hole), so the normal the
+               patterns read is the one facing the viewer */
+            vec3 n = gl_FrontFacing ? vWN : -vWN;
             ${k === 'carve' ? 'n = normalize(cross(dFdx(vMP), dFdy(vMP)));' : ''}
             vec3 c = LIME; float aok = 0.9;
             ${PAT[k]}

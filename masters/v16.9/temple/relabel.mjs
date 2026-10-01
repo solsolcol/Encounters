@@ -64,7 +64,34 @@ for (const [id, [x0, x1, y0, y1]] of Object.entries(expect)) {
 
 const out = new Document(), buf = out.createBuffer(), scene = out.createScene();
 const byPart = {};
-for (let t = 0; t < T; t++) (byPart[part[comp[t]]] ||= []).push(t);
+/* v17.1 · ONE COPY OF EVERY FACE. The v16.8 bake wrote each sloped face of
+   the roof, the gables and the capitals TWICE, facing up and facing down; the
+   temple is drawn two-sided now (the bake turned some faces the wrong way, so
+   one-sided drawing left see-through gaps — Chad's "empty space openings"),
+   and two coincident faces drawn two-sided fight over every pixel. Keep the
+   first copy of each set of three corners. */
+const seen = new Set(); let dup = 0;
+const keep = new Uint8Array(T);
+for (let t = 0; t < T; t++) {
+  const vs = [0, 1, 2].map(k => [0, 1, 2].map(a => Math.round(P[9*t+3*k+a] * 1000)).join(',')).sort().join('|');
+  if (seen.has(vs)) { dup++; continue; } seen.add(vs); keep[t] = 1;
+}
+console.log('duplicate faces dropped', dup);
+/* v17.1 · THE FRONT DOOR'S SURROUND is welded into the wall piece (the back
+   door's is its own piece, 112, and was painted gold from v17.0); measured,
+   its triangles lie in z -22.3..-19.3, x -6.7..7.5, up to y 58.1 — the back
+   one's footprint mirrored. Chad: "the frame around the main door should
+   have been gold. It was done properly on the back side door". */
+const triPart = t => {
+  const pc = part[comp[t]];
+  if (pc === 'wall') {
+    let ok = true;
+    for (let k = 0; k < 3; k++) { const x = P[9*t+3*k], y = P[9*t+3*k+1], z = P[9*t+3*k+2]; if (!(z > -22.3 && z < -19.3 && x > -6.7 && x < 7.5 && y > 33.3 && y < 58.15)) ok = false; }
+    if (ok) return 'frame';
+  }
+  return pc;
+};
+for (let t = 0; t < T; t++) if (keep[t]) (byPart[triPart(t)] ||= []).push(t);
 for (const [name, list] of Object.entries(byPart)) {
   const n = list.length * 3, pos = new Float32Array(n * 3), nrm = new Float32Array(n * 3), col = new Float32Array(n * 3);
   let o = 0;

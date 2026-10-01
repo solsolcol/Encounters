@@ -4530,6 +4530,30 @@ What the baseline contains, by release:
   `6abd8dd5989d2ee235140312`, byte-verified (193 files) before the
   harnesses. Sheet v80 exported (v44 stays the link).
   docs/V17.0-THE-TEMPLE-COLOURED.md is the build's memory.
+- **v17.1** THE OPENINGS CLOSED, THE FRONT DOOR GILDED, AND THE THRONES BUILT
+  ROUND THE MEN — Chad's eleven screenshots on v17.0. The "empty space
+  openings all over", the see-through slits down the pillars, the base's
+  see-through waist and most of the "spots missing colour" were ONE cause:
+  the bake had turned faces inward and one-sided drawing culled them. Every
+  temple material is two-sided now with the normal turned to the viewer, and
+  the bake's duplicate faces (6,817 — one-sided drawing had hidden them) are
+  dropped in `relabel.mjs` (467,079 triangles, 2.86 MB, every unique one).
+  The pillars went red at his word and then WHITE at his next ("now it looks
+  like a chinese temple"): limewash and gold only, no red on a pillar; the front
+  door's surround (welded into the wall piece in the source) moved to the
+  frame part and gilded like the back door's; the facade over it stencilled
+  red and gold; the mosaic one green glass in fine cells. The bougainvillea
+  pots go for the pack's lotus bowl; every bush on the grounds is the pack's
+  shortest hedge. THE THRONES: the monk and the Ajarn floated because the
+  seat had been measured on the robe's drape between the knees (15 cm under
+  where they sit) and their toes went past a footrest whose gilt lip stood
+  2 cm over their soles — `seatOnSkin` now measures every take each sits in
+  and builds the cushion, the seat, the footrest and a red-and-gold back
+  round him (`AJ_RISE` 0.38). The Ajarn's rod is in his FINGERS (`handGrip`
+  — a Mixamo hand bone is the wrist); the monk's whisk lies across his open
+  palm (his rig has no finger bones, his takes hold the palms up); the mask
+  stand is a real step (its tiers overlapped, so the front row stood inside
+  the upper tier). docs/V17.1-THE-OPENINGS-AND-THE-THRONES.md.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so

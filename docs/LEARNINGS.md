@@ -5079,3 +5079,27 @@ aimed at every object the change touches.**
 - **Photograph a list of asks against the shipped build.** A model prepared
   and placed in code (the masks) is not shipped until it is in a deploy —
   audit every ask in the conversation before reporting a release done.
+
+## v17.1 — the openings, and the thrones
+
+- **A hole in a baked model is usually a face turned the wrong way.** The
+  "openings", the slits down the pillars, the see-through base and most of
+  the "missing colour" were faces the bake had turned inward, culled by
+  one-sided drawing. Draw the asset two-sided and turn the normal to the
+  viewer in the shader (`gl_FrontFacing ? n : -n`) — and then drop the
+  bake's DUPLICATE faces (same three corners), which one-sided drawing had
+  been hiding and two-sided drawing makes fight (6,817 in the temple).
+- **A seat measured on a robe is measured on the cloth.** The lowest skin
+  round the hips of a robed man is the drape between his knees, 15 cm under
+  where he sits. Measure the skin UNDER AND BEHIND the hip joint, over every
+  take he sits in, and build the seat, the footrest and the back round those
+  numbers — and put the soles on the footrest's real top (its gilt lip, not
+  the box under it).
+- **A Mixamo hand bone is the WRIST.** Anything held goes at a point between
+  the hand bone and the fingertip bone (`handGrip`), never on the hand bone.
+  A rig with no finger bones cannot close a fist, so a held thing must suit
+  the hand the takes actually show (an open palm: lay it across the palm).
+- **Two stacked boxes are steps only if they do not overlap.** The mask
+  stand's upper tier covered all but 6 cm of the lower one's top, so the
+  front row stood inside the upper tier's face. A step's depth is what is
+  left in front of the next.
