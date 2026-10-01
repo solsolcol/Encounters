@@ -1613,15 +1613,37 @@
         w.position.set(UBO.x0 - 0.01, 3.1, UBO.z0 + 1.7 + i * (L - 3.4) / 4); w.rotation.y = -Math.PI / 2; world.add(w);
       }
       const uboFins = [];
-      // two tiers of roof, ridge along z, and the gables at the north and south ends
+      /* two tiers of roof, ridge along z, and the gables at the north and south ends.
+         v17.5 (Chad: "Look at the roof of the other building, fix it"): the roof
+         SITS ON THE WALLS now. It used to start at the wall top's height out at
+         the eave, so where it crossed the wall it stood 0.8 m above it, with open
+         sky between, and each slope was a zero-thickness sheet that vanished
+         when seen edge-on from the courtyard. The lower tier's eave is solved so
+         its slope meets the wall top; each slope is a slab with a dark wooden
+         underside; the upper tier rests on the lower one over a short white
+         band, as a stacked Lanna roof does. */
+      const WALL_TOP = 6.1, soffit = new THREE.MeshStandardMaterial({ color: 0x4a2c1a, roughness: 0.85 });
+      let lowerY = null;                         // the lower tier's surface height at a given half-width
       for (let t = 0; t < 2; t++) {
-        const eave = 6.1 + t * 1.7, ridge = 10.4 + t * 1.4, hw = W / 2 + 1.2 - t * 1.5, zz0 = UBO.z0 - 0.9 + t * 1.6, zz1 = UBO.z1 + 0.9 - t * 1.6;
+        const ridge = 10.4 + t * 1.4, hw = W / 2 + 1.2 - t * 1.5, zz0 = UBO.z0 - 0.9 + t * 1.6, zz1 = UBO.z1 + 0.9 - t * 1.6;
+        const over = hw - W / 2;
+        const eave = t === 0 ? (WALL_TOP + 0.08 - over * ridge / hw) / (1 - over / hw)   // the slope crosses the wall at its top
+                             : lowerY(hw) + 0.6;                                          // the upper tier over a 0.6 m band
         const rise = ridge - eave, slope = Math.hypot(rise, hw), ang = Math.atan2(rise, hw);
+        const tile = t ? matTile2 : matTile;
         for (const s of [-1, 1]) {
-          const p = new THREE.Mesh(new THREE.PlaneGeometry(slope, zz1 - zz0), t ? matTile2 : matTile);
-          p.rotation.order = 'ZYX'; p.rotation.x = -Math.PI / 2; p.rotation.z = -s * ang;   // tilted about the RIDGE (z), not turned about y
-          p.position.set(cx + s * hw / 2, (eave + ridge) / 2, (zz0 + zz1) / 2); world.add(p);
+          // a slab, not a sheet: tiles on top, wood under, a gilt edge round it
+          const p = new THREE.Mesh(new THREE.BoxGeometry(slope, 0.14, zz1 - zz0), [matGold, matGold, tile, soffit, matGold, matGold]);
+          p.rotation.z = -s * ang;               // tilted about the RIDGE (z)
+          p.position.set(cx + s * hw / 2, (eave + ridge) / 2 - 0.07 / Math.cos(ang), (zz0 + zz1) / 2);
+          p.castShadow = !LOW; p.receiveShadow = true; world.add(p);
+          if (t === 1) {
+            // the band between the tiers, from under the lower slope up to under this one
+            const dx = hw - 0.45, y0 = lowerY(dx) - 0.15, y1 = eave + 0.45 * Math.tan(ang) - 0.1;
+            box(0.12, y1 - y0, zz1 - zz0 - 0.4, cx + s * dx, (y0 + y1) / 2, (zz0 + zz1) / 2, matWall);
+          }
         }
+        if (t === 0) { const e0 = eave, r0 = ridge, h0 = hw; lowerY = (d) => e0 + (h0 - d) * (r0 - e0) / h0; }
         box(0.2, 0.22, zz1 - zz0, cx, ridge + 0.06, (zz0 + zz1) / 2, matGold);
         for (const zz of [zz0, zz1]) {
           const tri = new THREE.Shape();

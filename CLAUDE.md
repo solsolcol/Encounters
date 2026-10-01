@@ -4585,6 +4585,13 @@ What the baseline contains, by release:
   untouched); `mkRig` takes `anims: 'key'` for a second file of takes, and
   chaptertest checks it. Deploy `6abe35ff0172a837d5e6336e`, byte-verified
   (194 files).
+- **v17.5** THE HALL'S ROOF ON ITS WALLS — Chad: *"Look at the roof of the
+  other building, fix it."* The ordination hall's lower roof crossed its wall
+  line 0.8 m ABOVE the wall top (open sky between), and its slopes were
+  zero-thickness planes that vanished edge-on from the courtyard. The lower
+  eave is solved so the slope meets the wall top; the slopes are slabs with a
+  dark wooden underside; the upper tier sits on a short white band. Deploy
+  `6abebb3a11254a07b7f22ee6`, byte-verified (194 files).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
