@@ -1671,8 +1671,16 @@ body.hasTorch.chooseopen .torchBtn{display:none}
   animation:unUp .5s var(--ease) var(--d,.15s) backwards}
 .choCard:hover,.choCard:focus-visible{transform:translateY(-3px);border-color:rgba(255,200,110,.55);outline:none;
   box-shadow:0 10px 26px rgba(0,0,0,.45)}
-.choCard.on{border-color:#FFCF6E;background:linear-gradient(180deg,rgba(255,196,96,.16),rgba(255,170,60,.05));
-  box-shadow:0 0 0 1px #FFCF6E,0 0 28px rgba(255,190,90,.38),0 12px 30px rgba(0,0,0,.5)}
+.choCard.on{border-color:#FFCF6E;background:linear-gradient(180deg,rgba(255,196,96,.26),rgba(255,170,60,.08));
+  transform:translateY(-4px);
+  box-shadow:0 0 0 2px #FFCF6E,0 0 38px rgba(255,190,90,.55),0 14px 34px rgba(0,0,0,.55)}
+/* the picked card wears a gold tick in its corner */
+.choCard::after{content:"\2713";position:absolute;right:10px;top:10px;width:24px;height:24px;border-radius:50%;
+  display:grid;place-items:center;font:700 15px/1 var(--ui);color:#140f08;background:#FFCF6E;
+  opacity:0;transform:scale(.4);transition:opacity .2s,transform .25s cubic-bezier(.2,1.6,.4,1);
+  box-shadow:0 0 14px rgba(255,200,100,.7)}
+.choCard.on::after{opacity:1;transform:none}
+.choCard.on .choName{color:#FFE7B0}
 .choArt{position:relative;width:88px;height:88px;display:grid;place-items:center;border-radius:50%;
   background:radial-gradient(circle,rgba(255,214,120,.16) 0%,transparent 70%);color:#E9C77D}
 .choCard.on .choArt{color:#FFE2A0;animation:unBreathe 2.6s ease-in-out infinite}
@@ -1691,14 +1699,20 @@ body:not(.finePtr) .choNum{display:none}
 #choOk{margin:4px 0 2px;font-family:var(--ui);font-size:1rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
   color:var(--void);background:var(--bone);border:0;padding:13px 40px;cursor:pointer;
   box-shadow:0 0 0 1px rgba(255,179,103,.45),0 10px 30px rgba(0,0,0,.6);transition:background .18s,transform .18s var(--ease),opacity .2s}
-#choOk:hover:not(:disabled),#choOk:focus-visible:not(:disabled){background:var(--sodium);transform:translateY(-2px);outline:none}
-#choOk:disabled{opacity:.35;cursor:default;box-shadow:none}
+#choOk:not(:disabled){background:linear-gradient(180deg,#FFD98A,#F2B04E);
+  box-shadow:0 0 0 1px rgba(255,220,150,.8),0 0 26px rgba(255,180,80,.55),0 10px 30px rgba(0,0,0,.6);
+  animation:choWake .5s cubic-bezier(.2,1.5,.4,1)}
+@keyframes choWake{from{transform:scale(.92)}}
+#choOk:hover:not(:disabled),#choOk:focus-visible:not(:disabled){background:linear-gradient(180deg,#FFE4A8,#FFBF60);transform:translateY(-2px);outline:none}
+#choOk:disabled{opacity:.3;cursor:default;box-shadow:none;background:#6b6760}
 /* a phone: the cards stack, each a row — the drawing on the left, the words
    to the right — so three fit without the description being cut */
 @media (max-width:640px){
   .choBox{padding:16px 12px 12px;gap:8px}
   #choList{grid-template-columns:1fr;gap:8px}
-  .choCard{flex-direction:row;align-items:flex-start;text-align:left;padding:10px 10px 10px 8px;gap:10px}
+  .choCard{flex-direction:row;align-items:flex-start;text-align:left;padding:10px 32px 10px 8px;gap:10px}
+  .choCard.on{transform:none}
+  .choCard::after{right:7px;top:7px;width:21px;height:21px;font-size:13px}
   .choArt{width:58px;height:58px;flex:0 0 auto}
   .choIcon{width:50px;height:50px}
   .choText{align-items:flex-start;gap:3px}
