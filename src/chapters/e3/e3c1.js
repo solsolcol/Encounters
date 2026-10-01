@@ -3495,7 +3495,11 @@
     let lastMix = 0;
     const mixK = { chant: 0.12, music: 0 };
     function mixBeds(wdt) {
-      const st = getState(), x = yaw.position.x, z = yaw.position.z;
+      /* v17.6: the choice window and the unlock splash sit OVER the room — the
+         room keeps its sound under them (they used to read as "not play" and
+         let the music and the room tone fall away while he chose) */
+      const st0 = getState(), st = st0 === 'choose' || st0 === 'unlock' ? 'play' : st0;
+      const x = yaw.position.x, z = yaw.position.z;
       const under = inSala(x, z) ? 1 : 0;
       const room = inRoom(x, z), roofed = under || inWalk(x, z);
       const chantWant = st === 'play' || st === 'decide' ? (0.10 + 0.20 * THREE.MathUtils.clamp((x + 8) / 16, 0, 1)) * (room ? 0.3 : roofed ? 0.7 : 1) : 0.10;
