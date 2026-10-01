@@ -284,7 +284,7 @@
     const woodTex = tex(makePlanks(THREE, cnv));
     const goldTex = tex(makeGoldCarve(THREE, cnv));
     const tileTex = tex(makeRoofTiles(THREE, cnv, '#dc7b34', '#6e3a16'));   // v16.3: Thai orange terracotta, not a Chinese red
-    const tileTex2 = tex(makeRoofTiles(THREE, cnv, '#2f6a45', '#1c4029'));
+    const tileTex2 = tex(makeRoofTiles(THREE, cnv, '#8e2a1a', '#5a160d'));   // v17.3: deep red, not green
     const wallTex = tex(makeLimewash(THREE, cnv));
     const matGrass = new THREE.MeshStandardMaterial(grassTex ? { map: grassTex.map, roughnessMap: grassTex.rough, color: 0xa7b27c, roughness: 1 } : { color: 0x7d9a5c, roughness: 1 });
     const matPave  = new THREE.MeshStandardMaterial({ map: paveTex, roughness: 0.92 });
@@ -350,7 +350,7 @@
     const matMat   = new THREE.MeshStandardMaterial({ map: tex(makeReedMat(THREE, cnv)), roughness: 0.95 });
     /* v16.4: the naga in green-and-gold glass mosaic, glinting in the sun */
     const mosTex = tex(makeMosaicGreen(THREE, cnv)); mosTex.repeat.set(26, 3);
-    const matMosaic = new THREE.MeshStandardMaterial({ map: mosTex, roughness: 0.28, metalness: 0.35, emissive: 0x0a1a0e, emissiveIntensity: 0.4 });
+    const matMosaic = new THREE.MeshStandardMaterial({ map: mosTex, roughness: 0.28, metalness: 0.35, emissive: 0x1a120a, emissiveIntensity: 0.4 });
 
     const world = new THREE.Group();
     scene.add(world);
@@ -708,6 +708,9 @@
       parseOnce('naga').then(gltf => {
         if (!alive) return;
         const m = gltf.scene.clone(true);
+        /* v17.3: its green scales gold (Chad: "there is no green at thai
+           temples") — the file's own gold trim stays brighter than them */
+        m.traverse(o => { if (o.isMesh && o.material && !o.material.userData.ungreen) ungreen(o.material); });
         m.scale.setScalar(2.8); m.position.set(x, 0.5, STAIR.foot - 0.463 * 2.8);
         m.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.receiveShadow = true; } });
         world.add(m);
@@ -1546,8 +1549,7 @@
 
     /* ----------------------------------------------- the courtyard's east side
        The bodhi tree in its raised round planter with coloured cloths tied
-       round it; the spirit house on its post by the gate; a stray dog asleep
-       in the tree's shade; and across the east wall, the ubosot's long white
+       round it; the spirit house on its post by the gate; and across the east wall, the ubosot's long white
        flank with its gold windows and stacked roof. */
     {
       cyl(1.85, 1.95, 0.55, BODHI.x, 0.275, BODHI.z, matWhite, 28);
@@ -1593,28 +1595,7 @@
       const foot = new THREE.Group(); foot.position.set(SPIRIT.x, 0, SPIRIT.z); foot.rotation.y = Math.PI * 0.85; world.add(foot);
       for (let i = 0; i < 4; i++) thai('rooster', -0.33 + i * 0.22, 0, 0.5 + (i % 2) * 0.1, { s: 0.26, ry: 1.3 - i * 0.2, parent: foot, cast: false });
     }
-    // THE DOG, asleep in the planter's shade, breathing
-    const dog = new THREE.Group();
-    {
-      dog.position.set(BODHI.x - 2.1, 0, BODHI.z + 1.9); dog.rotation.y = 0.8; world.add(dog);   // (v16.9: clear of the naga's pedestal)
-      const fur = new THREE.MeshStandardMaterial({ color: 0xb9895a, roughness: 0.95 });
-      const body = new THREE.Mesh(new THREE.SphereGeometry(0.3, 14, 10), fur); body.scale.set(1.5, 0.55, 0.75);
-      body.position.set(0, 0.17, 0); dog.add(body); dog.userData.body = body;
-      const head = new THREE.Mesh(new THREE.SphereGeometry(0.13, 12, 8), fur); head.scale.set(1.2, 0.8, 0.9);
-      head.position.set(0.5, 0.11, 0.08); dog.add(head);
-      const snout = new THREE.Mesh(new THREE.SphereGeometry(0.06, 8, 6), fur); snout.scale.set(1.4, 0.7, 0.8);
-      snout.position.set(0.64, 0.08, 0.1); dog.add(snout);
-      for (const s of [-1, 1]) {
-        const ear = new THREE.Mesh(new THREE.ConeGeometry(0.045, 0.1, 6), fur);
-        ear.position.set(0.47, 0.2, 0.08 + s * 0.07); ear.rotation.z = -0.9; dog.add(ear);
-        const leg = new THREE.Mesh(new THREE.CapsuleGeometry(0.035, 0.22, 4, 6), fur);
-        leg.position.set(0.3, 0.05, 0.1 + s * 0.12); leg.rotation.z = Math.PI / 2; dog.add(leg);
-      }
-      const tail = new THREE.Mesh(new THREE.CapsuleGeometry(0.025, 0.28, 4, 6), fur);
-      tail.position.set(-0.52, 0.08, -0.12); tail.rotation.set(0, 0.6, Math.PI / 2); dog.add(tail);
-      dog.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.receiveShadow = true; } });
-      solids.push(hid(box(0.9, 0.4, 0.5, dog.position.x + 0.1, 0.2, dog.position.z, matProxy, world, false)));
-    }
+    /* v17.3: the stray dog that slept here is gone (Chad: "Remove this dog") */
 
     /* THE UBOSOT — the ordination hall. Only its west flank is ever seen, over
        the east wall: white walls on a stepped base, tall pointed windows with
@@ -1842,7 +1823,7 @@
        Coloured cloths wound round the trunk the way Thai temples do, a
        tail hanging from the knot, and small offerings on the soil */
     {
-      const cols = [0xe8912a, 0xe06a9a, 0x3f9a5a, 0xf2c230, 0xf3ecdc];
+      const cols = [0xe8912a, 0xe06a9a, 0xd8a12a, 0xf2c230, 0xf3ecdc];   // v17.3: saffron, not green
       for (let i = 0; i < 5; i++) {
         const band = new THREE.Mesh(new THREE.CylinderGeometry(0.29, 0.3, 0.13, 24, 1, true),
           new THREE.MeshStandardMaterial({ color: cols[i], roughness: 0.85, side: THREE.DoubleSide }));
@@ -3469,7 +3450,6 @@
         const c = candles[i];
         c.scale.y = 1.8 + Math.sin(t * 11 + i * 1.7) * 0.25 + Math.sin(t * 23 + i) * 0.12;
       }
-      if (dog.userData.body) dog.userData.body.scale.y = 0.55 + Math.sin(t * 1.3) * 0.025;
       if (smokeP) {
         const a = smokeP.geometry.attributes.position, seed = smokeP.userData.seed, N = seed.length;
         for (let i = 0; i < N; i++) {
@@ -4150,12 +4130,12 @@
   }
   function makeNagaScales(THREE, cnv) {
     const S = 128, [c, x] = cnv(S);
-    x.fillStyle = '#2f6a45'; x.fillRect(0, 0, S, S);
+    x.fillStyle = '#9a6618'; x.fillRect(0, 0, S, S);   // v17.3: gold, not green
     for (let row = 0; row < 10; row++) for (let col = 0; col < 10; col++) {
       const px = col * 13 + (row % 2) * 6.5, py = row * 12;
-      x.fillStyle = row % 3 ? '#3f8a58' : '#d9a63c';
+      x.fillStyle = row % 3 ? '#b88426' : '#e2b04a';
       x.beginPath(); x.arc(px, py, 6, 0, Math.PI); x.fill();
-      x.strokeStyle = '#1c4029'; x.lineWidth = 1; x.stroke();
+      x.strokeStyle = '#5a3a0c'; x.lineWidth = 1; x.stroke();
     }
     return done(THREE, c, false);
   }
@@ -4410,18 +4390,19 @@ vec3 frameCol(float d, vec2 q, float w){ float t = d / w;
         vec2 q = vec2(vMP.x + vMP.z, vMP.y);
         bool front = vMP.z > -50.0; bool face = front ? n.z > 0.3 : n.z < -0.3;
         if (face || abs(n.z) < 0.3) { c = gilt(q); gAmt = 1.0; } else { c = lacq(q) * 0.85; lAmt = 1.0; }`,
-      /* the bargeboards' inner layer: green and blue glass mosaic with gold chips */
+      /* the bargeboards' inner layer: glass mosaic (v17.3: gold, no green) */
       mosaic: `
         vec2 q = vec2(vMP.x, vMP.y) / 0.22; vec2 cell = floor(q); float hc = h21(cell);
         vec2 f = fract(q); float grout = smoothstep(0.0, 0.08, f.x) * smoothstep(0.0, 0.08, 1.0 - f.x) * smoothstep(0.0, 0.08, f.y) * smoothstep(0.0, 0.08, 1.0 - f.y);
         /* v17.1: one glass, small chips that vary only in tone — the gold and
            blue chips of v17.0 made a staircase of the bargeboard's diagonal */
-        vec3 glass = vec3(0.04, 0.22, 0.13) * (0.8 + 0.4 * hc);
+        /* v17.3: gold glass, not green (Chad: "there is no green at thai temples") */
+        vec3 glass = vec3(0.50, 0.32, 0.07) * (0.8 + 0.4 * hc);
         float k = aaK(q);
-        c = mix(vec3(0.045, 0.21, 0.125), glass * mix(0.7, 1.0, grout), k); gAmt = 0.0; lAmt = 1.0;
+        c = mix(vec3(0.47, 0.30, 0.07), glass * mix(0.7, 1.0, grout), k); gAmt = 0.55; lAmt = 0.45;
         bool front = vMP.z > -50.0; bool face = front ? n.z > 0.3 : n.z < -0.3;
         if (!face) { c = lacq(q) * 0.85; gAmt = 0.0; lAmt = 1.0; }`,
-      /* the roof: orange terracotta, two rows of green glaze along the eaves,
+      /* the roof: orange terracotta, two rows of red glaze along the eaves,
          a gold ridge; the underside teak boards; the tiers' fascias lacquer */
       roof: `
         if (n.y > 0.3) {
@@ -4435,7 +4416,7 @@ vec3 frameCol(float d, vec2 q, float w){ float t = d / w;
           float aa = 1.0 - smoothstep(0.18, 0.45, max(fwidth(row), fwidth(col)));
           shade = mix(0.82, shade, aa); tone = mix(0.9, tone, aa);
           tH = (body * (0.35 + 0.65 * smoothstep(tip, 1.0, fr)) + (1.0 - seam) * -0.25) * aa; tHk = 0.9;
-          vec3 tile = dB < 2.2 ? vec3(0.03, 0.19, 0.08) : vec3(0.62, 0.21, 0.06);
+          vec3 tile = dB < 2.2 ? vec3(0.40, 0.07, 0.04) : vec3(0.62, 0.21, 0.06);   // v17.3: the eave rows red, not green
           c = tile * shade * tone * (0.9 + 0.2 * fbm(vMP.xz * 0.08));
           lAmt = dB < 2.2 ? 0.6 : 0.0;
           if (dT < 0.7) { c = gilt(vMP.xz); gAmt = 1.0; tHk = 0.0; }
@@ -4459,7 +4440,10 @@ vec3 frameCol(float d, vec2 q, float w){ float t = d / w;
         c = limew(q); aok = 0.35;
         tH = fbm(q * 2.2) * 0.5; tHk = 0.012;
         float wt = abs(abs(vMP.x + 0.37) - 27.27);
-        bool reveal = wt < 0.83 && abs(n.x) < 0.5 && vMP.y > 39.4 && vMP.y < 54.8 && vMP.z < -23.1 && vMP.z > -80.2;
+        /* v17.3: only INSIDE an opening — the open shutters stand out from the
+           frame at this depth too, and painted as reveals they were the big gold
+           wedges Chad found beside every window */
+        bool reveal = wt < 0.83 && abs(n.x) < 0.5 && vMP.y > 39.4 && vMP.y < 54.8 && vMP.z < -23.1 && vMP.z > -80.2 && winSD(vec2(vMP.z, vMP.y)) < 0.25;
         if (n.y > 0.5 && vMP.y < 33.9) { c = floorCol(vMP); tHk = 0.0; }
         else if (wt < 0.9 && winSD(vec2(vMP.z, vMP.y)) < 0.0) {    // the mullion and anything else standing in an opening
           c = lacq(q); lAmt = 1.0; tHk = 0.0;
@@ -4507,7 +4491,9 @@ vec3 frameCol(float d, vec2 q, float w){ float t = d / w;
             fd = doorSD(vec2(vMP.x, vMP.y));
             /* v17.1: the end walls above the doors' carving — the white wedges
                Chad found between the gable's valances — red, the gold stencil */
-            if (vMP.y > 50.5) { float s = stencil(wq / 1.6); c = mix(lacq(wq), gilt(wq), s); gAmt = s; lAmt = 1.0 - s; tHk = 0.0;
+            /* v17.3: the FRONT wall stays white (Chad: "a little overdone");
+               the valances hanging over it keep their pattern */
+            if (vMP.y > 50.5 && vMP.z < -78.0) { float s = stencil(wq / 1.6); c = mix(lacq(wq), gilt(wq), s); gAmt = s; lAmt = 1.0 - s; tHk = 0.0;
               if (vMP.y < 51.0) { c = gilt(wq); gAmt = 1.0; lAmt = 0.0; } }
           }
           if (fd > 0.0 && fd < 1.05) { c = frameCol(fd, wq, 1.05); tHk = 0.0; }
@@ -4597,9 +4583,22 @@ vec3 frameCol(float d, vec2 q, float w){ float t = d / w;
     for (let i = 0; i < S; i += 32) { x.fillStyle = 'rgba(90,60,35,0.35)'; x.fillRect(i, 0, 1, S); }
     return done(THREE, c, true);
   }
+  /* v17.3: a texel whose green stands over its red and blue is turned to a
+     deep gold of the same brightness; everything else is untouched */
+  function ungreen(mat) {
+    mat.userData.ungreen = true;
+    mat.customProgramCacheKey = () => 'e3ungreen';
+    mat.onBeforeCompile = sh => {
+      sh.fragmentShader = sh.fragmentShader.replace('#include <map_fragment>', `#include <map_fragment>
+        { vec3 cg = diffuseColor.rgb; float gx = cg.g - max(cg.r, cg.b);
+          float lum = dot(cg, vec3(0.299, 0.587, 0.114));
+          diffuseColor.rgb = mix(cg, vec3(1.0, 0.68, 0.20) * lum * 1.5, smoothstep(0.0, 0.06, gx)); }`);
+    };
+    mat.needsUpdate = true;
+  }
   function makeMosaicGreen(THREE, cnv) {
     const S = 128, [c, x] = cnv(S), r = rng(83);
-    const cols = ['#2f7a4a', '#3f9a5a', '#26603c', '#4aa86a', '#2a6e48'];
+    const cols = ['#b07a22', '#c98f2c', '#9a6618', '#d9a63c', '#a87020'];   // v17.3: gold glass, not green
     for (let yy = 0; yy < S; yy += 4) for (let xx = 0; xx < S; xx += 4) {
       x.fillStyle = r() < 0.12 ? '#d9a63c' : cols[Math.floor(r() * cols.length)]; x.fillRect(xx, yy, 4, 4);
     }

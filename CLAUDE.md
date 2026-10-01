@@ -4563,6 +4563,18 @@ What the baseline contains, by release:
   `seatOnSkin` records each take's offset and `rootComp()` cancels it every
   frame, weighted by the takes playing — hips now move 1.5 cm between rest and
   talk (were 33). Deploy `6abe0685e57e0da715d669f7`, byte-verified.
+- **v17.3** THE DOG, THE SHUTTERS, THE FRONT WALL, AND NO GREEN — Chad's four
+  notes on v17.2. The dog is gone. The gold "overpainting" beside every side
+  window was the open SHUTTERS: they stand within the wall depth the reveal
+  paint keys on, so they were painted as reveals, almost all gold lip. The
+  reveal paint now also requires the point to be inside an opening
+  (`winSD < 0.25`). The front wall behind the porch is white up to the beams
+  (his purple marks, confirmed with him first); the valances over it and the
+  gable keep their red and gold. No green anywhere on the temple: gold glass
+  mosaic, red eave glaze, red second tiers, a saffron cloth on the bodhi, and
+  Chad's naga's green scales turned gold in the shader (`ungreen`; the file
+  untouched). The green Thao Wessuwan stays (his model). Deploy
+  `6abe174b12e36e13cc23498b`, byte-verified (193 files).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
