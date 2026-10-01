@@ -4575,6 +4575,16 @@ What the baseline contains, by release:
   Chad's naga's green scales turned gold in the shader (`ungreen`; the file
   untouched). The green Thao Wessuwan stays (his model). Deploy
   `6abe174b12e36e13cc23498b`, byte-verified (193 files).
+- **v17.4** THE STALL AUNTIE IS THE PINK-SHIRT LADY — Chad: *"i dont want to
+  repeat the same granny"*. The stall auntie was episode 1 chapter 3's granny;
+  she is the tang-ki audience's pink-shirt woman now (`sitwoman`, his pick),
+  seated on a stool behind the counter. Her file has no talking take, so the
+  monk's `Sitting_Answering_Questions` is retargeted onto her (a `meshy` map
+  in `tools/retarget.mjs`; `masters/v17.4/talkonly.mjs` keeps her seated hips
+  height and writes a 226 KB talk-only `sitwomantalk.glb`, chapter 3's file
+  untouched); `mkRig` takes `anims: 'key'` for a second file of takes, and
+  chaptertest checks it. Deploy `6abe35ff0172a837d5e6336e`, byte-verified
+  (194 files).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so

@@ -115,12 +115,13 @@
     /* the stand-in cast (docs/E3-MODELS.md: Chad is finding the real ones):
        the Ajarn is the admin tee in a white shirt, seated; the MONK (v16.1)
        is the botak recruit in saffron, seated; the stall auntie
-       is the granny with her own idle and talking takes; the man under the
+       (v17.4) is the pink-shirt woman from the tang-ki's audience, seated,
+       talking on the monk's take retargeted onto her; the man under the
        needle is the botak recruit; the man by the walkway is the standing
        man; the
        amulet in the film is episode 1's Phiboon (the auntie gave it to him
        when he was a boy, a callback nobody has to notice). */
-    assets: ['admintee', 'botak', 'granny', 'standman', 'phiboon', 'tree1', 'tree2', 'tree3', 'tree4', 'thaikit', 'wessred', 'wessgreen', 'naga', 'monk', 'ajarn', 'temple', 'slipper', 'khonmask'],
+    assets: ['admintee', 'botak', 'sitwoman', 'sitwomantalk', 'standman', 'phiboon', 'tree1', 'tree2', 'tree3', 'tree4', 'thaikit', 'wessred', 'wessgreen', 'naga', 'monk', 'ajarn', 'temple', 'slipper', 'khonmask'],
 
     /* THE SOUND. `watamb` is the dawn temple (birds, a far road, a broom on
        stone, wind chimes); `e3chant` is the monks' morning chanting from the
@@ -2126,6 +2127,12 @@
           rig.mixer = new THREE.AnimationMixer(g);
           rig.acts = {};
           for (const clip of gltf.animations) rig.acts[clip.name] = rig.mixer.clipAction(clip);
+          /* v17.4: `anims` names a second file of takes for this rig (no mesh,
+             bound to the clone by bone name — the motheranim precedent) */
+          if (opts.anims) parseOnce(opts.anims).then(a => {
+            if (!alive || !rig.mixer) return;
+            for (const clip of a.animations || []) if (!rig.acts[clip.name]) rig.acts[clip.name] = rig.mixer.clipAction(clip);
+          }).catch(err => { console.warn(opts.anims + ' failed to load', err); ctx.loadFail && ctx.loadFail(opts.anims, err); });
           const sizeOn = opts.sizeOn || opts.idle;
           if (sizeOn && rig.acts[sizeOn]) { rig.play(sizeOn, 1, 0, false, opts.sizeAt ?? opts.at); rig.mixer.update(0.001); }
         }
@@ -2544,9 +2551,34 @@
                                          r.group.position.x += BENCH.x - _v.x;
                                        } });
 
-    /* THE STALL AUNTIE — the granny, behind her counter, turned to the path */
-    const auntie = mkRig('granny', { x: STALL.x - 0.95, y: 0, z: STALL.z + 0.2, ry: Math.PI / 2, height: 1.55,
-                                     idle: 'Stand_and_Chat' });
+    /* THE STALL AUNTIE — v17.4: the pink-shirt woman from the tang-ki's
+       audience (Chad: "i dont want to repeat the same granny" — the granny is
+       episode 1 chapter 3's auntie), SITTING on a wooden stool behind her
+       counter on her own take, turned to the path. Her file carries no
+       talking take, so she TALKS on the monk's seated one, retargeted onto
+       her rig (`sitwomantalk`, masters/v17.4: tools/retarget.mjs … meshy, then
+       talkonly.mjs), and nods with it. The stool is built round her, under her
+       hips, once she has landed. */
+    const auntie = mkRig('sitwoman', { x: STALL.x - 1.15, y: 0.15, z: STALL.z + 0.2, ry: Math.PI / 2, height: 1.30,
+                                       seated: true, idle: 'Armature|Sit_Cross_Legged|baselayer', anims: 'sitwomantalk',
+                                       then: (r) => {
+                                         if (!r.hips) return;
+                                         r.model.updateMatrixWorld(true); r.hips.getWorldPosition(_v);
+                                         r.group.worldToLocal(_v);
+                                         const top = Math.max(0.3, _v.y - 0.11);
+                                         /* she sits 15 cm up (group y) so more of her clears the
+                                            counter; the stool's legs reach down to the paving */
+                                         const st = new THREE.Group(); st.position.set(_v.x, 0, _v.z); r.group.add(st);
+                                         const foot = -r.group.position.y, legH = top - 0.05 - foot;
+                                         cyl(0.2, 0.2, 0.05, 0, top - 0.025, 0, matWoodL, 14, st);
+                                         for (let k = 0; k < 4; k++) {
+                                           const a = k * Math.PI / 2 + Math.PI / 4;
+                                           cyl(0.022, 0.022, legH, Math.cos(a) * 0.14, foot + legH / 2, Math.sin(a) * 0.14, matWoodL, 6, st);
+                                         }
+                                         /* a stretcher between the front legs */
+                                         box(0.36, 0.03, 0.03, 0, 0.015, 0.16, matWoodL, st);
+                                         st.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.receiveShadow = true; } });
+                                       } });
     /* THE MAN BY THE WALKWAY (v16.1; v16.0's assistant, who stood by the
        Ajarn's dais watching the work) — standing at the sala's north-west
        corner, where the walkway leaves it. When the blessing is done he turns
@@ -2741,9 +2773,9 @@
 
     function talk(rig, secs) {
       rig.nod = secs;
-      if (rig === auntie && rig.acts) {
-        rig.play('Talk_Passionately', 0.85, 0.3);
-        after(secs + 0.15, () => { if (auntie.cur === 'Talk_Passionately') auntie.play('Stand_and_Chat', 1, 0.45); });
+      if (rig === auntie && rig.acts && rig.acts.Talk) {
+        auntie.play('Talk', 1, 0.35);
+        after(secs + 0.2, () => { if (auntie.cur === 'Talk') auntie.play('Armature|Sit_Cross_Legged|baselayer', 1, 0.45); });
       }
     }
 

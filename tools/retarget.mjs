@@ -81,6 +81,17 @@ const MAPS = {
     RightHandIndex1: 'ValveBiped.Bip01_R_Finger1_049', RightHandIndex2: 'ValveBiped.Bip01_R_Finger11_050',
     RightHandMiddle1: 'ValveBiped.Bip01_R_Finger2_052', RightHandMiddle2: 'ValveBiped.Bip01_R_Finger21_053',
   },
+  /* v17.4: Meshy's auto-rig (sitwoman, the pink-shirt lady) — Mixamo's bones
+     under its own names, and its spine numbered from the TOP down: Hips ->
+     Spine02 -> Spine01 -> Spine, read off the file's own hierarchy */
+  meshy: {
+    Hips: 'Hips', Spine: 'Spine02', Spine1: 'Spine01', Spine2: 'Spine',
+    Neck: 'neck', Head: 'Head',
+    LeftShoulder: 'LeftShoulder', LeftArm: 'LeftArm', LeftForeArm: 'LeftForeArm', LeftHand: 'LeftHand',
+    RightShoulder: 'RightShoulder', RightArm: 'RightArm', RightForeArm: 'RightForeArm', RightHand: 'RightHand',
+    LeftUpLeg: 'LeftUpLeg', LeftLeg: 'LeftLeg', LeftFoot: 'LeftFoot', LeftToeBase: 'LeftToeBase',
+    RightUpLeg: 'RightUpLeg', RightLeg: 'RightLeg', RightFoot: 'RightFoot', RightToeBase: 'RightToeBase',
+  },
   /* yinn — a MakeHuman/Character Creator rig, 108 bones over nine skins.
      She has NO hips bone: `spine01_117` roots the chain, and her hands are
      `wrist.L_21` / `wrist.R_47`, not anything with 'hand' in the name. The

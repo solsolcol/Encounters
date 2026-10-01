@@ -522,7 +522,12 @@ if (VOICE && Array.isArray(VOICE.LINES)) {
     const consts = Object.fromEntries([...src.matchAll(/const ([A-Z_][A-Z0-9_]*)\s*=\s*'([^']+)'/g)].map(m => [m[1], m[2]]));
     const rigOf = {};
     for (const m of src.matchAll(/(?:const|let)\s+(\w+)\s*=\s*mkRig\('(\w+)'/g)) rigOf[m[1]] = m[2];
-    const has = (k, take) => clipsOf[k] && clipsOf[k].has(take);
+    /* v17.4: a rig may carry a second file of takes (`anims: 'key'`) */
+    const animsOf = {};
+    for (const m of src.matchAll(/mkRig\('(\w+)'\s*,\s*\{([^}]*)/g)) {
+      const am = m[2].match(/\banims:\s*'(\w+)'/); if (am) animsOf[m[1]] = am[1];
+    }
+    const has = (k, take) => (clipsOf[k] && clipsOf[k].has(take)) || (animsOf[k] && clipsOf[animsOf[k]] && clipsOf[animsOf[k]].has(take));
     for (const m of src.matchAll(/mkRig\('(\w+)'\s*,\s*\{([^}]*)\}/g)) {
       const im = m[2].match(/\bidle:\s*(?:'([^']+)'|([A-Z_][A-Z0-9_]*)\b)/);
       if (!im || !clipsOf[m[1]]) continue;

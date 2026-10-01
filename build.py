@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "17.3"
+VERSION = "17.4"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -396,6 +396,7 @@ ASSETS = {
     'temple':       ('assets/temple.glb', True, False),       # e3c1 v16.9: Chad's Lanna temple in the sala's place (masters/v16.8/temple/bake.mjs, then tools/preptemple.mjs)
     'slipper':      ('assets/slipper.glb', True, False),      # e3c1 v16.9: Chad's Sketchfab flip-flops — every pair at the wat, coloured per pair (tools/prepslipper.mjs)
     'khonmask':     ('assets/khonmask.glb', True, False),     # e3c1 v16.9: Chad's Sketchfab Khon mask, five on the Ajarn's mask stand (tools/prepwess.mjs, TEXPX=1024 ERR=0.004, 0.075)
+    'sitwomantalk': ('assets/sitwomantalk.glb', True, False), # e3c1 v17.4: the stall auntie's talking take — the monk's Sitting_Answering_Questions retargeted onto sitwoman (masters/v17.4)
     'monk':         ('assets/monk.glb', True, False),         # e3c1 v16.8: Chad's monk, five takes, skin weights diffused (tools/prepmonk.mjs)
     'ajarn':        ('assets/ajarn.glb', True, False),        # e3c1 v16.8: Chad's Sak Yant Ajarn, seven takes, the same prep
 }
@@ -421,7 +422,7 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'ghostsoldier', 'encik2', 'bunkbed', 'cafestaff', 'foodwarmer', 'flashlight',
            'kamaz', 'forest', 'rifle', 'ghostcyclist', 'fboaim',
            'muzzle', 'ammocrate', 'ammomags', 'icontorch', 'zavsoldier',
-           'thaikit', 'wessred', 'wessgreen', 'naga', 'monk', 'ajarn', 'temple', 'slipper', 'khonmask'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone
+           'thaikit', 'wessred', 'wessgreen', 'naga', 'monk', 'ajarn', 'temple', 'slipper', 'khonmask', 'sitwomantalk'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone
 HOSTED_ONLY |= E2_ONLY
 
 # The split packs are hosted-only: there is no __..._B64__ token for them and
