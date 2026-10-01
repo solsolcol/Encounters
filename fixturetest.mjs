@@ -708,6 +708,57 @@ K.guardOffAgain = await p.evaluate(() => {
   e.kitAward('awareness', -4, { minigame: true });
   return e.evGuard().guard === 0 && e.stats.awareness === 46 && !e.kit.has('timkp');
 });
+/* v17.6: CHOOSE ONE (kit.choose) and the three Sak Yant. The window opens
+   in its own state with one card per item and Confirm asleep; Confirm is
+   refused with nothing picked and inside the 0.6 s guard; a pick and a
+   confirm answer the Promise with that id and hand back play. Then the
+   items themselves: a yant worn cannot be moved out of its box, and each
+   guard cuts only its own kind of harm (sanity measured with the amulet
+   off, so its ward is not in the sum). */
+K.chooseOpens = await p.evaluate(() => {
+  const e = window.__enc;
+  window.__chose = undefined;
+  e.kit.choose(['yanthahtaew', 'yantgaoyord']).then(id => { window.__chose = id; });
+  const st = e.chooseState();
+  const ok = document.getElementById('choOk');
+  const refusedEmpty = e.chooseClose('key') === false;
+  e.chooseSel(1);
+  const refusedGuard = e.chooseClose('key') === false;
+  return e.getState() === 'choose' && st.ids.length === 2
+    && document.querySelectorAll('#choList .choCard').length === 2
+    && !document.getElementById('choose').classList.contains('hide')
+    && refusedEmpty && refusedGuard && !ok.disabled
+    && document.querySelector('#choList .choCard.on')?.dataset.i === '1';
+});
+await p.waitForTimeout(800);
+await p.evaluate(() => window.__enc.chooseClose('key'));
+K.chooseAnswers = await until(() => window.__chose === 'yantgaoyord' && window.__enc.getState() === 'play'
+                                    && window.__enc.chooseState().ids === null, 8000).then(() => true, () => false);
+K.yantGuards = await p.evaluate(() => {
+  const e = window.__enc, k = e.kit;
+  const hadAm = k.has('amulet'), wornAm = k.equipped('amulet');
+  if (hadAm) k.take('amulet');
+  const res = {};
+  // Paed Tidt: a sudden hit, not a minigame's, is cut by 40 %; a minigame's is not
+  k.give('yantpaedtidt'); k.equip('yantpaedtidt');
+  e.stats.sanity = 80; e.kitAward('sanity', -10); res.shock = Math.abs(e.stats.sanity - 74) < 1e-9;
+  e.stats.sanity = 80; e.kitAward('sanity', -10, { minigame: true }); res.shockNotMini = e.stats.sanity === 70;
+  // fixed: a worn yant does not leave its box
+  e.invMove('gear', 'body'); res.fixed = k.equipped('yantpaedtidt');
+  // Hah Taew: the drain guard reads 0.35, the shock guard is gone with Paed Tidt
+  k.equip('yanthahtaew'); res.drain = e.guards().drain === 0.35 && e.guards().shock === 0;
+  e.stats.sanity = 80; e.kitAward('sanity', -10); res.hahNotShock = e.stats.sanity === 70;
+  // Gao Yord: the minigame guard at 0.3
+  k.equip('yantgaoyord'); e.stats.awareness = 50;
+  e.kitAward('awareness', -10, { minigame: true }); res.ev = e.guards().ev === 0.3 && Math.abs(e.stats.awareness - 43) < 1e-9;
+  for (const y of ['yanthahtaew', 'yantpaedtidt', 'yantgaoyord']) k.take(y);
+  if (hadAm) { k.give('amulet'); if (wornAm) k.equip('amulet'); k.urge(null); }
+  res.clean = !k.has('yanthahtaew') && !k.has('yantpaedtidt') && !k.has('yantgaoyord') && e.guards().drain === 0;
+  e.stats.sanity = 100; e.stats.awareness = 50;
+  window.__yg = res;
+  return Object.values(res).every(Boolean);
+});
+if (!K.yantGuards) console.log('yant guards', JSON.stringify(await p.evaluate(() => window.__yg)));
 // the lens level again, as the block found it: the walk to the pile below sets only the yaw
 await p.evaluate(() => { window.__enc.pitch.rotation.x = 0; });
 out.kit = K;

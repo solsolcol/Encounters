@@ -66,6 +66,10 @@ const composed = new Set();
 if (main.includes("T('slot.' + key")) slots.forEach(k => composed.add('slot.' + k));
 if (main.includes("T('item.' + id + '.name'")) items.forEach(k => composed.add('item.' + k + '.name'));
 if (main.includes("T('item.' + id + '.desc'")) items.forEach(k => composed.add('item.' + k + '.desc'));
+/* v17.6: an item's POWER line is OPTIONAL (the Sak Yant have one, the torch
+   does not), so a power row is reachable exactly when its item exists — a
+   row for an item the engine no longer has still fails as dead */
+if (main.includes("T('item.' + id + '.power'")) items.forEach(k => { if (keys.includes('item.' + k + '.power')) composed.add('item.' + k + '.power'); });
 /* v14.11: an item's rarity word, T('rarity.' + rar), for each entry of the
    engine's own RARITIES list — so a rarity nothing can have still fails */
 const rarities = [...listOf(/const RARITIES = \[([^\]]*)\]/).matchAll(/'([^']+)'/g)].map(m => m[1]);

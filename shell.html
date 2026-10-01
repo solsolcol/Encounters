@@ -1630,6 +1630,93 @@ body.hasTorch.unlockopen .torchBtn{display:none}
   transition:background .18s,transform .18s var(--ease);animation:unUp .5s var(--ease) .62s backwards}
 #unClose:hover,#unClose:focus-visible{background:var(--sodium);transform:translateY(-2px);outline:none}
 
+/* ── v17.6: CHOOSE ONE (kit.choose) ──────────────────────────────────────
+   A framed window in the middle of the screen over a dimmed world: a label,
+   the chapter's question, one card per item side by side (stacked on a
+   phone), and Confirm. A card lifts on hover and glows gold when picked;
+   Confirm wakes only once one is. Cards enter in a short stagger. */
+#choose{align-items:center;justify-content:center;pointer-events:auto;z-index:12;
+  padding:max(14px,env(safe-area-inset-top)) 14px max(14px,env(safe-area-inset-bottom));
+  background:radial-gradient(ellipse at 50% 45%,rgba(52,36,8,.55) 0%,rgba(8,8,10,.80) 60%,rgba(3,4,7,.92) 100%);
+  backdrop-filter:blur(3px);animation:unFade .35s var(--ease)}
+#choose.out{opacity:0;transition:opacity .24s linear;pointer-events:none}
+body.chooseopen .soundBtn,body.chooseopen #volWrap{display:none}
+body.hasTorch.chooseopen .torchBtn{display:none}
+.choBox{position:relative;width:min(960px,100%);max-height:100%;overflow:auto;display:flex;flex-direction:column;
+  align-items:center;gap:10px;padding:22px 22px 18px;text-align:center;
+  background:linear-gradient(180deg,rgba(28,22,14,.92),rgba(12,11,10,.94));
+  border:1px solid rgba(255,190,100,.38);border-radius:6px;
+  box-shadow:0 0 0 1px rgba(0,0,0,.6),0 0 60px rgba(255,170,60,.16),0 24px 70px rgba(0,0,0,.7);
+  animation:choIn .55s cubic-bezier(.2,1.25,.4,1) backwards}
+.choBox::before,.choBox::after{content:"";position:absolute;width:22px;height:22px;pointer-events:none;
+  border:2px solid rgba(255,200,110,.75)}
+.choBox::before{left:7px;top:7px;border-right:0;border-bottom:0}
+.choBox::after{right:7px;bottom:7px;border-left:0;border-top:0}
+@keyframes choIn{from{opacity:0;transform:scale(.92) translateY(14px)}}
+.choLabel{display:flex;align-items:center;gap:14px;font-family:var(--ui);font-weight:700;
+  font-size:clamp(.82rem,3vw,1.02rem);letter-spacing:.3em;text-transform:uppercase;color:var(--sodium);
+  text-shadow:0 0 16px rgba(255,179,103,.6)}
+.choLabel::before,.choLabel::after{content:"";width:min(54px,9vw);height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,179,103,.85))}
+.choLabel::after{transform:scaleX(-1)}
+#choTitle{font-family:"Cormorant Garamond",Georgia,serif;font-weight:600;margin:0 0 4px;
+  font-size:clamp(1.25rem,4.6vw,1.9rem);line-height:1.15;color:var(--bone);text-wrap:balance;
+  text-shadow:0 0 20px rgba(255,190,90,.3),0 2px 6px rgba(0,0,0,.85)}
+#choList{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;width:100%}
+.choCard{position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;
+  padding:16px 14px 14px;cursor:pointer;color:var(--bone);font:inherit;
+  background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.015));
+  border:1px solid rgba(255,255,255,.14);border-radius:5px;
+  transition:transform .2s var(--ease),border-color .2s,box-shadow .2s,background .2s;
+  animation:unUp .5s var(--ease) var(--d,.15s) backwards}
+.choCard:hover,.choCard:focus-visible{transform:translateY(-3px);border-color:rgba(255,200,110,.55);outline:none;
+  box-shadow:0 10px 26px rgba(0,0,0,.45)}
+.choCard.on{border-color:#FFCF6E;background:linear-gradient(180deg,rgba(255,196,96,.16),rgba(255,170,60,.05));
+  box-shadow:0 0 0 1px #FFCF6E,0 0 28px rgba(255,190,90,.38),0 12px 30px rgba(0,0,0,.5)}
+.choArt{position:relative;width:88px;height:88px;display:grid;place-items:center;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,214,120,.16) 0%,transparent 70%);color:#E9C77D}
+.choCard.on .choArt{color:#FFE2A0;animation:unBreathe 2.6s ease-in-out infinite}
+.choIcon{width:76px;height:76px;filter:drop-shadow(0 0 8px rgba(255,190,90,.35))}
+.choNum{position:absolute;left:-6px;top:-4px;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;
+  font-family:var(--mono);font-size:.72rem;font-weight:700;color:var(--void);background:rgba(255,207,110,.85)}
+body:not(.finePtr) .choNum{display:none}
+.choText{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:0}
+.choName{font-family:"Cormorant Garamond",Georgia,serif;font-weight:700;font-size:1.32rem;line-height:1.1;color:var(--bone)}
+.choCard .rar{margin:0}
+.choPower{display:flex;align-items:center;justify-content:center;gap:6px;font-weight:700;font-size:.9rem;
+  color:#63D6C8;text-shadow:0 0 8px rgba(99,214,200,.35)}
+.choPower svg{width:15px;height:15px;flex:0 0 auto}
+.choDesc{font-size:.82rem;line-height:1.45;color:#9AA1AE}
+.choHint{margin:2px 0 0;font-family:var(--ui);font-size:.82rem;letter-spacing:.06em;color:#8A91A0}
+#choOk{margin:4px 0 2px;font-family:var(--ui);font-size:1rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--void);background:var(--bone);border:0;padding:13px 40px;cursor:pointer;
+  box-shadow:0 0 0 1px rgba(255,179,103,.45),0 10px 30px rgba(0,0,0,.6);transition:background .18s,transform .18s var(--ease),opacity .2s}
+#choOk:hover:not(:disabled),#choOk:focus-visible:not(:disabled){background:var(--sodium);transform:translateY(-2px);outline:none}
+#choOk:disabled{opacity:.35;cursor:default;box-shadow:none}
+/* a phone: the cards stack, each a row — the drawing on the left, the words
+   to the right — so three fit without the description being cut */
+@media (max-width:640px){
+  .choBox{padding:16px 12px 12px;gap:8px}
+  #choList{grid-template-columns:1fr;gap:8px}
+  .choCard{flex-direction:row;align-items:flex-start;text-align:left;padding:10px 10px 10px 8px;gap:10px}
+  .choArt{width:58px;height:58px;flex:0 0 auto}
+  .choIcon{width:50px;height:50px}
+  .choText{align-items:flex-start;gap:3px}
+  .choName{font-size:1.1rem}
+  .choPower{font-size:.8rem;justify-content:flex-start}
+  .choDesc{font-size:.74rem;line-height:1.38}
+  #choOk{padding:12px 32px;font-size:.94rem}
+}
+/* v17.6: the unlock splash, for an item that is only a drawing */
+#unIcon{display:none;position:relative;width:min(56vw,36vh,280px);height:min(56vw,36vh,280px);color:#FFD98A;
+  filter:drop-shadow(0 0 18px rgba(255,190,90,.65));animation:unPop .8s cubic-bezier(.2,1.5,.4,1) .08s backwards}
+#unlock.bare #unCv{display:none}
+#unlock.bare #unIcon{display:block}
+/* v17.6: an item's power, in the description pane, in jade */
+.invInfo p.power{display:flex;align-items:center;gap:6px;margin:0 0 5px;font-size:.84rem;font-weight:700;
+  color:#63D6C8;text-shadow:0 0 8px rgba(99,214,200,.3)}
+.invInfo p.power svg{width:15px;height:15px;flex:0 0 auto}
+
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.01ms !important;transition-duration:.01ms !important}
   #grade::after{animation:none}
@@ -1697,6 +1784,28 @@ body.hasTorch.unlockopen .torchBtn{display:none}
       stroke-linejoin="round"/>
     <path d="M9 20.4c1 .9 2 .9 3 0s2-.9 3 0" fill="none" stroke="currentColor"
       stroke-width="1.3" stroke-linecap="round"/>
+  </symbol>
+  <!-- v17.6: the three Sak Yant the Ajarn offers — Hah Taew (five rows of
+       script), Paed Tidt (eight spokes round a centre), Gao Yord (nine spires,
+       a Buddha on each) -->
+  <symbol id="e-yhah" viewBox="0 0 48 48">
+    <path d="M24 9.6V4.8c0-1.5 1.9-1.6 2-.2.1 1.9-3.6 2.1-3.6-.3 0-2.6 4.6-2.8 5-.1" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M7.0 16.4Q24 12.4 41.0 16.4" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-dasharray="2.4 1.5"/>
+    <path d="M7.899999999999999 22.9Q24 18.9 40.1 22.9" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-dasharray="2.4 1.5"/>
+    <path d="M8.8 29.4Q24 25.4 39.2 29.4" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-dasharray="2.4 1.5"/>
+    <path d="M9.7 35.9Q24 31.9 38.3 35.9" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-dasharray="2.4 1.5"/>
+    <path d="M10.6 42.4Q24 38.4 37.4 42.4" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-dasharray="2.4 1.5"/>
+  </symbol>
+  <symbol id="e-ypaed" viewBox="0 0 48 48">
+    <circle cx="24" cy="24" r="5.4" fill="none" stroke="currentColor" stroke-width="1.8"/>
+    <circle cx="24" cy="24" r="1.8" fill="currentColor"/>
+    <circle cx="24" cy="24" r="21" fill="none" stroke="currentColor" stroke-width="1.3" stroke-dasharray="1.6 2.2"/>
+    <path d="M24.00 16.00L24.00 5.50M29.66 18.34L37.08 10.92M32.00 24.00L42.50 24.00M29.66 29.66L37.08 37.08M24.00 32.00L24.00 42.50M18.34 29.66L10.92 37.08M16.00 24.00L5.50 24.00M18.34 18.34L10.92 10.92" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="2.2 1.3"/>
+  </symbol>
+  <symbol id="e-ygao" viewBox="0 0 48 48">
+    <path d="M1.7999999999999998 38L4 18L6.2 38M6.8 38L9 15L11.2 38M11.8 38L14 12L16.2 38M16.8 38L19 9L21.2 38M21.8 38L24 6L26.2 38M26.8 38L29 9L31.2 38M31.8 38L34 12L36.2 38M36.8 38L39 15L41.2 38M41.8 38L44 18L46.2 38" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>
+    <circle cx="4" cy="15.7" r="1.2" fill="currentColor"/><circle cx="9" cy="12.7" r="1.2" fill="currentColor"/><circle cx="14" cy="9.7" r="1.2" fill="currentColor"/><circle cx="19" cy="6.7" r="1.2" fill="currentColor"/><circle cx="24" cy="3.7" r="1.2" fill="currentColor"/><circle cx="29" cy="6.7" r="1.2" fill="currentColor"/><circle cx="34" cy="9.7" r="1.2" fill="currentColor"/><circle cx="39" cy="12.7" r="1.2" fill="currentColor"/><circle cx="44" cy="15.7" r="1.2" fill="currentColor"/>
+    <path d="M4 41.5h40M7 45h34" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-dasharray="2.2 1.4"/>
   </symbol>
   <!-- v14.6: the magnifying glass on an item's view in the equipment panel -->
   <symbol id="e-zoom" viewBox="0 0 24 24">
@@ -2395,10 +2504,22 @@ body.hasTorch.unlockopen .torchBtn{display:none}
       <div class="unGlow" aria-hidden="true"></div>
       <div class="unMotes" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
       <canvas id="unCv" aria-hidden="true"></canvas>
+      <svg id="unIcon" aria-hidden="true"><use href="#e-yant"/></svg>
     </div>
     <h3 id="unName"></h3>
     <p class="unSub" data-t="unlock.sub">Added to your bag</p>
     <button id="unClose" type="button" data-t="unlock.close">Close</button>
+  </div>
+</div>
+
+<!-- v17.6: CHOOSE ONE — a few items, one card each, one taken (kit.choose) -->
+<div id="choose" class="layer hide" role="dialog" aria-modal="true" aria-labelledby="choLabel">
+  <div class="choBox">
+    <span class="choLabel" id="choLabel" data-t="choose.label">Choose one</span>
+    <h3 id="choTitle" class="hide"></h3>
+    <div id="choList" role="radiogroup" aria-labelledby="choLabel"></div>
+    <p class="choHint" id="choHint" data-t="choose.hint">Pick one, then confirm</p>
+    <button id="choOk" type="button" disabled data-t="choose.confirm">Confirm</button>
   </div>
 </div>
 

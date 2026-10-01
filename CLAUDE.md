@@ -149,6 +149,8 @@ The declarations, all optional:
 | `kit.pray(on, { secs, y })` | v16.5: the hands into añjali IN PLAY — episode 1 chapter 1 scene D's clasp lifted into the engine number for number (PRAYER_R/L, the half-palm gap, −0.235 / −0.375, setHandPrayer), eased on wall time, taken back by a scene's first frame and by kitReset; episode 3 chapter 1's blessing and Sak Yant — the twenty-second seam | — (the hands as they were) |
 | `stage.hotspots[].hits(x, y)` | v14.7: a hotspot PRESSED BY A TAP (or an unlocked click) ON THE THING ITSELF — `hits` answers whether that screen point is on it, and the engine's `hotspotTap` fires it; episode 1 chapter 3's amulet on the auntie's table | — (the badge and the key only) |
 | `kit.unlock(id, { onClose })` | v14.7: the ITEM UNLOCKED splash — the item's model turning in the middle (the `iv` renderer), its name, a Close button, its own sting; a screen state of its own (`unlock`) that closes every "is it play?" gate, with a 0.6 s guard so the press that took the item cannot also close it | — |
+| `kit.choose(ids, opts)` | v17.6: CHOOSE ONE — a centred window, one card per item (drawing, name, rarity, `item.<id>.power`, words), Confirm after a pick; answers a Promise of the id and gives nothing itself. Its own screen state (`choose`); episode 3 chapter 1's Sak Yant — the twenty-third seam | — |
+| `ITEM_DEFS[id].drainGuard` / `shockGuard` / `fixed` | v17.6: a worn item slows every sanity DRAIN, or cuts every sudden non-minigame sanity hit, by that fraction; `fixed` keeps a worn item in its box (a Sak Yant) | — |
 | `ITEM_DEFS[id].evGuard` | v14.13: while the item is WORN, every stat decrease a MINIGAME causes is multiplied by `1 − evGuard` (`evCut()`: graded presses, missed beats, wrong drops, a losing payout, and a chapter's own price marked `{ minigame: true }` on `kit.award`/`kit.conduct`) — the LP Tim Khun Paen's 50 % | — (0: nothing is cut) |
 | `items` | v14.15: the item ids the chapter can hand out with `kit.give` — the entry curtain prepares their models (and the next chapter's download ahead fetches them) so an item never loads in the middle of play. `chaptertest` fails a literal `kit.give('x')` that is not declared | — (none) |
 | `kit.weaponBlock(msg)` | v14.3: a chapter FORBIDS the shot and the HUD says why — `weaponFire` refuses before anything is spent, `#nofire` carries the chapter's own sentence under the reticle with `hudfail` and a buzz, and `body.wpnBlocked` dims FIRE before the rule is ever tested. `null` allows it again. The words are the CHAPTER's, so they are on the sheet | — (nothing is forbidden) |
@@ -4592,6 +4594,26 @@ What the baseline contains, by release:
   eave is solved so the slope meets the wall top; the slopes are slabs with a
   dark wooden underside; the upper tier sits on a short white band. Deploy
   `6abebb3a11254a07b7f22ee6`, byte-verified (194 files).
+- **v17.6** THE SAK YANT CHOICE — Chad: *"before the ajahn starts, the ajahn
+  asks the player which sakyant design ... a window frame pops up ... 3
+  different options ... each with a different effect and power ... Do not
+  remove anything"*, then *"Gao Yord, Hatiew Japet, Paed Tidt. Research on
+  what they are before adding them."* Researched: Gao Yord (nine spires,
+  Mount Meru, the master yant), Hah Taew (five rows of Khom script, five
+  blessings — "Hatiew"), Paed Tidt (eight directions); "Japet" matched no
+  yant in English or Thai and is flagged to Chad (a sheet edit if he meant
+  another). On the stool the Ajarn now asks (`aj1which`), THE TWENTY-THIRD
+  SEAM opens — `kit.choose(ids, opts)`, a centred window, one card per item
+  (its line drawing, name, rarity, POWER line, words), a screen state of its
+  own, no Esc, Confirm asleep until a pick and for 0.6 s — he answers
+  (`aj1chosen`), and the old breathe → gong → rod flow runs as it was
+  (`yantBegin`). At the stirring the yant goes ON (the Sak Yant box, never
+  the bag, `fixed` so it cannot be taken off) and the unlock splash shows its
+  drawing. Powers, one kind of harm each: Gao Yord `evGuard` 0.3, Hah Taew
+  `drainGuard` 0.35, Paed Tidt `shockGuard` 0.4 — both new guards before the
+  ward, and a pass-through with none worn, so episodes 1 and 2 are unchanged
+  by construction. The fixture proves the window and all three guards.
+  Sheet v81 exported (v44 stays the link). docs/V17.6-THE-SAK-YANT-CHOICE.md.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -5155,7 +5177,7 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v80** (`masters/v17.0/masterz-text-v80.xlsx`, v79 plus v17.0's three credit strings for the Khon masks. v79 was `masters/v16.9/masterz-text-v79.xlsx`, v78 plus v16.9's six credit strings — the temple and the slippers. v78 was `masters/v16.6/masterz-text-v78.xlsx`, v77 plus v16.6's four credit rows for the Tailandia packs. v77 was `masters/v16.1/masterz-text-v77.xlsx`, v76 with the monk's three voice lines re-said by Arthur at v16.2. v76 was `masters/v16.1/masterz-text-v76.xlsx`, five tabs: UI
+**THE SHEET IS v81** (`masters/v17.6/masterz-text-v81.xlsx`, v80 plus v17.6's Sak Yant choice: three items' names, powers and words, the window's words, the chapter's four, and two Ajarn voice lines. v80 was `masters/v17.0/masterz-text-v80.xlsx`, v79 plus v17.0's three credit strings for the Khon masks. v79 was `masters/v16.9/masterz-text-v79.xlsx`, v78 plus v16.9's six credit strings — the temple and the slippers. v78 was `masters/v16.6/masterz-text-v78.xlsx`, v77 plus v16.6's four credit rows for the Tailandia packs. v77 was `masters/v16.1/masterz-text-v77.xlsx`, v76 with the monk's three voice lines re-said by Arthur at v16.2. v76 was `masters/v16.1/masterz-text-v76.xlsx`, five tabs: UI
 TEXT 292, EPISODE 1 114, EPISODE 2 193, EPISODE 3 41, VOICE LINES 337 — v76
 adds v16.1's four words, two changed cells and seven voice lines to v75).
 Was v75 (`masters/v16.0/masterz-text-v75.xlsx`, which added episode 3

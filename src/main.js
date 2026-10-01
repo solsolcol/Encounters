@@ -3139,6 +3139,7 @@ function paintConduct(cd) {
 function kitAward(stat, delta, opts) {
   if (!(stat in stats) || !Number.isFinite(delta) || !delta) return;
   if (opts && opts.minigame) delta = evCut(delta);   // v14.13: a chapter's minigame price, cut by the guard
+  if (stat === 'sanity' && delta < 0 && !(opts && opts.minigame)) delta = -shockCut(-delta);   // v17.6: Paed Tidt
   if (stat === 'sanity' && delta < 0) delta = -wardSoak(-delta, true);   // v14.7: the amulet takes it first
   const before = stats[stat];
   stats[stat] = Math.max(0, Math.min(100, stats[stat] + delta));
@@ -4126,6 +4127,7 @@ function kitReset() {
   prayOff();                             // v16.5: a run never starts with the hands still together
   activeSpot = null;
   if (unl.id) unlockClose('force');      // v14.7: a splash never outlives the run it opened in
+  if (cho.ids) chooseClose('force');     // v17.6: nor does a choice
 }
 /* v11.1: HURT. A chapter holds the red damage frame on the screen and bleeds
    sanity on WALL time until the player acts (chapter 3's pressure: Chad,
@@ -4210,6 +4212,10 @@ const KIT = {
      chapters and all of episode 2 call none of them. */
   unlock: kitUnlock,
   unlockOpen: () => !!unl.id,
+  /* v17.6: THE TWENTY-THIRD SEAM — choose one of a few items (see
+     kitChoose). Answers a Promise of the id; gives nothing itself. */
+  choose: kitChoose,
+  chooseOpen: () => !!cho.ids,
   itemWarm: id => { if (ITEM_DEFS[id]) { itemArtGet(id); ivModel(id); } },
   /* v14.7: what the worn ward holds right now (0 when none is worn) */
   wardLeft: () => wardLeft(),
@@ -4694,7 +4700,7 @@ function applyChunk(v) {
   const n = CHUNK[v] || 4;
   /* v14.7: the amulet takes the bite first; only what is left reaches
      sanity. With no ward worn `rest` is exactly n, so this is v14.6 */
-  const rest = wardSoak(n, true);
+  const rest = wardSoak(shockCut(n), true);    // v17.6: Paed Tidt shrinks the bite before the amulet sees it
   stats.sanity -= rest;
   syncBars();
   if (Math.round(rest) > 0) sanityTick(Math.round(rest));
@@ -6230,7 +6236,8 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
   /* v16.0 · episode 3 chapter 1: the Ajarn (Toto) and the stall auntie (Anna) */
   'aj1next', 'aj1sit', 'aj1breathe', 'aj1katha', 'aj1done', 'aj1ask',
   'aj1A', 'aj1B', 'aj1C', 'aj1D1', 'aj1D2', 'au1hi', 'au1sell', 'au1shoes',
-  'mk1come', 'mk1chant', 'mk1teach', 'hp1room', 'aj1mat']);
+  'mk1come', 'mk1chant', 'mk1teach', 'hp1room', 'aj1mat',
+  'aj1which', 'aj1chosen']);   // v17.6: the Ajarn asks which yant, and answers the choice
 const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || ADULT_TAKES.has(name) || CAST_TAKES.has(name);
 /* v6.9: his WHISPERS go round the bus. Chad wanted the three pick-up
    reactions "almost whispering to himself" and they were re-voiced as
@@ -6957,7 +6964,24 @@ const ITEM_DEFS = {
      AMULET box, so it and the Phiboon are one-or-the-other. `evGuard` is what
      it does: the fraction of MINIGAME damage it takes away (0.5 = half) —
      see evCut(), below. Baked face to +z like the Phiboon, so no `view`. */
-  timkp: { icon: 'e-amulet', slot: 'neck', art: 'icontimkp', model: 'timkp', evGuard: 0.5, rarity: 'ultrarare' }
+  timkp: { icon: 'e-amulet', slot: 'neck', art: 'icontimkp', model: 'timkp', evGuard: 0.5, rarity: 'ultrarare' },
+  /* v17.6: THE THREE SAK YANT (Chad: "the ajahn asks the player which sakyant
+     design the player would like to choose ... 3 different options to choose
+     from, each with a different effect and power, each with its own
+     description"). Episode 3 chapter 1 offers them through kit.choose and
+     puts the chosen one on his BODY at the stirring. A tattoo does not come
+     off, so each is `fixed`: worn, it cannot be lifted out of its box. Each
+     guards against a different KIND of harm, so the three never overlap:
+       drainGuard — a sanity DRAIN (her standing in front of you, a presence,
+                    the hurt bleed) runs this much slower
+       shockGuard — a sanity hit that lands AT ONCE and is not a minigame's (a
+                    sighting's bite, a chapter's scare or penalty) is cut
+       evGuard    — a minigame's damage (v14.13's seam; the stronger of two
+                    worn guards counts, so it never stacks with the LP Tim)
+     Line-drawn icons, no model: a design on skin is a drawing. */
+  yanthahtaew: { icon: 'e-yhah', slot: 'body', fixed: true, drainGuard: 0.35, rarity: 'rare' },
+  yantpaedtidt: { icon: 'e-ypaed', slot: 'body', fixed: true, shockGuard: 0.4, rarity: 'rare' },
+  yantgaoyord: { icon: 'e-ygao', slot: 'body', fixed: true, evGuard: 0.3, rarity: 'rare' }
 };
 /* v14.11: every item has a RARITY (Chad: "Torch is common rarity with grey
    colour coding, the lp phiboon amulet is rare rarity with blue colour
@@ -7053,6 +7077,23 @@ function evCut(delta) {
   return g > 0 ? delta * (1 - g) : delta;
 }
 let evCuts = 0;                      // how many charges the guard has cut, for probes
+/* v17.6: the two other guards a worn item may carry (the Sak Yant). The same
+   shape as evGuard(): the strongest worn one counts, gains are never
+   touched, and nothing worn hands back exactly what it was given. They come
+   BEFORE the ward, like the minigame guard, so a worn amulet soaks what the
+   yant has already shrunk. */
+function wornGuard(field) {
+  let g = 0;
+  for (const k of GEAR_SLOTS) {
+    const d = inv.gear[k] && ITEM_DEFS[inv.gear[k]];
+    if (d && d[field] > 0) g = Math.max(g, Math.min(1, +d[field]));
+  }
+  return g;
+}
+const guardCuts = { drain: 0, shock: 0 };   // counted for probes
+/* n points of sanity LOST (positive) -> what is left after the guard */
+function drainCut(n) { const g = wornGuard('drainGuard'); if (!(n > 0) || !g) return n; guardCuts.drain++; return n * (1 - g); }
+function shockCut(n) { const g = wornGuard('shockGuard'); if (!(n > 0) || !g) return n; guardCuts.shock++; return n * (1 - g); }
 /* what protects RIGHT NOW: the charge while one is worn, else nothing */
 const wardLeft = () => (wardItem() ? Math.max(0, ward.charge) : 0);
 /* the charge belongs to an episode: entering another one refills it */
@@ -7420,11 +7461,17 @@ function invInfoPaint(id) {
     : '';
   box.classList.add('has');
   const rar = itemRarity(showing);
-  box.innerHTML = `<div class="ivPane">${view}${zoom}</div><div class="ivText"><h4>${itemName(showing)}</h4><span class="rar r-${rar}">${T('rarity.' + rar, rar)}</span>${wardLine(showing)}<p>${itemDesc(showing)}</p></div>`;
+  box.innerHTML = `<div class="ivPane">${view}${zoom}</div><div class="ivText"><h4>${itemName(showing)}</h4><span class="rar r-${rar}">${T('rarity.' + rar, rar)}</span>${wardLine(showing)}${powerLine(showing)}<p>${itemDesc(showing)}</p></div>`;
   paintArt(box);
   if (def.model) ivModel(showing);
 }
 
+/* v17.6: an item may name its POWER in one short line (the sheet's
+   `item.<id>.power`); none named, nothing drawn */
+function powerLine(id) {
+  const txt = T('item.' + id + '.power', '');
+  return txt ? `<p class="power"><svg aria-hidden="true"><use href="#e-yant"/></svg>${txt}</p>` : '';
+}
 /* v14.7: a ward item says what it has left — the one number the player
    cannot otherwise see once its yellow is gone from the bar */
 function wardLine(id) {
@@ -7441,9 +7488,17 @@ const slotGet = (kind, key) => kind === 'gear' ? inv.gear[key] : inv.bag[+key];
 const slotSet = (kind, key, v) => { if (kind === 'gear') inv.gear[key] = v; else inv.bag[+key] = v; };
 const fits = (id, kind, key) => kind === 'bag' || ITEM_DEFS[id]?.slot === key;
 
+/* v17.6: a FIXED item (a Sak Yant — ink does not come off) stays in its box */
+function invFixed(kind, key) {
+  const id = kind === 'gear' ? inv.gear[key] : null;
+  if (!id || !ITEM_DEFS[id] || !ITEM_DEFS[id].fixed) return false;
+  snd('uiclick', 0.35); haptic(18);
+  return true;
+}
 function invLift(kind, key) {
   const id = slotGet(kind, key);
   if (!id) return;
+  if (invFixed(kind, key)) return;
   inv.held = { id, from: { kind, key } };
   const d = dragEl();
   d.classList.add('on');
@@ -7454,6 +7509,7 @@ function invDropAt(kind, key) {
   if (!inv.held) return;
   const { id, from } = inv.held;
   if (!fits(id, kind, key)) { invCancel(); return; }     // wrong slot: put it back
+  if (kind === 'gear' && invFixed(kind, key)) { invCancel(); return; }   // v17.6: nothing displaces a fixed item
   const other = slotGet(kind, key);
   slotSet(from.kind, from.key, other);                   // swap, never destroy
   slotSet(kind, key, id);
@@ -7473,10 +7529,12 @@ function invQuickMove(kind, key) {
   if (kind === 'bag') {
     const target = ITEM_DEFS[id].slot;
     if (!target) return;
+    if (invFixed('gear', target)) return;          // v17.6: the box is taken for good
     const swap = inv.gear[target];
     inv.gear[target] = id; inv.bag[+key] = swap;
     inv.flash = { kind: 'gear', key: target };
   } else {
+    if (invFixed(kind, key)) return;               // v17.6: a Sak Yant stays on
     const free = inv.bag.indexOf(null);
     if (free < 0) return;
     inv.bag[free] = id; inv.gear[key] = null;
@@ -7909,8 +7967,15 @@ function kitUnlock(id, opts = {}) {
   for (const k in keys) keys[k] = false;       // a held W does not keep walking under it
   state = 'unlock';
   $('unName').textContent = itemName(id);
+  /* v17.6: the line under the name may be the chapter's (a Sak Yant is inked
+     on him, not "added to your bag") */
+  const sub = el.querySelector('.unSub'); if (sub) sub.textContent = opts.sub || T('unlock.sub', 'Added to your bag');
   el.classList.remove('hide', 'out');
   el.classList.toggle('flat', !ITEM_DEFS[id].model || iv.state[id] === 'none');
+  /* v17.6: an item with neither a model nor painted art (a Sak Yant) shows
+     its own line drawing, large, where the model would turn */
+  el.classList.toggle('bare', !ITEM_DEFS[id].model && !ITEM_DEFS[id].art);
+  $('unIcon')?.querySelector('use')?.setAttribute('href', '#' + (ITEM_DEFS[id].icon || 'e-yant'));
   document.body.classList.add('unlockopen');
   document.exitPointerLock?.();
   itemArtGet(id); ivModel(id);                 // the icon stands in until the model is ready
@@ -7956,6 +8021,113 @@ addEventListener('keydown', e => {
     e.preventDefault();
     if (e.repeat) return;                      // an E still held from the pickup is not a second press
     unlockClose(e.code === 'Escape' ? 'esc' : 'key');
+  }
+});
+
+/* ── v17.6: CHOOSE ONE — the TWENTY-THIRD SEAM, `kit.choose(ids, opts)` ──
+   Chad: "the ajahn asks the player which sakyant design the player would
+   like to choose. Then a window frame pops up in the middle of the screen,
+   and there are 3 different options to choose from, each with a different
+   effect and power, each with its own description. After the player
+   confirms which sakyant, then it goes to the flow that you already have."
+   So a chapter may put a few ITEMS in front of the player and wait for one:
+   a window in the middle of the screen, one card per item (its drawing, its
+   name, its rarity, its power in one line, its words — all the sheet's),
+   a card picked by a tap, a click, 1–9 or the arrows, and CONFIRM to take
+   it. It answers a Promise with the id chosen (null if the run is torn down
+   under it). It does NOT give the item: what the choice means is the
+   story's business. Like the unlock splash it is a screen STATE of its own,
+   `choose`, so every "is it play?" gate closes under it — no walking, no
+   drain, no hotspot, and a chapter's own clock (which runs in play) waits
+   for the answer. There is no Esc: a choice that asks to be made must be.
+   Confirm is refused for its first 0.6 s, so the press that sat him down
+   cannot also choose for him. Only episode 3 chapter 1 calls it. */
+const cho = { ids: null, sel: -1, t0: 0, resolve: null, outT: 0 };
+function kitChoose(ids, opts = {}) {
+  ids = (Array.isArray(ids) ? ids : []).filter(id => ITEM_DEFS[id]);
+  const el = $('choose');
+  if (!ids.length || !el || cho.ids || unl.id || state !== 'play' || fainting) return Promise.resolve(null);
+  clearTimeout(cho.outT);
+  cho.ids = ids; cho.sel = -1;
+  for (const k in keys) keys[k] = false;
+  state = 'choose';
+  $('choLabel').textContent = opts.label || T('choose.label', 'Choose one');
+  $('choTitle').textContent = opts.title || '';
+  $('choTitle').classList.toggle('hide', !opts.title);
+  $('choList').innerHTML = ids.map((id, i) => {
+    const rar = itemRarity(id), pw = T('item.' + id + '.power', '');
+    return `<button class="choCard" type="button" role="radio" aria-checked="false" data-i="${i}" style="--d:${(0.14 + i * 0.09).toFixed(2)}s">`
+      + `<span class="choArt">${iconSvg(ITEM_DEFS[id].icon || 'e-yant', 'choIcon')}<span class="choNum">${i + 1}</span></span>`
+      + `<span class="choText"><span class="choName">${itemName(id)}</span>`
+      + `<span class="rar r-${rar}">${T('rarity.' + rar, rar)}</span>`
+      + (pw ? `<span class="choPower"><svg aria-hidden="true"><use href="#e-yant"/></svg>${pw}</span>` : '')
+      + `<span class="choDesc">${itemDesc(id)}</span></span></button>`;
+  }).join('');
+  const ok = $('choOk');
+  ok.textContent = opts.confirm || T('choose.confirm', 'Confirm');
+  ok.disabled = true;
+  $('choHint').textContent = T('choose.hint', 'Pick one, then confirm');
+  el.classList.remove('hide', 'out');
+  document.body.classList.add('chooseopen');
+  document.exitPointerLock?.();
+  snd('itemunlock', 0.55);
+  haptic([20, 50, 40]);
+  cho.t0 = performance.now();
+  return new Promise(res => { cho.resolve = res; });
+}
+function chooseSel(i) {
+  if (!cho.ids || i < 0 || i >= cho.ids.length) return;
+  if (cho.sel !== i) { snd('uiclick', 0.5); haptic(12); }
+  cho.sel = i;
+  for (const c of $('choList').querySelectorAll('.choCard')) {
+    const on = +c.dataset.i === i;
+    c.classList.toggle('on', on); c.setAttribute('aria-checked', on ? 'true' : 'false');
+  }
+  $('choOk').disabled = false;
+}
+function chooseClose(how) {
+  if (!cho.ids) return false;
+  if (how !== 'force') {
+    if (cho.sel < 0) return false;
+    if (performance.now() - cho.t0 < UNLOCK_GUARD) return false;
+  }
+  const id = how === 'force' ? null : cho.ids[cho.sel];
+  const el = $('choose');
+  cho.ids = null; cho.sel = -1;
+  document.body.classList.remove('chooseopen');
+  if (el) {
+    if (how === 'force') el.classList.add('hide');
+    else { el.classList.add('out'); cho.outT = setTimeout(() => el.classList.add('hide'), 260); }
+  }
+  const res = cho.resolve; cho.resolve = null;
+  if (how !== 'force') {
+    state = 'play';
+    snd('uiconfirm', 0.6);
+    haptic([30, 40, 60]);
+    tryLock();
+  }
+  if (res) res(id);
+  return true;
+}
+$('choList')?.addEventListener('click', e => {
+  const c = e.target.closest?.('.choCard'); if (!c) return;
+  chooseSel(+c.dataset.i);
+});
+$('choList')?.addEventListener('dblclick', e => {
+  const c = e.target.closest?.('.choCard'); if (!c) return;
+  chooseSel(+c.dataset.i); chooseClose('click');
+});
+$('choOk')?.addEventListener('click', () => chooseClose('click'));
+addEventListener('keydown', e => {
+  if (!cho.ids) return;
+  const n = cho.ids.length;
+  if (/^(Digit|Numpad)[1-9]$/.test(e.code)) { e.preventDefault(); chooseSel(+e.code.slice(-1) - 1); return; }
+  if (['ArrowRight', 'ArrowDown', 'KeyD', 'KeyS'].includes(e.code)) { e.preventDefault(); chooseSel(cho.sel < 0 ? 0 : (cho.sel + 1) % n); return; }
+  if (['ArrowLeft', 'ArrowUp', 'KeyA', 'KeyW'].includes(e.code)) { e.preventDefault(); chooseSel(cho.sel < 0 ? n - 1 : (cho.sel - 1 + n) % n); return; }
+  if (['Enter', 'Space', 'KeyE', 'NumpadEnter'].includes(e.code)) {
+    e.preventDefault();
+    if (e.repeat) return;
+    chooseClose('key');
   }
 });
 
@@ -9105,6 +9277,7 @@ const STING_SAMPLE = {
   z1wait: ['z1wait', 1], z1warm: ['z1warm', 1], z1close: ['z1close', 1], z1next: ['z1next', 1],
   z1askA: ['z1askA', 1], z1askB: ['z1askB', 1], z1askC: ['z1askC', 1], z1askD: ['z1askD', 1],
   z1A: ['z1A', 1], z1B: ['z1B', 1], z1C: ['z1C', 1], z1D: ['z1D', 1],
+  aj1which: ['aj1which', 1], aj1chosen: ['aj1chosen', 1],   // v17.6
   aj1next: ['aj1next', 1], aj1sit: ['aj1sit', 1], aj1breathe: ['aj1breathe', 1], aj1katha: ['aj1katha', 1],
   aj1done: ['aj1done', 1], aj1ask: ['aj1ask', 1], aj1A: ['aj1A', 1], aj1B: ['aj1B', 1],
   aj1C: ['aj1C', 1], aj1D1: ['aj1D1', 1], aj1D2: ['aj1D2', 1], au1hi: ['au1hi', 1],
@@ -11438,7 +11611,7 @@ function tick(now = 0) {
     showHaunt(drain > 0 && !ev, gDrain > 0 ? 'ghost' : 'presence');
     if (ev && drain > 0) ui.bSan.classList.add('drain');
     if (drain > 0) {
-      const lost = Math.min(stats.sanity, wardSoak(drain * dt, false));   // v14.7: the amulet first
+      const lost = Math.min(stats.sanity, wardSoak(drainCut(drain * dt), false));   // v14.7: the amulet first (v17.6: Hah Taew slows it before)
       stats.sanity -= lost;
       noteDrain(lost);
       syncBars();
@@ -11464,7 +11637,7 @@ function tick(now = 0) {
        player reading four options is not being charged for reading them. */
     if (kitHurt.perSec > 0 && dtw > 0 && state === 'play') {
       const had = wardLeft();
-      const lost = Math.min(Math.max(0, stats.sanity), wardSoak(kitHurt.perSec * dtw, false));   // v14.7: the amulet first
+      const lost = Math.min(Math.max(0, stats.sanity), wardSoak(drainCut(kitHurt.perSec * dtw), false));   // v14.7: the amulet first (v17.6: Hah Taew)
       if (lost > 0) { stats.sanity -= lost; noteDrain(lost); syncBars(); if (stats.sanity <= 0) lose(); }
       else if (wardLeft() !== had) syncBars();          // all of it went to the amulet: its yellow still moved
     }
@@ -11888,6 +12061,10 @@ window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () =
                                 cracks: wardFx.cracks, breaks: wardFx.breaks,
                                 banner: !!$('wardBreak')?.classList.contains('on') }),
                  unlockState: () => ({ id: unl.id, state }),
+                 chooseState: () => ({ ids: cho.ids, sel: cho.sel, state }),        // v17.6
+                 chooseSel: i => chooseSel(i), chooseClose: how => chooseClose(how || 'click'),
+                 invMove: (kind, key) => invQuickMove(kind, key),                 // v17.6: the fixed-item check
+                 guards: () => ({ drain: wornGuard('drainGuard'), shock: wornGuard('shockGuard'), ev: evGuard(), cuts: { ...guardCuts } }),
                  unlockClose: how => unlockClose(how || 'click'),
                  hotspotTap, kitAward, applyChunk,
                  evGuard: () => ({ guard: evGuard(), cuts: evCuts }),   // v14.13: the minigame guard, for probes

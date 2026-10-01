@@ -121,6 +121,10 @@
        man; the
        amulet in the film is episode 1's Phiboon (the auntie gave it to him
        when he was a boy, a callback nobody has to notice). */
+    /* v17.6: the three Sak Yant the Ajarn offers — one of them goes on his
+       back at the stirring (the engine prepares an item's model at the
+       curtain; these have none, they are drawings, but they are declared) */
+    items: ['yantgaoyord', 'yanthahtaew', 'yantpaedtidt'],
     assets: ['admintee', 'botak', 'sitwoman', 'sitwomantalk', 'standman', 'phiboon', 'tree1', 'tree2', 'tree3', 'tree4', 'thaikit', 'wessred', 'wessgreen', 'naga', 'monk', 'ajarn', 'temple', 'slipper', 'khonmask'],
 
     /* THE SOUND. `watamb` is the dawn temple (birds, a far road, a broom on
@@ -155,7 +159,12 @@
       hotDoor: 'Open the door',
       noShoes: 'Shoes off before the sala.',
       evYant: 'Hold still',
-      evYantBrief: 'The Ajarn works with a long steel rod, one strike at a time. Breathe out as each strike lands — tap on the strike. A flinch costs you.'
+      evYantBrief: 'The Ajarn works with a long steel rod, one strike at a time. Breathe out as each strike lands — tap on the strike. A flinch costs you.',
+      /* v17.6: the choice of design */
+      yantLabel: 'Choose your Sak Yant',
+      yantTitle: 'Which design will the Ajarn give you?',
+      yantConfirm: 'Receive this yant',
+      yantSub: 'Inked on your back · worn in your Sak Yant slot'
     },
     sayPrefix: 'z1'
   };
@@ -192,7 +201,7 @@
     [3.2,-1.4,3.4,-1],[3.5,-1.4,3.7,-1],[3.8,-1.4,3.9,-1],[4.8,-1.4,4.9,-1],[5.1,-1.4,5.2,-1],[5.4,-1.4,5.5,-1],[6.5,-1.4,6.6,-1.1],
     [-6.1,-0.9,-5.9,-0.8],[-4.3,-0.9,-4.1,-0.8],[4.3,-0.9,4.5,-0.8],[6,-0.9,6.2,-0.8]
   ];
-  const SECS = { z1arrive: 3.79, z1wai: 4.13, z1wait: 3.00, z1warm: 4.60, au1hi: 3.97, au1sell: 8.59, au1shoes: 4.36, aj1next: 1.72, aj1sit: 1.57, aj1breathe: 3.63, aj1katha: 10.61, aj1done: 1.65, aj1ask: 3.08,
+  const SECS = { z1arrive: 3.79, z1wai: 4.13, z1wait: 3.00, z1warm: 4.60, au1hi: 3.97, au1sell: 8.59, au1shoes: 4.36, aj1which: 3.44, aj1chosen: 1.86, aj1next: 1.72, aj1sit: 1.57, aj1breathe: 3.63, aj1katha: 10.61, aj1done: 1.65, aj1ask: 3.08,
                  /* v16.1 */ mk1come: 3.40, mk1chant: 12.77, mk1teach: 14.37, hp1room: 6.19, aj1mat: 1.88, z1sadhu: 2.04, z1room: 1.88 };
 
   const hash = (i, s) => { const x = Math.sin(i * 127.1 + s * 311.7) * 43758.5453; return x - Math.floor(x); };
@@ -2787,6 +2796,7 @@
                                 'roomdoor', 'watersprinkle', 'roomamb', 'eavebells', 'wingflap',
                                 'z1wai', 'z1wait', 'z1warm', 'au1hi', 'au1sell', 'au1shoes',
                                 'aj1next', 'aj1sit', 'aj1breathe', 'aj1katha', 'aj1done', 'aj1ask',
+                                'aj1which', 'aj1chosen',
                                 'yantap', 'yantblow', 'yantwarm', 'e3bell', 'shoesoff', 'barestep',
                                 'trayset', 'coins', 'incenselit', 'e3gong',
                                 /* fired from walkOut()/ending(), helpers the engine's source scan cannot
@@ -3244,6 +3254,30 @@
       setPhase('yant');
       queueGap(0.6);
       queueLine('aj1sit', () => { ajarn.nod = SECS.aj1sit; });
+      /* v17.6 (Chad: "before the ajahn starts, the ajahn asks the player which
+         sakyant design the player would like to choose. Then a window frame
+         pops up ... After the player confirms which sakyant, then it goes to
+         the flow that you already have"): the question, the window, his
+         answer — and only then the breath, the gong and the rod, as before */
+      queueGap(0.5);
+      queueLine('aj1which', () => { ajarn.nod = SECS.aj1which; });
+      queueGap(0.25);
+      queueFn(() => chooseYant());
+    }
+    const YANTS = ['yantgaoyord', 'yanthahtaew', 'yantpaedtidt'];   // Chad's order
+    let yantPick = null;
+    function chooseYant() {
+      if (!kit || !kit.choose || phase !== 'yant') { yantBegin(); return; }
+      kit.choose(YANTS, { label: DATA.words.yantLabel, title: DATA.words.yantTitle, confirm: DATA.words.yantConfirm })
+        .then(id => {
+          if (!alive || phase !== 'yant' || !id) return;     // torn down under the window: the run starts again
+          yantPick = id;
+          queueGap(0.35);
+          queueLine('aj1chosen', () => { ajarn.nod = SECS.aj1chosen; });
+          yantBegin();
+        });
+    }
+    function yantBegin() {
       queueGap(0.5);
       queueLine('aj1breathe', () => { ajarn.nod = SECS.aj1breathe; });
       queueGap(0.4);
@@ -3278,7 +3312,16 @@
        to the room's look (not the courtyard's dawn) as it fades */
     const WARM = { ...ROOMLIGHT, hemi: [0xfff0d6, 0x8a765e, 1.35], key: [0xffd8a0, 1.2, 16, 9, 18], fill: [0xe8d8c0, 0.55],
                    vmHemi: [0xfff2dc, 0x94836e, 1.05], vmKey: [0xffd8a8, 0.8] };
+    /* v17.6: the yant he chose goes ON HIM — straight into the Sak Yant box,
+       never the bag (ink is not carried), and it cannot come off (`fixed`) */
+    function yantOn() {
+      if (!kit || !yantPick) return;
+      for (const y of YANTS) if (y !== yantPick && kit.has(y)) kit.take(y);
+      kit.equip(yantPick);
+      if (kit.urge) kit.urge(null);
+    }
     function stir() {
+      yantOn();
       setPhase('turn');
       after(0.5, () => sfxAt('yantblow', CUSH.x, CUSH.z - 0.2, 1.0, 1, 10));
       after(1.6, () => {
@@ -3292,6 +3335,11 @@
       });
       after(3.2, () => queueLine('z1warm'));
       after(5.4, () => { if (kit) kit.daylight(ROOMLIGHT, 3.5); });
+      /* v17.6: and when his line about the warmth has been said, the design
+         is shown — the ITEM UNLOCKED splash, its line drawing turning gold;
+         the chapter's clock waits under it, so "Finish. Turn around." comes
+         when it is closed */
+      after(7.9, () => { if (kit && kit.unlock && yantPick) kit.unlock(yantPick, { sub: DATA.words.yantSub }); });
       after(8.0, () => {
         queueLine('aj1done', () => { ajarn.nod = SECS.aj1done; });
         queueGap(0.3);
@@ -3626,6 +3674,11 @@
     }
     function reset() {
       dropTodo(); speakReset(); lineQ.length = 0; heard.clear();
+      /* v17.6: a replay sits on the stool again and chooses again, so the
+         yant from the run before comes off with the run (the v8.1 law, in the
+         bag's form — the torch precedent) */
+      yantPick = null;
+      if (kit) for (const y of YANTS) if (kit.has(y)) kit.take(y);
       booted = false; dayClock.t = 0; lastWall = 0;
       pigeonReset(); bellNext = 2;                     // v16.4: the flock back on the paving
       seated = null; kneel = null; turning = null; otherLeaving = null; workOn = true; strikeAt = 0; burst = 0; warmK = 0;
@@ -4086,7 +4139,8 @@
                      inRoom: inRoom(yaw.position.x, yaw.position.z), monkArm: +monkArmK.toFixed(2),
                      until: +speak.until.toFixed(2), pending: speak.pending ? speak.pending.name : null,
                      stool: +STOOL_TOP.toFixed(3), ajSeatTop: ajarn.seatTop ? +ajarn.seatTop.toFixed(3) : null,
-                     beds: DATA.ambience.beds.map(b => [b[0], +b[1].toFixed(3)]) }),
+                     beds: DATA.ambience.beds.map(b => [b[0], +b[1].toFixed(3)]),
+                     yant: yantPick, seatAt: [+zoneSeat.position.x.toFixed(2), +zoneSeat.position.z.toFixed(2)] }),
       hotspots,
       updateNotes: (dt, t) => { updateNotes(dt, t); filmTick(t); },
       updatePile, updateFire, updateSlow,

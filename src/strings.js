@@ -377,6 +377,18 @@ Object.assign(window.__TEXT__, {
      Wat Lahanrai everywhere"). Ready for use; no chapter gives it yet. */
   'item.timkp.name':     'LP Tim Khun Paen Lode Series, Wat Lahanrai',
   'item.timkp.desc':     'Made by the renowned LP Tim Issariko of Wat Lahanrai, this amulet is imbued with the powers from its Phong Prai Kuman powder, granting the wearer prosperity and enhancing charm. Reduce all kinds of damage from minigame events by 50%.',
+  /* v17.6: the three Sak Yant the Ajarn offers in episode 3 chapter 1. The
+     POWER line is shown on its own, coloured, under the rarity — on the
+     choice window and in the bag (`item.<id>.power`; any item may have one) */
+  'item.yantgaoyord.name':  'Gao Yord · Nine Spires',
+  'item.yantgaoyord.power': 'Minigame damage reduced by 30%',
+  'item.yantgaoyord.desc':  'Nine spires for the nine peaks of Mount Meru, the mountain of the gods. The master yant, the one many others are built on, for protection from every side and a steady hand when you are tested. A Sak Yant is for life: it cannot be taken off.',
+  'item.yanthahtaew.name':  'Hah Taew · Five Lines',
+  'item.yanthahtaew.power': 'Sanity drains 35% slower',
+  'item.yanthahtaew.desc':  'Five rows of old Khom script, each one a blessing: against unjust punishment and wandering spirits, against bad fortune, against black magic and curses, for success, and for charm. A slow dread loses its grip on you more slowly. A Sak Yant is for life: it cannot be taken off.',
+  'item.yantpaedtidt.name':  'Paed Tidt · Eight Directions',
+  'item.yantpaedtidt.power': 'Sudden sanity hits reduced by 40%',
+  'item.yantpaedtidt.desc':  'Eight mantras for the eight directions, around a still centre, guarding you from every side harm can come from. What leaps at you out of the dark lands softer. A Sak Yant is for life: it cannot be taken off.',
   // what its protection has left, under the words ({n} and {max} are numbers)
   // v14.11: short, in the bar's yellow ({n} and {max} are numbers, shown bold)
   'inv.wardLeft':        '{n}/{max} Protection',
@@ -389,6 +401,10 @@ Object.assign(window.__TEXT__, {
   'unlock.label':        'Item unlocked',
   'unlock.sub':          'Added to your bag',
   'unlock.close':        'Close',
+  // v17.6: the choose-one window (a chapter may give its own label and button)
+  'choose.label':        'Choose one',
+  'choose.confirm':      'Confirm',
+  'choose.hint':         'Pick one, then confirm',
 
   // --- spoken by screen readers, never seen on screen ----------------------
   'a11y.soundButton':    'Sound on or off',
