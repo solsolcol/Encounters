@@ -1770,7 +1770,11 @@ function kitHandsSet(k, opts = {}) {
   hands.to = Math.max(0, Math.min(1, +k || 0));
   if (opts.secs !== undefined) hands.secs = Math.max(0.01, +opts.secs);
   if (opts.secs === 0) hands.k = hands.to;
-  hands.last = performance.now();
+  /* the clock is NOT restarted on every call: a chapter drives this every
+     frame (its event's k), and restarting it each time left the ease with no
+     time to run (measured: the hands sat at 0.03 while the event read 0.43).
+     Only an idle seam starts its clock here. */
+  if (hands.k === 0 && hands.was === 0) hands.last = performance.now();
 }
 function handsOff() {
   const was = hands.was > 0 || hands.k > 0;
@@ -1820,18 +1824,28 @@ function gestureAt(t, k, outP, outQ) {
   outQ.setFromEuler(_hge).premultiply(GEST_R);
 }
 const _hgPr = new THREE.Vector3(), _hgQr = new THREE.Quaternion(), _hgPl = new THREE.Vector3(), _hgQl = new THREE.Quaternion();
-function handsPut(k, t) {
+/* `opts.from: 'rest'` lifts the right hand from where the engine rests it
+   (the hand on the knee, in a film) instead of from the clasp, and
+   `opts.left: false` leaves the left arm out of it */
+function handsPut(k, t, opts) {
   if (!handsReady || !rightOriented) return;
   if (!prayRestQ) prayRestQ = new THREE.Quaternion().setFromEuler(new THREE.Euler(0.50, 0.28, -0.48));
   buildWong();
+  const fromRest = !!(opts && opts.from === 'rest'), withLeft = !(opts && opts.left === false);
   const e = k * k * (3 - 2 * k), half = HAND_W * 0.085, py = pray.k > 0 ? pray.y : PRAY.y;
-  // the right hand: from the clasp to its gesture
+  // the right hand: from the clasp (or its rest) to its gesture
   gestureAt(t, k, _hgPr, _hgQr);
-  _hgp0.set(half, py, PRAY.z);
+  if (fromRest) _hgp0.copy(armBase); else _hgp0.set(half, py, PRAY.z);
   armR.position.lerpVectors(_hgp0, _hgPr, e);
-  armR.quaternion.slerpQuaternions(PRAYER_R, _hgQr, e);
+  armR.quaternion.slerpQuaternions(fromRest ? prayRestQ : PRAYER_R, _hgQr, e);
+  if (fromRest) {
+    if (rightHandModel) rightHandModel.traverse(b => { const f = b.isBone && wongPose && wongPose[b.name] && fingerPose && fingerPose.find(q => q.name === b.name); if (f) b.quaternion.slerpQuaternions(f.curled, wongPose[b.name], e); });
+    if (prayerArmL) prayerArmL.visible = false;
+    return;
+  }
   // the left: the same, a beat behind and a little slower, mirrored
-  const L = buildPrayerArm();
+  const L = withLeft ? buildPrayerArm() : null;
+  if (!withLeft && prayerArmL) prayerArmL.visible = false;
   if (L) {
     gestureAt(t * 0.93 + 1.7, k, _hgPl, _hgQl);
     _hgPl.x = -_hgPl.x;
@@ -10135,7 +10149,7 @@ function sceneApi(c) {
     /* v18.0: the hands taken, from a scene — the same pose kit.hands draws in
        play, at a k and a flow time the scene chooses; handsFrom is where play
        left them, so a scene can carry the gesture on without a jump */
-    handsPose: (k, t) => handsPut(Math.max(0, Math.min(1, k)), t),
+    handsPose: (k, t, o) => handsPut(Math.max(0, Math.min(1, k)), t, o),
     handsFrom: () => ({ k: handsFrom.k, t: handsFrom.t }),
     rightHand: () => rightHandModel, setHandCurl,
     vmKey, vmFire, vmHemi,
@@ -12268,6 +12282,7 @@ window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () =
                  skelLab,                                  // v15.2: the merge, proven
                  kit: KIT, kitDebug, interactNow,          // v7.0: the play kit, by state
                  prayDebug: () => ({ k: pray.k, to: pray.to, left: !!(prayerArmL && prayerArmL.visible), ax: +armR.position.x.toFixed(4), ay: +armR.position.y.toFixed(4) }),   // v16.5
+                 camRoll: () => camera.rotation.z,         // v18.0: the body's sway under kit.hands
                  vmCam, handsRoot, rightHand: () => rightHandModel, prayArm: () => prayerArmL,   // v16.5: probes measure the clasp on screen
                  weaponFire, weaponReload, weaponLog, weaponProp: () => weaponProp, weaponMixer: () => weaponMixer,      // v12.0, probes
                  evPress: (x, y) => evPress(x ?? innerWidth / 2, y ?? innerHeight / 2), evRelease,

@@ -191,7 +191,7 @@
     const wallTex = tex(makeCreamWall(THREE, cnv)); wallTex.repeat.set(6, 3);
     const goldTex = tex(makeGoldBand(THREE, cnv)); goldTex.repeat.set(10, 1);
     const tileTex = tex(makeRoofTiles(THREE, cnv, '#c96a2e', '#5e2a10')); tileTex.repeat.set(6, 4);
-    const matFloor = new THREE.MeshStandardMaterial({ map: floorTex, roughness: 0.24, metalness: 0.05 });
+    const matFloor = new THREE.MeshStandardMaterial({ map: floorTex, roughness: 0.32, metalness: 0.05 });
     const matCol   = new THREE.MeshStandardMaterial({ map: lacTex, roughness: 0.32, metalness: 0.2 });
     const matCoffer = new THREE.MeshStandardMaterial({ map: cofTex, roughness: 0.7, side: THREE.DoubleSide,
                                                        emissive: 0xffffff, emissiveMap: cofTex, emissiveIntensity: 0.10 });
@@ -520,10 +520,10 @@
     const smallBuddha = new THREE.Group(); smallBuddha.position.set(0, 0.89, -0.05); leafT.add(smallBuddha);
     thai('buddha', 0, 0, 0, { s: 1.15, tint: GOLD_T, glow: 0.18, parent: smallBuddha });
     // patches of leaf already on him, and the ones he will add (on his BACK)
-    const patchMat = new THREE.MeshStandardMaterial({ color: 0xffd36e, roughness: 0.2, metalness: 0.9, emissive: 0x6a4a10, emissiveIntensity: 0.6, side: THREE.DoubleSide });
+    const patchMat = new THREE.MeshStandardMaterial({ color: 0xffe08a, roughness: 0.25, metalness: 0.6, emissive: 0xc8962a, emissiveIntensity: 0.55, side: THREE.DoubleSide });
     const myLeaf = [];
     for (let i = 0; i < 9; i++) {
-      const p = new THREE.Mesh(new THREE.PlaneGeometry(0.035, 0.035), patchMat);
+      const p = new THREE.Mesh(new THREE.PlaneGeometry(0.022, 0.018), patchMat);
       const back = i >= 6;
       p.position.set((hash(i, 1) - 0.5) * 0.16, 0.12 + hash(i, 2) * 0.36, back ? -0.15 : 0.15);
       p.rotation.set(0, back ? Math.PI : 0, hash(i, 3) * 1.2);
@@ -686,6 +686,7 @@
       lay_granny:   { h: 1.52, take: 'Sit_Cross_Legged_on_Floor' },
       lay_scold:    { h: 1.55, take: 'Sit_Cross_Legged_on_Floor' },
       lay_sitwoman: { h: 1.60, take: 'Sit_Cross_Legged_on_Floor' },
+      admintee:     { h: 1.70, take: 'Chair_Sit_Idle_M' },
       monkrow:      { h: 1.70, take: 'Sit_Cross_Legged_on_Floor' }
     };
     function parseOnce(key) {
@@ -743,7 +744,7 @@
     const _v = new THREE.Vector3(), _v2 = new THREE.Vector3(), _v3 = new THREE.Vector3(), _q = new THREE.Quaternion(), _q2 = new THREE.Quaternion();
     const boneOf = (r, re) => r.bones.find(b => re.test(b.name)) || null;
     function mkSitter(key, x, z, ry, o = {}) {
-      const group = new THREE.Group(); group.position.set(x, o.y || 0, z); group.rotation.y = ry; world.add(group);
+      const group = new THREE.Group(); group.position.set(x, o.y || 0, z); group.rotation.y = ry; (o.parent || world).add(group);
       const H0 = (o.h || KIND[key].h) * 0.55;
       const proxy = new THREE.Mesh(new THREE.CapsuleGeometry(0.2, Math.max(0.1, H0 - 0.4), 4, 8), matProxy);
       proxy.position.y = H0 / 2 + 0.1; proxy.castShadow = !LOW; group.add(proxy);
@@ -768,7 +769,7 @@
         const crown = r.bones.some(b => /HeadTop_End|head_end/.test(b.name));
         if (isFinite(lo) && hi > lo) g.scale.multiplyScalar((o.h || KIND[key].h) / ((hi - lo) / (crown ? 1 : 0.935)));
         // the floor take, parked on one frame
-        const clip = (gltf.animations || []).find(c => c.name === KIND[key].take) || (gltf.animations || [])[0];
+        const clip = (gltf.animations || []).find(c => c.name === (o.take || KIND[key].take)) || (gltf.animations || [])[0];
         if (clip) {
           const mixer = new THREE.AnimationMixer(g), act = mixer.clipAction(clip);
           act.play(); act.time = clip.duration * (o.at ?? 0.1); act.paused = true; mixer.update(0);
@@ -1292,10 +1293,15 @@
         if (phase === 'peak' || phase === 'decide') { chant = 0.72; pull = 0.62; }
       } else if (st === 'decide') { chant = 0.6; pull = 0.5; }
       else if (st !== 'cine') { chant = 0.3; }
-      mixK.chant += (chant - mixK.chant) * (1 - Math.exp(-wdt / 1.0));
+      /* the opening film has its own sounds: the hall is not heard under the
+         memories (play's first frame has not come yet — `booted` — so this is
+         the film and never an ending) */
+      const film = st === 'cine' && !booted;
+      if (film) { chant = 0; pull = 0; }
+      mixK.chant += (chant - mixK.chant) * (1 - Math.exp(-wdt / (film ? 0.2 : 1.0)));
       mixK.pull += (pull - mixK.pull) * (1 - Math.exp(-wdt / 1.4));
-      mixK.dusk += (0.08 + 0.32 * nearDoor - mixK.dusk) * (1 - Math.exp(-wdt / 1.2));
-      DATA.ambience.beds[0][1] = 0.40;
+      mixK.dusk += ((film ? 0 : 0.08 + 0.32 * nearDoor) - mixK.dusk) * (1 - Math.exp(-wdt / (film ? 0.2 : 1.2)));
+      DATA.ambience.beds[0][1] = film ? 0 : 0.40;
       DATA.ambience.beds[1][1] = mixK.chant;
       DATA.ambience.beds[2][1] = mixK.pull;
       DATA.ambience.beds[3][1] = mixK.dusk;
@@ -1319,7 +1325,8 @@
     }
     function peopleTick(wdt) {
       for (const r of crowd) { if (!r.ready || !r.model) continue; bowTick(r); }
-      for (const r of [neighbour, yai, kid, frontMan]) if (r && r.ready) headTick(r, wdt);
+      for (const r of crowd) if (r.ready && (r.lookTo > 0 || r.lookW > 0.002)) headTick(r, wdt);
+      for (const r of monks) if (r.ready && (r.lookTo > 0 || r.lookW > 0.002)) headTick(r, wdt);
     }
     function updateNotes(dt, t) {
       const nowW = performance.now() / 1000;
@@ -1433,7 +1440,7 @@
     /* ============================================================ THE FILM SETS
        Five pockets far outside the hall (the far plane is 160 m: distance
        does the hiding, v8.9). Fog-free, painted light (the v4.9 recipe). */
-    const film = buildFilm(ctx, world, { tex, parseOnce, thai, box, cyl, alive: () => alive, owned, mkSitter });
+    const film = buildFilm(ctx, world, { tex, parseOnce, thai, box, cyl, alive: () => alive, owned, mkSitter, whiteOf, matFloor, matMat, matCream, matFlame, matGold, matDark, matWood, makeSignTex, KIND, HALL });
     function filmTick(t) { if (getState() === 'cine') film.tick(t); }
 
     const readyAt = performance.now();
@@ -1453,6 +1460,7 @@
       HALL, DOOR, PLACE, NEIGH, YAI, KID, FRONT, PED, ALT, MONKS, SHELF, LEAF, CANDLES, ROWZ, ROWX,
       neighbour: () => neighbour, yai: () => yai, kid: () => kid, frontMan: () => frontMan, crowd, monks,
       shadow, glimpse, drawShadow: (k, t) => { drawFigure(shadowCv.getContext('2d'), k, t, false); shadowTex.needsUpdate = true; },
+      lookAll: (k) => { for (const r of crowd) r.lookTo = k; for (const r of monks) r.lookTo = k; },
       leaves, film, myBook, myStand,
       get phase() { return phase; },
       setPhase, applyPhase, after, dayClock, sayLine,
@@ -1469,10 +1477,210 @@
   }
 
   /* ============================================================ THE FILM SETS
-     (filled in at CP5 — docs/V18.0-E3C2-PLAN.md §4.2) */
+     Four pockets 300 m out (the far plane is 160 m: none sees another or the
+     hall, v8.9), every material unlit and fog-free (the v4.9 recipe — a
+     memory has its own light painted in), and the hall's own front for the
+     last shot. Nothing here casts a shadow. */
   function buildFilm(ctx, world, h) {
-    const root = new ctx.THREE.Group(); world.add(root);
-    return { root, P: {}, tick() {} };
+    const { THREE, cnv, LOW } = ctx;
+    const root = new THREE.Group(); world.add(root);
+    const basic = (o) => new THREE.MeshBasicMaterial({ fog: false, ...o });
+    const fbox = (w, hh, d, x, y, z, m, p) => { const b = new THREE.Mesh(new THREE.BoxGeometry(w, hh, d), m); b.position.set(x, y, z); p.add(b); return b; };
+    const P = { yant: { x: 300, z: 0 }, office: { x: 0, z: 300 }, flat: { x: -300, z: 0 }, floor: { x: 0, z: -300 } };
+    const pock = (o) => { const g = new THREE.Group(); g.position.set(o.x, 0, o.z); root.add(g); return g; };
+
+    /* 1 · THE SECOND YANT: no room, only what is in front of the lens — a
+       bare shoulder, the healed first yant beside new lines going in, the
+       steel tip of the rod, one lamp's warmth. */
+    const Y = pock(P.yant);
+    const skinTex = h.tex(makeBackSkin(THREE, cnv));
+    const back = new THREE.Mesh(new THREE.SphereGeometry(1, 48, 32, 0, Math.PI, 0, Math.PI), basic({ map: skinTex, side: THREE.DoubleSide }));
+    back.scale.set(0.42, 0.62, 0.22); back.rotation.y = Math.PI; back.position.set(0, 1.25, 0); Y.add(back);
+    const lampG = new THREE.Mesh(new THREE.PlaneGeometry(3, 3), basic({ map: h.tex(makeGlow(THREE, cnv, '255,190,110')), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
+    lampG.position.set(0.5, 1.6, -0.5); Y.add(lampG);
+    fbox(6, 6, 0.1, 0, 2, 1.6, basic({ color: 0x0c0806 }), Y);
+    const rod = new THREE.Group(); Y.add(rod);
+    { const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.004, 0.006, 0.62, 8), basic({ color: 0x9aa0a6 }));
+      shaft.rotation.x = Math.PI / 2; shaft.position.z = -0.31; rod.add(shaft);
+      const tip = new THREE.Mesh(new THREE.ConeGeometry(0.004, 0.03, 6), basic({ color: 0x1a1a1a })); tip.rotation.x = -Math.PI / 2; tip.position.z = 0.015; rod.add(tip); }
+    rod.rotation.set(0.35, -0.5, 0);
+
+    /* 2 · HIS BUSINESS, BIGGER: a ROADEYE shopfront office at evening — the
+       lit sign, staff at their desks, boxes to the ceiling, the van at the
+       kerb with its side door open and then slammed */
+    const O = pock(P.office);
+    const street = new THREE.Mesh(new THREE.PlaneGeometry(40, 24), basic({ color: 0x1a1c22 })); street.rotation.x = -Math.PI / 2; street.position.set(0, 0, 4); O.add(street);
+    fbox(40, 0.15, 3.2, 0, 0.075, -0.4, basic({ color: 0x5b5a58 }), O);                           // the pavement
+    fbox(16, 6, 0.3, 0, 3, -6.2, basic({ color: 0x2a2724 }), O);                                  // the back wall
+    fbox(16, 0.1, 6, 0, 3.4, -3.2, basic({ color: 0xe8ecf0 }), O);                                // the lit ceiling
+    fbox(16, 0.05, 6, 0, 0.16, -3.2, basic({ color: 0x8c8a86 }), O);                              // the floor
+    for (const sx of [-1, 1]) fbox(0.3, 4.2, 0.3, sx * 7.5, 2.1, -1.0, basic({ color: 0x3a3836 }), O);
+    fbox(15.2, 0.6, 0.25, 0, 3.75, -1.0, basic({ map: h.tex(h.makeSignTex(THREE, cnv, 'ROADEYE  ·  DASHCAMS', '#0c1a33', '#ffd25a', 0.18)) }), O);
+    const glass = new THREE.Mesh(new THREE.PlaneGeometry(14.6, 3.2), basic({ color: 0x9fc4e8, transparent: true, opacity: 0.12, depthWrite: false })); glass.position.set(0, 1.75, -1.0); O.add(glass);
+    const boxTex = h.tex(makeBoxTex(THREE, cnv));
+    const boxMat = basic({ map: boxTex });
+    for (let i = 0; i < 64; i++) { const c = i % 8, r = Math.floor(i / 8); if (r > 5 - (c % 3)) continue; fbox(0.62, 0.42, 0.5, -6.2 + c * 0.64, 0.4 + r * 0.43, -5.6, boxMat, O); }
+    for (let i = 0; i < 3; i++) {
+      const dx = -1.8 + i * 2.6;
+      fbox(1.6, 0.06, 0.8, dx, 0.78, -3.0, basic({ color: 0xd8d2c6 }), O);
+      fbox(0.55, 0.36, 0.04, dx, 1.05, -3.3, basic({ color: 0x14202e }), O);
+      fbox(0.5, 0.31, 0.01, dx, 1.05, -3.27, basic({ color: 0x6fa8dc }), O);
+      fbox(0.48, 0.45, 0.48, dx, 0.42, -2.25, basic({ color: 0x23262b }), O);   // the chair
+    }
+    const staff = [0, 1, 2].map(i => h.mkSitter('admintee', -1.8 + i * 2.6, -2.35, Math.PI, { white: false, pray: false, take: 'Chair_Sit_Idle_M', at: 0.2 + i * 0.25, nod: 0.3, parent: O }));
+    const van = new THREE.Group(); van.position.set(3.2, 0, 2.2); O.add(van);
+    fbox(4.6, 1.9, 1.9, 0, 1.25, 0, basic({ color: 0xe9ebee }), van);
+    fbox(1.2, 1.2, 1.86, -2.25, 1.0, 0, basic({ color: 0xdfe1e4 }), van);
+    fbox(1.0, 0.6, 0.02, -2.2, 1.4, 0.94, basic({ color: 0x2a3644 }), van);
+    for (const wx of [-1.7, 1.4]) { const w = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.36, 2.0, 16), basic({ color: 0x111111 })); w.rotation.x = Math.PI / 2; w.position.set(wx, 0.36, 0); van.add(w); }
+    fbox(4.0, 0.3, 0.02, 0.2, 1.75, -0.96, basic({ map: h.tex(h.makeSignTex(THREE, cnv, 'ROADEYE', '#e9ebee', '#0c1a33', 0.2)) }), van);
+    const vanDoor = fbox(1.3, 1.6, 0.04, 0.3, 1.2, -0.98, basic({ color: 0xd4d7db }), van);
+    for (let i = 0; i < 4; i++) fbox(0.62, 0.42, 0.5, 2.0 + (i % 2) * 0.66, 0.2 + Math.floor(i / 2) * 0.43, 0.2, boxMat, O);
+    const lampO = new THREE.Mesh(new THREE.PlaneGeometry(6, 6), basic({ map: h.tex(makeGlow(THREE, cnv, '255,214,150')), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
+    lampO.position.set(-6, 4.2, 3); O.add(lampO);
+
+    /* 3 · HIS FLAT AT NIGHT: the floor, a low table, his phone playing the
+       chant, the city through the window */
+    const F = pock(P.flat);
+    fbox(8, 0.05, 8, 0, 0, 0, basic({ color: 0x3a2e26 }), F);
+    fbox(8, 4, 0.1, 0, 2, -3.0, basic({ color: 0x24201e }), F);
+    const city = new THREE.Mesh(new THREE.PlaneGeometry(3.2, 1.8), basic({ map: h.tex(makeCityNight(THREE, cnv)) })); city.position.set(0.6, 1.5, -2.94); F.add(city);
+    fbox(3.3, 0.06, 0.08, 0.6, 2.42, -2.92, basic({ color: 0x101010 }), F); fbox(3.3, 0.06, 0.08, 0.6, 0.58, -2.92, basic({ color: 0x101010 }), F);
+    fbox(1.1, 0.06, 0.6, 0, 0.38, -0.9, basic({ color: 0x5a3b26 }), F);                   // the low table
+    for (const lx of [-0.5, 0.5]) for (const lz of [-1.15, -0.65]) fbox(0.05, 0.35, 0.05, lx, 0.18, lz, basic({ color: 0x3a2618 }), F);
+    const phone = fbox(0.08, 0.01, 0.16, 0.12, 0.42, -0.8, basic({ color: 0x111111 }), F);
+    const screen = new THREE.Mesh(new THREE.PlaneGeometry(0.07, 0.145), basic({ map: h.tex(makePhoneChant(THREE, cnv)) })); screen.rotation.x = -Math.PI / 2; screen.position.set(0.12, 0.427, -0.8); F.add(screen);
+    void phone;
+    const phoneGlow = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 0.8), basic({ map: h.tex(makeGlow(THREE, cnv, '170,200,255')), transparent: true, opacity: 0.5, depthWrite: false, blending: THREE.AdditiveBlending }));
+    phoneGlow.rotation.x = -Math.PI / 2; phoneGlow.position.set(0.12, 0.44, -0.8); F.add(phoneGlow);
+    fbox(2.2, 0.5, 0.8, -1.9, 0.25, 0.4, basic({ color: 0x2d3440 }), F);                  // the sofa's edge
+    fbox(2.2, 0.6, 0.2, -1.9, 0.6, 0.75, basic({ color: 0x262c36 }), F);
+
+    /* 4 · A TEMPLE FLOOR, CLOSE: dark stone, a candle, the knees of the two
+       people kneeling either side of him in white */
+    const T = pock(P.floor);
+    const tf = new THREE.Mesh(new THREE.PlaneGeometry(6, 6), h.matFloor); tf.rotation.x = -Math.PI / 2; T.add(tf);
+    const tm = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 1.0), h.matMat); tm.rotation.x = -Math.PI / 2; tm.position.y = 0.006; T.add(tm);
+    const tc = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.24, 8), h.matCream); tc.position.set(0.18, 0.12, -0.75); T.add(tc);
+    const tcf = new THREE.Mesh(new THREE.ConeGeometry(0.016, 0.05, 6), h.matFlame); tcf.position.set(0.18, 0.27, -0.75); T.add(tcf);
+    const tlamp = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 1.4), basic({ map: h.tex(makeGlow(THREE, cnv, '255,200,120')), transparent: true, opacity: 0.6, depthWrite: false, blending: THREE.AdditiveBlending }));
+    tlamp.position.set(0.18, 0.3, -0.75); T.add(tlamp);
+    const sideL = h.mkSitter('lay_granny', -0.85, 0.05, Math.PI + 0.05, { parent: T, at: 0.3 });
+    const sideR = h.mkSitter('lay_admintee', 0.85, 0.05, Math.PI - 0.05, { parent: T, at: 0.5 });
+    const tlight = new THREE.PointLight(0xffc27a, 2.4, 3.2, 1.6); tlight.position.set(0.18, 0.5, -0.6); T.add(tlight);
+
+    /* 5 · THE DOORS: two people in white walk up the steps and in, ahead of
+       him (the admin tee's own walk, glided on the cine clock) */
+    const walkers = [];
+    const WALK = [[{ x: -0.7, z: 13.5 }, { x: -0.55, z: 8.6 }, { x: -0.4, z: 4.4 }, { x: -0.2, z: 2.6 }],
+                  [{ x: 0.85, z: 15.0 }, { x: 0.6, z: 8.6 }, { x: 0.45, z: 4.4 }, { x: 0.25, z: 2.6 }]];
+    h.parseOnce('admintee').then(gltf => {
+      if (!h.alive()) return;
+      for (let i = 0; i < 2; i++) {
+        const g = ctx.cloneSkinned(gltf.scene);
+        g.traverse(o => { if (o.isMesh) { o.material = Array.isArray(o.material) ? o.material.map(h.whiteOf) : h.whiteOf(o.material); o.frustumCulled = false; } });
+        const grp = new THREE.Group(); grp.add(g); grp.visible = false; world.add(grp);
+        g.updateMatrixWorld(true);
+        let lo = Infinity, hi = -Infinity; const v = new THREE.Vector3();
+        g.traverse(o => { if (o.isBone) { o.getWorldPosition(v); lo = Math.min(lo, v.y); hi = Math.max(hi, v.y); } });
+        if (hi > lo) g.scale.multiplyScalar((i ? 1.58 : 1.66) / (hi - lo));
+        const mixer = new THREE.AnimationMixer(g), clip = gltf.animations.find(c => c.name === 'Walking');
+        if (clip) mixer.clipAction(clip).play();
+        h.owned.push({ dispose: () => mixer.stopAllAction() });
+        walkers.push({ grp, g, mixer, path: WALK[i], last: 0 });
+      }
+    }).catch(err => { console.warn('admintee failed to load', err); ctx.loadFail && ctx.loadFail('admintee', err); });
+
+    // the yant shot's strikes and the rod, the van's door, the walkers — all on the cine clock
+    let lastT = 0;
+    function tick(t) {
+      const ct = (window.__enc && window.__enc.cine && window.__enc.cine.t) ? window.__enc.cine.t() : t;
+      // the rod: a strike every ~0.45 s into the skin, faster as the shot runs
+      const per = 0.48 - Math.min(0.14, ct * 0.012), ph = (ct % per) / per;
+      const hit = ph < 0.18 ? ph / 0.18 : 1 - (ph - 0.18) / 0.82;
+      rod.position.set(0.06 + Math.sin(ct * 0.7) * 0.03, 1.36 - ct * 0.004, -0.27 - (1 - hit) * 0.05);
+      // the van's side door slides shut
+      vanDoor.position.x = 0.3 - Math.min(1, Math.max(0, (ct - 16.0) / 0.4)) * 1.15;
+      // the walkers
+      const dt = Math.max(0, Math.min(0.1, ct - lastT)); lastT = ct;
+      for (let i = 0; i < walkers.length; i++) {
+        const w = walkers[i], u = (ct - 44.2 - i * 0.9) / 8.4;
+        w.grp.visible = u > 0 && u < 1;
+        if (!w.grp.visible) continue;
+        const seg = Math.min(w.path.length - 2, Math.floor(u * (w.path.length - 1))), f = u * (w.path.length - 1) - seg;
+        const a = w.path[seg], b = w.path[seg + 1];
+        const x = a.x + (b.x - a.x) * f, z = a.z + (b.z - a.z) * f;
+        const y = z > 8.4 ? -1.4 : z > 4.4 ? -1.4 + (8.4 - z) / 4.0 * 1.2 : -0.2 + Math.max(0, (4.4 - z) / 1.8) * 0.2;
+        w.grp.position.set(x, Math.min(0, y), z);
+        w.grp.rotation.y = Math.atan2(b.x - a.x, b.z - a.z);
+        w.mixer.update(dt);
+      }
+      void staff; void sideL; void sideR;
+    }
+    return { root, P, tick, rod, vanDoor, walkers, tlight };
+  }
+  /* the film's own paint */
+  function makeBackSkin(THREE, cnv) {
+    const S = 512, [c, x] = cnv(S), r = rng(71);
+    const g = x.createRadialGradient(S * 0.45, S * 0.4, 20, S / 2, S / 2, S * 0.7);
+    g.addColorStop(0, '#d9a27a'); g.addColorStop(1, '#8a5a3c');
+    x.fillStyle = g; x.fillRect(0, 0, S, S);
+    // the healed first yant: rows of script-like strokes in a pyramid, faded blue-black
+    x.strokeStyle = 'rgba(28,34,52,0.75)'; x.lineWidth = 3;
+    for (let row = 0; row < 5; row++) {
+      const n = 9 - row * 2;
+      for (let i = 0; i < n; i++) {
+        const cx = S * 0.36 + (i - (n - 1) / 2) * 22, cy = S * 0.62 - row * 30;
+        x.beginPath(); x.moveTo(cx - 7, cy); x.quadraticCurveTo(cx, cy - 14, cx + 7, cy); x.stroke();
+        x.beginPath(); x.arc(cx, cy + 7, 4, 0, Math.PI * 1.6); x.stroke();
+      }
+    }
+    // the new lines going in: crisper, darker, a little red round them
+    x.strokeStyle = 'rgba(160,40,30,0.25)'; x.lineWidth = 9;
+    for (let i = 0; i < 6; i++) { x.beginPath(); x.moveTo(S * 0.6, S * 0.3 + i * 22); x.lineTo(S * 0.6 + 60 + r() * 30, S * 0.3 + i * 22); x.stroke(); }
+    x.strokeStyle = 'rgba(12,12,18,0.95)'; x.lineWidth = 3;
+    for (let i = 0; i < 6; i++) {
+      x.beginPath(); x.moveTo(S * 0.6, S * 0.3 + i * 22);
+      for (let k = 0; k < 6; k++) x.quadraticCurveTo(S * 0.6 + k * 12 + 6, S * 0.3 + i * 22 - 8, S * 0.6 + k * 12 + 12, S * 0.3 + i * 22);
+      x.stroke();
+    }
+    for (let i = 0; i < 2000; i++) { const v = r() * 30; x.fillStyle = `rgba(${120 + v},${80 + v},${60 + v},0.15)`; x.fillRect(r() * S, r() * S, 2, 2); }
+    return done(THREE, c, false);
+  }
+  function makeGlow(THREE, cnv, rgb) {
+    const S = 128, [c, x] = cnv(S);
+    const g = x.createRadialGradient(S / 2, S / 2, 2, S / 2, S / 2, S / 2);
+    g.addColorStop(0, `rgba(${rgb},0.9)`); g.addColorStop(0.35, `rgba(${rgb},0.25)`); g.addColorStop(1, `rgba(${rgb},0)`);
+    x.fillStyle = g; x.fillRect(0, 0, S, S);
+    return done(THREE, c, false);
+  }
+  function makeBoxTex(THREE, cnv) {
+    const S = 128, [c, x] = cnv(S);
+    x.fillStyle = '#c7a477'; x.fillRect(0, 0, S, S);
+    x.fillStyle = '#0c1a33'; x.fillRect(10, 40, 108, 36);
+    x.fillStyle = '#ffd25a'; x.font = 'bold 20px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('ROADEYE', 64, 58);
+    x.strokeStyle = 'rgba(80,60,30,0.6)'; x.lineWidth = 3; x.strokeRect(2, 2, S - 4, S - 4);
+    return done(THREE, c, false);
+  }
+  function makeCityNight(THREE, cnv) {
+    const S = 512, [c, x] = cnv(S), r = rng(73);
+    const g = x.createLinearGradient(0, 0, 0, S); g.addColorStop(0, '#05080f'); g.addColorStop(0.7, '#141c34'); g.addColorStop(1, '#251f2e');
+    x.fillStyle = g; x.fillRect(0, 0, S, S);
+    for (let i = 0; i < 22; i++) {
+      const w = 20 + r() * 50, xx = r() * S, hh = (0.3 + r() * 0.55) * S;
+      x.fillStyle = '#0b0f1a'; x.fillRect(xx, S - hh, w, hh);
+      for (let wy = S - hh + 6; wy < S - 4; wy += 8) for (let wx = xx + 3; wx < xx + w - 3; wx += 6)
+        if (r() < 0.3) { x.fillStyle = r() < 0.8 ? 'rgba(255,214,140,0.9)' : 'rgba(170,210,255,0.9)'; x.fillRect(wx, wy, 3, 4); }
+    }
+    return done(THREE, c, false);
+  }
+  function makePhoneChant(THREE, cnv) {
+    const S = 128, [c, x] = cnv(S);
+    x.fillStyle = '#16121c'; x.fillRect(0, 0, S, S);
+    x.fillStyle = '#d9a64a'; x.beginPath(); x.arc(S / 2, S * 0.35, 18, 0, Math.PI * 2); x.fill();
+    x.fillStyle = '#efe6d2'; for (let i = 0; i < 9; i++) x.fillRect(16, S * 0.6 + i * 3, 96 - (i % 3) * 18, 1.4);
+    x.fillStyle = '#d9a64a'; x.fillRect(16, S * 0.9, 96, 3);
+    return done(THREE, c, false);
   }
 
   /* ============================================================= textures
@@ -1657,21 +1865,258 @@
   }
 
   /* ============================================================== THE FILM
-     (CP5) */
+     ~55 s, his own voice over four memories and then the hall's doors: the
+     second yant going in, the business bigger, his own hand lifting off his
+     knee at home while the chant plays on his phone, his hands coming apart
+     on a temple floor and snapping back — and the ordination hall at dusk,
+     people in white going in ahead of him. `e3film2` runs under it all. */
   function intro(c, s, api) {
-    const { fade, step } = api;
-    step(0, () => {});
-    fade(0.0, 0.5, 1, 1);
+    const { step, sfx, fade, camTo, yawTo, pitchTo, faceFrom, rawK, smoothK, stage, armR, handsRoot, tr } = api;
+    const F = stage.film, P = F.P;
+    const at = (o, x, y, z) => ({ x: o.x + x, y, z: o.z + z });
+    step(0, () => { handsRoot.visible = false; });
+    fade(0.0, 0.0, 1, 1);
+    sfx(0.2, 'e3film2', 0.85);
+
+    // 1 · THE SECOND YANT (0 – 10): skin, the rod, the lamp
+    fade(0.6, 2.2, 1, 0);
+    camTo(0.0, 10.0, at(P.yant, 0.16, 1.40, -0.62), at(P.yant, 0.06, 1.33, -0.48), smoothK);
+    yawTo(0.0, 10.0, faceFrom(P.yant.x + 0.16, P.yant.z - 0.62, P.yant.x + 0.02, P.yant.z), faceFrom(P.yant.x + 0.06, P.yant.z - 0.48, P.yant.x + 0.05, P.yant.z), smoothK);
+    pitchTo(0.0, 10.0, -0.10, -0.06, smoothK);
+    for (const t of [0.9, 1.4, 1.9, 2.4, 2.85, 3.3, 3.75, 4.2, 4.6, 5.0, 5.4, 5.8, 6.2, 6.6, 7.0, 7.4, 7.8, 8.2]) sfx(t, 'yantap', 0.5);
+    sfx(2.2, 'z2pro1');                               // 5.15 s → 7.35
+    fade(9.3, 10.0, 0, 1);
+
+    // 2 · HIS BUSINESS, BIGGER (10 – 20.5): the shopfront at evening, the van
+    fade(10.2, 11.2, 1, 0);
+    camTo(10.0, 20.5, at(P.office, -3.4, 1.62, 7.2), at(P.office, 0.2, 1.62, 6.0), smoothK);
+    yawTo(10.0, 20.5, faceFrom(P.office.x - 3.4, P.office.z + 7.2, P.office.x - 0.5, P.office.z - 2.5), faceFrom(P.office.x + 0.2, P.office.z + 6.0, P.office.x + 1.6, P.office.z - 1.5), smoothK);
+    pitchTo(10.0, 20.5, 0.02, 0.0, smoothK);
+    sfx(10.3, 'officeamb2', 0.7);
+    sfx(11.2, 'z2pro2');                              // 5.88 s → 17.08
+    sfx(16.0, 'slidevan', 0.75);
+    fade(19.8, 20.5, 0, 1);
+
+    // 3 · HIS FLAT AT NIGHT (20.5 – 35.6): the chant on his phone, and his hand lifts
+    step(20.5, () => { handsRoot.visible = true; armR.visible = true; api.handsPose(0, 0, { from: 'rest' }); });
+    fade(20.7, 21.8, 1, 0);
+    camTo(20.5, 35.6, at(P.flat, 0.02, 0.96, 0.18), at(P.flat, 0.0, 0.94, 0.12), smoothK);
+    yawTo(20.5, 21.0, faceFrom(P.flat.x, P.flat.z + 0.18, P.flat.x + 0.1, P.flat.z - 0.9), faceFrom(P.flat.x, P.flat.z + 0.18, P.flat.x + 0.1, P.flat.z - 0.9), rawK);
+    pitchTo(20.5, 25.5, -0.50, -0.44, smoothK);
+    sfx(20.6, 'flatnight', 0.85);
+    sfx(21.8, 'z2pro3');                              // 6.35 s → 28.15
+    tr(25.5, 31.4, (k) => { api.handsPose(0.85 * smooth(k), 0.8 + (25.5 + k * 5.9) * 0.62, { from: 'rest' }); }, rawK);
+    pitchTo(25.5, 30.2, -0.44, -0.12, smoothK);       // his eyes follow it up
+    sfx(25.8, 'handsrise', 0.5);
+    sfx(28.6, 'z2pro4');                              // 6.53 s → 35.13
+    sfx(31.5, 'handslip', 0.55);
+    tr(31.4, 32.4, (k) => { api.handsPose(0.85 * (1 - smooth(k)), 4.5 + k * 0.4, { from: 'rest' }); }, rawK);
+    step(32.45, () => { const m = api.rightHand(); if (m) api.setHandCurl(m, 1); });
+    pitchTo(31.4, 33.0, -0.12, -0.46, smoothK);
+    fade(35.0, 35.6, 0, 1);
+
+    // 4 · A TEMPLE FLOOR, CLOSE (35.6 – 44.0): the hands come apart, and snap back
+    step(35.6, () => { api.handsPose(0, 0); });
+    fade(35.8, 36.8, 1, 0);
+    camTo(35.6, 44.0, at(P.floor, 0.0, 0.98, 0.16), at(P.floor, 0.0, 0.97, 0.12), rawK);
+    yawTo(35.6, 40.6, faceFrom(P.floor.x, P.floor.z + 0.16, P.floor.x + 0.1, P.floor.z - 0.8), faceFrom(P.floor.x, P.floor.z + 0.16, P.floor.x + 0.1, P.floor.z - 0.8), rawK);
+    pitchTo(35.6, 37.0, -0.40, -0.36, smoothK);
+    sfx(35.8, 'e3vesper', 0.32);
+    sfx(36.4, 'z2pro5');                              // 5.56 s → 41.96
+    tr(37.4, 40.2, (k) => { api.handsPose(0.6 * smooth(k), 1.0 + k * 2.2); }, rawK);
+    sfx(37.6, 'handsrise', 0.45);
+    tr(40.2, 40.5, (k) => { api.handsPose(0.6 * (1 - k), 3.2); }, rawK);
+    sfx(40.25, 'handslip', 0.8);
+    // he glances left, then right, at the knees either side of him: did they see?
+    yawTo(40.7, 41.4, faceFrom(P.floor.x, P.floor.z + 0.16, P.floor.x + 0.1, P.floor.z - 0.8), faceFrom(P.floor.x, P.floor.z + 0.16, P.floor.x - 0.9, P.floor.z + 0.0), smoothK);
+    yawTo(41.6, 42.4, faceFrom(P.floor.x, P.floor.z + 0.16, P.floor.x - 0.9, P.floor.z + 0.0), faceFrom(P.floor.x, P.floor.z + 0.16, P.floor.x + 0.9, P.floor.z + 0.0), smoothK);
+    yawTo(42.6, 43.3, faceFrom(P.floor.x, P.floor.z + 0.16, P.floor.x + 0.9, P.floor.z + 0.0), faceFrom(P.floor.x, P.floor.z + 0.16, P.floor.x + 0.1, P.floor.z - 0.8), smoothK);
+    fade(43.4, 44.0, 0, 1);
+
+    // 5 · THE HALL'S DOORS AT DUSK (44.0 – 55.2): people in white going in ahead of him
+    step(44.0, () => { handsRoot.visible = false; });
+    fade(44.2, 45.8, 1, 0);
+    camTo(44.0, 53.6, { x: 0.35, y: 0.25, z: 15.2 }, { x: 0.1, y: 0.42, z: 9.6 }, smoothK);
+    yawTo(44.0, 53.6, faceFrom(0.35, 15.2, 0.0, 2.0), faceFrom(0.1, 9.6, 0.0, 2.0), smoothK);
+    pitchTo(44.0, 53.6, 0.16, 0.20, smoothK);
+    sfx(44.0, 'templedusk', 0.7);
+    sfx(44.4, 'e3vesper', 0.32);
+    sfx(45.8, 'z2pro6');                              // 5.64 s → 51.44
+    sfx(52.6, 'e3bell', 0.35);
+    fade(53.6, 55.0, 0, 1);
+    step(55.1, () => { handsRoot.visible = true; armR.visible = true; });
     c.endFade = 1;
     c.keepFade = true;
   }
 
   /* ============================================================ THE ENDINGS
-     (CP6) */
-  function scForce(c, s, api) { api.fade(0, 1, 0, 1); c.endFade = 1; }
-  function scStepOut(c, s, api) { api.fade(0, 1, 0, 1); c.endFade = 1; }
-  function scLetRun(c, s, api) { api.fade(0, 1, 0, 1); c.endFade = 1; }
-  function scStill(c, s, api) { api.fade(0, 1, 0, 1); c.endFade = 1; }
+     Each begins where play left him: kneeling in the third row, his hands up
+     in the gesture, the faces turned. Each is a different answer to the same
+     moment; all four close on his line inside the scene and the last one over
+     the black (the v15.3 shape). */
+  const P0 = (s) => ({ x: s.yawPos.x, y: s.yawPos.y, z: s.yawPos.z });
+  function ending(c, api, T) {
+    const { step, sfx, sfxFade, fade, handsRoot } = api;
+    fade(T, T + 2.4, 0, 1);
+    sfxFade(T + 0.4, T + 6.6, 'e3close2');
+    sfx(T + 2.8, 'z2next');                           // 7.08 s
+    step(T + 10.2, () => { handsRoot.visible = true; });
+    c.endFade = 1;
+  }
+  const hk = (api) => { const f = api.handsFrom(); return { k: Math.max(0.6, f.k || 1), t: f.t || 0 }; };
+
+  /* A · FORCE IT DOWN (bad) — the fists, the shaking, the woman who asks */
+  function scForce(c, s, api) {
+    const { sfx, tr, step, yawTo, pitchTo, faceFrom, smoothK, rawK, stage, camera } = api;
+    const p0 = P0(s), H0 = hk(api), N = stage.NEIGH;
+    let shake = 0;
+    tr(0, 1.2, (k) => { api.handsPose(H0.k, H0.t + k * 1.0); }, rawK);
+    // he wrenches them down: the gesture collapses, the fingers close, it shakes
+    tr(1.2, 12.0, (k, t) => {
+      const u = Math.min(1, (t - 1.2) / 1.1);
+      shake = (1 - Math.min(1, Math.max(0, (t - 6) / 6))) * 0.012;
+      api.handsPose(H0.k * (1 - smooth(u)) + 0.08, H0.t + 1.0 + u * 0.3);
+      const m = api.rightHand(), L = api.prayerArm();
+      if (m) api.setHandCurl(m, smooth(u));
+      if (L && L.userData.model) api.setHandCurl(L.userData.model, smooth(u));
+      api.armR.position.y -= 0.10 * smooth(u); api.armR.position.x += Math.sin(t * 41) * shake;
+      if (L) { L.position.y -= 0.10 * smooth(u); L.position.x += Math.sin(t * 37 + 1) * shake; }
+      camera.rotation.z = Math.sin(t * 33) * shake * 0.6;
+    }, rawK);
+    step(12.0, () => { camera.rotation.z = 0; });
+    sfx(1.3, 'handslip', 0.9);
+    sfx(2.7, 'handslip', 0.55);
+    // she leans to him and asks; he turns to her; she looks away
+    step(3.6, () => { const n = stage.neighbour(); if (n) n.lookTo = 1; });
+    sfx(4.0, 'lw2look');                              // 2.72 s → 6.72
+    yawTo(4.2, 5.2, s.yawRot, faceFrom(p0.x, p0.z, N.x, N.z - 0.2), smoothK);
+    pitchTo(4.2, 5.2, s.pitchX, -0.18, smoothK);
+    yawTo(7.0, 8.0, faceFrom(p0.x, p0.z, N.x, N.z - 0.2), s.yawRot, smoothK);
+    step(7.6, () => { const n = stage.neighbour(); if (n) n.lookTo = 0; });
+    pitchTo(7.4, 9.0, -0.18, -0.55, smoothK);          // down at his own clenched hands
+    sfx(7.6, 'z2A1');                                 // 5.25 s → 12.85
+    sfx(12.6, 'e3close2', 0.9);
+    pitchTo(13.0, 21.0, -0.55, 0.10, smoothK);         // and up, slowly, to the Buddha
+    sfx(13.4, 'z2close');                             // 8.36 s → 21.76
+    ending(c, api, 21.9);
+  }
+
+  /* B · RISE QUIETLY, BOW, AND STEP OUTSIDE (good) — out through the rows
+     with his eyes down, onto the steps, the chant behind the doors */
+  function scStepOut(c, s, api) {
+    const { sfx, tr, step, camTo, yawTo, pitchTo, faceFrom, smoothK, rawK, stage, handsRoot, duck } = api;
+    const p0 = P0(s), H0 = hk(api), PL = stage.PLACE;
+    tr(0, 1.6, (k) => { api.handsPose(H0.k * (1 - smooth(k)), H0.t + k * 0.8); }, rawK);
+    // the wai to the Buddha
+    yawTo(0, 1.2, s.yawRot, faceFrom(p0.x, p0.z, 0, -20.4), smoothK);
+    pitchTo(1.7, 2.5, s.pitchX, -0.72, smoothK);
+    pitchTo(2.5, 3.3, -0.72, -0.05, smoothK);
+    // he stands, and the hands go
+    step(3.4, () => { handsRoot.visible = false; });
+    const up = { x: PL.x - 0.15, y: 1.62, z: PL.z + 0.05 };
+    camTo(3.4, 4.6, p0, up, smoothK);
+    sfx(3.6, 'matkneel', 0.6);
+    // west to the aisle, then north along it to the doors, eyes down
+    const aisle = { x: -4.95, y: 1.62, z: PL.z + 0.1 }, near = { x: -4.95, y: 1.62, z: 0.2 }, door = { x: -0.2, y: 1.62, z: 1.5 },
+          porch = { x: 0.1, y: 1.62, z: 3.6 };
+    yawTo(4.4, 5.2, faceFrom(p0.x, p0.z, 0, -20.4), faceFrom(up.x, up.z, aisle.x, aisle.z), smoothK);
+    pitchTo(4.4, 5.2, -0.05, -0.32, smoothK);
+    camTo(5.0, 7.0, up, aisle, rawK);
+    step(5.4, () => { const n = stage.neighbour(); if (n) n.lookTo = 1; });
+    yawTo(6.8, 7.6, faceFrom(up.x, up.z, aisle.x, aisle.z), faceFrom(aisle.x, aisle.z, near.x, near.z), smoothK);
+    camTo(7.4, 13.4, aisle, near, rawK);
+    step(9.0, () => { const n = stage.neighbour(); if (n) n.lookTo = 0; });
+    yawTo(13.0, 13.9, faceFrom(aisle.x, aisle.z, near.x, near.z), faceFrom(near.x, near.z, door.x, door.z), smoothK);
+    camTo(13.5, 15.6, near, door, rawK);
+    yawTo(15.4, 16.0, faceFrom(near.x, near.z, door.x, door.z), faceFrom(door.x, door.z, porch.x, porch.z), smoothK);
+    camTo(15.8, 17.6, door, porch, rawK);
+    for (const t of [5.2, 5.9, 6.6, 7.6, 8.3, 9.0, 9.7, 10.4, 11.1, 11.8, 12.5, 13.2, 13.9, 14.6, 15.3, 16.0, 16.7]) sfx(t, 'barestep', 0.42);
+    // the dusk outside comes up, the chant falls behind the doors
+    sfx(15.9, 'templedusk', 0.8);
+    tr(15.8, 19.0, (k) => { duck('e3vesper', 1 - 0.7 * k); duck('hallamb', 1 - 0.8 * k); }, rawK);
+    // on the steps: his right hand, still trembling, settling
+    step(18.0, () => { handsRoot.visible = true; api.armR.visible = true; api.handsPose(0.22, 0, { from: 'rest' }); });
+    tr(18.0, 25.0, (k, t) => { api.handsPose(0.22 * (1 - smooth(k)) + 0.03 * Math.sin(t * 9) * (1 - k), 0.5 + k * 2, { from: 'rest' }); }, rawK);
+    pitchTo(17.6, 19.0, -0.32, -0.45, smoothK);
+    sfx(19.4, 'z2B1');                                // 6.35 s → 25.75
+    step(25.2, () => { handsRoot.visible = false; });
+    sfx(25.4, 'e3close2', 0.9);
+    pitchTo(25.6, 32.0, -0.45, 0.42, smoothK);         // up at the night over the courtyard
+    sfx(26.0, 'z2close');                             // 8.36 s → 34.36
+    ending(c, api, 34.5);
+  }
+
+  /* C · LET IT RUN (worst) — it takes all of him; the chant falters; the
+     whole hall turns; Yai pulls her grandson close; and then it leaves him */
+  function scLetRun(c, s, api) {
+    const { sfx, tr, step, yawTo, pitchTo, faceFrom, smoothK, rawK, stage, camera, duck } = api;
+    const p0 = P0(s), H0 = hk(api), Y = stage.YAI;
+    let tFlow = H0.t;
+    tr(0, 18.0, (k, t) => {
+      const fall = Math.min(1, Math.max(0, (t - 14.0) / 4.0));
+      tFlow = H0.t + t * (1.5 - 0.9 * fall);
+      api.handsPose(1 - smooth(fall), tFlow);
+      const amp = 1 - 0.7 * fall;
+      camera.rotation.z = amp * (0.12 * Math.sin(t * 0.9) + 0.03 * Math.sin(t * 2.3));
+      stage.drawShadow(1 - fall * 0.8, t);
+    }, rawK);
+    // the body turns with it: the lens sways side to side
+    tr(0, 14.0, (k, t) => { api.yaw.rotation.y = s.yawRot + 0.34 * Math.sin(t * 0.55) * Math.min(1, t / 2); }, rawK);
+    step(0.1, () => { stage.shadow.material.opacity = 0.78; });
+    sfx(0.4, 'handsrise', 0.85);
+    sfx(0.8, 'chantswell', 0.8);
+    sfx(3.4, 'handsrise', 0.7);
+    // Yai pulls her grandson to her; whispering spreads
+    step(2.6, () => { const y = stage.yai(); if (y) y.lookTo = 1; const kd = stage.kid(); if (kd) kd.lookTo = 1; });
+    sfx(3.2, 'lw2pull');                              // 2.59 s → 5.79
+    sfx(4.4, 'whispers', 0.7);
+    // the monks' chant falters, and stops
+    sfx(6.6, 'chantstop', 0.85);
+    tr(6.6, 9.4, (k) => { duck('e3vesper', 1 - k); }, rawK);
+    step(8.2, () => { stage.lookAll(1); });
+    sfx(9.6, 'handsrise', 0.6);
+    sfx(10.4, 'z2C1');                                // 6.53 s → 16.93
+    // it leaves him: the hands drop, the lens slumps forward
+    tr(14.0, 18.6, (k) => { api.yaw.rotation.y = s.yawRot; }, rawK);
+    pitchTo(15.6, 18.6, s.pitchX, -0.62, smoothK);
+    step(18.6, () => { camera.rotation.z = 0; stage.shadow.material.opacity = 0.22; });
+    sfx(18.4, 'handslip', 0.6);
+    sfx(18.8, 'e3close2', 0.85);
+    sfx(19.4, 'z2close');                             // 8.36 s → 27.76
+    pitchTo(20.0, 27.0, -0.62, -0.25, smoothK);
+    void p0; void Y; void yawTo; void faceFrom;
+    ending(c, api, 27.9);
+  }
+
+  /* D · STAY STILL, BREATHE, AND RESOLVE TO ASK SOMEONE WHO TRULY KNOWS
+     (best) — he neither fights nor follows; it slows; it settles into his lap;
+     the faces turn away; the chant goes on */
+  function scStill(c, s, api) {
+    const { sfx, tr, step, pitchTo, smoothK, rawK, stage, camera, duck } = api;
+    const H0 = hk(api);
+    tr(0, 7.0, (k, t) => {
+      const u = smooth(Math.min(1, t / 6.4));
+      api.handsPose(H0.k * (1 - u), H0.t + t * (0.9 - 0.7 * u));
+      camera.rotation.z = (1 - u) * 0.05 * Math.sin(t * 0.6);
+      stage.drawShadow(H0.k * (1 - u), t);
+    }, rawK);
+    // into the lap: the clasp lowers and the fingers rest
+    tr(7.0, 9.4, (k) => { api.handsPose(0, H0.t + 6); api.armR.position.y -= 0.16 * smooth(k); const L = api.prayerArm(); if (L) L.position.y -= 0.16 * smooth(k); }, rawK);
+    step(9.45, () => { camera.rotation.z = 0; });
+    tr(9.4, 15.0, () => { api.handsPose(0, H0.t + 6); api.armR.position.y -= 0.16; const L = api.prayerArm(); if (L) L.position.y -= 0.16; }, rawK);
+    pitchTo(0.6, 6.8, s.pitchX, -0.5, smoothK);
+    sfx(1.0, 'matkneel', 0.35);
+    // the faces turn away, one by one
+    step(3.2, () => { const n = stage.neighbour(); if (n) n.lookTo = 0; });
+    step(4.6, () => { const y = stage.yai(); if (y) y.lookTo = 0; const kd = stage.kid(); if (kd) kd.lookTo = 0; });
+    step(5.8, () => { const f = stage.frontMan(); if (f) f.lookTo = 0; });
+    tr(4.0, 9.0, (k) => { duck('e3vesper', 1 - 0.25 * k); }, rawK);
+    sfx(8.2, 'z2D1');                                 // 6.19 s → 14.39
+    sfx(14.2, 'e3close2', 0.9);
+    pitchTo(14.4, 22.0, -0.5, 0.16, smoothK);          // up, to the Buddha
+    sfx(15.0, 'z2close');                             // 8.36 s → 23.36
+    ending(c, api, 23.5);
+  }
 
   (window.__CHAPTERS__ = window.__CHAPTERS__ || {}).e3c2 = Object.assign(DATA, {
     build,

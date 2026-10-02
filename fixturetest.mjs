@@ -305,6 +305,32 @@ K.praySeam = await p.evaluate(async () => {
 }).catch(() => false);
 await settle();
 
+/* v18.0: THE HANDS TAKEN (the twenty-fourth seam) — kit.hands lifts both
+   hands out of the clasp into the gesture by k, sways the lens with them, and
+   gives every bit of it back at zero: the arm where the engine leaves it, the
+   roll level, the left arm hidden */
+K.handsSeam = await p.evaluate(async () => {
+  const E = window.__enc;
+  const frames = (n) => new Promise(r => { let k = 0; const f = () => (++k >= n ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); });
+  await frames(2);
+  const rest = E.prayDebug();
+  E.kit.hands(1, { secs: 0.05 });
+  const t0 = performance.now();
+  while (E.kit.getHands() < 1 && performance.now() - t0 < 30000) await frames(1);
+  await frames(3);
+  const up = E.prayDebug();
+  const moved = Math.abs(up.ax - rest.ax) > 0.02 && up.left;
+  let rolled = 0;
+  for (let i = 0; i < 6; i++) { await frames(1); rolled = Math.max(rolled, Math.abs(E.camRoll())); }
+  E.kit.hands(0, { secs: 0.05 });
+  const t1 = performance.now();
+  while (E.kit.getHands() > 0 && performance.now() - t1 < 30000) await frames(1);
+  await frames(3);
+  const down = E.prayDebug();
+  return moved && rolled > 0.001 && E.camRoll() === 0 && !down.left && down.ax === rest.ax && down.ay === rest.ay;
+}).catch(() => false);
+await settle();
+
 // presence: an unseen thing drains the bar, and the banner uses the chapter's words for it
 K.presenceDrains = await p.evaluate(() => { window.__enc.kit.presence(1); return window.__enc.stats.sanity; })
   .then(s0 => p.waitForFunction(x => window.__enc.stats.sanity < x - 0.3, s0, { timeout: 60000 }))
@@ -357,6 +383,17 @@ r = await runEvent({ kind: 'heartbeat', n: 2, bpm: 120, win: 0.34, zone: 1, lead
                    async () => { await untilT(0.5); await tapOnce(); await untilT(1.0); await tapOnce(); });
 const beatAnswered = r.sum;
 K.evHeartbeat = r.band.length === 2;
+/* v18.0: RESIST (the twenty-fifth seam). One strong swell, never held: the
+   hands reach the top, it SLIPS, the chapter is told and the slip is graded
+   the worst band; the same swell HELD from its start never slips, and the
+   ebb that follows is graded on how much of it was held. */
+r = await runEvent({ kind: 'resist', swells: [{ at: 0.2, len: 1.6, pull: 1.6 }], tail: 0.3, missCost: 3,
+                     award: { stat: 'awareness', per: 1 }, onSlip: () => { window.__slips = (window.__slips || 0) + 1; } }, null);
+K.evResistSlips = r.kind === 'resist' && await p.evaluate(() => window.__slips >= 1) && r.band.includes(-4);
+r = await runEvent({ kind: 'resist', swells: [{ at: 0.2, len: 1.2, pull: 0.9 }, { at: 2.4, len: 0.6, pull: 0.2 }], tail: 0.2, grip: 0.3,
+                     award: { stat: 'awareness', per: 1 }, onSlip: () => { window.__slips2 = (window.__slips2 || 0) + 1; } },
+                   async () => { await press(); await untilT(1.5); await release(); });
+K.evResistHeld = r.kind === 'resist' && await p.evaluate(() => !window.__slips2) && !r.band.includes(-4) && r.band.length >= 2;
 /* and MISSING both beats must HURT — the whole of Chad's v9.3 note */
 const san0 = await p.evaluate(() => window.__enc.stats.sanity);
 r = await runEvent({ kind: 'heartbeat', n: 2, bpm: 120, win: 0.2, zone: 1, lead: 0.4,

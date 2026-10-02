@@ -27,7 +27,7 @@ p.on('pageerror', e => errs.push(where + ': ' + e.message));
 /* v14.7: and episode 1 chapter 3, the first base-game chapter with a HOTSPOT
    (the amulet on the auntie's table, which must be reached before the altar
    opens) and with new per-frame code to catch a throw in */
-for (const key of ['ch3', 'e2c1', 'e2c2', 'e2c3', 'e2c4', 'e2c5', 'e3c1']) {
+for (const key of ['ch3', 'e2c1', 'e2c2', 'e2c3', 'e2c4', 'e2c5', 'e3c1', 'e3c2']) {
   where = key;
   await p.goto(PAGE + '?ch=' + key);
   await p.click('#startBtn');

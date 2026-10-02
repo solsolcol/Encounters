@@ -445,6 +445,7 @@ if (VOICE && Array.isArray(VOICE.LINES)) {
         rawK, smoothK, mixAngle: (a, b, k) => a + (b - a) * k, faceFrom: () => 0,
         CAM_FOV: 72, handWidth: () => 0.1, getReveal: () => 0,
         ghostOpacity: () => {}, setHandPrayer: () => {},
+        handsPose: () => {}, handsFrom: () => ({ k: 1, t: 0 }),   // v18.0: the hands seam in a scene
       };
       for (const k of ['THREE', 'SHRINE', 'stage', 'camera', 'yaw', 'pitch', 'ghost', 'ghostLight',
                        'kit', 'handsRoot', 'armR', 'armL', 'rightHandModel', 'prayerArmL',
