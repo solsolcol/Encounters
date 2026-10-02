@@ -4631,6 +4631,47 @@ What the baseline contains, by release:
   drawn frames. The katha now starts on the heartbeat's START: a kit event may
   declare `onBegin`. Sheet v82 exported (v44 stays the link).
   docs/V17.6-THE-SAK-YANT-CHOICE.md §7.
+- **v18.0** EPISODE 3 · CHAPTER 2 · THE HANDS THAT MOVED — S1·07, to the
+  episode plan Chad approved, with his one change: *"chp 2 temple should be a
+  different temple to look fresh for the player"*. Chapter 1 was a white-and-gold
+  Lanna wat seen from outside at dawn; chapter 2 is the INSIDE of a central-Thai
+  ordination hall at dusk: black-lacquer columns with gold bands, a coffered red
+  ceiling, a blue-and-gold back wall, a great gilded Buddha on a three-tier
+  pedestal, nine monks chanting on a side platform, and rows of laypeople in
+  white. THE FILM (55 s, his voice, Louis): a second yant going in, close; the
+  ROADEYE office bigger; his own hand lifting off his knee at home while the
+  chant plays on his phone; his hands coming apart on a temple floor and
+  snapping back; people in white climbing the hall's steps at dusk. PLAY: a
+  chant book from the shelf, gold leaf pressed onto the small Buddha's back, the
+  free mat in the third row, the chant and three bows — then THE TWENTY-FIFTH
+  SEAM, the `resist` event kind: the chant SWELLS three times, the hands rise on
+  their own, HOLD through a swell and LET GO in the ebb, graded on the v9.3
+  ladder, a slip turns heads and costs sanity; and THE TWENTY-FOURTH, `kit.hands`
+  (the hands lifted out of añjali into a Thai gesture by k, the body swaying
+  with them, eased on wall time). The peak: the hands up, the hall looking, a
+  crowned shadow on the mats and a gold glimpse at the frame's edge, and the
+  decision opens itself. Four answers (A press the hands together and force it;
+  B rise, bow and step outside; C let it run; D stay still and resolve to ask
+  someone who truly knows — D best, C worst), S1·07's lesson verbatim, no Pali
+  tag. 24 lines (Louis, a laywoman Onnie, Yai Air), 18 sounds and three beds,
+  picked by measurement (masters/v18.0/make.sh). The congregation is five
+  existing rigs re-posed onto the monk's cross-legged take (`lay_*.glb`, posed
+  into añjali once by IK) and dressed white by a skin-REGION rule — hue alone
+  left blotches on every printed shirt; the scolding granny keeps her own
+  sarong, which no colour rule can separate from her skin. Found and fixed by
+  photograph: the resist kind integrated on the CLAMPED frame dt, so on a slow
+  phone the hands rose in slow motion and could never slip (it integrates on the
+  event's own wall step now, and the fixture proves both a slip and a held
+  swell); `kit.hands` restarted its ease every frame a caller drove it; the
+  panel sat over the hands it asks you to watch (it is under the objective
+  now); a fist built on the clasp threads the fingers of one hand through the
+  other, so option A forces the PRAYER instead (its words changed to match);
+  the shelf's books were sealed inside a solid box; the film's back was an egg,
+  its van a toy, its floor shot a void and its steps floating slabs. Engine
+  seams: two (`kit.hands`, `resist`), both unreachable from episodes 1 and 2.
+  walktest gained e3c2. Sheet v83 exported (v44 stays the link). Deploy
+  `6ac02972bbf579dc3e16297c`, byte-verified (all 203 build files).
+  docs/V18.0-E3C2-PLAN.md is the build's memory.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -5167,8 +5208,9 @@ assigned where a texture belonged; and the clearance is ISSUED at the start
 of play rather than inferred from an empty bag, which had left both counters
 dead from the chapter's first frame (docs/LEARNINGS.md).
 
-Next up: **episode 3 chapter 2**, The Hands That Moved (v16.0 shipped chapter 1,
-The Luck I Went Looking For — `src/chapters/e3/e3c1.js`; the whole episode's
+Next up: **episode 3 chapter 3**, The Dance On Buddha Day (v16.0 shipped chapter 1,
+The Luck I Went Looking For — `src/chapters/e3/e3c1.js`; v18.0 chapter 2, The
+Hands That Moved — `src/chapters/e3/e3c2.js`, docs/V18.0-E3C2-PLAN.md; the whole episode's
 plan is docs/V16.0-EPISODE3-PLAN.md and its model list docs/E3-MODELS.md). Everything the architecture needs for it is in
 docs/EPISODES-PLAN.md.
 (chapter 1, The Worst Bed, shipped at v7.1 — `src/chapters/e2/e2c1.js`;
@@ -5194,7 +5236,7 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v82** (`masters/v17.7/masterz-text-v82.xlsx`, v81 with v17.7's three Sak Yant names and words from Chad's reference pages. v81 was `masters/v17.6/masterz-text-v81.xlsx`, v80 plus v17.6's Sak Yant choice: three items' names, powers and words, the window's words, the chapter's four, and two Ajarn voice lines. v80 was `masters/v17.0/masterz-text-v80.xlsx`, v79 plus v17.0's three credit strings for the Khon masks. v79 was `masters/v16.9/masterz-text-v79.xlsx`, v78 plus v16.9's six credit strings — the temple and the slippers. v78 was `masters/v16.6/masterz-text-v78.xlsx`, v77 plus v16.6's four credit rows for the Tailandia packs. v77 was `masters/v16.1/masterz-text-v77.xlsx`, v76 with the monk's three voice lines re-said by Arthur at v16.2. v76 was `masters/v16.1/masterz-text-v76.xlsx`, five tabs: UI
+**THE SHEET IS v83** (`masters/v18.0/masterz-text-v83.xlsx`, v82 plus episode 3 chapter 2's words and its 24 voice lines. v82 was `masters/v17.7/masterz-text-v82.xlsx`, v81 with v17.7's three Sak Yant names and words from Chad's reference pages. v81 was `masters/v17.6/masterz-text-v81.xlsx`, v80 plus v17.6's Sak Yant choice: three items' names, powers and words, the window's words, the chapter's four, and two Ajarn voice lines. v80 was `masters/v17.0/masterz-text-v80.xlsx`, v79 plus v17.0's three credit strings for the Khon masks. v79 was `masters/v16.9/masterz-text-v79.xlsx`, v78 plus v16.9's six credit strings — the temple and the slippers. v78 was `masters/v16.6/masterz-text-v78.xlsx`, v77 plus v16.6's four credit rows for the Tailandia packs. v77 was `masters/v16.1/masterz-text-v77.xlsx`, v76 with the monk's three voice lines re-said by Arthur at v16.2. v76 was `masters/v16.1/masterz-text-v76.xlsx`, five tabs: UI
 TEXT 292, EPISODE 1 114, EPISODE 2 193, EPISODE 3 41, VOICE LINES 337 — v76
 adds v16.1's four words, two changed cells and seven voice lines to v75).
 Was v75 (`masters/v16.0/masterz-text-v75.xlsx`, which added episode 3
