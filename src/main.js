@@ -3985,7 +3985,8 @@ function evFrame(dt, dLookX, dLookY) {
      than leaping. */
   const nowMs = performance.now() / 1000;
   if (!e.wallLast) e.wallLast = nowMs;
-  e.t += Math.min(0.25, Math.max(0, nowMs - e.wallLast));
+  const wdt = Math.min(0.25, Math.max(0, nowMs - e.wallLast));   // v18.0: the step the clock took, for a kind that integrates on it
+  e.t += wdt;
   e.wallLast = nowMs;
   if (e.down) e.look += Math.abs(dLookX) + Math.abs(dLookY);
   const bar = $('evBar');
@@ -4032,11 +4033,14 @@ function evFrame(dt, dLookX, dLookY) {
         }
         e.rprev = i;
       }
-      e.rguard = Math.max(0, e.rguard - dt);
+      e.rguard = Math.max(0, e.rguard - wdt);
       if (inSwell) {
         const s0 = sw[i], u = (e.t - s0.at) / s0.len;
         const pull = (s0.pull ?? 0.4) * (1 + o.surge * Math.sin(e.t * 6.3) + 0.6 * Math.sin(u * Math.PI));
-        e.rk = e.down ? Math.max(0, e.rk + (pull * o.grip - o.push) * dt) : e.rk + pull * dt;   // a strong enough swell beats the grip
+        /* on the event's own wall step (wdt), never the clamped frame dt: on a
+           slow phone the swells would otherwise rise in slow motion against a
+           clock that does not — measured, the fixture's swell never slipped */
+        e.rk = e.down ? Math.max(0, e.rk + (pull * o.grip - o.push) * wdt) : e.rk + pull * wdt;   // a strong enough swell beats the grip
         e.rmax = Math.max(e.rmax, e.rk);
         if (e.rk >= 1 && e.rguard <= 0) {
           e.rslipped = true; e.rguard = 1.2;
@@ -4047,8 +4051,8 @@ function evFrame(dt, dLookX, dLookY) {
         }
         e.rk = Math.min(1, e.rk);
       } else {
-        e.rk = Math.max(0, e.rk - o.relax * dt);
-        if (e.t > sw[0].at) { e.rebb += dt; if (e.down) e.rheld += dt; }
+        e.rk = Math.max(0, e.rk - o.relax * wdt);
+        if (e.t > sw[0].at) { e.rebb += wdt; if (e.down) e.rheld += wdt; }
       }
       const host = evEl();
       if (host) {

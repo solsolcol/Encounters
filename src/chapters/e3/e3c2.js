@@ -191,7 +191,7 @@
     const wallTex = tex(makeCreamWall(THREE, cnv)); wallTex.repeat.set(6, 3);
     const goldTex = tex(makeGoldBand(THREE, cnv)); goldTex.repeat.set(10, 1);
     const tileTex = tex(makeRoofTiles(THREE, cnv, '#c96a2e', '#5e2a10')); tileTex.repeat.set(6, 4);
-    const matFloor = new THREE.MeshStandardMaterial({ map: floorTex, roughness: 0.32, metalness: 0.05 });
+    const matFloor = new THREE.MeshStandardMaterial({ map: floorTex, roughness: 0.42, metalness: 0.05 });   // (0.32 put a hot spot of the Buddha lamp on the stone in front of every row)
     const matCol   = new THREE.MeshStandardMaterial({ map: lacTex, roughness: 0.32, metalness: 0.2 });
     const matCoffer = new THREE.MeshStandardMaterial({ map: cofTex, roughness: 0.7, side: THREE.DoubleSide,
                                                        emissive: 0xffffff, emissiveMap: cofTex, emissiveIntensity: 0.10 });
@@ -500,12 +500,17 @@
 
     /* --------------------------------------------- BY THE DOOR, AND THE ROWS */
     // the chant-book shelf: a low lacquered cabinet with open shelves of red books
-    const shelf = new THREE.Group(); shelf.position.set(SHELF.x, 0, SHELF.z - 0.22); world.add(shelf);
-    solids.push(box(1.5, 1.15, 0.4, 0, 0.575, 0, matWood, shelf));
+    // (turned a half-turn so its OPEN face, local +z, faces into the hall;
+    // the solid that blocks is an invisible box of the same footprint)
+    const shelf = new THREE.Group(); shelf.position.set(SHELF.x, 0, SHELF.z - 0.22); shelf.rotation.y = Math.PI; world.add(shelf);
+    { const c = box(1.5, 1.15, 0.4, 0, 0.575, 0, matWood, shelf); c.visible = false; solids.push(c); }
+    box(1.5, 1.15, 0.03, 0, 0.575, -0.185, matWood, shelf);                         // the back
+    for (const sx of [-1, 1]) box(0.04, 1.15, 0.4, sx * 0.73, 0.575, 0, matWood, shelf);   // the sides
+    for (const y of [0.12, 0.45, 0.78, 1.13]) box(1.5, 0.035, 0.4, 0, y, 0, matWood, shelf);   // the boards and the top
     const bookMats = [0x8c1b14, 0xa3241a, 0x7a1610, 0x99301e].map(c => new THREE.MeshStandardMaterial({ color: c, roughness: 0.75 }));
     const books = [];
     for (let row = 0; row < 3; row++) for (let i = 0; i < 18; i++) {
-      const b = box(0.06, 0.2, 0.15, -0.66 + i * 0.077, 0.24 + row * 0.33, 0.06, bookMats[(i + row) % 4], shelf, false);
+      const b = box(0.06, 0.2, 0.15, -0.66 + i * 0.077, 0.24 + row * 0.33, 0.02, bookMats[(i + row) % 4], shelf, false);
       b.rotation.z = (hash(i, row) - 0.5) * 0.08;
       if (row === 2 && i === 7) books.push(b);           // the one he takes
     }
@@ -684,7 +689,7 @@
       lay_admintee: { h: 1.70, take: 'Sit_Cross_Legged_on_Floor' },
       lay_botak:    { h: 1.68, take: 'Sit_Cross_Legged_on_Floor' },
       lay_granny:   { h: 1.52, take: 'Sit_Cross_Legged_on_Floor' },
-      lay_scold:    { h: 1.55, take: 'Sit_Cross_Legged_on_Floor' },
+      lay_scold:    { h: 1.55, take: 'Sit_Cross_Legged_on_Floor', own: true },   // her patterned sarong cannot be told from her skin by colour: she keeps her own clothes
       lay_sitwoman: { h: 1.60, take: 'Sit_Cross_Legged_on_Floor' },
       admintee:     { h: 1.70, take: 'Chair_Sit_Idle_M' },
       monkrow:      { h: 1.70, take: 'Sit_Cross_Legged_on_Floor' }
@@ -703,6 +708,40 @@
        skin and not hair goes to a warm white at its own brightness. One copy
        per KIND (every clone of a kind shares it). */
     const whiteCache = new Map();
+    /* which texels of a sheet are SKIN (1) or DARK (2: hair, trousers, the
+       empty atlas) — everything else is cloth and goes white. Hue alone left
+       blotches: a print or a check with skin-hued threads (the first
+       photographs had pink and brown flecks all over the white shirts). So a
+       texel is skin only when, among the non-dark texels of a 13x13 window
+       round it, most are skin-coloured — a skin island stays whole right to
+       its edge against the empty atlas, a pattern falls away. Prototyped on
+       the five sheets offline before it went in (masters/v18.0 notes). */
+    function skinMap(p, W, Hh) {
+      const N = W * Hh, raw = new Uint8Array(N);
+      for (let n = 0, i = 0; n < N; n++, i += 4) {
+        const r = p[i], g = p[i + 1], b = p[i + 2], L = 0.30 * r + 0.59 * g + 0.11 * b;
+        const mx = Math.max(r, g, b), mn = Math.min(r, g, b), sat = mx ? (mx - mn) / mx : 0;
+        let hue = 0;
+        if (mx !== mn) hue = mx === r ? 60 * (((g - b) / (mx - mn)) % 6) : mx === g ? 60 * ((b - r) / (mx - mn) + 2) : 60 * ((r - g) / (mx - mn) + 4);
+        if (hue < 0) hue += 360;
+        if (L < 42) raw[n] = 2;
+        else if (hue >= 4 && hue <= 38 && sat > 0.21 && sat < 0.66 && L > 58 && r > g + 10) raw[n] = 1;
+      }
+      const R = 6, out = new Uint8Array(N), W1 = W + 1;
+      const integ = (cls) => { const S = new Int32Array(W1 * (Hh + 1));
+        for (let y = 0; y < Hh; y++) { let row = 0; for (let x = 0; x < W; x++) { row += raw[y * W + x] === cls ? 1 : 0; S[(y + 1) * W1 + x + 1] = S[y * W1 + x + 1] + row; } }
+        return S; };
+      const S0 = integ(0), S1 = integ(1);
+      const box = (S, x0, y0, x1, y1) => S[y1 * W1 + x1] - S[y0 * W1 + x1] - S[y1 * W1 + x0] + S[y0 * W1 + x0];
+      for (let y = 0; y < Hh; y++) for (let x = 0; x < W; x++) {
+        const n = y * W + x;
+        if (raw[n] === 2) { out[n] = 2; continue; }
+        const x0 = Math.max(0, x - R), y0 = Math.max(0, y - R), x1 = Math.min(W, x + R + 1), y1 = Math.min(Hh, y + R + 1);
+        const sk = box(S1, x0, y0, x1, y1), cl = box(S0, x0, y0, x1, y1);
+        if (raw[n] === 1 ? sk > (sk + cl) * 0.62 : sk > (sk + cl) * 0.9) out[n] = 1;   // a cloth texel deep in skin is skin too (a pore, a shadow)
+      }
+      return out;
+    }
     function whiteOf(m) {
       if (whiteCache.has(m)) return whiteCache.get(m);
       const c = m.clone();
@@ -722,11 +761,10 @@
           cv.width = W; cv.height = Hh;
           const x = cv.getContext('2d'); x.drawImage(img, 0, 0);
           const d = x.getImageData(0, 0, W, Hh), p = d.data;
-          for (let i = 0; i < p.length; i += 4) {
-            const r = p[i], g = p[i + 1], b = p[i + 2], L = 0.30 * r + 0.59 * g + 0.11 * b;
-            const skin = r > g + 12 && g > b && r - b > 30 && r - b < 150 && L > 55 && L < 230 && (r - g) < 80;   // skin leads red by a clear margin; an olive tee does not
-            const hair = L < 40;
-            if (skin || hair) continue;
+          const cls = skinMap(p, W, Hh);
+          for (let i = 0, n = 0; i < p.length; i += 4, n++) {
+            if (cls[n]) continue;                         // skin, and the dark of hair and trousers, stay
+            const L = 0.30 * p[i] + 0.59 * p[i + 1] + 0.11 * p[i + 2];
             const v = Math.min(255, 172 + L * 0.40);
             p[i] = v; p[i + 1] = v * 0.988; p[i + 2] = v * 0.955;
           }
@@ -757,7 +795,7 @@
           if (o2.isBone) r.bones.push(o2);
           if (!o2.isMesh) return;
           o2.castShadow = !LOW && !!o.cast; o2.receiveShadow = false;
-          if (o.white !== false) o2.material = Array.isArray(o2.material) ? o2.material.map(whiteOf) : whiteOf(o2.material);
+          if (o.white !== false && !(KIND[key] && KIND[key].own)) o2.material = Array.isArray(o2.material) ? o2.material.map(whiteOf) : whiteOf(o2.material);
           o2.frustumCulled = true;
           if (o2.isSkinnedMesh) { const sp = new THREE.Sphere(new THREE.Vector3(0, 0.6, 0), 1.3); o2.boundingSphere = sp.clone(); if (o2.geometry) o2.geometry.boundingSphere = sp.clone(); }
         });
@@ -1496,8 +1534,10 @@
     const skinTex = h.tex(makeBackSkin(THREE, cnv));
     const back = new THREE.Mesh(new THREE.SphereGeometry(1, 48, 32, 0, Math.PI, 0, Math.PI), basic({ map: skinTex, side: THREE.DoubleSide }));
     back.scale.set(0.42, 0.62, 0.22); back.rotation.y = Math.PI; back.position.set(0, 1.25, 0); Y.add(back);
-    const lampG = new THREE.Mesh(new THREE.PlaneGeometry(3, 3), basic({ map: h.tex(makeGlow(THREE, cnv, '255,190,110')), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
-    lampG.position.set(0.5, 1.6, -0.5); Y.add(lampG);
+    // the lamp's warmth: BEHIND the shoulder, a rim round it (the lens is at
+    // z −0.6 looking +z, so the plane must not stand between them)
+    const lampG = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 1.8), basic({ map: h.tex(makeGlow(THREE, cnv, '255,190,110')), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide }));
+    lampG.position.set(0.5, 1.6, 0.4); Y.add(lampG);
     fbox(6, 6, 0.1, 0, 2, 1.6, basic({ color: 0x0c0806 }), Y);
     const rod = new THREE.Group(); Y.add(rod);
     { const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.004, 0.006, 0.62, 8), basic({ color: 0x9aa0a6 }));

@@ -319,7 +319,7 @@ K.handsSeam = await p.evaluate(async () => {
   while (E.kit.getHands() < 1 && performance.now() - t0 < 30000) await frames(1);
   await frames(3);
   const up = E.prayDebug();
-  const moved = Math.abs(up.ax - rest.ax) > 0.02 && up.left;
+  const moved = Math.hypot(up.ax - rest.ax, up.ay - rest.ay) > 0.02 && up.left;   // the gesture lifts the arm; x alone can come back near rest
   let rolled = 0;
   for (let i = 0; i < 6; i++) { await frames(1); rolled = Math.max(rolled, Math.abs(E.camRoll())); }
   E.kit.hands(0, { secs: 0.05 });
@@ -350,7 +350,12 @@ K.presenceStops = await p.evaluate(() => window.__enc.kitDebug().presence === 0
 
 // events: one system, eight kinds, each resolved by state
 async function runEvent(opts, drive) {
-  await p.evaluate(o => { window.__evR = null; window.__enc.kit.event(o).then(r => { window.__evR = r; }); }, opts);
+  await p.evaluate(o => {
+    window.__evR = null;
+    // a callback cannot cross into the page, so a check names a counter instead
+    if (o.slipTag) { const t = o.slipTag; o.onSlip = () => { window[t] = (window[t] || 0) + 1; }; }
+    window.__enc.kit.event(o).then(r => { window.__evR = r; });
+  }, opts);
   // started — or already over, for a kind that can resolve on its first frame
   await p.waitForFunction(() => { const d = window.__enc.kitDebug(); return window.__evR !== null || !!(d.event && d.event.started); }, null, { timeout: 30000 });
   if (drive && await p.evaluate(() => window.__evR === null)) await drive();
@@ -388,10 +393,10 @@ K.evHeartbeat = r.band.length === 2;
    the worst band; the same swell HELD from its start never slips, and the
    ebb that follows is graded on how much of it was held. */
 r = await runEvent({ kind: 'resist', swells: [{ at: 0.2, len: 1.6, pull: 1.6 }], tail: 0.3, missCost: 3,
-                     award: { stat: 'awareness', per: 1 }, onSlip: () => { window.__slips = (window.__slips || 0) + 1; } }, null);
+                     award: { stat: 'awareness', per: 1 }, slipTag: '__slips' }, null);
 K.evResistSlips = r.kind === 'resist' && await p.evaluate(() => window.__slips >= 1) && r.band.includes(-4);
 r = await runEvent({ kind: 'resist', swells: [{ at: 0.2, len: 1.2, pull: 0.9 }, { at: 2.4, len: 0.6, pull: 0.2 }], tail: 0.2, grip: 0.3,
-                     award: { stat: 'awareness', per: 1 }, onSlip: () => { window.__slips2 = (window.__slips2 || 0) + 1; } },
+                     award: { stat: 'awareness', per: 1 }, slipTag: '__slips2' },
                    async () => { await press(); await untilT(1.5); await release(); });
 K.evResistHeld = r.kind === 'resist' && await p.evaluate(() => !window.__slips2) && !r.band.includes(-4) && r.band.length >= 2;
 /* and MISSING both beats must HURT — the whole of Chad's v9.3 note */

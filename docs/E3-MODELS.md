@@ -37,6 +37,13 @@ scene. Priority ★ = the chapter looks wrong without it.
 - ★ **A Thevada** (a crowned Thai celestial dancer figure — a golden statue or a
   character) — shown as a translucent golden silhouette.
 - Props: candles, incense pots, lotus, temple drums/gong.
+- *Shipped at v18.0 with stand-ins, to swap when these land:* the hall is
+  built in primitives (black-lacquer columns, gold window crowns, a coffered
+  red ceiling) with the Tailandia kit's Buddha at 7.6x as the great image;
+  the kneeling rows are five existing rigs (admin tee, botak, granny, scold,
+  pink-shirt lady) RE-POSED onto the monk's cross-legged take and dressed
+  white (`lay_*.glb`); the chanting monks are Chad's monk (`monkrow.glb`);
+  the Thevada is a drawn shadow and a gold glimpse, never a model.
 
 ## Chapter 3 · The Dance On Buddha Day (Singapore)
 - ★ **A Thai amulet shop interior** (glass counters, shelves of framed amulets, a
