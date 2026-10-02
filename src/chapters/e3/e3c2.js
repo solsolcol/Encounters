@@ -586,10 +586,14 @@
        slippers on the steps, two lamps, the trees beyond. */
     const outside = new THREE.Group(); world.add(outside);
     box(HALL.x1 - HALL.x0 + 3, 0.2, 4.0, 0, -0.1, HALL.z1 + 2.45, matCream, outside);                       // the porch
-    for (let i = 0; i < 6; i++) box(5.0, 0.2, 0.36, 0, -0.3 - i * 0.2, HALL.z1 + 4.6 + i * 0.36, matCream, outside);   // the steps
-    const yard = new THREE.Mesh(new THREE.PlaneGeometry(60, 40), new THREE.MeshStandardMaterial({ map: tex(makeSlabs(THREE, cnv)), roughness: 0.9 }));
-    yard.material.map.repeat.set(16, 11);
-    yard.rotation.x = -Math.PI / 2; yard.position.set(0, -1.4, HALL.z1 + 26); yard.receiveShadow = true; outside.add(yard);
+    // the steps, each one SOLID to the courtyard, and the base the hall and its
+    // porch stand on (the first film frames showed thin slabs over blue void)
+    for (let i = 0; i < 6; i++) { const top = -0.2 - i * 0.2; box(5.0, top + 1.4, 0.36, 0, (top - 1.4) / 2, HALL.z1 + 4.6 + i * 0.36, matCream, outside); }
+    box(HALL.x1 - HALL.x0 + 3, 1.2, HALL.z1 - HALL.z0 + 4.3, 0, -0.8, (HALL.z0 + HALL.z1 + 4.4) / 2, matCream, outside, false);   // the base
+    box(HALL.x1 - HALL.x0 + 3.3, 0.08, 0.1, 0, -0.04, HALL.z1 + 4.47, matGold, outside, false);                                        // its gold lip
+    const yard = new THREE.Mesh(new THREE.PlaneGeometry(70, 80), new THREE.MeshStandardMaterial({ map: tex(makeSlabs(THREE, cnv)), roughness: 0.9 }));
+    yard.material.map.repeat.set(19, 22);
+    yard.rotation.x = -Math.PI / 2; yard.position.set(0, -1.4, HALL.z1 + 8); yard.receiveShadow = true; outside.add(yard);
     for (const s of [-1, 1]) {
       // porch columns, white with gold capitals, and the gables over the porch
       for (const x of [3.2, 6.6]) { box(0.5, 4.8, 0.5, s * x, 2.4, HALL.z1 + 4.0, matWhite, outside); cyl(0.32, 0.45, 0.4, s * x, 4.9, HALL.z1 + 4.0, matGold, 8, outside); }
@@ -1532,8 +1536,25 @@
        steel tip of the rod, one lamp's warmth. */
     const Y = pock(P.yant);
     const skinTex = h.tex(makeBackSkin(THREE, cnv));
-    const back = new THREE.Mesh(new THREE.SphereGeometry(1, 48, 32, 0, Math.PI, 0, Math.PI), basic({ map: skinTex, side: THREE.DoubleSide }));
-    back.scale.set(0.42, 0.62, 0.22); back.rotation.y = Math.PI; back.position.set(0, 1.25, 0); Y.add(back);
+    /* a man's back, from behind and a little above: the torso a tapered
+       cylinder flattened front to back (its −z face, u = 0.5, is the one the
+       lens sees — the yant is painted there), the shoulders' round, the neck
+       and the dark nape of the head at the top of the frame. Unlit paint with
+       the shading drawn in (the spine's groove, the blades), as the other
+       pockets are. (The first cut was one half-sphere: on screen an egg.) */
+    const skinM = basic({ map: skinTex });
+    const skinFlat = basic({ color: 0xa4704e });
+    const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.205, 0.165, 0.62, 64, 1, true), skinM);
+    torso.scale.z = 0.58; torso.position.set(0, 1.12, 0); Y.add(torso);
+    for (const sx of [-1, 1]) {
+      const sh = new THREE.Mesh(new THREE.SphereGeometry(0.075, 24, 16), skinFlat);
+      sh.scale.set(1.25, 0.8, 0.95); sh.position.set(sx * 0.19, 1.405, 0.0); Y.add(sh);
+    }
+    const yoke = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.205, 0.07, 48, 1, false), skinFlat);
+    yoke.scale.z = 0.58; yoke.position.set(0, 1.465, 0); Y.add(yoke);
+    const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.062, 0.12, 24), skinFlat); neck.position.set(0, 1.55, 0.01); Y.add(neck);
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.1, 32, 24), basic({ color: 0x15110e })); head.scale.set(0.92, 1.08, 1.0); head.position.set(0, 1.69, 0.03); Y.add(head);
+    const back = torso;
     // the lamp's warmth: BEHIND the shoulder, a rim round it (the lens is at
     // z −0.6 looking +z, so the plane must not stand between them)
     const lampG = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 1.8), basic({ map: h.tex(makeGlow(THREE, cnv, '255,190,110')), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide }));
@@ -1568,14 +1589,17 @@
       fbox(0.48, 0.45, 0.48, dx, 0.42, -2.25, basic({ color: 0x23262b }), O);   // the chair
     }
     const staff = [0, 1, 2].map(i => h.mkSitter('admintee', -1.8 + i * 2.6, -2.35, Math.PI, { white: false, pray: false, take: 'Chair_Sit_Idle_M', at: 0.2 + i * 0.25, nod: 0.3, parent: O }));
-    const van = new THREE.Group(); van.position.set(3.2, 0, 2.2); O.add(van);
-    fbox(4.6, 1.9, 1.9, 0, 1.25, 0, basic({ color: 0xe9ebee }), van);
-    fbox(1.2, 1.2, 1.86, -2.25, 1.0, 0, basic({ color: 0xdfe1e4 }), van);
-    fbox(1.0, 0.6, 0.02, -2.2, 1.4, 0.94, basic({ color: 0x2a3644 }), van);
-    for (const wx of [-1.7, 1.4]) { const w = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.36, 2.0, 16), basic({ color: 0x111111 })); w.rotation.x = Math.PI / 2; w.position.set(wx, 0.36, 0); van.add(w); }
-    fbox(4.0, 0.3, 0.02, 0.2, 1.75, -0.96, basic({ map: h.tex(h.makeSignTex(THREE, cnv, 'ROADEYE', '#e9ebee', '#0c1a33', 0.2)) }), van);
-    const vanDoor = fbox(1.3, 1.6, 0.04, 0.3, 1.2, -0.98, basic({ color: 0xd4d7db }), van);
-    for (let i = 0; i < 4; i++) fbox(0.62, 0.42, 0.5, 2.0 + (i % 2) * 0.66, 0.2 + Math.floor(i / 2) * 0.43, 0.2, boxMat, O);
+    /* (a white box van stood at the kerb here and slammed its door: in the
+       photographs it was a toy, and its door striped the frame — the van is
+       a SOUND now, off the edge of the shot, and the lens goes in to the
+       people instead) */
+    const vanDoor = new THREE.Object3D();
+    // a counter by the door with the cameras on show, and a trolley of stock going out
+    fbox(2.2, 0.95, 0.6, -4.6, 0.475, -1.9, basic({ color: 0x1d2633 }), O);
+    for (let i = 0; i < 5; i++) { fbox(0.09, 0.06, 0.07, -5.4 + i * 0.4, 1.0, -1.9, basic({ color: 0x0c0c0e }), O); fbox(0.03, 0.03, 0.005, -5.4 + i * 0.4, 1.0, -1.865, basic({ color: 0x5fa0e0 }), O); }
+    fbox(0.7, 0.06, 1.0, 3.6, 0.22, 1.0, basic({ color: 0x4a4a4c }), O);
+    fbox(0.04, 0.9, 0.04, 3.6, 0.65, 0.52, basic({ color: 0x4a4a4c }), O);
+    for (let i = 0; i < 4; i++) fbox(0.6, 0.4, 0.46, 3.6 + (i % 2 ? 0.0 : 0.0), 0.47 + i * 0.41, 1.0, boxMat, O);   // the trolley's stack
     const lampO = new THREE.Mesh(new THREE.PlaneGeometry(6, 6), basic({ map: h.tex(makeGlow(THREE, cnv, '255,214,150')), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
     lampO.position.set(-6, 4.2, 3); O.add(lampO);
 
@@ -1608,6 +1632,18 @@
     const sideL = h.mkSitter('lay_granny', -0.85, 0.05, Math.PI + 0.05, { parent: T, at: 0.3 });
     const sideR = h.mkSitter('lay_admintee', 0.85, 0.05, Math.PI - 0.05, { parent: T, at: 0.5 });
     const tlight = new THREE.PointLight(0xffc27a, 2.4, 3.2, 1.6); tlight.position.set(0.18, 0.5, -0.6); T.add(tlight);
+    // the hall around him, out of focus in the dark: a lacquered wall, two
+    // columns with their gold bands, and far off the gilded image's glow
+    // (the first cut floated the hands over a floor in an empty blue void)
+    fbox(9, 5, 0.2, 0, 2.5, -4.2, basic({ color: 0x120c0a }), T);
+    for (const sx of [-1.7, 1.9]) {
+      fbox(0.42, 5, 0.42, sx, 2.5, -3.1, basic({ color: 0x0b0807 }), T);
+      for (const y of [0.35, 1.9, 3.4]) fbox(0.44, 0.06, 0.44, sx, y, -3.1, basic({ color: 0x8a6a2c }), T);
+    }
+    const farGlow = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 2.6), basic({ map: h.tex(makeGlow(THREE, cnv, '255,196,96')), transparent: true, opacity: 0.85, depthWrite: false, blending: THREE.AdditiveBlending }));
+    farGlow.position.set(0.15, 1.5, -4.05); T.add(farGlow);
+    const farImg = new THREE.Mesh(new THREE.CircleGeometry(0.32, 24), basic({ color: 0xc89a3c })); farImg.scale.y = 1.5; farImg.position.set(0.15, 1.45, -4.08); T.add(farImg);
+    for (const sx of [-1, 1]) fbox(9, 0.02, 0.5, 0, 0.003, -0.5 + sx * 1.6, basic({ color: 0x7a1a14 }), T);   // the runner's edges, either side
 
     /* 5 · THE DOORS: two people in white walk up the steps and in, ahead of
        him (the admin tee's own walk, glided on the cine clock) */
@@ -1650,7 +1686,8 @@
         const seg = Math.min(w.path.length - 2, Math.floor(u * (w.path.length - 1))), f = u * (w.path.length - 1) - seg;
         const a = w.path[seg], b = w.path[seg + 1];
         const x = a.x + (b.x - a.x) * f, z = a.z + (b.z - a.z) * f;
-        const y = z > 8.4 ? -1.4 : z > 4.4 ? -1.4 + (8.4 - z) / 4.0 * 1.2 : -0.2 + Math.max(0, (4.4 - z) / 1.8) * 0.2;
+        // the porch top is 0; six risers of 0.2 run from z 6.42 to 8.78 down to the courtyard at −1.4
+        const y = z >= 8.78 ? -1.4 : z > 6.42 ? -0.2 * Math.ceil((z - 6.42) / 0.36 + 1e-6) : 0;
         w.grp.position.set(x, Math.min(0, y), z);
         w.grp.rotation.y = Math.atan2(b.x - a.x, b.z - a.z);
         w.mixer.update(dt);
@@ -1661,30 +1698,49 @@
   }
   /* the film's own paint */
   function makeBackSkin(THREE, cnv) {
-    const S = 512, [c, x] = cnv(S), r = rng(71);
-    const g = x.createRadialGradient(S * 0.45, S * 0.4, 20, S / 2, S / 2, S * 0.7);
-    g.addColorStop(0, '#d9a27a'); g.addColorStop(1, '#8a5a3c');
-    x.fillStyle = g; x.fillRect(0, 0, S, S);
-    // the healed first yant: rows of script-like strokes in a pyramid, faded blue-black
-    x.strokeStyle = 'rgba(28,34,52,0.75)'; x.lineWidth = 3;
+    // a 1024 x 512 wrap: u 0.5 is the middle of his back, toward the lens
+    // (a square sheet, drawn at half height and stretched: the wrap is 1.0 m
+    // round and 0.62 m tall, so a texel is taller than it is wide)
+    const [c, x] = cnv(1024), W = 1024, S = 512, r = rng(71), mid = W / 2;
+    x.scale(1, 2);
+    // the skin, darker toward the flanks (the wrap's shading), warm in the lamp
+    const g = x.createLinearGradient(0, 0, W, 0);
+    g.addColorStop(0, '#4a2c1c'); g.addColorStop(0.3, '#8a5a3c'); g.addColorStop(0.5, '#c8916a');
+    g.addColorStop(0.7, '#8a5a3c'); g.addColorStop(1, '#4a2c1c');
+    x.fillStyle = g; x.fillRect(0, 0, W, S);
+    // the shoulder blades: two soft lights, the hollow between them
+    for (const sx of [-1, 1]) {
+      const bg = x.createRadialGradient(mid + sx * 95, S * 0.3, 8, mid + sx * 95, S * 0.3, 120);
+      bg.addColorStop(0, 'rgba(240,190,150,0.35)'); bg.addColorStop(1, 'rgba(240,190,150,0)');
+      x.fillStyle = bg; x.fillRect(0, 0, W, S);
+    }
+    // the spine's groove
+    const sp = x.createLinearGradient(mid - 18, 0, mid + 18, 0);
+    sp.addColorStop(0, 'rgba(60,30,18,0)'); sp.addColorStop(0.5, 'rgba(60,30,18,0.45)'); sp.addColorStop(1, 'rgba(60,30,18,0)');
+    x.fillStyle = sp; x.fillRect(mid - 18, S * 0.08, 36, S * 0.92);
+    // the healed first yant: a pyramid of script under nine peaks, faded blue-black, on the left
+    x.strokeStyle = 'rgba(26,32,50,0.7)'; x.lineWidth = 2.6;
+    const ox = mid - 92;
     for (let row = 0; row < 5; row++) {
       const n = 9 - row * 2;
       for (let i = 0; i < n; i++) {
-        const cx = S * 0.36 + (i - (n - 1) / 2) * 22, cy = S * 0.62 - row * 30;
-        x.beginPath(); x.moveTo(cx - 7, cy); x.quadraticCurveTo(cx, cy - 14, cx + 7, cy); x.stroke();
-        x.beginPath(); x.arc(cx, cy + 7, 4, 0, Math.PI * 1.6); x.stroke();
+        const cx = ox + (i - (n - 1) / 2) * 15, cy = S * 0.52 - row * 22;
+        x.beginPath(); x.moveTo(cx - 5, cy); x.quadraticCurveTo(cx, cy - 10, cx + 5, cy); x.stroke();
+        x.beginPath(); x.arc(cx, cy + 5, 3, 0, Math.PI * 1.6); x.stroke();
       }
     }
-    // the new lines going in: crisper, darker, a little red round them
-    x.strokeStyle = 'rgba(160,40,30,0.25)'; x.lineWidth = 9;
-    for (let i = 0; i < 6; i++) { x.beginPath(); x.moveTo(S * 0.6, S * 0.3 + i * 22); x.lineTo(S * 0.6 + 60 + r() * 30, S * 0.3 + i * 22); x.stroke(); }
-    x.strokeStyle = 'rgba(12,12,18,0.95)'; x.lineWidth = 3;
+    for (let i = 0; i < 9; i++) { const cx = ox + (i - 4) * 15; x.beginPath(); x.moveTo(cx - 6, S * 0.52 - 4 * 22 - 14); x.lineTo(cx, S * 0.52 - 4 * 22 - 34); x.lineTo(cx + 6, S * 0.52 - 4 * 22 - 14); x.stroke(); }
+    // the new lines going in, on the right: crisper, darker, a little red and raised round them
+    x.strokeStyle = 'rgba(170,40,30,0.28)'; x.lineWidth = 8;
+    for (let i = 0; i < 6; i++) { x.beginPath(); x.moveTo(mid + 40, S * 0.22 + i * 20); x.lineTo(mid + 120 + r() * 20, S * 0.22 + i * 20); x.stroke(); }
+    x.strokeStyle = 'rgba(10,10,16,0.95)'; x.lineWidth = 2.6;
     for (let i = 0; i < 6; i++) {
-      x.beginPath(); x.moveTo(S * 0.6, S * 0.3 + i * 22);
-      for (let k = 0; k < 6; k++) x.quadraticCurveTo(S * 0.6 + k * 12 + 6, S * 0.3 + i * 22 - 8, S * 0.6 + k * 12 + 12, S * 0.3 + i * 22);
+      x.beginPath(); x.moveTo(mid + 40, S * 0.22 + i * 20);
+      const len = i === 5 ? 3 : 7;                 // the last row is still going in
+      for (let k = 0; k < len; k++) x.quadraticCurveTo(mid + 40 + k * 11 + 5, S * 0.22 + i * 20 - 7, mid + 40 + k * 11 + 11, S * 0.22 + i * 20);
       x.stroke();
     }
-    for (let i = 0; i < 2000; i++) { const v = r() * 30; x.fillStyle = `rgba(${120 + v},${80 + v},${60 + v},0.15)`; x.fillRect(r() * S, r() * S, 2, 2); }
+    for (let i = 0; i < 6000; i++) { const v = r() * 30; x.fillStyle = `rgba(${120 + v},${80 + v},${60 + v},0.12)`; x.fillRect(r() * W, r() * S, 2, 2); }
     return done(THREE, c, false);
   }
   function makeGlow(THREE, cnv, rgb) {
@@ -1920,18 +1976,19 @@
 
     // 1 · THE SECOND YANT (0 – 10): skin, the rod, the lamp
     fade(0.6, 2.2, 1, 0);
-    camTo(0.0, 10.0, at(P.yant, 0.16, 1.40, -0.62), at(P.yant, 0.06, 1.33, -0.48), smoothK);
-    yawTo(0.0, 10.0, faceFrom(P.yant.x + 0.16, P.yant.z - 0.62, P.yant.x + 0.02, P.yant.z), faceFrom(P.yant.x + 0.06, P.yant.z - 0.48, P.yant.x + 0.05, P.yant.z), smoothK);
-    pitchTo(0.0, 10.0, -0.10, -0.06, smoothK);
+    camTo(0.0, 10.0, at(P.yant, 0.14, 1.50, -0.66), at(P.yant, 0.07, 1.44, -0.52), smoothK);
+    yawTo(0.0, 10.0, faceFrom(P.yant.x + 0.14, P.yant.z - 0.66, P.yant.x + 0.03, P.yant.z), faceFrom(P.yant.x + 0.07, P.yant.z - 0.52, P.yant.x + 0.05, P.yant.z), smoothK);
+    pitchTo(0.0, 10.0, -0.30, -0.26, smoothK);
     for (const t of [0.9, 1.4, 1.9, 2.4, 2.85, 3.3, 3.75, 4.2, 4.6, 5.0, 5.4, 5.8, 6.2, 6.6, 7.0, 7.4, 7.8, 8.2]) sfx(t, 'yantap', 0.5);
     sfx(2.2, 'z2pro1');                               // 5.15 s → 7.35
     fade(9.3, 10.0, 0, 1);
 
     // 2 · HIS BUSINESS, BIGGER (10 – 20.5): the shopfront at evening, the van
     fade(10.2, 11.2, 1, 0);
-    camTo(10.0, 20.5, at(P.office, -3.4, 1.62, 7.2), at(P.office, 0.2, 1.62, 6.0), smoothK);
-    yawTo(10.0, 20.5, faceFrom(P.office.x - 3.4, P.office.z + 7.2, P.office.x - 0.5, P.office.z - 2.5), faceFrom(P.office.x + 0.2, P.office.z + 6.0, P.office.x + 1.6, P.office.z - 1.5), smoothK);
-    pitchTo(10.0, 20.5, 0.02, 0.0, smoothK);
+    // in from the pavement, through the open front, to the desks
+    camTo(10.0, 20.5, at(P.office, -1.6, 1.55, 3.2), at(P.office, -0.4, 1.45, 0.2), smoothK);
+    yawTo(10.0, 20.5, faceFrom(P.office.x - 1.6, P.office.z + 3.2, P.office.x - 0.6, P.office.z - 3.0), faceFrom(P.office.x - 0.4, P.office.z + 0.2, P.office.x + 0.6, P.office.z - 3.0), smoothK);
+    pitchTo(10.0, 20.5, -0.06, -0.12, smoothK);
     sfx(10.3, 'officeamb2', 0.7);
     sfx(11.2, 'z2pro2');                              // 5.88 s → 17.08
     sfx(16.0, 'slidevan', 0.75);
