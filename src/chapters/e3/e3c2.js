@@ -1561,7 +1561,7 @@
     lampG.position.set(0.5, 1.6, 0.4); Y.add(lampG);
     fbox(6, 6, 0.1, 0, 2, 1.6, basic({ color: 0x0c0806 }), Y);
     const rod = new THREE.Group(); Y.add(rod);
-    { const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.004, 0.006, 0.62, 8), basic({ color: 0x9aa0a6 }));
+    { const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.0022, 0.0042, 0.62, 10), basic({ color: 0x5c6166 }));
       shaft.rotation.x = Math.PI / 2; shaft.position.z = -0.31; rod.add(shaft);
       const tip = new THREE.Mesh(new THREE.ConeGeometry(0.004, 0.03, 6), basic({ color: 0x1a1a1a })); tip.rotation.x = -Math.PI / 2; tip.position.z = 0.015; rod.add(tip); }
     rod.rotation.set(0.35, -0.5, 0);
@@ -1588,7 +1588,10 @@
       fbox(0.5, 0.31, 0.01, dx, 1.05, -3.27, basic({ color: 0x6fa8dc }), O);
       fbox(0.48, 0.45, 0.48, dx, 0.42, -2.25, basic({ color: 0x23262b }), O);   // the chair
     }
-    const staff = [0, 1, 2].map(i => h.mkSitter('admintee', -1.8 + i * 2.6, -2.35, Math.PI, { white: false, pray: false, take: 'Chair_Sit_Idle_M', at: 0.2 + i * 0.25, nod: 0.3, parent: O }));
+    // (the take folds a man over his knees through its middle: parked on its
+    // upright frames, its first eighth and last sixth — v8.0's measure)
+    const staff = [0, 1, 2].map(i => h.mkSitter('admintee', -1.8 + i * 2.6, -2.35, Math.PI, { pray: false, take: 'Chair_Sit_Idle_M', at: [0.04, 0.9, 0.08][i], nod: 0.3, parent: O }));
+    for (let i = 0; i < 3; i++) fbox(0.46, 0.5, 0.05, -1.8 + i * 2.6, 0.85, -2.02, basic({ color: 0x23262b }), O);   // the chairs' backs
     /* (a white box van stood at the kerb here and slammed its door: in the
        photographs it was a toy, and its door striped the frame — the van is
        a SOUND now, off the edge of the shot, and the lens goes in to the
@@ -1674,7 +1677,8 @@
       // the rod: a strike every ~0.45 s into the skin, faster as the shot runs
       const per = 0.48 - Math.min(0.14, ct * 0.012), ph = (ct % per) / per;
       const hit = ph < 0.18 ? ph / 0.18 : 1 - (ph - 0.18) / 0.82;
-      rod.position.set(0.06 + Math.sin(ct * 0.7) * 0.03, 1.36 - ct * 0.004, -0.27 - (1 - hit) * 0.05);
+      // the tip on the last row still going in (x −0.08, y 1.18), touching the skin (z −0.115) on each strike
+      rod.position.set(-0.075 + Math.sin(ct * 0.7) * 0.012, 1.185 - Math.sin(ct * 0.4) * 0.006, -0.128 - (1 - hit) * 0.045);
       // the van's side door slides shut
       vanDoor.position.x = 0.3 - Math.min(1, Math.max(0, (ct - 16.0) / 0.4)) * 1.15;
       // the walkers
@@ -1976,9 +1980,10 @@
 
     // 1 · THE SECOND YANT (0 – 10): skin, the rod, the lamp
     fade(0.6, 2.2, 1, 0);
-    camTo(0.0, 10.0, at(P.yant, 0.14, 1.50, -0.66), at(P.yant, 0.07, 1.44, -0.52), smoothK);
-    yawTo(0.0, 10.0, faceFrom(P.yant.x + 0.14, P.yant.z - 0.66, P.yant.x + 0.03, P.yant.z), faceFrom(P.yant.x + 0.07, P.yant.z - 0.52, P.yant.x + 0.05, P.yant.z), smoothK);
-    pitchTo(0.0, 10.0, -0.30, -0.26, smoothK);
+    // close on the new lines and the rod's tip, the shoulder's curve at the frame's edge
+    camTo(0.0, 10.0, at(P.yant, 0.06, 1.36, -0.46), at(P.yant, 0.02, 1.33, -0.38), smoothK);
+    yawTo(0.0, 10.0, faceFrom(P.yant.x + 0.06, P.yant.z - 0.46, P.yant.x - 0.04, P.yant.z), faceFrom(P.yant.x + 0.02, P.yant.z - 0.38, P.yant.x - 0.05, P.yant.z), smoothK);
+    pitchTo(0.0, 10.0, -0.28, -0.24, smoothK);
     for (const t of [0.9, 1.4, 1.9, 2.4, 2.85, 3.3, 3.75, 4.2, 4.6, 5.0, 5.4, 5.8, 6.2, 6.6, 7.0, 7.4, 7.8, 8.2]) sfx(t, 'yantap', 0.5);
     sfx(2.2, 'z2pro1');                               // 5.15 s → 7.35
     fade(9.3, 10.0, 0, 1);
