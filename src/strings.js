@@ -379,16 +379,20 @@ Object.assign(window.__TEXT__, {
   'item.timkp.desc':     'Made by the renowned LP Tim Issariko of Wat Lahanrai, this amulet is imbued with the powers from its Phong Prai Kuman powder, granting the wearer prosperity and enhancing charm. Reduce all kinds of damage from minigame events by 50%.',
   /* v17.6: the three Sak Yant the Ajarn offers in episode 3 chapter 1. The
      POWER line is shown on its own, coloured, under the rarity — on the
-     choice window and in the bag (`item.<id>.power`; any item may have one) */
-  'item.yantgaoyord.name':  'Gao Yord · Nine Spires',
-  'item.yantgaoyord.power': 'Minigame damage reduced by 30%',
-  'item.yantgaoyord.desc':  'Nine spires for the nine peaks of Mount Meru, the mountain of the gods. The master yant, the one many others are built on, for protection from every side and a steady hand when you are tested. A Sak Yant is for life: it cannot be taken off.',
-  'item.yanthahtaew.name':  'Hah Taew · Five Lines',
+     choice window and in the bag (`item.<id>.power`; any item may have one).
+     v17.6b: names and meanings from the reference pages Chad gave
+     (bkktattoostudio13.com — the Five Rows page for Hah Taew Chat Petch, the
+     Gao Yord page, the Necklace page for Sroi Sangwan), kept to their key
+     points, because this teaches the player what each design is. */
+  'item.yantgaoyord.name':  'Yant Gao Yord',
+  'item.yantgaoyord.power': 'Sudden sanity hits reduced by 40%',
+  'item.yantgaoyord.desc':  'The Nine Spires: the nine peaks of Mount Meru, home of the gods, and the nine qualities of the Buddha, each spire crowned with the three ovals that stand for him. Inked at the top of the back, it protects against weapons, danger, evil spirits and black magic. A Sak Yant is for life: it cannot be taken off.',
+  'item.yanthahtaew.name':  'Yant Hah Taew Chat Petch',
   'item.yanthahtaew.power': 'Sanity drains 35% slower',
-  'item.yanthahtaew.desc':  'Five rows of old Khom script, each one a blessing: against unjust punishment and wandering spirits, against bad fortune, against black magic and curses, for success, and for charm. A slow dread loses its grip on you more slowly. A Sak Yant is for life: it cannot be taken off.',
-  'item.yantpaedtidt.name':  'Paed Tidt · Eight Directions',
-  'item.yantpaedtidt.power': 'Sudden sanity hits reduced by 40%',
-  'item.yantpaedtidt.desc':  'Eight mantras for the eight directions, around a still centre, guarding you from every side harm can come from. What leaps at you out of the dark lands softer. A Sak Yant is for life: it cannot be taken off.',
+  'item.yanthahtaew.desc':  'The Five Rows with the Diamond Canopy. Each row is a blessing: protection of the home, help through bad luck, protection from black magic and spirits, good fortune and success, and Metta Mahaniyom, loving kindness and charisma. The Chat Petch adds prosperity and support through difficult periods. A Sak Yant is for life: it cannot be taken off.',
+  'item.yantsroi.name':  'Yant Sroi Sangwan',
+  'item.yantsroi.power': 'Minigame damage reduced by 30%',
+  'item.yantsroi.desc':  'A sacred ornament of script worn like a necklace, close to the body. For prosperity, good luck and protection, the strength to overcome obstacles, charm and respect, and a sense of security and inner power. A Sak Yant is for life: it cannot be taken off.',
   // what its protection has left, under the words ({n} and {max} are numbers)
   // v14.11: short, in the bar's yellow ({n} and {max} are numbers, shown bold)
   'inv.wardLeft':        '{n}/{max} Protection',

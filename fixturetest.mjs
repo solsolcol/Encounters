@@ -731,29 +731,37 @@ K.chooseOpens = await p.evaluate(() => {
     && document.querySelector('#choList .choCard.on')?.dataset.i === '1';
 });
 await p.waitForTimeout(800);
-await p.evaluate(() => window.__enc.chooseClose('key'));
+/* v17.6b: Confirm SEALS first — the window stays, in its own state, while
+   the effect plays, and only then answers and hands back play */
+K.chooseSeals = await p.evaluate(() => {
+  const e = window.__enc;
+  const ok = e.chooseClose('key') === true;
+  const st = e.chooseState();
+  return ok && st.sealing === true && e.getState() === 'choose' && window.__chose === undefined
+    && document.getElementById('choose').classList.contains('sealing');
+});
 K.chooseAnswers = await until(() => window.__chose === 'yantgaoyord' && window.__enc.getState() === 'play'
-                                    && window.__enc.chooseState().ids === null, 8000).then(() => true, () => false);
+                                    && window.__enc.chooseState().ids === null, 60000).then(() => true, () => false);
 K.yantGuards = await p.evaluate(() => {
   const e = window.__enc, k = e.kit;
   const hadAm = k.has('amulet'), wornAm = k.equipped('amulet');
   if (hadAm) k.take('amulet');
   const res = {};
-  // Paed Tidt: a sudden hit, not a minigame's, is cut by 40 %; a minigame's is not
-  k.give('yantpaedtidt'); k.equip('yantpaedtidt');
+  // Gao Yord (v17.6b): a sudden hit, not a minigame's, is cut by 40 %; a minigame's is not
+  k.give('yantgaoyord'); k.equip('yantgaoyord');
   e.stats.sanity = 80; e.kitAward('sanity', -10); res.shock = Math.abs(e.stats.sanity - 74) < 1e-9;
   e.stats.sanity = 80; e.kitAward('sanity', -10, { minigame: true }); res.shockNotMini = e.stats.sanity === 70;
   // fixed: a worn yant does not leave its box
-  e.invMove('gear', 'body'); res.fixed = k.equipped('yantpaedtidt');
-  // Hah Taew: the drain guard reads 0.35, the shock guard is gone with Paed Tidt
+  e.invMove('gear', 'body'); res.fixed = k.equipped('yantgaoyord');
+  // Hah Taew Chat Petch: the drain guard reads 0.35, the shock guard is gone with Gao Yord
   k.equip('yanthahtaew'); res.drain = e.guards().drain === 0.35 && e.guards().shock === 0;
   e.stats.sanity = 80; e.kitAward('sanity', -10); res.hahNotShock = e.stats.sanity === 70;
-  // Gao Yord: the minigame guard at 0.3
-  k.equip('yantgaoyord'); e.stats.awareness = 50;
+  // Sroi Sangwan: the minigame guard at 0.3
+  k.equip('yantsroi'); e.stats.awareness = 50;
   e.kitAward('awareness', -10, { minigame: true }); res.ev = e.guards().ev === 0.3 && Math.abs(e.stats.awareness - 43) < 1e-9;
-  for (const y of ['yanthahtaew', 'yantpaedtidt', 'yantgaoyord']) k.take(y);
+  for (const y of ['yanthahtaew', 'yantsroi', 'yantgaoyord']) k.take(y);
   if (hadAm) { k.give('amulet'); if (wornAm) k.equip('amulet'); k.urge(null); }
-  res.clean = !k.has('yanthahtaew') && !k.has('yantpaedtidt') && !k.has('yantgaoyord') && e.guards().drain === 0;
+  res.clean = !k.has('yanthahtaew') && !k.has('yantsroi') && !k.has('yantgaoyord') && e.guards().drain === 0;
   e.stats.sanity = 100; e.stats.awareness = 50;
   window.__yg = res;
   return Object.values(res).every(Boolean);

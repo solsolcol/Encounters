@@ -124,7 +124,7 @@
     /* v17.6: the three Sak Yant the Ajarn offers — one of them goes on his
        back at the stirring (the engine prepares an item's model at the
        curtain; these have none, they are drawings, but they are declared) */
-    items: ['yantgaoyord', 'yanthahtaew', 'yantpaedtidt'],
+    items: ['yantgaoyord', 'yanthahtaew', 'yantsroi'],
     assets: ['admintee', 'botak', 'sitwoman', 'sitwomantalk', 'standman', 'phiboon', 'tree1', 'tree2', 'tree3', 'tree4', 'thaikit', 'wessred', 'wessgreen', 'naga', 'monk', 'ajarn', 'temple', 'slipper', 'khonmask'],
 
     /* THE SOUND. `watamb` is the dawn temple (birds, a far road, a broom on
@@ -2796,7 +2796,7 @@
                                 'roomdoor', 'watersprinkle', 'roomamb', 'eavebells', 'wingflap',
                                 'z1wai', 'z1wait', 'z1warm', 'au1hi', 'au1sell', 'au1shoes',
                                 'aj1next', 'aj1sit', 'aj1breathe', 'aj1katha', 'aj1done', 'aj1ask',
-                                'aj1which', 'aj1chosen',
+                                'aj1which', 'aj1chosen', 'yantseal',
                                 'yantap', 'yantblow', 'yantwarm', 'e3bell', 'shoesoff', 'barestep',
                                 'trayset', 'coins', 'incenselit', 'e3gong',
                                 /* fired from walkOut()/ending(), helpers the engine's source scan cannot
@@ -3264,11 +3264,15 @@
       queueGap(0.25);
       queueFn(() => chooseYant());
     }
-    const YANTS = ['yantgaoyord', 'yanthahtaew', 'yantpaedtidt'];   // Chad's order
+    const YANTS = ['yantgaoyord', 'yanthahtaew', 'yantsroi'];   // Chad's three (v17.6b)
     let yantPick = null;
     function chooseYant() {
       if (!kit || !kit.choose || phase !== 'yant') { yantBegin(); return; }
-      kit.choose(YANTS, { label: DATA.words.yantLabel, title: DATA.words.yantTitle, confirm: DATA.words.yantConfirm })
+      /* v17.6b: the seal sounds — the room's own temple bell under a golden
+         shimmer (yantseal: three takes of a bell prompt came back as pure
+         shimmer, so the bell's body is e3bell's) */
+      kit.choose(YANTS, { label: DATA.words.yantLabel, title: DATA.words.yantTitle, confirm: DATA.words.yantConfirm,
+                          sound: [['e3bell', 0.75], ['yantseal', 0.8]] })
         .then(id => {
           if (!alive || phase !== 'yant' || !id) return;     // torn down under the window: the run starts again
           yantPick = id;
@@ -3292,8 +3296,11 @@
     function startYant() {
       if (!kit || phase !== 'yant') return;
       workOn = 'player';
-      after(1.2, () => { if (!heard.has('katha3')) { heard.add('katha3'); sayLine('aj1katha', 0.7, () => { ajarn.nod = SECS.aj1katha; }, panOf('aj1katha')); } });
-      kit.event({ kind: 'heartbeat', label: DATA.words.evYant, brief: DATA.words.evYantBrief,
+      /* v17.6b (Chad: "the ajahn voiceline of namo tassa should start after the
+         player clicks start on the heartbeat minigame"): the katha waits for
+         START — the event's own onBegin — not for the briefing to open */
+      const katha = () => after(0.6, () => { if (!heard.has('katha3')) { heard.add('katha3'); sayLine('aj1katha', 0.7, () => { ajarn.nod = SECS.aj1katha; }, panOf('aj1katha')); } });
+      kit.event({ kind: 'heartbeat', label: DATA.words.evYant, brief: DATA.words.evYantBrief, onBegin: katha,
                   n: 14, bpm: 66, win: 0.26, zone: 5.8, lead: 2.0, accel: 0.975, minPeriod: 0.5,
                   tick: 'yantap', tickVol: 0.95, missCost: 3,
                   penalty: { stat: 'sanity' },

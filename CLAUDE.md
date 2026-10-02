@@ -4614,6 +4614,23 @@ What the baseline contains, by release:
   ward, and a pass-through with none worn, so episodes 1 and 2 are unchanged
   by construction. The fixture proves the window and all three guards.
   Sheet v81 exported (v44 stays the link). docs/V17.6-THE-SAK-YANT-CHOICE.md.
+- **v17.7** THE THREE DESIGNS, FROM THE SOURCE — Chad gave three reference
+  pages (bkktattoostudio13.com) and asked for names, short descriptions and
+  drawings that match them "extremely accurately ... it serves an educational
+  purpose". The three are **Yant Gao Yord**, **Yant Hah Taew Chat Petch** (the
+  Five Rows with the Diamond Canopy — the Five Rows page's own combination,
+  and what "Hatiew Japet" was) and **Yant Sroi Sangwan** (the Sak Yant
+  Necklace's real name); Paed Tidt, v17.6's guess, is gone and its power went
+  to Gao Yord, whose meaning is protection against danger. Each drawing is
+  redrawn from the pages' own gallery images (the 9-7-5-3-1 pyramid with the
+  three ovals and an unalome on nine peaks; five vertical rows with an unalome
+  top and bottom and the Chat Petch lattice; a U garland of three rows with
+  unalomes at its ends and a pendant). CONFIRM SEALS before it closes — the
+  card swells and burns gold, rings of light, the rest fall back, a gold wash,
+  the room's bell under a new golden shimmer (`yantseal`), 1.35 s and eight
+  drawn frames. The katha now starts on the heartbeat's START: a kit event may
+  declare `onBegin`. Sheet v82 exported (v44 stays the link).
+  docs/V17.6-THE-SAK-YANT-CHOICE.md §7.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -5177,7 +5194,7 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v81** (`masters/v17.6/masterz-text-v81.xlsx`, v80 plus v17.6's Sak Yant choice: three items' names, powers and words, the window's words, the chapter's four, and two Ajarn voice lines. v80 was `masters/v17.0/masterz-text-v80.xlsx`, v79 plus v17.0's three credit strings for the Khon masks. v79 was `masters/v16.9/masterz-text-v79.xlsx`, v78 plus v16.9's six credit strings — the temple and the slippers. v78 was `masters/v16.6/masterz-text-v78.xlsx`, v77 plus v16.6's four credit rows for the Tailandia packs. v77 was `masters/v16.1/masterz-text-v77.xlsx`, v76 with the monk's three voice lines re-said by Arthur at v16.2. v76 was `masters/v16.1/masterz-text-v76.xlsx`, five tabs: UI
+**THE SHEET IS v82** (`masters/v17.7/masterz-text-v82.xlsx`, v81 with v17.7's three Sak Yant names and words from Chad's reference pages. v81 was `masters/v17.6/masterz-text-v81.xlsx`, v80 plus v17.6's Sak Yant choice: three items' names, powers and words, the window's words, the chapter's four, and two Ajarn voice lines. v80 was `masters/v17.0/masterz-text-v80.xlsx`, v79 plus v17.0's three credit strings for the Khon masks. v79 was `masters/v16.9/masterz-text-v79.xlsx`, v78 plus v16.9's six credit strings — the temple and the slippers. v78 was `masters/v16.6/masterz-text-v78.xlsx`, v77 plus v16.6's four credit rows for the Tailandia packs. v77 was `masters/v16.1/masterz-text-v77.xlsx`, v76 with the monk's three voice lines re-said by Arthur at v16.2. v76 was `masters/v16.1/masterz-text-v76.xlsx`, five tabs: UI
 TEXT 292, EPISODE 1 114, EPISODE 2 193, EPISODE 3 41, VOICE LINES 337 — v76
 adds v16.1's four words, two changed cells and seven voice lines to v75).
 Was v75 (`masters/v16.0/masterz-text-v75.xlsx`, which added episode 3

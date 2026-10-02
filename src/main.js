@@ -3139,7 +3139,7 @@ function paintConduct(cd) {
 function kitAward(stat, delta, opts) {
   if (!(stat in stats) || !Number.isFinite(delta) || !delta) return;
   if (opts && opts.minigame) delta = evCut(delta);   // v14.13: a chapter's minigame price, cut by the guard
-  if (stat === 'sanity' && delta < 0 && !(opts && opts.minigame)) delta = -shockCut(-delta);   // v17.6: Paed Tidt
+  if (stat === 'sanity' && delta < 0 && !(opts && opts.minigame)) delta = -shockCut(-delta);   // v17.6: the Gao Yord (v17.6b)
   if (stat === 'sanity' && delta < 0) delta = -wardSoak(-delta, true);   // v14.7: the amulet takes it first
   const before = stats[stat];
   stats[stat] = Math.max(0, Math.min(100, stats[stat] + delta));
@@ -3600,6 +3600,14 @@ function evStart() {
 function evBegin() {
   const e = ev, o = e.o, host = evEl();
   if (e.briefing) { e.briefing = false; e.layout = e.layoutReal; e.t = 0; }
+  /* v17.6b: `onBegin` — the chapter is told the moment the event really
+     starts (START pressed on a briefing, or at once without one), so what
+     belongs to the play itself — episode 3's katha under the rod — waits for
+     the player rather than running over the instructions he is reading */
+  if (typeof o.onBegin === 'function' && !e.begun) {
+    e.begun = true;
+    try { o.onBegin(); } catch (err) { console.warn('event onBegin failed', err); }
+  }
   if (!host) return;
   host.className = 'layer ' + (e.layout === 'full' ? 'full ' : '') + e.kind;
   $('evLabel').textContent = o.label || '';
@@ -4700,7 +4708,7 @@ function applyChunk(v) {
   const n = CHUNK[v] || 4;
   /* v14.7: the amulet takes the bite first; only what is left reaches
      sanity. With no ward worn `rest` is exactly n, so this is v14.6 */
-  const rest = wardSoak(shockCut(n), true);    // v17.6: Paed Tidt shrinks the bite before the amulet sees it
+  const rest = wardSoak(shockCut(n), true);    // v17.6: Gao Yord shrinks the bite before the amulet sees it
   stats.sanity -= rest;
   syncBars();
   if (Math.round(rest) > 0) sanityTick(Math.round(rest));
@@ -6978,10 +6986,16 @@ const ITEM_DEFS = {
                     sighting's bite, a chapter's scare or penalty) is cut
        evGuard    — a minigame's damage (v14.13's seam; the stronger of two
                     worn guards counts, so it never stacks with the LP Tim)
-     Line-drawn icons, no model: a design on skin is a drawing. */
+     Line-drawn icons, no model: a design on skin is a drawing.
+     v17.6b (Chad, with three reference pages): the three are Yant Gao Yord,
+     Yant Hah Taew Chat Petch and Yant Sroi Sangwan, each power given to the
+     design whose own meaning it is — Gao Yord's protection "against all
+     weapons and danger" cuts the sudden hit; the Five Rows and the Diamond
+     Canopy, "support during difficult periods", slow the long dread; Sroi
+     Sangwan, "the ability to overcome obstacles", steadies the hand. */
+  yantgaoyord: { icon: 'e-ygao', slot: 'body', fixed: true, shockGuard: 0.4, rarity: 'rare' },
   yanthahtaew: { icon: 'e-yhah', slot: 'body', fixed: true, drainGuard: 0.35, rarity: 'rare' },
-  yantpaedtidt: { icon: 'e-ypaed', slot: 'body', fixed: true, shockGuard: 0.4, rarity: 'rare' },
-  yantgaoyord: { icon: 'e-ygao', slot: 'body', fixed: true, evGuard: 0.3, rarity: 'rare' }
+  yantsroi: { icon: 'e-ysroi', slot: 'body', fixed: true, evGuard: 0.3, rarity: 'rare' }
 };
 /* v14.11: every item has a RARITY (Chad: "Torch is common rarity with grey
    colour coding, the lp phiboon amulet is rare rarity with blue colour
@@ -8042,13 +8056,23 @@ addEventListener('keydown', e => {
    for the answer. There is no Esc: a choice that asks to be made must be.
    Confirm is refused for its first 0.6 s, so the press that sat him down
    cannot also choose for him. Only episode 3 chapter 1 calls it. */
-const cho = { ids: null, sel: -1, t0: 0, resolve: null, outT: 0 };
+const cho = { ids: null, sel: -1, t0: 0, resolve: null, outT: 0, sealing: false, sealT: 0, sound: null };
+/* v17.6b (Chad: "after the player confirms ... there should be sound effects
+   and visual effects instead of just abruptly closing the window"): Confirm
+   SEALS the choice first — the picked card swells and burns gold, a ring of
+   light leaves it, the others fall back, the window washes gold — and the
+   window goes only once that has played. The seal is measured on wall time
+   AND on drawn frames (the v13.1 law: a thing that must be SEEN is owed its
+   frames, or a hot phone at a frame a second never shows it). */
+const CHOOSE_SEAL_MS = 1350, CHOOSE_SEAL_FRAMES = 8;
 function kitChoose(ids, opts = {}) {
   ids = (Array.isArray(ids) ? ids : []).filter(id => ITEM_DEFS[id]);
   const el = $('choose');
   if (!ids.length || !el || cho.ids || unl.id || state !== 'play' || fainting) return Promise.resolve(null);
   clearTimeout(cho.outT);
-  cho.ids = ids; cho.sel = -1;
+  cho.ids = ids; cho.sel = -1; cho.sealing = false;
+  cho.sound = Array.isArray(opts.sound) ? opts.sound : null;   // [[name, vol], …] — the chapter's own seal
+  el.classList.remove('sealing');
   for (const k in keys) keys[k] = false;
   state = 'choose';
   $('choLabel').textContent = opts.label || T('choose.label', 'Choose one');
@@ -8057,7 +8081,7 @@ function kitChoose(ids, opts = {}) {
   $('choList').innerHTML = ids.map((id, i) => {
     const rar = itemRarity(id), pw = T('item.' + id + '.power', '');
     return `<button class="choCard" type="button" role="radio" aria-checked="false" data-i="${i}" style="--d:${(0.14 + i * 0.09).toFixed(2)}s">`
-      + `<span class="choArt">${iconSvg(ITEM_DEFS[id].icon || 'e-yant', 'choIcon')}<span class="choNum">${i + 1}</span></span>`
+      + `<span class="choArt"><span class="choRing" aria-hidden="true"></span><span class="choRing r2" aria-hidden="true"></span>${iconSvg(ITEM_DEFS[id].icon || 'e-yant', 'choIcon')}<span class="choNum">${i + 1}</span></span>`
       + `<span class="choText"><span class="choName">${itemName(id)}</span>`
       + `<span class="rar r-${rar}">${T('rarity.' + rar, rar)}</span>`
       + (pw ? `<span class="choPower"><svg aria-hidden="true"><use href="#e-yant"/></svg>${pw}</span>` : '')
@@ -8076,7 +8100,7 @@ function kitChoose(ids, opts = {}) {
   return new Promise(res => { cho.resolve = res; });
 }
 function chooseSel(i) {
-  if (!cho.ids || i < 0 || i >= cho.ids.length) return;
+  if (!cho.ids || cho.sealing || i < 0 || i >= cho.ids.length) return;
   if (cho.sel !== i) { snd('uiclick', 0.5); haptic(12); }
   cho.sel = i;
   for (const c of $('choList').querySelectorAll('.choCard')) {
@@ -8088,22 +8112,47 @@ function chooseSel(i) {
 function chooseClose(how) {
   if (!cho.ids) return false;
   if (how !== 'force') {
-    if (cho.sel < 0) return false;
+    if (cho.sel < 0 || cho.sealing) return false;
     if (performance.now() - cho.t0 < UNLOCK_GUARD) return false;
+    chooseSeal();
+    return true;
   }
+  return chooseFinish('force');
+}
+function chooseSeal() {
+  const el = $('choose');
+  cho.sealing = true;
+  $('choOk').disabled = true;
+  el?.classList.add('sealing');
+  let played = false;
+  for (const [name, vol] of (cho.sound || [])) if (snd(name, vol == null ? 1 : vol)) played = true;
+  if (!played) snd('uiconfirm', 0.7);
+  haptic([30, 50, 90, 40, 140]);
+  const t0 = performance.now(); let frames = 0;
+  const tick = () => {
+    if (!cho.sealing) return;
+    frames++;
+    if (frames >= CHOOSE_SEAL_FRAMES && performance.now() - t0 >= CHOOSE_SEAL_MS) { chooseFinish('seal'); return; }
+    requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+  clearTimeout(cho.sealT);
+  cho.sealT = setTimeout(() => { if (cho.sealing) chooseFinish('seal'); }, 15000);   // a page whose frames never run
+}
+function chooseFinish(how) {
+  if (!cho.ids) return false;
+  clearTimeout(cho.sealT);
   const id = how === 'force' ? null : cho.ids[cho.sel];
   const el = $('choose');
-  cho.ids = null; cho.sel = -1;
+  cho.ids = null; cho.sel = -1; cho.sealing = false;
   document.body.classList.remove('chooseopen');
   if (el) {
-    if (how === 'force') el.classList.add('hide');
-    else { el.classList.add('out'); cho.outT = setTimeout(() => el.classList.add('hide'), 260); }
+    if (how === 'force') { el.classList.add('hide'); el.classList.remove('sealing'); }
+    else { el.classList.add('out'); cho.outT = setTimeout(() => { el.classList.add('hide'); el.classList.remove('sealing'); }, 420); }
   }
   const res = cho.resolve; cho.resolve = null;
   if (how !== 'force') {
     state = 'play';
-    snd('uiconfirm', 0.6);
-    haptic([30, 40, 60]);
     tryLock();
   }
   if (res) res(id);
@@ -9278,6 +9327,7 @@ const STING_SAMPLE = {
   z1askA: ['z1askA', 1], z1askB: ['z1askB', 1], z1askC: ['z1askC', 1], z1askD: ['z1askD', 1],
   z1A: ['z1A', 1], z1B: ['z1B', 1], z1C: ['z1C', 1], z1D: ['z1D', 1],
   aj1which: ['aj1which', 1], aj1chosen: ['aj1chosen', 1],   // v17.6
+  yantseal: ['yantseal', 1],                                  // v17.6b: the choice sealed
   aj1next: ['aj1next', 1], aj1sit: ['aj1sit', 1], aj1breathe: ['aj1breathe', 1], aj1katha: ['aj1katha', 1],
   aj1done: ['aj1done', 1], aj1ask: ['aj1ask', 1], aj1A: ['aj1A', 1], aj1B: ['aj1B', 1],
   aj1C: ['aj1C', 1], aj1D1: ['aj1D1', 1], aj1D2: ['aj1D2', 1], au1hi: ['au1hi', 1],
@@ -12061,7 +12111,7 @@ window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () =
                                 cracks: wardFx.cracks, breaks: wardFx.breaks,
                                 banner: !!$('wardBreak')?.classList.contains('on') }),
                  unlockState: () => ({ id: unl.id, state }),
-                 chooseState: () => ({ ids: cho.ids, sel: cho.sel, state }),        // v17.6
+                 chooseState: () => ({ ids: cho.ids, sel: cho.sel, sealing: cho.sealing, state }),        // v17.6
                  chooseSel: i => chooseSel(i), chooseClose: how => chooseClose(how || 'click'),
                  invMove: (kind, key) => invQuickMove(kind, key),                 // v17.6: the fixed-item check
                  guards: () => ({ drain: wornGuard('drainGuard'), shock: wornGuard('shockGuard'), ev: evGuard(), cuts: { ...guardCuts } }),
