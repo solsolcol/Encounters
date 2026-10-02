@@ -585,7 +585,10 @@
        and gables, a tiled roof, the porch, steps down to the courtyard, the
        slippers on the steps, two lamps, the trees beyond. */
     const outside = new THREE.Group(); world.add(outside);
-    box(HALL.x1 - HALL.x0 + 3, 0.2, 4.0, 0, -0.1, HALL.z1 + 2.45, matCream, outside);                       // the porch
+    // the porch, paved in the courtyard's slabs (flat cream filled the frame in scene B)
+    const matPorch = new THREE.MeshStandardMaterial({ map: tex(makeSlabs(THREE, cnv)), roughness: 0.85, color: 0xf2e6d2 });
+    matPorch.map.repeat.set(5, 1.3);
+    box(HALL.x1 - HALL.x0 + 3, 0.2, 4.0, 0, -0.1, HALL.z1 + 2.45, matPorch, outside);
     // the steps, each one SOLID to the courtyard, and the base the hall and its
     // porch stand on (the first film frames showed thin slabs over blue void)
     for (let i = 0; i < 6; i++) { const top = -0.2 - i * 0.2; box(5.0, top + 1.4, 0.36, 0, (top - 1.4) / 2, HALL.z1 + 4.6 + i * 0.36, matCream, outside); }
