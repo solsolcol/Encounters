@@ -1744,6 +1744,127 @@ function prayFrame() {
   prayPut(pray.k, false);
   pray.was = pray.k;
 }
+/* v18.0: THE HANDS TAKEN (the twenty-fourth seam). Episode 3 chapter 2 is
+   S1·07: "my hands would begin moving on their own ... slow and graceful,
+   almost like the traditional movements of a Thevada ... My upper body would
+   rotate and sway." `kit.hands(k, { secs })` lifts both hands OUT of the
+   añjali kit.pray holds and into a slow Thai-dance gesture by k (0 the clasp
+   as it was, 1 the full gesture): the palms turn out, the fingers bend BACK
+   (the "wong" of Thai classical dance), the wrists roll, the two hands drift
+   on their own slow figure-eights a beat apart so they are never a mirror of
+   each other, and the camera rolls with the body's sway. Authored once for
+   the right hand and MIRRORED for the left by conjugation (M·R·M — the same
+   relation PRAYER_L holds to PRAYER_R). Eased on WALL time (the v7.4 law),
+   written only while k is above zero or easing down, taken back by kitReset
+   and owned by a scene on its first frame like the clasp. A scene drives the
+   same pose through `api.handsPose(k, t)`. Nothing before e3c2 calls it. */
+const hands = { k: 0, to: 0, secs: 1.2, last: 0, t: 0, was: 0 };
+const GEST_R = new THREE.Quaternion().setFromRotationMatrix(
+  new THREE.Matrix4().makeBasis(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, -1, 0)));
+const _hgq = new THREE.Quaternion(), _hgm = new THREE.Matrix4(), _hge = new THREE.Euler();
+const _hgp = new THREE.Vector3(), _hgp0 = new THREE.Vector3();
+const HG_MIR = new THREE.Matrix4().makeScale(-1, 1, 1);
+let wongPose = null;                 // the fingers straight, closed and bent BACK — built once from prayerPose
+const handsFrom = { k: 0, t: 0 };    // where kit.hands had them when the last scene took them
+function kitHandsSet(k, opts = {}) {
+  hands.to = Math.max(0, Math.min(1, +k || 0));
+  if (opts.secs !== undefined) hands.secs = Math.max(0.01, +opts.secs);
+  if (opts.secs === 0) hands.k = hands.to;
+  hands.last = performance.now();
+}
+function handsOff() {
+  const was = hands.was > 0 || hands.k > 0;
+  hands.k = hands.to = 0; hands.was = 0; hands.t = 0;
+  if (was) { camera.rotation.z = 0; if (pray.k === 0) prayPut(0, true); }
+}
+function buildWong() {
+  if (wongPose || !rightHandModel || !prayerPose || !rightOriented) return wongPose;
+  const m = rightHandModel, saved = {};
+  m.traverse(o => { if (o.isBone && prayerPose[o.name]) { saved[o.name] = o.quaternion.clone(); o.quaternion.copy(prayerPose[o.name]); } });
+  rightOriented.updateWorldMatrix(true, true);
+  /* the hand's across axis is the oriented frame's +X; expressed in each
+     joint's own frame, a POSITIVE turn about it is the opposite of the
+     walking curl (which turns by -CURL) — the fingers bend back */
+  const BACK = { thumb: 0.10, index: [0.30, 0.12, 0.06], middle: [0.34, 0.14, 0.07], ring: [0.32, 0.13, 0.06], pinky: [0.30, 0.12, 0.06] };
+  const ax = new THREE.Vector3(), m3 = new THREE.Matrix3(), inv = new THREE.Matrix4();
+  const order = [];
+  m.traverse(o => { if (o.isBone && prayerPose[o.name]) order.push(o); });
+  for (const b of order) {
+    const mt = /^f_(index|middle|ring|pinky)0([123])R$/.exec(b.name), th = /^thumb0[123]R$/.test(b.name);
+    const a = mt ? BACK[mt[1]][+mt[2] - 1] : th ? BACK.thumb : 0;
+    if (!a) continue;
+    b.updateWorldMatrix(true, false);
+    inv.copy(b.matrixWorld).invert().multiply(rightOriented.matrixWorld);
+    ax.set(1, 0, 0).applyMatrix3(m3.setFromMatrix4(inv)).normalize();
+    b.rotateOnAxis(ax, a);
+  }
+  wongPose = {};
+  m.traverse(o => { if (o.isBone && prayerPose[o.name]) { wongPose[o.name] = o.quaternion.clone(); o.quaternion.copy(saved[o.name]); } });
+  return wongPose;
+}
+function setHandWong(root, k) {
+  if (!prayerPose || !wongPose) return;
+  root.traverse(b => { if (b.isBone && wongPose[b.name]) b.quaternion.slerpQuaternions(prayerPose[b.name], wongPose[b.name], k); });
+}
+/* one hand's gesture at flow time t (the right hand; the left is this,
+   mirrored, a beat later) */
+function gestureAt(t, k, outP, outQ) {
+  const amp = 0.35 + 0.65 * k;
+  outP.set(0.15 + 0.045 * amp * Math.sin(t * 0.83),
+           -0.12 + 0.07 * k + 0.05 * amp * Math.sin(t * 1.21 + 0.6),
+           -0.43 + 0.035 * amp * Math.sin(t * 0.61 + 1.3));
+  _hge.set(-0.42 + 0.24 * Math.sin(t * 1.07),          // the wrist bent back, breathing
+           0.28 * amp * Math.sin(t * 0.77 + 0.4),        // the palm turning out and in
+           -0.30 + 0.22 * amp * Math.sin(t * 0.58 + 2.1), // the hand tilting outward
+           'XYZ');
+  outQ.setFromEuler(_hge).premultiply(GEST_R);
+}
+const _hgPr = new THREE.Vector3(), _hgQr = new THREE.Quaternion(), _hgPl = new THREE.Vector3(), _hgQl = new THREE.Quaternion();
+function handsPut(k, t) {
+  if (!handsReady || !rightOriented) return;
+  if (!prayRestQ) prayRestQ = new THREE.Quaternion().setFromEuler(new THREE.Euler(0.50, 0.28, -0.48));
+  buildWong();
+  const e = k * k * (3 - 2 * k), half = HAND_W * 0.085, py = pray.k > 0 ? pray.y : PRAY.y;
+  // the right hand: from the clasp to its gesture
+  gestureAt(t, k, _hgPr, _hgQr);
+  _hgp0.set(half, py, PRAY.z);
+  armR.position.lerpVectors(_hgp0, _hgPr, e);
+  armR.quaternion.slerpQuaternions(PRAYER_R, _hgQr, e);
+  // the left: the same, a beat behind and a little slower, mirrored
+  const L = buildPrayerArm();
+  if (L) {
+    gestureAt(t * 0.93 + 1.7, k, _hgPl, _hgQl);
+    _hgPl.x = -_hgPl.x;
+    _hgm.makeRotationFromQuaternion(_hgQl).premultiply(HG_MIR).multiply(HG_MIR);
+    _hgQl.setFromRotationMatrix(_hgm);
+    _hgp0.set(-half, py, PRAY.z);
+    L.visible = true;
+    L.position.lerpVectors(_hgp0, _hgPl, e);
+    L.quaternion.slerpQuaternions(PRAYER_L, _hgQl, e);
+    const fl = Math.min(1, e * (0.75 + 0.25 * Math.sin(t * 0.9 + 2.0)));
+    setHandWong(L.userData.model, fl);
+  }
+  if (rightHandModel) setHandWong(rightHandModel, Math.min(1, e * (0.75 + 0.25 * Math.sin(t * 0.9))));
+}
+function handsFrame() {
+  if (!handsReady || !rightOriented) return;
+  if (hands.k === 0 && hands.to === 0 && hands.was === 0) return;
+  const now = performance.now();
+  const dt = hands.last ? Math.min(1, (now - hands.last) / 1000) : 0; hands.last = now;
+  if (hands.k !== hands.to) hands.k = hands.to > hands.k ? Math.min(hands.to, hands.k + dt / hands.secs) : Math.max(hands.to, hands.k - dt / hands.secs);
+  if (hands.k === 0) {
+    hands.was = 0; hands.t = 0; camera.rotation.z = 0;
+    if (pray.k === 0) prayPut(0, true);       // no clasp to hand back to: the arm goes home
+    return;
+  }
+  hands.t += dt * (0.55 + 0.75 * hands.k);
+  handsPut(hands.k, hands.t);
+  // the upper body sways and turns with them (applied to the lens, so the
+  // look the player is fighting with still belongs to the player)
+  const e = hands.k * hands.k * (3 - 2 * hands.k);
+  camera.rotation.z = e * (0.055 * Math.sin(hands.t * 0.52) + 0.018 * Math.sin(hands.t * 1.31));
+  hands.was = hands.k;
+}
 let kitRooted = false, kitHurt = null;       // v11.1: the player held in place; the red damage frame + a bleed until the player acts
 let invUrge = null;                          // v11.6: an item the bag button pulses for until it is equipped (kit.give)
 let invBtnEl = null;                         // v11.6: the bag button, looked up once
@@ -3249,12 +3370,24 @@ const EV_DEFAULT = {
      drop costing the stat on the spot. */
   match:     { secs: 45, wrongCost: 4, fast: 12, slow: 34, pass: 1 },
   focus:     { n: 5, each: 1.6, tol: 90, pass: 0.6 },
-  sequence:  { each: 1.2, accel: 0.86, minEach: 0.45, pass: 0.6 }
+  sequence:  { each: 1.2, accel: 0.86, minEach: 0.45, pass: 0.6 },
+  /* v18.0: RESIST — the twenty-fifth seam. Episode 3 chapter 2: the chant
+     swells and his hands rise on their own; the player HOLDS through a swell
+     to keep them still and LETS GO in the ebb to breathe. `swells` are laid
+     out in event seconds ({ at, len, pull }); `k` is how far the hands have
+     risen (0..1), reported every frame (`onRise(k, inSwell, t)`); a hand that
+     reaches 1 is a SLIP (`onSlip(n)`, graded the worst band, k falls back to
+     `slipBack`); every swell is graded on the highest k it reached and every
+     ebb on how much of it was held (holding your breath is not stillness).
+     `push` is how fast a hold brings them down, `relax` how fast they settle
+     on their own in an ebb, `surge` how hard a swell pulses. */
+  resist:    { swells: [{ at: 1.5, len: 5, pull: 0.32 }, { at: 9.5, len: 6, pull: 0.40 }, { at: 18.5, len: 7, pull: 0.48 }],
+               push: 0.75, grip: 0.55, relax: 0.35, surge: 0.45, slipBack: 0.5, tail: 1.5, zone: 3, pass: 0.5 }
 };
 // the literals texttest looks for; the kind picks the row
 const EV_LABEL = { tap: 'event.tap', timed: 'event.timed', mash: 'event.mash', hold: 'event.hold',
                    stabilise: 'event.stabilise', heartbeat: 'event.heartbeat', focus: 'event.focus',
-                   sequence: 'event.sequence', match: 'event.match' };
+                   sequence: 'event.sequence', match: 'event.match', resist: 'event.resist' };
 /* ------------------------------------------------------ v9.3 · THE LADDER
    Chad, of the minigames: "no stakes, no damage, no repercussions ... they
    were supposed to require precise timing to pass, and every mistimed tap or
@@ -3624,7 +3757,7 @@ function evBegin() {
      blank panel, and a player was asked to time a press against nothing:
      Chad, of it, "The minigame seems broken and im not sure what its
      supposed to do." Episode 1 declares no events, so it cannot reach this. */
-  $('evTrack').classList.toggle('hide', !(e.kind === 'mash' || e.kind === 'hold' || e.kind === 'stabilise' || e.kind === 'tap' || e.kind === 'match' || e.kind === 'sequence'));
+  $('evTrack').classList.toggle('hide', !(e.kind === 'mash' || e.kind === 'hold' || e.kind === 'stabilise' || e.kind === 'tap' || e.kind === 'match' || e.kind === 'sequence' || e.kind === 'resist'));
   $('evBar').style.width = (e.kind === 'mash' ? e.bar * 100 : e.kind === 'match' ? 100 : 0) + '%';
   $('evItem').classList.toggle('hide', e.kind !== 'sequence');
   $('evDemo').classList.add('hide');       // v10.3: the briefing's illustration goes with the briefing
@@ -3865,6 +3998,56 @@ function evFrame(dt, dLookX, dLookY) {
       if (e.drift > o.drift || e.look > o.lookTol) evResolve({ ok: false, score: 0 });
       else if (e.t - e.downAt >= o.secs) evResolve({ ok: true, score: 1 });
       break;
+    case 'resist': {
+      /* v18.0: the chant's swells, laid out in the event's own wall-clock
+         seconds. Grading happens at each boundary, so a slow phone and a
+         fast one see the same swells and the same scores. */
+      const sw = o.swells, last = sw[sw.length - 1];
+      let i = -1;
+      for (let j = 0; j < sw.length; j++) if (e.t >= sw[j].at && e.t < sw[j].at + sw[j].len) { i = j; break; }
+      const inSwell = i >= 0;
+      if (e.rk === undefined) { e.rk = 0; e.rmax = 0; e.rheld = 0; e.rebb = 0; e.rprev = -1; e.rslip = 0; e.rguard = 0; e.rslipped = false; }
+      if (inSwell !== (e.rprev >= 0)) {
+        if (inSwell) {                                  // an ebb ends: was he breathing?
+          if (e.rebb > 0.3) evScorePress(Math.min(1, e.rheld / e.rebb));
+          e.rheld = 0; e.rebb = 0; e.rmax = 0; e.rslipped = false;
+          if (typeof o.onSwell === 'function') o.onSwell(i);
+        } else {                                        // a swell ends: how high did they get?
+          if (!e.rslipped) evScorePress(e.rmax);
+          if (typeof o.onEbb === 'function') o.onEbb(e.rprev);
+        }
+        e.rprev = i;
+      }
+      e.rguard = Math.max(0, e.rguard - dt);
+      if (inSwell) {
+        const s0 = sw[i], u = (e.t - s0.at) / s0.len;
+        const pull = (s0.pull ?? 0.4) * (1 + o.surge * Math.sin(e.t * 6.3) + 0.6 * Math.sin(u * Math.PI));
+        e.rk = e.down ? Math.max(0, e.rk + (pull * o.grip - o.push) * dt) : e.rk + pull * dt;   // a strong enough swell beats the grip
+        e.rmax = Math.max(e.rmax, e.rk);
+        if (e.rk >= 1 && e.rguard <= 0) {
+          e.rslipped = true; e.rguard = 1.2;
+          evScorePress(EV_WORST);
+          e.rk = o.slipBack;
+          if (typeof o.onSlip === 'function') o.onSlip(e.rslip);
+          e.rslip++;
+        }
+        e.rk = Math.min(1, e.rk);
+      } else {
+        e.rk = Math.max(0, e.rk - o.relax * dt);
+        if (e.t > sw[0].at) { e.rebb += dt; if (e.down) e.rheld += dt; }
+      }
+      const host = evEl();
+      if (host) {
+        host.classList.toggle('swell', inSwell);
+        host.style.setProperty('--rk', e.rk.toFixed(3));
+        const want = inSwell ? (o.holdWord || T('event.resistHold')) : (e.t < sw[0].at ? (o.readyWord || T('event.resistReady')) : (o.breatheWord || T('event.resistBreathe')));
+        const pe = $('evPrompt'); if (pe && pe.textContent !== want) pe.textContent = want;
+      }
+      if (bar) bar.style.width = (100 * e.rk).toFixed(1) + '%';
+      if (typeof o.onRise === 'function') o.onRise(e.rk, inSwell, e.t);
+      if (e.t >= last.at + last.len + (o.tail ?? 1.5)) evResolve(evBandResult(o));
+      break;
+    }
     case 'stabilise': {
       if (!e.down) { if (e.t > o.grace && e.downAt < 0) evResolve({ ok: false, score: 0 }); break; }
       const steady = 1 - Math.min(1, e.look / o.tol);
@@ -4133,6 +4316,7 @@ function kitReset() {
   if (CH.weapon) weaponSetup(CH.weapon); else weaponTeardown();   // v12.0
   kitRooted = false; kitHurtSet(null);   // v11.1
   prayOff();                             // v16.5: a run never starts with the hands still together
+  handsOff();                            // v18.0: nor with them still moving on their own
   activeSpot = null;
   if (unl.id) unlockClose('force');      // v14.7: a splash never outlives the run it opened in
   if (cho.ids) chooseClose('force');     // v17.6: nor does a choice
@@ -4194,6 +4378,8 @@ const KIT = {
   root: on => { kitRooted = !!on; },   // v11.1: hold the player in place (the look and the torch still work)
   pray: kitPraySet,                // v16.5: the hands into añjali in PLAY — episode 1 chapter 1's scene D pose, exactly
   praying: () => pray.to > 0,
+  hands: kitHandsSet,              // v18.0: the hands taken — out of the clasp into a Thai-dance gesture by k
+  getHands: () => hands.k,
   hurt: kitHurtSet,                // v11.1: the red frame held, and a bleed per second, until cleared
   /* v11.6: THE BAG, from a chapter. `give` puts an item in the bag and
      sets the bag button pulsing until it is equipped; `take` removes it
@@ -6200,7 +6386,11 @@ const ADULT_TAKES = new Set([
   'z1pro1', 'z1pro2', 'z1pro3', 'z1pro4', 'z1pro5', 'z1pro6',
   'z1arrive', 'z1wai', 'z1wait', 'z1warm', 'z1close', 'z1next',
   'z1askA', 'z1askB', 'z1askC', 'z1askD', 'z1A', 'z1B',
-  'z1C', 'z1D', 'z1sadhu', 'z1room']);
+  'z1C', 'z1D', 'z1sadhu', 'z1room',
+  /* v18.0 · episode 3 chapter 2 */
+  'z2pro1', 'z2pro2', 'z2pro3', 'z2pro4', 'z2pro5', 'z2pro6', 'z2arrive', 'z2leaf', 'z2kneel',
+  'z2slip1', 'z2slip2', 'z2peak', 'z2A1', 'z2B1', 'z2C1', 'z2D1', 'z2close', 'z2next',
+  'z2A', 'z2B', 'z2C', 'z2D']);
 /* The rest of the cast. They share `voiceOut` and the duck, but not the
    boost — see voiceStage() above. */
 const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
@@ -6245,7 +6435,8 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
   'aj1next', 'aj1sit', 'aj1breathe', 'aj1katha', 'aj1done', 'aj1ask',
   'aj1A', 'aj1B', 'aj1C', 'aj1D1', 'aj1D2', 'au1hi', 'au1sell', 'au1shoes',
   'mk1come', 'mk1chant', 'mk1teach', 'hp1room', 'aj1mat',
-  'aj1which', 'aj1chosen']);   // v17.6: the Ajarn asks which yant, and answers the choice
+  'aj1which', 'aj1chosen',     // v17.6: the Ajarn asks which yant, and answers the choice
+  'lw2look', 'lw2pull']);      // v18.0: the laywoman beside him (Onnie) and Yai in front (Air), whispered
 const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || ADULT_TAKES.has(name) || CAST_TAKES.has(name);
 /* v6.9: his WHISPERS go round the bus. Chad wanted the three pick-up
    reactions "almost whispering to himself" and they were re-voiced as
@@ -9341,7 +9532,22 @@ const STING_SAMPLE = {
   /* v16.1 · the monk in the sala, the man by the walkway, the private room */
   mk1come: ['mk1come', 1], mk1chant: ['mk1chant', 1], mk1teach: ['mk1teach', 1], hp1room: ['hp1room', 1],
   aj1mat: ['aj1mat', 1], z1sadhu: ['z1sadhu', 1], z1room: ['z1room', 1],
-  roomdoor: ['roomdoor', 1], watersprinkle: ['watersprinkle', 1], roomamb: ['roomamb', 1]
+  roomdoor: ['roomdoor', 1], watersprinkle: ['watersprinkle', 1], roomamb: ['roomamb', 1],
+  /* v18.0 · EPISODE 3 · CHAPTER 2 · THE HANDS THAT MOVED — his lines, the
+     laywoman and Yai, the hall (the evening chant, its swells and its
+     faltering), the hands, the film's two rooms, and three music cues */
+  z2pro1: ['z2pro1', 1], z2pro2: ['z2pro2', 1], z2pro3: ['z2pro3', 1], z2pro4: ['z2pro4', 1],
+  z2pro5: ['z2pro5', 1], z2pro6: ['z2pro6', 1], z2arrive: ['z2arrive', 1], z2leaf: ['z2leaf', 1],
+  z2kneel: ['z2kneel', 1], z2slip1: ['z2slip1', 1], z2slip2: ['z2slip2', 1], z2peak: ['z2peak', 1],
+  z2A1: ['z2A1', 1], z2B1: ['z2B1', 1], z2C1: ['z2C1', 1], z2D1: ['z2D1', 1],
+  z2close: ['z2close', 1], z2next: ['z2next', 1], z2A: ['z2A', 1], z2B: ['z2B', 1], z2C: ['z2C', 1], z2D: ['z2D', 1],
+  lw2look: ['lw2look', 1], lw2pull: ['lw2pull', 1],
+  pageturn: ['pageturn', 1], goldleaf: ['goldleaf', 1], matkneel: ['matkneel', 1], handsrise: ['handsrise', 1],
+  handslip: ['handslip', 1], whispers: ['whispers', 1], chantswell: ['chantswell', 1], chantstop: ['chantstop', 1],
+  templedoor: ['templedoor', 1], slidevan: ['slidevan', 1],
+  e3vesper: ['e3vesper', 1], hallamb: ['hallamb', 1], templedusk: ['templedusk', 1],
+  officeamb2: ['officeamb2', 1], flatnight: ['flatnight', 1],
+  e3film2: ['e3film2', 1], e3close2: ['e3close2', 1], e3pull: ['e3pull', 1]
 };
 /* Which kinds the synth below can actually fake. Everything else in
    STING_SAMPLE is sample-only: if its buffer is not decoded yet it stays
@@ -9664,6 +9870,11 @@ function playCineFn(sceneFn, onDone, startFade = 0) {
     keep: {}, endFade: 0, snap, onDone
   };
   prayOff();                       // v16.5: a scene takes the hands back from kit.pray, on its first frame
+  /* v18.0: and from kit.hands — the scene is told where they were (it may
+     carry the gesture on with api.handsPose), the sway's roll is not kept */
+  handsFrom.k = hands.k; handsFrom.t = hands.t;
+  if (hands.k > 0 || hands.was > 0) snap.camRoll = 0;
+  handsOff();
   cineDuck = null;                 // a scene starts with the room at full
   cineMusicK = 1;                  // v6.6: and the music at the chapter's level
   camLens(CAM_FOV);                // v6.12: and on the chapter's own lens
@@ -9921,6 +10132,11 @@ function sceneApi(c) {
     music: cineMusic,                // v6.6: hold the explore music down (a film with its own theme)
     handsRoot, armR, noteProp,
     buildPrayerArm, prayerArm: () => prayerArmL,
+    /* v18.0: the hands taken, from a scene — the same pose kit.hands draws in
+       play, at a k and a flow time the scene chooses; handsFrom is where play
+       left them, so a scene can carry the gesture on without a jump */
+    handsPose: (k, t) => handsPut(Math.max(0, Math.min(1, k)), t),
+    handsFrom: () => ({ k: handsFrom.k, t: handsFrom.t }),
     rightHand: () => rightHandModel, setHandCurl,
     vmKey, vmFire, vmHemi,
     dirtyShadows: n => { shadowDirty = n; }
@@ -11749,7 +11965,7 @@ function tick(now = 0) {
   if (state !== 'title' && handsReady) {
     torchPropSync();                       // v11.1: hand or torch, decided on the frame
     weaponPropSync();                      // v12.0: or the weapon, over both
-    if (state !== 'cine') prayFrame();     // v16.5: the praying hands (a scene owns the hands itself)
+    if (state !== 'cine') { prayFrame(); handsFrame(); }   // v16.5: the praying hands; v18.0: and the hands taken (a scene owns the hands itself)
   }
   /* v15: COVERED FRAMES. While an OPAQUE layer covers the whole canvas — the
      title, the chapter card once it is forced solid, a film or a scene held

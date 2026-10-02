@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "17.7"
+VERSION = "18.0"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -399,6 +399,16 @@ ASSETS = {
     'sitwomantalk': ('assets/sitwomantalk.glb', True, False), # e3c1 v17.4: the stall auntie's talking take — the monk's Sitting_Answering_Questions retargeted onto sitwoman (masters/v17.4)
     'monk':         ('assets/monk.glb', True, False),         # e3c1 v16.8: Chad's monk, five takes, skin weights diffused (tools/prepmonk.mjs)
     'ajarn':        ('assets/ajarn.glb', True, False),        # e3c1 v16.8: Chad's Sak Yant Ajarn, seven takes, the same prep
+    # e3c2 v18.0: the evening chant's crowd — five characters re-posed sitting
+    # on the floor (the monk's Sit_Cross_Legged_on_Floor retargeted in world
+    # space, tools/retarget.mjs) and simplified for a crowd (tools/prepwoman.mjs);
+    # monkrow is Chad's monk at crowd detail. masters/v18.0/crowd is the recipe.
+    'lay_admintee': ('assets/lay_admintee.glb', True, False),
+    'lay_botak':    ('assets/lay_botak.glb', True, False),
+    'lay_granny':   ('assets/lay_granny.glb', True, False),
+    'lay_scold':    ('assets/lay_scold.glb', True, False),
+    'lay_sitwoman': ('assets/lay_sitwoman.glb', True, False),
+    'monkrow':      ('assets/monkrow.glb', True, False),
 }
 
 # Hosted-only assets: shipped as a URL, never inlined as base64.
@@ -422,7 +432,8 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'ghostsoldier', 'encik2', 'bunkbed', 'cafestaff', 'foodwarmer', 'flashlight',
            'kamaz', 'forest', 'rifle', 'ghostcyclist', 'fboaim',
            'muzzle', 'ammocrate', 'ammomags', 'icontorch', 'zavsoldier',
-           'thaikit', 'wessred', 'wessgreen', 'naga', 'monk', 'ajarn', 'temple', 'slipper', 'khonmask', 'sitwomantalk'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone
+           'thaikit', 'wessred', 'wessgreen', 'naga', 'monk', 'ajarn', 'temple', 'slipper', 'khonmask', 'sitwomantalk',
+           'lay_admintee', 'lay_botak', 'lay_granny', 'lay_scold', 'lay_sitwoman', 'monkrow'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone
 HOSTED_ONLY |= E2_ONLY
 
 # The split packs are hosted-only: there is no __..._B64__ token for them and

@@ -154,6 +154,13 @@
               note: "Arthur — a wise, older Southeast Asian narrator, slow and warm (Chad's pick over Somchai, v16.2). The blessing chant is given to him ROMANISED as a Thai monk sounds it. Flat cast bus, RMS -16." },
     helper: { name: "The man by the walkway (episode 3, chapter 1)", voice: "FaUQoAqt8WX5mfvrvb3A", model: "eleven_v3",
               note: "Preecha — a patient, friendly Thai voice. One line. Flat cast bus, RMS -16." },
+    /* v18.0 — episode 3 chapter 2, the evening chant. Two women in the rows,
+       both whispering, cast so they do not sound like each other (the v4.1
+       rule); masters/v18.0/make.sh has the picks. */
+    laywoman: { name: "The laywoman beside him (episode 3, chapter 2)", voice: "OSCkDOqeWrrCkMiFPGB3", model: "eleven_v3",
+              note: "Onnie Thai — soft, an authentic Thai voice. Whispered; flat cast bus, levelled by RMS to -19 dBFS (under speech)." },
+    yai: { name: "Yai, the grandmother in front of him (episode 3, chapter 2)", voice: "wMBr6SfqQVuOqplK01NE", model: "eleven_v3",
+              note: "Air — a Thai woman's voice, aged by the line. Whispered to her grandson; flat cast bus, RMS -19." },
   };
 
   const LINES = [
@@ -910,7 +917,56 @@
     { id: "z1room", who: "jamesAdult", ch: "e3c1", where: "Inside the private room",
       text: "[quietly, in awe] So this is where they do it.", secs: 1.88 },
     { id: "aj1mat", who: "ajarn", ch: "e3c1", where: "The Ajarn, as he comes into the room",
-      text: "[calmly, without looking up] Sit there. Wait.", secs: 1.88 }
+      text: "[calmly, without looking up] Sit there. Wait.", secs: 1.88 },
+    // ---- episode 3 · chapter 2 · THE HANDS THAT MOVED (v18.0) --------------
+    { id: "z2pro1", who: "jamesAdult", ch: "e3c2", where: "Opening film: a second yant, then another",
+      text: "After the first one, I kept going back. Another yant... then another.", secs: 5.15 },
+    { id: "z2pro2", who: "jamesAdult", ch: "e3c2", where: "Opening film: his business, bigger",
+      text: "Business got better. Life got smoother. Every time, it felt like a little more luck.", secs: 5.88 },
+    { id: "z2pro3", who: "jamesAdult", ch: "e3c2", where: "Opening film: his flat at night, chanting on his phone",
+      text: "[uneasy] But something in me was waking up. When I heard chanting, my hands began to move.", secs: 6.35 },
+    { id: "z2pro4", who: "jamesAdult", ch: "e3c2", where: "Opening film: his hand lifting on its own",
+      text: "Slow. Graceful. Like a Thevada's. And I wasn't doing it.", secs: 6.53 },
+    { id: "z2pro5", who: "jamesAdult", ch: "e3c2", where: "Opening film: a temple floor, his hands coming apart",
+      text: "[anxious] Then it began happening in temples. I was afraid someone would see.", secs: 5.56 },
+    { id: "z2pro6", who: "jamesAdult", ch: "e3c2", where: "Opening film: the ordination hall's doors at dusk",
+      text: "I told myself I could still control it. Tonight, I would just chant. Like everyone else.", secs: 5.64 },
+    { id: "z2arrive", who: "jamesAdult", ch: "e3c2", where: "Seconds after play begins, inside the doors",
+      text: "[quietly] The evening chant had already started.", secs: 2.69 },
+    { id: "z2leaf", who: "jamesAdult", ch: "e3c2", where: "Pressing gold leaf on the back of the small Buddha",
+      text: "[softly] Gold on the back of the Buddha. Where nobody sees it.", secs: 3.71 },
+    { id: "z2kneel", who: "jamesAdult", ch: "e3c2", where: "Kneeling in the rows, after the three bows",
+      text: "[nervous] Just chant. Like everyone else. Nobody is looking at you.", secs: 3.71 },
+    { id: "z2slip1", who: "jamesAdult", ch: "e3c2", where: "The hands slip the first time",
+      text: "[afraid] No... not now.", secs: 3.00 },
+    { id: "z2slip2", who: "jamesAdult", ch: "e3c2", where: "The hands slip the second time",
+      text: "[desperate] Stop... stop.", secs: 2.93 },
+    { id: "z2peak", who: "jamesAdult", ch: "e3c2", where: "The peak: the hands go, the faces turn",
+      text: "[panicked] Not here. Not in front of everyone.", secs: 2.04 },
+    { id: "z2A1", who: "jamesAdult", ch: "e3c2", where: "Scene A: he forced it down",
+      text: "[shaken] I forced it down. It went... but I could feel it waiting.", secs: 5.25 },
+    { id: "z2B1", who: "jamesAdult", ch: "e3c2", where: "Scene B: outside, on the steps",
+      text: "[relieved] Outside, it faded. No scene. No harm. But I still didn't know what it was.", secs: 6.35 },
+    { id: "z2C1", who: "jamesAdult", ch: "e3c2", where: "Scene C: he let it run",
+      text: "[regretful] I wanted to see where it would go. It went where it wanted. Not where I did.", secs: 6.53 },
+    { id: "z2D1", who: "jamesAdult", ch: "e3c2", where: "Scene D: he kept still",
+      text: "[calm] I didn't fight it. I didn't follow it. I just knew I had to find someone who understood it.", secs: 6.19 },
+    { id: "z2close", who: "jamesAdult", ch: "e3c2", where: "The closing narration in all four outcomes",
+      text: "[reflective] I had come looking for better luck. I never expected to be kneeling in a temple... unable to control my own body.", secs: 8.36 },
+    { id: "z2next", who: "jamesAdult", ch: "e3c2", where: "Over the black at the end of all four outcomes",
+      text: "I thought, as long as it only happened in temples, I could hide it. Then came Buddha Day.", secs: 7.08 },
+    { id: "z2A", who: "jamesAdult", ch: "e3c2", where: "Under outcome card A",
+      text: "I forced it down. It did not go away.", secs: 2.93 },
+    { id: "z2B", who: "jamesAdult", ch: "e3c2", where: "Under outcome card B",
+      text: "I stepped outside, and let it pass.", secs: 2.69 },
+    { id: "z2C", who: "jamesAdult", ch: "e3c2", where: "Under outcome card C",
+      text: "I let it run, to see what it was.", secs: 3.00 },
+    { id: "z2D", who: "jamesAdult", ch: "e3c2", where: "Under outcome card D",
+      text: "I kept still, and went looking for someone who knew.", secs: 3.24 },
+    { id: "lw2look", who: "laywoman", ch: "e3c2", where: "Scene A: the woman beside him, whispering",
+      text: "[whispers, concerned] Nong... you okay?", secs: 2.72 },
+    { id: "lw2pull", who: "yai", ch: "e3c2", where: "Scene C: Yai pulls her grandson close",
+      text: "[whispers, frightened] Come, come. Sit with Yai. Don't look.", secs: 2.59 }
   ];
 
   // What a chapter key means on the sheet.
@@ -923,7 +979,8 @@
     e2c3: "Episode 2 · Chapter 3 · The Pressure",
     e2c4: "Episode 2 · Chapter 4 · The Cyclist",
     e2c5: "Episode 2 · Chapter 5 · The Last Question",
-    e3c1: "Episode 3 · Chapter 1 · The Luck I Went Looking For"
+    e3c1: "Episode 3 · Chapter 1 · The Luck I Went Looking For",
+    e3c2: "Episode 3 · Chapter 2 · The Hands That Moved"
   };
 
   window.__VOICE__ = { SPEAKERS, LINES, CHAPTERS };
