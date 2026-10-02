@@ -54,7 +54,7 @@
     brief: 'A temple hall in Thailand at dusk, the evening chant already begun. Take a chant book, press gold leaf onto the small Buddha, find your place in the rows, and kneel with everyone else.',
     prompt: 'The chant is at its height. Your hands are moving on their own, and the people around you have started to look.',
     choices: [
-      { k: 'A', text: 'Clench your fists and force it to stop.',
+      { k: 'A', text: 'Press your hands together hard and force it to stop.',
         d: { sanity: -9, awareness: 6, wisdom: -12 }, verdict: 'bad',
         say: 'I forced it down. It did not go away.',
         teach: 'What you suppress without understanding has not gone. It is only waiting.' },
@@ -2104,27 +2104,24 @@
   }
   const hk = (api) => { const f = api.handsFrom(); return { k: Math.max(0.6, f.k || 1), t: f.t || 0 }; };
 
-  /* A · FORCE IT DOWN (bad) — the fists, the shaking, the woman who asks */
+  /* A · FORCE IT DOWN (bad) — the prayer held by force, the shaking, the woman who asks */
   function scForce(c, s, api) {
     const { sfx, tr, step, yawTo, pitchTo, faceFrom, smoothK, rawK, stage, camera } = api;
     const p0 = P0(s), H0 = hk(api), N = stage.NEIGH;
     let shake = 0;
     tr(0, 1.2, (k) => { api.handsPose(H0.k, H0.t + k * 1.0); }, rawK);
-    // he wrenches them down: the gesture collapses, the fingers close, it shakes
+    // he wrenches them back into the clasp — the proper prayer, forced — and
+    // holds it there, trembling, until it stops. (A curled fist built on the
+    // clasp threaded one hand's fingers through the other's in every try
+    // photographed; the clasp itself is clean, and it is the truer image:
+    // the prayer held by force.)
     tr(1.2, 12.0, (k, t) => {
       const u = Math.min(1, (t - 1.2) / 1.1);
-      shake = (1 - Math.min(1, Math.max(0, (t - 6) / 6))) * 0.012;
-      api.handsPose(H0.k * (1 - smooth(u)) + 0.08, H0.t + 1.0 + u * 0.3);
-      const m = api.rightHand(), L = api.prayerArm();
-      // half-closed, not a full curl: a full one on the clasp threads the
-      // fingers of one hand through the other (photographed)
-      if (m) api.setHandCurl(m, 0.55 * smooth(u));
-      if (L && L.userData.model) api.setHandCurl(L.userData.model, 0.55 * smooth(u));
-      // pulled down and AWAY from the lens, apart, held at the bottom of the
-      // frame — the first try lifted them toward the lens until they filled it
-      api.armR.position.y += 0.02 * smooth(u); api.armR.position.z -= 0.06 * smooth(u);
-      api.armR.position.x += 0.03 * smooth(u) + Math.sin(t * 41) * shake;
-      if (L) { L.position.y += 0.02 * smooth(u); L.position.z -= 0.06 * smooth(u); L.position.x -= 0.03 * smooth(u) - Math.sin(t * 37 + 1) * shake; }
+      shake = (1 - Math.min(1, Math.max(0, (t - 6) / 6))) * 0.010;
+      api.handsPose(H0.k * (1 - smooth(u)), H0.t + 1.0 + u * 0.3);
+      const L = api.prayerArm();
+      api.armR.position.y += 0.03 * smooth(u); api.armR.position.x += Math.sin(t * 41) * shake;
+      if (L) { L.position.y += 0.03 * smooth(u); L.position.x += Math.sin(t * 37 + 1) * shake; }
       camera.rotation.z = Math.sin(t * 33) * shake * 0.6;
     }, rawK);
     step(12.0, () => { camera.rotation.z = 0; });
@@ -2137,7 +2134,7 @@
     pitchTo(4.2, 5.2, s.pitchX, -0.18, smoothK);
     yawTo(7.0, 8.0, faceFrom(p0.x, p0.z, N.x, N.z - 0.2), s.yawRot, smoothK);
     step(7.6, () => { const n = stage.neighbour(); if (n) n.lookTo = 0; });
-    pitchTo(7.4, 9.0, -0.18, -0.30, smoothK);          // down at his own clenched hands
+    pitchTo(7.4, 9.0, -0.18, -0.30, smoothK);          // down at his own hands, pressed together and shaking
     sfx(7.6, 'z2A1');                                 // 5.25 s → 12.85
     sfx(12.6, 'e3close2', 0.9);
     pitchTo(13.0, 21.0, -0.30, 0.10, smoothK);         // and up, slowly, to the Buddha
