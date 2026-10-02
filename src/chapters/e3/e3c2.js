@@ -591,6 +591,25 @@
     for (let i = 0; i < 6; i++) { const top = -0.2 - i * 0.2; box(5.0, top + 1.4, 0.36, 0, (top - 1.4) / 2, HALL.z1 + 4.6 + i * 0.36, matCream, outside); }
     box(HALL.x1 - HALL.x0 + 3, 1.2, HALL.z1 - HALL.z0 + 4.3, 0, -0.8, (HALL.z0 + HALL.z1 + 4.4) / 2, matCream, outside, false);   // the base
     box(HALL.x1 - HALL.x0 + 3.3, 0.08, 0.1, 0, -0.04, HALL.z1 + 4.47, matGold, outside, false);                                        // its gold lip
+    // the facade's face: the door framed and crowned in gold OUTSIDE too, two
+    // tall shuttered windows with their crowns, and a red-and-gold dado (the
+    // first photographs of the doors at dusk showed a blank cream wall)
+    { const zf = HALL.z1 + T + 0.03;
+      for (const s2 of [-1, 1]) box(0.16, DOOR.h + 0.16, 0.08, s2 * (DOOR.hw + 0.08), DOOR.h / 2, zf, matGold, outside, false);
+      box(DOOR.hw * 2 + 0.48, 0.18, 0.08, 0, DOOR.h + 0.09, zf, matGold, outside, false);
+      const oc = new THREE.Mesh(new THREE.ShapeGeometry(crownShape(THREE, DOOR.hw * 2 + 0.8, 1.6)), matGoldB);
+      oc.position.set(0, DOOR.h + 0.18, zf + 0.01); outside.add(oc);
+      for (const s2 of [-1, 1]) {
+        const wx = s2 * 2.35;
+        box(0.86, 1.9, 0.05, wx, 1.95, zf, matCol, outside, false);                                   // the shutter, lacquer
+        box(0.64, 1.6, 0.02, wx, 1.95, zf + 0.03, matGoldB, outside, false);                          // its gilt panel
+        for (const s3 of [-1, 1]) box(0.09, 2.06, 0.07, wx + s3 * 0.47, 1.95, zf + 0.01, matGold, outside, false);
+        box(1.04, 0.1, 0.07, wx, 0.92, zf + 0.01, matGold, outside, false);
+        const wc = new THREE.Mesh(new THREE.ShapeGeometry(crownShape(THREE, 1.2, 0.95)), matGoldB);
+        wc.position.set(wx, 2.96, zf + 0.01); outside.add(wc);
+      }
+      box(HALL.x1 - HALL.x0 + 0.9, 0.5, 0.04, 0, 0.25, zf, matRedD, outside, false);
+      box(HALL.x1 - HALL.x0 + 0.9, 0.05, 0.05, 0, 0.52, zf + 0.005, matGold, outside, false); }
     const yard = new THREE.Mesh(new THREE.PlaneGeometry(70, 80), new THREE.MeshStandardMaterial({ map: tex(makeSlabs(THREE, cnv)), roughness: 0.9 }));
     yard.material.map.repeat.set(19, 22);
     yard.rotation.x = -Math.PI / 2; yard.position.set(0, -1.4, HALL.z1 + 8); yard.receiveShadow = true; outside.add(yard);
@@ -600,6 +619,7 @@
       const lamp = new THREE.Group(); lamp.position.set(s * 3.4, -1.4, HALL.z1 + 9.0); outside.add(lamp);
       cyl(0.05, 0.07, 3.2, 0, 1.6, 0, matDark, 6, lamp);
       const glow = new THREE.Mesh(new THREE.SphereGeometry(0.18, 12, 10), matBulb); glow.position.y = 3.3; lamp.add(glow);
+      lamp.traverse(o => { o.castShadow = false; });   // (its globe threw two head-shaped shadows on the facade)
     }
     // the roof: two tiers of orange tile over the facade, a gable of red and gold
     function gable(z, w, h, y0, mat, tile) {
@@ -1638,15 +1658,15 @@
     // the hall around him, out of focus in the dark: a lacquered wall, two
     // columns with their gold bands, and far off the gilded image's glow
     // (the first cut floated the hands over a floor in an empty blue void)
-    fbox(9, 5, 0.2, 0, 2.5, -4.2, basic({ color: 0x120c0a }), T);
+    const encl = new THREE.Mesh(new THREE.BoxGeometry(16, 10, 14), basic({ color: 0x0d0908, side: THREE.BackSide })); encl.position.set(0, 4.98, -1.5); T.add(encl);
+    fbox(9, 7, 0.2, 0, 3.5, -4.2, basic({ color: 0x140d0a }), T);
     for (const sx of [-1.7, 1.9]) {
-      fbox(0.42, 5, 0.42, sx, 2.5, -3.1, basic({ color: 0x0b0807 }), T);
+      fbox(0.42, 8, 0.42, sx, 4, -3.1, basic({ color: 0x0b0807 }), T);
       for (const y of [0.35, 1.9, 3.4]) fbox(0.44, 0.06, 0.44, sx, y, -3.1, basic({ color: 0x8a6a2c }), T);
     }
-    const farGlow = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 2.6), basic({ map: h.tex(makeGlow(THREE, cnv, '255,196,96')), transparent: true, opacity: 0.85, depthWrite: false, blending: THREE.AdditiveBlending }));
+    const farGlow = new THREE.Mesh(new THREE.PlaneGeometry(3.6, 3.6), basic({ map: h.tex(makeGlow(THREE, cnv, '255,190,90')), transparent: true, opacity: 0.45, depthWrite: false, blending: THREE.AdditiveBlending }));
     farGlow.position.set(0.15, 1.5, -4.05); T.add(farGlow);
-    const farImg = new THREE.Mesh(new THREE.CircleGeometry(0.32, 24), basic({ color: 0xc89a3c })); farImg.scale.y = 1.5; farImg.position.set(0.15, 1.45, -4.08); T.add(farImg);
-    for (const sx of [-1, 1]) fbox(9, 0.02, 0.5, 0, 0.003, -0.5 + sx * 1.6, basic({ color: 0x7a1a14 }), T);   // the runner's edges, either side
+    for (const sx of [-1, 1]) fbox(9, 0.02, 0.12, 0, 0.003, -0.5 + sx * 1.6, basic({ color: 0x4a120e }), T);   // the mats' red borders, either side
 
     /* 5 · THE DOORS: two people in white walk up the steps and in, ahead of
        him (the admin tee's own walk, glided on the cine clock) */
@@ -2081,8 +2101,10 @@
       const m = api.rightHand(), L = api.prayerArm();
       if (m) api.setHandCurl(m, smooth(u));
       if (L && L.userData.model) api.setHandCurl(L.userData.model, smooth(u));
-      api.armR.position.y -= 0.10 * smooth(u); api.armR.position.x += Math.sin(t * 41) * shake;
-      if (L) { L.position.y -= 0.10 * smooth(u); L.position.x += Math.sin(t * 37 + 1) * shake; }
+      // drawn in hard against the chest — UP into the frame, not down out of it
+      // (the first photographs had the fists below the lens for the whole beat)
+      api.armR.position.y += 0.07 * smooth(u); api.armR.position.z += 0.03 * smooth(u); api.armR.position.x += Math.sin(t * 41) * shake;
+      if (L) { L.position.y += 0.07 * smooth(u); L.position.z += 0.03 * smooth(u); L.position.x += Math.sin(t * 37 + 1) * shake; }
       camera.rotation.z = Math.sin(t * 33) * shake * 0.6;
     }, rawK);
     step(12.0, () => { camera.rotation.z = 0; });
@@ -2095,10 +2117,10 @@
     pitchTo(4.2, 5.2, s.pitchX, -0.18, smoothK);
     yawTo(7.0, 8.0, faceFrom(p0.x, p0.z, N.x, N.z - 0.2), s.yawRot, smoothK);
     step(7.6, () => { const n = stage.neighbour(); if (n) n.lookTo = 0; });
-    pitchTo(7.4, 9.0, -0.18, -0.55, smoothK);          // down at his own clenched hands
+    pitchTo(7.4, 9.0, -0.18, -0.38, smoothK);          // down at his own clenched hands
     sfx(7.6, 'z2A1');                                 // 5.25 s → 12.85
     sfx(12.6, 'e3close2', 0.9);
-    pitchTo(13.0, 21.0, -0.55, 0.10, smoothK);         // and up, slowly, to the Buddha
+    pitchTo(13.0, 21.0, -0.38, 0.10, smoothK);         // and up, slowly, to the Buddha
     sfx(13.4, 'z2close');                             // 8.36 s → 21.76
     ending(c, api, 21.9);
   }
