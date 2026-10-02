@@ -1616,6 +1616,14 @@
        photographs it was a toy, and its door striped the frame — the van is
        a SOUND now, off the edge of the shot, and the lens goes in to the
        people instead) */
+    // the room round them: side walls, ceiling strips, the banner over the stock, a tiled floor
+    for (const sx of [-1, 1]) fbox(0.2, 3.6, 5.6, sx * 7.9, 1.8, -3.4, basic({ color: 0x2f2b28 }), O);
+    for (let i = 0; i < 3; i++) fbox(3.0, 0.04, 0.14, -4.5 + i * 4.5, 3.33, -3.2, basic({ color: 0xffffff }), O);
+    fbox(5.2, 0.7, 0.04, -3.6, 3.0, -6.0, basic({ map: h.tex(h.makeSignTex(THREE, cnv, 'ROADEYE · SEE THE ROAD', '#0c1a33', '#ffd25a', 0.2)) }), O);
+    { const ft = h.tex(makeOfficeFloor(THREE, cnv)); ft.wrapS = ft.wrapT = THREE.RepeatWrapping; ft.repeat.set(8, 3);
+      fbox(16, 0.05, 6, 0, 0.17, -3.2, basic({ map: ft }), O); }
+    fbox(0.9, 1.5, 0.02, 4.6, 1.9, -6.0, basic({ color: 0x1a3a5a }), O);                  // a poster of the product
+    fbox(0.8, 0.5, 0.025, 4.6, 2.2, -5.99, basic({ color: 0xd8e2ec }), O);
     const vanDoor = new THREE.Object3D();
     // a counter by the door with the cameras on show, and a trolley of stock going out
     fbox(2.2, 0.95, 0.6, -4.6, 0.475, -1.9, basic({ color: 0x1d2633 }), O);
@@ -1766,6 +1774,13 @@
     }
     for (let i = 0; i < 6000; i++) { const v = r() * 30; x.fillStyle = `rgba(${120 + v},${80 + v},${60 + v},0.12)`; x.fillRect(r() * W, r() * S, 2, 2); }
     return done(THREE, c, false);
+  }
+  function makeOfficeFloor(THREE, cnv) {
+    const S = 128, [c, x] = cnv(S);
+    x.fillStyle = '#6e6a64'; x.fillRect(0, 0, S, S);
+    x.fillStyle = '#7a756e'; x.fillRect(2, 2, S / 2 - 4, S / 2 - 4); x.fillRect(S / 2 + 2, S / 2 + 2, S / 2 - 4, S / 2 - 4);
+    x.strokeStyle = 'rgba(40,36,32,0.6)'; x.lineWidth = 2; x.strokeRect(0, 0, S / 2, S / 2); x.strokeRect(S / 2, S / 2, S / 2, S / 2);
+    return done(THREE, c, true);
   }
   function makeGlow(THREE, cnv, rgb) {
     const S = 128, [c, x] = cnv(S);
@@ -2001,9 +2016,11 @@
     // 1 · THE SECOND YANT (0 – 10): skin, the rod, the lamp
     fade(0.6, 2.2, 1, 0);
     // close on the new lines and the rod's tip, the shoulder's curve at the frame's edge
-    camTo(0.0, 10.0, at(P.yant, 0.06, 1.36, -0.46), at(P.yant, 0.02, 1.33, -0.38), smoothK);
-    yawTo(0.0, 10.0, faceFrom(P.yant.x + 0.06, P.yant.z - 0.46, P.yant.x - 0.04, P.yant.z), faceFrom(P.yant.x + 0.02, P.yant.z - 0.38, P.yant.x - 0.05, P.yant.z), smoothK);
-    pitchTo(0.0, 10.0, -0.28, -0.24, smoothK);
+    // an extreme close-up: skin, script and the steel tip fill the frame —
+    // the body's outline (primitives, as a stand-in) never enters it
+    camTo(0.0, 10.0, at(P.yant, -0.02, 1.25, -0.33), at(P.yant, -0.04, 1.22, -0.27), smoothK);
+    yawTo(0.0, 10.0, faceFrom(P.yant.x - 0.02, P.yant.z - 0.33, P.yant.x - 0.06, P.yant.z), faceFrom(P.yant.x - 0.04, P.yant.z - 0.27, P.yant.x - 0.07, P.yant.z), smoothK);
+    pitchTo(0.0, 10.0, -0.16, -0.12, smoothK);
     for (const t of [0.9, 1.4, 1.9, 2.4, 2.85, 3.3, 3.75, 4.2, 4.6, 5.0, 5.4, 5.8, 6.2, 6.6, 7.0, 7.4, 7.8, 8.2]) sfx(t, 'yantap', 0.5);
     sfx(2.2, 'z2pro1');                               // 5.15 s → 7.35
     fade(9.3, 10.0, 0, 1);
@@ -2099,12 +2116,15 @@
       shake = (1 - Math.min(1, Math.max(0, (t - 6) / 6))) * 0.012;
       api.handsPose(H0.k * (1 - smooth(u)) + 0.08, H0.t + 1.0 + u * 0.3);
       const m = api.rightHand(), L = api.prayerArm();
-      if (m) api.setHandCurl(m, smooth(u));
-      if (L && L.userData.model) api.setHandCurl(L.userData.model, smooth(u));
-      // drawn in hard against the chest — UP into the frame, not down out of it
-      // (the first photographs had the fists below the lens for the whole beat)
-      api.armR.position.y += 0.07 * smooth(u); api.armR.position.z += 0.03 * smooth(u); api.armR.position.x += Math.sin(t * 41) * shake;
-      if (L) { L.position.y += 0.07 * smooth(u); L.position.z += 0.03 * smooth(u); L.position.x += Math.sin(t * 37 + 1) * shake; }
+      // half-closed, not a full curl: a full one on the clasp threads the
+      // fingers of one hand through the other (photographed)
+      if (m) api.setHandCurl(m, 0.55 * smooth(u));
+      if (L && L.userData.model) api.setHandCurl(L.userData.model, 0.55 * smooth(u));
+      // pulled down and AWAY from the lens, apart, held at the bottom of the
+      // frame — the first try lifted them toward the lens until they filled it
+      api.armR.position.y += 0.02 * smooth(u); api.armR.position.z -= 0.06 * smooth(u);
+      api.armR.position.x += 0.03 * smooth(u) + Math.sin(t * 41) * shake;
+      if (L) { L.position.y += 0.02 * smooth(u); L.position.z -= 0.06 * smooth(u); L.position.x -= 0.03 * smooth(u) - Math.sin(t * 37 + 1) * shake; }
       camera.rotation.z = Math.sin(t * 33) * shake * 0.6;
     }, rawK);
     step(12.0, () => { camera.rotation.z = 0; });
@@ -2117,10 +2137,10 @@
     pitchTo(4.2, 5.2, s.pitchX, -0.18, smoothK);
     yawTo(7.0, 8.0, faceFrom(p0.x, p0.z, N.x, N.z - 0.2), s.yawRot, smoothK);
     step(7.6, () => { const n = stage.neighbour(); if (n) n.lookTo = 0; });
-    pitchTo(7.4, 9.0, -0.18, -0.38, smoothK);          // down at his own clenched hands
+    pitchTo(7.4, 9.0, -0.18, -0.30, smoothK);          // down at his own clenched hands
     sfx(7.6, 'z2A1');                                 // 5.25 s → 12.85
     sfx(12.6, 'e3close2', 0.9);
-    pitchTo(13.0, 21.0, -0.38, 0.10, smoothK);         // and up, slowly, to the Buddha
+    pitchTo(13.0, 21.0, -0.30, 0.10, smoothK);         // and up, slowly, to the Buddha
     sfx(13.4, 'z2close');                             // 8.36 s → 21.76
     ending(c, api, 21.9);
   }
