@@ -998,8 +998,11 @@
        a canvas from the same numbers as the hands. */
     const shadowCv = document.createElement('canvas'); shadowCv.width = 256; shadowCv.height = 256;
     const shadowTex = tex(new THREE.CanvasTexture(shadowCv)); shadowTex.colorSpace = THREE.SRGBColorSpace;
-    const shadow = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 2.1), new THREE.MeshBasicMaterial({ map: shadowTex, transparent: true, depthWrite: false, opacity: 0.0, color: 0x000000 }));
-    shadow.rotation.x = -Math.PI / 2; shadow.position.set(PLACE.x + 0.05, 0.015, PLACE.z - 1.35); shadow.renderOrder = 2; world.add(shadow);
+    // thrown LONG by the candle rack behind him, from his knees forward across
+    // the light mats of the rows ahead — where a shadow reads (first placed
+    // short, on the dark stone under the man in front, it never showed)
+    const shadow = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 3.6), new THREE.MeshBasicMaterial({ map: shadowTex, transparent: true, depthWrite: false, opacity: 0.0, color: 0x000000 }));
+    shadow.rotation.x = -Math.PI / 2; shadow.position.set(PLACE.x + 0.05, 0.016, PLACE.z - 0.45 - 1.8); shadow.renderOrder = 2; world.add(shadow);
     const glimCv = document.createElement('canvas'); glimCv.width = 256; glimCv.height = 256;
     const glimTex = tex(new THREE.CanvasTexture(glimCv)); glimTex.colorSpace = THREE.SRGBColorSpace;
     const glimpse = new THREE.Sprite(new THREE.SpriteMaterial({ map: glimTex, transparent: true, depthWrite: false, opacity: 0, blending: THREE.AdditiveBlending, fog: false }));
@@ -1053,7 +1056,7 @@
       const on = (st === 'play' || st === 'decide') && seated && k > 0.02;
       // the shadow: always there when he kneels (a plain kneeling shadow at k 0)
       shadow.visible = !!seated && (st === 'play' || st === 'decide' || st === 'cine');
-      shadow.material.opacity = seated ? 0.22 + 0.40 * k : 0;
+      shadow.material.opacity = seated ? 0.32 + 0.48 * k : 0;
       if (t - figAt > 0.07 && shadow.visible) {
         figAt = t;
         drawFigure(shadowCv.getContext('2d'), k, t, false); shadowTex.needsUpdate = true;
@@ -2215,6 +2218,9 @@
     sfx(3.2, 'lw2pull');                              // 2.59 s → 5.79
     sfx(4.4, 'whispers', 0.7);
     // the monks' chant falters, and stops
+    // his eyes drop to the floor ahead: the shadow on the mats is not his
+    pitchTo(4.6, 5.8, s.pitchX, -0.55, smoothK);
+    pitchTo(7.4, 8.4, -0.55, s.pitchX, smoothK);
     sfx(6.6, 'chantstop', 0.85);
     tr(6.6, 9.4, (k) => { duck('e3vesper', 1 - k); }, rawK);
     step(8.2, () => { stage.lookAll(1); });
@@ -2222,7 +2228,7 @@
     sfx(10.4, 'z2C1');                                // 6.53 s → 16.93
     // it leaves him: the hands drop, the lens slumps forward
     tr(14.0, 18.6, (k) => { api.yaw.rotation.y = s.yawRot; }, rawK);
-    pitchTo(15.6, 18.6, s.pitchX, -0.62, smoothK);
+    pitchTo(15.6, 18.6, s.pitchX, -0.62, smoothK);   // (s.pitchX again by 8.4)
     step(18.6, () => { camera.rotation.z = 0; stage.shadow.material.opacity = 0.22; });
     sfx(18.4, 'handslip', 0.6);
     sfx(18.8, 'e3close2', 0.85);
