@@ -79,3 +79,6 @@ Encounters-backup.bundle.part*
 # v15: and their binary twins, which the hosted build ships
 assets/audiopack*.bin
 assets/opuspack*.bin
+
+# throwaway probe scripts (like dbg-*.mjs): written freely, die with the session
+.scratch/
