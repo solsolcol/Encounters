@@ -8090,7 +8090,7 @@ function kitChoose(ids, opts = {}) {
   const ok = $('choOk');
   ok.textContent = opts.confirm || T('choose.confirm', 'Confirm');
   ok.disabled = true;
-  $('choHint').textContent = T('choose.hint', 'Pick one, then confirm');
+  $('choHint').textContent = opts.hint || T('choose.hint', 'Pick one, then confirm');
   el.classList.remove('hide', 'out');
   document.body.classList.add('chooseopen');
   document.exitPointerLock?.();

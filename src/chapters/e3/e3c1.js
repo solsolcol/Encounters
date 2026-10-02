@@ -164,7 +164,9 @@
       yantLabel: 'Choose your Sak Yant',
       yantTitle: 'Which design will the Ajarn give you?',
       yantConfirm: 'Receive this yant',
-      yantSub: 'Inked on your back · worn in your Sak Yant slot'
+      yantSub: 'Inked on your back · worn in your Sak Yant slot',
+      /* v17.7: said once on the window, not in each design's words */
+      yantHint: 'A Sak Yant is for life and cannot be taken off. Pick one, then confirm.'
     },
     sayPrefix: 'z1'
   };
@@ -3271,7 +3273,7 @@
       /* v17.6b: the seal sounds — the room's own temple bell under a golden
          shimmer (yantseal: three takes of a bell prompt came back as pure
          shimmer, so the bell's body is e3bell's) */
-      kit.choose(YANTS, { label: DATA.words.yantLabel, title: DATA.words.yantTitle, confirm: DATA.words.yantConfirm,
+      kit.choose(YANTS, { label: DATA.words.yantLabel, title: DATA.words.yantTitle, confirm: DATA.words.yantConfirm, hint: DATA.words.yantHint,
                           sound: [['e3bell', 0.75], ['yantseal', 0.8]] })
         .then(id => {
           if (!alive || phase !== 'yant' || !id) return;     // torn down under the window: the run starts again

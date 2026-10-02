@@ -386,13 +386,13 @@ Object.assign(window.__TEXT__, {
      points, because this teaches the player what each design is. */
   'item.yantgaoyord.name':  'Yant Gao Yord',
   'item.yantgaoyord.power': 'Sudden sanity hits reduced by 40%',
-  'item.yantgaoyord.desc':  'The Nine Spires: the nine peaks of Mount Meru, home of the gods, and the nine qualities of the Buddha, each spire crowned with the three ovals that stand for him. Inked at the top of the back, it protects against weapons, danger, evil spirits and black magic. A Sak Yant is for life: it cannot be taken off.',
+  'item.yantgaoyord.desc':  'The Nine Spires: the nine peaks of Mount Meru, home of the gods, and the nine qualities of the Buddha, each spire crowned with the three ovals that stand for him. Inked at the top of the back, it protects against weapons, danger, evil spirits and black magic.',
   'item.yanthahtaew.name':  'Yant Hah Taew Chat Petch',
   'item.yanthahtaew.power': 'Sanity drains 35% slower',
-  'item.yanthahtaew.desc':  'The Five Rows with the Diamond Canopy. Each row is a blessing: protection of the home, help through bad luck, protection from black magic and spirits, good fortune and success, and Metta Mahaniyom, loving kindness and charisma. The Chat Petch adds prosperity and support through difficult periods. A Sak Yant is for life: it cannot be taken off.',
+  'item.yanthahtaew.desc':  'The Five Rows with the Diamond Canopy. Each row is a blessing: protection of the home, help through bad luck, protection from black magic and spirits, good fortune and success, and Metta Mahaniyom, loving kindness and charisma. The Chat Petch adds prosperity and support through difficult periods.',
   'item.yantsroi.name':  'Yant Sroi Sangwan',
   'item.yantsroi.power': 'Minigame damage reduced by 30%',
-  'item.yantsroi.desc':  'A sacred ornament of script worn like a necklace, close to the body. For prosperity, good luck and protection, the strength to overcome obstacles, charm and respect, and a sense of security and inner power. A Sak Yant is for life: it cannot be taken off.',
+  'item.yantsroi.desc':  'A sacred ornament of script worn like a necklace, close to the body. For prosperity, good luck and protection, the strength to overcome obstacles, charm and respect, and a sense of security and inner power.',
   // what its protection has left, under the words ({n} and {max} are numbers)
   // v14.11: short, in the bar's yellow ({n} and {max} are numbers, shown bold)
   'inv.wardLeft':        '{n}/{max} Protection',
