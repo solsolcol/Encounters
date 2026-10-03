@@ -557,5 +557,40 @@ if (VOICE && Array.isArray(VOICE.LINES)) {
   console.log(`declared loads: ${loadsChecked} literal loads checked; takes: ${takesChecked} checked against the models' own clips`);
 }
 
+/* v18.2: EVERY BRIEFING SHOWS ITS GAME (Chad: "The minigame window must have
+   animations under the title to illustrate how it is played ... This must
+   always be a rule."). Three checks, no browser: every event kind the engine
+   defines has a picture in EV_DEMO; every picture EV_DEMO names, and every
+   `demo:` a chapter declares, is one shell.html actually draws (a class with
+   a `#evDemo.<name>` rule — a typo would open the briefing on an empty box);
+   and every chapter event that carries a `brief` falls back to a picture. */
+{
+  const shell = readFileSync(join(DIR, 'shell.html'), 'utf8');
+  const drawn = new Set([...shell.matchAll(/#evDemo\.(\w+)/g)].map(m => m[1]));
+  const defBlock = mainJs.slice(mainJs.indexOf('const EV_DEFAULT = {'), mainJs.indexOf('\n};', mainJs.indexOf('const EV_DEFAULT = {')));
+  const kinds = [...defBlock.matchAll(/^\s{2}(\w+):\s*\{/gm)].map(m => m[1]);
+  const demoBlock = mainJs.slice(mainJs.indexOf('const EV_DEMO = {'), mainJs.indexOf('};', mainJs.indexOf('const EV_DEMO = {')));
+  const EV_DEMO = Object.fromEntries([...demoBlock.matchAll(/(\w+):\s*'(\w+)'/g)].map(m => [m[1], m[2]]));
+  if (!kinds.length || !Object.keys(EV_DEMO).length) errs.push('ERR could not read EV_DEFAULT / EV_DEMO out of src/main.js');
+  for (const k of kinds) {
+    if (!EV_DEMO[k]) errs.push(`ERR event kind '${k}' has no briefing picture in EV_DEMO`);
+    else if (!drawn.has(EV_DEMO[k])) errs.push(`ERR EV_DEMO.${k} is '${EV_DEMO[k]}', which shell.html does not draw`);
+  }
+  let briefed = 0;
+  for (const f of files) {
+    const src = readFileSync(join(chapDir, f), 'utf8');
+    for (const m of src.matchAll(/\bdemo:\s*'(\w+)'/g))
+      if (!drawn.has(m[1])) errs.push(`ERR ${f}: demo '${m[1]}' is not a picture shell.html draws`);
+    for (const m of src.matchAll(/kit\.event\(\{([\s\S]{0,600}?)\}\)/g)) {
+      if (!/\bbrief:/.test(m[1])) continue;
+      briefed++;
+      const kind = (m[1].match(/kind:\s*'(\w+)'/) || [])[1];
+      const demo = (m[1].match(/\bdemo:\s*'(\w+)'/) || [])[1] || EV_DEMO[kind];
+      if (!demo) errs.push(`ERR ${f}: a briefed '${kind}' event has no picture`);
+    }
+  }
+  console.log(`briefing pictures: ${kinds.length} kinds, ${briefed} briefed events, drawn: ${[...drawn].join(' ')}`);
+}
+
 console.log('errors:', errs.length ? errs : 'none');
 if (errs.length) process.exit(1);

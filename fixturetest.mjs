@@ -510,6 +510,13 @@ r = await runEvent({ kind: 'sequence', items: [{ label: 'a' }, { label: 'b' }], 
       && document.getElementById('event').classList.contains('brief')
       && document.getElementById('evPrompt').textContent === 'Two of them. Tap each.';
   });
+  /* v18.2: a briefing that names no picture still SHOWS its game — the
+     kind's own (EV_DEMO: a sequence is the bar), drawn, not hidden */
+  K.evBriefIllustrates = await p.evaluate(() => {
+    const dm = document.getElementById('evDemo');
+    return dm.className === 'bar' && getComputedStyle(dm).display !== 'none'
+      && getComputedStyle(dm.querySelector('.dbar')).display !== 'none';
+  });
   await p.waitForTimeout(900);          // the clock must NOT have moved under the briefing
   K.evBriefStopsClock = await p.evaluate(() => window.__enc.kitDebug().event.t === 0);
   await tapOnce();                      // START

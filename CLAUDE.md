@@ -167,6 +167,16 @@ fixture chapter declares all of it and `fixturetest` proves it. The rule
 the code is shaped by: a verb mutates kit state, the FRAME touches the DOM,
 so a chapter may call the kit from inside build() before the HUD exists.
 
+**EVERY MINIGAME SHOWS HOW IT IS PLAYED** (Chad's standing rule, v18.2: "The
+minigame window must have animations under the title to illustrate how it is
+played ... This must always be a rule."). A briefed event's window always
+carries a looping picture under its title: the chapter may name one (`demo:`
+— `drag`, `bar`, `beat`, `rapid`, `look`, drawn by `#evDemo` in shell.html)
+and the engine falls back to its kind's own (`EV_DEMO`). A NEW KIND OF
+MINIGAME is not done until it has its own picture: a row in `EV_DEMO`, and a
+new class in shell.html if none of the five shows it — `chaptertest` fails a
+kind with no row and a picture shell.html does not draw.
+
 `shrine` is the engine's anchor for HER, not for the chapter's warm light.
 Chapter 1's happens to be both; chapter 2's is the gap beside the bed and
 its altar is a separate thing on the other wall. Getting that wrong made
@@ -4694,6 +4704,23 @@ What the baseline contains, by release:
   unchanged by construction. Three strings and the brief; sheet v84 exported
   (v44 stays the link). Deploy `6ac053166c298e0b65a7da38`, byte-verified (all
   203 build files). docs/V18.0-E3C2-PLAN.md §10.
+- **v18.2** EVERY MINIGAME SHOWS HOW IT IS PLAYED — Chad: *"The minigame
+  window must have animations under the title to illustrate how it is played,
+  just like the other minigames before. This must always be a rule."* Two
+  briefings had opened on words alone: episode 3 chapter 2's tapping fight and
+  chapter 1's Sak Yant rod. Three new looping pictures under the title join
+  v10.3's drag and v13.0's bar: `rapid` (a fingertip hammering, the bar held
+  up while it does, draining red the moment it stops), `beat` (rings closing
+  on a target, a tap landing as each one meets it) and `look` (a reticle
+  drifting off a target and brought back). The rule is the ENGINE's now:
+  `EV_DEMO` gives every one of the ten event kinds a picture, so a briefing
+  that names none still shows its kind's; `chaptertest` fails a kind with no
+  picture and any picture shell.html does not draw (proven by misspelling
+  one); `fixturetest` checks a briefing with no `demo` draws its kind's.
+  Photographed at phone size, four moments each. Episodes 1 and 2's briefings
+  keep their pictures; episode 1 has no events. No word moved; sheet v84
+  stands (v44 the link). Deploy `6ac06b29555ee6e8329e524c`, byte-verified (all
+  203 build files).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so

@@ -3302,7 +3302,7 @@
          player clicks start on the heartbeat minigame"): the katha waits for
          START — the event's own onBegin — not for the briefing to open */
       const katha = () => after(0.6, () => { if (!heard.has('katha3')) { heard.add('katha3'); sayLine('aj1katha', 0.7, () => { ajarn.nod = SECS.aj1katha; }, panOf('aj1katha')); } });
-      kit.event({ kind: 'heartbeat', label: DATA.words.evYant, brief: DATA.words.evYantBrief, onBegin: katha,
+      kit.event({ kind: 'heartbeat', label: DATA.words.evYant, brief: DATA.words.evYantBrief, demo: 'beat', onBegin: katha,
                   n: 14, bpm: 66, win: 0.26, zone: 5.8, lead: 2.0, accel: 0.975, minPeriod: 0.5,
                   tick: 'yantap', tickVol: 0.95, missCost: 3,
                   penalty: { stat: 'sanity' },

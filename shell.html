@@ -496,6 +496,50 @@ body.finePtr .wpnBtn{position:relative;margin-bottom:12px}
   14%{transform:translate(0,0);opacity:0}22%{transform:translate(0,0);opacity:1}
   66%{transform:translateX(146px);opacity:1}74%{transform:translate(146px,0);opacity:1}
   86%,100%{transform:translate(160px,24px);opacity:0}}
+/* v18.2: EVERY BRIEFING ILLUSTRATES ITS GAME (Chad: "The minigame window must
+   have animations under the title to illustrate how it is played, just like
+   the other minigames before. This must always be a rule."). Each child shows
+   only under the class of the picture it belongs to, and the engine gives
+   every kind a picture (EV_DEMO), so no briefing can open on words alone.
+   beat  — rings closing on a target and a tap landing as each one meets it
+           (the heartbeat, the Ajarn's rod, a single timed tap)
+   rapid — a fingertip hammering, the bar held up while it does, draining red
+           the moment it stops, and back up when it starts again (the hands)
+   look  — a reticle drifting off a target and brought back onto it (hold,
+           stabilise, focus) */
+#evDemo>*{display:none}
+#evDemo.drag .dslot,#evDemo.drag .dtile,#evDemo.drag .dhand{display:block}
+#evDemo.beat .dtgt,#evDemo.beat .dring,#evDemo.beat .dhit{display:block}
+#evDemo.rapid .dbar,#evDemo.rapid .dhold,#evDemo.rapid .dfinger{display:block}
+#evDemo.look .dtgt,#evDemo.look .dret{display:block}
+#evDemo .dtgt{position:absolute;left:50%;top:50%;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;
+  border:2px solid rgba(99,214,200,.85);background:rgba(99,214,200,.14);box-shadow:0 0 12px rgba(99,214,200,.3)}
+#evDemo .dring{position:absolute;left:50%;top:50%;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;
+  border:2px solid rgba(255,214,150,.95);opacity:0;animation:dring 1.1s linear infinite}
+#evDemo .dring.r2{animation-delay:-.55s}
+#evDemo .dhit{position:absolute;left:50%;top:50%;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;
+  background:rgba(255,255,255,.92);box-shadow:0 0 0 4px rgba(255,255,255,.22),0 0 16px rgba(255,255,255,.6);
+  opacity:0;animation:dhit .55s linear infinite}
+@keyframes dring{0%{transform:scale(2.6);opacity:0}15%{opacity:.9}80%{transform:scale(1);opacity:1}
+  88%{transform:scale(.85);opacity:0}100%{transform:scale(.85);opacity:0}}
+@keyframes dhit{0%,52%{opacity:0;transform:scale(.55)}60%{opacity:.95;transform:scale(.8)}
+  74%{opacity:.25;transform:scale(1.25)}82%,100%{opacity:0;transform:scale(.55)}}
+#evDemo.rapid .dbar{top:12px}
+#evDemo .dhold{position:absolute;left:11px;top:13px;height:14px;width:176px;border-radius:7px;
+  background:rgba(255,214,150,.9);box-shadow:0 0 10px rgba(255,214,150,.35);animation:dhold 3.2s linear infinite}
+#evDemo .dfinger{position:absolute;left:50%;top:34px;width:24px;height:24px;margin-left:-12px;border-radius:50%;
+  background:rgba(255,255,255,.92);box-shadow:0 0 0 4px rgba(255,255,255,.22),0 0 14px rgba(255,255,255,.5);
+  animation:dfShow 3.2s linear infinite,dfTap .15s ease-in-out infinite}
+@keyframes dhold{0%{width:150px;background:rgba(255,214,150,.9)}
+  12%{width:176px}24%{width:168px}36%{width:184px}48%{width:174px}56%{width:180px;background:rgba(255,214,150,.9)}
+  60%{background:rgba(232,72,58,.95)}78%{width:46px;background:rgba(232,72,58,.95)}
+  80%{background:rgba(255,214,150,.9)}100%{width:150px;background:rgba(255,214,150,.9)}}
+@keyframes dfShow{0%,57%{opacity:1}59%,79%{opacity:0}81%,100%{opacity:1}}
+@keyframes dfTap{0%,100%{transform:scale(1)}50%{transform:scale(.62)}}
+#evDemo .dret{position:absolute;left:50%;top:50%;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;
+  border:2px solid rgba(255,255,255,.9);box-shadow:0 0 10px rgba(255,255,255,.35);animation:dret 3s ease-in-out infinite}
+@keyframes dret{0%,22%{transform:translate(0,0)}42%{transform:translate(-52px,10px)}
+  58%{transform:translate(38px,-12px)}78%,100%{transform:translate(0,0)}}
 @keyframes dslotGlow{0%,60%{box-shadow:0 0 12px rgba(99,214,200,.18)}
   70%,86%{box-shadow:0 0 22px rgba(99,214,200,.6);border-color:#8FE6DB}100%{box-shadow:0 0 12px rgba(99,214,200,.18)}}
 .evtrack{display:block;position:relative;width:100%;height:10px;background:rgba(255,255,255,.08);
@@ -2415,7 +2459,7 @@ body:not(.finePtr) .choNum{display:none}
     <span class="stencil" id="evLabel"></span>
     <!-- v10.3: the briefing's looping illustration - a tile dragged from the
          left column onto its slot on the right (shown for demo: 'drag') -->
-    <div id="evDemo" class="hide" aria-hidden="true"><i class="dslot"></i><i class="dslot dst"></i><b class="dtile"></b><span class="dhand"></span><i class="dbar"></i><i class="dfill"></i><i class="dband"></i><span class="dtap"></span></div>
+    <div id="evDemo" class="hide" aria-hidden="true"><i class="dslot"></i><i class="dslot dst"></i><b class="dtile"></b><span class="dhand"></span><i class="dbar"></i><i class="dfill"></i><i class="dband"></i><span class="dtap"></span><i class="dtgt"></i><i class="dring"></i><i class="dring r2"></i><span class="dhit"></span><i class="dhold"></i><span class="dfinger"></span><span class="dret"></span></div>
     <!-- v9.7: THREE rings in flight, not one. A single ring had to both
          approach the next beat and show that you were late for the last one,
          and it could do neither: it froze on the target for the whole late

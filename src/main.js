@@ -3360,6 +3360,13 @@ function decisionClockStop() { decClock = null; $('dclock')?.classList.add('hide
 function haptic(pattern) { try { navigator.vibrate?.(pattern || 40); } catch {} }
 
 /* ---- events -------------------------------------------------------------- */
+/* v18.2: every kind's briefing picture (shell.html's #evDemo classes) — the
+   rule is that a briefing always SHOWS its game as well as saying it. A new
+   kind adds its row here; chaptertest fails a kind without one. */
+const EV_DEMO = {
+  tap: 'beat', timed: 'bar', mash: 'rapid', hold: 'look', stabilise: 'look',
+  heartbeat: 'beat', match: 'drag', focus: 'look', sequence: 'bar', resist: 'rapid',
+};
 const EV_DEFAULT = {
   tap:       { secs: 4 },
   timed:     { open: 2.0, close: 3.4, secs: 0 },
@@ -3730,8 +3737,13 @@ function evBrief() {
      children shell.html draws ('drag' the tile and the slots, 'bar' a filling
      bar and a tap landing in the band). No demo at all keeps it hidden, so
      every briefing shipped before this release is untouched. */
+  /* v18.2: AND NEVER NONE. Chad: "The minigame window must have animations
+     under the title to illustrate how it is played ... This must always be a
+     rule." A chapter may still name its picture; one that names none gets its
+     kind's own (EV_DEMO), so no briefing can open on words alone, and
+     chaptertest fails a picture shell.html does not draw. */
   const dm = $('evDemo');
-  dm.className = o.demo ? String(o.demo) : 'hide';
+  dm.className = String(o.demo || EV_DEMO[e.kind] || 'bar');
   const btn = $('evBtn');
   btn.textContent = o.briefButton || T('event.start');
   btn.className = 'go';
