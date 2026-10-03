@@ -1260,11 +1260,12 @@
       fight = { slips: 0, k: 0 };
       if (!kit) return;
       /* (Chad, 3 Oct) a RAPID-TAP fight: every tap pulls the hands back down;
-         the rate it takes climbs from 5.5 to 7.5 taps a second over twelve
+         the rate it takes climbs from 5 to 6.5 taps a second (v18.3: really
+         measured now — see evFrame) over twelve
          seconds of chant; one second too slow and they are gone. */
       kit.event({
         kind: 'resist', label: DATA.words.evHands, brief: DATA.words.evHandsBrief, demo: 'rapid',
-        secs: 12, rate0: 5.5, rate1: 7.5, window: 0.75, grace: 1.0, lead: 0.6,
+        secs: 12, rate0: 5.0, rate1: 6.5, window: 0.75, grace: 1.0, lead: 1.0,
         award: { stat: 'sanity', lo: -10, hi: 6 },
         onBegin: () => {
           if (!worldSfx) return;

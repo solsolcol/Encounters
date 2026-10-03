@@ -3407,7 +3407,7 @@ const EV_DEFAULT = {
      the chapter's hands rise exactly as close as the player is to losing.
      The first `lead` seconds are free: the first tap has to come from
      somewhere. */
-  resist:    { secs: 12, rate0: 5.5, rate1: 7.5, window: 0.75, grace: 1.0, lead: 0.6, pass: 0.5 }
+  resist:    { secs: 12, rate0: 5.0, rate1: 6.5, window: 0.75, grace: 1.0, lead: 1.0, pass: 0.5 }
 };
 // the literals texttest looks for; the kind picks the row
 const EV_LABEL = { tap: 'event.tap', timed: 'event.timed', mash: 'event.mash', hold: 'event.hold',
@@ -3893,6 +3893,15 @@ function evResolve(extra) {
 }
 /* a press: from the overlay, the button, a key, or a mouse under pointer lock */
 function evPress(x, y) {
+  /* v18.3: in a rapid-tap fight EVERY finger counts — two thumbs drumming
+     put the second down before the first is up, and that press was dropped
+     because the event was still "down". A held key cannot cheat it: evKey
+     drops auto-repeat before it gets here. */
+  if (ev && ev.started && !ev.briefing && ev.kind === 'resist' && ev.down) {
+    (ev.taps || (ev.taps = [])).push(performance.now() / 1000); ev.hits++;
+    snd('uiclick', 0.09, 1.25 + 0.15 * Math.random());
+    return;
+  }
   const e = ev; if (!e || !e.started || e.down) return;
   if (e.briefing) { evBegin(); return; }      // v8.7: START closes the briefing; nothing else counts
   const o = e.o;
@@ -4038,19 +4047,33 @@ function evFrame(dt, dLookX, dLookY) {
     case 'resist': {
       if (e.rk === undefined) { e.rk = 0; e.danger = 0; e.dmax = 0; e.taps = e.taps || []; e.rslip = 0; }
       const nowS = performance.now() / 1000;
-      while (e.taps.length && nowS - e.taps[0] > o.window) e.taps.shift();
+      while (e.taps.length && nowS - e.taps[0] > 3) e.taps.shift();
       const u = Math.min(1, Math.max(0, e.t / o.secs));
       const need = o.rate0 + (o.rate1 - o.rate0) * u;              // taps a second it takes right now
-      const rate = e.taps.length / o.window;
+      /* v18.3 (Chad: "Ep 3 chp 2 mini game is not working"). The rate was
+         the taps inside a 0.75 s window divided by 0.75 — a COUNT, so it moved
+         in steps of 1.33 a second, and a need of 5.5 really asked for 6.67 and
+         7.5 really asked for 8.0: past what most thumbs can hold for twelve
+         seconds. It is read from the GAPS now: k + 1 taps over the time from
+         the k-th tap back to this instant (k up to 4), which at a steady r
+         never reads under r, and falls smoothly the moment the taps slow —
+         a held finger reads as zero within a few tenths. `window` stays a
+         declared field for the fixture and is no longer the measure. */
+      const L = e.taps.length - 1, kq = Math.min(4, L);
+      const rate = kq >= 1 ? (kq + 1) / Math.max(1e-3, nowS - e.taps[L - kq]) : 0;
       e.rate = rate; e.need = need;
-      if (e.t > o.lead) {
+      /* and the slow clock waits for him: nothing is charged until he has
+         tapped twice (the START press is not one), or until a full second
+         past the lead if he never starts */
+      const live = e.t > o.lead && (kq >= 1 || e.t > o.lead + 1);
+      if (live) {
         if (rate < need) e.danger += wdt;
         else e.danger = Math.max(0, e.danger - wdt * 1.5);
       }
       e.dmax = Math.max(e.dmax, e.danger);
       e.rk = Math.min(1, e.danger / o.grace);
       const host = evEl();
-      const slow = e.t > o.lead && rate < need;
+      const slow = live && rate < need;
       if (host) {
         host.classList.toggle('danger', slow);
         host.style.setProperty('--rk', e.rk.toFixed(3));
@@ -4510,7 +4533,7 @@ function kitDebug() {
                             able to see WHICH band a press landed in, not just a count */
                          slotT: +(ev.slotT || 0).toFixed(3), band: ev.band.slice(), sum: ev.sum,
                          /* v18.1: the rapid-tap fight — taps a second now, what it asks, how close to losing */
-                         rate: ev.rate, need: ev.need, danger: ev.danger,
+                         rate: ev.rate, need: ev.need, danger: ev.danger, taps: ev.taps ? ev.taps.length : 0,
                          /* v9.4: the rhythm game's run and the match's progress */
                          beat: ev.beat, combo: ev.combo, best: ev.bestCombo,
                          done: ev.done, wrong: ev.wrong } : null,

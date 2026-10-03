@@ -402,6 +402,18 @@ K.evResistSlips = r.kind === 'resist' && !r.ok && r.delta === -3 && await p.eval
 r = await runEvent({ kind: 'resist', secs: 2.5, rate0: 0.8, rate1: 0.8, window: 3, grace: 3, lead: 0.2,
                      award: { stat: 'awareness', lo: -3, hi: 2 }, slipTag: '__slips2', tapEvery: 120 }, null);
 K.evResistHeld = r.kind === 'resist' && r.ok && r.delta > 0 && await p.evaluate(() => !window.__slips2);
+/* v18.3: TWO THUMBS. A second finger landing while the first is still down
+   is a tap — it was dropped, because the event was still "down". Real
+   pointer events on the overlay, the second before the first lifts. */
+r = await runEvent({ kind: 'resist', secs: 2, rate0: 0.5, rate1: 0.5, window: 1, grace: 5, lead: 0.1,
+                     award: { stat: 'awareness', lo: -3, hi: 2 } }, async () => {
+  K.evResistTwoThumbs = await p.evaluate(() => {
+    const host = document.getElementById('event');
+    const fire = (type, id, x) => host.dispatchEvent(new PointerEvent(type, { pointerType: 'touch', pointerId: id, isPrimary: id === 1, clientX: x, clientY: 500, bubbles: true, cancelable: true }));
+    fire('pointerdown', 1, 100); fire('pointerdown', 2, 300); fire('pointerup', 1, 100); fire('pointerup', 2, 300);
+    return window.__enc.kitDebug().event.taps === 2;
+  });
+});
 /* and MISSING both beats must HURT — the whole of Chad's v9.3 note */
 const san0 = await p.evaluate(() => window.__enc.stats.sanity);
 r = await runEvent({ kind: 'heartbeat', n: 2, bpm: 120, win: 0.2, zone: 1, lead: 0.4,

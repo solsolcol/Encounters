@@ -4721,6 +4721,25 @@ What the baseline contains, by release:
   keep their pictures; episode 1 has no events. No word moved; sheet v84
   stands (v44 the link). Deploy `6ac06b29555ee6e8329e524c`, byte-verified (all
   203 build files).
+- **v18.3** THE TAPPING FIGHT, WINNABLE — Chad: *"Ep 3 chp 2 mini game is
+  not working."* Driven through the REAL touch listeners on a phone build (the
+  v18.1 probe had called `evPress` directly, which skips them), the taps
+  reached the game — the defect was arithmetic and two edges. The rate was a
+  COUNT of taps in a 0.75 s window divided by 0.75, so it moved in steps of
+  1.33 a second: a need of 5.5 really asked for 6.67 and 7.5 really asked for
+  8.0, past what most thumbs hold for twelve seconds; the slow clock started
+  0.6 s after START, before anyone can get going, eating a third of the one
+  second allowed; and a second thumb landing while the first was still down
+  was dropped. Now: the rate is read from the GAPS ((k + 1) taps over the time
+  back to the k-th tap, k up to 4 — never reads under a steady r, falls the
+  moment the taps slow); nothing is charged until he has tapped twice (or a
+  second past the lead if he never starts); every finger counts in a `resist`
+  fight; and the climb is 5 → 6.5 taps a second, really measured, with a
+  1.0 s lead. Proven through real pointer events on the overlay: a steady 6.8
+  a second won, 4.5 lost; `fixturetest` gained `evResistTwoThumbs`.
+  **A minigame probe drives the REAL input path**, never the press function.
+  Deploy `6ac126316bb1421c32b86ecc`, byte-verified (all 203 build files). No
+  word moved; sheet v84 stands (v44 the link).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so

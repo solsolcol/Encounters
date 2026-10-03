@@ -5108,3 +5108,14 @@ aimed at every object the change touches.**
   0.30 m apart), so switching take slides the whole body. Measure each take's
   hips in the parent's frame and cancel the difference every frame, weighted
   by the takes playing (`rootComp`) — and only then build furniture round him.
+
+## A minigame probe must press through the REAL input path (v18.3)
+
+v18.1's tap probe called `__enc.evPress()` directly and the fight "worked";
+Chad found it unwinnable. The real path (pointer events on `#event`, the
+START tap, a second finger) carried two of the three defects, and the third —
+a rate measured as a COUNT in a short window, which quantises a stated need
+of 7.5 taps a second into a real one of 8.0 — only shows when you ask what
+rate a steady human tap actually reads as. Drive a minigame with dispatched
+PointerEvents on the overlay, and check both ends: a pace just over the
+stated need must WIN, one under it must LOSE.
