@@ -4672,6 +4672,28 @@ What the baseline contains, by release:
   walktest gained e3c2. Sheet v83 exported (v44 stays the link). Deploy
   `6ac02972bbf579dc3e16297c`, byte-verified (all 203 build files).
   docs/V18.0-E3C2-PLAN.md is the build's memory.
+- **v18.1** THE HANDS ARE A RAPID-TAP FIGHT — Chad, on v18.0's hold-and-let-go
+  minigame: *"Shouldn't the minigame be a rapid tapping quick time event type of
+  game? Tap too slow and he goes out of control ... Make it hard, even 1 second
+  of tapping too slow will lose the minigame. And the speed must be fast."* The
+  `resist` kind (the twenty-fifth seam) is rebuilt as that: every press is a
+  stamp on the real clock, the rate is the taps in the last 0.75 s, and the
+  rate needed RAMPS 5.5 → 7.5 taps a second over 12 s while the chant swells
+  three times. Under the rate, danger builds on the event's own wall step (the
+  v18.0 lesson: never the clamped dt); at or over it, danger drains half again
+  as fast; ONE second of danger in total and the hands are lost on that frame.
+  A held key counts once, so it cannot be cheated. The bar is the hands' last
+  hold on you, red when it is going, the panel shakes and says FASTER!; the
+  hands follow the danger live (`onRise`). Kept it: the peak is SMALLER — the
+  hands only drift, one neighbour glances — and +4; lost it: v18.0's full peak,
+  every head turning, and −10 sanity (cut by Gao Yord's 30 %). Measured on the
+  phone build at ~11 taps a second: danger 0 against a need of 5.5; stopped: lost
+  inside the second, then the decision with no page errors. `fixturetest` proves
+  both ends (no taps loses with the award's floor and a slip; steady tapping
+  holds with no slip). Episodes 1 and 2 never open a `resist` event, so they are
+  unchanged by construction. Three strings and the brief; sheet v84 exported
+  (v44 stays the link). Deploy `6ac053166c298e0b65a7da38`, byte-verified (all
+  203 build files). docs/V18.0-E3C2-PLAN.md §10.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -5236,7 +5258,7 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v83** (`masters/v18.0/masterz-text-v83.xlsx`, v82 plus episode 3 chapter 2's words and its 24 voice lines. v82 was `masters/v17.7/masterz-text-v82.xlsx`, v81 with v17.7's three Sak Yant names and words from Chad's reference pages. v81 was `masters/v17.6/masterz-text-v81.xlsx`, v80 plus v17.6's Sak Yant choice: three items' names, powers and words, the window's words, the chapter's four, and two Ajarn voice lines. v80 was `masters/v17.0/masterz-text-v80.xlsx`, v79 plus v17.0's three credit strings for the Khon masks. v79 was `masters/v16.9/masterz-text-v79.xlsx`, v78 plus v16.9's six credit strings — the temple and the slippers. v78 was `masters/v16.6/masterz-text-v78.xlsx`, v77 plus v16.6's four credit rows for the Tailandia packs. v77 was `masters/v16.1/masterz-text-v77.xlsx`, v76 with the monk's three voice lines re-said by Arthur at v16.2. v76 was `masters/v16.1/masterz-text-v76.xlsx`, five tabs: UI
+**THE SHEET IS v84** (`masters/v18.1/masterz-text-v84.xlsx`, v83 with v18.1's three rapid-tap words and the fight's new brief. v83 was `masters/v18.0/masterz-text-v83.xlsx`, v82 plus episode 3 chapter 2's words and its 24 voice lines. v82 was `masters/v17.7/masterz-text-v82.xlsx`, v81 with v17.7's three Sak Yant names and words from Chad's reference pages. v81 was `masters/v17.6/masterz-text-v81.xlsx`, v80 plus v17.6's Sak Yant choice: three items' names, powers and words, the window's words, the chapter's four, and two Ajarn voice lines. v80 was `masters/v17.0/masterz-text-v80.xlsx`, v79 plus v17.0's three credit strings for the Khon masks. v79 was `masters/v16.9/masterz-text-v79.xlsx`, v78 plus v16.9's six credit strings — the temple and the slippers. v78 was `masters/v16.6/masterz-text-v78.xlsx`, v77 plus v16.6's four credit rows for the Tailandia packs. v77 was `masters/v16.1/masterz-text-v77.xlsx`, v76 with the monk's three voice lines re-said by Arthur at v16.2. v76 was `masters/v16.1/masterz-text-v76.xlsx`, five tabs: UI
 TEXT 292, EPISODE 1 114, EPISODE 2 193, EPISODE 3 41, VOICE LINES 337 — v76
 adds v16.1's four words, two changed cells and seven voice lines to v75).
 Was v75 (`masters/v16.0/masterz-text-v75.xlsx`, which added episode 3
