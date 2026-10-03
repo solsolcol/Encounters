@@ -136,7 +136,7 @@
       hotBook: 'Take a chant book',
       hotLeaf: 'Press gold leaf',
       evHands: 'Keep your hands still',
-      evHandsBrief: 'The chant will swell, and your hands will start to rise on their own. HOLD while it swells to keep them still. When it ebbs, LET GO and breathe. Hold too long and you are only holding your breath.',
+      evHandsBrief: 'Your hands are starting to rise on their own. TAP as fast as you can: every tap pulls them back down, and the chant makes it harder. Slow down for even one second and they are no longer yours.',
       presence: 'People are looking at you'
     },
     sayPrefix: 'z2'
@@ -1259,45 +1259,68 @@
       setPhase('fight');
       fight = { slips: 0, k: 0 };
       if (!kit) return;
+      /* (Chad, 3 Oct) a RAPID-TAP fight: every tap pulls the hands back down;
+         the rate it takes climbs from 5.5 to 7.5 taps a second over twelve
+         seconds of chant; one second too slow and they are gone. */
       kit.event({
         kind: 'resist', label: DATA.words.evHands, brief: DATA.words.evHandsBrief,
-        swells: [{ at: 2.4, len: 5.0, pull: 0.40 }, { at: 11.0, len: 6.0, pull: 0.58 }, { at: 20.5, len: 7.0, pull: 0.98 }],
-        award: { stat: 'sanity', per: 1.2, hi: 6 }, missCost: 6,
-        onBegin: () => { if (worldSfx) worldSfx('e3gong', 0.45, 1, panAt(MONKS[0].x, MONKS[0].z)); },
-        onSwell: (i) => {
-          if (worldSfx) { worldSfx('chantswell', 0.75, 1, 0); worldSfx('handsrise', 0.55 + 0.15 * i, 1, 0); }
-          fight.swell = i;
-          // the yant he chose in chapter 1 warms on his back as they rise
-          if (yantOn()) { kit.flash({ color: 'rgba(255,196,96,0.22)', secs: 0.9 }); if (worldSfx) worldSfx('yantwarm', 0.55); }
+        secs: 12, rate0: 5.5, rate1: 7.5, window: 0.75, grace: 1.0, lead: 0.6,
+        award: { stat: 'sanity', lo: -10, hi: 6 },
+        onBegin: () => {
+          if (!worldSfx) return;
+          worldSfx('e3gong', 0.45, 1, panAt(MONKS[0].x, MONKS[0].z));
+          // the chant swells under it three times as the rate climbs
+          worldSfx('chantswell', 0.7, 1, 0);
+          after(4.2, () => { if (fight && !fight.result && worldSfx) worldSfx('chantswell', 0.8, 1, 0); });
+          after(8.4, () => { if (fight && !fight.result && worldSfx) { worldSfx('chantswell', 0.9, 1, 0); worldSfx('handsrise', 0.7, 1, 0); } });
+          // the yant he chose in chapter 1 warms on his back
+          if (yantOn()) { kit.flash({ color: 'rgba(255,196,96,0.22)', secs: 0.9 }); worldSfx('yantwarm', 0.55); }
         },
-        onEbb: () => { fight.swell = -1; },
-        onRise: (k) => { fight.k = k; if (kit.hands) kit.hands(Math.min(1, k * 0.92), { secs: 0.18 }); },
-        onSlip: (n) => {
+        onRise: (k, danger) => {
+          // the hands rise exactly as close as the player is to losing them,
+          // and a little tremble rides on them while he holds
+          fight.k = k;
+          if (kit.hands) kit.hands(Math.min(1, 0.06 + k * 0.85), { secs: 0.12 });
+          if (k > 0.35 && !fight.warned) { fight.warned = true; if (worldSfx) worldSfx('handsrise', 0.6, 1, 0); }
+          if (k < 0.05) fight.warned = false;
+          void danger;
+        },
+        onSlip: () => {
+          // LOST: the hands are no longer his
           fight.slips++;
-          if (worldSfx) worldSfx('handslip', 0.9);
-          if (kit.haptic) kit.haptic([40, 30, 60]);
-          kit.flash({ color: 'rgba(255,190,90,0.20)', secs: 0.4 });
-          // a head turns
-          const who = [neighbour, frontMan, yai][Math.min(2, n)];
-          if (who) who.lookTo = 1;
-          if (n === 0) queueLine('z2slip1');
-          if (n === 1) { queueLine('z2slip2'); if (worldSfx) worldSfx('whispers', 0.45, 1, panAt(NEIGH.x, NEIGH.z)); }
-          kit.presence(Math.min(0.6, 0.18 * fight.slips));
+          if (worldSfx) { worldSfx('handslip', 1.0); worldSfx('chantswell', 0.9, 0.96, 0); }
+          if (kit.haptic) kit.haptic([60, 30, 90, 30, 120]);
+          kit.flash({ color: 'rgba(255,120,80,0.28)', secs: 0.6 });
+          if (neighbour) neighbour.lookTo = 1;
+          if (frontMan) frontMan.lookTo = 1;
+          queueLine('z2slip1');
+          if (worldSfx) worldSfx('whispers', 0.5, 1, panAt(NEIGH.x, NEIGH.z));
         }
       }).then(r => {
         fight.result = r;
         if (r && !r.aborted) {
-          kit.conduct({ note: r.ok ? 'Held your hands still through the chant — almost.' : 'Lost your hands to the chant, in front of everyone.', s: 0, a: r.ok ? 3 : -1 });
-          beginPeak();
+          kit.conduct({ note: r.ok ? 'Kept your hands down through the chant.' : 'Lost your hands to the chant, in front of everyone.', s: 0, a: r.ok ? 4 : -2, minigame: !r.ok });
+          beginPeak(!!r.ok);
         }
       });
     }
     /* 6 · THE PEAK: whatever the score, it takes them; the faces turn; his
        line; and the decision opens by itself */
-    function beginPeak() {
+    function beginPeak(held) {
       if (phase !== 'fight') return;
       setPhase('peak');
       peakT = dayClock.t;
+      if (held) {
+        /* HELD: the chant ends and his hands are still his — pressed down,
+           shaking in the clasp; one face has seen; it is not over */
+        if (kit) { kit.hands(0.32, { secs: 1.2 }); kit.presence(0.25); }
+        if (worldSfx) worldSfx('handsrise', 0.5, 0.9, 0);
+        after(1.0, () => { if (neighbour) neighbour.lookTo = 1; });
+        after(1.6, () => queueLine('z2peak'));
+        after(4.6, () => { setPhase('decide'); if (getState() === 'play') startDecision(); });
+        return;
+      }
+      /* LOST: it takes them all the way up; the faces turn */
       if (kit) { kit.hands(1, { secs: 2.4 }); kit.presence(0.55); }
       if (worldSfx) { worldSfx('chantswell', 0.9, 0.96, 0); worldSfx('handsrise', 0.9, 0.85, 0); }
       if (yantOn() && kit) kit.flash({ color: 'rgba(255,196,96,0.28)', secs: 1.4 });
@@ -2108,7 +2131,8 @@
     step(T + 10.2, () => { handsRoot.visible = true; });
     c.endFade = 1;
   }
-  const hk = (api) => { const f = api.handsFrom(); return { k: Math.max(0.6, f.k || 1), t: f.t || 0 }; };
+  // where play left the hands: high after a lost fight, low in the clasp after a held one
+  const hk = (api) => { const f = api.handsFrom(); return { k: Math.max(0.25, f.k || 0.25), t: f.t || 0 }; };
 
   /* A · FORCE IT DOWN (bad) — the prayer held by force, the shaking, the woman who asks */
   function scForce(c, s, api) {
@@ -2202,7 +2226,8 @@
     tr(0, 18.0, (k, t) => {
       const fall = Math.min(1, Math.max(0, (t - 14.0) / 4.0));
       tFlow = H0.t + t * (1.5 - 0.9 * fall);
-      api.handsPose(1 - smooth(fall), tFlow);
+      // from wherever play left them, up into the full gesture in the first 1.2 s
+      api.handsPose(Math.min(1, H0.k + (1 - H0.k) * smooth(Math.min(1, t / 1.2))) * (1 - smooth(fall)), tFlow);
       const amp = 1 - 0.7 * fall;
       camera.rotation.z = amp * (0.12 * Math.sin(t * 0.9) + 0.03 * Math.sin(t * 2.3));
       stage.drawShadow(1 - fall * 0.8, t);

@@ -3385,18 +3385,22 @@ const EV_DEFAULT = {
   match:     { secs: 45, wrongCost: 4, fast: 12, slow: 34, pass: 1 },
   focus:     { n: 5, each: 1.6, tol: 90, pass: 0.6 },
   sequence:  { each: 1.2, accel: 0.86, minEach: 0.45, pass: 0.6 },
-  /* v18.0: RESIST — the twenty-fifth seam. Episode 3 chapter 2: the chant
-     swells and his hands rise on their own; the player HOLDS through a swell
-     to keep them still and LETS GO in the ebb to breathe. `swells` are laid
-     out in event seconds ({ at, len, pull }); `k` is how far the hands have
-     risen (0..1), reported every frame (`onRise(k, inSwell, t)`); a hand that
-     reaches 1 is a SLIP (`onSlip(n)`, graded the worst band, k falls back to
-     `slipBack`); every swell is graded on the highest k it reached and every
-     ebb on how much of it was held (holding your breath is not stillness).
-     `push` is how fast a hold brings them down, `relax` how fast they settle
-     on their own in an ebb, `surge` how hard a swell pulses. */
-  resist:    { swells: [{ at: 1.5, len: 5, pull: 0.32 }, { at: 9.5, len: 6, pull: 0.40 }, { at: 18.5, len: 7, pull: 0.48 }],
-               push: 0.75, grip: 0.55, relax: 0.35, surge: 0.45, slipBack: 0.5, tail: 1.5, zone: 3, pass: 0.5 }
+  /* v18.0: RESIST — the twenty-fifth seam, and (Chad, 3 Oct) a RAPID-TAP
+     quick-time event: "Tap too slow and he goes out of control. Tap fast
+     enough so that the hands can be controlled ... even 1 second of tapping
+     too slow will lose the minigame. And the speed must be fast." Every tap
+     pulls the hands back; the rate it takes climbs from `rate0` to `rate1`
+     taps a second over `secs`, measured over the last `window` seconds of
+     REAL time (tap timestamps, never the frame clock, so a slow frame does
+     not count as slow tapping). Below the rate, DANGER accumulates on the
+     event's own wall step; at `grace` seconds of it the hands are gone — the
+     event is LOST on that frame (`onSlip(0)`, ok false). Above it, danger
+     drains. Reaching `secs` is a WIN, scored by how close it came. `k`
+     (danger / grace) is reported every frame as `onRise(k, danger, t)`, so
+     the chapter's hands rise exactly as close as the player is to losing.
+     The first `lead` seconds are free: the first tap has to come from
+     somewhere. */
+  resist:    { secs: 12, rate0: 5.5, rate1: 7.5, window: 0.75, grace: 1.0, lead: 0.6, pass: 0.5 }
 };
 // the literals texttest looks for; the kind picks the row
 const EV_LABEL = { tap: 'event.tap', timed: 'event.timed', mash: 'event.mash', hold: 'event.hold',
@@ -3891,6 +3895,12 @@ function evPress(x, y) {
       break;
     case 'mash':
       e.bar = Math.min(1, e.bar + o.gain); e.hits++; snd('uiclick', 0.18, 1.1); break;
+    case 'resist':
+      // a tap is a REAL-time stamp: the rate is measured on the clock the
+      // player's thumb runs on, not on frames
+      (e.taps || (e.taps = [])).push(performance.now() / 1000); e.hits++;
+      snd('uiclick', 0.09, 1.25 + 0.15 * Math.random());
+      break;
     case 'heartbeat': {
       /* v9.4: the beat comes off the SCHEDULE, because the gaps shrink. A
          press is graded on how far it lands from the beat's centre as a
@@ -4014,56 +4024,39 @@ function evFrame(dt, dLookX, dLookY) {
       else if (e.t - e.downAt >= o.secs) evResolve({ ok: true, score: 1 });
       break;
     case 'resist': {
-      /* v18.0: the chant's swells, laid out in the event's own wall-clock
-         seconds. Grading happens at each boundary, so a slow phone and a
-         fast one see the same swells and the same scores. */
-      const sw = o.swells, last = sw[sw.length - 1];
-      let i = -1;
-      for (let j = 0; j < sw.length; j++) if (e.t >= sw[j].at && e.t < sw[j].at + sw[j].len) { i = j; break; }
-      const inSwell = i >= 0;
-      if (e.rk === undefined) { e.rk = 0; e.rmax = 0; e.rheld = 0; e.rebb = 0; e.rprev = -1; e.rslip = 0; e.rguard = 0; e.rslipped = false; }
-      if (inSwell !== (e.rprev >= 0)) {
-        if (inSwell) {                                  // an ebb ends: was he breathing?
-          if (e.rebb > 0.3) evScorePress(Math.min(1, e.rheld / e.rebb));
-          e.rheld = 0; e.rebb = 0; e.rmax = 0; e.rslipped = false;
-          if (typeof o.onSwell === 'function') o.onSwell(i);
-        } else {                                        // a swell ends: how high did they get?
-          if (!e.rslipped) evScorePress(e.rmax);
-          if (typeof o.onEbb === 'function') o.onEbb(e.rprev);
-        }
-        e.rprev = i;
+      if (e.rk === undefined) { e.rk = 0; e.danger = 0; e.dmax = 0; e.taps = e.taps || []; e.rslip = 0; }
+      const nowS = performance.now() / 1000;
+      while (e.taps.length && nowS - e.taps[0] > o.window) e.taps.shift();
+      const u = Math.min(1, Math.max(0, e.t / o.secs));
+      const need = o.rate0 + (o.rate1 - o.rate0) * u;              // taps a second it takes right now
+      const rate = e.taps.length / o.window;
+      e.rate = rate; e.need = need;
+      if (e.t > o.lead) {
+        if (rate < need) e.danger += wdt;
+        else e.danger = Math.max(0, e.danger - wdt * 1.5);
       }
-      e.rguard = Math.max(0, e.rguard - wdt);
-      if (inSwell) {
-        const s0 = sw[i], u = (e.t - s0.at) / s0.len;
-        const pull = (s0.pull ?? 0.4) * (1 + o.surge * Math.sin(e.t * 6.3) + 0.6 * Math.sin(u * Math.PI));
-        /* on the event's own wall step (wdt), never the clamped frame dt: on a
-           slow phone the swells would otherwise rise in slow motion against a
-           clock that does not — measured, the fixture's swell never slipped */
-        e.rk = e.down ? Math.max(0, e.rk + (pull * o.grip - o.push) * wdt) : e.rk + pull * wdt;   // a strong enough swell beats the grip
-        e.rmax = Math.max(e.rmax, e.rk);
-        if (e.rk >= 1 && e.rguard <= 0) {
-          e.rslipped = true; e.rguard = 1.2;
-          evScorePress(EV_WORST);
-          e.rk = o.slipBack;
-          if (typeof o.onSlip === 'function') o.onSlip(e.rslip);
-          e.rslip++;
-        }
-        e.rk = Math.min(1, e.rk);
-      } else {
-        e.rk = Math.max(0, e.rk - o.relax * wdt);
-        if (e.t > sw[0].at) { e.rebb += wdt; if (e.down) e.rheld += wdt; }
-      }
+      e.dmax = Math.max(e.dmax, e.danger);
+      e.rk = Math.min(1, e.danger / o.grace);
       const host = evEl();
+      const slow = e.t > o.lead && rate < need;
       if (host) {
-        host.classList.toggle('swell', inSwell);
+        host.classList.toggle('danger', slow);
         host.style.setProperty('--rk', e.rk.toFixed(3));
-        const want = inSwell ? (o.holdWord || T('event.resistHold')) : (e.t < sw[0].at ? (o.readyWord || T('event.resistReady')) : (o.breatheWord || T('event.resistBreathe')));
+        const want = e.t <= o.lead && !e.taps.length ? (o.readyWord || T('event.resistReady'))
+                   : slow ? (o.slowWord || T('event.resistBreathe')) : (o.tapWord || T('event.resistHold'));
         const pe = $('evPrompt'); if (pe && pe.textContent !== want) pe.textContent = want;
       }
-      if (bar) bar.style.width = (100 * e.rk).toFixed(1) + '%';
-      if (typeof o.onRise === 'function') o.onRise(e.rk, inSwell, e.t);
-      if (e.t >= last.at + last.len + (o.tail ?? 1.5)) evResolve(evBandResult(o));
+      if (bar) bar.style.width = (100 * (1 - e.rk)).toFixed(1) + '%';   // CONTROL: full while he has it
+      if (typeof o.onRise === 'function') o.onRise(e.rk, e.danger, e.t);
+      if (e.danger >= o.grace) {
+        // the hands are gone: lost, on this frame
+        if (typeof o.onSlip === 'function') o.onSlip(e.rslip);
+        e.rslip++;
+        evResolve({ ok: false, score: 0 });
+      } else if (e.t >= o.secs) {
+        // held to the end; scored by how close it came (0.6 at the edge, 1 untroubled)
+        evResolve({ ok: true, score: 0.6 + 0.4 * (1 - Math.min(1, e.dmax / o.grace)) });
+      }
       break;
     }
     case 'stabilise': {
@@ -4504,6 +4497,8 @@ function kitDebug() {
                          /* v9.3: the graded ladder, readable — a harness has to be
                             able to see WHICH band a press landed in, not just a count */
                          slotT: +(ev.slotT || 0).toFixed(3), band: ev.band.slice(), sum: ev.sum,
+                         /* v18.1: the rapid-tap fight — taps a second now, what it asks, how close to losing */
+                         rate: ev.rate, need: ev.need, danger: ev.danger,
                          /* v9.4: the rhythm game's run and the match's progress */
                          beat: ev.beat, combo: ev.combo, best: ev.bestCombo,
                          done: ev.done, wrong: ev.wrong } : null,

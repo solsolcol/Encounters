@@ -207,9 +207,9 @@ Object.assign(window.__TEXT__, {
   'event.stabilise':     'HOLD STEADY',
   'event.heartbeat':     'TAP ON THE BEAT',
   'event.resist':        'KEEP YOUR HANDS STILL',          // v18.0: the hands taken
-  'event.resistHold':    'HOLD',
-  'event.resistBreathe': 'LET GO · BREATHE',
-  'event.resistReady':   'WAIT FOR THE CHANT',
+  'event.resistHold':    'TAP! TAP! TAP!',
+  'event.resistBreathe': 'FASTER!',
+  'event.resistReady':   'START TAPPING',
   'event.focus':         'TAP THE LIGHT',
   'event.sequence':      'TAP EACH ONE',
   'event.match':         'DRAG EACH ITEM TO ITS PLACE',

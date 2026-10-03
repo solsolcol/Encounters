@@ -354,7 +354,9 @@ async function runEvent(opts, drive) {
     window.__evR = null;
     // a callback cannot cross into the page, so a check names a counter instead
     if (o.slipTag) { const t = o.slipTag; o.onSlip = () => { window[t] = (window[t] || 0) + 1; }; }
-    window.__enc.kit.event(o).then(r => { window.__evR = r; });
+    // a rapid-tap event is tapped from inside the page, on its own timer
+    const tap = o.tapEvery ? setInterval(() => { window.__enc.evPress(); window.__enc.evRelease(); }, o.tapEvery) : 0;
+    window.__enc.kit.event(o).then(r => { if (tap) clearInterval(tap); window.__evR = r; });
   }, opts);
   // started — or already over, for a kind that can resolve on its first frame
   await p.waitForFunction(() => { const d = window.__enc.kitDebug(); return window.__evR !== null || !!(d.event && d.event.started); }, null, { timeout: 30000 });
@@ -388,17 +390,18 @@ r = await runEvent({ kind: 'heartbeat', n: 2, bpm: 120, win: 0.34, zone: 1, lead
                    async () => { await untilT(0.5); await tapOnce(); await untilT(1.0); await tapOnce(); });
 const beatAnswered = r.sum;
 K.evHeartbeat = r.band.length === 2;
-/* v18.0: RESIST (the twenty-fifth seam). One strong swell, never held: the
-   hands reach the top, it SLIPS, the chapter is told and the slip is graded
-   the worst band; the same swell HELD from its start never slips, and the
-   ebb that follows is graded on how much of it was held. */
-r = await runEvent({ kind: 'resist', swells: [{ at: 0.2, len: 1.6, pull: 1.6 }], tail: 0.3, missCost: 3,
-                     award: { stat: 'awareness', per: 1 }, slipTag: '__slips' }, null);
-K.evResistSlips = r.kind === 'resist' && await p.evaluate(() => window.__slips >= 1) && r.band.includes(-4);
-r = await runEvent({ kind: 'resist', swells: [{ at: 0.2, len: 1.2, pull: 0.9 }, { at: 2.4, len: 0.6, pull: 0.2 }], tail: 0.2, grip: 0.3,
-                     award: { stat: 'awareness', per: 1 }, slipTag: '__slips2' },
-                   async () => { await press(); await untilT(1.5); await release(); });
-K.evResistHeld = r.kind === 'resist' && await p.evaluate(() => !window.__slips2) && !r.band.includes(-4) && r.band.length >= 2;
+/* v18.0: RESIST (the twenty-fifth seam), a RAPID-TAP fight since 3 Oct.
+   Never tapped, the danger runs past `grace` and it is LOST on that frame:
+   the chapter is told (onSlip), ok is false and the loss is PAID (lo). Tapped
+   faster than it asks the whole way, it is WON and pays. The rates here are
+   slow on purpose — this box draws about one frame a second, and the taps
+   are real-time stamps fired from the page between frames. */
+r = await runEvent({ kind: 'resist', secs: 3, rate0: 2, rate1: 2, window: 1, grace: 0.6, lead: 0.2,
+                     award: { stat: 'awareness', lo: -3, hi: 2 }, slipTag: '__slips' }, null);
+K.evResistSlips = r.kind === 'resist' && !r.ok && r.delta === -3 && await p.evaluate(() => window.__slips >= 1);
+r = await runEvent({ kind: 'resist', secs: 2.5, rate0: 0.8, rate1: 0.8, window: 3, grace: 3, lead: 0.2,
+                     award: { stat: 'awareness', lo: -3, hi: 2 }, slipTag: '__slips2', tapEvery: 120 }, null);
+K.evResistHeld = r.kind === 'resist' && r.ok && r.delta > 0 && await p.evaluate(() => !window.__slips2);
 /* and MISSING both beats must HURT — the whole of Chad's v9.3 note */
 const san0 = await p.evaluate(() => window.__enc.stats.sanity);
 r = await runEvent({ kind: 'heartbeat', n: 2, bpm: 120, win: 0.2, zone: 1, lead: 0.4,
