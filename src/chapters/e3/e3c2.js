@@ -52,7 +52,7 @@
     cardLabel: 'Chapter 2',
     cardTitle: 'The Hands That Moved',
     brief: 'A temple hall in Thailand at dusk, the evening chant already begun. Take a chant book, press gold leaf onto the small Buddha, find your place in the rows, and kneel with everyone else.',
-    prompt: 'The chant is at its height. Your hands are moving on their own, and the people around you have started to look.',
+    prompt: 'The chant is at its height. Your hands have moved on their own, and the people around you have seen it.',   // v18.4: true whether he held them or lost them
     choices: [
       { k: 'A', text: 'Press your hands together hard and force it to stop.',
         d: { sanity: -9, awareness: 6, wisdom: -12 }, verdict: 'bad',
@@ -281,23 +281,27 @@
         const za = edges[i], zb = edges[i + 1], len = za - zb;
         walls.push(box(T, H, len, xc, H / 2, (za + zb) / 2, matWall));
         // the dado: a dark red skirting band with a gold rule along its top
-        const d = box(0.04, 1.15, len, x + sgn * 0.02, 0.575, (za + zb) / 2, matDado, world, false); d.castShadow = false;
+        /* v18.4: `sgn` points OUTWARD, so every trim sits at x − sgn·d: at
+           x + sgn·d the dado was coplanar with the wall's face (z-fighting
+           down both long walls) and the frames, crowns and shutters were
+           buried in the masonry */
+        const d = box(0.04, 1.15, len, x - sgn * 0.02, 0.575, (za + zb) / 2, matDado, world, false); d.castShadow = false;
       }
       for (const z of WINZ) {
         walls.push(box(T, WIN.sill, WIN.w, xc, WIN.sill / 2, z, matWall));
-        box(0.04, 1.15, WIN.w, x + sgn * 0.02, 0.575, z, matDado, world, false);
+        box(0.04, 1.15, WIN.w, x - sgn * 0.02, 0.575, z, matDado, world, false);
         const top = WIN.sill + WIN.h;
         walls.push(box(T, H - top, WIN.w, xc, top + (H - top) / 2, z, matWall));
         // the gold frame, inside face: two jambs, a sill, and the pointed crown
-        const fx = x + sgn * 0.035;
+        const fx = x - sgn * 0.035;
         box(0.07, WIN.h + 0.1, 0.09, fx, WIN.sill + WIN.h / 2, z - WIN.w / 2 - 0.02, matGold, world, false);
         box(0.07, WIN.h + 0.1, 0.09, fx, WIN.sill + WIN.h / 2, z + WIN.w / 2 + 0.02, matGold, world, false);
         box(0.12, 0.09, WIN.w + 0.24, fx, WIN.sill - 0.03, z, matGold, world, false);
         const crown = new THREE.Mesh(new THREE.ShapeGeometry(crownShape(THREE, WIN.w + 0.34, 0.95)), matGoldB);
-        crown.position.set(x + sgn * 0.03, top, z); crown.rotation.y = sgn > 0 ? -Math.PI / 2 : Math.PI / 2; world.add(crown);
+        crown.position.set(x - sgn * 0.075, top, z); crown.rotation.y = sgn > 0 ? -Math.PI / 2 : Math.PI / 2; world.add(crown);
         // the open shutters, lacquer and gold, folded back against the inner wall
         for (const s of [-1, 1]) {
-          const sh = box(0.04, WIN.h, WIN.w / 2, x + sgn * 0.09, WIN.sill + WIN.h / 2, z + s * (WIN.w / 2 + WIN.w / 4 + 0.05), matCol, world, false);
+          const sh = box(0.04, WIN.h, WIN.w / 2, x - sgn * 0.03, WIN.sill + WIN.h / 2, z + s * (WIN.w / 2 + WIN.w / 4 + 0.05), matCol, world, false);
           sh.rotation.y = 0;
         }
       }
@@ -325,9 +329,13 @@
       const leaf = box(DOOR.hw, DOOR.h - 0.05, 0.08, -s * DOOR.hw / 2, (DOOR.h - 0.05) / 2, 0, matCol, pivot, false);
       // a gold panel on each leaf (a guardian's painted outline would be here)
       box(DOOR.hw * 0.8, DOOR.h * 0.78, 0.01, -s * DOOR.hw / 2, DOOR.h * 0.48, 0.045, matGoldB, pivot, false);
-      pivot.rotation.y = s * 1.45;           // open, folded back against the front wall
+      /* v18.4: −s·(π − 0.12) — INTO the hall and folded back along the
+         front wall, as this comment always said. s·1.45 swung both leaves
+         OUT onto the porch, while their colliders stood inside the hall
+         beside the spawn, invisible walls on the way to the shelf */
+      pivot.rotation.y = -s * (Math.PI - 0.12);
       leaves.push(pivot);
-      solids.push(hid(box(0.25, 2, DOOR.hw, s * (DOOR.hw - 0.12), 1, HALL.z1 - DOOR.hw / 2 - 0.05, matProxy)));
+      solids.push(hid(box(DOOR.hw, 2, 0.2, s * (DOOR.hw * 1.5), 1, HALL.z1 - 0.14, matProxy)));
     }
     // the doorway itself is closed to the player (the endings use it)
     walls.push(hid(box(DOOR.hw * 2, 3, 0.3, 0, 1.5, HALL.z1 + 0.35, matProxy)));
@@ -370,7 +378,7 @@
     const chand = [];
     for (const z of [-4.6, -10.4, -15.8]) {
       const g = new THREE.Group(); g.position.set(0, H - 2.2, z); world.add(g);
-      cyl(0.01, 0.01, 2.0, 0, 1.2, 0, matGold, 4, g);
+      cyl(0.01, 0.01, 2.2, 0, 1.1, 0, matGold, 4, g);   // v18.4: down to the top ring
       for (let ring = 0; ring < 2; ring++) {
         const R = 0.55 - ring * 0.22, y = -ring * 0.28;
         const tor = new THREE.Mesh(new THREE.TorusGeometry(R, 0.02, 6, 28), matGold); tor.rotation.x = Math.PI / 2; tor.position.y = y; g.add(tor);
@@ -388,7 +396,7 @@
     for (const sx of [-5.1, 5.1]) for (const z of [-3.8, -9.0, -14.2]) {
       if (sx > 0 && z < -5) continue;            // not over the monks
       const pivot = new THREE.Group(); pivot.position.set(sx, H - 1.6, z); world.add(pivot);
-      cyl(0.015, 0.015, 1.0, sx, H - 0.5, z, matDark, 4);
+      cyl(0.015, 0.015, 1.63, sx, H - 0.815, z, matDark, 4);   // v18.4: down to the kit fan's top (H − 1.63), not 0.63 m short of it
       const g = box(1.5, 0.02, 0.18, 0, 0, 0, matWood, pivot, false);
       const g2 = box(0.18, 0.02, 1.5, 0, 0, 0, matWood, pivot, false);
       thai('ceilfan', 0, -0.7, 0, { s: 0.55, cast: false, parent: pivot, hide: [g, g2] });
@@ -1056,6 +1064,11 @@
       const on = (st === 'play' || st === 'decide') && seated && k > 0.02;
       // the shadow: always there when he kneels (a plain kneeling shadow at k 0)
       shadow.visible = !!seated && (st === 'play' || st === 'decide' || st === 'cine');
+      /* v18.4: under a cutscene the SCENE owns the shadow — its crown (C),
+         its fade as he stands (B) — so play's plain kneeling figure is not
+         drawn over it every 0.07 s (C's crown flickered at ~14 Hz, and below
+         14 fps was never seen at all) */
+      if (st === 'cine') { glimpse.visible = false; glimpse.material.opacity = 0; return; }
       shadow.material.opacity = seated ? 0.32 + 0.48 * k : 0;
       if (t - figAt > 0.07 && shadow.visible) {
         figAt = t;
@@ -1089,6 +1102,7 @@
     function dropTodo() { todo.length = 0; }
     const heard = new Set();
     let seated = null, turning = null, bowing = null, fight = null, leafing = null, peakT = 0;
+    let heldWas = false;      // v18.4: how the fight went, so a resume at the peak restages THAT peak
 
     const speak = { until: 0, pending: null };
     function speakReset() { speak.until = 0; speak.pending = null; }
@@ -1127,17 +1141,21 @@
                                 'z2close', 'z2next', 'e3close2', 'step']);
 
     /* ------------------------------------------------------------ the phases */
-    function setPhase(p) {
+    function setPhase(p, opts) {
       phase = p;
-      if (kit) kit.setPhase(p);
-      objectiveFor(p);
+      if (kit) kit.setPhase((p === 'peak' || p === 'decide') && heldWas ? p + ':held' : p);
+      objectiveFor(p, opts);
       syncProps();
     }
-    function objectiveFor(p) {
+    function objectiveFor(p, opts) {
       if (!kit) return;
       const W = DATA.words;
       const obj = { book: W.objBook, leaf: W.objLeaf, place: W.objPlace, chant: W.objChant, fight: W.objHands }[p];
-      kit.objective(obj || null);
+      /* v18.4: `opts.complete === false` — the chant is not COMPLETED by
+         the hands rising out of it, and a LOST fight is not one either (the
+         v8.7 lie: OBJECTIVE COMPLETE, a chime and a buzz on the frame his
+         hands were taken) */
+      kit.objective(obj || null, opts);
       const wp = { book: { x: SHELF.x, y: 1.3, z: SHELF.z - 0.3 },
                    leaf: { x: LEAF.x + 0.3, y: 1.3, z: LEAF.z },
                    place: { x: PLACE.x, y: 0.9, z: PLACE.z } }[p];
@@ -1256,7 +1274,7 @@
     function yantOn() { return kit && ['yantgaoyord', 'yanthahtaew', 'yantsroi'].some(id => kit.equipped(id)); }
     function beginFight() {
       if (phase !== 'chant' || fight) return;
-      setPhase('fight');
+      setPhase('fight', { complete: false });
       fight = { slips: 0, k: 0 };
       if (!kit) return;
       /* (Chad, 3 Oct) a RAPID-TAP fight: every tap pulls the hands back down;
@@ -1298,6 +1316,7 @@
           if (worldSfx) worldSfx('whispers', 0.5, 1, panAt(NEIGH.x, NEIGH.z));
         }
       }).then(r => {
+        if (!fight) return;          // v18.4: a reset mid-fight aborts the event AND nulls `fight` first
         fight.result = r;
         if (r && !r.aborted) {
           kit.conduct({ note: r.ok ? 'Kept your hands down through the chant.' : 'Lost your hands to the chant, in front of everyone.', s: 0, a: r.ok ? 4 : -2, minigame: !r.ok });
@@ -1309,7 +1328,8 @@
        line; and the decision opens by itself */
     function beginPeak(held) {
       if (phase !== 'fight') return;
-      setPhase('peak');
+      heldWas = !!held;
+      setPhase('peak', held ? undefined : { complete: false });
       peakT = dayClock.t;
       if (held) {
         /* HELD: the chant ends and his hands are still his — pressed down,
@@ -1335,9 +1355,13 @@
     /* ------------------------------------------------------------- hotspots
        Anchors at EYE height (the v7.5 law), on the thing itself. */
     const hotspots = [
-      { id: 'book', pos: { x: SHELF.x, y: 1.25, z: SHELF.z - 0.25 }, radius: 2.4, prompt: DATA.words.hotBook,
+      /* v18.4: both anchors at 1.5 m on the HALL side of their own padded
+         blockers — at 1.25 / 1.3 m, standing at the shelf or the table put
+         them 45–70 degrees under a level gaze, out of the frame, so the
+         phone's only press (the badge) went out at arm's length (v7.5) */
+      { id: 'book', pos: { x: SHELF.x, y: 1.5, z: SHELF.z - 0.32 }, radius: 2.4, prompt: DATA.words.hotBook,
         enabled: () => phase === 'book', onInteract() { return takeBook(); } },
-      { id: 'leaf', pos: { x: LEAF.x + 0.35, y: 1.3, z: LEAF.z }, radius: 2.3, prompt: DATA.words.hotLeaf,
+      { id: 'leaf', pos: { x: LEAF.x + 0.3, y: 1.5, z: LEAF.z }, radius: 2.3, prompt: DATA.words.hotLeaf,
         enabled: () => phase === 'leaf' && !leafing, onInteract() { return pressLeaf(); } }
     ];
 
@@ -1446,6 +1470,8 @@
        kneels him again and starts the chant over (the hands begin still); a
        resume at the decision kneels him at the peak, hands up, and asks. */
     function applyPhase(p) {
+      const tag = String(p || '').split(':');
+      p = tag[0]; heldWas = tag[1] === 'held';
       if (!PHASES.includes(p)) p = 'book';
       seated = null; turning = null; bowing = null; fight = null; leafing = null;
       for (const r of [neighbour, yai, kid, frontMan]) if (r) { r.lookTo = 0; }
@@ -1458,10 +1484,12 @@
           kit.root(true);
           kit.pose('lying', { y: 0.98, yaw: faceBuddha(), span: 1.35, pitchLo: -0.75, pitchHi: 0.55, secs: 0.05 });
           if (kit.pray) kit.pray(true, { secs: 0, y: -0.33 });
-          if (kit.hands) kit.hands(1, { secs: 0.6 });
-          kit.presence(0.5);
+          /* v18.4: the peak he actually had — held: the hands pressed down
+             and shaking, one face; lost: up, and the faces */
+          if (kit.hands) kit.hands(heldWas ? 0.32 : 1, { secs: 0.6 });
+          kit.presence(heldWas ? 0.25 : 0.5);
         }
-        for (const r of [neighbour, yai, frontMan]) if (r) r.lookTo = 1;
+        for (const r of heldWas ? [neighbour] : [neighbour, yai, frontMan]) if (r) r.lookTo = 1;
         setPhase('decide');
         return;
       }
@@ -1473,14 +1501,22 @@
     function restore() {
       if (kit) kit.root(false);
       handBook.visible = false;
-      for (const l of leaves) l.rotation.y = Math.sign(l.position.x) * 1.45;
+      for (const l of leaves) l.rotation.y = -Math.sign(l.position.x) * (Math.PI - 0.12);
     }
     function reset() {
       dropTodo(); speakReset(); lineQ.length = 0; heard.clear();
       booted = false; dayClock.t = 0; lastWall = 0;
-      seated = null; turning = null; bowing = null; fight = null; leafing = null; peakT = 0;
-      for (const r of crowd) { r.bow = 0; r.lookTo = 0; r.lookW = 0; }
-      for (const l of leaves) l.rotation.y = Math.sign(l.position.x) * 1.45;
+      seated = null; turning = null; bowing = null; fight = null; leafing = null; peakT = 0; heldWas = false;
+      /* v18.4: and put every head and spine BACK — headTick only runs while
+         a look is live, so zeroing the weights left whoever was looking when
+         the last scene ended frozen half-turned through the replay; and the
+         monks, whom scene C turns with lookAll, were never reset at all */
+      for (const r of [...crowd, ...monks]) {
+        r.bow = 0; r.bowWas = false; r.lookTo = 0; r.lookW = 0;
+        if (r.head && r.headRest) r.head.quaternion.copy(r.headRest);
+        if (r.bowRest) for (const q of r.bowRest) q.b.quaternion.copy(q.q);
+      }
+      for (const l of leaves) l.rotation.y = -Math.sign(l.position.x) * (Math.PI - 0.12);
       if (kit) {
         kit.root(false); kit.pose('standing', { secs: 0.05 });
         if (kit.pray) kit.pray(false, { secs: 0 });
@@ -1533,7 +1569,13 @@
        Five pockets far outside the hall (the far plane is 160 m: distance
        does the hiding, v8.9). Fog-free, painted light (the v4.9 recipe). */
     const film = buildFilm(ctx, world, { tex, parseOnce, thai, box, cyl, alive: () => alive, owned, mkSitter, whiteOf, matFloor, matMat, matCream, matFlame, matGold, matDark, matWood, makeSignTex, KIND, HALL });
-    function filmTick(t) { if (getState() === 'cine') film.tick(t); }
+    /* v18.4: the film's clock is the INTRO's — run under an ending (scene B
+       is 44.7 s long) it put a walker on the courtyard at 44.2 s and left
+       him standing there, frozen mid-stride, through the replay */
+    function filmTick(t) {
+      if (getState() === 'cine' && !booted) film.tick(t);
+      else for (const w of film.walkers) if (w.grp.visible) w.grp.visible = false;
+    }
 
     const readyAt = performance.now();
     return (S = {
@@ -1558,7 +1600,7 @@
       setPhase, applyPhase, after, dayClock, sayLine,
       info: () => ({ phase, seated, t: +dayClock.t.toFixed(2), queued: lineQ.length, heard: [...heard],
                      until: +speak.until.toFixed(2), pending: speak.pending ? speak.pending.name : null,
-                     fight: fight ? { k: +(fight.k || 0).toFixed(2), slips: fight.slips, swell: fight.swell } : null,
+                     fight: fight ? { k: +(fight.k || 0).toFixed(2), slips: fight.slips } : null, held: heldWas,
                      crowd: crowd.length, crowdReady: crowd.filter(r => r.ready).length, monks: monks.length,
                      beds: DATA.ambience.beds.map(b => [b[0], +b[1].toFixed(3)]) }),
       hotspots,
@@ -1640,7 +1682,7 @@
     }
     // (the take folds a man over his knees through its middle: parked on its
     // upright frames, its first eighth and last sixth — v8.0's measure)
-    const staff = [0, 1, 2].map(i => h.mkSitter('admintee', -1.8 + i * 2.6, -2.35, Math.PI, { pray: false, take: 'Chair_Sit_Idle_M', at: [0.04, 0.9, 0.08][i], nod: 0.3, parent: O }));
+    const staff = [0, 1, 2].map(i => h.mkSitter('admintee', -1.8 + i * 2.6, -2.35, Math.PI, { pray: false, take: 'Chair_Sit_Idle_M', at: [0.04, 0.9, 0.08][i], nod: 0.3, parent: O, y: 0.195 }));   // v18.4: on the office floor (its top is 0.195), not in the slab
     for (let i = 0; i < 3; i++) fbox(0.46, 0.5, 0.05, -1.8 + i * 2.6, 0.85, -2.02, basic({ color: 0x23262b }), O);   // the chairs' backs
     /* (a white box van stood at the kerb here and slammed its door: in the
        photographs it was a toy, and its door striped the frame — the van is
@@ -2036,7 +2078,7 @@
      on a temple floor and snapping back — and the ordination hall at dusk,
      people in white going in ahead of him. `e3film2` runs under it all. */
   function intro(c, s, api) {
-    const { step, sfx, fade, camTo, yawTo, pitchTo, faceFrom, rawK, smoothK, stage, armR, handsRoot, tr } = api;
+    const { step, sfx, sfxFade, fade, camTo, yawTo, pitchTo, faceFrom, rawK, smoothK, stage, armR, handsRoot, tr } = api;
     const F = stage.film, P = F.P;
     const at = (o, x, y, z) => ({ x: o.x + x, y, z: o.z + z });
     step(0, () => { handsRoot.visible = false; });
@@ -2085,7 +2127,11 @@
     fade(35.0, 35.6, 0, 1);
 
     // 4 · A TEMPLE FLOOR, CLOSE (35.6 – 44.0): the hands come apart, and snap back
-    step(35.6, () => { api.handsPose(0, 0); });
+    /* v18.4: a TRACK, not a step — cineSeek re-applies every passed track
+       every frame, so after a once-step here shot 3's hand (31.4 – 32.4,
+       from 'rest') was written back over it until 37.4: the floor shot
+       faded in on one hand on a knee and the clasp popped in later */
+    tr(35.6, 37.4, () => { api.handsPose(0, 0); }, rawK);
     fade(35.8, 36.8, 1, 0);
     camTo(35.6, 44.0, at(P.floor, 0.0, 0.98, 0.16), at(P.floor, 0.0, 0.97, 0.12), rawK);
     yawTo(35.6, 40.6, faceFrom(P.floor.x, P.floor.z + 0.16, P.floor.x + 0.1, P.floor.z - 0.8), faceFrom(P.floor.x, P.floor.z + 0.16, P.floor.x + 0.1, P.floor.z - 0.8), rawK);
@@ -2101,6 +2147,7 @@
     yawTo(41.6, 42.4, faceFrom(P.floor.x, P.floor.z + 0.16, P.floor.x - 0.9, P.floor.z + 0.0), faceFrom(P.floor.x, P.floor.z + 0.16, P.floor.x + 0.9, P.floor.z + 0.0), smoothK);
     yawTo(42.6, 43.3, faceFrom(P.floor.x, P.floor.z + 0.16, P.floor.x + 0.9, P.floor.z + 0.0), faceFrom(P.floor.x, P.floor.z + 0.16, P.floor.x + 0.1, P.floor.z - 0.8), smoothK);
     fade(43.4, 44.0, 0, 1);
+    sfxFade(43.4, 44.0, 'e3vesper');                 // v18.4: the floor's chant goes with its shot (the doors cue their own at 44.4 — the two ran 8.6 s apart under the last line)
 
     // 5 · THE HALL'S DOORS AT DUSK (44.0 – 55.2): people in white going in ahead of him
     step(44.0, () => { handsRoot.visible = false; });
@@ -2185,6 +2232,7 @@
     pitchTo(2.5, 3.3, -0.72, -0.05, smoothK);
     // he stands, and the hands go
     step(3.4, () => { handsRoot.visible = false; });
+    tr(3.4, 4.6, (k) => { stage.shadow.material.opacity = 0.32 * (1 - k); }, rawK);   // v18.4: and his kneeling shadow with him
     const up = { x: PL.x - 0.15, y: 1.62, z: PL.z + 0.05 };
     camTo(3.4, 4.6, p0, up, smoothK);
     sfx(3.6, 'matkneel', 0.6);
@@ -2229,7 +2277,7 @@
       tFlow = H0.t + t * (1.5 - 0.9 * fall);
       // from wherever play left them, up into the full gesture in the first 1.2 s
       api.handsPose(Math.min(1, H0.k + (1 - H0.k) * smooth(Math.min(1, t / 1.2))) * (1 - smooth(fall)), tFlow);
-      const amp = 1 - 0.7 * fall;
+      const amp = 1 - fall;             // v18.4: to ZERO at 18 — the track re-applies at k 1 to the end, so 0.3 left the lens swaying through the close
       camera.rotation.z = amp * (0.12 * Math.sin(t * 0.9) + 0.03 * Math.sin(t * 2.3));
       stage.drawShadow(1 - fall * 0.8, t);
     }, rawK);

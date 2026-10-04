@@ -4740,6 +4740,46 @@ What the baseline contains, by release:
   **A minigame probe drives the REAL input path**, never the press function.
   Deploy `6ac126316bb1421c32b86ecc`, byte-verified (all 203 build files). No
   word moved; sheet v84 stands (v44 the link).
+- **v18.4** THE MINIGAME THAT NEVER SHOWED, AND A DEBUG PASS — Chad: *"No
+  the minigame does not even show up. Plus i want you to do a super
+  comprehensive debugging of this chapter."* The game itself was fine played
+  fresh — a phone walk through book, gold leaf and mat opened the brief — and
+  every probe before this one used `?ch=e3c2`, which reads and writes NO save,
+  so none could reach the cause: **a save for the START of a chapter carried
+  the FINISHED chapter's phase.** `finish()` writes the next chapter's save
+  from `worldState()`, whose `phase` is the kit's bookmark — e3c1's last,
+  `'decide'` — and e3c2 has a `'decide'` too, so Continue from the title put
+  him on his mat with the decision open: no book, no leaf, no chant, no fight.
+  The same skip hit e2c4 → e2c5 (the clearance), and a faint kept the phase it
+  fainted in. Fixed both ends: `saveCheckpoint` writes `phase: null` and empty
+  conduct whenever `at` is null (a chapter's start), and `resumeRun` ignores
+  them on such a save, so the save ALREADY on his phone opens right. Reproduced
+  on v18.3 with a seeded save (decide, on the mat) and gone on v18.4 (book, at
+  the door). Three reviewers read the chapter and the engine in parallel; what
+  they found and was fixed: a LOST fight played OBJECTIVE COMPLETE (and the
+  chant "completed" as the hands rose — both `{ complete: false }` now); a
+  Retry left heads and shoulders frozen half-turned and the monks tracking him
+  (reset puts every head and spine back, monks included); the book and leaf
+  anchors sat 45–70° under a level gaze at arm's length (1.5 m, hall side);
+  a reset mid-fight threw (null guard); after START nothing said where to tap
+  (`event.resistWhere`, under the word); play's shadow painter overwrote scene
+  C's crowned shadow every 0.07 s (a scene owns it now) and scene B's kneeling
+  shadow stayed as he stood; scene C's lens swayed through the close (the roll
+  goes to zero); the film's walkers appeared under scene B (44.7 s > 44.2) and
+  stood frozen outside through the replay (the film clock is the intro's only);
+  the film's floor shot opened on shot 3's hand until the clasp popped in (a
+  track, not a step — v5.30's law); two copies of the chant 8.6 s apart under
+  the last line (the first fades with its shot); the long walls' dado, frames,
+  crowns and shutters were on the OUTSIDE of the wall's inner face (`sgn`
+  points outward) — z-fighting dado, buried trim; the door leaves swung OUT
+  while their colliders stood inside beside the spawn (folded inward along the
+  wall now); fan and chandelier rods short of what they hold; the office staff
+  in the slab; a resume at the peak always staged the LOST one (`decide:held`);
+  the decision prompt is true for both. ENGINE: every ending's clasp sat 9.5 cm
+  high (`prayOff` zeroed `pray.k`, so `handsPut` fell back to chapter 1's
+  height) — it reads `pray.y`, reset by `kitReset`; nothing before e3c2 calls
+  `handsPut`. Sheet v85 exported (one UI string, one prompt; v44 the link).
+  Deploy `6ac194e045051f77f1f6fd5f`, byte-verified (203 build files).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -5304,7 +5344,7 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v84** (`masters/v18.1/masterz-text-v84.xlsx`, v83 with v18.1's three rapid-tap words and the fight's new brief. v83 was `masters/v18.0/masterz-text-v83.xlsx`, v82 plus episode 3 chapter 2's words and its 24 voice lines. v82 was `masters/v17.7/masterz-text-v82.xlsx`, v81 with v17.7's three Sak Yant names and words from Chad's reference pages. v81 was `masters/v17.6/masterz-text-v81.xlsx`, v80 plus v17.6's Sak Yant choice: three items' names, powers and words, the window's words, the chapter's four, and two Ajarn voice lines. v80 was `masters/v17.0/masterz-text-v80.xlsx`, v79 plus v17.0's three credit strings for the Khon masks. v79 was `masters/v16.9/masterz-text-v79.xlsx`, v78 plus v16.9's six credit strings — the temple and the slippers. v78 was `masters/v16.6/masterz-text-v78.xlsx`, v77 plus v16.6's four credit rows for the Tailandia packs. v77 was `masters/v16.1/masterz-text-v77.xlsx`, v76 with the monk's three voice lines re-said by Arthur at v16.2. v76 was `masters/v16.1/masterz-text-v76.xlsx`, five tabs: UI
+**THE SHEET IS v85** (`masters/v18.4/masterz-text-v85.xlsx`, v84 with v18.4's `event.resistWhere` and e3c2's decision prompt made true for both peaks. v84 was `masters/v18.1/masterz-text-v84.xlsx`, v83 with v18.1's three rapid-tap words and the fight's new brief. v83 was `masters/v18.0/masterz-text-v83.xlsx`, v82 plus episode 3 chapter 2's words and its 24 voice lines. v82 was `masters/v17.7/masterz-text-v82.xlsx`, v81 with v17.7's three Sak Yant names and words from Chad's reference pages. v81 was `masters/v17.6/masterz-text-v81.xlsx`, v80 plus v17.6's Sak Yant choice: three items' names, powers and words, the window's words, the chapter's four, and two Ajarn voice lines. v80 was `masters/v17.0/masterz-text-v80.xlsx`, v79 plus v17.0's three credit strings for the Khon masks. v79 was `masters/v16.9/masterz-text-v79.xlsx`, v78 plus v16.9's six credit strings — the temple and the slippers. v78 was `masters/v16.6/masterz-text-v78.xlsx`, v77 plus v16.6's four credit rows for the Tailandia packs. v77 was `masters/v16.1/masterz-text-v77.xlsx`, v76 with the monk's three voice lines re-said by Arthur at v16.2. v76 was `masters/v16.1/masterz-text-v76.xlsx`, five tabs: UI
 TEXT 292, EPISODE 1 114, EPISODE 2 193, EPISODE 3 41, VOICE LINES 337 — v76
 adds v16.1's four words, two changed cells and seven voice lines to v75).
 Was v75 (`masters/v16.0/masterz-text-v75.xlsx`, which added episode 3

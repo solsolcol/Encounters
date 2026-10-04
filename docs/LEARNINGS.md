@@ -5119,3 +5119,19 @@ of 7.5 taps a second into a real one of 8.0 — only shows when you ask what
 rate a steady human tap actually reads as. Drive a minigame with dispatched
 PointerEvents on the overlay, and check both ends: a pace just over the
 stated need must WIN, one under it must LOSE.
+
+
+## A save for the START of a chapter carries no bookmark (v18.4)
+
+`worldState()` is the run as it stands, and `finish()` used it to write the
+NEXT chapter's save — so the chapter just sealed handed its phase to the next
+one. Phase names repeat across chapters ('decide' is in e2c4, e2c5, e3c1 and
+e3c2), so the next chapter took it as its own and resumed at the end: Chad's
+"the minigame does not even show up" was e3c2 opening on its decision. A save
+with no position (`at: null` — a boundary, a faint, a finished run) means the
+START of a chapter, and the start of a chapter has no phase and has earned
+nothing: `saveCheckpoint` writes it that way and `resumeRun` reads it that
+way, so a bad save already on a phone heals too. And the probe law under it:
+**a `?ch=` session reads and writes no save** (CH_ASKED), so no deep-linked
+probe can ever see a save bug — seed a checkpoint into localStorage, load the
+page with no query, and press Continue.

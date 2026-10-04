@@ -1832,7 +1832,12 @@ function handsPut(k, t, opts) {
   if (!prayRestQ) prayRestQ = new THREE.Quaternion().setFromEuler(new THREE.Euler(0.50, 0.28, -0.48));
   buildWong();
   const fromRest = !!(opts && opts.from === 'rest'), withLeft = !(opts && opts.left === false);
-  const e = k * k * (3 - 2 * k), half = HAND_W * 0.085, py = pray.k > 0 ? pray.y : PRAY.y;
+  /* v18.4: the clasp at the CHAPTER's height (pray.y), not only while the
+     kit's prayer is on — playCineFn's prayOff() zeroes pray.k, so every
+     ending's clasp stood 9.5 cm higher than play's (e3c2 −0.33 → −0.235,
+     where the thumbs show) and jumped on the cut. kitReset puts pray.y back
+     to chapter 1's, so a chapter that never sets it is unchanged. */
+  const e = k * k * (3 - 2 * k), half = HAND_W * 0.085, py = pray.y;
   // the right hand: from the clasp (or its rest) to its gesture
   gestureAt(t, k, _hgPr, _hgQr);
   if (fromRest) _hgp0.copy(armBase); else _hgp0.set(half, py, PRAY.z);
@@ -3797,6 +3802,11 @@ function evBegin() {
   $('evDot').classList.add('hide');
   $('evDrag').classList.add('hide');
   $('evCombo').textContent = '';
+  /* v18.4: once START is pressed the button goes and the panel shrinks to a
+     strip, and nothing said WHERE the taps go — a player who waited for a
+     button lost the fight inside two seconds and read it as "the minigame
+     does not even show up". The rapid-tap fight says it, under its word. */
+  if (e.kind === 'resist') $('evNote').textContent = o.whereWord || T('event.resistWhere');
   if (e.kind === 'sequence') evShowItem();
   /* v9.4: a drag needs a cursor, and under pointer lock there is none - the
      mouse's clientX/clientY freeze, so the tiles could never be picked up.
@@ -4362,6 +4372,7 @@ function kitReset() {
   if (CH.weapon) weaponSetup(CH.weapon); else weaponTeardown();   // v12.0
   kitRooted = false; kitHurtSet(null);   // v11.1
   prayOff();                             // v16.5: a run never starts with the hands still together
+  pray.y = PRAY.y;                       // v18.4: and at chapter 1's height until the chapter says otherwise (handsPut reads it)
   handsOff();                            // v18.0: nor with them still moving on their own
   activeSpot = null;
   if (unl.id) unlockClose('force');      // v14.7: a splash never outlives the run it opened in
@@ -7477,6 +7488,16 @@ function saveCheckpoint(extra) {
     if (extra && extra.stats) base.stats = { ...extra.stats };
     if (extra && extra.ward) base.ward = { ...extra.ward };   // v14.7: a faint and a boundary say what the amulet holds
     if (extra && extra.ch && chapterExists(extra.ch)) base.ch = extra.ch;
+    /* v18.4: a save with no position is a save for the START of a chapter —
+       the boundary into the next one, a faint, a finished run — and the
+       start of a chapter has no bookmark and has earned nothing yet. Without
+       this, worldState() carried the chapter just FINISHED's phase into the
+       next one: e3c1 ends on 'decide', e3c2 has a 'decide' too, and a
+       Continue from the title put the player on his mat with the decision
+       open — no book, no gold leaf, no chant, no fight (Chad: "the minigame
+       does not even show up"). e2c4 → e2c5 skipped the clearance the same
+       way, and a faint kept the phase it fainted in. */
+    if (at === null) { base.phase = null; base.conduct = { s: 0, a: 0, notes: [] }; }
     localStorage.setItem(SAVE_KEY, JSON.stringify({
       ...base, at, done: !!(extra && extra.done), t: Date.now()
     }));
@@ -10880,6 +10901,12 @@ function resumeRun() {
     if (s.done) { Object.assign(stats, STATS_AT_START); }
     else applyState(s);            // stats and inventory, validated
     const at = s.at;
+    /* v18.4: and READ one the same way — a save written before v18.4 at a
+       boundary still carries the finished chapter's phase (Chad's phone has
+       one: e3c1's 'decide', which opened e3c2 at its decision) */
+    if (!(at && ['x', 'y', 'z'].every(k => Number.isFinite(at[k])))) {
+      kitPhase = null; conductAcc.s = 0; conductAcc.a = 0; conductAcc.notes.length = 0;
+    }
     if (at && ['x', 'y', 'z'].every(k => Number.isFinite(at[k]))) {
       yaw.position.set(at.x, at.y, at.z);
       yaw.rotation.y = Number.isFinite(at.ry) ? at.ry : SPAWN.rot;
