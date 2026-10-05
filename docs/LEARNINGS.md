@@ -5135,3 +5135,51 @@ way, so a bad save already on a phone heals too. And the probe law under it:
 **a `?ch=` session reads and writes no save** (CH_ASKED), so no deep-linked
 probe can ever see a save bug — seed a checkpoint into localStorage, load the
 page with no query, and press Continue.
+
+
+## A culling sphere is in the MESH's units, not the world's (v18.5)
+
+e3c2's sitters were given `new Sphere((0, 0.6, 0), 1.3)` as their bounding
+sphere — sound for a mesh at world scale 1, and 1.3 CENTIMETRES for the Meshy
+women, whose mesh hangs under an Armature at 0.01. Grounding then moved the
+model down, so the sphere sat under the floor, and three culled the whole
+woman whenever that point left the frame: thirteen of twenty-three people
+vanished as the player looked up. Nothing on screen says why a body is gone.
+Build the sphere where you mean it (world space round the body) and bring it
+INTO the mesh's space: centre through `matrixWorld⁻¹`, radius divided by the
+mesh's world scale.
+
+## An instanced copy of a quantized mesh needs its node's transform (v18.5)
+
+`new InstancedMesh(mesh.geometry, …)` takes the geometry WITHOUT the node it
+hung from. In a meshopt/quantized file that node carries the dequantizing
+scale — the slipper's `one` node is ×0.135 — so the raw geometry is ±1 and
+every instance came out 2 m long. Clone the geometry and `applyMatrix4` the
+mesh's `matrixWorld` first (chapter 1's `plantSlippers` always did).
+
+## A save written on the way INTO a chapter must survive until it is played (v18.5)
+
+`restart()` autosaves the fresh run at the spawn, and Continue reads a save
+with a position as "already in play" — so the boundary save `finish()` wrote
+was overwritten the moment the sealed card's Continue was pressed, and closing
+the app during the next chapter's loading or its film skipped the film for
+ever. The press that starts a chapter's film writes a chapter-start save
+(`at: null`) after `restart()`. And a chapter-start save carries the numbers
+play starts a chapter on, not the ones the last chapter ended on.
+
+## Recolouring a scanned atlas: decide per UV island, not per texel (v18.5)
+
+Episode 3 chapter 2 dresses the congregation white by recolouring each
+model's sheet: skin stays, dark (hair, trousers) stays, everything else goes
+white. Per texel, that put white specks along every hairline — the scan had
+baked olive flecks of the shirt into its hair, and an olive fleck is "not
+skin, not dark". Darkening near the dark instead (a padding band) put black
+dashes on the shirts, because the atlas packs hair islands edge to edge
+against shirt islands. What worked: rasterize the mesh's own UV triangles,
+take its UV islands from the index graph (vertices split at UV seams), and
+keep a shirt-coloured texel only when its island is under a fifth
+shirt-coloured AND hair surrounds it; give every uncovered texel the class of
+the nearest covered one. And a shirt in the scan's own baked shadow is darker
+than the "dark" cut-off — exclude the shirt's hue from the dark class, or a
+shadowed shirt island reads as hair. Judged by a close-up render each time:
+three plausible rules in a row were wrong, and only the photograph said so.

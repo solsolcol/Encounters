@@ -128,6 +128,8 @@
       actTouch: 'Tap to speak to the encik',
       interact: 'E to speak to the encik',
       interactTouch: 'Tap to speak to the encik',
+      actLine: 'Press E to speak to the encik',          // v18.5: Step back's hint (the fallback named chapter 1's pile of notes)
+      actLineTouch: 'Tap to speak to the encik',
       presence: 'Something followed you here.',
       objAsk: 'Ask three bunkmates what they heard · {n}/3',
       objEncik: 'Tell the encik',

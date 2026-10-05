@@ -82,7 +82,7 @@ ffmpeg -v error -y -i raw/flatnight_a.mp3 -i w_phonechant.wav -filter_complex "[
 trim w_flatnight0.wav w_flatnight.wav 0.0 14.6 1.4;      enc flatnight w_flatnight.wav -8.0 -8.0 96k 2
 # --- music
 trim raw/e3film2_a.mp3 w_e3film2.wav 1.8 54.0 3.0;       enc e3film2 w_e3film2.wav -3.0 -3.0 96k 2
-trim raw/e3close2_b.mp3 w_e3close2.wav 5.3 45.5 3.0;     enc e3close2 w_e3close2.wav -3.0 -3.0 96k 2
+trim raw/e3close2_b.mp3 w_e3close2.wav 9.8 45.5 3.0;     enc e3close2 w_e3close2.wav -3.0 -3.0 96k 2   # v18.5: from 9.8 (was 5.3) — the body arrives 3.2 s in, not 7.7, so the endings hear it before their fade
 trim raw/e3pull_a.mp3 w_e3pull0.wav 2.6 60.0 0.01;       loop w_e3pull0.wav w_e3pull1.wav 3.0
 rmsenc e3pull w_e3pull1.wav -19
 rm -f w_*.f32 w_e3pull0.wav w_e3pull1.wav w_flatnight0.wav w_phonechant.wav

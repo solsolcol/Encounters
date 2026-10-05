@@ -4780,6 +4780,63 @@ What the baseline contains, by release:
   height) — it reads `pray.y`, reset by `kitReset`; nothing before e3c2 calls
   `handsPut`. Sheet v85 exported (one UI string, one prompt; v44 the link).
   Deploy `6ac194e045051f77f1f6fd5f`, byte-verified (203 build files).
+- **v18.5** THE SECOND PASS — Chad: *"debug again comprehensively the same
+  chapter, it was not good enough"*. He was right. Six reviewers, each with
+  one lens (save and resume, geometry and framing, sound and timing, models and
+  rigs, words and HUD, and a regression audit of v18.4 itself), plus the
+  chapter played start to finish on a phone through real taps and every film
+  shot and ending photographed on the phone crop. What was found and fixed:
+  **HALF THE CONGREGATION WAS INVISIBLE** from most angles — every sitter's
+  culling sphere was 1.3 in MESH units, and the Meshy women's mesh hangs under
+  an Armature at 0.01, so theirs was 1.3 cm and, after grounding, under the
+  floor: the woman beside him and Yai among the thirteen (the sphere is built
+  in world space now, LEARNINGS). **THE PORCH SLIPPERS were drawn 7.4× life
+  size** — the raw quantized geometry without its node's transform (baked now,
+  chapter 1's way). **A REGRESSION OF MINE**: v18.4's shadow guard left scenes
+  A and B on play's last drawing, the crowned figure at 0.8, while he forces
+  the hands DOWN (every scene starts on the plain shadow now). THE ENGINE, all
+  unreachable from episode 1 except where said: a boundary save carried the
+  finished chapter's STATS, so Continue from the title and Continue on the
+  sealed card began the same chapter on different numbers (both start at
+  100/50/50 now — this one does touch every episode's title Continue, and
+  matches what in-session play always did); `restart()`'s autosave overwrote
+  the boundary save, so closing the app during the next chapter's loading or
+  film lost the film (the press writes a chapter-start save after it); a
+  hidden tab mid-fight was charged as slowness on the first frame back (the
+  fight's start grace comes back); Gao Yord's `shockGuard` cut minigame damage
+  it is defined not to (the engine's own minigame charges are flagged); and
+  the BOY's engine lines (`vlow`, `vfaint`, `vlost`) are not said in episode
+  3's adult voice. THE CHAPTER: the double chant swell on a loss clipped at
+  +5.5 dBFS; "No... not now." is said the first time the hands get away and
+  "Stop... stop." on the loss (it was never heard); the closing music's
+  near-silent first 8 s are cut so the endings hear its body; the film's last
+  chant and dusk fade with the picture; "z2leaf" no longer lands on the
+  opening line; a resume says no arrival line, kneels him without a false
+  OBJECTIVE COMPLETE, and at the peak opens the decision itself; a fight lost
+  into a faint stages no peak over the faint; Step back said "Tap the glowing
+  pile of notes" (and so did every episode 2–3 chapter but e2c4 — all fixed;
+  episode 1's chapters 2–5 still say it, Chad's call); the four conduct notes
+  are on the sheet; the objective says TAP; desktop is told to press Space or
+  click; the gold glimpse at the frame's edge could never be seen (it stood
+  141° behind him; it is keyed to the screen's own half-width now); the
+  crowned shadow lay under the man in front; ending C's sway turned away from
+  Yai for her whole line on a phone; the inner door crown faced the wall; no
+  floor in the doorway; the altar's images hung off the riser, the orchids
+  floated, the pot and phans stood in the riser; the gold-leaf patches hung
+  14 cm off the Buddha; the book stands faced the Buddha; the shelf's sign
+  floated; the leaf hotspot missed a level gaze; the lotus bowls were
+  walk-through; the monks sat in their cushions; the film's rod was cut by the
+  near plane mid-frame, its walkers blinked out on the threshold and skated,
+  its office staff wore temple white at desks with no legs; and every
+  congregation head carried a ring of WHITE SPECKS along its hairline — the
+  scan's olive flecks in the hair went white with the shirt — so the recolour
+  decides per UV ISLAND now (`coverLabels`; LEARNINGS has the three rules that
+  failed first, each caught only by a close-up photograph). Left for Chad: the
+  core lesson leaves out the case file's own "what I did was go and seek to
+  understand it properly…", and scene A's card line ("It did not go away")
+  contradicts its scene ("I could feel it waiting") — both are his words to
+  pick. Sheet v86 exported (v44 the link). Deploy `6ac334b6dd876b493b7eeb64`,
+  byte-verified (all 204 build files). docs/V18.0-E3C2-PLAN.md §13.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -5344,7 +5401,7 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v85** (`masters/v18.4/masterz-text-v85.xlsx`, v84 with v18.4's `event.resistWhere` and e3c2's decision prompt made true for both peaks. v84 was `masters/v18.1/masterz-text-v84.xlsx`, v83 with v18.1's three rapid-tap words and the fight's new brief. v83 was `masters/v18.0/masterz-text-v83.xlsx`, v82 plus episode 3 chapter 2's words and its 24 voice lines. v82 was `masters/v17.7/masterz-text-v82.xlsx`, v81 with v17.7's three Sak Yant names and words from Chad's reference pages. v81 was `masters/v17.6/masterz-text-v81.xlsx`, v80 plus v17.6's Sak Yant choice: three items' names, powers and words, the window's words, the chapter's four, and two Ajarn voice lines. v80 was `masters/v17.0/masterz-text-v80.xlsx`, v79 plus v17.0's three credit strings for the Khon masks. v79 was `masters/v16.9/masterz-text-v79.xlsx`, v78 plus v16.9's six credit strings — the temple and the slippers. v78 was `masters/v16.6/masterz-text-v78.xlsx`, v77 plus v16.6's four credit rows for the Tailandia packs. v77 was `masters/v16.1/masterz-text-v77.xlsx`, v76 with the monk's three voice lines re-said by Arthur at v16.2. v76 was `masters/v16.1/masterz-text-v76.xlsx`, five tabs: UI
+**THE SHEET IS v86** (`masters/v18.5/masterz-text-v86.xlsx`, v85 with v18.5's words: e3c2's objective, presence and Step-back lines and its four conduct notes, Step back in five more chapters, `event.resistWhereKey`, three voice-line descriptions. v85 was `masters/v18.4/masterz-text-v85.xlsx`, v84 with v18.4's `event.resistWhere` and e3c2's decision prompt made true for both peaks. v84 was `masters/v18.1/masterz-text-v84.xlsx`, v83 with v18.1's three rapid-tap words and the fight's new brief. v83 was `masters/v18.0/masterz-text-v83.xlsx`, v82 plus episode 3 chapter 2's words and its 24 voice lines. v82 was `masters/v17.7/masterz-text-v82.xlsx`, v81 with v17.7's three Sak Yant names and words from Chad's reference pages. v81 was `masters/v17.6/masterz-text-v81.xlsx`, v80 plus v17.6's Sak Yant choice: three items' names, powers and words, the window's words, the chapter's four, and two Ajarn voice lines. v80 was `masters/v17.0/masterz-text-v80.xlsx`, v79 plus v17.0's three credit strings for the Khon masks. v79 was `masters/v16.9/masterz-text-v79.xlsx`, v78 plus v16.9's six credit strings — the temple and the slippers. v78 was `masters/v16.6/masterz-text-v78.xlsx`, v77 plus v16.6's four credit rows for the Tailandia packs. v77 was `masters/v16.1/masterz-text-v77.xlsx`, v76 with the monk's three voice lines re-said by Arthur at v16.2. v76 was `masters/v16.1/masterz-text-v76.xlsx`, five tabs: UI
 TEXT 292, EPISODE 1 114, EPISODE 2 193, EPISODE 3 41, VOICE LINES 337 — v76
 adds v16.1's four words, two changed cells and seven voice lines to v75).
 Was v75 (`masters/v16.0/masterz-text-v75.xlsx`, which added episode 3

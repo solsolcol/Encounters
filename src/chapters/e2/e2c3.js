@@ -93,6 +93,8 @@
       actTouch: 'Tap to look down',
       interact: 'E to look down',
       interactTouch: 'Tap to look down',
+      actLine: 'Press E to look down',          // v18.5: Step back's hint (the fallback named chapter 1's pile of notes)
+      actLineTouch: 'Tap to look down',
       presence: 'Something is pressing on your leg.',
       objLook: 'Look around. Shine the torch into the jungle · {n}/6',
       objDown: 'Shine the torch down. On the ground.',

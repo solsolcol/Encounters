@@ -27,11 +27,12 @@
    find the free mat in the third row and kneel; bow three times with the
    hall; chant. Then the chant swells and his hands rise out of the añjali on
    their own (the engine's `kit.hands`, the twenty-fourth seam) and the
-   player fights them through three swells — HOLD while it swells, LET GO and
-   breathe in the ebb (the `resist` event, the twenty-fifth). Each slip
-   sweeps the hands wider, sways him, and turns a head. At the peak the hands
-   go whatever the score; his shadow on the floor has a crown; the woman
-   beside him is looking; and the decision opens by itself.
+   player fights them by TAPPING (the `resist` event, the twenty-fifth —
+   since v18.1 a rapid-tap fight: the rate it takes climbs from 5 to 6.5 taps
+   a second over twelve seconds of chant, and one second too slow in all
+   loses). Held: the peak is small, one face glances. Lost: the hands go all
+   the way, his shadow on the floor has a crown, the hall turns to look. The
+   decision opens by itself either way.
 
    The four options are the approved plan's (docs/V16.0-EPISODE3-PLAN.md §3,
    chapter 2): force it down (bad), rise and step outside (good), let it run
@@ -128,16 +129,26 @@
       actTouch: 'Tap to act',
       interact: 'E to choose what you do',
       interactTouch: 'Tap to choose what you do',
+      /* v18.5: the line Step back leaves on screen — without it the engine's
+         fallback said "Tap the glowing pile of notes to look again" here */
+      actLine: 'Press E to choose what you do',
+      actLineTouch: 'Tap to choose what you do',
       objBook: 'Take a chant book from the shelf',
       objLeaf: 'Press gold leaf onto the small Buddha',
-      objPlace: 'Find the free mat in the third row and kneel',
+      objPlace: 'Find the free mat at the end of the third row from the front',
       objChant: 'Chant with the hall',
-      objHands: 'Keep your hands still',
+      objHands: 'Tap fast to keep your hands down',
       hotBook: 'Take a chant book',
       hotLeaf: 'Press gold leaf',
       evHands: 'Keep your hands still',
       evHandsBrief: 'Your hands are starting to rise on their own. TAP as fast as you can: every tap pulls them back down, and the chant makes it harder. Slow down for even one second and they are no longer yours.',
-      presence: 'People are looking at you'
+      presence: 'People are looking at you.',
+      presenceWarn: 'Sanity drops while they stare.',
+      /* v18.5: the notes on the card are the chapter's words, so the sheet carries them */
+      noteBook: 'Took a chant book, like everyone else.',
+      noteLeaf: 'Pressed gold leaf on the back of the Buddha, where nobody sees it.',
+      noteHeld: 'Kept your hands down through the chant.',
+      noteLost: 'Lost your hands to the chant, in front of everyone.'
     },
     sayPrefix: 'z2'
   };
@@ -322,7 +333,8 @@
     box(0.14, DOOR.h + 0.14, 0.2, DOOR.hw + 0.05, DOOR.h / 2, HALL.z1 - 0.06, matGold, world, false);
     box(DOOR.hw * 2 + 0.38, 0.16, 0.22, 0, DOOR.h + 0.06, HALL.z1 - 0.06, matGold, world, false);
     const dcrown = new THREE.Mesh(new THREE.ShapeGeometry(crownShape(THREE, DOOR.hw * 2 + 0.7, 1.4)), matGoldB);
-    dcrown.position.set(0, DOOR.h + 0.12, HALL.z1 - 0.05); world.add(dcrown);
+    dcrown.position.set(0, DOOR.h + 0.12, HALL.z1 - 0.05); dcrown.rotation.y = Math.PI; world.add(dcrown);   // v18.5: facing INTO the hall (it faced the wall and was culled)
+    box(DOOR.hw * 2, 0.05, 0.45, 0, -0.025, HALL.z1 + 0.225, matFloor, world, false);   // v18.5: the threshold — the doorway had no floor between the hall and the porch
     const leaves = [];
     for (const s of [-1, 1]) {
       const pivot = new THREE.Group(); pivot.position.set(s * DOOR.hw, 0, HALL.z1 - 0.05); world.add(pivot);
@@ -457,19 +469,20 @@
     box(2.0, 0.35, 0.6, ALT.x, 1.02, ALT.z - 0.12, matRed);           // a riser for the images
     for (let i = -2; i <= 2; i++) {
       if (i === 0) continue;
-      thai('buddha', ALT.x + i * 0.55, 1.2, ALT.z - 0.14, { s: 0.85, tint: GOLD_T, glow: 0.15 });
+      thai('buddha', ALT.x + i * 0.42, 1.2, ALT.z - 0.14, { s: 0.85, tint: GOLD_T, glow: 0.15 });   // v18.5: 0.42 apart, on the riser (at 0.55 the outer two hung off its ends)
     }
     const candleFl = [];
     for (let i = 0; i < 12; i++) {
-      const cx = ALT.x - 1.32 + i * 0.24, cz = ALT.z + 0.28;
+      const cx = ALT.x - 1.32 + i * 0.24, cz = ALT.z + 0.38;   // v18.5: along the front edge, clear of the pot and the phans
       cyl(0.018, 0.018, 0.22, cx, 0.96, cz, matCream, 6);
       const f = new THREE.Mesh(new THREE.ConeGeometry(0.014, 0.05, 6), matFlame); f.position.set(cx, 1.1, cz); world.add(f); candleFl.push(f);
     }
-    thai('incense', ALT.x, 0.845, ALT.z + 0.18, { s: 0.6, cast: false });
+    thai('incense', ALT.x, 0.845, ALT.z + 0.27, { s: 0.6, cast: false });   // v18.5: in front of the riser (it stood half inside it)
     for (const s of [-1, 1]) {
-      thai('orchid', ALT.x + s * 1.2, 1.37, ALT.z - 0.1, { s: 0.45, cast: false });
-      thai('phan', ALT.x + s * 0.7, 0.845, ALT.z + 0.22, { s: 0.75, cast: false });
+      thai('orchid', ALT.x + s * 1.25, 0.845, ALT.z - 0.1, { s: 0.45, cast: false });   // v18.5: on the table beyond the riser (it floated half a metre up, inside an image)
+      thai('phan', ALT.x + s * 0.7, 0.845, ALT.z + 0.30, { s: 0.75, cast: false });     // v18.5: clear of the riser's face
       thai('lotusbowl', ALT.x + s * 2.15, 0, ALT.z + 0.3, { s: 0.7, cast: false });
+      solids.push(hid(box(0.6, 0.7, 0.6, ALT.x + s * 2.15, 0.35, ALT.z + 0.3, matProxy)));   // v18.5: and it stops a walker
     }
     // incense smoke over the altar
     const smokeN = LOW ? 18 : 36;
@@ -523,7 +536,7 @@
       if (row === 2 && i === 7) books.push(b);           // the one he takes
     }
     { const sign = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.28), new THREE.MeshBasicMaterial({ map: tex(makeSignTex(THREE, cnv, 'บทสวดมนต์ · CHANT BOOKS', '#3a0d08', '#f1d38a', 0.32)), toneMapped: false }));
-      sign.position.set(0, 1.45, 0.205); shelf.add(sign); }
+      sign.position.set(0, 1.30, 0.12); shelf.add(sign); }   // v18.5: standing on the shelf's top (it floated 16 cm over it)
 
     // the gold-leaf table: a small seated Buddha patched with leaf, a tray of
     // leaf in paper squares, a candle, a donation box
@@ -538,7 +551,9 @@
     for (let i = 0; i < 9; i++) {
       const p = new THREE.Mesh(new THREE.PlaneGeometry(0.022, 0.018), patchMat);
       const back = i >= 6;
-      p.position.set((hash(i, 1) - 0.5) * 0.16, 0.12 + hash(i, 2) * 0.36, back ? -0.15 : 0.15);
+      const py = 0.12 + hash(i, 2) * 0.36;
+      // v18.5: ON him — at ±0.15 (his box's extreme) they hung 14 cm in front of the chest and 7 cm off the back
+      p.position.set((hash(i, 1) - 0.5) * 0.12, py, back ? -0.085 : (py < 0.24 ? 0.08 : 0.02));
       p.rotation.set(0, back ? Math.PI : 0, hash(i, 3) * 1.2);
       smallBuddha.add(p); if (back) { p.visible = false; myLeaf.push(p); }
     }
@@ -570,16 +585,16 @@
       const m = new THREE.Mesh(new THREE.PlaneGeometry(0.85, 0.95), matMat); m.rotation.x = -Math.PI / 2; m.position.set(x, 0.008, z + 0.05); m.receiveShadow = true; world.add(m);
       if (hash(c, r) < 0.6 || (x === PLACE.x && z === PLACE.z)) {
         const st = new THREE.Group(); st.position.set(x, 0, z - 0.52); (x === PLACE.x && z === PLACE.z ? myStand : world).add(st);
-        box(0.3, 0.012, 0.2, 0, 0.17, 0, matWood, st, false).rotation.x = -0.6;
+        box(0.3, 0.012, 0.2, 0, 0.17, 0, matWood, st, false).rotation.x = 0.6;   // v18.5: tilted to the READER (−0.6 faced the Buddha)
         box(0.02, 0.17, 0.02, -0.12, 0.085, 0.04, matWood, st, false); box(0.02, 0.17, 0.02, 0.12, 0.085, 0.04, matWood, st, false);
       }
     }
     // his book, on his stand once he kneels
     const myBook = box(0.15, 0.012, 0.2, 0, 0.185, -0.015, bookMats[0], myStand, false);
-    myBook.rotation.x = -0.6; myBook.visible = false;
+    myBook.rotation.x = 0.6; myBook.visible = false;
     myStand.position.set(0, 0, 0);
     // the book in his hand while he walks (on the lens, like chapter 1's tray)
-    const handBook = new THREE.Group(); camera.add(handBook); handBook.position.set(0.17, -0.2, -0.38); handBook.rotation.set(-0.9, 0.25, 0.1);
+    const handBook = new THREE.Group(); camera.add(handBook); handBook.position.set(-0.16, -0.2, -0.38); handBook.rotation.set(-0.9, -0.25, -0.1);   // v18.5: the LEFT side — at +0.17 the right hand (drawn after the world) painted over it
     box(0.1, 0.014, 0.14, 0, 0, 0, bookMats[0], handBook, false);
     box(0.098, 0.012, 0.135, 0, 0.008, 0, new THREE.MeshStandardMaterial({ color: 0xf1e8d4, roughness: 0.9 }), handBook, false);
     handBook.visible = false;
@@ -635,6 +650,7 @@
     // the roof: two tiers of orange tile over the facade, a gable of red and gold
     function gable(z, w, h, y0, mat, tile) {
       const g = new THREE.Group(); g.position.set(0, y0, z); outside.add(g);
+      mat.side = THREE.DoubleSide;   // v18.5: scene B looks up at the porch gable from BEHIND
       const tri = new THREE.Mesh(new THREE.ShapeGeometry(triShape(THREE, w, h)), mat); tri.position.z = 0.02; g.add(tri);
       // the naga bargeboards: a gold edge up each side to the chofa at the top
       for (const s of [-1, 1]) {
@@ -660,21 +676,34 @@
     const slipCols = [0x2b5fa6, 0x1d1d1d, 0xa33a2c, 0xd9d2c3, 0x3d6b3c, 0x8a5a2b, 0x5a3f8f, 0xc28d1f, 0x222f4a, 0x7a1f1f];
     parseOnce('slipper').then(gltf => {
       if (!alive) return;
+      /* v18.5: the geometry WITH its node's own transform baked in, as
+         chapter 1 does (plantSlippers) — the raw quantized geometry is ±1, so
+         every slipper here was drawn 2 m long, a band of giant straps across
+         the porch reaching into the doorway */
       const one = gltf.scene.getObjectByName('one') || gltf.scene;
       let mesh = null; one.traverse(o => { if (o.isMesh && !mesh) mesh = o; });
       if (!mesh) return;
-      const N = 26, im = new THREE.InstancedMesh(mesh.geometry, mesh.material.clone(), N * 2);
-      const d = new THREE.Object3D(); let k = 0;
+      mesh.updateWorldMatrix(true, false);
+      const left = mesh.geometry.clone(); left.applyMatrix4(mesh.matrixWorld); left.computeVertexNormals();
+      const right = left.clone(); right.scale(-1, 1, 1);
+      if (right.index) { const ix = right.index.array; for (let i = 0; i < ix.length; i += 3) { const t = ix[i + 1]; ix[i + 1] = ix[i + 2]; ix[i + 2] = t; } right.index.needsUpdate = true; }
+      right.computeVertexNormals();
+      const smat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.62 });
+      const N = 26, ims = [new THREE.InstancedMesh(left, smat, N), new THREE.InstancedMesh(right, smat, N)];
+      const d = new THREE.Object3D(), col = new THREE.Color();
       for (let i = 0; i < N; i++) {
         const row = i % 2, x = -4.6 + Math.floor(i / 2) * 0.72 + (hash(i, 4) - 0.5) * 0.2, z = HALL.z1 + 0.6 + row * 0.55 + (hash(i, 5) - 0.5) * 0.15;
         const ry = (hash(i, 6) - 0.5) * 0.9 + (row ? Math.PI : 0);
-        for (const side of [-1, 1]) {
-          d.position.set(x + side * 0.07, 0.003, z + (side > 0 ? 0.02 : 0)); d.rotation.set(0, ry + side * 0.06, 0); d.scale.setScalar(1); d.updateMatrix();
-          im.setMatrixAt(k, d.matrix); im.setColorAt(k, new THREE.Color(slipCols[i % slipCols.length])); k++;
-        }
+        [-1, 1].forEach((side, j) => {
+          const off = side * 0.056;
+          d.position.set(x + off * Math.cos(ry), 0.002, z - off * Math.sin(ry)); d.rotation.set(0, ry + side * 0.05, 0); d.updateMatrix();
+          ims[j].setMatrixAt(i, d.matrix); ims[j].setColorAt(i, col.setHex(slipCols[i % slipCols.length]));
+        });
       }
-      im.instanceMatrix.needsUpdate = true; if (im.instanceColor) im.instanceColor.needsUpdate = true;
-      im.computeBoundingSphere(); im.castShadow = false; outside.add(im);
+      for (const im of ims) {
+        im.instanceMatrix.needsUpdate = true; if (im.instanceColor) im.instanceColor.needsUpdate = true;
+        im.computeBoundingSphere(); im.castShadow = false; outside.add(im);
+      }
     }).catch(err => { console.warn('slipper failed to load', err); ctx.loadFail && ctx.loadFail('slipper', err); });
     // trees beyond the courtyard (the kit, v6.15), seen through the windows and in the film
     const treeSpots = [];
@@ -759,7 +788,7 @@
         let hue = 0;
         if (mx !== mn) hue = mx === r ? 60 * (((g - b) / (mx - mn)) % 6) : mx === g ? 60 * ((b - r) / (mx - mn) + 2) : 60 * ((r - g) / (mx - mn) + 4);
         if (hue < 0) hue += 360;
-        if (L < 42) raw[n] = 2;
+        if (L < 42 && !(L > 14 && hue >= 48 && hue <= 110 && sat > 0.28)) raw[n] = 2;   // v18.5: not the olive of a shirt in the scan's own shadow
         else if (hue >= 4 && hue <= 38 && sat > 0.21 && sat < 0.66 && L > 58 && r > g + 10) raw[n] = 1;
       }
       const R = 6, out = new Uint8Array(N), W1 = W + 1;
@@ -777,7 +806,9 @@
       }
       return out;
     }
-    function whiteOf(m) {
+    const whiteGeos = new Map();
+    function whiteOf(m, geo) {
+      if (geo && geo.isBufferGeometry) { const gs = whiteGeos.get(m) || []; if (!gs.includes(geo)) gs.push(geo); whiteGeos.set(m, gs); }
       if (whiteCache.has(m)) return whiteCache.get(m);
       const c = m.clone();
       c.roughness = 0.85; c.metalness = 0;
@@ -797,8 +828,15 @@
           const x = cv.getContext('2d'); x.drawImage(img, 0, 0);
           const d = x.getImageData(0, 0, W, Hh), p = d.data;
           const cls = skinMap(p, W, Hh);
+          /* v18.5: WHITE SPECKS IN EVERY HEAD OF HAIR. The scan baked
+             olive flecks into its hair (and its padding follows each island
+             in the island's own colours), and an olive fleck is "not skin,
+             not dark", so it went white with the shirt: specks along every
+             hairline, plain at the distance he kneels from the next row.
+             The decision is made per UV island now (coverLabels). */
+          const lab = coverLabels(cls, W, Hh, whiteGeos.get(m));
           for (let i = 0, n = 0; i < p.length; i += 4, n++) {
-            if (cls[n]) continue;                         // skin, and the dark of hair and trousers, stay
+            if (lab[n]) continue;                         // skin, and the dark of hair and trousers, stay
             const L = 0.30 * p[i] + 0.59 * p[i + 1] + 0.11 * p[i + 2];
             const v = Math.min(255, 172 + L * 0.40);
             p[i] = v; p[i + 1] = v * 0.988; p[i + 2] = v * 0.955;
@@ -809,8 +847,78 @@
           t.anisotropy = 4; madeTex.push(t); c.map = t; c.needsUpdate = true;
         } catch (err) { console.warn('white recolour failed', err); }
       };
-      paint(0);
+      setTimeout(() => paint(0), 0);   // after the whole model has registered its meshes
       return c;
+    }
+    /* each texel's class, decided per UV ISLAND and spread into the padding.
+       An island is a connected run of triangles in UV space (vertices are
+       split at UV seams, so the index graph's components are the islands).
+       In an island that is mostly hair or trousers or skin — under a fifth
+       shirt-coloured — a shirt-coloured texel with hair (and skin) all round
+       it is a fleck the scan baked into the hair, and keeps its own colour;
+       everything else shirt-coloured goes white.
+       Every texel no triangle covers takes the class of the nearest one that
+       is covered (a breadth-first fill), so padding follows its island.
+       With no UVs, the classes as they were. */
+    function coverLabels(cls, W, Hh, geos) {
+      if (!geos || !geos.length) return cls;
+      const N = W * Hh, isl = new Int32Array(N).fill(-1);
+      const cloth = [], tot = [];
+      let base = 0;
+      for (const geo of geos) {
+        const uv = geo.attributes.uv; if (!uv) continue;
+        const idx = geo.index, nV = uv.count, nT = (idx ? idx.count : nV) / 3;
+        const par = new Int32Array(nV); for (let i = 0; i < nV; i++) par[i] = i;
+        const find = (i) => { while (par[i] !== i) { par[i] = par[par[i]]; i = par[i]; } return i; };
+        const vi = (t, k) => idx ? idx.getX(t * 3 + k) : t * 3 + k;
+        for (let t = 0; t < nT; t++) { const a0 = find(vi(t, 0)), a1 = find(vi(t, 1)), a2 = find(vi(t, 2)); par[a1] = a0; par[find(a2)] = a0; }
+        const ids = new Map();
+        for (let t = 0; t < nT; t++) {
+          const a = vi(t, 0), b = vi(t, 1), c2 = vi(t, 2), r = find(a);
+          if (!ids.has(r)) { ids.set(r, base + ids.size); cloth.push(0); tot.push(0); }
+          const id = ids.get(r);
+          const ax = uv.getX(a) * W, ay = uv.getY(a) * Hh, bx = uv.getX(b) * W, by = uv.getY(b) * Hh, cx = uv.getX(c2) * W, cy = uv.getY(c2) * Hh;
+          const x0 = Math.max(0, Math.floor(Math.min(ax, bx, cx))), x1 = Math.min(W - 1, Math.ceil(Math.max(ax, bx, cx)));
+          const y0 = Math.max(0, Math.floor(Math.min(ay, by, cy))), y1 = Math.min(Hh - 1, Math.ceil(Math.max(ay, by, cy)));
+          for (const [vx, vy] of [[ax, ay], [bx, by], [cx, cy]]) {
+            const qx = Math.min(W - 1, Math.max(0, vx | 0)), qy = Math.min(Hh - 1, Math.max(0, vy | 0)); isl[qy * W + qx] = id;
+          }
+          const den = (by - cy) * (ax - cx) + (cx - bx) * (ay - cy);
+          if (Math.abs(den) < 1e-9) continue;
+          for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
+            const px = x + 0.5, py = y + 0.5;
+            const l1 = ((by - cy) * (px - cx) + (cx - bx) * (py - cy)) / den, l2 = ((cy - ay) * (px - cx) + (ax - cx) * (py - cy)) / den;
+            if (l1 >= -0.02 && l2 >= -0.02 && 1 - l1 - l2 >= -0.02) isl[y * W + x] = id;
+          }
+        }
+        base += ids.size;
+      }
+      if (!base) return cls;
+      for (let n = 0; n < N; n++) { const id = isl[n]; if (id < 0) continue; tot[id]++; if (!cls[n]) cloth[id]++; }
+      const W1 = W + 1, I1 = new Int32Array(W1 * (Hh + 1)), I2 = new Int32Array(W1 * (Hh + 1));
+      for (let y = 0; y < Hh; y++) { let r1 = 0, r2 = 0; for (let x = 0; x < W; x++) { const c = cls[y * W + x]; r1 += c === 1 ? 1 : 0; r2 += c === 2 ? 1 : 0;
+        I1[(y + 1) * W1 + x + 1] = I1[y * W1 + x + 1] + r1; I2[(y + 1) * W1 + x + 1] = I2[y * W1 + x + 1] + r2; } }
+      const R = Math.max(2, Math.round(W / 170));
+      const fleck = (n) => {          // a shirt-coloured texel with hair (and skin) all round it
+        const x = n % W, y = (n / W) | 0, x0 = Math.max(0, x - R), y0 = Math.max(0, y - R), x1 = Math.min(W, x + R + 1), y1 = Math.min(Hh, y + R + 1);
+        const A = (x1 - x0) * (y1 - y0), bx = (I) => I[y1 * W1 + x1] - I[y0 * W1 + x1] - I[y1 * W1 + x0] + I[y0 * W1 + x0];
+        const dk = bx(I2), sk = bx(I1);
+        return dk >= A * 0.3 && dk + sk >= A * 0.7;
+      };
+      const lab = new Uint8Array(N), seen = new Uint8Array(N), q = new Int32Array(N);
+      let qh = 0, qt = 0;
+      for (let n = 0; n < N; n++) {
+        const id = isl[n]; if (id < 0) continue;
+        lab[n] = cls[n] || (cloth[id] < tot[id] * 0.2 && fleck(n) ? 2 : 0); seen[n] = 1; q[qt++] = n;
+      }
+      while (qh < qt) {
+        const n = q[qh++], x = n % W, y = (n / W) | 0, l = lab[n];
+        if (x > 0 && !seen[n - 1]) { seen[n - 1] = 1; lab[n - 1] = l; q[qt++] = n - 1; }
+        if (x < W - 1 && !seen[n + 1]) { seen[n + 1] = 1; lab[n + 1] = l; q[qt++] = n + 1; }
+        if (y > 0 && !seen[n - W]) { seen[n - W] = 1; lab[n - W] = l; q[qt++] = n - W; }
+        if (y < Hh - 1 && !seen[n + W]) { seen[n + W] = 1; lab[n + W] = l; q[qt++] = n + W; }
+      }
+      return lab;
     }
     /* a monk's robe: saffron on a copy of the monk's own sheet is already
        his; the crowd monk keeps its own colours */
@@ -830,7 +938,7 @@
           if (o2.isBone) r.bones.push(o2);
           if (!o2.isMesh) return;
           o2.castShadow = !LOW && !!o.cast; o2.receiveShadow = false;
-          if (o.white !== false && !(KIND[key] && KIND[key].own)) o2.material = Array.isArray(o2.material) ? o2.material.map(whiteOf) : whiteOf(o2.material);
+          if (o.white !== false && !(KIND[key] && KIND[key].own)) o2.material = Array.isArray(o2.material) ? o2.material.map(mm => whiteOf(mm, o2.geometry)) : whiteOf(o2.material, o2.geometry);
           o2.frustumCulled = true;
           if (o2.isSkinnedMesh) { const sp = new THREE.Sphere(new THREE.Vector3(0, 0.6, 0), 1.3); o2.boundingSphere = sp.clone(); if (o2.geometry) o2.geometry.boundingSphere = sp.clone(); }
         });
@@ -877,6 +985,21 @@
         r.spine = [boneOf(r, /Spine(_\d+)?$/), boneOf(r, /Spine1(_\d+)?$|Spine01(_\d+)?$/)].filter(Boolean);
         if (o.pray !== false) prayArms(r);
         r.bowRest = r.spine.map(b => ({ b, q: b.quaternion.clone() }));
+        /* v18.5: THE CULLING SPHERE, IN THE MESH'S OWN SPACE. The one set above
+           is 1.3 m only where a mesh's world scale is 1 — the Meshy women's
+           mesh hangs under an Armature at 0.01, so theirs was 1.3 CENTIMETRES,
+           and grounding then put it under the floor: thirteen of the
+           twenty-three sitters (the woman beside him and Yai among them) were
+           culled whenever that point left the frame. Now a 1.3 m sphere round
+           the body, wherever and at whatever scale the mesh is. */
+        g.updateMatrixWorld(true);
+        const wc = group.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0, 0.6, 0));
+        g.traverse(o2 => {
+          if (!o2.isSkinnedMesh) return;
+          const inv = o2.matrixWorld.clone().invert(), ws = o2.getWorldScale(new THREE.Vector3());
+          const sp = new THREE.Sphere(wc.clone().applyMatrix4(inv), 1.3 / Math.max(1e-6, Math.min(ws.x, ws.y, ws.z)));
+          o2.boundingSphere = sp; if (o2.geometry) o2.geometry.boundingSphere = sp.clone();
+        });
         proxy.visible = false; r.ready = true;
         if (o.then) o.then(r);
         redoShadows();
@@ -994,7 +1117,7 @@
       if (p) { crowd.push(p); p.row = r; p.col = c; }
     }
     // the monks, at crowd detail, facing across the hall
-    const monks = MONKS.map((m, i) => (LOW && i % 2) ? null : mkSitter('monkrow', m.x, m.z, -Math.PI / 2, { y: MPLAT.h, white: false, pray: i !== 0, at: 0.1 + hash(i, 41) * 0.5, cast: false })).filter(Boolean);
+    const monks = MONKS.map((m, i) => (LOW && i % 2) ? null : mkSitter('monkrow', m.x, m.z, -Math.PI / 2, { y: MPLAT.h + 0.06, white: false, pray: i !== 0, at: 0.1 + hash(i, 41) * 0.5, cast: false })).filter(Boolean);
 
     /* ------------------------------------------- THE THEVADA: SHADOW AND GLIMPSE
        Nothing in this chapter has a body but the people. What rises with his
@@ -1010,11 +1133,11 @@
     // the light mats of the rows ahead — where a shadow reads (first placed
     // short, on the dark stone under the man in front, it never showed)
     const shadow = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 3.6), new THREE.MeshBasicMaterial({ map: shadowTex, transparent: true, depthWrite: false, opacity: 0.0, color: 0x000000 }));
-    shadow.rotation.x = -Math.PI / 2; shadow.position.set(PLACE.x + 0.05, 0.016, PLACE.z - 0.45 - 1.8); shadow.renderOrder = 2; world.add(shadow);
+    shadow.rotation.x = -Math.PI / 2; shadow.position.set(PLACE.x + 0.5, 0.016, PLACE.z - 0.45 - 1.8);   // v18.5: in the gap beside the man in front (centred on his line, it lay under his body) shadow.renderOrder = 2; world.add(shadow);
     const glimCv = document.createElement('canvas'); glimCv.width = 256; glimCv.height = 256;
     const glimTex = tex(new THREE.CanvasTexture(glimCv)); glimTex.colorSpace = THREE.SRGBColorSpace;
     const glimpse = new THREE.Sprite(new THREE.SpriteMaterial({ map: glimTex, transparent: true, depthWrite: false, opacity: 0, blending: THREE.AdditiveBlending, fog: false }));
-    glimpse.scale.set(1.5, 1.5, 1); glimpse.position.set(PLACE.x - 0.95, 1.05, PLACE.z + 0.75); glimpse.visible = false; world.add(glimpse);
+    glimpse.scale.set(1.5, 1.5, 1); glimpse.position.set(PLACE.x - 0.70, 1.05, PLACE.z - 2.09);   // v18.5: 0.55 rad left of his line to the Buddha, 2.2 m out (it stood 141° behind him) glimpse.visible = false; world.add(glimpse);
     /* the figure: kneeling, the body a soft wedge, the head, and — with k —
        a chada crown (three narrowing tiers and a spire) and two arms lifted
        into a dancer's curve with the fingers bent back */
@@ -1068,7 +1191,20 @@
          its fade as he stands (B) — so play's plain kneeling figure is not
          drawn over it every 0.07 s (C's crown flickered at ~14 Hz, and below
          14 fps was never seen at all) */
-      if (st === 'cine') { glimpse.visible = false; glimpse.material.opacity = 0; return; }
+      if (st === 'cine') {
+        glimpse.visible = false; glimpse.material.opacity = 0;
+        /* v18.5: but every scene STARTS on the plain kneeling shadow — the
+           v18.4 return left A and B on play's last drawing, the crowned figure
+           at 0.8, through a scene where he forces the hands DOWN. C and D draw
+           their own from their first frames. */
+        if (!figureTick.cine) {
+          figureTick.cine = true;
+          shadow.material.opacity = seated ? 0.32 : 0;
+          drawFigure(shadowCv.getContext('2d'), 0, t, false); shadowTex.needsUpdate = true;
+        }
+        return;
+      }
+      figureTick.cine = false;
       shadow.material.opacity = seated ? 0.32 + 0.48 * k : 0;
       if (t - figAt > 0.07 && shadow.visible) {
         figAt = t;
@@ -1080,7 +1216,11 @@
         camera.getWorldDirection(_v);
         _v2.copy(glimpse.position).sub(camera.getWorldPosition(_v3)).normalize();
         const ang = Math.acos(THREE.MathUtils.clamp(_v.dot(_v2), -1, 1));
-        want = k * THREE.MathUtils.smoothstep(ang, 0.42, 0.62) * (1 - THREE.MathUtils.smoothstep(ang, 0.95, 1.2));
+        /* v18.5: the edge of THIS screen's frame — fixed angles (0.42–1.2 rad)
+           were past the edge of a phone (0.32 rad half-width) and, with the
+           glimpse 141° behind him, it could never be seen on any device */
+        const hf = Math.atan(Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2) * camera.aspect);
+        want = k * THREE.MathUtils.smoothstep(ang, hf * 0.55, hf * 0.8) * (1 - THREE.MathUtils.smoothstep(ang, hf * 1.0, hf * 1.25));
       }
       glimpse.material.opacity += (want * 0.55 - glimpse.material.opacity) * (1 - Math.exp(-wdt * (want > glimpse.material.opacity ? 1.2 : 6)));
       glimpse.visible = glimpse.material.opacity > 0.01;
@@ -1174,7 +1314,7 @@
     function takeBook() {
       if (phase !== 'book') return false;
       if (worldSfx) worldSfx('pageturn', 0.8);
-      if (kit) kit.conduct({ note: 'Took a chant book, like everyone else.', s: 0, a: 2 });
+      if (kit) kit.conduct({ note: DATA.words.noteBook, s: 0, a: 2 });
       setPhase('leaf');
       return true;
     }
@@ -1186,7 +1326,7 @@
       after(1.2, () => queueLine('z2leaf'));
       after(4.6, () => {
         leafing = null;
-        if (kit) kit.conduct({ note: 'Pressed gold leaf on the back of the Buddha, where nobody sees it.', s: 2, a: 3 });
+        if (kit) kit.conduct({ note: DATA.words.noteLeaf, s: 2, a: 3 });
         setPhase('place');
       });
       return true;
@@ -1266,11 +1406,16 @@
         for (const [a0, a1] of [[0.25, 2.25], [2.55, 4.55], [4.85, 6.85]]) { const u = (t - a0) / (a1 - a0); if (u > 0 && u < 1) dip = Math.sin(u * Math.PI); }
         pitch.rotation.x = -0.10 - dip * 0.62;
       }
-      if (t > 7.6) bowing = null;
+      /* v18.5: the shadow maps are drawn on demand; while the hall bows the
+         casters (the people nearest him, desktop only) move, so redraw them
+         a few times a second rather than leave upright shadows under bowed
+         backs */
+      if (t >= 0 && !LOW && (!bowTickAll.at || t - bowTickAll.at > 0.2 || t < bowTickAll.at)) { bowTickAll.at = t; redoShadows(); }
+      if (t > 7.6) { bowing = null; bowTickAll.at = 0; if (!LOW) redoShadows(); }
     }
-    /* 5 · THE HANDS — the resist event. The chant swells three times; the
-       hands follow the event's k; every slip turns a head and costs the
-       player; the third swell beats the grip whatever he does. */
+    /* 5 · THE HANDS — the resist event, a rapid-tap fight (v18.1). The hands
+       follow the event's danger (onRise); the first time they get away he
+       says so; losing turns the faces and costs sanity. */
     function yantOn() { return kit && ['yantgaoyord', 'yanthahtaew', 'yantsroi'].some(id => kit.equipped(id)); }
     function beginFight() {
       if (phase !== 'chant' || fight) return;
@@ -1289,9 +1434,10 @@
           if (!worldSfx) return;
           worldSfx('e3gong', 0.45, 1, panAt(MONKS[0].x, MONKS[0].z));
           // the chant swells under it three times as the rate climbs
-          worldSfx('chantswell', 0.7, 1, 0);
-          after(4.2, () => { if (fight && !fight.result && worldSfx) worldSfx('chantswell', 0.8, 1, 0); });
-          after(8.4, () => { if (fight && !fight.result && worldSfx) { worldSfx('chantswell', 0.9, 1, 0); worldSfx('handsrise', 0.7, 1, 0); } });
+          // (v18.5: 0.6 / 0.7 / 0.8 — at 0.9 the third swell grazed full scale over the beds)
+          worldSfx('chantswell', 0.6, 1, 0);
+          after(4.2, () => { if (fight && !fight.result && worldSfx) worldSfx('chantswell', 0.7, 1, 0); });
+          after(8.4, () => { if (fight && !fight.result && worldSfx) { worldSfx('chantswell', 0.8, 1, 0); worldSfx('handsrise', 0.6, 1, 0); } });
           // the yant he chose in chapter 1 warms on his back
           if (yantOn()) { kit.flash({ color: 'rgba(255,196,96,0.22)', secs: 0.9 }); worldSfx('yantwarm', 0.55); }
         },
@@ -1300,26 +1446,34 @@
           // and a little tremble rides on them while he holds
           fight.k = k;
           if (kit.hands) kit.hands(Math.min(1, 0.06 + k * 0.85), { secs: 0.12 });
-          if (k > 0.35 && !fight.warned) { fight.warned = true; if (worldSfx) worldSfx('handsrise', 0.6, 1, 0); }
-          if (k < 0.05) fight.warned = false;
+          if (k > 0.35 && !fight.warned) {
+            fight.warned = true; if (worldSfx) worldSfx('handsrise', 0.6, 1, 0);
+            /* v18.5: "No... not now." the first time they get away from him —
+               since v18.1 the fight had no first slip, so this take was said on
+               the LOSS and its partner, "Stop... stop.", was never heard */
+            if (!fight.said) { fight.said = true; queueLine('z2slip1'); }
+          }
+          // (v18.5: once a fight — re-armed below 0.05 it restarted every second or two for a player wavering at the line)
           void danger;
         },
         onSlip: () => {
           // LOST: the hands are no longer his
           fight.slips++;
-          if (worldSfx) { worldSfx('handslip', 1.0); worldSfx('chantswell', 0.9, 0.96, 0); }
+          // (v18.5: the swell is beginPeak's — two identical copies on one frame clipped at +5.5 dBFS)
+          if (worldSfx) worldSfx('handslip', 1.0);
           if (kit.haptic) kit.haptic([60, 30, 90, 30, 120]);
           kit.flash({ color: 'rgba(255,120,80,0.28)', secs: 0.6 });
           if (neighbour) neighbour.lookTo = 1;
           if (frontMan) frontMan.lookTo = 1;
-          queueLine('z2slip1');
+          queueLine('z2slip2');
           if (worldSfx) worldSfx('whispers', 0.5, 1, panAt(NEIGH.x, NEIGH.z));
         }
       }).then(r => {
         if (!fight) return;          // v18.4: a reset mid-fight aborts the event AND nulls `fight` first
         fight.result = r;
+        if (getState() !== 'play') return;   // v18.5: the loss's −10 can faint him inside evResolve; no peak over the faint
         if (r && !r.aborted) {
-          kit.conduct({ note: r.ok ? 'Kept your hands down through the chant.' : 'Lost your hands to the chant, in front of everyone.', s: 0, a: r.ok ? 4 : -2, minigame: !r.ok });
+          kit.conduct({ note: r.ok ? DATA.words.noteHeld : DATA.words.noteLost, s: 0, a: r.ok ? 4 : -2, minigame: !r.ok });
           beginPeak(!!r.ok);
         }
       });
@@ -1361,7 +1515,7 @@
          phone's only press (the badge) went out at arm's length (v7.5) */
       { id: 'book', pos: { x: SHELF.x, y: 1.5, z: SHELF.z - 0.32 }, radius: 2.4, prompt: DATA.words.hotBook,
         enabled: () => phase === 'book', onInteract() { return takeBook(); } },
-      { id: 'leaf', pos: { x: LEAF.x + 0.3, y: 1.5, z: LEAF.z }, radius: 2.3, prompt: DATA.words.hotLeaf,
+      { id: 'leaf', pos: { x: LEAF.x + 0.6, y: 1.5, z: LEAF.z }, radius: 2.3, prompt: DATA.words.hotLeaf,
         enabled: () => phase === 'leaf' && !leafing, onInteract() { return pressLeaf(); } }
     ];
 
@@ -1457,7 +1611,21 @@
       const now = performance.now() / 1000;
       if (lastWall) dayClock.t += Math.min(0.5, now - lastWall);
       lastWall = now;
-      if (!booted) { booted = true; applyPhase(kit ? kit.getPhase() : null); }
+      if (!booted) {
+        booted = true;
+        /* v18.5: the engine says this chapter's voiceLine ('z2arrive') about
+           2 s into play, outside the chapter's own speech window — so a quick
+           press of the gold leaf put "z2leaf" on top of it. Book the window. */
+        const p0 = kit ? kit.getPhase() : null;
+        /* and only a run that starts at the door hears it at all — the engine
+           replays the voiceLine on every entry, so a resume on the mat or at
+           the peak heard "The evening chant had already started." (the engine
+           reads DATA.voiceLine when the line fires, ~2 s from now) */
+        const fresh = !p0 || String(p0).split(':')[0] === 'book';
+        DATA.voiceLine = fresh ? 'z2arrive' : null;
+        if (fresh) speak.until = Math.max(speak.until, dayClock.t + 2.2 + (SECS.z2arrive || 2.7) + 0.3);
+        applyPhase(p0);
+      }
       runTodo(); runSpeak(); runQueue();
       watchTick(); turnTick(wdt); bowTickAll(); leafTick();
     }
@@ -1476,7 +1644,14 @@
       seated = null; turning = null; bowing = null; fight = null; leafing = null;
       for (const r of [neighbour, yai, kid, frontMan]) if (r) { r.lookTo = 0; }
       if (kit) { kit.pose('standing', { secs: 0.05 }); kit.root(false); if (kit.pray) kit.pray(false, { secs: 0 }); if (kit.hands) kit.hands(0, { secs: 0 }); kit.presence(0); }
-      if (p === 'chant' || p === 'fight') p = 'place';
+      if (p === 'chant' || p === 'fight') {
+        /* v18.5: kneel him straight back down — via 'place' the mat's
+           objective was set and then "completed" on the same frame by the
+           kneel watchTick does, an OBJECTIVE COMPLETE for nothing he did */
+        phase = 'place';
+        kneel();
+        return;
+      }
       if (p === 'peak' || p === 'decide') {
         yaw.position.x = PLACE.x; yaw.position.z = PLACE.z; yaw.rotation.y = faceBuddha();
         seated = 'mat';
@@ -1491,6 +1666,9 @@
         }
         for (const r of heldWas ? [neighbour] : [neighbour, yai, frontMan]) if (r) r.lookTo = 1;
         setPhase('decide');
+        /* v18.5: and ASK, as the comment above always said — a resume used
+           to leave him rooted with his hands up, draining, and no card */
+        after(1.0, () => { if (phase === 'decide' && getState() === 'play') startDecision(); });
         return;
       }
       setPhase(p);
@@ -1506,6 +1684,7 @@
     function reset() {
       dropTodo(); speakReset(); lineQ.length = 0; heard.clear();
       booted = false; dayClock.t = 0; lastWall = 0;
+      DATA.voiceLine = 'z2arrive';   // v18.5: the boot decides again whether it is said
       seated = null; turning = null; bowing = null; fight = null; leafing = null; peakT = 0; heldWas = false;
       /* v18.4: and put every head and spine BACK — headTick only runs while
          a look is live, so zeroing the weights left whoever was looking when
@@ -1544,6 +1723,7 @@
     }
     function dispose() {
       alive = false;
+      DATA.voiceLine = 'z2arrive';   // v18.5: DATA outlives the build
       if (treeStand) treeStand.userData.disposeTrees?.();
       camera.remove(handBook);
       const geos = new Set(), mats = new Set();
@@ -1656,7 +1836,7 @@
     { const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.0022, 0.0042, 0.62, 10), basic({ color: 0x5c6166 }));
       shaft.rotation.x = Math.PI / 2; shaft.position.z = -0.31; rod.add(shaft);
       const tip = new THREE.Mesh(new THREE.ConeGeometry(0.004, 0.03, 6), basic({ color: 0x1a1a1a })); tip.rotation.x = -Math.PI / 2; tip.position.z = 0.015; rod.add(tip); }
-    rod.rotation.set(0.35, -0.5, 0);
+    rod.rotation.set(0.35, -1.1, 0);   // v18.5: the shaft goes out to the side of the frame (at −0.5 it ran back past the lens and the near plane cut it off mid-frame)
 
     /* 2 · HIS BUSINESS, BIGGER: a ROADEYE shopfront office at evening — the
        lit sign, staff at their desks, boxes to the ceiling, the van at the
@@ -1666,7 +1846,7 @@
     fbox(40, 0.15, 3.2, 0, 0.075, -0.4, basic({ color: 0x5b5a58 }), O);                           // the pavement
     fbox(16, 6, 0.3, 0, 3, -6.2, basic({ color: 0x2a2724 }), O);                                  // the back wall
     fbox(16, 0.1, 6, 0, 3.4, -3.2, basic({ color: 0xe8ecf0 }), O);                                // the lit ceiling
-    fbox(16, 0.05, 6, 0, 0.16, -3.2, basic({ color: 0x8c8a86 }), O);                              // the floor
+    // (v18.5: the plain floor that lay 1 cm under the tiled one, and z-fought with it at the front, is gone)
     for (const sx of [-1, 1]) fbox(0.3, 4.2, 0.3, sx * 7.5, 2.1, -1.0, basic({ color: 0x3a3836 }), O);
     fbox(15.2, 0.6, 0.25, 0, 3.75, -1.0, basic({ map: h.tex(h.makeSignTex(THREE, cnv, 'ROADEYE  ·  DASHCAMS', '#0c1a33', '#ffd25a', 0.18)) }), O);
     const glass = new THREE.Mesh(new THREE.PlaneGeometry(14.6, 3.2), basic({ color: 0x9fc4e8, transparent: true, opacity: 0.12, depthWrite: false })); glass.position.set(0, 1.75, -1.0); O.add(glass);
@@ -1676,13 +1856,15 @@
     for (let i = 0; i < 3; i++) {
       const dx = -1.8 + i * 2.6;
       fbox(1.6, 0.06, 0.8, dx, 0.78, -3.0, basic({ color: 0xd8d2c6 }), O);
+      for (const lx of [-0.75, 0.75]) for (const lz of [-0.35, 0.35]) fbox(0.04, 0.56, 0.04, dx + lx, 0.47, -3.0 + lz, basic({ color: 0x8a8580 }), O);   // v18.5: legs (the desks floated)
+      fbox(0.05, 0.14, 0.05, dx, 0.88, -3.32, basic({ color: 0x14202e }), O);   // and the monitor's stand
       fbox(0.55, 0.36, 0.04, dx, 1.05, -3.3, basic({ color: 0x14202e }), O);
       fbox(0.5, 0.31, 0.01, dx, 1.05, -3.27, basic({ color: 0x6fa8dc }), O);
       fbox(0.48, 0.45, 0.48, dx, 0.42, -2.25, basic({ color: 0x23262b }), O);   // the chair
     }
     // (the take folds a man over his knees through its middle: parked on its
     // upright frames, its first eighth and last sixth — v8.0's measure)
-    const staff = [0, 1, 2].map(i => h.mkSitter('admintee', -1.8 + i * 2.6, -2.35, Math.PI, { pray: false, take: 'Chair_Sit_Idle_M', at: [0.04, 0.9, 0.08][i], nod: 0.3, parent: O, y: 0.195 }));   // v18.4: on the office floor (its top is 0.195), not in the slab
+    const staff = [0, 1, 2].map(i => h.mkSitter('admintee', -1.8 + i * 2.6, -2.35, Math.PI, { pray: false, white: false, take: 'Chair_Sit_Idle_M', at: [0.04, 0.9, 0.08][i], nod: 0.3, parent: O, y: 0.195 }));   // v18.5: his staff, not the temple's white   // v18.4: on the office floor (its top is 0.195), not in the slab
     for (let i = 0; i < 3; i++) fbox(0.46, 0.5, 0.05, -1.8 + i * 2.6, 0.85, -2.02, basic({ color: 0x23262b }), O);   // the chairs' backs
     /* (a white box van stood at the kerb here and slammed its door: in the
        photographs it was a toy, and its door striped the frame — the van is
@@ -1751,13 +1933,15 @@
     /* 5 · THE DOORS: two people in white walk up the steps and in, ahead of
        him (the admin tee's own walk, glided on the cine clock) */
     const walkers = [];
-    const WALK = [[{ x: -0.7, z: 13.5 }, { x: -0.55, z: 8.6 }, { x: -0.4, z: 4.4 }, { x: -0.2, z: 2.6 }],
-                  [{ x: 0.85, z: 15.0 }, { x: 0.6, z: 8.6 }, { x: 0.45, z: 4.4 }, { x: 0.25, z: 2.6 }]];
+    /* v18.5: on through the doors into the hall — the paths ended on the
+       porch and the walkers blinked out there, in full view, before the fade */
+    const WALK = [[{ x: -0.7, z: 13.5 }, { x: -0.55, z: 8.6 }, { x: -0.4, z: 4.4 }, { x: -0.2, z: 2.6 }, { x: -0.3, z: -2.5 }],
+                  [{ x: 0.85, z: 15.0 }, { x: 0.6, z: 8.6 }, { x: 0.45, z: 4.4 }, { x: 0.25, z: 2.6 }, { x: 0.35, z: -2.5 }]];
     h.parseOnce('admintee').then(gltf => {
       if (!h.alive()) return;
       for (let i = 0; i < 2; i++) {
         const g = ctx.cloneSkinned(gltf.scene);
-        g.traverse(o => { if (o.isMesh) { o.material = Array.isArray(o.material) ? o.material.map(h.whiteOf) : h.whiteOf(o.material); o.frustumCulled = false; } });
+        g.traverse(o => { if (o.isMesh) { o.material = Array.isArray(o.material) ? o.material.map(mm => h.whiteOf(mm, o.geometry)) : h.whiteOf(o.material, o.geometry); o.frustumCulled = false; } });
         const grp = new THREE.Group(); grp.add(g); grp.visible = false; world.add(grp);
         g.updateMatrixWorld(true);
         let lo = Infinity, hi = -Infinity; const v = new THREE.Vector3();
@@ -1784,11 +1968,14 @@
       // the walkers
       const dt = Math.max(0, Math.min(0.1, ct - lastT)); lastT = ct;
       for (let i = 0; i < walkers.length; i++) {
-        const w = walkers[i], u = (ct - 44.2 - i * 0.9) / 8.4;
-        w.grp.visible = u > 0 && u < 1;
+        /* v18.5: by DISTANCE at the take's own pace (1.35 m/s) — equal TIME per
+           leg made them skate at 2.3 m/s on the long legs and 0.6 on the short */
+        const w = walkers[i], P2 = w.path;
+        let dist = (ct - 44.2 - i * 0.9) * 1.35, seg = 0;
+        w.grp.visible = dist > 0;
         if (!w.grp.visible) continue;
-        const seg = Math.min(w.path.length - 2, Math.floor(u * (w.path.length - 1))), f = u * (w.path.length - 1) - seg;
-        const a = w.path[seg], b = w.path[seg + 1];
+        while (seg < P2.length - 2 && dist > Math.hypot(P2[seg + 1].x - P2[seg].x, P2[seg + 1].z - P2[seg].z)) { dist -= Math.hypot(P2[seg + 1].x - P2[seg].x, P2[seg + 1].z - P2[seg].z); seg++; }
+        const a = P2[seg], b = P2[seg + 1], f = Math.min(1, dist / Math.max(1e-6, Math.hypot(b.x - a.x, b.z - a.z)));
         const x = a.x + (b.x - a.x) * f, z = a.z + (b.z - a.z) * f;
         // the porch top is 0; six risers of 0.2 run from z 6.42 to 8.78 down to the courtyard at −1.4
         const y = z >= 8.78 ? -1.4 : z > 6.42 ? -0.2 * Math.ceil((z - 6.42) / 0.36 + 1e-6) : 0;
@@ -2160,6 +2347,8 @@
     sfx(45.8, 'z2pro6');                              // 5.64 s → 51.44
     sfx(52.6, 'e3bell', 0.35);
     fade(53.6, 55.0, 0, 1);
+    sfxFade(53.6, 55.0, 'e3vesper');                 // v18.5: the doors' chant and the dusk go down WITH the picture (they were cut at 55.1)
+    sfxFade(53.6, 55.0, 'templedusk');
     step(55.1, () => { handsRoot.visible = true; armR.visible = true; });
     c.endFade = 1;
     c.keepFade = true;
@@ -2282,7 +2471,7 @@
       stage.drawShadow(1 - fall * 0.8, t);
     }, rawK);
     // the body turns with it: the lens sways side to side
-    tr(0, 14.0, (k, t) => { api.yaw.rotation.y = s.yawRot + 0.34 * Math.sin(t * 0.55) * Math.min(1, t / 2); }, rawK);
+    tr(0, 14.0, (k, t) => { api.yaw.rotation.y = s.yawRot - 0.34 * Math.sin(t * 0.55) * Math.min(1, t / 2); }, rawK);   // v18.5: RIGHT first, toward Yai as she pulls the boy close (left put her off a phone's frame for her whole line)
     step(0.1, () => { stage.shadow.material.opacity = 0.78; });
     sfx(0.4, 'handsrise', 0.85);
     sfx(0.8, 'chantswell', 0.8);

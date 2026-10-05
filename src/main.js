@@ -192,6 +192,11 @@ const BOOT_CH = CH_KEY;      // where New game goes back to, whatever a save sai
    words (ep1.label, ep1.title ...) are the string sheet's, so Chad's.
    docs/EPISODES-PLAN.md is the reasoning and the decisions still open.  */
 const EPISODE_COUNT = 10, CHAPTERS_PER_EPISODE = 5;
+/* v18.5: the engine's own spoken takes (vlow, vfaint, vlost) are the BOY's —
+   episode 1's voice, and episode 2's too (v7.8: Aaron at eighteen). Episode 3
+   is a grown man (Louis); those lines would put the child's voice in his
+   mouth, so from episode 3 the engine says nothing there. */
+function boyVoiced() { return episodeOf(CH_KEY) <= 2; }
 function episodeOf(key) {
   const ch = window.__CHAPTERS__ && window.__CHAPTERS__[key];
   const n = ch ? Number(ch.episode) : NaN;
@@ -3275,10 +3280,17 @@ function paintConduct(cd) {
   }
   el.classList.remove('hide');
 }
+/* v18.5: what the engine's own minigame charges pass — a minigame's price,
+   already cut */
+const EV_PRICE = { minigame: true, cut: false };
 /* a stat moved by play, with the same tick the drain uses */
 function kitAward(stat, delta, opts) {
   if (!(stat in stats) || !Number.isFinite(delta) || !delta) return;
-  if (opts && opts.minigame) delta = evCut(delta);   // v14.13: a chapter's minigame price, cut by the guard
+  /* v18.5: `cut: false` — the engine's own minigame charges (a graded press,
+     a wrong drop, a losing payout) are cut by evCut where they are computed,
+     and passed here as a minigame so the shock guard below leaves them alone;
+     before, they arrived unflagged and Gao Yord's shockGuard cut them too */
+  if (opts && opts.minigame && opts.cut !== false) delta = evCut(delta);   // v14.13: a chapter's minigame price, cut by the guard
   if (stat === 'sanity' && delta < 0 && !(opts && opts.minigame)) delta = -shockCut(-delta);   // v17.6: the Gao Yord (v17.6b)
   if (stat === 'sanity' && delta < 0) delta = -wardSoak(-delta, true);   // v14.7: the amulet takes it first
   const before = stats[stat];
@@ -3514,7 +3526,7 @@ function evScorePress(err) {
     const flat = +e.o.missCost;
     const per = (e.o.penalty && +e.o.penalty.per) || 1;
     const cost = Number.isFinite(flat) && flat > 0 ? -flat : b.aw * per;
-    kitAward(st, evCut(cost));                      // the damage, now (v14.13: halved by the guard)
+    kitAward(st, evCut(cost), EV_PRICE);            // the damage, now (v14.13: halved by the guard)
     /* `paid` stays the FULL price: evResolve nets the ladder against it and
        cuts whatever is still owed itself, so the guard applies once */
     if (st === ((e.o.award && e.o.award.stat) || 'sanity')) e.paid += cost;
@@ -3673,7 +3685,7 @@ function evMatchDrop(x, y) {
     setTimeout(() => slot.classList.remove('nope'), 380);
     const st = (o.penalty && o.penalty.stat) || (o.award && o.award.stat) || 'awareness';
     const cost = Math.abs(+o.wrongCost || 0);
-    if (cost) kitAward(st, evCut(-cost));           // v14.13: halved by the guard
+    if (cost) kitAward(st, evCut(-cost), EV_PRICE); // v14.13: halved by the guard
     $('evNote').textContent = T('event.matchBad');
     evEl()?.classList.add('bad');
     snd('matchbad', 0.55);
@@ -3806,7 +3818,7 @@ function evBegin() {
      strip, and nothing said WHERE the taps go — a player who waited for a
      button lost the fight inside two seconds and read it as "the minigame
      does not even show up". The rapid-tap fight says it, under its word. */
-  if (e.kind === 'resist') $('evNote').textContent = o.whereWord || T('event.resistWhere');
+  if (e.kind === 'resist') $('evNote').textContent = o.whereWord || T(HAS_TOUCH ? 'event.resistWhere' : 'event.resistWhereKey');   // v18.5: a desktop has no screen to tap
   if (e.kind === 'sequence') evShowItem();
   /* v9.4: a drag needs a cursor, and under pointer lock there is none - the
      mouse's clientX/clientY freeze, so the tiles could never be picked up.
@@ -3896,7 +3908,7 @@ function evResolve(extra) {
        is what was actually applied, r.full what it would have been */
     r.full = r.delta;
     r.delta = evCut(r.delta);
-    kitAward(aw.stat, r.delta);
+    kitAward(aw.stat, r.delta, EV_PRICE);
   }
   if (!r.aborted && !r.skipped) snd(r.ok ? 'uiconfirm' : 'uiclick', r.ok ? 0.5 : 0.25);
   e.res(r);
@@ -4075,7 +4087,11 @@ function evFrame(dt, dLookX, dLookY) {
       /* and the slow clock waits for him: nothing is charged until he has
          tapped twice (the START press is not one), or until a full second
          past the lead if he never starts */
-      const live = e.t > o.lead && (kq >= 1 || e.t > o.lead + 1);
+      /* v18.5: and after the tab was hidden (a phone call, a notification,
+         an app switch) the same grace starts again — the taps from before
+         are gone and the first frame back is not his fault */
+      const from = Math.max(o.lead, e.backAt || 0);
+      const live = e.t > from && (kq >= 1 || e.t > from + 1);
       if (live) {
         if (rate < need) e.danger += wdt;
         else e.danger = Math.max(0, e.danger - wdt * 1.5);
@@ -6083,7 +6099,17 @@ if (CH.voiceLine && (HOSTED ? ASSET_MAP[CH.voiceLine] : EMBED[CH.voiceLine])) as
 function resumeAudio() {
   if (actx && actx.state !== 'running') actx.resume().catch(() => {});
 }
-document.addEventListener('visibilitychange', () => { if (!document.hidden) resumeAudio(); });
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) return;
+  resumeAudio();
+  /* v18.5: an event's clock runs on the wall, and a hidden tab draws no frame:
+     the first frame back must not charge the gap. Seed the mark again; a
+     rapid-tap fight also forgets the old taps and gives back its start grace */
+  if (ev && ev.started && !ev.briefing) {
+    ev.wallLast = 0;
+    if (ev.kind === 'resist') { ev.taps = []; ev.backAt = ev.t; }
+  }
+});
 addEventListener('pageshow', resumeAudio);
 addEventListener('focus', resumeAudio);
 addEventListener('pointerdown', resumeAudio, { passive: true });
@@ -6983,7 +7009,7 @@ function updateAudioFrame(t) {
     ? (reveal * 0.55 + presence * 0.25) * (0.35 + near * 0.65) : 0);
   const dying = state === 'play' && stats.sanity < 30;
   loopVol('heart', dying ? 0.12 + (1 - stats.sanity / 30) * 0.26 : 0);
-  if (dying) say('vlow');
+  if (dying && boyVoiced()) say('vlow');   // v18.5: the boy's take — not in episode 3's adult voice
 
   /* Cues from her state machine. The moment they mark is real even when
      the sample is still decoding, so a cue is replayed every frame until
@@ -9137,6 +9163,7 @@ function startChapterNow(key) {
      chapter of another episode refills it. */
   wardEpisode();
   restart();
+  saveCheckpoint({ at: null });    // v18.5: the film is still to come — a Continue before it ends gives it back (restart()'s autosave put him at the spawn)
   enterWorld(() => {
     yaw.position.copy(SPAWN.pos);
     yaw.rotation.y = SPAWN.rot;
@@ -10906,6 +10933,7 @@ function resumeRun() {
        one: e3c1's 'decide', which opened e3c2 at its decision) */
     if (!(at && ['x', 'y', 'z'].every(k => Number.isFinite(at[k])))) {
       kitPhase = null; conductAcc.s = 0; conductAcc.a = 0; conductAcc.notes.length = 0;
+      Object.assign(stats, STATS_AT_START);   // v18.5: a chapter's start is the numbers play starts it on (a save from before v18.5 still carries the last chapter's)
     }
     if (at && ['x', 'y', 'z'].every(k => Number.isFinite(at[k]))) {
       yaw.position.set(at.x, at.y, at.z);
@@ -11062,6 +11090,9 @@ function advanceTo(nxt) {
 function advanceToNow(nxt) {
   setChapter(nxt);
   for (const el of [ui.complete, ui.result, ui.over, ui.episode]) el?.classList.add('hide');
+  /* v18.5: restart()'s autosave records the run AT THE SPAWN, which a
+     Continue reads as "already in play" and so skips the opening film; the
+     film has not been seen, so the save after it says the chapter's start */
   /* restart() puts the run's state back — the props, the ghost, the hands,
      the numbers — and lands in play. enterWorld() takes it straight back
      out again in the same tick, so no frame of play is ever drawn, and the
@@ -11070,6 +11101,7 @@ function advanceToNow(nxt) {
      its reset is deliberate; it is the one piece of code that knows
      everything a fresh run has to put back.                             */
   restart();
+  saveCheckpoint({ at: null });    // v18.5: see above
   enterWorld(() => {
     yaw.position.copy(SPAWN.pos);
     yaw.rotation.y = SPAWN.rot;
@@ -11511,7 +11543,7 @@ function scFaint(c, s) {
   // the whip: eyes roll skyward, hard and sudden — an impulse, not a pan
   pitchTo(0, 0.38, s.pitchX, 0.62, k => k * k);
   sfx(0.02, 'boom');
-  sfx(0.30, 'vfaint');                                // v6.6: "No... my head..." — his, and nothing cuts it here
+  if (boyVoiced()) sfx(0.30, 'vfaint');               // v6.6: "No... my head..." — his, and nothing cuts it here (v18.5: the boy's voice, so not from episode 3)
   // decaying shake on yaw and roll — the death-cam judder
   tr(0, 1.7, (k, t) => {
     const decay = Math.exp(-2.2 * t);
@@ -11570,7 +11602,7 @@ function lose() {
     ui.panic.style.opacity = '1';
     snd('ulost', 0.8);
     ui.over.classList.remove('hide');
-    loseSpeech = speak('vlost', { wait: 10000 });
+    loseSpeech = boyVoiced() ? speak('vlost', { wait: 10000 }) : Promise.resolve(false);   // v18.5: the boy's take
     const teach = $('overTeach');
     teach.closest('.teachbox').classList.add('veiled');
     const teachHTML = T('lost.teaching', teach.innerHTML);
@@ -11600,7 +11632,12 @@ function finish() {
   /* v14.7: the next chapter is entered with what the amulet holds NOW, so its
      `enter` is today's charge; a new episode refills it on the way in */
   const wNext = { charge: ward.charge, ep: ward.ep, enter: ward.charge };
-  saveCheckpoint(nxt ? { at: null, done: false, ch: nxt, ward: wNext }
+  /* v18.5: and with the numbers a chapter STARTS on. Continue on the sealed
+     card goes through restart(), which starts the next chapter at
+     100/50/50; this save carried the finished chapter's numbers, so the same
+     chapter began differently from the title's Continue — and a run that
+     ended low could faint on the next chapter's first hit */
+  saveCheckpoint(nxt ? { at: null, done: false, ch: nxt, ward: wNext, stats: STATS_AT_START }
                      : { at: null, done: true, ward: wNext });
   if (nxt) markReached(nxt);       // finished this one: the next is open in the selector (v5.12)
   markSealed(CH_KEY, score, r);    // and its result is on record: the rank on its stop in the selector (v6.2), the tally at the episode's end (v6.3)

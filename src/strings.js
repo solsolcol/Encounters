@@ -211,6 +211,7 @@ Object.assign(window.__TEXT__, {
   'event.resistBreathe': 'FASTER!',
   'event.resistReady':   'START TAPPING',
   'event.resistWhere':   'Tap anywhere on the screen, fast',   // v18.4: where the taps go, once START has gone
+  'event.resistWhereKey': 'Press Space or click, fast',        // v18.5: the same, on a desktop
   'event.focus':         'TAP THE LIGHT',
   'event.sequence':      'TAP EACH ONE',
   'event.match':         'DRAG EACH ITEM TO ITS PLACE',

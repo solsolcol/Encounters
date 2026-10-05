@@ -113,6 +113,8 @@
       actTouch: 'Tap your bed',
       interact: 'E at your bed',
       interactTouch: 'Tap your bed',
+      actLine: 'Press E at your bed',          // v18.5: Step back's hint (the fallback named chapter 1's pile of notes)
+      actLineTouch: 'Tap your bed',
       presence: 'Something is in the block.',
       objArrive: 'Find your bed — bed one',
       objFallIn: 'FALL IN — on the yellow line',

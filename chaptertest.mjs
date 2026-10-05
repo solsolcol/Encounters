@@ -581,7 +581,7 @@ if (VOICE && Array.isArray(VOICE.LINES)) {
     const src = readFileSync(join(chapDir, f), 'utf8');
     for (const m of src.matchAll(/\bdemo:\s*'(\w+)'/g))
       if (!drawn.has(m[1])) errs.push(`ERR ${f}: demo '${m[1]}' is not a picture shell.html draws`);
-    for (const m of src.matchAll(/kit\.event\(\{([\s\S]{0,600}?)\}\)/g)) {
+    for (const m of src.matchAll(/kit\.event\(\{([\s\S]{0,2400}?)\}\)/g)) {
       if (!/\bbrief:/.test(m[1])) continue;
       briefed++;
       const kind = (m[1].match(/kind:\s*'(\w+)'/) || [])[1];

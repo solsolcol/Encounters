@@ -142,6 +142,8 @@
       actTouch: 'Tap to act',
       interact: 'E to answer the Ajarn',
       interactTouch: 'Tap to answer the Ajarn',
+      actLine: 'Press E to answer the Ajarn',          // v18.5: Step back's hint (the fallback named chapter 1's pile of notes)
+      actLineTouch: 'Tap to answer the Ajarn',
       objStall: 'Buy an offering set at the stall',
       objShoes: 'Take off your shoes at the steps',
       objWai: 'Pay your respects at the altar',

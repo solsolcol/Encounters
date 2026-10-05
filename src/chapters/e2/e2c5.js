@@ -150,6 +150,8 @@
       actTouch: 'Tap to act',
       interact: 'E to speak to the encik',
       interactTouch: 'Tap to speak to the encik',
+      actLine: 'Press E to speak to the encik',          // v18.5: Step back's hint (the fallback named chapter 1's pile of notes)
+      actLineTouch: 'Tap to speak to the encik',
       objClear: 'Clear your kit · {n}/3',
       objEncik: 'Speak to the encik',
       hotArms: 'Hand in your rifle',
