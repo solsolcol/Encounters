@@ -4836,7 +4836,9 @@ What the baseline contains, by release:
   understand it properly…", and scene A's card line ("It did not go away")
   contradicts its scene ("I could feel it waiting") — both are his words to
   pick. Sheet v86 exported (v44 the link). Deploy `6ac334b6dd876b493b7eeb64`,
-  byte-verified (all 204 build files). docs/V18.0-E3C2-PLAN.md §13.
+  byte-verified (all 204 build files). Harnesses chapter, fixture, walk,
+  state, resume, restart, menu, cine, leak, csp, text, sanity, inv, hosted
+  green. docs/V18.0-E3C2-PLAN.md §13.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
