@@ -5221,3 +5221,25 @@ every one of 298k positions, each with its own face normal (2000 of 2000
 sampled triangles flat). `prepmonk.mjs` "simplified" it to 596k at ratio 0.3
 and wrote 18 MB. `tools/deflatten.mjs` first (v8.0's tool, for exactly this),
 then the prep: 179k, 2.9 MB. The tell is vertices ÷ triangles ≈ 2.
+
+## A polished-metal scan: the light cut needs new normals, and the sheen needs its own reflection (v18.8)
+
+Chad's Buddha (588,799 triangles) is gilt metal, and three things were found
+by photograph, one at a time:
+- **A Meshy-style atlas floors the simplifier.** The texture is cut into many
+  small islands and meshopt will not collapse an edge across a UV seam, so
+  `simplify()` stopped at ~123k whatever error bound it was given. A
+  topology-free `simplifySloppy` reaches any count, but up close it is lumpy —
+  fit only for a far level.
+- **Polished metal shows every normal break.** The 123k cut read as a FACETED
+  face, with or without its normal map; recomputing every normal across the
+  seams from the faces round its position (`masters/v18.8/smoothn.mjs`,
+  prepmonk's step) made it smooth. A matte scan hides this; a mirror does not.
+- **The sheen is the environment, and the world's is deliberately faint**
+  (0.05). Give the metal its own `envMap` (the scene's) and `envMapIntensity`,
+  bracketed in the real room: 0 left the unlit images bronze-dark, 0.3 and up
+  washed the gold to pale yellow-white; 0.15 is gold. The dispose sweep frees
+  named maps only, never `envMap`, so the shared environment is safe.
+And "must look perfect" plus many instances means a THREE.LOD per image: every
+triangle while it is big on screen, the smoothed cut further out, the sloppy
+cut (sharing its vertices and maps) when it is small.

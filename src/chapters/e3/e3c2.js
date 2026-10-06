@@ -113,7 +113,7 @@
        white; the monks are Chad's monk at crowd detail; the Thevada is seen
        only as a crowned shadow and a gold glimpse at the edge of the frame */
     assets: ['lay_admintee', 'lay_botak', 'lay_granny', 'lay_scold', 'lay_sitwoman', 'monkrow',
-             'thaikit', 'slipper', 'admintee', 'tree1', 'tree2', 'tree3', 'tree4'],
+             'thaikit', 'slipper', 'admintee', 'tree1', 'tree2', 'tree3', 'tree4', 'buddhahd', 'buddhalod'],
 
     /* THE SOUND. The evening chant (`e3vesper`) is the chapter's music; the
        hall's room tone under it; the dusk outside near the doors; and the
@@ -246,10 +246,56 @@
     /* THE THAI KIT (v16.6's file, shared with chapter 1): one parse, every
        piece a clone; a primitive it replaces stays drawn until it lands */
     const GOLD_T = 0xffd88c;
+    /* v18.8 · CHAD'S BUDDHA (his Phra Buddha Chinnarat scan, every map kept —
+       "make sure all instances of buddha statues in the entire game, across
+       episode 3 all chapters, are all using this new buddha statue model ...
+       It needs to have its metallic sheen, texture, etc. It needs to look
+       perfect"). It takes the kit Buddha's place at the kit's footprint: its
+       base on the group's origin and 0.527 m tall before the group's own scale,
+       so every placement keeps its size, and no tint (its gold is its own).
+       One THREE.LOD per image. A PRINCIPAL image (`hd: true`) carries EVERY
+       triangle (588,799, buddhahd) while it is big on screen — under 4 x its
+       height away — the smoothed 123k cut further out, and a 30k cut sharing
+       that cut's vertices once it is small (12 x). Every other image (under a
+       metre tall) is the smoothed cut — no facet on its face, proven by close
+       render — and the 30k cut beyond 4 x its height. Its
+       metal reflects the room environment at its own strength (the world's is
+       0.05, kept low for everything else); the materials are shared clones,
+       and the dispose sweep never frees an envMap. */
+    const BUDDHA_H = 0.527, BUDDHA_ENV = 0.15, _bMat = new Map();   // 0.15: bracketed in the hall at 0 / 0.15 / 0.3 / 0.5 — 0 left the unlit images bronze-dark, 0.3 up washed the gold pale
+    function buddhaMat(m) {
+      let c = _bMat.get(m);
+      if (!c) { c = m.clone(); c.envMap = scene.environment || null; c.envMapIntensity = BUDDHA_ENV; _bMat.set(m, c); }
+      return c;
+    }
+    function chadBuddha(g, o) {
+      Promise.all([parseOnce('buddhahd'), parseOnce('buddhalod')]).then(([hd, lo]) => {
+        if (!alive) return;
+        const bb = new THREE.Box3().setFromObject(hd.scene), k = BUDDHA_H / (bb.max.y - bb.min.y), h = BUDDHA_H * (o.s || 1);
+        const lod = new THREE.LOD();
+        const level = (src, d) => {
+          const w = new THREE.Group(); w.scale.setScalar(k); w.position.y = -bb.min.y * k;
+          const m = src.clone(true); w.add(m);
+          m.traverse(q => { if (!q.isMesh) return; q.castShadow = o.cast !== false && !LOW; q.receiveShadow = true; q.material = buddhaMat(q.material); });
+          lod.addLevel(w, d);
+        };
+        /* only the PRINCIPAL images (`hd: true` — the ones the player stands
+           before) carry the full statue; at 589k a level, three of them drawn
+           at once at e3c1's altar was 2.6M triangles a frame */
+        if (o.hd) { level(hd.scene, 0); level(lo.scene.getObjectByName('buddha_mid'), 4 * h); }
+        else level(lo.scene.getObjectByName('buddha_mid'), 0);
+        level(lo.scene.getObjectByName('buddha_far'), (o.hd ? 12 : 4) * h);
+        g.add(lod);
+        for (const x of (o.hide || [])) if (x) x.visible = false;
+        if (o.then) o.then(g, lod);
+      }).catch(err => { console.warn('buddha failed to load', err); ctx.loadFail && ctx.loadFail('buddhahd', err); });
+      return g;
+    }
     function thai(name, x, y, z, o = {}) {
       const g = new THREE.Group(); g.position.set(x, y, z); g.rotation.y = o.ry || 0;
       if (o.s) g.scale.setScalar(o.s);
       (o.parent || world).add(g);
+      if (name === 'buddha') return chadBuddha(g, o);   // v18.8: Chad's statue, not the kit's
       parseOnce('thaikit').then(gltf => {
         if (!alive) return;
         const src = gltf.scene.getObjectByName('thai_' + name);
@@ -450,7 +496,13 @@
       const head = new THREE.Mesh(new THREE.SphereGeometry(0.42, 16, 12), matGold); head.position.set(0, PED_TOP + 3.3, PED.z); buddhaProxy.add(head);
       void base;
     }
-    thai('buddha', 0, PED_TOP, PED.z + 0.15, { s: 7.6, tint: GOLD_T, glow: 0.22, hide: [buddhaProxy] });
+    /* v18.8 (Chad: "The principal buddha statue in the main hall should also
+       use this as a large statue"): his statue at x9.0 — 4.74 m to the tip of
+       its own flame arch (6.84 m, under the 7.2 m ceiling; the nearest
+       cross-beam is at z -16.8), 3.2 m wide on the pedestal's 3.6 m top tier
+       and 1.85 m deep on its 2.1, so it sits the tier rather than overhanging
+       it; the hall's gold flame rings stand round its arch on the blue */
+    thai('buddha', 0, PED_TOP, PED.z + 0.1, { s: 9.0, hd: true, tint: GOLD_T, glow: 0.22, hide: [buddhaProxy] });
     // the seven-tier umbrellas
     for (const s of [-1, 1]) {
       const x = s * 2.75, g = new THREE.Group(); g.position.set(x, 0, PED.z + 1.2); world.add(g);
@@ -544,7 +596,27 @@
     solids.push(box(1.3, 0.85, 0.65, 0, 0.425, 0, matRedD, leafT));
     box(1.36, 0.04, 0.7, 0, 0.87, 0, matGold, leafT, false);
     const smallBuddha = new THREE.Group(); smallBuddha.position.set(0, 0.89, -0.05); leafT.add(smallBuddha);
-    thai('buddha', 0, 0, 0, { s: 1.15, tint: GOLD_T, glow: 0.18, parent: smallBuddha });
+    const leafPatches = [];
+    /* v18.8: Chad's statue is not the kit's shape (a flame-arch halo stands
+       behind the body), so once it lands every patch is cast along its own
+       line onto the real surface — the front ones onto the chest and base,
+       the back ones onto the statue's back — against the 123k level (close
+       to the surface to a millimetre, and a ninth of the triangles to test) */
+    thai('buddha', 0, 0, 0, { s: 1.15, hd: true, tint: GOLD_T, glow: 0.18, parent: smallBuddha, then: (g, lod) => {
+      if (!lod || !lod.levels || !lod.levels[1]) return;
+      smallBuddha.updateMatrixWorld(true);
+      const target = lod.levels[1].object, rc = new THREE.Raycaster(), o = new THREE.Vector3(), dir = new THREE.Vector3();
+      const was = target.visible; target.visible = true;
+      for (const p of leafPatches) {
+        const back = p.userData.back;
+        o.set(p.position.x, p.position.y, back ? -0.6 : 0.6); smallBuddha.localToWorld(o);
+        dir.set(0, 0, back ? 1 : -1).transformDirection(smallBuddha.matrixWorld);
+        rc.set(o, dir);
+        const hit = rc.intersectObject(target, true)[0];
+        if (hit) p.position.z = smallBuddha.worldToLocal(hit.point.clone()).z + (back ? -0.003 : 0.003);
+      }
+      target.visible = was;
+    } });
     // patches of leaf already on him, and the ones he will add (on his BACK)
     const patchMat = new THREE.MeshStandardMaterial({ color: 0xffe08a, roughness: 0.25, metalness: 0.6, emissive: 0xc8962a, emissiveIntensity: 0.55, side: THREE.DoubleSide });
     const myLeaf = [];
@@ -555,6 +627,7 @@
       // v18.5: ON him — at ±0.15 (his box's extreme) they hung 14 cm in front of the chest and 7 cm off the back
       p.position.set((hash(i, 1) - 0.5) * 0.12, py, back ? -0.085 : (py < 0.24 ? 0.08 : 0.02));
       p.rotation.set(0, back ? Math.PI : 0, hash(i, 3) * 1.2);
+      p.userData.back = back; leafPatches.push(p);
       smallBuddha.add(p); if (back) { p.visible = false; myLeaf.push(p); }
     }
     const leafTray = box(0.3, 0.03, 0.22, 0.42, 0.9, 0.12, matWoodL, leafT, false);

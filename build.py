@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "18.7"
+VERSION = "18.8"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -400,6 +400,9 @@ ASSETS = {
     #  file stays in assets/ and masters/, nothing loads it)
     'lersimask':    ('assets/lersimask.glb', True, False),    # e3c1 v18.7: Chad's row of lersi masks, on the wall behind the Ajarn (tools/prepwess.mjs LONG=1, 0.2)
     'altarrow':     ('assets/altarrow.glb', True, False),     # e3c1 v18.7: Chad's row of altar statues, on the room's east wall (tools/prepwess.mjs LONG=1 NPX=2048, 0.2)
+    'buddhahd':     ('assets/buddhahd.glb', True, False),     # e3 v18.8: Chad's Buddha (Phra Buddha Chinnarat), EVERY triangle and map — the near level of every Buddha in episode 3 (prepwess KEEPMR=1 NPX=2048 ERR=0.0001, ratio 1)
+    'buddhalod':    ('assets/buddhalod.glb', True, False),    # e3 v18.8: its mid (smoothed 123k) and far (30k, same vertices) levels in one file (masters/v18.8/make.sh)
+    'sangkathan':   ('assets/sangkathan.glb', True, False),   # e3c1 v18.8: Chad's sangkathan set, every merit set in the chapter (prepwess LONG=1 NPX=1024, 0.08)
     'customer':     ('assets/customer.glb', True, False),     # e3c1 v18.7: Chad's Sak Yant customer — Sit_Dodge, the stand, the walk (tools/prepmonk.mjs 0.3: weights diffused, normals shared)
     'sitwomantalk': ('assets/sitwomantalk.glb', True, False), # e3c1 v17.4: the stall auntie's talking take — the monk's Sitting_Answering_Questions retargeted onto sitwoman (masters/v17.4)
     'monk':         ('assets/monk.glb', True, False),         # e3c1 v16.8: Chad's monk, five takes, skin weights diffused (tools/prepmonk.mjs)
@@ -437,7 +440,7 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'ghostsoldier', 'encik2', 'bunkbed', 'cafestaff', 'foodwarmer', 'flashlight',
            'kamaz', 'forest', 'rifle', 'ghostcyclist', 'fboaim',
            'muzzle', 'ammocrate', 'ammomags', 'icontorch', 'zavsoldier',
-           'thaikit', 'wessred', 'wessgreen', 'naga', 'monk', 'ajarn', 'temple', 'slipper', 'lersimask', 'altarrow', 'customer', 'sitwomantalk',
+           'thaikit', 'wessred', 'wessgreen', 'naga', 'monk', 'ajarn', 'temple', 'slipper', 'lersimask', 'altarrow', 'customer', 'buddhahd', 'buddhalod', 'sangkathan', 'sitwomantalk',
            'lay_admintee', 'lay_botak', 'lay_granny', 'lay_scold', 'lay_sitwoman', 'monkrow'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone
 HOSTED_ONLY |= E2_ONLY
 

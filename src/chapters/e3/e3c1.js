@@ -49,7 +49,7 @@
     title: 'The Luck I Went Looking For',
     cardLabel: 'Chapter 1',
     cardTitle: 'The Luck I Went Looking For',
-    brief: 'A temple in Thailand, before the sun is up. Buy an offering, take off your shoes, pay your respects, receive the monk\'s blessing, and find the Ajarn in his private room.',
+    brief: 'A temple in Thailand, before the sun is up. Buy a Sangkathan set, take off your shoes, pay your respects, receive the monk\'s blessing, and find the Ajarn in his private room.',
     prompt: 'The yant is finished, and it is warm on your back. The Ajarn has put his hand on it. He is waiting for an answer.',
     choices: [
       { k: 'A', text: '"Luck. For my business."',
@@ -126,7 +126,7 @@
        back at the stirring (the engine prepares an item's model at the
        curtain; these have none, they are drawings, but they are declared) */
     items: ['yantgaoyord', 'yanthahtaew', 'yantsroi'],
-    assets: ['admintee', 'customer', 'sitwoman', 'sitwomantalk', 'standman', 'phiboon', 'tree1', 'tree2', 'tree3', 'tree4', 'thaikit', 'wessred', 'wessgreen', 'naga', 'monk', 'ajarn', 'temple', 'slipper', 'lersimask', 'altarrow'],
+    assets: ['admintee', 'customer', 'sitwoman', 'sitwomantalk', 'standman', 'phiboon', 'tree1', 'tree2', 'tree3', 'tree4', 'thaikit', 'wessred', 'wessgreen', 'naga', 'monk', 'ajarn', 'temple', 'slipper', 'lersimask', 'altarrow', 'buddhahd', 'buddhalod', 'sangkathan'],
 
     /* THE SOUND. `watamb` is the dawn temple (birds, a far road, a broom on
        stone, wind chimes); `e3chant` is the monks' morning chanting from the
@@ -145,7 +145,7 @@
       interactTouch: 'Tap to answer the Ajarn',
       actLine: 'Press E to answer the Ajarn',          // v18.5: Step back's hint (the fallback named chapter 1's pile of notes)
       actLineTouch: 'Tap to answer the Ajarn',
-      objStall: 'Buy an offering set at the stall',
+      objStall: 'Buy a Sangkathan set at the stall',
       objShoes: 'Take off your shoes at the steps',
       objWai: 'Pay your respects at the altar',
       objPresent: 'Present your offering to the monk',
@@ -154,7 +154,7 @@
       objWait: 'Sit on the mat and wait your turn',
       objSeat: 'Sit with your back to the Ajarn',
       objStill: 'Hold still',
-      hotStall: 'Buy an offering set',
+      hotStall: 'Buy a Sangkathan set',
       hotShoes: 'Take off your shoes',
       hotWai: 'Kneel and wai',
       hotPresent: 'Present your offering',
@@ -392,11 +392,57 @@
        blockers are the primitives' boxes, and a new piece that stands where
        the player walks brings its own (`o.block`). */
     const GOLD_T = 0xffd88c;          // the pack's Buddha, warmed from a stone-pale gilt to the altar's gold
+    /* v18.8 · CHAD'S BUDDHA (his Phra Buddha Chinnarat scan, every map kept —
+       "make sure all instances of buddha statues in the entire game, across
+       episode 3 all chapters, are all using this new buddha statue model ...
+       It needs to have its metallic sheen, texture, etc. It needs to look
+       perfect"). It takes the kit Buddha's place at the kit's footprint: its
+       base on the group's origin and 0.527 m tall before the group's own scale,
+       so every placement keeps its size, and no tint (its gold is its own).
+       One THREE.LOD per image. A PRINCIPAL image (`hd: true`) carries EVERY
+       triangle (588,799, buddhahd) while it is big on screen — under 4 x its
+       height away — the smoothed 123k cut further out, and a 30k cut sharing
+       that cut's vertices once it is small (12 x). Every other image (under a
+       metre tall) is the smoothed cut — no facet on its face, proven by close
+       render — and the 30k cut beyond 4 x its height. Its
+       metal reflects the room environment at its own strength (the world's is
+       0.05, kept low for everything else); the materials are shared clones,
+       and the dispose sweep never frees an envMap. */
+    const BUDDHA_H = 0.527, BUDDHA_ENV = 0.15, _bMat = new Map();   // 0.15: bracketed in the hall at 0 / 0.15 / 0.3 / 0.5 — 0 left the unlit images bronze-dark, 0.3 up washed the gold pale
+    function buddhaMat(m) {
+      let c = _bMat.get(m);
+      if (!c) { c = m.clone(); c.envMap = scene.environment || null; c.envMapIntensity = BUDDHA_ENV; _bMat.set(m, c); }
+      return c;
+    }
+    function chadBuddha(g, o) {
+      Promise.all([parseOnce('buddhahd'), parseOnce('buddhalod')]).then(([hd, lo]) => {
+        if (!alive) return;
+        const bb = new THREE.Box3().setFromObject(hd.scene), k = BUDDHA_H / (bb.max.y - bb.min.y), h = BUDDHA_H * (o.s || 1);
+        const lod = new THREE.LOD();
+        const level = (src, d) => {
+          const w = new THREE.Group(); w.scale.setScalar(k); w.position.y = -bb.min.y * k;
+          const m = src.clone(true); w.add(m);
+          m.traverse(q => { if (!q.isMesh) return; q.castShadow = o.cast !== false && !LOW; q.receiveShadow = true; q.material = buddhaMat(q.material); });
+          lod.addLevel(w, d);
+        };
+        /* only the PRINCIPAL images (`hd: true` — the ones the player stands
+           before) carry the full statue; at 589k a level, three of them drawn
+           at once at e3c1's altar was 2.6M triangles a frame */
+        if (o.hd) { level(hd.scene, 0); level(lo.scene.getObjectByName('buddha_mid'), 4 * h); }
+        else level(lo.scene.getObjectByName('buddha_mid'), 0);
+        level(lo.scene.getObjectByName('buddha_far'), (o.hd ? 12 : 4) * h);
+        g.add(lod);
+        for (const x of (o.hide || [])) if (x) x.visible = false;
+        if (o.then) o.then(g, lod);
+      }).catch(err => { console.warn('buddha failed to load', err); ctx.loadFail && ctx.loadFail('buddhahd', err); });
+      return g;
+    }
     function thai(name, x, y, z, o = {}) {
       const g = new THREE.Group(); g.position.set(x, y, z); g.rotation.y = o.ry || 0;
       if (o.s) g.scale.setScalar(o.s);
       (o.parent || world).add(g);
       if (o.block) solids.push(hid(cyl(o.block[0], o.block[0], o.block[1], x, (y || 0) + o.block[1] / 2, z, matProxy, o.parent || world)));
+      if (name === 'buddha') return chadBuddha(g, o);   // v18.8: Chad's statue, not the kit's
       parseOnce('thaikit').then(gltf => {
         if (!alive) return;
         const src = gltf.scene.getObjectByName('thai_' + name);
@@ -802,7 +848,9 @@
       // figure in gold, in the earth-touching pose's silhouette)
       /* v16.6: the pack's seated gold Buddha (0.53 m in the file) in the
          primitive's place and at its height, 1.85 m to the flame */
-      thai('buddha', ALT.x, SALA.floor + 1.14, SALA.z0 + 0.78, { s: 3.5, tint: GOLD_T, glow: 0.12, hide: [mkBuddha(ALT.x, SALA.floor + 1.14, SALA.z0 + 0.72, 1.0)] });
+      /* v18.8: the principal image is Chad's statue, LARGE (x4.5 — 2.37 m to its arch's tip, 1.62 m wide: it
+         clears the flanking images at +/-1.25 and is 0.92 m deep, the kit image's own depth at x3.5) */
+      thai('buddha', ALT.x, SALA.floor + 1.14, SALA.z0 + 0.78, { s: 4.5, hd: true, tint: GOLD_T, glow: 0.12, hide: [mkBuddha(ALT.x, SALA.floor + 1.14, SALA.z0 + 0.72, 1.0)] });
       for (const s of [-1, 1]) thai('buddha', ALT.x + s * 1.25, SALA.floor + 0.76, SALA.z0 + 1.02, { s: 1.5, tint: GOLD_T, glow: 0.12, hide: [mkBuddha(ALT.x + s * 1.25, SALA.floor + 0.76, SALA.z0 + 1.02, 0.42)] });
       // vases of lotus, candles, the incense pot, garlands
       for (const s of [-1, 1]) {
@@ -1443,26 +1491,47 @@
       for (const dz of [-0.16, 0.16]) slipperPair(kr, 0, SALA.floor + 0.3, dz, Math.PI / 2, dz < 0 ? 0x2c3e66 : 0xb3261e);   // v16.9: Chad's slippers
     }
 
-    function mkTray() {
+    /* v18.8 · THE SANGKATHAN SET (Chad: "this replaces the merit set that the
+       player gets at the booth ... Replace all the existing generated merit
+       set models with this new model, those on the table, and also make sure
+       when the player picks it up, it shows this new model"). Every set in the
+       chapter is made here — the stall's six, the pile on the monk's dais, the
+       one presented, the one in his hands — so his model is put in every one:
+       a yellow bucket of robe and necessities under a ribbon-tied wrap
+       (tools/prepwess.mjs, 52k triangles), SET_H tall on the group's origin,
+       facing +z. The drawn tray stays as the stand-in until it lands (v4.7).
+       `after(model)` lets a caller dress the model once it is there (the hand's
+       render order). */
+    const SET_H = 0.42;
+    function mkTray(after) {
       const g = new THREE.Group();
+      const old = new THREE.Group(); g.add(old);
       const base = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.14, 0.05, 16),
         new THREE.MeshStandardMaterial({ color: 0xb98a3a, roughness: 0.5, metalness: 0.2 }));
-      base.position.y = 0.025; g.add(base);
+      base.position.y = 0.025; old.add(base);
       // a lotus bud, marigolds, three sticks of incense, a candle, an envelope
       const lot = new THREE.Mesh(new THREE.SphereGeometry(0.045, 10, 8), new THREE.MeshStandardMaterial({ color: 0xf4b8c8, roughness: 0.6 }));
-      lot.scale.set(1, 1.6, 1); lot.position.set(-0.05, 0.11, 0); g.add(lot);
+      lot.scale.set(1, 1.6, 1); lot.position.set(-0.05, 0.11, 0); old.add(lot);
       for (let k = 0; k < 7; k++) {
         const m = new THREE.Mesh(new THREE.SphereGeometry(0.028, 8, 6), new THREE.MeshStandardMaterial({ color: k % 2 ? 0xf2a11a : 0xf6c228, roughness: 0.8 }));
-        const a = k / 7 * Math.PI * 2; m.position.set(Math.cos(a) * 0.11, 0.07, Math.sin(a) * 0.11); g.add(m);
+        const a = k / 7 * Math.PI * 2; m.position.set(Math.cos(a) * 0.11, 0.07, Math.sin(a) * 0.11); old.add(m);
       }
       for (let k = 0; k < 3; k++) {
         const st = new THREE.Mesh(new THREE.CylinderGeometry(0.004, 0.004, 0.26, 4), new THREE.MeshStandardMaterial({ color: 0x9a3b2a }));
-        st.position.set(0.05 + k * 0.012, 0.09, -0.04); st.rotation.z = 1.35; g.add(st);
+        st.position.set(0.05 + k * 0.012, 0.09, -0.04); st.rotation.z = 1.35; old.add(st);
       }
       const cd = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, 0.12, 8), new THREE.MeshStandardMaterial({ color: 0xf3e4b0 }));
-      cd.position.set(0.06, 0.09, 0.07); cd.rotation.z = 1.4; g.add(cd);
+      cd.position.set(0.06, 0.09, 0.07); cd.rotation.z = 1.4; old.add(cd);
       const env = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.004, 0.07), new THREE.MeshStandardMaterial({ color: 0xf6f2e8, roughness: 0.8 }));
-      env.position.set(0.0, 0.058, 0.085); env.rotation.y = 0.2; g.add(env);
+      env.position.set(0.0, 0.058, 0.085); env.rotation.y = 0.2; old.add(env);
+      parseOnce('sangkathan').then(gltf => {
+        if (!alive) return;
+        const bb = new THREE.Box3().setFromObject(gltf.scene), k = SET_H / (bb.max.y - bb.min.y);
+        const m = gltf.scene.clone(true); m.scale.setScalar(k); m.position.y = -bb.min.y * k;
+        m.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.receiveShadow = true; } });
+        g.add(m); old.visible = false;
+        if (after) after(m);
+      }).catch(err => { console.warn('sangkathan failed to load', err); ctx.loadFail && ctx.loadFail('sangkathan', err); });
       g.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.receiveShadow = true; } });
       return g;
     }
@@ -2775,11 +2844,16 @@
     /* THE TRAY IN HIS HANDS: the offering set, carried low in front of him
        from the stall to the Ajarn. It lives on the camera, like chapter 1's
        note, and only in play. */
-    const handTray = mkTray();
+    const handTray = mkTray(m => m.traverse(o => { if (o.isMesh) { o.castShadow = false; o.renderOrder = 2; } }));
     /* carried low and to the left, the hand beside it: at 1.15x and 0.62 m it
-       filled the lower half of the frame (CP3) */
-    handTray.scale.setScalar(0.72);
-    handTray.position.set(-0.17, -0.40, -0.70); handTray.rotation.set(0.62, 0.25, 0);
+       filled the lower half of the frame (CP3). v18.8: the sangkathan set is a
+       bucket, taller than the tray, so it is held lower and nearly upright (a
+       tray tilted 0.62 to show its flowers; a bucket tilted so looks spilt).
+       Chad: "needs to be slightly bigger, and bring it downwards by abit so
+       that it doesn't look like its floating in mid air" — x0.85, its base
+       below the frame's bottom edge, carried rather than hovering */
+    handTray.scale.setScalar(0.85);
+    handTray.position.set(-0.17, -0.58, -0.72); handTray.rotation.set(0.22, 0.3, 0);
     handTray.traverse(o => { if (o.isMesh) { o.castShadow = false; o.renderOrder = 2; } });
     handTray.visible = false;
     camera.add(handTray); owned.push(handTray);
@@ -2914,7 +2988,7 @@
       talk(auntie, SECS.au1sell);
       queueLine('au1sell');
       if (worldSfx) { worldSfx('coins', 0.7); after(1.2, () => worldSfx('trayset', 0.8)); }
-      if (kit) kit.conduct({ note: 'Bought an offering set for the Ajarn.', s: 0, a: 2 });
+      if (kit) kit.conduct({ note: 'Bought a Sangkathan set for the Ajarn.', s: 0, a: 2 });
       // the tray she hands over comes off her counter
       const t = stallTrays[2]; if (t) t.visible = false;
       setPhase('shoes');
@@ -3689,6 +3763,10 @@
       leaveTick(dt);
       dropTick(wdt); doorTick(wdt); helperTick(wdt);
       handTray.visible = getState() === 'play' && pIdx(phase) >= 1 && pIdx(phase) <= 3;
+      /* v18.8: a fixed 0.17 m to the left put the set half off a portrait
+         phone's frame (it sees a third of the width); 0.42 of the visible
+         half-width at its depth, never more than 0.17 */
+      if (handTray.visible) handTray.position.x = -Math.min(0.17, 0.72 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.aspect * 0.42);
       if (getState() !== 'play') { lastWall = 0; rodG.visible = false; return; }
       const now = performance.now() / 1000;
       if (lastWall) dayClock.t += Math.min(0.5, now - lastWall);
@@ -4468,10 +4546,14 @@
     x.fillStyle = '#1f2a22'; x.fillRect(0, 0, S, S);
     x.save(); x.scale(1, 1.47);
     x.fillStyle = '#f2ecd6'; x.font = 'bold 26px sans-serif'; x.textAlign = 'center';
-    x.fillText('OFFERING SET', S / 2, 36);
-    x.font = '20px sans-serif';
-    x.fillText('Lotus · Candle · Incense', S / 2, 72);
-    x.fillStyle = '#f6c228'; x.font = 'bold 40px sans-serif'; x.fillText('฿ 100', S / 2, 128);
+    /* v18.8 (Chad: "The label at the booth should say Sangkathan set ...
+       Update the price to be more realistic for such a set"): a bucket set
+       of robe and necessities for the Sangha runs about 299-599 baht */
+    x.font = 'bold 24px sans-serif';
+    x.fillText('SANGKATHAN SET', S / 2, 36);
+    x.font = '19px sans-serif';
+    x.fillText('Robe · Tea · Soap · Candles', S / 2, 72);
+    x.fillStyle = '#f6c228'; x.font = 'bold 40px sans-serif'; x.fillText('฿ 399', S / 2, 128);
     x.restore();
     return done(THREE, c, false);
   }
