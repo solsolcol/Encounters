@@ -205,8 +205,8 @@
     [3.2,-1.4,3.4,-1],[3.5,-1.4,3.7,-1],[3.8,-1.4,3.9,-1],[4.8,-1.4,4.9,-1],[5.1,-1.4,5.2,-1],[5.4,-1.4,5.5,-1],[6.5,-1.4,6.6,-1.1],
     [-6.1,-0.9,-5.9,-0.8],[-4.3,-0.9,-4.1,-0.8],[4.3,-0.9,4.5,-0.8],[6,-0.9,6.2,-0.8]
   ];
-  const SECS = { z1arrive: 3.79, z1wai: 4.13, z1wait: 3.00, z1warm: 4.60, au1hi: 3.97, au1sell: 8.59, au1shoes: 4.36, aj1which: 3.44, aj1chosen: 1.86, aj1next: 1.72, aj1sit: 1.57, aj1breathe: 3.63, aj1katha: 10.61, aj1done: 1.65, aj1ask: 3.08,
-                 /* v16.1 */ mk1come: 3.40, mk1chant: 12.77, mk1teach: 14.37, hp1room: 6.19, aj1mat: 1.88, z1sadhu: 2.04, z1room: 1.88 };
+  const SECS = { z1arrive: 3.08, z1wai: 3.71, z1wait: 3.40, z1warm: 4.99, au1hi: 3.97, au1sell: 8.59, au1shoes: 4.36, aj1which: 3.44, aj1chosen: 1.86, aj1next: 1.72, aj1sit: 1.57, aj1breathe: 3.63, aj1katha: 10.61, aj1done: 1.65, aj1ask: 3.08,
+                 /* v16.1 */ mk1come: 3.40, mk1chant: 12.77, mk1teach: 14.37, hp1room: 6.19, aj1mat: 1.88, z1sadhu: 2.35, z1room: 1.65 };
 
   const hash = (i, s) => { const x = Math.sin(i * 127.1 + s * 311.7) * 43758.5453; return x - Math.floor(x); };
   const smooth = k => k * k * (3 - 2 * k);
@@ -4933,7 +4933,7 @@ vec3 frameCol(float d, vec2 q, float w){ float t = d / w;
     pitchTo(0.0, 3.0, 0.02, 0.05, smoothK);
     sfx(0.9, 'boomgate', 0.8);
     tr(1.3, 4.3, k => { F.boom.rotation.z = -1.32 * k; }, smoothK);
-    sfx(2.6, 'z1pro1');                               // 4.28 s → 6.88
+    sfx(2.6, 'z1pro1');                               // 6.27 s → 8.87, under the dip (v18.6, Brian)
     fade(8.7, 9.4, 0, 1);
 
     // 2 · THE OFFICE AT NIGHT (9.4 – 19.4)
@@ -4944,7 +4944,7 @@ vec3 frameCol(float d, vec2 q, float w){ float t = d / w;
     pitchTo(9.4, 19.4, -0.10, -0.16, smoothK);
     sfx(9.7, 'officehum', 0.55);
     sfx(10.3, 'keytype', 0.55);
-    sfx(11.0, 'z1pro2');                              // 4.13 s → 15.13
+    sfx(11.0, 'z1pro2');                              // 4.91 s → 15.91
     sfx(15.4, 'keytype', 0.4);
     fade(18.7, 19.4, 0, 1);
 
@@ -4958,9 +4958,9 @@ vec3 frameCol(float d, vec2 q, float w){ float t = d / w;
     pitchTo(27.0, 33.6, -0.02, -0.42, smoothK);
     sfx(19.8, 'wareamb', 0.6);
     sfx(20.4, 'taperip', 0.7);
-    sfx(20.6, 'z1pro3');                              // 5.88 s → 26.48
+    sfx(20.3, 'z1pro3');                              // 6.92 s → 27.22 (v18.6: 20.6 → 20.3, Brian's take is longer)
     sfx(24.2, 'orderchime', 0.45);
-    sfx(26.8, 'z1pro4');                              // 6.27 s → 33.07, under the dip
+    sfx(27.6, 'z1pro4');                              // 6.19 s → 33.79, under the dip (v18.6: 26.8 → 27.6, clear of z1pro3)
     sfx(28.6, 'orderchime', 0.55);
     sfx(30.6, 'orderchime', 0.6);
     sfx(31.8, 'orderchime', 0.65);
@@ -4979,7 +4979,7 @@ vec3 frameCol(float d, vec2 q, float w){ float t = d / w;
       api.pitch.rotation.x = -Math.atan2(y - AM.y, Math.hypot(x - AM.x, z - AM.z));
     }, rawK);
     tr(33.6, 42.4, k => { const g = F.amuletSpin(); if (g) g.rotation.y = 0.3 + k * 0.9; }, smoothK);
-    sfx(35.0, 'z1pro5');                              // 6.43 s → 41.43
+    sfx(35.0, 'z1pro5');                              // 5.56 s → 40.56
     fade(41.7, 42.4, 0, 1);
 
     // 5 · THE PLANE WINDOW AT DAWN (42.4 – 50.2)
@@ -4990,7 +4990,7 @@ vec3 frameCol(float d, vec2 q, float w){ float t = d / w;
     tr(42.4, 50.2, k => { api.yaw.position.y += Math.sin(k * 40) * 0.0012; });
     sfx(42.5, 'cabinhum', 0.6);
     sfx(43.3, 'seatchime', 0.5);
-    sfx(44.0, 'z1pro6');                              // 5.15 s → 49.15
+    sfx(44.0, 'z1pro6');                              // 5.41 s → 49.41
     fade(49.5, 50.2, 0, 1);
 
     // 6 · THE WAT, at dawn: through the gate, to where play begins (50.2 – 62)

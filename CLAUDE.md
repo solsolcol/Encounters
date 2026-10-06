@@ -4839,6 +4839,30 @@ What the baseline contains, by release:
   byte-verified (all 204 build files). Harnesses chapter, fixture, walk,
   state, resume, restart, menu, cine, leak, csp, text, sanity, inv, hosted
   green. docs/V18.0-E3C2-PLAN.md §13.
+- **v18.6** THE GROWN MAN IS BRIAN — Chad, after an audition of five voices
+  (`masters/v18.6/audition/`, Aaron among them): *"Go with brian, make sure
+  everything using player voiceline in episode 3 chapter 1 and 2 is replaced
+  by this new adult voice. Be very careful and detailed."* All 44 of the grown
+  man's lines (`who: "jamesAdult"`, z1* and z2*) re-said by Brian Nguyen
+  (`bP8FJDHmWVEgXJDitdQd`) in place of Louis — the registry's words exactly,
+  tags and all, two takes a line, picked by measurement (a clean end first,
+  then no odd hole, then the tighter read; `masters/v18.6/make.sh` names every
+  pick and why), the v16.0 chain (high-pass 70 Hz, mono, peak-matched twice).
+  The set was PROVEN complete before anything was generated: the two chapters
+  cue no boy or recruit line, the engine's boy lines are gated off since v18.5,
+  and `ADULT_TAKES` is asserted equal to the registry both ways. Every `secs`
+  re-measured into the registry and both chapters' `SECS`; then a STATIC
+  OVERLAP SCAN (`masters/v18.6/overlap.mjs`, old lengths against new, so it
+  reports only what the new voice changed) found seven places — chapter 1's
+  film (z1pro3 into z1pro4), chapter 2's endings B and D (the reflection into
+  `z2close`) and all four endings' last line 0.07 s past the scene — each
+  re-timed by half a second or less inside the same shot; the scan reads zero
+  after. Play-time lines wait on `SECS` and needed nothing. Brian's speech sits
+  1.0 dB under Louis's on average, which the voice bus's compressor evens; no
+  level moved. One tool bug found and fixed: `fetch.py` lettered takes in the
+  order they ARRIVED, so a line whose first take was still pending downloaded
+  its second take twice under both names (LEARNINGS). Sheet v87 exported — 42
+  length cells, no word moved (v44 stays the link).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -5403,7 +5427,7 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v86** (`masters/v18.5/masterz-text-v86.xlsx`, v85 with v18.5's words: e3c2's objective, presence and Step-back lines and its four conduct notes, Step back in five more chapters, `event.resistWhereKey`, three voice-line descriptions. v85 was `masters/v18.4/masterz-text-v85.xlsx`, v84 with v18.4's `event.resistWhere` and e3c2's decision prompt made true for both peaks. v84 was `masters/v18.1/masterz-text-v84.xlsx`, v83 with v18.1's three rapid-tap words and the fight's new brief. v83 was `masters/v18.0/masterz-text-v83.xlsx`, v82 plus episode 3 chapter 2's words and its 24 voice lines. v82 was `masters/v17.7/masterz-text-v82.xlsx`, v81 with v17.7's three Sak Yant names and words from Chad's reference pages. v81 was `masters/v17.6/masterz-text-v81.xlsx`, v80 plus v17.6's Sak Yant choice: three items' names, powers and words, the window's words, the chapter's four, and two Ajarn voice lines. v80 was `masters/v17.0/masterz-text-v80.xlsx`, v79 plus v17.0's three credit strings for the Khon masks. v79 was `masters/v16.9/masterz-text-v79.xlsx`, v78 plus v16.9's six credit strings — the temple and the slippers. v78 was `masters/v16.6/masterz-text-v78.xlsx`, v77 plus v16.6's four credit rows for the Tailandia packs. v77 was `masters/v16.1/masterz-text-v77.xlsx`, v76 with the monk's three voice lines re-said by Arthur at v16.2. v76 was `masters/v16.1/masterz-text-v76.xlsx`, five tabs: UI
+**THE SHEET IS v87** (`masters/v18.6/masterz-text-v87.xlsx`, v86 with Brian's measured lengths in 42 voice-line cells, no word moved. v86 was `masters/v18.5/masterz-text-v86.xlsx`, v85 with v18.5's words: e3c2's objective, presence and Step-back lines and its four conduct notes, Step back in five more chapters, `event.resistWhereKey`, three voice-line descriptions. v85 was `masters/v18.4/masterz-text-v85.xlsx`, v84 with v18.4's `event.resistWhere` and e3c2's decision prompt made true for both peaks. v84 was `masters/v18.1/masterz-text-v84.xlsx`, v83 with v18.1's three rapid-tap words and the fight's new brief. v83 was `masters/v18.0/masterz-text-v83.xlsx`, v82 plus episode 3 chapter 2's words and its 24 voice lines. v82 was `masters/v17.7/masterz-text-v82.xlsx`, v81 with v17.7's three Sak Yant names and words from Chad's reference pages. v81 was `masters/v17.6/masterz-text-v81.xlsx`, v80 plus v17.6's Sak Yant choice: three items' names, powers and words, the window's words, the chapter's four, and two Ajarn voice lines. v80 was `masters/v17.0/masterz-text-v80.xlsx`, v79 plus v17.0's three credit strings for the Khon masks. v79 was `masters/v16.9/masterz-text-v79.xlsx`, v78 plus v16.9's six credit strings — the temple and the slippers. v78 was `masters/v16.6/masterz-text-v78.xlsx`, v77 plus v16.6's four credit rows for the Tailandia packs. v77 was `masters/v16.1/masterz-text-v77.xlsx`, v76 with the monk's three voice lines re-said by Arthur at v16.2. v76 was `masters/v16.1/masterz-text-v76.xlsx`, five tabs: UI
 TEXT 292, EPISODE 1 114, EPISODE 2 193, EPISODE 3 41, VOICE LINES 337 — v76
 adds v16.1's four words, two changed cells and seven voice lines to v75).
 Was v75 (`masters/v16.0/masterz-text-v75.xlsx`, which added episode 3

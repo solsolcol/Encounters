@@ -5183,3 +5183,14 @@ the nearest covered one. And a shirt in the scan's own baked shadow is darker
 than the "dark" cut-off — exclude the shirt's hue from the dark class, or a
 shadowed shirt island reads as hair. Judged by a close-up render each time:
 three plausible rules in a row were wrong, and only the photograph said so.
+
+## A take's letter belongs to its session, not to when it arrived (v18.6)
+
+`masters/*/fetch.py` named takes `_a`, `_b` in the order their URLs were found,
+skipping sessions still pending — so when a line's FIRST take was still
+generating, its second take was saved as `_a`; the next run, with both done,
+skipped `_a` (already on disk) and saved the second take AGAIN as `_b`. Two
+lines (z2C1, z2arrive) measured as identical pairs, and the real first take
+was never compared. The letter is now fixed by the session's place in
+`sessions.json`. Check `md5sum raw/*` for duplicates before picking.
+

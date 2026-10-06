@@ -155,7 +155,7 @@
 
   /* the measured length of every line said OUTSIDE a cutscene
      (masters/v18.0: the installed files, ffprobe) */
-  const SECS = { z2arrive: 2.69, z2leaf: 3.71, z2kneel: 3.71, z2slip1: 3.00, z2slip2: 2.93, z2peak: 2.04,
+  const SECS = { z2arrive: 2.27, z2leaf: 4.05, z2kneel: 4.60, z2slip1: 1.88, z2slip2: 1.80, z2peak: 2.19,
                  lw2look: 2.72, lw2pull: 2.59 };
 
   const hash = (i, s) => { const x = Math.sin(i * 127.1 + s * 311.7) * 43758.5453; return x - Math.floor(x); };
@@ -2281,7 +2281,7 @@
     yawTo(0.0, 10.0, faceFrom(P.yant.x - 0.02, P.yant.z - 0.33, P.yant.x - 0.06, P.yant.z), faceFrom(P.yant.x - 0.04, P.yant.z - 0.27, P.yant.x - 0.07, P.yant.z), smoothK);
     pitchTo(0.0, 10.0, -0.16, -0.12, smoothK);
     for (const t of [0.9, 1.4, 1.9, 2.4, 2.85, 3.3, 3.75, 4.2, 4.6, 5.0, 5.4, 5.8, 6.2, 6.6, 7.0, 7.4, 7.8, 8.2]) sfx(t, 'yantap', 0.5);
-    sfx(2.2, 'z2pro1');                               // 5.15 s → 7.35
+    sfx(2.2, 'z2pro1');                               // 5.64 s → 7.84
     fade(9.3, 10.0, 0, 1);
 
     // 2 · HIS BUSINESS, BIGGER (10 – 20.5): the shopfront at evening, the van
@@ -2291,7 +2291,7 @@
     yawTo(10.0, 20.5, faceFrom(P.office.x - 1.6, P.office.z + 3.2, P.office.x - 0.6, P.office.z - 3.0), faceFrom(P.office.x - 0.4, P.office.z + 0.2, P.office.x + 0.6, P.office.z - 3.0), smoothK);
     pitchTo(10.0, 20.5, -0.06, -0.12, smoothK);
     sfx(10.3, 'officeamb2', 0.7);
-    sfx(11.2, 'z2pro2');                              // 5.88 s → 17.08
+    sfx(11.2, 'z2pro2');                              // 6.84 s → 18.04
     sfx(16.0, 'slidevan', 0.75);
     fade(19.8, 20.5, 0, 1);
 
@@ -2302,11 +2302,11 @@
     yawTo(20.5, 21.0, faceFrom(P.flat.x, P.flat.z + 0.18, P.flat.x + 0.1, P.flat.z - 0.9), faceFrom(P.flat.x, P.flat.z + 0.18, P.flat.x + 0.1, P.flat.z - 0.9), rawK);
     pitchTo(20.5, 25.5, -0.50, -0.44, smoothK);
     sfx(20.6, 'flatnight', 0.85);
-    sfx(21.8, 'z2pro3');                              // 6.35 s → 28.15
+    sfx(21.8, 'z2pro3');                              // 5.72 s → 27.52
     tr(25.5, 31.4, (k) => { api.handsPose(0.85 * smooth(k), 0.8 + (25.5 + k * 5.9) * 0.62, { from: 'rest' }); }, rawK);
     pitchTo(25.5, 30.2, -0.44, -0.12, smoothK);       // his eyes follow it up
     sfx(25.8, 'handsrise', 0.5);
-    sfx(28.6, 'z2pro4');                              // 6.53 s → 35.13
+    sfx(28.6, 'z2pro4');                              // 6.84 s → 35.44, under the dip
     sfx(31.5, 'handslip', 0.55);
     tr(31.4, 32.4, (k) => { api.handsPose(0.85 * (1 - smooth(k)), 4.5 + k * 0.4, { from: 'rest' }); }, rawK);
     step(32.45, () => { const m = api.rightHand(); if (m) api.setHandCurl(m, 1); });
@@ -2324,7 +2324,7 @@
     yawTo(35.6, 40.6, faceFrom(P.floor.x, P.floor.z + 0.16, P.floor.x + 0.1, P.floor.z - 0.8), faceFrom(P.floor.x, P.floor.z + 0.16, P.floor.x + 0.1, P.floor.z - 0.8), rawK);
     pitchTo(35.6, 37.0, -0.40, -0.36, smoothK);
     sfx(35.8, 'e3vesper', 0.32);
-    sfx(36.4, 'z2pro5');                              // 5.56 s → 41.96
+    sfx(36.4, 'z2pro5');                              // 4.75 s → 41.15
     tr(37.4, 40.2, (k) => { api.handsPose(0.6 * smooth(k), 1.0 + k * 2.2); }, rawK);
     sfx(37.6, 'handsrise', 0.45);
     tr(40.2, 40.5, (k) => { api.handsPose(0.6 * (1 - k), 3.2); }, rawK);
@@ -2344,7 +2344,7 @@
     pitchTo(44.0, 53.6, 0.16, 0.20, smoothK);
     sfx(44.0, 'templedusk', 0.7);
     sfx(44.4, 'e3vesper', 0.32);
-    sfx(45.8, 'z2pro6');                              // 5.64 s → 51.44
+    sfx(45.8, 'z2pro6');                              // 6.77 s → 52.57
     sfx(52.6, 'e3bell', 0.35);
     fade(53.6, 55.0, 0, 1);
     sfxFade(53.6, 55.0, 'e3vesper');                 // v18.5: the doors' chant and the dusk go down WITH the picture (they were cut at 55.1)
@@ -2364,7 +2364,7 @@
     const { step, sfx, sfxFade, fade, handsRoot } = api;
     fade(T, T + 2.4, 0, 1);
     sfxFade(T + 0.4, T + 6.6, 'e3close2');
-    sfx(T + 2.8, 'z2next');                           // 7.08 s
+    sfx(T + 2.6, 'z2next');                           // 7.47 s → T + 10.07, inside the scene (v18.6: 2.8 → 2.6)
     step(T + 10.2, () => { handsRoot.visible = true; });
     c.endFade = 1;
   }
@@ -2402,10 +2402,10 @@
     yawTo(7.0, 8.0, faceFrom(p0.x, p0.z, N.x, N.z - 0.2), s.yawRot, smoothK);
     step(7.6, () => { const n = stage.neighbour(); if (n) n.lookTo = 0; });
     pitchTo(7.4, 9.0, -0.18, -0.30, smoothK);          // down at his own hands, pressed together and shaking
-    sfx(7.6, 'z2A1');                                 // 5.25 s → 12.85
+    sfx(7.6, 'z2A1');                                 // 4.21 s → 11.81
     sfx(12.6, 'e3close2', 0.9);
     pitchTo(13.0, 21.0, -0.30, 0.10, smoothK);         // and up, slowly, to the Buddha
-    sfx(13.4, 'z2close');                             // 8.36 s → 21.76
+    sfx(13.4, 'z2close');                             // 8.44 s → 21.84
     ending(c, api, 21.9);
   }
 
@@ -2447,12 +2447,12 @@
     step(18.0, () => { handsRoot.visible = true; api.armR.visible = true; api.handsPose(0.22, 0, { from: 'rest' }); });
     tr(18.0, 25.0, (k, t) => { api.handsPose(0.22 * (1 - smooth(k)) + 0.03 * Math.sin(t * 9) * (1 - k), 0.5 + k * 2, { from: 'rest' }); }, rawK);
     pitchTo(17.6, 19.0, -0.32, -0.45, smoothK);
-    sfx(19.4, 'z2B1');                                // 6.35 s → 25.75
+    sfx(18.9, 'z2B1');                                // 7.39 s → 26.29 (v18.6: 19.4 → 18.9)
     step(25.2, () => { handsRoot.visible = false; });
     sfx(25.4, 'e3close2', 0.9);
     pitchTo(25.6, 32.0, -0.45, 0.42, smoothK);         // up at the night over the courtyard
-    sfx(26.0, 'z2close');                             // 8.36 s → 34.36
-    ending(c, api, 34.5);
+    sfx(26.6, 'z2close');                             // 8.44 s → 35.04 (v18.6: 26.0 → 26.6, clear of z2B1)
+    ending(c, api, 35.0);
   }
 
   /* C · LET IT RUN (worst) — it takes all of him; the chant falters; the
@@ -2488,14 +2488,14 @@
     tr(6.6, 9.4, (k) => { duck('e3vesper', 1 - k); }, rawK);
     step(8.2, () => { stage.lookAll(1); });
     sfx(9.6, 'handsrise', 0.6);
-    sfx(10.4, 'z2C1');                                // 6.53 s → 16.93
+    sfx(10.4, 'z2C1');                                // 6.61 s → 17.01
     // it leaves him: the hands drop, the lens slumps forward
     tr(14.0, 18.6, (k) => { api.yaw.rotation.y = s.yawRot; }, rawK);
     pitchTo(15.6, 18.6, s.pitchX, -0.62, smoothK);   // (s.pitchX again by 8.4)
     step(18.6, () => { camera.rotation.z = 0; stage.shadow.material.opacity = 0.22; });
     sfx(18.4, 'handslip', 0.6);
     sfx(18.8, 'e3close2', 0.85);
-    sfx(19.4, 'z2close');                             // 8.36 s → 27.76
+    sfx(19.4, 'z2close');                             // 8.44 s → 27.84
     pitchTo(20.0, 27.0, -0.62, -0.25, smoothK);
     void p0; void Y; void yawTo; void faceFrom;
     ending(c, api, 27.9);
@@ -2524,11 +2524,11 @@
     step(4.6, () => { const y = stage.yai(); if (y) y.lookTo = 0; const kd = stage.kid(); if (kd) kd.lookTo = 0; });
     step(5.8, () => { const f = stage.frontMan(); if (f) f.lookTo = 0; });
     tr(4.0, 9.0, (k) => { duck('e3vesper', 1 - 0.25 * k); }, rawK);
-    sfx(8.2, 'z2D1');                                 // 6.19 s → 14.39
+    sfx(7.6, 'z2D1');                                 // 7.55 s → 15.15 (v18.6: 8.2 → 7.6)
     sfx(14.2, 'e3close2', 0.9);
     pitchTo(14.4, 22.0, -0.5, 0.16, smoothK);          // up, to the Buddha
-    sfx(15.0, 'z2close');                             // 8.36 s → 23.36
-    ending(c, api, 23.5);
+    sfx(15.5, 'z2close');                             // 8.44 s → 23.94 (v18.6: 15.0 → 15.5, clear of z2D1)
+    ending(c, api, 24.0);
   }
 
   (window.__CHAPTERS__ = window.__CHAPTERS__ || {}).e3c2 = Object.assign(DATA, {

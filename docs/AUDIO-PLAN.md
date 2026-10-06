@@ -1122,3 +1122,16 @@ masters/v16.4/make.sh, both peak -4 dBFS, e3c1's own pack.
 - `wingflap` — take a of two: its energy spread 33/26/32/9 % across the bands;
   take b was 91.5 % under 120 Hz, a thump a phone cannot play. Played once
   when the pigeons go up.
+
+## v18.6 · Brian, the grown man's voice (episode 3, 44 lines)
+
+Chad picked Brian Nguyen (`bP8FJDHmWVEgXJDitdQd`, eleven_v3) from a five-voice
+audition to replace Louis for every `jamesAdult` line in episode 3 chapters 1
+and 2. 88 takes, none failed (a concurrency limit delayed a third of them; the
+service retried by itself). Picks and reasons: `masters/v18.6/make.sh`;
+measures: `meas.txt`, `pauses.txt`. Chain unchanged from v16.0 (high-pass
+70 Hz, mono, peak -6.85 mp3 / -6.6 ogg, two passes); every output landed
+within 0.5 dB. Speech level against Louis, line by line: -1.0 dB on average
+(-6.0 to +4.6) — the voice bus's compressor evens it, so nothing moved. Length
+changes re-timed seven cues (`overlap.mjs`, zero new collisions after).
+
