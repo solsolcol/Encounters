@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "18.6"
+VERSION = "18.7"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -395,10 +395,15 @@ ASSETS = {
     'naga':         ('assets/naga.glb', True, False),         # e3c1 v16.6: Chad's naga, the sala's staircase balustrades (tools/prepwess.mjs, BEND)
     'temple':       ('assets/temple.glb', True, False),       # e3c1 v16.9: Chad's Lanna temple in the sala's place (masters/v16.8/temple/bake.mjs, then tools/preptemple.mjs)
     'slipper':      ('assets/slipper.glb', True, False),      # e3c1 v16.9: Chad's Sketchfab flip-flops — every pair at the wat, coloured per pair (tools/prepslipper.mjs)
-    'khonmask':     ('assets/khonmask.glb', True, False),     # e3c1 v16.9: Chad's Sketchfab Khon mask, five on the Ajarn's mask stand (tools/prepwess.mjs, TEXPX=1024 ERR=0.004, 0.075)
+    # (v18.7: 'khonmask' — v16.9's five Khon masks on the Ajarn's stand — left the
+    #  game at Chad's word, replaced by his row of lersi masks on the wall; the
+    #  file stays in assets/ and masters/, nothing loads it)
+    'lersimask':    ('assets/lersimask.glb', True, False),    # e3c1 v18.7: Chad's row of lersi masks, on the wall behind the Ajarn (tools/prepwess.mjs LONG=1, 0.2)
+    'altarrow':     ('assets/altarrow.glb', True, False),     # e3c1 v18.7: Chad's row of altar statues, on the room's east wall (tools/prepwess.mjs LONG=1 NPX=2048, 0.2)
+    'customer':     ('assets/customer.glb', True, False),     # e3c1 v18.7: Chad's Sak Yant customer — Sit_Dodge, the stand, the walk (tools/prepmonk.mjs 0.3: weights diffused, normals shared)
     'sitwomantalk': ('assets/sitwomantalk.glb', True, False), # e3c1 v17.4: the stall auntie's talking take — the monk's Sitting_Answering_Questions retargeted onto sitwoman (masters/v17.4)
     'monk':         ('assets/monk.glb', True, False),         # e3c1 v16.8: Chad's monk, five takes, skin weights diffused (tools/prepmonk.mjs)
-    'ajarn':        ('assets/ajarn.glb', True, False),        # e3c1 v16.8: Chad's Sak Yant Ajarn, seven takes, the same prep
+    'ajarn':        ('assets/ajarn.glb', True, False),        # e3c1 v18.7: Chad's Ajahn Krukai (was v16.8's Ajarn) — deflattened, Chair_Sit_Idle_M retargeted in from v16.8's file, prepmonk 0.3 (masters/v18.7)
     # e3c2 v18.0: the evening chant's crowd — five characters re-posed sitting
     # on the floor (the monk's Sit_Cross_Legged_on_Floor retargeted in world
     # space, tools/retarget.mjs) and simplified for a crowd (tools/prepwoman.mjs);
@@ -432,7 +437,7 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'ghostsoldier', 'encik2', 'bunkbed', 'cafestaff', 'foodwarmer', 'flashlight',
            'kamaz', 'forest', 'rifle', 'ghostcyclist', 'fboaim',
            'muzzle', 'ammocrate', 'ammomags', 'icontorch', 'zavsoldier',
-           'thaikit', 'wessred', 'wessgreen', 'naga', 'monk', 'ajarn', 'temple', 'slipper', 'khonmask', 'sitwomantalk',
+           'thaikit', 'wessred', 'wessgreen', 'naga', 'monk', 'ajarn', 'temple', 'slipper', 'lersimask', 'altarrow', 'customer', 'sitwomantalk',
            'lay_admintee', 'lay_botak', 'lay_granny', 'lay_scold', 'lay_sitwoman', 'monkrow'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone
 HOSTED_ONLY |= E2_ONLY
 

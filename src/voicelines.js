@@ -850,6 +850,8 @@
       text: "[a little sheepish] I didn't really know what I was doing. I copied the man beside me.", secs: 3.71 },
     { id: "z1wait", who: "jamesAdult", ch: "e3c1", where: "Sitting on the mat, waiting his turn",
       text: "I told myself it was for the business. Nothing more.", secs: 3.4 },
+    { id: "z1trance", who: "jamesAdult", ch: "e3c1", where: "On the mat, watching the man under the rod flinch (v18.7)",
+      text: "[uneasy] This guy seems to be in some kind of trance... Is he just acting it out... or is it truly the Sak Yant's energy?", secs: 9.29 },
     { id: "z1warm", who: "jamesAdult", ch: "e3c1", where: "The yant is finished, and it warms",
       text: "[unsettled] It went warm. Not the sting... something under it.", secs: 4.99 },
     { id: "z1askA", who: "jamesAdult", ch: "e3c1", where: "Scene A: what he asks of it",

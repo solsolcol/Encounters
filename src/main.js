@@ -6469,7 +6469,7 @@ const TEEN_TAKES = new Set([
    His files are `z*` — episode 3's chapters are z1..z5. */
 const ADULT_TAKES = new Set([
   'z1pro1', 'z1pro2', 'z1pro3', 'z1pro4', 'z1pro5', 'z1pro6',
-  'z1arrive', 'z1wai', 'z1wait', 'z1warm', 'z1close', 'z1next',
+  'z1arrive', 'z1wai', 'z1wait', 'z1trance', 'z1warm', 'z1close', 'z1next',
   'z1askA', 'z1askB', 'z1askC', 'z1askD', 'z1A', 'z1B',
   'z1C', 'z1D', 'z1sadhu', 'z1room',
   /* v18.0 · episode 3 chapter 2 */
@@ -9610,7 +9610,7 @@ const STING_SAMPLE = {
      five memories, and the three music cues (e3film, e3wait, e3close) */
   z1pro1: ['z1pro1', 1], z1pro2: ['z1pro2', 1], z1pro3: ['z1pro3', 1], z1pro4: ['z1pro4', 1],
   z1pro5: ['z1pro5', 1], z1pro6: ['z1pro6', 1], z1arrive: ['z1arrive', 1], z1wai: ['z1wai', 1],
-  z1wait: ['z1wait', 1], z1warm: ['z1warm', 1], z1close: ['z1close', 1], z1next: ['z1next', 1],
+  z1wait: ['z1wait', 1], z1trance: ['z1trance', 1], z1warm: ['z1warm', 1], z1close: ['z1close', 1], z1next: ['z1next', 1],
   z1askA: ['z1askA', 1], z1askB: ['z1askB', 1], z1askC: ['z1askC', 1], z1askD: ['z1askD', 1],
   z1A: ['z1A', 1], z1B: ['z1B', 1], z1C: ['z1C', 1], z1D: ['z1D', 1],
   aj1which: ['aj1which', 1], aj1chosen: ['aj1chosen', 1],   // v17.6

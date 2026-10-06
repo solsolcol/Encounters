@@ -5194,3 +5194,30 @@ lines (z2C1, z2arrive) measured as identical pairs, and the real first take
 was never compared. The letter is now fixed by the session's place in
 `sessions.json`. Check `md5sum raw/*` for duplicates before picking.
 
+
+## The retarget tool froze every parent at rest (v18.7)
+
+`tools/retarget.mjs` computed a source bone's world rotation as its parent's
+world REST times its own animated local — so every hips, spine and leg turn
+above a bone was left out of that bone's world, and the "delta from rest" it
+carried over was wrong wherever a parent moved. Proof: retarget a rig's own
+take back onto the same rig, which must come out identical — it came out
+**126° wrong at the feet** (`masters/v18.7/selfcmp.mjs`). Fixed by solving the
+source's animated world parents-first over its whole hierarchy; the same
+self-retarget is now 0.0° off, and the old Ajarn's answering take retargeted
+onto Krukai matches Mixamo's own copy of it by photograph. The law: **a
+retarget is proven by retargeting a rig onto ITSELF first** — any error there
+is the tool's. The older outputs made with it (v17.4's `sitwomantalk`, v18.0's
+`lay_*` crowd) were each judged by photograph when they shipped and are left
+as they are. And a retargeted SEATED take needs the source's hips translation
+too (`masters/v18.7/addhips.mjs`, scaled by the two rigs' rest hip heights) —
+the tool writes rotations only, and without it a seated man floats at
+standing height.
+
+## A flat-shaded export will not simplify — check before blaming the simplifier (v18.7)
+
+Chad's Krukai arrived as 596k triangles over 1.195M vertices — four copies of
+every one of 298k positions, each with its own face normal (2000 of 2000
+sampled triangles flat). `prepmonk.mjs` "simplified" it to 596k at ratio 0.3
+and wrote 18 MB. `tools/deflatten.mjs` first (v8.0's tool, for exactly this),
+then the prep: 179k, 2.9 MB. The tell is vertices ÷ triangles ≈ 2.

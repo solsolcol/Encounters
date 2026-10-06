@@ -223,19 +223,31 @@ for (const dn of dstRest.order) {
   mapped.push({ dn, sn, name: entry[0] });
 }
 
+/* v18.7: the source bone's world rotation this frame is its parent's
+   ANIMATED world rotation times its own animated local — solved parents
+   first over the take's whole hierarchy. Until v18.7 this read the parent's
+   world REST, which is only right while every parent holds still: a take
+   retargeted back onto its OWN rig came out 126° wrong at the feet
+   (masters/v18.7/selfcmp.mjs), because every hips/spine/leg turn above a
+   bone was left out of that bone's world. */
+const srcWorld = new Map();
+for (const sn of srcRest.order) {
+  const tr = srcTrack.get(sn), pa = srcRest.parent.get(sn), pw = pa ? srcWorld.get(pa) : null;
+  const rows = new Array(F);
+  for (let f = 0; f < F; f++) {
+    const l = tr ? sampleQ(tr, times[f]) : qNorm(sn.getRotation());
+    rows[f] = qNorm(qMul(pw ? pw[f] : [0, 0, 0, 1], l));
+  }
+  srcWorld.set(sn, rows);
+}
+
 const dstWorld = new Map();          // node -> per-frame world rotation
 const outLocal = new Map();          // node -> per-frame local rotation (the result)
 for (const { dn, sn } of mapped) {
-  const sTrack = srcTrack.get(sn);
   const sRestW = srcRest.rot.get(sn), dRestW = dstRest.rot.get(dn);
   const world = new Array(F), local = new Array(F);
   for (let f = 0; f < F; f++) {
-    /* the source bone's world rotation this frame: its parent's world rest
-       (the take's own hierarchy is static apart from these tracks) times its
-       animated local */
-    const sLocal = sTrack ? sampleQ(sTrack, times[f]) : qNorm(sn.getRotation());
-    const sParentW = srcRest.parent.has(sn) ? srcRest.rot.get(srcRest.parent.get(sn)) : [0, 0, 0, 1];
-    const sW = qMul(sParentW, sLocal);
+    const sW = srcWorld.get(sn)[f];
     const delta = qMul(sW, qInv(sRestW));            // what the SOURCE turned through
     const dW = qNorm(qMul(delta, dRestW));           // same turn, from the TARGET's rest
     world[f] = dW;

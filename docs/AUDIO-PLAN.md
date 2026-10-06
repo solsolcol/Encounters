@@ -1135,3 +1135,16 @@ within 0.5 dB. Speech level against Louis, line by line: -1.0 dB on average
 (-6.0 to +4.6) — the voice bus's compressor evens it, so nothing moved. Length
 changes re-timed seven cues (`overlap.mjs`, zero new collisions after).
 
+
+## v18.7 · z1trance, one new line for the grown man
+
+Episode 3 chapter 1, on the mat while the customer flinches under the rod
+(Chad: "This guy seems to be in some kind of trance, is he just acting it
+out...or is it truly the sakyant's energy?"). Brian (`bP8FJDHmWVEgXJDitdQd`),
+eleven_v3, "[uneasy] This guy seems to be in some kind of trance... Is he just
+acting it out... or is it truly the Sak Yant's energy?", four takes
+(`masters/v18.7/sessions.json`). Picked take a: the cleanest end (−37.5 dB;
+b and d end on signal), no spoken tag in any of the four. v18.6's chain
+(`masters/v18.7/make.sh`): mp3 −6.69 / ogg −6.68 dBFS, 9.29 s. Queued after
+the Ajarn's katha (~17.2–26.5 s on the mat clock); the work's end moved 5.5 s
+later to make room, so nothing overlaps it.

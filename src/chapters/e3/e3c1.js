@@ -117,7 +117,8 @@
        is the botak recruit in saffron, seated; the stall auntie
        (v17.4) is the pink-shirt woman from the tang-ki's audience, seated,
        talking on the monk's take retargeted onto her; the man under the
-       needle is the botak recruit; the man by the walkway is the standing
+       needle (v18.7) is Chad's Sak Yant customer, and the Ajarn Chad's Ajahn
+       Krukai; the man by the walkway is the standing
        man; the
        amulet in the film is episode 1's Phiboon (the auntie gave it to him
        when he was a boy, a callback nobody has to notice). */
@@ -125,7 +126,7 @@
        back at the stirring (the engine prepares an item's model at the
        curtain; these have none, they are drawings, but they are declared) */
     items: ['yantgaoyord', 'yanthahtaew', 'yantsroi'],
-    assets: ['admintee', 'botak', 'sitwoman', 'sitwomantalk', 'standman', 'phiboon', 'tree1', 'tree2', 'tree3', 'tree4', 'thaikit', 'wessred', 'wessgreen', 'naga', 'monk', 'ajarn', 'temple', 'slipper', 'khonmask'],
+    assets: ['admintee', 'customer', 'sitwoman', 'sitwomantalk', 'standman', 'phiboon', 'tree1', 'tree2', 'tree3', 'tree4', 'thaikit', 'wessred', 'wessgreen', 'naga', 'monk', 'ajarn', 'temple', 'slipper', 'lersimask', 'altarrow'],
 
     /* THE SOUND. `watamb` is the dawn temple (birds, a far road, a broom on
        stone, wind chimes); `e3chant` is the monks' morning chanting from the
@@ -205,7 +206,7 @@
     [3.2,-1.4,3.4,-1],[3.5,-1.4,3.7,-1],[3.8,-1.4,3.9,-1],[4.8,-1.4,4.9,-1],[5.1,-1.4,5.2,-1],[5.4,-1.4,5.5,-1],[6.5,-1.4,6.6,-1.1],
     [-6.1,-0.9,-5.9,-0.8],[-4.3,-0.9,-4.1,-0.8],[4.3,-0.9,4.5,-0.8],[6,-0.9,6.2,-0.8]
   ];
-  const SECS = { z1arrive: 3.08, z1wai: 3.71, z1wait: 3.40, z1warm: 4.99, au1hi: 3.97, au1sell: 8.59, au1shoes: 4.36, aj1which: 3.44, aj1chosen: 1.86, aj1next: 1.72, aj1sit: 1.57, aj1breathe: 3.63, aj1katha: 10.61, aj1done: 1.65, aj1ask: 3.08,
+  const SECS = { z1arrive: 3.08, z1wai: 3.71, z1wait: 3.40, z1trance: 9.29, z1warm: 4.99, au1hi: 3.97, au1sell: 8.59, au1shoes: 4.36, aj1which: 3.44, aj1chosen: 1.86, aj1next: 1.72, aj1sit: 1.57, aj1breathe: 3.63, aj1katha: 10.61, aj1done: 1.65, aj1ask: 3.08,
                  /* v16.1 */ mk1come: 3.40, mk1chant: 12.77, mk1teach: 14.37, hp1room: 6.19, aj1mat: 1.88, z1sadhu: 2.35, z1room: 1.65 };
 
   const hash = (i, s) => { const x = Math.sin(i * 127.1 + s * 311.7) * 43758.5453; return x - Math.floor(x); };
@@ -1073,52 +1074,86 @@
       const beyond = new THREE.Mesh(new THREE.BoxGeometry(1.6, dh + 0.1, 1.4), new THREE.MeshBasicMaterial({ color: 0x0a0806, side: THREE.BackSide }));
       beyond.position.set(dx, F + dh / 2, Z1 + 0.2 + 0.7); roomG.add(beyond);
 
-      /* THE SHRINE on the back wall, over the Ajarn's shoulder */
-      const sx = DAIS.x - ROOM.x, sz = Z0 + 0.26;
-      box(3.2, 0.07, 0.46, sx, F + 1.72, sz, matRed, roomG, false);
-      box(3.24, 0.03, 0.48, sx, F + 1.76, sz, matGold, roomG, false);
-      box(3.2, 0.07, 0.36, sx, F + 2.34, sz - 0.05, matRed, roomG, false);
-      for (const ex of [-1.5, 1.5]) box(0.06, 0.7, 0.06, sx + ex, F + 2.05, sz - 0.12, matWoodD, roomG, false);
-      /* v16.6: the pack's Buddha, sized to clear the shelf above (its flame
-         stops a hair under the board at F + 2.305) */
-      thai('buddha', sx, F + 1.76, sz - 0.02, { s: 1.02, tint: GOLD_T, glow: 0.2, parent: roomG, hide: [mkBuddha(sx, F + 1.76, sz - 0.02, 0.36, roomG)] });
-      for (const ex of [-0.55, 0.55]) thai('buddha', sx + ex, F + 1.76, sz + 0.04, { s: 0.78, tint: GOLD_T, glow: 0.2, parent: roomG, hide: [mkBuddha(sx + ex, F + 1.76, sz + 0.04, 0.22, roomG)] });
-      // gold standing images at the ends of the top shelf
-      for (const ex of [-1.35, 1.35]) thai('deity', sx + ex, F + 2.378, sz - 0.05, { s: 0.3, parent: roomG, cast: false });
-      mkRuesi(sx - 1.15, F + 1.76, sz, roomG);
-      // the old masters, framed, on the top shelf
-      const abbot = new THREE.MeshStandardMaterial({ map: tex(makeAbbot(THREE, cnv)), roughness: 0.6 });
-      for (const ex of [-0.9, 0.0, 0.9]) {
-        box(0.36, 0.46, 0.03, sx + ex, F + 2.62, sz - 0.12, matGold, roomG, false);
-        const ph = new THREE.Mesh(new THREE.PlaneGeometry(0.3, 0.4), abbot); ph.position.set(sx + ex, F + 2.62, sz - 0.1); roomG.add(ph);
+      /* v18.7 · THE BACK WALL IS THE MASKS, THE EAST WALL THE ALTAR (Chad:
+         "use this row of lersi masks model to completely replace the existing
+         ones ... mounted on the wall prominently, instead of on the floor. The
+         row of masks must be behind the AJ Krukai, instead of the buddha
+         statues" — and "'row of altar statues', this replaces the rows of
+         buddha statues completely ... move this to the sidewall, but it still
+         must be easily seen by the player the moment he enters the room").
+         v16.1's shelf-shrine — its two boards, the pack's Buddhas, the two
+         standing deities and the Ruesi — is gone with v16.9's Khon stand. What
+         stood on the shrine and was not a statue MOVED with the altar: the
+         four candles, the incense pot and its smoke, the two garlands, and
+         the old masters' three photographs, hung over it. Both rows are
+         Chad's scans (tools/prepwess.mjs), on their base centre, facing +z. */
+      const sx = DAIS.x - ROOM.x;
+      const MASK_S = 1.15, MASK_Y = F + 1.30;                 // 2.19 m wide, F+1.30..F+2.91 (the ceiling is F+3.0)
+      const ALT_S = 1.1, ALT_W = 1.904 * ALT_S, ALT_D = 0.889 * ALT_S;
+      const AZ = -2.05, PL_H = 0.52, PL_D = ALT_D + 0.2, PL_X = HW - PL_D / 2;   // the plinth: the row's footprint and a ledge in front
+      const ALT_X = HW - 0.02 - ALT_D / 2, LEDGE_X = HW - PL_D + 0.09;
+      function wallScan(key, x, y, z, ry, sc, stand) {
+        parseOnce(key).then(gltf => {
+          if (!alive) return;
+          const m = gltf.scene.clone(true);
+          m.scale.setScalar(sc); m.position.set(x, y, z); m.rotation.y = ry;
+          m.traverse(o => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = true; } });
+          roomG.add(m);
+          for (const h of stand) h.visible = false;
+        }).catch(err => { console.warn(key + ' failed to load', err); ctx.loadFail && ctx.loadFail(key, err); });
       }
-      // candles, a vase of lotus, the incense pot and its smoke, garlands
-      for (const ex of [-0.95, -0.8, 0.8, 0.95]) {
-        thai('candle', sx + ex, F + 1.76, sz + 0.14, { s: 0.4, parent: roomG, cast: false,
-          hide: [cyl(0.018, 0.018, 0.16, sx + ex, F + 1.84, sz + 0.14, new THREE.MeshStandardMaterial({ color: 0xf3e4b0, roughness: 0.6 }), 8, roomG)] });
+      // the masks: the scan's back (its brackets) flush on the back wall, centred over him
+      {
+        const stand = [box(2.1, 0.05, 0.36, sx, MASK_Y + 0.05, Z0 + 0.19, matRed, roomG, false),
+                       box(2.1, 0.05, 0.36, sx, MASK_Y + 0.75, Z0 + 0.19, matRed, roomG, false)];
+        wallScan('lersimask', sx, MASK_Y, Z0 + 0.012 + 0.308 * MASK_S, 0, MASK_S, stand);
+      }
+      // the altar row on its plinth, against the east wall, turned to face the room
+      {
+        box(PL_D, PL_H, ALT_W + 0.16, PL_X, F + PL_H / 2, AZ, matRed, roomG, false);
+        box(PL_D + 0.04, 0.04, ALT_W + 0.2, PL_X, F + PL_H + 0.02, AZ, matGold, roomG, false);
+        box(PL_D + 0.04, 0.06, ALT_W + 0.2, PL_X, F + 0.03, AZ, matGold, roomG, false);
+        solids.push(hid(box(PL_D, 1.4, ALT_W + 0.16, PL_X, F + 0.7, AZ, matProxy, roomG, false)));
+        const stand = [mkBuddha(ALT_X, F + PL_H + 0.04, AZ, 0.36, roomG)];
+        wallScan('altarrow', ALT_X, F + PL_H + 0.04, AZ, -Math.PI / 2, ALT_S, stand);
+      }
+      // the old masters, framed, on the east wall over the altar
+      const abbot = new THREE.MeshStandardMaterial({ map: tex(makeAbbot(THREE, cnv)), roughness: 0.6 });
+      for (const ez of [-0.62, 0.0, 0.62]) {
+        const g = new THREE.Group(); g.position.set(HW - 0.02, F + 2.42, AZ + ez); g.rotation.y = -Math.PI / 2; roomG.add(g);
+        box(0.36, 0.46, 0.03, 0, 0, 0, matGold, g, false);
+        const ph = new THREE.Mesh(new THREE.PlaneGeometry(0.3, 0.4), abbot); ph.position.z = 0.02; g.add(ph);
+      }
+      // candles on the plinth's ledge, the incense pot at its end, and the smoke
+      const LY = F + PL_H + 0.04;
+      for (const ez of [-0.95, -0.8, 0.8, 0.95]) {
+        thai('candle', LEDGE_X, LY, AZ + ez, { s: 0.4, parent: roomG, cast: false,
+          hide: [cyl(0.018, 0.018, 0.16, LEDGE_X, LY + 0.08, AZ + ez, new THREE.MeshStandardMaterial({ color: 0xf3e4b0, roughness: 0.6 }), 8, roomG)] });
         const f = new THREE.Mesh(new THREE.SphereGeometry(0.014, 8, 6), new THREE.MeshBasicMaterial({ color: 0xffc46a, transparent: true, opacity: 0.95, fog: false }));
-        f.scale.set(1, 1.8, 1); f.position.set(sx + ex, F + 1.94, sz + 0.14); roomG.add(f); candles.push(f);
+        f.scale.set(1, 1.8, 1); f.position.set(LEDGE_X, LY + 0.18, AZ + ez); roomG.add(f); candles.push(f);
       }
       {
-        const pot = [cyl(0.1, 0.08, 0.1, sx + 1.25, F + 1.81, sz + 0.1, matGold, 14, roomG)];
+        const iz = AZ + ALT_W / 2 - 0.02;
+        const pot = [cyl(0.1, 0.08, 0.1, LEDGE_X, LY + 0.05, iz, matGold, 14, roomG)];
         for (let k = 0; k < 4; k++) {
-          const st = cyl(0.004, 0.004, 0.26, sx + 1.22 + k * 0.02, F + 1.96, sz + 0.1, matRedD, 3, roomG);
-          st.rotation.z = (k - 1.5) * 0.08; pot.push(st);
+          const st = cyl(0.004, 0.004, 0.26, LEDGE_X, LY + 0.2, iz - 0.03 + k * 0.02, matRedD, 3, roomG);
+          st.rotation.x = (k - 1.5) * 0.08; pot.push(st);
         }
-        thai('incense', sx + 1.25, F + 1.76, sz + 0.1, { s: 0.42, parent: roomG, cast: false, hide: pot });   // v16.6
+        thai('incense', LEDGE_X, LY, iz, { s: 0.42, parent: roomG, cast: false, hide: pot });   // v16.6
+        if (makeSoftDot) {
+          const dot = makeSoftDot(); madeTex.push(dot);
+          const N = 12, geo = new THREE.BufferGeometry();
+          geo.setAttribute('position', new THREE.Float32BufferAttribute(new Float32Array(N * 3), 3));
+          roomSmoke = new THREE.Points(geo, new THREE.PointsMaterial({ map: dot, size: 0.13, transparent: true, opacity: 0.28, depthWrite: false, color: 0xd8d0c4 }));
+          roomSmoke.frustumCulled = false; roomSmoke.userData.seed = Array.from({ length: N }, (_, i) => hash(i, 11));
+          roomSmoke.userData.at = new THREE.Vector3(ROOM.x + LEDGE_X, LY + 0.29, ROOM.z + iz);
+          world.add(roomSmoke);
+        }
       }
-      if (makeSoftDot) {
-        const dot = makeSoftDot(); madeTex.push(dot);
-        const N = 12, geo = new THREE.BufferGeometry();
-        geo.setAttribute('position', new THREE.Float32BufferAttribute(new Float32Array(N * 3), 3));
-        roomSmoke = new THREE.Points(geo, new THREE.PointsMaterial({ map: dot, size: 0.13, transparent: true, opacity: 0.28, depthWrite: false, color: 0xd8d0c4 }));
-        roomSmoke.frustumCulled = false; roomSmoke.userData.seed = Array.from({ length: N }, (_, i) => hash(i, 11));
-        roomSmoke.userData.at = new THREE.Vector3(DAIS.x + 1.25, F + 2.05, ROOM.z + sz + 0.1);
-        world.add(roomSmoke);
-      }
+      // the garlands, swagged across the plinth's front
       for (let i = 0; i < 2; i++) {
-        const pts = [], w = 3.0, y = F + 1.7 + i * 0.62, z = sz + 0.24 - i * 0.05;
-        for (let k = 0; k <= 16; k++) { const t = k / 16; pts.push(new THREE.Vector3(sx - w / 2 + t * w, y - Math.sin(t * Math.PI) * 0.12, z)); }
+        const pts = [], w = ALT_W + 0.1, y = F + PL_H - 0.04 - i * 0.16, x = HW - PL_D - 0.025 - i * 0.005;
+        for (let k = 0; k <= 16; k++) { const t = k / 16; pts.push(new THREE.Vector3(x, y - Math.sin(t * Math.PI) * 0.1, AZ - w / 2 + t * w)); }
         roomG.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 32, 0.022, 6, false), new THREE.MeshStandardMaterial({ color: i ? 0xf6c228 : 0xf5f0de, roughness: 0.7 })));
       }
 
@@ -1133,7 +1168,7 @@
       cloth(1, -HW + 0.02, F + 1.75, -1.6, Math.PI / 2);
       cloth(2, -HW + 0.02, F + 1.75, -0.3, Math.PI / 2, 0.7, 0.7);
       cloth(3, -HW + 0.02, F + 1.75, 1.0, Math.PI / 2);
-      cloth(0, HW - 0.02, F + 1.8, -2.35, -Math.PI / 2, 0.55, 0.75);
+      cloth(0, HW - 0.02, F + 1.8, 0.95, -Math.PI / 2, 0.55, 0.75);   // v18.7: moved along the wall, the altar has its old place
       cloth(1, HW - 0.02, F + 1.8, 1.8, -Math.PI / 2, 0.55, 0.75);
       cloth(2, 0.9, F + 1.7, Z1 - 0.02, Math.PI, 0.9, 0.9);
       cloth(3, 2.4, F + 1.7, Z1 - 0.02, Math.PI, 0.55, 0.75);
@@ -1163,7 +1198,7 @@
       const tube = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 1.12, 8), new THREE.MeshBasicMaterial({ color: 0xfff6e8, fog: false }));
       tube.rotation.z = Math.PI / 2; tube.position.set(0.2, F + H - 0.08, 0.6); roomG.add(tube); roomLamps.push(tube);
       const cpool = new THREE.Mesh(new THREE.CircleGeometry(1.1, 28), new THREE.MeshBasicMaterial({ color: 0xffb870, transparent: true, opacity: 0.10, blending: THREE.AdditiveBlending, depthWrite: false, fog: false }));
-      cpool.rotation.x = -Math.PI / 2; cpool.position.set(sx, F + DAIS.h + 0.012, sz + 0.9); roomG.add(cpool);
+      cpool.rotation.x = -Math.PI / 2; cpool.position.set(HW - PL_D - 0.6, F + 0.012, AZ); roomG.add(cpool);   // v18.7: under the altar's candles
       // the ceiling fan
       {
         const g = new THREE.Group(); g.position.set(-0.9, F + H - 0.42, 0.9); roomG.add(g);
@@ -1199,49 +1234,9 @@
         thai('vasereed', -HW + 0.45, F, Z1 - 0.5, { s: 0.75, parent: roomG, cast: false });
         thai('oillamp', -HW + 0.3, F + 1.1, -2.82, { s: 0.55, parent: roomG, cast: false });
       }
-      /* v16.9 · THE MASKS (Chad: "a 3d model of a mask that can be placed
-         inside the sakyant ajahn room, maybe on his shelf? typically we will
-         see many lersi masks on the shelves of ajahn rooms"). His Khon mask
-         (Sketchfab "Khon Mask"; tools/prepwess.mjs at 93k of its 1.0M
-         triangles — the painted texture carries the detail, and side by side
-         with the original at close range it is the same mask), five of them
-         on a stepped red-and-gold stand against the back wall west of the
-         shrine, three tiers, facing into the room. A primitive head stands in
-         for each until the file lands (v4.7). */
-      {
-        /* v17.1 (Chad: "See how the mask penetrate through the platform?"):
-           the two tiers overlapped — the upper box stood over all but the
-           front 6 cm of the lower one's top, so the front row of masks stood
-           half inside the upper tier's face — and every mask stood 2 cm into
-           its tier's gilt lip. A real STEP now (the lower tier 0.70 deep, the
-           upper 0.30 on its back half), each mask on the lip's top and inside
-           its own step's depth. */
-        const MX = -1.9, mz = Z0 + 0.3, tiers = [[0.62, 0.70, 0.07], [1.18, 0.30, -0.13]];
-        for (let t = 0; t < 2; t++) {
-          const [top, depth, cz] = tiers[t];
-          box(2.1 - t * 0.6, top, depth, MX, F + top / 2, mz + cz, t ? matRedD : matRed, roomG, false);
-          box(2.14 - t * 0.6, 0.04, depth + 0.04, MX, F + top + 0.02, mz + cz, matGold, roomG, false);
-        }
-        const spots = [[MX - 0.68, 0.66, 0.22, 0.66], [MX, 0.66, 0.22, 0.72], [MX + 0.68, 0.66, 0.22, 0.66], [MX - 0.34, 1.22, -0.13, 0.62], [MX + 0.34, 1.22, -0.13, 0.62]];
-        const heads = [];
-        for (const [x, y, dz, h] of spots) {
-          const hd = new THREE.Group(); hd.position.set(x, F + y, mz + dz); roomG.add(hd);
-          cyl(0.1, 0.12, h * 0.5, 0, h * 0.25, 0, new THREE.MeshStandardMaterial({ color: 0x3f7a4c, roughness: 0.6 }), 12, hd);
-          const cr = new THREE.Mesh(new THREE.ConeGeometry(0.1, h * 0.5, 12), matGold); cr.position.y = h * 0.75; hd.add(cr);
-          heads.push({ hd, x, y, z: mz + dz, h });
-        }
-        parseOnce('khonmask').then(gltf => {
-          if (!alive) return;
-          const b = new THREE.Box3().setFromObject(gltf.scene), H = b.max.y - b.min.y;
-          heads.forEach((q, i) => {
-            const m = gltf.scene.clone(true);
-            m.scale.setScalar(q.h / H); m.position.set(q.x, F + q.y - b.min.y * q.h / H, q.z); m.rotation.y = (i - 2) * 0.08;
-            m.traverse(o => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = true; } });
-            roomG.add(m); q.hd.visible = false;
-          });
-        }).catch(err => { console.warn('khonmask failed to load', err); ctx.loadFail && ctx.loadFail('khonmask', err); });
-        solids.push(hid(box(2.1, 1.4, 0.72, MX, F + 0.7, mz + 0.07, matProxy, roomG, false)));
-      }
+      /* (v16.9's Khon mask stand — two tiers and five masks against the back
+         wall west of the shrine — removed at v18.7, Chad's word: his row of
+         lersi masks on the wall behind the Ajarn replaces it.) */
       // the waiting mat, a cushion, a low table with a jug and two cups
       {
         const mx = WAIT.x - ROOM.x, mz = WAIT.z - ROOM.z;
@@ -1280,6 +1275,17 @@
        cotton, the spirit lamp, his water — and in front of it the yant stool,
        facing out: you sit with your back to him. */
     const dais = mkDais(DAIS, AJ, roomG).g;
+    /* v18.7 · A FRONT STEP for the customer's feet: Chad's customer sits on
+       Sit_Dodge, whose toes reach ~0.6 m ahead of his hips — past the dais's
+       edge, into the air. The step is the dais's own wood and gilt, as wide as
+       a pair of feet needs; it has a blocker of its own (blockers()). */
+    const STEP = { x: DAIS.x, z: DAIS.z + DAIS.d / 2 + 0.13, w: 1.1, d: 0.26 };
+    {
+      const sx0 = STEP.x - ROOM.x, sz0 = STEP.z - ROOM.z, F0 = SALA.floor;
+      box(STEP.w, DAIS.h, STEP.d, sx0, F0 + DAIS.h / 2, sz0, matWood, roomG);
+      box(STEP.w + 0.05, 0.05, STEP.d + 0.03, sx0, F0 + DAIS.h, sz0 + 0.012, matGold, roomG);
+      box(STEP.w + 0.05, 0.08, STEP.d + 0.03, sx0, F0 + 0.04, sz0 + 0.012, matGold, roomG);
+    }
     let rodG = null, stool = null, stoolTop = null;
     {
       const trayX = 0.78, trayZ = -0.2;
@@ -2548,31 +2554,79 @@
       });
     }
 
-    /* THE MAN UNDER THE NEEDLE — the botak recruit, on the yant stool, facing
-       out, with the Ajarn behind him. When he is done he wais, stands and
-       walks out; that is how the player learns it is his turn. */
+    /* THE MAN UNDER THE NEEDLE — v18.7: Chad's Sak Yant customer (was the
+       botak recruit), on the yant stool, facing out, with the Ajarn behind
+       him. Chad's direction: SIT_DODGE while the yant goes in (the flinch of a
+       man in a trance — "is he just acting it out?"), SIT_TO_STAND when he is
+       done, WALKING out. His file was prepped like the monk (prepmonk.mjs: the
+       auto-rig's blocky weights diffused — the saw-tooth tearing under his
+       raised arms is gone — and the normals shared across the seams).
+       SEATED ON HIS SKIN (seatOnSkin's law, v16.8): the dodge is sampled at
+       several frames and his soles go on the dais, the stool's top under his
+       thighs at the lowest the take sits him, his hips over the stool. */
+    const C_DODGE = 'Sit_Dodge', C_STAND = 'Sit_to_standTransition_Female_2', C_WALK = 'Walking';
+    const C_STRIDE = 1.43;          // m/s his planted foot travels at rate 1 (measured off the walk take, v18.7)
+    /* he sits 0.30 m nearer the Ajarn than the player's stool spot: the dodge
+       leans him forward, away from the rod, and his feet must land on the dais
+       (and its step). The stool goes with him, and back to CUSH when the
+       player takes it (putOther), so the player's seat is v18.6's exactly. */
+    const C_BACK = 0.30;
     let STOOL_TOP = SALA.floor + DAIS.h + 0.465;
-    const other = mkRig('botak', { x: CUSH.x, y: SALA.floor + DAIS.h, z: CUSH.z, ry: 0, height: 1.72,
-                                   sizeOn: 'restpose', idle: 'Sit_and_Doze_Off', rate: 0.35, seated: true,
-                                   then: (r) => {
-                                     if (!r.hips || !stool) return;
-                                     r.model.updateMatrixWorld(true); r.hips.getWorldPosition(_v);
-                                     /* the man is moved onto the stool in x/z (the stool is where
-                                        the player will sit too), and the stool's height is his */
-                                     r.group.position.x += CUSH.x - _v.x; r.group.position.z += CUSH.z - _v.z;
-                                     const base = SALA.floor + DAIS.h;
-                                     const top = _v.y - 0.10, h = Math.max(0.2, top - base - 0.05);
-                                     stool.scale.y = h / 0.42; stool.position.y = base + h / 2;
-                                     if (stoolTop) stoolTop.position.y = base + h + 0.025;
-                                     STOOL_TOP = base + h + 0.05;
-                                     r.seatGroup = { x: r.group.position.x, z: r.group.position.z };
-                                   } });
+    function skinStats(r, take, ks) {
+      const m = { sole: Infinity, seat: Infinity, hx: 0, hz: 0 };
+      for (const k of ks) {
+        r.play(take, 1, 0, false, k); r.mixer.update(0);
+        r.model.updateMatrixWorld(true); r.hips.getWorldPosition(_v);
+        const hx = _v.x, hy = _v.y, hz = _v.z; m.hx += hx / ks.length; m.hz += hz / ks.length;
+        r.model.traverse(o => {
+          if (!o.isSkinnedMesh) return;
+          o.skeleton.update();
+          const n = o.geometry.attributes.position.count;
+          for (let i = 0; i < n; i += 5) {
+            o.getVertexPosition(i, _sv); _sv.applyMatrix4(o.matrixWorld);
+            if (_sv.y < m.sole) m.sole = _sv.y;
+            /* where he sits (he faces +z): the skin under and just behind the hip joint */
+            const dx = _sv.x - hx, dz = _sv.z - hz;
+            if (Math.abs(dx) < 0.2 && dz > -0.22 && dz < 0.04 && _sv.y < hy + 0.05 && _sv.y > hy - 0.45 && _sv.y < m.seat) m.seat = _sv.y;
+          }
+        });
+      }
+      return m;
+    }
+    const other = mkRig('customer', { x: CUSH.x, y: SALA.floor + DAIS.h, z: CUSH.z, ry: 0, height: 1.72,
+                                      sizeOn: C_WALK, sizeAt: 0, idle: C_DODGE, seated: true,
+                                      then: (r) => {
+                                        r.model.traverse(o => { if (o.isBone && /Spine2$/.test(o.name) && !r.spine) r.spine = o; });
+                                        if (!r.hips || !stool || !r.acts || !r.acts[C_DODGE]) return;
+                                        const base = SALA.floor + DAIS.h;
+                                        /* standing: the stand take's last frame, soles on the dais */
+                                        if (r.acts[C_STAND]) {
+                                          const st = skinStats(r, C_STAND, [1]);
+                                          r.standDy = base - st.sole;
+                                        }
+                                        const d = skinStats(r, C_DODGE, [0, 0.15, 0.3, 0.45, 0.6, 0.75, 0.9]);
+                                        /* the hips over the stool (the player sits there too), the soles on the dais */
+                                        r.group.position.x += CUSH.x - d.hx; r.group.position.z += (CUSH.z - C_BACK) - d.hz;
+                                        const dy = base - d.sole; r.model.position.y += dy;
+                                        r.seatY = r.model.position.y; r.standY = r.model.position.y - dy + (r.standDy ?? dy);
+                                        const top = d.seat + dy, h = Math.max(0.2, top - 0.05 - base);   // the cushion (0.05) tops out at his seat
+                                        stool.scale.y = h / 0.42; stool.position.y = base + h / 2;
+                                        if (stoolTop) stoolTop.position.y = base + h + 0.025;
+                                        STOOL_TOP = base + h + 0.05;
+                                        if (r.group.visible) { stool.position.z = CUSH.z - C_BACK; if (stoolTop) stoolTop.position.z = stool.position.z; }
+                                        r.seatGroup = { x: r.group.position.x, z: r.group.position.z };
+                                        r.seatInfo = { sole: +d.sole.toFixed(3), seat: +(d.seat + dy).toFixed(3), stoolTop: +STOOL_TOP.toFixed(3) };
+                                        r.cur = null; r.play(C_DODGE, 1, 0);
+                                      } });
     const putOther = (on) => {
       other.group.visible = !!on;
+      if (stool) stool.position.z = on ? CUSH.z - C_BACK : CUSH.z;
+      if (stoolTop) stoolTop.position.z = stool ? stool.position.z : CUSH.z;
       if (!on) return;
       if (other.seatGroup) other.group.position.set(other.seatGroup.x, SALA.floor + DAIS.h, other.seatGroup.z);
       other.group.rotation.y = 0;
-      if (other.acts) other.play('Sit_and_Doze_Off', 0.35, 0);
+      if (other.model && other.seatY !== undefined) other.model.position.y = other.seatY;
+      if (other.acts) other.play(C_DODGE, 1, 0);
     };
 
     /* A MAN WAITING on the bench along the west rail — the admin tee in his
@@ -2798,7 +2852,7 @@
     }
     if (warmSounds) warmSounds(['mk1come', 'mk1chant', 'mk1teach', 'hp1room', 'aj1mat', 'z1sadhu', 'z1room',
                                 'roomdoor', 'watersprinkle', 'roomamb', 'eavebells', 'wingflap',
-                                'z1wai', 'z1wait', 'z1warm', 'au1hi', 'au1sell', 'au1shoes',
+                                'z1wai', 'z1wait', 'z1trance', 'z1warm', 'au1hi', 'au1sell', 'au1shoes',
                                 'aj1next', 'aj1sit', 'aj1breathe', 'aj1katha', 'aj1done', 'aj1ask',
                                 'aj1which', 'aj1chosen', 'yantseal',
                                 'yantap', 'yantblow', 'yantwarm', 'e3bell', 'shoesoff', 'barestep',
@@ -3141,7 +3195,7 @@
          on the frame's clamped dt, so on a device under twenty frames a
          second it takes longer than its 0.6 s (measured on the probe box:
          the room was swapped in with the screen still part-lit) */
-      const whenBlack = () => { if (!alive || phase !== 'go') return;
+      const whenBlack = () => { if (!alive || phase !== 'go' || !entering) return;   // v18.7: an entry cleared under the fade (applyPhase, reset) stops waiting
         if (!kit || kit.getFade() >= 0.99 || dayClock.t - entering.t0 > 12) intoRoom(); else after(0.1, whenBlack); };
       after(1.1, whenBlack);
       return true;
@@ -3149,7 +3203,11 @@
     function placeInRoom(at) {
       const p = at || RIN;
       yaw.position.x = p.x; yaw.position.z = p.z;
-      yaw.rotation.y = Math.atan2(-((ROOM.x + 0.2) - p.x), -((ROOM.z - 1.2) - p.z));
+      /* v18.7: turned a little further right than v16.1, so the Ajarn, the
+         masks over him and the altar row on the east wall are all in a phone's
+         frame the moment the black lifts (Chad: "it still must be easily seen
+         by the player the moment he enters the room") */
+      yaw.rotation.y = Math.atan2(-((ROOM.x + 1.9) - p.x), -((ROOM.z - 2.5) - p.z));
       pitch.rotation.x = -0.04;
       if (kit) kit.daylight(ROOMLIGHT, 0);
     }
@@ -3197,14 +3255,21 @@
       if (worldSfx) worldSfx('barestep', 0.5, 0.85);
       waitSeq();
     }
+    /* v18.7 (Chad: "While the customer is getting his sakyant and playing
+       the sit dodge animation, i want a player voiceline to say something
+       like 'This guy seems to be in some kind of trance...'"): z1trance follows
+       the katha (~6.0-16.6, then 17.2-26.5), and everything after the work —
+       the rod stopping, the blow, the man standing, "Next" — moves 5.5 s
+       later so the line is said while he is still under the rod. */
     function waitSeq() {
       after(2.4, () => queueLine('z1wait'));
-      after(6.0, () => { if (!heard.has('katha2')) { heard.add('katha2'); queueLine('aj1katha', () => { ajarn.nod = SECS.aj1katha; }, 0.8); } });
-      after(21.5, () => { workOn = false; });
-      after(22.6, () => sfxAt('yantblow', CUSH.x, CUSH.z - 0.2, 0.85, 2, 12));
-      after(24.2, () => otherLeaves());
-      after(26.0, () => queueLine('aj1next', () => { ajarn.nod = SECS.aj1next; }));
-      after(28.2, () => {
+      after(6.0, () => { if (!heard.has('katha2')) { heard.add('katha2'); queueLine('aj1katha', () => { ajarn.nod = SECS.aj1katha; }, 0.8);
+                                                       queueGap(0.6); queueLine('z1trance'); } });
+      after(27.0, () => { workOn = false; });
+      after(28.1, () => sfxAt('yantblow', CUSH.x, CUSH.z - 0.2, 0.85, 2, 12));
+      after(29.7, () => otherLeaves());
+      after(31.5, () => queueLine('aj1next', () => { ajarn.nod = SECS.aj1next; }));
+      after(33.7, () => {
         seated = null;
         if (kit) { kit.pose('standing', { secs: 0.7 }); kit.root(false); }
         setPhase('seat');
@@ -3217,16 +3282,39 @@
        the door opens for him, and he is gone into the dark beyond it */
     const LEAVE = [{ x: CUSH.x, z: CUSH.z + 0.2 }, { x: CUSH.x - 0.1, z: DAIS.z + DAIS.d / 2 + 0.55 },
                    { x: RDOOR.x + 0.55, z: RDOOR.z - 1.0 }, { x: RDOOR.x, z: RDOOR.z - 0.35 }, { x: RDOOR.x, z: RDOOR.z + 0.4 }];
+    /* v18.7: he STANDS first (Sit_to_stand, once, held at its end), then walks.
+       The stand carries his hips ~0.36 m forward of where the walk take keeps
+       them, so on the frame the takes change the group is moved by exactly the
+       hips' jump — he walks on from where he stood up, not from the stool —
+       and the path starts there. His height eases from the seated grounding to
+       the standing one over the stand (each measured on his skin). */
     function otherLeaves() {
       if (!other.group.visible) return;
-      otherLeaving = { seg: 0, s: 0, t: 0 };
-      if (other.acts) { other.play('Walking', 0.95, 0.5); }
+      const canStand = !!(other.acts && other.acts[C_STAND] && other.model);
+      otherLeaving = { seg: 0, s: 0, t: 0, stand: canStand ? 0 : -1, path: LEAVE };
+      if (canStand) other.play(C_STAND, 1, 0.25, true);
+      else if (other.acts) other.play(C_WALK, 1.05 / C_STRIDE, 0.5);
     }
     function leaveTick(dt) {
       const L = otherLeaving; if (!L) return;
       const g = other.group;
-      if (L.seg >= LEAVE.length - 1) { g.visible = false; otherLeaving = null; after(1.2, () => { roomDoorWant = 0; }); return; }
-      const a = LEAVE[L.seg], b = LEAVE[L.seg + 1];
+      if (L.stand >= 0) {
+        L.stand += dt;
+        const dur = other.acts[C_STAND].getClip().duration, k = Math.min(1, L.stand / dur);
+        if (other.seatY !== undefined && other.standY !== undefined)
+          other.model.position.y = other.seatY + (other.standY - other.seatY) * k * k * (3 - 2 * k);
+        if (L.stand < dur) return;
+        g.updateMatrixWorld(true); other.hips.getWorldPosition(_v); const bx = _v.x, bz = _v.z;
+        other.play(C_WALK, 1.05 / C_STRIDE, 0);
+        g.updateMatrixWorld(true); other.hips.getWorldPosition(_v);
+        g.position.x += bx - _v.x; g.position.z += bz - _v.z;
+        L.stand = -1;
+        L.path = [{ x: g.position.x, z: g.position.z }, ...LEAVE.slice(1)];
+        return;
+      }
+      const P = L.path;
+      if (L.seg >= P.length - 1) { g.visible = false; otherLeaving = null; after(1.2, () => { roomDoorWant = 0; }); return; }
+      const a = P[L.seg], b = P[L.seg + 1];
       const len = Math.hypot(b.x - a.x, b.z - a.z);
       L.s += 1.05 * dt;
       if (L.s >= len) {
@@ -3241,9 +3329,9 @@
       const want = Math.atan2(b.x - a.x, b.z - a.z);
       let d = want - g.rotation.y; while (d > Math.PI) d -= Math.PI * 2; while (d < -Math.PI) d += Math.PI * 2;
       g.rotation.y += d * (1 - Math.exp(-dt * 6));
-      if (other.acts && other.acts.Walking) other.acts.Walking.setEffectiveTimeScale(1.05 / 1.39);
+      if (other.acts && other.acts[C_WALK]) other.acts[C_WALK].setEffectiveTimeScale(1.05 / C_STRIDE);
       // through the door and gone
-      if (L.seg === LEAVE.length - 2) g.visible = k < 0.6;
+      if (L.seg === P.length - 2) g.visible = k < 0.6;
     }
     /* 6 · THE STOOL — back to the Ajarn, facing out at the courtyard */
     function sitStool() {
@@ -3395,6 +3483,7 @@
     /* the Ajarn at work: bursts of strikes and a pause to re-ink, the rod's
        tip on the man's upper back, heard from wherever the player is */
     let workOn = true, strikeAt = 0, burst = 0, strikeK = 0;
+    const BACK_OFF = -0.13;        // v18.7: his upper spine to the skin of his back (photographed)
     function workTick(wdt) {
       ajarnTakeTick();
       const onOther = workOn === true && other.group.visible && !otherLeaving;
@@ -3409,6 +3498,9 @@
       }
       // the rod: from his right hand to the man's shoulder blade, tapping
       const tip = new THREE.Vector3(CUSH.x + 0.07, STOOL_TOP + 0.58, CUSH.z - 0.17);
+      /* v18.7: Chad's customer flinches (Sit_Dodge), so the tip rides HIS back —
+         behind his upper spine (he faces +z: behind is −z) — not a fixed point */
+      if (other.spine) { other.spine.getWorldPosition(tip); tip.x += 0.05; tip.y += 0.04; tip.z += BACK_OFF; }
       if (ajarn.hand) {
         /* v16.8 (Chad: "put the rod on his right hand while he is doing it"):
            the butt IN his hand, the tip on the man's back 6 cm off the skin
@@ -3748,6 +3840,8 @@
         const turned = Math.abs(Math.sin(D.ry || 0)) > 0.5, hx = (turned ? D.d : D.w) / 2, hz = (turned ? D.w : D.d) / 2;   // v16.9: the monk's is turned
         out.push(new THREE.Box3(new THREE.Vector3(D.x - hx - 0.14, 0, D.z - hz - 0.14), new THREE.Vector3(D.x + hx + 0.14, SALA.floor + 1.4, D.z + hz + 0.14)));
       }
+      // v18.7: the dais's front step, under the customer's feet
+      out.push(new THREE.Box3(new THREE.Vector3(STEP.x - STEP.w / 2 - 0.14, 0, STEP.z - STEP.d / 2), new THREE.Vector3(STEP.x + STEP.w / 2 + 0.14, SALA.floor + 1.4, STEP.z + STEP.d / 2 + 0.14)));
       out.push(new THREE.Box3(new THREE.Vector3(HELP.x - 0.35, 0, HELP.z - 0.35), new THREE.Vector3(HELP.x + 0.35, SALA.floor + 1.8, HELP.z + 0.35)));
       out.push(new THREE.Box3(new THREE.Vector3(BENCH.x - 0.4, 0, BENCH.z1), new THREE.Vector3(BENCH.x + 0.75, SALA.floor + 1.4, BENCH.z0)));
       return out;

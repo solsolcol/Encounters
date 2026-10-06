@@ -4863,6 +4863,33 @@ What the baseline contains, by release:
   order they ARRIVED, so a line whose first take was still pending downloaded
   its second take twice under both names (LEARNINGS). Sheet v87 exported — 42
   length cells, no word moved (v44 stays the link).
+- **v18.7** THE SAK YANT ROOM — Chad's four models for episode 3 chapter 1's
+  private room. **Ajahn Krukai** replaces the Ajarn under the same key
+  (`ajarn`): his file was FLAT-SHADED (1.195M vertices over 298k positions —
+  `deflatten.mjs` first, or nothing simplifies), it lacked the rest take, so
+  `Chair_Sit_Idle_M` was retargeted in from v16.8's file, and seatOnSkin
+  built the throne round him with no code change (179k tris, 2.9 MB).
+  Retargeting found a real bug in `tools/retarget.mjs`: it froze every source
+  parent at REST, so a rig retargeted onto ITSELF came out 126° off at the
+  feet; fixed (0.0°), proven across rigs against Mixamo's own copy of a take
+  (LEARNINGS). **The customer** (new key `customer`): his "jagged edges" were
+  the auto-rig's blocky weights tearing his shoulders when his arms rise —
+  `prepmonk.mjs` diffuses them, shape and paint untouched. `Sit_Dodge` under
+  the rod (the rod's tip rides his back now), `Sit_to_standTransition` once,
+  then `Walking` from where he stood (the group takes the hips' 0.36 m jump);
+  he sits 0.30 m nearer the Ajarn and the dais has a front STEP, because the
+  dodge put his feet in mid-air past the edge — the stool goes back to `CUSH`
+  when the player takes it. **z1trance** (Brian, 9.29 s): "This guy seems to
+  be in some kind of trance... Is he just acting it out... or is it truly the
+  Sak Yant's energy?", after the katha, with the end of the work 5.5 s later.
+  **The lersi masks** on the back wall over Krukai (×1.15, 2.19 m) replace
+  the shelf-shrine's statues and v16.9's Khon stand (`khonmask` no longer
+  loaded); **the altar row** (2.09M → 419k tris, kept at a fifth because a
+  face goes soft below that) on the east wall on a red-and-gold plinth, with
+  the shrine's candles, incense, smoke, garlands and the old masters'
+  photographs moved there; the entry view turned so all of it is in a phone's
+  frame. Sheet v88 (one voice line; v44 stays the link).
+  docs/V18.7-THE-SAK-YANT-ROOM.md is the build's memory.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -5427,7 +5454,7 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v87** (`masters/v18.6/masterz-text-v87.xlsx`, v86 with Brian's measured lengths in 42 voice-line cells, no word moved. v86 was `masters/v18.5/masterz-text-v86.xlsx`, v85 with v18.5's words: e3c2's objective, presence and Step-back lines and its four conduct notes, Step back in five more chapters, `event.resistWhereKey`, three voice-line descriptions. v85 was `masters/v18.4/masterz-text-v85.xlsx`, v84 with v18.4's `event.resistWhere` and e3c2's decision prompt made true for both peaks. v84 was `masters/v18.1/masterz-text-v84.xlsx`, v83 with v18.1's three rapid-tap words and the fight's new brief. v83 was `masters/v18.0/masterz-text-v83.xlsx`, v82 plus episode 3 chapter 2's words and its 24 voice lines. v82 was `masters/v17.7/masterz-text-v82.xlsx`, v81 with v17.7's three Sak Yant names and words from Chad's reference pages. v81 was `masters/v17.6/masterz-text-v81.xlsx`, v80 plus v17.6's Sak Yant choice: three items' names, powers and words, the window's words, the chapter's four, and two Ajarn voice lines. v80 was `masters/v17.0/masterz-text-v80.xlsx`, v79 plus v17.0's three credit strings for the Khon masks. v79 was `masters/v16.9/masterz-text-v79.xlsx`, v78 plus v16.9's six credit strings — the temple and the slippers. v78 was `masters/v16.6/masterz-text-v78.xlsx`, v77 plus v16.6's four credit rows for the Tailandia packs. v77 was `masters/v16.1/masterz-text-v77.xlsx`, v76 with the monk's three voice lines re-said by Arthur at v16.2. v76 was `masters/v16.1/masterz-text-v76.xlsx`, five tabs: UI
+**THE SHEET IS v88** (`masters/v18.7/masterz-text-v88.xlsx`, v87 plus v18.7's one voice line, z1trance. v87 was `masters/v18.6/masterz-text-v87.xlsx`, v86 with Brian's measured lengths in 42 voice-line cells, no word moved. v86 was `masters/v18.5/masterz-text-v86.xlsx`, v85 with v18.5's words: e3c2's objective, presence and Step-back lines and its four conduct notes, Step back in five more chapters, `event.resistWhereKey`, three voice-line descriptions. v85 was `masters/v18.4/masterz-text-v85.xlsx`, v84 with v18.4's `event.resistWhere` and e3c2's decision prompt made true for both peaks. v84 was `masters/v18.1/masterz-text-v84.xlsx`, v83 with v18.1's three rapid-tap words and the fight's new brief. v83 was `masters/v18.0/masterz-text-v83.xlsx`, v82 plus episode 3 chapter 2's words and its 24 voice lines. v82 was `masters/v17.7/masterz-text-v82.xlsx`, v81 with v17.7's three Sak Yant names and words from Chad's reference pages. v81 was `masters/v17.6/masterz-text-v81.xlsx`, v80 plus v17.6's Sak Yant choice: three items' names, powers and words, the window's words, the chapter's four, and two Ajarn voice lines. v80 was `masters/v17.0/masterz-text-v80.xlsx`, v79 plus v17.0's three credit strings for the Khon masks. v79 was `masters/v16.9/masterz-text-v79.xlsx`, v78 plus v16.9's six credit strings — the temple and the slippers. v78 was `masters/v16.6/masterz-text-v78.xlsx`, v77 plus v16.6's four credit rows for the Tailandia packs. v77 was `masters/v16.1/masterz-text-v77.xlsx`, v76 with the monk's three voice lines re-said by Arthur at v16.2. v76 was `masters/v16.1/masterz-text-v76.xlsx`, five tabs: UI
 TEXT 292, EPISODE 1 114, EPISODE 2 193, EPISODE 3 41, VOICE LINES 337 — v76
 adds v16.1's four words, two changed cells and seven voice lines to v75).
 Was v75 (`masters/v16.0/masterz-text-v75.xlsx`, which added episode 3

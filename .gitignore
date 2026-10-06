@@ -82,3 +82,4 @@ assets/opuspack*.bin
 
 # throwaway probe scripts (like dbg-*.mjs): written freely, die with the session
 .scratch/
+masters/*/out/*.glb
