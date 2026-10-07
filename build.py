@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "18.8"
+VERSION = "18.9"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -397,7 +397,8 @@ ASSETS = {
     'slipper':      ('assets/slipper.glb', True, False),      # e3c1 v16.9: Chad's Sketchfab flip-flops — every pair at the wat, coloured per pair (tools/prepslipper.mjs)
     # (v18.7: 'khonmask' — v16.9's five Khon masks on the Ajarn's stand — left the
     #  game at Chad's word, replaced by his row of lersi masks on the wall; the
-    #  file stays in assets/ and masters/, nothing loads it)
+    #  file stays in assets/ and masters/, nothing loads it; its credit row went
+    #  at v18.9)
     'lersimask':    ('assets/lersimask.glb', True, False),    # e3c1 v18.7: Chad's row of lersi masks, on the wall behind the Ajarn (tools/prepwess.mjs LONG=1, 0.2)
     'altarrow':     ('assets/altarrow.glb', True, False),     # e3c1 v18.7: Chad's row of altar statues, on the room's east wall (tools/prepwess.mjs LONG=1 NPX=2048, 0.2)
     'buddhahd':     ('assets/buddhahd.glb', True, False),     # e3 v18.8: Chad's Buddha (Phra Buddha Chinnarat), EVERY triangle and map — the near level of every Buddha in episode 3 (prepwess KEEPMR=1 NPX=2048 ERR=0.0001, ratio 1)

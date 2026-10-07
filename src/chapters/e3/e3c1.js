@@ -206,7 +206,7 @@
     [3.2,-1.4,3.4,-1],[3.5,-1.4,3.7,-1],[3.8,-1.4,3.9,-1],[4.8,-1.4,4.9,-1],[5.1,-1.4,5.2,-1],[5.4,-1.4,5.5,-1],[6.5,-1.4,6.6,-1.1],
     [-6.1,-0.9,-5.9,-0.8],[-4.3,-0.9,-4.1,-0.8],[4.3,-0.9,4.5,-0.8],[6,-0.9,6.2,-0.8]
   ];
-  const SECS = { z1arrive: 3.08, z1wai: 3.71, z1wait: 3.40, z1trance: 9.29, z1warm: 4.99, au1hi: 3.97, au1sell: 8.59, au1shoes: 4.36, aj1which: 3.44, aj1chosen: 1.86, aj1next: 1.72, aj1sit: 1.57, aj1breathe: 3.63, aj1katha: 10.61, aj1done: 1.65, aj1ask: 3.08,
+  const SECS = { z1arrive: 3.08, z1wai: 3.71, z1wait: 3.40, z1trance: 9.29, z1warm: 4.99, au1hi: 3.97, au1sell: 11.38, au1shoes: 4.36, aj1which: 3.44, aj1chosen: 1.86, aj1next: 1.72, aj1sit: 1.57, aj1breathe: 3.63, aj1katha: 10.61, aj1done: 1.65, aj1ask: 3.08,
                  /* v16.1 */ mk1come: 3.40, mk1chant: 12.77, mk1teach: 14.37, hp1room: 6.19, aj1mat: 1.88, z1sadhu: 2.35, z1room: 1.65 };
 
   const hash = (i, s) => { const x = Math.sin(i * 127.1 + s * 311.7) * 43758.5453; return x - Math.floor(x); };
