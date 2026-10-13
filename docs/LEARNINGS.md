@@ -5265,3 +5265,25 @@ cut (sharing its vertices and maps) when it is small.
   ambient, the screens' pool, a far panel) costs no light, so it cannot
   change the light count and rebuild every lit shader in the chapter
   (v15.1). The first numbers read as day — judge them in the photograph.
+
+## v19.1 · the hall and the room
+
+- **A default culling sphere is in MESH units, and a quantized file's mesh
+  units are not metres.** Chad's standing man vanished whenever the player
+  walked up to him: his positions are normalised shorts under a 0.01
+  armature, so `(0, 0.9, 0) r 1.9` was a two-centimetre ball at his feet,
+  culled the moment his feet left the frame. This is v18.5's congregation bug
+  in a third chapter. The cure is not a bigger default but a measured one:
+  the sphere round the POSED SKIN in world space, put into each mesh's own
+  frame (`skinCull`). Any rig without a table entry gets it.
+- **A prop placed beside a thing that is later rebuilt round someone must be
+  placed after the rebuild.** The bowls were set on the dais at v16.1, beside
+  a 0.62 m seat; v17.1's throne is sized to the monk once he lands, and its
+  footrest grew over both of them. `placeBowl()` runs in the same `then`, after
+  `seatOnSkin`.
+- **A yant is its STRUCTURE first.** At wall distance, what makes a Gao Yord a
+  Gao Yord is the 9-7-5-3-1 pyramid, the three ovals and the nine unalomes,
+  and what makes a necklace a Sroi Sangwan is the U of script rows with
+  unalomes at both ends. Draw those exactly from the reference; the letters
+  can be stroke shapes in the style of the script.
+

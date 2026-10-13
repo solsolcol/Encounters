@@ -862,6 +862,8 @@
       text: "[eager] Next time... give me the strongest one you have.", secs: 3.47 },
     { id: "z1askD", who: "jamesAdult", ch: "e3c1", where: "Scene D: what he asks of it",
       text: "[sincere] What does it ask of me?", secs: 1.41 },
+    { id: "z1thank", who: "jamesAdult", ch: "e3c1", where: "All four outcomes: he thanks the Ajarn as he bows, before he leaves the room (v19.1)",
+      text: "[grateful] Thank you, Ajahn Krukai.", secs: 1.70 },
     { id: "z1close", who: "jamesAdult", ch: "e3c1", where: "The closing narration, walking out, in all four outcomes",
       text: "[reflective] Software engineer. Business owner. Amulets. Blessings. Sak Yant. Looking back now, I can see how quietly one step led to the next.", secs: 13.32 },
     { id: "z1next", who: "jamesAdult", ch: "e3c1", where: "Over the black at the end of all four outcomes",

@@ -6471,7 +6471,7 @@ const ADULT_TAKES = new Set([
   'z1pro1', 'z1pro2', 'z1pro3', 'z1pro4', 'z1pro5', 'z1pro6',
   'z1arrive', 'z1wai', 'z1wait', 'z1trance', 'z1warm', 'z1close', 'z1next',
   'z1askA', 'z1askB', 'z1askC', 'z1askD', 'z1A', 'z1B',
-  'z1C', 'z1D', 'z1sadhu', 'z1room',
+  'z1C', 'z1D', 'z1sadhu', 'z1room', 'z1thank',
   /* v18.0 · episode 3 chapter 2 */
   'z2pro1', 'z2pro2', 'z2pro3', 'z2pro4', 'z2pro5', 'z2pro6', 'z2arrive', 'z2leaf', 'z2kneel',
   'z2slip1', 'z2slip2', 'z2peak', 'z2A1', 'z2B1', 'z2C1', 'z2D1', 'z2close', 'z2next',
@@ -9628,6 +9628,7 @@ const STING_SAMPLE = {
   /* v16.1 · the monk in the sala, the man by the walkway, the private room */
   mk1come: ['mk1come', 1], mk1chant: ['mk1chant', 1], mk1teach: ['mk1teach', 1], hp1room: ['hp1room', 1],
   aj1mat: ['aj1mat', 1], z1sadhu: ['z1sadhu', 1], z1room: ['z1room', 1],
+  z1thank: ['z1thank', 1],                                   // v19.1 · "Thank you, Ajahn Krukai." as he bows, every outcome
   roomdoor: ['roomdoor', 1], watersprinkle: ['watersprinkle', 1], roomamb: ['roomamb', 1],
   /* v18.0 · EPISODE 3 · CHAPTER 2 · THE HANDS THAT MOVED — his lines, the
      laywoman and Yai, the hall (the evening chant, its swells and its

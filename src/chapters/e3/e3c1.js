@@ -126,7 +126,7 @@
        back at the stirring (the engine prepares an item's model at the
        curtain; these have none, they are drawings, but they are declared) */
     items: ['yantgaoyord', 'yanthahtaew', 'yantsroi'],
-    assets: ['admintee', 'customer', 'sitwoman', 'sitwomantalk', 'standman', 'phiboon', 'tree1', 'tree2', 'tree3', 'tree4', 'thaikit', 'wessred', 'wessgreen', 'naga', 'monk', 'ajarn', 'temple', 'slipper', 'lersimask', 'altarrow', 'buddhahd', 'buddhalod', 'sangkathan',
+    assets: ['customer', 'sitwoman', 'sitwomantalk', 'standman', 'phiboon', 'tree1', 'tree2', 'tree3', 'tree4', 'thaikit', 'wessred', 'wessgreen', 'naga', 'monk', 'ajarn', 'temple', 'slipper', 'lersimask', 'altarrow', 'buddhahd', 'buddhalod', 'sangkathan',
              'filmoffice', 'filmlaptop', 'actioncam', 'planecabin', 'sitman', 'sitshout', 'sitclap', 'sitangry'],   // v19.0: the film's four models, and the plane's passengers
 
     /* THE SOUND. `watamb` is the dawn temple (birds, a far road, a broom on
@@ -208,7 +208,8 @@
     [-6.1,-0.9,-5.9,-0.8],[-4.3,-0.9,-4.1,-0.8],[4.3,-0.9,4.5,-0.8],[6,-0.9,6.2,-0.8]
   ];
   const SECS = { z1arrive: 3.08, z1wai: 3.71, z1wait: 3.40, z1trance: 9.29, z1warm: 4.99, au1hi: 3.97, au1sell: 11.38, au1shoes: 4.36, aj1which: 3.44, aj1chosen: 1.86, aj1next: 1.72, aj1sit: 1.57, aj1breathe: 3.63, aj1katha: 10.61, aj1done: 1.65, aj1ask: 3.08,
-                 /* v16.1 */ mk1come: 3.40, mk1chant: 12.77, mk1teach: 14.37, hp1room: 6.19, aj1mat: 1.88, z1sadhu: 2.35, z1room: 1.65 };
+                 /* v16.1 */ mk1come: 3.40, mk1chant: 12.77, mk1teach: 14.37, hp1room: 6.19, aj1mat: 1.88, z1sadhu: 2.35, z1room: 1.65,
+                 /* v19.1 */ z1thank: 1.70 };
 
   const hash = (i, s) => { const x = Math.sin(i * 127.1 + s * 311.7) * 43758.5453; return x - Math.floor(x); };
   const smooth = k => k * k * (3 - 2 * k);
@@ -838,13 +839,16 @@
         box(w + 0.04, 0.04, 1.62 - i * 0.3, ALT.x, y + h / 2, ALT.z + 0.1 - i * 0.12, matGold);
       }
       solids.push(hid(box(3.8, 1.2, 1.7, ALT.x, 0.6, ALT.z + 0.1, matRed, world, false)));
-      // the screen behind the Buddha: red with a gilded arch and a halo
-      const scr = box(3.2, 3.3, 0.08, ALT.x, SALA.floor + 2.8, SALA.z0 + 0.25, matRedD);
+      /* the screen behind the Buddha. v19.1 (Chad: "remove the half circle
+         thing behind the main buddha statue. also remove the circle thing
+         behind the half circle thing. add some motif pattern on the red board
+         behind the main buddha statue"): the gilded arch and the halo are
+         gone, and the board's FRONT carries a lai thai — a gold kanok border
+         round a diamond lattice of four-petal flowers, on the same red
+         (makeAltarScreen); its edges and back stay plain lacquer */
+      const scrMat = new THREE.MeshStandardMaterial({ map: tex(makeAltarScreen(THREE, cnv)), roughness: 0.5, metalness: 0.12 });
+      const scr = box(3.2, 3.3, 0.08, ALT.x, SALA.floor + 2.8, SALA.z0 + 0.25, [matRedD, matRedD, matRedD, matRedD, scrMat, matRedD]);
       void scr;
-      const halo = new THREE.Mesh(new THREE.RingGeometry(0.55, 0.72, 40), matGold);
-      halo.position.set(ALT.x, SALA.floor + 3.25, SALA.z0 + 0.32); world.add(halo);
-      const arch = new THREE.Mesh(new THREE.TorusGeometry(1.35, 0.06, 8, 40, Math.PI), matGold);
-      arch.position.set(ALT.x, SALA.floor + 2.4, SALA.z0 + 0.32); world.add(arch);
       // the Buddha (a stand-in until Chad's model lands: a lathe-built seated
       // figure in gold, in the earth-touching pose's silhouette)
       /* v16.6: the pack's seated gold Buddha (0.53 m in the file) in the
@@ -907,11 +911,9 @@
           new THREE.MeshStandardMaterial({ color: 0xf5f0de, roughness: 0.7 }));
         world.add(gm);
       }
-      // the abbot's photograph, framed in gold, on the second tier
-      const ph = new THREE.Mesh(new THREE.PlaneGeometry(0.34, 0.44),
-        new THREE.MeshStandardMaterial({ map: tex(makeAbbot(THREE, cnv)), roughness: 0.6 }));
-      ph.position.set(ALT.x - 0.95, SALA.floor + 1.28, ALT.z + 0.22); world.add(ph);
-      box(0.4, 0.5, 0.03, ALT.x - 0.95, SALA.floor + 1.28, ALT.z + 0.2, matGold);
+      /* v19.1: the abbot's photograph that stood framed on the second tier is
+         gone (Chad: "remove the monk portrait in the main temple hall, as it
+         looks really bad") */
     }
     /* THE RUESI — the hermit sage who is the patron of the Sak Yant masters,
        whose head sits on every Ajarn's shrine: a bronze-dark face, a long
@@ -1018,25 +1020,30 @@
        in that frame too (L); bowlPos is the world point, through mdW */
     const monkD = mkDais(MD, { x: MD.x + MONL.x, z: MD.z + MONL.z }, world);
     const offerPile = monkD.pile;
-    const bowlW = mdW(MONL.x + 0.42, MONL.z + 0.62);
+    const bowlL = { x: MONL.x + 0.42, z: MONL.z + 0.62 };      // the silver bowl, in the dais's own frame (v19.1: placeBowl moves it)
+    const bowlW = mdW(bowlL.x, bowlL.z);
     const bowlPos = new THREE.Vector3(bowlW.x, SALA.floor + MD.h + 0.04, bowlW.z);
-    let whisk = null;
+    let whisk = null, bowlG = null, almsG = null;
     {
       const g = monkD.g, L = (x, z) => [x, z];
+      /* v19.1: each bowl is ONE group, so placeBowl() can move it once the
+         throne has been built round him */
       const [ax, az] = L(MONL.x - 0.72, MONL.z + 0.35);
-      cyl(0.09, 0.07, 0.12, ax, MD.h + 0.06, az, matGold, 14, g);                       // the alms bowl's stand
+      almsG = new THREE.Group(); almsG.position.set(ax, 0, az); g.add(almsG);
+      cyl(0.09, 0.07, 0.12, 0, MD.h + 0.06, 0, matGold, 14, almsG);                     // the alms bowl's stand
       const bowl = new THREE.Mesh(new THREE.SphereGeometry(0.14, 18, 10, 0, Math.PI * 2, 0, Math.PI * 0.62), new THREE.MeshStandardMaterial({ color: 0x141210, roughness: 0.35 }));
-      bowl.rotation.x = Math.PI; bowl.position.set(ax, MD.h + 0.24, az); bowl.castShadow = !LOW; g.add(bowl);
+      bowl.rotation.x = Math.PI; bowl.position.set(0, MD.h + 0.24, 0); bowl.castShadow = !LOW; almsG.add(bowl);
       const lid = new THREE.Mesh(new THREE.SphereGeometry(0.13, 18, 8, 0, Math.PI * 2, 0, Math.PI * 0.35), bowl.material);
-      lid.position.set(ax, MD.h + 0.2, az); g.add(lid);
+      lid.position.set(0, MD.h + 0.2, 0); almsG.add(lid);
       // the lustral water: a silver bowl, the water in it, the whisk resting across it
-      const [bx, bz] = L(MONL.x + 0.42, MONL.z + 0.62);
+      const [bx, bz] = L(bowlL.x, bowlL.z);
+      bowlG = new THREE.Group(); bowlG.position.set(bx, 0, bz); g.add(bowlG);
       const silver = new THREE.MeshStandardMaterial({ color: 0xd4d6d8, roughness: 0.25, metalness: 0.85 });
       const kb = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.09, 0.09, 22, 1, true), silver);
-      kb.material.side = THREE.DoubleSide; kb.position.set(bx, MD.h + 0.05, bz); g.add(kb);
-      cyl(0.09, 0.09, 0.012, bx, MD.h + 0.006, bz, silver, 22, g);
+      kb.material.side = THREE.DoubleSide; kb.position.set(0, MD.h + 0.05, 0); bowlG.add(kb);
+      cyl(0.09, 0.09, 0.012, 0, MD.h + 0.006, 0, silver, 22, bowlG);
       const water = new THREE.Mesh(new THREE.CircleGeometry(0.125, 22), new THREE.MeshStandardMaterial({ color: 0x9fb8c0, roughness: 0.05, metalness: 0.2, transparent: true, opacity: 0.8 }));
-      water.rotation.x = -Math.PI / 2; water.position.set(bx, MD.h + 0.07, bz); g.add(water);
+      water.rotation.x = -Math.PI / 2; water.position.set(0, MD.h + 0.07, 0); bowlG.add(water);
       /* the whisk is a WORLD object the frame puts in his hand while he
          blesses (monkArm), and back across the bowl when he is done */
       whisk = new THREE.Group(); world.add(whisk);
@@ -1139,8 +1146,22 @@
       const sx = DAIS.x - ROOM.x;
       const MASK_S = 1.15, MASK_Y = F + 1.30;                 // 2.19 m wide, F+1.30..F+2.91 (the ceiling is F+3.0)
       const ALT_S = 1.1, ALT_W = 1.904 * ALT_S, ALT_D = 0.889 * ALT_S;
-      const AZ = -2.05, PL_H = 0.52, PL_D = ALT_D + 0.2, PL_X = HW - PL_D / 2;   // the plinth: the row's footprint and a ledge in front
-      const ALT_X = HW - 0.02 - ALT_D / 2, LEDGE_X = HW - PL_D + 0.09;
+      /* v19.1 · THE ALTAR ROW ON THE BACK WALL, BESIDE THE MASKS (Chad: "the
+         row of altar statues with the buddha statues should be right next to
+         the row of lersi masks, also mounted on the same wall at the same
+         height, if not slightly higher. But keep it some distance away from
+         the masks"). v18.7 stood it on a floor plinth against the east wall;
+         it is a WALL SHELF now, on the back wall to the masks' left (to their
+         right there is 1.4 m of wall, and the row is 2.09 m wide), 0.40 m
+         clear of them, its top board at F+1.40 — the masks' scan starts at
+         F+1.30, so the row stands a hand higher. The ledge in front of the
+         row carries what the plinth carried: the candles, the incense pot and
+         its smoke, the garlands. Nobody walks under a shrine: a blocker fills
+         the space below it. */
+      const MASK_X0 = sx - 1.903 * MASK_S / 2;                // the masks' left edge
+      const SH_Y = F + 1.40, SH_T = 0.07, PL_D = ALT_D + 0.2; // the shelf's top, its board, its depth (the row and a ledge)
+      const ALT_CX = MASK_X0 - 0.40 - ALT_W / 2;              // the row's centre, 0.40 m left of the masks
+      const ALT_CZ = Z0 + 0.02 + ALT_D / 2, LEDGE_Z = Z0 + PL_D - 0.09, SH_CZ = Z0 + PL_D / 2;
       function wallScan(key, x, y, z, ry, sc, stand) {
         parseOnce(key).then(gltf => {
           if (!alive) return;
@@ -1157,70 +1178,82 @@
                        box(2.1, 0.05, 0.36, sx, MASK_Y + 0.75, Z0 + 0.19, matRed, roomG, false)];
         wallScan('lersimask', sx, MASK_Y, Z0 + 0.012 + 0.308 * MASK_S, 0, MASK_S, stand);
       }
-      // the altar row on its plinth, against the east wall, turned to face the room
+      // the altar row on its wall shelf, to the masks' left, facing the room
       {
-        box(PL_D, PL_H, ALT_W + 0.16, PL_X, F + PL_H / 2, AZ, matRed, roomG, false);
-        box(PL_D + 0.04, 0.04, ALT_W + 0.2, PL_X, F + PL_H + 0.02, AZ, matGold, roomG, false);
-        box(PL_D + 0.04, 0.06, ALT_W + 0.2, PL_X, F + 0.03, AZ, matGold, roomG, false);
-        solids.push(hid(box(PL_D, 1.4, ALT_W + 0.16, PL_X, F + 0.7, AZ, matProxy, roomG, false)));
-        const stand = [mkBuddha(ALT_X, F + PL_H + 0.04, AZ, 0.36, roomG)];
-        wallScan('altarrow', ALT_X, F + PL_H + 0.04, AZ, -Math.PI / 2, ALT_S, stand);
-      }
-      // the old masters, framed, on the east wall over the altar
-      const abbot = new THREE.MeshStandardMaterial({ map: tex(makeAbbot(THREE, cnv)), roughness: 0.6 });
-      for (const ez of [-0.62, 0.0, 0.62]) {
-        const g = new THREE.Group(); g.position.set(HW - 0.02, F + 2.42, AZ + ez); g.rotation.y = -Math.PI / 2; roomG.add(g);
-        box(0.36, 0.46, 0.03, 0, 0, 0, matGold, g, false);
-        const ph = new THREE.Mesh(new THREE.PlaneGeometry(0.3, 0.4), abbot); ph.position.z = 0.02; g.add(ph);
-      }
-      // candles on the plinth's ledge, the incense pot at its end, and the smoke
-      const LY = F + PL_H + 0.04;
-      for (const ez of [-0.95, -0.8, 0.8, 0.95]) {
-        thai('candle', LEDGE_X, LY, AZ + ez, { s: 0.4, parent: roomG, cast: false,
-          hide: [cyl(0.018, 0.018, 0.16, LEDGE_X, LY + 0.08, AZ + ez, new THREE.MeshStandardMaterial({ color: 0xf3e4b0, roughness: 0.6 }), 8, roomG)] });
-        const f = new THREE.Mesh(new THREE.SphereGeometry(0.014, 8, 6), new THREE.MeshBasicMaterial({ color: 0xffc46a, transparent: true, opacity: 0.95, fog: false }));
-        f.scale.set(1, 1.8, 1); f.position.set(LEDGE_X, LY + 0.18, AZ + ez); roomG.add(f); candles.push(f);
-      }
-      {
-        const iz = AZ + ALT_W / 2 - 0.02;
-        const pot = [cyl(0.1, 0.08, 0.1, LEDGE_X, LY + 0.05, iz, matGold, 14, roomG)];
-        for (let k = 0; k < 4; k++) {
-          const st = cyl(0.004, 0.004, 0.26, LEDGE_X, LY + 0.2, iz - 0.03 + k * 0.02, matRedD, 3, roomG);
-          st.rotation.x = (k - 1.5) * 0.08; pot.push(st);
+        const SW = ALT_W + 0.16;
+        box(SW, SH_T, PL_D, ALT_CX, SH_Y - SH_T / 2, SH_CZ, matRed, roomG, false);             // the board
+        box(SW + 0.04, 0.035, PL_D + 0.02, ALT_CX, SH_Y + 0.0175 - 0.035, SH_CZ + 0.01, matGold, roomG, false);
+        box(SW + 0.04, 0.05, 0.03, ALT_CX, SH_Y - SH_T - 0.02, Z0 + PL_D + 0.005, matGold, roomG, false);   // its gilt lip, hanging under the front
+        // three brackets under it, red with a gilt edge, from the wall
+        const brk = new THREE.Shape(); brk.moveTo(0, 0); brk.lineTo(0, -0.46); brk.quadraticCurveTo(0.12, -0.12, PL_D - 0.18, 0); brk.closePath();
+        const brkG = new THREE.ExtrudeGeometry(brk, { depth: 0.05, bevelEnabled: false });
+        for (const bx of [-SW / 2 + 0.16, 0, SW / 2 - 0.16]) {
+          const b = new THREE.Mesh(brkG, matRed); b.rotation.y = -Math.PI / 2;
+          b.position.set(ALT_CX + bx - 0.025, SH_Y - SH_T, Z0); roomG.add(b);
+          const e = new THREE.Mesh(brkG, matGold); e.rotation.y = -Math.PI / 2; e.scale.set(1, 1, 0.3);
+          e.position.set(ALT_CX + bx + 0.012, SH_Y - SH_T - 0.004, Z0); roomG.add(e);
         }
-        thai('incense', LEDGE_X, LY, iz, { s: 0.42, parent: roomG, cast: false, hide: pot });   // v16.6
+        solids.push(hid(box(SW, 1.4, PL_D, ALT_CX, F + 0.7, SH_CZ, matProxy, roomG, false)));
+        const stand = [mkBuddha(ALT_CX, SH_Y, ALT_CZ, 0.36, roomG)];
+        wallScan('altarrow', ALT_CX, SH_Y, ALT_CZ, 0, ALT_S, stand);
+      }
+      /* v19.1: the old masters' three photographs that hung over the altar
+         are gone (Chad: "also remove all the generated monk portraits that
+         look bad") */
+      // candles on the shelf's ledge, the incense pot at its far end, and the smoke
+      const LY = SH_Y;
+      for (const ex of [-0.95, -0.8, 0.8, 0.95]) {
+        thai('candle', ALT_CX + ex, LY, LEDGE_Z, { s: 0.4, parent: roomG, cast: false,
+          hide: [cyl(0.018, 0.018, 0.16, ALT_CX + ex, LY + 0.08, LEDGE_Z, new THREE.MeshStandardMaterial({ color: 0xf3e4b0, roughness: 0.6 }), 8, roomG)] });
+        const f = new THREE.Mesh(new THREE.SphereGeometry(0.014, 8, 6), new THREE.MeshBasicMaterial({ color: 0xffc46a, transparent: true, opacity: 0.95, fog: false }));
+        f.scale.set(1, 1.8, 1); f.position.set(ALT_CX + ex, LY + 0.18, LEDGE_Z); roomG.add(f); candles.push(f);
+      }
+      {
+        const ix = ALT_CX - ALT_W / 2 + 0.02;                 // the end away from the masks: its smoke rises clear of them
+        const pot = [cyl(0.1, 0.08, 0.1, ix, LY + 0.05, LEDGE_Z, matGold, 14, roomG)];
+        for (let k = 0; k < 4; k++) {
+          const st = cyl(0.004, 0.004, 0.26, ix - 0.03 + k * 0.02, LY + 0.2, LEDGE_Z, matRedD, 3, roomG);
+          st.rotation.z = (k - 1.5) * 0.08; pot.push(st);
+        }
+        thai('incense', ix, LY, LEDGE_Z, { s: 0.42, parent: roomG, cast: false, hide: pot });   // v16.6
         if (makeSoftDot) {
           const dot = makeSoftDot(); madeTex.push(dot);
           const N = 12, geo = new THREE.BufferGeometry();
           geo.setAttribute('position', new THREE.Float32BufferAttribute(new Float32Array(N * 3), 3));
           roomSmoke = new THREE.Points(geo, new THREE.PointsMaterial({ map: dot, size: 0.13, transparent: true, opacity: 0.28, depthWrite: false, color: 0xd8d0c4 }));
           roomSmoke.frustumCulled = false; roomSmoke.userData.seed = Array.from({ length: N }, (_, i) => hash(i, 11));
-          roomSmoke.userData.at = new THREE.Vector3(ROOM.x + LEDGE_X, LY + 0.29, ROOM.z + iz);
+          roomSmoke.userData.at = new THREE.Vector3(ROOM.x + ix, LY + 0.29, ROOM.z + LEDGE_Z);
           world.add(roomSmoke);
         }
       }
-      // the garlands, swagged across the plinth's front
+      // the garlands, swagged across the shelf's front, under its lip
       for (let i = 0; i < 2; i++) {
-        const pts = [], w = ALT_W + 0.1, y = F + PL_H - 0.04 - i * 0.16, x = HW - PL_D - 0.025 - i * 0.005;
-        for (let k = 0; k <= 16; k++) { const t = k / 16; pts.push(new THREE.Vector3(x, y - Math.sin(t * Math.PI) * 0.1, AZ - w / 2 + t * w)); }
+        const pts = [], w = ALT_W + 0.1, y = SH_Y - SH_T - 0.06 - i * 0.14, z = Z0 + PL_D + 0.03 + i * 0.005;
+        for (let k = 0; k <= 16; k++) { const t = k / 16; pts.push(new THREE.Vector3(ALT_CX - w / 2 + t * w, y - Math.sin(t * Math.PI) * 0.1, z)); }
         roomG.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 32, 0.022, 6, false), new THREE.MeshStandardMaterial({ color: i ? 0xf6c228 : 0xf5f0de, roughness: 0.7 })));
       }
 
-      /* the yant cloths on the walls, framed: the five lines, the nine spires,
-         the twin tigers, the eight directions — drawn, not downloaded */
-      const cloth = (k, x, y, z, ry, w = 0.62, h = 0.82) => {
+      /* the yant cloths on the walls, framed — drawn, not downloaded. v19.1:
+         the three designs Chad gave (makeYantCloth), each painted ONCE and
+         shared by every cloth of it, each hung at its own proportions, and
+         one more where v18.7's altar stood on the east wall */
+      const YANT_A = { gao: 0.84, hah: 1.6, sroi: 0.66 }, yantMat = {};
+      const cloth = (k, x, y, z, ry, w) => {
+        const h = w * YANT_A[k];
+        const mat = yantMat[k] || (yantMat[k] = new THREE.MeshStandardMaterial({ map: tex(makeYantCloth(THREE, cnv, k)), roughness: 0.9 }));
         const g = new THREE.Group(); g.position.set(x, y, z); g.rotation.y = ry; roomG.add(g);
         box(w + 0.06, h + 0.06, 0.025, 0, 0, 0, matWoodD, g, false);
-        const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshStandardMaterial({ map: tex(makeYantCloth(THREE, cnv, k)), roughness: 0.9 }));
+        const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat);
         m.position.z = 0.014; g.add(m);
       };
-      cloth(1, -HW + 0.02, F + 1.75, -1.6, Math.PI / 2);
-      cloth(2, -HW + 0.02, F + 1.75, -0.3, Math.PI / 2, 0.7, 0.7);
-      cloth(3, -HW + 0.02, F + 1.75, 1.0, Math.PI / 2);
-      cloth(0, HW - 0.02, F + 1.8, 0.95, -Math.PI / 2, 0.55, 0.75);   // v18.7: moved along the wall, the altar has its old place
-      cloth(1, HW - 0.02, F + 1.8, 1.8, -Math.PI / 2, 0.55, 0.75);
-      cloth(2, 0.9, F + 1.7, Z1 - 0.02, Math.PI, 0.9, 0.9);
-      cloth(3, 2.4, F + 1.7, Z1 - 0.02, Math.PI, 0.55, 0.75);
+      cloth('gao', -HW + 0.02, F + 1.75, -1.6, Math.PI / 2, 0.80);
+      cloth('sroi', -HW + 0.02, F + 1.75, -0.3, Math.PI / 2, 0.92);
+      cloth('hah', -HW + 0.02, F + 1.75, 1.0, Math.PI / 2, 0.50);
+      cloth('gao', HW - 0.02, F + 1.8, -2.05, -Math.PI / 2, 0.80);
+      cloth('hah', HW - 0.02, F + 1.8, 0.95, -Math.PI / 2, 0.50);
+      cloth('sroi', HW - 0.02, F + 1.8, 1.8, -Math.PI / 2, 0.80);
+      cloth('gao', 0.9, F + 1.7, Z1 - 0.02, Math.PI, 0.95);
+      cloth('hah', 2.4, F + 1.7, Z1 - 0.02, Math.PI, 0.50);
 
       /* THE WINDOW on the east wall: a wooden frame, two shutters half open,
          and the dawn beyond them — a bright panel with the slats' shadows in
@@ -1247,7 +1280,7 @@
       const tube = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 1.12, 8), new THREE.MeshBasicMaterial({ color: 0xfff6e8, fog: false }));
       tube.rotation.z = Math.PI / 2; tube.position.set(0.2, F + H - 0.08, 0.6); roomG.add(tube); roomLamps.push(tube);
       const cpool = new THREE.Mesh(new THREE.CircleGeometry(1.1, 28), new THREE.MeshBasicMaterial({ color: 0xffb870, transparent: true, opacity: 0.10, blending: THREE.AdditiveBlending, depthWrite: false, fog: false }));
-      cpool.rotation.x = -Math.PI / 2; cpool.position.set(HW - PL_D - 0.6, F + 0.012, AZ); roomG.add(cpool);   // v18.7: under the altar's candles
+      cpool.rotation.x = -Math.PI / 2; cpool.position.set(ALT_CX, F + 0.012, LEDGE_Z + 0.45); roomG.add(cpool);   // v19.1: on the floor in front of the altar's shelf, under its candles' light
       // the ceiling fan
       {
         const g = new THREE.Group(); g.position.set(-0.9, F + H - 0.42, 0.9); roomG.add(g);
@@ -1470,7 +1503,7 @@
       const leafM = new THREE.MeshStandardMaterial({ color: 0x7a4626, roughness: 0.55 });
       box(0.045, dh, dw, 0, dh / 2, dw / 2, leafM, kutiLeaf);
       for (const y of [0.55, 1.45]) box(0.02, 0.6, dw - 0.16, 0.03, y, dw / 2, matWoodD, kutiLeaf, false);
-      box(0.02, 0.22, 0.5, 0.035, 1.62, dw / 2, new THREE.MeshStandardMaterial({ map: tex(makeYantCloth(THREE, cnv, 0)), roughness: 0.8 }), kutiLeaf, false);
+      box(0.02, 0.22, 0.5, 0.035, 1.62, dw / 2, new THREE.MeshStandardMaterial({ map: tex(makeYantCloth(THREE, cnv, 'gao', 0.44)), roughness: 0.8 }), kutiLeaf, false);   // v19.1: a Gao Yord, 0.5 x 0.22
       const knob = new THREE.Mesh(new THREE.SphereGeometry(0.03, 10, 8), matGold); knob.position.set(0.05, 1.0, dw - 0.1); kutiLeaf.add(knob);
       for (const wz of [KDOOR.z - 1.75, KDOOR.z + 1.75]) {
         const g = new THREE.Group(); g.position.set(X + 0.02, SALA.floor + 1.55, wz); world.add(g);
@@ -2191,6 +2224,41 @@
       return parsedGlb.get(key);
     }
     const _v = new THREE.Vector3();
+    /* v19.1 · EVERY RIG'S CULLING SPHERE FROM ITS POSED SKIN, in world space
+       and then in each mesh's own frame — v18.5's law (e3c2's congregation),
+       met here by Chad: "When player walks close to the standing male model
+       in the main temple hall, he disappears immediately, and reappears when
+       walking away." His file is quantized: every mesh's positions are
+       normalised shorts in [-1, 1] under a 0.01 armature, so wideBounds'
+       default sphere — (0, 0.9, 0), r 1.9, in MESH units — was a ball under
+       two centimetres across at his feet. Drawn while his feet were in
+       frame; dropped the moment the player came close enough to look him in
+       the face. One sphere round the whole body (eyes, teeth and lashes go
+       with it), generous on purpose — a take moves the body and a walk
+       carries it — and each mesh's own (clones share their geometry). A rig
+       with a measured table entry keeps it; a rig whose `then` already did
+       this (the plane's passengers, fitSeat) is not done twice. */
+    const _cv = new THREE.Vector3(), _cm = new THREE.Matrix4();
+    function skinCull(r, pad = 1.35, minR = 0) {
+      if (!r.model) return;
+      r.model.updateMatrixWorld(true);
+      const bb = new THREE.Box3();
+      r.model.traverse(o => {
+        if (!o.isSkinnedMesh) return;
+        o.skeleton.update();
+        const n = o.geometry.attributes.position.count, step = Math.max(1, Math.floor(n / 4000));
+        for (let i = 0; i < n; i += step) { o.getVertexPosition(i, _cv); _cv.applyMatrix4(o.matrixWorld); bb.expandByPoint(_cv); }
+      });
+      if (bb.isEmpty()) return;
+      const sph = bb.getBoundingSphere(new THREE.Sphere()), R = Math.max(sph.radius * pad, minR);
+      r.model.traverse(o => {
+        if (!o.isSkinnedMesh) return;
+        _cm.copy(o.matrixWorld).invert();
+        const k = o.matrixWorld.getMaxScaleOnAxis() || 1;
+        o.boundingSphere = new THREE.Sphere(sph.center.clone().applyMatrix4(_cm), R / k);
+      });
+      r.culled = true;
+    }
     function lowestBone(g) {
       let lo = Infinity;
       g.traverse(o => { if (o.isBone) { o.getWorldPosition(_v); lo = Math.min(lo, _v.y); } });
@@ -2269,6 +2337,7 @@
         }
         if (opts.then) opts.then(rig);
         g.updateMatrixWorld(true);
+        if (!CULL_SPHERE[key] && !rig.culled) skinCull(rig, 1.35, (opts.height || 1.7) * 0.8);
         proxy.visible = false; rig.ready = true; redoShadows();
       }).catch(err => { console.warn(key + ' failed to load', err); ctx.loadFail && ctx.loadFail(key, err); rig.ready = true; });
       return rig;
@@ -2361,6 +2430,11 @@
                                                              if (o.isBone && /RightHandMiddle\d/.test(o.name) && !r.tip) r.tip = o; });
                                    } });
     const ajSeat = dais.children.find(c => c.geometry && c.geometry.parameters && c.geometry.parameters.width === 0.62);
+    /* v19.1 (Chad: "the red backseat of the sakyant ajahn is colliding into
+       the masks behind. just remove this red backseat"): his throne is built
+       without its back — the masks hang on the wall right behind him. The
+       monk's throne keeps its own. */
+    if (ajSeat) ajSeat.userData.noBack = true;
     /* the seat goes under the hips: its top 0.10 below the hip joint, centred
        under it in x and z, in the dais's own frame (both daises: mkDais marks
        the seat with the height it stands on and its cushion) */
@@ -2530,7 +2604,7 @@
         U.riserTop.position.set(fm.x, fy - 0.02, fm.z);
       }
       // the back, just clear of his own
-      if (U.back && isFinite(back)) {
+      if (U.back && isFinite(back) && !U.noBack) {
         const bp = toL(s0 - 0.03, 0), bh = 0.6;
         U.back.position.set(bp.x, top + CU + bh / 2 - 0.04, bp.z);
         U.backTop.position.set(bp.x, top + CU + bh - 0.02, bp.z);
@@ -2596,11 +2670,29 @@
        talks, the thumbs-up take itself while he blesses (Chad's direction).
        The procedural arm lift is the stand-in's and is not given to him
        (no `arm`); the whisk still rides his right hand through the chant. */
+    /* v19.1 (Chad: "The monk's blessing bowl is colliding into his seat
+       base"): the bowls were set on the dais at v16.1, beside a 0.62 m seat
+       block. Since v17.1 the throne is BUILT ROUND HIM once he lands
+       (seatOnSkin) — its red footrest as wide as his knees and as deep as
+       his toes, with a gilt top a little wider — and it reached over both
+       spots. So the bowls go out to the footrest's own sides, a hand's width
+       clear of its gilt edge, on the dais; the whisk's resting place and
+       bowlPos follow the silver one. Never nearer in than v16.1 put them. */
+    function placeBowl() {
+      const R = monkD.seat.userData.riser;
+      if (!R || !bowlG || !almsG) return;
+      const half = R.scale.x * R.geometry.parameters.width / 2 + 0.02;   // the gilt top is 4 cm wider than the base
+      bowlL.x = Math.max(MONL.x + 0.42, R.position.x + half + 0.14 + 0.06);
+      bowlG.position.x = bowlL.x;
+      almsG.position.x = Math.min(MONL.x - 0.72, R.position.x - half - 0.14 - 0.06);
+      const w = mdW(bowlL.x, bowlL.z); bowlPos.set(w.x, bowlPos.y, w.z);
+    }
     const MONK_REST = 'Sit_Thumbs_Up_Right', MONK_TALK = 'Sitting_Answering_Questions', MONK_BLESS = 'Sit_Thumbs_Up_Right';
     const monk = mkRig('monk', { x: MON.x, y: MD_TOP + AJ_RISE, z: MON.z, ry: MD.ry, height: 1.68,   // v16.9: facing the hall from the east wall
                                   sizeOn: 'Walking', sizeAt: 0, idle: MONK_REST, at: 0, seated: true,
                                   then: (r) => {
                                     seatOnSkin(r, monkD.seat, [MONK_REST, MONK_TALK], () => r.play(MONK_REST, 1, 0, false, 0));
+                                    placeBowl();
                                     r.model.traverse(o => {
                                       if (!o.isBone) return;
                                       if (/RightHand(_\d+)?$/.test(o.name) && !r.hand) r.hand = o;
@@ -2699,16 +2791,9 @@
       if (other.acts) other.play(C_DODGE, 1, 0);
     };
 
-    /* A MAN WAITING on the bench along the west rail — the admin tee in his
-       own olive, dozing upright, as one does at half past five in the morning. */
-    const bench = new THREE.Group(); world.add(bench);
-    const waiter = mkRig('admintee', { x: BENCH.x + 0.1, y: SALA.floor, z: (BENCH.z0 + BENCH.z1) / 2 - 0.4, ry: Math.PI / 2, height: 1.70,
-                                       sizeOn: 'Idle_9', idle: 'Sit_and_Doze_Off', rate: 0.3, seated: true,
-                                       then: (r) => {
-                                         if (!r.hips) return;
-                                         r.model.updateMatrixWorld(true); r.hips.getWorldPosition(_v);
-                                         r.group.position.x += BENCH.x - _v.x;
-                                       } });
+    /* v19.1: the man who dozed on the bench (the admin tee, episode 2's army
+       shirt) is gone — Chad: "in the ep3 chp1 main temple hall, remove the
+       army admin shirt guy". The bench stays. */
 
     /* THE STALL AUNTIE — v17.4: the pink-shirt woman from the tang-ki's
        audience (Chad: "i dont want to repeat the same granny" — the granny is
@@ -2925,7 +3010,7 @@
       if (k <= 0.02) return null;
       return worldSfx(name, vol * (0.25 + 0.75 * k * k), rate, panAt(x, z));
     }
-    if (warmSounds) warmSounds(['mk1come', 'mk1chant', 'mk1teach', 'hp1room', 'aj1mat', 'z1sadhu', 'z1room',
+    if (warmSounds) warmSounds(['mk1come', 'mk1chant', 'mk1teach', 'hp1room', 'aj1mat', 'z1sadhu', 'z1room', 'z1thank',
                                 'roomdoor', 'watersprinkle', 'roomamb', 'eavebells', 'wingflap',
                                 'z1wai', 'z1wait', 'z1trance', 'z1warm', 'au1hi', 'au1sell', 'au1shoes',
                                 'aj1next', 'aj1sit', 'aj1breathe', 'aj1katha', 'aj1done', 'aj1ask',
@@ -3220,7 +3305,7 @@
         whisk.position.copy(_hp).add(_wUp).addScaledVector(dir, -0.04);
         whisk.lookAt(whisk.position.clone().add(dir));
       } else {
-        const wr = mdW(MONL.x + 0.42 - 0.14, MONL.z + 0.62);           // v16.9: across the bowl, in the turned dais's frame
+        const wr = mdW(bowlL.x - 0.14, bowlL.z);                       // v16.9: across the bowl, in the turned dais's frame (v19.1: wherever placeBowl put it)
         whisk.position.set(wr.x, bowlPos.y + 0.07, wr.z);
         whisk.rotation.set(0, Math.PI / 2 + 0.2 + MD.ry, 0);
         whisk.rotateX(-0.12);
@@ -3281,8 +3366,12 @@
       /* v18.7: turned a little further right than v16.1, so the Ajarn, the
          masks over him and the altar row on the east wall are all in a phone's
          frame the moment the black lifts (Chad: "it still must be easily seen
-         by the player the moment he enters the room") */
-      yaw.rotation.y = Math.atan2(-((ROOM.x + 1.9) - p.x), -((ROOM.z - 2.5) - p.z));
+         by the player the moment he enters the room"). v19.1: the altar row
+         is on the BACK wall now, left of the masks, so the view is turned back
+         to the gap between them — the altar on one side of a phone's frame,
+         the masks on the other, the Ajarn at its edge (a phone sees ~37
+         degrees across; the two rows and the Ajarn span 49 from here). */
+      yaw.rotation.y = Math.atan2(-((ROOM.x - 0.45) - p.x), -((ROOM.z - 2.9) - p.z));
       pitch.rotation.x = -0.04;
       if (kit) kit.daylight(ROOMLIGHT, 0);
     }
@@ -3753,7 +3842,7 @@
       const wdt = lastMix ? Math.min(0.5, nowW - lastMix) : 0;
       lastMix = nowW;
       // the mixers run in every state (v5.19): a cutscene owns the poses, never the clocks
-      for (const r of [ajarn, other, waiter, auntie, assistant, monk]) {
+      for (const r of [ajarn, other, auntie, assistant, monk]) {
         if (!r.mixer || !r.group.visible) continue;
         headPre(r); if (r === monk) monkArmPre();
         r.mixer.update(dt); rootComp(r); r.model && r.model.updateMatrixWorld(true);
@@ -3937,7 +4026,7 @@
       });
       sweep(world); sweep(handTray);
       scene.remove(world);
-      for (const r of [ajarn, other, waiter, auntie, assistant, monk]) r.mixer?.stopAllAction();
+      for (const r of [ajarn, other, auntie, assistant, monk]) r.mixer?.stopAllAction();
       for (const o of owned) { if (o.parent) o.parent.remove(o); o.dispose?.(); }
       owned.length = 0;
       for (const g of geos) g.dispose();
@@ -4008,6 +4097,7 @@
         const c = sph.center.clone().applyMatrix4(inv), k = o.matrixWorld.getMaxScaleOnAxis() || 1;
         o.boundingSphere = new THREE.Sphere(c, sph.radius * 1.15 / k);
       });
+      r.culled = true;
     }
     const film = buildFilm();
     function buildFilm() {
@@ -4536,7 +4626,7 @@
       SALA, DAIS, AJ, CUSH, WAIT, WAI, RACK, STALL, GATE, ALT, BODHI, DAIS_TOP, ajarnFace,
       ROOM, RDOOR, RIN, MD, MON, BLESS, WALK, KUTI, KDOOR, HELP, ROOMLIGHT,
       get STOOL_TOP() { return STOOL_TOP; },
-      ajarn, other, waiter, auntie, assistant, monk, putAjarn, putOther, myShoes, handTray, film,
+      ajarn, other, auntie, assistant, monk, putAjarn, putOther, myShoes, handTray, film,
       /* for the endings: the room's door opened by the scene, and the way out */
       roomDoor: (k) => { roomDoorWant = k; roomDoorK = k; if (roomLeaf) roomLeaf.rotation.y = -k * 1.3; },
       leaveRoom: () => { roomDoorWant = 0; roomDoorK = 0; if (roomLeaf) roomLeaf.rotation.y = 0; if (kit) kit.daylight(null, 0); },
@@ -4622,6 +4712,84 @@
     for (let i = 0; i < 500; i++) { x.fillStyle = `rgba(255,230,160,${r() * 0.12})`; x.fillRect(r() * S, r() * S, 2, 2); }
     return done(THREE, c, true);
   }
+  /* v19.1 · the red board behind the principal Buddha, painted as Thai
+     lacquer-and-gilt (lai rot nam): a border of running kanok flames between
+     gilt rules, and inside it a diamond lattice (lai phum khao bin) with a
+     four-petal flower at every crossing and a small gilt star in every
+     diamond. 1024 x 1056 for the board's 3.2 x 3.3 m; the red is matRedD's. */
+  function makeAltarScreen(THREE, cnv) {
+    const W = 1024, H = 1056, [c, x] = cnv(W); c.height = H;
+    const GOLD = '#d7a548', GOLD2 = '#f0cf7a', DEEP = '#6d140e';
+    const g = x.createRadialGradient(W / 2, H * 0.45, 60, W / 2, H * 0.5, W * 0.75);
+    g.addColorStop(0, '#7a1a12'); g.addColorStop(1, '#5a0f0a');
+    x.fillStyle = g; x.fillRect(0, 0, W, H);
+    // the lattice field: diagonal rules, a flower at every crossing, a star in every diamond
+    const B = 92, P = 96;                                    // border width; lattice pitch
+    x.save(); x.beginPath(); x.rect(B, B, W - 2 * B, H - 2 * B); x.clip();
+    x.strokeStyle = GOLD; x.lineWidth = 3;
+    for (let k = -H; k < W + H; k += P) {
+      x.beginPath(); x.moveTo(k, 0); x.lineTo(k + H, H); x.stroke();
+      x.beginPath(); x.moveTo(k, H); x.lineTo(k + H, 0); x.stroke();
+    }
+    const flower = (cx, cy, r) => {
+      x.fillStyle = GOLD;
+      for (let i = 0; i < 4; i++) {
+        const a = i * Math.PI / 2;
+        x.save(); x.translate(cx, cy); x.rotate(a);
+        x.beginPath(); x.moveTo(0, 0);
+        x.bezierCurveTo(r * 0.55, -r * 0.35, r * 0.75, -r * 0.05, r, 0);
+        x.bezierCurveTo(r * 0.75, r * 0.05, r * 0.55, r * 0.35, 0, 0); x.fill();
+        x.restore();
+      }
+      for (let i = 0; i < 4; i++) {                          // the small leaves between the petals
+        const a = i * Math.PI / 2 + Math.PI / 4;
+        x.beginPath(); x.ellipse(cx + Math.cos(a) * r * 0.42, cy + Math.sin(a) * r * 0.42, r * 0.16, r * 0.08, a, 0, Math.PI * 2); x.fill();
+      }
+      x.fillStyle = GOLD2; x.beginPath(); x.arc(cx, cy, r * 0.2, 0, Math.PI * 2); x.fill();
+      x.strokeStyle = DEEP; x.lineWidth = 1.5; x.beginPath(); x.arc(cx, cy, r * 0.2, 0, Math.PI * 2); x.stroke();
+    };
+    const star = (cx, cy, r) => {
+      x.fillStyle = GOLD; x.beginPath();
+      for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4, rr = i % 2 ? r * 0.35 : r; x.lineTo(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr); }
+      x.closePath(); x.fill();
+    };
+    // crossings sit where the rules meet: every P/2 across, alternating rows
+    for (let row = 0, y = 0; y <= H + P; row++, y += P / 2) {
+      for (let xx = (row % 2) * P / 2; xx <= W + P; xx += P) {
+        flower(xx, y, 26);
+        star(xx + P / 2, y, 9);
+      }
+    }
+    x.restore();
+    // the border: two gilt rules and a running kanok between them
+    x.fillStyle = DEEP; x.fillRect(0, 0, W, B); x.fillRect(0, H - B, W, B); x.fillRect(0, 0, B, H); x.fillRect(W - B, 0, B, H);
+    x.strokeStyle = GOLD; x.lineWidth = 6; x.strokeRect(12, 12, W - 24, H - 24);
+    x.lineWidth = 4; x.strokeRect(B - 8, B - 8, W - 2 * B + 16, H - 2 * B + 16);
+    const flame = (cx, cy, s, rot) => {
+      x.save(); x.translate(cx, cy); x.rotate(rot); x.scale(s, s);
+      x.fillStyle = GOLD; x.beginPath();
+      x.moveTo(-14, 10); x.bezierCurveTo(-16, -6, -4, -14, 4, -26);
+      x.bezierCurveTo(3, -14, 14, -10, 12, 4); x.bezierCurveTo(20, 0, 22, 10, 16, 14);
+      x.bezierCurveTo(4, 18, -8, 18, -14, 10); x.fill();
+      x.fillStyle = DEEP; x.beginPath(); x.arc(0, 4, 4.2, 0, Math.PI * 2); x.fill();
+      x.fillStyle = GOLD2; x.beginPath(); x.arc(0, 4, 2.2, 0, Math.PI * 2); x.fill();
+      x.restore();
+    };
+    const run = (x0, y0, x1, y1, rot) => {
+      const n = Math.round(Math.hypot(x1 - x0, y1 - y0) / 52);
+      for (let i = 0; i <= n; i++) flame(x0 + (x1 - x0) * i / n, y0 + (y1 - y0) * i / n, 1.2, rot);
+    };
+    const m = (B + 4) / 2 + 4;
+    run(m + 40, m, W - m - 40, m, 0);                         // top: the flames point up
+    run(m + 40, H - m, W - m - 40, H - m, Math.PI);           // bottom: down
+    run(m, m + 40, m, H - m - 40, -Math.PI / 2);              // left: out
+    run(W - m, m + 40, W - m, H - m - 40, Math.PI / 2);       // right: out
+    for (const [cx, cy] of [[m, m], [W - m, m], [m, H - m], [W - m, H - m]]) flower(cx, cy, 30);
+    // a faint lacquer wear, so the gilt is not printed-flat
+    const r = rng(41);
+    for (let i = 0; i < 1400; i++) { x.fillStyle = `rgba(${r() < 0.5 ? '255,220,150' : '30,6,4'},${r() * 0.07})`; x.fillRect(r() * W, r() * H, 2 + r() * 3, 1 + r() * 2); }
+    return done(THREE, c, false);
+  }
   function makeRoofTiles(THREE, cnv, a, b) {
     const S = 256, [c, x] = cnv(S);
     x.fillStyle = b; x.fillRect(0, 0, S, S);
@@ -4672,50 +4840,231 @@
     x.fillStyle = '#5a4432'; x.fillRect(52, 46, 7, 3); x.fillRect(69, 46, 7, 3); x.fillRect(58, 64, 12, 2);
     return done(THREE, c, false);
   }
-  /* v16.1 · the yant cloths (pha yant) on the room's walls: off-white cloth,
-     a red border, the design in black ink — k 0 the five lines (Hah Taew), 1
-     the nine spires (Gao Yord), 2 the twin tigers, 3 the eight directions
-     (Paed Tidt) — and every design ringed with lines of script, drawn as
-     small cursive strokes (the Khom letters are not in any font a phone has) */
-  function makeYantCloth(THREE, cnv, k) {
-    const S = 256, [c, x] = cnv(S), r = rng(97 + k * 31);
-    x.fillStyle = '#efe6d2'; x.fillRect(0, 0, S, S);
-    x.strokeStyle = '#9a1c14'; x.lineWidth = 7; x.strokeRect(8, 8, S - 16, S - 16);
-    x.strokeStyle = '#1a1410'; x.fillStyle = '#1a1410'; x.lineCap = 'round';
-    const glyphs = (x0, y0, w, h) => {
-      x.lineWidth = 1.6;
-      for (let gx = x0; gx < x0 + w - 6; gx += 7 + r() * 3) {
-        x.beginPath(); const cy = y0 + h / 2;
-        x.moveTo(gx, cy + 2); x.quadraticCurveTo(gx + 3, cy - 4 - r() * 3, gx + 5, cy + 1);
-        if (r() < 0.6) { x.moveTo(gx + 1, cy - 3); x.arc(gx + 1.5, cy - 4, 1.4, 0, Math.PI * 2); }
-        x.stroke();
-      }
-    };
-    if (k === 0) {
-      for (let i = 0; i < 5; i++) { const y = 70 + i * 26; x.lineWidth = 2; x.beginPath(); x.moveTo(40, y + 12); x.quadraticCurveTo(128, y + 2, 216, y + 12); x.stroke(); glyphs(44, y - 2, 168, 12); }
-    } else if (k === 1) {
-      for (let i = 0; i < 9; i++) { const cx = 128 + (i - 4) * 18, top = 48 + Math.abs(i - 4) * 12; x.lineWidth = 2.2; x.beginPath(); x.moveTo(cx - 8, 150); x.lineTo(cx, top); x.lineTo(cx + 8, 150); x.stroke(); }
-      x.lineWidth = 2; x.strokeRect(64, 150, 128, 50); x.beginPath(); x.arc(128, 175, 16, 0, Math.PI * 2); x.stroke();
-      glyphs(40, 206, 176, 12); glyphs(40, 222, 176, 12);
-    } else if (k === 2) {
-      for (const sd of [-1, 1]) {
-        x.save(); x.translate(128 + sd * 44, 132); x.scale(sd, 1);
-        x.lineWidth = 2.4; x.beginPath(); x.moveTo(30, 30); x.quadraticCurveTo(0, -10, -30, -24); x.quadraticCurveTo(-40, -30, -34, -38);
-        x.moveTo(30, 30); x.lineTo(34, 50); x.moveTo(8, 22); x.lineTo(6, 48); x.moveTo(-14, 6); x.lineTo(-26, 40); x.stroke();
-        x.beginPath(); x.arc(-32, -40, 9, 0, Math.PI * 2); x.stroke();
-        for (let j = 0; j < 4; j++) { x.beginPath(); x.moveTo(-10 + j * 10, 0); x.lineTo(-4 + j * 10, 16); x.stroke(); }
-        x.restore();
-      }
-      glyphs(40, 40, 176, 12); glyphs(40, 206, 176, 12); glyphs(40, 222, 176, 12);
-    } else {
-      x.lineWidth = 2;
-      for (const rr of [30, 56, 84]) { x.beginPath(); x.arc(128, 128, rr, 0, Math.PI * 2); x.stroke(); }
-      for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2; x.beginPath(); x.moveTo(128 + Math.cos(a) * 30, 128 + Math.sin(a) * 30); x.lineTo(128 + Math.cos(a) * 100, 128 + Math.sin(a) * 100); x.stroke(); }
-      for (let i = 0; i < 8; i++) { const a = (i + 0.5) / 8 * Math.PI * 2; glyphs(128 + Math.cos(a) * 64 - 10, 128 + Math.sin(a) * 64 - 6, 22, 12); }
-      x.beginPath(); x.arc(128, 128, 8, 0, Math.PI * 2); x.fill();
+  /* v16.1's cloths (the five lines, the nine spires, the twin tigers, the
+     eight directions, 256 px each, glyphs as squiggles) are redrawn at v19.1
+     as the three designs below. */
+  /* Khom-style letters (the yant's script is Khom, not in any font a phone
+     has): drawn strokes in a 10 x 10 box, y down — a looped head where the
+     pen starts, arches, hooks and tails, the shapes of ห ส ม อ ข ร น ะ ๆ ช
+     ย พ ท ถ ศ ง as the references write them. */
+  const KHOM = [
+    'M2.3 7.6m-0.9 0a0.9 0.9 0 1 0 1.8 0a0.9 0.9 0 1 0-1.8 0M3.2 7.6V3.6Q3.2 2.2 4.6 2.2Q6 2.2 6 3.6V8.4M6 3.6Q6 2.2 7.3 2.2Q8.6 2.2 8.6 3.6V8.2Q8.6 9.2 9.4 8.8',
+    'M3 3.3m-0.9 0a0.9 0.9 0 1 1 1.8 0a0.9 0.9 0 1 1-1.8 0M2.1 3.6Q2.4 8.4 5.2 8.4Q8 8.4 8 5.2V2.4Q8 1.4 9 1.8',
+    'M2.6 7.4m-0.8 0a0.8 0.8 0 1 0 1.6 0a0.8 0.8 0 1 0-1.6 0M3.4 7.4V2.6M3.4 7.6Q5 9.2 6.6 7.4Q7.8 6 7.8 2.6V8.6',
+    'M3.4 4.4m-0.8 0a0.8 0.8 0 1 1 1.6 0a0.8 0.8 0 1 1-1.6 0M2.6 4.6Q2.6 8.4 5.4 8.4Q8.2 8.4 8.2 5.4Q8.2 2 5.4 2Q3.6 2 3.4 3.6',
+    'M2.8 3.2m-0.8 0a0.8 0.8 0 1 1 1.6 0a0.8 0.8 0 1 1-1.6 0M3.6 3.4Q3.4 5.2 2.6 5.6Q2.2 8.4 5.2 8.4Q8 8.4 8 5.4V2.2',
+    'M2.4 2.6Q5 1.4 7.6 2.6Q4.6 3.6 4.4 5.4Q4.4 6.6 6 6.6Q7.4 6.8 6.6 8.6Q6 9.4 4.6 9',
+    'M2.6 7.4m-0.8 0a0.8 0.8 0 1 0 1.6 0a0.8 0.8 0 1 0-1.6 0M3.4 7.4V3.8Q3.4 2.2 5 2.2Q6.6 2.2 6.6 3.8V7.6Q6.6 8.6 7.6 8.4Q8.6 8.2 8.4 6.8Q8.2 6 7.6 6.4',
+    'M5 3.6m-1 0a1 1 0 1 1 2 0a1 1 0 1 1-2 0M5 7.2m-1 0a1 1 0 1 1 2 0a1 1 0 1 1-2 0',
+    'M2.2 6.2Q3.4 2.8 5.2 4.8Q6.4 6.4 7.4 3.6Q7.8 2.4 8.8 2.8',
+    'M2.6 7.4m-0.8 0a0.8 0.8 0 1 0 1.6 0a0.8 0.8 0 1 0-1.6 0M3.4 7.4V2.6M3.4 7.6Q5 9.2 6.6 7.4V2.4Q6.6 1.6 7.6 1.8L8.8 1.2',
+    'M2.6 3.4m-0.8 0a0.8 0.8 0 1 1 1.6 0a0.8 0.8 0 1 1-1.6 0M3.4 3.4V7.4Q3.4 8.4 4.6 8Q6 7.4 6 5.6V7.6Q6 8.6 7.4 8.4Q8.4 8 8.4 2.4',
+    'M2.4 2.4V7.2Q2.4 8.4 3.6 8L5 5.4L6.4 8Q7.6 8.4 7.6 7.2V2.4M7.6 2.4m-0.8 0a0.8 0.8 0 1 1 1.6 0a0.8 0.8 0 1 1-1.6 0',
+    'M2.6 3m-0.8 0a0.8 0.8 0 1 1 1.6 0a0.8 0.8 0 1 1-1.6 0M3.4 3.2Q3.6 5 2.8 5.4Q2.4 8.4 4.2 8.4Q5.6 8.4 5.6 6.4V3.4Q5.6 2.2 7 2.2Q8.4 2.2 8.4 3.6V8.6',
+    'M2.6 7.2m-0.8 0a0.8 0.8 0 1 0 1.6 0a0.8 0.8 0 1 0-1.6 0M3.4 7.2V3.8Q3.4 2.2 5.4 2.2Q7.6 2.2 7.6 4.4V8.4Q7.6 9.6 6.4 9.8',
+    'M3 4Q3 2 5 2Q7.6 2 7.6 4.8Q7.6 8.4 5 8.4Q3 8.4 3 6.6Q3 5.6 4.2 5.6Q5.2 5.8 5 6.8',
+    'M3.2 4.6m-0.8 0a0.8 0.8 0 1 1 1.6 0a0.8 0.8 0 1 1-1.6 0M4 4.6Q5.6 5 6.4 4Q7.8 2.4 7 1.8M6.4 4Q7.4 6.6 6.4 8.4Q5.6 9.2 4.4 8.6'
+  ];
+  const KHOM_MARK = ['M3.6 0.9Q5 -0.5 6.4 0.9', 'M5 0.4m-0.6 0a0.6 0.6 0 1 1 1.2 0a0.6 0.6 0 1 1-1.2 0', 'M5.2 9.4Q6 10.6 4.8 11'];
+  let khomP = null;
+  /* one letter, size px square, centred on (cx, cy); `n` picks it */
+  function khom(x, cx, cy, size, n, rot = 0) {
+    if (!khomP) khomP = { g: KHOM.map(d => new Path2D(d)), m: KHOM_MARK.map(d => new Path2D(d)) };
+    const j1 = ((Math.abs(n) * 37) % 11 - 5) / 5, j2 = ((Math.abs(n) * 53) % 7 - 3) / 3;   // a hand's wobble, the same every load
+    const k = size / 10 * (1 + j2 * 0.07);
+    x.save(); x.translate(cx, cy); x.rotate(rot + j1 * 0.09); x.scale(k, k); x.translate(-5, -5);
+    x.lineWidth = 1.15; x.lineCap = 'round'; x.lineJoin = 'round';
+    x.stroke(khomP.g[Math.abs(n) % KHOM.length]);
+    const mk = Math.abs(n * 7 + 3) % 9;
+    if (mk < KHOM_MARK.length) x.stroke(khomP.m[mk]);
+    x.restore();
+  }
+  /* letters along a straight run, left to right */
+  function khomRow(x, x0, x1, y, size, seed) {
+    const n = Math.max(1, Math.floor((x1 - x0) / (size * 0.92)));
+    const step = (x1 - x0) / n;
+    for (let i = 0; i < n; i++) khom(x, x0 + step * (i + 0.5), y, size, seed + i * 5);
+  }
+  /* THE UNALOME — the path to enlightenment: a curl at its root (the
+     tangle of life), switchbacks narrowing as it rises (the way), then the
+     straight line (release). Root at (bx, by), rising h px (h < 0: it hangs
+     DOWN, as the Hah Taew's lower ones do); w is the curl's width. */
+  function unalome(x, bx, by, h, w) {
+    const up = h >= 0 ? 1 : -1, H = Math.abs(h);
+    x.save(); x.translate(bx, by); x.scale(1, -up);              // local frame: +y is "up" the spire
+    x.lineCap = 'round'; x.lineJoin = 'round';
+    // the root: a spiral of 1.6 turns opening out, its centre over the root
+    const r0 = w * 0.32;
+    x.beginPath();
+    for (let i = 0; i <= 40; i++) {
+      const t = i / 40, a = -Math.PI / 2 + t * Math.PI * 2 * 1.6, rr = r0 * (0.25 + 0.75 * t);
+      const px = Math.cos(a) * rr, py = r0 + Math.sin(a) * rr;
+      i ? x.lineTo(px, py) : x.moveTo(px, py);
     }
-    // a red seal stamp in a corner, the master's
-    x.fillStyle = 'rgba(160,30,20,0.85)'; x.beginPath(); x.arc(208, 212, 11, 0, Math.PI * 2); x.fill();
+    // the switchbacks
+    let y = r0 * 2.1; const zz = 5;
+    for (let i = 0; i < zz; i++) {
+      const a = (w / 2) * (1 - i / (zz + 1)), dy = w * 0.36 * (1 - i * 0.08);
+      const sx = i % 2 ? -1 : 1;
+      x.quadraticCurveTo(sx * a * 1.25, y + dy * 0.2, sx * a * 0.2, y + dy * 0.75);
+      x.quadraticCurveTo(-sx * a * 0.6, y + dy * 0.95, 0, y + dy);
+      y += dy;
+    }
+    x.lineTo(0, Math.max(y + w * 0.3, H));
+    x.stroke();
+    x.restore();
+  }
+  /* the three ovals — the Triple Gem — stacked, standing on (cx, by), w wide */
+  function ovals(x, cx, by, w) {
+    const r1 = w * 0.13, r2 = w * 0.12, r3 = w * 0.12;
+    x.beginPath(); x.ellipse(cx, by - r1, w / 2, r1, 0, 0, Math.PI * 2); x.stroke();
+    x.beginPath(); x.ellipse(cx, by - r1 * 2 - r2, w * 0.34, r2, 0, 0, Math.PI * 2); x.stroke();
+    x.beginPath(); x.arc(cx, by - r1 * 2 - r2 * 2 - r3, r3, 0, Math.PI * 2); x.stroke();
+    return by - r1 * 2 - r2 * 2 - r3 * 2;                       // the top of the stack
+  }
+  /* a curl at the end of a rule, as the yant's baselines end */
+  function curl(x, ex, ey, dir, s) {
+    x.beginPath(); x.moveTo(ex, ey);
+    x.quadraticCurveTo(ex + dir * s * 1.2, ey, ex + dir * s * 1.1, ey + s * 0.6);
+    x.quadraticCurveTo(ex + dir * s * 0.9, ey + s * 1.0, ex + dir * s * 0.55, ey + s * 0.7);
+    x.stroke();
+  }
+  /* v19.1 · THE YANT CLOTHS (pha yant), redrawn from the three designs Chad
+     gave (bkktattoostudio13.com, saved at v17.7 — Chad: "all the yant
+     posters around the room needs to be completely redrawn according to the
+     yant designs i provided you before. they need to be accurate and
+     representative of real sak yant designs"). Black ink on unbleached cloth
+     with a red border, the master's seal, gold leaf pressed on by the
+     devout, as the references carry it.
+       'gao'  — YANT GAO YORD: a stepped pyramid of script cells, 9-7-5-3-1;
+                on every step's outer corner the three ovals and an unalome —
+                the nine peaks — the middle one the tallest; two lines of
+                script under it, ending in curls.
+       'hah'  — YANT HAH TAEW CHAT PETCH: five vertical rows of script, an
+                unalome rising from the top of each and one hanging from the
+                bottom, and the Chat Petch — the diamond net — crossing
+                between the rows.
+       'sroi' — YANT SROI SANGWAN: the necklace — three rows of script hung
+                in a U, an unalome rising from both ends of every row, and the
+                pendant at the front: a diamond with three unalomes over it.
+     `aspect` is height / width; the design keeps its own proportions and is
+     centred, with plain cloth round it. */
+  function makeYantCloth(THREE, cnv, k, aspect) {
+    const A = aspect || ({ gao: 0.84, hah: 1.6, sroi: 0.66 })[k] || 0.84;
+    const W = k === 'hah' ? 560 : 900, H = Math.round(W * A), [c, x] = cnv(W); c.height = H;
+    const r = rng(97 + ({ gao: 1, hah: 2, sroi: 3 })[k] * 31);
+    x.fillStyle = '#efe6d2'; x.fillRect(0, 0, W, H);
+    // the weave, and the cloth's age
+    for (let y = 0; y < H; y += 3) { x.fillStyle = `rgba(120,100,70,${0.025 + r() * 0.03})`; x.fillRect(0, y, W, 1); }
+    for (let xx = 0; xx < W; xx += 3) { x.fillStyle = `rgba(120,100,70,${0.02 + r() * 0.025})`; x.fillRect(xx, 0, 1, H); }
+    const vg = x.createRadialGradient(W / 2, H / 2, Math.min(W, H) * 0.3, W / 2, H / 2, Math.max(W, H) * 0.75);
+    vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(110,80,40,0.16)');
+    x.fillStyle = vg; x.fillRect(0, 0, W, H);
+    const B = Math.round(Math.min(W, H) * 0.035);
+    x.strokeStyle = '#9a1c14'; x.lineWidth = B; x.strokeRect(B, B, W - 2 * B, H - 2 * B);
+    // the design's own box, fitted inside the border
+    const DA = ({ gao: 0.84, hah: 1.6, sroi: 0.66 })[k];
+    let dw = W - 6 * B, dh = dw * DA;
+    if (dh > H - 6 * B) { dh = H - 6 * B; dw = dh / DA; }
+    const ox = (W - dw) / 2, oy = (H - dh) / 2;
+    x.strokeStyle = '#17110c'; x.fillStyle = '#17110c';
+    const gold = [];
+    if (k === 'gao') {
+      /* the whole of it — five rows, the ovals, the tallest spire and two
+         lines of script under — is 10.3 cells tall and 10.5 wide */
+      const cw = Math.min(dw / 10.5, dh / 10.3), rows = [9, 7, 5, 3, 1], cx = ox + dw / 2, yb = oy + dh / 2 + cw * 2.95;
+      x.lineWidth = Math.max(2.2, cw * 0.05);
+      let seed = 3;
+      rows.forEach((n, ri) => {
+        const y1 = yb - ri * cw, y0 = y1 - cw, x0 = cx - n * cw / 2;
+        x.strokeRect(x0, y0, n * cw, cw);
+        for (let i = 1; i < n; i++) { x.beginPath(); x.moveTo(x0 + i * cw, y0); x.lineTo(x0 + i * cw, y1); x.stroke(); }
+        for (let i = 0; i < n; i++) khom(x, x0 + (i + 0.5) * cw, y0 + cw * 0.5, cw * 0.66, seed++);
+      });
+      // the bottom rule runs out past the cells and curls under at both ends
+      x.beginPath(); x.moveTo(cx - 4.5 * cw - cw * 0.35, yb); x.lineTo(cx + 4.5 * cw + cw * 0.35, yb); x.stroke();
+      curl(x, cx - 4.5 * cw - cw * 0.35, yb, -1, cw * 0.3); curl(x, cx + 4.5 * cw + cw * 0.35, yb, 1, cw * 0.3);
+      // the nine peaks: on each step's two outer cells, and the top cell
+      rows.forEach((n, ri) => {
+        const y0 = yb - (ri + 1) * cw, ends = n === 1 ? [cx] : [cx - (n - 1) * cw / 2, cx + (n - 1) * cw / 2];
+        for (const ex of ends) {
+          const top = ovals(x, ex, y0, cw * 0.8);
+          unalome(x, ex, top, n === 1 ? cw * 2.4 : cw * 1.9, cw * 0.62);
+        }
+      });
+      // two lines of script under it, the rules ending in curls
+      for (let j = 0; j < 2; j++) {
+        const y = yb + cw * (0.62 + j * 0.78), half = cw * (4.9 - j * 0.6);
+        khomRow(x, cx - half, cx + half, y, cw * 0.6, 40 + j * 17);
+        x.beginPath(); x.moveTo(cx - half - cw * 0.5, y + cw * 0.36); x.lineTo(cx + half + cw * 0.5, y + cw * 0.36); x.stroke();
+        curl(x, cx - half - cw * 0.5, y + cw * 0.36, -1, cw * 0.22); curl(x, cx + half + cw * 0.5, y + cw * 0.36, 1, cw * 0.22);
+      }
+      gold.push([cx - cw * 0.2, yb - cw * 1.4, cw * 0.9, 0.22]);
+    } else if (k === 'hah') {
+      const cols = 5, gap = dw / 5.4, x0 = ox + dw / 2 - gap * 2, top = oy + dh * 0.215, bot = oy + dh * 0.79, nr = 8;
+      const ch = (bot - top) / nr, gs = Math.min(gap * 0.62, ch * 0.82);
+      x.lineWidth = Math.max(2.0, gs * 0.095);
+      for (let ci = 0; ci < cols; ci++) {
+        const gx = x0 + ci * gap;
+        unalome(x, gx, top - ch * 0.15, top - ch * 0.15 - (oy + dh * 0.01), gs * 0.72);
+        unalome(x, gx, bot + ch * 0.15, -((oy + dh * 0.99) - (bot + ch * 0.15)), gs * 0.72);
+        for (let j = 0; j < nr; j++) khom(x, gx, top + (j + 0.5) * ch, gs, ci * 11 + j * 3 + 1);
+      }
+      // the Chat Petch: a diamond net crossing between the rows, between the letters
+      x.lineWidth = Math.max(1.8, gs * 0.07);
+      for (let ci = 0; ci < cols - 1; ci++) {
+        const a = x0 + ci * gap + gs * 0.42, b = x0 + (ci + 1) * gap - gs * 0.42;
+        for (let j = 0; j < nr - 1; j++) {
+          const ya = top + (j + 0.5) * ch + ch * 0.12, yb = top + (j + 1.5) * ch - ch * 0.12;
+          x.beginPath(); x.moveTo(a, ya); x.lineTo(b, yb); x.moveTo(b, ya); x.lineTo(a, yb); x.stroke();
+        }
+      }
+    } else {
+      // three rows hung in a U, from the upper corners down to the front
+      const cx = ox + dw / 2, rows = 3, s = dh * 0.072;
+      const arc = (j, t) => {                       // t 0..1 along the row; j 0 outer .. 2 inner
+        const hw = dw * (0.43 - j * 0.055), y0 = oy + dh * (0.25 + j * 0.02), y1 = oy + dh * (0.80 - j * 0.105);
+        const a = Math.PI * (1 - t);                // from the left end round the bottom to the right
+        return [cx + Math.cos(a) * hw, y0 + Math.sin(a) * (y1 - y0) * 1];
+      };
+      x.lineWidth = Math.max(2.0, s * 0.1);
+      for (let j = 0; j < rows; j++) {
+        const n = 34 - j * 6;
+        for (let i = 0; i < n; i++) {
+          const t = (i + 0.5) / n;
+          if (Math.abs(t - 0.5) < [0.035, 0.06, 0.1][j]) continue;        // every row breaks round the pendant and its spires
+          const [px, py] = arc(j, t), [qx, qy] = arc(j, Math.min(1, t + 0.01));
+          khom(x, px, py, s, j * 13 + i * 3 + 2, Math.atan2(qy - py, qx - px));
+        }
+        // an unalome rising from each end of the row
+        const [lx, ly] = arc(j, 0), [rx, ry] = arc(j, 1);
+        unalome(x, lx, ly - s * 0.55, (ly - s * 0.55) - (oy + dh * 0.02 + j * s * 0.3), s * 0.55);
+        unalome(x, rx, ry - s * 0.55, (ry - s * 0.55) - (oy + dh * 0.02 + j * s * 0.3), s * 0.55);
+      }
+      // the pendant: a diamond with an eye in it, three unalomes over it
+      const [px, py] = arc(1, 0.5), d = s * 1.2;
+      x.lineWidth = Math.max(2.2, s * 0.12);
+      x.beginPath(); x.moveTo(px, py - d); x.lineTo(px + d * 0.8, py); x.lineTo(px, py + d); x.lineTo(px - d * 0.8, py); x.closePath(); x.stroke();
+      x.beginPath(); x.moveTo(px, py - d * 0.55); x.lineTo(px + d * 0.42, py); x.lineTo(px, py + d * 0.55); x.lineTo(px - d * 0.42, py); x.closePath(); x.stroke();
+      x.beginPath(); x.arc(px, py, d * 0.13, 0, Math.PI * 2); x.fill();
+      x.lineWidth = Math.max(1.9, s * 0.095);
+      unalome(x, px, py - d * 1.05, d * 3.4, s * 0.5);
+      unalome(x, px - d * 0.62, py - d * 0.55, d * 2.5, s * 0.42);
+      unalome(x, px + d * 0.62, py - d * 0.55, d * 2.5, s * 0.42);
+      gold.push([px + d * 0.1, py + d * 0.05, d * 1.05, -0.3]);
+    }
+    // gold leaf, pressed on by the devout (the references carry it too)
+    for (const [gx, gy, gs, rot] of gold) {
+      x.save(); x.translate(gx, gy); x.rotate(rot);
+      const gg = x.createLinearGradient(-gs / 2, -gs / 2, gs / 2, gs / 2);
+      gg.addColorStop(0, 'rgba(214,170,78,0.92)'); gg.addColorStop(0.45, 'rgba(240,206,120,0.95)'); gg.addColorStop(1, 'rgba(176,132,52,0.92)');
+      x.fillStyle = gg; x.fillRect(-gs / 2, -gs / 2, gs, gs);
+      x.restore();
+    }
+    // the master's seal in a corner
+    const sx = W - 3.4 * B, sy = H - 3.4 * B;
+    x.fillStyle = 'rgba(160,30,20,0.85)'; x.beginPath(); x.arc(sx, sy, B * 1.1, 0, Math.PI * 2); x.fill();
+    x.strokeStyle = 'rgba(239,230,210,0.9)'; x.lineWidth = B * 0.16; x.beginPath(); x.arc(sx, sy, B * 0.8, 0, Math.PI * 2); x.stroke();
     return done(THREE, c, false);
   }
   /* the dawn through the room's window, seen between the shutters: sky, the
@@ -5553,6 +5902,13 @@ vec3 frameCol(float d, vec2 q, float w){ float t = d / w;
     pitchTo(T, T + 0.8, s.pitchX, -0.55, smoothK);
     pitchTo(T + 0.8, T + 1.7, -0.55, 0.0, smoothK);
     sfx(T + 0.3, 'e3bell', 0.4);
+    /* v19.1 (Chad: "the player should also have a 'Thank you, Ajahn Krukai.'
+       voiceline play while the camera bows, before leaving the sakyant room
+       ... for every option chosen"): said into the bow, 1.70 s → T + 1.85,
+       as the head comes back up. Every ending's reply has finished by T
+       (A by 0.4 s, B 1.2, C 1.6, D 0.7), and it is warmed in build(), since
+       it is fired from this helper and not the scene itself (v14.16). */
+    sfx(T + 0.15, 'z1thank');
     /* he stands — ON the dais, so the eye is the dais's height over a
        standing man's — turns to the steps, and steps down off the front edge
        to the sala floor before he walks */
