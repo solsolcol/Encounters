@@ -4921,6 +4921,29 @@ What the baseline contains, by release:
   (shell.html, three strings) is gone with the masks v18.7 removed. Sheet v90
   (v44 stays the link). Harnesses chapter, text, csp, hosted green. Deploy
   `6ac5b07124c364094fa6782d`, byte-verified (all 208 build files).
+- **v19.0** THE FILM, REAL — Chad's four Sketchfab models in episode 3
+  chapter 1's opening film, through one new recipe (`tools/prepfilm.mjs`).
+  THE OFFICE is his Mersus Office (1.2 MB), turned and set so the desk the
+  shot is about stands where the drawn one did; the scrolling code is on two
+  of its own monitors, found as connected pieces of its Computers mesh and
+  measured for centre, facing and width (`masters/v19.0/screens.mjs`); night
+  is PAINTED (every material unlit, its colour times a blue ambient, the
+  screens' pool and one far panel) because a real light changes the light
+  count (v15.1). THE CAMERA BUSINESS is his ask exactly: no warehouse, no
+  racks ("the gates") — a light-oak table against a dark backdrop, his laptop
+  with the orders climbing on its own screen, nine of his Yi 4K cameras in
+  two rows, one slow pan ending on the screen. THE PLANE is his cabin — a
+  HALF cabin in the file, mirrored about its open aisle edge and closed with
+  a ceiling and bulkheads — at x17.5 (an economy seat, raycast in node), with
+  nine of chapter 3's tentage sitters seated on their posed skin
+  (`fitSeat`: on the cushion, never in it; their culling spheres from the
+  posed skin, v18.5's law), a whole new painted sky with the sun painted
+  last, the drawn wing retired, and the push-in ending nearly level on the
+  sun. And, Chad's queued ask, engine-wide: the title card after an opening
+  film says no "Loading…" (`playChapterCard(then, afterFilm)` →
+  `whenWorldReady(..., silent)`). Four credit rows; sheet v91 (v44 stays the
+  link). Deploy `6ace7a5d4345a4136786d8cd`, byte-verified (212 files).
+  docs/V19.0-THE-FILM-REAL.md is the build's memory.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -5485,7 +5508,7 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v90** (`masters/v18.9/masterz-text-v90.xlsx`, v89 less the three Khon Mask credit rows and with the stall auntie's re-voiced `au1sell`. v89 was `masters/v18.8/masterz-text-v89.xlsx`, v88 with three of e3c1's words — the brief, the stall's objective and prompt — saying Sangkathan set. v88 was `masters/v18.7/masterz-text-v88.xlsx`, v87 plus v18.7's one voice line, z1trance. v87 was `masters/v18.6/masterz-text-v87.xlsx`, v86 with Brian's measured lengths in 42 voice-line cells, no word moved. v86 was `masters/v18.5/masterz-text-v86.xlsx`, v85 with v18.5's words: e3c2's objective, presence and Step-back lines and its four conduct notes, Step back in five more chapters, `event.resistWhereKey`, three voice-line descriptions. v85 was `masters/v18.4/masterz-text-v85.xlsx`, v84 with v18.4's `event.resistWhere` and e3c2's decision prompt made true for both peaks. v84 was `masters/v18.1/masterz-text-v84.xlsx`, v83 with v18.1's three rapid-tap words and the fight's new brief. v83 was `masters/v18.0/masterz-text-v83.xlsx`, v82 plus episode 3 chapter 2's words and its 24 voice lines. v82 was `masters/v17.7/masterz-text-v82.xlsx`, v81 with v17.7's three Sak Yant names and words from Chad's reference pages. v81 was `masters/v17.6/masterz-text-v81.xlsx`, v80 plus v17.6's Sak Yant choice: three items' names, powers and words, the window's words, the chapter's four, and two Ajarn voice lines. v80 was `masters/v17.0/masterz-text-v80.xlsx`, v79 plus v17.0's three credit strings for the Khon masks. v79 was `masters/v16.9/masterz-text-v79.xlsx`, v78 plus v16.9's six credit strings — the temple and the slippers. v78 was `masters/v16.6/masterz-text-v78.xlsx`, v77 plus v16.6's four credit rows for the Tailandia packs. v77 was `masters/v16.1/masterz-text-v77.xlsx`, v76 with the monk's three voice lines re-said by Arthur at v16.2. v76 was `masters/v16.1/masterz-text-v76.xlsx`, five tabs: UI
+**THE SHEET IS v91** (`masters/v19.0/masterz-text-v91.xlsx`, v90 plus v19.0's four credit rows — the office, the cameras, the laptop, the cabin — and two voice-line descriptions that no longer say warehouse. v90 was `masters/v18.9/masterz-text-v90.xlsx`, v89 less the three Khon Mask credit rows and with the stall auntie's re-voiced `au1sell`. v89 was `masters/v18.8/masterz-text-v89.xlsx`, v88 with three of e3c1's words — the brief, the stall's objective and prompt — saying Sangkathan set. v88 was `masters/v18.7/masterz-text-v88.xlsx`, v87 plus v18.7's one voice line, z1trance. v87 was `masters/v18.6/masterz-text-v87.xlsx`, v86 with Brian's measured lengths in 42 voice-line cells, no word moved. v86 was `masters/v18.5/masterz-text-v86.xlsx`, v85 with v18.5's words: e3c2's objective, presence and Step-back lines and its four conduct notes, Step back in five more chapters, `event.resistWhereKey`, three voice-line descriptions. v85 was `masters/v18.4/masterz-text-v85.xlsx`, v84 with v18.4's `event.resistWhere` and e3c2's decision prompt made true for both peaks. v84 was `masters/v18.1/masterz-text-v84.xlsx`, v83 with v18.1's three rapid-tap words and the fight's new brief. v83 was `masters/v18.0/masterz-text-v83.xlsx`, v82 plus episode 3 chapter 2's words and its 24 voice lines. v82 was `masters/v17.7/masterz-text-v82.xlsx`, v81 with v17.7's three Sak Yant names and words from Chad's reference pages. v81 was `masters/v17.6/masterz-text-v81.xlsx`, v80 plus v17.6's Sak Yant choice: three items' names, powers and words, the window's words, the chapter's four, and two Ajarn voice lines. v80 was `masters/v17.0/masterz-text-v80.xlsx`, v79 plus v17.0's three credit strings for the Khon masks. v79 was `masters/v16.9/masterz-text-v79.xlsx`, v78 plus v16.9's six credit strings — the temple and the slippers. v78 was `masters/v16.6/masterz-text-v78.xlsx`, v77 plus v16.6's four credit rows for the Tailandia packs. v77 was `masters/v16.1/masterz-text-v77.xlsx`, v76 with the monk's three voice lines re-said by Arthur at v16.2. v76 was `masters/v16.1/masterz-text-v76.xlsx`, five tabs: UI
 TEXT 292, EPISODE 1 114, EPISODE 2 193, EPISODE 3 41, VOICE LINES 337 — v76
 adds v16.1's four words, two changed cells and seven voice lines to v75).
 Was v75 (`masters/v16.0/masterz-text-v75.xlsx`, which added episode 3

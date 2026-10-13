@@ -5243,3 +5243,25 @@ by photograph, one at a time:
 And "must look perfect" plus many instances means a THREE.LOD per image: every
 triangle while it is big on screen, the smoothed cut further out, the sloppy
 cut (sharing its vertices and maps) when it is small.
+
+## v19.0 · the film's four models
+
+- **A bought interior may be HALF a room.** Chad's airplane cabin was one
+  block of three seats and the wall beside it, open on the aisle side and at
+  both ends; from inside, the sky stood in the cabin. Mirrored about its open
+  edge (the floor's edge, a group with `scale.x = -1`) it is a whole cabin,
+  and a ceiling and two bulkheads close the box. Photograph an interior from
+  inside, looking every way, before staging anything in it.
+- **Measure a set by raycasting it in node.** three's GLTFLoader parses a
+  texture-less GLB in plain node, and a Raycaster through it answers what a
+  bounding box cannot: where the windows are in a wall, the cushion's top,
+  the backrest's face at each height (`masters/v19.0/holes2.mjs`).
+- **A painted sky: the sun goes on LAST, and the bloom stays small.** The
+  first painting put the cumulus over the sun; the second, with a 520 px
+  bloom and a light ACES allowance, whited the window out. And the blue has
+  to come down to the sky a WINDOW sees (~20 degrees over the horizon).
+- **Night without a light.** A night interior made of unlit materials whose
+  colour is multiplied in the fragment shader by pools of "light" (an
+  ambient, the screens' pool, a far panel) costs no light, so it cannot
+  change the light count and rebuild every lit shader in the chapter
+  (v15.1). The first numbers read as day — judge them in the photograph.

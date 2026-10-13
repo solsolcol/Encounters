@@ -126,7 +126,8 @@
        back at the stirring (the engine prepares an item's model at the
        curtain; these have none, they are drawings, but they are declared) */
     items: ['yantgaoyord', 'yanthahtaew', 'yantsroi'],
-    assets: ['admintee', 'customer', 'sitwoman', 'sitwomantalk', 'standman', 'phiboon', 'tree1', 'tree2', 'tree3', 'tree4', 'thaikit', 'wessred', 'wessgreen', 'naga', 'monk', 'ajarn', 'temple', 'slipper', 'lersimask', 'altarrow', 'buddhahd', 'buddhalod', 'sangkathan'],
+    assets: ['admintee', 'customer', 'sitwoman', 'sitwomantalk', 'standman', 'phiboon', 'tree1', 'tree2', 'tree3', 'tree4', 'thaikit', 'wessred', 'wessgreen', 'naga', 'monk', 'ajarn', 'temple', 'slipper', 'lersimask', 'altarrow', 'buddhahd', 'buddhalod', 'sangkathan',
+             'filmoffice', 'filmlaptop', 'actioncam', 'planecabin', 'sitman', 'sitshout', 'sitclap', 'sitangry'],   // v19.0: the film's four models, and the plane's passengers
 
     /* THE SOUND. `watamb` is the dawn temple (birds, a far road, a broom on
        stone, wind chimes); `e3chant` is the monks' morning chanting from the
@@ -3957,6 +3958,57 @@
        the fog and the dawn lights are the wat's, and a memory has its own
        light painted into it). Nothing here casts a shadow. */
     let ordTrees = null;
+    /* v19.0 · a passenger seated on an aircraft seat by his POSED SKIN: the
+       hips over the seat's middle, the lowest skin under the hips (the thighs'
+       and the seat's underside) set ON the cushion — never into it — and the
+       back brought to the backrest, whose face leans back as it rises
+       (raycast through the file: sz - 0.233 at y 0.87, sz - 0.327 at 1.34). */
+    const paxRigs = [];
+    function fitSeat(r, seat) {
+      if (!r.model || !r.hips) return;
+      const P = [];
+      const sample = () => {
+        P.length = 0; r.model.updateMatrixWorld(true);
+        r.model.traverse(o => {
+          if (!o.isSkinnedMesh) return;
+          const n = o.geometry.attributes.position.count, step = Math.max(1, Math.floor(n / 6000));
+          for (let i = 0; i < n; i += step) { o.getVertexPosition(i, _sv); _sv.applyMatrix4(o.matrixWorld); P.push(_sv.x, _sv.y, _sv.z); }
+        });
+      };
+      sample(); r.hips.getWorldPosition(_v);
+      r.group.position.x += seat.x - _v.x; r.group.position.z += seat.z - _v.z;
+      sample(); r.hips.getWorldPosition(_v);
+      const hx = _v.x, hy = _v.y, hz = _v.z;
+      let under = Infinity;
+      for (let i = 0; i < P.length; i += 3) if (Math.abs(P[i] - hx) < 0.2 && Math.abs(P[i + 2] - hz) < 0.15) under = Math.min(under, P[i + 1]);
+      if (isFinite(under)) r.group.position.y += seat.top + 0.006 - under;
+      const dy = isFinite(under) ? seat.top + 0.006 - under : 0;
+      let push = -Infinity;
+      for (let i = 0; i < P.length; i += 3) {
+        const y = P[i + 1] + dy;
+        if (y < seat.top + 0.2 || y > seat.top + 0.62 || Math.abs(P[i] - hx) > 0.22) continue;
+        const face = seat.z - 0.233 - (y - (seat.top + 0.195)) * 0.2;   // the backrest's face at this height (world)
+        push = Math.max(push, face + 0.012 - P[i + 2]);
+      }
+      if (isFinite(push)) r.group.position.z += push;
+      void hy;
+      r.model.updateMatrixWorld(true);
+      /* the culling sphere from the POSED skin, in world space and then in
+         each mesh's own frame (v18.5: a Meshy rig's mesh hangs under a 0.01
+         armature, so wideBounds' 1.9 is 1.9 cm there — photographed, the woman
+         in the aisle seat was simply not drawn). Each mesh's own sphere only:
+         clones share their geometry, and the next passenger sits elsewhere. */
+      const inv = new THREE.Matrix4();
+      r.model.traverse(o => {
+        if (!o.isSkinnedMesh) return;
+        const bb = new THREE.Box3(), n = o.geometry.attributes.position.count, step = Math.max(1, Math.floor(n / 4000));
+        for (let i = 0; i < n; i += step) { o.getVertexPosition(i, _sv); _sv.applyMatrix4(o.matrixWorld); bb.expandByPoint(_sv); }
+        const sph = bb.getBoundingSphere(new THREE.Sphere());
+        inv.copy(o.matrixWorld).invert();
+        const c = sph.center.clone().applyMatrix4(inv), k = o.matrixWorld.getMaxScaleOnAxis() || 1;
+        o.boundingSphere = new THREE.Sphere(c, sph.radius * 1.15 / k);
+      });
+    }
     const film = buildFilm();
     function buildFilm() {
       const root = new THREE.Group(); world.add(root);
@@ -4028,31 +4080,34 @@
       const off = new THREE.Group(); off.position.set(700, 0, 0); root.add(off);
       const codeCv = cnv(256), codeTex = new THREE.CanvasTexture(codeCv[0]);
       codeTex.colorSpace = THREE.SRGBColorSpace; madeTex.push(codeTex);
+      /* v19.0: the drawn office is the STAND-IN now (v4.7: a failed download
+         costs a nicer room, never the shot) — hidden the moment Chad's lands */
+      const offOld = new THREE.Group(); off.add(offOld);
       {
         const room = new THREE.Mesh(new THREE.BoxGeometry(16, 3.2, 12), basic({ color: 0x14161c, side: THREE.BackSide }));
-        room.position.set(0, 1.6, 0); off.add(room);
-        const carpet = fplane(16, 12, 0, 0.005, 0, basic({ map: tex(makeCarpet(THREE, cnv)) }), off, 0, -Math.PI / 2);
+        room.position.set(0, 1.6, 0); offOld.add(room);
+        const carpet = fplane(16, 12, 0, 0.005, 0, basic({ map: tex(makeCarpet(THREE, cnv)) }), offOld, 0, -Math.PI / 2);
         carpet.material.map.repeat.set(6, 4);
         // ceiling light panels, all off but one strip at the far end
-        for (let x = -6; x <= 6; x += 3) for (let z = -4; z <= 4; z += 4) fplane(1.2, 0.6, x, 3.18, z, basic({ color: x === 6 ? 0x5a6470 : 0x23262c }), off, 0, Math.PI / 2);
+        for (let x = -6; x <= 6; x += 3) for (let z = -4; z <= 4; z += 4) fplane(1.2, 0.6, x, 3.18, z, basic({ color: x === 6 ? 0x5a6470 : 0x23262c }), offOld, 0, Math.PI / 2);
         // the window wall: the city at night
-        const city = fplane(16, 3.0, 0, 1.6, -5.95, basic({ map: tex(makeCity(THREE, cnv)) }), off);
+        const city = fplane(16, 3.0, 0, 1.6, -5.95, basic({ map: tex(makeCity(THREE, cnv)) }), offOld);
         void city;
-        for (let x = -7.5; x <= 7.5; x += 2.5) fbox(0.08, 3.2, 0.1, x, 1.6, -5.9, basic({ color: 0x0b0c10 }), off);
-        fbox(16, 0.1, 0.12, 0, 0.9, -5.9, basic({ color: 0x0b0c10 }), off);
+        for (let x = -7.5; x <= 7.5; x += 2.5) fbox(0.08, 3.2, 0.1, x, 1.6, -5.9, basic({ color: 0x0b0c10 }), offOld);
+        fbox(16, 0.1, 0.12, 0, 0.9, -5.9, basic({ color: 0x0b0c10 }), offOld);
         // rows of desks, monitors dark, chairs pushed in
         const deskM = basic({ color: 0x3a3632 }), legM = basic({ color: 0x1e1f22 }), monM = basic({ color: 0x0a0b0d }), chairM = basic({ color: 0x1b1d22 });
         for (let r = 0; r < 3; r++) for (let c = 0; c < 4; c++) {
           const x = -5.5 + c * 3.4, z = 2.8 - r * 2.8;
           if (r === 1 && c === 2) continue;        // his, built below
-          fbox(1.6, 0.04, 0.8, x, 0.74, z, deskM, off);
-          fbox(0.04, 0.72, 0.7, x - 0.76, 0.36, z, legM, off); fbox(0.04, 0.72, 0.7, x + 0.76, 0.36, z, legM, off);
-          fbox(0.55, 0.34, 0.03, x, 1.0, z - 0.25, monM, off);
-          fbox(0.5, 0.5, 0.5, x, 0.45, z + 0.62, chairM, off);
+          fbox(1.6, 0.04, 0.8, x, 0.74, z, deskM, offOld);
+          fbox(0.04, 0.72, 0.7, x - 0.76, 0.36, z, legM, offOld); fbox(0.04, 0.72, 0.7, x + 0.76, 0.36, z, legM, offOld);
+          fbox(0.55, 0.34, 0.03, x, 1.0, z - 0.25, monM, offOld);
+          fbox(0.5, 0.5, 0.5, x, 0.45, z + 0.62, chairM, offOld);
         }
         // HIS desk: three monitors of scrolling code, a lamp, a mug, the empty chair
         const hx = -5.5 + 2 * 3.4, hz = 0;
-        const hisDesk = new THREE.Group(); hisDesk.position.set(hx, 0, hz); off.add(hisDesk);
+        const hisDesk = new THREE.Group(); hisDesk.position.set(hx, 0, hz); offOld.add(hisDesk);
         fbox(1.8, 0.04, 0.85, 0, 0.74, 0, basic({ color: 0x6a5f54 }), hisDesk);
         fbox(0.04, 0.72, 0.75, -0.86, 0.36, 0, legM, hisDesk); fbox(0.04, 0.72, 0.75, 0.86, 0.36, 0, legM, hisDesk);
         const scr = basic({ map: codeTex });
@@ -4080,74 +4135,157 @@
         fbox(0.5, 0.08, 0.5, 0, 0.47, 0, basic({ color: 0x1f2a3a }), ch);
         fbox(0.48, 0.62, 0.07, 0, 0.84, 0.22, basic({ color: 0x223044 }), ch);
         fbox(0.05, 0.42, 0.05, 0, 0.22, 0, legM, ch);
+        /* v19.0 · CHAD'S OFFICE (Mersus Office, Sketchfab — tools/prepfilm.mjs,
+           in metres, its desks at 0.74 m). Turned a half turn and set so the
+           two monitors of the desk the film is about stand where the drawn
+           desk's did, so the camera path and the stand-in agree. His desk is
+           the dual-monitor one whose keyboard is at (0.80, 0.78) in the file;
+           its two panels were found as connected pieces of the Computers mesh
+           and measured by their own vertices (masters/v19.0/screens.mjs):
+           centre, facing (toward the keyboard) and width.
+
+           NIGHT, PAINTED: every material becomes an unlit one whose colour is
+           multiplied by the light the shot needs — a low blue ambient, the
+           screens' pool round his desk, and one panel left on far off — so the
+           room is dark where nobody is working, which is what the shot is
+           about. (A real light would change the light COUNT, and every lit
+           material in the chapter would build its shader again — v15.1.) */
+        const OFF_T = [1.967, 0, 0.997];
+        const offM = new THREE.Group(); offM.position.set(OFF_T[0], 0, OFF_T[2]); offM.rotation.y = Math.PI; off.add(offM);
+        const nU = {
+          /* photographed: at an ambient of 0.085 and a 3.6 m pool the wood
+             floor read as day — these are the numbers that read as night */
+          nAmb: { value: new THREE.Color(0.045, 0.052, 0.08) },
+          nPA: { value: new THREE.Vector3(off.position.x + 1.30, 1.12, off.position.z - 0.10) }, nCA: { value: new THREE.Color(0.40, 0.60, 1.05) }, nRA: { value: 2.5 },
+          nPB: { value: new THREE.Vector3(off.position.x - 5.5, 3.4, off.position.z - 6.0) }, nCB: { value: new THREE.Color(0.15, 0.15, 0.18) }, nRB: { value: 6.0 },
+        };
+        const nightMat = (src) => {
+          const m = new THREE.MeshBasicMaterial({ map: src.map || null, color: src.color ? src.color.clone() : 0xffffff, fog: false,
+            transparent: !!src.transparent, opacity: src.opacity ?? 1, side: THREE.DoubleSide, alphaTest: src.alphaTest || 0, depthWrite: src.depthWrite !== false });
+          m.onBeforeCompile = (sh) => {
+            Object.assign(sh.uniforms, nU);
+            sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vNW;')
+              .replace('#include <fog_vertex>', '#include <fog_vertex>\nvNW = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+            sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying vec3 vNW;\nuniform vec3 nAmb, nPA, nCA, nPB, nCB;\nuniform float nRA, nRB;')
+              .replace('#include <opaque_fragment>', 'float kA = 1.0 - smoothstep(0.0, nRA, distance(vNW, nPA));\nfloat kB = 1.0 - smoothstep(0.0, nRB, distance(vNW, nPB));\noutgoingLight *= nAmb + nCA * kA * kA + nCB * kB * kB;\n#include <opaque_fragment>');
+          };
+          m.customProgramCacheKey = () => 'e3c1night';
+          return m;
+        };
+        // the code, on his two real screens (hidden until the room is there to hold them)
+        const offScr = new THREE.Group(); offScr.visible = false; offM.add(offScr);
+        for (const [mx, my, mz, ry] of [[0.318, 1.122, 1.192, 2.737], [1.015, 1.122, 1.242, -2.843]]) {
+          const sc = fplane(0.655, 0.37, 0, 0, 0, basic({ map: codeTex }), offScr);
+          sc.position.set(mx + Math.sin(ry) * 0.018, my, mz + Math.cos(ry) * 0.018); sc.rotation.set(0, ry, 0);
+        }
+        // and their glow on the desk under them
+        const offGlow = fplane(1.5, 0.9, 0.66, 0.748, 0.85, basic({ color: 0x3f7fd0, transparent: true, opacity: 0.16, blending: THREE.AdditiveBlending, depthWrite: false }), offScr, 0, -Math.PI / 2);
+        void offGlow;
+        // the city at night through the windows, all the way round
+        const cityTex = tex(makeCity(THREE, cnv)); cityTex.wrapS = THREE.RepeatWrapping; cityTex.repeat.set(5, 1);
+        const city2 = new THREE.Mesh(new THREE.CylinderGeometry(19, 19, 9, 48, 1, true), basic({ map: cityTex, side: THREE.BackSide }));
+        city2.position.set(3.7, 3.4, 2.1); off.add(city2); city2.visible = false;
+        parseOnce('filmoffice').then(gltf => {
+          if (!alive) return;
+          const g = gltf.scene.clone(true), mats = new Map();
+          g.traverse(o => {
+            if (!o.isMesh) return;
+            o.castShadow = o.receiveShadow = false;
+            const ms = Array.isArray(o.material) ? o.material : [o.material];
+            const nm = ms.map(m => { if (!mats.has(m)) mats.set(m, nightMat(m)); return mats.get(m); });
+            o.material = Array.isArray(o.material) ? nm : nm[0];
+          });
+          offM.add(g); offScr.visible = true; city2.visible = true; offOld.visible = false;
+        }).catch(err => { console.warn('filmoffice failed to load', err); ctx.loadFail && ctx.loadFail('filmoffice', err); });
         root.userData.code = { cv: codeCv, tex: codeTex, t: 0, lines: [] };
       }
 
-      /* ---- 3 · THE WAREHOUSE ---- */
+      /* ---- 3 · THE CAMERA BUSINESS (v19.0) ----
+         Chad: "the car camera business scene need to be greatly improved, it
+         looks really bad. There's no need to have the gates. Just show a
+         table, laptop, and the cameras on the table, and pan slowly while
+         voiceline talks." So the warehouse — its racks, which read as gates,
+         and its roller door — is gone, and what is left is the business: a
+         wooden table, his laptop with the orders climbing on it (Chad's
+         laptop model), and the cameras he sells laid out in front of it
+         (Chad's Xiaomi Yi 4K, at its real 6.6 cm). LIT, because black plastic
+         and a glass lens are nothing but their shading; the warm room behind
+         is just enough of a place to sit the table in. */
       const ware = new THREE.Group(); ware.position.set(1000, 0, 0); root.add(ware);
+      const chartCv = cnv(256), chartTex = new THREE.CanvasTexture(chartCv[0]); chartTex.colorSpace = THREE.SRGBColorSpace; madeTex.push(chartTex);
+      root.userData.chart = { cv: chartCv, tex: chartTex, k: 0 };
+      const BIZ = { top: 0.775 };
       {
-        /* LIT, unlike the night pockets: a warehouse is strip-lit and flat, and
-           unlit paint made every rack face the same colour (CP4) */
         const wl = (o) => new THREE.MeshStandardMaterial({ fog: false, roughness: 0.75, ...o });
-        const shell = new THREE.Mesh(new THREE.BoxGeometry(20, 6.5, 14), wl({ color: 0x8a8c90, side: THREE.BackSide }));
-        shell.position.y = 3.25; ware.add(shell);
-        const flo = fplane(20, 14, 0, 0.005, 0, wl({ map: tex(makeWareFloor(THREE, cnv)), roughness: 0.5 }), ware, 0, -Math.PI / 2);
-        flo.material.map.repeat.set(4, 3);
-        // strip lights, bright
-        for (let x = -7; x <= 7; x += 3.5) for (const z of [-3, 3]) fbox(2.2, 0.08, 0.2, x, 6.2, z, basic({ color: 0xf4f7ff }), ware);
-        // the roller door at the far end, a crack of daylight under it
-        fplane(6, 4.6, 0, 2.3, -6.95, basic({ map: tex(makeRoller(THREE, cnv)) }), ware);
-        fplane(6, 0.12, 0, 0.06, -6.9, basic({ color: 0xfff2cc }), ware);
-        // THE RACKS: three rows, orange uprights, blue beams, stacked with his boxes
-        const boxTex = tex(makeDashBox(THREE, cnv));
-        const boxM = wl({ map: boxTex });
-        const upM = wl({ color: 0xd8691f, roughness: 0.5 }), beamM = wl({ color: 0x2a55a0, roughness: 0.5 });
-        const n = LOW ? 150 : 260;
-        const inst = new THREE.InstancedMesh(new THREE.BoxGeometry(0.46, 0.3, 0.34), boxM, n);
-        let k = 0; const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), sc = new THREE.Vector3(1, 1, 1), p = new THREE.Vector3();
-        for (const rz of [-3.8, 0.2, 4.2]) {
-          for (const x of [-8.6, -4.3, 0, 4.3, 8.6]) { fbox(0.1, 4.2, 0.1, x, 2.1, rz - 0.55, upM, ware); fbox(0.1, 4.2, 0.1, x, 2.1, rz + 0.55, upM, ware); }
-          for (const y of [0.15, 1.35, 2.55, 3.75]) {
-            fbox(17.4, 0.1, 0.08, 0, y, rz - 0.55, beamM, ware); fbox(17.4, 0.1, 0.08, 0, y, rz + 0.55, beamM, ware);
-            for (let x = -8.3; x < 8.4 && k < n; x += 0.5) {
-              if (hash(x * 7 + rz, y * 3) < 0.12) continue;
-              for (let st = 0; st < 3 && k < n; st++) {
-                p.set(x, y + 0.2 + st * 0.31, rz + (hash(x, st) - 0.5) * 0.3);
-                q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), (hash(x + st, rz) - 0.5) * 0.12);
-                m4.compose(p, q, sc); inst.setMatrixAt(k++, m4);
-              }
-            }
-          }
+        /* behind the table, a dark warm backdrop and nothing else (photographed:
+           a lit room was a brown box that pulled the eye off the table) — the
+           table is the scene, the way a product is shot */
+        const back = new THREE.Mesh(new THREE.SphereGeometry(7, 32, 16),
+          basic({ map: tex(makeSkyGrad(THREE, cnv, ['#0b0907', '#2a1d14', '#120d0a'])), side: THREE.BackSide, depthWrite: false }));
+        back.position.y = 0.8; ware.add(back);
+        // THE TABLE: a thick light-oak top on four dark legs, a lamp's warm pool on it
+        const topT = tex(makeOak(THREE, cnv));
+        fbox(1.7, 0.05, 0.86, 0, BIZ.top - 0.025, 0, wl({ map: topT, roughness: 0.5 }), ware);
+        fplane(1.5, 0.8, -0.18, BIZ.top + 0.002, 0.05, basic({ map: tex(makePool(THREE, cnv)), transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending, depthWrite: false }), ware, 0, -Math.PI / 2);
+        for (const sx of [-0.78, 0.78]) for (const sz of [-0.36, 0.36]) fbox(0.06, BIZ.top - 0.05, 0.06, sx, (BIZ.top - 0.05) / 2, sz, wl({ color: 0x24201c, roughness: 0.6 }), ware);
+        /* THE LAPTOP, at the back of the table, its screen the orders chart.
+           The model's screen faces its own -x; a quarter turn faces it at the
+           pan. The drawn laptop stands in until the file lands. */
+        const lapAt = { x: 0.32, z: -0.14, ry: Math.PI / 2 - 0.42 };
+        const lapOld = new THREE.Group(); lapOld.position.set(lapAt.x, BIZ.top + 0.008, lapAt.z); lapOld.rotation.y = -0.42; ware.add(lapOld);
+        fbox(0.36, 0.015, 0.25, 0, 0, 0, basic({ color: 0x9a9ea4 }), lapOld);
+        fplane(0.34, 0.22, 0, 0.12, -0.12, basic({ map: chartTex }), lapOld, 0, -0.25);
+        parseOnce('filmlaptop').then(gltf => {
+          if (!alive) return;
+          const g = gltf.scene.clone(true);
+          g.position.set(lapAt.x, BIZ.top, lapAt.z); g.rotation.y = lapAt.ry;
+          g.traverse(o => {
+            if (!o.isMesh) return;
+            o.castShadow = false; o.receiveShadow = false;
+            const m = o.material;
+            o.material = (m && m.name === 'screen') ? basic({ map: chartTex }) : m.clone();
+            if (o.material.isMeshStandardMaterial) o.material.fog = false;
+          });
+          ware.add(g); lapOld.visible = false;
+        }).catch(err => { console.warn('filmlaptop failed to load', err); ctx.loadFail && ctx.loadFail('filmlaptop', err); });
+        /* THE CAMERAS, in a loose row along the front of the table, each
+           turned its own way — what he sells, lens to the light. Stand-ins:
+           the drawn camera (a body, a lens), swapped for Chad's model. */
+        /* set out as a seller sets them out (photographed: scattered at random
+           they read as dice): a front row facing the pan, a second row behind
+           turned a little, every lens toward the light */
+        const CAMS = [[-0.62, 0.22, 0.30], [-0.47, 0.25, 0.12], [-0.32, 0.23, -0.06], [-0.17, 0.26, 0.10], [-0.02, 0.24, -0.12],
+                      [-0.55, 0.06, 0.45], [-0.38, 0.08, 0.20], [-0.21, 0.07, -0.20], [-0.06, 0.09, 0.28]];
+        const camOld = new THREE.Group(); ware.add(camOld);
+        for (const [x, z, ry] of CAMS) {
+          const cg = new THREE.Group(); cg.position.set(x, BIZ.top + 0.022, z); cg.rotation.y = ry; camOld.add(cg);
+          fbox(0.066, 0.043, 0.03, 0, 0, 0, basic({ color: 0x151517 }), cg);
+          const lens = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.012, 16), basic({ color: 0x2a3444 }));
+          lens.rotation.x = Math.PI / 2; lens.position.set(0.015, 0, 0.02); cg.add(lens);
         }
-        inst.count = k; inst.frustumCulled = false; ware.add(inst);
-        // the packing table in the foreground: a cut-open box, a dashcam, the tape gun, the laptop
-        const tbl = new THREE.Group(); tbl.position.set(1.2, 0, 5.4); ware.add(tbl);
-        fbox(2.4, 0.06, 1.0, 0, 0.9, 0, basic({ color: 0x8a7254 }), tbl);
-        for (const sx of [-1.1, 1.1]) for (const sz of [-0.42, 0.42]) fbox(0.06, 0.88, 0.06, sx, 0.44, sz, basic({ color: 0x3a3a3a }), tbl);
-        const ob = fbox(0.5, 0.32, 0.36, -0.55, 1.09, 0.05, boxM, tbl); void ob;
-        fplane(0.5, 0.36, -0.55, 1.25, -0.13, basic({ color: 0xa8865a, side: THREE.DoubleSide }), tbl, 0, -0.9);  // a flap, open
-        // the camera itself, lifted out: a black body, a lens, a mount
-        const cam = new THREE.Group(); cam.position.set(0.05, 0.98, 0.1); cam.rotation.y = 0.5; tbl.add(cam);
-        fbox(0.12, 0.07, 0.06, 0, 0, 0, basic({ color: 0x151517 }), cam);
-        const lens = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.02, 16), basic({ color: 0x2a3444 }));
-        lens.rotation.x = Math.PI / 2; lens.position.set(0.02, 0, 0.04); cam.add(lens);
-        const glint = new THREE.Mesh(new THREE.CircleGeometry(0.008, 10), basic({ color: 0x9fc4ff }));
-        glint.position.set(0.026, 0.006, 0.051); cam.add(glint);
-        fbox(0.04, 0.04, 0.03, 0, 0.055, -0.01, basic({ color: 0x222226 }), cam);
-        // the laptop: its screen is the sales chart, rising
-        const lap = new THREE.Group(); lap.position.set(0.75, 0.93, 0.0); lap.rotation.y = -0.45; tbl.add(lap);
-        fbox(0.36, 0.015, 0.25, 0, 0, 0, basic({ color: 0x9a9ea4 }), lap);
-        const chartCv = cnv(256), chartTex = new THREE.CanvasTexture(chartCv[0]); chartTex.colorSpace = THREE.SRGBColorSpace; madeTex.push(chartTex);
-        const scrn = fplane(0.34, 0.22, 0, 0.12, -0.12, basic({ map: chartTex }), lap, 0, -0.25);
-        void scrn;
-        root.userData.chart = { cv: chartCv, tex: chartTex, k: 0 };
-        // the tape gun, and a phone lighting up with orders
-        fbox(0.16, 0.12, 0.05, -1.0, 1.0, 0.2, basic({ color: 0xb03a2e }), tbl);
-        const ph = fplane(0.07, 0.14, 0.4, 0.935, 0.3, basic({ color: 0x0c0c0e }), tbl, 0, -Math.PI / 2);
-        root.userData.phone = ph;
-        // a pallet jack and a pallet of boxes by the door
-        fbox(1.2, 0.14, 1.0, -5.0, 0.07, -5.2, basic({ color: 0x8a6a42 }), ware);
-        for (let i = 0; i < 12; i++) fbox(0.46, 0.3, 0.34, -5.3 + (i % 3) * 0.48, 0.3 + Math.floor(i / 6) * 0.31, -5.4 + (Math.floor(i / 3) % 2) * 0.36, boxM, ware);
+        parseOnce('actioncam').then(gltf => {
+          if (!alive) return;
+          /* black plastic and a glass lens, shaded: the file's metalness (0.49)
+             with nothing to reflect rendered it bronze (photographed) — a
+             satin plastic that takes the room's environment instead */
+          const camMats = new Map();
+          for (const [x, z, ry] of CAMS) {
+            const g = gltf.scene.clone(true);
+            g.position.set(x, BIZ.top, z); g.rotation.y = ry;
+            g.traverse(o => {
+              if (!o.isMesh) return;
+              o.castShadow = false; o.receiveShadow = false;
+              if (!camMats.has(o.material)) {
+                const m = o.material.clone(); m.fog = false; m.metalness = 0.1; m.roughness = 0.45;
+                m.envMap = scene.environment || null; m.envMapIntensity = 0.22;   // at 0.9 the black bodies read WHITE (photographed)
+                camMats.set(o.material, m);
+              }
+              o.material = camMats.get(o.material);
+            });
+            ware.add(g);
+          }
+          camOld.visible = false;
+        }).catch(err => { console.warn('actioncam failed to load', err); ctx.loadFail && ctx.loadFail('actioncam', err); });
       }
 
       /* ---- 4 · THE DESK AT NIGHT, AND THE AMULET ---- */
@@ -4206,23 +4344,38 @@
       /* ---- 5 · THE PLANE WINDOW AT DAWN ---- */
       const plane = new THREE.Group(); plane.position.set(1600, 0, 0); root.add(plane);
       {
-        // the world outside: a cloud sea at dawn, painted on a curved wall far off
-        const out = new THREE.Mesh(new THREE.CylinderGeometry(60, 60, 60, 40, 1, true, Math.PI / 2 - 1.2, 2.4),
-          basic({ map: tex(makeCloudSea(THREE, cnv)), side: THREE.BackSide }));
-        out.position.set(0, 1.4, 0); plane.add(out);
+        /* the world outside (v19.0, Chad: "Colour the sky outside with clouds and
+           sun"): a whole sky now, not a curved strip — deep blue overhead, the
+           dawn low on the horizon with the sun in it, a sea of cloud below and
+           towers of cumulus standing out of it, painted on a sphere round the
+           cabin. The sun is out of the window's side and a little ahead. */
+        const out = new THREE.Mesh(new THREE.SphereGeometry(70, 48, 24),
+          basic({ map: tex(makePlaneSky(THREE, cnv)), side: THREE.BackSide, depthWrite: false }));
+        out.position.set(0, 1.3, 0); plane.add(out);
+        const planeOld = new THREE.Group(); plane.add(planeOld);
         /* the wing, reaching out and swept back below the window. Drawn in the
            plane of the ground: with rotation.x = -PI/2 a shape point (x, y)
            lands at world (x, 0, -y), so the outline is written as (x, -z) */
         const wing = new THREE.Shape();
         wing.moveTo(0.9, 0.6); wing.lineTo(14.0, -6.0); wing.lineTo(14.4, -7.6); wing.lineTo(0.9, -3.6); wing.closePath();
-        const wm = new THREE.Mesh(new THREE.ShapeGeometry(wing), basic({ color: 0x6f757c, side: THREE.DoubleSide }));
-        wm.rotation.x = -Math.PI / 2; wm.position.y = 0.15; plane.add(wm);
+        /* v19.0: shaded — a flat grey wedge read as a cut-out against the new
+           sky (photographed); now its top catches the dawn toward the leading
+           edge and darkens to the flaps (ShapeGeometry's UVs are the shape's
+           own coordinates, so the gradient is laid out across them) */
+        const wingT = tex(makeWing(THREE, cnv)); wingT.repeat.set(1 / 14.5, 1 / 8.4); wingT.offset.set(-0.9 / 14.5, 7.8 / 8.4);
+        const wm = new THREE.Mesh(new THREE.ShapeGeometry(wing), basic({ map: wingT, side: THREE.DoubleSide }));
+        wm.rotation.x = -Math.PI / 2; wm.position.y = -0.85; plane.add(wm);   // v19.0: a metre lower — the sky is the window, the wing at its foot
         // a lighter leading edge catching the dawn, and the winglet at the tip
         const le = new THREE.Shape(); le.moveTo(0.9, 0.6); le.lineTo(14.0, -6.0); le.lineTo(14.0, -6.25); le.lineTo(0.9, 0.3); le.closePath();
         const lem = new THREE.Mesh(new THREE.ShapeGeometry(le), basic({ color: 0xb8a898, side: THREE.DoubleSide }));
-        lem.rotation.x = -Math.PI / 2; lem.position.y = 0.16; plane.add(lem);
-        const tip = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 1.2), basic({ color: 0x2c3e5c, side: THREE.DoubleSide }));
-        tip.position.set(14.2, 0.75, 6.8); tip.rotation.y = Math.PI / 2; plane.add(tip);
+        lem.rotation.x = -Math.PI / 2; lem.position.y = -0.84; plane.add(lem);
+        const tipS = new THREE.Shape(); tipS.moveTo(-0.7, -0.6); tipS.lineTo(0.7, -0.6); tipS.lineTo(0.35, 0.6); tipS.lineTo(-0.05, 0.6); tipS.closePath();   // swept, not a square
+        const tip = new THREE.Mesh(new THREE.ShapeGeometry(tipS), basic({ color: 0x23324c, side: THREE.DoubleSide }));
+        tip.position.set(14.2, -0.25, 6.8); tip.rotation.y = Math.PI / 2; plane.add(tip);
+        /* v19.0: retired with the drawn cabin — through Chad's window it read
+           as a flat blade cutting the sky in two (photographed, on desktop and
+           phone), and the ask is the sky: clouds and the sun */
+        wm.visible = false; lem.visible = false; tip.visible = false;
         // the cabin wall around the window: a panel with a rounded hole in it
         const panel = new THREE.Shape();
         panel.moveTo(-1.2, -1.0); panel.lineTo(1.2, -1.0); panel.lineTo(1.2, 1.3); panel.lineTo(-1.2, 1.3); panel.closePath();
@@ -4233,17 +4386,85 @@
         hole.quadraticCurveTo(-rw, rh, -rw, rh - r); hole.lineTo(-rw, -rh + r); hole.quadraticCurveTo(-rw, -rh, -rw + r, -rh);
         panel.holes.push(hole);
         const wall = new THREE.Mesh(new THREE.ShapeGeometry(panel), basic({ color: 0x4a4744, side: THREE.DoubleSide }));   // a dim cabin: the light is outside
-        wall.position.set(0, 1.3, 0); wall.rotation.y = -Math.PI / 2; wall.position.x = 0.62; plane.add(wall);
+        wall.position.set(0, 1.3, 0); wall.rotation.y = -Math.PI / 2; wall.position.x = 0.62; planeOld.add(wall);
         // the shade, half up, and the window's own inner frame
-        const shadeP = fplane(0.4, 0.3, 0.61, 1.52, 0, basic({ color: 0x6a655e, side: THREE.DoubleSide }), plane, -Math.PI / 2);
+        const shadeP = fplane(0.4, 0.3, 0.61, 1.52, 0, basic({ color: 0x6a655e, side: THREE.DoubleSide }), planeOld, -Math.PI / 2);
         void shadeP;
         const frame = new THREE.Mesh(new THREE.TorusGeometry(0.29, 0.03, 6, 28), basic({ color: 0xbdb8ae }));
         frame.material.color.setHex(0x6e6a63);
-        frame.scale.set(0.72, 1.05, 1); frame.rotation.y = Math.PI / 2; frame.position.set(0.6, 1.3, 0); plane.add(frame);
-        // the seat in front, the armrest, the overhead's glow
-        fbox(0.12, 0.9, 0.55, 0.3, 0.8, -0.72, basic({ color: 0x2a3550 }), plane);
-        fbox(0.5, 0.08, 0.08, 0.3, 0.64, 0.35, basic({ color: 0x6a6a6a }), plane);
-        fplane(2.4, 0.3, 0.1, 2.3, 0, basic({ color: 0x3c3a37 }), plane, -Math.PI / 2, 0);
+        frame.scale.set(0.72, 1.05, 1); frame.rotation.y = Math.PI / 2; frame.position.set(0.6, 1.3, 0); planeOld.add(frame);
+        /* v19.0 · CHAD'S CABIN (Airplane Inside, Sketchfab — a slice of five
+           rows of three, one wall of windows; tools/prepfilm.mjs x17.5, so the
+           cushion stands 0.37 m off the floor and the seat back 1.08). The
+           seats face +z. Set so HIS window — the second row's — is where the
+           drawn one was (its inner rim at x 0.62, its middle at y 1.30, z 0):
+           every number below was raycast through the file
+           (masters/v19.0/holes2.mjs) and moved by that one offset. */
+        const CAB_T = [-0.196, 0.17, 1.175];
+        const CAB = { seatX: [-0.706, -0.206, 0.294], rowZ: [-1.336, -0.147, 1.032, 2.221, 3.411], top: 0.675,
+                      aisle: -1.309, wallTop: 2.56, floor: 0.297, z0: -1.825, z1: 4.175 };
+        const across = (x) => 2 * CAB.aisle - x;   // a seat's twin across the aisle
+        const cabin = new THREE.Group(); cabin.position.set(CAB_T[0], CAB_T[1], CAB_T[2]); plane.add(cabin);
+        parseOnce('planecabin').then(gltf => {
+          if (!alive) return;
+          const g = gltf.scene.clone(true);
+          g.traverse(o => {
+            if (!o.isMesh) return;
+            o.castShadow = false; o.receiveShadow = false;
+            const m = o.material.clone(); m.fog = false;
+            /* the window panes (blinn5) are one opaque grey sheet in the file:
+               glass now, so the sky is what is in the window */
+            if (o.material.name === 'blinn5') { m.transparent = true; m.opacity = 0.06; m.depthWrite = false; m.color.setHex(0xdfeaf2); }
+            o.material = m;
+          });
+          cabin.add(g); planeOld.visible = false;
+          /* the file is HALF a cabin: one block of three and the wall beside
+             it, open on the aisle side and at both ends (photographed: the sky
+             stood in the cabin on the right). It is mirrored about the aisle
+             — the floor's open edge, x -1.113 in the file, so the aisle is
+             0.76 m wide — for the block of three across, and a ceiling and the
+             two end bulkheads close the box. */
+          const twin = g.clone(true); twin.scale.x = -1;
+          const cab2 = new THREE.Group(); cab2.position.set(2 * CAB.aisle - CAB_T[0], CAB_T[1], CAB_T[2]); plane.add(cab2); cab2.add(twin);
+          cabShell.visible = true;
+        }).catch(err => { console.warn('planecabin failed to load', err); ctx.loadFail && ctx.loadFail('planecabin', err); });
+        const cabShell = new THREE.Group(); cabShell.visible = false; plane.add(cabShell);
+        {
+          const lin = new THREE.MeshStandardMaterial({ color: 0xd9d3c8, roughness: 0.85, fog: false, side: THREE.DoubleSide });
+          const cw = CAB.wallTop, x0 = 0.142, x1 = 2 * CAB.aisle - x0, z0 = CAB.z0, z1 = CAB.z1, fl = CAB.floor;
+          fplane(x0 - x1, z1 - z0, (x0 + x1) / 2, cw - 0.01, (z0 + z1) / 2, lin, cabShell, 0, Math.PI / 2);                    // the ceiling
+          fplane(0.5, z1 - z0, CAB.aisle, cw - 0.02, (z0 + z1) / 2, basic({ color: 0xfff1d8 }), cabShell, 0, Math.PI / 2);   // its light strip
+          for (const z of [z0, z1]) fplane(2 * (0.97 - CAB.aisle) + 0.2, cw - fl, CAB.aisle, (cw + fl) / 2, z, lin, cabShell, 0, 0);   // the bulkheads
+          fplane(0.7, 1.9, CAB.aisle, fl + 0.95, z1 - 0.01, new THREE.MeshStandardMaterial({ color: 0x23324c, roughness: 0.9, fog: false, side: THREE.DoubleSide }), cabShell);   // a curtain, forward
+          fplane(0.36, 0.12, CAB.aisle, cw - 0.25, z1 - 0.02, basic({ color: 0x3fd07a }), cabShell);   // and an exit sign over it
+        }
+        /* THE PASSENGERS (Chad: "add other seated characters (you can reuse
+           from tangki event to be added to the airplane seats), make sure they
+           dont sink into the seats"): episode 1 chapter 3's seated audience, in
+           the rows ahead of his, each parked on a quiet frame of its own take.
+           Seated on their POSED SKIN, never their bones (v16.8): the underside
+           of the thighs on the cushion, the back against the backrest. */
+        const PAX = [
+          ['sitwoman', 0, 2, 'Armature|Sit_Cross_Legged|baselayer', 0.0],
+          ['sitman', 2, 2, 'Armature|Sitting_Clap|baselayer', 0.02],
+          ['sitangry', 0, 3, 'mixamo.com', 0.0],
+          ['sitshout', 1, 3, 'Armature|Sit_Shout_Hands_on_Mouth|baselayer', 0.0],
+          ['sitclap', 2, 4, 'mixamo.com', 0.0],
+          ['sitman', 0, 4, 'Armature|Sitting_Clap|baselayer', 0.5],
+          // and three across the aisle (seat index 3 + i is the twin of i)
+          ['sitangry', 3, 2, 'mixamo.com', 0.0],   // frame 0: at 0.4 an arm was up (photographed)
+          ['sitshout', 4, 3, 'Armature|Sit_Shout_Hands_on_Mouth|baselayer', 0.0],
+          ['sitclap', 5, 4, 'mixamo.com', 0.6],
+        ].filter((_, i) => !LOW || i < 3 || i === 6 || i === 7);
+        for (const [key, si, ri, take, at] of PAX) {
+          const sx = plane.position.x + (si < 3 ? CAB.seatX[si] : across(CAB.seatX[si - 3])), sz = plane.position.z + CAB.rowZ[ri];
+          paxRigs.push(mkRig(key, { x: sx, y: CAB.top, z: sz, ry: 0, height: 1.30, seated: true, idle: take, at,
+            then: (r) => fitSeat(r, { x: sx, z: sz, top: plane.position.y + CAB.top }) }));
+        }
+        // the stand-in's seat in front, the armrest, the overhead's glow
+        fbox(0.12, 0.9, 0.55, 0.3, 0.8, -0.72, basic({ color: 0x2a3550 }), planeOld);
+        fbox(0.5, 0.08, 0.08, 0.3, 0.64, 0.35, basic({ color: 0x6a6a6a }), planeOld);
+        fplane(2.4, 0.3, 0.1, 2.3, 0, basic({ color: 0x3c3a37 }), planeOld, -Math.PI / 2, 0);
       }
       return { root, ord, off, ware, desk, plane, amuletSpin: () => amuletSpin, candleFl: () => candleFl,
                boom: root.userData.boom, P: { ord: ord.position, off: off.position, ware: ware.position, desk: desk.position, plane: plane.position } };
@@ -4276,7 +4497,7 @@
       }
       if (Math.abs(cx - 1000) < 30) {
         const H = film.root.userData.chart, [cv, x] = H.cv;
-        H.k = Math.min(1, H.k + 0.004);
+        H.k = H.at !== undefined ? H.at : Math.min(1, H.k + 0.004);   // v19.0: the film's own clock drives it (a frame count crawled on a slow box)
         x.fillStyle = '#f5f7fa'; x.fillRect(0, 0, 256, 256);
         x.fillStyle = '#1f2a3a'; x.font = 'bold 20px sans-serif'; x.fillText('ROADEYE · ORDERS', 14, 30);
         x.strokeStyle = '#d0d6de'; x.lineWidth = 1;
@@ -5061,6 +5282,107 @@ vec3 frameCol(float d, vec2 q, float w){ float t = d / w;
     x.fillStyle = '#2a4a8a'; x.fillRect(80, 30, 30, 2); x.fillRect(80, 48, 36, 2);
     return done(THREE, c, false);
   }
+  /* v19.0 · the sky outside the plane: a whole sphere's worth (u runs round,
+     v from the zenith to the nadir, the horizon at the middle). Deep blue
+     overhead, dawn on the horizon, the sun in it a little ahead of the wing,
+     a sea of cloud below lit warm on its tops, and towers of cumulus standing
+     out of it. Painted at about half the brightness it should read at (ACES
+     at 1.42, v8.9). */
+  function makePlaneSky(THREE, cnv) {
+    const W = 2048, H = 1024, r = rng(41);
+    const c = document.createElement('canvas'); c.width = W; c.height = H; const x = c.getContext('2d');
+    /* photographed: the first painting went lilac under ACES and the clouds
+       were painted over the sun — so the colours are deeper and more
+       saturated than they should read, the cloud towers keep clear of the
+       sun's column, and the sun goes on LAST */
+    const g = x.createLinearGradient(0, 0, 0, H);
+    /* the blue comes down to ~8 degrees over the horizon: a window only
+       sees about twenty degrees of sky, and at 0.40 none of it was blue */
+    g.addColorStop(0, '#0a2a66'); g.addColorStop(0.3, '#17478f'); g.addColorStop(0.44, '#3c76b8');
+    g.addColorStop(0.475, '#c98a62'); g.addColorStop(0.5, '#eea66a'); g.addColorStop(0.53, '#e2c2a6');
+    g.addColorStop(0.65, '#b9b4c4'); g.addColorStop(1, '#7f88a2');
+    x.fillStyle = g; x.fillRect(0, 0, W, H);
+    const sx = W * 0.475, sy = H * 0.465;   // ~9 degrees ahead of square-on, ~6 up: inside his window where the push-in ends
+    // the dawn's warmth along the horizon, strongest under the sun
+    const hz = x.createRadialGradient(sx, H * 0.5, 10, sx, H * 0.5, W * 0.45);
+    hz.addColorStop(0, 'rgba(255,170,90,0.55)'); hz.addColorStop(1, 'rgba(255,150,80,0)');
+    x.fillStyle = hz; x.fillRect(0, H * 0.3, W, H * 0.4);
+    const puff = (cx, cy, rr, lit) => {
+      const gr = x.createRadialGradient(cx - rr * 0.25, cy - rr * 0.35, rr * 0.1, cx, cy, rr);
+      // a lit top, a shadowed lavender underside — the shape is in the shading
+      gr.addColorStop(0, `rgba(255,${238 - (1 - lit) * 30},${214 - (1 - lit) * 40},0.92)`);
+      gr.addColorStop(0.55, `rgba(${198 - (1 - lit) * 40},${190 - (1 - lit) * 36},${206 - (1 - lit) * 14},0.66)`);
+      gr.addColorStop(1, 'rgba(130,136,170,0)');
+      x.fillStyle = gr; x.fillRect(cx - rr, cy - rr, rr * 2, rr * 2);
+    };
+    // towers of cumulus standing up out of the sea, lit on the sun's side — never in the sun's own column
+    for (let k = 0; k < 16; k++) {
+      let cx = r() * W; if (Math.abs(cx - sx) < 220) cx += cx < sx ? -220 : 220;
+      const base = H * 0.515, hgt = 40 + r() * 100, wide = 70 + r() * 130;
+      const lit = 1 - Math.min(1, Math.abs(cx - sx) / (W * 0.4));
+      for (let j = 0; j < 24; j++) {
+        const t = r(), px = cx + (r() - 0.5) * wide * (1.1 - t * 0.6), py = base - t * hgt;
+        puff(px, py, 18 + r() * 26 * (1 - t * 0.5), lit);
+      }
+    }
+    // the cloud sea: rows of soft puffs, bigger as they come nearer (down the sphere)
+    for (let row = 0; row < 12; row++) {
+      const y = H * 0.512 + Math.pow(row / 11, 1.6) * H * 0.42, n = 70 + row * 6, rr0 = 14 + row * 9;
+      for (let i = 0; i < n; i++) {
+        const cx = r() * W, lit = 1 - Math.min(1, Math.abs(cx - sx) / (W * 0.45));
+        puff(cx, y + (r() - 0.5) * 18, rr0 + r() * rr0 * 0.8, lit * (1 - row / 16));
+      }
+    }
+    // a few high wisps
+    x.globalAlpha = 0.18;
+    for (let i = 0; i < 30; i++) { let cx = r() * W; if (Math.abs(cx - sx) < 160) continue; puff(cx, H * (0.22 + r() * 0.16), 30 + r() * 50, 0.8); }
+    x.globalAlpha = 1;
+    // a light ACES allowance (v8.9), lighter than the first pass's
+    x.fillStyle = 'rgba(16,14,30,0.34)'; x.fillRect(0, 0, W, H);
+    // THE SUN, last: a modest bloom, a bright ring, a white core (a 520 px bloom whited the window out)
+    for (const [rad, a] of [[300, 0.16], [140, 0.4], [60, 0.8], [30, 1]]) {
+      const sg = x.createRadialGradient(sx, sy, 2, sx, sy, rad);
+      sg.addColorStop(0, `rgba(255,250,232,${a})`); sg.addColorStop(0.4, `rgba(255,226,170,${a * 0.6})`); sg.addColorStop(1, 'rgba(255,200,140,0)');
+      x.fillStyle = sg; x.fillRect(0, 0, W, H);
+    }
+    x.fillStyle = '#fffbef'; x.beginPath(); x.arc(sx, sy, 20, 0, Math.PI * 2); x.fill();
+    return done(THREE, c, false);
+  }
+  /* v19.0 · light oak for the camera table, a lamp's pool for its top, and the
+     wing's skin: the dawn on its leading edge, darkening to the flaps */
+  function makeOak(THREE, cnv) {
+    const S = 512, [c, x] = cnv(S), r = rng(44);
+    x.fillStyle = '#b98d5e'; x.fillRect(0, 0, S, S);
+    for (let i = 0; i < 160; i++) {
+      x.strokeStyle = `rgba(${90 + r() * 30},${60 + r() * 20},${34 + r() * 14},${0.12 + r() * 0.2})`; x.lineWidth = 0.8 + r() * 2.2;
+      const y = r() * S; x.beginPath(); x.moveTo(0, y); x.bezierCurveTo(S / 3, y + r() * 16 - 8, 2 * S / 3, y + r() * 16 - 8, S, y + r() * 8 - 4); x.stroke();
+    }
+    for (let k = 0; k < 5; k++) { const y = r() * S; x.fillStyle = 'rgba(70,46,26,0.25)'; x.fillRect(0, y, S, 1); }
+    return done(THREE, c, false);
+  }
+  function makePool(THREE, cnv) {
+    const S = 256, [c, x] = cnv(S);
+    const g = x.createRadialGradient(S * 0.5, S * 0.5, 4, S * 0.5, S * 0.5, S * 0.5);
+    g.addColorStop(0, 'rgba(255,196,128,0.7)'); g.addColorStop(0.5, 'rgba(255,170,100,0.28)'); g.addColorStop(1, 'rgba(255,150,80,0)');
+    x.fillStyle = g; x.fillRect(0, 0, S, S);
+    return done(THREE, c, false);
+  }
+  function makeWing(THREE, cnv) {
+    const S = 512, [c, x] = cnv(S);
+    // v runs from the trailing edge (bottom of the canvas) to the leading edge (top)
+    const g = x.createLinearGradient(0, S, 0, 0);
+    g.addColorStop(0, '#3c4148'); g.addColorStop(0.55, '#7d838c'); g.addColorStop(0.9, '#c8b8a6'); g.addColorStop(1, '#e8d2b8');
+    x.fillStyle = g; x.fillRect(0, 0, S, S);
+    // the flap and aileron lines along the trailing edge, a few panel seams
+    x.strokeStyle = 'rgba(30,32,36,0.55)'; x.lineWidth = 2;
+    x.beginPath(); x.moveTo(0, S * 0.78); x.lineTo(S, S * 0.70); x.stroke();
+    for (let i = 1; i < 6; i++) { x.beginPath(); x.moveTo(i * S / 6, S * 0.78 - i * 1.3); x.lineTo(i * S / 6 + 6, S); x.stroke(); }
+    x.strokeStyle = 'rgba(40,44,50,0.25)'; x.lineWidth = 1;
+    for (let i = 1; i < 9; i++) { x.beginPath(); x.moveTo(i * S / 9, 0); x.lineTo(i * S / 9 + 20, S * 0.7); x.stroke(); }
+    // painted at half what it reads at (ACES, v8.9)
+    x.fillStyle = 'rgba(20,18,24,0.30)'; x.fillRect(0, 0, S, S);
+    return done(THREE, c, false);
+  }
   function makeCloudSea(THREE, cnv) {
     const S = 1024, [c, x] = cnv(S), r = rng(29);
     const g = x.createLinearGradient(0, 0, 0, S);
@@ -5124,17 +5446,23 @@ vec3 frameCol(float d, vec2 q, float w){ float t = d / w;
     sfx(15.4, 'keytype', 0.4);
     fade(18.7, 19.4, 0, 1);
 
-    // 3 · THE WAREHOUSE (19.4 – 33.6): down the aisle of his own boxes, then the table
+    // 3 · THE CAMERA BUSINESS (19.4 – 33.6), v19.0: one slow pan along the
+    // table — over the cameras he sells, left to right, and onto the laptop,
+    // where the orders climb while he says he wanted it to do better
     fade(19.6, 20.5, 1, 0);
-    camTo(19.4, 27.0, at(P.ware, 8.0, 2.1, 2.2), at(P.ware, 1.6, 1.8, 2.2), rawK);
-    yawTo(19.4, 27.0, faceFrom(P.ware.x + 8, P.ware.z + 2.2, P.ware.x - 8, P.ware.z + 2.0), faceFrom(P.ware.x + 1.6, P.ware.z + 2.2, P.ware.x - 6, P.ware.z + 2.6), rawK);
-    pitchTo(19.4, 27.0, 0.05, -0.02, smoothK);
-    camTo(27.0, 33.6, at(P.ware, 1.6, 1.8, 2.2), at(P.ware, 2.55, 1.30, 6.2), smoothK);
-    yawTo(27.0, 33.6, faceFrom(P.ware.x + 1.6, P.ware.z + 2.2, P.ware.x - 6, P.ware.z + 2.6), faceFrom(P.ware.x + 2.55, P.ware.z + 6.2, P.ware.x + 1.75, P.ware.z + 5.35), smoothK);
-    pitchTo(27.0, 33.6, -0.02, -0.42, smoothK);
+    tr(19.4, 33.6, k => {
+      const e = k * k * (3 - 2 * k) * 0.85 + k * 0.15;          // eased, and never quite still
+      const x = P.ware.x - 0.78 + e * 1.02, y = 0.95 + e * 0.07, z = P.ware.z + 0.56 - e * 0.04;
+      // it ends ON the laptop's screen (its middle, measured: the lid stands 0.12 m behind the base's centre) — on a phone, aimed at the base, the screen was half out of frame
+      const tx = P.ware.x - 0.62 + e * 0.99, ty = 0.79 + e * 0.14, tz = P.ware.z + 0.18 - e * 0.43;
+      api.yaw.position.set(x, y, z);
+      api.yaw.rotation.y = faceFrom(x, z, tx, tz);
+      api.pitch.rotation.x = -Math.atan2(y - ty, Math.hypot(x - tx, z - tz));
+    }, rawK);
     sfx(19.8, 'wareamb', 0.6);
     sfx(20.4, 'taperip', 0.7);
     sfx(20.3, 'z1pro3');                              // 6.92 s → 27.22 (v18.6: 20.6 → 20.3, Brian's take is longer)
+    tr(19.4, 33.6, k => { F.root.userData.chart.at = 0.15 + k * 0.85; });
     sfx(24.2, 'orderchime', 0.45);
     sfx(27.6, 'z1pro4');                              // 6.19 s → 33.79, under the dip (v18.6: 26.8 → 27.6, clear of z1pro3)
     sfx(28.6, 'orderchime', 0.55);
@@ -5160,9 +5488,16 @@ vec3 frameCol(float d, vec2 q, float w){ float t = d / w;
 
     // 5 · THE PLANE WINDOW AT DAWN (42.4 – 50.2)
     fade(42.6, 43.6, 1, 0);
-    camTo(42.4, 50.2, at(P.plane, 0.05, 1.28, 0.26), at(P.plane, 0.22, 1.31, 0.12), smoothK);
-    yawTo(42.4, 50.2, faceFrom(P.plane.x, P.plane.z + 0.26, P.plane.x + 3, P.plane.z - 0.2), faceFrom(P.plane.x + 0.22, P.plane.z + 0.12, P.plane.x + 3, P.plane.z + 0.3), smoothK);
-    pitchTo(42.4, 50.2, -0.30, -0.22, smoothK);
+    /* v19.0: from his own seat in Chad's cabin — first down the cabin at the
+       rows ahead (the passengers over their seat backs, the line of windows),
+       then turning to his own window and pushing in on it, the way it always
+       ended: the wing below, the cloud sea, the sun */
+    camTo(42.4, 44.8, at(P.plane, 0.16, 1.43, -0.34), at(P.plane, 0.20, 1.43, -0.30), smoothK);
+    yawTo(42.4, 44.8, faceFrom(P.plane.x + 0.16, P.plane.z - 0.34, P.plane.x + 0.55, P.plane.z + 3.2), faceFrom(P.plane.x + 0.2, P.plane.z - 0.3, P.plane.x + 0.9, P.plane.z + 3.0), smoothK);
+    pitchTo(42.4, 44.8, -0.10, -0.10, smoothK);
+    camTo(44.8, 50.2, at(P.plane, 0.20, 1.43, -0.30), at(P.plane, 0.44, 1.36, -0.04), smoothK);
+    yawTo(44.8, 50.2, faceFrom(P.plane.x + 0.2, P.plane.z - 0.3, P.plane.x + 0.9, P.plane.z + 3.0), faceFrom(P.plane.x + 0.44, P.plane.z - 0.04, P.plane.x + 3, P.plane.z + 0.35), smoothK);
+    pitchTo(44.8, 50.2, -0.10, -0.08, smoothK);   // level-ish: the sky and the sun in the window (at -0.26 it was all cloud sea)
     tr(42.4, 50.2, k => { api.yaw.position.y += Math.sin(k * 40) * 0.0012; });
     sfx(42.5, 'cabinhum', 0.6);
     sfx(43.3, 'seatchime', 0.5);

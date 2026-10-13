@@ -166,6 +166,18 @@ Object.assign(window.__TEXT__, {
   'credits.slipper':     'The slippers at the wat',
   'credits.slipperWho':  'Slipper · Sketchfab',
   'credits.slipperLink': 'sketchfab.com · slipper',
+  'credits.office':         'The office at night, in the opening film',
+  'credits.officeWho':      'Mersus Office · Sketchfab',
+  'credits.officeLink':     'sketchfab.com · mersus-office',
+  'credits.actioncam':      'The cameras on his table',
+  'credits.actioncamWho':   'Xiaomi Yi 4K Action Cam · Sketchfab',
+  'credits.actioncamLink':  'sketchfab.com · xiaomi-yi-4k-action-cam',
+  'credits.laptop':         'His laptop',
+  'credits.laptopWho':      'Laptop · Sketchfab',
+  'credits.laptopLink':     'sketchfab.com · laptop',
+  'credits.cabin':          'The plane, at dawn',
+  'credits.cabinWho':       'Airplane Inside · Sketchfab',
+  'credits.cabinLink':      'sketchfab.com · airplane-inside',
   /* v12.1 — Chad's ghost cyclist is his own model and takes no row (the
      v5.23 rule); the Kamaz and the flashlight already have theirs above. */
   'credits.anim':        'Animation, two of the crowd, and the soldiers’ takes',

@@ -10661,15 +10661,21 @@ async function warmWorld(items) {
   forceDraw = 3;                             // v15: drawn although covered — that is what they are for
   await cap(new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))), 3000);
 }
-function whenWorldReady(then, capMs = WORLD_CAP, keepWord = false) {
+function whenWorldReady(then, capMs = WORLD_CAP, keepWord = false, silent = false) {
   const t0 = performance.now();
   /* v14.16: the word goes where the player can see it — on the chapter card
      when the card is up, and over the black before an opening film, where
      the card is hidden and the wait used to be a silent black screen */
   const cardUp = ui.chapter && !ui.chapter.classList.contains('hide');
-  const load = cardUp ? $('chapLoad') : $('worldLoad');
+  /* v19.0 (Chad: "for all epx:chpx title screens that shows up after intro
+     cutscene completes ... i don't want the loading word to appear there"):
+     a SILENT wait shows no word at all. The card after a film is one — the
+     film's own curtain already waited for the world, so this second wait is
+     a re-check that ends in a moment and only ever flashed the word. */
+  const load = silent ? null : cardUp ? $('chapLoad') : $('worldLoad');
   const other = cardUp ? $('worldLoad') : $('chapLoad');
   other?.classList.add('hide');
+  if (silent) $('chapLoad')?.classList.add('hide');
   const items = curtainItems();
   try { zavInit(); zavLoad(); } catch {}
   for (const id of items) { try { ivModel(id); itemArtGet(id); } catch {} }   // the model and the painted icon
@@ -10732,7 +10738,7 @@ function whenWorldReady(then, capMs = WORLD_CAP, keepWord = false) {
   gate();
 }
 
-function playChapterCard(then) {
+function playChapterCard(then, afterFilm = false) {
   const el = ui.chapter;
   el.classList.remove('hide');
 
@@ -10780,7 +10786,7 @@ function playChapterCard(then) {
         el.style.opacity = '';
         el.classList.remove('in');
         setTimeout(() => { el.classList.add('hide'); then(); }, CARD_FADE);
-      });
+      }, WORLD_CAP, false, afterFilm);
     }, CARD_HOLD);
   };
   el.addEventListener('transitionend', cover, { once: true });
@@ -10837,7 +10843,7 @@ function enterWorld(place, opts = {}) {
     queueVoice();                  // his own voice, two seconds in
     autosave(true);                // the run is recorded from its first moment
     markReached(CH_KEY);           // and the chapter is open in the selector from now on (v5.12)
-  });
+  }, !!intro);                     // v19.0: after a film, the card says no "Loading…"
 
   /* v8.2: BEFORE the branch, not inside the film's arm. This used to sit
      below, on the film path only — so a chapter entered with no film (the

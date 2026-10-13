@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "18.9"
+VERSION = "19.0"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -404,6 +404,10 @@ ASSETS = {
     'buddhahd':     ('assets/buddhahd.glb', True, False),     # e3 v18.8: Chad's Buddha (Phra Buddha Chinnarat), EVERY triangle and map — the near level of every Buddha in episode 3 (prepwess KEEPMR=1 NPX=2048 ERR=0.0001, ratio 1)
     'buddhalod':    ('assets/buddhalod.glb', True, False),    # e3 v18.8: its mid (smoothed 123k) and far (30k, same vertices) levels in one file (masters/v18.8/make.sh)
     'sangkathan':   ('assets/sangkathan.glb', True, False),   # e3c1 v18.8: Chad's sangkathan set, every merit set in the chapter (prepwess LONG=1 NPX=1024, 0.08)
+    'filmoffice':   ('assets/filmoffice.glb', True, False),   # e3c1 v19.0: Chad's Mersus office, the film's office at night (tools/prepfilm.mjs office)
+    'filmlaptop':   ('assets/filmlaptop.glb', True, False),   # e3c1 v19.0: Chad's laptop on the camera-business table (tools/prepfilm.mjs laptop)
+    'actioncam':    ('assets/actioncam.glb', True, False),    # e3c1 v19.0: Chad's Xiaomi Yi 4K, the cameras on that table (tools/prepfilm.mjs actioncam)
+    'planecabin':   ('assets/planecabin.glb', True, False),   # e3c1 v19.0: Chad's airplane interior, the film's window at dawn (tools/prepfilm.mjs plane)
     'customer':     ('assets/customer.glb', True, False),     # e3c1 v18.7: Chad's Sak Yant customer — Sit_Dodge, the stand, the walk (tools/prepmonk.mjs 0.3: weights diffused, normals shared)
     'sitwomantalk': ('assets/sitwomantalk.glb', True, False), # e3c1 v17.4: the stall auntie's talking take — the monk's Sitting_Answering_Questions retargeted onto sitwoman (masters/v17.4)
     'monk':         ('assets/monk.glb', True, False),         # e3c1 v16.8: Chad's monk, five takes, skin weights diffused (tools/prepmonk.mjs)
@@ -441,7 +445,7 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'ghostsoldier', 'encik2', 'bunkbed', 'cafestaff', 'foodwarmer', 'flashlight',
            'kamaz', 'forest', 'rifle', 'ghostcyclist', 'fboaim',
            'muzzle', 'ammocrate', 'ammomags', 'icontorch', 'zavsoldier',
-           'thaikit', 'wessred', 'wessgreen', 'naga', 'monk', 'ajarn', 'temple', 'slipper', 'lersimask', 'altarrow', 'customer', 'buddhahd', 'buddhalod', 'sangkathan', 'sitwomantalk',
+           'thaikit', 'wessred', 'wessgreen', 'naga', 'monk', 'ajarn', 'temple', 'slipper', 'lersimask', 'altarrow', 'customer', 'buddhahd', 'buddhalod', 'sangkathan', 'sitwomantalk', 'filmoffice', 'filmlaptop', 'actioncam', 'planecabin',
            'lay_admintee', 'lay_botak', 'lay_granny', 'lay_scold', 'lay_sitwoman', 'monkrow'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone
 HOSTED_ONLY |= E2_ONLY
 
