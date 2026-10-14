@@ -1770,7 +1770,7 @@ const _hgq = new THREE.Quaternion(), _hgm = new THREE.Matrix4(), _hge = new THRE
 const _hgp = new THREE.Vector3(), _hgp0 = new THREE.Vector3();
 const HG_MIR = new THREE.Matrix4().makeScale(-1, 1, 1);
 let wongPose = null;                 // the fingers straight, closed and bent BACK — built once from prayerPose
-const handsFrom = { k: 0, t: 0 };    // where kit.hands had them when the last scene took them
+const handsFrom = { k: 0, t: 0, roll: 0 };    // where kit.hands had them when the last scene took them (v19.2: and the lens's roll, so a scene can ease it out instead of snapping it level)
 function kitHandsSet(k, opts = {}) {
   hands.to = Math.max(0, Math.min(1, +k || 0));
   if (opts.secs !== undefined) hands.secs = Math.max(0.01, +opts.secs);
@@ -1817,18 +1817,32 @@ function setHandWong(root, k) {
 }
 /* one hand's gesture at flow time t (the right hand; the left is this,
    mirrored, a beat later) */
+/* v19.2: its sideways reach is scaled to the SCREEN, as the resting hand's
+   has always been (layoutHands): 0.15 m out at 0.43 m deep is NDC 0.45 on a
+   desktop and past the right edge of a portrait phone (half-width 0.097 m),
+   so on Chad's phone the hands that rise on their own in e3c2's film, its
+   tapping fight and two of its endings were off the screen. 1 on a desktop,
+   ~0.39 on a phone; only kit.hands and a scene's handsPose call this, and
+   only e3c2 uses either.
+   And its DEPTH (GEST_ZS): the reach alone pulled the two hands into the
+   middle of a portrait screen at 0.43 m, each hand as wide as half the
+   frame, and they piled one on the other (ending C, photographed). On a
+   narrow screen they now rise a little further from the lens (to 0.55 m on
+   a phone) with their centres at about half the frame's half-width, so the
+   two stand apart, whole, either side. 1 and 1 on a desktop. */
+let GEST_XS = 1, GEST_ZS = 1;
 function gestureAt(t, k, outP, outQ) {
   const amp = 0.35 + 0.65 * k;
-  outP.set(0.15 + 0.045 * amp * Math.sin(t * 0.83),
+  outP.set((0.15 + 0.045 * amp * Math.sin(t * 0.83)) * GEST_XS,
            -0.12 + 0.07 * k + 0.05 * amp * Math.sin(t * 1.21 + 0.6),
-           -0.43 + 0.035 * amp * Math.sin(t * 0.61 + 1.3));
+           (-0.43 + 0.035 * amp * Math.sin(t * 0.61 + 1.3)) * GEST_ZS);
   _hge.set(-0.42 + 0.24 * Math.sin(t * 1.07),          // the wrist bent back, breathing
            0.28 * amp * Math.sin(t * 0.77 + 0.4),        // the palm turning out and in
-           -0.30 + 0.22 * amp * Math.sin(t * 0.58 + 2.1), // the hand tilting outward
+           (-0.30 + 0.22 * amp * Math.sin(t * 0.58 + 2.1)) * (0.5 + 0.5 * GEST_XS), // the hand tilting outward (less on a narrow screen, v19.2)
            'XYZ');
   outQ.setFromEuler(_hge).premultiply(GEST_R);
 }
-const _hgPr = new THREE.Vector3(), _hgQr = new THREE.Quaternion(), _hgPl = new THREE.Vector3(), _hgQl = new THREE.Quaternion();
+const _hgPr = new THREE.Vector3(), _hgQr = new THREE.Quaternion(), _hgPl = new THREE.Vector3(), _hgQl = new THREE.Quaternion(), _hgRq = new THREE.Quaternion();
 /* `opts.from: 'rest'` lifts the right hand from where the engine rests it
    (the hand on the knee, in a film) instead of from the clasp, and
    `opts.left: false` leaves the left arm out of it */
@@ -1842,14 +1856,36 @@ function handsPut(k, t, opts) {
      ending's clasp stood 9.5 cm higher than play's (e3c2 −0.33 → −0.235,
      where the thumbs show) and jumped on the cut. kitReset puts pray.y back
      to chapter 1's, so a chapter that never sets it is unchanged. */
-  const e = k * k * (3 - 2 * k), half = HAND_W * 0.085, py = pray.y;
+  /* v19.2: `opts.y` names the clasp's height outright — an opening film runs
+     before the chapter's first kit.pray, so pray.y is still chapter 1's there
+     (e3c2's temple floor: the thumbs Chad turned down at v16.5) */
+  const e = k * k * (3 - 2 * k), half = HAND_W * 0.085, py = (opts && opts.y != null) ? opts.y : pray.y;
+  /* v19.2: out of the CLASP the hands PART before they turn — position and
+     rotation on one ease swung both palms open while the wrists were still
+     pressed together, so between k 0.3 and 0.6 the heels fused into one
+     block and one thumb went through the other (held for seconds in a fight
+     tapped a little slow). Positions lead (done by k 0.55), the turn follows
+     (from 0.15), and the hands bow outward a few cm while they turn. The
+     ends are unchanged; from rest, one ease as before. */
+  const sm = (x) => x * x * (3 - 2 * x);
+  const ep = fromRest ? e : sm(Math.min(1, k / 0.55)), er = fromRest ? e : sm(Math.max(0, (k - 0.15) / 0.85));
+  const bulge = fromRest ? 0 : 0.035 * Math.sin(Math.PI * er);
   // the right hand: from the clasp (or its rest) to its gesture
   gestureAt(t, k, _hgPr, _hgQr);
   if (fromRest) _hgp0.copy(armBase); else _hgp0.set(half, py, PRAY.z);
-  armR.position.lerpVectors(_hgp0, _hgPr, e);
-  armR.quaternion.slerpQuaternions(fromRest ? prayRestQ : PRAYER_R, _hgQr, e);
+  armR.position.lerpVectors(_hgp0, _hgPr, ep); armR.position.x += bulge;
+  armR.quaternion.slerpQuaternions(fromRest ? prayRestQ : PRAYER_R, _hgQr, er);
   if (fromRest) {
-    if (rightHandModel) rightHandModel.traverse(b => { const f = b.isBone && wongPose && wongPose[b.name] && fingerPose && fingerPose.find(q => q.name === b.name); if (f) b.quaternion.slerpQuaternions(f.curled, wongPose[b.name], e); });
+    /* v19.2: `opts.relax` (0..1) rests the fingers part-way from the walking
+       curl (whose index finger points) to the closed, straight prayer hand —
+       a hand lying on a knee, not pointing at something (e3c2's flat) */
+    const relax = (opts && opts.relax) || 0;
+    if (rightHandModel) rightHandModel.traverse(b => {
+      const f = b.isBone && wongPose && wongPose[b.name] && fingerPose && fingerPose.find(q => q.name === b.name);
+      if (!f) return;
+      if (relax > 0 && prayerPose && prayerPose[b.name]) { _hgRq.slerpQuaternions(f.curled, prayerPose[b.name], relax); b.quaternion.slerpQuaternions(_hgRq, wongPose[b.name], e); }
+      else b.quaternion.slerpQuaternions(f.curled, wongPose[b.name], e);
+    });
     if (prayerArmL) prayerArmL.visible = false;
     return;
   }
@@ -1863,12 +1899,12 @@ function handsPut(k, t, opts) {
     _hgQl.setFromRotationMatrix(_hgm);
     _hgp0.set(-half, py, PRAY.z);
     L.visible = true;
-    L.position.lerpVectors(_hgp0, _hgPl, e);
-    L.quaternion.slerpQuaternions(PRAYER_L, _hgQl, e);
-    const fl = Math.min(1, e * (0.75 + 0.25 * Math.sin(t * 0.9 + 2.0)));
+    L.position.lerpVectors(_hgp0, _hgPl, ep); L.position.x -= bulge;
+    L.quaternion.slerpQuaternions(PRAYER_L, _hgQl, er);
+    const fl = Math.min(1, er * (0.75 + 0.25 * Math.sin(t * 0.9 + 2.0)));
     setHandWong(L.userData.model, fl);
   }
-  if (rightHandModel) setHandWong(rightHandModel, Math.min(1, e * (0.75 + 0.25 * Math.sin(t * 0.9))));
+  if (rightHandModel) setHandWong(rightHandModel, Math.min(1, er * (0.75 + 0.25 * Math.sin(t * 0.9))));
 }
 function handsFrame() {
   if (!handsReady || !rightOriented) return;
@@ -2340,13 +2376,21 @@ function darkLights() {
     if (n >= DARK_HOLD && o.visible) o.visible = false;
   }
 }
+const _wpV = new THREE.Vector3();
 function paintWaypoint() {
   const el = $('waypoint'); if (!el) return;
   if (!kitWaypoint || state !== 'play') { el.classList.add('hide'); return; }
   const n = projectTo(kitWaypoint.x, kitWaypoint.y, kitWaypoint.z);
-  if (n.z > 1) { el.classList.add('hide'); return; }   // behind the player: no marker
   let x = n.x, y = n.y;
-  const edge = Math.abs(x) > 0.92 || Math.abs(y) > 0.9;
+  /* v19.2: BEHIND the player the marker goes to the side edge it is nearer
+     to (it was hidden — so a first objective behind the spawn, e3c2's chant
+     books, had no marker anywhere and nothing said to turn round). Only
+     chapters that declare a waypoint (episodes 2 and 3) reach this. */
+  if (n.z > 1) {
+    _wpV.set(kitWaypoint.x, kitWaypoint.y, kitWaypoint.z).applyMatrix4(camera.matrixWorldInverse);
+    x = _wpV.x < 0 ? -0.92 : 0.92; y = 0;
+  }
+  const edge = n.z > 1 || Math.abs(x) > 0.92 || Math.abs(y) > 0.9;
   x = Math.max(-0.92, Math.min(0.92, x)); y = Math.max(-0.9, Math.min(0.9, y));
   el.style.transform = `translate(${((x * 0.5 + 0.5) * innerWidth).toFixed(0)}px, ${((-y * 0.5 + 0.5) * innerHeight).toFixed(0)}px) translate(-50%,-50%)`;
   el.classList.toggle('edge', edge);
@@ -4099,7 +4143,17 @@ function evFrame(dt, dLookX, dLookY) {
       e.dmax = Math.max(e.dmax, e.danger);
       e.rk = Math.min(1, e.danger / o.grace);
       const host = evEl();
-      const slow = live && rate < need;
+      /* v19.2: what the PANEL says is "you are losing ground", not the raw
+         comparison: the gap-based rate saw-tooths from r to 1.25r inside every
+         tap gap, so a thumb anywhere between 0.8 and 1.0 of the need flipped
+         TAP!/FASTER! and the red shake on and off twice a tap — the minigame
+         looked broken while he was holding. It reads the danger's trend over
+         a quarter second (or a rate far under), and holds a warning half a
+         second once shown. The SCORING is unchanged. */
+      if (e.dRefT == null || e.t < e.dRefT) { e.dRefT = e.t; e.dRef = e.danger; e.rising = false; e.slowUntil = 0; }
+      if (e.t - e.dRefT >= 0.25) { e.rising = e.danger > e.dRef + 0.02; e.dRef = e.danger; e.dRefT = e.t; }
+      if (live && (e.rising || rate < need * 0.6)) e.slowUntil = e.t + 0.5;
+      const slow = live && e.t < e.slowUntil;
       if (host) {
         host.classList.toggle('danger', slow);
         host.style.setProperty('--rk', e.rk.toFixed(3));
@@ -4299,6 +4353,7 @@ function kitInit() {
     addEventListener('pointerup', () => { if (ev && ev.down) evRelease(); });
   }
 }
+let poseWall = 0;
 function kitFrame(dt, t, dLookX, dLookY) {
   if (!kitInited) kitInit();
   /* v11.6: the bag button asks while a given item waits unequipped (a class
@@ -4313,7 +4368,11 @@ function kitFrame(dt, t, dLookX, dLookY) {
   document.body.classList.toggle('cardup', state !== 'play');
   weaponFrame(dt);   // v12.0: the weapon's clips, its flash and its rounds
   // pose
-  if (poseT < 1) { poseT = Math.min(1, poseT + dt / poseSecs); eyeY = poseFrom + (poseTo - poseFrom) * smoothK(poseT); }
+  /* v19.2: on WALL time (the v7.4 law): on the clamped frame step a slow
+     phone sank the eye for half a second after a chapter's own wall-clock
+     turn had ended (e3c2's kneel read as two motions) */
+  { const nowP = performance.now(), wdtP = poseWall ? Math.min(0.25, (nowP - poseWall) / 1000) : dt; poseWall = nowP;
+    if (poseT < 1) { poseT = Math.min(1, poseT + wdtP / poseSecs); eyeY = poseFrom + (poseTo - poseFrom) * smoothK(poseT); } }
   if (kitPose === 'lying' && state === 'play') {
     const d = Math.atan2(Math.sin(yaw.rotation.y - lieYaw), Math.cos(yaw.rotation.y - lieYaw));
     if (Math.abs(d) > lieSpan) yaw.rotation.y = lieYaw + Math.sign(d) * lieSpan;
@@ -5182,6 +5241,9 @@ function layoutHands() {
     if (weaponProp) weaponProp.position.copy(weaponBase);
   }
   armBase.copy(armR.position);
+  { const w43 = Math.tan(THREE.MathUtils.degToRad(vmCam.fov / 2)) * vmCam.aspect * 0.43;   // the frame's half-width at the gesture's 0.43 m
+    GEST_ZS = Math.min(1.3, Math.max(1, 0.12 / w43));                                        // v19.2: see gestureAt
+    GEST_XS = Math.min(1, w43 * GEST_ZS * 0.53 / 0.15); }
 }
 /* v11.3: the rest positions the swap tween works from (layoutHands writes
    them; torchPropSync offsets them every frame) */
@@ -9924,10 +9986,18 @@ function snapWorld() {
 }
 
 function restoreWorld(s, keep) {
-  yaw.position.copy(s.yawPos); yaw.rotation.y = s.yawRot;
-  pitch.rotation.x = s.pitchX; camera.rotation.z = s.camRoll;
+  /* v19.2: a scene may END ON ITS OWN PICTURE (`c.keep.view`): the outcome
+     card then lies over the scene's last image rather than the decision's
+     view with the walking hand back in it (episode 3 chapter 2 walks him out
+     of the hall — the card came up over him kneeling inside). Opt-in, so no
+     other chapter changes; restart() puts the camera and the hand back for
+     whatever plays next. */
+  if (!keep.view) {
+    yaw.position.copy(s.yawPos); yaw.rotation.y = s.yawRot;
+    pitch.rotation.x = s.pitchX; camera.rotation.z = s.camRoll;
+  }
   stage.restore(s.ch);
-  armR.visible = s.armVis;
+  armR.visible = keep.view ? false : s.armVis;
   armR.rotation.set(0.50, 0.28, -0.48);
   vmKey.intensity = VM_REST.key;
   layoutHands();
@@ -9969,7 +10039,7 @@ function playCineFn(sceneFn, onDone, startFade = 0) {
   prayOff();                       // v16.5: a scene takes the hands back from kit.pray, on its first frame
   /* v18.0: and from kit.hands — the scene is told where they were (it may
      carry the gesture on with api.handsPose), the sway's roll is not kept */
-  handsFrom.k = hands.k; handsFrom.t = hands.t;
+  handsFrom.k = hands.k; handsFrom.t = hands.t; handsFrom.roll = (hands.k > 0 || hands.was > 0) ? camera.rotation.z : 0;
   if (hands.k > 0 || hands.was > 0) snap.camRoll = 0;
   handsOff();
   cineDuck = null;                 // a scene starts with the room at full
@@ -10093,7 +10163,12 @@ function cineEnd() {
   letterboxOff();                          // v15: the whole frame again, before the bars start to move
   document.body.classList.remove('cine');
   skipBtn.classList.add('hide');
-  ui.hud.classList.remove('hide');
+  /* v19.2: a FILM (the only kind that keeps its black) hands over to the
+     chapter card, whose own `then` brings the bars back once the card has
+     covered the screen — un-hidden here, they sat over the black for the
+     whole of the card's fade-in, in every chapter with an opening
+     (photographed: e3c2's film at 55.08 s, the stat bars over the title). */
+  if (!c.keepFade) ui.hud.classList.remove('hide');
   c.onDone();
 }
 
@@ -10233,7 +10308,7 @@ function sceneApi(c) {
        play, at a k and a flow time the scene chooses; handsFrom is where play
        left them, so a scene can carry the gesture on without a jump */
     handsPose: (k, t, o) => handsPut(Math.max(0, Math.min(1, k)), t, o),
-    handsFrom: () => ({ k: handsFrom.k, t: handsFrom.t }),
+    handsFrom: () => ({ k: handsFrom.k, t: handsFrom.t, roll: handsFrom.roll }),
     rightHand: () => rightHandModel, setHandCurl,
     vmKey, vmFire, vmHemi,
     dirtyShadows: n => { shadowDirty = n; }
@@ -10633,6 +10708,12 @@ async function warmWorld(items) {
     });
     for (const t of tex) { try { r.initTexture(t); } catch { /* one bad texture must not stop the rest */ } }
   };
+  /* v19.2: the LEFT prayer hand is built lazily, and its clone's material is
+     DoubleSide — a different program from the right hand's — so the first
+     clasp of a session compiled it on screen (e3c2's film stalled as its
+     temple-floor shot faded in). Built now, hidden, it is warmed with the
+     rest of the viewmodel under the cover; nothing about it is drawn. */
+  try { if (rightOriented && !prayerArmL) buildPrayerArm(); } catch {}
   try { up(renderer, scene); up(renderer, vmScene); } catch {}
   /* v14.16: compileAsync only where the driver can compile in the
      background (KHR_parallel_shader_compile); without it three blocks on
@@ -11440,12 +11521,23 @@ function pick(i) {
        line under the rows. Chapters 1–5 never call kit.conduct, so cd is
        null there and nothing on their cards moves. */
     const cd = conductTake();
-    if (cd) { stats.sanity += cd.s < 0 ? -wardSoak(-cd.s, false) : cd.s; stats.awareness += cd.a; }   // v14.7: a banked cost too
+    /* v19.2: the rows START from what play banked — they counted from before
+       it, so the card ended on one number and the HUD showed another the
+       moment play resumed (e3c2: awareness 56 on the card, 65 for real). The
+       chips still show only the choice; "What you did" explains the start.
+       Episode 1 banks nothing, so its rows are unchanged. */
+    const rowsFrom = { ...before };
+    if (cd) {
+      const cs = cd.s < 0 ? -wardSoak(-cd.s, false) : cd.s;
+      stats.sanity += cs; stats.awareness += cd.a;   // v14.7: a banked cost too
+      rowsFrom.sanity = Math.max(0, Math.min(100, before.sanity + cs));
+      rowsFrom.awareness = Math.max(0, Math.min(100, before.awareness + cd.a));
+    }
     syncBars();                            // the hidden HUD stays truthful
     ui.say.innerHTML = c.say;
     ui.teach.textContent = '';             // it will write itself
     ui.teach.closest('.teachbox').classList.add('veiled');
-    ui.deltas.innerHTML = statRowsHTML(before, eff, wCard);
+    ui.deltas.innerHTML = statRowsHTML(rowsFrom, eff, wCard);
     paintConduct(cd);                      // v7.0
     ui.hud.classList.add('hide');       // the card's bars ARE the bars now
     ui.result.classList.remove('hide');

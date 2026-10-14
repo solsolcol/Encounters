@@ -4966,6 +4966,60 @@ What the baseline contains, by release:
   all four endings. Sheet v92 (v44 stays the link). Deploy
   `6ace877628b45d9c5c6a36dd`, byte-verified (213 files).
   docs/V19.1-THE-HALL-AND-THE-ROOM.md is the build's memory.
+- **v19.2** THE THIRD PASS OVER THE HANDS THAT MOVED — Chad: *"Find even
+  more bugs to fix, and things to objectively improve further in ep3 chp 2. It
+  is still glitchy and things still look so wrong."* Every beat photographed
+  at the phone's own ratio (film, play, fight, peak, all four endings, a
+  look-around), read by vision reviewers set by set and seven code lenses,
+  each finding checked by a skeptic; docs/V19.2-PLAN.md is the list, in two
+  rounds. THE FILM: the yant close-up redrawn (Khom letters, a steel needle);
+  the office is Chad's office model at evening with two civilians seated on
+  its cushions, sales dashboards, a banner, the dusk skyline; the flat's hand
+  RESTS on his crossed legs under a cool light and is held down; the temple
+  floor has a row kneeling ahead, a small Buddha and the hall's tiles; the
+  doors open on the roofline with lamps and the walkers on a ramp. THE HALL: a
+  gilt rope across the candle racks' gap (the one-piece collider was an
+  invisible wall there), the facade dado stopped at the jambs, gables drawn
+  to their triangles, chandeliers that hang from a hub on spokes, round smoke
+  from the incense tips, flared gilt capitals, column sheets at the columns'
+  proportions, the dado tiled per box, the coffers on the beams, open pages on
+  the stand books, the doubled halo hidden (Chad's e3c1 ruling), and the
+  candles, mats, stands and books INSTANCED (~200 meshes to six draws). THE
+  PEOPLE: the white recolour decided per TRIANGLE from skin weights (head and
+  hands kept, legs white whole, a garment judged on its own texels), so Yai's
+  print, the scold's sarong and every shirt go white and no face or head of
+  hair is touched; the man in front, Yai and the boy at full detail
+  (`lay_adminteehd`/`grannyhd`/`botakhd`, like the neighbour's); every sitter
+  on its SEAT with a painted contact shadow; looks in world space shared by
+  waist, shoulders, neck and head; a breath on everyone; the women's hands in
+  their laps (no finger bones to pray with). PLAY: the kneel glides, the bow
+  is made to the Buddha, the gold leaf's waypoint goes with the press, the
+  peak frames the whole statue over a phone's decision panel. THE ENDINGS:
+  one ending() that holds the picture under the last line; A's clasp sinks as
+  he looks up and the woman turns on her line; B walks square onto the door
+  to the head of the steps into a dusk courtyard whose lamps glow, with the
+  stars coming out; C's sway is sized to the screen and settles on Yai and the
+  boy; D glances at the woman and the hand rests in view. ENGINE (all opt-in
+  or unreachable from episode 1 except the first): the stat bars no longer
+  flash over a film's last black (every chapter); `GEST_XS` scales the
+  gesture to the screen; `handsPut` takes `y` and `relax`, and its hands part
+  before they turn; `handsFrom` carries the play roll; a waypoint behind the
+  player pins to the screen's edge; the outcome card's rows start from what
+  play banked; `c.keep.view` lets a scene's card lie over its own last
+  picture; the fight's panel reads the danger's trend (no flicker) and keeps
+  its rise from replaying; the left prayer hand is warmed under the curtain;
+  the pose ease runs on wall time. Put to Chad, not changed: the bag and menu
+  buttons over a phone's outcome card, the "Sealed" stamp under the bag
+  button, "Case file complete" after chapter 2 of 5, and the outcome card
+  creeping up as its teaching types (every card, every episode). Two traps
+  the photographs caught after the first fixes: the scans' UV maps carry
+  hair-thin SLIVER triangles running hundreds of texels across the sheet, and
+  painted by region they drew white lines across the man in front's face (a
+  recolour skips them now); and on a phone the two raised hands piled one on
+  the other in the middle of the frame (`GEST_ZS`: they rise a little further
+  from the lens, apart, either side). No word moved; sheet v92 stands (v44
+  the link). Deploy `6acfeb150529317846310b05`, byte-verified (all 216 build
+  files). docs/V19.2-PLAN.md is the memory.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so

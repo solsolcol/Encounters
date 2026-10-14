@@ -592,7 +592,7 @@ body.finePtr .wpnBtn{position:relative;margin-bottom:12px}
    it; gold while the taps keep up, RED and shaking the moment they do not */
 #event.resist #evPrompt{color:#F3D58A;text-shadow:0 0 12px rgba(233,196,106,.55);font-weight:700}
 #event.resist.danger .evpanel{border-color:rgba(232,72,58,.9);box-shadow:0 0 calc(16px + 40px * var(--rk,0)) rgba(232,72,58,.5);
-  animation:resistShake .12s linear infinite}
+  animation:rise .3s var(--ease),resistShake .12s linear infinite}   /* v19.2: `rise` kept FIRST in the list — replacing it, the panel replayed its 40 px rise every time the class came off */
 #event.resist.danger #evPrompt{color:#FF6B5C;text-shadow:0 0 14px rgba(255,80,60,.7)}
 #event.resist #evCombo{display:none}   /* v18.5: an empty 28 px gap between the label and the word */
 #event.resist #evNote{font-size:.8rem;color:#EDE6D4;opacity:.9;letter-spacing:.05em;text-transform:none}   /* v18.4: where the taps go */

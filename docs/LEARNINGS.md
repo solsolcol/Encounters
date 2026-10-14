@@ -5287,3 +5287,61 @@ cut (sharing its vertices and maps) when it is small.
   unalomes at both ends. Draw those exactly from the reference; the letters
   can be stroke shapes in the style of the script.
 
+
+## v19.2 · the third pass over episode 3 chapter 2
+
+- **A comment that eats code is not a comment.** v18.5 wrote a note into the
+  middle of a line, and `world.add(shadow)` and `world.add(glimpse)` became
+  comment text: the chapter's two supernatural images were never in the world
+  for a release. A line-level review that reads code as code would have seen
+  the add missing; read the diff as the parser does.
+- **`makeSignTex(…, aspect)` takes WIDTH ÷ HEIGHT.** e3c2 passed height ÷
+  width and every sign was squashed into a dashed line. A helper whose
+  argument is a ratio says which way round in its signature or its comment —
+  this one now draws the canvas at the plane's own proportions.
+- **A recolour is decided by WHERE on the body a texel is, per triangle.**
+  Colour alone failed three passes (specks in hair, a patch across an eye,
+  fingertips); per UV island failed the Meshy scans, which pack a face, a
+  neck and half a blouse into one island. Each triangle's skin weights say
+  head, hands, legs or garment, and a garment triangle is judged on its own
+  texels (mostly skin keeps its skin; mostly dark with head weight is hair
+  down a back). It also dressed the one sitter colour could never separate.
+- **Ground a sitter on its SEAT, never its lowest vertex.** A retargeted
+  cross-legged take puts the crossed ankles lowest; grounding those left every
+  seat 3–7 cm over the mat, and LOW casts no shadow, so nobody touched the
+  floor. The hips' skin to the mat (a few mm in), the ankles allowed under it,
+  and a painted contact shadow that exists on a phone (the v9.3 law).
+- **A box's UVs are 0..1 on every face, whatever its size.** One texture
+  repeat on boxes of different lengths draws the pattern a different size on
+  each (a dado's zigzag 3.6 cm under a window, 40 cm behind the altar). Tile
+  per box by its own length (`uvScale`); a long thin face needs a sheet drawn
+  at its own proportions. ShapeGeometry's UVs are the shape's METRES — map a
+  drawn gable 0..1 over the triangle yourself.
+- **`cyl(r0, r1)` is (radiusTop, radiusBottom).** A capital written as
+  (0.31, 0.527) is a funnel the column's corners break out of.
+- **A gesture placed in metres must be scaled to the screen.** On a portrait
+  phone the viewmodel frustum is a third as wide, so a hand at x 0.15 is off
+  the edge (`GEST_XS`); and out of a clasp the hands must PART before they
+  turn, or the palms swing open through each other while the wrists are
+  still pressed together.
+- **A HUD that shows a raw comparison flickers at the boundary.** The fight's
+  gap-based rate saw-tooths by 25% inside every tap gap, so TAP!/FASTER! and
+  the shake flipped twice a tap while the player held; the panel reads the
+  danger's TREND and holds a warning half a second. And an `animation`
+  shorthand that replaces another restarts the one it replaced when the class
+  comes off — keep the original first in the list.
+- **The card lies over whatever the camera last showed — so choose it.** A
+  scene that walks him out of the hall now ends on its own picture
+  (`c.keep.view`); without it the card rose over him back on his mat with the
+  walking hand. Opt-in, so no other chapter's card changed.
+- **A UV map carries slivers.** The scans' exports have hair-thin triangles
+  whose UVs run hundreds of texels across the sheet (at seams). Anything that
+  rasterizes UV triangles to decide texels — a recolour, a mask, a bake —
+  must skip them (long edge over 4% of the sheet, height under 6% of it), or
+  each one paints its decision in a line straight across whatever it crosses:
+  white lines through the man in front's face. They may also be what merged
+  "one island" across a face and a blouse in the first place.
+- **A gesture on a narrow screen needs DEPTH as well as reach.** Scaling only
+  the sideways reach pulled both raised hands into the middle of a portrait
+  frame, each as wide as half of it, piled on each other; a little more depth
+  (0.43 → 0.53 m) and centres at half the half-width stand them apart.

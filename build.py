@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "19.1"
+VERSION = "19.2"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -421,6 +421,10 @@ ASSETS = {
     'lay_granny':   ('assets/lay_granny.glb', True, False),
     'lay_scold':    ('assets/lay_scold.glb', True, False),
     'lay_sitwoman': ('assets/lay_sitwoman.glb', True, False),
+    'lay_sitwomanhd': ('assets/lay_sitwomanhd.glb', True, False),   # e3c2 v19.2: the woman beside him at full detail (47k tris, 1024 sheet) — the peak and ending A frame her face
+    'lay_adminteehd': ('assets/lay_adminteehd.glb', True, False),   # e3c2 v19.2: the man kneeling in front, at full detail (44.5k tris) — 1.2 m from the lens all chant
+    'lay_grannyhd': ('assets/lay_grannyhd.glb', True, False),       # e3c2 v19.2: Yai at full detail (17.9k tris) — ending C settles on her face
+    'lay_botakhd': ('assets/lay_botakhd.glb', True, False),         # e3c2 v19.2: the boy beside Yai at full detail (29.9k tris)
     'monkrow':      ('assets/monkrow.glb', True, False),
 }
 
@@ -446,7 +450,7 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'kamaz', 'forest', 'rifle', 'ghostcyclist', 'fboaim',
            'muzzle', 'ammocrate', 'ammomags', 'icontorch', 'zavsoldier',
            'thaikit', 'wessred', 'wessgreen', 'naga', 'monk', 'ajarn', 'temple', 'slipper', 'lersimask', 'altarrow', 'customer', 'buddhahd', 'buddhalod', 'sangkathan', 'sitwomantalk', 'filmoffice', 'filmlaptop', 'actioncam', 'planecabin',
-           'lay_admintee', 'lay_botak', 'lay_granny', 'lay_scold', 'lay_sitwoman', 'monkrow'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone
+           'lay_admintee', 'lay_botak', 'lay_granny', 'lay_scold', 'lay_sitwoman', 'lay_sitwomanhd', 'lay_adminteehd', 'lay_grannyhd', 'lay_botakhd', 'monkrow'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone
 HOSTED_ONLY |= E2_ONLY
 
 # The split packs are hosted-only: there is no __..._B64__ token for them and
