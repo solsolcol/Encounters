@@ -9830,6 +9830,17 @@ let prayerArmL = null;
 function buildPrayerArm() {
   if (prayerArmL || !rightOriented) return prayerArmL;
   const c = cloneSkinned(rightOriented);
+  /* v19.3: the copy is SHOWN, whatever the right hand is doing as it is made.
+     `rightOriented` is `handModel` — the root the torch and rifle swap hides
+     (torchPropSync: hidden while a torch is up or a rifle is out) — and a
+     clone copies `visible`. Since v19.2 the copy is made at the session's
+     first loading curtain rather than at its first clasp, so a session that
+     began in a chapter with the rifle out (episode 2 chapter 4) or the torch
+     up made it HIDDEN, and every clasp after that, in every chapter, showed
+     the right hand alone; a reload made it again, visible (Chad: "When i
+     continued game, the proper praying hands are back again"). Whether the
+     left hand is drawn is `prayerArmL.visible`'s alone. */
+  c.visible = true;
   c.traverse(o => {
     if (o.isMesh) {
       o.frustumCulled = false;
@@ -12478,7 +12489,13 @@ async function skelLab(key, o = {}) {
 window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () => state,   // v8.7: pitch, so a probe can aim the lens at the floor
                  skelLab,                                  // v15.2: the merge, proven
                  kit: KIT, kitDebug, interactNow,          // v7.0: the play kit, by state
-                 prayDebug: () => ({ k: pray.k, to: pray.to, left: !!(prayerArmL && prayerArmL.visible), ax: +armR.position.x.toFixed(4), ay: +armR.position.y.toFixed(4) }),   // v16.5
+                 prayDebug: () => ({ k: pray.k, to: pray.to, left: !!(prayerArmL && prayerArmL.visible), ax: +armR.position.x.toFixed(4), ay: +armR.position.y.toFixed(4),
+                                     /* v19.3: the left hand actually DRAWN — every level from its meshes up to the scene visible, not only its root */
+                                     leftDrawn: (() => { if (!prayerArmL) return false; let all = true, any = false;
+                                       prayerArmL.traverse(o => { if (!o.isMesh) return; any = true; for (let a = o; a; a = a.parent) if (!a.visible) all = false; });
+                                       return any && all; })() }),   // v16.5
+                 /* v19.3: probes rebuild the left hand on demand — to prove it is made shown whatever the right hand's root is at that moment */
+                 prayArmRebuild: () => { if (prayerArmL) { handsRoot.remove(prayerArmL); prayerArmL.traverse(o => { if (o.isMesh) o.material.dispose(); }); prayerArmL = null; } return !!buildPrayerArm(); },
                  camRoll: () => camera.rotation.z,         // v18.0: the body's sway under kit.hands
                  vmCam, handsRoot, rightHand: () => rightHandModel, prayArm: () => prayerArmL,   // v16.5: probes measure the clasp on screen
                  weaponFire, weaponReload, weaponLog, weaponProp: () => weaponProp, weaponMixer: () => weaponMixer,      // v12.0, probes

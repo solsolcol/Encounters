@@ -1157,9 +1157,18 @@
          F+1.30, so the row stands a hand higher. The ledge in front of the
          row carries what the plinth carried: the candles, the incense pot and
          its smoke, the garlands. Nobody walks under a shrine: a blocker fills
-         the space below it. */
+         the space below it.
+         v19.3 (Chad: "the altar of buddha statues need to be moved higher, it
+         should not be below the row of lersi masks"): at F+1.40 the row stood
+         1.22 m tall and its top was 0.29 m under the masks' top (F+2.91), so it
+         read as hanging below them. The shelf is at F+1.70 now: the row's top
+         at F+2.92, level with the masks' and a little over (the ceiling is
+         F+3.0, its centre spire 8 cm under it), its foot 0.40 m above theirs.
+         The ceiling beam at x −0.9 crosses the row's right end, where the
+         statues are 0.84–0.91 m tall — measured off the scan, F+2.62 at most
+         against the beam's F+2.80. */
       const MASK_X0 = sx - 1.903 * MASK_S / 2;                // the masks' left edge
-      const SH_Y = F + 1.40, SH_T = 0.07, PL_D = ALT_D + 0.2; // the shelf's top, its board, its depth (the row and a ledge)
+      const SH_Y = F + 1.70, SH_T = 0.07, PL_D = ALT_D + 0.2; // the shelf's top, its board, its depth (the row and a ledge)
       const ALT_CX = MASK_X0 - 0.40 - ALT_W / 2;              // the row's centre, 0.40 m left of the masks
       const ALT_CZ = Z0 + 0.02 + ALT_D / 2, LEDGE_Z = Z0 + PL_D - 0.09, SH_CZ = Z0 + PL_D / 2;
       function wallScan(key, x, y, z, ry, sc, stand) {
@@ -1182,7 +1191,12 @@
       {
         const SW = ALT_W + 0.16;
         box(SW, SH_T, PL_D, ALT_CX, SH_Y - SH_T / 2, SH_CZ, matRed, roomG, false);             // the board
-        box(SW + 0.04, 0.035, PL_D + 0.02, ALT_CX, SH_Y + 0.0175 - 0.035, SH_CZ + 0.01, matGold, roomG, false);
+        /* v19.3: the gilt edge's top 5 mm UNDER the board's (Chad: "when player
+           is moving near to the altar of buddha statues, there is a flickering
+           glitchy red texture on the shelf"). Both tops were at SH_Y exactly,
+           so the red board and the gold band fought over every pixel of the
+           shelf's top — a flicker that moves as the eye moves. */
+        box(SW + 0.04, 0.035, PL_D + 0.02, ALT_CX, SH_Y - 0.005 - 0.0175, SH_CZ + 0.01, matGold, roomG, false);
         box(SW + 0.04, 0.05, 0.03, ALT_CX, SH_Y - SH_T - 0.02, Z0 + PL_D + 0.005, matGold, roomG, false);   // its gilt lip, hanging under the front
         // three brackets under it, red with a gilt edge, from the wall
         const brk = new THREE.Shape(); brk.moveTo(0, 0); brk.lineTo(0, -0.46); brk.quadraticCurveTo(0.12, -0.12, PL_D - 0.18, 0); brk.closePath();
@@ -1193,9 +1207,11 @@
           const e = new THREE.Mesh(brkG, matGold); e.rotation.y = -Math.PI / 2; e.scale.set(1, 1, 0.3);
           e.position.set(ALT_CX + bx + 0.012, SH_Y - SH_T - 0.004, Z0); roomG.add(e);
         }
-        solids.push(hid(box(SW, 1.4, PL_D, ALT_CX, F + 0.7, SH_CZ, matProxy, roomG, false)));
+        solids.push(hid(box(SW, SH_Y - SH_T - F, PL_D, ALT_CX, F + (SH_Y - SH_T - F) / 2, SH_CZ, matProxy, roomG, false)));
         const stand = [mkBuddha(ALT_CX, SH_Y, ALT_CZ, 0.36, roomG)];
-        wallScan('altarrow', ALT_CX, SH_Y, ALT_CZ, 0, ALT_S, stand);
+        /* v19.3: 3 mm off the board — the scan's base cloth is flat at its
+           y = 0, and sat on SH_Y it was a second coplanar face on the shelf */
+        wallScan('altarrow', ALT_CX, SH_Y + 0.003, ALT_CZ, 0, ALT_S, stand);
       }
       /* v19.1: the old masters' three photographs that hung over the altar
          are gone (Chad: "also remove all the generated monk portraits that
@@ -3459,6 +3475,19 @@
       if (canStand) other.play(C_STAND, 1, 0.25, true);
       else if (other.acts) other.play(C_WALK, 1.05 / C_STRIDE, 0.5);
     }
+    /* v19.3: the stool is his only once the man on it has STOOD UP and walked
+       clear of it. 'seat' is set on the chapter's wall clock (4 s after he
+       starts to rise), but his stand and his walk run on the frame's clamped
+       dt, as his mixer does (the v9.3 law) — so on a phone under twenty frames
+       a second he was still rising from the stool when the zone fired, and
+       sitting put the camera inside him (photographed on the probe box: the
+       back of his head stretched across the frame). */
+    function stoolClear() {
+      const L = otherLeaving;
+      if (!L) return true;
+      if (L.stand >= 0) return false;
+      return Math.hypot(other.group.position.x - CUSH.x, other.group.position.z - CUSH.z) > 1.0;
+    }
     function leaveTick(dt) {
       const L = otherLeaving; if (!L) return;
       const g = other.group;
@@ -3754,7 +3783,7 @@
          (waitSeq), and the sala has the monk's chant at the blessing */
       // the zones: step into the glow and he sits
       if (phase === 'wait' && !seated && Math.hypot(x - WAIT.x, z - WAIT.z) < 0.62) sitMat();
-      if (phase === 'seat' && !seated && Math.hypot(x - zoneSeat.position.x, z - zoneSeat.position.z) < 0.62) sitStool();
+      if (phase === 'seat' && !seated && stoolClear() && Math.hypot(x - zoneSeat.position.x, z - zoneSeat.position.z) < 0.62) sitStool();
     }
     /* THE BEDS, by where he is and what is happening: the dawn everywhere,
        the chant louder toward the ubosot and softer under the sala's roof,

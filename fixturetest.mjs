@@ -291,11 +291,17 @@ K.praySeam = await p.evaluate(async () => {
   const frames = (n) => new Promise(r => { let k = 0; const f = () => (++k >= n ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); });
   await frames(2);
   const rest = E.prayDebug();
+  /* v19.3: the left hand is a copy of the right, and the right's root is the
+     torch and rifle swap's switch: a copy made while a rifle was out came out
+     HIDDEN for the rest of the session. Made here with the right hand's root
+     hidden, it must still be drawn when the clasp comes up. */
+  const root = E.rightHand().parent, was = root.visible;
+  root.visible = false; E.prayArmRebuild(); root.visible = was;
   E.kit.pray(true, { secs: 0.05 });
   const t0 = performance.now();
   while (E.prayDebug().k < 1 && performance.now() - t0 < 30000) await frames(1);
   const up = E.prayDebug();
-  const clasp = up.k === 1 && up.left && Math.abs(up.ay - (-0.235)) < 0.002 && E.kit.praying();
+  const clasp = up.k === 1 && up.left && up.leftDrawn && Math.abs(up.ay - (-0.235)) < 0.002 && E.kit.praying();
   E.kit.pray(false, { secs: 0.05 });
   const t1 = performance.now();
   while ((E.prayDebug().k > 0 || E.prayDebug().left) && performance.now() - t1 < 30000) await frames(1);

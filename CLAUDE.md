@@ -5020,6 +5020,35 @@ What the baseline contains, by release:
   from the lens, apart, either side). No word moved; sheet v92 stands (v44
   the link). Deploy `6acfeb150529317846310b05`, byte-verified (all 216 build
   files). docs/V19.2-PLAN.md is the memory.
+- **v19.3** THE LEFT HAND, THE ALTAR ROW AND THE SHELF — Chad: *"when player
+  is bowing to the monk and receiving the blessing, somehow the hand only
+  shows one hand ... This also affects the praying hands pose in the sakyant
+  room. Why? ... When i continued game, the proper praying hands are back
+  again."* WHY: the left prayer hand is a CLONE of the right hand's root,
+  and that root is the torch and rifle swap's switch (`handModel.visible`,
+  hidden while a rifle is out or a torch is up). v19.2 moved the clone from
+  the first clasp to the session's first loading curtain (to warm its
+  program), so a session that began in episode 2 chapter 4 (the rifle out
+  from its first frame) or with a torch up made the copy HIDDEN — once a
+  session, so every clasp after it, in every chapter, showed the right hand
+  alone; a reload made it again, shown. Measured on the hosted build: e2c4
+  at play, right root hidden, left copy `visible: false`. `buildPrayerArm`
+  now sets the copy shown; `prayDebug().leftDrawn` checks every level from
+  its meshes up, and `fixturetest`'s praySeam rebuilds the copy with the
+  right hand's root hidden (`__enc.prayArmRebuild`) and asserts it is drawn.
+  THE ALTAR ROW in the Sak Yant room is on a shelf at F+1.70 (was 1.40), its
+  top at F+2.92 against the masks' 2.91 (Chad: "should not be below the row
+  of lersi masks"); the ceiling beam over its right end clears the statues
+  there by 18 cm (measured off the scan). THE FLICKER was the shelf's red
+  board and its gilt edge sharing one top face — the gold sits 5 mm under it
+  now, and the altar scan 3 mm off the board. And one more from the probe's
+  photograph: the stool's zone opened on the wall clock while the man on it
+  rises on the frame clock, so under twenty frames a second sitting put the
+  camera inside him — the zone now waits until he has stood and walked
+  1 m clear (`stoolClear`). Chad's two queued batches for episode 3 chapter
+  2 are written down, verbatim and step by step, in docs/V19.4-PLAN.md.
+  No word moved; sheet v92 stands (v44 the link). Deploy
+  `6ad25fc578cc8e3f9af58785`, byte-verified (216 files).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -5555,6 +5584,10 @@ CAPTURES `pageerror` now, which is what caught that and a texture object
 assigned where a texture belonged; and the clearance is ISSUED at the start
 of play rather than inferred from an empty bag, which had left both counters
 dead from the chapter's first frame (docs/LEARNINGS.md).
+
+In flight: **docs/V19.4-PLAN.md** — Chad's two queued batches for episode 3
+chapter 2 (the opening film's five shots, and ten play changes), verbatim and
+step by step with a status column; read it first after any loss of context.
 
 Next up: **episode 3 chapter 3**, The Dance On Buddha Day (v16.0 shipped chapter 1,
 The Luck I Went Looking For — `src/chapters/e3/e3c1.js`; v18.0 chapter 2, The

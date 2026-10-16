@@ -5345,3 +5345,28 @@ cut (sharing its vertices and maps) when it is small.
   the sideways reach pulled both raised hands into the middle of a portrait
   frame, each as wide as half of it, piled on each other; a little more depth
   (0.43 → 0.53 m) and centres at half the half-width stand them apart.
+- **A clone copies every switch on its source, including the ones that belong
+  to someone else (v19.3).** The left prayer hand is a clone of the right
+  hand's root, and that root is the torch and rifle swap's switch
+  (`handModel.visible`, rewritten every frame by `torchPropSync`). Built
+  lazily at the first clasp it was always shown; v19.2 moved the build to the
+  session's first loading curtain to warm its program, and a session whose
+  first curtain came with the rifle out (episode 2 chapter 4) or a torch up
+  made the copy HIDDEN — and the copy is made once a session, so every clasp
+  after that, in every chapter, showed one hand. A reload made it again,
+  shown: "When i continued game, the proper praying hands are back again."
+  Measured: e2c4 at play, right root hidden, left copy `visible: false`. A
+  copy states its own switches the moment it is made (`c.visible = true`);
+  when a build moves EARLIER, ask what state its source is in at the new
+  moment, not only whether the build still works.
+- **Two flat boxes that share a top fight over it.** The Sak Yant room's
+  shelf board and its gilt edge both ended at `SH_Y`, so the red and the gold
+  z-fought over the whole shelf top, a flicker that moved with the eye (Chad:
+  "a flickering glitchy red texture on the shelf"). A trim is set 5 mm under
+  the face it trims; a scan stood ON a board is lifted 3 mm off it.
+- **A phase on the wall clock waits for a body on the frame clock.** e3c1's
+  'seat' opened 4 s after the man on the stool began to rise (dayClock, wall
+  time), while his stand and walk run on the clamped frame dt with his mixer
+  (the v9.3 law); under twenty frames a second he was still rising when the
+  zone fired, and sitting put the camera inside him. The zone now asks
+  whether he has actually stood and walked clear (`stoolClear`).
