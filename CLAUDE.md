@@ -5162,7 +5162,7 @@ What the baseline contains, by release:
   where one is a person the scenes direct). 0 same-model pairs within 1.6 m
   on desktop (23 places) and phone (17), down from 5; the repeats four models
   cannot avoid sit 2.0 m apart or more; `stage.seatStats()` reports it.
-  chaptertest green; leak, walk, cine run after the deploy. No word moved; sheet v93 stands (v44 the
+  chapter, leak, walk, cine green (4/4, after the deploy). No word moved; sheet v93 stands (v44 the
   link). Deploy `6ad282b7e556b6636da1bb5f`, byte-verified (216 files).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
