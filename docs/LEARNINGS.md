@@ -5382,3 +5382,15 @@ cut (sharing its vertices and maps) when it is small.
   of an hour. Jump straight to the state (`stage.applyPhase`, a teleport, a
   direct call), take the two photographs that matter, and stop; the e3c2 play
   batch was checked end to end that way in four and a half minutes.
+- **A comment appended to a line can swallow the line's own code (v19.5).** An
+  edit that added `// (why)` after the first statement on a line that held two
+  — `lap.rotation.y = …; F.add(lap);` — turned the second into comment text,
+  and the film's legs and phone were never in the scene. Every number said the
+  group was placed right; the photograph only showed them missing. Projecting
+  the meshes found it in one probe (no capsules in the scene at all). When an
+  edit puts a comment on a line, the comment goes LAST, after every statement.
+- **A phone's frame cannot see a symmetric approach's flanks.** A walk up the
+  axis to a door at 9 m shows a portrait phone ±3 m — the flight's nagas at
+  ±2.8 m left the frame by the stair's foot. What the eye would look at, the
+  shot must turn to (v19.5: a glance at the naga as he nears it), rather than
+  widening the lens or hoping the desktop frame is the one that matters.

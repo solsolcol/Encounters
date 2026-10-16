@@ -5072,6 +5072,47 @@ What the baseline contains, by release:
   to each state, four and a half minutes) green. Sheet v93 exported
   (masters/v19.4/masterz-text-v93.xlsx; v44 stays the link). Deploy
   `6ad265be45cba8a3ba613f8b`, byte-verified (216 files).
+- **v19.5** THE FILM, REBUILT — Chad's five notes on episode 3 chapter 2's
+  opening film (docs/V19.4-PLAN.md, Batch 1, verbatim; the read-only research
+  behind it is docs/research/V19.5-FILM-RESEARCH.md). THE NEEDLE is a macro:
+  0.6 m of tiled skin at 16° → 13.5° from 0.16 m (no body, no edge at any
+  aspect), and the yant WRITTEN — each of three live letters its own canvas,
+  the Khom path strings flattened into strokes with running length
+  (`flattenKhom`, `strokeTo`), six pokes a letter on YANT_TAPS, the steel point
+  riding the end of the ink and lifting between pokes, the finished columns
+  from one atlas in one mesh; a pure function of the film clock (`yantAt`, a
+  track — seek-, skip- and replay-safe), the lens handed back at 10.0 by a
+  second track. THE BUSINESS is chapter 1's table by its own numbers (oak, the
+  lamp's pool, 20 cameras, the laptop's orders climbing — `chartAt` — and a
+  stack of their boxes): no office, no staff, no van (`officeamb2`, `slidevan`
+  retired, files and rows); the sounds are chapter 1's. MA'S FLAT is chapter
+  4's living room by ITS code and numbers — shell, window, kitchen stub, the
+  block and its grass, Chad's altar re-seated on the cabinet by measurement in
+  the group's own frame — with its ceiling light and red altar bulb inside the
+  pocket (on only in the film, warmed as one group), ch4's daylight swapped in
+  by a STEP at 20.5 and back at 35.6, the hands on ch4's rig; he sits on the
+  floor on chapter 5's altar axis, his legs and the phone with the chant ahead
+  of the eye. Photographed side by side with chapter 4 from the same spot: the
+  same corner. THE TEMPLE FLOOR is the chapter's own hall, emptied for the shot
+  (`stage.solo`, a track that answers the clock; `reset()` refills it). THE
+  WALK IN is him alone — one walk up the path, the flight and the porch, a
+  glance at the naga at the flight's foot (a phone's narrow frame never sees
+  the flight's flanks otherwise) — and the EXTERIOR is raised to chapter 1's
+  recipes: three stepped steep roofs (slabs with tiles, soffits and gilt
+  edges, the lower tier solved onto the wall top, the upper on a white band,
+  high enough to stack over the porch's from the path), carved gables with
+  naga bargeboards, blades, rearing heads and chofa, pillars on plinths with
+  gold bands and lotus capitals, a lacquered beam and coffered porch ceiling,
+  lanterns, a marigold swag, lotus bowls and urns, the side windows framed and
+  crowned outside, eave bells, cheek walls with CHAD'S NAGA (×1.6 — the shear
+  baked for chapter 1's flight is within 3 % of this one's — ungreen'd), a
+  slab path with kerbs, lawns, the kit's hedge, the eight bai sema, lamps
+  (painted light), a chedi; the nagas are drawn on a phone only in a cutscene.
+  One trap: a targeted edit that appended a comment to a line pushed the
+  line's own `F.add(lap)` into the comment, and the legs never existed — found
+  by projecting the meshes, not by the photo (LEARNINGS). No word moved; sheet
+  v93 stands (v44 the link). Deploy `6ad275c2e28a6304c8375c42`, byte-verified
+  (216 files).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -5608,9 +5649,11 @@ assigned where a texture belonged; and the clearance is ISSUED at the start
 of play rather than inferred from an empty bag, which had left both counters
 dead from the chapter's first frame (docs/LEARNINGS.md).
 
-In flight: **docs/V19.4-PLAN.md** — Chad's two queued batches for episode 3
-chapter 2 (the opening film's five shots, and ten play changes), verbatim and
-step by step with a status column; read it first after any loss of context.
+In flight: **docs/V19.4-PLAN.md** — Chad's three queued batches for episode 3
+chapter 2, verbatim and step by step with a status column; read it first after
+any loss of context. The play batch shipped as v19.4 and the film as v19.5;
+Batch 3, THE CONGREGATION (his four white-outfit rigged characters and two
+Mixamo takes from his Drive folder replacing every `lay_*` sitter), is next.
 
 Next up: **episode 3 chapter 3**, The Dance On Buddha Day (v16.0 shipped chapter 1,
 The Luck I Went Looking For — `src/chapters/e3/e3c1.js`; v18.0 chapter 2, The

@@ -9699,9 +9699,9 @@ const STING_SAMPLE = {
   lw2look: ['lw2look', 1], lw2pull: ['lw2pull', 1], lw2what: ['lw2what', 1], yai2dance: ['yai2dance', 1],
   pageturn: ['pageturn', 1], matkneel: ['matkneel', 1], handsrise: ['handsrise', 1],
   handslip: ['handslip', 1], whispers: ['whispers', 1], chantswell: ['chantswell', 1], chantstop: ['chantstop', 1],
-  templedoor: ['templedoor', 1], slidevan: ['slidevan', 1],
+  templedoor: ['templedoor', 1],
   e3vesper: ['e3vesper', 1], hallamb: ['hallamb', 1], templedusk: ['templedusk', 1],
-  officeamb2: ['officeamb2', 1], flatnight: ['flatnight', 1],
+  flatnight: ['flatnight', 1],
   e3film2: ['e3film2', 1], e3close2: ['e3close2', 1], e3pull: ['e3pull', 1]
 };
 /* Which kinds the synth below can actually fake. Everything else in
