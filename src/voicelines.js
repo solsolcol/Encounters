@@ -937,8 +937,8 @@
       text: "I told myself I could still control it. Tonight, I would just chant. Like everyone else.", secs: 6.77 },
     { id: "z2arrive", who: "jamesAdult", ch: "e3c2", where: "Seconds after play begins, inside the doors",
       text: "[quietly] The evening chant had already started.", secs: 2.27 },
-    { id: "z2leaf", who: "jamesAdult", ch: "e3c2", where: "Pressing gold leaf on the back of the small Buddha",
-      text: "[softly] Gold on the back of the Buddha. Where nobody sees it.", secs: 4.05 },
+    { id: "z2join", who: "jamesAdult", ch: "e3c2", where: "Just after he takes a chant book (v19.4: the gold-leaf beat is gone)",
+      text: "[hurried, quietly] Better quickly join the chanting now... at the front.", secs: 3.63 },
     { id: "z2kneel", who: "jamesAdult", ch: "e3c2", where: "Kneeling in the rows, after the three bows",
       text: "[nervous] Just chant. Like everyone else. Nobody is looking at you.", secs: 4.6 },
     { id: "z2slip1", who: "jamesAdult", ch: "e3c2", where: "The fight: the first time his hands get away from him",
@@ -970,7 +970,11 @@
     { id: "lw2look", who: "laywoman", ch: "e3c2", where: "Scene A: the woman beside him, whispering",
       text: "[whispers, concerned] Nong... you okay?", secs: 2.72 },
     { id: "lw2pull", who: "yai", ch: "e3c2", where: "Scene C: Yai pulls her grandson close",
-      text: "[whispers, frightened] Come, come. Sit with Yai. Don't look.", secs: 2.59 }
+      text: "[whispers, frightened] Come, come. Sit with Yai. Don't look.", secs: 2.59 },
+    { id: "lw2what", who: "laywoman", ch: "e3c2", where: "Play: the woman beside him, the first time his hands get away (v19.4)",
+      text: "[whispers, puzzled] What is he doing?", secs: 2.19 },
+    { id: "yai2dance", who: "yai", ch: "e3c2", where: "Play: Yai in the row in front, as his hands rise at the peak (v19.4)",
+      text: "[whispers, surprised] Is he dancing?", secs: 1.33 }
   ];
 
   // What a chapter key means on the sheet.

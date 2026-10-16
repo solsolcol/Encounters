@@ -52,7 +52,7 @@
     title: 'The Hands That Moved',
     cardLabel: 'Chapter 2',
     cardTitle: 'The Hands That Moved',
-    brief: 'A temple hall in Thailand at dusk, the evening chant already begun. Take a chant book, press gold leaf onto the small Buddha, find your place in the rows, and kneel with everyone else.',
+    brief: 'A temple hall in Thailand at dusk, the evening chant already begun. Take a chant book, join the chanting at the front, and kneel with everyone else.',
     prompt: 'The chant is at its height. Your hands have moved on their own, and the people around you have seen it.',   // v18.4: true whether he held them or lost them
     choices: [
       { k: 'A', text: 'Press your hands together hard and force it to stop.',
@@ -135,19 +135,17 @@
       actLine: 'Press E to choose what you do',
       actLineTouch: 'Tap to choose what you do',
       objBook: 'Take a chant book from the shelf',
-      objLeaf: 'Press gold leaf onto the small Buddha',
       objPlace: 'Find the free mat at the end of the third row from the front',
       objChant: 'Chant with the hall',
       objHands: 'Tap fast to keep your hands down',
       hotBook: 'Take a chant book',
-      hotLeaf: 'Press gold leaf',
+      hotPlace: 'Kneel on your mat',
       evHands: 'Keep your hands still',
-      evHandsBrief: 'Your hands are starting to rise on their own. TAP as fast as you can: every tap pulls them back down, and the chant makes it harder. Slow down for even one second and they are no longer yours.',
-      presence: 'People are looking at you.',
+      evHandsBrief: 'Your hands are starting to rise on their own. The bar drains fast, and every tap fills it a little: TAP six or seven times a second to keep it up. Let it empty and they are no longer yours.',
+      presence: 'The people around you have noticed.',
       presenceWarn: 'Sanity drops while they stare.',
       /* v18.5: the notes on the card are the chapter's words, so the sheet carries them */
       noteBook: 'Took a chant book, like everyone else.',
-      noteLeaf: 'Pressed gold leaf on the back of the Buddha, where nobody sees it.',
       noteHeld: 'Kept your hands down through the chant.',
       noteLost: 'Lost your hands to the chant, in front of everyone.'
     },
@@ -156,7 +154,7 @@
 
   /* the measured length of every line said OUTSIDE a cutscene
      (masters/v18.0: the installed files, ffprobe) */
-  const SECS = { z2arrive: 2.27, z2leaf: 4.05, z2kneel: 4.60, z2slip1: 1.88, z2slip2: 1.80, z2peak: 2.19,
+  const SECS = { z2arrive: 2.27, z2join: 3.63, lw2what: 2.19, yai2dance: 1.33, z2kneel: 4.60, z2slip1: 1.88, z2slip2: 1.80, z2peak: 2.19,
                  lw2look: 2.72, lw2pull: 2.59 };
 
   const hash = (i, s) => { const x = Math.sin(i * 127.1 + s * 311.7) * 43758.5453; return x - Math.floor(x); };
@@ -691,8 +689,6 @@
                            const f = new THREE.Mesh(new THREE.ConeGeometry(0.016, 0.05, 6), matFlame); f.position.set(-0.45, 1.1, 0.15); leafT.add(f); return f; })();
     { const db = box(0.3, 0.42, 0.3, 0.8, 0.21, 0.5, matCol, leafT); solids.push(db);
       box(0.18, 0.01, 0.03, 0.8, 0.425, 0.5, matDark, leafT, false); }
-    const flyLeaf = new THREE.Mesh(new THREE.PlaneGeometry(0.04, 0.04), patchMat);
-    flyLeaf.visible = false; world.add(flyLeaf);
 
     // the candle stand behind the rows: a long low gilt rack of lit candles
     // (his shadow, and the crowned one, fall forward from it)
@@ -700,23 +696,17 @@
        5.4 × 0.75 m red box was the first thing play showed: a wall across a
        phone's whole frame at chest height, the runner running into its face.
        The collider stays one piece (nothing about where he can walk moves). */
-    solids.push(hid(box(CANDLES.x1 - CANDLES.x0, 0.75, 0.4, 0, 0.375, CANDLES.z, matRedD)));
+    /* v19.4 (Chad: "Allow the player to walk in by the middle too, instead of
+       blocking the access"): a collider per rack, so the runner between them
+       is open — the one-piece collider and v19.2's rope across the gap made
+       the west aisle the only way to the rows */
     for (const [xa, xb] of [[CANDLES.x0, -0.78], [0.78, CANDLES.x1]]) {
       const w = xb - xa, cx = (xa + xb) / 2;
+      solids.push(hid(box(w, 0.75, 0.4, cx, 0.375, CANDLES.z, matRedD)));
       box(w + 0.06, 0.04, 0.46, cx, 0.77, CANDLES.z, matGold, world, false);          // the tray
       box(w, 0.03, 0.40, cx, 0.22, CANDLES.z, matRedD, world, false);                 // a low shelf
       for (const lx of [xa + 0.04, xb - 0.04]) for (const lz of [-0.18, 0.18]) box(0.03, 0.75, 0.03, lx, 0.375, CANDLES.z + lz, matGold, world, false);
     }
-    /* v19.2: and a gilt rope across the runner between them, on two brass
-       posts — the collider is one piece, so the open gap was an invisible
-       wall to a player walking the runner; now what stops him is in view */
-    for (const sx of [-1, 1]) {
-      cyl(0.11, 0.13, 0.03, sx * 0.66, 0.015, CANDLES.z, matGold, 12);
-      cyl(0.022, 0.026, 0.84, sx * 0.66, 0.43, CANDLES.z, matGold, 8);
-      const ball = new THREE.Mesh(new THREE.SphereGeometry(0.045, 12, 8), matGold); ball.position.set(sx * 0.66, 0.87, CANDLES.z); world.add(ball);
-    }
-    { const pts = []; for (let i = 0; i <= 16; i++) { const u = i / 16; pts.push(new THREE.Vector3(-0.66 + 1.32 * u, 0.82 - 0.16 * Math.sin(Math.PI * u), CANDLES.z)); }
-      world.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 24, 0.018, 6, false), new THREE.MeshStandardMaterial({ color: 0x9e1b14, roughness: 0.75 }))); }
     /* v19.2: the rack's candles and flames, the mats, the stands and the books
        on them are INSTANCED, one draw each — they were ~200 meshes, each its
        own geometry, the heaviest thing in a phone's view down the nave */
@@ -791,7 +781,12 @@
     handBook.visible = false;
 
     // the glowing place to kneel (chapter 1's zone, in gold)
-    const zone = mkZone(PLACE.x, PLACE.z);   // v19.2: on the point the kneel tests (it was drawn 5 cm off it)
+    const zone = mkZone(PLACE.x, PLACE.z);
+    /* v19.4 (Chad: "make it more obvious where the player had to go to pick up
+       the chant book. Maybe add the circular ground glowing effect"): the mat's
+       glow, on the floor in front of the shelf; stepping into it takes a book */
+    const BOOKZ = { x: SHELF.x, z: SHELF.z - 1.17 };
+    const bookZone = mkZone(BOOKZ.x, BOOKZ.z);   // v19.2: on the point the kneel tests (it was drawn 5 cm off it)
 
     /* -------------------------------------- outside: the porch and the dusk
        The film's last shot and scene B look at the hall from its steps, so
@@ -1581,30 +1576,12 @@
         figAt = t; figureTick.lastK = k;
         drawFigure(shadowCv.getContext('2d'), k, t, false); shadowTex.needsUpdate = true;
       }
-      // the glimpse: only at the edge of the frame, gone when looked at
-      let want = 0;
-      if (on) {
-        const hf = Math.atan(Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2) * camera.aspect);
-        /* v19.2: placed for THIS screen — right of his line to the Buddha by
-           0.68 of the frame's half-width, the middle of the band the fade
-           below shows, 2.0 m out and lifted over the heads of the row ahead.
-           v18.5's spot was 0.55 rad out on every screen: past a phone's edge
-           (half-width 0.32), and on a desktop half behind the west column. */
-        if (figureTick.hf !== hf) {
-          figureTick.hf = hf;
-          const dx = 0 - PLACE.x, dz = PED.z - PLACE.z, L = Math.hypot(dx, dz), fx = dx / L, fz = dz / L;
-          const ca = Math.cos(hf * 0.68), sa = Math.sin(hf * 0.68);
-          // right of a heading (fx, fz) is (−fz, fx)
-          glimpse.position.set(PLACE.x + 2.0 * (fx * ca - fz * sa), 1.35, PLACE.z + 2.0 * (fz * ca + fx * sa));
-        }
-        camera.getWorldDirection(_v);
-        _v2.copy(glimpse.position).sub(camera.getWorldPosition(_v3)).normalize();
-        const ang = Math.acos(THREE.MathUtils.clamp(_v.dot(_v2), -1, 1));
-        /* v18.5: the edge of THIS screen's frame — fixed angles (0.42–1.2 rad)
-           were past the edge of a phone (0.32 rad half-width) and, with the
-           glimpse 141° behind him, it could never be seen on any device */
-        want = k * THREE.MathUtils.smoothstep(ang, hf * 0.55, hf * 0.8) * (1 - THREE.MathUtils.smoothstep(ang, hf * 1.0, hf * 1.25));
-      }
+      /* v19.4: no glimpse (Chad: "When the hands are moving gracefully, there is
+         like a glowing figure on the right moving its hands too. It looks bad,
+         and i will rather you remove that glowing figure"). The gold figure at
+         the frame's edge is never wanted now; the dark shadow on the mats
+         stays. */
+      const want = 0;
       glimpse.material.opacity += (want * 0.55 - glimpse.material.opacity) * (1 - Math.exp(-wdt * (want > glimpse.material.opacity ? 1.2 : 6)));
       glimpse.visible = glimpse.material.opacity > 0.01;
       if (glimpse.visible && t - (figureTick.g || 0) > 0.09) {
@@ -1624,7 +1601,7 @@
     function runTodo() { while (todo.length && todo[0].at <= dayClock.t) todo.shift().fn(); }
     function dropTodo() { todo.length = 0; }
     const heard = new Set();
-    let seated = null, turning = null, bowing = null, fight = null, leafing = null, peakT = 0;
+    let seated = null, turning = null, bowing = null, fight = null, peakT = 0;
     let heldWas = false;      // v18.4: how the fight went, so a resume at the peak restages THAT peak
 
     const speak = { until: 0, pending: null };
@@ -1650,16 +1627,16 @@
     function runQueue() {
       if (!lineQ.length || speak.pending || dayClock.t < speak.until) return;
       const q = lineQ.shift();
-      sayLine(q.name, q.vol, q.onStart, q.name.startsWith('lw2') ? panAt(NEIGH.x, NEIGH.z) : 0);
+      sayLine(q.name, q.vol, q.onStart, q.name.startsWith('lw2') ? panAt(NEIGH.x, NEIGH.z) : q.name.startsWith('yai2') ? panAt(YAI.x, YAI.z) : 0);
     }
     function panAt(x, z) {
       const dx = x - yaw.position.x, dz = z - yaw.position.z;
       const a = Math.atan2(dx, -dz) + yaw.rotation.y;
       return THREE.MathUtils.clamp(Math.sin(a) * 0.75, -0.75, 0.75);
     }
-    if (warmSounds) warmSounds(['z2leaf', 'z2kneel', 'z2slip1', 'z2slip2', 'z2peak', 'lw2look', 'lw2pull',
-                                'pageturn', 'goldleaf', 'matkneel', 'handsrise', 'handslip', 'whispers',
-                                'chantswell', 'chantstop', 'templedoor', 'coins', 'e3bell', 'e3gong', 'yantwarm', 'barestep',
+    if (warmSounds) warmSounds(['z2join', 'lw2what', 'yai2dance', 'z2kneel', 'z2slip1', 'z2slip2', 'z2peak', 'lw2look', 'lw2pull',
+                                'pageturn', 'matkneel', 'handsrise', 'handslip', 'whispers',
+                                'chantswell', 'chantstop', 'templedoor', 'e3bell', 'e3gong', 'yantwarm', 'barestep',
                                 /* fired from helpers the engine's source scan cannot read (v10.2) */
                                 'z2close', 'z2next', 'e3close2', 'step']);
 
@@ -1674,7 +1651,7 @@
       if (!kit) return;
       const W = DATA.words;
       // (v19.2: none in the fight — its panel says it, and three copies of one order took 41% of a phone)
-      const obj = { book: W.objBook, leaf: W.objLeaf, place: W.objPlace, chant: W.objChant }[p];
+      const obj = { book: W.objBook, place: W.objPlace, chant: W.objChant }[p];
       /* v18.4: `opts.complete === false` — the chant is not COMPLETED by
          the hands rising out of it, and a LOST fight is not one either (the
          v8.7 lie: OBJECTIVE COMPLETE, a chime and a buzz on the frame his
@@ -1682,17 +1659,17 @@
       kit.objective(obj || null, opts);
       // (v19.2: on the hotspots' own anchors — two markers in two places for one thing)
       const wp = { book: { x: SHELF.x, y: 1.5, z: SHELF.z - 0.32 },
-                   leaf: { x: LEAF.x, y: 1.35, z: LEAF.z },
                    place: { x: PLACE.x, y: 0.9, z: PLACE.z } }[p];
       kit.waypoint(wp || null);
     }
     function syncProps() {
       const i = pIdx(phase);
-      handBook.visible = i >= 1 && i <= 2 && !seated && getState() === 'play';
+      handBook.visible = false;   // v19.4 (Chad: "there is no need to have the chant book floating in his hand")
       myBook.visible = !!seated || i >= 3;
       zone.visible = phase === 'place' && !seated;
       for (const b of books) b.visible = i < 1;
-      for (let k = 0; k < myLeaf.length; k++) myLeaf[k].visible = i >= 2 || (leafing && k < (leafing.n || 0));
+      for (let k = 0; k < myLeaf.length; k++) myLeaf[k].visible = false;   // v19.4: no gold leaf beat
+      bookZone.visible = phase === 'book';
     }
 
     /* 1 · THE BOOK */
@@ -1700,38 +1677,15 @@
       if (phase !== 'book') return false;
       if (worldSfx) worldSfx('pageturn', 0.8);
       if (kit) kit.conduct({ note: DATA.words.noteBook, s: 0, a: 2 });
-      setPhase('leaf');
+      /* v19.4 (Chad: "There is no need for the whole paste gold leaf on the
+         buddha play sequence. After player takes the chanting book, just have
+         the player join the chanting people at the front ... have a voiceline
+         that says 'better quickly join the chanting now...at the front...'"):
+         the book leads straight to the mat. The 'leaf' phase stays in PHASES
+         only so an old save in it lands on the mat (applyPhase). */
+      setPhase('place');
+      after(0.6, () => queueLine('z2join'));
       return true;
-    }
-    /* 2 · THE GOLD LEAF — on the image's BACK, where nobody sees it */
-    function pressLeaf() {
-      if (phase !== 'leaf' || leafing) return false;
-      if (worldSfx) { worldSfx('coins', 0.55); after(0.8, () => worldSfx('goldleaf', 0.85)); }
-      leafing = { t0: dayClock.t, n: 0 };
-      if (kit) kit.waypoint(null);   // v19.2: the marker goes with the press (it sat on the statue's chest through the 4.6 s the leaf takes)
-      after(1.2, () => queueLine('z2leaf'));
-      after(4.6, () => {
-        leafing = null;
-        if (kit) kit.conduct({ note: DATA.words.noteLeaf, s: 2, a: 3 });
-        setPhase('place');
-      });
-      return true;
-    }
-    function leafTick() {
-      if (!leafing) { flyLeaf.visible = false; return; }
-      const t = dayClock.t - leafing.t0;
-      // a square of leaf lifts from the tray and settles on his back, three times
-      const k = (t - 0.6) / 1.1;
-      if (k > 0 && k < 3) {
-        const i = Math.floor(k), u = k - i;
-        const from = leafT.localToWorld(_v.set(0.32 + i * 0.08, 0.95, 0.07));
-        const to = myLeaf[i].getWorldPosition(_v2);
-        flyLeaf.visible = u < 0.95;
-        flyLeaf.position.lerpVectors(from, to, smooth(u)); flyLeaf.position.y += Math.sin(u * Math.PI) * 0.12;
-        flyLeaf.rotation.set(u * 3, u * 2, 0);
-        if (u > 0.9) leafing.n = Math.max(leafing.n, i + 1);
-      } else flyLeaf.visible = false;
-      syncProps();
     }
     /* 3 · THE MAT: step into the glow and he kneels, the book on his stand,
        hands together, facing the Buddha */
@@ -1823,18 +1777,24 @@
        follow the event's danger (onRise); the first time they get away he
        says so; losing turns the faces and costs sanity. */
     function yantOn() { return kit && ['yantgaoyord', 'yanthahtaew', 'yantsroi'].some(id => kit.equipped(id)); }
+    /* v19.4 (Chad: "When the hands are moving, there is no need to have other
+       people turn their heads to look at you. Just keep them as they were. But
+       have some voicelines from the crowd saying, 'what is he doing?' and 'is
+       he dancing?'"): in PLAY nobody turns; the woman beside him and Yai in
+       front whisper instead, each once a run, on the line queue */
+    function crowdSays(name) { if (heard.has(name)) return; heard.add(name); queueLine(name, null, 0.9); }
     function beginFight() {
       if (phase !== 'chant' || fight) return;
       setPhase('fight', { complete: false });
       fight = { slips: 0, k: 0 };
       if (!kit) return;
-      /* (Chad, 3 Oct) a RAPID-TAP fight: every tap pulls the hands back down;
-         the rate it takes climbs from 5 to 6.5 taps a second (v18.3: really
-         measured now — see evFrame) over twelve
-         seconds of chant; one second too slow and they are gone. */
+      /* v19.4 (Chad, 16 Oct): a DRAINING BAR — full when it appears, empty in
+         2.2 s untapped, every tap a small refill; tapping 6 a second holds it
+         level at the start and 6.5 by the end of the twelve seconds of chant;
+         empty, and the hands are gone (evFrame's resist) */
       kit.event({
         kind: 'resist', label: DATA.words.evHands, brief: DATA.words.evHandsBrief, demo: 'rapid',
-        secs: 12, rate0: 5.0, rate1: 6.5, window: 0.75, grace: 1.0, lead: 1.0,
+        secs: 12, rate0: 6.0, rate1: 6.5, empty: 2.2, grace: 2.2, lead: 0.4,
         award: { stat: 'sanity', lo: -10, hi: 6 },
         onBegin: () => {
           /* v19.2: FRAMED — the overlay takes every touch for 12 s, so the
@@ -1861,7 +1821,7 @@
             /* v18.5: "No... not now." the first time they get away from him —
                since v18.1 the fight had no first slip, so this take was said on
                the LOSS and its partner, "Stop... stop.", was never heard */
-            if (!fight.said) { fight.said = true; queueLine('z2slip1'); }
+            if (!fight.said) { fight.said = true; queueLine('z2slip1'); crowdSays('lw2what'); }
           }
           // (v18.5: once a fight — re-armed below 0.05 it restarted every second or two for a player wavering at the line)
           void danger;
@@ -1873,8 +1833,6 @@
           if (worldSfx) worldSfx('handslip', 1.0);
           if (kit.haptic) kit.haptic([60, 30, 90, 30, 120]);
           kit.flash({ color: 'rgba(255,120,80,0.28)', secs: 0.6 });
-          if (neighbour) neighbour.lookTo = 1;
-          if (frontMan) frontMan.lookTo = 1;
           queueLine('z2slip2');
           if (worldSfx) worldSfx('whispers', 0.5, 1, panAt(NEIGH.x, NEIGH.z));
         }
@@ -1909,7 +1867,7 @@
            a tremble in the clasp, with no rising sting — 0.32 and the sting
            on the frame he WON read as having slipped) */
         if (kit) kit.hands(0.10, { secs: 0.6 });
-        after(1.0, () => { if (neighbour) neighbour.lookTo = 1; if (kit) kit.presence(0.25); turnTo(toNeigh, 1.1, { ...LOOK, pitch: -0.12 }); });
+        after(1.0, () => { if (kit) kit.presence(0.25); turnTo(toNeigh, 1.1, { ...LOOK, pitch: -0.12 }); crowdSays('lw2what'); });
         after(1.6, () => queueLine('z2peak'));
         after(3.3, () => { if (!turning) turnTo(faceBuddha(), 1.1, { ...LOOK, pitch: -0.10 }); });   // v19.2: −0.10 — the whole statue stands on a phone's decision panel (at 0 its lap went under it)
         after(4.6, () => { setPhase('decide'); if (getState() === 'play') startDecision(); });
@@ -1919,9 +1877,8 @@
       if (kit) kit.hands(1, { secs: 2.4 });
       if (worldSfx) { worldSfx('chantswell', 0.9, 0.96, 0); worldSfx('handsrise', 0.9, 0.85, 0); }
       if (yantOn() && kit) kit.flash({ color: 'rgba(255,196,96,0.28)', secs: 1.4 });
-      after(0.8, () => { if (neighbour) neighbour.lookTo = 1; if (kit) kit.presence(0.55); turnTo(toNeigh, 1.1, { ...LOOK, pitch: -0.12 }); });
-      after(1.4, () => { if (yai) yai.lookTo = 1; if (worldSfx) worldSfx('whispers', 0.6, 1, panAt(YAI.x, YAI.z)); });
-      after(1.9, () => { if (frontMan) frontMan.lookTo = 1; if (kid) kid.lookTo = 1; });
+      after(0.8, () => { if (kit) kit.presence(0.55); turnTo(toNeigh, 1.1, { ...LOOK, pitch: -0.12 }); crowdSays('lw2what'); });
+      after(1.4, () => { if (worldSfx) worldSfx('whispers', 0.6, 1, panAt(YAI.x, YAI.z)); crowdSays('yai2dance'); });
       after(2.0, () => queueLine('z2peak'));
       after(2.6, () => { if (!turning) turnTo(toYai, 1.0, { ...LOOK, pitch: -0.10 }); });
       after(4.0, () => { if (!turning) turnTo(faceBuddha(), 1.0, { ...LOOK, pitch: -0.10 }); });
@@ -1937,11 +1894,13 @@
          phone's only press (the badge) went out at arm's length (v7.5) */
       { id: 'book', pos: { x: SHELF.x, y: 1.5, z: SHELF.z - 0.32 }, radius: 2.4, prompt: DATA.words.hotBook, markY: 0,   // (v19.2: the mark at the anchor — 0.55 over it climbed into the stat bars)
         enabled: () => phase === 'book', onInteract() { return takeBook(); } },
-      /* v19.2: on the statue itself (v7.5's law) — 0.6 m out it sat 0.135 m
-         into the hall from the table's padded edge, under the eye of a
-         player standing at the table, and the phone's only press went out */
-      { id: 'leaf', pos: { x: LEAF.x, y: 1.35, z: LEAF.z }, radius: 2.6, prompt: DATA.words.hotLeaf, markY: 0.2,
-        enabled: () => phase === 'leaf' && !leafing, onInteract() { return pressLeaf(); } }
+      /* v19.4 (Chad: "Make it more obvious where the player has to go to sit
+         down ... Have an exclamation mark effect floating above the glowing
+         circle zone"): the engine's own jade "!" over the mat, seen down the
+         hall; the anchor is the mat itself at eye height, so the mark floats
+         over its glow, and a press from the aisle beside it kneels him */
+      { id: 'place', pos: { x: PLACE.x, y: 1.0, z: PLACE.z }, radius: 1.4, prompt: DATA.words.hotPlace, markY: 0.45,
+        enabled: () => phase === 'place' && !seated, onInteract() { kneel(); return true; } }
     ];
 
     /* ------------------------------------------------------------- the pile
@@ -1971,6 +1930,7 @@
     function watchTick() {
       const x = yaw.position.x, z = yaw.position.z;
       if (phase === 'place' && !seated && Math.hypot(x - PLACE.x, z - PLACE.z) < 0.55) kneel();
+      if (phase === 'book' && Math.hypot(x - BOOKZ.x, z - BOOKZ.z) < 0.55) takeBook();   // v19.4
     }
     /* THE BEDS: the room tone always; the chant louder in the rows than by
        the door, and FULL through the fight and the peak; the dusk outside
@@ -2020,7 +1980,7 @@
         a.array[i * 3 + 2] = ALT.z + 0.27 + Math.cos(k * 7 + i) * 0.05 * (1 + k * 2);
       }
       a.needsUpdate = true;
-      zoneTick(zone, t);
+      zoneTick(zone, t); zoneTick(bookZone, t);
     }
     /* v19.2: A BREATH — every sitter's chest rises and settles a little, each
        on its own phase (the hall was thirty statues through half a minute of
@@ -2054,7 +2014,7 @@
       mixBeds(wdt);
       peopleTick(wdt);
       figureTick(wdt, t);
-      handBook.visible = getState() === 'play' && pIdx(phase) >= 1 && pIdx(phase) <= 2 && !seated;
+      handBook.visible = false;   // v19.4: never carried (syncProps)
       /* v19.2: kept INSIDE a portrait phone's frame (e3c1's tray law, v16.x):
          at a fixed −0.16 the book sat 23° left of the lens, and a phone's
          half-width is 18.6°, so on the only device Chad plays on the book in
@@ -2080,7 +2040,7 @@
         applyPhase(p0);
       }
       runTodo(); runSpeak(); runQueue();
-      watchTick(); turnTick(wdt); bowTickAll(); leafTick();
+      watchTick(); turnTick(wdt); bowTickAll();
     }
     function updatePile() {}
     function updateFire() {}
@@ -2094,7 +2054,8 @@
       const tag = String(p || '').split(':');
       p = tag[0]; heldWas = tag[1] === 'held';
       if (!PHASES.includes(p)) p = 'book';
-      seated = null; turning = null; bowing = null; fight = null; leafing = null;
+      seated = null; turning = null; bowing = null; fight = null;
+      if (p === 'leaf') p = 'place';   // v19.4: the gold-leaf beat is gone; a save in it goes on to the mat
       for (const r of [neighbour, yai, kid, frontMan]) if (r) { r.lookTo = 0; }
       if (kit) { kit.pose('standing', { secs: 0.05 }); kit.root(false); if (kit.pray) kit.pray(false, { secs: 0 }); if (kit.hands) kit.hands(0, { secs: 0 }); kit.presence(0); }
       if (p === 'chant' || p === 'fight') {
@@ -2118,7 +2079,6 @@
           if (kit.hands) kit.hands(heldWas ? 0.10 : 1, { secs: 0.6 });   // v19.2: as the live held peak (0.32 read as having slipped)
           kit.presence(heldWas ? 0.25 : 0.5);
         }
-        for (const r of heldWas ? [neighbour] : [neighbour, yai, frontMan]) if (r) r.lookTo = 1;
         setPhase('decide');
         /* v18.5: and ASK, as the comment above always said — a resume used
            to leave him rooted with his hands up, draining, and no card */
@@ -2139,7 +2099,7 @@
       dropTodo(); speakReset(); lineQ.length = 0; heard.clear();
       booted = false; dayClock.t = 0; lastWall = 0;
       DATA.voiceLine = 'z2arrive';   // v18.5: the boot decides again whether it is said
-      seated = null; turning = null; bowing = null; fight = null; leafing = null; peakT = 0; heldWas = false;
+      seated = null; turning = null; bowing = null; fight = null; peakT = 0; heldWas = false;
       figureTick.lastK = -1;
       if (kit && kit.daylight) kit.daylight(null, 0);   // v19.2: ending B brings the stars out; a replay starts on the chapter's own dusk
       /* v18.4: and put every head and spine BACK — headTick only runs while

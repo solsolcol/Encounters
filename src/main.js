@@ -3468,7 +3468,7 @@ const EV_DEFAULT = {
      the chapter's hands rise exactly as close as the player is to losing.
      The first `lead` seconds are free: the first tap has to come from
      somewhere. */
-  resist:    { secs: 12, rate0: 5.0, rate1: 6.5, window: 0.75, grace: 1.0, lead: 1.0, pass: 0.5 }
+  resist:    { secs: 12, rate0: 5.0, rate1: 6.5, window: 0.75, grace: 1.0, lead: 1.0, pass: 0.5, empty: 0 }   // v19.4: `empty` — a full bar's seconds to empty untapped (0: `grace`)
 };
 // the literals texttest looks for; the kind picks the row
 const EV_LABEL = { tap: 'event.tap', timed: 'event.timed', mash: 'event.mash', hold: 'event.hold',
@@ -3957,17 +3957,21 @@ function evResolve(extra) {
   if (!r.aborted && !r.skipped) snd(r.ok ? 'uiconfirm' : 'uiclick', r.ok ? 0.5 : 0.25);
   e.res(r);
 }
+/* v19.4: a tap in the rapid-tap fight FILLS the bar by its gain, on the
+   instant it lands — between frames as well, so a fast thumb on a slow phone
+   loses nothing (the stamps stay for the two-thumb check and the probes) */
+function resistTap(e) {
+  (e.taps || (e.taps = [])).push(performance.now() / 1000); e.hits++;
+  if (e.level !== undefined && !e.resolved) e.level = Math.min(1, e.level + (e.gain || 0));
+  snd('uiclick', 0.09, 1.25 + 0.15 * Math.random());
+}
 /* a press: from the overlay, the button, a key, or a mouse under pointer lock */
 function evPress(x, y) {
   /* v18.3: in a rapid-tap fight EVERY finger counts — two thumbs drumming
      put the second down before the first is up, and that press was dropped
      because the event was still "down". A held key cannot cheat it: evKey
      drops auto-repeat before it gets here. */
-  if (ev && ev.started && !ev.briefing && ev.kind === 'resist' && ev.down) {
-    (ev.taps || (ev.taps = [])).push(performance.now() / 1000); ev.hits++;
-    snd('uiclick', 0.09, 1.25 + 0.15 * Math.random());
-    return;
-  }
+  if (ev && ev.started && !ev.briefing && ev.kind === 'resist' && ev.down) { resistTap(ev); return; }
   const e = ev; if (!e || !e.started || e.down) return;
   if (e.briefing) { evBegin(); return; }      // v8.7: START closes the briefing; nothing else counts
   const o = e.o;
@@ -3982,12 +3986,7 @@ function evPress(x, y) {
       break;
     case 'mash':
       e.bar = Math.min(1, e.bar + o.gain); e.hits++; snd('uiclick', 0.18, 1.1); break;
-    case 'resist':
-      // a tap is a REAL-time stamp: the rate is measured on the clock the
-      // player's thumb runs on, not on frames
-      (e.taps || (e.taps = [])).push(performance.now() / 1000); e.hits++;
-      snd('uiclick', 0.09, 1.25 + 0.15 * Math.random());
-      break;
+    case 'resist': resistTap(e); break;
     case 'heartbeat': {
       /* v9.4: the beat comes off the SCHEDULE, because the gaps shrink. A
          press is graded on how far it lands from the beat's centre as a
@@ -4111,66 +4110,61 @@ function evFrame(dt, dLookX, dLookY) {
       else if (e.t - e.downAt >= o.secs) evResolve({ ok: true, score: 1 });
       break;
     case 'resist': {
-      if (e.rk === undefined) { e.rk = 0; e.danger = 0; e.dmax = 0; e.taps = e.taps || []; e.rslip = 0; }
+      /* v19.4 · A DRAINING BAR (Chad: "The bar should start depleting quickly
+         the moment the bar appears, and every repetitive quick rapid tap will
+         fill up the bar by micro amounts so that the bar will not deplete down
+         to 0. The rate of depletion should appear faster than the rate of
+         replenishing it ... the player needs to tap at least 6-7 times per
+         second on mobile or desktop to keep the bar from depleting, and
+         steady. The current mini game does not seem to work at all.") Until
+         now the bar showed a hidden one-second "danger" clock: full while the
+         player held, and gone inside a second the moment he did not — nothing
+         on screen said how he was doing. Now the bar IS the state: it starts
+         full and drains at 1/`empty` a second on wall time (the event's own
+         step, the v18.0 lesson), and each tap adds `gain` = drain ÷ the hold
+         rate, so tapping at exactly the rate (rate0 → rate1 over the fight)
+         holds it level, slower loses ground, faster refills; it saw-tooths a
+         little between taps, so it always LOOKS like it is draining. Empty is
+         lost on that frame; held to the end is won. */
+      if (e.level === undefined) { e.level = 1; e.lmin = 1; e.taps = e.taps || []; e.rslip = 0; e.rk = 0; e.danger = 0; e.dmax = 0; }
       const nowS = performance.now() / 1000;
       while (e.taps.length && nowS - e.taps[0] > 3) e.taps.shift();
       const u = Math.min(1, Math.max(0, e.t / o.secs));
-      const need = o.rate0 + (o.rate1 - o.rate0) * u;              // taps a second it takes right now
-      /* v18.3 (Chad: "Ep 3 chp 2 mini game is not working"). The rate was
-         the taps inside a 0.75 s window divided by 0.75 — a COUNT, so it moved
-         in steps of 1.33 a second, and a need of 5.5 really asked for 6.67 and
-         7.5 really asked for 8.0: past what most thumbs can hold for twelve
-         seconds. It is read from the GAPS now: k + 1 taps over the time from
-         the k-th tap back to this instant (k up to 4), which at a steady r
-         never reads under r, and falls smoothly the moment the taps slow —
-         a held finger reads as zero within a few tenths. `window` stays a
-         declared field for the fixture and is no longer the measure. */
+      const need = o.rate0 + (o.rate1 - o.rate0) * u;              // taps a second that hold the bar level now
+      const drain = 1 / Math.max(0.2, o.empty || o.grace || 1);
+      e.gain = drain / Math.max(0.1, need); e.need = need;
       const L = e.taps.length - 1, kq = Math.min(4, L);
-      const rate = kq >= 1 ? (kq + 1) / Math.max(1e-3, nowS - e.taps[L - kq]) : 0;
-      e.rate = rate; e.need = need;
-      /* and the slow clock waits for him: nothing is charged until he has
-         tapped twice (the START press is not one), or until a full second
-         past the lead if he never starts */
-      /* v18.5: and after the tab was hidden (a phone call, a notification,
-         an app switch) the same grace starts again — the taps from before
-         are gone and the first frame back is not his fault */
+      e.rate = kq >= 1 ? (kq + 1) / Math.max(1e-3, nowS - e.taps[L - kq]) : 0;   // for the panel and probes only
+      /* the drain waits out the lead (the hand coming off START), and after a
+         hidden tab the same grace again (v18.5) */
       const from = Math.max(o.lead, e.backAt || 0);
-      const live = e.t > from && (kq >= 1 || e.t > from + 1);
-      if (live) {
-        if (rate < need) e.danger += wdt;
-        else e.danger = Math.max(0, e.danger - wdt * 1.5);
-      }
-      e.dmax = Math.max(e.dmax, e.danger);
-      e.rk = Math.min(1, e.danger / o.grace);
+      if (e.t > from) e.level = Math.max(0, e.level - drain * wdt);
+      e.lmin = Math.min(e.lmin, e.level);
+      e.rk = 1 - e.level; e.danger = e.rk; e.dmax = Math.max(e.dmax, e.rk);
       const host = evEl();
-      /* v19.2: what the PANEL says is "you are losing ground", not the raw
-         comparison: the gap-based rate saw-tooths from r to 1.25r inside every
-         tap gap, so a thumb anywhere between 0.8 and 1.0 of the need flipped
-         TAP!/FASTER! and the red shake on and off twice a tap — the minigame
-         looked broken while he was holding. It reads the danger's trend over
-         a quarter second (or a rate far under), and holds a warning half a
-         second once shown. The SCORING is unchanged. */
-      if (e.dRefT == null || e.t < e.dRefT) { e.dRefT = e.t; e.dRef = e.danger; e.rising = false; e.slowUntil = 0; }
-      if (e.t - e.dRefT >= 0.25) { e.rising = e.danger > e.dRef + 0.02; e.dRef = e.danger; e.dRefT = e.t; }
-      if (live && (e.rising || rate < need * 0.6)) e.slowUntil = e.t + 0.5;
-      const slow = live && e.t < e.slowUntil;
+      /* the panel warns on the TREND (v19.2: a raw comparison flickered every
+         tap): losing ground over a quarter second, or under a third full */
+      if (e.lRefT == null || e.t < e.lRefT) { e.lRefT = e.t; e.lRef = e.level; e.slowUntil = 0; }
+      if (e.t - e.lRefT >= 0.25) { if (e.t > from && e.level < e.lRef - 0.03) e.slowUntil = e.t + 0.5; e.lRef = e.level; e.lRefT = e.t; }
+      if (e.t > from && e.level < 0.34) e.slowUntil = e.t + 0.3;
+      const slow = e.t < e.slowUntil;
       if (host) {
         host.classList.toggle('danger', slow);
         host.style.setProperty('--rk', e.rk.toFixed(3));
-        const want = e.t <= o.lead && !e.taps.length ? (o.readyWord || T('event.resistReady'))
+        const want = e.t <= from && !e.taps.length ? (o.readyWord || T('event.resistReady'))
                    : slow ? (o.slowWord || T('event.resistBreathe')) : (o.tapWord || T('event.resistHold'));
         const pe = $('evPrompt'); if (pe && pe.textContent !== want) pe.textContent = want;
       }
-      if (bar) bar.style.width = (100 * (1 - e.rk)).toFixed(1) + '%';   // CONTROL: full while he has it
+      if (bar) bar.style.width = (100 * e.level).toFixed(1) + '%';
       if (typeof o.onRise === 'function') o.onRise(e.rk, e.danger, e.t);
-      if (e.danger >= o.grace) {
+      if (e.level <= 0) {
         // the hands are gone: lost, on this frame
         if (typeof o.onSlip === 'function') o.onSlip(e.rslip);
         e.rslip++;
         evResolve({ ok: false, score: 0 });
       } else if (e.t >= o.secs) {
-        // held to the end; scored by how close it came (0.6 at the edge, 1 untroubled)
-        evResolve({ ok: true, score: 0.6 + 0.4 * (1 - Math.min(1, e.dmax / o.grace)) });
+        // held to the end; scored by how low it ran (0.6 at the edge, 1 never troubled)
+        evResolve({ ok: true, score: 0.6 + 0.4 * e.lmin });
       }
       break;
     }
@@ -4620,6 +4614,7 @@ function kitDebug() {
                          slotT: +(ev.slotT || 0).toFixed(3), band: ev.band.slice(), sum: ev.sum,
                          /* v18.1: the rapid-tap fight — taps a second now, what it asks, how close to losing */
                          rate: ev.rate, need: ev.need, danger: ev.danger, taps: ev.taps ? ev.taps.length : 0,
+                         level: ev.level, gain: ev.gain,   // v19.4: the draining bar
                          /* v9.4: the rhythm game's run and the match's progress */
                          beat: ev.beat, combo: ev.combo, best: ev.bestCombo,
                          done: ev.done, wrong: ev.wrong } : null,
@@ -6535,7 +6530,7 @@ const ADULT_TAKES = new Set([
   'z1askA', 'z1askB', 'z1askC', 'z1askD', 'z1A', 'z1B',
   'z1C', 'z1D', 'z1sadhu', 'z1room', 'z1thank',
   /* v18.0 · episode 3 chapter 2 */
-  'z2pro1', 'z2pro2', 'z2pro3', 'z2pro4', 'z2pro5', 'z2pro6', 'z2arrive', 'z2leaf', 'z2kneel',
+  'z2pro1', 'z2pro2', 'z2pro3', 'z2pro4', 'z2pro5', 'z2pro6', 'z2arrive', 'z2join', 'z2kneel',
   'z2slip1', 'z2slip2', 'z2peak', 'z2A1', 'z2B1', 'z2C1', 'z2D1', 'z2close', 'z2next',
   'z2A', 'z2B', 'z2C', 'z2D']);
 /* The rest of the cast. They share `voiceOut` and the duck, but not the
@@ -6583,7 +6578,8 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
   'aj1A', 'aj1B', 'aj1C', 'aj1D1', 'aj1D2', 'au1hi', 'au1sell', 'au1shoes',
   'mk1come', 'mk1chant', 'mk1teach', 'hp1room', 'aj1mat',
   'aj1which', 'aj1chosen',     // v17.6: the Ajarn asks which yant, and answers the choice
-  'lw2look', 'lw2pull']);      // v18.0: the laywoman beside him (Onnie) and Yai in front (Air), whispered
+  'lw2look', 'lw2pull',
+  'lw2what', 'yai2dance']);   // v19.4: their whispers in play, as his hands move      // v18.0: the laywoman beside him (Onnie) and Yai in front (Air), whispered
 const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || ADULT_TAKES.has(name) || CAST_TAKES.has(name);
 /* v6.9: his WHISPERS go round the bus. Chad wanted the three pick-up
    reactions "almost whispering to himself" and they were re-voiced as
@@ -9696,12 +9692,12 @@ const STING_SAMPLE = {
      laywoman and Yai, the hall (the evening chant, its swells and its
      faltering), the hands, the film's two rooms, and three music cues */
   z2pro1: ['z2pro1', 1], z2pro2: ['z2pro2', 1], z2pro3: ['z2pro3', 1], z2pro4: ['z2pro4', 1],
-  z2pro5: ['z2pro5', 1], z2pro6: ['z2pro6', 1], z2arrive: ['z2arrive', 1], z2leaf: ['z2leaf', 1],
+  z2pro5: ['z2pro5', 1], z2pro6: ['z2pro6', 1], z2arrive: ['z2arrive', 1], z2join: ['z2join', 1],   // v19.4: z2leaf retired with the gold leaf
   z2kneel: ['z2kneel', 1], z2slip1: ['z2slip1', 1], z2slip2: ['z2slip2', 1], z2peak: ['z2peak', 1],
   z2A1: ['z2A1', 1], z2B1: ['z2B1', 1], z2C1: ['z2C1', 1], z2D1: ['z2D1', 1],
   z2close: ['z2close', 1], z2next: ['z2next', 1], z2A: ['z2A', 1], z2B: ['z2B', 1], z2C: ['z2C', 1], z2D: ['z2D', 1],
-  lw2look: ['lw2look', 1], lw2pull: ['lw2pull', 1],
-  pageturn: ['pageturn', 1], goldleaf: ['goldleaf', 1], matkneel: ['matkneel', 1], handsrise: ['handsrise', 1],
+  lw2look: ['lw2look', 1], lw2pull: ['lw2pull', 1], lw2what: ['lw2what', 1], yai2dance: ['yai2dance', 1],
+  pageturn: ['pageturn', 1], matkneel: ['matkneel', 1], handsrise: ['handsrise', 1],
   handslip: ['handslip', 1], whispers: ['whispers', 1], chantswell: ['chantswell', 1], chantstop: ['chantstop', 1],
   templedoor: ['templedoor', 1], slidevan: ['slidevan', 1],
   e3vesper: ['e3vesper', 1], hallamb: ['hallamb', 1], templedusk: ['templedusk', 1],

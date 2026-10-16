@@ -362,7 +362,15 @@ async function runEvent(opts, drive) {
     if (o.slipTag) { const t = o.slipTag; o.onSlip = () => { window[t] = (window[t] || 0) + 1; }; }
     // a rapid-tap event is tapped from inside the page, on its own timer
     const tap = o.tapEvery ? setInterval(() => { window.__enc.evPress(); window.__enc.evRelease(); }, o.tapEvery) : 0;
-    window.__enc.kit.event(o).then(r => { if (tap) clearInterval(tap); window.__evR = r; });
+    /* v19.4: or on the EVENT's own clock — one tap every `tapEveryT` event
+       seconds. The event clock steps at most 0.25 s a drawn frame, so on this
+       one-frame-a-second box real-time taps outrun a bar that drains on it; a
+       rate test must tap on the clock the bar drains on */
+    let tapT = 0;
+    if (o.tapEveryT) { let next = o.tapEveryT; const f = () => { if (window.__evR !== null) return; const d = window.__enc.kitDebug().event;
+      if (d && d.started && !d.briefing && d.t >= next) { window.__enc.evPress(); window.__enc.evRelease(); next += o.tapEveryT; }
+      tapT = requestAnimationFrame(f); }; tapT = requestAnimationFrame(f); }
+    window.__enc.kit.event(o).then(r => { if (tap) clearInterval(tap); if (tapT) cancelAnimationFrame(tapT); window.__evR = r; });
   }, opts);
   // started — or already over, for a kind that can resolve on its first frame
   await p.waitForFunction(() => { const d = window.__enc.kitDebug(); return window.__evR !== null || !!(d.event && d.event.started); }, null, { timeout: 30000 });
@@ -408,6 +416,13 @@ K.evResistSlips = r.kind === 'resist' && !r.ok && r.delta === -3 && await p.eval
 r = await runEvent({ kind: 'resist', secs: 2.5, rate0: 0.8, rate1: 0.8, window: 3, grace: 3, lead: 0.2,
                      award: { stat: 'awareness', lo: -3, hi: 2 }, slipTag: '__slips2', tapEvery: 120 }, null);
 K.evResistHeld = r.kind === 'resist' && r.ok && r.delta > 0 && await p.evaluate(() => !window.__slips2);
+/* v19.4: the DRAINING BAR — tapped, but slower than the hold rate (2 a second
+   of the event's clock against 4: each tap refills a quarter, the bar drains a
+   full one a second), it still runs dry and is LOST; a real loss, not a
+   timeout */
+r = await runEvent({ kind: 'resist', secs: 6, rate0: 4, rate1: 4, empty: 1.0, grace: 1.0, lead: 0.2,
+                     award: { stat: 'awareness', lo: -3, hi: 2 }, slipTag: '__slips3', tapEveryT: 0.5 }, null);
+K.evResistSlowLoses = r.kind === 'resist' && !r.ok && await p.evaluate(() => window.__slips3 >= 1);
 /* v18.3: TWO THUMBS. A second finger landing while the first is still down
    is a tap — it was dropped, because the event was still "down". Real
    pointer events on the overlay, the second before the first lifts. */

@@ -5370,3 +5370,15 @@ cut (sharing its vertices and maps) when it is small.
   (the v9.3 law); under twenty frames a second he was still rising when the
   zone fired, and sitting put the camera inside him. The zone now asks
   whether he has actually stood and walked clear (`stoolClear`).
+- **A minigame's bar must BE its state (v19.4).** The rapid-tap fight's bar
+  was drawn from a hidden "danger" clock: full while the player held, and
+  then the fight was lost inside a second of slowness with nothing on screen
+  having said he was slipping — Chad, twice: "does not seem to work at all".
+  A bar that drains continuously, which each tap refills by drain ÷ the hold
+  rate, shows the player exactly where he stands at every instant, and its
+  saw-tooth between taps is the anxiety the fight is for.
+- **Verify a simple change in minutes, not an hour (Chad, v19.3).** The probe
+  box draws a frame every ~2.4 s; a full play-through to one beat costs most
+  of an hour. Jump straight to the state (`stage.applyPhase`, a teleport, a
+  direct call), take the two photographs that matter, and stop; the e3c2 play
+  batch was checked end to end that way in four and a half minutes.

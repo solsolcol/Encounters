@@ -1,0 +1,8 @@
+{
+  "z2join":  { "voice": "bP8FJDHmWVEgXJDitdQd", "who": "jamesAdult", "flow": "doEf4cGlsWQ6V7sTKIlG", "sessions": ["jgC41WLxGhYydvAYLb3E", "f9zz3ARV6ofLHDfHywhg"],
+               "prompt": "[hurried, quietly] Better quickly join the chanting now... at the front." },
+  "lw2what": { "voice": "OSCkDOqeWrrCkMiFPGB3", "who": "laywoman", "flow": "UpPtVILmhv7xoUctbiRZ", "sessions": ["uMnT1ZLZN6glTaou1Vlm", "VWp9qNzIUuSuU1w9wOId"],
+               "prompt": "[whispers, puzzled] What is he doing?" },
+  "yai2dance": { "voice": "wMBr6SfqQVuOqplK01NE", "who": "yai", "flow": "42u3DayWkmx9ueRUuXjz", "sessions": ["7cYCJQUAogskMrueTCDC", "3CUKX3udyi9h6nIv4WCw"],
+               "prompt": "[whispers, surprised] Is he dancing?" }
+}

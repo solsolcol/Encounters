@@ -5049,6 +5049,29 @@ What the baseline contains, by release:
   2 are written down, verbatim and step by step, in docs/V19.4-PLAN.md.
   No word moved; sheet v92 stands (v44 the link). Deploy
   `6ad25fc578cc8e3f9af58785`, byte-verified (216 files).
+- **v19.4** THE HANDS THAT MOVED, PLAYED AGAIN — Chad's ten notes on episode
+  3 chapter 2's play (docs/V19.4-PLAN.md, Batch 2, verbatim). The book is
+  not carried; a glowing ring on the floor in front of the shelf, and stepping
+  into it takes one. The GOLD LEAF beat is gone: the book leads straight to
+  the mat, and he says "Better quickly join the chanting now... at the
+  front." (`z2join`, Brian). The mat has the engine's "!" floating over its
+  glow (a `place` hotspot; a press kneels him). The candle racks are one
+  collider each and v19.2's rope is gone, so the middle aisle is open. THE
+  TAP FIGHT is a DRAINING BAR now (the `resist` kind in main.js): full when it
+  appears, empty in `empty` seconds untapped, every tap adds drain ÷ the hold
+  rate, so tapping at the rate holds it level and it still saw-tooths down
+  between taps; empty is lost on that frame. e3c2 holds at 6 → 6.5 taps a
+  second with 2.2 s to empty. Until now the bar showed a hidden one-second
+  danger clock — full, then gone, with nothing on screen saying how he was
+  doing: "does not seem to work at all". The glowing gold figure at the
+  frame's edge is gone (the dark shadow on the mats stays), and in play
+  nobody turns to stare: the woman beside him whispers "What is he doing?"
+  (`lw2what`, Onnie) and Yai "Is he dancing?" (`yai2dance`, Air). `z2leaf` and
+  `goldleaf` retired (files, rows, registry). fixturetest gained
+  evResistSlowLoses; chaptertest, the fixture and the probe (jumped straight
+  to each state, four and a half minutes) green. Sheet v93 exported
+  (masters/v19.4/masterz-text-v93.xlsx; v44 stays the link). Deploy
+  `6ad265be45cba8a3ba613f8b`, byte-verified (216 files).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
