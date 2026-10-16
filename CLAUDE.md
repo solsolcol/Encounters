@@ -5113,6 +5113,37 @@ What the baseline contains, by release:
   by projecting the meshes, not by the photo (LEARNINGS). No word moved; sheet
   v93 stands (v44 the link). Deploy `6ad275c2e28a6304c8375c42`, byte-verified
   (216 files).
+- **v19.6** THE CONGREGATION IS CHAD'S FOUR — *"completely replace ep 3 chp
+  2's existing kneeling and praying audience characters with only a mix of
+  these 4 models ... apply [the two Mixamo takes] directly onto those 4
+  rigged models ... the same praying animation pose throughout the audience.
+  Switch to the kneeling idle animation ... to turn their heads"*
+  (docs/V19.4-PLAN.md Batch 3; docs/V19.6-CONGREGATION.md is the build's
+  memory). His four Meshy characters in white (two women, two men) replace
+  every `lay_*` sitter: `cg_woman1/2`, `cg_man1/2` for the crowd (10–21k
+  triangles, 1024 sheets) and `…hd` cuts (47–48k, 2048 + normal) for the four
+  who act — the woman beside him, Yai, the seat beside Yai (the boy's seat;
+  an adult man now, the four have no child) and the man in front. Both of his
+  takes ride in every file (`pray`, `kneel`), put there by
+  `tools/retarget.mjs` with two new opt-in flags — `--align`, because a
+  Mixamo take rests in a T-pose and a Meshy rig in an A-pose, so a delta
+  applied to the target's own rest left every arm 45° low (LEARNINGS), and
+  `--hips`, which carries the kneel's drop (rest hips 0.93 m → 0.47) — then
+  the v16.8 Meshy recipe (`tools/prepmonk.mjs`, now with `TEX`);
+  `masters/v19.6/make.sh` is the whole pipeline. Use the `Character_output`
+  FBX: the `Merged_Animations` one converts to a crumpled sheet. In the hall
+  the praying take PLAYS on every sitter, each at its own phase and rate; a
+  head that must turn crossfades to kneeling idle (`animTick`) and the look
+  and the bow are laid on the take's own pose, put back before the mixer runs
+  each frame (the v11.5 law); grounded on the posed skin's lowest point (a
+  kneeling body is on its knees and toes); no recolour and no IK prayer. The
+  deal is seeded seat by seat and its fallback can still put a double beside a
+  sitter (found by the v19.6 review — two of one woman 1.00 m apart in the
+  back row, a double behind the man beside Yai); being solved next. 2.7 MB
+  of old crowd files gone. Photographed on a phone praying, looking and back
+  to praying, and ending C; chapter, leak, walk, cine, hosted green. No word
+  moved; sheet v93 stands (v44 the link). Deploy `6ad27b895022bf72d08d04cb`,
+  byte-verified (216 files).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -5651,9 +5682,9 @@ dead from the chapter's first frame (docs/LEARNINGS.md).
 
 In flight: **docs/V19.4-PLAN.md** — Chad's three queued batches for episode 3
 chapter 2, verbatim and step by step with a status column; read it first after
-any loss of context. The play batch shipped as v19.4 and the film as v19.5;
+any loss of context. The play batch shipped as v19.4, the film as v19.5 and
 Batch 3, THE CONGREGATION (his four white-outfit rigged characters and two
-Mixamo takes from his Drive folder replacing every `lay_*` sitter), is next.
+Mixamo takes replacing every `lay_*` sitter), as v19.6 — all three batches done.
 
 Next up: **episode 3 chapter 3**, The Dance On Buddha Day (v16.0 shipped chapter 1,
 The Luck I Went Looking For — `src/chapters/e3/e3c1.js`; v18.0 chapter 2, The
