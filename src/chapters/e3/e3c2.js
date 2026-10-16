@@ -1507,6 +1507,34 @@
           else g.position.y += isFinite(seat) ? Math.max(fl - 0.004 - seat, fl - 0.045 - sl) : fl + 0.012 - sl;
         }
         g.updateMatrixWorld(true);
+        /* v19.7: THE KNEES STAY PLANTED. The two takes are rooted ~22 cm apart
+           (retargeted, each from its own Mixamo file): 'pray' holds the knees
+           and hips forward of where 'kneel' does, so a head turn's crossfade
+           skated the whole body across its mat on its knees — the review's
+           finding, measured on every cg_* file. Each take's knee midpoint is
+           read once with that take alone (in the group's frame, where the
+           model's position lives) and animTick moves the model by the
+           weighted difference, e3c1's rootComp shape (v17.2). The pray pose
+           is put back exactly as it was before anything else is measured. */
+        if (r.mixer && r.acts.kneel !== r.acts.pray) {
+          const legs = r.bones.filter(b => /(Left|Right)Leg(_\d+)?$/.test(b.name));
+          if (legs.length === 2) {
+            const kneeMid = () => {
+              group.updateWorldMatrix(true, true);
+              const m = new THREE.Vector3();
+              for (const b of legs) m.add(group.worldToLocal(b.getWorldPosition(new THREE.Vector3())));
+              return m.multiplyScalar(0.5);
+            };
+            const pr = r.acts.pray, kn = r.acts.kneel, tp = pr.time;
+            const kp = kneeMid();
+            pr.stop(); kn.reset(); kn.play(); kn.time = kn.getClip().duration * 0.5; r.mixer.update(0);
+            const kk = kneeMid();
+            kn.stop(); pr.reset(); pr.play(); pr.time = tp; r.mixer.update(0);
+            g.updateMatrixWorld(true);
+            r.root0 = g.position.clone();
+            r.kneelOff = { x: kk.x - kp.x, z: kk.z - kp.z };
+          }
+        }
         r.head = boneOf(r, /(^|[^A-Za-z])Head(_\d+)?$|mixamorigHead(_\d+)?$/);
         /* the retargeted floor take leaves some heads tipped back at the
            ceiling (the source's neck is not theirs): stand each head up, a
@@ -1706,9 +1734,10 @@
        replace ... with only a mix of these 4 models"). The four people the
        scenes direct are the close cuts — the woman beside him and Yai are the
        two women, the man beside Yai and the man in front the two men — and
-       every other place is dealt from the four crowd cuts on a fixed seed so
-       no one kneels beside or behind their own double, and never Yai's or the
-       neighbour's model within 2.5 m of them. */
+       every other place is dealt from the four crowd cuts on a fixed seed and
+       then SOLVED so doubles sit as far apart as four models allow (v19.7,
+       below — the seat-by-seat deal this comment used to promise could not
+       keep its promise). */
     const deal = ['cg_woman1', 'cg_woman2', 'cg_man1', 'cg_man2'];
     const crowd = [];
     let crowdSlot = 0;
@@ -1721,27 +1750,62 @@
     const dealt = new Map();                    // "row,col" -> the base model there (crowd or close)
     const base = (k) => k.replace(/hd$/, '');
     const ROLE = new Map([[NEIGH.x + ',' + NEIGH.z, 'cg_woman1'], [YAI.x + ',' + YAI.z, 'cg_woman2'], [KID.x + ',' + KID.z, 'cg_man2'], [FRONT.x + ',' + FRONT.z, 'cg_man1']]);
-    const roleNear = (k, x, z) => [...ROLE].some(([pos, m]) => { const [px, pz] = pos.split(',').map(Number); return m === k && Math.hypot(x - px, z - pz) < 2.5; });
+    /* v19.7: the seats are SOLVED, not dealt one at a time (the v19.6 review:
+       seat by seat, a place whose every model was ruled out fell back with no
+       check at all — two of one woman 1.00 m apart, a double right behind the
+       man beside Yai). v5.29's shape, chapter 3's tent: a balanced deal over
+       the free places on a fixed seed, then a swap search over a
+       distance-weighted neighbour graph (any two places within 2.6 m, weight
+       1/d², three times heavier when one of them is a person the scenes
+       direct), swapping two places only when it lowers the same-model cost.
+       With four models and a place's eight neighbours some repeat is forced;
+       what the search buys is that the nearest pairs go first and the four
+       who act keep their doubles furthest away. `seatStats()` reports it. */
+    const seats = [];
     for (let r = 0; r < ROWZ.length; r++) for (let c = 0; c < ROWX.length; c++) {
       const x = ROWX[c], z = ROWZ[r];
       if (x === PLACE.x && z === PLACE.z) continue;
+      const role = ROLE.get(x + ',' + z) || null;
+      if (role || keep(r, c)) seats.push({ r, c, x, z, role, key: role });
+    }
+    const free = seats.filter(s => !s.role);
+    free.forEach((s, i) => { s.key = deal[i % deal.length]; });
+    for (let i = free.length - 1; i > 0; i--) { const j = Math.floor(hash(i, 37) * (i + 1)); const t = free[i].key; free[i].key = free[j].key; free[j].key = t; }
+    const seatEdges = [];
+    for (let i = 0; i < seats.length; i++) for (let j = i + 1; j < seats.length; j++) {
+      const d = Math.hypot(seats[i].x - seats[j].x, seats[i].z - seats[j].z);
+      if (d < 2.6) seatEdges.push([seats[i], seats[j], (seats[i].role || seats[j].role ? 3 : 1) / (d * d), d]);
+    }
+    const seatCost = () => { let s = 0; for (const [a, b, w] of seatEdges) if (a.key === b.key) s += w; return s; };
+    let seatBest = seatCost();
+    for (let pass = 0, better = true; better && pass < 40; pass++) {
+      better = false;
+      for (let i = 0; i < free.length; i++) for (let j = i + 1; j < free.length; j++) {
+        const a = free[i], b = free[j];
+        if (a.key === b.key) continue;
+        let t = a.key; a.key = b.key; b.key = t;
+        const c2 = seatCost();
+        if (c2 < seatBest - 1e-9) { seatBest = c2; better = true; } else { t = a.key; a.key = b.key; b.key = t; }
+      }
+    }
+    const seatStats = () => {
+      const pairs = (lim) => seatEdges.filter(([a, b, , d]) => d < lim && a.key === b.key).length;
+      const kinds = {}; for (const s of seats) kinds[s.key] = (kinds[s.key] || 0) + 1;
+      return { seats: seats.length, edges: seatEdges.length, cost: +seatBest.toFixed(3), sameAdjacent: pairs(1.05), sameWithin16: pairs(1.6), sameWithin26: pairs(2.6),
+               roleDoublesWithin16: seatEdges.filter(([a, b, , d]) => d < 1.6 && a.key === b.key && (a.role || b.role)).length, kinds };
+    };
+    for (const s of seats) {
+      const { r, c, x, z } = s;
       const jx = (hash(r, c + 11) - 0.5) * 0.08, jz = (hash(r, c + 13) - 0.5) * 0.08, ry = Math.PI + (hash(r, c + 17) - 0.5) * 0.14;
       let p = null;
-      const role = ROLE.get(x + ',' + z);
-      if (role) {
-        p = mkSitter(role + 'hd', x, z, Math.PI + (hash(r, c + 19) - 0.5) * 0.12, { cast: true, at: hash(r, c + 23) });
+      if (s.role) {
+        p = mkSitter(s.role + 'hd', x, z, Math.PI + (hash(r, c + 19) - 0.5) * 0.12, { cast: true, at: hash(r, c + 23) });
         if (x === NEIGH.x && z === NEIGH.z) neighbour = p; else if (x === YAI.x && z === YAI.z) yai = p;
         else if (x === KID.x && z === KID.z) kid = p; else frontMan = p;
-        dealt.set(r + ',' + c, role);
-      } else if (keep(r, c)) {
-        const near = new Set([dealt.get(r + ',' + (c - 1)), dealt.get((r - 1) + ',' + c), dealt.get((r - 1) + ',' + (c - 1)), dealt.get((r - 1) + ',' + (c + 1)),
-                              ROLE.get(ROWX[c + 1] + ',' + z), ROLE.get(x + ',' + ROWZ[r + 1])].filter(Boolean));
-        const start = Math.floor(hash(r * 7 + c, 31) * 4);
-        let key = deal[start];
-        for (let k = 0; k < 4; k++) { const cand = deal[(start + k) % 4]; if (!near.has(cand) && !roleNear(cand, x, z)) { key = cand; break; } }
-        dealt.set(r + ',' + c, key);
-        p = mkSitter(key, x + jx, z + jz, ry, { at: hash(r, c) });
+      } else {
+        p = mkSitter(s.key, x + jx, z + jz, ry, { at: hash(r, c) });
       }
+      dealt.set(r + ',' + c, s.key);
       if (p) { crowd.push(p); p.row = r; p.col = c; }
     }
     // the monks, at crowd detail, facing across the hall
@@ -2290,6 +2354,14 @@
       if (LOW && ((animFrame + r.slot) & 1) && want === 'pray') return;
       r.mixer.update(r.acc); r.acc = 0;
       for (const [b, q] of r.clipPose) q.copy(b.quaternion);
+      // v19.7: the knees stay where they are through the crossfade (mkSitter measured the two takes)
+      if (r.kneelOff && r.root0) {
+        const kn = r.acts.kneel, pr = r.acts.pray;
+        const wk = kn.isRunning() ? kn.getEffectiveWeight() : 0, wp = pr.isRunning() ? pr.getEffectiveWeight() : 0;
+        const k = wk + wp > 0 ? wk / (wk + wp) : (r.takeNow === 'kneel' ? 1 : 0);
+        r.model.position.x = r.root0.x - k * r.kneelOff.x;
+        r.model.position.z = r.root0.z - k * r.kneelOff.z;
+      }
     }
     function peopleTick(wdt) {
       breathT += wdt; animFrame++;
@@ -2507,6 +2579,7 @@
         drawFigure(shadowCv.getContext('2d'), k, figT0 + t, false); shadowTex.needsUpdate = true;
       },
       lookAll: (k) => { for (const r of crowd) r.lookTo = k; for (const r of monks) r.lookTo = k; },
+      seatStats,   // v19.7: how well the solved seating keeps doubles apart (the v5.29 shape)
       leaves, film, solo, myBook, myStand,
       get phase() { return phase; },
       setPhase, applyPhase, after, dayClock, sayLine,
