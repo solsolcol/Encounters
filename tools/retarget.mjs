@@ -118,6 +118,31 @@ const qMul = (a, b) => [
 const qInv = q => [-q[0], -q[1], -q[2], q[3]];        // unit quaternions only
 const qNorm = q => { const l = Math.hypot(...q) || 1; return q.map(v => v / l); };
 
+// v19.6: rest WORLD positions through every node's full TRS (scale included)
+const vSub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+const vNorm = v => { const l = Math.hypot(...v); return l > 1e-9 ? v.map(x => x / l) : null; };
+const qRot = (q, v) => { const p = qMul(qMul(q, [v[0], v[1], v[2], 0]), qInv(q)); return [p[0], p[1], p[2]]; };
+const qFromTo = (a, b) => {
+  const d = a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+  if (d < -0.999999) { const ax = vNorm(Math.abs(a[0]) < 0.9 ? [0, -a[2], a[1]] : [-a[2], 0, a[0]]); return [ax[0], ax[1], ax[2], 0]; }
+  const c = [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+  return qNorm([c[0], c[1], c[2], 1 + d]);
+};
+function restPos(doc) {
+  const pos = new Map(), frame = new Map();         // frame: [worldPos, worldRot, worldScale]
+  const walk = (node, P) => {
+    const t = node.getTranslation(), r = qNorm(node.getRotation()), sc = node.getScale();
+    const wp = P ? vAdd(P[0], qRot(P[1], [t[0] * P[2][0], t[1] * P[2][1], t[2] * P[2][2]])) : t.slice();
+    const wr = P ? qMul(P[1], r) : r, ws = P ? [P[2][0] * sc[0], P[2][1] * sc[1], P[2][2] * sc[2]] : sc.slice();
+    pos.set(node, wp); frame.set(node, [wp, wr, ws]);
+    for (const c of node.listChildren()) walk(c, [wp, wr, ws]);
+  };
+  for (const scene of doc.getRoot().listScenes()) for (const n of scene.listChildren()) walk(n, null);
+  pos.frame = frame;
+  return pos;
+}
+const vAdd = (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
+
 // -------------------------------------------------------------------- reading
 const io = new NodeIO().registerExtensions(ALL_EXTENSIONS)
   .registerDependencies({ 'meshopt.decoder': MeshoptDecoder, 'meshopt.encoder': MeshoptEncoder });
@@ -138,7 +163,9 @@ function restWorld(doc) {
   return { rot, parent, order };
 }
 
-const [takeF, targetF, outF, clipName = 'sit', mapName] = process.argv.slice(2);
+const ARGS = process.argv.slice(2).filter(a => !a.startsWith('--'));
+const ALIGN = process.argv.includes('--align'), HIPS = process.argv.includes('--hips');
+const [takeF, targetF, outF, clipName = 'sit', mapName] = ARGS;
 const take = await io.read(takeF);
 const dst  = await io.read(targetF);
 
@@ -241,6 +268,37 @@ for (const sn of srcRest.order) {
   srcWorld.set(sn, rows);
 }
 
+/* v19.6 · --align: TWO RIGS AT DIFFERENT REST POSES. The delta above is "how
+   far the source bone turned from ITS rest", and applying it to the target's
+   rest only works when both rests are the same body pose. A Mixamo take rests
+   in a T-pose and Meshy's auto-rig in an A-pose (Chad's congregation), so
+   every arm came out 45° off. With --align, each bone's target rest is first
+   SWUNG onto the source rest's bone direction (bone → its mapped child, in
+   world space, measured from the files' own TRS chains), and the delta is
+   applied to that: the bone's animated direction then equals the source's.
+   Twist about the bone stays the target's own. Without the flag nothing
+   changes. */
+const ALIGNQ = new Map();
+const CHILD = { Hips: 'Spine', Spine: 'Spine1', Spine1: 'Spine2', Spine2: 'Neck', Neck: 'Head', Head: 'HeadTop_End',
+  LeftShoulder: 'LeftArm', LeftArm: 'LeftForeArm', LeftForeArm: 'LeftHand', LeftHand: 'LeftHandMiddle1',
+  RightShoulder: 'RightArm', RightArm: 'RightForeArm', RightForeArm: 'RightHand', RightHand: 'RightHandMiddle1',
+  LeftUpLeg: 'LeftLeg', LeftLeg: 'LeftFoot', LeftFoot: 'LeftToeBase', LeftToeBase: 'LeftToe_End',
+  RightUpLeg: 'RightLeg', RightLeg: 'RightFoot', RightFoot: 'RightToeBase', RightToeBase: 'RightToe_End' };
+/* a target bone's child for the direction: the mapped child if mapped, else its first child (an _End tip) */
+const dstChild = (dn, name) => { const cn = MAP[CHILD[name]]; const c = cn && dstNode.get(cn); return c || dn.listChildren()[0] || null; };
+const srcChild = (sn, name) => srcNode.get(CHILD[name]) || sn.listChildren()[0] || null;
+if (ALIGN) {
+  const sP = restPos(take), dP = restPos(dst);
+  for (const { dn, sn, name } of mapped) {
+    if (name === 'Hips') continue;                // the hips' rest is the body's: never swung
+    const dc = dstChild(dn, name), sc = srcChild(sn, name);
+    if (!dc || !sc) continue;
+    const vd = vNorm(vSub(dP.get(dc), dP.get(dn))), vs = vNorm(vSub(sP.get(sc), sP.get(sn)));
+    if (!vd || !vs) continue;
+    ALIGNQ.set(dn, qFromTo(vd, vs));
+  }
+  console.log(`   --align: ${ALIGNQ.size} bones swung onto the source's rest`);
+}
 const dstWorld = new Map();          // node -> per-frame world rotation
 const outLocal = new Map();          // node -> per-frame local rotation (the result)
 for (const { dn, sn } of mapped) {
@@ -249,7 +307,7 @@ for (const { dn, sn } of mapped) {
   for (let f = 0; f < F; f++) {
     const sW = srcWorld.get(sn)[f];
     const delta = qMul(sW, qInv(sRestW));            // what the SOURCE turned through
-    const dW = qNorm(qMul(delta, dRestW));           // same turn, from the TARGET's rest
+    const dW = qNorm(qMul(qMul(delta, ALIGNQ.get(dn) || [0, 0, 0, 1]), dRestW));   // same turn, from the TARGET's rest (v19.6: rest aligned to the source's first)
     world[f] = dW;
     /* back to local, under whichever parent we have already solved; a parent
        that is not in the map has not moved, so its rest world is correct */
@@ -272,6 +330,37 @@ for (const [dn, local] of outLocal) {
     .setOutput(dst.createAccessor().setType('VEC4').setArray(arr).setBuffer(buf));
   outAnim.addSampler(s);
   outAnim.addChannel(dst.createAnimationChannel().setTargetNode(dn).setTargetPath('rotation').setSampler(s));
+}
+/* v19.6 · --hips: the hips' TRANSLATION, carried across in WORLD space — a
+   kneeling take lowers the body, and rotations alone leave a kneeling man
+   at standing height. The source hips' world offset from its rest, scaled by
+   the ratio of the two rigs' rest hip HEIGHTS (measured, v5.02's law), added
+   to the target's rest and brought back into the target hips' parent frame. */
+if (HIPS) {
+  const sH = srcNode.get('Hips'), dH = dstNode.get(MAP.Hips);
+  const tch = anim.listChannels().find(ch => ch.getTargetPath() === 'translation' && ch.getTargetNode() === sH);
+  if (sH && dH && tch) {
+    const sP = restPos(take), dP = restPos(dst);
+    const sPa = sP.frame.get(srcRest.parent.get(sH)) || [[0, 0, 0], [0, 0, 0, 1], [1, 1, 1]];
+    const dPa = dP.frame.get(dstRest.parent.get(dH)) || [[0, 0, 0], [0, 0, 0, 1], [1, 1, 1]];
+    const sRest = sP.get(sH), dRest = dP.get(dH), k = dRest[1] / sRest[1];
+    const tt = Array.from(tch.getSampler().getInput().getArray()), tv = Array.from(tch.getSampler().getOutput().getArray());
+    const at = (time) => { let i = 0; while (i < tt.length - 2 && tt[i + 1] < time) i++; const u = tt.length > 1 ? Math.min(1, Math.max(0, (time - tt[i]) / ((tt[i + 1] - tt[i]) || 1))) : 0;
+      const a = tv.slice(i * 3, i * 3 + 3), b = tt.length > 1 ? tv.slice((i + 1) * 3, i * 3 + 6) : a; return a.map((x, j) => x + (b[j] - x) * u); };
+    const toWorld = (P, l) => vAdd(P[0], qRot(P[1], [l[0] * P[2][0], l[1] * P[2][1], l[2] * P[2][2]]));
+    const toLocal = (P, w) => { const d = qRot(qInv(P[1]), vSub(w, P[0])); return [d[0] / P[2][0], d[1] / P[2][1], d[2] / P[2][2]]; };
+    const arr = new Float32Array(F * 3);
+    for (let f = 0; f < F; f++) {
+      const sw = toWorld(sPa, at(times[f]));
+      const dw = vAdd(dRest, vSub(sw, sRest).map(v => v * k));
+      arr.set(toLocal(dPa, dw), f * 3);
+    }
+    const s = dst.createAnimationSampler().setInterpolation('LINEAR').setInput(inputAcc)
+      .setOutput(dst.createAccessor().setType('VEC3').setArray(arr).setBuffer(buf));
+    outAnim.addSampler(s);
+    outAnim.addChannel(dst.createAnimationChannel().setTargetNode(dH).setTargetPath('translation').setSampler(s));
+    console.log(`   --hips: rest heights ${sRest[1].toFixed(3)} -> ${dRest[1].toFixed(3)} (x${k.toFixed(4)}), lowest ${Math.min(...Array.from({ length: F }, (_, f) => toWorld(dPa, Array.from(arr.slice(f * 3, f * 3 + 3)))[1])).toFixed(3)}`);
+  } else console.log('   --hips: no hips translation in the take');
 }
 await io.write(outF, dst);
 console.log(`   ${targetF.split('/').pop()} + ${clipName}: ${mapped.length} bones retargeted, `

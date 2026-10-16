@@ -5394,3 +5394,20 @@ cut (sharing its vertices and maps) when it is small.
   ±2.8 m left the frame by the stair's foot. What the eye would look at, the
   shot must turn to (v19.5: a glance at the naga as he nears it), rather than
   widening the lens or hoping the desktop frame is the one that matters.
+- **A take moves a bone by "how far it turned from ITS rest" — so two rigs at
+  different rest POSES need their rests aligned first (v19.6).** Mixamo takes
+  rest in a T-pose; Meshy's auto-rig rests in an A-pose (arms 45° down). The
+  world-space retarget (v5.20) carried each source bone's delta onto the
+  target's rest, which is only right when both rests are the same body pose:
+  every arm of Chad's four came out 45° low, hands through the thighs.
+  `retarget.mjs --align` first swings each target bone's rest onto the source
+  rest's BONE DIRECTION (bone → its mapped child, in world space, from the
+  files' own TRS chains), keeping the bone's own twist; then the animated
+  direction equals the source's. And `--hips` carries the hips' translation,
+  scaled by the two rest hip heights — without it a kneeling take kneels at
+  standing height (rest 0.93 m → kneeling 0.47).
+- **A Meshy `Merged_Animations` FBX is not the character with a take on it
+  (v19.6).** Converted, its armature sits at ×10,000 over a mesh at ×100 and
+  the skin and skeleton disagree: photographed, a crumpled sheet. The
+  `Character_output` FBX beside it converts whole. Photograph a converted
+  character before trusting any number about it.

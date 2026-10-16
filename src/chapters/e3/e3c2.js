@@ -112,7 +112,7 @@
        monk's own floor take, retargeted; masters/v18.0/crowd) and dressed in
        white; the monks are Chad's monk at crowd detail; the Thevada is seen
        only as a crowned shadow and a gold glimpse at the edge of the frame */
-    assets: ['lay_admintee', 'lay_botak', 'lay_granny', 'lay_scold', 'lay_sitwoman', 'lay_sitwomanhd', 'lay_adminteehd', 'lay_grannyhd', 'lay_botakhd', 'monkrow',
+    assets: ['cg_woman1', 'cg_woman2', 'cg_man1', 'cg_man2', 'cg_woman1hd', 'cg_woman2hd', 'cg_man1hd', 'cg_man2hd', 'monkrow',   // v19.6: Chad's congregation
              'thaikit', 'slipper', 'tree1', 'tree2', 'tree3', 'tree4', 'buddhahd', 'buddhalod', 'naga',
              'filmlaptop', 'actioncam', 'hdb', 'altar'],   // v19.5: the film's table (chapter 1's), Ma's flat (episode 1's), the stair's naga
 
@@ -1198,16 +1198,20 @@
        No mixer runs after that: the pose is the bones' own locals, and only
        a bow, a head or a hero's look writes them again. */
     const KIND = {
-      lay_admintee: { h: 1.70, take: 'Sit_Cross_Legged_on_Floor' },
-      lay_botak:    { h: 1.68, take: 'Sit_Cross_Legged_on_Floor' },
-      lay_granny:   { h: 1.52, take: 'Sit_Cross_Legged_on_Floor' },
-      lay_scold:    { h: 1.55, take: 'Sit_Cross_Legged_on_Floor' },   // v19.2: dressed white like everyone (her sarong is told from her skin by WHERE it is on her body now, not by colour)
-      lay_sitwoman: { h: 1.60, take: 'Sit_Cross_Legged_on_Floor' },
-      lay_sitwomanhd: { h: 1.60, take: 'Sit_Cross_Legged_on_Floor' },
-      // v19.2: the three nearest him at full detail too (the crowd cuts are 6.8k-10k triangles, faceted at 1.2 m)
-      lay_adminteehd: { h: 1.70, take: 'Sit_Cross_Legged_on_Floor' },
-      lay_grannyhd:   { h: 1.52, take: 'Sit_Cross_Legged_on_Floor' },
-      lay_botakhd:    { h: 1.68, take: 'Sit_Cross_Legged_on_Floor' },
+      /* v19.6 · CHAD'S CONGREGATION: his four in white (two women, two men,
+         Meshy scans on a 28-bone rig), kneeling on Mixamo's own PRAYING take
+         and turning their heads on its KNEELING IDLE — both applied to each
+         rig by tools/retarget.mjs --align --hips (docs/V19.6-CONGREGATION.md).
+         `kneel` names the take a head turns on; `own`: already dressed white */
+      cg_woman1:   { h: 1.60, take: 'pray', kneel: 'kneel', own: true },
+      cg_woman2:   { h: 1.57, take: 'pray', kneel: 'kneel', own: true },
+      cg_man1:     { h: 1.72, take: 'pray', kneel: 'kneel', own: true },
+      cg_man2:     { h: 1.69, take: 'pray', kneel: 'kneel', own: true },
+      // the four nearest him at close detail (48k triangles, 2048 sheets): the woman beside him, Yai, the man beside her, the man in front
+      cg_woman1hd: { h: 1.60, take: 'pray', kneel: 'kneel', own: true },
+      cg_woman2hd: { h: 1.57, take: 'pray', kneel: 'kneel', own: true },
+      cg_man1hd:   { h: 1.72, take: 'pray', kneel: 'kneel', own: true },
+      cg_man2hd:   { h: 1.69, take: 'pray', kneel: 'kneel', own: true },
       monkrow:      { h: 1.70, take: 'Sit_Cross_Legged_on_Floor' }
     };
     function parseOnce(key) {
@@ -1459,8 +1463,20 @@
         const crown = r.bones.some(b => /HeadTop_End|head_end/.test(b.name));
         if (isFinite(lo) && hi > lo) g.scale.multiplyScalar((o.h || KIND[key].h) / ((hi - lo) / (crown ? 1 : 0.935)));
         // the floor take, parked on one frame
+        const KN = KIND[key] && KIND[key].kneel;
         const clip = (gltf.animations || []).find(c => c.name === (o.take || KIND[key].take)) || (gltf.animations || [])[0];
-        if (clip) {
+        if (clip && KN) {
+          /* v19.6: Chad's congregation PLAYS its praying take ("the same praying
+             animation pose throughout the audience"), each at its own phase and
+             pace so the hall does not move as one; the kneeling idle is ready
+             for a head that must turn (animTick) */
+          const mixer = new THREE.AnimationMixer(g), act = mixer.clipAction(clip);
+          const kc = (gltf.animations || []).find(c => c.name === KN);
+          act.play(); act.time = clip.duration * (o.at ?? 0.1); mixer.update(0);
+          r.mixer = mixer; r.acts = { pray: act, kneel: kc ? mixer.clipAction(kc) : act }; r.takeNow = 'pray';
+          r.rate = 0.9 + hash(x * 7.1, z * 3.3) * 0.2; r.slot = crowdSlot++;
+          owned.push({ dispose: () => mixer.stopAllAction() });
+        } else if (clip) {
           const mixer = new THREE.AnimationMixer(g), act = mixer.clipAction(clip);
           act.play(); act.time = clip.duration * (o.at ?? 0.1); act.paused = true; mixer.update(0);
           owned.push({ dispose: () => mixer.stopAllAction() });
@@ -1485,7 +1501,10 @@
         });
         if (isFinite(sl)) {
           const fl = group.position.y;
-          g.position.y += isFinite(seat) ? Math.max(fl - 0.004 - seat, fl - 0.045 - sl) : fl + 0.012 - sl;
+          /* v19.6: a KNEELING body is on its knees and toes — the lowest skin a
+             few mm into the mat (its hips are half a metre up, not on a seat) */
+          if (KN) g.position.y += fl - 0.004 - sl;
+          else g.position.y += isFinite(seat) ? Math.max(fl - 0.004 - seat, fl - 0.045 - sl) : fl + 0.012 - sl;
         }
         g.updateMatrixWorld(true);
         r.head = boneOf(r, /(^|[^A-Za-z])Head(_\d+)?$|mixamorigHead(_\d+)?$/);
@@ -1495,7 +1514,7 @@
            at the book, not up at the roof */
         if (r.head) {
           const top = r.head.children.find(ch => ch.isBone && /HeadTop|head_end/i.test(ch.name)) || r.head.children.find(ch => ch.isBone);
-          if (top) {
+          if (top && !KN) {
             const fwd = new THREE.Vector3(Math.sin(ry), 0, Math.cos(ry));
             const hp = r.head.getWorldPosition(new THREE.Vector3()), tp = top.getWorldPosition(new THREE.Vector3());
             aimBone(r.head, tp.sub(hp).normalize(), new THREE.Vector3(0, 1, 0).multiplyScalar(Math.cos(o.nod ?? 0.22)).addScaledVector(fwd, Math.sin(o.nod ?? 0.22)).normalize());
@@ -1513,8 +1532,18 @@
           const s0 = hips && hips.children.find(ch => ch.isBone && /spine/i.test(ch.name));
           const s1 = s0 && s0.children.find(ch => ch.isBone && /spine/i.test(ch.name));
           r.spine = s0 ? [s0, s1].filter(Boolean) : [boneOf(r, /Spine(_\d+)?$/), boneOf(r, /Spine1(_\d+)?$|Spine01(_\d+)?$/)].filter(Boolean); }
-        if (o.pray !== false) prayArms(r);
+        if (o.pray !== false && !KN) prayArms(r);           // (v19.6: the praying take IS the prayer)
         r.bowRest = r.spine.map(b => ({ b, q: b.quaternion.clone() }));
+        /* v19.6: a playing take rewrites these bones every frame, so their
+           "rest" is the take's own pose THIS frame — kept here, refreshed by
+           animTick, and read by the look and the bow (which lay on top) */
+        if (r.mixer) {
+          r.clipPose = new Map();
+          for (const b of [r.head, r.neck, ...r.spine]) if (b) r.clipPose.set(b, b.quaternion.clone());
+          if (r.head) r.headRest = r.clipPose.get(r.head);
+          if (r.neck) r.neckRest = r.clipPose.get(r.neck);
+          r.bowRest = r.spine.map(b => ({ b, q: r.clipPose.get(b) }));
+        }
         /* v18.5: THE CULLING SPHERE, IN THE MESH'S OWN SPACE. The one set above
            is 1.3 m only where a mesh's world scale is 1 — the Meshy women's
            mesh hangs under an Armature at 0.01, so theirs was 1.3 CENTIMETRES,
@@ -1673,31 +1702,45 @@
        (the granny) with her grandson beside her (the botak recruit, small),
        and the man in front of him. Everyone else is dealt from the four kinds
        on a fixed seed so the rows are varied and the same every load. */
-    const deal = ['lay_granny', 'lay_scold', 'lay_admintee', 'lay_botak'];
+    /* v19.6: the rows are Chad's four and only them (Chad: "completely
+       replace ... with only a mix of these 4 models"). The four people the
+       scenes direct are the close cuts — the woman beside him and Yai are the
+       two women, the man beside Yai and the man in front the two men — and
+       every other place is dealt from the four crowd cuts on a fixed seed so
+       no one kneels beside or behind their own double, and never Yai's or the
+       neighbour's model within 2.5 m of them. */
+    const deal = ['cg_woman1', 'cg_woman2', 'cg_man1', 'cg_man2'];
     const crowd = [];
+    let crowdSlot = 0;
     let neighbour = null, yai = null, kid = null, frontMan = null;
     /* a phone keeps the rows near him — v19.2: the rows IN FRONT of him
        (0–2), which his kneeling view sees; v18's 1–3 kept the row behind him
        and left the front row's mats and stands empty in the middle of his
        frame for the whole chant, fight and peak */
     const keep = (r, c) => !LOW || r <= 2;      // (v19.2: every column — c ≤ 3 left the right of the aisle one man per row)
+    const dealt = new Map();                    // "row,col" -> the base model there (crowd or close)
+    const base = (k) => k.replace(/hd$/, '');
+    const ROLE = new Map([[NEIGH.x + ',' + NEIGH.z, 'cg_woman1'], [YAI.x + ',' + YAI.z, 'cg_woman2'], [KID.x + ',' + KID.z, 'cg_man2'], [FRONT.x + ',' + FRONT.z, 'cg_man1']]);
+    const roleNear = (k, x, z) => [...ROLE].some(([pos, m]) => { const [px, pz] = pos.split(',').map(Number); return m === k && Math.hypot(x - px, z - pz) < 2.5; });
     for (let r = 0; r < ROWZ.length; r++) for (let c = 0; c < ROWX.length; c++) {
       const x = ROWX[c], z = ROWZ[r];
       if (x === PLACE.x && z === PLACE.z) continue;
       const jx = (hash(r, c + 11) - 0.5) * 0.08, jz = (hash(r, c + 13) - 0.5) * 0.08, ry = Math.PI + (hash(r, c + 17) - 0.5) * 0.14;
       let p = null;
-      // v19.2: the woman beside him at FULL detail — the peak and ending A frame her face at a metre (the crowd cut's face was the smear Chad turned down at v5.31)
-      if (x === NEIGH.x && z === NEIGH.z) { p = neighbour = mkSitter('lay_sitwomanhd', x, z, Math.PI - 0.05, { cast: true, at: 0.15 }); }
-      else if (x === YAI.x && z === YAI.z) { p = yai = mkSitter('lay_grannyhd', x, z, Math.PI + 0.06, { cast: true, at: 0.2 }); }
-      else if (x === KID.x && z === KID.z) { p = kid = mkSitter('lay_botakhd', x, z, Math.PI - 0.08, { h: 1.22, cast: true, at: 0.3 }); }
-      else if (x === FRONT.x && z === FRONT.z) { p = frontMan = mkSitter('lay_adminteehd', x, z, Math.PI + 0.03, { cast: true, at: 0.45 }); }
-      else if (keep(r, c)) {
-        // women on the left of the aisle mostly, men on the right mostly
-        const left = x < 0, pick = Math.floor(hash(r * 7 + c, 31) * 100);
-        let key = left ? (pick % 4 === 0 ? deal[2 + pick % 2] : deal[pick % 2]) : (pick % 4 === 0 ? deal[pick % 2] : deal[2 + pick % 2]);
-        // v19.2: never Yai's own model within 2.5 m of her (a copy's head showed over hers in the peak's shot)
-        if (key === 'lay_granny' && Math.hypot(x - YAI.x, z - YAI.z) < 2.5) key = 'lay_admintee';
-        p = mkSitter(key, x + jx, z + jz, ry, { at: hash(r, c) * 0.6 });
+      const role = ROLE.get(x + ',' + z);
+      if (role) {
+        p = mkSitter(role + 'hd', x, z, Math.PI + (hash(r, c + 19) - 0.5) * 0.12, { cast: true, at: hash(r, c + 23) });
+        if (x === NEIGH.x && z === NEIGH.z) neighbour = p; else if (x === YAI.x && z === YAI.z) yai = p;
+        else if (x === KID.x && z === KID.z) kid = p; else frontMan = p;
+        dealt.set(r + ',' + c, role);
+      } else if (keep(r, c)) {
+        const near = new Set([dealt.get(r + ',' + (c - 1)), dealt.get((r - 1) + ',' + c), dealt.get((r - 1) + ',' + (c - 1)), dealt.get((r - 1) + ',' + (c + 1)),
+                              ROLE.get(ROWX[c + 1] + ',' + z), ROLE.get(x + ',' + ROWZ[r + 1])].filter(Boolean));
+        const start = Math.floor(hash(r * 7 + c, 31) * 4);
+        let key = deal[start];
+        for (let k = 0; k < 4; k++) { const cand = deal[(start + k) % 4]; if (!near.has(cand) && !roleNear(cand, x, z)) { key = cand; break; } }
+        dealt.set(r + ',' + c, key);
+        p = mkSitter(key, x + jx, z + jz, ry, { at: hash(r, c) });
       }
       if (p) { crowd.push(p); p.row = r; p.col = c; }
     }
@@ -2225,12 +2268,36 @@
       const pq = b.parent.getWorldQuaternion(_q2);
       b.quaternion.premultiply(_q.setFromAxisAngle(side.applyQuaternion(pq.invert()), d));
     }
+    /* v19.6: THE TAKE, under the look. Each frame: put back the take's pose
+       on the bones a look or a bow wrote last frame (a mixer writes a bone only
+       when its value changed — v11.5, or the look stacks), run the take (the
+       KNEELING IDLE while a head is turned or turning back, the PRAYING take
+       otherwise, crossfaded), and keep its new pose as the rest the look and
+       the bow lay on. A phone runs the people it is not looking at every other
+       frame (two dt's at once: the same pose, half the skinning). */
+    let animFrame = 0;
+    function animTick(r, wdt) {
+      for (const [b, q] of r.clipPose) b.quaternion.copy(q);
+      const want = r.lookTo > 0 || r.lookW > 0.25 ? 'kneel' : 'pray';
+      if (want !== r.takeNow) {
+        const a = r.acts[want], b = r.acts[r.takeNow];
+        /* each back on its own phase (a.reset() puts a take at 0, so a row
+           that looked round together would otherwise pray in step after) */
+        if (a !== b) { a.reset(); a.play(); a.time = a.getClip().duration * hash(r.x + (want === 'kneel' ? 0.37 : 0), r.z); a.crossFadeFrom(b, 0.55, false); }
+        r.takeNow = want;
+      }
+      r.acc = (r.acc || 0) + wdt * r.rate;
+      if (LOW && ((animFrame + r.slot) & 1) && want === 'pray') return;
+      r.mixer.update(r.acc); r.acc = 0;
+      for (const [b, q] of r.clipPose) q.copy(b.quaternion);
+    }
     function peopleTick(wdt) {
-      breathT += wdt;
+      breathT += wdt; animFrame++;
+      for (const r of crowd) if (r.ready && r.mixer && r.clipPose) animTick(r, wdt);
       for (const r of crowd) { if (!r.ready || !r.model) continue; bowTick(r); }
       for (const r of crowd) if (r.ready && (r.lookTo > 0 || r.lookW > 0.002)) headTick(r, wdt);
       for (const r of monks) if (r.ready && (r.lookTo > 0 || r.lookW > 0.002)) headTick(r, wdt);
-      for (let i = 0; i < crowd.length; i++) if (crowd[i].ready && crowd[i].model) breathe(crowd[i], i);
+      for (let i = 0; i < crowd.length; i++) if (crowd[i].ready && crowd[i].model && !crowd[i].mixer) breathe(crowd[i], i);   // (a playing take breathes on its own)
       for (let i = 0; i < monks.length; i++) if (monks[i].ready && monks[i].model) breathe(monks[i], i + 31);
     }
     function updateNotes(dt, t) {

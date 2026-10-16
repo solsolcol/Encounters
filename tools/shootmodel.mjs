@@ -34,6 +34,7 @@ const HTML = `<!doctype html><html><head><meta charset="utf-8"><style>html,body{
 <body><script type="module">
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 const W = ${SIZE}, H = ${SIZE};
 const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
 renderer.setSize(W, H); renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -46,7 +47,7 @@ const key = new THREE.DirectionalLight(0xffffff, 2.2); key.position.set(3, 5, 4)
 const fill = new THREE.DirectionalLight(0xbcd0ff, 0.8); fill.position.set(-4, 2, -3); scene.add(fill);
 const cam = new THREE.PerspectiveCamera(35, 1, 0.01, 500);
 window.__ready = false;
-new GLTFLoader().load('/model.glb', (gltf) => {
+new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load('/model.glb', (gltf) => {   // v19.6: the shipped, meshopt-packed files too
   const root = gltf.scene; scene.add(root);
   root.updateMatrixWorld(true);
   const box = new THREE.Box3().setFromObject(root);

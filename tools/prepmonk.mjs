@@ -34,6 +34,7 @@ import sharp from 'sharp';
 import fs from 'node:fs';
 const [,, IN, OUT, R] = process.argv;
 const RATIO = Number(R || 0.3), TAUBIN = Number(process.env.TAUBIN || 0), NOMAP = !!process.env.NOMAP;
+const TEXPX = Number(process.env.TEX || 2048);   // v19.6: the sheets' size (a crowd cut is seen small)
 await Promise.all([MeshoptSimplifier.ready, MeshoptEncoder.ready, MeshoptDecoder.ready]);
 const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({
   'meshopt.encoder': MeshoptEncoder, 'meshopt.decoder': MeshoptDecoder });
@@ -146,7 +147,7 @@ for (const mesh of root.listMeshes()) for (const p of mesh.listPrimitives()) {
 
 /* sheets: base colour and normal map at 2048 WebP, on a plain source */
 for (const tex of root.listTextures()) {
-  const img = await sharp(Buffer.from(tex.getImage())).resize(2048, 2048, { fit: 'fill' }).webp({ quality: 92 }).toBuffer();
+  const img = await sharp(Buffer.from(tex.getImage())).resize(TEXPX, TEXPX, { fit: 'fill' }).webp({ quality: 92 }).toBuffer();
   tex.setImage(img).setMimeType('image/webp').setURI('');
 }
 await doc.transform(prune(), meshopt({ encoder: MeshoptEncoder, level: 'medium' }));
