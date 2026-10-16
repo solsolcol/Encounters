@@ -5139,11 +5139,31 @@ What the baseline contains, by release:
   kneeling body is on its knees and toes); no recolour and no IK prayer. The
   deal is seeded seat by seat and its fallback can still put a double beside a
   sitter (found by the v19.6 review — two of one woman 1.00 m apart in the
-  back row, a double behind the man beside Yai); being solved next. 2.7 MB
+  back row, a double behind the man beside Yai); solved at v19.7. 2.7 MB
   of old crowd files gone. Photographed on a phone praying, looking and back
   to praying, and ending C; chapter, leak, walk, cine, hosted green. No word
   moved; sheet v93 stands (v44 the link). Deploy `6ad27b895022bf72d08d04cb`,
   byte-verified (216 files).
+- **v19.7** THE KNEES STAY PLANTED, AND THE SEATS ARE SOLVED — the two bugs
+  the v19.6 review confirmed (five lenses, a skeptic each; 4 of 6 candidates
+  real, and the four were these two, the first found independently by three
+  lenses). THE SLIDE: Chad's two takes, each retargeted from its own Mixamo
+  file, root the body ~22 cm apart — 'pray' holds the knees and hips forward
+  of where 'kneel' does — so every head turn's crossfade skated the kneeler
+  across the mat on his knees, the whole hall at once in scene C's
+  `lookAll(1)` while the lens is on the floor ahead. mkSitter reads each
+  take's knee midpoint (`LeftLeg`/`RightLeg`) with that take alone, in the
+  group's frame, and animTick moves the model by the weighted difference
+  (`r.kneelOff`, `r.root0` — e3c1's v17.2 rootComp shape). Measured on a
+  phone through a full turn and back: the knees move 1 mm (offsets 0.216–0.231
+  m per model). THE DOUBLES: the seats are SOLVED (v5.29's shape) — a balanced
+  deal over the free places on a fixed seed, then a swap search over a
+  neighbour graph (places within 2.6 m, weight 1/d², three times heavier
+  where one is a person the scenes direct). 0 same-model pairs within 1.6 m
+  on desktop (23 places) and phone (17), down from 5; the repeats four models
+  cannot avoid sit 2.0 m apart or more; `stage.seatStats()` reports it.
+  chaptertest green; leak, walk, cine run after the deploy. No word moved; sheet v93 stands (v44 the
+  link). Deploy `6ad282b7e556b6636da1bb5f`, byte-verified (216 files).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so

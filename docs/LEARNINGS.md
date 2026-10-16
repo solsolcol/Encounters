@@ -5411,3 +5411,20 @@ cut (sharing its vertices and maps) when it is small.
   the skin and skeleton disagree: photographed, a crumpled sheet. The
   `Character_output` FBX beside it converts whole. Photograph a converted
   character before trusting any number about it.
+- **Two takes retargeted from two files can root the body in two places, and
+  a crossfade between them MOVES it (v19.7).** Chad's 'pray' and 'kneel' were
+  each retargeted from its own Mixamo FBX with the hips carried, and each
+  file put the kneeling body somewhere slightly different relative to the
+  root: the knees 22 cm apart. Played alone, each looks right; blended for a
+  head turn, the person skates on their knees across the mat. Three of five
+  reviewers found it by MEASURING the two takes (forward kinematics on the
+  shipped GLBs); no still photograph shows it, because each frame is a valid
+  pose. Read a planted point (the knee midpoint here) with each take ALONE
+  and move the model by the weighted difference during the blend — the
+  v17.2 rootComp shape — and measure the drift through a real turn (1 mm).
+- **A seat-by-seat deal with a fallback keeps no promise (v19.7).** "Pick a
+  model none of my neighbours has, else take the first" silently seats a
+  double whenever every candidate is ruled out — 6 of 19 places here. With
+  few kinds and many neighbours, solve the whole arrangement (v5.29: balanced
+  deal, seeded shuffle, swap search over a distance-weighted graph) and
+  REPORT the result (`seatStats()`), so the claim in the comment is a number.
