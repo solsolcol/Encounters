@@ -32,6 +32,7 @@ import { dedup, prune, weld, simplify, meshopt } from '@gltf-transform/functions
 import { MeshoptSimplifier, MeshoptEncoder, MeshoptDecoder } from 'meshoptimizer';
 import sharp from 'sharp';
 import fs from 'node:fs';
+import { fixThinCharts } from './chartfix.mjs';
 const [,, IN, OUT, R] = process.argv;
 const RATIO = Number(R || 0.3), TAUBIN = Number(process.env.TAUBIN || 0), NOMAP = !!process.env.NOMAP;
 const TEXPX = Number(process.env.TEX || 2048);   // v19.6: the sheets' size (a crowd cut is seen small)
@@ -105,10 +106,49 @@ if (WSMOOTH > 0) for (const mesh of root.listMeshes()) for (const p of mesh.list
 }
 await doc.transform(simplify({ simplifier: MeshoptSimplifier, ratio: RATIO, error: 0.0015 }), prune());
 
+/* ---- v19.8: THE FOLDS. The simplifier can fold a thin flap flat onto
+   itself, leaving two copies of one triangle facing opposite ways (none in
+   the scan; 1 to 319 per cut of the congregation). Summed at a vertex their
+   normals cancel to nothing, a zero normal shades as NaN, and NaN draws
+   BLACK — the black slits on the shirts, black with the light off, with a
+   solid colour and with both sides drawn. The second of each pair gets its
+   own three vertices (every attribute copied, so the skin moves them as
+   one) and both are left out of the shared normals below; each side is then
+   shaded by its own face. ---- */
+for (const mesh of root.listMeshes()) for (const p of mesh.listPrimitives()) {
+  const pos = p.getAttribute('POSITION'), idx = p.getIndices(), I0 = idx.getArray();
+  const n = pos.getCount(), v = [0, 0, 0], key = [];
+  for (let i = 0; i < n; i++) { pos.getElement(i, v); key.push(v.join(',')); }
+  const gm = new Map(), g = i => { let x = gm.get(key[i]); if (x === undefined) gm.set(key[i], x = gm.size); return x; };
+  const seen = new Map(), pairs = [];
+  for (let t = 0; t < I0.length / 3; t++) {
+    const q = [g(I0[3 * t]), g(I0[3 * t + 1]), g(I0[3 * t + 2])];
+    if (q[0] === q[1] || q[1] === q[2] || q[0] === q[2]) continue;
+    const m = q.indexOf(Math.min(...q)), cyc = [q[m], q[(m + 1) % 3], q[(m + 2) % 3]], s = [...q].sort((a, b) => a - b).join(',');
+    const prev = seen.get(s);
+    if (prev && prev.cyc[1] === cyc[2] && !prev.paired) { prev.paired = true; pairs.push([prev.t, t]); } else if (!prev) seen.set(s, { t, cyc });
+  }
+  if (!pairs.length) continue;
+  const add = pairs.length * 3, N = n + add;
+  for (const sem of p.listSemantics()) {
+    const acc = p.getAttribute(sem), old = acc.getArray(), es = acc.getElementSize();
+    const arr = new old.constructor(N * es); arr.set(old);
+    let o = n;
+    for (const [, t] of pairs) for (let k = 0; k < 3; k++, o++) for (let e = 0; e < es; e++) arr[o * es + e] = old[I0[3 * t + k] * es + e];
+    acc.setArray(arr);
+  }
+  const I = N > 65535 ? new Uint32Array(I0) : new I0.constructor(I0);
+  let o = n; for (const [, t] of pairs) for (let k = 0; k < 3; k++, o++) I[3 * t + k] = o;
+  idx.setArray(I);
+  p.setExtras({ ...(p.getExtras() || {}), folds: pairs.map(q => q.flat()) });
+  console.log(`  folds: ${pairs.length} triangles lying back to back on another, each side given its own vertices`);
+}
+
 /* ---- normals shared across the seams (and an optional Taubin pass) ---- */
 for (const mesh of root.listMeshes()) for (const p of mesh.listPrimitives()) {
   const pos = p.getAttribute('POSITION'), nor = p.getAttribute('NORMAL'), I = p.getIndices().getArray();
   const n = pos.getCount(), P = new Float32Array(n * 3), v = [0, 0, 0];
+  const folds = (p.getExtras() || {}).folds || [], inFold = new Set(folds.flat());
   for (let i = 0; i < n; i++) { pos.getElement(i, v); P.set(v, 3 * i); }
   // group vertices by position (1e-5 m)
   const key = i => `${Math.round(P[3 * i] * 1e5)},${Math.round(P[3 * i + 1] * 1e5)},${Math.round(P[3 * i + 2] * 1e5)}`;
@@ -130,6 +170,7 @@ for (const mesh of root.listMeshes()) for (const p of mesh.listPrimitives()) {
   }
   const GN = new Float64Array(G * 3);
   for (let t = 0; t < I.length; t += 3) {
+    if (inFold.has(t / 3)) continue;   // v19.8: a fold's two faces would cancel each other here
     const a = I[t], b = I[t + 1], c = I[t + 2];
     const ux = P[3 * b] - P[3 * a], uy = P[3 * b + 1] - P[3 * a + 1], uz = P[3 * b + 2] - P[3 * a + 2];
     const vx = P[3 * c] - P[3 * a], vy = P[3 * c + 1] - P[3 * a + 1], vz = P[3 * c + 2] - P[3 * a + 2];
@@ -142,7 +183,46 @@ for (const mesh of root.listMeshes()) for (const p of mesh.listPrimitives()) {
     nor.getElement(i, old); if (old[0] * x + old[1] * y + old[2] * z < 0.985) changed++;
     nor.setElement(i, [x, y, z]);
   }
-  console.log(`  ${n} vertices in ${G} positions; ${changed} normals turned more than 10° to agree across a seam${TAUBIN ? `; Taubin x${TAUBIN}` : ''}`);
+  /* v19.8: each side of a fold, and any vertex no other face touches, takes its own face's normal */
+  const face = t => { const a = I[3 * t], b = I[3 * t + 1], c = I[3 * t + 2];
+    const ux = P[3 * b] - P[3 * a], uy = P[3 * b + 1] - P[3 * a + 1], uz = P[3 * b + 2] - P[3 * a + 2];
+    const vx = P[3 * c] - P[3 * a], vy = P[3 * c + 1] - P[3 * a + 1], vz = P[3 * c + 2] - P[3 * a + 2];
+    const f = [uy * vz - uz * vy, uz * vx - ux * vz, ux * vy - uy * vx], L = Math.hypot(...f) || 1; return f.map(q => q / L); };
+  for (const [t1, t2] of folds) {
+    for (let k = 0; k < 3; k++) nor.setElement(I[3 * t2 + k], face(t2));
+    for (let k = 0; k < 3; k++) { const i = I[3 * t1 + k], g = gid[i]; if (Math.hypot(GN[3 * g], GN[3 * g + 1], GN[3 * g + 2]) < 1e-20) nor.setElement(i, face(t1)); }
+  }
+  /* and a knife edge the simplifier left without an identical twin (two faces
+     folded back on a shared edge): where a position's faces cancel, each of
+     its vertices takes the faces that use THAT vertex, then its largest one */
+  { const big = new Float64Array(G); for (let t = 0; t < I.length; t += 3) { if (inFold.has(t / 3)) continue;
+      const f = face(t / 3), a = I[t], b = I[t + 1], c = I[t + 2];
+      const ux = P[3 * b] - P[3 * a], uy = P[3 * b + 1] - P[3 * a + 1], uz = P[3 * b + 2] - P[3 * a + 2], vx = P[3 * c] - P[3 * a], vy = P[3 * c + 1] - P[3 * a + 1], vz = P[3 * c + 2] - P[3 * a + 2];
+      const ar = Math.hypot(uy * vz - uz * vy, uz * vx - ux * vz, ux * vy - uy * vx); for (const i of [a, b, c]) big[gid[i]] += ar; }
+    const own = new Map();
+    for (let t = 0; t < I.length / 3; t++) for (let k = 0; k < 3; k++) { const i = I[3 * t + k], g = gid[i];
+      if (inFold.has(t) || Math.hypot(GN[3 * g], GN[3 * g + 1], GN[3 * g + 2]) > 1e-3 * big[g]) continue;
+      const f = face(t), o = own.get(i) || [0, 0, 0, null, 0]; o[0] += f[0]; o[1] += f[1]; o[2] += f[2]; own.set(i, o); }
+    for (const [i, o] of own) { const L = Math.hypot(o[0], o[1], o[2]); if (L > 1e-6) nor.setElement(i, [o[0] / L, o[1] / L, o[2] / L]);
+      else { for (let t = 0; t < I.length / 3; t++) if (I[3 * t] === i || I[3 * t + 1] === i || I[3 * t + 2] === i) { nor.setElement(i, face(t)); break; } } }
+    if (own.size) console.log(`  knife edges: ${own.size} vertices whose faces cancel, shaded by their own faces`);
+  }
+  const used = new Set(I);   // the simplifier leaves vertices no triangle uses; meshopt's reorder drops them
+  let zero = 0; for (const i of used) { nor.getElement(i, v); if (!(Math.hypot(...v) > 0.5)) zero++; }
+  if (folds.length) p.setExtras({ ...(p.getExtras() || {}), folds: undefined });
+  console.log(`  ${n} vertices in ${G} positions; ${changed} normals turned more than 10° to agree across a seam${TAUBIN ? `; Taubin x${TAUBIN}` : ''}; normals of no length: ${zero}`);
+}
+
+/* v19.8: the scan's two-texel charts, each pointed at a uniform spot of the
+   colour its surface shows, so an edge fetch cannot bleed a neighbour into
+   them (CHARTFIX=1; tools/chartfix.mjs has the measurement) */
+if (process.env.PREPACK) await io.write(process.env.PREPACK, doc);   // the cut before the fix, for probes
+if (process.env.CHARTFIX) {
+  const rep = [];
+  await fixThinCharts(doc, { finalPx: TEXPX, report: rep });
+  const sz = rep.map(r => r.texels).sort((a, b) => b - a);
+  console.log(`  largest fixed charts (texels at ${TEXPX}): ${sz.slice(0, 12).join(' ')}`);
+  if (process.env.CHARTREPORT) fs.writeFileSync(process.env.CHARTREPORT, JSON.stringify(rep));
 }
 
 /* sheets: base colour and normal map at 2048 WebP, on a plain source */
