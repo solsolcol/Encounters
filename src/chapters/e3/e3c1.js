@@ -208,7 +208,7 @@
     [-6.1,-0.9,-5.9,-0.8],[-4.3,-0.9,-4.1,-0.8],[4.3,-0.9,4.5,-0.8],[6,-0.9,6.2,-0.8]
   ];
   const SECS = { z1arrive: 3.08, z1wai: 3.71, z1wait: 3.40, z1trance: 9.29, z1warm: 4.99, au1hi: 3.97, au1sell: 11.38, au1shoes: 4.36, aj1which: 3.44, aj1chosen: 1.86, aj1next: 1.72, aj1sit: 1.57, aj1breathe: 3.63, aj1katha: 10.61, aj1done: 1.65, aj1ask: 3.08,
-                 /* v16.1 */ mk1come: 3.40, mk1chant: 12.77, mk1teach: 14.37, hp1room: 6.19, aj1mat: 1.88, z1sadhu: 2.35, z1room: 1.65,
+                 /* v16.1 */ mk1come: 3.40, mk1chant: 12.77, /* v19.9 */ mk1iti: 26.78, mk1teach: 14.37, hp1room: 6.19, aj1mat: 1.88, z1sadhu: 2.35, z1room: 1.65,
                  /* v19.1 */ z1thank: 1.70 };
 
   const hash = (i, s) => { const x = Math.sin(i * 127.1 + s * 311.7) * 43758.5453; return x - Math.floor(x); };
@@ -3026,7 +3026,7 @@
       if (k <= 0.02) return null;
       return worldSfx(name, vol * (0.25 + 0.75 * k * k), rate, panAt(x, z));
     }
-    if (warmSounds) warmSounds(['mk1come', 'mk1chant', 'mk1teach', 'hp1room', 'aj1mat', 'z1sadhu', 'z1room', 'z1thank',
+    if (warmSounds) warmSounds(['mk1come', 'mk1chant', 'mk1iti', 'mk1teach', 'hp1room', 'aj1mat', 'z1sadhu', 'z1room', 'z1thank',
                                 'roomdoor', 'watersprinkle', 'roomamb', 'eavebells', 'wingflap',
                                 'z1wai', 'z1wait', 'z1trance', 'z1warm', 'au1hi', 'au1sell', 'au1shoes',
                                 'aj1next', 'aj1sit', 'aj1breathe', 'aj1katha', 'aj1done', 'aj1ask',
@@ -3147,7 +3147,7 @@
     /* 4b · THE BLESSING (v16.1). He kneels under the monk's raised seat and
        bows; the monk chants the blessing (the Pali in a Thai monk's mouth) and
        flicks lustral water over him from the silver bowl, three times; then
-       the teaching, Chad's words — "blessings don't replace hard work and
+       (v19.9) the short Itipiso, the Buddha's virtues; then the teaching, Chad's words — "blessings don't replace hard work and
        merit" — and he answers "Sadhu", bows, and stands. Laid on the line
        queue so no line is dropped on a slow frame; the flicks are timed from
        the moment the chant actually starts. */
@@ -3177,12 +3177,21 @@
       /* the blessing keeps its own time whether or not a line sounds (a line
          whose bytes have not arrived is dropped, and every harness runs
          muted): the chant's start is stamped when the queue REACHES it, and
-         the queue is held for the chant's and the teaching's own lengths */
+         the queue is held for each chant's and the teaching's own lengths */
       const hold = (secs) => queueFn(() => { if (blessing) speak.until = Math.max(speak.until, blessing.mark + secs); });
       queueGap(2.2);
       queueFn(() => { if (blessing) blessing.chantAt = blessing.mark = dayClock.t; });
       queueLine('mk1chant', () => { monk.nod = SECS.mk1chant * 0.6; monkDo(MONK_BLESS, SECS.mk1chant); });
       hold(SECS.mk1chant + 0.3);
+      /* v19.9 — the short Itipiso straight after (Chad: "Can i add another
+         short itipiso chant after that short chant too?"). The whisk is down
+         by then (the flicks end 11.4 s into the blessing chant); a chanting
+         monk sits still, so he keeps his rest and only his head moves with
+         the words. */
+      queueGap(0.9);
+      queueFn(() => { if (blessing) blessing.mark = dayClock.t; });
+      queueLine('mk1iti', () => { monk.nod = SECS.mk1iti * 0.6; });
+      hold(SECS.mk1iti + 0.3);
       queueGap(0.9);
       queueFn(() => { if (blessing) blessing.mark = dayClock.t; });
       queueLine('mk1teach', () => { monk.nod = SECS.mk1teach; monkDo(MONK_TALK, SECS.mk1teach); });

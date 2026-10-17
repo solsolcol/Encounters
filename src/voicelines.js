@@ -912,6 +912,8 @@
       text: "[calmly] Come. Kneel here, and receive the blessing.", secs: 3.40 },
     { id: "mk1chant", who: "monk", ch: "e3c1", where: "The blessing, chanted as he sprinkles the water (Pali: Sabbītiyo vivajjantu, sabba-rogo vinassatu, mā te bhavatvantarāyo, sukhī dīghāyuko bhava)",
       text: "[chanting slowly in a low monotone] Sabbee-tiyo wiwatchantu... sabba-rogo winassatu... maa tay pawatwantarayo... sukhee deekha-yuko pawa...", secs: 12.77 },
+    { id: "mk1iti", who: "monk", ch: "e3c1", where: "Straight after the blessing, the short Itipiso — Chad's addition (Pali: Iti pi so bhagavā arahaṁ sammā-sambuddho, Vijjā-caraṇa-sampanno sugato lokavidū, Anuttaro purisa-damma-sārathi satthā deva-manussānaṁ buddho bhagavā 'ti)",
+      text: "[chanting slowly in a low monotone] Iti-pi so pakawa... arahang samma-sampoot-toh... wit-chaa-jarana-sampanno... sukato loka-widoo... anuttaro purisa-tamma-saarati... sattaa tay-wa-manussaanang... poot-toh pakawa-tee...", secs: 26.78 },
     { id: "mk1teach", who: "monk", ch: "e3c1", where: "After the blessing — Chad's words",
       text: "[gently] Blessings don't replace hard work and merit. Both hard work and merit will create the true foundation for the blessings to work. And don't forget to keep your Buddhist five precepts.", secs: 14.37 },
     { id: "z1sadhu", who: "jamesAdult", ch: "e3c1", where: "He thanks the monk",

@@ -6576,7 +6576,7 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
   /* v16.0 · episode 3 chapter 1: the Ajarn (Toto) and the stall auntie (Anna) */
   'aj1next', 'aj1sit', 'aj1breathe', 'aj1katha', 'aj1done', 'aj1ask',
   'aj1A', 'aj1B', 'aj1C', 'aj1D1', 'aj1D2', 'au1hi', 'au1sell', 'au1shoes',
-  'mk1come', 'mk1chant', 'mk1teach', 'hp1room', 'aj1mat',
+  'mk1come', 'mk1chant', 'mk1iti', 'mk1teach', 'hp1room', 'aj1mat',
   'aj1which', 'aj1chosen',     // v17.6: the Ajarn asks which yant, and answers the choice
   'lw2look', 'lw2pull',
   'lw2what', 'yai2dance']);   // v19.4: their whispers in play, as his hands move      // v18.0: the laywoman beside him (Onnie) and Yai in front (Air), whispered
@@ -9684,7 +9684,7 @@ const STING_SAMPLE = {
   watamb: ['watamb', 1], e3chant: ['e3chant', 1], officehum: ['officehum', 1], wareamb: ['wareamb', 1],
   cabinhum: ['cabinhum', 1], e3film: ['e3film', 1], e3wait: ['e3wait', 1], e3close: ['e3close', 1],
   /* v16.1 · the monk in the sala, the man by the walkway, the private room */
-  mk1come: ['mk1come', 1], mk1chant: ['mk1chant', 1], mk1teach: ['mk1teach', 1], hp1room: ['hp1room', 1],
+  mk1come: ['mk1come', 1], mk1chant: ['mk1chant', 1], mk1iti: ['mk1iti', 1], mk1teach: ['mk1teach', 1], hp1room: ['hp1room', 1],
   aj1mat: ['aj1mat', 1], z1sadhu: ['z1sadhu', 1], z1room: ['z1room', 1],
   z1thank: ['z1thank', 1],                                   // v19.1 · "Thank you, Ajahn Krukai." as he bows, every outcome
   roomdoor: ['roomdoor', 1], watersprinkle: ['watersprinkle', 1], roomamb: ['roomamb', 1],
