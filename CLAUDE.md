@@ -5199,8 +5199,11 @@ What the baseline contains, by release:
   sits still, so he keeps his rest and only his head moves with the words.
   The kneel lasts ~27 s longer; nothing else moved. Rows in `STING_SAMPLE`,
   `CAST_TAKES`, the registry, SECS and the warm list. Sheet v94 exported (one
-  voice line; v44 stays the link). Deploy `6ad39d08f495d3ae3df587b8`,
-  byte-verified (216 files).
+  voice line; v44 stays the link). Played through to the blessing on a phone
+  browser, unmuted: the voice log heard the Sabbītiyo, the Itipiso (26.79 s,
+  whole) and the teaching in that order, none overlapping, no page errors.
+  Harnesses chapter, text, csp, hosted green. Deploy
+  `6ad39d08f495d3ae3df587b8`, byte-verified (216 files).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
