@@ -5164,6 +5164,26 @@ What the baseline contains, by release:
   cannot avoid sit 2.0 m apart or more; `stage.seatStats()` reports it.
   chapter, leak, walk, cine green (4/4, after the deploy). No word moved; sheet v93 stands (v44 the
   link). Deploy `6ad282b7e556b6636da1bb5f`, byte-verified (216 files).
+- **v19.8** THE CONGREGATION'S HAIR — Chad: *"Why are there white streaks on
+  the hair of the audience? Fix it so that their hair is fine."* Two defects,
+  both measured before anything moved (docs/LEARNINGS.md has both laws). THE
+  SPECKS: each Meshy scan's atlas lays about two thirds of its charts in
+  strips two to four texels wide, flush against charts of another colour —
+  black hair touching white shirt — so every fetch on them is an edge fetch
+  and blends white in; not the lighting, not holes, not the UVs' stretch.
+  `tools/chartfix.mjs` (CHARTFIX=1 in `tools/prepmonk.mjs`) points each thin
+  chart at a uniform spot of its colour, does the same per triangle for the
+  thin arms of solid charts, and pulls every border vertex that faces another
+  colour 1.5 texels inward; no painted pixel moves. What a mipmap still
+  reaches across a flush border only no mipmaps removes: the congregation's
+  colour maps draw without them (v5.11's `zavNoMip` law; the normal maps keep
+  theirs). THE BLACK SLITS on the shirts: the simplifier folded thin flaps
+  flat into back-to-back triangle pairs (1–319 per cut), whose normals
+  cancelled to zero and shaded as NaN; each side now has its own vertices
+  and its own face's normal. All eight files re-made (masters/v19.8/make.sh,
+  from v19.6's retargeted files); photographed back, side and face for every
+  model, desktop and phone, and the hall with and without mipmaps. `src/main.js`
+  untouched. No word moved; sheet v93 stands (v44 the link).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so

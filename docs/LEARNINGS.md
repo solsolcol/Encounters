@@ -5428,3 +5428,35 @@ cut (sharing its vertices and maps) when it is small.
   few kinds and many neighbours, solve the whole arrangement (v5.29: balanced
   deal, seeded shuffle, swap search over a distance-weighted graph) and
   REPORT the result (`seatStats()`), so the claim in the comment is a number.
+- **A Meshy atlas packs some charts two texels wide with NO GUTTER (v19.8).**
+  Chad: "Why are there white streaks on the hair of the audience?" They were
+  not the lighting (they stayed with the light off), not holes (a solid colour
+  hid them), not a stretched UV and not the simplifier's welding: about two
+  thirds of each scan's ~600–3,000 UV charts are a handful of triangles laid
+  in strips 2–4 texels wide, butted straight against charts of another colour
+  — black hair touching white shirt. Every fetch on such a strip is an edge
+  fetch, so bilinear filtering and every mip level blend the neighbour in,
+  and millimetres of hair render white. Drawn over the sheet, some strips do
+  not even line up with their own paint. Found by ray-casting the speck
+  pixels back to their triangles (`getVertexPosition`, projected by hand —
+  `__enc` exposes no THREE) and drawing those triangles' UVs over the sheet.
+  `tools/chartfix.mjs` (CHARTFIX=1 in prepmonk) does it by MEASUREMENT: a
+  chart thin at the sheet's final size is pointed at a uniform spot of its
+  colour (its own median, unless no fifth of the surface round it shares it —
+  then the surface's); a thin arm of a solid chart, triangle by triangle; and
+  every border vertex whose outside is another colour pulled 1.5 texels in.
+  The paint never moves. What a mipmap still reaches across a flush border,
+  only switching mipmaps OFF removes — the v5.11 law (`zavNoMip`) for the
+  same kind of atlas, applied in e3c2 to the congregation's colour maps.
+  Photographed before and after, every model, back, side and face, desktop and
+  phone, and at a distance with and without mipmaps (no shimmer in a still).
+- **The simplifier folds thin flaps flat, and a fold shades BLACK (v19.8).**
+  meshopt can collapse a thin flap onto itself, leaving two copies of one
+  triangle facing opposite ways (none in the scans; 1–319 per cut). Normals
+  summed across a seam cancel to zero there, a zero normal shades as NaN, and
+  NaN draws black — black slits on the white shirts, the same with the light
+  off, with a solid colour and with both sides drawn (that last is what rules
+  out a flipped face). prepmonk now gives the second of each pair its own
+  vertices and shades each side by its own face. Count them on the cut, not
+  the scan: `dbg`-style, sort each triangle's three position groups and look
+  for the same triple with the other winding.

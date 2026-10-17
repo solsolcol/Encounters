@@ -1452,6 +1452,16 @@
           if (!o2.isMesh) return;
           o2.castShadow = !LOW && !!o.cast; o2.receiveShadow = false;
           if (o.white !== false && !(KIND[key] && KIND[key].own)) o2.material = Array.isArray(o2.material) ? o2.material.map(mm => whiteOf(mm, o2.geometry, o2)) : whiteOf(o2.material, o2.geometry, o2);
+          /* v19.8: Chad's congregation draws its colour WITHOUT mipmaps — the
+             v5.11 law (zavNoMip) for the same kind of atlas. Their scans pack
+             patches of black hair flush against white shirt patches with no
+             gap between, so every shrunken copy of the sheet averages the two
+             into a white line along the hair. tools/chartfix.mjs took the
+             two-texel patches and the borders off the edge at the prep (masters/
+             v19.8); what a mipmap still reaches, plain bilinear sampling does
+             not. The normal maps keep theirs. */
+          if (KIND[key] && KIND[key].own) for (const mm of [].concat(o2.material)) { const t = mm && mm.map;
+            if (t && t.generateMipmaps !== false) { t.generateMipmaps = false; t.minFilter = THREE.LinearFilter; t.needsUpdate = true; } }
           o2.frustumCulled = true;
           if (o2.isSkinnedMesh) { const sp = new THREE.Sphere(new THREE.Vector3(0, 0.6, 0), 1.3); o2.boundingSphere = sp.clone(); if (o2.geometry) o2.geometry.boundingSphere = sp.clone(); }
         });

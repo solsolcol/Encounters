@@ -219,7 +219,7 @@ for (const mesh of root.listMeshes()) for (const p of mesh.listPrimitives()) {
 if (process.env.PREPACK) await io.write(process.env.PREPACK, doc);   // the cut before the fix, for probes
 if (process.env.CHARTFIX) {
   const rep = [];
-  await fixThinCharts(doc, { finalPx: TEXPX, report: rep });
+  await fixThinCharts(doc, { finalPx: TEXPX, report: rep, inset: Number(process.env.INSET || 1.5) });
   const sz = rep.map(r => r.texels).sort((a, b) => b - a);
   console.log(`  largest fixed charts (texels at ${TEXPX}): ${sz.slice(0, 12).join(' ')}`);
   if (process.env.CHARTREPORT) fs.writeFileSync(process.env.CHARTREPORT, JSON.stringify(rep));
