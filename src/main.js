@@ -4482,11 +4482,21 @@ function kitFrame(dt, t, dLookX, dLookY) {
      wakes him at three). The same element the cutscenes fade; a cutscene
      that starts mid-fade simply takes it over, as it always has. */
   if (kitFade && state === 'play') {
-    kitFade.t = Math.min(1, kitFade.t + dt / kitFade.secs);
+    /* v21.0: on WALL TIME, like the kit's timer below (v7.4). `dt` is clamped
+       to 0.05 s, so under twenty frames a second a fade ran slow — a hot
+       phone's 1.2 s lift took longer, and e3c3's decision, waiting for its
+       black to lift, gave up after six seconds on a slow device and opened
+       over a screen still 44 % dark (and a fade is frozen outside play). The
+       first frame steps by `dt` exactly as before, so a snap to black still
+       lands in one frame; above twenty frames a second nothing changes. */
+    const now = performance.now() / 1000;
+    const step = kitFade.last ? Math.min(0.5, now - kitFade.last) : dt;
+    kitFade.last = now;
+    kitFade.t = Math.min(1, kitFade.t + step / kitFade.secs);
     kitFadeNow = kitFade.from + (kitFade.to - kitFade.from) * smoothK(kitFade.t);
     cineFadeEl.style.opacity = String(kitFadeNow);
     if (kitFade.t >= 1) kitFade = null;
-  }
+  } else if (kitFade) kitFade.last = 0;            // a menu or a scene never eats the fade
   // timer, objective, waypoint
   /* v7.4: the countdown runs on WALL TIME, not the frame's dt. `dt` is
      clamped to 0.05 s so a stutter can never throw the world, which means a

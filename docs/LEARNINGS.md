@@ -5601,3 +5601,12 @@ cut (sharing its vertices and maps) when it is small.
   table and the stool like every probe. A stage names its `arrivals` and the
   walk floods from each: a teleport is not a route, the arrival must be open
   floor, and everything in that world must be walkable from it.
+- **The kit's FADE is a clock too (v21.0).** v7.4 moved the kit's countdown
+  onto wall time because `dt` is clamped to 0.05 s and a device under twenty
+  frames a second ran it slow — and the kit's fade, written beside it, kept
+  `t += dt / secs`. So every chapter's black lifted slow on a hot phone, and a
+  chapter that waits for its black before opening a decision either waited
+  long or gave up and opened over the dark (e3c3, found by a resume probe on a
+  one-frame-a-second box: 44 % black under the four answers, frozen there
+  because a fade only runs in play). Every per-frame thing with a duration in
+  SECONDS reads the wall clock; the clamped `dt` is for motion only.

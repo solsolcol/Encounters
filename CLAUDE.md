@@ -5356,6 +5356,14 @@ What the baseline contains, by release:
   world, the pile itself too: the doorway, the table, the stool and the
   medium's table are all walkable. Harnesses chapter, walk, leak, fixture,
   cine, text, menu, hosted, csp, state, resume, restart, inv, sanity green.
+  And a resume probe (Continue from a save at each of the chapter's eleven
+  phases, through the title, on a phone) found the last one: the decision
+  opened over a screen still 44 % dark, because `kit.fade` advanced by the
+  CLAMPED frame step and so ran slow under twenty frames a second (the v7.4
+  law, which the kit's timer obeyed and its fade did not). The fade runs on
+  wall time now (the first frame steps as before; above twenty frames a second
+  nothing changes; episode 1 never calls it) — fixture and sanity green on it,
+  deployed `6ad6aa503c5ce78dcd720ba1`, byte-verified.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
