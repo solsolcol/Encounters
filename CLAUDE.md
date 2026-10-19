@@ -5231,8 +5231,10 @@ What the baseline contains, by release:
   fingertips meeting, the palms cupped, the thumbs toward the chest. The
   senior monk's microphone stand is gone and he prays with the row.
   `stage.palms()` reports what was measured. No word moved; sheet v94 stands
-  (v44 the link). Deploy `6ad5df48a136917addf7078a`, byte-verified (212
-  files).
+  (v44 the link). Photographed at phone size too (the lead monk and the
+  next, the rows from the aisle and beside him). Harnesses chapter, leak,
+  walk, cine, hosted green. Deploy `6ad5df48a136917addf7078a`, byte-verified
+  (212 files).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
