@@ -431,6 +431,8 @@ ASSETS = {
     'timkplod':     ('assets/timkplod.glb', True, False),     # e3c3 v21.0: the LP Tim's LIGHT copy for its case on the owner's counter, beyond 1.4 m (the full timkp within) — masters/v21.0/timlod.mjs
     'staffman':     ('assets/staffman.glb', True, False),     # e3c3 v21.0: the shop's staff man — ep1's standing man with the same four takes (masters/v21.0/owner/make.sh); a stand-in
     'medium':       ('assets/medium.glb', True, False),       # e3c3 v21.0: Chad's black Taoist medium, ten takes on a Mixamo rig (CHARTFIX=1 tools/prepmonk.mjs 0.3: 594k -> 178k tris)
+    'wifewalk':     ('assets/wifewalk.glb', True, False),     # e3c3 v21.0: the admin tee's Walking retargeted onto sitwoman, clip only (masters/v21.0/walk/make.sh)
+    'fatherwalk':   ('assets/fatherwalk.glb', True, False),   # e3c3 v21.0: the same onto sitangry, clip only
 }
 
 # Hosted-only assets: shipped as a URL, never inlined as base64.
@@ -455,7 +457,7 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'kamaz', 'forest', 'rifle', 'ghostcyclist', 'fboaim',
            'muzzle', 'ammocrate', 'ammomags', 'icontorch', 'zavsoldier',
            'thaikit', 'wessred', 'wessgreen', 'naga', 'monk', 'ajarn', 'temple', 'slipper', 'lersimask', 'altarrow', 'customer', 'buddhahd', 'buddhalod', 'sangkathan', 'sitwomantalk', 'filmoffice', 'filmlaptop', 'actioncam', 'planecabin',
-           'cg_woman2', 'cg_man2', 'cg_woman2hd', 'cg_man2hd', 'monkrow', 'hanuman', 'medium', 'owner', 'staffman', 'timkplod'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone
+           'cg_woman2', 'cg_man2', 'cg_woman2hd', 'cg_man2hd', 'monkrow', 'hanuman', 'medium', 'owner', 'staffman', 'timkplod', 'wifewalk', 'fatherwalk'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone
 HOSTED_ONLY |= E2_ONLY
 
 # The split packs are hosted-only: there is no __..._B64__ token for them and

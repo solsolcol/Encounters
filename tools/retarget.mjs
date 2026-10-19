@@ -179,12 +179,12 @@ const dst  = await io.read(targetF);
 const MAP = mapName === 'mixamo'
   ? Object.fromEntries(dst.getRoot().listNodes()
       .filter(n => /^mixamorig/.test(n.getName()))
-      .map(n => [n.getName().replace(/^mixamorig:?/, '').replace(/_\d+$/, ''), n.getName()]))
+      .map(n => [n.getName().replace(/^mixamorig\d*:?/, '').replace(/_\d+$/, ''), n.getName()]))   // v21.0: and a NUMBERED prefix (mixamorig9:, a second Mixamo export)
   : MAPS[mapName];
 if (!MAP) { console.error('unknown map: ' + mapName + ' (have: ' + Object.keys(MAPS) + ', mixamo)'); process.exit(1); }
 
 /* the take's animated nodes, by Mixamo core name */
-const core = n => n.replace(/^mixamorig:?/, '').replace(/_\d+$/, '');
+const core = n => n.replace(/^mixamorig\d*:?/, '').replace(/_\d+$/, '');
 const srcNode = new Map();
 for (const n of take.getRoot().listNodes()) srcNode.set(core(n.getName()), n);
 const dstNode = new Map();

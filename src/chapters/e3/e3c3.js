@@ -882,6 +882,7 @@
           if (isFinite(lb)) g.position.y += group.position.y - lb + (opts.footLift ?? 0.02);
         }
         g.updateMatrixWorld(true);
+        rig.baseY = g.position.y; rig.yOff = 0; rig.yTo = 0;
         if (opts.seated && rig.hips) {
           rig.hips.getWorldPosition(_v);
           const local = group.worldToLocal(_v.clone());
@@ -941,6 +942,11 @@
         if (!r.group.visible) continue;
         if (r.path) { walkTick(r, wdt); moving = true; }
         rigTurn(r, wdt);
+        if (r.model && r.baseY !== undefined && r.yOff !== r.yTo) {
+          r.yOff += (r.yTo - r.yOff) * (1 - Math.exp(-wdt * 5));
+          if (Math.abs(r.yTo - r.yOff) < 0.002) r.yOff = r.yTo;
+          r.model.position.y = r.baseY + r.yOff;
+        }
         if (!r.mixer) continue;
         if (r.talkUntil && now > r.talkUntil) { r.talkUntil = 0; if (r.idle && !r.path) r.play(r.idle, r.opts.rate || 1, 0.4); }
         headPre(r); spinePre(r);
@@ -1020,31 +1026,43 @@
       r.group.updateMatrixWorld(true);
       r.hips.getWorldPosition(_v);
       const out = r.group.worldToLocal(_v.clone());
+      /* and how far its feet hang above the floor: a seated take that keeps
+         the hips at standing height sits a man in the air, so his soles are
+         put on the floor (the v17.1 law) and the seat goes under him there */
+      const lb = lowestBone(r.model);
+      out.drop = isFinite(lb) ? Math.max(0, lb - r.group.position.y - 0.02) : 0;
       if (keep && r.acts[keep]) { r.play(keep, r.opts.rate || 1, 0); r.mixer.update(0.0001); }
       return out;
     }
-    /* THE GLOW ON THE FLOOR where he is to kneel (e3c2's zone, in gold) */
+    /* THE GLOW ON THE FLOOR where he is to kneel (e3c2's zone, in gold).
+       On this WHITE tile an additive gold sums to white (the v8.8 law), so
+       the hue is a normal-blended tint and the glow a faint additive layer
+       over it (the first photographs showed a white ring) */
     function mkZone(x, z) {
       const g = new THREE.Group(); g.position.set(x, 0.02, z); g.visible = false; shopG.add(g);
       const disc = new THREE.Mesh(new THREE.CircleGeometry(0.5, 32),
-        new THREE.MeshBasicMaterial({ color: 0xf2c46a, transparent: true, opacity: 0.22, depthWrite: false, fog: false }));
+        new THREE.MeshBasicMaterial({ color: 0xd99a1a, transparent: true, opacity: 0.3, depthWrite: false, fog: false }));
       disc.rotation.x = -Math.PI / 2; g.add(disc);
       const ring = new THREE.Mesh(new THREE.RingGeometry(0.46, 0.54, 40),
-        new THREE.MeshBasicMaterial({ color: 0xffd98a, transparent: true, opacity: 0.8, depthWrite: false, fog: false,
-                                      blending: THREE.AdditiveBlending, side: THREE.DoubleSide }));
+        new THREE.MeshBasicMaterial({ color: 0xc07a08, transparent: true, opacity: 0.85, depthWrite: false, fog: false, side: THREE.DoubleSide }));
       ring.rotation.x = -Math.PI / 2; ring.position.y = 0.004; g.add(ring);
+      const glow = new THREE.Mesh(new THREE.RingGeometry(0.42, 0.6, 40),
+        new THREE.MeshBasicMaterial({ color: 0xffc860, transparent: true, opacity: 0.3, depthWrite: false, fog: false,
+                                      blending: THREE.AdditiveBlending, side: THREE.DoubleSide }));
+      glow.rotation.x = -Math.PI / 2; glow.position.y = 0.005; g.add(glow);
       const wave = new THREE.Mesh(new THREE.RingGeometry(0.48, 0.54, 40), ring.material.clone());
       wave.rotation.x = -Math.PI / 2; wave.position.y = 0.006; wave.userData.moves = true; g.add(wave);
-      g.userData = { disc, ring, wave };
+      g.userData = { disc, ring, wave, glow };
       return g;
     }
     function zoneTick(g, t) {
       if (!g.visible) return;
       const { disc, ring, wave } = g.userData;
       const k = (t % 2.0) / 2.0;
-      wave.scale.setScalar(1 + k * 0.9); wave.material.opacity = 0.7 * (1 - k);
-      ring.material.opacity = 0.6 + 0.3 * Math.sin(t * 3.1);
-      disc.material.opacity = 0.18 + 0.08 * Math.sin(t * 3.1);
+      wave.scale.setScalar(1 + k * 0.9); wave.material.opacity = 0.75 * (1 - k);
+      ring.material.opacity = 0.7 + 0.2 * Math.sin(t * 3.1);
+      disc.material.opacity = 0.24 + 0.08 * Math.sin(t * 3.1);
+      if (g.userData.glow) g.userData.glow.material.opacity = 0.22 + 0.12 * Math.sin(t * 3.1);
     }
     const zone = mkZone(MAT.x, MAT.z);
     /* THE GIRL'S PHONE, raised to film him: it rides between her hands, a
@@ -1080,8 +1098,10 @@
         if (!hl) return;
         /* his own seated take's hips, carried to the stool's spot and turn */
         const c = Math.cos(OWN_SIT.ry), sn = Math.sin(OWN_SIT.ry);
-        ownerStool = plasticStool(shopG, OWN_SIT.x + hl.x * c + hl.z * sn, OWN_SIT.z - hl.x * sn + hl.z * c, Math.max(0.3, hl.y - 0.1), 0xc8261c);
+        r.seatDrop = hl.drop;
+        ownerStool = plasticStool(shopG, OWN_SIT.x + hl.x * c + hl.z * sn, OWN_SIT.z - hl.x * sn + hl.z * c, Math.max(0.3, hl.y - hl.drop - 0.1), 0xc8261c);
         ownerStool.visible = !!r.sitting;
+        if (r.sitting) { r.yTo = r.yOff = -r.seatDrop; r.model.position.y = r.baseY + r.yOff; }
       } });
     const staff  = mkRig('staffman', { x: STAFF.x, z: STAFF.z, ry: Math.PI / 2, height: 1.73, idle: 'Idle_9', look: 0.6 });
     const girl   = mkRig('cg_woman2hd', { x: -0.55, z: -5.5, ry: Math.PI, height: 1.6, idle: 'kneel', kneel: true });
@@ -1093,13 +1113,22 @@
     /* everyone back where the day began (a Retry, a replay) */
     function castHome() {
       for (const r of rigs) { r.path = null; r.turnTo = null; r.talkUntil = 0; r.nod = 0; r.bow = 0; }
-      owner.sitting = false; owner.idle = 'Idle_9'; owner.look = 1;
+      owner.sitting = false; owner.idle = 'Idle_9'; owner.look = 1; owner.yTo = owner.yOff = 0;
+      if (owner.model && owner.baseY !== undefined) owner.model.position.y = owner.baseY;
       owner.group.position.set(OWN.x, 0, OWN.z); owner.group.rotation.y = -Math.PI / 2;
       if (owner.acts && owner.acts.Idle_9) owner.play('Idle_9', 1, 0);
       if (ownerStool) ownerStool.visible = false;
       staff.look = 0.6; staff.group.position.set(STAFF.x, 0, STAFF.z); staff.group.rotation.y = Math.PI / 2;
       if (staff.acts && staff.acts.Idle_9) staff.play('Idle_9', 1, 0);
-      for (const r of [girl, manW, auntie, youth]) r.look = 0;
+      for (const r of [girl, manW, auntie, youth]) { r.look = 0; r.nod = 0; }
+      // the kneelers and the two on stools back as the day found them (the film moves and turns them)
+      girl.group.position.set(-0.55, 0, -5.5); girl.group.rotation.y = Math.PI;
+      if (girl.acts && girl.acts.kneel) girl.play('kneel', 1, 0);
+      manW.group.rotation.y = Math.PI;
+      auntie.group.rotation.y = Math.PI * 0.82;
+      if (auntie.acts && auntie.acts[SIT_W]) auntie.play(SIT_W, 1, 0, false, 0.05);
+      youth.group.rotation.y = -Math.PI * 0.82;
+      if (youth.acts && youth.acts[SHOUT]) youth.play(SHOUT, 1, 0, false, 0.0);
     }
     const PASS = { x0: -12.2, x1: 12.2, z: 2.9, v: 1.3, dir: 1 };
     function passerTick(wdt) {
@@ -1263,6 +1292,7 @@
       if (kit) kit.root(true);
       faceTo({ x: OWN.x, y: 1.32, z: OWN.z }, 0.8);
       owner.look = 1;
+      celebratePrep();                                   // the staff man readies the altar meanwhile
       queueGap(0.2);
       queueLine('ow3gift1', () => {
         talk(owner, SECS.ow3gift1);
@@ -1326,21 +1356,28 @@
     const OWN_SIT = { x: 1.72, z: -5.7 };
     OWN_SIT.ry = Math.atan2(BUDDHA_FACE.x - OWN_SIT.x, BUDDHA_FACE.z - OWN_SIT.z);
     const STAFF_AT = { x: -0.25, z: -3.55 };          // behind the mats, where staff stand while customers kneel
-    const RADIO_AT = { x: 1.95, z: -6.12 };
-    function celebrateBegin() {
+    const RADIO_AT = { x: 1.5, z: -6.18 };              // at the radio table's left end
+    /* the staff man readies the altar while the owner gives the gift (so it
+       is done before anyone kneels — the first photographs had him walking
+       across the front of the kneelers): round his counter, the left candle,
+       the right candle, the radio, then round the BACK of the owner's stool
+       and the youth's to stand behind the mats */
+    function celebratePrep() {
       if (celebrate) return;
       celebrate = { ready: false, ownerSat: false, staffDone: false };
-      // the staff man: round his counter, the left candle, the right candle, the radio, then the back
       walkTo(staff, [{ x: -3.85, z: -4.45 }, { x: -2.0, z: -5.72 }, { x: -0.95, z: -6.02 }], {
         v: 1.05, face: Math.PI,
         then: () => after(0.9, () => { lightFlame(0); walkTo(staff, [{ x: 0.95, z: -6.02 }], { v: 0.9, face: Math.PI,
-          then: () => after(0.9, () => { lightFlame(1); walkTo(staff, [{ x: 1.55, z: -5.8 }, RADIO_AT], { v: 0.9, face: Math.PI,
-            then: () => after(0.8, () => { radioSwitch(true); walkTo(staff, [{ x: 1.15, z: -5.3 }, STAFF_AT], { v: 1.0,
+          then: () => after(0.9, () => { lightFlame(1); walkTo(staff, [RADIO_AT], { v: 0.9, face: Math.PI,
+            then: () => after(0.8, () => { radioSwitch(true); walkTo(staff, [{ x: 2.9, z: -5.95 }, { x: 3.05, z: -4.2 }, { x: 1.6, z: -3.65 }, STAFF_AT], { v: 1.0,
               face: Math.atan2(BUDDHA_FACE.x - STAFF_AT.x, BUDDHA_FACE.z - STAFF_AT.z),
               then: () => { celebrate.staffDone = true; staff.look = 0; } }); }) }); }) }); })
       });
-      // the owner, a little after: round his counter's end to his stool
-      after(3.5, () => walkTo(owner, [{ x: 3.98, z: -4.3 }, { x: 3.0, z: -5.55 }, { x: OWN_SIT.x + 0.45, z: OWN_SIT.z + 0.1 }], {
+    }
+    // the owner, once it is on his chest: round his counter's end to his stool
+    function celebrateBegin() {
+      if (!celebrate) celebratePrep();
+      after(0.8, () => walkTo(owner, [{ x: 3.98, z: -4.3 }, { x: 3.0, z: -5.55 }, { x: OWN_SIT.x + 0.45, z: OWN_SIT.z + 0.1 }], {
         v: 0.85, then: () => sitOwner(false)
       }));
     }
@@ -1359,6 +1396,8 @@
       r.group.rotation.y = OWN_SIT.ry;
       r.sitting = true; r.idle = SIT_W; r.look = 0;
       if (r.acts && r.acts[SIT_W]) r.play(SIT_W, 1, instant ? 0 : 0.7);
+      r.yTo = -(r.seatDrop || 0);
+      if (instant && r.model && r.baseY !== undefined) { r.yOff = r.yTo; r.model.position.y = r.baseY + r.yOff; }
       if (ownerStool) ownerStool.visible = true;
       if (celebrate) celebrate.ownerSat = true;
     }
@@ -1476,6 +1515,10 @@
       }
       for (const r of [owner, staff, auntie, youth]) r.look = 1;
       girl.look = 0.8; manW.look = 0.8;
+      /* the girl in front of him turns round on her knees to see, her hands
+         together — what STAY PRESENT asks him to notice is in sight */
+      girl.turnTo = Math.atan2(MAT.x - girl.group.position.x, MAT.z - girl.group.position.z);
+      if (girl.acts && girl.acts.pray) girl.play('pray', 1, 0.6);
       owner.nod = 0;
       queueGap(0.4);
       queueLine('z3shift2', () => { if (kit && kit.hands) kit.hands(1, { secs: 1.6 }); });
@@ -1684,7 +1727,10 @@
       /* the people's clocks run in play AND under a film or a panel (v5.19:
          a guard that owns the poses must not own the clocks) — on wall time */
       const now = wallNow();
-      const wdt = lastFrame ? Math.min(0.1, now - lastFrame) : 0; lastFrame = now;
+      /* one wall step for the people AND the chapter clock (capped alike, 0.5 s):
+         a walk on a 0.1 s cap crawled at a fifth of its speed on a slow box
+         while the clock it was timed against ran on (the v9.3 law) */
+      const wdt = lastFrame ? Math.min(0.5, now - lastFrame) : 0; lastFrame = now;
       const st = getState();
       const live = st === 'play' || st === 'unlock' || st === 'choose';
       if (live || st === 'cine' || st === 'decide') peopleTick(wdt);
@@ -1812,10 +1858,11 @@
       film: {
         cast: { owner, staff, girl, manW, auntie, youth, passer },
         MAT, OWN_SIT, STAFF_AT, CLOCK, BUDDHA_FACE,
+        SHOUT, CLAP: SIT_W, CLAP_AT: 0.15,              // the youth's take; the auntie's, and its frame with the palms together (measured)
         put(r, x, z, ry) { r.path = null; r.turnTo = null; r.group.position.x = x; r.group.position.z = z; if (ry !== undefined) r.group.rotation.y = ry; },
         take(r, name, ts = 1, fade = 0.3, at) { return r.play(name, ts, fade, false, at); },
         walkRate(r, v) { return v / (WALK_NAT * (r.height || 1.7)); },
-        stand(r) { r.sitting = false; r.idle = 'Idle_9'; r.play('Idle_9', 1, 0.55); },
+        stand(r) { r.sitting = false; r.idle = 'Idle_9'; r.play('Idle_9', 1, 0.55); r.yTo = 0; },
         look(r, w) { r.look = w; },
         stoolTip(k) { if (!ownerStool) return; ownerStool.rotation.z = 1.45 * k; ownerStool.position.y = -0.05 * k; },
         phone(on) { girlPhone.visible = !!on; },
@@ -1867,7 +1914,7 @@
      clock (a seek or a skip lands on the same picture — v5.30), pushed in
      time order per person so the latest one wins. */
   function tranceFilm(c, s, api) {
-    const { tr, step, sfx, fade, camTo, smoothK, rawK, mixAngle, faceFrom, stage, camera, yaw, pitch, handsRoot } = api;
+    const { tr, step, sfx, fade, camTo, lens, smoothK, rawK, mixAngle, faceFrom, stage, camera, yaw, pitch, handsRoot } = api;
     const F = stage.film, C = F.cast, B = F.BUDDHA_FACE;
     const P = { x: s.yawPos.x, z: s.yawPos.z };
     const H0 = api.handsFrom(), hk = H0.k > 0 ? H0.k : 1, ht = H0.t || 0;
@@ -1895,54 +1942,85 @@
       if (face !== undefined) tr(t1, t1 + 0.55, (k) => { r.group.rotation.y = mixAngle(dir, face, k); }, smoothK);
     };
 
-    /* WHERE EVERYONE GOES (P is where he stood when the film took over) */
-    const A_OWN = at(0.62, -0.42), A_STAFF = at(-0.55, 0.36);          // hands on him
-    const B_OWN = at(1.45, -0.15), B_STAFF = at(-1.25, 0.95);          // stepped back
+    /* WHERE EVERYONE GOES (P is where he stood when the film took over).
+       Every spot is a metre or more off the lens: the owner is a scan whose
+       face will not stand a close-up (photographed at 0.75 m), and on a
+       phone a man a metre away already fills the frame. Every route below
+       keeps clear of the two still kneeling and was walked in the photos. */
+    const A_OWN = at(0.85, -0.6), A_STAFF = at(-0.6, 0.4);             // hands on him: the owner in front, the staff man behind
+    const B_OWN = at(1.75, 0.05), B_STAFF = at(-1.35, 0.95);           // stepped back
     const C_OWN = { x: 2.05, z: -4.35 }, C_STAFF = { x: -2.25, z: -3.35 };   // the minutes go by
-    const E_OWN = at(0.15, -0.95), E_STAFF = at(0.95, 0.05), E_GIRL = at(-0.75, -0.35);   // over him
-    const AUNTIE = { x: -2.45, z: -4.85 };
+    const E_OWN = at(-0.1, -1.35), E_STAFF = at(0.95, 0.45), E_GIRL = at(-0.7, -0.45);   // over him: the owner before him, the girl at his left
+    const AUNTIE = { x: -2.45, z: -4.85 }, GIRL0 = { x: -0.55, z: -5.5 };
+    const YOUTH = { x: 2.42, z: -4.85 };
+    const SHOUT = F.SHOUT, CLAP = F.CLAP;
+
+    /* the room as the film finds it: the girl turned round to him on her
+       knees, hands together (play's rise turned her; a seek lands the same) */
+    step(0, () => {
+      F.put(C.girl, GIRL0.x, GIRL0.z, mFace(GIRL0.x, GIRL0.z, P.x, P.z));
+      F.take(C.girl, 'pray', 1, 0.2); F.look(C.girl, 0.8);
+    });
 
     /* ---------------- A · 0–10.2 · THE DANCE, AND THE HANDS THAT CANNOT HOLD HIM */
-    const yA = near(camYaw(A_OWN), s.yawRot);
+    const yA = near(camYaw(A_OWN) + 0.12, s.yawRot);      // he sits a little right of the middle
+    const pA = Math.atan2(1.3 - 1.62, Math.hypot(A_OWN.x - P.x, A_OWN.z - P.z));   // on his chest, the face high in the frame
     tr(0, 4.2, (k) => { yaw.rotation.y = mixAngle(s.yawRot, yA, k); }, smoothK);
-    tr(0, 4.2, (k) => { pitch.rotation.x = s.pitchX + (0.02 - s.pitchX) * k; }, smoothK);
+    tr(0, 4.2, (k) => { pitch.rotation.x = s.pitchX + (pA - s.pitchX) * k; }, smoothK);
     // the owner jumps up — his stool goes over — and comes at him; the staff man from behind
     step(1.0, () => { F.stand(C.owner); F.look(C.owner, 1); });
     tr(1.05, 1.55, (k) => F.stoolTip(k), smoothK);
     sfx(1.15, 'stoolfall', 0.8);
     sfx(1.4, 'ow3eh');                                   // 2.93 → 4.33
-    walk(C.owner, [F.OWN_SIT, { x: 1.1, z: -4.6 }, A_OWN], 2.2, 5.0, mFace(A_OWN.x, A_OWN.z, P.x, P.z));
+    walk(C.owner, [F.OWN_SIT, { x: 1.2, z: -4.6 }, { x: 0.5, z: -4.55 }, A_OWN], 2.2, 5.0, mFace(A_OWN.x, A_OWN.z, P.x, P.z));
     walk(C.staff, [F.STAFF_AT, A_STAFF], 2.6, 4.7, mFace(A_STAFF.x, A_STAFF.z, P.x, P.z));
+    // they take hold of him: hands out, quick, the take at a struggle's pace
+    step(5.0, () => { F.take(C.owner, 'Talk_with_Hands_Open', 1.55, 0.25); F.take(C.staff, 'Talk_with_Hands_Open', 1.7, 0.25); });
     sfx(5.0, 'rushgrab', 0.85);
     sfx(5.3, 'sm3hold');                                 // 2.38 → 7.68
     sfx(8.0, 'sm3cannot');                               // 2.32 → 10.32
     sfx(8.6, 'crowdgasp', 0.55);
+    // the young man on the stool: his hands go up to his head, and stay
+    step(8.6, () => F.look(C.youth, 1));
+    tr(8.6, 9.6, (k) => F.take(C.youth, SHOUT, 1, 0, 0.25 * k), rawK);   // his own take, run to the frame his hands are up (0.25, measured)
+    const youthR0 = C.youth.group.rotation.y, auntieR0 = C.auntie.group.rotation.y;
+    tr(8.6, 9.8, (k) => { C.youth.group.rotation.y = mixAngle(youthR0, mFace(YOUTH.x, YOUTH.z, P.x, P.z), k); }, smoothK);
     // they let go and step back
     walk(C.owner, [A_OWN, B_OWN], 9.7, 11.0, mFace(B_OWN.x, B_OWN.z, P.x, P.z));
     walk(C.staff, [A_STAFF, B_STAFF], 9.8, 11.0, mFace(B_STAFF.x, B_STAFF.z, P.x, P.z));
 
     /* ---------------- B · 10.2–19.4 · THE ROOM WATCHES (the turn goes left) */
-    const yB0 = yA, yB1 = up(camYaw(at(0.35, -0.9)), yB0), yB2 = up(camYaw(AUNTIE), yB1), yB3 = up(camYaw({ x: -0.75, z: 0.6 }), yB2);
+    const yB0 = yA, yB1 = near(camYaw(GIRL0), yB0), yB2 = up(camYaw(AUNTIE), yB1), yB3 = up(camYaw({ x: -0.75, z: 0.6 }), yB2);
+    const pB1 = Math.atan2(1.05 - 1.62, Math.hypot(GIRL0.x - P.x, GIRL0.z - P.z));
     tr(10.2, 12.8, (k) => { yaw.rotation.y = yB0 + (yB1 - yB0) * k; }, smoothK);
     tr(12.8, 15.8, (k) => { yaw.rotation.y = yB1 + (yB2 - yB1) * k; }, smoothK);
     tr(15.8, 19.0, (k) => { yaw.rotation.y = yB2 + (yB3 - yB2) * k; }, smoothK);
-    tr(10.2, 12.8, (k) => { pitch.rotation.x = 0.02 - 0.3 * k; }, smoothK);          // down to the girl on her knees
-    tr(12.8, 15.8, (k) => { pitch.rotation.x = -0.28 + 0.16 * k; }, smoothK);
-    tr(15.8, 19.0, (k) => { pitch.rotation.x = -0.12 + 0.12 * k; }, smoothK);
+    tr(10.2, 12.8, (k) => { pitch.rotation.x = pA + (pB1 - pA) * k; }, smoothK);    // down to the girl on her knees, her phone up
+    tr(12.8, 15.8, (k) => { pitch.rotation.x = pB1 + (-0.16 - pB1) * k; }, smoothK);
+    tr(15.8, 19.0, (k) => { pitch.rotation.x = -0.16 + 0.16 * k; }, smoothK);
     sfx(11.0, 'st3uncle');                               // 2.35 → 13.35
     step(11.4, () => F.phone(true));
     sfx(12.5, 'phonerec', 0.6);
+    // the auntie turns to him and prays fast, palms beating together
+    tr(12.6, 13.8, (k) => { C.auntie.group.rotation.y = mixAngle(auntieR0, mFace(AUNTIE.x, AUNTIE.z, P.x, P.z), k); }, smoothK);
+    step(13.6, () => { F.look(C.auntie, 1); F.take(C.auntie, CLAP, 2.1, 0.3); });
     sfx(14.0, 'cu3amitabha');                            // 3.71 → 17.71
+    step(17.8, () => F.take(C.auntie, CLAP, 1, 0.35, F.CLAP_AT));   // and holds them together
     step(16.4, () => F.passerStop(true));
 
-    /* ---------------- C · 19.4–29.8 · FIFTEEN MINUTES, IN THREE JUMPS */
+    /* ---------------- C · 19.4–29.8 · FIFTEEN MINUTES, IN THREE JUMPS
+       The clock is far and small over the door, so the lens closes on it
+       (the sixteenth seam; cineEnd hands the lens back however it ends) */
     const CLK = F.CLOCK, yC = near(camYaw(CLK), yB3), pC = Math.atan2(CLK.y - 1.62, Math.hypot(CLK.x - P.x, CLK.z - P.z));
+    const ZOOM = 38;
     tr(19.0, 20.4, (k) => { yaw.rotation.y = yB3 + (yC - yB3) * k; }, smoothK);
     tr(19.0, 20.4, (k) => { pitch.rotation.x = 0 + (pC - 0) * k; }, smoothK);
+    lens(19.4, 21.4, 72, ZOOM, smoothK);
     tr(19.4, 29.6, (k) => F.clockTo(12, 10 + 15 * k), rawK);
     sfx(19.6, 'timelapse', 0.8);
     // cut one: the room from the altar's side — the owner back by his counter, the staff at the glass
     fade(21.95, 22.1, 0, 1); fade(22.25, 22.4, 1, 0);
+    lens(22.1, 22.12, ZOOM, 72, rawK);
     walk(C.owner, [B_OWN, C_OWN], 22.1, 22.15, mFace(C_OWN.x, C_OWN.z, P.x, P.z));
     walk(C.staff, [B_STAFF, C_STAFF], 22.1, 22.15, mFace(C_STAFF.x, C_STAFF.z, P.x, P.z));
     const yC1 = near(camYaw(C_OWN), yC);
@@ -1950,22 +2028,28 @@
     tr(22.12, 26.0, (k) => { yaw.rotation.y = yC1 - 0.25 + 0.3 * k; }, rawK);
     sfx(22.6, 'timelapse', 0.55);
     sfx(23.0, 'ow3let');                                 // 2.43 → 25.43
+    step(23.0, () => F.take(C.owner, 'Talk_with_Hands_Open', 0.9, 0.3));
+    step(25.45, () => F.take(C.owner, 'Idle_9', 1, 0.4));
     // cut two: the clock again, ten minutes on
     fade(25.85, 26.0, 0, 1); fade(26.15, 26.3, 1, 0);
-    tr(26.0, 26.02, () => { yaw.rotation.y = yC + 0.12; pitch.rotation.x = pC; }, rawK);
-    tr(26.02, 29.6, (k) => { yaw.rotation.y = yC + 0.12 - 0.2 * k; }, rawK);
+    lens(26.0, 26.02, 72, ZOOM + 4, rawK);
+    tr(26.0, 26.02, () => { yaw.rotation.y = yC + 0.06; pitch.rotation.x = pC; }, rawK);
+    tr(26.02, 29.6, (k) => { yaw.rotation.y = yC + 0.06 - 0.1 * k; }, rawK);
     sfx(26.2, 'timelapse', 0.45);
 
     /* ---------------- D · 29.6–35.6 · IT STOPS. HE GOES DOWN. */
     fade(29.45, 29.6, 0, 1); fade(29.75, 29.9, 1, 0);
-    // under that black: the girl kneels beside him, the auntie, the youth and the man in white turn to him
+    lens(29.6, 29.62, ZOOM + 4, 72, rawK);
+    // under that black: the girl kneels at his side, the others turn to him
     step(29.6, () => {
       F.put(C.girl, E_GIRL.x, E_GIRL.z, mFace(E_GIRL.x, E_GIRL.z, P.x, P.z));
+      F.take(C.girl, 'kneel', 1, 0.3);
       C.auntie.group.rotation.y = mFace(AUNTIE.x, AUNTIE.z, P.x, P.z);
-      C.youth.group.rotation.y = mFace(C.youth.group.position.x, C.youth.group.position.z, P.x, P.z);
+      C.youth.group.rotation.y = mFace(YOUTH.x, YOUTH.z, P.x, P.z);
       C.manW.group.rotation.y = mFace(C.manW.group.position.x, C.manW.group.position.z, P.x, P.z);
-      F.look(C.girl, 1); F.look(C.manW, 1);
+      F.look(C.girl, 1); F.look(C.manW, 1); F.look(C.youth, 1); F.look(C.auntie, 1);
     });
+    tr(29.6, 29.62, () => F.take(C.youth, SHOUT, 1, 0, 0.0), rawK);   // his hands down again (a track, pushed after his raise, so it wins)
     const yD = near(camYaw(B), yC);
     tr(29.6, 29.62, () => { yaw.rotation.y = yD; pitch.rotation.x = 0.12; }, rawK);
     step(30.5, () => { F.danceStop(true); F.phone(false); });
@@ -1975,25 +2059,32 @@
     sfx(31.3, 'kneethud', 0.9);
     sfx(31.32, 'matkneel', 0.6);
     sfx(31.9, 'z3breath');                               // 3.0 → 34.9
-    // the people come in while he breathes
-    walk(C.owner, [C_OWN, E_OWN], 31.6, 34.6, mFace(E_OWN.x, E_OWN.z, P.x, P.z));
+    // the people come in while he breathes (the owner round the far side of the two still kneeling)
+    walk(C.owner, [C_OWN, { x: 0.7, z: -4.3 }, { x: -0.1, z: -5.05 }, E_OWN], 31.6, 34.6, mFace(E_OWN.x, E_OWN.z, P.x, P.z));
     walk(C.staff, [C_STAFF, E_STAFF], 31.9, 34.9, mFace(E_STAFF.x, E_STAFF.z, P.x, P.z));
 
     /* ---------------- E · 34.9–60 · THE FACES OVER HIM */
-    const yE = near(camYaw(E_OWN), yD), pE = Math.atan2(1.52 - 0.98, Math.hypot(E_OWN.x - P.x, E_OWN.z - P.z));
+    const dO = Math.hypot(E_OWN.x - P.x, E_OWN.z - P.z);
+    const yE = near(camYaw(E_OWN), yD), pE = Math.atan2(1.55 - 0.98, dO);
     tr(34.9, 36.2, (k) => { yaw.rotation.y = yD + (yE - yD) * k; }, smoothK);
     tr(34.9, 36.2, (k) => { pitch.rotation.x = -0.38 + (pE + 0.38) * k; }, smoothK);
     sfx(36.2, 'ow3know');                                // 2.04 → 38.24
+    step(36.2, () => F.take(C.owner, 'Talk_with_Hands_Open', 0.85, 0.3));
+    step(38.3, () => F.take(C.owner, 'Idle_9', 1, 0.45));
     sfx(38.7, 'z3knew');                                 // 5.64 → 44.34
-    tr(39.4, 41.0, (k) => { pitch.rotation.x = pE + (-0.28 - pE) * k; }, smoothK);   // his eyes go down to the mat
-    tr(42.6, 44.2, (k) => { pitch.rotation.x = -0.28 + (pE + 0.28) * k; }, smoothK); // and back up to him
+    tr(39.4, 41.0, (k) => { pitch.rotation.x = pE + (-0.5 - pE) * k; }, smoothK);   // his eyes go down to the mat
+    tr(42.6, 44.2, (k) => { pitch.rotation.x = -0.5 + (pE + 0.5) * k; }, smoothK);  // and back up to him
     const yG = near(camYaw(E_GIRL), yE), yN = near(camYaw(AUNTIE), yG);
-    tr(44.5, 45.6, (k) => { yaw.rotation.y = yE + (yG - yE) * k; pitch.rotation.x = pE + (0.06 - pE) * k; }, smoothK);
+    const pG = Math.atan2(1.12 - 0.98, Math.hypot(E_GIRL.x - P.x, E_GIRL.z - P.z)), pN = Math.atan2(1.1 - 0.98, Math.hypot(AUNTIE.x - P.x, AUNTIE.z - P.z));
+    tr(44.5, 45.6, (k) => { yaw.rotation.y = yE + (yG - yE) * k; pitch.rotation.x = pE + (pG - pE) * k; }, smoothK);
     sfx(44.8, 'st3trance');                              // 2.59 → 47.39
-    tr(47.5, 48.7, (k) => { yaw.rotation.y = yG + (yN - yG) * k; pitch.rotation.x = 0.06 + (0.12 - 0.06) * k; }, smoothK);
+    step(44.8, () => { C.girl.nod = 2.6; });
+    tr(47.5, 48.7, (k) => { yaw.rotation.y = yG + (yN - yG) * k; pitch.rotation.x = pG + (pN - pG) * k; }, smoothK);
     sfx(47.9, 'cu3unclean');                             // 4.26 → 52.16
-    tr(52.2, 53.4, (k) => { yaw.rotation.y = yN + (near(yE, yN) - yN) * k; pitch.rotation.x = 0.12 + (pE - 0.12) * k; }, smoothK);
+    step(47.9, () => { C.auntie.nod = 4.2; });
+    tr(52.2, 53.4, (k) => { yaw.rotation.y = yN + (near(yE, yN) - yN) * k; pitch.rotation.x = pN + (pE - pN) * k; }, smoothK);
     sfx(52.6, 'ow3medium');                              // 5.56 → 58.16
+    step(52.6, () => F.take(C.owner, 'Talk_with_Hands_Open', 0.85, 0.3));
     // a slow push toward him while he says it
     camTo(53.4, 58.4, { x: P.x, y: 0.98, z: P.z }, { x: P.x + (E_OWN.x - P.x) * 0.12, y: 0.98, z: P.z + (E_OWN.z - P.z) * 0.12 }, smoothK);
     fade(58.4, 60.0, 0, 1);
@@ -2006,7 +2097,7 @@
     const alive = (t) => t < 30.5 ? 1 : Math.max(0, 1 - (t - 30.5) / 0.25);
     const grip = (t) => (t > 5.0 && t < 9.7) ? Math.sin(Math.PI * (t - 5.0) / 4.7) : 0;
     tr(0, 31.0, (k, t) => {
-      const a = alive(t), g = grip(t);
+      const a = alive(t) * (camera.fov / 72), g = grip(t);          // a closed lens magnifies a sway: it is scaled with it
       yaw.rotation.y += a * (0.09 * Math.sin(t * 1.25) + 0.035 * Math.sin(t * 2.9 + 0.7)) + g * 0.035 * Math.sin(t * 17.0);
       pitch.rotation.x += a * 0.05 * Math.sin(t * 1.7 + 1.1) + g * 0.02 * Math.sin(t * 13.0 + 1);
       camera.rotation.z = a * (0.055 * Math.sin(t * 1.25 + 0.4)) + g * 0.03 * Math.sin(t * 11.0);
