@@ -5254,9 +5254,11 @@ What the baseline contains, by release:
   and the body's sway — play's and ending C's — is 80 %.
   Only e3c2 calls the gesture, so nothing else moves. THE MUSIC: `e3close2`,
   under "I never expected to be kneeling" in every ending, was a bright
-  plucked melody; it is a viola, high strings and a hushed choir now, chosen
-  over seven others for the band a phone plays (AUDIO-PLAN v20.1; the first
-  four, dark and low, would have been near silent on his phone). THE WORDS:
+  plucked melody; it is a solo Thai bowed fiddle now, alone under his closing
+  line and then strings swelling in under it — Chad's pick by ear from the two
+  I sent ("I prefer the thai fiddle music"; my measured pick, a viola and
+  choir, shipped first and was replaced). Eight takes, the first four dark and
+  low and near silent on a phone (AUDIO-PLAN v20.1). THE WORDS:
   the lesson loses "And if something is affecting your health or your mind,
   see a doctor as well.", and the fight's brief is Chad's sentence exactly.
   Sheet v95 exported (v44 stays the link). `__enc.handsAt`, `gest` and
@@ -5265,6 +5267,13 @@ What the baseline contains, by release:
   all four endings, the film's flat and floor). Deploy
   `6ad63fd10ab41b47f67c52b4`, byte-verified (212 files). Harnesses chapter,
   text, fixture, cine, leak, csp, hosted green.
+- **v20.2** THE THAI FIDDLE — Chad, on the two closing pieces v20.1 sent him:
+  "I prefer the thai fiddle music." `e3close2` is `close_d` a, cut from 7.0 s
+  so each ending opens on about seven seconds of the fiddle alone under his
+  closing line and the strings swell in as it ends (the take's first 14 s are
+  the fiddle by itself; every ending plays the music ~19 s). The music file is
+  the only change. Deploy `6ad64474a98e3715e91323b1`, byte-verified (212
+  files); harnesses chapter, hosted green.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so

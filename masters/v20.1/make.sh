@@ -8,16 +8,20 @@
 # plays (250 Hz–4 kHz) against 64 % for chapter 1's e3close — on his phone
 # they would be near silent (the v10.4 law). Round 2 asked for the middle
 # register (close_c: viola, high strings, choir, bell; close_d: a Thai bowed
-# fiddle). PICK close_c a: 68 % in the phone band, centroid 462 Hz, 1.26
-# attacks a second (the fewest of eight — nothing plucked), slow swells every
-# ~8 s, the body arriving in 3 s. close_c b's body arrives at 28 s; close_d a
-# and b are silent for 15 s and twice as busy (4–5 attacks a second).
-# Cut 1.0 → 37.0 s (every ending fades it ≤ 20 s after its cue), levelled by
-# RMS to −18 dBFS (chapter 1's e3close averages −18.4) under a −3 dBFS ceiling.
+# fiddle). close_c a was measured best (68 % in the phone band, the fewest
+# attacks, the body 3 s in) and shipped first; Chad heard both and chose the
+# fiddle ("I prefer the thai fiddle music") — his ear over the measure (v10.6).
+# PICK close_d a: its first 14 s are the fiddle ALONE, quiet (−33 to −40 dBFS,
+# 99 % in the phone band, centroid 500–1000 Hz), and at 14.5 s the strings
+# swell in under it (−18 to −20). Every ending plays this music for ~19 s and
+# its first ~9 are under his closing line, so the cut starts at 7.0 s: about
+# seven seconds of the fiddle under his words, then the swell as they end.
+# Cut 7.0 → 43.0 s, levelled by RMS to −18 dBFS (chapter 1's e3close averages
+# −18.4) under a −3 dBFS ceiling.
 set -e
 cd "$(dirname "$0")"
-python3 ../v18.0/proc.py trim raw/close_c_a.mp3 w_e3close2.wav 1.0 37.0 3.0
+python3 ../v18.0/proc.py trim raw/close_d_a.mp3 w_e3close2.wav 7.0 43.0 3.0
 python3 ../v18.0/loud.py w_e3close2.wav w_e3close2_l.wav -18
 ffmpeg -v error -y -i w_e3close2_l.wav -map_metadata -1 -c:a libmp3lame -b:a 128k -ar 44100 ../../assets/audio/e3close2.mp3
 ffmpeg -v error -y -i w_e3close2_l.wav -map_metadata -1 -c:a libopus -b:a 96k -ar 48000 ../../assets/audio-opus/e3close2.ogg
-echo "e3close2 <- raw/close_c_a.mp3 (RMS -18)"; rm -f w_e3close2_l.wav w_e3close2.wav.f32 w_e3close2_l.wav.f32
+echo "e3close2 <- raw/close_d_a.mp3 (RMS -18)"; rm -f w_e3close2_l.wav w_e3close2.wav.f32 w_e3close2_l.wav.f32

@@ -1168,7 +1168,15 @@ by a closing theme this time). ROUND 2 asked for the middle register. PICK
 the phone band, centroid 462 Hz, 1.26 attacks a second (the fewest of the
 eight — nothing plucked), slow swells every ~8 s, its body arriving 3 s in.
 `close_c` b's body arrives at 28 s; `close_d` (a Thai bowed fiddle) a and b are
-silent for 15 s and twice as busy. Cut 1.0–37.0 s (every ending fades it within
-20 s of its cue), levelled by RMS to −18 dBFS (chapter 1's `e3close` averages
-−18.4) under a −3 dBFS ceiling (`../v18.0/loud.py`): mp3 −18.5 RMS / −4.4 peak,
-ogg −18.1 / −3.8. `masters/v20.1/make.sh` is the recipe; no cue moved.
+silent for 15 s and twice as busy. Shipped first: `close_c` a.
+
+THEN CHAD'S EAR (the v10.6 rule — he heard both, the pick and the runner-up):
+"I prefer the thai fiddle music." `close_d` a it is. Measured for the cut: its
+first 14 s are the bowed fiddle ALONE, quiet (−33 to −40 dBFS, 99 % in the
+phone band, centroid 500–1000 Hz), and at 14.5 s the strings swell in under it
+(−18 to −20). Every ending plays this music ~19 s, the first ~9 under his
+closing line, so the cut is 7.0–43.0 s: about seven seconds of the fiddle under
+his words, the swell as they end. Levelled by RMS to −18 dBFS under a −3 dBFS
+ceiling (`../v18.0/loud.py`): the fiddle alone lands at −21 to −25, the swell
+at −14 to −16 (mono fold, as measured on the files). `masters/v20.1/make.sh` is
+the recipe; no cue moved.
