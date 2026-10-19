@@ -5522,3 +5522,24 @@ cut (sharing its vertices and maps) when it is small.
   MIDDLE register ("a solo viola and a high string section ... no low drones,
   no bass rumble") kept it dark and put 68 % there. Measure the phone band
   share of any music before it ships; a dark prompt drifts low on its own.
+- **A glTF "_end" leaf is not a Bone (v21.0).** GLTFLoader makes a node a
+  `Bone` only when some skin lists it as a JOINT; the leaf nodes an FBX-path
+  export adds at every finger's tip (`f_index.03.R_end`, sanitised to
+  `f_index03R_end`) carry no weights, are in no skin's joint list, and arrive
+  as plain `Object3D`s. A lookup that tested `o.isBone` before the name never
+  found the fingertip, and ending D's LP Tim, which hangs from it, was never
+  attached — no error, nothing on screen. Match the name; do not require the
+  type.
+- **A sky dome's canvas row is theta / thetaLength (v21.0).** A
+  `SphereGeometry(r, …, 0, π/2 + 0.22)` maps canvas row y to the polar angle
+  y · thetaLength, so the HORIZON (θ = π/2) sits at 0.877 of the canvas, not at
+  its bottom and not at half. A gradient that ended at 0.58 painted everything
+  under 30° of elevation one flat colour and put a "dawn" sun drawn at 0.49 at
+  40° up. Paint to 0.877, and put a low sun at (π/2 − elevation) / thetaLength.
+- **Things held in the hand are drawn in the viewmodel's own scene (v21.0).**
+  The hands are rendered in `vmScene` through `vmCam`, which sits at that
+  scene's origin unrotated: that scene's frame IS the lens's frame. A prop
+  that must hang under gravity from a finger has to take its "up" as the
+  camera's up tipped back by the PITCH (`Rx(−pitch)`), and "facing the lens" as
+  +z there — the world yaw means nothing in that scene, and using it turned the
+  pendant edge-on or away.
