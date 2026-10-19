@@ -426,6 +426,8 @@ ASSETS = {
     'cg_woman2hd': ('assets/cg_woman2hd.glb', True, False),   # the woman beside him, and Yai
     'cg_man2hd':   ('assets/cg_man2hd.glb', True, False),     # the man beside Yai, and the man in front
     'monkrow':      ('assets/monkrow.glb', True, False),
+    'hanuman':      ('assets/hanuman.glb', True, False),      # e3c3 v21.0: Chad's Hanuman, the presence that roars at the medium (LONG=1 tools/prepwess.mjs 0.2: 591k -> 118k tris)
+    'medium':       ('assets/medium.glb', True, False),       # e3c3 v21.0: Chad's black Taoist medium, ten takes on a Mixamo rig (CHARTFIX=1 tools/prepmonk.mjs 0.3: 594k -> 178k tris)
 }
 
 # Hosted-only assets: shipped as a URL, never inlined as base64.
@@ -450,7 +452,7 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'kamaz', 'forest', 'rifle', 'ghostcyclist', 'fboaim',
            'muzzle', 'ammocrate', 'ammomags', 'icontorch', 'zavsoldier',
            'thaikit', 'wessred', 'wessgreen', 'naga', 'monk', 'ajarn', 'temple', 'slipper', 'lersimask', 'altarrow', 'customer', 'buddhahd', 'buddhalod', 'sangkathan', 'sitwomantalk', 'filmoffice', 'filmlaptop', 'actioncam', 'planecabin',
-           'cg_woman2', 'cg_man2', 'cg_woman2hd', 'cg_man2hd', 'monkrow'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone
+           'cg_woman2', 'cg_man2', 'cg_woman2hd', 'cg_man2hd', 'monkrow', 'hanuman', 'medium'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone
 HOSTED_ONLY |= E2_ONLY
 
 # The split packs are hosted-only: there is no __..._B64__ token for them and

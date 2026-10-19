@@ -48,12 +48,23 @@ scene. Priority ★ = the chapter looks wrong without it.
 ## Chapter 3 · The Dance On Buddha Day (Singapore)
 - ★ **A Thai amulet shop interior** (glass counters, shelves of framed amulets, a
   Buddha altar) — the Buddha Day scene, in Singapore.
-- ★ **The medium** — a NEW man (not episode 1's tang-ki): a Chinese medium in black
-  Taoist robes and cap, rigged.
+- ✅ **The medium** — ARRIVED 19 Oct (Drive `medium.glb`, 48 MB): a Taoist priest
+  in a black robe with gold trim and blue cuffs, a tall black hat with red
+  tassels; a Meshy scan on a 28-joint Mixamo rig with TEN takes (Running,
+  Walking, Chair_Sit_Idle_M, Sit_Finger_Wag_No, Sitting_Answering_Questions,
+  Stand_Talking_Angry, Talk_Passionately, Talk_with_Left_Hand_Raised,
+  Talk_with_Left_Hand_on_Hip, Talk_with_Right_Hand_Open). Shipped as `medium`
+  (`CHARTFIX=1 tools/prepmonk.mjs` at 0.3: 178k triangles, weights diffused,
+  normals shared across the seams, 4.1 MB, hosted-only).
 - ★ **A Chinese altar room / shrine** — red lanterns, a red altar, deity statues.
-- ★ **Hanuman** — the monkey warrior (a statue or a character) for the roar's
-  golden silhouette.
+- ✅ **Hanuman** — ARRIVED 19 Oct (Drive `hanuman.glb`, 48 MB: a white Hanuman
+  lunging with a trident, roaring, one static Meshy mesh of 591k triangles,
+  Y up, facing +z). Shipped as `hanuman` (`LONG=1 tools/prepwess.mjs` at 0.2:
+  118k triangles, 2048 colour + 1024 normal, 3.8 MB, hosted-only) — the
+  presence that roars at the medium, drawn as a golden apparition.
 - Shop staff and customers (rigged, Singaporean, casual).
+- *Building at v21.0 with stand-ins until these land* (docs/V21.0-E3C3-PLAN.md
+  §3 names which existing rig stands in for each part).
 
 ## Chapter 4 · The Pieces That Answered (amulet shops)
 - ★ **An old-style amulet shop** (can be chapter 3's shop re-dressed): wooden

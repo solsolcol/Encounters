@@ -104,7 +104,7 @@
 
     /* the stand-in cast (docs/V21.0-E3C3-PLAN.md §3) — each behind its own
        key, so a model of Chad's is a one-line swap */
-    assets: ['buddhahd', 'buddhalod', 'timkp'],
+    assets: ['buddhahd', 'buddhalod', 'timkp', 'hanuman', 'medium'],
     items: ['timkp'],
 
     musicVol: 0,
