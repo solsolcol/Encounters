@@ -10512,6 +10512,7 @@ function sceneApi(c) {
     handsFrom: () => ({ k: handsFrom.k, t: handsFrom.t, roll: handsFrom.roll }),
     rightHand: () => rightHandModel, setHandCurl,
     vmKey, vmFire, vmHemi,
+    vmCam,                           // v21.0: where a viewmodel thing falls on THIS screen (its fov and aspect) — the hands' scene is the lens's frame
     dirtyShadows: n => { shadowDirty = n; }
   };
 }

@@ -5543,3 +5543,35 @@ cut (sharing its vertices and maps) when it is small.
   camera's up tipped back by the PITCH (`Rx(−pitch)`), and "facing the lens" as
   +z there — the world yaw means nothing in that scene, and using it turned the
   pendant edge-on or away.
+- **A track's second argument is the RAW film clock, never clamped (v21.0).**
+  `tr(t0, t1, fn)` hands `fn` its eased `k` (clamped at 1) and the film's own
+  `t`, and it keeps calling `fn` on every frame after `t1`. A track written in
+  `t` — the intro's passer-by, walked along the corridor by `-1.6 + 1.3 *
+  (t - 20.6)` — therefore never stops: past its shot it went on holding him,
+  walking him out of the mall, and a step at the shot's end that freed him was
+  undone one frame later. He stood frozen out of sight for the whole of play.
+  A track that reads `t` states its own end: `if (t <= t1)`.
+- **A callback's object is not a positional argument (v21.0).** `kit.film`'s
+  `onDone` hands back `{ skipped }`; it was written `(o) => toShrine(false, o)`,
+  and toShrine's second parameter is the PHASE to land in. Every player who
+  reached the shrine landed in a phase that was an object — no objective, no
+  incense, no readings, no decision — and nothing threw. Pass what a callee
+  means, never what a caller happened to receive; and a function that takes a
+  phase refuses anything that is not one.
+- **A rig sized on a parked take is still parked (v21.0).** mkRig sizes a
+  model on its own take parked at a frame (`at` → `paused = true`), and
+  `play(name)` with that same take current returned early — keeping the pause.
+  The owner's staff, the shrine's wife and father and the passer-by's stride
+  stood as statues. Asked to run the current take, play() unpauses it.
+- **Size a seated man STANDING (v21.0).** Sized on his seated take, the
+  medium's bone span from toe to crown is a seated height, and scaled to 1.74 m
+  he stood 2.3 m tall in every ending that stands him up. Size on a standing
+  frame (`sizeOn: 'Walking'`), then seat him, and measure where his eyes are
+  from his own head bone rather than typing a height chosen against the wrong
+  size.
+- **A blocker made after build() returned reaches nothing (v21.0).** The
+  engine iterates the array `blockers()` returned at build time; a box pushed
+  to the chapter's own list when a model lands later (the medium's chair,
+  built round his measured takes) was never in it, and he and his chair could
+  be walked through. Push the Box3 into the ENGINE's array (`S.blockers`) —
+  the same reference, so collide() sees it on the next frame.

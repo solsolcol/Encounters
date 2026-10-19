@@ -63,8 +63,16 @@ scene. Priority ★ = the chapter looks wrong without it.
   118k triangles, 2048 colour + 1024 normal, 3.8 MB, hosted-only) — the
   presence that roars at the medium, drawn as a golden apparition.
 - Shop staff and customers (rigged, Singaporean, casual).
-- *Building at v21.0 with stand-ins until these land* (docs/V21.0-E3C3-PLAN.md
-  §3 names which existing rig stands in for each part).
+- *Shipped at v21.0 with stand-ins for the rest* (docs/V21.0-E3C3-PLAN.md §3
+  names which existing rig stands in for each part): the OWNER is episode 1's
+  encik scan and the STAFF MAN episode 1's standing man, each with Idle_9,
+  Talk_with_Hands_Open, Walking and Running retargeted in from the admin tee
+  (`masters/v21.0/owner/make.sh`) — their shoulders and arms are eased toward
+  the body at run time (the retarget leaves them a little shrugged and 14°
+  out); the kneeling girl and man are e3c2's congregation close cuts; the
+  auntie, the youth, the shrine's wife and father are episode 1's tentage
+  sitters; the passer-by is the botak recruit. Chad's own models for the owner,
+  the staff and the customers replace these one line each.
 
 ## Chapter 4 · The Pieces That Answered (amulet shops)
 - ★ **An old-style amulet shop** (can be chapter 3's shop re-dressed): wooden

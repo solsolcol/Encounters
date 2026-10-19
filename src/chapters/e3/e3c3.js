@@ -970,10 +970,10 @@
         }
         if (!r.mixer) continue;
         if (r.talkUntil && now > r.talkUntil) { r.talkUntil = 0; if (r.idle && !r.path) r.play(r.idle, r.opts.rate || 1, 0.4); }
-        headPre(r); spinePre(r);
+        headPre(r); spinePre(r); armsPre(r);
         r.mixer.update(wdt);
         if (r.rootOff) rootComp(r);
-        spinePost(r); headPost(r, wdt);
+        spinePost(r); armsPost(r); headPost(r, wdt);
         if (r.bow > 0.001) moving = true;
       }
       if (inB) toolsTick();                       // the sword and the bell, after his take has posed his hands
@@ -986,6 +986,39 @@
        on what the take wrote and put back before it writes again (the v11.5
        law — a take that holds still is not rewritten, and a bow would stack) */
     const _ax = new THREE.Vector3(), _ax2 = new THREE.Vector3(), _q2 = new THREE.Quaternion(), _q3 = new THREE.Quaternion();
+    /* THE STAND-INS' SHOULDERS: the owner and the staff man play takes
+       retargeted onto them from another rig, and those carry the source's
+       shoulders a little shrugged and its arms ~14° out (measured: upper arm
+       13.9° / 14.7° off the body's down) — a mannequin at the counter. Each
+       shoulder and upper arm is turned toward the body's down by a few degrees
+       after the mixer (and put back before it runs again, the v11.5 law),
+       weighted off whenever the scan's OWN seated take is playing. */
+    const _amA = new THREE.Vector3(), _amB = new THREE.Vector3(), _amD = new THREE.Vector3(), _amQ = new THREE.Quaternion(), _amP = new THREE.Quaternion();
+    function armsPre(r) { if (r.armWrote) r.armBones.forEach((b, i) => b.quaternion.copy(r.armWrote[i])); }
+    function armsPost(r) {
+      const F = r.opts.armFix; if (!F || !r.model || !r.hips || !r.acts) return;
+      if (!r.armBones) {
+        const find = (re) => { let o = null; r.model.traverse(b => { if (!o && b.isBone && re.test(b.name)) o = b; }); return o; };
+        r.armBones = [find(/LeftShoulder(_\d+)?$/), find(/RightShoulder(_\d+)?$/), find(/LeftArm(_\d+)?$/), find(/RightArm(_\d+)?$/)];
+        r.armNeck = find(/Neck(_\d+)?$/);
+        if (r.armBones.some(b => !b) || !r.armNeck) { r.opts.armFix = null; r.armBones = null; return; }
+        r.armWrote = r.armBones.map(b => b.quaternion.clone());
+      }
+      r.armBones.forEach((b, i) => r.armWrote[i].copy(b.quaternion));
+      const own = r.acts[SIT_W], w = 1 - (own && own.isScheduled() ? own.getEffectiveWeight() : 0);
+      if (w < 0.01) return;
+      r.model.updateMatrixWorld(true);
+      r.hips.getWorldPosition(_amA); r.armNeck.getWorldPosition(_amB); _amD.subVectors(_amA, _amB).normalize();   // the body's own down
+      r.armBones.forEach((b, i) => {
+        const ch = b.children.find(c => c.isBone); if (!ch) return;
+        b.getWorldPosition(_amA); ch.getWorldPosition(_amB);
+        _amB.sub(_amA).normalize(); _amA.crossVectors(_amB, _amD);
+        if (_amA.lengthSq() < 1e-8) return;
+        _amA.normalize(); b.parent.getWorldQuaternion(_amP); _amA.applyQuaternion(_amP.invert());
+        b.quaternion.premultiply(_amQ.setFromAxisAngle(_amA, THREE.MathUtils.degToRad(i < 2 ? F.sh : F.arm) * w));
+        b.updateMatrixWorld(true);
+      });
+    }
     function spinePre(r) { if (r.spineWrote && r.spine) r.spine.forEach((b, i) => b.quaternion.copy(r.spineWrote[i])); }
     function spinePost(r) {
       if (!r.spine || !r.spine.length) return;
@@ -1114,7 +1147,7 @@
     /* THE SHOP'S PEOPLE, before the chant */
     const SIT_W = 'mixamo.com', SHOUT = 'Armature|Sit_Shout_Hands_on_Mouth|baselayer';
     let ownerStool = null;
-    const owner  = mkRig('owner', { x: OWN.x, z: OWN.z, ry: -Math.PI / 2, height: 1.66, idle: 'Idle_9', look: 1,
+    const owner  = mkRig('owner', { x: OWN.x, z: OWN.z, ry: -Math.PI / 2, height: 1.66, idle: 'Idle_9', look: 1, armFix: { sh: 6, arm: 7 },
       then: (r) => {
         const hl = measureSeat(r, SIT_W, 0.05);
         if (!hl) return;
@@ -1125,7 +1158,7 @@
         ownerStool.visible = !!r.sitting;
         if (r.sitting) { r.yTo = r.yOff = -r.seatDrop; r.model.position.y = r.baseY + r.yOff; }
       } });
-    const staff  = mkRig('staffman', { x: STAFF.x, z: STAFF.z, ry: Math.PI / 2, height: 1.73, idle: 'Idle_9', look: 0.6 });
+    const staff  = mkRig('staffman', { x: STAFF.x, z: STAFF.z, ry: Math.PI / 2, height: 1.73, idle: 'Idle_9', look: 0.6, armFix: { sh: 6, arm: 7 } });
     /* the girl's two takes root her ~22 cm apart (each retargeted from its own
        Mixamo file — e3c2's v19.7 finding), so her turn to him at the rise
        skated her across her mat on her knees: each take's knee midpoint is
@@ -1262,6 +1295,40 @@
     const addGlow = (t, op) => new THREE.MeshBasicMaterial({ map: t, transparent: true, opacity: op, depthWrite: false, blending: THREE.AdditiveBlending, fog: false });
     const bwall = (w, h, d, x, y, z, mat) => { const m = box(w, h, d, x, y, z, mat, shrG, false); walls.push(m); return m; };
     const GG_FACE = 0;                                               // Guan Gong faces +z, the door (chapter 3's GG_YAW)
+
+    /* ---- THE NIGHT OVER THE LORONG. The engine's sky — its dome, its stars,
+       its moon — is centred on the world's origin, and this pocket stands
+       250 m off it: past the 160 m far plane from every star but a few low in
+       the +x, so ending D looked up "at the night" into a sky with nothing in
+       it (photographed on a phone). The shrine has its own, the engine's way —
+       points that keep their size at any distance, a few bright among a
+       dusting, a fifth of them warm — on a dome 100 m round the pocket, never
+       fogged (the night's fog would take them at that distance), hidden by the
+       room's ceiling and the facades wherever a roof would, and shown only
+       while he is here (worldB) */
+    const shrStars = new THREE.Group(); shrG.add(shrStars); shrStars.visible = false;
+    {
+      const dot = tex(makeGlowTex(THREE, cnv, [255, 255, 255]));
+      let sd = 2021019;
+      const rnd = () => ((sd = (Math.imul(sd, 1664525) + 1013904223) >>> 0) / 4294967296);
+      const layer = (n, size, l0, l1, op) => {
+        const pos = new Float32Array(n * 3), col = new Float32Array(n * 3);
+        for (let i = 0; i < n; i++) {
+          const el = Math.asin(0.12 + rnd() * 0.87), az = rnd() * Math.PI * 2, cr = Math.cos(el) * 100;
+          pos[i * 3] = Math.cos(az) * cr; pos[i * 3 + 1] = Math.sin(el) * 100; pos[i * 3 + 2] = Math.sin(az) * cr;
+          const l = l0 + rnd() * (l1 - l0), warm = rnd() < 0.22;
+          col[i * 3] = l * (warm ? 1.0 : 0.86); col[i * 3 + 1] = l * 0.9; col[i * 3 + 2] = l * (warm ? 0.76 : 1.0);
+        }
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+        geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+        const pts = new THREE.Points(geo, new THREE.PointsMaterial({ map: dot, size, sizeAttenuation: false, vertexColors: true,
+          transparent: true, opacity: op, depthWrite: false, fog: false, blending: THREE.AdditiveBlending }));
+        pts.renderOrder = -900; shrStars.add(pts);
+      };
+      layer(700, 2.0, 0.22, 0.6, 0.85);
+      layer(110, 3.6, 0.6, 1.0, 1.0);
+    }
 
     /* ---- the room's shell */
     { const f = new THREE.Mesh(new THREE.PlaneGeometry(9, 10), matQuarry);
@@ -1487,7 +1554,18 @@
       { const sw = new THREE.Group(); sw.position.set(0.02, T + 0.02, 0.24); sw.rotation.y = 0.04; g.add(sw); swordG = sw;
         // (chrome with nothing to reflect drew the blade near black in his hand — a lighter steel reads as steel)
         const blade = new THREE.MeshStandardMaterial({ color: 0xdfe4ea, roughness: 0.26, metalness: 0.42 }); owned.push({ dispose: () => blade.dispose() });
-        box(0.66, 0.005, 0.034, 0.12, 0, 0, blade, sw, false);
+        /* a seven-star sword (七星剑): a blade that narrows to a point with a
+           bevelled edge to catch the lamps (photographed in his hand, the flat
+           box read as a grey bar), and the Dipper's seven gold stars along it */
+        { const sh = new THREE.Shape(), L0 = -0.21, L1 = 0.45, w0 = 0.017, w1 = 0.012;
+          sh.moveTo(L0, -w0); sh.lineTo(L1 - 0.07, -w1); sh.lineTo(L1, 0); sh.lineTo(L1 - 0.07, w1); sh.lineTo(L0, w0); sh.lineTo(L0, -w0);
+          const bg = new THREE.ExtrudeGeometry(sh, { depth: 0.002, bevelEnabled: true, bevelThickness: 0.0016, bevelSize: 0.0028, bevelSegments: 1, steps: 1 });
+          bg.rotateX(Math.PI / 2); bg.translate(0, 0.001, 0);
+          const bm = new THREE.Mesh(bg, blade); sw.add(bm); owned.push({ dispose: () => bg.dispose() });
+          const sg = new THREE.CircleGeometry(0.0042, 10); owned.push({ dispose: () => sg.dispose() });
+          [[-0.14, 0.004], [-0.08, -0.005], [-0.02, 0.003], [0.04, -0.004], [0.11, 0.0], [0.17, 0.005], [0.24, -0.003]].forEach(([x, z]) => {
+            for (const sd of [1, -1]) { const st = new THREE.Mesh(sg, matGold); st.rotation.x = -sd * Math.PI / 2; st.position.set(x, sd * 0.0029, z); sw.add(st); }
+          }); }
         box(0.025, 0.03, 0.12, -0.22, 0, 0, matGold, sw, false);
         const hilt = cyl(0.014, 0.014, 0.16, -0.31, 0, 0, matBlack, 8, sw); hilt.rotation.z = Math.PI / 2;
         box(0.012, 0.012, 0.012, -0.4, 0, 0, matGold, sw, false);
@@ -2933,10 +3011,22 @@
       medStand(true, 0);
       if (kit) { kit.root(true); if (kit.hands) kit.hands(0, { secs: 0.6 }); }
       yaw.position.x = TABLE_AT.x; yaw.position.z = TABLE_AT.z + 0.2;
-      yaw.rotation.y = camYawFrom({ x: TABLE_AT.x, z: TABLE_AT.z + 0.2 }, MED_EYE); pitch.rotation.x = 0.05;
+      /* the decision panel covers the bottom half of the screen (a phone's
+         lower 60 %): looking a little down puts his face and the bell in the
+         top half, over it (at +0.05 a phone showed his hat and the plaque) */
+      yaw.rotation.y = camYawFrom({ x: TABLE_AT.x, z: TABLE_AT.z + 0.2 }, MED_EYE); pitch.rotation.x = -0.3;
       if (kit) kit.pose('standing', { secs: 0.05 });
       setPhase('decide');
-      after(0.6, () => { if (phase === 'decide' && getState() === 'play') startDecision(); });
+      after(0.6, () => openWhenClear(dayClock.t));
+    }
+    /* the decision opens once the black has lifted: the kit's fade only runs in
+       PLAY, so a decision opened under it froze it there — a Continue into the
+       end of the reading put the four answers over a black screen. Polled, not
+       timed (a slow phone fades slowly), and never more than six seconds. */
+    function openWhenClear(t0) {
+      if (phase !== 'decide' || getState() !== 'play') return;
+      if (kit && kit.getFade && kit.getFade() > 0.03 && dayClock.t - t0 < 6) { after(0.1, () => openWhenClear(t0)); return; }
+      startDecision();
     }
     /* the medium on his feet for the rites: out of his chair to stand behind
        his table, the sword in his right hand and the bell in his left */
@@ -2977,7 +3067,7 @@
       vmHemi: [0xffd2a8, 0x2a1410, 0.6], vmKey: [0xffb07a, 0.5]
     };
     const ARRIVE = { x: LX(-2.25), z: 1.3 };
-    function worldB(on) { shrPeople.visible = on; shopG.visible = mallG.visible = !on; }
+    function worldB(on) { shrPeople.visible = on; shrStars.visible = on; shopG.visible = mallG.visible = !on; }
     function placeAtShrine() {
       worldB(true);
       yaw.position.x = ARRIVE.x; yaw.position.z = ARRIVE.z;
@@ -3061,7 +3151,7 @@
         enabled: () => phase === 'owner', onInteract() { return giftBegin(); } },
       { id: 'mat', pos: { x: MAT.x, y: 1.0, z: MAT.z }, radius: 1.5, prompt: W.hotMat, markY: 0.45,
         enabled: () => phase === 'join' && !seated && wornNow(), onInteract() { kneel(); return true; } },
-      { id: 'joss', pos: { x: JOSS_W.x, y: 1.05, z: JOSS_W.z }, radius: 2.2, prompt: W.hotIncense, markY: 0.3,   // (at the default 0.55 the mark stood at eye height and read as over the medium's table, eight metres on)
+      { id: 'joss', pos: { x: JOSS_W.x, y: 1.05, z: JOSS_W.z }, radius: 2.2, prompt: W.hotIncense, markY: 0.08,   // (at the default 0.55 the mark stood at eye height and read as over the medium's table, eight metres on; at 0.3 a phone still read it as over the wife on her stool — just over the bundle now)
         enabled: () => phase === 'arrive' && !inc, onInteract() { return incenseBegin(); } },
       { id: 'stool', pos: { x: STOOL_W.x, y: 0.95, z: STOOL_W.z }, radius: 1.6, prompt: W.hotStool, markY: 0.5,
         enabled: () => phase === 'wait' && !sitB, onInteract() { sitDown(); return true; } }
@@ -3686,11 +3776,13 @@
        inside the table) */
     const M0 = { x: E.x - ux * 0.12, y: E.y + 0.03, z: E.z - uz * 0.12 };
     step(0.62, () => { handsRoot.visible = false; api.armR.visible = false; });
-    tr(0.62, 0.64, () => { yaw.rotation.y = Math.atan2(ux, uz); pitch.rotation.x = Math.atan2(1.3 - M0.y, dl - 0.12); }, rawK);
+    /* (on a phone the figure overfilled the frame with its head cut by the left edge: it stands 0.3 m further off,
+       and the lens is turned 0.12 rad toward the side its head is lunging to) */
+    tr(0.62, 0.64, () => { yaw.rotation.y = Math.atan2(ux, uz) + 0.12; pitch.rotation.x = Math.atan2(1.3 - M0.y, dl - 0.12); }, rawK);
     camTo(0.62, 2.8, M0, { x: E.x - ux * 0.03, y: E.y + 0.07, z: E.z - uz * 0.03 }, smoothK);     // he leans back from it
-    tr(0.62, 0.78, (k) => R.hanu(k, P, E, 0), smoothK);
-    tr(0.78, 2.5, (k) => R.hanu(1, P, E, 0.10 * k), smoothK);                                 // it comes at him
-    tr(2.5, 2.8, (k) => R.hanu(1 - k, P, E, 0.10), smoothK);
+    tr(0.62, 0.78, (k) => R.hanu(k, P, E, -0.3), smoothK);
+    tr(0.78, 2.5, (k) => R.hanu(1, P, E, -0.3 + 0.15 * k), smoothK);                          // it comes at him
+    tr(2.5, 2.8, (k) => R.hanu(1 - k, P, E, -0.15), smoothK);
     tr(2.62, 2.72, (k) => R.flash(0.7 * k), rawK);
     /* 3 · 2.8– · his eyes again: the medium on his feet, the rites */
     step(2.8, () => { handsRoot.visible = true; api.armR.visible = true; F.medStand(true); F.rite(true); F.asstLook(1); });
@@ -3922,13 +4014,19 @@
     sfx(T1 + 4.8, 'presencein', 0.35);
     tr(T1 + 4.6, T1 + 5.8, (k) => F.gust(sm(k)), rawK);
     tr(T1 + 5.8, T1 + 9.0, (k) => F.gust(1 - sm(k)), rawK);
-    pitchTo(T1 + 4.6, T1 + 6.0, 0.08, 0.2, smoothK);  // up at the lantern over the door (at 0.3 it filled the frame)
+    /* up AND round onto the lantern over the door: it hangs 0.89 m in front of him, 16° to his left and 44° up, so the
+       old tilt (0.2, straight ahead) showed a phone its tassel and the shutter. Turned to its bearing: the lantern and
+       its tassel span 16°–60° of elevation and the letterboxed frame is ±29.5°, so at 0.42 (24°) its top and its
+       character were cut off — at 0.62 (35.5°) it swings whole, 5° clear of the top bar */
+    const lant = faceFrom(F.LX(-2.0), 1.9, F.LX(-2.25), 1.05);
+    yawTo(T1 + 4.6, T1 + 6.0, face, lant, smoothK);
+    pitchTo(T1 + 4.6, T1 + 6.0, 0.08, 0.62, smoothK);
     // and away, down the lorong under the sodium lamp
     sfx(T1 + 8.2, 'e3close3', 0.9);
     sfx(T1 + 8.6, 'z3close');                          // 8.44 → T1 + 17.04
     const street = faceFrom(F.LX(-2.0), 1.9, F.LX(6.4), 6.0);
-    yawTo(T1 + 9.0, T1 + 15.5, face, street, smoothK);
-    pitchTo(T1 + 9.0, T1 + 15.5, 0.2, 0.16, smoothK);
+    yawTo(T1 + 9.0, T1 + 15.5, lant, street, smoothK);
+    pitchTo(T1 + 9.0, T1 + 15.5, 0.62, 0.16, smoothK);
     ending(c, api, T1 + 17.1);
   }
 
@@ -4008,11 +4106,22 @@
       if (bone) { bone.add(pend); pend.add(F.tim); F.tim.visible = true; }
     });
     const Q = camera.quaternion.constructor, V3 = camera.position.constructor, AX = new V3(1, 0, 0), AY = new V3(0, 1, 0);
-    const _pq = new Q(), _hq = new Q(), _sq = new Q(), _ps = new V3();
+    const _pq = new Q(), _hq = new Q(), _sq = new Q(), _ps = new V3(), _tp = new V3(), _dv = new V3(), _aq = new Q();
     tr(T2, T2 + 9.0, (k, t) => {
       const u = t - T2, up = sm(cl01(u / 1.1)) * (1 - sm(cl01((u - 7.6) / 1.0)));
       api.handsPose(0, 0, { from: 'rest', relax: 0.15 });
       api.armR.position.y += -0.2 + 0.35 * up; api.armR.position.x -= 0.05 * up; api.armR.position.z += 0.11 * up;
+      /* on a narrow screen layoutHands lays the hand further in (so the whole hand stays on it), and that carried the
+         fingertip — and the LP Tim on it — off the LEFT edge: a phone saw the hand and no pendant (photographed). The
+         arm slides right until the fingertip stands a little left of the middle; never left, so a desktop's hand is
+         exactly where it was. (The hands' scene is the lens's frame: the viewmodel camera sits at its origin.) */
+      if (bone && api.vmCam && up > 0) {
+        api.armR.updateMatrixWorld(true);
+        bone.getWorldPosition(_tp);
+        const hw = Math.tan(api.vmCam.fov * Math.PI / 360) * api.vmCam.aspect * Math.max(0.05, -_tp.z);
+        const need = Math.max(0, -0.1 * hw - _tp.x) * up;
+        if (need > 0) { api.armR.parent.getWorldQuaternion(_aq); api.armR.position.add(_dv.set(need, 0, 0).applyQuaternion(_aq.invert())); }
+      }
       if (api.vmFire) api.vmFire.intensity = 1.1 * up * (0.92 + 0.08 * Math.sin(u * 7.3));   // the lantern over the door, warm on it
       if (pend && pend.parent) {
         /* the pendant HANGS: the hands are drawn in the viewmodel's own scene, which is the lens's frame, so the
