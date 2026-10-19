@@ -3278,6 +3278,7 @@
       if (at >= PHASES.indexOf('wear')) {
         gifted = true; lpAmulet.visible = false; lpHalo.visible = false;
         if (kit && !kit.has('timkp')) kit.give('timkp');
+        else if (kit && kit.urge && p === 'wear' && !kit.equipped('timkp')) kit.urge('timkp');   // a Continue with it still in the bag: the bag asks again
       } else if (kit && kit.has('timkp')) kit.take('timkp');        // a fresh run: the owner gives it again
       if (at >= PHASES.indexOf('join')) { wornDone = true; snapCelebration(); }
       if (at >= PHASES.indexOf('arrive')) { toShrine(true, p); return; }

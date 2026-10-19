@@ -5575,3 +5575,21 @@ cut (sharing its vertices and maps) when it is small.
   built round his measured takes) was never in it, and he and his chair could
   be walked through. Push the Box3 into the ENGINE's array (`S.blockers`) —
   the same reference, so collide() sees it on the next frame.
+- **The engine's sky is the ORIGIN's sky (v21.0).** The dome, the stars and
+  the moon are one group at the world's origin, never moved, and the far
+  plane is 160 m. A pocket world stands 250 m off it (every chapter's second
+  world does), so from there the stars are 110–390 m away and almost all past
+  the far plane: episode 3 chapter 3's shrine looked up "at the night" into a
+  plain colour with no star in it, on desktop and phone alike, and nothing
+  threw. Indoors it never mattered; outdoors in a pocket at night, the pocket
+  brings its OWN stars (points that keep their size, on a dome inside the far
+  plane, `fog: false`, shown only while he is there).
+- **A narrow screen moves the HAND, and whatever hangs from it (v21.0).**
+  `layoutHands` lays the right hand further in on a portrait phone so the whole
+  hand stays on screen — 0.118 m left of a desktop's — and a thing hung from
+  its FINGERTIP (ending D's LP Tim) went with it, off the left edge: a phone saw
+  a hand and no pendant, while the desktop photograph was perfect. Measure a
+  held thing on the screen it is shown on (`vmCam`: the hands' scene is the
+  lens's frame, so a bone's world x over −z, against the frame's half-width at
+  that depth, is where it falls), and move only toward the middle — never so
+  that a desktop's frame changes.

@@ -150,6 +150,10 @@ The declarations, all optional:
 | `stage.hotspots[].hits(x, y)` | v14.7: a hotspot PRESSED BY A TAP (or an unlocked click) ON THE THING ITSELF — `hits` answers whether that screen point is on it, and the engine's `hotspotTap` fires it; episode 1 chapter 3's amulet on the auntie's table | — (the badge and the key only) |
 | `kit.unlock(id, { onClose })` | v14.7: the ITEM UNLOCKED splash — the item's model turning in the middle (the `iv` renderer), its name, a Close button, its own sting; a screen state of its own (`unlock`) that closes every "is it play?" gate, with a 0.6 s guard so the press that took the item cannot also close it | — |
 | `kit.choose(ids, opts)` | v17.6: CHOOSE ONE — a centred window, one card per item (drawing, name, rarity, `item.<id>.power`, words), Confirm after a pick; answers a Promise of the id and gives nothing itself. Its own screen state (`choose`); episode 3 chapter 1's Sak Yant — the twenty-third seam | — |
+| `kit.hands(k, { secs })` | v18.0: the hands lifted out of añjali into a Thai gesture by k, the body swaying with them, eased on wall time; episode 3 chapter 2 — the twenty-fourth seam | — (the hands as they were) |
+| event kind `resist` | v18.0 (a draining bar since v19.4): a RAPID-TAP fight — full when it appears, empty in `empty` seconds untapped, every tap refills it at the hold `rate`; lost on the frame it empties; episode 3 chapter 2 — the twenty-fifth seam | — |
+| `films` / `kit.film(key, { onDone })` | v21.0: a CUTSCENE FROM PLAY — a chapter declares `films: { key: fn }` in the cutscene language; `kit.film(key)` plays one from play (refused outside play or undeclared), warms its cues, aborts a live event, and hands back to PLAY where it ends, its black handed to the kit's fade; `onDone({ skipped })` — an OBJECT, never a phase (LEARNINGS). Episode 3 chapter 3's trance and roar — the twenty-sixth seam | — |
+| `kit.hold(obj, { clasp, lift, ahead })` | v21.0: a thing IN HIS HAND in play — on the right arm, drawn in the hands' pass; `clasp` puts it at the middle of the prayer clasp; `null` lets go (only from his hand); a scene and kitReset let go. Episode 3 chapter 3's joss sticks — the twenty-seventh seam | — |
 | `ITEM_DEFS[id].drainGuard` / `shockGuard` / `fixed` | v17.6: a worn item slows every sanity DRAIN, or cuts every sudden non-minigame sanity hit, by that fraction; `fixed` keeps a worn item in its box (a Sak Yant) | — |
 | `ITEM_DEFS[id].evGuard` | v14.13: while the item is WORN, every stat decrease a MINIGAME causes is multiplied by `1 − evGuard` (`evCut()`: graded presses, missed beats, wrong drops, a losing payout, and a chapter's own price marked `{ minigame: true }` on `kit.award`/`kit.conduct`) — the LP Tim Khun Paen's 50 % | — (0: nothing is cut) |
 | `items` | v14.15: the item ids the chapter can hand out with `kit.give` — the entry curtain prepares their models (and the next chapter's download ahead fetches them) so an item never loads in the middle of play. `chaptertest` fails a literal `kit.give('x')` that is not declared | — (none) |
@@ -5274,6 +5278,74 @@ What the baseline contains, by release:
   the fiddle by itself; every ending plays the music ~19 s). The music file is
   the only change. Deploy `6ad64474a98e3715e91323b1`, byte-verified (212
   files); harnesses chapter, hosted green.
+- **v21.0** EPISODE 3 · CHAPTER 3 · THE DANCE ON BUDDHA DAY — S1·08, to the
+  episode plan and Chad's shape for it: *"The opening film should not already
+  have him trancing. It should only set the stage and context ... The player
+  still gets to browse the amulet shop in play, get the lp tim amulet. And then
+  the buddha day celebration starts, and that's when the trance begins. Then
+  cutscene takes over, and the staff and customers urge him to see a medium,
+  and the player is then transported to the next playable section with the
+  chinese medium scene."* docs/V21.0-E3C3-PLAN.md is the build's memory,
+  checkpoint by checkpoint. THE FILM (37.4 s, his voice, Brian): Vesak dawn at a
+  temple gate in the estate, the old mall across its road with a bus going by,
+  the corridor walked to the shop's glass, the owner's nod inside — no trance.
+  PLAY A, the amulet shop at noon (glass counters of framed amulets, the old
+  masters' wall, a Vesak altar with Chad's Buddha, bunting and lotus lanterns,
+  the mall corridor past the glass): browse (four things to LOOK at — the
+  amulet wall, the LP Tim in its case, the altar, the old masters — and the
+  owner calls him over after two), the owner GIVES him the LP Tim Khun Paen
+  (v14.13's amulet, at last: the case opens, the unlock splash, worn through the
+  bag), the celebration — the owner on his stool, the staff man lighting the
+  candles and the radio's chant, the customers kneeling — his mat, the chant,
+  three bows; then the hands part, he rises, and STAY PRESENT: the graded
+  `focus` kind finished (a light on the Buddha, a candle, the owner, the clock,
+  the auntie praying, the girl filming him; a ring closes on each; the case
+  file's "I was conscious the whole time" as a thing to do). THE TRANCE FILM
+  (the twenty-sixth seam, `kit.film` — a cutscene FROM PLAY that hands back to
+  play): the dance from his eyes, the people rushing in, fifteen minutes on the
+  clock, the owner: go and see a medium. PLAY B, the medium's shrine that night
+  (an old shophouse, one shutter half down, the lorong outside with its own
+  stars; the altar with Guan Gong from episode 1's tentage): incense at the urn
+  held in the clasp (`kit.hold`, the twenty-seventh seam), three bows, his
+  stool, two readings watched (a wife, a father), then the body walks him to the
+  table and bows; the medium: "It is a ghost possessing you" — and something
+  ROARS out of him (a film: Chad's Hanuman in gold light where he stood, as the
+  medium sees it; the medium on his feet with a seven-star sword and the bell).
+  The decision opens over the rites. Four answers (A accept it all and do every
+  ritual; B tell him he is wrong; C thank him, leave and put it out of mind; D
+  thank him, hold the reading as one view and keep seeking — D best, B worst),
+  S1·08's lesson verbatim. 64 lines (30 Brian, 34 in eight new cast voices), 20
+  effects, 6 beds, 4 music cues, picked by measurement, Chad's ear on the
+  closing music ("closing b"). Chad's two models arrived mid-build: the black
+  Taoist MEDIUM (178k tris, ten takes) and the HANUMAN (118k); the owner, the
+  staff man and the customers are STAND-INS until his (docs/E3-MODELS.md).
+  CP11 was a review in five lenses with every finding verified before it was
+  touched, and it found the worst bug the chapter could have shipped: the
+  trance film's `onDone({ skipped })` went on as the shrine's PHASE, so every
+  player who reached the shrine landed in a phase that was an object — no
+  objective, no readings, no decision. Also: rigs parked by their own sizing
+  stood as statues (play() kept a pause); the medium was sized on his SEATED
+  take and stood 2.3 m (sized standing now, his eyes measured off his head); a
+  track written in the raw film clock never stopped (the passer frozen out of
+  sight for all of play); the medium's chair was never a blocker (pushed after
+  build() handed the engine its array); the decision opened over a frozen black
+  on a resume (the kit's fade only runs in play — it waits for the black now);
+  and the geometry lens's dozen. Then PLAYED START TO FINISH ON A PHONE THROUGH
+  REAL TAPS (`dbg-e3c3flow.mjs`): 45 lines in order, zero overlaps, no page
+  errors — and fixed from the phone photographs: the roar's shot turned onto
+  the Hanuman's face; the decision framed over the panel; the stand-ins'
+  shoulders and arms eased toward the body after the mixer (their retargeted
+  takes left them shrugged and 14° out); ending B's lantern turned to and seen
+  whole; ending D's LP Tim was OFF THE LEFT EDGE (a phone lays the hand further
+  in) — the arm slides right until the fingertip is in frame, never left, and
+  scenes get `vmCam` to ask; and ending D's "up at the night" had NO STARS — the
+  engine's sky is centred on the world's origin and the shrine stands 250 m off
+  it, past the far plane from every star, so the shrine has its own (LEARNINGS).
+  Engine changes reachable from episodes 1–2: a line still being said in play
+  is stopped at restart and on the way to the title (`stopLiveVoices`).
+  Everything else is unreachable from them by construction. Sheet v96 (120 new
+  rows, none changed; v44 stays the link). Deploy `6ad69de825ffbe32114ecc57`,
+  byte-verified (222 files), before the harnesses.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -5810,15 +5882,17 @@ assigned where a texture belonged; and the clearance is ISSUED at the start
 of play rather than inferred from an empty bag, which had left both counters
 dead from the chapter's first frame (docs/LEARNINGS.md).
 
-In flight: **docs/V19.4-PLAN.md** — Chad's three queued batches for episode 3
-chapter 2, verbatim and step by step with a status column; read it first after
-any loss of context. The play batch shipped as v19.4, the film as v19.5 and
-Batch 3, THE CONGREGATION (his four white-outfit rigged characters and two
-Mixamo takes replacing every `lay_*` sitter), as v19.6 — all three batches done.
+In flight: nothing queued. **docs/V21.0-E3C3-PLAN.md** is the last chapter's
+build memory, checkpoint by checkpoint; episode 3 chapter 3's owner, staff man
+and customers are STAND-INS until Chad's models land (docs/E3-MODELS.md says
+which rig stands in for each, and each is a one-line swap). Episode 3 chapter
+2's three batches (docs/V19.4-PLAN.md) are all done.
 
-Next up: **episode 3 chapter 3**, The Dance On Buddha Day (v16.0 shipped chapter 1,
+Next up: **episode 3 chapter 4**, The Pieces That Answered (v16.0 shipped chapter 1,
 The Luck I Went Looking For — `src/chapters/e3/e3c1.js`; v18.0 chapter 2, The
-Hands That Moved — `src/chapters/e3/e3c2.js`, docs/V18.0-E3C2-PLAN.md; the whole episode's
+Hands That Moved — `src/chapters/e3/e3c2.js`, docs/V18.0-E3C2-PLAN.md; v21.0
+chapter 3, The Dance On Buddha Day — `src/chapters/e3/e3c3.js`,
+docs/V21.0-E3C3-PLAN.md; the whole episode's
 plan is docs/V16.0-EPISODE3-PLAN.md and its model list docs/E3-MODELS.md). Everything the architecture needs for it is in
 docs/EPISODES-PLAN.md.
 (chapter 1, The Worst Bed, shipped at v7.1 — `src/chapters/e2/e2c1.js`;
@@ -5844,7 +5918,7 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v95** (`masters/v20.1/masterz-text-v95.xlsx`, v94 with v20.1's two e3c2 cells: the core lesson without its last sentence, and the fight's brief in Chad's words. v94 was `masters/v19.9/masterz-text-v94.xlsx`, v93 plus v19.9's one voice line, mk1iti. v93 was `masters/v19.4/masterz-text-v93.xlsx`, v92 with v19.4's play changes — its new lines in, the gold leaf's out. v92 was `masters/v19.1/masterz-text-v92.xlsx`, v91 plus v19.1's one voice line, z1thank. v91 was `masters/v19.0/masterz-text-v91.xlsx`, v90 plus v19.0's four credit rows — the office, the cameras, the laptop, the cabin — and two voice-line descriptions that no longer say warehouse. v90 was `masters/v18.9/masterz-text-v90.xlsx`, v89 less the three Khon Mask credit rows and with the stall auntie's re-voiced `au1sell`. v89 was `masters/v18.8/masterz-text-v89.xlsx`, v88 with three of e3c1's words — the brief, the stall's objective and prompt — saying Sangkathan set. v88 was `masters/v18.7/masterz-text-v88.xlsx`, v87 plus v18.7's one voice line, z1trance. v87 was `masters/v18.6/masterz-text-v87.xlsx`, v86 with Brian's measured lengths in 42 voice-line cells, no word moved. v86 was `masters/v18.5/masterz-text-v86.xlsx`, v85 with v18.5's words: e3c2's objective, presence and Step-back lines and its four conduct notes, Step back in five more chapters, `event.resistWhereKey`, three voice-line descriptions. v85 was `masters/v18.4/masterz-text-v85.xlsx`, v84 with v18.4's `event.resistWhere` and e3c2's decision prompt made true for both peaks. v84 was `masters/v18.1/masterz-text-v84.xlsx`, v83 with v18.1's three rapid-tap words and the fight's new brief. v83 was `masters/v18.0/masterz-text-v83.xlsx`, v82 plus episode 3 chapter 2's words and its 24 voice lines. v82 was `masters/v17.7/masterz-text-v82.xlsx`, v81 with v17.7's three Sak Yant names and words from Chad's reference pages. v81 was `masters/v17.6/masterz-text-v81.xlsx`, v80 plus v17.6's Sak Yant choice: three items' names, powers and words, the window's words, the chapter's four, and two Ajarn voice lines. v80 was `masters/v17.0/masterz-text-v80.xlsx`, v79 plus v17.0's three credit strings for the Khon masks. v79 was `masters/v16.9/masterz-text-v79.xlsx`, v78 plus v16.9's six credit strings — the temple and the slippers. v78 was `masters/v16.6/masterz-text-v78.xlsx`, v77 plus v16.6's four credit rows for the Tailandia packs. v77 was `masters/v16.1/masterz-text-v77.xlsx`, v76 with the monk's three voice lines re-said by Arthur at v16.2. v76 was `masters/v16.1/masterz-text-v76.xlsx`, five tabs: UI
+**THE SHEET IS v96** (`masters/v21.0/masterz-text-v96.xlsx`, v95 plus episode 3 chapter 3's 55 words, its 64 voice lines and one UI word, CLICK THE LIGHT — 120 rows added, none changed. v95 was `masters/v20.1/masterz-text-v95.xlsx`, v94 with v20.1's two e3c2 cells: the core lesson without its last sentence, and the fight's brief in Chad's words. v94 was `masters/v19.9/masterz-text-v94.xlsx`, v93 plus v19.9's one voice line, mk1iti. v93 was `masters/v19.4/masterz-text-v93.xlsx`, v92 with v19.4's play changes — its new lines in, the gold leaf's out. v92 was `masters/v19.1/masterz-text-v92.xlsx`, v91 plus v19.1's one voice line, z1thank. v91 was `masters/v19.0/masterz-text-v91.xlsx`, v90 plus v19.0's four credit rows — the office, the cameras, the laptop, the cabin — and two voice-line descriptions that no longer say warehouse. v90 was `masters/v18.9/masterz-text-v90.xlsx`, v89 less the three Khon Mask credit rows and with the stall auntie's re-voiced `au1sell`. v89 was `masters/v18.8/masterz-text-v89.xlsx`, v88 with three of e3c1's words — the brief, the stall's objective and prompt — saying Sangkathan set. v88 was `masters/v18.7/masterz-text-v88.xlsx`, v87 plus v18.7's one voice line, z1trance. v87 was `masters/v18.6/masterz-text-v87.xlsx`, v86 with Brian's measured lengths in 42 voice-line cells, no word moved. v86 was `masters/v18.5/masterz-text-v86.xlsx`, v85 with v18.5's words: e3c2's objective, presence and Step-back lines and its four conduct notes, Step back in five more chapters, `event.resistWhereKey`, three voice-line descriptions. v85 was `masters/v18.4/masterz-text-v85.xlsx`, v84 with v18.4's `event.resistWhere` and e3c2's decision prompt made true for both peaks. v84 was `masters/v18.1/masterz-text-v84.xlsx`, v83 with v18.1's three rapid-tap words and the fight's new brief. v83 was `masters/v18.0/masterz-text-v83.xlsx`, v82 plus episode 3 chapter 2's words and its 24 voice lines. v82 was `masters/v17.7/masterz-text-v82.xlsx`, v81 with v17.7's three Sak Yant names and words from Chad's reference pages. v81 was `masters/v17.6/masterz-text-v81.xlsx`, v80 plus v17.6's Sak Yant choice: three items' names, powers and words, the window's words, the chapter's four, and two Ajarn voice lines. v80 was `masters/v17.0/masterz-text-v80.xlsx`, v79 plus v17.0's three credit strings for the Khon masks. v79 was `masters/v16.9/masterz-text-v79.xlsx`, v78 plus v16.9's six credit strings — the temple and the slippers. v78 was `masters/v16.6/masterz-text-v78.xlsx`, v77 plus v16.6's four credit rows for the Tailandia packs. v77 was `masters/v16.1/masterz-text-v77.xlsx`, v76 with the monk's three voice lines re-said by Arthur at v16.2. v76 was `masters/v16.1/masterz-text-v76.xlsx`, five tabs: UI
 TEXT 292, EPISODE 1 114, EPISODE 2 193, EPISODE 3 41, VOICE LINES 337 — v76
 adds v16.1's four words, two changed cells and seven voice lines to v75).
 Was v75 (`masters/v16.0/masterz-text-v75.xlsx`, which added episode 3
