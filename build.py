@@ -427,6 +427,8 @@ ASSETS = {
     'cg_man2hd':   ('assets/cg_man2hd.glb', True, False),     # the man beside Yai, and the man in front
     'monkrow':      ('assets/monkrow.glb', True, False),
     'hanuman':      ('assets/hanuman.glb', True, False),      # e3c3 v21.0: Chad's Hanuman, the presence that roars at the medium (LONG=1 tools/prepwess.mjs 0.2: 591k -> 118k tris)
+    'owner':        ('assets/owner.glb', True, False),        # e3c3 v21.0: the amulet shop's owner — the encik scan (ep1 ch3's older man in black) with Idle_9, Talk_with_Hands_Open, Walking and Running retargeted in from admintee (tools/retarget.mjs mixamo --align [--hips]); a stand-in until Chad's
+    'staffman':     ('assets/staffman.glb', True, False),     # e3c3 v21.0: the shop's staff man — ep1's standing man with the same four takes (masters/v21.0/owner/make.sh); a stand-in
     'medium':       ('assets/medium.glb', True, False),       # e3c3 v21.0: Chad's black Taoist medium, ten takes on a Mixamo rig (CHARTFIX=1 tools/prepmonk.mjs 0.3: 594k -> 178k tris)
 }
 
@@ -452,7 +454,7 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'kamaz', 'forest', 'rifle', 'ghostcyclist', 'fboaim',
            'muzzle', 'ammocrate', 'ammomags', 'icontorch', 'zavsoldier',
            'thaikit', 'wessred', 'wessgreen', 'naga', 'monk', 'ajarn', 'temple', 'slipper', 'lersimask', 'altarrow', 'customer', 'buddhahd', 'buddhalod', 'sangkathan', 'sitwomantalk', 'filmoffice', 'filmlaptop', 'actioncam', 'planecabin',
-           'cg_woman2', 'cg_man2', 'cg_woman2hd', 'cg_man2hd', 'monkrow', 'hanuman', 'medium'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone
+           'cg_woman2', 'cg_man2', 'cg_woman2hd', 'cg_man2hd', 'monkrow', 'hanuman', 'medium', 'owner', 'staffman'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone
 HOSTED_ONLY |= E2_ONLY
 
 # The split packs are hosted-only: there is no __..._B64__ token for them and

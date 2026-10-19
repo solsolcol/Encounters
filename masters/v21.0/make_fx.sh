@@ -29,7 +29,8 @@
 #   e3dance: c (99.5 % in the phone band, steady at -13 dB, the body from 0 s);
 #     a and b sent to Chad with it; d is 52 % sub — out
 #   e3film3: b (body from the first second; a is silent for 12 s)
-#   e3close3: a (98 % phone band; b sits at -31 dB RMS and low)
+#   e3close3: measured pick a (98 % phone band; b sits at -31 dB RMS and low) —
+#     CHAD'S EAR chose b (the v10.6 rule: his ear beats the measure)
 set -e
 cd "$(dirname "$0")"
 peak() { python3 ../v9.7/peak.py "$1" | sed 's/.*peak //; s/ dBFS.*//'; }
@@ -89,5 +90,5 @@ loop  raw/shrineamb_b.mp3  w_shrineamb.wav 2.0;  enc shrineamb w_shrineamb.wav -
 trim raw/e3dance_c.mp3 w_d0.wav 0.82 53.0 0.01; xloop w_d0.wav w_e3dance.wav 3.0; enc e3dance w_e3dance.wav -3.0 -3.0 96k 2
 trim raw/e3shrine2_b.mp3 w_s0.wav 0.32 44.6 0.01; xloop w_s0.wav w_e3shrine.wav 3.0; enc e3shrine w_e3shrine.wav -4.0 -4.0 96k 2
 fx e3film3  raw/e3film3_b.mp3  0.01 53.3 2.50 -3.0
-fx e3close3 raw/e3close3_a.mp3 0.81 52.6 3.00 -3.0
+fx e3close3 raw/e3close3_b.mp3 0.52 53.3 3.00 -3.0   # CHAD'S EAR (19 Oct): "Closing b music is better than closing a music"
 rm -f w_*.f32 w_d0.wav w_s0.wav w_e3shrine.wav w_mallamb.wav w_shopchant.wav w_dancemove.wav w_lorongamb.wav w_estatemorn.wav w_shrineamb.wav w_e3dance.wav
