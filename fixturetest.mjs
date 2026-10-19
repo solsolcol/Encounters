@@ -311,6 +311,24 @@ K.praySeam = await p.evaluate(async () => {
 }).catch(() => false);
 await settle();
 
+/* v21.0: A THING IN HIS HAND (the twenty-seventh seam) — kit.hold puts an
+   object on the right arm (so it is drawn in the hands' pass), at the clasp's
+   middle when asked, lets go on hold(null), and a new hold replaces the old */
+K.holdSeam = await p.evaluate(async () => {
+  const E = window.__enc;
+  const arm = E.armR, Obj = arm.constructor;
+  const a = new Obj(), b = new Obj();
+  E.kit.hold(a, { clasp: true, lift: 0.02 });
+  const clasp = a.parent === arm && E.kit.holding() === a && [a.position.x, a.position.y, a.position.z].every(Number.isFinite)
+    && Math.hypot(a.position.x, a.position.y, a.position.z) < 0.4;
+  E.kit.hold(b, { pos: [0, 0, -0.1] });
+  const swap = a.parent === null && b.parent === arm && E.kit.holding() === b && b.position.z === -0.1;
+  E.kit.hold(null);
+  const off = b.parent === null && E.kit.holding() === null;
+  return clasp && swap && off;
+}).catch(() => false);
+await settle();
+
 /* v18.0: THE HANDS TAKEN (the twenty-fourth seam) — kit.hands lifts both
    hands out of the clasp into the gesture by k, sways the lens with them, and
    gives every bit of it back at zero: the arm where the engine leaves it, the

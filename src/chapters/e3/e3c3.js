@@ -114,7 +114,8 @@
        man switches it on; THE MELODY NOBODY ELSE HEARS, from the third Namo
        through the trance and into its film; the dance's cloth and feet —
        driven every frame by mixBeds (e3c2's shape) */
-    ambience: { beds: [['mallamb', 0.3], ['shopchant', 0], ['e3dance', 0], ['dancemove', 0]] },
+    ambience: { beds: [['mallamb', 0.3], ['shopchant', 0], ['e3dance', 0], ['dancemove', 0],
+                       ['lorongamb', 0], ['shrineamb', 0], ['e3shrine', 0], ['ritual', 0]] },
     voiceLine: null,
 
     words: {
@@ -913,7 +914,8 @@
       // the look: toward the lens, within a neck's reach, eased
       let ty = 0, tp = 0;
       if (rig.look > 0 && rig.group.visible) {
-        rig.head.getWorldPosition(_hp); camera.getWorldPosition(_cp);
+        rig.head.getWorldPosition(_hp);
+        if (rig.lookAt) _cp.set(rig.lookAt.x, rig.lookAt.y, rig.lookAt.z); else camera.getWorldPosition(_cp);
         const dx = _cp.x - _hp.x, dz = _cp.z - _hp.z, dy = _cp.y - _hp.y;
         const fwd = rig.group.rotation.y, a = Math.atan2(dx, dz) - fwd;
         const yawTo = Math.atan2(Math.sin(a), Math.cos(a));
@@ -962,6 +964,7 @@
         spinePost(r); headPost(r, wdt);
         if (r.bow > 0.001) moving = true;
       }
+      if (inB) toolsTick();                       // the sword and the bell, after his take has posed his hands
       if (!inB) { passerTick(wdt); phoneTick(); }
       /* the shadow maps are drawn on demand (v2.x): while someone walks or
          bows, a few times a second (e3c2's v18.5), desktop only */
@@ -1045,8 +1048,8 @@
        On this WHITE tile an additive gold sums to white (the v8.8 law), so
        the hue is a normal-blended tint and the glow a faint additive layer
        over it (the first photographs showed a white ring) */
-    function mkZone(x, z) {
-      const g = new THREE.Group(); g.position.set(x, 0.02, z); g.visible = false; shopG.add(g);
+    function mkZone(x, z, parent = shopG) {
+      const g = new THREE.Group(); g.position.set(x, 0.02, z); g.visible = false; parent.add(g);
       const disc = new THREE.Mesh(new THREE.CircleGeometry(0.5, 32),
         new THREE.MeshBasicMaterial({ color: 0xd99a1a, transparent: true, opacity: 0.3, depthWrite: false, fog: false }));
       disc.rotation.x = -Math.PI / 2; g.add(disc);
@@ -1128,6 +1131,20 @@
       staff.look = 0.6; staff.group.position.set(STAFF.x, 0, STAFF.z); staff.group.rotation.y = Math.PI / 2;
       if (staff.acts && staff.acts.Idle_9) staff.play('Idle_9', 1, 0);
       for (const r of [girl, manW, auntie, youth]) { r.look = 0; r.nod = 0; }
+      // the shrine's people back where the night found them
+      for (const [r, at, idle] of [[wife, WIFE_AT, WIFE_SIT], [father, FATHER_AT, SIT_W]]) {
+        r.group.visible = true; r.group.position.set(at.x, 0, at.z);
+        r.group.rotation.y = r === wife ? Math.PI : Math.atan2(MED_AT.x - FATHER_AT.x, MED_AT.z - FATHER_AT.z);
+        r.look = 0; r.lookAt = null; r.nod = 0;
+        if (r.acts && r.acts[idle]) r.play(idle, 1, 0);
+      }
+      asst.look = 0; asst.lookAt = null; asst.nod = 0;
+      medium.look = 0; medium.lookAt = null; medium.nod = 0;
+      if (medium.acts) { medium.standK = medium.standTo = 0; medium.group.position.z = MED_AT.z; medStand(false, 0); }
+      talismanGiven(false); urnLight(false); roarFx.flash(0); roarFx.hanu(0, MED_AT, MED_AT);
+      // the endings' things put away: the doorway open, no bus, nothing in his hand, the lanterns still
+      entShutterK(0); busK(0); shrLife.gust = 0;
+      for (const o of [cupProp, timHeld]) { o.visible = false; if (o.parent) o.parent.remove(o); }
       // the kneelers and the two on stools back as the day found them (the film moves and turns them)
       girl.group.position.set(-0.55, 0, -5.5); girl.group.rotation.y = Math.PI;
       if (girl.acts && girl.acts.kneel) girl.play('kneel', 1, 0);
@@ -1172,6 +1189,7 @@
     const LX = (lx) => SHR.x + lx;                                   // local x → world x
     const _sv = new THREE.Vector3();
     const shrLife = { smokes: [], fans: [], coils: [], flames: [], lanterns: [] };
+    let bigUrn = null, urnLit = false, talLaid = null, swordG = null, bellG = null, medStanding = false;
     const matQuarry = new THREE.MeshStandardMaterial({ map: tex(makeQuarryTiles(THREE, cnv)), roughness: 0.6 });
     matQuarry.map.repeat.set(9 / 1.2, 10 / 1.2);
     const matPaintB = new THREE.MeshStandardMaterial({ color: 0xe6d9bf, roughness: 0.93 });
@@ -1402,12 +1420,13 @@
       // the talismans: a stack, and one laid out with its brush beside it
       box(0.13, 0.03, 0.3, -0.5, T + 0.015, -0.05, matYellow, g, false);
       const tal = plane(0.11, 0.3, texMat(makeTalisman(THREE, cnv, 4), { roughness: 0.85 }), -0.3, T + 0.003, 0.0, 0, g); tal.rotation.x = -Math.PI / 2; tal.rotation.z = 0.12;
+      talLaid = tal;
       const brush = cyl(0.006, 0.004, 0.22, -0.16, T + 0.012, 0.02, matWoodL, 6, g); brush.rotation.x = Math.PI / 2; brush.rotation.z = 0.25;
       box(0.11, 0.022, 0.16, -0.3, T + 0.011, -0.22, matInk, g, false);
       // the seal and its red pad, the bell, the command flags, the tea
       cyl(0.045, 0.045, 0.018, -0.02, T + 0.009, 0.12, new THREE.MeshStandardMaterial({ color: 0xb01010, roughness: 0.7 }), 12, g);
       box(0.05, 0.08, 0.05, 0.08, T + 0.04, 0.12, matWoodL, g, false);
-      { const bell = new THREE.Group(); bell.position.set(0.24, T, 0.08); g.add(bell);
+      { const bell = new THREE.Group(); bell.position.set(0.24, T, 0.08); g.add(bell); bellG = bell;
         const cup = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.045, 0.07, 12, 1, true), matBronzeD); cup.position.y = 0.035; bell.add(cup);
         cyl(0.01, 0.012, 0.1, 0, 0.12, 0, matWoodL, 6, bell); }
       { cyl(0.04, 0.035, 0.12, 0.5, T + 0.06, -0.2, matLacqIn, 10, g);
@@ -1423,8 +1442,10 @@
       // a small urn of his own, a candle, and the sword across the front
       mkUrn(g, -0.05, T, -0.24, 0.07, 3, 3);
       cyl(0.025, 0.025, 0.18, -0.5, T + 0.09, -0.24, matLacq, 10, g); mkFlame(g, -0.5, T + 0.2, -0.24, 0.45);
-      { const sw = new THREE.Group(); sw.position.set(0.02, T + 0.02, 0.24); sw.rotation.y = 0.04; g.add(sw);
-        box(0.66, 0.005, 0.034, 0.12, 0, 0, matChrome, sw, false);
+      { const sw = new THREE.Group(); sw.position.set(0.02, T + 0.02, 0.24); sw.rotation.y = 0.04; g.add(sw); swordG = sw;
+        // (chrome with nothing to reflect drew the blade near black in his hand — a lighter steel reads as steel)
+        const blade = new THREE.MeshStandardMaterial({ color: 0xdfe4ea, roughness: 0.26, metalness: 0.42 }); owned.push({ dispose: () => blade.dispose() });
+        box(0.66, 0.005, 0.034, 0.12, 0, 0, blade, sw, false);
         box(0.025, 0.03, 0.12, -0.22, 0, 0, matGold, sw, false);
         const hilt = cyl(0.014, 0.014, 0.16, -0.31, 0, 0, matBlack, 8, sw); hilt.rotation.z = Math.PI / 2;
         box(0.012, 0.012, 0.012, -0.4, 0, 0, matGold, sw, false);
@@ -1464,7 +1485,8 @@
     { const g = new THREE.Group(); g.position.set(URN.x, 0, URN.z); shrG.add(g);
       cyl(0.36, 0.4, 0.5, 0, 0.25, 0, matStone, 16, g);
       cyl(0.39, 0.39, 0.04, 0, 0.52, 0, matStone, 16, g);
-      mkUrn(g, 0, 0.54, 0, 0.3, 46, 3, true);
+      bigUrn = mkUrn(g, 0, 0.54, 0, 0.3, 46, 3, true);
+      for (const o of bigUrn.userData.lit) o.visible = false;
       solids.push(hidBox(0.8, 1.2, 0.8, URN.x, 0.6, URN.z, shrG));
     }
     const JOSS = { x: -1.6, z: -1.2 };
@@ -1623,7 +1645,10 @@
       if (!shrPeople.visible) return;
       camera.getWorldQuaternion(_cq);
       for (const f of shrLife.flames) { f.core.scale.y = 2.2 * (1 + Math.sin(t * 11 + f.ph) * 0.16 + Math.sin(t * 23 + f.ph) * 0.07); f.glow.quaternion.copy(_cq); }
-      for (const l of shrLife.lanterns) { if (l.bill) l.halo.quaternion.copy(_cq); if (l.sway) l.sway.rotation.z = 0.018 * Math.sin(t * 0.9 + l.ph); }
+      /* the lanterns sway; a gust (ending B: "it heard me") swings them harder and faster, on an accumulated phase so it never jumps */
+      const gu = shrLife.gust || 0, gA = 0.018 * (1 + 6 * gu);
+      shrLife.swayPh = (shrLife.swayPh || 0) + wdt * (0.9 + 2.4 * gu);
+      for (const l of shrLife.lanterns) { if (l.bill) l.halo.quaternion.copy(_cq); if (l.sway) { l.sway.rotation.z = gA * Math.sin(shrLife.swayPh + l.ph); l.sway.rotation.x = 0.5 * gA * gu * Math.sin(shrLife.swayPh * 1.3 + l.ph * 2); } }
       for (const p of shrLife.fans) p.rotation.y += wdt * 2.4;
       for (const c of shrLife.coils) c.g.rotation.y += wdt * c.sp;
       for (const s of shrLife.smokes) {
@@ -1766,6 +1791,189 @@
       r.model.position.z = r.rootBase.z - wz / ws;
     }
 
+    /* ---- THE ROAR's own things: Chad's Hanuman as the medium sees him (gold
+       light where the young man stood — a body of light over a glow, both
+       unlit, both through the dark), and a gold flash over the lens */
+    const hanuG = new THREE.Group(); hanuG.visible = false; world.add(hanuG);
+    const hanuMats = [];
+    parseOnce('hanuman').then(gl => {
+      if (!alive) return;
+      const src = gl.scene;
+      src.updateMatrixWorld(true);
+      const bb = new THREE.Box3().setFromObject(src), k = 1.95 / (bb.max.y - bb.min.y);
+      /* (photographed: both layers drawn two-sided with no depth write summed
+         every surface of 118k triangles front and back, and the additive one
+         blew the whole figure out to a white blob with no face — now the body
+         is one solid gold surface that hides its own far side, and the glow is
+         a thin front-faced shell over it) */
+      for (const [color, op, blend, sc, dw] of [[0xffd27a, 0.86, THREE.NormalBlending, 1.0, true], [0xffa83a, 0.26, THREE.AdditiveBlending, 1.02, false]]) {
+        const m = src.clone(true);
+        m.traverse(o => {
+          if (!o.isMesh) return;
+          const mt = new THREE.MeshBasicMaterial({ map: o.material.map || null, color, transparent: true, opacity: 0, depthWrite: dw, blending: blend, fog: false, side: THREE.FrontSide });
+          mt.userData.peak = op; hanuMats.push(mt); owned.push({ dispose: () => mt.dispose() });
+          o.material = mt; o.castShadow = false; o.receiveShadow = false; o.renderOrder = 3;
+        });
+        const w = new THREE.Group(); w.scale.setScalar(k * sc); w.position.y = -bb.min.y * k * sc;
+        w.add(m); hanuG.add(w);
+      }
+    }).catch(err => { console.warn('hanuman failed to load', err); ctx.loadFail && ctx.loadFail('hanuman', err); });
+    const flashM = new THREE.MeshBasicMaterial({ color: 0xffc860, transparent: true, opacity: 0, depthTest: false, depthWrite: false, blending: THREE.AdditiveBlending, fog: false });
+    const flashQ = new THREE.Mesh(new THREE.PlaneGeometry(6, 6), flashM); flashQ.position.z = -0.5; flashQ.renderOrder = 9; flashQ.visible = false;
+    camera.add(flashQ);
+    owned.push({ dispose: () => { camera.remove(flashQ); flashQ.geometry.dispose(); flashM.dispose(); } });
+    const roarFx = {
+      flash(k) { flashM.opacity = 0.85 * k; flashQ.visible = k > 0.002; },
+      /* the figure at `at`, turned to face `to`, k its light, push a lunge along its facing */
+      hanu(k, at, to, push = 0) {
+        hanuG.visible = k > 0.002;
+        if (!hanuG.visible) return;
+        const ry = Math.atan2(to.x - at.x, to.z - at.z);
+        hanuG.position.set(at.x + Math.sin(ry) * push, 0, at.z + Math.cos(ry) * push);
+        hanuG.rotation.y = ry + HANU_FACE;
+        for (const m of hanuMats) m.opacity = m.userData.peak * k;
+      }
+    };
+    const HANU_FACE = 0;                                   // the model faces +z (photographed front-on, v21.0)
+    function talismanGiven(on) { if (talLaid) talLaid.visible = !on; }
+    /* the sword in his right hand, the bell in his left, for the rites; put
+       back on the table as they were found (a reset, a replay).
+       (Photographed, the first grip was a fixed offset in the hand bone's
+       frame: the sword came out of his wrist as a thin dark line and the bell
+       sat inside his sleeve. A Mixamo hand bone is the WRIST and his hand has
+       no finger bones, so the grip is measured instead: the PALM is the
+       centroid of the vertices skinned mainly to the hand bone, in its own
+       frame; each tool's grip point — the sword's hilt, the bell's handle —
+       is put there; and its turn rides the hand but is pulled every frame
+       toward how the thing is held — the blade up and toward the man before
+       him, the bell hanging mouth down — so a take that swings the wrist
+       swings the tool without ever driving it into the floor or the body.) */
+    const toolHome = new Map();
+    const SWORD_GRIP = new THREE.Vector3(-0.31, 0, 0), BELL_GRIP = new THREE.Vector3(0, 0.12, 0);
+    const SWORD_UP = (() => {
+      const x = new THREE.Vector3(-0.22, 1, 0.42).normalize(), z0 = new THREE.Vector3(0, 0, 1);
+      const y = z0.clone().addScaledVector(x, -z0.dot(x)).normalize(), z = new THREE.Vector3().crossVectors(x, y);
+      return new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(x, y, z));
+    })();
+    const BELL_UP = new THREE.Quaternion();
+    const _gq = new THREE.Quaternion(), _gq2 = new THREE.Quaternion(), _gs = new THREE.Vector3(), _gp = new THREE.Vector3(), _gm = new THREE.Matrix4();
+    function palmOf(r, hand) {
+      if (hand.userData.palm) return hand.userData.palm;
+      r.model.updateMatrixWorld(true);
+      _gm.copy(hand.matrixWorld).invert();
+      const c = new THREE.Vector3(), v = new THREE.Vector3(); let n = 0;
+      r.model.traverse(m => {
+        if (!m.isSkinnedMesh) return;
+        const bi = m.skeleton.bones.indexOf(hand); if (bi < 0) return;
+        const si = m.geometry.attributes.skinIndex, sw = m.geometry.attributes.skinWeight;
+        m.skeleton.update();
+        for (let i = 0; i < si.count; i++) {
+          let w = 0;
+          for (let k = 0; k < 4; k++) if (si.getComponent(i, k) === bi) w += sw.getComponent(i, k);
+          if (w < 0.5) continue;
+          m.getVertexPosition(i, v); v.applyMatrix4(m.matrixWorld).applyMatrix4(_gm); c.add(v); n++;
+        }
+      });
+      if (n) c.multiplyScalar(1 / n); else c.set(0, 0.07, 0);
+      return (hand.userData.palm = c);           // in the bone's own frame and units
+    }
+    function toolsInHands(on, settle = 0) {
+      const r = medium;
+      if (on && r.mixer) { r.mixer.update(0); r.model.updateMatrixWorld(true); }   // the hand where the new take has it
+      for (const [g, hand] of [[swordG, r.handR], [bellG, r.handL]]) {
+        if (!g) continue;
+        if (!toolHome.has(g)) toolHome.set(g, { parent: g.parent, pos: g.position.clone(), rot: g.rotation.clone() });
+        const H = toolHome.get(g);
+        if (on && hand) {
+          hand.add(g);
+          /* held exactly as it should be until the take has blended in, and
+             from then on riding the hand */
+          g.userData.rideQ = null; g.userData.settleUntil = performance.now() + settle * 1000;
+          toolsTick();
+        } else if (!on) {
+          H.parent.add(g); g.position.copy(H.pos); g.rotation.copy(H.rot); g.scale.setScalar(1);
+        }
+      }
+    }
+    function toolsTick() {
+      if (!medStanding) return;
+      const r = medium;
+      for (const [g, hand, grip, ideal, w] of [[swordG, r.handR, SWORD_GRIP, SWORD_UP, 0.55], [bellG, r.handL, BELL_GRIP, BELL_UP, 0.8]]) {
+        if (!g || !hand || g.parent !== hand) continue;
+        hand.getWorldQuaternion(_gq); hand.getWorldScale(_gs);
+        if (!g.userData.rideQ || performance.now() < g.userData.settleUntil) g.userData.rideQ = (g.userData.rideQ || new THREE.Quaternion()).copy(_gq).invert().multiply(ideal);
+        _gq2.copy(_gq).multiply(g.userData.rideQ).slerp(ideal, w);    // riding the hand, pulled toward how it is held
+        g.quaternion.copy(_gq).invert().multiply(_gq2);
+        const k = 1 / (_gs.x || 1);
+        g.scale.setScalar(k);                                          // the bone carries the model's (and its armature's) scale
+        _gp.copy(grip).applyQuaternion(g.quaternion).multiplyScalar(k);
+        g.position.copy(palmOf(r, hand)).sub(_gp);
+      }
+    }
+
+    /* ---- THE ENDINGS' own things (the scenes direct them through stage.film):
+       the entrance bay's shutter, which only ending B brings down; a bus in
+       the far lane for ending C; the cup of talisman water put in his hand in
+       A; the LP Tim held up into the lantern light in D; and a gust through
+       the lanterns when "whatever it was" hears him (B) */
+    const entMat = matShutter.clone(); entMat.map = tex(matShutter.map.clone()); entMat.map.needsUpdate = true; entMat.side = THREE.DoubleSide;
+    owned.push({ dispose: () => entMat.dispose() });
+    const entShutter = plane(4.0, 2.55, entMat, -2.25, 2.62 - 1.275, 0.01, 0, shrG); entShutter.visible = false;
+    function entShutterK(k) {
+      k = THREE.MathUtils.clamp(k, 0, 1);
+      entShutter.visible = k > 0.002;
+      entShutter.scale.y = Math.max(0.002, k); entShutter.position.y = 2.62 - 1.275 * k;
+      entMat.map.repeat.set(4, 2.2 * k); entMat.map.offset.y = 2.2 * (1 - k);   // the slats come down out of the box, not squashed
+    }
+    const BUS = { x0: 34, x1: -34, z: 11.6 };
+    const busG = new THREE.Group(); busG.visible = false; shrG.add(busG);
+    { const body = new THREE.MeshBasicMaterial({ color: 0x5c6066, fog: true }), skirt = new THREE.MeshBasicMaterial({ color: 0x2a2c30, fog: true }),
+            band = new THREE.MeshBasicMaterial({ color: 0x8a2a20, fog: true }), win = new THREE.MeshBasicMaterial({ map: tex(makeBusWindows(THREE, cnv)), fog: true }),
+            sign = new THREE.MeshBasicMaterial({ map: tex(makeBusSign(THREE, cnv)), fog: true }), tyre = new THREE.MeshBasicMaterial({ color: 0x101010, fog: true });
+      for (const m of [body, skirt, band, win, sign, tyre]) owned.push({ dispose: () => m.dispose() });
+      box(12.0, 2.3, 2.5, 0, 1.55, 0, body, busG, false);
+      box(12.02, 0.42, 2.52, 0, 0.55, 0, skirt, busG, false);
+      box(12.04, 0.12, 2.54, 0, 0.82, 0, band, busG, false);
+      for (const s of [-1, 1]) plane(11.2, 0.95, win, 0.25, 2.02, s * 1.262, s > 0 ? 0 : Math.PI, busG);            // the lit windows both sides
+      plane(2.3, 1.15, win, -6.012, 1.95, 0, -Math.PI / 2, busG);                                                     // the windscreen
+      plane(1.7, 0.28, sign, -6.02, 2.82, 0, -Math.PI / 2, busG);                                                     // the route, in amber
+      for (const [x, z] of [[-4.2, -1.12], [-4.2, 1.12], [3.6, -1.12], [3.6, 1.12]]) { const w = cyl(0.5, 0.5, 0.3, x, 0.5, z, tyre, 14, busG); w.rotation.x = Math.PI / 2; }
+      for (const s of [-1, 1]) {
+        const hl = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.9), addGlow(glowWarm, 0.95)); hl.position.set(-6.1, 0.82, s * 0.92); hl.rotation.y = -Math.PI / 2; busG.add(hl);
+        const tl = new THREE.Mesh(new THREE.PlaneGeometry(0.7, 0.7), addGlow(glowRed, 0.9)); tl.position.set(6.06, 0.95, s * 0.95); tl.rotation.y = Math.PI / 2; busG.add(tl);
+      }
+      const beam = new THREE.Mesh(new THREE.PlaneGeometry(7, 4), addGlow(glowWarm, 0.35)); beam.rotation.x = -Math.PI / 2; beam.position.set(-9.0, 0.02, 0); busG.add(beam);
+      const spill = new THREE.Mesh(new THREE.PlaneGeometry(12, 4.2), addGlow(glowWarm, 0.16)); spill.rotation.x = -Math.PI / 2; spill.position.set(0.25, 0.02, 0); busG.add(spill); }
+    function busK(k) {
+      busG.visible = k > 0 && k < 1;
+      busG.position.set(BUS.x0 + (BUS.x1 - BUS.x0) * k, 0, BUS.z);
+    }
+    // the cup of talisman water (built for the hands' pass: it rides his right arm in scene A)
+    const cupProp = new THREE.Group(); cupProp.visible = false;
+    { const por = new THREE.MeshStandardMaterial({ color: 0xf2eee6, roughness: 0.28 }), rim = new THREE.MeshStandardMaterial({ color: 0x2a4a8a, roughness: 0.4 }),
+            wat = new THREE.MeshStandardMaterial({ map: tex(makeAshWater(THREE, cnv)), roughness: 0.15 });
+      for (const m of [por, rim, wat]) owned.push({ dispose: () => m.dispose() });
+      const c = new THREE.Mesh(new THREE.CylinderGeometry(0.038, 0.028, 0.058, 18, 1, true), por); c.position.y = 0.029; cupProp.add(c);
+      const b = new THREE.Mesh(new THREE.CircleGeometry(0.028, 16), por); b.rotation.x = -Math.PI / 2; cupProp.add(b);
+      const r = new THREE.Mesh(new THREE.TorusGeometry(0.038, 0.0025, 6, 24), rim); r.rotation.x = Math.PI / 2; r.position.y = 0.058; cupProp.add(r);
+      const w = new THREE.Mesh(new THREE.CircleGeometry(0.035, 18), wat); w.rotation.x = -Math.PI / 2; w.position.y = 0.046; cupProp.add(w);
+      cupProp.traverse(o => { if (o.geometry) owned.push({ dispose: () => o.geometry.dispose() }); }); }
+    // the LP Tim, held up into the lantern light (D): Chad's model at full detail, as every amulet up close is
+    // (it hangs from his fingertip on a red cord: the cord from the group's origin down, the amulet's top 3 cm under it)
+    const timHeld = new THREE.Group(); timHeld.visible = false;
+    { const cordM = new THREE.MeshStandardMaterial({ color: 0x8a1a12, roughness: 0.9 }); owned.push({ dispose: () => cordM.dispose() });
+      const cord = cyl(0.0011, 0.0011, 0.032, 0, -0.016, 0, cordM, 5, timHeld); owned.push({ dispose: () => cord.geometry.dispose() }); }
+    parseOnce('timkp').then(hd => {
+      if (!alive) return;
+      const m = hd.scene.clone(true); m.scale.setScalar(0.052);
+      m.updateMatrixWorld(true);
+      const bb = new THREE.Box3().setFromObject(m);
+      m.position.set(-(bb.min.x + bb.max.x) / 2, -0.03 - bb.max.y, -(bb.min.z + bb.max.z) / 2);
+      m.traverse(q => { if (q.isMesh) { q.castShadow = false; q.receiveShadow = false; } });
+      timHeld.add(m);
+    }).catch(() => {});
+    shrLife.gust = 0;
+
     /* ------------------------------------------------------ the chapter clock */
     const PHASES = ['browse', 'owner', 'gift', 'wear', 'join', 'chant', 'trance',
                     'arrive', 'wait', 'called', 'decide'];
@@ -1823,7 +2031,13 @@
        v8.0: a line asked for before its bytes have decoded plays nothing) */
     if (warmSounds) warmSounds(['ow3hello', 'z3look1', 'z3look2', 'z3look3', 'z3look4', 'ow3call', 'ow3gift1', 'ow3gift2',
                                 'z3thanks', 'ow3good', 'ow3namo', 'z3shift1', 'z3shift2', 'z3night',
-                                'casesnap', 'glasscase', 'candlelit', 'torchclick', 'matkneel', 'e3bell', 'presencein']);
+                                'casesnap', 'glasscase', 'candlelit', 'torchclick', 'matkneel', 'e3bell', 'presencein',
+                                // the shrine's (play B): its lines and the sounds play makes there
+                                'z3shrine', 'as3sit', 'dv3wife', 'md3read1', 'md3drink', 'dv3father', 'md3read2', 'md3done',
+                                'as3next', 'z3walk', 'md3ghost', 'incenselit', 'urnsand', 'stoolscrape', 'taobell',
+                                'step1', 'step2', 'step3', 'step4',
+                                // the endings' helpers fire these (the engine reads a SCENE's own source for its cues, v14.16)
+                                'z3next', 'e3close3']);
 
     /* ------------------------------------------------------------ the phases */
     const inShrine = (x) => x < -100;
@@ -1836,10 +2050,11 @@
     function objectiveFor(p, opts) {
       if (!kit) return;
       const obj = { browse: W.objBrowse, owner: W.objOwner, wear: W.objWear, join: W.objJoin,
-                    chant: W.objChant, arrive: W.objIncense, wait: W.objWait }[p];
+                    chant: W.objChant, arrive: W.objIncense, wait: W.objWait, watch: W.objWatch }[p];
       kit.objective(obj || null, opts);
       /* the mat's own "!" floats over its glow (e3c2's v19.4); the owner is a
-         hotspot with his own mark — one marker for one thing (v19.2) */
+         hotspot with his own mark — one marker for one thing (v19.2); at the
+         shrine the joss sticks and then his stool are marked the same way */
       kit.waypoint(p === 'join' ? { x: MAT.x, y: 0.9, z: MAT.z } : null);
     }
     /* the receipt is the note (v7.3): a beat that banks is paid once, whatever
@@ -2105,14 +2320,14 @@
       const t = bowing ? dayClock.t - bowing.t0 : -1;
       let b = 0;
       if (t >= 0) for (const [a0, a1] of [[0.25, 2.25], [2.55, 4.55], [4.85, 6.85]]) { const u = (t - a0) / (a1 - a0); if (u > 0 && u < 1) b = Math.sin(u * Math.PI); }
-      for (const r of [girl, manW]) r.bow = b;
+      if (!bowing || !bowing.free) for (const r of [girl, manW]) r.bow = b;
       if (!bowing) return;
-      if (t < 7.3 && seated) {
+      if (t < 7.3 && (seated || bowing.free)) {
         const base = pitch.rotation.x - bowing.applied;
         const p2 = Math.max(-0.75, Math.min(0.55, base - b * 0.62));
         pitch.rotation.x = p2; bowing.applied = p2 - base;
       }
-      if (t > 7.6) { bowing = null; for (const r of [girl, manW]) r.bow = 0; }
+      if (t > 7.6) { if (!bowing.free) for (const r of [girl, manW]) r.bow = 0; bowing = null; }
     }
     function tranceStirs() {
       if (phase !== 'chant' || trance) return;
@@ -2214,6 +2429,254 @@
       yaw.position.z = MAT.z + 0.05 * Math.sin(T.t * 0.9 + 0.8);
     }
 
+    /* ================================================ PLAY B · THE SHRINE
+       arrive (the incense, three bows) → wait (his stool, two readings) →
+       called (the assistant calls; the body walks him to the table and bows
+       him) → the reading → the roar (a film) → decide. Every beat on the
+       chapter clock; the shrine's people tick only while he is there. */
+    const JOSS_W = { x: LX(JOSS.x), z: JOSS.z }, STOOL_W = { x: LX(MYSTOOL.x), z: MYSTOOL.z };
+    const INC_AT = { x: LX(0), z: -0.92 };                   // where he stands to offer, the urn before him
+    const TABLE_AT = { x: LX(0.1), z: -5.5 };               // where his legs stop him, before the medium's table
+    const MED_EYE = { x: MED_AT.x, y: 1.42, z: MED_AT.z + 0.1 };
+    const ALT_FACE = { x: LX(0), y: 1.6, z: -9.7 };
+    const WIFE_HEAD = { x: WIFE_AT.x, y: 1.05, z: WIFE_AT.z }, FATHER_HEAD = { x: FATHER_AT.x, y: 1.08, z: FATHER_AT.z };
+    let inc = null, sitB = null, walkB = null, bowB = null, roarDone = false;
+    const camYawFrom = (from, p) => Math.atan2(-(p.x - from.x), -(p.z - from.z));
+    const zoneB = mkZone(STOOL_W.x, STOOL_W.z, world);
+
+    /* THE THREE STICKS IN HIS HANDS (the plan's 7.2): red stems, the brown
+       incense over them, an ember at each tip and a thread of smoke, held
+       between the palms through the bows (kit.hold, the twenty-seventh seam —
+       a child of the right arm, drawn in the hands' own pass, so the palms
+       close round them) and planted in the urn's sand. In the clasp's frame:
+       +y is up the fingers, -z ahead; the origin is between the palms. */
+    const jossHeld = new THREE.Group(); jossHeld.visible = false;
+    const jossSmoke = [];
+    { const tilt = new THREE.Group(); tilt.rotation.x = -0.16; jossHeld.add(tilt);
+      const stemM = new THREE.MeshStandardMaterial({ color: 0xb02018, roughness: 0.55 });
+      const coatM = new THREE.MeshStandardMaterial({ color: 0x5c3a22, roughness: 0.95 });
+      const tipM  = new THREE.MeshBasicMaterial({ color: 0xff8030 });
+      const glowM = addGlow(glowSod, 0.85);
+      for (const m of [stemM, coatM, tipM, glowM]) owned.push({ dispose: () => m.dispose() });
+      const stemG = new THREE.CylinderGeometry(0.0018, 0.0018, 0.12, 5), coatG = new THREE.CylinderGeometry(0.0027, 0.0024, 0.2, 6),
+            tipG = new THREE.SphereGeometry(0.0034, 6, 4), glowG = new THREE.PlaneGeometry(0.03, 0.03);
+      for (const g of [stemG, coatG, tipG, glowG]) owned.push({ dispose: () => g.dispose() });
+      for (let i = 0; i < 3; i++) {
+        const s = new THREE.Group(); s.position.set((i - 1) * 0.007, 0, (i % 2) * -0.004); s.rotation.z = (i - 1) * -0.07; tilt.add(s);
+        const st = new THREE.Mesh(stemG, stemM); st.position.y = -0.02; s.add(st);
+        const ct = new THREE.Mesh(coatG, coatM); ct.position.y = 0.14; s.add(ct);
+        const tp = new THREE.Mesh(tipG, tipM); tp.position.y = 0.242; s.add(tp);
+        const gl = new THREE.Mesh(glowG, glowM); gl.position.y = 0.242; gl.renderOrder = 2; s.add(gl);
+      }
+      for (let i = 0; i < 6; i++) {
+        const m = new THREE.MeshBasicMaterial({ map: matSmoke.map, transparent: true, depthWrite: false, opacity: 0, color: 0xd8d4cc, fog: false });
+        owned.push({ dispose: () => m.dispose() });
+        const q = new THREE.Mesh(glowG, m); q.renderOrder = 2; q.userData.ph = i / 6; tilt.add(q); jossSmoke.push(q);
+      } }
+    owned.push({ dispose: () => { if (kit && kit.hold && kit.holding && kit.holding() === jossHeld) kit.hold(null); } });
+    function jossSmokeTick(t) {
+      if (!jossHeld.visible) return;
+      for (const q of jossSmoke) {
+        const u = (t * 0.32 + q.userData.ph) % 1;               // a thread rising off the tips and fading
+        q.position.set(0.004 * Math.sin(t * 1.7 + q.userData.ph * 9) + 0.01 * u * Math.sin(q.userData.ph * 5), 0.25 + u * 0.16, -0.01 * u);
+        q.scale.setScalar(0.6 + u * 2.2);
+        q.material.opacity = 0.32 * Math.sin(Math.PI * u) * (1 - u * 0.4);
+      }
+    }
+    function jossHold(on) {
+      jossHeld.visible = !!on;
+      if (!kit || !kit.hold) return;
+      if (on) kit.hold(jossHeld, { clasp: true });
+      else if (kit.holding && kit.holding() === jossHeld) kit.hold(null);
+    }
+
+    /* 1 · THE INCENSE — at the joss table: three sticks lit at its candle, he
+       turns to the altar over the urn, the hands together round the sticks,
+       three bows, and he looks down into the urn and plants them in the sand
+       (bowTick's three bows, made standing) */
+    function incenseBegin() {
+      if (phase !== 'arrive' || inc) return false;
+      inc = { t0: dayClock.t };
+      if (kit) kit.root(true);
+      if (worldSfx) worldSfx('incenselit', 0.8, 1, panAt(JOSS_W.x, JOSS_W.z));
+      turnTo(camYawFrom(INC_AT, ALT_FACE), 1.5, { y: 1.62, span: 0.9, lo: -0.7, hi: 0.5, pos: INC_AT, pitch: -0.08 }, () => {
+        if (kit && kit.pray) kit.pray(true, { secs: 1.0, y: -0.3 });
+        jossHold(true);
+        after(1.2, () => { bowing = { t0: dayClock.t, applied: 0, free: true }; });
+        after(8.3, () => turnTo(yaw.rotation.y, 0.6, { y: 1.62, span: 0.9, lo: -0.7, hi: 0.5, pos: null, pitch: -0.42 }));   // down, into the urn
+        after(8.9, () => {
+          if (worldSfx) worldSfx('urnsand', 0.9, 1, 0);
+          urnLight(true); jossHold(false);
+          if (kit && kit.pray) kit.pray(false, { secs: 0.9 });
+          bank(W.noteIncense, 0, 2);
+          after(1.0, () => {
+            if (kit) { kit.pose('standing', { secs: 0.4 }); kit.root(false); }
+            asst.look = 1; asst.lookAt = null;
+            queueGap(0.3);
+            queueLine('as3sit', () => { asst.nod = SECS.as3sit; }, 1, panAt(ASST_AT.x, ASST_AT.z));
+            setPhase('wait');
+          });
+        });
+      });
+      return true;
+    }
+    function urnLight(on) { urnLit = on; for (const o of bigUrn.userData.lit) o.visible = on; }
+
+    /* 2 · HIS STOOL — and while he waits, the two readings he watches, each
+       given with complete certainty, each sent off with a remedy */
+    function sitDown() {
+      if (phase !== 'wait' || sitB) return;
+      sitB = { t0: dayClock.t };
+      if (kit) kit.root(true);
+      if (worldSfx) worldSfx('stoolscrape', 0.6, 1, panAt(STOOL_W.x, STOOL_W.z));
+      turnTo(camYawFrom(STOOL_W, MED_EYE), 1.2, { y: 1.13, span: 1.35, lo: -0.75, hi: 0.5, pos: STOOL_W, pitch: -0.06 }, () => {
+        if (kit) kit.root(false);
+        objectiveFor('watch');
+        readingsBegin();
+      });
+    }
+    function readingsBegin() {
+      medium.look = 1; medium.lookAt = WIFE_HEAD;
+      queueGap(1.4);
+      queueLine('dv3wife', () => talk(wife, SECS.dv3wife, 'Talk'), 1, panAt(WIFE_AT.x, WIFE_AT.z));
+      queueGap(0.5);
+      queueLine('md3read1', () => { medPose(MED_READ); after(SECS.md3read1, () => medPose(MED_SIT)); }, 1, panAt(MED_AT.x, MED_AT.z));
+      queueGap(0.6);
+      queueLine('md3drink', () => {
+        medPose(MED_READ);
+        after(0.9, () => talismanGiven(true));
+        after(SECS.md3drink + 0.2, () => { medPose(MED_SIT); wife.nod = 1.4; after(1.6, wifeLeaves); });
+      }, 1, panAt(MED_AT.x, MED_AT.z));
+    }
+    function wifeLeaves() {
+      if (worldSfx) worldSfx('stoolscrape', 0.55, 1, panAt(WIFE_AT.x, WIFE_AT.z));
+      wife.look = 0;
+      walkTo(wife, [{ x: WIFE_AT.x - 0.35, z: WIFE_AT.z + 0.55 }, { x: LX(-2.55), z: -2.4 }, { x: LX(-2.6), z: 0.6 }, { x: LX(-7.3), z: 1.0 }],
+             { v: 0.95, then: (r) => { r.group.visible = false; } });
+      medium.lookAt = FATHER_HEAD;
+      queueGap(2.2);
+      queueLine('dv3father', () => { father.nod = SECS.dv3father; }, 1, panAt(FATHER_AT.x, FATHER_AT.z));
+      queueGap(0.5);
+      queueLine('md3read2', () => {
+        medPose(MED_READ);
+        after(SECS.md3read2 + 0.3, () => { medPose(MED_SIT); if (worldSfx) worldSfx('taobell', 0.75, 1, panAt(MED_AT.x, MED_AT.z)); });
+      }, 1, panAt(MED_AT.x, MED_AT.z));
+      queueGap(2.4);
+      queueLine('md3done', () => { father.nod = 1.5; after(SECS.md3done + 1.0, fatherLeaves); }, 1, panAt(MED_AT.x, MED_AT.z));
+    }
+    function fatherLeaves() {
+      if (worldSfx) worldSfx('stoolscrape', 0.55, 1, panAt(FATHER_AT.x, FATHER_AT.z));
+      father.look = 0;
+      walkTo(father, [{ x: FATHER_AT.x - 0.4, z: FATHER_AT.z + 0.75 }, { x: LX(-0.8), z: -2.6 }, { x: LX(-0.8), z: 0.6 }, { x: LX(-7.3), z: 1.1 }],
+             { v: 1.0, then: (r) => { r.group.visible = false; } });
+      medium.lookAt = null;                                   // and now he looks at the one still waiting
+      queueGap(3.0);
+      queueLine('as3next', () => { asst.nod = SECS.as3next; asst.lookAt = null; asst.look = 1; after(SECS.as3next + 0.4, bodyWalks); },
+                1, panAt(ASST_AT.x, ASST_AT.z));
+    }
+
+    /* 3 · THE BODY WALKS — not his: rooted, the lens carried off the stool,
+       across the floor to the table at a step that is not his own, the hands
+       a little up; there it turns him to the medium and BOWS him, deep and
+       formal (the case file: "the body moved forward and bowed to him") */
+    function bodyWalks() {
+      if (phase !== 'wait') return;
+      setPhase('called');
+      if (kit) {
+        kit.root(true); kit.presence(0.2);
+        kit.pose('standing', { secs: 1.1 });
+        if (kit.hands) kit.hands(0.3, { secs: 2.2 });
+      }
+      if (worldSfx) worldSfx('stoolscrape', 0.7, 1, panAt(STOOL_W.x, STOOL_W.z));
+      after(0.6, () => queueLine('z3walk'));
+      const pts = [{ x: STOOL_W.x + 0.25, z: STOOL_W.z - 0.15 }, { x: LX(-1.3), z: -5.25 }, TABLE_AT];
+      walkB = { i: 0, pts, t: 0, wait: 1.2, step: 0 };
+    }
+    function walkBTick(wdt) {
+      const W2 = walkB; if (!W2) return;
+      if (W2.wait > 0) { W2.wait -= wdt; return; }
+      W2.t += wdt;
+      const tgt = W2.pts[W2.i], dx = tgt.x - yaw.position.x, dz = tgt.z - yaw.position.z, d = Math.hypot(dx, dz), v = 0.62 * wdt;
+      // the eyes go where the legs go, a little late; the head bobs on the steps
+      const want = Math.atan2(-dx, -dz);
+      let a = want - yaw.rotation.y; a = Math.atan2(Math.sin(a), Math.cos(a));
+      yaw.rotation.y += a * (1 - Math.exp(-wdt * 2.6));
+      if (kit) kit.pose('lying', { y: 1.62 + 0.018 * Math.sin(W2.t * 8.6), yaw: yaw.rotation.y, span: 0.02, pitchLo: -0.3, pitchHi: 0.2, secs: 0.2 });
+      if ((W2.step += wdt) > 0.58) { W2.step = 0; if (worldSfx) worldSfx(['step1', 'step2', 'step3', 'step4'][(W2.t * 7 | 0) % 4], 0.45, 0.9, 0); }
+      if (d <= v) {
+        yaw.position.x = tgt.x; yaw.position.z = tgt.z;
+        if (++W2.i >= W2.pts.length) { walkB = null; bowToMedium(); }
+        return;
+      }
+      yaw.position.x += dx / d * v; yaw.position.z += dz / d * v;
+    }
+    function bowToMedium() {
+      medium.look = 1; medium.lookAt = null;
+      turnTo(camYawFrom(TABLE_AT, MED_EYE), 0.9, { y: 1.62, span: 0.4, lo: -0.85, hi: 0.4, pos: null, pitch: -0.12 }, () => {
+        if (kit && kit.pray) kit.pray(true, { secs: 0.7, y: -0.3 });
+        bowB = { t: 0 };
+        after(3.9, () => {
+          if (kit && kit.pray) kit.pray(false, { secs: 0.8 });
+          queueGap(0.4);
+          queueLine('md3ghost', () => { medPose(MED_READ); after(SECS.md3ghost + 0.3, startRoar); }, 1, panAt(MED_AT.x, MED_AT.z));
+        });
+      });
+    }
+    /* the bow: the lens goes down to the table's edge and comes back, the
+       body dipping with it — on the clock, as deltas on his own look */
+    function bowBTick(wdt) {
+      const B2 = bowB; if (!B2) return;
+      B2.t += wdt;
+      const t = B2.t;
+      const k = t < 1.3 ? smooth(t / 1.3) : t < 2.2 ? 1 : t < 3.4 ? 1 - smooth((t - 2.2) / 1.2) : 0;
+      const p0 = B2.p0 ?? (B2.p0 = pitch.rotation.x);
+      pitch.rotation.x = p0 - 0.78 * k;
+      if (kit) kit.pose('lying', { y: 1.62 - 0.2 * k, yaw: yaw.rotation.y, span: 0.02, pitchLo: -1.0, pitchHi: 0.4, secs: 0.05 });
+      if (t >= 3.4) bowB = null;
+    }
+
+    /* 4 · THE ROAR — a film from play (the twenty-sixth seam): the reading
+       lands, and what answers is not him */
+    function startRoar() {
+      if (phase !== 'called' || !kit || !kit.film) return;
+      if (kit.presence) kit.presence(0);
+      if (!kit.film('roar', { onDone: () => afterRoar() })) afterRoar();
+    }
+    function afterRoar() {
+      roarDone = true;
+      medStand(true, 0);
+      if (kit) { kit.root(true); if (kit.hands) kit.hands(0, { secs: 0.6 }); }
+      yaw.position.x = TABLE_AT.x; yaw.position.z = TABLE_AT.z + 0.2;
+      yaw.rotation.y = camYawFrom({ x: TABLE_AT.x, z: TABLE_AT.z + 0.2 }, MED_EYE); pitch.rotation.x = 0.05;
+      if (kit) kit.pose('standing', { secs: 0.05 });
+      setPhase('decide');
+      after(0.6, () => { if (phase === 'decide' && getState() === 'play') startDecision(); });
+    }
+    /* the medium on his feet for the rites: out of his chair to stand behind
+       his table, the sword in his right hand and the bell in his left */
+    const MED_STAND_DZ = 0.42;
+    /* the rites' take: the bell held up in his left hand, the sword in his
+       right (photographed against Stand_Talking_Angry and Talk_Passionately,
+       whose arms fly out wide — those are kept for anger, scene B) */
+    const MED_RITE = 'Talk_with_Left_Hand_Raised', MED_ANGRY = 'Stand_Talking_Angry';
+    function medStand(on, secs = 0.6, take = MED_RITE) {
+      const r = medium;
+      if (!r.acts) return;
+      medStanding = on;
+      r.standTo = on ? 1 : 0;
+      if (secs <= 0) r.standK = r.standTo;
+      if (on) { medPose(take, secs > 0 ? 0.5 : 0); }
+      else medPose(MED_SIT, secs > 0 ? 0.5 : 0);
+      toolsInHands(on, secs > 0 ? 0.6 : 0);
+    }
+    function medStandTick(wdt) {
+      const r = medium; if (r.standK === undefined) r.standK = 0;
+      if (r.standTo === undefined || r.standK === r.standTo) return;
+      r.standK += Math.sign(r.standTo - r.standK) * wdt / 0.6;
+      r.standK = THREE.MathUtils.clamp(r.standK, 0, 1);
+      r.group.position.z = MED_AT.z + MED_STAND_DZ * smooth(r.standK);
+    }
+
     /* 8 · AWAY — the trance film ends on black (CP5); under it he is put in
        the medium's shrine that night, its light on, warmed, and the black
        lifts on "That night... I went." */
@@ -2232,7 +2695,7 @@
       yaw.rotation.y = 0; pitch.rotation.x = -0.02;
       if (kit) { kit.daylight(SHRINE_NIGHT, 0); kit.pose('standing', { secs: 0.05 }); }
     }
-    function toShrine(resumed) {
+    function toShrine(resumed, at = 'arrive') {
       trance = null; seated = null; turning = null; facing = null; bowing = null;
       danceTo = 0;
       if (kit) {
@@ -2243,12 +2706,23 @@
         kit.fade(1, 0.01);
       }
       placeAtShrine();
-      setPhase('arrive');
+      const past = at !== 'arrive', done = at === 'called' || at === 'decide';
+      if (past) urnLight(true);                                   // his sticks are already in the urn
+      if (done) { wife.group.visible = false; father.group.visible = false; talismanGiven(true); }
+      setPhase(done ? 'decide' : at);
       const warmed = kit && kit.warm ? kit.warm() : Promise.resolve(0);
       warmed.then(() => {
         if (!alive) return;
-        if (kit) { kit.fade(0, 1.4); kit.root(false); }
-        if (!resumed) { queueGap(0.6); queueLine('z3night'); }
+        if (done) { kit && kit.fade(0, 1.2); afterRoar(); return; }
+        if (!resumed) {
+          queueGap(0.4);
+          queueLine('z3night', () => after(SECS.z3night * 0.55, () => { if (kit) { kit.fade(0, 1.8); kit.root(false); } }));
+          queueGap(0.9);
+          queueLine('z3shrine');
+        } else {
+          if (kit) { kit.fade(0, 1.4); kit.root(false); }
+          if (at === 'arrive') { queueGap(1.0); queueLine('z3shrine'); }
+        }
       });
     }
 
@@ -2288,13 +2762,18 @@
       { id: 'owner', pos: { x: OWN.x - 0.05, y: 1.45, z: OWN.z }, radius: 2.7, prompt: W.hotOwner,
         enabled: () => phase === 'owner', onInteract() { return giftBegin(); } },
       { id: 'mat', pos: { x: MAT.x, y: 1.0, z: MAT.z }, radius: 1.5, prompt: W.hotMat, markY: 0.45,
-        enabled: () => phase === 'join' && !seated && wornNow(), onInteract() { kneel(); return true; } }
+        enabled: () => phase === 'join' && !seated && wornNow(), onInteract() { kneel(); return true; } },
+      { id: 'joss', pos: { x: JOSS_W.x, y: 1.05, z: JOSS_W.z }, radius: 2.2, prompt: W.hotIncense, markY: 0.3,   // (at the default 0.55 the mark stood at eye height and read as over the medium's table, eight metres on)
+        enabled: () => phase === 'arrive' && !inc, onInteract() { return incenseBegin(); } },
+      { id: 'stool', pos: { x: STOOL_W.x, y: 0.95, z: STOOL_W.z }, radius: 1.6, prompt: W.hotStool, markY: 0.5,
+        enabled: () => phase === 'wait' && !sitB, onInteract() { sitDown(); return true; } }
     ];
 
     /* ---------------------------------------------------------- per frame */
     function watchTick() {
       const x = yaw.position.x, z = yaw.position.z;
       if (phase === 'join' && !seated && wornNow() && Math.hypot(x - MAT.x, z - MAT.z) < 0.5) kneel();
+      if (phase === 'wait' && !sitB && Math.hypot(x - STOOL_W.x, z - STOOL_W.z) < 0.5) sitDown();
       // the owner calls him over if he walks up to the counter, or after a while
       if (phase === 'browse' && !called) {
         if (browseT0 < 0) browseT0 = dayClock.t;
@@ -2305,8 +2784,8 @@
        the radio's chant once it is on; the melody nobody else hears from the
        third Namo, through the trance and into its film; the dance's own
        cloth and feet. All four go to nothing at the shrine. */
-    let danceTo = 0;
-    const mixK = { mall: 0.3, chant: 0, dance: 0, move: 0 };
+    let danceTo = 0, rite = false;
+    const mixK = { mall: 0.3, chant: 0, dance: 0, move: 0, lor: 0, room: 0, bed: 0, rit: 0 };
     function mixBeds(wdt, st) {
       const atShop = !inShrine(yaw.position.x);
       const front = THREE.MathUtils.clamp((yaw.position.z + 4.5) / 4.0, 0, 1);
@@ -2318,8 +2797,17 @@
       mixK.mall = ease(mixK.mall, mall, 0.8); mixK.chant = ease(mixK.chant, ch, 1.2);
       mixK.dance = ease(mixK.dance, dn, dn > mixK.dance ? 4.0 : danceHalt ? 0.05 : 1.5); mixK.move = ease(mixK.move, mv, danceHalt ? 0.05 : 1.0);
       if (danceHalt) mixK.chant = ease(mixK.chant, 0, 0.05);
+      /* WORLD B: the street louder by the shutters, the room tone, the bed the
+         readings are given over, and once he has roared, the rites' drum */
+      const inB = !atShop, outK = THREE.MathUtils.clamp((yaw.position.z + 3.0) / 4.0, 0, 1);
+      const lor = inB ? 0.08 + 0.32 * outK : 0, room = inB ? 0.26 : 0;
+      const bed = inB && !roarDone && !rite ? (phase === 'arrive' ? 0.22 : 0.3) : 0;
+      const rit = inB && (roarDone || rite) ? 0.5 : 0;
+      mixK.lor = ease(mixK.lor || 0, lor, 0.8); mixK.room = ease(mixK.room || 0, room, 0.8);
+      mixK.bed = ease(mixK.bed || 0, bed, bed > (mixK.bed || 0) ? 2.0 : 0.6); mixK.rit = ease(mixK.rit || 0, rit, 1.2);
       const B = DATA.ambience.beds;
       B[0][1] = mixK.mall; B[1][1] = mixK.chant; B[2][1] = mixK.dance; B[3][1] = mixK.move;
+      B[4][1] = mixK.lor; B[5][1] = mixK.room; B[6][1] = mixK.bed; B[7][1] = mixK.rit;
     }
     const ZONE_T0 = wallNow(), _cq = new THREE.Quaternion();
     function lifeTick(wdt) {
@@ -2336,6 +2824,10 @@
       lpHalo.material.opacity = 0.45 + 0.12 * Math.sin(t * 2.1);
       zone.visible = phase === 'join' && !seated && wornNow();
       zoneTick(zone, t);
+      zoneB.visible = phase === 'wait' && !sitB;
+      zoneTick(zoneB, t);
+      jossSmokeTick(t);
+      medStandTick(wdt);
       shrineTick(wdt, t);
     }
 
@@ -2364,6 +2856,7 @@
       runTodo(); runSpeak(); runQueue();
       if (st !== 'play') return;          // a splash: time passes, nothing is played
       faceTick(wdt); turnTick(wdt); bowTick(); watchTick(); wearTick(); chantTick(); tranceTick(wdt);
+      walkBTick(wdt); bowBTick(wdt);
     }
     function updatePile() {}
     function updateFire() {}
@@ -2388,7 +2881,7 @@
         if (kit && !kit.has('timkp')) kit.give('timkp');
       } else if (kit && kit.has('timkp')) kit.take('timkp');        // a fresh run: the owner gives it again
       if (at >= PHASES.indexOf('join')) { wornDone = true; snapCelebration(); }
-      if (at >= PHASES.indexOf('arrive')) { toShrine(true); return; }
+      if (at >= PHASES.indexOf('arrive')) { toShrine(true, p); return; }
       setPhase(p);
       if (p === 'browse') {
         browseT0 = dayClock.t;
@@ -2406,6 +2899,7 @@
       looked.clear(); called = false; gifted = false; wornDone = false; seated = null; turning = null; facing = null;
       bowing = null; chant = null; trance = null; caseK = caseTo = 0; celebrate = null; curTgt = 0; browseT0 = -1;
       objWas = null; danceTo = 0; danceHalt = false; passerHeld = false;
+      inc = null; sitB = null; walkB = null; bowB = null; roarDone = false; rite = false; jossHold(false);
       girlPhone.visible = false;
       if (ownerStool) { ownerStool.rotation.z = 0; ownerStool.position.y = 0; }
       for (const k in mixK) mixK[k] = 0;
@@ -2492,7 +2986,13 @@
         danceStop(on = true) { danceHalt = !!on; if (on) danceTo = 0; },
         radio(on) { radioSwitch(!!on); },
         shrineCast: { medium, asst, wife, father },
-        mediumSeat: () => medium.seatInfo || null
+        mediumSeat: () => medium.seatInfo || null,
+        roar: roarFx, MED_EYE, TABLE_AT, medPose, medStand, MED_READ, MED_NO, MED_RITE, MED_ANGRY,
+        rite(on) { rite = !!on; },
+        // the endings (CP8)
+        LX, MED_AT, ASST_AT, entShutter: entShutterK, bus: busK, cup: cupProp, tim: timHeld,
+        gust(k) { shrLife.gust = THREE.MathUtils.clamp(k, 0, 1); },
+        asstLook(w) { asst.look = w; asst.lookAt = null; }
       },
       pileVia: { what: 'the mat at the altar (the trance carries him to the shrine)', x: MAT.x, z: MAT.z },   // walktest: the medium is behind a scene change
       get phase() { return phase; },
@@ -2735,17 +3235,376 @@
     c.endFade = 1;
   }
 
-  /* ============================================================ THE ENDINGS
-     CP8 builds them; until then each is a short fade so the chapter can be
-     played end to end while it is half-built. */
-  function ending(secs) {
-    return (c, s, api) => {
-      const { fade } = api;
-      fade(secs * 0.6, secs, 0, 1);
-      c.endFade = 1;
-    };
+  /* ============================================================ THE ROAR
+     The reading has landed ("It is a ghost possessing you") and on that word
+     the nature of the thing changes (the case file). From his eyes: a gold
+     flash, the lens lunges at the medium, the room shakes, and a ROAR comes
+     out of him that is not his voice. Cut — what the medium sees: a white
+     monkey-warrior in gold light where the young man stood, crouched to
+     spring, the trident up (Chad's Hanuman). Cut back: the medium is out of
+     his chair with the sword and the bell, shouting the incantation; the
+     assistant pulls the room back; the drum. It ends on his eyes, and the
+     decision opens over the rites (afterRoar). Every move a track. */
+  function roarFilm(c, s, api) {
+    const { tr, step, sfx, camTo, smoothK, rawK, stage, camera, yaw, pitch, handsRoot } = api;
+    const F = stage.film, R = F.roar, E = F.MED_EYE;
+    const P = { x: s.yawPos.x, z: s.yawPos.z };
+    const dx = E.x - P.x, dz = E.z - P.z, dl = Math.hypot(dx, dz), ux = dx / dl, uz = dz / dl;
+    const yP = Math.atan2(-dx, -dz), pP = Math.atan2(E.y - 1.62, dl);
+    /* 1 · 0–0.62 · his eyes: the flash, the lunge, the roar */
+    sfx(0.0, 'hanumanroar', 1);
+    sfx(0.04, 'goldsting', 0.8);
+    tr(0, 0.12, (k) => R.flash(k), rawK);
+    tr(0.12, 1.0, (k) => R.flash(1 - k), smoothK);
+    tr(0, 0.02, () => { yaw.rotation.y = yP; pitch.rotation.x = pP; }, rawK);
+    camTo(0, 0.26, { x: P.x, y: 1.62, z: P.z }, { x: P.x + ux * 0.34, y: 1.7, z: P.z + uz * 0.34 }, smoothK);
+    /* 2 · 0.62–2.8 · what the medium sees: gold where the man stood */
+    const M0 = { x: E.x - ux * 0.12, y: 1.45, z: E.z - uz * 0.12 };
+    step(0.62, () => { handsRoot.visible = false; api.armR.visible = false; });
+    tr(0.62, 0.64, () => { yaw.rotation.y = Math.atan2(ux, uz); pitch.rotation.x = Math.atan2(1.15 - 1.45, dl - 0.12); }, rawK);
+    camTo(0.62, 2.8, M0, { x: M0.x - ux * 0.22, y: 1.5, z: M0.z - uz * 0.22 }, smoothK);     // he leans back from it
+    tr(0.62, 0.78, (k) => R.hanu(k, P, E, 0), smoothK);
+    tr(0.78, 2.5, (k) => R.hanu(1, P, E, 0.35 * k), smoothK);                                 // it comes at him
+    tr(2.5, 2.8, (k) => R.hanu(1 - k, P, E, 0.35), smoothK);
+    tr(2.62, 2.72, (k) => R.flash(0.7 * k), rawK);
+    /* 3 · 2.8– · his eyes again: the medium on his feet, the rites */
+    step(2.8, () => { handsRoot.visible = true; api.armR.visible = true; F.medStand(true); F.rite(true); F.asstLook(1); });
+    tr(2.8, 3.4, (k) => R.flash(0.7 * (1 - k)), smoothK);
+    camTo(2.8, 3.6, { x: P.x + ux * 0.2, y: 1.66, z: P.z + uz * 0.2 }, { x: P.x - ux * 0.05, y: 1.62, z: P.z - uz * 0.05 }, smoothK);
+    tr(2.8, 3.6, (k) => { yaw.rotation.y = yP; pitch.rotation.x = pP + (0.08 - pP) * k; }, smoothK);
+    sfx(3.1, 'md3chant');                                 // 4.05 → 7.15
+    sfx(3.4, 'taobell', 0.8);
+    sfx(4.3, 'swordswish', 0.7);
+    sfx(5.7, 'taobell', 0.7);
+    sfx(6.2, 'swordswish', 0.75);
+    sfx(6.9, 'drumroll', 0.75);
+    sfx(7.4, 'as3back');                                  // 2.51 → 9.91
+    sfx(8.1, 'drum', 0.8); sfx(8.7, 'drum', 0.7); sfx(9.3, 'gong', 0.55);
+    /* the body over every camera track: the shake of the roar in it, settling */
+    const shake = (t) => t < 2.8 ? Math.max(0, 1 - t / 2.8) : Math.max(0, 0.35 * (1 - (t - 2.8) / 3.0));
+    tr(0, 10.6, (k, t) => {
+      const a = shake(t);
+      yaw.rotation.y += a * 0.02 * Math.sin(t * 31.0);
+      pitch.rotation.x += a * 0.016 * Math.sin(t * 27.0 + 1.3);
+      camera.rotation.z = a * 0.025 * Math.sin(t * 23.0 + 0.4);
+    }, rawK);
+    step(10.5, () => { camera.rotation.z = 0; R.flash(0); R.hanu(0, P, E); handsRoot.visible = true; api.armR.visible = true; });
   }
-  const scAccept = ending(3.0), scWrong = ending(3.0), scLeave = ending(3.0), scSeek = ending(3.0);
+
+  /* ============================================================ THE ENDINGS
+     Each begins where the roar left him: standing before the medium's table,
+     the medium on his feet with the sword and the bell, the rites' drum going.
+     Each is a different answer to the same certainty: A takes the remedy, and
+     it does not end; B answers certainty with certainty and is thrown out into
+     the lorong; C thanks him and goes out into an ordinary night; D thanks him
+     and goes out to find the truth himself. All four close on "After that
+     night..." inside the scene and the last line under the held picture (e3c2's
+     v19.2 shape: the image holds while the line and the music go down
+     together), and the outcome card lies over the scene's own last picture. */
+  const P0 = (s) => ({ x: s.yawPos.x, y: s.yawPos.y, z: s.yawPos.z });
+  const sm = (x) => x * x * (3 - 2 * x), cl01 = (x) => Math.max(0, Math.min(1, x));
+
+  /* the closing, shared: "And some of the pieces I found... answered back."
+     over the held picture, the picture and the music going down together */
+  function ending(c, api, T) {
+    const { step, tr, sfx, sfxFade, fade, handsRoot, pitch, smoothK } = api;
+    let hold = null;
+    step(T, () => { hold = { p: pitch.rotation.x }; });
+    tr(T, T + 4.8, (k) => { if (hold) pitch.rotation.x = hold.p + 0.04 * k; }, smoothK);
+    sfx(T + 0.4, 'z3next');                           // 3.87 s → T + 4.27
+    fade(T + 1.9, T + 4.7, 0, 1);
+    sfxFade(T + 1.9, T + 4.7, 'e3close3');
+    step(T + 4.8, () => { handsRoot.visible = true; });   // (the engine keeps the walking hand off under the card — keep.view)
+    c.endFade = 1;
+    c.keep.view = true;
+  }
+  /* the wai, with his hands: the resting hand goes down out of the frame, the
+     clasp rises into it, holds through the bow, goes down, and the resting
+     hand comes back. handsPose writes the arms absolutely, so the last track
+     to have started owns them. Returns when the hand is back. */
+  function wai(api, T, H) {
+    const { tr, rawK } = api;
+    const Y = { y: -0.3 };
+    tr(T, T + 0.32, (k) => { api.handsPose(0, 0, { from: 'rest' }); api.armR.position.y -= 0.17 * sm(k); }, rawK);
+    tr(T + 0.32, T + 0.32 + H, (k, t) => {
+      const u = cl01((t - T - 0.32) / 0.45), d = cl01((t - T - H + 0.13) / 0.45);
+      api.handsPose(0, 0, Y);
+      const off = 0.17 * (1 - sm(u)) + 0.17 * sm(d), L = api.prayerArm();
+      api.armR.position.y -= off; if (L) L.position.y -= off;
+    }, rawK);
+    tr(T + 0.32 + H, T + 0.72 + H, (k) => { api.handsPose(0, 0, { from: 'rest' }); api.armR.position.y -= 0.17 * (1 - sm(k)); }, rawK);
+    return T + 0.72 + H;
+  }
+  /* a walk along a route at a steady pace — eased in and out, the heading
+     looking ahead along the way (unwrapped, so it never spins), a small bob,
+     a footfall every 0.56 s */
+  function walkRoute(api, pts, T0, v, look = 1.8) {
+    const { tr, sfx, faceFrom, rawK } = api;
+    const segL = pts.slice(1).map((q, i) => Math.hypot(q.x - pts[i].x, q.z - pts[i].z));
+    const L = segL.reduce((a, b) => a + b, 0), E = 0.55, D = L / v + E;
+    const atLen = (d) => { d = Math.max(0, Math.min(L, d));
+      for (let i = 0; i < segL.length; i++) { if (d <= segL[i] || i === segL.length - 1) { const f = segL[i] ? Math.min(1, d / segL[i]) : 1; return { x: pts[i].x + (pts[i + 1].x - pts[i].x) * f, z: pts[i].z + (pts[i + 1].z - pts[i].z) * f }; } d -= segL[i]; } };
+    const dAt = (t) => { const tt = Math.min(D, Math.max(0, t - T0)); return tt < E ? v * tt * tt / (2 * E) : tt > D - E ? L - v * (D - tt) * (D - tt) / (2 * E) : v * (tt - E / 2); };
+    const segH = [];
+    for (let i = 0; i < segL.length; i++) { let h = faceFrom(pts[i].x, pts[i].z, pts[i + 1].x, pts[i + 1].z); if (i) { while (h - segH[i - 1] > Math.PI) h -= 2 * Math.PI; while (h - segH[i - 1] < -Math.PI) h += 2 * Math.PI; } segH.push(h); }
+    const headAt = (d) => {
+      let i = 0, dd = d; while (i < segL.length - 1 && dd > segL[i]) { dd -= segL[i]; i++; }
+      const q = atLen(d), a = atLen(Math.min(L, d + look));
+      if (Math.hypot(a.x - q.x, a.z - q.z) < 0.3) return segH[segH.length - 1];
+      let h = faceFrom(q.x, q.z, a.x, a.z); while (h - segH[i] > Math.PI) h -= 2 * Math.PI; while (h - segH[i] < -Math.PI) h += 2 * Math.PI;
+      return h;
+    };
+    tr(T0, T0 + D + 0.05, (k, t) => {
+      const d = dAt(t), q = atLen(d);
+      api.yaw.position.set(q.x, 1.62 + 0.016 * Math.sin(d / 0.72 * Math.PI), q.z);
+      api.yaw.rotation.y = headAt(d);
+    }, rawK);
+    for (let t = T0 + 0.35; t < T0 + D - 0.25; t += 0.56) {
+      const at = +t.toFixed(2);
+      sfx(at, 'step', 0.85);                           // (a footfall: the engine deals one of step1..step4)
+    }
+    return { end: T0 + D, head: segH[segH.length - 1], first: segH[0], headAt0: headAt(0) };
+  }
+  // the way out, from the table through the room and the left bay to the five-foot way (local x, through LX)
+  const outRoute = (F, p0, last) => [{ x: p0.x, z: p0.z }, { x: F.LX(-1.0), z: -4.4 }, { x: F.LX(-2.3), z: -2.7 }, { x: F.LX(-2.4), z: -0.9 },
+    { x: F.LX(-2.35), z: 0.5 }, { x: F.LX(last.x), z: last.z }];
+
+  /* A · ACCEPT IT, DO EVERY RITUAL (bad) — "Then please... drive it out." He
+     kneels and shuts his eyes; in the dark the bell and the sword go round
+     him, the incantation, the paper burnt and stirred into water; he drinks
+     it; the assistant books him seven nights of the same; and outside under
+     the lanterns his hand begins to lift on its own. */
+  function scAccept(c, s, api) {
+    const { sfx, tr, step, fade, camTo, yawTo, pitchTo, faceFrom, smoothK, rawK, stage, duck, handsRoot } = api;
+    const F = stage.film, M = F.shrineCast.medium, A = F.shrineCast.asst, E = F.MED_EYE, p0 = P0(s);
+    const toMed = faceFrom(p0.x, p0.z, E.x, E.z);
+    step(0, () => { M.look = 1; M.lookAt = null; F.medPose(F.MED_RITE, 0.5); });
+    yawTo(0, 0.8, s.yawRot, toMed, smoothK);
+    pitchTo(0, 0.8, s.pitchX, 0.06, smoothK);
+    // the wai, and his plea
+    wai(api, 0.2, 2.2);
+    pitchTo(0.9, 1.5, 0.06, -0.36, smoothK); pitchTo(1.8, 2.5, -0.36, 0.06, smoothK);
+    sfx(0.6, 'z3A1');                                  // 2.51 → 3.11
+    // "Kneel. Close your eyes." — he goes down on his knees before the table
+    sfx(3.4, 'md3A1');                                 // 2.12 → 5.52
+    step(3.4, () => { M.nod = 1.8; });
+    const stand = { x: p0.x, y: 1.62, z: p0.z }, knee = { x: p0.x, y: 1.0, z: p0.z - 0.1 };
+    camTo(4.4, 5.4, stand, knee, smoothK);
+    pitchTo(4.4, 5.4, 0.06, 0.34, smoothK);           // up at him over the table's edge
+    sfx(5.0, 'kneethud', 0.6); sfx(5.05, 'matkneel', 0.5);
+    // his eyes close; the rites go round him in the dark
+    fade(5.8, 6.6, 0, 0.95);
+    tr(5.8, 6.6, (k) => { duck('ritual', 1 - 0.55 * k); }, rawK);
+    sfx(6.8, 'taobell', 0.85);
+    sfx(7.6, 'swordswish', 0.8);
+    sfx(8.2, 'swordswish', 0.7);
+    sfx(8.7, 'taobell', 0.7);
+    sfx(9.1, 'md3chant');                              // 4.05 → 13.15
+    sfx(10.7, 'taobell', 0.6);
+    sfx(13.3, 'ashwater', 0.8);                        // the paper burnt and the ash stirred into the water (2.03 s)
+    // his eyes open on the cup brought to his lips: "Drink." (held in the hands' pass, the hands below the frame)
+    step(15.2, () => { api.armR.visible = false; F.cup.visible = true; handsRoot.add(F.cup); });
+    fade(15.3, 16.0, 0.95, 0);
+    tr(15.2, 20.2, (k, t) => {
+      const up = sm(cl01((t - 15.4) / 0.9)), tip = sm(cl01((t - 17.0) / 0.7)) * (1 - sm(cl01((t - 18.6) / 0.6))), down = sm(cl01((t - 19.2) / 0.8));
+      F.cup.position.set(0.02, -0.34 + 0.24 * up - 0.3 * down + 0.02 * tip, -0.24 + 0.05 * tip);
+      F.cup.rotation.set(0.15 + 0.85 * tip, 0, 0);
+    }, rawK);
+    pitchTo(15.2, 16.4, 0.34, 0.1, smoothK);
+    sfx(16.2, 'md3A2');                                // 0.57 → 16.77
+    sfx(17.4, 'drinkgulp', 0.8);                       // 1.58 s
+    step(20.2, () => { F.cup.visible = false; if (F.cup.parent) F.cup.parent.remove(F.cup); api.armR.visible = true; });
+    // he gets up; the assistant has his list ready — "Come back seven nights."
+    camTo(19.6, 20.6, knee, stand, smoothK);
+    const toAsst = faceFrom(p0.x, p0.z, F.ASST_AT.x, F.ASST_AT.z);
+    yawTo(20.2, 21.2, toMed, toAsst, smoothK);
+    pitchTo(20.2, 21.2, 0.1, -0.12, smoothK);
+    step(20.4, () => { A.look = 1; A.lookAt = null; A.nod = 4.0; });
+    sfx(21.0, 'as3A');                                 // 3.87 → 24.87
+    // out under the lanterns: the black takes him through the door
+    fade(25.0, 25.6, 0, 1);
+    tr(25.0, 25.6, (k) => { duck('ritual', 0.45 * (1 - k)); }, rawK);
+    const out = { x: F.LX(-3.15), y: 1.62, z: 1.45 }, east = faceFrom(out.x, out.z, F.LX(7), 1.6);
+    camTo(25.65, 25.7, out, out, rawK);
+    yawTo(25.65, 25.7, east, east, rawK);
+    pitchTo(25.65, 25.7, -0.2, -0.2, rawK);
+    fade(25.8, 26.7, 1, 0);
+    // his right hand: it starts to lift into the dance on its own, is pulled down, and starts again
+    tr(26.0, 34.0, (k, t) => {
+      const u = t - 26.0, lift = 0.32 * Math.max(0, Math.sin(u * 0.9)) ** 1.5 + 0.03 * Math.sin(u * 7.3);
+      api.handsPose(cl01(lift), u * 0.8, { from: 'rest', relax: 0.6 });
+    }, rawK);
+    sfx(27.0, 'presencein', 0.3);
+    sfx(27.6, 'z3A2');                                 // 4.05 → 31.65
+    // and up, to the lanterns and the night over the lorong
+    sfx(31.8, 'e3close3', 0.9);
+    sfx(32.4, 'z3close');                              // 8.44 → 40.84
+    yawTo(33.0, 39.5, east, faceFrom(out.x, out.z, F.LX(2.0), 6.0), smoothK);
+    pitchTo(33.0, 39.5, -0.2, 0.26, smoothK);
+    step(34.0, () => { handsRoot.visible = false; });
+    ending(c, api, 41.0);
+  }
+
+  /* B · TELL HIM HE IS WRONG (worst) — certainty against certainty. The drum
+     stops; he looks at him; "What did you say?" — and it surges again: the
+     roar out of him, the gold, the stools going over; the assistant throws
+     him out, and the shutter comes down on the light. In the lorong the
+     lanterns swing in no wind: whatever it was, it heard him. */
+  function scWrong(c, s, api) {
+    const { sfx, tr, step, camTo, yawTo, pitchTo, faceFrom, smoothK, rawK, stage, duck, camera, handsRoot } = api;
+    const F = stage.film, M = F.shrineCast.medium, A = F.shrineCast.asst, E = F.MED_EYE, R = F.roar, p0 = P0(s);
+    const toMed = faceFrom(p0.x, p0.z, E.x, E.z);
+    step(0, () => { M.look = 0.6; M.lookAt = null; });
+    yawTo(0, 0.8, s.yawRot, toMed, smoothK);
+    pitchTo(0, 0.8, s.pitchX, 0.08, smoothK);
+    sfx(0.4, 'z3B1');                                  // 2.35 → 2.75
+    // the drum stops; the medium stops; he looks at him
+    tr(2.7, 3.3, (k) => { duck('ritual', 1 - k); }, rawK);
+    step(2.9, () => { M.look = 1; F.medPose(F.MED_ANGRY, 0.7); A.look = 1; A.lookAt = null; });
+    sfx(3.5, 'md3B1');                                 // 1.18 → 4.68
+    // and it surges again: the roar out of him, the gold, the lens thrown at the medium
+    sfx(5.0, 'hanumanroar', 1);
+    sfx(5.05, 'goldsting', 0.8);
+    tr(5.0, 5.12, (k) => R.flash(k), rawK);
+    tr(5.12, 6.2, (k) => R.flash(1 - k), smoothK);
+    const stand = { x: p0.x, y: 1.62, z: p0.z };
+    const lunge = { x: p0.x + (E.x - p0.x) * 0.22, y: 1.7, z: p0.z + (E.z - p0.z) * 0.22 };
+    camTo(5.0, 5.25, stand, lunge, smoothK);
+    tr(5.1, 5.8, (k) => { M.group.position.z = F.MED_AT.z + 0.42 - 0.24 * sm(k); }, rawK);   // the medium falls back a step
+    sfx(5.4, 'stoolfall', 0.8);
+    sfx(5.7, 'stoolscrape', 0.75);
+    tr(5.0, 11.0, (k, t) => { const a = Math.max(0, 1 - (t - 5.0) / 2.4) + 0.4 * Math.max(0, Math.sin((t - 6.6) * 2.2)) * cl01((10.4 - t) / 1.0) * (t > 6.6 ? 1 : 0);
+      camera.rotation.z = a * 0.03 * Math.sin(t * 27); }, rawK);
+    // "Go! Get out!" — he is turned round and thrown out of the door, stumbling
+    sfx(6.2, 'as3B');                                  // 3.27 → 9.47
+    const W = walkRoute(api, [{ x: lunge.x, z: lunge.z }, ...outRoute(F, p0, { x: -2.0, z: 1.9 }).slice(1)], 6.7, 1.9, 1.2);
+    yawTo(6.2, 6.75, toMed, W.headAt0, smoothK);
+    pitchTo(6.2, 6.9, 0.08, -0.12, smoothK);
+    for (const [t0, d] of [[7.3, 0.12], [8.6, 0.16], [9.5, 0.1]]) { pitchTo(t0, t0 + 0.14, -0.12, -0.12 - d, rawK); pitchTo(t0 + 0.14, t0 + 0.5, -0.12 - d, -0.12, smoothK); }
+    step(6.6, () => { handsRoot.visible = false; });
+    // he turns back: the shutter comes down on the light
+    const face = faceFrom(F.LX(-2.0), 1.9, F.LX(-2.25), -2.0);
+    yawTo(W.end - 0.1, W.end + 1.0, W.head, face, smoothK);
+    pitchTo(W.end - 0.1, W.end + 1.0, -0.12, 0.08, smoothK);
+    const T1 = W.end + 0.9;
+    sfx(T1, 'shutter', 0.95);                          // 2.9 s
+    tr(T1 + 0.05, T1 + 2.6, (k) => { F.entShutter(k); duck('ritual', 0); duck('shrineamb', 1 - 0.7 * k); }, rawK);
+    // "...and whatever it was, it heard me." — the lanterns swing in no wind
+    sfx(T1 + 3.0, 'z3B2');                             // 4.91 → T1 + 7.91
+    sfx(T1 + 4.8, 'presencein', 0.35);
+    tr(T1 + 4.6, T1 + 5.8, (k) => F.gust(sm(k)), rawK);
+    tr(T1 + 5.8, T1 + 9.0, (k) => F.gust(1 - sm(k)), rawK);
+    pitchTo(T1 + 4.6, T1 + 6.0, 0.08, 0.3, smoothK);  // up at the lantern over the door
+    // and away, down the lorong under the sodium lamp
+    sfx(T1 + 8.2, 'e3close3', 0.9);
+    sfx(T1 + 8.6, 'z3close');                          // 8.44 → T1 + 17.04
+    const street = faceFrom(F.LX(-2.0), 1.9, F.LX(6.4), 6.0);
+    yawTo(T1 + 9.0, T1 + 15.5, face, street, smoothK);
+    pitchTo(T1 + 9.0, T1 + 15.5, 0.3, 0.2, smoothK);
+    ending(c, api, T1 + 17.1);
+  }
+
+  /* C · THANK HIM, LEAVE, AND PUT IT OUT OF MIND (good) — a polite wai;
+     "Mm. Go home. Rest."; out through the room into an ordinary night: the
+     coffee shop's lights across the road, a bus going past between. */
+  function scLeave(c, s, api) {
+    const { sfx, tr, step, yawTo, pitchTo, faceFrom, smoothK, rawK, stage, duck, handsRoot } = api;
+    const F = stage.film, M = F.shrineCast.medium, E = F.MED_EYE, p0 = P0(s);
+    const toMed = faceFrom(p0.x, p0.z, E.x, E.z);
+    step(0, () => { M.look = 1; M.lookAt = null; });
+    yawTo(0, 0.8, s.yawRot, toMed, smoothK);
+    pitchTo(0, 0.8, s.pitchX, 0.06, smoothK);
+    wai(api, 0.2, 2.4);
+    pitchTo(0.9, 1.5, 0.06, -0.36, smoothK); pitchTo(1.9, 2.6, -0.36, 0.06, smoothK);
+    sfx(0.7, 'z3thank');                               // 1.96 → 2.66
+    step(2.9, () => { M.nod = 2.4; });
+    sfx(3.0, 'md3C');                                  // 2.43 → 5.43
+    // out: through the room, through the door, to the kerb
+    const kerb = { x: -2.1, z: 1.95 }, route = outRoute(F, p0, kerb);
+    const W = walkRoute(api, route, 6.0, 1.05);
+    yawTo(5.3, 6.1, toMed, W.headAt0, smoothK);
+    pitchTo(5.3, 6.1, 0.06, -0.05, smoothK);
+    step(5.6, () => { handsRoot.visible = false; });
+    tr(6.0, W.end, (k) => { duck('ritual', 1 - 0.75 * k); duck('shrineamb', 1 - 0.5 * k); }, rawK);
+    // the coffee shop across the road (its lit bay on the far facade), and the bus between
+    const kopi = { x: F.LX(-15), z: 16.4 };
+    const toKopi = faceFrom(F.LX(kerb.x), kerb.z, kopi.x, kopi.z);
+    yawTo(W.end - 0.3, W.end + 1.4, W.head, toKopi, smoothK);
+    pitchTo(W.end - 0.3, W.end + 1.4, -0.05, 0.1, smoothK);
+    const Tb = W.end + 0.9;
+    sfx(Tb, 'buspass', 0.9);                           // 4.54 s
+    tr(Tb + 0.3, Tb + 5.2, (k) => F.bus(k), rawK);
+    sfx(Tb + 1.4, 'z3C2');                             // 5.96 → Tb + 7.36
+    // he watches it go, and the night goes on
+    yawTo(Tb + 3.2, Tb + 8.0, toKopi, faceFrom(F.LX(kerb.x), kerb.z, F.LX(-24), 9.0), smoothK);
+    sfx(Tb + 7.6, 'e3close3', 0.9);
+    sfx(Tb + 8.0, 'z3close');                          // 8.44 → Tb + 16.44
+    pitchTo(Tb + 8.4, Tb + 15.5, 0.1, 0.24, smoothK);
+    ending(c, api, Tb + 16.5);
+  }
+
+  /* D · THANK HIM, HOLD HIS READING AS ONE VIEW, KEEP SEEKING (best) — a
+     wai; "Remember what I told you."; out under the lanterns, where his hand
+     finds the LP Tim and holds it up into their light; then out to the kerb,
+     and up at the night: "If I wanted the truth... I would have to go and
+     find it myself." */
+  function scSeek(c, s, api) {
+    const { sfx, tr, step, camTo, yawTo, pitchTo, faceFrom, smoothK, rawK, stage, duck, handsRoot, camera } = api;
+    const F = stage.film, M = F.shrineCast.medium, E = F.MED_EYE, p0 = P0(s);
+    const toMed = faceFrom(p0.x, p0.z, E.x, E.z);
+    step(0, () => { M.look = 1; M.lookAt = null; });
+    yawTo(0, 0.8, s.yawRot, toMed, smoothK);
+    pitchTo(0, 0.8, s.pitchX, 0.06, smoothK);
+    wai(api, 0.2, 2.4);
+    pitchTo(0.9, 1.5, 0.06, -0.36, smoothK); pitchTo(1.9, 2.6, -0.36, 0.06, smoothK);
+    sfx(0.7, 'z3thank');                               // 1.96 → 2.66
+    step(2.9, () => { M.nod = 1.4; });
+    sfx(3.0, 'md3D');                                  // 1.23 → 4.23
+    // out, to stand under the lantern over the door
+    const lan = { x: -2.3, z: 1.3 }, route = outRoute(F, p0, lan);
+    const W = walkRoute(api, route, 4.8, 1.05);
+    yawTo(4.3, 5.0, toMed, W.headAt0, smoothK);
+    pitchTo(4.3, 5.0, 0.06, -0.05, smoothK);
+    tr(4.8, W.end, (k) => { duck('ritual', 1 - 0.75 * k); duck('shrineamb', 1 - 0.5 * k); }, rawK);
+    const Ls = { x: F.LX(lan.x), z: lan.z }, outward = faceFrom(Ls.x, Ls.z, Ls.x + 0.6, Ls.z + 4);
+    yawTo(W.end - 0.3, W.end + 0.9, W.head, outward, smoothK);
+    // his hand finds the LP Tim and holds it up into the lantern's light: it hangs from his fingers on its cord
+    const T2 = W.end + 0.6;
+    let pend = null, bone = null;
+    step(T2, () => {
+      const hand = api.rightHand && api.rightHand();
+      if (hand) hand.traverse(o => { if (!bone && o.isBone && /f_index03R?_end$|f_index\.?03\.?R_end$/i.test(o.name)) bone = o; });
+      pend = new (F.tim.constructor)();
+      if (bone) { bone.add(pend); pend.add(F.tim); F.tim.visible = true; }
+    });
+    tr(T2, T2 + 9.0, (k, t) => {
+      const u = t - T2, up = sm(cl01(u / 1.1)) * (1 - sm(cl01((u - 7.6) / 1.0)));
+      api.handsPose(0, 0, { from: 'rest', relax: 0.15 });
+      api.armR.position.y += -0.2 + 0.26 * up; api.armR.position.x -= 0.05 * up; api.armR.position.z += 0.04 * up;
+      if (pend && pend.parent) {
+        // the pendant hangs: its frame turned to the world's up and the lens, whatever the finger does
+        pend.parent.updateWorldMatrix(true, false);
+        const pq = new (camera.quaternion.constructor)(); pend.parent.getWorldQuaternion(pq);
+        const yq = new (camera.quaternion.constructor)().setFromAxisAngle(new (camera.position.constructor)(0, 1, 0), api.yaw.rotation.y + 0.15 * Math.sin(u * 0.8));
+        pend.quaternion.copy(pq.invert().multiply(yq));
+        const s2 = new (camera.position.constructor)(); pend.parent.getWorldScale(s2); pend.scale.setScalar(1 / (s2.x || 1));
+      }
+    }, rawK);
+    pitchTo(T2, T2 + 1.2, 0.0, -0.3, smoothK);
+    sfx(T2 + 1.3, 'z3D2');                             // 6.77 → T2 + 8.07
+    step(T2 + 9.0, () => { F.tim.visible = false; if (F.tim.parent) F.tim.parent.remove(F.tim); if (pend && pend.parent) pend.parent.remove(pend); handsRoot.visible = false; });
+    // to the kerb, and up at the night
+    const kerb = { x: F.LX(-2.0), y: 1.62, z: 2.12 };
+    camTo(T2 + 8.6, T2 + 10.0, { x: Ls.x, y: 1.62, z: Ls.z }, kerb, smoothK);
+    sfx(T2 + 8.8, 'step', 0.8); sfx(T2 + 9.4, 'step', 0.8);
+    pitchTo(T2 + 8.8, T2 + 11.6, -0.3, 0.62, smoothK);
+    step(T2 + 9.6, () => { if (api.kit && api.kit.daylight) api.kit.daylight({ stars: 0.95 }, 5); });
+    sfx(T2 + 10.4, 'z3D3');                            // 4.44 → T2 + 14.84
+    sfx(T2 + 15.0, 'e3close3', 0.9);
+    sfx(T2 + 15.4, 'z3close');                         // 8.44 → T2 + 23.84
+    yawTo(T2 + 15.6, T2 + 22.5, outward, outward - 0.35, smoothK);
+    ending(c, api, T2 + 23.9);
+  }
 
   /* ================================================== THE DRAWN SURFACES
      Every sheet is drawn here, on a canvas (CSP-safe, no download). The words
@@ -3382,11 +4241,51 @@
     x.font = 'bold 22px serif'; x.fillText('有 求 必 應', 130, 50); x.fillText('神 光 普 照', 894, 50);
     return done(THREE, c, false);
   }
+  /* a night bus's lit side: a strip of window bays, the cabin's white light,
+     the seat backs and a few heads against it */
+  function makeBusWindows(THREE, cnv) {
+    const W = 1024, H = 96, [c, x] = sized(cnv, W, H), R = rng(14);
+    x.fillStyle = '#16181c'; x.fillRect(0, 0, W, H);
+    const bays = 9, bw = W / bays;
+    for (let i = 0; i < bays; i++) {
+      const x0 = i * bw + 5, w = bw - 10;
+      const g = x.createLinearGradient(0, 6, 0, H - 6); g.addColorStop(0, '#fbf6e2'); g.addColorStop(1, '#e8dfc2');
+      x.fillStyle = g; x.fillRect(x0, 6, w, H - 12);
+      x.fillStyle = 'rgba(70,90,120,0.55)';                                     // the seat backs
+      for (let s = 0; s < 2; s++) x.fillRect(x0 + 8 + s * w * 0.5, H * 0.58, w * 0.36, H * 0.4);
+      if (R() < 0.45) {                                                          // a passenger
+        const hx = x0 + w * (0.2 + 0.6 * R());
+        x.fillStyle = '#2a2420'; x.beginPath(); x.ellipse(hx, H * 0.5, 9, 11, 0, 0, Math.PI * 2); x.fill();
+        x.fillRect(hx - 15, H * 0.62, 30, H * 0.4);
+      }
+    }
+    return done(THREE, c, false);
+  }
+  function makeBusSign(THREE, cnv) {
+    const [c, x] = sized(cnv, 512, 84);
+    x.fillStyle = '#0c0a08'; x.fillRect(0, 0, 512, 84);
+    x.fillStyle = '#ffb028'; x.font = 'bold 56px monospace'; x.textBaseline = 'middle';
+    x.textAlign = 'left'; x.fillText('14', 26, 44);
+    x.font = 'bold 40px monospace'; x.textAlign = 'right'; x.fillText('BEDOK INT', 490, 44);
+    return done(THREE, c, false);
+  }
+  /* the talisman water: grey, with the burnt paper's ash floating in it */
+  function makeAshWater(THREE, cnv) {
+    const S = 128, [c, x] = cnv(S), R = rng(31);
+    const g = x.createRadialGradient(64, 64, 4, 64, 64, 64); g.addColorStop(0, '#8a857a'); g.addColorStop(1, '#5e5a52');
+    x.fillStyle = g; x.fillRect(0, 0, S, S);
+    for (let i = 0; i < 70; i++) {
+      x.fillStyle = `rgba(${20 + R() * 30},${18 + R() * 25},${16 + R() * 20},${0.5 + R() * 0.5})`;
+      x.beginPath(); x.ellipse(16 + R() * 96, 16 + R() * 96, 1 + R() * 4, 0.6 + R() * 2.5, R() * 3, 0, Math.PI * 2); x.fill();
+    }
+    x.fillStyle = 'rgba(180,40,20,0.5)'; for (let i = 0; i < 6; i++) x.fillRect(30 + R() * 60, 30 + R() * 60, 2 + R() * 3, 1 + R() * 2);   // a few red flecks of the paper's ink
+    return done(THREE, c, false);
+  }
 
   (window.__CHAPTERS__ = window.__CHAPTERS__ || {}).e3c3 = Object.assign(DATA, {
     build,
     intro,
     scenes: [scAccept, scWrong, scLeave, scSeek],
-    films: { trance: tranceFilm }
+    films: { trance: tranceFilm, roar: roarFilm }
   });
 })();

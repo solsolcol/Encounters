@@ -1709,6 +1709,35 @@ function kitPraySet(on, opts = {}) {
   if (opts.secs === 0) pray.k = pray.to;
   pray.last = performance.now();
 }
+/* v21.0: A THING IN HIS HAND, in play (the twenty-seventh seam). A chapter
+   hands over an Object3D and it rides the right arm — a child of it, so it is
+   drawn in the hands' own pass and the fingers close round it — at the place
+   and turn the chapter gives in the arm's frame (noteProp's frame, v3.8: the
+   palm at (0.012, -0.052, -0.148)), or, with `clasp`, at the middle of the
+   prayer clasp: the palm carried across to the plane where the two palms meet
+   (kit.pray's PRAYER_R and half-palm gap, so it lies between them) and turned
+   to the hands' root, so the thing's +y is up the fingers and its -z is ahead.
+   `hold(null)` lets go (detached, not disposed — the chapter owns its
+   geometry); kitReset lets go too. Episode 3 chapter 3's joss sticks, held
+   through three bows. Nothing before it calls this. */
+let heldProp = null;
+const HOLD_PALM = new THREE.Vector3(0.012, -0.052, -0.148);
+function kitHold(obj, opts = {}) {
+  if (heldProp && heldProp.parent) heldProp.parent.remove(heldProp);
+  heldProp = obj || null;
+  if (!obj) return;
+  armR.add(obj);
+  if (opts.clasp) {
+    const inv = PRAYER_R.clone().invert(), rn = HOLD_PALM.clone().applyQuaternion(PRAYER_R), half = HAND_W * 0.085;
+    obj.position.copy(HOLD_PALM).addScaledVector(new THREE.Vector3(1, 0, 0).applyQuaternion(inv), -(half + rn.x));
+    if (opts.lift) obj.position.addScaledVector(new THREE.Vector3(0, 1, 0).applyQuaternion(inv), +opts.lift);
+    if (opts.ahead) obj.position.addScaledVector(new THREE.Vector3(0, 0, -1).applyQuaternion(inv), +opts.ahead);
+    obj.quaternion.copy(inv);
+  } else {
+    const p = opts.pos || [HOLD_PALM.x, HOLD_PALM.y, HOLD_PALM.z], r = opts.rot || [0, 0, 0];
+    obj.position.set(p[0], p[1], p[2]); obj.rotation.set(r[0], r[1], r[2]);
+  }
+}
 function prayOff() {
   const was = pray.k > 0 || pray.was > 0;
   pray.k = pray.to = 0; pray.was = 0;
@@ -4503,6 +4532,7 @@ function kitReset() {
   if (CH.weapon) weaponSetup(CH.weapon); else weaponTeardown();   // v12.0
   kitRooted = false; kitHurtSet(null);   // v11.1
   prayOff();                             // v16.5: a run never starts with the hands still together
+  kitHold(null);                         // v21.0: nor with something still in his hand
   pray.y = PRAY.y;                       // v18.4: and at chapter 1's height until the chapter says otherwise (handsPut reads it)
   handsOff();                            // v18.0: nor with them still moving on their own
   activeSpot = null;
@@ -4610,6 +4640,8 @@ const KIT = {
   root: on => { kitRooted = !!on; },   // v11.1: hold the player in place (the look and the torch still work)
   pray: kitPraySet,                // v16.5: the hands into añjali in PLAY — episode 1 chapter 1's scene D pose, exactly
   praying: () => pray.to > 0,
+  hold: kitHold,                   // v21.0: the twenty-seventh seam — a thing in his right hand, or held in the clasp
+  holding: () => heldProp,
   hands: kitHandsSet,              // v18.0: the hands taken — out of the clasp into a Thai-dance gesture by k
   getHands: () => hands.k,
   hurt: kitHurtSet,                // v11.1: the red frame held, and a bleed per second, until cleared
