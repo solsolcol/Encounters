@@ -5344,8 +5344,18 @@ What the baseline contains, by release:
   Engine changes reachable from episodes 1–2: a line still being said in play
   is stopped at restart and on the way to the title (`stopLiveVoices`).
   Everything else is unreachable from them by construction. Sheet v96 (120 new
-  rows, none changed; v44 stays the link). Deploy `6ad69de825ffbe32114ecc57`,
-  byte-verified (222 files), before the harnesses.
+  rows, none changed; v44 stays the link). Deployed before the harnesses
+  (`6ad69de825ffbe32114ecc57`), then once more with the two things they and the
+  last probes found (`6ad6a5d045dd6c75bb534f52`, byte-verified, 222 files): a
+  Continue into 'wear' with the LP Tim still in the bag pulses the bag again,
+  and `walk` failed the shrine's joss table and stool as "unreachable on foot"
+  — every probe had TELEPORTED there, so nothing had ever proven the shrine's
+  doorway walkable from where the trance film puts him. A stage may now name
+  its `arrivals` (where a scene change puts him down) and walktest floods from
+  each, asserting the arrival is open floor and, when the pile lives in that
+  world, the pile itself too: the doorway, the table, the stool and the
+  medium's table are all walkable. Harnesses chapter, walk, leak, fixture,
+  cine, text, menu, hosted, csp, state, resume, restart, inv, sanity green.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so

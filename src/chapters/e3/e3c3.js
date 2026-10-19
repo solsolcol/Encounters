@@ -3414,6 +3414,7 @@
         passerFree() { passerHeld = false; passer.group.position.z = PASS.z; passer.group.rotation.y = PASS.dir > 0 ? Math.PI / 2 : -Math.PI / 2; }
       },
       pileVia: { what: 'the mat at the altar (the trance carries him to the shrine)', x: MAT.x, z: MAT.z },   // walktest: the medium is behind a scene change
+      arrivals: [{ what: "the shrine's arrival (the trance film puts him at its door)", x: ARRIVE.x, z: ARRIVE.z }],   // walktest floods the shrine from here
       get phase() { return phase; },
       setPhase, applyPhase, after, dayClock, sayLine,
       info: () => ({ phase, t: +dayClock.t.toFixed(2), queued: lineQ.length, heard: [...heard],

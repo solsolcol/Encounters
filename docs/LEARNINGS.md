@@ -5593,3 +5593,11 @@ cut (sharing its vertices and maps) when it is small.
   lens's frame, so a bone's world x over −z, against the frame's half-width at
   that depth, is where it falls), and move only toward the middle — never so
   that a desktop's frame changes.
+- **A world reached by a scene change is walked from where it puts him
+  (v21.0).** walktest floods the collision grid from the SPAWN, so a second
+  world a film carries the player to (e3c3's shrine, 250 m off) had every
+  place in it "unreachable on foot" — and the phone play-through could not
+  catch the opposite failure either, because it TELEPORTED between the joss
+  table and the stool like every probe. A stage names its `arrivals` and the
+  walk floods from each: a teleport is not a route, the arrival must be open
+  floor, and everything in that world must be walkable from it.

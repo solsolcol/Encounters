@@ -27,7 +27,9 @@ p.on('pageerror', e => errs.push(where + ': ' + e.message));
 /* v14.7: and episode 1 chapter 3, the first base-game chapter with a HOTSPOT
    (the amulet on the auntie's table, which must be reached before the altar
    opens) and with new per-frame code to catch a throw in */
-for (const key of ['ch3', 'e2c1', 'e2c2', 'e2c3', 'e2c4', 'e2c5', 'e3c1', 'e3c2', 'e3c3']) {
+const KEYS = ['ch3', 'e2c1', 'e2c2', 'e2c3', 'e2c4', 'e2c5', 'e3c1', 'e3c2', 'e3c3'];
+/* WALK_ONLY=e3c3 walks one chapter (a re-check after a fix, not the release run) */
+for (const key of (process.env.WALK_ONLY ? KEYS.filter(k => process.env.WALK_ONLY.split(',').includes(k)) : KEYS)) {
   where = key;
   await p.goto(PAGE + '?ch=' + key);
   await p.click('#startBtn');
@@ -51,7 +53,14 @@ for (const key of ['ch3', 'e2c1', 'e2c2', 'e2c3', 'e2c4', 'e2c5', 'e3c1', 'e3c2'
     for (let i = 0; i < nx; i++) for (let j = 0; j < nz; j++)
       blocked[i * nz + j] = hit(BN.minX + i * ST, BN.minZ + j * ST) ? 1 : 0;
     const cell = (x, z) => Math.round((x - BN.minX) / ST) * nz + Math.round((z - BN.minZ) / ST);
+    /* v21.0: a chapter with a SECOND WORLD that a scene change carries him to
+       (e3c3's shrine — the trance film puts him at its door) names where he
+       ARRIVES, and the walk floods from there too: every place in that world
+       must be walkable from where he is put down. (A teleport is not a route:
+       the arrival itself must be open floor, and nothing else is assumed.) */
+    const arrivals = (S.arrivals || []).map(a => ({ ...a, k: cell(a.x, a.z) }));
     const q = [cell(D.spawn.x, D.spawn.z)]; seen[q[0]] = 1;
+    for (const a of arrivals) if (!blocked[a.k] && !seen[a.k]) { seen[a.k] = 1; q.push(a.k); }
     for (let h = 0; h < q.length; h++) {
       const k = q[h], i = (k / nz) | 0, j = k % nz;
       for (const [di, dj] of [[1,0],[-1,0],[0,1],[0,-1]]) {
@@ -77,10 +86,14 @@ for (const key of ['ch3', 'e2c1', 'e2c2', 'e2c3', 'e2c4', 'e2c5', 'e3c1', 'e3c2'
        REACHED from — the door must be walkable, the room is a teleport */
     if (S.pileVia) targets.push({ what: 'the pile, via ' + S.pileVia.what, x: S.pileVia.x, z: S.pileVia.z, r: 1.2 });
     else targets.push({ what: 'the pile (his bed)', x: S.pile ? S.pile.pos.x : D.stage.pile.x, z: S.pile ? S.pile.pos.z : D.stage.pile.z, r: 1.6 });
+    /* v21.0: and when the pile's world is one he ARRIVES in, the pile itself
+       too — a decision closed with Step back is reopened by walking back to it */
+    if (S.pileVia && arrivals.length && S.pile) targets.push({ what: 'the pile itself, from the arrival', x: S.pile.pos.x, z: S.pile.pos.z, r: 1.6 });
     if (typeof S.LINE_X === 'number') targets.push({ what: 'the fall-in line', x: S.LINE_X + 0.2, z: 0, r: 1.2 });
     for (const h of (S.hotspots || [])) targets.push({ what: 'hotspot ' + (h.id || h.prompt), x: h.pos.x, z: h.pos.z, r: Math.max(0.8, (h.radius || 1.5) - 0.3) });
     return { targets: targets.map(t => ({ ...t, reach: near(t.x, t.z, t.r) })),
-             spawnFree: !blocked[cell(D.spawn.x, D.spawn.z)] };
+             spawnFree: !blocked[cell(D.spawn.x, D.spawn.z)],
+             arrivals: arrivals.map(a => ({ what: a.what, free: !blocked[a.k] })) };
   });
 
   /* v14.1: NOTHING IN THE WORLD MAY BE NaN. An InstancedMesh composed with a
@@ -114,6 +127,7 @@ for (const key of ['ch3', 'e2c1', 'e2c2', 'e2c3', 'e2c4', 'e2c5', 'e3c1', 'e3c2'
   ok(`${key}: every model it loads lands`, lerr.length === 0, lerr.slice(0, 4).join(' | '));
 
   ok(`${key}: spawn is on open floor`, r.spawnFree);
+  for (const a of r.arrivals) ok(`${key}: ${a.what} is on open floor`, a.free);
   for (const t of r.targets)
     ok(`${key}: can WALK to ${t.what}`, t.reach, t.reach ? '' : `(${t.x.toFixed(2)}, ${t.z.toFixed(2)}) unreachable on foot`);
 }
