@@ -5260,7 +5260,11 @@ What the baseline contains, by release:
   the lesson loses "And if something is affecting your health or your mind,
   see a doctor as well.", and the fight's brief is Chad's sentence exactly.
   Sheet v95 exported (v44 stays the link). `__enc.handsAt`, `gest` and
-  `gestLayout` are probes' handles.
+  `gestLayout` are probes' handles. Photographed on a phone at every beat
+  that moves the hands (the fight at five rises, the lost peak, the decision,
+  all four endings, the film's flat and floor). Deploy
+  `6ad63fd10ab41b47f67c52b4`, byte-verified (212 files). Harnesses chapter,
+  text, fixture, cine, leak, csp, hosted green.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
