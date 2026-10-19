@@ -5460,3 +5460,28 @@ cut (sharing its vertices and maps) when it is small.
   vertices and shades each side by its own face. Count them on the cut, not
   the scan: `dbg`-style, sort each triangle's three position groups and look
   for the same triple with the other winding.
+- **One retargeted take does not give every rig the same hands (v20.0).**
+  Chad's four congregation rigs all play the same Mixamo praying take, and two
+  of them held their palms UP to the face while the other two pressed them
+  together. `retarget.mjs --align` swings each target bone's DIRECTION onto
+  the source's and keeps the target's own TWIST about it — so a wrist's roll
+  is each rig's own, and on two of these four it does not land on añjali.
+  Nothing in a number says so; it was found by photographing each rig's
+  hands on its own, close, at five points of the loop. **Photograph every rig
+  that plays a take, not one of them** — and look at the hands, the one place
+  a twist shows.
+- **An arm solved by DIRECTIONS sets no TWIST (v20.0).** e3c2's two-bone
+  prayer solve aims the upper arm, the forearm and the hand by their lengths
+  (`aimBone`, a minimal rotation), so a hand keeps whatever roll it had: on
+  Chad's monk every palm faced the hall and the two hands crossed. The roll
+  has to be SET: measure the hand's palm off its own skin in its own bone's
+  frame (the hand is flat, so across its length the narrowest spread is
+  through the palm — on the monk 1.2 cm against 4.0 across the knuckles),
+  choose which face is the palm from the thumb (the skew across the hand)
+  and the handedness (right: thumb × fingers; left: fingers × thumb), CHECK
+  that against the scan's own A-pose (a palm faces its thigh — 0.99 on both
+  hands; the fingers' curl, the obvious other cue, disagreed on one hand),
+  then turn the hand on its long axis until that palm faces the other hand,
+  and solve the arms again with the wrists as far apart as the palms are
+  thick. Measured in the hall: each hand's flat 0.99–1.00 along the line
+  between them; photographed: fingertips meeting, the palms cupped.

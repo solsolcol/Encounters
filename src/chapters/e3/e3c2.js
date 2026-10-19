@@ -112,7 +112,7 @@
        monk's own floor take, retargeted; masters/v18.0/crowd) and dressed in
        white; the monks are Chad's monk at crowd detail; the Thevada is seen
        only as a crowned shadow and a gold glimpse at the edge of the frame */
-    assets: ['cg_woman1', 'cg_woman2', 'cg_man1', 'cg_man2', 'cg_woman1hd', 'cg_woman2hd', 'cg_man1hd', 'cg_man2hd', 'monkrow',   // v19.6: Chad's congregation
+    assets: ['cg_woman2', 'cg_man2', 'cg_woman2hd', 'cg_man2hd', 'monkrow',   // v19.6: Chad's congregation (v20.0: the two who pray with their palms together)
              'thaikit', 'slipper', 'tree1', 'tree2', 'tree3', 'tree4', 'buddhahd', 'buddhalod', 'naga',
              'filmlaptop', 'actioncam', 'hdb', 'altar'],   // v19.5: the film's table (chapter 1's), Ma's flat (episode 1's), the stair's naga
 
@@ -602,8 +602,7 @@
     /* -------------------------------------------- THE MONKS' PLATFORM (east)
        A raised platform along the side wall, a red carpet edged in gold, a
        low back screen, nine monks seated cross-legged facing across the
-       hall, a ceremonial fan before each, a microphone stand before the
-       senior monk at the Buddha's end. */
+       hall, a ceremonial fan before each. */
     solids.push(box(MPLAT.x1 - MPLAT.x0, MPLAT.h, MPLAT.z1 - MPLAT.z0, (MPLAT.x0 + MPLAT.x1) / 2, MPLAT.h / 2, (MPLAT.z0 + MPLAT.z1) / 2, matWood));
     box(MPLAT.x1 - MPLAT.x0 - 0.1, 0.02, MPLAT.z1 - MPLAT.z0 - 0.1, (MPLAT.x0 + MPLAT.x1) / 2, MPLAT.h + 0.01, (MPLAT.z0 + MPLAT.z1) / 2, matRed, world, false);
     box(0.05, 0.06, MPLAT.z1 - MPLAT.z0, MPLAT.x0 + 0.03, MPLAT.h + 0.01, (MPLAT.z0 + MPLAT.z1) / 2, matGold, world, false);
@@ -619,9 +618,7 @@
       leaf.scale.set(0.8, 1.15, 1); leaf.position.y = 0.82; fan.add(leaf);
       const rim = new THREE.Mesh(new THREE.TorusGeometry(0.17, 0.008, 4, 22), matGold); rim.scale.set(0.8, 1.15, 1); rim.position.y = 0.82; fan.add(rim);
     }
-    { const lead = MONKS[0];
-      cyl(0.012, 0.012, 0.9, lead.x - 0.6, MPLAT.h + 0.45, lead.z + 0.12, matDark, 5);
-      const mic = new THREE.Mesh(new THREE.SphereGeometry(0.03, 8, 6), matDark); mic.position.set(lead.x - 0.5, MPLAT.h + 0.92, lead.z + 0.12); world.add(mic); }
+    // v20.0: the senior monk's microphone stand is gone (Chad), and he prays with the row
 
     /* --------------------------------------------- BY THE DOOR, AND THE ROWS */
     // the chant-book shelf: a low lacquered cabinet with open shelves of red books
@@ -1203,14 +1200,19 @@
          and turning their heads on its KNEELING IDLE — both applied to each
          rig by tools/retarget.mjs --align --hips (docs/V19.6-CONGREGATION.md).
          `kneel` names the take a head turns on; `own`: already dressed white */
-      cg_woman1:   { h: 1.60, take: 'pray', kneel: 'kneel', own: true },
+      /* v20.0 (Chad: "some have their palms facing up to their face, some
+         have the proper hands cupped in prayer position. Remove those that
+         have their palms facing up ... only use a mix of those 2 correct
+         models"): photographed on the praying take at five points of its
+         loop, woman 1 and man 1 hold their palms UP toward the face the whole
+         way and woman 2 and man 2 hold them PRESSED TOGETHER the whole way —
+         the retarget keeps each rig's own wrist twist, and only these two
+         rigs' twists land on añjali. cg_woman1/cg_man1 (and their close
+         cuts) leave the chapter; their files stay in git and masters/v19.8. */
       cg_woman2:   { h: 1.57, take: 'pray', kneel: 'kneel', own: true },
-      cg_man1:     { h: 1.72, take: 'pray', kneel: 'kneel', own: true },
       cg_man2:     { h: 1.69, take: 'pray', kneel: 'kneel', own: true },
-      // the four nearest him at close detail (48k triangles, 2048 sheets): the woman beside him, Yai, the man beside her, the man in front
-      cg_woman1hd: { h: 1.60, take: 'pray', kneel: 'kneel', own: true },
+      // the four nearest him at close detail (48k triangles, 2048 sheets): the woman beside him and Yai are the woman, the man beside Yai and the man in front the man
       cg_woman2hd: { h: 1.57, take: 'pray', kneel: 'kneel', own: true },
-      cg_man1hd:   { h: 1.72, take: 'pray', kneel: 'kneel', own: true },
       cg_man2hd:   { h: 1.69, take: 'pray', kneel: 'kneel', own: true },
       monkrow:      { h: 1.70, take: 'Sit_Cross_Legged_on_Floor' }
     };
@@ -1629,31 +1631,127 @@
         const S = sd > 0 ? 'Left' : 'Right';
         const arm = boneOf(r, new RegExp(S + 'Arm(_\\d+)?$')), fore = boneOf(r, new RegExp(S + 'ForeArm(_\\d+)?$')), hand = boneOf(r, new RegExp(S + 'Hand(_\\d+)?$'));
         if (!arm || !fore || !hand) continue;
-        const sh = arm.getWorldPosition(new THREE.Vector3()), el = fore.getWorldPosition(new THREE.Vector3()), wr = hand.getWorldPosition(new THREE.Vector3());
-        const a = sh.distanceTo(el), b = el.distanceTo(wr);
-        const T0 = lap ? _v3.clone().addScaledVector(fwd, 0.16 + a * 0.45).addScaledVector(up, -0.40).addScaledVector(side, sd * 0.15)
-                       : _v3.clone().addScaledVector(fwd, 0.10 + a * 0.55).addScaledVector(up, -0.09).addScaledVector(side, sd * 0.035);
-        const dvec = T0.clone().sub(sh); let dl = dvec.length();
-        dl = Math.min(Math.max(dl, Math.abs(a - b) + 0.01), a + b - 0.005);
-        const dir = dvec.normalize();
-        const pole = up.clone().multiplyScalar(-1).addScaledVector(side, sd * 0.55).addScaledVector(fwd, -0.15).normalize();
-        const n = pole.addScaledVector(dir, -pole.dot(dir)).normalize();
-        const cosA = (a * a + dl * dl - b * b) / (2 * a * dl), sinA = Math.sqrt(Math.max(0, 1 - cosA * cosA));
-        const elbow = sh.clone().addScaledVector(dir, a * cosA).addScaledVector(n, a * sinA);
-        aimBone(arm, el.clone().sub(sh).normalize(), elbow.clone().sub(sh).normalize());
-        g.updateMatrixWorld(true);
-        const el2 = fore.getWorldPosition(new THREE.Vector3()), wr2 = hand.getWorldPosition(new THREE.Vector3());
-        const T1 = sh.clone().addScaledVector(dir, dl);
-        aimBone(fore, wr2.clone().sub(el2).normalize(), T1.clone().sub(el2).normalize());
-        g.updateMatrixWorld(true);
-        // the hand: its own length runs on from the forearm; point it up and a little forward
-        const el3 = fore.getWorldPosition(new THREE.Vector3()), wr3 = hand.getWorldPosition(new THREE.Vector3());
         const tip = hand.children.find(ch => ch.isBone);
-        const hdir = tip ? tip.getWorldPosition(new THREE.Vector3()).sub(wr3).normalize() : wr3.clone().sub(el3).normalize();
-        aimBone(hand, hdir, lap ? fwd.clone().multiplyScalar(0.85).addScaledVector(up, -0.5).normalize()
-                                : up.clone().multiplyScalar(0.92).addScaledVector(fwd, 0.25).addScaledVector(side, -sd * 0.12).normalize());
-        g.updateMatrixWorld(true);
+        /* v20.0: THE PALMS PRESSED TOGETHER (Chad: "The monks in the praying
+           position, have their palms open to the front"). The solve aimed
+           each hand's LENGTH up and never set its TWIST, so the hands rose
+           with their palms to the hall and crossed. Now each hand's own palm
+           is measured off the mesh (palmOf), the hand is turned on its long
+           axis until that palm faces the other hand (palmTo), and the arms
+           are solved a second time with the wrists exactly as far apart as
+           the two palms' own thickness (palmReach) — so they meet. */
+        const pl = lap ? null : palmOf(r, hand, tip, S);
+        const inward = side.clone().multiplyScalar(-sd);              // toward the other hand
+        const solve = (spread) => {
+          const sh = arm.getWorldPosition(new THREE.Vector3()), el = fore.getWorldPosition(new THREE.Vector3()), wr = hand.getWorldPosition(new THREE.Vector3());
+          const a = sh.distanceTo(el), b = el.distanceTo(wr);
+          const T0 = lap ? _v3.clone().addScaledVector(fwd, 0.16 + a * 0.45).addScaledVector(up, -0.40).addScaledVector(side, sd * 0.15)
+                         : _v3.clone().addScaledVector(fwd, 0.10 + a * 0.55).addScaledVector(up, -0.09).addScaledVector(side, sd * spread);
+          const dvec = T0.clone().sub(sh); let dl = dvec.length();
+          dl = Math.min(Math.max(dl, Math.abs(a - b) + 0.01), a + b - 0.005);
+          const dir = dvec.normalize();
+          const pole = up.clone().multiplyScalar(-1).addScaledVector(side, sd * 0.55).addScaledVector(fwd, -0.15).normalize();
+          const n = pole.addScaledVector(dir, -pole.dot(dir)).normalize();
+          const cosA = (a * a + dl * dl - b * b) / (2 * a * dl), sinA = Math.sqrt(Math.max(0, 1 - cosA * cosA));
+          const elbow = sh.clone().addScaledVector(dir, a * cosA).addScaledVector(n, a * sinA);
+          aimBone(arm, el.clone().sub(sh).normalize(), elbow.clone().sub(sh).normalize());
+          g.updateMatrixWorld(true);
+          const el2 = fore.getWorldPosition(new THREE.Vector3()), wr2 = hand.getWorldPosition(new THREE.Vector3());
+          const T1 = sh.clone().addScaledVector(dir, dl);
+          aimBone(fore, wr2.clone().sub(el2).normalize(), T1.clone().sub(el2).normalize());
+          g.updateMatrixWorld(true);
+          // the hand: its own length runs on from the forearm; point it up and a little forward
+          // (v20.0: pressed palms point the SAME way — the old inward lean crossed the fingers)
+          const el3 = fore.getWorldPosition(new THREE.Vector3()), wr3 = hand.getWorldPosition(new THREE.Vector3());
+          const hdir = tip ? tip.getWorldPosition(new THREE.Vector3()).sub(wr3).normalize() : wr3.clone().sub(el3).normalize();
+          aimBone(hand, hdir, lap ? fwd.clone().multiplyScalar(0.85).addScaledVector(up, -0.5).normalize()
+                                  : up.clone().multiplyScalar(0.92).addScaledVector(fwd, 0.25).addScaledVector(side, pl ? 0 : -sd * 0.12).normalize());
+          g.updateMatrixWorld(true);
+          if (pl) { palmTo(hand, pl, inward); g.updateMatrixWorld(true); }
+        };
+        solve(0.035);
+        if (pl) solve(palmReach(hand, pl, inward) + PALM_GAP);
       }
+    }
+    /* v20.0 · A HAND'S OWN PALM, measured once per rig and side: every vertex
+       the hand (and its tip bone) carries, in the hand bone's own frame —
+       where it never moves, whatever the pose. The finger axis is the bone
+       to its tip; the hand is flat, so across it the widest spread is the
+       line of the knuckles and the narrowest is THROUGH the palm. Which face
+       is the palm comes from the thumb (the one long tail across the hand,
+       its skew) and the handedness: a right palm is thumb × fingers, a left
+       one fingers × thumb. Checked against the scan's own A-pose, where a
+       palm faces its thigh: the thumb rule agrees on both hands (0.99). The
+       fingers' curl (fingertips toward the palm) is measured too, for the
+       probe only — on Chad's monk it DISAGREES on the left hand, so it is
+       not used. Measured in the hall: each hand's flat now lies 0.99–1.00
+       along the line between them, the fingertips meeting and the palms
+       cupped (stage.palms() reports what was measured). */
+    const palmCache = new Map();
+    const PALM_GAP = 0.002;          // between the two palms, each side of the middle
+    function palmOf(r, hand, tip, S) {
+      const ck = r.key + ':' + S;
+      if (palmCache.has(ck)) return palmCache.get(ck);
+      r.model.updateMatrixWorld(true);
+      const pts = [];
+      r.model.traverse(o => {
+        if (!o.isSkinnedMesh || !o.skeleton) return;
+        const bi = o.skeleton.bones.indexOf(hand), ti = tip ? o.skeleton.bones.indexOf(tip) : -1;
+        const sI = o.geometry.attributes.skinIndex, sW = o.geometry.attributes.skinWeight;
+        if (bi < 0 || !sI || !sW) return;
+        o.skeleton.update();
+        const n = o.geometry.attributes.position.count;
+        for (let i = 0; i < n; i++) {
+          let w = 0; for (let k = 0; k < 4; k++) { const j = sI.getComponent(i, k); if (j === bi || (ti >= 0 && j === ti)) w += sW.getComponent(i, k); }
+          if (w < 0.6) continue;
+          o.getVertexPosition(i, _v); _v.applyMatrix4(o.matrixWorld);
+          pts.push(hand.worldToLocal(_v.clone()));
+        }
+      });
+      if (pts.length < 30) { palmCache.set(ck, null); return null; }
+      const f = (tip ? tip.position.clone() : new THREE.Vector3(0, 1, 0)).normalize();
+      const m = new THREE.Vector3(); for (const p of pts) m.add(p); m.multiplyScalar(1 / pts.length);
+      const e1 = new THREE.Vector3(1, 0, 0); if (Math.abs(e1.dot(f)) > 0.9) e1.set(0, 0, 1);
+      e1.addScaledVector(f, -e1.dot(f)).normalize();
+      const e2 = new THREE.Vector3().crossVectors(f, e1), d = new THREE.Vector3();
+      let saa = 0, sab = 0, sbb = 0;
+      for (const p of pts) { d.subVectors(p, m); const a = d.dot(e1), b = d.dot(e2); saa += a * a; sab += a * b; sbb += b * b; }
+      const th = 0.5 * Math.atan2(2 * sab, saa - sbb);
+      const w = e1.clone().multiplyScalar(Math.cos(th)).addScaledVector(e2, Math.sin(th));      // across the knuckles
+      let s3 = 0; for (const p of pts) { const x = d.subVectors(p, m).dot(w); s3 += x * x * x; }
+      const thumb = w.clone().multiplyScalar(s3 < 0 ? -1 : 1);
+      const palm = S === 'Left' ? new THREE.Vector3().crossVectors(f, thumb) : new THREE.Vector3().crossVectors(thumb, f);
+      palm.normalize();
+      // the curl, for the probe: the far quarter of the hand against its middle, along the palm
+      const ts = pts.map(p => d.subVectors(p, m).dot(f)).sort((x, y) => x - y);
+      const tFar = ts[Math.floor(ts.length * 0.75)], tMid0 = ts[Math.floor(ts.length * 0.25)], tMid1 = ts[Math.floor(ts.length * 0.6)];
+      let cf = 0, nf = 0, cm = 0, nm = 0;
+      for (const p of pts) { d.subVectors(p, m); const t = d.dot(f), y = d.dot(palm); if (t >= tFar) { cf += y; nf++; } else if (t >= tMid0 && t <= tMid1) { cm += y; nm++; } }
+      const out = { pts: pts.filter((_, i) => i % 2 === 0), f, palm, curlAgrees: (nf && nm) ? (cf / nf - cm / nm) > 0 : null, n: pts.length };
+      palmCache.set(ck, out);
+      return out;
+    }
+    // turn the hand on its own long axis until its palm faces `inward`
+    function palmTo(hand, pl, inward) {
+      const hq = hand.getWorldQuaternion(new THREE.Quaternion());
+      const F = pl.f.clone().applyQuaternion(hq).normalize();
+      const N = pl.palm.clone().applyQuaternion(hq), T = inward.clone();
+      N.addScaledVector(F, -N.dot(F)); T.addScaledVector(F, -T.dot(F));
+      if (N.lengthSq() < 1e-8 || T.lengthSq() < 1e-8) return;
+      N.normalize(); T.normalize();
+      const ang = Math.atan2(new THREE.Vector3().crossVectors(N, T).dot(F), N.dot(T));
+      _q.setFromAxisAngle(F, ang);
+      hand.getWorldQuaternion(_q2); _q2.premultiply(_q);
+      const pq = hand.parent ? hand.parent.getWorldQuaternion(new THREE.Quaternion()) : new THREE.Quaternion();
+      hand.quaternion.copy(pq.invert().multiply(_q2));
+    }
+    // how far the palm's face stands from the wrist bone, toward the other hand
+    function palmReach(hand, pl, inward) {
+      hand.updateWorldMatrix(true, false);
+      const wr = hand.getWorldPosition(new THREE.Vector3()), q = [];
+      for (const p of pl.pts) q.push(_v.copy(p).applyMatrix4(hand.matrixWorld).sub(wr).dot(inward));
+      q.sort((x, y) => x - y);
+      return Math.max(0.005, q[Math.floor(q.length * 0.97)] || 0);    // the face, not the one vertex furthest out
     }
     // turn a bone so that a world direction `from` (its child, now) becomes `to`
     function aimBone(bone, from, to) {
@@ -1747,8 +1845,11 @@
        every other place is dealt from the four crowd cuts on a fixed seed and
        then SOLVED so doubles sit as far apart as four models allow (v19.7,
        below — the seat-by-seat deal this comment used to promise could not
-       keep its promise). */
-    const deal = ['cg_woman1', 'cg_woman2', 'cg_man1', 'cg_man2'];
+       keep its promise). v20.0: TWO models now, not four — the woman and
+       the man whose hands meet in prayer — so the search lays them out as
+       near a checkerboard as the rows allow, and the four who act are two
+       of each. */
+    const deal = ['cg_woman2', 'cg_man2'];      // v20.0: only the two whose palms meet in prayer (Chad)
     const crowd = [];
     let crowdSlot = 0;
     let neighbour = null, yai = null, kid = null, frontMan = null;
@@ -1759,7 +1860,7 @@
     const keep = (r, c) => !LOW || r <= 2;      // (v19.2: every column — c ≤ 3 left the right of the aisle one man per row)
     const dealt = new Map();                    // "row,col" -> the base model there (crowd or close)
     const base = (k) => k.replace(/hd$/, '');
-    const ROLE = new Map([[NEIGH.x + ',' + NEIGH.z, 'cg_woman1'], [YAI.x + ',' + YAI.z, 'cg_woman2'], [KID.x + ',' + KID.z, 'cg_man2'], [FRONT.x + ',' + FRONT.z, 'cg_man1']]);
+    const ROLE = new Map([[NEIGH.x + ',' + NEIGH.z, 'cg_woman2'], [YAI.x + ',' + YAI.z, 'cg_woman2'], [KID.x + ',' + KID.z, 'cg_man2'], [FRONT.x + ',' + FRONT.z, 'cg_man2']]);
     /* v19.7: the seats are SOLVED, not dealt one at a time (the v19.6 review:
        seat by seat, a place whose every model was ruled out fell back with no
        check at all — two of one woman 1.00 m apart, a double right behind the
@@ -1819,7 +1920,7 @@
       if (p) { crowd.push(p); p.row = r; p.col = c; }
     }
     // the monks, at crowd detail, facing across the hall
-    const monks = MONKS.map((m, i) => (LOW && i % 2) ? null : mkSitter('monkrow', m.x, m.z, -Math.PI / 2, { y: MPLAT.h + 0.06, white: false, pray: i !== 0, at: 0.1 + hash(i, 41) * 0.5, cast: false, shadow: false })).filter(Boolean);
+    const monks = MONKS.map((m, i) => (LOW && i % 2) ? null : mkSitter('monkrow', m.x, m.z, -Math.PI / 2, { y: MPLAT.h + 0.06, white: false, pray: true, at: 0.1 + hash(i, 41) * 0.5, cast: false, shadow: false })).filter(Boolean);
 
     /* ------------------------------------------- THE THEVADA: SHADOW AND GLIMPSE
        Nothing in this chapter has a body but the people. What rises with his
@@ -2590,6 +2691,7 @@
       },
       lookAll: (k) => { for (const r of crowd) r.lookTo = k; for (const r of monks) r.lookTo = k; },
       seatStats,   // v19.7: how well the solved seating keeps doubles apart (the v5.29 shape)
+      palms: () => [...palmCache].map(([k, v]) => ({ k, verts: v ? v.n : 0, curlAgrees: v ? v.curlAgrees : null })),   // v20.0: each praying rig's measured palm
       leaves, film, solo, myBook, myStand,
       get phase() { return phase; },
       setPhase, applyPhase, after, dayClock, sayLine,

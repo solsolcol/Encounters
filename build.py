@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "19.9"
+VERSION = "20.0"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -418,14 +418,13 @@ ASSETS = {
     # at a crowd cut (0.018, 1024, no normal map) and a close cut (0.08, 2048)
     # for the four the scenes direct. docs/V19.6-CONGREGATION.md, masters/v19.6.
     # monkrow is Chad's monk at crowd detail (masters/v18.0/crowd).
-    'cg_woman1':   ('assets/cg_woman1.glb', True, False),
+    # v20.0: only woman 2 and man 2 — the two whose palms meet in prayer on
+    # the take (Chad); woman 1 and man 1 held theirs palms-up to the face and
+    # left the chapter (in git history; masters/v19.8/make.sh re-makes them).
     'cg_woman2':   ('assets/cg_woman2.glb', True, False),
-    'cg_man1':     ('assets/cg_man1.glb', True, False),
     'cg_man2':     ('assets/cg_man2.glb', True, False),
-    'cg_woman1hd': ('assets/cg_woman1hd.glb', True, False),   # the woman beside him
-    'cg_woman2hd': ('assets/cg_woman2hd.glb', True, False),   # Yai
-    'cg_man1hd':   ('assets/cg_man1hd.glb', True, False),     # the man in front of him
-    'cg_man2hd':   ('assets/cg_man2hd.glb', True, False),     # the man beside Yai
+    'cg_woman2hd': ('assets/cg_woman2hd.glb', True, False),   # the woman beside him, and Yai
+    'cg_man2hd':   ('assets/cg_man2hd.glb', True, False),     # the man beside Yai, and the man in front
     'monkrow':      ('assets/monkrow.glb', True, False),
 }
 
@@ -451,7 +450,7 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'kamaz', 'forest', 'rifle', 'ghostcyclist', 'fboaim',
            'muzzle', 'ammocrate', 'ammomags', 'icontorch', 'zavsoldier',
            'thaikit', 'wessred', 'wessgreen', 'naga', 'monk', 'ajarn', 'temple', 'slipper', 'lersimask', 'altarrow', 'customer', 'buddhahd', 'buddhalod', 'sangkathan', 'sitwomantalk', 'filmoffice', 'filmlaptop', 'actioncam', 'planecabin',
-           'cg_woman1', 'cg_woman2', 'cg_man1', 'cg_man2', 'cg_woman1hd', 'cg_woman2hd', 'cg_man1hd', 'cg_man2hd', 'monkrow'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone
+           'cg_woman2', 'cg_man2', 'cg_woman2hd', 'cg_man2hd', 'monkrow'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone
 HOSTED_ONLY |= E2_ONLY
 
 # The split packs are hosted-only: there is no __..._B64__ token for them and

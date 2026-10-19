@@ -5204,6 +5204,35 @@ What the baseline contains, by release:
   whole) and the teaching in that order, none overlapping, no page errors.
   Harnesses chapter, text, csp, hosted green. Deploy
   `6ad39d08f495d3ae3df587b8`, byte-verified (216 files).
+- **v20.0** THE CONGREGATION'S HANDS, AND THE MONKS' — Chad, on episode 3
+  chapter 2: *"Of the praying audience models, some have their palms facing
+  up to their face, some have the proper hands cupped in prayer position.
+  Remove those that have their palms facing up ... only use a mix of those 2
+  correct models"* and *"The monks in the praying position, have their palms
+  open to the front. Fix it ... remove the standing mic from the first monk of
+  the row."* THE CONGREGATION: each of the four rigs photographed on its own,
+  hands close, at five points of the praying loop — woman 1 and man 1 hold
+  their palms UP to the face the whole way, woman 2 and man 2 PRESS them
+  together the whole way (the retarget keeps each rig's own wrist twist). The
+  rows are woman 2 and man 2 only (`cg_woman2`/`cg_man2` and their close
+  cuts): the woman beside him and Yai are the woman, the man beside Yai and
+  the man in front the man, and the solved deal lays the two out as near a
+  checkerboard as the rows allow (0 same-model neighbours side by side; with
+  two models some repeats a row apart are forced). The four dropped files
+  leave the build and the repo (git history and masters/v19.8/make.sh keep
+  them); the chapter downloads 3.6 MB less. THE MONKS: the prayer solve aimed each
+  hand's length and never set its twist, so the palms faced the hall and
+  crossed; now each hand's palm is measured off the monk's own skin, turned
+  on the hand's long axis to face the other hand, and the arms solved again
+  with the wrists as far apart as the palms are thick (`palmOf`, `palmTo`,
+  `palmReach`; LEARNINGS has the method and the check against the scan's
+  A-pose). Measured in the hall: each hand's flat 0.99–1.00 along the line
+  between them; photographed from the front, both sides and above: the
+  fingertips meeting, the palms cupped, the thumbs toward the chest. The
+  senior monk's microphone stand is gone and he prays with the row.
+  `stage.palms()` reports what was measured. No word moved; sheet v94 stands
+  (v44 the link). Deploy `6ad5df48a136917addf7078a`, byte-verified (212
+  files).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
