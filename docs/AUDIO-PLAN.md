@@ -1180,3 +1180,28 @@ his words, the swell as they end. Levelled by RMS to −18 dBFS under a −3 dBF
 ceiling (`../v18.0/loud.py`): the fiddle alone lands at −21 to −25, the swell
 at −14 to −16 (mono fold, as measured on the files). `masters/v20.1/make.sh` is
 the recipe; no cue moved.
+
+## v21.0 · episode 3 chapter 3, The Dance On Buddha Day
+
+**Voices** (64 lines, nine speakers, flow `URTG1KypweSna9iSGuca`): Brian for him
+(30, the v16.0/v18.6 chain), and eight new cast voices chosen by the library's
+own descriptions — the owner Brendon, the shop girl Lilian, a staff man Lee, an
+auntie 人生, the medium Roger, his assistant Kopi Gao, a wife Jane, a father Roy
+— levelled by RMS to −16 dBFS for the flat cast bus. `masters/v21.0/make.sh`.
+
+**Effects, beds and music** (flow `chhSJQIo5sMsm1HL5tDM`, `masters/v21.0/make_fx.sh`,
+which names every pick and why). Picked by the PHONE BAND first: five first
+takes came back almost all under 120 Hz — the presence's inward rush, the knees
+on the tile, the sword, the gold sting's body and the shrine's music (a drum
+and a drone) — which a phone speaker plays as silence. The rush and the shrine
+music were re-asked in the middle register; the knees layer e3c2's `matkneel`
+over the thud; the phone's record beep came back silent twice and is
+synthesized. New: `shopbell` `glasscase` `casesnap` `presencein` `rushgrab`
+`crowdgasp` `phonerec` `stoolfall` `timelapse` `kneethud` `shutter` `urnsand`
+`stoolscrape` `taobell` `ashwater` `swordswish` `hanumanroar` (four takes, c —
+the only one that roars the whole 2.8 s with clean edges) `goldsting`
+`drinkgulp` `buspass`; beds `mallamb` `shopchant` (the take named vesakchant — a file named v* is read as his voice by chaptertest) `dancemove` `lorongamb`
+`estatemorn` `shrineamb`; music `e3dance` (Thai piphat, take c of four — the
+steadiest, 99.5 % in the phone band, looped by crossfade) `e3film3`
+`e3shrine` (erhu and suona, the re-ask) `e3close3` (a solo erhu). Previews of
+the music and the four roars went to Chad (the v10.6 rule).
