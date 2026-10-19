@@ -466,8 +466,22 @@
     c.keep.ghostGone = true;
   });
 
+  /* v21.0: an IN-PLAY film (kit.film, the twenty-sixth seam), so
+     `fixturetest` can prove a cutscene started from play hands back to PLAY —
+     no card — with the camera wherever the chapter puts it under the black it
+     ends on. 3.6 s: past the Skip button's 3.0 s, so the skip is proven too. */
+  const fiProbe = (c, s, api) => {
+    const { fade, camTo, sfx } = api;
+    camTo(0, 2.4, { x: s.yawPos.x, y: s.yawPos.y, z: s.yawPos.z }, { x: s.yawPos.x, y: 2.4, z: s.yawPos.z + 1.5 });
+    sfx(0.2, 'boom');
+    fade(2.6, 3.6, 0, 1);
+    c.keepFade = true;
+    c.endFade = 1;
+  };
+
   (window.__CHAPTERS__ = window.__CHAPTERS__ || {}).chtest = Object.assign(DATA, {
     build,
+    films: { probe: fiProbe },
     scenes: [scTake, scBreak, scLook, scLeave]
   });
 })();

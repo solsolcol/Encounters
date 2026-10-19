@@ -852,6 +852,75 @@ K.yantGuards = await p.evaluate(() => {
   return Object.values(res).every(Boolean);
 });
 if (!K.yantGuards) console.log('yant guards', JSON.stringify(await p.evaluate(() => window.__yg)));
+/* v21.0: THE TWENTY-SIXTH SEAM — kit.film. From play, a declared film runs
+   (state cine, the HUD hidden); at its end the state is PLAY again, no card;
+   the black it ended on is the kit's, the chapter's onDone ran under it and
+   put the player where it said; and a kit.fade lifts it. Then again, SKIPPED
+   past the 3.0 s mark: the same hand-back. */
+const filmGo = () => p.evaluate(() => {
+  const e = window.__enc;
+  window.__filmDone = null;
+  const at = { x: e.yaw.position.x + 1.5, z: e.yaw.position.z - 1.0 };
+  window.__filmAt = at;
+  const ok = e.kit.film('probe', { onDone: (r) => {
+    e.yaw.position.x = at.x; e.yaw.position.z = at.z;
+    window.__filmDone = { st: e.getState(), fade: e.kit.getFade(), skipped: !!r.skipped };
+    e.kit.fade(0, 0.3);
+  } });
+  return ok && e.getState() === 'cine' && document.getElementById('hud').classList.contains('hide')
+    && e.kit.filmPlaying() === 'probe';
+});
+const filmBack = (skipped) => until(() => window.__filmDone && window.__enc.getState() === 'play', 60000).then(() => p.evaluate((sk) => {
+  const e = window.__enc, d = window.__filmDone, at = window.__filmAt;
+  return d.st === 'play' && d.fade > 0.9 && d.skipped === sk && e.kit.filmPlaying() === null
+    && Math.abs(e.yaw.position.x - at.x) < 1e-6 && Math.abs(e.yaw.position.z - at.z) < 1e-6
+    && !document.getElementById('hud').classList.contains('hide');
+}, skipped), () => false);
+const posFilm0 = await p.evaluate(() => ({ x: window.__enc.yaw.position.x, z: window.__enc.yaw.position.z }));
+K.filmFromPlay = await filmGo();
+K.filmBackToPlay = await filmBack(false);
+K.filmFadeLifts = await until(() => window.__enc.kit.getFade() < 0.02, 30000).then(() => true, () => false);
+K.filmSkip = await filmGo();
+if (K.filmSkip) {
+  await until(() => window.__enc.cine.t() > 3.05, 60000).catch(() => {});
+  await p.evaluate(() => window.__enc.cine.skip());
+  K.filmSkip = await filmBack(true);
+}
+K.filmRefusedOutOfPlay = await p.evaluate(() => window.__enc.kit.film('nope') === false);
+await until(() => window.__enc.kit.getFade() < 0.02, 30000).catch(() => {});
+await p.evaluate((q) => { const e = window.__enc; e.yaw.position.x = q.x; e.yaw.position.z = q.z; }, posFilm0);
+/* v21.0: FOCUS, GRADED (opt-in) — a thing noticed at once is a high band; a
+   tap on nothing is BROKEN and costs the penalty stat THERE AND THEN; a
+   briefing with no demo of its own shows the kind's picture, 'spot' */
+/* the miss is priced in AWARENESS here, which nothing but a minigame guard
+   touches (none is worn by now) — sanity would be soaked by the amulet's ward */
+const awG = await p.evaluate(() => { window.__enc.stats.awareness = 40; return 40; });
+r = await runEvent({ kind: 'focus', graded: true, targets: [{ sx: 0.5, sy: 0.5, label: 'here' }, { sx: 0.5, sy: 0.5 }], each: 3,
+                     missCost: 3, penalty: { stat: 'awareness' }, award: { stat: 'sanity', per: 1, hi: 6 } },
+                   async () => {
+  await untilDot();
+  K.focusLabel = await p.evaluate(() => document.querySelector('#evDot .dlab').textContent === 'here'
+    && document.getElementById('evDot').classList.contains('graded'));
+  await tapOnce();                                                            // at the centre, at once: a high band
+  await untilIdx(1); await untilDot();
+  await p.evaluate(() => { window.__enc.evPress(5, 5); window.__enc.evRelease(); });   // the corner: nothing there
+  await untilIdx(1);
+  await p.evaluate(() => { window.__enc.evPress(); window.__enc.evRelease(); });
+});
+K.focusGraded = r.kind === 'focus' && r.band.length >= 2 && r.band[0] >= 1 && r.band.includes(-4);
+K.focusMissCosts = await p.evaluate((a0) => Math.abs(window.__enc.stats.awareness - (a0 - 3)) < 1e-9, awG);
+/* (the briefing is put up on the event's FIRST FRAME, not by kit.event, so
+   wait for it — and read what is drawn: the class AND its pieces shown) */
+await p.evaluate(() => { window.__enc.kit.event({ kind: 'focus', brief: 'probe', targets: [{ sx: 0.5, sy: 0.5 }] }); });
+K.focusSpotDemo = await until(() => { const d = window.__enc.kitDebug(); return !!(d.event && d.event.briefing); }, 30000)
+  .then(() => p.evaluate(() => {
+    const dm = document.getElementById('evDemo');
+    return dm.className === 'spot' && getComputedStyle(dm).display !== 'none'
+      && getComputedStyle(dm.querySelector('.dspot')).display !== 'none'
+      && getComputedStyle(dm.querySelector('.dret')).display === 'none';
+  }), () => false);
+await p.evaluate(() => window.__enc.kit.abortEvent());
+await p.evaluate(() => { window.__enc.stats.sanity = 100; window.__enc.stats.awareness = 50; });
 // the lens level again, as the block found it: the walk to the pile below sets only the yaw
 await p.evaluate(() => { window.__enc.pitch.rotation.x = 0; });
 out.kit = K;

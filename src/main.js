@@ -3450,7 +3450,7 @@ function haptic(pattern) { try { navigator.vibrate?.(pattern || 40); } catch {} 
    kind adds its row here; chaptertest fails a kind without one. */
 const EV_DEMO = {
   tap: 'beat', timed: 'bar', mash: 'rapid', hold: 'look', stabilise: 'look',
-  heartbeat: 'beat', match: 'drag', focus: 'look', sequence: 'bar', resist: 'rapid',
+  heartbeat: 'beat', match: 'drag', focus: 'spot', sequence: 'bar', resist: 'rapid',   // v21.0: focus has its own (lights at places, a fingertip on each)
 };
 const EV_DEFAULT = {
   tap:       { secs: 4 },
@@ -4043,7 +4043,20 @@ function evPress(x, y) {
       if (dot && !dot.classList.contains('hide')) {
         const r = dot.getBoundingClientRect();
         const d = Math.hypot(x - (r.left + r.width / 2), y - (r.top + r.height / 2));
-        if (d <= o.tol) { e.hits++; evNote(true); evNextTarget(); }
+        /* v21.0: GRADED (opt-in; no chapter before episode 3 chapter 3 asks).
+           A thing noticed is scored on how SOON after it showed itself — the
+           dot's own life, read against `react` (seconds: PERFECT, GREAT, GOOD,
+           SLIGHT; past the last it is MISSED) — and a tap that lands on
+           nothing is BROKEN, paid at once through evScorePress (and so cut by
+           the LP Tim's minigame guard). Jabbing must not beat looking. */
+        if (o.graded) {
+          if (d <= o.tol) {
+            const R = Array.isArray(o.react) ? o.react : [0.55, 0.85, 1.2, 1.6];
+            const i = R.findIndex(v => e.slotT <= v);
+            evScorePress(i < 0 ? 0.34 : [0.03, 0.07, 0.12, 0.20][i] || 0.34);
+            evNextTarget();
+          } else evScorePress(EV_WORST);
+        } else if (d <= o.tol) { e.hits++; evNote(true); evNextTarget(); }
         else { e.misses++; evNote(false); }
       }
       break;
@@ -4273,21 +4286,46 @@ function evFrame(dt, dLookX, dLookY) {
     }
     case 'focus': {
       const dot = $('evDot');
-      if (e.over) { const s = e.hits / e.n; evResolve({ ok: s >= o.pass, score: s }); break; }
+      if (e.over) {
+        if (o.graded) { evResolve(evBandResult(o)); break; }
+        const s = e.hits / e.n; evResolve({ ok: s >= o.pass, score: s }); break;
+      }
       const tg = e.targets[e.idx % Math.max(1, e.targets.length)];
+      /* v21.0: a target may MOVE — `pos()` answers where it is now (a person
+         walking, a hand held up), re-projected every frame */
+      const P = tg && typeof tg.pos === 'function' ? tg.pos() : tg;
       let sx, sy, vis = true;
-      if (tg && Number.isFinite(tg.sx)) { sx = tg.sx * innerWidth; sy = tg.sy * innerHeight; }
-      else if (tg && Number.isFinite(tg.x)) {
-        const n = projectTo(tg.x, tg.y ?? 1.2, tg.z);
-        vis = n.z < 1; sx = (n.x * 0.5 + 0.5) * innerWidth; sy = (-n.y * 0.5 + 0.5) * innerHeight;
+      if (P && Number.isFinite(P.sx)) { sx = P.sx * innerWidth; sy = P.sy * innerHeight; }
+      else if (P && Number.isFinite(P.x)) {
+        const n = projectTo(P.x, P.y ?? 1.2, P.z);
+        /* graded: a thing off the screen's edge is not on screen (the old test
+           drew it there and let its clock run) */
+        vis = n.z < 1 && (!o.graded || (Math.abs(n.x) < 0.92 && Math.abs(n.y) < 0.9));
+        sx = (n.x * 0.5 + 0.5) * innerWidth; sy = (-n.y * 0.5 + 0.5) * innerHeight;
       } else { sx = innerWidth * (0.3 + 0.4 * ((e.idx * 0.618) % 1)); sy = innerHeight * (0.3 + 0.4 * ((e.idx * 0.382) % 1)); }
       if (dot) {
         dot.classList.toggle('hide', !vis);
+        dot.classList.toggle('graded', !!o.graded);
         dot.style.transform = `translate(${sx.toFixed(0)}px, ${sy.toFixed(0)}px) translate(-50%,-50%)`;
-        dot.style.opacity = (1 - e.slotT / e.o.each * 0.7).toFixed(2);
+        if (o.graded) {
+          /* what is drawn is what is scored (the v8.8 law): the ring closes
+             on the light over the thing's own life, and the light names it */
+          const k = Math.max(0, 1 - e.slotT / e.o.each);
+          dot.style.opacity = '1';
+          dot.style.setProperty('--k', k.toFixed(3));
+          const lab = dot.querySelector('.dlab');
+          if (lab && lab.textContent !== (tg.label || '')) lab.textContent = tg.label || '';
+        } else dot.style.opacity = (1 - e.slotT / e.o.each * 0.7).toFixed(2);
       }
-      e.slotT += dt;
-      if (e.slotT >= e.o.each) { e.misses++; evNote(false); evNextTarget(); }
+      /* graded: the clock runs only while the thing is on screen, so nothing
+         can expire unseen behind the lens — on the EVENT's own wall step
+         (v18.0's law: a slow frame must not be a slow reaction) */
+      if (!o.graded) e.slotT += dt;
+      else if (vis) e.slotT += wdt;
+      if (e.slotT >= e.o.each) {
+        if (o.graded) { evScorePress(EV_WORST); evNextTarget(); }
+        else { e.misses++; evNote(false); evNextTarget(); }
+      }
       break;
     }
     case 'sequence': {
@@ -4504,7 +4542,51 @@ function kitHurtSet(o) {
   kitHurt = o ? { perSec: Math.max(0, +o.perSec || 0), floor: o.floor === undefined ? 5 : Math.max(0, +o.floor), last: 0 } : null;
   if (!kitHurt) { const el = $('panic'); if (el) { el.classList.remove('critical'); el.classList.remove('hurt'); if (state !== 'play') el.style.opacity = '0'; } }
 }
+/* v21.0 · THE TWENTY-SIXTH SEAM — A CUTSCENE FROM PLAY THAT HANDS BACK TO
+   PLAY. Chad, of episode 3 chapter 3: "Then cutscene takes over, and the staff
+   and customers urge him to see a medium, and the player is then transported
+   to the next playable section". Until now a cutscene either OPENED a chapter
+   (its intro, which hands over to the chapter card) or ENDED one (a choice's
+   scene, which hands over to the outcome card). A chapter may now declare
+   `films: { key: fn }` — each written in the cutscene language — and play one
+   from the middle of play with `kit.film(key, { onDone })`: the same
+   playCineFn (the letterbox, Skip from 3.0 s, every verb), and at its end PLAY
+   again, with no card. A film that ends on black (`c.keepFade`) hands the
+   black to the kit's own fade, so `onDone` can move the player somewhere else
+   under it and lift it with `kit.fade(0, secs)` once the new place is ready.
+   Its cues are warmed when the chapter enters play (warmPlaySet), read off its
+   own source as a scene's are. No chapter before it declares a film, so
+   nothing else can reach any of this. */
+function kitFilm(key, opts = {}) {
+  const fn = CH.films && CH.films[key];
+  if (typeof fn !== 'function' || state !== 'play' || cine) return false;
+  if (ev) evResolve({ ok: false, aborted: true });
+  warmCues(cuesOf(fn));
+  kitFade = null;
+  let c = null;
+  playCineFn(fn, () => {
+    state = 'play';
+    /* the black a film ends on is the KIT's now (the same element), so a
+       kit.fade lifts it from where it stands rather than from a stale 0 */
+    kitFadeNow = c && c.keepFade ? (parseFloat(cineFadeEl.style.opacity) || 0) : 0;
+    kitFade = null;
+    ui.hud.classList.remove('hide');
+    hint.classList.add('hide');
+    document.body.classList.add('inplay');
+    setHint();
+    if (typeof opts.onDone === 'function') {
+      try { opts.onDone({ skipped: !!(c && c.skipped) }); }
+      catch (err) { console.error('film ' + key + ': onDone threw', err); }
+    }
+  }, Number.isFinite(+opts.startFade) ? +opts.startFade : kitFadeNow);
+  c = cine;
+  c.film = true;                 // a skip by gesture may re-lock the mouse (skipFilmOrScene): play follows
+  c.inPlay = key;
+  return true;
+}
 const KIT = {
+  film: kitFilm,                   // v21.0: the twenty-sixth seam — a cutscene from play, back to play
+  filmPlaying: () => (cine && cine.inPlay) || null,
   objective: kitObjectiveSet, timer: kitTimerStart, waypoint: kitWaypointSet,
   event: kitEvent, eventActive: evActive, abortEvent: () => { if (ev) evResolve({ ok: false, aborted: true }); },
   torch: torchSetup, torchOn: torchSet, torchRed, torchIsOn: () => torchOn,
@@ -6258,6 +6340,10 @@ function warmPlaySet() {
   // a voiceLine that lives in the pack decodes here; one that is its own
   // asset (chapter 1's 'voice') is simply not a pack name, and this no-ops
   if (CH.voiceLine) packWarm([CH.voiceLine]);
+  /* v21.0: and every in-play FILM's cues (kit.film), read off its own
+     source the way a scene's are — a film plays minutes into play, but a
+     cue whose sample has not decoded is silent by design */
+  if (CH.films) for (const f of Object.values(CH.films)) warmCues(cuesOf(f));
 }
 
 /* WHAT A SCENE ASKS FOR, READ OFF THE SCENE.

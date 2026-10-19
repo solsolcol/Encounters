@@ -428,8 +428,17 @@ if (VOICE && Array.isArray(VOICE.LINES)) {
       ...samplesOf((ch.scenes || []).flatMap(cuesOfSrc)),
       ...(ch.choices || []).map(c => (ch.sayPrefix || 'v') + c.k)]);
     const introWarm = new Set([...INTRO_BED, ...samplesOf(cuesOfSrc(ch.intro))]);   // a film WAITS for these (whenDecoded); a warmSounds name it does not wait for
+    /* v21.0: an IN-PLAY film (kit.film) is warmed when play begins
+       (warmPlaySet reads every film's own cues), and by whatever the chapter
+       warms itself — never by the decision's list */
+    const films = (ch.films && typeof ch.films === 'object') ? Object.entries(ch.films) : [];
+    const filmWarm = new Set([...ownWarm, ...samplesOf(films.flatMap(([, f]) => cuesOfSrc(f)))]);
     const list = [];
     if (typeof ch.intro === 'function') list.push(['intro', ch.intro]);
+    for (const [fk, fn] of films) {
+      if (typeof fn === 'function') list.push([`film ${fk}`, fn]);
+      else bad(key, `films.${fk} is not a function`);
+    }
     (ch.scenes || []).forEach((fn, i) => { if (typeof fn === 'function') list.push([`scene ${'ABCD'[i] || i}`, fn]); });
     for (const [label, fn] of list) {
       const tracks = [], cues = [];
@@ -453,13 +462,13 @@ if (VOICE && Array.isArray(VOICE.LINES)) {
       try { fn(anyProxy(), anyProxy(), api); }
       catch (e) { bad(key, `${label} could not be walked for its cue times — ${e.message}`); continue; }
       scanned++;
-      const warm = label === 'intro' ? introWarm : sceneWarm;
+      const warm = label === 'intro' ? introWarm : label.startsWith('film ') ? filmWarm : sceneWarm;
       for (const n of samplesOf(cues.map(q => q.kind))) {
         warmChecked++;
         if (!warm.has(n)) bad(key, `${label} fires '${n}' but nothing warms it before it plays — ` +
-                                   `the engine reads cues from the ${label === 'intro' ? 'film' : 'scene'}'s own source, ` +
+                                   `the engine reads cues from the ${label === 'intro' || label.startsWith('film ') ? 'film' : 'scene'}'s own source, ` +
                                    `so a cue fired from a helper is silent until something else has decoded it ` +
-                                   `(write the sfx literally in the ${label === 'intro' ? 'film' : 'scene'}, or ctx.warmSounds it in build())`);
+                                   `(write the sfx literally in the ${label === 'intro' || label.startsWith('film ') ? 'film' : 'scene'}, or ctx.warmSounds it in build())`);
       }
       const dur = Math.max(1, ...tracks);
       for (const q of cues) {

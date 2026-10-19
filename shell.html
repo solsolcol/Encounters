@@ -506,12 +506,39 @@ body.finePtr .wpnBtn{position:relative;margin-bottom:12px}
    rapid — a fingertip hammering, the bar held up while it does, draining red
            the moment it stops, and back up when it starts again (the hands)
    look  — a reticle drifting off a target and brought back onto it (hold,
-           stabilise, focus) */
+           stabilise)
+   spot  — v21.0: a light showing itself at one place after another, a ring
+           closing on it, and a fingertip landing on each (focus: notice it) */
 #evDemo>*{display:none}
 #evDemo.drag .dslot,#evDemo.drag .dtile,#evDemo.drag .dhand{display:block}
 #evDemo.beat .dtgt,#evDemo.beat .dring,#evDemo.beat .dhit{display:block}
 #evDemo.rapid .dbar,#evDemo.rapid .dhold,#evDemo.rapid .dfinger{display:block}
 #evDemo.look .dtgt,#evDemo.look .dret{display:block}
+#evDemo.spot .dspot,#evDemo.spot .dsring,#evDemo.spot .dstap{display:block}
+#evDemo .dspot{position:absolute;left:0;top:0;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,226,170,.98),rgba(255,179,103,.25) 60%,transparent 72%);
+  box-shadow:0 0 14px rgba(255,200,120,.7);animation:dspot 3.6s linear infinite}
+#evDemo .dsring{position:absolute;left:0;top:0;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;
+  border:2px solid rgba(99,214,200,.9);box-shadow:0 0 8px rgba(99,214,200,.35);animation:dsring 3.6s linear infinite}
+#evDemo .dstap{position:absolute;left:0;top:0;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;
+  background:rgba(255,255,255,.92);box-shadow:0 0 0 4px rgba(255,255,255,.22),0 0 12px rgba(255,255,255,.5);
+  animation:dstap 3.6s ease-in-out infinite}
+@keyframes dspot{0%{transform:translate(40px,34px) scale(.4);opacity:0}5%{transform:translate(40px,34px) scale(1);opacity:1}
+  27%{transform:translate(40px,34px) scale(1);opacity:1}31%{transform:translate(40px,34px) scale(1.7);opacity:0}
+  33.3%{transform:translate(118px,20px) scale(.4);opacity:0}38%{transform:translate(118px,20px) scale(1);opacity:1}
+  60%{transform:translate(118px,20px) scale(1);opacity:1}64%{transform:translate(118px,20px) scale(1.7);opacity:0}
+  66.6%{transform:translate(182px,42px) scale(.4);opacity:0}71%{transform:translate(182px,42px) scale(1);opacity:1}
+  93%{transform:translate(182px,42px) scale(1);opacity:1}97%,100%{transform:translate(182px,42px) scale(1.7);opacity:0}}
+@keyframes dsring{0%{transform:translate(40px,34px) scale(2.5);opacity:0}5%{transform:translate(40px,34px) scale(2.3);opacity:.9}
+  27%{transform:translate(40px,34px) scale(1.12);opacity:.9}29%,33.2%{transform:translate(40px,34px) scale(1.12);opacity:0}
+  33.3%{transform:translate(118px,20px) scale(2.5);opacity:0}38%{transform:translate(118px,20px) scale(2.3);opacity:.9}
+  60%{transform:translate(118px,20px) scale(1.12);opacity:.9}62%,66.5%{transform:translate(118px,20px) scale(1.12);opacity:0}
+  66.6%{transform:translate(182px,42px) scale(2.5);opacity:0}71%{transform:translate(182px,42px) scale(2.3);opacity:.9}
+  93%{transform:translate(182px,42px) scale(1.12);opacity:.9}95%,100%{transform:translate(182px,42px) scale(1.12);opacity:0}}
+@keyframes dstap{0%{transform:translate(26px,62px);opacity:0}14%{transform:translate(30px,54px);opacity:.9}
+  25%{transform:translate(40px,34px) scale(.7);opacity:1}30%,33%{transform:translate(40px,34px) scale(1);opacity:0}
+  47%{transform:translate(110px,46px);opacity:.9}58%{transform:translate(118px,20px) scale(.7);opacity:1}63%,66%{transform:translate(118px,20px) scale(1);opacity:0}
+  80%{transform:translate(172px,62px);opacity:.9}91%{transform:translate(182px,42px) scale(.7);opacity:1}96%,100%{transform:translate(182px,42px) scale(1);opacity:0}}
 #evDemo .dtgt{position:absolute;left:50%;top:50%;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;
   border:2px solid rgba(99,214,200,.85);background:rgba(99,214,200,.14);box-shadow:0 0 12px rgba(99,214,200,.3)}
 #evDemo .dring{position:absolute;left:50%;top:50%;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;
@@ -677,6 +704,18 @@ body.finePtr .wpnBtn{position:relative;margin-bottom:12px}
   transform:translate(-50%,-50%);border:2px solid var(--sodium);
   background:radial-gradient(circle,rgba(255,220,160,.9),rgba(255,179,103,.15) 60%,transparent 70%);
   box-shadow:0 0 26px rgba(255,200,120,.8);pointer-events:none;animation:breathe .6s ease-in-out infinite}
+/* v21.0: a GRADED focus (opt-in) — the light names the thing it sits on, and a
+   jade ring closes on it over the thing's own life (--k, 1 → 0, written by the
+   frame from the very clock the press is graded on: what is drawn is what is
+   scored). Ungraded, both children stay hidden and the dot is as it was. */
+#evDot .dring2,#evDot .dlab{display:none}
+#evDot.graded .dring2{display:block;position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;
+  border-radius:50%;border:2px solid rgba(99,214,200,.92);box-shadow:0 0 10px rgba(99,214,200,.45);
+  transform:scale(calc(1 + 1.6 * var(--k, 1)));opacity:calc(.35 + .65 * var(--k, 1))}
+#evDot.graded .dlab{display:block;position:absolute;left:50%;top:calc(100% + 10px);transform:translateX(-50%);
+  white-space:nowrap;font:600 .82rem/1.1 var(--ui, system-ui);letter-spacing:.04em;color:#fff2dc;
+  padding:3px 8px;border-radius:6px;background:rgba(7,8,11,.62);text-shadow:0 1px 2px rgba(0,0,0,.8)}
+#evDot.graded .dlab:empty{display:none}
 /* the interact badge is tappable: hotspots have no mesh under the finger */
 .ibadge{pointer-events:auto;cursor:pointer}
 .invBtn svg path:first-child,.menuBtn svg path:first-child{fill:none}
@@ -2479,7 +2518,7 @@ body:not(.finePtr) .choNum{display:none}
     <span class="stencil" id="evLabel"></span>
     <!-- v10.3: the briefing's looping illustration - a tile dragged from the
          left column onto its slot on the right (shown for demo: 'drag') -->
-    <div id="evDemo" class="hide" aria-hidden="true"><i class="dslot"></i><i class="dslot dst"></i><b class="dtile"></b><span class="dhand"></span><i class="dbar"></i><i class="dfill"></i><i class="dband"></i><span class="dtap"></span><i class="dtgt"></i><i class="dring"></i><i class="dring r2"></i><span class="dhit"></span><i class="dhold"></i><span class="dfinger"></span><span class="dret"></span></div>
+    <div id="evDemo" class="hide" aria-hidden="true"><i class="dslot"></i><i class="dslot dst"></i><b class="dtile"></b><span class="dhand"></span><i class="dbar"></i><i class="dfill"></i><i class="dband"></i><span class="dtap"></span><i class="dtgt"></i><i class="dring"></i><i class="dring r2"></i><span class="dhit"></span><i class="dhold"></i><span class="dfinger"></span><span class="dret"></span><i class="dspot"></i><i class="dsring"></i><span class="dstap"></span></div>
     <!-- v9.7: THREE rings in flight, not one. A single ring had to both
          approach the next beat and show that you were late for the last one,
          and it could do neither: it froze on the target for the whole late
@@ -2496,7 +2535,7 @@ body:not(.finePtr) .choNum{display:none}
     <button id="evBtn" type="button"></button>
     <span id="evNote" class="stencil"></span>
   </div>
-  <div id="evDot" class="hide"></div>
+  <div id="evDot" class="hide"><i class="dring2"></i><b class="dlab"></b></div>
   <div id="evDrag" class="hide"></div>
 </div>
 
