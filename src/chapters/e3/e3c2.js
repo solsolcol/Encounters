@@ -72,7 +72,7 @@
         say: 'I kept still, and went looking for someone who knew.',
         teach: 'Seek to understand it properly, from people who know far more than you.' }
     ],
-    core: 'If something like this ever happens to you, the important thing is what you do next. Do not imitate these states, do not provoke them, and do not chase them out of curiosity. And if something is affecting your health or your mind, see a doctor as well.',
+    core: 'If something like this ever happens to you, the important thing is what you do next. Do not imitate these states, do not provoke them, and do not chase them out of curiosity.',
 
     /* units metres, y up; -z is toward the Buddha. THE HALL: its inner faces
        x -6.5…6.5, z -22 (the Buddha's wall) … 2 (the door wall); the doors in
@@ -141,7 +141,7 @@
       hotBook: 'Take a chant book',
       hotPlace: 'Kneel on your mat',
       evHands: 'Keep your hands still',
-      evHandsBrief: 'Your hands are starting to rise on their own. The bar drains fast, and every tap fills it a little: TAP six or seven times a second to keep it up. Let it empty and they are no longer yours.',
+      evHandsBrief: 'Your hands are starting to move on their own again. Tap the screen or click the button rapidly, in order to keep your hands under your control.',
       presence: 'The people around you have noticed.',
       presenceWarn: 'Sanity drops while they stare.',
       /* v18.5: the notes on the card are the chapter's words, so the sheet carries them */
@@ -4073,7 +4073,7 @@
       const rise = Math.min(1, H0.k + (1 - H0.k) * smooth(Math.min(1, t / 1.2)));
       api.handsPose(rise * (1 - smooth(fall)), tFlow);
       const amp = 1 - fall;             // v18.4: to ZERO at 18 — the track re-applies at k 1 to the end, so 0.3 left the lens swaying through the close
-      camera.rotation.z = amp * (0.12 * Math.sin(t * 0.9) + 0.03 * Math.sin(t * 2.3)) + rollOut(H0, t);
+      camera.rotation.z = amp * (0.096 * Math.sin(t * 0.9) + 0.024 * Math.sin(t * 2.3)) + rollOut(H0, t);   // v20.1: 80 % of the old roll, with play's sway
       // the shadow rises with them and keeps a faint crown after (v19.2: from play's level, not a pop to the crowned figure)
       const opUp = op0 + (0.78 - op0) * smooth(Math.min(1, t / 0.6));
       stage.drawShadow(rise * (1 - fall * 0.8), t, opUp + (0.22 - opUp) * smooth(fall));

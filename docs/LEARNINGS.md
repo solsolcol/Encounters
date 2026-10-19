@@ -5485,3 +5485,40 @@ cut (sharing its vertices and maps) when it is small.
   and solve the arms again with the wrists as far apart as the palms are
   thick. Measured in the hall: each hand's flat 0.99–1.00 along the line
   between them; photographed: fingertips meeting, the palms cupped.
+- **The viewmodel arm is a WHOLE arm, and a hand turned in the air swings it
+  (v20.1).** `arms.glb` carries the forearm AND the upper arm (bones
+  `upper_armR` and `trapezius`, 384 vertices led by the upper arm), cut off at
+  the shoulder. Every pose the engine gives `armR` turns the hand about the
+  wrist, so the rest of the arm swings with it: e3c2's gesture tilted each
+  hand outward (rz −0.30), which swung each forearm inward and ACROSS the
+  other, and at the full rise the right arm's shoulder stood on the LEFT of the
+  screen (measured: ndc −0.62, −0.80 on a desktop) with the cut end showing at
+  the bottom — Chad's "the entire arms become disembodied in mid air". The
+  measure that settles it is not the hand: it is the UPPER ARM's skinned
+  vertices (each vertex's heaviest bone), and the 30 % of them farthest from
+  the elbow (the cut), projected through `vmCam` at every flow time and rise
+  on every screen shape. A pose is clean when none land on screen. The fix
+  was mostly the tilt: level (rz ≈ 0), the forearms run down and out of frame.
+- **The arms mesh holds a COLLAPSED left arm, and its bones come first (v20.1).**
+  Both arms ride in one skinned mesh; the left is collapsed to a point, and in
+  a traversal `handL` comes BEFORE `handR`. A probe that looked the hand up by
+  `/^hand[RL]?$/` got the collapsed left hand, so every "distance from the
+  hand" and every hand position it reported was measured from a fixed point in
+  front of the camera — and a search tuned against it converged on numbers
+  that meant nothing. Look viewmodel bones up by their EXACT names
+  (`handR`, `forearmR`, `upper_armR`); a measurement that does not move when
+  the pose moves (a "crossing" count stuck at 56 for every candidate) is
+  measuring the wrong thing.
+- **A resize on a slow box takes effect a frame later, and a frame is over a
+  second (v20.1).** `setViewportSize` and then 400 ms: every one of four screen
+  shapes measured identically, because the resize event (and so
+  `layoutHands`) had not run yet — four measurements of the desktop, reported
+  as phone, phone, laptop and wide screen. Wait for the state the resize
+  produces (`vmCam.aspect === w / h`), never for a time (the v8.7 law again).
+- **A closing theme has to be audible on a phone too (v20.1).** Asked for
+  "dark, solemn" with low cello, bell and choir drones, eleven_music_v2 gave
+  four takes with 14–36 % of their energy in 250 Hz–4 kHz, the band a phone
+  speaker plays, against 64 % for chapter 1's `e3close`. Asking for the
+  MIDDLE register ("a solo viola and a high string section ... no low drones,
+  no bass rumble") kept it dark and put 68 % there. Measure the phone band
+  share of any music before it ships; a dark prompt drifts low on its own.

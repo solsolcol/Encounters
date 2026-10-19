@@ -1830,15 +1830,39 @@ function setHandWong(root, k) {
    narrow screen they now rise a little further from the lens (to 0.55 m on
    a phone) with their centres at about half the frame's half-width, so the
    two stand apart, whole, either side. 1 and 1 on a desktop. */
-let GEST_XS = 1, GEST_ZS = 1;
+/* v20.1: THE ARMS STAY ON THE BODY (Chad: "the hands and arms move so much
+   that the player can see the entire rigged arm that does not connect to a
+   body, the entire arms become disembodied in mid air ... lowering the arms,
+   hands, and keeping them further apart, while slightly reducing the amount
+   of total motion"). The arm rig carries its UPPER arm, and the gesture's
+   outward tilt (rz −0.30) swung each forearm inward and across the other, so
+   at the full rise the shoulder joint stood on screen (measured: ndc −0.62,
+   −0.80 on a desktop) and the cut end of the upper arm showed at the bottom
+   — 2–4 % of the time on every screen shape, the upper arm 3–8 %. These are
+   the numbers a search found over 800 moments of the gesture on four screen
+   shapes (390×844, 360×800, 1280×800, 1920×1080), each counting the upper
+   arm's skinned vertices that land on screen: none do, at any rise or flow
+   time. The tilt turns the other way (rz −0.30 → +0.33), so the forearms run
+   down and a little OUT, toward shoulders that would be there; the hands sit
+   lower (y −0.12 → −0.155, and the rise adds 1 cm, not 7), wider (0.15 →
+   0.186 m on a desktop, 0.53 → 0.55 of a phone's half-width), and every
+   swing is 65 % of what it was. A narrow screen drops them 2 cm more (`yN`),
+   where the margin under the bottom edge was thinnest. */
+let GEST_XS = 1, GEST_ZS = 1, gestW43 = 0.3;
+const GEST = { x: 0.186, xA: 0.0293, y: -0.155, yN: 0.02, yK: 0.01, yA: 0.0325, z: -0.43, zA: 0.0228,
+               rx: -0.469, rxA: 0.156, ryA: 0.182, rz: 0.33, rzA: 0.143, xFrac: 0.55, zW: 0.12 };
+function gestLayout() {
+  GEST_ZS = Math.min(1.3, Math.max(1, GEST.zW / gestW43));                                  // v19.2: see gestureAt
+  GEST_XS = Math.min(1, gestW43 * GEST_ZS * GEST.xFrac / GEST.x);
+}
 function gestureAt(t, k, outP, outQ) {
-  const amp = 0.35 + 0.65 * k;
-  outP.set((0.15 + 0.045 * amp * Math.sin(t * 0.83)) * GEST_XS,
-           -0.12 + 0.07 * k + 0.05 * amp * Math.sin(t * 1.21 + 0.6),
-           (-0.43 + 0.035 * amp * Math.sin(t * 0.61 + 1.3)) * GEST_ZS);
-  _hge.set(-0.42 + 0.24 * Math.sin(t * 1.07),          // the wrist bent back, breathing
-           0.28 * amp * Math.sin(t * 0.77 + 0.4),        // the palm turning out and in
-           (-0.30 + 0.22 * amp * Math.sin(t * 0.58 + 2.1)) * (0.5 + 0.5 * GEST_XS), // the hand tilting outward (less on a narrow screen, v19.2)
+  const G = GEST, amp = 0.35 + 0.65 * k;
+  outP.set((G.x + G.xA * amp * Math.sin(t * 0.83)) * GEST_XS,
+           G.y - G.yN * Math.min(1, (GEST_ZS - 1) / 0.3) + G.yK * k + G.yA * amp * Math.sin(t * 1.21 + 0.6),
+           (G.z + G.zA * amp * Math.sin(t * 0.61 + 1.3)) * GEST_ZS);
+  _hge.set(G.rx + G.rxA * Math.sin(t * 1.07),          // the wrist bent back, breathing
+           G.ryA * amp * Math.sin(t * 0.77 + 0.4),        // the palm turning out and in
+           (G.rz + G.rzA * amp * Math.sin(t * 0.58 + 2.1)) * (0.5 + 0.5 * GEST_XS), // the hand tilting outward (less on a narrow screen, v19.2)
            'XYZ');
   outQ.setFromEuler(_hge).premultiply(GEST_R);
 }
@@ -1922,7 +1946,7 @@ function handsFrame() {
   // the upper body sways and turns with them (applied to the lens, so the
   // look the player is fighting with still belongs to the player)
   const e = hands.k * hands.k * (3 - 2 * hands.k);
-  camera.rotation.z = e * (0.055 * Math.sin(hands.t * 0.52) + 0.018 * Math.sin(hands.t * 1.31));
+  camera.rotation.z = e * (0.044 * Math.sin(hands.t * 0.52) + 0.014 * Math.sin(hands.t * 1.31));   // v20.1: the sway 80 % of what it was, with the hands' swings (Chad: "slightly reducing the amount of total motion")
   hands.was = hands.k;
 }
 let kitRooted = false, kitHurt = null;       // v11.1: the player held in place; the red damage frame + a bleed until the player acts
@@ -5236,9 +5260,8 @@ function layoutHands() {
     if (weaponProp) weaponProp.position.copy(weaponBase);
   }
   armBase.copy(armR.position);
-  { const w43 = Math.tan(THREE.MathUtils.degToRad(vmCam.fov / 2)) * vmCam.aspect * 0.43;   // the frame's half-width at the gesture's 0.43 m
-    GEST_ZS = Math.min(1.3, Math.max(1, 0.12 / w43));                                        // v19.2: see gestureAt
-    GEST_XS = Math.min(1, w43 * GEST_ZS * 0.53 / 0.15); }
+  gestW43 = Math.tan(THREE.MathUtils.degToRad(vmCam.fov / 2)) * vmCam.aspect * 0.43;      // the frame's half-width at the gesture's 0.43 m
+  gestLayout();
 }
 /* v11.3: the rest positions the swap tween works from (layoutHands writes
    them; torchPropSync offsets them every frame) */
@@ -12493,6 +12516,8 @@ window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () =
                  /* v19.3: probes rebuild the left hand on demand — to prove it is made shown whatever the right hand's root is at that moment */
                  prayArmRebuild: () => { if (prayerArmL) { handsRoot.remove(prayerArmL); prayerArmL.traverse(o => { if (o.isMesh) o.material.dispose(); }); prayerArmL = null; } return !!buildPrayerArm(); },
                  camRoll: () => camera.rotation.z,         // v18.0: the body's sway under kit.hands
+                 handsAt: (k, t, o) => handsPut(k, t, o),  // v20.1: probes pose the gesture at any flow time (where the arm's cut end goes)
+                 gest: GEST, gestLayout,                   // v20.1: …and try its numbers
                  vmCam, handsRoot, rightHand: () => rightHandModel, prayArm: () => prayerArmL,   // v16.5: probes measure the clasp on screen
                  weaponFire, weaponReload, weaponLog, weaponProp: () => weaponProp, weaponMixer: () => weaponMixer,      // v12.0, probes
                  evPress: (x, y) => evPress(x ?? innerWidth / 2, y ?? innerHeight / 2), evRelease,

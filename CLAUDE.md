@@ -5235,6 +5235,32 @@ What the baseline contains, by release:
   next, the rows from the aisle and beside him). Harnesses chapter, leak,
   walk, cine, hosted green. Deploy `6ad5df48a136917addf7078a`, byte-verified
   (212 files).
+- **v20.1** THE ARMS ON THE BODY, AND A DARKER CLOSE — Chad's four notes on
+  episode 3 chapter 2. THE ARMS: *"the hands and arms move so much that the
+  player can see the entire rigged arm that does not connect to a body ...
+  lowered slightly more, and separated further apart ... slightly reducing the
+  amount of total motion ... this entire chapter should not have this problem
+  at all."* The viewmodel rig carries its UPPER arm, and the gesture's outward
+  tilt swung each forearm inward and across the other, so at a full rise the
+  shoulder stood on screen and the cut end showed at the bottom. Measured by
+  the upper arm's own skinned vertices through `vmCam` (LEARNINGS: the arms
+  mesh's collapsed left arm answers a loose `/hand/` lookup first, and the
+  first search tuned against it); the gesture's numbers (`GEST`, one object
+  now, `gestureAt` reads it) were found by a search and then checked at 800
+  moments of the gesture on eight screen shapes: none of the upper arm on
+  screen, ever, and the hands never cross. The tilt turns the other way so
+  the forearms run down and a little out, the hands sit lower and wider, every
+  swing is 65 % of what it was (a narrow screen drops them 2 cm more, `yN`),
+  and the body's sway — play's and ending C's — is 80 %.
+  Only e3c2 calls the gesture, so nothing else moves. THE MUSIC: `e3close2`,
+  under "I never expected to be kneeling" in every ending, was a bright
+  plucked melody; it is a viola, high strings and a hushed choir now, chosen
+  over seven others for the band a phone plays (AUDIO-PLAN v20.1; the first
+  four, dark and low, would have been near silent on his phone). THE WORDS:
+  the lesson loses "And if something is affecting your health or your mind,
+  see a doctor as well.", and the fight's brief is Chad's sentence exactly.
+  Sheet v95 exported (v44 stays the link). `__enc.handsAt`, `gest` and
+  `gestLayout` are probes' handles.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -5805,7 +5831,7 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v94** (`masters/v19.9/masterz-text-v94.xlsx`, v93 plus v19.9's one voice line, mk1iti. v93 was `masters/v19.4/masterz-text-v93.xlsx`, v92 with v19.4's play changes — its new lines in, the gold leaf's out. v92 was `masters/v19.1/masterz-text-v92.xlsx`, v91 plus v19.1's one voice line, z1thank. v91 was `masters/v19.0/masterz-text-v91.xlsx`, v90 plus v19.0's four credit rows — the office, the cameras, the laptop, the cabin — and two voice-line descriptions that no longer say warehouse. v90 was `masters/v18.9/masterz-text-v90.xlsx`, v89 less the three Khon Mask credit rows and with the stall auntie's re-voiced `au1sell`. v89 was `masters/v18.8/masterz-text-v89.xlsx`, v88 with three of e3c1's words — the brief, the stall's objective and prompt — saying Sangkathan set. v88 was `masters/v18.7/masterz-text-v88.xlsx`, v87 plus v18.7's one voice line, z1trance. v87 was `masters/v18.6/masterz-text-v87.xlsx`, v86 with Brian's measured lengths in 42 voice-line cells, no word moved. v86 was `masters/v18.5/masterz-text-v86.xlsx`, v85 with v18.5's words: e3c2's objective, presence and Step-back lines and its four conduct notes, Step back in five more chapters, `event.resistWhereKey`, three voice-line descriptions. v85 was `masters/v18.4/masterz-text-v85.xlsx`, v84 with v18.4's `event.resistWhere` and e3c2's decision prompt made true for both peaks. v84 was `masters/v18.1/masterz-text-v84.xlsx`, v83 with v18.1's three rapid-tap words and the fight's new brief. v83 was `masters/v18.0/masterz-text-v83.xlsx`, v82 plus episode 3 chapter 2's words and its 24 voice lines. v82 was `masters/v17.7/masterz-text-v82.xlsx`, v81 with v17.7's three Sak Yant names and words from Chad's reference pages. v81 was `masters/v17.6/masterz-text-v81.xlsx`, v80 plus v17.6's Sak Yant choice: three items' names, powers and words, the window's words, the chapter's four, and two Ajarn voice lines. v80 was `masters/v17.0/masterz-text-v80.xlsx`, v79 plus v17.0's three credit strings for the Khon masks. v79 was `masters/v16.9/masterz-text-v79.xlsx`, v78 plus v16.9's six credit strings — the temple and the slippers. v78 was `masters/v16.6/masterz-text-v78.xlsx`, v77 plus v16.6's four credit rows for the Tailandia packs. v77 was `masters/v16.1/masterz-text-v77.xlsx`, v76 with the monk's three voice lines re-said by Arthur at v16.2. v76 was `masters/v16.1/masterz-text-v76.xlsx`, five tabs: UI
+**THE SHEET IS v95** (`masters/v20.1/masterz-text-v95.xlsx`, v94 with v20.1's two e3c2 cells: the core lesson without its last sentence, and the fight's brief in Chad's words. v94 was `masters/v19.9/masterz-text-v94.xlsx`, v93 plus v19.9's one voice line, mk1iti. v93 was `masters/v19.4/masterz-text-v93.xlsx`, v92 with v19.4's play changes — its new lines in, the gold leaf's out. v92 was `masters/v19.1/masterz-text-v92.xlsx`, v91 plus v19.1's one voice line, z1thank. v91 was `masters/v19.0/masterz-text-v91.xlsx`, v90 plus v19.0's four credit rows — the office, the cameras, the laptop, the cabin — and two voice-line descriptions that no longer say warehouse. v90 was `masters/v18.9/masterz-text-v90.xlsx`, v89 less the three Khon Mask credit rows and with the stall auntie's re-voiced `au1sell`. v89 was `masters/v18.8/masterz-text-v89.xlsx`, v88 with three of e3c1's words — the brief, the stall's objective and prompt — saying Sangkathan set. v88 was `masters/v18.7/masterz-text-v88.xlsx`, v87 plus v18.7's one voice line, z1trance. v87 was `masters/v18.6/masterz-text-v87.xlsx`, v86 with Brian's measured lengths in 42 voice-line cells, no word moved. v86 was `masters/v18.5/masterz-text-v86.xlsx`, v85 with v18.5's words: e3c2's objective, presence and Step-back lines and its four conduct notes, Step back in five more chapters, `event.resistWhereKey`, three voice-line descriptions. v85 was `masters/v18.4/masterz-text-v85.xlsx`, v84 with v18.4's `event.resistWhere` and e3c2's decision prompt made true for both peaks. v84 was `masters/v18.1/masterz-text-v84.xlsx`, v83 with v18.1's three rapid-tap words and the fight's new brief. v83 was `masters/v18.0/masterz-text-v83.xlsx`, v82 plus episode 3 chapter 2's words and its 24 voice lines. v82 was `masters/v17.7/masterz-text-v82.xlsx`, v81 with v17.7's three Sak Yant names and words from Chad's reference pages. v81 was `masters/v17.6/masterz-text-v81.xlsx`, v80 plus v17.6's Sak Yant choice: three items' names, powers and words, the window's words, the chapter's four, and two Ajarn voice lines. v80 was `masters/v17.0/masterz-text-v80.xlsx`, v79 plus v17.0's three credit strings for the Khon masks. v79 was `masters/v16.9/masterz-text-v79.xlsx`, v78 plus v16.9's six credit strings — the temple and the slippers. v78 was `masters/v16.6/masterz-text-v78.xlsx`, v77 plus v16.6's four credit rows for the Tailandia packs. v77 was `masters/v16.1/masterz-text-v77.xlsx`, v76 with the monk's three voice lines re-said by Arthur at v16.2. v76 was `masters/v16.1/masterz-text-v76.xlsx`, five tabs: UI
 TEXT 292, EPISODE 1 114, EPISODE 2 193, EPISODE 3 41, VOICE LINES 337 — v76
 adds v16.1's four words, two changed cells and seven voice lines to v75).
 Was v75 (`masters/v16.0/masterz-text-v75.xlsx`, which added episode 3
