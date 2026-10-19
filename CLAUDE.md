@@ -5369,7 +5369,8 @@ What the baseline contains, by release:
   of the scene — he turns a little less far now (its edge 23° off the middle,
   outside a phone's 18.6°), and the bus, which a phone sees for about a second
   and a half, was photographed crossing the kopitiam's light. Final deploy
-  `6ad6abf5f590bbe95232c53b`, byte-verified (222 files).
+  `6ad6abf5f590bbe95232c53b`, byte-verified (222 files). Milestone backup
+  bundle made (723 MB, 35 parts of 20 MB, reassembled byte-identical).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
