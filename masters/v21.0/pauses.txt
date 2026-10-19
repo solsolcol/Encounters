@@ -1,0 +1,128 @@
+as3A_a         n= 5 firstSeg= 0.42 gaps=[0.22, 0.52, 0.12, 0.22] speech=2.46
+as3A_b         n= 5 firstSeg= 1.40 gaps=[0.26, 0.12, 0.14, 0.12] speech=3.12
+as3B_a         n= 4 firstSeg= 0.34 gaps=[0.4, 0.5, 0.14] speech=2.04
+as3B_b         n= 4 firstSeg= 0.58 gaps=[0.5, 0.34, 0.14] speech=2.74
+as3back_a      n= 5 firstSeg= 0.40 gaps=[0.46, 0.46, 0.12, 0.48] speech=1.92
+as3back_b      n= 3 firstSeg= 0.24 gaps=[0.24, 0.24] speech=1.88
+as3next_a      n= 3 firstSeg= 0.38 gaps=[0.36, 0.26] speech=1.08
+as3next_b      n= 3 firstSeg= 0.44 gaps=[0.3, 0.2] speech=1.16
+as3sit_a       n= 5 firstSeg= 0.34 gaps=[0.2, 0.14, 0.34, 0.12] speech=2.68
+as3sit_b       n= 4 firstSeg= 0.32 gaps=[0.3, 0.48, 0.14] speech=2.68
+cu3amitabha_a  n= 3 firstSeg= 0.90 gaps=[0.36, 0.34] speech=2.64
+cu3amitabha_b  n= 1 firstSeg= 2.86 gaps=[] speech=2.86
+cu3unclean_a   n= 4 firstSeg= 0.78 gaps=[0.48, 0.62, 0.12] speech=3.88
+cu3unclean_b   n= 3 firstSeg= 0.64 gaps=[0.3, 0.5] speech=3.22
+dv3father_a    n= 3 firstSeg= 0.62 gaps=[0.16, 0.24] speech=3.56
+dv3father_b    n= 4 firstSeg= 0.70 gaps=[0.18, 0.18, 0.34] speech=3.56
+dv3wife_a      n= 1 firstSeg= 3.50 gaps=[] speech=3.5
+dv3wife_b      n= 1 firstSeg= 3.10 gaps=[] speech=3.1
+md3A1_a        n= 2 firstSeg= 0.28 gaps=[1.06] speech=0.92
+md3A1_b        n= 2 firstSeg= 0.30 gaps=[0.4] speech=1.02
+md3A2_a        n= 1 firstSeg= 0.24 gaps=[] speech=0.24
+md3A2_b        n= 1 firstSeg= 0.26 gaps=[] speech=0.26
+md3B1_a        n= 1 firstSeg= 0.96 gaps=[] speech=0.96
+md3B1_b        n= 1 firstSeg= 0.84 gaps=[] speech=0.84
+md3C_a         n= 3 firstSeg= 0.36 gaps=[0.42, 0.5] speech=1.36
+md3C_b         n= 3 firstSeg= 0.28 gaps=[0.36, 0.4] speech=1.08
+md3D_a         n= 1 firstSeg= 1.08 gaps=[] speech=1.08
+md3D_b         n= 1 firstSeg= 1.06 gaps=[] speech=1.06
+md3chant_a     n= 2 firstSeg= 1.22 gaps=[0.3] speech=3.12
+md3chant_b     n= 4 firstSeg= 0.70 gaps=[0.14, 0.32, 0.16] speech=3.2
+md3done_a      n= 2 firstSeg= 0.34 gaps=[0.24] speech=1.08
+md3done_b      n= 2 firstSeg= 0.38 gaps=[0.22] speech=1.16
+md3drink_a     n= 4 firstSeg= 0.48 gaps=[0.38, 0.4, 0.22] speech=2.08
+md3drink_b     n= 4 firstSeg= 0.58 gaps=[1.4, 1.02, 0.26] speech=2.78
+md3ghost_a     n= 2 firstSeg= 0.68 gaps=[0.14] speech=1.46
+md3ghost_b     n= 1 firstSeg= 1.44 gaps=[] speech=1.44
+md3read1_a     n= 4 firstSeg= 0.72 gaps=[0.56, 0.14, 1.2] speech=4.44
+md3read1_b     n= 6 firstSeg= 0.80 gaps=[0.84, 0.24, 0.12, 0.82, 0.12] speech=4.86
+md3read2_a     n= 2 firstSeg= 1.26 gaps=[0.78] speech=2.88
+md3read2_b     n= 3 firstSeg= 1.20 gaps=[0.62, 0.12] speech=3.16
+ow3call_a      n= 3 firstSeg= 1.00 gaps=[0.16, 0.12] speech=1.98
+ow3call_b      n= 2 firstSeg= 1.22 gaps=[0.12] speech=1.92
+ow3eh_a        n= 5 firstSeg= 0.02 gaps=[0.12, 0.36, 0.24, 0.16] speech=1.58
+ow3eh_b        n= 4 firstSeg= 0.28 gaps=[0.5, 0.32, 0.16] speech=1.72
+ow3gift1_a     n= 8 firstSeg= 1.24 gaps=[0.2, 0.16, 0.34, 0.14, 0.22, 0.16, 0.12] speech=7.02
+ow3gift1_b     n=10 firstSeg= 1.34 gaps=[0.22, 0.18, 0.56, 0.2, 0.16, 0.22, 0.12, 0.2] speech=7.26
+ow3gift2_a     n= 6 firstSeg= 0.02 gaps=[0.12, 0.54, 0.12, 0.22, 0.2] speech=2.22
+ow3gift2_b     n= 6 firstSeg= 0.54 gaps=[0.48, 0.18, 0.16, 0.26, 0.2] speech=1.88
+ow3good_a      n= 4 firstSeg= 0.68 gaps=[0.26, 0.18, 0.14] speech=2.36
+ow3good_b      n= 2 firstSeg= 0.72 gaps=[0.42] speech=2.34
+ow3hello_a     n= 7 firstSeg= 1.36 gaps=[0.22, 0.18, 0.12, 0.16, 0.12, 0.34] speech=4.6
+ow3hello_b     n= 6 firstSeg= 0.46 gaps=[0.24, 0.26, 0.42, 0.48, 0.16] speech=4.54
+ow3know_a      n= 1 firstSeg= 1.92 gaps=[] speech=1.92
+ow3know_b      n= 1 firstSeg= 1.98 gaps=[] speech=1.98
+ow3let_a       n= 1 firstSeg= 2.70 gaps=[] speech=2.7
+ow3let_b       n= 1 firstSeg= 2.34 gaps=[] speech=2.34
+ow3medium_a    n= 5 firstSeg= 0.58 gaps=[0.16, 0.4, 0.22, 0.28] speech=4.32
+ow3medium_b    n= 9 firstSeg= 0.44 gaps=[0.14, 0.18, 0.52, 0.18, 0.44, 0.36, 0.26, 0.12] speech=3.7
+ow3namo_a      n=13 firstSeg= 5.98 gaps=[0.48, 0.18, 0.22, 0.14, 0.16, 0.16, 0.2, 0.74] speech=15.94
+ow3namo_b      n=25 firstSeg= 1.38 gaps=[0.18, 0.28, 0.38, 0.12, 0.64, 0.12, 0.6, 0.98] speech=18.06
+sm3cannot_a    n= 2 firstSeg= 0.58 gaps=[0.48] speech=1.54
+sm3cannot_b    n= 2 firstSeg= 0.62 gaps=[0.46] speech=1.72
+sm3hold_a      n= 3 firstSeg= 0.28 gaps=[0.44, 0.42] speech=1.4
+sm3hold_b      n= 3 firstSeg= 0.36 gaps=[0.74, 0.54] speech=1.68
+st3trance_a    n= 4 firstSeg= 0.34 gaps=[0.18, 0.14, 0.22] speech=1.94
+st3trance_b    n= 4 firstSeg= 1.62 gaps=[0.14, 0.14, 0.22] speech=2.12
+st3uncle_a     n= 2 firstSeg= 0.72 gaps=[0.14] speech=2.14
+st3uncle_b     n= 2 firstSeg= 0.60 gaps=[0.24] speech=1.96
+z3A1_a         n= 3 firstSeg= 0.92 gaps=[0.66, 0.14] speech=1.54
+z3A1_b         n= 3 firstSeg= 1.00 gaps=[1.0, 0.12] speech=1.92
+z3A2_a         n= 2 firstSeg= 1.30 gaps=[2.1] speech=2.28
+z3A2_b         n= 2 firstSeg= 1.56 gaps=[1.38] speech=2.44
+z3A_a          n= 2 firstSeg= 0.74 gaps=[0.54] speech=2.0
+z3A_b          n= 2 firstSeg= 0.86 gaps=[0.44] speech=2.26
+z3B1_a         n= 2 firstSeg= 0.58 gaps=[1.16] speech=1.62
+z3B1_b         n= 2 firstSeg= 0.62 gaps=[0.54] speech=1.62
+z3B2_a         n= 4 firstSeg= 1.54 gaps=[0.12, 1.0, 0.62] speech=4.24
+z3B2_b         n= 3 firstSeg= 1.82 gaps=[0.62, 0.5] speech=3.56
+z3B_a          n= 1 firstSeg= 1.36 gaps=[] speech=1.36
+z3B_b          n= 1 firstSeg= 1.14 gaps=[] speech=1.14
+z3C2_a         n= 3 firstSeg= 0.78 gaps=[0.24, 1.14] speech=4.34
+z3C2_b         n= 3 firstSeg= 0.90 gaps=[0.36, 1.1] speech=3.98
+z3C_a          n= 3 firstSeg= 0.72 gaps=[0.58, 0.12] speech=1.8
+z3C_b          n= 2 firstSeg= 0.64 gaps=[0.52] speech=1.62
+z3D2_a         n= 4 firstSeg= 1.14 gaps=[1.5, 1.18, 1.34] speech=3.64
+z3D2_b         n= 4 firstSeg= 1.06 gaps=[1.0, 1.18, 1.06] speech=3.36
+z3D3_a         n= 2 firstSeg= 1.18 gaps=[1.3] speech=2.96
+z3D3_b         n= 2 firstSeg= 1.08 gaps=[1.58] speech=2.88
+z3D_a          n= 3 firstSeg= 0.62 gaps=[0.8, 0.2] speech=2.1
+z3D_b          n= 2 firstSeg= 0.64 gaps=[0.6] speech=2.14
+z3breath_a     n= 2 firstSeg= 0.74 gaps=[1.36] speech=1.44
+z3breath_b     n= 2 firstSeg= 0.58 gaps=[0.7] speech=0.78
+z3close_a      n= 3 firstSeg= 2.60 gaps=[0.82, 1.14] speech=4.44
+z3close_b      n= 4 firstSeg= 0.90 gaps=[0.94, 0.46, 0.56] speech=4.94
+z3knew_a       n= 4 firstSeg= 0.70 gaps=[1.58, 1.28, 1.28] speech=2.8
+z3knew_b       n= 4 firstSeg= 0.44 gaps=[0.96, 0.24, 1.46] speech=2.78
+z3look1_a      n= 5 firstSeg= 0.74 gaps=[0.68, 0.9, 1.38, 0.62] speech=3.66
+z3look1_b      n= 5 firstSeg= 0.54 gaps=[0.12, 0.26, 0.58, 1.3] speech=3.86
+z3look2_a      n= 2 firstSeg= 1.68 gaps=[0.94] speech=3.4
+z3look2_b      n= 2 firstSeg= 1.76 gaps=[0.78] speech=3.64
+z3look3_a      n= 4 firstSeg= 0.62 gaps=[0.28, 0.12, 1.0] speech=3.64
+z3look3_b      n= 3 firstSeg= 1.46 gaps=[0.22, 1.06] speech=3.54
+z3look4_a      n= 2 firstSeg= 1.10 gaps=[0.88] speech=2.64
+z3look4_b      n= 2 firstSeg= 1.00 gaps=[0.72] speech=2.44
+z3next_a       n= 2 firstSeg= 1.66 gaps=[1.26] speech=2.44
+z3next_b       n= 2 firstSeg= 1.46 gaps=[1.42] speech=2.16
+z3night_a      n= 3 firstSeg= 0.56 gaps=[1.42, 0.12] speech=0.88
+z3night_b      n= 2 firstSeg= 0.54 gaps=[1.3] speech=1.02
+z3pro1_a       n= 1 firstSeg= 1.02 gaps=[] speech=1.02
+z3pro1_b       n= 1 firstSeg= 1.30 gaps=[] speech=1.3
+z3pro2_a       n= 2 firstSeg= 3.56 gaps=[1.16] speech=4.74
+z3pro2_b       n= 2 firstSeg= 3.60 gaps=[1.36] speech=4.84
+z3pro3_a       n= 2 firstSeg= 2.12 gaps=[0.72] speech=3.22
+z3pro3_b       n= 2 firstSeg= 1.98 gaps=[0.64] speech=3.04
+z3pro4_a       n= 3 firstSeg= 3.72 gaps=[0.96, 0.18] speech=5.54
+z3pro4_b       n= 3 firstSeg= 3.96 gaps=[0.98, 0.2] speech=5.88
+z3shift1_a     n= 3 firstSeg= 0.40 gaps=[0.18, 0.98] speech=2.04
+z3shift1_b     n= 2 firstSeg= 1.00 gaps=[1.06] speech=2.12
+z3shift2_a     n= 2 firstSeg= 0.86 gaps=[1.22] speech=2.82
+z3shift2_b     n= 2 firstSeg= 0.82 gaps=[1.22] speech=2.84
+z3shrine_a     n= 3 firstSeg= 0.02 gaps=[0.12, 1.58] speech=3.0
+z3shrine_b     n= 2 firstSeg= 2.02 gaps=[2.08] speech=3.0
+z3thank_a      n= 1 firstSeg= 0.68 gaps=[] speech=0.68
+z3thank_b      n= 1 firstSeg= 0.68 gaps=[] speech=0.68
+z3thanks_a     n= 2 firstSeg= 0.96 gaps=[1.46] speech=2.68
+z3thanks_b     n= 2 firstSeg= 0.96 gaps=[1.28] speech=2.72
+z3walk_a       n= 3 firstSeg= 0.36 gaps=[0.6, 1.24] speech=3.02
+z3walk_b       n= 3 firstSeg= 0.30 gaps=[0.54, 1.06] speech=2.64

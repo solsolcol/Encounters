@@ -6641,7 +6641,12 @@ const ADULT_TAKES = new Set([
   /* v18.0 · episode 3 chapter 2 */
   'z2pro1', 'z2pro2', 'z2pro3', 'z2pro4', 'z2pro5', 'z2pro6', 'z2arrive', 'z2join', 'z2kneel',
   'z2slip1', 'z2slip2', 'z2peak', 'z2A1', 'z2B1', 'z2C1', 'z2D1', 'z2close', 'z2next',
-  'z2A', 'z2B', 'z2C', 'z2D']);
+  'z2A', 'z2B', 'z2C', 'z2D',
+  /* v21.0 · episode 3 chapter 3 */
+  'z3pro1', 'z3pro2', 'z3pro3', 'z3pro4', 'z3look1', 'z3look2', 'z3look3', 'z3look4',
+  'z3thanks', 'z3shift1', 'z3shift2', 'z3breath', 'z3knew', 'z3night', 'z3shrine', 'z3walk',
+  'z3A1', 'z3A2', 'z3B1', 'z3B2', 'z3thank', 'z3C2', 'z3D2', 'z3D3',
+  'z3close', 'z3next', 'z3A', 'z3B', 'z3C', 'z3D']);
 /* The rest of the cast. They share `voiceOut` and the duck, but not the
    boost — see voiceStage() above. */
 const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
@@ -6688,7 +6693,13 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
   'mk1come', 'mk1chant', 'mk1iti', 'mk1teach', 'hp1room', 'aj1mat',
   'aj1which', 'aj1chosen',     // v17.6: the Ajarn asks which yant, and answers the choice
   'lw2look', 'lw2pull',
-  'lw2what', 'yai2dance']);   // v19.4: their whispers in play, as his hands move      // v18.0: the laywoman beside him (Onnie) and Yai in front (Air), whispered
+  'lw2what', 'yai2dance',
+  /* v21.0 · episode 3 chapter 3: the shop's owner (Brendon), staff and an auntie; the medium (Roger), his assistant (Kopi Gao), two who came to him */
+  'ow3hello', 'ow3call', 'ow3gift1', 'ow3gift2', 'ow3good', 'ow3namo', 'ow3eh', 'sm3hold',
+  'sm3cannot', 'st3uncle', 'cu3amitabha', 'ow3let', 'ow3know', 'st3trance', 'cu3unclean', 'ow3medium',
+  'as3sit', 'dv3wife', 'md3read1', 'md3drink', 'dv3father', 'md3read2', 'md3done', 'as3next',
+  'md3ghost', 'md3chant', 'as3back', 'md3A1', 'md3A2', 'as3A', 'md3B1', 'as3B',
+  'md3C', 'md3D']);   // v19.4: their whispers in play, as his hands move      // v18.0: the laywoman beside him (Onnie) and Yai in front (Air), whispered
 const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || ADULT_TAKES.has(name) || CAST_TAKES.has(name);
 /* v6.9: his WHISPERS go round the bus. Chad wanted the three pick-up
    reactions "almost whispering to himself" and they were re-voiced as
@@ -9806,6 +9817,20 @@ const STING_SAMPLE = {
   z2A1: ['z2A1', 1], z2B1: ['z2B1', 1], z2C1: ['z2C1', 1], z2D1: ['z2D1', 1],
   z2close: ['z2close', 1], z2next: ['z2next', 1], z2A: ['z2A', 1], z2B: ['z2B', 1], z2C: ['z2C', 1], z2D: ['z2D', 1],
   lw2look: ['lw2look', 1], lw2pull: ['lw2pull', 1], lw2what: ['lw2what', 1], yai2dance: ['yai2dance', 1],
+  /* v21.0 · EPISODE 3 · CHAPTER 3 · THE DANCE ON BUDDHA DAY — his lines, the shop, the medium's shrine */
+  z3pro1: ['z3pro1', 1], z3pro2: ['z3pro2', 1], z3pro3: ['z3pro3', 1], z3pro4: ['z3pro4', 1], ow3hello: ['ow3hello', 1],
+  z3look1: ['z3look1', 1], z3look2: ['z3look2', 1], z3look3: ['z3look3', 1], z3look4: ['z3look4', 1], ow3call: ['ow3call', 1],
+  ow3gift1: ['ow3gift1', 1], ow3gift2: ['ow3gift2', 1], z3thanks: ['z3thanks', 1], ow3good: ['ow3good', 1], ow3namo: ['ow3namo', 1],
+  z3shift1: ['z3shift1', 1], z3shift2: ['z3shift2', 1], ow3eh: ['ow3eh', 1], sm3hold: ['sm3hold', 1], sm3cannot: ['sm3cannot', 1],
+  st3uncle: ['st3uncle', 1], cu3amitabha: ['cu3amitabha', 1], ow3let: ['ow3let', 1], z3breath: ['z3breath', 1], ow3know: ['ow3know', 1],
+  z3knew: ['z3knew', 1], st3trance: ['st3trance', 1], cu3unclean: ['cu3unclean', 1], ow3medium: ['ow3medium', 1], z3night: ['z3night', 1],
+  z3shrine: ['z3shrine', 1], as3sit: ['as3sit', 1], dv3wife: ['dv3wife', 1], md3read1: ['md3read1', 1], md3drink: ['md3drink', 1],
+  dv3father: ['dv3father', 1], md3read2: ['md3read2', 1], md3done: ['md3done', 1], as3next: ['as3next', 1], z3walk: ['z3walk', 1],
+  md3ghost: ['md3ghost', 1], md3chant: ['md3chant', 1], as3back: ['as3back', 1], z3A1: ['z3A1', 1], md3A1: ['md3A1', 1],
+  md3A2: ['md3A2', 1], as3A: ['as3A', 1], z3A2: ['z3A2', 1], z3B1: ['z3B1', 1], md3B1: ['md3B1', 1],
+  as3B: ['as3B', 1], z3B2: ['z3B2', 1], z3thank: ['z3thank', 1], md3C: ['md3C', 1], z3C2: ['z3C2', 1],
+  md3D: ['md3D', 1], z3D2: ['z3D2', 1], z3D3: ['z3D3', 1], z3close: ['z3close', 1], z3next: ['z3next', 1],
+  z3A: ['z3A', 1], z3B: ['z3B', 1], z3C: ['z3C', 1], z3D: ['z3D', 1],
   pageturn: ['pageturn', 1], matkneel: ['matkneel', 1], handsrise: ['handsrise', 1],
   handslip: ['handslip', 1], whispers: ['whispers', 1], chantswell: ['chantswell', 1], chantstop: ['chantstop', 1],
   templedoor: ['templedoor', 1],
