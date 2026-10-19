@@ -222,6 +222,7 @@ Object.assign(window.__TEXT__, {
   'event.resistWhere':   'Tap anywhere on the screen, fast',   // v18.4: where the taps go, once START has gone
   'event.resistWhereKey': 'Press Space or click, fast',        // v18.5: the same, on a desktop
   'event.focus':         'TAP THE LIGHT',
+  'event.focusKey':      'CLICK THE LIGHT',            // v21.0: the same, on a desktop
   'event.sequence':      'TAP EACH ONE',
   'event.match':         'DRAG EACH ITEM TO ITS PLACE',
   'event.matchOk':       'MATCHED',

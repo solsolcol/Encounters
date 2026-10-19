@@ -1723,7 +1723,7 @@ function kitPraySet(on, opts = {}) {
 let heldProp = null;
 const HOLD_PALM = new THREE.Vector3(0.012, -0.052, -0.148);
 function kitHold(obj, opts = {}) {
-  if (heldProp && heldProp.parent) heldProp.parent.remove(heldProp);
+  if (heldProp && heldProp.parent === armR) armR.remove(heldProp);   // only from his hand: a chapter may have put it somewhere since
   heldProp = obj || null;
   if (!obj) return;
   armR.add(obj);
@@ -3888,7 +3888,9 @@ function evBegin() {
   if (!host) return;
   host.className = 'layer ' + (e.layout === 'full' ? 'full ' : '') + e.kind;
   $('evLabel').textContent = o.label || '';
-  $('evPrompt').textContent = o.prompt || T(EV_LABEL[e.kind]);
+  /* v21.0: a desktop has no light to TAP — it clicks (the v18.5 resist rule,
+     for the focus kind; no episode-1 or -2 chapter opens a focus event) */
+  $('evPrompt').textContent = o.prompt || T(e.kind === 'focus' && !HAS_TOUCH ? 'event.focusKey' : EV_LABEL[e.kind]);
   $('evNote').textContent = '';
   const btn = $('evBtn');
   btn.textContent = o.button || T(EV_LABEL[e.kind]);
@@ -4069,6 +4071,11 @@ function evPress(x, y) {
     }
     case 'focus': {
       const dot = $('evDot');
+      /* v21.0 (graded only): a press before a frame has moved the light onto
+         the next thing would land on the OLD spot and score the new one a
+         PERFECT unseen — a double tap was free; and once the last is done the
+         event is over */
+      if (o.graded && (e.over || !e.placed)) break;
       if (dot && !dot.classList.contains('hide')) {
         const r = dot.getBoundingClientRect();
         const d = Math.hypot(x - (r.left + r.width / 2), y - (r.top + r.height / 2));
@@ -4123,7 +4130,7 @@ function evMove(x, y) {
   if (e.kind === 'match') { e.lastX = x; e.lastY = y; if (e.drag) { evDragTo(x, y); evMatchHover(x, y); } }
 }
 function evNextTarget() {
-  const e = ev; e.idx++; e.slotT = 0;
+  const e = ev; e.idx++; e.slotT = 0; e.placed = false;   // v21.0: the next light is not on screen until a frame puts it there
   if (e.idx >= e.n) { e.over = true; return; }
 }
 function evNextItem() {
@@ -4336,6 +4343,7 @@ function evFrame(dt, dLookX, dLookY) {
         dot.classList.toggle('hide', !vis);
         dot.classList.toggle('graded', !!o.graded);
         dot.style.transform = `translate(${sx.toFixed(0)}px, ${sy.toFixed(0)}px) translate(-50%,-50%)`;
+        if (vis) e.placed = true;
         if (o.graded) {
           /* what is drawn is what is scored (the v8.8 law): the ring closes
              on the light over the thing's own life, and the light names it */
@@ -4343,7 +4351,8 @@ function evFrame(dt, dLookX, dLookY) {
           dot.style.opacity = '1';
           dot.style.setProperty('--k', k.toFixed(3));
           const lab = dot.querySelector('.dlab');
-          if (lab && lab.textContent !== (tg.label || '')) lab.textContent = tg.label || '';
+          const tl = (tg && tg.label) || '';           // (a graded focus with no target list has no thing to name)
+          if (lab && lab.textContent !== tl) lab.textContent = tl;
         } else dot.style.opacity = (1 - e.slotT / e.o.each * 0.7).toFixed(2);
       }
       /* graded: the clock runs only while the thing is on screen, so nothing
@@ -9147,7 +9156,7 @@ function returnToTitle() {
   for (const el of [ui.hud, hint, ui.prompt, ui.interact, ui.decide]) el?.classList.add('hide');
   document.body.classList.remove('inplay');
   showHaunt(false);
-  stopBed(); stopCineVoices();
+  stopBed(); stopCineVoices(); stopLiveVoices();   // v21.0: nor a line play was still saying
   for (const n of liveLoops) loopVol(n, 0);   // ALL of them: silenceChapterLoops() keeps this chapter's own
   if (narSrc) { try { narSrc.stop(); } catch {} narSrc = null; }
   clearTimeout(voiceTimer); voicePending = false;   // his opening line must not land on the title screen
@@ -10228,6 +10237,7 @@ function playCineFn(sceneFn, onDone, startFade = 0) {
     keep: {}, endFade: 0, snap, onDone
   };
   prayOff();                       // v16.5: a scene takes the hands back from kit.pray, on its first frame
+  kitHold(null);                   // v21.0: and lets go of whatever kit.hold put in them (it would ride the arm the scene poses)
   /* v18.0: and from kit.hands — the scene is told where they were (it may
      carry the gesture on with api.handsPose), the sway's roll is not kept */
   handsFrom.k = hands.k; handsFrom.t = hands.t; handsFrom.roll = (hands.k > 0 || hands.was > 0) ? camera.rotation.z : 0;
@@ -11969,6 +11979,25 @@ const SPAWN = { pos: yaw.position.clone(), rot: yaw.rotation.y };
 // the chapter takes its own equivalent snapshot inside build(), for the same
 // reason and at the same moment — see stage.reset()
 
+/* v21.0: a line still being said in PLAY — a chapter's world saying it
+   (worldSfx), a card line, the opening line — is not carried onto the title
+   or into the next run (stopCineVoices only ever held a scene's own). Ramped,
+   not cut dead (the v5.30 edges). */
+function stopLiveVoices() {
+  if (voiceSrc) { try { voiceSrc.stop(); } catch {} voiceSrc = null; }
+  if (!actx) return;
+  const t = actx.currentTime;
+  for (const s of [...liveVoices]) {
+    try {
+      if (s.__g) {
+        s.__g.gain.cancelScheduledValues(t);
+        s.__g.gain.setValueAtTime(s.__g.gain.value, t);
+        s.__g.gain.linearRampToValueAtTime(0.0001, t + 0.12);
+      }
+      s.stop(t + 0.14);
+    } catch { /* already finished on its own */ }
+  }
+}
 function restart() {
   // every screen that could be up, down
   for (const el of [ui.complete, ui.over, ui.result, ui.decide,
@@ -12008,6 +12037,7 @@ function restart() {
   // stop, and every once-per-run narration trigger re-arms
   stopBed();
   stopCineVoices();                // and anything the last scene left ringing
+  stopLiveVoices();                // v21.0: and any line play was still saying
   if (narSrc) { try { narSrc.stop(); } catch {} narSrc = null; }
   for (const k in narrated) delete narrated[k];
   fainting = false;

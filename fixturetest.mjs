@@ -325,7 +325,17 @@ K.holdSeam = await p.evaluate(async () => {
   const swap = a.parent === null && b.parent === arm && E.kit.holding() === b && b.position.z === -0.1;
   E.kit.hold(null);
   const off = b.parent === null && E.kit.holding() === null;
-  return clasp && swap && off;
+  /* held at the clasp with the hands IN the clasp, the thing sits on the plane
+     where the palms meet — the middle between the two hands, in the arm's own
+     frame x ≈ the clasp's centre line (v21.0 review) */
+  E.kit.pray(true, { secs: 0 });
+  await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));   // the frame lays the clasp
+  const c = new Obj(); E.kit.hold(c, { clasp: true });
+  c.updateWorldMatrix(true, false);
+  const w = c.position.clone(); c.getWorldPosition(w);                  // the hands' pass is drawn from its origin, looking down -z
+  const mid = c.parent === arm && E.prayDebug().k === 1 && Math.abs(w.x) < 0.02 && w.z < 0;
+  E.kit.hold(null); E.kit.pray(false, { secs: 0 });
+  return clasp && swap && off && mid && c.parent === null;
 }).catch(() => false);
 await settle();
 
@@ -900,11 +910,14 @@ K.filmBackToPlay = await filmBack(false);
 K.filmFadeLifts = await until(() => window.__enc.kit.getFade() < 0.02, 30000).then(() => true, () => false);
 K.filmSkip = await filmGo();
 if (K.filmSkip) {
+  /* a DECLARED film is refused while the game is not in play (here: another
+     film is running) — the 'nope' check below only proves an undeclared key */
+  K.filmRefusedOutOfPlay = await p.evaluate(() => { const e = window.__enc; return e.getState() === 'cine' && e.kit.film('probe') === false; });
   await until(() => window.__enc.cine.t() > 3.05, 60000).catch(() => {});
   await p.evaluate(() => window.__enc.cine.skip());
   K.filmSkip = await filmBack(true);
 }
-K.filmRefusedOutOfPlay = await p.evaluate(() => window.__enc.kit.film('nope') === false);
+K.filmRefusedUndeclared = await p.evaluate(() => window.__enc.kit.film('nope') === false);
 await until(() => window.__enc.kit.getFade() < 0.02, 30000).catch(() => {});
 await p.evaluate((q) => { const e = window.__enc; e.yaw.position.x = q.x; e.yaw.position.z = q.z; }, posFilm0);
 /* v21.0: FOCUS, GRADED (opt-in) — a thing noticed at once is a high band; a

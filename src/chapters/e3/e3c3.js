@@ -428,6 +428,11 @@
     }
     counter(LCNT, 1, 0);
     counter(RCNT, -1, 2);
+    /* the strips behind the counters are the staff's: between a counter's
+       padded back and the cabinets' (0.30 m, open at both ends) the lens could
+       walk in and stand inside the man there — a thin box fills each */
+    solids.push(hidBox(0.02, 1.4, 3.2, -3.79, 0.7, (LCNT.z0 + LCNT.z1) / 2));
+    solids.push(hidBox(0.02, 1.4, 3.0, 3.80, 0.7, (RCNT.z0 + RCNT.z1) / 2));
 
     /* -------------------------------------------- the owner's working end
        A wooden top at the back of his counter: the loupe, the lamp, the till,
@@ -596,7 +601,7 @@
       // the front tier: candles, the incense pot, orchids, trays of fruit, a small bell
       for (const s of [-1, 1]) {
         thai('candle', x + s * 0.82, T1, z + 0.08, { s: 0.55, cast: false, parent: altarG });
-        thai('orchid', x + s * 0.62, T1, z - 0.02, { s: 0.38, cast: false, parent: altarG });
+        thai('orchid', x + s * 0.83, T1, z - 0.15, { s: 0.38, cast: false, parent: altarG });   // beside the second tier, behind the candle (at ±0.62 they stood inside it)
         thai('phan', x + s * 0.32, T1, z + 0.1, { s: 0.42, cast: false, parent: altarG });
       }
       thai('incense', x, T1, z + 0.1, { s: 0.42, cast: false, parent: altarG });
@@ -618,11 +623,10 @@
         g.add(glow); g.userData = { core: f, glow };
         flames.push(g);
       }
-      // lilies either side, lotus bowls on the floor in front of them
-      for (const s of [-1, 1]) {
-        thai('lily', x + s * 1.48, 0, z + 0.05, { s: 0.8, parent: altarG });
-        thai('lotusbowl', x + s * 1.55, 0, z + 0.62, { s: 0.55, cast: false, parent: altarG });
-      }
+      /* lilies either side (the two lotus bowls that stood in front of them are
+         gone: the staff man lit the candles and switched on the radio standing
+         IN them, and the owner's stool stood against one) */
+      for (const s of [-1, 1]) thai('lily', x + s * 1.48, 0, z + 0.05, { s: 0.8, parent: altarG });
       // the warm wash on the board (painted: no light)
       const wash = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 1.6), new THREE.MeshBasicMaterial({ map: tex(makeGlowTex(THREE, cnv, [255, 190, 110])),
         transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0.32 }));
@@ -816,7 +820,12 @@
                     talkUntil: 0, stool: null, opts };
       rig.play = (name, ts = 1, fade = 0.34, once = false, at) => {
         if (!rig.mixer || !rig.acts || !rig.acts[name]) return false;
-        if (rig.cur === name && at === undefined) { rig.acts[name].setEffectiveTimeScale(ts); return true; }
+        /* asked to RUN the take already current: it runs. A take parked by
+           the sizing (or by an earlier `at`) is paused, and keeping that
+           pause left the owner's staff, the shrine's wife and father and
+           the auntie's prayer standing as statues (the v21.0 review) */
+        if (rig.cur === name && at === undefined && rig.acts[name].isScheduled()) {
+          const a = rig.acts[name]; a.paused = false; a.setEffectiveTimeScale(ts); return true; }
         const nx = rig.acts[name], old = rig.cur && rig.cur !== name && rig.acts[rig.cur];
         nx.reset(); nx.setEffectiveTimeScale(ts); nx.setEffectiveWeight(1);
         nx.setLoop(once ? THREE.LoopOnce : THREE.LoopRepeat, Infinity);
@@ -1117,9 +1126,31 @@
         if (r.sitting) { r.yTo = r.yOff = -r.seatDrop; r.model.position.y = r.baseY + r.yOff; }
       } });
     const staff  = mkRig('staffman', { x: STAFF.x, z: STAFF.z, ry: Math.PI / 2, height: 1.73, idle: 'Idle_9', look: 0.6 });
-    const girl   = mkRig('cg_woman2hd', { x: -0.55, z: -5.5, ry: Math.PI, height: 1.6, idle: 'kneel', kneel: true });
+    /* the girl's two takes root her ~22 cm apart (each retargeted from its own
+       Mixamo file — e3c2's v19.7 finding), so her turn to him at the rise
+       skated her across her mat on her knees: each take's knee midpoint is
+       read once in her group's frame and rootComp moves the model by the
+       weighted difference, the knees staying where the kneel put them */
+    function kneelComp(r) {
+      if (!r.acts || !r.acts.kneel || !r.acts.pray) return;
+      const legs = [];
+      r.model.traverse(o => { if (o.isBone && /(Left|Right)Leg(_\d+)?$/.test(o.name)) legs.push(o); });
+      if (legs.length !== 2) return;
+      const mid = () => {
+        r.group.updateWorldMatrix(true, true);
+        const m = new THREE.Vector3();
+        for (const b of legs) m.add(r.group.worldToLocal(b.getWorldPosition(new THREE.Vector3())));
+        return m.multiplyScalar(0.5);
+      };
+      r.play('pray', 1, 0, false, 0.5); const kp = mid();
+      r.play('kneel', 1, 0, false, 0.5); const kk = mid();
+      r.play('kneel', 1, 0);
+      r.rootBase = { x: r.model.position.x, z: r.model.position.z };
+      r.rootOff = { kneel: [0, 0], pray: [kp.x - kk.x, kp.z - kk.z] };
+    }
+    const girl   = mkRig('cg_woman2hd', { x: -0.55, z: -5.5, ry: Math.PI, height: 1.6, idle: 'kneel', kneel: true, then: kneelComp });
     const manW   = mkRig('cg_man2hd', { x: 0.55, z: -5.5, ry: Math.PI, height: 1.72, idle: 'pray', kneel: true });
-    const auntie = mkRig('sitclap', { x: -2.45, z: -4.85, ry: Math.PI * 0.82, height: 1.22, idle: SIT_W, at: 0.05, seated: true, stool: 0xc8261c });
+    const auntie = mkRig('sitclap', { x: -2.45, z: -4.85, ry: Math.PI * 0.82, height: 1.22, idle: SIT_W, at: 0.15, seated: true, stool: 0xc8261c });   // parked on her palms-together frame: she is praying (the trance's target names it)
     const youth  = mkRig('sitshout', { x: 2.42, z: -4.85, ry: -Math.PI * 0.82, height: 1.27, idle: SHOUT, at: 0.0, seated: true, stool: 0x2a64b4 });
     const passer = mkRig('botak', { parent: mallG, x: -10, z: 2.9, ry: Math.PI / 2, height: 1.72, idle: 'Walking',
       then: (r) => r.model.traverse(o => { if (o.isMesh) o.castShadow = false; }) });   // a walker's shadow would redraw the maps forever
@@ -1153,11 +1184,18 @@
       if (girl.acts && girl.acts.kneel) girl.play('kneel', 1, 0);
       manW.group.rotation.y = Math.PI;
       auntie.group.rotation.y = Math.PI * 0.82;
-      if (auntie.acts && auntie.acts[SIT_W]) auntie.play(SIT_W, 1, 0, false, 0.05);
+      if (auntie.acts && auntie.acts[SIT_W]) auntie.play(SIT_W, 1, 0, false, 0.15);
       youth.group.rotation.y = -Math.PI * 0.82;
       if (youth.acts && youth.acts[SHOUT]) youth.play(SHOUT, 1, 0, false, 0.0);
+      /* the passer-by back on his beat, walking (the trance film stops him at
+         the glass on a parked frame), and the shop's clock back to the morning
+         the chapter opens on (the trance film runs it on fifteen minutes) */
+      passerHeld = false; PASS.dir = 1;
+      passer.group.position.set(-10, 0, PASS.z); passer.group.rotation.y = Math.PI / 2;
+      if (passer.acts && passer.acts.Walking) passer.play('Walking', 1, 0);
+      clockTo(12, 6);
     }
-    const PASS = { x0: -12.2, x1: 12.2, z: 2.9, v: 1.3, dir: 1 };
+    const PASS = { x0: -12.2, x1: 12.2, z: 2.35, v: 1.3, dir: 1 };   // (at 2.9 he walked along the columns' near faces, half of him through each)
     function passerTick(wdt) {
       if (!passer.ready || !passer.group.visible || passerHeld) return;
       const g = passer.group;
@@ -1230,7 +1268,7 @@
       f.rotation.x = -Math.PI / 2; f.position.set(0, 0, -5); f.receiveShadow = true; shrG.add(f); }
     { const c = new THREE.Mesh(new THREE.PlaneGeometry(9, 10), matBoards);
       c.rotation.x = Math.PI / 2; c.position.set(0, SB.H, -5); shrG.add(c); }
-    for (const z of [-2.2, -4.6, -7.0, -9.2]) box(9, 0.2, 0.16, 0, SB.H - 0.1, z, matBeam, shrG, false);      // the beams
+    for (const z of [-2.2, -4.6, -7.0, -9.86]) box(9, 0.2, 0.16, 0, SB.H - 0.1, z, matBeam, shrG, false);    // the beams (the last on the back wall: at −9.2 it ran through the altar's canopy and hid the top of its plaque)
     bwall(9.4, SB.H, 0.2, 0, SB.H / 2, SB.z0 - 0.1, matPaintB);                                              // back
     bwall(0.2, SB.H, 10.2, SB.x0 - 0.1, SB.H / 2, -5.0, matPaintB);                                          // left
     bwall(0.2, SB.H, 10.2, SB.x1 + 0.1, SB.H / 2, -5.0, matPaintB);                                          // right
@@ -1268,6 +1306,7 @@
       // the neighbours on both sides: shut for the night
       for (const s of [-1, 1]) {
         const sh = plane(7.4, 2.7, matShutter, s * 8.2, 1.35, 0.0, 0, shrG); sh.material.side = THREE.DoubleSide;
+        bwall(7.4, 2.7, 0.2, s * 8.2, 1.35, -0.1, matProxy).visible = false;   // (a drawn shutter stopped nobody: past it there is no floor at all)
         box(7.5, SB.H - 2.7, 0.25, s * 8.25, (SB.H + 2.7) / 2, -0.125, matPaintB, shrG, false);
         box(7.4, 0.12, 0.2, s * 8.2, 2.62, 0.05, matSteel, shrG, false);
       }
@@ -1523,8 +1562,10 @@
     solids.push(hidBox(0.5, 1.0, 0.5, -3.95, 0.5, -0.6, shrG));
 
     /* ---- the walls' things: talismans over the door and by the altar, the
-       deity painting, a clock, the steel cabinet, the back door's curtain */
-    [[-2.6, 2.35, -0.27, 0], [-1.9, 2.35, -0.27, 1], [2.0, 2.4, -9.98, 2], [-2.0, 2.4, -9.98, 3], [SB.x1 - 0.01, 2.2, -3.0, 4], [SB.x0 + 0.01, 2.2, -7.6, 5]]
+       deity painting, a clock, the steel cabinet, the back door's curtain
+       (the door's pair on the transom over the opening — at 2.35 they hung in
+       the open bay with nothing holding them) */
+    [[-2.6, 2.98, -0.27, 0], [-1.9, 2.98, -0.27, 1], [2.0, 2.4, -9.98, 2], [-2.0, 2.4, -9.98, 3], [SB.x1 - 0.01, 2.2, -3.0, 4], [SB.x0 + 0.01, 2.2, -7.6, 5]]
       .forEach(([x, y, z, i]) => {
         const ry = Math.abs(x - SB.x1) < 0.05 ? -Math.PI / 2 : Math.abs(x - SB.x0) < 0.05 ? Math.PI / 2 : z < -5 ? 0 : Math.PI;
         plane(0.13, 0.4, texMat(makeTalisman(THREE, cnv, 11 + i), { roughness: 0.85 }), x, y, z, ry, shrG);
@@ -1532,7 +1573,7 @@
     plane(0.62, 0.92, texMat(makeDeityPainting(THREE, cnv), { roughness: 0.7 }), SB.x1 - 0.012, 1.95, -3.6, -Math.PI / 2, shrG);
     plane(0.62, 0.92, texMat(makeDeityPainting(THREE, cnv, '#6a1a12', '#d8a838'), { roughness: 0.7 }), SB.x0 + 0.012, 1.95, -3.2, Math.PI / 2, shrG);
     // a wall shelf of joss-paper bundles and red boxes, and a silk banner by the door
-    box(1.2, 0.03, 0.26, SB.x0 + 0.14, 1.62, -5.2, matWoodL, shrG, false);
+    box(0.26, 0.03, 1.2, SB.x0 + 0.14, 1.62, -5.2, matWoodL, shrG, false);     // along the wall (it was turned 90°: 0.74 m into the room at eye height)
     for (let i = 0; i < 5; i++) box(0.2, 0.12 + (i % 2) * 0.06, 0.2, SB.x0 + 0.14, 1.69 + (i % 2) * 0.03, -5.68 + i * 0.24, new THREE.MeshStandardMaterial({ color: [0xd8b040, 0xb8241a, 0xe8c860, 0x8a1a12, 0xd8b040][i], roughness: 0.75 }), shrG, false);
     plane(0.34, 1.3, new THREE.MeshStandardMaterial({ map: tex(makeCouplet(THREE, cnv, '有求必應')), roughness: 0.9, side: THREE.DoubleSide }), SB.x0 + 0.012, 1.95, -1.35, Math.PI / 2, shrG);
     plane(0.34, 0.34, texMat(makeClockFace(THREE, cnv), { roughness: 0.5 }), SB.x0 + 0.012, 2.55, -6.0, Math.PI / 2, shrG);
@@ -1674,8 +1715,11 @@
     const MED_SIT = 'Chair_Sit_Idle_M', MED_READ = 'Sitting_Answering_Questions', MED_NO = 'Sit_Finger_Wag_No';
     const WIFE_SIT = 'Armature|Sit_Cross_Legged|baselayer', ASST_CLAP = 'Armature|Sitting_Clap|baselayer', ASST_REST = 0.0;
     const stoolStays = (r) => { if (r.stool) { r.stool.updateWorldMatrix(true, false); shrPeople.attach(r.stool); } };
+    /* sized STANDING (on his walk's first frame): sized on the seated take a
+       seated span read as his full height, and he stood 2.3 m tall in every
+       ending that stands him up (the v21.0 review) */
     const medium = mkRig('medium', { parent: shrPeople, x: MED_AT.x, z: MED_AT.z, ry: 0, height: 1.74, idle: 'Chair_Sit_Idle_M', look: 0,
-      then: (r) => seatMedium(r) });
+      sizeOn: 'Walking', then: (r) => seatMedium(r) });
     const asst = mkRig('sitman', { parent: shrPeople, x: ASST_AT.x, z: ASST_AT.z, ry: -Math.PI / 2, height: 1.25, idle: ASST_CLAP, at: ASST_REST, seated: true, stool: 0x2a64b4 });
     const wife = mkRig('sitwoman', { parent: shrPeople, x: WIFE_AT.x, z: WIFE_AT.z, ry: Math.PI, height: 1.2, idle: WIFE_SIT, seated: true, stool: 0xc8261c, anims: ['sitwomantalk', 'wifewalk'], then: stoolStays });
     const father = mkRig('sitangry', { parent: shrPeople, x: FATHER_AT.x, z: FATHER_AT.z, ry: Math.atan2(MED_AT.x - FATHER_AT.x, MED_AT.z - FATHER_AT.z), height: 1.25, idle: SIT_W, seated: true, stool: 0x2a64b4, anims: 'fatherwalk', then: stoolStays });
@@ -1751,6 +1795,10 @@
       if (isFinite(sole)) { const dy = r.group.position.y - sole; r.model.position.y += dy; for (const m of all) { m.sole += dy; m.seat += dy; } for (let i = 0; i < seats.length; i++) seats[i] += dy; }
       r.rootBase = { x: r.model.position.x, z: r.model.position.z };
       r.baseY = r.model.position.y; r.yOff = r.yTo = 0;
+      /* his EYES, where every shot of him aims: off his seated head bone (a
+         Mixamo head bone sits ~10 cm under the eyes — v5.04), never a typed
+         height, which was set against the 2.3 m man he was by mistake */
+      if (r.head) { r.group.updateWorldMatrix(true, true); r.head.getWorldPosition(_v); MED_EYE.y = +(_v.y + 0.1).toFixed(3); }
       const seatY = seats.length ? (Math.min(...seats) + Math.max(...seats)) / 2 : 0.48;
       const back = Math.min(...all.map(m => m.back).filter(isFinite));
       const knee = Math.max(...all.map(m => m.toe).filter(isFinite)) - 0.2;
@@ -1774,7 +1822,10 @@
         box(0.05, 0.05, D, sx * (W / 2 - 0.02), top + 0.24, zc, matLacq, g);
         box(0.05, 0.24, 0.05, sx * (W / 2 - 0.02), top + 0.12, s1 - 0.04, matLacq, g);
       }
-      solids.push(hidBox(W + 0.1, 1.4, D + 0.12, hx - SHR.x, 0.7, hz + zc, shrG));
+      /* (built when his GLB lands, long after build() handed the engine its
+         blockers — a push to `solids` here reached nothing, and he and his chair
+         could be walked through: the box goes into the engine's own array) */
+      lateSolid(hidBox(W + 0.1, 1.4, D + 0.12, hx - SHR.x, 0.7, hz + zc, shrG));
       r.chair = g;
       r.seatInfo = { seatY: +seatY.toFixed(3), s0: +s0.toFixed(3), s1: +s1.toFixed(3), sole: +sole.toFixed(3),
                      takes: all.map(m => [m.take, +m.seat.toFixed(3), +m.sole.toFixed(3), +m.toe.toFixed(3), +m.back.toFixed(3)]) };
@@ -2194,7 +2245,7 @@
     const PHASES = ['browse', 'owner', 'gift', 'wear', 'join', 'chant', 'trance',
                     'arrive', 'wait', 'called', 'decide'];
     let phase = 'browse';
-    let booted = false;
+    let booted = false, preplaced = false;
     const dayClock = { t: 0 };
     let lastWall = 0;
     const todo = [];
@@ -2594,7 +2645,7 @@
     ].map((tg, i) => ({ label: tg.label, at: tg.at, pos: () => { curTgt = i; return tg.at(); } }));
     function beginTrance() {
       if (phase !== 'chant') return;
-      setPhase('trance');
+      setPhase('trance', { complete: false });            // the chant is not "completed" as the body takes over (e3c2's v18.4)
       trance = { t: 0, yaw: yaw.rotation.y, py: pitch.rotation.x, appY: yaw.rotation.y, appP: pitch.rotation.x, ev: false, done: false };
       curTgt = 0;
       after(SECS.z3shift2 + 0.9, beginAware);
@@ -2615,7 +2666,10 @@
     function startTranceFilm() {
       if (phase !== 'trance' || !kit || !kit.film) return;
       if (kit.presence) kit.presence(0);
-      if (!kit.film('trance', { onDone: (o) => toShrine(false, o) })) toShrine(false);
+      /* (onDone hands back { skipped }: it must NOT reach toShrine's second argument, which is the PHASE to land in —
+         the first build passed it straight through, so every player who reached the shrine landed in a phase that was
+         an object: no objective, no incense, no readings, no decision. Found by three reviewers at once) */
+      if (!kit.film('trance', { onDone: () => toShrine(false) })) toShrine(false);
     }
     function tranceTick(wdt) {
       const T = trance; if (!T) return;
@@ -2742,14 +2796,23 @@
        given with complete certainty, each sent off with a remedy */
     function sitDown() {
       if (phase !== 'wait' || sitB) return;
-      sitB = { t0: dayClock.t };
+      /* he faces between the medium and the wife (each ~10° off the middle, so a
+         phone's ±18° holds both through her reading); the father's turn comes
+         with his reading, unless the player has already looked elsewhere */
+      sitB = { t0: dayClock.t, aim: readAim(WIFE_HEAD, 0.5) };
       if (kit) kit.root(true);
       if (worldSfx) worldSfx('stoolscrape', 0.6, 1, panAt(STOOL_W.x, STOOL_W.z));
-      turnTo(camYawFrom(STOOL_W, MED_EYE), 1.2, { y: 1.13, span: 1.35, lo: -0.75, hi: 0.5, pos: STOOL_W, pitch: -0.06 }, () => {
+      turnTo(sitB.aim, 1.2, { y: 1.13, span: 1.35, lo: -0.75, hi: 0.5, pos: STOOL_W, pitch: -0.06 }, () => {
         if (kit) kit.root(false);
         objectiveFor('watch');
         readingsBegin();
       });
+    }
+    /* a seated look between the medium's eyes and someone: `w` of the way from him to them */
+    function readAim(p, w) {
+      const ya = camYawFrom(STOOL_W, MED_EYE), yb = camYawFrom(STOOL_W, p);
+      let d = yb - ya; while (d > Math.PI) d -= Math.PI * 2; while (d < -Math.PI) d += Math.PI * 2;
+      return ya + d * w;
     }
     function readingsBegin() {
       medium.look = 1; medium.lookAt = WIFE_HEAD;
@@ -2770,6 +2833,13 @@
       walkTo(wife, [{ x: WIFE_AT.x - 0.35, z: WIFE_AT.z + 0.55 }, { x: LX(-2.55), z: -2.4 }, { x: LX(-2.6), z: 0.6 }, { x: LX(-7.3), z: 1.0 }],
              { v: 0.95, then: (r) => { r.group.visible = false; } });
       medium.lookAt = FATHER_HEAD;
+      if (sitB && !turning && sitB.aim !== undefined) {
+        let dd = yaw.rotation.y - sitB.aim; while (dd > Math.PI) dd -= Math.PI * 2; while (dd < -Math.PI) dd += Math.PI * 2;
+        if (Math.abs(dd) < 0.15) {                     // still where we put him: turn him to the father (40° round)
+          sitB.aim = readAim(FATHER_HEAD, 0.6);
+          turnTo(sitB.aim, 1.8, { y: 1.13, span: 1.35, lo: -0.75, hi: 0.5, pos: null, pitch: pitch.rotation.x });
+        }
+      }
       queueGap(2.2);
       queueLine('dv3father', () => { father.nod = SECS.dv3father; }, 1, panAt(FATHER_AT.x, FATHER_AT.z));
       queueGap(0.5);
@@ -2797,7 +2867,7 @@
        formal (the case file: "the body moved forward and bowed to him") */
     function bodyWalks() {
       if (phase !== 'wait') return;
-      setPhase('called');
+      setPhase('called', { complete: false });            // nor is the wait, as the body walks off without him
       if (kit) {
         kit.root(true); kit.presence(0.2);
         kit.pose('standing', { secs: 1.1 });
@@ -2880,7 +2950,10 @@
       if (!r.acts) return;
       medStanding = on;
       r.standTo = on ? 1 : 0;
-      if (secs <= 0) r.standK = r.standTo;
+      /* (an instant stand writes where he stands NOW: the tick only moves him
+         while standK chases standTo, so a Continue into the reading's end left
+         him standing up inside his own chair) */
+      if (secs <= 0) { r.standK = r.standTo; r.group.position.z = MED_AT.z + MED_STAND_DZ * smooth(r.standK); }
       if (on) { medPose(take, secs > 0 ? 0.5 : 0); }
       else medPose(MED_SIT, secs > 0 ? 0.5 : 0);
       toolsInHands(on, secs > 0 ? 0.6 : 0);
@@ -2912,6 +2985,7 @@
       if (kit) { kit.daylight(SHRINE_NIGHT, 0); kit.pose('standing', { secs: 0.05 }); }
     }
     function toShrine(resumed, at = 'arrive') {
+      if (!PHASES.includes(at) || PHASES.indexOf(at) < PHASES.indexOf('arrive')) at = 'arrive';   // a phase, and one of the shrine's, whatever is passed
       trance = null; seated = null; turning = null; facing = null; bowing = null;
       danceTo = 0;
       if (kit) {
@@ -2926,8 +3000,13 @@
       if (past) urnLight(true);                                   // his sticks are already in the urn
       if (done) { wife.group.visible = false; father.group.visible = false; talismanGiven(true); }
       setPhase(done ? 'decide' : at);
+      /* the joss sticks held under the black while the warm runs: they are
+         drawn in the HANDS' pass, and a program the warm never saw is built on
+         screen the moment he takes them at the urn (the v15.1 law) */
+      jossHold(true);
       const warmed = kit && kit.warm ? kit.warm() : Promise.resolve(0);
       warmed.then(() => {
+        jossHold(false);
         if (!alive) return;
         if (done) { kit && kit.fade(0, 1.2); afterRoar(); return; }
         if (!resumed) {
@@ -2944,7 +3023,10 @@
 
     /* ------------------------------------------------------- the decision */
     const _ndc = new THREE.Vector3();
-    const PILE_POS = new THREE.Vector3(SHR.x, 0, -5.4);   // the medium's table
+    /* the medium's table, over its far edge, in front of the man (it stood at
+       z −5.4 — under the player's own feet at TABLE_AT, so a decision closed
+       with Escape could never be reopened: straight down is never in view) */
+    const PILE_POS = new THREE.Vector3(LX(MTB.x), 0, MTB.z - 0.25);
     const INTERACT_R = 2.4;
     const pile = new THREE.Group(); pile.position.copy(PILE_POS); world.add(pile);
     const pileLive = () => phase === 'decide' && inShrine(yaw.position.x);
@@ -3016,9 +3098,13 @@
       /* WORLD B: the street louder by the shutters, the room tone, the bed the
          readings are given over, and once he has roared, the rites' drum */
       const inB = !atShop, outK = THREE.MathUtils.clamp((yaw.position.z + 3.0) / 4.0, 0, 1);
-      const lor = inB ? 0.08 + 0.32 * outK : 0, room = inB ? 0.26 : 0;
-      const bed = inB && !roarDone && !rite ? (phase === 'arrive' ? 0.22 : 0.3) : 0;
-      const rit = inB && (roarDone || rite) ? 0.5 : 0;
+      /* under the outcome and sealed cards the night goes quiet: the rites'
+         drum and the reading bed stop and the street and the room sink (the
+         ending's own music is what the card is read over) */
+      const card = st === 'result' || st === 'complete';
+      const lor = inB ? (card ? 0.06 : 0.08 + 0.32 * outK) : 0, room = inB ? (card ? 0.1 : 0.26) : 0;
+      const bed = inB && !card && !roarDone && !rite ? (phase === 'arrive' ? 0.22 : 0.3) : 0;
+      const rit = inB && !card && (roarDone || rite) ? 0.5 : 0;
       mixK.lor = ease(mixK.lor || 0, lor, 0.8); mixK.room = ease(mixK.room || 0, room, 0.8);
       mixK.bed = ease(mixK.bed || 0, bed, bed > (mixK.bed || 0) ? 2.0 : 0.6); mixK.rit = ease(mixK.rit || 0, rit, 1.2);
       const B = DATA.ambience.beds;
@@ -3062,6 +3148,13 @@
       if (live || st === 'cine' || st === 'decide') peopleTick(wdt);
       mixBeds(wdt, st);
       lifeTick(wdt);
+      /* a Continue into the shrine: World B goes up UNDER the chapter card, or
+         the card lifted on the shop at noon for the frames before play boots
+         the phase (the v21.0 review) */
+      if (!booted && !preplaced && kit) {
+        const pp = String(kit.getPhase() || '').split(':')[0];
+        if (pp === 'trance' || PHASES.indexOf(pp) >= PHASES.indexOf('arrive')) { preplaced = true; placeAtShrine(); }
+      }
       if (!live) { lastWall = 0; return; }
       if (lastWall) dayClock.t += Math.min(0.5, now - lastWall);
       lastWall = now;
@@ -3111,7 +3204,7 @@
     function restore() {}
     function reset() {
       dropTodo(); speakReset(); lineQ.length = 0; heard.clear();
-      booted = false; dayClock.t = 0; lastWall = 0;
+      booted = false; preplaced = false; dayClock.t = 0; lastWall = 0;
       looked.clear(); called = false; gifted = false; wornDone = false; seated = null; turning = null; facing = null;
       bowing = null; chant = null; trance = null; caseK = caseTo = 0; celebrate = null; curTgt = 0; browseT0 = -1;
       objWas = null; danceTo = 0; danceHalt = false; passerHeld = false; filmG.visible = false; passer.group.position.z = PASS.z;
@@ -3138,6 +3231,15 @@
       phase = 'browse';
     }
 
+    /* a blocker made after build() returned: the engine iterates the array
+       blockers() handed it, so the box joins THAT array (the chapter's, while
+       the stage is still being built) */
+    function lateSolid(o) {
+      if (!S || !S.blockers) { solids.push(o); return; }
+      o.updateWorldMatrix(true, false);
+      const bb = new THREE.Box3().setFromObject(o); bb.expandByScalar(0.14); bb.min.y = 0; bb.max.y = Math.max(bb.max.y, 1.40);
+      S.blockers.push(bb);
+    }
     function blockers() {
       const out = [];
       const b = (o, pad = 0.20) => { o.updateWorldMatrix(true, false); const bb = new THREE.Box3().setFromObject(o); bb.expandByScalar(pad); out.push(bb); };
@@ -3193,7 +3295,10 @@
         walkRate(r, v) { return v / (WALK_NAT * (r.height || 1.7)); },
         stand(r) { r.sitting = false; r.idle = 'Idle_9'; r.play('Idle_9', 1, 0.55); r.yTo = 0; },
         look(r, w) { r.look = w; },
-        stoolTip(k) { if (!ownerStool) return; ownerStool.rotation.z = 1.45 * k; ownerStool.position.y = -0.05 * k; },
+        /* (it pivots on the floor under its seat, so tipped, half of it went under
+           the tile: each frame it is lifted until its lowest point rests on the floor) */
+        stoolTip(k) { if (!ownerStool) return; ownerStool.rotation.z = 1.45 * k; ownerStool.position.y = 0;
+          if (k > 0) { ownerStool.updateWorldMatrix(true, true); const bb = new THREE.Box3().setFromObject(ownerStool, true); ownerStool.position.y = Math.max(0, -bb.min.y); } },
         phone(on) { girlPhone.visible = !!on; },
         passerStop(on) { passerHeld = !!on;
           if (on) { passer.group.position.set(-1.55, 0, 0.78); passer.group.rotation.y = Math.PI; passer.play('Walking', 1, 0.3, false, 0.122); }
@@ -3290,8 +3395,10 @@
     // 2 · THE OLD MALL (12.3 – 20.6): across its road, from the top of the slab down onto its shops, and in a little
     step(12.3, () => daylight(F.FILM_MORN));
     shot(12.3, 20.6, M(-2.2, 1.66, 22.0), M(-1.2, 1.66, 17.4), M(0, 49, -10), M(0, 4.4, -2.6), (k) => sm(cl01((k * 8.3 - 0.2) / 7.8)));
-    tr(12.3, 20.6, (k, t) => F.mallBus((t - 13.6) / 6.8), rawK);   // a green bus in the far lane, between him and the mall
-    sfx(15.2, 'buspass', 0.55);
+    /* a green bus in the far lane, between him and the mall — across the middle of the frame at 19.2, once the lens has
+       come down far enough to hold all of it (at 17 it was its roof in the corner of a look up at the tower) */
+    tr(12.3, 20.6, (k, t) => F.mallBus((t - 16.0) / 6.4), rawK);
+    sfx(17.4, 'buspass', 0.55);
     fade(12.4, 13.4, 1, 0);
     sfx(13.9, 'z3pro3');                              // 4.0 → 17.9
     fade(19.9, 20.6, 0, 1);
@@ -3300,7 +3407,10 @@
     /* 3 · THE CORRIDOR (20.6 – 29.9): World A's own, walked from its east end to the shop's glass, a man coming the
        other way on the far side (his walk on the film's clock, so a seek finds him where the shot wants him) */
     step(20.6, () => { daylight(null); });
-    tr(20.6, 29.9, (k, t) => F.passerTo(-1.6 + 1.3 * (t - 20.6), 3.95, Math.PI / 2), rawK);
+    /* (a track is applied on every frame after its start with the RAW film
+       time, so past 29.9 this one kept holding him and walking him on — he
+       was frozen out of sight for the whole of play) */
+    tr(20.6, 29.9, (k, t) => { if (t <= 29.9) F.passerTo(-1.6 + 1.3 * (t - 20.6), 3.95, Math.PI / 2); }, rawK);
     /* (the walk's own track from the cut itself: a passed track holds its last value, so a walk starting later would
        leave the lens at the mall's end for those frames — out at x 300 with its pocket already put away) */
     const W = walkRoute(api, [{ x: 12.4, z: 2.05 }, { x: 2.6, z: 2.05 }, { x: 1.25, z: 1.75 }, { x: 0.62, z: 1.12 }], 20.6, 1.6);
@@ -3570,13 +3680,17 @@
     tr(0, 0.02, () => { yaw.rotation.y = yP; pitch.rotation.x = pP; }, rawK);
     camTo(0, 0.26, { x: P.x, y: 1.62, z: P.z }, { x: P.x + ux * 0.34, y: 1.7, z: P.z + uz * 0.34 }, smoothK);
     /* 2 · 0.62–2.8 · what the medium sees: gold where the man stood */
-    const M0 = { x: E.x - ux * 0.12, y: 1.45, z: E.z - uz * 0.12 };
+    /* (from his own eyes — MED_EYE, measured off his seated head — and he
+       leans BACK, along +u: the first cut moved the lens 0.22 m toward the
+       figure; and it comes on 0.10, not 0.35, which put its legs and belly
+       inside the table) */
+    const M0 = { x: E.x - ux * 0.12, y: E.y + 0.03, z: E.z - uz * 0.12 };
     step(0.62, () => { handsRoot.visible = false; api.armR.visible = false; });
-    tr(0.62, 0.64, () => { yaw.rotation.y = Math.atan2(ux, uz); pitch.rotation.x = Math.atan2(1.15 - 1.45, dl - 0.12); }, rawK);
-    camTo(0.62, 2.8, M0, { x: M0.x - ux * 0.22, y: 1.5, z: M0.z - uz * 0.22 }, smoothK);     // he leans back from it
+    tr(0.62, 0.64, () => { yaw.rotation.y = Math.atan2(ux, uz); pitch.rotation.x = Math.atan2(1.3 - M0.y, dl - 0.12); }, rawK);
+    camTo(0.62, 2.8, M0, { x: E.x - ux * 0.03, y: E.y + 0.07, z: E.z - uz * 0.03 }, smoothK);     // he leans back from it
     tr(0.62, 0.78, (k) => R.hanu(k, P, E, 0), smoothK);
-    tr(0.78, 2.5, (k) => R.hanu(1, P, E, 0.35 * k), smoothK);                                 // it comes at him
-    tr(2.5, 2.8, (k) => R.hanu(1 - k, P, E, 0.35), smoothK);
+    tr(0.78, 2.5, (k) => R.hanu(1, P, E, 0.10 * k), smoothK);                                 // it comes at him
+    tr(2.5, 2.8, (k) => R.hanu(1 - k, P, E, 0.10), smoothK);
     tr(2.62, 2.72, (k) => R.flash(0.7 * k), rawK);
     /* 3 · 2.8– · his eyes again: the medium on his feet, the rites */
     step(2.8, () => { handsRoot.visible = true; api.armR.visible = true; F.medStand(true); F.rite(true); F.asstLook(1); });
@@ -3718,7 +3832,10 @@
     fade(15.3, 16.0, 0.985, 0);
     tr(15.2, 20.2, (k, t) => {
       const up = sm(cl01((t - 15.4) / 0.9)), tip = sm(cl01((t - 17.0) / 0.7)) * (1 - sm(cl01((t - 18.6) / 0.6))), down = sm(cl01((t - 19.2) / 0.8));
-      F.cup.position.set(0.015, -0.36 + 0.2 * up - 0.3 * down + 0.03 * tip, -0.33 + 0.12 * tip);   // (at 0.24 m it filled the frame like a bucket)
+      /* (at 0.24 m it filled the frame like a bucket; at -0.16 / -0.33 it sat on the frame's bottom edge — 26° under the middle of
+         a 26° half-view — and the tip carried the drink itself out of frame: it rests at 20° under the middle now, and the tip
+         brings it up and in toward the lips, still at 19°) */
+      F.cup.position.set(0.015, -0.36 + 0.24 * up - 0.34 * down + 0.04 * tip, -0.33 + 0.1 * tip);
       F.cup.rotation.set(0.12 + 0.9 * tip, 0, 0);
     }, rawK);
     pitchTo(15.2, 16.4, 0.34, 0.1, smoothK);
@@ -3787,7 +3904,7 @@
     tr(5.0, 11.0, (k, t) => { const a = Math.max(0, 1 - (t - 5.0) / 2.4) + 0.4 * Math.max(0, Math.sin((t - 6.6) * 2.2)) * cl01((10.4 - t) / 1.0) * (t > 6.6 ? 1 : 0);
       camera.rotation.z = a * 0.03 * Math.sin(t * 27); }, rawK);
     // "Go! Get out!" — he is turned round and thrown out of the door, stumbling
-    sfx(6.2, 'as3B');                                  // 3.27 → 9.47
+    sfx(6.9, 'as3B');                                  // 3.27 → 10.17 (at 6.2 it was said into the roar's loudest half-second, 6.0–6.5)
     const W = walkRoute(api, [{ x: lunge.x, z: lunge.z }, ...outRoute(F, p0, { x: -2.0, z: 1.9 }).slice(1)], 6.7, 1.9, 1.2);
     yawTo(6.2, 6.75, toMed, W.headAt0, smoothK);
     pitchTo(6.2, 6.9, 0.08, -0.12, smoothK);

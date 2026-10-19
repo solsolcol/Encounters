@@ -1066,7 +1066,7 @@
       text: "[flatly, certain] Your house... the main door is facing the wrong way. Something followed your husband home.", secs: 7.16 },
     { id: "md3drink", who: "medium3", ch: "e3c3", where: "Play: the medium's remedy",
       text: "Burn this. Put the ash in water. Drink it, three days.", secs: 3.32 },
-    { id: "dv3father", who: "father3", ch: "e3c3", where: "Play: the second consultation, a father with his son",
+    { id: "dv3father", who: "father3", ch: "e3c3", where: "Play: the second consultation, a father asking about his son",
       text: "[tired, worried] Sifu, my son keeps crying every night. Cannot stop.", secs: 4.68 },
     { id: "md3read2", who: "medium3", ch: "e3c3", where: "Play: the medium's second reading",
       text: "[flatly] Your son got a fright. Something saw him at the void deck.", secs: 3.92 },

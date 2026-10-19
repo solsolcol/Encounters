@@ -27,6 +27,16 @@ if mode == 'trim':
     if ni and len(x) > ni: x[:ni] *= np.linspace(0,1,ni)[:,None]
     if no and len(x) > no: x[-no:] *= np.linspace(1,0,no)[:,None]
     print('%-16s %.2fs  peak %.2f dBFS  %dch' % (outp, len(x)/sr, 20*np.log10(np.abs(x).max()+1e-12), ch))
+elif mode == 'cut':     # v21.0: take [a, b) out, an equal-power crossfade at the join (a rest that reads as a dropout in a loop)
+    a, b = float(sys.argv[4]), float(sys.argv[5])
+    xf = float(sys.argv[6]) if len(sys.argv) > 6 else 0.12
+    n = int(xf*sr); A = x[:int(a*sr)+n].copy(); B = x[int(b*sr):].copy()
+    th = np.linspace(0, np.pi/2, n)[:,None]
+    mid = A[-n:]*np.cos(th) + B[:n]*np.sin(th)
+    x = np.concatenate([A[:-n], mid, B[n:]])
+    j = int(a*sr); w = int(0.25*sr)
+    print('%-16s %.2fs  cut %.2f-%.2f; join RMS %.1f dBFS (before %.1f / after %.1f)  %dch'
+          % (outp, len(x)/sr, a, b, db(x[j-w//2:j+w//2]), db(x[j-w-w//2:j-w//2]), db(x[j+w//2:j+w+w//2]), ch))
 elif mode == 'xloop':   # v21.0: crossfade only, the slow swells kept
     xf = float(sys.argv[4]) if len(sys.argv) > 4 else 1.5
     n = int(xf*sr); tail = x[-n:].copy(); x = x[:-n].copy()

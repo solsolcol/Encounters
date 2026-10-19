@@ -87,8 +87,9 @@ xloop raw/estatemorn_a.mp3 w_estatemorn.wav 2.0; enc estatemorn w_estatemorn.wav
 loop  raw/shrineamb_b.mp3  w_shrineamb.wav 2.0;  enc shrineamb w_shrineamb.wav -8.0 -8.0 96k 2
 
 # --- the music
-trim raw/e3dance_c.mp3 w_d0.wav 0.82 53.0 0.01; xloop w_d0.wav w_e3dance.wav 3.0; enc e3dance w_e3dance.wav -3.0 -3.0 96k 2
+# (the take rests 1.4 s at 19.30-20.74 — -35 to -44 dB, a dropout every time the bed comes round: cut out at the phrase boundary)
+trim raw/e3dance_c.mp3 w_d0.wav 0.82 53.0 0.01; python3 proc.py cut w_d0.wav w_d1.wav 18.48 19.92 0.12; xloop w_d1.wav w_e3dance.wav 3.0; enc e3dance w_e3dance.wav -3.0 -3.0 96k 2
 trim raw/e3shrine2_b.mp3 w_s0.wav 0.32 44.6 0.01; xloop w_s0.wav w_e3shrine.wav 3.0; enc e3shrine w_e3shrine.wav -4.0 -4.0 96k 2
 fx e3film3  raw/e3film3_b.mp3  0.01 53.3 2.50 -3.0
 fx e3close3 raw/e3close3_b.mp3 0.52 53.3 3.00 -3.0   # CHAD'S EAR (19 Oct): "Closing b music is better than closing a music"
-rm -f w_*.f32 w_d0.wav w_s0.wav w_e3shrine.wav w_mallamb.wav w_shopchant.wav w_dancemove.wav w_lorongamb.wav w_estatemorn.wav w_shrineamb.wav w_e3dance.wav
+rm -f w_*.f32 w_d0.wav w_d1.wav w_s0.wav w_e3shrine.wav w_mallamb.wav w_shopchant.wav w_dancemove.wav w_lorongamb.wav w_estatemorn.wav w_shrineamb.wav w_e3dance.wav

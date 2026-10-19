@@ -611,6 +611,14 @@ body.finePtr .wpnBtn{position:relative;margin-bottom:12px}
    exactly over the hands it is asking the player to watch) */
 #event.full.resist{align-items:flex-start;padding-bottom:0;background:transparent;
   padding-top:calc(max(14px,env(safe-area-inset-top)) + 18px + var(--objH,40px) + 12px)}
+/* v21.0: FOCUS — the world IS the minigame (a light shows on a thing round him; he taps the thing), so the running
+   panel stands at the TOP under the objective, small and see-through, and the scene is not dimmed. Centred, the
+   first build stood its panel over the very things it asked him to find (photographed on a phone: the candle under
+   the panel, only its light showing at the edge). The briefing is not 'full', so it keeps its own roomy panel. */
+#event.full.focus{align-items:flex-start;padding-bottom:0;background:transparent;
+  padding-top:calc(max(14px,env(safe-area-inset-top)) + 18px + var(--objH,40px) + 12px)}
+#event.full.focus .evpanel{width:min(84vw,320px);gap:6px;padding:9px 16px;background:rgba(7,8,11,.5)}
+#event.full.focus #evPrompt{font-size:1rem;letter-spacing:.14em;min-height:1.2em}
 #event.resist .evpanel{width:min(84vw,320px);gap:6px;padding:9px 16px;background:rgba(7,8,11,.5);
   transition:border-color .25s,box-shadow .25s}
 #event.resist #evPrompt{font-size:1.02rem;letter-spacing:.16em;min-height:1.2em;transition:color .2s}
@@ -709,6 +717,7 @@ body.finePtr .wpnBtn{position:relative;margin-bottom:12px}
    frame from the very clock the press is graded on: what is drawn is what is
    scored). Ungraded, both children stay hidden and the dot is as it was. */
 #evDot .dring2,#evDot .dlab{display:none}
+#evDot.graded{animation:none}   /* (the breathe animates opacity and an animation beats the frame's inline 1: the light dimmed by half while it was being graded) */
 #evDot.graded .dring2{display:block;position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;
   border-radius:50%;border:2px solid rgba(99,214,200,.92);box-shadow:0 0 10px rgba(99,214,200,.45);
   transform:scale(calc(1 + 1.6 * var(--k, 1)));opacity:calc(.35 + .65 * var(--k, 1))}
