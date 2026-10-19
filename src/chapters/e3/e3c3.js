@@ -109,7 +109,11 @@
     items: ['timkp'],
 
     musicVol: 0,
-    ambience: { beds: [] },
+    /* the mall's murmur through the glass; the radio's chant once the staff
+       man switches it on; THE MELODY NOBODY ELSE HEARS, from the third Namo
+       through the trance and into its film; the dance's cloth and feet —
+       driven every frame by mixBeds (e3c2's shape) */
+    ambience: { beds: [['mallamb', 0.3], ['shopchant', 0], ['e3dance', 0], ['dancemove', 0]] },
     voiceLine: null,
 
     words: {
@@ -133,7 +137,17 @@
       hotIncense: 'Take three joss sticks',
       hotStool: 'Sit on the stool',
       evAware: 'Stay present',
-      evAwareBrief: 'Something has come into your body, and you cannot stop it. But you are still here. Tap each thing you notice, the moment it shows itself.',
+      evAwareBrief: 'Something has come into your body, and you cannot stop it. But you are still here. When a light shows on something around you, tap it (or look at it and click) before its ring closes.',
+      lookWall: 'The framed amulets',
+      lookTim: 'The LP Tim in its case',
+      lookAltar: 'The altar',
+      lookMasters: 'The old masters',
+      tgBuddha: 'The Buddha',
+      tgCandle: 'A candle',
+      tgOwner: 'Uncle',
+      tgClock: 'The clock',
+      tgAuntie: 'The auntie, praying',
+      tgGirl: 'The girl\'s hands',
       presence: 'Something is moving your body.',
       presenceWarn: 'Sanity drops while it holds you.',
       noteTim: 'Wore the LP Tim Khun Paen the owner gave you.',
@@ -166,7 +180,7 @@
   function build(ctx) {
     const { THREE, GLTFLoader, cloneSkinned, scene, camera, yaw, pitch, LOW, kit, plantTrees,
             assetBytes, rescueTextures, redoShadows, cnv, makeHellNote,
-            getState, startDecision, worldSfx, warmSounds, HEAD_RE } = ctx;
+            getState, startDecision, worldSfx, warmSounds, soundOff, HEAD_RE } = ctx;
 
     const owned = [];
     let alive = true;
@@ -550,6 +564,9 @@
        either side, lotus bowls on the floor for Vesak, a red valance over the
        whole, and a strip of warm light washing the board. */
     const altarG = new THREE.Group(); shopG.add(altarG);
+    const flames = [];                                     // lit by the staff man at the celebration
+    const flameGlowTex = tex(makeGlowTex(THREE, cnv, [255, 196, 120]));
+    let radioLed = null;
     const ALT_TOP = ALTAR.h, T1 = ALT_TOP + 0.22, T2 = T1 + 0.22, T3 = T2 + 0.2;
     {
       const { x, z, w, d, h } = ALTAR;
@@ -591,7 +608,14 @@
         const top = new THREE.Mesh(new THREE.SphereGeometry(0.04, 12, 10), orange); top.position.set(x + s * 0.98, ALT_TOP + 0.11, z + 0.18); altarG.add(top);
       }
       // the candle flames (painted light)
-      for (const s of [-1, 1]) { const f = new THREE.Mesh(new THREE.SphereGeometry(0.012, 8, 6), matFlame); f.scale.set(1, 2.2, 1); f.position.set(x + s * 0.82, T1 + 0.25, z + 0.08); altarG.add(f); }
+      for (const s of [-1, 1]) {
+        const g = new THREE.Group(); g.position.set(x + s * 0.82, T1 + 0.25, z + 0.08); g.visible = false; altarG.add(g);
+        const f = new THREE.Mesh(new THREE.SphereGeometry(0.012, 8, 6), matFlame); f.scale.set(1, 2.2, 1); g.add(f);
+        const glow = new THREE.Mesh(new THREE.PlaneGeometry(0.17, 0.17), new THREE.MeshBasicMaterial({ map: flameGlowTex, transparent: true, depthWrite: false,
+          blending: THREE.AdditiveBlending, opacity: 0.75 }));
+        g.add(glow); g.userData = { core: f, glow };
+        flames.push(g);
+      }
       // lilies either side, lotus bowls on the floor in front of them
       for (const s of [-1, 1]) {
         thai('lily', x + s * 1.48, 0, z + 0.05, { s: 0.8, parent: altarG });
@@ -605,6 +629,8 @@
       box(0.42, 0.62, 0.36, x + 1.95, 0.31, z + 0.02, matWood, altarG);
       const radio = box(0.32, 0.16, 0.14, x + 1.95, 0.7, z + 0.02, matBlack, altarG);
       for (const s of [-1, 1]) { const sp = new THREE.Mesh(new THREE.CircleGeometry(0.045, 16), matDark); sp.position.set(x + 1.95 + s * 0.1, 0.7, z + 0.095); altarG.add(sp); }
+      radioLed = new THREE.Mesh(new THREE.CircleGeometry(0.007, 10), new THREE.MeshBasicMaterial({ color: 0x6aff8a }));
+      radioLed.position.set(x + 1.95, 0.755, z + 0.093); radioLed.visible = false; altarG.add(radioLed);
       solids.push(hidBox(0.42, 0.8, 0.36, x + 1.95, 0.4, z + 0.02));
       void radio;
     }
@@ -814,7 +840,14 @@
           if (!o.isBone) return;
           if (HEAD_RE.test(o.name) && !rig.head) rig.head = o;
           if (/Hips(_\d+)?$/.test(o.name) && !rig.hips) rig.hips = o;
+          if (/RightHand(_\d+)?$/.test(o.name) && !rig.handR) rig.handR = o;
+          if (/LeftHand(_\d+)?$/.test(o.name) && !rig.handL) rig.handL = o;
         });
+        /* the spine by HIERARCHY, lowest first (e3c2's v19.2: by name the
+           Meshy rigs give their chest the bow's big share) */
+        { const s0 = rig.hips && rig.hips.children.find(ch => ch.isBone && /spine/i.test(ch.name));
+          const s1 = s0 && s0.children.find(ch => ch.isBone && /spine/i.test(ch.name));
+          rig.spine = [s0, s1].filter(Boolean); }
         if (gltf.animations && gltf.animations.length) {
           rig.mixer = new THREE.AnimationMixer(g);
           rig.acts = {};
@@ -891,35 +924,186 @@
       _q.setFromEuler(_e);
       rig.head.quaternion.multiply(_q);
     }
-    /* a line said with the talking take under it, then back to rest */
+    /* a line said with the talking take under it, then back to rest — on
+       WALL time, so a line said under a splash ends when its words do; a man
+       sitting (or walking) only nods, since the talking take stands him up */
     function talk(rig, secs, take = 'Talk_with_Hands_Open') {
-      if (!rig || !rig.acts || !rig.acts[take]) { if (rig) rig.nod = secs; return; }
+      if (!rig) return;
+      if (rig.sitting || rig.path || !rig.acts || !rig.acts[take]) { rig.nod = secs; return; }
       rig.play(take, 1, 0.3);
-      rig.talkUntil = dayClock.t + secs;
+      rig.talkUntil = performance.now() / 1000 + secs;
     }
+    let shadowAt = 0;
     function peopleTick(wdt) {
+      const now = performance.now() / 1000;
+      let moving = false;
       for (const r of rigs) {
-        if (!r.mixer || !r.group.visible) continue;
-        if (r.talkUntil && dayClock.t > r.talkUntil) { r.talkUntil = 0; if (r.idle) r.play(r.idle, r.opts.rate || 1, 0.4); }
-        headPre(r);
+        if (!r.group.visible) continue;
+        if (r.path) { walkTick(r, wdt); moving = true; }
+        rigTurn(r, wdt);
+        if (!r.mixer) continue;
+        if (r.talkUntil && now > r.talkUntil) { r.talkUntil = 0; if (r.idle && !r.path) r.play(r.idle, r.opts.rate || 1, 0.4); }
+        headPre(r); spinePre(r);
         r.mixer.update(wdt);
-        headPost(r, wdt);
+        spinePost(r); headPost(r, wdt);
+        if (r.bow > 0.001) moving = true;
       }
       passerTick(wdt);
+      phoneTick();
+      /* the shadow maps are drawn on demand (v2.x): while someone walks or
+         bows, a few times a second (e3c2's v18.5), desktop only */
+      if (!LOW && moving && now - shadowAt > 0.25) { shadowAt = now; redoShadows(); }
     }
+    /* THE BOW (the krap) on a kneeler: about the rig's own right axis, laid
+       on what the take wrote and put back before it writes again (the v11.5
+       law — a take that holds still is not rewritten, and a bow would stack) */
+    const _ax = new THREE.Vector3(), _ax2 = new THREE.Vector3(), _q2 = new THREE.Quaternion(), _q3 = new THREE.Quaternion();
+    function spinePre(r) { if (r.spineWrote && r.spine) r.spine.forEach((b, i) => b.quaternion.copy(r.spineWrote[i])); }
+    function spinePost(r) {
+      if (!r.spine || !r.spine.length) return;
+      if (!r.spineWrote) r.spineWrote = r.spine.map(b => b.quaternion.clone());
+      else r.spine.forEach((b, i) => r.spineWrote[i].copy(b.quaternion));
+      const bow = r.bow || 0;
+      if (bow < 0.001) return;
+      const ry = r.group.rotation.y;
+      _ax.set(Math.cos(ry), 0, -Math.sin(ry));
+      r.spine.forEach((b, i) => {
+        b.parent.getWorldQuaternion(_q2);
+        _ax2.copy(_ax).applyQuaternion(_q2.invert());
+        b.quaternion.premultiply(_q3.setFromAxisAngle(_ax2, bow * (i === 0 ? 0.62 : 0.38)));
+      });
+    }
+    /* WALKING THE CAST: a rig on a path, its walk take at the rate the ground
+       covered asks for (v9.3 — the take's own speed, ~1.38 m/s for a 1.75 m
+       man, so it never glides), the body turning toward where it goes on an
+       ease (a corner is WALKED, v5.07); at the end it turns to `face` and
+       `then` decides what it does. A path obeys no collision (v5.03): every
+       one below is laid clear of the counters, the mats' people and the
+       altar's bowls, and was walked in the photographs. */
+    const WALK_NAT = 1.38 / 1.75;
+    function walkTo(r, pts, o = {}) {
+      if (!r) return;
+      r.path = { pts: pts.map(q => ({ x: q.x, z: q.z })), i: 0, v: o.v || 0.95, face: o.face, then: o.then || null };
+      r.talkUntil = 0; r.turnTo = null; r.look = 0;
+      if (r.acts && r.acts.Walking) r.play('Walking', (o.v || 0.95) / (WALK_NAT * (r.height || 1.7)), 0.35);
+    }
+    function walkTick(r, wdt) {
+      const P = r.path, g = r.group, tgt = P.pts[P.i];
+      const dx = tgt.x - g.position.x, dz = tgt.z - g.position.z, d = Math.hypot(dx, dz), step = P.v * wdt;
+      if (d <= step) {
+        g.position.x = tgt.x; g.position.z = tgt.z;
+        if (++P.i < P.pts.length) return;
+        r.path = null;
+        if (P.face !== undefined) r.turnTo = P.face;
+        if (P.then) P.then(r);
+        else if (r.idle && r.acts && r.acts[r.idle]) r.play(r.idle, r.opts.rate || 1, 0.4);
+        if (!r.path && r.cur === 'Walking' && r.idle && r.acts && r.acts[r.idle]) r.play(r.idle, r.opts.rate || 1, 0.4);
+        return;
+      }
+      g.position.x += dx / d * step; g.position.z += dz / d * step;
+      let a = Math.atan2(dx, dz) - g.rotation.y; a = Math.atan2(Math.sin(a), Math.cos(a));
+      g.rotation.y += a * (1 - Math.exp(-wdt * 6));
+    }
+    function rigTurn(r, wdt) {
+      if (r.turnTo === undefined || r.turnTo === null) return;
+      let a = r.turnTo - r.group.rotation.y; a = Math.atan2(Math.sin(a), Math.cos(a));
+      if (Math.abs(a) < 0.004) { r.group.rotation.y = r.turnTo; r.turnTo = null; return; }
+      r.group.rotation.y += a * (1 - Math.exp(-wdt * 4));
+    }
+    /* where a seated take puts a man's hips, in his own group's frame (so a
+       stool can be built under them wherever he sits — the v17.1 seat law:
+       the seat is ours, the hip height is the take's) */
+    function measureSeat(r, take, at) {
+      if (!r.acts || !r.acts[take] || !r.hips) return null;
+      const keep = r.cur;
+      r.play(take, 1, 0, false, at);
+      r.group.updateMatrixWorld(true);
+      r.hips.getWorldPosition(_v);
+      const out = r.group.worldToLocal(_v.clone());
+      if (keep && r.acts[keep]) { r.play(keep, r.opts.rate || 1, 0); r.mixer.update(0.0001); }
+      return out;
+    }
+    /* THE GLOW ON THE FLOOR where he is to kneel (e3c2's zone, in gold) */
+    function mkZone(x, z) {
+      const g = new THREE.Group(); g.position.set(x, 0.02, z); g.visible = false; shopG.add(g);
+      const disc = new THREE.Mesh(new THREE.CircleGeometry(0.5, 32),
+        new THREE.MeshBasicMaterial({ color: 0xf2c46a, transparent: true, opacity: 0.22, depthWrite: false, fog: false }));
+      disc.rotation.x = -Math.PI / 2; g.add(disc);
+      const ring = new THREE.Mesh(new THREE.RingGeometry(0.46, 0.54, 40),
+        new THREE.MeshBasicMaterial({ color: 0xffd98a, transparent: true, opacity: 0.8, depthWrite: false, fog: false,
+                                      blending: THREE.AdditiveBlending, side: THREE.DoubleSide }));
+      ring.rotation.x = -Math.PI / 2; ring.position.y = 0.004; g.add(ring);
+      const wave = new THREE.Mesh(new THREE.RingGeometry(0.48, 0.54, 40), ring.material.clone());
+      wave.rotation.x = -Math.PI / 2; wave.position.y = 0.006; wave.userData.moves = true; g.add(wave);
+      g.userData = { disc, ring, wave };
+      return g;
+    }
+    function zoneTick(g, t) {
+      if (!g.visible) return;
+      const { disc, ring, wave } = g.userData;
+      const k = (t % 2.0) / 2.0;
+      wave.scale.setScalar(1 + k * 0.9); wave.material.opacity = 0.7 * (1 - k);
+      ring.material.opacity = 0.6 + 0.3 * Math.sin(t * 3.1);
+      disc.material.opacity = 0.18 + 0.08 * Math.sin(t * 3.1);
+    }
+    const zone = mkZone(MAT.x, MAT.z);
+    /* THE GIRL'S PHONE, raised to film him: it rides between her hands, a
+       hand higher, its back (the lens) turned to him and its lit screen to
+       her — placed in the world every frame, so no bone's axes are guessed */
+    const girlPhone = new THREE.Group(); girlPhone.visible = false; shopG.add(girlPhone);
+    box(0.072, 0.15, 0.009, 0, 0, 0, matBlack, girlPhone, false);
+    { const sc = new THREE.Mesh(new THREE.PlaneGeometry(0.064, 0.138), new THREE.MeshBasicMaterial({ color: 0xcfe8ff }));
+      sc.position.z = -0.0052; sc.rotation.y = Math.PI; girlPhone.add(sc);
+      const lens = new THREE.Mesh(new THREE.CircleGeometry(0.006, 12), new THREE.MeshBasicMaterial({ color: 0x222830 }));
+      lens.position.set(-0.022, 0.058, 0.0052); girlPhone.add(lens);
+      const rec = new THREE.Mesh(new THREE.CircleGeometry(0.003, 8), new THREE.MeshBasicMaterial({ color: 0xff3020 }));
+      rec.position.set(-0.008, 0.058, 0.0052); girlPhone.add(rec); }
+    const _ph = new THREE.Vector3(), _ph2 = new THREE.Vector3();
+    function phoneTick() {
+      if (!girlPhone.visible || !girl.handR || !girl.handL) return;
+      girl.handR.getWorldPosition(_ph); girl.handL.getWorldPosition(_ph2);
+      _ph.add(_ph2).multiplyScalar(0.5);
+      camera.getWorldPosition(_cp);
+      _ph2.copy(_cp).sub(_ph).setY(0).normalize();
+      girlPhone.position.set(_ph.x + _ph2.x * 0.08, _ph.y + 0.16, _ph.z + _ph2.z * 0.08);
+      girlPhone.lookAt(_cp.x, girlPhone.position.y, _cp.z);
+      girlPhone.rotateY(0.42);                          // a little edge-on, so the lit screen shows
+    }
+    let passerHeld = false, danceHalt = false;
 
     /* THE SHOP'S PEOPLE, before the chant */
     const SIT_W = 'mixamo.com', SHOUT = 'Armature|Sit_Shout_Hands_on_Mouth|baselayer';
-    const owner  = mkRig('owner', { x: OWN.x, z: OWN.z, ry: -Math.PI / 2, height: 1.66, idle: 'Idle_9', look: 1 });
+    let ownerStool = null;
+    const owner  = mkRig('owner', { x: OWN.x, z: OWN.z, ry: -Math.PI / 2, height: 1.66, idle: 'Idle_9', look: 1,
+      then: (r) => {
+        const hl = measureSeat(r, SIT_W, 0.05);
+        if (!hl) return;
+        /* his own seated take's hips, carried to the stool's spot and turn */
+        const c = Math.cos(OWN_SIT.ry), sn = Math.sin(OWN_SIT.ry);
+        ownerStool = plasticStool(shopG, OWN_SIT.x + hl.x * c + hl.z * sn, OWN_SIT.z - hl.x * sn + hl.z * c, Math.max(0.3, hl.y - 0.1), 0xc8261c);
+        ownerStool.visible = !!r.sitting;
+      } });
     const staff  = mkRig('staffman', { x: STAFF.x, z: STAFF.z, ry: Math.PI / 2, height: 1.73, idle: 'Idle_9', look: 0.6 });
-    const girl   = mkRig('cg_woman2hd', { x: -0.62, z: -6.02, ry: Math.PI, height: 1.6, idle: 'kneel', kneel: true });
+    const girl   = mkRig('cg_woman2hd', { x: -0.55, z: -5.5, ry: Math.PI, height: 1.6, idle: 'kneel', kneel: true });
     const manW   = mkRig('cg_man2hd', { x: 0.55, z: -5.5, ry: Math.PI, height: 1.72, idle: 'pray', kneel: true });
     const auntie = mkRig('sitclap', { x: -2.45, z: -4.85, ry: Math.PI * 0.82, height: 1.22, idle: SIT_W, at: 0.05, seated: true, stool: 0xc8261c });
     const youth  = mkRig('sitshout', { x: 2.42, z: -4.85, ry: -Math.PI * 0.82, height: 1.27, idle: SHOUT, at: 0.0, seated: true, stool: 0x2a64b4 });
-    const passer = mkRig('botak', { parent: mallG, x: -10, z: 2.9, ry: Math.PI / 2, height: 1.72, idle: 'Walking' });
+    const passer = mkRig('botak', { parent: mallG, x: -10, z: 2.9, ry: Math.PI / 2, height: 1.72, idle: 'Walking',
+      then: (r) => r.model.traverse(o => { if (o.isMesh) o.castShadow = false; }) });   // a walker's shadow would redraw the maps forever
+    /* everyone back where the day began (a Retry, a replay) */
+    function castHome() {
+      for (const r of rigs) { r.path = null; r.turnTo = null; r.talkUntil = 0; r.nod = 0; r.bow = 0; }
+      owner.sitting = false; owner.idle = 'Idle_9'; owner.look = 1;
+      owner.group.position.set(OWN.x, 0, OWN.z); owner.group.rotation.y = -Math.PI / 2;
+      if (owner.acts && owner.acts.Idle_9) owner.play('Idle_9', 1, 0);
+      if (ownerStool) ownerStool.visible = false;
+      staff.look = 0.6; staff.group.position.set(STAFF.x, 0, STAFF.z); staff.group.rotation.y = Math.PI / 2;
+      if (staff.acts && staff.acts.Idle_9) staff.play('Idle_9', 1, 0);
+      for (const r of [girl, manW, auntie, youth]) r.look = 0;
+    }
     const PASS = { x0: -12.2, x1: 12.2, z: 2.9, v: 1.3, dir: 1 };
     function passerTick(wdt) {
-      if (!passer.ready || !passer.group.visible) return;
+      if (!passer.ready || !passer.group.visible || passerHeld) return;
       const g = passer.group;
       g.position.x += PASS.dir * PASS.v * wdt;
       if (g.position.x > PASS.x1) { PASS.dir = -1; g.rotation.y = -Math.PI / 2; }
@@ -939,7 +1123,7 @@
     walls.push(box(9, SHRINE_IN.H, 0.2, SHR.x, SHRINE_IN.H / 2, 2.3, matDark));
 
     /* ------------------------------------------------------ the chapter clock */
-    const PHASES = ['browse', 'owner', 'wear', 'join', 'chant', 'trance',
+    const PHASES = ['browse', 'owner', 'gift', 'wear', 'join', 'chant', 'trance',
                     'arrive', 'wait', 'called', 'decide'];
     let phase = 'browse';
     let booted = false;
@@ -953,32 +1137,53 @@
 
     const speak = { until: 0, pending: null };
     function speakReset() { speak.until = 0; speak.pending = null; }
+    /* A LINE IS A BEAT, HEARD OR NOT: a muted game (soundOff) speaks it
+       silently on its own length, and a line whose bytes have not landed is
+       held for a moment (v8.0) and then spoken silently too — the people's
+       moves and the story are chained on a line's START, so a line that is
+       dropped must never stop the chapter */
     function sayLine(name, vol = 1, onStart, pan) {
-      if (!worldSfx) return false;
       if (dayClock.t < speak.until) return false;
-      const start = () => { speak.until = dayClock.t + (SECS[name] || 2.5) + 0.25; if (onStart) onStart(); };
+      const start = () => { speak.until = dayClock.t + (SECS[name] || 2.5) + 0.25; heard.add(name); if (onStart) onStart(); };
+      if ((soundOff && soundOff()) || !worldSfx) { start(); return true; }
       if (worldSfx(name, vol, 1, pan)) { start(); return true; }
-      speak.pending = { name, vol, start, pan, give: dayClock.t + 3 };
+      speak.pending = { name, vol, start, pan, give: dayClock.t + 1.6 };
       speak.until = dayClock.t + 0.2;
       return true;
     }
     function runSpeak() {
       const q = speak.pending;
       if (!q || dayClock.t < speak.until) return;
-      if (dayClock.t > q.give) { speak.pending = null; return; }
+      if (dayClock.t > q.give || (soundOff && soundOff())) { speak.pending = null; q.start(); return; }
       if (worldSfx(q.name, q.vol, 1, q.pan)) { speak.pending = null; q.start(); }
       else speak.until = dayClock.t + 0.2;
     }
+    /* one voice at a time, in order, never dropped (the v9.5 count-off's
+       queue): a held line holds the queue rather than losing its words */
     const lineQ = [];
-    function queueLine(name, onStart, vol = 1) { lineQ.push({ name, onStart, vol }); }
+    function queueLine(name, onStart, vol = 1, pan = 0) { lineQ.push({ name, onStart, vol, pan }); }
+    function queueGap(secs) { lineQ.push({ gap: secs }); }
     function runQueue() {
       if (!lineQ.length || speak.pending || dayClock.t < speak.until) return;
       const q = lineQ.shift();
-      sayLine(q.name, q.vol, q.onStart, 0);
+      if (q.gap) { speak.until = dayClock.t + q.gap; return; }
+      sayLine(q.name, q.vol, q.onStart, q.pan);
     }
+    function panAt(x, z) {
+      const dx = x - yaw.position.x, dz = z - yaw.position.z;
+      const a = Math.atan2(dx, -dz) + yaw.rotation.y;
+      return THREE.MathUtils.clamp(Math.sin(a) * 0.75, -0.75, 0.75);
+    }
+
+    /* the play-time voices and sounds, decoded ahead (the seventeenth seam,
+       v8.0: a line asked for before its bytes have decoded plays nothing) */
+    if (warmSounds) warmSounds(['ow3hello', 'z3look1', 'z3look2', 'z3look3', 'z3look4', 'ow3call', 'ow3gift1', 'ow3gift2',
+                                'z3thanks', 'ow3good', 'ow3namo', 'z3shift1', 'z3shift2', 'z3night',
+                                'casesnap', 'glasscase', 'candlelit', 'torchclick', 'matkneel', 'e3bell', 'presencein']);
 
     /* ------------------------------------------------------------ the phases */
     const inShrine = (x) => x < -100;
+    const W = DATA.words;
     function setPhase(p, opts) {
       phase = p;
       if (kit) kit.setPhase(p);
@@ -986,11 +1191,405 @@
     }
     function objectiveFor(p, opts) {
       if (!kit) return;
-      const W = DATA.words;
       const obj = { browse: W.objBrowse, owner: W.objOwner, wear: W.objWear, join: W.objJoin,
                     chant: W.objChant, arrive: W.objIncense, wait: W.objWait }[p];
       kit.objective(obj || null, opts);
-      kit.waypoint(null);
+      /* the mat's own "!" floats over its glow (e3c2's v19.4); the owner is a
+         hotspot with his own mark — one marker for one thing (v19.2) */
+      kit.waypoint(p === 'join' ? { x: MAT.x, y: 0.9, z: MAT.z } : null);
+    }
+    /* the receipt is the note (v7.3): a beat that banks is paid once, whatever
+       a Continue replays */
+    function bank(note, s = 0, a = 0) {
+      if (!kit || !note) return;
+      const got = kit.getConduct ? kit.getConduct().notes : [];
+      if (got.includes(note)) return;
+      kit.conduct({ note, s, a });
+    }
+
+    /* ================================================ PLAY A · THE SHOP
+       browse → owner → gift → wear → join → chant → trance (the plan's §2.2).
+       Every beat on the chapter clock (wall time, v7.1); whether the LP Tim is
+       worn is read off the bag every frame (v11.6 / v14.7), so a Continue, a
+       bag opened at the wrong moment or an amulet taken off again all land on
+       the right order. */
+    const wallNow = () => performance.now() / 1000;
+    const looked = new Set();
+    let called = false, gifted = false, wornDone = false, seated = null, turning = null, facing = null,
+        bowing = null, chant = null, trance = null, caseK = 0, caseTo = 0, celebrate = null,
+        flamesOn = false, radioOn = false, curTgt = 0, browseT0 = -1;
+    const wornNow = () => !!kit && kit.equipped('timkp');
+    const BUDDHA_FACE = { x: 0, y: T3 + BUDDHA_H * 1.62 * 0.8, z: ALTAR.z - 0.18 };
+    const faceBuddha = (p = MAT) => Math.atan2(-(BUDDHA_FACE.x - p.x), -(BUDDHA_FACE.z - p.z));
+
+    /* 1 · BROWSING — four things to look at, each a line of his; the owner
+       calls him over once he has looked at two, or walks up, or has wandered
+       for long enough */
+    const LOOKS = {
+      wall:    { line: 'z3look1' },
+      tim:     { line: 'z3look2' },
+      altar:   { line: 'z3look3' },
+      masters: { line: 'z3look4' }
+    };
+    function lookAt(k) {
+      if (phase !== 'browse' && phase !== 'owner') return false;
+      if (looked.has(k)) return false;
+      looked.add(k);
+      queueLine(LOOKS[k].line);
+      if (looked.size >= 2 && !called) after(0.5, () => ownerCalls());
+      return true;
+    }
+    function ownerCalls() {
+      if (called || phase !== 'browse') return;
+      called = true;
+      setPhase('owner');
+      owner.look = 1;
+      queueGap(0.4);
+      queueLine('ow3call', () => talk(owner, SECS.ow3call), 1, panAt(OWN.x, OWN.z));
+    }
+
+    /* 2 · THE GIFT — at his counter the owner lifts the acrylic lid off the
+       LP Tim's own case, says why today, and holds it out; the ITEM UNLOCKED
+       splash shows it turning (Chad: "The player still gets to browse the
+       amulet shop in play, get the lp tim amulet") */
+    function giftBegin() {
+      if (phase !== 'owner') return false;
+      setPhase('gift');
+      /* he is at the counter now: a look's line or the owner's call still
+         waiting in the queue is dropped (the one already playing finishes),
+         so the owner speaks the moment he can — not after thirteen seconds of
+         lines about the shop the player has already left behind */
+      lineQ.length = 0;
+      if (kit) kit.root(true);
+      faceTo({ x: OWN.x, y: 1.32, z: OWN.z }, 0.8);
+      owner.look = 1;
+      queueGap(0.2);
+      queueLine('ow3gift1', () => {
+        talk(owner, SECS.ow3gift1);
+        after(2.4, () => { caseTo = 1; if (worldSfx) worldSfx('casesnap', 0.7, 1, panAt(LPT.x, LPT.z)); });
+        after(SECS.ow3gift1 + 0.3, () => {
+          queueLine('ow3gift2', () => {
+            talk(owner, SECS.ow3gift2);
+            after(0.7, takeTim);
+            after(SECS.ow3gift2 + 0.35, giveTim);
+          }, 1, panAt(OWN.x, OWN.z));
+        });
+      }, 1, panAt(OWN.x, OWN.z));
+      return true;
+    }
+    function takeTim() { lpAmulet.visible = false; lpHalo.visible = false; if (worldSfx) worldSfx('glasscase', 0.35, 1.2, panAt(LPT.x, LPT.z)); }
+    function giveTim() {
+      if (gifted) return;
+      gifted = true;
+      takeTim();
+      if (kit && !kit.has('timkp')) kit.give('timkp');
+      const ok = kit && kit.unlock && kit.unlock('timkp', { onClose: afterUnlock });
+      if (!ok) afterUnlock();
+    }
+    function afterUnlock() {
+      if (phase !== 'gift') return;
+      caseTo = 0;
+      if (kit) kit.root(false);
+      setPhase('wear');
+    }
+
+    /* 3 · WEARING IT — the order stands until the bag says it is on his
+       chest; taking it off again asks again, with no COMPLETE (v8.7) */
+    function wearTick() {
+      if (phase === 'wear' && wornNow()) {
+        bank(W.noteTim, 0, 2);
+        setPhase('join');
+        if (!wornDone) {
+          wornDone = true;
+          queueGap(0.6);
+          queueLine('z3thanks');
+          queueGap(0.3);
+          queueLine('ow3good', () => { talk(owner, SECS.ow3good); celebrateBegin(); }, 1, panAt(OWN.x, OWN.z));
+        }
+        return;
+      }
+      if (phase === 'join' && !seated) {
+        const want = wornNow() ? W.objJoin : W.objWear;
+        if (kit && kit.objective && objWas !== want) {
+          objWas = want;
+          kit.objective(want, { complete: false });
+          kit.waypoint(wornNow() ? { x: MAT.x, y: 0.9, z: MAT.z } : null);
+        }
+      }
+    }
+    let objWas = null;
+
+    /* 4 · THE CELEBRATION — the staff man lights the two altar candles and
+       switches on the radio's chant; the owner comes round his counter to his
+       stool at the front; the free mat glows. Laid out on the people's own
+       paths (wall time, the walk take at the rate the ground asks for). */
+    const OWN_SIT = { x: 1.72, z: -5.7 };
+    OWN_SIT.ry = Math.atan2(BUDDHA_FACE.x - OWN_SIT.x, BUDDHA_FACE.z - OWN_SIT.z);
+    const STAFF_AT = { x: -0.25, z: -3.55 };          // behind the mats, where staff stand while customers kneel
+    const RADIO_AT = { x: 1.95, z: -6.12 };
+    function celebrateBegin() {
+      if (celebrate) return;
+      celebrate = { ready: false, ownerSat: false, staffDone: false };
+      // the staff man: round his counter, the left candle, the right candle, the radio, then the back
+      walkTo(staff, [{ x: -3.85, z: -4.45 }, { x: -2.0, z: -5.72 }, { x: -0.95, z: -6.02 }], {
+        v: 1.05, face: Math.PI,
+        then: () => after(0.9, () => { lightFlame(0); walkTo(staff, [{ x: 0.95, z: -6.02 }], { v: 0.9, face: Math.PI,
+          then: () => after(0.9, () => { lightFlame(1); walkTo(staff, [{ x: 1.55, z: -5.8 }, RADIO_AT], { v: 0.9, face: Math.PI,
+            then: () => after(0.8, () => { radioSwitch(true); walkTo(staff, [{ x: 1.15, z: -5.3 }, STAFF_AT], { v: 1.0,
+              face: Math.atan2(BUDDHA_FACE.x - STAFF_AT.x, BUDDHA_FACE.z - STAFF_AT.z),
+              then: () => { celebrate.staffDone = true; staff.look = 0; } }); }) }); }) }); })
+      });
+      // the owner, a little after: round his counter's end to his stool
+      after(3.5, () => walkTo(owner, [{ x: 3.98, z: -4.3 }, { x: 3.0, z: -5.55 }, { x: OWN_SIT.x + 0.45, z: OWN_SIT.z + 0.1 }], {
+        v: 0.85, then: () => sitOwner(false)
+      }));
+    }
+    function lightFlame(i) {
+      flamesOn = true; flames[i].visible = true;
+      if (worldSfx) worldSfx('candlelit', 0.55, 1, panAt(flames[i].position.x, ALTAR.z));
+    }
+    function radioSwitch(on) {
+      radioOn = on; radioLed.visible = on;
+      if (on && worldSfx) worldSfx('torchclick', 0.45, 0.8, panAt(RADIO_AT.x, ALTAR.z));
+    }
+    function sitOwner(instant) {
+      const r = owner;
+      r.path = null; r.turnTo = null;
+      r.group.position.set(OWN_SIT.x, 0, OWN_SIT.z);
+      r.group.rotation.y = OWN_SIT.ry;
+      r.sitting = true; r.idle = SIT_W; r.look = 0;
+      if (r.acts && r.acts[SIT_W]) r.play(SIT_W, 1, instant ? 0 : 0.7);
+      if (ownerStool) ownerStool.visible = true;
+      if (celebrate) celebrate.ownerSat = true;
+    }
+    /* a resume past the celebration: everyone where the chant finds them */
+    function snapCelebration() {
+      celebrate = { ready: true, ownerSat: true, staffDone: true };
+      staff.path = null; staff.group.position.set(STAFF_AT.x, 0, STAFF_AT.z);
+      staff.group.rotation.y = Math.atan2(BUDDHA_FACE.x - STAFF_AT.x, BUDDHA_FACE.z - STAFF_AT.z); staff.look = 0;
+      if (staff.acts && staff.idle) staff.play(staff.idle, 1, 0);
+      sitOwner(true);
+      flames.forEach(f => { f.visible = true; }); flamesOn = true;
+      radioSwitch(false); radioOn = true; radioLed.visible = true;
+    }
+
+    /* 5 · THE MAT — step into the glow (or press) and he kneels, hands
+       together, facing the Buddha (e3c2's kneel, glide and turn) */
+    function kneel() {
+      if (phase !== 'join' || seated || !wornNow()) return;
+      seated = 'mat';
+      if (kit) kit.root(true);
+      if (worldSfx) worldSfx('matkneel', 0.8);
+      turnTo(faceBuddha(), 1.0, { y: 0.98, span: 1.35, lo: -0.75, hi: 0.55, pos: MAT, pitch: 0.18 }, () => {
+        if (kit && kit.pray) kit.pray(true, { secs: 1.2, y: -0.33 });
+      });
+      setPhase('chant');
+      chant = { t0: -1 };
+    }
+    function turnTo(to, secs, o, done) {
+      turning = { t: 0, from: yaw.rotation.y, to, secs, y: o.y, span: o.span, lo: o.lo, hi: o.hi, done,
+                  pos: o.pos || null, p0: { x: yaw.position.x, z: yaw.position.z }, pitch: o.pitch, pt0: pitch.rotation.x };
+    }
+    function turnTick(wdt) {
+      if (!turning) return;
+      const T2 = turning;
+      T2.t += wdt / T2.secs;
+      const k = smooth(Math.min(1, T2.t));
+      let d = T2.to - T2.from; while (d > Math.PI) d -= Math.PI * 2; while (d < -Math.PI) d += Math.PI * 2;
+      yaw.rotation.y = T2.from + d * k;
+      if (T2.pos) { yaw.position.x = T2.p0.x + (T2.pos.x - T2.p0.x) * k; yaw.position.z = T2.p0.z + (T2.pos.z - T2.p0.z) * k; }
+      if (T2.pitch != null) pitch.rotation.x = T2.pt0 + (T2.pitch - T2.pt0) * k;
+      if (kit) kit.pose('lying', { y: T2.y, yaw: yaw.rotation.y, span: 0.02, pitchLo: Math.min(T2.lo, pitch.rotation.x - 0.01), pitchHi: Math.max(T2.hi, pitch.rotation.x + 0.01), secs: 0.9 });
+      if (T2.t >= 1) {
+        turning = null;
+        if (kit) kit.pose('lying', { y: T2.y, yaw: T2.to, span: T2.span, pitchLo: T2.lo, pitchHi: T2.hi, secs: 0.05 });
+        if (T2.done) T2.done();
+      }
+    }
+    /* a standing look turned onto something (the owner at the gift) */
+    function faceTo(p, secs) {
+      camera.getWorldPosition(_cp);
+      const toY = Math.atan2(-(p.x - yaw.position.x), -(p.z - yaw.position.z));
+      const toP = Math.atan2(p.y - _cp.y, Math.hypot(p.x - yaw.position.x, p.z - yaw.position.z));
+      facing = { t: 0, secs, y0: yaw.rotation.y, p0: pitch.rotation.x, y1: toY, p1: toP };
+    }
+    function faceTick(wdt) {
+      if (!facing) return;
+      const F = facing; F.t += wdt / F.secs;
+      const k = smooth(Math.min(1, F.t));
+      let d = F.y1 - F.y0; d = Math.atan2(Math.sin(d), Math.cos(d));
+      yaw.rotation.y = F.y0 + d * k;
+      pitch.rotation.x = F.p0 + (F.p1 - F.p0) * k;
+      if (F.t >= 1) facing = null;
+    }
+
+    /* 6 · THE CHANT — once the owner sits and the radio is on: the shop's
+       small bell, the krap (three bows, the room and he together), and the
+       owner's Namo tassa three times over the radio. On the third Namo a
+       Thai melody comes up that nobody else hears, and the hands start to
+       part on their own. */
+    function chantTick() {
+      if (phase !== 'chant' || !chant || turning) return;
+      if (chant.t0 < 0) {
+        if (!celebrate || !celebrate.ownerSat || !radioOn) return;
+        chant.t0 = dayClock.t;
+        after(0.6, () => { if (worldSfx) worldSfx('e3bell', 0.45, 1, panAt(0, ALTAR.z)); });
+        after(1.1, () => { bowing = { t0: dayClock.t, applied: 0 }; });
+        after(8.4, () => queueLine('ow3namo', () => {
+          owner.nod = SECS.ow3namo;
+          after(12.3, tranceStirs);                      // the third Namo
+          after(SECS.ow3namo + 0.2, () => queueLine('z3shift1', () => {
+            if (kit && kit.hands) kit.hands(0.45, { secs: 2.4 });
+            after(SECS.z3shift1 + 0.5, riseUp);          // and as his words end, he rises
+          }));
+        }, 1, panAt(OWN_SIT.x, OWN_SIT.z)));
+      }
+    }
+    /* the krap: the lens dips three times and comes back, riding on his own
+       look (e3c2's v19.2 law); the two kneeling in front bow with him */
+    function bowTick() {
+      const t = bowing ? dayClock.t - bowing.t0 : -1;
+      let b = 0;
+      if (t >= 0) for (const [a0, a1] of [[0.25, 2.25], [2.55, 4.55], [4.85, 6.85]]) { const u = (t - a0) / (a1 - a0); if (u > 0 && u < 1) b = Math.sin(u * Math.PI); }
+      for (const r of [girl, manW]) r.bow = b;
+      if (!bowing) return;
+      if (t < 7.3 && seated) {
+        const base = pitch.rotation.x - bowing.applied;
+        const p2 = Math.max(-0.75, Math.min(0.55, base - b * 0.62));
+        pitch.rotation.x = p2; bowing.applied = p2 - base;
+      }
+      if (t > 7.6) { bowing = null; for (const r of [girl, manW]) r.bow = 0; }
+    }
+    function tranceStirs() {
+      if (phase !== 'chant' || trance) return;
+      danceTo = 1;                                         // the melody nobody else hears
+      if (worldSfx) worldSfx('presencein', 0.75);
+      if (kit) { if (kit.hands) kit.hands(0.2, { secs: 2.6 }); kit.presence(0.12); }
+    }
+    function riseUp() {
+      if (phase !== 'chant') return;
+      seated = null;
+      if (kit) {
+        kit.pose('standing', { secs: 2.2 });
+        if (kit.hands) kit.hands(0.8, { secs: 2.0 });
+        kit.presence(0.3);
+      }
+      for (const r of [owner, staff, auntie, youth]) r.look = 1;
+      girl.look = 0.8; manW.look = 0.8;
+      owner.nod = 0;
+      queueGap(0.4);
+      queueLine('z3shift2', () => { if (kit && kit.hands) kit.hands(1, { secs: 1.6 }); });
+      after(1.0, () => beginTrance());
+    }
+
+    /* 7 · THE TRANCE — the body dances; the eyes are still his. A turn that
+       is not his carries him round the shop, lingering on whatever the
+       minigame is asking him to notice — STAY PRESENT: the case file's own
+       sentence ("I was conscious the whole time. I knew what I was doing and
+       I knew what was happening around me") as a thing to do. The dance is
+       applied as DELTAS on his own look (v11.1), so a mouse still owns where
+       the eyes go. */
+    const headOf = (r, fb) => { if (r.head) { r.head.getWorldPosition(_tg); return { x: _tg.x, y: _tg.y + 0.06, z: _tg.z }; } return fb; };
+    const handsOf = (r, fb) => {
+      if (r.handR && r.handL) { r.handR.getWorldPosition(_tg); r.handL.getWorldPosition(_tg2); return { x: (_tg.x + _tg2.x) / 2, y: (_tg.y + _tg2.y) / 2, z: (_tg.z + _tg2.z) / 2 }; }
+      return fb;
+    };
+    const _tg = new THREE.Vector3(), _tg2 = new THREE.Vector3();
+    const TGTS = [
+      { label: W.tgBuddha, at: () => BUDDHA_FACE },
+      { label: W.tgCandle, at: () => ({ x: flames[1].position.x, y: flames[1].position.y, z: flames[1].position.z }) },
+      { label: W.tgOwner,  at: () => headOf(owner, { x: OWN_SIT.x, y: 1.25, z: OWN_SIT.z }) },
+      { label: W.tgClock,  at: () => CLOCK },
+      { label: W.tgAuntie, at: () => handsOf(auntie, { x: -2.45, y: 0.95, z: -4.85 }) },
+      { label: W.tgGirl,   at: () => handsOf(girl, { x: -0.55, y: 0.85, z: -5.6 }) }
+    ].map((tg, i) => ({ label: tg.label, at: tg.at, pos: () => { curTgt = i; return tg.at(); } }));
+    function beginTrance() {
+      if (phase !== 'chant') return;
+      setPhase('trance');
+      trance = { t: 0, yaw: yaw.rotation.y, py: pitch.rotation.x, appY: yaw.rotation.y, appP: pitch.rotation.x, ev: false, done: false };
+      curTgt = 0;
+      after(SECS.z3shift2 + 0.9, beginAware);
+    }
+    function beginAware() {
+      if (!trance || trance.ev || !kit) return;
+      trance.ev = true;
+      kit.event({ kind: 'focus', graded: true, label: W.evAware, brief: W.evAwareBrief, demo: 'spot',
+                  targets: TGTS, each: 3.2, react: [0.6, 0.95, 1.35, 1.8], tol: 110,
+                  missCost: 5, award: { stat: 'awareness', per: 1, hi: 12 } })
+        .then(r => { if (!trance || !r || r.aborted) return; awareDone(r); });
+    }
+    function awareDone(r) {
+      trance.done = true;
+      bank(r.ok ? W.noteAware : W.noteLost);
+      after(1.4, startTranceFilm);
+    }
+    function startTranceFilm() {
+      if (phase !== 'trance' || !kit || !kit.film) return;
+      if (kit.presence) kit.presence(0);
+      if (!kit.film('trance', { onDone: (o) => toShrine(false, o) })) toShrine(false);
+    }
+    function tranceTick(wdt) {
+      const T = trance; if (!T) return;
+      T.t += wdt;
+      camera.getWorldPosition(_cp);
+      const P = TGTS[Math.min(TGTS.length - 1, curTgt)].at();
+      // its bearing, unwrapped onto the way the dance turns (to his right)
+      let b = Math.atan2(-(P.x - yaw.position.x), -(P.z - yaw.position.z));
+      while (b > T.yaw + 0.7) b -= Math.PI * 2;
+      while (b < T.yaw - Math.PI * 2 + 0.7) b += Math.PI * 2;
+      /* the thing sits off the middle, alternately left and right, by about
+         half what a narrow screen can show (a phone sees ~0.3 rad each side) */
+      const half = Math.atan(Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.aspect);
+      const off = THREE.MathUtils.clamp(half * 0.45, 0.08, 0.24) * (curTgt % 2 ? 1 : -1);
+      const want = (T.done ? T.yaw - 0.5 : b + off);
+      const dy = want - T.yaw;
+      T.yaw += THREE.MathUtils.clamp(dy * (1 - Math.exp(-wdt * 1.4)), -0.8 * wdt, 0.8 * wdt);
+      const pWant = THREE.MathUtils.clamp(Math.atan2(P.y - _cp.y, Math.hypot(P.x - _cp.x, P.z - _cp.z)), -0.7, 0.6) - 0.04;
+      T.py += (pWant - T.py) * (1 - Math.exp(-wdt * 1.6));
+      const sway = 0.09 * Math.sin(T.t * 1.25) + 0.035 * Math.sin(T.t * 2.9 + 0.7);
+      const nod = 0.05 * Math.sin(T.t * 1.7 + 1.1);
+      const Y = T.yaw + sway, Pp = T.py + nod;
+      yaw.rotation.y += Y - T.appY; T.appY = Y;
+      pitch.rotation.x += Pp - T.appP; T.appP = Pp;
+      // the feet drift a hand's breadth round the mat as it turns him
+      yaw.position.x = MAT.x + 0.07 * Math.sin(T.t * 0.7);
+      yaw.position.z = MAT.z + 0.05 * Math.sin(T.t * 0.9 + 0.8);
+    }
+
+    /* 8 · AWAY — the trance film ends on black (CP5); under it he is put in
+       the medium's shrine that night, its light on, warmed, and the black
+       lifts on "That night... I went." */
+    const SHRINE_NIGHT = {
+      stops: [[0.00, '#04060c'], [0.25, '#060912'], [0.55, '#080d1a'], [1.00, '#0b1224']],
+      bg: 0x04060c, fog: [0x0a0b10, 0.018],
+      hemi: [0xffd2a8, 0x2a1410, 0.55], key: [0xffb07a, 0.55, -2, 6, 3], fill: [0x6a7cff, 0.10],
+      stars: 0.5, moon: 0, sun: 0, clouds: 0,
+      vmHemi: [0xffd2a8, 0x2a1410, 0.6], vmKey: [0xffb07a, 0.5]
+    };
+    const ARRIVE = { x: SHR.x, z: 1.2 };
+    function placeAtShrine() {
+      yaw.position.x = ARRIVE.x; yaw.position.z = ARRIVE.z;
+      yaw.rotation.y = 0; pitch.rotation.x = -0.02;
+      if (kit) { kit.daylight(SHRINE_NIGHT, 0); kit.pose('standing', { secs: 0.05 }); }
+    }
+    function toShrine(resumed) {
+      trance = null; seated = null; turning = null; facing = null; bowing = null;
+      danceTo = 0;
+      if (kit) {
+        kit.root(true);
+        if (kit.pray) kit.pray(false, { secs: 0 });
+        if (kit.hands) kit.hands(0, { secs: 0 });
+        kit.presence(0);
+        kit.fade(1, 0.01);
+      }
+      placeAtShrine();
+      setPhase('arrive');
+      const warmed = kit && kit.warm ? kit.warm() : Promise.resolve(0);
+      warmed.then(() => {
+        if (!alive) return;
+        if (kit) { kit.fade(0, 1.4); kit.root(false); }
+        if (!resumed) { queueGap(0.6); queueLine('z3night'); }
+      });
     }
 
     /* ------------------------------------------------------- the decision */
@@ -1013,18 +1612,85 @@
       return true;
     }
 
-    const hotspots = [];
+    /* ------------------------------------------------------------- hotspots
+       Anchors at EYE height on the thing itself (the v7.5 law). The four
+       look-spots fire by being LOOKED AT (the eighteenth seam), and a press
+       works while the reticle is on one (v12.5). */
+    const hotspots = [
+      { id: 'lkWall', pos: { x: -4.05, y: 1.35, z: -2.25 }, radius: 7.5, aim: 0.30, dwell: 1.0, once: true, markFar: 9, prompt: W.lookWall,
+        enabled: () => phase === 'browse', onInteract() { return lookAt('wall'); } },
+      { id: 'lkTim', pos: { x: LPT.x, y: RCNT.top + 0.12, z: LPT.z }, radius: 4.5, aim: 0.20, dwell: 1.0, once: true, markFar: 6, prompt: W.lookTim,
+        enabled: () => phase === 'browse', onInteract() { return lookAt('tim'); } },
+      { id: 'lkAltar', pos: { x: 0, y: 1.7, z: ALTAR.z + 0.1 }, radius: 8, aim: 0.30, dwell: 1.0, once: true, markFar: 9, prompt: W.lookAltar,
+        enabled: () => phase === 'browse', onInteract() { return lookAt('altar'); } },
+      { id: 'lkMasters', pos: { x: SHOP.x1 - 0.05, y: 1.78, z: -2.5 }, radius: 7.5, aim: 0.26, dwell: 1.0, once: true, markFar: 9, prompt: W.lookMasters,
+        enabled: () => phase === 'browse', onInteract() { return lookAt('masters'); } },
+      { id: 'owner', pos: { x: OWN.x - 0.05, y: 1.45, z: OWN.z }, radius: 2.7, prompt: W.hotOwner,
+        enabled: () => phase === 'owner', onInteract() { return giftBegin(); } },
+      { id: 'mat', pos: { x: MAT.x, y: 1.0, z: MAT.z }, radius: 1.5, prompt: W.hotMat, markY: 0.45,
+        enabled: () => phase === 'join' && !seated && wornNow(), onInteract() { kneel(); return true; } }
+    ];
+
+    /* ---------------------------------------------------------- per frame */
+    function watchTick() {
+      const x = yaw.position.x, z = yaw.position.z;
+      if (phase === 'join' && !seated && wornNow() && Math.hypot(x - MAT.x, z - MAT.z) < 0.5) kneel();
+      // the owner calls him over if he walks up to the counter, or after a while
+      if (phase === 'browse' && !called) {
+        if (browseT0 < 0) browseT0 = dayClock.t;
+        if ((x > 1.7 && Math.abs(z - OWN.z) < 1.6) || dayClock.t - browseT0 > 45) ownerCalls();
+      }
+    }
+    /* THE BEDS: the mall's murmur through the glass (louder by the front);
+       the radio's chant once it is on; the melody nobody else hears from the
+       third Namo, through the trance and into its film; the dance's own
+       cloth and feet. All four go to nothing at the shrine. */
+    let danceTo = 0;
+    const mixK = { mall: 0.3, chant: 0, dance: 0, move: 0 };
+    function mixBeds(wdt, st) {
+      const atShop = !inShrine(yaw.position.x);
+      const front = THREE.MathUtils.clamp((yaw.position.z + 4.5) / 4.0, 0, 1);
+      let mall = atShop ? 0.12 + 0.2 * front : 0, ch = atShop && radioOn ? 0.42 : 0, dn = atShop ? danceTo * 0.85 : 0, mv = 0;
+      if (phase === 'trance' && atShop) { ch = 0.2; mv = 0.5; }
+      if (danceHalt) { dn = 0; mv = 0; ch = 0; }        // the trance film: the music STOPS
+      if (st === 'cine' && !booted) { mall = 0.25; ch = 0; dn = 0; mv = 0; }     // the opening film has its own sounds
+      const ease = (k, to, s) => k + (to - k) * (1 - Math.exp(-wdt / s));
+      mixK.mall = ease(mixK.mall, mall, 0.8); mixK.chant = ease(mixK.chant, ch, 1.2);
+      mixK.dance = ease(mixK.dance, dn, dn > mixK.dance ? 4.0 : danceHalt ? 0.05 : 1.5); mixK.move = ease(mixK.move, mv, danceHalt ? 0.05 : 1.0);
+      if (danceHalt) mixK.chant = ease(mixK.chant, 0, 0.05);
+      const B = DATA.ambience.beds;
+      B[0][1] = mixK.mall; B[1][1] = mixK.chant; B[2][1] = mixK.dance; B[3][1] = mixK.move;
+    }
+    const ZONE_T0 = wallNow(), _cq = new THREE.Quaternion();
+    function lifeTick(wdt) {
+      const t = wallNow() - ZONE_T0;
+      camera.getWorldQuaternion(_cq);
+      for (let i = 0; i < flames.length; i++) {
+        if (!flames[i].visible) continue;
+        flames[i].userData.core.scale.y = 2.2 * (1 + Math.sin(t * 11 + i * 1.7) * 0.16 + Math.sin(t * 23 + i) * 0.07);
+        flames[i].userData.glow.quaternion.copy(_cq);
+      }
+      caseK += (caseTo - caseK) * (1 - Math.exp(-wdt * 5));
+      lpLid.position.set(0, 0.122 + 0.17 * caseK, -0.07 * caseK);
+      lpLid.rotation.x = -0.55 * caseK;
+      lpHalo.material.opacity = 0.45 + 0.12 * Math.sin(t * 2.1);
+      zone.visible = phase === 'join' && !seated && wornNow();
+      zoneTick(zone, t);
+    }
 
     /* ------------------------------------------------------------ the frame */
     let lastFrame = 0;
     function updateNotes(dt, t) {
-      /* the people's clocks run in play AND under a film (v5.19: a guard that
-         owns the poses must not own the clocks) — on wall time */
-      const now = performance.now() / 1000;
+      /* the people's clocks run in play AND under a film or a panel (v5.19:
+         a guard that owns the poses must not own the clocks) — on wall time */
+      const now = wallNow();
       const wdt = lastFrame ? Math.min(0.1, now - lastFrame) : 0; lastFrame = now;
       const st = getState();
-      if (st === 'play' || st === 'cine') peopleTick(wdt);
-      if (st !== 'play') { lastWall = 0; return; }
+      const live = st === 'play' || st === 'unlock' || st === 'choose';
+      if (live || st === 'cine' || st === 'decide') peopleTick(wdt);
+      mixBeds(wdt, st);
+      lifeTick(wdt);
+      if (!live) { lastWall = 0; return; }
       if (lastWall) dayClock.t += Math.min(0.5, now - lastWall);
       lastWall = now;
       if (!booted) {
@@ -1032,17 +1698,39 @@
         applyPhase(kit ? kit.getPhase() : null);
       }
       runTodo(); runSpeak(); runQueue();
+      if (st !== 'play') return;          // a splash: time passes, nothing is played
+      faceTick(wdt); turnTick(wdt); bowTick(); watchTick(); wearTick(); chantTick(); tranceTick(wdt);
     }
     function updatePile() {}
     function updateFire() {}
     function updateSlow() {}
 
-    /* ------------------------------------------------------------ a resume */
+    /* ------------------------------------------------------------ a resume
+       A Continue lands on the order that is still open: the gift is never
+       given twice, the celebration is set as the chant finds it, a chant or
+       a trance under way is begun again from its mat — or, once the trance
+       is spent, at the shrine (the plan's 4.7). */
     function applyPhase(p) {
       const tag = String(p || '').split(':');
       p = tag[0];
       if (!PHASES.includes(p)) p = 'browse';
+      if (p === 'gift') p = 'owner';
+      if (p === 'chant') p = 'join';
+      if (p === 'trance') p = 'arrive';
+      const at = PHASES.indexOf(p);
+      if (at >= PHASES.indexOf('owner')) called = true;
+      if (at >= PHASES.indexOf('wear')) {
+        gifted = true; lpAmulet.visible = false; lpHalo.visible = false;
+        if (kit && !kit.has('timkp')) kit.give('timkp');
+      } else if (kit && kit.has('timkp')) kit.take('timkp');        // a fresh run: the owner gives it again
+      if (at >= PHASES.indexOf('join')) { wornDone = true; snapCelebration(); }
+      if (at >= PHASES.indexOf('arrive')) { toShrine(true); return; }
       setPhase(p);
+      if (p === 'browse') {
+        browseT0 = dayClock.t;
+        after(1.6, () => { if (phase === 'browse' && !heard.has('ow3hello')) queueLine('ow3hello', () => talk(owner, SECS.ow3hello), 1, panAt(OWN.x, OWN.z)); });
+      }
+      if (p === 'owner') owner.look = 1;
     }
 
     /* ---------------------------------------------------------- lifecycle */
@@ -1051,15 +1739,30 @@
     function reset() {
       dropTodo(); speakReset(); lineQ.length = 0; heard.clear();
       booted = false; dayClock.t = 0; lastWall = 0;
+      looked.clear(); called = false; gifted = false; wornDone = false; seated = null; turning = null; facing = null;
+      bowing = null; chant = null; trance = null; caseK = caseTo = 0; celebrate = null; curTgt = 0; browseT0 = -1;
+      objWas = null; danceTo = 0; danceHalt = false; passerHeld = false;
+      girlPhone.visible = false;
+      if (ownerStool) { ownerStool.rotation.z = 0; ownerStool.position.y = 0; }
+      for (const k in mixK) mixK[k] = 0;
+      for (const h of hotspots) { h.done = false; h.dwellT = 0; }
+      // the LP Tim back in its case; the candles out; the radio off
+      lpAmulet.visible = true; lpHalo.visible = true;
+      flames.forEach(f => { f.visible = false; }); flamesOn = false;
+      radioOn = false; radioLed.visible = false;
+      castHome();
       if (kit) {
         kit.root(false); kit.pose('standing', { secs: 0.05 });
         if (kit.pray) kit.pray(false, { secs: 0 });
         if (kit.hands) kit.hands(0, { secs: 0 });
         kit.presence(0);
+        kit.daylight(null, 0);
+        if (kit.has('timkp')) kit.take('timkp');
         kit.setPhase('browse');
       }
       phase = 'browse';
     }
+
     function blockers() {
       const out = [];
       const b = (o, pad = 0.20) => { o.updateWorldMatrix(true, false); const bb = new THREE.Box3().setFromObject(o); bb.expandByScalar(pad); out.push(bb); };
@@ -1101,11 +1804,40 @@
       get noteStorm() { return 1; },
       set noteStorm(v) {},
       SHOP, MALL, SHR, MAT,
+      /* THE TRANCE FILM's hooks (tranceFilm, below): the cast, where the
+         celebration put them, and the few things a film must do in the shop
+         that are not a camera — a man standing up, his stool going over, a
+         phone raised, a passer-by stopping at the glass, the clock, and the
+         melody nobody else hears stopping dead */
+      film: {
+        cast: { owner, staff, girl, manW, auntie, youth, passer },
+        MAT, OWN_SIT, STAFF_AT, CLOCK, BUDDHA_FACE,
+        put(r, x, z, ry) { r.path = null; r.turnTo = null; r.group.position.x = x; r.group.position.z = z; if (ry !== undefined) r.group.rotation.y = ry; },
+        take(r, name, ts = 1, fade = 0.3, at) { return r.play(name, ts, fade, false, at); },
+        walkRate(r, v) { return v / (WALK_NAT * (r.height || 1.7)); },
+        stand(r) { r.sitting = false; r.idle = 'Idle_9'; r.play('Idle_9', 1, 0.55); },
+        look(r, w) { r.look = w; },
+        stoolTip(k) { if (!ownerStool) return; ownerStool.rotation.z = 1.45 * k; ownerStool.position.y = -0.05 * k; },
+        phone(on) { girlPhone.visible = !!on; },
+        passerStop(on) { passerHeld = !!on;
+          if (on) { passer.group.position.set(-1.55, 0, 0.78); passer.group.rotation.y = Math.PI; passer.play('Walking', 1, 0.3, false, 0.122); }
+          else passer.play('Walking', 1, 0.3); },
+        clockTo,
+        danceStop(on = true) { danceHalt = !!on; if (on) danceTo = 0; },
+        radio(on) { radioSwitch(!!on); }
+      },
       pileVia: { what: 'the mat at the altar (the trance carries him to the shrine)', x: MAT.x, z: MAT.z },   // walktest: the medium is behind a scene change
       get phase() { return phase; },
       setPhase, applyPhase, after, dayClock, sayLine,
       info: () => ({ phase, t: +dayClock.t.toFixed(2), queued: lineQ.length, heard: [...heard],
-                     until: +speak.until.toFixed(2), pending: speak.pending ? speak.pending.name : null }),
+                     until: +speak.until.toFixed(2), pending: speak.pending ? speak.pending.name : null,
+                     looked: [...looked], called, gifted, worn: wornNow(), seated, celebrate,
+                     trance: trance ? { t: +trance.t.toFixed(1), tgt: curTgt, ev: trance.ev, done: trance.done } : null,
+                     rigsReady: rigs.every(r => r.ready),
+                     owner: { x: +owner.group.position.x.toFixed(2), z: +owner.group.position.z.toFixed(2), cur: owner.cur, sitting: !!owner.sitting },
+                     staff: { x: +staff.group.position.x.toFixed(2), z: +staff.group.position.z.toFixed(2), cur: staff.cur },
+                     flames: flames.map(f => f.visible), radio: radioOn, caseK: +caseK.toFixed(2),
+                     beds: DATA.ambience.beds.map(b => b[0] + ':' + (+b[1]).toFixed(2)).join(' ') }),
       hotspots,
       updateNotes, updatePile, updateFire, updateSlow,
       snap, restore, reset, dispose
@@ -1119,6 +1851,174 @@
   function intro(c, s, api) {
     const { fade } = api;
     fade(0, 3.0, 1, 1);
+    c.keepFade = true;
+    c.endFade = 1;
+  }
+
+  /* ============================================================ THE TRANCE
+     A film FROM PLAY (the twenty-sixth seam, kit.film), from his eyes: the
+     dance carries on with the melody nobody else hears; the owner and the
+     staff man come at him and cannot hold him; the room watches, the girl
+     films, the auntie prays fast, a passer-by stops at the glass; fifteen
+     minutes go by on the wall clock in three jumps; the music STOPS, he goes
+     down on his knees, and the faces come over him — "Tonight, you go and
+     see a medium." It ends on a black that stays: its onDone takes him to
+     the shrine that night (toShrine). Every move is a TRACK of the film's own
+     clock (a seek or a skip lands on the same picture — v5.30), pushed in
+     time order per person so the latest one wins. */
+  function tranceFilm(c, s, api) {
+    const { tr, step, sfx, fade, camTo, smoothK, rawK, mixAngle, faceFrom, stage, camera, yaw, pitch, handsRoot } = api;
+    const F = stage.film, C = F.cast, B = F.BUDDHA_FACE;
+    const P = { x: s.yawPos.x, z: s.yawPos.z };
+    const H0 = api.handsFrom(), hk = H0.k > 0 ? H0.k : 1, ht = H0.t || 0;
+    const TAU = Math.PI * 2;
+    const mFace = (ax, az, bx, bz) => Math.atan2(bx - ax, bz - az);   // a MODEL at a facing b (faceFrom + PI, v5.0)
+    const at = (dx, dz) => ({ x: P.x + dx, z: P.z + dz });
+    const camYaw = (q) => faceFrom(P.x, P.z, q.x, q.z);
+    const up = (a, ref) => { while (a < ref) a += TAU; while (a > ref + TAU) a -= TAU; return a; };   // turning LEFT from ref
+    const near = (a, ref) => { while (a < ref - Math.PI) a += TAU; while (a > ref + Math.PI) a -= TAU; return a; };
+    // a walk along straight legs at the pace the ground asks, then a turn to `face`
+    const walk = (r, pts, t0, t1, face) => {
+      let L = 0; for (let i = 1; i < pts.length; i++) L += Math.hypot(pts[i].x - pts[i - 1].x, pts[i].z - pts[i - 1].z);
+      const v = L / Math.max(0.1, t1 - t0);
+      step(t0, () => { F.take(r, 'Walking', F.walkRate(r, v), 0.25); F.look(r, 0); });
+      tr(t0, t1, (k) => {
+        let d = k * L;
+        for (let i = 1; i < pts.length; i++) {
+          const a = pts[i - 1], b = pts[i], l = Math.hypot(b.x - a.x, b.z - a.z);
+          if (d <= l || i === pts.length - 1) { const u = Math.min(1, d / Math.max(1e-4, l)); F.put(r, a.x + (b.x - a.x) * u, a.z + (b.z - a.z) * u, mFace(a.x, a.z, b.x, b.z)); return; }
+          d -= l;
+        }
+      }, rawK);
+      const n = pts.length, dir = mFace(pts[n - 2].x, pts[n - 2].z, pts[n - 1].x, pts[n - 1].z);
+      step(t1, () => { F.take(r, 'Idle_9', 1, 0.35); F.look(r, 1); });
+      if (face !== undefined) tr(t1, t1 + 0.55, (k) => { r.group.rotation.y = mixAngle(dir, face, k); }, smoothK);
+    };
+
+    /* WHERE EVERYONE GOES (P is where he stood when the film took over) */
+    const A_OWN = at(0.62, -0.42), A_STAFF = at(-0.55, 0.36);          // hands on him
+    const B_OWN = at(1.45, -0.15), B_STAFF = at(-1.25, 0.95);          // stepped back
+    const C_OWN = { x: 2.05, z: -4.35 }, C_STAFF = { x: -2.25, z: -3.35 };   // the minutes go by
+    const E_OWN = at(0.15, -0.95), E_STAFF = at(0.95, 0.05), E_GIRL = at(-0.75, -0.35);   // over him
+    const AUNTIE = { x: -2.45, z: -4.85 };
+
+    /* ---------------- A · 0–10.2 · THE DANCE, AND THE HANDS THAT CANNOT HOLD HIM */
+    const yA = near(camYaw(A_OWN), s.yawRot);
+    tr(0, 4.2, (k) => { yaw.rotation.y = mixAngle(s.yawRot, yA, k); }, smoothK);
+    tr(0, 4.2, (k) => { pitch.rotation.x = s.pitchX + (0.02 - s.pitchX) * k; }, smoothK);
+    // the owner jumps up — his stool goes over — and comes at him; the staff man from behind
+    step(1.0, () => { F.stand(C.owner); F.look(C.owner, 1); });
+    tr(1.05, 1.55, (k) => F.stoolTip(k), smoothK);
+    sfx(1.15, 'stoolfall', 0.8);
+    sfx(1.4, 'ow3eh');                                   // 2.93 → 4.33
+    walk(C.owner, [F.OWN_SIT, { x: 1.1, z: -4.6 }, A_OWN], 2.2, 5.0, mFace(A_OWN.x, A_OWN.z, P.x, P.z));
+    walk(C.staff, [F.STAFF_AT, A_STAFF], 2.6, 4.7, mFace(A_STAFF.x, A_STAFF.z, P.x, P.z));
+    sfx(5.0, 'rushgrab', 0.85);
+    sfx(5.3, 'sm3hold');                                 // 2.38 → 7.68
+    sfx(8.0, 'sm3cannot');                               // 2.32 → 10.32
+    sfx(8.6, 'crowdgasp', 0.55);
+    // they let go and step back
+    walk(C.owner, [A_OWN, B_OWN], 9.7, 11.0, mFace(B_OWN.x, B_OWN.z, P.x, P.z));
+    walk(C.staff, [A_STAFF, B_STAFF], 9.8, 11.0, mFace(B_STAFF.x, B_STAFF.z, P.x, P.z));
+
+    /* ---------------- B · 10.2–19.4 · THE ROOM WATCHES (the turn goes left) */
+    const yB0 = yA, yB1 = up(camYaw(at(0.35, -0.9)), yB0), yB2 = up(camYaw(AUNTIE), yB1), yB3 = up(camYaw({ x: -0.75, z: 0.6 }), yB2);
+    tr(10.2, 12.8, (k) => { yaw.rotation.y = yB0 + (yB1 - yB0) * k; }, smoothK);
+    tr(12.8, 15.8, (k) => { yaw.rotation.y = yB1 + (yB2 - yB1) * k; }, smoothK);
+    tr(15.8, 19.0, (k) => { yaw.rotation.y = yB2 + (yB3 - yB2) * k; }, smoothK);
+    tr(10.2, 12.8, (k) => { pitch.rotation.x = 0.02 - 0.3 * k; }, smoothK);          // down to the girl on her knees
+    tr(12.8, 15.8, (k) => { pitch.rotation.x = -0.28 + 0.16 * k; }, smoothK);
+    tr(15.8, 19.0, (k) => { pitch.rotation.x = -0.12 + 0.12 * k; }, smoothK);
+    sfx(11.0, 'st3uncle');                               // 2.35 → 13.35
+    step(11.4, () => F.phone(true));
+    sfx(12.5, 'phonerec', 0.6);
+    sfx(14.0, 'cu3amitabha');                            // 3.71 → 17.71
+    step(16.4, () => F.passerStop(true));
+
+    /* ---------------- C · 19.4–29.8 · FIFTEEN MINUTES, IN THREE JUMPS */
+    const CLK = F.CLOCK, yC = near(camYaw(CLK), yB3), pC = Math.atan2(CLK.y - 1.62, Math.hypot(CLK.x - P.x, CLK.z - P.z));
+    tr(19.0, 20.4, (k) => { yaw.rotation.y = yB3 + (yC - yB3) * k; }, smoothK);
+    tr(19.0, 20.4, (k) => { pitch.rotation.x = 0 + (pC - 0) * k; }, smoothK);
+    tr(19.4, 29.6, (k) => F.clockTo(12, 10 + 15 * k), rawK);
+    sfx(19.6, 'timelapse', 0.8);
+    // cut one: the room from the altar's side — the owner back by his counter, the staff at the glass
+    fade(21.95, 22.1, 0, 1); fade(22.25, 22.4, 1, 0);
+    walk(C.owner, [B_OWN, C_OWN], 22.1, 22.15, mFace(C_OWN.x, C_OWN.z, P.x, P.z));
+    walk(C.staff, [B_STAFF, C_STAFF], 22.1, 22.15, mFace(C_STAFF.x, C_STAFF.z, P.x, P.z));
+    const yC1 = near(camYaw(C_OWN), yC);
+    tr(22.1, 22.12, () => { yaw.rotation.y = yC1 - 0.25; pitch.rotation.x = 0.0; }, rawK);
+    tr(22.12, 26.0, (k) => { yaw.rotation.y = yC1 - 0.25 + 0.3 * k; }, rawK);
+    sfx(22.6, 'timelapse', 0.55);
+    sfx(23.0, 'ow3let');                                 // 2.43 → 25.43
+    // cut two: the clock again, ten minutes on
+    fade(25.85, 26.0, 0, 1); fade(26.15, 26.3, 1, 0);
+    tr(26.0, 26.02, () => { yaw.rotation.y = yC + 0.12; pitch.rotation.x = pC; }, rawK);
+    tr(26.02, 29.6, (k) => { yaw.rotation.y = yC + 0.12 - 0.2 * k; }, rawK);
+    sfx(26.2, 'timelapse', 0.45);
+
+    /* ---------------- D · 29.6–35.6 · IT STOPS. HE GOES DOWN. */
+    fade(29.45, 29.6, 0, 1); fade(29.75, 29.9, 1, 0);
+    // under that black: the girl kneels beside him, the auntie, the youth and the man in white turn to him
+    step(29.6, () => {
+      F.put(C.girl, E_GIRL.x, E_GIRL.z, mFace(E_GIRL.x, E_GIRL.z, P.x, P.z));
+      C.auntie.group.rotation.y = mFace(AUNTIE.x, AUNTIE.z, P.x, P.z);
+      C.youth.group.rotation.y = mFace(C.youth.group.position.x, C.youth.group.position.z, P.x, P.z);
+      C.manW.group.rotation.y = mFace(C.manW.group.position.x, C.manW.group.position.z, P.x, P.z);
+      F.look(C.girl, 1); F.look(C.manW, 1);
+    });
+    const yD = near(camYaw(B), yC);
+    tr(29.6, 29.62, () => { yaw.rotation.y = yD; pitch.rotation.x = 0.12; }, rawK);
+    step(30.5, () => { F.danceStop(true); F.phone(false); });
+    tr(30.9, 31.35, () => {}, rawK);
+    camTo(30.9, 31.35, { x: P.x, y: 1.62, z: P.z }, { x: P.x, y: 0.98, z: P.z }, (k) => k * k);
+    tr(30.9, 31.6, (k) => { pitch.rotation.x = 0.12 - 0.5 * k; }, smoothK);
+    sfx(31.3, 'kneethud', 0.9);
+    sfx(31.32, 'matkneel', 0.6);
+    sfx(31.9, 'z3breath');                               // 3.0 → 34.9
+    // the people come in while he breathes
+    walk(C.owner, [C_OWN, E_OWN], 31.6, 34.6, mFace(E_OWN.x, E_OWN.z, P.x, P.z));
+    walk(C.staff, [C_STAFF, E_STAFF], 31.9, 34.9, mFace(E_STAFF.x, E_STAFF.z, P.x, P.z));
+
+    /* ---------------- E · 34.9–60 · THE FACES OVER HIM */
+    const yE = near(camYaw(E_OWN), yD), pE = Math.atan2(1.52 - 0.98, Math.hypot(E_OWN.x - P.x, E_OWN.z - P.z));
+    tr(34.9, 36.2, (k) => { yaw.rotation.y = yD + (yE - yD) * k; }, smoothK);
+    tr(34.9, 36.2, (k) => { pitch.rotation.x = -0.38 + (pE + 0.38) * k; }, smoothK);
+    sfx(36.2, 'ow3know');                                // 2.04 → 38.24
+    sfx(38.7, 'z3knew');                                 // 5.64 → 44.34
+    tr(39.4, 41.0, (k) => { pitch.rotation.x = pE + (-0.28 - pE) * k; }, smoothK);   // his eyes go down to the mat
+    tr(42.6, 44.2, (k) => { pitch.rotation.x = -0.28 + (pE + 0.28) * k; }, smoothK); // and back up to him
+    const yG = near(camYaw(E_GIRL), yE), yN = near(camYaw(AUNTIE), yG);
+    tr(44.5, 45.6, (k) => { yaw.rotation.y = yE + (yG - yE) * k; pitch.rotation.x = pE + (0.06 - pE) * k; }, smoothK);
+    sfx(44.8, 'st3trance');                              // 2.59 → 47.39
+    tr(47.5, 48.7, (k) => { yaw.rotation.y = yG + (yN - yG) * k; pitch.rotation.x = 0.06 + (0.12 - 0.06) * k; }, smoothK);
+    sfx(47.9, 'cu3unclean');                             // 4.26 → 52.16
+    tr(52.2, 53.4, (k) => { yaw.rotation.y = yN + (near(yE, yN) - yN) * k; pitch.rotation.x = 0.12 + (pE - 0.12) * k; }, smoothK);
+    sfx(52.6, 'ow3medium');                              // 5.56 → 58.16
+    // a slow push toward him while he says it
+    camTo(53.4, 58.4, { x: P.x, y: 0.98, z: P.z }, { x: P.x + (E_OWN.x - P.x) * 0.12, y: 0.98, z: P.z + (E_OWN.z - P.z) * 0.12 }, smoothK);
+    fade(58.4, 60.0, 0, 1);
+    step(59.9, () => { handsRoot.visible = true; api.armR.visible = true; camera.rotation.z = 0; });
+
+    /* ---------------- the body, laid on top of every camera track above
+       (pushed LAST, so it rides whatever the latest base track wrote): the
+       dance's sway and nod, the shake while they hold him, the roll of the
+       body, and the hands in the dance until the stop */
+    const alive = (t) => t < 30.5 ? 1 : Math.max(0, 1 - (t - 30.5) / 0.25);
+    const grip = (t) => (t > 5.0 && t < 9.7) ? Math.sin(Math.PI * (t - 5.0) / 4.7) : 0;
+    tr(0, 31.0, (k, t) => {
+      const a = alive(t), g = grip(t);
+      yaw.rotation.y += a * (0.09 * Math.sin(t * 1.25) + 0.035 * Math.sin(t * 2.9 + 0.7)) + g * 0.035 * Math.sin(t * 17.0);
+      pitch.rotation.x += a * 0.05 * Math.sin(t * 1.7 + 1.1) + g * 0.02 * Math.sin(t * 13.0 + 1);
+      camera.rotation.z = a * (0.055 * Math.sin(t * 1.25 + 0.4)) + g * 0.03 * Math.sin(t * 11.0);
+    }, rawK);
+    tr(31.9, 35.0, (k, t) => { pitch.rotation.x += 0.025 * Math.sin((t - 31.9) * Math.PI * 1.1); }, rawK);   // the breath
+    tr(0, 30.6, (k, t) => { api.handsPose(hk, ht + t * (1 + grip(t) * 1.5)); }, rawK);
+    tr(30.6, 31.3, (k, t) => {
+      const u = Math.min(1, (t - 30.6) / 0.7);
+      api.handsPose(hk * (1 - u), ht + 30.6);
+      api.armR.position.y -= 0.16 * u; const L = api.prayerArm(); if (L) L.position.y -= 0.16 * u;
+    }, rawK);
+    step(31.35, () => { handsRoot.visible = false; });
     c.keepFade = true;
     c.endFade = 1;
   }
@@ -1561,6 +2461,7 @@
   (window.__CHAPTERS__ = window.__CHAPTERS__ || {}).e3c3 = Object.assign(DATA, {
     build,
     intro,
-    scenes: [scAccept, scWrong, scLeave, scSeek]
+    scenes: [scAccept, scWrong, scLeave, scSeek],
+    films: { trance: tranceFilm }
   });
 })();

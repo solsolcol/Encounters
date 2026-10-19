@@ -4760,6 +4760,15 @@ const CHCTX = {
      cutscene — footsteps in the kitchen, a chair dragged in an empty room.
      Chapter 4's haunting is never seen, so this is the whole haunting. */
   worldSfx: (name, vol, rate, pan) => snd(name, vol, rate, pan),
+  /* v21.0: WHETHER THE GAME IS MUTED, read-only. A chapter that paces its
+     people on their lines holds a line whose sample has not decoded yet (the
+     v8.0 law) — and a muted game plays nothing, so every line was held, then
+     dropped, and a beat chained on a line's start never came (episode 3
+     chapter 3's gift waits on the owner's words). With this a chapter speaks
+     a muted line SILENTLY, on its own length, and the story goes on. Called
+     at play time only (`muted` is declared further down this file); nothing
+     before episode 3 chapter 3 asks. */
+  soundOff: () => muted,
   /* THE SEVENTEENTH SEAM (v8.0): a chapter may DECODE ahead of the player.
      `snd()` returns null when a sample has not decoded yet — sndBuf kicks the
      decode and the call plays nothing — and until now only a FILM's cues were
