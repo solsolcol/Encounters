@@ -4064,7 +4064,10 @@
     tr(Tb + 0.3, Tb + 5.2, (k) => F.bus(k), rawK);
     sfx(Tb + 1.4, 'z3C2');                             // 5.96 → Tb + 7.36
     // he watches it go, and the night goes on
-    yawTo(Tb + 3.2, Tb + 8.0, toKopi, faceFrom(F.LX(kerb.x), kerb.z, F.LX(-24), 9.0), smoothK);
+    /* (he stands on the line of the five-foot way's pillars, z 2.02, and the one at x −4.5 is 2.4 m along it: looking
+       toward (−24, 9) put its face in the right third of a phone's frame for the rest of the scene — toward (−24, 14)
+       its edge is 23° off the middle, outside a phone's 18.6°) */
+    yawTo(Tb + 3.2, Tb + 8.0, toKopi, faceFrom(F.LX(kerb.x), kerb.z, F.LX(-24), 14.0), smoothK);
     sfx(Tb + 7.6, 'e3close3', 0.9);
     sfx(Tb + 8.0, 'z3close');                          // 8.44 → Tb + 16.44
     pitchTo(Tb + 8.4, Tb + 15.5, 0.1, 0.24, smoothK);

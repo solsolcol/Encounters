@@ -5363,7 +5363,13 @@ What the baseline contains, by release:
   law, which the kit's timer obeyed and its fade did not). The fade runs on
   wall time now (the first frame steps as before; above twenty frames a second
   nothing changes; episode 1 never calls it) — fixture and sanity green on it,
-  deployed `6ad6aa503c5ce78dcd720ba1`, byte-verified.
+  deployed `6ad6aa503c5ce78dcd720ba1`, byte-verified. Last, ending C on a phone:
+  he stops on the line of the five-foot way's pillars, so turning to watch the
+  night bus go put one 2.4 m away in the right third of the frame for the rest
+  of the scene — he turns a little less far now (its edge 23° off the middle,
+  outside a phone's 18.6°), and the bus, which a phone sees for about a second
+  and a half, was photographed crossing the kopitiam's light. Final deploy
+  `6ad6abf5f590bbe95232c53b`, byte-verified (222 files).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
