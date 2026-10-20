@@ -2040,11 +2040,12 @@ let _dwLast = 0;
 /* v12.5: is the reticle ON this spot? One test, used by the dwell that grades
    the look and by the badge that offers the press, so the two can never
    disagree about what the player is looking at. */
-function hotspotAimed(h) {
+function hotspotOff(h) {
   camera.getWorldDirection(_dwFwd); camera.getWorldPosition(_dwCam);
   _dwTo.set(h.pos.x - _dwCam.x, (h.pos.y ?? 1.0) - _dwCam.y, h.pos.z - _dwCam.z).normalize();
-  return Math.acos(THREE.MathUtils.clamp(_dwFwd.dot(_dwTo), -1, 1)) < (h.aim || 0.10);
+  return Math.acos(THREE.MathUtils.clamp(_dwFwd.dot(_dwTo), -1, 1));
 }
+function hotspotAimed(h) { return hotspotOff(h) < (h.aim || 0.10); }
 function dwellHotspots() {
   /* WALL time, not the clamped frame dt (the kit timer's law, v7.4): at
      one frame a second the clamped dt is 0.05, so a 0.8 s look would take
@@ -2054,10 +2055,23 @@ function dwellHotspots() {
   const dt = _dwLast ? Math.min(0.5, (now - _dwLast) / 1000) : 0;
   _dwLast = now;
   if (state !== 'play' || ev) return;
-  for (const h of hotspotList()) {
+  /* v21.1: ONE LOOK AT A TIME. Two look-spots whose cones overlap both filled
+     from one glance and fired together (episode 3 chapter 3's LP Tim case and
+     the masters' wall sit 0.169 rad apart from where play begins, against
+     cones of 0.20 and 0.26): only the spot nearest the reticle, as a fraction
+     of its own cone, gains now. No chapter before it has two cones that
+     overlap (e2c3's nearest are 47° apart), so nothing else changes. */
+  const list = hotspotList();
+  let win = null, wk = Infinity;
+  for (const h of list) {
     if (!h || !h.pos || !(h.dwell > 0) || h.done || (typeof h.enabled === 'function' && !h.enabled())) continue;
-    const d = Math.hypot(yaw.position.x - h.pos.x, yaw.position.z - h.pos.z);
-    const on = d < (h.radius || 2.2) && hotspotAimed(h);
+    if (Math.hypot(yaw.position.x - h.pos.x, yaw.position.z - h.pos.z) >= (h.radius || 2.2)) continue;
+    const k = hotspotOff(h) / (h.aim || 0.10);
+    if (k < 1 && k < wk) { wk = k; win = h; }
+  }
+  for (const h of list) {
+    if (!h || !h.pos || !(h.dwell > 0) || h.done || (typeof h.enabled === 'function' && !h.enabled())) continue;
+    const on = h === win;
     h.dwellT = on ? (h.dwellT || 0) + dt : Math.max(0, (h.dwellT || 0) - dt * 2);
     if (h.dwellT < h.dwell) continue;
     h.dwellT = 0;
