@@ -4151,7 +4151,7 @@ function evMove(x, y) {
   if (e.kind === 'match') { e.lastX = x; e.lastY = y; if (e.drag) { evDragTo(x, y); evMatchHover(x, y); } }
 }
 function evNextTarget() {
-  const e = ev; e.idx++; e.slotT = 0; e.placed = false;   // v21.0: the next light is not on screen until a frame puts it there
+  const e = ev; e.idx++; e.slotT = 0; e.placed = false; e.unseenT = 0;   // v21.0: the next light is not on screen until a frame puts it there (v21.1: nor has it been missed for long)
   if (e.idx >= e.n) { e.over = true; return; }
 }
 function evNextItem() {
@@ -4380,7 +4380,16 @@ function evFrame(dt, dLookX, dLookY) {
          can expire unseen behind the lens — on the EVENT's own wall step
          (v18.0's law: a slow frame must not be a slow reaction) */
       if (!o.graded) e.slotT += dt;
-      else if (vis) e.slotT += wdt;
+      else if (vis) { e.slotT += wdt; e.unseenT = 0; }
+      /* v21.1: ...and a light never found expires all the same. The clock above
+         runs only while the thing is on screen, so a player looking the other
+         way held the event open for ever (in e3c3, with the presence draining
+         him toward a faint that rewinds the chapter). Out of sight for `lost`
+         seconds running (2.5 x its life, at least 6) it is MISSED, as if its
+         ring had closed. Only a graded focus (e3c3, the fixture) reaches it */
+      else if ((e.unseenT = (e.unseenT || 0) + wdt) >= (o.lost ?? Math.max(6, 2.5 * e.o.each))) {
+        e.unseenT = 0; evScorePress(EV_WORST); evNextTarget(); break;
+      }
       if (e.slotT >= e.o.each) {
         if (o.graded) { evScorePress(EV_WORST); evNextTarget(); }
         else { e.misses++; evNote(false); evNextTarget(); }
@@ -4632,6 +4641,12 @@ function kitFilm(key, opts = {}) {
   if (typeof fn !== 'function' || state !== 'play' || cine) return false;
   if (ev) evResolve({ ok: false, aborted: true });
   warmCues(cuesOf(fn));
+  /* v21.1: SAVED FIRST. A film from play is long (e3c3's trance is 60 s) and
+     plays straight after the thing it rewards; the last autosave could be a
+     minute older than the result, so a phone closed in the middle of the
+     film lost the minigame. The phase the chapter set is the bookmark, and a
+     resume lands where the film hands back to */
+  autosave(true);
   kitFade = null;
   let c = null;
   playCineFn(fn, () => {
@@ -4640,6 +4655,12 @@ function kitFilm(key, opts = {}) {
        kit.fade lifts it from where it stands rather than from a stale 0 */
     kitFadeNow = c && c.keepFade ? (parseFloat(cineFadeEl.style.opacity) || 0) : 0;
     kitFade = null;
+    /* v21.1: and the hands, which play always shows. A film may hide them for
+       a shot, and a skip runs its passed steps in the order they were PUSHED,
+       not by their times — so a hide registered after the show that undoes it
+       left e3c3's hands, and the joss sticks in them, gone for the whole
+       shrine. The chapter's order is fixed too; this is the net under it */
+    handsRoot.visible = true;
     ui.hud.classList.remove('hide');
     hint.classList.add('hide');
     document.body.classList.add('inplay');
@@ -6352,6 +6373,9 @@ document.addEventListener('visibilitychange', () => {
     ev.wallLast = 0;
     if (ev.kind === 'resist') { ev.taps = []; ev.backAt = ev.t; }
   }
+  /* v21.1: and the kit's fade, which steps on the wall too: the first frame
+     back leapt up to half a second of it */
+  if (kitFade) kitFade.last = 0;
 });
 addEventListener('pageshow', resumeAudio);
 addEventListener('focus', resumeAudio);
@@ -9688,6 +9712,7 @@ const STING_SAMPLE = {
   // its dread layer, and the lines the ghost-free chapter runs on
   suona: ['suona', 0.9], bellring: ['bellring', 0.85],
   drumroll: ['drumroll', 0.9], gongdeep: ['gongdeep', 0.9],
+  drum3: ['drum3', 0.8], drumroll3: ['drumroll3', 0.9], gong3: ['gong3', 0.85],   // v21.1: e3c3's own copies, so ch3's stay in ch3's pack
   trancehum: ['trancehum', 0.85],
   v3chair: ['v3chair', 1], v3out1: ['v3out1', 1], v3out2: ['v3out2', 1],
   v3seen: ['v3seen', 1], v3grip: ['v3grip', 1], v3left: ['v3left', 1],
@@ -9922,6 +9947,7 @@ const STING_SAMPLE = {
   estatemorn: ['estatemorn', 1], shrineamb: ['shrineamb', 1],
   e3dance: ['e3dance', 1], e3film3: ['e3film3', 1], e3shrine: ['e3shrine', 1], e3close3: ['e3close3', 1],
   pageturn: ['pageturn', 1], matkneel: ['matkneel', 1], handsrise: ['handsrise', 1],
+  matkneel3: ['matkneel3', 1], candlelit3: ['candlelit3', 1], incenselit3: ['incenselit3', 1],   // v21.1: e3c3's copies of e3c1's and e3c2's
   handslip: ['handslip', 1], whispers: ['whispers', 1], chantswell: ['chantswell', 1], chantstop: ['chantstop', 1],
   templedoor: ['templedoor', 1],
   e3vesper: ['e3vesper', 1], hallamb: ['hallamb', 1], templedusk: ['templedusk', 1],
@@ -10391,7 +10417,9 @@ function cineEnd() {
      chapter's opening film, which ends and lets the chapter card come up
      over it — says so with `keepFade`, and the black stays until whatever
      comes next puts something in front of it.                            */
-  if (!c.keepFade) clearCineFade();
+  /* v21.1: the black is the kit's element too, so the kit forgets it with it:
+     left at 1, a later kit.fade(0) would first snap the screen back to black */
+  if (!c.keepFade) { clearCineFade(); kitFade = null; kitFadeNow = 0; }
   letterboxOff();                          // v15: the whole frame again, before the bars start to move
   document.body.classList.remove('cine');
   skipBtn.classList.add('hide');

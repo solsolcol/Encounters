@@ -902,7 +902,8 @@ const filmBack = (skipped) => until(() => window.__filmDone && window.__enc.getS
   const e = window.__enc, d = window.__filmDone, at = window.__filmAt;
   return d.st === 'play' && d.fade > 0.9 && d.skipped === sk && e.kit.filmPlaying() === null
     && Math.abs(e.yaw.position.x - at.x) < 1e-6 && Math.abs(e.yaw.position.z - at.z) < 1e-6
-    && !document.getElementById('hud').classList.contains('hide');
+    && !document.getElementById('hud').classList.contains('hide')
+    && e.handsRoot.visible === true;          // v21.1: the film hid them; play always shows them
 }, skipped), () => false);
 const posFilm0 = await p.evaluate(() => ({ x: window.__enc.yaw.position.x, z: window.__enc.yaw.position.z }));
 K.filmFromPlay = await filmGo();
@@ -940,6 +941,15 @@ r = await runEvent({ kind: 'focus', graded: true, targets: [{ sx: 0.5, sy: 0.5, 
 });
 K.focusGraded = r.kind === 'focus' && r.band.length >= 2 && r.band[0] >= 1 && r.band.includes(-4);
 K.focusMissCosts = await p.evaluate((a0) => Math.abs(window.__enc.stats.awareness - (a0 - 3)) < 1e-9, awG);
+/* v21.1: a graded light the player never turns to still expires — out of
+   sight for `lost` seconds running it is MISSED, as if its ring had closed
+   (the event used to wait for ever). Both lights stand behind the lens */
+const behind = await p.evaluate(() => { const e = window.__enc, ry = e.yaw.rotation.y;
+  return { x: e.yaw.position.x + Math.sin(ry) * 6, y: 1.2, z: e.yaw.position.z + Math.cos(ry) * 6 }; });
+r = await runEvent({ kind: 'focus', graded: true, targets: [behind, behind], each: 3, lost: 1.0,
+                     missCost: 0, penalty: { stat: 'awareness' }, award: { stat: 'sanity', per: 1, hi: 6 } });
+K.focusUnseenExpires = r.kind === 'focus' && Array.isArray(r.band) && r.band.length === 2 && r.band.every(b => b === -4);
+if (!K.focusUnseenExpires) console.log('unseen focus', JSON.stringify(r));
 /* (the briefing is put up on the event's FIRST FRAME, not by kit.event, so
    wait for it — and read what is drawn: the class AND its pieces shown) */
 await p.evaluate(() => { window.__enc.kit.event({ kind: 'focus', brief: 'probe', targets: [{ sx: 0.5, sy: 0.5 }] }); });

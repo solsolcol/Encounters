@@ -114,8 +114,11 @@
        man switches it on; THE MELODY NOBODY ELSE HEARS, from the third Namo
        through the trance and into its film; the dance's cloth and feet —
        driven every frame by mixBeds (e3c2's shape) */
+    /* (the rites' drum and four more are COPIES under this chapter's own names — ritual3, drum3, drumroll3, gong3,
+       candlelit3, incenselit3, matkneel3: a sound two chapters ask for is shared, and asking for ch3's, e3c1's and
+       e3c2's by their names put all seven in every player's boot download — EN-2, the v4.2 split) */
     ambience: { beds: [['mallamb', 0.3], ['shopchant', 0], ['e3dance', 0], ['dancemove', 0],
-                       ['lorongamb', 0], ['shrineamb', 0], ['e3shrine', 0], ['ritual', 0]] },
+                       ['lorongamb', 0], ['shrineamb', 0], ['e3shrine', 0], ['ritual3', 0]] },
     voiceLine: null,
 
     words: {
@@ -1194,9 +1197,9 @@
       if (g.userData.glow) g.userData.glow.material.opacity = 0.22 + 0.12 * Math.sin(t * 3.1);
     }
     const zone = mkZone(MAT.x, MAT.z);
-    /* THE GIRL'S PHONE, raised to film him: it rides between her hands, a
-       hand higher, its back (the lens) turned to him and its lit screen to
-       her — placed in the world every frame, so no bone's axes are guessed */
+    /* THE GIRL'S PHONE, raised to film him: held up in front of her joined
+       hands, its back (the lens) turned to him and its lit screen to her —
+       placed in the world every frame, so no bone's axes are guessed */
     const girlPhone = new THREE.Group(); girlPhone.visible = false; shopG.add(girlPhone);
     box(0.072, 0.15, 0.009, 0, 0, 0, matBlack, girlPhone, false);
     { const sc = new THREE.Mesh(new THREE.PlaneGeometry(0.064, 0.138), new THREE.MeshBasicMaterial({ color: 0xcfe8ff }));
@@ -1212,7 +1215,7 @@
       _ph.add(_ph2).multiplyScalar(0.5);
       camera.getWorldPosition(_cp);
       _ph2.copy(_cp).sub(_ph).setY(0).normalize();
-      girlPhone.position.set(_ph.x + _ph2.x * 0.08, _ph.y + 0.16, _ph.z + _ph2.z * 0.08);
+      girlPhone.position.set(_ph.x + _ph2.x * 0.11, _ph.y + 0.07, _ph.z + _ph2.z * 0.11);   // (in front of her fingers: 0.16 up it floated over her joined hands — VT-10)
       girlPhone.lookAt(_cp.x, girlPhone.position.y, _cp.z);
       girlPhone.rotateY(0.42);                          // a little edge-on, so the lit screen shows
     }
@@ -2286,9 +2289,12 @@
       const M = (o) => day ? new THREE.MeshStandardMaterial({ roughness: 0.45, ...o }) : new THREE.MeshBasicMaterial({ fog: true, ...o });
       const body = M({ color: day ? 0x55a043 : 0x5c6066 }), skirt = M({ color: day ? 0x2c3032 : 0x2a2c30 }),
             band = M({ color: day ? 0xeeeee6 : 0x8a2a20 }),
-            win = day ? new THREE.MeshStandardMaterial({ color: 0x1e2a32, roughness: 0.12, metalness: 0.35 }) : new THREE.MeshBasicMaterial({ map: tex(makeBusWindows(THREE, cnv)), fog: true }),
+            win = day ? new THREE.MeshStandardMaterial({ map: tex(makeBusWindowsDay(THREE, cnv)), roughness: 0.15, metalness: 0.2 }) : new THREE.MeshBasicMaterial({ map: tex(makeBusWindows(THREE, cnv)), fog: true }),
+            glass = day ? new THREE.MeshStandardMaterial({ color: 0x1e2a32, roughness: 0.12, metalness: 0.35 }) : win,   // the windscreen (and the rear): plain glass by day
+            rearWin = day ? glass : M({ color: 0xe9e1c6 }),                                                               // at night the cabin's light through it
+            plate = M({ map: tex(makeBusPlate(THREE, cnv)) }),
             sign = new THREE.MeshBasicMaterial({ map: tex(makeBusSign(THREE, cnv)), fog: true }), tyre = M({ color: 0x101010 });
-      for (const m of [body, skirt, band, win, sign, tyre]) owned.push({ dispose: () => m.dispose() });
+      for (const m of new Set([body, skirt, band, win, glass, rearWin, plate, sign, tyre])) owned.push({ dispose: () => m.dispose() });   // (their maps go with madeTex)
       /* a single-decker 3.15 m tall: the body from 1.0 m up, a dark skirt below it to 0.32, and the tyres INSIDE the
          skirt's line (their outer face at 1.25 against the skirt's 1.26), so from the side only their lower third shows
          under the skirt — the first build had them poking out of the body as black discs */
@@ -2296,8 +2302,10 @@
       box(12.02, 0.68, 2.52, 0, 0.66, 0, skirt, g, false);
       box(12.04, 0.12, 2.54, 0, 1.04, 0, band, g, false);
       for (const s of [-1, 1]) plane(11.2, 0.95, win, 0.25, 2.2, s * 1.262, s > 0 ? 0 : Math.PI, g);             // the windows both sides
-      plane(2.3, 1.2, win, -6.012, 2.15, 0, -Math.PI / 2, g);                                                      // the windscreen
+      plane(2.3, 1.2, glass, -6.012, 2.15, 0, -Math.PI / 2, g);                                                    // the windscreen
       plane(1.7, 0.28, sign, -6.02, 2.95, 0, -Math.PI / 2, g);                                                     // the route, in amber
+      plane(1.9, 0.75, rearWin, 6.012, 2.4, 0, Math.PI / 2, g);                                                    // the rear window
+      plane(0.52, 0.13, plate, 6.012, 1.32, 0, Math.PI / 2, g);                                                    // and its plate
       for (const [x, z] of [[-4.2, -1.13], [-4.2, 1.13], [3.6, -1.13], [3.6, 1.13]]) { const w = cyl(0.48, 0.48, 0.24, x, 0.48, z, tyre, 14, g); w.rotation.x = Math.PI / 2; }
       if (!day) {
         for (const s of [-1, 1]) {
@@ -2463,8 +2471,10 @@
       }
       for (let i = 0; i < 6; i++) lotusLantern(DAWN, -7.5 + i * 3, 4.4, H.z + 1.0);
       // the flags: strings from the gate's roof to the hall's eaves and along the wall
-      bunting(DAWN, [[0, 4.1, -1.2, -8, 5.3, H.z + 1.2, 0.5], [0, 4.1, -1.2, 8, 5.3, H.z + 1.2, 0.5], [0, 4.1, -1.2, 0, 6.2, H.z + 1.2, 0.4],
-                     [-2.2, 3.5, -1.2, -14, 1.7, -1.2, 0.35], [2.2, 3.5, -1.2, 14, 1.7, -1.2, 0.35]]);
+      /* (tied ABOVE the ridge and outside the pillars' caps: tied at the ridge beam and the caps' middles, the first
+         flags of every string hung inside the roof, the beam and the pillars and poked out of them — VF-9) */
+      bunting(DAWN, [[0, 4.34, -1.2, -8, 5.3, H.z + 1.2, 0.5], [0, 4.34, -1.2, 8, 5.3, H.z + 1.2, 0.5], [0, 4.34, -1.2, 0, 6.2, H.z + 1.2, 0.4],
+                     [-2.52, 3.56, -1.2, -14, 1.7, -1.2, 0.35], [2.52, 3.56, -1.2, 14, 1.7, -1.2, 0.35]]);
       // the estate: three blocks of flats behind the temple, the trees between
       parseOnce('hdb').then(gl => {
         if (!alive) return;
@@ -2472,7 +2482,9 @@
            build stood all three behind the hall and the wide showed none of them) */
         for (const [x, z, ry] of [[-36, -56, 0.1], [-82, -28, 0.5]]) {
           const b = gl.scene.clone(true); b.scale.setScalar(0.001); b.rotation.y = ry;
-          b.traverse(o => { if (!o.isMesh) return; if (o.name.includes('Grd_Floor')) { o.visible = false; return; } o.castShadow = false; o.receiveShadow = false; });
+          /* (its ground floor KEPT: chapter 1 hides that box because it builds a void deck in the gap, and nothing is
+             built here — the blocks stood on a storey of sky, grounded by a box nobody could see — VF-3) */
+          b.traverse(o => { if (!o.isMesh) return; o.castShadow = false; o.receiveShadow = false; });
           b.updateMatrixWorld(true);
           const bb = new THREE.Box3().setFromObject(b);
           b.position.set(x - (bb.min.x + bb.max.x) / 2, -bb.min.y, z - (bb.min.z + bb.max.z) / 2);
@@ -2605,10 +2617,10 @@
        v8.0: a line asked for before its bytes have decoded plays nothing) */
     if (warmSounds) warmSounds(['ow3hello', 'z3look1', 'z3look2', 'z3look3', 'z3look4', 'ow3call', 'ow3gift1', 'ow3gift2',
                                 'z3thanks', 'ow3good', 'ow3namo', 'z3shift1', 'z3shift2', 'z3night',
-                                'casesnap', 'glasscase', 'candlelit', 'torchclick', 'matkneel', 'e3bell', 'presencein',
+                                'casesnap', 'glasscase', 'candlelit3', 'torchclick', 'matkneel3', 'e3bell', 'presencein',
                                 // the shrine's (play B): its lines and the sounds play makes there
                                 'z3shrine', 'as3sit', 'dv3wife', 'md3read1', 'md3drink', 'dv3father', 'md3read2', 'md3done',
-                                'as3next', 'z3walk', 'md3ghost', 'incenselit', 'urnsand', 'stoolscrape', 'taobell',
+                                'as3next', 'z3walk', 'md3ghost', 'incenselit3', 'urnsand', 'stoolscrape', 'taobell',
                                 'step1', 'step2', 'step3', 'step4',
                                 // the endings' helpers fire these (the engine reads a SCENE's own source for its cues, v14.16)
                                 'z3next', 'e3close3']);
@@ -2808,7 +2820,7 @@
     }
     function lightFlame(i) {
       flamesOn = true; flames[i].visible = true;
-      if (worldSfx) worldSfx('candlelit', 0.55, 1, panAt(flames[i].position.x, ALTAR.z));
+      if (worldSfx) worldSfx('candlelit3', 0.55, 1, panAt(flames[i].position.x, ALTAR.z));
     }
     function radioSwitch(on) {
       radioOn = on; radioLed.visible = on;
@@ -2843,7 +2855,7 @@
       if (phase !== 'join' || seated || !wornNow()) return;
       seated = 'mat';
       if (kit) kit.root(true);
-      if (worldSfx) worldSfx('matkneel', 0.8);
+      if (worldSfx) worldSfx('matkneel3', 0.8);
       turnTo(faceBuddha(), 1.0, { y: 0.98, span: 1.35, lo: -0.75, hi: 0.55, pos: MAT, pitch: 0.18 }, () => {
         if (kit && kit.pray) kit.pray(true, { secs: 1.2, y: -0.33 });
       });
@@ -3104,7 +3116,7 @@
       if (phase !== 'arrive' || inc) return false;
       inc = { t0: dayClock.t };
       if (kit) kit.root(true);
-      if (worldSfx) worldSfx('incenselit', 0.8, 1, panAt(JOSS_W.x, JOSS_W.z));
+      if (worldSfx) worldSfx('incenselit3', 0.8, 1, panAt(JOSS_W.x, JOSS_W.z));
       turnTo(camYawFrom(INC_AT, ALT_FACE), 1.5, { y: 1.62, span: 0.9, lo: -0.7, hi: 0.5, pos: INC_AT, pitch: -0.08 }, () => {
         if (kit && kit.pray) kit.pray(true, { secs: 1.0, y: -0.3 });
         jossHold(true);
@@ -3921,7 +3933,9 @@
        face will not stand a close-up (photographed at 0.75 m), and on a
        phone a man a metre away already fills the frame. Every route below
        keeps clear of the two still kneeling and was walked in the photos. */
-    const A_OWN = at(0.85, -0.6), A_STAFF = at(-0.6, 0.4);             // hands on him: the owner in front, the staff man behind
+    /* (the staff man at his right shoulder, not behind him: from behind, the man saying "Hold him! Hold him!" and "I
+       cannot!" was never once on screen, and the struggle did not read — VT-4. The lens turns to him for his line) */
+    const A_OWN = at(0.85, -0.6), A_STAFF = at(0.8, 0.15);             // hands on him: the owner in front, the staff man at his right
     const B_OWN = at(1.75, 0.05), B_STAFF = at(-1.35, 0.95);           // stepped back
     const C_OWN = { x: 2.05, z: -4.35 }, C_STAFF = { x: -2.25, z: -3.35 };   // the minutes go by
     /* (the girl a little further off: at 0.84 m her face filled a phone's frame and the scan's mouth did not stand
@@ -3949,10 +3963,14 @@
     sfx(1.15, 'stoolfall', 0.8);
     sfx(1.4, 'ow3eh');                                   // 2.93 → 4.33
     walk(C.owner, [F.OWN_SIT, { x: 1.2, z: -4.6 }, { x: 0.5, z: -4.55 }, A_OWN], 2.2, 5.0, mFace(A_OWN.x, A_OWN.z, P.x, P.z));
-    walk(C.staff, [F.STAFF_AT, A_STAFF], 2.6, 4.7, mFace(A_STAFF.x, A_STAFF.z, P.x, P.z));
+    walk(C.staff, [F.STAFF_AT, A_STAFF], 3.3, 4.6, mFace(A_STAFF.x, A_STAFF.z, P.x, P.z));
     // they take hold of him: hands out, quick, the take at a struggle's pace
     step(5.0, () => { F.take(C.owner, 'Talk_with_Hands_Open', 1.55, 0.25); F.take(C.staff, 'Talk_with_Hands_Open', 1.7, 0.25); });
     sfx(5.0, 'rushgrab', 0.85);
+    // the eyes go to the man at his arm for "Hold him!", and back to the owner for "I cannot..."
+    const yS = near(camYaw(A_STAFF), yA), pS = Math.atan2(1.42 - 1.62, Math.hypot(A_STAFF.x - P.x, A_STAFF.z - P.z));
+    tr(5.05, 5.6, (k) => { yaw.rotation.y = yA + (yS - yA) * k; pitch.rotation.x = pA + (pS - pA) * k; }, smoothK);
+    tr(7.25, 7.95, (k) => { yaw.rotation.y = yS + (yA - yS) * k; pitch.rotation.x = pS + (pA - pS) * k; }, smoothK);
     sfx(5.3, 'sm3hold');                                 // 2.38 → 7.68
     sfx(8.0, 'sm3cannot');                               // 2.32 → 10.32
     sfx(8.6, 'crowdgasp', 0.55);
@@ -4033,7 +4051,7 @@
     camTo(30.9, 31.35, { x: P.x, y: 1.62, z: P.z }, { x: P.x, y: 0.98, z: P.z }, (k) => k * k);
     tr(30.9, 31.6, (k) => { pitch.rotation.x = 0.02 - 0.4 * k; }, smoothK);
     sfx(31.3, 'kneethud', 0.9);
-    sfx(31.32, 'matkneel', 0.6);
+    sfx(31.32, 'matkneel3', 0.6);
     sfx(31.9, 'z3breath');                               // 3.0 → 34.9
     // the people come in while he breathes (the owner round the far side of the two still kneeling)
     walk(C.owner, [C_OWN, { x: 0.7, z: -4.3 }, { x: -0.1, z: -5.05 }, E_OWN], 31.6, 34.6, mFace(E_OWN.x, E_OWN.z, P.x, P.z));
@@ -4094,7 +4112,8 @@
        the owner's "let him", the Buddha (VT-2, the v21.1 photographs). Out of the way, the subject over the
        fingertips; at both ends it moves under the black or in a pan */
     const dip = (t) => 0.13 * (sm(cl01((t - 10.4) / 0.9)) - sm(cl01((t - 18.4) / 0.9))) + 0.15 * (t >= 22.1 && t < 25.85 ? 1 : 0)
-                     + 0.11 * sm(cl01((t - 29.6) / 0.5));
+                     + 0.11 * sm(cl01((t - 29.6) / 0.5))
+                     + 0.12 * (sm(cl01((t - 5.0) / 0.35)) - sm(cl01((t - 7.4) / 0.6)));   // pulled down by the hands on his arms (VT-4)
     tr(0, 30.6, (k, t) => {
       api.handsPose(hk, flowAt(Math.min(t, 30.6)));
       const d = dip(Math.min(t, 30.6)); if (d > 0) { api.armR.position.y -= d; const L = api.prayerArm(); if (L) L.position.y -= d; }
@@ -4169,12 +4188,12 @@
     sfx(4.3, 'swordswish', 0.7);
     sfx(5.7, 'taobell', 0.7);
     sfx(6.2, 'swordswish', 0.75);
-    sfx(6.9, 'drumroll', 0.75);
+    sfx(6.9, 'drumroll3', 0.75);
     sfx(7.4, 'as3back');                                  // 2.51 → 9.91
-    sfx(8.1, 'drum', 0.8); sfx(8.7, 'drum', 0.7); sfx(9.3, 'gong', 0.55);
+    sfx(8.1, 'drum3', 0.8); sfx(8.7, 'drum3', 0.7); sfx(9.3, 'gong3', 0.55);
     /* (the gong is 4 s long and the film ends 1.3 s into it: cut at the end it CHOKED — it is damped over the last
        0.7 s instead, the drum's tail with it — the v21.1 review) */
-    sfxFade(9.9, 10.6, 'gong'); sfxFade(10.1, 10.6, 'drum');
+    sfxFade(9.9, 10.6, 'gong3'); sfxFade(10.1, 10.6, 'drum3');
     /* the body over every camera track: the shake of the roar in it, settling */
     const shake = (t) => t < 2.8 ? Math.max(0, 1 - t / 2.8) : Math.max(0, 0.35 * (1 - (t - 2.8) / 3.0));
     tr(0, 10.6, (k, t) => {
@@ -4298,10 +4317,10 @@
     const stand = { x: p0.x, y: 1.62, z: p0.z }, knee = { x: p0.x, y: 1.0, z: p0.z - 0.1 };
     camTo(4.4, 5.4, stand, knee, smoothK);
     pitchTo(4.4, 5.4, 0.06, 0.34, smoothK);           // up at him over the table's edge
-    sfx(5.0, 'kneethud', 0.6); sfx(5.05, 'matkneel', 0.5);
+    sfx(5.0, 'kneethud', 0.6); sfx(5.05, 'matkneel3', 0.5);
     // his eyes close; the rites go round him in the dark
     fade(5.8, 6.6, 0, 0.985);
-    tr(5.8, 6.6, (k) => { duck('ritual', 1 - 0.55 * k); }, rawK);
+    tr(5.8, 6.6, (k) => { duck('ritual3', 1 - 0.55 * k); }, rawK);
     sfx(6.8, 'taobell', 0.85);
     sfx(7.6, 'swordswish', 0.8);
     sfx(8.2, 'swordswish', 0.7);
@@ -4333,7 +4352,7 @@
     sfx(21.0, 'as3A');                                 // 3.87 → 24.87
     // out under the lanterns: the black takes him through the door
     fade(25.0, 25.6, 0, 1);
-    tr(25.0, 25.6, (k) => { duck('ritual', 0.45 * (1 - k)); }, rawK);
+    tr(25.0, 25.6, (k) => { duck('ritual3', 0.45 * (1 - k)); }, rawK);
     const out = { x: F.LX(-3.15), y: 1.62, z: 1.45 }, east = faceFrom(out.x, out.z, F.LX(7), 1.6);
     camTo(25.65, 25.7, out, out, rawK);
     yawTo(25.65, 25.7, east, east, rawK);
@@ -4374,7 +4393,7 @@
     pitchTo(0, 0.8, s.pitchX, 0.08, smoothK);
     sfx(0.4, 'z3B1');                                  // 2.35 → 2.75
     // the drum stops; the medium stops; he looks at him
-    tr(2.7, 3.3, (k) => { duck('ritual', 1 - k); }, rawK);
+    tr(2.7, 3.3, (k) => { duck('ritual3', 1 - k); }, rawK);
     step(2.9, () => { M.look = 1; F.medPose(F.MED_ANGRY, 0.7); A.look = 1; A.lookAt = null; });
     sfx(3.5, 'md3B1');                                 // 1.18 → 4.68
     // and it surges again: the roar out of him, the gold, the lens thrown at the medium
@@ -4408,7 +4427,7 @@
     pitchTo(W.end - 0.1, W.end + 1.0, -0.12, 0.08, smoothK);
     const T1 = W.end + 0.9;
     sfx(T1, 'shutter', 0.95);                          // 2.9 s
-    tr(T1 + 0.05, T1 + 2.6, (k) => { F.entShutter(k); duck('ritual', 0); duck('shrineamb', 1 - 0.7 * k); }, rawK);
+    tr(T1 + 0.05, T1 + 2.6, (k) => { F.entShutter(k); duck('ritual3', 0); duck('shrineamb', 1 - 0.7 * k); }, rawK);
     // "...and whatever it was, it heard me." — the lanterns swing in no wind
     sfx(T1 + 3.0, 'z3B2');                             // 4.91 → T1 + 7.91
     sfx(T1 + 4.8, 'presencein', 0.35);
@@ -4451,7 +4470,7 @@
     turnOnto(api, 5.3, 6.1, toMed, W.headAt0);
     pitchTo(5.3, 6.1, 0.06, -0.05, smoothK);
     step(5.6, () => { handsRoot.visible = false; });
-    tr(6.0, W.end, (k) => { duck('ritual', 1 - 0.75 * k); duck('shrineamb', 1 - 0.5 * k); }, rawK);
+    tr(6.0, W.end, (k) => { duck('ritual3', 1 - 0.75 * k); duck('shrineamb', 1 - 0.5 * k); }, rawK);
     // the coffee shop across the road (its lit bay on the far facade), and the bus between
     const kopi = { x: F.LX(-15), z: 16.4 };
     const toKopi = faceFrom(F.LX(kerb.x), kerb.z, kopi.x, kopi.z);
@@ -4494,7 +4513,7 @@
     const W = walkRoute(api, route, 4.8, 1.05);
     turnOnto(api, 4.3, 5.0, toMed, W.headAt0);
     pitchTo(4.3, 5.0, 0.06, -0.05, smoothK);
-    tr(4.8, W.end, (k) => { duck('ritual', 1 - 0.75 * k); duck('shrineamb', 1 - 0.5 * k); }, rawK);
+    tr(4.8, W.end, (k) => { duck('ritual3', 1 - 0.75 * k); duck('shrineamb', 1 - 0.5 * k); }, rawK);
     /* (toward the kopitiam's lit bay across the road, x −15: the LP Tim is held up against its warm light, as this
        ending always meant — straight across, it hung against two grey shutters and the black road; the v21.1
        photographs) */
@@ -5214,6 +5233,38 @@
         x.fillRect(hx - 15, H * 0.62, 30, H * 0.4);
       }
     }
+    return done(THREE, c, false);
+  }
+  /* a day bus's side (VF-1: the morning's bus went by with one flat dark band for windows): tinted bays in black
+     rubber, the sky caught along their tops, the seat backs and a few heads just showing through, a glint */
+  function makeBusWindowsDay(THREE, cnv) {
+    const W = 1024, H = 96, [c, x] = sized(cnv, W, H), R = rng(15);
+    x.fillStyle = '#0c0e10'; x.fillRect(0, 0, W, H);
+    const bays = 9, bw = W / bays;
+    for (let i = 0; i < bays; i++) {
+      const x0 = i * bw + 6, w = bw - 12;
+      const g = x.createLinearGradient(0, 6, 0, H - 6); g.addColorStop(0, '#7d93a3'); g.addColorStop(0.32, '#34434e'); g.addColorStop(1, '#1b242b');
+      x.fillStyle = g; x.fillRect(x0, 6, w, H - 12);
+      x.fillStyle = 'rgba(10,14,18,0.6)';                                        // the seat backs
+      for (let s = 0; s < 2; s++) x.fillRect(x0 + 8 + s * w * 0.5, H * 0.6, w * 0.36, H * 0.38);
+      if (R() < 0.4) {                                                           // a passenger
+        const hx = x0 + w * (0.2 + 0.6 * R());
+        x.fillStyle = 'rgba(8,10,12,0.72)'; x.beginPath(); x.ellipse(hx, H * 0.52, 9, 11, 0, 0, Math.PI * 2); x.fill();
+        x.fillRect(hx - 15, H * 0.64, 30, H * 0.36);
+      }
+      const gl = x.createLinearGradient(x0, 6, x0 + w, H - 6);                   // the glint across the glass
+      gl.addColorStop(0.28, 'rgba(255,255,255,0)'); gl.addColorStop(0.4, 'rgba(255,255,255,0.12)'); gl.addColorStop(0.5, 'rgba(255,255,255,0)');
+      x.fillStyle = gl; x.fillRect(x0, 6, w, H - 12);
+    }
+    return done(THREE, c, false);
+  }
+  /* the plate on its back (VC-6: the bus left the frame as a plain box) */
+  function makeBusPlate(THREE, cnv) {
+    const [c, x] = sized(cnv, 256, 64);
+    x.fillStyle = '#f4f2ea'; x.fillRect(0, 0, 256, 64);
+    x.strokeStyle = '#1a1a1a'; x.lineWidth = 4; x.strokeRect(3, 3, 250, 58);
+    x.fillStyle = '#141414'; x.font = 'bold 40px monospace'; x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.fillText('SBS 8462D', 128, 34);
     return done(THREE, c, false);
   }
   function makeBusSign(THREE, cnv) {
