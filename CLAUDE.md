@@ -375,7 +375,9 @@ player voiceline. Always remember this."). A take never reads an abbreviated
 honorific as letters: the script says "Luang Phu Tim", "Luang Phor", "Ajahn"
 in full, for every speaker. On-screen text may keep the printed form ("LP Tim
 Khun Paen" is how the amulet is named on a card); the rule is about what is
-SAID. Check a new line's script for "LP" before generating it.
+SAID. Check a new line's script for "LP" before generating it — and
+`chaptertest` fails any registry row whose words carry "LP" or "L.P." (it
+catches exactly v21.7's two, `z3look2` and `ow3gift1`, and nothing else).
 
 A cutscene reaches sound through `sfx(at, kind, vol)` and nothing else.
 `kind` is a row in `STING_SAMPLE` in main.js — that table IS the
@@ -5594,6 +5596,55 @@ What the baseline contains, by release:
   with one comment's number corrected (the diff read before the commit found
   it), byte-verified (221 files); harnesses chapter, text, hosted, cine
   green. docs/V21.2-PLAN.md, the v21.7 section.
+- **v21.8** CHAD'S THIRTEEN NOTES ON THE DANCE ON BUDDHA DAY, AND FOUR MORE —
+  episode 3 chapter 3 (docs/V21.8-PLAN.md has every note verbatim and the
+  record). THE MINIGAME "sometimes works and sometimes doesnt work, depending
+  on whether i pressed continue game, manually select chapter to play, or
+  naturally progressed": every way in was driven with real input and every
+  one played it — the difference was the SAVE. The autosave writes every 8 s
+  and the phase read `trance` before STAY PRESENT as well as after it, so a
+  Continue from a save taken in those twenty seconds skipped it for good; only
+  a PLAYED trance is tagged now (`trance:done`), an untagged one resumes on
+  the mat (LEARNINGS). THE SHOP: a MONK (Chad's, cut to 28 %, `monkshop`)
+  kneels at the front facing the altar in e3c2's prayer and LEADS THE CHANT
+  in Chad's Pali (`mk3chant`, Arthur, v as w) where the owner's namo was, the
+  customers a row behind him, and as it ends the trance stirs, "No... not
+  here", STAY PRESENT; the altar carries e3c1's altar row (its far level had
+  drawn ALL GOLD — gltf-transform's `prune` dropped the UVs of a cut that
+  borrows the near level's material; `tools/permcut.mjs` keeps them for NOTEX
+  now, LEARNINGS); the two shelves beside it are Chad's row of LERSI MASKS
+  (e3c1's `lersimask`) over a red-and-gold cabinet; the LP Tim stands open,
+  no glass, and GLOWS (v14.7's recipe); the masters' wall is Chad's five
+  portraits, the source's own bytes (`masters/v21.8/portraits/SOURCES.md`),
+  credited to the three pages he gave; every amulet display is his TRAY or his
+  SHELF (`masters/v21.8/display/make.sh`: the tray near at 6 % with its relief,
+  a baked planar mid and far for the dozens across the counters, the shelf
+  whole with two cuts over the same vertices). THE WORDS: the voices say
+  **Luang Phu Tim**, never "LP" (`z3look2`, `ow3gift1` — a standing rule now,
+  above), the play line is "Candles, fruits, offerings... he even invited a
+  monk today to lead the chanting." (`z3look3`), the girl says "Sadhu, sadhu,
+  sadhu!" (`cu3sadhu`), the wife at the shrine speaks at 2.8 syllables a
+  second instead of 5.4 (`dv3wife`, eleven_v4 — v3 kept the same speed between
+  its pauses however it was asked), and the core lesson is Chad's pick, second
+  person and a third of the length. THE STREET behind the shrine is BUILT: a
+  row of shophouses the length of the lorong with five-foot ways, fanlights,
+  balustrades, blade signs, a kopitiam and a minimart open, rain trees, cars,
+  sodium lamps every thirty metres, HDB blocks behind — lit WITHOUT A LIGHT by
+  one small shader that paints each lamp as a pool falling off as the square
+  of 1 + (d/r)², merged into a handful of batches (LEARNINGS). THE MALE
+  CUSTOMER is the botak recruit, seated upright, no fist-pumping. THE ROAR is
+  re-staged for the screen it plays on: each shot names what must be in it —
+  points on the Hanuman's own body and the medium's hat, chair and knees — and
+  the lens stands as far back as THIS screen's aspect needs (a portrait phone
+  sees a third of the width; the first orbit showed it a torso with no head);
+  the lunge is a PAN with two gold echoes trailing it down the line; the
+  medium flinches as it comes, is thrown back as it strikes under a short hard
+  flash, gasps after the crash's first blow (a voice ducks everything else),
+  and STANDS in front of us before the tongue (`hanulunge`, `hanuhit`,
+  `hanucrash`, `goldswell`, `md3gasp`). Retired: `ow3namo`, `cu3amitabha`,
+  `glasscase`, `casesnap`. Sheet v103 exported (v44 stays the link).
+  Deploy `6ad7c5210aa63d0c8e494c8f`, byte-verified (all 231 build files);
+  the full suite running after it (SUITE_RESULT).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so

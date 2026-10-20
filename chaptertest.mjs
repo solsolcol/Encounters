@@ -251,6 +251,7 @@ try {
   new Function('window', readFileSync(join(DIR, 'src', 'voicelines.js'), 'utf8'))(voiceWin);
 } catch (e) { errs.push('ERR src/voicelines.js failed to load: ' + e.message); }
 const VOICE = voiceWin.__VOICE__;
+const VOICE_ABBREV = /\bL\.?P\b\.?/;   // "LP", "L.P." — an honorific's letters (v21.8)
 if (VOICE && Array.isArray(VOICE.LINES)) {
   const rows = new Set(VOICE.LINES.map(l => l.id));
   const isVoice = n => /^(v|t5)/.test(n) && !/room$/.test(n);
@@ -264,6 +265,12 @@ if (VOICE && Array.isArray(VOICE.LINES)) {
     if (!VOICE.CHAPTERS?.[l.ch]) errs.push(`voice: row '${l.id}' names an unknown chapter '${l.ch}'`);
     if (typeof l.text !== 'string' || !l.text.trim() || l.text.includes('???')) {
       errs.push(`voice: row '${l.id}' has no text written down`);
+    }
+    /* v21.8 (Chad: "The voicelines should say luang phu tim, and not literally lp ... Always remember this"): a
+       master's title is SPOKEN in full, so no take's words may carry it abbreviated — the TTS reads "LP" as letters.
+       (On-screen text may keep "LP Tim Khun Paen"; this is the registry of what is SAID.) */
+    if (typeof l.text === 'string' && VOICE_ABBREV.test(l.text)) {
+      errs.push(`voice: row '${l.id}' says an abbreviated title ("${l.text.match(VOICE_ABBREV)[0]}") — a voice says "Luang Phu", "Luang Phor" in full`);
     }
     if (typeof l.secs !== 'number' || !(l.secs > 0)) errs.push(`voice: row '${l.id}' has no measured length`);
   }
