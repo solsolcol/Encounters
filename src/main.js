@@ -3924,6 +3924,13 @@ function evBegin() {
      Hand the pointer back; the next click on the canvas after the event
      re-locks it through the path that has always done so. */
   if (e.kind === 'match') { evBuildMatch(); document.exitPointerLock?.(); }
+  /* v21.1: and a GRADED focus event, which scores where the press LANDS. Under
+     pointer lock every click lands on the middle of the screen, nothing is
+     drawn there outside rifle mode, and the light it asks for is held off the
+     middle — so a desktop player clicking the light he could see was charged
+     a miss for it. The cursor is handed back, as for the match; the next
+     click after the event re-locks. Only episode 3 chapter 3 opens one. */
+  else if (e.kind === 'focus' && o.graded) document.exitPointerLock?.();
   snd('uiclick', 0.3);
 }
 function evShowItem() {

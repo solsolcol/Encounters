@@ -139,7 +139,7 @@
       hotIncense: 'Take three joss sticks',
       hotStool: 'Sit on the stool',
       evAware: 'Stay present',
-      evAwareBrief: 'Something has come into your body, and you cannot stop it. But you are still here. When a light shows on something around you, tap it (or look at it and click) before its ring closes.',
+      evAwareBrief: 'Something has come into your body, and you cannot stop it. But you are still here. When a light shows on something around you, tap it (or click it) before its ring closes.',
       lookWall: 'The framed amulets',
       lookTim: 'The LP Tim in its case',
       lookAltar: 'The altar',
@@ -153,7 +153,7 @@
       presence: 'Something is moving your body.',
       presenceWarn: 'Sanity drops while it holds you.',
       noteTim: 'Wore the LP Tim Khun Paen the owner gave you.',
-      noteAware: 'Stayed aware of everything around you, though your body was not yours.',
+      noteAware: 'Stayed aware of what was around you, though your body was not yours.',
       noteLost: 'Lost track of where you were while your body danced.',
       noteIncense: 'Lit incense at the medium\'s urn before you sat.'
     },
@@ -182,10 +182,12 @@
   function build(ctx) {
     const { THREE, GLTFLoader, cloneSkinned, scene, camera, yaw, pitch, LOW, kit, plantTrees,
             assetBytes, rescueTextures, redoShadows, cnv, makeHellNote,
-            getState, startDecision, worldSfx, warmSounds, soundOff, HEAD_RE } = ctx;
+            getState, startDecision, worldSfx, warmSounds, soundOff, HEAD_RE, unifySkeletons } = ctx;
 
     const owned = [];
+    const treeStands = [];          // v21.1: kept, so dispose() can hand the shared tree kit back before its sweep
     let alive = true;
+    let shrineRun = 0, shrDark = false;   // v21.1: the shrine arrival's run token (SR-6) and its HUD held under the black (ST-4)
     const parsedGlb = new Map();
     const madeTex = [];
     const tex = (t) => { madeTex.push(t); return t; };
@@ -282,6 +284,9 @@
         parsedGlb.set(key, assetBytes(key).then(BUF => new Promise((res, rej) =>
           new GLTFLoader().parse(BUF, '', (gltf) => {
             rescueTextures(gltf, BUF);
+            /* one exact skeleton per model, before any clone (v15.2, proven pixel for pixel): a scan's every mesh
+               carries its own, and the staff man was ten skeleton updates a frame (the v21.1 review) */
+            if (unifySkeletons) unifySkeletons(gltf.scene);
             res({ scene: gltf.scene, animations: gltf.animations });
           }, rej))));
       }
@@ -596,7 +601,7 @@
       box(2.9, 0.22, 0.04, x, SHOP.H - 0.11, z + 0.1, matRed, altarG, false);
       box(2.9, 0.03, 0.05, x, SHOP.H - 0.225, z + 0.1, matGold, altarG, false);
       // THE IMAGES: Chad's Buddha, the principal on the top tier, two smaller on the second
-      thai('buddha', x, T3, z - 0.18, { s: 1.62, hd: true, hdAt: 3.5, parent: altarG });
+      thai('buddha', x, T3, z - 0.18, { s: 1.62, hd: true, hdAt: LOW ? 1.9 : 3.5, parent: altarG });   // (on a phone the full 589k level only inside 1.9 m — e3c2's v19.2 number: at 3.5 it was drawn through the whole chant and trance from the mat at 2.5 m, the v21.1 review)
       for (const s of [-1, 1]) thai('buddha', x + s * 0.5, T2, z - 0.13, { s: 0.78, parent: altarG });
       // the front tier: candles, the incense pot, orchids, trays of fruit, a small bell
       for (const s of [-1, 1]) {
@@ -826,21 +831,28 @@
            the auntie's prayer standing as statues (the v21.0 review) */
         if (rig.cur === name && at === undefined && rig.acts[name].isScheduled()) {
           const a = rig.acts[name]; a.paused = false; a.setEffectiveTimeScale(ts); return true; }
+        /* (a split talk still on — splitPlay — goes with whatever is asked for next) */
+        if (rig.splitOn && rig.splitOn.size) { for (const k of rig.splitOn) if (k !== name && rig.acts[k]) rig.acts[k].fadeOut(fade > 0 ? fade : 0.01); rig.splitOn.clear(); }
         const nx = rig.acts[name], old = rig.cur && rig.cur !== name && rig.acts[rig.cur];
         nx.reset(); nx.setEffectiveTimeScale(ts); nx.setEffectiveWeight(1);
         nx.setLoop(once ? THREE.LoopOnce : THREE.LoopRepeat, Infinity);
         nx.clampWhenFinished = once;
+        /* (an update here runs outside peopleTick's head/spine/arm bracket: the take's new pose is written, the next
+           frame's pre-pass then put back LAST frame's capture, and a parked take — whose values no longer change —
+           was never written again: the youth's head stayed 33° wrong for 21 s of the trance film. So the bracket is
+           kept here too — the v11.5 law from the other side, the v21.1 review) */
+        const mixNow = (dt) => { headPre(rig); spinePre(rig); armsPre(rig); rig.mixer.update(dt); recapture(rig); };
         if (at !== undefined) {
           nx.play(); nx.time = nx.getClip().duration * at; nx.paused = true;
           for (const a of Object.values(rig.acts)) if (a !== nx) a.stop();
-          rig.mixer.update(0);
+          mixNow(0);
         } else if (fade > 0) {
           nx.paused = false; nx.fadeIn(fade).play();
           if (old) old.fadeOut(fade);
         } else {
           nx.paused = false; nx.play();
           for (const a of Object.values(rig.acts)) if (a !== nx) a.stop();
-          rig.mixer.update(0.0001);
+          mixNow(0.0001);
         }
         rig.cur = name;
         return true;
@@ -919,6 +931,12 @@
        runs again, so a turn never stacks on the frame a take holds still */
     const _q = new THREE.Quaternion(), _e = new THREE.Euler(), _hp = new THREE.Vector3(), _cp = new THREE.Vector3();
     function headPre(rig) { if (rig.head && rig.headWrote) rig.head.quaternion.copy(rig.headWrote); }
+    /* what a take wrote OUTSIDE peopleTick is what the next frame's pre-pass puts back (rig.play, seatMedium) */
+    function recapture(r) {
+      if (r.head && r.headWrote) r.headWrote.copy(r.head.quaternion);
+      if (r.spine && r.spineWrote) r.spine.forEach((b, i) => r.spineWrote[i].copy(b.quaternion));
+      if (r.armBones && r.armWrote) r.armBones.forEach((b, i) => r.armWrote[i].copy(b.quaternion));
+    }
     function headPost(rig, wdt) {
       if (!rig.head) return;
       if (!rig.headWrote) rig.headWrote = new THREE.Quaternion();
@@ -951,8 +969,37 @@
     function talk(rig, secs, take = 'Talk_with_Hands_Open') {
       if (!rig) return;
       if (rig.sitting || rig.path || !rig.acts || !rig.acts[take]) { rig.nod = secs; return; }
-      rig.play(take, 1, 0.3);
+      if (rig.opts.splitTalk && rig.acts[rig.idle]) {               // made when first asked: the talk's file lands after the model
+        if (!rig.acts[take + '^up']) splitTake(rig, take, false, '^up');
+        if (!rig.acts[rig.idle + '^low']) splitTake(rig, rig.idle, true, '^low');
+      }
+      if (rig.acts[take + '^up'] && rig.acts[rig.idle + '^low']) splitPlay(rig, take, 0.3);
+      else rig.play(take, 1, 0.3);
       rig.talkUntil = performance.now() / 1000 + secs;
+    }
+    /* v21.1: a talking take on a SEATED body, under its own legs — the
+       medium's ^up/^low split given to anyone who carries it. The wife talks
+       on the monk's seated take retargeted onto her, and that take uncrosses
+       her legs and puts both toes 11–12 cm through the tiles for her whole
+       line (FK over the shipped files): her legs stay on her own sitting
+       take, the talk is laid over her upper body only. The legs' tracks hand
+       over to themselves (the idle and its ^low in step), so they never move. */
+    function splitPlay(r, name, fade) {
+      const on = r.splitOn || (r.splitOn = new Set());
+      const idle = r.acts[r.idle];
+      const want = name === r.idle ? [r.idle] : [r.idle + '^low', name + '^up'];
+      const sync = on.has(r.idle + '^low') ? r.acts[r.idle + '^low'].time : (idle && idle.isRunning() ? idle.time : 0);
+      if (r.cur && !on.has(r.cur) && !want.includes(r.cur) && r.acts[r.cur]) r.acts[r.cur].fadeOut(fade);
+      for (const k of [...on]) if (!want.includes(k)) { r.acts[k].fadeOut(fade); on.delete(k); }
+      for (const k of want) {
+        const a = r.acts[k]; if (!a || on.has(k)) continue;
+        a.reset(); a.setEffectiveTimeScale(1); a.setEffectiveWeight(1);
+        if (k === r.idle || k === r.idle + '^low') a.time = sync;
+        a.play(); if (fade > 0) a.fadeIn(fade);
+        on.add(k);
+      }
+      if (name === r.idle) on.clear();
+      r.cur = name === r.idle ? r.idle : name + '^up';
     }
     let shadowAt = 0;
     function peopleTick(wdt) {
@@ -969,7 +1016,8 @@
           r.model.position.y = r.baseY + r.yOff;
         }
         if (!r.mixer) continue;
-        if (r.talkUntil && now > r.talkUntil) { r.talkUntil = 0; if (r.idle && !r.path) r.play(r.idle, r.opts.rate || 1, 0.4); }
+        if (r.talkUntil && now > r.talkUntil) { r.talkUntil = 0; if (r.idle && !r.path) { if (r.splitOn && r.splitOn.size) splitPlay(r, r.idle, 0.4); else r.play(r.idle, r.opts.rate || 1, 0.4); } }
+        if (r === medium) medRestTick(wdt);
         headPre(r); spinePre(r); armsPre(r);
         r.mixer.update(wdt);
         if (r.rootOff) rootComp(r);
@@ -1046,7 +1094,11 @@
       if (!r) return;
       r.path = { pts: pts.map(q => ({ x: q.x, z: q.z })), i: 0, v: o.v || 0.95, face: o.face, then: o.then || null };
       r.talkUntil = 0; r.turnTo = null; r.look = 0;
-      if (r.acts && r.acts.Walking) r.play('Walking', (o.v || 0.95) / (WALK_NAT * (r.height || 1.7)), 0.35);
+      /* (a seated rig is sized on its seated span, and that span is not its standing height: the stride ran 16–36 %
+         fast and the feet skated — standH is its height on its own walk, walkDy the walk's toes on the floor; FK over
+         the shipped files, the v21.1 review) */
+      if (r.acts && r.acts.Walking) r.play('Walking', (o.v || 0.95) / (WALK_NAT * (r.opts.standH || r.height || 1.7)), 0.35);
+      if (r.opts.walkDy) r.yTo = r.opts.walkDy;
     }
     function walkTick(r, wdt) {
       const P = r.path, g = r.group, tgt = P.pts[P.i];
@@ -1203,6 +1255,8 @@
         r.group.visible = true; r.group.position.set(at.x, 0, at.z);
         r.group.rotation.y = r === wife ? Math.PI : Math.atan2(MED_AT.x - FATHER_AT.x, MED_AT.z - FATHER_AT.z);
         r.look = 0; r.lookAt = null; r.nod = 0;
+        if (r.splitOn) r.splitOn.clear();                // (the fade-0 play below stops every other action, the split's too)
+        r.yTo = r.yOff = 0; if (r.model && r.baseY !== undefined) r.model.position.y = r.baseY;   // (the walk's drop, undone)
         if (r.acts && r.acts[idle]) r.play(idle, 1, 0);
       }
       asst.look = 0; asst.lookAt = null; asst.nod = 0;
@@ -1210,8 +1264,8 @@
       if (medium.acts) { medium.standK = medium.standTo = 0; medium.group.position.z = MED_AT.z; medStand(false, 0); }
       talismanGiven(false); urnLight(false); roarFx.flash(0); roarFx.hanu(0, MED_AT, MED_AT);
       // the endings' things put away: the doorway open, no bus, nothing in his hand, the lanterns still
-      entShutterK(0); busK(0); shrLife.gust = 0;
-      for (const o of [cupProp, timHeld]) { o.visible = false; if (o.parent) o.parent.remove(o); }
+      entShutterK(0); busK(0); shrLife.gust = 0; starsK(0);
+      for (const o of [cupProp, timHeld]) { o.visible = false; o.userData.warmHeld = false; if (o.parent) o.parent.remove(o); }
       // the kneelers and the two on stools back as the day found them (the film moves and turns them)
       girl.group.position.set(-0.55, 0, -5.5); girl.group.rotation.y = Math.PI;
       if (girl.acts && girl.acts.kneel) girl.play('kneel', 1, 0);
@@ -1307,6 +1361,13 @@
        room's ceiling and the facades wherever a roof would, and shown only
        while he is here (worldB) */
     const shrStars = new THREE.Group(); shrG.add(shrStars); shrStars.visible = false;
+    /* v21.1: the stars a scene can ask more of — ending D looks up at the night, and its `stars` daylight drove the
+       ENGINE's dome, which from the shrine is past the far plane: nothing in the sky ever changed (the v21.1 review) */
+    const starMats = [];
+    function starsK(k) {
+      k = THREE.MathUtils.clamp(k, 0, 1);
+      for (const s of starMats) { s.m.opacity = Math.min(1, s.op * (1 + 0.35 * k)); s.m.size = s.size * (1 + 0.55 * k); }
+    }
     {
       const dot = tex(makeGlowTex(THREE, cnv, [255, 255, 255]));
       let sd = 2021019;
@@ -1325,6 +1386,7 @@
         const pts = new THREE.Points(geo, new THREE.PointsMaterial({ map: dot, size, sizeAttenuation: false, vertexColors: true,
           transparent: true, opacity: op, depthWrite: false, fog: false, blending: THREE.AdditiveBlending }));
         pts.renderOrder = -900; shrStars.add(pts);
+        starMats.push({ m: pts.material, op, size });
       };
       layer(700, 2.0, 0.22, 0.6, 0.85);
       layer(110, 3.6, 0.6, 1.0, 1.0);
@@ -1749,6 +1811,7 @@
     }
     /* an incense coil hung from a beam: a cone of spiral, a red tag, its
        burning end and a thread of smoke */
+    let coilTagMat = null;
     function mkCoil(x, z) {
       const top = SB.H - 0.95, pts = [];
       for (let i = 0; i <= 120; i++) { const t = i / 120, a = t * Math.PI * 2 * 6.5, r = 0.02 + 0.19 * t; pts.push(new THREE.Vector3(Math.cos(a) * r, -0.05 - 0.3 * t, Math.sin(a) * r)); }
@@ -1757,7 +1820,9 @@
       g.add(coil);
       cyl(0.003, 0.003, SB.H - top, 0, (SB.H - top) / 2, 0, matInk, 4, g);
       for (let k = 0; k < 3; k++) { const a = k * 2.094; const s = cyl(0.0015, 0.0015, 0.36, Math.cos(a) * 0.1, -0.13, Math.sin(a) * 0.1, matInk, 3, g); s.rotation.z = Math.cos(a) * 0.28; s.rotation.x = -Math.sin(a) * 0.28; }
-      plane(0.07, 0.14, new THREE.MeshBasicMaterial({ map: tex(makeSignTxt(THREE, cnv, '福', '#c01a10', '#ffd86a', 0.5)), side: THREE.DoubleSide, fog: true }), 0, -0.34, 0, 0, g);
+      /* (one tag drawn for every coil: each drew its own 512×1024 sheet, six identical ones — PF-13) */
+      if (!coilTagMat) coilTagMat = new THREE.MeshBasicMaterial({ map: tex(makeSignTxt(THREE, cnv, '福', '#c01a10', '#ffd86a', 0.5)), side: THREE.DoubleSide, fog: true });
+      plane(0.07, 0.14, coilTagMat, 0, -0.34, 0, 0, g);
       const end = pts[pts.length - 1];
       const tip = new THREE.Mesh(new THREE.SphereGeometry(0.009, 6, 4), matEmber); tip.position.copy(end); g.add(tip);
       mkSmoke(g, end.x, end.y + 0.05, end.z, 4, 0.5, 0.1);
@@ -1799,8 +1864,8 @@
     const medium = mkRig('medium', { parent: shrPeople, x: MED_AT.x, z: MED_AT.z, ry: 0, height: 1.74, idle: 'Chair_Sit_Idle_M', look: 0,
       sizeOn: 'Walking', then: (r) => seatMedium(r) });
     const asst = mkRig('sitman', { parent: shrPeople, x: ASST_AT.x, z: ASST_AT.z, ry: -Math.PI / 2, height: 1.25, idle: ASST_CLAP, at: ASST_REST, seated: true, stool: 0x2a64b4 });
-    const wife = mkRig('sitwoman', { parent: shrPeople, x: WIFE_AT.x, z: WIFE_AT.z, ry: Math.PI, height: 1.2, idle: WIFE_SIT, seated: true, stool: 0xc8261c, anims: ['sitwomantalk', 'wifewalk'], then: stoolStays });
-    const father = mkRig('sitangry', { parent: shrPeople, x: FATHER_AT.x, z: FATHER_AT.z, ry: Math.atan2(MED_AT.x - FATHER_AT.x, MED_AT.z - FATHER_AT.z), height: 1.25, idle: SIT_W, seated: true, stool: 0x2a64b4, anims: 'fatherwalk', then: stoolStays });
+    const wife = mkRig('sitwoman', { parent: shrPeople, x: WIFE_AT.x, z: WIFE_AT.z, ry: Math.PI, height: 1.2, idle: WIFE_SIT, seated: true, stool: 0xc8261c, anims: ['sitwomantalk', 'wifewalk'], then: stoolStays, splitTalk: true, standH: 1.64, walkDy: -0.024 });
+    const father = mkRig('sitangry', { parent: shrPeople, x: FATHER_AT.x, z: FATHER_AT.z, ry: Math.atan2(MED_AT.x - FATHER_AT.x, MED_AT.z - FATHER_AT.z), height: 1.25, idle: SIT_W, seated: true, stool: 0x2a64b4, anims: 'fatherwalk', then: stoolStays, standH: 1.45 });
 
     /* THE MEDIUM'S CHAIR, built round his own seated takes (e3c1's v17.1 law:
        the seat is ours, the sitting is the take's): each take's hips measured
@@ -1817,6 +1882,29 @@
        another take's upper body — a crossfade either way (the legs' tracks
        hand over to themselves, so they never move) */
     const medOn = new Set();
+    /* v21.1: HIS REST IS THE TAKE'S UPRIGHT STRETCH. Chair_Sit_Idle_M is the
+       take v8.0 wrote down as "not an idle": measured by FK over medium.glb's
+       own 10.67 s, his head stands 0.40 over his hips from 0 to 1.3 s and from
+       9.2 s to the end, and for the five seconds between it drops to 0.18 and
+       slides 0.32 forward — he folded over his table for three quarters of
+       every loop, and under every reading his hips (MED_SIT^low) tipped the
+       talking take forward with them. So both are driven on WALL time through
+       that stretch only — 9.2 s round the loop's seam to 1.2 s, a slow there
+       and back (the seam is continuous: 0.402 / 0.049 either side) — the way
+       e2c1's riders sit inside their take's upright window. */
+    const MED_WIN = [9.2, 1.2];
+    let medRestT = 0;
+    function medRestTick(wdt) {
+      const r = medium; if (!r.acts) return;
+      medRestT += Math.min(wdt, 0.25);
+      for (const k of [MED_SIT, MED_SIT + '^low']) {
+        const a = r.acts[k]; if (!a || !medOn.has(k)) continue;
+        const dur = a.getClip().duration, span = dur - MED_WIN[0] + MED_WIN[1];
+        let t = MED_WIN[0] + span * (0.5 - 0.5 * Math.cos(medRestT * Math.PI / (span * 1.4)));
+        if (t >= dur) t -= dur;
+        a.paused = true; a.time = t;
+      }
+    }
     function medPose(name, fade = 0.45, ts = 1) {
       const r = medium; if (!r.acts || !r.acts[MED_SIT]) return;
       const want = name === MED_SIT ? [MED_SIT] : (r.acts[name + '^up'] ? [MED_SIT + '^low', name + '^up'] : [name]);
@@ -1838,7 +1926,9 @@
       const hipAt = {}, seats = [], all = [];
       for (const take of takes) {
         let hx = 0, hz = 0, n = 0;
-        for (const k of [0, 0.25, 0.5, 0.75]) {
+        /* measured over the poses he will actually rest in (MED_WIN), never across the fold */
+        const tdur = r.acts[take].getClip().duration;
+        for (const k of [9.2, 9.9, 10.5, 0.4, 1.1].map(s => Math.min(s, tdur) / tdur)) {
           r.play(take, 1, 0, false, k); r.mixer.update(0); r.model.updateMatrixWorld(true);
           r.hips.getWorldPosition(_v); const hy = _v.y, wx = _v.x, wz = _v.z;
           const hl = r.group.worldToLocal(_v.clone()); hx += hl.x; hz += hl.z; n++;
@@ -1867,7 +1957,7 @@
       }
       const ref = hipAt[MED_SIT] || [0, 0];
       for (const a of Object.values(r.acts)) a.stop();
-      medOn.clear(); r.cur = null; medPose(MED_SIT, 0); r.mixer.update(0.0001);
+      medOn.clear(); r.cur = null; medPose(MED_SIT, 0); headPre(r); spinePre(r); armsPre(r); r.mixer.update(0.0001); recapture(r);
       // the soles on the floor: the rest take's lowest skin to y 0
       const rest = all.filter(m => m.take === MED_SIT), sole = Math.min(...rest.map(m => m.sole));
       if (isFinite(sole)) { const dy = r.group.position.y - sole; r.model.position.y += dy; for (const m of all) { m.sole += dy; m.seat += dy; } for (let i = 0; i < seats.length; i++) seats[i] += dy; }
@@ -1907,6 +1997,11 @@
       r.chair = g;
       r.seatInfo = { seatY: +seatY.toFixed(3), s0: +s0.toFixed(3), s1: +s1.toFixed(3), sole: +sole.toFixed(3),
                      takes: all.map(m => [m.take, +m.seat.toFixed(3), +m.sole.toFixed(3), +m.toe.toFixed(3), +m.back.toFixed(3)]) };
+      /* PF-4: his palms measured now, under the loading screen — a scan of every skinned vertex, twice, which ran on
+         the roar's cut the first time he took up the sword and the bell (the palm is in the hand bone's own frame,
+         so the pose it is measured in does not matter — the v21.1 review) */
+      if (r.handR) palmOf(r, r.handR);
+      if (r.handL) palmOf(r, r.handL);
       redoShadows();
     }
     function rootComp(r) {
@@ -2095,7 +2190,9 @@
     }
     // the cup of talisman water (built for the hands' pass: it rides his right arm in scene A)
     const cupProp = new THREE.Group(); cupProp.visible = false;
-    { const por = new THREE.MeshStandardMaterial({ color: 0xf2eee6, roughness: 0.28 }), rim = new THREE.MeshStandardMaterial({ color: 0x2a4a8a, roughness: 0.4 }),
+    /* (the body is an open-ended cylinder, and seen from above — at his lips — its inside is the BACK face: drawn
+       one-sided, the cup was a navy hoop with the table showing through its wall. Both sides now — the v21.1 review) */
+    { const por = new THREE.MeshStandardMaterial({ color: 0xf2eee6, roughness: 0.28, side: THREE.DoubleSide }), rim = new THREE.MeshStandardMaterial({ color: 0x2a4a8a, roughness: 0.4 }),
             wat = new THREE.MeshStandardMaterial({ map: tex(makeAshWater(THREE, cnv)), roughness: 0.15 });
       for (const m of [por, rim, wat]) owned.push({ dispose: () => m.dispose() });
       const c = new THREE.Mesh(new THREE.CylinderGeometry(0.038, 0.028, 0.058, 18, 1, true), por); c.position.y = 0.029; cupProp.add(c);
@@ -2116,7 +2213,7 @@
       m.position.set(-(bb.min.x + bb.max.x) / 2, -0.03 - bb.max.y, -(bb.min.z + bb.max.z) / 2);
       m.traverse(q => { if (q.isMesh) { q.castShadow = false; q.receiveShadow = false; } });
       timHeld.add(m);
-    }).catch(() => {});
+    }).catch(err => { console.warn('the held LP Tim failed to load', err); ctx.loadFail && ctx.loadFail('timkp', err); });   // (never silent: v14.16)
     shrLife.gust = 0;
 
     /* ================================================== THE FILM'S POCKETS
@@ -2250,8 +2347,8 @@
           DAWN.add(b);
         }
       }).catch(err => { console.warn('hdb failed to load', err); ctx.loadFail && ctx.loadFail('hdb', err); });
-      if (plantTrees) plantTrees(DAWN, [[-12, -5], [12, -5.5], [-20, -24], [17, -27], [-28, -9], [26, -10], [-40, -30], [42, -34], [6, -36], [-16, -40]]
-        .map(([x, z], i) => ({ x, y: 0, z, h: 8 + (i % 3) * 1.6 })), { seed: 31, tint: 0x8a9a7a, lowKeep: 0.7 });
+      if (plantTrees) treeStands.push(plantTrees(DAWN, [[-12, -5], [12, -5.5], [-20, -24], [17, -27], [-28, -9], [26, -10], [-40, -30], [42, -34], [6, -36], [-16, -40]]
+        .map(([x, z], i) => ({ x, y: 0, z, h: 8 + (i % 3) * 1.6 })), { seed: 31, tint: 0x8a9a7a, lowKeep: 0.7 }));
       // the people in white with their lotus flowers, waiting to go in (posed below, when their models land)
       /* (the chapter's own close cuts of Chad's two, parsed already for the shop's kneelers: no download; a phone takes three) */
       for (let i = 0; i < (LOW ? 3 : 5); i++) dawnQueue.push({ key: i % 2 ? 'cg_man2hd' : 'cg_woman2hd', x: 3.1 + i * 1.15, z: 0.7 + (i % 2) * 0.12, h: i % 2 ? 1.72 : 1.6 });
@@ -2316,7 +2413,7 @@
       for (let i = 0; i < 12; i++) box(0.4, 3.7, 0.4, -30 + i * 5.5, 1.85, 3.1, matWhiteF, MALLX, false);
       // a bus stop across the road, the trees along it
       box(6, 0.12, 2.0, 12, 2.7, 19.2, matGreenF, MALLX, false); for (const x of [9.4, 14.6]) box(0.1, 2.7, 0.1, x, 1.35, 19.9, matIronF, MALLX, false);
-      if (plantTrees) plantTrees(MALLX, [[-24, 19.5], [-14, 20], [26, 19.5], [36, 20], [-36, 3.8], [40, 3.6]].map(([x, z], i) => ({ x, y: 0, z, h: 7 + (i % 2) * 2 })), { seed: 33, tint: 0x8a9a7a, lowKeep: 0.7 });
+      if (plantTrees) treeStands.push(plantTrees(MALLX, [[-24, 19.5], [-14, 20], [26, 19.5], [36, 20], [-36, 3.8], [40, 3.6]].map(([x, z], i) => ({ x, y: 0, z, h: 7 + (i % 2) * 2 })), { seed: 33, tint: 0x8a9a7a, lowKeep: 0.7 }));
     }
 
     /* ------------------------------------------------------ the chapter clock */
@@ -2394,13 +2491,16 @@
     }
     function objectiveFor(p, opts) {
       if (!kit) return;
-      const obj = { browse: W.objBrowse, owner: W.objOwner, wear: W.objWear, join: W.objJoin,
+      /* 'join' with the LP Tim not on him (a Continue saved after he took it
+         off) asks for it again first, so a resume plays one order, not two */
+      const joinNow = p === 'join' && wornNow();
+      const obj = { browse: W.objBrowse, owner: W.objOwner, wear: W.objWear, join: joinNow ? W.objJoin : W.objWear,
                     chant: W.objChant, arrive: W.objIncense, wait: W.objWait, watch: W.objWatch }[p];
-      kit.objective(obj || null, opts);
+      kit.objective(shrDark ? null : (obj || null), opts);
       /* the mat's own "!" floats over its glow (e3c2's v19.4); the owner is a
          hotspot with his own mark — one marker for one thing (v19.2); at the
          shrine the joss sticks and then his stool are marked the same way */
-      kit.waypoint(p === 'join' ? { x: MAT.x, y: 0.9, z: MAT.z } : null);
+      kit.waypoint(joinNow ? { x: MAT.x, y: 0.9, z: MAT.z } : null);
     }
     /* the receipt is the note (v7.3): a beat that banks is paid once, whatever
        a Continue replays */
@@ -2446,7 +2546,9 @@
     function ownerCalls() {
       if (called || phase !== 'browse') return;
       called = true;
-      setPhase('owner');
+      /* COMPLETE only when he did look around: walking up to the counter, or
+         wandering 45 s, is not "Look around the shop" done (v8.7) */
+      setPhase('owner', looked.size >= 2 ? undefined : { complete: false });
       owner.look = 1;
       queueGap(0.4);
       queueLine('ow3call', () => talk(owner, SECS.ow3call), 1, panAt(OWN.x, OWN.z));
@@ -2483,10 +2585,19 @@
       return true;
     }
     function takeTim() { lpAmulet.visible = false; lpHalo.visible = false; if (worldSfx) worldSfx('glasscase', 0.35, 1.2, panAt(LPT.x, LPT.z)); }
+    /* SR-5: what the AMULET box held before the gift (the Phiboon, worn since episode 1), so a replay that takes the
+       LP Tim back gives the neck back what it had — a replay used to leave the Phiboon it displaced in the bag */
+    let neckWas = null;
+    function takeTimBack() {
+      if (!kit || !kit.has('timkp')) return;
+      kit.take('timkp');
+      if (neckWas && kit.has(neckWas) && !kit.equipped(neckWas)) kit.equip(neckWas);
+    }
     function giveTim() {
       if (gifted) return;
       gifted = true;
-      takeTim();
+      if (kit && kit.equipped && !kit.equipped('timkp')) neckWas = kit.equipped('amulet') ? 'amulet' : null;
+      if (lpAmulet.visible) takeTim();            // (it is already out of the case: the glass's sound once, not twice)
       if (kit && !kit.has('timkp')) kit.give('timkp');
       const ok = kit && kit.unlock && kit.unlock('timkp', { onClose: afterUnlock });
       if (!ok) afterUnlock();
@@ -2516,8 +2627,13 @@
       if (phase === 'join' && !seated) {
         const want = wornNow() ? W.objJoin : W.objWear;
         if (kit && kit.objective && objWas !== want) {
+          /* taken off again: it asks again with no COMPLETE (going back is not
+             done, v8.7) and the bag pulses with it; put back on, that IS done
+             and is congratulated (ch3's amulet, e2c3's torch — the v21.1 review) */
+          const back = want === W.objWear;
+          if (back && kit.urge) kit.urge('timkp');
+          kit.objective(want, back || objWas === null ? { complete: false } : undefined);
           objWas = want;
-          kit.objective(want, { complete: false });
           kit.waypoint(wornNow() ? { x: MAT.x, y: 0.9, z: MAT.z } : null);
         }
       }
@@ -2731,9 +2847,17 @@
     function beginAware() {
       if (!trance || trance.ev || !kit) return;
       trance.ev = true;
+      /* (the v21.1 review, three corrections) THE RING IS THE WINDOW: the ring closes over `each`, and a tap after the
+         last paying band (react[3], 1.8 s) was already MISSED — so at 3.2 s a player doing what the brief says ("before
+         its ring closes") was charged for a ring still 1.7x the light. It closes at 1.9 now, where the paying window
+         ends; a late tap cost the same as a timeout before, so nothing about the scoring moves. A MISS COSTS SANITY:
+         with no `penalty` the engine charged the award's stat, awareness, while the words said "SANITY LOST" and the
+         plan said sanity. And the body's drain waits while the brief is read (presence 0 until START, then back). */
+      if (kit.presence) kit.presence(0);
       kit.event({ kind: 'focus', graded: true, label: W.evAware, brief: W.evAwareBrief, demo: 'spot',
-                  targets: TGTS, each: 3.2, react: [0.6, 0.95, 1.35, 1.8], tol: 110,
-                  missCost: 5, award: { stat: 'awareness', per: 1, hi: 12 } })
+                  targets: TGTS, each: 1.9, react: [0.6, 0.95, 1.35, 1.8], tol: 110,
+                  missCost: 5, penalty: { stat: 'sanity' }, award: { stat: 'awareness', per: 1, hi: 12 },
+                  onBegin: () => { if (trance && !trance.done && kit.presence) kit.presence(0.3); } })
         .then(r => { if (!trance || !r || r.aborted) return; awareDone(r); });
     }
     function awareDone(r) {
@@ -3014,7 +3138,7 @@
       /* the decision panel covers the bottom half of the screen (a phone's
          lower 60 %): looking a little down puts his face and the bell in the
          top half, over it (at +0.05 a phone showed his hat and the plaque) */
-      yaw.rotation.y = camYawFrom({ x: TABLE_AT.x, z: TABLE_AT.z + 0.2 }, MED_EYE); pitch.rotation.x = -0.3;
+      yaw.rotation.y = camYawFrom({ x: TABLE_AT.x, z: TABLE_AT.z + 0.2 }, MED_EYE); pitch.rotation.x = -0.3;   // (the roar film's last second eases onto this)
       if (kit) kit.pose('standing', { secs: 0.05 });
       setPhase('decide');
       after(0.6, () => openWhenClear(dayClock.t));
@@ -3068,40 +3192,79 @@
     };
     const ARRIVE = { x: LX(-2.25), z: 1.3 };
     function worldB(on) { shrPeople.visible = on; shrStars.visible = on; shopG.visible = mallG.visible = !on; }
-    function placeAtShrine() {
+    function placeAtShrine(at = 'arrive') {
       worldB(true);
-      yaw.position.x = ARRIVE.x; yaw.position.z = ARRIVE.z;
-      yaw.rotation.y = 0; pitch.rotation.x = -0.02;
+      if (at === 'called' || at === 'decide') {             // the reading over: at his table, as afterRoar frames it
+        yaw.position.x = TABLE_AT.x; yaw.position.z = TABLE_AT.z + 0.2;
+        yaw.rotation.y = camYawFrom({ x: TABLE_AT.x, z: TABLE_AT.z + 0.2 }, MED_EYE); pitch.rotation.x = -0.3;
+      } else {
+        yaw.position.x = ARRIVE.x; yaw.position.z = ARRIVE.z;
+        yaw.rotation.y = 0; pitch.rotation.x = -0.02;
+      }
       if (kit) { kit.daylight(SHRINE_NIGHT, 0); kit.pose('standing', { secs: 0.05 }); }
     }
+    /* the state a shrine phase is found in (an arrival, a Continue under the card, a Continue in play) */
+    function shrineState(at) {
+      const past = at !== 'arrive', done = at === 'called' || at === 'decide';
+      if (past) urnLight(true);                                   // his sticks are already in the urn
+      if (done) { wife.group.visible = false; father.group.visible = false; talismanGiven(true); }
+      return done;
+    }
+    /* CF-7: the ash-water cup (ending A) and the held LP Tim (ending D) are drawn in the HANDS' pass, in no scene
+       until their endings — held hidden in the hands while a warm runs, so their programs are built under a cover and
+       not on their first frame (the joss sticks' v15.1 law; the v21.1 review) */
+    function warmProps(on) {
+      for (const o of [cupProp, timHeld]) {
+        if (on) { if (!o.parent) { jossHeld.add(o); o.visible = false; o.userData.warmHeld = true; } }
+        else if (o.userData.warmHeld) { o.userData.warmHeld = false; if (o.parent) o.parent.remove(o); o.visible = false; }
+      }
+    }
+    /* (shrineRun, shrDark: declared with `alive`, at the top — objectiveFor reads shrDark) */
     function toShrine(resumed, at = 'arrive') {
       if (!PHASES.includes(at) || PHASES.indexOf(at) < PHASES.indexOf('arrive')) at = 'arrive';   // a phase, and one of the shrine's, whatever is passed
       trance = null; seated = null; turning = null; facing = null; bowing = null;
       danceTo = 0;
+      const run = ++shrineRun;
+      /* SR-1: a Continue into the shrine was placed UNDER the card (updateNotes' preplace) and the curtain warmed it
+         there, so it raises no black of its own: it used to show the shrine, snap to black, warm, and fade it in a
+         second time — and a Continue at the decision showed the door first and the table second (the v21.1 review) */
+      const cold = resumed && preplaced;
       if (kit) {
         kit.root(true);
         if (kit.pray) kit.pray(false, { secs: 0 });
         if (kit.hands) kit.hands(0, { secs: 0 });
         kit.presence(0);
-        kit.fade(1, 0.01);
+        if (!cold) kit.fade(1, 0.01);
       }
-      placeAtShrine();
-      const past = at !== 'arrive', done = at === 'called' || at === 'decide';
-      if (past) urnLight(true);                                   // his sticks are already in the urn
-      if (done) { wife.group.visible = false; father.group.visible = false; talismanGiven(true); }
+      if (!cold) placeAtShrine(at);
+      const done = shrineState(at);
+      /* ST-4: the shrine's order, its beep and its "!" wait for the picture: on the black before "That night... I
+         went." they stood in a void (the v21.1 photographs) */
+      shrDark = !resumed;
       setPhase(done ? 'decide' : at);
+      if (cold) {
+        jossHold(false); warmProps(false);
+        if (done) { afterRoar(); return; }
+        if (kit) kit.root(false);
+        if (at === 'arrive') { queueGap(1.0); queueLine('z3shrine'); }
+        return;
+      }
       /* the joss sticks held under the black while the warm runs: they are
          drawn in the HANDS' pass, and a program the warm never saw is built on
          screen the moment he takes them at the urn (the v15.1 law) */
-      jossHold(true);
+      jossHold(true); warmProps(true);
       const warmed = kit && kit.warm ? kit.warm() : Promise.resolve(0);
       warmed.then(() => {
-        jossHold(false);
-        if (!alive) return;
+        jossHold(false); warmProps(false);
+        if (!alive || run !== shrineRun) return;                  // (SR-6: a reset or a second arrival since)
         if (done) { kit && kit.fade(0, 1.2); afterRoar(); return; }
         if (!resumed) {
           queueGap(0.4);
-          queueLine('z3night', () => after(SECS.z3night * 0.55, () => { if (kit) { kit.fade(0, 1.8); kit.root(false); } }));
+          queueLine('z3night', () => after(SECS.z3night * 0.55, () => {
+            if (run !== shrineRun) return;
+            shrDark = false; objectiveFor(phase);
+            if (kit) { kit.fade(0, 1.8); kit.root(false); }
+          }));
           queueGap(0.9);
           queueLine('z3shrine');
         } else {
@@ -3152,7 +3315,7 @@
       { id: 'mat', pos: { x: MAT.x, y: 1.0, z: MAT.z }, radius: 1.5, prompt: W.hotMat, markY: 0.45,
         enabled: () => phase === 'join' && !seated && wornNow(), onInteract() { kneel(); return true; } },
       { id: 'joss', pos: { x: JOSS_W.x, y: 1.05, z: JOSS_W.z }, radius: 2.2, prompt: W.hotIncense, markY: 0.08,   // (at the default 0.55 the mark stood at eye height and read as over the medium's table, eight metres on; at 0.3 a phone still read it as over the wife on her stool — just over the bundle now)
-        enabled: () => phase === 'arrive' && !inc, onInteract() { return incenseBegin(); } },
+        enabled: () => phase === 'arrive' && !inc && !shrDark, onInteract() { return incenseBegin(); } },
       { id: 'stool', pos: { x: STOOL_W.x, y: 0.95, z: STOOL_W.z }, radius: 1.6, prompt: W.hotStool, markY: 0.5,
         enabled: () => phase === 'wait' && !sitB, onInteract() { sitDown(); return true; } }
     ];
@@ -3174,6 +3337,7 @@
        cloth and feet. All four go to nothing at the shrine. */
     let danceTo = 0, rite = false;
     const mixK = { mall: 0.3, chant: 0, dance: 0, move: 0, lor: 0, room: 0, bed: 0, rit: 0 };
+    let mixCard = false;
     function mixBeds(wdt, st) {
       const atShop = !inShrine(yaw.position.x);
       const front = THREE.MathUtils.clamp((yaw.position.z + 4.5) / 4.0, 0, 1);
@@ -3193,6 +3357,11 @@
          ending's own music is what the card is read over) */
       const card = st === 'result' || st === 'complete';
       const lor = inB ? (card ? 0.06 : 0.08 + 0.32 * outK) : 0, room = inB ? (card ? 0.1 : 0.26) : 0;
+      /* ST-2: the endings hold the rites' drum and the room tone down with a duck, and the duck is cleared as the
+         scene ends — so on the card's first frame both sprang back to their play levels and only then eased away
+         (the drum climbing back under the outcome card). The two the scenes duck land on the card's own level. */
+      if (card && !mixCard && inB) { mixK.rit = 0; mixK.room = room; }
+      mixCard = card;
       const bed = inB && !card && !roarDone && !rite ? (phase === 'arrive' ? 0.22 : 0.3) : 0;
       const rit = inB && !card && (roarDone || rite) ? 0.5 : 0;
       mixK.lor = ease(mixK.lor || 0, lor, 0.8); mixK.room = ease(mixK.room || 0, room, 0.8);
@@ -3243,7 +3412,11 @@
          the phase (the v21.0 review) */
       if (!booted && !preplaced && kit) {
         const pp = String(kit.getPhase() || '').split(':')[0];
-        if (pp === 'trance' || PHASES.indexOf(pp) >= PHASES.indexOf('arrive')) { preplaced = true; placeAtShrine(); }
+        if (pp === 'trance' || PHASES.indexOf(pp) >= PHASES.indexOf('arrive')) {
+          const at = pp === 'trance' ? 'arrive' : pp;
+          preplaced = true; placeAtShrine(at); shrineState(at);
+          jossHold(true); warmProps(true);                       // (the curtain's warm, still to come, builds them; the boot lets go)
+        }
       }
       if (!live) { lastWall = 0; return; }
       if (lastWall) dayClock.t += Math.min(0.5, now - lastWall);
@@ -3278,8 +3451,9 @@
       if (at >= PHASES.indexOf('wear')) {
         gifted = true; lpAmulet.visible = false; lpHalo.visible = false;
         if (kit && !kit.has('timkp')) kit.give('timkp');
-        else if (kit && kit.urge && p === 'wear' && !kit.equipped('timkp')) kit.urge('timkp');   // a Continue with it still in the bag: the bag asks again
-      } else if (kit && kit.has('timkp')) kit.take('timkp');        // a fresh run: the owner gives it again
+        /* a Continue with it still in the bag: the bag asks again — at 'join' too (taken off after it was worn), not only 'wear' */
+        else if (kit && kit.urge && at < PHASES.indexOf('arrive') && !kit.equipped('timkp')) kit.urge('timkp');
+      } else if (kit && kit.has('timkp')) takeTimBack();            // a fresh run: the owner gives it again
       if (at >= PHASES.indexOf('join')) { wornDone = true; snapCelebration(); }
       if (at >= PHASES.indexOf('arrive')) { toShrine(true, p); return; }
       setPhase(p);
@@ -3300,6 +3474,7 @@
       bowing = null; chant = null; trance = null; caseK = caseTo = 0; celebrate = null; curTgt = 0; browseT0 = -1;
       objWas = null; danceTo = 0; danceHalt = false; passerHeld = false; filmG.visible = false; passer.group.position.z = PASS.z;
       inc = null; sitB = null; walkB = null; bowB = null; roarDone = false; rite = false; jossHold(false);
+      shrineRun++; shrDark = false;                              // (a warm still running belongs to the run before)
       girlPhone.visible = false;
       if (ownerStool) { ownerStool.rotation.z = 0; ownerStool.position.y = 0; }
       for (const k in mixK) mixK[k] = 0;
@@ -3316,7 +3491,7 @@
         if (kit.hands) kit.hands(0, { secs: 0 });
         kit.presence(0);
         kit.daylight(null, 0);
-        if (kit.has('timkp')) kit.take('timkp');
+        takeTimBack();
         kit.setPhase('browse');
       }
       phase = 'browse';
@@ -3341,6 +3516,10 @@
     }
     function dispose() {
       alive = false;
+      /* the tree stands FIRST: their geometry and every map are the session's shared kit, and the sweep below would
+         have freed them out from under every later chapter with trees (v6.15's law; the v21.1 review) */
+      for (const g of treeStands) g && g.userData.disposeTrees?.();
+      treeStands.length = 0;
       const geos = new Set(), mats = new Set();
       const sweep = (root) => root.traverse(o => {
         if (o.geometry) geos.add(o.geometry);
@@ -3383,7 +3562,7 @@
         SHOUT, CLAP: SIT_W, CLAP_AT: 0.15,              // the youth's take; the auntie's, and its frame with the palms together (measured)
         put(r, x, z, ry) { r.path = null; r.turnTo = null; r.group.position.x = x; r.group.position.z = z; if (ry !== undefined) r.group.rotation.y = ry; },
         take(r, name, ts = 1, fade = 0.3, at) { return r.play(name, ts, fade, false, at); },
-        walkRate(r, v) { return v / (WALK_NAT * (r.height || 1.7)); },
+        walkRate(r, v) { return v / (WALK_NAT * (r.opts.standH || r.height || 1.7)); },
         stand(r) { r.sitting = false; r.idle = 'Idle_9'; r.play('Idle_9', 1, 0.55); r.yTo = 0; },
         look(r, w) { r.look = w; },
         /* (it pivots on the floor under its seat, so tipped, half of it went under
@@ -3403,7 +3582,9 @@
         rite(on) { rite = !!on; },
         // the endings (CP8)
         LX, MED_AT, ASST_AT, SHRINE_NIGHT, entShutter: entShutterK, bus: busK, cup: cupProp, tim: timHeld,
+        DECIDE_AT: { x: TABLE_AT.x, z: TABLE_AT.z + 0.2 }, DECIDE_PITCH: -0.3,   // where afterRoar frames the decision (the roar film ends on it)
         gust(k) { shrLife.gust = THREE.MathUtils.clamp(k, 0, 1); },
+        stars: starsK,
         asstLook(w) { asst.look = w; asst.lookAt = null; },
         // the opening film (CP9): its two pockets, their light, the bunting, the man in the corridor
         FP, FM, FILM_DAWN, FILM_MORN, OWN,
@@ -3476,7 +3657,7 @@
     // 1 · VESAK MORNING (0 – 12.3): from under the bunting, back across the road onto the gate and the people in white
     /* (from left of the gate: the first cut started over the queue, and its heads stood under the lens as dark blobs) */
     shot(0, 12.3, P(-1.4, 2.7, 2.8), P(9.6, 1.72, 6.9), P(0.0, 4.8, -3.0), P(1.2, 1.8, -0.9), (k) => sm(cl01((k * 12.3 - 0.4) / 11.2)));
-    tr(0, 12.3, (k, t) => F.flutter(t), rawK);
+    tr(0, 12.3, (k, t) => { if (t <= 12.4) F.flutter(t); }, rawK);   // (a track re-applies every frame to the film's end: the bunting re-posed for 25 s behind a hidden pocket — PF-10)
     fade(0.4, 2.4, 1, 0);
     sfx(0.3, 'estatemorn', 0.9);                      // the estate at dawn: birds, a far road (20 s: into the street's shot)
     sfx(2.6, 'z3pro1');                               // 2.35 → 4.95
@@ -3560,6 +3741,18 @@
     const near = (a, ref) => { while (a < ref - Math.PI) a += TAU; while (a > ref + Math.PI) a -= TAU; return a; };
     // a walk along straight legs at the pace the ground asks, then a turn to `face`
     const walk = (r, pts, t0, t1, face) => {
+      /* v21.1: a move UNDER THE BLACK is a put, never a walk — the two 0.05 s
+         "walks" at the time-lapse cut ran Walking at ×18.6 and ×4.4, three's
+         fadeOut put that take back at full weight, and the owner came out of
+         the black with his legs churning and whipping 145° round on the spot
+         (the v21.1 review: FK, and a simulation of the film) */
+      if (t1 - t0 < 0.2) {
+        const q = pts[pts.length - 1], m = pts[pts.length - 2];
+        const f = face !== undefined ? face : mFace(m.x, m.z, q.x, q.z);
+        step(t0, () => { F.take(r, 'Idle_9', 1, 0); F.look(r, 1); });
+        tr(t0, t1, () => F.put(r, q.x, q.z, f), rawK);
+        return;
+      }
       let L = 0; for (let i = 1; i < pts.length; i++) L += Math.hypot(pts[i].x - pts[i - 1].x, pts[i].z - pts[i - 1].z);
       const v = L / Math.max(0.1, t1 - t0);
       step(t0, () => { F.take(r, 'Walking', F.walkRate(r, v), 0.25); F.look(r, 0); });
@@ -3722,7 +3915,6 @@
     // a slow push toward him while he says it
     camTo(53.4, 58.4, { x: P.x, y: 0.98, z: P.z }, { x: P.x + (E_OWN.x - P.x) * 0.12, y: 0.98, z: P.z + (E_OWN.z - P.z) * 0.12 }, smoothK);
     fade(58.4, 60.0, 0, 1);
-    step(59.9, () => { handsRoot.visible = true; api.armR.visible = true; camera.rotation.z = 0; });
 
     /* ---------------- the body, laid on top of every camera track above
        (pushed LAST, so it rides whatever the latest base track wrote): the
@@ -3730,20 +3922,35 @@
        body, and the hands in the dance until the stop */
     const alive = (t) => t < 30.5 ? 1 : Math.max(0, 1 - (t - 30.5) / 0.25);
     const grip = (t) => (t > 5.0 && t < 9.7) ? Math.sin(Math.PI * (t - 5.0) / 4.7) : 0;
+    /* (eased in over the film's first half second, the roll from where play's dance left it: added at full from
+       t 0 on top of play's own sway, the first frame jolted 4.5° of roll — the v21.1 review) */
     tr(0, 31.0, (k, t) => {
-      const a = alive(t) * (camera.fov / 72), g = grip(t);          // a closed lens magnifies a sway: it is scaled with it
-      yaw.rotation.y += a * (0.09 * Math.sin(t * 1.25) + 0.035 * Math.sin(t * 2.9 + 0.7)) + g * 0.035 * Math.sin(t * 17.0);
-      pitch.rotation.x += a * 0.05 * Math.sin(t * 1.7 + 1.1) + g * 0.02 * Math.sin(t * 13.0 + 1);
-      camera.rotation.z = a * (0.055 * Math.sin(t * 1.25 + 0.4)) + g * 0.03 * Math.sin(t * 11.0);
+      const a = alive(t) * (camera.fov / 72), g = grip(t), e = sm(cl01(t / 0.5));   // a closed lens magnifies a sway: it is scaled with it
+      yaw.rotation.y += e * (a * (0.09 * Math.sin(t * 1.25) + 0.035 * Math.sin(t * 2.9 + 0.7)) + g * 0.035 * Math.sin(t * 17.0));
+      pitch.rotation.x += e * (a * 0.05 * Math.sin(t * 1.7 + 1.1) + g * 0.02 * Math.sin(t * 13.0 + 1));
+      camera.rotation.z = (H0.roll || 0) * (1 - e) + e * (a * (0.055 * Math.sin(t * 1.25 + 0.4)) + g * 0.03 * Math.sin(t * 11.0));
     }, rawK);
-    tr(31.9, 35.0, (k, t) => { pitch.rotation.x += 0.025 * Math.sin((t - 31.9) * Math.PI * 1.1); }, rawK);   // the breath
-    tr(0, 30.6, (k, t) => { api.handsPose(hk, ht + t * (1 + grip(t) * 1.5)); }, rawK);
+    /* the breath: two of them, ending on a zero crossing (a track is re-applied with the RAW time on every frame
+       after it starts, so this kept bobbing the lens to the film's end at 60 s — the v21.0 law) */
+    tr(31.9, 35.0, (k, t) => { pitch.rotation.x += 0.025 * Math.sin(Math.min(t - 31.9, 40 / 11) * Math.PI * 1.1); }, rawK);
+    /* the hands quicken while they hold him (1 → 2.5 → 1 times their pace): the RATE integrated, a pure function of
+       t so a seek lands where a watch does. (t × (1 + 1.5 grip) multiplied the time instead: the gesture lurched
+       forward at ×6, ran BACKWARDS at −8.7 and stopped dead at 9.7 — the v21.1 review) */
+    const flowAt = (t) => ht + t + 1.5 * (4.7 / Math.PI) * (1 - Math.cos(Math.PI * cl01((t - 5.0) / 4.7)));
+    tr(0, 30.6, (k, t) => { api.handsPose(hk, flowAt(Math.min(t, 30.6))); }, rawK);
     tr(30.6, 31.3, (k, t) => {
       const u = Math.min(1, (t - 30.6) / 0.7);
-      api.handsPose(hk * (1 - u), ht + 30.6);
+      api.handsPose(hk * (1 - u), flowAt(30.6));
       api.armR.position.y -= 0.16 * u; const L = api.prayerArm(); if (L) L.position.y -= 0.16 * u;
     }, rawK);
     step(31.35, () => { handsRoot.visible = false; });
+    /* the hands back for play, pushed AFTER the hide above: a skip runs every
+       step it has not yet run in the order they were PUSHED, not in time
+       order, so a show pushed before the 31.35 hide ran first and the hide
+       last — and a skipped trance film left the hands, and the joss sticks
+       held in the clasp, invisible through the whole shrine (the v21.1
+       review) */
+    step(59.9, () => { handsRoot.visible = true; api.armR.visible = true; camera.rotation.z = 0; });
     c.keepFade = true;
     c.endFade = 1;
   }
@@ -3759,7 +3966,7 @@
      assistant pulls the room back; the drum. It ends on his eyes, and the
      decision opens over the rites (afterRoar). Every move a track. */
   function roarFilm(c, s, api) {
-    const { tr, step, sfx, camTo, smoothK, rawK, stage, camera, yaw, pitch, handsRoot } = api;
+    const { tr, step, sfx, sfxFade, camTo, smoothK, rawK, mixAngle, stage, camera, yaw, pitch, handsRoot } = api;
     const F = stage.film, R = F.roar, E = F.MED_EYE;
     const P = { x: s.yawPos.x, z: s.yawPos.z };
     const dx = E.x - P.x, dz = E.z - P.z, dl = Math.hypot(dx, dz), ux = dx / dl, uz = dz / dl;
@@ -3791,6 +3998,11 @@
     tr(2.8, 3.4, (k) => R.flash(0.7 * (1 - k)), smoothK);
     camTo(2.8, 3.6, { x: P.x + ux * 0.2, y: 1.66, z: P.z + uz * 0.2 }, { x: P.x - ux * 0.05, y: 1.62, z: P.z - uz * 0.05 }, smoothK);
     tr(2.8, 3.6, (k) => { yaw.rotation.y = yP; pitch.rotation.x = pP + (0.08 - pP) * k; }, smoothK);
+    /* and the last second eases onto the decision's own framing — afterRoar puts the view there in one frame, and
+       from the film's end that was a 22° drop and 0.15 m back as the letterbox left (the v21.1 review) */
+    const D = F.DECIDE_AT, yD = Math.atan2(-(E.x - D.x), -(E.z - D.z));
+    camTo(9.5, 10.5, { x: P.x - ux * 0.05, y: 1.62, z: P.z - uz * 0.05 }, { x: D.x, y: 1.62, z: D.z }, smoothK);
+    tr(9.5, 10.5, (k) => { yaw.rotation.y = mixAngle(yP, yD, k); pitch.rotation.x = 0.08 + (F.DECIDE_PITCH - 0.08) * k; }, smoothK);
     sfx(3.1, 'md3chant');                                 // 4.05 → 7.15
     sfx(3.4, 'taobell', 0.8);
     sfx(4.3, 'swordswish', 0.7);
@@ -3799,6 +4011,9 @@
     sfx(6.9, 'drumroll', 0.75);
     sfx(7.4, 'as3back');                                  // 2.51 → 9.91
     sfx(8.1, 'drum', 0.8); sfx(8.7, 'drum', 0.7); sfx(9.3, 'gong', 0.55);
+    /* (the gong is 4 s long and the film ends 1.3 s into it: cut at the end it CHOKED — it is damped over the last
+       0.7 s instead, the drum's tail with it — the v21.1 review) */
+    sfxFade(9.9, 10.6, 'gong'); sfxFade(10.1, 10.6, 'drum');
     /* the body over every camera track: the shake of the roar in it, settling */
     const shake = (t) => t < 2.8 ? Math.max(0, 1 - t / 2.8) : Math.max(0, 0.35 * (1 - (t - 2.8) / 3.0));
     tr(0, 10.6, (k, t) => {
@@ -3851,7 +4066,11 @@
       const off = 0.17 * (1 - sm(u)) + 0.17 * sm(d), L = api.prayerArm();
       api.armR.position.y -= off; if (L) L.position.y -= off;
     }, rawK);
-    tr(T + 0.32 + H, T + 0.72 + H, (k) => { api.handsPose(0, 0, { from: 'rest', relax: 0.85 }); api.armR.position.y -= 0.17 * (1 - sm(k)); }, rawK);   // (relaxed: the walking hand points, and here there is nothing to point at)
+    /* and the resting hand STAYS DOWN, out of the frame: back at rest it is the walking hand, its index finger out,
+       and the photographs had it pointing at the medium's sash as he knelt and at the assistant's knees (relaxed, the
+       fingers close but that finger still leads). A scene that needs the hand again raises it from below (A's lift,
+       D's LP Tim) — the v21.1 review */
+    tr(T + 0.32 + H, T + 0.72 + H, (k) => { api.handsPose(0, 0, { from: 'rest', relax: 0.85 }); api.armR.position.y -= 0.17; }, rawK);
     return T + 0.72 + H;
   }
   /* a walk along a route at a steady pace — eased in and out, the heading
@@ -3883,6 +4102,14 @@
       sfx(at, 'step', 0.85);                           // (a footfall: the engine deals one of step1..step4)
     }
     return { end: T0 + D, head: segH[segH.length - 1], first: segH[0], headAt0: headAt(0) };
+  }
+  /* v21.1: a turn onto a walk that HANDS OVER. yawTo's track writes its end value on every frame after t1 (cineSeek
+     re-applies every passed track, in push order), so the turn from the medium onto the route, pushed after the walk,
+     owned the walk's heading for the whole walk out: endings B, C and D crossed the room looking 52–58° off his own
+     path and then jumped that far in one frame (the v21.1 review, measured and photographed). This one stops writing
+     at t1; on a skip it writes nothing, so the walk's own end heading stands and the next turn starts from it. */
+  function turnOnto(api, t0, t1, from, to) {
+    api.tr(t0, t1, (k, t) => { if (t <= t1) api.yaw.rotation.y = api.mixAngle(from, to, k); }, api.smoothK);
   }
   // the way out, from the table through the room and the left bay to the five-foot way (local x, through LX)
   const outRoute = (F, p0, last) => [{ x: p0.x, z: p0.z }, { x: F.LX(-1.0), z: -4.4 }, { x: F.LX(-2.3), z: -2.7 }, { x: F.LX(-2.4), z: -0.9 },
@@ -3955,15 +4182,20 @@
     tr(26.0, 34.0, (k, t) => {
       const u = t - 26.0, lift = 0.62 * Math.max(0, Math.sin(u * 0.85)) ** 1.4 + 0.035 * Math.sin(u * 7.3);
       api.handsPose(cl01(lift), u * 0.8, { from: 'rest', relax: 0.8 });
+      api.armR.position.y -= 0.17 * (1 - sm(cl01((lift - 0.04) / 0.2)));   // up from below the frame, where the bow left it, and back down
     }, rawK);
     sfx(27.0, 'presencein', 0.3);
     sfx(27.6, 'z3A2');                                 // 4.05 → 31.65
     // and up, to the lanterns and the night over the lorong
     sfx(31.8, 'e3close3', 0.9);
     sfx(32.4, 'z3close');                              // 8.44 → 40.84
-    yawTo(33.0, 39.5, east, faceFrom(out.x, out.z, F.LX(2.0), 6.0), smoothK);
-    pitchTo(33.0, 39.5, -0.2, 0.26, smoothK);
-    step(34.0, () => { handsRoot.visible = false; });
+    /* (along the five-foot way, a little toward the road: the far lantern stays in the left of a phone's frame and
+       the night opens on the right. Toward (LX 2, z 6) it swung across the road and held the last nine seconds, and
+       the card, on three flat shophouse fronts, the lanterns gone — the v21.1 photographs) */
+    yawTo(33.0, 39.5, east, east - 0.16, smoothK);
+    pitchTo(33.0, 39.5, -0.2, 0.2, smoothK);
+    tr(34.0, 34.6, (k) => { api.armR.position.y -= 0.3 * sm(k); }, rawK);   // the hand down out of the frame, not gone in one frame mid-lift
+    step(34.6, () => { handsRoot.visible = false; });
     ending(c, api, 41.0);
   }
 
@@ -4000,7 +4232,7 @@
     // "Go! Get out!" — he is turned round and thrown out of the door, stumbling
     sfx(6.9, 'as3B');                                  // 3.27 → 10.17 (at 6.2 it was said into the roar's loudest half-second, 6.0–6.5)
     const W = walkRoute(api, [{ x: lunge.x, z: lunge.z }, ...outRoute(F, p0, { x: -2.0, z: 1.9 }).slice(1)], 6.7, 1.9, 1.2);
-    yawTo(6.2, 6.75, toMed, W.headAt0, smoothK);
+    turnOnto(api, 6.2, 6.75, toMed, W.headAt0);
     pitchTo(6.2, 6.9, 0.08, -0.12, smoothK);
     for (const [t0, d] of [[7.3, 0.12], [8.6, 0.16], [9.5, 0.1]]) { pitchTo(t0, t0 + 0.14, -0.12, -0.12 - d, rawK); pitchTo(t0 + 0.14, t0 + 0.5, -0.12 - d, -0.12, smoothK); }
     step(6.6, () => { handsRoot.visible = false; });
@@ -4050,7 +4282,7 @@
     // out: through the room, through the door, to the kerb
     const kerb = { x: -2.1, z: 1.95 }, route = outRoute(F, p0, kerb);
     const W = walkRoute(api, route, 6.0, 1.05);
-    yawTo(5.3, 6.1, toMed, W.headAt0, smoothK);
+    turnOnto(api, 5.3, 6.1, toMed, W.headAt0);
     pitchTo(5.3, 6.1, 0.06, -0.05, smoothK);
     step(5.6, () => { handsRoot.visible = false; });
     tr(6.0, W.end, (k) => { duck('ritual', 1 - 0.75 * k); duck('shrineamb', 1 - 0.5 * k); }, rawK);
@@ -4094,7 +4326,7 @@
     // out, to stand under the lantern over the door
     const lan = { x: -2.3, z: 1.3 }, route = outRoute(F, p0, lan);
     const W = walkRoute(api, route, 4.8, 1.05);
-    yawTo(4.3, 5.0, toMed, W.headAt0, smoothK);
+    turnOnto(api, 4.3, 5.0, toMed, W.headAt0);
     pitchTo(4.3, 5.0, 0.06, -0.05, smoothK);
     tr(4.8, W.end, (k) => { duck('ritual', 1 - 0.75 * k); duck('shrineamb', 1 - 0.5 * k); }, rawK);
     const Ls = { x: F.LX(lan.x), z: lan.z }, outward = faceFrom(Ls.x, Ls.z, Ls.x + 0.6, Ls.z + 4);
@@ -4146,10 +4378,11 @@
     const kerb = { x: F.LX(-2.0), y: 1.62, z: 2.12 };
     camTo(T2 + 8.6, T2 + 10.0, { x: Ls.x, y: 1.62, z: Ls.z }, kerb, smoothK);
     sfx(T2 + 8.8, 'step', 0.8); sfx(T2 + 9.4, 'step', 0.8);
-    pitchTo(T2 + 8.8, T2 + 11.6, 0.03, 0.62, smoothK);
-    /* (the night's own preset with more stars: daylightTo lays a preset over the CHAPTER's daylight, which is
-       the shop's noon — `{ stars }` alone would have faded the lorong up to midday) */
-    step(T2 + 9.6, () => { if (api.kit && api.kit.daylight) api.kit.daylight(Object.assign({}, F.SHRINE_NIGHT, { stars: 0.95 }), 5); });
+    /* (higher than the 0.62 it was: the far row's upper floor filled half the frame under a hard roofline, and the
+       stars, the thing he looks up at, were faint and never changed — they are the shrine's OWN, brightened over
+       the line; the engine's dome a `{ stars }` daylight drives is past the far plane from here — the v21.1 review) */
+    pitchTo(T2 + 8.8, T2 + 11.6, 0.03, 0.82, smoothK);
+    tr(T2 + 9.6, T2 + 14.6, (k) => F.stars(k), smoothK);
     sfx(T2 + 10.4, 'z3D3');                            // 4.44 → T2 + 14.84
     sfx(T2 + 15.0, 'e3close3', 0.9);
     sfx(T2 + 15.4, 'z3close');                         // 8.44 → T2 + 23.84
