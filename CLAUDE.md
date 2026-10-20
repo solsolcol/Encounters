@@ -5644,7 +5644,9 @@ What the baseline contains, by release:
   `hanucrash`, `goldswell`, `md3gasp`). Retired: `ow3namo`, `cu3amitabha`,
   `glasscase`, `casesnap`. Sheet v103 exported (v44 stays the link).
   Deploy `6ad7c5210aa63d0c8e494c8f`, byte-verified (all 231 build files);
-  the full suite running after it (SUITE_RESULT).
+  the full suite 24/24 green after it (2388 s), and endings B, C and D
+  re-photographed on a phone, the three that look at the rebuilt street. And
+  `chaptertest` now fails any voice line whose words carry "LP".
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
