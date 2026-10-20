@@ -20,6 +20,7 @@ build over testlib's server, so `npm run build` first. Run from the repo root.
 | `skelproof.mjs` | v15.2: the skeleton merge is exact — each model parsed twice, one merged, both posed at four times; every skinned vertex (bit for bit) and rendered frame pairs (pixel for pixel) for the parse, a clone and 'detached' copies; a blank frame fails | `node tools/probes/skelproof.mjs [key[:clipsKey]…]` |
 | `skins.mjs` | skeletons per model (meshes, skeletons, rows, bones bound more than one way) and skeleton updates / bone uploads per drawn frame, with her held on screen | `[OPT=skelMerge:0] node tools/probes/skins.mjs <chapter…>` |
 | `fontproof.mjs` | v15.2: the self-hosted fonts draw the same pixels as Google's own (fetched by curl AS the browser); the built page asks Google for nothing | `node tools/probes/fontproof.mjs [--as=<label from tools/fontuas.txt>]` |
+| `tdzscan.mjs` | v21.1: no build-level `let`/`const` of a chapter is read before its declaration runs (the boot throw chaptertest cannot see); static, no browser — needs `npm i --no-save acorn@8.14.0 acorn-walk@8.3.4` | `node tools/probes/tdzscan.mjs src/chapters/e3/e3c3.js [build]` |
 
 The fonts themselves are taken by `node tools/fontsnap.mjs` (in `tools/`, not
 here): it asks Google as every browser in `tools/fontuas.txt`, fails unless

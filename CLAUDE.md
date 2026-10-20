@@ -5371,6 +5371,55 @@ What the baseline contains, by release:
   and a half, was photographed crossing the kopitiam's light. Final deploy
   `6ad6abf5f590bbe95232c53b`, byte-verified (222 files). Milestone backup
   bundle made (723 MB, 35 parts of 20 MB, reassembled byte-identical).
+- **v21.1** THE DANCE ON BUDDHA DAY, DEBUGGED — Chad: *"Find more bugs to fix
+  in this chapter, do it comprehensively."* v18.4/v18.5/v19.2's shape: every
+  beat photographed at a phone's ratio, eight code lenses, every lead verified
+  against today's code or a photograph before anything was touched;
+  docs/V21.1-PLAN.md lists each finding, its verdict, its fix, and what was
+  left alone and why. THE RIGS: the medium had RESTED on `Chair_Sit_Idle_M`,
+  folded over his own table three quarters of every loop (v8.0's "not an idle",
+  FK-measured) — he rests inside its upright window now; the wife's borrowed
+  talking take uncrossed her legs into the tiles (the talk rides her upper body
+  only); the owner walks to his stool and sits where he stood (he popped 0.46 m
+  and 31°); the trance film's moves under the black are puts, not ×18 walks;
+  strides from standing heights; skeletons merged; palms measured at load.
+  THE FILMS: the endings' walk owns its heading (a finished turn kept writing,
+  so he walked out looking 52–58° off his path and snapped round); the
+  gesture's quickening integrated; the roar eases onto the decision and its
+  gong is damped, not choked; the trance film's hands sink while the room is
+  watched, its eyes go down to his knees, the staff man stands at his
+  shoulder and is looked at for "Hold him!"; the girl's phone in her hands.
+  THE STREET: the lorong runs on past every ending's frame (road 180 m, the far
+  row 96 m with a roofline, the five-foot way walled where the invisible wall
+  stood); the kopitiam is a lit bay with tables and late customers; a real
+  motorbike, roller boxes, a door lantern with a knotted tassel, incense as
+  wisps; ending D holds the LP Tim against the kopitiam under brightening
+  stars; the night bus runs into the fog with a rear window and a plate.
+  PLAY: one look at a time (engine: two overlapping look cones fired from one
+  glance); STAY PRESENT's lights live as long as they pay, release the mouse
+  on a desktop, charge sanity as the words say, and are drawn under the stats
+  on a phone; the girl kneels clear of his line to the Buddha; the shop's
+  lanterns out from behind the stats; the joss table's mark at reach; the
+  lilies, the fan and the waiting stools block; the auntie's hands in her lap
+  (her take's every "palms together" frame is an overhead clap); a cold
+  Continue into the shrine is placed under the loading screen. THE ENGINE,
+  all unreachable from episodes 1–2 except where said: a film from play saves
+  first and always hands the hands back (a skip runs passed steps in PUSH
+  order — LEARNINGS); a graded light never found expires; a scene's end clears
+  the kit's black with the overlay (every scene); the kit fade reseeds on a
+  tab's return. THE DOWNLOAD: e3c3 had cued seven of ch3's, e3c1's and e3c2's
+  sounds by their names, which made all seven shared — 252 KB of Opus in every
+  player's boot download; it has its own copies now (`drum3` …), each back in
+  its own chapter's pack. dv3father.ogg's one sample over full scale limited
+  (masters/v21.1/father.sh). AND THE FIRST DEPLOY WAS BROKEN: two shared
+  materials of v21.1's own (the lanterns', the coils') were `let`s declared
+  below the street that first asks for them, a dead-zone ReferenceError in
+  build(), and e3c3 did not boot for 35 minutes (6ad6ec13…) until
+  `6ad6f2b4d0120b485145bdbf` (221 of 221 files byte-identical). Declared at the
+  top of build() now; `tools/probes/tdzscan.mjs` finds the class statically and
+  every chapter scans clean (LEARNINGS: deploy first means before the
+  harnesses, never before the changed chapter has been seen to boot). Two
+  words; sheet v97 exported (v44 stays the link).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -5908,7 +5957,8 @@ of play rather than inferred from an empty bag, which had left both counters
 dead from the chapter's first frame (docs/LEARNINGS.md).
 
 In flight: nothing queued. **docs/V21.0-E3C3-PLAN.md** is the last chapter's
-build memory, checkpoint by checkpoint; episode 3 chapter 3's owner, staff man
+build memory, checkpoint by checkpoint, and **docs/V21.1-PLAN.md** its debug
+pass (every finding, its verdict and fix, and what was left alone and why); episode 3 chapter 3's owner, staff man
 and customers are STAND-INS until Chad's models land (docs/E3-MODELS.md says
 which rig stands in for each, and each is a one-line swap). Episode 3 chapter
 2's three batches (docs/V19.4-PLAN.md) are all done.
@@ -5943,7 +5993,7 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v96** (`masters/v21.0/masterz-text-v96.xlsx`, v95 plus episode 3 chapter 3's 55 words, its 64 voice lines and one UI word, CLICK THE LIGHT — 120 rows added, none changed. v95 was `masters/v20.1/masterz-text-v95.xlsx`, v94 with v20.1's two e3c2 cells: the core lesson without its last sentence, and the fight's brief in Chad's words. v94 was `masters/v19.9/masterz-text-v94.xlsx`, v93 plus v19.9's one voice line, mk1iti. v93 was `masters/v19.4/masterz-text-v93.xlsx`, v92 with v19.4's play changes — its new lines in, the gold leaf's out. v92 was `masters/v19.1/masterz-text-v92.xlsx`, v91 plus v19.1's one voice line, z1thank. v91 was `masters/v19.0/masterz-text-v91.xlsx`, v90 plus v19.0's four credit rows — the office, the cameras, the laptop, the cabin — and two voice-line descriptions that no longer say warehouse. v90 was `masters/v18.9/masterz-text-v90.xlsx`, v89 less the three Khon Mask credit rows and with the stall auntie's re-voiced `au1sell`. v89 was `masters/v18.8/masterz-text-v89.xlsx`, v88 with three of e3c1's words — the brief, the stall's objective and prompt — saying Sangkathan set. v88 was `masters/v18.7/masterz-text-v88.xlsx`, v87 plus v18.7's one voice line, z1trance. v87 was `masters/v18.6/masterz-text-v87.xlsx`, v86 with Brian's measured lengths in 42 voice-line cells, no word moved. v86 was `masters/v18.5/masterz-text-v86.xlsx`, v85 with v18.5's words: e3c2's objective, presence and Step-back lines and its four conduct notes, Step back in five more chapters, `event.resistWhereKey`, three voice-line descriptions. v85 was `masters/v18.4/masterz-text-v85.xlsx`, v84 with v18.4's `event.resistWhere` and e3c2's decision prompt made true for both peaks. v84 was `masters/v18.1/masterz-text-v84.xlsx`, v83 with v18.1's three rapid-tap words and the fight's new brief. v83 was `masters/v18.0/masterz-text-v83.xlsx`, v82 plus episode 3 chapter 2's words and its 24 voice lines. v82 was `masters/v17.7/masterz-text-v82.xlsx`, v81 with v17.7's three Sak Yant names and words from Chad's reference pages. v81 was `masters/v17.6/masterz-text-v81.xlsx`, v80 plus v17.6's Sak Yant choice: three items' names, powers and words, the window's words, the chapter's four, and two Ajarn voice lines. v80 was `masters/v17.0/masterz-text-v80.xlsx`, v79 plus v17.0's three credit strings for the Khon masks. v79 was `masters/v16.9/masterz-text-v79.xlsx`, v78 plus v16.9's six credit strings — the temple and the slippers. v78 was `masters/v16.6/masterz-text-v78.xlsx`, v77 plus v16.6's four credit rows for the Tailandia packs. v77 was `masters/v16.1/masterz-text-v77.xlsx`, v76 with the monk's three voice lines re-said by Arthur at v16.2. v76 was `masters/v16.1/masterz-text-v76.xlsx`, five tabs: UI
+**THE SHEET IS v97** (`masters/v21.1/masterz-text-v97.xlsx`, v96 with v21.1's two e3c3 cells: STAY PRESENT's brief says "(or click it)" and its note "what was around you". v96 was `masters/v21.0/masterz-text-v96.xlsx`, v95 plus episode 3 chapter 3's 55 words, its 64 voice lines and one UI word, CLICK THE LIGHT — 120 rows added, none changed. v95 was `masters/v20.1/masterz-text-v95.xlsx`, v94 with v20.1's two e3c2 cells: the core lesson without its last sentence, and the fight's brief in Chad's words. v94 was `masters/v19.9/masterz-text-v94.xlsx`, v93 plus v19.9's one voice line, mk1iti. v93 was `masters/v19.4/masterz-text-v93.xlsx`, v92 with v19.4's play changes — its new lines in, the gold leaf's out. v92 was `masters/v19.1/masterz-text-v92.xlsx`, v91 plus v19.1's one voice line, z1thank. v91 was `masters/v19.0/masterz-text-v91.xlsx`, v90 plus v19.0's four credit rows — the office, the cameras, the laptop, the cabin — and two voice-line descriptions that no longer say warehouse. v90 was `masters/v18.9/masterz-text-v90.xlsx`, v89 less the three Khon Mask credit rows and with the stall auntie's re-voiced `au1sell`. v89 was `masters/v18.8/masterz-text-v89.xlsx`, v88 with three of e3c1's words — the brief, the stall's objective and prompt — saying Sangkathan set. v88 was `masters/v18.7/masterz-text-v88.xlsx`, v87 plus v18.7's one voice line, z1trance. v87 was `masters/v18.6/masterz-text-v87.xlsx`, v86 with Brian's measured lengths in 42 voice-line cells, no word moved. v86 was `masters/v18.5/masterz-text-v86.xlsx`, v85 with v18.5's words: e3c2's objective, presence and Step-back lines and its four conduct notes, Step back in five more chapters, `event.resistWhereKey`, three voice-line descriptions. v85 was `masters/v18.4/masterz-text-v85.xlsx`, v84 with v18.4's `event.resistWhere` and e3c2's decision prompt made true for both peaks. v84 was `masters/v18.1/masterz-text-v84.xlsx`, v83 with v18.1's three rapid-tap words and the fight's new brief. v83 was `masters/v18.0/masterz-text-v83.xlsx`, v82 plus episode 3 chapter 2's words and its 24 voice lines. v82 was `masters/v17.7/masterz-text-v82.xlsx`, v81 with v17.7's three Sak Yant names and words from Chad's reference pages. v81 was `masters/v17.6/masterz-text-v81.xlsx`, v80 plus v17.6's Sak Yant choice: three items' names, powers and words, the window's words, the chapter's four, and two Ajarn voice lines. v80 was `masters/v17.0/masterz-text-v80.xlsx`, v79 plus v17.0's three credit strings for the Khon masks. v79 was `masters/v16.9/masterz-text-v79.xlsx`, v78 plus v16.9's six credit strings — the temple and the slippers. v78 was `masters/v16.6/masterz-text-v78.xlsx`, v77 plus v16.6's four credit rows for the Tailandia packs. v77 was `masters/v16.1/masterz-text-v77.xlsx`, v76 with the monk's three voice lines re-said by Arthur at v16.2. v76 was `masters/v16.1/masterz-text-v76.xlsx`, five tabs: UI
 TEXT 292, EPISODE 1 114, EPISODE 2 193, EPISODE 3 41, VOICE LINES 337 — v76
 adds v16.1's four words, two changed cells and seven voice lines to v75).
 Was v75 (`masters/v16.0/masterz-text-v75.xlsx`, which added episode 3

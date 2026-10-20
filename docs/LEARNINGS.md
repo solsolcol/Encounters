@@ -5610,3 +5610,67 @@ cut (sharing its vertices and maps) when it is small.
   one-frame-a-second box: 44 % black under the four answers, frozen there
   because a fade only runs in play). Every per-frame thing with a duration in
   SECONDS reads the wall clock; the clamped `dt` is for motion only.
+
+## v21.1 · the fourth pass over episode 3 chapter 3
+
+- **A `let` below its first caller is a crash at boot, and only a browser
+  sees it.** A chapter's `build()` is one long function whose builders are
+  hoisted, so `function mkLantern()` can be called from the street two hundred
+  lines before the `let lanternSkinMat = null` it reads — and that read is a
+  ReferenceError (the temporal dead zone): the chapter never builds, the game
+  never starts in it. chaptertest never builds a chapter, so it was green; the
+  first v21.1 deploy of e3c3 was broken for 35 minutes, caught by a probe that
+  could not reach `window.__enc`. Shared materials and every other build-level
+  `let` a builder reads go at the TOP of build(). And "deploy first" means
+  before the HARNESSES, never before the changed chapter has been seen to
+  BOOT once (a minute, `?ch=` to play) — Chad's own rule says "built and
+  photographed". `tools/probes/tdzscan.mjs` finds the class statically: every
+  chapter scans clean, the broken file reports its five reads.
+- **A skip runs the passed steps in the order they were PUSHED.** cineSeek on
+  a skip walks the track list, not the clock, so a `step` that shows the hands
+  at 59.9 pushed before the `step` that hides them at 31.35 ran first — and
+  the hide won: a skipped trance film left the hands, and the joss sticks in
+  them, gone for the whole shrine. A step that undoes another is pushed after
+  it; and what play always shows (the hands), the hand-back from a film shows
+  (kitFilm, EN-1).
+- **A finished track keeps writing — so a turn must stop.** Endings B, C and D
+  pushed the turn from the medium onto the route AFTER the walk's own heading
+  track, and a finished `tr` re-applies its end value every frame: he walked
+  out looking 52–58° off his own path and the view snapped round in one frame
+  as the walk ended. The v5.07 law, in its third form: a track that is meant
+  to finish says so (`if (t <= t1)`), and later tracks own the rest.
+- **A take's name is not its content (again).** The medium RESTED on
+  `Chair_Sit_Idle_M`, the take v8.0 wrote down as "not an idle": FK over the
+  shipped file puts his head 0.18 m over his hips (0.40 upright) and 0.32 in
+  front of them for three quarters of every loop. He was folded over his own
+  table through the whole arrival. Sample the head over the hips across the
+  WHOLE clip before resting anyone on a take; rest inside its upright window
+  (here 9.2 s → the loop seam → 1.2 s, a slow ping-pong), and measure the seat
+  over that window.
+- **The tree kit is the session's, not the chapter's.** `plantTrees` parses
+  one shared kit; a chapter's `dispose()` that sweeps its world without calling
+  each stand's `userData.disposeTrees()` first frees the kit out from under
+  every later chapter with trees (the v6.15 law, missed by a new chapter).
+- **Two look-spots whose cones overlap fill from one glance.** The dwell had
+  graded each spot on its own; e3c3's LP Tim case and the masters' wall stand
+  0.169 rad apart from where play begins, inside cones of 0.20 and 0.26, so
+  one look fired both. The engine gives the look to ONE spot — the nearest the
+  reticle as a fraction of its own cone (no earlier chapter has two cones that
+  overlap, so nothing else moved).
+- **Measure a mono line MONO.** `peak.py` decodes with `-ac 2`, and ffmpeg's
+  upmix of a mono Opus file reads 3 dB down: dv3father.ogg measured −2.37 dBFS
+  there and +0.64 (one sample over full scale) decoded as the browser decodes
+  it, mono, in float. libopus put back a transient the −1.5 dBFS limiter had
+  held; the fix is a limiter on the Opus source only (masters/v21.1/limit.py),
+  and the encodes now match each other's RMS.
+- **Reusing another chapter's sound by its name moves it into the boot
+  download.** The v4.2 split gives a sound to a chapter only when exactly one
+  chapter names it; e3c3 cued ch3's drums, e3c1's candle and incense and
+  e3c2's mat by their names, and all seven became shared — 252 KB of Opus for
+  every player at boot, ch3's drums resident all session. A chapter that wants
+  another's sound takes a COPY under its own name (`drum3` …).
+- **A talking take from another rig brings its legs.** The wife's talk is the
+  monk's, retargeted, and it uncrossed her legs and sank both toes 11–12 cm
+  into the floor for her whole line. A borrowed take goes on the upper body
+  only (`^up`), over the sitter's own seated take on the legs (`^low`) — the
+  medium's split, which already existed.
