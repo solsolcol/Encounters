@@ -3864,8 +3864,11 @@
        leave the lens at the mall's end for those frames — out at x 300 with its pocket already put away) */
     /* (it ends in the doorway's middle, close to the glass: at (0.62, 1.12) it stood on the door's right mullion's
        line and the held picture was cut in half by the bar 1.1 m off — VF-2/GF-8. From here both mullions are ~34°
-       off the middle, outside a phone's frame; 1.7 m/s keeps the hold where it was, 28.7 → 29.5) */
-    const W = walkRoute(api, [{ x: 12.4, z: 2.05 }, { x: 2.6, z: 2.05 }, { x: 1.25, z: 1.75 }, { x: 0.31, z: 0.45 }], 20.6, 1.7);
+       off the middle, outside a phone's frame. And it comes in STRAIGHT, through the middle of the right leaf: the
+       last stretch used to run on the line of the door's MIDDLE bar (x 0), so for the walk's last second that bar
+       stood in the centre of a phone's frame, half a metre off (the v21.1 photographs). Square on, the two bars
+       slide out to either side as he comes in. 1.77 m/s keeps the hold where it was, 28.7 → 29.5) */
+    const W = walkRoute(api, [{ x: 12.4, z: 2.05 }, { x: 1.2, z: 2.05 }, { x: 0.31, z: 1.55 }, { x: 0.31, z: 0.45 }], 20.6, 1.77);
     pitchTo(20.6, 21.0, 0.03, 0.03, rawK);
     const inLook = faceFrom(0.31, 0.45, 0.05, -6.69);   // through the glass, onto the altar at the back
     yawTo(W.end - 0.3, W.end + 0.5, W.head, inLook, smoothK);
