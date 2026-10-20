@@ -5418,8 +5418,21 @@ What the baseline contains, by release:
   `6ad6f2b4d0120b485145bdbf` (221 of 221 files byte-identical). Declared at the
   top of build() now; `tools/probes/tdzscan.mjs` finds the class statically and
   every chapter scans clean (LEARNINGS: deploy first means before the
-  harnesses, never before the changed chapter has been seen to boot). Two
-  words; sheet v97 exported (v44 stays the link).
+  harnesses, never before the changed chapter has been seen to boot). The
+  re-photographs found two more: a SECOND shrine arrival (a probe's applyPhase
+  before the chapter's boot) left the first one's black up, because SR-6's run
+  token cancelled the warm that would have lifted it and SR-1's cold arrival
+  raises none — the decision opened over black; a cold arrival now waits for a
+  warm in flight and lifts the black itself (LEARNINGS: a run token cancels a
+  callback, not what it owed). And the film's walk to the shop ran its last
+  stretch on the door's MIDDLE bar, which stood in the centre of a phone's
+  frame for a second; he comes in square through one leaf now. Continue from a
+  save at each of the shrine's five phases lands right with the screen clear;
+  all four endings, the film and the shop photographed on a phone with no page
+  errors. Two words; sheet v97 exported (v44 stays the link). Harnesses
+  chapter, leak, walk, fixture, cine, text, csp, hosted, restart, sanity,
+  resume, state, menu green. Final deploy `6ad70237e0646fd956b04f3e`,
+  byte-verified (221 files).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
