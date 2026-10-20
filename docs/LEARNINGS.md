@@ -5729,3 +5729,31 @@ cut (sharing its vertices and maps) when it is small.
   A plant meant to be seen from below grows OVER the parapet and down its
   face — work out the line of sight over the top before placing anything
   behind it.
+
+## v21.5 — a whisper that bursts
+
+- **eleven_v3 would not whisper invented syllables in Roger's voice; eleven_v4
+  would, with ONE tag.** Sixteen v3 takes over four prompts — [whispers] or
+  [whispering] alone, and stacked with [intense], [raspy], [breathless],
+  [quickly] — measured 65–81 % voiced: a hushed speech. v4 with the w1
+  prompt's stacked tags was still 66–71 %; v4 with `[whispering]` and nothing
+  else was 46–54 %, inside the game's own whispers. Stacking a manner tag on a
+  whisper tag gives the model a voiced way to obey both. And whether a take
+  whispers is MEASURED — the share of loud frames with a pitch, the energy
+  above 2 kHz — never read off a transcript, which cannot say.
+- **A take that is mostly whisper and ends in a shout cannot ride a
+  whole-take RMS chain.** The whisper is most of the take, so the gain to
+  RMS −16 lifted it ~8 dB, and the compressor and limiter took ~5 dB off the
+  shout: the "HAH!" came out QUIETER than the whisper's loudest moments, the
+  drama gone. Split it in the silence between them and level each half alone
+  (`masters/v21.5/level2.py`); the gain change is inside silence, so there is
+  no seam. Judge it in momentary LOUDNESS (ffmpeg `ebur128`) as well as RMS:
+  a whisper's energy sits at 2–5 kHz, where loudness weighting counts most —
+  on the shipped take RMS gives the shout 11 dB over the whisper's average,
+  loudness 8.9.
+- **A peak limiter sets the ceiling on how loud a short shout can be.** Past
+  the ceiling, more gain on the shout only means more gain reduction — its
+  100 ms loudness stayed at −10 dBFS RMS whatever gain it was given. The only
+  way past that is to cut the waveform's crest (soft clipping), which buys
+  ~2.7 dB and leaves a residual 18 dB under the signal; not shipped unheard.
+  The contrast comes from where the WHISPER sits instead.

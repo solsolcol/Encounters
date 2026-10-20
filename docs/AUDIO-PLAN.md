@@ -1288,3 +1288,43 @@ take's level. It is 1.52 s longer than the old one, so the roar film and
 ending A are re-timed around it (docs/V21.2-PLAN.md, the v21.4 section).
 godp1_d, godp1_a and godp2_d went to Chad as previews; `masters/v21.4/make.sh`
 installs the pick.
+
+## v21.5 · the spirit tongue, whispered
+
+Chad: "Can the medium tongue have more expressive tone for dramatic effect?
+And deity tongues tend to have a whispery quick tone where you can barely make
+out what he is saying. The current take is too distinct." The same invented
+syllables, now a quick WHISPERED stream that bursts into a shout, in the same
+voice (Roger, `Fo6zHX740rFxxP1fWDxu`), on flow `qapQMCX9SGeqWVMjA91j`, six
+prompts of four takes (`masters/v21.5/sessions.json`). No punctuation inside
+the stream, so the model has nowhere to stop between phrases:
+
+    [whispering] ngat kiep hwang lo tsiu mong dzai ling ngok hrit pau kau ngai lo sa hwang ngai kiep lo tsiu [shouting] HAH!
+
+Measured with `masters/v21.5/meas.py` (voiced share of the loud frames, energy
+above 2 kHz, onsets a second, the pauses inside, the arc), against the game's
+own whispers — vpick1 35 % voiced, n3C1 61 % — and the shipped v21.4 take,
+68 % voiced with 5.2 % above 2 kHz:
+
+| prompts | model | voiced | > 2 kHz | what it is |
+|---|---|---|---|---|
+| w1–w3 (whisper tags stacked with [intense] / [raspy] / [breathless] / [quickly]) and w5 ([whispering] alone), sixteen takes | eleven_v3 | 65–81 % | 1–5 % | a hushed speech |
+| w4 (the w1 prompt) | eleven_v4 | 66–71 % | 6–10 % | breathier, still voiced |
+| **w6 ([whispering] alone)** | **eleven_v4** | **46–54 %** | **15–24 %** | **a whisper**, the shout 11–14 dB over it |
+
+**w6_c** picked: the most breath (49 % voiced, 24.4 % above 2 kHz), the
+quickest stream (2.6 onsets a second), silence at both ends. 10 % faster
+(`atempo=1.1`, the pitch kept). NOT through the v21.0 cast chain: RMS −16 for
+the whole take lifted the whisper ~8 dB while the compressor and limiter took
+~5 dB off the shout, and the "HAH!" came out quieter than the whisper's
+loudest moments (ebur128 momentary: the whisper to −12.5 LUFS, the shout
+−13.8). `masters/v21.5/level2.py` splits the take in the silence before the
+shout and levels each half alone: the whisper 3:1 over its own RMS and to −21
+RMS; the shout to its full level under the −1.5 dBFS limiter; the edges as
+level.py's. Momentary loudness: the whisper −20.8 LUFS mean, −17.6 at its
+loudest; the shout −11.9 — the shipped v21.4 take's own loudest moments were
+−12.9 to −13.5. 4.99 s; mp3 −20.1 RMS / −1.9 peak, Opus −19.6 / −1.3.
+Shipped, by meas.py: 42 % voiced, 23.8 % above 2 kHz, arc 10.0 dB, pauses
+0.28 / 0.34 s (v21.4: 68 %, 5.2 %, 3.7 dB, 0.60 / 0.12 / 0.70 / 0.30).
+Previews to Chad: 1 the shipped take; 2 w6_b, the other reading, the same
+chain; 3 w6_c at its own speed. `masters/v21.5/make.sh` installs the pick.
