@@ -6811,7 +6811,7 @@ const ADULT_TAKES = new Set([
   'z2slip1', 'z2slip2', 'z2peak', 'z2A1', 'z2B1', 'z2C1', 'z2D1', 'z2close', 'z2next',
   'z2A', 'z2B', 'z2C', 'z2D',
   /* v21.0 · episode 3 chapter 3 */
-  'z3pro3', 'z3pro4', 'z3look1', 'z3look2', 'z3look3', 'z3look4',
+  'z3pro0', 'z3pro3', 'z3pro4', 'z3pro5', 'z3look1', 'z3look2', 'z3look3', 'z3look4',   // z3pro0, z3pro5: v21.7
   'z3thanks', 'z3shift1', 'z3shift2', 'z3breath', 'z3knew', 'z3night', 'z3shrine', 'z3walk',
   'z3A1', 'z3A2', 'z3B1', 'z3B2', 'z3thank', 'z3C2', 'z3D2', 'z3D3',
   'z3close', 'z3next', 'z3A', 'z3B', 'z3C', 'z3D']);
@@ -9987,7 +9987,7 @@ const STING_SAMPLE = {
   z2close: ['z2close', 1], z2next: ['z2next', 1], z2A: ['z2A', 1], z2B: ['z2B', 1], z2C: ['z2C', 1], z2D: ['z2D', 1],
   lw2look: ['lw2look', 1], lw2pull: ['lw2pull', 1], lw2what: ['lw2what', 1], yai2dance: ['yai2dance', 1],
   /* v21.0 · EPISODE 3 · CHAPTER 3 · THE DANCE ON BUDDHA DAY — his lines, the shop, the medium's shrine */
-  z3pro3: ['z3pro3', 1], z3pro4: ['z3pro4', 1], ow3hello: ['ow3hello', 1],
+  z3pro0: ['z3pro0', 1], z3pro3: ['z3pro3', 1], z3pro4: ['z3pro4', 1], z3pro5: ['z3pro5', 1], ow3hello: ['ow3hello', 1],   // z3pro0, z3pro5: v21.7
   z3look1: ['z3look1', 1], z3look2: ['z3look2', 1], z3look3: ['z3look3', 1], z3look4: ['z3look4', 1], ow3call: ['ow3call', 1],
   ow3gift1: ['ow3gift1', 1], ow3gift2: ['ow3gift2', 1], z3thanks: ['z3thanks', 1], ow3good: ['ow3good', 1], ow3namo: ['ow3namo', 1],
   z3shift1: ['z3shift1', 1], z3shift2: ['z3shift2', 1], ow3eh: ['ow3eh', 1], sm3hold: ['sm3hold', 1], sm3cannot: ['sm3cannot', 1],

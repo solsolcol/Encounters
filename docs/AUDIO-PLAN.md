@@ -1340,3 +1340,25 @@ its own decay (the last 150 ms peak at −42.8 dBFS). 4.27 s; mp3 −21.5 RMS /
 −1.9 peak, Opus −21.1 / −1.7; momentary loudness as before (−20.5 / −20.0
 LUFS integrated). By meas.py: 40 % voiced, 29.1 % above 2 kHz, one pause
 (0.2 s). `masters/v21.5/make.sh` installs it.
+
+## v21.7 · two more lines in the Buddha Day film
+
+Chad asked for a line at the very start of episode 3 chapter 3's opening
+film, over Golden Mile Complex, and one after "...I went to pay my
+respects."; he picked the first of three proposals and wrote the second.
+Brian (`bP8FJDHmWVEgXJDitdQd`), eleven_v3 like every film line of his, four
+takes each on the e3c3 voices flow (`URTG1KypweSna9iSGuca`,
+`masters/v21.7/sessions.json`):
+
+    z3pro0  [reflective] Back home, the closest thing to Thailand was Golden Mile Complex.
+    z3pro5  [uneasy] I only meant to stay for the chanting... but something else happened...
+
+Picked by `measure.py` and `pauses.py` (copied from v19.1 and v21.0): z3pro0
+**b** — the only one of the four whose last 60 ms is clean (−39.5 dB; a, c
+and d end on signal at −25.3, −19.1, −18.7, and would click); z3pro5 **a** —
+the cleanest end (−40.6) and head (−59.0), the ellipsis read as a 1.08 s
+pause (b and c leave holes of 1.46 and 1.32 s, d starts on signal with no
+lead). The v21.0 chain: high-pass 70 Hz, mono, peak-matched twice to −6.85
+mp3 / −6.6 Opus. 4.24 s (RMS −20.8 / −20.5) and 4.80 s (−18.7 / −18.4),
+inside the film's other two lines' −18.5 and −21.7. `masters/v21.7/make.sh`
+installs them.

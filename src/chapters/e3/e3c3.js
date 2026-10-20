@@ -167,7 +167,7 @@
   /* the measured length of every line said OUTSIDE a cutscene
      (masters/v21.0: the installed files, ffprobe) */
   const SECS = {
-    z3pro3: 4.0, z3pro4: 6.84, ow3hello: 5.96, z3look1: 6.27,
+    z3pro0: 4.24, z3pro3: 4.0, z3pro4: 6.84, z3pro5: 4.8, ow3hello: 5.96, z3look1: 6.27,
     z3look2: 4.44, z3look3: 5.15, z3look4: 3.71, ow3call: 2.43, ow3gift1: 8.44, ow3gift2: 3.47,
     z3thanks: 4.21, ow3good: 2.85, ow3namo: 19.15, z3shift1: 3.47, z3shift2: 4.28, ow3eh: 2.93,
     sm3hold: 2.38, sm3cannot: 2.32, st3uncle: 2.35, cu3amitabha: 3.71, ow3let: 2.43, z3breath: 3.0,
@@ -3798,15 +3798,23 @@
      'by then i learnt to hide...'". The temple gate at dawn is gone, and so
      are "It was Buddha Day." — the next line says Buddha Day itself — and
      "By then, I had learnt to hide..."):
-       1 · 0–10.6   GOLDEN MILE COMPLEX across Beach Road in the morning:
+       1 · 0–14.1   GOLDEN MILE COMPLEX across Beach Road in the morning:
                     his eyes up its stepped face to where the terraces meet
-                    the sky, then down onto its name and its shops, a coach
-                    at the kerb, a bus going by ("There was an amulet shop I
-                    often visited. The owner knew me well.")
-       2 · 10.6–19.9 its corridor, World A's own: he walks it to the shop's
+                    the sky ("Back home, the closest thing to Thailand was
+                    Golden Mile Complex." — v21.7), then down onto its name
+                    and its shops, a coach at the kerb, a bus going by
+                    ("There was an amulet shop I often visited. The owner
+                    knew me well.")
+       2 · 14.1–23.4 its corridor, World A's own: he walks it to the shop's
                     glass ("Every Buddha Day, he held a small chanting...")
-       3 · 19.9–27.4 inside, on the bell: the owner looks up and nods, and
-                    the lens finds the altar at the back. Black, and the card.
+       3 · 23.4–32.4 inside, on the bell: the owner looks up and nods ("I only
+                    meant to stay for the chanting..." — v21.7, Chad's words),
+                    and in the line's pause the lens finds the altar at the
+                    back ("...but something else happened..."). Black, and
+                    the card.
+     (v21.7: the two new lines moved everything after the first by 3.5 s and
+     held the last shot 1.5 s longer — each beat the same distance from the
+     line it belongs to; the film is 32.4 s, was 27.4.)
      The pocket is drawn only while its shot runs, its light swapped in by a
      STEP (a passed track re-applies every frame); a skip runs every step in
      order and lands on the shop's own light. */
@@ -3817,14 +3825,14 @@
     const M = (x, y, z) => ({ x: F.FM.x + x, y, z: F.FM.z + z });
 
     step(0, () => { handsRoot.visible = false; daylight(F.FILM_MORN); });
-    tr(0, 27.4, (k, t) => F.pockets(t < 10.6), rawK);           // a track: a seek always answers the clock
+    tr(0, 32.4, (k, t) => F.pockets(t < 14.1), rawK);           // a track: a seek always answers the clock
     /* the chapter's own bed is the mall's murmur: none of it in the street, the corridor's from the moment we are in
        it, and down with the picture at the end */
-    tr(0, 27.4, (k, t) => duck('mallamb', t < 10.6 ? 0 : t < 11.6 ? t - 10.6 : t < 25.6 ? 1 : Math.max(0, 1 - (t - 25.6) / 1.6)), rawK);
+    tr(0, 32.4, (k, t) => duck('mallamb', t < 14.1 ? 0 : t < 15.1 ? t - 14.1 : t < 30.6 ? 1 : Math.max(0, 1 - (t - 30.6) / 1.6)), rawK);
     fade(0, 0, 1, 1);
     sfx(0.2, 'e3film3', 0.8);
 
-    /* 1 · GOLDEN MILE COMPLEX (0 – 10.6): he stands across Beach Road from the end of the slab, looking up its
+    /* 1 · GOLDEN MILE COMPLEX (0 – 14.1): he stands across Beach Road from the end of the slab, looking up its
        stepped face to where the last terraces meet the sky (the end wall's steps against it, the profile the building
        is known by); his eyes come down it onto the name over the podium and the Thai shops under it, and he takes a
        few steps toward it as a bus goes by between */
@@ -3833,31 +3841,34 @@
        the picture rather than under half a frame of sky. v21.3: both looks come down with the podium) */
     const E0 = M(36.5, 1.66, 21.5), E1 = M(31.0, 1.66, 18.6);
     const L0 = M(22.5, 29, -14), L1 = M(16.0, 5.5, 0);
-    tr(0, 10.6, (k, t) => {
-      const kp = sm(cl01((t - 0.4) / 9.6)), kl = sm(cl01((t - 3.6) / 5.4));
+    tr(0, 14.1, (k, t) => {
+      const kp = sm(cl01((t - 0.4) / 13.1)), kl = sm(cl01((t - 7.1) / 5.4));
       const x = E0.x + (E1.x - E0.x) * kp, z = E0.z + (E1.z - E0.z) * kp, y = 1.66;
       const tx = L0.x + (L1.x - L0.x) * kl, ty = L0.y + (L1.y - L0.y) * kl, tz = L0.z + (L1.z - L0.z) * kl;
       yaw.position.set(x, y, z);
       yaw.rotation.y = faceFrom(x, z, tx, tz);
       pitch.rotation.x = Math.atan2(ty - y, Math.hypot(tx - x, tz - z));
     }, rawK);
-    /* a green bus in the near lane, between him and the mall: across the middle of the frame at ~9.4, once his eyes
+    /* a green bus in the near lane, between him and the mall: across the middle of the frame at ~12.9, once his eyes
        have come down far enough to hold all of it */
-    tr(0, 10.6, (k, t) => F.mallBus((t - 4.6) / 6.0), rawK);
-    sfx(7.4, 'buspass', 0.55);
+    tr(0, 14.1, (k, t) => F.mallBus((t - 8.1) / 6.0), rawK);
+    sfx(10.9, 'buspass', 0.55);
     fade(0.4, 1.8, 1, 0);
     sfx(0.3, 'estatemorn', 0.9);                      // the morning street: birds, the road
-    sfx(2.2, 'z3pro3');                               // 4.0 → 6.2
-    fade(10.0, 10.6, 0, 1);
-    sfxFade(10.0, 10.6, 'estatemorn');
+    /* v21.7: his first words are over the building itself, as the picture comes up (Chad picked the line); the shop's
+       line follows half a second after it, and the look down, the bus and the fade keep their distance from it */
+    sfx(1.0, 'z3pro0');                               // 4.24 → 5.24
+    sfx(5.7, 'z3pro3');                               // 4.0 → 9.7
+    fade(13.5, 14.1, 0, 1);
+    sfxFade(13.5, 14.1, 'estatemorn');
 
-    /* 2 · THE CORRIDOR (10.6 – 19.9): World A's own, walked from its east end to the shop's glass, a man coming the
+    /* 2 · THE CORRIDOR (14.1 – 23.4): World A's own, walked from its east end to the shop's glass, a man coming the
        other way on the far side (his walk on the film's clock, so a seek finds him where the shot wants him) */
-    step(10.6, () => { daylight(null); });
+    step(14.1, () => { daylight(null); });
     /* (a track is applied on every frame after its start with the RAW film
-       time, so past 19.9 this one kept holding him and walking him on — he
+       time, so past the shot's end (23.4 now) this one kept holding him and walking him on — he
        was frozen out of sight for the whole of play) */
-    tr(10.6, 19.9, (k, t) => { if (t <= 19.9) F.passerTo(-1.6 + 1.3 * (t - 10.6), 3.95, Math.PI / 2); }, rawK);
+    tr(14.1, 23.4, (k, t) => { if (t <= 23.4) F.passerTo(-1.6 + 1.3 * (t - 14.1), 3.95, Math.PI / 2); }, rawK);
     /* (the walk's own track from the cut itself: a passed track holds its last value, so a walk starting later would
        leave the lens at the mall's end for those frames — out at x 300 with its pocket already put away) */
     /* (it ends in the doorway's middle, close to the glass: at (0.62, 1.12) it stood on the door's right mullion's
@@ -3865,34 +3876,38 @@
        off the middle, outside a phone's frame. And it comes in STRAIGHT, through the middle of the right leaf: the
        last stretch used to run on the line of the door's MIDDLE bar (x 0), so for the walk's last second that bar
        stood in the centre of a phone's frame, half a metre off (the v21.1 photographs). Square on, the two bars
-       slide out to either side as he comes in. 1.77 m/s keeps the hold where it was, 18.7 → 19.5) */
-    const W = walkRoute(api, [{ x: 12.4, z: 2.05 }, { x: 1.2, z: 2.05 }, { x: 0.31, z: 1.55 }, { x: 0.31, z: 0.45 }], 10.6, 1.77);
-    pitchTo(10.6, 11.0, 0.03, 0.03, rawK);
+       slide out to either side as he comes in. 1.77 m/s keeps the hold where it was, 22.2 → 23.0) */
+    const W = walkRoute(api, [{ x: 12.4, z: 2.05 }, { x: 1.2, z: 2.05 }, { x: 0.31, z: 1.55 }, { x: 0.31, z: 0.45 }], 14.1, 1.77);
+    pitchTo(14.1, 14.5, 0.03, 0.03, rawK);
     const inLook = faceFrom(0.31, 0.45, 0.05, -6.69);   // through the glass, onto the altar at the back
     yawTo(W.end - 0.3, W.end + 0.5, W.head, inLook, smoothK);
     pitchTo(W.end - 0.5, W.end + 0.4, 0.03, -0.05, smoothK);
-    fade(10.7, 11.5, 1, 0);
-    sfx(12.6, 'z3pro4');                              // 6.84 → 19.44
-    fade(19.5, 19.9, 0, 1);
+    fade(14.2, 15.0, 1, 0);
+    sfx(16.1, 'z3pro4');                              // 6.84 → 22.94
+    fade(23.0, 23.4, 0, 1);
 
-    // 3 · INSIDE (19.9 – 27.4): the bell over the door, two steps in, the owner looking up from his counter
-    step(19.9, () => { F.passerFree(); });
-    sfx(19.85, 'shopbell', 0.8);
+    // 3 · INSIDE (23.4 – 32.4): the bell over the door, two steps in, the owner looking up from his counter
+    step(23.4, () => { F.passerFree(); });
+    sfx(23.35, 'shopbell', 0.8);
     const IN0 = { x: 0.1, y: 1.62, z: -0.25 }, IN1 = { x: -0.18, y: 1.62, z: -0.95 };
     const toOwn = faceFrom(IN1.x, IN1.z, F.OWN.x, F.OWN.z), toAlt = faceFrom(IN1.x, IN1.z, 0.05, -6.69);
-    tr(19.9, 21.6, (k) => { yaw.position.set(IN0.x + (IN1.x - IN0.x) * k, IN0.y + 0.012 * Math.sin(k * Math.PI * 2), IN0.z + (IN1.z - IN0.z) * k); }, smoothK);
-    sfx(20.25, 'step', 0.7); sfx(20.85, 'step', 0.7);
-    yawTo(19.9, 21.6, toOwn + 0.2, toOwn, smoothK);
-    pitchTo(19.9, 21.6, -0.02, -0.06, smoothK);
-    fade(19.95, 20.6, 1, 0);
-    step(20.4, () => { const O = F.cast.owner; O.look = 1; O.lookAt = null; });
-    step(21.2, () => { F.cast.owner.nod = 1.6; });    // he knows him: a nod, no word (his hello is play's first line)
-    yawTo(23.2, 25.6, toOwn, toAlt, smoothK);
-    pitchTo(23.2, 25.6, -0.06, 0.02, smoothK);
-    fade(25.6, 27.2, 0, 1);
-    sfxFade(25.4, 27.2, 'e3film3');
-    tr(27.2, 27.4, () => {}, rawK);                   // the film's length (its last steps run inside it)
-    step(27.3, () => { handsRoot.visible = true; });
+    tr(23.4, 25.1, (k) => { yaw.position.set(IN0.x + (IN1.x - IN0.x) * k, IN0.y + 0.012 * Math.sin(k * Math.PI * 2), IN0.z + (IN1.z - IN0.z) * k); }, smoothK);
+    sfx(23.75, 'step', 0.7); sfx(24.35, 'step', 0.7);
+    yawTo(23.4, 25.1, toOwn + 0.2, toOwn, smoothK);
+    pitchTo(23.4, 25.1, -0.02, -0.06, smoothK);
+    fade(23.45, 24.1, 1, 0);
+    step(23.9, () => { const O = F.cast.owner; O.look = 1; O.lookAt = null; });
+    step(24.7, () => { F.cast.owner.nod = 1.6; });    // he knows him: a nod, no word (his hello is play's first line)
+    /* v21.7: the film's last line, Chad's own words. Its first half is said on the owner; in its pause (the take's
+       1.08 s between "chanting..." at 27.52 and "but" at 28.60) the lens turns to the altar at the back, where it will
+       happen, and arrives on "...something else happened..."; a beat on the altar in silence, then the black */
+    sfx(25.1, 'z3pro5');                              // 4.80 → 29.90
+    yawTo(27.5, 29.7, toOwn, toAlt, smoothK);
+    pitchTo(27.5, 29.7, -0.06, 0.02, smoothK);
+    fade(30.6, 32.2, 0, 1);
+    sfxFade(30.4, 32.2, 'e3film3');
+    tr(32.2, 32.4, () => {}, rawK);                   // the film's length (its last steps run inside it)
+    step(32.3, () => { handsRoot.visible = true; });
     c.keepFade = true;
     c.endFade = 1;
   }
