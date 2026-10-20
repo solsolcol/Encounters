@@ -1328,3 +1328,15 @@ Shipped, by meas.py: 42 % voiced, 23.8 % above 2 kHz, arc 10.0 dB, pauses
 0.28 / 0.34 s (v21.4: 68 %, 5.2 %, 3.7 dB, 0.60 / 0.12 / 0.70 / 0.30).
 Previews to Chad: 1 the shipped take; 2 w6_b, the other reading, the same
 chain; 3 w6_c at its own speed. `masters/v21.5/make.sh` installs the pick.
+
+## v21.6 · the whisper, and nothing after it
+
+Chad, on hearing v21.5: "I dont want the hah at the end of that voiceline, it
+is unnecessary." No generation: w6_c has 0.25 s of silence before its shout,
+and `level2.py` levels the whisper half from its own numbers alone, so
+`DROP_SHOUT=1` keeps that half and ends in the silence. The whisper is the
+v21.5 whisper to the sample (zero difference over 203,520 samples), ending on
+its own decay (the last 150 ms peak at −42.8 dBFS). 4.27 s; mp3 −21.5 RMS /
+−1.9 peak, Opus −21.1 / −1.7; momentary loudness as before (−20.5 / −20.0
+LUFS integrated). By meas.py: 40 % voiced, 29.1 % above 2 kHz, one pause
+(0.2 s). `masters/v21.5/make.sh` installs it.

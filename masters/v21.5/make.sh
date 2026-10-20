@@ -32,10 +32,17 @@
 # stopped four times (0.60 / 0.12 / 0.70 / 0.30 s): less distinct, by number. The
 # roar film and ending A are re-timed to the new length in e3c3.js
 # (docs/V21.2-PLAN.md, the v21.5 section).
+# v21.6 · Chad, on hearing it: "I dont want the hah at the end of that
+# voiceline, it is unnecessary." The take has 0.25 s of silence before the
+# shout, so DROP_SHOUT=1 cuts it in the middle of that silence: the whisper is
+# levelled from its own numbers alone, so it is sample-for-sample the v21.5
+# whisper, ending on its own decay (the last 150 ms peak at -42.8 dBFS).
+# 4.27 s; the roar film and ending A re-timed in e3c3.js (docs/V21.2-PLAN.md,
+# the v21.6 section).
 ffmpeg -v error -y -i raw/w6_c.mp3 -af "atempo=1.1" -ac 1 -ar 48000 t_md3chant.wav
 python3 ../v21.0/prep.py t_md3chant.wav p_md3chant.wav --fade 0.12 >/dev/null
-python3 level2.py p_md3chant.wav w_md3chant.wav
+DROP_SHOUT=1 python3 level2.py p_md3chant.wav w_md3chant.wav
 ffmpeg -v error -y -i w_md3chant.wav -map_metadata -1 -c:a libmp3lame -b:a 128k -ar 44100 ../../assets/audio/md3chant.mp3
 ffmpeg -v error -y -i w_md3chant.wav -map_metadata -1 -c:a libopus -b:a 64k -ar 48000 ../../assets/audio-opus/md3chant.ogg
-echo "md3chant <- raw/w6_c.mp3 (atempo 1.1, level2.py)"
+echo "md3chant <- raw/w6_c.mp3 (atempo 1.1, level2.py, the shout dropped)"
 rm -f t_md3chant.wav p_md3chant.wav w_md3chant.wav

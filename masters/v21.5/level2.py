@@ -20,13 +20,19 @@ so there is no seam to hear):
 Measured and not used: soft-clipping the shout (tanh) buys +2.7 dB of RMS at
 the same peak but leaves a residual 18 dB under the signal — grit nobody here
 can listen to first.
-Usage: python3 level2.py in.wav out.wav [WHISPER_RMS] [SHOUT_FRAME] [RATIO] [OVER_DB]"""
-import subprocess, sys, numpy as np
+v21.6: Chad, on hearing it: "I dont want the hah at the end of that voiceline,
+it is unnecessary." DROP_SHOUT=1 keeps the whisper half and nothing after the
+split — the whisper is levelled from its own numbers alone either way, so it
+comes out exactly as v21.5 shipped it, ending in the silence where the shout
+used to begin.
+Usage: [DROP_SHOUT=1] python3 level2.py in.wav out.wav [WHISPER_RMS] [SHOUT_FRAME] [RATIO] [OVER_DB]"""
+import subprocess, sys, os, numpy as np
 inp, outp = sys.argv[1], sys.argv[2]
 WHISPER = float(sys.argv[3]) if len(sys.argv) > 3 else -21.0
 SHOUT = float(sys.argv[4]) if len(sys.argv) > 4 else -4.0
 RATIO = float(sys.argv[5]) if len(sys.argv) > 5 else 3.0
 OVER = float(sys.argv[6]) if len(sys.argv) > 6 else 0.0
+DROP = os.environ.get('DROP_SHOUT') == '1'
 sr = 48000; CEIL = 10 ** (-1.5 / 20)
 x = np.frombuffer(subprocess.run(['ffmpeg', '-v', 'error', '-i', inp, '-f', 'f32le', '-ac', '1', '-ar', str(sr), '-'],
                                  capture_output=True).stdout, np.float32).astype(np.float64)
@@ -58,7 +64,7 @@ W *= g; W *= 10 ** ((WHISPER - rms(W)) / 20)
 # the shout: its loudest 50 ms frame to SHOUT
 f5 = int(0.05 * sr); top = max(db(np.sqrt(np.mean(S[i:i + f5] ** 2))) for i in range(0, max(1, len(S) - f5), f5 // 2))
 S *= 10 ** ((SHOUT - top) / 20)
-x = np.concatenate([W, S])
+x = W.copy() if DROP else np.concatenate([W, S])
 # lookahead limiter at CEIL (level.py's)
 win = int(0.005 * sr); need = np.minimum(1.0, CEIL / np.maximum(np.abs(x), 1e-9))
 lim = np.minimum.reduce([np.roll(need, -k) for k in range(win)])
@@ -69,8 +75,12 @@ x *= gg
 n_in = int(0.008 * sr); n_out = int(0.03 * sr); x[:n_in] *= np.linspace(0, 1, n_in); x[-n_out:] *= np.linspace(1, 0, n_out)
 Wn, Sn = x[:cut], x[cut:]
 def top100(y): f = int(0.1 * sr); return max(db(np.sqrt(np.mean(y[i:i + f] ** 2))) for i in range(0, max(1, len(y) - f), f // 4))
-print('%s: %.2f s, RMS %.2f, peak %.2f | whisper RMS %.2f, loudest 100 ms %.2f | shout loudest 100 ms %.2f, split at %.2f s'
-      % (outp, len(x) / sr, rms(x), db(np.abs(x).max()), rms(Wn), top100(Wn), top100(Sn), cut / sr))
+if DROP:
+    print('%s: %.2f s, RMS %.2f, peak %.2f | whisper only, loudest 100 ms %.2f, cut at %.2f s (the shout dropped)'
+          % (outp, len(x) / sr, rms(x), db(np.abs(x).max()), top100(Wn), cut / sr))
+else:
+    print('%s: %.2f s, RMS %.2f, peak %.2f | whisper RMS %.2f, loudest 100 ms %.2f | shout loudest 100 ms %.2f, split at %.2f s'
+          % (outp, len(x) / sr, rms(x), db(np.abs(x).max()), rms(Wn), top100(Wn), top100(Sn), cut / sr))
 x.astype(np.float32).tofile(outp + '.f32')
 subprocess.run(['ffmpeg', '-v', 'error', '-y', '-f', 'f32le', '-ar', str(sr), '-ac', '1', '-i', outp + '.f32', outp], check=True)
 import os; os.remove(outp + '.f32')
