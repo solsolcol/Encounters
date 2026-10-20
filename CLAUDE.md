@@ -5505,7 +5505,10 @@ What the baseline contains, by release:
   chapter. Three takes went to Chad by ear (1 shipped; 2 the same words with
   a long pause; 3 a lower "possessed" chant). Sheet v99 exported (one voice
   line; v44 stays the link). Deploy `6ad74575c14a0c4c5f0967ab`,
-  byte-verified (221 files). docs/V21.2-PLAN.md, the v21.4 section.
+  byte-verified (221 files); harnesses text, chapter, hosted green; the roar
+  film played in a phone browser with the sound on — the incantation whole
+  (5.58 s), "step back" 0.39 s after it, every cue sounding, no page errors.
+  docs/V21.2-PLAN.md, the v21.4 section.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
