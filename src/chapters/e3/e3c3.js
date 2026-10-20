@@ -173,7 +173,7 @@
     sm3hold: 2.38, sm3cannot: 2.32, st3uncle: 2.35, cu3amitabha: 3.71, ow3let: 2.43, z3breath: 3.0,
     ow3know: 2.04, z3knew: 5.64, st3trance: 2.59, cu3unclean: 4.26, ow3medium: 5.56, z3night: 2.69,
     z3shrine: 4.7, as3sit: 3.63, dv3wife: 3.55, md3read1: 7.16, md3drink: 3.32, dv3father: 4.68,
-    md3read2: 3.92, md3done: 1.52, as3next: 1.88, z3walk: 4.44, md3ghost: 1.7, md3chant: 4.05,
+    md3read2: 3.92, md3done: 1.52, as3next: 1.88, z3walk: 4.44, md3ghost: 1.7, md3chant: 5.57,
     as3back: 2.51, z3A1: 2.51, md3A1: 2.12, md3A2: 0.57, as3A: 3.87, z3A2: 4.05,
     z3B1: 2.35, md3B1: 1.18, as3B: 3.27, z3B2: 4.91, z3thank: 1.96, md3C: 2.43,
     z3C2: 5.96, md3D: 1.23, z3D2: 6.77, z3D3: 4.44, z3close: 8.44, z3next: 3.87,
@@ -4202,28 +4202,33 @@
     /* and the last second eases onto the decision's own framing — afterRoar puts the view there in one frame, and
        from the film's end that was a 22° drop and 0.15 m back as the letterbox left (the v21.1 review) */
     const D = F.DECIDE_AT, yD = Math.atan2(-(E.x - D.x), -(E.z - D.z));
-    camTo(9.5, 10.5, { x: P.x - ux * 0.05, y: 1.62, z: P.z - uz * 0.05 }, { x: D.x, y: 1.62, z: D.z }, smoothK);
-    tr(9.5, 10.5, (k) => { yaw.rotation.y = mixAngle(yP, yD, k); pitch.rotation.x = 0.08 + (F.DECIDE_PITCH - 0.08) * k; }, smoothK);
-    sfx(3.1, 'md3chant');                                 // 4.05 → 7.15
+    camTo(10.8, 11.8, { x: P.x - ux * 0.05, y: 1.62, z: P.z - uz * 0.05 }, { x: D.x, y: 1.62, z: D.z }, smoothK);
+    tr(10.8, 11.8, (k) => { yaw.rotation.y = mixAngle(yP, yD, k); pitch.rotation.x = 0.08 + (F.DECIDE_PITCH - 0.08) * k; }, smoothK);
+    /* v21.4: the incantation is in a tongue nobody knows (Chad: "he should speak with a deity ancient chinese language
+       that cannot be understood" — it was 天灵灵，地灵灵！… in plain Mandarin), and the new take is 5.57 s where the old
+       was 4.05: it starts on the cut to him on his feet (the roar is over by 2.87), and everything after it — the
+       drumroll, the assistant, the drum, the gong, the ease onto the decision and the film's end — moved 1.3 s later,
+       each the same distance from the incantation's end as before. The bells and the sword stay inside it. */
+    sfx(2.9, 'md3chant');                                 // 5.57 → 8.47
     sfx(3.4, 'taobell', 0.8);
     sfx(4.3, 'swordswish', 0.7);
     sfx(5.7, 'taobell', 0.7);
     sfx(6.2, 'swordswish', 0.75);
-    sfx(6.9, 'drumroll3', 0.75);
-    sfx(7.4, 'as3back');                                  // 2.51 → 9.91
-    sfx(8.1, 'drum3', 0.8); sfx(8.7, 'drum3', 0.7); sfx(9.3, 'gong3', 0.55);
+    sfx(8.2, 'drumroll3', 0.75);                          // (under its last shout)
+    sfx(8.7, 'as3back');                                  // 2.51 → 11.21
+    sfx(9.4, 'drum3', 0.8); sfx(10.0, 'drum3', 0.7); sfx(10.6, 'gong3', 0.55);
     /* (the gong is 4 s long and the film ends 1.3 s into it: cut at the end it CHOKED — it is damped over the last
        0.7 s instead, the drum's tail with it — the v21.1 review) */
-    sfxFade(9.9, 10.6, 'gong3'); sfxFade(10.1, 10.6, 'drum3');
+    sfxFade(11.2, 11.9, 'gong3'); sfxFade(11.4, 11.9, 'drum3');
     /* the body over every camera track: the shake of the roar in it, settling */
     const shake = (t) => t < 2.8 ? Math.max(0, 1 - t / 2.8) : Math.max(0, 0.35 * (1 - (t - 2.8) / 3.0));
-    tr(0, 10.6, (k, t) => {
+    tr(0, 11.9, (k, t) => {
       const a = shake(t);
       yaw.rotation.y += a * 0.02 * Math.sin(t * 31.0);
       pitch.rotation.x += a * 0.016 * Math.sin(t * 27.0 + 1.3);
       camera.rotation.z = a * 0.025 * Math.sin(t * 23.0 + 0.4);
     }, rawK);
-    step(10.5, () => { camera.rotation.z = 0; R.flash(0); R.hanu(0, P, E); handsRoot.visible = true; api.armR.visible = true; });
+    step(11.8, () => { camera.rotation.z = 0; R.flash(0); R.hanu(0, P, E); handsRoot.visible = true; api.armR.visible = true; });
   }
 
   /* ============================================================ THE ENDINGS
@@ -4346,7 +4351,7 @@
     sfx(7.6, 'swordswish', 0.8);
     sfx(8.2, 'swordswish', 0.7);
     sfx(8.7, 'taobell', 0.7);
-    sfx(9.1, 'md3chant');                              // 4.05 → 13.15
+    sfx(7.6, 'md3chant');                              // 5.57 → 13.17 (v21.4: the longer take starts on the sword, ends where the old one did)
     sfx(10.7, 'taobell', 0.6);
     sfx(13.3, 'ashwater', 0.8);                        // the paper burnt and the ash stirred into the water (2.03 s)
     // his eyes open on the cup brought to his lips: "Drink." (held in the hands' pass, the hands below the frame)

@@ -1260,3 +1260,31 @@ same chain and level (mp3 −16.0 dB RMS / −1.5 peak, Opus −15.6 / −2.0).
 `masters/v21.2/make.sh` installs it; mahori c stays in raw/. His ear over my
 measure, again (v10.6): the pitch match I ranked first is a property of the
 mix, not of the music.
+
+## v21.4 · the medium's incantation, in a tongue nobody knows
+
+Chad: "The medium reacts with speaking chinese after the hanuman roar. I dont
+want that, he should speak with a deity ancient chinese language that cannot
+be understood." `md3chant` was 天灵灵，地灵灵！太上老君急急如律令！ — the Taoist
+exorcist's formula in plain Mandarin, understood word for word by any
+Chinese-speaking player. It is now a SPIRIT TONGUE: invented syllables built
+from southern Chinese sounds (ng-, -iep, -ok, -it, tsiu, dzai, hw-) that make
+no word in any language, in the medium's own voice (Roger,
+`Fo6zHX740rFxxP1fWDxu`, eleven_v3) under the old take's own tag:
+
+    [shouting, commanding] Ngat-kiep hwang-lo! Tsiu-mong dzai-ling, ngok-hrit pau-kau! Ngai-lo-sa... HAH!
+
+Two prompts, four takes each (`masters/v21.4/sessions.json`; the second
+`[chanting, possessed] Hwang-ngai... kiep-lo-sa... tsiu-ngok-pau! ...`).
+Picked by `masters/v21.4/meas.py` — length, the pauses inside the take, the
+tail level, the pitch: **godp1_d**, three phrases and the shout evenly paced
+(gaps 0.62 / 0.72 / 0.36 s), the cleanest tail of its prompt (−36.5 dB), and
+the most raised voice of the eight (f0 median 167 Hz, p10 127 — shouted the
+whole way, as the old take was). godp1_a stalls 1.06 s after its first
+phrase; godp1_b and c end ON signal; the "possessed" reads are lower and
+0.5–2 s longer. The v21.0 cast chain (prep `--fade 0.12`, RMS −16 dBFS,
+limiter −1.5): 5.57 s, mp3 −16.5 RMS / −1.9 peak, Opus −16.0 / −1.3 — the old
+take's level. It is 1.52 s longer than the old one, so the roar film and
+ending A are re-timed around it (docs/V21.2-PLAN.md, the v21.4 section).
+godp1_d, godp1_a and godp2_d went to Chad as previews; `masters/v21.4/make.sh`
+installs the pick.
