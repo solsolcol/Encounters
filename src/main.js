@@ -3819,6 +3819,7 @@ function kitEvent(opts = {}) {
   const o = { ...EV_DEFAULT[kind], ...opts, kind };
   for (const n of EV_SOUNDS) WARM_WANT.add(n);
   packWarm(EV_SOUNDS);
+  if (opts.popSound) { WARM_WANT.add(opts.popSound); packWarm([opts.popSound]); }   // v21.2: a steady light's chime
   if (kind === 'timed') o.secs = o.close;
   return new Promise(res => {
     document.body.classList.add('evopen');   // v12.2: a kit event owns the screen (the weapon HUD and the reticle go)
@@ -3991,6 +3992,7 @@ function evResolve(extra) {
   if (host) {
     host.className = 'layer hide';
     $('evDot').classList.add('hide'); $('evDrag').classList.add('hide');
+    $('evDot').classList.remove('steady', 'pop');   // v21.2: a steady light's own look goes with its event
     $('evMatch').classList.add('hide');
     $('evIcon').textContent = ''; $('evCombo').textContent = '';
     $('evSrc').textContent = ''; $('evDst').textContent = '';
@@ -4152,7 +4154,67 @@ function evMove(x, y) {
 }
 function evNextTarget() {
   const e = ev; e.idx++; e.slotT = 0; e.placed = false; e.unseenT = 0;   // v21.0: the next light is not on screen until a frame puts it there (v21.1: nor has it been missed for long)
+  /* v21.2: a steady light leaves a beat before the next can come on, so the
+     word the last one earned is read before the eye is pulled away */
+  if (e.o && e.o.steady) { e.gapT = e.o.gap ?? 0.6; e.waitT = 0; $('evDot')?.classList.remove('pop'); }
   if (e.idx >= e.n) { e.over = true; return; }
+}
+/* v21.2: A STEADY LIGHT (opt-in, `steady: true` on a graded focus event —
+   episode 3 chapter 3's STAY PRESENT; the fixture proves it). Chad, of
+   v21.1's: "unplayable at all, i cant hit the lights, and i cannot see the
+   lights appear where i need to hit." Played through at sixty frames a
+   second on a phone's screen (dbg-e3c3aware.mjs), five lights of six came on
+   at the screen's right EDGE — the moment its thing crossed into view, half
+   the light off the glass — while the trance was still turning onto it, and
+   slid 87-194 px inward under the finger reaching for it: a tap aimed where
+   it was seen landed where it no longer was. A steady light comes on only once
+   its thing has been brought to rest well inside the screen (the target's own
+   `ready()`, and the safe `box` in NDC), comes on with a flash, a chime and a
+   tick under the thumb so the eye is drawn to where it is, and is held where
+   it came on (eased toward its thing, so the last of a sway cannot carry it
+   off). Nothing runs on a light not yet shown — no life, and no 'lost' charge:
+   a light the game never put on the screen is the game's to answer for, so
+   after `waitMax` seconds it is skipped, not charged. */
+function evFocusSteady(e, o, tg, dot, wdt) {
+  const P = tg && typeof tg.pos === 'function' ? tg.pos() : tg;
+  let sx = innerWidth / 2, sy = innerHeight / 2, inBox = false, onScreen = false;
+  if (P && Number.isFinite(P.sx)) { sx = P.sx * innerWidth; sy = P.sy * innerHeight; inBox = onScreen = true; }
+  else if (P && Number.isFinite(P.x)) {
+    const n = projectTo(P.x, P.y ?? 1.2, P.z), B = o.box || { x: 0.7, yLo: -0.7, yHi: 0.35 };
+    onScreen = n.z < 1 && Math.abs(n.x) < 0.92 && Math.abs(n.y) < 0.9;
+    inBox = n.z < 1 && Math.abs(n.x) <= B.x && n.y >= B.yLo && n.y <= B.yHi;
+    sx = (n.x * 0.5 + 0.5) * innerWidth; sy = (-n.y * 0.5 + 0.5) * innerHeight;
+  }
+  const ready = !(tg && typeof tg.ready === 'function') || !!tg.ready();
+  if (!dot) return;
+  dot.classList.add('graded', 'steady');
+  if (!e.placed) {
+    e.gapT = Math.max(0, (e.gapT || 0) - wdt);
+    if (e.gapT > 0 || !ready || !inBox) {
+      dot.classList.add('hide');
+      if ((e.waitT = (e.waitT || 0) + wdt) >= (o.waitMax ?? 12)) {
+        console.warn('a focus light was never put on the screen — skipped, not charged:', tg && tg.label);
+        e.skipped = (e.skipped || 0) + 1; evNextTarget();
+      }
+      return;
+    }
+    // it comes on: here, now, with a flash
+    e.placed = true; e.waitT = 0; e.dotX = sx; e.dotY = sy; e.shown = (e.shown || 0) + 1;
+    dot.classList.remove('hide', 'pop'); void dot.offsetWidth; dot.classList.add('pop');
+    if (o.popSound) snd(o.popSound, o.popVol ?? 0.5);
+    if (o.haptic !== false) haptic(14);
+  } else {
+    const k = 1 - Math.exp(-wdt / (o.ease ?? 0.08));
+    e.dotX += (sx - e.dotX) * k; e.dotY += (sy - e.dotY) * k;
+  }
+  dot.classList.toggle('hide', !onScreen);
+  dot.style.transform = `translate(${e.dotX.toFixed(0)}px, ${e.dotY.toFixed(0)}px) translate(-50%,-50%)`;
+  dot.style.opacity = '1';
+  dot.style.setProperty('--k', Math.max(0, 1 - e.slotT / o.each).toFixed(3));
+  const lab = dot.querySelector('.dlab'), tl = (tg && tg.label) || '';
+  if (lab && lab.textContent !== tl) lab.textContent = tl;
+  if (onScreen) e.slotT += wdt;              // (a light whose thing leaves the screen waits for it to come back)
+  if (e.slotT >= o.each) { evScorePress(EV_WORST); evNextTarget(); }   // its ring closed: MISSED
 }
 function evNextItem() {
   const e = ev; e.idx++;
@@ -4347,6 +4409,7 @@ function evFrame(dt, dLookX, dLookY) {
         if (o.graded) { evResolve(evBandResult(o)); break; }
         const s = e.hits / e.n; evResolve({ ok: s >= o.pass, score: s }); break;
       }
+      if (o.steady && o.graded) { evFocusSteady(e, o, e.targets[e.idx % Math.max(1, e.targets.length)], dot, wdt); break; }   // v21.2
       const tg = e.targets[e.idx % Math.max(1, e.targets.length)];
       /* v21.0: a target may MOVE — `pos()` answers where it is now (a person
          walking, a hand held up), re-projected every frame */
@@ -6748,7 +6811,7 @@ const ADULT_TAKES = new Set([
   'z2slip1', 'z2slip2', 'z2peak', 'z2A1', 'z2B1', 'z2C1', 'z2D1', 'z2close', 'z2next',
   'z2A', 'z2B', 'z2C', 'z2D',
   /* v21.0 · episode 3 chapter 3 */
-  'z3pro1', 'z3pro2', 'z3pro3', 'z3pro4', 'z3look1', 'z3look2', 'z3look3', 'z3look4',
+  'z3pro3', 'z3pro4', 'z3look1', 'z3look2', 'z3look3', 'z3look4',
   'z3thanks', 'z3shift1', 'z3shift2', 'z3breath', 'z3knew', 'z3night', 'z3shrine', 'z3walk',
   'z3A1', 'z3A2', 'z3B1', 'z3B2', 'z3thank', 'z3C2', 'z3D2', 'z3D3',
   'z3close', 'z3next', 'z3A', 'z3B', 'z3C', 'z3D']);
@@ -9924,7 +9987,7 @@ const STING_SAMPLE = {
   z2close: ['z2close', 1], z2next: ['z2next', 1], z2A: ['z2A', 1], z2B: ['z2B', 1], z2C: ['z2C', 1], z2D: ['z2D', 1],
   lw2look: ['lw2look', 1], lw2pull: ['lw2pull', 1], lw2what: ['lw2what', 1], yai2dance: ['yai2dance', 1],
   /* v21.0 · EPISODE 3 · CHAPTER 3 · THE DANCE ON BUDDHA DAY — his lines, the shop, the medium's shrine */
-  z3pro1: ['z3pro1', 1], z3pro2: ['z3pro2', 1], z3pro3: ['z3pro3', 1], z3pro4: ['z3pro4', 1], ow3hello: ['ow3hello', 1],
+  z3pro3: ['z3pro3', 1], z3pro4: ['z3pro4', 1], ow3hello: ['ow3hello', 1],
   z3look1: ['z3look1', 1], z3look2: ['z3look2', 1], z3look3: ['z3look3', 1], z3look4: ['z3look4', 1], ow3call: ['ow3call', 1],
   ow3gift1: ['ow3gift1', 1], ow3gift2: ['ow3gift2', 1], z3thanks: ['z3thanks', 1], ow3good: ['ow3good', 1], ow3namo: ['ow3namo', 1],
   z3shift1: ['z3shift1', 1], z3shift2: ['z3shift2', 1], ow3eh: ['ow3eh', 1], sm3hold: ['sm3hold', 1], sm3cannot: ['sm3cannot', 1],
@@ -12786,6 +12849,8 @@ window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () =
                    return true;
                  },
                  evState: () => ev && ({ kind: ev.kind, t: +ev.t.toFixed(2), n: ev.n, done: ev.done,
+                                         idx: ev.idx, placed: !!ev.placed, slotT: +(ev.slotT || 0).toFixed(3),   // v21.2: the focus light's own clock, for probes
+                                         shown: ev.shown || 0, skipped: ev.skipped || 0,
                                          wrong: ev.wrong, beat: ev.beat, band: ev.band.slice(),
                                          combo: ev.combo, best: ev.bestCombo, beats: ev.beats.slice() }),
                  // a getter, not the array: rebuildStage() re-points BLOCKERS

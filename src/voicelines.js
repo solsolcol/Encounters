@@ -996,11 +996,7 @@
     { id: "yai2dance", who: "yai", ch: "e3c2", where: "Play: Yai in the row in front, as his hands rise at the peak (v19.4)",
       text: "[whispers, surprised] Is he dancing?", secs: 1.33 },
     // ---- episode 3 · chapter 3 · THE DANCE ON BUDDHA DAY (v21.0) -----------
-    { id: "z3pro1", who: "jamesAdult", ch: "e3c3", where: "Opening film: Vesak morning, the estate",
-      text: "[softly] It was Buddha Day.", secs: 2.35 },
-    { id: "z3pro2", who: "jamesAdult", ch: "e3c3", where: "Opening film: the old mall",
-      text: "By then, I had learnt to hide what my hands did in temples... but I never stopped going.", secs: 6.03 },
-    { id: "z3pro3", who: "jamesAdult", ch: "e3c3", where: "Opening film: the corridor of shops",
+    { id: "z3pro3", who: "jamesAdult", ch: "e3c3", where: "Opening film: across the road from Golden Mile Complex",
       text: "There was an amulet shop I often visited. The owner knew me well.", secs: 4.0 },
     { id: "z3pro4", who: "jamesAdult", ch: "e3c3", where: "Opening film: the shop's glass door",
       text: "Every Buddha Day, he held a small chanting for his regular customers. That morning, I went to pay my respects.", secs: 6.84 },

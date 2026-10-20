@@ -388,6 +388,8 @@ async function runEvent(opts, drive) {
     window.__evR = null;
     // a callback cannot cross into the page, so a check names a counter instead
     if (o.slipTag) { const t = o.slipTag; o.onSlip = () => { window[t] = (window[t] || 0) + 1; }; }
+    // v21.2: a steady focus target's ready() reads a flag the check flips
+    if (o.readyTag) { const t = o.readyTag; o.targets = o.targets.map(q => Object.assign({}, q, { ready: () => !!window[t] })); }
     // a rapid-tap event is tapped from inside the page, on its own timer
     const tap = o.tapEvery ? setInterval(() => { window.__enc.evPress(); window.__enc.evRelease(); }, o.tapEvery) : 0;
     /* v19.4: or on the EVENT's own clock — one tap every `tapEveryT` event
@@ -961,6 +963,30 @@ K.focusSpotDemo = await until(() => { const d = window.__enc.kitDebug(); return 
       && getComputedStyle(dm.querySelector('.dret')).display === 'none';
   }), () => false);
 await p.evaluate(() => window.__enc.kit.abortEvent());
+/* v21.2: A STEADY LIGHT (opt-in, e3c3's STAY PRESENT). Until its target says
+   ready() nothing is shown and nothing runs — no life, no charge, however long
+   it waits; once ready it comes on with its flash ('pop'), and a tap scores a
+   band; a light never made ready is skipped after `waitMax`, NOT charged */
+await p.evaluate(() => { window.__rdy = false; window.__enc.stats.awareness = 40; });
+r = await runEvent({ kind: 'focus', graded: true, steady: true, readyTag: '__rdy', targets: [{ sx: 0.5, sy: 0.5, label: 'still' }], each: 2,
+                     gap: 0, waitMax: 60, missCost: 3, penalty: { stat: 'awareness' }, award: { stat: 'sanity', per: 1, hi: 6 } },
+                   async () => {
+  await untilT(2.5);                                                      // past a whole life: had it run, it would be MISSED now
+  K.focusSteadyWaits = await p.evaluate(() => { const d = window.__enc.kitDebug().event, s = window.__enc.evState();
+    return !!d && document.getElementById('evDot').classList.contains('hide') && s.idx === 0 && s.band.length === 0 && s.placed === false; });
+  await p.evaluate(() => { window.__rdy = true; });
+  await untilDot();
+  K.focusSteadyPops = await p.evaluate(() => { const c = document.getElementById('evDot').classList;
+    return c.contains('pop') && c.contains('steady') && c.contains('graded') && document.querySelector('#evDot .dlab').textContent === 'still'; });
+  await tapOnce();
+});
+K.focusSteadyHit = r.kind === 'focus' && r.band.length === 1 && r.band[0] >= 1;
+if (!K.focusSteadyHit) console.log('steady focus', JSON.stringify(r));
+await p.evaluate(() => { window.__never = false; });
+r = await runEvent({ kind: 'focus', graded: true, steady: true, readyTag: '__never', targets: [{ sx: 0.5, sy: 0.5 }], each: 2,
+                     waitMax: 1.5, missCost: 3, penalty: { stat: 'awareness' }, award: { stat: 'sanity', per: 1, hi: 6 } });
+K.focusSteadyNeverFree = r.kind === 'focus' && r.band.length === 0 && await p.evaluate(() => Math.abs(window.__enc.stats.awareness - 40) < 1e-9);
+K.focusSteadyLookGoes = await p.evaluate(() => !document.getElementById('evDot').classList.contains('steady'));
 await p.evaluate(() => { window.__enc.stats.sanity = 100; window.__enc.stats.awareness = 50; });
 // the lens level again, as the block found it: the walk to the pile below sets only the yaw
 await p.evaluate(() => { window.__enc.pitch.rotation.x = 0; });

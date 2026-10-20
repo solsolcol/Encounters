@@ -1205,3 +1205,50 @@ the only one that roars the whole 2.8 s with clean edges) `goldsting`
 steadiest, 99.5 % in the phone band, looped by crossfade) `e3film3`
 `e3shrine` (erhu and suona, the re-ask) `e3close3` (a solo erhu). Previews of
 the music and the four roars went to Chad (the v10.6 rule).
+
+## v21.2 · the shop radio's chant, replaced; two film lines removed
+
+Chad: "after taking the lp tim amulet, there is some background chanting sound
+that sounds eerie. Replace that with a proper buddhist chanting music/sound."
+The v21.0 `shopchant` came from the SOUND-EFFECTS model asked for lay people
+chanting in Pali, and that model makes wordless voice texture — measured, a
+continuous wall with no breath in 20 s at 216 Hz, the ghost-choir shape. The
+new one (flow `qapQMCX9SGeqWVMjA91j`) is the MUSIC model with the Itipiso as
+its custom lyrics, "a group of monks reciting Pali in unison, a cappella, one
+steady low reciting tone", four takes, and two transcribed to prove the words
+are really chanted. `masters/v21.2/chantmeas.py` measures a chant without ears:
+the syllable pulse (the envelope's 2–8 Hz modulation), how far the reciting
+tone wanders (f0 IQR in semitones), breaths, the phone band. Picked c: one
+reciting tone (IQR 0.25 st), an even pulse at 5 Hz, the whole text from
+"itipi so" to "lokassati" in 75 s, 85 % in the band a phone plays; a and d went
+to Chad as previews. It loops as it is (its last word at 72.9 s decays to
+−72 dB by 75 s; the first starts 0.1 s in). High-passed 90 Hz, low-passed
+10 kHz (the radio), levelled by RMS to −15.5 dBFS under a −1.5 dBFS limiter
+for the mp3 and −3.0 for the Opus copy, because libopus overshoots this file by
+2.7 dB (the v9.6 law). An eleven_v3 solo by Arthur (episode 3 chapter 1's
+monk, the same text) is in `masters/v21.2/raw/chantiti_*` as the fallback.
+`masters/v21.2/make.sh` is the recipe. Its level in the mix is unchanged.
+
+The film's `z3pro1` ("It was Buddha Day.") and `z3pro2` ("By then, I had
+learnt to hide what my hands did in temples...") are removed with the temple
+gate they played over (Chad's word); their masters stay in `masters/v21.0/raw/`.
+
+**Turned down the same day.** Chad, on the previews of c, a and d: "All 3
+generated chant music choices are terrible. Remove the chant music, and
+replace with thai traditional music instead." The radio plays Thai
+traditional music now (same flow, `thaistrings` and `thaimahori` in
+`masters/v21.2/sessions.json`, eight instrumental takes of 75 s). Both prompts
+ask for no xylophones and no gongs: the trance's melody, `e3dance`, is a
+piphat of exactly those, and the radio must not sound like the thing nobody
+else hears. Picked by `masters/v21.2/musicmeas.py` (phone band, the 1 s
+level's spread, onsets, chroma correlation with `e3dance`) and
+`musicloop.py` (the flattest 50 s of the body, its end placed where the take
+runs on most like its head, a 2 s crossfade): **mahori c** — khim, fiddle,
+zither and flute — 99.2 % in the phone band, a 2.4 dB spread, +0.83 against
+`e3dance` (the nearest of the eight). The same radio chain and level as the
+chant it replaces; mp3 −15.9 dB RMS / −1.6 peak, Opus −15.6 / −2.4, 51.3 s.
+It keeps the key `shopchant`. In the mix it now sinks to a quarter as the
+trance melody rises, and sits at 0.1 through the trance — two melodies at
+once fight where a chant under the piphat did not. mahori a (the steadiest,
+1.5 dB) and strings a went to Chad as previews; the chant takes stay in
+`masters/v21.2/raw/` as the record and nothing ships them.

@@ -725,6 +725,21 @@ body.finePtr .wpnBtn{position:relative;margin-bottom:12px}
   white-space:nowrap;font:600 .82rem/1.1 var(--ui, system-ui);letter-spacing:.04em;color:#fff2dc;
   padding:3px 8px;border-radius:6px;background:rgba(7,8,11,.62);text-shadow:0 1px 2px rgba(0,0,0,.8)}
 #evDot.graded .dlab:empty{display:none}
+/* v21.2: a STEADY light (opt-in — episode 3 chapter 3's STAY PRESENT) is a
+   size a thumb can find, and comes ON with a flash and a ring thrown out from
+   it, so the eye is pulled to where it is. The flash animates a FILTER and the
+   ring a pseudo-element: the light is placed by its inline transform, and an
+   animated transform (or `scale`, which multiplies the translate) would throw
+   it across the screen for the length of the pop. */
+#evDot.steady{width:58px;height:58px;border-width:3px}
+#evDot.steady.graded .dring2{width:58px;height:58px;margin:-29px 0 0 -29px}
+#evDot.steady .dlab{font-size:.9rem}
+#evDot.graded.pop{animation:dotFlash .6s ease-out}
+#evDot.pop::after{content:'';position:absolute;left:50%;top:50%;width:58px;height:58px;margin:-29px 0 0 -29px;
+  border-radius:50%;border:3px solid #fff6dc;box-shadow:0 0 24px rgba(255,236,190,.95);pointer-events:none;
+  animation:dotRing .75s ease-out forwards}
+@keyframes dotFlash{0%{filter:brightness(2.8)}100%{filter:brightness(1)}}
+@keyframes dotRing{0%{transform:scale(.4);opacity:1}100%{transform:scale(3.4);opacity:0}}
 /* the interact badge is tappable: hotspots have no mesh under the finger */
 .ibadge{pointer-events:auto;cursor:pointer}
 .invBtn svg path:first-child,.menuBtn svg path:first-child{fill:none}

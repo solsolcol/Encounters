@@ -5684,3 +5684,48 @@ cut (sharing its vertices and maps) when it is small.
   an old continuation return early, the run that superseded it takes over that
   continuation's cleanup: here the cold arrival waits for the warm still in
   flight, releases what that warm held, and lifts the black itself.
+
+## v21.2 — Golden Mile Complex, a steady light, a proper chant
+
+- **A minigame probe that reads where the light IS proves nothing about a
+  person.** STAY PRESENT passed every probe from v21.0 to v21.1 and Chad
+  called it "unplayable at all": the probes polled the light's hidden
+  position and tapped it, on a box that draws a frame a second, so they never
+  saw five lights of six come on half off the glass and slide 87-194 px
+  under a finger. Run the
+  page on Playwright's FAKE CLOCK (`page.clock.install()` before `goto`,
+  `pauseAt(now)` at the moment of interest, then `runFor(16)` a frame) and the
+  recording is what a 60 fps phone draws, however slowly this box renders it;
+  then tap like a person — a reaction time after the light first shows, aimed
+  where it was seen a moment before (`dbg-e3c3aware.mjs`).
+- **Never animate `transform` — or `scale` — on an element that is PLACED by
+  an inline transform.** A keyframed transform replaces the inline translate
+  for the length of the animation (the element jumps to the corner), and the
+  individual `scale` property multiplies it (the element flies toward the
+  corner and back). The steady light's pop flashes with `filter` and throws
+  its ring from a pseudo-element.
+- **The sound-effects model makes voice TEXTURE, not words.** Asked for
+  "people chanting in Pali" it returns a breathless wall of ghostly vowels —
+  which is what Chad heard as eerie. Chanting with real words comes from the
+  MUSIC model given the text as custom lyrics, and a transcription is what
+  proves the words are there (`eleven_scribe_v1` read the whole Itipiso back
+  out of the take that shipped).
+- **A light the game never shows must cost the player nothing.** v21.1's
+  `lost` timer charged a MISS for a light that had stayed off screen; with the
+  chapter deciding when a light may come on (`ready()`), a light that never
+  came on is the game's failure, so it is skipped, not charged.
+- **A sign in a film is sized for the PHONE's frame, and its place is
+  computed before it is photographed.** The camera's 72° is vertical, so a
+  portrait phone sees a third of a desktop's width (±18.6° against ±49°): the
+  first GOLDEN MILE COMPLEX board — one line, 32 m — was whole on the desktop
+  and ran off both sides of the phone ("LDEN MILE COMPLEX 黄金大厦"). A copy of
+  the camera rig in plain Node (`yaw → pitch → PerspectiveCamera(72, aspect)`,
+  the film's own easing) projects the board's corners for both screens in a
+  second (`dbg-gmcframe.mjs`); two lines on 18 m put it inside NDC ±0.77 on
+  the phone, and only then was it photographed.
+- **What stands behind a parapet is not seen from the street.** The terraces'
+  planters and bushes sat behind their parapets with their tops at the
+  parapet's top, and from the road under a stepped slab not one was visible.
+  A plant meant to be seen from below grows OVER the parapet and down its
+  face — work out the line of sight over the top before placing anything
+  behind it.
