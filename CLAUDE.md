@@ -5474,6 +5474,17 @@ What the baseline contains, by release:
   text, csp, hosted, leak, walk and chapter green on the first deploy
   (`6ad7258ec95ae2bb94751997`), hosted and chapter again on the radio's music;
   final deploy `6ad72fba521b74824b6113dd`, byte-verified (221 files).
+- **v21.3** RADIO MUSIC NO. 2, AND TWO ROWS OF SHOPS — Chad, on v21.2: "Thai
+  radio music 2 is better" and "just show the bottom 2 rows of shopfronts ...
+  move the golden mile complex signboard lower after removing the third row."
+  The radio plays mahori a (preview no. 2, the steadiest of the eight takes;
+  mahori c stays in masters/v21.2/raw), through the same radio chain and to
+  the same level. Golden Mile Complex's podium is two rows of shops, 8.9 m
+  where it was 13.2, so the sign, the slab and its roof come down with it, the
+  sign standing on the second row; the opening shot's two looks come down
+  too, computed so the board stays whole on a phone and then photographed. No
+  word moved; sheet v98 stands (v44 the link). Harnesses chapter, hosted
+  green. Deploy `6ad73e060eef6af3bddcfd42`, byte-verified (221 files).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so

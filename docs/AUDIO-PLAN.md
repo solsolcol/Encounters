@@ -1252,3 +1252,11 @@ trance melody rises, and sits at 0.1 through the trance — two melodies at
 once fight where a chant under the piphat did not. mahori a (the steadiest,
 1.5 dB) and strings a went to Chad as previews; the chant takes stay in
 `masters/v21.2/raw/` as the record and nothing ships them.
+
+**v21.3.** Chad, on the three Thai previews: "Thai radio music 2 is better."
+No. 2 was **mahori a** — the steadiest of the eight (a 1.5 dB spread over its
+50.8 s loop), +0.74 against `e3dance` — so it is the radio's music now, the
+same chain and level (mp3 −16.0 dB RMS / −1.5 peak, Opus −15.6 / −2.0).
+`masters/v21.2/make.sh` installs it; mahori c stays in raw/. His ear over my
+measure, again (v10.6): the pitch match I ranked first is a property of the
+mix, not of the music.

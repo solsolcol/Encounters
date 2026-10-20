@@ -63,20 +63,23 @@
 #   mahori_b      99.2%  0.0%  3.24        -28.5  +0.77
 #   mahori_c      99.2%  0.0%  2.36        -25.3  +0.83   PICK
 #   mahori_d      98.0%  0.0%  2.36        -21.4  +0.20
-# PICK: mahori_c — all of it in the band a phone plays, an even level, and
-# of the eight the nearest in pitch to the melody it sits under once the
-# hands part (the chapter also sinks the radio under that melody now).
-# mahori_a and strings_a went to Chad as previews (his ear swaps them).
+# PICK (v21.2): mahori_c — all of it in the band a phone plays, an even
+# level, and of the eight the nearest in pitch to the melody it sits under
+# once the hands part (the chapter also sinks the radio under that melody).
+# mahori_a and strings_a went to Chad as previews (his ear swaps them) — and
+# it did. v21.3, Chad: "Thai radio music 2 is better." Preview no. 2 was
+# mahori_a, the steadiest of the eight (a 1.5 dB spread over its loop), so it
+# is the radio's music now; mahori_c stays in raw/.
 # The radio: high-passed at 90 Hz, low-passed at 10 kHz; levelled by RMS to
 # -15.5 dBFS under a -1.5 dBFS lookahead limiter (levelst.py), the Opus copy
 # from its own -3.0 source (libopus overshoots; the v9.6 law).
 set -e
 cd "$(dirname "$0")"
-python3 musicloop.py raw/thaimahori_c.mp3 50
-ffmpeg -v error -y -i w_thaimahori_c.wav -af "highpass=f=90:poles=2,lowpass=f=10000:poles=2" -ar 48000 -ac 2 f_r.wav
+python3 musicloop.py raw/thaimahori_a.mp3 50
+ffmpeg -v error -y -i w_thaimahori_a.wav -af "highpass=f=90:poles=2,lowpass=f=10000:poles=2" -ar 48000 -ac 2 f_r.wav
 python3 levelst.py f_r.wav lv_r.wav -15.5 -1.5
 python3 levelst.py f_r.wav lv_r3.wav -15.5 -3.0
 ffmpeg -v error -y -i lv_r.wav -map_metadata -1 -c:a libmp3lame -b:a 128k -ar 44100 -ac 2 ../../assets/audio/shopchant.mp3
 ffmpeg -v error -y -i lv_r3.wav -map_metadata -1 -c:a libopus -b:a 96k -ar 48000 -ac 2 ../../assets/audio-opus/shopchant.ogg
 rm -f f_r.wav lv_r.wav lv_r3.wav w_thai*.wav
-echo "shopchant <- thaimahori_c (the radio's Thai music; the key keeps its name)"
+echo "shopchant <- thaimahori_a (the radio's Thai music, Chad's pick; the key keeps its name)"

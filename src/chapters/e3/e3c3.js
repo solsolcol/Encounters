@@ -2403,7 +2403,10 @@
        of the tower is the same piece, so each part is ONE instanced mesh — a draw a part, not a draw a floor. */
     const MALLX = new THREE.Group(); MALLX.position.set(FM.x, 0, FM.z); filmG.add(MALLX);
     const mallBusG = makeBus(MALLX, true);          // a green single-decker going by in the near lane
-    const GM = { x0: -64, x1: 30, pod: 13.2, fh: 3.4, floors: 13, step: 1.45, z0: -3.0, depth: 15 };
+    /* (v21.3, Chad: "just show the bottom 2 rows of shopfronts will do, instead of the current 3 rows. Then move the
+       golden mile complex signboard lower after removing the third row" — the podium is two rows of shops, 8.9 m
+       where it was 13.2, and the sign, the slab and its roof all stand on it, so they come down with it) */
+    const GM = { x0: -64, x1: 30, pod: 8.9, fh: 3.4, floors: 13, step: 1.45, z0: -3.0, depth: 15 };
     GM.len = GM.x1 - GM.x0; GM.cx = (GM.x0 + GM.x1) / 2;
     const gmZ = (i) => GM.z0 - i * GM.step;            // floor i's front edge, where its terrace's parapet stands
     { const sky = new THREE.Mesh(new THREE.SphereGeometry(118, 40, 20, 0, Math.PI * 2, 0, Math.PI / 2 + 0.22), fBasic({ map: tex(makeMorningSky(THREE, cnv)), side: THREE.BackSide, depthWrite: false, fog: false }));
@@ -2419,7 +2422,7 @@
          terrace the tower stands back from */
       const podM = fStd({ color: 0xc9bfa8, roughness: 0.93 });                // the cream concrete, weathered
       box(GM.len, GM.pod, 30, GM.cx, GM.pod / 2, -15.05, podM, MALLX, false);
-      [[0, 4.6], [4.6, 4.3], [8.9, 4.3]].forEach(([y0, h], i) => {
+      [[0, 4.6], [4.6, 4.3]].forEach(([y0, h], i) => {
         const t = tex(makeMallFront(THREE, cnv, i)); t.wrapS = THREE.RepeatWrapping; t.repeat.set(GM.len / 46, 1);   // a shop every 4.6 m
         plane(GM.len - 1.4, h - 0.3, fBasic({ map: t }), GM.cx, y0 + (h - 0.3) / 2, 0.01, 0, MALLX);
         box(GM.len, 0.3, 0.5, GM.cx, y0 + h - 0.15, 0.2, matWhiteF, MALLX, false);
@@ -3826,10 +3829,10 @@
        is known by); his eyes come down it onto the name over the podium and the Thai shops under it, and he takes a
        few steps toward it as a bus goes by between */
     /* (where the sign lands was COMPUTED for both screens before it was photographed — dbg-gmcframe: at the end its
-       board spans NDC x −0.73…0.77 on a phone, inside the frame, and the opening keeps the slab in the top third of
-       the picture rather than under half a frame of sky) */
+       board spans NDC x −0.82…0.83 on a phone, inside the frame, and the opening keeps the slab in the top third of
+       the picture rather than under half a frame of sky. v21.3: both looks come down with the podium) */
     const E0 = M(36.5, 1.66, 21.5), E1 = M(31.0, 1.66, 18.6);
-    const L0 = M(22.5, 33, -14), L1 = M(15.5, 8.8, 0);
+    const L0 = M(22.5, 29, -14), L1 = M(16.0, 5.5, 0);
     tr(0, 10.6, (k, t) => {
       const kp = sm(cl01((t - 0.4) / 9.6)), kl = sm(cl01((t - 3.6) / 5.4));
       const x = E0.x + (E1.x - E0.x) * kp, z = E0.z + (E1.z - E0.z) * kp, y = 1.66;
