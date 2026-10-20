@@ -6863,11 +6863,14 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
   'lw2look', 'lw2pull',
   'lw2what', 'yai2dance',
   /* v21.0 · episode 3 chapter 3: the shop's owner (Brendon), staff and an auntie; the medium (Roger), his assistant (Kopi Gao), two who came to him */
-  'ow3hello', 'ow3call', 'ow3gift1', 'ow3gift2', 'ow3good', 'ow3namo', 'ow3eh', 'sm3hold',
-  'sm3cannot', 'st3uncle', 'cu3amitabha', 'ow3let', 'ow3know', 'st3trance', 'cu3unclean', 'ow3medium',
+  'ow3hello', 'ow3call', 'ow3gift1', 'ow3gift2', 'ow3good', 'ow3eh', 'sm3hold',
+  'sm3cannot', 'st3uncle', 'ow3let', 'ow3know', 'st3trance', 'cu3unclean', 'ow3medium',
   'as3sit', 'dv3wife', 'md3read1', 'md3drink', 'dv3father', 'md3read2', 'md3done', 'as3next',
   'md3ghost', 'md3chant', 'as3back', 'md3A1', 'md3A2', 'as3A', 'md3B1', 'as3B',
-  'md3C', 'md3D']);   // v19.4: their whispers in play, as his hands move      // v18.0: the laywoman beside him (Onnie) and Yai in front (Air), whispered
+  'md3C', 'md3D',
+  /* v21.8: the monk who leads the chant (Arthur), the auntie's "Sadhu" in place of her "Amituofo", the medium's gasp
+     at the Hanuman (the owner's Namo is retired with the monk's coming) */
+  'mk3chant', 'cu3sadhu', 'md3gasp']);   // v19.4: their whispers in play, as his hands move      // v18.0: the laywoman beside him (Onnie) and Yai in front (Air), whispered
 const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || ADULT_TAKES.has(name) || CAST_TAKES.has(name);
 /* v6.9: his WHISPERS go round the bus. Chad wanted the three pick-up
    reactions "almost whispering to himself" and they were re-voiced as
@@ -9989,9 +9992,9 @@ const STING_SAMPLE = {
   /* v21.0 · EPISODE 3 · CHAPTER 3 · THE DANCE ON BUDDHA DAY — his lines, the shop, the medium's shrine */
   z3pro0: ['z3pro0', 1], z3pro3: ['z3pro3', 1], z3pro4: ['z3pro4', 1], z3pro5: ['z3pro5', 1], ow3hello: ['ow3hello', 1],   // z3pro0, z3pro5: v21.7
   z3look1: ['z3look1', 1], z3look2: ['z3look2', 1], z3look3: ['z3look3', 1], z3look4: ['z3look4', 1], ow3call: ['ow3call', 1],
-  ow3gift1: ['ow3gift1', 1], ow3gift2: ['ow3gift2', 1], z3thanks: ['z3thanks', 1], ow3good: ['ow3good', 1], ow3namo: ['ow3namo', 1],
+  ow3gift1: ['ow3gift1', 1], ow3gift2: ['ow3gift2', 1], z3thanks: ['z3thanks', 1], ow3good: ['ow3good', 1],
   z3shift1: ['z3shift1', 1], z3shift2: ['z3shift2', 1], ow3eh: ['ow3eh', 1], sm3hold: ['sm3hold', 1], sm3cannot: ['sm3cannot', 1],
-  st3uncle: ['st3uncle', 1], cu3amitabha: ['cu3amitabha', 1], ow3let: ['ow3let', 1], z3breath: ['z3breath', 1], ow3know: ['ow3know', 1],
+  st3uncle: ['st3uncle', 1], ow3let: ['ow3let', 1], z3breath: ['z3breath', 1], ow3know: ['ow3know', 1],
   z3knew: ['z3knew', 1], st3trance: ['st3trance', 1], cu3unclean: ['cu3unclean', 1], ow3medium: ['ow3medium', 1], z3night: ['z3night', 1],
   z3shrine: ['z3shrine', 1], as3sit: ['as3sit', 1], dv3wife: ['dv3wife', 1], md3read1: ['md3read1', 1], md3drink: ['md3drink', 1],
   dv3father: ['dv3father', 1], md3read2: ['md3read2', 1], md3done: ['md3done', 1], as3next: ['as3next', 1], z3walk: ['z3walk', 1],
@@ -10001,11 +10004,14 @@ const STING_SAMPLE = {
   md3D: ['md3D', 1], z3D2: ['z3D2', 1], z3D3: ['z3D3', 1], z3close: ['z3close', 1], z3next: ['z3next', 1],
   z3A: ['z3A', 1], z3B: ['z3B', 1], z3C: ['z3C', 1], z3D: ['z3D', 1],
   /* v21.0 · its effects, beds and music (masters/v21.0/make_fx.sh) */
-  shopbell: ['shopbell', 1], glasscase: ['glasscase', 1], casesnap: ['casesnap', 1], presencein: ['presencein', 1],
+  shopbell: ['shopbell', 1], presencein: ['presencein', 1],   // (v21.8: glasscase and casesnap retired with the LP Tim's glass lid)
   rushgrab: ['rushgrab', 1], crowdgasp: ['crowdgasp', 1], phonerec: ['phonerec', 1], stoolfall: ['stoolfall', 1],
   timelapse: ['timelapse', 1], kneethud: ['kneethud', 1], shutter: ['shutter', 1], urnsand: ['urnsand', 1],
   stoolscrape: ['stoolscrape', 1], taobell: ['taobell', 1], ashwater: ['ashwater', 1], swordswish: ['swordswish', 1],
   hanumanroar: ['hanumanroar', 1], goldsting: ['goldsting', 1], drinkgulp: ['drinkgulp', 1], buspass: ['buspass', 1],
+  /* v21.8 · the monk's chant, "Sadhu", the medium's gasp, and the Hanuman's lunge at him (masters/v21.8/make.sh) */
+  mk3chant: ['mk3chant', 1], cu3sadhu: ['cu3sadhu', 1], md3gasp: ['md3gasp', 1],
+  hanulunge: ['hanulunge', 1], hanuhit: ['hanuhit', 1], hanucrash: ['hanucrash', 1], goldswell: ['goldswell', 1],
   mallamb: ['mallamb', 1], shopchant: ['shopchant', 1], dancemove: ['dancemove', 1], lorongamb: ['lorongamb', 1],
   estatemorn: ['estatemorn', 1], shrineamb: ['shrineamb', 1],
   e3dance: ['e3dance', 1], e3film3: ['e3film3', 1], e3shrine: ['e3shrine', 1], e3close3: ['e3close3', 1],

@@ -178,6 +178,16 @@ Object.assign(window.__TEXT__, {
   'credits.cabin':          'The plane, at dawn',
   'credits.cabinWho':       'Airplane Inside · Sketchfab',
   'credits.cabinLink':      'sketchfab.com · airplane-inside',
+  // v21.8 · the five masters on the amulet shop's wall — Chad's photographs, hung exactly as their pages give them
+  'credits.masters':        'The old masters on the amulet shop’s wall',
+  'credits.mastersWho':     'Somdej Toh, Ajahn Mun and Luang Pu Thuad · mybuddha108.com',
+  'credits.mastersLink':    'mybuddha108.com · famous_monks',
+  'credits.lptim':          'Luang Phu Tim, at prayer',
+  'credits.lptimWho':       'Luang Phoo Tim · phorkhru.weebly.com',
+  'credits.lptimLink':      'phorkhru.weebly.com · luang-phoo-tim',
+  'credits.lptim2':         'Luang Phu Tim on his bench',
+  'credits.lptim2Who':      'Wat Lahanrai · ahaina.wordpress.com',
+  'credits.lptim2Link':     'ahaina.wordpress.com · wat-lahanrai',
   /* v12.1 — Chad's ghost cyclist is his own model and takes no row (the
      v5.23 rule); the Kamaz and the flashlight already have theirs above. */
   'credits.anim':        'Animation, two of the crowd, and the soldiers’ takes',

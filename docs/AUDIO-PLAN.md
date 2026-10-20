@@ -1362,3 +1362,45 @@ lead). The v21.0 chain: high-pass 70 Hz, mono, peak-matched twice to −6.85
 mp3 / −6.6 Opus. 4.24 s (RMS −20.8 / −20.5) and 4.80 s (−18.7 / −18.4),
 inside the film's other two lines' −18.5 and −21.7. `masters/v21.7/make.sh`
 installs them.
+
+## v21.8 · Chad's thirteen notes on episode 3 chapter 3
+
+Seven lines re-said or new and four new effects, every one on the e3c3 voices
+flow (`URTG1KypweSna9iSGuca`, four takes each, `masters/v21.8/sessions.json`),
+picked by measurement (`measure.py`, `pauses.py`, v21.5's `meas.py` for
+voicing, v21.0's `sfxmeas.py`); `masters/v21.8/make.sh` names every pick, why
+the other three lost, and installs them. "Luang Pu" is how the TTS is told to
+say **Luang Phu** (Chad: "the voicelines should say luang phu tim, and not
+literally lp ... Always remember this" — the rule is in CLAUDE.md now).
+
+    z3look3   Brian   [quietly impressed] Candles, fruits, offerings... he even invited a monk
+                      today to lead the chanting.                                5.96 s  (d)
+    z3look2   Brian   Luang Pu Tim Khun Paen... he never lets anyone hold that one.  4.68 s  (c)
+    ow3gift1  owner   Today is Buddha Day, very auspicious. This one, Luang Pu Tim Khun Paen,
+                      from Wat Lahanrai. I kept it for you very long already.    9.72 s  (b)
+    mk3chant  monk    (Arthur) Imina sakkarena Buddham pujemi / Dhammam / Sangham;
+                      Araham samma-sambuddho bhagava; Buddham bhagavantam abhivademi —
+                      romanised as a Thai monk says it, v as w               30.41 s  (c)
+    cu3sadhu  auntie  [in awe] Sadhu, sadhu, sadhu!   (replaces cu3amitabha)  3.06 s  (a)
+    dv3wife   wife    Sifu... my husband cannot sleep. Every night... he says something is
+                      sitting on his chest.   eleven_v4, [worried] [slowly]   7.60 s  (dv3wife2 d)
+    md3gasp   medium  [gasps in shock] Hah...!   (Roger; new)                 1.41 s  (a)
+    hanulunge  sfx   the spirit's rush at the medium                          2.25 s  (d)
+    hanuhit    sfx   the impact's low boom (a phone's speaker drops it: the low layer only)   3.53 s  (d)
+    hanucrash  sfx   the impact a PHONE hears — cymbal and temple gong, no deep bass          3.03 s  (c)
+    goldswell  sfx   the golden shimmer as the figure comes up                 2.59 s  (b)
+
+The wife's line was the hard one: "speaks way too fast" measured 5.4
+syllables a second (3.55 s for fifteen words). eleven_v3 under [worried,
+slowly] and then under more ellipses kept the same speed of speech between
+its pauses (3.9–4.6 syl/s); only eleven_v4 with the two tags read slower
+(2.2–3.3 syl/s), and its d is the same woman (median f0 229 Hz against the
+old take's 213). The lines are the v21.0 chains: Brian high-passed at 70 Hz,
+mono, peak-matched twice (−6.85 mp3 / −6.6 Opus); the cast levelled by RMS to
+−16 dBFS for the flat cast bus; the effects peak-matched at −2.0 (goldswell
+−4.0). RETIRED with what they belonged to: `ow3namo` (the owner's namo — the
+monk leads the chant now), `cu3amitabha` (the girl's line), `glasscase` and
+`casesnap` (the LP Tim's glass lid is gone) — files, rows and registry
+entries removed. In the roar film the gasp waits for the crash's first blow
+(3.02 against the impact at 2.70): a voice ducks every other source 8 dB
+(v5.27), so on the blow it took the crash's weight with it.

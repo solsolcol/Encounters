@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "21.7"
+VERSION = "21.8"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -433,6 +433,28 @@ ASSETS = {
     'medium':       ('assets/medium.glb', True, False),       # e3c3 v21.0: Chad's black Taoist medium, ten takes on a Mixamo rig (CHARTFIX=1 tools/prepmonk.mjs 0.3: 594k -> 178k tris)
     'wifewalk':     ('assets/wifewalk.glb', True, False),     # e3c3 v21.0: the admin tee's Walking retargeted onto sitwoman, clip only (masters/v21.0/walk/make.sh)
     'fatherwalk':   ('assets/fatherwalk.glb', True, False),   # e3c3 v21.0: the same onto sitangry, clip only
+    # e3c3 v21.8: the old masters on the amulet shop's wall are Chad's five photographs, each the source's own bytes,
+    # unaltered (masters/v21.8/portraits/SOURCES.md has every page, file and sha1; credited in the panel)
+    'mstr_somdejtoh':   ('assets/master_somdejtoh.png', True, False),
+    'mstr_achanmun':    ('assets/master_achanmun.png', True, False),
+    'mstr_lpthuad':     ('assets/master_lpthuad.png', True, False),
+    'mstr_lptimpray':   ('assets/master_lptimpray.jpg', True, False),
+    'mstr_lptimbench':  ('assets/master_lptimbench.jpg', True, False),
+    # e3c3 v21.8: Chad's amulet display tray, REAL 3D at every distance (Chad: "I wanted it as real 3d, not just
+    # texture"): near, his scan cut to 6 % with its own maps (tools/permcut.mjs STRICT=1 NW=0.5, 47.5k); across the
+    # room the same geometry with its seams taken away — its own front view projected onto it (tools/bakeboard.mjs,
+    # tools/planartray.mjs) — at 6k and 1.6k. And his display shelf of images, EVERY triangle near (594k, colour 4096),
+    # 178k and 40k across the room, three index lists over one vertex buffer (tools/lodpair.mjs LEVELS) —
+    # masters/v21.8/display/make.sh is the recipe
+    'traynear':         ('assets/traynear.glb', True, False),
+    'trayfar':          ('assets/trayfar.glb', True, False),
+    'amushelf':         ('assets/amushelf.glb', True, False),
+    # e3c3 v21.8: the shop is seen across a room, so its heaviest scans carry a LIGHTER level (tools/permcut.mjs, the
+    # simplifier in its permissive mode): the statue row's far level is geometry alone and wears the near level's
+    # maps (NOTEX=1 UVW=4, 0.3 of 419k: 126k); the monk who leads the chant is his scan at 0.28 (50k, every take kept);
+    # the display shelf carries its own far level (tools/lodpair.mjs MODE=permissive, 40k) beside the near
+    'altarrowfar':      ('assets/altarrowfar.glb', True, False),
+    'monkshop':         ('assets/monkshop.glb', True, False),
 }
 
 # Hosted-only assets: shipped as a URL, never inlined as base64.
@@ -457,7 +479,9 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'kamaz', 'forest', 'rifle', 'ghostcyclist', 'fboaim',
            'muzzle', 'ammocrate', 'ammomags', 'icontorch', 'zavsoldier',
            'thaikit', 'wessred', 'wessgreen', 'naga', 'monk', 'ajarn', 'temple', 'slipper', 'lersimask', 'altarrow', 'customer', 'buddhahd', 'buddhalod', 'sangkathan', 'sitwomantalk', 'filmoffice', 'filmlaptop', 'actioncam', 'planecabin',
-           'cg_woman2', 'cg_man2', 'cg_woman2hd', 'cg_man2hd', 'monkrow', 'hanuman', 'medium', 'owner', 'staffman', 'timkplod', 'wifewalk', 'fatherwalk'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone
+           'cg_woman2', 'cg_man2', 'cg_woman2hd', 'cg_man2hd', 'monkrow', 'hanuman', 'medium', 'owner', 'staffman', 'timkplod', 'wifewalk', 'fatherwalk',
+           'mstr_somdejtoh', 'mstr_achanmun', 'mstr_lpthuad', 'mstr_lptimpray', 'mstr_lptimbench',
+           'traynear', 'trayfar', 'amushelf', 'altarrowfar', 'monkshop'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone
 HOSTED_ONLY |= E2_ONLY
 
 # The split packs are hosted-only: there is no __..._B64__ token for them and

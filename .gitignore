@@ -8,6 +8,8 @@ wrapped.html
 
 # throwaway render checks from the test harnesses
 *.png
+# (but Chad's portraits of the old masters ARE assets — v21.8, the source's own bytes, never re-encoded)
+!assets/master_*.png
 view/
 
 # original asset archives (the .glb files that matter are committed)
@@ -83,3 +85,6 @@ assets/opuspack*.bin
 # throwaway probe scripts (like dbg-*.mjs): written freely, die with the session
 .scratch/
 masters/*/out/*.glb
+
+# v21.8: the display models' intermediates (masters/v21.8/display/make.sh rebuilds them)
+masters/v21.8/display/*.glb

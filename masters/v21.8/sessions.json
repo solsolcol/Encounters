@@ -1,0 +1,85 @@
+{
+ "_flow": "URTG1KypweSna9iSGuca",
+ "_note": "v21.8 \u00b7 eleven_v3, four takes each. Prompts: z3look3 '[quietly impressed] Candles, fruits, offerings... he even invited a monk today to lead the chanting.' (Brian); z3look2 'Luang Pu Tim Khun Paen... he never lets anyone hold that one.' (Brian); ow3gift1 'Today is Buddha Day, very auspicious. This one, Luang Pu Tim Khun Paen, from Wat Lahanrai. I kept it for you very long already.' (owner3, Brendon); mk3chant '[chanting slowly in a low monotone] Ee-mi-naa sak-kaa-ray-na... poot-tang poo-jay-mee... Ee-mi-naa sak-kaa-ray-na... tam-mang poo-jay-mee... Ee-mi-naa sak-kaa-ray-na... sang-kang poo-jay-mee... Arahang samma-sampoot-toh pakawa... Poot-tang pakawan-tang apiwaa-tay-mee...' (Arthur); cu3sadhu '[in awe] Sadhu, sadhu, sadhu!' (auntie3); dv3wife '[worried, slowly] Sifu... my husband cannot sleep. Every night... he says something is sitting on his chest.' (wife3, Jane). 'Luang Pu' is how the TTS is told to say Luang Phu (poo, never foo).",
+ "z3look3": [
+  "qUN3kklp56yiBCURy25U",
+  "BwsCb5PjZozlRru2zXAe",
+  "VnoQcsHxztCQ7aFHTsXt",
+  "ZWZF5jBf6Ylc3RXyiaLf"
+ ],
+ "z3look2": [
+  "EOkZ81bVQcZEbe2o13dy",
+  "46GbOWRlE0Sx8vSp9ypa",
+  "jeYTjbk3nVvDVgwVqjez",
+  "RdgVWYKJKyRkfu7MxMTt"
+ ],
+ "ow3gift1": [
+  "sjHyApicGgw5LiNqxaAo",
+  "wpiJSe9B8PINctMFdZpd",
+  "uYjKgF6Epz3NYEt9539p",
+  "E959pR35iuewz02hc0fH"
+ ],
+ "mk3chant": [
+  "HC3YG3f19Q0G1tYQEGII",
+  "05cCOW4SJVQKMHeJj3LT",
+  "LuA1HIKZBL59kFxzr1JH",
+  "twwCJex01VmoF2WQBMUN"
+ ],
+ "cu3sadhu": [
+  "66X4dR5alS18hMBCwqZk",
+  "3Q1Pe7uLyqX00izK89Ua",
+  "5aiRVbfYzQCmLOalVKxh",
+  "f2sfsZOUwT3Y3AYzPxEW"
+ ],
+ "dv3wife": [
+  "34ghPJge9otzxkdZJNTI",
+  "VlFC8Klr9uON9Z3KHofq",
+  "c9SmcgRGyqXOq1h41t68",
+  "qEvd6Nn3JpyxohBovvG6"
+ ],
+ "dv3wife2": [
+  "OkKk4R6UmaLKGfwomIzP",
+  "KOXZldWKebNJ60p1yMyT",
+  "V5v4pypzSzSylXh3cRAh",
+  "wasyx7FW3DmuTgw1w0qJ"
+ ],
+ "dv3wife3": [
+  "f7q0lXlzwxBjD3VyyeGz",
+  "0HkjuruQlfdS6wooDTO5",
+  "dg2411zOfzI5vdXrRPd8",
+  "Jbw6YpkgrxK2Omoajo3i"
+ ],
+ "_note2": "dv3wife2: eleven_v4 '[worried] [slowly] Sifu... my husband cannot sleep. Every night... he says something is sitting on his chest.' dv3wife3: eleven_v3 '[worried, hesitant] Sifu... my husband... cannot sleep. Every night... he says... something is sitting on his chest...' (the first batch still read at 3.5 words a second of speech)",
+ "hanulunge": [
+  "ncbHAuaSieN7fHGH0HyF",
+  "W6kWuYlBqGhvGQuSN5Hg",
+  "1yjfXKpAetauZnhKMZp1",
+  "IB7ay6MEoQLcGDvdvBHL"
+ ],
+ "hanuhit": [
+  "OPbcpyHmSfpCK8vWW7Q7",
+  "NtLcAH7K8ka5pU3JLh3q",
+  "jmvR17XjotfFMZQB8Amh",
+  "hOvlAuqiqaNyKbW7LEsC"
+ ],
+ "goldswell": [
+  "Ik3tg1IUyTV1NgnohMVL",
+  "pBJbIMMd5vuNKXDeeRR5",
+  "QZw0yo9gWAYK4w8dLpDI",
+  "nc1bFHCcKdTa9rkL70gY"
+ ],
+ "md3gasp": [
+  "XHcaopFGsblIVwT1TlRJ",
+  "XGDvtSNV6GUZSl6AXkli",
+  "0Qu5HOrPQELx610DMZOK",
+  "zxKqs3AZS8iG5Nw5ZiPt"
+ ],
+ "_note3": "roar sfx, eleven_text_to_sound_v2 (nodes c91Wu4f8FXfBqZOCyPBv / hqqTxbtXOK3qQF24p9zu / SikrHifpUlAozQkWjmlD): hanulunge 2.2 s 'A huge golden spirit lunges forward through the air: a powerful surging rush of roaring wind and fire...'; hanuhit 3.5 s 'A colossal cinematic impact: a sharp heavy hit with a bright metallic shimmering ring...'; goldswell 2.6 s 'A rising magical golden shimmer swell...'; prompt_influence 0.5. md3gasp: eleven_v3, medium3 (Roger) '[gasps in shock] Hah...!'",
+ "hanucrash": [
+  "FPPT3pMCQsX0evG3tpWc",
+  "DyQJjPUfUuZWUSfnW1xE",
+  "07AYqTXAIPftZ7eZugNb",
+  "Ystx7txZuAwjcPQSgDdi"
+ ],
+ "_note4": "hanucrash 3 s (node TcnLHzzEro4lBMnjyhxS, influence 0.55): 'An explosive bright metallic crash: a huge cymbal and a temple gong struck hard together...no deep bass' \u2014 the four hanuhit takes were 67-94 % under 120 Hz, which a phone cannot play (v10.4)"
+}

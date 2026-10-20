@@ -5757,3 +5757,48 @@ cut (sharing its vertices and maps) when it is small.
   way past that is to cut the waveform's crest (soft clipping), which buys
   ~2.7 dB and leaves a residual 18 dB under the signal; not shipped unheard.
   The contrast comes from where the WHISPER sits instead.
+
+## v21.8 — Chad's thirteen notes on episode 3 chapter 3
+
+- **A phase bookmark must say whether the thing was PLAYED, not merely
+  reached.** "The minigame sometimes works and sometimes doesnt work,
+  depending on whether i pressed continue game, manually select chapter to
+  play, or naturally progressed" — every way in was driven with real input and
+  every one played it. What differed was WHEN the last autosave fell: it
+  writes every 8 s, and the phase read `trance` from the hands parting to the
+  trance film, before the minigame as well as after it; a Continue read every
+  `trance` as spent. A player who closed the app anywhere in those twenty
+  seconds lost it for good — which looks, from outside, exactly like "it
+  depends how I got in". The fix is a tag written only by the minigame's own
+  end (`trance:done`). When a report blames the PATH, check the SAVE: the
+  path decides the order things load in, the save decides what is skipped.
+- **gltf-transform's `prune()` drops a vertex attribute no material reads —
+  and a far level that borrows the near level's material reads nothing.** The
+  shop's altar row has a light far cut that shares the full one's material
+  (`NOTEX=1`); with no texture of its own `prune` saw its TEXCOORD_0 as unused
+  and removed it, so the whole row drew one texel of its atlas: ALL GOLD, from
+  across the shop ("what happened to the original texture and colours?").
+  `tools/permcut.mjs` keeps attributes for a NOTEX cut now. A level that will
+  wear another level's material must be checked for its own UVs.
+- **A cinematic shot of something large is framed for the SCREEN it plays
+  on.** The roar's lunge, an orbit 1.2–1.6 m off a 2 m figure, read on the
+  desktop and showed a phone a gold torso with no head and no medium: at the
+  same 72° height a portrait phone sees a third of the width. The film now
+  names what must be in each shot — points ON the figure's own body (its box's
+  corners stood half a metre off a figure with one arm up and a tail out, and a
+  frame fitted to them was that much too wide) and the medium's hat, chair and
+  knees — and puts the lens as far back along its line of sight as this
+  screen's aspect, less the letterbox's 22 %, needs. Fit, then photograph both.
+- **A voice ducks everything else (v5.27), so never put a gasp ON an
+  impact.** The medium's gasp at the moment of the hit took the crash's weight
+  down 8 dB with it; after the crash's first blow it is a reaction to it.
+- **Light a night street without a light — per pixel.** The street behind
+  the shrine is a hundred-odd built faces lit by seven lamps and two open
+  shops; real lights would change the light count (v15.1) and cost a phone
+  dearly. One small `onBeforeCompile` on a basic material carries the lamps as
+  uniforms in world space and paints moonlight plus each lamp as a pool on the
+  faces turned to it, falling off as the SQUARE of 1 + (d/r)² — the first
+  build's plain 1/(1 + (d/r)²) lit the whole row like a stage at dusk; at the
+  square, between two lamps thirty metres apart a facade goes dark, which is
+  what a street at night is. Everything merged into a handful of batches, one
+  draw a material.

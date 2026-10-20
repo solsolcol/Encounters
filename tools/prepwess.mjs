@@ -10,7 +10,8 @@
    simplified to ~a sixth, the base colour keeps 2048 (the face and the
    crown's gold are painted, not modelled, at this triangle count), the
    normal map 1024, and the metal-roughness sheet goes (the gold reads from
-   the paint; a 4096 sheet for a sheen is 12 MB of source).
+   the paint; a 4096 sheet for a sheen is 12 MB of source). (v21.8: MRPX sets
+   the kept metal-roughness sheet's size on its own, default TEXPX.)
 
    The contract is asserted BEFORE the meshopt pass (v12.1): Y up, base on
    y = 0, centred on x/z, in the scan's own units (the chapter scales it to
@@ -77,7 +78,7 @@ if (!process.env.LONG && !(size[1] > size[0] && size[1] > size[2])) throw new Er
 /* the sheets: base colour 2048, normal 1024, WebP on a PLAIN source (no
    EXT_texture_webp — rescueTextures reads json.textures[i].source, v14.12) */
 for (const mat of root.listMaterials()) {
-  for (const [tex, px, q] of [[mat.getBaseColorTexture(), +(process.env.TEXPX || 2048), 90], [KEEPMR ? mat.getMetallicRoughnessTexture() : null, +(process.env.TEXPX || 2048), 90], [mat.getNormalTexture(), +(process.env.NPX || 1024), 92]]) {   // v18.7: NPX, the normal sheet's size
+  for (const [tex, px, q] of [[mat.getBaseColorTexture(), +(process.env.TEXPX || 2048), 90], [KEEPMR ? mat.getMetallicRoughnessTexture() : null, +(process.env.MRPX || process.env.TEXPX || 2048), 90], [mat.getNormalTexture(), +(process.env.NPX || 1024), 92]]) {   // v18.7: NPX, the normal sheet's size
     if (!tex) continue;
     const img = await sharp(Buffer.from(tex.getImage())).resize(px, px, { fit: 'fill' }).webp({ quality: q }).toBuffer();
     tex.setImage(img).setMimeType('image/webp').setURI('');
