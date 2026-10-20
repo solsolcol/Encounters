@@ -191,6 +191,7 @@
     const treeStands = [];          // v21.1: kept, so dispose() can hand the shared tree kit back before its sweep
     let alive = true;
     let shrineRun = 0, shrDark = false;   // v21.1: the shrine arrival's run token (SR-6) and its HUD held under the black (ST-4)
+    let lanternSkinMat = null, tasselMat = null, coilTagMat = null;   // v21.1: the lanterns' shared skin and tassel (mkLantern) and the coils' one tag (mkCoil), here so no caller meets them in their dead zone
     const parsedGlb = new Map();
     const madeTex = [];
     const tex = (t) => { madeTex.push(t); return t; };
@@ -1911,8 +1912,9 @@
       const halo = new THREE.Mesh(new THREE.CircleGeometry(h * 0.2, 20), matGold); halo.position.set(0, h * 0.78, -h * 0.13); g.add(halo);
       return g;
     }
-    /* a red paper lantern, lit from within (unlit material: it is the light) */
-    let lanternSkinMat = null, tasselMat = null;
+    /* a red paper lantern, lit from within (unlit material: it is the light) — its two shared materials are declared
+       at the top of build(): the street's lanterns are made before this point, and a `let` here was still in its
+       dead zone when they asked for it (the v21.1 deploy threw on boot) */
     function mkLantern(x, y, z, r, outside) {
       const g = new THREE.Group(); g.position.set(x, y, z); shrG.add(g);
       /* (one skin for all of them, and rounder: ending B holds a close-up on one — VB-9) */
@@ -1933,7 +1935,6 @@
     }
     /* an incense coil hung from a beam: a cone of spiral, a red tag, its
        burning end and a thread of smoke */
-    let coilTagMat = null;
     function mkCoil(x, z) {
       const top = SB.H - 0.95, pts = [];
       for (let i = 0; i <= 120; i++) { const t = i / 120, a = t * Math.PI * 2 * 6.5, r = 0.02 + 0.19 * t; pts.push(new THREE.Vector3(Math.cos(a) * r, -0.05 - 0.3 * t, Math.sin(a) * r)); }
@@ -2623,7 +2624,14 @@
                                 'as3next', 'z3walk', 'md3ghost', 'incenselit3', 'urnsand', 'stoolscrape', 'taobell',
                                 'step1', 'step2', 'step3', 'step4',
                                 // the endings' helpers fire these (the engine reads a SCENE's own source for its cues, v14.16)
-                                'z3next', 'e3close3']);
+                                'z3next', 'e3close3',
+                                /* and the two films from play (ST-5): the engine warms their cues at play's entry, and a
+                                   pack that landed after the curtain gave up waiting had nobody to decode them — a name
+                                   asked for HERE is decoded whenever the bytes land */
+                                'ow3eh', 'rushgrab', 'sm3hold', 'sm3cannot', 'crowdgasp', 'st3uncle', 'phonerec', 'cu3amitabha',
+                                'stoolfall', 'timelapse', 'st3trance', 'kneethud', 'z3breath', 'ow3know', 'z3knew', 'cu3unclean',
+                                'ow3medium', 'ow3let', 'hanumanroar', 'goldsting', 'drumroll3', 'drum3', 'gong3', 'md3chant',
+                                'swordswish', 'as3back']);
 
     /* ------------------------------------------------------------ the phases */
     const inShrine = (x) => x < -100;
