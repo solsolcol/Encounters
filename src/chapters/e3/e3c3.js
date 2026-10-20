@@ -236,6 +236,9 @@
     const matWood   = new THREE.MeshStandardMaterial({ color: 0x3e2414, roughness: 0.5 });
     const matWoodL  = new THREE.MeshStandardMaterial({ color: 0x8a5a34, roughness: 0.55 });
     const matSteel  = new THREE.MeshStandardMaterial({ color: 0xb8bcc2, roughness: 0.3, metalness: 0.7 });
+    /* the shutters' roller boxes, painted steel: in polished steel they mirrored the sky's environment and read as a
+       glowing lavender strip across the top of every shutter (VB-7) */
+    const matBoxSteel = new THREE.MeshStandardMaterial({ color: 0x5c6066, roughness: 0.62, metalness: 0.3 });
     const matAlu    = new THREE.MeshStandardMaterial({ color: 0xc9ccd0, roughness: 0.35, metalness: 0.6 });
     const matChrome = new THREE.MeshStandardMaterial({ color: 0xe8ecf0, roughness: 0.12, metalness: 0.9 });
     const matCream  = new THREE.MeshStandardMaterial({ color: 0xe9dfc8, roughness: 0.9 });
@@ -544,7 +547,16 @@
       plane(0.42, 0.63, texMat(makeCalendar(THREE, cnv)), wx - 0.002, 1.55, -4.15, -Math.PI / 2, shopG);
       solids.push(hidBox(0.4, 0.9, 2.8, SHOP.x1 - 0.2, 0.45, -2.45));
       // a small shelf-shrine over the photographs: a Buddha, a garland, two candles
+      /* (on two gilt brackets, with a gold lip along its front: seen from the counter it was a dark-red slab floating
+         on nothing behind the SANITY row — VP-9) */
       box(0.28, 0.03, 0.7, SHOP.x1 - 0.14, 2.62, -2.5, matRed, shopG);
+      box(0.012, 0.045, 0.7, SHOP.x1 - 0.282, 2.62, -2.5, matGold, shopG, false);
+      for (const dz of [-0.26, 0.26]) {
+        box(0.2, 0.025, 0.03, SHOP.x1 - 0.1, 2.59, -2.5 + dz, matGold, shopG, false);
+        const st = box(0.02, 0.2, 0.03, SHOP.x1 - 0.02, 2.5, -2.5 + dz, matGold, shopG, false);
+        const dg = box(0.018, 0.24, 0.025, SHOP.x1 - 0.09, 2.52, -2.5 + dz, matGold, shopG, false); dg.rotation.z = 0.78;
+        st.castShadow = dg.castShadow = false;
+      }
       thai('buddha', SHOP.x1 - 0.15, 2.635, -2.5, { s: 0.42, ry: -Math.PI / 2, parent: shopG, cast: false });
     }
 
@@ -1417,14 +1429,14 @@
     for (const [x, w] of [[-4.375, 0.25], [0, 0.5], [4.375, 0.25]]) bwall(w, SB.H, 0.25, x, SB.H / 2, -0.125, matPaintB);
     box(9, SB.H - 2.7, 0.25, 0, (SB.H + 2.7) / 2, -0.125, matPaintB, shrG, false);
     // the entrance bay (left): its shutter rolled up into the box over it, a folding grille pushed back
-    box(4.0, 0.16, 0.22, -2.25, 2.62, -0.04, matSteel, shrG, false);
-    box(4.0, 0.05, 0.05, -2.25, 2.53, 0.02, matSteel, shrG, false);
+    box(4.0, 0.16, 0.22, -2.25, 2.62, -0.04, matBoxSteel, shrG, false);
+    box(4.0, 0.05, 0.05, -2.25, 2.53, 0.02, matBoxSteel, shrG, false);
     for (let i = 0; i < 7; i++) box(0.018, 2.5, 0.018, -4.18 + i * 0.05, 1.25, -0.06 - (i % 2) * 0.03, matSteel, shrG, false);
     for (const y of [0.3, 1.25, 2.2]) box(0.34, 0.018, 0.05, -4.03, y, -0.07, matSteel, shrG, false);
     // the other bay: half down, the light under it; a blocker below the slats
     { const sh = plane(4.0, 1.55, matShutter, 2.25, 1.925, 0.004, 0, shrG); sh.material.side = THREE.DoubleSide;
       box(4.0, 0.06, 0.06, 2.25, 1.15, 0.01, matSteel, shrG, false);
-      box(4.0, 0.16, 0.22, 2.25, 2.62, -0.04, matSteel, shrG, false);
+      box(4.0, 0.16, 0.22, 2.25, 2.62, -0.04, matBoxSteel, shrG, false);
       bwall(4.0, 1.2, 0.2, 2.25, 0.6, -0.1, matProxy).visible = false;
       const spill = new THREE.Mesh(new THREE.PlaneGeometry(4.0, 1.4), addGlow(glowWarm, 0.22));
       spill.rotation.x = -Math.PI / 2; spill.position.set(2.25, 0.012, 0.55); shrG.add(spill); }
@@ -1441,7 +1453,7 @@
         const sh = plane(7.4, 2.7, matShutter, s * 8.2, 1.35, 0.0, 0, shrG); sh.material.side = THREE.DoubleSide;
         bwall(7.4, 2.7, 0.2, s * 8.2, 1.35, -0.1, matProxy).visible = false;   // (a drawn shutter stopped nobody: past it there is no floor at all)
         box(7.5, SB.H - 2.7, 0.25, s * 8.25, (SB.H + 2.7) / 2, -0.125, matPaintB, shrG, false);
-        box(7.4, 0.12, 0.2, s * 8.2, 2.62, 0.05, matSteel, shrG, false);
+        box(7.4, 0.12, 0.2, s * 8.2, 2.62, 0.05, matBoxSteel, shrG, false);
       }
       // the way along is blocked past the neighbours (crates and a parked bicycle at the ends)
       for (const s of [-1, 1]) {
@@ -1471,6 +1483,39 @@
         const fm = new THREE.MeshBasicMaterial({ map: tex(makeLorongFacade(THREE, cnv, seed, shop)), fog: true });
         plane(24, 12, fm, x, 6.0, 16.6, Math.PI, shrG);
       }
+      /* THE KOPITIAM, with some depth (VC-5): ending C is a look at it, and it was a flat painted doorway with three
+         brown T's for tables — round marble tables and plastic stools spill onto its five-foot way, three people
+         sit late over their kopi, a drinks fridge glows at the side and the light pools out across the paving */
+      { const KX = -15, KZ = 15.75;
+        const marble = new THREE.MeshStandardMaterial({ color: 0xe8e4dc, roughness: 0.4 }), iron = new THREE.MeshStandardMaterial({ color: 0x22201e, roughness: 0.6 });
+        const stoolR = new THREE.MeshStandardMaterial({ color: 0xb8241c, roughness: 0.55 }), stoolB = new THREE.MeshStandardMaterial({ color: 0x2a58a8, roughness: 0.55 });
+        const shirt = [0x3a4c5e, 0x6a4a32, 0x2c2c34].map(c => new THREE.MeshStandardMaterial({ color: c, roughness: 0.9 }));
+        const skin = new THREE.MeshStandardMaterial({ color: 0x8a6a52, roughness: 0.8 }), dark = new THREE.MeshStandardMaterial({ color: 0x1c1c22, roughness: 0.9 });
+        for (const m of [marble, iron, stoolR, stoolB, skin, dark, ...shirt]) owned.push({ dispose: () => m.dispose() });
+        const seats = [];
+        [-1.7, 0, 1.6].forEach((dx, i) => {
+          const x = KX + dx, z = KZ + (i % 2 ? 0.15 : -0.1);
+          cyl(0.38, 0.38, 0.03, x, 0.75, z, marble, 18, shrG); cyl(0.035, 0.035, 0.72, x, 0.38, z, iron, 6, shrG); cyl(0.2, 0.22, 0.02, x, 0.08, z, iron, 12, shrG);
+          for (let k = 0; k < 3; k++) {
+            const a = k * 2.094 + i * 0.7, sx = x + Math.cos(a) * 0.62, sz = z + Math.sin(a) * 0.5;
+            cyl(0.15, 0.17, 0.44, sx, 0.29, sz, (i + k) % 2 ? stoolR : stoolB, 10, shrG);
+            seats.push({ x: sx, z: sz, tx: x, tz: z });
+          }
+          const cup = cyl(0.035, 0.03, 0.08, x + 0.1, 0.81, z - 0.08, marble, 8, shrG); cup.castShadow = false;
+        });
+        // three of them taken: a seated figure each, turned to its table (lit from behind, they read as people)
+        [seats[1], seats[4], seats[6]].forEach((st, i) => {
+          const g = new THREE.Group(); g.position.set(st.x, 0, st.z); g.rotation.y = Math.atan2(st.tx - st.x, st.tz - st.z); shrG.add(g);
+          box(0.34, 0.5, 0.22, 0, 0.8, -0.02, shirt[i], g); box(0.3, 0.14, 0.42, 0, 0.56, 0.16, dark, g); box(0.28, 0.42, 0.12, 0, 0.27, 0.36, dark, g);
+          const hd = new THREE.Mesh(new THREE.SphereGeometry(0.1, 12, 10), skin); hd.position.set(0, 1.17, 0.02); g.add(hd);
+          for (const sx of [-0.2, 0.2]) { const ar = box(0.08, 0.36, 0.08, sx, 0.84, 0.1, shirt[i], g); ar.rotation.x = -0.9; }
+        });
+        const fr = box(0.72, 1.85, 0.55, KX - 2.55, 0.93, 16.2, iron, shrG);
+        const fg = new THREE.Mesh(new THREE.PlaneGeometry(0.6, 1.6), new THREE.MeshBasicMaterial({ color: 0xdcecff, fog: true }));
+        fg.position.set(KX - 2.55, 0.98, 16.2 - 0.28); fg.rotation.y = Math.PI; shrG.add(fg); owned.push({ dispose: () => fg.material.dispose() });
+        const pool = new THREE.Mesh(new THREE.PlaneGeometry(7.0, 2.6), addGlow(glowWarm, 0.34)); pool.rotation.x = -Math.PI / 2; pool.position.set(KX, 0.085, 15.5); shrG.add(pool);
+        owned.push({ dispose: () => pool.material.dispose() });
+      }
       /* and its ROOFLINE: a parapet the length of the row, water tanks and an aerial on it — the row ended in a hard
          straight edge under the stars ending D looks up at (VD-5) */
       { const pm = new THREE.MeshBasicMaterial({ color: 0x15141a, fog: true }); owned.push({ dispose: () => pm.dispose() });
@@ -1492,16 +1537,39 @@
         const pool = new THREE.Mesh(new THREE.PlaneGeometry(11, 11), addGlow(glowSod, 0.42));
         pool.rotation.x = -Math.PI / 2; pool.position.set(x, 0.0, z + arm * 2.2); shrG.add(pool);
       }
-      // a motorbike parked at the kerb
-      { const g = new THREE.Group(); g.position.set(-6.4, 0, 3.35); shrG.add(g);
+      // a motorbike parked at the kerb, leaning on its stand
+      /* (v21.1: it was a red box on two rings with a white cube for a lamp, and it is the one thing in the
+         foreground of ending C's held last picture — the v21.1 photographs: forks, a tank, the seat, fenders, the
+         engine and its exhaust, mirrors, a plate and a tail lamp now, on the same footprint) */
+      { const g = new THREE.Group(); g.position.set(-6.4, 0, 3.35); g.rotation.x = 0.13; shrG.add(g);
         const tyre = new THREE.MeshStandardMaterial({ color: 0x141414, roughness: 0.8 });
         const paint = new THREE.MeshStandardMaterial({ color: 0x7a1412, roughness: 0.35, metalness: 0.3 });
-        for (const x of [-0.62, 0.62]) { const w = new THREE.Mesh(new THREE.TorusGeometry(0.27, 0.07, 8, 20), tyre); w.position.set(x, 0.3, 0); g.add(w);
-          const hub = cyl(0.08, 0.08, 0.08, x, 0.3, 0, matChrome, 10, g); hub.rotation.x = Math.PI / 2; }
-        box(0.9, 0.3, 0.26, 0.0, 0.55, 0, paint, g); box(0.62, 0.09, 0.28, -0.12, 0.78, 0, matBlack, g);
-        box(0.36, 0.42, 0.3, 0.42, 0.62, 0, paint, g); box(0.05, 0.05, 0.62, 0.56, 1.02, 0, matChrome, g);
-        box(0.5, 0.06, 0.08, -0.25, 0.42, 0.14, matChrome, g, false);
-        box(0.14, 0.1, 0.06, 0.66, 0.86, 0, new THREE.MeshBasicMaterial({ color: 0xd8d8c0 }), g, false); }
+        const grey = new THREE.MeshStandardMaterial({ color: 0x34363a, roughness: 0.6, metalness: 0.4 });
+        for (const x of [-0.62, 0.62]) {
+          const w = new THREE.Mesh(new THREE.TorusGeometry(0.26, 0.075, 8, 24), tyre); w.position.set(x, 0.3, 0); g.add(w);
+          const rim = new THREE.Mesh(new THREE.TorusGeometry(0.19, 0.012, 4, 24), matChrome); rim.position.set(x, 0.3, 0); g.add(rim);
+          const hub = cyl(0.06, 0.06, 0.1, x, 0.3, 0, matChrome, 10, g); hub.rotation.x = Math.PI / 2;
+          for (let k = 0; k < 3; k++) { const sp = box(0.36, 0.014, 0.014, x, 0.3, 0, grey, g, false); sp.rotation.z = k * Math.PI / 3; }
+          const fen = new THREE.Mesh(new THREE.TorusGeometry(0.33, 0.04, 4, 12, Math.PI * 0.55), paint);
+          fen.position.set(x, 0.3, 0); fen.rotation.z = x > 0 ? Math.PI * 0.3 : Math.PI * 0.15; fen.scale.z = 2.2; g.add(fen);
+        }
+        for (const z of [-0.07, 0.07]) { const fk = cyl(0.022, 0.022, 0.72, 0.5, 0.62, z, matChrome, 8, g); fk.rotation.z = 0.38; }   // the front forks
+        const tank = new THREE.Mesh(new THREE.SphereGeometry(0.2, 14, 10), paint); tank.scale.set(1.25, 0.62, 0.72); tank.position.set(0.18, 0.86, 0); g.add(tank);
+        box(0.58, 0.09, 0.26, -0.24, 0.84, 0, matBlack, g);                                                        // the seat
+        box(0.4, 0.26, 0.24, -0.02, 0.5, 0, grey, g);                                                             // the engine
+        box(0.5, 0.16, 0.2, -0.36, 0.66, 0, paint, g);                                                            // the side panels
+        const ex = cyl(0.04, 0.05, 0.62, -0.38, 0.36, 0.17, matChrome, 10, g); ex.rotation.z = Math.PI / 2 - 0.12;   // the exhaust
+        box(0.05, 0.05, 0.62, 0.62, 1.06, 0, matChrome, g, false);                                                 // the handlebar
+        for (const z of [-0.31, 0.31]) {
+          box(0.09, 0.04, 0.04, 0.62, 1.06, z, matBlack, g, false);                                                // grips
+          const st = cyl(0.008, 0.008, 0.26, 0.6, 1.18, z * 0.8, matChrome, 4, g); st.rotation.x = z > 0 ? -0.3 : 0.3;
+          const mi = new THREE.Mesh(new THREE.CircleGeometry(0.045, 12), matChrome); mi.position.set(0.6, 1.31, z * 0.68); mi.rotation.y = Math.PI / 2; g.add(mi);
+        }
+        const lamp = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.06, 14), new THREE.MeshBasicMaterial({ color: 0xd8d8c0 }));
+        lamp.rotation.z = Math.PI / 2; lamp.position.set(0.7, 0.92, 0); g.add(lamp);
+        box(0.02, 0.06, 0.14, -0.74, 0.62, 0, new THREE.MeshBasicMaterial({ color: 0x7a0c08 }), g, false);         // the tail lamp (unlit)
+        box(0.01, 0.12, 0.2, -0.75, 0.48, 0, new THREE.MeshBasicMaterial({ color: 0xdcd8c8 }), g, false);          // the plate
+        const stand = cyl(0.012, 0.012, 0.32, -0.1, 0.14, 0.16, matChrome, 4, g); stand.rotation.x = -0.55; }   // (on the side it leans to)
       // the joss-paper burner on the five-foot way's end
       { const g = new THREE.Group(); g.position.set(6.9, 0, 1.35); shrG.add(g);
         const drum = cyl(0.3, 0.28, 0.78, 0, 0.39, 0, matBlack, 16, g);
@@ -1768,6 +1836,7 @@
     function mkSmoke(parent, x, y, z, n, h, w) {
       const g = new THREE.Group(); g.position.set(x, y, z); parent.add(g);
       const puffs = [];
+      n = Math.round(n * 1.6);                   // (more of them, thinner: VB-6)
       for (let i = 0; i < n; i++) { const p = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), matSmoke.clone()); g.add(p); puffs.push(p); owned.push({ dispose: () => p.material.dispose() }); }
       shrLife.smokes.push({ g, puffs, h, w, sp: 0.16 + hash(x * 7, z * 3) * 0.08, ph: hash(x, z) });
       return g;
@@ -1822,13 +1891,21 @@
       return g;
     }
     /* a red paper lantern, lit from within (unlit material: it is the light) */
+    let lanternSkinMat = null, tasselMat = null;
     function mkLantern(x, y, z, r, outside) {
       const g = new THREE.Group(); g.position.set(x, y, z); shrG.add(g);
-      const skin = new THREE.Mesh(new THREE.SphereGeometry(r, 18, 12), new THREE.MeshBasicMaterial({ map: tex(makeLanternSkin(THREE, cnv)), fog: true }));
+      /* (one skin for all of them, and rounder: ending B holds a close-up on one — VB-9) */
+      if (!lanternSkinMat) lanternSkinMat = new THREE.MeshBasicMaterial({ map: tex(makeLanternSkin(THREE, cnv)), fog: true });
+      const skin = new THREE.Mesh(new THREE.SphereGeometry(r, 40, 24), lanternSkinMat);
       skin.scale.y = 0.82; g.add(skin);
-      for (const s of [-1, 1]) cyl(r * 0.42, r * 0.42, r * 0.14, 0, s * r * 0.82, 0, matGold, 14, g);
+      for (const s of [-1, 1]) cyl(r * 0.42, r * 0.42, r * 0.14, 0, s * r * 0.82, 0, matGold, 24, g);
       cyl(0.004, 0.004, SB.H - y - r * 0.9, 0, (SB.H - y) / 2 + r * 0.4, 0, matInk, 4, g);
-      const tas = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.12, r * 0.2, r * 0.9, 8), new THREE.MeshStandardMaterial({ color: 0xc81a10, roughness: 0.9 })); tas.position.y = -r * 1.32; g.add(tas);
+      /* the tassel: a knot, a gold band, and a fringe that flares and is open at its end (it was a solid 8-sided
+         rod with a flat dark end) */
+      if (!tasselMat) tasselMat = new THREE.MeshStandardMaterial({ color: 0xc81a10, roughness: 0.9, side: THREE.DoubleSide });
+      const knot = new THREE.Mesh(new THREE.SphereGeometry(r * 0.09, 12, 8), tasselMat); knot.position.y = -r * 0.9; g.add(knot);
+      cyl(r * 0.07, r * 0.07, r * 0.05, 0, -r * 1.0, 0, matGold, 12, g);
+      const tas = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.06, r * 0.19, r * 0.8, 24, 1, true), tasselMat); tas.position.y = -r * 1.42; g.add(tas);
       const hl = new THREE.Mesh(new THREE.PlaneGeometry(r * 4.5, r * 4.5), addGlow(glowRed, outside ? 0.5 : 0.38)); g.add(hl);
       shrLife.lanterns.push({ halo: hl, bill: true, sway: g, ph: x * 1.3 + z });
       return g;
@@ -1866,8 +1943,10 @@
         for (let i = 0; i < s.puffs.length; i++) {
           const u = ((t * s.sp + i / s.puffs.length + s.ph) % 1), p = s.puffs[i];
           p.position.set(Math.sin(t * 0.7 + i * 1.3) * 0.04 * u, u * s.h, Math.cos(t * 0.5 + i) * 0.03 * u);
-          p.scale.setScalar(0.04 + u * s.w); p.quaternion.copy(_cq);
-          p.material.opacity = 0.32 * Math.sin(Math.PI * u);
+          /* WISPS, not orbs: each puff drawn tall and narrow on the screen (it faces the lens), thinner — against the
+             medium's black robe the round ones read as grey discs and a glowing ball (VB-6, VC-9) */
+          p.quaternion.copy(_cq); p.scale.set(0.03 + u * s.w * 0.5, 0.06 + u * s.w * 1.5, 1);
+          p.material.opacity = 0.2 * Math.sin(Math.PI * u);
         }
       }
     }
@@ -2170,10 +2249,13 @@
     const entMat = matShutter.clone(); entMat.map = tex(matShutter.map.clone()); entMat.map.needsUpdate = true; entMat.side = THREE.DoubleSide;
     owned.push({ dispose: () => entMat.dispose() });
     const entShutter = plane(4.0, 2.55, entMat, -2.25, 2.62 - 1.275, 0.01, 0, shrG); entShutter.visible = false;
+    // (its bottom rail, which comes down with it: the shutter's edge was only where the slats' picture stopped — VB-7)
+    const entRail = box(4.0, 0.05, 0.05, -2.25, 2.62, 0.03, matBoxSteel, shrG, false); entRail.visible = false;
     function entShutterK(k) {
       k = THREE.MathUtils.clamp(k, 0, 1);
-      entShutter.visible = k > 0.002;
+      entShutter.visible = k > 0.002; entRail.visible = entShutter.visible;
       entShutter.scale.y = Math.max(0.002, k); entShutter.position.y = 2.62 - 1.275 * k;
+      entRail.position.y = 2.62 - 2.55 * k + 0.025;
       entMat.map.repeat.set(4, 2.2 * k); entMat.map.offset.y = 2.2 * (1 - k);   // the slats come down out of the box, not squashed
     }
     /* (from +50 to −80 now, at the same 13.9 m/s: it drove off the road's end at −34 and blinked out on a desktop's
@@ -4360,7 +4442,10 @@
     turnOnto(api, 4.3, 5.0, toMed, W.headAt0);
     pitchTo(4.3, 5.0, 0.06, -0.05, smoothK);
     tr(4.8, W.end, (k) => { duck('ritual', 1 - 0.75 * k); duck('shrineamb', 1 - 0.5 * k); }, rawK);
-    const Ls = { x: F.LX(lan.x), z: lan.z }, outward = faceFrom(Ls.x, Ls.z, Ls.x + 0.6, Ls.z + 4);
+    /* (toward the kopitiam's lit bay across the road, x −15: the LP Tim is held up against its warm light, as this
+       ending always meant — straight across, it hung against two grey shutters and the black road; the v21.1
+       photographs) */
+    const Ls = { x: F.LX(lan.x), z: lan.z }, outward = faceFrom(Ls.x, Ls.z, F.LX(-15), 16.6);
     yawTo(W.end - 0.3, W.end + 0.9, W.head, outward, smoothK);
     // his hand finds the LP Tim and holds it up into the lantern's light: it hangs from his fingers on its cord
     const T2 = W.end + 0.6;
@@ -4994,13 +5079,15 @@
     return done(THREE, c, false);
   }
   /* a red paper lantern's skin: the character for blessing on it */
+  /* (1024 × 512 since v21.1: ending B's close-up of the door's lantern showed a soft, blurred character at 256) */
   function makeLanternSkin(THREE, cnv) {
-    const [c, x] = sized(cnv, 256, 128);
-    const g = x.createLinearGradient(0, 0, 0, 128); g.addColorStop(0, '#a8140c'); g.addColorStop(0.5, '#e8301c'); g.addColorStop(1, '#a8140c');
-    x.fillStyle = g; x.fillRect(0, 0, 256, 128);
-    x.strokeStyle = 'rgba(80,0,0,0.35)'; x.lineWidth = 2; for (let i = 0; i < 256; i += 16) { x.beginPath(); x.moveTo(i, 0); x.lineTo(i, 128); x.stroke(); }
-    x.fillStyle = '#ffd86a'; x.font = 'bold 60px serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
-    x.fillText('福', 64, 66); x.fillText('福', 192, 66);
+    const [c, x] = sized(cnv, 1024, 512);
+    const g = x.createLinearGradient(0, 0, 0, 512); g.addColorStop(0, '#a8140c'); g.addColorStop(0.5, '#e8301c'); g.addColorStop(1, '#a8140c');
+    x.fillStyle = g; x.fillRect(0, 0, 1024, 512);
+    x.strokeStyle = 'rgba(80,0,0,0.35)'; x.lineWidth = 6; for (let i = 0; i < 1024; i += 64) { x.beginPath(); x.moveTo(i, 0); x.lineTo(i, 512); x.stroke(); }
+    x.fillStyle = '#ffd86a'; x.font = 'bold 240px serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.shadowColor = 'rgba(90,10,0,0.55)'; x.shadowBlur = 6;
+    x.fillText('福', 256, 264); x.fillText('福', 768, 264);
     return done(THREE, c, true);
   }
   /* the shophouse's ceiling: the upper floor's planks, stained dark, the
