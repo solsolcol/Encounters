@@ -1335,8 +1335,12 @@
     const matTubeB  = new THREE.MeshBasicMaterial({ color: 0xf2f6ff });
     const matRedLamp = new THREE.MeshBasicMaterial({ color: 0xff3018 });
     const matEmber  = new THREE.MeshBasicMaterial({ color: 0xff7a28 });
+    /* v21.1: the lorong runs on past every frame an ending holds (GF-1, VB-5, VC-1): the road, its lines and both
+       kerbs 180 m long, the far row of shophouses 96 m, and the fog takes them — they stopped at ±30 and ±24 in plain
+       sight, and three endings held their last pictures on those ends */
+    const ROAD_L = 180;
     const matAsph   = new THREE.MeshStandardMaterial({ map: tex(makeAsphalt(THREE, cnv)), roughness: 0.92, color: 0x8a8a90 });
-    matAsph.map.repeat.set(60 / 6, 12 / 6);
+    matAsph.map.repeat.set(ROAD_L / 6, 12 / 6);
     const matFfw    = new THREE.MeshStandardMaterial({ map: tex(makePeranakanTiles(THREE, cnv)), roughness: 0.55, color: 0xb0aaa0 });
     matFfw.map.repeat.set(24 / 0.4, 2.2 / 0.4);
     const matShutter = texMat(makeShutter(THREE, cnv), { roughness: 0.6, metalness: 0.3 });
@@ -1443,20 +1447,40 @@
       for (const s of [-1, 1]) {
         bwall(0.3, 2.0, 2.2, s * 7.6, 1.0, 1.1, matProxy).visible = false;
         for (let i = 0; i < 3; i++) box(0.55, 0.4, 0.45, s * (7.8 + (i % 2) * 0.1), 0.2 + i * 0.4, 0.45 + i * 0.2, i % 2 ? matWood : matWoodL, shrG);
+        /* v21.1: and a wall says so — past the crates the way's tiles and ceiling stopped at ±12 in a black void 4.8 m
+           off, behind a wall nobody could see (GF-1): a plastered end wall, the neighbour's bay walled off, a
+           grille and a pipe on it, where the invisible one stands */
+        box(0.24, SB.H, 2.2, s * 8.2, SB.H / 2, 1.1, matPaintB, shrG);
+        box(0.02, 0.7, 0.9, s * 8.07, 2.3, 0.9, matSteel, shrG, false);
+        cyl(0.05, 0.05, SB.H, s * 8.03, SB.H / 2, 1.95, matSteel, 8, shrG);
       }
+      /* and where our row's way ENDS, at ±12, a plastered end the height of the way (seen from the road, never
+         from inside it): the tiles, the ceiling and the beam stopped there on nothing */
+      for (const s of [-1, 1]) box(0.3, SB.H + 0.3, 2.6, s * 12.15, (SB.H + 0.3) / 2, 1.0, matPaintB, shrG, false);
       // the kerb, the drain, the double yellow lines, the road
-      box(24, 0.14, 0.14, 0, 0.07, 2.27, matKerb, shrG, false);
-      { const d = new THREE.Mesh(new THREE.PlaneGeometry(40, 0.32), matInk); d.rotation.x = -Math.PI / 2; d.position.set(0, -0.02, 2.5); shrG.add(d); }
-      const road = new THREE.Mesh(new THREE.PlaneGeometry(60, 12), matAsph);
+      box(ROAD_L, 0.14, 0.14, 0, 0.07, 2.27, matKerb, shrG, false);
+      { const d = new THREE.Mesh(new THREE.PlaneGeometry(ROAD_L, 0.32), matInk); d.rotation.x = -Math.PI / 2; d.position.set(0, -0.02, 2.5); shrG.add(d); }
+      const road = new THREE.Mesh(new THREE.PlaneGeometry(ROAD_L, 12), matAsph);
       road.rotation.x = -Math.PI / 2; road.position.set(0, -0.03, 8.66); road.receiveShadow = true; shrG.add(road);
       const yel = new THREE.MeshBasicMaterial({ color: 0xc8a020 });
-      for (const z of [2.8, 2.92]) { const l = new THREE.Mesh(new THREE.PlaneGeometry(40, 0.06), yel); l.rotation.x = -Math.PI / 2; l.position.set(0, -0.025, z); shrG.add(l); }
-      { const l = new THREE.Mesh(new THREE.PlaneGeometry(60, 0.1), new THREE.MeshBasicMaterial({ color: 0x9a9a92 })); l.rotation.x = -Math.PI / 2; l.position.set(0, -0.025, 8.7); shrG.add(l); }
+      for (const z of [2.8, 2.92]) { const l = new THREE.Mesh(new THREE.PlaneGeometry(ROAD_L, 0.06), yel); l.rotation.x = -Math.PI / 2; l.position.set(0, -0.025, z); shrG.add(l); }
+      { const l = new THREE.Mesh(new THREE.PlaneGeometry(ROAD_L, 0.1), new THREE.MeshBasicMaterial({ color: 0x9a9a92 })); l.rotation.x = -Math.PI / 2; l.position.set(0, -0.025, 8.7); shrG.add(l); }
       // across the road: the far five-foot way and a row of shophouses at night (painted, self-lit)
-      box(60, 0.14, 2.0, 0, 0.0, 15.6, matKerb, shrG, false);
-      for (const [x, seed, shop] of [[-12, 3, 2], [12, 7, -1]]) {
+      box(ROAD_L, 0.14, 2.0, 0, 0.0, 15.6, matKerb, shrG, false);
+      for (const [x, seed, shop] of [[-12, 3, 2], [12, 7, -1], [-36, 5, -1], [36, 9, -1]]) {
         const fm = new THREE.MeshBasicMaterial({ map: tex(makeLorongFacade(THREE, cnv, seed, shop)), fog: true });
         plane(24, 12, fm, x, 6.0, 16.6, Math.PI, shrG);
+      }
+      /* and its ROOFLINE: a parapet the length of the row, water tanks and an aerial on it — the row ended in a hard
+         straight edge under the stars ending D looks up at (VD-5) */
+      { const pm = new THREE.MeshBasicMaterial({ color: 0x15141a, fog: true }); owned.push({ dispose: () => pm.dispose() });
+        box(96, 0.55, 0.35, 0, 12.27, 16.5, pm, shrG, false);
+        for (const x of [-40, -27, -15, -4.5, 7, 19, 31, 43]) {
+          const tk = cyl(0.75, 0.75, 1.1, x, 13.25, 17.6, pm, 12, shrG); tk.castShadow = false;
+          box(0.12, 0.6, 0.12, x - 0.5, 12.7, 17.3, pm, shrG, false); box(0.12, 0.6, 0.12, x + 0.5, 12.7, 17.3, pm, shrG, false);
+        }
+        for (const x of [-21, 13, 37]) { cyl(0.025, 0.025, 2.2, x, 13.6, 16.9, pm, 4, shrG); box(0.9, 0.03, 0.03, x, 14.3, 16.9, pm, shrG, false); box(0.6, 0.03, 0.03, x, 14.0, 16.9, pm, shrG, false); }
+        for (let i = 0; i < 4; i++) box(1.8 + (i % 2) * 1.2, 1.4 + (i % 3) * 0.5, 1.6, -33 + i * 22, 12.55 + (0.7 + (i % 3) * 0.25), 18.4, pm, shrG, false);   // stair towers and lift huts
       }
       // the sodium lamp on our side, its pool on the road; a second across the way
       for (const [x, z, arm] of [[6.4, 2.5, 1], [-11.0, 15.0, -1]]) {
@@ -2152,7 +2176,9 @@
       entShutter.scale.y = Math.max(0.002, k); entShutter.position.y = 2.62 - 1.275 * k;
       entMat.map.repeat.set(4, 2.2 * k); entMat.map.offset.y = 2.2 * (1 - k);   // the slats come down out of the box, not squashed
     }
-    const BUS = { x0: 34, x1: -34, z: 11.6 };
+    /* (from +50 to −80 now, at the same 13.9 m/s: it drove off the road's end at −34 and blinked out on a desktop's
+       screen; the road runs to ±90 and the fog has it by −80 — GF-6) */
+    const BUS = { x0: 50, x1: -80, z: 11.6 };
     /* a Singapore single-decker, built once for the night (ending C's, unlit materials with its windows lit) and once
        for the morning (the film's, lit materials, dark glass, no lamps) */
     function makeBus(parent, day) {
@@ -4231,13 +4257,18 @@
       camera.rotation.z = a * 0.03 * Math.sin(t * 27); }, rawK);
     // "Go! Get out!" — he is turned round and thrown out of the door, stumbling
     sfx(6.9, 'as3B');                                  // 3.27 → 10.17 (at 6.2 it was said into the roar's loudest half-second, 6.0–6.5)
-    const W = walkRoute(api, [{ x: lunge.x, z: lunge.z }, ...outRoute(F, p0, { x: -2.0, z: 1.9 }).slice(1)], 6.7, 1.9, 1.2);
+    /* (he stops further out and to the right of the door: at (−2.0, 1.9) the doorway lantern hung 0.89 m in front
+       of him, and through the whole shutter beat its gold ring and its tassel stood across the top-left of a phone's
+       frame — "a large red pipe" (the v21.1 photographs). From here it is 28° off his line, out of a phone's frame,
+       and whole on a desktop's; he turns up onto it later as before) */
+    const BST = { x: -1.3, z: 2.15 };
+    const W = walkRoute(api, [{ x: lunge.x, z: lunge.z }, ...outRoute(F, p0, BST).slice(1)], 6.7, 1.9, 1.2);
     turnOnto(api, 6.2, 6.75, toMed, W.headAt0);
     pitchTo(6.2, 6.9, 0.08, -0.12, smoothK);
     for (const [t0, d] of [[7.3, 0.12], [8.6, 0.16], [9.5, 0.1]]) { pitchTo(t0, t0 + 0.14, -0.12, -0.12 - d, rawK); pitchTo(t0 + 0.14, t0 + 0.5, -0.12 - d, -0.12, smoothK); }
     step(6.6, () => { handsRoot.visible = false; });
     // he turns back: the shutter comes down on the light
-    const face = faceFrom(F.LX(-2.0), 1.9, F.LX(-2.25), -2.0);
+    const face = faceFrom(F.LX(BST.x), BST.z, F.LX(-2.25), -2.0);
     yawTo(W.end - 0.1, W.end + 1.0, W.head, face, smoothK);
     pitchTo(W.end - 0.1, W.end + 1.0, -0.12, 0.08, smoothK);
     const T1 = W.end + 0.9;
@@ -4248,19 +4279,19 @@
     sfx(T1 + 4.8, 'presencein', 0.35);
     tr(T1 + 4.6, T1 + 5.8, (k) => F.gust(sm(k)), rawK);
     tr(T1 + 5.8, T1 + 9.0, (k) => F.gust(1 - sm(k)), rawK);
-    /* up AND round onto the lantern over the door: it hangs 0.89 m in front of him, 16° to his left and 44° up, so the
-       old tilt (0.2, straight ahead) showed a phone its tassel and the shutter. Turned to its bearing: the lantern and
-       its tassel span 16°–60° of elevation and the letterboxed frame is ±29.5°, so at 0.42 (24°) its top and its
-       character were cut off — at 0.62 (35.5°) it swings whole, 5° clear of the top bar */
-    const lant = faceFrom(F.LX(-2.0), 1.9, F.LX(-2.25), 1.05);
+    /* up AND round onto the lantern over the door, turned to its bearing. From BST it hangs 1.45 m off and spans
+       10°–39° of elevation with its tassel, and the letterboxed frame is ±29.5°: at 0.42 (24°) it swings whole, the
+       string to the ceiling above it, clear of both bars on a phone. (From v21.0's stand, 0.89 m under it, it spanned
+       16°–60° and needed 0.62 — and stood across the top of the shutter shot before it.) */
+    const lant = faceFrom(F.LX(BST.x), BST.z, F.LX(-2.25), 1.05);
     yawTo(T1 + 4.6, T1 + 6.0, face, lant, smoothK);
-    pitchTo(T1 + 4.6, T1 + 6.0, 0.08, 0.62, smoothK);
+    pitchTo(T1 + 4.6, T1 + 6.0, 0.08, 0.42, smoothK);
     // and away, down the lorong under the sodium lamp
     sfx(T1 + 8.2, 'e3close3', 0.9);
     sfx(T1 + 8.6, 'z3close');                          // 8.44 → T1 + 17.04
-    const street = faceFrom(F.LX(-2.0), 1.9, F.LX(6.4), 6.0);
+    const street = faceFrom(F.LX(BST.x), BST.z, F.LX(6.4), 6.0);
     yawTo(T1 + 9.0, T1 + 15.5, lant, street, smoothK);
-    pitchTo(T1 + 9.0, T1 + 15.5, 0.62, 0.16, smoothK);
+    pitchTo(T1 + 9.0, T1 + 15.5, 0.42, 0.16, smoothK);
     ending(c, api, T1 + 17.1);
   }
 
@@ -4293,7 +4324,7 @@
     pitchTo(W.end - 0.3, W.end + 1.4, -0.05, 0.1, smoothK);
     const Tb = W.end + 0.9;
     sfx(Tb, 'buspass', 0.9);                           // 4.54 s
-    tr(Tb + 0.3, Tb + 5.2, (k) => F.bus(k), rawK);
+    tr(Tb - 0.85, Tb + 8.5, (k) => F.bus(k), rawK);      // (13.9 m/s; past the kerb's line at Tb + 2.9, as it always was)
     sfx(Tb + 1.4, 'z3C2');                             // 5.96 → Tb + 7.36
     // he watches it go, and the night goes on
     /* (he stands on the line of the five-foot way's pillars, z 2.02, and the one at x −4.5 is 2.4 m along it: looking
