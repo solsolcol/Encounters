@@ -5674,3 +5674,13 @@ cut (sharing its vertices and maps) when it is small.
   into the floor for her whole line. A borrowed take goes on the upper body
   only (`^up`), over the sitter's own seated take on the legs (`^low`) — the
   medium's split, which already existed.
+- **A run token cancels a callback; it does not cancel what the callback owed.**
+  SR-6 gave the shrine arrival a run token so a superseded arrival's warm
+  returns early instead of lifting the screen over the newer one. But that
+  return also skipped the one thing the superseded run still owed the screen:
+  lifting the black it had raised. The newer arrival was the COLD one (placed
+  under the loading screen, so it raises no black of its own), nothing lifted
+  it, and the decision opened over black six seconds later. When a token makes
+  an old continuation return early, the run that superseded it takes over that
+  continuation's cleanup: here the cold arrival waits for the warm still in
+  flight, releases what that warm held, and lifts the black itself.

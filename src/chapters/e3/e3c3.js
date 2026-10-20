@@ -191,6 +191,7 @@
     const treeStands = [];          // v21.1: kept, so dispose() can hand the shared tree kit back before its sweep
     let alive = true;
     let shrineRun = 0, shrDark = false;   // v21.1: the shrine arrival's run token (SR-6) and its HUD held under the black (ST-4)
+    let shrineWarm = null;                // v21.1: the arrival's warm while it runs (a cold arrival that supersedes it waits for it)
     let lanternSkinMat = null, tasselMat = null, coilTagMat = null;   // v21.1: the lanterns' shared skin and tassel (mkLantern) and the coils' one tag (mkCoil), here so no caller meets them in their dead zone
     const parsedGlb = new Map();
     const madeTex = [];
@@ -3401,10 +3402,19 @@
       shrDark = !resumed;
       setPhase(done ? 'decide' : at);
       if (cold) {
-        jossHold(false); warmProps(false);
-        if (done) { afterRoar(); return; }
-        if (kit) kit.root(false);
-        if (at === 'arrive') { queueGap(1.0); queueLine('z3shrine'); }
+        /* (an earlier arrival this run supersedes may still be warming under its own black — an applyPhase before the
+           chapter's boot arrives twice — and its warm returns on the run token without lifting that black, so the
+           decision opened over it after openWhenClear's six seconds: the cold arrival lets that warm finish, holding
+           what it holds, and lifts the black itself) */
+        const go = () => {
+          if (!alive || run !== shrineRun) return;
+          jossHold(false); warmProps(false);
+          if (kit && kit.getFade && kit.getFade() > 0.001) kit.fade(0, 1.2);
+          if (done) { afterRoar(); return; }
+          if (kit) kit.root(false);
+          if (at === 'arrive') { queueGap(1.0); queueLine('z3shrine'); }
+        };
+        if (shrineWarm) shrineWarm.then(go); else go();
         return;
       }
       /* the joss sticks held under the black while the warm runs: they are
@@ -3412,7 +3422,9 @@
          screen the moment he takes them at the urn (the v15.1 law) */
       jossHold(true); warmProps(true);
       const warmed = kit && kit.warm ? kit.warm() : Promise.resolve(0);
+      shrineWarm = warmed;
       warmed.then(() => {
+        if (shrineWarm === warmed) shrineWarm = null;
         jossHold(false); warmProps(false);
         if (!alive || run !== shrineRun) return;                  // (SR-6: a reset or a second arrival since)
         if (done) { kit && kit.fade(0, 1.2); afterRoar(); return; }
