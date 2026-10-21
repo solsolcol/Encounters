@@ -250,7 +250,8 @@
     sm3hold: 2.38, sm3cannot: 2.32, st3uncle: 2.35, cu3sadhu: 3.01, ow3let: 2.43, z3breath: 3.0,
     ow3know: 2.04, z3knew: 5.64, st3trance: 2.59, cu3unclean: 4.26, ow3medium: 5.56, z3night: 2.69,
     z3shrine: 4.7, as3sit: 3.63, dv3wife: 7.57, md3read1: 7.16, md3drink: 3.32, dv3father: 4.68,
-    md3read2: 3.92, md3done: 1.52, as3next: 1.88, z3walk: 4.44, md3ghost: 1.7, md3gasp: 1.39, md3chant: 4.27,
+    md3read2: 3.92, md3done: 1.52, as3next: 1.88, z3walk: 4.44, md3ghost: 10.92, md3gasp: 1.39, md3chant: 4.27,
+    wf3thanks: 2.74, md3fu: 6.43, fa3thanks: 1.38, z3what: 3.16,   // v21.12: the thanks, the talisman, his answer (md3ghost re-said longer)
     as3back: 2.51, z3A1: 2.51, md3A1: 2.12, md3A2: 0.57, as3A: 3.87, z3A2: 4.05,
     z3B1: 2.35, md3B1: 1.18, as3B: 3.27, z3B2: 4.91, z3thank: 1.96, md3C: 2.43,
     z3C2: 5.96, md3D: 1.23, z3D2: 6.77, z3D3: 4.44, z3close: 8.44, z3next: 3.87,
@@ -3385,17 +3386,20 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       flash(k) { flashM.opacity = 0.85 * k; flashQ.visible = k > 0.002; },
       /* the figure at `at`, turned to face `to`, k its light, push a lunge along its facing; v21.8: `lift` off the
          floor and `tilt` forward into the lunge, about its own feet */
-      hanu(k, at, to, push = 0, lift = 0, tilt = 0) {
+      hanu(k, at, to, push = 0, lift = 0, tilt = 0, sc = 1, glow = 1) {
         hanuG.visible = k > 0.002;
         if (!hanuG.visible) return;
         const ry = Math.atan2(to.x - at.x, to.z - at.z);
         hanuG.position.set(at.x + Math.sin(ry) * push, lift, at.z + Math.cos(ry) * push);
         hanuG.rotation.set(tilt, ry + HANU_FACE, 0, 'YXZ');
-        for (const m of hanuMats) m.opacity = m.userData.peak * k;
+        hanuG.scale.setScalar(sc);   // v21.12: the zoom as it comes into view (1 for every other moment)
+        /* (v21.12: `glow` brightens the additive shell alone — the body of light stays one solid gold — while it
+           comes into view and stands there glowing) */
+        for (const m of hanuMats) m.opacity = Math.min(1, m.userData.peak * k * (m.blending === THREE.AdditiveBlending ? glow : 1));
       },
       /* its halo and its embers, at k, about its body where it is now; t the film's clock; v21.9: `flare` swells the
          halo for the moment it rears and roars (0 for none) */
-      aura(k, t, flare = 0) {
+      aura(k, t, flare = 0, inK = 0) {
         halo.visible = embers.visible = k > 0.002;
         if (!halo.visible) return;
         hanuG.updateWorldMatrix(true, false);
@@ -3404,9 +3408,17 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
         halo.scale.setScalar((2.9 + 0.25 * Math.sin(t * 7.0)) * (1 + 0.5 * flare));
         halo.material.opacity = Math.min(0.95, 0.62 * k * (0.86 + 0.14 * Math.sin(t * 11.0)) * (1 + 0.45 * flare));
         const EP = embGeo.attributes.position;
+        /* (v21.12: `inK` draws the embers IN to it as it forms — out from as far as two metres off, down onto its
+           chest — instead of rising off it; between the two they blend) */
+        const cy = _fxV.y;
         for (let i = 0; i < EMB; i++) {
           const [a0, r0, y0, rise, spin, ph] = embSeed[i], u = (t * rise * 0.55 + ph) % 1, a = a0 + t * spin * 0.6, rr = r0 + u * 0.55;
-          EP.setXYZ(i, _fxV.x + Math.cos(a) * rr, hanuG.position.y + 0.1 + ((y0 + u * 1.6) % 2.1), _fxV.z + Math.sin(a) * rr);
+          let ex = _fxV.x + Math.cos(a) * rr, ey = hanuG.position.y + 0.1 + ((y0 + u * 1.6) % 2.1), ez = _fxV.z + Math.sin(a) * rr;
+          if (inK > 0.001) {
+            const v = (t * rise * 0.9 + ph) % 1, ri = (r0 + 0.35) * 3.2 * (1 - v), yi = cy + (y0 - 1.05) * 0.9 * (1 - v);
+            ex += (_fxV.x + Math.cos(a) * ri - ex) * inK; ey += (yi - ey) * inK; ez += (_fxV.z + Math.sin(a) * ri - ez) * inK;
+          }
+          EP.setXYZ(i, ex, ey, ez);
         }
         EP.needsUpdate = true;
         embMat.opacity = 0.95 * k;
@@ -3464,6 +3476,7 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
           if (!g.visible) return;
           g.position.set(at.x + Math.sin(ry) * e.push, e.lift, at.z + Math.cos(ry) * e.push);
           g.rotation.set(e.tilt, ry + HANU_FACE, 0, 'YXZ');
+          g.scale.setScalar(e.sc || 1);   // v21.12: larger copies closing in on it as it zooms into view
           for (const m of echoMats[i]) m.opacity = 0.34 * e.k;
         });
       },
@@ -3883,7 +3896,7 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
                                 'candlelit3', 'torchclick', 'matkneel3', 'e3bell', 'presencein',
                                 // the shrine's (play B): its lines and the sounds play makes there
                                 'z3shrine', 'as3sit', 'dv3wife', 'md3read1', 'md3drink', 'dv3father', 'md3read2', 'md3done',
-                                'as3next', 'z3walk', 'md3ghost', 'incenselit3', 'urnsand', 'stoolscrape', 'taobell',
+                                'as3next', 'z3walk', 'md3ghost', 'wf3thanks', 'md3fu', 'fa3thanks', 'z3what', 'incenselit3', 'urnsand', 'stoolscrape', 'taobell',
                                 'step1', 'step2', 'step3', 'step4',
                                 // the endings' helpers fire these (the engine reads a SCENE's own source for its cues, v14.16)
                                 'z3next', 'e3close3',
@@ -4599,8 +4612,13 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       queueLine('md3drink', () => {
         medPose(MED_READ);
         after(0.9, () => talismanGiven(true));
-        after(SECS.md3drink + 0.2, () => { medPose(MED_SIT); wife.nod = 1.4; after(1.6, wifeLeaves); });
+        after(SECS.md3drink + 0.2, () => { medPose(MED_SIT); wife.nod = 1.4; });
       }, 1, panAt(MED_AT.x, MED_AT.z));
+      /* v21.12 (Chad: "the customers in the taoist medium shop, they need to say 'thank you sifu' before they walk
+         away"): she thanks him with the talisman in her hands, on her talking take, nodding — and only then goes */
+      queueGap(0.45);
+      queueLine('wf3thanks', () => { talk(wife, SECS.wf3thanks, 'Talk'); wife.nod = SECS.wf3thanks; after(SECS.wf3thanks + 0.5, wifeLeaves); },
+                1, panAt(WIFE_AT.x, WIFE_AT.z));
     }
     function wifeLeaves() {
       if (worldSfx) worldSfx('stoolscrape', 0.55, 1, panAt(WIFE_AT.x, WIFE_AT.z));
@@ -4622,8 +4640,20 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
         medPose(MED_READ);
         after(SECS.md3read2 + 0.3, () => { medPose(MED_SIT); if (worldSfx) worldSfx('taobell', 0.75, 1, panAt(MED_AT.x, MED_AT.z)); });
       }, 1, panAt(MED_AT.x, MED_AT.z));
+      /* v21.12 (Chad: "For the man customer, the taoist medium should also say he give him a talisman to bring home,
+         before telling him it is done"): a fresh one is laid out from the stack as he says it and is gone into the
+         father's hands on "bring it home"; then "Okay. Can go already."; then the father's thanks, and he goes */
       queueGap(2.4);
-      queueLine('md3done', () => { father.nod = 1.5; after(SECS.md3done + 1.0, fatherLeaves); }, 1, panAt(MED_AT.x, MED_AT.z));
+      queueLine('md3fu', () => {
+        medPose(MED_READ); talismanGiven(false);
+        after(2.1, () => { talismanGiven(true); father.nod = 1.2; });
+        after(SECS.md3fu + 0.2, () => medPose(MED_SIT));
+      }, 1, panAt(MED_AT.x, MED_AT.z));
+      queueGap(0.4);
+      queueLine('md3done', () => { father.nod = 1.5; }, 1, panAt(MED_AT.x, MED_AT.z));
+      queueGap(0.35);
+      queueLine('fa3thanks', () => { father.nod = SECS.fa3thanks + 0.4; after(SECS.fa3thanks + 0.7, fatherLeaves); },
+                1, panAt(FATHER_AT.x, FATHER_AT.z));
     }
     function fatherLeaves() {
       if (worldSfx) worldSfx('stoolscrape', 0.55, 1, panAt(FATHER_AT.x, FATHER_AT.z));
@@ -4679,7 +4709,13 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
         after(3.9, () => {
           if (kit && kit.pray) kit.pray(false, { secs: 0.8 });
           queueGap(0.4);
-          queueLine('md3ghost', () => { medPose(MED_READ); after(SECS.md3ghost + 0.3, startRoar); }, 1, panAt(MED_AT.x, MED_AT.z));
+          /* v21.12 (Chad: "the taoist medium should say more words instead of just saying its a ghost ... The player
+             should then immediately reply with a surprised voiceline like 'what...? ghost...? i don't think so...'
+             before he turns into that roar sound"): the long reading, and his answer a breath after it, and the film
+             on the black right after his last word */
+          queueLine('md3ghost', () => { medPose(MED_READ); }, 1, panAt(MED_AT.x, MED_AT.z));
+          queueGap(0.15);
+          queueLine('z3what', () => { after(0.4, () => medPose(MED_SIT)); after(SECS.z3what + 0.15, startRoar); });
         });
       });
     }
@@ -5720,15 +5756,30 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
        stays GAP short of his eyes along the line; it stands up RUN further back */
     const reachAt = (tilt) => { let m = -Infinity; for (const q of R.corners(P, E, 0, 0, tilt)) m = Math.max(m, (q.x - P.x) * ux + (q.z - P.z) * uz); return m; };
     const A1 = Math.min(0.4, dl - GAP - Math.max(reachAt(TILT), reachAt(REAR))), A0 = A1 - RUN;
-    const LAND = 2.62, STAMP = 2.68;               // it lands; the stamp — its roar's weight — goes out of it
+    /* v21.12 · THE HANUMAN REVEALED (Chad: "When the hanuman appears, i want the hanuman to fade zoom glow into view
+       with a sound effect, stands in place for about a second with the glowing appearance, before starting the lunge
+       sequence. So that player has more time to look at the hanuman. When the hanuman appears in place with the glow
+       effect, have the camera pan in a slow 360 around the hanuman, so that the player can see a good view of the
+       hanuman from various angles, before locking into the camera view where the hanuman is about to lunge out. The
+       roar sound should only play at the very moment the lunge begins"): it comes into view 0.55–ARRIVE, stands there
+       glowing ARRIVE–ORB0, the lens goes all the way round it ORB0–ORB1 (the whole circle and on to the lunge's own
+       angle), locks onto the lunge's first frame ORB1–L0, and the charge — and the roar — begin at L0. Everything from
+       the charge on keeps its v21.9 distance from it: DT is how much later that now is */
+    const ARRIVE = 2.35, ORB0 = 3.35, ORB1 = 13.35, L0 = 13.95, DT = L0 - 1.4;
+    const LAND = 2.62 + DT, STAMP = 2.68 + DT;     // it lands; the stamp — its roar's weight — goes out of it
     const F0 = at(A0, 0, 0), F1 = at(A1, 0, 0);
     const CHEST = at(A1 + 0.12, 0, 1.25);           // where the ring goes out of it: its chest, reared
     const gather = (k) => 0.35 * k * k * (3 - 2 * k) + 0.65 * k * k;          // it gathers, then goes
-    /* 1 · 0–0.55 · his eyes: the flash, the jolt at the medium, the roar out of him — and the medium stops his reading
-       and goes still (his rest take: his reading take tipped his head back into his chair's crest, measured) */
+    /* 1 · 0–0.55 · his eyes: the flash, the jolt at the medium — and the medium stops his reading and goes still (his
+       rest take: his reading take tipped his head back into his chair's crest, measured). v21.12: no roar here any
+       more (it is the lunge's, at L0); the sound of its coming rises from 0.3 — a riser, a held breath, and its bloom
+       on ARRIVE, the moment it is wholly there (hanuappear, picked for that shape — masters/v21.12/make.sh) */
     step(0.05, () => F.medPose(F.MED_SIT, 0.3));
-    sfx(0.0, 'hanumanroar', 1);
     sfx(0.04, 'goldsting', 0.8);
+    sfx(0.3, 'hanuappear', 1);
+    /* (the reading's music sinks under it, for the whole of the reveal and the circle; a scene's duck is cleared at both
+       ends of the cutscene, and the bed itself goes at the rites) */
+    tr(0.2, 1.4, (k) => api.duck('e3shrine', 1 - 0.7 * k), smoothK);
     tr(0, 0.12, (k) => R.flash(k), rawK);
     tr(0.12, 0.85, (k) => R.flash(1 - k), smoothK);
     tr(0, 0.02, () => { yaw.rotation.y = yP; pitch.rotation.x = pP; }, rawK);
@@ -5741,7 +5792,6 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
        chest, never up at its crown: looking up the 23° his neck allows tipped his hat 7 cm into his chair's crest,
        measured at v21.9) */
     step(0.55, () => { handsRoot.visible = false; api.armR.visible = false; M.look = 1; M.lookAt = { x: F0.x, y: 1.5, z: F0.z }; });
-    sfx(0.5, 'goldswell', 0.9);
     /* (v21.9: on a NARROW screen the frame holds the figure's body and head — its points within `r` of its own axis —
        and lets the spear and the tail run past the edges: they make it 2.5 m across, and no angle inside this room
        holds that and the medium in a portrait frame (measured, every candidate wanted the lens 7.1–9.0 m back). Its
@@ -5769,9 +5819,6 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       if (!fA || (ok && (!okA || (NARROW && D < DA)))) { aA = a; fA = f; DA = D; okA = ok; }
       if (ok && !NARROW) break;
     }
-    tr(0.55, 1.4, (k) => put(back(T0, fA, DA * (1.14 - 0.14 * k)), T0), smoothK);
-    tr(0.55, 0.95, (k) => R.hanu(k, P, E, A0, 0, 0), smoothK);
-    tr(0.55, 1.0, (k, t) => R.aura(k, t), smoothK);
     /* 3 · 1.4–LAND · IT CHARGES, and the lens goes with it (Chad's pan, v21.8): from the line's −x side the camera
        tracks it down the line and pulls back as it comes, so that it lands with the medium in the same frame — the
        whole figure, his hat, his chair and the table between them, the GAP between them being the point of the
@@ -5781,7 +5828,8 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
        down the line at the medium, the only way a portrait frame holds them both (photographed: square-on, the lens
        was pinned to the wall with the stools across the foreground, and the medium was out of the frame). Two gold
        echoes trail it down the line it charges along; it leaves the floor and comes down onto it */
-    sfx(1.3, 'hanulunge', 1);
+    sfx(L0 - 0.1, 'hanulunge', 1);
+    sfx(L0, 'hanumanroar', 1);                     // v21.12: the roar, at the very moment the lunge begins
     const lungeAt = (q) => ({ push: A0 + (A1 - A0) * q, lift: LIFT * Math.sin(Math.PI * Math.min(1, Math.max(0, (q - 0.08) / 0.92))),
                               tilt: TILT * Math.min(1, q * 1.6) });
     const box1 = coreOf(R.corners(P, E, A1, 0, REAR), A1, 0.7).concat(MED_PTS), T1 = cen(box1);
@@ -5802,7 +5850,96 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
     }
     const C1 = back(T1, fB, DB), D0 = fitD(T0, fB, box0) * 1.12, C0 = back(T0, fB, D0);
     F.roarFrame = { DA, DB, D0, aA, thB, A0, A1, T0, T1, C0, C1, fA, fB, box0, box1, cands };   // (what the framing measured: probes read it)
-    tr(1.4, LAND, (k) => {
+    /* 2 · 0.55–ARRIVE–ORB0 · THE REVEAL (v21.12): CUT, and we are out of him, where the circle will begin — a
+       three-quarter front of it on the line's −x side — and it COMES INTO VIEW: out of nothing at the height of its
+       chest, growing to its own size (the zoom) and settling onto its feet, its shell burning bright, two larger copies
+       of it closing in on it, the embers drawn in to it out of the dark; at ARRIVE it is wholly there — the bloom of
+       its sound, a short flash, a ring off its chest and one across the floor, the medium starting in his chair — and
+       it STANDS there glowing for a second, the lens easing in */
+    const appearK = (t) => cl01((t - 0.55) / (ARRIVE - 0.55));
+    const zoomSc = (k) => { const u = k - 1; return 0.42 + 0.58 * (1 + 2.2 * u * u * u + 1.2 * u * u); };   // (a little past its size, and back)
+    const zoomLift = (sc) => Math.max(0, (1 - sc) * 1.05);                                                  // (it grows about its chest)
+    const glowHold = (t) => 1.35 + 0.15 * Math.sin(t * 3.1);
+    /* THE CIRCLE: about its core where it stands (T0 — on a phone its body and head, box0), at a man's eye height,
+       from AL0 (0 is in front of it, between it and the medium; +π/2 the line's −x side) all the way round and on to
+       the lunge's own angle, so the lens arrives where the charge begins. The distance at each angle is what THIS
+       screen needs to hold its core (fitD), smoothed so the lens glides rather than breathes; the lens stays inside
+       the room and above the stools, the urn, the joss table and the medium's table where it passes over them, and
+       never looks at it through them */
+    const AL0 = 0.44, ORB_Y = 1.62, ORB_N = 144;
+    const offs = (al) => ({ x: ux * Math.cos(al) + nx * Math.sin(al), z: uz * Math.cos(al) + nz * Math.sin(al) });
+    const lensAt = (al, Rh, y) => { const o = offs(al); return { x: T0.x + o.x * Rh, y, z: T0.z + o.z * Rh }; };
+    const inRoom = (L) => L.x > RM.x0 + 0.3 && L.x < RM.x1 - 0.3 && L.z > RM.z0 + 0.3 && L.z < RM.z1 - 0.3;
+    const needR = (al, y) => {      // the horizontal distance at which its core fills no more than this screen's frame
+      let Rh = 2.4;
+      for (let it = 0; it < 6; it++) {
+        const L = lensAt(al, Rh, y), f = unit(T0.x - L.x, T0.y - L.y, T0.z - L.z);
+        Rh = Math.max(1.2, fitD(T0, f, box0) * 1.08 * (Math.hypot(f.x, f.z) || 1));
+      }
+      return Rh;
+    };
+    const c0o = { x: C0.x - T0.x, z: C0.z - T0.z };
+    let ALL = Math.atan2(c0o.x * nx + c0o.z * nz, c0o.x * ux + c0o.z * uz);   // the lunge's own angle
+    while (ALL < AL0 + 0.2) ALL += Math.PI * 2;
+    while (ALL > AL0 + 0.2 + Math.PI * 2) ALL -= Math.PI * 2;
+    const SWEEP = Math.PI * 2 + (ALL - AL0);
+    const orbR = [], orbY = [];
+    let orbShort = 0;
+    for (let i = 0; i <= ORB_N; i++) {
+      const al = AL0 + SWEEP * i / ORB_N;
+      let y = ORB_Y, Rh = needR(al, y);
+      for (let g = 0; g < 8 && !inRoom(lensAt(al, Rh, y)); g++) Rh -= 0.12;          // (a wall pulls it in)
+      orbShort = Math.max(orbShort, needR(al, y) - Rh);
+      for (let g = 0; g < 8 && (!clearAt(lensAt(al, Rh, y)) || !seen(lensAt(al, Rh, y), T0)); g++) y += 0.1;   // (over the furniture)
+      orbR.push(Rh); orbY.push(y);
+    }
+    /* (smoothed: the nearest the walls allow is a ceiling; the widest the figure needs nearby is a floor — so a
+       max over ±20° under the ceiling, then a mean over ±20°) */
+    const W = Math.round(ORB_N * (0.35 / SWEEP)), sm1 = (arr, fn) => arr.map((_, i) => fn(arr.slice(Math.max(0, i - W), Math.min(arr.length, i + W + 1))));
+    const cap = orbR.slice();
+    const orbRs = sm1(sm1(orbR, a => Math.max(...a)).map((v, i) => Math.min(v, cap[i])), a => a.reduce((x, y) => x + y, 0) / a.length);
+    const orbYs = sm1(sm1(orbY, a => Math.max(...a)), a => a.reduce((x, y) => x + y, 0) / a.length);
+    const orbAt = (p) => { const f = cl01(p) * ORB_N, i = Math.min(ORB_N - 1, Math.floor(f)), w = f - i;
+      return lensAt(AL0 + SWEEP * cl01(p), orbRs[i] + (orbRs[i + 1] - orbRs[i]) * w, orbYs[i] + (orbYs[i + 1] - orbYs[i]) * w); };
+    /* the speed: gathering over its first 1.6 s, the circle at an even pace, settling over its last 2.2 s */
+    const ORB_T = ORB1 - ORB0, TA = 1.6, TD = 2.2, VMAX = 1 / (ORB_T - (TA + TD) / 2);
+    const orbP = (t) => { const u = Math.max(0, Math.min(ORB_T, t - ORB0));
+      if (u < TA) return 0.5 * VMAX * u * u / TA;
+      if (u < ORB_T - TD) return VMAX * (TA / 2 + (u - TA));
+      const r = ORB_T - u; return 1 - 0.5 * VMAX * r * r / TD; };
+    F.roarFrame.orbit = { AL0, ALL, SWEEP, short: +orbShort.toFixed(2), Rmin: +Math.min(...orbRs).toFixed(2), Rmax: +Math.max(...orbRs).toFixed(2),
+                          ymin: +Math.min(...orbYs).toFixed(2), ymax: +Math.max(...orbYs).toFixed(2), start: orbAt(0), end: orbAt(1) };
+    // the reveal's lens: at the circle's start, easing in on it
+    const L0p = orbAt(0), pushIn = (k) => mix(mix(T0, L0p, 1.1), L0p, k);
+    tr(0.55, ORB0, (k, t) => put(pushIn(sm(cl01((t - 0.55) / (ORB0 - 0.55)))), T0), rawK);
+    // the figure coming into view: the fade, the zoom, the shell burning bright, then glowing where it stands
+    tr(0.55, ARRIVE, (k, t) => { const a = appearK(t), sc = zoomSc(a);
+      R.hanu(sm(Math.min(1, a * 1.3)), P, E, A0, zoomLift(sc), 0, sc, 1 + 2.2 * (1 - a)); }, rawK);
+    tr(ARRIVE, ORB1, (k, t) => R.hanu(1, P, E, A0, 0, 0, 1, glowHold(t)), rawK);
+    // two larger copies of it closing in on it, gone as it arrives
+    tr(0.55, ARRIVE + 0.05, (k, t) => { const a = appearK(t), cy = 1.0;
+      const e1 = 1 + 1.4 * Math.pow(1 - a, 1.2), e2 = 1 + 2.4 * Math.pow(1 - a, 1.2);
+      R.echoes(P, E, a >= 1 ? null : [{ push: A0, lift: cy - e1, tilt: 0, k: 0.9 * (1 - a) * Math.min(1, a * 4), sc: e1 },
+                                      { push: A0, lift: cy - e2, tilt: 0, k: 0.55 * (1 - a) * Math.min(1, a * 3), sc: e2 }]); }, rawK);
+    // its halo and its embers: drawn in as it forms, flaring as it arrives, breathing while it stands and we circle it
+    tr(0.55, ARRIVE, (k, t) => { const a = appearK(t); R.aura(sm(a), t, 1.6 * a, 1 - a); }, rawK);
+    tr(ARRIVE, L0, (k, t) => R.aura(1, t, 0.25 + 0.9 * Math.exp(-(t - ARRIVE) * 2.4) + 0.08 * Math.sin(t * 2.3)), rawK);
+    // ARRIVE: the bloom — a short flash, a ring off its chest and one across the floor
+    const CH0 = at(A0 + 0.1, 0, 1.15);
+    tr(ARRIVE - 0.06, ARRIVE, (k) => R.flash(0.32 * k), rawK);
+    tr(ARRIVE, ARRIVE + 0.42, (k) => R.flash(0.32 * (1 - k)), smoothK);
+    tr(ARRIVE, ARRIVE + 0.7, (k) => R.ring(k, CH0), rawK);
+    tr(ARRIVE, ARRIVE + 0.85, (k) => R.floorRing(k, { x: F0.x, z: F0.z }, 1.6), rawK);
+    // the medium starts in his chair as it arrives — a little; his full startle is for the lunge
+    tr(ARRIVE - 0.1, ARRIVE + 0.35, (k) => { M.recoil = 0.35 * k; }, smoothK);
+    // its glow under the hold and the circle (a hum, an octave laid over it), gone under the lunge's roar
+    sfx(ARRIVE - 0.4, 'hanuhold', 1);
+    sfxFade(L0 - 0.45, L0 + 0.25, 'hanuhold');
+    /* 3' · ORB0–ORB1 · THE CIRCLE, and ORB1–L0 THE LOCK: the lens goes all the way round it at a man's eye height,
+       looking at its core, and on to the lunge's own angle; then it settles onto the lunge's first frame (C0, T0) */
+    tr(ORB0, ORB1, (k, t) => put(orbAt(orbP(t)), T0), rawK);
+    tr(ORB1, L0, (k) => put(mix(orbAt(1), C0, sm(k)), T0), rawK);
+    tr(L0, LAND, (k) => {
       const q = gather(k), L = lungeAt(q);
       R.hanu(1, P, E, L.push, L.lift, L.tilt);
       const ek = Math.min(1, q * 5) * (1 - Math.max(0, (k - 0.82) / 0.18));
@@ -5812,21 +5949,21 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       if (k < 1) M.lookAt = { x: fx + ux * 0.3, y: 1.5 + L.lift, z: fz + uz * 0.3 };   // (a track past its end still runs: only while it comes)
       put(mix(C0, C1, q), mix(T0, T1, q));
     }, rawK);
-    tr(1.0, 3.0, (k, t) => R.aura(1, t, t < STAMP ? 0 : Math.exp(-(t - STAMP) * 3.5)), rawK);
+    tr(L0, 3.0 + DT, (k, t) => R.aura(1, t, t < STAMP ? 0 : Math.exp(-(t - STAMP) * 3.5)), rawK);
     /* 4 · LAND–3.0 · it lands short of him and REARS — up off its forward lean to a little back of upright, a small
        lift under it — and the stamp goes out of IT: the low boom and the gong, a gold ring off its own chest, a short
        hard flash, the room shaken and the lanterns swinging, its halo swelling; the lens eases in on the two of them */
     step(LAND, () => { M.lookAt = { x: F1.x + ux * 0.3, y: 1.55, z: F1.z + uz * 0.3 }; });
-    tr(LAND, 3.0, (k) => R.hanu(1, P, E, A1, 0.06 * Math.sin(Math.PI * Math.min(1, k * 1.5)), TILT + (REAR - TILT) * sm(Math.min(1, k * 1.3))), rawK);
-    tr(LAND, 3.1, (k) => put(mix(C1, T1, 0.06 * sm(k)), T1), rawK);
+    tr(LAND, 3.0 + DT, (k) => R.hanu(1, P, E, A1, 0.06 * Math.sin(Math.PI * Math.min(1, k * 1.5)), TILT + (REAR - TILT) * sm(Math.min(1, k * 1.3))), rawK);
+    tr(LAND, 3.1 + DT, (k) => put(mix(C1, T1, 0.06 * sm(k)), T1), rawK);
     sfx(STAMP, 'hanuhit', 1);
     sfx(STAMP + 0.04, 'hanucrash', 0.85);
     tr(STAMP, STAMP + 0.05, (k) => R.flash(0.62 * k), rawK);
     tr(STAMP + 0.05, STAMP + 0.32, (k) => R.flash(0.62 * (1 - k)), smoothK);
     tr(STAMP + 0.02, STAMP + 0.62, (k) => R.ring(k, CHEST), rawK);
     tr(STAMP, STAMP + 0.75, (k) => R.floorRing(k, { x: F1.x + ux * 0.2, z: F1.z + uz * 0.2 }, Math.min(2.2, dl - A1 - 0.6)), rawK);
-    tr(STAMP + 0.04, 3.2, (k) => F.gust(k), smoothK);
-    tr(3.2, 4.6, (k) => F.gust(1 - k), smoothK);
+    tr(STAMP + 0.04, 3.2 + DT, (k) => F.gust(k), smoothK);
+    tr(3.2 + DT, 4.6 + DT, (k) => F.gust(1 - k), smoothK);
     tr(LAND + 0.1, LAND + 0.6, (k) => R.streak(1 - k, F0, F1, 1.2), smoothK);
     /* 5 · and the medium, TAKEN ABACK — a little (Chad: "taken aback a little, but not look like he entirely
        collapsed backwards ... his collapse backwards made him collide into the seat. That should not happen"): as
@@ -5834,56 +5971,61 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
        his chair — never through it (RECOIL: his back sits a centimetre off the chair's at rest, measured, so his
        trunk may lean back 2.6° at most and the rest of the startle is his hands and his shoulders) — and his gasp
        after the gong's first blow (a voice ducks every other sound 8 dB: on the blow it took the gong's weight) */
-    tr(2.3, 2.85, (k) => { M.recoil = k; }, smoothK);
-    tr(3.9, 4.4, (k) => { M.recoil = 1 - k; }, smoothK);
-    sfx(3.0, 'md3gasp');                              // 1.41 → 4.41
+    tr(2.3 + DT, 2.85 + DT, (k) => { M.recoil = 0.35 + 0.65 * k; }, smoothK);   // (v21.12: from the little start he gave as it arrived)
+    tr(3.9 + DT, 4.4 + DT, (k) => { M.recoil = 1 - k; }, smoothK);
+    sfx(3.0 + DT, 'md3gasp');                         // 1.41 s
     /* 6 · 3.1–4.1 · CUT to him: the medium in his chair, taken aback, the gold going out of the air before him (the
        figure, its halo, its embers fading where it reared), his eyes going from where it was to the young man */
-    tr(3.0, 3.55, (k) => R.hanu(1 - k, P, E, A1, 0, REAR), smoothK);
-    tr(3.0, 3.7, (k, t) => R.aura(1 - k, t), rawK);
-    tr(3.1, 4.1, (k) => put(mix(at(dl - 1.08, 0.8, E.y + 0.1), at(dl - 0.98, 0.7, E.y + 0.13), k), { x: E.x, y: E.y - 0.02, z: E.z }), smoothK);
-    step(3.6, () => { M.lookAt = { x: P.x, y: 1.62, z: P.z }; });
+    tr(3.0 + DT, 3.55 + DT, (k) => R.hanu(1 - k, P, E, A1, 0, REAR), smoothK);
+    tr(3.0 + DT, 3.7 + DT, (k, t) => R.aura(1 - k, t), rawK);
+    tr(3.1 + DT, 4.1 + DT, (k) => put(mix(at(dl - 1.08, 0.8, E.y + 0.1), at(dl - 0.98, 0.7, E.y + 0.13), k), { x: E.x, y: E.y - 0.02, z: E.z }), smoothK);
+    step(3.6 + DT, () => { M.lookAt = { x: P.x, y: 1.62, z: P.z }; });
     /* 7 · 4.1– · his eyes again: the medium still in his chair, staring at him — and THEN he stands (v21.8: he stood
        inside the close shot, into the lens, photographed at 4.4), out of his chair over 0.6 s with the sword and the
        bell coming up with him, the lens lifting with his face; the rites */
-    step(4.1, () => { handsRoot.visible = true; api.armR.visible = true; });
-    camTo(4.1, 5.2, { x: P.x + ux * 0.18, y: 1.64, z: P.z + uz * 0.18 }, { x: P.x - ux * 0.05, y: 1.62, z: P.z - uz * 0.05 }, smoothK);
-    tr(4.1, 4.45, () => { yaw.rotation.y = yP; pitch.rotation.x = pP; }, rawK);
-    tr(4.45, 5.2, (k) => { yaw.rotation.y = yP; pitch.rotation.x = pP + (0.08 - pP) * k; }, smoothK);
-    step(4.45, () => { F.medStand(true); F.rite(true); F.asstLook(1); });
-    sfx(4.45, 'stoolscrape', 0.5);
-    step(5.0, () => { M.lookAt = null; });
+    step(4.1 + DT, () => { handsRoot.visible = true; api.armR.visible = true; });
+    camTo(4.1 + DT, 5.2 + DT, { x: P.x + ux * 0.18, y: 1.64, z: P.z + uz * 0.18 }, { x: P.x - ux * 0.05, y: 1.62, z: P.z - uz * 0.05 }, smoothK);
+    tr(4.1 + DT, 4.45 + DT, () => { yaw.rotation.y = yP; pitch.rotation.x = pP; }, rawK);
+    tr(4.45 + DT, 5.2 + DT, (k) => { yaw.rotation.y = yP; pitch.rotation.x = pP + (0.08 - pP) * k; }, smoothK);
+    step(4.45 + DT, () => { F.medStand(true); F.rite(true); F.asstLook(1); });
+    sfx(4.45 + DT, 'stoolscrape', 0.5);
+    step(5.0 + DT, () => { M.lookAt = null; });
     /* and the last second eases onto the decision's own framing — afterRoar puts the view there in one frame, and
        from the film's end that was a 22° drop and 0.15 m back as the letterbox left (the v21.1 review) */
     const D = F.DECIDE_AT, yD = Math.atan2(-(E.x - D.x), -(E.z - D.z));
-    camTo(11.6, 12.6, { x: P.x - ux * 0.05, y: 1.62, z: P.z - uz * 0.05 }, { x: D.x, y: 1.62, z: D.z }, smoothK);
-    tr(11.6, 12.6, (k) => { yaw.rotation.y = mixAngle(yP, yD, k); pitch.rotation.x = 0.08 + (F.DECIDE_PITCH - 0.08) * k; }, smoothK);
+    camTo(11.6 + DT, 12.6 + DT, { x: P.x - ux * 0.05, y: 1.62, z: P.z - uz * 0.05 }, { x: D.x, y: 1.62, z: D.z }, smoothK);
+    tr(11.6 + DT, 12.6 + DT, (k) => { yaw.rotation.y = mixAngle(yP, yD, k); pitch.rotation.x = 0.08 + (F.DECIDE_PITCH - 0.08) * k; }, smoothK);
     /* the tongue (v21.4–v21.6: a whisper in no language, 4.27 s) on the cut back to his eyes — v21.8: 2.1 s later than
        it was, the lunge and the medium's shock before it — and everything after it moved with it, each the same
        distance from its end: the bells and the sword inside it, the drumroll under its last breath, the assistant, the
        drum, the gong damped with the drum's tail at the end (the v21.1 review: cut at the end, the gong CHOKED) */
-    sfx(5.0, 'md3chant');                                 // 4.27 → 9.27
-    sfx(5.5, 'taobell', 0.8);
-    sfx(6.4, 'swordswish', 0.7);
-    sfx(7.8, 'taobell', 0.7);
-    sfx(8.3, 'swordswish', 0.75);
-    sfx(9.0, 'drumroll3', 0.75);                          // (under its last breath)
-    sfx(9.5, 'as3back');                                  // 2.51 → 12.01
-    sfx(10.2, 'drum3', 0.8); sfx(10.8, 'drum3', 0.7); sfx(11.4, 'gong3', 0.55);
-    sfxFade(12.0, 12.7, 'gong3'); sfxFade(12.2, 12.7, 'drum3');
-    /* the body over every camera track: the roar's shake, the stamp's (the hardest), the rites' (lighter), settling */
+    sfx(5.0 + DT, 'md3chant');                            // 4.27 s
+    sfx(5.5 + DT, 'taobell', 0.8);
+    sfx(6.4 + DT, 'swordswish', 0.7);
+    sfx(7.8 + DT, 'taobell', 0.7);
+    sfx(8.3 + DT, 'swordswish', 0.75);
+    sfx(9.0 + DT, 'drumroll3', 0.75);                     // (under its last breath)
+    sfx(9.5 + DT, 'as3back');                             // 2.51 s
+    sfx(10.2 + DT, 'drum3', 0.8); sfx(10.8 + DT, 'drum3', 0.7); sfx(11.4 + DT, 'gong3', 0.55);
+    sfxFade(12.0 + DT, 12.7 + DT, 'gong3'); sfxFade(12.2 + DT, 12.7 + DT, 'drum3');
+    /* the body over every camera track: the jolt in his eyes, a tremor as it comes into view and its bloom on ARRIVE,
+       stillness while it stands and we circle it (v21.12), the charge's, the stamp's (the hardest), the rites'
+       (lighter), settling */
     const shake = (t) => t < 0.55 ? 1 - 0.4 * t / 0.55
+                       : t < ARRIVE - 0.1 ? 0.05
+                       : t < ARRIVE + 0.6 ? 0.42 * (1 - (t - (ARRIVE - 0.1)) / 0.7)
+                       : t < L0 ? 0
                        : t < STAMP ? 0.12
                        : t < STAMP + 1.25 ? 1.1 * (1 - (t - STAMP) / 1.25)
-                       : t < 4.45 ? 0
-                       : Math.max(0, 0.3 * (1 - (t - 4.45) / 2.6));
-    tr(0, 12.7, (k, t) => {
+                       : t < 4.45 + DT ? 0
+                       : Math.max(0, 0.3 * (1 - (t - 4.45 - DT) / 2.6));
+    tr(0, 12.7 + DT, (k, t) => {
       const a = shake(t);
       yaw.rotation.y += a * 0.02 * Math.sin(t * 31.0);
       pitch.rotation.x += a * 0.016 * Math.sin(t * 27.0 + 1.3);
       camera.rotation.z = a * 0.025 * Math.sin(t * 23.0 + 0.4);
     }, rawK);
-    step(12.6, () => { camera.rotation.z = 0; R.flash(0); R.hanu(0, P, E); R.off(); M.recoil = 0; M.lookAt = null; handsRoot.visible = true; api.armR.visible = true; });
+    step(12.6 + DT, () => { camera.rotation.z = 0; R.flash(0); R.hanu(0, P, E); R.off(); M.recoil = 0; M.lookAt = null; handsRoot.visible = true; api.armR.visible = true; });
   }
 
   /* ============================================================ THE ENDINGS

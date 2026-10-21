@@ -1,0 +1,145 @@
+{
+ "_note": "v21.12-v21.13 effects/beds on flow x1GA0BZOmq4QkgJCd4V4 (sfxnodes.json). The second run hit a 429 queue limit: the names with fewer than four sessions are re-run once the queue drains (a 429 never started a generation).",
+ "hanuappear": [
+  "G7FJaji2O51qShzg8DL3",
+  "3Baps9YsB15U53sjVTtR",
+  "8mtoWVcv15V2ItRfUpIl",
+  "wNprgoi7sYz69w0qlvNO"
+ ],
+ "hanuhold": [
+  "tyWZv4LZYSRoT9SWCXdQ",
+  "H2ZFpmtKwcHMIoSi2lr4",
+  "zqTesWgIJIPKYBxTalnY",
+  "vaIwj9weIT1KP6XZo11u"
+ ],
+ "shopair": [
+  "Qpu11NiQ74PNA7YOhKo3",
+  "IKpaFTpNjXxi81QXhAwy",
+  "at9zIeiYdlT2drkjwiid",
+  "bQ7MzuylIYl6mUZTLZlT"
+ ],
+ "mallwalla": [
+  "ksQDVrxRdohNqAddTijh",
+  "EMGeNX6g4zeHQIHosPMj",
+  "5EecxKMfVU4BfBFGe6XF",
+  "SL1cwynIsgJETfu1KK37"
+ ],
+ "mshutter": [
+  "Ct1GCOgwbnnnsudCvZpm",
+  "NBodezRl0oL9612LcLBK",
+  "eR6kDA5JqjxMQrgWZjdA",
+  "y07bNheDdmmMNZlzKM2D"
+ ],
+ "trolley": [
+  "gbLRZmGRT8knFsniM5nn",
+  "3CjxHyU5jaMw4aZw5D67",
+  "qWJ0xODkF9q0rBnHvSZo",
+  "3r4leaRatvFnwGlj4hgY"
+ ],
+ "phonering": [
+  "1e0g1A8JXuR1m3oEGEWa",
+  "LmddFUf6vm9HMPBqwif3",
+  "Ukrd1RUAfo92FlF5Rcm4",
+  "gUMPX5an4LuA21xYcUd0"
+ ],
+ "cashdraw": [
+  "OkPVCg662gmaPBwAF4tf",
+  "mf00SK7CjL5wGyGPN3Pq",
+  "208bfu0y9yxkUgvPxhL1",
+  "HqdJePo9QSlU4lTLdBr5"
+ ],
+ "bagrustle": [
+  "8bbU6oqQQrXh19mJ5INi",
+  "8B0ISjzID7Xq4QMOUCXU",
+  "wNeR9tq6y8tZzL3Ulili",
+  "8AHXJtoqhyvcTV1HauD7"
+ ],
+ "childpass": [
+  "bLgmgUyKSCACkNUMW66T",
+  "4dgzONSWfqH5pmvr5sTk",
+  "VmFbfgVG14pNYpyZUHma",
+  "WT0fqVjWb7KCHgXU4sdH"
+ ],
+ "slipperspass": [
+  "ihqy8YPaMeCN4QXXfQ1Q",
+  "LrLugYgrlIW8PWOQA8NM",
+  "CbMHjmKfKug1Ps950W7r",
+  "JKc3SLBCIjtCHCmDI7P2"
+ ],
+ "farradio": [
+  "yjQcxzeoVMO42vyEfG10",
+  "9cOyuN4dXHaozEXFFbbB"
+ ],
+ "nightinsects": [
+  "UKWTgiCUWGdjeLmCsucE",
+  "4LlkH5EOUR3tFtlp4lEE",
+  "jCV88jOKs1WbqOOjuYnR",
+  "OjnjxcNJCBtQnmTFEgXY"
+ ],
+ "shrinefan": [
+  "d1Y9s3M4kDulZpJ8Nn00",
+  "hcAraoDfdxkCd1ifLgIj",
+  "p50YA8pMCnk5ly80QmAk",
+  "rWCmCTg9LtTzC2o9J6nu"
+ ],
+ "gecko": [
+  "UY82CWDzz6k9uwDImQrP",
+  "4y2dhD3ofQl48q6TMeNo",
+  "xvcy9nUOoU6i3m6HajjI",
+  "9pwaNfGiZZaHd6x6J36M"
+ ],
+ "motorbike": [
+  "QOQVdJmQoHO0ipdPN3eB",
+  "qvTDjHUfpChGfZNKqZ0z",
+  "xWB150Z5TEQln3aAB6ts",
+  "sd6RQ6nRBSgdHPZhgiDu"
+ ],
+ "carpass": [
+  "5hQhzPCrSBeWV223uHuj",
+  "XeAK8MAN9AQ6YiwhzjtU",
+  "cVjQakgn6VDxNMsU4MBi",
+  "U93hFXGQkPHCb0Wp5uCv"
+ ],
+ "dogfar": [
+  "pACzdHNajxA5jNhKUs6d",
+  "LnnA4zUvuvsTg0AmNyOD",
+  "Ya61XzprVsf2on61qiZ5",
+  "EGTOQMbpaCwVvxYfK6Lt"
+ ],
+ "kopiclatter": [
+  "iCRisAF69oAeRV4Ga2tF",
+  "9pbZLofJfrJz4ZYTNczc",
+  "wZCmRZaQbli0K9DpMjZ7",
+  "9dPcQyhzEdxuHeNAc2Rt"
+ ],
+ "tvfar": [
+  "F0gwnQcdA7WHqnqfRB8N",
+  "MwQnkqsUiDTW9CWhWijl",
+  "twFQ8eWSHwk3YtrTANsy",
+  "qgg1V27HvV81M6h3JuYa"
+ ],
+ "windchime": [
+  "d0AbxdJ1MTTpKibeP7og",
+  "6bQo9nQYqW07hdL2CLIu",
+  "9HA8N9czivEuJKTBUsze",
+  "vFPivGiC2sXoFvgR9IuR"
+ ],
+ "catfar": [
+  "4igM8Cquol6a9LwmRVX0",
+  "ODjX7KRVkOpzqZzglNbw",
+  "T1lmcSvWlHeY3I9Z0qca",
+  "Ae9oXPizRlXMAgUqMM7P"
+ ],
+ "hanuappear2": [
+  "axGclQrfvFgel4Hu785N",
+  "xMBuyM5hjshw0v8JtmJw",
+  "csS37IvrnmZokw2hLTGC",
+  "c7K8ODBqYcnqgaX1Iw81"
+ ],
+ "shrinefan2": [
+  "VCplK0daTi7mbT9hfh6V",
+  "hHvNdUjHvpqeeRCSYiSs",
+  "olUAw0zyQVMY5ycvonFT",
+  "jvFphdU9DYJ3ac8KdA8C"
+ ]
+}

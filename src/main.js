@@ -6849,6 +6849,7 @@ const ADULT_TAKES = new Set([
   /* v21.0 · episode 3 chapter 3 */
   'z3pro0', 'z3pro3', 'z3pro4', 'z3pro5', 'z3look1', 'z3look2', 'z3look3', 'z3look4',   // z3pro0, z3pro5: v21.7
   'z3masters',                                                                            // v21.11: his answer as the gallery of the masters opens
+  'z3what',                                                                               // v21.12: his surprised answer to the medium, before the roar
   'z3thanks', 'z3shift1', 'z3shift2', 'z3breath', 'z3knew', 'z3night', 'z3shrine', 'z3walk',
   'z3A1', 'z3A2', 'z3B1', 'z3B2', 'z3thank', 'z3C2', 'z3D2', 'z3D3',
   'z3close', 'z3next', 'z3A', 'z3B', 'z3C', 'z3D']);
@@ -6908,7 +6909,8 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
   /* v21.8: the monk who leads the chant (Arthur), the auntie's "Sadhu" in place of her "Amituofo", the medium's gasp
      at the Hanuman (the owner's Namo is retired with the monk's coming) */
   'mk3chant', 'cu3sadhu', 'md3gasp',
-  'ow3masters']);   // v21.11: the owner introduces the gallery of the masters   // v19.4: their whispers in play, as his hands move      // v18.0: the laywoman beside him (Onnie) and Yai in front (Air), whispered
+  'ow3masters',   // v21.11: the owner introduces the gallery of the masters
+  'wf3thanks', 'md3fu', 'fa3thanks']);   // v21.12: the wife and the father thank the medium, and his talisman for the father   // v19.4: their whispers in play, as his hands move      // v18.0: the laywoman beside him (Onnie) and Yai in front (Air), whispered
 const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || ADULT_TAKES.has(name) || CAST_TAKES.has(name);
 /* v6.9: his WHISPERS go round the bus. Chad wanted the three pick-up
    reactions "almost whispering to himself" and they were re-voiced as
@@ -10452,6 +10454,8 @@ const STING_SAMPLE = {
   z3pro0: ['z3pro0', 1], z3pro3: ['z3pro3', 1], z3pro4: ['z3pro4', 1], z3pro5: ['z3pro5', 1], ow3hello: ['ow3hello', 1],   // z3pro0, z3pro5: v21.7
   z3look1: ['z3look1', 1], z3look2: ['z3look2', 1], z3look3: ['z3look3', 1], z3look4: ['z3look4', 1], ow3call: ['ow3call', 1],
   ow3masters: ['ow3masters', 1], z3masters: ['z3masters', 1],   // v21.11: the owner introduces the gallery of the masters; his answer
+  wf3thanks: ['wf3thanks', 1], md3fu: ['md3fu', 1], fa3thanks: ['fa3thanks', 1], z3what: ['z3what', 1],   // v21.12: the shrine's thanks, the talisman, his answer
+  hanuappear: ['hanuappear', 1], hanuhold: ['hanuhold', 0.55],   // v21.12: the Hanuman fades, zooms and glows into view; its glow while the lens circles it
   ow3gift1: ['ow3gift1', 1], ow3gift2: ['ow3gift2', 1], z3thanks: ['z3thanks', 1], ow3good: ['ow3good', 1],
   z3shift1: ['z3shift1', 1], z3shift2: ['z3shift2', 1], ow3eh: ['ow3eh', 1], sm3hold: ['sm3hold', 1], sm3cannot: ['sm3cannot', 1],
   st3uncle: ['st3uncle', 1], ow3let: ['ow3let', 1], z3breath: ['z3breath', 1], ow3know: ['ow3know', 1],
