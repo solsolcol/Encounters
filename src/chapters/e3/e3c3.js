@@ -1286,6 +1286,7 @@
       return g;
     }
     const rigs = [];
+    const kopiRigs = [];            // v21.14: the kopitiam's three, across the road from the shrine
     function mkRig(key, opts) {
       const parent = opts.parent || shopG;
       const group = new THREE.Group();
@@ -1500,10 +1501,22 @@
         if (r.bow > 0.001 || r.recoil > 0.001) moving = true;
       }
       if (inB) toolsTick();                       // the sword and the bell, after his take has posed his hands
+      if (inB) kopiTick(now);                     // v21.14: the kopitiam's two, talking across their tables
       if (!inB) { passerTick(wdt); phoneTick(); monkTick(wdt); }
       /* the shadow maps are drawn on demand (v2.x): while someone walks or
          bows, a few times a second (e3c2's v18.5), desktop only */
       if (!LOW && moving && now - shadowAt > 0.25) { shadowAt = now; redoShadows(); }
+    }
+    /* THE KOPITIAM'S TWO (v21.14): the uncle at the middle table and the young man at the next talk across them —
+       each turned toward the other as far as a neck goes (headPost's look, at a fixed point: the other's head), the
+       one speaking nodding, the turn passing every few seconds on the WALL clock, since ending C (a film) is a look
+       at them. The auntie at the first table sits over her kopi; the other two are behind her shoulder. */
+    let kopiTalkAt = 0, kopiWho = 0;
+    function kopiTick(now) {
+      const a = kopiRigs[1], b = kopiRigs[2];
+      if (!a || !b || !a.ready || !b.ready || !a.head || !b.head) return;
+      if (!a.lookAt) { a.lookAt = b.head.getWorldPosition(new THREE.Vector3()); b.lookAt = a.head.getWorldPosition(new THREE.Vector3()); a.look = b.look = 0.85; }
+      if (now >= kopiTalkAt) { kopiWho ^= 1; const t = kopiWho ? b : a; t.nod = 2.2; t.nodT = 0; kopiTalkAt = now + (kopiWho ? 3.4 : 4.6); }
     }
     /* THE BOW (the krap) on a kneeler: about the rig's own right axis, laid
        on what the take wrote and put back before it writes again (the v11.5
@@ -2600,30 +2613,41 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       buildStreet();
       /* THE KOPITIAM, with some depth (VC-5): ending C is a look at it, and it was a flat painted doorway with three
          brown T's for tables — round marble tables and plastic stools spill onto its five-foot way, three people
-         sit late over their kopi, a drinks fridge glows at the side and the light pools out across the paving */
+         sit late over their kopi, a drinks fridge glows at the side and the light pools out across the paving.
+         v21.14 (Chad: "replace those stick figures in the kopitiam with real sitting 3d models"): the three are the
+         chapter's own seated people, so no new download — and every stool is the four-legged plastic one they sit on */
       { const KX = KOPI.x, KZ = KOPI.z, kg = new THREE.Group(); kg.position.y = KOPI.y; shrG.add(kg);   // (v21.8: on the far five-foot way, now built — 0.15 up, 1.4 m further back)
         const marble = new THREE.MeshStandardMaterial({ color: 0xe8e4dc, roughness: 0.4 }), iron = new THREE.MeshStandardMaterial({ color: 0x22201e, roughness: 0.6 });
         const stoolR = new THREE.MeshStandardMaterial({ color: 0xb8241c, roughness: 0.55 }), stoolB = new THREE.MeshStandardMaterial({ color: 0x2a58a8, roughness: 0.55 });
-        const shirt = [0x3a4c5e, 0x6a4a32, 0x2c2c34].map(c => new THREE.MeshStandardMaterial({ color: c, roughness: 0.9 }));
-        const skin = new THREE.MeshStandardMaterial({ color: 0x8a6a52, roughness: 0.8 }), dark = new THREE.MeshStandardMaterial({ color: 0x1c1c22, roughness: 0.9 });
-        for (const m of [marble, iron, stoolR, stoolB, skin, dark, ...shirt]) owned.push({ dispose: () => m.dispose() });
-        const seats = [];
+        for (const m of [marble, iron, stoolR, stoolB]) owned.push({ dispose: () => m.dispose() });
+        const seats = [], TAKEN = [1, 4, 6];
         [-1.7, 0, 1.6].forEach((dx, i) => {
           const x = KX + dx, z = KZ + (i % 2 ? 0.15 : -0.1);
           cyl(0.38, 0.38, 0.03, x, 0.75, z, marble, 18, kg); cyl(0.035, 0.035, 0.72, x, 0.38, z, iron, 6, kg); cyl(0.2, 0.22, 0.02, x, 0.08, z, iron, 12, kg);
           for (let k = 0; k < 3; k++) {
             const a = k * 2.094 + i * 0.7, sx = x + Math.cos(a) * 0.62, sz = z + Math.sin(a) * 0.5;
-            cyl(0.15, 0.17, 0.44, sx, 0.29, sz, (i + k) % 2 ? stoolR : stoolB, 10, kg);
-            seats.push({ x: sx, z: sz, tx: x, tz: z });
+            const col = (i + k) % 2 ? stoolR.color.getHex() : stoolB.color.getHex();
+            if (!TAKEN.includes(seats.length)) plasticStool(kg, sx, sz, 0.46, col);   // (a taken seat's stool comes with its sitter, under his hips)
+            seats.push({ x: sx, z: sz, tx: x, tz: z, col });
           }
           const cup = cyl(0.035, 0.03, 0.08, x + 0.1, 0.81, z - 0.08, marble, 8, kg); cup.castShadow = false;
         });
-        // three of them taken: a seated figure each, turned to its table (lit from behind, they read as people)
-        [seats[1], seats[4], seats[6]].forEach((st, i) => {
-          const g = new THREE.Group(); g.position.set(st.x, 0, st.z); g.rotation.y = Math.atan2(st.tx - st.x, st.tz - st.z); kg.add(g);
-          box(0.34, 0.5, 0.22, 0, 0.8, -0.02, shirt[i], g); box(0.3, 0.14, 0.42, 0, 0.56, 0.16, dark, g); box(0.28, 0.42, 0.12, 0, 0.27, 0.36, dark, g);
-          const hd = new THREE.Mesh(new THREE.SphereGeometry(0.1, 12, 10), skin); hd.position.set(0, 1.17, 0.02); g.add(hd);
-          for (const sx of [-0.2, 0.2]) { const ar = box(0.08, 0.36, 0.08, sx, 0.84, 0.1, shirt[i], g); ar.rotation.x = -0.9; }
+        /* three of them taken, each turned to his table: a woman over her kopi with her hands in her lap (the shop
+           auntie's file and frame), an uncle on the chair take's upright frame (the father's), a young man (the shop
+           youth's). Each is placed by his HIPS — the take's root sits forward of them — so the stool mkRig builds under
+           the hips stands where the seat is, and nothing casts: the lamp over them is painted */
+        [[seats[1], 'sitclap', { height: 1.22, idle: SIT_W, at: 0.0, sizeAt: 0.15 }],
+         [seats[4], 'botak', { height: 1.72, sizeOn: 'Walking', sizeAt: 0.122, idle: 'Chair_Sit_Idle_M', at: 0.06 }],
+         [seats[6], 'sitshout', { height: 1.27, idle: SHOUT, at: 0.0 }]].forEach(([st, key, o]) => {
+          /* (under shrPeople — World B's people, ticked while it is up, a film included; it sits at the world's
+             origin, so the street's x is shifted by SHR.x) */
+          kopiRigs.push(mkRig(key, { parent: shrPeople, x: SHR.x + st.x, y: KOPI.y, z: st.z, ry: Math.atan2(st.tx - st.x, st.tz - st.z), seated: true, stool: st.col, ...o,
+            then: (r) => {
+              r.model.traverse(q => { if (q.isMesh) q.castShadow = false; });
+              if (!r.hips) return;
+              r.hips.getWorldPosition(_v);
+              r.group.position.x += SHR.x + st.x - _v.x; r.group.position.z += st.z - _v.z;
+            } }));
         });
         const fr = box(0.72, 1.85, 0.55, KX - 2.3, 0.93, 17.55, iron, kg);
         const fg = new THREE.Mesh(new THREE.PlaneGeometry(0.6, 1.6), new THREE.MeshBasicMaterial({ color: 0xdcecff, fog: true }));
@@ -3587,57 +3611,27 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
     /* (from +50 to −80 now, at the same 13.9 m/s: it drove off the road's end at −34 and blinked out on a desktop's
        screen; the road runs to ±90 and the fog has it by −80 — GF-6) */
     const BUS = { x0: 50, x1: -80, z: 11.45 };          // (v21.8: 11.6 → 11.45, clear of the cars parked at the far kerb)
-    /* a Singapore single-decker, built once for the night (ending C's, unlit materials with its windows lit) and once
-       for the morning (the film's, lit materials, dark glass, no lamps) */
+    /* a Singapore single-decker (v21.14, Chad: "the buses look too basic and plain, they need to be further improved
+       significantly"): makeCityBus below builds it — extruded from its side profile, its cabin seen through the glass —
+       once for the night (ending C's: unlit materials, the cabin lit) and once for the morning (the film's: lit
+       materials, dark glass). The night's keeps what the box bus had: its lamps' glow, the beam they throw on the road
+       ahead and the cabin's light spilling under it */
     function makeBus(parent, day) {
-      const g = new THREE.Group(); g.visible = false; parent.add(g);
-      const M = (o) => day ? new THREE.MeshStandardMaterial({ roughness: 0.45, ...o }) : new THREE.MeshBasicMaterial({ fog: true, ...o });
-      const body = M({ color: day ? 0x55a043 : 0x5c6066 }), skirt = M({ color: day ? 0x2c3032 : 0x2a2c30 }),
-            band = M({ color: day ? 0xeeeee6 : 0x8a2a20 }),
-            win = day ? new THREE.MeshStandardMaterial({ map: tex(makeBusWindowsDay(THREE, cnv)), roughness: 0.15, metalness: 0.2 }) : new THREE.MeshBasicMaterial({ map: tex(makeBusWindows(THREE, cnv)), fog: true }),
-            glass = day ? new THREE.MeshStandardMaterial({ color: 0x1e2a32, roughness: 0.12, metalness: 0.35 }) : win,   // the windscreen (and the rear): plain glass by day
-            rearWin = day ? glass : M({ color: 0xe9e1c6 }),                                                               // at night the cabin's light through it
-            plate = M({ map: tex(makeBusPlate(THREE, cnv)) }),
-            sign = new THREE.MeshBasicMaterial({ map: tex(makeBusSign(THREE, cnv)), fog: true }), tyre = M({ color: 0x101010 });
-      for (const m of new Set([body, skirt, band, win, glass, rearWin, plate, sign, tyre])) owned.push({ dispose: () => m.dispose() });   // (their maps go with madeTex)
-      /* a single-decker 3.15 m tall: the body from 1.0 m up, a dark skirt below it to 0.32, and the tyres INSIDE the
-         skirt's line (their outer face at 1.25 against the skirt's 1.26), so from the side only their lower third shows
-         under the skirt — the first build had them poking out of the body as black discs */
-      box(12.0, 2.15, 2.5, 0, 2.075, 0, body, g, false);
-      box(12.02, 0.68, 2.52, 0, 0.66, 0, skirt, g, false);
-      box(12.04, 0.12, 2.54, 0, 1.04, 0, band, g, false);
-      for (const s of [-1, 1]) plane(11.2, 0.95, win, 0.25, 2.2, s * 1.262, s > 0 ? 0 : Math.PI, g);             // the windows both sides
-      plane(2.3, 1.2, glass, -6.012, 2.15, 0, -Math.PI / 2, g);                                                    // the windscreen
-      plane(1.7, 0.28, sign, -6.02, 2.95, 0, -Math.PI / 2, g);                                                     // the route, in amber
-      plane(1.9, 0.75, rearWin, 6.012, 2.4, 0, Math.PI / 2, g);                                                    // the rear window
-      plane(0.52, 0.13, plate, 6.012, 1.32, 0, Math.PI / 2, g);                                                    // and its plate
-      for (const [x, z] of [[-4.2, -1.13], [-4.2, 1.13], [3.6, -1.13], [3.6, 1.13]]) { const w = cyl(0.48, 0.48, 0.24, x, 0.48, z, tyre, 14, g); w.rotation.x = Math.PI / 2; }
+      const g = makeCityBus(THREE, cnv, tex, day); g.visible = false; parent.add(g);
       if (!day) {
         for (const s of [-1, 1]) {
-          const hl = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.9), addGlow(glowWarm, 0.95)); hl.position.set(-6.1, 0.72, s * 0.92); hl.rotation.y = -Math.PI / 2; g.add(hl);
-          const tl = new THREE.Mesh(new THREE.PlaneGeometry(0.7, 0.7), addGlow(glowRed, 0.9)); tl.position.set(6.06, 0.88, s * 0.95); tl.rotation.y = Math.PI / 2; g.add(tl);
+          const hl = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.9), addGlow(glowWarm, 0.95)); hl.position.set(-6.17, 0.78, s * 0.92); hl.rotation.y = -Math.PI / 2; g.add(hl);
+          const tl = new THREE.Mesh(new THREE.PlaneGeometry(0.7, 0.7), addGlow(glowRed, 0.9)); tl.position.set(6.13, 1.05, s * 1.1); tl.rotation.y = Math.PI / 2; g.add(tl);
         }
         const beam = new THREE.Mesh(new THREE.PlaneGeometry(7, 4), addGlow(glowWarm, 0.35)); beam.rotation.x = -Math.PI / 2; beam.position.set(-9.0, 0.02, 0); g.add(beam);
         const spill = new THREE.Mesh(new THREE.PlaneGeometry(12, 4.2), addGlow(glowWarm, 0.16)); spill.rotation.x = -Math.PI / 2; spill.position.set(0.25, 0.02, 0); g.add(spill);
       }
       return g;
     }
-    /* v21.2: a TOUR COACH parked at Golden Mile Complex's kerb (where the coaches to Hat Yai and Kuala Lumpur leave
-       from): a white high-deck body, a red and blue stripe down its side, a band of tinted glass, at rest */
+    /* v21.2: a TOUR COACH at rest at Golden Mile Complex's kerb (where the coaches to Hat Yai leave from). v21.14:
+       makeTourCoach below builds it; turned to face east, the way the near lane runs, so its door is on the kerb */
     function makeCoach(parent, x, z) {
-      const g = new THREE.Group(); g.position.set(x, 0, z); parent.add(g);
-      const M = (o) => { const m = new THREE.MeshStandardMaterial({ roughness: 0.4, ...o }); owned.push({ dispose: () => m.dispose() }); return m; };
-      const white = M({ color: 0xf2f1ec }), red = M({ color: 0xc0262a }), blue = M({ color: 0x1f4f9a }),
-            glass = M({ color: 0x1b242c, roughness: 0.1, metalness: 0.4 }), dark = M({ color: 0x2a2c30 }), tyre = M({ color: 0x111111 });
-      box(12.2, 2.9, 2.5, 0, 2.05, 0, white, g, false);                    // the body, 0.6 m to 3.5 m
-      box(12.22, 0.5, 2.52, 0, 0.72, 0, dark, g, false);                   // the skirt over the luggage bays
-      for (const s of [-1, 1]) {
-        plane(11.4, 1.05, glass, 0.3, 2.75, s * 1.262, s > 0 ? 0 : Math.PI, g);   // the windows, tinted
-        plane(12.0, 0.22, red, 0, 1.78, s * 1.263, s > 0 ? 0 : Math.PI, g);       // the stripes
-        plane(12.0, 0.12, blue, 0, 1.6, s * 1.263, s > 0 ? 0 : Math.PI, g);
-      }
-      plane(2.3, 1.5, glass, -6.112, 2.55, 0, -Math.PI / 2, g);            // the windscreen
-      for (const [wx, wz] of [[-4.3, -1.13], [-4.3, 1.13], [3.4, -1.13], [3.4, 1.13], [4.6, -1.13], [4.6, 1.13]]) { const w = cyl(0.5, 0.5, 0.26, wx, 0.5, wz, tyre, 14, g); w.rotation.x = Math.PI / 2; w.castShadow = false; }
+      const g = makeTourCoach(THREE, cnv, tex); g.position.set(x, 0, z); g.rotation.y = Math.PI; parent.add(g);
       return g;
     }
     const busG = makeBus(shrG, false);
@@ -5354,6 +5348,7 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       get phase() { return phase; },
       setPhase, applyPhase, after, dayClock, sayLine,
       galleryPages, galleryBegin,                                  // v21.10: for probes — the pages as the window gets them
+      kopiRigs, busG, mallBusG,                                    // v21.14: for probes — the kopitiam's three, the two buses
       info: () => ({ phase, t: +dayClock.t.toFixed(2), queued: lineQ.length, heard: [...heard], galSeen: [...galSeen], galUp, galIntro,
                      until: +speak.until.toFixed(2), pending: speak.pending ? speak.pending.name : null,
                      looked: [...looked], called, gifted, worn: wornNow(), seated, celebrate,
@@ -7170,48 +7165,421 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
     x.font = 'bold 22px serif'; x.fillText('有 求 必 應', 130, 50); x.fillText('神 光 普 照', 894, 50);
     return done(THREE, c, false);
   }
-  /* a night bus's lit side: a strip of window bays, the cabin's white light,
-     the seat backs and a few heads against it */
-  function makeBusWindows(THREE, cnv) {
-    const W = 1024, H = 96, [c, x] = sized(cnv, W, H), R = rng(14);
-    x.fillStyle = '#16181c'; x.fillRect(0, 0, W, H);
-    const bays = 9, bw = W / bays;
-    for (let i = 0; i < bays; i++) {
-      const x0 = i * bw + 5, w = bw - 10;
-      const g = x.createLinearGradient(0, 6, 0, H - 6); g.addColorStop(0, '#fbf6e2'); g.addColorStop(1, '#e8dfc2');
-      x.fillStyle = g; x.fillRect(x0, 6, w, H - 12);
-      x.fillStyle = 'rgba(70,90,120,0.55)';                                     // the seat backs
-      for (let s = 0; s < 2; s++) x.fillRect(x0 + 8 + s * w * 0.5, H * 0.58, w * 0.36, H * 0.4);
-      if (R() < 0.45) {                                                          // a passenger
-        const hx = x0 + w * (0.2 + 0.6 * R());
-        x.fillStyle = '#2a2420'; x.beginPath(); x.ellipse(hx, H * 0.5, 9, 11, 0, 0, Math.PI * 2); x.fill();
-        x.fillRect(hx - 15, H * 0.62, 30, H * 0.4);
+  /* ---------------------------------------------------------------- v21.14 · THE BUSES (CP4, N3-N5)
+     Chad: "the buses that appear (i can see 2 types of buses, one in intro cutscene, and one in the road outside the
+     taoist medium shop), the buses look too basic and plain, they need to be further improved significantly."
+     Both were a box with a skirt, two flat window planes and four cylinders. Now: the body EXTRUDED from its own side
+     profile (a rounded roof edge, the raked windscreen, the rear's slope, the wheel arches cut out of the outline,
+     every edge bevelled), its window band a TUNNEL through it so the cabin is seen through the glass (seats, yellow
+     poles, the ceiling's light strips, a few passengers; lit warm at night), black pillars between tinted panes, two
+     glass doors on the kerb side, wheels in their arches (tyres, silver hubs with studs, mud flaps), the front's split
+     windscreen with wipers, headlamp clusters, indicators, the bumper and grille, the amber LED destination display
+     and the plate, the rear's window, tail-lamp clusters, engine louvres, an advertisement panel and its plate, mirrors
+     on "rabbit ear" arms and a roof air-conditioning pod. The livery is drawn (green with a white band and a lighter
+     sweep — no operator's name or crest, the v9.3 rule); the same builder makes the morning's bus (lit materials) and
+     the night's (unlit, its cabin glowing). The coach at Golden Mile's kerb gets the same treatment. Static parts are
+     merged per material, so each is a handful of draws. Front at −x, kerb side +z (Singapore drives on the left). */
+  function busMergeByMaterial(THREE, root) {
+    /* every plain mesh under root merged into one mesh per material (non-indexed, matrices baked into root's frame) */
+    root.updateMatrixWorld(true);
+    const inv = new THREE.Matrix4().copy(root.matrixWorld).invert(), byMat = new Map(), drop = [];
+    root.traverse(o => {
+      if (!o.isMesh || o.isInstancedMesh || Array.isArray(o.material) || o.userData.keep) return;
+      const m = o.material; if (!byMat.has(m)) byMat.set(m, []);
+      byMat.get(m).push(o); drop.push(o);
+    });
+    for (const [mat, list] of byMat) {
+      const pos = [], nor = [], uv = [];
+      for (const o of list) {
+        const gg = o.geometry.index ? o.geometry.toNonIndexed() : o.geometry.clone();
+        const M = new THREE.Matrix4().multiplyMatrices(inv, o.matrixWorld), N = new THREE.Matrix3().getNormalMatrix(M);
+        gg.applyMatrix4(M);
+        const P = gg.attributes.position, Nn = gg.attributes.normal, U = gg.attributes.uv;
+        for (let i = 0; i < P.count; i++) {
+          pos.push(P.getX(i), P.getY(i), P.getZ(i));
+          if (Nn) nor.push(Nn.getX(i), Nn.getY(i), Nn.getZ(i)); else nor.push(0, 1, 0);
+          if (U) uv.push(U.getX(i), U.getY(i)); else uv.push(0, 0);
+        }
+        gg.dispose();
+      }
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+      geo.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3));
+      geo.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+      geo.computeBoundingSphere();
+      const mesh = new THREE.Mesh(geo, mat); mesh.renderOrder = list[0].renderOrder || 0;
+      root.add(mesh);
+    }
+    for (const o of drop) { o.parent.remove(o); o.geometry.dispose(); }
+    return root;
+  }
+  /* the side profile, extruded across the width; its window band a hole (a tunnel: the cabin), whose inner faces are
+     handed to their own material (the cabin's lining) instead of the paint */
+  function busBody(THREE, P) {
+    const s = new THREE.Shape();
+    const { X0, X1, Y0, HT, AX, AR, AY } = P;
+    s.moveTo(X0 + 0.06, Y0);
+    for (const ax of AX) {                                            // the bottom edge, front to rear, over each arch
+      const dx = Math.sqrt(AR * AR - (AY - Y0) * (AY - Y0)), a = Math.atan2(Y0 - AY, dx);
+      s.lineTo(ax - dx, Y0);
+      s.absarc(ax, AY, AR, Math.PI - a, a, true);
+    }
+    s.lineTo(X1 - 0.05, Y0);
+    for (const [x, y] of P.rear) s.lineTo(x, y);                       // up the rear
+    s.lineTo(P.roofRear, HT);
+    s.lineTo(P.roofFront, HT);                                        // along the roof
+    for (const [x, y] of P.front) s.lineTo(x, y);                      // down the windscreen and the front
+    s.lineTo(X0, Y0 + 0.06);
+    const hole = new THREE.Path();                                    // the window band, round-cornered
+    const { x0, x1, y0, y1 } = P.win, r = 0.1;
+    hole.moveTo(x0 + r, y0); hole.lineTo(x1 - r, y0); hole.quadraticCurveTo(x1, y0, x1, y0 + r); hole.lineTo(x1, y1 - r);
+    hole.quadraticCurveTo(x1, y1, x1 - r, y1); hole.lineTo(x0 + r, y1); hole.quadraticCurveTo(x0, y1, x0, y1 - r); hole.lineTo(x0, y0 + r);
+    hole.quadraticCurveTo(x0, y0, x0 + r, y0);
+    s.holes.push(hole);
+    const bev = 0.05, depth = P.W - 2 * bev;
+    const geo = new THREE.ExtrudeGeometry(s, { depth, bevelEnabled: true, bevelThickness: bev, bevelSize: bev, bevelSegments: 3, curveSegments: 14 });
+    geo.translate(0, 0, -depth / 2);
+    /* re-group: [0] the two sides (the livery), [1] the outer walls (paint), [2] the tunnel's walls (the cabin's
+       lining), [3] the arches' walls (the wheel wells, black), [4] the tunnel's two ends (the cab's bulkheads, dark) */
+    const pos = geo.attributes.position, nor = geo.attributes.normal, uv = geo.attributes.uv, tri = [[], [], [], [], []];
+    for (const grp of geo.groups) {
+      for (let i = grp.start; i < grp.start + grp.count; i += 3) {
+        let gi = grp.materialIndex;
+        if (gi === 1) {
+          const cx = (pos.getX(i) + pos.getX(i + 1) + pos.getX(i + 2)) / 3, cy = (pos.getY(i) + pos.getY(i + 1) + pos.getY(i + 2)) / 3,
+                cz = (pos.getZ(i) + pos.getZ(i + 1) + pos.getZ(i + 2)) / 3;
+          if (cx > x0 - 0.02 && cx < x1 + 0.02 && cy > y0 - 0.02 && cy < y1 + 0.02 && Math.abs(cz) < P.W / 2 - 0.02) {
+            const nx = (nor.getX(i) + nor.getX(i + 1) + nor.getX(i + 2)) / 3;
+            gi = Math.abs(nx) > 0.7 ? 4 : 2;
+          } else if (cy < AY + AR + 0.08 && P.AX.some(ax => Math.hypot(cx - ax, cy - AY) < AR + 0.08)) gi = 3;
+        }
+        tri[gi].push(i);
       }
     }
+    const P2 = [], N2 = [], U2 = [], out = new THREE.BufferGeometry();
+    let at = 0;
+    tri.forEach((list, gi) => {
+      for (const i of list) for (let k = 0; k < 3; k++) {
+        P2.push(pos.getX(i + k), pos.getY(i + k), pos.getZ(i + k)); N2.push(nor.getX(i + k), nor.getY(i + k), nor.getZ(i + k)); U2.push(uv.getX(i + k), uv.getY(i + k));
+      }
+      out.addGroup(at, list.length * 3, gi); at += list.length * 3;
+    });
+    out.setAttribute('position', new THREE.Float32BufferAttribute(P2, 3));
+    out.setAttribute('normal', new THREE.Float32BufferAttribute(N2, 3));
+    out.setAttribute('uv', new THREE.Float32BufferAttribute(U2, 2));
+    out.computeBoundingSphere();
+    geo.dispose();
+    return out;
+  }
+  /* the livery, in the profile's own metres (u = (x − X0) / L, v = (y − Y0) / (HT − Y0)): the window band's black
+     surround, the colours and the sweep, the arches' rubber trims, the panel seams — no words (both sides share it,
+     and the far side sees it mirrored) */
+  function makeCityBusLivery(THREE, cnv, P) {
+    const W = 2048, H = 512, [c, x] = sized(cnv, W, H);
+    const X = (m) => (m - P.X0) / P.L * W, Y = (m) => (1 - (m - P.Y0) / (P.HT - P.Y0)) * H;
+    x.fillStyle = '#e9ece6'; x.fillRect(0, 0, W, H);                                   // the upper body, off-white
+    const g1 = x.createLinearGradient(0, Y(1.1), 0, Y(P.Y0)); g1.addColorStop(0, '#3f9d48'); g1.addColorStop(1, '#2f7d38');
+    x.fillStyle = g1; x.fillRect(0, Y(1.12), W, H - Y(1.12));                          // the lower body, green
+    x.fillStyle = '#7ccf6e';                                                           // the lighter sweep, rising to the rear
+    x.beginPath(); x.moveTo(X(P.X0), Y(0.62)); x.bezierCurveTo(X(-2), Y(0.62), X(1.5), Y(1.05), X(P.X1), Y(1.12));
+    x.lineTo(X(P.X1), Y(0.92)); x.bezierCurveTo(X(1.8), Y(0.88), X(-1.6), Y(0.44), X(P.X0), Y(0.46)); x.closePath(); x.fill();
+    x.fillStyle = '#f4f5f0'; x.fillRect(0, Y(1.20), W, Y(1.12) - Y(1.20));             // the white band under the glass
+    x.fillStyle = '#111316'; x.fillRect(X(P.win.x0 - 0.12), Y(P.win.y1 + 0.08), X(P.win.x1 + 0.12) - X(P.win.x0 - 0.12), Y(P.win.y0 - 0.06) - Y(P.win.y1 + 0.08));
+    x.fillStyle = '#2f7d38'; x.fillRect(0, Y(P.HT), W, Y(P.HT - 0.16) - Y(P.HT));        // the roof's edge, green
+    x.fillStyle = '#26292c'; x.fillRect(0, Y(0.52), W, H - Y(0.52));                    // the skirt's rubbing strip
+    x.strokeStyle = 'rgba(0,0,0,0.28)'; x.lineWidth = 2;                               // panel seams
+    for (let m = P.X0 + 1.5; m < P.X1 - 0.5; m += 1.5) { x.beginPath(); x.moveTo(X(m), Y(1.12)); x.lineTo(X(m), Y(0.56)); x.stroke(); }
+    x.beginPath(); x.moveTo(0, Y(0.86)); x.lineTo(W, Y(0.86)); x.stroke();
+    x.fillStyle = '#16181a';                                                           // the arches' rubber trim
+    for (const ax of P.AX) { x.beginPath(); x.arc(X(ax), Y(P.AY), (P.AR + 0.06) / P.L * W, Math.PI, 0); x.arc(X(ax), Y(P.AY), P.AR / P.L * W, 0, Math.PI, true); x.fill(); }
+    const t = done(THREE, c, false);
+    t.repeat.set(1 / P.L, 1 / (P.HT - P.Y0)); t.offset.set(-P.X0 / P.L, -P.Y0 / (P.HT - P.Y0));
+    return t;
+  }
+  function makeBusShield(THREE, cnv, day) {             // the windscreen: the sky caught in its top, dark below, a glint
+    const [c, x] = sized(cnv, 256, 256);
+    const g = x.createLinearGradient(0, 0, 0, 256);
+    if (day) { g.addColorStop(0, '#8fa8bb'); g.addColorStop(0.35, '#3b4b57'); g.addColorStop(1, '#141b21'); }
+    else { g.addColorStop(0, '#2a3038'); g.addColorStop(0.4, '#14181d'); g.addColorStop(1, '#0a0c0f'); }
+    x.fillStyle = g; x.fillRect(0, 0, 256, 256);
+    const gl = x.createLinearGradient(0, 0, 256, 256);
+    gl.addColorStop(0.3, 'rgba(255,255,255,0)'); gl.addColorStop(0.42, day ? 'rgba(255,255,255,0.22)' : 'rgba(255,240,210,0.08)'); gl.addColorStop(0.52, 'rgba(255,255,255,0)');
+    x.fillStyle = gl; x.fillRect(0, 0, 256, 256);
     return done(THREE, c, false);
   }
-  /* a day bus's side (VF-1: the morning's bus went by with one flat dark band for windows): tinted bays in black
-     rubber, the sky caught along their tops, the seat backs and a few heads just showing through, a glint */
-  function makeBusWindowsDay(THREE, cnv) {
-    const W = 1024, H = 96, [c, x] = sized(cnv, W, H), R = rng(15);
-    x.fillStyle = '#0c0e10'; x.fillRect(0, 0, W, H);
-    const bays = 9, bw = W / bays;
-    for (let i = 0; i < bays; i++) {
-      const x0 = i * bw + 6, w = bw - 12;
-      const g = x.createLinearGradient(0, 6, 0, H - 6); g.addColorStop(0, '#7d93a3'); g.addColorStop(0.32, '#34434e'); g.addColorStop(1, '#1b242b');
-      x.fillStyle = g; x.fillRect(x0, 6, w, H - 12);
-      x.fillStyle = 'rgba(10,14,18,0.6)';                                        // the seat backs
-      for (let s = 0; s < 2; s++) x.fillRect(x0 + 8 + s * w * 0.5, H * 0.6, w * 0.36, H * 0.38);
-      if (R() < 0.4) {                                                           // a passenger
-        const hx = x0 + w * (0.2 + 0.6 * R());
-        x.fillStyle = 'rgba(8,10,12,0.72)'; x.beginPath(); x.ellipse(hx, H * 0.52, 9, 11, 0, 0, Math.PI * 2); x.fill();
-        x.fillRect(hx - 15, H * 0.64, 30, H * 0.36);
-      }
-      const gl = x.createLinearGradient(x0, 6, x0 + w, H - 6);                   // the glint across the glass
-      gl.addColorStop(0.28, 'rgba(255,255,255,0)'); gl.addColorStop(0.4, 'rgba(255,255,255,0.12)'); gl.addColorStop(0.5, 'rgba(255,255,255,0)');
-      x.fillStyle = gl; x.fillRect(x0, 6, w, H - 12);
-    }
+  function makeBusAd(THREE, cnv) {                     // the advertisement on its back: a generic poster, no brand
+    const [c, x] = sized(cnv, 512, 256);
+    const g = x.createLinearGradient(0, 0, 512, 256); g.addColorStop(0, '#1e5aa8'); g.addColorStop(1, '#3fb1d8');
+    x.fillStyle = g; x.fillRect(0, 0, 512, 256);
+    x.fillStyle = '#ffffff'; x.font = 'bold 54px sans-serif'; x.textAlign = 'center'; x.fillText('MIND THE GAP', 256, 102);
+    x.font = 'bold 30px sans-serif'; x.fillText('Give way to buses leaving the bus stop', 256, 158);
+    x.fillStyle = '#ffd23a'; x.beginPath(); x.arc(452, 212, 30, 0, Math.PI * 2); x.fill();
     return done(THREE, c, false);
+  }
+  function makeBusGrille(THREE, cnv) {                 // louvres: the engine's at the rear, the cooling grille at the front
+    const [c, x] = sized(cnv, 256, 128);
+    x.fillStyle = '#1b1d20'; x.fillRect(0, 0, 256, 128);
+    for (let i = 0; i < 12; i++) { x.fillStyle = '#3a3e43'; x.fillRect(6, 6 + i * 10, 244, 4); x.fillStyle = '#0b0c0e'; x.fillRect(6, 10 + i * 10, 244, 4); }
+    return done(THREE, c, false);
+  }
+  function makeCityBus(THREE, cnv, tex, day) {
+    const g = new THREE.Group();
+    const P = { L: 12.0, W: 2.5, X0: -6.0, X1: 6.0, Y0: 0.30, HT: 3.08, AX: [-3.3, 2.65], AR: 0.62, AY: 0.50,
+                win: { x0: -5.3, x1: 5.25, y0: 1.24, y1: 2.70 },
+                rear: [[6.0, 0.36], [6.0, 2.62], [5.96, 2.88]], roofRear: 5.78, roofFront: -5.62,
+                front: [[-5.86, 2.96], [-5.93, 2.78], [-6.0, 1.18], [-6.04, 1.06], [-6.04, 0.40]] };
+    const C = day ? { paint: 0xffffff, lining: 0xc9c6bb, seat: 0x2a3f78, pole: 0xf2c418, glass: 0x1a242c, frame: 0x101214, chrome: 0xc8ccd0,
+                      tyre: 0x141414, lamp: 0xe8eef2, tail: 0xb01e1e, amber: 0xe89a1c, roof: 0xdedfd8, people: 0x2e2a28 }
+                  : { paint: 0x5c605c, lining: 0xf3ead2, seat: 0x46588c, pole: 0xf2c418, glass: 0x10161c, frame: 0x0c0d0f, chrome: 0x7a7e84,
+                      tyre: 0x0a0a0a, lamp: 0xfff1cc, tail: 0xff3424, amber: 0xffb43a, roof: 0x6a6d6a, people: 0x2a2420 };
+    const M = (o) => { if (day) return new THREE.MeshStandardMaterial({ roughness: 0.5, ...o });
+      const { roughness, metalness, ...b } = o; return new THREE.MeshBasicMaterial({ fog: true, ...b }); };
+    const glow = (col) => new THREE.MeshBasicMaterial({ color: col, fog: true });
+    const livery = M({ map: tex(makeCityBusLivery(THREE, cnv, P)), color: C.paint, roughness: 0.38 });
+    const paint = M({ color: day ? 0xe9ece6 : 0x55595a, roughness: 0.4 });
+    const lining = day ? new THREE.MeshStandardMaterial({ color: C.lining, roughness: 0.9, side: THREE.DoubleSide }) : new THREE.MeshBasicMaterial({ color: C.lining, fog: true, side: THREE.DoubleSide });
+    const well = M({ color: 0x0e0f10, roughness: 0.95 }), bulk = M({ color: day ? 0x2a2c2e : 0x1c1d20, roughness: 0.8 });
+    const body = new THREE.Mesh(busBody(THREE, P), [livery, paint, lining, well, bulk]); body.userData.keep = true; g.add(body);
+    const mk = (geo, mat, x, y, z, ry = 0, rx = 0, rz = 0) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.rotation.set(rx, ry, rz); g.add(m); return m; };
+    const bx = (w, h, d, mat, x, y, z, ry, rx, rz) => mk(new THREE.BoxGeometry(w, h, d), mat, x, y, z, ry, rx, rz);
+    const frame = M({ color: C.frame, roughness: 0.6 }), chrome = M({ color: C.chrome, roughness: 0.25, metalness: day ? 0.8 : 0 });
+    const glass = day ? new THREE.MeshStandardMaterial({ color: C.glass, roughness: 0.06, metalness: 0.55, transparent: true, opacity: 0.62, depthWrite: false })
+                      : new THREE.MeshBasicMaterial({ color: 0x8aa0b0, transparent: true, opacity: 0.12, depthWrite: false, fog: true });
+    const shieldMap = tex(makeBusShield(THREE, cnv, day));
+    const shield = day ? new THREE.MeshStandardMaterial({ map: shieldMap, roughness: 0.05, metalness: 0.3 }) : new THREE.MeshBasicMaterial({ map: shieldMap, fog: true });
+    /* the glass: a pane per bay both sides, black pillars between them; on the kerb side the doors take their place */
+    const W2 = P.W / 2, doors = [[-5.72, -4.74], [-0.58, 0.56]];
+    const bays = [];
+    for (let x0 = P.win.x0; x0 < P.win.x1 - 0.3; ) { const w = Math.min(1.32, P.win.x1 - x0); bays.push([x0, x0 + w]); x0 += w; }
+    for (const s of [-1, 1]) {
+      for (const [a, b] of bays) {
+        if (s > 0 && doors.some(([d0, d1]) => a < d1 - 0.05 && b > d0 + 0.05)) continue;
+        const pane = mk(new THREE.PlaneGeometry(b - a - 0.06, P.win.y1 - P.win.y0 - 0.04), glass, (a + b) / 2, (P.win.y0 + P.win.y1) / 2, s * (W2 + 0.012), s > 0 ? 0 : Math.PI);
+        pane.renderOrder = 2;
+        bx(0.07, P.win.y1 - P.win.y0 + 0.04, 0.04, frame, b, (P.win.y0 + P.win.y1) / 2, s * (W2 + 0.012));   // the pillar after it
+      }
+      bx(P.win.x1 - P.win.x0 + 0.1, 0.05, 0.05, frame, (P.win.x0 + P.win.x1) / 2, P.win.y1 + 0.01, s * (W2 + 0.01));   // the rubber along the top
+      bx(P.win.x1 - P.win.x0 + 0.1, 0.05, 0.05, frame, (P.win.x0 + P.win.x1) / 2, P.win.y0 - 0.01, s * (W2 + 0.01));   // and the sill
+    }
+    /* the route on the kerb side, an amber display in the first window behind the front door */
+    const side = mk(new THREE.PlaneGeometry(0.96, 0.16), glow(0xffffff), -4.15, 2.48, W2 + 0.02); side.material.map = tex(makeBusSign(THREE, cnv)); side.material.needsUpdate = true;
+    /* the doors (kerb side): two glass leaves each in black frames with a centre seal, floor to cant rail */
+    for (const [d0, d1] of doors) {
+      const cx = (d0 + d1) / 2, w = d1 - d0, y0 = P.Y0 + 0.08, y1 = P.win.y1 + 0.02, h = y1 - y0, z = W2 + 0.018;
+      const dg = mk(new THREE.PlaneGeometry(w - 0.06, h - 0.06), glass, cx, (y0 + y1) / 2, z); dg.renderOrder = 2;
+      bx(w, 0.06, 0.03, frame, cx, y1, z); bx(w, 0.06, 0.03, frame, cx, y0, z); bx(w, 0.05, 0.03, frame, cx, y0 + h * 0.42, z);
+      bx(0.06, h, 0.03, frame, d0, (y0 + y1) / 2, z); bx(0.06, h, 0.03, frame, d1, (y0 + y1) / 2, z); bx(0.045, h, 0.035, frame, cx, (y0 + y1) / 2, z + 0.002);
+      bx(0.03, 0.5, 0.03, chrome, cx - 0.12, y0 + h * 0.55, z + 0.02); bx(0.03, 0.5, 0.03, chrome, cx + 0.12, y0 + h * 0.55, z + 0.02);   // grab handles
+      bx(w + 0.1, 0.04, 0.12, frame, cx, P.Y0 + 0.04, W2 + 0.04);                     // the step's edge
+    }
+    /* the cabin, through the glass: rows of seats either side of the aisle, the yellow poles, the ceiling's rails
+       and light strips, and a few people */
+    const seatMat = M({ color: C.seat, roughness: 0.85 }), poleMat = M({ color: C.pole, roughness: 0.4 });
+    const seatBack = new THREE.BoxGeometry(0.08, 0.6, 0.42), head = new THREE.BoxGeometry(0.1, 0.16, 0.36);
+    const rows = []; for (let x = -4.4; x <= 4.6; x += 0.82) rows.push(x);
+    const seats = new THREE.InstancedMesh(seatBack, seatMat, rows.length * 4), heads = new THREE.InstancedMesh(head, seatMat, rows.length * 4);
+    const m4 = new THREE.Matrix4(); let n = 0;
+    for (const x of rows) for (const z of [-0.88, -0.44, 0.44, 0.88]) {
+      m4.makeTranslation(x + 0.3, P.win.y0 + 0.24, z); seats.setMatrixAt(n, m4); m4.makeTranslation(x + 0.31, P.win.y0 + 0.62, z); heads.setMatrixAt(n, m4); n++;
+    }
+    seats.count = heads.count = n; g.add(seats, heads);
+    for (const x of [-4.0, -1.6, 0.9, 3.0]) for (const z of [-0.22, 0.22]) mk(new THREE.CylinderGeometry(0.02, 0.02, P.win.y1 - P.win.y0, 8), poleMat, x, (P.win.y0 + P.win.y1) / 2, z);
+    for (const z of [-0.62, 0.62]) mk(new THREE.CylinderGeometry(0.018, 0.018, P.win.x1 - P.win.x0 - 0.4, 8), poleMat, (P.win.x0 + P.win.x1) / 2, P.win.y1 - 0.14, z, 0, 0, Math.PI / 2);
+    const strip = glow(day ? 0xdfe6ea : 0xfff6dc);
+    for (const z of [-0.5, 0.5]) mk(new THREE.PlaneGeometry(P.win.x1 - P.win.x0 - 0.6, 0.12), strip, (P.win.x0 + P.win.x1) / 2, P.win.y1 - 0.06, z, 0, Math.PI / 2);   // (the tunnel's ceiling is 0.05 under the band's top)
+    /* a few people: a shirt, shoulders, a face and a head of hair each (they read as people through the glass) */
+    const R = rng(day ? 7 : 11), skin = M({ color: day ? 0xb88a68 : 0xc49474, roughness: 0.8 }), hair = M({ color: 0x141210, roughness: 0.9 });
+    const shirts = [0xe8e6e0, 0x3c5a8c, 0xb83a32, 0x2e6e4a, 0x6c6a72].map(c => M({ color: c, roughness: 0.9 }));
+    const pHead = new THREE.SphereGeometry(0.1, 12, 10), pHair = new THREE.SphereGeometry(0.104, 12, 8, 0, Math.PI * 2, 0, Math.PI * 0.55),
+          pBody = new THREE.CylinderGeometry(0.15, 0.19, 0.46, 10), pNeck = new THREE.CylinderGeometry(0.045, 0.05, 0.08, 8);
+    const taken = new Set();
+    for (let i = 0; i < 7; i++) {
+      const r = 1 + Math.floor(R() * (rows.length - 2)), c = Math.floor(R() * 4), key = r * 4 + c;
+      if (taken.has(key)) continue; taken.add(key);
+      const x = rows[r] + 0.12, z = [-0.88, -0.44, 0.44, 0.88][c], y = P.win.y0;
+      mk(pBody, shirts[Math.floor(R() * shirts.length)], x, y + 0.24, z);
+      mk(pNeck, skin, x, y + 0.5, z); mk(pHead, skin, x - 0.01, y + 0.62, z);
+      const hr = mk(pHair, hair, x + 0.01, y + 0.635, z); hr.rotation.z = 0.35;
+    }
+    /* the front: the split windscreen with its wipers, the destination display, headlamps, indicators, the bumper,
+       the grille and the plate */
+    /* (the bevel puts every outer wall 0.05 outside the profile: the front glass's line runs (−6.05, 1.18) to (−5.98, 2.78)) */
+    const ws = mk(new THREE.PlaneGeometry(P.W - 0.16, 1.58), shield, -6.027, 1.98, 0);
+    ws.lookAt(-6.027 - 1.6, 1.98 + 0.07, 0);                                           // its normal: forward, a little up (the rake)
+    bx(0.03, 1.6, 0.05, frame, -6.035, 1.98, 0);                                      // the split
+    for (const z of [-0.55, 0.45]) { const wp = bx(0.025, 0.85, 0.025, frame, -6.04, 1.62, z); wp.rotation.set(0.9, 0, 0); }
+    const dest = mk(new THREE.PlaneGeometry(1.9, 0.26), glow(0xffffff), -5.955, 2.88, 0, -Math.PI / 2);
+    dest.material.map = tex(makeBusSign(THREE, cnv)); dest.material.needsUpdate = true;
+    const lampMat = glow(day ? 0xd8e2e8 : C.lamp), indMat = glow(C.amber), tailMat = glow(C.tail);
+    if (day) { lampMat.color.setHex(0xc9d3da); }
+    for (const z of [-1, 1]) {
+      bx(0.05, 0.2, 0.42, lampMat, -6.105, 0.78, z * 0.92);                            // the headlamp cluster
+      bx(0.05, 0.08, 0.16, indMat, -6.105, 0.96, z * 1.04);                            // the indicator
+      bx(0.12, 0.08, 0.05, indMat, -4.05, 0.98, z * (W2 + 0.01));                      // and the side repeater
+    }
+    bx(0.14, 0.24, P.W + 0.04, frame, -6.1, 0.42, 0);                                  // the bumper
+    mk(new THREE.PlaneGeometry(1.2, 0.3), M({ map: tex(makeBusGrille(THREE, cnv)) }), -6.1, 0.76, 0, -Math.PI / 2);
+    mk(new THREE.PlaneGeometry(0.52, 0.13), M({ map: tex(makeBusPlate(THREE, cnv)) }), -6.18, 0.42, 0, -Math.PI / 2);
+    /* the mirrors, on arms over the front corners ("rabbit ears") */
+    for (const s of [-1, 1]) {
+      const curve = new THREE.CatmullRomCurve3([new THREE.Vector3(-5.75, 2.95, s * 1.18), new THREE.Vector3(-6.25, 3.0, s * 1.22),
+                                                new THREE.Vector3(-6.55, 2.7, s * 1.3), new THREE.Vector3(-6.55, 2.35, s * 1.32)]);
+      mk(new THREE.TubeGeometry(curve, 16, 0.025, 6, false), frame, 0, 0, 0);
+      bx(0.08, 0.36, 0.2, frame, -6.55, 2.18, s * 1.32);
+    }
+    /* the rear: the window, the advertisement, the engine's louvres, the tail lamps, the plate */
+    mk(new THREE.PlaneGeometry(1.6, 0.55), shield, 6.062, 2.36, 0, Math.PI / 2);
+    mk(new THREE.PlaneGeometry(1.7, 0.85), M({ map: tex(makeBusAd(THREE, cnv)) }), 6.062, 1.56, 0, Math.PI / 2);
+    mk(new THREE.PlaneGeometry(1.9, 0.5), M({ map: tex(makeBusGrille(THREE, cnv)) }), 6.062, 0.84, 0, Math.PI / 2);
+    for (const z of [-1, 1]) { bx(0.05, 0.9, 0.16, tailMat, 6.07, 1.05, z * 1.1); bx(0.05, 0.12, 0.16, indMat, 6.07, 1.58, z * 1.1); }
+    mk(new THREE.PlaneGeometry(0.52, 0.13), M({ map: tex(makeBusPlate(THREE, cnv)) }), 6.15, 0.42, 0, Math.PI / 2);
+    bx(0.12, 0.2, P.W + 0.02, frame, 6.08, 0.42, 0);                                    // the rear bumper
+    /* the roof: the air-conditioning pod and its grilles */
+    bx(4.2, 0.24, 1.9, M({ color: C.roof, roughness: 0.5 }), 1.9, P.HT + 0.17, 0);
+    for (const x of [0.4, 1.9, 3.4]) bx(0.9, 0.02, 0.9, frame, x, P.HT + 0.295, 0);
+    /* the wheels in their arches: tyres, silver hubs with studs, mud flaps */
+    const tyreMat = M({ color: C.tyre, roughness: 0.95 }), hubMat = chrome;
+    const tyreG = new THREE.CylinderGeometry(0.5, 0.5, 0.3, 22), hubG = new THREE.CylinderGeometry(0.27, 0.27, 0.03, 18), studG = new THREE.CylinderGeometry(0.022, 0.022, 0.04, 6);
+    for (const ax of P.AX) for (const s of [-1, 1]) {
+      const z = s * (W2 - 0.16);
+      mk(tyreG, tyreMat, ax, 0.5, z, 0, Math.PI / 2);
+      mk(hubG, hubMat, ax, 0.5, s * (W2 - 0.005), 0, Math.PI / 2);
+      for (let k = 0; k < 8; k++) { const a = k * Math.PI / 4; mk(studG, frame, ax + Math.cos(a) * 0.16, 0.5 + Math.sin(a) * 0.16, s * (W2 + 0.012), 0, Math.PI / 2); }
+      bx(0.02, 0.36, 0.3, frame, ax + 0.72, P.Y0 + 0.16, s * (W2 - 0.16));             // the mud flap behind it
+    }
+    busMergeByMaterial(THREE, g);
+    g.traverse(o => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = false; } });
+    return g;
+  }
+  /* the coach's livery: white, a red and a blue sweep rising to the rear, the luggage bays' doors with their hinges
+     and handles between the axles, the black window surround (no words: the far side sees it mirrored) */
+  function makeCoachLivery(THREE, cnv, P) {
+    const W = 2048, H = 512, [c, x] = sized(cnv, W, H);
+    const X = (m) => (m - P.X0) / P.L * W, Y = (m) => (1 - (m - P.Y0) / (P.HT - P.Y0)) * H;
+    x.fillStyle = '#f3f3ef'; x.fillRect(0, 0, W, H);
+    x.fillStyle = '#111316'; x.fillRect(X(P.win.x0 - 0.1), Y(P.win.y1 + 0.1), X(P.win.x1 + 0.1) - X(P.win.x0 - 0.1), Y(P.win.y0 - 0.08) - Y(P.win.y1 + 0.1));
+    const sweep = (col, y0, y1, k) => {
+      x.fillStyle = col; x.beginPath();
+      x.moveTo(X(P.X0), Y(y0)); x.bezierCurveTo(X(-2.5), Y(y0 - 0.05), X(1.5), Y(y0 + 0.5 * k), X(P.X1), Y(y0 + 0.75 * k));
+      x.lineTo(X(P.X1), Y(y1 + 0.75 * k)); x.bezierCurveTo(X(1.5), Y(y1 + 0.5 * k), X(-2.5), Y(y1 - 0.05), X(P.X0), Y(y1)); x.closePath(); x.fill();
+    };
+    sweep('#c8232c', 1.42, 1.28, 1); sweep('#1d4f9c', 1.24, 1.12, 1); sweep('#e9a21b', 1.08, 1.03, 1);
+    x.fillStyle = '#2a2d31'; x.fillRect(0, Y(0.52), W, H - Y(0.52));                 // the skirt's strip
+    /* the luggage bays: doors between the axles, hinged along their tops, a handle each */
+    for (let b = P.AX[0] + 0.85; b < P.AX[1] - 0.9 - 1.4; b += 1.55) {
+      x.strokeStyle = 'rgba(0,0,0,0.45)'; x.lineWidth = 3; x.strokeRect(X(b), Y(1.0), X(b + 1.45) - X(b), Y(0.58) - Y(1.0));
+      x.fillStyle = 'rgba(0,0,0,0.3)'; x.fillRect(X(b + 0.08), Y(1.02), X(b + 1.37) - X(b + 0.08), 4);   // the hinge
+      x.fillStyle = '#9aa0a6'; x.fillRect(X(b + 0.62), Y(0.66), X(b + 0.84) - X(b + 0.62), 7);          // the handle
+    }
+    x.fillStyle = '#16181a';
+    for (const ax of P.AX) { x.beginPath(); x.arc(X(ax), Y(P.AY), (P.AR + 0.06) / P.L * W, Math.PI, 0); x.arc(X(ax), Y(P.AY), P.AR / P.L * W, 0, Math.PI, true); x.fill(); }
+    const t = done(THREE, c, false);
+    t.repeat.set(1 / P.L, 1 / (P.HT - P.Y0)); t.offset.set(-P.X0 / P.L, -P.Y0 / (P.HT - P.Y0));
+    return t;
+  }
+  function makeCoachName(THREE, cnv) {                 // the company's name along its side, English and Thai (generic)
+    const [c, x] = sized(cnv, 1024, 160);
+    x.clearRect(0, 0, 1024, 160);
+    x.fillStyle = '#1d4f9c'; x.font = 'italic bold 78px sans-serif'; x.textAlign = 'left'; x.textBaseline = 'middle';
+    x.fillText('HAT YAI EXPRESS', 12, 58);
+    x.fillStyle = '#c8232c'; x.font = 'bold 44px sans-serif'; x.fillText('หาดใหญ่ เอ็กซ์เพรส  ·  SINGAPORE – HAT YAI', 16, 128);
+    return done(THREE, c, false);
+  }
+  function makeCoachBoard(THREE, cnv) {                // the destination board behind the windscreen
+    const [c, x] = sized(cnv, 512, 96);
+    x.fillStyle = '#0c0a08'; x.fillRect(0, 0, 512, 96);
+    x.fillStyle = '#ffb028'; x.font = 'bold 44px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.fillText('HAT YAI · หาดใหญ่', 256, 50);
+    return done(THREE, c, false);
+  }
+  function makeTourCoach(THREE, cnv, tex) {
+    const g = new THREE.Group();
+    const P = { L: 12.2, W: 2.5, X0: -6.1, X1: 6.1, Y0: 0.35, HT: 3.55, AX: [-4.45, 2.48, 3.72], AR: 0.62, AY: 0.5,   // (a tandem at the back: two arches)
+                win: { x0: -5.0, x1: 5.55, y0: 1.66, y1: 3.12 },
+                rear: [[6.1, 0.42], [6.1, 3.1], [6.02, 3.38]], roofRear: 5.82, roofFront: -5.35,
+                front: [[-5.72, 3.48], [-5.92, 3.22], [-6.08, 1.4], [-6.12, 1.25], [-6.12, 0.45]] };
+    const M = (o) => new THREE.MeshStandardMaterial({ roughness: 0.45, ...o });
+    const glow = (col) => new THREE.MeshBasicMaterial({ color: col, fog: true });
+    const livery = M({ map: tex(makeCoachLivery(THREE, cnv, P)), roughness: 0.32 }), paint = M({ color: 0xf1f1ec, roughness: 0.35 });
+    const lining = new THREE.MeshStandardMaterial({ color: 0xc4bfb2, roughness: 0.9, side: THREE.DoubleSide });
+    const well = M({ color: 0x0e0f10, roughness: 0.95 }), bulk = M({ color: 0x2a2c2e, roughness: 0.8 });
+    const body = new THREE.Mesh(busBody(THREE, P), [livery, paint, lining, well, bulk]); body.userData.keep = true; g.add(body);
+    const mk = (geo, mat, x, y, z, ry = 0, rx = 0, rz = 0) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.rotation.set(rx, ry, rz); g.add(m); return m; };
+    const bx = (w, h, d, mat, x, y, z, ry, rx, rz) => mk(new THREE.BoxGeometry(w, h, d), mat, x, y, z, ry, rx, rz);
+    const frame = M({ color: 0x101214, roughness: 0.6 }), chrome = M({ color: 0xc8ccd0, roughness: 0.25, metalness: 0.8 });
+    const glass = new THREE.MeshStandardMaterial({ color: 0x18222a, roughness: 0.06, metalness: 0.55, transparent: true, opacity: 0.72, depthWrite: false });
+    const shield = new THREE.MeshStandardMaterial({ map: tex(makeBusShield(THREE, cnv, true)), roughness: 0.05, metalness: 0.3 });
+    const W2 = P.W / 2, door = [-5.75, -5.12];
+    /* the long side glass: tall panes with thin pillars; the entrance door on the kerb side, ahead of the front axle */
+    const bays = []; for (let x0 = P.win.x0; x0 < P.win.x1 - 0.3; ) { const w = Math.min(1.75, P.win.x1 - x0); bays.push([x0, x0 + w]); x0 += w; }
+    for (const s of [-1, 1]) {
+      for (const [a, b] of bays) {
+        const pane = mk(new THREE.PlaneGeometry(b - a - 0.05, P.win.y1 - P.win.y0 - 0.04), glass, (a + b) / 2, (P.win.y0 + P.win.y1) / 2, s * (W2 + 0.012), s > 0 ? 0 : Math.PI);
+        pane.renderOrder = 2;
+        bx(0.05, P.win.y1 - P.win.y0 + 0.04, 0.04, frame, b, (P.win.y0 + P.win.y1) / 2, s * (W2 + 0.012));
+      }
+      bx(P.win.x1 - P.win.x0 + 0.1, 0.05, 0.05, frame, (P.win.x0 + P.win.x1) / 2, P.win.y1 + 0.01, s * (W2 + 0.01));
+      bx(P.win.x1 - P.win.x0 + 0.1, 0.05, 0.05, frame, (P.win.x0 + P.win.x1) / 2, P.win.y0 - 0.01, s * (W2 + 0.01));
+      const nm = mk(new THREE.PlaneGeometry(3.6, 0.56), M({ map: tex(makeCoachName(THREE, cnv)), transparent: true }), -0.9, 0.8, s * (W2 + 0.006), s > 0 ? 0 : Math.PI);   // (on the luggage bays, under the sweeps)
+      nm.renderOrder = 1;
+    }
+    { const cx = (door[0] + door[1]) / 2, w = door[1] - door[0], y0 = P.Y0 + 0.1, y1 = 3.05, h = y1 - y0, z = W2 + 0.018;
+      const dg = mk(new THREE.PlaneGeometry(w - 0.05, h - 0.05), glass, cx, (y0 + y1) / 2, z); dg.renderOrder = 2;
+      bx(w, 0.05, 0.03, frame, cx, y1, z); bx(w, 0.05, 0.03, frame, cx, y0, z); bx(0.05, h, 0.03, frame, door[0], (y0 + y1) / 2, z); bx(0.05, h, 0.03, frame, door[1], (y0 + y1) / 2, z);
+      bx(0.03, 0.6, 0.03, chrome, door[1] - 0.1, 1.6, z + 0.02); }
+    /* the cabin through the glass: high-backed seats with white headrest covers, a few passengers waiting */
+    const seatMat = M({ color: 0x5a2a3a, roughness: 0.85 }), cover = M({ color: 0xf0eee6, roughness: 0.9 });
+    const rows = []; for (let x = -4.4; x <= 5.0; x += 0.9) rows.push(x);
+    const seats = new THREE.InstancedMesh(new THREE.BoxGeometry(0.1, 0.8, 0.44), seatMat, rows.length * 4), covers = new THREE.InstancedMesh(new THREE.BoxGeometry(0.11, 0.2, 0.36), cover, rows.length * 4);
+    const m4 = new THREE.Matrix4(); let n = 0;
+    for (const x of rows) for (const z of [-0.9, -0.46, 0.46, 0.9]) {
+      m4.makeTranslation(x + 0.32, P.win.y0 + 0.3, z); seats.setMatrixAt(n, m4); m4.makeTranslation(x + 0.33, P.win.y0 + 0.62, z); covers.setMatrixAt(n, m4); n++;
+    }
+    seats.count = covers.count = n; g.add(seats, covers);
+    const strip = glow(0xdfe6ea); mk(new THREE.PlaneGeometry(P.win.x1 - P.win.x0 - 0.6, 0.1), strip, (P.win.x0 + P.win.x1) / 2, P.win.y1 - 0.06, 0, 0, Math.PI / 2);
+    const R = rng(23), skin = M({ color: 0xb88a68, roughness: 0.8 }), hair = M({ color: 0x141210, roughness: 0.9 });
+    const shirts = [0xe8e6e0, 0x3c5a8c, 0xb83a32, 0x6c6a72].map(c => M({ color: c, roughness: 0.9 }));
+    const pHead = new THREE.SphereGeometry(0.1, 12, 10), pHair = new THREE.SphereGeometry(0.104, 12, 8, 0, Math.PI * 2, 0, Math.PI * 0.55), pBody = new THREE.CylinderGeometry(0.15, 0.19, 0.46, 10);
+    for (let i = 0; i < 4; i++) {
+      const x = rows[1 + Math.floor(R() * (rows.length - 2))] + 0.14, z = [-0.9, -0.46, 0.46, 0.9][Math.floor(R() * 4)], y = P.win.y0;
+      mk(pBody, shirts[i % shirts.length], x, y + 0.26, z); mk(pHead, skin, x - 0.01, y + 0.64, z); const hr = mk(pHair, hair, x + 0.01, y + 0.655, z); hr.rotation.z = 0.35;
+    }
+    /* the front: the big curved windscreen in two halves, long wipers, the board behind it, headlamps, the grille,
+       the bumper, the plate */
+    /* (the bevel puts the front's glass line from (−6.13, 1.40) to (−5.97, 3.22): one big pane on that rake, a split) */
+    const ws = mk(new THREE.PlaneGeometry(P.W - 0.14, 1.86), shield, -6.062, 2.31, 0);
+    ws.lookAt(-6.062 - 1.82, 2.31 + 0.16, 0);
+    bx(0.04, 1.86, 0.05, frame, -6.075, 2.31, 0);
+    for (const z of [-0.6, 0.55]) { const wp = bx(0.025, 1.0, 0.025, frame, -6.1, 1.85, z); wp.rotation.set(0.75, 0, 0); }
+    const board = mk(new THREE.PlaneGeometry(1.5, 0.28), glow(0xffffff), -5.98, 3.0, 0, -Math.PI / 2); board.material.map = tex(makeCoachBoard(THREE, cnv)); board.material.needsUpdate = true;
+    const lampMat = glow(0xc9d3da), indMat = glow(0xe89a1c), tailMat = glow(0xb01e1e);
+    for (const z of [-1, 1]) { for (const k of [0, 1]) bx(0.05, 0.16, 0.18, lampMat, -6.17, 0.82, z * (1.0 - k * 0.2)); bx(0.05, 0.08, 0.14, indMat, -6.17, 1.0, z * 1.06); }
+    mk(new THREE.PlaneGeometry(1.1, 0.34), M({ map: tex(makeBusGrille(THREE, cnv)) }), -6.17, 0.8, 0, -Math.PI / 2);
+    bx(0.16, 0.26, P.W + 0.04, frame, -6.16, 0.47, 0);
+    mk(new THREE.PlaneGeometry(0.52, 0.13), M({ map: tex(makeBusPlate(THREE, cnv)) }), -6.25, 0.47, 0, -Math.PI / 2);
+    for (const s of [-1, 1]) {                                       // the long mirror arms
+      const curve = new THREE.CatmullRomCurve3([new THREE.Vector3(-5.6, 3.42, s * 1.15), new THREE.Vector3(-6.3, 3.45, s * 1.2),
+                                                new THREE.Vector3(-6.75, 3.0, s * 1.3), new THREE.Vector3(-6.75, 2.55, s * 1.34)]);
+      mk(new THREE.TubeGeometry(curve, 16, 0.028, 6, false), frame, 0, 0, 0);
+      bx(0.09, 0.42, 0.22, frame, -6.75, 2.36, s * 1.34);
+    }
+    /* the rear: the engine's louvres, the tail-lamp clusters, the plate, the name */
+    mk(new THREE.PlaneGeometry(2.0, 1.0), M({ map: tex(makeBusGrille(THREE, cnv)) }), 6.162, 1.05, 0, Math.PI / 2);
+    for (const z of [-1, 1]) { bx(0.05, 1.0, 0.16, tailMat, 6.16, 1.25, z * 1.1); bx(0.05, 0.12, 0.16, indMat, 6.16, 1.85, z * 1.1); }
+    mk(new THREE.PlaneGeometry(0.52, 0.13), M({ map: tex(makeBusPlate(THREE, cnv)) }), 6.2, 0.45, 0, Math.PI / 2);
+    bx(0.12, 0.22, P.W + 0.02, frame, 6.14, 0.46, 0);
+    bx(5.5, 0.26, 2.0, M({ color: 0xdedfd8, roughness: 0.5 }), 1.6, P.HT + 0.18, 0);   // the roof's air-conditioning
+    /* the wheels: one axle at the front, two at the back */
+    const tyreMat = M({ color: 0x141414, roughness: 0.95 });
+    const tyreG = new THREE.CylinderGeometry(0.5, 0.5, 0.3, 22), hubG = new THREE.CylinderGeometry(0.27, 0.27, 0.03, 18), studG = new THREE.CylinderGeometry(0.022, 0.022, 0.04, 6);
+    for (const ax of P.AX) for (const s of [-1, 1]) {
+      mk(tyreG, tyreMat, ax, 0.5, s * (W2 - 0.16), 0, Math.PI / 2);
+      mk(hubG, chrome, ax, 0.5, s * (W2 - 0.005), 0, Math.PI / 2);
+      for (let k = 0; k < 8; k++) { const a = k * Math.PI / 4; mk(studG, frame, ax + Math.cos(a) * 0.16, 0.5 + Math.sin(a) * 0.16, s * (W2 + 0.012), 0, Math.PI / 2); }
+    }
+    busMergeByMaterial(THREE, g);
+    g.traverse(o => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = false; } });
+    return g;
   }
   /* the plate on its back (VC-6: the bus left the frame as a plain box) */
   function makeBusPlate(THREE, cnv) {

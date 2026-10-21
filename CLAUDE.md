@@ -5834,6 +5834,23 @@ What the baseline contains, by release:
   dist <snap>`; build.py writes new files, so a snapshot outlives the next build)
   so the next version builds while the last one's harnesses run. No word moved.
   Deploy `6ad917e242b3c97dee4cfc91`, byte-verified (all 235 served files).
+- **v21.14** THE BUSES, THE COACH, AND THE KOPITIAM'S PEOPLE — the third
+  milestone (N3–N6). Both buses were a box with a skirt and four cylinders; one
+  builder (`makeCityBus`) makes both now — the body extruded from its side
+  profile with the wheel arches cut out of it, its window band a tunnel so the
+  cabin shows through the glass (seats, poles, light strips, passengers), pillars,
+  two doors, hubs and mud flaps, the split windscreen and wipers, the amber
+  destination display, lamps, the grille, mirrors on rabbit-ear arms, a roof
+  pod, a drawn green-and-white livery with no operator's name; lit for the
+  film's morning, unlit with its cabin glowing for ending C (keeping the old
+  bus's lamp glow and beam). The Golden Mile coach the same way
+  (`makeTourCoach`: three axles, the big windscreen and its HAT YAI board, a
+  generic HAT YAI EXPRESS livery, seats and passengers), turned east so its door
+  is on the kerb. The kopitiam's stick figures are three of the chapter's own
+  seated people (no new download) on four-legged plastic stools built under their
+  HIPS, and the uncle and the young man talk across their tables (heads turned,
+  nods alternating, on the wall clock — ending C is a look at them). Deploy
+  `6ad91e0f6582aebfab4c0e83`, byte-verified (all 235 served files). No word moved.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
