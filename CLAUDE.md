@@ -5813,6 +5813,27 @@ What the baseline contains, by release:
   moments, desktop and phone, no page errors. Sheet v107 (four new voice lines,
   md3ghost's words; v44 stays the link). Deploy `6ad9143822672d70605c9776`, byte-verified
   (all 235 served files).
+- **v21.13** THE SOUND OF BOTH PLACES — the second milestone of Chad's 21 Oct
+  batch (N1, N2: "there is a general lack of ambient sound and environmental
+  sound effects in this whole chapter ... Some parts are too quiet"). Measured
+  first: the shop with the radio off was −34 to −42 dB of mall murmur and nothing
+  else, the shrine while he waits −35 — quiet rooms with nothing IN them. Four
+  beds (`shopair` the A/C and fans, `mallwalla` the corridor's people,
+  `nightinsects` the lorong's crickets, `shrinefan` the blades' swish and a loose
+  blade's tick — round one was 97–100 % under 120 Hz, a hum a phone cannot play,
+  and its ticks stood 33 dB over its average, so it is levelled by RMS,
+  `masters/v21.12/level_rms.py`), mixed by place in `mixBeds`; and fifteen
+  one-shots on a seeded stream on the chapter clock (`ambTick`, cleared by
+  `reset()`): the shop's seven every 8–18 s while he browses (a neighbour's
+  shutter, a trolley, a phone next door, a cash drawer, a bag, a child, slippers),
+  the shrine's eight every 9–20 s while he waits (geckos, a motorbike, a car, a
+  dog, the kopitiam's cups, a far TV, a wind chime, a cat), panned, quieter while
+  anyone speaks, never two at once. All nineteen are e3c3's own pack; the shared
+  pack did not move. Also the warm list's two missing v21.12 sounds, and the
+  harnesses may run on a SNAPSHOT of a build (`ENC_DIST`, `ENC_WRAPPED` — `cp -al
+  dist <snap>`; build.py writes new files, so a snapshot outlives the next build)
+  so the next version builds while the last one's harnesses run. No word moved.
+  Deploy `6ad917e242b3c97dee4cfc91`, byte-verified (all 235 served files).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so

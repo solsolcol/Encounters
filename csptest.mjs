@@ -3,7 +3,9 @@ import fs from 'fs';
 import { chromium } from 'playwright';
 import { LAUNCH } from './testlib.mjs';
 
-const html = fs.readFileSync(new URL('./wrapped.html', import.meta.url));
+// ENC_WRAPPED (v21.13): a snapshot of wrapped.html, so a harness run can
+// outlive the next build (testlib's ENC_DIST is the same idea).
+const html = fs.readFileSync(process.env.ENC_WRAPPED || new URL('./wrapped.html', import.meta.url));
 // Serve the page under a strict CSP: inline script allowed, but no blob:
 // or data: image sources. This began as a model of the claude.ai artifact
 // sandbox; that artifact was retired 30 Aug 2026 and the constraint no

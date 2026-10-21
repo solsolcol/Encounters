@@ -51,8 +51,13 @@ export const DIR = fileURLToPath(new URL('.', import.meta.url));
      would kill them with a stack instead of a sentence.                 */
 import { createServer } from 'node:http';
 import { readFileSync } from 'node:fs';
-import { extname, join, normalize } from 'node:path';
-const _ROOT = join(DIR, 'dist');
+import { extname, join, normalize, resolve } from 'node:path';
+/* ENC_DIST (v21.13): serve a SNAPSHOT of dist/ instead — `cp -al dist <snap>`
+   hard-links every file, and build.py deletes dist/ and writes new files
+   rather than rewriting the old ones, so a snapshot survives the next
+   build untouched. That lets the harnesses run on one build while the
+   next is built. Unset, nothing changes.                              */
+const _ROOT = process.env.ENC_DIST ? resolve(process.env.ENC_DIST) : join(DIR, 'dist');
 const _MIME = { '.html': 'text/html', '.js': 'text/javascript',
                 '.glb': 'model/gltf-binary', '.webp': 'image/webp',
                 '.mp3': 'audio/mpeg', '.json': 'application/json',

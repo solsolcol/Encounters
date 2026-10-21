@@ -9,11 +9,13 @@
 import { createServer } from 'node:http';
 import { fileURLToPath } from 'node:url';
 import { readFile } from 'node:fs/promises';
-import { extname, join, normalize } from 'node:path';
+import { extname, join, normalize, resolve } from 'node:path';
 import { chromium } from 'playwright';
 import { LAUNCH, toPlay } from './testlib.mjs';
 
-const ROOT = fileURLToPath(new URL('./dist/', import.meta.url));
+// ENC_DIST (v21.13): a snapshot of dist/, as in testlib.
+const ROOT = process.env.ENC_DIST ? resolve(process.env.ENC_DIST) + '/'
+                                  : fileURLToPath(new URL('./dist/', import.meta.url));
 const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.glb': 'model/gltf-binary',
                '.webp': 'image/webp', '.mp3': 'audio/mpeg', '.css': 'text/css',   // v15.2: the self-hosted fonts
                '.woff2': 'font/woff2', '.woff': 'font/woff', '.ttf': 'font/ttf' };

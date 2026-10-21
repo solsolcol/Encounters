@@ -132,7 +132,9 @@
        e3c2's by their names put all seven in every player's boot download — EN-2, the v4.2 split) */
     ambience: { beds: [['mallamb', 0.3], ['shopchant', 0], ['e3dance', 0], ['dancemove', 0],
                        ['lorongamb', 0], ['shrineamb', 0], ['e3shrine', 0], ['ritual3', 0],
-                       ['galbed', 0]] },                    // v21.10: under the masters' gallery while it is open
+                       ['galbed', 0],                       // v21.10: under the masters' gallery while it is open
+                       ['shopair', 0], ['mallwalla', 0],    // v21.13: the shop's air and fans; the corridor's people
+                       ['nightinsects', 0], ['shrinefan', 0]] },   // v21.13: the lorong's crickets; the shrine's ceiling fan
     voiceLine: null,
 
     words: {
@@ -3910,7 +3912,12 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
                                 // v21.8: the roar's lunge — the medium's gasp, the rush, the hit, the crash, the swell
                                 'md3gasp', 'hanulunge', 'hanuhit', 'hanucrash', 'goldswell',
                                 // v21.10: the masters' gallery (played by the engine's window, by these names)
-                                'galopen', 'galflip', 'galread', 'galdone', 'galclose', 'galbed']);
+                                'galopen', 'galflip', 'galread', 'galdone', 'galclose', 'galbed',
+                                // v21.12: the Hanuman's appearance and its glow (the roar film from play, ST-5's reason)
+                                'hanuappear', 'hanuhold',
+                                // v21.13: the places' own noises (the beds are the engine's; these one-shots are played by name)
+                                'mshutter', 'trolley', 'phonering', 'cashdraw', 'bagrustle', 'childpass', 'slipperspass',
+                                'gecko', 'motorbike', 'carpass', 'dogfar', 'kopiclatter', 'tvfar', 'windchime', 'catfar']);
 
     /* ------------------------------------------------------------ the phases */
     const inShrine = (x) => x < -100;
@@ -4984,7 +4991,7 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
        monk's last word, through the trance and into its film; the dance's own
        cloth and feet. All four go to nothing at the shrine. */
     let danceTo = 0, rite = false;
-    const mixK = { mall: 0.3, chant: 0, dance: 0, move: 0, lor: 0, room: 0, bed: 0, rit: 0, gal: 0 };
+    const mixK = { mall: 0.3, chant: 0, dance: 0, move: 0, lor: 0, room: 0, bed: 0, rit: 0, gal: 0, air: 0, walla: 0, ins: 0, fan: 0 };
     let mixCard = false;
     function mixBeds(wdt, st) {
       const atShop = !inShrine(yaw.position.x);
@@ -5025,9 +5032,24 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       const galTo = st === 'gallery' ? 0.55 : 0;
       mixK.gal = ease(mixK.gal || 0, galTo, galTo > (mixK.gal || 0) ? 1.0 : 0.6);
       const galUnder = 1 - 0.8 * THREE.MathUtils.clamp((mixK.gal || 0) / 0.55, 0, 1);
+      /* v21.13 (CP3, Chad: "Some parts are too quiet"): the shop's own air — the A/C and its fans — under everything
+         in World A, sinking under the melody nobody else hears; the corridor's people through the glass, louder by the
+         front; in World B the lorong's crickets, louder by the shutters, and the shrine's ceiling fan. Levelled against
+         the files' measured RMS (shopair -19, mallwalla -30, nightinsects -18, shrinefan -26 dBFS): the room tones near
+         -38, the people -39 at the back to -32 at the glass, the crickets -42 inside to -30 at the door. Nothing new
+         under the opening film, which has its own sounds */
+      const filmA = st === 'cine' && !booted;
+      const sinkD = 1 - 0.5 * THREE.MathUtils.clamp(mixK.dance / 0.85, 0, 1);
+      const air = atShop && !filmA ? (danceHalt ? 0.05 : 0.11 * sinkD) : 0;
+      const walla = atShop && !filmA && !danceHalt ? (0.36 + 0.44 * front) * under : 0;
+      const ins = inB ? (card ? 0.05 : 0.06 + 0.22 * outK) : 0;
+      const fan = inB ? (card ? 0.08 : 0.17 * (1 - 0.5 * outK)) : 0;
+      mixK.air = ease(mixK.air || 0, air, 1.0); mixK.walla = ease(mixK.walla || 0, walla, 0.8);
+      mixK.ins = ease(mixK.ins || 0, ins, 0.8); mixK.fan = ease(mixK.fan || 0, fan, 0.8);
       const B = DATA.ambience.beds;
       B[0][1] = mixK.mall * galUnder; B[1][1] = mixK.chant * galUnder; B[2][1] = mixK.dance; B[3][1] = mixK.move;
       B[4][1] = mixK.lor; B[5][1] = mixK.room; B[6][1] = mixK.bed; B[7][1] = mixK.rit; B[8][1] = mixK.gal;
+      B[9][1] = mixK.air * galUnder; B[10][1] = mixK.walla * galUnder; B[11][1] = mixK.ins; B[12][1] = mixK.fan;
     }
     const ZONE_T0 = wallNow(), _cq = new THREE.Quaternion();
     function lifeTick(wdt) {
@@ -5046,6 +5068,62 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       jossSmokeTick(t);
       medStandTick(wdt);
       shrineTick(wdt, t);
+    }
+
+    /* v21.13 (CP3): THE PLACES' OWN NOISES, one at a time on the chapter's clock from their own seeded stream (the
+       e2c3 bush stream's shape, v11.3): in the shop, the mall beyond the glass — a neighbour's roller shutter, a
+       trolley, a phone ringing next door, a cash drawer, a plastic bag, a child laughing past, slippers; at the shrine,
+       the lorong and the room — a house gecko on the wall, a motorbike and a car going by, a dog and a cat far off, the
+       kopitiam's cups, a neighbour's TV, a wind chime at the door. Each panned to where it comes from; the street's
+       louder by the shutters; a third quieter while a line is being said. Never two at once, never over the monk's
+       chant, the trance, the call to the table or the roar, nothing under a panel (they run in play only); reset()
+       rewinds the stream (the v8.1 law) */
+    const sideX = (lo, hi) => (ambRand() < 0.5 ? -1 : 1) * (lo + ambRand() * (hi - lo));
+    const AMB = {
+      shop: [
+        { n: 'mshutter', v: 0.30, len: 3.5, at: () => ({ x: sideX(6, 12), z: 2.5 }) },
+        { n: 'trolley', v: 0.30, len: 5.0, at: () => ({ x: sideX(0, 10), z: 2.5 }) },
+        { n: 'phonering', v: 0.14, len: 2.7, at: () => ({ x: sideX(6, 7), z: -3.0 }) },
+        { n: 'cashdraw', v: 0.18, len: 2.5, at: () => ({ x: sideX(6, 7), z: -2.0 }) },
+        { n: 'bagrustle', v: 0.26, len: 2.5, at: () => ({ x: sideX(0, 4), z: 1.0 }) },
+        { n: 'childpass', v: 0.18, len: 3.5, at: () => ({ x: sideX(2, 9), z: 2.5 }) },
+        { n: 'slipperspass', v: 0.30, len: 4.5, at: () => ({ x: sideX(0, 6), z: 1.5 }) },
+      ],
+      shrine: [
+        { n: 'gecko', v: 0.28, len: 2.5, at: () => ({ x: sideX(4.3, 4.4), z: -3 - ambRand() * 5 }) },
+        { n: 'motorbike', v: 0.42, len: 6.0, street: true, at: () => ({ x: sideX(4, 20), z: 8 }) },
+        { n: 'carpass', v: 0.38, len: 6.0, street: true, at: () => ({ x: sideX(4, 20), z: 8 }) },
+        { n: 'dogfar', v: 0.16, len: 3.5, street: true, at: () => ({ x: sideX(20, 40), z: 30 }) },
+        { n: 'kopiclatter', v: 0.20, len: 5.0, street: true, at: () => ({ x: KOPI.x, z: KOPI.z }) },
+        { n: 'tvfar', v: 0.15, len: 7.0, at: () => ({ x: sideX(5.5, 6), z: -5 }) },
+        { n: 'windchime', v: 0.24, len: 4.0, at: () => ({ x: 0, z: 0.2 }) },
+        { n: 'catfar', v: 0.14, len: 2.5, street: true, at: () => ({ x: sideX(10, 25), z: 20 }) },
+      ],
+    };
+    const AMB_SEED = 0x2113;
+    let ambSeed = AMB_SEED, ambAt = 0, ambBusy = 0, ambLast = '', ambN = 0;
+    function ambRand() {
+      ambSeed = (ambSeed + 0x6D2B79F5) | 0; let t = ambSeed;
+      t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    }
+    function ambTick() {
+      if (!worldSfx || (soundOff && soundOff())) return;
+      const atShop = !inShrine(yaw.position.x);
+      const live = atShop ? ['browse', 'owner', 'gift', 'wear', 'join'].includes(phase) : ['arrive', 'wait'].includes(phase) && !roarDone;
+      if (!live) { ambAt = 0; return; }
+      if (!ambAt) { ambAt = dayClock.t + 4 + ambRand() * 6; return; }
+      if (dayClock.t < ambAt || dayClock.t < ambBusy) return;
+      const pool = atShop ? AMB.shop : AMB.shrine;
+      let k = Math.floor(ambRand() * pool.length);
+      if (pool[k].n === ambLast) k = (k + 1 + Math.floor(ambRand() * (pool.length - 1))) % pool.length;
+      const sd = pool[k], at = sd.at(), wx = atShop ? at.x : LX(at.x);
+      const outK = THREE.MathUtils.clamp((yaw.position.z + 3.0) / 4.0, 0, 1);
+      const vol = sd.v * (sd.street ? 0.5 + 0.5 * outK : 1) * (dayClock.t < speak.until ? 0.66 : 1) * (0.85 + 0.3 * ambRand());
+      if (worldSfx(sd.n, vol, 0.94 + 0.12 * ambRand(), panAt(wx, at.z))) {
+        ambN++; ambLast = sd.n; ambBusy = dayClock.t + sd.len + 0.8;
+        ambAt = dayClock.t + (atShop ? 8 + ambRand() * 10 : 9 + ambRand() * 11);
+      } else ambAt = dayClock.t + 1.5;
     }
 
     /* ------------------------------------------------------------ the frame */
@@ -5085,6 +5163,7 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       if (st !== 'play') return;          // a splash: time passes, nothing is played
       faceTick(wdt); turnTick(wdt); bowTick(); watchTick(); wearTick(); chantTick(); tranceTick(wdt);
       walkBTick(wdt); bowBTick(wdt);
+      ambTick();                                           // v21.13: the places' own noises
     }
     function updatePile() {}
     function updateFire() {}
@@ -5145,6 +5224,7 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       girlPhone.visible = false;
       if (ownerStool) { ownerStool.rotation.z = 0; ownerStool.position.y = 0; }
       for (const k in mixK) mixK[k] = 0;
+      ambSeed = AMB_SEED; ambAt = 0; ambBusy = 0; ambLast = ''; ambN = 0;   // v21.13: the places' noises from the top
       for (const h of hotspots) { h.done = false; h.dwellT = 0; }
       // the LP Tim back on its stand; the candles out; the radio on again (v21.8: it plays while he browses)
       lpAmulet.visible = true; lpHalo.visible = true;
@@ -5282,7 +5362,8 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
                      owner: { x: +owner.group.position.x.toFixed(2), z: +owner.group.position.z.toFixed(2), cur: owner.cur, sitting: !!owner.sitting },
                      staff: { x: +staff.group.position.x.toFixed(2), z: +staff.group.position.z.toFixed(2), cur: staff.cur },
                      flames: flames.map(f => f.visible), radio: radioOn, timOnStand: lpAmulet.visible,
-                     beds: DATA.ambience.beds.map(b => b[0] + ':' + (+b[1]).toFixed(2)).join(' ') }),
+                     beds: DATA.ambience.beds.map(b => b[0] + ':' + (+b[1]).toFixed(2)).join(' '),
+                     amb: { n: ambN, last: ambLast, next: ambAt ? +(ambAt - dayClock.t).toFixed(1) : null } }),
       hotspots,
       updateNotes, updatePile, updateFire, updateSlow,
       snap, restore, reset, dispose
