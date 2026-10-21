@@ -156,6 +156,41 @@ await p.evaluate(() => { const e = window.__enc; e.yaw.rotation.y = 0; e.pitch.r
 await until(() => window.__enc.kitDebug().conduct.notes.includes('You looked at the mark.'), 20000).catch(() => {});
 K.dwellFires = await p.evaluate(() => window.__enc.kitDebug().conduct.notes.includes('You looked at the mark.'));
 
+/* v21.9: THE TWENTY-EIGHTH SEAM — a spot answered by a PRESS on what you look
+   at (`pressAim`; Chad, of episode 3 chapter 3's shop: "I don't want this auto
+   timer, instead the user either has to tap it, click it, or press E"). The
+   fixture's sign and plaque sit 0.12 rad apart from the spawn, inside each
+   other's 0.25 cones. Proven: neither is offered with the reticle off them; the
+   badge names the one the reticle is NEARER; resting on one runs no timer at
+   all; E presses it; and a tap on the other's mark presses that one. */
+const aimFrom9 = (x, z) => p.evaluate(([x, z]) => { const e = window.__enc; e.yaw.position.set(0, 1.62, 9);
+  e.yaw.rotation.y = Math.atan2(-x, -(z - 9)); e.pitch.rotation.x = 0; }, [x, z]);
+const spotNow = () => p.evaluate(() => window.__enc.kitDebug().hotspot);
+const readNotes = () => p.evaluate(() => window.__enc.kitDebug().conduct.notes.filter(n => n === 'You read the sign.' || n === 'You read the plaque.'));
+await p.evaluate(() => { for (const h of window.__enc.stage.hotspots) if (h.id === 'sign' || h.id === 'plaque') h.armed = true; });
+await aimFrom9(0, -8); await settle();
+K.pressNotOffAim = !['sign', 'plaque'].includes(await spotNow());
+await aimFrom9(-10.5, 0);
+await until(() => window.__enc.kitDebug().hotspot === 'sign', 20000).catch(() => {});
+K.pressOffered = (await spotNow()) === 'sign';
+await aimFrom9(-10.5, -2.5);
+await until(() => window.__enc.kitDebug().hotspot === 'plaque', 20000).catch(() => {});
+K.pressNearerCone = (await spotNow()) === 'plaque';
+await aimFrom9(-10.5, 0);
+await until(() => window.__enc.kitDebug().hotspot === 'sign', 20000).catch(() => {});
+await p.waitForTimeout(2500);   // a NEGATIVE: nothing may fire, and no look-timer may even start
+K.pressNoTimer = (await readNotes()).length === 0
+  && await p.evaluate(() => { const h = window.__enc.stage.hotspots.find(x => x.id === 'sign'); return !h.done && !(h.dwellT > 0); });
+await p.keyboard.press('KeyE');
+await until(() => window.__enc.kitDebug().conduct.notes.includes('You read the sign.'), 20000).catch(() => {});
+K.pressE = (await readNotes()).join('|') === 'You read the sign.';
+await aimFrom9(-4, 0); await settle();   // the plaque's mark on screen, the reticle well off it
+K.pressTapMark = await p.evaluate(() => {
+  const e = window.__enc, m = e.hotMarkAt('plaque');
+  if (!m || m.z > 1 || e.hotspotTap(3, 3) !== false) return false;
+  return e.hotspotTap(m.x, m.y) === true && e.kitDebug().conduct.notes.includes('You read the plaque.');
+});
+
 // torch: declared → the button is on the body, F toggles it, off again after
 K.torchDeclared = await p.evaluate(() => {
   const d = window.__enc.kitDebug();

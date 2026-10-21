@@ -1008,7 +1008,7 @@
       text: "[uneasy] I only meant to stay for the chanting... but something else happened...", secs: 4.8 },
     { id: "ow3hello", who: "owner3", ch: "e3c3", where: "Seconds after play begins: the owner looks up from his counter",
       text: "[warmly] Ah, you came! Happy Buddha Day! Come in, come in. Look around first, ah.", secs: 5.96 },
-    { id: "z3look1", who: "jamesAdult", ch: "e3c3", where: "Play: looking at the wall of framed amulets",
+    { id: "z3look1", who: "jamesAdult", ch: "e3c3", where: "Play: the framed amulets in the staff's counter, tapped or pressed (v21.9: the wall behind it holds Chad's shelves of images since v21.8)",
       text: "[quietly] Somdej, Phra Rod, Nang Phaya... every one of them with its own story.", secs: 6.27 },
     { id: "z3look2", who: "jamesAdult", ch: "e3c3", where: "Play: looking at the Luang Phu Tim on its stand behind the counter (v21.8: said in full — Chad: \"The voicelines should say luang phu tim, and not literally lp\"; the TTS is told \"Luang Pu\", poo)",
       text: "Luang Phu Tim Khun Paen... he never lets anyone hold that one.", secs: 4.65 },

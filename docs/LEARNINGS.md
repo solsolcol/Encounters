@@ -5802,3 +5802,22 @@ cut (sharing its vertices and maps) when it is small.
   square, between two lamps thirty metres apart a facade goes dark, which is
   what a street at night is. Everything merged into a handful of batches, one
   draw a material.
+- **An audit of "is everything done?" is taken from the record and the
+  shipped thing, never from memory** (v21.9). Chad's messages came out of the
+  session's own log — including the ones that arrived mid-turn as queued
+  commands, which a plain "user messages" filter misses — and his attached
+  images out of the same log (base64 in the record), so the shipped portraits
+  could be compared with what he sent pixel by pixel. Spoken lines were checked
+  by their AUDIO: faster-whisper in a scratch virtualenv (`pip install
+  faster-whisper`; the model downloads once) transcribes a shipped take
+  locally, at no credit cost — and a chant is cut phrase by phrase and
+  transcribed with NO prompt, because a prompt leans the transcript toward the
+  very words being checked. The audit found one loose end that no check on any
+  single change could have: a look-spot's words still named what a later change
+  had taken off the wall it pointed at.
+- **A hand pose is judged by a measure, not by one photograph** (v21.9). A
+  wide photograph at an oblique angle read the shop monk's añjali as open
+  palms; replaying the chapter's own palm measure in the page said the palms
+  face each other exactly (1.00 both hands, wrists 6 cm apart) and the A-pose
+  check agreed (0.93), and a close side photograph showed the clasp. Measure
+  first, then photograph from where the measure says to look.

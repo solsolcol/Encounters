@@ -138,7 +138,7 @@
       interactTouch: 'Tap to choose what you do',
       actLine: 'Press E to choose what you do',
       actLineTouch: 'Tap to choose what you do',
-      objBrowse: 'Look around the shop',
+      objBrowse: 'Look around the shop · {n}/4',          // (v21.9: each of the four pressed is a beat)
       objOwner: 'See the owner at his counter',
       objWear: 'Open your bag and wear the LP Tim Khun Paen',
       objJoin: 'Join the chanting at the altar',
@@ -657,8 +657,9 @@
        His shelf of images — twenty on five shelves, Buddhas, monks, deities
        and hermits, 1.082 x 1.899 x 0.32 m, baked on its base centre facing +z
        — stands on the staff's wall behind the staff man (Chad: "the shelf
-       behind the man was supposed to be the shelf i provided you") and in
-       the back-left corner. THREE levels in the one file, three index lists
+       behind the man was supposed to be the shelf i provided you") — three
+       of them (the back-left corner's pair went for the lersi masks, later in
+       v21.8). THREE levels in the one file, three index lists
        over one set of vertices (tools/lodpair.mjs LEVELS): EVERY triangle of
        his scan (594k) within 1.5 m of a shelf's middle (Chad: "you removed
        too much detail from the amulet display trays and shelf"), a 178k cut
@@ -3670,7 +3671,7 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       /* 'join' with the LP Tim not on him (a Continue saved after he took it
          off) asks for it again first, so a resume plays one order, not two */
       const joinNow = p === 'join' && wornNow();
-      const obj = { browse: W.objBrowse, owner: W.objOwner, wear: W.objWear, join: joinNow ? W.objJoin : W.objWear,
+      const obj = { browse: W.objBrowse.replace('{n}', String(looked.size)), owner: W.objOwner, wear: W.objWear, join: joinNow ? W.objJoin : W.objWear,
                     chant: W.objChant, arrive: W.objIncense, wait: W.objWait, watch: W.objWatch }[p];
       kit.objective(shrDark ? null : (obj || null), opts);
       /* the mat's own "!" floats over its glow (e3c2's v19.4); the owner is a
@@ -3702,29 +3703,38 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
     const BUDDHA_FACE = ROW_FACE;                       // v21.8: the Buddha at the middle of Chad's statue row
     const faceBuddha = (p = MAT) => Math.atan2(-(BUDDHA_FACE.x - p.x), -(BUDDHA_FACE.z - p.z));
 
-    /* 1 · BROWSING — four things to look at, each a line of his; the owner
-       calls him over once he has looked at two, or walks up, or has wandered
-       for long enough */
+    /* 1 · BROWSING — four things to look at, each a line of his.
+       v21.9 (Chad: "the user either has to tap it, click it, or press E on
+       each objective in order to complete it and move to the next"): each of
+       the four is PRESSED (the hotspots below), the order counts them — 1/4,
+       2/4, 3/4, each a beat — and the owner calls him over on the fourth.
+       Nothing moves on by itself any more: v21.0 had him call after two, or
+       when the player walked up to the counter, or after 45 s of wandering,
+       and each of those finished the browse with markers still on screen,
+       never pressed. The count rides the phase string (`browse:wall,tim`), so
+       a Continue lands on the same count (e2c2's `ask:`, v7.3's law). */
     const LOOKS = {
       wall:    { line: 'z3look1' },
       tim:     { line: 'z3look2' },
       altar:   { line: 'z3look3' },
       masters: { line: 'z3look4' }
     };
+    const LOOK_N = Object.keys(LOOKS).length;
+    const browseMark = () => { if (kit) kit.setPhase(looked.size ? 'browse:' + [...looked].join(',') : 'browse'); };
     function lookAt(k) {
-      if (phase !== 'browse' && phase !== 'owner') return false;
+      if (phase !== 'browse') return false;
       if (looked.has(k)) return false;
       looked.add(k);
       queueLine(LOOKS[k].line);
-      if (looked.size >= 2 && !called) after(0.5, () => ownerCalls());
+      if (looked.size >= LOOK_N) ownerCalls();          // the fourth: the owner's call is queued behind its line
+      else { objectiveFor('browse'); browseMark(); }
       return true;
     }
     function ownerCalls() {
       if (called || phase !== 'browse') return;
       called = true;
-      /* COMPLETE only when he did look around: walking up to the counter, or
-         wandering 45 s, is not "Look around the shop" done (v8.7) */
-      setPhase('owner', looked.size >= 2 ? undefined : { complete: false });
+      /* COMPLETE only when he did look around (v8.7) — since v21.9 the only way here from the browse */
+      setPhase('owner', looked.size >= LOOK_N ? undefined : { complete: false });
       owner.look = 1;
       queueGap(0.4);
       queueLine('ow3call', () => talk(owner, SECS.ow3call), 1, panAt(OWN.x, OWN.z));
@@ -4551,17 +4561,40 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
     }
 
     /* ------------------------------------------------------------- hotspots
-       Anchors at EYE height on the thing itself (the v7.5 law). The four
-       look-spots fire by being LOOKED AT (the eighteenth seam), and a press
-       works while the reticle is on one (v12.5). */
+       Anchors at EYE height on the thing itself (the v7.5 law).
+       v21.9 (Chad: "the objective markers all have a timing that automatically
+       completes if the user camera faces it. I don't want this auto timer,
+       instead the user either has to tap it, click it, or press E on each
+       objective in order to complete it and move to the next"): the four
+       look-spots are PRESSED, never timed — `pressAim` (the twenty-eighth
+       seam): E, the badge or a click under pointer lock presses the one the
+       reticle is on; a tap or an unlocked click on its mark, or on the thing
+       itself (`hits`, a box round it), presses it from anywhere in reach.
+       The framed amulets are the trays in the staff's counter now: since
+       v21.8 the wall behind it holds Chad's shelves of images, and the
+       line ("Somdej, Phra Rod, Nang Phaya...") names amulets. */
+    const _tapRay = new THREE.Raycaster(), _tapPtr = new THREE.Vector2(), _tapHit = new THREE.Vector3();
+    const tapBox = (x0, y0, z0, x1, y1, z1) => {
+      const bb = new THREE.Box3(new THREE.Vector3(x0, y0, z0), new THREE.Vector3(x1, y1, z1));
+      return (cx, cy) => {
+        camera.updateMatrixWorld();
+        _tapPtr.set((cx / innerWidth) * 2 - 1, -(cy / innerHeight) * 2 + 1);
+        _tapRay.setFromCamera(_tapPtr, camera);
+        return !!_tapRay.ray.intersectBox(bb, _tapHit);
+      };
+    };
     const hotspots = [
-      { id: 'lkWall', pos: { x: -4.05, y: 1.35, z: -2.25 }, radius: 7.5, aim: 0.30, dwell: 1.0, once: true, markFar: 9, prompt: W.lookWall,
+      { id: 'lkWall', lookKey: 'wall', pos: { x: -3.2, y: 1.15, z: -3.4 }, radius: 9, aim: 0.30, pressAim: true, once: true, markFar: 9, markY: 0.25, prompt: W.lookWall,
+        hits: tapBox(LCNT.x0 - 0.05, 0.35, LCNT.z1 - 0.05, LCNT.x1 + 0.05, LCNT.top + 0.02, LCNT.z0 + 0.05),   // the staff's counter, its trays
         enabled: () => phase === 'browse', onInteract() { return lookAt('wall'); } },
-      { id: 'lkTim', pos: { x: LPT.x, y: RCNT.top + 0.12, z: LPT.z }, radius: 4.5, aim: 0.20, dwell: 1.0, once: true, markFar: 6, prompt: W.lookTim,
+      { id: 'lkTim', lookKey: 'tim', pos: { x: LPT.x, y: RCNT.top + 0.12, z: LPT.z }, radius: 6, aim: 0.20, pressAim: true, once: true, markFar: 6, prompt: W.lookTim,
+        hits: tapBox(LPT.x - 0.13, RCNT.top - 0.02, LPT.z - 0.15, LPT.x + 0.13, RCNT.top + 0.40, LPT.z + 0.15),   // the LP Tim on its stand
         enabled: () => phase === 'browse', onInteract() { return lookAt('tim'); } },
-      { id: 'lkAltar', pos: { x: 0, y: 1.45, z: ALTAR.z + 0.1 }, radius: 8, aim: 0.30, dwell: 1.0, once: true, markFar: 9, prompt: W.lookAltar,   // (v21.8: on the row's Buddha and the monk before it)
+      { id: 'lkAltar', lookKey: 'altar', pos: { x: 0, y: 1.45, z: ALTAR.z + 0.1 }, radius: 9, aim: 0.30, pressAim: true, once: true, markFar: 9, prompt: W.lookAltar,   // (v21.8: on the row's Buddha and the monk before it)
+        hits: tapBox(-ALTAR.w / 2 - 0.05, 0, SHOP.z0, ALTAR.w / 2 + 0.05, 2.45, ALTAR.z + ALTAR.d / 2 + 0.05),   // the altar, its row and the screen behind
         enabled: () => phase === 'browse', onInteract() { return lookAt('altar'); } },
-      { id: 'lkMasters', pos: { x: SHOP.x1 - 0.05, y: 1.78, z: -2.5 }, radius: 7.5, aim: 0.26, dwell: 1.0, once: true, markFar: 9, prompt: W.lookMasters,
+      { id: 'lkMasters', lookKey: 'masters', pos: { x: SHOP.x1 - 0.05, y: 1.78, z: -2.5 }, radius: 9, aim: 0.26, pressAim: true, once: true, markFar: 9, prompt: W.lookMasters,
+        hits: tapBox(SHOP.x1 - 0.2, 0.9, -3.25, SHOP.x1, 2.32, -1.75),   // the five portraits
         enabled: () => phase === 'browse', onInteract() { return lookAt('masters'); } },
       { id: 'owner', pos: { x: OWN.x - 0.05, y: 1.45, z: OWN.z }, radius: 2.7, prompt: W.hotOwner, markY: 0.3,   // (just over his head: at the default it stood under the objective box from the counter — VP-4)
         enabled: () => phase === 'owner', onInteract() { return giftBegin(); } },
@@ -4581,11 +4614,9 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       const x = yaw.position.x, z = yaw.position.z;
       if (phase === 'join' && !seated && wornNow() && Math.hypot(x - MAT.x, z - MAT.z) < 0.5) kneel();
       if (phase === 'wait' && !sitB && Math.hypot(x - STOOL_W.x, z - STOOL_W.z) < 0.5) sitDown();
-      // the owner calls him over if he walks up to the counter, or after a while
-      if (phase === 'browse' && !called) {
-        if (browseT0 < 0) browseT0 = dayClock.t;
-        if ((x > 1.7 && Math.abs(z - OWN.z) < 1.6) || dayClock.t - browseT0 > 45) ownerCalls();
-      }
+      /* (v21.9: the owner no longer calls him over when he walks up to the
+         counter or after 45 s of wandering — the browse ends on the fourth
+         press, and only there; see lookAt) */
     }
     /* THE BEDS: the mall's murmur through the glass (louder by the front);
        the radio's Thai music while it is on (v21.8: from the start, until the
@@ -4717,8 +4748,15 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       } else if (kit && kit.has('timkp')) takeTimBack();            // a fresh run: the owner gives it again
       if (at >= PHASES.indexOf('join')) { wornDone = true; snapCelebration(); }
       if (at >= PHASES.indexOf('arrive')) { toShrine(true, p); return; }
+      /* v21.9: a Continue in the browse lands on the same count — the looks
+         already pressed are spent (their marks gone, their lines not said again) */
+      if (p === 'browse' && tag[1]) {
+        for (const k of tag[1].split(',')) if (LOOKS[k]) looked.add(k);
+        for (const h of hotspots) if (h.lookKey && looked.has(h.lookKey)) h.done = true;
+      }
       setPhase(p);
       if (p === 'browse') {
+        browseMark();
         browseT0 = dayClock.t;
         after(1.6, () => { if (phase === 'browse' && !heard.has('ow3hello')) queueLine('ow3hello', () => talk(owner, SECS.ow3hello), 1, panAt(OWN.x, OWN.z)); });
       }

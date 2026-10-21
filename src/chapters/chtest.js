@@ -373,6 +373,19 @@
           if (kit) kit.conduct({ note: 'You looked at the mark.' });
           return true;
         } },
+      /* v21.9: two spots answered by a PRESS on what you look at
+         (`pressAim`, the twenty-eighth seam): no timer, offered only while
+         the reticle is in its cone, the nearer of two overlapping cones
+         winning, and a tap on its mark pressing it. 0.12 rad apart from the
+         spawn, so the cones overlap; asleep until fixturetest arms them, so
+         no other proof's aim can find them. Episode 3 chapter 3's four shop
+         spots are this. */
+      { id: 'sign', pos: { x: -10.5, y: 1.6, z: 0 }, radius: 16, aim: 0.25, pressAim: true, prompt: 'Read the sign', once: true, markFar: 16,
+        enabled() { return !!this.armed; },
+        onInteract() { if (kit) kit.conduct({ note: 'You read the sign.' }); return true; } },
+      { id: 'plaque', pos: { x: -10.5, y: 1.6, z: -2.5 }, radius: 16, aim: 0.25, pressAim: true, prompt: 'Read the plaque', once: true, markFar: 16,
+        enabled() { return !!this.armed; },
+        onInteract() { if (kit) kit.conduct({ note: 'You read the plaque.' }); return true; } },
       /* v14.7: a hotspot answered by a TAP ON THE THING — `hits(x, y)`,
          reached through the engine's hotspotTap from a touch or an unlocked
          click — whose press hands over an item and opens the ITEM UNLOCKED

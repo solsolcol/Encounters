@@ -2006,7 +2006,7 @@ function hotspotVisible(h) {
   return n.z < 1 && Math.abs(n.x) < 0.97 && Math.abs(n.y) < 0.97;
 }
 function nearestHotspot() {
-  let best = null, bd = Infinity;
+  let best = null, bd = Infinity, aimed = null, ak = Infinity;
   for (const h of hotspotList()) {
     if (!h || !h.pos || h.done || (typeof h.enabled === 'function' && !h.enabled())) continue;
     /* v12.3 excluded a DWELL spot from the badge entirely, because a press
@@ -2021,9 +2021,27 @@ function nearestHotspot() {
        taps what the game has marked is answered instead of ignored. */
     if (h.dwell > 0 && !hotspotAimed(h)) continue;
     const d = Math.hypot(yaw.position.x - h.pos.x, yaw.position.z - h.pos.z);
+    /* v21.9: THE TWENTY-EIGHTH SEAM — a spot answered by a PRESS on what you
+       are LOOKING AT. Chad, of episode 3 chapter 3's four look-spots: "the
+       objective markers all have a timing that automatically completes if
+       the user camera faces it. I don't want this auto timer, instead the
+       user either has to tap it, click it, or press E on each objective".
+       A `pressAim` spot has no dwell: it is offered to E and the badge only
+       while the reticle is inside its own `aim`, and when two cones hold the
+       reticle the one it is nearer (as a fraction of each cone) wins — the
+       rule the look itself was graded on (v21.1), so the badge names the
+       thing under the reticle, never merely the nearest. A tap or an
+       unlocked click on its MARK fires it too (hotspotTap), and so does a
+       click under pointer lock (the canvas's mousedown). Only a spot that
+       declares it is touched, and none did before v21.9. */
+    if (h.pressAim) {
+      const k = hotspotOff(h) / (h.aim || 0.10);
+      if (k < 1 && k < ak && d < (h.radius || 2.2) && (h.anyView || hotspotVisible(h))) { aimed = h; ak = k; }
+      continue;
+    }
     if (d < (h.radius || 2.2) && d < bd && (h.anyView || hotspotVisible(h))) { best = h; bd = d; }
   }
-  return best;
+  return aimed || best;
 }
 /* v11.0: THE EIGHTEENTH SEAM — a hotspot SEEN BY LOOKING. Episode 2
    chapter 3's play is a torch: a spot in the jungle is "pressed" when the
@@ -2120,10 +2138,12 @@ function interactNow() {
 function hotspotTap(x, y) {
   if (state !== 'play' || ev) return false;
   for (const h of hotspotList()) {
-    if (!h || !h.pos || typeof h.hits !== 'function' || h.done
+    if (!h || !h.pos || (typeof h.hits !== 'function' && !h.pressAim) || h.done
         || (typeof h.enabled === 'function' && !h.enabled())) continue;
     const d = Math.hypot(yaw.position.x - h.pos.x, yaw.position.z - h.pos.z);
-    if (d >= (h.radius || 2.2) || !h.hits(x, y)) continue;
+    if (d >= (h.radius || 2.2)) continue;
+    // v21.9: a `pressAim` spot is also pressed by a tap on its own mark
+    if (!(h.pressAim && hotMarkHit(h, x, y, d)) && !(typeof h.hits === 'function' && h.hits(x, y))) continue;
     const r = typeof h.onInteract === 'function' ? h.onInteract(h) : false;
     if (r !== false) { snd('uiclick', 0.35); if (h.once) { h.done = true; if (activeSpot === h) setInteractBadge(null); } }
     return r !== false;
@@ -2356,6 +2376,14 @@ function paintObjective() {
    Chapters 1-5 declare no hotspots, so `hotspotList()` is empty there and
    this paints nothing — the base game cannot see it. */
 const HOTMARK_FAR = 16;                 // metres; the bunk is ~12 long
+const HOTMARK_TAP = 32;                 // v21.9: CSS px from a mark's middle that a tap on it counts (the phone's mark is 44 across)
+/* v21.9: is (x, y) on this spot's mark, exactly where paintHotMarks draws it? */
+function hotMarkHit(h, x, y, d) {
+  if (d > (h.markFar || HOTMARK_FAR)) return false;
+  const q = projectTo(h.pos.x, (h.pos.y ?? 1.0) + (h.markY ?? 0.55), h.pos.z);
+  if (q.z > 1 || Math.abs(q.x) > 1.02 || Math.abs(q.y) > 1.02) return false;
+  return Math.hypot(x - (q.x * 0.5 + 0.5) * innerWidth, y - (-q.y * 0.5 + 0.5) * innerHeight) < HOTMARK_TAP;
+}
 const hotMarks = [];
 function hotMarkEl(i) {
   const host = $('hotmarks'); if (!host) return null;
@@ -2396,7 +2424,10 @@ function paintHotMarks() {
          opposite: "at thirty metres the diamond renders small and dim". A
          spot may now say where NEAR begins; every other spot keeps radius,
          so nothing else moves. */
-      const near = d < (h.nearR != null ? h.nearR : (h.radius || 2.2));
+      /* v21.9: a `pressAim` spot's reach is the whole room, so "in reach" is
+         the badge's own choice — the one mark under the reticle grows and
+         ripples, and it is the one E, the badge or a click will press */
+      const near = h.pressAim ? h === activeSpot : d < (h.nearR != null ? h.nearR : (h.radius || 2.2));
       const k = near ? 1.15 : THREE.MathUtils.clamp(1.25 - d / far, 0.55, 1);
       const a = near ? 1 : THREE.MathUtils.clamp(1.15 - d / far, 0.35, 0.9);
       el.style.display = '';
@@ -5891,6 +5922,8 @@ canvas.addEventListener('mousedown', e => {
     return;
   }
   if (!locked && hotspotTap(e.clientX, e.clientY)) return;   // v14.7: a hotspot that can be clicked on
+  // v21.9: under lock the reticle is the cursor — a click presses the `pressAim` spot it is on, as E does
+  if (locked && state === 'play' && activeSpot && activeSpot.pressAim) { interactNow(); return; }
   tryLock();                         // upgrade to real free look where allowed
 });
 
@@ -12828,6 +12861,10 @@ async function skelLab(key, o = {}) {
 window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () => state,   // v8.7: pitch, so a probe can aim the lens at the floor
                  skelLab,                                  // v15.2: the merge, proven
                  kit: KIT, kitDebug, interactNow,          // v7.0: the play kit, by state
+                 /* v21.9: where a hotspot's mark is on the screen (CSS px), so a probe can tap it as a thumb would */
+                 hotMarkAt: (id) => { const h = hotspotList().find(s => s && s.id === id); if (!h) return null;
+                   const q = projectTo(h.pos.x, (h.pos.y ?? 1.0) + (h.markY ?? 0.55), h.pos.z);
+                   return { x: (q.x * 0.5 + 0.5) * innerWidth, y: (-q.y * 0.5 + 0.5) * innerHeight, z: q.z }; },
                  prayDebug: () => ({ k: pray.k, to: pray.to, left: !!(prayerArmL && prayerArmL.visible), ax: +armR.position.x.toFixed(4), ay: +armR.position.y.toFixed(4),
                                      /* v19.3: the left hand actually DRAWN — every level from its meshes up to the scene visible, not only its root */
                                      leftDrawn: (() => { if (!prayerArmL) return false; let all = true, any = false;
