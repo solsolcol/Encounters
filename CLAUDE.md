@@ -5851,6 +5851,30 @@ What the baseline contains, by release:
   HIPS, and the uncle and the young man talk across their tables (heads turned,
   nods alternating, on the wall clock — ending C is a look at them). Deploy
   `6ad91e0f6582aebfab4c0e83`, byte-verified (all 235 served files). No word moved.
+- **v21.15** BEACH ROAD, AND THE BLOCKS AROUND GOLDEN MILE — the fourth
+  milestone (N7: "the exterior of golden mile complex, the surrounding areas
+  and road and the hdb behind are too sparse and have too much empty spaces").
+  Photographed first: the road one plane of the NIGHT street's asphalt under a
+  morning sun, nothing on it but the bus, nobody on the pavements, the road
+  stopping at x −80 in the sky's lower half, the end wall blank, two HDB blocks
+  alone on bare ground. Now Beach Road runs 310 m to the haze in a sunlit
+  asphalt with paved pavements, two lanes each way, a planted median with
+  keep-left signs and twin-armed lamps, single and double yellow, a coach bay,
+  a zebra laid ACROSS the road with its zigzags and amber beacons, arrows, guard
+  rails, drains and manholes, a built bus stop; seven cars both ways on the
+  film's clock (`mallLife`), a second coach, five motorcycles; two walkers, a
+  woman on her suitcase, an auntie at the stop (the chapter's own rigs); banners
+  under the mall's canopy, its end wall drawn and its podium's end shopped;
+  Golden Mile Tower beside it on a podium of shops with its name on the roof's
+  edge, more blocks west and across; the game's HDB block at six places behind,
+  a car park, lawns, trees. Found by photograph and fixed: every car drove
+  BACKWARDS past its lane's arrows (the pack's cars face their local −x), the
+  Tower's two shop rows were one row twice (floors five apart sign alike), and
+  the painted morning sky cut a cloud straight down its seam in the film's first
+  frame (a puff near either edge is drawn again a canvas-width over). Built in a
+  hard-linked copy of the tree while the last version's harnesses ran — the law
+  that copy taught is in LEARNINGS. No word moved; sheet v107 stands. Deploy
+  `6ad92554daabec41cb115fd8`, byte-verified (all 235 served files).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so

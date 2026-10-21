@@ -1287,6 +1287,7 @@
     }
     const rigs = [];
     const kopiRigs = [];            // v21.14: the kopitiam's three, across the road from the shrine
+    const mallCars = [], mallWalkers = [], mallSitters = [];   // v21.15: the film's street — its traffic, its two walking, its two sitting
     function mkRig(key, opts) {
       const parent = opts.parent || shopG;
       const group = new THREE.Group();
@@ -3711,17 +3712,34 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
     const gmZ = (i) => GM.z0 - i * GM.step;            // floor i's front edge, where its terrace's parapet stands
     { const sky = new THREE.Mesh(new THREE.SphereGeometry(118, 40, 20, 0, Math.PI * 2, 0, Math.PI / 2 + 0.22), fBasic({ map: tex(makeMorningSky(THREE, cnv)), side: THREE.BackSide, depthWrite: false, fog: false }));
       sky.position.set(0, -6, 0); sky.renderOrder = -1; MALLX.add(sky);
-      const asT = tex(makeAsphalt(THREE, cnv)); asT.wrapS = asT.wrapT = THREE.RepeatWrapping; asT.repeat.set(160 / 6, 12 / 6);
-      const road = new THREE.Mesh(new THREE.PlaneGeometry(160, 12), fStd({ map: asT, color: 0x96969c, roughness: 0.92 })); road.rotation.x = -Math.PI / 2; road.position.set(0, 0, 11); MALLX.add(road);
-      { const pv = new THREE.Mesh(new THREE.PlaneGeometry(160, 5), fStd({ color: 0xaaa498, roughness: 0.9 })); pv.rotation.x = -Math.PI / 2; pv.position.set(0, 0.012, 2.5); MALLX.add(pv);
-        const pv2 = new THREE.Mesh(new THREE.PlaneGeometry(160, 6), fStd({ color: 0xaaa498, roughness: 0.9 })); pv2.rotation.x = -Math.PI / 2; pv2.position.set(0, 0.012, 20); MALLX.add(pv2); }
-      for (const z of [5.0, 17.0]) box(160, 0.14, 0.2, 0, 0.07, z, matConcF, MALLX, false);
-      for (let i = 0; i < 8; i++) { const st = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 4.0), fBasic({ color: 0xe8e8e0 })); st.rotation.x = -Math.PI / 2; st.position.set(-3.5 + i * 1.0, 0.012, 11); MALLX.add(st); }   // the zebra
-      { const l = new THREE.Mesh(new THREE.PlaneGeometry(160, 0.12), fBasic({ color: 0xd8d8d0 })); l.rotation.x = -Math.PI / 2; l.position.set(0, 0.01, 11); MALLX.add(l); }
+      /* v21.15 · BEACH ROAD (CP6, N7 — Chad: "the exterior of golden mile complex, the surrounding areas and road and
+         the hdb behind are too sparse and have too much empty spaces, they need to be much more detailed and properly
+         built with more effort"). Photographed first, on both screens: the road was one plane of the NIGHT street's
+         asphalt — black under a morning sun, and on a phone the biggest thing in the frame — with a centre line and a
+         zebra laid ALONG the road instead of across it; west of the mall the road and both pavements stopped at x −80
+         in the sky's lower half. The road runs to the haze both ways now, in a sunlit asphalt, on paved pavements (the
+         far one wide enough for the bus stop and its people); everything ON it is the block below the coach */
+      const BR = { x0: -215, x1: 95 }; BR.len = BR.x1 - BR.x0; BR.cx = (BR.x0 + BR.x1) / 2;
+      const asT = tex(makeDayAsphalt(THREE, cnv)); asT.wrapS = asT.wrapT = THREE.RepeatWrapping; asT.repeat.set(BR.len / 9, 12 / 9);
+      const road = new THREE.Mesh(new THREE.PlaneGeometry(BR.len, 12), fStd({ map: asT, roughness: 0.94 })); road.rotation.x = -Math.PI / 2; road.position.set(BR.cx, 0, 11); MALLX.add(road);
+      { const pvT = tex(makePavers(THREE, cnv));
+        const pvM = (w) => { const t = pvT.clone(); t.needsUpdate = true; madeTex.push(t); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(BR.len / 2.4, w / 2.4); return fStd({ map: t, roughness: 0.9 }); };
+        const pv = new THREE.Mesh(new THREE.PlaneGeometry(BR.len, 5), pvM(5)); pv.rotation.x = -Math.PI / 2; pv.position.set(BR.cx, 0.012, 2.5); MALLX.add(pv);
+        const pv2 = new THREE.Mesh(new THREE.PlaneGeometry(BR.len, 8), pvM(8)); pv2.rotation.x = -Math.PI / 2; pv2.position.set(BR.cx, 0.012, 21); MALLX.add(pv2);
+        /* and the ground the buildings stand on, past the pavements both ways — it was the sky's lower half */
+        const gr = new THREE.Mesh(new THREE.PlaneGeometry(440, 320), fStd({ color: 0x8c877c, roughness: 0.95 })); gr.rotation.x = -Math.PI / 2; gr.position.set(-40, -0.03, -60); MALLX.add(gr); }
+      for (const z of [5.0, 17.0]) box(BR.len, 0.14, 0.2, BR.cx, 0.07, z, matConcF, MALLX, false);
       /* THE PODIUM: three floors of shops, a row of Thai signs a floor, the covered way along the front; its roof a
          terrace the tower stands back from */
       const podM = fStd({ color: 0xc9bfa8, roughness: 0.93 });                // the cream concrete, weathered
       box(GM.len, GM.pod, 30, GM.cx, GM.pod / 2, -15.05, podM, MALLX, false);
+      /* (v21.15: the podium's east end, 30 m of blank wall in the opening's first frames, has its shops too, and a
+         coach company's painted sign over them) */
+      [[0, 4.6], [4.6, 4.3]].forEach(([y0, h], i) => {
+        const t = tex(makeMallFront(THREE, cnv, 2 + i)); t.wrapS = THREE.RepeatWrapping; t.repeat.set(28 / 46, 1);
+        plane(28, h - 0.3, fBasic({ map: t }), GM.x1 + 0.02, y0 + (h - 0.3) / 2, -15.05, Math.PI / 2, MALLX);
+        box(0.5, 0.3, 28.6, GM.x1 + 0.2, y0 + h - 0.15, -15.05, matWhiteF, MALLX, false);
+      });
       [[0, 4.6], [4.6, 4.3]].forEach(([y0, h], i) => {
         const t = tex(makeMallFront(THREE, cnv, i)); t.wrapS = THREE.RepeatWrapping; t.repeat.set(GM.len / 46, 1);   // a shop every 4.6 m
         plane(GM.len - 1.4, h - 0.3, fBasic({ map: t }), GM.cx, y0 + (h - 0.3) / 2, 0.01, 0, MALLX);
@@ -3762,7 +3780,9 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
              k => { const f = v + 2 * k; return [GM.cx, GM.pod + f * GM.fh + 0.36 + (GM.fh - 0.36) / 2, gmZ(f) - GM.step + 0.01]; });
       }
       // the two end walls, a floor at a time — their stepped front edge is the building's profile
-      const endM = fStd({ color: 0xb7ad97, roughness: 0.95 });
+      /* (v21.15: the end walls were one flat cream — on a phone, the biggest surface in the film's first frames; now
+         each floor's piece wears weathered concrete, its slab's drip line and the rain's streaks under it) */
+      const endM = fStd({ map: tex(makeGMCEndWall(THREE, cnv)), color: 0xd8ccb2, roughness: 0.95 });
       inst(new THREE.BoxGeometry(0.7, GM.fh, GM.depth + 0.3), endM, N * 2,
            k => { const f = k % N, x = k < N ? GM.x1 - 0.35 : GM.x0 + 0.35; return [x, GM.pod + f * GM.fh + GM.fh / 2, gmZ(f) + 0.3 - (GM.depth + 0.3) / 2]; });
       // the roof: a parapet round the top floor, the lift and water-tank houses set back on it
@@ -3811,24 +3831,295 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       // its neighbours: a plain office slab to the left and the estate's blocks behind, so it does not stand on its own
       { const nt = tex(makeTowerFace(THREE, cnv)); nt.wrapS = nt.wrapT = THREE.RepeatWrapping; nt.repeat.set(3, 5);
         box(30, 70, 22, -92, 35, -20, fStd({ map: nt, color: 0xc8c4bc, roughness: 0.85 }), MALLX, false); }
-      parseOnce('hdb').then(gl => {
-        if (!alive) return;
-        for (const [x, z, ry] of [[66, -52, -0.35], [-30, -70, 0.12]]) {
-          const b = gl.scene.clone(true); b.scale.setScalar(0.001); b.rotation.y = ry;
-          b.traverse(o => { if (!o.isMesh) return; o.castShadow = false; o.receiveShadow = false; });
-          b.updateMatrixWorld(true);
-          const bb = new THREE.Box3().setFromObject(b);
-          b.position.set(x - (bb.min.x + bb.max.x) / 2, -bb.min.y, z - (bb.min.z + bb.max.z) / 2);
-          MALLX.add(b);
-        }
-      }).catch(err => { console.warn('hdb failed to load', err); ctx.loadFail && ctx.loadFail('hdb', err); });
+      /* (the estate's hdb blocks: built with Beach Road below, at six places, merged — v21.15) */
 
-      // a tour coach at the kerb (the coaches to Hat Yai leave from here), a lamp post or two
-      makeCoach(MALLX, -18, 6.4);
-      for (const x of [-30, -2, 26]) { box(0.16, 7.5, 0.16, x, 3.75, 4.75, matIronF, MALLX, false); box(1.6, 0.14, 0.3, x - 0.7, 7.5, 4.75, matIronF, MALLX, false); }
-      // a bus stop across the road, behind him; the rain trees along the kerbs, kept out of his way
-      box(6, 0.12, 2.0, 12, 2.7, 19.2, matGreenF, MALLX, false); for (const x of [9.4, 14.6]) box(0.1, 2.7, 0.1, x, 1.35, 19.9, matIronF, MALLX, false);
+      // a tour coach in the bay at the kerb (the coaches to Hat Yai leave from here); the rain trees along the kerbs, kept out of his way
+      const coachA = makeCoach(MALLX, -18, 6.4);
       if (plantTrees) treeStands.push(plantTrees(MALLX, [[-24, 19.5], [-4, 20.4], [52, 20.2], [-40, 4.0], [-10, 4.0], [44, 3.8]].map(([x, z], i) => ({ x, y: 0, z, h: 7 + (i % 2) * 2 })), { seed: 33, tint: 0x8a9a7a, lowKeep: 0.7 }));
+      /* ================= v21.15 · BEACH ROAD, FURNISHED (CP6, N7). What a road in front of Golden Mile has on it.
+         THE MARKINGS: two lanes each way, dashed between them; a planted median with its edge lines; single yellow
+         along the mall's kerb and double yellow along the far one; the coach bay's box; the zebra laid ACROSS the
+         road (it lay along it), its zigzags on every lane edge of both approaches and amber beacons on black-and-white
+         poles at both kerbs and on the refuge; arrows in the lanes. THE FURNITURE: guard rails along both kerbs, open
+         at the zebra, the coach bay and the bus stop; drains and manholes; keep-left signs on the median's noses;
+         twin-armed lamps down the median; the bus stop behind him, built. THE TRAFFIC: a second coach in the bay, cars
+         both ways on the film's clock (`mallLife`), motorcycles at a lot. THE PEOPLE: two walking, a woman on her
+         suitcase by the coaches, an auntie on the bus stop's bench. Static pieces merged per material
+         (busMergeByMaterial), repeated ones instanced: the whole street is a few dozen draws. */
+      {
+        const L1 = 6.43, L2 = 9.28, L3 = 13.03, L4 = 15.68, MED0 = 10.7, MED1 = 11.7, MEDZ = 11.2, ZX = 1.7;
+        /* (none between x 15 and 33: from where the shot ends, the line to the mall's name crosses the median at x ≈ 24,
+           and a pole there stood through the sign on a phone — photographed) */
+        const LAMPS_MED = [-187, -155, -123, -91, -59, -27, 38, 70];
+        const R = rng(1515);
+        const white = fBasic({ color: 0xeeeee6 }), yellow = fBasic({ color: 0xe6c02a });
+        const flat = (w, d, mat, x, z, y, parent) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d), mat); m.rotation.x = -Math.PI / 2; m.position.set(x, y, z); parent.add(m); return m; };
+        const M4 = new THREE.Matrix4(), Q4 = new THREE.Quaternion(), V4 = new THREE.Vector3(), S4 = new THREE.Vector3(), E4 = new THREE.Euler();
+        const instAt = (geo, mat, list, parent = MALLX) => {          // each [x, y, z, ry, sx, sy, sz]
+          const I = new THREE.InstancedMesh(geo, mat, list.length); owned.push({ dispose: () => geo.dispose() });
+          list.forEach((p, k) => { Q4.setFromEuler(E4.set(0, p[3] || 0, 0)); S4.set(p[4] || 1, p[5] || 1, p[6] || 1); M4.compose(V4.set(p[0], p[1], p[2]), Q4, S4); I.setMatrixAt(k, M4); });
+          I.castShadow = false; I.receiveShadow = false; I.computeBoundingSphere(); parent.add(I); return I;
+        };
+        const merged = (g) => { busMergeByMaterial(THREE, g); g.traverse(o => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = false; } }); return g; };
+
+        // ---- the markings
+        { const mk = new THREE.Group(); MALLX.add(mk);
+          for (const z of [7.85, 14.35]) for (let x = BR.x0 + 3; x < BR.x1 - 3; x += 6) { if (Math.abs(x) < 15.5) continue; flat(2.6, 0.12, white, x, z, 0.014, mk); }
+          for (const z of [MED0 - 0.14, MED1 + 0.14]) flat(BR.len, 0.1, white, BR.cx, z, 0.014, mk);
+          flat(-44 - BR.x0, 0.1, yellow, (BR.x0 - 44) / 2, 5.17, 0.015, mk);              // single yellow, not along the coach bay
+          flat(BR.x1 + 5, 0.1, yellow, (BR.x1 - 5) / 2, 5.17, 0.015, mk);
+          for (const z of [16.83, 16.69]) flat(BR.len, 0.1, yellow, BR.cx, z, 0.015, mk);   // double yellow
+          flat(39, 0.14, white, -24.5, 7.72, 0.015, mk); for (const x of [-44, -5]) flat(0.14, 2.7, white, x, 6.37, 0.015, mk);   // the coach bay
+          for (const z of [5.55, 6.55, 7.55, 8.55, 9.55, 12.25, 13.25, 14.25, 15.25, 16.25]) flat(ZX * 2, 0.5, white, 0, z, 0.016, mk);   // the zebra
+          { const zt = tex(makeZigzag(THREE, cnv)); zt.wrapS = THREE.RepeatWrapping; zt.repeat.set(12, 1);
+            const zm = fBasic({ map: zt, transparent: true, depthWrite: false });
+            for (const z of [5.34, 7.85, MED0 - 0.16, MED1 + 0.16, 14.35, 16.52]) for (const sx of [-1, 1]) flat(12, 0.26, zm, sx * (ZX + 6.6), z, 0.017, mk); }
+          { const am = fBasic({ map: tex(makeRoadArrow(THREE, cnv)), transparent: true, depthWrite: false });
+            for (const [x, z, dir] of [[-26, L2, 1], [-62, L2, 1], [-62, L1, 1], [26, L3, -1], [26, L4, -1], [62, L3, -1], [62, L4, -1]]) {
+              const a = flat(4.2, 0.9, am, x, z, 0.017, mk); if (dir < 0) a.rotation.z = Math.PI; } }
+          merged(mk); }
+
+        // ---- the median: kerbed, planted, broken at the zebra for a refuge; keep-left signs on its noses
+        { const med = new THREE.Group(); MALLX.add(med);
+          const medM = fStd({ color: 0xd4cfc2, roughness: 0.9 }), soilM = fStd({ color: 0x4c4434, roughness: 1 });
+          for (const [a, b] of [[BR.x0, -ZX - 0.5], [ZX + 0.5, BR.x1]]) {
+            box(b - a, 0.16, MED1 - MED0, (a + b) / 2, 0.08, MEDZ, medM, med, false);
+            flat(b - a - 0.2, MED1 - MED0 - 0.24, soilM, (a + b) / 2, MEDZ, 0.163, med);
+          }
+          const kl = fStd({ map: tex(makeKeepLeft(THREE, cnv)), roughness: 0.6 }), back = fStd({ color: 0x5a5e62, roughness: 0.6 }), pole = fStd({ color: 0x8a8e92, roughness: 0.5, metalness: 0.4 });
+          for (const sx of [-1, 1]) {
+            const x = sx * (ZX + 0.75);
+            cyl(0.035, 0.035, 1.1, x, 0.71, MEDZ, pole, 8, med);
+            const s = new THREE.Mesh(new THREE.CircleGeometry(0.3, 24), kl); s.position.set(x, 1.2, MEDZ); s.rotation.y = sx > 0 ? Math.PI / 2 : -Math.PI / 2; med.add(s);
+            const sb = new THREE.Mesh(new THREE.CircleGeometry(0.3, 24), back); sb.position.set(x - sx * 0.012, 1.2, MEDZ); sb.rotation.y = sx > 0 ? -Math.PI / 2 : Math.PI / 2; med.add(sb);
+          }
+          merged(med);
+          const sh = [];
+          for (let x = BR.x0 + 2; x < BR.x1 - 1; x += 0.9 + R() * 0.5) {
+            if (Math.abs(x) < ZX + 1.6) continue;
+            if (LAMPS_MED.some(lx => Math.abs(x - lx) < 0.75)) continue;
+            const s = 0.55 + R() * 0.4;
+            sh.push([x, 0.17 + s * 0.26, MEDZ + (R() - 0.5) * 0.24, R() * Math.PI, s * 1.35, s * 0.8, s * 0.95]);
+          }
+          const I = instAt(new THREE.IcosahedronGeometry(0.42, 1), fStd({ color: 0xffffff, roughness: 0.85 }), sh);
+          const GR = [0x4a7838, 0x5e8a3e, 0x3c6a34, 0x6a8e44].map(c => new THREE.Color(c));
+          sh.forEach((_, k) => I.setColorAt(k, GR[(R() * GR.length) | 0])); I.instanceColor.needsUpdate = true; }
+
+        // ---- the zebra's beacons: amber globes on black-and-white poles, both kerbs and the refuge
+        { const g = new THREE.Group(); MALLX.add(g);
+          const poleM = fStd({ map: tex(makeBeaconPole(THREE, cnv)), roughness: 0.6 }), globeM = fBasic({ color: 0xffb02a });
+          for (const [x, z, y0] of [[-ZX - 0.45, 4.6, 0], [ZX + 0.45, 4.6, 0], [-ZX - 0.45, 17.4, 0], [ZX + 0.45, 17.4, 0], [-ZX - 1.15, MEDZ, 0.16], [ZX + 1.15, MEDZ, 0.16]]) {
+            cyl(0.05, 0.055, 2.7, x, y0 + 1.35, z, poleM, 10, g);
+            const gl = new THREE.Mesh(new THREE.SphereGeometry(0.17, 16, 12), globeM); gl.position.set(x, y0 + 2.86, z); g.add(gl);
+          }
+          merged(g); }
+
+        // ---- guard rails along both kerbs (open at the zebra, the coach bay, the motorcycle lot and the bus stop)
+        { const railM = fStd({ color: 0xa9adb0, roughness: 0.45, metalness: 0.5 }), g = new THREE.Group(); MALLX.add(g);
+          const posts = [];
+          const run = (a, b, z) => {
+            for (let x = a; x <= b + 0.01; x += 2.0) posts.push([x, 0.5, z]);
+            box(b - a, 0.05, 0.05, (a + b) / 2, 0.98, z, railM, g, false); box(b - a, 0.04, 0.04, (a + b) / 2, 0.55, z, railM, g, false);
+          };
+          for (const [a, b] of [[BR.x0 + 2, -46], [-3.4, -ZX - 0.75], [ZX + 0.75, 15.5], [29, BR.x1 - 2]]) run(a, b, 4.78);
+          for (const [a, b] of [[BR.x0 + 2, -ZX - 0.75], [ZX + 0.75, 7.0], [17.0, BR.x1 - 2]]) run(a, b, 17.22);
+          merged(g);
+          instAt(new THREE.BoxGeometry(0.06, 1.0, 0.06), railM, posts); }
+
+        // ---- drains along both kerbs, manholes in the lanes
+        { const gr = [];
+          for (let x = BR.x0 + 5; x < BR.x1 - 2; x += 11) { if (Math.abs(x) < 3) continue; gr.push([x, 0.016, 5.21]); gr.push([x + 4, 0.016, 16.79]); }
+          instAt(new THREE.PlaneGeometry(0.95, 0.32).rotateX(-Math.PI / 2), fStd({ map: tex(makeGrate(THREE, cnv)), roughness: 0.7, metalness: 0.3 }), gr);
+          instAt(new THREE.CircleGeometry(0.34, 20).rotateX(-Math.PI / 2), fStd({ map: tex(makeManhole(THREE, cnv)), roughness: 0.6, metalness: 0.3 }),
+                 [[-48, 0.016, L2 + 0.4], [-12, 0.016, L1 + 0.6], [9, 0.016, L3 - 0.3], [40, 0.016, L4 + 0.2], [-90, 0.016, L3], [72, 0.016, L2 - 0.4], [-130, 0.016, L4]]); }
+
+        // ---- twin-armed lamps down the median (grey poles, a head at the end of each arm, over the lanes)
+        { const g = new THREE.Group(); MALLX.add(g);
+          const poleM = fStd({ color: 0x8c9196, roughness: 0.45, metalness: 0.45 }), headM = fStd({ color: 0x5a5f64, roughness: 0.4, metalness: 0.5 }), lensM = fBasic({ color: 0xf2efe2 });
+          for (const x of LAMPS_MED) {
+            cyl(0.17, 0.2, 0.5, x, 0.41, MEDZ, poleM, 12, g);
+            cyl(0.09, 0.15, 9.2, x, 0.66 + 4.6, MEDZ, poleM, 12, g);
+            for (const s of [-1, 1]) {
+              const cv = new THREE.QuadraticBezierCurve3(new THREE.Vector3(x, 9.2, MEDZ), new THREE.Vector3(x, 9.95, MEDZ + s * 0.8), new THREE.Vector3(x, 9.78, MEDZ + s * 2.3));
+              g.add(new THREE.Mesh(new THREE.TubeGeometry(cv, 10, 0.055, 6, false), poleM));
+              const h = box(0.36, 0.13, 0.8, x, 9.74, MEDZ + s * 2.6, headM, g, false); h.rotation.x = s * 0.06;
+              const ln = new THREE.Mesh(new THREE.PlaneGeometry(0.28, 0.66), lensM); ln.rotation.x = Math.PI / 2; ln.position.set(x, 9.668, MEDZ + s * 2.6); g.add(ln);
+            }
+          }
+          merged(g); }
+
+        // ---- the bus stop behind him (x 7.4 … 16.6 on the far pavement): a roof on posts, a glass back, a bench, a
+        //      lit poster at one end and the stop's own board on a pole at the other — it faces the road
+        const STOP = { x: 12, back: 20.6 };
+        { const g = new THREE.Group(); MALLX.add(g);
+          const roofM = fStd({ color: 0x3c4a50, roughness: 0.5, metalness: 0.3 }), postM = fStd({ color: 0x6c757c, roughness: 0.4, metalness: 0.5 });
+          const benchM = fStd({ color: 0x9aa3a8, roughness: 0.35, metalness: 0.6 }), bz = STOP.back;
+          box(7.6, 0.14, 2.6, STOP.x, 2.85, bz - 1.0, roofM, g, false);
+          box(7.6, 0.34, 0.08, STOP.x, 2.71, bz - 2.27, roofM, g, false);                    // the fascia, over the kerb side
+          for (const x of [8.6, 12, 15.4]) box(0.12, 2.8, 0.12, x, 1.4, bz, postM, g, false);
+          box(3.6, 0.07, 0.42, 11.2, 0.395, bz - 0.36, benchM, g, false);                    // the bench (its top 0.43 m up)
+          for (const x of [9.6, 12.8]) box(0.08, 0.36, 0.36, x, 0.18, bz - 0.36, postM, g, false);
+          box(1.4, 2.0, 0.22, 15.9, 1.15, bz - 0.5, postM, g, false);                        // the poster's case
+          const ad = new THREE.Mesh(new THREE.PlaneGeometry(1.24, 1.8), fBasic({ map: tex(makeStopPoster(THREE, cnv)) })); ad.position.set(15.9, 1.15, bz - 0.62); ad.rotation.y = Math.PI; g.add(ad);
+          cyl(0.05, 0.05, 2.9, 7.4, 1.45, bz - 1.9, postM, 8, g);
+          const sb = new THREE.Mesh(new THREE.PlaneGeometry(0.62, 1.0), fStd({ map: tex(makeStopBoard(THREE, cnv)), roughness: 0.5 })); sb.position.set(7.4, 2.25, bz - 1.86); sb.rotation.y = Math.PI; g.add(sb);
+          merged(g);
+          const gl = new THREE.Mesh(new THREE.PlaneGeometry(6.6, 1.9), fStd({ color: 0xa8c4cc, roughness: 0.08, metalness: 0.2, transparent: true, opacity: 0.32, depthWrite: false }));
+          gl.position.set(STOP.x, 1.25, bz + 0.02); gl.rotation.y = Math.PI; gl.renderOrder = 2; MALLX.add(gl); }
+
+        // ---- the podium's street front, closer (6.5): banners hung from the canopy's edge in every other bay — the
+        //      coaches north, the money changers, the Thai food, the amulets
+        { const g = new THREE.Group(); MALLX.add(g);
+          const BAN = [['#c8241a', '#fff2c0', 'HAT YAI', 'หาดใหญ่ · 08:00  21:00'], ['#1e4a8a', '#ffffff', 'BANGKOK', 'กรุงเทพฯ · DAILY'],
+                       ['#f2c12e', '#2a1a10', 'THAI FOOD', 'อาหารไทย'], ['#2a7a3a', '#fff6d8', 'MONEY CHANGER', 'แลกเงิน'],
+                       ['#7a1a1a', '#ffd870', 'AMULETS', 'พระเครื่อง'], ['#d8641a', '#fff6e0', 'COACH TICKETS', 'ตั๋วรถทัวร์']];
+          const mats = BAN.map(b => fBasic({ map: tex(makeCanopyBanner(THREE, cnv, b)) }));
+          let i = 0;
+          for (let x = GM.x0 + 4.75; x < GM.x1 - 2; x += 11) { const m = new THREE.Mesh(new THREE.PlaneGeometry(1.9, 0.62), mats[i++ % mats.length]); m.position.set(x, 3.2, 3.33); g.add(m); }
+          merged(g); }
+
+        // ---- the coach bay's second coach (a clone of the first: the same geometry and materials, no second set of
+        //      canvases) — a phone never sees this far west, so it goes there only
+        if (!LOW) { const c2 = coachA.clone(); c2.position.x = -34.5; MALLX.add(c2); }
+
+        // ---- motorcycles at a lot by the near kerb, east of the zebra's zigzags (each built once, merged, cloned)
+        { const blk = fStd({ color: 0x18191b, roughness: 0.6 }), chr = fStd({ color: 0xb8bcc0, roughness: 0.3, metalness: 0.8 }), seat = fStd({ color: 0x201e1d, roughness: 0.8 });
+          const moto = (col) => {
+            const g = new THREE.Group(), body = fStd({ color: col, roughness: 0.35, metalness: 0.2 });
+            for (const x of [-0.64, 0.64]) {
+              const t = new THREE.Mesh(new THREE.TorusGeometry(0.27, 0.075, 8, 20), blk); t.position.set(x, 0.345, 0); g.add(t);
+              const h = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.13, 0.08, 14), chr); h.rotation.x = Math.PI / 2; h.position.set(x, 0.345, 0); g.add(h);
+            }
+            box(0.95, 0.24, 0.26, -0.02, 0.6, 0, body, g, false);                            // the body
+            box(0.56, 0.1, 0.27, -0.2, 0.77, 0, seat, g, false);                             // the seat
+            box(0.22, 0.42, 0.3, 0.42, 0.78, 0, body, g, false);                             // the front shield
+            box(0.05, 0.05, 0.62, 0.5, 1.02, 0, chr, g, false);                              // the handlebar
+            const fk = box(0.05, 0.62, 0.05, 0.6, 0.62, 0, chr, g, false); fk.rotation.z = -0.38;   // the fork
+            box(0.12, 0.1, 0.16, 0.56, 0.98, 0, chr, g, false);                              // the headlamp
+            const ex = cyl(0.04, 0.05, 0.6, -0.45, 0.33, -0.16, chr, 8, g); ex.rotation.z = Math.PI / 2 - 0.12;   // the exhaust
+            box(0.36, 0.06, 0.2, 0.64, 0.66, 0, body, g, false);                              // the front mudguard
+            merged(g);
+            return g;
+          };
+          const cols = [0xb8261c, 0x1e3a6a, 0x2a2c30, 0xd8d8d2, 0x3a6a3a];
+          for (let i = 0; i < 5; i++) { const m = moto(cols[i]); m.position.set(17.8 + i * 2.0, 0, 5.85); m.rotation.y = -1.25; MALLX.add(m); } }
+
+        // ---- the traffic: cars both ways (the chapter's `cars`, as on the lorong), placed by the film's clock
+        parseOnce('cars').then(gl => {
+          if (!alive) return;
+          gl.scene.updateMatrixWorld(true);
+          const bodies = []; gl.scene.traverse(o => { if (o.isMesh) bodies.push(o); });
+          const geos = bodies.map(src => {
+            const geo = src.geometry.clone(); geo.applyMatrix4(src.matrixWorld); geo.computeBoundingBox();
+            let bb = geo.boundingBox;
+            if (bb.max.z - bb.min.z > bb.max.x - bb.min.x) { geo.rotateY(Math.PI / 2); geo.computeBoundingBox(); bb = geo.boundingBox; }
+            const s = 4.3 / (bb.max.x - bb.min.x);
+            geo.translate(-(bb.min.x + bb.max.x) / 2, -bb.min.y, -(bb.min.z + bb.max.z) / 2); geo.scale(s, s, s);
+            geo.computeBoundingSphere(); owned.push({ dispose: () => geo.dispose() });
+            return { geo, mat: src.material };
+          });
+          /* [lane z, x at t 0, speed (m/s, signed: + runs east)]: the far lanes run west between him and the mall,
+             the near lane east (the bus is in it from 8.1 s — every car in that lane is clear of it, by arithmetic) */
+          /* (each far-lane car crosses the middle of his view — x ≈ 25 there — at its own moment, 1.2, 3.5, 6.3, 8.5 and
+             10.6 s, and none while the bus does, 12.9) */
+          for (const [z, x0, v] of [[L4, 36, -9.5], [L3, 62, -10.5], [L4, 82, -9.0], [L3, 118, -11.0], [L4, 120, -9.0],
+                                     [L2, -6, 11.5], [L2, -96, 11.0]]) {
+            const k = mallCars.length % geos.length, car = new THREE.Mesh(geos[k].geo, geos[k].mat);
+            /* (the pack's cars face their LOCAL −x once laid along x — photographed: at 0 a car on the +x lane drove
+               backwards past its own arrow — so a car going east turns a half turn and one going west keeps 0) */
+            car.rotation.y = v > 0 ? Math.PI : 0; car.position.set(x0, 0.0, z); car.visible = false; car.castShadow = false; car.receiveShadow = false;
+            MALLX.add(car); mallCars.push({ car, x0, v, lo: BR.x0 + 4, hi: BR.x1 - 4 });
+          }
+        }).catch(e => { if (ctx.loadFail) ctx.loadFail('cars', e); else console.warn('e3c3: the film\'s cars did not load', e); });
+
+        // ---- the people: two walking (on the film's clock), a woman on her suitcase by the coaches, an auntie at the stop
+        const noCast = (r) => r.model.traverse(o => { if (o.isMesh) o.castShadow = false; });
+        /* (their take runs at the rate their glide asks of it — the stride the take is drawn with — so no foot skates) */
+        mallWalkers.push({ r: mkRig('botak', { parent: MALLX, x: 1.5, z: 4.15, ry: Math.PI / 2, height: 1.72, idle: 'Walking', rate: 1.25 / (WALK_NAT * 1.72), then: noCast }), x0: 1.5, z: 4.15, v: 1.25 });
+        mallWalkers.push({ r: mkRig('staffman', { parent: MALLX, x: 21, z: 21.4, ry: -Math.PI / 2, height: 1.73, idle: 'Walking', rate: 1.3 / (WALK_NAT * 1.73), then: noCast }), x0: 21, z: 21.4, v: -1.3 });
+        const SEATS_F = [{ key: 'sitwoman', x: -26.0, z: 4.0, ry: 0, o: { height: 1.2, idle: WIFE_SIT }, seat: 'case' },
+                         { key: 'sitclap', x: 11.0, z: STOP.back - 0.36, ry: Math.PI, o: { height: 1.22, idle: SIT_W, at: 0.0, sizeAt: 0.15 }, seat: 'bench' }];
+        for (const S of SEATS_F) {
+          mallSitters.push(mkRig(S.key, { parent: MALLX, x: S.x, z: S.z, ry: S.ry, ...S.o,
+            then: (r) => {
+              noCast(r);
+              if (!r.hips) return;
+              r.hips.getWorldPosition(_v); MALLX.worldToLocal(_v);
+              r.group.position.x += S.x - _v.x; r.group.position.z += S.z - _v.z;
+              /* the seat under his hips: the bench is built (0.43 m, so he settles); a suitcase is built to his height, as
+                 mkRig's stool is (its top 0.1 m under the hips), with a second standing beside it */
+              if (S.seat === 'bench') { r.group.position.y += 0.43 - (_v.y - 0.1); return; }
+              const top = Math.max(0.3, _v.y - 0.1), cm = fStd({ color: 0x8a1c2a, roughness: 0.4 }), hm = fStd({ color: 0x1c1c1e, roughness: 0.5 });
+              const cs = new THREE.Group(); cs.position.set(S.x, 0, S.z); MALLX.add(cs);
+              box(0.62, top, 0.34, 0, top / 2, -0.02, cm, cs, false); box(0.3, 0.035, 0.05, 0, top + 0.017, -0.02, hm, cs, false);
+              box(0.42, 0.62, 0.24, 0.62, 0.31, 0.1, fStd({ color: 0x2a4a7a, roughness: 0.45 }), cs, false);   // a second, standing
+              cyl(0.012, 0.012, 0.36, 0.62, 0.8, 0.1, hm, 6, cs);
+              for (const o of cs.children) o.castShadow = false;
+            } }));
+        }
+
+        // ---- THE NEIGHBOURS. West of the mall, along its side of the road: a podium under the office slab that
+        //      stood alone, a 1980s block, a row of shophouses, a far slab in the haze. Across the road (the left of
+        //      the frame on a wide screen): a hotel slab, shophouses, a block of flats, an office. East (the right of the
+        //      frame as the film opens): Golden Mile Tower on its podium, a car park, the estate.
+        { const bld = new THREE.Group(); MALLX.add(bld);
+          const face = (t, rx, ry) => { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(rx, ry); return t; };
+          const fB = (w, h, d, x, y, z, map, rx, ry, col = 0xffffff) => box(w, h, d, x, y, z, fStd({ map: face(tex(map), rx, ry), color: col, roughness: 0.85 }), bld, false);
+          const plain = fStd({ color: 0xb4ab98, roughness: 0.92 }), roofM = fStd({ color: 0x8e887c, roughness: 0.95 });
+          /* a podium's street face: its rows of shops and a band over each (a box textured all round put one shop's
+             sign 24 m long down its side — photographed) */
+          /* (a row's signs run (3i + 4·floor) mod 10, so floors five apart are the SAME row — Golden Mile Tower's two
+             rows were 0 and 5 and read as one row twice; a row may also start half a strip along, `sh`) */
+          const podF = (w, x, z, rows) => rows.forEach(([y0, h, fl, sh = 0]) => {
+            const t = tex(makeMallFront(THREE, cnv, fl)); t.wrapS = THREE.RepeatWrapping; t.repeat.set(w / 46, 1); t.offset.x = sh;
+            plane(w - 0.6, h - 0.3, fBasic({ map: t }), x, y0 + (h - 0.3) / 2, z + 0.02, 0, bld);
+            box(w, 0.3, 0.5, x, y0 + h - 0.15, z + 0.2, matWhiteF, bld, false);
+          });
+          // west, the mall's side
+          box(30, 9, 8, -92, 4.5, -5, plain, bld, false); podF(30, -92, -1, [[0, 4.6, 1], [4.6, 4.3, 4]]);   // the slab's podium
+          box(30.4, 0.6, 8.4, -92, 9.3, -5, plain, bld, false);
+          fB(22, 21, 18, -125, 10.5, -10, makeBlockFace(THREE, cnv, 0), 2, 3);
+          box(22.4, 0.8, 18.4, -125, 21.4, -10, roofM, bld, false);
+          fB(28, 11, 12, -154, 5.5, -7, makeShophouseRow(THREE, cnv, 0), 5, 1);
+          fB(26, 46, 20, -188, 23, -16, makeOfficeBands(THREE, cnv, 1), 2, 6, 0xd8d4cc);
+          // across the road, west of him
+          if (!LOW) {
+            fB(30, 34, 16, -46, 17, 36, makeBlockFace(THREE, cnv, 1), 3, 5);
+            fB(24, 11, 12, -76, 5.5, 31, makeShophouseRow(THREE, cnv, 1), 4, 1);
+            fB(34, 40, 14, -112, 20, 37, makeBlockFace(THREE, cnv, 2), 3, 6);
+            fB(28, 54, 22, -150, 27, 42, makeOfficeBands(THREE, cnv, 0), 2, 7);
+            fB(24, 14, 12, -20, 7, 32, makeShophouseRow(THREE, cnv, 2), 4, 1);
+          }
+          // east: Golden Mile Tower (a 1970s office slab on its podium, its name over the podium), the car park
+          box(26, 10, 24, 52, 5, -13, plain, bld, false); podF(26, 52, -1, [[0, 4.6, 4], [4.6, 4.6, 4, 0.5]]);   // (floor 4's order: the mall's own rows are 0 and 1, its end 2 and 3)
+          box(26.4, 0.6, 24.4, 52, 10.3, -13, plain, bld, false);
+          fB(22, 62, 16, 52, 10.6 + 31, -16, makeOfficeBands(THREE, cnv, 0), 2, 8, 0xe2dccf);
+          box(22.6, 2.2, 16.6, 52, 10.6 + 63.1, -16, plain, bld, false);
+          plane(14, 2.4, fBasic({ map: tex(makeNameBoard(THREE, cnv, 'GOLDEN MILE TOWER')) }), 52, 11.85, -1.2, 0, bld);   // on its roof's edge, as the mall's is
+          fB(30, 15, 22, 88, 7.5, -16, makeCarPark(THREE, cnv), 3, 5);
+          box(30.4, 1.0, 22.4, 88, 15.5, -16, plain, bld, false);
+          merged(bld); }
+
+        // ---- the estate behind, east of the mall: the hdb block at more places (all merged into one draw a material),
+        //      lawns at their feet, trees between
+        parseOnce('hdb').then(gl => {
+          if (!alive) return;
+          const est = new THREE.Group(); MALLX.add(est);
+          for (const [x, z, ry] of [[66, -52, -0.35], [-30, -70, 0.12], [96, -48, -0.1], [80, -82, 0.25], [112, -76, -0.42], [40, -96, 0.05]]) {
+            const b = gl.scene.clone(true); b.scale.setScalar(0.001); b.rotation.y = ry;
+            b.updateMatrixWorld(true);
+            const bb = new THREE.Box3().setFromObject(b);
+            b.position.set(x - (bb.min.x + bb.max.x) / 2, -bb.min.y, z - (bb.min.z + bb.max.z) / 2);
+            est.add(b);
+          }
+          merged(est);
+        }).catch(err => { console.warn('hdb failed to load', err); ctx.loadFail && ctx.loadFail('hdb', err); });
+        { const lawn = fStd({ color: 0x5e7e3e, roughness: 1 });
+          for (const [x, z, w, d] of [[78, -64, 70, 56], [-30, -70, 40, 30], [40, -96, 40, 26]]) { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d), lawn); m.rotation.x = -Math.PI / 2; m.position.set(x, 0.006, z); MALLX.add(m); } }
+        if (plantTrees) treeStands.push(plantTrees(MALLX, [[70, -30], [84, -34], [104, -36], [60, -70], [92, -66], [106, -92], [52, -84], [124, -60],
+                                                           [-104, 3.6], [-138, 3.8], [-170, 3.6], [-60, 19.6], [-92, 20.2], [-126, 19.8], [-162, 20.4]]
+          .map(([x, z], i) => ({ x, y: 0, z, h: 6.5 + (i % 3) * 1.6 })), { seed: 151, tint: 0x8a9a7a, lowKeep: 0.6 }));
+      }
     }
 
     /* ------------------------------------------------------ the chapter clock */
@@ -5338,7 +5629,17 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
         asstLook(w) { asst.look = w; asst.lookAt = null; },
         // the opening film (CP9; v21.2: one pocket, Golden Mile Complex): its light, the bus, the man in the corridor
         FM, FILM_MORN, OWN,
-        pockets(on) { filmG.visible = !!on; },
+        pockets(on) {
+          filmG.visible = !!on;
+          for (const w of mallWalkers) w.r.group.visible = !!on;          // v21.15: their clocks stop with the pocket
+          for (const r of mallSitters) r.group.visible = !!on;
+        },
+        /* v21.15: Beach Road on the film's clock — every car where its lane and speed put it at t, each walker where
+           his pace does (a track: a seek and a skip find the same street) */
+        mallLife(t) {
+          for (const c of mallCars) { const x = c.x0 + c.v * t; c.car.position.x = x; c.car.visible = x > c.lo && x < c.hi; }
+          for (const w of mallWalkers) { w.r.group.position.x = w.x0 + w.v * t; w.r.group.position.z = w.z; }
+        },
         mallBus(k) { mallBusG.visible = k > 0 && k < 1; mallBusG.position.set(-36 + 72 * THREE.MathUtils.clamp(k, 0, 1), 0, 9.4); mallBusG.rotation.y = Math.PI; },   // (v21.2: 9.4, clear of the coach at the kerb)
         passerTo(x, z, ry) { passerHeld = true; passer.group.position.set(x, 0, z); passer.group.rotation.y = ry; },
         passerFree() { passerHeld = false; passer.group.position.z = PASS.z; passer.group.rotation.y = PASS.dir > 0 ? Math.PI / 2 : -Math.PI / 2; }
@@ -5429,6 +5730,7 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
     /* a green bus in the near lane, between him and the mall: across the middle of the frame at ~12.9, once his eyes
        have come down far enough to hold all of it */
     tr(0, 14.1, (k, t) => F.mallBus((t - 8.1) / 6.0), rawK);
+    tr(0, 14.1, (k, t) => F.mallLife(t), rawK);              // v21.15: the cars both ways, the two walking
     sfx(10.9, 'buspass', 0.55);
     fade(0.4, 1.8, 1, 0);
     sfx(0.3, 'estatemorn', 0.9);                      // the morning street: birds, the road
@@ -7132,6 +7434,236 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
     for (let i = 0; i < 3; i++) { x.fillStyle = 'rgba(14,14,16,0.55)'; x.fillRect(r() * S, r() * S, 30 + r() * 60, 20 + r() * 40); }
     return done(THREE, c, true);
   }
+  /* ---------------------------------------------------------------- v21.15 · BEACH ROAD'S SURFACES AND SIGNS (CP6)
+     All drawn in canvas (CSP-safe, no download), like every other surface in the film's pocket. */
+  /* the morning's asphalt: a mid grey with its aggregate, the darker patches of old repairs, tar-sealed cracks and a
+     few oil drips — the night street's asphalt (makeAsphalt) is near black, and under a morning sun it read as a
+     hole in the picture */
+  function makeDayAsphalt(THREE, cnv) {
+    const S = 512, [c, x] = cnv(S), R = rng(97);
+    x.fillStyle = '#5f6064'; x.fillRect(0, 0, S, S);
+    for (let i = 0; i < 9000; i++) { const v = 72 + R() * 72; x.fillStyle = `rgba(${v},${v},${v + 3},${0.22 + R() * 0.32})`; x.fillRect(R() * S, R() * S, 1 + R() * 2, 1 + R() * 2); }
+    x.globalAlpha = 0.16;
+    for (let i = 0; i < 14; i++) { x.fillStyle = R() < 0.55 ? '#45464b' : '#717276'; x.beginPath(); x.ellipse(R() * S, R() * S, 24 + R() * 80, 12 + R() * 44, R() * 3, 0, Math.PI * 2); x.fill(); }
+    x.globalAlpha = 1;
+    x.strokeStyle = 'rgba(32,32,36,0.4)'; x.lineWidth = 2;
+    for (let i = 0; i < 5; i++) { x.beginPath(); let px = R() * S, py = R() * S; x.moveTo(px, py); for (let k = 0; k < 6; k++) { px += (R() - 0.5) * 60; py += (R() - 0.5) * 60; x.lineTo(px, py); } x.stroke(); }
+    x.globalAlpha = 0.12;
+    for (let i = 0; i < 7; i++) { x.fillStyle = '#26262a'; x.beginPath(); x.ellipse(R() * S, R() * S, 8 + R() * 16, 5 + R() * 10, R() * 3, 0, Math.PI * 2); x.fill(); }
+    x.globalAlpha = 1;
+    return done(THREE, c, true);
+  }
+  /* the pavement: square concrete pavers, 30 cm, each a slightly different stone, a few darker with age */
+  function makePavers(THREE, cnv) {
+    const S = 256, [c, x] = cnv(S), R = rng(98), T = 32;
+    x.fillStyle = '#7a756c'; x.fillRect(0, 0, S, S);
+    for (let i = 0; i < 8; i++) for (let j = 0; j < 8; j++) {
+      const v = 172 + (R() * 22 | 0) - 11, w = R() < 0.12 ? -18 : 0;
+      x.fillStyle = `rgb(${v + w},${v - 5 + w},${v - 14 + w})`; x.fillRect(i * T + 1, j * T + 1, T - 2, T - 2);
+      x.globalAlpha = 0.25;
+      for (let k = 0; k < 12; k++) { x.fillStyle = R() < 0.5 ? '#8a8478' : '#d6d0c2'; x.fillRect(i * T + 1 + R() * (T - 4), j * T + 1 + R() * (T - 4), 1 + R() * 2, 1 + R() * 2); }
+      x.globalAlpha = 1;
+    }
+    return done(THREE, c, true);
+  }
+  /* a zebra's zigzag line, white on nothing: one tooth every 1 m of a 12 m strip (the strip repeats it 12 times) */
+  function makeZigzag(THREE, cnv) {
+    const [c, x] = sized(cnv, 64, 32);
+    x.clearRect(0, 0, 64, 32);
+    x.strokeStyle = '#eeeee6'; x.lineWidth = 5; x.lineJoin = 'miter';
+    x.beginPath(); x.moveTo(0, 26); x.lineTo(32, 6); x.lineTo(64, 26); x.stroke();
+    return done(THREE, c, false);
+  }
+  /* a lane's arrow, straight ahead, pointing +x of its plane */
+  function makeRoadArrow(THREE, cnv) {
+    const [c, x] = sized(cnv, 512, 112);
+    x.clearRect(0, 0, 512, 112);
+    x.fillStyle = '#eeeee6';
+    x.fillRect(16, 44, 330, 24);
+    x.beginPath(); x.moveTo(330, 8); x.lineTo(500, 56); x.lineTo(330, 104); x.closePath(); x.fill();
+    return done(THREE, c, false);
+  }
+  /* KEEP LEFT: a blue disc, a white rim, a white arrow down to the left */
+  function makeKeepLeft(THREE, cnv) {
+    const S = 128, [c, x] = cnv(S);
+    x.fillStyle = '#f2f2ee'; x.fillRect(0, 0, S, S);
+    x.fillStyle = '#1b4fa0'; x.beginPath(); x.arc(64, 64, 56, 0, Math.PI * 2); x.fill();
+    x.save(); x.translate(64, 64); x.rotate(Math.PI * 0.75);
+    x.fillStyle = '#ffffff'; x.fillRect(-8, -34, 16, 46);
+    x.beginPath(); x.moveTo(-22, 10); x.lineTo(22, 10); x.lineTo(0, 36); x.closePath(); x.fill();
+    x.restore();
+    return done(THREE, c, false);
+  }
+  /* the beacon's pole: black and white bands, up its height (a cylinder's v runs bottom to top) */
+  function makeBeaconPole(THREE, cnv) {
+    const [c, x] = sized(cnv, 16, 256);
+    for (let i = 0; i < 9; i++) { x.fillStyle = i % 2 ? '#f0f0ea' : '#141414'; x.fillRect(0, i * 256 / 9, 16, 256 / 9 + 1); }
+    return done(THREE, c, false);
+  }
+  /* a kerb's drain grate: an iron frame and its slots */
+  function makeGrate(THREE, cnv) {
+    const [c, x] = sized(cnv, 128, 48);
+    x.fillStyle = '#2c2c2e'; x.fillRect(0, 0, 128, 48);
+    x.fillStyle = '#0b0b0c'; for (let i = 0; i < 12; i++) x.fillRect(8 + i * 10, 7, 5, 34);
+    x.strokeStyle = '#4a4a4c'; x.lineWidth = 3; x.strokeRect(2, 2, 124, 44);
+    return done(THREE, c, false);
+  }
+  /* a manhole cover: an iron disc, a raised grid, a rim */
+  function makeManhole(THREE, cnv) {
+    const S = 128, [c, x] = cnv(S);
+    x.fillStyle = '#5a5a5c'; x.fillRect(0, 0, S, S);
+    x.fillStyle = '#3c3c3f'; x.beginPath(); x.arc(64, 64, 62, 0, Math.PI * 2); x.fill();
+    x.strokeStyle = '#58585b'; x.lineWidth = 3;
+    for (let k = -50; k <= 50; k += 12) { x.beginPath(); x.moveTo(14, 64 + k); x.lineTo(114, 64 + k); x.stroke(); x.beginPath(); x.moveTo(64 + k, 14); x.lineTo(64 + k, 114); x.stroke(); }
+    x.strokeStyle = '#6a6a6e'; x.lineWidth = 6; x.beginPath(); x.arc(64, 64, 58, 0, Math.PI * 2); x.stroke();
+    return done(THREE, c, false);
+  }
+  /* the bus stop's lit poster: a travel bill for the coaches north from this very kerb — generic, no company */
+  function makeStopPoster(THREE, cnv) {
+    const [c, x] = sized(cnv, 256, 372);
+    const g = x.createLinearGradient(0, 0, 0, 372); g.addColorStop(0, '#f7b955'); g.addColorStop(0.55, '#e0603a'); g.addColorStop(1, '#5a2346');
+    x.fillStyle = g; x.fillRect(0, 0, 256, 372);
+    x.fillStyle = 'rgba(255,236,190,0.9)'; x.beginPath(); x.arc(170, 168, 44, 0, Math.PI * 2); x.fill();
+    x.fillStyle = '#2a1428';                                                       // a temple's roofs and two palms
+    x.beginPath(); x.moveTo(30, 300); x.lineTo(70, 240); x.lineTo(110, 300); x.closePath(); x.fill();
+    x.beginPath(); x.moveTo(60, 300); x.lineTo(70, 200); x.lineTo(80, 300); x.closePath(); x.fill();
+    x.fillRect(0, 300, 256, 72);
+    for (const [px, h] of [[200, 120], [230, 96]]) { x.fillRect(px, 300 - h, 5, h); for (let k = 0; k < 5; k++) { x.beginPath(); x.ellipse(px + 2, 300 - h, 30, 6, -0.9 + k * 0.45, 0, Math.PI * 2); x.fill(); } }
+    x.fillStyle = '#ffffff'; x.textAlign = 'center'; x.font = 'bold 30px sans-serif';
+    x.fillText('HAT YAI', 128, 52); x.font = 'bold 22px sans-serif'; x.fillText('BANGKOK · KL', 128, 84);
+    x.font = 'bold 18px sans-serif'; x.fillText('DAILY COACHES', 128, 344);
+    x.font = '14px sans-serif'; x.fillText('from Golden Mile', 128, 364);
+    return done(THREE, c, false);
+  }
+  /* the stop's own board: BUS STOP, its number, the services that call */
+  function makeStopBoard(THREE, cnv) {
+    const [c, x] = sized(cnv, 128, 208);
+    x.fillStyle = '#f4f4ef'; x.fillRect(0, 0, 128, 208);
+    x.fillStyle = '#1d5c3a'; x.fillRect(0, 0, 128, 52);
+    x.fillStyle = '#ffffff'; x.textAlign = 'center'; x.font = 'bold 24px sans-serif'; x.fillText('BUS STOP', 64, 34);
+    x.fillStyle = '#1a1a1a'; x.font = 'bold 26px monospace'; x.fillText('01039', 64, 86);
+    x.font = 'bold 13px sans-serif'; x.fillText('Golden Mile Cplx', 64, 108);
+    x.strokeStyle = '#1a1a1a'; x.lineWidth = 2; x.strokeRect(8, 118, 112, 82);
+    x.font = 'bold 22px monospace';
+    [['100', '107'], ['961', '980']].forEach((row, i) => row.forEach((n, j) => x.fillText(n, 38 + j * 52, 150 + i * 34)));
+    return done(THREE, c, false);
+  }
+  /* a mid-rise block's face: floors of windows in its own colour bands, air-conditioners, the odd open window */
+  function makeBlockFace(THREE, cnv, v) {
+    const S = 512, [c, x] = cnv(S), R = rng(120 + v);
+    const P = [['#e4dccb', '#c87a5a'], ['#d8e0e2', '#5a8aa8'], ['#e6e0c8', '#8aa05a']][v % 3];
+    x.fillStyle = P[0]; x.fillRect(0, 0, S, S);
+    const fl = 8, fh = S / fl, cols = 8, cw = S / cols;
+    for (let f = 0; f < fl; f++) {
+      x.fillStyle = P[1]; x.fillRect(0, f * fh + fh - 10, S, 6);                  // the floor's band
+      for (let k = 0; k < cols; k++) {
+        const x0 = k * cw + 10, y0 = f * fh + 12, w = cw - 20, h = fh - 30;
+        x.fillStyle = ['#2c3540', '#38424c', '#24303a'][(R() * 3) | 0]; x.fillRect(x0, y0, w, h);
+        if (R() < 0.35) { x.fillStyle = ['#d8cfb8', '#b8c8d2', '#e8e2d0'][(R() * 3) | 0]; x.fillRect(x0 + 3, y0 + 3, w * (0.3 + R() * 0.5), h - 6); }   // curtains
+        x.strokeStyle = '#d6d2c8'; x.lineWidth = 2; x.strokeRect(x0, y0, w, h); x.beginPath(); x.moveTo(x0 + w / 2, y0); x.lineTo(x0 + w / 2, y0 + h); x.stroke();
+        if (R() < 0.3) { x.fillStyle = '#efefea'; x.fillRect(x0 + w - 18, y0 + h + 2, 18, 9); }   // an air-conditioner under it
+      }
+    }
+    x.globalAlpha = 0.18; for (let i = 0; i < 90; i++) { x.fillStyle = '#6a6458'; x.fillRect(R() * S, R() * S, 2 + R() * 4, 18 + R() * 60); } x.globalAlpha = 1;   // the rain's streaks
+    return done(THREE, c, true);
+  }
+  /* a row of old shophouses by day: three storeys, each bay its own pastel, shuttered windows over, the five-foot
+     way's dark arches at the foot with a shop's sign over each */
+  function makeShophouseRow(THREE, cnv, v) {
+    const [c, x] = sized(cnv, 512, 256), R = rng(130 + v);
+    const PAL = ['#e8c7a8', '#b9d6c8', '#efe0a8', '#d8b8c8', '#c8d8e8', '#f0d8c0'];
+    const SIGN = [['#c8241a', '#fff2c0'], ['#1e4a8a', '#ffffff'], ['#2a7a3a', '#fff6d8'], ['#f2c12e', '#2a1a10']];
+    for (let b = 0; b < 4; b++) {
+      const x0 = b * 128, col = PAL[(b + v * 2) % PAL.length];
+      x.fillStyle = col; x.fillRect(x0, 0, 128, 256);
+      x.fillStyle = 'rgba(0,0,0,0.12)'; x.fillRect(x0, 0, 3, 256);
+      for (const y0 of [22, 98]) for (let w = 0; w < 3; w++) {
+        const wx = x0 + 14 + w * 38; x.fillStyle = '#3a3026'; x.fillRect(wx, y0, 26, 50);
+        x.fillStyle = ['#5a8a5a', '#7a5a3a', '#4a6a8a'][(b + w) % 3]; x.fillRect(wx + 1, y0 + 1, 12, 48); x.fillRect(wx + 13, y0 + 1, 12, 48);   // the shutters, open
+      }
+      x.fillStyle = '#ece6d8'; x.fillRect(x0, 160, 128, 10);                        // the cornice over the five-foot way
+      const [sb, sf] = SIGN[(b + v) % SIGN.length]; x.fillStyle = sb; x.fillRect(x0 + 10, 172, 108, 20);
+      x.fillStyle = sf; x.font = 'bold 13px sans-serif'; x.textAlign = 'center'; x.fillText(['TRADING', 'HARDWARE', 'KOPI', 'PROVISION'][(b + v * 3) % 4], x0 + 64, 187);
+      x.fillStyle = '#2a2622'; x.beginPath(); x.moveTo(x0 + 14, 256); x.lineTo(x0 + 14, 214); x.quadraticCurveTo(x0 + 64, 194, x0 + 114, 214); x.lineTo(x0 + 114, 256); x.fill();   // its arch
+    }
+    x.globalAlpha = 0.12; for (let i = 0; i < 40; i++) { x.fillStyle = '#5a5248'; x.fillRect(R() * 512, R() * 160, 2, 10 + R() * 40); } x.globalAlpha = 1;   // the rain's streaks
+    return done(THREE, c, true);
+  }
+  /* a 1970s office slab: ribbon windows between concrete spandrels, floor after floor, a blind drawn here and there */
+  function makeOfficeBands(THREE, cnv, v) {
+    const S = 512, [c, x] = cnv(S), R = rng(140 + v);
+    x.fillStyle = v ? '#c8bfae' : '#b8ae9a'; x.fillRect(0, 0, S, S);
+    const fl = 8, fh = S / fl;
+    for (let f = 0; f < fl; f++) {
+      const y0 = f * fh + 14, h = fh - 26;
+      x.fillStyle = v ? '#2e4050' : '#28363e'; x.fillRect(0, y0, S, h);
+      for (let k = 0; k < 16; k++) {
+        const x0 = k * 32;
+        if (R() < 0.3) { x.fillStyle = ['#d8d2c0', '#b8c6cc', '#e0dccc'][(R() * 3) | 0]; x.fillRect(x0 + 2, y0 + 2, 28, h * (0.3 + R() * 0.6)); }
+        x.fillStyle = '#8a9096'; x.fillRect(x0, y0, 2, h);
+      }
+      x.fillStyle = 'rgba(255,255,255,0.08)'; x.fillRect(0, y0, S, 4);
+    }
+    x.globalAlpha = 0.15; for (let i = 0; i < 70; i++) { x.fillStyle = '#5c564a'; x.fillRect(R() * S, R() * S, 2 + R() * 3, 16 + R() * 50); } x.globalAlpha = 1;
+    return done(THREE, c, true);
+  }
+  /* a multi-storey car park: open decks between their parapets, the cars parked on them, a P */
+  function makeCarPark(THREE, cnv) {
+    const S = 512, [c, x] = cnv(S), R = rng(150);
+    x.fillStyle = '#d6d2c8'; x.fillRect(0, 0, S, S);
+    const fl = 5, fh = S / fl;
+    for (let f = 0; f < fl; f++) {
+      const y0 = f * fh + 26, h = fh - 46;
+      x.fillStyle = '#2a2a2c'; x.fillRect(0, y0, S, h);
+      for (let k = 0; k < 14; k++) if (R() < 0.75) {
+        x.fillStyle = ['#c8c8c4', '#8a1c1c', '#1e3a6a', '#2a2a2a', '#e8e6e0', '#5a5a5e'][(R() * 6) | 0];
+        x.fillRect(k * 36 + 6, y0 + h - 22, 26, 16); x.fillStyle = 'rgba(20,24,30,0.8)'; x.fillRect(k * 36 + 10, y0 + h - 30, 18, 9);
+      }
+      for (let k = 0; k < 8; k++) { x.fillStyle = '#c4c0b6'; x.fillRect(k * 64, y0, 6, h); }
+    }
+    x.fillStyle = '#1d4fa0'; x.fillRect(440, 12, 54, 54); x.fillStyle = '#ffffff'; x.font = 'bold 46px sans-serif'; x.textAlign = 'center'; x.fillText('P', 467, 56);
+    return done(THREE, c, true);
+  }
+  /* one floor of Golden Mile's end wall (v21.15): weathered concrete, a joint at the slab, the drip line under it and
+     the rain's long streaks, a few vent blocks — each floor's piece wears it, so the streaks start again at each slab
+     as they do on the building */
+  function makeGMCEndWall(THREE, cnv) {
+    const [c, x] = sized(cnv, 512, 128), R = rng(161);
+    x.fillStyle = '#d6ccb6'; x.fillRect(0, 0, 512, 128);
+    x.globalAlpha = 0.14; for (let i = 0; i < 1600; i++) { x.fillStyle = R() < 0.5 ? '#8a826e' : '#f2ead8'; x.fillRect(R() * 512, R() * 128, 1 + R() * 3, 1 + R() * 3); } x.globalAlpha = 1;
+    for (let i = 0; i < 46; i++) {
+      const sx = R() * 512, len = 30 + R() * 96, g = x.createLinearGradient(0, 10, 0, 10 + len);
+      g.addColorStop(0, 'rgba(86,78,62,0.5)'); g.addColorStop(1, 'rgba(86,78,62,0)'); x.fillStyle = g; x.fillRect(sx, 10, 2 + R() * 7, len);
+    }
+    x.fillStyle = 'rgba(70,64,52,0.55)'; x.fillRect(0, 0, 512, 4); x.fillStyle = 'rgba(255,248,232,0.5)'; x.fillRect(0, 4, 512, 3);   // the slab's joint, lit edge
+    x.fillStyle = 'rgba(60,54,44,0.35)'; x.fillRect(0, 9, 512, 3);                                                                  // its drip line
+    for (let k = 0; k < 3; k++) {                                                                                                  // vent blocks
+      const vx = 60 + k * 170 + R() * 40;
+      x.fillStyle = '#9c927e'; x.fillRect(vx, 46, 34, 34);
+      x.fillStyle = '#4a443a'; for (let a = 0; a < 3; a++) for (let b = 0; b < 3; b++) x.fillRect(vx + 3 + a * 11, 49 + b * 11, 7, 7);
+    }
+    const d = x.createLinearGradient(0, 100, 0, 128); d.addColorStop(0, 'rgba(80,72,58,0)'); d.addColorStop(1, 'rgba(80,72,58,0.3)'); x.fillStyle = d; x.fillRect(0, 100, 512, 28);
+    return done(THREE, c, false);
+  }
+  /* a banner under Golden Mile's canopy: its colour, a name in English, the Thai under it, a hem */
+  function makeCanopyBanner(THREE, cnv, [bg, fg, en, th]) {
+    const [c, x] = sized(cnv, 256, 84);
+    x.fillStyle = bg; x.fillRect(0, 0, 256, 84);
+    x.strokeStyle = fg; x.globalAlpha = 0.6; x.lineWidth = 3; x.strokeRect(5, 5, 246, 74); x.globalAlpha = 1;
+    x.fillStyle = fg; x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.font = 'bold 28px sans-serif'; x.fillText(en, 128, 30, 236);
+    x.font = 'bold 20px sans-serif'; x.fillText(th, 128, 62, 236);
+    return done(THREE, c, false);
+  }
+  /* a building's name, gilt capitals on a dark board (Golden Mile Tower's, over its podium) */
+  function makeNameBoard(THREE, cnv, text) {
+    const [c, x] = sized(cnv, 1024, 176);
+    x.fillStyle = '#2e241c'; x.fillRect(0, 0, 1024, 176);
+    x.strokeStyle = '#b08a46'; x.lineWidth = 6; x.strokeRect(10, 10, 1004, 156);
+    const g = x.createLinearGradient(0, 40, 0, 140); g.addColorStop(0, '#f6dc9a'); g.addColorStop(0.5, '#d4a24c'); g.addColorStop(1, '#9a6a26');
+    x.fillStyle = g; x.textAlign = 'center'; x.textBaseline = 'middle'; x.font = 'bold 92px sans-serif'; x.fillText(text, 512, 92, 960);
+    return done(THREE, c, false);
+  }
   /* the five-foot way's tiles: Peranakan encaustic, a rosette in each tile,
      quarter-circles meeting at the corners, worn by a century of feet */
   function makePeranakanTiles(THREE, cnv) {
@@ -7624,9 +8156,14 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       const cx = R() * W, cy = H * (0.36 + R() * 0.3), n = 5 + (R() * 6 | 0), base = 30 + R() * 60;
       for (let k = 0; k < n; k++) {
         const px = cx + (R() - 0.5) * base * 2.4, py = cy + (R() - 0.5) * base * 0.5, r = base * (0.5 + R() * 0.6);
-        const cg = x.createRadialGradient(px, py - r * 0.2, 2, px, py, r);
-        cg.addColorStop(0, 'rgba(255,255,255,0.92)'); cg.addColorStop(0.6, 'rgba(240,244,250,0.6)'); cg.addColorStop(1, 'rgba(230,238,248,0)');
-        x.fillStyle = cg; x.beginPath(); x.arc(px, py, r, 0, Math.PI * 2); x.fill();
+        /* v21.15: drawn again a canvas-width either side — the dome wraps the sheet round, and a puff near its edge
+           was cut straight down the seam (photographed: a cloud with a ruled left side in the film's first frame) */
+        for (const ox of [-W, 0, W]) {
+          if (px + ox + r < 0 || px + ox - r > W) continue;
+          const cg = x.createRadialGradient(px + ox, py - r * 0.2, 2, px + ox, py, r);
+          cg.addColorStop(0, 'rgba(255,255,255,0.92)'); cg.addColorStop(0.6, 'rgba(240,244,250,0.6)'); cg.addColorStop(1, 'rgba(230,238,248,0)');
+          x.fillStyle = cg; x.beginPath(); x.arc(px + ox, py, r, 0, Math.PI * 2); x.fill();
+        }
       }
     }
     return done(THREE, c, false);

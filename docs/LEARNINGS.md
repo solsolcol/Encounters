@@ -5875,3 +5875,18 @@ cut (sharing its vertices and maps) when it is small.
   and the Thai plaque under the portrait sat on top of KNOWN FOR in the next
   row. With no free space in the container, auto rows never grow past their
   minimums. `min-height: auto` on the item gives the row its height back.
+- **A hard-linked copy of the tree is a second NAME for the same files, not a
+  copy of them** (v21.13–v21.15). To build the next version while the last
+  one's harnesses run, the tree is copied with `cp -al` (every file but `.git`,
+  `dist` and `node_modules`, which is a symlink) — seconds and no disk — and
+  three things follow from sharing inodes. build.py rewrites `hellnote.html`,
+  `wrapped.html`, `bundle.js` and the sound packs IN PLACE, so they are deleted
+  in the copy before its first build, or the copy's build writes into the
+  repo's. An edit to a source file may land in place (every copy sees it at
+  once) or as a new file (no copy sees it), depending on what wrote it — both
+  happened in one session: the street's first edits reached every copy, and the
+  car-facing fix reached the repo alone, so the build that was meant to carry
+  it did not. Before a copy builds, sync it (`cp --remove-destination`) and
+  prove it (`diff -rq src <copy>/src`). And a probe or a harness runs on a
+  SNAPSHOT of the copy's output (`cp -al dist <snap>`; `ENC_DIST=<snap>`),
+  because the next build deletes and rewrites `dist/` under a running server.
