@@ -4681,6 +4681,7 @@ function kitReset() {
   activeSpot = null;
   if (unl.id) unlockClose('force');      // v14.7: a splash never outlives the run it opened in
   if (cho.ids) chooseClose('force');     // v17.6: nor does a choice
+  if (gal.open) galClose('force');       // v21.10: nor a gallery
 }
 /* v11.1: HURT. A chapter holds the red damage frame on the screen and bleeds
    sanity on WALL time until the player acts (chapter 3's pressure: Chad,
@@ -4829,6 +4830,8 @@ const KIT = {
      kitChoose). Answers a Promise of the id; gives nothing itself. */
   choose: kitChoose,
   chooseOpen: () => !!cho.ids,
+  gallery: kitGallery,                   // v21.10: THE GALLERY, the twenty-ninth seam
+  galleryOpen: () => gal.open,
   itemWarm: id => { if (ITEM_DEFS[id]) { itemArtGet(id); ivModel(id); } },
   /* v14.7: what the worn ward holds right now (0 when none is worn) */
   wardLeft: () => wardLeft(),
@@ -8848,6 +8851,427 @@ addEventListener('keydown', e => {
   }
 });
 
+/* ── v21.10: THE GALLERY — the TWENTY-NINTH SEAM, `kit.gallery(opts)` ─────
+   Chad: "when the player interacts with the row of portraits by clicking or E
+   on it, it will open a new window frame like a gallery mode, with full
+   resolution images of each monk and player can flip through or scroll
+   through the gallery. In this window frame, the monk portrait is on the
+   left, and on the right is a proper accurate background documentary/story
+   of each monk, and the era they were born in (years), and what each were
+   known for ... nice visual effects, glow effects, sparkles, etc, and sound
+   effects ... The player must go through this entire experience as part of
+   the objective."
+   So a chapter may put PAGES in front of the player — each a picture (one or
+   more of its asset keys, drawn whole and unaltered from their own bytes into
+   a canvas: no URL is made, the strict CSP's way) and its words (a name, a
+   second name, LIVED / ERA / TEMPLE, what it is known for, the story) — and
+   wait. A screen STATE of its own, `gallery`, so every "is it play?" gate
+   closes under it. Turned by the side arrows, the thumbnails, a swipe, the
+   wheel, the arrow keys (and A/D, digits, Home/End). A page counts as READ
+   once it has been on screen GAL_DWELL ms of wall time (so a page swept past
+   does not count, and a page read on a phone at a frame a second still
+   does); when every page is read the window says so — a ring of light, its
+   own chime — and NEXT becomes CONTINUE. Esc and the X close it at any time:
+   the Promise answers `{ seenAll, seen, last }` either way (null only when
+   the run is torn down under it), and what the reading MEANS is the story's
+   business — the chapter decides whether an early close counts. Sounds are
+   the chapter's (`opts.sounds`: open, flip, read, done, close as [name, vol]),
+   the engine's UI sounds standing in. While it is open the world is not
+   drawn (the window and its backdrop cover it; WORLD COVERED, v15.0). Only
+   episode 3 chapter 3 calls it; the fixture proves it. */
+const GAL_DWELL = 1200, GAL_GUARD = 450, GAL_WHEEL = 50;
+const gal = { open: false, pages: null, i: 0, seen: null, done: false, t0: 0, dwellT: 0, resolve: null, outT: 0,
+              raf: 0, sounds: null, img: 0, imgT: 0, bmps: new Map(), fx: null, wheel: 0, wheelT: 0, wheelLast: 0,
+              drag: null, hintT: 0, label: '', lastT: 0 };
+const galDpr = () => Math.min(2.5, devicePixelRatio || 1);
+/* a picture's bitmap, from its own bytes (kept for the session: five or six small photographs) */
+function galBmp(img) {
+  let e = gal.bmps.get(img.key);
+  if (!e) {
+    e = { bmp: null, failed: false };
+    e.p = assetBytes(img.key, true)
+      .then(b => createImageBitmap(new Blob([b], { type: img.mime || 'image/jpeg' })))
+      .then(bmp => { e.bmp = bmp; return bmp; })
+      .catch(err => { e.failed = true; console.warn('gallery picture failed', img.key, err); return null; });
+    gal.bmps.set(img.key, e);
+  }
+  return e;
+}
+function galSnd(k) {
+  const s = gal.sounds && gal.sounds[k];
+  if (Array.isArray(s) && s[0] && snd(s[0], s[1] == null ? 1 : s[1])) return;
+  const fb = { open: ['itemunlock', 0.5], flip: ['uiclick', 0.45], read: null, done: ['uiconfirm', 0.8], close: ['uiconfirm', 0.4] }[k];
+  if (fb) snd(fb[0], fb[1]);
+}
+function kitGallery(opts = {}) {
+  const pages = (Array.isArray(opts.pages) ? opts.pages : []).filter(p => p && p.name);
+  const el = $('gallery');
+  if (!pages.length || !el || gal.open || unl.id || cho.ids || state !== 'play' || fainting) return Promise.resolve(null);
+  clearTimeout(gal.outT); clearTimeout(gal.hintT);
+  gal.open = true; gal.pages = pages; gal.done = false; gal.sounds = opts.sounds || null;
+  const had = new Set(Array.isArray(opts.seen) ? opts.seen : []);
+  gal.seen = new Set(pages.map((p, k) => had.has(p.id) ? k : -1).filter(k => k >= 0));
+  /* every page already read (a chapter that passes back a finished reading): the window opens done —
+     CONTINUE, no celebration a second time — or it could never finish, since a page read is never read again */
+  gal.done = gal.seen.size >= pages.length;
+  for (const k in keys) keys[k] = false;
+  state = 'gallery';
+  $('galLabel').textContent = opts.label || T('gallery.label', 'Gallery');
+  $('galX').setAttribute('aria-label', T('gallery.close', 'Close'));
+  $('galPrev').setAttribute('aria-label', T('gallery.prev', 'Previous'));
+  $('galNext').setAttribute('aria-label', T('gallery.next', 'Next'));
+  /* the thumbnails: one round button a page, its picture drawn into it when it arrives */
+  $('galThumbs').innerHTML = pages.map((p, k) => `<button class="galThumb" type="button" role="tab" data-i="${k}" aria-label="${galEsc(p.name)}"><canvas></canvas></button>`).join('');
+  pages.forEach((p, k) => { const im = (p.images || [])[0]; if (im) galBmp(im).p.then(() => galThumbPaint(k)); });
+  const hint = $('galHint');
+  hint.textContent = HAS_TOUCH ? T('gallery.hint', 'Swipe or tap the arrows to turn the page')
+                               : T('gallery.hintKey', 'Use ← → or the arrows to turn the page');
+  hint.classList.remove('gone');
+  gal.hintT = setTimeout(() => hint.classList.add('gone'), 7000);
+  $('galBox').classList.remove('done', 'cele');
+  if (gal.done) $('galBox').classList.add('done');
+  el.classList.remove('hide', 'out');
+  document.body.classList.add('galleryopen');
+  document.exitPointerLock?.();
+  /* the first page not yet read (or the one asked for) */
+  let start = Number.isInteger(opts.start) ? opts.start : pages.findIndex((p, k) => !gal.seen.has(k));
+  if (start < 0) start = 0;
+  gal.i = -1;
+  galFxStart();                                // (before the first page, so its burst has somewhere to go)
+  galShow(start, 0);
+  galProgPaint(false);
+  galSnd('open');
+  haptic([20, 50, 70]);
+  gal.t0 = performance.now();
+  return new Promise(res => { gal.resolve = res; });
+}
+function galEsc(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+function galShow(i, dir) {
+  const P = gal.pages; if (!P) return;
+  i = ((i % P.length) + P.length) % P.length;
+  gal.i = i; gal.img = 0; gal.imgT = performance.now(); gal.dwellT = performance.now();
+  const p = P[i];
+  $('galName').textContent = p.name;
+  $('galAka').textContent = p.aka || '';
+  $('galPlaque').textContent = p.plaque || '';
+  const meta = [[T('gallery.lived', 'Lived'), p.lived], [T('gallery.era', 'Era'), p.era], [T('gallery.temple', 'Temple'), p.temple]]
+    .filter(([, v]) => v);
+  $('galMeta').innerHTML = meta.map(([k, v]) => `<dt>${galEsc(k)}</dt><dd>${galEsc(v)}</dd>`).join('');
+  $('galMeta').style.display = meta.length ? '' : 'none';
+  const known = (p.known || []).filter(Boolean);
+  $('galKnown').innerHTML = known.map((k, n) => `<li style="--k:${n}">${galEsc(k)}</li>`).join('');
+  $('galKnown').parentElement.style.display = known.length ? '' : 'none';
+  const story = (Array.isArray(p.story) ? p.story : [p.story]).filter(Boolean);
+  $('galStory').innerHTML = story.map(s => `<p>${galEsc(s)}</p>`).join('');
+  $('galRight').scrollTop = 0; $('galPage').scrollTop = 0;     // (whichever scrolls: the words, or on an upright phone the page)
+  const imgs = p.images || [];
+  $('galPips').innerHTML = imgs.length > 1 ? imgs.map((im, k) => `<button type="button" data-k="${k}" class="${k ? '' : 'on'}" aria-label="${k + 1} / ${imgs.length}"></button>`).join('') : '';
+  $('galImg').setAttribute('aria-label', p.name);
+  for (const b of $('galThumbs').querySelectorAll('.galThumb')) {
+    const on = +b.dataset.i === i;
+    b.classList.toggle('on', on); b.setAttribute('aria-selected', on ? 'true' : 'false');
+    if (on) b.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
+  }
+  /* the turn: the page's animation restarted from the side it came from */
+  const pg = $('galPage');
+  pg.classList.remove('turnN', 'turnP', 'turn0'); void pg.offsetWidth;
+  pg.classList.add(dir > 0 ? 'turnN' : dir < 0 ? 'turnP' : 'turn0');
+  galPaint();
+  if (dir) { galSnd('flip'); haptic(12); }
+  galBurst(dir ? 34 : 54);
+}
+/* the picture: whole, at its own aspect, as large as the left column allows, at the screen's own sharpness */
+function galPaint() {
+  const p = gal.pages && gal.pages[gal.i]; if (!p) return;
+  const imgs = p.images || [], im = imgs.length ? imgs[gal.img % imgs.length] : null;
+  const pic = $('galPic'), cv = $('galImg'), frame = $('galFrame');
+  pic.classList.toggle('own', !!(im && im.own));
+  const e = im ? galBmp(im) : null, bmp = e && e.bmp;
+  if (e && !bmp && !e.failed) e.p.then(() => { if (gal.open && gal.pages && gal.pages[gal.i] === p) galPaint(); });
+  const box = pic.getBoundingClientRect();
+  /* the frame's own thickness (padding of frame + liner) comes off the room the picture has */
+  const cs1 = getComputedStyle(frame), cs2 = getComputedStyle(frame.firstElementChild);
+  const pad = 2 * ((parseFloat(cs1.paddingLeft) || 0) + (parseFloat(cs2.paddingLeft) || 0));
+  const aw = Math.max(40, box.width * 0.9 - pad), ah = Math.max(40, box.height * 0.94 - pad);
+  const iw = bmp ? bmp.width : 3, ih = bmp ? bmp.height : 4;
+  const s = Math.min(aw / iw, ah / ih);
+  const cw = Math.max(24, Math.floor(iw * s)), ch = Math.max(24, Math.floor(ih * s));
+  cv.style.width = cw + 'px'; cv.style.height = ch + 'px';
+  const dpr = galDpr(), W = Math.round(cw * dpr), H = Math.round(ch * dpr);
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const g = cv.getContext('2d'); if (!g) return;
+  g.clearRect(0, 0, W, H);
+  if (bmp) { g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high'; g.drawImage(bmp, 0, 0, W, H); }
+  else {                                               // until it arrives: a dark panel and a faint gold wheel
+    const gr = g.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, '#2a1d10'); gr.addColorStop(1, '#120c07');
+    g.fillStyle = gr; g.fillRect(0, 0, W, H);
+    g.strokeStyle = 'rgba(255,210,130,.35)'; g.lineWidth = Math.max(1, W * 0.01);
+    const r = Math.min(W, H) * 0.18; g.beginPath(); g.arc(W / 2, H / 2, r, 0, Math.PI * 2); g.stroke();
+    for (let k = 0; k < 8; k++) { const a = k * Math.PI / 4; g.beginPath(); g.moveTo(W / 2, H / 2); g.lineTo(W / 2 + Math.cos(a) * r, H / 2 + Math.sin(a) * r); g.stroke(); }
+  }
+}
+function galThumbPaint(k) {
+  const b = $('galThumbs').querySelector(`.galThumb[data-i="${k}"]`), p = gal.pages && gal.pages[k];
+  if (!b || !p) return;
+  const im = (p.images || [])[0], e = im ? galBmp(im) : null, bmp = e && e.bmp; if (!bmp) return;
+  const cv = b.querySelector('canvas'), sz = Math.round((b.clientWidth || 54) * galDpr());
+  if (cv.width !== sz) { cv.width = sz; cv.height = sz; }
+  const g = cv.getContext('2d'); if (!g) return;
+  /* a thumbnail is a small round button, not the portrait: the picture's upper middle (the face), as a token */
+  const side = Math.min(bmp.width, bmp.height) * (im.own ? 0.62 : 0.8);
+  const sx = (bmp.width - side) / 2, sy = Math.max(0, bmp.height * (im.own ? 0.18 : 0.08));
+  g.clearRect(0, 0, sz, sz); g.imageSmoothingQuality = 'high';
+  g.drawImage(bmp, sx, sy, side, Math.min(side, bmp.height - sy), 0, 0, sz, sz);
+}
+function galProgPaint(fresh) {
+  const n = gal.pages ? gal.pages.length : 0, m = gal.seen ? gal.seen.size : 0;
+  $('galProgTxt').textContent = (gal.done ? T('gallery.allRead', 'All {m} read') : T('gallery.read', '{n} of {m} read'))
+    .replace('{n}', m).replace('{m}', n);
+  $('galBarFill').style.width = (n ? 100 * m / n : 0).toFixed(1) + '%';
+  $('galGo').textContent = gal.done ? T('gallery.continue', 'Continue') : T('gallery.nextBtn', 'Next');
+  for (const b of $('galThumbs').querySelectorAll('.galThumb')) b.classList.toggle('seen', gal.seen.has(+b.dataset.i));
+}
+/* a page is READ once it has been on screen GAL_DWELL ms (wall time); the last one read lights the window */
+function galDwell(now) {
+  if (!gal.open || gal.seen.has(gal.i) || now - gal.dwellT < GAL_DWELL) return;
+  gal.seen.add(gal.i);
+  galProgPaint(true);
+  galSnd('read');
+  if (!gal.done && gal.seen.size >= gal.pages.length) {
+    gal.done = true;
+    const box = $('galBox');
+    box.classList.remove('cele'); void box.offsetWidth; box.classList.add('done', 'cele');
+    galProgPaint(true);
+    galSnd('done');
+    haptic([30, 50, 90, 40, 120]);
+    galBurst(90, true);
+  }
+}
+function galGo(d) { if (!gal.open || performance.now() - gal.t0 < GAL_GUARD) return; galShow(gal.i + d, d); }
+function galJump(k) {
+  if (!gal.open || performance.now() - gal.t0 < GAL_GUARD || !gal.pages || k < 0 || k >= gal.pages.length || k === gal.i) return;
+  galShow(k, k > gal.i ? 1 : -1);
+}
+function galPrimary() {
+  if (!gal.open || performance.now() - gal.t0 < GAL_GUARD) return;
+  if (gal.done) { galClose('done'); return; }
+  /* NEXT: the next page not yet read, after this one (or simply the next) */
+  const n = gal.pages.length;
+  for (let s = 1; s <= n; s++) { const k = (gal.i + s) % n; if (!gal.seen.has(k) && k !== gal.i) { galShow(k, 1); return; } }
+  galShow(gal.i + 1, 1);
+}
+function galPip(k) {
+  const p = gal.pages && gal.pages[gal.i]; if (!p || !p.images || p.images.length < 2) return;
+  k = ((k % p.images.length) + p.images.length) % p.images.length; if (k === gal.img) return;
+  gal.img = k; gal.imgT = performance.now();
+  const cv = $('galImg'); cv.classList.add('swap');
+  setTimeout(() => { if (!gal.open) return; galPaint(); cv.classList.remove('swap'); }, 280);
+  for (const b of $('galPips').querySelectorAll('button')) b.classList.toggle('on', +b.dataset.k === k);
+  galBurst(18);
+}
+/* the part of the page that scrolls: the words beside the portrait, or — on a phone held upright, where the story
+   runs under it — the whole page (shell.html decides which; this only asks) */
+function galScroller() {
+  const pg = $('galPage'), oy = getComputedStyle(pg).overflowY;
+  return oy === 'auto' || oy === 'scroll' ? pg : $('galRight');
+}
+function galClose(how) {
+  if (!gal.open) return false;
+  /* (the X too: on a phone the tap that opened the window is followed by the browser's own click, which can land on
+     whatever now sits under the finger — the X included) */
+  if ((how === 'done' || how === 'key' || how === 'x') && performance.now() - gal.t0 < GAL_GUARD) return false;
+  const out = { seenAll: gal.done, seen: [...gal.seen].sort((a, b) => a - b).map(k => gal.pages[k].id), last: gal.pages[gal.i] && gal.pages[gal.i].id };
+  gal.open = false;
+  galFxStop();
+  clearTimeout(gal.hintT);
+  const el = $('gallery');
+  document.body.classList.remove('galleryopen');
+  if (el) {
+    if (how === 'force') el.classList.add('hide');
+    else { el.classList.add('out'); gal.outT = setTimeout(() => el.classList.add('hide'), 400); }
+  }
+  gal.pages = null; gal.drag = null;
+  for (const k in keys) keys[k] = false;
+  const res = gal.resolve; gal.resolve = null;
+  if (how !== 'force') {
+    state = 'play';
+    galSnd('close');
+    if (how !== 'esc') tryLock();             // (Esc is no gesture the browser will lock on — v14.7)
+  }
+  if (res) res(how === 'force' ? null : out);
+  return true;
+}
+/* ── the gallery's light: gold dust rising through the dim around the window (#galFx), and round the portrait —
+   motes drifting on the halo, four-point glints winking on and off the frame, a burst at every turn (#galPicFx).
+   Nothing is drawn over the picture itself: #galPicFx is clipped to everything outside the picture's rectangle. */
+function galSprite(kind) {
+  const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d');
+  if (kind === 'dot') {
+    const r = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+    r.addColorStop(0, 'rgba(255,250,228,1)'); r.addColorStop(0.18, 'rgba(255,224,150,.9)');
+    r.addColorStop(0.45, 'rgba(255,180,70,.28)'); r.addColorStop(1, 'rgba(255,160,40,0)');
+    g.fillStyle = r; g.fillRect(0, 0, 64, 64);
+  } else {                                             // a four-point star with a soft core
+    const r = g.createRadialGradient(32, 32, 0, 32, 32, 14);
+    r.addColorStop(0, 'rgba(255,252,236,1)'); r.addColorStop(1, 'rgba(255,214,130,0)');
+    g.fillStyle = r; g.fillRect(0, 0, 64, 64);
+    g.fillStyle = 'rgba(255,240,200,.95)';
+    for (const [dx, dy] of [[1, 0], [0, 1]]) {
+      g.beginPath(); g.moveTo(32 - dx * 30, 32 - dy * 30); g.lineTo(32 + dy * 2.2, 32 + dx * 2.2);
+      g.lineTo(32 + dx * 30, 32 + dy * 30); g.lineTo(32 - dy * 2.2, 32 - dx * 2.2); g.closePath(); g.fill();
+    }
+  }
+  return c;
+}
+function galFxStart() {
+  if (!gal.fx) gal.fx = { dot: galSprite('dot'), star: galSprite('star'), motes: [], halo: [], glints: [], bursts: [], seed: 7 };
+  const F = gal.fx, few = IS_PHONE;
+  const rnd = () => { F.seed = (F.seed * 16807) % 2147483647; return (F.seed - 1) / 2147483646; };
+  F.rnd = rnd;
+  F.motes = Array.from({ length: few ? 22 : 40 }, () => ({ x: rnd(), y: rnd(), v: 0.018 + rnd() * 0.04, r: 2 + rnd() * 4, ph: rnd() * 6.28, sw: 0.004 + rnd() * 0.01 }));
+  F.halo = Array.from({ length: few ? 14 : 24 }, () => ({ a: rnd() * 6.28, rr: 0.42 + rnd() * 0.2, v: (rnd() < 0.5 ? -1 : 1) * (0.05 + rnd() * 0.12), r: 2 + rnd() * 3.5, ph: rnd() * 6.28, rise: rnd() }));
+  F.glints = []; F.bursts = [];
+  gal.lastT = performance.now();
+  cancelAnimationFrame(gal.raf);
+  const tick = now => {
+    if (!gal.open) return;
+    const dt = Math.min(0.1, (now - gal.lastT) / 1000); gal.lastT = now;
+    galDwell(now);
+    const p = gal.pages && gal.pages[gal.i];
+    if (p && p.images && p.images.length > 1 && now - gal.imgT > 6500) galPip(gal.img + 1);
+    galFxDraw(dt, now / 1000);
+    gal.raf = requestAnimationFrame(tick);
+  };
+  gal.raf = requestAnimationFrame(tick);
+}
+function galFxStop() { cancelAnimationFrame(gal.raf); gal.raf = 0; }
+function galFit(cv, k) {
+  const w = cv.clientWidth, h = cv.clientHeight; if (!w || !h) return null;
+  const d = Math.min(k, devicePixelRatio || 1), W = Math.round(w * d), H = Math.round(h * d);
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const g = cv.getContext('2d'); if (!g) return null;
+  g.setTransform(d, 0, 0, d, 0, 0);
+  return { g, w, h };
+}
+function galBurst(n, big) {
+  const F = gal.fx; if (!F || !F.rnd) return;
+  for (let k = 0; k < n; k++) {
+    const a = F.rnd() * 6.283, sp = (big ? 140 : 90) + F.rnd() * (big ? 320 : 220);
+    F.bursts.push({ a, sp, t: 0, life: 0.7 + F.rnd() * 0.8, r: 2 + F.rnd() * (big ? 5 : 3.5), edge: F.rnd() });
+  }
+}
+function galFxDraw(dt, t) {
+  const F = gal.fx; if (!F) return;
+  /* the dim round the window */
+  const A = galFit($('galFx'), 1.5);
+  if (A) {
+    const { g, w, h } = A; g.clearRect(0, 0, w, h); g.globalCompositeOperation = 'lighter';
+    for (const m of F.motes) {
+      m.y -= m.v * dt; if (m.y < -0.05) { m.y = 1.05; m.x = F.rnd(); }
+      const x = (m.x + Math.sin(t * 0.6 + m.ph) * m.sw) * w, y = m.y * h;
+      const al = 0.25 + 0.35 * (0.5 + 0.5 * Math.sin(t * 1.7 + m.ph));
+      g.globalAlpha = al; g.drawImage(F.dot, x - m.r * 2, y - m.r * 2, m.r * 4, m.r * 4);
+    }
+    g.globalAlpha = 1; g.globalCompositeOperation = 'source-over';
+  }
+  /* round the portrait: clipped to everything outside the picture */
+  const cv = $('galPicFx'), B = galFit(cv, 1.5);
+  if (!B) return;
+  const { g, w, h } = B; g.clearRect(0, 0, w, h);
+  const cr = cv.getBoundingClientRect(), fr = $('galFrame').getBoundingClientRect(), ir = $('galImg').getBoundingClientRect();
+  const fx0 = fr.left - cr.left, fy0 = fr.top - cr.top, fw = fr.width, fh = fr.height;
+  const ix0 = ir.left - cr.left, iy0 = ir.top - cr.top;
+  const cx = fx0 + fw / 2, cy = fy0 + fh / 2, R = Math.max(fw, fh) * 0.62;
+  g.save();
+  g.beginPath(); g.rect(0, 0, w, h); g.rect(ix0, iy0, ir.width, ir.height); g.clip('evenodd');
+  g.globalCompositeOperation = 'lighter';
+  for (const m of F.halo) {                          // motes drifting round on the halo, rising a little as they go
+    m.a += m.v * dt; m.rise = (m.rise + dt * 0.05) % 1;
+    const rr = R * m.rr * (1 + 0.06 * Math.sin(t * 0.8 + m.ph));
+    const x = cx + Math.cos(m.a) * rr * 1.05, y = cy + Math.sin(m.a) * rr * 0.92 - m.rise * 26;
+    g.globalAlpha = 0.35 + 0.45 * (0.5 + 0.5 * Math.sin(t * 2.1 + m.ph));
+    g.drawImage(F.dot, x - m.r * 2, y - m.r * 2, m.r * 4, m.r * 4);
+  }
+  if (F.glints.length < (IS_PHONE ? 3 : 5) && F.rnd() < dt * 2.2) {   // a glint winks on somewhere on the frame's edge
+    const side = Math.floor(F.rnd() * 4), u = F.rnd();
+    const gx = side === 0 ? fx0 + u * fw : side === 1 ? fx0 + fw : side === 2 ? fx0 + u * fw : fx0;
+    const gy = side === 0 ? fy0 : side === 1 ? fy0 + u * fh : side === 2 ? fy0 + fh : fy0 + u * fh;
+    F.glints.push({ x: gx, y: gy, t: 0, life: 0.9 + F.rnd() * 0.7, s: 14 + F.rnd() * 16, rot: F.rnd() * 0.6 });
+  }
+  F.glints = F.glints.filter(gl => (gl.t += dt) < gl.life);
+  for (const gl of F.glints) {
+    const k = gl.t / gl.life, a = Math.sin(Math.PI * k), s = gl.s * (0.4 + 0.6 * a);
+    g.globalAlpha = a; g.save(); g.translate(gl.x, gl.y); g.rotate(gl.rot + k * 0.5);
+    g.drawImage(F.star, -s, -s, s * 2, s * 2); g.restore();
+  }
+  F.bursts = F.bursts.filter(b => (b.t += dt) < b.life);
+  for (const b of F.bursts) {                        // a turn's burst: sparks leaving the frame's edge
+    const k = b.t / b.life, ease = 1 - Math.pow(1 - k, 2.4);
+    const ox = cx + Math.cos(b.a) * fw * 0.5 * (0.9 + b.edge * 0.2), oy = cy + Math.sin(b.a) * fh * 0.5 * (0.9 + b.edge * 0.2);
+    const x = ox + Math.cos(b.a) * b.sp * ease * 0.5, y = oy + Math.sin(b.a) * b.sp * ease * 0.5 - k * 18;
+    g.globalAlpha = (1 - k) * 0.95; const r = b.r * (1 - k * 0.5);
+    g.drawImage(F.dot, x - r * 2, y - r * 2, r * 4, r * 4);
+  }
+  g.restore();
+}
+$('galPrev')?.addEventListener('click', () => galGo(-1));
+$('galNext')?.addEventListener('click', () => galGo(1));
+$('galGo')?.addEventListener('click', () => galPrimary());
+$('galX')?.addEventListener('click', () => galClose('x'));
+$('galThumbs')?.addEventListener('click', e => { const b = e.target.closest?.('.galThumb'); if (b) galJump(+b.dataset.i); });
+$('galPips')?.addEventListener('click', e => { const b = e.target.closest?.('button'); if (b) galPip(+b.dataset.k); });
+/* the wheel turns the page — except over the words while they can still scroll that way */
+$('galBox')?.addEventListener('wheel', e => {
+  if (!gal.open) return;
+  const st = galScroller(), vert = Math.abs(e.deltaY) >= Math.abs(e.deltaX);
+  if (vert && st.contains(e.target)) {
+    const room = e.deltaY > 0 ? st.scrollTop + st.clientHeight < st.scrollHeight - 2 : st.scrollTop > 0;
+    if (room) return;
+  }
+  e.preventDefault();
+  const now = performance.now();
+  if (now - gal.wheelLast > 260) gal.wheel = 0;
+  gal.wheelLast = now;
+  if (now - gal.wheelT < 450) return;               // one turn a gesture (a trackpad's tail keeps sending)
+  gal.wheel += vert ? e.deltaY : e.deltaX;
+  if (Math.abs(gal.wheel) >= GAL_WHEEL) { const d = gal.wheel > 0 ? 1 : -1; gal.wheel = 0; gal.wheelT = now; galGo(d); }
+}, { passive: false });
+/* a swipe turns it (a finger or a pen; a mouse has the arrows, the wheel and the keys) */
+$('galBody')?.addEventListener('pointerdown', e => {
+  if (!gal.open || e.pointerType === 'mouse' || e.target.closest?.('button')) return;
+  gal.drag = { id: e.pointerId, x0: e.clientX, y0: e.clientY, dx: 0, on: false };
+});
+addEventListener('pointermove', e => {
+  const d = gal.drag; if (!d || e.pointerId !== d.id) return;
+  const dx = e.clientX - d.x0, dy = e.clientY - d.y0; d.dx = dx;
+  if (!d.on && Math.abs(dx) > 14 && Math.abs(dx) > 1.4 * Math.abs(dy)) { d.on = true; $('galPage').classList.add('drag'); }
+  if (d.on) $('galPage').style.transform = `translateX(${(dx * 0.32).toFixed(1)}px)`;
+});
+const galDragEnd = e => {
+  const d = gal.drag; if (!d || e.pointerId !== d.id) return;
+  gal.drag = null;
+  const pg = $('galPage'); pg.classList.remove('drag'); pg.style.transform = '';
+  if (d.on && Math.abs(d.dx) > 48) galGo(d.dx < 0 ? 1 : -1);
+};
+addEventListener('pointerup', galDragEnd);
+addEventListener('pointercancel', galDragEnd);
+addEventListener('resize', () => { if (gal.open) { galPaint(); gal.pages && gal.pages.forEach((p, k) => galThumbPaint(k)); } });
+addEventListener('keydown', e => {
+  if (!gal.open) return;
+  const c = e.code;
+  if (['ArrowRight', 'KeyD', 'PageDown'].includes(c)) { e.preventDefault(); galGo(1); return; }
+  if (['ArrowLeft', 'KeyA', 'PageUp'].includes(c)) { e.preventDefault(); galGo(-1); return; }
+  if (c === 'Home') { e.preventDefault(); galJump(0); return; }
+  if (c === 'End') { e.preventDefault(); galJump(gal.pages.length - 1); return; }
+  if (/^(Digit|Numpad)[1-9]$/.test(c)) { e.preventDefault(); galJump(+c.slice(-1) - 1); return; }
+  if (['ArrowDown', 'ArrowUp', 'KeyS', 'KeyW'].includes(c)) {
+    e.preventDefault(); galScroller().scrollBy({ top: (c === 'ArrowDown' || c === 'KeyS') ? 70 : -70, behavior: 'smooth' }); return;
+  }
+  if (['Enter', 'Space', 'NumpadEnter'].includes(c)) { e.preventDefault(); if (!e.repeat) galPrimary(); return; }
+  if (c === 'Escape') { e.preventDefault(); galClose('esc'); return; }
+  if (c === 'KeyE' || c === 'KeyI' || c === 'KeyM' || c === 'KeyF') e.preventDefault();   // the world's keys do nothing under it
+});
+
 /* ── MASTER ZAV, in three dimensions (v5.08) ──────────────────────────
    Chad's Guild Wars screen: the character himself turns in the middle of
    the panel and the boxes sit around him. A SECOND renderer on its own
@@ -12633,6 +13057,9 @@ function worldCovered() {
   if (ui.episode && !ui.episode.classList.contains('hide')) return true;
   if (!ui.chapter.classList.contains('hide') && ui.chapter.style.opacity === '1') return true;
   if (cineFadeEl.style.opacity === '1' && !cineFadeEl.classList.contains('clearing')) return true;
+  /* v21.10: the gallery's window and its backdrop cover the world (a frozen frame shows dimmed round the window's
+     edges, which is all a reader sees of it) */
+  if (gal.open) return true;
   return false;
 }
 function anyVisibleMesh(o) {
@@ -12937,6 +13364,9 @@ window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () =
                                 banner: !!$('wardBreak')?.classList.contains('on') }),
                  unlockState: () => ({ id: unl.id, state }),
                  chooseState: () => ({ ids: cho.ids, sel: cho.sel, sealing: cho.sealing, state }),        // v17.6
+                 galleryState: () => ({ open: gal.open, i: gal.i, n: gal.pages ? gal.pages.length : 0,   // v21.10
+                                        seen: gal.seen ? [...gal.seen] : [], done: gal.done, img: gal.img, state }),
+                 galleryGo: d => galGo(d), galleryClose: how => galClose(how || 'x'),
                  chooseSel: i => chooseSel(i), chooseClose: how => chooseClose(how || 'click'),
                  invMove: (kind, key) => invQuickMove(kind, key),                 // v17.6: the fixed-item check
                  guards: () => ({ drain: wornGuard('drainGuard'), shock: wornGuard('shockGuard'), ev: evGuard(), cuts: { ...guardCuts } }),

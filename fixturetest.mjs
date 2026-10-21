@@ -917,6 +917,84 @@ K.yantGuards = await p.evaluate(() => {
   return Object.values(res).every(Boolean);
 });
 if (!K.yantGuards) console.log('yant guards', JSON.stringify(await p.evaluate(() => window.__yg)));
+/* v21.10: THE TWENTY-NINTH SEAM — kit.gallery. It opens in a state of its own on
+   the first page not yet read, refuses a turn inside its guard, counts a page
+   READ only after it has stood on screen (wall time), turns by a real click on
+   the arrow and by real keys, says NEXT until every page is read and then
+   CONTINUE, answers the Promise with seenAll true and hands back play; opened
+   again with two pages read it starts on the third, and Esc closes it early
+   with seenAll false and the reading so far; opened with every page read it
+   is already done. A picture is drawn from its own bytes (an episode-3
+   portrait, on the hosted build the suite drives). */
+const GAL_PAGES = [
+  { id: 'ga', name: 'First master', aka: 'Aka one', plaque: 'Plaque one', lived: '1900 – 1980', era: 'Era one', temple: 'Temple one',
+    known: ['Known a', 'Known b', 'Known c'], story: ['Story one, first paragraph.', 'Story one, second.'],
+    images: [{ key: 'mstr_lptimpray', mime: 'image/jpeg' }, { key: 'mstr_lptimbench', mime: 'image/jpeg' }] },
+  { id: 'gb', name: 'Second master', lived: '1800 – 1880', known: ['Known d'], story: 'Story two.',
+    images: [{ key: 'mstr_lpthuad', mime: 'image/png', own: true }] },
+  { id: 'gc', name: 'Third master', story: 'Story three, with no picture at all.' },
+];
+K.galleryOpens = await p.evaluate((pages) => {
+  const e = window.__enc;
+  window.__gal = undefined;
+  e.kit.gallery({ pages, label: 'Probe gallery' }).then(r => { window.__gal = r; });
+  const st = e.galleryState();
+  e.galleryGo(1);                                              // inside the guard: refused
+  const held = e.galleryState().i === 0;
+  return e.getState() === 'gallery' && st.open && st.n === 3 && st.i === 0 && !st.done && held
+    && e.kit.galleryOpen() === true
+    && !document.getElementById('gallery').classList.contains('hide')
+    && document.querySelectorAll('#galThumbs .galThumb').length === 3
+    && document.getElementById('galName').textContent === 'First master'
+    && document.querySelectorAll('#galPips button').length === 2
+    && document.getElementById('galGo').textContent === 'Next';
+}, GAL_PAGES);
+/* a page is not read at once, and is read after it has stood */
+K.galleryNotAtOnce = await p.evaluate(() => window.__enc.galleryState().seen.length === 0);
+K.galleryReadsOne = await until(() => window.__enc.galleryState().seen.includes(0), 30000).then(() => true, () => false);
+K.galleryPicture = await until(() => {
+  const cv = document.getElementById('galImg'); if (!cv || !cv.width) return false;
+  const g = cv.getContext('2d'), d = g.getImageData(cv.width >> 1, cv.height >> 1, 1, 1).data;
+  return cv.width > 60 && d[3] === 255;                        // the photograph is drawn, opaque
+}, 30000).then(() => true, () => false);
+await p.waitForTimeout(500);                                   // past the guard, certainly
+await p.click('#galNext');                                     // a real click on the arrow
+K.galleryClickTurns = await until(() => window.__enc.galleryState().i === 1, 15000).then(() => true, () => false);
+K.galleryReadsTwo = await until(() => window.__enc.galleryState().seen.includes(1), 30000).then(() => true, () => false);
+await p.keyboard.press('End');                                 // a real key: the last page
+K.galleryKeyTurns = await until(() => window.__enc.galleryState().i === 2, 15000).then(() => true, () => false);
+K.galleryDone = await until(() => {
+  const st = window.__enc.galleryState();
+  return st.done && st.seen.length === 3 && document.getElementById('galBox').classList.contains('done')
+    && document.getElementById('galGo').textContent === 'Continue';
+}, 30000).then(() => true, () => false);
+await p.keyboard.press('Enter');                               // CONTINUE
+K.galleryAnswers = await until(() => window.__gal && window.__enc.getState() === 'play' && !window.__enc.galleryState().open, 30000)
+  .then(() => p.evaluate(() => window.__gal.seenAll === true && window.__gal.seen.join() === 'ga,gb,gc'), () => false);
+await p.waitForTimeout(500);
+K.galleryResumes = await p.evaluate((pages) => {
+  const e = window.__enc;
+  window.__gal = undefined;
+  e.kit.gallery({ pages, seen: ['ga', 'gb'] }).then(r => { window.__gal = r; });
+  const st = e.galleryState();
+  return st.open && st.i === 2 && st.seen.length === 2 && !st.done;
+}, GAL_PAGES);
+await p.waitForTimeout(600);
+await p.keyboard.press('Escape');
+K.galleryEscEarly = await until(() => window.__gal && window.__enc.getState() === 'play', 30000)
+  .then(() => p.evaluate(() => window.__gal.seenAll === false && window.__gal.seen.join() === 'ga,gb'), () => false);
+await p.waitForTimeout(600);
+K.galleryAllReadOpensDone = await p.evaluate((pages) => {
+  const e = window.__enc;
+  window.__gal = undefined;
+  e.kit.gallery({ pages, seen: ['ga', 'gb', 'gc'] }).then(r => { window.__gal = r; });
+  const st = e.galleryState();
+  return st.open && st.done && document.getElementById('galGo').textContent === 'Continue';
+}, GAL_PAGES);
+await p.waitForTimeout(600);
+await p.click('#galX');                                        // the X, a real click
+K.galleryXCloses = await until(() => window.__gal && window.__enc.getState() === 'play', 30000)
+  .then(() => p.evaluate(() => window.__gal.seenAll === true && !window.__enc.kit.galleryOpen()), () => false);
 /* v21.0: THE TWENTY-SIXTH SEAM — kit.film. From play, a declared film runs
    (state cine, the HUD hidden); at its end the state is PLAY again, no card;
    the black it ended on is the kit's, the chapter's onDone ran under it and

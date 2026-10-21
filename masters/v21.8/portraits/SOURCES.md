@@ -20,3 +20,17 @@ The three from mybuddha108 carry their own gold frames and are hung as they
 are; the two of Luang Phu Tim are photographs and are hung in a plain frame
 built AROUND them (the photograph itself untouched). They are drawn unlit and
 outside tone mapping, so what reaches the screen is each file's own colour.
+
+## v21.10 · the sixth: LP Phiboon
+
+Chad, 21 Oct 2026, with the image attached: "Please add lp phiboon attached
+image here as one additional monk portrait to be on the same row as existing
+monk portraits on the wall in the amulet shop. Frame it nicely." — "(Image
+credit: bankhundej.blogspot.com)". The file is the attachment itself, copied
+byte for byte (no crop, no resize, no recolour, no re-encode), hung in a frame
+built AROUND it like Luang Phu Tim's two (a richer one: a two-step gilt
+moulding, a crimson velvet liner, gilt corner blocks).
+
+| asset | master | source page | file | size | sha1 |
+|---|---|---|---|---|---|
+| master_lpphiboon.jpg | Luang Pu Phiboon (LP Phiboon) | https://bankhundej.blogspot.com/ | the image Chad attached in chat | 318×500 | 3f6e2df4d5999d5c4b6a2bffe7f643652f3084b2 |

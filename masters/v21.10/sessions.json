@@ -1,0 +1,46 @@
+{
+ "_flow": "o5Uc3nZjy2Iqe3UHGRbO",
+ "_note": "v21.10 \u00b7 the masters' gallery. eleven_text_to_sound_v2 (prompt_influence 0.6, duration_seconds as a PARAMETER \u2014 the v9.2 law), four takes each; galbed is eleven_music_v2, instrumental, 75 s, to be hand-looped. Prompts: galopen 'A small Thai temple bell rings once, clear and bright, and a warm golden shimmer of tiny chimes swells up softly beneath it and fades away. Reverent, magical, gentle. No bass, no drums, no whoosh.' (2.8 s); galflip 'A single heavy page of an old book turning softly, close, followed by one tiny crystal chime that rings and fades. Clean, quiet room, no music.' (1.2 s); galread 'One very short, soft, bright tap on a tiny brass bell, a gentle confirmation tick with a short sparkle tail. Clean, close, quiet.' (0.8 s); galdone 'Three gentle ascending notes struck on a Thai khim hammered dulcimer, then a small temple bell, resolving into a warm sustained golden shimmer of chimes that slowly fades. Uplifting, reverent, a feeling of completion. No drums, no deep bass.' (3.5 s); galclose 'A soft descending shimmer of tiny wind chimes settling gently into silence, like a book softly closed in a quiet temple. Gentle, short, no bass.' (1.6 s); galbed 'Slow, reverent, contemplative instrumental for a museum gallery of revered Thai Buddhist masters. A Thai khim (hammered dulcimer) plays a sparse, gentle, flowing melody over a warm soft string pad, with a soft wooden flute answering now and then and a distant small temple bell every few bars. Peaceful, respectful, wistful, golden light. Even, soft dynamics throughout, no build-up, no drums, no percussion beat, no deep sub-bass.' galopen2 (round two, prompt_influence 0.7, 3.0 s): 'A warm brass Thai temple bell struck softly once, a clear mid-pitched tone that rings out and slowly fades, with a delicate shimmer of tiny chimes rising gently behind it. The bell is the main sound. Close, clean, reverent, starts from silence. No drums, no deep bass, no whoosh.' \u2014 round one's four were all 99.7 % over 3 kHz, a sparkle with no bell.",
+ "galopen": [
+  "QxB79qW1HLATZ14AXvhN",
+  "PNPpGrcb16xTpqGD8WHf",
+  "XxUrdSKJlPHBlYm0T90r",
+  "bOTAucjEX3ftUB2HGXYL"
+ ],
+ "galflip": [
+  "SHZEeaC6oJQClHpznIXq",
+  "pdb75tVpb5rU5bXOqt6M",
+  "yxDasER8ltkpPxwSWDuy",
+  "ZvUhL5KA1O7okWJgNJAB"
+ ],
+ "galread": [
+  "2qasfUm97eWnICEIQkkF",
+  "iOodidWBwRjlLSyVx9au",
+  "0uVQQcp3uICJMv6e3sK6",
+  "ErkpCL7zS922vIUmPL4l"
+ ],
+ "galdone": [
+  "27Wl8Z5mdO4hYrgAPDZv",
+  "ErO33NpRdTQHUfcx5zPo",
+  "8fO6EacvS9Zhtst3P0C4",
+  "uPUtMebVGEbKBMISzKZL"
+ ],
+ "galclose": [
+  "NuJxrWDhHJ5KkZe8rzM9",
+  "UF63wcueJH4lvEnVOk3g",
+  "vlhy2U9mVPHDadp1KrBV",
+  "5qwSw7U6HOjzkaZriQ2m"
+ ],
+ "galbed": [
+  "RSVHhntVg8WXjh6IlWeP",
+  "n8CCgksGUmB68j5XZNen",
+  "B6LxDc0joZU9jUThEVO1",
+  "V3b0Bb8KUvT3g9riTM5x"
+ ],
+ "galopen2": [
+  "YdQJQZcAf4CcxSvnXf9g",
+  "0ct0j2QNC9HF0iag7FSr",
+  "4ZExZBLkFUqPQYATvi0h",
+  "ezYJvFRFXFmyqR57YSaa"
+ ]
+}

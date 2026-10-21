@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "21.9"
+VERSION = "21.10"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -440,6 +440,7 @@ ASSETS = {
     'mstr_lpthuad':     ('assets/master_lpthuad.png', True, False),
     'mstr_lptimpray':   ('assets/master_lptimpray.jpg', True, False),
     'mstr_lptimbench':  ('assets/master_lptimbench.jpg', True, False),
+    'mstr_lpphiboon':   ('assets/master_lpphiboon.jpg', True, False),   # v21.10: LP Phiboon, the photograph Chad attached, byte for byte (credited bankhundej.blogspot.com)
     # e3c3 v21.8: Chad's amulet display tray, REAL 3D at every distance (Chad: "I wanted it as real 3d, not just
     # texture"): near, his scan cut to 6 % with its own maps (tools/permcut.mjs STRICT=1 NW=0.5, 47.5k); across the
     # room the same geometry with its seams taken away — its own front view projected onto it (tools/bakeboard.mjs,
@@ -480,7 +481,7 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'muzzle', 'ammocrate', 'ammomags', 'icontorch', 'zavsoldier',
            'thaikit', 'wessred', 'wessgreen', 'naga', 'monk', 'ajarn', 'temple', 'slipper', 'lersimask', 'altarrow', 'customer', 'buddhahd', 'buddhalod', 'sangkathan', 'sitwomantalk', 'filmoffice', 'filmlaptop', 'actioncam', 'planecabin',
            'cg_woman2', 'cg_man2', 'cg_woman2hd', 'cg_man2hd', 'monkrow', 'hanuman', 'medium', 'owner', 'staffman', 'timkplod', 'wifewalk', 'fatherwalk',
-           'mstr_somdejtoh', 'mstr_achanmun', 'mstr_lpthuad', 'mstr_lptimpray', 'mstr_lptimbench',
+           'mstr_somdejtoh', 'mstr_achanmun', 'mstr_lpthuad', 'mstr_lptimpray', 'mstr_lptimbench', 'mstr_lpphiboon',
            'traynear', 'trayfar', 'amushelf', 'altarrowfar', 'monkshop'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone
 HOSTED_ONLY |= E2_ONLY
 

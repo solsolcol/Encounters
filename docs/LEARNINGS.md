@@ -5861,3 +5861,17 @@ cut (sharing its vertices and maps) when it is small.
   the search goes on round to looking down the line over its shoulder — the one
   composition a portrait frame can hold two things in, by depth rather than by
   width. Desktop takes the same code path with the whole figure and is unchanged.
+- **A hit area never moves** (v21.10). The gallery's NEXT arrow had an idle
+  nudge (translateX 0 → 6 px) on the BUTTON itself; Playwright waits for an
+  element to be "stable" before it clicks, and an infinite animation is never
+  stable, so the fixture's real click timed out after two minutes while the
+  game worked. A finger chases the same moving target. The nudge is on the
+  arrow's drawing inside the button now; the button's box never moves.
+- **In a grid that scrolls, an item with `min-height: 0` gets no row of its
+  own** (v21.10). On an upright phone the gallery's page is a grid in a
+  scroller of fixed height; the portrait column kept the base rule's
+  `min-height: 0` (right for the desktop's flex column) and so contributed
+  NOTHING to its auto row's minimum — the row was sized by the words beside it,
+  and the Thai plaque under the portrait sat on top of KNOWN FOR in the next
+  row. With no free space in the container, auto rows never grow past their
+  minimums. `min-height: auto` on the item gives the row its height back.

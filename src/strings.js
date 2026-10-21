@@ -188,6 +188,10 @@ Object.assign(window.__TEXT__, {
   'credits.lptim2':         'Luang Phu Tim on his bench',
   'credits.lptim2Who':      'Wat Lahanrai · ahaina.wordpress.com',
   'credits.lptim2Link':     'ahaina.wordpress.com · wat-lahanrai',
+  // v21.10 · the sixth on the wall — Chad's photograph of LP Phiboon, hung as he sent it
+  'credits.phiboon':        'Luang Pu Phiboon',
+  'credits.phiboonWho':     'LP Phiboon · bankhundej.blogspot.com',
+  'credits.phiboonLink':    'bankhundej.blogspot.com',
   /* v12.1 — Chad's ghost cyclist is his own model and takes no row (the
      v5.23 rule); the Kamaz and the flashlight already have theirs above. */
   'credits.anim':        'Animation, two of the crowd, and the soldiers’ takes',
@@ -435,6 +439,21 @@ Object.assign(window.__TEXT__, {
   'choose.label':        'Choose one',
   'choose.confirm':      'Confirm',
   'choose.hint':         'Pick one, then confirm',
+  // v21.10 · THE GALLERY (kit.gallery): pages to turn, a picture and its story
+  'gallery.label':       'Gallery',
+  'gallery.lived':       'Lived',
+  'gallery.era':         'Era',
+  'gallery.temple':      'Temple',
+  'gallery.known':       'Known for',
+  'gallery.read':        '{n} of {m} read',
+  'gallery.allRead':     'All {m} read',
+  'gallery.nextBtn':     'Next',
+  'gallery.continue':    'Continue',
+  'gallery.close':       'Close',
+  'gallery.prev':        'Previous',
+  'gallery.next':        'Next',
+  'gallery.hint':        'Swipe or tap the arrows to turn the page',
+  'gallery.hintKey':     'Use ← → or the arrows to turn the page',
 
   // --- spoken by screen readers, never seen on screen ----------------------
   'a11y.soundButton':    'Sound on or off',

@@ -113,6 +113,7 @@
              /* v21.8: the monk who leads the chant (e3c1's, at full detail), Chad's row of altar statues (e3c1's Sak Yant
                 room), and his five masters for the wall (the sources' own photographs, unaltered) */
              'monkshop', 'altarrow', 'altarrowfar', 'lersimask', 'cars', 'mstr_somdejtoh', 'mstr_achanmun', 'mstr_lpthuad', 'mstr_lptimpray', 'mstr_lptimbench',
+             'mstr_lpphiboon',                              // v21.10: LP Phiboon, the sixth on the wall (Chad's photograph, unaltered)
              'traynear', 'trayfar', 'amushelf'],
     items: ['timkp'],
 
@@ -127,7 +128,8 @@
        candlelit3, incenselit3, matkneel3: a sound two chapters ask for is shared, and asking for ch3's, e3c1's and
        e3c2's by their names put all seven in every player's boot download — EN-2, the v4.2 split) */
     ambience: { beds: [['mallamb', 0.3], ['shopchant', 0], ['e3dance', 0], ['dancemove', 0],
-                       ['lorongamb', 0], ['shrineamb', 0], ['e3shrine', 0], ['ritual3', 0]] },
+                       ['lorongamb', 0], ['shrineamb', 0], ['e3shrine', 0], ['ritual3', 0],
+                       ['galbed', 0]] },                    // v21.10: under the masters' gallery while it is open
     voiceLine: null,
 
     words: {
@@ -156,6 +158,69 @@
       lookTim: 'The LP Tim on its stand',          // (v21.8: no glass case — on screen it may say LP; a VOICE says Luang Phu)
       lookAltar: 'The altar',
       lookMasters: 'The old masters',
+      /* v21.10: THE MASTERS' GALLERY — one page a master, in Chad's order. Researched and sourced:
+         docs/research/V21.10-MASTERS.md (what is legend is said to be legend; what is a guess, a guess) */
+      galLabel: 'The Old Masters',
+      mThuadName: 'Luang Pu Thuad',
+      mThuadAka: 'Somdet Chao Phako · “who trod on the sea and made it fresh”',
+      mThuadThai: 'หลวงปู่ทวด',
+      mThuadLived: 'By tradition 1582 – 1682 (B.E. 2125 – 2225), about 100 years',
+      mThuadEra: 'The Ayutthaya Kingdom — born under King Maha Thammarachathirat, died under King Narai',
+      mThuadTemple: 'Wat Phako, Songkhla · Wat Chang Hai, Pattani',
+      mThuadKnown1: 'Southern Thailand’s most revered legendary monk, honoured from Songkhla to Malaysia and Singapore',
+      mThuadKnown2: 'The legend of the sea made fresh — the sweet water beneath his foot',
+      mThuadKnown3: 'His amulets, first made at Wat Chang Hai in 1954, worn for protection on journeys',
+      mThuadStory1: 'Luang Pu Thuad was born, by traditional dating, in 1582 at Sathing Phra in Songkhla, the son of Hu and Chan, bonded servants of a wealthy man. Legend says a king cobra coiled around his cradle and left a glowing crystal on the baby’s chest; a crystal said to be that one is kept at Wat Phako. He became a novice at fifteen and a monk at twenty, named Samiramo, and studied in Nakhon Si Thammarat and Ayutthaya.',
+      mThuadStory2: 'Two legends made him famous. On a storm-bound ship whose fresh water had run out, he lowered his foot into the sea and the water around it turned sweet; and at the Ayutthaya court he solved a Dhamma riddle sent from Lanka, earning a royal title. He returned south to restore Wat Phako and is said to have died around 1682, aged about 100, at Sai Buri, in Kedah.',
+      mThuadStory3: 'His remains rest in a stupa at Wat Chang Hai in Pattani. There, in 1954, the temple’s abbot Ajahn Tim Dhammadharo — a different monk from Luang Phu Tim of Wat Lahanrai — made the first amulets in his image, for the people who helped build its new ordination hall.',
+      mTimName: 'Luang Phu Tim Issariko',
+      mTimAka: 'Phra Khru Phawanaphirat · born Tim Ngamsri',
+      mTimThai: 'หลวงปู่ทิม อิสริโก',
+      mTimLived: '16 June 1879 – 16 October 1975 (B.E. 2422 – 2518), 96 years',
+      mTimEra: 'Rattanakosin — the reigns of King Rama V to King Rama IX',
+      mTimTemple: 'Wat Lahanrai, Ban Khai, Rayong',
+      mTimKnown1: 'The Khun Paen amulets of Phong Prai Kuman powder, 1972 – 1974',
+      mTimKnown2: 'An austere life: one meal a day, no meat, few words and no wealth',
+      mTimKnown3: 'The great master of eastern Thailand, and the builder of Wat Lahanrai',
+      mTimStory1: 'Luang Phu Tim was born Tim Ngamsri on 16 June 1879 at Lahan, in Rayong province, in the reign of King Chulalongkorn. A younger relative of Luang Phu Sang Thao, a revered master of the old protective arts, he studied that teacher’s manuals, and in 1906, at about twenty-seven, he was ordained with the name Issariko.',
+      mTimStory2: 'He spent years wandering on thudong through several provinces before Wat Lahanrai, in Ban Khai district, became his home; there he built an ordination hall and a school. Devotees remember him as solitary and austere: he spoke little, ate one meal a day and no meat, and cared nothing for wealth. In 1964 he received the title Phra Khru Phawanaphirat.',
+      mTimStory3: 'His Khun Paen amulets of Phong Prai Kuman powder, made from 1972 for the consecration of the temple’s ordination boundary, became some of the most sought-after in Thailand. He died at Wat Lahanrai on 16 October 1975, aged 96.',
+      mTohName: 'Somdej Toh',
+      mTohAka: 'Somdet Phra Phutthachan (To Phrommarangsi)',
+      mTohThai: 'สมเด็จพระพุฒาจารย์ (โต พฺรหฺมรํสี)',
+      mTohLived: '17 April 1788 – 22 June 1872 (B.E. 2331 – 2415), 84 years',
+      mTohEra: 'Early Rattanakosin — born under King Rama I, died under King Rama V',
+      mTohTemple: 'Wat Rakhang Khositaram, Bangkok',
+      mTohKnown1: 'The Phra Somdej amulets, first of the five most prized in Thailand',
+      mTohKnown2: 'Refining and spreading the Chinabanchon protective chant',
+      mTohKnown3: 'Plain, witty, fearless teaching — to common people and kings alike',
+      mTohStory1: 'Somdej Toh was born on 17 April 1788 at Tha Ruea in Ayutthaya, in the first years of Bangkok under King Rama I. Folk tradition says his father was royal — Rama I or Rama II, depending on the telling — but no record proves it. A novice at about twelve and a monk from 1807, he studied the Pali scriptures deeply, yet declined royal rank through the whole reign of Rama III.',
+      mTohStory2: 'Under King Mongkut, who valued his counsel, he accepted the abbacy of Wat Rakhang in 1852 and, in 1864, the title Somdet Phra Phutthachan. He preached in plain, witty language and verse, and many stories tell of his fearless, unconventional lessons, even to kings.',
+      mTohStory3: 'He made the white-powder Phra Somdej amulets, raised giant Buddha images, and refined the Chinabanchon protective chant. He died on 22 June 1872, aged 84, at Wat Intharawihan in Bangkok, where the great standing Buddha he had begun was still unfinished.',
+      mMunName: 'Luang Pu Mun Bhuridatto',
+      mMunAka: 'Ajahn Mun · born Mun Kaenkaew',
+      mMunThai: 'หลวงปู่มั่น ภูริทตฺโต',
+      mMunLived: '20 January 1870 – 11 November 1949 (B.E. 2413 – 2492), 79 years',
+      mMunEra: 'Rattanakosin — the reigns of King Rama V to King Rama IX',
+      mMunTemple: 'The forests and caves of the Northeast · Wat Pa Sutthawat, Sakon Nakhon',
+      mMunKnown1: 'Founding the Thai Forest Tradition with Ajahn Sao Kantasilo',
+      mMunKnown2: 'Decades of dhutanga — wandering, and meditating alone in forests and caves',
+      mMunKnown3: 'The teacher of a generation of masters: Ajahn Maha Bua, Ajahn Thate, Ajahn Lee',
+      mMunStory1: 'Mun Kaenkaew was born on 20 January 1870 in Ban Kham Bong, a farming village in Ubon Ratchathani, in Thailand’s northeast. He was a novice at fifteen, and on 12 June 1893 he was ordained a monk at Wat Liap in Ubon, receiving the name Bhuridatto, “one who gives wisdom.”',
+      mMunStory2: 'There he met Ajahn Sao Kantasilo, and the two left settled temple life for forests, caves and charnel grounds, keeping the strict dhutanga practices: one meal a day of food received on alms round, almost no possessions, and long solitary meditation. Ajahn Mun wandered for decades through Isan, Laos and Burma, and spent about twelve years in the mountains of Chiang Mai and Chiang Rai.',
+      mMunStory3: 'From this life grew the Thai Forest Tradition and a generation of teachers, among them Ajahn Maha Bua, Ajahn Thate and Ajahn Lee. He died at Wat Pa Sutthawat, Sakon Nakhon, on 11 November 1949, aged 79. In 2020 UNESCO joined in marking the 150th anniversary of his birth.',
+      mPhiboonName: 'Luang Pu Phiboon',
+      mPhiboonAka: 'Born Phiboon Sae Tan · Luang Pu of Ban Daeng',
+      mPhiboonThai: 'หลวงปู่พิบูลย์',
+      mPhiboonLived: 'Birth unrecorded – died 1946 (B.E. 2489)',
+      mPhiboonEra: 'Rattanakosin — believed born under King Rama IV; died under King Rama VIII',
+      mPhiboonTemple: 'Wat Phra Thaen, Ban Daeng, Udon Thani',
+      mPhiboonKnown1: 'Founding Wat Phra Thaen, and helping lay out the village of Ban Daeng',
+      mPhiboonKnown2: 'Holy water and healing — and legends of tamed crocodiles and a sacred staff',
+      mPhiboonKnown3: 'Phibun Rak district, in Udon Thani, which bears his name',
+      mPhiboonStory1: 'Luang Pu Phiboon was born Phiboon Sae Tan at Ban Phra Chao in Roi Et province, the son of a Chinese merchant named Sa and a local woman, Sopha. No birth date was recorded; he is believed to have been born in the reign of King Mongkut. A prosperous, generous man, he married and raised an adopted daughter, then gave his property to her family and became a monk.',
+      mPhiboonStory2: 'He wandered across the Mekong to meditate in the caves of Laos, then settled in Udon Thani, founding Wat Phra Thaen beside an ancient stone altar and helping the villagers lay out Ban Daeng, with its roads, a rice bank and a buffalo bank. Devotees tell of crocodiles he tamed, and of a sacred staff left for him by a mysterious stranger.',
+      mPhiboonStory3: 'Wary of “holy man” movements in Isan, officials detained him; from about 1931 he was confined at Wat Phothisomphon in Udon Thani, where he died in 1946. Phibun Rak district now bears his name.',
       tgBuddha: 'The Buddha',
       tgCandle: 'A candle',
       tgOwner: 'Uncle',
@@ -749,19 +814,61 @@
        Toh and Ajahn Mun, whose pictures carry their own gold frames, hang as
        they are (their corners are the file's own transparency). Since v21.9
        all five hang in ONE ROW high on the wall, over the owner's head (the
-       row's own note, below). Credited in the panel, one row a page. */
+       row's own note, below). Credited in the panel, one row a page.
+       v21.10 · A SIXTH (Chad: "Please add lp phiboon attached image here as
+       one additional monk portrait to be on the same row as existing monk
+       portraits on the wall in the amulet shop. Frame it nicely"): LP
+       Phiboon, the photograph Chad attached, byte for byte, in a FINE frame —
+       a two-step gilt moulding, a crimson velvet liner, gilt corner blocks
+       with a rosette each — at the row's door end. */
     {
       const wx = SHOP.x1 - 0.012;
+      /* v21.10: the fine frame's border (moulding + liner) and its liner, and its two materials */
+      const FINE_B = 0.062, FINE_L = 0.028;
+      const matVelvet = new THREE.MeshStandardMaterial({ color: 0x6a0e14, roughness: 0.96 });
+      const matGoldHi = new THREE.MeshStandardMaterial({ color: 0xf2c86e, roughness: 0.24, metalness: 0.6, emissive: 0x4a3008, emissiveIntensity: 0.65 });
       /* an ImageBitmap upload ignores UNPACK_FLIP_Y (the WebGL rule), so the photograph's first row arrives at v = 0:
          the plane's own v is turned round to stand it upright — the picture itself is never touched */
       const portrait = (key, mime, w, h, y, z, frame) => {
         const g = new THREE.Group(); g.position.set(wx - 0.004, y, z); g.rotation.y = -Math.PI / 2; shopG.add(g);
+        const fine = frame === 'fine';
         // a soft shadow on the wall, a little under it, so it hangs ON the wall rather than being painted into it
-        const sh = new THREE.Mesh(new THREE.PlaneGeometry(w * 1.12, h * 1.1), new THREE.MeshBasicMaterial({
+        const sw = fine ? (w + 2 * FINE_B) * 1.06 : w * 1.12, shh = fine ? (h + 2 * FINE_B) * 1.06 : h * 1.1;
+        const sh = new THREE.Mesh(new THREE.PlaneGeometry(sw, shh), new THREE.MeshBasicMaterial({
           map: (() => { const t = makeSoftDot('rgba(0,0,0,0.55)', 'rgba(0,0,0,0)'); madeTex.push(t); return t; })(),
           transparent: true, depthWrite: false, fog: false }));
         sh.position.set(0.006, -0.018, -0.002); g.add(sh);
-        if (frame) {                                         // a gilt moulding round it, standing proud of the picture, and a dark board behind
+        if (fine) {
+          /* v21.10 · THE FINE FRAME (LP Phiboon's — "Frame it nicely"): from the back, a dark board, a crimson velvet
+             liner FINE_L wide round the photograph with a thin gilt slip at its inner edge, then a gilt moulding
+             FINE_M wide in two steps — a broad flat and a raised bead along its inner edge, so the light catches a
+             line round the picture — and a gilt block at each corner carrying a small rosette. The photograph itself
+             is never touched: it lies on the velvet, inside the slip. */
+          const L = FINE_L, M = FINE_B - FINE_L, W = w + 2 * FINE_B, H = h + 2 * FINE_B;
+          box(W, H, 0.008, 0, 0, 0.004, matDark, g, false);                                   // the board
+          box(w + 2 * L, h + 2 * L, 0.004, 0, 0, 0.010, matVelvet, g, false);                // the liner
+          const sl = 0.006;                                                                    // the slip
+          box(w + 2 * sl, sl, 0.006, 0, h / 2 + sl / 2, 0.013, matGoldHi, g, false);
+          box(w + 2 * sl, sl, 0.006, 0, -h / 2 - sl / 2, 0.013, matGoldHi, g, false);
+          box(sl, h, 0.006, -w / 2 - sl / 2, 0, 0.013, matGoldHi, g, false);
+          box(sl, h, 0.006, w / 2 + sl / 2, 0, 0.013, matGoldHi, g, false);
+          const iw = w + 2 * L, ih = h + 2 * L;                                              // the moulding's inner edge
+          box(W, M, 0.026, 0, ih / 2 + M / 2, 0.013, matGold, g, false);                      // the broad flat, round
+          box(W, M, 0.026, 0, -ih / 2 - M / 2, 0.013, matGold, g, false);
+          box(M, ih, 0.026, -iw / 2 - M / 2, 0, 0.013, matGold, g, false);
+          box(M, ih, 0.026, iw / 2 + M / 2, 0, 0.013, matGold, g, false);
+          const bd = 0.009;                                                                    // the bead along it
+          box(iw + 2 * bd, bd, 0.034, 0, ih / 2 + bd / 2, 0.017, matGoldHi, g, false);
+          box(iw + 2 * bd, bd, 0.034, 0, -ih / 2 - bd / 2, 0.017, matGoldHi, g, false);
+          box(bd, ih, 0.034, -iw / 2 - bd / 2, 0, 0.017, matGoldHi, g, false);
+          box(bd, ih, 0.034, iw / 2 + bd / 2, 0, 0.017, matGoldHi, g, false);
+          const cb = M + 0.012, rG = new THREE.CylinderGeometry(0.011, 0.013, 0.008, 16);   // the corner blocks
+          for (const sx of [-1, 1]) for (const sy of [-1, 1]) {
+            const cx = sx * (W / 2 - cb / 2 + 0.004), cy = sy * (H / 2 - cb / 2 + 0.004);
+            box(cb, cb, 0.036, cx, cy, 0.018, matGold, g, false);
+            const ro = new THREE.Mesh(rG, matGoldHi); ro.rotation.x = Math.PI / 2; ro.position.set(cx, cy, 0.039); g.add(ro);
+          }
+        } else if (frame) {                                  // a gilt moulding round it, standing proud of the picture, and a dark board behind
           const fw = 0.032, fd = 0.026;
           box(w + 2 * fw, fw, fd, 0, h / 2 + fw / 2, fd / 2, matGold, g, false);
           box(w + 2 * fw, fw, fd, 0, -h / 2 - fw / 2, fd / 2, matGold, g, false);
@@ -772,7 +879,7 @@
         const geo = new THREE.PlaneGeometry(w, h), uv = geo.attributes.uv;
         for (let i = 0; i < uv.count; i++) uv.setY(i, 1 - uv.getY(i));
         const mat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: !frame, alphaTest: frame ? 0 : 0.02, toneMapped: false, fog: false });
-        const m = new THREE.Mesh(geo, mat); m.position.z = frame ? 0.0075 : 0.004; m.visible = false; g.add(m);
+        const m = new THREE.Mesh(geo, mat); m.position.z = fine ? 0.0125 : frame ? 0.0075 : 0.004; m.visible = false; g.add(m);
         loadImageTexture(key, mime).then(t => {
           if (!alive || !t) return;
           madeTex.push(t); mat.map = t; mat.needsUpdate = true; m.visible = true;
@@ -788,19 +895,29 @@
          it above 1.70 m — the row's lowest edge is MSTR.y0, 1.90. All five the same height on the wall (MSTR.h, the
          gilt mouldings included), each at its own aspect, never cropped; in the order the two rows had: Luang Pu
          Thuad, Luang Phu Tim at prayer, Somdej Toh in the middle under the shelf-shrine, Luang Phu Tim on his bench,
-         Ajahn Mun */
+         Ajahn Mun.
+         v21.10: and LP Phiboon at the door end (+z) — his photograph 318 x 500, in the fine frame (FINE_B a side), so
+         the row keeps its rhythm of framed portraits and photographs; six, recentred on the shelf-shrine, whose
+         middle now falls in the gap between Somdej Toh and Luang Phu Tim on his bench */
       const FWD = 0.032, GAP = 0.12, RH = MSTR.h, RY = MSTR.y0 + MSTR.h / 2;   // (FWD: the moulding portrait() builds round a photograph)
+      const border = fr => fr === 'fine' ? FINE_B : fr ? FWD : 0;
       const row = [
         ['mstr_lpthuad', 'image/png', RH * 320 / 418, RH, false],
         ['mstr_lptimpray', 'image/jpeg', (RH - 2 * FWD) * 250 / 333, RH - 2 * FWD, true],
         ['mstr_somdejtoh', 'image/png', RH * 320 / 418, RH, false],
         ['mstr_lptimbench', 'image/jpeg', (RH - 2 * FWD) * 450 / 600, RH - 2 * FWD, true],
-        ['mstr_achanmun', 'image/png', RH * 320 / 418, RH, false]
+        ['mstr_achanmun', 'image/png', RH * 320 / 418, RH, false],
+        ['mstr_lpphiboon', 'image/jpeg', (RH - 2 * FINE_B) * 318 / 500, RH - 2 * FINE_B, 'fine']
       ];
-      const outer = row.map(([, , w, , fr]) => w + (fr ? 2 * FWD : 0));
-      let rz = MSTR.z - (outer.reduce((a, b) => a + b, 0) + GAP * (row.length - 1)) / 2;
+      const outer = row.map(([, , w, , fr]) => w + 2 * border(fr));
+      const rowLen = outer.reduce((a, b) => a + b, 0) + GAP * (row.length - 1);
+      MSTR.half = rowLen / 2;                                // (the row's half-length: its tap box, lkMasters)
+      let rz = MSTR.z - rowLen / 2;
       row.forEach(([key, mime, w, h, fr], i) => { portrait(key, mime, w, h, RY, rz + outer[i] / 2, fr); rz += outer[i] + GAP; });
-      const BRZ = outer[2] / 2 + GAP / 2;                    // the shelf-shrine's brackets: down the gaps either side of the middle one
+      /* the shelf-shrine's brackets, a quarter-metre either side of its middle. Until v21.10 they stood down the gaps
+         either side of Somdej Toh, the row's middle; with six the middle is a gap, so they stand OVER the two
+         portraits beside it, their struts stopping 4 cm above the frames' tops (MSTR.y0 + MSTR.h) */
+      const BRZ = 0.25, BRY0 = MSTR.y0 + MSTR.h + 0.04;
       box(0.4, 0.86, 2.8, SHOP.x1 - 0.2, 0.43, -2.45, matWood, shopG);                             // the low cabinet
       box(0.42, 0.03, 2.82, SHOP.x1 - 0.2, 0.875, -2.45, matWoodL, shopG);
       const br = texMat(makeBoxRow(THREE, cnv));
@@ -818,7 +935,7 @@
         boxRows.push({ set visible(v) { rim.visible = !v; }, get visible() { return !rim.visible; } });
       }
       trayGroup(lowTrays, boxRows);
-      plane(0.42, 0.63, texMat(makeCalendar(THREE, cnv)), wx - 0.002, 1.55, -4.15, -Math.PI / 2, shopG);
+      plane(0.42, 0.63, texMat(makeCalendar(THREE, cnv)), wx - 0.002, 1.55, -4.45, -Math.PI / 2, shopG);   // (v21.10: 0.3 m back, clear of the longer row's end)
       solids.push(hidBox(0.4, 0.9, 2.8, SHOP.x1 - 0.2, 0.45, -2.45));
       // a small shelf-shrine over the photographs: a Buddha, a garland, two candles
       /* (on two gilt brackets, with a gold lip along its front: seen from the counter it was a dark-red slab floating
@@ -827,7 +944,7 @@
       box(0.012, 0.045, 0.7, SHOP.x1 - 0.282, 2.62, -2.5, matGold, shopG, false);
       for (const dz of [-BRZ, BRZ]) {
         box(0.2, 0.025, 0.03, SHOP.x1 - 0.1, 2.59, -2.5 + dz, matGold, shopG, false);
-        const st = box(0.02, 0.2, 0.03, SHOP.x1 - 0.02, 2.5, -2.5 + dz, matGold, shopG, false);
+        const st = box(0.02, 2.6 - BRY0, 0.03, SHOP.x1 - 0.02, (2.6 + BRY0) / 2, -2.5 + dz, matGold, shopG, false);
         const dg = box(0.018, 0.24, 0.025, SHOP.x1 - 0.09, 2.52, -2.5 + dz, matGold, shopG, false); dg.rotation.z = 0.78;
         st.castShadow = dg.castShadow = false;
       }
@@ -3714,7 +3831,9 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
                                 'ow3medium', 'ow3let', 'hanumanroar', 'goldsting', 'drumroll3', 'drum3', 'gong3', 'md3chant',
                                 'swordswish', 'as3back',
                                 // v21.8: the roar's lunge — the medium's gasp, the rush, the hit, the crash, the swell
-                                'md3gasp', 'hanulunge', 'hanuhit', 'hanucrash', 'goldswell']);
+                                'md3gasp', 'hanulunge', 'hanuhit', 'hanucrash', 'goldswell',
+                                // v21.10: the masters' gallery (played by the engine's window, by these names)
+                                'galopen', 'galflip', 'galread', 'galdone', 'galclose', 'galbed']);
 
     /* ------------------------------------------------------------ the phases */
     const inShrine = (x) => x < -100;
@@ -3778,7 +3897,12 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       masters: { line: 'z3look4' }
     };
     const LOOK_N = Object.keys(LOOKS).length;
-    const browseMark = () => { if (kit) kit.setPhase(looked.size ? 'browse:' + [...looked].join(',') : 'browse'); };
+    /* (v21.10: and the gallery's pages read so far, as `g.<id>` — a Continue opens it where he left off) */
+    const browseMark = () => {
+      if (!kit) return;
+      const tags = [...looked, ...[...galSeen].map(id => 'g.' + id)];
+      kit.setPhase(tags.length ? 'browse:' + tags.join(',') : 'browse');
+    };
     function lookAt(k) {
       if (phase !== 'browse') return false;
       if (looked.has(k)) return false;
@@ -3796,6 +3920,54 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       owner.look = 1;
       queueGap(0.4);
       queueLine('ow3call', () => talk(owner, SECS.ow3call), 1, panAt(OWN.x, OWN.z));
+    }
+
+    /* v21.10 · THE MASTERS' GALLERY (Chad: "when the player interacts with the
+       row of portraits by clicking or E on it, it will open a new window frame
+       like a gallery mode ... The player must go through this entire experience
+       as part of the objective, before the player can proceed to other
+       objectives"). The row opens the engine's gallery (kit.gallery, the
+       twenty-ninth seam) on the first page not yet read; the masters count as
+       looked at — and so the browse can end and the owner call — ONLY when it
+       closes with every page read. Closed early, the row stays marked and opens
+       again on the first unread page; what was read rides the phase string
+       (`browse:wall,g.thuad,g.tim`), so a Continue opens it where he left off.
+       The words are the sheet's (`words`: galLabel, mThuadName ...); the
+       photographs are the wall's own, unaltered (v21.8). The order is Chad's. */
+    const GAL = [
+      { id: 'thuad',   k: 'Thuad',   images: [{ key: 'mstr_lpthuad', mime: 'image/png', own: true }] },
+      { id: 'tim',     k: 'Tim',     images: [{ key: 'mstr_lptimpray', mime: 'image/jpeg' }, { key: 'mstr_lptimbench', mime: 'image/jpeg' }] },
+      { id: 'toh',     k: 'Toh',     images: [{ key: 'mstr_somdejtoh', mime: 'image/png', own: true }] },
+      { id: 'mun',     k: 'Mun',     images: [{ key: 'mstr_achanmun', mime: 'image/png', own: true }] },
+      { id: 'phiboon', k: 'Phiboon', images: [{ key: 'mstr_lpphiboon', mime: 'image/jpeg' }] }
+    ];
+    const GAL_SOUNDS = { open: ['galopen', 0.8], flip: ['galflip', 0.7], read: ['galread', 0.45],
+                         done: ['galdone', 0.85], close: ['galclose', 0.6] };
+    const galSeen = new Set();
+    let galUp = false;
+    const galW = (k, f) => W['m' + k + f] || '';
+    function galleryPages() {
+      return GAL.map(g => ({
+        id: g.id, name: galW(g.k, 'Name'), aka: galW(g.k, 'Aka'), plaque: galW(g.k, 'Thai'),
+        lived: galW(g.k, 'Lived'), era: galW(g.k, 'Era'), temple: galW(g.k, 'Temple'),
+        known: [1, 2, 3].map(n => galW(g.k, 'Known' + n)).filter(Boolean),
+        story: [1, 2, 3].map(n => galW(g.k, 'Story' + n)).filter(Boolean),
+        images: g.images
+      }));
+    }
+    function galleryBegin() {
+      if (phase !== 'browse' || looked.has('masters') || galUp || !kit || !kit.gallery) return false;
+      const answer = kit.gallery({ pages: galleryPages(), label: W.galLabel, seen: [...galSeen], sounds: GAL_SOUNDS });
+      if (!kit.galleryOpen()) return false;              // refused (another window up, or not in play)
+      galUp = true;
+      answer.then(r => {
+        galUp = false;
+        if (!r) return;                                  // torn down under it (a Retry): reset() clears the reading
+        for (const id of r.seen) galSeen.add(id);
+        if (r.seenAll && phase === 'browse') lookAt('masters');
+        else browseMark();
+      });
+      return true;
     }
 
     /* 2 · THE GIFT — at his counter the owner lifts the acrylic lid off the
@@ -4653,9 +4825,10 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
         enabled: () => phase === 'browse', onInteract() { return lookAt('altar'); } },
       /* (v21.9: the row's middle, its mark in the space between the row and the shelf-shrine over it — on the row it
          would stand on a master's face, under it it read as the owner's) */
-      { id: 'lkMasters', lookKey: 'masters', pos: { x: SHOP.x1 - 0.05, y: MSTR.y0 + MSTR.h / 2, z: MSTR.z }, radius: 9, aim: 0.26, pressAim: true, once: true, markFar: 9, markY: MSTR.h / 2 + 0.11, prompt: W.lookMasters,
-        hits: tapBox(SHOP.x1 - 0.2, MSTR.y0 - 0.03, MSTR.z - 1.25, SHOP.x1, MSTR.y0 + MSTR.h + 0.04, MSTR.z + 1.25),   // the five portraits, one row
-        enabled: () => phase === 'browse', onInteract() { return lookAt('masters'); } },
+      /* (v21.10: it opens the masters' gallery, and is not `once` — it stays until every page has been read) */
+      { id: 'lkMasters', lookKey: 'masters', pos: { x: SHOP.x1 - 0.05, y: MSTR.y0 + MSTR.h / 2, z: MSTR.z }, radius: 9, aim: 0.26, pressAim: true, markFar: 9, markY: MSTR.h / 2 + 0.11, prompt: W.lookMasters,
+        hits: tapBox(SHOP.x1 - 0.2, MSTR.y0 - 0.03, MSTR.z - MSTR.half - 0.04, SHOP.x1, MSTR.y0 + MSTR.h + 0.04, MSTR.z + MSTR.half + 0.04),   // the six portraits, one row (v21.10: its measured length)
+        enabled: () => phase === 'browse' && !looked.has('masters'), onInteract() { return galleryBegin(); } },
       { id: 'owner', pos: { x: OWN.x - 0.05, y: 1.45, z: OWN.z }, radius: 2.7, prompt: W.hotOwner, markY: 0.3,   // (just over his head: at the default it stood under the objective box from the counter — VP-4)
         enabled: () => phase === 'owner', onInteract() { return giftBegin(); } },
       { id: 'mat', pos: { x: MAT.x, y: 1.0, z: MAT.z }, radius: 1.5, prompt: W.hotMat, markY: -0.55,   // (just over the mat's glow: 1.45 m up it read as the altar's, beside a second marker — VP-5)
@@ -4684,7 +4857,7 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
        monk's last word, through the trance and into its film; the dance's own
        cloth and feet. All four go to nothing at the shrine. */
     let danceTo = 0, rite = false;
-    const mixK = { mall: 0.3, chant: 0, dance: 0, move: 0, lor: 0, room: 0, bed: 0, rit: 0 };
+    const mixK = { mall: 0.3, chant: 0, dance: 0, move: 0, lor: 0, room: 0, bed: 0, rit: 0, gal: 0 };
     let mixCard = false;
     function mixBeds(wdt, st) {
       const atShop = !inShrine(yaw.position.x);
@@ -4721,9 +4894,13 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       const rit = inB && !card && (roarDone || rite) ? 0.5 : 0;
       mixK.lor = ease(mixK.lor || 0, lor, 0.8); mixK.room = ease(mixK.room || 0, room, 0.8);
       mixK.bed = ease(mixK.bed || 0, bed, bed > (mixK.bed || 0) ? 2.0 : 0.6); mixK.rit = ease(mixK.rit || 0, rit, 1.2);
+      /* v21.10: while the masters' gallery is open its own bed rises and the shop's radio and the mall sink under it */
+      const galTo = st === 'gallery' ? 0.55 : 0;
+      mixK.gal = ease(mixK.gal || 0, galTo, galTo > (mixK.gal || 0) ? 1.0 : 0.6);
+      const galUnder = 1 - 0.8 * THREE.MathUtils.clamp((mixK.gal || 0) / 0.55, 0, 1);
       const B = DATA.ambience.beds;
-      B[0][1] = mixK.mall; B[1][1] = mixK.chant; B[2][1] = mixK.dance; B[3][1] = mixK.move;
-      B[4][1] = mixK.lor; B[5][1] = mixK.room; B[6][1] = mixK.bed; B[7][1] = mixK.rit;
+      B[0][1] = mixK.mall * galUnder; B[1][1] = mixK.chant * galUnder; B[2][1] = mixK.dance; B[3][1] = mixK.move;
+      B[4][1] = mixK.lor; B[5][1] = mixK.room; B[6][1] = mixK.bed; B[7][1] = mixK.rit; B[8][1] = mixK.gal;
     }
     const ZONE_T0 = wallNow(), _cq = new THREE.Quaternion();
     function lifeTick(wdt) {
@@ -4811,7 +4988,10 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       /* v21.9: a Continue in the browse lands on the same count — the looks
          already pressed are spent (their marks gone, their lines not said again) */
       if (p === 'browse' && tag[1]) {
-        for (const k of tag[1].split(',')) if (LOOKS[k]) looked.add(k);
+        for (const k of tag[1].split(',')) {
+          if (LOOKS[k]) looked.add(k);
+          else if (k.startsWith('g.')) galSeen.add(k.slice(2));   // v21.10: the gallery's pages read
+        }
         for (const h of hotspots) if (h.lookKey && looked.has(h.lookKey)) h.done = true;
       }
       setPhase(p);
@@ -4831,6 +5011,7 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       booted = false; preplaced = false; dayClock.t = 0; lastWall = 0;
       looked.clear(); called = false; gifted = false; wornDone = false; seated = null; turning = null; facing = null;
       bowing = null; chant = null; trance = null; celebrate = null; curTgt = 0; browseT0 = -1;
+      galSeen.clear(); galUp = false;                            // v21.10: the masters' gallery unread again
       objWas = null; danceTo = 0; danceHalt = false; passerHeld = false; filmG.visible = false; passer.group.position.z = PASS.z;
       inc = null; sitB = null; walkB = null; bowB = null; roarDone = false; rite = false; jossHold(false);
       shrineRun++; shrDark = false;                              // (a warm still running belongs to the run before)
@@ -4965,7 +5146,8 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       arrivals: [{ what: "the shrine's arrival (the trance film puts him at its door)", x: ARRIVE.x, z: ARRIVE.z }],   // walktest floods the shrine from here
       get phase() { return phase; },
       setPhase, applyPhase, after, dayClock, sayLine,
-      info: () => ({ phase, t: +dayClock.t.toFixed(2), queued: lineQ.length, heard: [...heard],
+      galleryPages, galleryBegin,                                  // v21.10: for probes — the pages as the window gets them
+      info: () => ({ phase, t: +dayClock.t.toFixed(2), queued: lineQ.length, heard: [...heard], galSeen: [...galSeen], galUp,
                      until: +speak.until.toFixed(2), pending: speak.pending ? speak.pending.name : null,
                      looked: [...looked], called, gifted, worn: wornNow(), seated, celebrate,
                      trance: trance ? { t: +trance.t.toFixed(1), tgt: curTgt, ev: trance.ev, done: trance.done } : null,

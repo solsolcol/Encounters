@@ -80,7 +80,8 @@ const WHERE = {
   item: 'Equipment panel — the items',
   card: 'Outcome + teaching card — under the stat rows',
   unlock: 'The ITEM UNLOCKED splash (v14.7)',
-  rarity: 'Equipment panel — an item\'s rarity, under its name (v14.11)'
+  rarity: 'Equipment panel — an item\'s rarity, under its name (v14.11)',
+  gallery: 'The gallery window — pages to turn, a picture and its story (v21.10)'
 };
 /* v6.0: where a chapter's rows belong — episode 1's `chN` as always, and a
    later episode's `eNcM` (docs/EPISODES-PLAN.md) — and the notes for the
