@@ -781,6 +781,10 @@
         new THREE.MeshStandardMaterial({ color: 0x3a3f46, roughness: 0.9 }));
       slippers.position.set(0, 0.025, 0.035);
       mother.add(coat, shoulders, armL, armR2, neck, head, hair, bun, calves, slippers);
+      /* v21.16: NEVER DRAWN. She stood only until her model landed (v4.7) — scene B's mother, made of a cylinder,
+         boxes and balls, if the download failed. Chad's rule is no block figures anywhere: every part is hidden from
+         the start and stays as the handle the nod fallback turns, so a missing file leaves the doorway empty */
+      for (const c of mother.children) c.visible = false;
       mother.userData.head = head;
     }
     mother.position.set(MUM.x, 0, MUM.z);

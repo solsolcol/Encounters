@@ -779,8 +779,8 @@
       group.position.set(opts.x, 0, opts.z); group.rotation.y = opts.ry || 0;
       (opts.parent || world).add(group);
       const proxy = new THREE.Mesh(new THREE.CapsuleGeometry(0.2, opts.height - 0.4, 4, 8), matProxy);
-      proxy.position.y = opts.height / 2; proxy.castShadow = !LOW; group.add(proxy);
-      if (opts.noProxy) proxy.visible = false;
+      proxy.position.y = opts.height / 2; proxy.castShadow = false; group.add(proxy);
+      proxy.visible = false;   // (v21.16: never drawn — a capsule was a block of a person; until the model lands, and for good if it never does, the place stands empty)
       const rig = { key, group, proxy, model: null, mixer: null, acts: null, cur: null, head: null,
                     ready: false, height: opts.height, idle: opts.idle || null };
       rig.play = (name, ts = 1, fade = 0.34, once = false, at) => {
@@ -921,7 +921,7 @@
       group.position.set(x, 0, z); group.rotation.y = opts.ry || 0;
       world.add(group);
       const proxy = new THREE.Mesh(new THREE.CapsuleGeometry(0.2, height - 0.4, 4, 8), matProxy);
-      proxy.position.y = height / 2; proxy.castShadow = !LOW; group.add(proxy);
+      proxy.position.y = height / 2; proxy.castShadow = false; proxy.visible = false; group.add(proxy);   // (v21.16: never drawn — a capsule was a block of a person; until the model lands, and for good if it never does, the place stands empty)
       const man = { group, proxy, model: null, ready: false, height };
       loadGltf('fboaim').then(gltf => {
         if (!alive) return;
@@ -1418,7 +1418,9 @@
       }
       cycWant = 1;
       cycAlpha(fadeIn ? 0.02 : 1);               // a scene gets him whole on its first frame
-      if (cyc.fbMat) cyc.fbMat.opacity = cyc.ready && cyc.model ? 0 : GHOST_A;
+      /* (v21.16: the two rings and the column are never drawn — they were a block figure of a rider, and Chad's rule is
+         none anywhere; they stay only as what a round can hit, so a missing file costs the rider, never the beat's logic) */
+      if (cyc.fbMat) cyc.fbMat.opacity = 0;
     }
     function cycEnd(fadeOut) { cycOn = false; cycWant = 0; if (!fadeOut) cycAlpha(0); }
     function cycFrame(dt) {

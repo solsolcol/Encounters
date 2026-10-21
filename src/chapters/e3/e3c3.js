@@ -1295,7 +1295,9 @@
       parent.add(group);
       const ph = opts.seated ? 1.1 : opts.kneel ? 0.95 : opts.height;
       const proxy = new THREE.Mesh(new THREE.CapsuleGeometry(0.2, Math.max(0.1, ph - 0.4), 4, 8), matProxy);
-      proxy.position.y = ph / 2 + 0.05; proxy.castShadow = !LOW; group.add(proxy);
+      /* (v21.16: never drawn — until the model lands, and for good if it never does, the place is empty: a capsule
+         stood there before, a block of a person, and Chad's rule is no block figures anywhere) */
+      proxy.position.y = ph / 2 + 0.05; proxy.castShadow = false; proxy.visible = false; group.add(proxy);
       const rig = { key, group, proxy, model: null, mixer: null, acts: null, cur: null, head: null, hips: null,
                     ready: false, height: opts.height, idle: opts.idle || null, floor: opts.y || 0,
                     headWrote: null, nod: 0, nodT: 0, nodW: 0, lookYaw: 0, lookPitch: 0, look: opts.look || 0, lookK: 0,
@@ -1911,7 +1913,7 @@
       const cushM = new THREE.MeshStandardMaterial({ color: 0xa65218, roughness: 0.93 });
       box(0.7, CUSH_TOP, 0.66, 0, CUSH_TOP / 2, 0.07, cushM, g0);
       box(0.72, 0.012, 0.68, 0, 0.006, 0.07, matGold, g0, false);
-      const proxy = new THREE.Mesh(new THREE.CapsuleGeometry(0.22, 0.42, 4, 8), matProxy); proxy.position.y = 0.55; proxy.castShadow = !LOW; g0.add(proxy);
+      const proxy = new THREE.Mesh(new THREE.CapsuleGeometry(0.22, 0.42, 4, 8), matProxy); proxy.position.y = 0.55; proxy.castShadow = false; proxy.visible = false; g0.add(proxy);   // (v21.16: never drawn)
       solids.push(hidBox(0.95, 1.0, 0.78, MONK.x, 0.5, MONK.z - 0.07));      // nobody walks through the monk (world coords: his front is -z)
       /* (his scan at 0.28 — 50k of 179k, every take kept, tools/permcut.mjs: photographed side by side at 1.4 m the two
          faces are the same face, and the full one was 179k triangles in every view of the shop) */
@@ -2762,11 +2764,9 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
          white Wuchang, a general on his tiger, the black Wuchang — facing the door across the niche (DEI). Two levels
          over ONE set of vertices and ONE set of maps (tools/lodpair.mjs, masters/v21.11/make.sh): every one of the
          scan's 593k triangles within DEI.near of its middle, a permissive cut of 148k beyond it (photographed side by
-         side from 3 m and from the stool: the same row). Until it lands the four drawn images stand in on the step,
-         so a failed download costs the row, never the altar (v4.7) — the curtain waits for it, so a player who has
-         the file never sees them. */
-      const deiStandIn = [[-1.0, 0x2a6a3a, 0xe8c08a, 0.6], [-0.36, 0xb8241a, 0xd8a070, 0.7], [0.36, 0xd8a83a, 0xe8c08a, 0.7], [1.0, 0x1a2a5a, 0x6a4a2a, 0.6]]
-        .map(([x, robe, face, h], i) => mkDeity(g, x, ALT.top + DEI.top, DEI.z, h, robe, face, i));
+         side from 3 m and from the stool: the same row). The curtain waits for it. (v21.16: the four images drawn from
+         cylinders and balls that stood in on the step until it landed are gone — Chad's rule, no block figures
+         anywhere; a failed download costs the row and leaves the step bare, never a drawn figure in its place.) */
       parseOnce('taoistrow').then(gl => {
         if (!alive) return;
         const lod = new THREE.LOD(); lod.position.set(0, ALT.top + DEI.top + 0.003, DEI.z); lod.scale.setScalar(DEI.s); g.add(lod);
@@ -2783,7 +2783,6 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
           });
           lod.addLevel(m, d);
         }
-        for (const s of deiStandIn) s.visible = false;
       }).catch(err => { console.warn('taoistrow failed to load', err); ctx.loadFail && ctx.loadFail('taoistrow', err); });
       // the red lamps: a lotus lamp each side on the cabinet, two electric candles on the step
       for (const s of [-1, 1]) {
@@ -3068,20 +3067,6 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       const om = new THREE.MeshStandardMaterial({ color: 0xf08a1a, roughness: 0.55 });
       for (let i = 0; i < 5; i++) { const o = new THREE.Mesh(new THREE.SphereGeometry(0.04, 10, 8), om); o.position.set(i < 4 ? Math.cos(i * 1.57) * 0.05 : 0, i < 4 ? 0.06 : 0.12, i < 4 ? Math.sin(i * 1.57) * 0.05 : 0); g.add(o); }
       owned.push({ dispose: () => om.dispose() });
-    }
-    /* a temple image in miniature, built (robe, face, crown and a halo behind) */
-    function mkDeity(parent, x, y, z, h, robe, face, i) {
-      const g = new THREE.Group(); g.position.set(x, y, z); parent.add(g);
-      const rm = new THREE.MeshStandardMaterial({ color: robe, roughness: 0.45, metalness: 0.15 }), fm = new THREE.MeshStandardMaterial({ color: face, roughness: 0.5 });
-      owned.push({ dispose: () => { rm.dispose(); fm.dispose(); } });
-      cyl(h * 0.32, h * 0.36, h * 0.08, 0, h * 0.04, 0, matGold, 14, g);
-      const body = new THREE.Mesh(new THREE.CylinderGeometry(h * 0.18, h * 0.3, h * 0.55, 14), rm); body.position.y = h * 0.36; g.add(body);
-      box(h * 0.42, h * 0.06, h * 0.2, 0, h * 0.5, h * 0.06, matGold, g, false);
-      const head = new THREE.Mesh(new THREE.SphereGeometry(h * 0.11, 12, 10), fm); head.position.y = h * 0.74; g.add(head);
-      if (i % 2) { const beard = new THREE.Mesh(new THREE.ConeGeometry(h * 0.06, h * 0.16, 8), matInk); beard.position.set(0, h * 0.62, h * 0.07); beard.rotation.x = Math.PI; g.add(beard); }
-      const crown = new THREE.Mesh(new THREE.CylinderGeometry(h * 0.08, h * 0.11, h * 0.12, 10), matGold); crown.position.y = h * 0.88; g.add(crown);
-      const halo = new THREE.Mesh(new THREE.CircleGeometry(h * 0.2, 20), matGold); halo.position.set(0, h * 0.78, -h * 0.13); g.add(halo);
-      return g;
     }
     /* a red paper lantern, lit from within (unlit material: it is the light) — its two shared materials are declared
        at the top of build(): the street's lanterns are made before this point, and a `let` here was still in its
@@ -3617,8 +3602,101 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
        once for the night (ending C's: unlit materials, the cabin lit) and once for the morning (the film's: lit
        materials, dark glass). The night's keeps what the box bus had: its lamps' glow, the beam they throw on the road
        ahead and the cabin's light spilling under it */
+    /* v21.16 · PEOPLE IN THE SEATS, NEVER BLOCKS (Chad: "You should never ever use those generated fake block figures
+       in any part of the game. They ruin the entire look of the game. All your generated block figures must all be
+       replaced by real 3d model characters."). The buses and the coach drew their passengers as a cylinder, a ball and
+       a cap. Each is one of the chapter's own seated people now — the shop auntie, the youth, the clapping man — posed
+       ONCE on the frame they sit in and their skin BAKED to plain geometry (every vertex and its normal carried through
+       the skin, the hips at the origin): a still, a mesh per part, no skeleton and no mixer, nothing to tick, cloned
+       into every seat a builder lists. Until a file lands the seat is empty — never a block in its place. */
+    const PASSENGERS = [
+      { key: 'sitclap', height: 1.22, idle: SIT_W, at: 0.0, sizeAt: 0.15 },
+      { key: 'sitshout', height: 1.27, idle: SHOUT, at: 0.0 },
+      { key: 'sitman', height: 1.25, idle: ASST_CLAP, at: ASST_REST }];
+    const _sp = new THREE.Vector3(), _sq = new THREE.Vector3(), _sN = new THREE.Matrix3(), stills = new Map();
+    const GET = ['getX', 'getY', 'getZ', 'getW'];
+    const copyAttr = (a) => {                         // (component by component: an interleaved or quantized one reads right)
+      const out = new Float32Array(a.count * a.itemSize);
+      for (let i = 0; i < a.count; i++) for (let k = 0; k < a.itemSize; k++) out[i * a.itemSize + k] = a[GET[k]](i);
+      return new THREE.BufferAttribute(out, a.itemSize);
+    };
+    function sitterStill(spec) {
+      if (stills.has(spec.key)) return stills.get(spec.key);
+      const p = parseOnce(spec.key).then((gltf) => {
+        if (!alive) return null;
+        const g = cloneSkinned(gltf.scene), holder = new THREE.Group(); holder.add(g);
+        const mixer = (gltf.animations || []).length ? new THREE.AnimationMixer(g) : null;
+        const pose = (name, at) => {
+          const clip = mixer && gltf.animations.find(c => c.name === name); if (!clip) return;
+          mixer.stopAllAction(); const a = mixer.clipAction(clip); a.play(); a.time = clip.duration * at; a.paused = true; mixer.update(0);
+        };
+        // sized as mkRig sizes them (the bone span to the crown, on their own take), then posed on the frame they sit in
+        pose(spec.sizeOn || spec.idle, spec.sizeAt ?? spec.at ?? 0);
+        holder.updateMatrixWorld(true);
+        let lo = Infinity, hi = -Infinity, crown = false, hips = null;
+        g.traverse(o => {
+          if (!o.isBone) return;
+          o.getWorldPosition(_sp); lo = Math.min(lo, _sp.y); hi = Math.max(hi, _sp.y);
+          if (/HeadTop_End|head_end/.test(o.name)) crown = true;
+          if (!hips && /Hips(_\d+)?$/.test(o.name)) hips = o;
+        });
+        if (isFinite(lo) && hi > lo) g.scale.multiplyScalar(spec.height / ((hi - lo) / (crown ? 1 : 0.935)));
+        pose(spec.idle, spec.at ?? 0);
+        holder.updateMatrixWorld(true);
+        const hp = hips ? hips.getWorldPosition(new THREE.Vector3()) : new THREE.Vector3();
+        const parts = []; let seat = Infinity;
+        g.traverse(o => {
+          if (!o.isMesh || !o.geometry.attributes.position) return;
+          const src = o.geometry, pos = src.attributes.position, nrm = src.attributes.normal, n = pos.count;
+          const P = new Float32Array(n * 3), N = new Float32Array(n * 3);
+          _sN.getNormalMatrix(o.matrixWorld);
+          for (let i = 0; i < n; i++) {
+            _sp.fromBufferAttribute(pos, i);
+            if (nrm) _sq.fromBufferAttribute(nrm, i).add(_sp);           // (a skin is affine: T(p + n) − T(p) is n carried by it)
+            if (o.isSkinnedMesh) { o.applyBoneTransform(i, _sp); if (nrm) o.applyBoneTransform(i, _sq); }
+            if (nrm) { _sq.sub(_sp).applyMatrix3(_sN).normalize(); N[i * 3] = _sq.x; N[i * 3 + 1] = _sq.y; N[i * 3 + 2] = _sq.z; }
+            _sp.applyMatrix4(o.matrixWorld).sub(hp);
+            P[i * 3] = _sp.x; P[i * 3 + 1] = _sp.y; P[i * 3 + 2] = _sp.z;
+            if (Math.abs(_sp.x) < 0.14 && Math.abs(_sp.z) < 0.14 && _sp.y < seat) seat = _sp.y;   // what sits on the seat: the skin under the hips
+          }
+          const geo = new THREE.BufferGeometry();
+          geo.setAttribute('position', new THREE.BufferAttribute(P, 3));
+          if (nrm) geo.setAttribute('normal', new THREE.BufferAttribute(N, 3));
+          for (const k of ['uv', 'uv1', 'color']) if (src.attributes[k]) geo.setAttribute(k, copyAttr(src.attributes[k]));
+          if (src.index) geo.setIndex(new THREE.BufferAttribute(src.index.array.slice(), 1));
+          for (const gr of src.groups) geo.addGroup(gr.start, gr.count, gr.materialIndex);
+          if (!nrm) geo.computeVertexNormals();
+          geo.computeBoundingSphere();
+          /* by day his own materials (cloned: nothing a scene does to the shop's rigs reaches him); by night unlit and
+             warm, lit by the cabin's light as the bus's own lining is */
+          const one = (m) => m.clone(), night = (m) => new THREE.MeshBasicMaterial({ map: m.map || null, color: 0xdcc8aa, fog: true, side: m.side,
+                                                                                transparent: m.transparent, alphaTest: m.alphaTest || 0 });
+          const mats = Array.isArray(o.material) ? o.material : [o.material];
+          parts.push({ geo, day: mats.length > 1 ? mats.map(one) : one(mats[0]), night: mats.length > 1 ? mats.map(night) : night(mats[0]) });
+        });
+        if (mixer) { mixer.stopAllAction(); mixer.uncacheRoot(g); }
+        return parts.length ? { parts, seatDy: isFinite(seat) ? seat : -0.1 } : null;
+      }).catch(err => { console.warn('e3c3: passenger ' + spec.key + ' failed', err); return null; });
+      stills.set(spec.key, p);
+      return p;
+    }
+    /* each seat a builder lists gets one, dealt round the three from `deal` (a phone seats about half of them); the
+       seat's pan under the skin his hips carry, facing the front of the bus (its −x) */
+    function seatPeople(g, night, deal) {
+      const seats = g.userData.seats || [];
+      const use = LOW ? seats.filter((s, i) => i % 2 === 0) : seats;
+      use.forEach((s, i) => {
+        sitterStill(PASSENGERS[(i + deal) % PASSENGERS.length]).then(st => {
+          if (!alive || !st) return;
+          const p = new THREE.Group(); p.position.set(s.x, s.y - st.seatDy - 0.012, s.z); p.rotation.y = -Math.PI / 2;
+          for (const part of st.parts) { const m = new THREE.Mesh(part.geo, night ? part.night : part.day); m.castShadow = false; m.receiveShadow = false; p.add(m); }
+          g.add(p);
+        });
+      });
+    }
     function makeBus(parent, day) {
       const g = makeCityBus(THREE, cnv, tex, day); g.visible = false; parent.add(g);
+      seatPeople(g, !day, day ? 0 : 1);
       if (!day) {
         for (const s of [-1, 1]) {
           const hl = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.9), addGlow(glowWarm, 0.95)); hl.position.set(-6.17, 0.78, s * 0.92); hl.rotation.y = -Math.PI / 2; g.add(hl);
@@ -3633,6 +3711,7 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
        makeTourCoach below builds it; turned to face east, the way the near lane runs, so its door is on the kerb */
     function makeCoach(parent, x, z) {
       const g = makeTourCoach(THREE, cnv, tex); g.position.set(x, 0, z); g.rotation.y = Math.PI; parent.add(g);
+      seatPeople(g, false, 2);
       return g;
     }
     const busG = makeBus(shrG, false);
@@ -3980,7 +4059,7 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
 
         // ---- the coach bay's second coach (a clone of the first: the same geometry and materials, no second set of
         //      canvases) — a phone never sees this far west, so it goes there only
-        if (!LOW) { const c2 = coachA.clone(); c2.position.x = -34.5; MALLX.add(c2); }
+        if (!LOW) { const c2 = coachA.clone(); c2.position.x = -34.5; MALLX.add(c2); seatPeople(c2, false, 1); }   // (v21.16: a clone carries the seats, not the people seated after it)
 
         // ---- motorcycles at a lot by the near kerb, east of the zebra's zigzags (each built once, merged, cloned)
         { const blk = fStd({ color: 0x18191b, roughness: 0.6 }), chr = fStd({ color: 0xb8bcc0, roughness: 0.3, metalness: 0.8 }), seat = fStd({ color: 0x201e1d, roughness: 0.8 });
@@ -4115,10 +4194,20 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
           merged(est);
         }).catch(err => { console.warn('hdb failed to load', err); ctx.loadFail && ctx.loadFail('hdb', err); });
         { const lawn = fStd({ color: 0x5e7e3e, roughness: 1 });
-          for (const [x, z, w, d] of [[78, -64, 70, 56], [-30, -70, 40, 30], [40, -96, 40, 26]]) { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d), lawn); m.rotation.x = -Math.PI / 2; m.position.set(x, 0.006, z); MALLX.add(m); } }
+          for (const [x, z, w, d] of [[78, -64, 70, 56], [-30, -70, 40, 30], [40, -96, 40, 26]]) { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d), lawn); m.rotation.x = -Math.PI / 2; m.position.set(x, 0.006, z); MALLX.add(m); }
+          /* v21.16: the gap between the mall and the Tower (x 30–39) looked straight down to the estate over bare grey
+             ground, at the right of every wide frame the film holds — a garden now: a paved way along the mall's end
+             shops, a lawn, a planter kerb on the pavement's edge, and trees down it (the stand below) */
+          for (const [x, z, w, d] of [[35.6, -13, 6.6, 24], [36.6, -37, 12.8, 24]]) { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d), lawn); m.rotation.x = -Math.PI / 2; m.position.set(x, 0.008, z); MALLX.add(m); }
+          const way = new THREE.Mesh(new THREE.PlaneGeometry(2.1, 48), fStd({ color: 0xb4ab9a, roughness: 0.92 })); way.rotation.x = -Math.PI / 2; way.position.set(31.3, 0.01, -24.5); MALLX.add(way);
+          box(6.4, 0.42, 0.3, 35.6, 0.21, -0.3, fStd({ color: 0xc9c2b2, roughness: 0.9 }), MALLX, false); }
         if (plantTrees) treeStands.push(plantTrees(MALLX, [[70, -30], [84, -34], [104, -36], [60, -70], [92, -66], [106, -92], [52, -84], [124, -60],
                                                            [-104, 3.6], [-138, 3.8], [-170, 3.6], [-60, 19.6], [-92, 20.2], [-126, 19.8], [-162, 20.4]]
           .map(([x, z], i) => ({ x, y: 0, z, h: 6.5 + (i % 3) * 1.6 })), { seed: 151, tint: 0x8a9a7a, lowKeep: 0.6 }));
+        /* v21.16: the garden's trees, their own stand — SMALL (4.4–5.6 m: a crown runs to its own height across, and the
+           gap is 9 m between two walls), down its middle; none on a phone, whose frame never reaches the gap */
+        if (plantTrees) treeStands.push(plantTrees(MALLX, [[34.6, -5.0], [36.2, -11.5], [34.8, -18], [36.4, -31], [35.0, -38], [36.2, -45]]
+          .map(([x, z], i) => ({ x, y: 0, z, h: 4.4 + (i % 3) * 0.6 })), { seed: 152, tint: 0x8a9a7a, lowKeep: 0 }));
       }
     }
 
@@ -7919,20 +8008,18 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
     for (const z of [-0.62, 0.62]) mk(new THREE.CylinderGeometry(0.018, 0.018, P.win.x1 - P.win.x0 - 0.4, 8), poleMat, (P.win.x0 + P.win.x1) / 2, P.win.y1 - 0.14, z, 0, 0, Math.PI / 2);
     const strip = glow(day ? 0xdfe6ea : 0xfff6dc);
     for (const z of [-0.5, 0.5]) mk(new THREE.PlaneGeometry(P.win.x1 - P.win.x0 - 0.6, 0.12), strip, (P.win.x0 + P.win.x1) / 2, P.win.y1 - 0.06, z, 0, Math.PI / 2);   // (the tunnel's ceiling is 0.05 under the band's top)
-    /* a few people: a shirt, shoulders, a face and a head of hair each (they read as people through the glass) */
-    const R = rng(day ? 7 : 11), skin = M({ color: day ? 0xb88a68 : 0xc49474, roughness: 0.8 }), hair = M({ color: 0x141210, roughness: 0.9 });
-    const shirts = [0xe8e6e0, 0x3c5a8c, 0xb83a32, 0x2e6e4a, 0x6c6a72].map(c => M({ color: c, roughness: 0.9 }));
-    const pHead = new THREE.SphereGeometry(0.1, 12, 10), pHair = new THREE.SphereGeometry(0.104, 12, 8, 0, Math.PI * 2, 0, Math.PI * 0.55),
-          pBody = new THREE.CylinderGeometry(0.15, 0.19, 0.46, 10), pNeck = new THREE.CylinderGeometry(0.045, 0.05, 0.08, 8);
-    const taken = new Set();
+    /* a few people. v21.16: the builder lists their SEATS only — the pan each sits on, facing the front — and build()
+       puts one of the chapter's real seated people in each (sitterStill); it draws no body of its own (they were a
+       cylinder, a ball and a cap: Chad, "never ever use those generated fake block figures"). The same seeded stream
+       as before, a draw where a shirt was picked, so the people sit where the photographed ones sat */
+    const R = rng(day ? 7 : 11), taken = new Set(), seatList = [];
     for (let i = 0; i < 7; i++) {
       const r = 1 + Math.floor(R() * (rows.length - 2)), c = Math.floor(R() * 4), key = r * 4 + c;
       if (taken.has(key)) continue; taken.add(key);
-      const x = rows[r] + 0.12, z = [-0.88, -0.44, 0.44, 0.88][c], y = P.win.y0;
-      mk(pBody, shirts[Math.floor(R() * shirts.length)], x, y + 0.24, z);
-      mk(pNeck, skin, x, y + 0.5, z); mk(pHead, skin, x - 0.01, y + 0.62, z);
-      const hr = mk(pHair, hair, x + 0.01, y + 0.635, z); hr.rotation.z = 0.35;
+      R();
+      seatList.push({ x: rows[r] + 0.12, y: P.win.y0 - 0.06, z: [-0.88, -0.44, 0.44, 0.88][c] });   // (the seat back's foot: its pan)
     }
+    g.userData.seats = seatList;
     /* the front: the split windscreen with its wipers, the destination display, headlamps, indicators, the bumper,
        the grille and the plate */
     /* (the bevel puts every outer wall 0.05 outside the profile: the front glass's line runs (−6.05, 1.18) to (−5.98, 2.78)) */
@@ -8069,13 +8156,15 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
     }
     seats.count = covers.count = n; g.add(seats, covers);
     const strip = glow(0xdfe6ea); mk(new THREE.PlaneGeometry(P.win.x1 - P.win.x0 - 0.6, 0.1), strip, (P.win.x0 + P.win.x1) / 2, P.win.y1 - 0.06, 0, 0, Math.PI / 2);
-    const R = rng(23), skin = M({ color: 0xb88a68, roughness: 0.8 }), hair = M({ color: 0x141210, roughness: 0.9 });
-    const shirts = [0xe8e6e0, 0x3c5a8c, 0xb83a32, 0x6c6a72].map(c => M({ color: c, roughness: 0.9 }));
-    const pHead = new THREE.SphereGeometry(0.1, 12, 10), pHair = new THREE.SphereGeometry(0.104, 12, 8, 0, Math.PI * 2, 0, Math.PI * 0.55), pBody = new THREE.CylinderGeometry(0.15, 0.19, 0.46, 10);
+    /* (v21.16: the seats only, as the bus's — build() seats real people in them; the same seeded stream, so they sit
+       where the photographed ones sat, and no seat is taken twice) */
+    const R = rng(23), seatsOut = [], took = new Set();
     for (let i = 0; i < 4; i++) {
-      const x = rows[1 + Math.floor(R() * (rows.length - 2))] + 0.14, z = [-0.9, -0.46, 0.46, 0.9][Math.floor(R() * 4)], y = P.win.y0;
-      mk(pBody, shirts[i % shirts.length], x, y + 0.26, z); mk(pHead, skin, x - 0.01, y + 0.64, z); const hr = mk(pHair, hair, x + 0.01, y + 0.655, z); hr.rotation.z = 0.35;
+      const x = rows[1 + Math.floor(R() * (rows.length - 2))] + 0.14, z = [-0.9, -0.46, 0.46, 0.9][Math.floor(R() * 4)];
+      if (took.has(x + ',' + z)) continue; took.add(x + ',' + z);
+      seatsOut.push({ x, y: P.win.y0 - 0.1, z });                                                // (the seat back's foot: its pan)
     }
+    g.userData.seats = seatsOut;
     /* the front: the big curved windscreen in two halves, long wipers, the board behind it, headlamps, the grille,
        the bumper, the plate */
     /* (the bevel puts the front's glass line from (−6.13, 1.40) to (−5.97, 3.22): one big pane on that rake, a split) */

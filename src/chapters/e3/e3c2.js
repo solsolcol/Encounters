@@ -112,7 +112,7 @@
        monk's own floor take, retargeted; masters/v18.0/crowd) and dressed in
        white; the monks are Chad's monk at crowd detail; the Thevada is seen
        only as a crowned shadow and a gold glimpse at the edge of the frame */
-    assets: ['cg_woman2', 'cg_man2', 'cg_woman2hd', 'cg_man2hd', 'monkrow',   // v19.6: Chad's congregation (v20.0: the two who pray with their palms together)
+    assets: ['cg_woman2', 'cg_man2', 'cg_woman2hd', 'cg_man2hd', 'cg_man2cross', 'monkrow',   // v19.6: Chad's congregation (v20.0: the two who pray with their palms together)
              'thaikit', 'slipper', 'tree1', 'tree2', 'tree3', 'tree4', 'buddhahd', 'buddhalod', 'naga',
              'filmlaptop', 'actioncam', 'hdb', 'altar'],   // v19.5: the film's table (chapter 1's), Ma's flat (episode 1's), the stair's naga
 
@@ -537,7 +537,8 @@
         d.position.set(Math.cos(a) * r, -0.4 + Math.sin(a) * r, 0); d.rotation.set(0, 0, a - Math.PI / 2); d.updateMatrix(); flames.setMatrixAt(i, d.matrix); }
       flames.instanceMatrix.needsUpdate = true; flames.computeBoundingSphere(); aureole.add(flames); }
     const buddhaProxy = new THREE.Group(); world.add(buddhaProxy);
-    { // a stand-in drawn until the kit's Buddha lands
+    buddhaProxy.visible = false;   // (v21.16: never drawn — a Buddha of three balls is a block figure; the pedestal waits for his statue)
+    { // a stand-in that stood until the kit's Buddha landed
       const base = cyl(1.3, 1.45, 0.8, 0, PED_TOP + 0.4, PED.z, matGold, 20, buddhaProxy);
       const body = new THREE.Mesh(new THREE.SphereGeometry(0.9, 18, 14), matGold); body.scale.set(1, 1.35, 0.8);
       body.position.set(0, PED_TOP + 1.8, PED.z); buddhaProxy.add(body);
@@ -1437,7 +1438,9 @@
       const group = new THREE.Group(); group.position.set(x, o.y || 0, z); group.rotation.y = ry; (o.parent || world).add(group);
       const H0 = (o.h || KIND[key].h) * 0.55;
       const proxy = new THREE.Mesh(new THREE.CapsuleGeometry(0.2, Math.max(0.1, H0 - 0.4), 4, 8), matProxy);
-      proxy.position.y = H0 / 2 + 0.1; proxy.castShadow = !LOW; group.add(proxy);
+      /* (v21.16: never drawn — a capsule was a block of a person; until the model lands, and for good if it never does,
+         the mat stays empty: Chad's rule, no block figures anywhere) */
+      proxy.position.y = H0 / 2 + 0.1; proxy.castShadow = false; proxy.visible = false; group.add(proxy);
       /* v19.2: a CONTACT SHADOW painted under every sitter, on a phone as on a
          desktop — LOW casts no shadows at all, so nobody touched the floor
          (the v9.3 law: a body that measures right still floats without the
@@ -3086,23 +3089,92 @@
     const flatYaw = Math.atan2(-((-2.85) - FLATCAM.x), -((-2.15) - FLATCAM.z));
     /* (a little ahead of the eye — a seated man leans in — so a phone's narrow frame has his shins and the phone at its foot) */
     const lap = new THREE.Group(); lap.position.set(FLATCAM.x - Math.sin(flatYaw) * 0.12, 0, FLATCAM.z - Math.cos(flatYaw) * 0.12); lap.rotation.y = flatYaw + 0.0922; F.add(lap);   // (v19.2's legs were laid out for a lens at yaw −0.0922)
-    { const trou = new THREE.MeshStandardMaterial({ color: 0x1f222b, roughness: 0.9 }), sock = new THREE.MeshStandardMaterial({ color: 0x2b2d33, roughness: 0.95 });
-      const limb = (a, b, r, m) => {
-        const A = new THREE.Vector3(...a), B = new THREE.Vector3(...b), L = A.distanceTo(B);
-        const cap = new THREE.Mesh(new THREE.CapsuleGeometry(r, L, 6, 14), m);
-        cap.position.copy(A).add(B).multiplyScalar(0.5); cap.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), B.clone().sub(A).normalize()); lap.add(cap);
-      };
-      limb([0.11, 0.12, 0.12], [0.38, 0.13, -0.23], 0.078, trou);          // the right thigh, out to the knee
-      limb([-0.15, 0.12, 0.12], [-0.42, 0.13, -0.23], 0.078, trou);        // the left
-      limb([0.38, 0.10, -0.24], [-0.12, 0.08, -0.48], 0.058, trou);        // the right shin, across in front
-      limb([-0.42, 0.12, -0.24], [0.10, 0.17, -0.42], 0.056, trou);        // the left, over it
-      limb([-0.10, 0.06, -0.50], [-0.28, 0.05, -0.48], 0.042, sock);
-      limb([0.08, 0.15, -0.43], [0.25, 0.13, -0.38], 0.040, sock); }
-    { const ph = fbox(0.08, 0.01, 0.16, -0.14, 0.005, -0.66, basic({ color: 0x111111 }), lap); ph.rotation.y = 0.25;   // (left of the resting hand, which hid it)
+    /* v21.16 · HIS LEGS ARE A REAL MAN'S (Chad: "You should never ever use those generated fake block figures in any
+       part of the game ... All your generated block figures must all be replaced by real 3d model characters"). They
+       were six capsules. They are Chad's congregation man now (cg_man2hd — in white, and barefoot, as a man is in a
+       Singapore flat) sitting on the monk's own Sit_Cross_Legged_on_Floor take, retargeted onto his rig
+       (masters/v21.16/make.sh): sized as the hall's congregation is, posed once, the skin BAKED to plain geometry, and
+       only the LEGS and the SEAT kept — every vertex SKINNED to the hips and the legs, none to the arms, the head or
+       the spine — because the arms and hands at rest are the engine's own, and his chest and head would stand where
+       the lens is. (A cut by HEIGHT ran through his knees, which a cross-legged man holds higher than his waist, and
+       showed the hollow inside of his trousers as torn paper; a cut by bone follows the body, and where it parts —
+       the waist, the shoulders — is out of every frame.) Turned to face the altar with the lens, his seat on the
+       floor, his hips 0.28 m ahead of the eye: under this lens a real man's knees fall below the letterbox, so his
+       legs sit as far out as the frame needs, and no further — measured through the film's own lens on a phone and
+       a desktop, at both ends of the shot's push-in and both of its pitches (tools/probes/legscore.mjs), not one pixel of
+       an inside face is seen from here until 0.06 m further out. Until both files land the floor is bare — never a
+       block in his place. */
+    Promise.all([h.parseOnce('cg_man2hd'), h.parseOnce('cg_man2cross')]).then(([man, take]) => {
+      if (!h.alive()) return;
+      const clip = (take.animations || []).find(c => c.name === 'cross');
+      if (!clip) throw new Error('cg_man2cross has no cross take');
+      const g = ctx.cloneSkinned(man.scene), holder = new THREE.Group(); holder.add(g);
+      const bones = []; g.traverse(o => { if (o.isBone) bones.push(o); });
+      const v = new THREE.Vector3(), w = new THREE.Vector3(), nm = new THREE.Matrix3();
+      holder.updateMatrixWorld(true);
+      let lo = Infinity, hi = -Infinity;
+      for (const b of bones) { b.getWorldPosition(v); lo = Math.min(lo, v.y); hi = Math.max(hi, v.y); }
+      const crown = bones.some(b => /HeadTop_End|head_end/.test(b.name));
+      if (isFinite(lo) && hi > lo) g.scale.multiplyScalar(h.KIND.cg_man2hd.h / ((hi - lo) / (crown ? 1 : 0.935)));
+      const mixer = new THREE.AnimationMixer(g), act = mixer.clipAction(clip);
+      act.play(); act.time = clip.duration * 0.3; act.paused = true; mixer.update(0);
+      holder.updateMatrixWorld(true);
+      const hipsB = bones.find(b => /^Hips(_\d+)?$/.test(b.name));
+      const hp = hipsB ? hipsB.getWorldPosition(new THREE.Vector3()) : new THREE.Vector3();
+      /* (each bone sorted once: the arms, the head and neck, and what is kept — the hips and the legs) */
+      const ARM = /(Shoulder|Arm|Hand)/i, HEAD = /(Neck|Head)/i, LEGS = /(^Hips(_\d+)?$|UpLeg|Leg|Foot|Toe)/i;
+      const out = new THREE.Group(); let minY = Infinity;
+      g.traverse(o => {
+        if (!o.isSkinnedMesh) return;
+        const src = o.geometry, pos = src.attributes.position, nrm = src.attributes.normal, sI = src.attributes.skinIndex, sW = src.attributes.skinWeight, n = pos.count;
+        const P = new Float32Array(n * 3), N = new Float32Array(n * 3), keep = new Uint8Array(n);
+        const part = o.skeleton.bones.map(b => ARM.test(b.name) ? 1 : HEAD.test(b.name) ? 2 : LEGS.test(b.name) ? 3 : 0);
+        nm.getNormalMatrix(o.matrixWorld);
+        for (let i = 0; i < n; i++) {
+          v.fromBufferAttribute(pos, i);
+          if (nrm) w.fromBufferAttribute(nrm, i).add(v);               // (a skin is affine: T(p + n) − T(p) carries the normal)
+          o.applyBoneTransform(i, v); if (nrm) { o.applyBoneTransform(i, w); w.sub(v).applyMatrix3(nm).normalize(); }
+          v.applyMatrix4(o.matrixWorld);
+          const wt = [0, 0, 0, 0]; for (let k = 0; k < 4; k++) wt[part[sI.getComponent(i, k)]] += sW.getComponent(i, k);
+          keep[i] = wt[3] >= 0.6 && wt[1] < 0.3 && wt[2] < 0.3 ? 1 : 0;
+          /* into his own frame: the hips at the origin, turned a half turn so he faces the lap's −z */
+          P[i * 3] = -(v.x - hp.x); P[i * 3 + 1] = v.y - hp.y; P[i * 3 + 2] = -(v.z - hp.z);
+          if (nrm) { N[i * 3] = -w.x; N[i * 3 + 1] = w.y; N[i * 3 + 2] = -w.z; }
+        }
+        const idx = src.index ? src.index.array : Array.from({ length: n }, (_, i) => i), tri = [];
+        const groups = src.groups.length ? src.groups : [{ start: 0, count: idx.length, materialIndex: 0 }], ng = [];
+        for (const gr of groups) {
+          const start = tri.length;
+          for (let t = gr.start; t < gr.start + gr.count; t += 3) {
+            const a = idx[t], b = idx[t + 1], c = idx[t + 2];
+            if (keep[a] && keep[b] && keep[c]) { tri.push(a, b, c); minY = Math.min(minY, P[a * 3 + 1], P[b * 3 + 1], P[c * 3 + 1]); }
+          }
+          ng.push({ start, count: tri.length - start, materialIndex: gr.materialIndex || 0 });
+        }
+        if (!tri.length) return;
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute('position', new THREE.BufferAttribute(P, 3));
+        if (nrm) geo.setAttribute('normal', new THREE.BufferAttribute(N, 3));
+        const uv = src.attributes.uv;
+        if (uv) { const U = new Float32Array(n * 2); for (let i = 0; i < n; i++) { U[i * 2] = uv.getX(i); U[i * 2 + 1] = uv.getY(i); } geo.setAttribute('uv', new THREE.BufferAttribute(U, 2)); }
+        geo.setIndex(tri);
+        if (src.groups.length) for (const gr of ng) geo.addGroup(gr.start, gr.count, gr.materialIndex);
+        if (!nrm) geo.computeVertexNormals();
+        geo.computeBoundingSphere();
+        const mats = [].concat(o.material).map(m => m.clone());
+        const m = new THREE.Mesh(geo, Array.isArray(o.material) ? mats : mats[0]); m.castShadow = m.receiveShadow = false;
+        out.add(m);
+      });
+      mixer.stopAllAction(); mixer.uncacheRoot(g);
+      if (!out.children.length || !isFinite(minY)) return;
+      out.position.set(0, 0.004 - minY, -0.16);                         // his seat on the floor, his hips 0.28 m ahead of the eye
+      lap.add(out);
+    }).catch(err => { console.warn('the film\'s legs failed to load', err); ctx.loadFail && ctx.loadFail('cg_man2cross', err); });
+    { const ph = fbox(0.08, 0.01, 0.16, -0.10, 0.005, -0.95, basic({ color: 0x111111 }), lap); ph.rotation.y = 0.25;   // (v21.16: beyond his real knees, which hid it where it lay — seen over them now)
       const scr = new THREE.Mesh(new THREE.PlaneGeometry(0.07, 0.145), basic({ map: h.tex(makePhoneChant(THREE, cnv)) }));
-      scr.rotation.set(-Math.PI / 2, 0, 0.25); scr.position.set(-0.14, 0.0112, -0.66); lap.add(scr);
+      scr.rotation.set(-Math.PI / 2, 0, 0.25); scr.position.set(-0.10, 0.0112, -0.95); lap.add(scr);
       const pg = new THREE.Mesh(new THREE.PlaneGeometry(0.6, 0.6), basic({ map: h.tex(makeGlow(THREE, cnv, '170,200,255')), transparent: true, opacity: 0.35, depthWrite: false, blending: THREE.AdditiveBlending }));
-      pg.rotation.x = -Math.PI / 2; pg.position.set(-0.14, 0.013, -0.66); lap.add(pg); }
+      pg.rotation.x = -Math.PI / 2; pg.position.set(-0.10, 0.013, -0.95); lap.add(pg); }
 
     /* 4 · THE TEMPLE FLOOR is the hall itself now (v19.5 — Chad: "there is no
        need to place other people in that scene. Just have him solo ... why

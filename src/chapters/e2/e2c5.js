@@ -715,7 +715,7 @@
       group.position.set(opts.x, 0, opts.z); group.rotation.y = opts.ry || 0;
       world.add(group);
       const proxy = new THREE.Mesh(new THREE.CapsuleGeometry(0.2, opts.height - 0.4, 4, 8), matProxy);
-      proxy.position.y = opts.height / 2; proxy.castShadow = !LOW; group.add(proxy);
+      proxy.position.y = opts.height / 2; proxy.castShadow = false; proxy.visible = false; group.add(proxy);   // (v21.16: never drawn — a capsule was a block of a person; until the model lands, and for good if it never does, the place stands empty)
       const rig = { key, group, proxy, model: null, mixer: null, acts: null, cur: null, head: null,
                     ready: false, height: opts.height, idle: opts.idle || null };
       rig.play = (name, ts = 1, fade = 0.34, once = false, at) => {

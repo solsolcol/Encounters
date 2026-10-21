@@ -628,6 +628,7 @@
         a.rotation.z = s * 0.25; a.rotation.x = -0.35;
       }
       cyl(0.07, 0.12, 2.2, 0, 1.85, 0.42, matGold, 10, g);
+      for (const o of g.children.slice(2)) o.visible = false;   // (v21.16: the giant built of cylinders is never drawn — the plinth waits for the scan)
       solids.push(hid(box(1.3, 0.7, 1.3, x, 0.35, z, matWhite, world, false)));
       /* v16.6: Chad's Thao Wessuwan scan (tools/prepwess.mjs) takes the
          giant's place on the same plinth, the same height to the spire tip
@@ -972,6 +973,10 @@
       const flame = new THREE.Mesh(new THREE.ConeGeometry(0.045, 0.24, 10), matGold);
       flame.position.set(0, 1.76, 0); g.add(flame);
       g.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.receiveShadow = true; } });
+      /* (v21.16: never drawn. Every one of these stands in for Chad's Buddha until it lands and was hidden then; a
+         Buddha built of balls and capsules is a block figure, and Chad's rule is none anywhere — a failed download
+         leaves the place bare) */
+      g.visible = false;
       return g;
     }
 
@@ -2285,7 +2290,9 @@
       group.position.set(opts.x, opts.y || 0, opts.z); group.rotation.y = opts.ry || 0;
       world.add(group);
       const proxy = new THREE.Mesh(new THREE.CapsuleGeometry(0.2, (opts.seated ? 1.1 : opts.height) - 0.4, 4, 8), matProxy);
-      proxy.position.y = (opts.seated ? 1.1 : opts.height) / 2 + (opts.seated ? 0.1 : 0); proxy.castShadow = !LOW; group.add(proxy);
+      /* (v21.16: never drawn — a capsule was a block of a person; until the model lands, and for good if it never does,
+         the place stands empty: Chad's rule, no block figures anywhere) */
+      proxy.position.y = (opts.seated ? 1.1 : opts.height) / 2 + (opts.seated ? 0.1 : 0); proxy.castShadow = false; proxy.visible = false; group.add(proxy);
       const rig = { key, group, proxy, model: null, mixer: null, acts: null, cur: null, head: null, hips: null,
                     ready: false, height: opts.height, idle: opts.idle || null, floor: opts.y || 0,
                     headRest: null, headWrote: null, nod: 0, nodT: 0, lookYaw: 0, lookPitch: 0 };

@@ -183,6 +183,24 @@ MINIGAME is not done until it has its own picture: a row in `EV_DEMO`, and a
 new class in shell.html if none of the five shows it — `chaptertest` fails a
 kind with no row and a picture shell.html does not draw.
 
+**NO GENERATED BLOCK FIGURES, ANYWHERE** (Chad's standing rule, v21.16: "You
+should never ever use those generated fake block figures in any part of the
+game. They ruin the entire look of the game. All your generated block figures
+must all be replaced by real 3d model characters."). A person in this game — a
+passenger behind a bus window, a face in a far crowd, a sitter at a kopitiam, a
+figure in a film, his own legs under the lens — is one of the real character
+models the game already ships (cloned, posed, baked to a still if it never moves,
+cut to the part the shot needs, recoloured), never boxes, spheres, cylinders or
+capsules arranged as a body, and never a body painted onto a canvas to stand for
+one. The same holds for a FIGURE of any kind — a statue, a deity, a giant, an
+effigy: the scan or nothing. A placeholder that stands until a model lands is
+INVISIBLE from its first frame (kept only as a proxy for a collider, a tap or a
+scene's handle, never a shape on screen), so a failed download costs a person,
+never shows a block one; a person who cannot be a real model is left out, not
+drawn. A thing that is itself a picture of a figure in the world — a range's
+Figure 11 target board, a poster, a photograph — is a prop, not a person. v21.16
+applied it to all thirteen chapters (docs/V21.16-NO-BLOCK-FIGURES.md).
+
 `shrine` is the engine's anchor for HER, not for the chapter's warm light.
 Chapter 1's happens to be both; chapter 2's is the gap beside the bed and
 its altar is a separate thing on the other wall. Getting that wrong made
@@ -5875,6 +5893,42 @@ What the baseline contains, by release:
   hard-linked copy of the tree while the last version's harnesses ran — the law
   that copy taught is in LEARNINGS. No word moved; sheet v107 stands. Deploy
   `6ad92554daabec41cb115fd8`, byte-verified (all 235 served files).
+- **v21.16** NO BLOCK FIGURES, ANYWHERE, AND THE BATCH AUDITED — the fifth and
+  last milestone of Chad's 21 Oct batch (CP7, CP8), and a standing rule that
+  arrived in the middle of it: *"You should never ever use those generated fake
+  block figures in any part of the game. They ruin the entire look of the game.
+  All your generated block figures must all be replaced by real 3d model
+  characters."* (the rule is above, under the minigame rule;
+  docs/V21.16-NO-BLOCK-FIGURES.md is the record). Three sweeps found a player saw
+  one in normal play in two places — the passengers in episode 3 chapter 3's
+  buses and coaches (a cylinder, a ball and a cap each) and his own crossed legs
+  in episode 3 chapter 2's film (six capsules) — and that every chapter built a
+  placeholder for each character that stood until its model landed and STAYED
+  if the file never came, statues included. The passengers are the chapter's
+  own seated people posed once and BAKED to plain geometry (`sitterStill`: no
+  skeleton, no mixer, for a figure behind glass), sat on each seat by the skin
+  under the hips — 5 / 7 / 4 / 4 seats, all occupied. His legs are Chad's
+  congregation man on the monk's cross-legged take (`cg_man2cross.glb`, the clip
+  alone, 62 KB), baked and cut by what each vertex is SKINNED to — a cut by
+  height took the tops off his raised knees and showed the hollow inside of his
+  trousers as torn paper — and set 0.28 m ahead of the eye, where the frame sees
+  his knees under the resting hand; `tools/probes/legscore.mjs` rasterizes the
+  body through the shot's own lens and counts the back faces that win the depth
+  test (the hollow, seen): the height cut 600–2,200, the bone cut none. The chant
+  phone moved beyond his knees, which hid it. Every placeholder in thirteen
+  chapters is invisible from its first frame (kept as a collider, a tap or a
+  scene's handle); the statue stand-ins (the Buddhas, the gate's giants, the
+  paper effigy) likewise, and e3c3's four drawn deities removed. Kept, and put
+  to Chad: the range's Figure 11 boards (a printed silhouette is a prop) and
+  e3c2's painted shadow on the mats (a shadow, kept by name at v19.4). Also a
+  garden in the gap between Golden Mile Complex and the Tower (bare grey ground
+  at the right of every wide frame of the film). CP7: the chapter played through
+  on a phone by real taps (51 lines in order, none over another, no page error),
+  Continue from every shrine phase and both trance saves landing right, the
+  places' sounds measured again, and all thirteen harnesses green on the live
+  build. CP8: each of the batch's eighteen notes checked against it
+  (docs/V21.12-PLAN.md). No word moved; sheet v107 stands. Deploy
+  `6ad9350ab68becd73c8a86c1`, byte-verified (all 236 served files).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -6411,11 +6465,13 @@ assigned where a texture belonged; and the clearance is ISSUED at the start
 of play rather than inferred from an empty bag, which had left both counters
 dead from the chapter's first frame (docs/LEARNINGS.md).
 
-In flight: **Chad's batch of 21 Oct 2026 on episode 3 chapter 3 — docs/V21.12-PLAN.md**
-(the shrine's new lines, the Hanuman's appearance and 360, the sound of both
-places, the buses, the kopitiam's people, Golden Mile's streets): five
-milestones, v21.12 to v21.16, each ticked in that file as it lands — a session
-that starts mid-way reads it first. **docs/V21.0-E3C3-PLAN.md** is the last chapter's
+In flight: nothing queued. **Chad's batch of 21 Oct 2026 on episode 3 chapter 3 —
+docs/V21.12-PLAN.md** (the shrine's new lines, the Hanuman's appearance and 360, the
+sound of both places, the buses, the kopitiam's people, Golden Mile's streets)
+shipped in five milestones, v21.12 to v21.16, and each of its eighteen notes is
+checked off against the live build there (CP8); **docs/V21.16-NO-BLOCK-FIGURES.md**
+is the record of his no-block-figures rule applied to all thirteen chapters.
+**docs/V21.0-E3C3-PLAN.md** is the last chapter's
 build memory, checkpoint by checkpoint, **docs/V21.1-PLAN.md** its debug
 pass (every finding, its verdict and fix, and what was left alone and why),
 and **docs/V21.2-PLAN.md** Chad's five notes on it (Golden Mile Complex, the

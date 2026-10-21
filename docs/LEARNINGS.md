@@ -5890,3 +5890,32 @@ cut (sharing its vertices and maps) when it is small.
   prove it (`diff -rq src <copy>/src`). And a probe or a harness runs on a
   SNAPSHOT of the copy's output (`cp -al dist <snap>`; `ENC_DIST=<snap>`),
   because the next build deletes and rewrites `dist/` under a running server.
+- **A person who never moves is a still, not a rig** (v21.16, the bus and coach passengers). Chad's rule — no
+  block figures, anywhere — put real seated people behind every bus window, up to seven a bus. As rigs that is a
+  skeleton, a mixer and a skinned draw each, ticked every frame for a figure that sits still behind glass. Instead
+  each kind is posed ONCE on the frame it sits in and its skin BAKED: every vertex carried through the skin with
+  `applyBoneTransform` (and its normal with it — a skin is affine, so T(p + n) − T(p) is the normal carried
+  exactly, the same blend the GPU applies), into one frame with the hips at the origin, then copied attribute by
+  attribute (component by component, so an interleaved or quantized source reads right) into plain geometry. The
+  still is cloned into every seat: no skeleton, no mixer, nothing to tick, and the seat is found from the skin
+  under the hips, not from a bone. A builder that runs before the files land lists SEATS (`userData.seats`) and
+  build() fills them when they do — and a clone of the builder's group copies the seats and not the people seated
+  after it, so a cloned coach is seated on its own.
+- **A real body's legs are under its eyes** (v21.16, episode 3 chapter 2's film). His crossed legs had been six
+  capsules laid out so they reached 0.6 m in front of a lens pitched 30° down; the real man's legs — the monk's
+  own cross-legged take on Chad's congregation man, baked and cut — came out exactly where a seated man's are,
+  almost straight under the eye, and the frame (72° tall, its bottom eighth under the letterbox) never saw them.
+  The capsules had been stretched to be seen. So the cut legs go where the SHOT needs them, not where the anatomy
+  would: the hips forward until the knees are under the resting hand. Two more things the first tries got wrong:
+  **a scanned body is cut by what its vertices are SKINNED to, never by height** — a cross-legged man holds his
+  knees HIGHER than his waist, so a plane "just over the hips" took the tops off his knees, and a Meshy scan is
+  one hollow surface with nothing under the cloth, so every cut shows the inside of his trousers as torn paper;
+  kept by bone (hips and legs in, arms, head and spine out) the body parts where it really parts, at the waist
+  and the shoulders. And **a cut is judged by its BACK FACES**: rasterize the kept body through the shot's own
+  lens with a depth buffer and count the pixels where a back face wins — that count is the hollow, seen, and
+  only zero passes (`tools/probes/legscore.mjs`: the height cut 600–2,200 of them at every placement that showed
+  any leg; the bone cut none from hips under the eye to 0.32 m ahead of it, which ships at 0.28).
+- **A probe picks its object by an exact property, never a loose predicate** (v21.16). Two runs of "move the legs
+  forward and photograph" moved the FIRST mesh that was big, unskinned and textured — something else entirely —
+  and both photographed nothing changing, which read as "the legs are still out of frame". The third picked the
+  legs by their vertex count (41,956, measured by the diagnostic that found them) and moved the right thing.

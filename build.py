@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "21.15"
+VERSION = "21.16"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -425,6 +425,7 @@ ASSETS = {
     'cg_man2':     ('assets/cg_man2.glb', True, False),
     'cg_woman2hd': ('assets/cg_woman2hd.glb', True, False),   # the woman beside him, and Yai
     'cg_man2hd':   ('assets/cg_man2hd.glb', True, False),     # the man beside Yai, and the man in front
+    'cg_man2cross': ('assets/cg_man2cross.glb', True, False), # e3c2 v21.16: the monk's Sit_Cross_Legged_on_Floor retargeted onto cg_man2hd, the clip alone (masters/v21.16) — his crossed legs in the film's flat, in place of the capsules (no block figures)
     'monkrow':      ('assets/monkrow.glb', True, False),
     'hanuman':      ('assets/hanuman.glb', True, False),      # e3c3 v21.0: Chad's Hanuman, the presence that roars at the medium (LONG=1 tools/prepwess.mjs 0.2: 591k -> 118k tris)
     'owner':        ('assets/owner.glb', True, False),        # e3c3 v21.0: the amulet shop's owner — the encik scan (ep1 ch3's older man in black) with Idle_9, Talk_with_Hands_Open, Walking and Running retargeted in from admintee (tools/retarget.mjs mixamo --align [--hips]); a stand-in until Chad's
@@ -487,7 +488,7 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'kamaz', 'forest', 'rifle', 'ghostcyclist', 'fboaim',
            'muzzle', 'ammocrate', 'ammomags', 'icontorch', 'zavsoldier',
            'thaikit', 'wessred', 'wessgreen', 'naga', 'monk', 'ajarn', 'temple', 'slipper', 'lersimask', 'altarrow', 'customer', 'buddhahd', 'buddhalod', 'sangkathan', 'sitwomantalk', 'filmoffice', 'filmlaptop', 'actioncam', 'planecabin',
-           'cg_woman2', 'cg_man2', 'cg_woman2hd', 'cg_man2hd', 'monkrow', 'hanuman', 'medium', 'owner', 'staffman', 'timkplod', 'wifewalk', 'fatherwalk',
+           'cg_woman2', 'cg_man2', 'cg_woman2hd', 'cg_man2hd', 'cg_man2cross', 'monkrow', 'hanuman', 'medium', 'owner', 'staffman', 'timkplod', 'wifewalk', 'fatherwalk',
            'mstr_somdejtoh', 'mstr_achanmun', 'mstr_lpthuad', 'mstr_lptimpray', 'mstr_lptimbench', 'mstr_lpphiboon',
            'taoistrow', 'ptg_zhenwu', 'ptg_jade',
            'traynear', 'trayfar', 'amushelf', 'altarrowfar', 'monkshop'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone

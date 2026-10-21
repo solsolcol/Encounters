@@ -754,6 +754,9 @@
        detailed would make it the subject of the shot, and it is not. */
     const effigy = new THREE.Group();
     effigy.position.set(0, 0, -0.75);
+    /* (v21.16: never drawn — a figure of cylinders and boxes that stood only until the Guan Gong scan landed in its
+       place; Chad's rule is no block figures anywhere, so a failed download leaves the plinth bare) */
+    effigy.visible = false;
     altar.add(effigy);
     const eBody = new THREE.Mesh(
       new THREE.CylinderGeometry(0.34, 0.62, 1.85, 10), matCloth);
@@ -1053,6 +1056,12 @@
         legs.castShadow = !LOW;
         g.add(legs);
       }
+      /* v21.16: NEVER DRAWN. These were the tent's people before Chad's models were, and since v4.7 each has stood
+         only until its model landed (or for good if the download failed). Chad's rule since v21.16 is no block figures
+         anywhere: every part is hidden from the start, and the group stays — an invisible handle the seat deal, the
+         scenes (the medium's head) and the colliders still read — so a model that never arrives leaves an empty seat,
+         never a box with a ball on it. */
+      for (const c of g.children) c.visible = false;
       g.userData.head = head;
       g.userData.hair = hair;
       g.userData.torso = torso;
@@ -1350,11 +1359,13 @@
     const sash = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.13, 0.26), matSash);
     sash.position.set(0, 0.90, 0);
     sash.rotation.z = 0.42;
+    sash.visible = false;                        // (v21.16: a part of the stand-in, never drawn — see figure())
     medium.add(sash);
     const stool = new THREE.Mesh(
       new THREE.CylinderGeometry(0.20, 0.22, 0.44, 10), matWood);
     stool.position.set(MEDIUM.x, 0.22, MEDIUM.z);
     stool.castShadow = true; stool.receiveShadow = true;
+    stool.visible = false;                       // (v21.16: the stand-in's seat — he STANDS once he lands, and it was hidden then)
     world.add(stool);
     // the two flags, on short sticks, one in each hand
     const flags = [];
@@ -1370,6 +1381,7 @@
       cloth2.rotation.y = sx * 0.4;
       fg.add(stick, cloth2);
       fg.rotation.z = -sx * 0.5;
+      fg.visible = false;                        // (v21.16: held by the stand-in, never drawn — see figure())
       medium.add(fg);
       flags.push(fg);
     }
@@ -1427,6 +1439,7 @@
     world.add(auntie);
     const bun = new THREE.Mesh(new THREE.SphereGeometry(0.062, 8, 6), matHair);
     bun.position.set(0, 1.60, -0.10);
+    bun.visible = false;                         // (v21.16: a part of the stand-in, never drawn — see figure())
     auntie.add(bun);
 
     /* ================================================================== */

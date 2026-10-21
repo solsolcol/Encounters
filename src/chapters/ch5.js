@@ -938,7 +938,10 @@
     const tangProxy = new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.30, 1.66, 10),
       new THREE.MeshStandardMaterial({ color: 0x6a5c4a, roughness: 0.9 }));
     tangProxy.position.y = 0.83;
-    tangProxy.castShadow = true;
+    /* (v21.16: invisible from the start, as the comment above has always said it was — it was drawn, a grey column
+       for a man, until his model landed; Chad's rule is no block figures anywhere. It stays for the interact ray and
+       the blocker, both of which read a hidden mesh exactly as a drawn one) */
+    tangProxy.visible = false;
     tangki.add(tangProxy);
     let tangMixer = null, tangHead = null;
     let tangBow = 0;                             // scenes add this to the head, post-mixer
@@ -1046,6 +1049,7 @@
     const maProxy = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.26, 1.5, 10),
       new THREE.MeshStandardMaterial({ color: 0x7a5c50, roughness: 0.9 }));
     maProxy.position.y = 0.75;
+    maProxy.visible = false;                     // (v21.16: never drawn — the same as his)
     ma.add(maProxy);
     let maMixer = null;
     /* her four retargeted clips (see ch2 for the bake). Same tiny interface:

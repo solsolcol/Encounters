@@ -404,7 +404,7 @@
     const STAFF_AT = [{ x: COUNTER.x - 0.75, z: -1.9 }, { x: COUNTER.x - 0.75, z: 1.7 }];
     const staff = { ready: false, group: new THREE.Group(), models: [] };
     world.add(staff.group);
-    const staffProxies = STAFF_AT.map(p => { const c = new THREE.Mesh(new THREE.CapsuleGeometry(0.2, 1.2, 4, 8), matProxy); c.position.set(p.x, 0.9, p.z); staff.group.add(c); return c; });
+    const staffProxies = STAFF_AT.map(p => { const c = new THREE.Mesh(new THREE.CapsuleGeometry(0.2, 1.2, 4, 8), matProxy); c.position.set(p.x, 0.9, p.z); c.visible = false; staff.group.add(c); return c; });   // (v21.16: never drawn — a capsule was a block of a person; until the model lands, and for good if it never does, the place stands empty)
     assetBytes('cafestaff').then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
       if (!alive) return;
       rescueTextures(gltf, BUF);
@@ -514,7 +514,7 @@
     world.add(seated.group);
     const proxies = SEATS.map(sp => {
       const p = new THREE.Mesh(new THREE.CapsuleGeometry(0.2, 0.7, 4, 8), matProxy);
-      p.position.set(sp.x, 0.75, sp.z); p.castShadow = !LOW; seated.group.add(p); return p;
+      p.position.set(sp.x, 0.75, sp.z); p.castShadow = false; p.visible = false; seated.group.add(p); return p;   // (v21.16: never drawn — a capsule was a block of a person; until the model lands, and for good if it never does, the place stands empty)
     });
     assetBytes('admintee').then(BUF => new GLTFLoader().parse(BUF, '', (gltf) => {
       if (!alive) return;
@@ -625,7 +625,7 @@
       group.position.set(opts.x, 0, opts.z); group.rotation.y = opts.ry || 0;
       world.add(group);
       const proxy = new THREE.Mesh(new THREE.CapsuleGeometry(0.2, opts.height - 0.4, 4, 8), matProxy);
-      proxy.position.y = opts.height / 2; proxy.castShadow = !LOW; group.add(proxy);
+      proxy.position.y = opts.height / 2; proxy.castShadow = false; proxy.visible = false; group.add(proxy);   // (v21.16: never drawn — a capsule was a block of a person; until the model lands, and for good if it never does, the place stands empty)
       const rig = { key, group, proxy, model: null, mixer: null, acts: null, cur: null, head: null,
                     ready: false, height: opts.height, idle: opts.idle || null };
       rig.play = (name, ts = 1, fade = 0.34, once = false, at) => {
