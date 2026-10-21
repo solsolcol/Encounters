@@ -109,7 +109,10 @@
        key, so a model of Chad's is a one-line swap */
     assets: ['buddhahd', 'buddhalod', 'timkp', 'timkplod', 'thaikit', 'hanuman', 'medium', 'owner', 'staffman', 'hdb',
              'cg_woman2hd', 'cg_man2hd', 'sitclap', 'sitshout', 'botak',
-             'guangong', 'sitman', 'sitwoman', 'sitwomantalk', 'wifewalk',
+             'sitman', 'sitwoman', 'sitwomantalk', 'wifewalk',
+             /* v21.11: Chad's row of six Taoist deities on the medium's altar (in Guan Gong's place), and the two
+                paintings on the shrine's walls (Wikimedia Commons, public domain, the files' own bytes) */
+             'taoistrow', 'ptg_zhenwu', 'ptg_jade',
              /* v21.8: the monk who leads the chant (e3c1's, at full detail), Chad's row of altar statues (e3c1's Sak Yant
                 room), and his five masters for the wall (the sources' own photographs, unaltered) */
              'monkshop', 'altarrow', 'altarrowfar', 'lersimask', 'cars', 'mstr_somdejtoh', 'mstr_achanmun', 'mstr_lpthuad', 'mstr_lptimpray', 'mstr_lptimbench',
@@ -242,6 +245,7 @@
   const SECS = {
     z3pro0: 4.24, z3pro3: 4.0, z3pro4: 6.84, z3pro5: 4.8, ow3hello: 5.96, z3look1: 6.27,
     z3look2: 4.65, z3look3: 5.93, z3look4: 3.71, ow3call: 2.43, ow3gift1: 9.69, ow3gift2: 3.47,
+    ow3masters: 7.37, z3masters: 5.69,                                     // v21.11: the masters' gallery's introduction
     z3thanks: 4.21, ow3good: 2.85, mk3chant: 30.37, z3shift1: 3.47, z3shift2: 4.28, ow3eh: 2.93,
     sm3hold: 2.38, sm3cannot: 2.32, st3uncle: 2.35, cu3sadhu: 3.01, ow3let: 2.43, z3breath: 3.0,
     ow3know: 2.04, z3knew: 5.64, st3trance: 2.59, cu3unclean: 4.26, ow3medium: 5.56, z3night: 2.69,
@@ -2109,7 +2113,6 @@
     const addGlow = (t, op) => new THREE.MeshBasicMaterial({ map: t, transparent: true, opacity: op, depthWrite: false, blending: THREE.AdditiveBlending, fog: false });
     const addGlowF = (t, op) => { const m = addGlow(t, op); m.fog = true; return m; };   // v21.8: one the night's fog takes, for the street's far lamps
     const bwall = (w, h, d, x, y, z, mat) => { const m = box(w, h, d, x, y, z, mat, shrG, false); walls.push(m); return m; };
-    const GG_FACE = 0;                                               // Guan Gong faces +z, the door (chapter 3's GG_YAW)
 
     /* ---- THE NIGHT OVER THE LORONG. The engine's sky — its dome, its stars,
        its moon — is centred on the world's origin, and this pocket stands
@@ -2692,8 +2695,14 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
     }
 
     /* ---- THE ALTAR: the base cabinet, the niche with its canopy and plaque,
-       two steps of images, Guan Gong in the middle, the red lamps */
+       two steps, Chad's row of six deities on the upper one, the red lamps
+       (v21.11 — until then Guan Gong stood alone on the upper step and four
+       drawn images on the lower) */
     const ALT = { z: -9.55, top: 0.95 };
+    /* v21.11 · THE ROW's scale (2.66 m across the niche's 2.88: the images 0.6–0.84 m tall, a shrine's carved size),
+       the depth of its middle (its back 2.5 cm off the niche's back panel), and how near the camera must be for every
+       triangle (beside the offering table he can stand under a metre from the outer two) */
+    const DEI = { s: 1.4, z: -9.655, near: 3.0, top: 0.7 };          // (top: the upper step's height over the cabinet)
     { const g = new THREE.Group(); shrG.add(g);
       const base = box(3.2, ALT.top, 0.9, 0, ALT.top / 2, ALT.z, matLacq, g); solids.push(base);
       for (const x of [-0.8, 0.8]) { box(1.4, 0.03, 0.02, x, 0.78, ALT.z + 0.455, matGold, g, false); box(1.4, 0.03, 0.02, x, 0.18, ALT.z + 0.455, matGold, g, false); }
@@ -2713,29 +2722,41 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
         const bulbs = new THREE.InstancedMesh(new THREE.SphereGeometry(0.03, 8, 6), matRedLamp, 9);
         for (let i = 0; i < 9; i++) { m4.makeTranslation(-1.28 + i * 0.32, ALT.top + 1.9, -9.22); bulbs.setMatrixAt(i, m4); }
         g.add(bulbs); }
-      // the steps
-      box(2.9, 0.2, 0.62, 0, ALT.top + 0.1, -9.6, matLacq, g); box(2.94, 0.03, 0.03, 0, ALT.top + 0.2, -9.29, matGold, g, false);
-      box(2.1, 0.3, 0.4, 0, ALT.top + 0.35, -9.72, matLacq, g); box(2.14, 0.03, 0.03, 0, ALT.top + 0.5, -9.52, matGold, g, false);
-      // the lesser images on the lower step (drawn as statues: robe, face, crown, a halo behind)
-      [[-1.25, 0x2a6a3a, 0xe8c08a, 0.36], [-0.82, 0xb8241a, 0xd8a070, 0.42], [0.82, 0xd8a83a, 0xe8c08a, 0.42], [1.25, 0x1a2a5a, 0x6a4a2a, 0.36]]
-        .forEach(([x, robe, face, h], i) => mkDeity(g, x, ALT.top + 0.2, -9.5, h, robe, face, i));
-      // Guan Gong on the upper step (Chad's scan, from episode 1's tentage), a red plinth under him
-      box(0.62, 0.12, 0.34, 0, ALT.top + 0.56, -9.74, matLacqIn, g); box(0.64, 0.02, 0.36, 0, ALT.top + 0.62, -9.74, matGold, g, false);
-      { const hold = new THREE.Group(); hold.position.set(0, ALT.top + 0.63, -9.74); g.add(hold);
-        const ph = new THREE.Mesh(new THREE.CapsuleGeometry(0.16, 0.6, 4, 8), matLacq); ph.position.y = 0.48; hold.add(ph);
-        parseOnce('guangong').then(gl => {
-          if (!alive) return;
-          const s = gl.scene.clone(true);
-          s.updateMatrixWorld(true);
-          let b1 = new THREE.Box3().setFromObject(s);
-          if ((b1.max.z - b1.min.z) > (b1.max.y - b1.min.y) * 1.4) { s.rotation.x = -Math.PI / 2; s.updateMatrixWorld(true); b1 = new THREE.Box3().setFromObject(s); }
-          s.scale.setScalar(1.12 / (b1.max.y - b1.min.y)); s.updateMatrixWorld(true);
-          const b2 = new THREE.Box3().setFromObject(s);
-          s.position.set(-(b2.min.x + b2.max.x) / 2, -b2.min.y, -(b2.min.z + b2.max.z) / 2);
-          const yawG = new THREE.Group(); yawG.rotation.y = GG_FACE; yawG.add(s); hold.add(yawG);
-          s.traverse(o => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = true; } });
-          ph.visible = false;
-        }).catch(err => { console.warn('guangong failed to load', err); ctx.loadFail && ctx.loadFail('guangong', err); }); }
+      /* the steps (v21.11: the upper one widened to 2.8 m and deepened to 0.52 m to carry the row, its back on the
+         niche's, and raised 0.2 m — DEI.top — so the six preside over the medium's hat from the door and the waiting
+         stools, the way a shrine's images stand high; the lower one 0.70 m deep, so a 0.19 m lip runs along the front
+         of the row for the candles) */
+      box(2.9, 0.2, 0.70, 0, ALT.top + 0.1, -9.56, matLacq, g); box(2.94, 0.03, 0.03, 0, ALT.top + 0.2, -9.21, matGold, g, false);
+      box(2.8, DEI.top - 0.2, 0.52, 0, ALT.top + 0.2 + (DEI.top - 0.2) / 2, -9.66, matLacq, g); box(2.84, 0.03, 0.03, 0, ALT.top + DEI.top, -9.40, matGold, g, false);
+      /* THE ROW (v21.11 — Chad: "Use this row of deities to add onto the taoist medium's shop's altar area, remove the
+         existing guan gong, and use this row of deities instead placed on the altar"): his scan of six images on their
+         own cloud bases — Nezha on his wind-fire wheels, Guan Gong, Xuantian Shangdi on the turtle and the snake, the
+         white Wuchang, a general on his tiger, the black Wuchang — facing the door across the niche (DEI). Two levels
+         over ONE set of vertices and ONE set of maps (tools/lodpair.mjs, masters/v21.11/make.sh): every one of the
+         scan's 593k triangles within DEI.near of its middle, a permissive cut of 148k beyond it (photographed side by
+         side from 3 m and from the stool: the same row). Until it lands the four drawn images stand in on the step,
+         so a failed download costs the row, never the altar (v4.7) — the curtain waits for it, so a player who has
+         the file never sees them. */
+      const deiStandIn = [[-1.0, 0x2a6a3a, 0xe8c08a, 0.6], [-0.36, 0xb8241a, 0xd8a070, 0.7], [0.36, 0xd8a83a, 0xe8c08a, 0.7], [1.0, 0x1a2a5a, 0x6a4a2a, 0.6]]
+        .map(([x, robe, face, h], i) => mkDeity(g, x, ALT.top + DEI.top, DEI.z, h, robe, face, i));
+      parseOnce('taoistrow').then(gl => {
+        if (!alive) return;
+        const lod = new THREE.LOD(); lod.position.set(0, ALT.top + DEI.top + 0.003, DEI.z); lod.scale.setScalar(DEI.s); g.add(lod);
+        let mat = null;
+        for (const [name, d] of [['taoistrow_near', 0], ['taoistrow_far', DEI.near]]) {
+          const src = gl.scene.getObjectByName(name);
+          if (!src) throw new Error('taoistrow has no ' + name);
+          const m = src.clone(true);                                   // (its own transform: meshopt's dequantization)
+          m.traverse(o => {
+            if (!o.isMesh) return;
+            o.castShadow = false; o.receiveShadow = true;
+            if (!mat) { mat = o.material.clone(); mat.envMap = scene.environment || null; mat.envMapIntensity = 0.25; owned.push({ dispose: () => mat.dispose() }); }
+            o.material = mat;
+          });
+          lod.addLevel(m, d);
+        }
+        for (const s of deiStandIn) s.visible = false;
+      }).catch(err => { console.warn('taoistrow failed to load', err); ctx.loadFail && ctx.loadFail('taoistrow', err); });
       // the red lamps: a lotus lamp each side on the cabinet, two electric candles on the step
       for (const s of [-1, 1]) {
         cyl(0.012, 0.016, 0.42, s * 1.36, ALT.top + 0.21, -9.3, matGold, 6, g);
@@ -2743,11 +2764,11 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
         for (let p = 0; p < 6; p++) { const pt = box(0.05, 0.012, 0.09, s * 1.36 + Math.cos(p * 1.05) * 0.07, ALT.top + 0.4, -9.3 + Math.sin(p * 1.05) * 0.07, matLacq, g, false); pt.rotation.y = -p * 1.05; pt.rotation.z = 0.5; }
         const hl = new THREE.Mesh(new THREE.PlaneGeometry(0.7, 0.7), addGlow(glowRed, 0.6)); hl.position.set(s * 1.36, ALT.top + 0.45, -9.2); g.add(hl);
         shrLife.lanterns.push({ halo: hl, bill: true });
-        cyl(0.035, 0.035, 0.3, s * 1.12, ALT.top + 0.35, -9.42, matLacq, 10, g);
-        mkFlame(g, s * 1.12, ALT.top + 0.52, -9.42, 0.6);
+        cyl(0.035, 0.035, 0.3, s * 1.12, ALT.top + 0.35, -9.305, matLacq, 10, g);      // (v21.11: on the lower step's lip, before the row)
+        mkFlame(g, s * 1.12, ALT.top + 0.52, -9.305, 0.6);
       }
-      // the red glow the lamps throw on the niche's back
-      const wash = new THREE.Mesh(new THREE.PlaneGeometry(3.0, 2.1), addGlow(glowRed, 0.32)); wash.position.set(0, ALT.top + 0.95, -9.9); g.add(wash);
+      // the red glow the lamps throw on the niche's back (v21.11: 8 mm off the panel, behind the row's backs)
+      const wash = new THREE.Mesh(new THREE.PlaneGeometry(3.0, 2.1), addGlow(glowRed, 0.32)); wash.position.set(0, ALT.top + 0.95, -9.912); g.add(wash);
     }
     // the offering table before the altar: the urn, candles, fruit, tea, flowers
     const OFT = { z: -8.55, top: 0.84 };
@@ -2904,8 +2925,50 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
         const ry = Math.abs(x - SB.x1) < 0.05 ? -Math.PI / 2 : Math.abs(x - SB.x0) < 0.05 ? Math.PI / 2 : z < -5 ? 0 : Math.PI;
         plane(0.13, 0.4, texMat(makeTalisman(THREE, cnv, 11 + i), { roughness: 0.85 }), x, y, z, ry, shrG);
       });
-    plane(0.62, 0.92, texMat(makeDeityPainting(THREE, cnv), { roughness: 0.7 }), SB.x1 - 0.012, 1.95, -3.6, -Math.PI / 2, shrG);
-    plane(0.62, 0.92, texMat(makeDeityPainting(THREE, cnv, '#6a1a12', '#d8a838'), { roughness: 0.7 }), SB.x0 + 0.012, 1.95, -3.2, Math.PI / 2, shrG);
+    /* v21.11 · THE TWO PAINTINGS (Chad: "replace the generated taoist deity portraits in the taoist medium's shop with
+       this image ... This is from wikipedia directly. Credit it too." and "add this portrait too, to the taoist
+       medium's shop on the wall"). Where the two drawn paintings hung: XUANTIAN SHANGDI (Zhenwu), god of the North,
+       seated on his rock throne among his marshals — Ming, early 15th century, Herbert F. Johnson Museum of Art — on
+       the left wall, the nearer to the player's stool, and THE JADE EMPEROR AND THE HEAVENLY KINGS (anonymous, ink
+       and colour on silk) on the right. Both PUBLIC DOMAIN on Wikimedia Commons, each the file's own bytes (sha1
+       checked against the Commons API: masters/v21.11/SOURCES.md), drawn whole at its own aspect, never cropped or
+       retouched (v21.8's rule for the masters), credited in the panel. Each hangs the way a Chinese hanging scroll
+       is mounted: a dark inner border, a silk mount deeper at the top than at the foot, the two ribbons down the top,
+       a wooden rod on a cord from a nail, and a roller with bone knobs at the foot. Lit by the room — a painting on
+       a dim shrine's wall is not a lamp. */
+    { const SC = { w: 0.66, side: 0.06, top: 0.21, foot: 0.11, rim: 0.012, foot0: 1.40 };   // (the foot 0.11 m over the dado's rail)
+      const matSilk = new THREE.MeshStandardMaterial({ color: 0xcdbb8f, roughness: 0.92 });
+      const matRim  = new THREE.MeshStandardMaterial({ color: 0x3a2a1a, roughness: 0.8 });
+      const matRod  = new THREE.MeshStandardMaterial({ color: 0x4a2a14, roughness: 0.55 });
+      const matKnob = new THREE.MeshStandardMaterial({ color: 0xe8dcc0, roughness: 0.4 });
+      const matRibbon = new THREE.MeshStandardMaterial({ color: 0x8a7650, roughness: 0.9 });   // (the mount's silk, a shade darker)
+      const hangScroll = (key, mime, aspect, x, z, ry) => {
+        const ih = SC.w / aspect, W = SC.w + 2 * SC.side, H = ih + SC.top + SC.foot, iy = (SC.foot - SC.top) / 2;
+        const g = new THREE.Group(); g.position.set(x, SC.foot0 + H / 2, z); g.rotation.y = ry; shrG.add(g);
+        box(W, H, 0.004, 0, 0, 0.002, matSilk, g, false);                                              // the silk mount
+        box(SC.w + 2 * SC.rim, ih + 2 * SC.rim, 0.002, 0, iy, 0.005, matRim, g, false);                // the inner border
+        for (const s of [-1, 1]) box(0.016, SC.top - 0.03, 0.001, s * SC.w * 0.2, H / 2 - SC.top / 2, 0.0045, matRibbon, g, false);   // the two ribbons
+        box(W + 0.012, 0.022, 0.016, 0, H / 2 + 0.011, 0.008, matRod, g, false);                       // the rod
+        const cx = W * 0.35, cy = 0.148, cl = Math.hypot(cx, cy);                                      // the cord, rod to nail
+        for (const s of [-1, 1]) { const c = cyl(0.0018, 0.0018, cl, s * cx / 2, H / 2 + 0.022 + cy / 2, 0.01, matInk, 4, g); c.rotation.z = s * Math.atan2(cx, cy); }
+        cyl(0.005, 0.005, 0.02, 0, H / 2 + 0.022 + cy, 0.01, matSteel, 6, g).rotation.x = Math.PI / 2; // the nail
+        { const r = cyl(0.016, 0.016, W + 0.02, 0, -H / 2 - 0.005, 0.016, matRod, 14, g); r.rotation.z = Math.PI / 2;   // the roller
+          for (const s of [-1, 1]) cyl(0.021, 0.021, 0.035, s * (W / 2 + 0.028), -H / 2 - 0.005, 0.016, matKnob, 14, g).rotation.z = Math.PI / 2; }
+        // the painting (an ImageBitmap upload ignores UNPACK_FLIP_Y, so the plane's own v is turned round)
+        const geo = new THREE.PlaneGeometry(SC.w, ih), uv = geo.attributes.uv;
+        for (let i = 0; i < uv.count; i++) uv.setY(i, 1 - uv.getY(i));
+        /* lit by the room, and lifted a little by its own colours (emissive: the same picture at 0.3) — the night
+           preset left the old silk two shades too dark on the wall to read from the stools (photographed) */
+        const mat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.85, emissive: 0xffffff, emissiveIntensity: 0.3 });
+        const m = new THREE.Mesh(geo, mat); m.position.set(0, iy, 0.0068); m.visible = false; g.add(m);
+        loadImageTexture(key, mime).then(t => {
+          if (!alive || !t) return;
+          madeTex.push(t); mat.map = t; mat.emissiveMap = t; mat.needsUpdate = true; m.visible = true;
+        }).catch(() => {});
+        return g;
+      };
+      hangScroll('ptg_zhenwu', 'image/jpeg', 1000 / 1365, SB.x0 + 0.003, -3.2, Math.PI / 2);
+      hangScroll('ptg_jade', 'image/jpeg', 647 / 904, SB.x1 - 0.003, -3.6, -Math.PI / 2); }
     // a wall shelf of joss-paper bundles and red boxes, and a silk banner by the door
     box(0.26, 0.03, 1.2, SB.x0 + 0.14, 1.62, -5.2, matWoodL, shrG, false);     // along the wall (it was turned 90°: 0.74 m into the room at eye height)
     for (let i = 0; i < 5; i++) box(0.2, 0.12 + (i % 2) * 0.06, 0.2, SB.x0 + 0.14, 1.69 + (i % 2) * 0.03, -5.68 + i * 0.24, new THREE.MeshStandardMaterial({ color: [0xd8b040, 0xb8241a, 0xe8c860, 0x8a1a12, 0xd8b040][i], roughness: 0.75 }), shrG, false);
@@ -3815,6 +3878,7 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
     /* the play-time voices and sounds, decoded ahead (the seventeenth seam,
        v8.0: a line asked for before its bytes have decoded plays nothing) */
     if (warmSounds) warmSounds(['ow3hello', 'z3look1', 'z3look2', 'z3look3', 'z3look4', 'ow3call', 'ow3gift1', 'ow3gift2',
+                                'ow3masters', 'z3masters',                                  // v21.11: the gallery's introduction
                                 'z3thanks', 'ow3good', 'mk3chant', 'z3shift1', 'z3shift2', 'z3night',
                                 'candlelit3', 'torchclick', 'matkneel3', 'e3bell', 'presencein',
                                 // the shrine's (play B): its lines and the sounds play makes there
@@ -3944,7 +4008,7 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
     const GAL_SOUNDS = { open: ['galopen', 0.8], flip: ['galflip', 0.7], read: ['galread', 0.45],
                          done: ['galdone', 0.85], close: ['galclose', 0.6] };
     const galSeen = new Set();
-    let galUp = false;
+    let galUp = false, galIntro = false;          // (galIntro: false · 'speaking' while the owner introduces it · 'done')
     const galW = (k, f) => W['m' + k + f] || '';
     function galleryPages() {
       return GAL.map(g => ({
@@ -3955,8 +4019,35 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
         images: g.images
       }));
     }
+    /* v21.11 · THE OWNER INTRODUCES IT, AND HE ANSWERS (Chad: "when the player clicks or interact with the row of
+       monk portraits, have the store owner say something first before the gallery window frame opens ... The player
+       should also say a voiceline in response, as the gallery window frame opens"). The first press of a run: the
+       owner, turned to him on his talking take — "Ahh... the great masters of the old days. You want to hear their
+       stories? Come, I tell you about them." — and as his line ends the window opens on the player's answer, "Yes,
+       please, Uncle. I know their faces from the amulets... but not their stories." Once a run: a reopen after
+       closing early goes straight in, and so does a Continue that has read some pages already. A press while he is
+       still speaking does nothing. */
     function galleryBegin() {
+      if (phase !== 'browse' || looked.has('masters') || galUp || galIntro === 'speaking' || !kit || !kit.gallery) return false;
+      if (!galIntro && !galSeen.size) {
+        galIntro = 'speaking';
+        queueLine('ow3masters', () => {
+          talk(owner, SECS.ow3masters);
+          after(SECS.ow3masters + 0.3, () => {                       // (past the line's own booking: speak.until)
+            if (galIntro !== 'speaking') return;                     // (a reset in between)
+            galIntro = 'done';                                       // (refused — another window up — the next press opens it)
+            galleryOpen(true);
+          });
+        }, 1, panAt(OWN.x, OWN.z));
+        return true;
+      }
+      return galleryOpen(false);
+    }
+    function galleryOpen(reply) {
       if (phase !== 'browse' || looked.has('masters') || galUp || !kit || !kit.gallery) return false;
+      /* his answer as the window opens: said HERE, in play, a beat before the window takes the screen — the chapter's
+         own line queue does not run under the gallery (its clock is play's) */
+      if (reply) sayLine('z3masters');
       const answer = kit.gallery({ pages: galleryPages(), label: W.galLabel, seen: [...galSeen], sounds: GAL_SOUNDS });
       if (!kit.galleryOpen()) return false;              // refused (another window up, or not in play)
       galUp = true;
@@ -4828,7 +4919,7 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       /* (v21.10: it opens the masters' gallery, and is not `once` — it stays until every page has been read) */
       { id: 'lkMasters', lookKey: 'masters', pos: { x: SHOP.x1 - 0.05, y: MSTR.y0 + MSTR.h / 2, z: MSTR.z }, radius: 9, aim: 0.26, pressAim: true, markFar: 9, markY: MSTR.h / 2 + 0.11, prompt: W.lookMasters,
         hits: tapBox(SHOP.x1 - 0.2, MSTR.y0 - 0.03, MSTR.z - MSTR.half - 0.04, SHOP.x1, MSTR.y0 + MSTR.h + 0.04, MSTR.z + MSTR.half + 0.04),   // the six portraits, one row (v21.10: its measured length)
-        enabled: () => phase === 'browse' && !looked.has('masters'), onInteract() { return galleryBegin(); } },
+        enabled: () => phase === 'browse' && !looked.has('masters') && galIntro !== 'speaking', onInteract() { return galleryBegin(); } },   // (v21.11: not while the owner introduces it)
       { id: 'owner', pos: { x: OWN.x - 0.05, y: 1.45, z: OWN.z }, radius: 2.7, prompt: W.hotOwner, markY: 0.3,   // (just over his head: at the default it stood under the objective box from the counter — VP-4)
         enabled: () => phase === 'owner', onInteract() { return giftBegin(); } },
       { id: 'mat', pos: { x: MAT.x, y: 1.0, z: MAT.z }, radius: 1.5, prompt: W.hotMat, markY: -0.55,   // (just over the mat's glow: 1.45 m up it read as the altar's, beside a second marker — VP-5)
@@ -5011,7 +5102,7 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       booted = false; preplaced = false; dayClock.t = 0; lastWall = 0;
       looked.clear(); called = false; gifted = false; wornDone = false; seated = null; turning = null; facing = null;
       bowing = null; chant = null; trance = null; celebrate = null; curTgt = 0; browseT0 = -1;
-      galSeen.clear(); galUp = false;                            // v21.10: the masters' gallery unread again
+      galSeen.clear(); galUp = false; galIntro = false;          // v21.10: the masters' gallery unread again (v21.11: and introduced again)
       objWas = null; danceTo = 0; danceHalt = false; passerHeld = false; filmG.visible = false; passer.group.position.z = PASS.z;
       inc = null; sitB = null; walkB = null; bowB = null; roarDone = false; rite = false; jossHold(false);
       shrineRun++; shrDark = false;                              // (a warm still running belongs to the run before)
@@ -5147,7 +5238,7 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       get phase() { return phase; },
       setPhase, applyPhase, after, dayClock, sayLine,
       galleryPages, galleryBegin,                                  // v21.10: for probes — the pages as the window gets them
-      info: () => ({ phase, t: +dayClock.t.toFixed(2), queued: lineQ.length, heard: [...heard], galSeen: [...galSeen], galUp,
+      info: () => ({ phase, t: +dayClock.t.toFixed(2), queued: lineQ.length, heard: [...heard], galSeen: [...galSeen], galUp, galIntro,
                      until: +speak.until.toFixed(2), pending: speak.pending ? speak.pending.name : null,
                      looked: [...looked], called, gifted, worn: wornNow(), seated, celebrate,
                      trance: trance ? { t: +trance.t.toFixed(1), tgt: curTgt, ev: trance.ev, done: trance.done } : null,
@@ -6778,21 +6869,6 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
     }
     x.fillStyle = '#1a3a8a'; x.fillRect(0, 0, 512, 30);
     x.fillStyle = '#ffffff'; x.font = 'bold 17px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('DRINKS · SNACKS · TOILETRIES · 日用品', 256, 16);
-    return done(THREE, c, false);
-  }
-  /* a deity painting in a frame: a robed figure in a halo, generic, soft */
-  function makeDeityPainting(THREE, cnv, robeA = '#1e5a3a', robeB = '#b8241a') {
-    const [c, x] = sized(cnv, 256, 384);
-    x.fillStyle = '#3a0c08'; x.fillRect(0, 0, 256, 384);
-    const g = x.createLinearGradient(0, 20, 0, 364); g.addColorStop(0, '#d8b77a'); g.addColorStop(1, '#8a6a3a');
-    x.fillStyle = g; x.fillRect(20, 20, 216, 344);
-    x.fillStyle = 'rgba(255,230,150,0.55)'; x.beginPath(); x.arc(128, 120, 54, 0, Math.PI * 2); x.fill();
-    x.fillStyle = robeA; x.beginPath(); x.moveTo(60, 352); x.quadraticCurveTo(128, 120, 196, 352); x.fill();   // the robe
-    x.fillStyle = robeB; x.beginPath(); x.moveTo(96, 352); x.quadraticCurveTo(128, 190, 160, 352); x.fill();
-    x.fillStyle = '#c8783a'; x.beginPath(); x.ellipse(128, 128, 26, 32, 0, 0, Math.PI * 2); x.fill();   // the face
-    x.fillStyle = '#1a1210'; x.beginPath(); x.moveTo(104, 150); x.quadraticCurveTo(128, 230, 152, 150); x.fill();   // the long beard
-    x.fillStyle = '#1a1210'; x.fillRect(100, 92, 56, 12);
-    x.strokeStyle = '#d4a23e'; x.lineWidth = 6; x.strokeRect(14, 14, 228, 356);
     return done(THREE, c, false);
   }
   /* the assistant's board: today's consultations and numbers */

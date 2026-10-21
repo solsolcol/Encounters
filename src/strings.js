@@ -192,6 +192,13 @@ Object.assign(window.__TEXT__, {
   'credits.phiboon':        'Luang Pu Phiboon',
   'credits.phiboonWho':     'LP Phiboon · bankhundej.blogspot.com',
   'credits.phiboonLink':    'bankhundej.blogspot.com',
+  // v21.11 · the two paintings on the medium's walls — Wikimedia Commons, public domain, hung as their files give them
+  'credits.zhenwu':         'Xuantian Shangdi (Zhenwu), in the medium’s shrine',
+  'credits.zhenwuWho':      'Ming, early 15th century · Herbert F. Johnson Museum of Art · Wikipedia, public domain',
+  'credits.zhenwuLink':     'commons.wikimedia.org · Xuantian Shangdi (Zhenwu), god of the North',
+  'credits.jade':           'The Jade Emperor and the Heavenly Kings, in the medium’s shrine',
+  'credits.jadeWho':        'Anonymous, ink and colour on silk · Sotheby’s · Wikipedia, public domain',
+  'credits.jadeLink':       'commons.wikimedia.org · Portraits of Jade Emperor and the Heavenly Kings',
   /* v12.1 — Chad's ghost cyclist is his own model and takes no row (the
      v5.23 rule); the Kamaz and the flashlight already have theirs above. */
   'credits.anim':        'Animation, two of the crowd, and the soldiers’ takes',
