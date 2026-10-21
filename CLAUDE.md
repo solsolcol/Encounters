@@ -5683,7 +5683,40 @@ What the baseline contains, by release:
   no page errors. Episodes 1 and 2 declare no `pressAim`, so they are unchanged
   by construction. Sheet v104 exported (two cells; v44 stays the link). Deploy
   `6ad85958d679ee427b9d1851`, byte-verified (all 231 served files).
-  docs/V21.9-PLAN.md is the build's memory.
+  THEN CHAD'S THIRD MESSAGE: *"the shop owner standing is covering the monk
+  portraits behind. I want the monk portraits to all be in a single row at the
+  top ... the hanuman lunge should not look like it is attacking the medium ...
+  the point was only to show aggression. Make the hanuman start the lunge
+  further behind, so that its ending position is not so close to the medium.
+  The medium should be taken aback a little, but not look like he entirely
+  collapsed backwards. Also, his collapse backwards made him collide into the
+  seat."* THE MASTERS hang in ONE ROW high on the owner's wall (`MSTR`: lowest
+  edge 1.90 m — from anywhere the counter lets the player stand, the 1.66 m
+  owner covers nothing on it above ~1.70), all five the same 0.50 m on the wall,
+  each at its own aspect, unaltered, in the order the two rows had; the
+  masters' spot, its mark and its tap box moved with them; photographed from
+  the counter, its ends, the middle and the door, desktop and phone. THE LUNGE,
+  measured first: the figure came within 0.64 m of his face, and his body went
+  up to 41 cm into his chair. The figure's arm and spear reach 1.1–1.3 m ahead
+  of its feet, so where it stops is now SOLVED from its own points — it stands
+  up 1.6 m before that and lands with its front 1.5 m short of his eyes, 32 cm
+  short of his table's edge, then rears; the ring goes out of its own chest and
+  a new shockwave across the floor from its feet (fading before it reaches
+  him); the pan tracks it and pulls back so the GAP is in the frame (square-on
+  where the screen is wide, behind its shoulder where it is not), and every
+  lens position is checked against the stools, the urn, the joss table and his
+  table (`SHR_KEEP` — moving the figure back had put the first shot's lens in the
+  red stool). THE MEDIUM: at rest his back sat ~1 cm off his chair's, so v21.8's
+  24° lean drove him through it; the lean is 2.6° now and the startle is his
+  shoulders and his hands before his chest, palms out (chosen from three
+  photographed at its peak); he goes still on his rest take as the roar begins.
+  And a pre-existing collision the scan found in PLAY: his reading take tips his
+  head back 5 cm into the chair's crest 6.3 s in, and the wife's reading runs
+  7.2 s — the chair's back now reclines 4.9° (`MED_RECLINE`), and every phase of
+  every seated take clears it (rest 6.4 cm, reading 2.2, finger-wag 2.7);
+  through the whole roar his back stays ≥ 6.5 cm off it. Deploy
+  `6ad86de460b7d5fb8f111c4a`, byte-verified (all 231 served files).
+  docs/V21.9-PLAN.md is the build's memory; four laws in LEARNINGS.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so

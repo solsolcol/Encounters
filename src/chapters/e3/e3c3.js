@@ -237,6 +237,7 @@
     const OWN = { x: 3.98, z: -2.45 };                   // the owner, behind his counter
     const STAFF = { x: -3.92, z: -2.35 };                // the staff man, behind the other
     const LPT = { x: 3.1, z: -2.0 };                     // the LP Tim's case on the owner's counter
+    const MSTR = { y0: 1.90, h: 0.50, z: -2.5 };           // v21.9: the old masters' one row on the owner's wall (its lowest edge, its height, its middle)
     const CLOCK = { x: 0, y: 2.56, z: -0.06 };           // over the door, inside, facing the shop
 
     /* ----------------------------------------------------------- materials */
@@ -743,11 +744,12 @@
        (masters/v21.8/portraits/SOURCES.md: the page, the file, its sha1),
        drawn UNLIT and outside tone mapping, so the screen shows each one's
        own colour; never cropped, scaled only as a whole, at its own aspect.
-       Luang Phu Tim's two, above — the master of the shop's prized amulet —
-       in plain gilt frames built ROUND the photographs; below, Luang Pu
-       Thuad, Somdej Toh and Ajahn Mun, whose pictures carry their own gold
-       frames and hang as they are (their corners are the file's own
-       transparency). Credited in the panel, one row a page. */
+       Luang Phu Tim's two — the master of the shop's prized amulet — in
+       plain gilt frames built ROUND the photographs; Luang Pu Thuad, Somdej
+       Toh and Ajahn Mun, whose pictures carry their own gold frames, hang as
+       they are (their corners are the file's own transparency). Since v21.9
+       all five hang in ONE ROW high on the wall, over the owner's head (the
+       row's own note, below). Credited in the panel, one row a page. */
     {
       const wx = SHOP.x1 - 0.012;
       /* an ImageBitmap upload ignores UNPACK_FLIP_Y (the WebGL rule), so the photograph's first row arrives at v = 0:
@@ -778,12 +780,27 @@
         return g;
       };
       /* Luang Phu Tim at prayer (250 x 333) and on his bench (450 x 600), both 3:4; the three mybuddha108 portraits
-         320 x 418. Left to right as seen from the shop floor (+z is the viewer's right on this wall) */
-      portrait('mstr_lptimpray', 'image/jpeg', 0.42, 0.42 * 333 / 250, 1.97, -2.86, true);
-      portrait('mstr_lptimbench', 'image/jpeg', 0.42, 0.42 * 600 / 450, 1.97, -2.14, true);
-      portrait('mstr_lpthuad', 'image/png', 0.48 * 320 / 418, 0.48, 1.2, -2.96, false);
-      portrait('mstr_somdejtoh', 'image/png', 0.48 * 320 / 418, 0.48, 1.2, -2.5, false);
-      portrait('mstr_achanmun', 'image/png', 0.48 * 320 / 418, 0.48, 1.2, -2.04, false);
+         320 x 418. Left to right as seen from the shop floor (+z is the viewer's right on this wall).
+         v21.9 · ONE ROW, AT THE TOP (Chad: "the shop owner standing is covering the monk portraits behind. I want the
+         monk portraits to all be in a single row at the top so that they are not covered"). Until v21.9 Luang Phu
+         Tim's two hung over the other three, and those three (1.0–1.4 m) were behind the owner's back. He is 1.66 m
+         tall, 0.51 m off this wall, and from anywhere the counter lets the player stand his head covers nothing on
+         it above 1.70 m — the row's lowest edge is MSTR.y0, 1.90. All five the same height on the wall (MSTR.h, the
+         gilt mouldings included), each at its own aspect, never cropped; in the order the two rows had: Luang Pu
+         Thuad, Luang Phu Tim at prayer, Somdej Toh in the middle under the shelf-shrine, Luang Phu Tim on his bench,
+         Ajahn Mun */
+      const FWD = 0.032, GAP = 0.12, RH = MSTR.h, RY = MSTR.y0 + MSTR.h / 2;   // (FWD: the moulding portrait() builds round a photograph)
+      const row = [
+        ['mstr_lpthuad', 'image/png', RH * 320 / 418, RH, false],
+        ['mstr_lptimpray', 'image/jpeg', (RH - 2 * FWD) * 250 / 333, RH - 2 * FWD, true],
+        ['mstr_somdejtoh', 'image/png', RH * 320 / 418, RH, false],
+        ['mstr_lptimbench', 'image/jpeg', (RH - 2 * FWD) * 450 / 600, RH - 2 * FWD, true],
+        ['mstr_achanmun', 'image/png', RH * 320 / 418, RH, false]
+      ];
+      const outer = row.map(([, , w, , fr]) => w + (fr ? 2 * FWD : 0));
+      let rz = MSTR.z - (outer.reduce((a, b) => a + b, 0) + GAP * (row.length - 1)) / 2;
+      row.forEach(([key, mime, w, h, fr], i) => { portrait(key, mime, w, h, RY, rz + outer[i] / 2, fr); rz += outer[i] + GAP; });
+      const BRZ = outer[2] / 2 + GAP / 2;                    // the shelf-shrine's brackets: down the gaps either side of the middle one
       box(0.4, 0.86, 2.8, SHOP.x1 - 0.2, 0.43, -2.45, matWood, shopG);                             // the low cabinet
       box(0.42, 0.03, 2.82, SHOP.x1 - 0.2, 0.875, -2.45, matWoodL, shopG);
       const br = texMat(makeBoxRow(THREE, cnv));
@@ -808,7 +825,7 @@
          on nothing behind the SANITY row — VP-9) */
       box(0.28, 0.03, 0.7, SHOP.x1 - 0.14, 2.62, -2.5, matRed, shopG);
       box(0.012, 0.045, 0.7, SHOP.x1 - 0.282, 2.62, -2.5, matGold, shopG, false);
-      for (const dz of [-0.26, 0.26]) {
+      for (const dz of [-BRZ, BRZ]) {
         box(0.2, 0.025, 0.03, SHOP.x1 - 0.1, 2.59, -2.5 + dz, matGold, shopG, false);
         const st = box(0.02, 0.2, 0.03, SHOP.x1 - 0.02, 2.5, -2.5 + dz, matGold, shopG, false);
         const dg = box(0.018, 0.24, 0.025, SHOP.x1 - 0.09, 2.52, -2.5 + dz, matGold, shopG, false); dg.rotation.z = 0.78;
@@ -1409,12 +1426,24 @@
        has it toward where a startled man's goes, measured in the world (his forward and his left from his facing) */
     const _rcA = new THREE.Vector3(), _rcB = new THREE.Vector3(), _rcT = new THREE.Vector3(), _rcQ = new THREE.Quaternion(),
           _rcP = new THREE.Quaternion(), _rcL = new THREE.Quaternion(), _rcI = new THREE.Quaternion();
+    /* v21.9 · A LITTLE (Chad: "The medium should be taken aback a little, but not look like he entirely collapsed
+       backwards. Also, his collapse backwards made him collide into the seat"). Measured in his chair's own frame
+       (dbg-e3c3recoil2): at rest his back sits ~1 cm off the chair's back, and v21.8's 0.42 rad of lean drove his
+       shoulder blades 6–10 cm and his neck 21 cm into it. So the trunk may lean back `lean` (2.6°) and no more, and
+       the startle is the rest of him: his shoulders jump (`sh`), his elbows come forward and his forearms up before
+       his chest, palms out — `arms` of the way to where a startled man's go (`upper`, `fore`: out, forward, up).
+       Chosen from three photographed at the peak (hands by the face read as a collapse, hands half-raised as
+       covering his face). A probe may change these live (stage.film.RECOIL) */
+    const RECOIL = { lean: 0.045, arms: 0.85, sh: 0.2, upper: [0.3, 0.55, -0.75], fore: [0.15, 0.75, 0.6] };
     function recoilPre(r) { if (r.rcWrote) r.rcBones.forEach((b, i) => b.quaternion.copy(r.rcWrote[i])); }
     function recoilPost(r) {
       if (!r.model || (!r.rcBones && !(r.recoil > 0.001))) return;
       if (!r.rcBones) {
         const find = (re) => { let o = null; r.model.traverse(b => { if (!o && b.isBone && re.test(b.name)) o = b; }); return o; };
-        r.rcBones = [find(/LeftArm(_\d+)?$/), find(/RightArm(_\d+)?$/), find(/LeftForeArm(_\d+)?$/), find(/RightForeArm(_\d+)?$/)];
+        /* (parents first — each is turned from where its parent has just put it: the shoulders, the upper arms, the
+           forearms) */
+        r.rcBones = [find(/LeftShoulder(_\d+)?$/), find(/RightShoulder(_\d+)?$/), find(/LeftArm(_\d+)?$/), find(/RightArm(_\d+)?$/),
+                     find(/LeftForeArm(_\d+)?$/), find(/RightForeArm(_\d+)?$/)];
         if (r.rcBones.some(b => !b)) r.rcBones = [];
         r.rcWrote = r.rcBones.map(b => b.quaternion.clone());
       }
@@ -1424,10 +1453,14 @@
       r.model.updateMatrixWorld(true);
       r.rcBones.forEach((b, i) => {
         const ch = b.children.find(c => c.isBone); if (!ch) return;
-        const side = i % 2 ? -1 : 1, out = i < 2 ? 0.45 : 0.12, fwd = i < 2 ? 0.75 : 0.3, up = i < 2 ? 0.62 : 0.95;
-        _rcT.set(fz * side * out + fx * fwd, up, -fx * side * out + fz * fwd).normalize();
         b.getWorldPosition(_rcA); ch.getWorldPosition(_rcB); _rcB.sub(_rcA).normalize();
-        _rcQ.setFromUnitVectors(_rcB, _rcT).slerp(_rcI, 1 - w);
+        let k = w * RECOIL.arms;
+        if (i < 2) { _rcT.copy(_rcB); _rcT.y += RECOIL.sh; _rcT.normalize(); k = w; }        // the shoulders: up, from where the take has them
+        else {
+          const side = i % 2 ? -1 : 1, [out, fwd, up] = i < 4 ? RECOIL.upper : RECOIL.fore;
+          _rcT.set(fz * side * out + fx * fwd, up, -fx * side * out + fz * fwd).normalize();
+        }
+        _rcQ.setFromUnitVectors(_rcB, _rcT).slerp(_rcI, 1 - k);
         b.parent.getWorldQuaternion(_rcP);
         _rcL.copy(_rcP).invert().multiply(_rcQ).multiply(_rcP);
         b.quaternion.premultiply(_rcL);
@@ -1438,7 +1471,7 @@
       if (!r.spine || !r.spine.length) return;
       if (!r.spineWrote) r.spineWrote = r.spine.map(b => b.quaternion.clone());
       else r.spine.forEach((b, i) => r.spineWrote[i].copy(b.quaternion));
-      const bow = (r.bow || 0) - 0.42 * (r.recoil || 0);   // (v21.8: a recoil throws the trunk BACK — the medium, taken aback)
+      const bow = (r.bow || 0) - RECOIL.lean * (r.recoil || 0);   // (a recoil leans the trunk BACK — the medium, taken aback: v21.9, a little)
       if (Math.abs(bow) < 0.001) return;
       const ry = r.group.rotation.y;
       _ax.set(Math.cos(ry), 0, -Math.sin(ry));
@@ -2953,6 +2986,7 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
        and back (the seam is continuous: 0.402 / 0.049 either side) — the way
        e2c1's riders sit inside their take's upright window. */
     const MED_WIN = [9.2, 1.2];
+    const MED_RECLINE = 0.085;                      // v21.9: his chair's back leans back this far about its foot (seatMedium)
     let medRestT = 0;
     function medRestTick(wdt) {
       const r = medium; if (!r.acts) return;
@@ -3040,12 +3074,18 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       for (const sx of [-1, 1]) for (const sz of [s0 + 0.04, s1 - 0.04]) box(0.06, top - 0.06, 0.06, sx * (W / 2 - 0.04), (top - 0.06) / 2, sz, matLacqIn, g);
       box(W, 0.1, 0.03, 0, top - 0.11, s1, matLacq, g, false); box(W - 0.1, 0.02, 0.012, 0, top - 0.09, s1 + 0.016, matGold, g, false);
       const bh = 0.82;
-      box(W, bh, 0.05, 0, top + bh / 2, s0 - 0.03, matLacq, g);
-      box(W - 0.16, bh - 0.2, 0.012, 0, top + bh / 2 + 0.03, s0 - 0.002, matLacqIn, g, false);
-      for (const [w, h, y] of [[W - 0.12, 0.02, top + 0.15], [W - 0.12, 0.02, top + bh - 0.06]]) box(w, h, 0.012, 0, y, s0 - 0.0, matGold, g, false);
-      const roundel = new THREE.Mesh(new THREE.CircleGeometry(0.09, 20), matGold); roundel.position.set(0, top + bh * 0.62, s0 + 0.002); g.add(roundel);
-      box(W + 0.14, 0.08, 0.08, 0, top + bh + 0.04, s0 - 0.03, matLacq, g);
-      for (const sx of [-1, 1]) { const horn = new THREE.Mesh(new THREE.ConeGeometry(0.04, 0.12, 8), matGold); horn.position.set(sx * (W / 2 + 0.08), top + bh + 0.09, s0 - 0.03); horn.rotation.z = -sx * 0.9; g.add(horn); }
+      /* v21.9: the back RECLINES, about its foot (MED_RECLINE). Measured in the chair's frame over every phase of the
+         takes he sits in (dbg-e3c3readscan): his rest take clears an upright back by 2.9 cm at least, but the reading
+         take tips his head back at 6.3–6.9 s of its 9.7 — and the wife's reading runs it 7.2 s — 5 cm into the crest.
+         Leaned back 4.9°, the crest stands 7 cm further back at that height and the small of the back only 1–2 cm, so
+         the seat he sits in is unchanged */
+      const bk = new THREE.Group(); bk.position.set(0, top, s0); bk.rotation.x = -MED_RECLINE; g.add(bk);
+      box(W, bh, 0.05, 0, bh / 2, -0.03, matLacq, bk);
+      box(W - 0.16, bh - 0.2, 0.012, 0, bh / 2 + 0.03, -0.002, matLacqIn, bk, false);
+      for (const [w, h, y] of [[W - 0.12, 0.02, 0.15], [W - 0.12, 0.02, bh - 0.06]]) box(w, h, 0.012, 0, y, 0, matGold, bk, false);
+      const roundel = new THREE.Mesh(new THREE.CircleGeometry(0.09, 20), matGold); roundel.position.set(0, bh * 0.62, 0.002); bk.add(roundel);
+      box(W + 0.14, 0.08, 0.08, 0, bh + 0.04, -0.03, matLacq, bk);
+      for (const sx of [-1, 1]) { const horn = new THREE.Mesh(new THREE.ConeGeometry(0.04, 0.12, 8), matGold); horn.position.set(sx * (W / 2 + 0.08), bh + 0.09, -0.03); horn.rotation.z = -sx * 0.9; bk.add(horn); }
       for (const sx of [-1, 1]) {
         box(0.05, 0.05, D, sx * (W / 2 - 0.02), top + 0.24, zc, matLacq, g);
         box(0.05, 0.24, 0.05, sx * (W / 2 - 0.02), top + 0.12, s1 - 0.04, matLacq, g);
@@ -3055,7 +3095,7 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
          could be walked through: the box goes into the engine's own array) */
       lateSolid(hidBox(W + 0.1, 1.4, D + 0.12, hx - SHR.x, 0.7, hz + zc, shrG));
       r.chair = g;
-      r.seatInfo = { seatY: +seatY.toFixed(3), s0: +s0.toFixed(3), s1: +s1.toFixed(3), sole: +sole.toFixed(3),
+      r.seatInfo = { seatY: +seatY.toFixed(3), s0: +s0.toFixed(3), s1: +s1.toFixed(3), sole: +sole.toFixed(3), recline: MED_RECLINE,
                      takes: all.map(m => [m.take, +m.seat.toFixed(3), +m.sole.toFixed(3), +m.toe.toFixed(3), +m.back.toFixed(3)]) };
       /* PF-4: his palms measured now, under the loading screen — a scan of every skinned vertex, twice, which ran on
          the roar's cut the first time he took up the sword and the bell (the palm is in the hand bone's own frame,
@@ -3150,6 +3190,8 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
     const hfxMat = (map) => { const m = new THREE.MeshBasicMaterial({ map, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, fog: false, side: THREE.DoubleSide }); owned.push({ dispose: () => m.dispose() }); return m; };
     const halo = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), hfxMat(goldGlow)); halo.renderOrder = 4; halo.visible = false; hfxG.add(halo);
     const ring = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), hfxMat(ringTex)); ring.renderOrder = 6; ring.visible = false; hfxG.add(ring);
+    /* v21.9: and one flat on the floor, the stamp going out across the tiles from its feet */
+    const ringF = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), hfxMat(ringTex)); ringF.rotation.x = -Math.PI / 2; ringF.renderOrder = 6; ringF.visible = false; hfxG.add(ringF);
     const streaks = [0, 1].map(() => { const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), hfxMat(streakTex)); m.renderOrder = 4; m.visible = false; hfxG.add(m); return m; });
     const EMB = 90, embGeo = new THREE.BufferGeometry(), embSeed = [];
     { const r = rng(9107); for (let i = 0; i < EMB; i++) embSeed.push([r() * Math.PI * 2, 0.2 + r() * 0.5, r() * 2.1, 0.5 + r() * 1.2, (r() - 0.5) * 2.4, r()]); }
@@ -3171,15 +3213,16 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
         hanuG.rotation.set(tilt, ry + HANU_FACE, 0, 'YXZ');
         for (const m of hanuMats) m.opacity = m.userData.peak * k;
       },
-      /* its halo and its embers, at k, about its body where it is now; t the film's clock */
-      aura(k, t) {
+      /* its halo and its embers, at k, about its body where it is now; t the film's clock; v21.9: `flare` swells the
+         halo for the moment it rears and roars (0 for none) */
+      aura(k, t, flare = 0) {
         halo.visible = embers.visible = k > 0.002;
         if (!halo.visible) return;
         hanuG.updateWorldMatrix(true, false);
         _fxV.set(0, 1.15, 0).applyMatrix4(hanuG.matrixWorld);
         halo.position.copy(_fxV); camera.getWorldQuaternion(halo.quaternion);
-        halo.scale.setScalar(2.9 + 0.25 * Math.sin(t * 7.0));
-        halo.material.opacity = 0.62 * k * (0.86 + 0.14 * Math.sin(t * 11.0));
+        halo.scale.setScalar((2.9 + 0.25 * Math.sin(t * 7.0)) * (1 + 0.5 * flare));
+        halo.material.opacity = Math.min(0.95, 0.62 * k * (0.86 + 0.14 * Math.sin(t * 11.0)) * (1 + 0.45 * flare));
         const EP = embGeo.attributes.position;
         for (let i = 0; i < EMB; i++) {
           const [a0, r0, y0, rise, spin, ph] = embSeed[i], u = (t * rise * 0.55 + ph) % 1, a = a0 + t * spin * 0.6, rr = r0 + u * 0.55;
@@ -3201,7 +3244,16 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
           m.material.opacity = 0.75 * k;
         });
       },
-      /* the ring going out of the medium when it reaches him */
+      /* v21.9: the stamp across the floor from its feet, at k (0–1), its widest `r` metres — faded out before it can
+         reach anyone */
+      floorRing(k, at, r = 2.2) {
+        ringF.visible = k > 0.002 && k < 0.998;
+        if (!ringF.visible) return;
+        ringF.position.set(at.x, 0.015, at.z);
+        ringF.scale.setScalar(0.3 + 2 * r * k);
+        ringF.material.opacity = 0.85 * (1 - k) * (1 - k);
+      },
+      /* the ring going out of IT (v21.9: its chest — until v21.9 the medium's, when it reached him) */
       ring(k, at) {
         ring.visible = k > 0.002 && k < 0.998;
         if (!ring.visible) return;
@@ -3235,7 +3287,13 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
           for (const m of echoMats[i]) m.opacity = 0.34 * e.k;
         });
       },
-      off() { halo.visible = embers.visible = ring.visible = false; for (const m of streaks) m.visible = false; for (const g of echoG) g.visible = false; }
+      off() { halo.visible = embers.visible = ring.visible = ringF.visible = false; for (const m of streaks) m.visible = false; for (const g of echoG) g.visible = false; },
+      /* v21.9: points on the figure as it stands NOW (for probes: how near it comes to the medium) */
+      points() {
+        if (!hanuG.visible || !hanuPts.length) return [];
+        hanuG.updateMatrixWorld(true);
+        return hanuPts.map(p => { _fxV.copy(p).applyMatrix4(hanuG.matrixWorld); return { x: _fxV.x, y: _fxV.y, z: _fxV.z }; });
+      }
     };
     const HANU_FACE = 0;                                   // the model faces +z (photographed front-on, v21.0)
     function talismanGiven(on) { if (talLaid) talLaid.visible = !on; }
@@ -4593,8 +4651,10 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       { id: 'lkAltar', lookKey: 'altar', pos: { x: 0, y: 1.45, z: ALTAR.z + 0.1 }, radius: 9, aim: 0.30, pressAim: true, once: true, markFar: 9, prompt: W.lookAltar,   // (v21.8: on the row's Buddha and the monk before it)
         hits: tapBox(-ALTAR.w / 2 - 0.05, 0, SHOP.z0, ALTAR.w / 2 + 0.05, 2.45, ALTAR.z + ALTAR.d / 2 + 0.05),   // the altar, its row and the screen behind
         enabled: () => phase === 'browse', onInteract() { return lookAt('altar'); } },
-      { id: 'lkMasters', lookKey: 'masters', pos: { x: SHOP.x1 - 0.05, y: 1.78, z: -2.5 }, radius: 9, aim: 0.26, pressAim: true, once: true, markFar: 9, prompt: W.lookMasters,
-        hits: tapBox(SHOP.x1 - 0.2, 0.9, -3.25, SHOP.x1, 2.32, -1.75),   // the five portraits
+      /* (v21.9: the row's middle, its mark in the space between the row and the shelf-shrine over it — on the row it
+         would stand on a master's face, under it it read as the owner's) */
+      { id: 'lkMasters', lookKey: 'masters', pos: { x: SHOP.x1 - 0.05, y: MSTR.y0 + MSTR.h / 2, z: MSTR.z }, radius: 9, aim: 0.26, pressAim: true, once: true, markFar: 9, markY: MSTR.h / 2 + 0.11, prompt: W.lookMasters,
+        hits: tapBox(SHOP.x1 - 0.2, MSTR.y0 - 0.03, MSTR.z - 1.25, SHOP.x1, MSTR.y0 + MSTR.h + 0.04, MSTR.z + 1.25),   // the five portraits, one row
         enabled: () => phase === 'browse', onInteract() { return lookAt('masters'); } },
       { id: 'owner', pos: { x: OWN.x - 0.05, y: 1.45, z: OWN.z }, radius: 2.7, prompt: W.hotOwner, markY: 0.3,   // (just over his head: at the default it stood under the objective box from the counter — VP-4)
         enabled: () => phase === 'owner', onInteract() { return giftBegin(); } },
@@ -4880,7 +4940,11 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
         radio(on) { radioSwitch(!!on); },
         shrineCast: { medium, asst, wife, father },
         mediumSeat: () => medium.seatInfo || null,
-        roar: roarFx, MED_EYE, TABLE_AT, medPose, medStand, MED_READ, MED_NO, MED_RITE, MED_ANGRY,
+        roar: roarFx, RECOIL, MED_EYE, TABLE_AT, medPose, medStand, MED_SIT, MED_READ, MED_NO, MED_RITE, MED_ANGRY,
+        /* (v21.9: what the roar film's lens keeps clear of, below its height + 0.15: the waiting stools, the joss table,
+           the urn, the medium's table) */
+        SHR_KEEP: [[-2.55, -3.7, 0.4, 0.5], [MYSTOOL.x, MYSTOOL.z, 0.4, 0.5], [-2.55, -5.7, 0.4, 0.5], [JOSS.x, JOSS.z, 0.65, 1.4],
+                   [URN.x, URN.z, 0.6, 1.1], [MTB.x, MTB.z, 0.85, 0.85]].map(([x, z, r, h]) => ({ x: LX(x), z, r, h })),
         SHR_ROOM: { x0: LX(SB.x0), x1: LX(SB.x1), z0: SB.z0, z1: SB.z1, h: SB.H },   // (v21.8: where the roar film's lens may stand)
         rite(on) { rite = !!on; },
         // the endings (CP8)
@@ -5368,13 +5432,28 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
     const unit = (x, y, z) => { const l = Math.hypot(x, y, z) || 1; return { x: x / l, y: y / l, z: z / l }; };
     const back = (T, f, d) => ({ x: Math.min(RM.x1 - 0.3, Math.max(RM.x0 + 0.3, T.x - f.x * d)), y: Math.min(RM.h - 0.3, Math.max(0.35, T.y - f.y * d)),
                                  z: Math.min(RM.z1 - 0.3, Math.max(RM.z0 + 0.3, T.z - f.z * d)) });   // (and never through a wall)
-    /* how far it flies: its feet to 0.95 m short of his eyes (over his table), so that pitched into the lunge its
-       head stops a forearm from his face rather than in it */
-    const REACH = Math.max(0.6, dl - 0.95), LIFT = 0.32, TILT = 0.32;
-    const F1 = at(REACH, 0, 0);
-    const IMPACT = { x: E.x - ux * 0.1, y: E.y - 0.12, z: E.z - uz * 0.1 };   // where it reaches him: his chest
+    /* v21.9 · A DISPLAY OF POWER, NOT A BLOW (Chad: "the hanuman lunge should not look like it is attacking the
+       medium, that was not the point, the point was only to show aggression. Make the hanuman start the lunge
+       further behind, so that its ending position is not so close to the medium. The medium should be taken aback a
+       little, but not look like he entirely collapsed backwards"). Until v21.9 it rose where the young man stood and
+       flew over the medium's table to a forearm from his face, and the ring went out of the MEDIUM's chest: a blow.
+       Now it stands up A0 behind where the young man stood, charges, and LANDS with its feet 1.85 m short of the
+       medium's eyes — on the young man's side of the table, never over it — and rears and roars there; the ring,
+       the flash and the room shaking go out of IT, and the medium is taken aback in his chair */
+    const LIFT = 0.3, TILT = 0.24, REAR = -0.07, GAP = 1.5, RUN = 1.6;
+    /* where it stops is solved from its OWN body, never its feet: its arm and the spear in it reach 1.1–1.3 m ahead
+       of its feet (measured on the shipped figure — stopped by its feet 1.85 m short, its front still came within
+       0.64 m of his eyes, over his table), so its feet land where its foremost point, leaning into the landing,
+       stays GAP short of his eyes along the line; it stands up RUN further back */
+    const reachAt = (tilt) => { let m = -Infinity; for (const q of R.corners(P, E, 0, 0, tilt)) m = Math.max(m, (q.x - P.x) * ux + (q.z - P.z) * uz); return m; };
+    const A1 = Math.min(0.4, dl - GAP - Math.max(reachAt(TILT), reachAt(REAR))), A0 = A1 - RUN;
+    const LAND = 2.62, STAMP = 2.68;               // it lands; the stamp — its roar's weight — goes out of it
+    const F0 = at(A0, 0, 0), F1 = at(A1, 0, 0);
+    const CHEST = at(A1 + 0.12, 0, 1.25);           // where the ring goes out of it: its chest, reared
     const gather = (k) => 0.35 * k * k * (3 - 2 * k) + 0.65 * k * k;          // it gathers, then goes
-    /* 1 · 0–0.55 · his eyes: the flash, the jolt at the medium, the roar out of him */
+    /* 1 · 0–0.55 · his eyes: the flash, the jolt at the medium, the roar out of him — and the medium stops his reading
+       and goes still (his rest take: his reading take tipped his head back into his chair's crest, measured) */
+    step(0.05, () => F.medPose(F.MED_SIT, 0.3));
     sfx(0.0, 'hanumanroar', 1);
     sfx(0.04, 'goldsting', 0.8);
     tr(0, 0.12, (k) => R.flash(k), rawK);
@@ -5383,67 +5462,113 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
     camTo(0, 0.26, { x: P.x, y: 1.62, z: P.z }, { x: P.x + ux * 0.34, y: 1.7, z: P.z + uz * 0.34 }, smoothK);
     /* the medium as a frame must hold him: his hat's crown, his chair's back, his knees under the table */
     const MED_PTS = [{ x: E.x, y: 2.02, z: E.z }, { x: E.x + ux * 0.42, y: 1.25, z: E.z + uz * 0.42 }, { x: E.x - ux * 0.3, y: 0.55, z: E.z - uz * 0.3 }];
-    /* 2 · 0.55–1.4 · CUT, and we are out of him: gold light standing where he stood, coming up out of the flash on a
-       swell — the lens low on the line's −x side and before it (55° round toward the medium), looking up at the whole
-       of it from as far back as this screen needs, easing in */
-    step(0.55, () => { handsRoot.visible = false; api.armR.visible = false; M.look = 1; M.lookAt = { x: P.x, y: 1.85, z: P.z }; });
+    /* 2 · 0.55–1.4 · CUT, and we are out of him: gold light standing up behind where he stood, coming up out of the
+       flash on a swell — the lens low on the line's −x side and before it (55° round toward the medium), looking up
+       at the whole of it from as far back as this screen needs, easing in. (The medium's eyes go to it — to its
+       chest, never up at its crown: looking up the 23° his neck allows tipped his hat 7 cm into his chair's crest,
+       measured at v21.9) */
+    step(0.55, () => { handsRoot.visible = false; api.armR.visible = false; M.look = 1; M.lookAt = { x: F0.x, y: 1.5, z: F0.z }; });
     sfx(0.5, 'goldswell', 0.9);
-    const box0 = R.corners(P, E, 0, 0, 0), T0 = cen(box0);
-    const aA = 0.96, tA = 0.17;
-    const fA = unit(-(ux * Math.cos(aA) + nx * Math.sin(aA)) * Math.cos(tA), Math.sin(tA), -(uz * Math.cos(aA) + nz * Math.sin(aA)) * Math.cos(tA));
-    const DA = fitD(T0, fA, box0);
-    tr(0.55, 1.4, (k) => put(back(T0, fA, DA * (1.14 - 0.14 * k)), T0), smoothK);
-    tr(0.55, 0.95, (k) => R.hanu(k, P, E, 0, 0, 0), smoothK);
-    tr(0.55, 1.0, (k, t) => R.aura(k, t), smoothK);
-    /* 3 · 1.4–2.75 · IT GOES FOR HIM, and the lens PANS with it (Chad's word): on the line's −x side, square to it,
-       as far back as this screen needs for the whole figure where it reaches him AND the medium (and, from there,
-       the whole figure where it stood), turning from where it stood to where it strikes as it goes and pushing in a
-       little; and two gold echoes of it trail down the line it flies, where it was a moment before. (Until v21.8 an
-       orbit 1.2–1.6 m off the figure, which showed a phone a gold torso with no head and no medium — photographed.) */
-    sfx(1.3, 'hanulunge', 1);
-    const box1 = R.corners(P, E, REACH, LIFT, TILT).concat(MED_PTS), T1 = cen(box1);
-    const tB = 0.07, fB = unit(-nx * Math.cos(tB), Math.sin(tB), -nz * Math.cos(tB));
-    let DB = fitD(T1, fB, box1) * 1.04;
-    for (let i = 0; i < 6; i++) {
-      const C = back(T1, fB, DB * 1.1), have = Math.hypot(T0.x - C.x, T0.y - C.y, T0.z - C.z);
-      const need = fitD(T0, unit(T0.x - C.x, T0.y - C.y, T0.z - C.z), box0);
-      if (have >= need) break;
-      DB += (need - have) / 1.1 + 0.05;
+    /* (v21.9: on a NARROW screen the frame holds the figure's body and head — its points within `r` of its own axis —
+       and lets the spear and the tail run past the edges: they make it 2.5 m across, and no angle inside this room
+       holds that and the medium in a portrait frame (measured, every candidate wanted the lens 7.1–9.0 m back). Its
+       head juts forward of its feet: at 0.7 m the first shot cut its face at the frame's edge, photographed, so the
+       shot of it alone takes 1.05 m, the two-shot 0.7) */
+    const NARROW = camera.aspect < 1;
+    const coreOf = (pts, push, r) => !NARROW ? pts : pts.filter(q => Math.hypot(q.x - (P.x + ux * push), q.z - (P.z + uz * push)) < r);
+    const box0 = coreOf(R.corners(P, E, A0, 0, 0), A0, 1.05), T0 = cen(box0);
+    /* (v21.9: and never in the furniture — with the figure further back, 55° round put the lens 0.24 m from the red
+       stool at its own height, so the next angle round that stands clear of every stool, the urn, the joss table and
+       the medium's table is taken) */
+    const KEEP = F.SHR_KEEP || [];
+    const clearAt = (C) => KEEP.every(o => C.y > o.h + 0.15 || Math.hypot(C.x - o.x, C.z - o.z) > o.r);
+    /* (and never looking THROUGH them: photographed, a lens clear of the joss table looked at the figure through it) */
+    const seen = (C, T) => { for (let i = 1; i < 10; i++) { const q = mix(C, T, i / 10);
+      if (!KEEP.every(o => q.y > o.h + 0.05 || Math.hypot(q.x - o.x, q.z - o.z) > o.r * 0.8)) return false; } return true; };
+    /* (on a portrait screen the widest a figure can be is a third of a desktop's: of the angles that stand clear, the
+       one that brings the lens nearest, and less low — at the desktop's 0.17 rad up and that distance it sat on the
+       floor in the corner, photographed) */
+    const tA = NARROW ? 0.09 : 0.17;
+    let aA = 0.96, fA = null, DA = 0, okA = false;
+    for (const a of [0.96, 0.82, 1.1, 0.7, 1.24]) {
+      const f = unit(-(ux * Math.cos(a) + nx * Math.sin(a)) * Math.cos(tA), Math.sin(tA), -(uz * Math.cos(a) + nz * Math.sin(a)) * Math.cos(tA)), D = fitD(T0, f, box0);
+      const ok = clearAt(back(T0, f, D * 1.14)) && clearAt(back(T0, f, D)) && seen(back(T0, f, D * 1.14), T0) && seen(back(T0, f, D), T0);
+      if (!fA || (ok && (!okA || (NARROW && D < DA)))) { aA = a; fA = f; DA = D; okA = ok; }
+      if (ok && !NARROW) break;
     }
-    F.roarFrame = { DA, DB, T0, T1, fA, fB, box0, box1 };   // (what the framing measured: probes read it)
-    const lungeAt = (q) => ({ push: REACH * q, lift: LIFT * Math.sin(Math.min(1, q * 1.4) * Math.PI / 2), tilt: TILT * Math.min(1, q * 1.6) });
-    tr(1.4, 2.75, (k) => {
-      const q = gather(k), L = lungeAt(q), push = L.push, lift = L.lift;
-      R.hanu(1, P, E, push, lift, L.tilt);
+    tr(0.55, 1.4, (k) => put(back(T0, fA, DA * (1.14 - 0.14 * k)), T0), smoothK);
+    tr(0.55, 0.95, (k) => R.hanu(k, P, E, A0, 0, 0), smoothK);
+    tr(0.55, 1.0, (k, t) => R.aura(k, t), smoothK);
+    /* 3 · 1.4–LAND · IT CHARGES, and the lens goes with it (Chad's pan, v21.8): from the line's −x side the camera
+       tracks it down the line and pulls back as it comes, so that it lands with the medium in the same frame — the
+       whole figure, his hat, his chair and the table between them, the GAP between them being the point of the
+       shot. Square to the line where this screen's width allows it; on a narrower one turned toward the medium,
+       behind the figure's shoulder, until the frame fits inside the room (a portrait phone sees a third of a
+       desktop's width at the same 72° height) — on a phone, round until the lens is over the figure's shoulder looking
+       down the line at the medium, the only way a portrait frame holds them both (photographed: square-on, the lens
+       was pinned to the wall with the stools across the foreground, and the medium was out of the frame). Two gold
+       echoes trail it down the line it charges along; it leaves the floor and comes down onto it */
+    sfx(1.3, 'hanulunge', 1);
+    const lungeAt = (q) => ({ push: A0 + (A1 - A0) * q, lift: LIFT * Math.sin(Math.PI * Math.min(1, Math.max(0, (q - 0.08) / 0.92))),
+                              tilt: TILT * Math.min(1, q * 1.6) });
+    const box1 = coreOf(R.corners(P, E, A1, 0, REAR), A1, 0.7).concat(MED_PTS), T1 = cen(box1);
+    const dirAt = (th) => { const tB = NARROW || th > 0.9 ? -0.1 : 0.07;   // (a phone's lens at a man's eye, over the low furniture, looking a little down)
+      return unit((-nx * Math.cos(th) + ux * Math.sin(th)) * Math.cos(tB), Math.sin(tB), (-nz * Math.cos(th) + uz * Math.sin(th)) * Math.cos(tB)); };
+    let fB = null, DB = 0, thB = 0, best = -1;
+    const cands = [];
+    for (let th = 0; th <= 1.451; th += 0.075) {
+      const f = dirAt(th), D = fitD(T1, f, box1) * 1.06, C = back(T1, f, D), Cs = back(T0, f, fitD(T0, f, box0) * 1.12);
+      const fits = Math.hypot(C.x - (T1.x - f.x * D), C.y - (T1.y - f.y * D), C.z - (T1.z - f.z * D)) < 0.02;   // (it stands inside the room)
+      let clear = seen(Cs, T0) && seen(C, T1);                                                                    // (it sees them,
+      for (let i = 0; i <= 8; i++) clear = clear && clearAt(mix(Cs, C, i / 8)) && seen(mix(Cs, C, i / 8), mix(T0, T1, i / 8));   //  and its whole track is clear)
+      const score = (fits ? 2 : 0) + (clear ? 1 : 0);
+      cands.push({ th: +th.toFixed(3), D: +D.toFixed(2), fits, clear, C: [+(C.x - F.LX(0)).toFixed(2), +C.y.toFixed(2), +C.z.toFixed(2)],
+                   want: [+(T1.x - f.x * D - F.LX(0)).toFixed(2), +(T1.y - f.y * D).toFixed(2), +(T1.z - f.z * D).toFixed(2)] });
+      if (score > best) { best = score; fB = f; DB = D; thB = th; }
+      if (fits && clear) break;
+    }
+    const C1 = back(T1, fB, DB), D0 = fitD(T0, fB, box0) * 1.12, C0 = back(T0, fB, D0);
+    F.roarFrame = { DA, DB, D0, aA, thB, A0, A1, T0, T1, C0, C1, fA, fB, box0, box1, cands };   // (what the framing measured: probes read it)
+    tr(1.4, LAND, (k) => {
+      const q = gather(k), L = lungeAt(q);
+      R.hanu(1, P, E, L.push, L.lift, L.tilt);
       const ek = Math.min(1, q * 5) * (1 - Math.max(0, (k - 0.82) / 0.18));
       R.echoes(P, E, [{ ...lungeAt(Math.max(0, q - 0.13)), k: ek }, { ...lungeAt(Math.max(0, q - 0.28)), k: ek * 0.55 }]);
-      const fx = P.x + ux * push, fz = P.z + uz * push;
-      R.streak(q > 0.04 ? Math.min(1, q * 4) : 0, P, { x: fx, z: fz }, 1.2 + lift);
-      if (k < 1) M.lookAt = { x: fx + ux * 0.55, y: 1.75 + lift, z: fz + uz * 0.55 };   // (a track past its end still runs: only while it flies)
-      put(back(T1, fB, DB * (1.1 - 0.1 * sm(k))), mix(T0, T1, Math.min(1, q * 1.08)));
+      const fx = P.x + ux * L.push, fz = P.z + uz * L.push;
+      R.streak(q > 0.04 ? Math.min(1, q * 4) : 0, F0, { x: fx, z: fz }, 1.2 + L.lift);
+      if (k < 1) M.lookAt = { x: fx + ux * 0.3, y: 1.5 + L.lift, z: fz + uz * 0.3 };   // (a track past its end still runs: only while it comes)
+      put(mix(C0, C1, q), mix(T0, T1, q));
     }, rawK);
-    tr(1.0, 2.85, (k, t) => R.aura(1, t), rawK);
-    /* 4 · 2.7 · it reaches him: a white-gold flash, a ring going out of him, the room shaken, the lanterns swinging;
-       5 · and the medium, taken aback — flinching back in his chair as it comes at him, thrown back as it strikes,
-       his hands up, his eyes on it — and his gasp after the crash's first blow (a voice ducks every other sound
-       8 dB: on the blow it took the crash's weight with it) */
-    sfx(2.7, 'hanuhit', 1);
-    sfx(2.74, 'hanucrash', 0.85);
-    sfx(3.02, 'md3gasp');                              // 1.39 → 4.41
-    /* (the flash short and hard: at 0.9 for 0.6 s it hid his whole recoil under white, photographed at 2.78 and 3.0) */
-    tr(2.7, 2.75, (k) => R.flash(0.8 * k), rawK);
-    tr(2.75, 3.02, (k) => R.flash(0.8 * (1 - k)), smoothK);
-    tr(2.72, 3.3, (k) => R.ring(k, IMPACT), rawK);
-    tr(2.72, 3.2, (k) => F.gust(k), smoothK);
+    tr(1.0, 3.0, (k, t) => R.aura(1, t, t < STAMP ? 0 : Math.exp(-(t - STAMP) * 3.5)), rawK);
+    /* 4 · LAND–3.0 · it lands short of him and REARS — up off its forward lean to a little back of upright, a small
+       lift under it — and the stamp goes out of IT: the low boom and the gong, a gold ring off its own chest, a short
+       hard flash, the room shaken and the lanterns swinging, its halo swelling; the lens eases in on the two of them */
+    step(LAND, () => { M.lookAt = { x: F1.x + ux * 0.3, y: 1.55, z: F1.z + uz * 0.3 }; });
+    tr(LAND, 3.0, (k) => R.hanu(1, P, E, A1, 0.06 * Math.sin(Math.PI * Math.min(1, k * 1.5)), TILT + (REAR - TILT) * sm(Math.min(1, k * 1.3))), rawK);
+    tr(LAND, 3.1, (k) => put(mix(C1, T1, 0.06 * sm(k)), T1), rawK);
+    sfx(STAMP, 'hanuhit', 1);
+    sfx(STAMP + 0.04, 'hanucrash', 0.85);
+    tr(STAMP, STAMP + 0.05, (k) => R.flash(0.62 * k), rawK);
+    tr(STAMP + 0.05, STAMP + 0.32, (k) => R.flash(0.62 * (1 - k)), smoothK);
+    tr(STAMP + 0.02, STAMP + 0.62, (k) => R.ring(k, CHEST), rawK);
+    tr(STAMP, STAMP + 0.75, (k) => R.floorRing(k, { x: F1.x + ux * 0.2, z: F1.z + uz * 0.2 }, Math.min(2.2, dl - A1 - 0.6)), rawK);
+    tr(STAMP + 0.04, 3.2, (k) => F.gust(k), smoothK);
     tr(3.2, 4.6, (k) => F.gust(1 - k), smoothK);
-    tr(2.42, 2.9, (k) => { M.recoil = k; }, smoothK);
+    tr(LAND + 0.1, LAND + 0.6, (k) => R.streak(1 - k, F0, F1, 1.2), smoothK);
+    /* 5 · and the medium, TAKEN ABACK — a little (Chad: "taken aback a little, but not look like he entirely
+       collapsed backwards ... his collapse backwards made him collide into the seat. That should not happen"): as
+       it comes at him his shoulders jump, his hands come up before his chest, palms out, and he presses back into
+       his chair — never through it (RECOIL: his back sits a centimetre off the chair's at rest, measured, so his
+       trunk may lean back 2.6° at most and the rest of the startle is his hands and his shoulders) — and his gasp
+       after the gong's first blow (a voice ducks every other sound 8 dB: on the blow it took the gong's weight) */
+    tr(2.3, 2.85, (k) => { M.recoil = k; }, smoothK);
     tr(3.9, 4.4, (k) => { M.recoil = 1 - k; }, smoothK);
-    /* 6 · 2.85–4.1 · CUT to him: the medium in his chair, the gold going out of the air before him (the figure, its
-       halo, its streak fading where it reached), his eyes going from where it was to the young man */
-    tr(2.85, 4.1, (k) => put(mix(at(dl - 1.08, 0.8, E.y + 0.1), at(dl - 0.98, 0.7, E.y + 0.13), k), { x: E.x, y: E.y - 0.02, z: E.z }), smoothK);
-    tr(2.85, 3.5, (k) => R.hanu(1 - k, P, E, REACH, LIFT, TILT + 0.1 * k), smoothK);
-    tr(2.75, 3.25, (k) => R.streak(1 - k, P, F1, 1.2 + LIFT), smoothK);
-    tr(2.85, 3.7, (k, t) => R.aura(1 - k, t), rawK);
+    sfx(3.0, 'md3gasp');                              // 1.41 → 4.41
+    /* 6 · 3.1–4.1 · CUT to him: the medium in his chair, taken aback, the gold going out of the air before him (the
+       figure, its halo, its embers fading where it reared), his eyes going from where it was to the young man */
+    tr(3.0, 3.55, (k) => R.hanu(1 - k, P, E, A1, 0, REAR), smoothK);
+    tr(3.0, 3.7, (k, t) => R.aura(1 - k, t), rawK);
+    tr(3.1, 4.1, (k) => put(mix(at(dl - 1.08, 0.8, E.y + 0.1), at(dl - 0.98, 0.7, E.y + 0.13), k), { x: E.x, y: E.y - 0.02, z: E.z }), smoothK);
     step(3.6, () => { M.lookAt = { x: P.x, y: 1.62, z: P.z }; });
     /* 7 · 4.1– · his eyes again: the medium still in his chair, staring at him — and THEN he stands (v21.8: he stood
        inside the close shot, into the lens, photographed at 4.4), out of his chair over 0.6 s with the sword and the
@@ -5473,10 +5598,10 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
     sfx(9.5, 'as3back');                                  // 2.51 → 12.01
     sfx(10.2, 'drum3', 0.8); sfx(10.8, 'drum3', 0.7); sfx(11.4, 'gong3', 0.55);
     sfxFade(12.0, 12.7, 'gong3'); sfxFade(12.2, 12.7, 'drum3');
-    /* the body over every camera track: the roar's shake, the hit's (the hardest), the rites' (lighter), settling */
+    /* the body over every camera track: the roar's shake, the stamp's (the hardest), the rites' (lighter), settling */
     const shake = (t) => t < 0.55 ? 1 - 0.4 * t / 0.55
-                       : t < 2.7 ? 0.12
-                       : t < 3.95 ? 1.25 * (1 - (t - 2.7) / 1.25)
+                       : t < STAMP ? 0.12
+                       : t < STAMP + 1.25 ? 1.1 * (1 - (t - STAMP) / 1.25)
                        : t < 4.45 ? 0
                        : Math.max(0, 0.3 * (1 - (t - 4.45) / 2.6));
     tr(0, 12.7, (k, t) => {

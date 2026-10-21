@@ -5821,3 +5821,43 @@ cut (sharing its vertices and maps) when it is small.
   face each other exactly (1.00 both hands, wrists 6 cm apart) and the A-pose
   check agreed (0.93), and a close side photograph showed the clasp. Measure
   first, then photograph from where the measure says to look.
+- **Where a figure stops is solved from its own body, never its feet**
+  (v21.9). The Hanuman's arm and spear reach 1.1–1.3 m ahead of its feet, so
+  stopping its feet 1.85 m short of the medium still put its front 0.64 m from
+  his face, over his table — and "how close does it come" is what decides
+  whether a charge reads as a threat or a blow. The film now takes the figure's
+  own points (`R.corners`) at the landing's lean and the reared lean, and puts
+  its feet where its FOREMOST point stays the chosen gap short. A display of
+  power also sends its effects out of the one displaying it (the ring off its
+  own chest, a shockwave from its own feet that fades before it reaches anyone):
+  effects that land on the other man say he was hit.
+- **A seated man's chair is built round every take he sits in, and checked
+  band by band** (v21.9). The medium's chair was fitted to his rest take only,
+  so his reading take — which tips his head back 6.3–6.9 s in, and the wife's
+  reading runs it 7.2 s — put his hat 5 cm into the crest. The scan that found
+  it poses each seated take at many phases with no frame between pose and
+  measure, takes every skinned vertex into the chair's own frame, and reports
+  per 5 cm of height his rearmost point against the back's front plane; a
+  reclined back (4.9° about its foot) cleared all of them while moving the small
+  of the back only 1–2 cm. And a STARTLE in a chair is bounded by the chair: his
+  back sat a centimetre off it, so any real lean goes through it — the startle
+  has to be his shoulders and his hands, and his eyes on the thing's chest
+  rather than up at its crown (looking up tips the head back too).
+- **A camera that moves for one change can land in the furniture** (v21.9).
+  Moving the figure 1.5 m back moved the lens framing it — onto the red stool at
+  the stool's own height. A film whose lens is placed by computation needs a
+  list of what it keeps clear of (`SHR_KEEP`) and a check on every candidate
+  position and the track between them, or the next change to the subject will
+  put the camera inside something without a single number looking wrong.
+- **When a portrait frame cannot hold the whole subject, say what it may lose,
+  then search the angles** (v21.9). The Hanuman with its spear and tail is
+  2.5 m across; with the medium beside it, every angle inside the shrine wanted
+  the phone's lens 7.1–9.0 m back (the search's own candidates, read by
+  `dbg-e3c3cands.mjs`), so on a phone it stood pinned to the wall, low, with the
+  stools across the foreground and the medium out of the frame. On a narrow
+  screen the frame now holds the figure's CORE (its points within a radius of
+  its own axis — 1.05 m when it is alone, so its forward-jutting head stays in;
+  0.7 m in the two-shot) and lets the spear tip and tail run off the edges, and
+  the search goes on round to looking down the line over its shoulder — the one
+  composition a portrait frame can hold two things in, by depth rather than by
+  width. Desktop takes the same code path with the whole figure and is unchanged.
