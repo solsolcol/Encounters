@@ -6226,6 +6226,13 @@ What the baseline contains, by release:
   `6ada35b699db563d26d16e49`, byte-verified (236 files). The fixture: 176 of 176 green on it, once two harness faults
   from v21.26's checks were fixed (an evaluate that returned, and so awaited, the gallery's own promise and hung the
   run; a stamp read a beat before the page wrote it).
+- **v21.29** THE MASTERS AHEAD, BRIGHTER — Chad: *"yes make the locked ones brighter"*. At 42 % the gallery's locked
+  thumbnails could not be told apart. Four levels were photographed on the real gallery at a phone's size and measured
+  outside the padlock; the locked picture is `saturate(.55) brightness(.72)` now (was `.25` / `.42`): each face shows,
+  and it is still a step under a thumbnail he has reached (80 %), the cream padlock saying the rest. CSS only.
+  Photographed on a phone and a desktop (a clipped desktop shot caught the window still opening on the slow test box —
+  `galIn` starts at opacity 0 and brightness 2.2 — and the settled frame a second later is right). Deploy
+  `6ada4d40de244946b2409c26`, byte-verified (236 files). No word moved; sheet v113 stands (v44 the link).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so

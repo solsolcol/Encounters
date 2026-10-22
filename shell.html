@@ -2154,8 +2154,10 @@ body.finePtr .galPull,body.finePtr .galEndHint{display:block}
    and no fade into it: the class lands after the window's first style pass, so every opening faded the locked
    thumbnails from 80 % to 42 % over a quarter second. Unlocked, the base rules' transitions brighten it as before.
    A filter makes the picture a stacking context painted in tree order with the positioned lock, so the shackle — the
-   ::before, first in the tree — went under it: both halves of the lock carry z-index 1) */
-.galThumb.locked canvas{filter:saturate(.25) brightness(.42);transition:none}
+   ::before, first in the tree — went under it: both halves of the lock carry z-index 1)
+   v21.29 (Chad: "make the locked ones brighter"): at 42 % the masters ahead could not be told apart; at 72 % each face
+   shows and it is still a step under a reached thumbnail (80 %), the lock saying the rest */
+.galThumb.locked canvas{filter:saturate(.55) brightness(.72);transition:none}
 .galThumb.locked:not(.seen)::after{content:"";position:absolute;z-index:1;left:50%;top:50%;width:12px;height:9px;margin:0 0 0 -6px;border-radius:2px;
   background:#e3cf9f;box-shadow:0 0 6px rgba(0,0,0,.9)}
 .galThumb.locked:not(.seen)::before{content:"";position:absolute;z-index:1;inset:auto;left:50%;top:50%;width:6px;height:7px;margin:-6px 0 0 -5px;
