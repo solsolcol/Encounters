@@ -934,10 +934,21 @@ const GAL_PAGES = [
     images: [{ key: 'mstr_lpthuad', mime: 'image/png', own: true }] },
   { id: 'gc', name: 'Third master', story: 'Story three, with no picture at all.' },
 ];
+/* (v21.26: the same pages under their own ids, the third with a story too long to stand on the screen — it cannot count
+   until it is scrolled, so "Esc closes it early" no longer races the page counting on a loaded box) */
+const GAL_LONG = Array.from({ length: 14 }, (_, k) => `Paragraph ${k + 1} of a story long enough to scroll: the words run on past the foot of the column, line after line, so the end of it is somewhere below.`);
+const ESC_PAGES = GAL_PAGES.map(q => ({ ...q, id: 'e' + q.id, ...(q.id === 'gc' ? { story: GAL_LONG } : {}) }));
 K.galleryOpens = await p.evaluate((pages) => {
   const e = window.__enc;
   window.__gal = undefined;
   e.kit.gallery({ pages, label: 'Probe gallery' }).then(r => { window.__gal = r; });
+  /* (v21.26: when page 1 counts is stamped in the page from this instant, so a loaded box cannot make it look early) */
+  window.__galRead0 = null;
+  const tOpen = performance.now(), iv = setInterval(() => {
+    const s0 = e.galleryState();
+    if (s0.seen.includes(0)) { window.__galRead0 = performance.now() - tOpen; clearInterval(iv); }
+    else if (!s0.open) clearInterval(iv);
+  }, 20);
   const st = e.galleryState();
   e.galleryGo(1);                                              // inside the guard: refused
   const held = e.galleryState().i === 0;
@@ -949,9 +960,11 @@ K.galleryOpens = await p.evaluate((pages) => {
     && document.querySelectorAll('#galPips button').length === 2
     && document.getElementById('galGo').textContent === 'Next';
 }, GAL_PAGES);
-/* a page is not read at once, and is read after it has stood */
-K.galleryNotAtOnce = await p.evaluate(() => window.__enc.galleryState().seen.length === 0);
+/* a page is not read at once, and is read after it has stood (v21.26: measured in the page — it counts no sooner than
+   GAL_DWELL after the window opened; a separate round trip read it as "already read" on a loaded box) */
 K.galleryReadsOne = await until(() => window.__enc.galleryState().seen.includes(0), 30000).then(() => true, () => false);
+K.galleryNotAtOnce = await p.evaluate(() => window.__galRead0 != null && window.__galRead0 >= 1150);
+if (!K.galleryNotAtOnce) console.log('gallery not at once', await p.evaluate(() => window.__galRead0));
 K.galleryPicture = await until(() => {
   const cv = document.getElementById('galImg'); if (!cv || !cv.width) return false;
   const g = cv.getContext('2d'), d = g.getImageData(cv.width >> 1, cv.height >> 1, 1, 1).data;
@@ -976,14 +989,14 @@ await p.waitForTimeout(800);                                   // (v21.23: the w
 K.galleryResumes = await p.evaluate((pages) => {
   const e = window.__enc;
   window.__gal = undefined;
-  e.kit.gallery({ pages, seen: ['ga', 'gb'] }).then(r => { window.__gal = r; });
+  e.kit.gallery({ pages, seen: ['ega', 'egb'] }).then(r => { window.__gal = r; });
   const st = e.galleryState();
   return st.open && st.i === 2 && st.seen.length === 2 && !st.done;
-}, GAL_PAGES);
+}, ESC_PAGES);
 await p.waitForTimeout(600);
 await p.keyboard.press('Escape');
 K.galleryEscEarly = await until(() => window.__gal && window.__enc.getState() === 'play', 30000)
-  .then(() => p.evaluate(() => window.__gal.seenAll === false && window.__gal.seen.join() === 'ga,gb'), () => false);
+  .then(() => p.evaluate(() => window.__gal.seenAll === false && window.__gal.seen.join() === 'ega,egb'), () => false);
 await p.waitForTimeout(800);
 /* v21.25: every page read, it opens DONE on the first page — and NEXT is still NEXT there (not the close), the
    next page by name; two presses inside one turn turn once; the close is only on the last page */
@@ -1093,7 +1106,7 @@ const L = await p.evaluate(async () => {
   const tries = {};
   const stays = async (name, fn) => { await sleep(560); fn(); await sleep(150); tries[name] = G().i === 0; };
   await stays('next', () => document.getElementById('galGo').click());
-  out.nopeSays = /bar fills/i.test(document.getElementById('galHint').textContent) && !document.getElementById('galHint').classList.contains('gone');
+  out.nopeSays = /fills up as you read/i.test(document.getElementById('galHint').textContent) && !document.getElementById('galHint').classList.contains('gone');
   await stays('endMark', () => document.getElementById('galEndGo').click());
   await stays('arrow', () => document.getElementById('galNext').click());
   const kd = code => document.dispatchEvent(new KeyboardEvent('keydown', { code, bubbles: true, cancelable: true }));
@@ -1102,6 +1115,7 @@ const L = await p.evaluate(async () => {
   await stays('digit', () => kd('Digit3'));
   await stays('enter', () => kd('Enter'));
   await stays('thumb', () => document.querySelector('#galThumbs .galThumb[data-i="1"]').click());
+  out.nopeOnThumb = document.querySelector('#galThumbs .galThumb[data-i="1"]').classList.contains('nope');   // v21.26: the one pressed shakes
   await stays('pull', async () => { wheel(story, 8, 100); });
   await sleep(400);
   await stays('wheelSide', () => wheel(story, 30, 0, 12));
@@ -1116,6 +1130,7 @@ const L = await p.evaluate(async () => {
   out.thumbLocked = document.querySelector('#galThumbs .galThumb[data-i="2"]').classList.contains('locked');
   const c2 = G().cur;
   out.cursorClimbs = c2 > c1;
+  out.curEnd = c2;
   return out;
 });
 K.galleryLongNotReadAtOnce = !!(L.atEnd && L.notRead && L.shown && L.cursorPaced);
@@ -1125,6 +1140,18 @@ if (!K.galleryLongNotReadAtOnce || !K.galleryLockedRefusesAll || !K.galleryLocke
 await p.keyboard.press('Escape');                               // and the window can always be left
 K.galleryLockedEscCloses = await until(() => window.__gal && window.__enc.getState() === 'play', 30000)
   .then(() => p.evaluate(() => window.__gal.seenAll === false && window.__gal.seen.length === 0), () => false);
+K.galleryNopeOnPressed = !!L.nopeOnThumb;
+/* v21.26: a window closed by accident and opened again finds the page's reading where it was (it went back to 0) */
+await p.waitForTimeout(800);
+K.galleryReadingKept = await p.evaluate((pages) => {
+  window.__enc.kit.gallery({ pages, label: 'Lock again' });
+  const st = window.__enc.galleryState();
+  return st.open && st.i === 0 && st.cur >= 0.02;
+}, WHEEL_PAGES).then(ok => ok && L.curEnd > 0.02);
+if (!K.galleryReadingKept) console.log('gallery reading kept', JSON.stringify({ curEnd: L.curEnd, st: await p.evaluate(() => window.__enc.galleryState()) }));
+await p.waitForTimeout(600);
+await p.evaluate(() => window.__enc.galleryClose('x'));
+await until(() => window.__enc.getState() === 'play' && !window.__enc.kit.galleryOpen(), 30000).catch(() => {});
 await p.waitForTimeout(800);
 /* (the wheel's own mechanics below, on pages already read — the reading is proved above) */
 await p.evaluate((pages) => { window.__gal = undefined; window.__enc.kit.gallery({ pages, label: 'Wheel', seen: ['wa', 'wb', 'wc'] }).then(r => { window.__gal = r; }); }, WHEEL_PAGES);
@@ -1205,6 +1232,26 @@ if (!Object.values(W).every(Boolean)) console.log('gallery wheel', JSON.stringif
 await p.evaluate(() => window.__enc.galleryClose('x'));       // (the X's own path: play again, as the film below needs)
 await until(() => window.__enc.getState() === 'play' && !window.__enc.kit.galleryOpen(), 30000).catch(() => {});
 await p.waitForTimeout(500);
+/* v21.26: THE ARROWS STOP AT THE ENDS — every page read, on the last page → stays (the way on is Close gallery; it went
+   round to the first master), and on the first page ← stays */
+await p.evaluate(() => { if (window.__enc.kit.galleryOpen()) window.__enc.galleryClose('x'); });
+await until(() => window.__enc.getState() === 'play' && !window.__enc.kit.galleryOpen(), 30000).catch(() => {});
+await p.waitForTimeout(800);
+await p.evaluate((pages) => window.__enc.kit.gallery({ pages, label: 'Ends', seen: pages.map(q => q.id), start: 2 }), WHEEL_PAGES);
+await p.waitForTimeout(900);
+await p.keyboard.press('ArrowRight');
+await p.waitForTimeout(700);
+const endR = await p.evaluate(() => ({ i: window.__enc.galleryState().i, go: document.getElementById('galGo').textContent, nextLocked: document.getElementById('galNext').classList.contains('locked') }));
+await p.keyboard.press('Home');
+await until(() => window.__enc.galleryState().i === 0, 15000).catch(() => {});
+await p.waitForTimeout(700);
+await p.keyboard.press('ArrowLeft');
+await p.waitForTimeout(700);
+const endL = await p.evaluate(() => ({ i: window.__enc.galleryState().i, prevLocked: document.getElementById('galPrev').classList.contains('locked') }));
+K.galleryArrowsStopAtEnds = endR.i === 2 && endR.go === 'Close gallery' && endR.nextLocked && endL.i === 0 && endL.prevLocked;
+if (!K.galleryArrowsStopAtEnds) console.log('gallery ends', JSON.stringify({ endR, endL }));
+await p.evaluate(() => window.__enc.galleryClose('x'));
+await until(() => window.__enc.getState() === 'play' && !window.__enc.kit.galleryOpen(), 30000).catch(() => {});
 /* v21.0: THE TWENTY-SIXTH SEAM — kit.film. From play, a declared film runs
    (state cine, the HUD hidden); at its end the state is PLAY again, no card;
    the black it ended on is the kit's, the chapter's onDone ran under it and

@@ -5948,12 +5948,16 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
          music should be softened heavily while this gallery mode opens, and priority is on the music of this gallery
          mode"): two melodies in different keys collide even 16 dB apart (measured in the phone band, 300 Hz–5 kHz: the
          radio at 0.3 x 0.2 sat at -41 dBFS RMS against the gallery's bed at -26), and the radio sank only as fast as the
-         bed rose. Now the radio goes down to 8 % of its level within half a second of the window opening (its own
-         duck, galDuck), the gallery's bed comes up to 0.7 (+2 dB): about 26 dB apart; the shop's air and the mall's
-         murmur, which carry no melody, sink to a fifth as before */
+         bed rose. Now the radio goes down to 8 % of its level on its own duck (galDuck: 0.18 s here, and the engine's
+         0.3 s glide on the loop after it — the full −22 dB in about two seconds, the window's bell and his answer over
+         the first of it), the gallery's bed comes up to 0.7 (+2 dB): about 26 dB apart; the shop's air and the mall's
+         murmur, which carry no melody, sink to a fifth as before. v21.26: and the radio is held down until the
+         gallery's bed has all but gone (under 0.12) before it comes back — the two returned and left at about the same
+         rate, so for half a second after a close both melodies sat within a few dB of each other again */
       const galTo = st === 'gallery' ? 0.7 : 0;
       mixK.gal = ease(mixK.gal || 0, galTo, galTo > (mixK.gal || 0) ? 1.0 : 0.6);
-      mixK.galDuck = ease(mixK.galDuck || 0, st === 'gallery' ? 1 : 0, st === 'gallery' ? 0.18 : 0.8);
+      const galHeld = st === 'gallery' || (mixK.gal || 0) > 0.12;
+      mixK.galDuck = ease(mixK.galDuck || 0, galHeld ? 1 : 0, galHeld ? 0.18 : 0.8);
       const galUnder = 1 - 0.8 * THREE.MathUtils.clamp((mixK.gal || 0) / 0.7, 0, 1);
       const radioUnder = 1 - 0.92 * THREE.MathUtils.clamp(mixK.galDuck || 0, 0, 1);
       /* v21.13 (CP3, Chad: "Some parts are too quiet"): the shop's own air — the A/C and its fans — under everything

@@ -464,12 +464,13 @@ Object.assign(window.__TEXT__, {
   // a press comes too early (the Next button fills like a bar as the story is read)
   'gallery.hint':        'Read each story to its end, then tap Next',
   'gallery.hintKey':     'Read each story to its end, then press Next',
-  'gallery.lockRead':    'Read on — Next opens when the bar fills',
+  'gallery.lockRead':    'Keep reading — Next fills up as you read',              // v21.26: names the button, not "the bar"
+  'gallery.lockReadLast':'Keep reading — Close gallery fills up as you read',     // v21.26: the last page's way on
   'gallery.lockOrder':   'The pages open in order, one at a time',
   // v21.23: the end of each story — the way on, by name, and (on a desktop) what the wheel does there
   'gallery.endNext':     'Next',
   'gallery.endPull':     'Scroll on to turn the page',
-  'gallery.endWait':     'Opens when the bar fills',            // v21.25: under it while the story is still being read
+  'gallery.endWait':     'Fills up as you read',                // v21.25: under it while the story is still being read (v21.26: no "bar")
   'gallery.endFinish':   'Close the gallery',                   // v21.25: the end mark on the last page, all read
 
   // --- spoken by screen readers, never seen on screen ----------------------
