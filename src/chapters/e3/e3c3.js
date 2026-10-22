@@ -4907,7 +4907,9 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
         id: g.id, name: galW(g.k, 'Name'), aka: galW(g.k, 'Aka'), plaque: galW(g.k, 'Thai'),
         lived: galW(g.k, 'Lived'), era: galW(g.k, 'Era'), temple: galW(g.k, 'Temple'),
         known: [1, 2, 3].map(n => galW(g.k, 'Known' + n)).filter(Boolean),
-        story: [1, 2, 3, 4].map(n => galW(g.k, 'Story' + n)).filter(Boolean),   // v21.22: a fourth — what devotees believe (Chad)
+        /* v21.22: first why he is legendary (Chad: "they are all legendary in their own rights and the description
+           should explain that too"), then his life, then what devotees believe ("note them as popular belief") */
+        story: ['Significance', 'Story1', 'Story2', 'Story3', 'Story4'].map(f => galW(g.k, f)).filter(Boolean),
         images: g.images
       }));
     }
