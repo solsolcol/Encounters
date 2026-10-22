@@ -6132,6 +6132,15 @@ What the baseline contains, by release:
   Engine changes reach only `kit.gallery` and its window; episodes 1–2 never open it. Two
   words; sheet v111 (v44 stays the link). Deploys `6ada09e5ddc6331c5fdfaa2a` and
   `6ada0fed49acf7031b942032`, each byte-verified. docs/V21.23-PLAN.md is the record.
+- **v21.24** HIS ANSWER, NEVER REFUSED — found by the last check of v21.23: pressed within the first 1.6 s of the
+  shop (straight after the film, or after a Continue), the masters' row started the owner's introduction before his
+  timed hello was queued; the hello queued behind it, began on the frame the gallery opened (over its bell), and
+  booked six seconds on the chapter's clock, which stands still under the window — so "Yes, please, Uncle..." was
+  refused for good and never played. The hello is skipped once the introduction has begun, and his answer waits out
+  anything still booked on the wall clock instead of being refused. Replayed as a phone with sound: the answer 0.6 s
+  after the bell, no hello over it, and the whole hand-off in order with no voice over another. `e3c3.js` only; no
+  word moved, sheet v111 stands. Deploy `6ada1a85f5ce867abd164ebc`, byte-verified (236 files). docs/V21.23-PLAN.md,
+  the v21.24 section.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so

@@ -5973,3 +5973,12 @@ cut (sharing its vertices and maps) when it is small.
   tell that the browser took the drag. And aim at what is ON the screen: the first "swipe over the story" started at
   the story's laid-out middle, which on an upright phone is below the fold, so it landed on the thumbnails and tested
   nothing (`document.elementFromPoint` says what a point is over).
+- **Nothing may queue behind a line that opens a window** (v21.24). The masters' gallery opens 0.3 s after the
+  owner's introduction, and the chapter's clock — the one every line is booked on — stands still under the window.
+  Pressed in the first 1.6 s of the shop, the introduction started before the owner's timed hello was queued; the
+  hello queued behind it, the queue started it on the frame the introduction's booking ended (just before the window
+  opened), and its six-second booking sat on a clock that then stopped — so his answer, asked for on the wall clock,
+  was refused for good. Two rules: a timed line does not queue behind a line that leads into a window; and a line
+  asked for while that clock is stopped waits out whatever is still booked, on the wall clock, rather than being
+  refused. And the probe that found it was the one that drove the moment the other probes always walked past — a
+  hand-off probe that hears the greeting first can never reach a race with the greeting.
