@@ -2090,6 +2090,16 @@ body.finePtr .galPull,body.finePtr .galEndHint{display:block}
 .galEnd.pulling .galEndHint{color:#e7c98a}
 .galEnd.pulling .galEndGo{border-color:#FFCF6E;box-shadow:0 0 22px rgba(255,190,90,.3)}
 .galEnd.last .galPull,.galEnd.last .galEndHint{display:none}
+/* v21.25: under the story while it is still being read — the same filling bar as the foot's Next, and a line that says
+   what the bar is (on every screen, touch included); the wheel's pull and its hint are not offered until it is full */
+.galEnd.locked .galPull,.galEnd.locked .galEndHint{display:none}
+.galEnd.locked .galEndGo{cursor:default;border-color:rgba(255,204,118,.32);
+  background:linear-gradient(90deg,rgba(255,190,90,.28) calc(var(--rd,0) * 100%),rgba(255,190,90,.03) 0)}
+.galEnd.locked .galEndGo:hover,.galEnd.locked .galEndGo:focus-visible{transform:none;box-shadow:none;border-color:rgba(255,204,118,.45)}
+.galEnd.locked .galEndK{color:rgba(255,190,90,.6)} .galEnd.locked .galEndN{color:rgba(255,226,160,.62);text-shadow:none}
+.galEnd.locked .galEndGo svg{opacity:.4;filter:none}
+.galEndWait{display:none;font:500 .72rem/1.2 var(--ui);letter-spacing:.06em;color:#bfae86}
+.galEnd.locked .galEndWait{display:block}
 .galEnd.last .galEndGo{background:linear-gradient(180deg,#FFD98A,#F2B04E);border-color:#ffe2a0;
   box-shadow:0 0 0 1px rgba(255,236,190,.9),0 0 26px rgba(255,190,90,.55)}   /* (v21.23: still — two gold CONTINUEs a hand apart pulsed out of step; the foot's is the one that breathes) */
 .galEnd.last .galEndK{color:#6a4510} .galEnd.last .galEndN{color:#1a1206;text-shadow:none}
@@ -2136,6 +2146,13 @@ body.finePtr .galPull,body.finePtr .galEndHint{display:block}
           mask:radial-gradient(closest-side,transparent calc(100% - 3px),#000 calc(100% - 2.5px))}
 .galThumb.dwell::before{opacity:1}
 .galThumb.seen{filter:none}
+/* v21.25: a page past the first unread one is locked — dim, a small lock on it (the ring's ::before and the tick's
+   ::after are never needed on it: it is never the page being read, and an unread page has no tick) */
+.galThumb.locked{cursor:default;filter:saturate(.25) brightness(.42)}
+.galThumb.locked:not(.seen)::after{content:"";position:absolute;left:50%;top:50%;width:12px;height:9px;margin:0 0 0 -6px;border-radius:2px;
+  background:#e3cf9f;box-shadow:0 0 6px rgba(0,0,0,.9)}
+.galThumb.locked:not(.seen)::before{content:"";position:absolute;inset:auto;left:50%;top:50%;width:6px;height:7px;margin:-6px 0 0 -5px;
+  border:2px solid #e3cf9f;border-bottom:0;border-radius:5px 5px 0 0;background:none;opacity:1;-webkit-mask:none;mask:none}
 .galThumb.seen::after{content:"\2713";position:absolute;right:-5px;bottom:-5px;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;
   font:700 12px/1 var(--ui);color:#140f08;background:#FFCF6E;box-shadow:0 0 10px rgba(255,200,100,.85);animation:galTick .55s cubic-bezier(.2,1.7,.4,1) backwards}
 @keyframes galTick{from{transform:scale(0) rotate(-70deg)}}
@@ -2147,8 +2164,27 @@ body.finePtr .galPull,body.finePtr .galEndHint{display:block}
 #galGo{flex:0 0 auto;font:700 .96rem/1 var(--ui);letter-spacing:.16em;text-transform:uppercase;padding:14px 30px;border-radius:2px;cursor:pointer;
   color:#ffe2a0;background:rgba(255,190,90,.08);border:1px solid rgba(255,204,118,.62);transition:background .2s,transform .2s var(--ease)}
 #galGo:hover,#galGo:focus-visible{background:rgba(255,190,90,.2);outline:none;transform:translateY(-2px)}
-.galBox.done #galGo{color:var(--void);background:linear-gradient(180deg,#FFD98A,#F2B04E);border-color:#ffe2a0;
+/* v21.25: gold and breathing only where it ends the window — the last page, every page read (it went gold on every
+   page once all were read, and closed the window from an earlier page) */
+#galGo.fin{color:var(--void);background:linear-gradient(180deg,#FFD98A,#F2B04E);border-color:#ffe2a0;
   animation:choWake .6s cubic-bezier(.2,1.5,.4,1),galPulse 2.2s ease-in-out .6s infinite}
+/* v21.25 · THE WAY ON WAITS while the story is read, and SHOWS it: the button fills like a bar (--rd, 0 to 1, from the
+   reading cursor), dimmed until it is full; full, it lights once (.woke) with the read tick; pressed too early it
+   flashes warm (.nope) and the hint under the window says why. Never greyed to nothing: it is still Next, filling */
+#galGo.locked{color:rgba(255,226,160,.6);border-color:rgba(255,204,118,.34);cursor:default;
+  background:linear-gradient(90deg,rgba(255,190,90,.32) calc(var(--rd,0) * 100%),rgba(255,190,90,.05) 0)}
+#galGo.locked:hover,#galGo.locked:focus-visible{transform:none;
+  background:linear-gradient(90deg,rgba(255,190,90,.36) calc(var(--rd,0) * 100%),rgba(255,190,90,.08) 0)}
+#galGo.woke,.galEndGo.woke{animation:galWoke .95s ease-out}
+@keyframes galWoke{0%{box-shadow:0 0 0 0 rgba(255,220,150,0)}30%{box-shadow:0 0 0 2px rgba(255,236,190,.95),0 0 34px rgba(255,190,90,.9)}
+  100%{box-shadow:0 0 0 0 rgba(255,220,150,0)}}
+#galGo.nope,.galEndGo.nope{animation:galNope .5s ease-out}
+@keyframes galNope{0%,100%{border-color:rgba(255,204,118,.34)}25%{border-color:#ffab7a;box-shadow:0 0 16px rgba(255,140,90,.55)}}
+.galNav.nope svg{animation:galNopeX .4s ease-out}
+@keyframes galNopeX{20%{transform:translateX(-5px)}45%{transform:translateX(4px)}70%{transform:translateX(-2px)}}
+.galNav.locked{opacity:.34;cursor:default}
+.galNav.locked svg{animation:none;filter:none}
+.galNav.locked:hover,.galNav.locked:focus-visible{transform:none;opacity:.5}
 @keyframes galPulse{0%,100%{box-shadow:0 0 0 1px rgba(255,220,150,.8),0 0 18px rgba(255,180,80,.45)}
   50%{box-shadow:0 0 0 1px rgba(255,236,190,1),0 0 42px rgba(255,190,90,.9)}}
 .galHint{margin:8px 0 0;text-align:center;font:500 .8rem/1.2 var(--ui);color:#a39883;letter-spacing:.04em;min-height:1.2em;
@@ -2220,6 +2256,10 @@ body.finePtr .galPull,body.finePtr .galEndHint{display:block}
   .galFoot{margin-top:4px;padding-top:4px}
   .galThumb{width:32px;height:32px}
   .galHint{display:none}
+  /* (v21.25: but a "not yet" is always said — over the foot, where the press was) */
+  .galHint.say{display:block;position:absolute;left:50%;bottom:56px;transform:translateX(-50%);margin:0;padding:6px 12px;z-index:6;
+    white-space:nowrap;border-radius:3px;background:rgba(10,7,4,.9);border:1px solid rgba(255,204,118,.35);color:#e7d4a8;
+    pointer-events:none}
   .galName{font-size:1.3rem}
   .galCorner{width:40px;height:40px} .galX{right:32px}   /* (v21.23: the X clear of the smaller corner) */
   .galFoot{padding-left:30px;padding-right:30px}         /* (and the thumbnails and NEXT clear of the bottom corners) */
@@ -3154,6 +3194,7 @@ body.finePtr .galPull,body.finePtr .galEndHint{display:block}
               </button>
               <span class="galPull" aria-hidden="true"><i id="galPullFill"></i></span>
               <span class="galEndHint" data-t="gallery.endPull">Scroll on to turn the page</span>
+              <span class="galEndWait" data-t="gallery.endWait">Opens when the bar fills</span>
             </div>
           </div>
         </div>

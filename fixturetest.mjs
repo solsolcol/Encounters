@@ -966,10 +966,10 @@ K.galleryKeyTurns = await until(() => window.__enc.galleryState().i === 2, 15000
 K.galleryDone = await until(() => {
   const st = window.__enc.galleryState();
   return st.done && st.seen.length === 3 && document.getElementById('galBox').classList.contains('done')
-    && document.getElementById('galGo').textContent === 'Continue';
+    && document.getElementById('galGo').textContent === 'Close gallery' && document.getElementById('galGo').classList.contains('fin');
 }, 30000).then(() => true, () => false);
-await p.waitForTimeout(900);                                   // (v21.23: CONTINUE is not taken in the 0.8 s after the last page counts)
-await p.keyboard.press('Enter');                               // CONTINUE
+await p.waitForTimeout(900);                                   // (v21.23: the close is not taken in the 0.8 s after the last page counts)
+await p.keyboard.press('Enter');                               // Close gallery (v21.25: it was CONTINUE)
 K.galleryAnswers = await until(() => window.__gal && window.__enc.getState() === 'play' && !window.__enc.galleryState().open, 30000)
   .then(() => p.evaluate(() => window.__gal.seenAll === true && window.__gal.seen.join() === 'ga,gb,gc'), () => false);
 await p.waitForTimeout(800);                                   // (v21.23: the window does not reopen within 0.6 s of a close)
@@ -985,17 +985,63 @@ await p.keyboard.press('Escape');
 K.galleryEscEarly = await until(() => window.__gal && window.__enc.getState() === 'play', 30000)
   .then(() => p.evaluate(() => window.__gal.seenAll === false && window.__gal.seen.join() === 'ga,gb'), () => false);
 await p.waitForTimeout(800);
+/* v21.25: every page read, it opens DONE on the first page — and NEXT is still NEXT there (not the close), the
+   next page by name; two presses inside one turn turn once; the close is only on the last page */
 K.galleryAllReadOpensDone = await p.evaluate((pages) => {
   const e = window.__enc;
   window.__gal = undefined;
   e.kit.gallery({ pages, seen: ['ga', 'gb', 'gc'] }).then(r => { window.__gal = r; });
   const st = e.galleryState();
-  return st.open && st.done && document.getElementById('galGo').textContent === 'Continue';
+  return st.open && st.done && st.i === 0 && document.getElementById('galGo').textContent === 'Next'
+    && document.getElementById('galEndN').textContent === 'Second master' && !st.next.close && !st.next.locked;
 }, GAL_PAGES);
+await p.waitForTimeout(600);
+await p.click('#galGo'); await p.waitForTimeout(120); await p.click('#galGo');   // two presses inside one turn
+await p.waitForTimeout(250);
+K.galleryOneTurnAtATime = await p.evaluate(() => window.__enc.galleryState().i === 1 && window.__enc.galleryState().open);
+await p.waitForTimeout(600);
+await p.click('#galGo');
+K.galleryCloseOnlyOnLast = await until(() => {
+  const st = window.__enc.galleryState(), go = document.getElementById('galGo');
+  return st.open && st.i === 2 && go.textContent === 'Close gallery' && go.classList.contains('fin') && st.next.close;
+}, 15000).then(() => true, () => false);
 await p.waitForTimeout(600);
 await p.click('#galX');                                        // the X, a real click
 K.galleryXCloses = await until(() => window.__gal && window.__enc.getState() === 'play', 30000)
   .then(() => p.evaluate(() => window.__gal.seenAll === true && !window.__enc.kit.galleryOpen()), () => false);
+/* v21.25 · NEXT IS ALWAYS THE NEXT PAGE (Chad: "if i accidentally moved to the next monk and moved back to the previous
+   one, the next button [went] to the next monk after the next ... if i already finished all monks and went back to an
+   earlier one, the button below becomes continue, and ends the whole window"). Page 1 visited and read, back to page 0:
+   NEXT opens page 1, never 2. Every page read and back on page 0: NEXT, not the close, and it opens page 1. */
+await p.waitForTimeout(800);
+await p.evaluate((pages) => { window.__gal = undefined; window.__enc.kit.gallery({ pages, label: 'Order' }).then(r => { window.__gal = r; }); }, GAL_PAGES);
+await until(() => window.__enc.galleryState().seen.includes(0), 30000).catch(() => {});
+await p.waitForTimeout(550);
+await p.click('#galNext');                                     // on to page 1 ...
+await until(() => window.__enc.galleryState().seen.includes(1), 30000).catch(() => {});
+await p.waitForTimeout(550);
+await p.click('#galPrev');                                     // ... and back
+await until(() => window.__enc.galleryState().i === 0, 15000).catch(() => {});
+const ord0 = await p.evaluate(() => ({ go: document.getElementById('galGo').textContent, end: document.getElementById('galEndN').textContent }));
+await p.waitForTimeout(550);
+await p.click('#galGo');
+K.galleryNextNeverSkips = await until(() => window.__enc.galleryState().i === 1, 15000).then(() => true, () => false)
+  && ord0.go === 'Next' && ord0.end === 'Second master';
+await p.waitForTimeout(550);
+await p.click('#galGo');                                       // page 2, the last
+await until(() => window.__enc.galleryState().done, 30000).catch(() => {});
+await p.waitForTimeout(950);
+await p.click('#galPrev'); await p.waitForTimeout(550); await p.click('#galPrev');
+await until(() => window.__enc.galleryState().i === 0, 15000).catch(() => {});
+const ord1 = await p.evaluate(() => ({ go: document.getElementById('galGo').textContent, fin: document.getElementById('galGo').classList.contains('fin'),
+                                      end: document.getElementById('galEndN').textContent, done: window.__enc.galleryState().done }));
+await p.waitForTimeout(550);
+await p.click('#galGo');
+K.galleryDoneStillNext = await until(() => window.__enc.galleryState().i === 1 && window.__enc.galleryState().open, 15000).then(() => true, () => false)
+  && ord1.done && ord1.go === 'Next' && !ord1.fin && ord1.end === 'Second master';
+if (!K.galleryNextNeverSkips || !K.galleryDoneStillNext) console.log('gallery order', JSON.stringify({ ord0, ord1, st: await p.evaluate(() => window.__enc.galleryState()) }));
+await p.evaluate(() => window.__enc.galleryClose('x'));
+await until(() => window.__enc.getState() === 'play' && !window.__enc.kit.galleryOpen(), 30000).catch(() => {});
 /* v21.23: THE GALLERY'S WHEEL (Chad: "when i tried on desktop and mouse scroll to the bottom, it immediately jumped to
    the bottom of the next page"). On pages whose stories scroll: a spin from the top stops at the END of the story and
    turns nothing; a fresh pull from the end turns ONCE, to the page NEXT would open, and that page opens at its TOP —
@@ -1009,8 +1055,72 @@ const WHEEL_PAGES = [
   { id: 'wb', name: 'Wheel two', story: LONG },
   { id: 'wc', name: 'Wheel three', story: LONG },
 ];
+/* v21.25 · A STORY IS READ, NOT SCROLLED PAST (Chad: "i dont want players to just mindlessly and quickly scroll through
+   all the stories or to spam next, or spam flip"). A long story spun to its end at once is NOT read: its reading
+   cursor climbs at the reading pace and no faster; while it does, every way forward is refused — NEXT, the end mark,
+   the → arrow and key, End, a digit, a later thumbnail, the wheel's pull, a sideways swipe on the wheel, a finger's
+   swipe — and ← round to the last page too, and each says why; Esc still closes the window. */
 await p.waitForTimeout(800);
-await p.evaluate((pages) => { window.__gal = undefined; window.__enc.kit.gallery({ pages, label: 'Wheel' }).then(r => { window.__gal = r; }); }, WHEEL_PAGES);
+await p.evaluate((pages) => { window.__gal = undefined; window.__enc.kit.gallery({ pages, label: 'Lock' }).then(r => { window.__gal = r; }); }, WHEEL_PAGES);
+await p.waitForTimeout(900);                                    // past the guard
+const L = await p.evaluate(async () => {
+  const E = window.__enc, sleep = ms => new Promise(r => setTimeout(r, ms)), G = () => E.galleryState();
+  const sc = () => { const pg = document.getElementById('galPage'); return getComputedStyle(pg).overflowY === 'auto' ? pg : document.getElementById('galRight'); };
+  const story = document.getElementById('galStory');
+  const wheel = (el, n, dy, dx = 0) => {
+    for (let k = 0; k < n; k++) {
+      const r = el.getBoundingClientRect();
+      const ev = new WheelEvent('wheel', { deltaY: dy, deltaX: dx, bubbles: true, cancelable: true, clientX: r.left + 5, clientY: r.top + 5 });
+      el.dispatchEvent(ev);
+      if (!ev.defaultPrevented && dy) { const s = sc(); if (s.contains(el) && !s.classList.contains('hold')) s.scrollTop += dy; }
+    }
+  };
+  const out = {};
+  wheel(story, 60, 100);                                       // spun straight to the end
+  await sleep(1500);
+  const a = G(), c1 = a.cur;
+  out.atEnd = sc().scrollTop >= sc().scrollHeight - sc().clientHeight - 2;
+  out.notRead = a.i === 0 && a.seen.length === 0 && a.next.locked && !a.next.close;
+  out.shown = document.getElementById('galGo').classList.contains('locked') && document.getElementById('galEnd').classList.contains('locked');
+  out.cursorPaced = c1 > 0.02 && c1 < 0.9 && a.words > 150;
+  const tries = {};
+  const stays = async (name, fn) => { await sleep(560); fn(); await sleep(150); tries[name] = G().i === 0; };
+  await stays('next', () => document.getElementById('galGo').click());
+  out.nopeSays = /bar fills/i.test(document.getElementById('galHint').textContent) && !document.getElementById('galHint').classList.contains('gone');
+  await stays('endMark', () => document.getElementById('galEndGo').click());
+  await stays('arrow', () => document.getElementById('galNext').click());
+  const kd = code => document.dispatchEvent(new KeyboardEvent('keydown', { code, bubbles: true, cancelable: true }));
+  await stays('keyRight', () => kd('ArrowRight'));
+  await stays('keyEnd', () => kd('End'));
+  await stays('digit', () => kd('Digit3'));
+  await stays('enter', () => kd('Enter'));
+  await stays('thumb', () => document.querySelector('#galThumbs .galThumb[data-i="1"]').click());
+  await stays('pull', async () => { wheel(story, 8, 100); });
+  await sleep(400);
+  await stays('wheelSide', () => wheel(story, 30, 0, 12));
+  await sleep(400);
+  const body = document.getElementById('galBody');
+  const pe = (type, id, x) => body.dispatchEvent(new PointerEvent(type, { pointerId: id, pointerType: 'touch', isPrimary: true,
+    clientX: x, clientY: 300, bubbles: true, cancelable: true }));
+  await stays('swipe', () => { pe('pointerdown', 9, 600); pe('pointermove', 9, 480); pe('pointermove', 9, 330); pe('pointerup', 9, 330); });
+  await stays('backRound', () => document.getElementById('galPrev').click());   // ← from the first page round to the last
+  out.tries = tries;
+  out.allRefused = Object.values(tries).every(Boolean);
+  out.thumbLocked = document.querySelector('#galThumbs .galThumb[data-i="2"]').classList.contains('locked');
+  const c2 = G().cur;
+  out.cursorClimbs = c2 > c1;
+  return out;
+});
+K.galleryLongNotReadAtOnce = !!(L.atEnd && L.notRead && L.shown && L.cursorPaced);
+K.galleryLockedRefusesAll = !!(L.allRefused && L.cursorClimbs && L.thumbLocked);
+K.galleryLockedSaysWhy = !!L.nopeSays;
+if (!K.galleryLongNotReadAtOnce || !K.galleryLockedRefusesAll || !K.galleryLockedSaysWhy) console.log('gallery lock', JSON.stringify(L));
+await p.keyboard.press('Escape');                               // and the window can always be left
+K.galleryLockedEscCloses = await until(() => window.__gal && window.__enc.getState() === 'play', 30000)
+  .then(() => p.evaluate(() => window.__gal.seenAll === false && window.__gal.seen.length === 0), () => false);
+await p.waitForTimeout(800);
+/* (the wheel's own mechanics below, on pages already read — the reading is proved above) */
+await p.evaluate((pages) => { window.__gal = undefined; window.__enc.kit.gallery({ pages, label: 'Wheel', seen: ['wa', 'wb', 'wc'] }).then(r => { window.__gal = r; }); }, WHEEL_PAGES);
 await p.waitForTimeout(900);                                    // past the guard
 const W = await p.evaluate(async () => {
   const E = window.__enc, sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -1051,7 +1161,7 @@ const W = await p.evaluate(async () => {
   out.repeatTurnsNothing = st().i === i0;
   kd('ArrowLeft', false);
   out.pressTurns = st().i === (i0 + 2) % 3;
-  await sleep(200);
+  await sleep(700);                                             // (v21.25: one turn at a time — past GAL_TURN)
   /* touch: a second finger is a pinch, never a swipe; a swipe the system took over (pointercancel) turns nothing; a
      swipe lifted turns one page, and leaves the page unshifted */
   const body = document.getElementById('galBody');

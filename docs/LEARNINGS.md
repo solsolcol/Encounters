@@ -5982,3 +5982,25 @@ cut (sharing its vertices and maps) when it is small.
   asked for while that clock is stopped waits out whatever is still booked, on the wall clock, rather than being
   refused. And the probe that found it was the one that drove the moment the other probes always walked past — a
   hand-off probe that hears the greeting first can never reach a race with the greeting.
+- **"Read" is a story read, not a page shown** (v21.25). From v21.10 to v21.24 a gallery page counted as read after
+  1.2 s on screen — a timer, which cannot tell a reader from someone passing through, so a page visited by accident
+  counted and five presses of NEXT 1.2 s apart "read" five masters' stories in six seconds. A reading gate that means
+  anything is a cursor moving down the text at a reading pace and never past what is on screen; set the pace well
+  above real reading (600 words a minute here, 2.5× an average adult's ~238) so that it binds only on someone not
+  reading — a gate a genuine reader meets is a bug, not rigour. And it has to SHOW: a locked button that fills like a
+  bar, a line that says what the bar is, a lock on what cannot open yet — a rule the player cannot see is
+  indistinguishable from a broken button.
+- **A convenience that jumps is a skip** (v21.25). NEXT sent the reader to "the next page not yet read", which looked
+  helpful and broke the one model a reader has of a book: the next page is the next page. A visited page counted, so
+  going back and pressing NEXT jumped over it; every page read, NEXT became CONTINUE on EVERY page and pressed on an
+  earlier master, ended the window. Navigation is sequential; where a destination is shut, the button waits and says
+  why, it never reroutes.
+- **A button's word is a promise about what happens** (v21.25). "Continue" promises more and ended the window. The
+  button that ends a window says so ("Close gallery"), and only where ending is what the reader wants: the last page,
+  everything read.
+- **Two melodies collide at any audible gap** (v21.25). The shop's radio (a Thai ensemble) sat 15 dB under the
+  gallery's khim bed in the phone band and still fought it — different keys and tempos are heard in every quiet bar of
+  the quieter one — and it sank only as fast as the bed rose (a 1 s ease), so the window opened over a clash. Duck a
+  competing melody hard (−22 dB more here, to 8 %) and FAST (0.18 s), on its own envelope rather than the incoming
+  bed's, and leave the ambience that carries no melody where it was. Hold it down, never off: the same envelope brings
+  it back when the window goes.

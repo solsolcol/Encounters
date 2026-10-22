@@ -8880,11 +8880,18 @@ addEventListener('keydown', e => {
    second name, LIVED / ERA / TEMPLE, what it is known for, the story) — and
    wait. A screen STATE of its own, `gallery`, so every "is it play?" gate
    closes under it. Turned by the side arrows, the thumbnails, a swipe, the
-   wheel, the arrow keys (and A/D, digits, Home/End). A page counts as READ
-   once it has been on screen GAL_DWELL ms of wall time (so a page swept past
-   does not count, and a page read on a phone at a frame a second still
-   does); when every page is read the window says so — a ring of light, its
-   own chime — and NEXT becomes CONTINUE. Esc and the X close it at any time:
+   wheel, the arrow keys (and A/D, digits, Home/End). v21.25 · IT IS READ IN
+   ORDER (docs/V21.25-PLAN.md): a page counts as READ once its story has been
+   read to its end at a reading pace (galDwell — v21.10–v21.24 counted 1.2 s
+   on screen, so a page passed by accident counted and five quick presses
+   "read" the gallery); NEXT is ALWAYS the next page and opens only once this
+   one is read, filling like a bar as it is (Chad: "it should always go to
+   the next monk on the next page rather than have this kind of skipping
+   behaviour"); no page past the first unread one opens, by any route; one
+   turn at a time; going back is always allowed; and the window ends only on
+   the LAST page, every page read, by a button that says so — Close gallery
+   (CONTINUE, which "ends the whole window", is gone). Every page read, the
+   window says so — a ring of light, its own chime. Esc and the X close it at any time:
    the Promise answers `{ seenAll, seen, last }` either way (null only when
    the run is torn down under it), and what the reading MEANS is the story's
    business — the chapter decides whether an early close counts. Sounds are
@@ -8897,10 +8904,17 @@ const GAL_DWELL = 1200, GAL_GUARD = 450;
    turns the page at GAL_PULL px (two notches of a mouse wheel), holds GAL_HOLD ms after its last notch and drains over
    GAL_DRAIN; a turn holds the wheel GAL_LOCK ms at least and until it has gone quiet; sideways, GAL_SWIPE px turns */
 const GAL_QUIET = 260, GAL_PULL = 200, GAL_HOLD = 700, GAL_DRAIN = 500, GAL_LOCK = 700, GAL_SWIPE = 90;
+/* v21.25 · THE READING (docs/V21.25-PLAN.md): a reading cursor moves down the page's story at GAL_PACE words a second —
+   600 a minute, the upper edge of skimming and two and a half times an average adult's silent reading (~238), so a
+   genuine reader never waits on it (Chad: "it needs to remain intuitive") — and never
+   past the bottom of what is on screen; the page counts as read when the cursor reaches the story's last line. And one
+   turn at a time: a turn within GAL_TURN ms of the last one is refused, by every route (the turn's own sweep is 750) */
+const GAL_PACE = 10, GAL_TURN = 500;
 const gal = { open: false, pages: null, i: 0, seen: null, done: false, t0: 0, dwellT: 0, resolve: null, outT: 0,
               raf: 0, sounds: null, img: 0, imgT: 0, bmps: new Map(), fx: null, wheelLast: 0, lockTill: 0, swipe: 0,
               armed: false, pull: 0, pullT: 0, pullShown: -1, ptrs: new Set(), closedT: -1e9, doneT: 0, hidT: 0, wake: null,
               onRead: null, swapT: 0, flipT: 0, held: false, fxOff: false,
+              cur: 0, curT: 0, curs: new Map(), words: 0, rdShown: -1, turnT: -1e9, nopeT: -1e9,   // v21.25 (the reading)
               drag: null, hintT: 0, label: '', lastT: 0 };
 const galDpr = () => Math.min(2.5, devicePixelRatio || 1);
 /* v21.23: a player who asked the system for less motion gets the window still — no drifting dust, no sparks, no glints
@@ -8951,11 +8965,12 @@ function kitGallery(opts = {}) {
   gal.open = true; gal.pages = pages; gal.done = false; gal.sounds = opts.sounds || null;
   gal.lockTill = 0; gal.swipe = 0; gal.armed = false; gal.pull = 0; gal.pullShown = -1;   // v21.23: no wheel carried in
   gal.ptrs.clear(); gal.doneT = 0; gal.hidT = 0; galHold(false);
+  gal.curs = new Map(); gal.turnT = -1e9; gal.nopeT = -1e9;                 // v21.25: no reading carried in
   gal.onRead = typeof opts.onRead === 'function' ? opts.onRead : null;   // v21.23: told of each page as it is read
   const had = new Set(Array.isArray(opts.seen) ? opts.seen : []);
   gal.seen = new Set(pages.map((p, k) => had.has(p.id) ? k : -1).filter(k => k >= 0));
-  /* every page already read (a chapter that passes back a finished reading): the window opens done —
-     CONTINUE, no celebration a second time — or it could never finish, since a page read is never read again */
+  /* every page already read (a chapter that passes back a finished reading): the window opens done — no
+     celebration a second time — on its first page, and the last page closes it (v21.25: NEXT stays NEXT) */
   gal.done = gal.seen.size >= pages.length;
   for (const k in keys) keys[k] = false;
   state = 'gallery';
@@ -8967,18 +8982,21 @@ function kitGallery(opts = {}) {
   $('galThumbs').innerHTML = pages.map((p, k) => `<button class="galThumb" type="button" role="tab" data-i="${k}" aria-label="${galEsc(p.name)}"><canvas></canvas></button>`).join('');
   pages.forEach((p, k) => { const im = (p.images || [])[0]; if (im) galBmp(im).p.then(() => galThumbPaint(k)); });
   const hint = $('galHint');
-  hint.textContent = HAS_TOUCH ? T('gallery.hint', 'Swipe or tap the arrows to turn the page')
-                               : T('gallery.hintKey', 'Use ← → or the arrows to turn the page');
-  hint.classList.remove('gone');
+  /* (v21.25: the rule first — a page turns on once its story has been read to the end) */
+  hint.textContent = HAS_TOUCH ? T('gallery.hint', 'Read each story to its end, then tap Next')
+                               : T('gallery.hintKey', 'Read each story to its end, then press Next');
+  hint.classList.remove('gone', 'say');
   gal.hintT = setTimeout(() => hint.classList.add('gone'), 7000);
   $('galBox').classList.remove('done', 'cele');
   if (gal.done) $('galBox').classList.add('done');
   el.classList.remove('hide', 'out');
   document.body.classList.add('galleryopen');
   document.exitPointerLock?.();
-  /* the first page not yet read (or the one asked for) */
-  let start = Number.isInteger(opts.start) ? opts.start : pages.findIndex((p, k) => !gal.seen.has(k));
-  if (start < 0) start = 0;
+  /* the first page not yet read — the FRONTIER (v21.25: or the one asked for, never past it: a page opens only when no
+     unread page stands before it) */
+  const front = galFront();
+  let start = Number.isInteger(opts.start) ? Math.min(Math.max(0, opts.start), front) : front;
+  if (start >= pages.length) start = 0;
   gal.i = -1;
   galFxStart();                                // (before the first page, so its burst has somewhere to go)
   galShow(start, 0);
@@ -8993,7 +9011,9 @@ function galEsc(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '
 function galShow(i, dir) {
   const P = gal.pages; if (!P) return;
   i = ((i % P.length) + P.length) % P.length;
+  if (gal.i >= 0 && gal.i < P.length) gal.curs.set(gal.i, gal.cur);   // v21.25: a page's reading is kept for its return
   gal.i = i; gal.img = 0; gal.imgT = performance.now(); gal.dwellT = performance.now();
+  gal.cur = gal.curs.get(i) || 0; gal.curT = performance.now(); gal.rdShown = -1;
   /* v21.23: a cross-fade still in flight belongs to the page it began on (closed inside its 280 ms, it used to leave the
      picture at opacity 0 — the next opening showed a frame with nothing in it on every single-photograph page) */
   clearTimeout(gal.swapT); $('galImg').classList.remove('swap');
@@ -9009,6 +9029,8 @@ function galShow(i, dir) {
   $('galKnown').innerHTML = known.map((k, n) => `<li style="--k:${n}">${galEsc(k)}</li>`).join('');
   $('galKnown').parentElement.style.display = known.length ? '' : 'none';
   const story = (Array.isArray(p.story) ? p.story : [p.story]).filter(Boolean);
+  /* v21.25: the story's length in words, which sets how fast its reading cursor may move (GAL_PACE) */
+  gal.words = story.map(s => typeof s === 'string' ? s : (s.text || '')).join(' ').split(/\s+/).filter(Boolean).length;
   /* (v21.23: a paragraph may come as { text, rule: true } — a small gold rule set before it, where the telling turns: in
      episode 3 chapter 3 the masters' lives give way to what devotees believe, which Chad asked to be "noted as popular
      belief"; a plain string is a plain paragraph, as it always was) */
@@ -9016,6 +9038,7 @@ function galShow(i, dir) {
     : (s.text ? `${s.rule ? '<span class="galRule" aria-hidden="true"></span>' : ''}<p>${galEsc(s.text)}</p>` : '')).join('');
   $('galRight').scrollTop = 0; $('galPage').scrollTop = 0;     // (whichever scrolls: the words, or on an upright phone the page)
   gal.armed = false; gal.pull = 0;                               // v21.23: a pull belongs to the page it was made on
+  for (const id of ['galGo', 'galEndGo', 'galNext']) $(id)?.classList.remove('woke', 'nope');
   galEndPaint(); galFadeSync();
   const imgs = p.images || [];
   $('galPips').innerHTML = imgs.length > 1 ? imgs.map((im, k) => `<button type="button" data-k="${k}" class="${k ? '' : 'on'}" aria-label="${k + 1} / ${imgs.length}"></button>`).join('') : '';
@@ -9027,6 +9050,7 @@ function galShow(i, dir) {
     b.classList.toggle('on', on); b.setAttribute('aria-selected', on ? 'true' : 'false');
     if (on) b.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
   }
+  galReadPaint(gal.seen.has(i) ? 1 : gal.cur);                   // (v21.25: the page's reading so far, on its own thumbnail)
   /* the turn: the page's animation restarted from the side it came from */
   const pg = $('galPage');
   pg.classList.remove('turnN', 'turnP', 'turn0'); void pg.offsetWidth;
@@ -9107,26 +9131,68 @@ function galProgPaint(fresh) {
   $('galProgTxt').textContent = (gal.done ? T('gallery.allRead', 'All {m} read') : T('gallery.read', '{n} of {m} read'))
     .replace('{n}', m).replace('{m}', n);
   $('galBarFill').style.width = (n ? 100 * m / n : 0).toFixed(1) + '%';
-  $('galGo').textContent = gal.done ? T('gallery.continue', 'Continue') : T('gallery.nextBtn', 'Next');
-  for (const b of $('galThumbs').querySelectorAll('.galThumb')) b.classList.toggle('seen', gal.seen.has(+b.dataset.i));
-  galEndPaint();
+  /* (v21.25: and a page past the frontier is LOCKED — its thumbnail says so, and a press on it is refused) */
+  const front = galFront();
+  for (const b of $('galThumbs').querySelectorAll('.galThumb')) {
+    const k = +b.dataset.i, lk = k > front;
+    b.classList.toggle('seen', gal.seen.has(k)); b.classList.toggle('locked', lk);
+    b.setAttribute('aria-disabled', lk ? 'true' : 'false');
+  }
+  galEndPaint();                                                 // (NEXT / Close gallery is the end mark's to say: it follows the page)
 }
-/* v21.23 · THE END OF A STORY — where it leads: the page NEXT would open (the next one not yet read after this one, or
-   simply the next), or -1 once every page is read and the way on is CONTINUE, which only a press gives (the wheel
-   never closes the window). The end mark under the story says which, by name — it IS the NEXT button, said where the
-   reader's eyes already are, and it presses the same way. */
-function galEndTarget() {
-  if (!gal.pages || gal.done) return -1;
-  const n = gal.pages.length;
-  for (let s = 1; s < n; s++) { const k = (gal.i + s) % n; if (!gal.seen.has(k)) return k; }
-  return (gal.i + 1) % n;
+/* v21.25 · READ IN ORDER (docs/V21.25-PLAN.md; Chad: "it should always go to the next monk on the next page rather
+   than have this kind of skipping behaviour ... the player must read all the stories, and have no skipping
+   behaviour"). The FRONTIER is the first page not yet read (n once every page is), and no page past it opens: the
+   window is read in order, one story at a time, and going back is always allowed. */
+function galFront() {
+  const n = gal.pages ? gal.pages.length : 0;
+  for (let k = 0; k < n; k++) if (!gal.seen.has(k)) return k;
+  return n;
 }
+/* may the window turn from this page to page k, going dir (+1 on, -1 back)? On only once THIS page has been read,
+   and never past the frontier (which also refuses ← from the first page round to the last, past unread pages) */
+function galMayTurn(k, dir) {
+  if (!gal.pages || k < 0 || k >= gal.pages.length) return false;
+  if (dir > 0 && !gal.seen.has(gal.i)) return false;
+  return k <= galFront();
+}
+/* where NEXT leads from this page — ALWAYS the next page (v21.23 sent it to the next page not yet read, so a page
+   visited by accident was jumped over) — and whether it waits (`locked`, this page not yet read). On the LAST page, once
+   every page is read, the way on ends the window (`close`); while the last page is still being read the close waits as
+   NEXT does; read, with an earlier page still unread (a save from before v21.25, when any order counted), it goes round
+   to the first page. */
+function galNext() {
+  if (!gal.pages || !gal.seen) return null;
+  const n = gal.pages.length, read = gal.seen.has(gal.i);
+  if (gal.i < n - 1) return { k: gal.i + 1, close: false, locked: !read };
+  if (gal.done) return { k: -1, close: true, locked: false };
+  let rest = true;
+  for (let k = 0; k < n - 1; k++) if (!gal.seen.has(k)) { rest = false; break; }
+  return rest ? { k: -1, close: true, locked: !read } : { k: 0, close: false, locked: !read };
+}
+/* the way on, said twice: under the story (the end mark: its name, by name — it IS NEXT, said where the reader's eyes
+   already are, and it presses the same way) and in the foot. v21.25: CONTINUE is gone (Chad: "Continue is misleading, i
+   expect continue to show me more but it ends the whole window. Use another word") — the button that ends the window
+   says so, Close gallery; and both wait, filling, while the story is read (galReadPaint) */
 function galEndPaint() {
-  if (!gal.pages || !$('galEnd')) return;
-  const k = galEndTarget();
-  $('galEnd').classList.toggle('last', k < 0);
-  $('galEndK').textContent = k < 0 ? T('gallery.allRead', 'All {m} read').replace('{m}', gal.pages.length) : T('gallery.endNext', 'Next');
-  $('galEndN').textContent = k < 0 ? T('gallery.continue', 'Continue') : gal.pages[k].name;
+  if (!gal.pages) return;
+  const t = galNext(); if (!t) return;
+  const n = gal.pages.length, m = gal.seen.size, fin = t.close && !t.locked;
+  const go = $('galGo');
+  if (go) {
+    go.textContent = t.close ? T('gallery.finish', 'Close gallery') : T('gallery.nextBtn', 'Next');
+    go.classList.toggle('fin', fin); go.classList.toggle('locked', t.locked);
+    go.setAttribute('aria-disabled', t.locked ? 'true' : 'false');
+  }
+  /* the side arrows show what they would do: dim and still when the way that side is shut */
+  $('galNext')?.classList.toggle('locked', !galMayTurn((gal.i + 1) % n, 1));
+  $('galPrev')?.classList.toggle('locked', !galMayTurn((gal.i - 1 + n) % n, -1));
+  if (!$('galEnd')) return;
+  $('galEnd').classList.toggle('last', fin); $('galEnd').classList.toggle('locked', t.locked);
+  $('galEndGo')?.setAttribute('aria-disabled', t.locked ? 'true' : 'false');
+  $('galEndK').textContent = !t.close ? T('gallery.endNext', 'Next')
+    : (t.locked ? T('gallery.read', '{n} of {m} read').replace('{n}', m) : T('gallery.allRead', 'All {m} read')).replace('{m}', n);
+  $('galEndN').textContent = t.close ? T('gallery.endFinish', 'Close the gallery') : gal.pages[t.k].name;
 }
 /* the pull from the end: it holds GAL_HOLD ms after its last notch, then drains over GAL_DRAIN (read lazily) */
 function galPullNow(now) {
@@ -9150,18 +9216,36 @@ function galFadeSync() {
   const pg = $('galPage');
   $('galBody')?.classList.toggle('deep', !!pg && galScroller() === pg && pg.scrollTop > 24);
 }
-/* a page is READ once it has been on screen GAL_DWELL ms (wall time); the last one read lights the window */
+/* v21.25 · THE READING: a page is READ once its story has been read to its END at a reading pace (Chad: "i dont want
+   players to just mindlessly and quickly scroll through all the stories"). A cursor moves down the story at GAL_PACE
+   words a second and never past the bottom of what is on screen, so a story scrolled straight to its end still waits
+   for the cursor to get there (a 460-word story: ~46 s), while a genuine reader — a screenful, read, the next — never
+   waits on it; scrolling back up loses nothing, and a page left and come back to keeps its reading. The ring round the
+   page's own thumbnail and both NEXT buttons fill with it. (v21.10–v21.24: a page counted after GAL_DWELL ms on screen,
+   so five presses of NEXT 1.2 s apart "read" the whole gallery.) The last page read lights the window. */
 function galDwell(now) {
-  if (!gal.open || gal.seen.has(gal.i)) return;
-  /* v21.23: the reading shows — a ring fills round the page's own thumbnail over the GAL_DWELL it takes to count, so a
-     page is seen being read and NEXT is not pressed blind */
-  const thumb = $('galThumbs').querySelector('.galThumb.on');
-  const k = Math.min(1, Math.max(0, (now - gal.dwellT) / GAL_DWELL));
-  if (thumb) { thumb.classList.add('dwell'); thumb.style.setProperty('--dw', k.toFixed(3)); }
-  if (k < 1) return;
+  if (!gal.open || !gal.pages) return;
+  const dt = Math.min(1, Math.max(0, (now - (gal.curT || now)) / 1000)); gal.curT = now;
+  if (gal.seen.has(gal.i)) return;
+  const st = galScroller(), story = $('galStory'); if (!st || !story) return;
+  /* how much of the story stands above the bottom of the screen (4 px of grace) — the boxes on screen are scaled while
+     the window enters, so they are read against the scroller's own scale, which is the layout's */
+  const sr = story.getBoundingClientRect(), cr = st.getBoundingClientRect();
+  const sc = cr.height > 1 && st.offsetHeight > 0 ? cr.height / st.offsetHeight : 1;
+  const bottom = cr.top + (st.clientTop + st.clientHeight + 4) * sc;
+  const vis = sr.height > 1 ? Math.min(1, Math.max(0, (bottom - sr.top) / sr.height)) : 1;
+  gal.cur = Math.max(gal.cur, Math.min(vis, gal.cur + dt * GAL_PACE / Math.max(1, gal.words)));
+  gal.curs.set(gal.i, gal.cur);
+  galReadPaint(gal.cur);
+  if (gal.cur < 1 - 1e-6 || now - gal.dwellT < GAL_DWELL) return;   // (and never under GAL_DWELL on the page)
   gal.seen.add(gal.i);
+  const thumb = $('galThumbs').querySelector('.galThumb.on');
   if (thumb) thumb.classList.remove('dwell');
   galProgPaint(true);
+  /* (v21.25: and the way on wakes where the eyes are — both NEXT buttons light once, with the tick below) */
+  if (gal.seen.size < gal.pages.length) for (const id of ['galGo', 'galEndGo']) {
+    const b = $(id); if (b) { b.classList.remove('woke', 'nope'); void b.offsetWidth; b.classList.add('woke'); }
+  }
   /* (v21.23: and it is felt and seen where the eyes are — a short buzz, and the name lights once) */
   haptic(10);
   if (!(GAL_RM && GAL_RM.matches)) $('galName').animate?.([{ filter: 'drop-shadow(0 0 14px rgba(255,190,90,.35)) brightness(1)' },
@@ -9182,21 +9266,76 @@ function galDwell(now) {
     galBurst(90, true);
   }
 }
-function galGo(d) { if (!gal.open || performance.now() - gal.t0 < GAL_GUARD) return; galShow(gal.i + d, d); }
-function galJump(k) {
-  if (!gal.open || performance.now() - gal.t0 < GAL_GUARD || !gal.pages || k < 0 || k >= gal.pages.length || k === gal.i) return;
-  galShow(k, k > gal.i ? 1 : -1);
+/* the reading, shown (only when it moves): the ring round the page's own thumbnail, and the fill of both NEXT buttons
+   while they wait (shell.html draws --rd only on a locked button) */
+function galReadPaint(k) {
+  k = Math.min(1, Math.max(0, k));
+  if (Math.abs(k - gal.rdShown) < 0.004 && !(k >= 1 && gal.rdShown < 1)) return;
+  gal.rdShown = k;
+  const thumb = $('galThumbs').querySelector('.galThumb.on');
+  if (thumb && !gal.seen.has(gal.i)) { thumb.classList.add('dwell'); thumb.style.setProperty('--dw', k.toFixed(3)); }
+  const v = k.toFixed(3);
+  $('galGo')?.style.setProperty('--rd', v); $('galEndGo')?.style.setProperty('--rd', v);
 }
-function galPrimary() {
-  if (!gal.open || performance.now() - gal.t0 < GAL_GUARD) return;
-  /* (v21.23: not in the instant NEXT has turned into CONTINUE under a finger already on its way — the window closed a
-     tenth of a second into its own celebration; a press in the 0.8 s after the last page counts is not taken) */
-  if (gal.done && gal.doneT && performance.now() - gal.doneT < 800) return;
-  if (gal.done) { galClose('done'); return; }
-  /* NEXT: the next page not yet read, after this one (or simply the next) */
+/* v21.25 · EVERY TURN GOES THROUGH HERE — the arrows, A/D, a swipe, the sideways wheel, the wheel's pull, Page Down,
+   Enter and Space at the end, NEXT, the end mark, the thumbnails, the digits, Home and End. One turn at a time (Chad: "i
+   dont want players to ... spam next, or spam flip"): a turn within GAL_TURN ms of the last is refused quietly; a turn
+   the reading has not opened yet (galMayTurn) is refused with a word (galNope). Answers whether it turned. */
+function galTurnTo(k, dir) {
+  const now = performance.now();
+  if (!gal.open || !gal.pages || now - gal.t0 < GAL_GUARD || now - gal.turnT < GAL_TURN) return false;
+  galDwell(now);                                   // (the reading brought up to this instant: a page that counts now counts)
+  if (!galMayTurn(k, dir)) { galNope(dir > 0 && !gal.seen.has(gal.i)); return false; }
+  gal.turnT = now;
+  galShow(k, dir);
+  return true;
+}
+function galGo(d) {
+  if (!gal.pages) return false;
   const n = gal.pages.length;
-  for (let s = 1; s <= n; s++) { const k = (gal.i + s) % n; if (!gal.seen.has(k) && k !== gal.i) { galShow(k, 1); return; } }
-  galShow(gal.i + 1, 1);
+  return galTurnTo(((gal.i + d) % n + n) % n, d);
+}
+function galJump(k) {
+  if (!gal.open || !gal.pages || k < 0 || k >= gal.pages.length || k === gal.i) return false;
+  return galTurnTo(k, k > gal.i ? 1 : -1);
+}
+/* NEXT (the foot's button, the end mark, Enter, Space and Page Down at the end, the wheel's pull): the next page, once
+   this one is read — or, on the last page with every page read, the end of the window */
+function galPrimary() {
+  const now = performance.now();
+  if (!gal.open || !gal.pages || now - gal.t0 < GAL_GUARD) return false;
+  galDwell(now);
+  const t = galNext(); if (!t) return false;
+  if (t.locked) { galNope(true); return false; }
+  if (t.close) {
+    /* (v21.23: not in the instant the way on has turned into the close under a finger already on its way — the window
+       closed a tenth of a second into its own celebration; a press in the 0.8 s after the last page counts is not taken.
+       v21.25: nor within GAL_TURN of a turn) */
+    if ((gal.doneT && now - gal.doneT < 800) || now - gal.turnT < GAL_TURN) return false;
+    return galClose('done');
+  }
+  return galTurnTo(t.k, 1);
+}
+/* v21.25 · a way that is shut, pressed: the buttons shake, a soft low tick, and the hint under the window says why — the
+   story is still being read (`reading`), or the pages open in order (a locked thumbnail, a digit, End). Once per
+   GAL_TURN, however fast the presses come. */
+function galNope(reading) {
+  const now = performance.now();
+  if (now - gal.nopeT < GAL_TURN) return;
+  gal.nopeT = now;
+  for (const id of ['galGo', 'galEndGo', 'galNext']) {
+    const b = $(id); if (b) { b.classList.remove('nope', 'woke'); void b.offsetWidth; b.classList.add('nope'); }
+  }
+  snd('uiclick', 0.16, 0.6);
+  haptic(14);
+  const h = $('galHint');
+  if (h) {
+    clearTimeout(gal.hintT);
+    h.textContent = reading ? T('gallery.lockRead', 'Read on — Next opens when the bar fills')
+                            : T('gallery.lockOrder', 'The pages open in order, one at a time');
+    h.classList.remove('gone'); h.classList.add('say');
+    gal.hintT = setTimeout(() => h.classList.add('gone'), 3200);
+  }
 }
 function galPip(k) {
   const p = gal.pages && gal.pages[gal.i]; if (!p || !p.images || p.images.length < 2) return;
@@ -9309,6 +9448,7 @@ document.addEventListener('visibilitychange', () => {
   /* (v21.23: time away is no time read — a page glanced at before switching apps counted on the way back, and Luang Phu
      Tim's photograph changed the instant the window was seen again) */
   if (gal.hidT) { const d = performance.now() - gal.hidT; gal.dwellT += d; gal.imgT += d; gal.hidT = 0; }
+  gal.curT = performance.now();                    // (v21.25: nor any reading — the cursor moves only while it is seen)
   galWake(true);
 });
 /* v21.23: the end mark's hairline, filled as far as the pull has gone (only written when it moves) */
@@ -9436,7 +9576,9 @@ $('gallery')?.addEventListener('wheel', e => {
     if (fresh) gal.swipe = 0;
     gal.swipe += dx;
     if (Math.abs(gal.swipe) >= GAL_SWIPE && now - gal.t0 >= GAL_GUARD) {
-      const d = gal.swipe > 0 ? 1 : -1; gal.swipe = 0; gal.lockTill = now + GAL_LOCK; galHold(true); galGo(d);
+      /* (v21.25: once a gesture — and the words held only when it turned: a turn the reading has not opened is refused) */
+      const d = gal.swipe > 0 ? 1 : -1; gal.swipe = 0; gal.lockTill = now + GAL_LOCK;
+      if (galGo(d)) galHold(true);
     }
     return;
   }
@@ -9450,9 +9592,12 @@ $('gallery')?.addEventListener('wheel', e => {
   stop();
   if (dy < 0) { gal.armed = false; galPull(0, now); return; }   // at the top the wheel stops
   if (fresh) gal.armed = true;                             // a pull begins only from the end
-  if (!gal.armed || galEndTarget() < 0 || now - gal.t0 < GAL_GUARD) return;
+  const t = galNext();
+  if (!gal.armed || !t || t.close || now - gal.t0 < GAL_GUARD) return;   // (the wheel never closes the window)
+  /* (v21.25: no pull while the story is still being read — a fresh one says why, once) */
+  if (t.locked) { if (fresh) galPrimary(); gal.armed = false; return; }
   const was = galPullNow(now), v = galPull(was + dy / GAL_PULL, now);
-  if (v >= 1) { gal.armed = false; gal.lockTill = now + GAL_LOCK; galHold(true); galPrimary(); }
+  if (v >= 1) { gal.armed = false; gal.lockTill = now + GAL_LOCK; if (galPrimary()) galHold(true); else galPull(0, now); }
   else if (Math.floor(v * 3) > Math.floor(was * 3)) snd('uiclick', 0.2, 0.8 + 0.4 * v);   // a tick, rising, each third
 }, { passive: false });
 /* the fades follow the words (galFadeSync) */
@@ -9513,7 +9658,7 @@ addEventListener('keydown', e => {
     const st = galScroller(), down = c === 'PageDown';
     const room = down ? st.scrollTop + st.clientHeight < st.scrollHeight - 2 : st.scrollTop > 0.5;
     if (room) st.scrollBy({ top: (down ? 1 : -1) * st.clientHeight * 0.85, behavior: 'smooth' });
-    else if (!e.repeat) { if (!down) galGo(-1); else if (galEndTarget() >= 0) galPrimary(); }
+    else if (!e.repeat) { if (!down) galGo(-1); else { const t = galNext(); if (t && !t.close) galPrimary(); } }
     return;
   }
   if (c === 'Home') { e.preventDefault(); galJump(0); return; }
@@ -13653,7 +13798,11 @@ window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () =
                  galleryState: () => ({ open: gal.open, i: gal.i, n: gal.pages ? gal.pages.length : 0,   // v21.10
                                         seen: gal.seen ? [...gal.seen] : [], done: gal.done, img: gal.img, state,
                                         pull: +galPullNow(performance.now()).toFixed(3), armed: gal.armed,      // v21.23
-                                        locked: performance.now() < gal.lockTill, end: galEndTarget() }),
+                                        wheelHeld: performance.now() < gal.lockTill,
+                                        /* v21.25: the reading — where NEXT leads, whether it waits, the frontier, the cursor */
+                                        next: gal.open ? galNext() : null, front: gal.open ? galFront() : -1,
+                                        cur: +gal.cur.toFixed(3), words: gal.words, turnT: gal.turnT,
+                                        end: (t => !t || t.close ? -1 : t.k)(gal.open ? galNext() : null) }),
                  galleryGo: d => galGo(d), galleryClose: how => galClose(how || 'x'),
                  chooseSel: i => chooseSel(i), chooseClose: how => chooseClose(how || 'click'),
                  invMove: (kind, key) => invQuickMove(kind, key),                 // v17.6: the fixed-item check

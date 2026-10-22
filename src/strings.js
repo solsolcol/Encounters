@@ -455,15 +455,22 @@ Object.assign(window.__TEXT__, {
   'gallery.read':        '{n} of {m} read',
   'gallery.allRead':     'All {m} read',
   'gallery.nextBtn':     'Next',
-  'gallery.continue':    'Continue',
+  // v21.25: the button that ends the window says so (Chad: "Continue is misleading ... it ends the whole window")
+  'gallery.finish':      'Close gallery',
   'gallery.close':       'Close',
   'gallery.prev':        'Previous',
   'gallery.next':        'Next',
-  'gallery.hint':        'Swipe or tap the arrows to turn the page',
-  'gallery.hintKey':     'Use ← → or the arrows to turn the page',
+  // v21.25: a page turns on only once its story has been read through — said as the window opens, and again when
+  // a press comes too early (the Next button fills like a bar as the story is read)
+  'gallery.hint':        'Read each story to its end, then tap Next',
+  'gallery.hintKey':     'Read each story to its end, then press Next',
+  'gallery.lockRead':    'Read on — Next opens when the bar fills',
+  'gallery.lockOrder':   'The pages open in order, one at a time',
   // v21.23: the end of each story — the way on, by name, and (on a desktop) what the wheel does there
   'gallery.endNext':     'Next',
   'gallery.endPull':     'Scroll on to turn the page',
+  'gallery.endWait':     'Opens when the bar fills',            // v21.25: under it while the story is still being read
+  'gallery.endFinish':   'Close the gallery',                   // v21.25: the end mark on the last page, all read
 
   // --- spoken by screen readers, never seen on screen ----------------------
   'a11y.soundButton':    'Sound on or off',

@@ -5906,7 +5906,7 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
        monk's last word, through the trance and into its film; the dance's own
        cloth and feet. All four go to nothing at the shrine. */
     let danceTo = 0, rite = false;
-    const mixK = { mall: 0.3, chant: 0, dance: 0, move: 0, lor: 0, room: 0, bed: 0, rit: 0, gal: 0, air: 0, walla: 0, ins: 0, fan: 0 };
+    const mixK = { mall: 0.3, chant: 0, dance: 0, move: 0, lor: 0, room: 0, bed: 0, rit: 0, gal: 0, galDuck: 0, air: 0, walla: 0, ins: 0, fan: 0 };
     let mixCard = false;
     function mixBeds(wdt, st) {
       const atShop = !inShrine(yaw.position.x);
@@ -5943,10 +5943,19 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       const rit = inB && !card && (roarDone || rite) ? 0.5 : 0;
       mixK.lor = ease(mixK.lor || 0, lor, 0.8); mixK.room = ease(mixK.room || 0, room, 0.8);
       mixK.bed = ease(mixK.bed || 0, bed, bed > (mixK.bed || 0) ? 2.0 : 0.6); mixK.rit = ease(mixK.rit || 0, rit, 1.2);
-      /* v21.10: while the masters' gallery is open its own bed rises and the shop's radio and the mall sink under it */
-      const galTo = st === 'gallery' ? 0.55 : 0;
+      /* v21.10: while the masters' gallery is open its own bed rises and the shop's radio and the mall sink under it.
+         v21.25 (Chad: "the background music of the shop clashes with the music of this gallery mode. The background
+         music should be softened heavily while this gallery mode opens, and priority is on the music of this gallery
+         mode"): two melodies in different keys collide even 16 dB apart (measured in the phone band, 300 Hz–5 kHz: the
+         radio at 0.3 x 0.2 sat at -41 dBFS RMS against the gallery's bed at -26), and the radio sank only as fast as the
+         bed rose. Now the radio goes down to 8 % of its level within half a second of the window opening (its own
+         duck, galDuck), the gallery's bed comes up to 0.7 (+2 dB): about 26 dB apart; the shop's air and the mall's
+         murmur, which carry no melody, sink to a fifth as before */
+      const galTo = st === 'gallery' ? 0.7 : 0;
       mixK.gal = ease(mixK.gal || 0, galTo, galTo > (mixK.gal || 0) ? 1.0 : 0.6);
-      const galUnder = 1 - 0.8 * THREE.MathUtils.clamp((mixK.gal || 0) / 0.55, 0, 1);
+      mixK.galDuck = ease(mixK.galDuck || 0, st === 'gallery' ? 1 : 0, st === 'gallery' ? 0.18 : 0.8);
+      const galUnder = 1 - 0.8 * THREE.MathUtils.clamp((mixK.gal || 0) / 0.7, 0, 1);
+      const radioUnder = 1 - 0.92 * THREE.MathUtils.clamp(mixK.galDuck || 0, 0, 1);
       /* v21.13 (CP3, Chad: "Some parts are too quiet"): the shop's own air — the A/C and its fans — under everything
          in World A, sinking under the melody nobody else hears; the corridor's people through the glass, louder by the
          front; in World B the lorong's crickets, louder by the shutters, and the shrine's ceiling fan. Levelled against
@@ -5962,7 +5971,7 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       mixK.air = ease(mixK.air || 0, air, 1.0); mixK.walla = ease(mixK.walla || 0, walla, 0.8);
       mixK.ins = ease(mixK.ins || 0, ins, 0.8); mixK.fan = ease(mixK.fan || 0, fan, 0.8);
       const B = DATA.ambience.beds;
-      B[0][1] = mixK.mall * galUnder; B[1][1] = mixK.chant * galUnder; B[2][1] = mixK.dance; B[3][1] = mixK.move;
+      B[0][1] = mixK.mall * galUnder; B[1][1] = mixK.chant * radioUnder; B[2][1] = mixK.dance; B[3][1] = mixK.move;
       B[4][1] = mixK.lor; B[5][1] = mixK.room; B[6][1] = mixK.bed; B[7][1] = mixK.rit; B[8][1] = mixK.gal;
       B[9][1] = mixK.air * galUnder; B[10][1] = mixK.walla * galUnder; B[11][1] = mixK.ins; B[12][1] = mixK.fan;
     }
