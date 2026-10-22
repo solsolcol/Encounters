@@ -6029,6 +6029,27 @@ What the baseline contains, by release:
   voice line out; v44 stays the link). Harnesses text, cine, hosted and csp green. Deploy
   `6ad9d0667983a9af0554c5fc`, then `6ad9d1ee138c96fcac8a85ef` for one comment's wording,
   each byte-verified (236 served files).
+- **v21.21** THE GALLERY'S HAND-OFF — Chad: *"After finishing the gallery of monk details,
+  immediately play the player voiceline of 'old masters looking over the shop', and don't
+  allow the player to tap on the next objective yet until the voiceline and everything is
+  totally completed. Only after full completion, then proceed to play the next owner
+  voiceline and then allow the player to proceed with the next objective."* Two causes, both
+  in episode 3 chapter 3's browse. The chapter's clock stands still under the gallery window
+  and the voices do not, so his answer as the window opened (`z3masters`) stayed "booked"
+  for its whole length after it closed and "The old masters..." (`z3look4`) waited ~6 s
+  behind it — the bookings now come forward by the wall time the window was up. And v21.9
+  put the owner's order up on the fourth press while the lines still waited, so pressing him
+  started the gift, which empties the line queue. Now the fourth look empties the objective
+  box (OBJECTIVE COMPLETE), the owner's call is queued behind its line, and his order and
+  mark come from the END of his call; and from the press of a look until its line is over
+  — and while the owner introduces the masters and while he answers — nothing in the browse
+  is offered (`holdTill`, `browseHeld()`). A Continue saved between the fourth look and the
+  order lands on the order. Proven by real presses on a phone with sound (dbg-galhand.mjs):
+  `z3look4` 0.24 s after CONTINUE, the call only after it, the order only after that, the
+  owner pressed all along and refused, no overlapping voices. Two laws in LEARNINGS.
+  Harnesses walk and leak green. Deploy `6ad9d7524b2f740b2df61f44`, byte-verified (236
+  served files). docs/V21.21-PLAN.md is the record; the masters' stories, researched again
+  at the same ask, follow as v21.22.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
