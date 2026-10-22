@@ -1153,7 +1153,10 @@ const W = await p.evaluate(async () => {
   out.holdOnTurn = sc().classList.contains('hold');             // (v21.23: the new page held while the spin goes on)
   await sleep(1100);
   const s2 = st(); out.pullTurnsOnce = s2.i === 1; out.newPageAtTop = s2.top === 0;
-  out.holdReleased = !sc().classList.contains('hold');          // (and given back once the wheel is quiet)
+  /* (and given back once the wheel is quiet — by the window's own frame, the first drawn after the quiet: polled, since
+     on a loaded box a frame can come later than any fixed wait's margin, and a fixed wait is then a coin toss — v8.7) */
+  for (const tq = performance.now(); sc().classList.contains('hold') && performance.now() - tq < 8000; ) await sleep(100);
+  out.holdReleased = !sc().classList.contains('hold');
   burst(document.getElementById('galImg'), 3, 100);             // a spin over the portrait: the story scrolls
   await sleep(500);
   const s3 = st(); out.portraitScrolls = s3.i === 1 && s3.top === 300;
