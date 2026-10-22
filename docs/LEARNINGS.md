@@ -6020,3 +6020,10 @@ cut (sharing its vertices and maps) when it is small.
   sequence (touchStart, fourteen touchMoves, touchEnd) is taken by the browser as its pan — pointercancel — and scrolls
   285 px for a 300 px drag on both. The game was fine; the probe's finger was not a finger. Before believing a "the
   screen will not scroll" from a probe, run the same input against the build already in players' hands.
+- **A `<style>` a probe appends to `<head>` loses to this page's own** (v21.26). The phone-foot probe injected candidate
+  layouts for the gallery's foot. Every candidate measured exactly as the shipped one (the button 145 px, still
+  wrapped), and the page's CSP took the blame. It was not that: the hosted page sends no policy. The game's stylesheet
+  is inside `<body>` (shell.html puts its `<style>` after `<body>`), so rules appended to `document.head` come EARLIER
+  in document order and lose every tie of specificity. So a probe should append its rules at the end of
+  `document.body`, or mark them `!important`. Before trusting a measured candidate, read back one property it sets
+  with `getComputedStyle`, to prove the rule took. A candidate that "changes nothing" may never have been applied.
