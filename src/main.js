@@ -6848,7 +6848,7 @@ const ADULT_TAKES = new Set([
   'z2A', 'z2B', 'z2C', 'z2D',
   /* v21.0 · episode 3 chapter 3 */
   'z3pro0', 'z3pro3', 'z3pro4', 'z3pro5', 'z3look1', 'z3look2', 'z3look3', 'z3look4',   // z3pro0, z3pro5: v21.7
-  'z3pro6', 'z3pro7',                                                                       // v21.19: the bus in, the crossing
+  'z3pro6',                                                                                 // v21.19: the bus in (v21.20: z3pro7, the crossing, went)
   'z3masters',                                                                            // v21.11: his answer as the gallery of the masters opens
   'z3what',                                                                               // v21.12: his surprised answer to the medium, before the roar
   'z3thanks', 'z3shift1', 'z3shift2', 'z3breath', 'z3knew', 'z3night', 'z3shrine', 'z3walk',
@@ -10458,7 +10458,7 @@ const STING_SAMPLE = {
   lw2look: ['lw2look', 1], lw2pull: ['lw2pull', 1], lw2what: ['lw2what', 1], yai2dance: ['yai2dance', 1],
   /* v21.0 · EPISODE 3 · CHAPTER 3 · THE DANCE ON BUDDHA DAY — his lines, the shop, the medium's shrine */
   z3pro0: ['z3pro0', 1], z3pro3: ['z3pro3', 1], z3pro4: ['z3pro4', 1], z3pro5: ['z3pro5', 1], ow3hello: ['ow3hello', 1],   // z3pro0, z3pro5: v21.7
-  z3pro6: ['z3pro6', 1], z3pro7: ['z3pro7', 1],                                                  // v21.19: the bus in; the crossing
+  z3pro6: ['z3pro6', 1],                                                                        // v21.19: the bus in (v21.20: z3pro7, the crossing, went)
   busride: ['busride', 1], busbell: ['busbell', 1], busbrake: ['busbrake', 1], busdoor: ['busdoor', 1], cardtap: ['cardtap', 1],   // v21.19: his ride in
   busaway: ['busaway', 1], busdoorshut: ['busdoorshut', 1],                                          // (v21.17's, played by the lorong's world; the film cues them too)
   z3look1: ['z3look1', 1], z3look2: ['z3look2', 1], z3look3: ['z3look3', 1], z3look4: ['z3look4', 1], ow3call: ['ow3call', 1],

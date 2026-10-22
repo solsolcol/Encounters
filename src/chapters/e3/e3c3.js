@@ -246,7 +246,7 @@
   /* the measured length of every line said OUTSIDE a cutscene
      (masters/v21.0: the installed files, ffprobe; v21.8's re-said and new lines, masters/v21.8) */
   const SECS = {
-    z3pro0: 4.24, z3pro3: 4.0, z3pro4: 6.84, z3pro5: 4.8, z3pro6: 3.69, z3pro7: 7.69, ow3hello: 5.96, z3look1: 6.27,
+    z3pro0: 4.24, z3pro3: 4.0, z3pro4: 6.84, z3pro5: 4.8, z3pro6: 3.69, ow3hello: 5.96, z3look1: 6.27,
     z3look2: 4.65, z3look3: 5.93, z3look4: 3.71, ow3call: 2.43, ow3gift1: 9.69, ow3gift2: 3.47,
     ow3masters: 7.37, z3masters: 5.69,                                     // v21.11: the masters' gallery's introduction
     z3thanks: 4.21, ow3good: 2.85, mk3chant: 30.37, z3shift1: 3.47, z3shift2: 4.28, ow3eh: 2.93,
@@ -4202,8 +4202,11 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
        pulls away at 1.4 m/s² to 11 m/s. A function of t — a seek and a skip find it where it was */
     const RIDE = { at: 13.0, z: 15.68, v0: 9.0, a: 1.6, stop: 7.0, go: 10.0, ag: 1.4, vmax: 11.0 };
     /* the zebra's HOLD: from when he comes to its kerb to when he is across; a waiting car's middle stands `line`
-       from the zebra's middle (its stripes reach 1.7 m, then a 1.5 m gap, then half a car), the next `gap` behind */
-    const ZEB = { line: 5.35, gap: 6.25, h0: 12.0, h1: 25.6 }, CAR_A = 3.0;
+       from the zebra's middle (its stripes reach 1.7 m, then a 1.5 m gap, then half a car), the next `gap` behind.
+       (v21.20: across = the cut that puts him on the far kerb, 18.2, and the cars go a beat after it, as the lens
+       starts to rise — 25.6 when he walked all of it. Every car that waits has stopped before it goes: the last to
+       stop, second in its lane's queue, stops at 18.74; a car that would stop after 18.9 drives on) */
+    const ZEB = { line: 5.35, gap: 6.25, h0: 12.0, h1: 18.9 }, CAR_A = 3.0;
     function carX(c, t) {
       if (c.wait === null) return c.x0 + c.dir * c.v * t;
       const db = c.v * c.v / (2 * CAR_A), tb = c.v / CAR_A;
@@ -6357,26 +6360,29 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
                      across the road is the mall with its name over the
                      podium ("Back home, the closest thing to Thailand was
                      Golden Mile Complex." — v21.7)
-       3 · 15.5–25.4 OVER THE ZEBRA: a look at the cars waiting for him, then
-                     across, the podium's shops and banners coming up ("Thai
-                     grocers, Thai food, coaches leaving for Hat Yai... and
-                     amulets, if you knew where to look." — v21.19)
-       4 · 25.4–35.2 THE REVEAL: the lens leaves his eyes and rises and draws
+       3 · 15.5–18.2 OVER THE ZEBRA: a look at the cars waiting for him and
+                     his first steps onto it; a dip, and he is across (v21.20,
+                     Chad: "there is no need to have the voiceline saying
+                     coaches leaving for hat yai, take that out, and speed up
+                     the intro cutscene after accounting for the taken out
+                     voiceline duration" — the walk over was that line's)
+       4 · 18.2–28.0 THE REVEAL: the lens leaves his eyes and rises and draws
                      back over Beach Road until the whole building stands in
                      the frame — its distance SOLVED from the building's
                      corners for the screen it plays on (the roar's fitD law);
                      a screen too narrow for its 94 m frames its whole height
                      and PANS along it instead ("There was an amulet shop I
                      often visited. The owner knew me well.")
-       5 · 35.2–44.5 its corridor, World A's own: he walks it to the shop's
+       5 · 28.0–37.3 its corridor, World A's own: he walks it to the shop's
                      glass ("Every Buddha Day, he held a small chanting...")
-       6 · 44.5–53.5 inside, on the bell: the owner looks up and nods ("I only
+       6 · 37.3–46.3 inside, on the bell: the owner looks up and nods ("I only
                      meant to stay for the chanting..." — v21.7, Chad's words),
                      and in the line's pause the lens finds the altar at the
                      back ("...but something else happened..."). Black, and
                      the card.
      (v21.19: 53.5 s, was 32.4 — the corridor and the shop are v21.7's shots
-     21.1 s later, every beat the same distance from its line.)
+     21.1 s later, every beat the same distance from its line. v21.20: 46.3 s —
+     from the reveal on, every beat is v21.19's 7.2 s earlier.)
      The pocket is drawn only while its shots run, its light swapped in by a
      STEP (a passed track re-applies every frame); a skip runs every step in
      order and lands on the shop's own light. A track that moves the lens
@@ -6393,13 +6399,13 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       yaw.rotation.y = faceFrom(p.x, p.z, q.x, q.z);
       pitch.rotation.x = Math.atan2(q.y - p.y, Math.hypot(q.x - p.x, q.z - p.z));
     };
-    const CUT1 = 8.2, CUT2 = 15.2, OUT = 35.2;          // the outside shots' ends; the corridor from OUT, the shop from 44.5
+    const CUT1 = 8.2, CUT2 = 15.2, CUT3 = 18.2, OUT = 28.0;   // the outside shots' ends; the corridor from OUT, the shop from 37.3
 
     step(0, () => { handsRoot.visible = false; daylight(F.FILM_MORN); });
-    tr(0, 53.5, (k, t) => F.pockets(t < OUT), rawK);              // a track: a seek always answers the clock
+    tr(0, 46.3, (k, t) => F.pockets(t < OUT), rawK);              // a track: a seek always answers the clock
     /* the chapter's own bed is the mall's murmur: none of it in the street, the corridor's from the moment we are in
        it, and down with the picture at the end */
-    tr(0, 53.5, (k, t) => duck('mallamb', t < OUT ? 0 : t < OUT + 1 ? t - OUT : t < 51.7 ? 1 : Math.max(0, 1 - (t - 51.7) / 1.6)), rawK);
+    tr(0, 46.3, (k, t) => duck('mallamb', t < OUT ? 0 : t < OUT + 1 ? t - OUT : t < 44.5 ? 1 : Math.max(0, 1 - (t - 44.5) / 1.6)), rawK);
     tr(0, OUT, (k, t) => { F.busRide(t); F.mallLife(t); }, rawK);  // his bus, the cars both ways and the two walking, on the film's clock
     fade(0, 0, 1, 1);
     sfx(0.2, 'e3film3', 0.8);
@@ -6434,27 +6440,33 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
     const P2 = M(18.8, 1.66, 19.6), BUSR = M(16.6, 1.6, 16.9), NAME = M(14.0, 11.6, -0.1);
     tr(CUT1, CUT2, (k, t) => { if (t <= CUT2) put(P2, mix(BUSR, NAME, sm(cl01((t - 11.9) / 2.9)))); }, rawK);
     fade(8.6, 9.2, 1, 0);
-    sfx(8.45, 'estatemorn', 0.9); sfx(28.45, 'estatemorn', 0.9);   // the street (its file loops: the second picks up the first's end)
+    sfx(8.45, 'estatemorn', 0.9);                      // the street (its 20.0 s outlast it: down with the picture at OUT)
+    /* (v21.20: and only once — the second cue, at 28.45, picked up the first's end for a street that ran to 35.2,
+       and now it would start in the corridor) */
     sfx(9.3, 'busdoorshut', 0.55);
     sfx(10.0, 'busaway', 0.7);
     sfx(12.6, 'z3pro0');                               // 4.24 → 16.84
     fade(14.85, CUT2, 0, 1);
 
-    /* 3 · OVER THE ZEBRA (15.2 – 25.4): at its kerb, a look right at the cars waiting for him (the far lanes run
-       west: they come from his right), then across — the median's refuge, the near lanes, the podium coming up */
-    const K0 = M(0.1, 1.62, 17.9), K1 = M(0.1, 1.62, 5.4);
-    tr(CUT2, 17.0, (k, t) => {
-      if (t > 17.0) return;
-      const kr = sm(cl01((t - 15.7) / 0.6)) - sm(cl01((t - 16.35) / 0.6));
-      put(K0, mix(M(0.1, 1.9, 2.0), M(9.0, 1.1, 13.0), kr));
+    /* 3 · OVER THE ZEBRA (15.2 – 18.2): at its kerb, a look right at the cars waiting for him (the far lanes run
+       west: they come from his right), and his first steps onto it; a dip, and he is across. (v21.20: the walk over
+       was the Hat Yai line's, 7.8 s of zebra under it, and without the line it is a look, two steps and the cut. The
+       walk starts only when the look is back, so his heading never jumps, and on the look's own pitch — v21.19's
+       snapped 3° there) */
+    const K0 = M(0.1, 1.62, 17.9), K1 = M(0.1, 1.62, 5.4), REST3 = M(0.1, 1.9, 2.0);
+    tr(CUT2, 16.6, (k, t) => {
+      if (t > 16.6) return;
+      const kr = sm(cl01((t - 15.55) / 0.5)) - sm(cl01((t - 16.1) / 0.5));
+      put(K0, mix(REST3, M(9.0, 1.1, 13.0), kr));
     }, rawK);
     fade(15.5, 16.0, 1, 0);
-    const W3 = walkRoute(api, [K0, K1], 17.0, 1.6);   // (25.36: its own track owns his feet and his heading)
-    pitchTo(17.0, 18.4, -0.04, 0.0, smoothK);
-    pitchTo(21.6, W3.end, 0.0, 0.15, smoothK);
-    sfx(17.6, 'z3pro7');                               // 7.69 → 25.29
+    /* (2.6 m of it, so its footfalls end under the dip, the last in the dark; its track owns his feet and his
+       heading until the reveal's, pushed later, takes the lens) */
+    walkRoute(api, [K0, M(0.1, 1.62, 15.3)], 16.6, 1.6);
+    pitchTo(16.6, 17.4, Math.atan2(REST3.y - K0.y, K0.z - REST3.z), -0.03, smoothK);
+    fade(17.85, CUT3, 0, 1);
 
-    /* 4 · THE REVEAL (25.4 – 35.2): from the kerb, on the shops under the canopy, the lens leaves his eyes, rises and
+    /* 4 · THE REVEAL (18.2 – 28.0): from the kerb, on the shops under the canopy, the lens leaves his eyes, rises and
        draws back over Beach Road until the WHOLE building stands in the frame. Where it stops is SOLVED, not chosen
        (the roar film's fitD): the building's corners — the podium's foot and its name's line, the top terraces and the
        houses on the roof — and the distance back along a line from the north-east at which every one of them is inside
@@ -6485,26 +6497,27 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       pan = { a: M(16, 27, -10), b: M(-50, 27, -10) };
     }
     const CR = { x: T.x - f.x * D, y: T.y - f.y * D, z: T.z - f.z * D }, S1 = M(0.6, 2.4, 0.2);
-    tr(25.4, OUT, (k, t) => {
+    tr(CUT3, OUT, (k, t) => {
       if (t > OUT) return;
-      const u = sm(cl01((t - 26.2) / 6.0)), uy = sm(cl01((t - 26.2) / 4.6));
+      const u = sm(cl01((t - 19.0) / 6.0)), uy = sm(cl01((t - 19.0) / 4.6));
       const p = { x: K1.x + (CR.x - K1.x) * u, y: K1.y + (CR.y - K1.y) * uy, z: K1.z + (CR.z - K1.z) * u };
-      let q = mix(S1, pan ? pan.a : T, sm(cl01((t - 26.4) / 5.2)));
-      if (pan) q = mix(q, pan.b, sm(cl01((t - 31.4) / 3.6)));
-      else { const d = 3.0 * sm(cl01((t - 31.4) / 3.6)); p.x -= d; q = { x: q.x - d, y: q.y, z: q.z }; }   // and a slow drift along it
+      let q = mix(S1, pan ? pan.a : T, sm(cl01((t - 19.2) / 5.2)));
+      if (pan) q = mix(q, pan.b, sm(cl01((t - 24.2) / 3.6)));
+      else { const d = 3.0 * sm(cl01((t - 24.2) / 3.6)); p.x -= d; q = { x: q.x - d, y: q.y, z: q.z }; }   // and a slow drift along it
       put(p, q);
     }, rawK);
-    sfx(30.4, 'z3pro3');                               // 4.0 → 34.4
-    fade(34.6, OUT, 0, 1);
-    sfxFade(34.6, OUT, 'estatemorn');
+    fade(18.3, 18.8, 1, 0);                            // (v21.20: out of the dip, on the far kerb — it came straight off the walk)
+    sfx(23.2, 'z3pro3');                               // 4.0 → 27.2
+    fade(27.4, OUT, 0, 1);
+    sfxFade(27.4, OUT, 'estatemorn');
 
-    /* 5 · THE CORRIDOR (35.2 – 44.5): World A's own, walked from its east end to the shop's glass, a man coming the
+    /* 5 · THE CORRIDOR (28.0 – 37.3): World A's own, walked from its east end to the shop's glass, a man coming the
        other way on the far side (his walk on the film's clock, so a seek finds him where the shot wants him) */
     step(OUT, () => { daylight(null); });
     /* (a track is applied on every frame after its start with the RAW film
-       time, so past the shot's end (44.5 now) this one kept holding him and walking him on — he
+       time, so past the shot's end (37.3 now) this one kept holding him and walking him on — he
        was frozen out of sight for the whole of play) */
-    tr(OUT, 44.5, (k, t) => { if (t <= 44.5) F.passerTo(-1.6 + 1.3 * (t - OUT), 3.95, Math.PI / 2); }, rawK);
+    tr(OUT, 37.3, (k, t) => { if (t <= 37.3) F.passerTo(-1.6 + 1.3 * (t - OUT), 3.95, Math.PI / 2); }, rawK);
     /* (the walk's own track from the cut itself: a passed track holds its last value, so a walk starting later would
        leave the lens at the mall's end for those frames — out at x 300 with its pocket already put away) */
     /* (it ends in the doorway's middle, close to the glass: at (0.62, 1.12) it stood on the door's right mullion's
@@ -6512,38 +6525,38 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
        off the middle, outside a phone's frame. And it comes in STRAIGHT, through the middle of the right leaf: the
        last stretch used to run on the line of the door's MIDDLE bar (x 0), so for the walk's last second that bar
        stood in the centre of a phone's frame, half a metre off (the v21.1 photographs). Square on, the two bars
-       slide out to either side as he comes in. 1.77 m/s keeps the hold where it was, 43.3 → 44.1) */
+       slide out to either side as he comes in. 1.77 m/s keeps the hold where it was, 36.1 → 36.9) */
     const W = walkRoute(api, [{ x: 12.4, z: 2.05 }, { x: 1.2, z: 2.05 }, { x: 0.31, z: 1.55 }, { x: 0.31, z: 0.45 }], OUT, 1.77);
     pitchTo(OUT, OUT + 0.4, 0.03, 0.03, rawK);
     const inLook = faceFrom(0.31, 0.45, 0.05, -6.69);   // through the glass, onto the altar at the back
     yawTo(W.end - 0.3, W.end + 0.5, W.head, inLook, smoothK);
     pitchTo(W.end - 0.5, W.end + 0.4, 0.03, -0.05, smoothK);
     fade(OUT + 0.1, OUT + 0.9, 1, 0);
-    sfx(37.2, 'z3pro4');                              // 6.84 → 44.04
-    fade(44.1, 44.5, 0, 1);
+    sfx(30.0, 'z3pro4');                              // 6.84 → 36.84
+    fade(36.9, 37.3, 0, 1);
 
-    // 6 · INSIDE (44.5 – 53.5): the bell over the door, two steps in, the owner looking up from his counter
-    step(44.5, () => { F.passerFree(); });
-    sfx(44.45, 'shopbell', 0.8);
+    // 6 · INSIDE (37.3 – 46.3): the bell over the door, two steps in, the owner looking up from his counter
+    step(37.3, () => { F.passerFree(); });
+    sfx(37.25, 'shopbell', 0.8);
     const IN0 = { x: 0.1, y: 1.62, z: -0.25 }, IN1 = { x: -0.18, y: 1.62, z: -0.95 };
     const toOwn = faceFrom(IN1.x, IN1.z, F.OWN.x, F.OWN.z), toAlt = faceFrom(IN1.x, IN1.z, 0.05, -6.69);
-    tr(44.5, 46.2, (k) => { yaw.position.set(IN0.x + (IN1.x - IN0.x) * k, IN0.y + 0.012 * Math.sin(k * Math.PI * 2), IN0.z + (IN1.z - IN0.z) * k); }, smoothK);
-    sfx(44.85, 'step', 0.7); sfx(45.45, 'step', 0.7);
-    yawTo(44.5, 46.2, toOwn + 0.2, toOwn, smoothK);
-    pitchTo(44.5, 46.2, -0.02, -0.06, smoothK);
-    fade(44.55, 45.2, 1, 0);
-    step(45.0, () => { const O = F.cast.owner; O.look = 1; O.lookAt = null; });
-    step(45.8, () => { F.cast.owner.nod = 1.6; });    // he knows him: a nod, no word (his hello is play's first line)
+    tr(37.3, 39.0, (k) => { yaw.position.set(IN0.x + (IN1.x - IN0.x) * k, IN0.y + 0.012 * Math.sin(k * Math.PI * 2), IN0.z + (IN1.z - IN0.z) * k); }, smoothK);
+    sfx(37.65, 'step', 0.7); sfx(38.25, 'step', 0.7);
+    yawTo(37.3, 39.0, toOwn + 0.2, toOwn, smoothK);
+    pitchTo(37.3, 39.0, -0.02, -0.06, smoothK);
+    fade(37.35, 38.0, 1, 0);
+    step(37.8, () => { const O = F.cast.owner; O.look = 1; O.lookAt = null; });
+    step(38.6, () => { F.cast.owner.nod = 1.6; });    // he knows him: a nod, no word (his hello is play's first line)
     /* v21.7: the film's last line, Chad's own words. Its first half is said on the owner; in its pause (the take's
-       1.08 s between "chanting..." at 48.62 and "but" at 49.70) the lens turns to the altar at the back, where it will
+       1.08 s between "chanting..." at 41.42 and "but" at 42.50) the lens turns to the altar at the back, where it will
        happen, and arrives on "...something else happened..."; a beat on the altar in silence, then the black */
-    sfx(46.2, 'z3pro5');                              // 4.80 → 51.00
-    yawTo(48.6, 50.8, toOwn, toAlt, smoothK);
-    pitchTo(48.6, 50.8, -0.06, 0.02, smoothK);
-    fade(51.7, 53.3, 0, 1);
-    sfxFade(51.5, 53.3, 'e3film3');
-    tr(53.3, 53.5, () => {}, rawK);                   // the film's length (its last steps run inside it)
-    step(53.4, () => { handsRoot.visible = true; });
+    sfx(39.0, 'z3pro5');                              // 4.80 → 43.80
+    yawTo(41.4, 43.6, toOwn, toAlt, smoothK);
+    pitchTo(41.4, 43.6, -0.06, 0.02, smoothK);
+    fade(44.5, 46.1, 0, 1);
+    sfxFade(44.3, 46.1, 'e3film3');
+    tr(46.1, 46.3, () => {}, rawK);                   // the film's length (its last steps run inside it)
+    step(46.2, () => { handsRoot.visible = true; });
     c.keepFade = true;
     c.endFade = 1;
   }

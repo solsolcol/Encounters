@@ -1002,8 +1002,6 @@
       text: "[reflective] On my days off, I'd take the bus down to Beach Road.", secs: 3.69 },
     { id: "z3pro0", who: "jamesAdult", ch: "e3c3", where: "Opening film: off at the stop, as the bus pulls away and Golden Mile Complex stands across the road (v21.19; v21.7's first line)",
       text: "[reflective] Back home, the closest thing to Thailand was Golden Mile Complex.", secs: 4.24 },
-    { id: "z3pro7", who: "jamesAdult", ch: "e3c3", where: "Opening film: crossing Beach Road over the zebra, the podium's shops and banners coming up (v21.19)",
-      text: "Thai grocers, Thai food, coaches leaving for Hat Yai... and amulets, if you knew where to look.", secs: 7.69 },
     { id: "z3pro3", who: "jamesAdult", ch: "e3c3", where: "Opening film: as the camera rises and draws back to the whole of Golden Mile Complex (v21.19)",
       text: "There was an amulet shop I often visited. The owner knew me well.", secs: 4.0 },
     { id: "z3pro4", who: "jamesAdult", ch: "e3c3", where: "Opening film: the shop's glass door",

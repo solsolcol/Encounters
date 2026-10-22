@@ -32,7 +32,8 @@
 #                the end is faded (0.12 s).
 #   z3pro7       "Thai grocers, Thai food, coaches leaving for Hat Yai... and amulets, if you knew where to look."
 #                PICK a: the cleanest head (-75.9 against -40 to -52) and the tightest read (7.68 s against 8.24-9.04);
-#                its end faded (0.12 s).
+#                its end faded (0.12 s). RETIRED at v21.20 (Chad: "no need to have the voiceline saying coaches leaving
+#                for hat yai, take that out") — the takes stay in raw/, the line below is commented out.
 set -e
 cd "$(dirname "$0")"
 peak() { python3 ../v9.7/peak.py "$1" | sed 's/.*peak //; s/ dBFS.*//'; }
@@ -74,5 +75,5 @@ if [ "${M3:-1}" = 1 ]; then
   shot busdoor  raw/busdoor_d.mp3  2.48 0.25
   shot cardtap  raw/cardtap_a.mp3  1.00 0.30
   him  z3pro6   raw/z3pro6_b.mp3 --fade 0.12
-  him  z3pro7   raw/z3pro7_a.mp3 --fade 0.12
+  # him  z3pro7   raw/z3pro7_a.mp3 --fade 0.12      # (v21.20: retired)
 fi
