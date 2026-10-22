@@ -4966,11 +4966,15 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       /* his answer as the window opens (v21.11) — v21.23: a breath after it, 0.6 s, on the wall clock (the chapter's own
          stands still under the window). Said in the same instant, his voice ducked the window's opening bell to 40 %
          (every sound dips under a voice) and it rang half-heard. Never once the window has gone; and booked 0.6 s
-         later than said, so the close's re-basing (by the time the window was up) still ends his line where it ends */
+         later than said, so the close's re-basing (by the time the window was up) still ends his line where it ends.
+         v21.24: a line still booked as the window opens is waited out on the wall clock instead of refusing him for
+         good — the clock that booked it stands still under the window, so sayLine would refuse until the close */
+      const booked = Math.max(0, speak.until - dayClock.t);
       if (reply) setTimeout(() => {
         if (!galUp || !kit.galleryOpen()) return;
+        if (booked > 0) speak.until = Math.min(speak.until, dayClock.t);   // (said out by now, on the wall clock)
         sayLine('z3masters', 1, () => { holdFor('z3masters')(); speak.until += 0.6; holdTill += 0.6; });
-      }, 600);
+      }, Math.max(600, booked * 1000 + 300));
       galUp = true;
       const opened = wallNow();
       answer.then(r => {
@@ -6212,7 +6216,9 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       if (p === 'browse') {
         browseMark();
         browseT0 = dayClock.t;
-        after(1.6, () => { if (phase === 'browse' && !heard.has('ow3hello')) queueLine('ow3hello', () => talk(owner, SECS.ow3hello), 1, panAt(OWN.x, OWN.z)); });
+        /* (v21.24: not once he has begun introducing the masters — pressed in the first 1.6 s, the hello queued behind
+           that introduction, began on the frame the window opened, over its bell, and his answer was refused behind it) */
+        after(1.6, () => { if (phase === 'browse' && !heard.has('ow3hello') && !galIntro) queueLine('ow3hello', () => talk(owner, SECS.ow3hello), 1, panAt(OWN.x, OWN.z)); });
       }
       if (p === 'owner') owner.look = 1;
     }
