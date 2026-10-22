@@ -6007,7 +6007,8 @@ What the baseline contains, by release:
   stepped back behind them; the canopy's columns moved half a span off the zebra's line
   and its underside is a lit ceiling (it was a dark band over a third of a phone's frame).
   Five new sounds (`busride`, `busbell`, `busbrake`, `busdoor`, `cardtap`). The static
-  overlap scan is clean. Sheet v108 (two voice lines; v44 stays the link). Deploy
+  overlap scan is clean; csp, hosted, text, leak, cine and walk green. Sheet v108 (two
+  voice lines; v44 stays the link). Deploy
   `6ad9c311ccc5346559dc0c9c`, byte-verified (236 served files). docs/V21.17-PLAN.md is the
   record of all three milestones.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
