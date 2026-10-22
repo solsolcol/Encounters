@@ -5956,6 +5956,28 @@ What the baseline contains, by release:
   rising to 0.59 as a pass crosses the door and its pan sweeping right to left; no page
   errors. Deploy `6ad9b22d0702d39f1131b5ff`, byte-verified (236 served files); harnesses
   csp, sanity, sound, hosted, leak, cine, fixture green on its snapshot.
+- **v21.18** GOLDEN MILE'S SHOPS, BUILT — the second milestone (Chad: *"Now for the row
+  of shops inside golden mile itself, these shops now look too basic, and they can all be
+  improved much further with more detail"*). Each of the corridor's eleven neighbours was
+  ONE painted plane; each is a shop now (`shopRow`): a recess 2.4 m deep with its back and
+  side walls, a ceiling with its lit panels, its own floor, an aluminium front with glass
+  and its doors folded back, a lightbox on a fascia over it, and what that kind of shop
+  holds — the grocer's shelves, drinks fridge and fruit crates at the door, the travel
+  agent's desk and brochures, the kitchen's counter, pots, tables and stools and two people
+  at lunch (the shrine's seated pair baked to stills, the v21.16 rule; a phone seats one),
+  the massage parlour's recliners and curtain, the goldsmith's lit cases and folded grille,
+  the phone shop's wall of cases, the money changer's rates, the coach agency's departures
+  and luggage, a snack shop, a unit shuttered TO LET — lit by World A's own light and
+  painted glows (no lamp: v15.1), nothing casting a shadow, merged a batch a material and
+  the goods instanced. The corridor's end, which the film's walk looks straight at (on a
+  phone the middle of the picture), was a bare wall: a lift lobby now — two lift doors in
+  steel frames, a floor lamp over each, call buttons, the mall's directory between them,
+  a green EXIT. Fixed by photograph: every door leaf was one solid aluminium slab (two grey
+  boards in each doorway — glass in a frame now), and the money changer's small rate
+  poster stood over its big board. Photographed on a phone and a desktop from the film's
+  walk, the shop's glass and the corridor; no page errors. The podium's ground floor on
+  Beach Road moved to v21.19, the film that walks to it. Deploy
+  `6ad9b8d90cde606fc1e3434b`, byte-verified (236 served files).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so

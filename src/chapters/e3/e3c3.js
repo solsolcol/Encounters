@@ -1192,6 +1192,351 @@
       }
     }
 
+    /* v21.18 · GOLDEN MILE'S SHOPS, BUILT (Chad: "Now for the row of shops inside golden mile itself, these shops now
+       look too basic, and they can all be improved much further with more detail"). Each neighbour was ONE painted
+       plane — a band, a name, a few rectangles for goods — flat from every angle the shop's glass and the film's walk
+       see it from. Each is a SHOP now: a recess 2.4 m deep with its back and side walls, a ceiling with its lit
+       panels, a floor of its own; an aluminium front with glass and its doors folded open; a lightbox on a fascia
+       over it; and inside and out what that kind of shop holds — a grocer's shelves, fridge and crates of fruit at the
+       door, a travel agent's desk, brochures and A-board, a kitchen's counter, tables and menu, a massage parlour's
+       recliners and curtain, a goldsmith's lit cases, a phone shop's counter and wall of cases, a money changer's
+       rates, a coach agency's departures and luggage, a snack shop, a unit shuttered TO LET. Lit by World A's own
+       light and by painted glows (no lamp: the v15.1 law); nothing casts or takes a shadow; and MERGED — a batch a
+       material and the goods instanced, a dozen draws for the corridor. A bay is built in its own frame (x across it
+       to the viewer's right, z out toward the corridor, its front at z 0) and the frame turns it to face its row's
+       way. The film's podium on Beach Road takes the same builder (v21.19). */
+    const SHOP_SIGNS = tex(makeMallSigns(THREE, cnv)), SHOP_POSTERS = tex(makeMallPosters(THREE, cnv));
+    const SHOP_SEATED = [];      // the diners a row lists: seated further down, once the baked stills exist (sitterStill)
+    const SIGN_CELL = (i) => [0.004, 1 - (i + 1) * 128 / 1280 + 0.004, 0.996, 1 - i * 128 / 1280 - 0.004];
+    const POST_CELL = (i) => { const cx = i % 4, cy = Math.floor(i / 4); return [cx / 4 + 0.004, 1 - (cy + 1) / 4 + 0.004, (cx + 1) / 4 - 0.004, 1 - cy / 4 - 0.004]; };
+    const PC = (k) => POST_CELL(MALL_POSTER[k]);
+    /* a kind: its sign (a row of the signs' atlas), its walls, floor and light, how it is dressed, its goods' colours */
+    const SHOP_KINDS = {
+      travel:  { sign: 0, wall: 0xe6edf4, floor: 0xb9c0c8, lamp: 0xf4f8ff, dress: 'travel' },
+      grocery: { sign: 1, wall: 0xf0efe6, floor: 0xc4c2b4, lamp: 0xf6fbff, dress: 'grocery', pal: [0xd8261c, 0xf2b81c, 0x2a8a3a, 0x1e5aa8, 0xe86a1a, 0xf4f0e6, 0x8a2ad8, 0xc8a46a] },
+      snack:   { sign: 9, wall: 0xf6eedc, floor: 0xc8bca4, lamp: 0xfff6e6, dress: 'grocery', pal: [0xf2b81c, 0xe84a8a, 0xd8261c, 0x7ac83a, 0xf2783a, 0x8a4a2a, 0xfff2c8, 0x3ab4d8], noFridge: true },
+      food:    { sign: 2, wall: 0xf4e6d0, floor: 0xa89a86, lamp: 0xfff2dc, dress: 'food' },
+      massage: { sign: 3, wall: 0xf0d6c8, floor: 0x8a6a56, lamp: 0xffe6cc, dress: 'massage' },
+      gold:    { sign: 4, wall: 0x8a1610, floor: 0xd8cfc0, lamp: 0xfff2d8, dress: 'gold' },
+      phone:   { sign: 5, wall: 0xeef0f2, floor: 0xb4b8bc, lamp: 0xf0f6ff, dress: 'phone', pal: [0x1a1a1a, 0xe8e8e8, 0xd8261c, 0x1e5aa8, 0xf2b81c, 0x2a8a3a, 0xe84a8a, 0x8a2ad8] },
+      money:   { sign: 7, wall: 0xe4ece6, floor: 0xb0b4ae, lamp: 0xf2fff6, dress: 'money' },
+      tickets: { sign: 8, wall: 0xf4ecd8, floor: 0xb8b0a0, lamp: 0xfff8e8, dress: 'tickets' },
+      shut:    { sign: 6, dress: 'shut' } };
+    const _sm4 = new THREE.Matrix4(), _sq4 = new THREE.Quaternion(), _se4 = new THREE.Euler(0, 0, 0, 'YXZ'), _sv4 = new THREE.Vector3(), _ss4 = new THREE.Vector3(), _sn3 = new THREE.Matrix3(), _sc4 = new THREE.Color();
+    /* a batch, World A's (buildStreet's shape): every piece posed in the current bay's frame, merged into one mesh */
+    function shopBatch(parent) {
+      const P = [], N = [], C = [], U = [], I = []; let FR = null;
+      const B = {
+        frame(m) { FR = m; return B; },
+        add(geo, x, y, z, col, o = {}) {
+          _se4.set(o.rx || 0, o.ry || 0, o.rz || 0, 'YXZ'); _sq4.setFromEuler(_se4);
+          _sm4.compose(_sv4.set(x, y, z), _sq4, _ss4.set(1, 1, 1)).premultiply(FR); _sn3.getNormalMatrix(_sm4);
+          _sc4.set(col);
+          const pa = geo.attributes.position, na = geo.attributes.normal, ua = geo.attributes.uv, base = P.length / 3;
+          for (let i = 0; i < pa.count; i++) {
+            _sv4.fromBufferAttribute(pa, i).applyMatrix4(_sm4); P.push(_sv4.x, _sv4.y, _sv4.z);
+            _sv4.fromBufferAttribute(na, i).applyMatrix3(_sn3).normalize(); N.push(_sv4.x, _sv4.y, _sv4.z);
+            C.push(_sc4.r, _sc4.g, _sc4.b);
+            if (o.cell) { const q = o.cell; U.push(q[0] + ua.getX(i) * (q[2] - q[0]), q[1] + ua.getY(i) * (q[3] - q[1])); }
+            else U.push(ua.getX(i), ua.getY(i));
+          }
+          if (geo.index) for (let i = 0; i < geo.index.count; i++) I.push(base + geo.index.getX(i));
+          else for (let i = 0; i < pa.count; i++) I.push(base + i);
+          geo.dispose();
+          return B;
+        },
+        box(w, h, d, x, y, z, col, o) { return B.add(new THREE.BoxGeometry(w, h, d), x, y, z, col, o); },
+        quad(w, h, x, y, z, col, o) { return B.add(new THREE.PlaneGeometry(w, h), x, y, z, col, o); },
+        cyl(r, h, x, y, z, col, o = {}) { return B.add(new THREE.CylinderGeometry(o.r1 ?? r, r, h, o.seg || 12), x, y, z, col, o); },
+        build(mat) {
+          if (!I.length) return null;
+          const g = new THREE.BufferGeometry();
+          g.setAttribute('position', new THREE.Float32BufferAttribute(P, 3));
+          g.setAttribute('normal', new THREE.Float32BufferAttribute(N, 3));
+          g.setAttribute('color', new THREE.Float32BufferAttribute(C, 3));
+          g.setAttribute('uv', new THREE.Float32BufferAttribute(U, 2));
+          g.setIndex(P.length / 3 > 65535 ? new THREE.Uint32BufferAttribute(I, 1) : new THREE.Uint16BufferAttribute(I, 1));
+          g.computeBoundingSphere();
+          const m = new THREE.Mesh(g, mat); m.castShadow = false; m.receiveShadow = false;
+          parent.add(m); return m;
+        },
+      };
+      return B;
+    }
+    /* a row of bays: [{ x, z, ry, kind, seed }], each a whole shop; o.H the ceiling it stands under (the fascia
+       reaches it), o.fascia its colour, o.mats to share one set of materials between rows */
+    function shopRow(parent, bays, o = {}) {
+      const lit = shopBatch(parent), metal = shopBatch(parent), glow = shopBatch(parent), post = shopBatch(parent),
+            bright = shopBatch(parent), sign = shopBatch(parent), glass = shopBatch(parent), shut = shopBatch(parent);
+      const goods = [], cans = [], fruit = [], gold = [];
+      const FR = new THREE.Matrix4(); let BAY = null;
+      const HW = 1.94, D = 2.4, CH = 2.75, MH = o.H || 3.6, ALU = 0xc4c8cc, STEEL = 0x9aa0a6;
+      const put = (list, x, y, z, sx, sy, sz, col, ry = 0, rx = 0) => {
+        _se4.set(rx, ry, 0, 'YXZ'); _sq4.setFromEuler(_se4);
+        list.push({ m: new THREE.Matrix4().compose(_sv4.set(x, y, z), _sq4, _ss4.set(sx, sy, sz)).premultiply(FR), col });
+      };
+      /* goods along a shelf board from u0 to u1 (x when along x, z when along z), standing on height y, against `back`
+         (the wall side's coordinate): packets, cans and bottles, a little gap between, dealt from the bay's own stream */
+      const stock = (rnd, pal, along, u0, u1, y, back, depth, face, maxH = 0.32) => {
+        let u = u0 + 0.02;
+        while (u < u1 - 0.06) {
+          const kind = rnd(), col = pal[Math.floor(rnd() * pal.length)];
+          if (kind < 0.55) {                                         // a packet or a box
+            const w = 0.07 + rnd() * 0.1, h = Math.min(maxH, 0.1 + rnd() * 0.24), d = Math.min(depth - 0.04, 0.1 + rnd() * 0.12);
+            if (u + w > u1) break;
+            const c = back + face * (d / 2 + 0.02);
+            if (along === 'x') put(goods, u + w / 2, y + h / 2, c, w, h, d, col); else put(goods, c, y + h / 2, u + w / 2, d, h, w, col);
+            u += w + 0.012;
+          } else {                                                   // a row of cans or bottles, front to back
+            const tall = rnd() < 0.4, r = tall ? 0.034 : 0.032, h = tall ? Math.min(maxH, 0.26) : 0.12;
+            for (let k = 0; k < 2; k++) {
+              const c = back + face * (0.06 + k * 0.08);
+              if (along === 'x') put(cans, u + r, y + h / 2, c, r * 2, h, r * 2, col); else put(cans, c, y + h / 2, u + r, r * 2, h, r * 2, col);
+            }
+            u += r * 2 + 0.01;
+          }
+        }
+      };
+      /* an open steel shelf unit against a wall: uprights, boards, stock on every board */
+      const shelfX = (rnd, pal, x0, x1, zBack, depth, tiers) => {
+        for (const x of [x0, x1]) metal.box(0.04, tiers[tiers.length - 1] + 0.1, depth, x, (tiers[tiers.length - 1] + 0.1) / 2, zBack + depth / 2, STEEL);
+        tiers.forEach((y, i) => { metal.box(x1 - x0, 0.025, depth, (x0 + x1) / 2, y, zBack + depth / 2, i % 2 ? 0xd8dadc : 0xcfd2d6);
+          if (i < tiers.length - 1) stock(rnd, pal, 'x', x0 + 0.03, x1 - 0.03, y + 0.013, zBack, depth, 1, Math.min(0.32, tiers[i + 1] - y - 0.06)); });
+        lit.quad(x1 - x0, tiers[tiers.length - 1], (x0 + x1) / 2, tiers[tiers.length - 1] / 2, zBack + 0.004, 0xdedcd4);   // its back panel
+      };
+      const shelfZ = (rnd, pal, z0, z1, xBack, depth, tiers, face) => {     // face −1: against the right wall, facing −x
+        for (const z of [z0, z1]) metal.box(depth, tiers[tiers.length - 1] + 0.1, 0.04, xBack + face * depth / 2, (tiers[tiers.length - 1] + 0.1) / 2, z, STEEL);
+        tiers.forEach((y, i) => { metal.box(depth, 0.025, z1 - z0, xBack + face * depth / 2, y, (z0 + z1) / 2, i % 2 ? 0xd8dadc : 0xcfd2d6);
+          if (i < tiers.length - 1) stock(rnd, pal, 'z', z0 + 0.03, z1 - 0.03, y + 0.013, xBack, depth, face, Math.min(0.32, tiers[i + 1] - y - 0.06)); });
+      };
+      const chair = (x, z, col, ry = 0) => {                           // a plastic chair: seat, back, four legs
+        const c = Math.cos(ry), s = Math.sin(ry), at = (dx, dz) => [x + dx * c + dz * s, z - dx * s + dz * c];
+        let p = at(0, 0); lit.box(0.42, 0.05, 0.42, p[0], 0.45, p[1], col, { ry });
+        p = at(0, 0.2); lit.box(0.42, 0.4, 0.04, p[0], 0.68, p[1], col, { ry, rx: 0.12 });
+        for (const [dx, dz] of [[-0.18, -0.18], [0.18, -0.18], [-0.18, 0.18], [0.18, 0.18]]) { p = at(dx, dz); metal.box(0.025, 0.44, 0.025, p[0], 0.22, p[1], 0x444444); }
+      };
+      const aBoard = (x, z, cell, frame = 0x2a2a2a) => {                  // an A-board on the corridor's floor
+        lit.box(0.54, 0.86, 0.03, x, 0.44, z, frame, { rx: -0.16 });
+        post.quad(0.48, 0.48, x, 0.56, z, 0xffffff, { rx: -0.16, cell });
+        lit.box(0.54, 0.86, 0.03, x, 0.44, z - 0.14, frame, { rx: 0.16 });
+      };
+      const pot = (x, z, h = 0.34) => {                                  // a potted palm: a pot, a fan of leaves
+        lit.cyl(0.15, h, x, h / 2, z, 0xa8582a, { r1: 0.19, seg: 12 });
+        for (let k = 0; k < 7; k++) put(goods, x + Math.cos(k * 0.9) * 0.12, h + 0.32, z + Math.sin(k * 0.9) * 0.12, 0.05, 0.62, 0.16, 0x2f7a32, k * 0.9, 0.35);
+      };
+      const DRESS = {
+        grocery(K, rnd) {
+          shelfX(rnd, K.pal, -1.86, 1.86, -D + 0.02, 0.42, [0.1, 0.5, 0.9, 1.3, 1.7, 2.06]);
+          shelfZ(rnd, K.pal, -1.92, -0.62, HW - 0.02, 0.36, [0.1, 0.48, 0.86, 1.24, 1.62], -1);
+          if (!K.noFridge) {                                             // the drinks fridge on the left: open-fronted behind glass, lit inside
+            const fx = -HW + 0.36, fz = -1.25;
+            lit.box(0.05, 2.0, 0.64, -HW + 0.035, 1.0, fz, 0xe6e6e8);
+            for (const s of [-1, 1]) lit.box(0.7, 2.0, 0.04, fx, 1.0, fz + s * 0.3, 0xe6e6e8);
+            lit.box(0.7, 0.16, 0.64, fx, 0.08, fz, 0xe6e6e8); lit.box(0.72, 0.24, 0.66, fx, 2.12, fz, 0xc8201a);
+            glow.quad(0.56, 1.72, -HW + 0.062, 1.02, fz, 0xdcecff, { ry: Math.PI / 2 });
+            for (let r = 0; r < 4; r++) {
+              metal.box(0.6, 0.02, 0.56, fx + 0.02, 0.28 + r * 0.43, fz, 0xd0d4d8);
+              for (let k = 0; k < 6; k++) for (let j = 0; j < 2; j++) put(cans, -HW + 0.34 + j * 0.16, 0.42 + r * 0.43, fz - 0.22 + k * 0.088, 0.062, 0.25, 0.062, K.pal[(r * 3 + k + j) % K.pal.length]);
+            }
+            glass.quad(0.6, 1.76, -HW + 0.712, 1.02, fz, 0xffffff, { ry: Math.PI / 2 });
+          } else shelfZ(rnd, K.pal, -1.92, -0.62, -HW + 0.02, 0.36, [0.1, 0.48, 0.86, 1.24, 1.62], 1);
+          // the till by the door
+          lit.box(0.86, 0.95, 0.46, 1.25, 0.475, -0.5, 0xd8d0c0); lit.box(0.92, 0.04, 0.52, 1.25, 0.97, -0.5, 0x3a3a3a);
+          lit.box(0.3, 0.16, 0.22, 1.2, 1.07, -0.55, 0x1a1a1a); glow.quad(0.2, 0.1, 1.2, 1.12, -0.437, 0x7ad8ff);
+          // at the door: produce in crates on a stepped stand, sacks of rice
+          lit.box(1.5, 0.42, 0.5, -1.0, 0.21, 0.4, 0x6a4a2a); lit.box(1.5, 0.3, 0.32, -1.0, 0.57, 0.3, 0x6a4a2a);
+          const cr = [[-1.37, 0.47, 0.5, 0xf2b81c], [-0.63, 0.47, 0.5, 0x6ab42a], [-1.37, 0.77, 0.3, 0xd8201a], [-0.63, 0.77, 0.3, 0xf28a1c]];
+          for (const [x, y, z, col] of cr) {
+            lit.box(0.66, 0.14, 0.32, x, y, z, rnd() < 0.5 ? 0x2a6a3a : 0x9a6a3a);
+            for (let k = 0; k < 18; k++) put(fruit, x - 0.27 + (k % 6) * 0.11 + rnd() * 0.02, y + 0.08 + (k > 11 ? 0.06 : 0), z - 0.1 + Math.floor(k / 6) % 2 * 0.1, 0.1, 0.09, 0.1, col);
+          }
+          for (let k = 0; k < 3; k++) { lit.box(0.44, 0.22, 0.62, 1.32, 0.11 + k * 0.22, 0.36, 0xf4f0e2, { ry: k * 0.08 }); }
+          post.quad(0.4, 0.3, 1.32, 0.55, 0.672, 0xffffff, { cell: PC('rice') });
+          post.quad(0.5, 0.5, -1.3, 1.5, -0.025, 0xffffff, { cell: PC('noodles') });
+        },
+        travel(K, rnd) {
+          lit.box(2.3, 0.75, 0.6, -0.15, 0.375, -1.78, 0xe8eef4); lit.box(2.4, 0.04, 0.66, -0.15, 0.77, -1.78, 0x2a4a7a);
+          for (const x of [-0.75, 0.45]) { lit.box(0.5, 0.33, 0.04, x, 1.04, -1.9, 0x121214); glow.quad(0.46, 0.29, x, 1.04, -1.878, 0x9ad0ff); metal.box(0.04, 0.12, 0.04, x, 0.85, -1.9, 0x333333); }
+          chair(-0.75, -2.15, 0x2a2a2e, Math.PI); chair(-0.6, -1.12, 0x1e5aa8); chair(0.45, -1.12, 0x1e5aa8);
+          [['bangkok', -1.2], ['phuket', 0], ['hatyai', 1.2]].forEach(([k, x]) => { lit.box(0.68, 0.68, 0.02, x, 1.78, -D + 0.012, 0xf2f2f2); post.quad(0.62, 0.62, x, 1.78, -D + 0.024, 0xffffff, { cell: PC(k) }); });
+          // the brochure rack on the right wall, the departures on the left
+          lit.box(0.04, 1.2, 1.1, HW - 0.04, 1.3, -1.0, 0xd8d8d8);
+          for (let r = 0; r < 4; r++) for (let k = 0; k < 4; k++) put(goods, HW - 0.09, 0.86 + r * 0.29, -1.38 + k * 0.25, 0.03, 0.22, 0.16, [0x1e5aa8, 0xf2b81c, 0xd8261c, 0x2a8a3a, 0xe84a8a][(r + k * 2) % 5], 0, 0.18);
+          bright.quad(0.9, 0.9, -HW + 0.02, 1.6, -1.2, 0xffffff, { ry: Math.PI / 2, cell: PC('timetable') });
+          aBoard(1.3, 0.55, PC('coach'));
+          // a brochure stand at the door
+          metal.box(0.04, 1.2, 0.04, -1.35, 0.6, 0.42, 0x555555); metal.box(0.4, 0.03, 0.3, -1.35, 0.02, 0.42, 0x555555);
+          for (let k = 0; k < 3; k++) put(goods, -1.35, 0.55 + k * 0.28, 0.5, 0.36, 0.22, 0.03, [0x2a8a3a, 0x1e5aa8, 0xe86a1a][k], 0, -0.2);
+          post.quad(0.48, 0.48, 1.32, 1.45, -0.025, 0xffffff, { cell: PC('phuket') });
+        },
+        food(K, rnd) {
+          metal.box(3.72, 0.92, 0.62, 0, 0.46, -D + 0.33, 0xc0c4c8); metal.box(3.76, 0.04, 0.66, 0, 0.94, -D + 0.33, 0xdadde0);
+          for (let k = 0; k < 4; k++) put(cans, -1.3 + k * 0.85, 1.08, -D + 0.3, 0.32, 0.26, 0.32, 0xb8bcc0);         // the pots
+          glass.quad(3.6, 0.3, 0, 1.12, -D + 0.66, 0xffffff);
+          for (let k = 0; k < 6; k++) put(goods, -1.5 + k * 0.6, 0.985, -D + 0.52, 0.42, 0.05, 0.22, [0xd8501c, 0xe8c040, 0x3a8a2a, 0x7a3a1a, 0xc8642a, 0xf0e0b0][k]);
+          bright.quad(1.5, 0.75, -0.55, 1.88, -D + 0.012, 0xffffff, { cell: PC('menu') });
+          post.quad(0.8, 0.8, 1.15, 1.85, -D + 0.012, 0xffffff, { cell: PC('tomyum') });
+          for (const x of [-0.95, 0.85]) {                               // two tables, stools round them
+            lit.box(0.64, 0.03, 0.64, x, 0.74, -1.05, 0xe6dcc8); metal.box(0.05, 0.72, 0.05, x, 0.37, -1.05, 0x6a6a6a); metal.box(0.4, 0.02, 0.4, x, 0.01, -1.05, 0x6a6a6a);
+            for (const [dx, dz] of [[-0.45, 0], [0.45, 0], [0, 0.42]]) lit.cyl(0.15, 0.45, x + dx, 0.225, -1.05 + dz, (dx + dz) > 0 ? 0xd8261c : 0x1e5aa8, { r1: 0.13 });
+          }
+          /* two at lunch, one at each table, turned to it (real seated people baked to a still — the v21.16 rule; a
+             phone seats the one) */
+          const dine = (who, lx, lz, fx, fz, low) => {
+            const v = new THREE.Vector3(lx, 0.45, lz).applyMatrix4(FR);
+            SHOP_SEATED.push({ who, parent, x: v.x, y: v.y, z: v.z, ry: (BAY.ry || 0) + Math.atan2(fx, fz), low });
+          };
+          dine('sitman', -1.4, -1.05, 1, 0, true);
+          dine('sitwoman', 1.3, -1.05, -1, 0, false);
+          // outside: a table for two and the menu on an easel
+          lit.box(0.6, 0.03, 0.6, -1.25, 0.74, 0.5, 0xe6dcc8); metal.box(0.05, 0.72, 0.05, -1.25, 0.37, 0.5, 0x6a6a6a);
+          for (const dx of [-0.42, 0.42]) lit.cyl(0.15, 0.45, -1.25 + dx, 0.225, 0.5, 0x1e5aa8, { r1: 0.13 });
+          aBoard(1.32, 0.5, PC('menu'), 0x5a2a0a);
+          post.quad(0.46, 0.46, 1.32, 1.5, -0.025, 0xffffff, { cell: PC('tomyum') });
+        },
+        massage(K, rnd) {
+          lit.box(1.0, 0.95, 0.46, 1.28, 0.475, -0.62, 0x6a2a3a); lit.box(1.06, 0.04, 0.52, 1.28, 0.97, -0.62, 0xe8d8c8);
+          lit.cyl(0.07, 0.14, 1.45, 1.06, -0.62, 0xf4f2ee);                                                                    // an orchid on the desk
+          for (let k = 0; k < 6; k++) put(fruit, 1.45 + Math.sin(k) * 0.08, 1.25 + k * 0.05, -0.62 + Math.cos(k) * 0.05, 0.07, 0.05, 0.07, k % 2 ? 0xd85aa8 : 0xf4e6f4);
+          for (const x of [-1.25, -0.12]) {                               // two foot-massage recliners
+            lit.box(0.64, 0.36, 1.0, x, 0.18, -1.72, 0x4a1414); lit.box(0.62, 0.12, 0.6, x, 0.42, -1.82, 0x7a2424);
+            lit.box(0.62, 0.78, 0.14, x, 0.78, -2.18, 0x7a2424, { rx: -0.34 });
+            for (const s of [-1, 1]) lit.box(0.1, 0.2, 0.62, x + s * 0.33, 0.56, -1.86, 0x4a1414);
+            lit.box(0.4, 0.3, 0.4, x, 0.15, -0.92, 0x7a2424); put(goods, x, 0.31, -0.92, 0.36, 0.02, 0.36, 0xf2f0ea);
+          }
+          metal.box(1.5, 0.03, 0.03, 1.15, 2.28, -1.45, 0xc8b89a);        // the curtain on its rail
+          for (let k = 0; k < 8; k++) lit.box(0.19, 2.04, 0.02, 0.48 + k * 0.19, 1.24, -1.45 + (k % 2) * 0.05, 0xd8b88a, { ry: k % 2 ? 0.32 : -0.32 });
+          post.quad(0.7, 0.7, -0.7, 1.72, -D + 0.012, 0xffffff, { cell: PC('massage') });
+          lit.box(0.66, 0.66, 0.02, 0.62, 1.78, -D + 0.012, 0xc89a3a); post.quad(0.6, 0.6, 0.62, 1.78, -D + 0.024, 0xffffff, { cell: PC('elephant') });
+          // outside: the price list on an easel, a palm
+          for (const s of [-1, 1]) metal.box(0.03, 1.3, 0.03, -1.3 + s * 0.22, 0.62, 0.52, 0x5a3a1a, { rz: s * -0.12 });
+          post.quad(0.52, 0.52, -1.3, 1.02, 0.56, 0xffffff, { rx: -0.12, cell: PC('massage') });
+          pot(1.55, 0.38);
+        },
+        gold(K, rnd) {
+          const cases = [[0, -1.98, 3.5, 0.55], [-1.58, -1.12, 0.5, 1.0], [1.58, -1.12, 0.5, 1.0]];
+          for (const [x, z, w, d] of cases) {                              // the lit glass cases: a red base, a bright bed, gold on it, glass over
+            lit.box(w, 0.86, d, x, 0.43, z, 0x5a0a08); glow.quad(w - 0.06, d - 0.06, x, 0.865, z, 0xfff0c8, { rx: -Math.PI / 2 });
+            glass.box(w, 0.3, d, x, 1.02, z, 0xffffff);
+            metal.box(w + 0.02, 0.025, d + 0.02, x, 1.18, z, 0xd8b04a);
+            const n = Math.round(w * d * 26);
+            for (let k = 0; k < n; k++) {
+              const gx = x + (rnd() - 0.5) * (w - 0.12), gz = z + (rnd() - 0.5) * (d - 0.12);
+              if (rnd() < 0.5) put(gold, gx, 0.885, gz, 0.11, 0.015, 0.11, 0xffc84a, rnd() * 3); else put(gold, gx, 0.9, gz, 0.04, 0.05, 0.16, 0xffd86a, rnd() * 3);
+            }
+          }
+          lit.box(1.0, 1.0, 0.02, 0, 1.78, -D + 0.012, 0xd8a83a); bright.quad(0.92, 0.92, 0, 1.78, -D + 0.024, 0xffffff, { cell: PC('goldrate') });
+          lit.box(0.6, 0.9, 0.55, -1.5, 0.45, -2.05, 0x3a3a3c); metal.box(0.08, 0.08, 0.04, -1.45, 0.6, -1.76, 0xd8b04a);   // the safe
+          for (const x of [-1.2, 1.2]) put(fruit, x, 2.35, -1.2, 0.26, 0.32, 0.26, 0xd8201a);                                // two red lanterns
+          for (const s of [-1, 1]) for (let k = 0; k < 6; k++) metal.box(0.025, 2.2, 0.025, s * (HW - 0.12 - k * 0.06), 1.1, -0.06, 0x8a8e92);   // the grille, folded back
+        },
+        phone(K, rnd) {
+          lit.box(2.6, 0.95, 0.5, -0.4, 0.475, -1.22, 0x2a2a2e); glass.box(2.6, 0.04, 0.5, -0.4, 0.97, -1.22, 0xffffff);
+          for (let k = 0; k < 9; k++) { const x = -1.55 + k * 0.29; put(goods, x, 0.93, -1.22, 0.075, 0.012, 0.15, 0x111111, 0.1); glow.quad(0.06, 0.12, x, 0.937, -1.22, [0x3a9ae8, 0xe84a8a, 0x3ad88a][k % 3], { rx: -Math.PI / 2, rz: 0.1 }); }
+          lit.box(3.6, 1.62, 0.03, 0, 1.46, -D + 0.016, 0xdcdcd4);                                                          // the wall of cases
+          for (let r = 0; r < 6; r++) for (let c = 0; c < 8; c++) put(goods, -1.47 + c * 0.42, 0.86 + r * 0.25, -D + 0.05, 0.13, 0.2, 0.025, K.pal[(r * 5 + c * 3) % K.pal.length]);
+          lit.box(0.04, 0.52, 0.88, HW - 0.04, 1.95, -1.4, 0x111111); glow.quad(0.82, 0.46, HW - 0.065, 1.95, -1.4, 0x3a8ae8, { ry: -Math.PI / 2 });
+          chair(-0.4, -1.9, 0x2a2a2e, Math.PI);
+          aBoard(1.32, 0.5, PC('sim'), 0x0a1a4a);
+          post.quad(0.46, 0.46, -1.32, 1.45, -0.025, 0xffffff, { cell: PC('sim') });
+        },
+        money(K, rnd) {
+          lit.box(3.8, 1.02, 0.5, 0, 0.51, -0.95, 0x1e3a2e); lit.box(3.84, 0.04, 0.56, 0, 1.04, -0.95, 0xc8ccc4);
+          glass.quad(3.8, 1.2, 0, 1.66, -0.95, 0xffffff); metal.box(3.84, 0.04, 0.04, 0, 2.27, -0.95, ALU);
+          for (const x of [-1.0, 1.0]) { lit.box(0.4, 0.06, 0.24, x, 1.07, -0.85, 0x2a2a2a); metal.box(0.03, 1.2, 0.03, x * 0.5, 1.66, -0.95, ALU); }
+          bright.quad(1.5, 1.5, 0.3, 1.55, -D + 0.012, 0xffffff, { cell: PC('rates') });
+          lit.box(0.6, 0.9, 0.55, -1.45, 0.45, -2.05, 0x3a3a3c);
+          post.quad(0.4, 0.4, -1.35, 1.6, -0.025, 0xffffff, { cell: PC('rates') });     // (on the left pane: on the right it stood over the big board)
+        },
+        tickets(K, rnd) {
+          lit.box(1.9, 0.95, 0.56, -0.7, 0.475, -1.6, 0xd8261c); lit.box(1.96, 0.04, 0.6, -0.7, 0.97, -1.6, 0xf4f0e6);
+          lit.box(0.48, 0.32, 0.04, -0.9, 1.12, -1.75, 0x121214); glow.quad(0.44, 0.28, -0.9, 1.12, -1.728, 0x9ad0ff);
+          chair(-0.7, -2.05, 0x2a2a2e, Math.PI); chair(-0.9, -0.95, 0xd8261c);
+          bright.quad(1.2, 1.2, 0.95, 1.7, -D + 0.012, 0xffffff, { cell: PC('timetable') });
+          post.quad(0.7, 0.7, -0.8, 1.85, -D + 0.012, 0xffffff, { cell: PC('coach') });
+          post.quad(0.6, 0.6, -HW + 0.012, 1.7, -0.9, 0xffffff, { ry: Math.PI / 2, cell: PC('hatyai') });
+          lit.box(0.42, 0.62, 0.24, 1.3, 0.31, -0.55, 0x2a4a8a); metal.box(0.2, 0.2, 0.02, 1.3, 0.72, -0.55, 0x333333);        // luggage, waiting
+          lit.box(0.38, 0.55, 0.22, 1.62, 0.275, -0.85, 0x8a2a2a);
+          for (let k = 0; k < 3; k++) lit.box(0.5, 0.36, 0.4, -1.55 + (k % 2) * 0.06, 0.18 + k * 0.36, -0.45, 0xb88a5a, { ry: k * 0.1 });
+          aBoard(-1.3, 0.55, PC('hatyai'), 0x8e0e08);
+          post.quad(0.46, 0.46, 1.32, 1.5, -0.025, 0xffffff, { cell: PC('coach') });
+        },
+      };
+      for (const bay of bays) {
+        FR.makeRotationY(bay.ry || 0).setPosition(bay.x, 0, bay.z); BAY = bay;
+        for (const b of [lit, metal, glow, post, bright, sign, glass, shut]) b.frame(FR);
+        const K = SHOP_KINDS[bay.kind], rnd = rng(bay.seed || 2118);
+        // the fascia over the front and its lightbox (every bay, the shut one's long dark)
+        lit.quad(2 * HW + 0.24, MH - CH, 0, CH + (MH - CH) / 2, 0.004, o.fascia || 0xe2d8c6);
+        lit.box(3.74, 0.64, 0.12, 0, CH + 0.43, 0.064, 0x1c1c1e);
+        sign.quad(3.64, 0.56, 0, CH + 0.43, 0.126, K.dress === 'shut' ? 0x8a8a8a : 0xffffff, { cell: SIGN_CELL(K.sign) });
+        if (K.dress === 'shut') {                                        // a roller shutter down, a poster on it
+          shut.quad(2 * HW, CH, 0, CH / 2, -0.02, 0xcfd2d0);
+          lit.box(2 * HW, 0.2, 0.24, 0, CH - 0.1, -0.06, 0x5c6066);
+          post.quad(0.62, 0.62, 0.7, 1.45, -0.012, 0xffffff, { cell: PC('tolet') });
+          post.quad(0.5, 0.5, -0.9, 1.3, -0.012, 0xf0e8e0, { cell: PC('calendar'), rz: 0.04 });
+          continue;
+        }
+        // the shell: floor, back and side walls, ceiling and its lit panels, the skirting
+        lit.quad(2 * HW, D, 0, 0.006, -D / 2, K.floor, { rx: -Math.PI / 2 });
+        lit.quad(2 * HW, CH, 0, CH / 2, -D, K.wall);
+        lit.quad(D, CH, -HW, CH / 2, -D / 2, K.wall, { ry: Math.PI / 2 });
+        lit.quad(D, CH, HW, CH / 2, -D / 2, K.wall, { ry: -Math.PI / 2 });
+        lit.quad(2 * HW, D, 0, CH, -D / 2, 0xeeece6, { rx: Math.PI / 2 });
+        for (const sx of [-0.95, 0.95]) glow.quad(0.56, 1.12, sx, CH - 0.008, -D * 0.52, K.lamp, { rx: Math.PI / 2 });
+        lit.box(2 * HW, 0.09, 0.012, 0, 0.045, -D + 0.006, 0x5a5450);
+        // the front: aluminium posts, the door's mullions, a transom, a sill; glass in the sides and over the door
+        for (const s of [-1, 1]) metal.box(0.07, CH, 0.09, s * (HW - 0.035), CH / 2, 0, ALU);
+        for (const s of [-1, 1]) metal.box(0.05, 2.25, 0.08, s * 0.6, 1.125, 0, ALU);
+        metal.box(2 * HW, 0.06, 0.09, 0, 2.25, 0, ALU); metal.box(2 * HW, 0.05, 0.1, 0, 0.025, 0, ALU);
+        for (const s of [-1, 1]) glass.quad(HW - 0.66, 2.16, s * (0.6 + (HW - 0.6) / 2), 1.13, -0.012, 0xffffff);
+        glass.quad(2 * HW - 0.1, 0.42, 0, 2.5, -0.012, 0xffffff);
+        /* the two door leaves folded back into the shop: glass in an aluminium FRAME — two stiles, a head rail, a kick
+           rail and a pull bar on each face (the first build drew each leaf as one solid aluminium slab, and every front
+           read as two grey boards standing in its doorway) */
+        for (const s of [-1, 1]) {
+          const lx = s * 0.57;
+          for (const z of [-0.06, -0.56]) metal.box(0.035, 2.18, 0.045, lx, 1.11, z, ALU);
+          metal.box(0.035, 0.07, 0.54, lx, 2.165, -0.31, ALU); metal.box(0.035, 0.18, 0.54, lx, 0.11, -0.31, ALU);
+          for (const f of [-1, 1]) {
+            metal.box(0.018, 0.46, 0.018, lx + f * 0.05, 1.08, -0.47, 0xdfe2e4);
+            for (const y of [0.88, 1.28]) metal.box(0.04, 0.014, 0.014, lx + f * 0.03, y, -0.47, 0xdfe2e4);
+          }
+          glass.quad(0.5, 2.1, lx, 1.11, -0.31, 0xffffff, { ry: s * Math.PI / 2 });
+        }
+        lit.box(1.1, 0.012, 0.56, 0, 0.012, -0.34, 0x34302e);          // the doormat
+        DRESS[K.dress](K, rnd);
+      }
+      // built: one mesh a material, the goods instanced (a material nothing ended up using is let go at once)
+      const M = {
+        lit: new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.78 }),
+        metal: new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.32, metalness: 0.55 }),
+        glow: new THREE.MeshBasicMaterial({ vertexColors: true }),
+        post: new THREE.MeshStandardMaterial({ map: SHOP_POSTERS, vertexColors: true, roughness: 0.55, emissive: 0xffffff, emissiveMap: SHOP_POSTERS, emissiveIntensity: 0.22 }),
+        bright: new THREE.MeshBasicMaterial({ map: SHOP_POSTERS, vertexColors: true }),
+        sign: new THREE.MeshBasicMaterial({ map: SHOP_SIGNS, vertexColors: true }),
+        glass: new THREE.MeshStandardMaterial({ color: 0xdfeaf0, roughness: 0.05, metalness: 0.1, transparent: true, opacity: 0.12, depthWrite: false, side: THREE.DoubleSide }),
+        shut: (() => { const t = tex(makeShutter(THREE, cnv)); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(4, 2.6); return new THREE.MeshStandardMaterial({ map: t, vertexColors: true, roughness: 0.6, metalness: 0.3 }); })(),
+        goods: new THREE.MeshStandardMaterial({ roughness: 0.55 }),
+        gold: new THREE.MeshStandardMaterial({ roughness: 0.25, metalness: 0.6, emissive: 0x5a3a08, emissiveIntensity: 0.55 }) };
+      const out = [lit.build(M.lit), metal.build(M.metal), glow.build(M.glow), post.build(M.post),
+                   bright.build(M.bright), sign.build(M.sign), glass.build(M.glass), shut.build(M.shut)];
+      const inst = (list, geo, mat) => {
+        if (!list.length) { geo.dispose(); return null; }
+        const im = new THREE.InstancedMesh(geo, mat, list.length);
+        list.forEach((g, i) => { im.setMatrixAt(i, g.m); im.setColorAt(i, _sc4.set(g.col)); });
+        im.instanceMatrix.needsUpdate = true; im.instanceColor.needsUpdate = true;
+        im.computeBoundingSphere(); im.castShadow = false; im.receiveShadow = false; parent.add(im); return im;
+      };
+      out.push(inst(goods, new THREE.BoxGeometry(1, 1, 1), M.goods),
+               inst(cans, new THREE.CylinderGeometry(0.5, 0.5, 1, 10), M.goods),
+               inst(fruit, new THREE.SphereGeometry(0.5, 10, 8), M.goods),
+               inst(gold, new THREE.BoxGeometry(1, 1, 1), M.gold));
+      const used = new Set(out.filter(Boolean).map(m => m.material));
+      for (const m of Object.values(M)) if (!used.has(m)) m.dispose();
+      return out.filter(Boolean);
+    }
+
     /* ============================================== THE MALL, past the glass
        Golden Mile Complex's corridor (v21.2: Chad names the mall): terrazzo, a
        low ceiling of fluorescent troughs, square columns clad in tile, the
@@ -1203,24 +1548,48 @@
       /* the ceiling runs 0.3 m into both walls, and a solid wall stands behind the far side's shopfronts: the fronts
          are 2.95 m planes under a 3.6 m ceiling, and the first film's walk showed the SKY over every one of them */
       const ce = new THREE.Mesh(new THREE.PlaneGeometry(W, D + 0.6), matMallCeil); ce.rotation.x = Math.PI / 2; ce.position.set(0, MALL.H, mz); mallG.add(ce);
-      box(W, MALL.H, 0.2, 0, MALL.H / 2, MALL.z1 + 0.12, matWallB, mallG, false);
+      box(W, MALL.H, 0.2, 0, MALL.H / 2, MALL.z1 + 2.55, matWallB, mallG, false);   // (v21.18: behind the far side's shops, which are built now)
       for (let i = 0; i < 7; i++) { const t = box(2.4, 0.04, 0.12, -12 + i * 4, MALL.H - 0.02, mz, matTube, mallG, false); t.castShadow = false; }
-      // the neighbours across the corridor (facing -z) and on our side (facing +z)
-      const kinds = ['travel', 'grocery', 'food', 'massage', 'gold', 'phone', 'shutter'];
-      for (let i = 0; i < 7; i++) {
-        const xx = MALL.x0 + 2 + i * 4;
-        plane(3.9, 2.95, texMat(makeShopfront(THREE, cnv, kinds[i]), { roughness: 0.4, emissive: 0xffffff, emissiveIntensity: 0.18 }), xx, 1.48, MALL.z1 - 0.01, Math.PI, mallG);
-        box(0.12, MALL.H, 0.2, xx + 1.98, MALL.H / 2, MALL.z1 + 0.05, matWallB, mallG, false);
+      /* the neighbours (v21.18: BUILT, shopRow above — they were one painted plane each): across the corridor
+         facing it (−z), the shop's glass looking onto the kitchen, the massage parlour and the goldsmith; and on our
+         side facing +z, the film's walk passing the coach agency and the money changer */
+      shopRow(mallG, [
+        { x: -12, z: MALL.z1, ry: Math.PI, kind: 'travel', seed: 11 }, { x: -8, z: MALL.z1, ry: Math.PI, kind: 'grocery', seed: 12 },
+        { x: -4, z: MALL.z1, ry: Math.PI, kind: 'food', seed: 13 },    { x: 0, z: MALL.z1, ry: Math.PI, kind: 'massage', seed: 14 },
+        { x: 4, z: MALL.z1, ry: Math.PI, kind: 'gold', seed: 15 },     { x: 8, z: MALL.z1, ry: Math.PI, kind: 'phone', seed: 16 },
+        { x: 12, z: MALL.z1, ry: Math.PI, kind: 'shut', seed: 17 },
+        { x: -11.5, z: MALL.z0, ry: 0, kind: 'shut', seed: 21 },       { x: -7.5, z: MALL.z0, ry: 0, kind: 'snack', seed: 22 },
+        { x: 7.5, z: MALL.z0, ry: 0, kind: 'money', seed: 23 },        { x: 11.5, z: MALL.z0, ry: 0, kind: 'tickets', seed: 24 }]);
+      // the piers between the far side's shops, and on our side the wall where no shop is
+      for (let i = 1; i < 7; i++) box(0.2, MALL.H, 0.3, MALL.x0 + i * 4, MALL.H / 2, MALL.z1 + 0.06, matWallB, mallG, false);
+      for (const s of [-1, 1]) {
+        box(1.06, MALL.H, 0.2, s * 5.03, MALL.H / 2, -0.14, matWallB, mallG, false);
+        box(0.2, MALL.H, 0.3, s * 9.5, MALL.H / 2, -0.1, matWallB, mallG, false);
+        box(0.56, MALL.H, 0.2, s * 13.72, MALL.H / 2, -0.14, matWallB, mallG, false);
       }
-      for (const m of mallG.children) if (m.material && m.material.map && m.material.emissiveIntensity === 0.18) m.material.emissiveMap = m.material.map;
-      for (const [xx, k] of [[-11.5, 'phone'], [-7.5, 'grocery'], [7.5, 'gold'], [11.5, 'shutter']]) {
-        const mt = texMat(makeShopfront(THREE, cnv, k), { roughness: 0.4, emissive: 0xffffff, emissiveIntensity: 0.18 }); mt.emissiveMap = mt.map;
-        plane(3.9, 2.95, mt, xx, 1.48, MALL.z0 - 0.02, 0, mallG);
-      }
-      box(SHOP.x0 - MALL.x0, MALL.H, 0.2, (MALL.x0 + SHOP.x0) / 2, MALL.H / 2, -0.14, matWallB, mallG, false);
-      box(MALL.x1 - SHOP.x1, MALL.H, 0.2, (MALL.x1 + SHOP.x1) / 2, MALL.H / 2, -0.14, matWallB, mallG, false);
       box(SHOP.x1 - SHOP.x0, MALL.H - SHOP.H, 0.2, 0, SHOP.H + (MALL.H - SHOP.H) / 2, 0.04, matWallB, mallG, false);
       for (const s of [-1, 1]) box(0.2, MALL.H, D + 0.4, s * MALL.x1, MALL.H / 2, mz, matWallB, mallG, false);
+      /* v21.18 · THE CORRIDOR'S END, where the film's walk looks (on a phone, the middle of the picture: it was a bare
+         wall): a lift lobby — two lift doors in steel frames, a floor lamp over each, the call buttons — the mall's
+         directory between them, and the green EXIT hung from the ceiling before it */
+      { const ex = -MALL.x1 + 0.1;                                  // the end wall's inner face
+        const steel = new THREE.MeshStandardMaterial({ color: 0xc2c8ce, roughness: 0.26, metalness: 0.55 }),
+              frameS = new THREE.MeshStandardMaterial({ color: 0x8c9298, roughness: 0.35, metalness: 0.5 }),
+              lamp = new THREE.MeshBasicMaterial({ color: 0xffb648 }), dark = new THREE.MeshStandardMaterial({ color: 0x15171a, roughness: 0.5 });
+        for (const z of [1.05, 3.95]) {
+          box(0.06, 2.42, 1.3, ex + 0.03, 1.21, z, frameS, mallG, false);
+          for (const sd of [-1, 1]) box(0.04, 2.24, 0.56, ex + 0.08, 1.12, z + sd * 0.285, steel, mallG, false);
+          box(0.05, 0.02, 0.012, ex + 0.1, 1.12, z, dark, mallG, false);
+          box(0.04, 0.18, 0.52, ex + 0.05, 2.62, z, dark, mallG, false); plane(0.16, 0.08, lamp, ex + 0.075, 2.62, z, Math.PI / 2, mallG);
+          box(0.03, 0.26, 0.11, ex + 0.05, 1.12, z + (z < 2.5 ? 0.82 : -0.82), frameS, mallG, false);
+          for (const y of [1.07, 1.17]) plane(0.034, 0.034, lamp, ex + 0.068, y, z + (z < 2.5 ? 0.82 : -0.82), Math.PI / 2, mallG);
+        }
+        box(0.05, 1.5, 1.0, ex + 0.025, 1.5, 2.5, dark, mallG, false);
+        plane(0.92, 1.38, new THREE.MeshBasicMaterial({ map: tex(makeMallDirectory(THREE, cnv)), color: 0xe6e6e6 }), ex + 0.055, 1.5, 2.5, Math.PI / 2, mallG);
+        box(0.08, 0.3, 0.7, ex + 1.6, MALL.H - 0.42, 2.5, new THREE.MeshStandardMaterial({ color: 0xe8e8e2, roughness: 0.5 }), mallG, false);
+        for (const sd of [-1, 1]) plane(0.64, 0.24, new THREE.MeshBasicMaterial({ map: tex(makeExitSign(THREE, cnv)) }), ex + 1.6 + sd * 0.041, MALL.H - 0.42, 2.5, sd * Math.PI / 2, mallG);
+        for (const sd of [-0.25, 0.25]) box(0.012, 0.27, 0.012, ex + 1.6, MALL.H - 0.135, 2.5 + sd, frameS, mallG, false);
+      }
       // the shop's own lightbox over its front
       const lbM = new THREE.MeshBasicMaterial({ map: tex(makeLightbox(THREE, cnv)) });
       plane(4.2, 0.6, lbM, 0, SHOP.H + 0.36, 0.15, 0, mallG);
@@ -3693,6 +4062,18 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
           for (const part of st.parts) { const m = new THREE.Mesh(part.geo, night ? part.night : part.day); m.castShadow = false; m.receiveShadow = false; p.add(m); }
           g.add(p);
         });
+      });
+    }
+    /* v21.18 · the corridor's diners (shopRow listed them before the stills were defined): each on its stool's top,
+       by the skin his hips carry, as a passenger sits */
+    for (const s of SHOP_SEATED) {
+      if (LOW && !s.low) continue;
+      const spec = s.who === 'sitwoman' ? { key: 'sitwoman', height: 1.2, idle: WIFE_SIT } : PASSENGERS[2];
+      sitterStill(spec).then(st => {
+        if (!alive || !st) return;
+        const p = new THREE.Group(); p.position.set(s.x, s.y - st.seatDy - 0.012, s.z); p.rotation.y = s.ry;
+        for (const part of st.parts) { const m = new THREE.Mesh(part.geo, part.day); m.castShadow = false; m.receiveShadow = false; p.add(m); }
+        s.parent.add(p);
       });
     }
     function makeBus(parent, day) {
@@ -7114,66 +7495,146 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
     x.fillStyle = '#fff4dc'; x.font = 'bold 34px sans-serif'; x.fillText('พระเครื่อง · AMULETS · BUDDHA IMAGES · 佛像', 512, 142);
     return done(THREE, c, false);
   }
-  /* a neighbouring shopfront in the old mall: a sign band and a window */
-  function makeShopfront(THREE, cnv, kind) {
-    const W = 512, H = 384, [c, x] = sized(cnv, W, H), r = rng(kind.length * 7 + 3);
-    const K = {
-      grocery: { band: '#1f6a3a', ink: '#fff4c8', name: 'THAI MART  ร้านค้าไทย', sub: 'Fresh from Bangkok daily' },
-      travel:  { band: '#174a8c', ink: '#ffffff', name: 'BANGKOK TRAVEL', sub: 'Bus · Air · Tours  ทัวร์' },
-      massage: { band: '#b03a6a', ink: '#fff0f6', name: 'THAI MASSAGE  นวดไทย', sub: 'Foot · Body · Herbal' },
-      gold:    { band: '#7a1a10', ink: '#ffd76a', name: '金店 GOLDSMITH', sub: '916 · 999 Gold' },
-      phone:   { band: '#202020', ink: '#7fe0ff', name: 'MOBILE CENTRE', sub: 'Repair · Top-up · SIM' },
-      shutter: { band: '#5a5a5a', ink: '#e8e8e8', name: 'TO LET', sub: 'Enquiries 9xxx xxxx' },
-      food:    { band: '#c46a10', ink: '#fff6e0', name: 'THAI KITCHEN  อาหารไทย', sub: 'Boat noodles · Tom yum' }
-    }[kind] || { band: '#444', ink: '#fff', name: kind.toUpperCase(), sub: '' };
-    x.fillStyle = '#3a3a3e'; x.fillRect(0, 0, W, H);
-    x.fillStyle = K.band; x.fillRect(0, 0, W, 86);
-    x.fillStyle = K.ink; x.textAlign = 'center'; x.textBaseline = 'middle';
-    x.font = 'bold 40px sans-serif'; x.fillText(K.name, W / 2, 34);
-    x.font = '22px sans-serif'; x.fillText(K.sub, W / 2, 68);
-    if (kind === 'shutter' || kind === 'massage') {               // a roller shutter, part or all the way down
-      const top = kind === 'massage' ? 230 : 92;
-      x.fillStyle = '#d8dad6'; x.fillRect(10, 92, W - 20, H - 102);
-      x.fillStyle = '#9ea29c'; x.fillRect(10, top, W - 20, H - top - 10);
-      for (let y = top; y < H - 10; y += 9) { x.fillStyle = 'rgba(40,40,40,0.35)'; x.fillRect(10, y, W - 20, 2); }
-      if (kind === 'massage') { x.fillStyle = '#f6c8da'; for (let i = 0; i < 3; i++) x.fillRect(40 + i * 150, 110, 110, 100); }
-      return done(THREE, c, false);
+  /* v21.18 · the corridor's end: the mall's directory — its name, the floors and what is on them (generic names), a
+     plan of this floor with a red YOU ARE HERE; and the green EXIT over the way out */
+  function makeMallDirectory(THREE, cnv) {
+    const [c, x] = sized(cnv, 512, 768);
+    x.fillStyle = '#16212c'; x.fillRect(0, 0, 512, 768);
+    x.fillStyle = '#c9a24c'; x.fillRect(0, 0, 512, 104);
+    x.fillStyle = '#1c1408'; x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.font = 'bold 38px sans-serif'; x.fillText('GOLDEN MILE COMPLEX', 256, 40);
+    x.font = 'bold 22px sans-serif'; x.fillText('DIRECTORY  ·  ผังร้านค้า  ·  商场指南', 256, 80);
+    const floors = [['LEVEL 3', ['Karaoke Lounge', 'Thai Disco', 'Travel Agents']], ['LEVEL 2', ['Thai Restaurants', 'Coach Ticketing', 'Massage']],
+                    ['LEVEL 1', ['Thai Mart', 'Amulets', 'Money Changer', 'Mobile']], ['B1', ['Supermarket', 'Food Court']]];
+    let y = 136;
+    for (const [fl, units] of floors) {
+      x.fillStyle = '#c9a24c'; x.fillRect(24, y - 16, 112, 32);
+      x.fillStyle = '#1c1408'; x.font = 'bold 20px sans-serif'; x.fillText(fl, 80, y);
+      x.fillStyle = '#e8eef2'; x.font = '19px sans-serif'; x.textAlign = 'left';
+      units.forEach((u, i) => x.fillText(u, 156 + (i % 2) * 176, y + Math.floor(i / 2) * 26 - (units.length > 2 ? 12 : 0)));
+      x.textAlign = 'center'; y += 74;
     }
-    // the window: a glass box of goods
-    x.fillStyle = '#e8eef0'; x.fillRect(10, 92, W - 20, H - 102);
-    if (kind === 'grocery' || kind === 'food') {
-      for (let sh = 0; sh < 4; sh++) {
-        const y = 110 + sh * 66;
-        x.fillStyle = '#9a9a9a'; x.fillRect(16, y + 56, W - 32, 4);
-        for (let i = 0; i < 18; i++) {
-          x.fillStyle = `hsl(${(r() * 360) | 0},${55 + r() * 30}%,${40 + r() * 25}%)`;
-          const w = 16 + r() * 10, h = 26 + r() * 26; x.fillRect(20 + i * 26.5, y + 56 - h, w, h);
-        }
+    // this floor's plan: the corridor, the shops either side, the lifts at its end
+    const px = 40, py = 448, pw = 432, ph = 250;
+    x.fillStyle = '#22303e'; x.fillRect(px, py, pw, ph);
+    x.strokeStyle = '#8aa0b4'; x.lineWidth = 2;
+    for (let i = 0; i < 7; i++) { x.strokeRect(px + 8 + i * 60, py + 10, 54, 70); x.strokeRect(px + 8 + i * 60, py + ph - 80, 54, 70); }
+    x.fillStyle = '#d8b04a'; x.fillRect(px + 8 + 3 * 60, py + ph - 80, 54, 70);              // the amulet shop
+    x.fillStyle = '#5a6a7a'; x.fillRect(px + 2, py + 96, 30, 58);                             // the lifts
+    x.fillStyle = '#e8263c'; x.beginPath(); x.arc(px + 60, py + 125, 11, 0, Math.PI * 2); x.fill();
+    x.fillStyle = '#ffffff'; x.font = 'bold 18px sans-serif'; x.textAlign = 'left'; x.fillText('YOU ARE HERE', px + 80, py + 126);
+    x.textAlign = 'center'; x.fillStyle = '#9ab0c4'; x.font = '16px sans-serif'; x.fillText('LIFT  ลิฟต์  电梯', px + pw / 2 + 40, py + ph + 30);
+    return done(THREE, c, false);
+  }
+  function makeExitSign(THREE, cnv) {
+    const [c, x] = sized(cnv, 256, 96);
+    x.fillStyle = '#0f8a3e'; x.fillRect(0, 0, 256, 96);
+    x.fillStyle = '#ffffff'; x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.font = 'bold 46px sans-serif'; x.fillText('EXIT 出口', 150, 50);
+    x.beginPath(); x.moveTo(28, 50); x.lineTo(58, 28); x.lineTo(58, 42); x.lineTo(80, 42); x.lineTo(80, 58); x.lineTo(58, 58); x.lineTo(58, 72); x.closePath(); x.fill();
+    return done(THREE, c, false);
+  }
+  /* v21.18 · THE MALL'S SHOPS, BUILT — the drawn parts. Their signboards, one atlas: ten lightboxes of 1024 × 128,
+     each a shop's own (a lit face, a bright edge, the name in English with its Thai or Chinese, a line under it) */
+  const MALL_SIGNS = [
+    { bg: ['#1e5aa8', '#0f356c'], edge: '#9fd0ff', ink: '#ffffff', name: 'BANGKOK TRAVEL  ทัวร์', sub: 'BUS · AIR · TOURS · VISA' },
+    { bg: ['#23824a', '#12512b'], edge: '#ffe27a', ink: '#fff6cc', name: 'THAI MART  ร้านค้าไทย', sub: 'FRESH FROM BANGKOK DAILY' },
+    { bg: ['#e07a18', '#a24a08'], edge: '#ffe2a8', ink: '#fffaf0', name: 'THAI KITCHEN  อาหารไทย', sub: 'BOAT NOODLES · TOM YUM · MOOKATA' },
+    { bg: ['#c2457a', '#7e1f4a'], edge: '#ffd0e4', ink: '#fff4fa', name: 'THAI MASSAGE  นวดไทย', sub: 'FOOT · BODY · HERBAL COMPRESS' },
+    { bg: ['#9a1810', '#5a0a06'], edge: '#ffd24a', ink: '#ffd84e', name: '金 店   GOLDSMITH', sub: '916 · 999 GOLD  ·  BUY & SELL' },
+    { bg: ['#1a1c22', '#08090c'], edge: '#3ad0ff', ink: '#8ae8ff', name: 'MOBILE CENTRE', sub: 'REPAIR · TOP-UP · THAI SIM' },
+    { bg: ['#8a8478', '#5e5a52'], edge: '#b8b2a4', ink: '#d6d0c2', name: 'SUCCESS TRADING', sub: '' , faded: true },
+    { bg: ['#14523e', '#0a3024'], edge: '#7affc8', ink: '#e8fff4', name: 'MONEY CHANGER  แลกเงิน', sub: 'THB · MYR · USD · RMB' },
+    { bg: ['#d8261c', '#8e0e08'], edge: '#ffe14a', ink: '#ffe94e', name: 'HAT YAI EXPRESS', sub: 'COACHES DAILY · HAT YAI · KL · BANGKOK' },
+    { bg: ['#f2b81c', '#c47e08'], edge: '#fff6cc', ink: '#5a1608', name: 'THAI SNACKS  ขนมไทย', sub: 'SWEETS · DRIED FRUIT · CHILLI PASTE' }];
+  function makeMallSigns(THREE, cnv) {
+    const [c, x] = sized(cnv, 1024, 1280);
+    MALL_SIGNS.forEach((s, i) => {
+      const y = i * 128, g = x.createLinearGradient(0, y, 0, y + 128);
+      g.addColorStop(0, s.bg[0]); g.addColorStop(1, s.bg[1]);
+      x.fillStyle = g; x.fillRect(0, y, 1024, 128);
+      x.strokeStyle = s.edge; x.lineWidth = 6; x.strokeRect(6, y + 6, 1012, 116);
+      x.globalAlpha = 0.18; x.fillStyle = '#ffffff'; x.fillRect(12, y + 12, 1000, 36); x.globalAlpha = 1;   // the lightbox's own sheen
+      x.fillStyle = s.ink; x.textAlign = 'center'; x.textBaseline = 'middle';
+      x.font = `bold ${s.sub ? 54 : 64}px sans-serif`; x.fillText(s.name, 512, y + (s.sub ? 52 : 64));
+      if (s.sub) { x.font = 'bold 26px sans-serif'; x.fillText(s.sub, 512, y + 102); }
+      if (s.faded) {                                        // an old sign nobody has lit for years: streaks, a corner gone
+        x.globalAlpha = 0.35; for (let k = 0; k < 40; k++) { x.fillStyle = k % 2 ? '#4a463e' : '#a29c8e'; x.fillRect((k * 97) % 1000, y + 8, 3 + (k % 4), 112); }
+        x.globalAlpha = 1; x.fillStyle = '#3a3630'; x.beginPath(); x.moveTo(900, y + 128); x.lineTo(1024, y + 70); x.lineTo(1024, y + 128); x.fill();
       }
-    } else if (kind === 'travel') {
-      for (let i = 0; i < 3; i++) {                                // posters: a temple at sunset, a beach, a city
-        const px = 26 + i * 160;
-        const gr = x.createLinearGradient(0, 110, 0, 340);
-        gr.addColorStop(0, ['#f2a046', '#4ab0e0', '#8a6ad0'][i]); gr.addColorStop(1, ['#7a2a1a', '#e8d8a0', '#202040'][i]);
-        x.fillStyle = gr; x.fillRect(px, 110, 140, 200);
-        x.fillStyle = 'rgba(20,10,10,0.75)';
-        if (i === 0) { x.beginPath(); x.moveTo(px + 70, 160); x.lineTo(px + 110, 260); x.lineTo(px + 30, 260); x.fill(); x.fillRect(px + 20, 260, 100, 30); }
-        if (i === 2) for (let k = 0; k < 6; k++) x.fillRect(px + 10 + k * 21, 200 + (k * 37 % 50), 16, 110);
-        x.fillStyle = '#fff'; x.font = 'bold 18px sans-serif'; x.fillText(['BANGKOK', 'PHUKET', 'HAT YAI'][i], px + 70, 330);
-      }
-    } else if (kind === 'gold') {
-      x.fillStyle = '#2a0c08'; x.fillRect(16, 100, W - 32, H - 116);
-      for (let i = 0; i < 60; i++) { x.strokeStyle = `rgba(255,${190 + r() * 50},${70 + r() * 40},0.9)`; x.lineWidth = 2;
-        x.beginPath(); x.arc(30 + r() * (W - 60), 120 + r() * 230, 6 + r() * 12, 0, Math.PI * 2); x.stroke(); }
-    } else if (kind === 'phone') {
-      for (let i = 0; i < 4; i++) for (let j = 0; j < 3; j++) {
-        x.fillStyle = '#1a1a1a'; x.fillRect(40 + i * 112, 110 + j * 84, 52, 74);
-        x.fillStyle = `hsl(${(r() * 360) | 0},60%,55%)`; x.fillRect(44 + i * 112, 116 + j * 84, 44, 60);
-      }
-    }
-    const sheen = x.createLinearGradient(0, 92, W, H);            // the glass
-    sheen.addColorStop(0, 'rgba(255,255,255,0.16)'); sheen.addColorStop(0.4, 'rgba(255,255,255,0)'); sheen.addColorStop(0.6, 'rgba(255,255,255,0.08)'); sheen.addColorStop(1, 'rgba(255,255,255,0)');
-    x.fillStyle = sheen; x.fillRect(10, 92, W - 20, H - 102);
+    });
+    return done(THREE, c, false);
+  }
+  /* their posters, menus and boards, one atlas of sixteen 256 × 256 cells (see MALL_POSTER for which is which) */
+  const MALL_POSTER = { bangkok: 0, phuket: 1, hatyai: 2, timetable: 3, menu: 4, massage: 5, rates: 6, sim: 7,
+                        tolet: 8, noodles: 9, goldrate: 10, elephant: 11, tomyum: 12, coach: 13, calendar: 14, rice: 15 };
+  function makeMallPosters(THREE, cnv) {
+    const [c, x] = sized(cnv, 1024, 1024), r = rng(2118);
+    const cell = (i, fn) => { const cx = (i % 4) * 256, cy = Math.floor(i / 4) * 256; x.save(); x.translate(cx, cy); x.beginPath(); x.rect(0, 0, 256, 256); x.clip(); fn(); x.restore(); };
+    const txt = (s, X, Y, px, col, al = 'center') => { x.fillStyle = col; x.textAlign = al; x.textBaseline = 'middle'; x.font = `bold ${px}px sans-serif`; x.fillText(s, X, Y); };
+    const sky = (a, b) => { const g = x.createLinearGradient(0, 0, 0, 256); g.addColorStop(0, a); g.addColorStop(1, b); x.fillStyle = g; x.fillRect(0, 0, 256, 256); };
+    cell(0, () => { sky('#f4a040', '#6a1c10');                                   // BANGKOK: a temple's spires at sunset
+      x.fillStyle = '#ffd890'; x.beginPath(); x.arc(170, 96, 30, 0, 7); x.fill();
+      x.fillStyle = '#2a0e08';
+      for (const [px, h, w] of [[60, 120, 30], [110, 160, 40], [168, 110, 28], [210, 80, 22]]) { x.beginPath(); x.moveTo(px, 210 - h); x.lineTo(px + w / 2, 210); x.lineTo(px - w / 2, 210); x.fill(); x.fillRect(px - w * 0.7, 196, w * 1.4, 16); }
+      x.fillRect(0, 210, 256, 46); txt('BANGKOK', 128, 232, 34, '#ffe6a8'); });
+    cell(1, () => { sky('#3ab4e8', '#f2e2a8');                                   // PHUKET: sea, sand, a longtail boat
+      x.fillStyle = '#1a7ab0'; x.fillRect(0, 120, 256, 60); x.fillStyle = '#f6e6b0'; x.fillRect(0, 180, 256, 76);
+      x.fillStyle = '#7a3a14'; x.beginPath(); x.moveTo(60, 150); x.lineTo(170, 150); x.lineTo(150, 168); x.lineTo(76, 168); x.fill();
+      x.fillStyle = '#2a5a1c'; for (const px of [20, 228]) { x.fillRect(px, 70, 6, 110); x.beginPath(); x.ellipse(px + 3, 70, 40, 12, 0.3, 0, 7); x.fill(); }
+      txt('PHUKET', 128, 226, 38, '#0e4a78'); });
+    cell(2, () => { sky('#4a3a9a', '#e8708a');                                   // HAT YAI: the city at dusk
+      x.fillStyle = '#1a1430'; for (let k = 0; k < 9; k++) { const h = 50 + r() * 90; x.fillRect(k * 29, 200 - h, 26, h); }
+      x.fillStyle = '#ffd86a'; for (let k = 0; k < 40; k++) x.fillRect(4 + r() * 248, 110 + r() * 86, 3, 4);
+      x.fillStyle = '#1a1430'; x.fillRect(0, 200, 256, 56); txt('HAT YAI', 128, 228, 36, '#ffe0f0'); });
+    cell(3, () => { x.fillStyle = '#101418'; x.fillRect(0, 0, 256, 256);          // the coach timetable, an LED board
+      txt('DEPARTURES  ออกเดินทาง', 128, 22, 17, '#ffd23a');
+      [['HAT YAI', '08:00'], ['HAT YAI', '10:30'], ['K. LUMPUR', '13:00'], ['BANGKOK', '15:45'], ['HAT YAI', '21:00'], ['SONGKHLA', '22:30']].forEach(([d, t], k) => {
+        txt(d, 18, 58 + k * 32, 19, '#ff8a2a', 'left'); txt(t, 238, 58 + k * 32, 19, '#7aff8a', 'right'); }); });
+    cell(4, () => { x.fillStyle = '#fff4dc'; x.fillRect(0, 0, 256, 256);          // the kitchen's menu: six dishes, a price each
+      txt('MENU  เมนู', 128, 20, 20, '#a8320a');
+      const dish = [['#d8501c', 'TOM YUM'], ['#7a3a1a', 'BOAT NOODLE'], ['#e8c040', 'PAD THAI'], ['#3a8a2a', 'GREEN CURRY'], ['#c8642a', 'BASIL PORK'], ['#f0e0b0', 'MANGO RICE']];
+      dish.forEach(([col, n], k) => { const X = 46 + (k % 3) * 82, Y = 72 + Math.floor(k / 3) * 96;
+        x.fillStyle = '#f8f8f4'; x.beginPath(); x.arc(X, Y, 30, 0, 7); x.fill(); x.fillStyle = col; x.beginPath(); x.arc(X, Y, 23, 0, 7); x.fill();
+        txt(n, X, Y + 42, 11, '#3a1a0a'); txt('$' + (5 + k % 3), X, Y + 56, 12, '#a8320a'); }); });
+    cell(5, () => { x.fillStyle = '#5a1a3a'; x.fillRect(0, 0, 256, 256);          // the massage price list
+      x.strokeStyle = '#f2c4d8'; x.lineWidth = 3; x.strokeRect(8, 8, 240, 240);
+      txt('PRICE LIST', 128, 34, 22, '#ffd8ea');
+      [['FOOT 45 min', '$28'], ['THAI 1 hr', '$38'], ['OIL 1 hr', '$42'], ['HERBAL 90 min', '$58']].forEach(([a, b], k) => { txt(a, 20, 82 + k * 40, 17, '#fff0f6', 'left'); txt(b, 236, 82 + k * 40, 17, '#ffd24a', 'right'); }); });
+    cell(6, () => { x.fillStyle = '#060806'; x.fillRect(0, 0, 256, 256);          // the money changer's rates, red and green LEDs
+      txt('WE BUY    WE SELL', 128, 18, 16, '#ffffff');
+      [['THB', '25.40', '24.10'], ['MYR', '3.42', '3.28'], ['USD', '1.33', '1.30'], ['RMB', '5.36', '5.10'], ['IDR', '11,850', '11,200']].forEach(([c3, a, b], k) => {
+        txt(c3, 12, 52 + k * 42, 20, '#ffffff', 'left'); txt(a, 158, 52 + k * 42, 20, '#ff3a2a', 'right'); txt(b, 246, 52 + k * 42, 20, '#3aff6a', 'right'); }); });
+    cell(7, () => { sky('#0a1a4a', '#2a6ad8');                                   // the phone shop's offer
+      x.fillStyle = '#ffffff'; x.fillRect(150, 40, 70, 130); x.fillStyle = '#2a8ae8'; x.fillRect(156, 50, 58, 104);
+      txt('THAI SIM', 80, 70, 28, '#ffe14a'); txt('$10', 80, 120, 46, '#ffffff'); txt('5G · 30 DAYS', 128, 210, 22, '#bfe6ff'); });
+    cell(8, () => { x.fillStyle = '#f4f2ea'; x.fillRect(0, 0, 256, 256);          // TO LET
+      x.fillStyle = '#c81e14'; x.fillRect(0, 0, 256, 74); txt('TO LET', 128, 40, 50, '#ffffff');
+      txt('SHOP UNIT', 128, 110, 24, '#1a1a1a'); txt('Enquiries', 128, 156, 20, '#3a3a3a'); txt('9xxx xxxx', 128, 190, 26, '#1a1a1a'); });
+    cell(9, () => { x.fillStyle = '#ffe23a'; x.fillRect(0, 0, 256, 256);          // the grocer's offer
+      txt('PROMO!', 128, 34, 34, '#d8201a'); for (let k = 0; k < 5; k++) { x.fillStyle = ['#e8401a', '#2a9a3a', '#e8a01a', '#8a2ad8', '#1a7ad8'][k]; x.fillRect(18 + k * 46, 80, 38, 56); }
+      txt('INSTANT NOODLES', 128, 168, 20, '#3a1a0a'); txt('5 FOR $3', 128, 212, 36, '#d8201a'); });
+    cell(10, () => { x.fillStyle = '#7a0a06'; x.fillRect(0, 0, 256, 256);         // the goldsmith's board: 金, 福, today's price
+      txt('金', 70, 80, 90, '#ffd24a'); txt('福', 190, 80, 90, '#ffd24a');
+      txt('916 GOLD', 128, 170, 26, '#ffe6a0'); txt('TODAY $102 /g', 128, 212, 24, '#ffffff'); });
+    cell(11, () => { sky('#2a6a3a', '#d8b86a');                                   // a framed picture: an elephant in a field
+      x.fillStyle = '#4a4440'; x.beginPath(); x.ellipse(128, 150, 70, 46, 0, 0, 7); x.fill(); x.fillRect(80, 170, 22, 50); x.fillRect(150, 170, 22, 50);
+      x.beginPath(); x.ellipse(196, 132, 30, 34, 0, 0, 7); x.fill(); x.fillRect(214, 140, 14, 70);
+      x.strokeStyle = '#c89a3a'; x.lineWidth = 10; x.strokeRect(5, 5, 246, 246); });
+    cell(12, () => { x.fillStyle = '#2a0a06'; x.fillRect(0, 0, 256, 256);         // TOM YUM, a bowl
+      x.fillStyle = '#f2f0ea'; x.beginPath(); x.arc(128, 128, 92, 0, 7); x.fill(); x.fillStyle = '#e0501a'; x.beginPath(); x.arc(128, 128, 78, 0, 7); x.fill();
+      x.fillStyle = '#f4a8a0'; for (let k = 0; k < 6; k++) { x.beginPath(); x.ellipse(128 + Math.cos(k) * 40, 128 + Math.sin(k * 1.3) * 34, 16, 9, k, 0, 7); x.fill(); }
+      x.fillStyle = '#4ab43a'; for (let k = 0; k < 8; k++) x.fillRect(90 + r() * 80, 96 + r() * 70, 9, 4);
+      txt('TOM YUM GOONG', 128, 236, 22, '#ffd24a'); });
+    cell(13, () => { sky('#f0f4f8', '#b8d0e8');                                  // a coach, side on
+      x.fillStyle = '#ffffff'; x.fillRect(20, 90, 216, 90); x.fillStyle = '#d8261c'; x.fillRect(20, 150, 216, 16); x.fillStyle = '#1a2a3a'; x.fillRect(30, 100, 196, 34);
+      x.fillStyle = '#1a1a1a'; for (const px of [64, 190]) { x.beginPath(); x.arc(px, 182, 16, 0, 7); x.fill(); }
+      txt('TO HAT YAI', 128, 40, 28, '#d8261c'); txt('DAILY · $45', 128, 226, 26, '#1a1a1a'); });
+    cell(14, () => { x.fillStyle = '#fffaf2'; x.fillRect(0, 0, 256, 256);          // a calendar
+      x.fillStyle = '#c81e14'; x.fillRect(0, 0, 256, 56); txt('2026', 128, 30, 30, '#ffffff');
+      for (let k = 0; k < 35; k++) txt(String(k % 31 + 1), 24 + (k % 7) * 35, 80 + Math.floor(k / 7) * 34, 15, k % 7 === 0 ? '#c81e14' : '#2a2a2a'); });
+    cell(15, () => { x.fillStyle = '#f6f2e6'; x.fillRect(0, 0, 256, 256);          // a rice sack's print
+      x.fillStyle = '#1e7a3a'; x.fillRect(0, 70, 256, 110); txt('JASMINE RICE', 128, 104, 26, '#ffffff'); txt('ข้าวหอมมะลิ', 128, 146, 26, '#ffe14a'); txt('5 KG', 128, 214, 30, '#1e7a3a'); });
     return done(THREE, c, false);
   }
   /* one amulet in its case, for the atlas: k picks the kind */
