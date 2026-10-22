@@ -996,7 +996,10 @@ K.galleryAllReadOpensDone = await p.evaluate((pages) => {
     && document.getElementById('galEndN').textContent === 'Second master' && !st.next.close && !st.next.locked;
 }, GAL_PAGES);
 await p.waitForTimeout(600);
-await p.click('#galGo'); await p.waitForTimeout(120); await p.click('#galGo');   // two presses inside one turn
+/* two presses inside one turn, both in ONE task: on a box drawing a frame a second, two real clicks 120 ms apart land
+   a second or more apart (each waits for the button to hold still over two frames), past GAL_TURN, and the second
+   rightly turns again — so the gap itself is pressed here, and a real click turns the next page */
+await p.evaluate(() => { const g = document.getElementById('galGo'); g.click(); g.click(); });
 await p.waitForTimeout(250);
 K.galleryOneTurnAtATime = await p.evaluate(() => window.__enc.galleryState().i === 1 && window.__enc.galleryState().open);
 await p.waitForTimeout(600);
@@ -1005,10 +1008,14 @@ K.galleryCloseOnlyOnLast = await until(() => {
   const st = window.__enc.galleryState(), go = document.getElementById('galGo');
   return st.open && st.i === 2 && go.textContent === 'Close gallery' && go.classList.contains('fin') && st.next.close;
 }, 15000).then(() => true, () => false);
+if (!K.galleryOneTurnAtATime || !K.galleryCloseOnlyOnLast) console.log('gallery turns', JSON.stringify(await p.evaluate(() => window.__enc.galleryState())));
 await p.waitForTimeout(600);
-await p.click('#galX');                                        // the X, a real click
-K.galleryXCloses = await until(() => window.__gal && window.__enc.getState() === 'play', 30000)
+/* (a window a failed check above already closed has no X to click — the check below fails, the run goes on) */
+const xOpen = await p.evaluate(() => window.__enc.kit.galleryOpen());
+if (xOpen) await p.click('#galX', { timeout: 30000 }).catch(() => {});   // the X, a real click
+K.galleryXCloses = xOpen && await until(() => window.__gal && window.__enc.getState() === 'play', 30000)
   .then(() => p.evaluate(() => window.__gal.seenAll === true && !window.__enc.kit.galleryOpen()), () => false);
+if (!K.galleryXCloses) await p.evaluate(() => window.__enc.galleryClose('x')).catch(() => {});
 /* v21.25 · NEXT IS ALWAYS THE NEXT PAGE (Chad: "if i accidentally moved to the next monk and moved back to the previous
    one, the next button [went] to the next monk after the next ... if i already finished all monks and went back to an
    earlier one, the button below becomes continue, and ends the whole window"). Page 1 visited and read, back to page 0:

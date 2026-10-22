@@ -6004,3 +6004,19 @@ cut (sharing its vertices and maps) when it is small.
   competing melody hard (−22 dB more here, to 8 %) and FAST (0.18 s), on its own envelope rather than the incoming
   bed's, and leave the ambience that carries no melody where it was. Hold it down, never off: the same envelope brings
   it back when the window goes.
+- **Two "quick" real clicks are not quick on a slow box** (v21.25). The fixture's "two presses inside one turn turn
+  once" clicked NEXT twice 120 ms apart with `p.click` — and on the software renderer each click first waits for the
+  button to hold still over two drawn frames, so at a frame a second the presses landed more than a second apart, past
+  the 0.5 s turn gap: the second rightly turned again, a third press then CLOSED the window from the last page, and the
+  next step's click on the X waited 120 s for a button that was gone and crashed the whole harness. A check that needs
+  presses to land INSIDE a time window dispatches them in one task (`g.click(); g.click()` in one `evaluate`); a check
+  that needs them APART waits in the page, never in the harness. And a click whose target a failed check may already
+  have removed is guarded (`if (open) click`), so one red check stays one red check.
+- **A vertical `Input.synthesizeScrollGesture` is a TAP here; a finger is `Input.dispatchTouchEvent`** (v21.25). The
+  phone probe "spun" the gallery's story to its end with thirty touch scroll gestures and the page never left its top
+  — which, under a rule that a story must be scrolled to be read, would have meant no phone could ever finish the
+  gallery. Measured on the live build and the new one side by side (`dbg-galvscroll.mjs`): the synthesized vertical
+  gesture reaches the page as pointerdown/pointerup with no movement and scrolls nothing on EITHER, while a raw touch
+  sequence (touchStart, fourteen touchMoves, touchEnd) is taken by the browser as its pan — pointercancel — and scrolls
+  285 px for a 300 px drag on both. The game was fine; the probe's finger was not a finger. Before believing a "the
+  screen will not scroll" from a probe, run the same input against the build already in players' hands.
