@@ -2248,13 +2248,17 @@ body.finePtr .galPull,body.finePtr .galEndHint{display:block}
   .galRays,#galFx{display:none}
   .galEnd{margin:18px 0 4px;gap:8px} .galEndGo{padding:10px 14px 10px 16px} .galEndN{font-size:1.14rem}
   .galFoot{flex-wrap:wrap;gap:8px 10px;margin-top:8px;padding-top:8px}
-  .galThumbs{gap:8px}
-  .galThumb{width:34px;height:34px} .galThumb::before{inset:-3px}
+  .galThumbs{gap:6px}
+  /* (v21.26: a little smaller on the narrowest phones — 34 px from about 405 px wide — so Close gallery stays on the
+     thumbnails' row; at 360–390 it dropped under them and the foot grew 36–42 px on the last page) */
+  .galThumb{width:min(34px,8.4vw);height:min(34px,8.4vw)} .galThumb::before{inset:-3px}
   .galThumb.seen::after{width:15px;height:15px;font-size:9px;right:-4px;bottom:-4px}
   .galProg{order:3;flex:1 1 100%;gap:5px}
   #galProgTxt{font-size:.66rem}
-  /* (narrow enough that CONTINUE, which is wider than NEXT, stays on the thumbnails' row — it wrapped, and the foot jumped) */
-  #galGo{margin-left:auto;padding:11px 13px;font-size:.78rem;letter-spacing:.1em}
+  /* (narrow enough that the widest label stays on the thumbnails' row — it wrapped, and the foot jumped: v21.23's CONTINUE,
+     and v21.25's CLOSE GALLERY, 145 px against the 136 a 390 px phone leaves it; measured 127 now, and on the row at 360,
+     375, 390 and 412 px with dbg-galfoot.mjs) */
+  #galGo{margin-left:auto;padding:11px 10px;font-size:.74rem;letter-spacing:.06em;white-space:nowrap}
   .galHint{font-size:.7rem;margin-top:5px}
 }
 /* a short screen (a phone on its side): less chrome, so the page keeps its height */
