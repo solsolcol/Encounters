@@ -968,10 +968,11 @@ K.galleryDone = await until(() => {
   return st.done && st.seen.length === 3 && document.getElementById('galBox').classList.contains('done')
     && document.getElementById('galGo').textContent === 'Continue';
 }, 30000).then(() => true, () => false);
+await p.waitForTimeout(900);                                   // (v21.23: CONTINUE is not taken in the 0.8 s after the last page counts)
 await p.keyboard.press('Enter');                               // CONTINUE
 K.galleryAnswers = await until(() => window.__gal && window.__enc.getState() === 'play' && !window.__enc.galleryState().open, 30000)
   .then(() => p.evaluate(() => window.__gal.seenAll === true && window.__gal.seen.join() === 'ga,gb,gc'), () => false);
-await p.waitForTimeout(500);
+await p.waitForTimeout(800);                                   // (v21.23: the window does not reopen within 0.6 s of a close)
 K.galleryResumes = await p.evaluate((pages) => {
   const e = window.__enc;
   window.__gal = undefined;
@@ -983,7 +984,7 @@ await p.waitForTimeout(600);
 await p.keyboard.press('Escape');
 K.galleryEscEarly = await until(() => window.__gal && window.__enc.getState() === 'play', 30000)
   .then(() => p.evaluate(() => window.__gal.seenAll === false && window.__gal.seen.join() === 'ga,gb'), () => false);
-await p.waitForTimeout(600);
+await p.waitForTimeout(800);
 K.galleryAllReadOpensDone = await p.evaluate((pages) => {
   const e = window.__enc;
   window.__gal = undefined;
@@ -995,6 +996,90 @@ await p.waitForTimeout(600);
 await p.click('#galX');                                        // the X, a real click
 K.galleryXCloses = await until(() => window.__gal && window.__enc.getState() === 'play', 30000)
   .then(() => p.evaluate(() => window.__gal.seenAll === true && !window.__enc.kit.galleryOpen()), () => false);
+/* v21.23: THE GALLERY'S WHEEL (Chad: "when i tried on desktop and mouse scroll to the bottom, it immediately jumped to
+   the bottom of the next page"). On pages whose stories scroll: a spin from the top stops at the END of the story and
+   turns nothing; a fresh pull from the end turns ONCE, to the page NEXT would open, and that page opens at its TOP —
+   the rest of the spin never reaches it; a spin over the portrait scrolls the story; one sideways swipe turns one page;
+   the end mark names where it leads. Every burst is dispatched in ONE synchronous task, so no stall on a loaded box
+   can split a spin into two gestures; the quiet between bursts is a wait, and a stall only lengthens it. Where the
+   window lets an event through, the browser's own scroll is applied by hand (an untrusted event does not scroll). */
+const LONG = Array.from({ length: 14 }, (_, k) => `Paragraph ${k + 1} of a story long enough to scroll: the words run on past the foot of the column, line after line, so the end of it is somewhere below.`);
+const WHEEL_PAGES = [
+  { id: 'wa', name: 'Wheel one', story: LONG },
+  { id: 'wb', name: 'Wheel two', story: LONG },
+  { id: 'wc', name: 'Wheel three', story: LONG },
+];
+await p.waitForTimeout(800);
+await p.evaluate((pages) => { window.__gal = undefined; window.__enc.kit.gallery({ pages, label: 'Wheel' }).then(r => { window.__gal = r; }); }, WHEEL_PAGES);
+await p.waitForTimeout(900);                                    // past the guard
+const W = await p.evaluate(async () => {
+  const E = window.__enc, sleep = ms => new Promise(r => setTimeout(r, ms));
+  const sc = () => { const pg = document.getElementById('galPage'); return getComputedStyle(pg).overflowY === 'auto' ? pg : document.getElementById('galRight'); };
+  const burst = (el, n, dy, dx = 0) => {
+    for (let k = 0; k < n; k++) {
+      const r = el.getBoundingClientRect();
+      const ev = new WheelEvent('wheel', { deltaY: dy, deltaX: dx, bubbles: true, cancelable: true, clientX: r.left + 5, clientY: r.top + 5 });
+      el.dispatchEvent(ev);
+      if (!ev.defaultPrevented && dy) { const s = sc(); if (s.contains(el)) s.scrollTop += dy; }
+    }
+  };
+  const st = () => ({ i: E.galleryState().i, top: Math.round(sc().scrollTop), max: sc().scrollHeight - sc().clientHeight });
+  const out = {};
+  out.scrolls = st().max > 300;
+  burst(document.getElementById('galStory'), 40, 100);          // a fast spin, on well past the end
+  await sleep(500);
+  const s1 = st(); out.spinStopsAtEnd = s1.i === 0 && s1.top >= s1.max - 2;
+  out.endNames = document.getElementById('galEndN')?.textContent === 'Wheel two';
+  burst(document.getElementById('galStory'), 8, 100);           // a fresh pull from the end
+  await sleep(1100);
+  const s2 = st(); out.pullTurnsOnce = s2.i === 1; out.newPageAtTop = s2.top === 0;
+  burst(document.getElementById('galImg'), 3, 100);             // a spin over the portrait: the story scrolls
+  await sleep(500);
+  const s3 = st(); out.portraitScrolls = s3.i === 1 && s3.top === 300;
+  await sleep(500);
+  burst(document.getElementById('galStory'), 30, 0, 12);        // one sideways swipe
+  await sleep(1100);
+  out.swipeTurnsOne = st().i === 2;
+  /* a held key's repeats turn nothing (held, → ran the pages round at the keyboard's repeat rate); a press does */
+  const kd = (code, repeat) => document.dispatchEvent(new KeyboardEvent('keydown', { code, repeat, bubbles: true, cancelable: true }));
+  const i0 = st().i;
+  kd('ArrowLeft', true); kd('ArrowLeft', true); kd('ArrowLeft', true);
+  out.repeatTurnsNothing = st().i === i0;
+  kd('ArrowLeft', false);
+  out.pressTurns = st().i === (i0 + 2) % 3;
+  await sleep(200);
+  /* touch: a second finger is a pinch, never a swipe; a swipe the system took over (pointercancel) turns nothing; a
+     swipe lifted turns one page, and leaves the page unshifted */
+  const body = document.getElementById('galBody');
+  const pe = (type, id, x) => body.dispatchEvent(new PointerEvent(type, { pointerId: id, pointerType: 'touch', isPrimary: id === 1,
+    clientX: x, clientY: 300, bubbles: true, cancelable: true }));
+  const i1 = st().i;
+  pe('pointerdown', 1, 400); pe('pointerdown', 2, 520); pe('pointermove', 2, 420); pe('pointermove', 2, 260);
+  pe('pointerup', 2, 260); pe('pointerup', 1, 400);
+  out.pinchTurnsNothing = st().i === i1;
+  pe('pointerdown', 3, 600); pe('pointermove', 3, 480); pe('pointermove', 3, 330); pe('pointercancel', 3, 330);
+  out.cancelTurnsNothing = st().i === i1;
+  pe('pointerdown', 4, 600); pe('pointermove', 4, 480); pe('pointermove', 4, 330); pe('pointerup', 4, 330);
+  out.swipeLiftedTurns = st().i === (i1 + 1) % 3;
+  const pg = document.getElementById('galPage');
+  out.swipeLeavesNoShift = !pg.classList.contains('drag') && !pg.style.transform;
+  return out;
+});
+K.galleryWheelScrolls = W.scrolls;
+K.galleryWheelStopsAtEnd = W.spinStopsAtEnd;
+K.galleryWheelEndNames = W.endNames;
+K.galleryWheelPullOnce = W.pullTurnsOnce;
+K.galleryWheelNewPageTop = W.newPageAtTop;
+K.galleryWheelPortrait = W.portraitScrolls;
+K.galleryWheelSwipeOne = W.swipeTurnsOne;
+K.galleryKeyRepeatTurnsNothing = W.repeatTurnsNothing && W.pressTurns;
+K.galleryPinchTurnsNothing = W.pinchTurnsNothing;
+K.gallerySwipeCancelTurnsNothing = W.cancelTurnsNothing;
+K.gallerySwipeTurnsOne = W.swipeLiftedTurns && W.swipeLeavesNoShift;
+if (!Object.values(W).every(Boolean)) console.log('gallery wheel', JSON.stringify(W));
+await p.evaluate(() => window.__enc.galleryClose('x'));       // (the X's own path: play again, as the film below needs)
+await until(() => window.__enc.getState() === 'play' && !window.__enc.kit.galleryOpen(), 30000).catch(() => {});
+await p.waitForTimeout(500);
 /* v21.0: THE TWENTY-SIXTH SEAM — kit.film. From play, a declared film runs
    (state cine, the HUD hidden); at its end the state is PLAY again, no card;
    the black it ended on is the kit's, the chapter's onDone ran under it and

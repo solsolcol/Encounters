@@ -5933,3 +5933,27 @@ cut (sharing its vertices and maps) when it is small.
   own line still sat in the queue — and pressing him started a beat that EMPTIES the queue, so the lines were
   skipped. The next objective now comes from the END of the last line before it (an `after()` scheduled from that
   line's own start), and the browse offers nothing while any of its lines is waiting or being said.
+- **A size is read from LAYOUT, never from the screen box, while anything can be animating** (v21.23, the masters'
+  gallery). `galPaint` sized the portrait's canvas from `getBoundingClientRect()` of its column — and a page turn
+  sweeps that column in (scale .92, rotateY) and the window's entrance scales it (.88 × .86), so the size read on
+  the frame a page arrived was the size of the animation's first frame: 286 × 374 on opening, 251 × 335 after an
+  arrow, against the 342 × 456 the column holds, kept until something resized the window. `clientWidth` /
+  `clientHeight` are the layout box and no transform touches them. The same family the other way: the sparkles
+  round the portrait clip their hole from on-screen boxes, which ARE transformed — so they are brought back into
+  the canvas's own pixels by the canvas's own on-screen scale before they are used.
+- **A wheel that can turn a page counts GESTURES, not events** (v21.23). One notch past the end of a story turned
+  the page, and the rest of the same spin was let through the moment the new page had room to scroll, so a spin
+  that reached the end of one master landed at the foot of the next (measured: a fast spin from the top of the
+  first ended at the foot of the third; a trackpad's momentum carried 534 px down the next page). The rules that
+  fixed it: a gesture is a run of events closer than ~260 ms; a spin that scrolls INTO an edge stops there; a
+  turn needs a gesture that BEGINS at the edge, and fills a visible meter before it fires; after a turn the wheel
+  is held until it has gone quiet. Time the gesture by each event's own `timeStamp` — a turn's long frame queues
+  the events behind it, and on the handler's clock they arrive as one pause that splits one gesture into two.
+  And test it at a REAL machine's timing: one Playwright `mouse.wheel` call takes over a second on a slow box, so
+  the probe dispatches the events in the page at 16–40 ms; and the harness dispatches each burst in ONE
+  synchronous task, so no stall on a loaded box can split a spin the way a person never would.
+- **Before calling a probe's jump a double press, check what the press is meant to do** (v21.23). A page that went
+  from master 2 to master 4 on one Space read as "Space pressed NEXT and the focused arrow both" — but NEXT goes
+  to the next page NOT YET READ, and master 3 had been read; cancelling the keydown had already stopped the
+  button's own press. The real defect under it was the opposite one: a button reached with Tab could not answer
+  its own key at all.

@@ -5891,6 +5891,9 @@ function tryLock() {
 }
 document.addEventListener('pointerlockchange', () => {
   locked = document.pointerLockElement === canvas;
+  /* (v21.23: a lock asked for a moment before the gallery opened by itself can land after it — the cursor hidden over
+     a window made to be pointed at; it is let go at once) */
+  if (locked && state === 'gallery') document.exitPointerLock?.();
   setHint();
 });
 document.addEventListener('pointerlockerror', () => { lockBlocked = true; setHint(); });
@@ -8889,36 +8892,53 @@ addEventListener('keydown', e => {
    the engine's UI sounds standing in. While it is open the world is not
    drawn (the window and its backdrop cover it; WORLD COVERED, v15.0). Only
    episode 3 chapter 3 calls it; the fixture proves it. */
-const GAL_DWELL = 1200, GAL_GUARD = 450, GAL_WHEEL = 50;
+const GAL_DWELL = 1200, GAL_GUARD = 450;
+/* v21.23 · the wheel (the listener says why): a gap of GAL_QUIET ms ends a gesture; a pull from the end of a story
+   turns the page at GAL_PULL px (two notches of a mouse wheel), holds GAL_HOLD ms after its last notch and drains over
+   GAL_DRAIN; a turn holds the wheel GAL_LOCK ms at least and until it has gone quiet; sideways, GAL_SWIPE px turns */
+const GAL_QUIET = 260, GAL_PULL = 200, GAL_HOLD = 700, GAL_DRAIN = 500, GAL_LOCK = 700, GAL_SWIPE = 90;
 const gal = { open: false, pages: null, i: 0, seen: null, done: false, t0: 0, dwellT: 0, resolve: null, outT: 0,
-              raf: 0, sounds: null, img: 0, imgT: 0, bmps: new Map(), fx: null, wheel: 0, wheelT: 0, wheelLast: 0,
+              raf: 0, sounds: null, img: 0, imgT: 0, bmps: new Map(), fx: null, wheelLast: 0, lockTill: 0, swipe: 0,
+              armed: false, pull: 0, pullT: 0, pullShown: -1, ptrs: new Set(), closedT: -1e9, doneT: 0, hidT: 0, wake: null,
+              onRead: null, swapT: 0, flipT: 0,
               drag: null, hintT: 0, label: '', lastT: 0 };
 const galDpr = () => Math.min(2.5, devicePixelRatio || 1);
 /* a picture's bitmap, from its own bytes (kept for the session: five or six small photographs) */
 function galBmp(img) {
   let e = gal.bmps.get(img.key);
+  /* (v21.23: a picture that failed to arrive is asked for again, at most every 4 s — its bytes are let go when the
+     loading curtain lifts, so the gallery fetches them again, and one dropped request on a weak connection used to
+     leave that master an empty frame for the rest of the session) */
+  if (e && e.failed && performance.now() - e.failT > 4000) { gal.bmps.delete(img.key); e = null; }
   if (!e) {
     e = { bmp: null, failed: false };
     e.p = assetBytes(img.key, true)
       .then(b => createImageBitmap(new Blob([b], { type: img.mime || 'image/jpeg' })))
       .then(bmp => { e.bmp = bmp; return bmp; })
-      .catch(err => { e.failed = true; console.warn('gallery picture failed', img.key, err); return null; });
+      .catch(err => { e.failed = true; e.failT = performance.now(); console.warn('gallery picture failed', img.key, err); return null; });
     gal.bmps.set(img.key, e);
   }
   return e;
 }
-function galSnd(k) {
+function galSnd(k, rate = 1, pan = 0, volK = 1) {
   const s = gal.sounds && gal.sounds[k];
-  if (Array.isArray(s) && s[0] && snd(s[0], s[1] == null ? 1 : s[1])) return;
+  if (Array.isArray(s) && s[0] && snd(s[0], (s[1] == null ? 1 : s[1]) * volK, rate, pan)) return;
   const fb = { open: ['itemunlock', 0.5], flip: ['uiclick', 0.45], read: null, done: ['uiconfirm', 0.8], close: ['uiconfirm', 0.4] }[k];
-  if (fb) snd(fb[0], fb[1]);
+  if (fb) snd(fb[0], fb[1] * volK, rate, pan);
 }
 function kitGallery(opts = {}) {
   const pages = (Array.isArray(opts.pages) ? opts.pages : []).filter(p => p && p.name);
   const el = $('gallery');
-  if (!pages.length || !el || gal.open || unl.id || cho.ids || state !== 'play' || fainting) return Promise.resolve(null);
+  /* (v21.23: nor under a live minigame, which runs on the frame and would play out unseen beneath it; nor within 0.6 s
+     of the window closing — the second click of a double-click on the X, or a tap through its fade, pressed the row
+     that opens it again, and the window sprang back the instant it had gone) */
+  if (!pages.length || !el || gal.open || unl.id || cho.ids || ev || state !== 'play' || fainting
+      || performance.now() - gal.closedT < 600) return Promise.resolve(null);
   clearTimeout(gal.outT); clearTimeout(gal.hintT);
   gal.open = true; gal.pages = pages; gal.done = false; gal.sounds = opts.sounds || null;
+  gal.lockTill = 0; gal.swipe = 0; gal.armed = false; gal.pull = 0; gal.pullShown = -1;   // v21.23: no wheel carried in
+  gal.ptrs.clear(); gal.doneT = 0; gal.hidT = 0;
+  gal.onRead = typeof opts.onRead === 'function' ? opts.onRead : null;   // v21.23: told of each page as it is read
   const had = new Set(Array.isArray(opts.seen) ? opts.seen : []);
   gal.seen = new Set(pages.map((p, k) => had.has(p.id) ? k : -1).filter(k => k >= 0));
   /* every page already read (a chapter that passes back a finished reading): the window opens done —
@@ -8952,6 +8972,7 @@ function kitGallery(opts = {}) {
   galProgPaint(false);
   galSnd('open');
   haptic([20, 50, 70]);
+  galWake(true);
   gal.t0 = performance.now();
   return new Promise(res => { gal.resolve = res; });
 }
@@ -8960,6 +8981,9 @@ function galShow(i, dir) {
   const P = gal.pages; if (!P) return;
   i = ((i % P.length) + P.length) % P.length;
   gal.i = i; gal.img = 0; gal.imgT = performance.now(); gal.dwellT = performance.now();
+  /* v21.23: a cross-fade still in flight belongs to the page it began on (closed inside its 280 ms, it used to leave the
+     picture at opacity 0 — the next opening showed a frame with nothing in it on every single-photograph page) */
+  clearTimeout(gal.swapT); $('galImg').classList.remove('swap');
   const p = P[i];
   $('galName').textContent = p.name;
   $('galAka').textContent = p.aka || '';
@@ -8972,13 +8996,21 @@ function galShow(i, dir) {
   $('galKnown').innerHTML = known.map((k, n) => `<li style="--k:${n}">${galEsc(k)}</li>`).join('');
   $('galKnown').parentElement.style.display = known.length ? '' : 'none';
   const story = (Array.isArray(p.story) ? p.story : [p.story]).filter(Boolean);
-  $('galStory').innerHTML = story.map(s => `<p>${galEsc(s)}</p>`).join('');
+  /* (v21.23: a paragraph may come as { text, rule: true } — a small gold rule set before it, where the telling turns: in
+     episode 3 chapter 3 the masters' lives give way to what devotees believe, which Chad asked to be "noted as popular
+     belief"; a plain string is a plain paragraph, as it always was) */
+  $('galStory').innerHTML = story.map(s => typeof s === 'string' ? `<p>${galEsc(s)}</p>`
+    : (s.text ? `${s.rule ? '<span class="galRule" aria-hidden="true"></span>' : ''}<p>${galEsc(s.text)}</p>` : '')).join('');
   $('galRight').scrollTop = 0; $('galPage').scrollTop = 0;     // (whichever scrolls: the words, or on an upright phone the page)
+  gal.armed = false; gal.pull = 0;                               // v21.23: a pull belongs to the page it was made on
+  galEndPaint(); galFadeSync();
   const imgs = p.images || [];
   $('galPips').innerHTML = imgs.length > 1 ? imgs.map((im, k) => `<button type="button" data-k="${k}" class="${k ? '' : 'on'}" aria-label="${k + 1} / ${imgs.length}"></button>`).join('') : '';
   $('galImg').setAttribute('aria-label', p.name);
+  galDragClear();
   for (const b of $('galThumbs').querySelectorAll('.galThumb')) {
     const on = +b.dataset.i === i;
+    b.classList.remove('dwell');
     b.classList.toggle('on', on); b.setAttribute('aria-selected', on ? 'true' : 'false');
     if (on) b.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
   }
@@ -8987,7 +9019,13 @@ function galShow(i, dir) {
   pg.classList.remove('turnN', 'turnP', 'turn0'); void pg.offsetWidth;
   pg.classList.add(dir > 0 ? 'turnN' : dir < 0 ? 'turnP' : 'turn0');
   galPaint();
-  if (dir) { galSnd('flip'); haptic(12); }
+  if (dir) {
+    /* v21.23: a page is never turned twice the same way — a breath of pitch either side, and from the side it comes in
+       (NEXT from the right, back from the left); turns closer than 110 ms (a thumbnail run) share one sound */
+    const now = performance.now(), r = gal.fx && gal.fx.rnd ? gal.fx.rnd() : 0.5;
+    if (now - (gal.flipT || 0) > 110) { galSnd('flip', 0.96 + 0.08 * r, 0.16 * Math.sign(dir)); gal.flipT = now; }
+    haptic(12);
+  }
   galBurst(dir ? 34 : 54);
 }
 /* the picture: whole, at its own aspect, as large as the left column allows, at the screen's own sharpness */
@@ -8998,7 +9036,11 @@ function galPaint() {
   pic.classList.toggle('own', !!(im && im.own));
   const e = im ? galBmp(im) : null, bmp = e && e.bmp;
   if (e && !bmp && !e.failed) e.p.then(() => { if (gal.open && gal.pages && gal.pages[gal.i] === p) galPaint(); });
-  const box = pic.getBoundingClientRect();
+  /* v21.23: the column's LAYOUT size — never its on-screen box, which a page turn's sweep (rotateY, scale .92) and the
+     window's own entrance (scale .88, .86) shrink while they run: measured on v21.22 at 1280 × 800, the portrait was
+     drawn 286 × 374 on opening and 251 × 335 after an arrow, against the 342 × 456 the column holds, and kept that
+     size until the window was resized */
+  const box = { width: pic.clientWidth, height: pic.clientHeight };
   /* the frame's own thickness (padding of frame + liner) comes off the room the picture has */
   const cs1 = getComputedStyle(frame), cs2 = getComputedStyle(frame.firstElementChild);
   const pad = 2 * ((parseFloat(cs1.paddingLeft) || 0) + (parseFloat(cs2.paddingLeft) || 0));
@@ -9040,15 +9082,71 @@ function galProgPaint(fresh) {
   $('galBarFill').style.width = (n ? 100 * m / n : 0).toFixed(1) + '%';
   $('galGo').textContent = gal.done ? T('gallery.continue', 'Continue') : T('gallery.nextBtn', 'Next');
   for (const b of $('galThumbs').querySelectorAll('.galThumb')) b.classList.toggle('seen', gal.seen.has(+b.dataset.i));
+  galEndPaint();
+}
+/* v21.23 · THE END OF A STORY — where it leads: the page NEXT would open (the next one not yet read after this one, or
+   simply the next), or -1 once every page is read and the way on is CONTINUE, which only a press gives (the wheel
+   never closes the window). The end mark under the story says which, by name — it IS the NEXT button, said where the
+   reader's eyes already are, and it presses the same way. */
+function galEndTarget() {
+  if (!gal.pages || gal.done) return -1;
+  const n = gal.pages.length;
+  for (let s = 1; s < n; s++) { const k = (gal.i + s) % n; if (!gal.seen.has(k)) return k; }
+  return (gal.i + 1) % n;
+}
+function galEndPaint() {
+  if (!gal.pages || !$('galEnd')) return;
+  const k = galEndTarget();
+  $('galEnd').classList.toggle('last', k < 0);
+  $('galEndK').textContent = k < 0 ? T('gallery.allRead', 'All {m} read').replace('{m}', gal.pages.length) : T('gallery.endNext', 'Next');
+  $('galEndN').textContent = k < 0 ? T('gallery.continue', 'Continue') : gal.pages[k].name;
+}
+/* the pull from the end: it holds GAL_HOLD ms after its last notch, then drains over GAL_DRAIN (read lazily) */
+function galPullNow(now) {
+  const age = now - gal.pullT;
+  return age <= GAL_HOLD ? gal.pull : Math.max(0, gal.pull * (1 - (age - GAL_HOLD) / GAL_DRAIN));
+}
+function galPull(v, now) { gal.pull = Math.max(0, v); gal.pullT = now; return gal.pull; }
+/* v21.23 · the fade over the words only where there IS more: above once they have scrolled, below until the end — the
+   old fade dimmed the bottom 12 % for good, so a story's last line was never read at full strength (measured: 36 px
+   of the last paragraph inside it at the very end of the page) */
+function galFadeSync() {
+  for (const id of ['galRight', 'galPage']) {
+    const el = $(id); if (!el) continue;
+    const can = el.scrollHeight > el.clientHeight + 2;
+    el.classList.toggle('fT', can && el.scrollTop > 2);
+    el.classList.toggle('fB', can && el.scrollTop + el.clientHeight < el.scrollHeight - 2);
+  }
+  /* on a phone held upright the whole page scrolls and the side arrows stay where the portrait was — over the story's
+     first and last words once it has moved up; they step aside until the page is back at its top (NEXT, the end mark
+     and a swipe still turn it) */
+  const pg = $('galPage');
+  $('galBody')?.classList.toggle('deep', !!pg && galScroller() === pg && pg.scrollTop > 24);
 }
 /* a page is READ once it has been on screen GAL_DWELL ms (wall time); the last one read lights the window */
 function galDwell(now) {
-  if (!gal.open || gal.seen.has(gal.i) || now - gal.dwellT < GAL_DWELL) return;
+  if (!gal.open || gal.seen.has(gal.i)) return;
+  /* v21.23: the reading shows — a ring fills round the page's own thumbnail over the GAL_DWELL it takes to count, so a
+     page is seen being read and NEXT is not pressed blind */
+  const thumb = $('galThumbs').querySelector('.galThumb.on');
+  const k = Math.min(1, Math.max(0, (now - gal.dwellT) / GAL_DWELL));
+  if (thumb) { thumb.classList.add('dwell'); thumb.style.setProperty('--dw', k.toFixed(3)); }
+  if (k < 1) return;
   gal.seen.add(gal.i);
+  if (thumb) thumb.classList.remove('dwell');
   galProgPaint(true);
-  galSnd('read');
+  /* (v21.23: and it is felt and seen where the eyes are — a short buzz, and the name lights once) */
+  haptic(10);
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) $('galName').animate?.([{ filter: 'drop-shadow(0 0 14px rgba(255,190,90,.35)) brightness(1)' },
+    { filter: 'drop-shadow(0 0 26px rgba(255,220,140,.95)) brightness(1.45)', offset: 0.3 },
+    { filter: 'drop-shadow(0 0 14px rgba(255,190,90,.35)) brightness(1)' }], { duration: 1000, easing: 'ease-out' });
+  /* (v21.23: the chapter is told at once and the run saved with it — the reading reached the save only when the window
+     closed, so a phone that locked or dropped the tab in the middle of the gallery lost every page read in it) */
+  if (gal.onRead) { try { gal.onRead(gal.pages[gal.i].id); saveCheckpoint(); } catch (err) { console.warn('gallery onRead', err); } }
+  /* (v21.23: the page that completes the set has the chime alone — the tick under it was lost in it, a click on the bell) */
+  if (gal.done || gal.seen.size < gal.pages.length) galSnd('read');
   if (!gal.done && gal.seen.size >= gal.pages.length) {
-    gal.done = true;
+    gal.done = true; gal.doneT = performance.now();
     const box = $('galBox');
     box.classList.remove('cele'); void box.offsetWidth; box.classList.add('done', 'cele');
     galProgPaint(true);
@@ -9064,6 +9162,9 @@ function galJump(k) {
 }
 function galPrimary() {
   if (!gal.open || performance.now() - gal.t0 < GAL_GUARD) return;
+  /* (v21.23: not in the instant NEXT has turned into CONTINUE under a finger already on its way — the window closed a
+     tenth of a second into its own celebration; a press in the 0.8 s after the last page counts is not taken) */
+  if (gal.done && gal.doneT && performance.now() - gal.doneT < 800) return;
   if (gal.done) { galClose('done'); return; }
   /* NEXT: the next page not yet read, after this one (or simply the next) */
   const n = gal.pages.length;
@@ -9075,7 +9176,8 @@ function galPip(k) {
   k = ((k % p.images.length) + p.images.length) % p.images.length; if (k === gal.img) return;
   gal.img = k; gal.imgT = performance.now();
   const cv = $('galImg'); cv.classList.add('swap');
-  setTimeout(() => { if (!gal.open) return; galPaint(); cv.classList.remove('swap'); }, 280);
+  clearTimeout(gal.swapT);
+  gal.swapT = setTimeout(() => { cv.classList.remove('swap'); if (gal.open) galPaint(); }, 280);
   for (const b of $('galPips').querySelectorAll('button')) b.classList.toggle('on', +b.dataset.k === k);
   galBurst(18);
 }
@@ -9092,20 +9194,24 @@ function galClose(how) {
   if ((how === 'done' || how === 'key' || how === 'x') && performance.now() - gal.t0 < GAL_GUARD) return false;
   const out = { seenAll: gal.done, seen: [...gal.seen].sort((a, b) => a - b).map(k => gal.pages[k].id), last: gal.pages[gal.i] && gal.pages[gal.i].id };
   gal.open = false;
+  gal.closedT = performance.now();
   galFxStop();
-  clearTimeout(gal.hintT);
+  galWake(false);
+  clearTimeout(gal.hintT); clearTimeout(gal.swapT);
   const el = $('gallery');
   document.body.classList.remove('galleryopen');
   if (el) {
-    if (how === 'force') el.classList.add('hide');
-    else { el.classList.add('out'); gal.outT = setTimeout(() => el.classList.add('hide'), 400); }
+    if (how === 'force') { el.classList.add('hide'); galFxFree(); }
+    else { el.classList.add('out'); gal.outT = setTimeout(() => { el.classList.add('hide'); galFxFree(); }, 400); }
   }
-  gal.pages = null; gal.drag = null;
+  gal.pages = null; galDragClear(); gal.ptrs.clear();
   for (const k in keys) keys[k] = false;
   const res = gal.resolve; gal.resolve = null;
   if (how !== 'force') {
     state = 'play';
-    galSnd('close');
+    /* (v21.23: half as loud on CONTINUE — what comes next, the objective's chime and his voice, follows on the next
+       frame, and the close landed on top of both) */
+    galSnd('close', 1, 0, how === 'done' ? 0.5 : 1);
     if (how !== 'esc') tryLock();             // (Esc is no gesture the browser will lock on — v14.7)
   }
   if (res) res(how === 'force' ? null : out);
@@ -9147,6 +9253,7 @@ function galFxStart() {
     if (!gal.open) return;
     const dt = Math.min(0.1, (now - gal.lastT) / 1000); gal.lastT = now;
     galDwell(now);
+    galPullPaint(now);
     const p = gal.pages && gal.pages[gal.i];
     if (p && p.images && p.images.length > 1 && now - gal.imgT > 6500) galPip(gal.img + 1);
     galFxDraw(dt, now / 1000);
@@ -9155,6 +9262,35 @@ function galFxStart() {
   gal.raf = requestAnimationFrame(tick);
 }
 function galFxStop() { cancelAnimationFrame(gal.raf); gal.raf = 0; }
+/* (v21.23: and the two light canvases give their pixels back once the window has gone — 3 MB on a phone, up to 19 on a
+   large screen) */
+function galFxFree() { for (const id of ['galFx', 'galPicFx']) { const c = $(id); if (c) { c.width = 0; c.height = 0; } } }
+/* v21.23: while the window is open the screen stays awake — five long stories read without a touch let a phone dim and
+   lock in the middle of one (where the browser offers it; refused quietly where it does not) */
+function galWake(on) {
+  try {
+    if (gal.wake && gal.wake.released) gal.wake = null;
+    if (!on) { if (gal.wake) { const l = gal.wake; gal.wake = null; l.release().catch(() => {}); } return; }
+    if (gal.wake || !navigator.wakeLock || document.hidden) return;
+    navigator.wakeLock.request('screen').then(l => { if (gal.open && !gal.wake) gal.wake = l; else l.release().catch(() => {}); }).catch(() => {});
+  } catch { }
+}
+document.addEventListener('visibilitychange', () => {
+  if (!gal.open) return;
+  if (document.hidden) { gal.hidT = performance.now(); return; }
+  /* (v21.23: time away is no time read — a page glanced at before switching apps counted on the way back, and Luang Phu
+     Tim's photograph changed the instant the window was seen again) */
+  if (gal.hidT) { const d = performance.now() - gal.hidT; gal.dwellT += d; gal.imgT += d; gal.hidT = 0; }
+  galWake(true);
+});
+/* v21.23: the end mark's hairline, filled as far as the pull has gone (only written when it moves) */
+function galPullPaint(now) {
+  const v = Math.min(1, galPullNow(now));
+  if (Math.abs(v - gal.pullShown) < 0.003) return;
+  gal.pullShown = v;
+  const f = $('galPullFill'); if (f) f.style.transform = `scaleX(${v.toFixed(3)})`;
+  $('galEnd')?.classList.toggle('pulling', v > 0.01);
+}
 function galFit(cv, k) {
   const w = cv.clientWidth, h = cv.clientHeight; if (!w || !h) return null;
   const d = Math.min(k, devicePixelRatio || 1), W = Math.round(w * d), H = Math.round(h * d);
@@ -9165,6 +9301,7 @@ function galFit(cv, k) {
 }
 function galBurst(n, big) {
   const F = gal.fx; if (!F || !F.rnd) return;
+  n = Math.min(n, Math.max(0, 320 - F.bursts.length));      // (v21.23: never more than 320 in the air, however fast the turns)
   for (let k = 0; k < n; k++) {
     const a = F.rnd() * 6.283, sp = (big ? 140 : 90) + F.rnd() * (big ? 320 : 220);
     F.bursts.push({ a, sp, t: 0, life: 0.7 + F.rnd() * 0.8, r: 2 + F.rnd() * (big ? 5 : 3.5), edge: F.rnd() });
@@ -9189,11 +9326,15 @@ function galFxDraw(dt, t) {
   if (!B) return;
   const { g, w, h } = B; g.clearRect(0, 0, w, h);
   const cr = cv.getBoundingClientRect(), fr = $('galFrame').getBoundingClientRect(), ir = $('galImg').getBoundingClientRect();
-  const fx0 = fr.left - cr.left, fy0 = fr.top - cr.top, fw = fr.width, fh = fr.height;
-  const ix0 = ir.left - cr.left, iy0 = ir.top - cr.top;
+  /* v21.23: the on-screen boxes brought back into the canvas's own pixels — while a turn sweeps the column (scale .92,
+     rotateY) or the window enters (scale .88), the canvas is drawn shrunk with them, so unscaled offsets put the hole
+     round the picture in the wrong place and the motes crossed its edge for as long as the sweep ran */
+  const kx = cr.width > 1 ? w / cr.width : 1, ky = cr.height > 1 ? h / cr.height : 1;
+  const fx0 = (fr.left - cr.left) * kx, fy0 = (fr.top - cr.top) * ky, fw = fr.width * kx, fh = fr.height * ky;
+  const ix0 = (ir.left - cr.left) * kx, iy0 = (ir.top - cr.top) * ky, iw = ir.width * kx, ih = ir.height * ky;
   const cx = fx0 + fw / 2, cy = fy0 + fh / 2, R = Math.max(fw, fh) * 0.62;
   g.save();
-  g.beginPath(); g.rect(0, 0, w, h); g.rect(ix0, iy0, ir.width, ir.height); g.clip('evenodd');
+  g.beginPath(); g.rect(0, 0, w, h); g.rect(ix0, iy0, iw, ih); g.clip('evenodd');
   g.globalCompositeOperation = 'lighter';
   for (const m of F.halo) {                          // motes drifting round on the halo, rising a little as they go
     m.a += m.v * dt; m.rise = (m.rise + dt * 0.05) % 1;
@@ -9230,25 +9371,74 @@ $('galGo')?.addEventListener('click', () => galPrimary());
 $('galX')?.addEventListener('click', () => galClose('x'));
 $('galThumbs')?.addEventListener('click', e => { const b = e.target.closest?.('.galThumb'); if (b) galJump(+b.dataset.i); });
 $('galPips')?.addEventListener('click', e => { const b = e.target.closest?.('button'); if (b) galPip(+b.dataset.k); });
-/* the wheel turns the page — except over the words while they can still scroll that way */
-$('galBox')?.addEventListener('wheel', e => {
+$('galEndGo')?.addEventListener('click', () => galPrimary());
+/* v21.23 · THE WHEEL READS, AND TURNS ONLY WHEN ASKED (Chad: "when i tried on desktop and mouse scroll to the bottom,
+   it immediately jumped to the bottom of the next page, instead of starting at the top of the next page"). It did: one
+   notch past the end turned the page, and the rest of the same spin — let through the moment the new page had room —
+   ran on down it (measured on v21.22 at a real machine's timing: a fast spin from the top of the first master ended at
+   the FOOT of the third; a trackpad's momentum carried 534 px down the next page; one sideways swipe turned two pages;
+   a spin with the mouse over the portrait turned the page instead of scrolling the story).
+   Now the wheel scrolls the words from anywhere over the window, and a spin that scrolls into the end of a story STOPS
+   there, so its last lines can be read. The page turns only on a pull that BEGINS at the end — the wheel quiet a
+   moment (GAL_QUIET), then turned again — and the pull fills the end mark under the story (GAL_PULL px: two notches
+   of a mouse wheel) before it turns, to where NEXT would go; once it has turned, the wheel is held until it goes quiet
+   (GAL_LOCK at least), so nothing of that spin, nor a trackpad's momentum, reaches the new page — which opens at its
+   top. Upward the wheel stops at the top (the arrows, ← and a swipe go back). Sideways — a trackpad's swipe, or shift
+   and the wheel — turns the page, once a gesture. The wheel never closes the window: every page read, the end mark
+   says CONTINUE and waits for a press. */
+$('gallery')?.addEventListener('wheel', e => {
   if (!gal.open) return;
-  const st = galScroller(), vert = Math.abs(e.deltaY) >= Math.abs(e.deltaX);
-  if (vert && st.contains(e.target)) {
-    const room = e.deltaY > 0 ? st.scrollTop + st.clientHeight < st.scrollHeight - 2 : st.scrollTop > 0;
-    if (room) return;
+  /* (a pinch on a trackpad arrives as the wheel with Ctrl, as does Ctrl and the wheel: never a scroll or a turn, and
+     never the whole page zoomed behind the window) */
+  if (e.ctrlKey) { e.preventDefault(); return; }
+  /* (each event's own time — when the hand moved, not when the page got round to it: a page turn's long frame queues
+     the events behind it, and on the clock they would arrive as a pause that splits one gesture into two) */
+  const pn = performance.now(), now = e.timeStamp > 0 && Math.abs(e.timeStamp - pn) < 5000 ? e.timeStamp : pn;
+  const st = galScroller();
+  const fresh = now - gal.wheelLast >= GAL_QUIET;          // the wheel was quiet: this event begins a gesture
+  gal.wheelLast = now;
+  if (now < gal.lockTill) { e.preventDefault(); gal.lockTill = Math.max(gal.lockTill, now + GAL_QUIET); return; }
+  const k = e.deltaMode === 1 ? 33 : e.deltaMode === 2 ? st.clientHeight * 0.9 : 1;   // lines and pages, in pixels
+  const dx = e.deltaX * k, dy = e.deltaY * k;
+  if (Math.abs(dx) > Math.abs(dy)) {
+    e.preventDefault();                                    // (and never the browser's own back / forward)
+    if (fresh) gal.swipe = 0;
+    gal.swipe += dx;
+    if (Math.abs(gal.swipe) >= GAL_SWIPE && now - gal.t0 >= GAL_GUARD) {
+      const d = gal.swipe > 0 ? 1 : -1; gal.swipe = 0; gal.lockTill = now + GAL_LOCK; galGo(d);
+    }
+    return;
+  }
+  if (!dy) return;
+  const atEnd = st.scrollTop + st.clientHeight >= st.scrollHeight - 2, atTop = st.scrollTop <= 0.5;
+  if (dy < 0 ? !atTop : !atEnd) {                          // room that way: the words scroll
+    gal.armed = false; galPull(0, now);
+    if (st.contains(e.target)) return;                     // (over the words the browser scrolls them, as it does anything)
+    e.preventDefault(); st.scrollBy({ top: dy }); return;  // (over the portrait, the frame, the foot: the words all the same)
   }
   e.preventDefault();
-  const now = performance.now();
-  if (now - gal.wheelLast > 260) gal.wheel = 0;
-  gal.wheelLast = now;
-  if (now - gal.wheelT < 450) return;               // one turn a gesture (a trackpad's tail keeps sending)
-  gal.wheel += vert ? e.deltaY : e.deltaX;
-  if (Math.abs(gal.wheel) >= GAL_WHEEL) { const d = gal.wheel > 0 ? 1 : -1; gal.wheel = 0; gal.wheelT = now; galGo(d); }
+  if (dy < 0) { gal.armed = false; galPull(0, now); return; }   // at the top the wheel stops
+  if (fresh) gal.armed = true;                             // a pull begins only from the end
+  if (!gal.armed || galEndTarget() < 0 || now - gal.t0 < GAL_GUARD) return;
+  const was = galPullNow(now), v = galPull(was + dy / GAL_PULL, now);
+  if (v >= 1) { gal.armed = false; gal.lockTill = now + GAL_LOCK; galPrimary(); }
+  else if (Math.floor(v * 3) > Math.floor(was * 3)) snd('uiclick', 0.2, 0.8 + 0.4 * v);   // a tick, rising, each third
 }, { passive: false });
+/* the fades follow the words (galFadeSync) */
+$('galRight')?.addEventListener('scroll', galFadeSync, { passive: true });
+$('galPage')?.addEventListener('scroll', galFadeSync, { passive: true });
+/* v21.23: a mouse press never leaves a button of the window holding the focus, so for a mouse player Enter and Space
+   are always NEXT — while a button the keyboard brings the focus to (Tab) answers its own key (on v21.22 Enter on a
+   thumbnail reached with Tab pressed NEXT instead: the window took the key whatever held the focus). */
+$('gallery')?.addEventListener('mousedown', e => { if (e.target.closest?.('button')) e.preventDefault(); });
 /* a swipe turns it (a finger or a pen; a mouse has the arrows, the wheel and the keys) */
 $('galBody')?.addEventListener('pointerdown', e => {
-  if (!gal.open || e.pointerType === 'mouse' || e.target.closest?.('button')) return;
+  if (!gal.open || e.pointerType === 'mouse') return;
+  gal.ptrs.add(e.pointerId);
+  /* (v21.23: a second finger is a pinch — a hand trying to look closer at a photograph — never a swipe: the second
+     finger used to take the swipe over, and lifting it turned the page) */
+  if (gal.ptrs.size > 1) { galDragClear(); return; }
+  if (e.target.closest?.('button')) return;
   gal.drag = { id: e.pointerId, x0: e.clientX, y0: e.clientY, dx: 0, on: false };
 });
 addEventListener('pointermove', e => {
@@ -9258,26 +9448,75 @@ addEventListener('pointermove', e => {
   if (d.on) $('galPage').style.transform = `translateX(${(dx * 0.32).toFixed(1)}px)`;
 });
 const galDragEnd = e => {
+  gal.ptrs.delete(e.pointerId);
   const d = gal.drag; if (!d || e.pointerId !== d.id) return;
-  gal.drag = null;
-  const pg = $('galPage'); pg.classList.remove('drag'); pg.style.transform = '';
-  if (d.on && Math.abs(d.dx) > 48) galGo(d.dx < 0 ? 1 : -1);
+  galDragClear();
+  /* (v21.23: only a finger LIFTED turns the page — a swipe the browser or the system took over, a pointercancel,
+     turns nothing) */
+  if (e.type === 'pointerup' && d.on && Math.abs(d.dx) > 48) galGo(d.dx < 0 ? 1 : -1);
 };
+/* (v21.23: a swipe's shift and its .drag are put back wherever a swipe ends — a close or a turn in the middle of one
+   left the next opening's page shifted, its sweep switched off) */
+function galDragClear() { gal.drag = null; const pg = $('galPage'); if (pg) { pg.classList.remove('drag'); pg.style.transform = ''; } }
 addEventListener('pointerup', galDragEnd);
 addEventListener('pointercancel', galDragEnd);
-addEventListener('resize', () => { if (gal.open) { galPaint(); gal.pages && gal.pages.forEach((p, k) => galThumbPaint(k)); } });
+addEventListener('resize', () => { if (gal.open) { galPaint(); gal.pages && gal.pages.forEach((p, k) => galThumbPaint(k)); galFadeSync(); } });
 addEventListener('keydown', e => {
   if (!gal.open) return;
   const c = e.code;
-  if (['ArrowRight', 'KeyD', 'PageDown'].includes(c)) { e.preventDefault(); galGo(1); return; }
-  if (['ArrowLeft', 'KeyA', 'PageUp'].includes(c)) { e.preventDefault(); galGo(-1); return; }
+  /* (v21.23: a key held with Ctrl, Cmd or Alt is the browser's or the system's — copy, find, zoom — and turns nothing;
+     the arrows are still kept from it, where Alt or Cmd and ← would leave the game for the page before it) */
+  if (e.ctrlKey || e.metaKey || e.altKey) { if (/^Arrow/.test(c)) e.preventDefault(); return; }
+  /* (v21.23: a page turns once a PRESS — a held key's repeats turn nothing: held, → ran the pages round at the
+     keyboard's repeat rate, and so did a key still held from walking when the window opened by itself) */
+  if (e.repeat && (['ArrowRight', 'KeyD', 'ArrowLeft', 'KeyA', 'Home', 'End'].includes(c) || /^(Digit|Numpad)[1-9]$/.test(c))) {
+    e.preventDefault(); return;
+  }
+  if (['ArrowRight', 'KeyD'].includes(c)) { e.preventDefault(); galGo(1); return; }
+  if (['ArrowLeft', 'KeyA'].includes(c)) { e.preventDefault(); galGo(-1); return; }
+  /* v21.23: Page Down / Page Up read the story a screen at a time, as they do anywhere; past its end Page Down goes on
+     to where NEXT would (never CONTINUE — no key but Enter, Space and Esc closes the window), and above its top Page
+     Up turns back (a held key scrolls, and only a fresh press turns) */
+  if (c === 'PageDown' || c === 'PageUp') {
+    e.preventDefault();
+    const st = galScroller(), down = c === 'PageDown';
+    const room = down ? st.scrollTop + st.clientHeight < st.scrollHeight - 2 : st.scrollTop > 0.5;
+    if (room) st.scrollBy({ top: (down ? 1 : -1) * st.clientHeight * 0.85, behavior: 'smooth' });
+    else if (!e.repeat) { if (!down) galGo(-1); else if (galEndTarget() >= 0) galPrimary(); }
+    return;
+  }
   if (c === 'Home') { e.preventDefault(); galJump(0); return; }
   if (c === 'End') { e.preventDefault(); galJump(gal.pages.length - 1); return; }
   if (/^(Digit|Numpad)[1-9]$/.test(c)) { e.preventDefault(); galJump(+c.slice(-1) - 1); return; }
   if (['ArrowDown', 'ArrowUp', 'KeyS', 'KeyW'].includes(c)) {
     e.preventDefault(); galScroller().scrollBy({ top: (c === 'ArrowDown' || c === 'KeyS') ? 70 : -70, behavior: 'smooth' }); return;
   }
-  if (['Enter', 'Space', 'NumpadEnter'].includes(c)) { e.preventDefault(); if (!e.repeat) galPrimary(); return; }
+  if (c === 'Tab') {
+    /* (v21.23: the focus stays in the window — Tab past its last button went out to the browser's own bar, and from
+       there no key of the window answered, Esc included) */
+    const fs = [...$('gallery').querySelectorAll('button')].filter(b => b.offsetParent && !b.disabled && getComputedStyle(b).pointerEvents !== 'none');
+    if (!fs.length) return;
+    e.preventDefault();
+    const k = fs.indexOf(document.activeElement);
+    fs[k < 0 ? (e.shiftKey ? fs.length - 1 : 0) : (k + (e.shiftKey ? -1 : 1) + fs.length) % fs.length].focus();
+    return;
+  }
+  if (['Enter', 'Space', 'NumpadEnter'].includes(c)) {
+    /* (a button the keyboard brought the focus to answers its own key — a thumbnail, an arrow, the X; a mouse press
+       never leaves one focused, so for anyone else these keys are NEXT, once) */
+    const f = document.activeElement;
+    if (f && f.tagName === 'BUTTON' && $('gallery').contains(f)) return;
+    e.preventDefault();
+    if (e.repeat) return;
+    /* (v21.23: Space reads on first, a screen at a time, as it does on any page — at the end of the story it is NEXT,
+       or CONTINUE; on v21.22 a Space pressed to read on through the last master's story closed the window. Enter is
+       NEXT at once) */
+    if (c === 'Space') {
+      const st = galScroller();
+      if (st.scrollTop + st.clientHeight < st.scrollHeight - 2) { st.scrollBy({ top: st.clientHeight * 0.85, behavior: 'smooth' }); return; }
+    }
+    galPrimary(); return;
+  }
   if (c === 'Escape') { e.preventDefault(); galClose('esc'); return; }
   if (c === 'KeyE' || c === 'KeyI' || c === 'KeyM' || c === 'KeyF') e.preventDefault();   // the world's keys do nothing under it
 });
@@ -13381,7 +13620,9 @@ window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () =
                  unlockState: () => ({ id: unl.id, state }),
                  chooseState: () => ({ ids: cho.ids, sel: cho.sel, sealing: cho.sealing, state }),        // v17.6
                  galleryState: () => ({ open: gal.open, i: gal.i, n: gal.pages ? gal.pages.length : 0,   // v21.10
-                                        seen: gal.seen ? [...gal.seen] : [], done: gal.done, img: gal.img, state }),
+                                        seen: gal.seen ? [...gal.seen] : [], done: gal.done, img: gal.img, state,
+                                        pull: +galPullNow(performance.now()).toFixed(3), armed: gal.armed,      // v21.23
+                                        locked: performance.now() < gal.lockTill, end: galEndTarget() }),
                  galleryGo: d => galGo(d), galleryClose: how => galClose(how || 'x'),
                  chooseSel: i => chooseSel(i), chooseClose: how => chooseClose(how || 'click'),
                  invMove: (kind, key) => invQuickMove(kind, key),                 // v17.6: the fixed-item check

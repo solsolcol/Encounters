@@ -1909,7 +1909,9 @@ body:not(.finePtr) .choNum{display:none}
   padding:max(10px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));
   background:radial-gradient(ellipse at 50% 46%,rgba(74,48,10,.64) 0%,rgba(11,8,7,.9) 58%,rgba(3,3,5,.97) 100%);
   animation:unFade .45s var(--ease)}
-#gallery.out{opacity:0;transition:opacity .38s ease;pointer-events:none}
+/* (v21.23: the closing window still takes the taps meant for it while it fades — with pointer-events off, the second
+   tap of a double-tap on the X went through to the mute button now under it, and muted the game) */
+#gallery.out{opacity:0;transition:opacity .38s ease}
 body.galleryopen .soundBtn,body.galleryopen #volWrap{display:none}
 body.hasTorch.galleryopen .torchBtn{display:none}
 #galFx{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
@@ -1995,9 +1997,16 @@ body.hasTorch.galleryopen .torchBtn{display:none}
   color:#3a2408;background:linear-gradient(180deg,#f7dc96,#cf9d45);box-shadow:0 0 0 1px rgba(80,48,8,.8),0 6px 16px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,250,220,.8);
   text-shadow:0 1px 0 rgba(255,240,200,.6);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .galPlaque:empty{display:none}
+/* v21.23: the fades over the words only where there IS more (galFadeSync sets fT / fB): above once they have scrolled,
+   below until the end — the old one dimmed the bottom 12 % for good, the last line of every story with it */
+@property --fT{syntax:'<length>';inherits:false;initial-value:0px}
+@property --fB{syntax:'<length>';inherits:false;initial-value:0px}
 .galRight{position:relative;display:flex;flex-direction:column;min-height:0;min-width:0;padding:2px 12px 22px 0;
   overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:rgba(255,204,118,.5) transparent;
-  -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 88%,transparent 100%);mask-image:linear-gradient(180deg,#000 0%,#000 88%,transparent 100%)}
+  --fT:0px;--fB:0px;transition:--fT .3s ease,--fB .3s ease;
+  -webkit-mask-image:linear-gradient(180deg,transparent 0,#000 var(--fT),#000 calc(100% - var(--fB)),transparent 100%);
+          mask-image:linear-gradient(180deg,transparent 0,#000 var(--fT),#000 calc(100% - var(--fB)),transparent 100%)}
+.galRight.fT{--fT:30px} .galRight.fB{--fB:64px}
 .galName{font-family:"Cormorant Garamond",Georgia,serif;font-weight:600;margin:0;font-size:clamp(1.6rem,3.7vw,2.8rem);line-height:1.04;
   background:linear-gradient(100deg,#c98f2c 0%,#ffe6a6 20%,#f0bd56 38%,#fff5d6 50%,#e8b14a 62%,#ffd98a 80%,#b47820 100%);background-size:240% 100%;
   -webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;
@@ -2017,8 +2026,45 @@ body.hasTorch.galleryopen .torchBtn{display:none}
   background:linear-gradient(135deg,#fff3c8,#e3a640);box-shadow:0 0 9px rgba(255,190,90,.85)}
 .galStory{position:relative}
 .galStory p{margin:0 0 .85em;font:400 .96rem/1.68 var(--ui);color:#ddd5c4}
-.galStory p:first-child::first-letter{float:left;font-family:"Cormorant Garamond",Georgia,serif;font-weight:600;font-size:3.3em;line-height:.8;
+.galStory p:first-of-type::first-letter{float:left;font-family:"Cormorant Garamond",Georgia,serif;font-weight:600;font-size:3.3em;line-height:.8;
   margin:.07em .12em 0 0;color:#f4c766;text-shadow:0 0 16px rgba(255,190,90,.55)}
+/* v21.23 · THE END OF A STORY: a gold rule with a lotus diamond, then the way on — the master NEXT would open, or,
+   every page read, CONTINUE (it IS that button, said where the reader's eyes already are). On a desktop the hairline
+   under it fills as the wheel pulls from the end, and the page turns when it is full; the line under that says so. */
+/* v21.23: the small rule before a paragraph that turns the telling (the masters' beliefs, after their lives) */
+.galRule{display:block;position:relative;width:min(150px,42%);height:12px;margin:.15em auto 1.1em;opacity:.9}
+.galRule::before{content:"";position:absolute;left:0;right:0;top:50%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,204,118,.6) 30%,rgba(255,204,118,.6) 70%,transparent)}
+.galRule::after{content:"";position:absolute;left:50%;top:50%;width:7px;height:7px;margin:-3.5px 0 0 -3.5px;transform:rotate(45deg);
+  background:linear-gradient(135deg,#fff3c8,#e3a640);box-shadow:0 0 0 3px #150f09,0 0 9px rgba(255,190,90,.8)}
+.galEnd{display:flex;flex-direction:column;align-items:center;gap:10px;margin:22px 0 8px}
+.galEndOrn{position:relative;width:min(260px,74%);height:14px}
+.galEndOrn::before{content:"";position:absolute;left:0;right:0;top:50%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,204,118,.7) 28%,rgba(255,204,118,.7) 72%,transparent)}
+.galEndOrn::after{content:"";position:absolute;left:50%;top:50%;width:9px;height:9px;margin:-4.5px 0 0 -4.5px;transform:rotate(45deg);
+  background:linear-gradient(135deg,#fff3c8,#e3a640);box-shadow:0 0 0 4px #150f09,0 0 12px rgba(255,190,90,.9)}
+.galEndGo{display:flex;align-items:center;gap:14px;min-width:min(260px,80%);justify-content:space-between;padding:11px 16px 11px 20px;
+  border-radius:3px;cursor:pointer;color:inherit;text-align:left;
+  background:linear-gradient(180deg,rgba(255,190,90,.12),rgba(255,190,90,.03));border:1px solid rgba(255,204,118,.5);
+  transition:background .2s,border-color .2s,transform .2s var(--ease),box-shadow .2s}
+.galEndGo:hover,.galEndGo:focus-visible{background:rgba(255,190,90,.2);border-color:#FFCF6E;transform:translateY(-1px);outline:none;
+  box-shadow:0 0 24px rgba(255,190,90,.35)}
+.galEndT{display:flex;flex-direction:column;gap:4px;min-width:0}
+.galEndK{font:700 .62rem/1 var(--ui);letter-spacing:.28em;text-transform:uppercase;color:var(--sodium)}
+.galEndN{font-family:"Cormorant Garamond",Georgia,serif;font-weight:600;font-size:1.32rem;line-height:1.1;color:#ffe2a0;
+  text-shadow:0 0 12px rgba(255,190,90,.35)}
+.galEndGo svg{width:12px;height:22px;flex:0 0 auto;color:#ffd98a;filter:drop-shadow(0 0 6px rgba(255,190,90,.7))}
+.galPull{display:none;position:relative;width:min(260px,80%);height:2px;border-radius:1px;background:rgba(255,255,255,.08);overflow:hidden}
+.galPull i{position:absolute;inset:0;transform-origin:0 50%;transform:scaleX(0);
+  background:linear-gradient(90deg,#b8791f,#fff1c2);box-shadow:0 0 8px rgba(255,200,100,.9)}
+.galEndHint{display:none;font:500 .72rem/1.2 var(--ui);letter-spacing:.06em;color:#9c8f77;transition:color .2s}
+body.finePtr .galPull,body.finePtr .galEndHint{display:block}
+.galEnd.pulling .galEndHint{color:#e7c98a}
+.galEnd.pulling .galEndGo{border-color:#FFCF6E;box-shadow:0 0 22px rgba(255,190,90,.3)}
+.galEnd.last .galPull,.galEnd.last .galEndHint{display:none}
+.galEnd.last .galEndGo{background:linear-gradient(180deg,#FFD98A,#F2B04E);border-color:#ffe2a0;animation:galPulse 2.2s ease-in-out infinite}
+.galEnd.last .galEndK{color:#6a4510} .galEnd.last .galEndN{color:#1a1206;text-shadow:none}
+.galEnd.last .galEndGo svg{color:#3a2408;filter:none}
 /* the page turns: the portrait sweeps in on a 3D turn from the side it came from, the words rise after it */
 .galPage.turnN .galLeft{animation:galPicN .75s cubic-bezier(.2,1.1,.3,1) both}
 .galPage.turnP .galLeft{animation:galPicP .75s cubic-bezier(.2,1.1,.3,1) both}
@@ -2031,6 +2077,7 @@ body.hasTorch.galleryopen .torchBtn{display:none}
 .galPage[class*="turn"] .galHeadT > :nth-child(3){animation-delay:.14s}
 .galPage[class*="turn"] .galBodyT > :nth-child(1){animation-delay:.21s}
 .galPage[class*="turn"] .galBodyT > :nth-child(2){animation-delay:.3s}
+.galPage[class*="turn"] .galBodyT > :nth-child(3){animation-delay:.38s}
 .galPage[class*="turn"] .galKnown li{animation:galTextIn .55s var(--ease) both;animation-delay:calc(.3s + var(--k,0) * .09s)}
 @keyframes galTextIn{from{opacity:0;transform:translateY(14px)}}
 .galNav{position:absolute;top:50%;width:48px;height:72px;margin-top:-36px;z-index:3;border:0;padding:0;cursor:pointer;background:none;
@@ -2048,6 +2095,13 @@ body.hasTorch.galleryopen .torchBtn{display:none}
   border:2px solid rgba(255,204,118,.32);transition:transform .25s var(--ease),border-color .25s,box-shadow .25s,filter .25s;filter:saturate(.75) brightness(.8)}
 .galThumb canvas{width:100%;height:100%;border-radius:50%;display:block}
 .galThumb.on{transform:scale(1.14);border-color:#FFD98A;filter:none;box-shadow:0 0 0 2px rgba(255,217,138,.32),0 0 22px rgba(255,190,90,.75)}
+/* v21.23: the page being read fills a ring round its own thumbnail (galDwell sets --dw from 0 to 1), and the tick
+   follows it — a page is seen being read */
+.galThumb::before{content:"";position:absolute;inset:-6px;border-radius:50%;pointer-events:none;opacity:0;transition:opacity .25s;
+  background:conic-gradient(#FFE7A8 calc(var(--dw,0) * 360deg),rgba(255,214,140,.14) 0);
+  -webkit-mask:radial-gradient(closest-side,transparent calc(100% - 3px),#000 calc(100% - 2.5px));
+          mask:radial-gradient(closest-side,transparent calc(100% - 3px),#000 calc(100% - 2.5px))}
+.galThumb.dwell::before{opacity:1}
 .galThumb.seen{filter:none}
 .galThumb.seen::after{content:"\2713";position:absolute;right:-5px;bottom:-5px;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;
   font:700 12px/1 var(--ui);color:#140f08;background:#FFCF6E;box-shadow:0 0 10px rgba(255,200,100,.85);animation:galTick .55s cubic-bezier(.2,1.7,.4,1) backwards}
@@ -2079,7 +2133,10 @@ body.hasTorch.galleryopen .torchBtn{display:none}
   .galX{width:34px;height:34px;right:-2px;top:-2px;font-size:15px}
   .galPage{grid-template-columns:minmax(0,46%) minmax(0,1fr);grid-template-rows:auto auto;grid-template-areas:"left head" "body body";
     align-content:start;gap:14px 12px;padding:2px 16px 26px;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
-    -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 91%,transparent 100%);mask-image:linear-gradient(180deg,#000 0%,#000 91%,transparent 100%)}
+    --fT:0px;--fB:0px;transition:transform .25s var(--ease),--fT .3s ease,--fB .3s ease;
+    -webkit-mask-image:linear-gradient(180deg,transparent 0,#000 var(--fT),#000 calc(100% - var(--fB)),transparent 100%);
+            mask-image:linear-gradient(180deg,transparent 0,#000 var(--fT),#000 calc(100% - var(--fB)),transparent 100%)}
+  .galPage.fT{--fT:24px} .galPage.fB{--fB:52px}
   .galRight{display:contents}
   /* (min-height:auto: with the base's 0 the row was sized by the words beside the portrait alone, and the plaque
      under it ran into KNOWN FOR — a scroller's grid rows give an item with min-height 0 no room of its own) */
@@ -2089,6 +2146,7 @@ body.hasTorch.galleryopen .torchBtn{display:none}
   .galPic{flex:none;height:auto;aspect-ratio:.78}
   .galNav{top:calc((100vw - 54px) * .295 + 2px);width:30px;height:50px;margin-top:-25px;opacity:.78} .galNav svg{width:16px;height:30px}
   .galNav.prev{left:-12px} .galNav.next{right:-12px}
+  .galBody.deep .galNav{opacity:0;pointer-events:none}
   .galFrame{padding:6px} .galLiner{padding:4px}
   .galPlaque{font-size:.74rem;padding:4px 8px;white-space:normal;line-height:1.35}
   .galName{font-size:1.38rem}
@@ -2099,9 +2157,10 @@ body.hasTorch.galleryopen .torchBtn{display:none}
   .galKnownT{font-size:.6rem;letter-spacing:.18em}
   .galKnown ul{margin:8px 0 12px;gap:6px} .galKnown li{font-size:.84rem;line-height:1.42;padding-left:18px} .galKnown li::before{width:7px;height:7px;left:3px}
   .galStory p{font-size:.88rem;line-height:1.62}
+  .galEnd{margin:18px 0 4px;gap:8px} .galEndGo{padding:10px 14px 10px 16px} .galEndN{font-size:1.14rem}
   .galFoot{flex-wrap:wrap;gap:8px 10px;margin-top:8px;padding-top:8px}
   .galThumbs{gap:6px}
-  .galThumb{width:34px;height:34px}
+  .galThumb{width:34px;height:34px} .galThumb::before{inset:-4px}
   .galThumb.seen::after{width:15px;height:15px;font-size:9px;right:-4px;bottom:-4px}
   .galProg{order:3;flex:1 1 100%;gap:5px}
   #galProgTxt{font-size:.66rem}
@@ -3035,6 +3094,16 @@ body.hasTorch.galleryopen .torchBtn{display:none}
           <div class="galBodyT">
             <div class="galKnown"><span class="galKnownT" data-t="gallery.known">Known for</span><ul id="galKnown"></ul></div>
             <div class="galStory" id="galStory"></div>
+            <!-- v21.23: the end of the story, and the way on (NEXT's own choice, by name, or CONTINUE) -->
+            <div class="galEnd" id="galEnd">
+              <span class="galEndOrn" aria-hidden="true"></span>
+              <button class="galEndGo" id="galEndGo" type="button">
+                <span class="galEndT"><span class="galEndK" id="galEndK"></span><span class="galEndN" id="galEndN"></span></span>
+                <svg aria-hidden="true"><use href="#gal-chev"/></svg>
+              </button>
+              <span class="galPull" aria-hidden="true"><i id="galPullFill"></i></span>
+              <span class="galEndHint" data-t="gallery.endPull">Scroll on to turn the page</span>
+            </div>
           </div>
         </div>
       </div>

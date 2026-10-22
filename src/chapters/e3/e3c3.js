@@ -4921,7 +4921,10 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
         known: [1, 2, 3].map(n => galW(g.k, 'Known' + n)).filter(Boolean),
         /* v21.22: first why he is legendary (Chad: "they are all legendary in their own rights and the description
            should explain that too"), then his life, then what devotees believe ("note them as popular belief") */
-        story: ['Significance', 'Story1', 'Story2', 'Story3', 'Story4'].map(f => galW(g.k, f)).filter(Boolean),
+        story: [...['Significance', 'Story1', 'Story2', 'Story3'].map(f => galW(g.k, f)),
+                /* (v21.23: and what devotees believe set apart by a small gold rule — the page turns from his life to the
+                   telling of it) */
+                galW(g.k, 'Story4') && { text: galW(g.k, 'Story4'), rule: true }].filter(Boolean),
         images: g.images
       }));
     }
@@ -4951,11 +4954,19 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
     }
     function galleryOpen(reply) {
       if (phase !== 'browse' || looked.has('masters') || galUp || !kit || !kit.gallery) return false;
-      /* his answer as the window opens: said HERE, in play, a beat before the window takes the screen — the chapter's
-         own line queue does not run under the gallery (its clock is play's) */
-      if (reply) sayLine('z3masters', 1, holdFor('z3masters'));
-      const answer = kit.gallery({ pages: galleryPages(), label: W.galLabel, seen: [...galSeen], sounds: GAL_SOUNDS });
+      /* (v21.23: and each page is told to the chapter the moment it counts as read — the reading rides the phase string,
+         and the engine saves the run with it, so a phone that drops the tab mid-gallery keeps what was read) */
+      const answer = kit.gallery({ pages: galleryPages(), label: W.galLabel, seen: [...galSeen], sounds: GAL_SOUNDS,
+                                   onRead: id => { galSeen.add(id); browseMark(); } });
       if (!kit.galleryOpen()) return false;              // refused (another window up, or not in play)
+      /* his answer as the window opens (v21.11) — v21.23: a breath after it, 0.6 s, on the wall clock (the chapter's own
+         stands still under the window). Said in the same instant, his voice ducked the window's opening bell to 40 %
+         (every sound dips under a voice) and it rang half-heard. Never once the window has gone; and booked 0.6 s
+         later than said, so the close's re-basing (by the time the window was up) still ends his line where it ends */
+      if (reply) setTimeout(() => {
+        if (!galUp || !kit.galleryOpen()) return;
+        sayLine('z3masters', 1, () => { holdFor('z3masters')(); speak.until += 0.6; holdTill += 0.6; });
+      }, 600);
       galUp = true;
       const opened = wallNow();
       answer.then(r => {

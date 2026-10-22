@@ -461,6 +461,9 @@ Object.assign(window.__TEXT__, {
   'gallery.next':        'Next',
   'gallery.hint':        'Swipe or tap the arrows to turn the page',
   'gallery.hintKey':     'Use ← → or the arrows to turn the page',
+  // v21.23: the end of each story — the way on, by name, and (on a desktop) what the wheel does there
+  'gallery.endNext':     'Next',
+  'gallery.endPull':     'Scroll on to turn the page',
 
   // --- spoken by screen readers, never seen on screen ----------------------
   'a11y.soundButton':    'Sound on or off',
