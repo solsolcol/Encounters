@@ -52,23 +52,26 @@
     cardTitle: 'The Dance On Buddha Day',
     brief: 'Buddha Day, at the amulet shop you often visit in Singapore. Look around, see the owner at his counter, and join his chanting at the altar.',
     prompt: 'The medium has given his reading, and something roared back at him through you. What do you do with what he said?',
+    /* v21.30 (Chad: "the taoist medium decision options, i think they are not distinct enough to account for various
+       outcomes/learnings etc like in previous chapters"): four different KINDS of answer — hand the question over,
+       certainty against certainty, collect a second answer, ask and keep seeking (docs/V21.30-PLAN.md §3) */
     choices: [
-      { k: 'A', text: 'Accept it: it is a ghost. Do every ritual he says.',
+      { k: 'A', text: 'Ask him to drive it out, and do everything he says.',
         d: { sanity: -9, awareness: 6, wisdom: -12 }, verdict: 'bad',
-        say: 'I took his word, and did everything he said.',
-        teach: 'A reading is one person\'s understanding, through their own training. Taken whole, the first explanation ends the search before it begins.' },
-      { k: 'B', text: 'Tell him he is wrong.',
+        say: 'I handed it all to him... and stopped asking.',
+        teach: 'A sincere reading is still one person\'s reading, through his own training. Take the first explanation whole, and the search ends before it begins.' },
+      { k: 'B', text: 'Tell him he\'s wrong: it is not a ghost.',
         d: { sanity: -18, awareness: -9, wisdom: -27 }, verdict: 'worst', critical: true,
-        say: 'I told him he was wrong.',
-        teach: 'Answering one certainty with another is the same mistake, and provoking what you cannot identify is never safe.' },
-      { k: 'C', text: 'Thank him, leave, and put it out of mind.',
+        say: 'I told him he was wrong. I couldn\'t say what was right.',
+        teach: 'Rejecting what you cannot disprove is the same certainty, turned around. Respect the one who tries to help you, even when you see it differently.' },
+      { k: 'C', text: 'Thank him, then get a second opinion from the shop owner.',
         d: { sanity: 9, awareness: 12, wisdom: 15 }, verdict: 'good',
-        say: 'I thanked him, and tried to forget it.',
-        teach: 'Leaving politely harms no one. But a question put away does not answer itself.' },
-      { k: 'D', text: 'Thank him, hold his reading as one view, and keep seeking the truth.',
+        say: 'I asked for a second opinion, and got a second certainty.',
+        teach: 'A second view is wiser than swallowing the first. But collecting answers is not the same as understanding.' },
+      { k: 'D', text: 'Ask him why it grew angry — then seek the truth for yourself.',
         d: { sanity: 15, awareness: 24, wisdom: 30 }, verdict: 'best',
-        say: 'I thanked him, and kept looking for the truth.',
-        teach: 'Respect the one who reads for you, and hold what he says as one view. The truth is still yours to seek.' }
+        say: 'I asked him honestly, and went to find the truth myself.',
+        teach: 'Respect the one who reads for you, and hold what he says as one view. The truth is still yours to seek, learn and find.' }
     ],
     /* v21.8 (Chad: "The core lesson text is way too long, and why is that written from a first person perspective?
        None of the previous core lessons were ever written like that. It should be a real core lesson."): the case
@@ -151,6 +154,20 @@
       objWear: 'Open your bag and wear the LP Tim Khun Paen',
       objJoin: 'Join the chanting at the altar',
       objChant: 'Chant with them',
+      /* v21.30 · the chant's captions (Chad: "subtitles and translation at the bottom of the screen, to explain to the
+         user how each line is pronounced and what each line means in english ... Use them as is without altering the
+         words"): his chanting sheet's own lines, word for word — the Pali as it is said, then what it means — shown at
+         the bottom of the screen as the monk chants each one (kit.captions) */
+      chant1: 'Imina Sakarena Buddhaṁ Pujaymi',
+      chant1en: 'With this offering, I worship the Buddha.',
+      chant2: 'Imina Sakarena Dhammaṁ Pujaymi.',
+      chant2en: 'With this offering, I worship the Dhamma.',
+      chant3: 'Imina Sakarena Saṅghaṁ Pujaymi.',
+      chant3en: 'With this offering, I worship the Saṅgha.',
+      chant4: 'Arahaṁ sammā-sambuddho bhagavā.',
+      chant4en: 'The Blessed One is Worthy & Rightly Self-awakened.',
+      chant5: 'Buddhaṁ bhagavantaṁ abhivādemi.',
+      chant5en: 'I bow down before the Awakened, Blessed One.',
       objIncense: 'Light incense at the urn',
       objWait: 'Sit and wait for your turn',
       objWatch: 'Wait for your turn',
@@ -267,10 +284,14 @@
     z3shrine: 4.7, as3sit: 3.63, dv3wife: 7.57, md3read1: 7.16, md3drink: 3.32, dv3father: 4.68,
     md3read2: 3.92, md3done: 1.52, as3next: 1.88, z3walk: 4.44, md3ghost: 10.92, md3gasp: 1.39, md3chant: 4.27,
     wf3thanks: 2.74, md3fu: 6.43, fa3thanks: 1.38, z3what: 3.16,   // v21.12: the thanks, the talisman, his answer (md3ghost re-said longer)
-    as3back: 2.51, z3A1: 2.51, md3A1: 2.12, md3A2: 0.57, as3A: 3.87, z3A2: 4.05,
-    z3B1: 2.35, md3B1: 1.18, as3B: 3.27, z3B2: 4.91, z3thank: 1.96, md3C: 2.43,
-    z3C2: 5.96, md3D: 1.23, z3D2: 6.77, z3D3: 4.44, z3close: 8.44, z3next: 3.87,
-    z3A: 2.93, z3B: 1.57, z3C: 2.27, z3D: 3.08
+    z3roar: 4.28,                                                  // v21.30: in the roar film, as the lens circles the Hanuman
+    as3back: 2.51, z3thank: 1.96, z3close: 8.44, z3next: 3.87,
+    /* v21.30: the four endings told whole (masters/v21.30/make.sh) — re-said and new */
+    z3A1: 6.61, md3A1: 4.91, z3A3: 7.47, md3A2: 2.04, as3A: 7.81, z3A2: 15.31, md3A3: 2.59, z3A4: 9.09, z3A5: 7.00,
+    z3B1: 4.75, md3B1: 2.69, md3B2: 3.74, z3B3: 1.07, md3B3: 3.97, as3B: 1.57, z3B2: 5.41, z3B4: 6.27, z3B5: 8.75, z3B6: 6.11,
+    z3C1: 3.87, md3C: 5.07, z3C2: 9.33, z3C3: 2.27, ow3C1: 6.35, z3C4: 4.36, ow3C2: 14.21, z3C5: 12.59, z3C6: 5.04,
+    z3D1: 10.11, md3D: 2.17, md3D2: 9.64, md3D3: 2.12, z3D2: 6.35, z3D3: 11.81, z3D4: 13.64,
+    z3A: 3.55, z3B: 3.71, z3C: 3.79, z3D: 3.55
   };
 
   const hash = (i, s) => { const x = Math.sin(i * 127.1 + s * 311.7) * 43758.5453; return x - Math.floor(x); };
@@ -1886,6 +1907,7 @@
         if (r.bow > 0.001 || r.recoil > 0.001) moving = true;
       }
       if (inB) toolsTick();                       // the sword and the bell, after his take has posed his hands
+      if (inB) talTick(wdt);                      // v21.30: the talisman in the endings, after his hand is posed
       if (inB) kopiTick(now);                     // v21.14: the kopitiam's two, talking across their tables
       if (!inB) { passerTick(wdt); phoneTick(); monkTick(wdt); }
       /* the shadow maps are drawn on demand (v2.x): while someone walks or
@@ -2421,14 +2443,15 @@
         r.yTo = r.yOff = 0; if (r.model && r.baseY !== undefined) r.model.position.y = r.baseY;   // (the walk's drop, undone)
         if (r.acts && r.acts[idle]) r.play(idle, 1, 0, false, park);
       }
+      nextOneShow(false);                                  // (v21.30: ending B's next one gone again, her stool's place the plain stool's)
       asst.look = 0; asst.lookAt = null; asst.nod = 0;
       medium.look = 0; medium.lookAt = null; medium.nod = 0;
       if (medium.acts) { medium.standK = medium.standTo = 0; medium.group.position.z = MED_AT.z; medStand(false, 0); }
-      talismanGiven(false); urnLight(false); roarFx.flash(0); roarFx.hanu(0, MED_AT, MED_AT); roarFx.off();
+      talismanGiven(false); urnLight(false); roarFx.flash(0); roarFx.hanu(0, MED_AT, MED_AT); roarFx.off(); lidSet(false);
       medium.recoil = 0;
       // the endings' things put away: the doorway open, no bus, nothing in his hand, the lanterns still
       entShutterK(0); busK(0); shrLife.gust = 0; starsK(0);
-      for (const o of [cupProp, timHeld]) { o.visible = false; o.userData.warmHeld = false; if (o.parent) o.parent.remove(o); }
+      for (const o of [cupProp]) { o.visible = false; o.userData.warmHeld = false; if (o.parent) o.parent.remove(o); }
       // the kneelers and the two on stools back as the day found them (the film moves and turns them)
       girl.group.position.set(GIRL_AT.x, 0, GIRL_AT.z); girl.group.rotation.y = Math.PI;
       if (girl.acts && girl.acts.kneel) girl.play('kneel', 1, 0);
@@ -2444,6 +2467,12 @@
       passer.group.position.set(-10, 0, PASS.z); passer.group.rotation.y = Math.PI / 2;
       if (passer.acts && passer.acts.Walking) passer.play('Walking', 1, 0);
       clockTo(12, 6);
+      /* v21.30: ending C's next morning undone — the celebration's people and the monk back at the altar — and the
+         endings' talismans put away, the sword and the bell no longer on their way down */
+      for (const r of [girl, manW, auntie, youth]) r.group.visible = true;
+      if (monk.group) monk.group.visible = true;
+      talSet('off'); talAsst.visible = false; toolsFly = null;
+      for (const r of kopiRigs) { r.lookAt = null; r.look = 0; }
     }
     const PASS = { x0: -12.2, x1: 12.2, z: 2.35, v: 1.3, dir: 1 };   // (at 2.9 he walked along the columns' near faces, half of him through each)
     function passerTick(wdt) {
@@ -3079,7 +3108,9 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
           const st = cyl(0.008, 0.008, 0.26, 0.6, 1.18, z * 0.8, matChrome, 4, g); st.rotation.x = z > 0 ? -0.3 : 0.3;
           const mi = new THREE.Mesh(new THREE.CircleGeometry(0.045, 12), matChrome); mi.position.set(0.6, 1.31, z * 0.68); mi.rotation.y = Math.PI / 2; g.add(mi);
         }
-        const lamp = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.06, 14), new THREE.MeshBasicMaterial({ color: 0xd8d8c0 }));
+        /* (the headlamp is OFF, like the tail lamp: an unlit material drew it as a white ball glowing at the kerb,
+           the brightest thing in ending D's walk on a phone — v21.30's photographs. Glass and chrome, catching the street) */
+        const lamp = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.06, 14), new THREE.MeshStandardMaterial({ color: 0xb4b4a6, roughness: 0.22, metalness: 0.55 }));
         lamp.rotation.z = Math.PI / 2; lamp.position.set(0.7, 0.92, 0); g.add(lamp);
         box(0.02, 0.06, 0.14, -0.74, 0.62, 0, new THREE.MeshBasicMaterial({ color: 0x7a0c08 }), g, false);         // the tail lamp (unlit)
         box(0.01, 0.12, 0.2, -0.75, 0.48, 0, new THREE.MeshBasicMaterial({ color: 0xdcd8c8 }), g, false);          // the plate
@@ -3318,8 +3349,10 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
     /* ---- the stools along the left wall for the waiting (his among them),
        and a stack of them in the corner by the door */
     const MYSTOOL = { x: -2.55, z: -4.7 };
+    let nearStool = null;   // (v21.30: the one by the door, which gives way to ending B's next one — F.nextOne)
     for (const [x, z, c] of [[-2.55, -3.7, 0x2a64b4], [MYSTOOL.x, MYSTOOL.z, 0xc8261c], [-2.55, -5.7, 0x2a64b4]]) {
-      plasticStool(shrG, x, z, 0.45, c);
+      const st = plasticStool(shrG, x, z, 0.45, c);
+      if (z === -3.7) nearStool = st;
       if (x !== MYSTOOL.x || z !== MYSTOOL.z) solids.push(hidBox(0.34, 0.9, 0.34, x, 0.45, z, shrG));   // (the two others block: GF-7; his own is the place he sits)
     }
     for (let i = 0; i < 5; i++) { const s = plasticStool(shrG, -3.95, -0.6, 0.45, 0xc8261c); s.position.y = i * 0.07; s.rotation.y = i * 0.05; }
@@ -3493,7 +3526,7 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       if (!shrPeople.visible) return;
       camera.getWorldQuaternion(_cq);
       for (const f of shrLife.flames) { f.core.scale.y = 2.2 * (1 + Math.sin(t * 11 + f.ph) * 0.16 + Math.sin(t * 23 + f.ph) * 0.07); f.glow.quaternion.copy(_cq); }
-      /* the lanterns sway; a gust (ending B: "it heard me") swings them harder and faster, on an accumulated phase so it never jumps */
+      /* the lanterns sway; a gust (the roar; ending D as he names Hanuman) swings them harder and faster, on an accumulated phase so it never jumps */
       const gu = shrLife.gust || 0, gA = 0.018 * (1 + 6 * gu);
       shrLife.swayPh = (shrLife.swayPh || 0) + wdt * (0.9 + 2.4 * gu);
       for (const l of shrLife.lanterns) { if (l.bill) l.halo.quaternion.copy(_cq); if (l.sway) { l.sway.rotation.z = gA * Math.sin(shrLife.swayPh + l.ph); l.sway.rotation.x = 0.5 * gA * gu * Math.sin(shrLife.swayPh * 1.3 + l.ph * 2); } }
@@ -3534,6 +3567,17 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
        the take folds him over for more than half its length (e2c1's v8.0 measure), so it is never played through;
        his own Walking takes him out */
     const father = mkRig('botak', { parent: shrPeople, x: FATHER_AT.x, z: FATHER_AT.z, ry: Math.atan2(MED_AT.x - FATHER_AT.x, MED_AT.z - FATHER_AT.z), height: 1.72, sizeOn: 'Walking', sizeAt: 0.122, idle: 'Chair_Sit_Idle_M', at: 0.06, seated: true, stool: 0x2a64b4, then: stoolStays, standH: 1.72 });
+    /* v21.30 · THE NEXT ONE (ending B, as approved: "he looks back at the lit doorway: inside, the medium is already with
+       someone else, and the assistant calls the next one in"). A woman who came in while he was at the table, waiting on
+       the stool nearest the door: never in play, shown by ending B alone (F.nextOne) and put away by castHome. The shop
+       auntie's file and parked frame, hands in her lap (no new download); placed by her hips over the stool's place,
+       turned to the medium, and the plain stool there gives way to the one mkRig builds under her */
+    const NEXT_AT = { x: LX(-2.55), z: -3.7 };
+    const nextOne = mkRig('sitclap', { parent: shrPeople, x: NEXT_AT.x, z: NEXT_AT.z, ry: Math.atan2(MED_AT.x - NEXT_AT.x, MED_AT.z - NEXT_AT.z),
+      height: 1.22, idle: SIT_W, at: 0.0, sizeAt: 0.15, seated: true, stool: 0x2a64b4,
+      then: (r) => { if (!r.hips) return; r.hips.getWorldPosition(_v); r.group.position.x += NEXT_AT.x - _v.x; r.group.position.z += NEXT_AT.z - _v.z; } });
+    nextOne.group.visible = false;
+    function nextOneShow(on) { nextOne.group.visible = !!on; if (nearStool) nearStool.visible = !on; }
 
     /* THE MEDIUM'S CHAIR, built round his own seated takes (e3c1's v17.1 law:
        the seat is ours, the sitting is the take's): each take's hips measured
@@ -3754,6 +3798,15 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
     const flashQ = new THREE.Mesh(new THREE.PlaneGeometry(6, 6), flashM); flashQ.position.z = -0.5; flashQ.renderOrder = 9; flashQ.visible = false;
     camera.add(flashQ);
     owned.push({ dispose: () => { camera.remove(flashQ); flashQ.geometry.dispose(); flashM.dispose(); } });
+    /* v21.30 · LIGHT THROUGH CLOSED EYES (ending A): an opaque warm sheet over the lens, so that when the scene's black
+       thins a little what shows is a glow and never the room — the roar's additive flash let the medium show through
+       the dark, and the photographs read as eyes half open, against "Close your eyes" */
+    const lidM = new THREE.MeshBasicMaterial({ color: 0xbe4a1c, transparent: true, opacity: 1, depthTest: false, depthWrite: false, fog: false, toneMapped: false });
+    const lidQ = new THREE.Mesh(new THREE.PlaneGeometry(6, 6), lidM); lidQ.position.z = -0.45; lidQ.renderOrder = 10; lidQ.visible = false;
+    camera.add(lidQ);
+    owned.push({ dispose: () => { camera.remove(lidQ); lidQ.geometry.dispose(); lidM.dispose(); } });
+    const LID_RGB = [0xbe / 255, 0x4a / 255, 0x1c / 255];
+    function lidSet(on, b = 1) { lidQ.visible = !!on; if (on) lidM.color.setRGB(LID_RGB[0] * b, LID_RGB[1] * b, LID_RGB[2] * b, THREE.SRGBColorSpace); }
     /* v21.8 · THE LUNGE's LIGHT (Chad: "i want the camera to pan to show the entire panning perspective of the
        hanuman looking like it lunged out towards the medium, with special glowing effects ... This moment needs to
        feel cinematic and powerful and impressive"): a halo that breathes behind the figure's body, embers coming off
@@ -3962,8 +4015,8 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
     /* ---- THE ENDINGS' own things (the scenes direct them through stage.film):
        the entrance bay's shutter, which only ending B brings down; a bus in
        the far lane for ending C; the cup of talisman water put in his hand in
-       A; the LP Tim held up into the lantern light in D; and a gust through
-       the lanterns when "whatever it was" hears him (B) */
+       A; and a gust through the lanterns (D: as he names Hanuman under the
+       lantern, looking at his own hand) */
     const entMat = matShutter.clone(); entMat.map = tex(matShutter.map.clone()); entMat.map.needsUpdate = true; entMat.side = THREE.DoubleSide;
     owned.push({ dispose: () => entMat.dispose() });
     const entShutter = plane(4.0, 2.55, entMat, -2.25, 2.62 - 1.275, 0.01, 0, shrG); entShutter.visible = false;
@@ -4153,21 +4206,106 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       const r = new THREE.Mesh(new THREE.TorusGeometry(0.038, 0.0025, 6, 24), rim); r.rotation.x = Math.PI / 2; r.position.y = 0.058; cupProp.add(r);
       const w = new THREE.Mesh(new THREE.CircleGeometry(0.035, 18), wat); w.rotation.x = -Math.PI / 2; w.position.y = 0.046; cupProp.add(w);
       cupProp.traverse(o => { if (o.geometry) owned.push({ dispose: () => o.geometry.dispose() }); }); }
-    // the LP Tim, held up into the lantern light (D): Chad's model at full detail, as every amulet up close is
-    // (it hangs from his fingertip on a red cord: the cord from the group's origin down, the amulet's top 3 cm under it)
-    const timHeld = new THREE.Group(); timHeld.visible = false;
-    { const cordM = new THREE.MeshStandardMaterial({ color: 0x8a1a12, roughness: 0.9 }); owned.push({ dispose: () => cordM.dispose() });
-      const cord = cyl(0.0011, 0.0011, 0.032, 0, -0.016, 0, cordM, 5, timHeld); owned.push({ dispose: () => cord.geometry.dispose() }); }
-    parseOnce('timkp').then(hd => {
-      if (!alive) return;
-      const m = hd.scene.clone(true); m.scale.setScalar(0.052);
-      m.updateMatrixWorld(true);
-      const bb = new THREE.Box3().setFromObject(m);
-      m.position.set(-(bb.min.x + bb.max.x) / 2, -0.03 - bb.max.y, -(bb.min.z + bb.max.z) / 2);
-      m.traverse(q => { if (q.isMesh) { q.castShadow = false; q.receiveShadow = false; } });
-      timHeld.add(m);
-    }).catch(err => { console.warn('the held LP Tim failed to load', err); ctx.loadFail && ctx.loadFail('timkp', err); });   // (never silent: v14.16)
+    /* (v21.30: the Luang Phu Tim that hung from his fingertip under the lantern in D is gone with that shot — Chad: "the
+       amulet has nothing to do with the trance"; D looks at his own hand there now, ownHand) */
     shrLife.gust = 0;
+
+    /* v21.30 · THE TALISMANS THE ENDINGS GIVE (docs/V21.30-PLAN.md §4: "no practice and no practitioner is ever the
+       villain" — in all four endings the medium is kind, and three of them offer the young man a talisman). The medium
+       takes one off the stack on his table, holds it up as he speaks and lays it at the table's near edge for him (B:
+       refused and left lying there; C, D: taken); the assistant's lies ready at the near edge of his desk (A). Each is a
+       yellow fu on its own plane in World B; the one in his hand is drawn in the hands' pass (talHeld), pinched at its top
+       edge and hanging from his fingertip. talTick moves the world one on wall time toward
+       where its mode puts it, so the mode is the whole state: a scene's steps set it, and every scene's first frame
+       sets 'off' (a skip and a replay find it where they should). */
+    const talMat = new THREE.MeshStandardMaterial({ map: tex(makeTalisman(THREE, cnv, 7)), roughness: 0.85, side: THREE.DoubleSide });
+    const talGeo = new THREE.PlaneGeometry(0.11, 0.3);
+    owned.push({ dispose: () => { talMat.dispose(); talGeo.dispose(); } });
+    const talOut = new THREE.Mesh(talGeo, talMat); talOut.visible = false; talOut.castShadow = false; shrG.add(talOut);
+    const talAsst = new THREE.Mesh(talGeo, talMat); talAsst.visible = false; talAsst.castShadow = false;
+    talAsst.position.set(ASD.x - 0.3, 0.737, ASD.z + 0.04); talAsst.rotation.set(-Math.PI / 2, 0, -Math.PI / 2 + 0.12); shrG.add(talAsst);   // (its top away from him, +x: he reads it from the room side)
+    const TAL_STACK = new THREE.Vector3(MTB.x - 0.5, MTB.top + 0.033, MTB.z - 0.05);
+    const TAL_EDGE = new THREE.Vector3(MTB.x - 0.06, MTB.top + 0.004, MTB.z + MTB.d / 2 - 0.1);
+    const TAL_FLAT = new THREE.Quaternion().setFromEuler(new THREE.Euler(-Math.PI / 2, 0, 0.06));
+    const talHeld = new THREE.Group(); talHeld.visible = false;
+    { const m = new THREE.Mesh(talGeo, talMat); m.scale.setScalar(0.75); m.position.y = -0.112; m.castShadow = false; talHeld.add(m); }   // (its top edge on the group's origin: pinched there)
+    let talMode = 'off', talK = 1;
+    const talFrom = { p: new THREE.Vector3(), q: new THREE.Quaternion() };
+    const _tlP = new THREE.Vector3(), _tlQ = new THREE.Quaternion(), _tlC = new THREE.Vector3(), _tlM = new THREE.Matrix4(), _tlU = new THREE.Vector3(0, 1, 0);
+    function talSet(mode) {
+      if (mode === talMode) return;
+      talFrom.p.copy(talOut.position); talFrom.q.copy(talOut.quaternion);
+      if (talMode === 'off' || talMode === 'taken') { talFrom.p.copy(TAL_STACK); talFrom.q.copy(TAL_FLAT); }
+      talMode = mode; talK = 0;
+      talOut.visible = mode === 'stack' || mode === 'hand' || mode === 'edge';
+    }
+    /* where the mode puts it, in shrG's frame: on the stack; up in the medium's right hand (its foot at his palm, facing
+       the young man); flat at the table's near edge, its top toward the medium */
+    function talTarget(p, q) {
+      if (talMode === 'hand' && medium.handR) {
+        medium.handR.localToWorld(_tlP.copy(palmOf(medium, medium.handR)));
+        _tlP.y += 0.1;
+        camera.getWorldPosition(_tlC);
+        _tlM.lookAt(_tlC, _tlP, _tlU);                 // (+z toward the lens: the drawn face to him)
+        q.setFromRotationMatrix(_tlM);
+        shrG.worldToLocal(p.copy(_tlP));
+        return;
+      }
+      if (talMode === 'edge') { p.copy(TAL_EDGE); q.copy(TAL_FLAT); return; }
+      p.copy(TAL_STACK); q.copy(TAL_FLAT);
+    }
+    function talTick(wdt) {
+      if (!talOut.visible) return;
+      talK = Math.min(1, talK + wdt / (talMode === 'hand' ? 0.45 : 0.6));
+      talTarget(_tlP, _tlQ);
+      const k = smooth(talK);
+      talOut.position.lerpVectors(talFrom.p, _tlP, k);
+      talOut.quaternion.slerpQuaternions(talFrom.q, _tlQ, k);
+    }
+    /* v21.30: the sword and the bell SET DOWN (B, C, D: he sits to talk with the young man) — carried from his hands to
+       their places on the table over 0.8 s of wall time; medStand(false) puts them back in one frame, which is right
+       for a reset and a resume and wrong in front of the lens */
+    let toolsFly = null;
+    function medSitDown(secs = 0.8) {
+      const r = medium; if (!r.acts) return;
+      const items = [];
+      for (const g of [swordG, bellG]) {
+        if (!g || !toolHome.has(g)) continue;
+        const H = toolHome.get(g);
+        if (g.parent !== H.parent) H.parent.attach(g);
+        items.push({ g, p0: g.position.clone(), q0: g.quaternion.clone(), s0: g.scale.x, H, qH: new THREE.Quaternion().setFromEuler(H.rot) });
+      }
+      toolsFly = { t: 0, secs, items };
+      medStanding = false; r.standTo = 0; medPose(MED_SIT, 0.5);
+    }
+    function toolsFlyTick(wdt) {
+      const T = toolsFly; if (!T) return;
+      T.t = Math.min(1, T.t + wdt / T.secs);
+      const k = smooth(T.t);
+      for (const it of T.items) {
+        it.g.position.lerpVectors(it.p0, it.H.pos, k);
+        it.g.quaternion.slerpQuaternions(it.q0, it.qH, k);
+        it.g.scale.setScalar(it.s0 + (1 - it.s0) * k);
+      }
+      if (T.t >= 1) toolsFly = null;
+    }
+    /* v21.30 · THE NEXT MORNING (ending C): the shop put back as an ordinary morning — the owner at his counter, the
+       staff man at his, nobody at the altar (the monk and the celebration's four gone home), the candles out, the radio
+       off (the ending's own music is what plays), the LP Tim's stand empty (it is round his neck), the shop's light, the
+       clock at a quarter past ten. The beds follow the camera into World A by themselves (inShrine). A Retry or a replay
+       (castHome) puts every one of them back. */
+    function shopMorning() {
+      castHome(); worldB(false);
+      for (const r of [girl, manW, auntie, youth]) r.group.visible = false;
+      if (monk.group) monk.group.visible = false;
+      flames.forEach(f => { f.visible = false; }); flamesOn = false;
+      radioOn = false; radioLed.visible = false;
+      lpAmulet.visible = false; lpHalo.visible = false;
+      if (ownerStool) { ownerStool.rotation.z = 0; ownerStool.position.y = 0; }
+      girlPhone.visible = false; danceTo = 0; danceHalt = false; filmG.visible = false;
+      clockTo(10, 15);
+      if (kit) kit.daylight(null, 0);
+    }
 
     /* ================================================== THE FILM'S POCKET
        Context only (Chad: "The opening film should not already have him
@@ -4781,6 +4919,8 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
                                 'galopen', 'galflip', 'galread', 'galdone', 'galclose', 'galbed',
                                 // v21.12: the Hanuman's appearance and its glow (the roar film from play, ST-5's reason)
                                 'hanuappear', 'hanuhold',
+                                // v21.30: his line as the lens circles it
+                                'z3roar',
                                 // v21.13: the places' own noises (the beds are the engine's; these one-shots are played by name)
                                 'mshutter', 'trolley', 'phonering', 'cashdraw', 'bagrustle', 'childpass', 'slipperspass',
                                 'gecko', 'motorbike', 'carpass', 'dogfar', 'kopiclatter', 'tvfar', 'windchime', 'catfar']);
@@ -5224,6 +5364,10 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
        else hears comes up, the hands start to part on their own, and "No...
        not here." follows a quarter of a second after it. */
     const CHANT_BOW = 28.2;                               // mk3chant: "apiwaa-tay-mee" is its last 1.9 s (28.4-30.3, measured): the bow goes down into it
+    /* v21.30 · the five lines' captions, each up while its line is chanted — timed on the take's own phrases (its
+       silences measured at 6.64–7.89, 13.91–15.31, 21.14–22.48 and 25.65–26.73 of its 30.37 s), and counted from the
+       moment the voice starts, on wall time, so a menu opened over the chant cannot put them out of step with it */
+    const CHANT_CAPS = [[0.05, 7.5], [7.75, 14.95], [15.15, 22.1], [22.3, 26.4], [26.55, 30.6]];
     function chantTick() {
       if (phase !== 'chant' || !chant || turning) return;
       if (chant.t0 < 0) {
@@ -5233,6 +5377,7 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
         after(1.1, () => { bowing = { t0: dayClock.t, applied: 0 }; });
         after(8.4, () => queueLine('mk3chant', () => {
           monk.chantT0 = dayClock.t; owner.nod = SECS.mk3chant;
+          if (kit && kit.captions) kit.captions(CHANT_CAPS.map(([at, end], i) => ({ at, end, text: W['chant' + (i + 1)], sub: W['chant' + (i + 1) + 'en'] })));
           after(CHANT_BOW, () => { if (phase === 'chant') bowing = { t0: dayClock.t, applied: 0, once: true }; });
           after(SECS.mk3chant + 0.05, tranceStirs);       // his last word
           after(SECS.mk3chant + 0.15, () => queueLine('z3shift1', () => {
@@ -5740,11 +5885,11 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       if (done) { wife.group.visible = false; father.group.visible = false; talismanGiven(true); }
       return done;
     }
-    /* CF-7: the ash-water cup (ending A) and the held LP Tim (ending D) are drawn in the HANDS' pass, in no scene
+    /* CF-7: the ash-water cup (ending A) and the held talisman (A, C, D) are drawn in the HANDS' pass, in no scene
        until their endings — held hidden in the hands while a warm runs, so their programs are built under a cover and
        not on their first frame (the joss sticks' v15.1 law; the v21.1 review) */
     function warmProps(on) {
-      for (const o of [cupProp, timHeld]) {
+      for (const o of [cupProp, talHeld]) {
         if (on) { if (!o.parent) { jossHeld.add(o); o.visible = false; o.userData.warmHeld = true; } }
         else if (o.userData.warmHeld) { o.userData.warmHeld = false; if (o.parent) o.parent.remove(o); o.visible = false; }
       }
@@ -5995,6 +6140,7 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       zoneTick(zoneB, t);
       jossSmokeTick(t);
       medStandTick(wdt);
+      toolsFlyTick(wdt);                                   // v21.30: the sword and the bell carried down to the table
       shrineTick(wdt, t);
     }
 
@@ -6365,12 +6511,38 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
         SHR_ROOM: { x0: LX(SB.x0), x1: LX(SB.x1), z0: SB.z0, z1: SB.z1, h: SB.H },   // (v21.8: where the roar film's lens may stand)
         rite(on) { rite = !!on; },
         // the endings (CP8)
-        LX, MED_AT, ASST_AT, SHRINE_NIGHT, entShutter: entShutterK, bus: busK, cup: cupProp, tim: timHeld,
+        LX, MED_AT, ASST_AT, SHRINE_NIGHT, entShutter: entShutterK, bus: busK, cup: cupProp,
         DECIDE_AT: { x: TABLE_AT.x, z: TABLE_AT.z + 0.2 }, DECIDE_PITCH: -0.3,   // where afterRoar frames the decision (the roar film ends on it)
         GIRL_AT,
         gust(k) { shrLife.gust = THREE.MathUtils.clamp(k, 0, 1); },
         stars: starsK,
         asstLook(w) { asst.look = w; asst.lookAt = null; },
+        nextOne: nextOneShow, NEXT_AT, lid: lidSet,
+        lookToward(r, p) {        // (a head turns only toward a point within 7 m: aimed 5 m out along its line to p, kopiLook's way)
+          if (!r || !r.head) return;
+          const h = r.head.getWorldPosition(new THREE.Vector3()), d = new THREE.Vector3(p.x - h.x, p.y - h.y, p.z - h.z);
+          r.lookAt = h.add(d.multiplyScalar(5 / Math.max(0.01, d.length()))); r.look = 1;
+        },
+        /* v21.30 · the endings told whole (docs/V21.30-PLAN.md): he sits to talk with the young man (the sword and the
+           bell set down, not snapped), he talks seated, the talismans, the urn's sticks for A's nights, the kopitiam's
+           two looking over (B — a head turns only toward a point within 7 m, so the look is aimed at a point 5 m out
+           along their line to him), the shop the next morning (C) */
+        medSit: medSitDown,
+        medTalk(on) { medPose(on ? MED_READ : MED_SIT, 0.45); },
+        tal: talSet, talAsst(on) { talAsst.visible = !!on; }, talHeld,
+        TAL_EDGE: { x: LX(TAL_EDGE.x), y: TAL_EDGE.y, z: TAL_EDGE.z },
+        TAL_ASST: { x: LX(ASD.x - 0.3), y: 0.737, z: ASD.z + 0.04 }, ASD: { x: LX(ASD.x), z: ASD.z },
+        urnLight, URN: { x: LX(URN.x), z: URN.z }, KOPI: { x: LX(KOPI.x), z: KOPI.z },
+        kopiLook(p) {
+          for (const r of [kopiRigs[1], kopiRigs[2]]) {
+            if (!r || !r.head) continue;
+            if (!p) { r.lookAt = null; r.look = 0.85; continue; }
+            const h = r.head.getWorldPosition(new THREE.Vector3()), d = new THREE.Vector3(p.x - h.x, p.y - h.y, p.z - h.z);
+            r.lookAt = h.add(d.multiplyScalar(5 / Math.max(0.01, d.length()))); r.look = 1;
+          }
+        },
+        talk(r, secs) { talk(r, secs); },
+        shopMorning, RCNT, ALTAR, MSTR, SHOP, DOOR,
         // the opening film (CP9; v21.2: one pocket, Golden Mile Complex): its light, the bus, the man in the corridor
         FM, FILM_MORN, OWN,
         pockets(on) {
@@ -6992,8 +7164,13 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
        roar sound should only play at the very moment the lunge begins"): it comes into view 0.55–ARRIVE, stands there
        glowing ARRIVE–ORB0, the lens goes all the way round it ORB0–ORB1 (the whole circle and on to the lunge's own
        angle), locks onto the lunge's first frame ORB1–L0, and the charge — and the roar — begin at L0. Everything from
-       the charge on keeps its v21.9 distance from it: DT is how much later that now is */
-    const ARRIVE = 2.35, ORB0 = 3.35, ORB1 = 13.35, L0 = 13.95, DT = L0 - 1.4;
+       the charge on keeps its v21.9 distance from it: DT is how much later that now is.
+       v21.30 · THE CIRCLE, QUICKER, AND HIS LINE IN IT (Chad: "the 360 orbit around the hanuman takes way too long,
+       shorten the duration, and speed up the 360 orbit. And during the orbit duration, add a player voiceline saying,
+       'i feel something roaring through me...' then the lunge and roar happens"): the circle is 5.4 s where it was 10 —
+       the same sweep, nearly twice as fast at its even pace — and "I feel something... roaring through me..." (z3roar,
+       4.28 s) is said inside it, ending a second before the lunge; everything from the charge on is 4.6 s earlier */
+    const ARRIVE = 2.35, ORB0 = 3.35, ORB1 = 8.75, L0 = 9.35, DT = L0 - 1.4;
     const LAND = 2.62 + DT, STAMP = 2.68 + DT;     // it lands; the stamp — its roar's weight — goes out of it
     const F0 = at(A0, 0, 0), F1 = at(A1, 0, 0);
     const CHEST = at(A1 + 0.12, 0, 1.25);           // where the ring goes out of it: its chest, reared
@@ -7129,8 +7306,9 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
     const orbYs = sm1(sm1(orbY, a => Math.max(...a)), a => a.reduce((x, y) => x + y, 0) / a.length);
     const orbAt = (p) => { const f = cl01(p) * ORB_N, i = Math.min(ORB_N - 1, Math.floor(f)), w = f - i;
       return lensAt(AL0 + SWEEP * cl01(p), orbRs[i] + (orbRs[i + 1] - orbRs[i]) * w, orbYs[i] + (orbYs[i + 1] - orbYs[i]) * w); };
-    /* the speed: gathering over its first 1.6 s, the circle at an even pace, settling over its last 2.2 s */
-    const ORB_T = ORB1 - ORB0, TA = 1.6, TD = 2.2, VMAX = 1 / (ORB_T - (TA + TD) / 2);
+    /* the speed: gathering over its first 1.0 s, the circle at an even pace, settling over its last 1.4 s (v21.30: 1.6
+       and 2.2 of a ten-second circle) */
+    const ORB_T = ORB1 - ORB0, TA = 1.0, TD = 1.4, VMAX = 1 / (ORB_T - (TA + TD) / 2);
     const orbP = (t) => { const u = Math.max(0, Math.min(ORB_T, t - ORB0));
       if (u < TA) return 0.5 * VMAX * u * u / TA;
       if (u < ORB_T - TD) return VMAX * (TA / 2 + (u - TA));
@@ -7167,6 +7345,9 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
        looking at its core, and on to the lunge's own angle; then it settles onto the lunge's first frame (C0, T0) */
     tr(ORB0, ORB1, (k, t) => put(orbAt(orbP(t)), T0), rawK);
     tr(ORB1, L0, (k) => put(mix(orbAt(1), C0, sm(k)), T0), rawK);
+    /* v21.30: his line, inside the circle — the hum under it ducks while he speaks (every voice does that) and comes
+       back for the second before the lunge takes it */
+    sfx(ORB0 + 0.5, 'z3roar');                         // 4.28 s → 8.13; the lunge's rush at 9.25
     tr(L0, LAND, (k) => {
       const q = gather(k), L = lungeAt(q);
       R.hanu(1, P, E, L.push, L.lift, L.tilt);
@@ -7257,15 +7438,20 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
   }
 
   /* ============================================================ THE ENDINGS
-     Each begins where the roar left him: standing before the medium's table,
-     the medium on his feet with the sword and the bell, the rites' drum going.
-     Each is a different answer to the same certainty: A takes the remedy, and
-     it does not end; B answers certainty with certainty and is thrown out into
-     the lorong; C thanks him and goes out into an ordinary night; D thanks him
-     and goes out to find the truth himself. All four close on "After that
-     night..." inside the scene and the last line under the held picture (e3c2's
-     v19.2 shape: the image holds while the line and the music go down
-     together), and the outcome card lies over the scene's own last picture. */
+     v21.30 (Chad: "the taoist medium should not react so aggressively and ask customers to get out even if the
+     customer dont agree with the medium, this is absolutely wrong from a spiritual educational perspective ... All
+     the outcome cutscenes are too simple, short, some have awkward silence or gaps where nothing is said, there is no
+     proper narrative for each"): written again line by line (docs/V21.30-PLAN.md §4) to two standing rules — no
+     practice and no practitioner is ever the villain, and an outcome scene is a whole story. Each begins where the
+     roar left him: standing before the medium's table, the medium on his feet with the sword and the bell, the rites'
+     drum going. Each is a different KIND of answer: A hands the question over (the rite, the cup, seven nights, and
+     it does not stop); B answers certainty with certainty (the medium unoffended, a talisman offered and refused, the
+     door left open, and nothing to put in its place); C collects a second answer (the shop owner the next morning,
+     just as kind and just as sure); D asks, and is answered honestly (one view — the truth is his to seek). The
+     medium is calm, sincere and kind in all four: nobody raises a voice at him and nobody shows him the door. No
+     stretch passes in silence: a walk is spoken over, a pause is held by a sound with a reason. All four close on
+     the bridge to chapter 4 under the held picture (e3c2's v19.2 shape: the image holds while the line and the music
+     go down together), and the outcome card lies over the scene's own last picture. */
   const P0 = (s) => ({ x: s.yawPos.x, y: s.yawPos.y, z: s.yawPos.z });
   const sm = (x) => x * x * (3 - 2 * x), cl01 = (x) => Math.max(0, Math.min(1, x));
 
@@ -7346,251 +7532,31 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
   const outRoute = (F, p0, last) => [{ x: p0.x, z: p0.z }, { x: F.LX(-1.0), z: -4.4 }, { x: F.LX(-2.3), z: -2.7 }, { x: F.LX(-2.4), z: -0.9 },
     { x: F.LX(-2.35), z: 0.5 }, { x: F.LX(last.x), z: last.z }];
 
-  /* A · ACCEPT IT, DO EVERY RITUAL (bad) — "Then please... drive it out." He
-     kneels and shuts his eyes; in the dark the bell and the sword go round
-     him, the incantation, the paper burnt and stirred into water; he drinks
-     it; the assistant books him seven nights of the same; and outside under
-     the lanterns his hand begins to lift on its own. */
-  function scAccept(c, s, api) {
-    const { sfx, tr, step, fade, camTo, yawTo, pitchTo, faceFrom, smoothK, rawK, stage, duck, handsRoot } = api;
-    const F = stage.film, M = F.shrineCast.medium, A = F.shrineCast.asst, E = F.MED_EYE, p0 = P0(s);
-    const toMed = faceFrom(p0.x, p0.z, E.x, E.z);
-    step(0, () => { M.look = 1; M.lookAt = null; F.medPose(F.MED_RITE, 0.5); });
-    yawTo(0, 0.8, s.yawRot, toMed, smoothK);
-    pitchTo(0, 0.8, s.pitchX, 0.06, smoothK);
-    // the wai, and his plea
-    wai(api, 0.2, 2.2);
-    pitchTo(0.9, 1.5, 0.06, -0.36, smoothK); pitchTo(1.8, 2.5, -0.36, 0.06, smoothK);
-    sfx(0.6, 'z3A1');                                  // 2.51 → 3.11
-    // "Kneel. Close your eyes." — he goes down on his knees before the table
-    sfx(3.4, 'md3A1');                                 // 2.12 → 5.52
-    step(3.4, () => { M.nod = 1.8; });
-    const stand = { x: p0.x, y: 1.62, z: p0.z }, knee = { x: p0.x, y: 1.0, z: p0.z - 0.1 };
-    camTo(4.4, 5.4, stand, knee, smoothK);
-    pitchTo(4.4, 5.4, 0.06, 0.34, smoothK);           // up at him over the table's edge
-    sfx(5.0, 'kneethud', 0.6); sfx(5.05, 'matkneel3', 0.5);
-    // his eyes close; the rites go round him in the dark
-    fade(5.8, 6.6, 0, 0.985);
-    tr(5.8, 6.6, (k) => { duck('ritual3', 1 - 0.55 * k); }, rawK);
-    sfx(6.8, 'taobell', 0.85);
-    sfx(7.6, 'swordswish', 0.8);
-    sfx(8.2, 'swordswish', 0.7);
-    sfx(8.7, 'taobell', 0.7);
-    sfx(8.9, 'md3chant');                              // 4.27 → 13.17 (v21.4: the longer take started on the sword; v21.5: the whispered one on the second; v21.6: without its shout, after the bell — ending where it always did)
-    sfx(10.7, 'taobell', 0.6);
-    sfx(13.3, 'ashwater', 0.8);                        // the paper burnt and the ash stirred into the water (2.03 s)
-    // his eyes open on the cup brought to his lips: "Drink." (held in the hands' pass, the hands below the frame)
-    step(15.2, () => { api.armR.visible = false; F.cup.visible = true; F.cup.scale.setScalar(0.72); handsRoot.add(F.cup); });
-    fade(15.3, 16.0, 0.985, 0);
-    tr(15.2, 20.2, (k, t) => {
-      const up = sm(cl01((t - 15.4) / 0.9)), tip = sm(cl01((t - 17.0) / 0.7)) * (1 - sm(cl01((t - 18.6) / 0.6))), down = sm(cl01((t - 19.2) / 0.8));
-      /* (at 0.24 m it filled the frame like a bucket; at -0.16 / -0.33 it sat on the frame's bottom edge — 26° under the middle of
-         a 26° half-view — and the tip carried the drink itself out of frame: it rests at 20° under the middle now, and the tip
-         brings it up and in toward the lips, still at 19°) */
-      F.cup.position.set(0.015, -0.36 + 0.24 * up - 0.34 * down + 0.04 * tip, -0.33 + 0.1 * tip);
-      F.cup.rotation.set(0.12 + 0.9 * tip, 0, 0);
-    }, rawK);
-    pitchTo(15.2, 16.4, 0.34, 0.1, smoothK);
-    sfx(16.2, 'md3A2');                                // 0.57 → 16.77
-    sfx(17.4, 'drinkgulp', 0.8);                       // 1.58 s
-    step(20.2, () => { F.cup.visible = false; if (F.cup.parent) F.cup.parent.remove(F.cup); api.armR.visible = true; });
-    // he gets up; the assistant has his list ready — "Come back seven nights."
-    camTo(19.6, 20.6, knee, stand, smoothK);
-    const toAsst = faceFrom(p0.x, p0.z, F.ASST_AT.x, F.ASST_AT.z);
-    yawTo(20.2, 21.2, toMed, toAsst, smoothK);
-    pitchTo(20.2, 21.2, 0.1, -0.12, smoothK);
-    step(20.4, () => { A.look = 1; A.lookAt = null; A.nod = 4.0; });
-    sfx(21.0, 'as3A');                                 // 3.87 → 24.87
-    // out under the lanterns: the black takes him through the door
-    fade(25.0, 25.6, 0, 1);
-    tr(25.0, 25.6, (k) => { duck('ritual3', 0.45 * (1 - k)); }, rawK);
-    const out = { x: F.LX(-3.15), y: 1.62, z: 1.45 }, east = faceFrom(out.x, out.z, F.LX(7), 1.6);
-    camTo(25.65, 25.7, out, out, rawK);
-    yawTo(25.65, 25.7, east, east, rawK);
-    pitchTo(25.65, 25.7, -0.2, -0.2, rawK);
-    fade(25.8, 26.7, 1, 0);
-    // his right hand: it starts to lift into the dance on its own, is pulled down, and starts again
-    tr(26.0, 34.0, (k, t) => {
-      const u = t - 26.0, lift = 0.62 * Math.max(0, Math.sin(u * 0.85)) ** 1.4 + 0.035 * Math.sin(u * 7.3);
-      api.handsPose(cl01(lift), u * 0.8, { from: 'rest', relax: 0.8 });
-      api.armR.position.y -= 0.17 * (1 - sm(cl01((lift - 0.04) / 0.2)));   // up from below the frame, where the bow left it, and back down
-    }, rawK);
-    sfx(27.0, 'presencein', 0.3);
-    sfx(27.6, 'z3A2');                                 // 4.05 → 31.65
-    // and up, to the lanterns and the night over the lorong
-    sfx(31.8, 'e3close3', 0.9);
-    sfx(32.4, 'z3close');                              // 8.44 → 40.84
-    /* (along the five-foot way, a little toward the road: the far lantern stays in the left of a phone's frame and
-       the night opens on the right. Toward (LX 2, z 6) it swung across the road and held the last nine seconds, and
-       the card, on three flat shophouse fronts, the lanterns gone — the v21.1 photographs) */
-    yawTo(33.0, 39.5, east, east - 0.16, smoothK);
-    pitchTo(33.0, 39.5, -0.2, 0.2, smoothK);
-    tr(34.0, 34.6, (k) => { api.armR.position.y -= 0.3 * sm(k); }, rawK);   // the hand down out of the frame, not gone in one frame mid-lift
-    step(34.6, () => { handsRoot.visible = false; });
-    ending(c, api, 41.0);
-  }
-
-  /* B · TELL HIM HE IS WRONG (worst) — certainty against certainty. The drum
-     stops; he looks at him; "What did you say?" — and it surges again: the
-     roar out of him, the gold, the stools going over; the assistant throws
-     him out, and the shutter comes down on the light. In the lorong the
-     lanterns swing in no wind: whatever it was, it heard him. */
-  function scWrong(c, s, api) {
-    const { sfx, tr, step, camTo, yawTo, pitchTo, faceFrom, smoothK, rawK, stage, duck, camera, handsRoot } = api;
-    const F = stage.film, M = F.shrineCast.medium, A = F.shrineCast.asst, E = F.MED_EYE, R = F.roar, p0 = P0(s);
-    const toMed = faceFrom(p0.x, p0.z, E.x, E.z);
-    step(0, () => { M.look = 0.6; M.lookAt = null; });
-    yawTo(0, 0.8, s.yawRot, toMed, smoothK);
-    pitchTo(0, 0.8, s.pitchX, 0.08, smoothK);
-    sfx(0.4, 'z3B1');                                  // 2.35 → 2.75
-    // the drum stops; the medium stops; he looks at him
-    tr(2.7, 3.3, (k) => { duck('ritual3', 1 - k); }, rawK);
-    step(2.9, () => { M.look = 1; F.medPose(F.MED_ANGRY, 0.7); A.look = 1; A.lookAt = null; });
-    sfx(3.5, 'md3B1');                                 // 1.18 → 4.68
-    // and it surges again: the roar out of him, the gold, the lens thrown at the medium
-    sfx(5.0, 'hanumanroar', 1);
-    sfx(5.05, 'goldsting', 0.8);
-    tr(5.0, 5.12, (k) => R.flash(k), rawK);
-    tr(5.12, 6.2, (k) => R.flash(1 - k), smoothK);
-    const stand = { x: p0.x, y: 1.62, z: p0.z };
-    const lunge = { x: p0.x + (E.x - p0.x) * 0.22, y: 1.7, z: p0.z + (E.z - p0.z) * 0.22 };
-    camTo(5.0, 5.25, stand, lunge, smoothK);
-    tr(5.1, 5.8, (k) => { M.group.position.z = F.MED_AT.z + 0.42 - 0.24 * sm(k); }, rawK);   // the medium falls back a step
-    sfx(5.4, 'stoolfall', 0.8);
-    sfx(5.7, 'stoolscrape', 0.75);
-    tr(5.0, 11.0, (k, t) => { const a = Math.max(0, 1 - (t - 5.0) / 2.4) + 0.4 * Math.max(0, Math.sin((t - 6.6) * 2.2)) * cl01((10.4 - t) / 1.0) * (t > 6.6 ? 1 : 0);
-      camera.rotation.z = a * 0.03 * Math.sin(t * 27); }, rawK);
-    // "Go! Get out!" — he is turned round and thrown out of the door, stumbling
-    sfx(6.9, 'as3B');                                  // 3.27 → 10.17 (at 6.2 it was said into the roar's loudest half-second, 6.0–6.5)
-    /* (he stops further out and to the right of the door: at (−2.0, 1.9) the doorway lantern hung 0.89 m in front
-       of him, and through the whole shutter beat its gold ring and its tassel stood across the top-left of a phone's
-       frame — "a large red pipe" (the v21.1 photographs). From here it is 28° off his line, out of a phone's frame,
-       and whole on a desktop's; he turns up onto it later as before) */
-    const BST = { x: -1.3, z: 2.15 };
-    const W = walkRoute(api, [{ x: lunge.x, z: lunge.z }, ...outRoute(F, p0, BST).slice(1)], 6.7, 1.9, 1.2);
-    turnOnto(api, 6.2, 6.75, toMed, W.headAt0);
-    pitchTo(6.2, 6.9, 0.08, -0.12, smoothK);
-    for (const [t0, d] of [[7.3, 0.12], [8.6, 0.16], [9.5, 0.1]]) { pitchTo(t0, t0 + 0.14, -0.12, -0.12 - d, rawK); pitchTo(t0 + 0.14, t0 + 0.5, -0.12 - d, -0.12, smoothK); }
-    step(6.6, () => { handsRoot.visible = false; });
-    // he turns back: the shutter comes down on the light
-    const face = faceFrom(F.LX(BST.x), BST.z, F.LX(-2.25), -2.0);
-    yawTo(W.end - 0.1, W.end + 1.0, W.head, face, smoothK);
-    pitchTo(W.end - 0.1, W.end + 1.0, -0.12, 0.08, smoothK);
-    const T1 = W.end + 0.9;
-    sfx(T1, 'shutter', 0.95);                          // 2.9 s
-    tr(T1 + 0.05, T1 + 2.6, (k) => { F.entShutter(k); duck('ritual3', 0); duck('shrineamb', 1 - 0.7 * k); }, rawK);
-    // "...and whatever it was, it heard me." — the lanterns swing in no wind
-    sfx(T1 + 3.0, 'z3B2');                             // 4.91 → T1 + 7.91
-    sfx(T1 + 4.8, 'presencein', 0.35);
-    tr(T1 + 4.6, T1 + 5.8, (k) => F.gust(sm(k)), rawK);
-    tr(T1 + 5.8, T1 + 9.0, (k) => F.gust(1 - sm(k)), rawK);
-    /* up AND round onto the lantern over the door, turned to its bearing. From BST it hangs 1.45 m off and spans
-       10°–39° of elevation with its tassel, and the letterboxed frame is ±29.5°: at 0.42 (24°) it swings whole, the
-       string to the ceiling above it, clear of both bars on a phone. (From v21.0's stand, 0.89 m under it, it spanned
-       16°–60° and needed 0.62 — and stood across the top of the shutter shot before it.) */
-    const lant = faceFrom(F.LX(BST.x), BST.z, F.LX(-2.25), 1.05);
-    yawTo(T1 + 4.6, T1 + 6.0, face, lant, smoothK);
-    pitchTo(T1 + 4.6, T1 + 6.0, 0.08, 0.42, smoothK);
-    // and away, down the lorong under the sodium lamp
-    sfx(T1 + 8.2, 'e3close3', 0.9);
-    sfx(T1 + 8.6, 'z3close');                          // 8.44 → T1 + 17.04
-    const street = faceFrom(F.LX(BST.x), BST.z, F.LX(6.4), 6.0);
-    yawTo(T1 + 9.0, T1 + 15.5, lant, street, smoothK);
-    pitchTo(T1 + 9.0, T1 + 15.5, 0.42, 0.16, smoothK);
-    ending(c, api, T1 + 17.1);
-  }
-
-  /* C · THANK HIM, LEAVE, AND PUT IT OUT OF MIND (good) — a polite wai;
-     "Mm. Go home. Rest."; out through the room into an ordinary night: the
-     coffee shop's lights across the road, a bus going past between. */
-  function scLeave(c, s, api) {
-    const { sfx, tr, step, yawTo, pitchTo, faceFrom, smoothK, rawK, stage, duck, handsRoot } = api;
-    const F = stage.film, M = F.shrineCast.medium, E = F.MED_EYE, p0 = P0(s);
-    const toMed = faceFrom(p0.x, p0.z, E.x, E.z);
-    step(0, () => { M.look = 1; M.lookAt = null; });
-    yawTo(0, 0.8, s.yawRot, toMed, smoothK);
-    pitchTo(0, 0.8, s.pitchX, 0.06, smoothK);
-    wai(api, 0.2, 2.4);
-    pitchTo(0.9, 1.5, 0.06, -0.36, smoothK); pitchTo(1.9, 2.6, -0.36, 0.06, smoothK);
-    sfx(0.7, 'z3thank');                               // 1.96 → 2.66
-    step(2.9, () => { M.nod = 2.4; });
-    sfx(3.0, 'md3C');                                  // 2.43 → 5.43
-    // out: through the room, through the door, to the kerb
-    const kerb = { x: -2.1, z: 1.95 }, route = outRoute(F, p0, kerb);
-    const W = walkRoute(api, route, 6.0, 1.05);
-    turnOnto(api, 5.3, 6.1, toMed, W.headAt0);
-    pitchTo(5.3, 6.1, 0.06, -0.05, smoothK);
-    step(5.6, () => { handsRoot.visible = false; });
-    tr(6.0, W.end, (k) => { duck('ritual3', 1 - 0.75 * k); duck('shrineamb', 1 - 0.5 * k); }, rawK);
-    // the coffee shop across the road (its lit bay on the far facade), and the bus between
-    const kopi = { x: F.LX(-15), z: 17.8 };             // (v21.8: its open front, 1.4 m further back with the far row)
-    const toKopi = faceFrom(F.LX(kerb.x), kerb.z, kopi.x, kopi.z);
-    yawTo(W.end - 0.3, W.end + 1.4, W.head, toKopi, smoothK);
-    pitchTo(W.end - 0.3, W.end + 1.4, -0.05, 0.1, smoothK);
-    const Tb = W.end + 0.9;
-    sfx(Tb, 'buspass', 0.9);                           // 4.54 s
-    tr(Tb - 0.85, Tb + 8.5, (k) => F.bus(k), rawK);      // (13.9 m/s; past the kerb's line at Tb + 2.9, as it always was)
-    sfx(Tb + 1.4, 'z3C2');                             // 5.96 → Tb + 7.36
-    // he watches it go, and the night goes on
-    /* (he stands on the line of the five-foot way's pillars, z 2.02, and the one at x −4.5 is 2.4 m along it: looking
-       toward (−24, 9) put its face in the right third of a phone's frame for the rest of the scene — toward (−24, 14)
-       its edge is 23° off the middle, outside a phone's 18.6°) */
-    yawTo(Tb + 3.2, Tb + 8.0, toKopi, faceFrom(F.LX(kerb.x), kerb.z, F.LX(-24), 14.0), smoothK);
-    sfx(Tb + 7.6, 'e3close3', 0.9);
-    sfx(Tb + 8.0, 'z3close');                          // 8.44 → Tb + 16.44
-    pitchTo(Tb + 8.4, Tb + 15.5, 0.1, 0.24, smoothK);
-    ending(c, api, Tb + 16.5);
-  }
-
-  /* D · THANK HIM, HOLD HIS READING AS ONE VIEW, KEEP SEEKING (best) — a
-     wai; "Remember what I told you."; out under the lanterns, where his hand
-     finds the LP Tim and holds it up into their light; then out to the kerb,
-     and up at the night: "If I wanted the truth... I would have to go and
-     find it myself." */
-  function scSeek(c, s, api) {
-    const { sfx, tr, step, camTo, yawTo, pitchTo, faceFrom, smoothK, rawK, stage, duck, handsRoot, camera } = api;
-    const F = stage.film, M = F.shrineCast.medium, E = F.MED_EYE, p0 = P0(s);
-    const toMed = faceFrom(p0.x, p0.z, E.x, E.z);
-    step(0, () => { M.look = 1; M.lookAt = null; });
-    yawTo(0, 0.8, s.yawRot, toMed, smoothK);
-    pitchTo(0, 0.8, s.pitchX, 0.06, smoothK);
-    wai(api, 0.2, 2.4);
-    pitchTo(0.9, 1.5, 0.06, -0.36, smoothK); pitchTo(1.9, 2.6, -0.36, 0.06, smoothK);
-    sfx(0.7, 'z3thank');                               // 1.96 → 2.66
-    step(2.9, () => { M.nod = 1.4; });
-    sfx(3.0, 'md3D');                                  // 1.23 → 4.23
-    // out, to stand under the lantern over the door
-    const lan = { x: -2.3, z: 1.3 }, route = outRoute(F, p0, lan);
-    const W = walkRoute(api, route, 4.8, 1.05);
-    turnOnto(api, 4.3, 5.0, toMed, W.headAt0);
-    pitchTo(4.3, 5.0, 0.06, -0.05, smoothK);
-    tr(4.8, W.end, (k) => { duck('ritual3', 1 - 0.75 * k); duck('shrineamb', 1 - 0.5 * k); }, rawK);
-    /* (toward the kopitiam's lit bay across the road, x −15: the LP Tim is held up against its warm light, as this
-       ending always meant — straight across, it hung against two grey shutters and the black road; the v21.1
-       photographs) */
-    const Ls = { x: F.LX(lan.x), z: lan.z }, outward = faceFrom(Ls.x, Ls.z, F.LX(-15), 18.0);   // (v21.8: the kopitiam's front, with the far row)
-    yawTo(W.end - 0.3, W.end + 0.9, W.head, outward, smoothK);
-    // his hand finds the LP Tim and holds it up into the lantern's light: it hangs from his fingers on its cord
-    const T2 = W.end + 0.6;
+  /* v21.30: a thing IN HIS HAND, held up to look at — the right hand rises from below the frame with the thing
+     hanging from its index fingertip (a talisman pinched at its top edge: the one he takes in A, C and D, and the
+     medium's again in the shop in C), and goes back down. (The fingertip is the "_end" LEAF of the index finger: glTF
+     makes a node a Bone only when a skin lists it as a joint, and a leaf no vertex is weighted to is a plain Object3D.)
+     On a narrow screen the arm slides right until the fingertip stands a little left of the middle, never left (the
+     v21.0 photographs: a phone laid the hand further in and what it held hung off its left edge). Every time inside the
+     track is clamped to its end: a passed track is re-applied with the RAW clock (cineSeek), and the hand must stay
+     down after. Returns the end. */
+  function holdUp(api, obj, T2, dur, o = {}) {
+    const { tr, step, camera, rawK } = api;
+    const rise = o.rise || 1.1, fall = o.fall || 1.0, lift = o.lift === undefined ? 0.35 : o.lift, sway = o.sway === undefined ? 0.22 : o.sway;
     let pend = null, bone = null;
-    /* (the fingertip is the "_end" LEAF of the index finger: glTF makes a node a Bone only when a skin lists it as a
-       joint, and a leaf no vertex is weighted to is a plain Object3D — the first build tested isBone and never found it) */
     step(T2, () => {
       const hand = api.rightHand && api.rightHand();
-      if (hand) hand.traverse(o => { if (!bone && /f_index03R?_end$|f_index\.?03\.?R_end$/i.test(o.name)) bone = o; });
-      pend = new (F.tim.constructor)();
-      if (bone) { bone.add(pend); pend.add(F.tim); F.tim.visible = true; }
+      bone = null;
+      if (hand) hand.traverse(q => { if (!bone && /f_index03R?_end$|f_index\.?03\.?R_end$/i.test(q.name)) bone = q; });
+      pend = new (obj.constructor)();
+      if (bone) { bone.add(pend); pend.add(obj); obj.visible = true; }
     });
     const Q = camera.quaternion.constructor, V3 = camera.position.constructor, AX = new V3(1, 0, 0), AY = new V3(0, 1, 0);
     const _pq = new Q(), _hq = new Q(), _sq = new Q(), _ps = new V3(), _tp = new V3(), _dv = new V3(), _aq = new Q();
-    tr(T2, T2 + 9.0, (k, t) => {
-      const u = t - T2, up = sm(cl01(u / 1.1)) * (1 - sm(cl01((u - 7.6) / 1.0)));
+    tr(T2, T2 + dur, (k, t) => {
+      const u = Math.min(t, T2 + dur) - T2, up = sm(cl01(u / rise)) * (1 - sm(cl01((u - (dur - fall)) / fall)));
       api.handsPose(0, 0, { from: 'rest', relax: 0.15 });
-      api.armR.position.y += -0.2 + 0.35 * up; api.armR.position.x -= 0.05 * up; api.armR.position.z += 0.11 * up;
-      /* on a narrow screen layoutHands lays the hand further in (so the whole hand stays on it), and that carried the
-         fingertip — and the LP Tim on it — off the LEFT edge: a phone saw the hand and no pendant (photographed). The
-         arm slides right until the fingertip stands a little left of the middle; never left, so a desktop's hand is
-         exactly where it was. (The hands' scene is the lens's frame: the viewmodel camera sits at its origin.) */
+      api.armR.position.y += -0.2 + lift * up; api.armR.position.x -= 0.05 * up; api.armR.position.z += 0.11 * up;
       if (bone && api.vmCam && up > 0) {
         api.armR.updateMatrixWorld(true);
         bone.getWorldPosition(_tp);
@@ -7598,35 +7564,585 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
         const need = Math.max(0, -0.1 * hw - _tp.x) * up;
         if (need > 0) { api.armR.parent.getWorldQuaternion(_aq); api.armR.position.add(_dv.set(need, 0, 0).applyQuaternion(_aq.invert())); }
       }
-      if (api.vmFire) api.vmFire.intensity = 1.1 * up * (0.92 + 0.08 * Math.sin(u * 7.3));   // the lantern over the door, warm on it
+      if (o.light && api.vmFire) api.vmFire.intensity = 1.1 * up * (0.92 + 0.08 * Math.sin(u * 7.3));   // the lantern over the door, warm on it
       if (pend && pend.parent) {
-        /* the pendant HANGS: the hands are drawn in the viewmodel's own scene, which is the lens's frame, so the
-           world's up there is the camera's up tipped back by the pitch; it faces the lens (the model's front is
-           its +z, the shop case's measure) and turns a little on its cord */
+        /* it HANGS: the hands are drawn in the viewmodel's own scene, which is the lens's frame, so the world's up
+           there is the camera's up tipped back by the pitch; it faces the lens and turns a little as it hangs */
         pend.parent.updateWorldMatrix(true, false);
         pend.parent.getWorldQuaternion(_pq);
-        _hq.setFromAxisAngle(AX, -api.pitch.rotation.x).multiply(_sq.setFromAxisAngle(AY, 0.22 * Math.sin(u * 0.8)));
+        _hq.setFromAxisAngle(AX, -api.pitch.rotation.x).multiply(_sq.setFromAxisAngle(AY, sway * Math.sin(u * 0.8)));
         pend.quaternion.copy(_pq.invert().multiply(_hq));
         pend.parent.getWorldScale(_ps); pend.scale.setScalar(1 / (_ps.x || 1));
       }
     }, rawK);
+    step(T2 + dur, () => { obj.visible = false; if (obj.parent) obj.parent.remove(obj); if (pend && pend.parent) pend.parent.remove(pend); });
+    return T2 + dur;
+  }
+  /* v21.30 · HIS OWN HAND, looked at (D: Chad on the first cut, "the amulet has nothing to do with the trance"). The
+     right hand rises from below the frame with its palm turned to his eyes and its fingers open, holds there breathing,
+     and goes down again; `o.turn(u)` rolls it over about the line of its fingers (the forearm's turn: its back to him
+     and back), `o.close(u)` half closes the fingers, `o.light(u)` is the lantern's light on it. Posed from a basis the
+     way PRAYER_R is (the hand's own axes: fingers −Z, palm −Y, index to pinky +X), with its palm (HOLD_PALM in the arm's
+     frame) put on the screen in the hands' own camera — a little right of the middle, under the eyes, 0.5 m off — so a
+     phone's narrow frame and a desktop's wide one both hold it whole (the first cut, 0.46 m off and a third of the way
+     right, filled a phone's frame and ran off its right edge, tipped back so far it read edge-on, the fingers apart
+     like a claw); and into the arm's parent's frame, which carries the
+     viewmodel's sway. The lantern is over him and a little behind, so its light comes onto the palm from over his
+     shoulder: the hands' warm light is moved there for the shot and put back where it was. Every time is clamped to the
+     track's end (a passed track is re-applied with the raw clock): after it the hand is down, the light where it was.
+     Returns the end. */
+  function ownHand(api, T, dur, o = {}) {
+    const { tr, step, rawK, THREE } = api;
+    const rise = o.rise || 1.2, fall = o.fall || 1.0;
+    const HP = new THREE.Vector3(0.012, -0.052, -0.148);
+    const palm = new THREE.Vector3(), loc = new THREE.Vector3(), n = new THREE.Vector3(), f = new THREE.Vector3(), x = new THREE.Vector3(), ny = new THREE.Vector3(), fz = new THREE.Vector3();
+    const UP = new THREE.Vector3(0, 1, 0), m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), pq = new THREE.Quaternion();
+    /* (the lantern's light: over his shoulder, and warm but not the burner's orange — at 0xff8433 and full strength the
+       hand read as orange plastic in the phone's photographs, where the same hand at the kerb in A is plain skin; the
+       colour is the track's to give back, which it does as the hand goes down, a skip included) */
+    const LAMP = new THREE.Vector3(0.06, 0.32, 0.12), LAMPC = new THREE.Color(0xffb489);
+    let fire0 = null, fireC0 = null;
+    step(T, () => { api.handsRoot.visible = true; api.armR.visible = true; if (api.vmFire && !fire0) { fire0 = api.vmFire.position.clone(); fireC0 = api.vmFire.color.clone(); } });
+    tr(T, T + dur, (k, t) => {
+      const u = Math.min(t, T + dur) - T;
+      const up = sm(cl01(u / rise)) * (1 - sm(cl01((u - (dur - fall)) / fall)));
+      const close = o.close ? o.close(u) : 0;
+      api.handsPose(0, 0, { from: 'rest', relax: 1 - 0.55 * close });          // (the fingers: straight and together, an open palm; half closed)
+      /* (where it is held: the same share of the frame's HEIGHT on every screen at one depth, which on a desktop's wide
+         frame made it a small thing low in the corner — the photographs; so a desktop holds it nearer and higher, in the
+         right third, and a phone just right of the middle) */
+      const cam = api.vmCam, narrow = cam.aspect < 1, depth = narrow ? 0.5 : 0.38;
+      const hh = Math.tan(cam.fov * Math.PI / 360) * depth, hw = hh * cam.aspect;
+      palm.set((narrow ? 0.12 : 0.3) * hw + 0.005 * Math.sin(u * 0.9), (narrow ? -0.33 : -0.22) * hh + 0.004 * Math.sin(u * 1.3 + 0.7) - (1 - up) * 1.3 * hh, -depth);
+      n.copy(palm).negate().normalize(); n.y += 0.12; n.normalize();            // the palm to his eyes, tipped back a little
+      f.copy(UP).addScaledVector(n, -UP.dot(n)).normalize();                    // the fingers up, leaning away
+      const th = o.turn ? o.turn(u) : 0;
+      if (th) n.applyAxisAngle(f, th);
+      x.crossVectors(n, f);                                                     // index → pinky
+      m4.makeBasis(x, ny.copy(n).negate(), fz.copy(f).negate());
+      q.setFromRotationMatrix(m4);
+      const par = api.armR.parent;
+      par.updateWorldMatrix(true, false); par.getWorldQuaternion(pq);
+      api.armR.quaternion.copy(pq.invert()).multiply(q);
+      par.worldToLocal(loc.copy(palm));
+      api.armR.position.copy(loc).sub(HP.clone().multiplyScalar(api.armR.scale.x).applyQuaternion(api.armR.quaternion));
+      if (api.vmFire && fire0) {
+        api.vmFire.position.lerpVectors(fire0, LAMP, up);
+        api.vmFire.color.copy(fireC0).lerp(LAMPC, up);
+        api.vmFire.intensity = (o.light ? o.light(u) : 1) * up;
+      }
+    }, rawK);
+    step(T + dur, () => { api.handsRoot.visible = false; if (api.vmFire && fire0) { api.vmFire.position.copy(fire0); api.vmFire.color.copy(fireC0); } });
+    return T + dur;
+  }
+  /* v21.30: the talisman laid before him, TAKEN — he steps in to it and looks down at it, his hand comes up from below
+     the frame for it, the world's copy is put away as the hand reaches it, and he holds the hand's copy up a moment
+     before it goes down out of the frame with it (put away in his pocket). Returns when the hand is down. */
+  function takeTal(api, F, T, o) {
+    const { step, camTo, pitchTo, yawTo, faceFrom, smoothK } = api;
+    const at = o.at, from = o.from, near = o.near;
+    const yF = faceFrom(near.x, near.z, at.x, at.z), dn = -Math.atan2(1.62 - at.y, Math.hypot(at.x - near.x, at.z - near.z));
+    camTo(T - 0.7, T, { x: from.x, y: 1.62, z: from.z }, { x: near.x, y: 1.62, z: near.z }, smoothK);
+    yawTo(T - 0.7, T, o.yaw0, yF, smoothK);
+    pitchTo(T - 0.7, T, o.pitch0, dn + 0.22, smoothK);
+    step(T + 0.55, o.take);
+    pitchTo(T + 0.8, T + 1.4, dn + 0.22, -0.12, smoothK);              // up with it: the paper in his fingers, under his eyes
+    const end = holdUp(api, F.talHeld, T, o.dur || 3.2, { rise: 0.9, fall: 0.7, lift: 0.3, sway: 0.06 });
+    if (o.back) camTo(end - 0.7, end, { x: near.x, y: 1.62, z: near.z }, { x: from.x, y: 1.62, z: from.z }, smoothK);
+    return { end, yaw: yF };
+  }
+  /* the hand lifting on its own at the kerb (A, B: "it didn't stop") — up into the dance, pulled down, starting again;
+     down out of the frame for its last 0.6 s, and the hands put away */
+  function handLifts(api, T0, T1) {
+    const { tr, step, rawK, handsRoot } = api;
+    step(T0, () => { handsRoot.visible = true; api.armR.visible = true; });
+    tr(T0, T1, (k, t) => {
+      const tt = Math.min(t, T1), u = tt - T0, dn = sm(cl01((tt - (T1 - 0.6)) / 0.6));
+      const lift = (0.62 * Math.max(0, Math.sin(u * 1.1)) ** 1.4 + 0.035 * Math.sin(u * 7.3)) * (1 - dn);   // (up 0-2.9 s, down, up again from 5.7 s: twice in 8 s)
+      api.handsPose(cl01(lift), u * 0.8, { from: 'rest', relax: 0.8 });
+      api.armR.position.y -= 0.17 * (1 - sm(cl01((lift - 0.04) / 0.2))) + 0.3 * dn;   // up from below the frame and back down
+    }, rawK);
+    step(T1, () => { handsRoot.visible = false; });
+  }
+
+  /* A · "THE ANSWER I WAS HANDED" (bad) — he hands the question over. "Sifu... whatever it is, please... drive it
+     out." The medium, kind, has him kneel and close his eyes; the rite goes round him a shot at a time — the sword, the
+     bell, the whispered tongue, his gods through the smoke — then the paper burnt as light through his closed eyes, and
+     his own thought: he didn't want to know. The cup; the assistant's talisman for his bed and
+     seven nights; the nights themselves; the seventh: "Should be alright now." On the kerb his hand begins to lift on
+     its own: it didn't stop, and he had nothing left to ask with. */
+  function scAccept(c, s, api) {
+    const { sfx, tr, step, fade, camTo, yawTo, pitchTo, lens, faceFrom, smoothK, rawK, stage, duck, handsRoot } = api;
+    const F = stage.film, M = F.shrineCast.medium, A = F.shrineCast.asst, E = F.MED_EYE, p0 = P0(s), FOV = api.CAM_FOV;
+    const toMed = faceFrom(p0.x, p0.z, E.x, E.z);
+    step(0, () => { M.look = 1; M.lookAt = null; F.medPose(F.MED_RITE, 0.5); F.tal('off'); F.talAsst(true); F.urnLight(true); });
+    yawTo(0, 0.8, s.yawRot, toMed, smoothK);
+    pitchTo(0, 0.8, s.pitchX, 0.06, smoothK);
+    // 1 · the wai, and his plea; the drum softens under it as the medium hears him out — and the lens closes on the medium as he begs
+    wai(api, 0.2, 2.2);
+    pitchTo(0.9, 1.5, 0.06, -0.36, smoothK); pitchTo(1.8, 2.5, -0.36, 0.06, smoothK);
+    sfx(0.6, 'z3A1');                                  // 6.61 → 7.21
+    tr(1.0, 3.0, (k) => { duck('ritual3', 1 - 0.5 * k); }, rawK);
+    lens(2.6, 7.4, FOV, 62, smoothK);
+    // 2 · "Don't be afraid. Kneel down. Close your eyes. I will settle it for you." — he goes down on his knees (the lens wide again: the medium over him)
+    sfx(7.6, 'md3A1');                                 // 4.91 → 12.51
+    step(7.6, () => { M.nod = 1.6; });
+    const stand = { x: p0.x, y: 1.62, z: p0.z }, knee = { x: p0.x, y: 1.0, z: p0.z - 0.1 };
+    camTo(8.9, 9.9, stand, knee, smoothK);
+    pitchTo(8.9, 9.9, 0.06, 0.34, smoothK);           // up at him over the table's edge
+    lens(8.9, 9.9, 62, FOV, smoothK);
+    sfx(9.5, 'kneethud', 0.6); sfx(9.55, 'matkneel3', 0.5);
+    /* 3 · his eyes close; the rite goes round him — and what he was thinking. (v21.30, Chad on the first cut: "I dont
+       think you're trying hard enough on these cutscenes" — it was thirteen seconds of black.) With his eyes shut the
+       film steps out of him and shows what is being done to him, a shot at a time, never the place where he kneels: from
+       low beside the table, the medium over him with the sword and the bell as the strokes go through the air; the
+       medium close from the other side, the bell up, as the whispered tongue is said over him; his gods through the
+       urn's smoke on "I didn't ask what it was". Then his own dark again: the paper going up is light through his closed
+       eyes (behind the black a warm sheet covers the lens, the black thins over it and closes again, and the glow
+       flickers like the flame; the sheet is up before the black thins and down after it closes), and "I only wanted
+       someone to take it away" is said in the dark. Everyone looks at where he kneels, never into the lens: the medium's
+       and the assistant's heads are aimed at his kneeling head through the shots. */
+    fade(10.9, 11.7, 0, 0.985);
+    tr(10.9, 11.7, (k) => { duck('ritual3', 0.5 - 0.3 * k); }, rawK);
+    const kneelHead = { x: knee.x, y: 1.0, z: knee.z }, medHead = (y) => ({ x: E.x, y, z: E.z + 0.42 });
+    step(11.7, () => { M.lookAt = kneelHead; F.lookToward(A, kneelHead); handsRoot.visible = false; });
+    sfx(12.2, 'taobell', 0.85);
+    const shot = (t0, t1, a, b, at, f0, f1) => {       // a camera from a to b, held on `at`, the lens f0 → f1
+      const ya = faceFrom(a.x, a.z, at.x, at.z), yb = faceFrom(b.x, b.z, at.x, at.z);
+      const pa = Math.atan2(at.y - a.y, Math.hypot(at.x - a.x, at.z - a.z)), pb = Math.atan2(at.y - b.y, Math.hypot(at.x - b.x, at.z - b.z));
+      camTo(t0, t1, a, b, rawK); yawTo(t0, t1, ya, yb, rawK); pitchTo(t0, t1, pa, pb, rawK); lens(t0, t1, f0, f1, rawK);
+    };
+    // i · low beside the table on his left: the medium over the place where he kneels, the strokes through the air
+    const R0 = 12.55;
+    fade(R0, R0 + 0.3, 0.985, 0);
+    step(R0, () => { F.medPose('Talk_Passionately', 0.3, 0.85); });
+    shot(R0, 15.45, { x: F.LX(-1.08), y: 0.9, z: -5.92 }, { x: F.LX(-0.9), y: 1.0, z: -6.05 }, medHead(1.48), 66, 56);
+    sfx(12.9, 'swordswish', 0.8);
+    sfx(13.5, 'swordswish', 0.7);
+    sfx(14.0, 'md3chant');                             // 4.27 → 18.27
+    sfx(14.3, 'taobell', 0.7);
+    // ii · close, from his other side: the bell held up, the tongue whispered over the young man
+    step(15.45, () => { F.medPose(F.MED_RITE, 0.4); });
+    shot(15.45, 18.4, { x: F.LX(1.32), y: 1.5, z: -6.12 }, { x: F.LX(1.08), y: 1.5, z: -6.4 }, medHead(1.72), 48, 44);
+    sfx(16.9, 'taobell', 0.55);
+    // iii · his gods through the urn's smoke: "I didn't ask what it was."
+    shot(18.4, 20.75, { x: F.LX(1.42), y: 1.34, z: -7.86 }, { x: F.LX(0.98), y: 1.42, z: -7.98 }, { x: F.LX(0.1), y: 2.02, z: -9.655 }, 58, 50);
+    sfx(18.3, 'z3A3');                                 // 7.47 → 25.77 (as the incantation's last breath dies away)
+    fade(20.5, 20.8, 0, 0.985);
+    sfx(21.0, 'ashwater', 0.8);                        // the paper burnt and the ash stirred into the water (2.03 s)
+    fade(20.9, 21.4, 0.985, 0.72); fade(21.4, 23.3, 0.72, 0.985);
+    tr(20.8, 23.5, (k, t) => { const u = Math.min(t, 23.5) - 20.8; F.lid(u < 2.65, 0.82 + 0.18 * Math.sin(u * 15.0) * Math.sin(u * 5.3)); }, rawK);
+    // (and back on his knees, behind his own eyes, before they open: the lens, the place, the look; the medium's eyes on him)
+    camTo(24.9, 24.95, knee, knee, rawK); yawTo(24.9, 24.95, toMed, toMed, rawK); pitchTo(24.9, 24.95, 0.34, 0.34, rawK); lens(24.9, 24.95, FOV, FOV, rawK);
+    step(24.95, () => { M.lookAt = null; handsRoot.visible = true; });
+    // 4 · his eyes open on the cup brought to his lips: "Drink. Slowly." (held in the hands' pass, the hands below the frame)
+    step(25.0, () => { api.armR.visible = false; F.cup.visible = true; F.cup.scale.setScalar(0.72); handsRoot.add(F.cup); });
+    fade(25.1, 25.8, 0.985, 0);
+    tr(25.0, 30.6, (k, t) => {
+      const tt = Math.min(t, 30.6);
+      const up = sm(cl01((tt - 25.2) / 0.9)), tip = sm(cl01((tt - 27.7) / 0.7)) * (1 - sm(cl01((tt - 29.2) / 0.6))), down = sm(cl01((tt - 29.8) / 0.8));
+      /* (it rests at 20° under the middle and the tip brings it up and in toward the lips — v21.1's numbers) */
+      F.cup.position.set(0.015, -0.36 + 0.24 * up - 0.34 * down + 0.04 * tip, -0.33 + 0.1 * tip);
+      F.cup.rotation.set(0.12 + 0.9 * tip, 0, 0);
+    }, rawK);
+    pitchTo(25.0, 26.2, 0.34, 0.1, smoothK);
+    sfx(26.0, 'md3A2');                                // 2.04 → 28.04
+    step(26.0, () => { M.nod = 1.0; });
+    sfx(28.2, 'drinkgulp', 0.8);                       // 1.58 → 29.78 (the cup at his lips)
+    step(30.6, () => { F.cup.visible = false; if (F.cup.parent) F.cup.parent.remove(F.cup); api.armR.visible = true; });
+    // 5 · he gets up, and the assistant calls him over to his desk: seven nights, and a talisman for over his bed
+    camTo(30.0, 31.0, knee, stand, smoothK);
+    pitchTo(30.0, 31.0, 0.1, 0.0, smoothK);
+    step(29.9, () => { A.look = 1; A.lookAt = null; A.nod = 7.6; });
+    sfx(30.0, 'as3A');                                 // 7.81 → 37.81
+    const desk = { x: F.LX(2.1), z: -6.05 }, toDesk = faceFrom(desk.x, desk.z, F.ASST_AT.x, F.ASST_AT.z);
+    const W = walkRoute(api, [{ x: p0.x, z: p0.z }, { x: F.LX(1.2), z: -5.55 }, desk], 31.0, 1.0, 1.0);
+    turnOnto(api, 30.6, 31.3, toMed, W.headAt0);
+    yawTo(W.end - 0.3, W.end + 0.4, W.head, toDesk, smoothK);
+    const TK = W.end + 0.9;
+    const tk = takeTal(api, F, TK, { at: F.TAL_ASST, from: desk, near: { x: desk.x + 0.12, z: desk.z - 0.03 }, yaw0: toDesk, pitch0: 0.0,
+      dur: 3.4, take: () => F.talAsst(false), back: true });
+    yawTo(tk.end - 0.7, tk.end, tk.yaw, toDesk, smoothK);
+    pitchTo(tk.end - 0.7, tk.end, -0.12, 0.0, smoothK);
+    // 6 · the nights that follow, on the black between them: the sticks in the urn, the bell, the lantern over the door
+    const N0 = Math.max(tk.end + 0.25, 38.1);
+    fade(N0, N0 + 0.45, 0, 1);
+    sfx(N0 + 0.55, 'z3A2');                            // 15.31 → N0 + 15.86
+    const LXf = F.LX, urnEye = { x: LXf(-0.85), y: 1.38, z: -0.75 }, urnAt = { x: F.URN.x, y: 0.8, z: F.URN.z };
+    camTo(N0 + 0.5, N0 + 0.55, urnEye, urnEye, rawK);
+    yawTo(N0 + 0.5, N0 + 0.55, faceFrom(urnEye.x, urnEye.z, urnAt.x, urnAt.z), faceFrom(urnEye.x, urnEye.z, urnAt.x, urnAt.z), rawK);
+    pitchTo(N0 + 0.5, N0 + 0.55, -0.5, -0.5, rawK);
+    step(N0 + 0.5, () => { handsRoot.visible = false; });
+    fade(N0 + 0.6, N0 + 1.1, 1, 0);
+    pitchTo(N0 + 0.6, N0 + 4.6, -0.5, -0.32, smoothK);   // up with the smoke
+    sfx(N0 + 0.8, 'incenselit3', 0.7);
+    // the bell in the medium's hand (another night: he stands for the rite again)
+    const N1 = N0 + 4.9;
+    fade(N1, N1 + 0.3, 0, 1);
+    step(N1 + 0.3, () => { F.medStand(true, 0); M.look = 0; M.lookAt = null; });
+    const bellEye = { x: LXf(0.95), y: 1.5, z: -5.55 }, medAt = { x: E.x, z: E.z + 0.42 };
+    camTo(N1 + 0.32, N1 + 0.36, bellEye, bellEye, rawK);
+    yawTo(N1 + 0.32, N1 + 0.36, faceFrom(bellEye.x, bellEye.z, medAt.x, medAt.z), faceFrom(bellEye.x, bellEye.z, medAt.x, medAt.z), rawK);
+    pitchTo(N1 + 0.32, N1 + 0.36, 0.02, 0.02, rawK);
+    fade(N1 + 0.4, N1 + 0.8, 1, 0);
+    camTo(N1 + 0.4, N1 + 4.6, bellEye, { x: bellEye.x - 0.2, y: 1.5, z: bellEye.z - 0.25 }, smoothK);
+    sfx(N1 + 1.0, 'taobell', 0.8); sfx(N1 + 2.6, 'swordswish', 0.6); sfx(N1 + 3.4, 'taobell', 0.7);
+    // and arriving again under the lanterns, the door lit
+    const N2 = N1 + 4.9;
+    fade(N2, N2 + 0.3, 0, 1);
+    const st0 = { x: LXf(-3.7), y: 1.62, z: 2.05 }, st1 = { x: LXf(-2.45), y: 1.62, z: 1.0 }, doorAt = { x: LXf(-2.3), z: -1.2 };
+    camTo(N2 + 0.32, N2 + 0.36, st0, st0, rawK);
+    yawTo(N2 + 0.32, N2 + 0.36, faceFrom(st0.x, st0.z, doorAt.x, doorAt.z), faceFrom(st0.x, st0.z, doorAt.x, doorAt.z), rawK);
+    pitchTo(N2 + 0.32, N2 + 0.36, 0.04, 0.04, rawK);
+    fade(N2 + 0.4, N2 + 0.8, 1, 0);
+    camTo(N2 + 0.4, N2 + 5.6, st0, st1, smoothK);
+    for (let t = N2 + 0.7; t < N2 + 5.4; t += 0.56) sfx(+t.toFixed(2), 'step', 0.7);
+    // 7 · the seventh night, at his table: the medium, seated, kind — "Should be alright now. Go home. Rest well."
+    const N3 = N2 + 5.8;            // (md3A3 0.44 s after z3A2's last word: N3 = N0 + 15.6)
+    fade(N3, N3 + 0.35, 0, 1);
+    step(N3 + 0.35, () => { F.medStand(false, 0); M.look = 1; M.lookAt = null; duck('ritual3', 0); handsRoot.visible = true; api.armR.visible = true; });
+    camTo(N3 + 0.37, N3 + 0.4, stand, stand, rawK);
+    yawTo(N3 + 0.37, N3 + 0.4, toMed, toMed, rawK);
+    pitchTo(N3 + 0.37, N3 + 0.4, -0.12, -0.12, rawK);
+    fade(N3 + 0.45, N3 + 0.95, 1, 0);
+    sfx(N3 + 0.7, 'md3A3');                            // 2.59 → N3 + 3.29
+    step(N3 + 0.7, () => { F.medTalk(true); M.nod = 2.4; });
+    step(N3 + 3.4, () => { F.medTalk(false); });
+    const W2 = wai(api, N3 + 2.0, 1.6);                // (his thanks, as the medium sends him home)
+    sfx(N3 + 3.4, 'taobell', 0.45);                    // a last soft ring of the bell as he goes
+    pitchTo(N3 + 2.6, N3 + 3.2, -0.12, -0.4, smoothK);
+    fade(N3 + 3.6, N3 + 4.1, 0, 1);
+    // 8 · out under the lanterns: his right hand starts to lift into the dance on its own, is pulled down, and starts again
+    const K0 = Math.max(W2, N3 + 4.15);
+    const out = { x: LXf(-3.15), y: 1.62, z: 1.45 }, east = faceFrom(out.x, out.z, LXf(7), 1.6);
+    camTo(K0, K0 + 0.05, out, out, rawK);
+    yawTo(K0, K0 + 0.05, east, east, rawK);
+    pitchTo(K0, K0 + 0.05, -0.2, -0.2, rawK);
+    step(K0, () => { duck('ritual3', 0); duck('shrineamb', 0.6); });
+    fade(K0 + 0.1, K0 + 0.9, 1, 0);
+    handLifts(api, K0 + 0.3, K0 + 8.6);
+    sfx(K0 + 0.5, 'presencein', 0.3);
+    sfx(K0 + 0.9, 'z3A4');                             // 9.09 → K0 + 9.99
+    lens(K0 + 1.0, K0 + 9.4, FOV, 62, smoothK);        // (the way closing in on him while it happens again)
+    // 9 · and up, to the lanterns and the night over the lorong (along the five-foot way, a little toward the road: the far
+    //     lantern in the left of a phone's frame and the night opening on the right — the v21.1 photographs)
+    sfx(K0 + 9.6, 'e3close3', 0.9);
+    sfx(K0 + 10.4, 'z3A5');                            // 7.00 → K0 + 17.40
+    yawTo(K0 + 10.0, K0 + 16.8, east, east - 0.16, smoothK);
+    pitchTo(K0 + 10.0, K0 + 16.8, -0.2, 0.2, smoothK);
+    lens(K0 + 10.0, K0 + 13.0, 62, FOV, smoothK);
+    ending(c, api, K0 + 17.7);
+  }
+
+  /* B · "CERTAINTY AGAINST CERTAINTY" (worst) — "No. You're wrong. It's not a ghost. I would know." The medium takes
+     no offence: he sets down the sword and the bell, sits, and answers him quietly — "Maybe. I can only tell you what
+     I see." — and still offers him a talisman for his protection. "I don't need it." "Okay. If you change your mind,
+     my door is always open." The assistant sees him out kindly. Sure of himself on the way out; on the kerb his hand
+     lifts on its own, and across the road two people look over; through the door the medium has already turned to
+     the next one waiting. He had thrown away the one answer he had, with nothing to put in its place. */
+  function scWrong(c, s, api) {
+    const { sfx, tr, step, yawTo, pitchTo, lens, faceFrom, smoothK, rawK, stage, duck, handsRoot } = api;
+    const F = stage.film, M = F.shrineCast.medium, A = F.shrineCast.asst, E = F.MED_EYE, p0 = P0(s), FOV = api.CAM_FOV;
+    const narrow = api.camera.aspect < 1;               // (a phone's frame is a third of a desktop's across: it needs less push)
+    const toMed = faceFrom(p0.x, p0.z, E.x, E.z);
+    /* (the next one is already waiting by the door — behind him while he stands at the table; he sees her as he turns
+       to go, and she is who the medium and his assistant turn to when he looks back from the kerb) */
+    step(0, () => { M.look = 1; M.lookAt = null; F.tal('off'); F.talAsst(false); F.nextOne(true); });
+    yawTo(0, 0.8, s.yawRot, toMed, smoothK);
+    pitchTo(0, 0.8, s.pitchX, 0.08, smoothK);
+    sfx(0.4, 'z3B1');                                  // 4.75 → 5.15
+    lens(0.6, 4.8, FOV, 63, smoothK);                  // (his certainty: the lens closing on the medium as he says it)
+    // the drum stops; the medium sets down the sword and the bell and sits — considering him, not angry
+    tr(4.8, 5.5, (k) => { duck('ritual3', 1 - k); }, rawK);
+    step(5.1, () => { F.medSit(0.8); });
+    sfx(5.25, 'stoolscrape', 0.4);
+    pitchTo(5.1, 6.0, 0.08, -0.04, smoothK);           // (down with him as he sits)
+    sfx(6.3, 'md3B1');                                 // 2.69 → 8.99
+    step(6.3, () => { F.medTalk(true); });
+    // "Whatever it is, it is strong. Take this... for your protection." — a talisman off his stack, held up, laid before him
+    step(9.1, () => { F.tal('hand'); });
+    sfx(9.4, 'md3B2');                                 // 3.74 → 13.14
+    step(12.2, () => { F.tal('edge'); });
+    step(13.2, () => { F.medTalk(false); M.nod = 0; });
+    pitchTo(12.3, 12.9, -0.04, -0.32, smoothK);        // his eyes go to it on the table
+    lens(12.1, 12.9, 63, FOV, smoothK);
+    pitchTo(13.3, 13.8, -0.32, 0.0, smoothK);
+    sfx(13.5, 'z3B3');                                 // 1.07 → 14.57
+    // he turns away — "Okay. If you change your mind, my door is always open." to his back
+    const BST = { x: -1.3, z: 2.15 };
+    const W = walkRoute(api, outRoute(F, p0, BST), 15.0, 1.05);
+    turnOnto(api, 14.3, 15.05, toMed, W.headAt0);
+    pitchTo(14.3, 15.0, 0.0, -0.08, smoothK);
+    sfx(14.8, 'md3B3');                                // 3.97 → 18.77
+    step(14.8, () => { F.medTalk(true); M.look = 1; });
+    step(18.9, () => { F.medTalk(false); });
+    step(14.9, () => { handsRoot.visible = false; });
+    // the assistant, from his desk, as he goes by: "Walk safe, ah."
+    step(19.0, () => { A.look = 1; A.lookAt = null; A.nod = 1.6; });
+    sfx(19.2, 'as3B');                                 // 1.57 → 20.77
+    tr(15.0, W.end, (k) => { duck('ritual3', 0); duck('shrineamb', 1 - 0.4 * k); }, rawK);
+    sfx(21.0, 'z3B2');                                 // 5.41 → 26.41
+    // the kerb: across the road the kopitiam, and his hand begins to lift on its own
+    const Bs = { x: F.LX(BST.x), z: BST.z }, toKopi = faceFrom(Bs.x, Bs.z, F.KOPI.x, F.KOPI.z + 0.4);
+    yawTo(W.end - 0.3, W.end + 1.0, W.head, toKopi, smoothK);
+    pitchTo(W.end - 0.3, W.end + 1.0, -0.08, 0.05, smoothK);
+    const H0 = W.end + 0.4;
+    handLifts(api, H0, H0 + 8.2);
+    sfx(H0 + 0.2, 'presencein', 0.35);
+    step(H0 + 1.4, () => { F.kopiLook({ x: Bs.x, y: 1.62, z: Bs.z }); });   // two at the kopitiam look over
+    const TB4 = Math.max(26.7, H0 + 1.0);              // (the time named apart: the engine reads a cue's name off the call's own text, and a comma inside the time hid it)
+    sfx(TB4, 'z3B4');                                  // 6.27
+    lens(H0 + 1.2, H0 + 7.6, FOV, 60, smoothK);        // (the street closing in: the two across the road, looking)
+    // he looks back at the lit doorway: the medium has already turned to the next one waiting, and the assistant calls them in
+    const TB = Math.max(33.0, H0 + 8.0);
+    const nxt = { x: F.NEXT_AT.x, y: 1.05, z: F.NEXT_AT.z };
+    step(TB, () => { F.kopiLook(null); M.look = 1; M.lookAt = nxt; });
+    /* (between him and her: on a phone the medium alone filled the frame and she was off its left edge — and between
+       their BEARINGS, not their middle, so the push through the door below holds them both on a phone's frame) */
+    const back = (faceFrom(Bs.x, Bs.z, E.x, E.z) + faceFrom(Bs.x, Bs.z, F.NEXT_AT.x, F.NEXT_AT.z)) / 2;
+    yawTo(TB, TB + 1.4, toKopi, back, smoothK);
+    pitchTo(TB, TB + 1.4, 0.05, -0.02, smoothK);
+    lens(TB, TB + 1.4, 60, FOV, smoothK);
+    step(TB + 1.4, () => { F.lookToward(A, nxt); A.nod = 2.0; });   // (to her, on the stool by the door)
+    sfx(TB + 1.4, 'as3next');                          // 1.88 → TB + 3.28
+    step(TB + 1.7, () => { M.nod = 1.6; });
+    step(TB + 2.3, () => { F.medTalk(true); });         // (already talking with her: his reading take, seen through the door)
+    step(TB + 9.5, () => { F.medTalk(false); });
+    sfx(TB + 3.6, 'z3B5');                             // 8.75 → TB + 12.35
+    /* (and the lens goes in through the door onto them while he says it — the help he turned down, being given to
+       someone else — and comes back out as he turns away. From the kerb the two stand ~20° apart, so a phone's frame,
+       a third of a desktop's across, holds them both no tighter than 57°: at 50° the medium was cut at its edge) */
+    const fDoor = narrow ? 57 : 38;
+    lens(TB + 3.4, TB + 11.4, FOV, fDoor, smoothK);
+    // and away down the lorong under the sodium lamp
+    sfx(TB + 11.9, 'e3close3', 0.9);
+    const street = faceFrom(Bs.x, Bs.z, F.LX(6.4), 6.0);
+    yawTo(TB + 12.0, TB + 18.2, back, street, smoothK);
+    pitchTo(TB + 12.0, TB + 18.2, -0.02, 0.14, smoothK);
+    lens(TB + 11.9, TB + 13.8, fDoor, FOV, smoothK);
+    sfx(TB + 12.7, 'z3B6');                            // 6.11 → TB + 18.81
+    ending(c, api, TB + 19.1);
+  }
+
+  /* C · "A SECOND OPINION" (good) — he thanks the medium, who gives him a talisman and an open door. Out to the kerb on
+     "I needed someone else to tell me what it was"; the bus goes by; and the next morning, the amulet shop, the owner
+     glad to see him — and just as kind, and just as sure: not a ghost, a Thevada. Two kind men, two certainties (the
+     medium's talisman in his hand, the owner behind it); they could not both be right, and they could both be wrong.
+     Asking around gave him more answers, and none of them his. */
+  function scLeave(c, s, api) {
+    const { sfx, tr, step, fade, camTo, yawTo, pitchTo, lens, faceFrom, smoothK, rawK, stage, duck, handsRoot } = api;
+    const F = stage.film, M = F.shrineCast.medium, E = F.MED_EYE, p0 = P0(s), FOV = api.CAM_FOV;
+    const toMed = faceFrom(p0.x, p0.z, E.x, E.z);
+    step(0, () => { M.look = 1; M.lookAt = null; F.tal('off'); F.talAsst(false); });
+    yawTo(0, 0.8, s.yawRot, toMed, smoothK);
+    pitchTo(0, 0.8, s.pitchX, 0.06, smoothK);
+    wai(api, 0.2, 2.4);
+    pitchTo(0.9, 1.5, 0.06, -0.36, smoothK); pitchTo(1.9, 2.6, -0.36, 0.06, smoothK);
+    sfx(0.6, 'z3C1');                                  // 3.87 → 4.47
+    tr(1.0, 2.0, (k) => { duck('ritual3', 1 - 0.7 * k); }, rawK);
+    step(1.2, () => { F.medSit(0.8); });                 // (while he bows: the sword and the bell down, and he sits)
+    sfx(1.35, 'stoolscrape', 0.35);
+    // "Hmm. Keep this talisman with you. If it comes again, come back and see me."
+    step(4.5, () => { F.tal('hand'); M.nod = 1.2; });
+    sfx(4.8, 'md3C');                                  // 5.07 → 9.87
+    step(4.8, () => { F.medTalk(true); });
+    lens(4.6, 8.2, FOV, 63, smoothK);                  // (in on him, kind, the talisman up in his hand)
+    lens(8.3, 8.9, 63, FOV, smoothK);                  // (and wide again before he steps in to take it)
+    step(8.3, () => { F.tal('edge'); });
+    step(9.9, () => { F.medTalk(false); });
+    const near = { x: p0.x, z: p0.z - 0.32 };
+    const tk = takeTal(api, F, 9.6, { at: F.TAL_EDGE, from: p0, near, yaw0: toMed, pitch0: 0.06, dur: 3.0, take: () => F.tal('taken'), back: true });
+    sfx(10.4, 'z3C2');                                 // 9.33 → 19.73 (as he looks at it: "A ghost...")
+    step(10.6, () => { M.nod = 1.4; });
+    // out: through the room, through the door, to the kerb
+    const kerb = { x: -2.1, z: 1.95 };
+    const W = walkRoute(api, outRoute(F, p0, kerb), tk.end + 0.1, 1.05);
+    turnOnto(api, tk.end - 0.4, tk.end + 0.3, tk.yaw, W.headAt0);
+    pitchTo(tk.end - 0.4, tk.end + 0.3, -0.12, -0.05, smoothK);
+    step(tk.end + 0.2, () => { handsRoot.visible = false; });
+    tr(tk.end, W.end, (k) => { duck('ritual3', 0.3 * (1 - k)); duck('shrineamb', 1 - 0.5 * k); }, rawK);
+    // the bus goes by between him and the kopitiam's light — and the night with it
+    const kopi = { x: F.KOPI.x, z: 17.8 };
+    const toKopi = faceFrom(F.LX(kerb.x), kerb.z, kopi.x, kopi.z);
+    yawTo(W.end - 0.3, W.end + 1.2, W.head, toKopi, smoothK);
+    pitchTo(W.end - 0.3, W.end + 1.2, -0.05, 0.08, smoothK);
+    const Tb = W.end - 0.2;
+    sfx(Tb, 'buspass', 0.9);                           // 4.54 s
+    tr(Tb - 0.85, Tb + 8.5, (k) => F.bus(k), rawK);      // (13.9 m/s; past the kerb's line at Tb + 2.9)
+    /* the black comes UNDER the bus, as its body fills the frame: on a phone's narrow frame the bus is in it from about
+       Tb + 2.8 to Tb + 3.8, and a fade that finished at Tb + 3.1 (v21.30's first cut) showed it for a split second
+       through the dark */
+    const TM = Tb + 3.45;
+    fade(TM - 0.3, TM + 0.3, 0, 1);
+    sfx(TM + 0.4, 'z3C3');                             // 2.27 → TM + 2.67
+    // the next morning, the amulet shop: put back under the black, its own light and sounds, the door's bell behind him
+    step(TM + 0.3, () => { F.shopMorning(); F.bus(0); handsRoot.visible = false; });
+    const din = { x: 0.32, y: 1.62, z: -0.45 }, cf = { x: 2.2, y: 1.62, z: -2.28 }, O = F.cast.owner;
+    const ownHead = { x: F.OWN.x, y: 1.52, z: F.OWN.z };
+    const toOwn0 = faceFrom(din.x, din.z, ownHead.x, ownHead.z), toOwn = faceFrom(cf.x, cf.z, ownHead.x, ownHead.z);
+    camTo(TM + 0.32, TM + 0.36, din, din, rawK);
+    yawTo(TM + 0.32, TM + 0.36, toOwn0, toOwn0, rawK);
+    pitchTo(TM + 0.32, TM + 0.36, -0.02, -0.02, rawK);
+    sfx(TM + 2.2, 'shopbell', 0.7);
+    fade(TM + 2.4, TM + 3.3, 1, 0);
+    step(TM + 2.4, () => { O.look = 1; O.lookAt = null; });
+    const W2 = walkRoute(api, [din, { x: 1.35, z: -1.35 }, cf], TM + 2.8, 0.95, 1.0);
+    yawTo(W2.end - 0.4, W2.end + 0.5, W2.head, toOwn, smoothK);
+    pitchTo(W2.end - 0.4, W2.end + 0.5, -0.02, -0.03, smoothK);
+    sfx(TM + 3.1, 'ow3C1');                            // 6.35 → TM + 9.45
+    step(TM + 3.1, () => { F.talk(O, 6.35); });
+    sfx(TM + 9.8, 'z3C4');                             // 4.36 → TM + 14.16
+    /* (v21.30, the second pass: "He said... it could be a ghost." — his eyes go down to the amulets under the counter's
+       glass on "it", and come up again as the owner says "Ghost?") */
+    pitchTo(TM + 11.0, TM + 11.8, -0.03, -0.42, smoothK);
+    pitchTo(TM + 14.0, TM + 14.7, -0.42, -0.03, smoothK);
+    sfx(TM + 14.5, 'ow3C2');                           // 14.21 → TM + 28.71
+    step(TM + 14.5, () => { F.talk(O, 14.21); });
+    /* the owner's reading, spoken onto the place it is about: in on him; on "Yesterday you danced for the Buddha" (4.92 s
+       into the line) to the altar where it happened, held through "The whole shop saw."; back to him on "A ghost won't
+       pay respect like that" (8.14); and in again on "I think something good is looking after you. Maybe a Thevada." */
+    const toAltar = faceFrom(cf.x, cf.z, F.ALTAR.x, F.ALTAR.z);
+    lens(TM + 14.6, TM + 19.2, FOV, 60, smoothK);
+    yawTo(TM + 19.2, TM + 20.6, toOwn, toAltar, smoothK);
+    pitchTo(TM + 19.2, TM + 20.6, -0.03, -0.05, smoothK);
+    yawTo(TM + 22.3, TM + 23.7, toAltar, toOwn, smoothK);
+    pitchTo(TM + 22.3, TM + 23.7, -0.05, -0.03, smoothK);
+    lens(TM + 22.3, TM + 23.7, 60, 56, smoothK);
+    lens(TM + 24.8, TM + 28.6, 56, 46, smoothK);
+    /* "One said a ghost. One said a Thevada." — the medium's talisman comes out of his pocket into his hand, the owner
+       behind it; "both kind... both so sure" up to the old masters on the wall behind the owner; and "They couldn't both
+       be right... and they could both be wrong" turned to the altar and its Buddha, closing on it */
+    const mst = { x: F.SHOP.x1 - 0.05, y: F.MSTR.y0 + F.MSTR.h / 2, z: F.MSTR.z };
+    const pM = Math.atan2(mst.y - 1.62, Math.hypot(mst.x - cf.x, mst.z - cf.z));
+    const T5 = TM + 29.0;
+    sfx(T5, 'z3C5');                                   // 12.59 → T5 + 12.59
+    step(T5 - 0.35, () => { handsRoot.visible = true; api.armR.visible = true; });
+    holdUp(api, F.talHeld, T5 - 0.3, 4.5, { rise: 0.8, fall: 0.8, lift: 0.3, sway: 0.08 });
+    step(T5 + 4.25, () => { handsRoot.visible = false; });
+    pitchTo(T5 - 0.3, T5 + 0.6, -0.03, -0.1, smoothK);   // (the paper low in the frame, the owner over it)
+    lens(T5 - 0.3, T5 + 0.6, 46, 52, smoothK);
+    pitchTo(T5 + 4.2, T5 + 5.8, -0.1, pM, smoothK);
+    lens(T5 + 4.2, T5 + 5.8, 52, 56, smoothK);
+    yawTo(T5 + 7.4, T5 + 9.4, toOwn, toAltar, smoothK);
+    pitchTo(T5 + 7.4, T5 + 9.4, pM, -0.04, smoothK);
+    lens(T5 + 7.4, T5 + 9.4, 56, 60, smoothK);
+    lens(T5 + 9.4, T5 + 12.4, 60, 46, smoothK);
+    sfx(T5 + 12.2, 'e3close3', 0.9);
+    camTo(T5 + 12.4, T5 + 18.6, cf, { x: cf.x - 0.35, y: 1.62, z: cf.z - 0.5 }, smoothK);   // a step toward the altar
+    sfx(T5 + 13.0, 'z3C6');                            // 5.04 → T5 + 18.04
+    ending(c, api, T5 + 18.4);
+  }
+
+  /* D · "THE HONEST ANSWER" (best) — he asks the case file's own question: why would it grow angry only when he called
+     it a ghost? The medium sets the sword down, sits, and thinks: "Hmm. I saw that also." He reads it, he says, the way
+     his teachers taught him, through his god, in his tradition — another master may read it another way. A talisman
+     anyway ("Cannot hurt"), and his thanks. Out under the lantern he looks at his own hand — the hand that danced — a
+     ghost, a Thevada, Hanuman: he could prove none of them. Up at the stars, and down the long road: if he wanted the
+     truth he would have to go and seek it, learn it, and find it for himself — and he starts walking. */
+  function scSeek(c, s, api) {
+    const { sfx, tr, step, camTo, yawTo, pitchTo, lens, faceFrom, smoothK, rawK, stage, duck, handsRoot } = api;
+    const F = stage.film, M = F.shrineCast.medium, E = F.MED_EYE, p0 = P0(s), FOV = api.CAM_FOV;
+    const narrow = api.camera.aspect < 1;
+    const toMed = faceFrom(p0.x, p0.z, E.x, E.z);
+    step(0, () => { M.look = 1; M.lookAt = null; F.tal('off'); F.talAsst(false); });
+    yawTo(0, 0.8, s.yawRot, toMed, smoothK);
+    pitchTo(0, 0.8, s.pitchX, 0.06, smoothK);
+    wai(api, 0.2, 2.2);
+    pitchTo(0.9, 1.5, 0.06, -0.36, smoothK); pitchTo(1.8, 2.5, -0.36, 0.06, smoothK);
+    sfx(0.6, 'z3D1');                                  // 10.11 → 10.71
+    tr(1.0, 3.0, (k) => { duck('ritual3', 1 - 0.6 * k); }, rawK);
+    lens(3.0, 10.4, FOV, 62, smoothK);                 // (in on the medium while he asks it)
+    step(5.4, () => { M.nod = 1.0; });
+    // the medium sets the sword down on the table, sits, and looks at him a long moment
+    tr(9.8, 10.6, (k) => { duck('ritual3', 0.4 * (1 - k)); }, rawK);
+    step(10.0, () => { F.medSit(0.9); });
+    sfx(10.2, 'stoolscrape', 0.35);
+    pitchTo(10.0, 10.9, 0.06, -0.03, smoothK);
+    sfx(11.1, 'md3D');                                 // 2.17 → 13.27
+    step(11.1, () => { M.nod = 2.0; });
+    sfx(13.6, 'md3D2');                                // 9.64 → 23.24
+    step(13.6, () => { F.medTalk(true); });
+    /* "I read it the way my teachers taught me... through my god, in my tradition." — on "through my god" (2.84 s into
+       the line) his eyes go up past the medium to the six on the altar behind him, the lens closing on them, and hold
+       there through "in my tradition"; on "Another master, the Thai side, may read it another way" (6.02) they come back
+       down to the man saying it */
+    const ROW = { x: F.LX(0), y: 2.05, z: -9.655 };
+    const pRow = Math.atan2(ROW.y - 1.62, Math.hypot(ROW.x - p0.x, ROW.z - p0.z)), fRow = narrow ? 44 : 38;
+    pitchTo(16.2, 17.6, -0.03, pRow, smoothK);
+    lens(16.2, 17.6, 62, fRow, smoothK);
+    pitchTo(19.4, 20.8, pRow, -0.03, smoothK);
+    lens(19.4, 20.8, fRow, 58, smoothK);
+    step(23.3, () => { F.tal('hand'); });
+    sfx(23.6, 'md3D3');                                // 2.12 → 25.72
+    lens(23.4, 24.8, 58, FOV, smoothK);                // (wide again before he steps in to the table)
+    step(24.9, () => { F.tal('edge'); });
+    step(25.8, () => { F.medTalk(false); M.nod = 1.2; });
+    const near = { x: p0.x, z: p0.z - 0.32 };
+    const tk = takeTal(api, F, 26.0, { at: F.TAL_EDGE, from: p0, near, yaw0: toMed, pitch0: -0.03, dur: 2.0, take: () => F.tal('taken'), back: true });
+    sfx(26.6, 'z3thank');                              // 1.96 → 28.56
+    yawTo(tk.end - 0.6, tk.end, tk.yaw, toMed, smoothK);
+    pitchTo(tk.end - 0.6, tk.end, -0.12, 0.06, smoothK);
+    const Wd = wai(api, tk.end + 0.1, 1.4);           // his thanks, with his hands
+    sfx(tk.end + 0.6, 'windchime', 0.3);               // (the night air at the door moves the chime as he bows)
+    pitchTo(tk.end + 0.6, tk.end + 1.2, 0.06, -0.3, smoothK); pitchTo(tk.end + 1.4, tk.end + 2.0, -0.3, 0.06, smoothK);
+    // out, to stand under the lantern over the door: "He had given me his answer honestly..."
+    const lan = { x: -2.3, z: 1.3 };
+    const W = walkRoute(api, outRoute(F, p0, lan), Wd - 0.1, 1.05);
+    turnOnto(api, Wd - 0.6, Wd, toMed, W.headAt0);
+    pitchTo(Wd - 0.6, Wd, 0.06, -0.05, smoothK);
+    tr(Wd - 0.1, W.end, (k) => { duck('ritual3', 0); duck('shrineamb', 1 - 0.5 * k); }, rawK);
+    sfx(Wd + 0.3, 'z3D2');                             // 6.35
+    /* (toward the kopitiam's lit bay across the road, x −15: what he holds up is seen against its warm light — straight
+       across, it hung against two grey shutters and the black road; the v21.1 photographs) */
+    /* (and on a desktop a little further left: straight at the kopitiam, its wide frame took the five-foot way's pillar
+       beside him as a slab down its right quarter — the photographs; 0.38 rad puts the pillar past the edge and the
+       kopitiam's light in the right third, where the hand is held) */
+    const Ls = { x: F.LX(lan.x), z: lan.z }, outward = faceFrom(Ls.x, Ls.z, F.LX(-15), 18.0) + (narrow ? 0 : 0.38);
+    yawTo(W.end - 0.3, W.end + 0.9, W.head, outward, smoothK);
+    /* his own hand (v21.30, Chad on the first cut: "i don't understand why the lp tim amulet is in one of the ending
+       cutscenes, the amulet has nothing to do with the trance" — it was the Luang Phu Tim held up here): the hand that
+       danced, up into the lantern's light and looked at — "A ghost? A Thevada? Hanuman?" — the lanterns stirring on
+       "Hanuman?" and the light flaring on it; over to its back on "I couldn't prove it was a ghost" (4.54 s into the
+       line), back to its palm on "I couldn't prove it wasn't" (6.92); the fingers half closing on "...something else
+       entirely" (9.08), and down */
+    const T2 = Math.max(W.end + 0.3, Wd + 7.0);
     pitchTo(T2, T2 + 1.2, -0.05, 0.03, smoothK);       // level, onto the street: the kopitiam's light behind it
-    sfx(T2 + 1.3, 'z3D2');                             // 6.77 → T2 + 8.07
-    step(T2 + 9.0, () => { F.tim.visible = false; if (F.tim.parent) F.tim.parent.remove(F.tim); if (pend && pend.parent) pend.parent.remove(pend); handsRoot.visible = false; });
-    // to the kerb, and up at the night
+    sfx(T2 + 0.1, 'z3D3');                             // 11.81 → T2 + 11.91 (as the hand comes up)
+    ownHand(api, T2, 11.7, {
+      turn: (u) => -2.6 * (sm(cl01((u - 4.5) / 1.7)) - sm(cl01((u - 6.9) / 1.5))),
+      close: (u) => sm(cl01((u - 9.2) / 1.6)),
+      light: (u) => (0.42 + 0.5 * sm(cl01((u - 2.9) / 0.35)) * (1 - sm(cl01((u - 3.5) / 1.2)))) * (0.92 + 0.08 * Math.sin(u * 7.3)),
+    });
+    tr(T2 + 2.9, T2 + 5.0, (k, t) => { const u = Math.min(t, T2 + 5.0) - T2; F.gust(0.45 * sm(cl01((u - 2.9) / 0.4)) * (1 - sm(cl01((u - 3.6) / 1.4)))); }, rawK);
+    sfx(T2 + 3.0, 'windchime', 0.22);
+    // to the kerb, and up at the stars: "What I realised that night was simple..."
     const kerb = { x: F.LX(-2.0), y: 1.62, z: 2.12 };
-    camTo(T2 + 8.6, T2 + 10.0, { x: Ls.x, y: 1.62, z: Ls.z }, kerb, smoothK);
-    sfx(T2 + 8.8, 'step', 0.8); sfx(T2 + 9.4, 'step', 0.8);
-    /* (higher than the 0.62 it was: the far row's upper floor filled half the frame under a hard roofline, and the
-       stars, the thing he looks up at, were faint and never changed — they are the shrine's OWN, brightened over
-       the line; the engine's dome a `{ stars }` daylight drives is past the far plane from here — the v21.1 review) */
-    pitchTo(T2 + 8.8, T2 + 11.6, 0.03, 0.82, smoothK);
-    tr(T2 + 9.6, T2 + 14.6, (k) => F.stars(k), smoothK);
-    sfx(T2 + 10.4, 'z3D3');                            // 4.44 → T2 + 14.84
-    sfx(T2 + 15.0, 'e3close3', 0.9);
-    sfx(T2 + 15.4, 'z3close');                         // 8.44 → T2 + 23.84
-    yawTo(T2 + 15.6, T2 + 22.5, outward, outward - 0.35, smoothK);
-    ending(c, api, T2 + 23.9);
+    camTo(T2 + 11.2, T2 + 12.6, { x: Ls.x, y: 1.62, z: Ls.z }, kerb, smoothK);
+    sfx(T2 + 11.4, 'step', 0.8); sfx(T2 + 12.0, 'step', 0.8);
+    /* (the shrine's OWN stars, brightened over the line; the engine's dome is past the far plane from here — v21.1) */
+    pitchTo(T2 + 11.4, T2 + 14.0, 0.03, 0.82, smoothK);
+    tr(T2 + 12.0, T2 + 17.0, (k) => F.stars(k), smoothK);
+    sfx(T2 + 13.4, 'z3D4');                            // 13.64 → T2 + 27.04
+    /* and on "I couldn't just accept the first explanation I was handed" (2.96 s into the line) his eyes come down from
+       the stars and along the lorong, the lamps going away down it — the road he would have to walk — and on "I had to
+       go and seek it" (8.90) he steps off the kerb and walks it, on along the road's edge past the parked motorbike,
+       under the closing words, into the black (held on the stars, the phone's photographs were one still picture for
+       twenty-six seconds). The walk is timed to end as the black closes; its first heading is the one the look comes
+       down onto, so the walk takes over without a turn. */
+    const T3 = T2 + 22.0, TE = T2 + 41.2;
+    /* (out round the motorbike parked at the kerb, 1.35 m off its bars — at 0.75 m a desktop's frame walked straight at
+       its handlebars and mirrors, the photographs — and the eyes 9 m ahead along the way: down the lorong as he steps
+       off, not across it) */
+    const route = [{ x: kerb.x, z: kerb.z }, { x: F.LX(-3.4), z: 4.3 }, { x: F.LX(-5.6), z: 5.1 }, { x: F.LX(-16.6), z: 5.1 }];
+    const segs = route.slice(1).map((q, i) => Math.hypot(q.x - route[i].x, q.z - route[i].z)), Lr = segs.reduce((a, b) => a + b, 0);
+    const along = (d) => { for (let i = 0; i < segs.length; i++) { if (d <= segs[i] || i === segs.length - 1) { const f = Math.min(1, d / segs[i]); return { x: route[i].x + (route[i + 1].x - route[i].x) * f, z: route[i].z + (route[i + 1].z - route[i].z) * f }; } d -= segs[i]; } };
+    const LOOK = 9, a0 = along(LOOK), road = faceFrom(kerb.x, kerb.z, a0.x, a0.z);
+    yawTo(T2 + 16.8, T2 + 19.6, outward, road, smoothK);
+    pitchTo(T2 + 16.8, T2 + 19.6, 0.82, 0.03, smoothK);
+    walkRoute(api, route, T3, Lr / (TE - T3 - 0.55), LOOK);
+    sfx(T2 + 26.4, 'e3close3', 0.9);
+    sfx(T2 + 27.6, 'z3close');                         // 8.44 → T2 + 36.04
+    ending(c, api, T2 + 36.4);
   }
 
   /* ================================================== THE DRAWN SURFACES

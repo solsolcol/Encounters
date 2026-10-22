@@ -922,9 +922,10 @@ if (!K.yantGuards) console.log('yant guards', JSON.stringify(await p.evaluate(()
    READ only after it has stood on screen (wall time), turns by a real click on
    the arrow and by real keys, says NEXT until every page is read and then
    CONTINUE, answers the Promise with seenAll true and hands back play; opened
-   again with two pages read it starts on the third, and Esc closes it early
-   with seenAll false and the reading so far; opened with every page read it
-   is already done. A picture is drawn from its own bytes (an episode-3
+   again with two pages read it starts on the third, and (v21.30) Esc closes
+   nothing early — the window stays and says why, and there is no X; a probe's
+   close answers seenAll false and the reading so far; opened with every page
+   read it is already done, and at its very end Esc is Close gallery. A picture is drawn from its own bytes (an episode-3
    portrait, on the hosted build the suite drives). */
 const GAL_PAGES = [
   { id: 'ga', name: 'First master', aka: 'Aka one', plaque: 'Plaque one', lived: '1900 – 1980', era: 'Era one', temple: 'Temple one',
@@ -968,7 +969,7 @@ K.galleryOpens = await p.evaluate((pages) => {
 /* (v21.27: and until the page's own watcher has written WHEN — polling `seen` alone could see the page count before
    the 20 ms watcher did, and read the stamp as null: a pass reported as a fail, the stamp 2568 ms a moment later) */
 K.galleryReadsOne = await until(() => window.__enc.galleryState().seen.includes(0) && window.__galRead0 != null, 30000).then(() => true, () => false);
-K.galleryNotAtOnce = await p.evaluate(() => window.__galRead0 != null && window.__galRead0 >= 1150);
+K.galleryNotAtOnce = await p.evaluate(() => window.__galRead0 != null && window.__galRead0 >= 750);   // (v21.30: GAL_DWELL 800, was 1200)
 if (!K.galleryNotAtOnce) console.log('gallery not at once', await p.evaluate(() => window.__galRead0));
 K.galleryPicture = await until(() => {
   const cv = document.getElementById('galImg'); if (!cv || !cv.width) return false;
@@ -999,8 +1000,18 @@ K.galleryResumes = await p.evaluate((pages) => {
   return st.open && st.i === 2 && st.seen.length === 2 && !st.done;
 }, ESC_PAGES);
 await p.waitForTimeout(600);
+/* v21.30 · Esc CLOSES NOTHING EARLY (Chad: "do not allow the player to close the window, remove the X button ... they
+   must finish the entire experience and read everything, before they can close at the very end"): pressed with a page
+   still unread the window stays and its hint says why — and the X is not there at all. (The probe's own close then
+   answers the reading so far, as a chapter torn down in the middle of the gallery would be answered) */
 await p.keyboard.press('Escape');
-K.galleryEscEarly = await until(() => window.__gal && window.__enc.getState() === 'play', 30000)
+await p.waitForTimeout(1200);
+K.galleryEscStays = await p.evaluate(() => window.__gal === undefined && window.__enc.getState() === 'gallery' && window.__enc.kit.galleryOpen()
+  && /closes at the end/.test(document.getElementById('galHint').textContent));
+K.galleryNoX = await p.evaluate(() => !document.getElementById('galX') && !document.querySelector('#gallery .galX'));
+if (!K.galleryEscStays) console.log('gallery esc', JSON.stringify(await p.evaluate(() => ({ gal: window.__gal, st: window.__enc.getState(), hint: document.getElementById('galHint').textContent }))));
+await p.evaluate(() => window.__enc.galleryClose('x'));
+K.galleryProbeCloseAnswers = await until(() => window.__gal && window.__enc.getState() === 'play', 30000)
   .then(() => p.evaluate(() => window.__gal.seenAll === false && window.__gal.seen.join() === 'ega,egb'), () => false);
 await p.waitForTimeout(800);
 /* v21.25: every page read, it opens DONE on the first page — and NEXT is still NEXT there (not the close), the
@@ -1028,12 +1039,14 @@ K.galleryCloseOnlyOnLast = await until(() => {
 }, 15000).then(() => true, () => false);
 if (!K.galleryOneTurnAtATime || !K.galleryCloseOnlyOnLast) console.log('gallery turns', JSON.stringify(await p.evaluate(() => window.__enc.galleryState())));
 await p.waitForTimeout(600);
-/* (a window a failed check above already closed has no X to click — the check below fails, the run goes on) */
-const xOpen = await p.evaluate(() => window.__enc.kit.galleryOpen());
-if (xOpen) await p.click('#galX', { timeout: 30000 }).catch(() => {});   // the X, a real click
-K.galleryXCloses = xOpen && await until(() => window.__gal && window.__enc.getState() === 'play', 30000)
+/* v21.30: at the very end — the last page, every story read — Esc is Close gallery, as Enter is (the X that closed it
+   here until v21.30 is gone). (A window a failed check above already closed is not pressed: the check fails, the run
+   goes on) */
+const endOpen = await p.evaluate(() => window.__enc.kit.galleryOpen());
+if (endOpen) await p.keyboard.press('Escape');
+K.galleryEscAtEndCloses = endOpen && await until(() => window.__gal && window.__enc.getState() === 'play', 30000)
   .then(() => p.evaluate(() => window.__gal.seenAll === true && !window.__enc.kit.galleryOpen()), () => false);
-if (!K.galleryXCloses) await p.evaluate(() => window.__enc.galleryClose('x')).catch(() => {});
+if (!K.galleryEscAtEndCloses) await p.evaluate(() => window.__enc.galleryClose('x')).catch(() => {});
 /* v21.25 · NEXT IS ALWAYS THE NEXT PAGE (Chad: "if i accidentally moved to the next monk and moved back to the previous
    one, the next button [went] to the next monk after the next ... if i already finished all monks and went back to an
    earlier one, the button below becomes continue, and ends the whole window"). Page 1 visited and read, back to page 0:
@@ -1151,8 +1164,11 @@ K.galleryLockedRefusesAll = !!(L.allRefused && L.cursorClimbs && L.thumbLocked);
 K.galleryRefusedSwipeFreesWheel = !!L.sideFree;
 K.galleryLockedSaysWhy = !!L.nopeSays;
 if (!K.galleryLongNotReadAtOnce || !K.galleryLockedRefusesAll || !K.galleryLockedSaysWhy) console.log('gallery lock', JSON.stringify(L));
-await p.keyboard.press('Escape');                               // and the window can always be left
-K.galleryLockedEscCloses = await until(() => window.__gal && window.__enc.getState() === 'play', 30000)
+await p.keyboard.press('Escape');                               // v21.30: and Esc does not let him out early
+await p.waitForTimeout(900);
+K.galleryLockedEscStays = await p.evaluate(() => window.__gal === undefined && window.__enc.getState() === 'gallery' && window.__enc.kit.galleryOpen());
+await p.evaluate(() => window.__enc.galleryClose('x'));         // (the probe's own close: the reading so far, none)
+K.galleryLockedProbeAnswers = await until(() => window.__gal && window.__enc.getState() === 'play', 30000)
   .then(() => p.evaluate(() => window.__gal.seenAll === false && window.__gal.seen.length === 0), () => false);
 K.galleryNopeOnPressed = !!L.nopeOnThumb;
 /* v21.26: a window closed by accident and opened again finds the page's reading where it was (it went back to 0) */
@@ -1271,7 +1287,7 @@ await until(() => window.__enc.getState() === 'play' && !window.__enc.kit.galler
 /* v21.27: ONE NOTCH NEVER TURNS. A page whose last line came on screen since the last frame counts INSIDE the wheel
    event, and is pulled on like any other — two notches, then the rest of the spin held. v21.26 read the lock as of the
    last frame and pressed NEXT to say why, and NEXT, counting the page, turned it on the one notch with nothing to hold
-   the spin. Opened and spun in ONE task, with no frame between (a busy wait past the page's 1.2 s), so a loaded box
+   the spin. Opened and spun in ONE task, with no frame between (a busy wait past the page's 0.8 s — 1.2 until v21.30), so a loaded box
    cannot change what is tested. */
 await p.waitForTimeout(800);
 const NOTCH_PAGES = [
@@ -1304,6 +1320,19 @@ if (!K.galleryWheelNotchNoTurn) console.log('gallery notch', JSON.stringify(N));
 await p.waitForTimeout(800);
 await p.evaluate(() => window.__enc.galleryClose('x'));
 await until(() => window.__enc.getState() === 'play' && !window.__enc.kit.galleryOpen(), 30000).catch(() => {});
+/* v21.30: THE THIRTIETH SEAM — kit.captions. Two lines, each in its own window of wall time: the first up at once with
+   its words and its meaning under them, then the second; null takes it down. (Windows of seconds, not tenths: on a box
+   drawing a frame a second a tenth-of-a-second window is never painted at all) */
+await p.evaluate(() => window.__enc.kit.captions([{ at: 0, end: 6, text: 'Line one', sub: 'Meaning one' }, { at: 8, end: 16, text: 'Line two', sub: 'Meaning two' }]));
+K.captionFirst = await until(() => { const el = document.getElementById('caption');
+  return el.classList.contains('on') && el.querySelector('.capMain').textContent === 'Line one' && el.querySelector('.capSub').textContent === 'Meaning one'
+    && getComputedStyle(el).display !== 'none'; }, 15000).then(() => true, () => false);
+K.captionSecond = await until(() => { const el = document.getElementById('caption');
+  return el.classList.contains('on') && el.querySelector('.capMain').textContent === 'Line two' && el.querySelector('.capSub').textContent === 'Meaning two'; }, 30000)
+  .then(() => true, () => false);
+await p.evaluate(() => window.__enc.kit.captions(null));
+K.captionCleared = await until(() => !document.getElementById('caption').classList.contains('on') && window.__enc.kit.captionNow() === null, 15000)
+  .then(() => true, () => false);
 /* v21.0: THE TWENTY-SIXTH SEAM — kit.film. From play, a declared film runs
    (state cine, the HUD hidden); at its end the state is PLAY again, no card;
    the black it ended on is the kit's, the chapter's onDone ran under it and

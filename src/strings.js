@@ -457,7 +457,6 @@ Object.assign(window.__TEXT__, {
   'gallery.nextBtn':     'Next',
   // v21.25: the button that ends the window says so (Chad: "Continue is misleading ... it ends the whole window")
   'gallery.finish':      'Close gallery',
-  'gallery.close':       'Close',
   'gallery.prev':        'Previous',
   'gallery.next':        'Next',
   // v21.25: a page turns on only once its story has been read through — said as the window opens, and again when
@@ -467,6 +466,7 @@ Object.assign(window.__TEXT__, {
   'gallery.lockRead':    'Keep reading — Next fills up as you read',              // v21.26: names the button, not "the bar"
   'gallery.lockReadLast':'Keep reading — Close gallery fills up as you read',     // v21.26: the last page's way on
   'gallery.lockOrder':   'The pages open in order, one at a time',
+  'gallery.lockStay':    'The gallery closes at the end, once every story is read',   // v21.30: Esc before the end (the X is gone)
   // v21.23: the end of each story — the way on, by name, and (on a desktop) what the wheel does there
   'gallery.endNext':     'Next',
   'gallery.endPull':     'Scroll on to turn the page',

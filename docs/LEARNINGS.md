@@ -6049,3 +6049,47 @@ cut (sharing its vertices and maps) when it is small.
   Write an evaluate that starts something and does not wait for it in braces (`=> { start(); }`). And when a harness
   runs more than twice as long as it usually does, it is hung, not slow: compare against the logged durations
   before waiting longer.
+- **A comma inside a cue's time hides the cue from the warm scan** (v21.30). The engine finds a cutscene's sounds by
+  READING ITS SOURCE for `sfx(<time>, '<name>')`, and so does `chaptertest`; the time is matched as "anything up to the
+  first comma". Scene B's `sfx(Math.max(26.7, H0 + 1.0), 'z3B4')` has a comma inside the time, so the scan read
+  `Math.max(26.7` as the time and `H0 + 1.0)` as the name — and the line was never warmed: on a first run it would
+  have been asked for cold and played nothing. `chaptertest` caught it ("fires 'z3B4' but nothing warms it"). Compute
+  such a time into a `const` first and cue the const. The same scan reads comments: a comment that quotes
+  `sfx(t, 'name')` as an example is a cue to it, and failed as "'name' is not a kind in STING_SAMPLE".
+- **A sound the world plays by name is not yet a sound a scene can cue** (v21.30). The shrine's one-shots (the
+  geckos, the wind chime at the door) are played through `worldSfx` by name and have no row in `STING_SAMPLE`; ending
+  D's `sfx(t, 'windchime')` therefore "plays nothing" until the row exists. Adding the row does not move the sound to
+  the shared pack — `build.py` excludes `STING_SAMPLE` (a vocabulary, not a use) from its scan of what the engine
+  itself plays — so it stays in the one chapter that asks for it.
+- **A recording stub must hand a scene everything the scene READS, not only the verbs it calls** (v21.30). The four
+  endings were scanned inside the hosted build by calling each scene with a recording api, so every walk would be its
+  real length. The scan threw before it recorded a single cue: `holdUp` reads `camera.quaternion.constructor` to make
+  a scratch quaternion, and the stub's camera was a plain object (`{ aspect, fov, rotation }`). A stub built from "the
+  verbs the scene uses" misses the objects a helper reads. Hand it the live object (`camera: E.camera`) wherever the
+  scene only reads it, and keep the stub for what the scene would WRITE.
+- **A decision cannot be reopened from the card it ended on** (v21.30). A probe that played ending A and then called
+  `applyPhase('called')` from the outcome card waited five minutes for a decision that never came: the chapter opens its
+  decision only from PLAY (`openWhenClear` returns unless the state is `play`), and the card is not play. It wasted the whole run (B, C and D each timed out in turn). Drive
+  each ending in a fresh page (`ONLY=n`). It costs one boot per ending, and it is the path a player takes.
+- **A turn that hands over to a walk must end where the walk begins** (v21.30). `turnOnto` writes the heading only
+  while its own clock runs (so it never fights the walk that follows), and every passed track is re-applied on every
+  frame in push order. Leave a gap between the turn's end and the walk's start and the last HELD heading — an earlier
+  `yawTo`, still writing its end value each frame — takes the lens back for the length of the gap: in ending D the
+  look comes down from the stars onto the lorong 2.4 s before he steps off, and through `turnOnto` it would have
+  snapped back to the kopitiam for those 2.4 s. When the look must hold before a walk, turn with a plain `yawTo` pushed
+  BEFORE the walk (it holds its end value, and the walk, pushed after it, takes over on its first frame), and aim it at
+  the walk's own first heading — the point `LOOK` metres along the route, as `walkRoute` computes it — so nothing jumps.
+- **In a point-of-view scene a cut away from his eyes needs the cast to look at HIM, not at the lens** (v21.30). A rig
+  with `look = 1` and no `lookAt` turns its head to the camera, which is right while the camera is his eyes. Ending A's
+  rite cuts to three shots from outside him (his eyes are shut), and the medium and the assistant would have turned to
+  look into each of those lenses. Aim their heads at where he IS (his kneeling head, `lookToward`) for as long as the
+  camera is elsewhere, and hand them back to the lens (`lookAt = null`) on the frame his eyes open. And frame those
+  shots so the place where he kneels is never in them: there is no body there to see.
+- **A scene with words and no direction is not finished** (v21.30, Chad: "I dont think you're trying hard enough on
+  these cutscenes"). Read back from the phone photographs, the first cut of the four endings held one medium shot for
+  sixteen seconds while the medium spoke, a black screen for thirteen, the stars for twenty-six. The cheapest direction
+  this engine has is the `lens` track: it changes only the field of view, so it can never fight a walk, a turn or a
+  camera move; a slow push (72° → 60°) on the person speaking draws the eye the way a cut would, and a turn on the word
+  to what the words are about ("Yesterday you danced for the Buddha" → the altar) does the rest. A phone's frame is a
+  third of a desktop's across, so the deepest pushes are chosen per screen. Hand the lens back to 72° before every walk,
+  every take and every cut, in push order (a passed `lens` track keeps writing its end value).

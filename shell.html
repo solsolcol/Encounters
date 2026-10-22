@@ -52,6 +52,26 @@ html,body{height:100%;overflow:hidden;background:var(--void);color:var(--bone);
    One element, fired through kit.flash(), so a chapter never reaches into
    the DOM for it — a wash of colour from the edges in, gone in half a
    second. Chapters 1-5 never call it, so the base game never sees it. */
+/* v21.30 · THE CAPTIONS (kit.captions, the thirtieth seam): a voice's words at the bottom of the screen and, in italic
+   under them, what they mean — set in the game's serif, the way a chanting book sets the Pali over its English. Over
+   the world and the hint line, under every panel; each line rises on, and fades off */
+#caption{position:fixed;left:50%;bottom:max(10vh,calc(env(safe-area-inset-bottom) + 72px));z-index:5;
+  transform:translate(-50%,8px);opacity:0;pointer-events:none;text-align:center;text-wrap:balance;
+  width:max-content;max-width:min(92vw,820px);padding:12px 26px 13px;border-radius:14px;
+  background:linear-gradient(180deg,rgba(10,8,6,.64),rgba(10,8,6,.52));border:1px solid rgba(233,201,138,.16);
+  box-shadow:0 8px 30px rgba(0,0,0,.35);transition:opacity .32s var(--ease),transform .32s var(--ease)}
+#caption.on{opacity:1;transform:translate(-50%,0)}
+#caption.swap{animation:capSwap .42s var(--ease)}
+@keyframes capSwap{0%{opacity:.15;transform:translate(-50%,6px)}100%{opacity:1;transform:translate(-50%,0)}}
+#caption .capMain{font-family:"Cormorant Garamond",Georgia,serif;font-weight:600;font-size:1.62rem;line-height:1.2;
+  color:#F4ECD8;letter-spacing:.01em;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+#caption .capSub{margin-top:4px;font-family:"Cormorant Garamond",Georgia,serif;font-style:italic;font-weight:500;
+  font-size:1.2rem;line-height:1.25;color:#E9C98A;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+body.cine #caption{bottom:calc(12vh + 10px)}   /* (in a scene: over the letterbox's bottom bar, not on it) */
+@media (max-width:640px){
+  #caption{bottom:max(17vh,calc(env(safe-area-inset-bottom) + 96px));padding:9px 16px 10px;border-radius:12px}
+  #caption .capMain{font-size:1.26rem} #caption .capSub{font-size:1.02rem}
+}
 #hudflash{position:fixed;inset:0;pointer-events:none;z-index:6;opacity:0;
   background:radial-gradient(ellipse at center,transparent 22%,var(--fc,#63D6C8) 130%)}
 #hudflash.on{animation:hudFlash var(--fs,.55s) ease-out}
@@ -1951,11 +1971,6 @@ body.hasTorch.galleryopen .torchBtn{display:none}
   text-shadow:0 0 16px rgba(255,179,103,.6);animation:unLabelIn .8s var(--ease) .1s backwards}
 .galLabel::before,.galLabel::after{content:"";width:min(64px,9vw);height:1px;background:linear-gradient(90deg,transparent,rgba(255,179,103,.85))}
 .galLabel::after{transform:scaleX(-1)}
-/* (v21.23: inside the top-right flourish, not on it — at right:-8px its dark disc sat over the corner's curl) */
-.galX{position:absolute;right:36px;top:-4px;width:40px;height:40px;border-radius:50%;z-index:3;cursor:pointer;
-  border:1px solid rgba(255,204,118,.5);background:rgba(0,0,0,.4);color:#efe2c4;font:600 17px/1 var(--ui);
-  display:grid;place-items:center;transition:background .2s,border-color .2s,color .2s,transform .2s var(--ease)}
-.galX:hover,.galX:focus-visible{background:rgba(255,190,90,.2);border-color:#FFCF6E;color:#FFE7B0;transform:rotate(90deg);outline:none}
 .galBody{position:relative;flex:1 1 auto;min-height:0;display:flex;align-items:stretch;touch-action:pan-y}
 .galPage{flex:1 1 auto;min-width:0;min-height:0;display:grid;grid-template-columns:minmax(0,43%) minmax(0,1fr);
   gap:clamp(14px,3vw,44px);padding:0 52px;perspective:1600px;transition:transform .25s var(--ease);
@@ -2215,7 +2230,6 @@ body.finePtr .galPull,body.finePtr .galEndHint{display:block}
   .galCorner{width:38px;height:38px}
   .galHead{min-height:30px;margin-bottom:6px}
   .galLabel{letter-spacing:.2em;gap:8px} .galLabel::before,.galLabel::after{width:16px}
-  .galX{width:34px;height:34px;right:35px;top:-2px;font-size:15px}
   /* v21.23 · THE PORTRAIT IS THE HERO: centred over the page at two thirds of its width — about one and a half times
      the old column's — with his names and dates under it like a museum label, then what he is known for and his
      story. (Beside a column of dates, a master's face was the size of a stamp on the one device this is played on.) */
@@ -2281,7 +2295,7 @@ body.finePtr .galPull,body.finePtr .galEndHint{display:block}
     white-space:nowrap;border-radius:3px;background:rgba(10,7,4,.9);border:1px solid rgba(255,204,118,.35);color:#e7d4a8;
     pointer-events:none}
   .galName{font-size:1.3rem}
-  .galCorner{width:40px;height:40px} .galX{right:32px}   /* (v21.23: the X clear of the smaller corner) */
+  .galCorner{width:40px;height:40px}
   .galFoot{padding-left:30px;padding-right:30px}         /* (and the thumbnails and NEXT clear of the bottom corners) */
 }
 
@@ -2494,6 +2508,7 @@ body.finePtr .galPull,body.finePtr .galEndHint{display:block}
 <div id="panic"></div>
 <!-- v8.7: one screen flash, fired by the kit — a reached place, a beat landing -->
 <div id="hudflash"></div>
+<div id="caption" aria-live="polite"><div class="capMain"></div><div class="capSub"></div></div>
 <div id="cineFade"></div>
 <!-- v14.16: the loading word over the black before an opening film (the chapter card is hidden there) -->
 <span class="stencil hide" id="worldLoad" data-t="chapter.loading">Loading&hellip;</span>
@@ -3181,7 +3196,6 @@ body.finePtr .galPull,body.finePtr .galEndHint{display:block}
     </svg>
     <div class="galHead">
       <span class="galLabel" id="galLabel"></span>
-      <button id="galX" class="galX" type="button" aria-label="Close" data-t-aria="gallery.close">&#x2715;</button>
     </div>
     <div class="galBody" id="galBody">
       <button class="galNav prev" id="galPrev" type="button" aria-label="Previous" data-t-aria="gallery.prev"><svg aria-hidden="true" style="transform:scaleX(-1)"><use href="#gal-chev"/></svg></button>

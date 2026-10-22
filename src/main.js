@@ -2280,6 +2280,42 @@ function flashRun() {
   clearTimeout(kitFlashT);
   kitFlashT = setTimeout(() => el.classList.remove('on'), req.secs * 1000 + 60);
 }
+/* v21.30 · THE THIRTIETH SEAM — CAPTIONS (Chad, on episode 3 chapter 3's chant: "i want there to be subtitles and
+   translation at the bottom of the screen, to explain to the user how each line is pronounced and what each line means
+   in english"). `kit.captions(list)` shows each { at, end, text, sub } at the bottom of the screen — `text` the line as
+   it is said, `sub` what it means, in italic under it — between its own `at` and `end`, in seconds from the CALL, on
+   WALL time (the v7.4 law): what a caption is timed against is a voice, and a voice plays on in the sound card through
+   frames the chapter's clock never counts. Painted in play and in a scene only; a panel opened over it hides it, and
+   its times run on under the panel exactly as the voice does. null (or an empty list) takes it down, and a run never
+   starts with one up (kitReset). The verb only records; the frame paints (the kit's law). Episodes 1 and 2 never call
+   it. */
+let kitCaps = null;
+const capPainted = { k: -2, el: null };
+function kitCaptionsSet(list) {
+  const L = Array.isArray(list) ? list.filter(q => q && (q.text || q.sub)).map(q => ({
+    at: Math.max(0, +q.at || 0), end: Math.max(0, +q.end || 0), text: String(q.text || ''), sub: String(q.sub || '') })) : [];
+  kitCaps = L.length ? { t0: performance.now(), list: L, last: Math.max(...L.map(q => q.end)) } : null;
+}
+function captionsFrame() {
+  let k = -1;
+  if (kitCaps) {
+    const t = (performance.now() - kitCaps.t0) / 1000;
+    if (t > kitCaps.last + 0.5) kitCaps = null;
+    else if (state === 'play' || state === 'cine') kitCaps.list.forEach((q, i) => { if (t >= q.at && t < q.end) k = i; });
+  }
+  if (k === capPainted.k) return;
+  const el = capPainted.el || (capPainted.el = $('caption')); if (!el) return;
+  const was = capPainted.k; capPainted.k = k;
+  if (k < 0) { el.classList.remove('on'); return; }
+  const q = kitCaps.list[k];
+  el.querySelector('.capMain').textContent = q.text;
+  el.querySelector('.capSub').textContent = q.sub;
+  el.querySelector('.capSub').classList.toggle('hide', !q.sub);
+  /* (a line that follows another directly comes up again on its own, rather than its words changing under a caption
+     already standing — `swap` replays the rise) */
+  el.classList.remove('swap'); if (was >= 0) { void el.offsetWidth; el.classList.add('swap'); }
+  el.classList.add('on');
+}
 function objReset() {
   objQ.length = 0; objBeat = null;
   clearTimeout(objSwapT); clearTimeout(objFlashT);
@@ -4641,6 +4677,7 @@ function kitFrame(dt, t, dLookX, dLookY) {
   } else if (kitTimer) kitTimer.last = 0;
   paintObjective();
   flashRun();                       // v8.7: the kit's screen flash, if one was asked for
+  captionsFrame();                  // v21.30: the captions, if a chapter asked for any
   paintWaypoint();
   paintHotMarks();
   // the decision clock
@@ -4668,6 +4705,7 @@ function kitReset() {
   kitObjective = null; kitTimer = null; kitWaypoint = null;
   objReset();                       // v8.7: and the beats queued against the old objective
   kitFlashReq = null;
+  kitCaps = null;                   // v21.30: and no caption left up from the run before
   kitPose = 'standing'; eyeY = 1.62; poseFrom = poseTo = 1.62; poseT = 1; pitchLo = -1.2; pitchHi = 1.2;
   chapterPresence = 0;
   dayTween = null;
@@ -4795,6 +4833,8 @@ const KIT = {
   decisionClock: (secs, onExpire) => { decClock = secs > 0 ? { secs, left: secs, onExpire, fired: false } : null; },
   haptic,
   flash: kitFlashSet,              // v8.7: one wash of colour over the screen
+  captions: kitCaptionsSet,        // v21.30: the thirtieth seam — a voice's words at the bottom of the screen, and what they mean
+  captionNow: () => (capPainted.k >= 0 && kitCaps ? { ...kitCaps.list[capPainted.k], k: capPainted.k } : null),
   root: on => { kitRooted = !!on; },   // v11.1: hold the player in place (the look and the torch still work)
   pray: kitPraySet,                // v16.5: the hands into añjali in PLAY — episode 1 chapter 1's scene D pose, exactly
   praying: () => pray.to > 0,
@@ -6856,9 +6896,12 @@ const ADULT_TAKES = new Set([
   'z3pro6',                                                                                 // v21.19: the bus in (v21.20: z3pro7, the crossing, went)
   'z3masters',                                                                            // v21.11: his answer as the gallery of the masters opens
   'z3what',                                                                               // v21.12: his surprised answer to the medium, before the roar
+  'z3roar',                                                                               // v21.30: in the roar film, as the lens circles the Hanuman
   'z3thanks', 'z3shift1', 'z3shift2', 'z3breath', 'z3knew', 'z3night', 'z3shrine', 'z3walk',
   'z3A1', 'z3A2', 'z3B1', 'z3B2', 'z3thank', 'z3C2', 'z3D2', 'z3D3',
-  'z3close', 'z3next', 'z3A', 'z3B', 'z3C', 'z3D']);
+  'z3close', 'z3next', 'z3A', 'z3B', 'z3C', 'z3D',
+  /* v21.30: the four endings told whole (docs/V21.30-PLAN.md) */
+  'z3A3', 'z3A4', 'z3A5', 'z3B3', 'z3B4', 'z3B5', 'z3B6', 'z3C1', 'z3C3', 'z3C4', 'z3C5', 'z3C6', 'z3D1', 'z3D4']);
 /* The rest of the cast. They share `voiceOut` and the duck, but not the
    boost — see voiceStage() above. */
 const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
@@ -6916,7 +6959,8 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
      at the Hanuman (the owner's Namo is retired with the monk's coming) */
   'mk3chant', 'cu3sadhu', 'md3gasp',
   'ow3masters',   // v21.11: the owner introduces the gallery of the masters
-  'wf3thanks', 'md3fu', 'fa3thanks']);   // v21.12: the wife and the father thank the medium, and his talisman for the father   // v19.4: their whispers in play, as his hands move      // v18.0: the laywoman beside him (Onnie) and Yai in front (Air), whispered
+  'wf3thanks', 'md3fu', 'fa3thanks',   // v21.12: the wife and the father thank the medium, and his talisman for the father   // v19.4: their whispers in play, as his hands move      // v18.0: the laywoman beside him (Onnie) and Yai in front (Air), whispered
+  'md3A3', 'md3B2', 'md3B3', 'md3D2', 'md3D3', 'ow3C1', 'ow3C2']);   // v21.30: the medium kind in all four endings, the owner's second opinion
 const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || ADULT_TAKES.has(name) || CAST_TAKES.has(name);
 /* v6.9: his WHISPERS go round the bus. Chad wanted the three pick-up
    reactions "almost whispering to himself" and they were re-voiced as
@@ -8893,15 +8937,19 @@ addEventListener('keydown', e => {
    turn at a time; going back is always allowed; and the window ends only on
    the LAST page, every page read, by a button that says so — Close gallery
    (CONTINUE, which "ends the whole window", is gone). Every page read, the
-   window says so — a ring of light, its own chime. Esc and the X close it at any time:
-   the Promise answers `{ seenAll, seen, last }` either way (null only when
-   the run is torn down under it), and what the reading MEANS is the story's
-   business — the chapter decides whether an early close counts. Sounds are
+   window says so — a ring of light, its own chime. v21.30 · AND NOTHING CLOSES
+   IT EARLY (Chad: "From the moment the player opens the gallery window, they
+   must finish the entire experience and read everything, before they can close
+   at the very end"): the X is gone, and Esc says so instead of closing — at the
+   very end it is Close gallery, as Enter is. The Promise answers `{ seenAll,
+   seen, last }` (null when the run is torn down under it; a probe's own close
+   answers the reading so far), and what the reading MEANS is the story's
+   business. Sounds are
    the chapter's (`opts.sounds`: open, flip, read, done, close as [name, vol]),
    the engine's UI sounds standing in. While it is open the world is not
    drawn (the window and its backdrop cover it; WORLD COVERED, v15.0). Only
    episode 3 chapter 3 calls it; the fixture proves it. */
-const GAL_DWELL = 1200, GAL_GUARD = 450;
+const GAL_DWELL = 800, GAL_GUARD = 450;   // v21.30: 800 (it was 1200 — Chad: "the timer for each page can be set faster, maybe faster by about 50%")
 /* v21.23 · the wheel (the listener says why): a gap of GAL_QUIET ms ends a gesture; a pull from the end of a story
    turns the page at GAL_PULL px (two notches of a mouse wheel), holds GAL_HOLD ms after its last notch and drains over
    GAL_DRAIN; a turn holds the wheel GAL_LOCK ms at least and until it has gone quiet; sideways, GAL_SWIPE px turns */
@@ -8910,8 +8958,11 @@ const GAL_QUIET = 260, GAL_PULL = 200, GAL_HOLD = 700, GAL_DRAIN = 500, GAL_LOCK
    600 a minute, the upper edge of skimming and two and a half times an average adult's silent reading (~238), so a
    genuine reader never waits on it (Chad: "it needs to remain intuitive") — and never
    past the bottom of what is on screen; the page counts as read when the cursor reaches the story's last line. And one
-   turn at a time: a turn within GAL_TURN ms of the last one is refused, by every route (the turn's own sweep is 750) */
-const GAL_PACE = 10, GAL_TURN = 500;
+   turn at a time: a turn within GAL_TURN ms of the last one is refused, by every route (the turn's own sweep is 750).
+   v21.30 · HALF AGAIN AS FAST (Chad: "the timer for each page can be set faster, maybe faster by about 50%"): 15 words
+   a second, 900 a minute, and the floor under a short page 0.8 s — each master's page fills in two thirds of the time
+   it took */
+const GAL_PACE = 15, GAL_TURN = 500;
 const gal = { open: false, pages: null, i: 0, seen: null, done: false, t0: 0, dwellT: 0, resolve: null, outT: 0,
               raf: 0, sounds: null, img: 0, imgT: 0, bmps: new Map(), fx: null, wheelLast: 0, lockTill: 0, swipe: 0, swipeSpent: false,
               armed: false, pull: 0, pullT: 0, pullShown: -1, ptrs: new Set(), closedT: -1e9, doneT: 0, hidT: 0, wake: null,
@@ -8981,7 +9032,6 @@ function kitGallery(opts = {}) {
   for (const k in keys) keys[k] = false;
   state = 'gallery';
   $('galLabel').textContent = opts.label || T('gallery.label', 'Gallery');
-  $('galX').setAttribute('aria-label', T('gallery.close', 'Close'));
   $('galPrev').setAttribute('aria-label', T('gallery.prev', 'Previous'));
   $('galNext').setAttribute('aria-label', T('gallery.next', 'Next'));
   /* the thumbnails: one round button a page, its picture drawn into it when it arrives */
@@ -9348,6 +9398,7 @@ function galNope(kind, targets) {
   if (h) {
     clearTimeout(gal.hintT);
     h.textContent = kind === 'order' ? T('gallery.lockOrder', 'The pages open in order, one at a time')
+                  : kind === 'stay' ? T('gallery.lockStay', 'The gallery closes at the end, once every story is read')   // v21.30: Esc, early
                   : kind === 'readLast' ? T('gallery.lockReadLast', 'Keep reading — Close gallery fills up as you read')
                   : T('gallery.lockRead', 'Keep reading — Next fills up as you read');
     h.classList.remove('gone'); h.classList.add('say');
@@ -9376,8 +9427,9 @@ function galScroller() {
 }
 function galClose(how) {
   if (!gal.open) return false;
-  /* (the X too: on a phone the tap that opened the window is followed by the browser's own click, which can land on
-     whatever now sits under the finger — the X included) */
+  /* (and a probe's close inside the guard too — `x`, the name the X's own path had until v21.30 took the X away: on a
+     phone the tap that opened the window is followed by the browser's own click, which can land on whatever now sits
+     under the finger) */
   if ((how === 'done' || how === 'key' || how === 'x') && performance.now() - gal.t0 < GAL_GUARD) return false;
   const out = { seenAll: gal.done, seen: [...gal.seen].sort((a, b) => a - b).map(k => gal.pages[k].id), last: gal.pages[gal.i] && gal.pages[gal.i].id };
   gal.open = false;
@@ -9559,7 +9611,6 @@ function galFxDraw(dt, t) {
 $('galPrev')?.addEventListener('click', () => galGo(-1));
 $('galNext')?.addEventListener('click', () => galGo(1));
 $('galGo')?.addEventListener('click', () => galPrimary());
-$('galX')?.addEventListener('click', () => galClose('x'));
 $('galThumbs')?.addEventListener('click', e => { const b = e.target.closest?.('.galThumb'); if (b) galJump(+b.dataset.i); });
 $('galPips')?.addEventListener('click', e => { const b = e.target.closest?.('button'); if (b) galPip(+b.dataset.k); });
 $('galEndGo')?.addEventListener('click', () => galPrimary());
@@ -9720,8 +9771,8 @@ addEventListener('keydown', e => {
     return;
   }
   if (['Enter', 'Space', 'NumpadEnter'].includes(c)) {
-    /* (a button the keyboard brought the focus to answers its own key — a thumbnail, an arrow, the X; a mouse press
-       never leaves one focused, so for anyone else these keys are NEXT, once) */
+    /* (a button the keyboard brought the focus to answers its own key — a thumbnail, an arrow; a mouse press never
+       leaves one focused, so for anyone else these keys are NEXT, once) */
     const f = document.activeElement;
     if (f && f.tagName === 'BUTTON' && $('gallery').contains(f)) return;
     e.preventDefault();
@@ -9735,7 +9786,19 @@ addEventListener('keydown', e => {
     }
     galPrimary(); return;
   }
-  if (c === 'Escape') { e.preventDefault(); galClose('esc'); return; }
+  /* v21.30 · NOTHING CLOSES IT EARLY (Chad: "do not allow the player to close the window, remove the X button. This is to
+     prevent the player from closing the gallery prematurely. From the moment the player opens the gallery window, they
+     must finish the entire experience and read everything, before they can close at the very end"). The X is gone, and
+     Esc closes nothing early: on the last page with every story read it is Close gallery, as Enter is; anywhere before
+     that it says so, and the window stays */
+  if (c === 'Escape') {
+    e.preventDefault();
+    if (e.repeat) return;
+    const t = galNext();
+    if (t && t.close && !t.locked) { galPrimary(); return; }
+    galNope('stay', []);
+    return;
+  }
   if (c === 'KeyE' || c === 'KeyI' || c === 'KeyM' || c === 'KeyF') e.preventDefault();   // the world's keys do nothing under it
 });
 
@@ -10921,6 +10984,7 @@ const STING_SAMPLE = {
   z3look1: ['z3look1', 1], z3look2: ['z3look2', 1], z3look3: ['z3look3', 1], z3look4: ['z3look4', 1], ow3call: ['ow3call', 1],
   ow3masters: ['ow3masters', 1], z3masters: ['z3masters', 1],   // v21.11: the owner introduces the gallery of the masters; his answer
   wf3thanks: ['wf3thanks', 1], md3fu: ['md3fu', 1], fa3thanks: ['fa3thanks', 1], z3what: ['z3what', 1],   // v21.12: the shrine's thanks, the talisman, his answer
+  z3roar: ['z3roar', 1],                                        // v21.30: "I feel something... roaring through me..." as the lens circles it
   hanuappear: ['hanuappear', 1], hanuhold: ['hanuhold', 0.55],   // v21.12: the Hanuman fades, zooms and glows into view; its glow while the lens circles it
   ow3gift1: ['ow3gift1', 1], ow3gift2: ['ow3gift2', 1], z3thanks: ['z3thanks', 1], ow3good: ['ow3good', 1],
   z3shift1: ['z3shift1', 1], z3shift2: ['z3shift2', 1], ow3eh: ['ow3eh', 1], sm3hold: ['sm3hold', 1], sm3cannot: ['sm3cannot', 1],
@@ -10933,6 +10997,12 @@ const STING_SAMPLE = {
   as3B: ['as3B', 1], z3B2: ['z3B2', 1], z3thank: ['z3thank', 1], md3C: ['md3C', 1], z3C2: ['z3C2', 1],
   md3D: ['md3D', 1], z3D2: ['z3D2', 1], z3D3: ['z3D3', 1], z3close: ['z3close', 1], z3next: ['z3next', 1],
   z3A: ['z3A', 1], z3B: ['z3B', 1], z3C: ['z3C', 1], z3D: ['z3D', 1],
+  /* v21.30 · the four endings told whole (masters/v21.30/make.sh) */
+  z3A3: ['z3A3', 1], md3A3: ['md3A3', 1], z3A4: ['z3A4', 1], z3A5: ['z3A5', 1],
+  md3B2: ['md3B2', 1], z3B3: ['z3B3', 1], md3B3: ['md3B3', 1], z3B4: ['z3B4', 1], z3B5: ['z3B5', 1], z3B6: ['z3B6', 1],
+  z3C1: ['z3C1', 1], z3C3: ['z3C3', 1], ow3C1: ['ow3C1', 1], z3C4: ['z3C4', 1], ow3C2: ['ow3C2', 1], z3C5: ['z3C5', 1], z3C6: ['z3C6', 1],
+  z3D1: ['z3D1', 1], md3D2: ['md3D2', 1], md3D3: ['md3D3', 1], z3D4: ['z3D4', 1],
+  windchime: ['windchime', 1],                                  // (the shrine's own chime at the door, which ending D asks for as he bows)
   /* v21.0 · its effects, beds and music (masters/v21.0/make_fx.sh) */
   shopbell: ['shopbell', 1], presencein: ['presencein', 1],   // (v21.8: glasscase and casesnap retired with the LP Tim's glass lid)
   rushgrab: ['rushgrab', 1], crowdgasp: ['crowdgasp', 1], phonerec: ['phonerec', 1], stoolfall: ['stoolfall', 1],
