@@ -5919,3 +5919,17 @@ cut (sharing its vertices and maps) when it is small.
   forward and photograph" moved the FIRST mesh that was big, unskinned and textured — something else entirely —
   and both photographed nothing changing, which read as "the legs are still out of frame". The third picked the
   legs by their vertex count (41,956, measured by the diagnostic that found them) and moved the right thing.
+- **A clock that stops under a window must not hold a voice that does not** (v21.21, episode 3 chapter 3's
+  masters' gallery). A chapter's speech window (`speak.until`) is stated in the chapter's own clock, and that clock
+  only runs in PLAY — so it stands still under a modal window (the gallery, the bag, the menu), while a line said
+  as the window opens plays on in real time. When the window closed, the chapter still thought his answer was
+  being said for its whole length, and the next line — the one Chad wanted "immediately" — waited ~6 s behind a
+  voice that had long finished. On the window's close the bookings come forward by the WALL time the window was
+  up, and a line that never started (held cold) is dropped: it belonged to the window's opening. Generalised:
+  **anything booked on a play-only clock and then carried across a screen state must be re-based on wall time when
+  play comes back.**
+- **An order must not appear while the lines that lead to it are still waiting** (v21.21). The shop's fourth look
+  set the next phase on the press, so the owner's order, mark and badge were up while his call and the player's
+  own line still sat in the queue — and pressing him started a beat that EMPTIES the queue, so the lines were
+  skipped. The next objective now comes from the END of the last line before it (an `after()` scheduled from that
+  line's own start), and the browse offers nothing while any of its lines is waiting or being said.

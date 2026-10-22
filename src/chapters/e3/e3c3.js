@@ -4845,19 +4845,30 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       if (phase !== 'browse') return false;
       if (looked.has(k)) return false;
       looked.add(k);
-      queueLine(LOOKS[k].line);
+      holdTill = Infinity;                               // v21.21: held from the press until its line is over (holdFor)
+      queueLine(LOOKS[k].line, holdFor(LOOKS[k].line));
+      browseMark();
       if (looked.size >= LOOK_N) ownerCalls();          // the fourth: the owner's call is queued behind its line
-      else { objectiveFor('browse'); browseMark(); }
+      else objectiveFor('browse');
       return true;
     }
     function ownerCalls() {
       if (called || phase !== 'browse') return;
       called = true;
-      /* COMPLETE only when he did look around (v8.7) — since v21.9 the only way here from the browse */
-      setPhase('owner', looked.size >= LOOK_N ? undefined : { complete: false });
-      owner.look = 1;
+      /* v21.21 (Chad: "don't allow the player to tap on the next objective yet until the voiceline and everything is
+         totally completed. Only after full completion, then proceed to play the next owner voiceline and then allow
+         the player to proceed with the next objective"): the browse is done — OBJECTIVE COMPLETE, and the box empties
+         — but the owner calls only once the fourth look's line has been said in full (he is queued behind it), and
+         his order and his mark come only once he has finished. Until then nothing in the shop can be pressed: v21.9
+         put the order up on the fourth press, so the owner could be pressed while the lines still waited, and the
+         gift's start dropped them (giftBegin empties the queue) */
+      if (kit) kit.objective(null);
       queueGap(0.4);
-      queueLine('ow3call', () => talk(owner, SECS.ow3call), 1, panAt(OWN.x, OWN.z));
+      queueLine('ow3call', () => {
+        owner.look = 1;
+        talk(owner, SECS.ow3call);
+        after(SECS.ow3call + 0.25, () => { if (phase === 'browse' && called) setPhase('owner'); });
+      }, 1, panAt(OWN.x, OWN.z));
     }
 
     /* v21.10 · THE MASTERS' GALLERY (Chad: "when the player interacts with the
@@ -4883,6 +4894,13 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
                          done: ['galdone', 0.85], close: ['galclose', 0.6] };
     const galSeen = new Set();
     let galUp = false, galIntro = false;          // (galIntro: false · 'speaking' while the owner introduces it · 'done')
+    /* v21.21 · ONE THING AT A TIME (Chad: "The purpose of this change is to prevent skipping voicelines or having it
+       clash or queue wrongly"): from the press of a look until its line has been said in full — and while the owner
+       introduces the masters, and while he answers — nothing else in the browse is offered: no mark, no badge, no
+       press. So no line of the browse is ever queued behind another, cut off, or talked over. */
+    let holdTill = 0;                             // the chapter clock until which the browse holds every press
+    const browseHeld = () => dayClock.t < holdTill || galIntro === 'speaking';
+    const holdFor = (name) => () => { holdTill = dayClock.t + (SECS[name] || 2.5) + 0.25; };
     const galW = (k, f) => W['m' + k + f] || '';
     function galleryPages() {
       return GAL.map(g => ({
@@ -4921,13 +4939,22 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       if (phase !== 'browse' || looked.has('masters') || galUp || !kit || !kit.gallery) return false;
       /* his answer as the window opens: said HERE, in play, a beat before the window takes the screen — the chapter's
          own line queue does not run under the gallery (its clock is play's) */
-      if (reply) sayLine('z3masters');
+      if (reply) sayLine('z3masters', 1, holdFor('z3masters'));
       const answer = kit.gallery({ pages: galleryPages(), label: W.galLabel, seen: [...galSeen], sounds: GAL_SOUNDS });
       if (!kit.galleryOpen()) return false;              // refused (another window up, or not in play)
       galUp = true;
+      const opened = wallNow();
       answer.then(r => {
         galUp = false;
         if (!r) return;                                  // torn down under it (a Retry): reset() clears the reading
+        /* v21.21: the chapter's clock stands still under the window and the voices do not — his answer, booked on the
+           clock as the window opened, was still "being said" for its whole length after the window closed, so his
+           line about the masters waited for a voice that had long finished. The bookings come forward by the time
+           the window was up, and an answer that never started is dropped: it belongs to the window's opening */
+        const away = Math.max(0, wallNow() - opened);
+        if (speak.pending && speak.pending.name === 'z3masters') speak.pending = null;
+        speak.until = Math.max(dayClock.t, speak.until - away);
+        holdTill = Math.max(dayClock.t, holdTill - away);
         for (const id of r.seen) galSeen.add(id);
         if (r.seenAll && phase === 'browse') lookAt('masters');
         else browseMark();
@@ -5805,19 +5832,19 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
     const hotspots = [
       { id: 'lkWall', lookKey: 'wall', pos: { x: -3.2, y: 1.15, z: -3.4 }, radius: 9, aim: 0.30, pressAim: true, once: true, markFar: 9, markY: 0.25, prompt: W.lookWall,
         hits: tapBox(LCNT.x0 - 0.05, 0.35, LCNT.z1 - 0.05, LCNT.x1 + 0.05, LCNT.top + 0.02, LCNT.z0 + 0.05),   // the staff's counter, its trays
-        enabled: () => phase === 'browse', onInteract() { return lookAt('wall'); } },
+        enabled: () => phase === 'browse' && !browseHeld(), onInteract() { return lookAt('wall'); } },
       { id: 'lkTim', lookKey: 'tim', pos: { x: LPT.x, y: RCNT.top + 0.12, z: LPT.z }, radius: 6, aim: 0.20, pressAim: true, once: true, markFar: 6, prompt: W.lookTim,
         hits: tapBox(LPT.x - 0.13, RCNT.top - 0.02, LPT.z - 0.15, LPT.x + 0.13, RCNT.top + 0.40, LPT.z + 0.15),   // the LP Tim on its stand
-        enabled: () => phase === 'browse', onInteract() { return lookAt('tim'); } },
+        enabled: () => phase === 'browse' && !browseHeld(), onInteract() { return lookAt('tim'); } },
       { id: 'lkAltar', lookKey: 'altar', pos: { x: 0, y: 1.45, z: ALTAR.z + 0.1 }, radius: 9, aim: 0.30, pressAim: true, once: true, markFar: 9, prompt: W.lookAltar,   // (v21.8: on the row's Buddha and the monk before it)
         hits: tapBox(-ALTAR.w / 2 - 0.05, 0, SHOP.z0, ALTAR.w / 2 + 0.05, 2.45, ALTAR.z + ALTAR.d / 2 + 0.05),   // the altar, its row and the screen behind
-        enabled: () => phase === 'browse', onInteract() { return lookAt('altar'); } },
+        enabled: () => phase === 'browse' && !browseHeld(), onInteract() { return lookAt('altar'); } },
       /* (v21.9: the row's middle, its mark in the space between the row and the shelf-shrine over it — on the row it
          would stand on a master's face, under it it read as the owner's) */
       /* (v21.10: it opens the masters' gallery, and is not `once` — it stays until every page has been read) */
       { id: 'lkMasters', lookKey: 'masters', pos: { x: SHOP.x1 - 0.05, y: MSTR.y0 + MSTR.h / 2, z: MSTR.z }, radius: 9, aim: 0.26, pressAim: true, markFar: 9, markY: MSTR.h / 2 + 0.11, prompt: W.lookMasters,
         hits: tapBox(SHOP.x1 - 0.2, MSTR.y0 - 0.03, MSTR.z - MSTR.half - 0.04, SHOP.x1, MSTR.y0 + MSTR.h + 0.04, MSTR.z + MSTR.half + 0.04),   // the six portraits, one row (v21.10: its measured length)
-        enabled: () => phase === 'browse' && !looked.has('masters') && galIntro !== 'speaking', onInteract() { return galleryBegin(); } },   // (v21.11: not while the owner introduces it)
+        enabled: () => phase === 'browse' && !looked.has('masters') && !browseHeld(), onInteract() { return galleryBegin(); } },   // (v21.11: not while the owner introduces it; v21.21: nor while any line of the browse is said)
       { id: 'owner', pos: { x: OWN.x - 0.05, y: 1.45, z: OWN.z }, radius: 2.7, prompt: W.hotOwner, markY: 0.3,   // (just over his head: at the default it stood under the objective box from the counter — VP-4)
         enabled: () => phase === 'owner', onInteract() { return giftBegin(); } },
       { id: 'mat', pos: { x: MAT.x, y: 1.0, z: MAT.z }, radius: 1.5, prompt: W.hotMat, markY: -0.55,   // (just over the mat's glow: 1.45 m up it read as the altar's, beside a second marker — VP-5)
@@ -6148,6 +6175,9 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
           else if (k.startsWith('g.')) galSeen.add(k.slice(2));   // v21.10: the gallery's pages read
         }
         for (const h of hotspots) if (h.lookKey && looked.has(h.lookKey)) h.done = true;
+        /* v21.21: saved after the fourth look and before the owner's order (the order now waits for his call): the
+           browse is spent, so the Continue lands on the order itself, the owner already looking up */
+        if (looked.size >= LOOK_N) { p = 'owner'; called = true; }
       }
       setPhase(p);
       if (p === 'browse') {
@@ -6167,6 +6197,7 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       looked.clear(); called = false; gifted = false; wornDone = false; seated = null; turning = null; facing = null;
       bowing = null; chant = null; trance = null; celebrate = null; curTgt = 0; browseT0 = -1;
       galSeen.clear(); galUp = false; galIntro = false;          // v21.10: the masters' gallery unread again (v21.11: and introduced again)
+      holdTill = 0;                                              // v21.21: nothing held
       objWas = null; danceTo = 0; danceHalt = false; passerHeld = false; filmG.visible = false; passer.group.position.z = PASS.z;
       inc = null; sitB = null; walkB = null; bowB = null; roarDone = false; rite = false; jossHold(false);
       shrineRun++; shrDark = false;                              // (a warm still running belongs to the run before)
@@ -6327,6 +6358,7 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
                              pass: busPass && { x: +busX(busPass, dayClock.t).toFixed(2), z: busPass.z, dir: busPass.dir, stop: !!busPass.stop,
                                                 vol: +DATA.ambience.beds[13][1].toFixed(3), pan: +DATA.ambience.beds[13][2].toFixed(2) } }),
       info: () => ({ phase, t: +dayClock.t.toFixed(2), queued: lineQ.length, heard: [...heard], galSeen: [...galSeen], galUp, galIntro,
+                     held: browseHeld(), holdTill: Number.isFinite(holdTill) ? +holdTill.toFixed(2) : 'line',   // v21.21
                      until: +speak.until.toFixed(2), pending: speak.pending ? speak.pending.name : null,
                      looked: [...looked], called, gifted, worn: wornNow(), seated, celebrate,
                      trance: trance ? { t: +trance.t.toFixed(1), tgt: curTgt, ev: trance.ev, done: trance.done } : null,
