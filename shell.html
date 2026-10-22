@@ -2152,11 +2152,13 @@ body.finePtr .galPull,body.finePtr .galEndHint{display:block}
 .galThumb.locked{cursor:default;filter:none;transition:none;border-color:rgba(255,204,118,.18)}
 /* (v21.27: the dimming on the picture alone — on the whole button it dimmed the lock with it, cream to a low mid-grey;
    and no fade into it: the class lands after the window's first style pass, so every opening faded the locked
-   thumbnails from 80 % to 42 % over a quarter second. Unlocked, the base rules' transitions brighten it as before) */
+   thumbnails from 80 % to 42 % over a quarter second. Unlocked, the base rules' transitions brighten it as before.
+   A filter makes the picture a stacking context painted in tree order with the positioned lock, so the shackle — the
+   ::before, first in the tree — went under it: both halves of the lock carry z-index 1) */
 .galThumb.locked canvas{filter:saturate(.25) brightness(.42);transition:none}
-.galThumb.locked:not(.seen)::after{content:"";position:absolute;left:50%;top:50%;width:12px;height:9px;margin:0 0 0 -6px;border-radius:2px;
+.galThumb.locked:not(.seen)::after{content:"";position:absolute;z-index:1;left:50%;top:50%;width:12px;height:9px;margin:0 0 0 -6px;border-radius:2px;
   background:#e3cf9f;box-shadow:0 0 6px rgba(0,0,0,.9)}
-.galThumb.locked:not(.seen)::before{content:"";position:absolute;inset:auto;left:50%;top:50%;width:6px;height:7px;margin:-6px 0 0 -5px;
+.galThumb.locked:not(.seen)::before{content:"";position:absolute;z-index:1;inset:auto;left:50%;top:50%;width:6px;height:7px;margin:-6px 0 0 -5px;
   border:2px solid #e3cf9f;border-bottom:0;border-radius:5px 5px 0 0;background:none;opacity:1;-webkit-mask:none;mask:none}
 .galThumb.seen::after{content:"\2713";position:absolute;right:-5px;bottom:-5px;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;
   font:700 12px/1 var(--ui);color:#140f08;background:#FFCF6E;box-shadow:0 0 10px rgba(255,200,100,.85);animation:galTick .55s cubic-bezier(.2,1.7,.4,1) backwards}
