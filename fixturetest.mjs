@@ -965,7 +965,9 @@ K.galleryOpens = await p.evaluate((pages) => {
 }, GAL_PAGES);
 /* a page is not read at once, and is read after it has stood (v21.26: measured in the page — it counts no sooner than
    GAL_DWELL after the window opened; a separate round trip read it as "already read" on a loaded box) */
-K.galleryReadsOne = await until(() => window.__enc.galleryState().seen.includes(0), 30000).then(() => true, () => false);
+/* (v21.27: and until the page's own watcher has written WHEN — polling `seen` alone could see the page count before
+   the 20 ms watcher did, and read the stamp as null: a pass reported as a fail, the stamp 2568 ms a moment later) */
+K.galleryReadsOne = await until(() => window.__enc.galleryState().seen.includes(0) && window.__galRead0 != null, 30000).then(() => true, () => false);
 K.galleryNotAtOnce = await p.evaluate(() => window.__galRead0 != null && window.__galRead0 >= 1150);
 if (!K.galleryNotAtOnce) console.log('gallery not at once', await p.evaluate(() => window.__galRead0));
 K.galleryPicture = await until(() => {
@@ -1249,7 +1251,9 @@ await p.waitForTimeout(500);
 await p.evaluate(() => { if (window.__enc.kit.galleryOpen()) window.__enc.galleryClose('x'); });
 await until(() => window.__enc.getState() === 'play' && !window.__enc.kit.galleryOpen(), 30000).catch(() => {});
 await p.waitForTimeout(800);
-await p.evaluate((pages) => window.__enc.kit.gallery({ pages, label: 'Ends', seen: pages.map(q => q.id), start: 2 }), WHEEL_PAGES);
+/* (v21.27: in braces — returned, the window's own promise was the evaluate's answer, and it waits for the window to
+   CLOSE: the run hung here for good, since only the next step closes it) */
+await p.evaluate((pages) => { window.__enc.kit.gallery({ pages, label: 'Ends', seen: pages.map(q => q.id), start: 2 }); }, WHEEL_PAGES);
 await p.waitForTimeout(900);
 await p.keyboard.press('ArrowRight');
 await p.waitForTimeout(700);

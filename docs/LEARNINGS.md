@@ -6042,3 +6042,10 @@ cut (sharing its vertices and maps) when it is small.
   went UNDER the picture, and the body (last) stayed over it. Every number said both halves were there (content,
   size, opacity, colour); only a photograph at device scale 4 showed a cream box where a padlock had been. When a
   filter, opacity < 1, transform or will-change moves onto an element, check what its positioned siblings paint under.
+- **An `evaluate` answers with whatever its function returns, a promise included** (v21.27). The fixture opened a gallery with
+  `p.evaluate((pages) => window.__enc.kit.gallery({ … }), PAGES)`. Without braces the arrow RETURNS the call, so
+  Playwright awaited the window's own promise, which resolves only when the window closes. The step that closes it was
+  the next one, so the run hung for over an hour. That check normally takes seconds and the whole fixture 3–5 minutes.
+  Write an evaluate that starts something and does not wait for it in braces (`=> { start(); }`). And when a harness
+  runs more than twice as long as it usually does, it is hung, not slow: compare against the logged durations
+  before waiting longer.
