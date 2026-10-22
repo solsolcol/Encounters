@@ -52,7 +52,11 @@ from his **phone**. Consequences:
    your tests are complete"): the build he can play goes live the moment it
    is built and photographed, and the harnesses run while he plays it. A
    harness that then fails is fixed and redeployed — Netlify's two-tap
-   rollback is the safety net, not the wait.
+   rollback is the safety net, not the wait. **Probes and reviews ARE tests**
+   (Chad, v21.25: "When you know these tests will take very long to run,
+   deploy first, then fix later ... be smart about your time"): the moment a
+   build has booted the chapter it changes, it goes live — before the
+   real-input probes, the reviewers and the full harness, never after them.
    Nothing that talks to Google Drive may stand between a green build and
    Netlify; if the sheet upload fails, the build still ships and the sheet
    is retried afterwards.
