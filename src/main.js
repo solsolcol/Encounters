@@ -4661,6 +4661,8 @@ function kitFrame(dt, t, dLookX, dLookY) {
    through applyState afterwards */
 function kitReset() {
   if (ev) evResolve({ ok: false, aborted: true });
+  galCurs.clear();                  // v21.27: a gallery's reading is kept for the run, not past it — a chapter replayed
+                                    // is read again (its own `seen` resets with it), never pressed through at 1.2 s a page
   kitPhase = null;
   conductAcc.s = 0; conductAcc.a = 0; conductAcc.notes.length = 0;
   kitObjective = null; kitTimer = null; kitWaypoint = null;
@@ -8911,12 +8913,12 @@ const GAL_QUIET = 260, GAL_PULL = 200, GAL_HOLD = 700, GAL_DRAIN = 500, GAL_LOCK
    turn at a time: a turn within GAL_TURN ms of the last one is refused, by every route (the turn's own sweep is 750) */
 const GAL_PACE = 10, GAL_TURN = 500;
 const gal = { open: false, pages: null, i: 0, seen: null, done: false, t0: 0, dwellT: 0, resolve: null, outT: 0,
-              raf: 0, sounds: null, img: 0, imgT: 0, bmps: new Map(), fx: null, wheelLast: 0, lockTill: 0, swipe: 0,
+              raf: 0, sounds: null, img: 0, imgT: 0, bmps: new Map(), fx: null, wheelLast: 0, lockTill: 0, swipe: 0, swipeSpent: false,
               armed: false, pull: 0, pullT: 0, pullShown: -1, ptrs: new Set(), closedT: -1e9, doneT: 0, hidT: 0, wake: null,
               onRead: null, swapT: 0, flipT: 0, held: false, fxOff: false,
               cur: 0, curT: 0, words: 0, rdShown: -1, turnT: -1e9, nopeT: -1e9,   // v21.25 (the reading)
               drag: null, hintT: 0, label: '', lastT: 0 };
-/* v21.26: each page's reading so far, by the page's id, for as long as the game is open — a window closed by accident
+/* v21.26: each page's reading so far, by the page's id, for the run (kitReset clears it, v21.27) — a window closed by accident
    (the X, Esc) and opened again finds the page where it was, not back at its first line */
 const galCurs = new Map();
 const galPid = k => { const p = gal.pages && gal.pages[k]; return p && p.id != null ? String(p.id) : '#' + k; };
@@ -8967,7 +8969,7 @@ function kitGallery(opts = {}) {
       || performance.now() - gal.closedT < 600) return Promise.resolve(null);
   clearTimeout(gal.outT); clearTimeout(gal.hintT);
   gal.open = true; gal.pages = pages; gal.done = false; gal.sounds = opts.sounds || null;
-  gal.lockTill = 0; gal.swipe = 0; gal.armed = false; gal.pull = 0; gal.pullShown = -1;   // v21.23: no wheel carried in
+  gal.lockTill = 0; gal.swipe = 0; gal.swipeSpent = false; gal.armed = false; gal.pull = 0; gal.pullShown = -1;   // v21.23: no wheel carried in
   gal.ptrs.clear(); gal.doneT = 0; gal.hidT = 0; galHold(false);
   gal.turnT = -1e9; gal.nopeT = -1e9;                                    // v21.25 (v21.26: each page's reading is kept, galCurs)
   gal.onRead = typeof opts.onRead === 'function' ? opts.onRead : null;   // v21.23: told of each page as it is read
@@ -9248,6 +9250,9 @@ function galDwell(now) {
   const thumb = $('galThumbs').querySelector('.galThumb.on');
   if (thumb) thumb.classList.remove('dwell');
   galProgPaint(true);
+  /* (v21.27: an arrow pressed too early let its shake go only on the next turn — `.galNav.nope svg` outranks the →
+     arrow's nudge, so the way on stopped inviting for the rest of the page) */
+  for (const id of ['galNext', 'galPrev']) $(id)?.classList.remove('nope');
   /* (v21.25: and the way on wakes where the eyes are — both NEXT buttons light once, with the tick below) */
   if (gal.seen.size < gal.pages.length) for (const id of ['galGo', 'galEndGo']) {
     const b = $(id); if (b) { b.classList.remove('woke', 'nope'); void b.offsetWidth; b.classList.add('woke'); }
@@ -9362,8 +9367,12 @@ function galPip(k) {
 /* the part of the page that scrolls: the words beside the portrait, or — on a phone held upright, where the story
    runs under it — the whole page (shell.html decides which; this only asks) */
 function galScroller() {
-  const pg = $('galPage'), oy = getComputedStyle(pg).overflowY;
-  return oy === 'auto' || oy === 'scroll' ? pg : $('galRight');
+  /* (v21.27: read off galRight's display, which the wheel's hold never touches. v21.23 read galPage's overflow, and the
+     hold sets that to hidden — so on a narrow window, where galRight is display:contents and the page itself scrolls,
+     the scroller read as a box with no size while the hold was on: the reading stalled, and a wheel event in the frame
+     the hold lifted took its zero metrics for the end of the story) */
+  const rt = $('galRight');
+  return getComputedStyle(rt).display === 'contents' ? $('galPage') : rt;
 }
 function galClose(how) {
   if (!gal.open) return false;
@@ -9585,12 +9594,16 @@ $('gallery')?.addEventListener('wheel', e => {
   const dx = e.deltaX * k, dy = e.deltaY * k;
   if (Math.abs(dx) > Math.abs(dy)) {
     stop();                                                // (and never the browser's own back / forward)
-    if (fresh) gal.swipe = 0;
+    if (fresh) { gal.swipe = 0; gal.swipeSpent = false; }
+    if (gal.swipeSpent) return;                            // (once a gesture, turned or refused)
     gal.swipe += dx;
     if (Math.abs(gal.swipe) >= GAL_SWIPE && now - gal.t0 >= GAL_GUARD) {
-      /* (v21.25: once a gesture — and the words held only when it turned: a turn the reading has not opened is refused) */
-      const d = gal.swipe > 0 ? 1 : -1; gal.swipe = 0; gal.lockTill = now + GAL_LOCK;
-      if (galGo(d)) galHold(true);
+      /* (v21.25: once a gesture — and the words held only when it turned: a turn the reading has not opened is refused.
+         v21.27: and the wheel locked only when it turned. A refused swipe, or one at the first or last page, locked every
+         wheel event for at least GAL_LOCK and every further one for GAL_QUIET more, so a trackpad reader could not
+         scroll the story until the swipe's momentum had died away) */
+      const d = gal.swipe > 0 ? 1 : -1; gal.swipe = 0; gal.swipeSpent = true;
+      if (galGo(d)) { gal.lockTill = now + GAL_LOCK; galHold(true); }
     }
     return;
   }
@@ -9604,10 +9617,17 @@ $('gallery')?.addEventListener('wheel', e => {
   stop();
   if (dy < 0) { gal.armed = false; galPull(0, now); return; }   // at the top the wheel stops
   if (fresh) gal.armed = true;                             // a pull begins only from the end
-  const t = galNext();
-  if (!gal.armed || !t || t.close || now - gal.t0 < GAL_GUARD) return;   // (the wheel never closes the window)
-  /* (v21.25: no pull while the story is still being read — a fresh one says why, once) */
-  if (t.locked) { if (fresh) galPrimary(); gal.armed = false; return; }
+  if (!gal.armed || now - gal.t0 < GAL_GUARD) return;
+  /* (v21.27: the reading brought up to this event before the lock is read. v21.26 read it as of the last frame and,
+     locked, pressed NEXT to say why — and NEXT, bringing the reading up itself, found the page had counted since that
+     frame and TURNED it, on one notch, with nothing to hold the rest of the spin: v21.23's bug through a narrow door.
+     A page that counts here is pulled on like any other, two notches) */
+  galDwell(now);
+  const t = galNext(); if (!t) return;
+  /* (v21.25: no pull while the story is still being read — a fresh one says why, once; v21.27: on the last page too,
+     where the way on is Close gallery) */
+  if (t.locked) { if (fresh) galNope(t.close ? 'readLast' : 'read', ['galGo', 'galEndGo']); gal.armed = false; return; }
+  if (t.close) return;                                     // (the wheel never closes the window)
   const was = galPullNow(now), v = galPull(was + dy / GAL_PULL, now);
   if (v >= 1) { gal.armed = false; gal.lockTill = now + GAL_LOCK; if (galPrimary()) galHold(true); else galPull(0, now); }
   else if (Math.floor(v * 3) > Math.floor(was * 3)) snd('uiclick', 0.2, 0.8 + 0.4 * v);   // a tick, rising, each third
@@ -9670,7 +9690,17 @@ addEventListener('keydown', e => {
     const st = galScroller(), down = c === 'PageDown';
     const room = down ? st.scrollTop + st.clientHeight < st.scrollHeight - 2 : st.scrollTop > 0.5;
     if (room) st.scrollBy({ top: (down ? 1 : -1) * st.clientHeight * 0.85, behavior: 'smooth' });
-    else if (!e.repeat) { if (!down) galGo(-1); else { const t = galNext(); if (t && !t.close) galPrimary(); } }
+    else if (!e.repeat) {
+      if (!down) galGo(-1);
+      else {
+        /* (v21.27: the reading brought up first, and a lock said — on the last page too, where Page Down said nothing;
+           it never closes the window) */
+        galDwell(performance.now());
+        const t = galNext();
+        if (t && t.locked) galNope(t.close ? 'readLast' : 'read', ['galGo', 'galEndGo']);
+        else if (t && !t.close) galPrimary();
+      }
+    }
     return;
   }
   if (c === 'Home') { e.preventDefault(); galJump(0); return; }

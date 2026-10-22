@@ -2137,7 +2137,7 @@ body.finePtr .galPull,body.finePtr .galEndHint{display:block}
 .galThumbs{display:flex;gap:10px;align-items:center;flex:0 0 auto}
 .galThumb{position:relative;width:54px;height:54px;border-radius:50%;padding:0;cursor:pointer;background:#0d0a07;
   border:2px solid rgba(255,204,118,.32);transition:transform .25s var(--ease),border-color .25s,box-shadow .25s,filter .25s;filter:saturate(.75) brightness(.8)}
-.galThumb canvas{width:100%;height:100%;border-radius:50%;display:block}
+.galThumb canvas{width:100%;height:100%;border-radius:50%;display:block;transition:filter .25s}
 .galThumb.on{transform:scale(1.14);border-color:#FFD98A;filter:none;box-shadow:0 0 0 2px rgba(255,217,138,.32),0 0 22px rgba(255,190,90,.75)}
 /* v21.23: the page being read fills a ring round its own thumbnail (galDwell sets --dw from 0 to 1), and the tick
    follows it — a page is seen being read */
@@ -2149,7 +2149,11 @@ body.finePtr .galPull,body.finePtr .galEndHint{display:block}
 .galThumb.seen{filter:none}
 /* v21.25: a page past the first unread one is locked — dim, a small lock on it (the ring's ::before and the tick's
    ::after are never needed on it: it is never the page being read, and an unread page has no tick) */
-.galThumb.locked{cursor:default;filter:saturate(.25) brightness(.42)}
+.galThumb.locked{cursor:default;filter:none;transition:none;border-color:rgba(255,204,118,.18)}
+/* (v21.27: the dimming on the picture alone — on the whole button it dimmed the lock with it, cream to a low mid-grey;
+   and no fade into it: the class lands after the window's first style pass, so every opening faded the locked
+   thumbnails from 80 % to 42 % over a quarter second. Unlocked, the base rules' transitions brighten it as before) */
+.galThumb.locked canvas{filter:saturate(.25) brightness(.42);transition:none}
 .galThumb.locked:not(.seen)::after{content:"";position:absolute;left:50%;top:50%;width:12px;height:9px;margin:0 0 0 -6px;border-radius:2px;
   background:#e3cf9f;box-shadow:0 0 6px rgba(0,0,0,.9)}
 .galThumb.locked:not(.seen)::before{content:"";position:absolute;inset:auto;left:50%;top:50%;width:6px;height:7px;margin:-6px 0 0 -5px;

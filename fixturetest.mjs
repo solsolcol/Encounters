@@ -941,10 +941,13 @@ const ESC_PAGES = GAL_PAGES.map(q => ({ ...q, id: 'e' + q.id, ...(q.id === 'gc' 
 K.galleryOpens = await p.evaluate((pages) => {
   const e = window.__enc;
   window.__gal = undefined;
-  e.kit.gallery({ pages, label: 'Probe gallery' }).then(r => { window.__gal = r; });
-  /* (v21.26: when page 1 counts is stamped in the page from this instant, so a loaded box cannot make it look early) */
+  /* (v21.26: when page 1 counts is stamped in the page, so a loaded box cannot make it look early — v21.27: from BEFORE
+     the window opens: the 1.2 s runs from inside kit.gallery, and stamped after it the work of opening came off the
+     measure, leaving 50 ms of margin on a loaded box) */
   window.__galRead0 = null;
-  const tOpen = performance.now(), iv = setInterval(() => {
+  const tOpen = performance.now();
+  e.kit.gallery({ pages, label: 'Probe gallery' }).then(r => { window.__gal = r; });
+  const iv = setInterval(() => {
     const s0 = e.galleryState();
     if (s0.seen.includes(0)) { window.__galRead0 = performance.now() - tOpen; clearInterval(iv); }
     else if (!s0.open) clearInterval(iv);
@@ -1085,7 +1088,7 @@ await p.evaluate((pages) => { window.__gal = undefined; window.__enc.kit.gallery
 await p.waitForTimeout(900);                                    // past the guard
 const L = await p.evaluate(async () => {
   const E = window.__enc, sleep = ms => new Promise(r => setTimeout(r, ms)), G = () => E.galleryState();
-  const sc = () => { const pg = document.getElementById('galPage'); return getComputedStyle(pg).overflowY === 'auto' ? pg : document.getElementById('galRight'); };
+  const sc = () => { const rt = document.getElementById('galRight'); return getComputedStyle(rt).display === 'contents' ? document.getElementById('galPage') : rt; };
   const story = document.getElementById('galStory');
   const wheel = (el, n, dy, dx = 0) => {
     for (let k = 0; k < n; k++) {
@@ -1119,12 +1122,20 @@ const L = await p.evaluate(async () => {
   await stays('pull', async () => { wheel(story, 8, 100); });
   await sleep(400);
   await stays('wheelSide', () => wheel(story, 30, 0, 12));
+  /* v21.27: a sideways swipe that did not turn leaves the wheel free — the story scrolls back up at once (v21.26 locked
+     every wheel event for 0.7 s and more after it, turned or not) */
+  out.sideFree = (() => {
+    const r = story.getBoundingClientRect();
+    const up = new WheelEvent('wheel', { deltaY: -100, bubbles: true, cancelable: true, clientX: r.left + 5, clientY: r.top + 5 });
+    story.dispatchEvent(up);
+    return !up.defaultPrevented;
+  })();
   await sleep(400);
   const body = document.getElementById('galBody');
   const pe = (type, id, x) => body.dispatchEvent(new PointerEvent(type, { pointerId: id, pointerType: 'touch', isPrimary: true,
     clientX: x, clientY: 300, bubbles: true, cancelable: true }));
   await stays('swipe', () => { pe('pointerdown', 9, 600); pe('pointermove', 9, 480); pe('pointermove', 9, 330); pe('pointerup', 9, 330); });
-  await stays('backRound', () => document.getElementById('galPrev').click());   // ← from the first page round to the last
+  await stays('backStops', () => document.getElementById('galPrev').click());   // ← on the first page (v21.26: it stops; it went round)
   out.tries = tries;
   out.allRefused = Object.values(tries).every(Boolean);
   out.thumbLocked = document.querySelector('#galThumbs .galThumb[data-i="2"]').classList.contains('locked');
@@ -1135,6 +1146,7 @@ const L = await p.evaluate(async () => {
 });
 K.galleryLongNotReadAtOnce = !!(L.atEnd && L.notRead && L.shown && L.cursorPaced);
 K.galleryLockedRefusesAll = !!(L.allRefused && L.cursorClimbs && L.thumbLocked);
+K.galleryRefusedSwipeFreesWheel = !!L.sideFree;
 K.galleryLockedSaysWhy = !!L.nopeSays;
 if (!K.galleryLongNotReadAtOnce || !K.galleryLockedRefusesAll || !K.galleryLockedSaysWhy) console.log('gallery lock', JSON.stringify(L));
 await p.keyboard.press('Escape');                               // and the window can always be left
@@ -1250,6 +1262,42 @@ await p.waitForTimeout(700);
 const endL = await p.evaluate(() => ({ i: window.__enc.galleryState().i, prevLocked: document.getElementById('galPrev').classList.contains('locked') }));
 K.galleryArrowsStopAtEnds = endR.i === 2 && endR.go === 'Close gallery' && endR.nextLocked && endL.i === 0 && endL.prevLocked;
 if (!K.galleryArrowsStopAtEnds) console.log('gallery ends', JSON.stringify({ endR, endL }));
+await p.evaluate(() => window.__enc.galleryClose('x'));
+await until(() => window.__enc.getState() === 'play' && !window.__enc.kit.galleryOpen(), 30000).catch(() => {});
+/* v21.27: ONE NOTCH NEVER TURNS. A page whose last line came on screen since the last frame counts INSIDE the wheel
+   event, and is pulled on like any other — two notches, then the rest of the spin held. v21.26 read the lock as of the
+   last frame and pressed NEXT to say why, and NEXT, counting the page, turned it on the one notch with nothing to hold
+   the spin. Opened and spun in ONE task, with no frame between (a busy wait past the page's 1.2 s), so a loaded box
+   cannot change what is tested. */
+await p.waitForTimeout(800);
+const NOTCH_PAGES = [
+  { id: 'na', name: 'Notch one', story: 'A short story.' },
+  { id: 'nb', name: 'Notch two', story: 'A short story.' },
+  { id: 'nc', name: 'Notch three', story: 'A short story.' },
+];
+const N = await p.evaluate((pages) => {
+  const E = window.__enc;
+  E.kit.gallery({ pages, label: 'Notch' });
+  const story = document.getElementById('galStory');
+  const notch = () => {
+    const r = story.getBoundingClientRect();
+    const ev = new WheelEvent('wheel', { deltaY: 100, bubbles: true, cancelable: true, clientX: r.left + 5, clientY: r.top + 5 });
+    story.dispatchEvent(ev); return ev.defaultPrevented;
+  };
+  const s0 = E.galleryState(), before = { open: s0.open, i: s0.i, seen: s0.seen.length };
+  const t0 = performance.now(); while (performance.now() - t0 < 1500) { /* no frame runs */ }
+  notch();
+  const one = E.galleryState();
+  notch();
+  const two = E.galleryState();
+  const third = notch();
+  const held = ['galPage', 'galRight'].some(id => document.getElementById(id).classList.contains('hold'));
+  return { before, oneI: one.i, oneSeen: one.seen.includes(0), twoI: two.i, held, third };
+}, NOTCH_PAGES);
+K.galleryWheelNotchNoTurn = N.before.open && N.before.i === 0 && N.before.seen === 0 && N.oneI === 0 && N.oneSeen
+  && N.twoI === 1 && N.held && N.third;
+if (!K.galleryWheelNotchNoTurn) console.log('gallery notch', JSON.stringify(N));
+await p.waitForTimeout(800);
 await p.evaluate(() => window.__enc.galleryClose('x'));
 await until(() => window.__enc.getState() === 'play' && !window.__enc.kit.galleryOpen(), 30000).catch(() => {});
 /* v21.0: THE TWENTY-SIXTH SEAM — kit.film. From play, a declared film runs
