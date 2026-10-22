@@ -246,7 +246,7 @@
   /* the measured length of every line said OUTSIDE a cutscene
      (masters/v21.0: the installed files, ffprobe; v21.8's re-said and new lines, masters/v21.8) */
   const SECS = {
-    z3pro0: 4.24, z3pro3: 4.0, z3pro4: 6.84, z3pro5: 4.8, ow3hello: 5.96, z3look1: 6.27,
+    z3pro0: 4.24, z3pro3: 4.0, z3pro4: 6.84, z3pro5: 4.8, z3pro6: 3.69, z3pro7: 7.69, ow3hello: 5.96, z3look1: 6.27,
     z3look2: 4.65, z3look3: 5.93, z3look4: 3.71, ow3call: 2.43, ow3gift1: 9.69, ow3gift2: 3.47,
     ow3masters: 7.37, z3masters: 5.69,                                     // v21.11: the masters' gallery's introduction
     z3thanks: 4.21, ow3good: 2.85, mk3chant: 30.37, z3shift1: 3.47, z3shift2: 4.28, ow3eh: 2.93,
@@ -4066,18 +4066,24 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
     }
     /* v21.18 · the corridor's diners (shopRow listed them before the stills were defined): each on its stool's top,
        by the skin his hips carry, as a passenger sits */
-    for (const s of SHOP_SEATED) {
-      if (LOW && !s.low) continue;
-      const spec = s.who === 'sitwoman' ? { key: 'sitwoman', height: 1.2, idle: WIFE_SIT } : PASSENGERS[2];
-      sitterStill(spec).then(st => {
-        if (!alive || !st) return;
-        const p = new THREE.Group(); p.position.set(s.x, s.y - st.seatDy - 0.012, s.z); p.rotation.y = s.ry;
-        for (const part of st.parts) { const m = new THREE.Mesh(part.geo, part.day); m.castShadow = false; m.receiveShadow = false; p.add(m); }
-        s.parent.add(p);
-      });
+    let dinersSeated = 0;                            // (v21.19: a function, so the film's podium, built further down, seats its own)
+    function seatDiners() {
+      for (; dinersSeated < SHOP_SEATED.length; dinersSeated++) {
+        const s = SHOP_SEATED[dinersSeated];
+        if (LOW && !s.low) continue;
+        const spec = s.who === 'sitwoman' ? { key: 'sitwoman', height: 1.2, idle: WIFE_SIT } : PASSENGERS[2];
+        sitterStill(spec).then(st => {
+          if (!alive || !st) return;
+          const p = new THREE.Group(); p.position.set(s.x, s.y - st.seatDy - 0.012, s.z); p.rotation.y = s.ry;
+          for (const part of st.parts) { const m = new THREE.Mesh(part.geo, part.day); m.castShadow = false; m.receiveShadow = false; p.add(m); }
+          s.parent.add(p);
+        });
+      }
     }
-    function makeBus(parent, day) {
+    seatDiners();
+    function makeBus(parent, day, mine) {
       const g = makeCityBus(THREE, cnv, tex, day); g.visible = false; parent.add(g);
+      if (mine) g.userData.seats = g.userData.seats.filter(s => !mine(s));     // (v21.19: his own seat stays his)
       seatPeople(g, !day, day ? 0 : 1);
       if (!day) {
         for (const s of [-1, 1]) {
@@ -4186,7 +4192,35 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
        terraces, planters and air-conditioners on them, the name over the podium, Thai signs under it. Every floor
        of the tower is the same piece, so each part is ONE instanced mesh — a draw a part, not a draw a floor. */
     const MALLX = new THREE.Group(); MALLX.position.set(FM.x, 0, FM.z); filmG.add(MALLX);
-    const mallBusG = makeBus(MALLX, true);          // a green single-decker going by in the near lane
+    /* v21.19 · the bus he comes in on: the day bus, his row (the right-hand side, its −z, a row behind the middle door)
+       kept empty of the passengers the builder seats. He rides INSIDE it, so its glass is drawn from both sides (from
+       within, a one-sided pane is no pane at all — the first photographs read as standing in the road) */
+    const mallBusG = makeBus(MALLX, true, s => Math.abs(s.x - 0.64) < 0.4 && s.z < 0);
+    { const gm = mallBusG.userData.glass; if (gm) { gm.side = THREE.DoubleSide; gm.needsUpdate = true; } }
+    /* where it is at the film's time t: westbound in the kerb lane at 9 m/s, braking at 1.6 m/s² to stand at the stop
+       with its front door at the pole (x 13: the door 5.2 m ahead of its middle) at 7.0, its doors open; at 10.0 it
+       pulls away at 1.4 m/s² to 11 m/s. A function of t — a seek and a skip find it where it was */
+    const RIDE = { at: 13.0, z: 15.68, v0: 9.0, a: 1.6, stop: 7.0, go: 10.0, ag: 1.4, vmax: 11.0 };
+    /* the zebra's HOLD: from when he comes to its kerb to when he is across; a waiting car's middle stands `line`
+       from the zebra's middle (its stripes reach 1.7 m, then a 1.5 m gap, then half a car), the next `gap` behind */
+    const ZEB = { line: 5.35, gap: 6.25, h0: 12.0, h1: 25.6 }, CAR_A = 3.0;
+    function carX(c, t) {
+      if (c.wait === null) return c.x0 + c.dir * c.v * t;
+      const db = c.v * c.v / (2 * CAR_A), tb = c.v / CAR_A;
+      const t1 = (c.wait - c.dir * db - c.x0) / (c.dir * c.v);          // its braking begins
+      if (t < t1) return c.x0 + c.dir * c.v * t;
+      if (t < t1 + tb) { const u = t - t1; return c.wait - c.dir * db + c.dir * (c.v * u - 0.5 * CAR_A * u * u); }
+      if (t < c.go) return c.wait;
+      const u = t - c.go; return c.wait + c.dir * (u < tb ? 0.5 * CAR_A * u * u : 0.5 * CAR_A * tb * tb + c.v * (u - tb));
+    }
+    function busRideX(t) {
+      const R = RIDE, db = R.v0 * R.v0 / (2 * R.a), tb = R.stop - R.v0 / R.a;
+      if (t < tb) return R.at + db + R.v0 * (tb - t);
+      if (t < R.stop) return R.at + 0.5 * R.a * (R.stop - t) ** 2;
+      if (t < R.go) return R.at;
+      const u = t - R.go, tv = R.vmax / R.ag;
+      return R.at - (u < tv ? 0.5 * R.ag * u * u : 0.5 * R.ag * tv * tv + R.vmax * (u - tv));
+    }
     /* (v21.3, Chad: "just show the bottom 2 rows of shopfronts will do, instead of the current 3 rows. Then move the
        golden mile complex signboard lower after removing the third row" — the podium is two rows of shops, 8.9 m
        where it was 13.2, and the sign, the slab and its roof all stand on it, so they come down with it) */
@@ -4215,7 +4249,21 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       /* THE PODIUM: three floors of shops, a row of Thai signs a floor, the covered way along the front; its roof a
          terrace the tower stands back from */
       const podM = fStd({ color: 0xc9bfa8, roughness: 0.93 });                // the cream concrete, weathered
-      box(GM.len, GM.pod, 30, GM.cx, GM.pod / 2, -15.05, podM, MALLX, false);
+      /* (v21.19: the walk over the zebra ends at the podium's ground floor, and the seven bays it and the crane's first
+         seconds see are SHOPS now — the corridor's own builder, shopRow: a recess behind its glass front, its lightbox,
+         what it sells, two at lunch in the kitchen. They keep the painted front's own pitch (ten shops a tile of its
+         texture), so the painted shops carry on either side from a shop's edge; the podium's mass stands 2.5 m back
+         behind the built ones, with a pier between each pair. The walk ended on a flat painting of a shop: on a phone,
+         nose to it, the whole picture) */
+      const PB = { w: (GM.len - 1.4) / (GM.len / 46) / 10, n: 7 }; PB.x1 = PB.w * PB.n / 2; PB.x0 = -PB.x1;
+      box(GM.len, GM.pod - 3.6, 30, GM.cx, 3.6 + (GM.pod - 3.6) / 2, -15.05, podM, MALLX, false);              // over the shops
+      box(PB.x0 - GM.x0, 3.6, 30, (GM.x0 + PB.x0) / 2, 1.8, -15.05, podM, MALLX, false);                         // the ground floor, west
+      box(GM.x1 - PB.x1, 3.6, 30, (PB.x1 + GM.x1) / 2, 1.8, -15.05, podM, MALLX, false);                         // and east
+      box(PB.x1 - PB.x0, 3.6, 27.5, 0, 1.8, -2.55 - 13.75, podM, MALLX, false);                                  // behind the built shops
+      shopRow(MALLX, ['tickets', 'money', 'food', 'grocery', 'travel', 'snack', 'massage']
+        .map((kind, i) => ({ x: PB.x0 + PB.w * (i + 0.5), z: 0, ry: 0, kind, seed: 2190 + i })), { fascia: 0xcfc5ae });
+      for (let i = 0; i <= PB.n; i++) box(PB.w - 3.88, 3.6, 0.5, PB.x0 + PB.w * i, 1.8, -0.2, podM, MALLX, false);   // the piers
+      seatDiners();
       /* (v21.15: the podium's east end, 30 m of blank wall in the opening's first frames, has its shops too, and a
          coach company's painted sign over them) */
       [[0, 4.6], [4.6, 4.3]].forEach(([y0, h], i) => {
@@ -4224,8 +4272,12 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
         box(0.5, 0.3, 28.6, GM.x1 + 0.2, y0 + h - 0.15, -15.05, matWhiteF, MALLX, false);
       });
       [[0, 4.6], [4.6, 4.3]].forEach(([y0, h], i) => {
-        const t = tex(makeMallFront(THREE, cnv, i)); t.wrapS = THREE.RepeatWrapping; t.repeat.set(GM.len / 46, 1);   // a shop every 4.6 m
-        plane(GM.len - 1.4, h - 0.3, fBasic({ map: t }), GM.cx, y0 + (h - 0.3) / 2, 0.01, 0, MALLX);
+        const a0 = GM.cx - (GM.len - 1.4) / 2, b1 = GM.cx + (GM.len - 1.4) / 2;
+        for (const [a, b] of (i ? [[a0, b1]] : [[a0, PB.x0], [PB.x1, b1]])) {      // (the ground floor's either side of the built shops)
+          const t = tex(makeMallFront(THREE, cnv, i)); t.wrapS = THREE.RepeatWrapping; t.repeat.set((b - a) / (PB.w * 10), 1);   // a shop every 4.5 m
+          if (!i && b === PB.x0) t.offset.x = Math.ceil(t.repeat.x * 10 - 1e-6) / 10 - t.repeat.x;   // (its east end on a shop's edge)
+          plane(b - a, h - 0.3, fBasic({ map: t }), (a + b) / 2, y0 + (h - 0.3) / 2, 0.01, 0, MALLX);
+        }
         box(GM.len, 0.3, 0.5, GM.cx, y0 + h - 0.15, 0.2, matWhiteF, MALLX, false);
       });
       box(GM.len, 1.1, 0.4, GM.cx, GM.pod + 0.55, -0.2, podM, MALLX, false);  // the podium roof's parapet
@@ -4236,7 +4288,15 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       plane(18, 4.4, fBasic({ map: tex(makeGMCName(THREE, cnv)), transparent: true }), 14, GM.pod + 1.1 + 2.35, 0.05, 0, MALLX);
       // the covered way along the front: a canopy on columns
       box(GM.len, 0.18, 3.2, GM.cx, 3.7, 1.7, matWhiteF, MALLX, false);
-      for (let x = GM.x0 + 2; x < GM.x1; x += 5.5) box(0.4, 3.7, 0.4, x, 1.85, 3.1, matWhiteF, MALLX, false);
+      /* (v21.19: its underside, a ceiling with a fluorescent tube every 2.75 m — from the street it was the canopy's
+         unlit bottom face, a dark brown band over the top third of the walk's last frames on a phone) */
+      { const sof = new THREE.Mesh(new THREE.PlaneGeometry(GM.len, 3.2), fStd({ color: 0xd8d2c4, emissive: 0x5c584e, roughness: 0.9 }));
+        sof.rotation.x = Math.PI / 2; sof.position.set(GM.cx, 3.605, 1.7); MALLX.add(sof);
+        const tubeG = new THREE.PlaneGeometry(1.2, 0.07); owned.push({ dispose: () => tubeG.dispose() });
+        const n = Math.floor((GM.len - 2) / 2.75), tubes = new THREE.InstancedMesh(tubeG, fBasic({ color: 0xf4f7f8 }), n), m4 = new THREE.Matrix4();
+        for (let k = 0; k < n; k++) { m4.makeRotationX(Math.PI / 2).setPosition(GM.x0 + 1.4 + k * 2.75, 3.6, 1.9); tubes.setMatrixAt(k, m4); }
+        tubes.computeBoundingSphere(); MALLX.add(tubes); }
+      for (let x = GM.x0 + 0.75; x < GM.x1; x += 5.5) box(0.4, 3.7, 0.4, x, 1.85, 3.1, matWhiteF, MALLX, false);   // (v21.19: a span centred on the zebra's line — a column stood on it, in the walk's last frames)
 
       /* THE STEPPED SLAB: thirteen floors over the podium, each 1.45 m back from the one below — so each floor's
          front strip is a terrace open to the sky, behind a parapet, with the floor's glass set back behind it — 15 m
@@ -4458,7 +4518,8 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
                        ['#7a1a1a', '#ffd870', 'AMULETS', 'พระเครื่อง'], ['#d8641a', '#fff6e0', 'COACH TICKETS', 'ตั๋วรถทัวร์']];
           const mats = BAN.map(b => fBasic({ map: tex(makeCanopyBanner(THREE, cnv, b)) }));
           let i = 0;
-          for (let x = GM.x0 + 4.75; x < GM.x1 - 2; x += 11) { const m = new THREE.Mesh(new THREE.PlaneGeometry(1.9, 0.62), mats[i++ % mats.length]); m.position.set(x, 3.2, 3.33); g.add(m); }
+          /* (v21.19: mid-span — the columns moved) */
+          for (let x = GM.x0 + 3.5; x < GM.x1 - 2; x += 11) { const m = new THREE.Mesh(new THREE.PlaneGeometry(1.9, 0.62), mats[i++ % mats.length]); m.position.set(x, 3.2, 3.33); g.add(m); }
           merged(g); }
 
         // ---- the coach bay's second coach (a clone of the first: the same geometry and materials, no second set of
@@ -4501,18 +4562,29 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
             geo.computeBoundingSphere(); owned.push({ dispose: () => geo.dispose() });
             return { geo, mat: src.material };
           });
-          /* [lane z, x at t 0, speed (m/s, signed: + runs east)]: the far lanes run west between him and the mall,
-             the near lane east (the bus is in it from 8.1 s — every car in that lane is clear of it, by arithmetic) */
-          /* (each far-lane car crosses the middle of his view — x ≈ 25 there — at its own moment, 1.2, 3.5, 6.3, 8.5 and
-             10.6 s, and none while the bus does, 12.9) */
-          for (const [z, x0, v] of [[L4, 36, -9.5], [L3, 62, -10.5], [L4, 82, -9.0], [L3, 118, -11.0], [L4, 120, -9.0],
-                                     [L2, -6, 11.5], [L2, -96, 11.0]]) {
-            const k = mallCars.length % geos.length, car = new THREE.Mesh(geos[k].geo, geos[k].mat);
-            /* (the pack's cars face their LOCAL −x once laid along x — photographed: at 0 a car on the +x lane drove
-               backwards past its own arrow — so a car going east turns a half turn and one going west keeps 0) */
-            car.rotation.y = v > 0 ? Math.PI : 0; car.position.set(x0, 0.0, z); car.visible = false; car.castShadow = false; car.receiveShadow = false;
-            MALLX.add(car); mallCars.push({ car, x0, v, lo: BR.x0 + 4, hi: BR.x1 - 4 });
-          }
+          /* v21.19 · [lane z, direction (+1 east), x at t 0, speed]: the near lane (L2) runs east, the far two west. The
+             film is now the bus in, off at the stop and over the zebra: a car that comes to the zebra while he is at it
+             or on it (ZEB.h0 – h1) WAITS — brakes to the line, or to a car's length and a gap behind the one ahead in
+             its lane — and pulls away when he is across, a car further back a beat later (carX). None passes his window
+             while the bus stands (the far lane's first is behind it then), and none is ON the zebra when he is */
+          const CARS_F = [[L2, 1, -60, 11], [L2, 1, -140, 10.5], [L2, 1, -170, 10.5], [L2, 1, -260, 11], [L2, 1, -380, 11],
+                          [L3, -1, 120, 10.5], [L3, -1, 160, 10.5], [L3, -1, 190, 10.5], [L3, -1, 330, 11],
+                          [L4, -1, 215, 11], [L4, -1, 400, 11]];
+          const queued = new Map();
+          CARS_F.map(([z, dir, x0, v]) => ({ z, dir, x0, v, tl: (-dir * ZEB.line - x0) / (dir * v) }))
+            .sort((a, b) => a.tl - b.tl)
+            .forEach(c => {
+              c.wait = null; c.go = 0;
+              if (c.tl >= ZEB.h0 - 0.5 && c.tl <= ZEB.h1) {
+                const k = queued.get(c.z) || 0; queued.set(c.z, k + 1);
+                c.wait = -c.dir * ZEB.line - c.dir * k * ZEB.gap; c.go = ZEB.h1 + 0.7 * k;
+              }
+              const k = mallCars.length % geos.length, car = new THREE.Mesh(geos[k].geo, geos[k].mat);
+              /* (the pack's cars face their LOCAL −x once laid along x — photographed: at 0 a car on the +x lane drove
+                 backwards past its own arrow — so a car going east turns a half turn and one going west keeps 0) */
+              car.rotation.y = c.dir > 0 ? Math.PI : 0; car.position.set(c.x0, 0.0, c.z); car.visible = false; car.castShadow = false; car.receiveShadow = false;
+              MALLX.add(car); mallCars.push({ car, x0: c.x0, dir: c.dir, v: c.v, wait: c.wait, go: c.go, lo: BR.x0 + 4, hi: BR.x1 - 4 });
+            });
         }).catch(e => { if (ctx.loadFail) ctx.loadFail('cars', e); else console.warn('e3c3: the film\'s cars did not load', e); });
 
         // ---- the people: two walking (on the film's clock), a woman on her suitcase by the coaches, an auntie at the stop
@@ -6227,10 +6299,17 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
         /* v21.15: Beach Road on the film's clock — every car where its lane and speed put it at t, each walker where
            his pace does (a track: a seek and a skip find the same street) */
         mallLife(t) {
-          for (const c of mallCars) { const x = c.x0 + c.v * t; c.car.position.x = x; c.car.visible = x > c.lo && x < c.hi; }
+          for (const c of mallCars) { const x = carX(c, t); c.car.position.x = x; c.car.visible = x > c.lo && x < c.hi; }
           for (const w of mallWalkers) { w.r.group.position.x = w.x0 + w.v * t; w.r.group.position.z = w.z; }
         },
-        mallBus(k) { mallBusG.visible = k > 0 && k < 1; mallBusG.position.set(-36 + 72 * THREE.MathUtils.clamp(k, 0, 1), 0, 9.4); mallBusG.rotation.y = Math.PI; },   // (v21.2: 9.4, clear of the coach at the kerb)
+        /* v21.19: the bus he rides in on, by the film's clock (busRideX); its glass a passenger's window while he is
+           in it (to 8.2), and a bus's tinted glass from the street after */
+        busAt: busRideX,
+        busRide(t) {
+          const x = busRideX(t); mallBusG.visible = x > -150; mallBusG.position.set(x, 0, RIDE.z); mallBusG.rotation.y = 0;
+          const g = mallBusG.userData.glass; if (g) g.opacity = t < 8.2 ? 0.3 : 0.62;
+        },
+        GM,
         passerTo(x, z, ry) { passerHeld = true; passer.group.position.set(x, 0, z); passer.group.rotation.y = ry; },
         passerFree() { passerHeld = false; passer.group.position.z = PASS.z; passer.group.rotation.y = PASS.dir > 0 ? Math.PI / 2 : -Math.PI / 2; }
       },
@@ -6263,85 +6342,169 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
   /* ============================================================ THE FILM
      Context only (Chad: "The opening film should not already have him
      trancing. It should only set the stage and context for what is about to
-     happen"). Three shots, two of his lines, no trance (v21.2 — Chad: "it is
-     buddha day, meaning uposatha day, not actual vesak day. There is no need
-     to start the intro cutscene at the chinese buddhist temple. Start at the
-     outside of the mall complex instead ... Remove the voiceline that says
-     'by then i learnt to hide...'". The temple gate at dawn is gone, and so
-     are "It was Buddha Day." — the next line says Buddha Day itself — and
-     "By then, I had learnt to hide..."):
-       1 · 0–14.1   GOLDEN MILE COMPLEX across Beach Road in the morning:
-                    his eyes up its stepped face to where the terraces meet
-                    the sky ("Back home, the closest thing to Thailand was
-                    Golden Mile Complex." — v21.7), then down onto its name
-                    and its shops, a coach at the kerb, a bus going by
-                    ("There was an amulet shop I often visited. The owner
-                    knew me well.")
-       2 · 14.1–23.4 its corridor, World A's own: he walks it to the shop's
-                    glass ("Every Buddha Day, he held a small chanting...")
-       3 · 23.4–32.4 inside, on the bell: the owner looks up and nods ("I only
-                    meant to stay for the chanting..." — v21.7, Chad's words),
-                    and in the line's pause the lens finds the altar at the
-                    back ("...but something else happened..."). Black, and
-                    the card.
-     (v21.7: the two new lines moved everything after the first by 3.5 s and
-     held the last shot 1.5 s longer — each beat the same distance from the
-     line it belongs to; the film is 32.4 s, was 27.4.)
-     The pocket is drawn only while its shot runs, its light swapped in by a
+     happen"). v21.19 · THE BUS IN (Chad: "the intro cutscene can start with
+     the player dropping off the bus at the bus stop and then walks over to
+     golden mile complex, and the camera starts panning and Zooming out to
+     show the entire building exterior etc. this must be done well on both
+     desktop and phone framing ... you can also add more new voicelines and
+     readjust the overall timing and duration to fit these changes well"):
+       1 · 0–8.2     ON THE BUS: his window seat, Golden Mile Tower and then
+                     the mall sliding into the window as it brakes to the
+                     stop; the bell, the brakes, the doors ("On my days off,
+                     I'd take the bus down to Beach Road." — v21.19)
+       2 · 8.6–15.2  OFF AT THE STOP: the doors shut in front of him, the bus
+                     pulls away and its side slides past like a curtain, and
+                     across the road is the mall with its name over the
+                     podium ("Back home, the closest thing to Thailand was
+                     Golden Mile Complex." — v21.7)
+       3 · 15.5–25.4 OVER THE ZEBRA: a look at the cars waiting for him, then
+                     across, the podium's shops and banners coming up ("Thai
+                     grocers, Thai food, coaches leaving for Hat Yai... and
+                     amulets, if you knew where to look." — v21.19)
+       4 · 25.4–35.2 THE REVEAL: the lens leaves his eyes and rises and draws
+                     back over Beach Road until the whole building stands in
+                     the frame — its distance SOLVED from the building's
+                     corners for the screen it plays on (the roar's fitD law);
+                     a screen too narrow for its 94 m frames its whole height
+                     and PANS along it instead ("There was an amulet shop I
+                     often visited. The owner knew me well.")
+       5 · 35.2–44.5 its corridor, World A's own: he walks it to the shop's
+                     glass ("Every Buddha Day, he held a small chanting...")
+       6 · 44.5–53.5 inside, on the bell: the owner looks up and nods ("I only
+                     meant to stay for the chanting..." — v21.7, Chad's words),
+                     and in the line's pause the lens finds the altar at the
+                     back ("...but something else happened..."). Black, and
+                     the card.
+     (v21.19: 53.5 s, was 32.4 — the corridor and the shop are v21.7's shots
+     21.1 s later, every beat the same distance from its line.)
+     The pocket is drawn only while its shots run, its light swapped in by a
      STEP (a passed track re-applies every frame); a skip runs every step in
-     order and lands on the shop's own light. */
+     order and lands on the shop's own light. A track that moves the lens
+     stops writing past its own shot (a passed track is applied every frame
+     with the raw film time: v21.0's passer, frozen for all of play). */
   function intro(c, s, api) {
-    const { step, tr, sfx, sfxFade, fade, yawTo, pitchTo, faceFrom, rawK, smoothK, stage, handsRoot, duck, yaw, pitch } = api;
+    const { step, tr, sfx, sfxFade, fade, yawTo, pitchTo, faceFrom, rawK, smoothK, stage, handsRoot, duck, yaw, pitch, camera } = api;
     const F = stage.film;
     const daylight = (d) => { if (api.kit && api.kit.daylight) api.kit.daylight(d, 0); };
     const M = (x, y, z) => ({ x: F.FM.x + x, y, z: F.FM.z + z });
+    const mix = (p, q, k) => ({ x: p.x + (q.x - p.x) * k, y: p.y + (q.y - p.y) * k, z: p.z + (q.z - p.z) * k });
+    const put = (p, q) => {                            // the lens at p, looking at q (world)
+      yaw.position.set(p.x, p.y, p.z);
+      yaw.rotation.y = faceFrom(p.x, p.z, q.x, q.z);
+      pitch.rotation.x = Math.atan2(q.y - p.y, Math.hypot(q.x - p.x, q.z - p.z));
+    };
+    const CUT1 = 8.2, CUT2 = 15.2, OUT = 35.2;          // the outside shots' ends; the corridor from OUT, the shop from 44.5
 
     step(0, () => { handsRoot.visible = false; daylight(F.FILM_MORN); });
-    tr(0, 32.4, (k, t) => F.pockets(t < 14.1), rawK);           // a track: a seek always answers the clock
+    tr(0, 53.5, (k, t) => F.pockets(t < OUT), rawK);              // a track: a seek always answers the clock
     /* the chapter's own bed is the mall's murmur: none of it in the street, the corridor's from the moment we are in
        it, and down with the picture at the end */
-    tr(0, 32.4, (k, t) => duck('mallamb', t < 14.1 ? 0 : t < 15.1 ? t - 14.1 : t < 30.6 ? 1 : Math.max(0, 1 - (t - 30.6) / 1.6)), rawK);
+    tr(0, 53.5, (k, t) => duck('mallamb', t < OUT ? 0 : t < OUT + 1 ? t - OUT : t < 51.7 ? 1 : Math.max(0, 1 - (t - 51.7) / 1.6)), rawK);
+    tr(0, OUT, (k, t) => { F.busRide(t); F.mallLife(t); }, rawK);  // his bus, the cars both ways and the two walking, on the film's clock
     fade(0, 0, 1, 1);
     sfx(0.2, 'e3film3', 0.8);
 
-    /* 1 · GOLDEN MILE COMPLEX (0 – 14.1): he stands across Beach Road from the end of the slab, looking up its
-       stepped face to where the last terraces meet the sky (the end wall's steps against it, the profile the building
-       is known by); his eyes come down it onto the name over the podium and the Thai shops under it, and he takes a
-       few steps toward it as a bus goes by between */
-    /* (where the sign lands was COMPUTED for both screens before it was photographed — dbg-gmcframe: at the end its
-       board spans NDC x −0.82…0.83 on a phone, inside the frame, and the opening keeps the slab in the top third of
-       the picture rather than under half a frame of sky. v21.3: both looks come down with the podium) */
-    const E0 = M(36.5, 1.66, 21.5), E1 = M(31.0, 1.66, 18.6);
-    const L0 = M(22.5, 29, -14), L1 = M(16.0, 5.5, 0);
-    tr(0, 14.1, (k, t) => {
-      const kp = sm(cl01((t - 0.4) / 13.1)), kl = sm(cl01((t - 7.1) / 5.4));
-      const x = E0.x + (E1.x - E0.x) * kp, z = E0.z + (E1.z - E0.z) * kp, y = 1.66;
-      const tx = L0.x + (L1.x - L0.x) * kl, ty = L0.y + (L1.y - L0.y) * kl, tz = L0.z + (L1.z - L0.z) * kl;
-      yaw.position.set(x, y, z);
-      yaw.rotation.y = faceFrom(x, z, tx, tz);
-      pitch.rotation.x = Math.atan2(ty - y, Math.hypot(tx - x, tz - z));
+    /* 1 · ON THE BUS (0 – 8.2): his seat on the right (the bus's −z: across the road), the aisle one, a row behind its
+       middle door; the lens rides with the bus. He looks down the bus first — the seat backs ahead and the heads over
+       them, the rails, the windows running forward — and as it brakes his eyes go to the window and up the mall's
+       terraces, a pillar and the window's top still in the frame. (v21.19: from the window seat, 0.4 m off the glass,
+       a phone saw nothing but the street, and the first photographs read as standing in the road) */
+    const SEAT = { x: 0.66, y: 1.98, z: -0.40 };
+    tr(0, CUT1, (k, t) => {
+      if (t > CUT1) return;
+      const bx = F.busAt(t), vib = 0.004 * Math.sin(t * 37) + 0.0025 * Math.sin(t * 23.1);
+      yaw.position.set(F.FM.x + bx + SEAT.x, SEAT.y + vib, F.FM.z + 15.68 + SEAT.z);
+      yaw.rotation.y = 1.0 - 0.58 * sm(cl01((t - 2.6) / 4.0));
+      pitch.rotation.x = 0.08 + 0.21 * sm(cl01((t - 3.4) / 3.6));
     }, rawK);
-    /* a green bus in the near lane, between him and the mall: across the middle of the frame at ~12.9, once his eyes
-       have come down far enough to hold all of it */
-    tr(0, 14.1, (k, t) => F.mallBus((t - 8.1) / 6.0), rawK);
-    tr(0, 14.1, (k, t) => F.mallLife(t), rawK);              // v21.15: the cars both ways, the two walking
-    sfx(10.9, 'buspass', 0.55);
-    fade(0.4, 1.8, 1, 0);
-    sfx(0.3, 'estatemorn', 0.9);                      // the morning street: birds, the road
-    /* v21.7: his first words are over the building itself, as the picture comes up (Chad picked the line); the shop's
-       line follows half a second after it, and the look down, the bus and the fade keep their distance from it */
-    sfx(1.0, 'z3pro0');                               // 4.24 → 5.24
-    sfx(5.7, 'z3pro3');                               // 4.0 → 9.7
-    fade(13.5, 14.1, 0, 1);
-    sfxFade(13.5, 14.1, 'estatemorn');
+    fade(0.3, 1.7, 1, 0);
+    sfx(0.0, 'busride', 0.7); sfxFade(7.6, 8.3, 'busride');
+    sfx(1.0, 'z3pro6');                                // 3.69 → 4.69
+    sfx(3.5, 'busbell', 0.5);                          // someone's for the stop
+    sfx(3.9, 'busbrake', 0.55);                        // its squeal, then the air at the stop
+    sfx(7.25, 'busdoor', 0.6);
+    fade(7.75, CUT1, 0, 1);
+    sfx(8.25, 'cardtap', 0.45);                        // his card on the reader, stepping down (in the dark)
 
-    /* 2 · THE CORRIDOR (14.1 – 23.4): World A's own, walked from its east end to the shop's glass, a man coming the
+    /* 2 · OFF AT THE STOP (8.6 – 15.2): a few steps back from the kerb past the shelter's end, 2.7 m off the bus's side
+       — its doors shut, it pulls away and its rear slides out of the frame like a curtain, and there across the road is
+       the mall; his eyes go up to its name. (v21.19: the first cut stood him at its door, 0.9 m off its glass, and the
+       whole picture was the inside of a bus window; at x 17.2 a desktop's frame caught the shelter roof's end, 1.4 m to
+       his left, as a dark wedge over the name — 3.0 m clear of it now, outside even a desktop's 49°) */
+    const P2 = M(18.8, 1.66, 19.6), BUSR = M(16.6, 1.6, 16.9), NAME = M(14.0, 11.6, -0.1);
+    tr(CUT1, CUT2, (k, t) => { if (t <= CUT2) put(P2, mix(BUSR, NAME, sm(cl01((t - 11.9) / 2.9)))); }, rawK);
+    fade(8.6, 9.2, 1, 0);
+    sfx(8.45, 'estatemorn', 0.9); sfx(28.45, 'estatemorn', 0.9);   // the street (its file loops: the second picks up the first's end)
+    sfx(9.3, 'busdoorshut', 0.55);
+    sfx(10.0, 'busaway', 0.7);
+    sfx(12.6, 'z3pro0');                               // 4.24 → 16.84
+    fade(14.85, CUT2, 0, 1);
+
+    /* 3 · OVER THE ZEBRA (15.2 – 25.4): at its kerb, a look right at the cars waiting for him (the far lanes run
+       west: they come from his right), then across — the median's refuge, the near lanes, the podium coming up */
+    const K0 = M(0.1, 1.62, 17.9), K1 = M(0.1, 1.62, 5.4);
+    tr(CUT2, 17.0, (k, t) => {
+      if (t > 17.0) return;
+      const kr = sm(cl01((t - 15.7) / 0.6)) - sm(cl01((t - 16.35) / 0.6));
+      put(K0, mix(M(0.1, 1.9, 2.0), M(9.0, 1.1, 13.0), kr));
+    }, rawK);
+    fade(15.5, 16.0, 1, 0);
+    const W3 = walkRoute(api, [K0, K1], 17.0, 1.6);   // (25.36: its own track owns his feet and his heading)
+    pitchTo(17.0, 18.4, -0.04, 0.0, smoothK);
+    pitchTo(21.6, W3.end, 0.0, 0.15, smoothK);
+    sfx(17.6, 'z3pro7');                               // 7.69 → 25.29
+
+    /* 4 · THE REVEAL (25.4 – 35.2): from the kerb, on the shops under the canopy, the lens leaves his eyes, rises and
+       draws back over Beach Road until the WHOLE building stands in the frame. Where it stops is SOLVED, not chosen
+       (the roar film's fitD): the building's corners — the podium's foot and its name's line, the top terraces and the
+       houses on the roof — and the distance back along a line from the north-east at which every one of them is inside
+       THIS screen's frame (the letterbox's 22 % off its height, a margin each way). A screen too narrow for 94 m at
+       any distance the sky allows (a phone: a third of a desktop's width) frames the whole HEIGHT and pans along its
+       length instead — "panning and zooming out" both ways */
+    const VT = Math.tan(camera.fov * Math.PI / 360), HX = VT * camera.aspect * 0.86, HY = VT * 0.78 * 0.9;
+    const unit = (x, y, z) => { const l = Math.hypot(x, y, z) || 1; return { x: x / l, y: y / l, z: z / l }; };
+    const fitD = (T, f, pts) => {
+      const h = Math.hypot(f.x, f.z) || 1, r = { x: -f.z / h, z: f.x / h };
+      const v = { x: -r.z * f.y, y: r.z * f.x - r.x * f.z, z: r.x * f.y };
+      let D = 0;
+      for (const p of pts) {
+        const qx = p.x - T.x, qy = p.y - T.y, qz = p.z - T.z;
+        const x = qx * r.x + qz * r.z, y = qx * v.x + qy * v.y + qz * v.z, z = qx * f.x + qy * f.y + qz * f.z;
+        D = Math.max(D, Math.abs(x) / HX - z, Math.abs(y) / HY - z);
+      }
+      return D;
+    };
+    const G = F.GM, T = M((G.x0 + G.x1) / 2, 27, -10);
+    const corners = [[G.x0, 0, 4.0], [G.x1, 0, 4.0], [G.x0, 9.9, 0.3], [G.x1, 9.9, 0.3], [G.x0, 54.4, -20.6], [G.x1, 54.4, -20.6],
+                     [-46, 56.4, -28.9], [14, 56.4, -28.9]].map(([x, y, z]) => M(x, y, z));
+    const dirAt = (a, e) => unit(-Math.sin(a) * Math.cos(e), -Math.sin(e), -Math.cos(a) * Math.cos(e));   // a: from straight on, toward the west
+    let f = dirAt(0.32, 0.2), D = fitD(T, f, corners) * 1.03, pan = null;
+    if (D > 78) {
+      f = dirAt(0.08, 0.24);
+      D = fitD(T, f, corners.map(p => ({ x: T.x, y: p.y, z: p.z }))) * 1.06;
+      pan = { a: M(16, 27, -10), b: M(-50, 27, -10) };
+    }
+    const CR = { x: T.x - f.x * D, y: T.y - f.y * D, z: T.z - f.z * D }, S1 = M(0.6, 2.4, 0.2);
+    tr(25.4, OUT, (k, t) => {
+      if (t > OUT) return;
+      const u = sm(cl01((t - 26.2) / 6.0)), uy = sm(cl01((t - 26.2) / 4.6));
+      const p = { x: K1.x + (CR.x - K1.x) * u, y: K1.y + (CR.y - K1.y) * uy, z: K1.z + (CR.z - K1.z) * u };
+      let q = mix(S1, pan ? pan.a : T, sm(cl01((t - 26.4) / 5.2)));
+      if (pan) q = mix(q, pan.b, sm(cl01((t - 31.4) / 3.6)));
+      else { const d = 3.0 * sm(cl01((t - 31.4) / 3.6)); p.x -= d; q = { x: q.x - d, y: q.y, z: q.z }; }   // and a slow drift along it
+      put(p, q);
+    }, rawK);
+    sfx(30.4, 'z3pro3');                               // 4.0 → 34.4
+    fade(34.6, OUT, 0, 1);
+    sfxFade(34.6, OUT, 'estatemorn');
+
+    /* 5 · THE CORRIDOR (35.2 – 44.5): World A's own, walked from its east end to the shop's glass, a man coming the
        other way on the far side (his walk on the film's clock, so a seek finds him where the shot wants him) */
-    step(14.1, () => { daylight(null); });
+    step(OUT, () => { daylight(null); });
     /* (a track is applied on every frame after its start with the RAW film
-       time, so past the shot's end (23.4 now) this one kept holding him and walking him on — he
+       time, so past the shot's end (44.5 now) this one kept holding him and walking him on — he
        was frozen out of sight for the whole of play) */
-    tr(14.1, 23.4, (k, t) => { if (t <= 23.4) F.passerTo(-1.6 + 1.3 * (t - 14.1), 3.95, Math.PI / 2); }, rawK);
+    tr(OUT, 44.5, (k, t) => { if (t <= 44.5) F.passerTo(-1.6 + 1.3 * (t - OUT), 3.95, Math.PI / 2); }, rawK);
     /* (the walk's own track from the cut itself: a passed track holds its last value, so a walk starting later would
        leave the lens at the mall's end for those frames — out at x 300 with its pocket already put away) */
     /* (it ends in the doorway's middle, close to the glass: at (0.62, 1.12) it stood on the door's right mullion's
@@ -6349,38 +6512,38 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
        off the middle, outside a phone's frame. And it comes in STRAIGHT, through the middle of the right leaf: the
        last stretch used to run on the line of the door's MIDDLE bar (x 0), so for the walk's last second that bar
        stood in the centre of a phone's frame, half a metre off (the v21.1 photographs). Square on, the two bars
-       slide out to either side as he comes in. 1.77 m/s keeps the hold where it was, 22.2 → 23.0) */
-    const W = walkRoute(api, [{ x: 12.4, z: 2.05 }, { x: 1.2, z: 2.05 }, { x: 0.31, z: 1.55 }, { x: 0.31, z: 0.45 }], 14.1, 1.77);
-    pitchTo(14.1, 14.5, 0.03, 0.03, rawK);
+       slide out to either side as he comes in. 1.77 m/s keeps the hold where it was, 43.3 → 44.1) */
+    const W = walkRoute(api, [{ x: 12.4, z: 2.05 }, { x: 1.2, z: 2.05 }, { x: 0.31, z: 1.55 }, { x: 0.31, z: 0.45 }], OUT, 1.77);
+    pitchTo(OUT, OUT + 0.4, 0.03, 0.03, rawK);
     const inLook = faceFrom(0.31, 0.45, 0.05, -6.69);   // through the glass, onto the altar at the back
     yawTo(W.end - 0.3, W.end + 0.5, W.head, inLook, smoothK);
     pitchTo(W.end - 0.5, W.end + 0.4, 0.03, -0.05, smoothK);
-    fade(14.2, 15.0, 1, 0);
-    sfx(16.1, 'z3pro4');                              // 6.84 → 22.94
-    fade(23.0, 23.4, 0, 1);
+    fade(OUT + 0.1, OUT + 0.9, 1, 0);
+    sfx(37.2, 'z3pro4');                              // 6.84 → 44.04
+    fade(44.1, 44.5, 0, 1);
 
-    // 3 · INSIDE (23.4 – 32.4): the bell over the door, two steps in, the owner looking up from his counter
-    step(23.4, () => { F.passerFree(); });
-    sfx(23.35, 'shopbell', 0.8);
+    // 6 · INSIDE (44.5 – 53.5): the bell over the door, two steps in, the owner looking up from his counter
+    step(44.5, () => { F.passerFree(); });
+    sfx(44.45, 'shopbell', 0.8);
     const IN0 = { x: 0.1, y: 1.62, z: -0.25 }, IN1 = { x: -0.18, y: 1.62, z: -0.95 };
     const toOwn = faceFrom(IN1.x, IN1.z, F.OWN.x, F.OWN.z), toAlt = faceFrom(IN1.x, IN1.z, 0.05, -6.69);
-    tr(23.4, 25.1, (k) => { yaw.position.set(IN0.x + (IN1.x - IN0.x) * k, IN0.y + 0.012 * Math.sin(k * Math.PI * 2), IN0.z + (IN1.z - IN0.z) * k); }, smoothK);
-    sfx(23.75, 'step', 0.7); sfx(24.35, 'step', 0.7);
-    yawTo(23.4, 25.1, toOwn + 0.2, toOwn, smoothK);
-    pitchTo(23.4, 25.1, -0.02, -0.06, smoothK);
-    fade(23.45, 24.1, 1, 0);
-    step(23.9, () => { const O = F.cast.owner; O.look = 1; O.lookAt = null; });
-    step(24.7, () => { F.cast.owner.nod = 1.6; });    // he knows him: a nod, no word (his hello is play's first line)
+    tr(44.5, 46.2, (k) => { yaw.position.set(IN0.x + (IN1.x - IN0.x) * k, IN0.y + 0.012 * Math.sin(k * Math.PI * 2), IN0.z + (IN1.z - IN0.z) * k); }, smoothK);
+    sfx(44.85, 'step', 0.7); sfx(45.45, 'step', 0.7);
+    yawTo(44.5, 46.2, toOwn + 0.2, toOwn, smoothK);
+    pitchTo(44.5, 46.2, -0.02, -0.06, smoothK);
+    fade(44.55, 45.2, 1, 0);
+    step(45.0, () => { const O = F.cast.owner; O.look = 1; O.lookAt = null; });
+    step(45.8, () => { F.cast.owner.nod = 1.6; });    // he knows him: a nod, no word (his hello is play's first line)
     /* v21.7: the film's last line, Chad's own words. Its first half is said on the owner; in its pause (the take's
-       1.08 s between "chanting..." at 27.52 and "but" at 28.60) the lens turns to the altar at the back, where it will
+       1.08 s between "chanting..." at 48.62 and "but" at 49.70) the lens turns to the altar at the back, where it will
        happen, and arrives on "...something else happened..."; a beat on the altar in silence, then the black */
-    sfx(25.1, 'z3pro5');                              // 4.80 → 29.90
-    yawTo(27.5, 29.7, toOwn, toAlt, smoothK);
-    pitchTo(27.5, 29.7, -0.06, 0.02, smoothK);
-    fade(30.6, 32.2, 0, 1);
-    sfxFade(30.4, 32.2, 'e3film3');
-    tr(32.2, 32.4, () => {}, rawK);                   // the film's length (its last steps run inside it)
-    step(32.3, () => { handsRoot.visible = true; });
+    sfx(46.2, 'z3pro5');                              // 4.80 → 51.00
+    yawTo(48.6, 50.8, toOwn, toAlt, smoothK);
+    pitchTo(48.6, 50.8, -0.06, 0.02, smoothK);
+    fade(51.7, 53.3, 0, 1);
+    sfxFade(51.5, 53.3, 'e3film3');
+    tr(53.3, 53.5, () => {}, rawK);                   // the film's length (its last steps run inside it)
+    step(53.4, () => { handsRoot.visible = true; });
     c.keepFade = true;
     c.endFade = 1;
   }
@@ -8522,6 +8685,31 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
     x.fillStyle = '#ffd23a'; x.beginPath(); x.arc(452, 212, 30, 0, Math.PI * 2); x.fill();
     return done(THREE, c, false);
   }
+  /* v21.19 · a city bus's seat, as the film sees it from the row behind: its back and headrest one side profile (u along
+     the bus, + to the rear; v up from the pan's top), leaning back, rounded over the top, a step where the headrest
+     meets the back — extruded the seat's width with a soft edge. Its foot stands under the cabin's floor */
+  function busSeatGeo(THREE) {
+    const s = new THREE.Shape();
+    s.moveTo(-0.045, -0.05); s.lineTo(0.03, -0.05);
+    s.lineTo(0.075, 0.55);                                          // the back's rear face, leaning back
+    s.quadraticCurveTo(0.092, 0.745, 0.035, 0.762);                 // over the top of the headrest
+    s.quadraticCurveTo(-0.032, 0.768, -0.042, 0.70);
+    s.lineTo(-0.028, 0.60);                                         // the headrest's front, a small step back
+    s.quadraticCurveTo(-0.058, 0.40, -0.045, 0.12);                 // the lumbar
+    s.lineTo(-0.045, -0.05);
+    const g = new THREE.ExtrudeGeometry(s, { depth: 0.38, bevelEnabled: true, bevelThickness: 0.02, bevelSize: 0.015, bevelSegments: 2, curveSegments: 5 });
+    g.translate(0, 0, -0.19);
+    return g;
+  }
+  /* its moquette: deep blue with the flecks of colour every bus seat in the city has */
+  function makeBusMoquette(THREE, cnv, day) {
+    const N = 256, [c, x] = sized(cnv, N, N), R = rng(53);
+    x.fillStyle = day ? '#2a3b78' : '#3c4e86'; x.fillRect(0, 0, N, N);
+    for (let i = 0; i < 2600; i++) { x.fillStyle = R() < 0.5 ? 'rgba(14,20,48,0.5)' : 'rgba(70,92,170,0.45)'; x.fillRect(Math.floor(R() * N), Math.floor(R() * N), 2, 2); }   // the weave
+    const cols = ['#6a7cc0', '#b8404e', '#3a9aa2', '#c8a040', '#7a5ab0'];
+    for (let i = 0; i < 900; i++) { x.fillStyle = cols[Math.floor(R() * cols.length)]; x.fillRect(Math.floor(R() * N), Math.floor(R() * N), 2, 2); }   // the flecks
+    return done(THREE, c, true);
+  }
   function makeBusGrille(THREE, cnv) {                 // louvres: the engine's at the rear, the cooling grille at the front
     const [c, x] = sized(cnv, 256, 128);
     x.fillStyle = '#1b1d20'; x.fillRect(0, 0, 256, 128);
@@ -8580,15 +8768,20 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
     }
     /* the cabin, through the glass: rows of seats either side of the aisle, the yellow poles, the ceiling's rails
        and light strips, and a few people */
-    const seatMat = M({ color: C.seat, roughness: 0.85 }), poleMat = M({ color: C.pole, roughness: 0.4 });
-    const seatBack = new THREE.BoxGeometry(0.08, 0.6, 0.42), head = new THREE.BoxGeometry(0.1, 0.16, 0.36);
+    /* (v21.19: the opening film rides INSIDE this one, so its seats are seats — the back and its headrest one rounded
+       piece leaning back, in a blue moquette with its flecks, and a chrome rail along the top of each aisle seat; they
+       were a slab with a block on it, and from the next row back that is all the picture is) */
+    const seatMap = tex(makeBusMoquette(THREE, cnv, day)); seatMap.wrapS = seatMap.wrapT = THREE.RepeatWrapping; seatMap.repeat.set(2.5, 2.5);
+    const seatMat = M({ map: seatMap, color: 0xffffff, roughness: 0.92 }), poleMat = M({ color: C.pole, roughness: 0.4 });
+    const seatBack = busSeatGeo(THREE), head = new THREE.BoxGeometry(0.024, 0.024, 0.2);
     const rows = []; for (let x = -4.4; x <= 4.6; x += 0.82) rows.push(x);
-    const seats = new THREE.InstancedMesh(seatBack, seatMat, rows.length * 4), heads = new THREE.InstancedMesh(head, seatMat, rows.length * 4);
-    const m4 = new THREE.Matrix4(); let n = 0;
+    const seats = new THREE.InstancedMesh(seatBack, seatMat, rows.length * 4), heads = new THREE.InstancedMesh(head, chrome, rows.length * 2);
+    const m4 = new THREE.Matrix4(); let n = 0, nh = 0;
     for (const x of rows) for (const z of [-0.88, -0.44, 0.44, 0.88]) {
-      m4.makeTranslation(x + 0.3, P.win.y0 + 0.24, z); seats.setMatrixAt(n, m4); m4.makeTranslation(x + 0.31, P.win.y0 + 0.62, z); heads.setMatrixAt(n, m4); n++;
+      m4.makeTranslation(x + 0.3, P.win.y0 - 0.06, z); seats.setMatrixAt(n++, m4);
+      if (Math.abs(z) < 0.5) { m4.makeTranslation(x + 0.335, P.win.y0 + 0.725, z - Math.sign(z) * 0.07); heads.setMatrixAt(nh++, m4); }
     }
-    seats.count = heads.count = n; g.add(seats, heads);
+    seats.count = n; heads.count = nh; g.add(seats, heads);
     for (const x of [-4.0, -1.6, 0.9, 3.0]) for (const z of [-0.22, 0.22]) mk(new THREE.CylinderGeometry(0.02, 0.02, P.win.y1 - P.win.y0, 8), poleMat, x, (P.win.y0 + P.win.y1) / 2, z);
     for (const z of [-0.62, 0.62]) mk(new THREE.CylinderGeometry(0.018, 0.018, P.win.x1 - P.win.x0 - 0.4, 8), poleMat, (P.win.x0 + P.win.x1) / 2, P.win.y1 - 0.14, z, 0, 0, Math.PI / 2);
     const strip = glow(day ? 0xdfe6ea : 0xfff6dc);
@@ -8605,6 +8798,7 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       seatList.push({ x: rows[r] + 0.12, y: P.win.y0 - 0.06, z: [-0.88, -0.44, 0.44, 0.88][c] });   // (the seat back's foot: its pan)
     }
     g.userData.seats = seatList;
+    g.userData.glass = glass;                        // (v21.19: the film's bus clears it while he rides inside)
     /* the front: the split windscreen with its wipers, the destination display, headlamps, indicators, the bumper,
        the grille and the plate */
     /* (the bevel puts every outer wall 0.05 outside the profile: the front glass's line runs (−6.05, 1.18) to (−5.98, 2.78)) */
