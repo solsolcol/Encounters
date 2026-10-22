@@ -1020,7 +1020,9 @@ const W = await p.evaluate(async () => {
       const r = el.getBoundingClientRect();
       const ev = new WheelEvent('wheel', { deltaY: dy, deltaX: dx, bubbles: true, cancelable: true, clientX: r.left + 5, clientY: r.top + 5 });
       el.dispatchEvent(ev);
-      if (!ev.defaultPrevented && dy) { const s = sc(); if (s.contains(el)) s.scrollTop += dy; }
+      /* (the browser's own scroll, as a real one does it: not when cancelled, and never on a held column — v21.23's
+         hold makes it unscrollable, which is what stops even an uncancellable event) */
+      if (!ev.defaultPrevented && dy) { const s = sc(); if (s.contains(el) && !s.classList.contains('hold')) s.scrollTop += dy; }
     }
   };
   const st = () => ({ i: E.galleryState().i, top: Math.round(sc().scrollTop), max: sc().scrollHeight - sc().clientHeight });
@@ -1031,8 +1033,10 @@ const W = await p.evaluate(async () => {
   const s1 = st(); out.spinStopsAtEnd = s1.i === 0 && s1.top >= s1.max - 2;
   out.endNames = document.getElementById('galEndN')?.textContent === 'Wheel two';
   burst(document.getElementById('galStory'), 8, 100);           // a fresh pull from the end
+  out.holdOnTurn = sc().classList.contains('hold');             // (v21.23: the new page held while the spin goes on)
   await sleep(1100);
   const s2 = st(); out.pullTurnsOnce = s2.i === 1; out.newPageAtTop = s2.top === 0;
+  out.holdReleased = !sc().classList.contains('hold');          // (and given back once the wheel is quiet)
   burst(document.getElementById('galImg'), 3, 100);             // a spin over the portrait: the story scrolls
   await sleep(500);
   const s3 = st(); out.portraitScrolls = s3.i === 1 && s3.top === 300;
@@ -1070,6 +1074,7 @@ K.galleryWheelStopsAtEnd = W.spinStopsAtEnd;
 K.galleryWheelEndNames = W.endNames;
 K.galleryWheelPullOnce = W.pullTurnsOnce;
 K.galleryWheelNewPageTop = W.newPageAtTop;
+K.galleryWheelHold = !!(W.holdOnTurn && W.holdReleased);
 K.galleryWheelPortrait = W.portraitScrolls;
 K.galleryWheelSwipeOne = W.swipeTurnsOne;
 K.galleryKeyRepeatTurnsNothing = W.repeatTurnsNothing && W.pressTurns;

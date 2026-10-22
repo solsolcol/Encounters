@@ -5957,3 +5957,19 @@ cut (sharing its vertices and maps) when it is small.
   to the next page NOT YET READ, and master 3 had been read; cancelling the keydown had already stopped the
   button's own press. The real defect under it was the opposite one: a button reached with Tab could not answer
   its own key at all.
+- **A wheel event you must cancel may not be cancellable** (v21.23). Chrome dispatches the first wheel event of a
+  scroll sequence cancellable and, if the page lets it through, sends the REST of that sequence uncancellable ("Ignored
+  attempt to cancel a wheel event with cancelable=false") — and for a mouse wheel a sequence lasts until the wheel has
+  been still for about half a second, far longer than one gesture by the page's own measure. So a handler that turns
+  a page and then "holds" the wheel by cancelling events holds nothing once the spin began by scrolling natively: the
+  rest of it scrolls the new page. What stops it in every browser is making the scroller unscrollable for the hold
+  (`overflow-y: hidden`, with `scrollbar-gutter: stable` so the words never re-wrap) and giving it back when the wheel
+  goes quiet; cancel as well, but only `if (e.cancelable)`. A probe's synthetic WheelEvent is always cancellable and
+  never scrolls anything, so no dispatching probe can show this — reason from the browser's rules, and make the fix
+  true by construction.
+- **A touch claim is tested through the browser's own gesture pipeline** (v21.23). Whether a drag is the page's swipe
+  or the browser's pan is decided from touch-action inside Chrome's input router, which dispatched pointer events
+  never reach — CDP `Input.synthesizeScrollGesture` with `gestureSourceType: 'touch'` does, and pointercancel is the
+  tell that the browser took the drag. And aim at what is ON the screen: the first "swipe over the story" started at
+  the story's laid-out middle, which on an upright phone is below the fold, so it landed on the thumbnails and tested
+  nothing (`document.elementFromPoint` says what a point is over).

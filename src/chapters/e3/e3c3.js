@@ -4896,11 +4896,15 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
        The words are the sheet's (`words`: galLabel, mThuadName ...); the
        photographs are the wall's own, unaltered (v21.8). The order is Chad's. */
     const GAL = [
-      { id: 'thuad',   k: 'Thuad',   images: [{ key: 'mstr_lpthuad', mime: 'image/png', own: true }] },
-      { id: 'tim',     k: 'Tim',     images: [{ key: 'mstr_lptimpray', mime: 'image/jpeg' }, { key: 'mstr_lptimbench', mime: 'image/jpeg' }] },
-      { id: 'toh',     k: 'Toh',     images: [{ key: 'mstr_somdejtoh', mime: 'image/png', own: true }] },
-      { id: 'mun',     k: 'Mun',     images: [{ key: 'mstr_achanmun', mime: 'image/png', own: true }] },
-      { id: 'phiboon', k: 'Phiboon', images: [{ key: 'mstr_lpphiboon', mime: 'image/jpeg' }] }
+      /* (v21.23: `ar` is each photograph's own width over height, so the frame opens at its shape before the bytes land;
+         `thumb` is where the face is, for the round thumbnail — Luang Pu Phiboon's photograph is full length and his
+         face sits in its top sixth, where the rule for the others found his robe) */
+      { id: 'thuad',   k: 'Thuad',   images: [{ key: 'mstr_lpthuad', mime: 'image/png', own: true, ar: 320 / 418 }] },
+      { id: 'tim',     k: 'Tim',     images: [{ key: 'mstr_lptimpray', mime: 'image/jpeg', ar: 250 / 333 },
+                                              { key: 'mstr_lptimbench', mime: 'image/jpeg', ar: 450 / 600 }] },
+      { id: 'toh',     k: 'Toh',     images: [{ key: 'mstr_somdejtoh', mime: 'image/png', own: true, ar: 320 / 418 }] },
+      { id: 'mun',     k: 'Mun',     images: [{ key: 'mstr_achanmun', mime: 'image/png', own: true, ar: 320 / 418 }] },
+      { id: 'phiboon', k: 'Phiboon', images: [{ key: 'mstr_lpphiboon', mime: 'image/jpeg', ar: 318 / 500, thumb: [0.53, 0.135, 0.44] }] }
     ];
     const GAL_SOUNDS = { open: ['galopen', 0.8], flip: ['galflip', 0.7], read: ['galread', 0.45],
                          done: ['galdone', 0.85], close: ['galclose', 0.6] };
