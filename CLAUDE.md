@@ -205,6 +205,33 @@ drawn. A thing that is itself a picture of a figure in the world — a range's
 Figure 11 target board, a poster, a photograph — is a prop, not a person. v21.16
 applied it to all thirteen chapters (docs/V21.16-NO-BLOCK-FIGURES.md).
 
+**NO PRACTICE AND NO PRACTITIONER IS EVER THE VILLAIN** (Chad's standing rule,
+v21.30: "the taoist medium should not react so aggressively and ask customers to
+get out even if the customer dont agree with the medium, this is absolutely wrong
+from a spiritual educational perspective ... The point was never to paint any
+religion or practice in a bad light."). Every tradition in this game — Thai
+Buddhist, Taoist, Chinese folk, any other — and everyone who practises one is
+shown sincere, competent within their own training, kind to the people who come
+to them, and gracious when someone disagrees. A choice's consequence comes from
+the PLAYER's own act and attitude (what he accepted, refused, provoked or never
+asked), never from a practitioner turning hostile, mocking, greedy or cruel, and
+nobody is shown the door for disagreeing. Where Master Z's lesson is that a
+reading can be wrong, it is said as "each reads through their own training",
+never as "this one is a fraud". Read every line of a scene for this before it is
+voiced. (v21.0 broke it: ending B of episode 3 chapter 3 had the medium go cold
+and his assistant throw the young man out — docs/V21.30-PLAN.md §1.)
+
+**AN OUTCOME SCENE IS A WHOLE STORY** (Chad, v21.30: "All the outcome cutscenes
+are too simple, short, some have awkward silence or gaps where nothing is said,
+there is no proper narrative for each"). Each ending tells what he does, how it
+is answered, what it costs or gives him, and what he understands — the whole way
+through. No stretch passes in silence: a walk is spoken over, a pause is held by
+a sound with a reason. Four options are four different KINDS of answer, each with
+its own scene — two options that differ only in what he is thinking are one scene
+twice. An ending is read as a story before it is built and its silences are
+measured after; a review that checks only frames, collisions and overlapping
+voices has not reviewed it.
+
 `shrine` is the engine's anchor for HER, not for the chapter's warm light.
 Chapter 1's happens to be both; chapter 2's is the gap beside the bed and
 its altar is a separate thing on the other wall. Getting that wrong made
