@@ -6223,7 +6223,9 @@ What the baseline contains, by release:
   order with the positioned lock, so moving the dimming onto the picture put the shackle (the `::before`, first in the
   tree) under it. Both halves carry `z-index: 1`. Photographed on a phone and a desktop: a clear cream padlock on each
   dimmed master. Two laws in LEARNINGS (a refusal must not be able to succeed; a filter's stacking context). Deploy
-  `6ada35b699db563d26d16e49`, byte-verified (236 files).
+  `6ada35b699db563d26d16e49`, byte-verified (236 files). The fixture: 176 of 176 green on it, once two harness faults
+  from v21.26's checks were fixed (an evaluate that returned, and so awaited, the gallery's own promise and hung the
+  run; a stamp read a beat before the page wrote it).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
