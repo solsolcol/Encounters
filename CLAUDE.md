@@ -6199,6 +6199,31 @@ What the baseline contains, by release:
   control shakes, the reading is kept, the arrows stop at the ends).
   Sheet v113 (three cells; v44 stays the link). Deploy `6ada2e5319f2e874ebcd88f0`, byte-verified (236 files). One probe
   law in LEARNINGS: a `<style>` appended to `<head>` loses to this page's own.
+- **v21.27** THE SECOND REVIEW — a code-correctness review of the gallery as v21.26 left it. It held everything the
+  reading rules promise and found seven things to fix, each checked before it was touched (docs/V21.25-PLAN.md §6).
+  ONE WHEEL NOTCH COULD TURN A PAGE: the wheel read the lock as of the last frame and, locked, pressed NEXT to say why.
+  NEXT brought the reading up itself, and when the page had counted since that frame it turned, on one notch, with
+  nothing holding the rest of the spin. Now the reading is brought up to the event first, and a lock is only ever said,
+  never pressed, so a page that counts there is pulled on like any other (two notches, the spin held).
+  A SIDEWAYS SWIPE locks the wheel only when it turned. A refused swipe, or one at the first or last page, used to stop
+  the story scrolling for 0.7 s and more. It is still once a gesture.
+  On the LAST PAGE, still being read, the wheel and Page Down now say "…Close gallery fills up as you read" (they said
+  nothing).
+  An ARROW pressed too early lets its shake go when the page counts, so → nudges again.
+  WHICH BOX SCROLLS is read off the layout, not off the overflow that the wheel's hold changes. On a window 700 px wide
+  or less, the reading had stalled while held.
+  A LOCKED THUMBNAIL dims only its picture, so the lock reads cream, and it lands without a fade on every opening.
+  A page's kept READING lasts for the run (`kitReset` clears it), so a chapter replayed is read again.
+  THE FIXTURE: "not at once" is stamped before the window opens, and two new checks prove the wheel fixes, one of them
+  in a single task with a busy wait so a loaded box cannot change it. The v21.26 phone probe passed on the live build
+  first: no skip, both of Chad's scenarios, the radio held and back. Deploy `6ada3454b29ffc57d641ca6c`, byte-verified
+  (236 files). No word moved; sheet v113 stands (v44 the link).
+- **v21.28** THE PADLOCK WHOLE AGAIN — photographed after the v21.27 deploy at device scale 4, the locked thumbnails
+  showed the lock's body and no shackle: a cream box. A `filter` makes the picture a stacking context, painted in tree
+  order with the positioned lock, so moving the dimming onto the picture put the shackle (the `::before`, first in the
+  tree) under it. Both halves carry `z-index: 1`. Photographed on a phone and a desktop: a clear cream padlock on each
+  dimmed master. Two laws in LEARNINGS (a refusal must not be able to succeed; a filter's stacking context). Deploy
+  `6ada35b699db563d26d16e49`, byte-verified (236 files).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so

@@ -6027,3 +6027,18 @@ cut (sharing its vertices and maps) when it is small.
   in document order and lose every tie of specificity. So a probe should append its rules at the end of
   `document.body`, or mark them `!important`. Before trusting a measured candidate, read back one property it sets
   with `getComputedStyle`, to prove the rule took. A candidate that "changes nothing" may never have been applied.
+- **A refusal must not be able to succeed** (v21.27). The gallery's wheel read a lock as of the last frame and, while
+  it was locked, pressed NEXT so that NEXT would say why. But NEXT brings the reading up to the instant before
+  deciding. When the page had counted since that frame, the "say why" press TURNED the page, on one wheel notch, with
+  none of the hold that a real turn sets. A path whose job is to explain a refusal must be one that cannot act: bring
+  the state up to the event first, then read the lock, and if it is shut, say so (`galNope`) without calling the
+  function that would also act. The reviewer proved the race deterministically by busy-waiting past the dwell inside
+  one task, so no frame could run between the lock being read and the press. That is how to test any "the state
+  changed between the frame and the event" bug.
+- **A `filter` makes a stacking context, painted in tree order with positioned siblings** (v21.28). The locked
+  thumbnail's padlock is two pseudo-elements: the shackle (`::before`) and the body (`::after`). Moving the thumbnail's
+  dimming filter from the button onto its picture, so that the lock would no longer be dimmed, turned the picture into
+  a stacking context. It was then painted in the same layer as the positioned lock, in DOM order: the shackle (first)
+  went UNDER the picture, and the body (last) stayed over it. Every number said both halves were there (content,
+  size, opacity, colour); only a photograph at device scale 4 showed a cream box where a padlock had been. When a
+  filter, opacity < 1, transform or will-change moves onto an element, check what its positioned siblings paint under.
