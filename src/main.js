@@ -7373,8 +7373,13 @@ function updateAudioFrame(t) {
      `atShrine` is one keyed to your distance from it. Chapter 1's values
      are the defaults, so nothing about the deck moves.                   */
   const amb = CH.ambience || AMBIENCE_DEFAULT;
-  for (const [name, vol] of (amb.beds || AMBIENCE_DEFAULT.beds)) {
+  /* v21.17: a bed may carry a third value, its PAN (-1 left … +1 right), which
+     the chapter may move every frame as it moves the volume — episode 3
+     chapter 3's buses on the lorong, whose engine follows the bus across the
+     screen. No other chapter declares one, so nothing else is panned. */
+  for (const [name, vol, pan] of (amb.beds || AMBIENCE_DEFAULT.beds)) {
     loopVol(name, inWorld ? vol * duckOf(name) : 0);
+    if (pan !== undefined) loopPan(name, pan);
     liveLoops.add(name);
   }
   const at = amb.atShrine;

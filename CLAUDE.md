@@ -5929,6 +5929,33 @@ What the baseline contains, by release:
   build. CP8: each of the batch's eighteen notes checked against it
   (docs/V21.12-PLAN.md). No word moved; sheet v107 stands. Deploy
   `6ad9350ab68becd73c8a86c1`, byte-verified (all 236 served files).
+- **v21.17** THE LORONG'S BUSES — the first of three milestones on Chad's message of
+  22 Oct (docs/V21.17-PLAN.md has it verbatim, the design and the record): *"For the
+  taoist medium shop's road outside, you can have buses pass by with more frequency with
+  its own bus sound effects. So that the player sees more activity outside. Currently i
+  think the bus only appears after some options cutscenes, and there is no guarantee that
+  the user will see it."* He was right — the medium's street had one bus, ending C's. Now,
+  in play at the shrine (arriving, waiting, called to the table), a night bus goes by
+  every 20–34 s from a seeded stream (`busRand`, rewound by reset() — the v8.1 law), the
+  lanes in turn (the near lane east, its doors on our kerb; the far lane west), each a
+  clone of the night bus with its own seated people; a scene, a card, the menu or the
+  decision ENDS a pass on that frame (e2c3's far runs). Each has its own engine, a LOOP
+  (`busnight`) driven every frame from where the bus is: the volume by the street lamps'
+  own falloff 1/(1+(d/r)²)², quieter from the back of the room, and the PAN by its bearing
+  on his screen. That is ONE engine seam: a bed may carry a third value, its pan
+  (`[name, vol, pan]`), which the ambient frame hands to `loopPan`; no other chapter
+  declares one, so nothing else moves. And the sighting that is GUARANTEED: on a fresh
+  arrival the black lifts on the street — the bus that brought him standing at a stop
+  across the road (a pole and its board, "80339 · Aft Lor 5"), its doors shutting
+  (`busdoorshut`); it pulls away (`busaway`) and the view follows it, then turns to the
+  shrine's door, and the order comes 7.3 s after the black lifts. Found by the probe: a
+  beat driven before the chapter's first live frame is re-applied as a RESUME (v9.3's law
+  again), and a regular pass could start under the arrival's black (guarded). Three
+  sounds on the effects flow, picked by measurement (masters/v21.17/make.sh). Photographed
+  on a phone and a desktop: the arrival bus framed whole at the stop on both, the engine
+  rising to 0.59 as a pass crosses the door and its pan sweeping right to left; no page
+  errors. Deploy `6ad9b22d0702d39f1131b5ff`, byte-verified (236 served files); harnesses
+  csp, sanity, sound, hosted, leak, cine, fixture green on its snapshot.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -6465,7 +6492,10 @@ assigned where a texture belonged; and the clearance is ISSUED at the start
 of play rather than inferred from an empty bag, which had left both counters
 dead from the chapter's first frame (docs/LEARNINGS.md).
 
-In flight: nothing queued. **Chad's batch of 21 Oct 2026 on episode 3 chapter 3 —
+In flight: **Chad's message of 22 Oct 2026 on episode 3 chapter 3 — docs/V21.17-PLAN.md**
+(the lorong's buses, Golden Mile's shops, and the opening film rebuilt as his ride in on
+the bus), three milestones, v21.17 to v21.19; that file is the record and a session that
+starts mid-way reads it first. **Chad's batch of 21 Oct 2026 on episode 3 chapter 3 —
 docs/V21.12-PLAN.md** (the shrine's new lines, the Hanuman's appearance and 360, the
 sound of both places, the buses, the kopitiam's people, Golden Mile's streets)
 shipped in five milestones, v21.12 to v21.16, and each of its eighteen notes is

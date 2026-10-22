@@ -134,7 +134,8 @@
                        ['lorongamb', 0], ['shrineamb', 0], ['e3shrine', 0], ['ritual3', 0],
                        ['galbed', 0],                       // v21.10: under the masters' gallery while it is open
                        ['shopair', 0], ['mallwalla', 0],    // v21.13: the shop's air and fans; the corridor's people
-                       ['nightinsects', 0], ['shrinefan', 0]] },   // v21.13: the lorong's crickets; the shrine's ceiling fan
+                       ['nightinsects', 0], ['shrinefan', 0],      // v21.13: the lorong's crickets; the shrine's ceiling fan
+                       ['busnight', 0, 0]] },               // v21.17: the engine of the bus going by on the lorong — its third value its PAN, moved with it (busTick)
     voiceLine: null,
 
     words: {
@@ -3719,6 +3720,28 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       busG.visible = k > 0 && k < 1;
       busG.position.set(BUS.x0 + (BUS.x1 - BUS.x0) * k, 0, BUS.z);
     }
+    /* v21.17 · THE LORONG'S BUSES (Chad: "For the taoist medium shop's road outside, you can have buses pass by with
+       more frequency with its own bus sound effects. So that the player sees more activity outside. Currently i think
+       the bus only appears after some options cutscenes, and there is no guarantee that the user will see it."). The
+       night bus above is ending C's alone, driven by that scene's timeline. In play at the shrine a second one goes by
+       now (busTick, below the frame): every 20–34 s from its own seeded stream, the two lanes in turn — the near lane
+       east, its doors on our kerb, the far lane west — and the ARRIVAL begins on it: the black lifts on the bus that
+       brought him, stopped across the road at the stop, its doors shutting; it pulls away and the view goes with it,
+       and on round to the shrine's door (the sighting nobody can miss). A clone of the night bus — its geometry, its
+       materials, its lamps, no second set of canvases — with its own passengers seated after the clone (a clone
+       carries the seats, not the people). Its engine is a LOOP the frame steers by where the bus is: louder as it
+       nears, quieter the deeper he stands in the room, panned to its bearing on his screen (a bed's third value) */
+    const passG = busG.clone(); passG.visible = false; shrG.add(passG);
+    seatPeople(passG, true, 2);
+    const BUS_STOP = { x: -14.0, z: 13.6 };                // across the road, against the far kerb (15.06): the bus that brought him
+    /* the stop: a pole on the far verge by its front door (local −5.2 of the bus's middle), the board on it */
+    { const pm = new THREE.MeshStandardMaterial({ color: 0x8a9096, roughness: 0.5, metalness: 0.4 });
+      const bm = new THREE.MeshBasicMaterial({ map: tex(makeStopBoard(THREE, cnv, '80339', 'Aft Lor 5', [['2', '13'], ['21', '67']])), color: 0x6a6a62, fog: true });
+      owned.push({ dispose: () => pm.dispose() }, { dispose: () => bm.dispose() });
+      const px = BUS_STOP.x - 5.2, pz = 15.42;
+      cyl(0.035, 0.035, 2.75, px, 1.375 + 0.1, pz, pm, 8, shrG).castShadow = false;
+      for (const s of [1, -1]) { const b = new THREE.Mesh(new THREE.PlaneGeometry(0.42, 0.68), bm); b.position.set(px + s * 0.026, 2.2, pz); b.rotation.y = s * Math.PI / 2; shrG.add(b); }
+      box(0.05, 0.7, 0.44, px, 2.2, pz, pm, shrG, false); }
     // the cup of talisman water (built for the hands' pass: it rides his right arm in scene A)
     const cupProp = new THREE.Group(); cupProp.visible = false;
     /* (the body is an open-ended cylinder, and seen from above — at his lips — its inside is the BACK face: drawn
@@ -4274,6 +4297,7 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
                                 'z3shrine', 'as3sit', 'dv3wife', 'md3read1', 'md3drink', 'dv3father', 'md3read2', 'md3done',
                                 'as3next', 'z3walk', 'md3ghost', 'wf3thanks', 'md3fu', 'fa3thanks', 'z3what', 'incenselit3', 'urnsand', 'stoolscrape', 'taobell',
                                 'step1', 'step2', 'step3', 'step4',
+                                'busnight', 'busaway', 'busdoorshut',                       // v21.17: the lorong's buses
                                 // the endings' helpers fire these (the engine reads a SCENE's own source for its cues, v14.16)
                                 'z3next', 'e3close3',
                                 /* and the two films from play (ST-5): the engine warms their cues at play's entry, and a
@@ -5260,11 +5284,12 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
         if (!alive || run !== shrineRun) return;                  // (SR-6: a reset or a second arrival since)
         if (done) { kit && kit.fade(0, 1.2); afterRoar(); return; }
         if (!resumed) {
+          busArrive();                                     // v21.17: the bus that brought him, at the stop across the road, under the black
           queueGap(0.4);
           queueLine('z3night', () => after(SECS.z3night * 0.55, () => {
             if (run !== shrineRun) return;
-            shrDark = false; objectiveFor(phase);
-            if (kit) { kit.fade(0, 1.8); kit.root(false); }
+            if (kit) kit.fade(0, 1.8);
+            busLeave(run);                                 // (the order, its mark and his feet once the view is round at the door)
           }));
           queueGap(0.9);
           queueLine('z3shrine');
@@ -5500,6 +5525,99 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       } else ambAt = dayClock.t + 1.5;
     }
 
+    /* v21.17 · THE LORONG'S BUSES, going by (passG, above). A pass is a function of the chapter's clock, so it runs
+       where that clock runs — in play at the shrine, through the arrival, the wait, the readings and the call to the
+       table — and a film, a scene, a card, a menu or the decision ENDS it on that frame (e2c3's far runs, v11.4: a bus
+       held in the road behind a panel is a bus that jumps when play comes back); the next is booked from play's clock
+       after it. The lanes in turn, a speed each from the stream; reset() rewinds it (the v8.1 law). Its engine: the
+       loop at 1/(1 + (d/r)²)² of its level (the street lamps' own falloff), a little over a third of that from the
+       back of the room (outK), idling while it stands at the stop, panned to its bearing on his screen */
+    const BUS_LANES = [{ z: 5.55, dir: 1 }, { z: 11.45, dir: -1 }];   // the near lane runs east, its doors on our kerb; the far lane west
+    const BUS_SEED = 0x2117, BUS_END = 78, BUS_VOL = 0.72, BUS_R = 12;
+    let busSeed = BUS_SEED, busNext = 0, busPass = null, busN = 0, busLane = 0, busWatch = null;
+    function busRand() {
+      busSeed = (busSeed + 0x6D2B79F5) | 0; let t = busSeed;
+      t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    }
+    function busX(p, t) {                                  // where a pass's middle is (local x) at chapter time t
+      if (!p.stop) return p.x0 + p.dir * p.v * (t - p.t0);
+      const s = p.stop, tau = Math.max(0, t - s.go), ta = s.vmax / s.acc;   // standing, then pulling away: accelerating, then cruising
+      return p.x0 + p.dir * (tau < ta ? 0.5 * s.acc * tau * tau : 0.5 * s.acc * ta * ta + s.vmax * (tau - ta));
+    }
+    const _bv = new THREE.Vector3();
+    function busPan(lx, z) {                               // its bearing on his screen, −1 left … +1 right
+      _bv.set(LX(lx), 1.4, z); camera.worldToLocal(_bv);
+      return THREE.MathUtils.clamp(_bv.x / (Math.abs(_bv.z) + 2.0), -1, 1) * 0.85;
+    }
+    function busEnd() {
+      busPass = null; passG.visible = false; busWatch = null;
+      DATA.ambience.beds[13][1] = 0;
+    }
+    function busStart() {
+      const L = BUS_LANES[busLane % 2]; busLane++;
+      busPass = { x0: -L.dir * BUS_END, dir: L.dir, z: L.z, v: 10.5 + busRand() * 3.5, t0: dayClock.t, stop: null };   // 38–50 km/h, a lorong's
+      busN++;
+    }
+    function busTick(st) {
+      const B = DATA.ambience.beds[13];
+      const live = st === 'play' && inShrine(yaw.position.x) && !roarDone && ['arrive', 'wait', 'called'].includes(phase);
+      if (!live) { if (busPass) busEnd(); busNext = 0; B[1] = 0; return; }
+      const t = dayClock.t;
+      if (!busPass && shrDark) { B[1] = 0; return; }       // (none under the arrival's black: the first is the one that brought him)
+      if (!busPass) {
+        if (!busNext) busNext = t + 6 + busRand() * 8;
+        if (t < busNext) { B[1] = 0; return; }
+        busStart();
+      }
+      const p = busPass, x = busX(p, t);
+      if (p.dir * x > BUS_END) { busEnd(); busNext = t + 20 + busRand() * 14; return; }
+      passG.position.set(x, 0, p.z); passG.rotation.y = p.dir > 0 ? Math.PI : 0; passG.visible = true;
+      const d = Math.hypot(LX(x) - yaw.position.x, p.z - yaw.position.z), fall = 1 / (1 + (d / BUS_R) ** 2);
+      const outK = THREE.MathUtils.clamp((yaw.position.z + 3.0) / 4.0, 0, 1);
+      B[1] = BUS_VOL * fall * fall * (0.4 + 0.6 * outK) * (p.stop && t < p.stop.go ? 0.55 : 1);
+      B[2] = busPan(x, p.z);
+    }
+    /* THE ARRIVAL (a fresh one): under the black the bus that brought him is put at the stop across the road and the
+       view on it — framed for a phone's third of the width, the whole bus in it (it spans 27–58° off the street's
+       line from where he stands; a desktop sees the five-foot way's pillar beside it too) */
+    function busArrive() {
+      busPass = { x0: BUS_STOP.x, dir: -1, z: BUS_STOP.z, v: 0, t0: dayClock.t, stop: { go: Infinity, acc: 1.45, vmax: 11.5 } };
+      busNext = 0; busN++;
+      yaw.rotation.y = Math.atan2(-(LX(BUS_STOP.x) - yaw.position.x), -(BUS_STOP.z - yaw.position.z)); pitch.rotation.x = 0.02;
+      busTick(getState());
+    }
+    /* as the black lifts: its doors shut; two seconds on it pulls away to the west and the view goes with it, and on
+       round to the shrine's door; then the order, its mark, and his feet are his */
+    function busLeave(run) {
+      const p = busPass;
+      if (p && p.stop) {
+        busWatch = { p };
+        if (worldSfx) worldSfx('busdoorshut', 0.5, 1, busPan(BUS_STOP.x - 4, BUS_STOP.z));
+        after(2.0, () => {
+          if (busPass !== p) return;
+          p.stop.go = dayClock.t;
+          if (worldSfx) worldSfx('busaway', 0.62, 1, busPan(BUS_STOP.x, BUS_STOP.z));
+        });
+      }
+      after(4.4, () => {
+        if (run !== shrineRun) return;
+        busWatch = null;
+        faceTo({ x: ARRIVE.x, y: 1.55, z: ARRIVE.z - 4.3 }, 2.8);
+      });
+      after(7.3, () => {
+        if (run !== shrineRun) return;
+        shrDark = false; objectiveFor(phase);
+        if (kit) kit.root(false);
+      });
+    }
+    function busWatchTick(wdt) {                           // the view held on the bus as it goes (eased: a head following it)
+      if (!busWatch || busPass !== busWatch.p) { busWatch = null; return; }
+      const p = busPass, toY = Math.atan2(-(LX(busX(p, dayClock.t)) - yaw.position.x), -(p.z - yaw.position.z));
+      let d = toY - yaw.rotation.y; d = Math.atan2(Math.sin(d), Math.cos(d));
+      yaw.rotation.y += d * (1 - Math.exp(-wdt / 0.45));
+    }
+
     /* ------------------------------------------------------------ the frame */
     let lastFrame = 0;
     function updateNotes(dt, t) {
@@ -5514,6 +5632,7 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       const live = st === 'play' || st === 'unlock' || st === 'choose';
       if (live || st === 'cine' || st === 'decide') peopleTick(wdt);
       mixBeds(wdt, st);
+      busTick(st);                                         // v21.17: the lorong's buses (after the beds: it writes the last of them)
       lifeTick(wdt);
       /* a Continue into the shrine: World B goes up UNDER the chapter card, or
          the card lifted on the shop at noon for the frames before play boots
@@ -5535,7 +5654,7 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       }
       runTodo(); runSpeak(); runQueue();
       if (st !== 'play') return;          // a splash: time passes, nothing is played
-      faceTick(wdt); turnTick(wdt); bowTick(); watchTick(); wearTick(); chantTick(); tranceTick(wdt);
+      faceTick(wdt); busWatchTick(wdt); turnTick(wdt); bowTick(); watchTick(); wearTick(); chantTick(); tranceTick(wdt);
       walkBTick(wdt); bowBTick(wdt);
       ambTick();                                           // v21.13: the places' own noises
     }
@@ -5599,6 +5718,7 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       if (ownerStool) { ownerStool.rotation.z = 0; ownerStool.position.y = 0; }
       for (const k in mixK) mixK[k] = 0;
       ambSeed = AMB_SEED; ambAt = 0; ambBusy = 0; ambLast = ''; ambN = 0;   // v21.13: the places' noises from the top
+      busEnd(); busSeed = BUS_SEED; busNext = 0; busN = 0; busLane = 0;      // v21.17: the lorong's buses from the top
       for (const h of hotspots) { h.done = false; h.dwellT = 0; }
       // the LP Tim back on its stand; the candles out; the radio on again (v21.8: it plays while he browses)
       lpAmulet.visible = true; lpHalo.visible = true;
@@ -5739,6 +5859,10 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       setPhase, applyPhase, after, dayClock, sayLine,
       galleryPages, galleryBegin,                                  // v21.10: for probes — the pages as the window gets them
       kopiRigs, busG, mallBusG,                                    // v21.14: for probes — the kopitiam's three, the two buses
+      passG, shrineFresh: () => toShrine(false),                  // (for probes: the arrival as the trance film hands it over)
+      buses: () => ({ n: busN, next: +busNext.toFixed(2), lane: busLane, watch: !!busWatch, t: +dayClock.t.toFixed(2),   // v21.17: the lorong's passes
+                             pass: busPass && { x: +busX(busPass, dayClock.t).toFixed(2), z: busPass.z, dir: busPass.dir, stop: !!busPass.stop,
+                                                vol: +DATA.ambience.beds[13][1].toFixed(3), pan: +DATA.ambience.beds[13][2].toFixed(2) } }),
       info: () => ({ phase, t: +dayClock.t.toFixed(2), queued: lineQ.length, heard: [...heard], galSeen: [...galSeen], galUp, galIntro,
                      until: +speak.until.toFixed(2), pending: speak.pending ? speak.pending.name : null,
                      looked: [...looked], called, gifted, worn: wornNow(), seated, celebrate,
@@ -7625,16 +7749,16 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
     return done(THREE, c, false);
   }
   /* the stop's own board: BUS STOP, its number, the services that call */
-  function makeStopBoard(THREE, cnv) {
+  function makeStopBoard(THREE, cnv, code = '01039', name = 'Golden Mile Cplx', services = [['100', '107'], ['961', '980']]) {   // (v21.17: the lorong's stop has its own)
     const [c, x] = sized(cnv, 128, 208);
     x.fillStyle = '#f4f4ef'; x.fillRect(0, 0, 128, 208);
     x.fillStyle = '#1d5c3a'; x.fillRect(0, 0, 128, 52);
     x.fillStyle = '#ffffff'; x.textAlign = 'center'; x.font = 'bold 24px sans-serif'; x.fillText('BUS STOP', 64, 34);
-    x.fillStyle = '#1a1a1a'; x.font = 'bold 26px monospace'; x.fillText('01039', 64, 86);
-    x.font = 'bold 13px sans-serif'; x.fillText('Golden Mile Cplx', 64, 108);
+    x.fillStyle = '#1a1a1a'; x.font = 'bold 26px monospace'; x.fillText(code, 64, 86);
+    x.font = 'bold 13px sans-serif'; x.fillText(name, 64, 108);
     x.strokeStyle = '#1a1a1a'; x.lineWidth = 2; x.strokeRect(8, 118, 112, 82);
     x.font = 'bold 22px monospace';
-    [['100', '107'], ['961', '980']].forEach((row, i) => row.forEach((n, j) => x.fillText(n, 38 + j * 52, 150 + i * 34)));
+    services.forEach((row, i) => row.forEach((n, j) => x.fillText(n, 38 + j * 52, 150 + i * 34)));
     return done(THREE, c, false);
   }
   /* a mid-rise block's face: floors of windows in its own colour bands, air-conditioners, the odd open window */
