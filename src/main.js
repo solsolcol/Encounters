@@ -11489,7 +11489,12 @@ const STING_SAMPLE = {
   y4bell: ['y4bell', 1], y4tube: ['y4tube', 1], y4beads: ['y4beads', 1], y4curtain: ['y4curtain', 1], y4candle: ['y4candle', 1],
   y4creak: ['y4creak', 1], y4box: ['y4box', 1], y4setdown: ['y4setdown', 1], y4clatter: ['y4clatter', 1], y4sting: ['y4sting', 1],
   y4radio: ['y4radio', 1],
-  y4cry: ['y4cry', 1]                // v22.0 CP5: her weeping, echoing, when she appears at the edge of his sight (cp5/cry.sh)
+  y4cry: ['y4cry', 1],               // v22.0 CP5: her weeping, echoing, when she appears at the edge of his sight (cp5/cry.sh)
+  /* v22.0 CP6 · the merit film (masters/v22.0/cp6/make.sh): the temple at sunset — its bell and its evening air, the
+     envelope, the water poured for her into the bowl and onto the earth, the breeze, the light rising; its music in two
+     pieces of one take, the opening and the coda. (m4*, because t4* is episode 2 chapter 4's tower: a name is global) */
+  m4bell: ['m4bell', 1], m4envelope: ['m4envelope', 1], m4pour: ['m4pour', 1], m4ground: ['m4ground', 1],
+  m4leaves: ['m4leaves', 1], m4dusk: ['m4dusk', 1], m4rise: ['m4rise', 1], m4music: ['m4music', 1], m4coda: ['m4coda', 1]
 };
 /* Which kinds the synth below can actually fake. Everything else in
    STING_SAMPLE is sample-only: if its buffer is not decoded yet it stays

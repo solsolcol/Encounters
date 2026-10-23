@@ -93,6 +93,12 @@ scene. Priority ★ = the chapter looks wrong without it.
 - ★ **A home interior** — his own flat or house (a different home from episode 1).
 - ★ **Kumanthong figures** — Thai golden child figures with a topknot (6–8; one
   or two models reused and tinted is fine).
+- ✅ **Three kumanthong models** — ARRIVED 23 Oct (Drive folder
+  `1Jj5s0xuYuXUYw8Ep0ixe8GilmMhp7RAg`: `kuman1.glb` 108 MB, `kuman2.glb` 261 MB,
+  `kuman3.glb` 73 MB; Chad: "use it if you need to, or use it for the kumanthong
+  chapter"). Downloaded to `masters/v22.0/src/` (git-ignored, re-downloadable);
+  they are this chapter's — prepped at full detail when chapter 5 is built (the
+  Yin shop's own kuman thong are already on Chad's yin shelf model).
 - ★ **A home altar table** (carved, gilt or red).
 - Props: red drinks in small cups · fruit · candles · incense · garlands.
 - **A child silhouette** (for the shadow children — any small child model).

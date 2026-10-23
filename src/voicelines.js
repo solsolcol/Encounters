@@ -1202,7 +1202,7 @@
       text: "[uneasy] One afternoon, on the top floor of an old mall, I found a shop I had never noticed before.", secs: 5.72 },
     { id: "z4pro4", who: "jamesAdult", ch: "e3c4", where: "The opening film: walking to the shop at the end of the corridor, an old song coming from it",
       text: "[uneasy] Nobody else was up there... just an old song, coming from that shop.", secs: 5.41 },
-    { id: "z4look1", who: "jamesAdult", ch: "e3c4", where: "The Yin shop: he looks at the little oil bottles in the cabinet",
+    { id: "z4look1", who: "jamesAdult", ch: "e3c4", where: "The Yin shop: he looks at the little bottles of prai oil on the shelves",
       text: "[uneasy] Little bottles of oil... with something floating inside. I didn't want to know what.", secs: 7.47 },
     { id: "z4look2", who: "jamesAdult", ch: "e3c4", where: "The Yin shop: he looks at the wall of paintings (Phra Ngan, Mae Nak, Nang Tani) and her photograph between them with fresh flowers under it",
       text: "[uneasy] Paintings of ghost women... and a little god with red eyes, smiling at me. And between them, a photo of a real girl... with fresh flowers under it.", secs: 12.56 },
