@@ -1,17 +1,32 @@
 {
- "w_click.wav": {
-  "dur": 0.3,
-  "peak": -0.2,
-  "rms": -23.1,
-  "sub": 0.003,
-  "low": 0.684,
-  "mid": 0.234,
-  "hi": 0.078,
-  "cent": 1375,
+ "w_heart.wav": {
+  "dur": 0.7,
+  "peak": -3.1,
+  "rms": -17.3,
+  "sub": 0.261,
+  "low": 0.733,
+  "mid": 0.006,
+  "hi": 0.0,
+  "cent": 156,
   "on": 0.0,
-  "end": 0.1,
+  "end": 0.5,
   "holes": 0,
-  "tailDb": -71.9,
-  "headDb": -15.4
+  "tailDb": -54.1,
+  "headDb": -12.7
+ },
+ "y4heart_d.mp3": {
+  "dur": 1.2,
+  "peak": -7.0,
+  "rms": -26.3,
+  "sub": 0.588,
+  "low": 0.412,
+  "mid": 0.0,
+  "hi": 0.0,
+  "cent": 115,
+  "on": 0.0,
+  "end": 0.5,
+  "holes": 0,
+  "tailDb": -66.6,
+  "headDb": -18.2
  }
 }

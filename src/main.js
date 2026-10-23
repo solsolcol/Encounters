@@ -1840,6 +1840,238 @@ function tremTick() {
   handsRoot.rotation.z += trem.or; handsRoot.rotation.x += 0.6 * trem.or;
   return true;
 }
+/* v22.0 · THE COLD — THE THIRTY-THIRD, THIRTY-FOURTH AND THIRTY-FIFTH SEAMS. Episode 3 chapter 4's Yin locket
+   (S1·09: "an intense cold"). Chad, of the frost the first build drew on the lens: "Why the frost effect has
+   snowflakes? It makes no sense ... Why dont you also add motion blur effects, dimming effects ... Or heart beat
+   slowing down, with a hear beat sound, heart rate monitor going crazy, motion blur and heart palpitations while
+   feeling cold, feeling cold effects are just blue blur effects along the edge of the screen". So the cold is what
+   it does to HIM, not ice on a lens, and it is three verbs:
+     kit.chill(k, { secs })  the edges of his sight blur and go blue, the world dims and loses its colour — two
+                             layers over the canvas and under the HUD (#chillBlur, a backdrop blur masked to the
+                             edges; #chillTint, the blue there) and the canvas's own CSS filter. Every heartbeat
+                             kit.pulse lands surges it inward for a moment.
+     kit.pulse(o | null)     his heart taken over — { bpm, secs, erratic, sound, vol, haptic, kick }: the rate eased to
+                             `bpm` over `secs`; the rhythm broken by `erratic` 0..1 (a beat that comes early, wide and
+                             bizarre, then the pause that makes up for it; a beat that never comes, its P wave alone);
+                             the HUD's monitor drawing exactly those beats as they happen, in seconds, each one heard
+                             (`sound`, a pack sound) and felt (a buzz on a phone) the moment its spike is drawn, so
+                             what is heard is what is shown; `kick` makes the next beat an early one, now (a
+                             scare). Only the fields given change. null hands the monitor back to the night.
+     kit.smear(k, { secs })  the picture lags behind his eyes: the frame drawn before laid over this one, weighted by
+                             a DECAY TIME so a trail is as long at 20 frames a second as at 60 — one copy of the
+                             drawn frame into a texture and one quad; no render target, no light, no new program on
+                             any material the world draws.
+   All three ease on WALL time (the v7.4 law) and at 0 touch nothing at all — no layer shown, no filter, no copy, no
+   draw, no beat — so a chapter that never calls them draws and sounds exactly as it always did. kitReset takes all
+   three back. Nothing before e3c4 calls them; the fixture proves them. */
+const CHILL_LIVE = s => s === 'play' || s === 'decide' || s === 'unlock' || s === 'choose' || s === 'menu';
+const PULSE_LIVE = s => s === 'play' || s === 'decide' || s === 'unlock' || s === 'choose';
+const chill = { k: 0, to: 0, secs: 1.5, last: 0, beat: 0, on: false, sig: '', el: null };
+function chillEls() {
+  if (!chill.el) chill.el = { blur: document.getElementById('chillBlur'), tint: document.getElementById('chillTint') };
+  return chill.el.blur && chill.el.tint ? chill.el : null;
+}
+function kitChill(k, opts = {}) {
+  chill.to = Math.max(0, Math.min(1, +k || 0));
+  if (opts.secs !== undefined) chill.secs = Math.max(0.01, +opts.secs);
+  if (opts.secs === 0) chill.k = chill.to;
+  if (!chill.last) chill.last = performance.now();
+}
+function chillTick() {
+  if (chill.k === 0 && chill.to === 0) { chill.beat = 0; chill.last = 0; if (chill.on) chillPaint(false); return; }
+  const now = performance.now(), dt = chill.last ? Math.min(0.25, (now - chill.last) / 1000) : 0;
+  chill.last = now;
+  if (chill.k !== chill.to) chill.k = chill.to > chill.k ? Math.min(chill.to, chill.k + dt / chill.secs) : Math.max(chill.to, chill.k - dt / chill.secs);
+  chill.beat *= Math.exp(-dt * 5.5);
+  chillPaint(chill.k > 0.002 && CHILL_LIVE(state));
+}
+/* written only when a value moves (the signature), and taken off entirely at 0: a layer that is not shown is not
+   composited, and the canvas carries no filter at all */
+function chillPaint(show) {
+  const E = chillEls(); if (!E) return;
+  if (!show) {
+    if (chill.on) { chill.on = false; chill.sig = ''; E.blur.classList.add('hide'); E.tint.classList.add('hide'); canvas.style.filter = ''; }
+    return;
+  }
+  if (!chill.on) { chill.on = true; E.blur.classList.remove('hide'); E.tint.classList.remove('hide'); }
+  const k = chill.k, b = chill.beat * k;
+  const blur = 1.2 + 9.5 * k + 4.5 * b;                       // CSS px, at the very edge
+  const clear = Math.max(16, 66 - 30 * k - 14 * b);           // how much of the middle stays sharp, % of the way to a corner
+  const sig = blur.toFixed(1) + ' ' + clear.toFixed(1) + ' ' + k.toFixed(3) + ' ' + b.toFixed(2);
+  if (sig === chill.sig) return;
+  chill.sig = sig;
+  const mask = `radial-gradient(ellipse at 50% 47%, transparent ${clear.toFixed(1)}%, #000 ${(clear + 26).toFixed(1)}%)`;
+  const bf = `blur(${blur.toFixed(1)}px) saturate(${(1 - 0.45 * k).toFixed(3)}) brightness(${(1 - 0.22 * k - 0.1 * b).toFixed(3)})`;
+  const s1 = E.blur.style;
+  s1.backdropFilter = bf; s1.webkitBackdropFilter = bf; s1.maskImage = mask; s1.webkitMaskImage = mask;
+  const t0 = Math.max(10, clear - 6);
+  E.tint.style.background = `radial-gradient(ellipse at 50% 47%, rgba(120,170,240,0) ${t0.toFixed(1)}%, `
+    + `rgba(104,158,232,${(0.12 * k + 0.08 * b).toFixed(3)}) ${(t0 + 24).toFixed(1)}%, rgba(40,82,158,${(0.40 * k + 0.16 * b).toFixed(3)}) 100%)`;
+  canvas.style.filter = `saturate(${(1 - 0.5 * k).toFixed(3)}) brightness(${(1 - 0.16 * k - 0.06 * b).toFixed(3)})`;
+}
+/* the heart. Beats are SPIKES on the wall clock — { t, kind } with kind 0 a beat, 1 an early wide one, 2 one that
+   never comes — so the monitor can draw the P wave before a beat that has not landed yet and the T wave after one
+   that has, and a page that freezes for a second draws the beats it missed without playing them late */
+let kitPulse = null;
+const pulseLog = { beats: 0, early: 0, dropped: 0, heard: 0 };
+function pulseRand(n) { const v = Math.sin(n * 127.1 + 311.7) * 43758.5453; return v - Math.floor(v); }
+function kitPulseSet(o) {
+  if (!o) { kitPulse = null; return; }
+  const kp = kitPulse || (kitPulse = { bpm: curBpm, to: curBpm, secs: 3, erratic: 0, sound: null, vol: 0.6, buzz: true,
+                                       n: 0, spikes: [], next: null, last: 0, drawT: 0, away: 0 });
+  if (Number.isFinite(+o.bpm) && +o.bpm > 0) kp.to = Math.max(20, Math.min(200, +o.bpm));
+  if (o.secs !== undefined) kp.secs = Math.max(0.05, +o.secs || 0.05);
+  if (o.erratic !== undefined) kp.erratic = Math.max(0, Math.min(1, +o.erratic || 0));
+  if (o.sound !== undefined) kp.sound = o.sound || null;
+  if (o.vol !== undefined) kp.vol = Math.max(0, +o.vol || 0);
+  if (o.haptic !== undefined) kp.buzz = !!o.haptic;
+  const now = performance.now() / 1000;
+  if (!kp.next) kp.next = { t: now + 0.3, kind: 0 };
+  /* `kick`: a palpitation NOW — the next beat brought in early and wide, unless one is about to land anyway or the
+     last landed a moment ago (a heart cannot beat twice in a fifth of a second) */
+  if (o.kick) {
+    const last = kp.spikes.length ? kp.spikes[kp.spikes.length - 1].t : -1;
+    if (kp.next.t - now > 0.15 && now - last > 0.2) kp.next = { t: now + 0.04, kind: 1 };
+  }
+}
+function kitPulseTick() {
+  const kp = kitPulse; if (!kp) return;
+  const nowMs = performance.now();
+  if (!PULSE_LIVE(state)) { kp.last = 0; if (!kp.away) kp.away = nowMs; return; }
+  if (kp.away) {           // a menu, a scene, a hidden tab: the heart picks up where it was, not where the clock is
+    const gap = (nowMs - kp.away) / 1000; kp.away = 0;
+    if (kp.next) kp.next.t += gap;
+    for (const s of kp.spikes) s.t += gap;
+  }
+  const now = nowMs / 1000, dt = kp.last ? Math.min(0.25, now - kp.last) : 0;
+  kp.last = now;
+  kp.bpm += (kp.to - kp.bpm) * (1 - Math.exp(-dt * 3 / kp.secs));
+  for (let guard = 0; kp.next && now >= kp.next.t && guard < 4; guard++) {
+    const s = kp.next;
+    kp.spikes.push(s); if (kp.spikes.length > 8) kp.spikes.shift();
+    pulseLog.beats++;
+    if (s.kind === 1) pulseLog.early++; else if (s.kind === 2) pulseLog.dropped++;
+    if (s.kind !== 2 && now - s.t < 0.25) {
+      pulseLog.heard++;
+      if (kp.sound) snd(kp.sound, kp.vol * (s.kind === 1 ? 0.82 : 1), s.kind === 1 ? 1.1 : 1);
+      chill.beat = Math.max(chill.beat, s.kind === 1 ? 0.75 : 1);
+      if (kp.buzz) haptic(s.kind === 1 ? [10, 50, 16] : [24]);
+    }
+    // the next beat — when it lands and what it is, decided as this one lands
+    const base = 60 / kp.bpm, e = kp.erratic, r = pulseRand(++kp.n);
+    let kind = 0, rr = base * (1 + (pulseRand(kp.n + 0.5) - 0.5) * 0.22 * e);
+    if (s.kind === 1) rr = base * 1.5;                        // the pause after an early beat makes up for it
+    else if (r < 0.30 * e) { kind = 1; rr = base * 0.5; }    // a palpitation: in early, wide, bizarre
+    else if (r < 0.42 * e) kind = 2;                          // a beat that never comes: its P wave alone
+    kp.next = { t: s.t + rr, kind };
+  }
+}
+/* one beat on the monitor, d seconds from its spike. A beat is ecgWave's shape laid over 0.8 s with its R at 0.21
+   (so a slow heart is a beat and then a flat line, as a slow heart is); an early beat has no P wave, a broad tall
+   complex and a deep T the other way; a beat that never comes is its P wave and nothing after */
+function pulseShape(d, kind) {
+  if (kind === 1) {
+    if (d < -0.06 || d > 0.46) return 0;
+    if (d < 0.02) return (d + 0.06) / 0.08 * 1.3;
+    if (d < 0.12) return 1.3 - (d - 0.02) / 0.10 * 2.2;
+    if (d < 0.20) return -0.9 + (d - 0.12) / 0.08 * 0.75;
+    const u = (d - 0.20) / 0.26;
+    return -0.15 * (1 - u) - 0.45 * Math.sin(u * Math.PI);
+  }
+  const k = 0.21 + d / 0.8;
+  if (k < 0 || k >= 1) return 0;
+  if (kind === 2) return k < 0.10 ? ecgWave(k) : 0;
+  return ecgWave(k);
+}
+function pulseWaveAt(kp, tau) {
+  let v = 0;
+  for (const s of kp.spikes) { const d = tau - s.t; if (d > -0.25 && d < 0.75) v += pulseShape(d, s.kind); }
+  const nx = kp.next; if (nx) { const d = tau - nx.t; if (d > -0.25 && d < 0) v += pulseShape(d, nx.kind); }
+  const e = kp.erratic;
+  if (e > 0) v = v * (1 + 0.45 * e)
+    + e * (0.05 * Math.sin(tau * 2 * Math.PI * 0.6)                                                    // the baseline wandering
+         + 0.055 * (Math.sin(tau * 2 * Math.PI * 5.3) + 0.6 * Math.sin(tau * 2 * Math.PI * 8.7 + 1.3))  // a fibrillating squiggle
+         + (Math.random() - 0.5) * 0.09);                                                               // and the leads' noise
+  return v;
+}
+/* the picture lagging behind his eyes */
+const smear = { k: 0, to: 0, secs: 1, last: 0, tex: null, mesh: null, scene: null, cam: null, w: 0, h: 0,
+                ok: true, check: false, at: -1, drawn: 0, copied: 0, err: 0, lastDraw: 0 };
+let framesDrawn = 0;    // v22.0: frames that reached the GPU — a smear draws only over the frame drawn just before it
+function kitSmear(k, opts = {}) {
+  smear.to = Math.max(0, Math.min(1, +k || 0));
+  if (opts.secs !== undefined) smear.secs = Math.max(0.01, +opts.secs);
+  if (opts.secs === 0) smear.k = smear.to;
+  if (!smear.last) smear.last = performance.now();
+}
+function smearTick() {
+  if (smear.k === 0 && smear.to === 0) { smear.last = 0; if (smear.tex || smear.mesh) smearFree(); return; }
+  const now = performance.now(), dt = smear.last ? Math.min(0.25, (now - smear.last) / 1000) : 0;
+  smear.last = now;
+  if (smear.k !== smear.to) smear.k = smear.to > smear.k ? Math.min(smear.to, smear.k + dt / smear.secs) : Math.max(smear.to, smear.k - dt / smear.secs);
+}
+function smearFree() {
+  if (smear.tex) smear.tex.dispose();
+  if (smear.mesh) { smear.mesh.geometry.dispose(); smear.mesh.material.dispose(); }
+  smear.tex = smear.mesh = smear.scene = smear.cam = null; smear.at = -1; smear.lastDraw = 0;
+}
+const _smv = new THREE.Vector2();
+/* after both passes: the last frame over this one, then this frame (with the trail in it) copied for the next.
+   The texture holds the drawn bytes — already tone-mapped and in the screen's colour space — and the quad writes
+   them back as they are (no colour chunks in its shader), so a still picture under a smear is the same picture.
+   The first copy into a new texture is checked once with getError: a browser that cannot copy this drawing buffer
+   turns the smear off for the session rather than laying a black frame over the world. */
+function smearPass() {
+  if (!smear.ok || smear.k <= 0.002 || !PULSE_LIVE(state)) { smear.at = -1; return; }
+  renderer.getDrawingBufferSize(_smv);
+  const w = _smv.x | 0, h = _smv.y | 0;
+  if (w < 2 || h < 2) return;
+  if (!smear.tex || smear.w !== w || smear.h !== h) {
+    if (smear.tex) smear.tex.dispose();
+    smear.tex = new THREE.FramebufferTexture(w, h);
+    smear.w = w; smear.h = h; smear.at = -1; smear.check = true;
+    if (smear.mesh) smear.mesh.material.uniforms.map.value = smear.tex;
+  }
+  if (!smear.mesh) {
+    const mat = new THREE.ShaderMaterial({
+      uniforms: { map: { value: smear.tex }, a: { value: 0 } },
+      vertexShader: 'varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }',
+      fragmentShader: 'uniform sampler2D map; uniform float a; varying vec2 vUv; void main() { gl_FragColor = vec4(texture2D(map, vUv).rgb, a); }',
+      transparent: true, depthTest: false, depthWrite: false, toneMapped: false
+    });
+    smear.mesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), mat);
+    smear.mesh.frustumCulled = false;
+    smear.scene = new THREE.Scene(); smear.scene.add(smear.mesh);
+    smear.cam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+  }
+  const now = performance.now();
+  const dt = smear.lastDraw ? Math.min(0.25, (now - smear.lastDraw) / 1000) : 1 / 60;
+  smear.lastDraw = now;
+  if (smear.at === framesDrawn - 1) {
+    const tau = 0.025 + 0.15 * smear.k;                       // how long a trail lasts, in seconds
+    smear.mesh.material.uniforms.a.value = Math.min(0.85, Math.exp(-dt / tau)) * Math.min(1, smear.k * 3);
+    renderer.autoClear = false;
+    renderer.render(smear.scene, smear.cam);
+    renderer.autoClear = true;
+    smear.drawn++;
+  }
+  try {
+    const gl = renderer.getContext();
+    if (smear.check) gl.getError();
+    renderer.copyFramebufferToTexture(smear.tex);
+    if (smear.check) {
+      smear.check = false;
+      const e = gl.getError();
+      if (e !== gl.NO_ERROR) { smear.ok = false; smear.err = e; smearFree(); console.warn('smear: this drawing buffer cannot be copied (' + e + '); off for this session'); return; }
+    }
+    smear.at = framesDrawn; smear.copied++;
+  } catch (err) { smear.ok = false; smearFree(); console.warn('smear: off for this session', err); }
+}
+function coldOff() {
+  chill.k = chill.to = 0; chill.beat = 0; chill.last = 0; chillPaint(false);
+  kitPulse = null;
+  smear.k = smear.to = 0; smear.last = 0; smearFree();
+}
 function handsOff() {
   const was = hands.was > 0 || hands.k > 0;
   hands.k = hands.to = 0; hands.was = 0; hands.t = 0;
@@ -4873,6 +5105,7 @@ function kitReset() {
   pray.y = PRAY.y;                       // v18.4: and at chapter 1's height until the chapter says otherwise (handsPut reads it)
   handsOff();                            // v18.0: nor with them still moving on their own
   trem.k = trem.to = 0; trem.t = 0; trem.last = 0;   // v22.0: nor shaking
+  coldOff();                             // v22.0: nor cold — no chill at the edges, his own heart back, no smear
   activeSpot = null;
   if (unl.id) unlockClose('force');      // v14.7: a splash never outlives the run it opened in
   if (cho.ids) chooseClose('force');     // v17.6: nor does a choice
@@ -4998,6 +5231,10 @@ const KIT = {
   hands: kitHandsSet,              // v18.0: the hands taken — out of the clasp into a Thai-dance gesture by k
   getHands: () => hands.k,
   tremble: kitTremble,             // v22.0: the hands shaking by k (the thirty-second seam)
+  chill: kitChill,                 // v22.0: the cold at the edges of his sight — blur, blue, dim (the thirty-third seam)
+  pulse: kitPulseSet,              // v22.0: his heart taken over — rate, rhythm, heard and felt, on the monitor (the thirty-fourth)
+  smear: kitSmear,                 // v22.0: the picture lagging behind his eyes (the thirty-fifth)
+  getPulse: () => (kitPulse ? { bpm: kitPulse.bpm, to: kitPulse.to, erratic: kitPulse.erratic } : null),
   hurt: kitHurtSet,                // v11.1: the red frame held, and a bleed per second, until cleared
   /* v11.6: THE BAG, from a chapter. `give` puts an item in the bag and
      sets the bag button pulsing until it is equipped; `take` removes it
@@ -7773,6 +8010,21 @@ function updatePulse(dt) {
   const s = pulseStress(), flat = s < 0;
   spikeLevel = Math.max(0, spikeLevel - dt * 0.25);         // the rate lingers
   impulse = Math.max(0, impulse - dt * 0.9);                // the height rings down
+  const kp = flat ? null : kitPulse;
+  if (kp) {
+    /* v22.0: a heart a chapter has taken over (kit.pulse) is drawn from its own beats, in wall-clock seconds, so
+       the spike on the strip and the beat in the ear are the same beat at any frame rate; a menu holds the strip */
+    curBpm = kp.bpm;
+    const now = performance.now() / 1000;
+    const wdt = kp.drawT ? Math.min(0.25, Math.max(0, now - kp.drawT)) : dt;
+    kp.drawT = now;
+    const cols = PULSE_LIVE(state) ? Math.min(W, Math.max(1, Math.round(W * wdt / ECG_WINDOW))) : 0;
+    const amp = 0.42 + Math.max(s, 0.4 + 0.45 * kp.erratic) * 0.35;
+    for (let i = 0; i < cols; i++) {
+      ecgTrail[ecgX] = pulseWaveAt(kp, now - (cols - 1 - i) * wdt / cols) * amp * (1 + impulse * 0.8);
+      ecgX = (ecgX + 1) % W;
+    }
+  } else {
   curBpm += (((flat ? 50 : 50 + s * 95)) - curBpm) * Math.min(1, dt * 2.2);
   // under high stress the rhythm itself goes wrong: beats land early, late
   const jitter = !flat && s > 0.55 ? 1 + Math.sin(beatPhase * 19.7) * 0.3 * s : 1;
@@ -7789,9 +8041,11 @@ function updatePulse(dt) {
     ecgTrail[ecgX] = ecgWave(k) * amp * qrsGain + noise;
     ecgX = (ecgX + 1) % W;
   }
+  }
   ecgCtx.clearRect(0, 0, W, H);
   const mid = H * 0.62, span = H * 0.42;
-  for (const [width, alpha] of [[3 * dpr, 0.22], [1.2 * dpr, 0.95]]) {
+  const wild = kp ? kp.erratic : 0;                          // v22.0: a heart gone wrong glows harder on the strip
+  for (const [width, alpha] of [[3 * dpr * (1 + wild), 0.22 + 0.2 * wild], [1.2 * dpr, 0.95]]) {
     ecgCtx.beginPath();
     for (let i = 0; i < W; i++) {
       // extreme beats peg the strip edge, like a real monitor clipping
@@ -11231,10 +11485,11 @@ const STING_SAMPLE = {
   /* v22.0 CP5 · the Yin shop's sound (masters/v22.0/cp5/make.sh): the song on the cassette (her own humming) and
      her humming beside him, the drone, the dead floor, and every small wrong thing the shop does */
   y4song: ['y4song', 1], y4hum: ['y4hum', 1], y4dread: ['y4dread', 1], y4mall: ['y4mall', 1], y4tapeclick: ['y4tapeclick', 1],
-  y4zap: ['y4zap', 1], y4frost: ['y4frost', 1], y4shiver: ['y4shiver', 1], y4breath: ['y4breath', 1], y4sigh: ['y4sigh', 1],
+  y4zap: ['y4zap', 1], y4heart: ['y4heart', 1], y4shiver: ['y4shiver', 1], y4breath: ['y4breath', 1], y4sigh: ['y4sigh', 1],
   y4bell: ['y4bell', 1], y4tube: ['y4tube', 1], y4beads: ['y4beads', 1], y4curtain: ['y4curtain', 1], y4candle: ['y4candle', 1],
   y4creak: ['y4creak', 1], y4box: ['y4box', 1], y4setdown: ['y4setdown', 1], y4clatter: ['y4clatter', 1], y4sting: ['y4sting', 1],
-  y4radio: ['y4radio', 1]
+  y4radio: ['y4radio', 1],
+  y4cry: ['y4cry', 1]                // v22.0 CP5: her weeping, echoing, when she appears at the edge of his sight (cp5/cry.sh)
 };
 /* Which kinds the synth below can actually fake. Everything else in
    STING_SAMPLE is sample-only: if its buffer is not decoded yet it stays
@@ -13694,6 +13949,9 @@ function tick(now = 0) {
   updateGhost(dt);
   stage.updatePile(t);
   updateAudioFrame(t);
+  kitPulseTick();      // v22.0: a heart a chapter has taken over (kit.pulse) — its beats heard and felt as the monitor draws them
+  chillTick();         // v22.0: the cold at the edges of his sight (kit.chill)
+  smearTick();         // v22.0: and the picture lagging behind his eyes (kit.smear)
   updatePulse(dt);
   /* v8.6: A LIGHT AT ZERO STILL COSTS EVERY PIXEL. three.js compiles the
      shader for the lights it COLLECTS, and it collects a light whether or
@@ -13753,6 +14011,7 @@ function tick(now = 0) {
   if (worldCovered()) {
     scene.updateMatrixWorld();
     vmScene.updateMatrixWorld();
+    smear.at = -1;                         // v22.0: a smear never lays a frame from before a cover over one after it
     return;
   }
   if (forceDraw > 0) forceDraw--;
@@ -13761,6 +14020,7 @@ function tick(now = 0) {
   const band = letterbox && document.body.classList.contains('cine');
   if (band) { renderer.setScissor(0, letterbox.y, letterbox.w, letterbox.h); renderer.setScissorTest(true); }
   try {
+  framesDrawn++;                           // v22.0: kit.smear lays only the frame drawn just before over this one
   renderer.render(scene, camera);
 
   // second pass: the viewmodel gets its own fresh depth buffer, so the hands
@@ -13774,6 +14034,7 @@ function tick(now = 0) {
     renderer.autoClear = true;
   } else vmScene.updateMatrixWorld();    // nothing to draw, but whatever reads a hand's matrix reads it fresh
   if (OPT.lightMem) lightMemTick();      // v15: a compile on screen is remembered for the next curtain
+  if (smear.k > 0.002 || smear.at >= 0) smearPass();   // v22.0: kit.smear — a no-op unless a chapter asked
   } finally { if (band) renderer.setScissorTest(false); }   // never left on, whatever a pass did
 }
 /* v15: THE LETTERBOX IS NOT SHADED. Every film and scene draws two opaque
@@ -14058,6 +14319,17 @@ window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () =
                  camRoll: () => camera.rotation.z,         // v18.0: the body's sway under kit.hands
                  handsAt: (k, t, o) => handsPut(k, t, o),  // v20.1: probes pose the gesture at any flow time (where the arm's cut end goes)
                  tremble: () => ({ k: +trem.k.toFixed(3), to: trem.to, ox: trem.ox, oy: trem.oy, or: trem.or }),   // v22.0: the shake, for the fixture
+                 /* v22.0: the cold, for the fixture and the probes — the chill's layer and filter as painted, the heart's
+                    beats as heard, the smear's draws and copies */
+                 cold: () => {
+                   const E = chillEls();
+                   return { chill: { k: +chill.k.toFixed(3), to: chill.to, beat: +chill.beat.toFixed(3), on: chill.on,
+                                     shown: !!(E && !E.blur.classList.contains('hide')), filter: canvas.style.filter,
+                                     backdrop: E ? (E.blur.style.backdropFilter || E.blur.style.webkitBackdropFilter || '') : '' },
+                            pulse: kitPulse ? { bpm: +kitPulse.bpm.toFixed(1), to: kitPulse.to, erratic: kitPulse.erratic, next: kitPulse.next && kitPulse.next.kind } : null,
+                            beats: { ...pulseLog }, curBpm: +curBpm.toFixed(1),
+                            smear: { k: +smear.k.toFixed(3), ok: smear.ok, err: smear.err, drawn: smear.drawn, copied: smear.copied, tex: !!smear.tex } };
+                 },
                  gest: GEST, gestLayout,                   // v20.1: …and try its numbers
                  vmCam, handsRoot, rightHand: () => rightHandModel, prayArm: () => prayerArmL,   // v16.5: probes measure the clasp on screen
                  weaponFire, weaponReload, weaponLog, weaponProp: () => weaponProp, weaponMixer: () => weaponMixer,      // v12.0, probes

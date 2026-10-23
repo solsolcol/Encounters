@@ -40,6 +40,14 @@
 #   y4clatter c  the densest bounce, clean tail
 #   y4sting c    rises for 1.75 s and CUTS to silence (-52 dB 0.25 s after its peak) — she is there, and nothing
 #   y4radio a    static and a whine, clean end
+#
+# THE HEART (CP5d, Chad: "heart beat slowing down, with a heart beat sound, heart rate monitor going crazy"):
+#   y4heart d    the only take of four with body above the sub-bass (41 % in 120-500 Hz; a, b, c are 76-99 % under
+#                120 Hz, which a phone plays as nothing) and a clear lub at 0.02 s and dub at 0.21 s. heart.py gives
+#                the thump harmonics a phone can play (26 % sub, 73 % 120-500 Hz after), peak -3 dBFS. kit.pulse plays
+#                it on every beat it draws, so what is heard is what the monitor shows.
+#   y4frost is RETIRED with the frost (Chad: "Why the frost effect has snowflakes? It makes no sense"); its row,
+#                its files and its cue are gone.
 set -e
 cd "$(dirname "$0")"
 peak() { python3 ../../v9.7/peak.py "$1" | sed 's/.*peak //; s/ dBFS.*//'; }
@@ -88,9 +96,25 @@ if [ "${BEDS:-1}" = 1 ]; then
   rm -f w_d0.wav* w_d1.wav* w_dread.wav* w_m0.wav w_m1.wav* w_mall.wav*
 fi
 
+if [ "${VOICE:-1}" = 1 ]; then
+  # z4look2, said again for the wall that replaced the photographs (Phra Ngan, Mae Nak, Nang Tani around her photo):
+  # "[uneasy] Paintings of ghost women... and a little god with red eyes, smiling at me. And between them, a photo of
+  # a real girl... with fresh flowers under it." Four takes (Brian, eleven_v3), all four the words exactly; take a has
+  # the cleanest end (-37.8, faded) and the pause after "ghost women" (1.18 s) — 12.56 s. On his v16.0/v18.6 chain.
+  python3 ../../v21.0/prep.py raw/z4look2_a.mp3 p_z4look2.wav --fade 0.12 >/dev/null
+  ffmpeg -v error -y -i p_z4look2.wav -af "highpass=f=70:poles=2" -ar 48000 -ac 1 h_z4look2.wav
+  enc z4look2 h_z4look2.wav -6.85 -6.6 64k 1
+  rm -f p_z4look2.wav h_z4look2.wav
+fi
+
+if [ "${HEART:-1}" = 1 ]; then
+  python3 heart.py raw/y4heart_d.mp3 w_heart.wav
+  enc y4heart w_heart.wav -3.0 -3.0 64k 1
+  rm -f w_heart.wav w_heart.wav.f32
+fi
+
 if [ "${FX:-1}" = 1 ]; then
   shot y4zap     raw/y4zap_b.mp3     0.00 1.80 0.15
-  shot y4frost   raw/y4frost_c.mp3   0.20 3.40 0.30
   shot y4shiver  raw/y4shiver_a.mp3  0.00 2.15 0.25
   shot y4breath  raw/y4breath_d.mp3  0.35 2.00 0.20
   shot y4sigh    raw/y4sigh_a.mp3    0.00 2.30 0.30

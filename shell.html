@@ -76,6 +76,12 @@ body.cine #caption{bottom:calc(12vh + 10px)}   /* (in a scene: over the letterbo
   background:radial-gradient(ellipse at center,transparent 22%,var(--fc,#63D6C8) 130%)}
 #hudflash.on{animation:hudFlash var(--fs,.55s) ease-out}
 @keyframes hudFlash{0%{opacity:0}18%{opacity:.62}100%{opacity:0}}
+/* v22.0 · THE COLD (kit.chill). Chad: "feeling cold effects are just blue blur effects along the edge of the screen".
+   The blur is the page's own backdrop filter, masked to the edges, and the blue a gradient over it — every value
+   (the radius, how much of the middle stays sharp, the blue's strength) written by the engine on the frame, a
+   heartbeat surging them inward. Two SIBLINGS on the page rather than one box, because a box holding a backdrop
+   filter can become its child's backdrop root and blur nothing. Under the HUD and the dread frame. */
+#chillBlur,#chillTint{position:fixed;inset:0;pointer-events:none;z-index:3}
 #panic{position:fixed;inset:0;pointer-events:none;z-index:3;opacity:0;
   transition:opacity .4s linear;
   background:radial-gradient(ellipse at 50% 50%,transparent 12%,
@@ -2552,6 +2558,9 @@ body.finePtr .galPull,body.finePtr .galEndHint{display:block}
 
 <canvas id="scene"></canvas>
 <div id="grade"></div>
+<!-- v22.0: the cold (kit.chill) — the edges of his sight blurred, then the blue there; shown only while it is cold -->
+<div id="chillBlur" class="hide"></div>
+<div id="chillTint" class="hide"></div>
 <div id="panic"></div>
 <!-- v8.7: one screen flash, fired by the kit — a reached place, a beat landing -->
 <div id="hudflash"></div>
@@ -2969,6 +2978,18 @@ body.finePtr .galPull,body.finePtr .galEndHint{display:block}
         <span class="credWho" data-t="credits.jadeWho">Anonymous, ink and colour on silk &middot; Sotheby&rsquo;s &middot; Wikipedia, public domain</span>
         <a class="credLink" href="https://commons.wikimedia.org/wiki/File:Portraits_of_Jade_Emperor_and_the_Heavenly_Kings.JPG"
            target="_blank" rel="noopener noreferrer" data-t="credits.jadeLink">commons.wikimedia.org &middot; Portraits of Jade Emperor and the Heavenly Kings</a>
+      </li>
+      <li>
+        <span class="credWhat" data-t="credits.yinghost">The ghost in the Yin shop</span>
+        <span class="credWho" data-t="credits.yinghostWho">Horror Ghost Character &ndash; Blood Stained Spirit &middot; adhamasalah &middot; Sketchfab, CC BY 4.0</span>
+        <a class="credLink" href="https://sketchfab.com/3d-models/horror-ghost-character-blood-stained-spirit-ed1a90be19404450935720f7abaae471"
+           target="_blank" rel="noopener noreferrer" data-t="credits.yinghostLink">sketchfab.com &middot; horror-ghost-character-blood-stained-spirit</a>
+      </li>
+      <li>
+        <span class="credWhat" data-t="credits.skull">The skulls in the Yin shop</span>
+        <span class="credWho" data-t="credits.skullWho">Scattering Skull &middot; Vladimir Petkovic &middot; Khronos glTF Sample Assets, CC0</span>
+        <a class="credLink" href="https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/ScatteringSkull"
+           target="_blank" rel="noopener noreferrer" data-t="credits.skullLink">github.com &middot; KhronosGroup &middot; ScatteringSkull</a>
       </li>
       <li>
         <span class="credWhat" data-t="credits.anim">Animation, two of the crowd, and the soldiers&rsquo; takes</span>

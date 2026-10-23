@@ -78,23 +78,28 @@
     /* NO HAUNTING (the eleventh leak): nothing hunts him here — the pieces answer */
     ghost: null,
 
-    /* WORLD Y's light: a dim unit at the end of a dim floor — a red altar
-       lamp, one tube; the cold, the Hanuman's gold and the tray's presences
-       are tweens away from the three worlds' own (kit.daylight) */
+    /* WORLD Y's light: an ordinary shop on an old mall's top floor one
+       afternoon — the ceiling's tubes on, the warmth of the wood and the
+       altar's red bulb. CP5a, Chad: "No shop will deliberately make itself
+       dark and rundown, it makes no sense" and "it doesn't have to be
+       rundown ... This world is not binary": not a showroom either. What is
+       eerie here is what the shop SELLS. The cold, the Hanuman's gold and
+       the tray's presences are tweens away from the three worlds' own
+       (kit.daylight) */
     daylight: {
-      stops: [[0.00, '#2a2228'], [0.30, '#221a20'], [0.60, '#1a1418'], [1.00, '#120e10']],
-      bg: 0x120e10,
-      fog: [0x1c1416, 0.022],
-      hemi: [0xffd9cc, 0x2a1810, 0.46],
-      key: [0xffcab4, 0.36, 1, 6, 2],
-      fill: [0xff8c72, 0.22],
+      stops: [[0.00, '#3c3a37'], [0.30, '#34322f'], [0.60, '#2c2a28'], [1.00, '#242220']],
+      bg: 0x242220,
+      fog: [0x2c2926, 0.010],
+      hemi: [0xf6f2ea, 0x4a3e34, 0.78],
+      key: [0xfff4e4, 0.58, 1, 6, 2],
+      fill: [0xffd6c0, 0.24],
       stars: 0, moon: 0,
       sun: 0, clouds: 0,
-      vmHemi: [0xffd9cc, 0x2a1810, 0.62],
-      vmKey: [0xffcab4, 0.5]
+      vmHemi: [0xf6f2ea, 0x4a3e34, 0.9],
+      vmKey: [0xfff4e4, 0.66]
     },
 
-    assets: ['granny', 'yinghost', 'yinwall', 'yingirl'],
+    assets: ['yinkeeper', 'yinghost', 'yinptg', 'yingirl', 'yinamulet', 'yinamuletlod', 'yinshelf', 'yinshelflod', 'yinskull'],
     items: [],
 
     musicVol: 0,
@@ -118,7 +123,7 @@
       objPick: 'Pick up the amulet',
       objLeave: 'Leave the shop',
       lookBottles: 'The bottles of oil',
-      lookPhotos: 'The old photographs',
+      lookPhotos: 'The paintings on the wall',
       lookAltar: 'The small altar',
       hotKeeper: 'Talk to the shopkeeper',
       hotLocket: 'Pick up the amulet',
@@ -163,7 +168,7 @@
      pack every player downloads at boot (measured: unquoted, the shared Opus pack grew 5.35 -> 7.29 MB) */
   const SECS = {
     /* the film */ 'z4pro1': 7.97, 'z4pro2': 7.08, 'z4pro3': 5.72, 'z4pro4': 5.41,
-    /* the Yin shop */ 'z4look1': 7.47, 'z4look2': 7.47, 'z4look3': 5.64, 'yk4hello': 2.69, 'yk4show': 13.61, 'z4ask': 1.8, 'yk4gentle': 6.64, 'z4numb': 3.24, 'z4cold': 4.23, 'z4beside': 4.13, 'z4yin': 5.64, 'yk4heard': 1.96, 'yk4merit': 4.55,
+    /* the Yin shop */ 'z4look1': 7.47, 'z4look2': 12.56, 'z4look3': 5.64, 'yk4hello': 2.69, 'yk4show': 13.61, 'z4ask': 1.8, 'yk4gentle': 6.64, 'z4numb': 3.24, 'z4cold': 4.23, 'z4beside': 4.13, 'z4yin': 5.64, 'yk4heard': 1.96, 'yk4merit': 4.55,
     /* the merit film */ 'z4tem1': 4.13, 'z4dedicate': 7.24, 'mk4yatha': 12.12, 'z4tem2': 2.85, 'z4han0': 4.05,
     /* the Hanuman */ 'ow4hello': 4.75, 'z4fine': 4.52, 'ow4new': 5.88, 'z4roar': 4.83, 'z4urge': 3.74, 'ow4ok': 3.55, 'z4go': 3.63, 'sm4what': 2.43, 'z4hide': 6.69, 'z4tray0': 6.43,
     /* the tray */ 'to4hello': 3.37, 'to4notice': 8.33, 'z4sense': 1.78, 'to4tray': 4.52, 'z4lersi': 6.77, 'to4lersi': 3.84, 'z4wess': 4.13, 'to4wess': 4.49, 'z4naga': 5.41, 'to4naga': 3.47, 'to4unknown': 7.39, 'to4clock': 3.53, 'z4feel': 3.63,
@@ -274,6 +279,21 @@
       }
       return parsedGlb.get(key);
     }
+    /* CHAD'S yin amulet (v22.0 CP5), shared by her velvet box and his hand: the near cut (every triangle) and the far
+       cut wearing the near one's own material; its frame is old silver-gold, so its metal takes the room's reflection
+       a little (none and it reads black, v8.9; the whole of it and it reads pale, v18.8) */
+    let yinAm = null;
+    function yinAmulet() {
+      if (!yinAm) yinAm = Promise.all([parseOnce('yinamulet'), parseOnce('yinamuletlod')]).then(([n, f]) => {
+        let mat = null; n.scene.traverse(m => { if (m.isMesh && !mat) mat = m.material; });
+        if (mat) { mat.envMapIntensity = 0.35; for (const k of ['map', 'normalMap', 'roughnessMap', 'metalnessMap']) if (mat[k]) mat[k].anisotropy = 8; }
+        f.scene.traverse(m => { if (m.isMesh) m.material = mat; });
+        for (const sc of [n.scene, f.scene]) sc.traverse(m => { if (m.isMesh) { m.castShadow = false; m.receiveShadow = false; } });
+        return { near: n.scene, far: f.scene, mat };
+      });
+      return yinAm;
+    }
+    const yinChainMat = M({ color: 0x8e7c5e, roughness: 0.38, metalness: 0.85 });   // its chain: the frame's old metal
 
     /* ============================================== WORLD Y · THE YIN SHOP (CP4)
        An old mall's top floor one afternoon: a dead corridor of shutters along an atrium void, its escalator taped
@@ -324,7 +344,7 @@
       const mCurtain = M({ map: tCurtain, roughness: 0.9, side: THREE.DoubleSide });
       const mLace    = M({ map: tLace, color: 0xf0e6d6, roughness: 0.9, transparent: true, alphaTest: 0.35, side: THREE.DoubleSide });
       const mGlass   = M({ color: 0xbfd4cf, roughness: 0.06, metalness: 0.2, transparent: true, opacity: 0.12, depthWrite: false });
-      const mGlassDirty = M({ color: 0x9aa59c, roughness: 0.3, metalness: 0.1, transparent: true, opacity: 0.22, depthWrite: false });
+      const mGlassDirty = M({ color: 0xaab4ae, roughness: 0.22, metalness: 0.1, transparent: true, opacity: 0.15, depthWrite: false });   // CP5a: glass, not grime
       const mAlu     = M({ color: 0x8e9294, roughness: 0.4, metalness: 0.7 });
       const mBrass   = M({ color: 0xb08a3e, roughness: 0.36, metalness: 0.8 });
       const mGilt    = M({ color: 0xb8913a, roughness: 0.4, metalness: 0.7, emissive: 0x241604, emissiveIntensity: 0.4 });
@@ -373,8 +393,7 @@
       { const c = ceilAt(W, D, 0, H, cz, mCeil, G);
         const uv = c.geometry.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * W / 2.4, uv.getY(i) * D / 2.4);
         c.material = matRep(mCeil, repeatTex(tCeil, 1, 1)); }
-      // a missing ceiling panel over the back corner: the dark above it
-      { const hole = new THREE.Mesh(new THREE.PlaneGeometry(0.6, 0.6), mBlack); hole.rotation.x = Math.PI / 2; hole.position.set(-1.5, H - 0.003, -6.9); G.add(hole); }
+      // (CP5a: the missing ceiling panel over the back corner is gone — a shop that is open mends its ceiling)
       const blockerOnly = (w, h, d, x, y, z) => { const m = hidBox(w, h, d, x, y, z, G); walls.push(m); return m; };
       blockerOnly(W + 0.4, H, 0.2, 0, H / 2, YSHOP.z0 - 0.1);
       blockerOnly(0.2, H, D, YSHOP.x0 - 0.1, H / 2, cz);
@@ -382,7 +401,8 @@
       const lw = YDOOR.x0 - YSHOP.x0, rw = YSHOP.x1 - YDOOR.x1;
       blockerOnly(lw, H, 0.2, YSHOP.x0 + lw / 2, H / 2, 0.1);
       blockerOnly(rw, H, 0.2, YDOOR.x1 + rw / 2, H / 2, 0.1);
-      // the walls as they are seen: a dark wainscot to 0.95 m, a rail, stained plaster above
+      // the walls as they are seen: a dark wainscot to 0.95 m, a rail, painted plaster above (CP5a: plain paint
+      // with the ordinary marks of a shop in use — no damp, no cracks)
       const WAIN = 0.95;
       const wallRun = (len, cx, cz2, ry) => {
         tiled(len, H - WAIN, mPlasterR, 2.2, cx, WAIN + (H - WAIN) / 2, cz2, ry);
@@ -440,14 +460,20 @@
         yLive.beads = { red, dark, n, per, x0: YDOOR.x0 + 0.04, x1: YDOOR.x1 - 0.04, top: GL - 0.02, step: 0.055, z: 0.12, t: 0, push: 0 };
         const rail = box(YDOOR.x1 - YDOOR.x0, 0.03, 0.03, 0, GL - 0.005, 0.12, mWoodDk, G, false); }
 
-      /* ---- the LEFT wall: three tall cabinets of spirit amulets (the oil bottles in the middle one) */
+      /* ---- the LEFT wall: three tall cabinets of spirit amulets (the oil bottles in the middle one) — drawn, and
+         standing only until CHAD'S yin amulet shelf lands in their place (below, after their contents) */
       const CAB = { x0: YSHOP.x0, x1: YSHOP.x0 + 0.46, h: 2.12, base: 0.56 };
       const cabZ = [[-1.18, -2.38], [-2.48, -3.68], [-3.78, -4.98]];
       const SHELF = [0.62, 0.98, 1.34, 1.7, 2.04];
+      const YSHELF = { d: 0.322, w: 1.228, h: 2.0, gap: 0.01 };     // Chad's shelf, measured (masters/v22.0/yinmodels)
       const glows = [];
+      const cabStart = G.children.length;
       cabZ.forEach(([za, zb], ci) => {
         const w = za - zb, cz2 = (za + zb) / 2, xd = CAB.x1 - CAB.x0, xc = (CAB.x0 + CAB.x1) / 2;
-        solids.push(box(xd, CAB.base, w, xc, CAB.base / 2, cz2, mWood, G, false));          // the cupboard under it (solid)
+        box(xd, CAB.base, w, xc, CAB.base / 2, cz2, mWood, G, false);                         // the cupboard under it
+        // its collision is the SHELF's footprint, drawn cabinet or shelf: padded 0.14 it stands 0.47 off the wall, in
+        // front of the drawn glass (0.46) and 0.14 short of the shelf's face, its full height (it hides her, girlSeen)
+        solids.push(hidBox(YSHELF.d, YSHELF.h, YSHELF.w, CAB.x0 + YSHELF.gap + YSHELF.d / 2, YSHELF.h / 2, cz2, G));
         box(xd, 0.04, w, xc, CAB.h, cz2, mWoodDk, G, false);                                   // its top
         box(xd, 0.08, w + 0.04, xc, CAB.h + 0.06, cz2, mWood, G, false);                      // a cornice
         box(0.02, CAB.h - CAB.base, w, CAB.x0 + 0.01, (CAB.h + CAB.base) / 2, cz2, mRed, G, false);   // back: old red baize
@@ -535,6 +561,33 @@
         const candleGeo = new THREE.CylinderGeometry(0.012, 0.012, 0.14, 10); candleGeo.translate(0, 0.07, 0);
         mk(candleGeo, mWhiteWax, candles);
       }
+      const cabParts = G.children.slice(cabStart);
+      /* CHAD'S yin amulet shelf (v22.0 CP5: "this is the yin amulet shelf in the yin shop, replace your generated ones
+         with this model"): a dark wooden cabinet of yin stock — lockets, prai oil, kuman thong, takrut cases, two skulls
+         — three along the wall where the drawn cabinets stood, each a THREE.LOD: the near cut within 3.2 m (2.4 on a
+         phone), the far cut beyond wearing the near one's own material (v21.8). The middle one is MIRRORED, so the wall
+         is not one shelf stamped three times. The drawn cabinets stand until both cuts land (a failed download costs the
+         nicer shelf, never the wall, v4.7) and go on the frame they do. */
+      Promise.all([parseOnce('yinshelf'), parseOnce('yinshelflod')]).then(([near, far]) => {
+        if (!alive) return;
+        let nearMat = null;
+        near.scene.traverse(m => { if (m.isMesh && !nearMat) nearMat = m.material; });
+        if (!nearMat) return;
+        for (const k of ['map', 'normalMap', 'roughnessMap', 'metalnessMap']) if (nearMat[k]) nearMat[k].anisotropy = 8;
+        cabZ.forEach(([za, zb], ci) => {
+          const lod = new THREE.LOD();
+          const n = near.scene.clone(true), f = far.scene.clone(true);
+          f.traverse(m => { if (m.isMesh) m.material = nearMat; });
+          for (const o of [n, f]) o.traverse(m => { if (m.isMesh) { m.castShadow = false; m.receiveShadow = true; } });
+          lod.addLevel(n, 0); lod.addLevel(f, LOW ? 2.4 : 3.2);
+          lod.position.set(CAB.x0 + YSHELF.gap + YSHELF.d / 2, 0, (za + zb) / 2);
+          lod.rotation.y = Math.PI / 2;                       // its face (+z in the file) to the shop (+x)
+          if (ci === 1) lod.scale.x = -1;
+          G.add(lod);
+        });
+        for (const o of cabParts) o.visible = false;
+        yLive.shelves = true;
+      }).catch(err => { console.warn('yinshelf failed to load', err); ctx.loadFail && ctx.loadFail('yinshelf', err); });
 
       /* ---- the BACK: the spirit altar on red cloth, the covered mirror, the red bulb; the back room's curtain */
       { const A = YALT, top = A.h;
@@ -565,14 +618,16 @@
         cyl(0.03, 0.025, 0.06, A.x + 0.24, ty + 0.03, A.z + 0.22, mGlass, 12, G);
         cyl(0.08, 0.08, 0.012, A.x - 0.62, ty + 0.006, A.z + 0.2, M({ color: 0xd8c8a8, roughness: 0.4 }), 16, G);
         for (let k = 0; k < 5; k++) { const s = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.02, 0.03), M({ color: [0xe86a8a, 0x7ac84a, 0xf2d24a][k % 3], roughness: 0.6 })); s.position.set(A.x - 0.62 + (k - 2) * 0.03, ty + 0.022, A.z + 0.2 + (k % 2) * 0.02); G.add(s); }
-        // a young woman's things: a small hand mirror, a comb, a lipstick, a bottle of perfume
+        // a young woman's things: a small hand mirror, a comb, a lipstick, a bottle of perfume (CP5c: the comb, the lipstick,
+        // the perfume and one candle had been laid INSIDE the upper tier's box — it covers the top's back 0.31 m — and are on
+        // the open cloth in front of it now)
         { const mir = new THREE.Group(); mir.position.set(A.x + 0.3, ty + 0.006, A.z - 0.02); mir.rotation.y = -0.4; G.add(mir);
           const fr = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.008, 18), M({ color: 0xd8a0a8, roughness: 0.4 })); fr.position.y = 0.004; mir.add(fr);
           const gl = new THREE.Mesh(new THREE.CircleGeometry(0.042, 18), M({ color: 0x8a96a0, roughness: 0.05, metalness: 0.9 })); gl.rotation.x = -Math.PI / 2; gl.position.y = 0.0085; mir.add(gl);
           const hd = new THREE.Mesh(new THREE.BoxGeometry(0.018, 0.008, 0.08), fr.material); hd.position.set(0, 0.004, 0.085); mir.add(hd); }
-        box(0.11, 0.008, 0.035, A.x + 0.15, ty + 0.004, A.z - 0.12, M({ color: 0x2a1a12, roughness: 0.5 }), G, false);
-        cyl(0.007, 0.007, 0.05, A.x + 0.02, ty + 0.025, A.z - 0.1, M({ color: 0xb01c2a, roughness: 0.3, metalness: 0.4 }), 8, G);
-        cyl(0.018, 0.022, 0.06, A.x - 0.08, ty + 0.03, A.z - 0.14, M({ color: 0xe0b8c8, roughness: 0.1, transparent: true, opacity: 0.7 }), 10, G);
+        box(0.11, 0.008, 0.035, A.x + 0.15, ty + 0.004, A.z + 0.03, M({ color: 0x2a1a12, roughness: 0.5 }), G, false);
+        cyl(0.007, 0.007, 0.05, A.x + 0.02, ty + 0.025, A.z + 0.0, M({ color: 0xb01c2a, roughness: 0.3, metalness: 0.4 }), 8, G);
+        cyl(0.018, 0.022, 0.06, A.x - 0.08, ty + 0.03, A.z + 0.01, M({ color: 0xe0b8c8, roughness: 0.1, transparent: true, opacity: 0.7 }), 10, G);
         // jasmine garlands: rings of white buds with a red tassel, over the tier and on the cloth
         { const budG = new THREE.SphereGeometry(0.009, 6, 4), mBud = M({ color: 0xf7f4ea, roughness: 0.7 });
           const rings = [[A.x - 0.28, uy, YSHOP.z0 + 0.16, 0.09], [A.x + 0.28, uy, YSHOP.z0 + 0.16, 0.09], [A.x + 0.62, ty, A.z - 0.05, 0.08]];
@@ -583,7 +638,7 @@
           im.instanceMatrix.needsUpdate = true; im.computeBoundingSphere(); G.add(im);
           for (const [x, y, z, R] of rings) { const tas = cyl(0.008, 0.016, 0.07, x, y + 0.035, z + R * 0.55 + 0.01, M({ color: 0xc8241c, roughness: 0.8 }), 6, G); } }
         // candles on the altar, lit
-        for (const [dx, dz, h] of [[-0.66, -0.12, 0.16], [0.68, -0.14, 0.13], [-0.1, -0.24, 0.1]]) {
+        for (const [dx, dz, h] of [[-0.66, -0.12, 0.16], [0.68, -0.14, 0.13], [-0.27, -0.03, 0.1]]) {
           const c = cyl(0.015, 0.016, h, A.x + dx, ty + h / 2, A.z + dz, mWhiteWax, 10, G);
           yLive.flames.push({ x: A.x + dx, y: ty + h + 0.025, z: A.z + dz, s: 0.05 });
         }
@@ -623,7 +678,9 @@
         const rod = cyl(0.01, 0.01, dx1 - dx0 + 0.2, (dx0 + dx1) / 2, dh - 0.02, YSHOP.z0 + 0.07, mBrass, 6, G); rod.rotation.z = Math.PI / 2;
       }
 
-      /* ---- the RIGHT wall, back half: the faces of the departed, and hers with fresh white flowers under it */
+      /* ---- the RIGHT wall, back half: what a Yin shop hangs (Chad: "Usually it is female ghosts, sometimes the portraits
+         look like demons" — and the demon is PHRA NGAN, "you should generate something that looks like a phra ngan"),
+         and between them hers, a photograph, with fresh white flowers under it */
       const PX = YSHOP.x1 - 0.012;
       const frameOn = (w, h, z, y, mFrame, depth = 0.03) => {
         const g = new THREE.Group(); g.position.set(PX - depth / 2, y, z); g.rotation.y = -Math.PI / 2; G.add(g);
@@ -635,31 +692,37 @@
         box(w, h, 0.004, 0, 0, -depth / 2 + 0.002, mBlack, g, false);
         return g;
       };
-      const photoMat = new THREE.MeshStandardMaterial({ color: 0xd8ccb4, roughness: 0.7, visible: false }); mats.push(photoMat);
+      const ptgMat = new THREE.MeshStandardMaterial({ color: 0xd8ccb4, roughness: 0.72, visible: false }); mats.push(ptgMat);
       const girlMat = new THREE.MeshStandardMaterial({ color: 0xe0d4bc, roughness: 0.6, visible: false }); mats.push(girlMat);
       yLive.girlMat = girlMat;
-      // the photographs: 24 faces in one sheet, 4 x 6 cells of 256 x 192 px; each frame shows the middle of one
-      const cell = (geo, ci, ri) => {
-        const uv = geo.attributes.uv, x0 = ci * 256 + 62, x1 = ci * 256 + 194, y0 = ri * 192 + 8, y1 = ri * 192 + 186;
-        for (let i = 0; i < uv.count; i++) uv.setXY(i, (x0 + uv.getX(i) * (x1 - x0)) / 1024, (y1 - uv.getY(i) * (y1 - y0)) / 1152);
+      /* the paintings: one sheet (masters/v22.0/cp5/paintings.sh), 1088 x 1536 — Phra Ngan seated with his whiskey,
+         cigarettes and photographs of women at his feet, Phra Ngan close, Mae Nak in her doorway, Nang Tani at her banana
+         tree. Each rect is in the sheet's pixels, top-down (the texture is not flipped, as the photographs' was not). */
+      const ptgCell = (geo, x0, y0, x1, y1) => {
+        const uv = geo.attributes.uv;
+        for (let i = 0; i < uv.count; i++) uv.setXY(i, (x0 + uv.getX(i) * (x1 - x0)) / 1088, (y1 - uv.getY(i) * (y1 - y0)) / 1536);
       };
-      const PORTRAITS = [
-        // [z, y, w, h, cell, frame]
-        [-4.42, 2.18, 0.17, 0.23, 0, 0], [-4.75, 1.86, 0.2, 0.27, 5, 1], [-4.45, 1.5, 0.16, 0.21, 9, 0], [-4.78, 1.16, 0.18, 0.24, 14, 0],
-        [-5.12, 2.24, 0.15, 0.2, 2, 1], [-5.18, 1.18, 0.16, 0.21, 19, 1], [-6.72, 2.22, 0.19, 0.25, 7, 0], [-6.38, 1.18, 0.17, 0.22, 12, 1],
-        [-6.75, 1.86, 0.15, 0.2, 21, 0], [-7.05, 1.5, 0.21, 0.28, 3, 1], [-7.38, 2.12, 0.16, 0.21, 16, 0], [-7.36, 1.16, 0.17, 0.23, 10, 0],
-        [-5.55, 2.26, 0.14, 0.19, 23, 0], [-6.32, 2.26, 0.14, 0.19, 6, 1], [-5.12, 1.62, 0.17, 0.22, 17, 0], [-6.75, 1.5, 0.16, 0.21, 20, 1]
+      const PAINTINGS = [
+        // [z, y, w, h, [x0, y0, x1, y1] in the sheet, frame (0 dark wood, 1 gilt), a hand's tilt]
+        [-4.78, 1.70, 0.46, 0.69, [0, 0, 512, 768], 1, 0.008],        // Phra Ngan, seated, his offerings at his feet
+        [-5.40, 1.74, 0.40, 0.60, [0, 768, 512, 1536], 0, -0.006],     // Mae Nak in her doorway
+        [-6.50, 1.74, 0.40, 0.60, [512, 768, 1024, 1536], 0, 0.005],   // Nang Tani at her banana tree
+        [-7.22, 1.70, 0.42, 0.56, [512, 0, 1088, 768], 1, -0.009]      // Phra Ngan, close, his eyes
       ];
       const mFrames = [M({ map: tWood, color: 0x3a2214, roughness: 0.5 }), mGilt];
-      for (const [z, y, w, h, ci, fi] of PORTRAITS) {
-        const g = frameOn(w, h, z, y, mFrames[fi]);
-        const geo = new THREE.PlaneGeometry(w, h); cell(geo, ci % 4, Math.floor(ci / 4));
-        const ph = new THREE.Mesh(geo, photoMat); ph.position.z = 0.004; g.add(ph);
-        g.rotation.z = (((ci * 37) % 7) - 3) * 0.006;        // hung by hand: none quite level
+      yLive.paintings = [];
+      for (const [z, y, w, h, r, fi, tilt] of PAINTINGS) {
+        const g = frameOn(w, h, z, y, mFrames[fi], 0.035);
+        const geo = new THREE.PlaneGeometry(w, h); ptgCell(geo, r[0], r[1], r[2], r[3]);
+        const ph = new THREE.Mesh(geo, ptgMat); ph.position.z = 0.004; g.add(ph);
+        g.rotation.z = tilt;                                  // hung by hand: none quite level
+        yLive.paintings.push(g);
       }
       // hers, larger, in a gilt frame, and under it a small ledge with fresh white flowers, a cup, a burnt-down candle
-      { const g = frameOn(0.3, 0.34, YGIRL.z, YGIRL.y, mGilt, 0.035);
-        const ph = new THREE.Mesh(new THREE.PlaneGeometry(0.3, 0.34), girlMat);
+      // (CP5: her photograph is the portrait under the glass of Chad's yin amulet, in an old oval mat —
+      // masters/v22.0/yinmodels/matphoto.py — so the wall and the locket in his hand are the same woman)
+      { const g = frameOn(0.28, 0.37, YGIRL.z, YGIRL.y, mGilt, 0.035);
+        const ph = new THREE.Mesh(new THREE.PlaneGeometry(0.28, 0.37), girlMat);
         const uv = ph.geometry.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setY(i, 1 - uv.getY(i));
         ph.position.z = 0.006; g.add(ph);
         const ly = YGIRL.y - 0.31;
@@ -681,8 +744,12 @@
         yLive.flames.push({ x: YSHOP.x1 - 0.07, y: ly + 0.062, z: YGIRL.z + 0.15, s: 0.035 });
         yLive.girlFlower = glowPlane(0.8, 0.8, 0xffc890, 0.10, YSHOP.x1 - 0.015, ly + 0.25, YGIRL.z, 0, -Math.PI / 2);
       }
-      // the photographs arrive when their bytes do (a failed download costs the faces, never the room)
-      loadImageTexture('yinwall', 'image/jpeg').then(t => { if (!alive || !t) return; madeTex.push(t); photoMat.map = t; photoMat.color.set(0xffffff); photoMat.visible = true; photoMat.needsUpdate = true; }).catch(() => {});
+      // the paintings arrive when their bytes do (a failed download costs the pictures, never the room: until then
+      // each frame holds its dark backing)
+      // (CP5a: the paintings are dark by nature — night, smoke, a god in shadow — so their own colours are lent a little
+      // light, v21.11's recipe for the Ming painting, or under ordinary shop light they read as four dark boards)
+      loadImageTexture('yinptg', 'image/jpeg').then(t => { if (!alive || !t) return; madeTex.push(t); ptgMat.map = t; ptgMat.color.set(0xffffff);
+        ptgMat.emissive.set(0xffffff); ptgMat.emissiveMap = t; ptgMat.emissiveIntensity = 0.22; ptgMat.visible = true; ptgMat.needsUpdate = true; }).catch(() => {});
       loadImageTexture('yingirl', 'image/jpeg').then(t => {
         if (!alive || !t) return; madeTex.push(t); yLive.girlTex = t;
         girlMat.map = t; girlMat.color.set(0xffffff); girlMat.visible = true; girlMat.needsUpdate = true;
@@ -718,9 +785,23 @@
         yLive.locketFace = face;
         const lens = new THREE.Mesh(new THREE.CircleGeometry(0.018, 24), mGlass); lens.rotation.x = -Math.PI / 2; lens.position.y = 0.0035; lk.add(lens);
         const bail = new THREE.Mesh(new THREE.TorusGeometry(0.004, 0.0012, 4, 10), mGilt); bail.position.set(0, 0, -0.025); bail.rotation.y = Math.PI / 2; lk.add(bail);
-        const chainG = new THREE.TorusGeometry(0.003, 0.0008, 3, 6), mChain = mGilt;
+        const chainG = new THREE.TorusGeometry(0.003, 0.0008, 3, 6), mChain = yinChainMat;
         for (let k = 0; k < 14; k++) { const ln = new THREE.Mesh(chainG, mChain); const a = k / 14 * Math.PI * 1.6 + 2.0; ln.position.set(Math.cos(a) * 0.045, 0, -0.03 + Math.sin(a) * 0.03); ln.rotation.y = a; lk.add(ln); }
         yLive.locket = lk;
+        /* CHAD'S yin amulet (v22.0 CP5: "this is the yin amulet that the player holds") on her satin: 7 cm with its
+           bail, lying face up, its bail to her side so the portrait reads the right way up from his side of the
+           counter; every triangle within 1.6 m (an amulet ships at full detail, v14.14), the far cut beyond. The drawn
+           locket stands until it lands; its chain stays, coiled round it. */
+        { const drawn = [rim, back, face, lens, bail];
+          yinAmulet().then(A => {
+            if (!alive) return;
+            const lod = new THREE.LOD(), turn = new THREE.Group(); turn.rotation.y = -Math.PI / 2;
+            const lay = new THREE.Group(); lay.rotation.x = -Math.PI / 2; lay.scale.setScalar(0.07); lay.position.y = 0.0031;
+            lod.addLevel(A.near.clone(true), 0); lod.addLevel(A.far.clone(true), 1.6);
+            lay.add(lod); turn.add(lay); lk.add(turn);
+            for (const o of drawn) o.visible = false;
+          }).catch(() => {});
+        }
         // the brass bell, the fan, the ledger
         cyl(0.03, 0.035, 0.035, C.x0 + 0.2, C.top + 0.0175, C.zf - 0.2, mBrass, 14, G);
         { const fan = new THREE.Mesh(new THREE.CircleGeometry(0.14, 16, 0, Math.PI), M({ map: tYant, color: 0xe8d8b8, roughness: 0.9, side: THREE.DoubleSide }));
@@ -768,24 +849,86 @@
             }
           }
         }
-        // and behind her, at the end of the counter, a low cabinet with a dead lamp on it (closes her corner)
+        // and behind her, at the end of the counter, a low cabinet with her table lamp on it, lit (closes her corner;
+        // CP5a: a lamp in an open shop is on — the shade glows, a warm pool on the cabinet and the wall)
         solids.push(box(0.8, 0.86, 0.32, 2.0, 0.43, -4.02, mWood, G, false));
         cyl(0.06, 0.08, 0.04, 2.1, 0.88, -4.02, mBrass, 12, G);
         cyl(0.01, 0.01, 0.3, 2.1, 1.05, -4.02, mBrass, 6, G);
-        cyl(0.08, 0.14, 0.14, 2.1, 1.22, -4.02, M({ color: 0x7a2a1c, roughness: 0.7, side: THREE.DoubleSide }), 14, G);
+        cyl(0.08, 0.14, 0.14, 2.1, 1.22, -4.02, M({ color: 0x8a3422, roughness: 0.7, side: THREE.DoubleSide, emissive: 0xff8a4a, emissiveIntensity: 0.55 }), 14, G);
+        glowPlane(0.9, 0.9, 0xffb070, 0.22, 2.1, 0.865, -4.02, -Math.PI / 2);
+        glowPlane(1.1, 1.0, 0xffb070, 0.14, YSHOP.x1 - 0.004, 1.3, -4.02, 0, -Math.PI / 2);
       }
 
-      /* ---- the ceiling's one fitting: two tubes, one dead, one that flickers; the pool it paints on the floor */
-      { const fz = -3.6, fy = H - 0.05;
+      /* ---- CP5c: SKULLS, and the shop's other occult things (Chad: "there are usually many skulls or occult items all
+         over, that is the real eerie part"). The skull is a REAL scan (tools/prepskull.mjs: Khronos's ScatteringSkull,
+         CC0, made bone from its own ambient occlusion), cloned where a yin shop keeps them — the middle of her altar's
+         upper tier, the counter beside the velvet box between two black candles, small carved ones in the counter's
+         showcase, the keeper's shelf, the top of the stock, the tops of the yin shelves, her lamp cabinet — each with
+         its own finish (bone, smoked, black lacquer). Nothing stands in for one until it lands (v21.16). Lengths in
+         metres, brow to back; `ry` turns the face (+z in the file) to the room. */
+      const SKULLS = [
+        [YALT.x, 1.17, YSHOP.z0 + 0.16, 0, 0.20, 'bone'],                          // her altar's upper tier, in the middle
+        [YALT.x + 0.47, 1.17, YSHOP.z0 + 0.15, -0.3, 0.09, 'black'],               // a small black one at its end
+        [1.22, YCNT.top, -2.05, -Math.PI / 2 + 0.12, 0.20, 'smoke'],               // the counter, by the velvet box
+        [1.36, 0.779, -1.84, -Math.PI / 2 + 0.3, 0.045, 'bone'],                   // carved ones in the showcase
+        [1.12, 0.779, -2.40, -Math.PI / 2 - 0.2, 0.04, 'black'],
+        [1.35, 0.779, -3.18, -Math.PI / 2, 0.05, 'smoke'],
+        [YSHOP.x1 - 0.12, 1.4925, -1.85, -Math.PI / 2 - 0.15, 0.18, 'bone'],       // her shelf, behind her
+        [2.0, 1.90, -0.62, -Math.PI / 2 + 0.25, 0.20, 'smoke'],                    // on top of the stock
+        [CAB.x0 + 0.17, YSHELF.h, -1.62, Math.PI / 2 - 0.2, 0.18, 'bone'],         // on the yin shelves
+        [CAB.x0 + 0.17, YSHELF.h, -4.52, Math.PI / 2 + 0.25, 0.20, 'black'],
+        [1.78, 0.86, -3.88, -Math.PI / 2 - 0.4, 0.12, 'smoke']                     // her lamp cabinet
+      ];
+      parseOnce('yinskull').then(k => {
+        if (!alive) return;
+        let base = null; k.scene.traverse(m => { if (m.isMesh && !base) base = m.material; });
+        if (!base) return;
+        const tint = (c, o = {}) => { const m = base.clone(); m.color.set(c); Object.assign(m, o); mats.push(m); return m; };
+        const fin = { bone: base, smoke: tint(0x8f8070, { roughness: 0.7 }), black: tint(0x2c2622, { roughness: 0.3, metalness: 0.1 }) };
+        for (const [x, y, z, ry, len, f] of SKULLS) {
+          const s = k.scene.clone(true); s.scale.setScalar(len / 0.2); s.position.set(x, y, z); s.rotation.y = ry;
+          s.traverse(m => { if (m.isMesh) { m.material = fin[f]; m.castShadow = false; m.receiveShadow = true; } });
+          G.add(s);
+        }
+      }).catch(err => { console.warn('yinskull failed to load', err); ctx.loadFail && ctx.loadFail('yinskull', err); });
+      // two black candles beside the counter's skull (one lit), and a black one burning on her altar's tier
+      { const mBlackWax = M({ color: 0x17120f, roughness: 0.55 });
+        for (const [x, z, h, lit] of [[1.40, -1.86, 0.15, true], [1.43, -2.24, 0.10, false]]) {
+          cyl(0.016, 0.017, h, x, YCNT.top + h / 2, z, mBlackWax, 10, G);
+          if (lit) yLive.flames.push({ x, y: YCNT.top + h + 0.025, z, s: 0.05 });
+        }
+        cyl(0.014, 0.015, 0.12, YALT.x - 0.18, 1.17 + 0.06, YSHOP.z0 + 0.12, mBlackWax, 10, G);
+        yLive.flames.push({ x: YALT.x - 0.18, y: 1.17 + 0.145, z: YSHOP.z0 + 0.12, s: 0.045 }); }
+      // a small coffin (a lok song) bound in red cord on the stock's top, and a meed mor — a ritual knife, its handle
+      // wound in red — laid on her shelf
+      { const cof = new THREE.Group(); cof.position.set(2.02, 1.90, -1.05); cof.rotation.y = 0.2; G.add(cof);
+        const mCof = M({ color: 0x3a2116, roughness: 0.6 }), mCord = M({ color: 0x9c1a14, roughness: 0.7 });
+        const lidG = new THREE.CylinderGeometry(0.035, 0.035, 0.16, 6, 1); lidG.rotateZ(Math.PI / 2); lidG.scale(1, 0.7, 1);
+        const body = new THREE.Mesh(lidG, mCof); body.position.y = 0.025; cof.add(body);
+        for (const dx of [-0.045, 0.045]) { const t = new THREE.Mesh(new THREE.TorusGeometry(0.031, 0.002, 4, 14), mCord); t.rotation.y = Math.PI / 2; t.position.set(dx, 0.025, 0); cof.add(t); }
+        const kn = new THREE.Group(); kn.position.set(YSHOP.x1 - 0.13, 1.4925, -3.42); kn.rotation.y = 0.5; G.add(kn);
+        box(0.13, 0.003, 0.024, 0.065, 0.004, 0, M({ color: 0xb8bcc0, roughness: 0.25, metalness: 0.9 }), kn, false);
+        const hd = cyl(0.009, 0.01, 0.09, -0.045, 0.01, 0, M({ color: 0x1a1210, roughness: 0.5 }), 8, kn); hd.rotation.z = Math.PI / 2;
+        for (let i = 0; i < 6; i++) { const w = new THREE.Mesh(new THREE.TorusGeometry(0.0105, 0.0016, 4, 10), mCord); w.rotation.y = Math.PI / 2; w.position.set(-0.08 + i * 0.013, 0.01, 0); kn.add(w); } }
+
+      /* ---- the ceiling's fittings: two, each two tubes, both working (CP5a: an open shop keeps its lights on);
+         the front one is the one the shop makes stutter when a look is answered (lookAnswer's bottles), and the
+         back one over the altar end is steady. Each paints its pool on the floor and its spill on the ceiling. */
+      const fitting = (fz, mat, glows) => {
+        const fy = H - 0.05;
         box(0.26, 0.06, 1.3, 0, fy, fz, M({ color: 0xd8d6d0, roughness: 0.5 }), G, false);
-        const tubeOn = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, 1.2, 10), new THREE.MeshBasicMaterial({ color: 0xe8f2ff })); mats.push(tubeOn.material);
-        tubeOn.rotation.x = Math.PI / 2; tubeOn.position.set(-0.06, fy - 0.04, fz); G.add(tubeOn);
-        const tubeOff = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, 1.2, 10), M({ color: 0x8a8a84, roughness: 0.3 }));
-        tubeOff.rotation.x = Math.PI / 2; tubeOff.position.set(0.06, fy - 0.04, fz); G.add(tubeOff);
-        yLive.tube = tubeOn;
-        yLive.tubeGlow.push(glowPlane(3.2, 4.2, 0xbcd6ff, 0.16, 0, 0.013, fz, -Math.PI / 2));
-        yLive.tubeGlow.push(glowPlane(1.0, 2.2, 0xd8e8ff, 0.32, 0, H - 0.008, fz, Math.PI / 2));
-      }
+        for (const tx of [-0.06, 0.06]) {
+          const t = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, 1.2, 10), mat);
+          t.rotation.x = Math.PI / 2; t.position.set(tx, fy - 0.04, fz); G.add(t);
+        }
+        glows.push(glowPlane(3.4, 4.4, 0xdce8ff, 0.14, 0, 0.013, fz, -Math.PI / 2));
+        glows.push(glowPlane(1.2, 2.4, 0xeef4ff, 0.30, 0, H - 0.008, fz, Math.PI / 2));
+      };
+      { const mTube = new THREE.MeshBasicMaterial({ color: 0xeef4ff }); mats.push(mTube);
+        fitting(-3.6, mTube, yLive.tubeGlow);            // over the middle, where the bottles stand
+        yLive.tube = { material: mTube };                // the stutter writes this one material: both its tubes
+        const mTube2 = new THREE.MeshBasicMaterial({ color: 0xeef4ff }); mats.push(mTube2);
+        yLive.tubeGlow2 = []; fitting(-6.5, mTube2, yLive.tubeGlow2); yLive.tube2 = { material: mTube2 }; }   // behind the fan
       // an old ceiling fan over the back of the shop, turning slowly; the cold (CP5) slows it to a stop
       { const fan = new THREE.Group(); fan.position.set(0.2, H, -5.7); G.add(fan);
         cyl(0.012, 0.012, 0.32, 0, -0.16, 0, mBrass, 8, fan);
@@ -812,11 +955,11 @@
         f.pool = glowPlane(f.s * 6, f.s * 6, 0xffa050, 0.28, f.x, f.y - 0.01, f.z); f.pool.material = f.pool.material.clone(); mats.push(f.pool.material);
         f.seed = f.x * 13.7 + f.z * 7.1;
       }
-      // dust in the red air
-      { const n = LOW ? 70 : 140, pos = new Float32Array(n * 3);
+      // a little dust where the light falls (CP5a: a shop's ordinary dust, not a red haze)
+      { const n = LOW ? 20 : 40, pos = new Float32Array(n * 3);
         for (let i = 0; i < n; i++) { pos[i * 3] = YSHOP.x0 + 0.2 + ((i * 0.6180339) % 1) * (W - 0.4); pos[i * 3 + 1] = 0.3 + ((i * 0.381966) % 1) * 2.1; pos[i * 3 + 2] = YSHOP.z0 + 0.3 + ((i * 0.7548776) % 1) * (D - 0.6); }
         const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-        const pm = new THREE.PointsMaterial({ color: 0xffb8a0, size: 0.012, transparent: true, opacity: 0.55, depthWrite: false, blending: THREE.AdditiveBlending, map: tGlow, fog: false });
+        const pm = new THREE.PointsMaterial({ color: 0xfff0e0, size: 0.01, transparent: true, opacity: 0.28, depthWrite: false, blending: THREE.AdditiveBlending, map: tGlow, fog: false });
         mats.push(pm);
         const pts = new THREE.Points(geo, pm); pts.frustumCulled = false; G.add(pts);
         yLive.motes = { pts, base: Float32Array.from(pos), n };
@@ -826,7 +969,7 @@
         mats.push(sm);
         for (let k = 0; k < 6; k++) { const m = sm.clone(); mats.push(m); const sp = new THREE.Sprite(m); sp.position.copy(yLive.smokeAt); G.add(sp); yLive.smoke.push({ sp, t: k / 6, k: k * 1.7 }); } }
 
-      /* ---- the CORRIDOR: terrazzo, a ceiling of dead fittings, the shutters, the railing over the void */
+      /* ---- the CORRIDOR: terrazzo, the ceiling and its fittings, the shutters, the railing over the void */
       { const X0 = YMALL.x0, X1 = YMALL.x1, CW = X1 - X0, ccx = (X0 + X1) / 2, CH = YMALL.H;
         floorAt(CW, YMALL.z1 - YMALL.z0, ccx, (YMALL.z0 + YMALL.z1) / 2, mTerr, G);
         const ceil = ceilAt(CW, YMALL.z1 - YMALL.z0, ccx, CH, (YMALL.z0 + YMALL.z1) / 2, mCeilC, G);
@@ -858,17 +1001,22 @@
         // pillars between the units, tiled; and either side of her door
         const mPillarT = matRep(mPillar, repeatTex(tPlaster, 1, 1)); mPillarT.color.set(0xb4ada2);
         for (const px of [-18.6, -13.2, -7.8, -2.65, 2.65]) boxT(0.5, CH, 0.5, px, CH / 2, 0.25, mPillarT, 1.6);
-        // her own fascia: an old red board, gold border, no name left on it
-        { const sign = new THREE.Mesh(new THREE.PlaneGeometry(4.9, 0.52), M({ color: 0x5a1612, roughness: 0.7, emissive: 0x1a0402, emissiveIntensity: 1 }));
+        // her own fascia: a red board, a gold border, and what she sells in gold letters (CP5a: an open shop says
+        // what it is; the words are world art — the jetty sign's precedent — and name no real business)
+        { const sign = new THREE.Mesh(new THREE.PlaneGeometry(4.9, 0.52), M({ map: tex(makeYinFascia(THREE, cnv)), roughness: 0.6, emissive: 0x2a0a04, emissiveIntensity: 0.6 }));
           sign.position.set(0, 2.88, 0.205); G.add(sign);
           box(4.95, 0.03, 0.03, 0, 3.15, 0.21, mGilt, G, false); box(4.95, 0.03, 0.03, 0, 2.61, 0.21, mGilt, G, false); }
-        // the tube fittings along the corridor: all dead but one far down, and the one outside her door, dim
-        for (let x = X0 + 2; x < X1 - 1; x += 4) {
-          box(0.24, 0.05, 1.22, x, CH - 0.03, 2.4, M({ color: 0xbfbcb4, roughness: 0.5 }), G, false);
-        }
-        { const t = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, 1.15, 8), new THREE.MeshBasicMaterial({ color: 0xcfe0ff })); mats.push(t.material);
-          t.rotation.x = Math.PI / 2; t.position.set(-10, CH - 0.07, 2.4); G.add(t); yLive.farTube = t;
-          yLive.farPool = glowPlane(3.0, 4.0, 0xb8ccff, 0.10, -10, 0.012, 2.4, -Math.PI / 2); }
+        // the tube fittings along the corridor, every four metres, lit (CP5a: an old mall on a quiet afternoon keeps
+        // its lights on); one far down is out, as one always is (not binary). One material for every lit tube.
+        { const mFit = M({ color: 0xbfbcb4, roughness: 0.5 }), mCorTube = new THREE.MeshBasicMaterial({ color: 0xe6eef8 }); mats.push(mCorTube);
+          const tubeGeo = new THREE.CylinderGeometry(0.014, 0.014, 1.15, 8);
+          for (let x = X0 + 2; x < X1 - 1; x += 4) {
+            box(0.24, 0.05, 1.22, x, CH - 0.03, 2.4, mFit, G, false);
+            if (x === X0 + 6) continue;                    // the one that is out
+            for (const tx of [-0.055, 0.055]) { const t = new THREE.Mesh(tubeGeo, mCorTube); t.rotation.x = Math.PI / 2; t.position.set(x + tx, CH - 0.07, 2.4); G.add(t); }
+            glowPlane(3.2, 4.2, 0xdce6f4, 0.10, x, 0.012, 2.4, -Math.PI / 2);
+            glowPlane(1.6, 2.8, 0xeef4ff, 0.16, x, CH - 0.006, 2.4, Math.PI / 2);
+          } }
         // the railing over the void: a steel handrail, balusters, glass panels; a gap where the escalator lands,
         // taped off with a barrier
         const RZ = YMALL.z1, GAP0 = -14.2, GAP1 = -12.4;
@@ -898,9 +1046,22 @@
         tiled(CW, 2.6, mShutter, 2.6, ccx, 1.3, YVOID.z1 + 3, Math.PI);
         { const fs = new THREE.Mesh(new THREE.PlaneGeometry(CW, 0.5), M({ map: tSigns, roughness: 0.8 })); fs.rotation.y = Math.PI; fs.position.set(ccx, 2.86, YVOID.z1 + 2.98); G.add(fs); }
         ceilAt(CW, 3, ccx, CH, YVOID.z1 + 1.5, mCeilC, G);
-        // bulkheads up to the skylight on both sides of the void, and the skylight: dirty glass, a grey afternoon
+        // its fittings, lit like this side's, and two of its units open (their light on the walkway's floor and out
+        // across the void — CP5a: a quiet floor, not an abandoned one)
+        { const mFit2 = M({ color: 0xbfbcb4, roughness: 0.5 }), mT2 = new THREE.MeshBasicMaterial({ color: 0xe6eef8 }); mats.push(mT2);
+          const tg = new THREE.CylinderGeometry(0.014, 0.014, 1.15, 8), fz = YVOID.z1 + 1.5;
+          for (let x = X0 + 4; x < X1 - 1; x += 5) {
+            box(0.24, 0.05, 1.22, x, CH - 0.03, fz, mFit2, G, false);
+            for (const tx of [-0.055, 0.055]) { const t = new THREE.Mesh(tg, mT2); t.rotation.x = Math.PI / 2; t.position.set(x + tx, CH - 0.07, fz); G.add(t); }
+            glowPlane(3.0, 3.0, 0xdce6f4, 0.09, x, 0.012, fz, -Math.PI / 2);
+          }
+          for (const ux of [-16.5, -5.0]) {
+            glowPlane(3.6, 2.3, 0xffe2b8, 0.20, ux, 1.25, YVOID.z1 + 2.97, 0, Math.PI);
+            glowPlane(3.4, 2.2, 0xffd8a8, 0.10, ux, 0.013, YVOID.z1 + 2.0, -Math.PI / 2);
+          } }
+        // bulkheads up to the skylight on both sides of the void, and the skylight: an afternoon through its panes
         for (const bz of [RZ, YVOID.z1]) { const b = new THREE.Mesh(new THREE.PlaneGeometry(CW, YVOID.sky - CH), mSlab); b.position.set(ccx, (CH + YVOID.sky) / 2, bz); b.rotation.y = bz === RZ ? Math.PI : 0; G.add(b); }
-        { const sky = new THREE.Mesh(new THREE.PlaneGeometry(CW, vd), new THREE.MeshBasicMaterial({ map: repeatTex(tSky, CW / 4, 1), color: 0x8a96a0, fog: false }));
+        { const sky = new THREE.Mesh(new THREE.PlaneGeometry(CW, vd), new THREE.MeshBasicMaterial({ map: repeatTex(tSky, CW / 4, 1), color: 0xc4ced6, fog: false }));
           mats.push(sky.material); sky.rotation.x = Math.PI / 2; sky.position.set(ccx, YVOID.sky, vz); G.add(sky); }
         // the escalator, rising out of the floor below to the taped-off landing (the opening film rides it)
         { const e0 = new THREE.Vector3(-21.2, YVOID.floor, 6.25), e1 = new THREE.Vector3(GAP0 + 0.3, 0, 6.25);
@@ -923,8 +1084,13 @@
       }
 
       /* ---- the people: the keeper behind her counter; the woman at the edge of the frame (hidden until CP5 calls) */
-      yLive.keeper = mkPerson('granny', { x: KEEP.x, z: KEEP.z, ry: -Math.PI / 2, height: 1.56, idle: 'Stand_and_Chat', talk: 'Talk_Passionately', idleRate: 0.42, talkRate: 0.8, talkWeight: 0.55, look: 0.8 });
-      yLive.girl = mkPerson('yinghost', { x: -1.2, z: -5.6, ry: Math.PI / 2, height: 1.6, idle: 'Idle_9', idleRate: 0.25, hidden: true, ghost: true });
+      // the keeper is CHAD'S Yin shop owner (v22.0: "use this model to become the shop owner of the yin amulet shop"),
+      // on a retargeted standing idle and her own talking take (masters/v22.0/owners/make.sh)
+      yLive.keeper = mkPerson('yinkeeper', { x: KEEP.x, z: KEEP.z, ry: -Math.PI / 2, height: 1.57, idle: 'Idle_9', talk: 'Talk_with_Left_Hand_on_Hip', idleRate: 0.8, talkRate: 0.9, talkWeight: 0.85, look: 0.8 });
+      /* the woman at the edge of his sight: CHAD'S ghost ("Horror Ghost Character - Blood Stained Spirit", adhamasalah,
+         Sketchfab, CC BY 4.0 — "You can use this female ghost model, if you need to show a ghost literally appearing in
+         the scene"): long black hair down over her face, a white dress stained with blood, barefoot; standing still */
+      yLive.girl = mkPerson('yinghost', { x: -1.2, z: -5.6, ry: Math.PI / 2, height: 1.6, still: true, hidden: true, ghost: true });
     }
 
     /* ---------------------------------------------------------- the people of this chapter
@@ -940,10 +1106,45 @@
                   talkUntil: 0, talkW: 0, lookYaw: 0, lookPitch: 0, look: o.look || 0, rootIdle: new THREE.Vector3(), rootTalk: new THREE.Vector3(),
                   inner: null, alpha: o.hidden ? 0 : 1, mats: [] };
       if (o.hidden) group.visible = false;
+      /* a STILL figure (`o.still`): a scan with no rig — Chad's ghost (tools/prepstatic.mjs: one mesh, in metres, the
+         face to +z, the hem on y 0). As a ghost she is drawn in TWO passes, both in the transparent queue so the shop
+         behind her is already painted: her depth first (no colour), then her colour on that depth only — so at 0.72
+         she is one pale figure with her own hair in front of her own face, never a blend of her back through her
+         front (v12.4: one baked mesh through the plain transparent path lost whole parts of the cyclist) */
+      if (o.still) {
+        parseOnce(key).then((gltf) => {
+          if (!alive) return;
+          const g = gltf.scene.clone(true);
+          const bb = new THREE.Box3().setFromObject(g), s = o.height / Math.max(0.01, bb.max.y - bb.min.y);
+          const inner = new THREE.Group(); inner.scale.setScalar(s); inner.position.y = -bb.min.y * s + 0.004; inner.add(g); group.add(inner);
+          const pres = [];
+          g.traverse(m => { if (!m.isMesh) return;
+            m.castShadow = !LOW && !o.ghost; m.receiveShadow = false;
+            for (const mm of [].concat(m.material)) { const t = mm && mm.map;       // a generated scan's atlas: no mipmaps (v19.8)
+              if (t && t.generateMipmaps !== false) { t.generateMipmaps = false; t.minFilter = THREE.LinearFilter; t.needsUpdate = true; } }
+            if (o.ghost) {
+              const col = m.material.clone(); col.transparent = true; col.depthWrite = false; col.depthFunc = THREE.LessEqualDepth; col.opacity = 1;
+              m.material = col; m.renderOrder = 41; P.mats.push(col); mats.push(col);
+              const pre = new THREE.MeshBasicMaterial({ colorWrite: false, depthWrite: true, transparent: true, opacity: 1,
+                polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 2 }); mats.push(pre);   // a hair behind: her colour always passes it
+              const pm = new THREE.Mesh(m.geometry, pre); pm.renderOrder = 40;
+              pm.position.copy(m.position); pm.quaternion.copy(m.quaternion); pm.scale.copy(m.scale); pres.push([m.parent, pm]);
+            } });
+          for (const [par, pm] of pres) par.add(pm);
+          P.inner = inner; P.model = g; P.mixer = null; P.scale = s; P.ready = true;
+        }).catch(err => { console.warn(key + ' failed to load', err); ctx.loadFail && ctx.loadFail(key, err); });
+        people.push(P);
+        return P;
+      }
       parseOnce(key).then((gltf) => {
         if (!alive) return;
         const g = cloneSkinned(gltf.scene);
         g.traverse(m => { if (m.isMesh) { m.castShadow = !LOW && !o.ghost; m.receiveShadow = false;
+          /* these are Meshy scans (Chad's people): black hair packed flush against white cloth in the atlas, so every
+             shrunken copy of the sheet greys the hair — drawn without mipmaps, e3c2's v19.8 law (zavNoMip, v5.11);
+             the photographs had the girl as a grey mannequin at the edge of the frame */
+          for (const mm of [].concat(m.material)) { const t = mm && mm.map;
+            if (t && t.generateMipmaps !== false) { t.generateMipmaps = false; t.minFilter = THREE.LinearFilter; t.needsUpdate = true; } }
           if (o.ghost) { m.material = m.material.clone(); m.material.transparent = true; m.material.depthWrite = false; m.material.opacity = 1; P.mats.push(m.material); mats.push(m.material); } } });
         g.traverse(b => { if (b.isBone && HEAD_RE.test(b.name) && !P.head) P.head = b; });
         const mx = new THREE.AnimationMixer(g);
@@ -1001,7 +1202,7 @@
         const want = performance.now() / 1000 < P.talkUntil ? (P.o.talkWeight || 1) : 0;
         P.talkW += (want - P.talkW) * (1 - Math.exp(-wdt * 3.2));
         if (P.talk) { P.talk.setEffectiveWeight(P.talkW); P.idle && P.idle.setEffectiveWeight(1 - P.talkW * 0.85); }
-        P.mixer.update(wdt);
+        if (P.mixer) P.mixer.update(wdt);                         // (a still figure has none)
         // the two takes stand her in different places: keep her feet where the idle puts them
         if (P.talk) { _pv.copy(P.rootTalk).sub(P.rootIdle).multiplyScalar(P.talkW); P.model.position.set(-_pv.x, 0, -_pv.z); }
         if (P.head) {
@@ -1025,25 +1226,24 @@
        Every moving thing in the shop on WALL time (the v7.4 law), in every state — a film shows the shop too. `k` is
        the shop's light (CP5's cold takes it down), `flameK` the candles', `redK` the altar's red, `smokeK` the joss's;
        nothing runs while he is in another world. */
-    let yT = 0, tubeNext = 4, tubeStut = 0;
+    let yT = 0, tubeStut = 0;
     const _bm = new THREE.Matrix4();
     function yTick(wdt) {
       if (Math.abs(yaw.position.x) > 60 || wdt <= 0) return;
       yT += wdt;
       const L = yLive.k;
-      // the tube: steady but for a stutter every 5–13 s (on and off at sixteen a second), a faint shimmer under it
-      tubeNext -= wdt;
-      if (tubeNext <= 0) { tubeStut = 0.25 + hash(yT, 3) * 0.45; tubeNext = 5 + hash(yT, 7) * 8; }
+      // the tubes: steady, with the faint shimmer a fluorescent tube has (CP5a: they no longer stutter by
+      // themselves — a working shop's lights work); the front fitting stutters only when the shop ANSWERS a look
+      // (lookAnswer's bottles: on and off at sixteen a second for 0.9 s)
       let tk = 1;
       if (tubeStut > 0) { tubeStut -= wdt; tk = hash(Math.floor(yT * 16), 11) < 0.45 ? 0.12 : 1; }
-      tk *= 0.95 + 0.05 * Math.sin(yT * 31);
-      if (yLive.tube) yLive.tube.material.color.setRGB(0.06 + 0.85 * tk * L, 0.06 + 0.89 * tk * L, 0.07 + 0.93 * tk * L);
+      tk *= 0.97 + 0.03 * Math.sin(yT * 31);
+      if (yLive.tube) yLive.tube.material.color.setRGB(0.06 + 0.87 * tk * L, 0.06 + 0.9 * tk * L, 0.07 + 0.93 * tk * L);
       for (const g of yLive.tubeGlow) g.material.opacity = g.userData.op * tk * L;
-      // the far tube down the corridor: dimmer, and dying
-      if (yLive.farTube) {
-        const fk = hash(Math.floor(yT * 7), 5) < 0.12 ? 0.18 : 0.72 + 0.28 * Math.sin(yT * 0.4);
-        yLive.farTube.material.color.setRGB(0.81 * fk, 0.88 * fk, fk); yLive.farPool.material.opacity = yLive.farPool.userData.op * fk;
-      }
+      { const t2 = 0.97 + 0.03 * Math.sin(yT * 29 + 1.3);
+        if (yLive.tube2) yLive.tube2.material.color.setRGB(0.06 + 0.87 * t2 * L, 0.06 + 0.9 * t2 * L, 0.07 + 0.93 * t2 * L);
+        for (const g of yLive.tubeGlow2 || []) g.material.opacity = g.userData.op * t2 * L; }
+      // (CP5a: the corridor's far tube no longer dies down by itself; the corridor's fittings are steady)
       // the altar's red: a slow throb you only notice when it stops
       const rk = yLive.redK * (0.93 + 0.07 * Math.sin(yT * 0.9));
       for (const g of yLive.redGlow) g.material.opacity = g.userData.op * rk;
@@ -1102,7 +1302,7 @@
         }
         pos.needsUpdate = true; C.mesh.geometry.computeVertexNormals();
       }
-      // dust in the red air, and the joss's smoke
+      // the dust, and the joss's smoke
       const Mo = yLive.motes;
       if (Mo) {
         const p = Mo.pts.geometry.attributes.position, b = Mo.base;
@@ -1273,7 +1473,7 @@
     }
     function lookAnswer(k) {
       if (!worldSfx || worldOf(yaw.position.x) !== 'Y') return;
-      if (k === 'bottles') { tubeStut = 0.9; tubeNext = 9; worldSfx('y4tube', 0.5, 1, panAt(0, -4.0)); }
+      if (k === 'bottles') { tubeStut = 0.9; worldSfx('y4tube', 0.5, 1, panAt(0, -4.0)); }
       else if (k === 'photos') { yin.bellSwing = 1; worldSfx('y4bell', 0.42, 1, panAt(DOORBELL.x, DOORBELL.z)); }
       else if (k === 'altar') { if (yLive.curtain) yLive.curtain.gust = 1.4; worldSfx('y4curtain', 0.55, 1, panAt(BACKROOM.x, BACKROOM.z)); }
     }
@@ -1308,36 +1508,32 @@
     /* ============================================== THE YIN EXPERIENCE (CP5)
        S1·09: "an electric-like numbness travelling up my arm, followed by an intense cold". On the chapter's clock
        from the press, his look his own: the locket in his hand (kit.hold) with static crawling from it up his arm and
-       the hand trembling (kit.tremble); then the cold — frost growing in from the edges of his sight, his breath
-       fogging, the shop's red draining to a cold blue-white, the candles shrinking, the fan running down, the tape on
-       the counter sagging (the song's own source slowing: the bed RATE, main.js's loopRate); then a young woman at
+       the hand trembling (kit.tremble), his heart jumping (kit.pulse, heard and on the monitor); then the cold — what
+       it does to HIM, not ice on a lens (Chad: "Why the frost effect has snowflakes? It makes no sense"): the edges of
+       his sight blurring and going blue and the world dimming (kit.chill), the picture lagging behind his eyes
+       (kit.smear), his heart slowing and missing and jumping while the monitor goes wild, his breath fogging, the
+       shop's red draining to a cold blue-white, the candles shrinking, the fan running down, the tape on the
+       counter sagging (the song's own source slowing: the bed RATE, main.js's loopRate); then a young woman at
        the very edge of his sight who is gone before his eyes reach her, and her humming beside him — the tape's
        voice, without the tape; then STEADY (the thirty-first seam): keep her steady and set her down gently. The
        set-down: the tape runs down and stops with a click, a sigh at his ear, the warmth back over four seconds, the
        candles straightening, his promise. Every number below is on WALL time or the chapter's clock (the v7.4 law). */
+    /* the cold's light: the same tubes gone thin and blue, the room a third darker (CP5a re-derived it from the
+       brighter shop; the edge blur, the grey and the dimming on the picture are kit.chill's, on top) */
     const Y_COLD = {
-      stops: [[0.00, '#1c2630'], [0.30, '#18202a'], [0.60, '#141a22'], [1.00, '#0e1218']],
-      bg: 0x0e1218, fog: [0x141c24, 0.03],
-      hemi: [0xcfe4ff, 0x10161e, 0.5], key: [0xd8ecff, 0.42, 1, 6, 2], fill: [0x9cc4ff, 0.26],
+      stops: [[0.00, '#24303c'], [0.30, '#1e2833'], [0.60, '#18202a'], [1.00, '#12181f']],
+      bg: 0x12181f, fog: [0x1a222c, 0.02],
+      hemi: [0xd6e6ff, 0x1c2430, 0.52], key: [0xdcecff, 0.4, 1, 6, 2], fill: [0x9cc4ff, 0.24],
       stars: 0, moon: 0, sun: 0, clouds: 0,
-      vmHemi: [0xcfe4ff, 0x10161e, 0.62], vmKey: [0xd8ecff, 0.55]
+      vmHemi: [0xd6e6ff, 0x1c2430, 0.66], vmKey: [0xdcecff, 0.5]
     };
     const RADIO = { x: YSHOP.x1 - 0.12, z: -2.2 }, BACKROOM = { x: YSHOP.x0 + 0.68, z: YSHOP.z0 + 0.3 }, DOORBELL = { x: 0.3, z: -0.19 };
-    const Y_SOUNDS = ['y4song', 'y4dread', 'y4mall', 'y4hum', 'y4tapeclick', 'y4zap', 'y4frost', 'y4shiver', 'y4breath', 'y4sigh',
-                      'y4bell', 'y4tube', 'y4beads', 'y4curtain', 'y4candle', 'y4creak', 'y4box', 'y4setdown', 'y4clatter', 'y4sting', 'y4radio'];
+    const Y_SOUNDS = ['y4song', 'y4dread', 'y4mall', 'y4hum', 'y4tapeclick', 'y4zap', 'y4heart', 'y4shiver', 'y4breath', 'y4sigh',
+                      'y4bell', 'y4tube', 'y4beads', 'y4curtain', 'y4candle', 'y4creak', 'y4box', 'y4setdown', 'y4clatter', 'y4sting', 'y4radio', 'y4cry'];
     if (warmSounds) warmSounds(Y_SOUNDS);
     const yin = { on: false, run: 0, setDown: false, cold: 0, coldTo: 0, numb: 0, numbTo: 0, puffT: 0,
                   rate: 1, gain: 1, stopping: false, stopped: false, clicked: false, bellSwing: 0, radioDip: 0,
                   girl: { a: 0, to: 0, shows: 0, side: 1, placed: false, nextAt: 0 } };
-    /* the frost: a plane on the lens (a child of the camera, past its 8 cm near plane), its alphaTest lowered as the
-       cold comes so the ferns grow inward from the edges (makeYinFrost draws its alpha by distance from the edge) */
-    const frostMat = new THREE.MeshBasicMaterial({ map: tex(makeYinFrost(THREE, cnv)), transparent: true, opacity: 0, alphaTest: 0.999,
-                                                    depthTest: false, depthWrite: false, fog: false, toneMapped: false });
-    mats.push(frostMat);
-    const frostMesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), frostMat);
-    frostMesh.renderOrder = 9990; frostMesh.frustumCulled = false; frostMesh.visible = false; frostMesh.position.set(0, 0, -0.105);
-    camera.add(frostMesh);
-    owned.push({ dispose: () => { camera.remove(frostMesh); frostMesh.geometry.dispose(); } });
     /* his breath: three puffs that fog in front of him and drift away (world sprites, recycled) */
     const puffs = [];
     for (let i = 0; i < 3; i++) {
@@ -1354,6 +1550,7 @@
     {
       const gold = M({ color: 0xd2a640, roughness: 0.32, metalness: 0.85, emissive: 0x2a1a04, emissiveIntensity: 0.5 });
       const lk = new THREE.Group(); lk.scale.setScalar(1.35); yinHeld.add(lk);
+      const heldLinks = [];
       const rim = new THREE.Mesh(new THREE.TorusGeometry(0.021, 0.0035, 8, 28), gold); lk.add(rim);
       const back = new THREE.Mesh(new THREE.CylinderGeometry(0.021, 0.021, 0.004, 28), gold); back.rotation.x = Math.PI / 2; back.position.z = -0.002; lk.add(back);
       const fm = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.4, visible: false }); mats.push(fm);
@@ -1363,23 +1560,40 @@
       const glass = new THREE.Mesh(new THREE.CircleGeometry(0.018, 28), M({ color: 0xbfd4cf, roughness: 0.05, metalness: 0.2, transparent: true, opacity: 0.16, depthWrite: false }));
       glass.position.z = 0.0025; lk.add(glass);
       const bail = new THREE.Mesh(new THREE.TorusGeometry(0.004, 0.0012, 4, 10), gold); bail.position.set(0, 0.025, 0); lk.add(bail);
-      // the chain, slipping down between his fingers
+      /* CHAD'S yin amulet in his hand (v22.0 CP5: "this is the yin amulet that the player holds"): the near cut, every
+         triangle, 10 cm with its bail (7.5 read as a coin at the fingertip in the photographs), her portrait to the lens;
+         the drawn locket stands until it lands */
+      { const drawn = [rim, back, heldFace, glass, bail];
+        yinAmulet().then(A => {
+          if (!alive) return;
+          const m = A.near.clone(true); m.scale.setScalar(0.1 / 1.35); lk.add(m);
+          for (const o of drawn) o.visible = false;
+          // the chain re-laid for her size: through the bail (its ring 4.5 cm up), back over her ghost's face on the
+          // locket's back, and down behind her onto his fingers
+          heldLinks.forEach((ln, k) => { const u = k / 17;
+            ln.position.set(0.006 * Math.sin(u * 5), 0.033 - u * 0.1, -(0.0105 + 0.006 * Math.sin(Math.PI * Math.min(1, u * 1.4))) * Math.min(1, u * 4) - u * 0.004);
+            ln.scale.setScalar(1.25); });
+        }).catch(() => {}); }
+      // the chain, from the bail over the back of the locket and down onto his fingers (CP5e: held up on the fingertip
+      // with the chain rising out of the frame, it read as a locket hanging from something above him)
       const chainG = new THREE.TorusGeometry(0.003, 0.0008, 3, 6);
-      for (let k = 0; k < 16; k++) {
-        const ln = new THREE.Mesh(chainG, gold), u = k / 15;
-        ln.position.set(0.006 * Math.sin(u * 5), 0.028 + u * 0.05, -0.004 - u * 0.012); ln.rotation.set(u * 2, k % 2 ? Math.PI / 2 : 0, 0); lk.add(ln);
+      for (let k = 0; k < 18; k++) {
+        const ln = new THREE.Mesh(chainG, yinChainMat), u = k / 17;
+        ln.position.set(0.005 * Math.sin(u * 5), 0.027 - u * 0.078, -0.004 - 0.007 * Math.sin(Math.PI * Math.min(1, u * 1.4)) - u * 0.003);
+        ln.rotation.set(u * 2, k % 2 ? Math.PI / 2 : 0, 0); lk.add(ln); heldLinks.push(ln);
       }
-      // the static: jagged threads from the locket up the arm, re-drawn every 50 ms (additive, over the skin)
-      const arcMat = new THREE.LineBasicMaterial({ color: 0xa8dcff, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthTest: false, depthWrite: false, fog: false, toneMapped: false });
-      mats.push(arcMat);
-      for (let i = 0; i < 6; i++) {
-        const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(11 * 3), 3));
-        const ln = new THREE.Line(geo, arcMat); ln.renderOrder = 50; ln.frustumCulled = false; yinHeld.add(ln); arcs.push(ln);
+      // the cold creeping from the locket up his arm: soft blue lights that rise from her and fade on the wrist, one
+      // after another (CP5e: the first build drew jagged white threads here, and in the photographs they read as
+      // scribbles on the skin, not as cold). Additive, over the skin, in the hands' pass.
+      for (let i = 0; i < 7; i++) {
+        const m = new THREE.SpriteMaterial({ map: yLive.tGlow, color: 0x8cc8ff, transparent: true, opacity: 0, depthTest: false, depthWrite: false, blending: THREE.AdditiveBlending, fog: false });
+        mats.push(m);
+        const sp = new THREE.Sprite(m); sp.renderOrder = 50; sp.visible = false; yinHeld.add(sp);
+        arcs.push({ sp, ph: i / 7, side: (hash(i, 41) - 0.5) * 2, lift: (hash(i, 43) - 0.5) * 2 });
       }
       const gm = new THREE.SpriteMaterial({ map: yLive.tGlow, color: 0x7cc4ff, transparent: true, opacity: 0, depthTest: false, depthWrite: false, blending: THREE.AdditiveBlending, fog: false });
       mats.push(gm);
       yin.glow = new THREE.Sprite(gm); yin.glow.scale.set(0.09, 0.09, 1); yin.glow.renderOrder = 51; yinHeld.add(yin.glow);
-      yin.arcMat = arcMat;
       owned.push({ dispose: () => {
         if (kit && kit.holding && kit.holding() === yinHeld) kit.hold(null);
         yinHeld.traverse(o => { if (o.geometry) o.geometry.dispose(); });
@@ -1391,32 +1605,46 @@
       if (!kit || !kit.hold) return;
       if (on) {
         if (yLive.girlTex && heldFace) { heldFace.material.map = yLive.girlTex; heldFace.material.visible = true; heldFace.material.needsUpdate = true; }
-        kit.hold(yinHeld, { pos: [0.004, -0.02, -0.178], rot: [ARM_INV.x - 0.25, ARM_INV.y, ARM_INV.z] });
+        // above the fingertip, clear of the hand (chosen from nine photographed placements — at the palm the index finger
+        // covered her face, CP5e)
+        kit.hold(yinHeld, { pos: [0.018, 0.005, -0.19], rot: [ARM_INV.x - 0.25, ARM_INV.y, ARM_INV.z] });
       } else if (kit.holding && kit.holding() === yinHeld) kit.hold(null);
     }
-    let arcNext = 0;
     const _as = new THREE.Vector3(), _au = new THREE.Vector3(), _ap = new THREE.Vector3();
     function arcsTick(wdt) {
       const k = yin.numb;
-      yin.arcMat.opacity = Math.min(1, k * 1.2) * (0.6 + 0.4 * hash(Math.floor(yT * 30), 17));
-      yin.glow.material.opacity = k * (0.35 + 0.25 * Math.sin(yT * 14));
-      if (k < 0.02) { for (const ln of arcs) ln.visible = false; return; }
-      arcNext -= wdt; if (arcNext > 0) return;
-      arcNext = 0.05;
+      yin.glow.material.opacity = k * (0.3 + 0.12 * Math.sin(yT * 3.1));       // her glow: a slow breath, not a buzz
+      if (k < 0.02) { for (const a of arcs) a.sp.visible = false; return; }
       _as.set(0, 0, 1).cross(ARM_UP).normalize(); _au.copy(ARM_UP).cross(_as).normalize();
-      let seed = Math.floor(yT * 20) * 13;
-      const rnd = () => hash(++seed, 29);
-      for (const ln of arcs) {
-        const a = ln.geometry.attributes.position, len = (0.05 + rnd() * 0.16) * (0.5 + 0.5 * k), j = 0.006 + 0.006 * k;
-        const ox = (rnd() - 0.5) * 0.02, oy = (rnd() - 0.5) * 0.02;
-        for (let i = 0; i < 11; i++) {
-          const u = i / 10;
-          _ap.copy(ARM_UP).multiplyScalar(u * len).addScaledVector(_as, ox + (rnd() - 0.5) * j).addScaledVector(_au, oy + (rnd() - 0.5) * j);
-          a.setXYZ(i, _ap.x, _ap.y, _ap.z);
-        }
-        a.needsUpdate = true;
-        ln.visible = rnd() < 0.35 + 0.6 * k;
+      const reach = 0.08 + 0.16 * k;                                          // further up the arm as he goes numb
+      for (const a of arcs) {
+        a.ph = (a.ph + wdt * (0.32 + 0.1 * k)) % 1;
+        const u = a.ph, wob = Math.sin(yT * 2.3 + a.side * 4) * 0.004;
+        _ap.copy(ARM_UP).multiplyScalar(u * reach).addScaledVector(_as, a.side * 0.008 * (0.4 + u) + wob).addScaledVector(_au, a.lift * 0.006);
+        a.sp.position.copy(_ap);
+        const sc = 0.03 + 0.05 * Math.sin(Math.PI * u) * (0.6 + 0.4 * k); a.sp.scale.set(sc, sc, 1);
+        a.sp.material.opacity = Math.sin(Math.PI * u) * Math.min(1, k * 1.1) * 0.55;
+        a.sp.visible = true;
       }
+    }
+    /* CP5e · HE TURNS FROM THE COUNTER with her in his hand, to hold her up to the shop's light — looking down the
+       shop: the aisle and the cabinets, the altar at the back, her portrait on the right wall. It is also the only
+       view in which the frame's edges can hold her: facing the keeper, every spot at the edge of a desktop's frame
+       is behind the counter, in the stock or past the wall (the probe, at the counter: 36 candidates, 36 refused).
+       1.4 s on wall time, eased; held still under a panel; his look is his own again the moment it ends. */
+    const viewTurn = { on: false, t: 0, secs: 1.4, y0: 0, y1: 0, p0: 0, p1: 0 };
+    function viewTurnStart(tx, tz, pitchTo, secs) {
+      const dx = tx - yaw.position.x, dz = tz - yaw.position.z, want = Math.atan2(-dx, -dz);
+      const d = Math.atan2(Math.sin(want - yaw.rotation.y), Math.cos(want - yaw.rotation.y));
+      Object.assign(viewTurn, { on: true, t: 0, secs, y0: yaw.rotation.y, y1: yaw.rotation.y + d, p0: pitch.rotation.x, p1: pitchTo });
+    }
+    function viewTurnTick(wdt) {
+      if (!viewTurn.on || getState() !== 'play') return;
+      viewTurn.t = Math.min(1, viewTurn.t + wdt / viewTurn.secs);
+      const k = viewTurn.t * viewTurn.t * (3 - 2 * viewTurn.t);
+      yaw.rotation.y = viewTurn.y0 + (viewTurn.y1 - viewTurn.y0) * k;
+      pitch.rotation.x = viewTurn.p0 + (viewTurn.p1 - viewTurn.p0) * k;
+      if (viewTurn.t >= 1) viewTurn.on = false;
     }
     /* THE GIRL at the edge of the frame — of THIS screen (a phone's half-width is ~19°, a desktop's ~49°): put where
        the frame ends, held there in the world, and gone the moment his look turns toward her (before it arrives).
@@ -1426,20 +1654,49 @@
     function girlFree(x, z) {
       if (x < YSHOP.x0 + 0.35 || x > YSHOP.x1 - 0.35 || z < YSHOP.z0 + 0.4 || z > YSHOP.z1 - 0.5) return false;
       for (const b of (S && S.blockers) || []) if (b.max.y > 0.5 && x > b.min.x - 0.12 && x < b.max.x + 0.12 && z > b.min.z - 0.12 && z < b.max.z + 0.12) return false;
+      // never inside the keeper (she stands behind the counter, where the narrow frame's spots fall)
+      if (Math.hypot(x - KEEP.x, z - KEEP.z) < 0.62) return false;
       return true;
     }
+    /* does the line from him to a spot pass through anything tall (a cabinet, a shelf, the back wall)? A girl behind
+       the stock is not a girl at the edge of his sight. 2-D slab test against every blocker taller than a counter:
+       furniture's collision COLUMNS all stand to 1.40 whatever is drawn (blockers()' solid, the v5.03 law), so the
+       counter he leans on read as a wall at the first threshold (1.2) and every spot past it failed — the probe
+       photographs: she never came. Only what really stands above 1.45 (shelves, the walls) hides her. */
+    function girlSeen(ax, az, bx, bz) {
+      for (const b of (S && S.blockers) || []) {
+        if (b.max.y <= 1.45) continue;
+        let t0 = 0, t1 = 1;
+        const ok = [[ax, bx - ax, b.min.x, b.max.x], [az, bz - az, b.min.z, b.max.z]].every(([o, d, lo, hi]) => {
+          if (Math.abs(d) < 1e-9) return o >= lo && o <= hi;
+          let u0 = (lo - o) / d, u1 = (hi - o) / d; if (u0 > u1) [u0, u1] = [u1, u0];
+          t0 = Math.max(t0, u0); t1 = Math.min(t1, u1); return t0 <= t1;
+        });
+        if (ok && t1 > 0.02 && t0 < 0.98) return false;
+      }
+      return true;
+    }
+    /* CP5e: the first build looked only 0.85-1.3 m out at 0.97 of the half-width, and from the counter every one of
+       those spots was inside the counter (the photographs: she never came). Now: further out, a little further in
+       from the edge, and only where nothing tall stands between them. */
     function girlPlace() {
       const G = yin.girl, P = yLive.girl; if (!P || !P.ready) return false;
       camera.getWorldDirection(_gd); _gd.y = 0; _gd.normalize(); camera.getWorldPosition(_gp);
-      const e = halfFovH() * 0.97;
-      for (const side of [G.side, -G.side]) for (const d of [1.3, 1.05, 0.85]) {
-        const a = side * e, ca = Math.cos(a), sa = Math.sin(a);
-        // turn the view direction by a (positive = to his right, the screen's +x)
-        const dx = _gd.x * ca + _gd.z * sa, dz = -_gd.x * sa + _gd.z * ca;
+      const hf = halfFovH(), fails = G.fail = { free: 0, seen: 0, from: [+_gp.x.toFixed(2), +_gp.z.toFixed(2)], dir: [+_gd.x.toFixed(2), +_gd.z.toFixed(2)], hf: +hf.toFixed(3) };
+      /* (Chad's ghost, v22.0 CP5: the cold's own edge blur — kit.chill — swallowed her at 0.82-0.95 of the half-width,
+         a pale smear in every photograph; she stands where the sight is still sharp now, two thirds of the way out, and
+         far enough off that the whole of her is in the frame, hem to crown) */
+      for (const side of [G.side, -G.side]) for (const f of [0.64, 0.7, 0.58, 0.76]) for (const d of [2.2, 2.6, 1.9, 3.1, 1.6, 3.7, 4.4]) {
+        const a = side * hf * f, ca = Math.cos(a), sa = Math.sin(a);
+        // turn the view direction by a, positive = to his RIGHT (the screen's +x, where a sound panned +1 is heard):
+        // facing −z, a quarter turn right faces +x. (The first build turned the other way and panned her breath
+        // to the side she was not on.)
+        const dx = _gd.x * ca - _gd.z * sa, dz = _gd.x * sa + _gd.z * ca;
         const x = _gp.x + dx * d, z = _gp.z + dz * d;
-        if (!girlFree(x, z)) continue;
+        if (!girlFree(x, z)) { fails.free++; continue; }
+        if (!girlSeen(_gp.x, _gp.z, x, z)) { fails.seen++; continue; }
         P.group.position.set(x, 0, z); P.group.rotation.y = Math.atan2(_gp.x - x, _gp.z - z);
-        G.side = side; G.placed = true;
+        G.side = side; G.placed = true; G.at = { f, d };
         return true;
       }
       return false;
@@ -1452,8 +1709,9 @@
           if (worldSfx) {
             const pan = G.side * 0.75;
             if (G.shows === 1) worldSfx('y4sting', 0.4, 1, pan);
-            worldSfx('y4breath', 0.62, 1, pan);
-            worldSfx('y4hum', 0.66, 1, pan);
+            // she CRIES (Chad: "when the ghost appears, i want the ghost to have a pitiful crying voice echoing"):
+            // a young woman's broken weeping, laid with an echo that carries down the tiles and back (cry.sh)
+            worldSfx('y4cry', 0.78, 1, pan);
           }
         } else G.nextAt = dayClock.t + 0.4;
       }
@@ -1462,17 +1720,19 @@
         camera.getWorldDirection(_gd); _gd.y = 0; _gd.normalize(); camera.getWorldPosition(_gp);
         _gq.copy(P.group.position).sub(_gp); _gq.y = 0; _gq.normalize();
         const off = Math.acos(THREE.MathUtils.clamp(_gd.dot(_gq), -1, 1)), edge = halfFovH();
-        const want = G.to > 0 && off > edge * 0.62 ? 0.72 : 0;
+        const want = G.to > 0 && off > edge * 0.36 ? 0.8 : 0;            // gone the moment his look turns onto her
         G.a += (want - G.a) * (1 - Math.exp(-wdt * (want > G.a ? 2.2 : 14)));
         if (want === 0 && G.a < 0.02) {
           G.placed = false; G.a = 0;
           if (G.to > 0 && G.shows < 2) { G.side = -G.side; G.nextAt = dayClock.t + 2.6; } else G.to = 0;
         }
       }
-      for (const m of P.mats) { m.opacity = G.a; if (m.color) m.color.setRGB(0.82 + 0.1 * G.a, 0.86 + 0.08 * G.a, 0.95); if (m.emissive) m.emissive.setRGB(0.05 * G.a, 0.07 * G.a, 0.11 * G.a); }
+      // CP5e: her own colours kept (her hair dark, her face pale), cooled a little and lit faintly from within, so she
+      // reads as a young woman at the edge of his sight and not as a grey shape (the first tint washed her out)
+      for (const m of P.mats) { m.opacity = G.a; if (m.color) m.color.setRGB(0.86 + 0.08 * G.a, 0.88 + 0.07 * G.a, 0.97); if (m.emissive) m.emissive.setRGB(0.05 * G.a, 0.06 * G.a, 0.09 * G.a); }
       P.group.visible = G.a > 0.01;
     }
-    /* the frost, the breath, the static, the light, the lid, the bell — every frame (the shop lives in every state) */
+    /* the breath, the static, the light, the lid, the bell — every frame (the shop lives in every state) */
     function yinTick(wdt) {
       if (wdt <= 0) return;
       const ease = (v, to, s) => v + (to - v) * (1 - Math.exp(-wdt / s));
@@ -1489,15 +1749,7 @@
           if (worldSfx && worldOf(yaw.position.x) === 'Y') worldSfx('y4tapeclick', 0.5, 1, panAt(RADIO.x, RADIO.z));
         }
       } else yin.rate = ease(yin.rate, rateTo, 0.9);
-      // the frost on the lens
       const fk = yin.cold;
-      frostMesh.visible = fk > 0.01 && worldOf(yaw.position.x) === 'Y';
-      if (frostMesh.visible) {
-        const h = 2 * 0.105 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2);
-        frostMesh.scale.set(h * camera.aspect * 1.04, h * 1.04, 1);
-        frostMat.alphaTest = Math.max(0.05, 0.999 - 0.82 * fk);
-        frostMat.opacity = Math.min(0.92, fk * 1.25);
-      }
       // the velvet box's lid
       if (yLive.box) yLive.box.lid.rotation.z += (-1.9 * yLive.box.open - yLive.box.lid.rotation.z) * (1 - Math.exp(-wdt * 3));
       // his breath, every 2.4 s while it is cold
@@ -1527,9 +1779,18 @@
       if (yLive.fan) yLive.fan.k = 1 - 0.88 * fk;
       yLive.smokeK = 1 - 0.7 * fk;
       arcsTick(wdt);
+      viewTurnTick(wdt);
       girlTick(wdt);
     }
 
+    /* the cold on him, through the engine's three verbs (kit.chill / kit.smear / kit.pulse, main.js) — each optional,
+       so a build without them plays the rest of the experience as it was */
+    function coldTo(o) {
+      if (!kit) return;
+      if (o.chill && kit.chill) kit.chill(o.chill[0], { secs: o.chill[1] });
+      if (o.smear && kit.smear) kit.smear(o.smear[0], { secs: o.smear[1] });
+      if (o.pulse !== undefined && kit.pulse) kit.pulse(o.pulse);
+    }
     /* the experience itself, beat by beat on the chapter clock (a reset or a second start cancels the first: `run`) */
     function yinStart() {
       if (yin.on || !kit) return;
@@ -1542,7 +1803,12 @@
       heldShow(true);
       setPhase('yinHold', 'held');
       kit.objective(null);
-      at(0.5, () => { yin.numbTo = 1; kit.tremble(0.35, { secs: 0.8 }); if (worldSfx) worldSfx('y4zap', 0.55, 1, 0.4); });
+      at(0.3, () => viewTurnStart(-0.35, -7.4, -0.06, 1.4));      // down the shop, her portrait on the right wall
+      at(0.5, () => {
+        yin.numbTo = 1; kit.tremble(0.35, { secs: 0.8 }); if (worldSfx) worldSfx('y4zap', 0.55, 1, 0.4);
+        // the moment it touches him his heart jumps — heard from here on, and drawn on the monitor beat for beat
+        coldTo({ pulse: { bpm: 104, secs: 0.6, erratic: 0.15, sound: 'y4heart', vol: 0.55, kick: true } });
+      });
       at(1.4, () => queueLine('z4numb'));
       at(1.9, () => { kit.tremble(0.5, { secs: 1.0 }); if (worldSfx) worldSfx('y4zap', 0.4, 0.9, 0.5); });
       at(3.0, () => {
@@ -1550,10 +1816,17 @@
         kit.daylight(Y_COLD, 3.0);
         W.presence = W.presenceCold; kit.presence(0.55);
         kit.tremble(0.65, { secs: 1.5 });
-        if (worldSfx) worldSfx('y4frost', 0.65, 1, 0);
+        // THE COLD: the edges of his sight blurring and going blue, the world dimming, the picture lagging behind his
+        // eyes — and the racing heart SLOWING, missing beats, the monitor starting to go wrong
+        coldTo({ chill: [0.6, 3.5], smear: [0.45, 3.5], pulse: { bpm: 58, secs: 4.5, erratic: 0.35 } });
+        if (worldSfx) worldSfx('y4shiver', 0.5, 1, 0);
       });
       at(5.0, () => queueLine('z4cold'));
-      at(6.6, () => { const G = yin.girl; G.to = 1; G.shows = 0; G.nextAt = dayClock.t; G.side = hash(yin.run, 31) < 0.5 ? 1 : -1; });
+      at(6.6, () => {
+        const G = yin.girl; G.to = 1; G.shows = 0; G.nextAt = dayClock.t; G.side = hash(yin.run, 31) < 0.5 ? 1 : -1;
+        // as she comes: colder still, the heart down to a crawl and jumping (palpitations), the monitor wild
+        coldTo({ chill: [0.85, 2.5], smear: [0.7, 2.5], pulse: { bpm: 44, secs: 4, erratic: 0.7 } });
+      });
       at(7.4, () => queueLine('z4beside'));
       at(7.4 + (SECS.z4beside || 4.1) + 0.9, () => queueFn(() => yinSteady(run)));
     }
@@ -1564,8 +1837,17 @@
         kind: 'steady', label: W.evSteady, brief: W.evSteadyBrief, demo: 'steady',
         secs: 8, ring: 0.16, grace: 1.3, pass: 0.6,
         onBegin: () => { if (worldSfx) worldSfx('y4sting', 0.3, 0.8, 0); },
-        onDrift: (k) => { kit.tremble(0.45 + 0.75 * Math.min(1, k), { secs: 0.15 }); yin.numbTo = 0.6 + 0.4 * Math.min(1, k); },
-        onTug: () => { tugs++; if (worldSfx) worldSfx(tugs % 2 ? 'y4breath' : 'y4zap', 0.42, 1, (tugs % 2 ? -1 : 1) * 0.6); }
+        // the further she drifts from the middle, the harder the hand shakes, the colder the edges and the wilder the heart
+        onDrift: (k) => {
+          const d = Math.min(1, k);
+          kit.tremble(0.45 + 0.75 * d, { secs: 0.15 }); yin.numbTo = 0.6 + 0.4 * d;
+          coldTo({ chill: [0.75 + 0.25 * d, 0.3], pulse: { erratic: 0.55 + 0.45 * d } });
+        },
+        // and every tug is a palpitation on the spot
+        onTug: () => {
+          tugs++; if (worldSfx) worldSfx(tugs % 2 ? 'y4breath' : 'y4zap', 0.42, 1, (tugs % 2 ? -1 : 1) * 0.6);
+          coldTo({ pulse: { kick: true } });
+        }
       }).then(r => { if (run === yin.run && yin.on) yinSetDown(!!(r && r.ok)); });
     }
     function yinSetDown(ok) {
@@ -1579,8 +1861,10 @@
         kit.award('sanity', -6, { minigame: true });
         kit.conduct({ note: W.noteSlip });
         if (kit.flash) kit.flash({ color: 'rgba(170,205,255,0.28)', secs: 0.5 });
+        coldTo({ pulse: { kick: true } });                         // the clatter jolts him
       }
-      // the tape runs down and stops; a sigh at his ear; the cold leaves over four seconds
+      // the tape runs down and stops; a sigh at his ear; the cold leaves over four seconds — the edges clearing, the
+      // picture catching up with his eyes, the heart steadying and coming back to him, then out of his ears
       yin.stopping = true;
       after(1.1, () => { if (worldSfx) worldSfx('y4sigh', 0.62, 1, -yin.girl.side * 0.6); });
       yin.girl.to = 0;
@@ -1588,6 +1872,10 @@
       kit.daylight(null, 4.0);
       kit.presence(0); W.presence = undefined;
       kit.tremble(0, { secs: 1.6 });
+      coldTo({ chill: [0, 4.0], smear: [0, 2.5], pulse: { bpm: 76, secs: 3.0, erratic: 0 } });
+      const run = yin.run;
+      after(3.4, () => { if (run === yin.run) coldTo({ pulse: { vol: 0.22 } }); });
+      after(6.0, () => { if (run === yin.run) coldTo({ pulse: null }); });
       queueGap(2.2);
       queueLine('z4yin');
       queueFn(() => { yin.bellSwing = 0.6; if (worldSfx) worldSfx('y4bell', 0.3, 1, panAt(DOORBELL.x, DOORBELL.z)); });
@@ -1649,11 +1937,12 @@
       yin.on = false; yin.setDown = false; yin.cold = yin.coldTo = 0; yin.numb = yin.numbTo = 0; yin.puffT = 0;
       yin.rate = 1; yin.stopping = false; yin.stopped = false; yin.clicked = false; yin.bellSwing = 0; yin.radioDip = 0;
       Object.assign(yin.girl, { a: 0, to: 0, shows: 0, side: 1, placed: false, nextAt: 0 });
+      viewTurn.on = false;
+      coldTo({ chill: [0, 0], smear: [0, 0], pulse: null });     // nothing of the cold outlives a reset (kitReset also clears it)
       if (yLive.girl) yLive.girl.group.visible = false;
       heldShow(false);
       if (yLive.locket) yLive.locket.visible = true;
       if (yLive.box) { yLive.box.open = 0; yLive.box.lid.rotation.z = 0; }
-      frostMesh.visible = false;
       for (const p of puffs) { p.t = 1; p.sp.visible = false; }
       yLive.redK = 1; yLive.flameK = 1; yLive.smokeK = 1; if (yLive.fan) yLive.fan.k = 1;
       W.presence = undefined;
@@ -1922,10 +2211,13 @@
                  { what: 'the tray shop (the run-out film puts him inside its door)', x: TARRIVE.x, z: TARRIVE.z }],
       get phase() { return phase; },
       setPhase, applyPhase, after, dayClock, sayLine,
+      // (a probe's handle: the locket held at a trial offset in the arm's frame, so its framing is chosen by photograph)
+      holdTry: (pos, rot) => { if (kit && kit.hold) { yinHeld.visible = true; kit.hold(yinHeld, { pos, rot: rot || [ARM_INV.x - 0.25, ARM_INV.y, ARM_INV.z] }); } },
       info: () => ({ phase, t: +dayClock.t.toFixed(2), queued: lineQ.length, heard: [...heard], looked: [...looked], held: [...held],
                      until: +speak.until.toFixed(2), pending: speak.pending ? speak.pending.name : null, world: worldOf(yaw.position.x),
                      yin: { on: yin.on, cold: +yin.cold.toFixed(2), numb: +yin.numb.toFixed(2), rate: +yin.rate.toFixed(3), stopped: yin.stopped,
-                            girl: { placed: yin.girl.placed, a: +yin.girl.a.toFixed(2), shows: yin.girl.shows, side: yin.girl.side },
+                            girl: { placed: yin.girl.placed, a: +yin.girl.a.toFixed(2), shows: yin.girl.shows, side: yin.girl.side, at: yin.girl.at || null,
+                                    ready: !!(yLive.girl && yLive.girl.ready), to: yin.girl.to, fail: yin.girl.fail || null },
                             beds: DATA.ambience.beds.map(b => b.map(v => typeof v === 'number' ? +v.toFixed(3) : v)), wrong: wrongI } }),
       hotspots,
       updateNotes, updatePile, updateFire, updateSlow,
@@ -2002,7 +2294,8 @@
     x.lineTo(0, Math.max(y + w * 0.3, h)); x.stroke(); x.restore();
   }
 
-  /* the floor: 300 mm glazed tiles in oxblood and brown, worn dull, the grout gone dark; one texture is 1.2 m */
+  /* the floor: 300 mm glazed tiles in oxblood and brown, the glaze dulled where people walk (CP5a: a chip here and
+     there, no cracks, the grout a working grey); one texture is 1.2 m */
   function makeYinFloor(THREE, cnv) {
     const S = 512, [c, x] = cnv(S), r = yRng(41), n = 4, T = S / n;
     const tones = [[104, 50, 38], [92, 46, 34], [114, 60, 44], [84, 44, 34]];
@@ -2016,34 +2309,27 @@
       const g = x.createLinearGradient(i * T, j * T, i * T + T, j * T + T);
       g.addColorStop(0, 'rgba(255,214,190,0.06)'); g.addColorStop(0.45, 'rgba(255,214,190,0)'); g.addColorStop(1, 'rgba(0,0,0,0.08)');
       x.fillStyle = g; x.fillRect(i * T, j * T, T, T);
-      // a chipped corner on some
-      if (r() < 0.3) { x.fillStyle = 'rgba(60,40,30,0.8)'; x.beginPath(); const cx = i * T + (r() < 0.5 ? 3 : T - 3), cy = j * T + (r() < 0.5 ? 3 : T - 3); x.moveTo(cx, cy); x.lineTo(cx + (cx > i * T + T / 2 ? -9 : 9), cy); x.lineTo(cx, cy + (cy > j * T + T / 2 ? -7 : 7)); x.fill(); }
+      // a chipped corner on the odd one
+      if (r() < 0.08) { x.fillStyle = 'rgba(60,40,30,0.8)'; x.beginPath(); const cx = i * T + (r() < 0.5 ? 3 : T - 3), cy = j * T + (r() < 0.5 ? 3 : T - 3); x.moveTo(cx, cy); x.lineTo(cx + (cx > i * T + T / 2 ? -9 : 9), cy); x.lineTo(cx, cy + (cy > j * T + T / 2 ? -7 : 7)); x.fill(); }
     }
-    x.strokeStyle = 'rgba(22,12,8,0.6)'; x.lineWidth = 1.2;
-    for (const [ti, tj] of [[1, 2], [3, 0], [2, 3]]) { x.beginPath(); let px = ti * T + 10 + r() * (T - 20), py = tj * T + 2; x.moveTo(px, py); for (let q = 0; q < 6; q++) { px += (r() - 0.5) * 26; py += T / 6.2; x.lineTo(px, py); } x.stroke(); }
-    x.fillStyle = '#251812'; for (let k = 0; k <= n; k++) { x.fillRect(k * T - 2, 0, 4, S); x.fillRect(0, k * T - 2, S, 4); }
-    yBlob(x, S, S * 0.72, S * 0.3, 160, 'rgba(26,14,10,0.20)');
-    yBlob(x, S, S * 0.2, S * 0.8, 120, 'rgba(26,14,10,0.14)');
+    x.fillStyle = '#4a3c34'; for (let k = 0; k <= n; k++) { x.fillRect(k * T - 2, 0, 4, S); x.fillRect(0, k * T - 2, S, 4); }
+    yBlob(x, S, S * 0.72, S * 0.3, 140, 'rgba(26,14,10,0.07)');
     return yDone(THREE, c, true);
   }
-  /* the plaster: cream gone tea-coloured, damp creeping down from the ceiling, hairline cracks; one texture is 2.2 m */
+  /* the plaster: a warm cream emulsion rolled over old plaster — the roller's soft unevenness, a fine grain, the
+     odd small mark (CP5a: no damp, no cracks: "it doesn't have to be rundown"); one texture is 2.2 m */
   function makeYinPlaster(THREE, cnv) {
     const S = 512, [c, x] = cnv(S), r = yRng(43);
-    x.fillStyle = '#cab59a'; x.fillRect(0, 0, S, S);
-    for (let i = 0; i < 70; i++) yBlob(x, S, r() * S, r() * S, 18 + r() * 90, `rgba(${r() < 0.55 ? '118,94,68' : '220,206,182'},${0.07 + r() * 0.1})`);
-    // damp running down: tide lines that end in a darker edge
-    for (let i = 0; i < 7; i++) {
-      const px = r() * S, w = 18 + r() * 70, h = 90 + r() * 280, py = r() * S;
-      for (const ox of [-S, 0, S]) for (const oy of [-S, 0, S]) {
-        if (px + ox > S || px + ox + w < 0 || py + oy > S || py + oy + h < 0) continue;
-        const g = x.createLinearGradient(0, py + oy, 0, py + oy + h);
-        g.addColorStop(0, 'rgba(104,80,52,0)'); g.addColorStop(0.75, 'rgba(104,80,52,0.15)'); g.addColorStop(0.96, 'rgba(84,60,38,0.3)'); g.addColorStop(1, 'rgba(84,60,38,0)');
-        x.fillStyle = g; x.fillRect(px + ox, py + oy, w, h);
-      }
-    }
-    yGrain(x, S, S, 14, r);
-    x.strokeStyle = 'rgba(70,52,36,0.35)'; x.lineWidth = 1;
-    for (let i = 0; i < 6; i++) { x.beginPath(); let px = 20 + r() * (S - 40), py = 20 + r() * (S - 40); x.moveTo(px, py); for (let q = 0; q < 7; q++) { px += (r() - 0.5) * 36; py += (r() - 0.3) * 28; x.lineTo(px, py); } x.stroke(); }
+    x.fillStyle = '#d6c8b0'; x.fillRect(0, 0, S, S);
+    for (let i = 0; i < 46; i++) yBlob(x, S, r() * S, r() * S, 30 + r() * 110, `rgba(${r() < 0.5 ? '150,132,108' : '236,226,208'},${0.03 + r() * 0.05})`);
+    // the roller's lanes: long soft vertical bands a shade apart
+    for (let i = 0; i < 9; i++) { const px = r() * S, w = 40 + r() * 50, a = 0.015 + r() * 0.025;
+      for (const ox of [-S, 0, S]) { x.fillStyle = `rgba(${r() < 0.5 ? '120,104,84' : '244,236,222'},${a})`; x.fillRect(px + ox, 0, w, S); } }
+    yGrain(x, S, S, 8, r);
+    // a few small marks: a nail hole, a scuff, a pencil tick — the wall of a shop that is used
+    for (let i = 0; i < 5; i++) { const px = r() * S, py = r() * S;
+      if (i < 2) { x.fillStyle = 'rgba(70,58,46,0.45)'; x.beginPath(); x.arc(px, py, 1.4, 0, Math.PI * 2); x.fill(); }
+      else { x.strokeStyle = 'rgba(90,76,60,0.12)'; x.lineWidth = 2; x.beginPath(); x.moveTo(px, py); x.lineTo(px + 6 + r() * 14, py + (r() - 0.5) * 4); x.stroke(); } }
     return yDone(THREE, c, true);
   }
   /* old varnished wood: the grain along the board (u), periodic so it wraps */
@@ -2063,17 +2349,15 @@
     yGrain(x, S, S, 10, r);
     return yDone(THREE, c, true);
   }
-  /* the shop's ceiling: 600 mm boards in a T-bar grid, yellowed, rings of old leaks; one texture is 2.4 m */
+  /* the shop's ceiling: 600 mm mineral-fibre boards in a white T-bar grid, the boards' pinholes, a shade of age in a
+     board or two (CP5a: no leak rings, no gaps); one texture is 2.4 m */
   function makeYinCeil(THREE, cnv) {
     const S = 512, [c, x] = cnv(S), r = yRng(53), n = 4, T = S / n;
-    x.fillStyle = '#ddd2bc'; x.fillRect(0, 0, S, S);
-    for (let i = 0; i < 2600; i++) { x.fillStyle = `rgba(110,100,84,${0.04 + r() * 0.1})`; x.fillRect(r() * S, r() * S, 1 + r() * 2, 1); }
-    for (const [ti, tj] of [[0, 1], [2, 3], [3, 1]]) {
-      const cx = ti * T + T * (0.3 + r() * 0.4), cy = tj * T + T * (0.3 + r() * 0.4);
-      for (let q = 0; q < 3; q++) { x.strokeStyle = `rgba(120,86,46,${0.22 - q * 0.05})`; x.lineWidth = 3 - q; x.beginPath(); x.ellipse(cx, cy, 22 + q * 13, 16 + q * 10, r(), 0, Math.PI * 2); x.stroke(); }
-      yBlob(x, S, cx, cy, 34, 'rgba(140,104,60,0.22)');
-    }
-    x.fillStyle = '#8a8478'; for (let k = 0; k <= n; k++) { x.fillRect(k * T - 3, 0, 6, S); x.fillRect(0, k * T - 3, S, 6); }
+    for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) { const v = 226 + (r() - 0.5) * 10 | 0; x.fillStyle = `rgb(${v},${v - 4},${v - 12})`; x.fillRect(i * T, j * T, T, T); }
+    for (let i = 0; i < 2600; i++) { x.fillStyle = `rgba(110,100,84,${0.03 + r() * 0.07})`; x.fillRect(r() * S, r() * S, 1 + r() * 1.5, 1); }
+    yBlob(x, S, T * 2.5, T * 0.5, 50, 'rgba(170,140,96,0.08)');
+    x.fillStyle = '#d4d0c6'; for (let k = 0; k <= n; k++) { x.fillRect(k * T - 3, 0, 6, S); x.fillRect(0, k * T - 3, S, 6); }
+    x.fillStyle = 'rgba(80,74,64,0.35)'; for (let k = 0; k <= n; k++) { x.fillRect(k * T + 3, 0, 1, S); x.fillRect(0, k * T + 3, S, 1); }
     return yDone(THREE, c, true);
   }
   /* old red cloth: a deep red weave, worn paler along its folds */
@@ -2187,16 +2471,16 @@
     x.fillStyle = '#8c7244'; x.fillRect(0, 0, S, 3); x.fillRect(0, 0, 3, S);
     return yDone(THREE, c, true);
   }
-  /* the corridor's T-bar ceiling: grey tiles, some stained, one in nine gone (black above); one texture is 2.4 m */
+  /* the corridor's T-bar ceiling: pale tiles, the odd one a shade off (CP5a: none missing); one texture is 2.4 m */
   function makeYinCeilC(THREE, cnv) {
     const S = 512, [c, x] = cnv(S), r = yRng(73), n = 4, T = S / n;
     for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) {
-      const v = 200 + (r() - 0.5) * 16 | 0;
-      x.fillStyle = (i === 2 && j === 1) ? '#0c0a09' : `rgb(${v},${v - 4},${v - 12})`; x.fillRect(i * T, j * T, T, T);
-      if (!(i === 2 && j === 1)) { for (let k = 0; k < 160; k++) { x.fillStyle = `rgba(100,94,84,${0.05 + r() * 0.1})`; x.fillRect(i * T + r() * T, j * T + r() * T, 1 + r() * 2, 1); }
-        if (r() < 0.3) yBlob(x, S, i * T + T / 2, j * T + T / 2, 40, 'rgba(120,90,50,0.22)'); }
+      const v = 212 + (r() - 0.5) * 12 | 0;
+      x.fillStyle = `rgb(${v},${v - 3},${v - 9})`; x.fillRect(i * T, j * T, T, T);
+      for (let k = 0; k < 160; k++) { x.fillStyle = `rgba(100,94,84,${0.04 + r() * 0.07})`; x.fillRect(i * T + r() * T, j * T + r() * T, 1 + r() * 2, 1); }
+      if (r() < 0.1) yBlob(x, S, i * T + T / 2, j * T + T / 2, 34, 'rgba(150,120,80,0.10)');
     }
-    x.fillStyle = '#7a766e'; for (let k = 0; k <= n; k++) { x.fillRect(k * T - 3, 0, 6, S); x.fillRect(0, k * T - 3, S, 6); }
+    x.fillStyle = '#9a968e'; for (let k = 0; k <= n; k++) { x.fillRect(k * T - 3, 0, 6, S); x.fillRect(0, k * T - 3, S, 6); }
     return yDone(THREE, c, true);
   }
   /* the words painted on her glass in old gold, read from the corridor: Thai, Chinese, English, half of it flaked */
@@ -2209,7 +2493,7 @@
     x.font = 'bold 62px serif'; x.fillText('佛 牌 · 古 物', 512, 178);
     x.font = 'bold 50px serif'; x.fillText('AMULETS · CURIOS', 512, 270);
     x.globalCompositeOperation = 'destination-out';
-    for (let i = 0; i < 260; i++) { x.fillStyle = `rgba(0,0,0,${0.5 + r() * 0.5})`; x.beginPath(); x.ellipse(r() * 1024, r() * 342, 2 + r() * 9, 1 + r() * 5, r() * 3, 0, Math.PI * 2); x.fill(); }
+    for (let i = 0; i < 70; i++) { x.fillStyle = `rgba(0,0,0,${0.3 + r() * 0.4})`; x.beginPath(); x.ellipse(r() * 1024, r() * 342, 1 + r() * 4, 1 + r() * 2.5, r() * 3, 0, Math.PI * 2); x.fill(); }
     x.globalCompositeOperation = 'source-over';
     return yDone(THREE, c, false);
   }
@@ -2271,17 +2555,17 @@
     x.fillStyle = g; x.fillRect(0, 0, S, S);
     return yDone(THREE, c, false);
   }
-  /* the atrium's skylight: dirty panes in a steel grid, a grey afternoon, leaves dead on the glass */
+  /* the atrium's skylight: panes in a steel grid, an afternoon sky, a few leaves on the glass */
   function makeYinSkylight(THREE, cnv) {
     const [c, x] = ySized(cnv, 256, 384), r = yRng(97);
-    const g = x.createLinearGradient(0, 0, 0, 384); g.addColorStop(0, '#c4ccd0'); g.addColorStop(1, '#9aa4aa');
+    const g = x.createLinearGradient(0, 0, 0, 384); g.addColorStop(0, '#d8e2ea'); g.addColorStop(1, '#b4c4d0');
     x.fillStyle = g; x.fillRect(0, 0, 256, 384);
-    for (let i = 0; i < 30; i++) yBlob(x, 256, r() * 256, r() * 384, 14 + r() * 40, `rgba(70,64,52,${0.08 + r() * 0.12})`);
-    for (let i = 0; i < 26; i++) { x.fillStyle = `rgba(${60 + r() * 40 | 0},${44 + r() * 20 | 0},${24},0.7)`; x.beginPath(); x.ellipse(r() * 256, r() * 384, 3 + r() * 5, 1.5 + r() * 2, r() * 3, 0, Math.PI * 2); x.fill(); }
+    for (let i = 0; i < 10; i++) yBlob(x, 256, r() * 256, r() * 384, 14 + r() * 40, `rgba(90,84,72,${0.04 + r() * 0.06})`);
+    for (let i = 0; i < 6; i++) { x.fillStyle = `rgba(${60 + r() * 40 | 0},${44 + r() * 20 | 0},${24},0.7)`; x.beginPath(); x.ellipse(r() * 256, r() * 384, 3 + r() * 5, 1.5 + r() * 2, r() * 3, 0, Math.PI * 2); x.fill(); }
     x.fillStyle = '#3a3c3e'; for (const px of [0, 128]) x.fillRect(px - 3, 0, 6, 384); for (const py of [0, 128, 256]) x.fillRect(0, py - 3, 256, 6);
     return yDone(THREE, c, true);
   }
-  /* the dead shops' fascias, four boards down a 1024 x 512 sheet: faded, a letter or two gone */
+  /* the other shops' fascias, four boards down a 1024 x 512 sheet: their years in the paint, every letter there */
   function makeYinSigns(THREE, cnv) {
     const [c, x] = ySized(cnv, 1024, 512), r = yRng(101);
     const boards = [['好运裁缝', 'LUCKY TAILOR & ALTERATIONS', '#1e3a6a', '#e8dcc0'], ['美景照相', 'MAY KING PHOTO STUDIO', '#e8e2d4', '#8a1a14'],
@@ -2293,14 +2577,25 @@
       x.fillStyle = fg; x.font = 'bold 54px serif'; x.fillText(zh, 512, y + 46); x.font = 'bold 30px sans-serif'; x.fillText(en, 512, y + 98);
       // sun and years
       for (let k = 0; k < 40; k++) yBlob(x, 1024, r() * 1024, y + r() * 128, 10 + r() * 40, `rgba(${r() < 0.5 ? '255,250,240' : '30,24,20'},${0.06 + r() * 0.1})`);
-      x.globalCompositeOperation = 'source-atop';
-      for (let k = 0; k < 3; k++) { x.fillStyle = bg; x.fillRect(200 + r() * 600, y + 12 + r() * 90, 18 + r() * 20, 30 + r() * 20); }
-      x.globalCompositeOperation = 'source-over';
       x.fillStyle = 'rgba(0,0,0,0.35)'; x.fillRect(0, y, 1024, 4); x.fillRect(0, y + 124, 1024, 4);
     });
     return yDone(THREE, c, false);
   }
   /* a TO LET notice, taped on the inside of the glass, years old */
+  /* the Yin shop's own board: red lacquer, a gold rule, Thai over Chinese over English, one 4.9 x 0.52 m board */
+  function makeYinFascia(THREE, cnv) {
+    const [c, x] = ySized(cnv, 1024, 110), r = yRng(103);
+    const g = x.createLinearGradient(0, 0, 0, 110); g.addColorStop(0, '#7a1a12'); g.addColorStop(1, '#561008');
+    x.fillStyle = g; x.fillRect(0, 0, 1024, 110);
+    for (let k = 0; k < 24; k++) yBlob(x, 1024, r() * 1024, r() * 110, 8 + r() * 26, `rgba(${r() < 0.5 ? '255,236,220' : '30,8,4'},${0.03 + r() * 0.05})`);
+    const gold = x.createLinearGradient(0, 0, 0, 110); gold.addColorStop(0, '#f0cc78'); gold.addColorStop(0.55, '#c49440'); gold.addColorStop(1, '#94682a');
+    x.strokeStyle = gold; x.lineWidth = 3; x.strokeRect(6, 6, 1012, 98); x.lineWidth = 1; x.strokeRect(12, 12, 1000, 86);
+    x.fillStyle = gold; x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.font = 'bold 40px sans-serif'; x.fillText('เครื่องรางของขลัง', 300, 52);
+    x.font = 'bold 34px serif'; x.fillText('灵 符 · 佛 牌', 690, 40);
+    x.font = 'bold 18px sans-serif'; x.fillText('THAI AMULETS  ·  TALISMANS', 690, 78);
+    return yDone(THREE, c, false);
+  }
   function makeYinToLet(THREE, cnv) {
     const [c, x] = ySized(cnv, 256, 342), r = yRng(103);
     x.fillStyle = '#f0e8d4'; x.fillRect(0, 0, 256, 342);
@@ -2327,47 +2622,6 @@
     x.strokeStyle = '#a81c14'; x.lineWidth = 6; x.strokeRect(6, 6, 116, 140);
     x.strokeStyle = '#7a120c'; x.lineWidth = 1.6; yKhomRow(x, 14, 114, 52, 24, 3); yKhomRow(x, 18, 110, 98, 22, 11);
     for (let i = 0; i < 8; i++) yBlob(x, 128, r() * 128, r() * 152, 10 + r() * 20, `rgba(120,80,30,${0.08 + r() * 0.1})`);
-    return yDone(THREE, c, false);
-  }
-  /* THE FROST on the lens (CP5): ice ferns growing in from every edge. Its ALPHA is how near the edge a texel is,
-     broken by the ferns, so the material's alphaTest — lowered as the cold comes — grows the frost INWARD rather than
-     fading it in; its colour is the white-blue of the crystals */
-  function makeYinFrost(THREE, cnv) {
-    const S = 512, [c, x] = cnv(S), r = yRng(131);
-    x.clearRect(0, 0, S, S);
-    // the base: alpha by distance from the nearest edge (1 at the edge, 0 a third of the way in), a little noise
-    const img = x.createImageData(S, S), d = img.data;
-    for (let j = 0; j < S; j++) for (let i = 0; i < S; i++) {
-      const e = Math.min(i, j, S - 1 - i, S - 1 - j) / (S * 0.36);
-      const n = (Math.sin(i * 0.11 + j * 0.07) + Math.sin(i * 0.031 - j * 0.053) * 1.3) * 0.08;
-      const a = Math.max(0, Math.min(1, 1 - e + n));
-      const k = (j * S + i) * 4;
-      d[k] = 214; d[k + 1] = 232; d[k + 2] = 246; d[k + 3] = Math.round(255 * a * a * 0.7);
-    }
-    x.putImageData(img, 0, 0);
-    // the ferns: branching strokes from the edges inward, their alpha ABOVE the base so they lead the growth
-    x.lineCap = 'round';
-    const fern = (px, py, ang, len, w, depth) => {
-      if (depth > 4 || len < 4) return;
-      const ex = px + Math.cos(ang) * len, ey = py + Math.sin(ang) * len;
-      x.strokeStyle = `rgba(240,248,255,${0.5 + 0.12 * (4 - depth)})`; x.lineWidth = w;
-      x.beginPath(); x.moveTo(px, py); x.lineTo(ex, ey); x.stroke();
-      const n = 3 + (r() * 3 | 0);
-      for (let k = 1; k <= n; k++) {
-        const t = k / (n + 1), bx = px + (ex - px) * t, by = py + (ey - py) * t;
-        for (const sgn of [-1, 1]) fern(bx, by, ang + sgn * (0.7 + r() * 0.35), len * (0.32 + r() * 0.18) * (1 - t * 0.4), Math.max(0.6, w * 0.6), depth + 1);
-      }
-    };
-    for (let i = 0; i < 26; i++) {
-      const side = i % 4, u = r() * S;
-      const [px, py, ang] = side === 0 ? [u, 0, Math.PI / 2] : side === 1 ? [u, S, -Math.PI / 2] : side === 2 ? [0, u, 0] : [S, u, Math.PI];
-      fern(px, py, ang + (r() - 0.5) * 0.9, 70 + r() * 90, 2.2, 0);
-    }
-    // a frosted bloom in each corner
-    for (const [cx, cy] of [[0, 0], [S, 0], [0, S], [S, S]]) {
-      const g = x.createRadialGradient(cx, cy, 0, cx, cy, S * 0.42); g.addColorStop(0, 'rgba(235,245,255,0.95)'); g.addColorStop(1, 'rgba(235,245,255,0)');
-      x.fillStyle = g; x.fillRect(0, 0, S, S);
-    }
     return yDone(THREE, c, false);
   }
   /* the barrier across the escalator's landing: black and yellow */

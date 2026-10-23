@@ -76,7 +76,9 @@ for (const p of prims) {
 const span = [hi[0] - lo[0], hi[1] - lo[1], hi[2] - lo[2]];
 const c = [(lo[0] + hi[0]) / 2, (lo[1] + hi[1]) / 2, (lo[2] + hi[2]) / 2];
 if (!(span[1] > span[0] && span[1] > span[2])) throw new Error('expected the height on y, got span ' + span.map(v => v.toFixed(3)));
-if (!(span[2] < span[0] * 0.5)) throw new Error('expected the thin axis on z, got span ' + span.map(v => v.toFixed(3)));
+/* THICK=1: a deep relief — a figure standing out of its frame (Chad's lersi amulet, v22.0: a hermit's head in an arched
+   casing, 0.43 of its height deep) — is still an amulet with its face on z; only the flat medallion's check is waived */
+if (!(span[2] < span[0] * 0.5) && process.env.THICK !== '1') throw new Error('expected the thin axis on z, got span ' + span.map(v => v.toFixed(3)));
 /* which z face carries the relief: of the vertices in the middle of the
    medallion (away from the rim), the side with the larger depth variance */
 const zs = { pos: [], neg: [] };
@@ -131,7 +133,7 @@ console.log(`  maps: base ${!!baseT}, metal/rough ${!!mrT}, normal ${!!nT}`);
 
 await doc.transform(weld(), dedup(), prune());
 await MeshoptSimplifier.ready;
-if (RATIO < 1) await doc.transform(simplify({ simplifier: MeshoptSimplifier, ratio: RATIO, error: 0.0015 }));
+if (RATIO < 1) await doc.transform(simplify({ simplifier: MeshoptSimplifier, ratio: RATIO, error: Number(process.env.ERR || 0.0015) }));   // ERR: a far cut needs a looser error to reach its ratio
 
 /* the contract, BEFORE quantization (v13.1) */
 {

@@ -1,0 +1,90 @@
+{
+ "raw/y4cry_a.mp3": {
+  "sub": 0.0,
+  "low": 0.008,
+  "mid": 0.986,
+  "air": 0.006,
+  "f0": 580.3,
+  "voiced": 0.55,
+  "sobs": 14,
+  "dead": 0.38,
+  "words": "www.mooji.org"
+ },
+ "raw/y4cry_b.mp3": {
+  "sub": 0.0,
+  "low": 0.03,
+  "mid": 0.968,
+  "air": 0.002,
+  "f0": 551.2,
+  "voiced": 0.71,
+  "sobs": 11,
+  "dead": 0.05,
+  "words": "Oooooooh"
+ },
+ "raw/y4cry_c.mp3": {
+  "sub": 0.0,
+  "low": 0.0,
+  "mid": 0.97,
+  "air": 0.03,
+  "f0": 408.3,
+  "voiced": 0.53,
+  "sobs": 16,
+  "dead": 0.36,
+  "words": "Ahh!"
+ },
+ "raw/y4cry_d.mp3": {
+  "sub": 0.0,
+  "low": 0.0,
+  "mid": 0.989,
+  "air": 0.01,
+  "f0": 537.8,
+  "voiced": 0.68,
+  "sobs": 13,
+  "dead": 0.16,
+  "words": "AHHHHHHHHHHHHHHHHHHHHHH"
+ },
+ "raw/y4cry_e.mp3": {
+  "sub": 0.0,
+  "low": 0.637,
+  "mid": 0.348,
+  "air": 0.015,
+  "f0": 432.4,
+  "voiced": 0.43,
+  "sobs": 22,
+  "dead": 0.42,
+  "words": "I'm sorry, I'm sorry, I'm sorry, I'm sorry."
+ },
+ "raw/y4cry_f.mp3": {
+  "sub": 0.0,
+  "low": 0.028,
+  "mid": 0.943,
+  "air": 0.028,
+  "f0": 551.2,
+  "voiced": 0.39,
+  "sobs": 16,
+  "dead": 0.46,
+  "words": "I'm sorry, but I'm sorry."
+ },
+ "raw/y4cry_g.mp3": {
+  "sub": 0.0,
+  "low": 0.197,
+  "mid": 0.791,
+  "air": 0.012,
+  "f0": 525.0,
+  "voiced": 0.48,
+  "sobs": 20,
+  "dead": 0.34,
+  "words": "I'm sorry, I'm sorry, I'm sorry, I'm sorry, I'm sorry."
+ },
+ "raw/y4cry_h.mp3": {
+  "sub": 0.018,
+  "low": 0.836,
+  "mid": 0.141,
+  "air": 0.005,
+  "f0": 450.0,
+  "voiced": 0.35,
+  "sobs": 19,
+  "dead": 0.51,
+  "words": "Hahahaha"
+ }
+}

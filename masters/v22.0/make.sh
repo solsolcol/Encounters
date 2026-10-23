@@ -152,7 +152,8 @@ him  z4pro3     raw/z4pro3_a.mp3     $F
 him  z4pro4     raw/z4pro4_a.mp3     $F
 # the Yin shop
 him  z4look1    raw/z4look1_b.mp3    $F
-him  z4look2    raw/z4look2_a.mp3    $F
+# z4look2 was re-said at CP5b for the paintings that replaced the photographs — cp5/make.sh (VOICE) makes it now
+# him  z4look2    raw/z4look2_a.mp3    $F
 him  z4look3    raw/z4look3_a.mp3    $F
 him  z4ask      raw/z4ask_b.mp3
 him  z4numb     raw/z4numb_b.mp3

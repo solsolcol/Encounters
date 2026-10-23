@@ -365,6 +365,40 @@ K.trembleSeam = await p.evaluate(async () => {
 }).catch(() => false);
 await settle();
 
+/* v22.0: THE COLD (the thirty-third, -fourth and -fifth seams) — kit.chill shows the edge layer with a blur and
+   puts a filter on the canvas, and at 0 takes both away entirely; kit.pulse beats on the wall clock at the rate
+   asked (a beat is counted as it lands), its erratic heart comes early and drops beats, and null hands the monitor
+   back; kit.smear lays the last frame over this one (it draws and copies, with no GL error) and at 0 frees its
+   texture. Before and after, nothing of any of them is left: no layer, no filter, no heart, no texture */
+K.coldSeam = await p.evaluate(async () => {
+  const E = window.__enc;
+  const frames = (n) => new Promise(r => { let k = 0; const f = () => (++k >= n ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); });
+  const until = async (f, ms) => { const t0 = performance.now(); while (!f() && performance.now() - t0 < ms) await frames(1); return f(); };
+  const c0 = E.cold();
+  const clean0 = !c0.chill.shown && c0.chill.filter === '' && !c0.pulse && !c0.smear.tex;
+  E.kit.chill(1, { secs: 0 });
+  await frames(3);
+  const c1 = E.cold();
+  const chilled = c1.chill.shown && /blur\(/.test(c1.chill.backdrop) && /saturate/.test(c1.chill.filter);
+  E.kit.pulse({ bpm: 150, secs: 0.05 });
+  const b0 = E.cold().beats.beats;
+  const beats = await until(() => E.cold().beats.beats - b0 >= 3, 20000);      // 150 a minute: ~2.5 beats a second
+  E.kit.pulse({ bpm: 120, erratic: 1 });
+  const e0 = E.cold().beats;
+  const wild = await until(() => { const e = E.cold().beats; return e.early > e0.early && e.dropped >= e0.dropped && e.beats - e0.beats >= 6; }, 30000);
+  E.kit.smear(1, { secs: 0 });
+  await until(() => E.cold().smear.copied > 3, 20000);
+  const s1 = E.cold().smear;
+  const smeared = s1.ok && s1.copied > 3 && s1.drawn > 2 && s1.tex;
+  E.kit.chill(0, { secs: 0 }); E.kit.pulse(null); E.kit.smear(0, { secs: 0 });
+  await frames(3);
+  const c2 = E.cold();
+  const clean = !c2.chill.shown && c2.chill.filter === '' && !c2.pulse && !c2.smear.tex;
+  console.log('coldSeam', JSON.stringify({ clean0, chilled, beats, wild, smeared, clean, smear: s1 }));
+  return clean0 && chilled && beats && wild && smeared && clean;
+}).catch(e => { console.log('coldSeam threw', e.message); return false; });
+await settle();
+
 /* v21.0: A THING IN HIS HAND (the twenty-seventh seam) — kit.hold puts an
    object on the right arm (so it is drawn in the hands' pass), at the clasp's
    middle when asked, lets go on hold(null), and a new hold replaces the old */

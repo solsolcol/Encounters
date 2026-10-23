@@ -449,13 +449,18 @@ ASSETS = {
     'taoistrow':        ('assets/taoistrow.glb', True, False),
     'ptg_zhenwu':       ('assets/painting_zhenwu.jpg', True, False),
     'ptg_jade':         ('assets/painting_jadeemperor.jpg', True, False),
-    # e3c4 v22.0: the Yin shop — its wall of the departed (24 generated portraits of fictional people, two 4 x 3 sheets
-    # stacked, masters/v22.0/img) and the young woman's own photograph (the locket and her frame with the flowers), and
-    # the pale woman at the edge of the frame: Chad's congregation woman in white with Idle_9 retargeted onto her
-    # (tools/retarget.mjs meshy --align) — a stand-in until Chad's (docs/V22.0-E3C4-PLAN.md §9)
-    'yinwall':          ('assets/yinwall.jpg', True, False),
+    # e3c4 v22.0: the Yin shop — its paintings (CP5b: Chad asked for female ghosts and wrathful figures on its walls in
+    # place of v22.0 CP4's wall of 24 generated portraits) and the young woman's own photograph (her frame with the
+    # flowers), the keeper, the ghost at the edge of his sight, Chad's yin amulet and his yin amulet shelf, and the skulls
+    'yinptg':           ('assets/yinptg.jpg', True, False),     # e3c4 v22.0 CP5b: the Yin shop's paintings — Phra Ngan (twice), Mae Nak, Nang Tani (masters/v22.0/cp5/paintings.sh)
     'yingirl':          ('assets/yingirl.jpg', True, False),
-    'yinghost':         ('assets/yinghost.glb', True, False),
+    'yinghost':         ('assets/yinghost.glb', True, False),    # e3c4 v22.0 CP5: the ghost at the edge of his sight — CHAD'S pick, "Horror Ghost Character - Blood Stained Spirit" (adhamasalah, Sketchfab, CC BY 4.0), a still scan 1.62 m tall at 0.3 (59k), masters/v22.0/yinmodels/make.sh
+    'yinamulet':        ('assets/yinamulet.glb', True, False),   # e3c4 v22.0 CP5: CHAD'S yin amulet — the oval locket he holds, her portrait under its glass, a ghost's face on its back; an amulet, so FULL detail (593k, v14.14), colour 4096, normal and metal 2048
+    'yinamuletlod':     ('assets/yinamuletlod.glb', True, False),# its far cut for the velvet box across the counter (29.7k, geometry only — it wears the near level's material, v21.8)
+    'yinshelf':         ('assets/yinshelf.glb', True, False),    # e3c4 v22.0 CP5: CHAD'S yin amulet shelf — a dark wooden cabinet of yin stock (lockets, prai oil, kuman thong, skulls, takrut cases), 2.0 m, 119k, three along the left wall
+    'yinshelflod':      ('assets/yinshelflod.glb', True, False), # its far cut (23.7k, geometry only)
+    'yinskull':         ('assets/yinskull.glb', True, False),    # e3c4 v22.0 CP5c: a REAL scanned skull (Khronos "ScatteringSkull", CC0, Vladimir Petkovic), made bone from its own AO, 17k
+    'yinkeeper':        ('assets/yinkeeper.glb', True, False),   # e3c4 v22.0: the Yin shop's keeper — CHAD'S model (Drive 'yin shop owner.glb', an older woman, a Meshy scan, six takes of her own), the v16.8 recipe at a quarter (150k), Idle_9 retargeted in (masters/v22.0/owners/make.sh); replaces the granny stand-in
     # e3c3 v21.8: Chad's amulet display tray, REAL 3D at every distance (Chad: "I wanted it as real 3d, not just
     # texture"): near, his scan cut to 6 % with its own maps (tools/permcut.mjs STRICT=1 NW=0.5, 47.5k); across the
     # room the same geometry with its seams taken away — its own front view projected onto it (tools/bakeboard.mjs,
@@ -497,7 +502,7 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'thaikit', 'wessred', 'wessgreen', 'naga', 'monk', 'ajarn', 'temple', 'slipper', 'lersimask', 'altarrow', 'customer', 'buddhahd', 'buddhalod', 'sangkathan', 'sitwomantalk', 'filmoffice', 'filmlaptop', 'actioncam', 'planecabin',
            'cg_woman2', 'cg_man2', 'cg_woman2hd', 'cg_man2hd', 'cg_man2cross', 'monkrow', 'hanuman', 'medium', 'owner', 'staffman', 'timkplod', 'wifewalk', 'fatherwalk',
            'mstr_somdejtoh', 'mstr_achanmun', 'mstr_lpthuad', 'mstr_lptimpray', 'mstr_lptimbench', 'mstr_lpphiboon',
-           'taoistrow', 'ptg_zhenwu', 'ptg_jade', 'yinwall', 'yingirl', 'yinghost',
+           'taoistrow', 'ptg_zhenwu', 'ptg_jade', 'yinptg', 'yingirl', 'yinghost', 'yinkeeper', 'yinamulet', 'yinamuletlod', 'yinshelf', 'yinshelflod', 'yinskull',
            'traynear', 'trayfar', 'amushelf', 'altarrowfar', 'monkshop'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone
 HOSTED_ONLY |= E2_ONLY
 
