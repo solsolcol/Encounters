@@ -4191,7 +4191,10 @@ function evBrief() {
   const e = ev, o = e.o, host = evEl();
   e.briefing = true;
   e.layoutReal = e.layout; e.layout = 'button';
-  host.className = 'layer full brief';
+  /* v22.0: `low` — the briefing stands at the FOOT of the screen, not the middle, so the thing it is about stays in
+     sight above it (episode 3 chapter 4's Hanuman: the vision is the reason for LET GO, and a centred briefing lay
+     across its face on a phone and a desktop alike). Absent, the middle, as every event already shipped. */
+  host.className = 'layer full brief' + (o.low ? ' low' : '');
   $('evLabel').textContent = o.label || T('event.ready');
   $('evPrompt').textContent = o.brief;
   $('evNote').textContent = '';
@@ -4240,7 +4243,7 @@ function evBegin() {
     try { o.onBegin(); } catch (err) { console.warn('event onBegin failed', err); }
   }
   if (!host) return;
-  host.className = 'layer ' + (e.layout === 'full' ? 'full ' : '') + e.kind;
+  host.className = 'layer ' + (e.layout === 'full' ? 'full ' : '') + e.kind + (o.low ? ' low' : '');
   $('evLabel').textContent = o.label || '';
   /* v21.0: a desktop has no light to TAP — it clicks (the v18.5 resist rule,
      for the focus kind; no episode-1 or -2 chapter opens a focus event) */
@@ -11494,7 +11497,16 @@ const STING_SAMPLE = {
      envelope, the water poured for her into the bowl and onto the earth, the breeze, the light rising; its music in two
      pieces of one take, the opening and the coda. (m4*, because t4* is episode 2 chapter 4's tower: a name is global) */
   m4bell: ['m4bell', 1], m4envelope: ['m4envelope', 1], m4pour: ['m4pour', 1], m4ground: ['m4ground', 1],
-  m4leaves: ['m4leaves', 1], m4dusk: ['m4dusk', 1], m4rise: ['m4rise', 1], m4music: ['m4music', 1], m4coda: ['m4coda', 1]
+  m4leaves: ['m4leaves', 1], m4dusk: ['m4dusk', 1], m4rise: ['m4rise', 1], m4music: ['m4music', 1], m4coda: ['m4coda', 1],
+  /* v22.0 CP7 · the Hanuman shop (masters/v22.0/cp7/make.sh): the piece's hum, its surge, the glass rattling, its embers,
+     the roar heard from inside, its ring, the pull, the clatter as it falls, the vision bursting; the run out of the mall
+     (his running feet, the shoppers' alarm, his breath); and chapter 3's shop beds and small noises, this chapter's own
+     copies (a name is global, and a sound two chapters ask for by name goes into everyone's boot download, the v4.2 split) */
+  h4rumble: ['h4rumble', 1], h4surge: ['h4surge', 1], h4rattle: ['h4rattle', 1], h4embers: ['h4embers', 1], h4roarin: ['h4roarin', 1],
+  h4ring: ['h4ring', 1], h4pull: ['h4pull', 1], h4clatter: ['h4clatter', 1], h4burst: ['h4burst', 1], h4feet: ['h4feet', 1],
+  h4crowd: ['h4crowd', 1], h4pant: ['h4pant', 1], h4air: ['h4air', 1], h4walla: ['h4walla', 1], h4mall: ['h4mall', 1],
+  h4radio: ['h4radio', 1], h4shutter: ['h4shutter', 1], h4trolley: ['h4trolley', 1], h4phone: ['h4phone', 1], h4cash: ['h4cash', 1],
+  h4bag: ['h4bag', 1], h4child: ['h4child', 1], h4slippers: ['h4slippers', 1]
 };
 /* Which kinds the synth below can actually fake. Everything else in
    STING_SAMPLE is sample-only: if its buffer is not decoded yet it stays

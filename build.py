@@ -476,6 +476,12 @@ ASSETS = {
     # the display shelf carries its own far level (tools/lodpair.mjs MODE=permissive, 40k) beside the near
     'altarrowfar':      ('assets/altarrowfar.glb', True, False),
     'monkshop':         ('assets/monkshop.glb', True, False),
+    # e3c4 v22.0 CP7: CHAD'S Hanuman amulet (Drive folder 1ZycGDfozDHZg12eIUWIfHYcovf-2RT1E, "the lersi amulet and hanuman
+    # amulet, that the player will try to feel too") — the piece the Hanuman shop's owner sets on his stand. An amulet, so
+    # EVERY triangle (595k, its 8192 colour at 4096 — the v14.14 rule, tools/prepamulet.mjs HD=1) within 1.4 m, and a
+    # light far cut across the shop (29.8k, geometry only — it wears the near level's material, v21.8)
+    'hanuamulet':       ('assets/hanuamulet.glb', True, False),
+    'hanuamuletlod':    ('assets/hanuamuletlod.glb', True, False),
 }
 
 # Hosted-only assets: shipped as a URL, never inlined as base64.
@@ -503,7 +509,7 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'cg_woman2', 'cg_man2', 'cg_woman2hd', 'cg_man2hd', 'cg_man2cross', 'monkrow', 'hanuman', 'medium', 'owner', 'staffman', 'timkplod', 'wifewalk', 'fatherwalk',
            'mstr_somdejtoh', 'mstr_achanmun', 'mstr_lpthuad', 'mstr_lptimpray', 'mstr_lptimbench', 'mstr_lpphiboon',
            'taoistrow', 'ptg_zhenwu', 'ptg_jade', 'yinptg', 'yingirl', 'yinghost', 'yinkeeper', 'yinamulet', 'yinamuletlod', 'yinshelf', 'yinshelflod', 'yinskull',
-           'traynear', 'trayfar', 'amushelf', 'altarrowfar', 'monkshop'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone
+           'traynear', 'trayfar', 'amushelf', 'altarrowfar', 'monkshop', 'hanuamulet', 'hanuamuletlod'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone
 HOSTED_ONLY |= E2_ONLY
 
 # The split packs are hosted-only: there is no __..._B64__ token for them and

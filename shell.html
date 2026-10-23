@@ -470,6 +470,12 @@ body.finePtr .wpnBtn{position:relative;margin-bottom:12px}
   border-color:rgba(99,214,200,.55);box-shadow:0 0 34px rgba(99,214,200,.18)}
 #event.brief #evLabel{color:#8FE6DB;text-shadow:0 0 12px rgba(99,214,200,.6)}
 #event.brief #evPrompt{font-size:1.05rem;line-height:1.5;text-align:left;opacity:.95}
+/* v22.0: an event that stands LOW (`low: true`) — its briefing at the foot of the screen, under what it is about, and
+   the scene barely dimmed (episode 3 chapter 4's Hanuman vision; nothing else declares it) */
+#event.full.brief.low{align-items:flex-end;padding-bottom:max(18px,env(safe-area-inset-bottom));background:rgba(4,5,8,.12)}
+/* ...and once it runs, its panel stands there too, a little see-through, so the thing it is about stays in view */
+#event.low:not(.brief){padding-bottom:max(14px,env(safe-area-inset-bottom))}
+#event.low:not(.brief) .evpanel{background:rgba(7,8,11,.62)}
 #evPrompt{margin:0;font-size:1.12rem;line-height:1.35;min-height:1.4em}
 /* v10.3: the briefing's illustration - a tile drawn from the left slot to
    the right one by a fingertip, on a loop, so the drag is SHOWN under the

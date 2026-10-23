@@ -1,0 +1,95 @@
+{
+ "_flow": "V92OOV7Y3fIr8z4QWtmh (e3c4 CP7 \u00b7 the Hanuman shop); effects eleven_text_to_sound_v2, four takes asked (five starts failed on a transient error: those nodes carry three)",
+ "h4rumble": [
+  "xd4poWOfDbAjH0eFOcy2",
+  "k4VYUwVvaPnYzEsrUWFK",
+  "6dCMLJVoSkucZ4zH0Ace"
+ ],
+ "h4surge": [
+  "hLQOWzcMfs9ExzeeqZTJ",
+  "l848E54feP4lBEb8s88B",
+  "dcBqcSIA656RgaX1nZIc",
+  "oIvhAsb93jwsv5wsYM6Z"
+ ],
+ "h4rattle": [
+  "aA0U6HM5UA3QGFLQalvZ",
+  "UOzTeD11NMqHEYGnNd9U",
+  "IS3odFE0DA9OEbOS1DzV"
+ ],
+ "h4embers": [
+  "gkvMUWw6GHPjtM42vS0i",
+  "QFE6mwRy3PYYngZicHsA",
+  "c7aHPjJUKT5mrmkdMrfa"
+ ],
+ "h4roarin": [
+  "u3YSdioMZD34aWMrwSBE",
+  "phwEi1lUsCns130BrXgf",
+  "MS40I53ITeHIze5HMhn8",
+  "2jV7I7AkMnWjMnlWR6rH"
+ ],
+ "h4ring": [
+  "gOnjZjMhz24QdWWOAOyn",
+  "6jRdYF7hn3Ssyzw2hoxu",
+  "FPUCKrhqCUl2zsYUHvet",
+  "woAxggqPNBVVVy0Wd0qH"
+ ],
+ "h4pull": [
+  "aJ8dvGgwqy6aIZxAYicV",
+  "AeJlHjnhXpKbQmITylOy",
+  "b4mrEootLkjuHEVsRMIP"
+ ],
+ "h4clatter": [
+  "HvuSV06ozQj8ZwtkRaFe",
+  "xpPRZxiUstenV76jvCJ7",
+  "sjnV3KJzoDWZKEkRZ8Dr",
+  "FpDcyEwo1kRhW0fqbaAh"
+ ],
+ "h4burst": [
+  "hUJP1Pm7tTMT8Hl9ogTU",
+  "N77cLiwRZJmesQnUnR1k",
+  "UA8vBhdqKwqjJLxDFQqR"
+ ],
+ "h4feet": [
+  "OP1eRnR1Y9yyeAt6PX52",
+  "dvWVks6pfIkYq2DMMG3j",
+  "JP0psMVh2CAeDKHnFAV3",
+  "w5YZjsgy1EWX637681Gt"
+ ],
+ "h4crowd": [
+  "1W74NTrDx4DA9rPHWWuz",
+  "jR304CCQodGoAxhjO2DM",
+  "JbemHZJXekBTh8hir9vf",
+  "Ob60YAr0O3kZaqPh58Ka"
+ ],
+ "h4pant": [
+  "M8Wo8HSzdIsoDbPH4NLo",
+  "JjzWET7LOE9NI1V7mQUC",
+  "NOa3fIYo55DXFyNNZT9z",
+  "8zXa9phCAuP9EOpPMOts"
+ ],
+ "h4rumble2": [
+  "hdSq2X2DT770y3GU7u5U",
+  "95fvX5TD54WTKsYkstTQ",
+  "E8IYTUJ93kOIY7G4v2ib",
+  "qfwLntPwmnlGjeUQ3kVw"
+ ],
+ "h4surge2": [
+  "IaJ21DSaco7WUO0daTKO",
+  "DvB0kVZ6cTV3yFNIsEtM",
+  "55inSSOSTqtUYPFN9Ovk",
+  "VRs9WNFNKAmVZgWstfnB"
+ ],
+ "h4ring2": [
+  "xqJMOfuP1yZAalC9n4f5",
+  "MFQ3D9WUyyB3JLYqB0kq",
+  "QfEUsjxM3YCfZIr5igcR",
+  "qjhUjrqMxdF6y0OviTOC"
+ ],
+ "h4burst2": [
+  "3p91RuA7BV87R9RKDAJq",
+  "KC6DFvm3ASOaNcv2bOJx",
+  "Mht6ak4ULDZSss27t0TC",
+  "evnrIKCCSUtwDM5B66Cg"
+ ],
+ "_round2": "h4rumble2/h4surge2/h4ring2/h4burst2: the same nodes re-prompted for phone-band content (round one was 84-100 % under 120 Hz)"
+}
