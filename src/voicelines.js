@@ -1200,7 +1200,8 @@
     e2c5: "Episode 2 · Chapter 5 · The Last Question",
     e3c1: "Episode 3 · Chapter 1 · The Luck I Went Looking For",
     e3c2: "Episode 3 · Chapter 2 · The Hands That Moved",
-    e3c3: "Episode 3 · Chapter 3 · The Dance On Buddha Day"
+    e3c3: "Episode 3 · Chapter 3 · The Dance On Buddha Day",
+    e3c4: "Episode 3 · Chapter 4 · The Pieces That Answered"
   };
 
   window.__VOICE__ = { SPEAKERS, LINES, CHAPTERS };
