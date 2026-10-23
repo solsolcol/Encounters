@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "21.31"
+VERSION = "21.32"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -428,7 +428,7 @@ ASSETS = {
     'cg_man2cross': ('assets/cg_man2cross.glb', True, False), # e3c2 v21.16: the monk's Sit_Cross_Legged_on_Floor retargeted onto cg_man2hd, the clip alone (masters/v21.16) — his crossed legs in the film's flat, in place of the capsules (no block figures)
     'monkrow':      ('assets/monkrow.glb', True, False),
     'hanuman':      ('assets/hanuman.glb', True, False),      # e3c3 v21.0: Chad's Hanuman, the presence that roars at the medium (LONG=1 tools/prepwess.mjs 0.2: 591k -> 118k tris)
-    'owner':        ('assets/owner.glb', True, False),        # e3c3 v21.0: the amulet shop's owner — the encik scan (ep1 ch3's older man in black) with Idle_9, Talk_with_Hands_Open, Walking and Running retargeted in from admintee (tools/retarget.mjs mixamo --align [--hips]); a stand-in until Chad's
+    'owner':        ('assets/owner.glb', True, False),        # e3c3 v21.32: the amulet shop's owner — CHAD'S model (Drive 'amulet shop owner.glb', a Meshy scan on a 28-joint Mixamo rig, 598k tris, nine takes of his own), the v16.8 Meshy recipe at a quarter (149k), Idle_9 retargeted in from admintee (mixamo --align — he carries no standing idle), and his seated take's upright stretch baked as 'mixamo.com', the name e3c3 seats him on (masters/v22.0/owners/make.sh). Replaces v21.0's stand-in (the encik scan)
     'timkplod':     ('assets/timkplod.glb', True, False),     # e3c3 v21.0: the LP Tim's LIGHT copy for its case on the owner's counter, beyond 1.4 m (the full timkp within) — masters/v21.0/timlod.mjs
     'staffman':     ('assets/staffman.glb', True, False),     # e3c3 v21.0: the shop's staff man — ep1's standing man with the same four takes (masters/v21.0/owner/make.sh); a stand-in
     'medium':       ('assets/medium.glb', True, False),       # e3c3 v21.0: Chad's black Taoist medium, ten takes on a Mixamo rig (CHARTFIX=1 tools/prepmonk.mjs 0.3: 594k -> 178k tris)

@@ -73,6 +73,11 @@ scene. Priority ★ = the chapter looks wrong without it.
   auntie, the youth, the shrine's wife and father are episode 1's tentage
   sitters; the passer-by is the botak recruit. Chad's own models for the owner,
   the staff and the customers replace these one line each.
+- ✅ **The owner** — ARRIVED 23 Oct (Drive `amulet shop owner.glb`: an older
+  Chinese man in a white shirt, a Meshy scan on a 28-joint Mixamo rig, 598k
+  triangles, nine takes). Shipped at v21.32 as `owner` (149k, the v16.8 recipe;
+  Idle_9 retargeted in; his seated take's upright stretch baked as `mixamo.com`
+  — `masters/v22.0/owners/make.sh`), in place of the encik stand-in.
 
 ## Chapter 4 · The Pieces That Answered (amulet shops)
 - ★ **An old-style amulet shop** (can be chapter 3's shop re-dressed): wooden

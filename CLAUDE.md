@@ -6338,6 +6338,19 @@ What the baseline contains, by release:
   phone with the sound on, every line of the three chants came up in order and went with its chant, no page error.
   Two probe laws in LEARNINGS (observe a caption, never sample it; a probe's phase jump leaves the line queue full).
   docs/V21.30-PLAN.md §13 is the record.
+- **v21.32** THE OWNER IS CHAD'S — *"Use this amulet shop owner 3d model to replace the current existing shop owner
+  in ep 3 chp 3 buddha day amulet shop owner. This is fully rigged with many built in animations. Replace cleanly."*
+  Episode 3 chapter 3's owner (a stand-in since v21.0, the encik scan) is his model: an older Chinese man in a white
+  shirt, a Meshy scan on a 28-joint Mixamo rig (598k triangles, nine takes of his own). The v16.8 Meshy recipe at a
+  quarter (149k, 2048 sheets, 3.0 MB); his own walk, run and talking take; Idle_9 retargeted in from the admin tee (he
+  carries no standing idle, `--align`); and his own seated take's upright stretch baked as `mixamo.com`, the name the
+  chapter seats him on — the take folds him over his knees for five of its eleven seconds (photographed), so only
+  9.2 s round the seam to 1.2 s is kept, played there and back (`masters/v22.0/owners/sitloop.mjs`). Every beat that
+  drives him finds the take it asks for, so no timeline moved. His trousers showed white specks along their seams
+  (black cloth flush against white in the atlas): his colour draws without mipmaps (`noMip`, the v19.8 law).
+  Photographed standing near and far, talking and seated. Built from v21.31's tree plus this change in a worktree, since
+  the branch carries v22.0 in progress. Deploy `6adb9557bb1f96576755c648`, byte-verified (236 files); harnesses leak
+  and cine green. No word moved; sheet v115 stands (v44 the link).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so

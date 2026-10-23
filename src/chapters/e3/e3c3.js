@@ -1742,7 +1742,12 @@
       parseOnce(key).then((gltf) => {
         if (!alive) return;
         const g = cloneSkinned(gltf.scene);
-        g.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.receiveShadow = false; } });
+        g.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.receiveShadow = false;
+          /* v21.32: a Meshy scan (opts.noMip — Chad's owner) packs black cloth flush against white in its atlas, and
+             every shrunken copy of the sheet lays white specks along the trousers' seams: its colour draws without
+             mipmaps, e3c2's v19.8 law (zavNoMip, v5.11); the normal map keeps its own */
+          if (opts.noMip) for (const mm of [].concat(o.material)) { const t = mm && mm.map;
+            if (t && t.generateMipmaps !== false) { t.generateMipmaps = false; t.minFilter = THREE.LinearFilter; t.needsUpdate = true; } } } });
         group.add(g); rig.model = g;
         g.traverse(o => {
           if (!o.isBone) return;
@@ -2142,7 +2147,10 @@
     /* THE SHOP'S PEOPLE, before the chant */
     const SIT_W = 'mixamo.com', SHOUT = 'Armature|Sit_Shout_Hands_on_Mouth|baselayer';
     let ownerStool = null;
-    const owner  = mkRig('owner', { x: OWN.x, z: OWN.z, ry: -Math.PI / 2, height: 1.66, idle: 'Idle_9', look: 1, armFix: { sh: 6, arm: 7 },
+    /* v21.32: the owner is CHAD'S model (an older Chinese man in a white shirt; "Replace cleanly") — his own walk, run and
+       talking take, a retargeted standing idle, and his own seated take's upright stretch under the stand-in's take name
+       (SIT_W), so every beat that drives him still finds what it asks for (masters/v22.0/owners/make.sh) */
+    const owner  = mkRig('owner', { x: OWN.x, z: OWN.z, ry: -Math.PI / 2, height: 1.66, idle: 'Idle_9', look: 1, armFix: { sh: 6, arm: 7 }, noMip: true,
       then: (r) => {
         const hl = measureSeat(r, SIT_W, 0.05);
         if (!hl) return;
