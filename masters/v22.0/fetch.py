@@ -7,7 +7,7 @@ Usage: python3 fetch.py [name ...]   (default: every name not yet on disk)"""
 import json, glob, os, re, subprocess, sys
 T = sorted(glob.glob('/root/.claude/projects/-home-user-Encounters/*.jsonl') + glob.glob('/root/.claude/projects/-home-user-Encounters/*/tool-results/*.txt'), key=os.path.getmtime)
 urls = {}   # session -> {gen: url}
-pat = re.compile(r'https://storage\.googleapis\.com/[^"\\\s]*?/content_generation/([A-Za-z0-9]+)/([A-Za-z0-9]+)/content\.(mp3|wav|mp4)\?[^"\\\s]*')
+pat = re.compile(r'https://storage\.googleapis\.com/[^"\\\s]*?/content_generation/([A-Za-z0-9]+)/([A-Za-z0-9]+)/content\.(mp3|wav|mp4|png|jpg|jpeg|webp)\?[^"\\\s]*')
 for f in T:
     with open(f, errors='ignore') as h:
         for line in h:

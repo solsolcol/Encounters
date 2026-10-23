@@ -27,7 +27,7 @@ p.on('pageerror', e => errs.push(where + ': ' + e.message));
 /* v14.7: and episode 1 chapter 3, the first base-game chapter with a HOTSPOT
    (the amulet on the auntie's table, which must be reached before the altar
    opens) and with new per-frame code to catch a throw in */
-const KEYS = ['ch3', 'e2c1', 'e2c2', 'e2c3', 'e2c4', 'e2c5', 'e3c1', 'e3c2', 'e3c3'];
+const KEYS = ['ch3', 'e2c1', 'e2c2', 'e2c3', 'e2c4', 'e2c5', 'e3c1', 'e3c2', 'e3c3', 'e3c4'];
 /* WALK_ONLY=e3c3 walks one chapter (a re-check after a fix, not the release run) */
 for (const key of (process.env.WALK_ONLY ? KEYS.filter(k => process.env.WALK_ONLY.split(',').includes(k)) : KEYS)) {
   where = key;

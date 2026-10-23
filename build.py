@@ -449,6 +449,13 @@ ASSETS = {
     'taoistrow':        ('assets/taoistrow.glb', True, False),
     'ptg_zhenwu':       ('assets/painting_zhenwu.jpg', True, False),
     'ptg_jade':         ('assets/painting_jadeemperor.jpg', True, False),
+    # e3c4 v22.0: the Yin shop — its wall of the departed (24 generated portraits of fictional people, two 4 x 3 sheets
+    # stacked, masters/v22.0/img) and the young woman's own photograph (the locket and her frame with the flowers), and
+    # the pale woman at the edge of the frame: Chad's congregation woman in white with Idle_9 retargeted onto her
+    # (tools/retarget.mjs meshy --align) — a stand-in until Chad's (docs/V22.0-E3C4-PLAN.md §9)
+    'yinwall':          ('assets/yinwall.jpg', True, False),
+    'yingirl':          ('assets/yingirl.jpg', True, False),
+    'yinghost':         ('assets/yinghost.glb', True, False),
     # e3c3 v21.8: Chad's amulet display tray, REAL 3D at every distance (Chad: "I wanted it as real 3d, not just
     # texture"): near, his scan cut to 6 % with its own maps (tools/permcut.mjs STRICT=1 NW=0.5, 47.5k); across the
     # room the same geometry with its seams taken away — its own front view projected onto it (tools/bakeboard.mjs,
@@ -490,7 +497,7 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'thaikit', 'wessred', 'wessgreen', 'naga', 'monk', 'ajarn', 'temple', 'slipper', 'lersimask', 'altarrow', 'customer', 'buddhahd', 'buddhalod', 'sangkathan', 'sitwomantalk', 'filmoffice', 'filmlaptop', 'actioncam', 'planecabin',
            'cg_woman2', 'cg_man2', 'cg_woman2hd', 'cg_man2hd', 'cg_man2cross', 'monkrow', 'hanuman', 'medium', 'owner', 'staffman', 'timkplod', 'wifewalk', 'fatherwalk',
            'mstr_somdejtoh', 'mstr_achanmun', 'mstr_lpthuad', 'mstr_lptimpray', 'mstr_lptimbench', 'mstr_lpphiboon',
-           'taoistrow', 'ptg_zhenwu', 'ptg_jade',
+           'taoistrow', 'ptg_zhenwu', 'ptg_jade', 'yinwall', 'yingirl', 'yinghost',
            'traynear', 'trayfar', 'amushelf', 'altarrowfar', 'monkshop'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone
 HOSTED_ONLY |= E2_ONLY
 
