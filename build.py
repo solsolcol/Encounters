@@ -482,6 +482,13 @@ ASSETS = {
     # light far cut across the shop (29.8k, geometry only — it wears the near level's material, v21.8)
     'hanuamulet':       ('assets/hanuamulet.glb', True, False),
     'hanuamuletlod':    ('assets/hanuamuletlod.glb', True, False),
+    # e3c4 v22.0 CP8: CHAD'S lersi amulet (the same folder) — the first piece on the tray in the Chinatown shophouse, every
+    # triangle within arm's reach (the v14.14 rule) and a far cut; its face, cut from the far level at run time, is the
+    # presence that forms behind him. The tray shop's towkay is a stand-in until Chad's model: the chapter-3 owner who
+    # stood in at v21.0-v21.31 (git 4a11ff6^:assets/owner.glb), an old uncle with his own idle and talking takes
+    'lersiamulet':      ('assets/lersiamulet.glb', True, False),
+    'lersiamuletlod':   ('assets/lersiamuletlod.glb', True, False),
+    'towkay':           ('assets/towkay.glb', True, False),
 }
 
 # Hosted-only assets: shipped as a URL, never inlined as base64.
@@ -509,7 +516,8 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'cg_woman2', 'cg_man2', 'cg_woman2hd', 'cg_man2hd', 'cg_man2cross', 'monkrow', 'hanuman', 'medium', 'owner', 'staffman', 'timkplod', 'wifewalk', 'fatherwalk',
            'mstr_somdejtoh', 'mstr_achanmun', 'mstr_lpthuad', 'mstr_lptimpray', 'mstr_lptimbench', 'mstr_lpphiboon',
            'taoistrow', 'ptg_zhenwu', 'ptg_jade', 'yinptg', 'yingirl', 'yinghost', 'yinkeeper', 'yinamulet', 'yinamuletlod', 'yinshelf', 'yinshelflod', 'yinskull',
-           'traynear', 'trayfar', 'amushelf', 'altarrowfar', 'monkshop', 'hanuamulet', 'hanuamuletlod'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone
+           'traynear', 'trayfar', 'amushelf', 'altarrowfar', 'monkshop', 'hanuamulet', 'hanuamuletlod',
+           'lersiamulet', 'lersiamuletlod', 'towkay'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone
 HOSTED_ONLY |= E2_ONLY
 
 # The split packs are hosted-only: there is no __..._B64__ token for them and

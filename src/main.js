@@ -1849,7 +1849,9 @@ function tremTick() {
      kit.chill(k, { secs })  the edges of his sight blur and go blue, the world dims and loses its colour — two
                              layers over the canvas and under the HUD (#chillBlur, a backdrop blur masked to the
                              edges; #chillTint, the blue there) and the canvas's own CSS filter. Every heartbeat
-                             kit.pulse lands surges it inward for a moment.
+                             kit.pulse lands surges it inward for a moment. It is painted in play and the panels that
+                             open over play; `cine: true` lets a SCENE paint it too (ending B's cold in his room) —
+                             a cutscene otherwise never shows it, and kitReset turns that off again.
      kit.pulse(o | null)     his heart taken over — { bpm, secs, erratic, sound, vol, haptic, kick }: the rate eased to
                              `bpm` over `secs`; the rhythm broken by `erratic` 0..1 (a beat that comes early, wide and
                              bizarre, then the pause that makes up for it; a beat that never comes, its P wave alone);
@@ -1866,7 +1868,7 @@ function tremTick() {
    three back. Nothing before e3c4 calls them; the fixture proves them. */
 const CHILL_LIVE = s => s === 'play' || s === 'decide' || s === 'unlock' || s === 'choose' || s === 'menu';
 const PULSE_LIVE = s => s === 'play' || s === 'decide' || s === 'unlock' || s === 'choose';
-const chill = { k: 0, to: 0, secs: 1.5, last: 0, beat: 0, on: false, sig: '', el: null };
+const chill = { k: 0, to: 0, secs: 1.5, last: 0, beat: 0, on: false, sig: '', el: null, cine: false };
 function chillEls() {
   if (!chill.el) chill.el = { blur: document.getElementById('chillBlur'), tint: document.getElementById('chillTint') };
   return chill.el.blur && chill.el.tint ? chill.el : null;
@@ -1875,6 +1877,7 @@ function kitChill(k, opts = {}) {
   chill.to = Math.max(0, Math.min(1, +k || 0));
   if (opts.secs !== undefined) chill.secs = Math.max(0.01, +opts.secs);
   if (opts.secs === 0) chill.k = chill.to;
+  if (opts.cine !== undefined) chill.cine = !!opts.cine;
   if (!chill.last) chill.last = performance.now();
 }
 function chillTick() {
@@ -1883,7 +1886,7 @@ function chillTick() {
   chill.last = now;
   if (chill.k !== chill.to) chill.k = chill.to > chill.k ? Math.min(chill.to, chill.k + dt / chill.secs) : Math.max(chill.to, chill.k - dt / chill.secs);
   chill.beat *= Math.exp(-dt * 5.5);
-  chillPaint(chill.k > 0.002 && CHILL_LIVE(state));
+  chillPaint(chill.k > 0.002 && (CHILL_LIVE(state) || (chill.cine && state === 'cine')));
 }
 /* written only when a value moves (the signature), and taken off entirely at 0: a layer that is not shown is not
    composited, and the canvas carries no filter at all */
@@ -2068,7 +2071,7 @@ function smearPass() {
   } catch (err) { smear.ok = false; smearFree(); console.warn('smear: off for this session', err); }
 }
 function coldOff() {
-  chill.k = chill.to = 0; chill.beat = 0; chill.last = 0; chillPaint(false);
+  chill.k = chill.to = 0; chill.beat = 0; chill.last = 0; chill.cine = false; chillPaint(false);
   kitPulse = null;
   smear.k = smear.to = 0; smear.last = 0; smearFree();
 }
@@ -11506,7 +11509,25 @@ const STING_SAMPLE = {
   h4ring: ['h4ring', 1], h4pull: ['h4pull', 1], h4clatter: ['h4clatter', 1], h4burst: ['h4burst', 1], h4feet: ['h4feet', 1],
   h4crowd: ['h4crowd', 1], h4pant: ['h4pant', 1], h4air: ['h4air', 1], h4walla: ['h4walla', 1], h4mall: ['h4mall', 1],
   h4radio: ['h4radio', 1], h4shutter: ['h4shutter', 1], h4trolley: ['h4trolley', 1], h4phone: ['h4phone', 1], h4cash: ['h4cash', 1],
-  h4bag: ['h4bag', 1], h4child: ['h4child', 1], h4slippers: ['h4slippers', 1]
+  h4bag: ['h4bag', 1], h4child: ['h4child', 1], h4slippers: ['h4slippers', 1],
+  /* v22.0 CP8 · the tray shop (masters/v22.0/cp8/make.sh): the street through its open front, its fans, the forest under
+     the Lersi, the water under the naga and the music under the pieces (the beds); the clock's tick, the tea, the cups, a
+     piece picked up and set down, the OM, the leaves, the antiques rattling, the dust, a piece waking, the giant's steps
+     and his breath, the serpent's hiss, the presences turning, the bundle unwrapped, the clock stopping, the pressure in
+     the ears; a scooter, a bicycle and people passing in the street */
+  x4street: ['x4street', 1], x4fan: ['x4fan', 1], x4forest: ['x4forest', 1], x4water: ['x4water', 1], x4tension: ['x4tension', 1],
+  x4tick: ['x4tick', 1], x4tea: ['x4tea', 1], x4cup: ['x4cup', 1], x4pick: ['x4pick', 1], x4set: ['x4set', 1],
+  x4om: ['x4om', 1], x4leaves: ['x4leaves', 1], x4rattle: ['x4rattle', 1], x4dust: ['x4dust', 1], x4shimmer: ['x4shimmer', 1],
+  x4step: ['x4step', 1], x4giant: ['x4giant', 1], x4hiss: ['x4hiss', 1], x4turn: ['x4turn', 1], x4unwrap: ['x4unwrap', 1],
+  x4clockstop: ['x4clockstop', 1], x4pressure: ['x4pressure', 1], x4scooter: ['x4scooter', 1], x4bicycle: ['x4bicycle', 1],
+  x4passers: ['x4passers', 1],
+  /* v22.0 CP9 · the four endings (masters/v22.0/cp9/make.sh): the whispers out of the piece, the thing that is not one
+     of the three rushing in and its scream, his fall (the stool, his body, the cup), coming round, the glass of water,
+     the paper bag, the drawer, the owner's pen on his card, a tube stuttering; the three rushing in; the evening street
+     and his room at night (the beds); the closing music */
+  x4whispers: ['x4whispers', 1], x4wrong: ['x4wrong', 1], x4rush: ['x4rush', 1], x4fall: ['x4fall', 1], x4wake: ['x4wake', 1],
+  x4glass: ['x4glass', 1], x4bag: ['x4bag', 1], x4drawer: ['x4drawer', 1], x4pen: ['x4pen', 1], x4flicker: ['x4flicker', 1],
+  x4dusk: ['x4dusk', 1], x4room: ['x4room', 1], x4close: ['x4close', 1]
 };
 /* Which kinds the synth below can actually fake. Everything else in
    STING_SAMPLE is sample-only: if its buffer is not decoded yet it stays
