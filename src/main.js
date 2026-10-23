@@ -7417,6 +7417,19 @@ function loopPan(name, v) {
     L.panSet = c;
   }
 }
+/* v22.0: a bed's playback RATE, steerable like its pan — episode 3 chapter 4's
+   cassette, whose tape sags and stops as the cold comes into the room: the
+   song's own source slows (pitch and tempo together, as a tape does), never a
+   second recording crossfaded in. Only when it moves (loopPan); a short time
+   constant, so a wow the chapter writes frame by frame is heard as a wow. */
+function loopRate(name, v) {
+  const L = packLoops[name];
+  const c = THREE.MathUtils.clamp(v, 0.01, 4);
+  if (L && L.src && L.rateSet !== c) {
+    L.src.playbackRate.setTargetAtTime(c, actx.currentTime, 0.06);
+    L.rateSet = c;
+  }
+}
 // her bearing on the player's screen, -1 left ... +1 right
 const _pp = new THREE.Vector3();
 function ghostPan() {
@@ -7600,9 +7613,12 @@ function updateAudioFrame(t) {
      the chapter may move every frame as it moves the volume — episode 3
      chapter 3's buses on the lorong, whose engine follows the bus across the
      screen. No other chapter declares one, so nothing else is panned. */
-  for (const [name, vol, pan] of (amb.beds || AMBIENCE_DEFAULT.beds)) {
+  /* v22.0: and a fourth, its RATE (loopRate) — episode 3 chapter 4's cassette
+     slowing to a stop. No other chapter declares one, so nothing else moves. */
+  for (const [name, vol, pan, rate] of (amb.beds || AMBIENCE_DEFAULT.beds)) {
     loopVol(name, inWorld ? vol * duckOf(name) : 0);
     if (pan !== undefined) loopPan(name, pan);
+    if (rate !== undefined) loopRate(name, rate);
     liveLoops.add(name);
   }
   const at = amb.atShrine;
@@ -11211,7 +11227,14 @@ const STING_SAMPLE = {
   sm4what: ['sm4what', 1], mk4yatha: ['mk4yatha', 1], to4hello: ['to4hello', 1], to4notice: ['to4notice', 1], to4tray: ['to4tray', 1], to4lersi: ['to4lersi', 1],
   to4wess: ['to4wess', 1], to4naga: ['to4naga', 1], to4unknown: ['to4unknown', 1], to4clock: ['to4clock', 1], to4A1: ['to4A1', 1], to4A3: ['to4A3', 1],
   to4A2: ['to4A2', 1], to4B1: ['to4B1', 1], to4B2: ['to4B2', 1], to4C1: ['to4C1', 1], to4C2: ['to4C2', 1], to4D1: ['to4D1', 1],
-  to4D2: ['to4D2', 1], to4D3: ['to4D3', 1]
+  to4D2: ['to4D2', 1], to4D3: ['to4D3', 1],
+  /* v22.0 CP5 · the Yin shop's sound (masters/v22.0/cp5/make.sh): the song on the cassette (her own humming) and
+     her humming beside him, the drone, the dead floor, and every small wrong thing the shop does */
+  y4song: ['y4song', 1], y4hum: ['y4hum', 1], y4dread: ['y4dread', 1], y4mall: ['y4mall', 1], y4tapeclick: ['y4tapeclick', 1],
+  y4zap: ['y4zap', 1], y4frost: ['y4frost', 1], y4shiver: ['y4shiver', 1], y4breath: ['y4breath', 1], y4sigh: ['y4sigh', 1],
+  y4bell: ['y4bell', 1], y4tube: ['y4tube', 1], y4beads: ['y4beads', 1], y4curtain: ['y4curtain', 1], y4candle: ['y4candle', 1],
+  y4creak: ['y4creak', 1], y4box: ['y4box', 1], y4setdown: ['y4setdown', 1], y4clatter: ['y4clatter', 1], y4sting: ['y4sting', 1],
+  y4radio: ['y4radio', 1]
 };
 /* Which kinds the synth below can actually fake. Everything else in
    STING_SAMPLE is sample-only: if its buffer is not decoded yet it stays

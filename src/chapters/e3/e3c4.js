@@ -98,7 +98,10 @@
     items: [],
 
     musicVol: 0,
-    ambience: { beds: [] },
+    /* the beds, mixed every frame by where he is (mixBedsY): the cassette on the counter's shelf playing HER (its
+       volume by distance, its pan by bearing, its RATE — the fourth value, main.js's loopRate — sagging with the
+       cold and running down to a stop when he sets her down), the drone under the shop, the dead floor outside */
+    ambience: { beds: [['y4song', 0, 0, 1], ['y4dread', 0], ['y4mall', 0]] },
     voiceLine: null,
 
     words: {
@@ -305,6 +308,7 @@
       const tFlame = tex(makeYinFlame(THREE, cnv));
       const tSmoke = tex(makeYinSmoke(THREE, cnv));
       const tGlow = tex(makeYinGlow(THREE, cnv));
+      yLive.tSmoke = tSmoke; yLive.tGlow = tGlow;       // CP5: his breath's puffs and the static's glow
       const tSky = tex(makeYinSkylight(THREE, cnv));
       const tSigns = tex(makeYinSigns(THREE, cnv));
       const tToLet = tex(makeYinToLet(THREE, cnv));
@@ -1045,10 +1049,13 @@
       for (const g of yLive.redGlow) g.material.opacity = g.userData.op * rk;
       if (yLive.bulb) yLive.bulb.material.color.setRGB(Math.min(1, rk), 0.165 * rk, 0.1 * rk);
       // the candles
+      // (CP5: a candle guttering is a DIP that shrinks every flame for a moment and gives them back)
+      yLive.flameDip = Math.max(0, (yLive.flameDip || 0) - wdt * 0.9);
+      const gut = 1 - 0.7 * Math.sin(Math.PI * Math.min(1, yLive.flameDip)) * (0.6 + 0.4 * Math.sin(yT * 31));
       for (const f of yLive.flames) {
         if (!f.sprite) continue;
         const fl = 1 + 0.13 * Math.sin(yT * 9.1 + f.seed) + 0.07 * Math.sin(yT * 23.7 + f.seed * 2) + 0.05 * Math.sin(yT * 3.3 + f.seed);
-        const fk = yLive.flameK;
+        const fk = yLive.flameK * gut;
         f.sprite.scale.set(f.s * 0.5 * (0.92 + 0.08 * fl) * Math.max(0.15, fk), f.s * fl * fk, 1);
         f.sprite.position.set(f.x + Math.sin(yT * 2.1 + f.seed) * 0.0015, f.y + (fl - 1) * f.s * 0.3 * fk - (1 - fk) * f.s * 0.4, f.z);
         f.pool.material.opacity = f.pool.userData.op * (0.82 + 0.18 * fl) * fk;
@@ -1258,9 +1265,17 @@
       if (phase !== 'yin' || looked.has(k)) return false;
       looked.add(k);
       setPhase('yin', [...looked].join(','));
-      queueLine({ bottles: 'z4look1', photos: 'z4look2', altar: 'z4look3' }[k]);
+      /* each look is answered by the shop (the plan's §4.1): the bottles by the tube stuttering over them, the
+         photographs by the door's bell ringing once with nobody there, the altar by the back room's curtain */
+      queueLine({ bottles: 'z4look1', photos: 'z4look2', altar: 'z4look3' }[k], () => after(1.6, () => lookAnswer(k)));
       if (looked.size >= LOOK_N) queueFn(() => keeperSpeaks());
       return true;
+    }
+    function lookAnswer(k) {
+      if (!worldSfx || worldOf(yaw.position.x) !== 'Y') return;
+      if (k === 'bottles') { tubeStut = 0.9; tubeNext = 9; worldSfx('y4tube', 0.5, 1, panAt(0, -4.0)); }
+      else if (k === 'photos') { yin.bellSwing = 1; worldSfx('y4bell', 0.42, 1, panAt(DOORBELL.x, DOORBELL.z)); }
+      else if (k === 'altar') { if (yLive.curtain) yLive.curtain.gust = 1.4; worldSfx('y4curtain', 0.55, 1, panAt(BACKROOM.x, BACKROOM.z)); }
     }
     function keeperSpeaks() {
       if (phase !== 'yin') return;
@@ -1269,23 +1284,381 @@
     }
     function keeperShows() {
       if (phase !== 'yinKeeper') return false;
-      queueLine('yk4show');
+      // she opens the velvet box as she begins (the lid eases up in yinTick) and talks through her two lines
+      queueLine('yk4show', () => {
+        personTalk(yLive.keeper, SECS.yk4show);
+        after(0.5, () => { if (yLive.box) yLive.box.open = 1; if (worldSfx) worldSfx('y4box', 0.55, 1, panAt(YBOX.x, YBOX.z)); });
+      });
       queueLine('z4ask');
-      queueLine('yk4gentle', () => setPhase('yinHold'));
+      queueLine('yk4gentle', () => { personTalk(yLive.keeper, SECS.yk4gentle); setPhase('yinHold'); });
       return true;
     }
     function pickLocket() {
-      if (phase !== 'yinHold') return false;
-      // CP5: the whole Yin experience. CP1: the line, set down, the keeper.
-      queueLine('z4yin');
-      queueLine('yk4heard');
-      queueLine('yk4merit', () => setPhase('yinDone'));
+      if (phase !== 'yinHold' || yin.on) return false;
+      yinStart();
       return true;
     }
     function leaveYin() {
       if (phase !== 'yinDone' || !kit) return;
       setPhase('yinDone');
+      if (kit.waypoint) kit.waypoint(null);
       if (!kit.film || !kit.film('merit', { onDone: () => toWorld('H', false) })) toWorld('H', false);
+    }
+
+    /* ============================================== THE YIN EXPERIENCE (CP5)
+       S1·09: "an electric-like numbness travelling up my arm, followed by an intense cold". On the chapter's clock
+       from the press, his look his own: the locket in his hand (kit.hold) with static crawling from it up his arm and
+       the hand trembling (kit.tremble); then the cold — frost growing in from the edges of his sight, his breath
+       fogging, the shop's red draining to a cold blue-white, the candles shrinking, the fan running down, the tape on
+       the counter sagging (the song's own source slowing: the bed RATE, main.js's loopRate); then a young woman at
+       the very edge of his sight who is gone before his eyes reach her, and her humming beside him — the tape's
+       voice, without the tape; then STEADY (the thirty-first seam): keep her steady and set her down gently. The
+       set-down: the tape runs down and stops with a click, a sigh at his ear, the warmth back over four seconds, the
+       candles straightening, his promise. Every number below is on WALL time or the chapter's clock (the v7.4 law). */
+    const Y_COLD = {
+      stops: [[0.00, '#1c2630'], [0.30, '#18202a'], [0.60, '#141a22'], [1.00, '#0e1218']],
+      bg: 0x0e1218, fog: [0x141c24, 0.03],
+      hemi: [0xcfe4ff, 0x10161e, 0.5], key: [0xd8ecff, 0.42, 1, 6, 2], fill: [0x9cc4ff, 0.26],
+      stars: 0, moon: 0, sun: 0, clouds: 0,
+      vmHemi: [0xcfe4ff, 0x10161e, 0.62], vmKey: [0xd8ecff, 0.55]
+    };
+    const RADIO = { x: YSHOP.x1 - 0.12, z: -2.2 }, BACKROOM = { x: YSHOP.x0 + 0.68, z: YSHOP.z0 + 0.3 }, DOORBELL = { x: 0.3, z: -0.19 };
+    const Y_SOUNDS = ['y4song', 'y4dread', 'y4mall', 'y4hum', 'y4tapeclick', 'y4zap', 'y4frost', 'y4shiver', 'y4breath', 'y4sigh',
+                      'y4bell', 'y4tube', 'y4beads', 'y4curtain', 'y4candle', 'y4creak', 'y4box', 'y4setdown', 'y4clatter', 'y4sting', 'y4radio'];
+    if (warmSounds) warmSounds(Y_SOUNDS);
+    const yin = { on: false, run: 0, setDown: false, cold: 0, coldTo: 0, numb: 0, numbTo: 0, puffT: 0,
+                  rate: 1, gain: 1, stopping: false, stopped: false, clicked: false, bellSwing: 0, radioDip: 0,
+                  girl: { a: 0, to: 0, shows: 0, side: 1, placed: false, nextAt: 0 } };
+    /* the frost: a plane on the lens (a child of the camera, past its 8 cm near plane), its alphaTest lowered as the
+       cold comes so the ferns grow inward from the edges (makeYinFrost draws its alpha by distance from the edge) */
+    const frostMat = new THREE.MeshBasicMaterial({ map: tex(makeYinFrost(THREE, cnv)), transparent: true, opacity: 0, alphaTest: 0.999,
+                                                    depthTest: false, depthWrite: false, fog: false, toneMapped: false });
+    mats.push(frostMat);
+    const frostMesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), frostMat);
+    frostMesh.renderOrder = 9990; frostMesh.frustumCulled = false; frostMesh.visible = false; frostMesh.position.set(0, 0, -0.105);
+    camera.add(frostMesh);
+    owned.push({ dispose: () => { camera.remove(frostMesh); frostMesh.geometry.dispose(); } });
+    /* his breath: three puffs that fog in front of him and drift away (world sprites, recycled) */
+    const puffs = [];
+    for (let i = 0; i < 3; i++) {
+      const m = new THREE.SpriteMaterial({ map: yLive.tSmoke, color: 0xe4eef6, transparent: true, opacity: 0, depthWrite: false, fog: false }); mats.push(m);
+      const sp = new THREE.Sprite(m); sp.visible = false; worldY.add(sp); puffs.push({ sp, t: 1, v: new THREE.Vector3() });
+    }
+    /* the locket in his hand, and the static crawling from it up his arm — drawn in the hands' pass (kit.hold makes
+       it a child of the right arm). Its frame is turned to undo the arm's rest (0.50, 0.28, −0.48), so +z faces the
+       lens. */
+    const yinHeld = new THREE.Group(); yinHeld.visible = false;
+    const ARM_UP = new THREE.Vector3(0.42, -0.5, 0.76).normalize();      // up the forearm, in the held frame
+    const arcs = [];
+    let heldFace = null;
+    {
+      const gold = M({ color: 0xd2a640, roughness: 0.32, metalness: 0.85, emissive: 0x2a1a04, emissiveIntensity: 0.5 });
+      const lk = new THREE.Group(); lk.scale.setScalar(1.35); yinHeld.add(lk);
+      const rim = new THREE.Mesh(new THREE.TorusGeometry(0.021, 0.0035, 8, 28), gold); lk.add(rim);
+      const back = new THREE.Mesh(new THREE.CylinderGeometry(0.021, 0.021, 0.004, 28), gold); back.rotation.x = Math.PI / 2; back.position.z = -0.002; lk.add(back);
+      const fm = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.4, visible: false }); mats.push(fm);
+      const fg = new THREE.CircleGeometry(0.018, 28), fuv = fg.attributes.uv;
+      for (let i = 0; i < fuv.count; i++) fuv.setXY(i, 0.28 + fuv.getX(i) * 0.44, 1 - (0.08 + (1 - fuv.getY(i)) * 0.4));
+      heldFace = new THREE.Mesh(fg, fm); heldFace.position.z = 0.0015; lk.add(heldFace);
+      const glass = new THREE.Mesh(new THREE.CircleGeometry(0.018, 28), M({ color: 0xbfd4cf, roughness: 0.05, metalness: 0.2, transparent: true, opacity: 0.16, depthWrite: false }));
+      glass.position.z = 0.0025; lk.add(glass);
+      const bail = new THREE.Mesh(new THREE.TorusGeometry(0.004, 0.0012, 4, 10), gold); bail.position.set(0, 0.025, 0); lk.add(bail);
+      // the chain, slipping down between his fingers
+      const chainG = new THREE.TorusGeometry(0.003, 0.0008, 3, 6);
+      for (let k = 0; k < 16; k++) {
+        const ln = new THREE.Mesh(chainG, gold), u = k / 15;
+        ln.position.set(0.006 * Math.sin(u * 5), 0.028 + u * 0.05, -0.004 - u * 0.012); ln.rotation.set(u * 2, k % 2 ? Math.PI / 2 : 0, 0); lk.add(ln);
+      }
+      // the static: jagged threads from the locket up the arm, re-drawn every 50 ms (additive, over the skin)
+      const arcMat = new THREE.LineBasicMaterial({ color: 0xa8dcff, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthTest: false, depthWrite: false, fog: false, toneMapped: false });
+      mats.push(arcMat);
+      for (let i = 0; i < 6; i++) {
+        const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(11 * 3), 3));
+        const ln = new THREE.Line(geo, arcMat); ln.renderOrder = 50; ln.frustumCulled = false; yinHeld.add(ln); arcs.push(ln);
+      }
+      const gm = new THREE.SpriteMaterial({ map: yLive.tGlow, color: 0x7cc4ff, transparent: true, opacity: 0, depthTest: false, depthWrite: false, blending: THREE.AdditiveBlending, fog: false });
+      mats.push(gm);
+      yin.glow = new THREE.Sprite(gm); yin.glow.scale.set(0.09, 0.09, 1); yin.glow.renderOrder = 51; yinHeld.add(yin.glow);
+      yin.arcMat = arcMat;
+      owned.push({ dispose: () => {
+        if (kit && kit.holding && kit.holding() === yinHeld) kit.hold(null);
+        yinHeld.traverse(o => { if (o.geometry) o.geometry.dispose(); });
+      } });
+    }
+    const ARM_INV = new THREE.Euler().setFromQuaternion(new THREE.Quaternion().setFromEuler(new THREE.Euler(0.50, 0.28, -0.48)).invert());
+    function heldShow(on) {
+      yinHeld.visible = !!on;
+      if (!kit || !kit.hold) return;
+      if (on) {
+        if (yLive.girlTex && heldFace) { heldFace.material.map = yLive.girlTex; heldFace.material.visible = true; heldFace.material.needsUpdate = true; }
+        kit.hold(yinHeld, { pos: [0.004, -0.02, -0.178], rot: [ARM_INV.x - 0.25, ARM_INV.y, ARM_INV.z] });
+      } else if (kit.holding && kit.holding() === yinHeld) kit.hold(null);
+    }
+    let arcNext = 0;
+    const _as = new THREE.Vector3(), _au = new THREE.Vector3(), _ap = new THREE.Vector3();
+    function arcsTick(wdt) {
+      const k = yin.numb;
+      yin.arcMat.opacity = Math.min(1, k * 1.2) * (0.6 + 0.4 * hash(Math.floor(yT * 30), 17));
+      yin.glow.material.opacity = k * (0.35 + 0.25 * Math.sin(yT * 14));
+      if (k < 0.02) { for (const ln of arcs) ln.visible = false; return; }
+      arcNext -= wdt; if (arcNext > 0) return;
+      arcNext = 0.05;
+      _as.set(0, 0, 1).cross(ARM_UP).normalize(); _au.copy(ARM_UP).cross(_as).normalize();
+      let seed = Math.floor(yT * 20) * 13;
+      const rnd = () => hash(++seed, 29);
+      for (const ln of arcs) {
+        const a = ln.geometry.attributes.position, len = (0.05 + rnd() * 0.16) * (0.5 + 0.5 * k), j = 0.006 + 0.006 * k;
+        const ox = (rnd() - 0.5) * 0.02, oy = (rnd() - 0.5) * 0.02;
+        for (let i = 0; i < 11; i++) {
+          const u = i / 10;
+          _ap.copy(ARM_UP).multiplyScalar(u * len).addScaledVector(_as, ox + (rnd() - 0.5) * j).addScaledVector(_au, oy + (rnd() - 0.5) * j);
+          a.setXYZ(i, _ap.x, _ap.y, _ap.z);
+        }
+        a.needsUpdate = true;
+        ln.visible = rnd() < 0.35 + 0.6 * k;
+      }
+    }
+    /* THE GIRL at the edge of the frame — of THIS screen (a phone's half-width is ~19°, a desktop's ~49°): put where
+       the frame ends, held there in the world, and gone the moment his look turns toward her (before it arrives).
+       Twice at most, the second time on the other side. */
+    const _gd = new THREE.Vector3(), _gp = new THREE.Vector3(), _gq = new THREE.Vector3();
+    function halfFovH() { return Math.atan(Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2) * camera.aspect); }
+    function girlFree(x, z) {
+      if (x < YSHOP.x0 + 0.35 || x > YSHOP.x1 - 0.35 || z < YSHOP.z0 + 0.4 || z > YSHOP.z1 - 0.5) return false;
+      for (const b of (S && S.blockers) || []) if (b.max.y > 0.5 && x > b.min.x - 0.12 && x < b.max.x + 0.12 && z > b.min.z - 0.12 && z < b.max.z + 0.12) return false;
+      return true;
+    }
+    function girlPlace() {
+      const G = yin.girl, P = yLive.girl; if (!P || !P.ready) return false;
+      camera.getWorldDirection(_gd); _gd.y = 0; _gd.normalize(); camera.getWorldPosition(_gp);
+      const e = halfFovH() * 0.97;
+      for (const side of [G.side, -G.side]) for (const d of [1.3, 1.05, 0.85]) {
+        const a = side * e, ca = Math.cos(a), sa = Math.sin(a);
+        // turn the view direction by a (positive = to his right, the screen's +x)
+        const dx = _gd.x * ca + _gd.z * sa, dz = -_gd.x * sa + _gd.z * ca;
+        const x = _gp.x + dx * d, z = _gp.z + dz * d;
+        if (!girlFree(x, z)) continue;
+        P.group.position.set(x, 0, z); P.group.rotation.y = Math.atan2(_gp.x - x, _gp.z - z);
+        G.side = side; G.placed = true;
+        return true;
+      }
+      return false;
+    }
+    function girlTick(wdt) {
+      const G = yin.girl, P = yLive.girl; if (!P || !P.ready) return;
+      if (G.to > 0 && !G.placed && dayClock.t >= G.nextAt && getState() === 'play') {
+        if (girlPlace()) {
+          G.shows++; G.a = 0;
+          if (worldSfx) {
+            const pan = G.side * 0.75;
+            if (G.shows === 1) worldSfx('y4sting', 0.4, 1, pan);
+            worldSfx('y4breath', 0.62, 1, pan);
+            worldSfx('y4hum', 0.66, 1, pan);
+          }
+        } else G.nextAt = dayClock.t + 0.4;
+      }
+      if (G.placed) {
+        // is his look turning onto her? (the angle off his view's centre, against this screen's half-width)
+        camera.getWorldDirection(_gd); _gd.y = 0; _gd.normalize(); camera.getWorldPosition(_gp);
+        _gq.copy(P.group.position).sub(_gp); _gq.y = 0; _gq.normalize();
+        const off = Math.acos(THREE.MathUtils.clamp(_gd.dot(_gq), -1, 1)), edge = halfFovH();
+        const want = G.to > 0 && off > edge * 0.62 ? 0.72 : 0;
+        G.a += (want - G.a) * (1 - Math.exp(-wdt * (want > G.a ? 2.2 : 14)));
+        if (want === 0 && G.a < 0.02) {
+          G.placed = false; G.a = 0;
+          if (G.to > 0 && G.shows < 2) { G.side = -G.side; G.nextAt = dayClock.t + 2.6; } else G.to = 0;
+        }
+      }
+      for (const m of P.mats) { m.opacity = G.a; if (m.color) m.color.setRGB(0.82 + 0.1 * G.a, 0.86 + 0.08 * G.a, 0.95); if (m.emissive) m.emissive.setRGB(0.05 * G.a, 0.07 * G.a, 0.11 * G.a); }
+      P.group.visible = G.a > 0.01;
+    }
+    /* the frost, the breath, the static, the light, the lid, the bell — every frame (the shop lives in every state) */
+    function yinTick(wdt) {
+      if (wdt <= 0) return;
+      const ease = (v, to, s) => v + (to - v) * (1 - Math.exp(-wdt / s));
+      yin.cold = ease(yin.cold, yin.coldTo, yin.coldTo > yin.cold ? 1.6 : 1.4);
+      yin.numb = ease(yin.numb, yin.numbTo, 0.5);
+      yin.bellSwing *= Math.exp(-wdt * 1.6); yin.radioDip *= Math.exp(-wdt * 2.2);
+      if (yLive.bell) yLive.bell.rotation.z = Math.sin(yT * 14) * 0.5 * yin.bellSwing;
+      // the tape: a sag and a wow with the cold; running down when he sets her down, then the stop key
+      let rateTo = 1 - 0.14 * yin.cold;
+      if (yin.stopping) {
+        yin.rate = ease(yin.rate, 0.02, 0.42);
+        if (yin.rate < 0.1 && !yin.clicked) {
+          yin.clicked = true; yin.stopped = true;
+          if (worldSfx && worldOf(yaw.position.x) === 'Y') worldSfx('y4tapeclick', 0.5, 1, panAt(RADIO.x, RADIO.z));
+        }
+      } else yin.rate = ease(yin.rate, rateTo, 0.9);
+      // the frost on the lens
+      const fk = yin.cold;
+      frostMesh.visible = fk > 0.01 && worldOf(yaw.position.x) === 'Y';
+      if (frostMesh.visible) {
+        const h = 2 * 0.105 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2);
+        frostMesh.scale.set(h * camera.aspect * 1.04, h * 1.04, 1);
+        frostMat.alphaTest = Math.max(0.05, 0.999 - 0.82 * fk);
+        frostMat.opacity = Math.min(0.92, fk * 1.25);
+      }
+      // the velvet box's lid
+      if (yLive.box) yLive.box.lid.rotation.z += (-1.9 * yLive.box.open - yLive.box.lid.rotation.z) * (1 - Math.exp(-wdt * 3));
+      // his breath, every 2.4 s while it is cold
+      if (fk > 0.35 && yin.on) {
+        yin.puffT -= wdt;
+        if (yin.puffT <= 0) {
+          yin.puffT = 2.4;
+          const p = puffs.find(q => q.t >= 1);
+          if (p) {
+            camera.getWorldPosition(_gp); camera.getWorldDirection(_gd);
+            p.sp.position.copy(_gp).addScaledVector(_gd, 0.26); p.sp.position.y -= 0.13;
+            p.v.copy(_gd).multiplyScalar(0.22); p.v.y += 0.05; p.t = 0; p.sp.visible = true;
+            if (worldSfx && hash(Math.floor(yT * 3), 23) < 0.6) worldSfx('y4shiver', 0.36, 1, 0);
+          }
+        }
+      }
+      for (const p of puffs) {
+        if (p.t >= 1) { p.sp.visible = false; continue; }
+        p.t = Math.min(1, p.t + wdt / 1.7);
+        p.sp.position.addScaledVector(p.v, wdt);
+        const sc = 0.08 + p.t * 0.32; p.sp.scale.set(sc, sc, 1);
+        p.sp.material.opacity = Math.sin(Math.PI * Math.min(1, p.t * 1.4)) * 0.32 * (1 - p.t * 0.5);
+      }
+      // the shop's own lamps follow the cold: the red down, the candles small, the joss's smoke thin, the fan running down
+      yLive.redK = 1 - 0.68 * fk;
+      yLive.flameK = 1 - 0.6 * fk;
+      if (yLive.fan) yLive.fan.k = 1 - 0.88 * fk;
+      yLive.smokeK = 1 - 0.7 * fk;
+      arcsTick(wdt);
+      girlTick(wdt);
+    }
+
+    /* the experience itself, beat by beat on the chapter clock (a reset or a second start cancels the first: `run`) */
+    function yinStart() {
+      if (yin.on || !kit) return;
+      const run = ++yin.run;
+      const at = (t, fn) => after(t, () => { if (run === yin.run && yin.on) fn(); });
+      yin.on = true; yin.setDown = false;
+      kit.root(true);
+      kit.objective(null);
+      if (yLive.locket) yLive.locket.visible = false;              // from her box into his hand
+      heldShow(true);
+      setPhase('yinHold', 'held');
+      kit.objective(null);
+      at(0.5, () => { yin.numbTo = 1; kit.tremble(0.35, { secs: 0.8 }); if (worldSfx) worldSfx('y4zap', 0.55, 1, 0.4); });
+      at(1.4, () => queueLine('z4numb'));
+      at(1.9, () => { kit.tremble(0.5, { secs: 1.0 }); if (worldSfx) worldSfx('y4zap', 0.4, 0.9, 0.5); });
+      at(3.0, () => {
+        yin.coldTo = 1;
+        kit.daylight(Y_COLD, 3.0);
+        W.presence = W.presenceCold; kit.presence(0.55);
+        kit.tremble(0.65, { secs: 1.5 });
+        if (worldSfx) worldSfx('y4frost', 0.65, 1, 0);
+      });
+      at(5.0, () => queueLine('z4cold'));
+      at(6.6, () => { const G = yin.girl; G.to = 1; G.shows = 0; G.nextAt = dayClock.t; G.side = hash(yin.run, 31) < 0.5 ? 1 : -1; });
+      at(7.4, () => queueLine('z4beside'));
+      at(7.4 + (SECS.z4beside || 4.1) + 0.9, () => queueFn(() => yinSteady(run)));
+    }
+    function yinSteady(run) {
+      if (run !== yin.run || !yin.on || !kit) return;
+      let tugs = 0;
+      kit.event({
+        kind: 'steady', label: W.evSteady, brief: W.evSteadyBrief, demo: 'steady',
+        secs: 8, ring: 0.16, grace: 1.3, pass: 0.6,
+        onBegin: () => { if (worldSfx) worldSfx('y4sting', 0.3, 0.8, 0); },
+        onDrift: (k) => { kit.tremble(0.45 + 0.75 * Math.min(1, k), { secs: 0.15 }); yin.numbTo = 0.6 + 0.4 * Math.min(1, k); },
+        onTug: () => { tugs++; if (worldSfx) worldSfx(tugs % 2 ? 'y4breath' : 'y4zap', 0.42, 1, (tugs % 2 ? -1 : 1) * 0.6); }
+      }).then(r => { if (run === yin.run && yin.on) yinSetDown(!!(r && r.ok)); });
+    }
+    function yinSetDown(ok) {
+      if (yin.setDown || !kit) return;
+      yin.setDown = true;
+      heldShow(false);
+      if (yLive.locket) yLive.locket.visible = true;               // back on her satin
+      if (worldSfx) worldSfx(ok ? 'y4setdown' : 'y4clatter', ok ? 0.6 : 0.7, 1, panAt(YBOX.x, YBOX.z));
+      if (ok) kit.conduct({ s: 3, note: W.noteSteady });
+      else {
+        kit.award('sanity', -6, { minigame: true });
+        kit.conduct({ note: W.noteSlip });
+        if (kit.flash) kit.flash({ color: 'rgba(170,205,255,0.28)', secs: 0.5 });
+      }
+      // the tape runs down and stops; a sigh at his ear; the cold leaves over four seconds
+      yin.stopping = true;
+      after(1.1, () => { if (worldSfx) worldSfx('y4sigh', 0.62, 1, -yin.girl.side * 0.6); });
+      yin.girl.to = 0;
+      yin.coldTo = 0; yin.numbTo = 0;
+      kit.daylight(null, 4.0);
+      kit.presence(0); W.presence = undefined;
+      kit.tremble(0, { secs: 1.6 });
+      queueGap(2.2);
+      queueLine('z4yin');
+      queueFn(() => { yin.bellSwing = 0.6; if (worldSfx) worldSfx('y4bell', 0.3, 1, panAt(DOORBELL.x, DOORBELL.z)); });
+      queueGap(1.2);
+      queueLine('yk4heard', () => personTalk(yLive.keeper, SECS.yk4heard));
+      queueLine('yk4merit', () => { personTalk(yLive.keeper, SECS.yk4merit); yinDone(); });
+    }
+    function yinDone() {
+      yin.on = false;
+      setPhase('yinDone');
+      if (!kit) return;
+      kit.root(false);
+      if (kit.waypoint) kit.waypoint({ x: 0, y: 1.3, z: 0.1 });
+    }
+    /* the small wrong things while he browses — each ONCE, on the chapter clock, never under a voice */
+    const WRONG = ['radio', 'candle', 'creak', 'beads'];
+    let wrongAt = 0, wrongI = 0;
+    function wrongThing(k) {
+      if (!worldSfx) return;
+      if (k === 'radio') { worldSfx('y4radio', 0.5, 1, panAt(RADIO.x, RADIO.z)); yin.radioDip = 1; }
+      else if (k === 'candle') { worldSfx('y4candle', 0.5, 1, panAt(YALT.x, YALT.z)); yLive.flameDip = 1; }
+      else if (k === 'creak') worldSfx('y4creak', 0.55, 1, panAt(BACKROOM.x, BACKROOM.z));
+      else if (k === 'beads') {
+        worldSfx('y4beads', 0.45, 1, panAt(0, 0.1));
+        const B = yLive.beads; if (B && B.vel) for (let s2 = 0; s2 < B.n; s2++) B.vel[s2] += (hash(s2, 3) - 0.5) * 1.6;
+      }
+    }
+    function wrongTick() {
+      if (!(phase === 'yin' || phase === 'yinKeeper') || worldOf(yaw.position.x) !== 'Y') return;
+      if (!wrongAt) { wrongAt = dayClock.t + 9; return; }
+      if (wrongI >= WRONG.length || dayClock.t < wrongAt || !quiet()) return;
+      wrongThing(WRONG[wrongI++]);
+      wrongAt = dayClock.t + 10 + hash(wrongI, 13) * 7;
+    }
+    /* the beds: the cassette from the radio (by distance, panned by its bearing, its rate the tape's), the drone
+       under everything in the shop, the mall's emptiness outside — eased, so a door walked through is a fade */
+    const mixK = { dread: 0, mall: 0, song: 0 };
+    function mixBedsY(wdt, st) {
+      const B = DATA.ambience.beds, inY = worldOf(yaw.position.x) === 'Y';
+      const live = inY && (st === 'play' || st === 'unlock' || st === 'choose' || st === 'menu');
+      const d = Math.hypot(yaw.position.x - RADIO.x, yaw.position.z - RADIO.z);
+      const outside = yaw.position.z > 0.15;
+      const att = (1 / (1 + (d / 2.6) ** 2)) * (outside ? 0.45 : 1);
+      const humDuck = yin.girl.placed ? 0.55 : 1;
+      const song = live && !yin.stopped ? 0.55 * att * (1 - 0.6 * yin.radioDip) * humDuck : 0;
+      const k = (s) => 1 - Math.exp(-wdt / s);
+      mixK.song += (song - mixK.song) * k(yin.stopped ? 0.05 : 0.5);
+      B[0][1] = mixK.song; B[0][2] = panAt(RADIO.x, RADIO.z);
+      B[0][3] = yin.rate * (1 + 0.012 * yin.cold * Math.sin(yT * 2 * Math.PI * 0.6));
+      const dread = live ? (outside ? 0.12 : 0.22 + 0.18 * yin.cold) * (yin.stopped && !yin.on ? 0.7 : 1) : 0;
+      mixK.dread += (dread - mixK.dread) * k(1.5);
+      B[1][1] = mixK.dread;
+      const mall = live ? (outside ? 0.42 : 0.1) : 0;
+      mixK.mall += (mall - mixK.mall) * k(0.8);
+      B[2][1] = mixK.mall;
+    }
+    function yinReset() {
+      yin.run++;
+      yin.on = false; yin.setDown = false; yin.cold = yin.coldTo = 0; yin.numb = yin.numbTo = 0; yin.puffT = 0;
+      yin.rate = 1; yin.stopping = false; yin.stopped = false; yin.clicked = false; yin.bellSwing = 0; yin.radioDip = 0;
+      Object.assign(yin.girl, { a: 0, to: 0, shows: 0, side: 1, placed: false, nextAt: 0 });
+      if (yLive.girl) yLive.girl.group.visible = false;
+      heldShow(false);
+      if (yLive.locket) yLive.locket.visible = true;
+      if (yLive.box) { yLive.box.open = 0; yLive.box.lid.rotation.z = 0; }
+      frostMesh.visible = false;
+      for (const p of puffs) { p.t = 1; p.sp.visible = false; }
+      yLive.redK = 1; yLive.flameK = 1; yLive.smokeK = 1; if (yLive.fan) yLive.fan.k = 1;
+      W.presence = undefined;
+      wrongAt = 0; wrongI = 0;
+      mixK.song = mixK.dread = mixK.mall = 0;
     }
 
     /* ------------------------------------------------------- the Hanuman shop */
@@ -1403,7 +1776,7 @@
       { id: 'keeper', pos: { x: KEEP.x, y: 1.35, z: KEEP.z }, radius: 2.6, prompt: W.hotKeeper, markY: 0.3,
         enabled: () => phase === 'yinKeeper' && quiet(), onInteract() { return keeperShows(); } },
       { id: 'locket', pos: { x: YBOX.x, y: YCNT.top + 0.1, z: YBOX.z }, radius: 2.2, prompt: W.hotLocket, markY: 0.2,
-        enabled: () => phase === 'yinHold' && quiet(), onInteract() { return pickLocket(); } },
+        enabled: () => phase === 'yinHold' && !yin.on && quiet(), onInteract() { return pickLocket(); } },
       { id: 'owner', pos: { x: HX + 3.98, y: 1.45, z: -2.45 }, radius: 2.7, prompt: W.hotOwner, markY: 0.3,
         enabled: () => phase === 'han' && quiet(), onInteract() { return ownerShows(); } },
       { id: 'hanuman', pos: { x: HX + 3.1, y: 1.2, z: -2.45 }, radius: 2.2, prompt: W.hotHanuman, markY: 0.2,
@@ -1430,6 +1803,7 @@
       const wdt = lastFrame ? Math.min(0.5, now - lastFrame) : 0; lastFrame = now;
       yTick(wdt); peopleTick(wdt);
       const st = getState();
+      yinTick(wdt); mixBedsY(wdt, st);
       const live = st === 'play' || st === 'unlock' || st === 'choose';
       if (!live) { lastWall = 0; return; }
       if (lastWall) dayClock.t += Math.min(0.5, now - lastWall);
@@ -1440,7 +1814,7 @@
       }
       runTodo(); runSpeak(); runQueue();
       if (st !== 'play') return;
-      watchTick();
+      watchTick(); wrongTick();
     }
     function updatePile() {}
     function updateFire() {}
@@ -1466,7 +1840,12 @@
       if (p === 'yin' && tag[1]) for (const k of tag[1].split(',')) if (['bottles', 'photos', 'altar'].includes(k)) looked.add(k);
       for (const h of hotspots) if (h.lookKey && looked.has(h.lookKey)) h.done = true;
       if (p === 'yin' && looked.size >= LOOK_N) p = 'yinKeeper';
+      /* the experience is begun again from its pickup (yinHold: the box open, the locket in it); after it, the box
+         stays open, the tape stopped, and the door waits */
+      if (p === 'yinHold' || p === 'yinDone') { if (yLive.box) { yLive.box.open = 1; yLive.box.lid.rotation.z = -1.9; } }
+      if (p === 'yinDone') { yin.stopped = true; yin.clicked = true; yin.rate = 0.02; }
       setPhase(p, p === 'yin' && looked.size ? [...looked].join(',') : undefined);
+      if (p === 'yinDone' && kit && kit.waypoint) kit.waypoint({ x: 0, y: 1.3, z: 0.1 });
     }
 
     /* ---------------------------------------------------------- lifecycle */
@@ -1477,6 +1856,7 @@
       booted = false; dayClock.t = 0; lastWall = 0;
       looked.clear(); held.clear();
       worldRun++;
+      yinReset();
       for (const h of hotspots) { h.done = false; h.dwellT = 0; }
       if (kit) {
         kit.root(false); kit.pose('standing', { secs: 0.05 });
@@ -1543,7 +1923,10 @@
       get phase() { return phase; },
       setPhase, applyPhase, after, dayClock, sayLine,
       info: () => ({ phase, t: +dayClock.t.toFixed(2), queued: lineQ.length, heard: [...heard], looked: [...looked], held: [...held],
-                     until: +speak.until.toFixed(2), pending: speak.pending ? speak.pending.name : null, world: worldOf(yaw.position.x) }),
+                     until: +speak.until.toFixed(2), pending: speak.pending ? speak.pending.name : null, world: worldOf(yaw.position.x),
+                     yin: { on: yin.on, cold: +yin.cold.toFixed(2), numb: +yin.numb.toFixed(2), rate: +yin.rate.toFixed(3), stopped: yin.stopped,
+                            girl: { placed: yin.girl.placed, a: +yin.girl.a.toFixed(2), shows: yin.girl.shows, side: yin.girl.side },
+                            beds: DATA.ambience.beds.map(b => b.map(v => typeof v === 'number' ? +v.toFixed(3) : v)), wrong: wrongI } }),
       hotspots,
       updateNotes, updatePile, updateFire, updateSlow,
       snap, restore, reset, dispose
@@ -1944,6 +2327,47 @@
     x.strokeStyle = '#a81c14'; x.lineWidth = 6; x.strokeRect(6, 6, 116, 140);
     x.strokeStyle = '#7a120c'; x.lineWidth = 1.6; yKhomRow(x, 14, 114, 52, 24, 3); yKhomRow(x, 18, 110, 98, 22, 11);
     for (let i = 0; i < 8; i++) yBlob(x, 128, r() * 128, r() * 152, 10 + r() * 20, `rgba(120,80,30,${0.08 + r() * 0.1})`);
+    return yDone(THREE, c, false);
+  }
+  /* THE FROST on the lens (CP5): ice ferns growing in from every edge. Its ALPHA is how near the edge a texel is,
+     broken by the ferns, so the material's alphaTest — lowered as the cold comes — grows the frost INWARD rather than
+     fading it in; its colour is the white-blue of the crystals */
+  function makeYinFrost(THREE, cnv) {
+    const S = 512, [c, x] = cnv(S), r = yRng(131);
+    x.clearRect(0, 0, S, S);
+    // the base: alpha by distance from the nearest edge (1 at the edge, 0 a third of the way in), a little noise
+    const img = x.createImageData(S, S), d = img.data;
+    for (let j = 0; j < S; j++) for (let i = 0; i < S; i++) {
+      const e = Math.min(i, j, S - 1 - i, S - 1 - j) / (S * 0.36);
+      const n = (Math.sin(i * 0.11 + j * 0.07) + Math.sin(i * 0.031 - j * 0.053) * 1.3) * 0.08;
+      const a = Math.max(0, Math.min(1, 1 - e + n));
+      const k = (j * S + i) * 4;
+      d[k] = 214; d[k + 1] = 232; d[k + 2] = 246; d[k + 3] = Math.round(255 * a * a * 0.7);
+    }
+    x.putImageData(img, 0, 0);
+    // the ferns: branching strokes from the edges inward, their alpha ABOVE the base so they lead the growth
+    x.lineCap = 'round';
+    const fern = (px, py, ang, len, w, depth) => {
+      if (depth > 4 || len < 4) return;
+      const ex = px + Math.cos(ang) * len, ey = py + Math.sin(ang) * len;
+      x.strokeStyle = `rgba(240,248,255,${0.5 + 0.12 * (4 - depth)})`; x.lineWidth = w;
+      x.beginPath(); x.moveTo(px, py); x.lineTo(ex, ey); x.stroke();
+      const n = 3 + (r() * 3 | 0);
+      for (let k = 1; k <= n; k++) {
+        const t = k / (n + 1), bx = px + (ex - px) * t, by = py + (ey - py) * t;
+        for (const sgn of [-1, 1]) fern(bx, by, ang + sgn * (0.7 + r() * 0.35), len * (0.32 + r() * 0.18) * (1 - t * 0.4), Math.max(0.6, w * 0.6), depth + 1);
+      }
+    };
+    for (let i = 0; i < 26; i++) {
+      const side = i % 4, u = r() * S;
+      const [px, py, ang] = side === 0 ? [u, 0, Math.PI / 2] : side === 1 ? [u, S, -Math.PI / 2] : side === 2 ? [0, u, 0] : [S, u, Math.PI];
+      fern(px, py, ang + (r() - 0.5) * 0.9, 70 + r() * 90, 2.2, 0);
+    }
+    // a frosted bloom in each corner
+    for (const [cx, cy] of [[0, 0], [S, 0], [0, S], [S, S]]) {
+      const g = x.createRadialGradient(cx, cy, 0, cx, cy, S * 0.42); g.addColorStop(0, 'rgba(235,245,255,0.95)'); g.addColorStop(1, 'rgba(235,245,255,0)');
+      x.fillStyle = g; x.fillRect(0, 0, S, S);
+    }
     return yDone(THREE, c, false);
   }
   /* the barrier across the escalator's landing: black and yellow */
