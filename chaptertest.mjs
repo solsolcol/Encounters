@@ -159,7 +159,8 @@ for (const [key, ch] of Object.entries(chapters)) {
     let j = i + 'const SECS = {'.length, depth = 1;
     while (j < src.length && depth) { const c = src[j]; if (c === '{') depth++; else if (c === '}') depth--; j++; }
     const body = src.slice(i, j).replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/[^\n]*/g, '');
-    const have = new Set([...body.matchAll(/([A-Za-z0-9_]+)\s*:/g)].map(m => m[1]));
+    // a key may be quoted (v22.0: e3c4 quotes its names so build.py gives every line to the chapter's own pack)
+    const have = new Set([...body.matchAll(/'?([A-Za-z0-9_]+)'?\s*:/g)].map(m => m[1]));
     for (const n of used.sort()) {
       if (!have.has(n)) bad(f, `speaks '${n}' but SECS has no measured length for it — sayLine books the 2.5 s fallback`);
     }

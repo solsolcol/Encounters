@@ -1810,6 +1810,36 @@ function kitHandsSet(k, opts = {}) {
      Only an idle seam starts its clock here. */
   if (hands.k === 0 && hands.was === 0) hands.last = performance.now();
 }
+/* v22.0 · THE TREMBLE — THE THIRTY-SECOND SEAM. Episode 3 chapter 4 (S1·09:
+   "an electric-like numbness travelling up my arm ... an overwhelming urge,
+   as if something wanted to enter"). `kit.tremble(k, { secs })` shakes the
+   hands by k (0 still, 1 a hard shake): a fast shiver in position and roll on
+   the viewmodel's root, laid on AFTER updateViewmodel has written its bob and
+   sway, so it rides on top of them and whatever is in the hand (kit.hold)
+   shakes with it. Eased on WALL time (the v7.4 law); at 0 nothing is written
+   at all, so a chapter that never calls it draws what it always drew, bit for
+   bit. kitReset takes it back. Nothing before e3c4 calls it. */
+const trem = { k: 0, to: 0, secs: 0.6, last: 0, t: 0, ox: 0, oy: 0, or: 0 };
+function kitTremble(k, opts = {}) {
+  trem.to = Math.max(0, Math.min(1.5, +k || 0));
+  if (opts.secs !== undefined) trem.secs = Math.max(0.01, +opts.secs);
+  if (opts.secs === 0) trem.k = trem.to;
+  if (trem.k === 0 && !trem.last) trem.last = performance.now();
+}
+function tremTick() {
+  if (trem.k === 0 && trem.to === 0) { trem.ox = trem.oy = trem.or = 0; trem.last = 0; return false; }
+  const now = performance.now(), dt = trem.last ? Math.min(0.25, (now - trem.last) / 1000) : 0;
+  trem.last = now;
+  if (trem.k !== trem.to) trem.k = trem.to > trem.k ? Math.min(trem.to, trem.k + dt / trem.secs) : Math.max(trem.to, trem.k - dt / trem.secs);
+  trem.t += dt;
+  const k = trem.k, t = trem.t;
+  trem.ox = k * (0.0042 * Math.sin(t * 61.3) + 0.0026 * Math.sin(t * 97.1 + 1.3));
+  trem.oy = k * (0.0038 * Math.sin(t * 73.7 + 0.4) + 0.0024 * Math.sin(t * 113.9 + 2.1));
+  trem.or = k * (0.022 * Math.sin(t * 57.1 + 0.9) + 0.012 * Math.sin(t * 89.3));
+  handsRoot.position.x += trem.ox; handsRoot.position.y += trem.oy;
+  handsRoot.rotation.z += trem.or; handsRoot.rotation.x += 0.6 * trem.or;
+  return true;
+}
 function handsOff() {
   const was = hands.was > 0 || hands.k > 0;
   hands.k = hands.to = 0; hands.was = 0; hands.t = 0;
@@ -3561,6 +3591,7 @@ function haptic(pattern) { try { navigator.vibrate?.(pattern || 40); } catch {} 
 const EV_DEMO = {
   tap: 'beat', timed: 'bar', mash: 'rapid', hold: 'look', stabilise: 'look',
   heartbeat: 'beat', match: 'drag', focus: 'spot', sequence: 'bar', resist: 'rapid',   // v21.0: focus has its own (lights at places, a fingertip on each)
+  steady: 'steady',                      // v22.0: a mark pushed off by a tremor, a fingertip dragging it back into its ring
 };
 const EV_DEFAULT = {
   tap:       { secs: 4 },
@@ -3602,12 +3633,20 @@ const EV_DEFAULT = {
      the chapter's hands rise exactly as close as the player is to losing.
      The first `lead` seconds are free: the first tap has to come from
      somewhere. */
-  resist:    { secs: 12, rate0: 5.0, rate1: 6.5, window: 0.75, grace: 1.0, lead: 1.0, pass: 0.5, empty: 0 }   // v19.4: `empty` — a full bar's seconds to empty untapped (0: `grace`)
+  resist:    { secs: 12, rate0: 5.0, rate1: 6.5, window: 0.75, grace: 1.0, lead: 1.0, pass: 0.5, empty: 0 },   // v19.4: `empty` — a full bar's seconds to empty untapped (0: `grace`)
+  /* v22.0: STEADY — the thirty-first seam (see evSteadyFrame). `ring` is the
+     ring's radius as a share of the screen's shorter side; the drift runs at
+     amp0 → amp1 ring-radii a second over the event, the tugs kick tug0 → tug1
+     of a radius and come every tugGap0 → tugGap1 seconds; out of the ring for
+     `grace` seconds together it SLIPS; `pass` is the share of the time in. */
+  steady:    { secs: 8, ring: 0.15, amp0: 0.32, amp1: 0.95, tug0: 0.45, tug1: 1.0, tugGap0: 1.8, tugGap1: 0.9,
+               grace: 1.2, lead: 0.7, pass: 0.6, seed: 7, gain: 1 }
 };
 // the literals texttest looks for; the kind picks the row
 const EV_LABEL = { tap: 'event.tap', timed: 'event.timed', mash: 'event.mash', hold: 'event.hold',
                    stabilise: 'event.stabilise', heartbeat: 'event.heartbeat', focus: 'event.focus',
-                   sequence: 'event.sequence', match: 'event.match', resist: 'event.resist' };
+                   sequence: 'event.sequence', match: 'event.match', resist: 'event.resist',
+                   steady: 'event.steady' };
 /* ------------------------------------------------------ v9.3 · THE LADDER
    Chad, of the minigames: "no stakes, no damage, no repercussions ... they
    were supposed to require precise timing to pass, and every mistimed tap or
@@ -3947,6 +3986,7 @@ function evBrief() {
   $('evItem').classList.add('hide');
   $('evMatch').classList.add('hide');
   $('evDot').classList.add('hide');
+  $('evSteady')?.classList.add('hide');   // v22.0
   snd('uiclick', 0.3);
 }
 function evStart() {
@@ -3975,7 +4015,11 @@ function evBegin() {
   $('evPrompt').textContent = o.prompt || T(e.kind === 'focus' && !HAS_TOUCH ? 'event.focusKey' : EV_LABEL[e.kind]);
   $('evNote').textContent = '';
   const btn = $('evBtn');
-  btn.textContent = o.button || T(EV_LABEL[e.kind]);
+  /* v22.0: a timed event may name its two words — `waitWord` on the button
+     until the window opens, `goWord` once it has (episode 3 chapter 4's
+     "Hold..." / "LET GO"); absent, the engine's own, so every timed event
+     already shipped reads exactly as it did */
+  btn.textContent = (e.kind === 'timed' && o.waitWord) || o.button || T(EV_LABEL[e.kind]);
   btn.className = e.kind === 'timed' ? 'wait' : '';
   btn.classList.toggle('hide', e.layout !== 'button' && e.kind !== 'mash');
   /* v12.3: AND 'sequence'. Its frame has written `evBar` since v9.3 — the
@@ -3985,7 +4029,7 @@ function evBegin() {
      blank panel, and a player was asked to time a press against nothing:
      Chad, of it, "The minigame seems broken and im not sure what its
      supposed to do." Episode 1 declares no events, so it cannot reach this. */
-  $('evTrack').classList.toggle('hide', !(e.kind === 'mash' || e.kind === 'hold' || e.kind === 'stabilise' || e.kind === 'tap' || e.kind === 'match' || e.kind === 'sequence' || e.kind === 'resist'));
+  $('evTrack').classList.toggle('hide', !(e.kind === 'mash' || e.kind === 'hold' || e.kind === 'stabilise' || e.kind === 'tap' || e.kind === 'match' || e.kind === 'sequence' || e.kind === 'resist' || e.kind === 'steady'));
   $('evBar').style.width = (e.kind === 'mash' ? e.bar * 100 : e.kind === 'match' ? 100 : 0) + '%';
   $('evItem').classList.toggle('hide', e.kind !== 'sequence');
   $('evDemo').classList.add('hide');       // v10.3: the briefing's illustration goes with the briefing
@@ -4000,6 +4044,7 @@ function evBegin() {
      button lost the fight inside two seconds and read it as "the minigame
      does not even show up". The rapid-tap fight says it, under its word. */
   if (e.kind === 'resist') $('evNote').textContent = o.whereWord || T(HAS_TOUCH ? 'event.resistWhere' : 'event.resistWhereKey');   // v18.5: a desktop has no screen to tap
+  if (e.kind === 'steady') $('evNote').textContent = o.whereWord || T(HAS_TOUCH ? 'event.steadyWhere' : 'event.steadyWhereKey');   // v22.0: where the drag goes
   if (e.kind === 'sequence') evShowItem();
   /* v9.4: a drag needs a cursor, and under pointer lock there is none - the
      mouse's clientX/clientY freeze, so the tiles could never be picked up.
@@ -4013,6 +4058,9 @@ function evBegin() {
      a miss for it. The cursor is handed back, as for the match; the next
      click after the event re-locks. Only episode 3 chapter 3 opens one. */
   else if (e.kind === 'focus' && o.graded) document.exitPointerLock?.();
+  /* v22.0: a STEADY drag is a cursor's too — under pointer lock the mouse has
+     no position to drag from — so the pointer is handed back as for the match */
+  else if (e.kind === 'steady') { evSteadyBuild(e); document.exitPointerLock?.(); }
   snd('uiclick', 0.3);
 }
 function evShowItem() {
@@ -4060,6 +4108,7 @@ function evResolve(extra) {
     host.className = 'layer hide';
     $('evDot').classList.add('hide'); $('evDrag').classList.add('hide');
     $('evDot').classList.remove('steady', 'pop');   // v21.2: a steady light's own look goes with its event
+    $('evSteady')?.classList.add('hide');            // v22.0: and the steady ring with its
     $('evMatch').classList.add('hide');
     $('evIcon').textContent = ''; $('evCombo').textContent = '';
     $('evSrc').textContent = ''; $('evDst').textContent = '';
@@ -4132,6 +4181,7 @@ function evPress(x, y) {
     case 'mash':
       e.bar = Math.min(1, e.bar + o.gain); e.hits++; snd('uiclick', 0.18, 1.1); break;
     case 'resist': resistTap(e); break;
+    case 'steady': e.lastX = x; e.lastY = y; break;   // v22.0: the drag starts where the finger lands
     case 'heartbeat': {
       /* v9.4: the beat comes off the SCHEDULE, because the gaps shrink. A
          press is graded on how far it lands from the beat's centre as a
@@ -4218,6 +4268,12 @@ function evMove(x, y) {
   const e = ev; if (!e || !e.down) return;
   e.drift = Math.max(e.drift, Math.hypot(x - e.downX, y - e.downY));
   if (e.kind === 'match') { e.lastX = x; e.lastY = y; if (e.drag) { evDragTo(x, y); evMatchHover(x, y); } }
+  /* v22.0: the mark moves with the DRAG, by its delta, so a finger may land
+     anywhere and answer the tremor from there */
+  if (e.kind === 'steady' && e.started && !e.briefing && e.R) {
+    const g = +e.o.gain || 1;
+    e.mx += (x - e.lastX) * g; e.my += (y - e.lastY) * g; e.lastX = x; e.lastY = y;
+  }
 }
 function evNextTarget() {
   const e = ev; e.idx++; e.slotT = 0; e.placed = false; e.unseenT = 0;   // v21.0: the next light is not on screen until a frame puts it there (v21.1: nor has it been missed for long)
@@ -4283,6 +4339,102 @@ function evFocusSteady(e, o, tg, dot, wdt) {
   if (onScreen) e.slotT += wdt;              // (a light whose thing leaves the screen waits for it to come back)
   if (e.slotT >= o.each) { evScorePress(EV_WORST); evNextTarget(); }   // its ring closed: MISSED
 }
+/* v22.0 · STEADY — THE THIRTY-FIRST SEAM. Episode 3 chapter 4's Yin locket
+   (S1·09: "Almost immediately I felt an electric-like numbness travelling up
+   my arm, followed by an intense cold"; the shopkeeper: "If she doesn't like
+   you... put her down"). A MARK — the thing in his hand — drifts on a tremor
+   that grows over the event, and is kicked by TUGS that come harder and
+   closer together as it runs; the player DRAGS, a finger anywhere on the
+   screen or the mouse with its button held, and the mark moves with the drag
+   by its delta, so keeping it is answering the tremor, not chasing a target.
+   The score is the share of the time it stayed inside its ring; out of the
+   ring for `grace` seconds together it SLIPS, and the event is lost on that
+   frame (`onSlip`). A chapter is told every frame how far off it is
+   (`onDrift(k, inside, t)`, k the distance as a share of the ring) so its
+   hands can shake exactly as hard, and on every tug (`onTug(k)`). The drift
+   is a HEADING that wanders, not a sum of sines — a sine's integral is
+   bounded, and a mark that only ever swayed round the middle would never
+   need holding. Integrated on the event's own wall step in sub-steps (the
+   v18.0 lesson), on a seeded stream, so a run is the same run every time.
+   Its own picture under the briefing's title (EV_DEMO, #evDemo.steady). */
+function evSteadyBuild(e) {
+  const o = e.o, st = $('evSteady');
+  e.R = Math.max(46, Math.min(innerWidth, innerHeight) * (+o.ring || 0.15));
+  e.mx = 0; e.my = 0; e.inT = 0; e.outRun = 0; e.liveT = 0; e.tugV = [0, 0]; e.slipped = false;
+  let q = (+o.seed || 7) * 9301 + 49297;
+  e.rnd = () => ((q = (q * 9301 + 49297) % 233280) / 233280);
+  e.ph = [0, 1, 2, 3, 4].map(() => e.rnd() * Math.PI * 2);
+  e.head = e.rnd() * Math.PI * 2;
+  e.nextTug = (o.lead ?? 0.7) + (+o.tugGap0 || 1.8) * (0.7 + 0.5 * e.rnd());
+  if (st) {
+    st.classList.remove('hide', 'out', 'tug');
+    st.style.setProperty('--sr', e.R.toFixed(0) + 'px');
+  }
+}
+function evSteadyFrame(e, o, wdt, bar) {
+  if (!e.R) evSteadyBuild(e);
+  const u = Math.min(1, Math.max(0, e.t / o.secs)), R = e.R;
+  const lead = o.lead ?? 0.7;
+  /* sub-steps of at most 1/30 s, so a slow frame drifts as far as a fast one
+     would have — and no further */
+  let left = wdt;
+  while (left > 1e-6) {
+    const h = Math.min(left, 1 / 30); left -= h;
+    const tt = e.t - left;                                  // the moment this sub-step ends
+    if (tt <= lead) continue;                               // the finger has to come down first
+    const amp = (+o.amp0) + ((+o.amp1) - (+o.amp0)) * u;   // ring-radii a second
+    e.head += h * (1.1 * Math.sin(0.7 * tt + e.ph[0]) + 0.8 * Math.sin(1.9 * tt + e.ph[1]));
+    const sp = amp * R * (0.65 + 0.35 * Math.sin(2.3 * tt + e.ph[2]));
+    e.mx += Math.cos(e.head) * sp * h + e.tugV[0] * h;
+    e.my += Math.sin(e.head) * sp * h + e.tugV[1] * h;
+    const dec = Math.exp(-h / 0.12); e.tugV[0] *= dec; e.tugV[1] *= dec;
+    if (tt >= e.nextTug) {
+      // a TUG: she pulls — a kick of tug0 → tug1 ring-radii, delivered over ~0.12 s
+      const k = (+o.tug0) + ((+o.tug1) - (+o.tug0)) * u, a = e.rnd() * Math.PI * 2;
+      e.tugV[0] += Math.cos(a) * k * R / 0.12; e.tugV[1] += Math.sin(a) * k * R / 0.12;
+      const gap = (+o.tugGap0) + ((+o.tugGap1) - (+o.tugGap0)) * u;
+      e.nextTug = tt + gap * (0.7 + 0.6 * e.rnd());
+      e.tugAt = tt;
+      if (typeof o.onTug === 'function') { try { o.onTug(k); } catch {} }
+      if (o.haptic !== false) haptic(22);
+    }
+    // never off the screen for good
+    const d0 = Math.hypot(e.mx, e.my), cap = R * 2.6;
+    if (d0 > cap) { e.mx *= cap / d0; e.my *= cap / d0; }
+    const inside = Math.hypot(e.mx, e.my) <= R;
+    e.liveT += h;
+    if (inside) { e.inT += h; e.outRun = 0; } else e.outRun += h;
+  }
+  const d = Math.hypot(e.mx, e.my), inside = d <= R, k = d / R;
+  const st = $('evSteady');
+  if (st) {
+    const jit = (e.t > lead ? (0.6 + 2.6 * u) : 0);           // a visible shiver on top of the drift
+    const jx = Math.sin(e.t * 47.0) * jit, jy = Math.cos(e.t * 53.0) * jit;
+    const mk = st.querySelector('.smark');
+    if (mk) mk.style.transform = `translate(${(e.mx + jx).toFixed(1)}px, ${(e.my + jy).toFixed(1)}px)`;
+    st.classList.toggle('out', !inside && e.t > lead);
+    st.classList.toggle('tug', e.tugAt !== undefined && e.t - e.tugAt < 0.25);
+    st.style.setProperty('--sk', Math.min(1, k).toFixed(3));
+    st.style.setProperty('--so', Math.min(1, e.outRun / Math.max(0.1, o.grace)).toFixed(3));
+  }
+  const host = evEl();
+  if (host) {
+    host.classList.toggle('danger', !inside && e.t > lead);
+    const want = !inside && e.t > lead ? (o.outWord || T('event.steadyOut')) : (o.prompt || T('event.steady'));
+    const pe = $('evPrompt'); if (pe && pe.textContent !== want) pe.textContent = want;
+  }
+  if (bar) bar.style.width = (100 * u).toFixed(1) + '%';
+  if (typeof o.onDrift === 'function') { try { o.onDrift(Math.min(2, k), inside, e.t); } catch {} }
+  e.share = e.liveT > 0 ? e.inT / e.liveT : 1;
+  if (e.outRun >= o.grace) {
+    // she slipped: lost, on this frame
+    e.slipped = true;
+    if (typeof o.onSlip === 'function') { try { o.onSlip(0); } catch {} }
+    evResolve({ ok: false, score: 0 });
+  } else if (e.t >= o.secs) {
+    evResolve({ ok: e.share >= o.pass, score: e.share });
+  }
+}
 function evNextItem() {
   const e = ev; e.idx++;
   e.slotT = 0;                       // v9.3: the new item's window starts now
@@ -4316,7 +4468,8 @@ function evFrame(dt, dLookX, dLookY) {
       break;
     case 'timed': {
       const btn = $('evBtn');
-      if (btn) { btn.classList.toggle('wait', e.t < o.open); btn.classList.toggle('go', e.t >= o.open); if (e.t >= o.open && btn.textContent !== T('event.go')) btn.textContent = T('event.go'); }
+      const goW = o.goWord || T('event.go');   // v22.0: the chapter's word for NOW, if it names one
+      if (btn) { btn.classList.toggle('wait', e.t < o.open); btn.classList.toggle('go', e.t >= o.open); if (e.t >= o.open && btn.textContent !== goW) btn.textContent = goW; }
       if (e.t >= o.close) evResolve({ ok: false, score: 0 });
       break;
     }
@@ -4391,6 +4544,7 @@ function evFrame(dt, dLookX, dLookY) {
       }
       break;
     }
+    case 'steady': evSteadyFrame(e, o, wdt, bar); break;   // v22.0: the thirty-first seam
     case 'stabilise': {
       if (!e.down) { if (e.t > o.grace && e.downAt < 0) evResolve({ ok: false, score: 0 }); break; }
       const steady = 1 - Math.min(1, e.look / o.tol);
@@ -4718,6 +4872,7 @@ function kitReset() {
   kitHold(null);                         // v21.0: nor with something still in his hand
   pray.y = PRAY.y;                       // v18.4: and at chapter 1's height until the chapter says otherwise (handsPut reads it)
   handsOff();                            // v18.0: nor with them still moving on their own
+  trem.k = trem.to = 0; trem.t = 0; trem.last = 0;   // v22.0: nor shaking
   activeSpot = null;
   if (unl.id) unlockClose('force');      // v14.7: a splash never outlives the run it opened in
   if (cho.ids) chooseClose('force');     // v17.6: nor does a choice
@@ -4842,6 +4997,7 @@ const KIT = {
   holding: () => heldProp,
   hands: kitHandsSet,              // v18.0: the hands taken — out of the clasp into a Thai-dance gesture by k
   getHands: () => hands.k,
+  tremble: kitTremble,             // v22.0: the hands shaking by k (the thirty-second seam)
   hurt: kitHurtSet,                // v11.1: the red frame held, and a bleed per second, until cleared
   /* v11.6: THE BAG, from a chapter. `give` puts an item in the bag and
      sets the bag button pulsing until it is equipped; `take` removes it
@@ -4953,6 +5109,9 @@ function kitDebug() {
                          /* v18.1: the rapid-tap fight — taps a second now, what it asks, how close to losing */
                          rate: ev.rate, need: ev.need, danger: ev.danger, taps: ev.taps ? ev.taps.length : 0,
                          level: ev.level, gain: ev.gain,   // v19.4: the draining bar
+                         /* v22.0: the steady ring — where the mark is (px from the
+                            ring's centre), the ring's radius, the share held */
+                         mx: ev.mx, my: ev.my, R: ev.R, share: ev.share, outRun: ev.outRun,
                          /* v9.4: the rhythm game's run and the match's progress */
                          beat: ev.beat, combo: ev.combo, best: ev.bestCombo,
                          done: ev.done, wrong: ev.wrong } : null,
@@ -5868,6 +6027,7 @@ function updateViewmodel(dt, t, speed, strafe, dLookX, dLookY) {
   handsRoot.rotation.set(bobPitch - vm.sway.y * 1.6,
                          vm.sway.x * 1.9,
                          bobRoll + vm.lean * 1.5);
+  tremTick();                                       // v22.0: the hands shaking, if a chapter asked (a no-op at 0)
 
   /* The burner throws warm light on the hands as you get close to it.
      v14.0: `fireLight` may be NULL. Every chapter until episode 2's fifth
@@ -6901,7 +7061,14 @@ const ADULT_TAKES = new Set([
   'z3A1', 'z3A2', 'z3B1', 'z3B2', 'z3thank', 'z3C2', 'z3D2', 'z3D3',
   'z3close', 'z3next', 'z3A', 'z3B', 'z3C', 'z3D',
   /* v21.30: the four endings told whole (docs/V21.30-PLAN.md) */
-  'z3A3', 'z3A4', 'z3A5', 'z3B3', 'z3B4', 'z3B5', 'z3B6', 'z3C1', 'z3C3', 'z3C4', 'z3C5', 'z3C6', 'z3D1', 'z3D4']);
+  'z3A3', 'z3A4', 'z3A5', 'z3B3', 'z3B4', 'z3B5', 'z3B6', 'z3C1', 'z3C3', 'z3C4', 'z3C5', 'z3C6', 'z3D1', 'z3D4',
+  /* v22.0 · episode 3 chapter 4, The Pieces That Answered (masters/v22.0/make.sh) */
+  'z4pro1', 'z4pro2', 'z4pro3', 'z4pro4', 'z4look1', 'z4look2', 'z4look3', 'z4ask', 'z4numb',
+  'z4cold', 'z4beside', 'z4yin', 'z4tem1', 'z4dedicate', 'z4tem2', 'z4han0', 'z4fine', 'z4roar',
+  'z4urge', 'z4go', 'z4hide', 'z4tray0', 'z4sense', 'z4lersi', 'z4wess', 'z4naga', 'z4feel',
+  'z4A1', 'z4A1b', 'z4A2b', 'z4A2', 'z4A3', 'z4A4', 'z4B1', 'z4B1b', 'z4B2',
+  'z4B3', 'z4B5', 'z4B4', 'z4C1', 'z4C2', 'z4C3', 'z4C4', 'z4D1', 'z4D2',
+  'z4D5', 'z4D3', 'z4D4', 'z4A', 'z4B', 'z4C', 'z4D']);
 /* The rest of the cast. They share `voiceOut` and the duck, but not the
    boost — see voiceStage() above. */
 const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
@@ -6960,7 +7127,13 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
   'mk3chant', 'cu3sadhu', 'md3gasp',
   'ow3masters',   // v21.11: the owner introduces the gallery of the masters
   'wf3thanks', 'md3fu', 'fa3thanks',   // v21.12: the wife and the father thank the medium, and his talisman for the father   // v19.4: their whispers in play, as his hands move      // v18.0: the laywoman beside him (Onnie) and Yai in front (Air), whispered
-  'md3A3', 'md3B2', 'md3B3', 'md3D2', 'md3D3', 'ow3C1', 'ow3C2']);   // v21.30: the medium kind in all four endings, the owner's second opinion
+  'md3A3', 'md3B2', 'md3B3', 'md3D2', 'md3D3', 'ow3C1', 'ow3C2',   // v21.30: the medium kind in all four endings, the owner's second opinion
+  /* v22.0 · episode 3 chapter 4: the Yin shop's keeper (Siriporn), chapter 3's owner and staff man, the temple's monk
+     (Arthur), the Chinatown tray owner (Win) */
+  'yk4hello', 'yk4show', 'yk4gentle', 'yk4heard', 'yk4merit', 'ow4hello', 'ow4new', 'ow4ok', 'sm4what',
+  'mk4yatha', 'to4hello', 'to4notice', 'to4tray', 'to4lersi', 'to4wess', 'to4naga', 'to4unknown', 'to4clock',
+  'to4A1', 'to4A3', 'to4A2', 'to4B1', 'to4B2', 'to4C1', 'to4C2', 'to4D1', 'to4D2',
+  'to4D3']);
 const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || ADULT_TAKES.has(name) || CAST_TAKES.has(name);
 /* v6.9: his WHISPERS go round the bus. Chad wanted the three pick-up
    reactions "almost whispering to himself" and they were re-voiced as
@@ -11023,7 +11196,22 @@ const STING_SAMPLE = {
   templedoor: ['templedoor', 1],
   e3vesper: ['e3vesper', 1], hallamb: ['hallamb', 1], templedusk: ['templedusk', 1],
   flatnight: ['flatnight', 1],
-  e3film2: ['e3film2', 1], e3close2: ['e3close2', 1], e3pull: ['e3pull', 1]
+  e3film2: ['e3film2', 1], e3close2: ['e3close2', 1], e3pull: ['e3pull', 1],
+  /* v22.0 · EPISODE 3 · CHAPTER 4 · THE PIECES THAT ANSWERED — his lines and the cast's (masters/v22.0/make.sh) */
+  z4pro1: ['z4pro1', 1], z4pro2: ['z4pro2', 1], z4pro3: ['z4pro3', 1], z4pro4: ['z4pro4', 1], z4look1: ['z4look1', 1], z4look2: ['z4look2', 1],
+  z4look3: ['z4look3', 1], z4ask: ['z4ask', 1], z4numb: ['z4numb', 1], z4cold: ['z4cold', 1], z4beside: ['z4beside', 1], z4yin: ['z4yin', 1],
+  z4tem1: ['z4tem1', 1], z4dedicate: ['z4dedicate', 1], z4tem2: ['z4tem2', 1], z4han0: ['z4han0', 1], z4fine: ['z4fine', 1], z4roar: ['z4roar', 1],
+  z4urge: ['z4urge', 1], z4go: ['z4go', 1], z4hide: ['z4hide', 1], z4tray0: ['z4tray0', 1], z4sense: ['z4sense', 1], z4lersi: ['z4lersi', 1],
+  z4wess: ['z4wess', 1], z4naga: ['z4naga', 1], z4feel: ['z4feel', 1], z4A1: ['z4A1', 1], z4A1b: ['z4A1b', 1], z4A2b: ['z4A2b', 1],
+  z4A2: ['z4A2', 1], z4A3: ['z4A3', 1], z4A4: ['z4A4', 1], z4B1: ['z4B1', 1], z4B1b: ['z4B1b', 1], z4B2: ['z4B2', 1],
+  z4B3: ['z4B3', 1], z4B5: ['z4B5', 1], z4B4: ['z4B4', 1], z4C1: ['z4C1', 1], z4C2: ['z4C2', 1], z4C3: ['z4C3', 1],
+  z4C4: ['z4C4', 1], z4D1: ['z4D1', 1], z4D2: ['z4D2', 1], z4D5: ['z4D5', 1], z4D3: ['z4D3', 1], z4D4: ['z4D4', 1],
+  z4A: ['z4A', 1], z4B: ['z4B', 1], z4C: ['z4C', 1], z4D: ['z4D', 1], yk4hello: ['yk4hello', 1], yk4show: ['yk4show', 1],
+  yk4gentle: ['yk4gentle', 1], yk4heard: ['yk4heard', 1], yk4merit: ['yk4merit', 1], ow4hello: ['ow4hello', 1], ow4new: ['ow4new', 1], ow4ok: ['ow4ok', 1],
+  sm4what: ['sm4what', 1], mk4yatha: ['mk4yatha', 1], to4hello: ['to4hello', 1], to4notice: ['to4notice', 1], to4tray: ['to4tray', 1], to4lersi: ['to4lersi', 1],
+  to4wess: ['to4wess', 1], to4naga: ['to4naga', 1], to4unknown: ['to4unknown', 1], to4clock: ['to4clock', 1], to4A1: ['to4A1', 1], to4A3: ['to4A3', 1],
+  to4A2: ['to4A2', 1], to4B1: ['to4B1', 1], to4B2: ['to4B2', 1], to4C1: ['to4C1', 1], to4C2: ['to4C2', 1], to4D1: ['to4D1', 1],
+  to4D2: ['to4D2', 1], to4D3: ['to4D3', 1]
 };
 /* Which kinds the synth below can actually fake. Everything else in
    STING_SAMPLE is sample-only: if its buffer is not decoded yet it stays
@@ -13846,6 +14034,7 @@ window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () =
                  prayArmRebuild: () => { if (prayerArmL) { handsRoot.remove(prayerArmL); prayerArmL.traverse(o => { if (o.isMesh) o.material.dispose(); }); prayerArmL = null; } return !!buildPrayerArm(); },
                  camRoll: () => camera.rotation.z,         // v18.0: the body's sway under kit.hands
                  handsAt: (k, t, o) => handsPut(k, t, o),  // v20.1: probes pose the gesture at any flow time (where the arm's cut end goes)
+                 tremble: () => ({ k: +trem.k.toFixed(3), to: trem.to, ox: trem.ox, oy: trem.oy, or: trem.or }),   // v22.0: the shake, for the fixture
                  gest: GEST, gestLayout,                   // v20.1: …and try its numbers
                  vmCam, handsRoot, rightHand: () => rightHandModel, prayArm: () => prayerArmL,   // v16.5: probes measure the clasp on screen
                  weaponFire, weaponReload, weaponLog, weaponProp: () => weaponProp, weaponMixer: () => weaponMixer,      // v12.0, probes

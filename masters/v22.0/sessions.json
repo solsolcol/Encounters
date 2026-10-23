@@ -1,0 +1,437 @@
+{
+ "_flow": "YsJLKD4nNm2z2CvBVXuc (the e3c4 voices flow)",
+ "_voices": "jamesAdult Brian bP8FJDHmWVEgXJDitdQd; owner3 Brendon rTCcr5snLtTho4KbH96N; staffman3 Lee aFxDLa1A1dSRlzW8nziT; monk Arthur tX4zpyB6s34no1FgD0Mm; audition: keeper Siriporn v2NF9R77fF8wZRdbGYTg / Kanya B4NdgwdU97lHqA8Udh2D; towkay Kopi O HxkJ72rJ50z9kcGPPnG7 / Win zkPxBj0FiB6fKlz0dJBS / Mr David 76X7rrvQajZEHM3u9zcd; all eleven_v3",
+ "_audK1": "[an old woman, soft and slow, a little sad] This one is a Yin amulet. A young lady... she passed away very young. A sad story. But she is very strong.",
+ "audK1": [
+  "RQ5pZhs4UORKiS1nYxF6",
+  "tjNwV3Wt23VWVdh2RFHu"
+ ],
+ "_audK2": "[an old woman, soft and slow, a little sad] This one is a Yin amulet. A young lady... she passed away very young. A sad story. But she is very strong.",
+ "audK2": [
+  "xDB8HBADnr3n9jTz0BIg",
+  "wVr66XqcImzKRE5BODhW"
+ ],
+ "_audT1": "[an old uncle, warm and curious] You know... I've been watching you. The way you hold the pieces. You have a special sensitivity. Not many people have it.",
+ "audT1": [
+  "3J4OMjyJiBAth3e3pthQ",
+  "jzRwKLIHMGKAeLcUF2qi"
+ ],
+ "_audT2": "[an old uncle, warm and curious] You know... I've been watching you. The way you hold the pieces. You have a special sensitivity. Not many people have it.",
+ "audT2": [
+  "XDyLnN0PT65461yGWDkH",
+  "001FtIP6AYaHZx8qq9xH"
+ ],
+ "_audT3": "[an old uncle, warm and curious] You know... I've been watching you. The way you hold the pieces. You have a special sensitivity. Not many people have it.",
+ "audT3": [
+  "UmmDQwaMt8e5usDRB3Dx",
+  "FSbyRH28xFKz2f5RJSZS"
+ ],
+ "_z4pro1": "[haunted] After that night at the medium... I couldn't leave it alone. I needed to know what was happening to me.",
+ "z4pro1": [
+  "SYW7HNsvVCnsV9FKGdVp",
+  "BrPZbMdoVXnKs5FSNz71"
+ ],
+ "_z4pro2": "[weary] I went from shop to shop. Amulets, masters... anyone who might know something.",
+ "z4pro2": [
+  "YPgv9H4iTq0allSZfY9T",
+  "0xfv0VzXzccV441aTEdc"
+ ],
+ "_z4pro3": "[uneasy] One afternoon, on the top floor of an old mall, I found a shop I had never noticed before.",
+ "z4pro3": [
+  "X2ybjjf6853H5NqHgnrc",
+  "myRHmQTBOBzutmkrtDsh"
+ ],
+ "_z4pro4": "[uneasy] Nobody else was up there... just an old song, coming from that shop.",
+ "z4pro4": [
+  "aXu1nfWX1YEUuwy2l0tx",
+  "DQ6tYP6g9Pa5e6yh5zO7"
+ ],
+ "_z4look1": "[uneasy] Little bottles of oil... with something floating inside. I didn't want to know what.",
+ "z4look1": [
+  "9ODnZBlUZSPfcXCEameC",
+  "8mZx0TlgDZLSYH2i1bIe"
+ ],
+ "_z4look2": "[uneasy] Old photographs... nobody in them was smiling. And one of them had fresh flowers under it.",
+ "z4look2": [
+  "lT2m72w4XuJlOLTvWJk1",
+  "4bL4PK2Hgl3Y1pgg5p0G"
+ ],
+ "_z4look3": "[unsettled] Red drinks, with straws in them... for someone who isn't here anymore.",
+ "z4look3": [
+  "tFv2p2iuxr1lZo6DJq5v",
+  "FtKNY2Q5ebrDGFScJJcS"
+ ],
+ "_z4ask": "[hesitant] Can I... hold it?",
+ "z4ask": [
+  "qqazxiqE6UdHIsmHtkc2",
+  "0SNfUMwZKCVnxf06af0D"
+ ],
+ "_z4numb": "[alarmed, strained] My arm... it's going numb...",
+ "z4numb": [
+  "IQljnygl3kRvGQ82HAla",
+  "ILyAf2qVxzxuF0dEXo2P"
+ ],
+ "_z4cold": "[shivering, frightened] So cold... like ice water in my veins...",
+ "z4cold": [
+  "rxwpWWqbNLCJz6f0gpDQ",
+  "0cwsvQDqmonFF2T4HVwZ"
+ ],
+ "_z4beside": "[frightened whisper] There's someone... standing beside me...",
+ "z4beside": [
+  "jY2gfxyiuRLLwHzVvhtk",
+  "yPnVy7KL1RhhPHOoxtWY"
+ ],
+ "_z4yin": "[shaken, sincere] I will not bring you home... but I will make merits under your name.",
+ "z4yin": [
+  "xqjNh70nSRsid0LVSqXj",
+  "5rh9HdEHzEhLrrGJkSfK"
+ ],
+ "_yk4show": "[an old woman, soft and slow, a little sad] This one is a Yin amulet. A young lady... she passed away very young. A sad story. But she is very strong.",
+ "yk4show": [
+  "RQ5pZhs4UORKiS1nYxF6",
+  "tjNwV3Wt23VWVdh2RFHu"
+ ],
+ "_to4notice": "[an old uncle, warm and curious] You know... I've been watching you. The way you hold the pieces. You have a special sensitivity. Not many people have it.",
+ "to4notice": [
+  "XDyLnN0PT65461yGWDkH",
+  "001FtIP6AYaHZx8qq9xH"
+ ],
+ "_z4tem1": "[reflective] Later, I went to a temple and made a contribution dedicated to her.",
+ "z4tem1": [
+  "ySCj7NYriIrtzdUbI5bV",
+  "uVxnQMosCrf5kyMk35SA"
+ ],
+ "_z4dedicate": "[tender, reverent whisper] For the young lady of the amulet... may this merit reach you. May you be at peace.",
+ "z4dedicate": [
+  "pCHSIBd2aq9dnXiWTqF9",
+  "nh0poPjxpfJnX40c5tCq"
+ ],
+ "_z4tem2": "[reflective] That experience has stayed with me ever since.",
+ "z4tem2": [
+  "q2NWYnXHSf1FbL2ifLV8",
+  "CI6mA5hP0HgiBmz1gUBw"
+ ],
+ "_z4han0": "[reflective] On another occasion... I was back at the shop I knew best.",
+ "z4han0": [
+  "CYFFuv7NISxYzT2zTnft",
+  "29scZerpYAcVLT05psPH"
+ ],
+ "_z4fine": "[tired, sincere] I'm okay, Uncle. Still trying to understand what happened.",
+ "z4fine": [
+  "19Ct9fkML1rLD95iYB9B",
+  "BSLZ5M6nuoO6ZMiVEQWV"
+ ],
+ "_z4roar": "[stunned, frightened] Something... roared. Inside me.",
+ "z4roar": [
+  "4rThS04wwKQn6RJI254l",
+  "DgVguhyI2nO0glwOdsH4"
+ ],
+ "_z4urge": "[terrified, straining] No... no... it wants to come in...",
+ "z4urge": [
+  "ga3FdIG5WyW7cKAJ1H59",
+  "VByfyjvs7n39gn5pKksR"
+ ],
+ "_z4go": "[shaken, breathless] I... I have to go.",
+ "z4go": [
+  "EtFqzbxz6Raop66n6mmF",
+  "0OclH349tzSp1N2GVciv"
+ ],
+ "_z4hide": "[breathless, ashamed] I couldn't let anyone see me like that. Not again. Not in public.",
+ "z4hide": [
+  "nXRufvtgW7fVM9z8e9el",
+  "4ViqBQLxnvGJvqF6GXIT"
+ ],
+ "_z4tray0": "[reflective] Eventually, there was one shop owner I visited often. He was the one who noticed.",
+ "z4tray0": [
+  "RC8WDoybY39PsprMKwpx",
+  "McApEuRYAXN4MxtWXC41"
+ ],
+ "_z4sense": "[puzzled] Sensitivity...?",
+ "z4sense": [
+  "hvRBKFQzVnerQpJMJj6O",
+  "pU3XWF05lMeFJySKYFpY"
+ ],
+ "_z4lersi": "[awed, calm] Calm... and very old. Like sitting in a forest at night.",
+ "z4lersi": [
+  "0BqsCybBpLr5zcR5ImAU",
+  "Wo2WBlgGyktSAUQFvCDr"
+ ],
+ "_z4wess": "[awed, frightened] Something huge... standing right outside.",
+ "z4wess": [
+  "I5NnsuB7GoiUsP2AcKJI",
+  "t1xVSvAFccIfE39emSLs"
+ ],
+ "_z4naga": "[awed, uneasy] Water... everywhere. And something moving in it.",
+ "z4naga": [
+  "eac0PXyJ4lAmq9OplDr5",
+  "rRKoffSIzk5bgsU9YoHu"
+ ],
+ "_z4feel": "[awed, frightened whisper] Everything went quiet. Even them.",
+ "z4feel": [
+  "5gAMgN5yYQfkI3zmGGq9",
+  "iSgxDFWrIbpxGseH9TkK"
+ ],
+ "_z4A1": "[resolute] I wanted to know. So I opened myself... all the way.",
+ "z4A1": [
+  "rs4bpNapuGYEEDeStz6X",
+  "72u1a6QQz2db6DG1Ch1a"
+ ],
+ "_z4A1b": "[panicking] No... this isn't one of them... this isn't—",
+ "z4A1b": [
+  "NuTQ9GfgQhGcE8lUSFp3",
+  "7a5qYmgjpISckplh59Ay"
+ ],
+ "_z4A2b": "[groggy, confused] What... what happened?",
+ "z4A2b": [
+  "WwRT4423utGfCrMXtwu3",
+  "tobHnXKpQGKFovWmRonm"
+ ],
+ "_z4A2": "[shaken] Twenty minutes... I couldn't remember any of it.",
+ "z4A2": [
+  "sARXbHdU8i2r9dnAU71J",
+  "HmyQm0DIZXh5WRJr2WSD"
+ ],
+ "_z4A3": "[haunted, reflective] I invited it in, to prove it was there. It came. And I still couldn't tell you what it was.",
+ "z4A3": [
+  "3TWZDuH2u8wOHvsxKp5Z",
+  "3WTV9TN4vq2EYFdhe02F"
+ ],
+ "_z4A4": "[haunted] For weeks after, I didn't feel alone. Not once.",
+ "z4A4": [
+  "QXlbR0IfRh4DuE6XmILF",
+  "qVMBLriGtMjKEHrUBiVl"
+ ],
+ "_z4B1": "[eager] How much, Uncle? I'll try it at home.",
+ "z4B1": [
+  "Fe0r6Q3gCs1u23QDEEIP",
+  "SMRMbDRsJxh8ZtLDlGas"
+ ],
+ "_z4B1b": "[curious, uneasy] Okay... let's see what you are.",
+ "z4B1b": [
+  "MA66Mxax8qkll51xIDL6",
+  "Cmio4miyqMnwdq5duBgv"
+ ],
+ "_z4B2": "[frightened, guilty] I had told her I wouldn't bring her home. And here I was... bringing home something I couldn't even name.",
+ "z4B2": [
+  "wMBCVuFt4qivRDZzOIja",
+  "42rjCDytgMOxBkA7muYS"
+ ],
+ "_z4B3": "[exhausted, haunted] I didn't sleep that night. Every sound in the room was it... or me.",
+ "z4B3": [
+  "SvB3duQ4cxfxv16hIlqK",
+  "Pebf9N8AKYAnYbD2vNxp"
+ ],
+ "_z4B5": "[ashamed] Uncle... I'm bringing it back.",
+ "z4B5": [
+  "00O3m86N1K1dKgDdzfSr",
+  "1o4kmXhRabiMNIwBDRvI"
+ ],
+ "_z4B4": "[reflective] I brought it back the next morning. Some things are not for testing alone.",
+ "z4B4": [
+  "IHFGHin74H4aE2arLFi2",
+  "fZxczoDeqA2PeIGM1RZT"
+ ],
+ "_z4C1": "[polite, tired] Thank you, Uncle... but I think that's enough for today.",
+ "z4C1": [
+  "pCuBHG4laZNETFWp1JaI",
+  "rjDYhIUFFYZwCf6V5Wlw"
+ ],
+ "_z4C2": "[reflective] I put it down and walked away. That much, I got right.",
+ "z4C2": [
+  "l6qCdlfokT0VbI9dWx82",
+  "Y03pZ1Wif3q75YNCkDDw"
+ ],
+ "_z4C3": "[troubled] But I still didn't understand what I had been doing... or what had been answering me.",
+ "z4C3": [
+  "2XSHVScFNJCjT0YxyCF4",
+  "s0XqUTL7h8WlTPjXQCl2"
+ ],
+ "_z4C4": "[uneasy] And I knew... sooner or later, I would pick something up again.",
+ "z4C4": [
+  "A82LA8vsUJ5PQDtLhdBk",
+  "mjY9MyXUcXqxRBWyMINT"
+ ],
+ "_z4D1": "[sincere] Uncle... I don't want to test them anymore. I don't know what I'm letting in.",
+ "z4D1": [
+  "UO5dT93TLTzBx2kLGtWb",
+  "OgUsPALySlGTQPIV8YE2"
+ ],
+ "_z4D2": "[earnest] Do you know anyone who can teach me properly? Someone who really knows?",
+ "z4D2": [
+  "ZCu2CgXLxiIgBYOyNmlw",
+  "JCKObpk0ZCoLHPzbX5EH"
+ ],
+ "_z4D5": "[grateful] Thank you, Uncle. Really.",
+ "z4D5": [
+  "38qwfJYQqcgi12XuafSI",
+  "FrJShz7rmDb2IgWwH1kx"
+ ],
+ "_z4D3": "[resolved, reflective] Discernment. Respect. Proper guidance. That was the first time I asked for them.",
+ "z4D3": [
+  "PS77DtUt5Ob2bBcFYBYE",
+  "XvaPONNkA1Iqp86Gbi5O"
+ ],
+ "_z4D4": "[peaceful, certain] You don't need to invite something in... just to prove that something is there.",
+ "z4D4": [
+  "FbqlEp02b5ti9sVGu3mi",
+  "YyySE6COJAKs8ipV6qhE"
+ ],
+ "_z4A": "[haunted] I opened the door to prove it was there. It came in.",
+ "z4A": [
+  "ZiKnbSgqqj5JvpIbgTK4",
+  "Ac6ULO0BimqrR28AwR5x"
+ ],
+ "_z4B": "[regretful] I brought it home, and broke the promise I made to her.",
+ "z4B": [
+  "m7f3QHYxlLvIWTLytQq5",
+  "HdErFp9WxvYgAqy8vBCp"
+ ],
+ "_z4C": "[uncertain] I put it down. I still didn't understand.",
+ "z4C": [
+  "hYYRRHOiiMKlHGj3YBQW",
+  "OsyNQaFHAOpIPTNi3SWV"
+ ],
+ "_z4D": "[at peace] I stopped testing, and asked for a teacher.",
+ "z4D": [
+  "T3nB8MItEUZg7DMcrpYU",
+  "yxRkQ9SD8MsyrWtmxfET"
+ ],
+ "_yk4hello": "[an old woman, soft and slow, knowing] You're looking for something special, boy?",
+ "yk4hello": [
+  "WbClSCjGP9h23n5oSOhm",
+  "P3LMLZUz9PuBFlNQZxum"
+ ],
+ "_yk4gentle": "[an old woman, soft and slow, careful] Hold her gently. If she doesn't like you... put her down.",
+ "yk4gentle": [
+  "wq6RJTwvmoXKSKEpltIh",
+  "zfSg8mfQaDzROE9RVnqP"
+ ],
+ "_yk4heard": "[an old woman, soft and slow, gentle] She heard your promise.",
+ "yk4heard": [
+  "9ZiL8h8C8LTJD6RS2kLg",
+  "EzWo0wsMspJFLYwXamNw",
+  "4APLsV5KbXHNWn2FdjHO",
+  "2ubFc6qJHeiK3isMXHZ2"
+ ],
+ "_yk4merit": "[an old woman, soft and slow, kind] Go and make merit for her. Don't forget, ah.",
+ "yk4merit": [
+  "XozEwMIS3O61RWNOoMiz",
+  "qN6xuJ1cpEqiuPdr8PKK",
+  "V1AtUCZDCwM2NocWEUht",
+  "SdgMciXhj6NuANrMJR3P"
+ ],
+ "_ow4hello": "[warmly] Ah, you came back! I was worried about you, after Buddha Day.",
+ "ow4hello": [
+  "I3bm8M3EqmJ66DfAsj8O",
+  "oVAlXUnuGwW4rx8LknIL"
+ ],
+ "_ow4new": "[excited] Come, come. I just got something new. Hanuman, very powerful one. Come and see.",
+ "ow4new": [
+  "SNEPRkfkFHBGSD5PSeCq",
+  "Ep6fl7p8spnnnQ1p64lN"
+ ],
+ "_ow4ok": "[alarmed] Eh! Boy! What happened? Your face so pale!",
+ "ow4ok": [
+  "SAxCZMtGA5ZfRLUnKaNR",
+  "bJH3ziIF0FAm30TMXpex"
+ ],
+ "_sm4what": "[startled] Boss... what happened to him?",
+ "sm4what": [
+  "SNfvy6Ud1oGIzlht9FJM",
+  "Ea7bET6Ij1GiLKRyrTCo"
+ ],
+ "_mk4yatha": "[chanting slowly in a low monotone] Ya-taa waa-ree-wa-haa poo-raa... pa-ree-poo-ren-tee saa-ka-rang... ay-wa-may-wa ee-toh tin-nang... pay-taa-nang oo-pa-kap-pa-tee...",
+ "mk4yatha": [
+  "irugKZ0l25LsIsUl3Iz9",
+  "K6vmuPMjKYeBkILTghBm"
+ ],
+ "_to4hello": "[an old uncle, warm and cheerful] Ah, you're here again. Come, sit, sit. I just made tea.",
+ "to4hello": [
+  "y0mXAosbMpFNlfrn4ljJ",
+  "Opoo9GrECCXUjIhlfA1T"
+ ],
+ "_to4tray": "[an old uncle, warm, encouraging] Here. Hold them, one by one. Let your mind open... and see what you feel.",
+ "to4tray": [
+  "gdGsAbGkhZr5IcFtAWoF",
+  "KBHPPmOYIxSsQb0dzmmt"
+ ],
+ "_to4lersi": "[an old uncle, pleased and impressed] Ah... you feel it, right? The Lersi. The old hermit.",
+ "to4lersi": [
+  "RAtADvAgEvpgrqHw3om8",
+  "5lgkVmWI89WZ3UKbpC84"
+ ],
+ "_to4wess": "[an old uncle, impressed] Thao Wessuwan. Guardian of the north. Even he comes for you.",
+ "to4wess": [
+  "stTVLN2Rh8LSvz5N72H0",
+  "kqyZmJgyGnfGA5R2aQRu"
+ ],
+ "_to4naga": "[an old uncle, amazed] Phaya Naga. Wah... all three answer you.",
+ "to4naga": [
+  "Qti5CeWjr2FIfmkkHd2F",
+  "hNuUODvzQ87l6bXojMY6"
+ ],
+ "_to4unknown": "[an old uncle, uncertain, curious] This one... even I don't know what is inside. It came from an old collection. Nobody could tell me. Maybe... you can.",
+ "to4unknown": [
+  "ns1tUSkE8C9vG04oBZdb",
+  "tz8QOAKwEx6ufcs21H8K"
+ ],
+ "_to4clock": "[an old uncle, puzzled, uneasy] Eh... the clock... stopped.",
+ "to4clock": [
+  "YzUTS4VmjxR2sTwo5KiA",
+  "u42h5borBzhlVYU4GwJp"
+ ],
+ "_to4A1": "[an old uncle, frightened, shouting] Boy! Boy! Wake up! Can you hear me or not?",
+ "to4A1": [
+  "xr2SQVyZawXcypkSVahU",
+  "keQVu3dYs21lJNFeefdt",
+  "4Ws8eKbmCtKPA6nllV5l",
+  "LmpAZomYOtZhcNyAHaZY"
+ ],
+ "_to4A3": "[an old uncle, shaken] You fell down. Shaking, talking in a voice... not yours. Twenty minutes, you know!",
+ "to4A3": [
+  "RFWxuWjnqvlvUrXEK5tr",
+  "VS7xCeg6pfDFJNhFQeVP"
+ ],
+ "_to4A2": "[an old uncle, sorry, worried] I'm sorry... I shouldn't have given you that one. Here, drink some water. Rest first.",
+ "to4A2": [
+  "T7kPPqCmF6rJnFKeo56s",
+  "DdyxYJSA4B68ZAVc4JIA"
+ ],
+ "_to4B1": "[an old uncle, hesitant, serious] Okay... but treat it with respect, ah. If anything happens, bring it back.",
+ "to4B1": [
+  "xDS41h5iF20WU5Cy3x3Z",
+  "s0tbQBX0EglcJIDroI0V"
+ ],
+ "_to4B2": "[an old uncle, kind, relieved] Never mind. Better like that. Don't worry about the money.",
+ "to4B2": [
+  "CH8SKFRrmJKi3AmolA9h",
+  "Oaq0K3Rcslhk90mOTZwR"
+ ],
+ "_to4C1": "[an old uncle, approving, gentle] Yes, yes. Don't force. Some things are better left wrapped.",
+ "to4C1": [
+  "cCTJ8ROBqMSzOa2sqWX7",
+  "38BEZK3VDIGXzAsNwOAo"
+ ],
+ "_to4C2": "[an old uncle, warm] Come again anytime, ah. Tea is always here.",
+ "to4C2": [
+  "yRmmUEE2dwlhV1sEwG2m",
+  "yWsTcZpTdPLMEZf5tgQG",
+  "uwGGeoJLn5sBZ13AZ2G7",
+  "Oirhj9hzqTvL6skYf1B3"
+ ],
+ "_to4D1": "[an old uncle, thoughtful, humbled] You know... you're right. I only collect them. I don't really know what is inside either.",
+ "to4D1": [
+  "qFzhr5k1qfSH5CZFUPb1",
+  "F6f6rIvqgTFzWjMIui1a"
+ ],
+ "_to4D2": "[an old uncle, warm, sincere] Go and see this temple. There's a monk there who teaches meditation. He will explain it properly. Not like me, play-play.",
+ "to4D2": [
+  "Y54K75OmXcBLcM379wzc",
+  "BULtXh9wHJE3bxP6vhlK"
+ ],
+ "_to4D3": "[an old uncle, gentle] Go. And this one... I'll keep it wrapped.",
+ "to4D3": [
+  "8mWhqbteZZdeaQeFNo7I",
+  "IALpRqGTQcPCcXBXl9fB"
+ ]
+}

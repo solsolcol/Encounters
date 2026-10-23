@@ -346,6 +346,25 @@ K.praySeam = await p.evaluate(async () => {
 }).catch(() => false);
 await settle();
 
+/* v22.0: THE TREMBLE (the thirty-second seam) — kit.tremble(1) shakes the
+   viewmodel's root a little every frame (the offset moves and is non-zero),
+   and back at 0 nothing at all is laid on: the offset is exactly zero, so a
+   chapter that never calls it draws what it always drew */
+K.trembleSeam = await p.evaluate(async () => {
+  const E = window.__enc;
+  const frames = (n) => new Promise(r => { let k = 0; const f = () => (++k >= n ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); });
+  const still0 = E.tremble();
+  E.kit.tremble(1, { secs: 0 });
+  await frames(3);
+  const a = E.tremble(); await frames(2); const b = E.tremble();
+  const shakes = a.k === 1 && (Math.abs(a.ox) + Math.abs(a.or)) > 0 && (a.ox !== b.ox || a.or !== b.or);
+  E.kit.tremble(0, { secs: 0 });
+  await frames(3);
+  const c = E.tremble();
+  return still0.ox === 0 && still0.or === 0 && shakes && c.k === 0 && c.ox === 0 && c.oy === 0 && c.or === 0;
+}).catch(() => false);
+await settle();
+
 /* v21.0: A THING IN HIS HAND (the twenty-seventh seam) — kit.hold puts an
    object on the right arm (so it is drawn in the hands' pass), at the clasp's
    middle when asked, lets go on hold(null), and a new hold replaces the old */
@@ -488,6 +507,53 @@ K.evResistHeld = r.kind === 'resist' && r.ok && r.delta > 0 && await p.evaluate(
 r = await runEvent({ kind: 'resist', secs: 6, rate0: 4, rate1: 4, empty: 1.0, grace: 1.0, lead: 0.2,
                      award: { stat: 'awareness', lo: -3, hi: 2 }, slipTag: '__slips3', tapEveryT: 0.5 }, null);
 K.evResistSlowLoses = r.kind === 'resist' && !r.ok && await p.evaluate(() => window.__slips3 >= 1);
+/* v22.0: STEADY (the thirty-first seam). Left alone, the tremor carries the
+   mark out of its ring and it SLIPS — lost on that frame, the chapter told
+   (onSlip), the floor paid. Answered — a finger down on the overlay and real
+   pointer moves that drag the mark back toward the middle every frame — it
+   is HELD to the end and pays. Real PointerEvents on the overlay, the v18.3
+   law: a minigame probe drives the REAL input path. */
+r = await runEvent({ kind: 'steady', secs: 4, amp0: 1.3, amp1: 1.6, tug0: 0.5, tug1: 0.6, grace: 0.5, lead: 0.2,
+                     award: { stat: 'awareness', lo: -3, hi: 2 }, slipTag: '__sslip' }, null);
+K.evSteadySlips = r.kind === 'steady' && !r.ok && r.delta === -3 && await p.evaluate(() => window.__sslip >= 1);
+r = await runEvent({ kind: 'steady', secs: 2.5, amp0: 0.5, amp1: 0.7, tug0: 0.2, tug1: 0.3, grace: 0.8, lead: 0.2,
+                     award: { stat: 'awareness', lo: -3, hi: 2 } }, async () => {
+  await p.evaluate(() => new Promise(done => {
+    const host = document.getElementById('event');
+    let x = 200, y = 420, down = false;
+    const fire = (type, cx, cy) => host.dispatchEvent(new PointerEvent(type, { pointerType: 'touch', pointerId: 7, isPrimary: true, clientX: cx, clientY: cy, bubbles: true, cancelable: true }));
+    const f = () => {
+      if (window.__evR !== null) { if (down) fire('pointerup', x, y); return done(); }
+      const d = window.__enc.kitDebug().event;
+      if (d && d.started && !d.briefing && d.R) {
+        if (!down) { fire('pointerdown', x, y); down = true; }
+        else { x -= d.mx; y -= d.my; fire('pointermove', x, y); }   // drag the mark back onto the centre
+      }
+      requestAnimationFrame(f);
+    };
+    requestAnimationFrame(f);
+  }));
+});
+K.evSteadyHeld = r.kind === 'steady' && r.ok && r.score >= 0.6 && r.delta > 0;
+/* and its briefing SHOWS the game (Chad's v18.2 rule): the kind's own picture */
+r = await runEvent({ kind: 'steady', secs: 0.4, lead: 0.1, grace: 5, brief: 'Keep it in the ring.' }, async () => {
+  K.evSteadyIllustrates = await p.evaluate(() => {
+    const dm = document.getElementById('evDemo');
+    return dm.className === 'steady' && getComputedStyle(dm).display !== 'none'
+      && getComputedStyle(dm.querySelector('.dqm')).display !== 'none' && getComputedStyle(dm.querySelector('.dqf')).display !== 'none';
+  });
+  await tapOnce();                      // START
+});
+/* v22.0: a TIMED event's own words — `waitWord` until the window opens, `goWord` after */
+r = await runEvent({ kind: 'timed', open: 0.5, close: 3, waitWord: 'Hold...', goWord: 'LET GO' }, async () => {
+  const before = await p.evaluate(() => document.getElementById('evBtn').textContent);
+  await untilT(0.55);
+  await p.waitForFunction(() => document.getElementById('evBtn').textContent === 'LET GO', null, { timeout: 20000 }).catch(() => {});
+  const after = await p.evaluate(() => document.getElementById('evBtn').textContent);
+  K.evTimedWords = before === 'Hold...' && after === 'LET GO';
+  await tapOnce();
+});
+K.evTimedWordsPress = r.ok === true;
 /* v18.3: TWO THUMBS. A second finger landing while the first is still down
    is a tap — it was dropped, because the event was still "down". Real
    pointer events on the overlay, the second before the first lifts. */

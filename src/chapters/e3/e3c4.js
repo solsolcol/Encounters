@@ -156,14 +156,21 @@
 
   /* the measured length of every line said OUTSIDE a cutscene (CP2 measures
      them; until then, estimates — sayLine books its window from these) */
+  /* every line's measured length (ffprobe of the shipped take, masters/v22.0/secs.json) — the line queue books its
+     window by it, so a voice never starts over another. The names are QUOTED on purpose: build.py gives a sound to a
+     chapter's own pack only when the chapter names it in quotes, and a line it cannot attribute goes to the SHARED
+     pack every player downloads at boot (measured: unquoted, the shared Opus pack grew 5.35 -> 7.29 MB) */
   const SECS = {
-    z4look1: 4.6, z4look2: 5.2, z4look3: 4.4,
-    yk4hello: 2.8, yk4show: 7.6, z4ask: 1.8, yk4gentle: 4.2,
-    z4numb: 2.6, z4cold: 3.4, z4yin: 5.2, yk4heard: 1.8, yk4merit: 3.0,
-    z4han0: 3.6, ow4hello: 4.2, z4fine: 3.4, ow4new: 5.0, z4roar: 2.8, ow4ok: 2.4, z4go: 1.8,
-    z4tray0: 5.0, to4hello: 3.8, to4notice: 8.0, z4sense: 1.6, to4tray: 5.2,
-    z4lersi: 4.2, to4lersi: 4.0, z4wess: 3.2, to4wess: 4.2, z4naga: 3.6, to4naga: 3.6,
-    to4unknown: 8.0, z4feel: 3.0
+    /* the film */ 'z4pro1': 7.97, 'z4pro2': 7.08, 'z4pro3': 5.72, 'z4pro4': 5.41,
+    /* the Yin shop */ 'z4look1': 7.47, 'z4look2': 7.47, 'z4look3': 5.64, 'yk4hello': 2.69, 'yk4show': 13.61, 'z4ask': 1.8, 'yk4gentle': 6.64, 'z4numb': 3.24, 'z4cold': 4.23, 'z4beside': 4.13, 'z4yin': 5.64, 'yk4heard': 1.96, 'yk4merit': 4.55,
+    /* the merit film */ 'z4tem1': 4.13, 'z4dedicate': 7.24, 'mk4yatha': 12.12, 'z4tem2': 2.85, 'z4han0': 4.05,
+    /* the Hanuman */ 'ow4hello': 4.75, 'z4fine': 4.52, 'ow4new': 5.88, 'z4roar': 4.83, 'z4urge': 3.74, 'ow4ok': 3.55, 'z4go': 3.63, 'sm4what': 2.43, 'z4hide': 6.69, 'z4tray0': 6.43,
+    /* the tray */ 'to4hello': 3.37, 'to4notice': 8.33, 'z4sense': 1.78, 'to4tray': 4.52, 'z4lersi': 6.77, 'to4lersi': 3.84, 'z4wess': 4.13, 'to4wess': 4.49, 'z4naga': 5.41, 'to4naga': 3.47, 'to4unknown': 7.39, 'to4clock': 3.53, 'z4feel': 3.63,
+    /* A */ 'z4A1': 6.19, 'z4A1b': 3.55, 'to4A1': 2.8, 'z4A2b': 1.96, 'to4A3': 6.37, 'z4A2': 4.13, 'to4A2': 5.07, 'z4A3': 10.27, 'z4A4': 5.64,
+    /* B */ 'z4B1': 2.51, 'to4B1': 5.43, 'z4B1b': 2.43, 'z4B2': 7.39, 'z4B3': 7.03, 'z4B5': 3.47, 'to4B2': 3.97, 'z4B4': 5.56,
+    /* C */ 'z4C1': 3.71, 'to4C1': 3.79, 'to4C2': 2.85, 'z4C2': 4.91, 'z4C3': 7.08, 'z4C4': 7.89,
+    /* D */ 'z4D1': 8.2, 'to4D1': 6.9, 'z4D2': 4.52, 'to4D2': 7.05, 'z4D5': 1.88, 'to4D3': 3.89, 'z4D3': 8.36, 'z4D4': 6.19,
+    /* the cards */ 'z4A': 4.91, 'z4B': 3.4, 'z4C': 3.87, 'z4D': 2.69
   };
 
   const hash = (i, s) => { const x = Math.sin(i * 127.1 + s * 311.7) * 43758.5453; return x - Math.floor(x); };
@@ -408,7 +415,13 @@
     }
     const quiet = () => !lineQ.length && !speak.pending && dayClock.t >= speak.until;
 
-    if (warmSounds) warmSounds(Object.keys(SECS));
+    /* only the lines said IN PLAY are warmed here (each decoded buffer is ~1 MB a five seconds on a phone): the films
+       warm their own cues (kit.film), the endings and the cards are warmed by startDecision */
+    const PLAY_LINES = ['z4look1', 'z4look2', 'z4look3', 'yk4hello', 'yk4show', 'z4ask', 'yk4gentle', 'z4numb', 'z4cold',
+      'z4beside', 'z4yin', 'yk4heard', 'yk4merit', 'ow4hello', 'z4fine', 'ow4new', 'z4roar', 'z4urge', 'ow4ok', 'z4go',
+      'to4hello', 'to4notice', 'z4sense', 'to4tray', 'z4lersi', 'to4lersi', 'z4wess', 'to4wess', 'z4naga', 'to4naga',
+      'to4unknown', 'to4clock', 'z4feel', 'z4han0', 'z4tray0'];   // the last two under the kit's black between worlds
+    if (warmSounds) warmSounds(PLAY_LINES);
 
     /* ------------------------------------------------------------ the phases */
     const W = DATA.words;

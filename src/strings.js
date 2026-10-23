@@ -242,6 +242,10 @@ Object.assign(window.__TEXT__, {
   'event.resistReady':   'START TAPPING',
   'event.resistWhere':   'Tap anywhere on the screen, fast',   // v18.4: where the taps go, once START has gone
   'event.resistWhereKey': 'Press Space or click, fast',        // v18.5: the same, on a desktop
+  'event.steady':        'HOLD IT STEADY',                     // v22.0: the steady ring
+  'event.steadyOut':     'BRING IT BACK',
+  'event.steadyWhere':   'Drag anywhere to keep it inside the ring',
+  'event.steadyWhereKey': 'Hold the mouse button and drag to keep it in the ring',
   'event.focus':         'TAP THE LIGHT',
   'event.focusKey':      'CLICK THE LIGHT',            // v21.0: the same, on a desktop
   'event.sequence':      'TAP EACH ONE',

@@ -1,0 +1,412 @@
+{
+ "_voices": {
+  "jamesAdult": "bP8FJDHmWVEgXJDitdQd",
+  "yinkeeper4": "v2NF9R77fF8wZRdbGYTg",
+  "towkay4": "zkPxBj0FiB6fKlz0dJBS",
+  "owner3": "rTCcr5snLtTho4KbH96N",
+  "staffman3": "aFxDLa1A1dSRlzW8nziT",
+  "monk": "tX4zpyB6s34no1FgD0Mm"
+ },
+ "lines": [
+  [
+   "z4pro1",
+   "jamesAdult",
+   "[haunted] After that night at the medium... I couldn't leave it alone. I needed to know what was happening to me."
+  ],
+  [
+   "z4pro2",
+   "jamesAdult",
+   "[weary] I went from shop to shop. Amulets, masters... anyone who might know something."
+  ],
+  [
+   "z4pro3",
+   "jamesAdult",
+   "[uneasy] One afternoon, on the top floor of an old mall, I found a shop I had never noticed before."
+  ],
+  [
+   "z4pro4",
+   "jamesAdult",
+   "[uneasy] Nobody else was up there... just an old song, coming from that shop."
+  ],
+  [
+   "z4look1",
+   "jamesAdult",
+   "[uneasy] Little bottles of oil... with something floating inside. I didn't want to know what."
+  ],
+  [
+   "z4look2",
+   "jamesAdult",
+   "[uneasy] Old photographs... nobody in them was smiling. And one of them had fresh flowers under it."
+  ],
+  [
+   "z4look3",
+   "jamesAdult",
+   "[unsettled] Red drinks, with straws in them... for someone who isn't here anymore."
+  ],
+  [
+   "z4ask",
+   "jamesAdult",
+   "[hesitant] Can I... hold it?"
+  ],
+  [
+   "z4numb",
+   "jamesAdult",
+   "[alarmed, strained] My arm... it's going numb..."
+  ],
+  [
+   "z4cold",
+   "jamesAdult",
+   "[shivering, frightened] So cold... like ice water in my veins..."
+  ],
+  [
+   "z4beside",
+   "jamesAdult",
+   "[frightened whisper] There's someone... standing beside me..."
+  ],
+  [
+   "z4yin",
+   "jamesAdult",
+   "[shaken, sincere] I will not bring you home... but I will make merits under your name."
+  ],
+  [
+   "z4tem1",
+   "jamesAdult",
+   "[reflective] Later, I went to a temple and made a contribution dedicated to her."
+  ],
+  [
+   "z4dedicate",
+   "jamesAdult",
+   "[tender, reverent whisper] For the young lady of the amulet... may this merit reach you. May you be at peace."
+  ],
+  [
+   "z4tem2",
+   "jamesAdult",
+   "[reflective] That experience has stayed with me ever since."
+  ],
+  [
+   "z4han0",
+   "jamesAdult",
+   "[reflective] On another occasion... I was back at the shop I knew best."
+  ],
+  [
+   "z4fine",
+   "jamesAdult",
+   "[tired, sincere] I'm okay, Uncle. Still trying to understand what happened."
+  ],
+  [
+   "z4roar",
+   "jamesAdult",
+   "[stunned, frightened] Something... roared. Inside me."
+  ],
+  [
+   "z4urge",
+   "jamesAdult",
+   "[terrified, straining] No... no... it wants to come in..."
+  ],
+  [
+   "z4go",
+   "jamesAdult",
+   "[shaken, breathless] I... I have to go."
+  ],
+  [
+   "z4hide",
+   "jamesAdult",
+   "[breathless, ashamed] I couldn't let anyone see me like that. Not again. Not in public."
+  ],
+  [
+   "z4tray0",
+   "jamesAdult",
+   "[reflective] Eventually, there was one shop owner I visited often. He was the one who noticed."
+  ],
+  [
+   "z4sense",
+   "jamesAdult",
+   "[puzzled] Sensitivity...?"
+  ],
+  [
+   "z4lersi",
+   "jamesAdult",
+   "[awed, calm] Calm... and very old. Like sitting in a forest at night."
+  ],
+  [
+   "z4wess",
+   "jamesAdult",
+   "[awed, frightened] Something huge... standing right outside."
+  ],
+  [
+   "z4naga",
+   "jamesAdult",
+   "[awed, uneasy] Water... everywhere. And something moving in it."
+  ],
+  [
+   "z4feel",
+   "jamesAdult",
+   "[awed, frightened whisper] Everything went quiet. Even them."
+  ],
+  [
+   "z4A1",
+   "jamesAdult",
+   "[resolute] I wanted to know. So I opened myself... all the way."
+  ],
+  [
+   "z4A1b",
+   "jamesAdult",
+   "[panicking] No... this isn't one of them... this isn't—"
+  ],
+  [
+   "z4A2b",
+   "jamesAdult",
+   "[groggy, confused] What... what happened?"
+  ],
+  [
+   "z4A2",
+   "jamesAdult",
+   "[shaken] Twenty minutes... I couldn't remember any of it."
+  ],
+  [
+   "z4A3",
+   "jamesAdult",
+   "[haunted, reflective] I invited it in, to prove it was there. It came. And I still couldn't tell you what it was."
+  ],
+  [
+   "z4A4",
+   "jamesAdult",
+   "[haunted] For weeks after, I didn't feel alone. Not once."
+  ],
+  [
+   "z4B1",
+   "jamesAdult",
+   "[eager] How much, Uncle? I'll try it at home."
+  ],
+  [
+   "z4B1b",
+   "jamesAdult",
+   "[curious, uneasy] Okay... let's see what you are."
+  ],
+  [
+   "z4B2",
+   "jamesAdult",
+   "[frightened, guilty] I had told her I wouldn't bring her home. And here I was... bringing home something I couldn't even name."
+  ],
+  [
+   "z4B3",
+   "jamesAdult",
+   "[exhausted, haunted] I didn't sleep that night. Every sound in the room was it... or me."
+  ],
+  [
+   "z4B5",
+   "jamesAdult",
+   "[ashamed] Uncle... I'm bringing it back."
+  ],
+  [
+   "z4B4",
+   "jamesAdult",
+   "[reflective] I brought it back the next morning. Some things are not for testing alone."
+  ],
+  [
+   "z4C1",
+   "jamesAdult",
+   "[polite, tired] Thank you, Uncle... but I think that's enough for today."
+  ],
+  [
+   "z4C2",
+   "jamesAdult",
+   "[reflective] I put it down and walked away. That much, I got right."
+  ],
+  [
+   "z4C3",
+   "jamesAdult",
+   "[troubled] But I still didn't understand what I had been doing... or what had been answering me."
+  ],
+  [
+   "z4C4",
+   "jamesAdult",
+   "[uneasy] And I knew... sooner or later, I would pick something up again."
+  ],
+  [
+   "z4D1",
+   "jamesAdult",
+   "[sincere] Uncle... I don't want to test them anymore. I don't know what I'm letting in."
+  ],
+  [
+   "z4D2",
+   "jamesAdult",
+   "[earnest] Do you know anyone who can teach me properly? Someone who really knows?"
+  ],
+  [
+   "z4D5",
+   "jamesAdult",
+   "[grateful] Thank you, Uncle. Really."
+  ],
+  [
+   "z4D3",
+   "jamesAdult",
+   "[resolved, reflective] Discernment. Respect. Proper guidance. That was the first time I asked for them."
+  ],
+  [
+   "z4D4",
+   "jamesAdult",
+   "[peaceful, certain] You don't need to invite something in... just to prove that something is there."
+  ],
+  [
+   "z4A",
+   "jamesAdult",
+   "[haunted] I opened the door to prove it was there. It came in."
+  ],
+  [
+   "z4B",
+   "jamesAdult",
+   "[regretful] I brought it home, and broke the promise I made to her."
+  ],
+  [
+   "z4C",
+   "jamesAdult",
+   "[uncertain] I put it down. I still didn't understand."
+  ],
+  [
+   "z4D",
+   "jamesAdult",
+   "[at peace] I stopped testing, and asked for a teacher."
+  ],
+  [
+   "yk4hello",
+   "yinkeeper4",
+   "[an old woman, soft and slow, knowing] You're looking for something special, boy?"
+  ],
+  [
+   "yk4show",
+   "yinkeeper4",
+   "[an old woman, soft and slow, a little sad] This one is a Yin amulet. A young lady... she passed away very young. A sad story. But she is very strong."
+  ],
+  [
+   "yk4gentle",
+   "yinkeeper4",
+   "[an old woman, soft and slow, careful] Hold her gently. If she doesn't like you... put her down."
+  ],
+  [
+   "yk4heard",
+   "yinkeeper4",
+   "[an old woman, soft and slow, gentle] She heard your promise."
+  ],
+  [
+   "yk4merit",
+   "yinkeeper4",
+   "[an old woman, soft and slow, kind] Go and make merit for her. Don't forget, ah."
+  ],
+  [
+   "ow4hello",
+   "owner3",
+   "[warmly] Ah, you came back! I was worried about you, after Buddha Day."
+  ],
+  [
+   "ow4new",
+   "owner3",
+   "[excited] Come, come. I just got something new. Hanuman, very powerful one. Come and see."
+  ],
+  [
+   "ow4ok",
+   "owner3",
+   "[alarmed] Eh! Boy! What happened? Your face so pale!"
+  ],
+  [
+   "sm4what",
+   "staffman3",
+   "[startled] Boss... what happened to him?"
+  ],
+  [
+   "mk4yatha",
+   "monk",
+   "[chanting slowly in a low monotone] Ya-taa waa-ree-wa-haa poo-raa... pa-ree-poo-ren-tee saa-ka-rang... ay-wa-may-wa ee-toh tin-nang... pay-taa-nang oo-pa-kap-pa-tee..."
+  ],
+  [
+   "to4hello",
+   "towkay4",
+   "[an old uncle, warm and cheerful] Ah, you're here again. Come, sit, sit. I just made tea."
+  ],
+  [
+   "to4notice",
+   "towkay4",
+   "[an old uncle, warm and curious] You know... I've been watching you. The way you hold the pieces. You have a special sensitivity. Not many people have it."
+  ],
+  [
+   "to4tray",
+   "towkay4",
+   "[an old uncle, warm, encouraging] Here. Hold them, one by one. Let your mind open... and see what you feel."
+  ],
+  [
+   "to4lersi",
+   "towkay4",
+   "[an old uncle, pleased and impressed] Ah... you feel it, right? The Lersi. The old hermit."
+  ],
+  [
+   "to4wess",
+   "towkay4",
+   "[an old uncle, impressed] Thao Wessuwan. Guardian of the north. Even he comes for you."
+  ],
+  [
+   "to4naga",
+   "towkay4",
+   "[an old uncle, amazed] Phaya Naga. Wah... all three answer you."
+  ],
+  [
+   "to4unknown",
+   "towkay4",
+   "[an old uncle, uncertain, curious] This one... even I don't know what is inside. It came from an old collection. Nobody could tell me. Maybe... you can."
+  ],
+  [
+   "to4clock",
+   "towkay4",
+   "[an old uncle, puzzled, uneasy] Eh... the clock... stopped."
+  ],
+  [
+   "to4A1",
+   "towkay4",
+   "[an old uncle, frightened, shouting] Boy! Boy! Wake up! Can you hear me or not?"
+  ],
+  [
+   "to4A3",
+   "towkay4",
+   "[an old uncle, shaken] You fell down. Shaking, talking in a voice... not yours. Twenty minutes, you know!"
+  ],
+  [
+   "to4A2",
+   "towkay4",
+   "[an old uncle, sorry, worried] I'm sorry... I shouldn't have given you that one. Here, drink some water. Rest first."
+  ],
+  [
+   "to4B1",
+   "towkay4",
+   "[an old uncle, hesitant, serious] Okay... but treat it with respect, ah. If anything happens, bring it back."
+  ],
+  [
+   "to4B2",
+   "towkay4",
+   "[an old uncle, kind, relieved] Never mind. Better like that. Don't worry about the money."
+  ],
+  [
+   "to4C1",
+   "towkay4",
+   "[an old uncle, approving, gentle] Yes, yes. Don't force. Some things are better left wrapped."
+  ],
+  [
+   "to4C2",
+   "towkay4",
+   "[an old uncle, warm] Come again anytime, ah. Tea is always here."
+  ],
+  [
+   "to4D1",
+   "towkay4",
+   "[an old uncle, thoughtful, humbled] You know... you're right. I only collect them. I don't really know what is inside either."
+  ],
+  [
+   "to4D2",
+   "towkay4",
+   "[an old uncle, warm, sincere] Go and see this temple. There's a monk there who teaches meditation. He will explain it properly. Not like me, play-play."
+  ],
+  [
+   "to4D3",
+   "towkay4",
+   "[an old uncle, gentle] Go. And this one... I'll keep it wrapped."
+  ]
+ ]
+}
