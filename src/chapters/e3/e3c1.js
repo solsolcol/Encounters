@@ -170,7 +170,27 @@
       yantConfirm: 'Receive this yant',
       yantSub: 'Inked on your back · worn in your Sak Yant slot',
       /* v17.7: said once on the window, not in each design's words */
-      yantHint: 'A Sak Yant is for life and cannot be taken off. Pick one, then confirm.'
+      yantHint: 'A Sak Yant is for life and cannot be taken off. Pick one, then confirm.',
+      /* v21.31: the chants' captions (Chad: "subtitles with original pali words and the translated meaning, the same way
+         it is done in episode 3 chapter 3"), each Pali line over what it means. The monk's blessing and the Ajarn's
+         homage are the chanting guide's Pali; the Itipiso is Chad's own (v19.9), in his three lines; every English line
+         is Thanissaro Bhikkhu's, A Chanting Guide (dhammatalks.org), as e3c3's last two lines are */
+      bless1: 'Sabbītiyo vivajjantu',
+      bless1en: 'May all distresses be averted.',
+      bless2: 'Sabba-rogo vinassatu',
+      bless2en: 'May every disease be destroyed.',
+      bless3: 'Mā te bhavatvantarāyo',
+      bless3en: 'May there be no dangers for you.',
+      bless4: 'Sukhī dīgh’āyuko bhava.',
+      bless4en: 'May you be happy & live long.',
+      iti1: 'Iti pi so bhagavā arahaṁ sammā-sambuddho,',
+      iti1en: 'He is a Blessed One, a Worthy One, a Rightly Self-awakened One,',
+      iti2: 'Vijjā-caraṇa-sampanno sugato lokavidū,',
+      iti2en: 'consummate in knowledge & conduct, one who has gone the good way, knower of the cosmos,',
+      iti3: 'Anuttaro purisa-damma-sārathi satthā deva-manussānaṁ buddho bhagavā \'ti.',
+      iti3en: 'unexcelled trainer of those who can be taught, teacher of human & divine beings; awakened; blessed.',
+      namo: 'Namo tassa bhagavato arahato sammā-sambuddhassa.',
+      namoen: 'Homage to the Blessed One, the Worthy One, the Rightly Self-awakened One.'
     },
     sayPrefix: 'z1'
   };
@@ -3167,6 +3187,24 @@
        the phone and the desktop agree. */
     const PRAY_Y = -0.37;
     const FLICKS = [3.0, 6.3, 9.8];               // seconds into the chant: its three breaths (v16.2, Arthur)
+    /* v21.31 · THE CHANTS, CAPTIONED (Chad: "when player is getting blessing from the monk, and the monk chants his
+       lines, i also want subtitles with original pali words and the translated meaning, the same way it is done in
+       episode 3 chapter 3 ... for the sakyant ajahn, when the ajahn chants his namo tassa, also add subtitles for
+       that"). e3c3's seam (kit.captions): each line up while it is chanted, the Pali over what it means, counted on
+       wall time from the moment the voice starts. Timed on each take's own breaths, measured: the blessing's four
+       phrases end and begin at 2.71/3.72, 5.83/7.05 and 9.34/10.50 of its 12.74 s; the Itipiso's seven phrases fall
+       into Chad's three lines at 7.35/8.44 and 14.82/16.02 of its 26.79 s; the Ajarn says his homage twice, the
+       breath between at 5.0–5.7 of 10.57 s */
+    const CAPS = {
+      bless: [['bless1', 0.05, 3.2], ['bless2', 3.4, 6.45], ['bless3', 6.65, 9.9], ['bless4', 10.1, 12.95]],
+      iti: [['iti1', 0.05, 7.9], ['iti2', 8.1, 15.4], ['iti3', 15.6, 27.0]],
+      namo: [['namo', 0.05, 5.6], ['namo', 5.75, 10.75]]
+    };
+    function chantCaps(k) {
+      if (!kit || !kit.captions || !CAPS[k]) return;
+      const Wd = DATA.words;
+      kit.captions(CAPS[k].map(([w, at, end]) => ({ at, end, text: Wd[w], sub: Wd[w + 'en'] })));
+    }
     function beginBless() {
       if (phase !== 'bless' || blessing) return false;
       yaw.position.x = BLESS.x; yaw.position.z = BLESS.z;
@@ -3188,7 +3226,7 @@
       const hold = (secs) => queueFn(() => { if (blessing) speak.until = Math.max(speak.until, blessing.mark + secs); });
       queueGap(2.2);
       queueFn(() => { if (blessing) blessing.chantAt = blessing.mark = dayClock.t; });
-      queueLine('mk1chant', () => { monk.nod = SECS.mk1chant * 0.6; monkDo(MONK_BLESS, SECS.mk1chant); });
+      queueLine('mk1chant', () => { monk.nod = SECS.mk1chant * 0.6; monkDo(MONK_BLESS, SECS.mk1chant); chantCaps('bless'); });
       hold(SECS.mk1chant + 0.3);
       /* v19.9 — the short Itipiso straight after (Chad: "Can i add another
          short itipiso chant after that short chant too?"). The whisk is down
@@ -3197,7 +3235,7 @@
          the words. */
       queueGap(0.9);
       queueFn(() => { if (blessing) blessing.mark = dayClock.t; });
-      queueLine('mk1iti', () => { monk.nod = SECS.mk1iti * 0.6; });
+      queueLine('mk1iti', () => { monk.nod = SECS.mk1iti * 0.6; chantCaps('iti'); });
       hold(SECS.mk1iti + 0.3);
       queueGap(0.9);
       queueFn(() => { if (blessing) blessing.mark = dayClock.t; });
@@ -3459,7 +3497,7 @@
        later so the line is said while he is still under the rod. */
     function waitSeq() {
       after(2.4, () => queueLine('z1wait'));
-      after(6.0, () => { if (!heard.has('katha2')) { heard.add('katha2'); queueLine('aj1katha', () => { ajarn.nod = SECS.aj1katha; }, 0.8);
+      after(6.0, () => { if (!heard.has('katha2')) { heard.add('katha2'); queueLine('aj1katha', () => { ajarn.nod = SECS.aj1katha; chantCaps('namo'); }, 0.8);
                                                        queueGap(0.6); queueLine('z1trance'); } });
       after(27.0, () => { workOn = false; });
       after(28.1, () => sfxAt('yantblow', CUSH.x, CUSH.z - 0.2, 0.85, 2, 12));
@@ -3600,7 +3638,7 @@
       /* v17.6b (Chad: "the ajahn voiceline of namo tassa should start after the
          player clicks start on the heartbeat minigame"): the katha waits for
          START — the event's own onBegin — not for the briefing to open */
-      const katha = () => after(0.6, () => { if (!heard.has('katha3')) { heard.add('katha3'); sayLine('aj1katha', 0.7, () => { ajarn.nod = SECS.aj1katha; }, panOf('aj1katha')); } });
+      const katha = () => after(0.6, () => { if (!heard.has('katha3')) { heard.add('katha3'); sayLine('aj1katha', 0.7, () => { ajarn.nod = SECS.aj1katha; chantCaps('namo'); }, panOf('aj1katha')); } });
       kit.event({ kind: 'heartbeat', label: DATA.words.evYant, brief: DATA.words.evYantBrief, demo: 'beat', onBegin: katha,
                   n: 14, bpm: 66, win: 0.26, zone: 5.8, lead: 2.0, accel: 0.975, minPeriod: 0.5,
                   tick: 'yantap', tickVol: 0.95, missCost: 3,

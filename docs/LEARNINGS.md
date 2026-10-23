@@ -6093,3 +6093,22 @@ cut (sharing its vertices and maps) when it is small.
   to what the words are about ("Yesterday you danced for the Buddha" → the altar) does the rest. A phone's frame is a
   third of a desktop's across, so the deepest pushes are chosen per screen. Hand the lens back to 72° before every walk,
   every take and every cut, in push order (a passed `lens` track keeps writing its end value).
+
+## v21.31 — chapter 1's chants captioned
+
+- **To prove a short-lived piece of the screen appeared, OBSERVE it; do not sample it** (v21.31). The first caption
+  probe logged the caption box with a 100 ms `setInterval`, and it never saw the first line of the blessing or of the
+  Itipiso — while every later line came up on time. Nothing was wrong with the game: on this box, with the chapter's
+  temple in view and screenshots being taken, a frame came every ~3 s (worst 9.5 s), and the timer callbacks ran only
+  in the gaps a frame left, so a line painted and replaced inside that gap was never sampled. A `MutationObserver` on
+  the element records every paint in the task that makes it: run again that way, all seven lines (four of the blessing,
+  three of the Itipiso) came up in order and went with their chants. v21.30's caption probe used a
+  `requestAnimationFrame` logger for the same reason; the observer is better still, because it does not depend on a
+  frame landing inside a line's window either. And take no screenshot while the thing being proved is on screen — on
+  this box one capture holds the page's frames for tens of seconds.
+- **A phase applied by a probe does not empty the chapter's line queue** (v21.31). `applyPhase('wait')` called while
+  the blessing's queue still held the teaching and "Sadhu" put the Ajarn's homage BEHIND them, so the room's own
+  `after()` timers (the man standing, "Next", the phase turning to `seat`) ran ahead of the homage they were written to
+  follow. A player cannot reach the room with the blessing's queue unfinished (`endBless` is its last item, and only
+  it opens the walkway), and `reset()` empties the queue; but a probe that jumps phases mid-queue sees an order no
+  player can, and should read it as the probe's, not the game's.

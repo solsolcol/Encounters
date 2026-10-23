@@ -8961,8 +8961,10 @@ const GAL_QUIET = 260, GAL_PULL = 200, GAL_HOLD = 700, GAL_DRAIN = 500, GAL_LOCK
    turn at a time: a turn within GAL_TURN ms of the last one is refused, by every route (the turn's own sweep is 750).
    v21.30 · HALF AGAIN AS FAST (Chad: "the timer for each page can be set faster, maybe faster by about 50%"): 15 words
    a second, 900 a minute, and the floor under a short page 0.8 s — each master's page fills in two thirds of the time
-   it took */
-const GAL_PACE = 15, GAL_TURN = 500;
+   it took. v21.31 · TEN SECONDS LESS A PAGE (Chad: "the timer for each page can be further reduced by 10 seconds for
+   each page"): 22.5 words a second — episode 3 chapter 3's five pages are 437–473 words, 29.1–31.5 s at 15 and
+   19.4–21.0 s now, each 9.7–10.5 s quicker */
+const GAL_PACE = 22.5, GAL_TURN = 500;
 const gal = { open: false, pages: null, i: 0, seen: null, done: false, t0: 0, dwellT: 0, resolve: null, outT: 0,
               raf: 0, sounds: null, img: 0, imgT: 0, bmps: new Map(), fx: null, wheelLast: 0, lockTill: 0, swipe: 0, swipeSpent: false,
               armed: false, pull: 0, pullT: 0, pullShown: -1, ptrs: new Set(), closedT: -1e9, doneT: 0, hidT: 0, wake: null,
@@ -9277,7 +9279,7 @@ function galFadeSync() {
 /* v21.25 · THE READING: a page is READ once its story has been read to its END at a reading pace (Chad: "i dont want
    players to just mindlessly and quickly scroll through all the stories"). A cursor moves down the story at GAL_PACE
    words a second and never past the bottom of what is on screen, so a story scrolled straight to its end still waits
-   for the cursor to get there (a 460-word story: ~46 s), while a genuine reader — a screenful, read, the next — never
+   for the cursor to get there (a 460-word story: ~46 s at v21.25's pace, ~20 s at v21.31's), while a genuine reader — a screenful, read, the next — never
    waits on it; scrolling back up loses nothing, and a page left and come back to keeps its reading. The ring round the
    page's own thumbnail and both NEXT buttons fill with it. (v21.10–v21.24: a page counted after GAL_DWELL ms on screen,
    so five presses of NEXT 1.2 s apart "read" the whole gallery.) The last page read lights the window. */
