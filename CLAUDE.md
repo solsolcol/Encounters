@@ -6517,6 +6517,19 @@ What the baseline contains, by release:
     first reading differed only because a look fired between the probe's two readings, LEARNINGS). Milestone backup
     bundle made (chapter 4 shipped at v22.0): 1008 MB in 49 parts of 20 MB that reassemble byte-identical, at
     `622d56d`; it replaces v21.0's.
+- **v22.4** THE FILM'S OWN SOUND — Chad, told the opening film of episode 3 chapter 4 still waited for ElevenLabs
+  credits: *"My elevenlabs has more than enough credits, what r u talking about"*. Twice more that afternoon every one
+  of twenty takes came back refused ("This request exceeds your quota of 127573. You have 0 credits remaining"), the
+  second time after he had opened the workspace and found his credits at their maximum; then, at *"Try again, and are
+  you using the latest v4?"*, the score node moved to Music v2.5 (the workspace's newest music model; v4 is the speech
+  model, and sound effects have one model) and the run went through. The film has its own score now in place of World
+  Y's drone, a far siren under the fade from black, the scroll wheel's three turns, the tray across the owner's glass
+  and the escalator ride, each picked of four by measurement (masters/v22.0/cp10/make.sh, docs/AUDIO-PLAN.md v22.4) and
+  all nine `f4*` sounds in e3c4's own pack. Played on a phone with the sound on: all five sound, no page error. The four
+  music takes went to Chad as loudness-matched previews; take 3 is in until he picks. One law in LEARNINGS: a run's
+  "started" is not "made", and an estimate is not a balance check. `src/main.js` gains five rows in `STING_SAMPLE`
+  and nothing else. No word moved; sheet v118 stands (v44 the link). Deploy `6adcde04ed7f68b8809c7115`,
+  byte-verified (253 served files).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -7055,9 +7068,9 @@ dead from the chapter's first frame (docs/LEARNINGS.md).
 
 In flight: nothing queued. **Episode 3 chapter 4, The Pieces That Answered, shipped at v22.0 —
 docs/V22.0-E3C4-PLAN.md** is its build memory (Chad's words, the design, every checkpoint, the review's
-fixes); its Chinatown towkay is a STAND-IN until Chad's model (docs/E3-MODELS.md), its opening film waits
-on its own score and four sounds (no ElevenLabs credits at the time; the recipe is in
-masters/v22.0/cp10/sessions.json), and its closing music is take c until Chad picks between c and a.
+fixes); its Chinatown towkay is a STAND-IN until Chad's model (docs/E3-MODELS.md), its opening film has had
+its own score and four sounds since v22.4 (the score is take 3 of four until Chad picks by ear — the previews
+are masters/v22.0/previews/film-music-1..4.mp3), and its closing music is take c until Chad picks between c and a.
 Its deep debug at v22.3 — **docs/V22.3-PLAN.md** — lists every finding of eight code lenses and the phone
 photographs, each with its verdict and fix, and what was left alone and why.
 **Chad's message of 22 Oct 2026 on episode 3 chapter 3 —

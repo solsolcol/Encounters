@@ -122,5 +122,36 @@
   "rwrej3GElDdOCHx4Jxax",
   "dTW63FOQDWRTRKv6Okx3",
   "eSmQNSAAIqEc3COuYX6I"
+ ],
+ "_note_24oct_run5": "24 Oct ~16:20 UTC, Chad: 'Try again, and are you using the latest v4?' — the score node moved to eleven_music_v2_5 (the workspace's newest music model; v4 is a SPEECH model, and sound effects have one model, eleven_text_to_sound_v2); run 5 went through: all 20 takes made and fetched to raw/*_run5_*.mp3 (fetch.py). Picks and reasons in make.sh (v22.4).",
+ "f4music_run5": [
+  "oDdm7CMrMReuGWr3OcEP",
+  "BbE4NCQsMlAP65LPG5RN",
+  "lB3qPJ9EmqXGigiT7Wyl",
+  "CYYdnUBqKs6MqFaUDIzD"
+ ],
+ "f4scroll_run5": [
+  "OirvTGTW6WT5SrKYqgh4",
+  "bRWQV8N3NL8KcPFdZU56",
+  "svAPIFdW7IObLROop3Ek",
+  "G0wJFbEz08TkElg1BOtG"
+ ],
+ "f4siren_run5": [
+  "4DvwHqlAmNPcLaSIXuCU",
+  "Zpbqo895Rv0LdCYZe7Jg",
+  "IzVszE1d42NFJNkhnriZ",
+  "eRGuP297RQ9O7GJmbZy9"
+ ],
+ "f4escal_run5": [
+  "xfBAoHA7B518Ugj80gZY",
+  "KlgGSaUOTxYzjsork3Uq",
+  "iUoMhZ7KRZtigBhcV017",
+  "BWS4MF4MGBVLUjtFv2qf"
+ ],
+ "f4tray_run5": [
+  "QdqHbKtwJbGKcBH7QzsJ",
+  "sDA7dXlXl44aXLtBNsPp",
+  "dW93jcVaLF8Eemz7XAtG",
+  "Q8FqO2QgVJ9rHsZLIABy"
  ]
 }

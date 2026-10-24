@@ -6280,3 +6280,12 @@ cut (sharing its vertices and maps) when it is small.
   then writes `look:1`, and B lands on 1/6 — "different", though each landed exactly where its own save says (v22.2 met
   the same in the other order, A read on that look's COMPLETE beat). Seed the state the comparison is about and face
   away from anything a look fires: from `look:1` turned 40° clear of every cone, A and B land alike.
+- **A generation that "started" has not been made, and an estimate is not a balance check** (v22.4). Runs 3 and 4 of
+  episode 3 chapter 4's film sounds came back from `creative_run_flow_nodes` with `success: true` on all twenty takes
+  and `failed: 0` in the summary, and every one of them was refused a moment later in `creative_get_flow_run_status`
+  ("This request exceeds your quota of 127573. You have 0 credits remaining"; "Insufficient funds" for the music, which
+  even showed two takes "generating" before they failed too). `estimate_only` priced the same run at 7,511 credits with
+  no error at all. So a run's reply means ACCEPTED: read the status until each generation says `completed` or names its
+  error, and quote that error to the person whose account it is — the message is what lets them see which account and
+  which allowance is meant. Nothing refused is charged, so running the same nodes again after a refusal for credits is
+  not the "never repeat a generation" trap.

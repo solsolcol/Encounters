@@ -1404,3 +1404,30 @@ monk leads the chant now), `cu3amitabha` (the girl's line), `glasscase` and
 entries removed. In the roar film the gasp waits for the crash's first blow
 (3.02 against the impact at 2.70): a voice ducks every other source 8 dB
 (v5.27), so on the blow it took the crash's weight with it.
+
+## v22.4 · episode 3 chapter 4's opening film, its own sound
+
+At v22.0 the film was made of this game's own takes under e3c4's names (`f4office`, `f4keys`, `f4click`,
+`f4shopbell`) and World Y's drone carried it as its score, because the ElevenLabs workspace refused every new
+generation for credits: "This request exceeds your quota of 127573. You have 0 credits remaining" for the effects,
+"Insufficient funds" for the music. Runs 3 and 4 on 24 Oct were refused the same way, every one of twenty, nothing
+charged. Run 5 went through after Chad opened the workspace and found his credits at their maximum (the session ids of
+all five runs are in `masters/v22.0/cp10/sessions.json`; the score node moved to `eleven_music_v2_5`, the workspace's
+newest music model, before run 5 — v4 is a speech model, and the effects have one model). Four takes each, measured
+with `masters/v22.0/cp5/meas.py` and a curve-and-onsets measure; `masters/v22.0/cp10/make.sh` names every pick and why:
+
+    f4music   score    c   the only take a phone can carry (21 % in 500 Hz-3 kHz; b and d put 28-39 % under 120 Hz);
+                           sparse, phrased with rests, and thinning to its end as the prompt asked     50.5 s
+    f4siren   effect   d   a passing wail with the traffic under it (high-passed at 120 Hz), clean ends   8.0 s
+    f4escal   effect   c   steady, a handrail squeak at 6 s; 51 % above 500 Hz                         11.0 s
+    f4tray    effect   b   the only one with body: clicks as the tray starts, the clack as it stops     1.95 s
+    f4scroll  effect   c   runs of exactly 7, 7, 7, 7 and 5 clicks; three of them laid on the film's three turns
+                           of the wheel (0.0, 2.3 and 3.8 s apart)                                       4.24 s
+
+The score is peak-matched at −3.0 dBFS (`m4music`'s and `x4close`'s level), the siren at −8.0, the rest at −6.0, all
+stereo, both encodings. All nine `f4*` sounds are e3c4's own pack; the shared pack did not move (100 sounds). In the
+film: the siren at 0.3 under the fade from black, the score at 0.6 (its rests on the office's cut to black and under the
+tray; its thinning, 44.6–50.6, under the push through her beads, where her song takes over), the wheel at 2.57, the tray
+at 20.05 (it replaces `x4set` there), the escalator at 24.0, faded as he steps off (31.4–33.2). The four music takes
+went to Chad as loudness-matched previews (`masters/v22.0/previews/film-music-1..4.mp3`; 3 is in the game), because a
+score is his ear's to pick (the v10.6 rule).

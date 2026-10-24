@@ -10577,8 +10577,9 @@
      holds only its cues and its fades. It opens on black (the v4.6 law) and ends on it: the chapter card lies over the
      black, and play begins where the film leaves him, inside her door. The office's hum, his keys and the click; the
      Golden Mile shop's own air (its beds, World H's); the old mall's (World Y's: the empty floor, the drone, her song from
-     the far end, louder as he comes); the tube, the beads, the bell. (Its score is the drone for now: the film's own
-     music is generated when the account has credits again — docs/V22.0-E3C4-PLAN.md §12) */
+     the far end, louder as he comes); the tube, the beads, the bell. Its own score under all of it, and its own wheel,
+     siren, escalator and tray (v22.4 — World Y's drone carried the film until the account had credits again;
+     masters/v22.0/cp10/make.sh) */
   function introFilm(c, s, api) {
     const { tr, step, sfx, sfxFade, fade, rawK, stage } = api;
     const F = stage.filmO, T = F.T;
@@ -10588,22 +10589,26 @@
     tr(0, T.end, (k, t) => F.frame(t, api), rawK);
     // O1 · his desk at night
     sfx(0.2, 'f4office', 0.5);
+    sfx(0.3, 'f4siren', 0.32);                           // a siren passing far off, through the glass, as the picture comes up
     sfx(0.5, 'f4keys', 0.42);                            // the search typed in the dark
-    sfx(0.6, 'y4dread', 0.2);                            // the drone under all of it
+    sfx(0.6, 'f4music', 0.5);                            // its score, under all of it (thinning to nothing as he goes in, 44.6-50.6)
     fade(0.6, 2.2, 1, 0);
     sfx(1.0, 'z4pro1', 1);                               // "After that night at the medium... I couldn't leave it alone..."  → 8.97
+    sfx(2.57, 'f4scroll', 0.5);                          // the wheel's three turns down the results (2.6, 4.9, 6.4)
     sfx(8.2, 'f4click', 0.5);                            // the fifth result: "What is a Yin amulet?"
     fade(11.0, 11.85, 0, 1);
     sfxFade(11.0, 11.85, 'f4office');
+    sfxFade(11.0, 11.85, 'f4siren');
     // O2 · Golden Mile, shop to shop (the shop's own air from World H's beds)
     fade(11.95, 12.6, 1, 0);
     sfx(12.4, 'z4pro2', 1);                              // "I went from shop to shop. Amulets, masters... anyone who might know something."  → 19.48
     sfx(15.55, 'f4shopbell', 0.5);                       // in through the shop's door
-    sfx(21.3, 'x4set', 0.3);                             // the tray brought across the glass
+    sfx(20.05, 'f4tray', 0.5);                           // the tray slid across the glass (20.2-21.4): its clicks, the clack as it stops
     fade(23.2, 23.9, 0, 1);
-    sfxFade(22.6, 24.0, 'y4dread');
     // O3 · the old mall, the top floor (World Y's beds: the empty floor, the drone, her song far off)
+    sfx(24.0, 'f4escal', 0.45);                          // the escalator under him, out of the black
     fade(24.1, 25.2, 1, 0);
+    sfxFade(31.4, 33.2, 'f4escal');                      // off the step at the top (31.2), walking away from it
     sfx(25.0, 'z4pro3', 1);                              // "One afternoon, on the top floor of an old mall, I found a shop I had never noticed before."  → 30.72
     sfx(34.5, 'y4tube', 0.45);                           // the one tube stuttering, ahead of him
     sfx(36.6, 'y4tube', 0.35);
