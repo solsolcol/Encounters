@@ -7333,6 +7333,7 @@ const ADULT_TAKES = new Set([
   'z3pro0', 'z3pro3', 'z3pro4', 'z3pro5', 'z3look1', 'z3look2', 'z3look3', 'z3look4',   // z3pro0, z3pro5: v21.7
   'z3pro6',                                                                                 // v21.19: the bus in (v21.20: z3pro7, the crossing, went)
   'z3masters',                                                                            // v21.11: his answer as the gallery of the masters opens
+  'z3lersi', 'z3shelf',                                                                   // v22.5: at the lersi masks, hung above the Buddhas; at the shelf of images
   'z3what',                                                                               // v21.12: his surprised answer to the medium, before the roar
   'z3roar',                                                                               // v21.30: in the roar film, as the lens circles the Hanuman
   'z3thanks', 'z3shift1', 'z3shift2', 'z3breath', 'z3knew', 'z3night', 'z3shrine', 'z3walk',
@@ -11468,6 +11469,7 @@ const STING_SAMPLE = {
   busride: ['busride', 1], busbell: ['busbell', 1], busbrake: ['busbrake', 1], busdoor: ['busdoor', 1], cardtap: ['cardtap', 1],   // v21.19: his ride in
   busaway: ['busaway', 1], busdoorshut: ['busdoorshut', 1],                                          // (v21.17's, played by the lorong's world; the film cues them too)
   z3look1: ['z3look1', 1], z3look2: ['z3look2', 1], z3look3: ['z3look3', 1], z3look4: ['z3look4', 1], ow3call: ['ow3call', 1],
+  z3lersi: ['z3lersi', 1], z3shelf: ['z3shelf', 1],             // v22.5: his lines at the lersi masks and at the shelf of images
   ow3masters: ['ow3masters', 1], z3masters: ['z3masters', 1],   // v21.11: the owner introduces the gallery of the masters; his answer
   wf3thanks: ['wf3thanks', 1], md3fu: ['md3fu', 1], fa3thanks: ['fa3thanks', 1], z3what: ['z3what', 1],   // v21.12: the shrine's thanks, the talisman, his answer
   z3roar: ['z3roar', 1],                                        // v21.30: "I feel something... roaring through me..." as the lens circles it

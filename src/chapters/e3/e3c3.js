@@ -114,7 +114,8 @@
              'cg_woman2hd', 'cg_man2hd', 'sitclap', 'sitshout', 'botak',
              'sitman', 'sitwoman', 'sitwomantalk', 'wifewalk',
              /* v21.11: Chad's row of six Taoist deities on the medium's altar (in Guan Gong's place), and the two
-                paintings on the shrine's walls (Wikimedia Commons, public domain, the files' own bytes) */
+                paintings on the shrine's walls (Wikimedia Commons, public domain, the files' own bytes).
+                v22.5: the row is his updated one ("These are more accurate") — five images, the same key */
              'taoistrow', 'ptg_zhenwu', 'ptg_jade',
              /* v21.8: the monk who leads the chant (e3c1's, at full detail), Chad's row of altar statues (e3c1's Sak Yant
                 room), and his five masters for the wall (the sources' own photographs, unaltered) */
@@ -149,7 +150,7 @@
       interactTouch: 'Tap to choose what you do',
       actLine: 'Press E to choose what you do',
       actLineTouch: 'Tap to choose what you do',
-      objBrowse: 'Look around the shop · {n}/4',          // (v21.9: each of the four pressed is a beat)
+      objBrowse: 'Look around the shop · {n}/6',          // (v21.9: each one pressed is a beat; v22.5: six — the lersi masks and the shelf of Buddhas joined the four)
       objOwner: 'See the owner at his counter',
       objWear: 'Open your bag and wear the LP Tim Khun Paen',
       objJoin: 'Join the chanting at the altar',
@@ -181,6 +182,8 @@
       lookTim: 'The LP Tim on its stand',          // (v21.8: no glass case — on screen it may say LP; a VOICE says Luang Phu)
       lookAltar: 'The altar',
       lookMasters: 'The old masters',
+      lookLersi: 'The lersi masks',                  // v22.5
+      lookShelf: 'The shelf of Buddhas',             // v22.5 (Chad's own name for it)
       /* v21.10: THE MASTERS' GALLERY — one page a master, in Chad's order. Researched and sourced:
          docs/research/V21.10-MASTERS.md (what is legend is said to be legend; what is a guess, a guess).
          v21.22: researched again, every sentence checked by a second reader against its sources, and each page
@@ -278,6 +281,7 @@
     z3pro0: 4.24, z3pro3: 4.0, z3pro4: 6.84, z3pro5: 4.8, z3pro6: 3.69, ow3hello: 5.96, z3look1: 6.27,
     z3look2: 4.65, z3look3: 5.93, z3look4: 3.71, ow3call: 2.43, ow3gift1: 9.69, ow3gift2: 3.47,
     ow3masters: 7.37, z3masters: 5.69,                                     // v21.11: the masters' gallery's introduction
+    z3lersi: 8.41, z3shelf: 7.45,                                          // v22.5: the lersi masks; the shelves of images
     z3thanks: 4.21, ow3good: 2.85, mk3chant: 30.37, z3shift1: 3.47, z3shift2: 4.28, ow3eh: 2.93,
     sm3hold: 2.38, sm3cannot: 2.32, st3uncle: 2.35, cu3sadhu: 3.01, ow3let: 2.43, z3breath: 3.0,
     ow3know: 2.04, z3knew: 5.64, st3trance: 2.59, cu3unclean: 4.26, ow3medium: 5.56, z3night: 2.69,
@@ -344,6 +348,7 @@
     const STAFF = { x: -3.92, z: -2.35 };                // the staff man, behind the other
     const LPT = { x: 3.1, z: -2.0 };                     // the LP Tim's case on the owner's counter
     const MSTR = { y0: 1.90, h: 0.50, z: -2.5 };           // v21.9: the old masters' one row on the owner's wall (its lowest edge, its height, its middle)
+    const LERSI = { x: -3.0, y: 1.25, w: 1.903, h: 1.397, d: 0.616 };   // v22.5: the lersi masks' row on the back wall — its middle, its lower shelf, its measured size
     const CLOCK = { x: 0, y: 2.56, z: -0.06 };           // over the door, inside, facing the shop
 
     /* ----------------------------------------------------------- materials */
@@ -773,6 +778,9 @@
        to 2.6 m, a 40k cut beyond — the same images across the shop. The
        images' gilt takes the room's reflection as the Buddha's does. */
     const SHELF = { w: 1.082, d: 0.32, mid: 0.95 };
+    /* (v22.5: where the three stand — their backs on the staff's wall, their fronts into the shop — named once, so the
+       look-spot at the shelf of Buddhas, lkShelf, stands on the shelf the scan does) */
+    const SHELF_X = SHOP.x0 + SHELF.d / 2 + 0.012, SHELF_ZS = [-0.95, -2.25, -3.55];
     function displayShelf(x, z, ry, standIn) {
       parseOnce('amushelf').then(g => {
         if (!alive) return;
@@ -801,7 +809,7 @@
       return new THREE.MeshStandardMaterial({ map: t, roughness: 0.6 });
     });
     {
-      const CAB = { x: SHOP.x0 + 0.22, d: 0.4, h: 2.1, zs: [-0.95, -2.25, -3.55], w: 1.2 };
+      const CAB = { x: SHOP.x0 + 0.22, d: 0.4, h: 2.1, zs: SHELF_ZS, w: 1.2 };
       const cabG = new THREE.Group(); shopG.add(cabG);                  // the stand-in: the old cabinets and their rows
       const frames = [], faces = Array.from({ length: 8 }, () => []);
       let n = 0;
@@ -836,7 +844,7 @@
         I.castShadow = false; cabG.add(I);
       });
       /* his shelves on the cabinets' own spots: the back 1 cm off the wall, the front (+z in the file) turned to +x */
-      for (const cz of CAB.zs) displayShelf(SHOP.x0 + SHELF.d / 2 + 0.012, cz, Math.PI / 2, cabG);
+      for (const cz of CAB.zs) displayShelf(SHELF_X, cz, Math.PI / 2, cabG);
     }
 
     /* ------------------------------------------- the owner's wall: THE OLD MASTERS
@@ -1141,7 +1149,7 @@
          1.25 m, its spires 0.25 m under the ceiling; under it a low cabinet in the altar's red lacquer and gilt, its
          candles and incense pot before the masks (e3c1's ledge carried the same). Two red boards stand in until it
          lands (a failed download costs the masks, never the corner — v4.7) */
-      const sx = -3.0, MS = 1.0, MY = 1.25, CAB_H = 0.9, cz = SHOP.z0 + 0.24;
+      const sx = LERSI.x, MS = 1.0, MY = LERSI.y, CAB_H = 0.9, cz = SHOP.z0 + 0.24;
       const maskStand = [box(2.0, 0.05, 0.32, sx, MY + 0.05, SHOP.z0 + 0.17, matRed, shopG, false),
                          box(2.0, 0.05, 0.32, sx, MY + 0.75, SHOP.z0 + 0.17, matRed, shopG, false)];
       parseOnce('lersimask').then(gltf => {
@@ -3162,7 +3170,7 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
     }
 
     /* ---- THE ALTAR: the base cabinet, the niche with its canopy and plaque,
-       two steps, Chad's row of six deities on the upper one, the red lamps
+       two steps, Chad's row of deities on the upper one (v22.5: his updated row of five), the red lamps
        (v21.11 — until then Guan Gong stood alone on the upper step and four
        drawn images on the lower) */
     const ALT = { z: -9.55, top: 0.95 };
@@ -3190,9 +3198,9 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
         for (let i = 0; i < 9; i++) { m4.makeTranslation(-1.28 + i * 0.32, ALT.top + 1.9, -9.22); bulbs.setMatrixAt(i, m4); }
         g.add(bulbs); }
       /* the steps (v21.11: the upper one widened to 2.8 m and deepened to 0.52 m to carry the row, its back on the
-         niche's, and raised 0.2 m — DEI.top — so the six preside over the medium's hat from the door and the waiting
-         stools, the way a shrine's images stand high; the lower one 0.70 m deep, so a 0.19 m lip runs along the front
-         of the row for the candles) */
+         niche's, and raised 0.2 m — DEI.top — so the row (six, five since v22.5) presides over the medium's hat from
+         the door and the waiting stools, the way a shrine's images stand high; the lower one 0.70 m deep, so a 0.19 m
+         lip runs along the front of the row for the candles) */
       box(2.9, 0.2, 0.70, 0, ALT.top + 0.1, -9.56, matLacq, g); box(2.94, 0.03, 0.03, 0, ALT.top + 0.2, -9.21, matGold, g, false);
       box(2.8, DEI.top - 0.2, 0.52, 0, ALT.top + 0.2 + (DEI.top - 0.2) / 2, -9.66, matLacq, g); box(2.84, 0.03, 0.03, 0, ALT.top + DEI.top, -9.40, matGold, g, false);
       /* THE ROW (v21.11 — Chad: "Use this row of deities to add onto the taoist medium's shop's altar area, remove the
@@ -3203,7 +3211,14 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
          scan's 593k triangles within DEI.near of its middle, a permissive cut of 148k beyond it (photographed side by
          side from 3 m and from the stool: the same row). The curtain waits for it. (v21.16: the four images drawn from
          cylinders and balls that stood in on the step until it landed are gone — Chad's rule, no block figures
-         anywhere; a failed download costs the row and leaves the step bare, never a drawn figure in its place.) */
+         anywhere; a failed download costs the row and leaves the step bare, never a drawn figure in its place.)
+         v22.5 (Chad: "replace the current row of taoist deities at the taoist medium shop with this new 3d model row
+         of taoist deities. These are more accurate"): his updated scan under the same key — FIVE images on their own
+         pedestals, the underworld court a Singapore medium's altar carries: Ox-Head with his trident, the white
+         Wuchang with his fan, a black-faced judge enthroned in the middle with his court tablet, the black Wuchang
+         with his plaque, Horse-Face with his spear. The same width as the old row to the millimetre (1.902 at 1, so
+         DEI stands), taller (0.743 against 0.597: its top 2.69 m, under the canopy's drops at 2.88), facing +z; every
+         one of its 582k triangles near, a 146k cut beyond (masters/v22.5/make.sh) */
       parseOnce('taoistrow').then(gl => {
         if (!alive) return;
         const lod = new THREE.LOD(); lod.position.set(0, ALT.top + DEI.top + 0.003, DEI.z); lod.scale.setScalar(DEI.s); g.add(lod);
@@ -4921,6 +4936,7 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
        v8.0: a line asked for before its bytes have decoded plays nothing) */
     if (warmSounds) warmSounds(['ow3hello', 'z3look1', 'z3look2', 'z3look3', 'z3look4', 'ow3call', 'ow3gift1', 'ow3gift2',
                                 'ow3masters', 'z3masters',                                  // v21.11: the gallery's introduction
+                                'z3lersi', 'z3shelf',                                       // v22.5: the lersi masks; the shelves of images
                                 'z3thanks', 'ow3good', 'mk3chant', 'z3shift1', 'z3shift2', 'z3night',
                                 'candlelit3', 'torchclick', 'matkneel3', 'e3bell', 'presencein',
                                 // the shrine's (play B): its lines and the sounds play makes there
@@ -4994,7 +5010,7 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
     const BUDDHA_FACE = ROW_FACE;                       // v21.8: the Buddha at the middle of Chad's statue row
     const faceBuddha = (p = MAT) => Math.atan2(-(BUDDHA_FACE.x - p.x), -(BUDDHA_FACE.z - p.z));
 
-    /* 1 · BROWSING — four things to look at, each a line of his.
+    /* 1 · BROWSING — four things to look at, each a line of his (v22.5: six, below).
        v21.9 (Chad: "the user either has to tap it, click it, or press E on
        each objective in order to complete it and move to the next"): each of
        the four is PRESSED (the hotspots below), the order counts them — 1/4,
@@ -5003,12 +5019,22 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
        when the player walked up to the counter, or after 45 s of wandering,
        and each of those finished the browse with markers still on screen,
        never pressed. The count rides the phase string (`browse:wall,tim`), so
-       a Continue lands on the same count (e2c2's `ask:`, v7.3's law). */
+       a Continue lands on the same count (e2c2's `ask:`, v7.3's law).
+       v22.5 (Chad: "add another objective at the row of lersi masks" and "also
+       add another objective at the shelf of buchas"): SIX — the lersi masks
+       hung higher than the Buddhas on the altar, and the shelf where Buddhas
+       stand on every row among monks, hermits and deities; one line of his
+       each, in Chad's words. Nothing else moved: the owner still calls only
+       when EVERY look in LOOKS is spent (LOOK_N is their count), the masters
+       still count only when the gallery has been read through (galleryOpen),
+       and every look holds the browse until its line is over (browseHeld). */
     const LOOKS = {
       wall:    { line: 'z3look1' },
       tim:     { line: 'z3look2' },
       altar:   { line: 'z3look3' },
-      masters: { line: 'z3look4' }
+      masters: { line: 'z3look4' },
+      lersi:   { line: 'z3lersi' },                     // v22.5
+      shelf:   { line: 'z3shelf' }                      // v22.5
     };
     const LOOK_N = Object.keys(LOOKS).length;
     /* (v21.10: and the gallery's pages read so far, as `g.<id>` — a Continue opens it where he left off) */
@@ -5024,7 +5050,7 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       holdTill = Infinity;                               // v21.21: held from the press until its line is over (holdFor)
       queueLine(LOOKS[k].line, holdFor(LOOKS[k].line));
       browseMark();
-      if (looked.size >= LOOK_N) ownerCalls();          // the fourth: the owner's call is queued behind its line
+      if (looked.size >= LOOK_N) ownerCalls();          // the last (v22.5: the sixth): the owner's call is queued behind its line
       else objectiveFor('browse');
       return true;
     }
@@ -5034,7 +5060,7 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       /* v21.21 (Chad: "don't allow the player to tap on the next objective yet until the voiceline and everything is
          totally completed. Only after full completion, then proceed to play the next owner voiceline and then allow
          the player to proceed with the next objective"): the browse is done — OBJECTIVE COMPLETE, and the box empties
-         — but the owner calls only once the fourth look's line has been said in full (he is queued behind it), and
+         — but the owner calls only once the last look's line (v22.5: the sixth's) has been said in full (he is queued behind it), and
          his order and his mark come only once he has finished. Until then nothing in the shop can be pressed: v21.9
          put the order up on the fourth press, so the owner could be pressed while the lines still waited, and the
          gift's start dropped them (giftBegin empties the queue) */
@@ -6014,7 +6040,7 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
        completes if the user camera faces it. I don't want this auto timer,
        instead the user either has to tap it, click it, or press E on each
        objective in order to complete it and move to the next"): the four
-       look-spots are PRESSED, never timed — `pressAim` (the twenty-eighth
+       look-spots (v22.5: six) are PRESSED, never timed — `pressAim` (the twenty-eighth
        seam): E, the badge or a click under pointer lock presses the one the
        reticle is on; a tap or an unlocked click on its mark, or on the thing
        itself (`hits`, a box round it), presses it from anywhere in reach.
@@ -6047,6 +6073,23 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       { id: 'lkMasters', lookKey: 'masters', pos: { x: SHOP.x1 - 0.05, y: MSTR.y0 + MSTR.h / 2, z: MSTR.z }, radius: 9, aim: 0.26, pressAim: true, markFar: 9, markY: MSTR.h / 2 + 0.11, prompt: W.lookMasters,
         hits: tapBox(SHOP.x1 - 0.2, MSTR.y0 - 0.03, MSTR.z - MSTR.half - 0.04, SHOP.x1, MSTR.y0 + MSTR.h + 0.04, MSTR.z + MSTR.half + 0.04),   // the six portraits, one row (v21.10: its measured length)
         enabled: () => phase === 'browse' && !looked.has('masters') && !browseHeld(), onInteract() { return galleryBegin(); } },   // (v21.11: not while the owner introduces it; v21.21: nor while any line of the browse is said)
+      /* v22.5 · THE LERSI MASKS (Chad: "add another objective at the row of lersi masks. The player should say a
+         voiceline after clicking the objective marker on the row of lersi masks"): on the masks' middle, its mark in
+         the strip between their spires and the ceiling; the tap box the masks and their two shelves (LERSI, measured).
+         They hang at 1.25-2.65 m, over the Buddha row on the altar (0.94-1.76), which is what his line is about. Like
+         every look: pressed, never timed, held while any line of the browse is said, spent once */
+      { id: 'lkLersi', lookKey: 'lersi', pos: { x: LERSI.x, y: LERSI.y + LERSI.h / 2, z: SHOP.z0 + 0.36 }, radius: 9, aim: 0.26, pressAim: true, once: true, markFar: 9,
+        markY: LERSI.h / 2 + 0.13, prompt: W.lookLersi,
+        hits: tapBox(LERSI.x - LERSI.w / 2, LERSI.y - 0.03, SHOP.z0, LERSI.x + LERSI.w / 2, LERSI.y + LERSI.h + 0.02, SHOP.z0 + 0.012 + LERSI.d),
+        enabled: () => phase === 'browse' && !browseHeld(), onInteract() { return lookAt('lersi'); } },
+      /* v22.5 · THE SHELF OF BUDDHAS (Chad: "also add another objective at the shelf of buchas"): Chad's shelf of
+         images by the door, the first of the three on the staff's wall (SHELF_ZS[0]) — Buddhas on every one of its five
+         rows among monks, hermits and deities. The anchor on its upper rows (the counter hides the lower ones from the
+         floor), its mark just over its top; the tap box the shelf itself. The same rules as every other look */
+      { id: 'lkShelf', lookKey: 'shelf', pos: { x: SHELF_X + SHELF.d / 2, y: 1.35, z: SHELF_ZS[0] }, radius: 9, aim: 0.26, pressAim: true, once: true, markFar: 9,
+        markY: 0.70, prompt: W.lookShelf,
+        hits: tapBox(SHELF_X - SHELF.d / 2, 0, SHELF_ZS[0] - SHELF.w / 2, SHELF_X + SHELF.d / 2, 1.92, SHELF_ZS[0] + SHELF.w / 2),
+        enabled: () => phase === 'browse' && !browseHeld(), onInteract() { return lookAt('shelf'); } },
       { id: 'owner', pos: { x: OWN.x - 0.05, y: 1.45, z: OWN.z }, radius: 2.7, prompt: W.hotOwner, markY: 0.3,   // (just over his head: at the default it stood under the objective box from the counter — VP-4)
         enabled: () => phase === 'owner', onInteract() { return giftBegin(); } },
       { id: 'mat', pos: { x: MAT.x, y: 1.0, z: MAT.z }, radius: 1.5, prompt: W.hotMat, markY: -0.55,   // (just over the mat's glow: 1.45 m up it read as the altar's, beside a second marker — VP-5)
@@ -6391,8 +6434,10 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
           else if (k.startsWith('g.')) galSeen.add(k.slice(2));   // v21.10: the gallery's pages read
         }
         for (const h of hotspots) if (h.lookKey && looked.has(h.lookKey)) h.done = true;
-        /* v21.21: saved after the fourth look and before the owner's order (the order now waits for his call): the
-           browse is spent, so the Continue lands on the order itself, the owner already looking up */
+        /* v21.21: saved after the last look and before the owner's order (the order now waits for his call): the
+           browse is spent, so the Continue lands on the order itself, the owner already looking up.
+           (v22.5: a save from before the lersi masks and the shelf holds four looks at most, so it lands in the browse
+           with those two still to do, and the owner calls after them — however far through the four it was) */
         if (looked.size >= LOOK_N) { p = 'owner'; called = true; }
       }
       setPhase(p);
@@ -8087,9 +8132,9 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
     sfx(13.6, 'md3D2');                                // 9.64 → 23.24
     step(13.6, () => { F.medTalk(true); });
     /* "I read it the way my teachers taught me... through my god, in my tradition." — on "through my god" (2.84 s into
-       the line) his eyes go up past the medium to the six on the altar behind him, the lens closing on them, and hold
-       there through "in my tradition"; on "Another master, the Thai side, may read it another way" (6.02) they come back
-       down to the man saying it */
+       the line) his eyes go up past the medium to the row on the altar behind him (five since v22.5), the lens closing
+       on them, and hold there through "in my tradition"; on "Another master, the Thai side, may read it another way"
+       (6.02) they come back down to the man saying it */
     const ROW = { x: F.LX(0), y: 2.05, z: -9.655 };
     const pRow = Math.atan2(ROW.y - 1.62, Math.hypot(ROW.x - p0.x, ROW.z - p0.z)), fRow = narrow ? 44 : 38;
     pitchTo(16.2, 17.6, -0.03, pRow, smoothK);

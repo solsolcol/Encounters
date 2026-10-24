@@ -57,6 +57,14 @@ scene. Priority ★ = the chapter looks wrong without it.
   (`CHARTFIX=1 tools/prepmonk.mjs` at 0.3: 178k triangles, weights diffused,
   normals shared across the seams, 4.1 MB, hosted-only).
 - ★ **A Chinese altar room / shrine** — red lanterns, a red altar, deity statues.
+- ✅ **The row of deities on the medium's altar** — Chad's scan, shipped as
+  `taoistrow` at v21.11 (six images: Nezha, Guan Gong, Xuantian Shangdi, the two
+  Wuchang, a general on a tiger) and REPLACED under the same key at v22.5 by his
+  updated scan ("These are more accurate"; Drive
+  `1pz-YlKB3rLRtV-xu9B9JD-8E1pA316OC`, 118 MB): FIVE images on their own
+  pedestals — Ox-Head, the white Wuchang, a black-faced judge enthroned in the
+  middle, the black Wuchang, Horse-Face. Every triangle near (582k) and a 146k
+  cut beyond 3 m over the same vertices and maps (`masters/v22.5/make.sh`).
 - ✅ **Hanuman** — ARRIVED 19 Oct (Drive `hanuman.glb`, 48 MB: a white Hanuman
   lunging with a trident, roaring, one static Meshy mesh of 591k triangles,
   Y up, facing +z). Shipped as `hanuman` (`LONG=1 tools/prepwess.mjs` at 0.2:

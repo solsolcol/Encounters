@@ -1431,3 +1431,23 @@ tray; its thinning, 44.6–50.6, under the push through her beads, where her son
 at 20.05 (it replaces `x4set` there), the escalator at 24.0, faded as he steps off (31.4–33.2). The four music takes
 went to Chad as loudness-matched previews (`masters/v22.0/previews/film-music-1..4.mp3`; 3 is in the game), because a
 score is his ear's to pick (the v10.6 rule).
+
+## v22.5 · episode 3 chapter 3's amulet shop, two more things to look at
+
+Chad asked for two new look-spots in the shop, each with a line in his own words: at the row of lersi masks ("Hmm,
+shouldn't these lersi masks be placed lower than the row of Buddha statues? This doesn't seem rightly placed...") and at
+the shelf of Buddhas ("Hm I think all the buddha statues should be placed at the top row instead...nevermind...").
+Both are Brian's (`jamesAdult`), eleven_v3, two takes each on the e3c3 voices flow (`masters/v22.5/sessions.json`),
+both takes of each with every word right (faster-whisper small and medium.en). `masters/v22.5/make.sh` names every pick
+and why:
+
+    z3lersi   b   the clean head (−52.4 dB), "Hmm." set apart by a 0.9 s beat before the question — the puzzled
+                  read — and 1.3 s before "This doesn't seem rightly placed"; it ends on the "d" of "placed", so its
+                  last 0.12 s is faded (a's head is noise and its "Hmm" runs straight into the question)   8.41 s
+    z3shelf   a   the only take clean at both ends (−63.2 / −53.3 dB), "Hmm." then a 1.1 s beat, the thought, a
+                  1.5 s pause, "Never mind." (b ends on signal)                                          7.45 s
+
+The script carries one tag naming an emotion each (`[puzzled]`, `[thoughtful]`); in z3shelf a comma after "Hm", a
+space after the first ellipsis and the capital on "Buddha" are for the read — not one of his words moved. His chain is
+the v16.0/v18.6 one (high-pass 70 Hz, mono, peak-matched to −6.85 mp3 / −6.6 ogg, 64 kbps Opus). Both are e3c3's own
+pack, warmed by the chapter; the shared pack did not move.
