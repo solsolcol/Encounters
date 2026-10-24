@@ -6529,7 +6529,7 @@ What the baseline contains, by release:
   music takes went to Chad as loudness-matched previews; take 3 is in until he picks. One law in LEARNINGS: a run's
   "started" is not "made", and an estimate is not a balance check. `src/main.js` gains five rows in `STING_SAMPLE`
   and nothing else. No word moved; sheet v118 stands (v44 the link). Deploy `6adcde04ed7f68b8809c7115`,
-  byte-verified (253 served files).
+  byte-verified (253 served files); harnesses chapter, hosted, csp and cine green on it.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
