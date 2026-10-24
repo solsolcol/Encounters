@@ -90,10 +90,19 @@ out.autosaveRunsUnaided = await p.evaluate(async () => {
   const e = window.__enc;
   const before = e.loadCheckpoint().t;
   e.yaw.position.set(1.0, 1.62, -2.0);
-  await new Promise(r => setTimeout(r, 11000));      // AUTOSAVE_MS is 8 s
-  const after = e.loadCheckpoint();
-  return after.t > before && Math.abs(after.at.x - 1.0) < 0.01;
+  /* v22.0: POLL, never a fixed wait (the v8.7 law). AUTOSAVE_MS is 8 s of wall time, but the save is written by the
+     FRAME loop, and on a loaded box one software-rendered frame can take seconds: the fixed 11 s missed it twice in
+     the v22.0 suite and again run on its own, with the autosave's code untouched by v22.0. Nothing else writes a
+     save while this waits, so a save that lands is still the loop's own. */
+  const t0 = performance.now();
+  while (performance.now() - t0 < 60000) {
+    const s = e.loadCheckpoint();
+    if (s && s.at && s.t > before && Math.abs(s.at.x - 1.0) < 0.01) { window.__autosaveAfter = performance.now() - t0; return true; }
+    await new Promise(r => setTimeout(r, 500));
+  }
+  return false;
 });
+console.log('autosave landed after', await p.evaluate(() => window.__autosaveAfter == null ? 'never' : (window.__autosaveAfter / 1000).toFixed(1) + ' s'));
 
 // --- 3 + 4. reload, Continue, land where you were ---------------------------
 await boot();
