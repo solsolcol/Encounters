@@ -7366,9 +7366,13 @@
       const al = M({ color: 0x8a8e92, roughness: 0.35, metalness: 0.7 });
       for (const [w, h, x, y] of [[2.9, 0.06, REFL.x, 2.53], [2.9, 0.06, REFL.x, 0.04], [0.06, 2.5, REFL.x - 1.43, 1.28], [0.06, 2.5, REFL.x + 1.43, 1.28], [0.05, 2.45, REFL.x + 0.2, 1.28]])
         box(w, h, 0.05, x, y, REFL.z + 0.01, al, reflG, false); }
+    // (v22.3 P-1: a reflection ADDS light to dark glass. Slate-grey 0x2a2e38 with no glow against the 0x07080b room,
+    // under the painted street at 0.62, reached the screen ~4/255 apart, so he whipped round at nothing the player was
+    // shown. Pale and faintly self-lit, he reads as a man in the glass, seen through the reflection; a black silhouette
+    // was photographed too and reads as someone standing inside the shop, which the turn to the street would contradict)
     const eShade = mkPerson('staffman', { parent: worldT, x: REFL.x + 0.42, z: REFL.z - 1.95, ry: 0, height: 1.7, idle: 'Idle_9', hidden: true,
-      then: (P) => { P.model.traverse(m => { if (!m.isMesh) return; m.material = m.material.clone(); m.material.color.setHex(0x2a2e38);
-                                                 if (m.material.emissive) m.material.emissive.setHex(0x000000); mats.push(m.material); m.castShadow = false; }); } });
+      then: (P) => { P.model.traverse(m => { if (!m.isMesh) return; m.material = m.material.clone(); m.material.color.setHex(0x6e7484);
+                                                 if (m.material.emissive) m.material.emissive.setHex(0x2a2d36); mats.push(m.material); m.castShadow = false; }); } });
 
     /* ---- the light of the endings (five stops each, as every World T preset has, so the sky tweens) */
     const T_DUSK = { stops: [[0.00, '#e89a64'], [0.12, '#b8786a'], [0.35, '#6a6488'], [0.65, '#2e3a62'], [1.00, '#141c3a']],

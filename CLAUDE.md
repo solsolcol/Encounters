@@ -6458,6 +6458,61 @@ What the baseline contains, by release:
   - The same street stands in episode 3 chapter 3, at night, from the same code, so it has both fixes too.
   - Deploy `6adc42813401ea7784504094`, byte-verified (253 files). No word moved; sheet v117 stands (v44 the link).
     docs/V22.0-E3C4-PLAN.md §12.4 is the record; three laws in LEARNINGS.
+- **v22.3** EPISODE 3 CHAPTER 4, DEBUGGED IN DEPTH — Chad: *"Also do a very deep and comprehensive debugging of
+  this chapter"*. v21.1's method: eight read-only code lenses, phone photographs of every beat, every finding verified
+  against today's code or a photograph before it was touched. docs/V22.3-PLAN.md lists each finding with its verdict and
+  fix, and what was left alone and why.
+  - THE ENGINE (all unreachable from episodes 1–2 except where said):
+    - `stage.skyAt()` (THE THIRTY-SIXTH SEAM): the sky stands where the stage says. World T, 250 m from the origin,
+      stood outside the dome, so its street had a flat sky with no evening and no stars. A stage that declares nothing
+      is drawn as before.
+    - `stageDirty`: v22.2's `freshStage()` reset a world straight out of build() and took away what build() had set
+      up. The v22.2 suite's fixture failure was this; it passes now. It reaches every chapter's Continue and New game,
+      and runs only for a world that has been played.
+    - STEADY begun under the pointer lock starts from its first real move (the browser's cursor restore jumped the mark
+      up to 2.6 rings off).
+    - The cold's full-screen blur is restyled about a tenth as often (its inputs quantised).
+  - THE CHAPTER:
+    - SAVE AND RESUME: the cold's breath no longer goes on over the title and the pause menu. A Continue after the Yin
+      set-down hears his promise and her answer again. A Continue inside her "pick it up" hears it again. A Continue at
+      the end of the tray posts no false COMPLETE. reset() clears every mouth still moving.
+    - THE ARRIVALS: after the merit film and after the run-out, the order, its chime and the stool's "!" wait for the
+      picture (`wDark`). World H's arrival faces the owner who greets him.
+    - LET GO: each attempt owns its roar, so an early press no longer leaves the old one peaking in the next try. A
+      price that faints him ends the beat. The card says how it went (two new notes).
+    - THE PLACES:
+      - World Y: the atrium's bulkheads face the void they close; the pillars are solid; the slits to the sky over the
+        fronts are closed; three flickering joints are fixed; the words sit on the glass.
+      - World H: the corner, counter-top and trunking flickers are fixed (and in e3c3); the gap behind the counters is
+        closed (and in e3c3); the shopper keeps his line.
+      - World T: the open strips through the ground along the street are closed; the five-foot way's ends are crates and
+        a palm, not invisible walls; its pillars, piers and folded doors are solid; the open fronts across the road stop
+        flickering (and in e3c3's night street); the framed trays, jars, antiques and stock sit on what holds them; the
+        balusters stop inside the rail; the halos are behind their figures; the hermit's look frames his face on a
+        phone; the decision opens only by itself; leaves land where they fall; the street is drawn only in World T.
+    - THE FILMS: the merit film's bowl pours from the top of the frame, its water inside the bowl, its stream one tube
+      re-laid in place. The Yin shop is still heard under the chapter card. The run-out's shopper comes in on a cut and
+      stops when he steps aside.
+    - THE ENDINGS: A's last scare is seen through the window, not a shutter. B's bag is carried where it is seen, the
+      fourth piece no longer smokes at home, the desk's bar is gone and the next morning reads ten past ten. D's card is
+      written beside the bundle, in the owner's hand, with the lens on it. B, C and D open on the counter whichever way
+      he was looking.
+    - SOUND: her weeping goes when she does and never doubles; the Yin shop's beds stay in the bag; the cold's banner
+      observes ("Sanity drops while the cold holds you.") instead of giving an order he cannot follow.
+  - THE PHOTOGRAPHS (a phone, every beat, on the deployed build) found three more, each confirmed and fixed:
+    - P-1: ending A's last scare could not be seen: the figure a step behind him stood slate-grey in the dark shop
+      behind the glass and reached the screen about 4/255 apart from the room. He is pale and faintly self-lit now, a
+      man in the glass seen through the painted street (four looks were photographed; a reflection only adds light, and
+      a black silhouette read as someone standing inside the shop).
+    - P-2: ending B's bag, carried back in, filled a phone's frame and hid the owner for the whole of "Uncle... I'm
+      bringing it back"; it is held lower, so his face shows above it.
+    - P-3: from the end of the five-foot way the road's double yellow line was drawn THROUGH the pillar in front of it
+      (one 180 m strip 9 cm wide, which the rasterizer clips badly where it passes the lens); the lines are laid in
+      12 m lengths.
+  - Three words; sheet v118 (v44 stays the link).
+  - Deploys `6adc65beedbc96b6a29c712a`, `6adc6a732f97622dcc3aa617` (her weeping held) and `6adc813d8e7e820f970ea524`
+    (the photographs' three), each byte-verified (253 served files); harnesses text, csp, hosted and chapter green on
+    the second.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so

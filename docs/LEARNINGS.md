@@ -6255,12 +6255,22 @@ cut (sharing its vertices and maps) when it is small.
 - **A thing seen through glass needs to differ from what is behind the glass, not from the glass** (v22.3, P-1). Ending
   A's figure "a step behind him" stood in a near-black room behind a reflection painted at 62 %. A slate-grey figure in
   a black room, seen through 38 % of window, reached the screen as about 4/255 of difference: the code was right, the
-  figure was there, and no player could see it. The lens's photographs at the 0.95 s it shows were the first to look.
+  figure was there, and no player could see it. No photograph had been taken inside its 0.95 s until this pass's.
   Work out what reaches the eye (the figure's light, times what the glass lets through, against the same for the room)
-  before trusting a scare to a dark shape behind glass.
+  before trusting a scare to a dark shape behind glass. And remember what a reflection is: it only ever ADDS light to
+  dark glass. Four looks were photographed in the figure's moment; a pale figure, faintly self-lit, reads as a man in
+  the glass seen through the reflection, while a black silhouette reads as someone standing inside the shop — which
+  his turn to the street then contradicts.
 - **A strip 180 m long and a few centimetres wide is laid in lengths** (v22.3, P-3). The double yellow line was one box
   the length of the street, 9 cm wide. Where it passed the lens it had to be clipped, and the rasterizer drew it THROUGH
   the pillar in front of it: a dashed yellow line across the pillar's face, in one view and not its mirror image. A
   projection through the shot's own lens proved which it was (the dashes sat on the line's path, not on the pillar's
   diagonal, where a clipping crack would be). Long thin geometry that passes the camera is cut into lengths of about
   10 m. It costs a few hundred triangles.
+- **Probe law: a panel still rising takes the tap meant for what is above it** (v22.3). The decision panel rises 40 px
+  over 0.45 s. At a frame a second, a choice's rect read in the middle of that rise holds still across several reads,
+  because nothing is being painted between them, so "the same rect three times" passed and the tap landed 40 px low,
+  on the next choice: the probe asked for ending A and got B, twice. Wait until the panel has no running animation
+  (`getAnimations({ subtree: true })`) AND `document.elementFromPoint` at the point is the choice itself, then tap. And
+  read a scene's own state only after its first drawn frame: the ending's name is set there, not when the cutscene
+  becomes active.
