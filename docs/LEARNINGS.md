@@ -6124,3 +6124,40 @@ cut (sharing its vertices and maps) when it is small.
   every name it READS that nothing declares and no browser global provides; every chapter scans clean. A plain
   `x = …` to an undeclared name is left alone on purpose: in a plain script that is a sloppy-mode global, not a throw
   (e2c3's `S`). Run it beside tdzscan before a chapter is deployed.
+
+- **A stand-in is chosen by its face at the nearest distance a scene will put the lens** (v22.0). e3c4's Chinatown
+  owner stood in as episode 1's encik scan, which had read fine for two chapters across a tent and behind a counter
+  at three metres — and every ending pushes in to a two-shot at 1.6 m, where its 4,200 triangles on one 512-pixel
+  atlas of a few hundred islands broke his face into light and dark patches, faceted, with a seam round the neck. A
+  figure's quality is a property of the CLOSEST shot it is in, not of the scene it was first placed in.
+  `tools/probes/faceshot.mjs` loads any asset with three's own loader (no build), parks a take at a time, and
+  photographs the head front, three-quarter and profile and the whole figure at a phone's pixel ratio; every older
+  man the game ships went through it before one was picked. Check `HEAD_RE` against the rig before trusting its head
+  shot: a figure framed from the top of its box shows hair, not a face.
+- **A downward face under a roof takes only the hemisphere's ground colour** (v22.0). e3c4's five-foot ways had
+  their ceilings painted 0x5c544a, and in the afternoon (T_DAY: hemisphere ground 0x6a5038 at 0.85) a 36 % grey
+  facing down lit by a dark brown came out black — every walk along the shops had a void over the top third of a
+  phone's frame. A real covered walkway is lit from below by the street and the tiles; nothing here bounces light,
+  so the ceilings are a pale plaster with that bounce as a warm emissive (0x4a4236). Any ceiling that is seen at a
+  low angle in daylight wants the same, and the check is a photograph, not the material's colour.
+- **Nothing in the engine gives the hands' root back after an opening film or a scene** (v22.0). `restart()` and
+  `restoreWorld()` put the ARM back (`armR`); only `kit.film`'s end restores `handsRoot`. e3c4's opening film hides
+  the hands in its frames, and the Yin shop was then played with no hand at all — the locket, the numbness climbing
+  his arm and the cold all happened to nothing — until the merit film handed them back; a Retry after one of its
+  endings likewise. A chapter whose film or scene hides `handsRoot` gives it back at its own end (a `step(T, …)`), as
+  e3c3's do.
+- **A tween begun while another runs starts from the picture as it is, not from the last one's end** (v22.0).
+  `daylightTo` began every tween from `dayNow`, which only moves when a tween FINISHES — so a piece taken while the room
+  was still going back to day flashed the previous piece's colour for a frame before its own began. The start of a
+  tween is what is on screen (`dayMix` of the running one at its current k). The same holds for any state eased toward
+  a target.
+- **A bookmark moves in the same tick as the payment it records** (v22.0). e3c4 paid the Yin's set-down and left the
+  phase on 'held' for the eleven seconds the keeper then speaks; an autosave there resumed into STEADY and paid it a
+  second time. Its third LET GO miss paid 0.8 s before its bookmark moved. Pay and bookmark together, or the save can
+  fall between them — and bank conduct with a receipt (`bankOnce`, v7.3's law) wherever a Continue can reach the beat
+  again.
+- **The v19.5 comment trap struck again, mid-line this time** (v22.0): `bagG.position.set(…);   // (why) bagG.rotation.set(…);
+  bagG.scale.setScalar(1);` — a comment written after the FIRST statement of a line that held three hid the other two,
+  and the bag in ending B's room kept whatever turn and size the shop's shot had left it. Found by reading the full
+  diff before the commit, not by any harness: chaptertest, tdzscan and undefscan all pass a statement turned into a
+  comment. Before a commit, scan the ADDED lines for code after a `//` (a call ending `);`, an assignment).

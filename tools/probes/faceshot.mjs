@@ -30,7 +30,7 @@ sc.add(new THREE.HemisphereLight(0xfff4e8, 0x40382c, 1.4));
 const key = new THREE.DirectionalLight(0xffffff, 1.6); key.position.set(1.2, 2.2, 2.4); sc.add(key);
 const cam = new THREE.PerspectiveCamera(30, W / H, 0.01, 100);
 const L = new GLTFLoader(); L.setMeshoptDecoder(MeshoptDecoder);
-const HEAD_RE = /(^|[^a-z])Head(_\\d+)?$/i;
+const HEAD_RE = /Head(_\\d+)?$/;                                   // the engine's CHCTX.HEAD_RE
 window.shoot = async (file, clip, secs) => {
   const g = await new Promise((ok, no) => L.load(file, ok, undefined, no));
   const root = g.scene; sc.add(root);

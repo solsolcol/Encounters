@@ -84,6 +84,13 @@ scene. Priority ★ = the chapter looks wrong without it.
   shelves, framed amulets, a wall clock.
 - ★ **The shop owner** — an older Chinese Singaporean man in a white Chinese-collar
   shirt, rigged.
+- ★ **The Chinatown towkay** (v22.0: the chapter became three shops, one owner each —
+  the Yin shop's keeper is Chad's, the Hanuman shop is chapter 3's own with Chad's
+  owner): an old uncle, a dark mandarin-collar shirt or a singlet, rigged. *Shipped
+  with a stand-in:* Chad's congregation man (`cg_man2hd`) with admintee's Idle_9 and
+  Talk_with_Hands_Open retargeted onto him (`masters/v22.0/towkay/make.sh`) — the
+  first stand-in, episode 1's encik scan, could not hold a two-shot (4,200 triangles
+  on a 512-pixel atlas). Chad's model replaces it as `towkay`, one file.
 - **A Lersi** (a bearded hermit sage figure/statue) · **a Hanuman amulet / figurine** ·
   **a Yin amulet** (round) — small props held in the hand.
 - **The Yin girl** — a pale, long-haired young woman (for a translucent face).

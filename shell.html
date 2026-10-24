@@ -568,6 +568,27 @@ body.finePtr .wpnBtn{position:relative;margin-bottom:12px}
 @keyframes dqr{0%,30%{border-color:rgba(143,214,240,.85)}36%,52%{border-color:rgba(232,72,58,.95);box-shadow:0 0 16px rgba(232,72,58,.45)}
   64%,100%{border-color:rgba(143,214,240,.85)}}
 @keyframes dqsh{0%{transform:translate(0,0)}25%{transform:translate(1.5px,-1px)}50%{transform:translate(-1px,1.5px)}75%{transform:translate(1px,1px)}100%{transform:translate(0,0)}}
+/* v22.0 · wait — the timed press's own picture: a dim button with the fingertip held over it, waiting (it bobs, it
+   does not touch); the button lights gold and the fingertip comes down on it the same moment, a ring of light
+   bursting off it. Wait for it, then at once (episode 3 chapter 4's LET GO; the bar it borrowed showed a drill
+   the button never plays) */
+#evDemo.wait .dwb,#evDemo.wait .dwf,#evDemo.wait .dwr{display:block}
+#evDemo .dwb{position:absolute;left:50%;top:50%;width:96px;height:28px;margin:-10px 0 0 -48px;border-radius:14px;
+  border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.07);animation:dwb 2.8s linear infinite}
+#evDemo .dwb::before{content:'';position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;
+  background:rgba(255,255,255,.55);box-shadow:-14px 0 0 rgba(255,255,255,.55),14px 0 0 rgba(255,255,255,.55);animation:dwd 2.8s linear infinite}
+#evDemo .dwr{position:absolute;left:50%;top:50%;width:96px;height:28px;margin:-10px 0 0 -48px;border-radius:14px;
+  border:2px solid rgba(255,214,150,.95);opacity:0;animation:dwr 2.8s linear infinite}
+#evDemo .dwf{position:absolute;left:50%;top:50%;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;
+  background:rgba(255,255,255,.92);box-shadow:0 0 0 4px rgba(255,255,255,.22),0 0 14px rgba(255,255,255,.5);animation:dwf 2.8s ease-in-out infinite}
+@keyframes dwb{0%,54%{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.28);box-shadow:none}
+  57%,80%{background:linear-gradient(180deg,rgba(255,220,160,.96),rgba(232,170,80,.92));border-color:rgba(255,236,190,.95);box-shadow:0 0 18px rgba(255,200,110,.75)}
+  90%,100%{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.28);box-shadow:none}}
+@keyframes dwd{0%,54%{opacity:1}56%,88%{opacity:0}94%,100%{opacity:1}}
+@keyframes dwr{0%,58%{opacity:0;transform:scale(1)}62%{opacity:.95;transform:scale(1.04)}82%,100%{opacity:0;transform:scale(1.5)}}
+@keyframes dwf{0%{transform:translate(46px,-6px);opacity:0}10%{transform:translate(18px,-22px);opacity:.95}
+  30%{transform:translate(18px,-25px);opacity:.95}50%{transform:translate(18px,-21px);opacity:.95}
+  58%{transform:translate(10px,2px) scale(.74);opacity:1}68%{transform:translate(14px,-12px);opacity:.95}84%,100%{transform:translate(40px,-24px);opacity:0}}
 #evDemo .dspot{position:absolute;left:0;top:0;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;
   background:radial-gradient(circle,rgba(255,226,170,.98),rgba(255,179,103,.25) 60%,transparent 72%);
   box-shadow:0 0 14px rgba(255,200,120,.7);animation:dspot 3.6s linear infinite}
@@ -1741,7 +1762,7 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
      height (`--objH`, measured by the frame), with 12 px of air. */
   body.hasObj #haunt{padding-top:calc(max(14px,env(safe-area-inset-top)) + 166px + var(--objH,0px) + 12px)}
   /* v21.1: and STAY PRESENT's panel — on a phone it stood at the desktop's +18 px, over the very bars its misses move */
-  #event.full.resist,#event.full.focus{padding-top:calc(max(14px,env(safe-area-inset-top)) + 166px + var(--objH,40px) + 12px)}
+  #event.full.resist,#event.full.focus,#event.full.steady{padding-top:calc(max(14px,env(safe-area-inset-top)) + 166px + var(--objH,40px) + 12px)}   /* (v22.0: and STEADY's — over the bars its drift and slip move) */
   /* v8.3: the marks are bigger on a phone — the screen is a third the width
      of a desktop's and the same 34 px diamond reads as a speck on it */
   .hmark{width:44px;height:44px;margin:-22px 0 0 -22px}
@@ -3065,7 +3086,7 @@ body.finePtr .galPull,body.finePtr .galEndHint{display:block}
     <span class="stencil" id="evLabel"></span>
     <!-- v10.3: the briefing's looping illustration - a tile dragged from the
          left column onto its slot on the right (shown for demo: 'drag') -->
-    <div id="evDemo" class="hide" aria-hidden="true"><i class="dslot"></i><i class="dslot dst"></i><b class="dtile"></b><span class="dhand"></span><i class="dbar"></i><i class="dfill"></i><i class="dband"></i><span class="dtap"></span><i class="dtgt"></i><i class="dring"></i><i class="dring r2"></i><span class="dhit"></span><i class="dhold"></i><span class="dfinger"></span><span class="dret"></span><i class="dspot"></i><i class="dsring"></i><span class="dstap"></span><i class="dqr"></i><b class="dqm"></b><span class="dqf"></span></div>
+    <div id="evDemo" class="hide" aria-hidden="true"><i class="dslot"></i><i class="dslot dst"></i><b class="dtile"></b><span class="dhand"></span><i class="dbar"></i><i class="dfill"></i><i class="dband"></i><span class="dtap"></span><i class="dtgt"></i><i class="dring"></i><i class="dring r2"></i><span class="dhit"></span><i class="dhold"></i><span class="dfinger"></span><span class="dret"></span><i class="dspot"></i><i class="dsring"></i><span class="dstap"></span><i class="dqr"></i><b class="dqm"></b><span class="dqf"></span><i class="dwb"></i><i class="dwr"></i><span class="dwf"></span></div>
     <!-- v9.7: THREE rings in flight, not one. A single ring had to both
          approach the next beat and show that you were late for the last one,
          and it could do neither: it froze on the target for the whole late

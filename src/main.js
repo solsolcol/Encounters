@@ -3787,7 +3787,11 @@ function applyDaylight(over) {
 function daylightTo(preset, secs) {
   const to = { ...SKY_NIGHT, ...(CH.daylight || {}), ...(preset || {}) };
   if (!(secs > 0)) { dayNow = to; dayTween = null; applyDaylightD(to); return; }
-  dayTween = { from: dayNow || { ...SKY_NIGHT, ...(CH.daylight || {}) }, to, t: 0, secs };
+  /* v22.0: from where the picture IS. A tween begun while another ran started from the last one's END (`dayNow` only
+     moves when a tween finishes), so episode 3 chapter 4's next piece, taken while the room was still going back to
+     day, flashed the previous piece's colour for a frame before its own tween began */
+  const from = dayTween ? dayMix(dayTween.from, dayTween.to, smoothK(dayTween.t)) : (dayNow || { ...SKY_NIGHT, ...(CH.daylight || {}) });
+  dayTween = { from, to, t: 0, secs };
 }
 function dayMix(a, b, k) {
   const col = (x, y) => _c1.setHex(x).lerp(_c2.setHex(y), k).getHex();
@@ -3824,7 +3828,8 @@ function haptic(pattern) { try { navigator.vibrate?.(pattern || 40); } catch {} 
    rule is that a briefing always SHOWS its game as well as saying it. A new
    kind adds its row here; chaptertest fails a kind without one. */
 const EV_DEMO = {
-  tap: 'beat', timed: 'bar', mash: 'rapid', hold: 'look', stabilise: 'look',
+  tap: 'beat', timed: 'wait',             // v22.0: timed has its own (a dim button, the fingertip held over it, down the moment it lights)
+  mash: 'rapid', hold: 'look', stabilise: 'look',
   heartbeat: 'beat', match: 'drag', focus: 'spot', sequence: 'bar', resist: 'rapid',   // v21.0: focus has its own (lights at places, a fingertip on each)
   steady: 'steady',                      // v22.0: a mark pushed off by a tremor, a fingertip dragging it back into its ring
 };
@@ -4398,14 +4403,20 @@ function resistTap(e) {
   snd('uiclick', 0.09, 1.25 + 0.15 * Math.random());
 }
 /* a press: from the overlay, the button, a key, or a mouse under pointer lock */
-function evPress(x, y) {
+function evPress(x, y, pid) {
   /* v18.3: in a rapid-tap fight EVERY finger counts — two thumbs drumming
      put the second down before the first is up, and that press was dropped
      because the event was still "down". A held key cannot cheat it: evKey
      drops auto-repeat before it gets here. */
   if (ev && ev.started && !ev.briefing && ev.kind === 'resist' && ev.down) { resistTap(ev); return; }
   const e = ev; if (!e || !e.started || e.down) return;
-  if (e.briefing) { evBegin(); return; }      // v8.7: START closes the briefing; nothing else counts
+  if (e.briefing) {                          // v8.7: START closes the briefing; nothing else counts
+    evBegin();
+    /* v22.0: but a STEADY drag starts with the finger that pressed START — held down from START and dragged, it moved
+       nothing while the mark drifted out (the drag answers by its delta, so it may begin anywhere) */
+    if (ev === e && e.kind === 'steady') { e.down = true; e.downAt = e.t; e.downX = x; e.downY = y; e.lastX = x; e.lastY = y; e.pid = pid; }
+    return;
+  }
   const o = e.o;
   e.down = true; e.downAt = e.t; e.downX = x; e.downY = y; e.drift = 0; e.look = 0;
   $('evBtn')?.classList.add('down');
@@ -4413,13 +4424,16 @@ function evPress(x, y) {
     case 'tap':
       evResolve({ ok: true, score: 1 - Math.min(1, e.t / o.secs) * 0.5 }); break;
     case 'timed':
+      /* v22.0: `guard` (opt-in seconds): a press that soon after START is the second half of a double tap on the very
+         button START was, not an early release (episode 3 chapter 4's LET GO charged it -4 as one) */
+      if (o.guard && e.t < o.guard) break;
       if (e.t < o.open) evResolve({ ok: false, early: true, score: 0 });
       else evResolve({ ok: true, score: 1 - Math.min(1, (e.t - o.open) / (o.close - o.open)) * 0.5 });
       break;
     case 'mash':
       e.bar = Math.min(1, e.bar + o.gain); e.hits++; snd('uiclick', 0.18, 1.1); break;
     case 'resist': resistTap(e); break;
-    case 'steady': e.lastX = x; e.lastY = y; break;   // v22.0: the drag starts where the finger lands
+    case 'steady': e.lastX = x; e.lastY = y; e.pid = pid; break;   // v22.0: the drag starts where the finger lands, and is that finger's
     case 'heartbeat': {
       /* v9.4: the beat comes off the SCHEDULE, because the gaps shrink. A
          press is graded on how far it lands from the beat's centre as a
@@ -4492,8 +4506,10 @@ function evPress(x, y) {
     default: break;   // hold / stabilise: the press is the beginning of the hold
   }
 }
-function evRelease() {
+function evRelease(pid) {
   const e = ev; if (!e || !e.down) return;
+  // v22.0: a steady drag is one finger's — a second thumb lifting does not end it
+  if (e.kind === 'steady' && e.pid !== undefined && pid !== undefined && pid !== e.pid) return;
   e.down = false;
   $('evBtn')?.classList.remove('down');
   /* the release carries no coordinates, so the drop lands where the last
@@ -4502,8 +4518,10 @@ function evRelease() {
   if (e.kind === 'hold' && e.t < e.o.secs) evResolve({ ok: false, score: 0 });
   if (e.kind === 'stabilise' && e.t < e.o.secs) evResolve({ ok: false, score: 0 });
 }
-function evMove(x, y) {
+function evMove(x, y, pid) {
   const e = ev; if (!e || !e.down) return;
+  // v22.0: and its moves are that finger's (a second thumb's alternated with the first and jumped the mark)
+  if (e.kind === 'steady' && e.pid !== undefined && pid !== undefined && pid !== e.pid) return;
   e.drift = Math.max(e.drift, Math.hypot(x - e.downX, y - e.downY));
   if (e.kind === 'match') { e.lastX = x; e.lastY = y; if (e.drag) { evDragTo(x, y); evMatchHover(x, y); } }
   /* v22.0: the mark moves with the DRAG, by its delta, so a finger may land
@@ -4988,18 +5006,18 @@ function kitInit() {
       if (e.pointerType === 'mouse' && e.button !== 0) return false;
       return true;
     };
-    host.addEventListener('pointerdown', e => { if (!pressFrom(e)) return; e.preventDefault(); evPress(e.clientX, e.clientY); });
-    host.addEventListener('pointermove', e => { if (ev && ev.down) evMove(e.clientX, e.clientY); });
-    for (const k of ['pointerup', 'pointercancel']) host.addEventListener(k, () => evRelease());
+    host.addEventListener('pointerdown', e => { if (!pressFrom(e)) return; e.preventDefault(); evPress(e.clientX, e.clientY, e.pointerId); });
+    host.addEventListener('pointermove', e => { if (ev && ev.down) evMove(e.clientX, e.clientY, e.pointerId); });
+    for (const k of ['pointerup', 'pointercancel']) host.addEventListener(k, e => evRelease(e.pointerId));
     // a mouse press under pointer lock never reaches the overlay
     addEventListener('pointerdown', e => {
       if (!ev || !ev.started || e.target.closest?.('#event') || e.target.closest?.('.soundBtn')) return;
       if (e.pointerType === 'mouse' && e.button === 0) evPress(innerWidth / 2, innerHeight / 2);   // v14.4: primary only
     });
-    addEventListener('pointerup', () => { if (ev && ev.down) evRelease(); });
+    addEventListener('pointerup', e => { if (ev && ev.down) evRelease(e.pointerId); });
   }
 }
-let poseWall = 0;
+let poseWall = 0, dayWall = 0;
 function kitFrame(dt, t, dLookX, dLookY) {
   if (!kitInited) kitInit();
   /* v11.6: the bag button asks while a given item waits unequipped (a class
@@ -5024,11 +5042,14 @@ function kitFrame(dt, t, dLookX, dLookY) {
     if (Math.abs(d) > lieSpan) yaw.rotation.y = lieYaw + Math.sign(d) * lieSpan;
   }
   // daylight
+  /* v22.0: on WALL time (the v7.4 law, as the pose above): on the clamped step a hot phone ran a 2.6 s return to day at
+     half speed or slower */
   if (dayTween) {
-    dayTween.t = Math.min(1, dayTween.t + dt / dayTween.secs);
+    const nowD = performance.now(), wdtD = dayWall ? Math.min(0.25, (nowD - dayWall) / 1000) : dt; dayWall = nowD;
+    dayTween.t = Math.min(1, dayTween.t + wdtD / dayTween.secs);
     if (dayTween.t >= 1) { dayNow = dayTween.to; dayTween = null; applyDaylightD(dayNow); }
     else applyDaylightD(dayMix(dayTween.from, dayTween.to, smoothK(dayTween.t)), true);
-  }
+  } else dayWall = 0;
   /* v7.1: a FADE in play — the black between the day and the night of a
      chapter that has both (The Worst Bed lies him down at lights out and
      wakes him at three). The same element the cutscenes fade; a cutscene
@@ -13532,6 +13553,10 @@ function lose() {
      here — playCineFn stops every play-time narration on its first line
      (v4.91), so a line started here was cut a millisecond later and the
      faint was silent (Chad heard nothing). */
+  /* v22.0: a minigame open when he faints is ended (aborted — every chapter's handler returns or ignores it): its
+     overlay sat over the faint card and took the taps meant for Retry (episode 3 chapter 4's STEADY, episode 2
+     chapter 1's heartbeat — both can drain to zero while they run) */
+  if (ev) evResolve({ ok: false, aborted: true });
   snd('dread', 0.6);
   playCineFn(scFaint, () => {
     fainting = false;
