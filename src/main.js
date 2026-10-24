@@ -11527,7 +11527,10 @@ const STING_SAMPLE = {
      and his room at night (the beds); the closing music */
   x4whispers: ['x4whispers', 1], x4wrong: ['x4wrong', 1], x4rush: ['x4rush', 1], x4fall: ['x4fall', 1], x4wake: ['x4wake', 1],
   x4glass: ['x4glass', 1], x4bag: ['x4bag', 1], x4drawer: ['x4drawer', 1], x4pen: ['x4pen', 1], x4flicker: ['x4flicker', 1],
-  x4dusk: ['x4dusk', 1], x4room: ['x4room', 1], x4close: ['x4close', 1]
+  x4dusk: ['x4dusk', 1], x4room: ['x4room', 1], x4close: ['x4close', 1],
+  /* v22.0 CP10 · the opening film (masters/v22.0/cp10/make.sh): his office at night, his keys, the mouse's click,
+     a shop's door bell at Golden Mile — this game's own takes under e3c4's names (no credits left for new ones) */
+  f4office: ['f4office', 1], f4keys: ['f4keys', 1], f4click: ['f4click', 1], f4shopbell: ['f4shopbell', 1]
 };
 /* Which kinds the synth below can actually fake. Everything else in
    STING_SAMPLE is sample-only: if its buffer is not decoded yet it stays

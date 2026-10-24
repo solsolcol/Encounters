@@ -109,7 +109,9 @@
              'owner', 'staffman', 'granny', 'botak', 'admintee', 'hanuman',
              /* World T (CP8): the street's parked cars, CHAD'S lersi amulet, his Thao Wessuwan and naga as the tray's two
                 other pieces (and the presences they call), the towkay */
-             'cars', 'lersiamulet', 'lersiamuletlod', 'wessred', 'naga', 'towkay'],
+             'cars', 'lersiamulet', 'lersiamuletlod', 'wessred', 'naga', 'towkay',
+             /* the opening film (CP10): his desk at night in e3c1's office, Chad's Mersus Office */
+             'filmoffice'],
     items: [],
 
     musicVol: 0,
@@ -434,7 +436,6 @@
       const mRubber  = M({ color: 0x141414, roughness: 0.6 });
       const mDarkUnit = M({ color: 0x0d0c0c, roughness: 0.95 });
       const mSlab    = M({ color: 0x8a8478, roughness: 0.9 });
-      const mHazard  = M({ map: tex(makeYinHazard(THREE, cnv)), roughness: 0.6 });
       const addMat = (map, color, op) => { const m = new THREE.MeshBasicMaterial({ map, color, transparent: true, opacity: op, depthWrite: false, blending: THREE.AdditiveBlending, fog: false, toneMapped: false }); mats.push(m); return m; };
       const glowPlane = (w, h, color, op, x, y, z, rx = 0, ry = 0) => {
         const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), addMat(tGlow, color, op));
@@ -1084,9 +1085,11 @@
           for (let x = X0 + 2; x < X1 - 1; x += 4) {
             box(0.24, 0.05, 1.22, x, CH - 0.03, 2.4, mFit, G, false);
             if (x === X0 + 6) continue;                    // the one that is out
-            for (const tx of [-0.055, 0.055]) { const t = new THREE.Mesh(tubeGeo, mCorTube); t.rotation.x = Math.PI / 2; t.position.set(x + tx, CH - 0.07, 2.4); G.add(t); }
-            glowPlane(3.2, 4.2, 0xdce6f4, 0.10, x, 0.012, 2.4, -Math.PI / 2);
-            glowPlane(1.6, 2.8, 0xeef4ff, 0.16, x, CH - 0.006, 2.4, Math.PI / 2);
+            const fl = x === X0 + 18 ? (yLive.flick = []) : null;   // CP10: the one the opening film's walk comes to, stuttering
+            for (const tx of [-0.055, 0.055]) { const t = new THREE.Mesh(tubeGeo, mCorTube); t.rotation.x = Math.PI / 2; t.position.set(x + tx, CH - 0.07, 2.4); G.add(t); if (fl) fl.push(t); }
+            const g1 = glowPlane(3.2, 4.2, 0xdce6f4, 0.10, x, 0.012, 2.4, -Math.PI / 2);
+            const g2 = glowPlane(1.6, 2.8, 0xeef4ff, 0.16, x, CH - 0.006, 2.4, Math.PI / 2);
+            if (fl) fl.push(g1, g2);
           } }
         // the railing over the void: a steel handrail, balusters, glass panels; a gap where the escalator lands,
         // taped off with a barrier
@@ -1098,11 +1101,9 @@
           box(w, 0.06, 0.1, cx, 0.03, RZ, mSteel, G, false);
           for (let x = a + 0.05; x < b; x += 1.2) box(0.04, 1.05, 0.04, x, 0.525, RZ, mSteel, G, false);
         }
-        // the barrier across the escalator's landing (a blocker: nobody rides it today)
+        // the escalator's landing: an UP escalator, so its blocker is the one way nobody goes (CP10: the tape that
+        // said "nobody rides it today" went when the opening film began to ride it up)
         walls.push(hidBox(GAP1 - GAP0, 1.4, 0.3, (GAP0 + GAP1) / 2, 0.7, RZ));
-        for (const bx of [GAP0 + 0.25, GAP1 - 0.25]) { box(0.05, 0.95, 0.05, bx, 0.475, RZ + 0.05, mHazard, G, false); }
-        box(GAP1 - GAP0 - 0.3, 0.12, 0.03, (GAP0 + GAP1) / 2, 0.82, RZ + 0.06, mHazard, G, false);
-        box(GAP1 - GAP0 - 0.3, 0.12, 0.03, (GAP0 + GAP1) / 2, 0.42, RZ + 0.06, mHazard, G, false);
         // the corridor slab's edge, the void, the floor below with a few lit units, the far side, the skylight
         box(CW, 0.42, 0.25, ccx, -0.21, RZ + 0.12, mSlab, G, false);
         const vz = (YVOID.z0 + YVOID.z1) / 2, vd = YVOID.z1 - YVOID.z0;
@@ -1145,7 +1146,7 @@
           for (let k = 0; k < nS; k++) { const t = (k + 0.5) / nS; const x = e0.x + (e1.x - e0.x) * t, y = e0.y + (e1.y - e0.y) * t; mtx.makeTranslation(x, y - 0.06, 6.25); steps.setMatrixAt(k, mtx); }
           steps.instanceMatrix.needsUpdate = true; steps.computeBoundingSphere(); G.add(steps);
           box(1.8, 0.03, 1.2, GAP0 + 0.9 + 0.3, 0.015, 6.25, mSteel, G, false);
-          yLive.escalator = { e0, e1 };
+          yLive.escalator = { e0, e1, steps, nS, z: 6.25, v: 0.6 };    // (CP10: running up, 0.6 m a second — yTick; the opening film rides it)
         }
         // the EXIT at the corridor's west end, green over a shut fire door
         { const d = new THREE.Mesh(new THREE.PlaneGeometry(1.0, 2.1), M({ color: 0x5a5e58, roughness: 0.6 })); d.rotation.y = Math.PI / 2; d.position.set(X0 + 0.01, 1.05, 2.5); G.add(d);
@@ -1319,7 +1320,8 @@
           if (!P.headWrote) P.headWrote = new THREE.Quaternion();
           P.headWrote.copy(P.head.quaternion);
           let ty = 0, tp = 0;
-          const filmLook = (hLive.look && P.wx > 100) || (endLive.on && P.wx < -100);   // CP7: the run-out film's stares; CP9: the endings
+          const filmLook = (hLive.look && P.wx > 100) || (endLive.on && P.wx < -100)    // CP7: the run-out film's stares; CP9: the endings;
+                        || (oLive.on && oLive.where === 'mall' && Math.abs(P.wx) < 100);   // CP10: the keeper, as he comes in
           if (P.look > 0 && (getState() === 'play' || filmLook)) {
             P.head.getWorldPosition(_hp); camera.getWorldPosition(_cp);
             const dx = _cp.x - _hp.x, dz = _cp.z - _hp.z, dy = _cp.y - _hp.y;
@@ -1329,6 +1331,8 @@
           const k = 1 - Math.exp(-wdt * 2.4);
           P.lookYaw += (ty * P.look - P.lookYaw) * k; P.lookPitch += (tp * P.look - P.lookPitch) * k;
           if (Math.abs(P.lookYaw) + Math.abs(P.lookPitch) > 1e-4) { _pe.set(P.lookPitch, P.lookYaw, 0, 'YXZ'); _pq.setFromEuler(_pe); P.head.quaternion.multiply(_pq); }
+          // CP10: a head shaken "no" (the opening film's Golden Mile owner), on the film's own clock
+          if (P.shakeAmp > 1e-4) { _pe.set(0, P.shakeAmp * Math.sin((P.shakeT || 0) * 11.0), 0, 'YXZ'); _pq.setFromEuler(_pe); P.head.quaternion.multiply(_pq); }
         }
       }
     }
@@ -1400,6 +1404,17 @@
         }
         B.red.instanceMatrix.needsUpdate = true; B.dark.instanceMatrix.needsUpdate = true;
         B.push = moved;                                  // CP5 rattles them by this
+      }
+      // CP10 · the escalator up out of the floor below, running (an UP escalator: its landing's blocker is the one way
+      // nobody goes — down it); the opening film stands him on a step of it, at its own speed
+      const ES = yLive.escalator;
+      if (ES && ES.steps) {
+        const L = ES.e0.distanceTo(ES.e1), sh = ((yT * ES.v) % (L / ES.nS)) / L;
+        for (let k = 0; k < ES.nS; k++) {
+          let u = (k + 0.5) / ES.nS + sh; if (u > 1) u -= 1;
+          _bm.makeTranslation(ES.e0.x + (ES.e1.x - ES.e0.x) * u, ES.e0.y + (ES.e1.y - ES.e0.y) * u - 0.06, ES.z); ES.steps.setMatrixAt(k, _bm);
+        }
+        ES.steps.instanceMatrix.needsUpdate = true;
       }
       // the back room's curtain: a draught from behind it, and CP5's gust
       const C = yLive.curtain;
@@ -4149,6 +4164,7 @@
               const px = (rS() < 0.5 ? -1 : 1) * (w / 2 - 0.55);
               bPl.add(new THREE.CylinderGeometry(0.2, 0.15, 0.36, 8), px, fy + 0.18, 0.75, 0x8a5a3a);
               bPl.add(new THREE.IcosahedronGeometry(0.32, 1), px, fy + 0.6, 0.75, 0x35552c);
+              (tLive.pots || (tLive.pots = [])).push(new THREE.Vector3(px, 0, 0.75).applyMatrix4(FR));   // CP9: an ending's walk bends round it
             }
             return;
           }
@@ -4892,10 +4908,11 @@
     const mixK = { dread: 0, mall: 0, song: 0 };
     function mixBedsY(wdt, st) {
       const B = DATA.ambience.beds, inY = worldOf(yaw.position.x) === 'Y';
-      const live = inY && (st === 'play' || st === 'unlock' || st === 'choose' || st === 'menu');
+      const filmMall = st === 'cine' && oLive.on && oLive.where === 'mall';   // CP10: the opening film's old mall
+      const live = inY && (st === 'play' || st === 'unlock' || st === 'choose' || st === 'menu' || filmMall);
       const d = Math.hypot(yaw.position.x - RADIO.x, yaw.position.z - RADIO.z);
       const outside = yaw.position.z > 0.15;
-      const att = (1 / (1 + (d / 2.6) ** 2)) * (outside ? 0.45 : 1);
+      const att = (1 / (1 + (d / (filmMall ? 5.0 : 2.6)) ** 2)) * (outside ? 0.45 : 1);   // (the film hears it from the far end)
       const humDuck = yin.girl.placed ? 0.55 : 1;
       const song = live && !yin.stopped ? 0.55 * att * (1 - 0.6 * yin.radioDip) * humDuck : 0;
       const k = (s) => 1 - Math.exp(-wdt / s);
@@ -6584,7 +6601,12 @@
       const wall = new THREE.Mesh(new THREE.CylinderGeometry(0.034, 0.029, 0.11, 20, 1, true), gm); wall.position.y = 0.055; glassW.add(wall);
       const base = new THREE.Mesh(new THREE.CylinderGeometry(0.029, 0.029, 0.007, 20), gm); base.position.y = 0.0035; glassW.add(base);
       const water = new THREE.Mesh(new THREE.CylinderGeometry(0.0315, 0.0285, 0.078, 20), M({ color: 0xa8ccd6, roughness: 0.02, transparent: true, opacity: 0.42, depthWrite: false }));
-      water.position.y = 0.046; glassW.add(water); }
+      water.position.y = 0.046; glassW.add(water);
+      // a lit rim and the water's surface catching the light: on the tiles the plain glass all but vanished
+      const rim = new THREE.Mesh(new THREE.TorusGeometry(0.0335, 0.0018, 6, 28), M({ color: 0xffffff, roughness: 0.05, emissive: 0xc8d4d8, emissiveIntensity: 0.5, transparent: true, opacity: 0.8 }));
+      rim.rotation.x = Math.PI / 2; rim.position.y = 0.11; glassW.add(rim);
+      const top = new THREE.Mesh(new THREE.CircleGeometry(0.031, 24), M({ color: 0xdaf0f6, roughness: 0.02, emissive: 0x6a8c96, emissiveIntensity: 0.35, transparent: true, opacity: 0.7, depthWrite: false }));
+      top.rotation.x = -Math.PI / 2; top.position.y = 0.086; glassW.add(top); }
 
     /* ---- A · HIS EYES CLOSING: two lids in front of the lens (children of the camera, 0.1 m out), each a black field
        with a soft curved edge, drawn before the presences' clearer (renderOrder 878) so what he sees with his eyes shut
@@ -6607,8 +6629,13 @@
       const show = kTop > 0.002 || kBot > 0.002;
       lidTop.visible = lidBot.visible = show;
       if (!show) return;
-      const eT = 0.105 + (-0.012 - 0.105) * kTop, eB = -0.105 + (0.002 + 0.105) * kBot;
-      lidTop.position.set(0, eT + 0.105, -0.1); lidBot.position.set(0, eB - 0.105, -0.1);
+      // shut, the two edges cross by 5 cm at the middle (and still by 3 at a desktop's sides, where the curve rises)
+      const eT = 0.105 + (-0.03 - 0.105) * kTop, eB = -0.105 + (0.02 + 0.105) * kBot;
+      /* the drawn lid's edge (makeLidT: a quadratic from half-height at the corners through 0.92 of it at the middle)
+         reaches only 0.71 of the plane's 0.25 below its top at the middle, so the plane stands 0.0525 above the edge it
+         is asked for (below, for the lower lid). The first build put it 0.105 above: on a phone, "shut" left the middle
+         two thirds of the frame open */
+      lidTop.position.set(0, eT + 0.0525, -0.1); lidBot.position.set(0, eB - 0.0525, -0.1);
     }
     const L_WRONG = { tint: 0x16060a, rim: 0xff2a16, pow: 1.4, body: 0.5, base: 0.92, rimA: 0.5, peak: 1 };
     const wrongF = { g: new THREE.Group(), mats: [], ready: false };
@@ -6963,6 +6990,26 @@
       H2.mG.rotation.z = -m / 60 * Math.PI * 2; H2.hG.rotation.z = -(4 + m / 60) / 12 * Math.PI * 2;
     }
     function eBundle(o) { endLive.bundleAt = o; }
+    /* the five-foot way's potted plants (buildStreetT records them, in World T's own numbers): a walk along it bends
+       round one, toward the shop fronts, rather than through it (the phone's photographs walked ending A into one) */
+    function ePotZ(x, z) {
+      let zz = z;
+      for (const p of tLive.pots || []) {
+        if (p.z < 0.2 || p.z > TWAY.z1) continue;                   // our own five-foot way's, not the far row's
+        const dx = Math.abs(x - (TX + p.x)); if (dx > 1.2) continue;
+        const clear = p.z - 0.68, w = 1 - eS(0.55, 1.2, dx);
+        if (zz > clear) zz += (clear - zz) * w;
+      }
+      return zz;
+    }
+    const _ehd = new THREE.Vector3();
+    /* on his back on the tiles: the lens on the owner's face as he bends over him (his head bone, a frame old — the
+       first build aimed at a fixed point and the phone's frame cut his face at its top edge) */
+    function eFloorAim() {
+      const P = tLive.owner, H = P && P.ready && P.head ? P.head.getWorldPosition(_ehd) : null;
+      if (!H) return { y: 0, p: 1.2 };
+      return { y: eYaw(A_FLOOR.x, A_FLOOR.z, H.x, H.z), p: Math.min(1.5, ePitch(A_FLOOR.x, A_FLOOR.y, A_FLOOR.z, H.x, H.y - 0.12, H.z)) };
+    }
     function eTk(onCounter) { for (const m of E_TK) m.visible = onCounter; }
 
     function endBegin(k, api) {
@@ -7078,11 +7125,14 @@
       ripple.visible = redWash.visible = false; wrongF.g.visible = false;
       for (const k of ORDER) ePres(k, 0);
       eTk(false);
-      floorTk.visible = t < EA.out + 0.5; floorTk.position.set(0.78, 0, -4.4); floorTk.rotation.set(0, 0.6, 0);
+      floorTk.visible = t < EA.out + 0.5; floorTk.position.set(0.74, 0, -4.52); floorTk.rotation.set(0, 0.6, 0);
       puddle.visible = floorTk.visible;
       if (tLive.stool) { tLive.stool.position.set(TSTOOL.x - TX - 0.05, 0.17, -4.68); tLive.stool.rotation.set(0, 0.4, Math.PI / 2); }
       const cup = tLive.cups[0];
-      if (cup) { endLive.spilt = true; cup.cup.position.set(0.3, 0.033, -4.55); cup.cup.rotation.set(0, 0.3, Math.PI / 2); cup.tea.visible = false; }
+      // (the stool, the cup and the piece lie where the lens finds them from the floor: the phone's photographs had the
+      // cup out of the frame and the piece at its edge)
+      if (cup) { endLive.spilt = true; cup.cup.position.set(0.55, 0.033, -4.8); cup.cup.rotation.set(0, 0.3, Math.PI / 2); cup.tea.visible = false; }
+      puddle.position.set(0.6, 0.004, -4.71);
       glassW.visible = t >= EA.glassAt && t < EA.out + 0.5; glassW.position.set(0.95, 0, -3.95);
       if (t < EA.out + 0.5) {
         endLive.where = 'shop'; endLive.tension = 0;
@@ -7101,12 +7151,13 @@
         // the owner, the glass
         if (t < EA.sit0) {
           const shakeK = eS(20.8, 21.1, t) * (1 - eS(23.4, 23.8, t)), jolt = shakeK * Math.sin(t * 9.5);
-          eCam(A_FLOOR.x + 0.006 * jolt, A_FLOOR.y, A_FLOOR.z, 0.04 * Math.sin(t * 0.4), 1.2 + 0.03 * Math.sin(t * 0.6) + 0.025 * jolt, 0.04 * jolt);
+          const fa = eFloorAim();
+          eCam(A_FLOOR.x + 0.006 * jolt, A_FLOOR.y, A_FLOOR.z, fa.y + 0.04 * Math.sin(t * 0.4), fa.p + 0.03 * Math.sin(t * 0.6) + 0.025 * jolt, 0.04 * jolt);
         } else if (t < EA.clock0) {
-          const k = eS(EA.sit0, EA.sit1, t);
+          const k = eS(EA.sit0, EA.sit1, t), fa = eFloorAim();
           const ox = A_OWN.x, oz = A_OWN.z, yo = eYaw(A_SIT.x, A_SIT.z, ox, oz), po = ePitch(A_SIT.x, A_SIT.y, A_SIT.z, ox, 1.52, oz);
           eCam(A_FLOOR.x + (A_SIT.x - A_FLOOR.x) * k, A_FLOOR.y + (A_SIT.y - A_FLOOR.y) * k + 0.004 * Math.sin(t * 1.3), A_FLOOR.z + (A_SIT.z - A_FLOOR.z) * k,
-               eMix(0, yo, k), 1.2 + (po - 1.2) * k, 0);
+               eMix(fa.y, yo, k), fa.p + (po - fa.p) * k, 0);
         } else if (t < EA.floor0) {
           const k = eS(EA.clock0, EA.clock1, t), yo = eYaw(A_SIT.x, A_SIT.z, A_OWN.x, A_OWN.z), po = ePitch(A_SIT.x, A_SIT.y, A_SIT.z, A_OWN.x, 1.52, A_OWN.z);
           const yc = eYaw(A_SIT.x, A_SIT.z, TX + TCLOCK.x, TCLOCK.z), pc = ePitch(A_SIT.x, A_SIT.y, A_SIT.z, TX + TCLOCK.x, TCLOCK.y + 0.2, TCLOCK.z);
@@ -7144,7 +7195,7 @@
         py = t < EA.turn0 ? -0.04 : -0.08;
       } else { const k = (t - EA.walk2); x = XS - 1.2 * k + 0.25 * Math.min(1, k); ry = Math.PI / 2 + (t > 58.0 && t < 59.4 ? 0.7 * Math.sin(Math.PI * (t - 58.0) / 1.4) : 0.02 * Math.sin(t)); walkT = t; }
       const ph = (walkT - EA.walk0) * Math.PI * 2.1;
-      eCam(x, 1.6 + bobA * 0.026 * Math.abs(Math.sin(ph)), Z, ry, py, bobA * 0.012 * Math.sin(ph * 0.5));
+      eCam(x, 1.6 + bobA * 0.026 * Math.abs(Math.sin(ph)), ePotZ(x, Z), ry, py, bobA * 0.012 * Math.sin(ph * 0.5));
       // the shape in the glass, for a moment, then nothing behind him at all
       if (eShade && eShade.group) eShade.group.visible = t >= EA.shade0 && t < EA.shade1;
       // his hand, at his side and shaking
@@ -7170,12 +7221,16 @@
     const B_DOOR = { x: TX + 0.4, z: 1.5 }, B_CNT = { x: TX + 0.55, z: -4.75 };
     function endB(t, api) {
       const S0 = endLive.t0;
+      eLens(BASE_FOV);
       if (t < EB.room) {
         endLive.where = 'shop'; eDay(T_STILL); eClock(false, 25);
-        // on the owner for the asking and his answer, down to the bag, the bag taken
+        // on the owner for the asking and his answer — in a little while he answers, his lean over the counter as he
+        // wraps it — down to the bag, the bag taken
         const yo = S0.ry, po = T_OWN, pb = eyePitch(PILE_POS.x, TCNT.top + 0.12, PILE_POS.z);
         const k1 = eS(0, 0.9, t), k2 = eS(EB.bag - 0.4, EB.bag + 0.6, t);
+        eLens(BASE_FOV - 7 * eS(3.2, 5.8, t) * (1 - k2));
         eCam(S0.x, S0.y + 0.005 * Math.sin(t * 1.5), S0.z, yo, (S0.p + (po - S0.p) * k1) * (1 - k2) + pb * k2, 0);
+        eOwner(TX + 0.55, -6.85, 0, 0.15 * eS(EB.wrap0 - 0.3, EB.wrap0 + 0.3, t) * (1 - eS(EB.wrap1, EB.wrap1 + 0.7, t)));
         // the bundle closed, into a paper bag on the counter, and the bag to him
         const shut = eS(EB.wrap0, EB.wrap1, t);
         eBundle(t < EB.bagIn ? { x: PILE_POS.x - TX, y: TCNT.top, z: PILE_POS.z, open: 1 - shut, vis: true } : { vis: false });
@@ -7222,13 +7277,13 @@
           const freeze = t > 22.6 ? 0.25 : 1;
           eCam(B_DESK.x, B_DESK.y + 0.006 * freeze * Math.sin(t * 1.4), B_DESK.z, eMix(yDesk, yWin, wk) + 0.25 * dk, pDesk + (pWin - pDesk) * wk - 0.22 * dk, 0);
         } else {
-          const ck = eS(EB.clockLook0, EB.clockLook1, t) * (1 - eS(EB.knock - 0.2, EB.knock + 0.3, t)), dk = eS(EB.deskLook0, EB.deskLook1, t);
+          // on the pillow, his head on its side: the clock by it first (three in the morning, red in the dark), then a slow
+          // turn across the room to the desk where the drawer is — the knock from it, a flinch — held there until the black
+          // (CP9 opened on the ceiling: on a phone, grey and nothing)
           const yC = eYaw(B_BED.x, B_BED.z, TX - 1.3, RMZ - 1.1), pC = ePitch(B_BED.x, B_BED.y, B_BED.z, TX - 1.3, 0.53, RMZ - 1.1);
           const yD = eYaw(B_BED.x, B_BED.z, TX + 0.1, RMZ - 1.45), pD = ePitch(B_BED.x, B_BED.y, B_BED.z, TX + 0.1, 0.62, RMZ - 1.45);
-          const yUp = Math.PI + 0.2, pUp = 1.25;
-          let yy = eMix(yUp, yC, ck), pp = pUp + (pC - pUp) * ck;
-          yy = eMix(yy, yD, dk); pp = pp + (pD - pp) * dk;
-          eCam(B_BED.x, B_BED.y, B_BED.z + 0.003 * Math.sin(t * 0.7), yy, pp, 0);
+          const dk = eS(EB.clockLook1, EB.knock - 0.3, t), fl = t > EB.knock ? Math.exp(-(t - EB.knock) * 5) * Math.sin((t - EB.knock) * 30) : 0;
+          eCam(B_BED.x, B_BED.y, B_BED.z + 0.003 * Math.sin(t * 0.7), eMix(yC, yD, dk) + 0.012 * fl, pC + (pD - pC) * dk + 0.03 * fl, 0.14);
         }
         return;
       }
@@ -7284,7 +7339,9 @@
         if (k === 'wess') { P.g.scale.setScalar(1 + 0.05 * u); }
         ePres(k, (running ? 0.62 - 0.2 * eS(EC.clock, EC.clock + 2, t) : 0.62) * (1 - u));
       }
-      // the camera: the wai at the counter; up; stood; turned to the door; out; a look back in; the street
+      // the camera: the wai at the counter; in a little as he answers; up; stood; turned to the door; out; a look back in;
+      // the street
+      eLens(BASE_FOV - 8 * eS(3.2, 7.4, t) * (1 - eS(EC.stand0 - 0.4, EC.stand0 + 0.5, t)));
       if (t < EC.stand0) {
         const k = eS(0, 0.9, t);
         eCam(S0.x, S0.y + 0.005 * Math.sin(t * 1.5), S0.z, S0.ry, S0.p + (T_OWN - S0.p) * k - 0.12 * eS(EC.wai0 + 0.5, EC.wai0 + 1.1, t) * (1 - eS(EC.wai1 - 0.9, EC.wai1 - 0.3, t)), 0);
@@ -7302,12 +7359,14 @@
         // out onto the five-foot way, along it to the west; a slow look at another shop's window full of pieces
         const w = Math.max(0, t - EC.step), x = TX + 0.25 - 1.05 * Math.max(0, t - EC.ffw), z = Math.min(1.15, 0.9 + 0.25 * eS(EC.step, EC.ffw, t)), ph = w * Math.PI * 2.1;
         const yaw0 = eMix(0.08, Math.PI / 2, eS(EC.step, EC.ffw + 0.4, t)), wk = eS(EC.window0, EC.window0 + 1.2, t) * (1 - eS(EC.window1 - 0.8, EC.window1, t));
-        eCam(x, 1.62 + 0.024 * Math.abs(Math.sin(ph)) * (1 - 0.6 * wk), z, eMix(yaw0, 0.35, wk), -0.02 - 0.06 * wk, 0);
+        // (the look is ACROSS the road, at the far row's open fronts: the neighbours along this side are shuttered, and the
+        // phone's photographs of a look at them were a roller shutter filling the frame)
+        eCam(x, 1.62 + 0.024 * Math.abs(Math.sin(ph)) * (1 - 0.6 * wk), ePotZ(x, z), eMix(yaw0, Math.PI - 0.45, wk), -0.02 + 0.03 * wk, 0);
       }
       // his hands: the wai at the counter, and down
       if (t < EC.wai1) { const up = eS(EC.wai0, EC.wai0 + 0.5, t) * (1 - eS(EC.wai1 - 0.5, EC.wai1, t)); eClasp(api, up, false); if (up <= 0.001) eHandsAway(api); }
       else eHandsAway(api);
-      eOwner(TX + 0.55, -6.85, 0, 0);
+      eOwner(TX + 0.55, -6.85, 0, 0.15 * eS(EC.wrap0 - 0.3, EC.wrap0 + 0.3, t) * (1 - eS(EC.wrap1, EC.wrap1 + 0.7, t)));
     }
 
     /* ---------------------------------------------------------- D · ASK FOR A TEACHER (best)
@@ -7368,9 +7427,14 @@
         const pBundle = eyePitch(PILE_POS.x, TCNT.top + 0.05, PILE_POS.z);
         let yy = S0.ry, pp, xx = S0.x, yh = S0.y, zz = S0.z, roll = 0;
         if (t < ED.write0 - 0.2) {
-          const k = eS(ED.push1 - 0.2, ED.push1 + 0.8, t);
+          // on the owner: in a little as he asks (the lens, and his own lean toward the counter); down to the cloth as the
+          // owner leans over to wrap it; closer again on the question; held for the answer (CP9 held one frame for 22 s)
+          const k = eS(ED.push1 - 0.2, ED.push1 + 0.8, t), wrapK = eS(ED.wrap0 - 0.3, ED.wrap0 + 0.4, t) * (1 - eS(ED.wrap1, ED.wrap1 + 0.8, t));
           pp = (S0.p + (pBundle + 0.06 - S0.p) * eS(0, 0.4, t)) * (1 - k) + T_OWN * k;
-          eLens(BASE_FOV);
+          pp += (pBundle + 0.1 - pp) * wrapK * 0.7;
+          const lean = 0.05 * eS(2.6, 8.6, t) + 0.05 * eS(17.0, 21.0, t);
+          xx = S0.x - Math.sin(S0.ry) * lean; zz = S0.z - Math.cos(S0.ry) * lean;
+          eLens(BASE_FOV - 7 * eS(2.6, 8.6, t) - 7 * eS(17.0, 21.0, t) + 6 * wrapK);
         } else if (t < ED.take0) {
           // the insert: low over the counter, the card under the pen
           const cx = PILE_POS.x - 0.02, cz = -6.08 + 0.3 * eS(ED.slide0, ED.slide1, t);
@@ -7382,7 +7446,7 @@
           eLens(BASE_FOV);
         }
         eCam(xx, yh + 0.004 * Math.sin(t * 1.5), zz, yy, pp, roll);
-        eOwner(TX + 0.55, -6.85, 0, 0);
+        eOwner(TX + 0.55, -6.85, 0, 0.16 * eS(ED.wrap0 - 0.3, ED.wrap0 + 0.3, t) * (1 - eS(ED.wrap1, ED.wrap1 + 0.7, t)));
         eLamps(0);
         return;
       }
@@ -7399,12 +7463,250 @@
       const w = Math.max(0, t - ED.walk0), ph = w * Math.PI * 2.0;
       const lk = eS(ED.lamps0 - 0.5, ED.lamps0 + 1.2, t) * (1 - eS(ED.pocket0 - 0.4, ED.pocket0 + 0.4, t));
       const look = eMix(Math.PI + 0.25, Math.PI + 0.7, lk), walkYaw = eMix(look, Math.PI / 2, eS(ED.pocket0, ED.walk0 + 0.8, t));
-      eCam(D_KERB.x - 1.0 * w, D_KERB.y + (w > 0 ? 0.022 * Math.abs(Math.sin(ph)) : 0.004 * Math.sin(t * 1.3)), D_KERB.z - 0.9 * eS(ED.pocket0, ED.walk0 + 1.5, t),
+      eCam(D_KERB.x - 1.0 * w, D_KERB.y + (w > 0 ? 0.022 * Math.abs(Math.sin(ph)) : 0.004 * Math.sin(t * 1.3)), ePotZ(D_KERB.x - 1.0 * w, D_KERB.z - 0.9 * eS(ED.pocket0, ED.walk0 + 1.5, t)),
            walkYaw, -0.06 + 0.1 * lk - 0.05 * (1 - eS(ED.street, ED.lamps0, t)), 0);
     }
 
     const END_T = { A: EA.end, B: EB.end, C: EC.end, D: ED.end };
     const endCtl = { begin: endBegin, frame: endFrame, end: (k) => {}, T: END_T, EA, EB, EC, ED, talk: eTalk };
+
+    /* ================================================================== THE OPENING FILM (CP10, docs/V22.0-E3C4-PLAN.md §4.0)
+       "Seeking", in his voice, on one clock: every picture a function of the film's own seconds (the merit film's
+       shape), so a seek, a skip and a slow phone land on the same frame. Four places:
+         O1  0.0–11.8   his desk at night (a pocket at z −250): the two screens full of searches, the medium's talisman
+                        from chapter 3 by the keyboard; the wheel down the results, a click, and the other screen opens a
+                        thread on Yin amulets
+         O2 11.9–23.9   Golden Mile, shop to shop (World H): the corridor; amulets under the glass; a tray slid across
+                        the owner's counter, the owner shaking his head
+         O3 24.0–43.4   the old mall (World Y): up the escalator out of the floor below, off at the top, and down the
+                        corridor — one tube stuttering, the old song from the far end
+         O4 43.4–52.0   her door: the red light through the beads, the bell; in through the beads to where play begins,
+                        his eyes on the still figure behind the counter
+       The office is Chad's Mersus Office (e3c1's film, v19.0), PAINTED for the night the way e3c1 paints it — unlit, its
+       colour times the light the shot needs (a low blue ambient, the screens' pool, the desk lamp's) — so the light
+       count never changes (v15.1); its stand-in is drawn (v4.7: a failed download costs a nicer room, never the shot). */
+    const OFFZ = -250;
+    const offG = new THREE.Group(); offG.position.set(0, 0, OFFZ); offG.visible = false; world.add(offG);
+    const O_T = { o2: 11.9, o2b: 15.6, o2c: 19.6, o3: 24.0, o3b: 31.2, o3c: 33.0, door: 43.4, push0: 44.2, push1: 48.8, end: 52.0,
+                  beads: 0, bell: 0 };
+    const oLive = { on: false, where: '', day: undefined, page: -1 };
+    const offU = {
+      nAmb: { value: new THREE.Color(0.05, 0.056, 0.085) },
+      nPA: { value: new THREE.Vector3(1.30, 1.12, OFFZ - 0.10) }, nCA: { value: new THREE.Color(0.40, 0.60, 1.05) }, nRA: { value: 2.5 },
+      nPB: { value: new THREE.Vector3(-5.5, 3.4, OFFZ - 6.0) }, nCB: { value: new THREE.Color(0.15, 0.15, 0.18) }, nRB: { value: 6.0 },
+      nPC: { value: new THREE.Vector3(1.95, 0.98, OFFZ + 0.14) }, nCC: { value: new THREE.Color(0.95, 0.66, 0.36) }, nRC: { value: 1.25 }
+    };
+    function nightMat(src) {
+      const m = new THREE.MeshBasicMaterial({ map: src.map || null, color: src.color ? src.color.clone() : 0xffffff, fog: false,
+        transparent: !!src.transparent, opacity: src.opacity ?? 1, side: THREE.DoubleSide, alphaTest: src.alphaTest || 0, depthWrite: src.depthWrite !== false });
+      m.onBeforeCompile = (sh) => {
+        Object.assign(sh.uniforms, offU);
+        sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vNW;')
+          .replace('#include <fog_vertex>', '#include <fog_vertex>\nvNW = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+        sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying vec3 vNW;\nuniform vec3 nAmb, nPA, nCA, nPB, nCB, nPC, nCC;\nuniform float nRA, nRB, nRC;')
+          .replace('#include <opaque_fragment>', 'float kA = 1.0 - smoothstep(0.0, nRA, distance(vNW, nPA));\nfloat kB = 1.0 - smoothstep(0.0, nRB, distance(vNW, nPB));\n'
+            + 'float kC = 1.0 - smoothstep(0.0, nRC, distance(vNW, nPC));\noutgoingLight *= nAmb + nCA * kA * kA + nCB * kB * kB + nCC * kC * kC;\n#include <opaque_fragment>');
+      };
+      m.customProgramCacheKey = () => 'e3c4night';
+      mats.push(m); return m;
+    }
+    const oBasic = (o) => { const m = new THREE.MeshBasicMaterial({ fog: false, ...o }); mats.push(m); return m; };
+    const oBox = (w, h, d, x, y, z, m, par) => { const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); b.position.set(x, y, z); par.add(b); return b; };
+    const oPlane = (w, h, x, y, z, m, par, ry = 0, rx = 0) => { const p = new THREE.Mesh(new THREE.PlaneGeometry(w, h), m); p.position.set(x, y, z); p.rotation.set(rx, ry, 0); par.add(p); return p; };
+    // THE SCREENS (where e3c1 measured his two monitors in the model, masters/v19.0/screens.mjs): the left one a page of
+    // results that the wheel scrolls (a tall page, its window moved by the texture's offset), the right one an article
+    // until the click, then the thread
+    const OSCR = { w: 0.655, h: 0.37, rep: 289 / 1100 };
+    const scrList = tex(makeSearchListT(THREE, cnv)); scrList.repeat.set(1, OSCR.rep); scrList.offset.set(0, 1 - OSCR.rep);
+    const scrArt = tex(makeArticleT(THREE, cnv)), scrForum = tex(makeForumT(THREE, cnv));
+    const offM = new THREE.Group(); offM.position.set(1.967, 0, 0.997); offM.rotation.y = Math.PI; offG.add(offM);
+    const offScr = new THREE.Group(); offM.add(offScr);
+    const scrMatL = oBasic({ map: scrList }), scrMatR = oBasic({ map: scrArt });
+    const scrL = oPlane(OSCR.w, OSCR.h, 1.015 + Math.sin(-2.843) * 0.018, 1.122, 1.242 + Math.cos(-2.843) * 0.018, scrMatL, offScr, -2.843);
+    const scrR = oPlane(OSCR.w, OSCR.h, 0.318 + Math.sin(2.737) * 0.018, 1.122, 1.192 + Math.cos(2.737) * 0.018, scrMatR, offScr, 2.737);
+    const cursor = oPlane(0.016, 0.022, 0, 0, 0.002, oBasic({ map: tex(makeCursorT(THREE, cnv)), transparent: true, depthWrite: false }), scrL);
+    cursor.renderOrder = 4;
+    // their glow on the desk, and the desk lamp's warm pool and its shade (painted light, no lamp)
+    // (the desk's top is 0.825 m in Chad's model — measured off its triangles, masters/v22.0/cp10; e3c1's 0.748 lies
+    // inside the table, where nothing laid on it can be seen)
+    const ODESK = 0.825;
+    oPlane(1.5, 0.9, 0.66, ODESK + 0.002, 0.85, oBasic({ color: 0x3f7fd0, transparent: true, opacity: 0.16, blending: THREE.AdditiveBlending, depthWrite: false }), offScr, 0, -Math.PI / 2);
+    { const lampG = new THREE.Group(); lampG.position.set(1.95, ODESK, 0.12); offG.add(lampG);
+      const dark = oBasic({ color: 0x14141a });
+      oBox(0.12, 0.018, 0.12, 0, 0.009, 0, dark, lampG);
+      const arm = oBox(0.016, 0.36, 0.016, 0, 0.19, -0.02, dark, lampG); arm.rotation.x = 0.22;
+      const shade = new THREE.Mesh(new THREE.ConeGeometry(0.075, 0.12, 16, 1, true), oBasic({ color: 0xffd9a0, side: THREE.DoubleSide }));
+      shade.position.set(0, 0.36, 0.06); shade.rotation.x = 0.5; lampG.add(shade);
+      oPlane(0.7, 0.55, -0.12, 0.003, 0.12, oBasic({ color: 0xffc88a, transparent: true, opacity: 0.22, blending: THREE.AdditiveBlending, depthWrite: false }), lampG, 0, -Math.PI / 2); }
+    // the medium's talisman from chapter 3, by the keyboard (on its left, clear of it and the mouse pad — their places
+    // measured with the desk's): yellow paper, red brush strokes (makeFuT)
+    const O_TAL = { x: 0.82, y: ODESK + 0.003, z: 0.22 };
+    { const fu = new THREE.Mesh(new THREE.PlaneGeometry(0.072, 0.198), nightMat({ map: tex(makeFuT(THREE, cnv)), color: new THREE.Color(1, 1, 1) }));
+      fu.rotation.set(-Math.PI / 2, 0, -0.32); fu.position.set(O_TAL.x, O_TAL.y, O_TAL.z); offG.add(fu); }
+    // the city at night through the windows, all the way round (e3c1's)
+    { const cityTex = tex(makeOfficeCity(THREE, cnv)); cityTex.wrapS = THREE.RepeatWrapping; cityTex.repeat.set(5, 1);
+      const city = new THREE.Mesh(new THREE.CylinderGeometry(19, 19, 9, 48, 1, true), oBasic({ map: cityTex, side: THREE.BackSide }));
+      city.position.set(3.7, 3.4, 2.1); offG.add(city); }
+    // the stand-in: a dark room, his desk and two monitors where the model's stand (hidden the moment Chad's lands)
+    const offOld = new THREE.Group(); offG.add(offOld);
+    { const dk = oBasic({ color: 0x14161c, side: THREE.BackSide }); oBox(16, 3.2, 12, 1.3, 1.6, 0, dk, offOld);
+      const desk = oBasic({ color: 0x5a5048 }), leg = oBasic({ color: 0x1e1f22 }), mon = oBasic({ color: 0x0a0b0d });
+      oBox(1.9, 0.04, 0.85, 1.3, 0.73, 0.0, desk, offOld); oBox(0.04, 0.72, 0.75, 0.38, 0.36, 0.0, leg, offOld); oBox(0.04, 0.72, 0.75, 2.22, 0.36, 0.0, leg, offOld);
+      for (const [x, z, ry] of [[0.952, -0.27, 0.299], [1.649, -0.22, -0.404]]) { const b = oBox(0.68, 0.4, 0.03, x, 1.122, z, mon, offOld); b.rotation.y = ry; }
+      oBox(0.42, 0.02, 0.14, 1.17, 0.76, 0.22, leg, offOld); }
+    parseOnce('filmoffice').then(gltf => {
+      if (!alive) return;
+      const g = gltf.scene.clone(true), nm = new Map();
+      g.traverse(o => {
+        if (!o.isMesh) return;
+        o.castShadow = o.receiveShadow = false;
+        const ms = Array.isArray(o.material) ? o.material : [o.material];
+        const out = ms.map(m => { if (!nm.has(m)) nm.set(m, nightMat(m)); return nm.get(m); });
+        o.material = Array.isArray(o.material) ? out : out[0];
+      });
+      offM.add(g); offOld.visible = false;
+    }).catch(err => { console.warn('filmoffice failed to load', err); ctx.loadFail && ctx.loadFail('filmoffice', err); });
+    // O2's tray: one of Chad's display trays, lying on the owner's glass, slid across to the lens
+    const oTray = new THREE.Group(); oTray.visible = false; H.shopG.add(oTray);
+    { const TRAY_T = 0.0973 * 0.225;                       // the scan's board depth (buildWorldH's TRAY.d) at the counters' scale
+      H_TRAYS([[0, H.RCNT.top + 0.008 + TRAY_T / 2, 0, new THREE.Euler(-Math.PI / 2, -Math.PI / 2, 0, 'YXZ'), 0.225]], [], oTray); }
+
+    const _oa = new THREE.Vector3(), _ob = new THREE.Vector3(), _oq = new THREE.Quaternion();
+    const oS = (a, b, t) => smooth(cl01((t - a) / (b - a)));
+    function oPut(px, py, pz, tx, ty, tz) {                           // the lens at p, looking at the target
+      yaw.position.set(px, py, pz);
+      yaw.rotation.y = Math.atan2(-(tx - px), -(tz - pz));
+      pitch.rotation.x = Math.atan2(ty - py, Math.hypot(tx - px, tz - pz));
+      camera.rotation.z = 0;
+    }
+    function oDay(p) { if (oLive.day !== p && kit) { oLive.day = p; kit.daylight(p, 0); } }
+    /* how far from a screen to stand for it to fill THIS frame's width (a phone sees a third of a desktop's) */
+    function oFit(w, h) {
+      const tv = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)), th = tv * camera.aspect;
+      return Math.max(0.42, (w / 0.86) / 2 / th, (h / 0.62) / 2 / tv);
+    }
+    function oScreen(m, d) {                                          // a screen's middle and a point d out along its face
+      m.getWorldPosition(_oa); _ob.set(0, 0, 1).applyQuaternion(m.getWorldQuaternion(_oq)).multiplyScalar(d).add(_oa);
+      return [_oa.clone(), _ob.clone()];
+    }
+    function oFlick(on) { for (const m of yLive.flick || []) m.visible = on; }
+    /* O3's walk: off the escalator's top, through the railing's gap, along the corridor to her door — a curve through
+       these points, walked at a pace eased in at the top and out at the door (arc length, so the steps are even) */
+    const O_PATH = (() => {
+      const P = [[-13.9, 6.25], [-13.35, 6.05], [-13.25, 5.2], [-12.7, 4.05], [-10.6, 3.35], [-6.0, 2.85], [-2.4, 2.45], [-0.5, 2.0], [-0.08, 1.62]]
+        .map(([x, z]) => new THREE.Vector3(x, 0, z));
+      const c = new THREE.CatmullRomCurve3(P, false, 'centripetal'); c.arcLengthDivisions = 400; return c;
+    })();
+    /* where the push through the door crosses the beads and passes under the bell: the times its cues land on */
+    const oPushZ = (t) => 1.62 + (DATA.spawn.z - 1.62) * oS(O_T.push0, O_T.push1, t);
+    for (const [key, zc] of [['beads', 0.12], ['bell', -0.19]]) {
+      let a = O_T.push0, b = O_T.push1;
+      for (let i = 0; i < 30; i++) { const m = (a + b) / 2; if (oPushZ(m) > zc) a = m; else b = m; }
+      O_T[key] = +((a + b) / 2).toFixed(2);
+    }
+    /* an ease in, a steady walk, an ease out: a of the time to come up to pace, d to come down (distance, 0..1) */
+    const eAD = (k, a, d) => { const v = 1 / (1 - a / 2 - d / 2);
+      return v * (k < a ? k * k / (2 * a) : k > 1 - d ? (1 - a / 2 - d / 2) - (1 - k) * (1 - k) / (2 * d) : k - a / 2); };
+    /* the ride: standing on a step (the escalator's own 0.6 m a second, yTick's), his eyes up the stair, then onto the
+       floor he is arriving on — a function of the clock, so the walk can turn off the look it ends on */
+    function oRide(t) {
+      const E = yLive.escalator, L = E ? E.e0.distanceTo(E.e1) : 8.63;
+      const u = Math.min(1, 0.5 + ESC_V * (t - O_T.o3) / L);
+      const ex = E ? E.e0.x + (E.e1.x - E.e0.x) * u : -17, ey = (E ? E.e0.y + (E.e1.y - E.e0.y) * u : -2) + 1.58, ez = E ? E.z : 6.25;
+      const top = oS(28.8, O_T.o3b + 0.6, t);
+      return { ex, ey, ez, tx: ex + 4, ty: ey + 1.0 * (1 - top), tz: ez - 1.6 * top };
+    }
+    function oBegin() { oLive.on = true; oLive.where = ''; oLive.day = undefined; oLive.page = -1; }
+    function oFrame(t, api) {
+      if (!oLive.on) oBegin();
+      api.handsRoot.visible = false;
+      const where = t < O_T.o2 - 0.05 ? 'office' : t < O_T.o3 - 0.05 ? 'gm' : 'mall';
+      oLive.where = where;
+      offG.visible = where === 'office';
+      oDay(where === 'gm' ? H_DAY : null);
+      hLive.look = where === 'gm' && t >= O_T.o2c;
+      const P = hLive.owner;
+      if (P) { P.shakeAmp = 0; P.shakeT = t; }
+      oTray.visible = where === 'gm' && t >= O_T.o2c - 0.05;
+      oFlick(!(where === 'mall' && t > 34.4 && t < 38.6 && hash(Math.floor(t * 13), 47) < 0.42));
+      // ---- O1 · his desk at night
+      if (where === 'office') {
+        // the wheel: three turns down the results, the fifth ("What is a Yin amulet?") left under the cursor
+        const px = 120 * oS(2.6, 3.4, t) + 140 * oS(4.9, 5.6, t) + 120 * oS(6.4, 7.0, t);
+        scrList.offset.y = 1 - OSCR.rep - px / 1100;
+        // the cursor: drifting over the results, onto the fifth, the click at 8.2
+        const ck = oS(6.9, 7.9, t), cx = 0.09 - 0.17 * ck + 0.012 * Math.sin(t * 0.9) * (1 - ck), cy = 0.04 - 0.05 * ck;
+        cursor.position.set(cx, cy, 0.002); cursor.scale.setScalar(t >= 8.2 && t < 8.32 ? 0.85 : 1);
+        const page = t >= 8.3 ? 1 : 0;
+        if (page !== oLive.page) { oLive.page = page; scrMatR.map = page ? scrForum : scrArt; scrMatR.needsUpdate = true; }
+        // the lens: in from behind his chair to both screens; down to the talisman by the keyboard; up to the results;
+        // and, on the click, across to the thread, close enough on THIS screen to read it
+        const [SL] = oScreen(scrL, 0), [SR, NR] = oScreen(scrR, oFit(OSCR.w, OSCR.h));
+        const MIDx = (SL.x + SR.x) / 2, MIDy = (SL.y + SR.y) / 2, MIDz = (SL.z + SR.z) / 2;
+        const TAL = { x: O_TAL.x, y: O_TAL.y, z: OFFZ + O_TAL.z };
+        const k0 = oS(0, 4.2, t), cx0 = 1.38 + (1.30 - 1.38) * k0, cy0 = 1.32 + (1.25 - 1.32) * k0, cz0 = OFFZ + 1.30 + (0.80 - 1.30) * k0;
+        const kT = oS(4.2, 5.4, t) * (1 - oS(5.8, 6.9, t)), kL = oS(5.8, 6.9, t) * (1 - oS(8.5, 9.6, t)), kR = oS(8.5, 10.4, t);
+        const ax = MIDx + (TAL.x - MIDx) * kT + (SL.x - MIDx) * kL + (SR.x - MIDx) * kR;
+        const ay = MIDy + (TAL.y - MIDy) * kT + (SL.y - MIDy) * kL + (SR.y - MIDy) * kR;
+        const az = MIDz + (TAL.z - MIDz) * kT + (SL.z - MIDz) * kL + (SR.z - MIDz) * kR;
+        const pk = oS(8.6, 11.0, t);
+        oPut(cx0 + (NR.x - cx0) * pk, cy0 + (NR.y - cy0) * pk + 0.004 * Math.sin(t * 1.1), cz0 + (NR.z - cz0) * pk, ax, ay, az);
+        return;
+      }
+      // ---- O2 · Golden Mile, shop to shop (World H, its own numbers + HX)
+      if (where === 'gm') {
+        if (t < O_T.o2b) {                                          // the corridor, past the fronts, to the shop's glass
+          const k = oS(O_T.o2, O_T.o2b + 0.6, t), x = HX - 11.0 + 4.6 * k, ph = (t - O_T.o2) * Math.PI * 2.1;
+          oPut(x, 1.62 + 0.02 * Math.abs(Math.sin(ph)), 2.7 - 0.2 * k, x + 4.0, 1.45, 0.9 - 0.7 * k);
+        } else if (t < O_T.o2c) {                                   // the staff's counter: amulets under the glass
+          const k = oS(O_T.o2b - 0.4, O_T.o2c + 0.4, t), z = -1.45 - 1.35 * k, C = H.LCNT;
+          oPut(HX - 2.35, 1.42, z, HX + (C.x0 + C.x1) / 2 - 0.05, 0.62, z - 0.25);
+        } else {                                                    // the owner's counter: a tray slid across, his head shaking
+          const k = oS(O_T.o2c, O_T.o3, t), z = -2.75;
+          const sl = oS(20.2, 21.4, t);
+          oTray.position.set(3.32 - 0.30 * sl, 0, z);
+          oPut(HX + 2.18 + 0.14 * k, 1.43, z - 0.04, HX + 3.55, 1.2, z + 0.02);
+          if (P) P.shakeAmp = 0.2 * oS(21.0, 21.3, t) * (1 - oS(22.4, 22.8, t));
+        }
+        return;
+      }
+      // ---- O3 · the old mall: up the escalator (standing on a step: its own 0.6 m a second), off at the top; the corridor
+      if (t < O_T.o3b) {
+        const R = oRide(t);
+        oPut(R.ex, R.ey + 0.002 * Math.sin(t * 7), R.ez, R.tx, R.ty, R.tz);
+        return;
+      }
+      if (t < O_T.door) {
+        // off the step, through the gap, along the corridor: the path's arc walked eased in and out; the look three
+        // metres ahead along it, a touch toward the shop fronts, and onto her door in the last of it
+        const s = eAD(cl01((t - O_T.o3b) / (O_T.door - O_T.o3b)), 0.12, 0.16), p = O_PATH.getPointAt(Math.min(1, s), _oa);
+        const ahead = O_PATH.getPointAt(Math.min(1, s + 0.12), _ob);
+        const y0 = 1.58 + 0.04 * oS(O_T.o3b, O_T.o3b + 0.8, t), bob = 0.02 * Math.abs(Math.sin((t - O_T.o3b) * Math.PI * 1.9)) * (1 - oS(O_T.door - 1.0, O_T.door, t));
+        const toDoor = oS(O_T.door - 3.6, O_T.door, t), kb = oS(O_T.o3b, O_T.o3b + 1.4, t);   // (kb: off the ride's look)
+        let tx = ahead.x + (-0.04 - ahead.x) * toDoor, ty = 1.5 - 0.08 * toDoor, tz = ahead.z - 0.4 + (-1.38 - (ahead.z - 0.4)) * toDoor;
+        const R = oRide(O_T.o3b);
+        tx = R.tx + (tx - R.tx) * kb; ty = R.ty + (ty - R.ty) * kb; tz = R.tz + (tz - R.tz) * kb;
+        oPut(p.x, y0 + bob, p.z, tx, ty, tz);
+        return;
+      }
+      // ---- O4 · her door: a breath on the threshold, then in through the beads to where play begins, his eyes going to
+      // the still figure behind the counter
+      const k = oS(O_T.push0, O_T.push1, t), SP = DATA.spawn, z = oPushZ(t);
+      const x = -0.08 + (SP.x + 0.08) * k, ph = (t - O_T.push0) * Math.PI * 1.9;
+      const kk = oS(O_T.push1 - 1.6, O_T.end - 0.8, t), KE = yLive.keeper && yLive.keeper.head ? yLive.keeper.head.getWorldPosition(_ob) : null;
+      const kx = KE ? KE.x : KEEP.x, ky = KE ? KE.y - 0.05 : 1.45, kz = KE ? KE.z : KEEP.z;
+      const lx = x + 0.04 * (1 - k), ly = 1.42 - 0.06 * k, lz = z - 3;
+      oPut(x, 1.62 + 0.018 * Math.abs(Math.sin(ph)) * (1 - oS(O_T.push1 - 0.6, O_T.push1, t)), z,
+           lx + (kx - lx) * kk * 0.85, ly + (ky - ly) * kk * 0.85, lz + (kz - lz) * kk * 0.85);
+      yin.bellSwing = t >= O_T.bell ? Math.exp(-(t - O_T.bell) * 1.6) : 0;
+    }
+    function oEnd() {
+      oLive.on = false; oLive.where = ''; offG.visible = false; oTray.visible = false; hLive.look = false;
+      if (hLive.owner) hLive.owner.shakeAmp = 0;
+      oFlick(true);
+      scrMatR.map = scrArt; scrMatR.needsUpdate = true; oLive.page = -1;
+    }
+    const filmCtl = { frame: oFrame, end: oEnd, T: O_T };
 
     /* ---------------------------------------------------------- lifecycle */
     function snap() { return { phase }; }
@@ -7419,6 +7721,7 @@
       hanReset(); runEnd();                          // World H: the piece, the vision, the lens, the door, the run-out's stares
       tReset();                                      // World T: the seat, the tray, the pieces, the presences, the clock, the room's answers
       endReset();                                    // the endings: the lids, the room, the lamps, the bag, the card, the stool, the owner (CP9)
+      oEnd();                                        // the opening film: its office, its tray, the owner's head, the stuttering tube (CP10)
       for (const h of hotspots) { h.done = false; h.dwellT = 0; }
       if (kit) {
         kit.root(false); kit.pose('standing', { secs: 0.05 });
@@ -7482,6 +7785,7 @@
       merit: meritCtl,                               // the merit film's controller (CP6): every picture a function of its clock
       runout: runCtl,                                // the run-out film's (CP7)
       endT: endCtl,                                  // the four endings' (CP9): every picture a function of the scene's clock
+      filmO: filmCtl,                                // the opening film's (CP10): the same shape, its four places
       pileVia: { what: 'the tray shop\'s counter (two films carry him there)', x: TSTOOL.x, z: TSTOOL.z },
       arrivals: [{ what: 'the Hanuman shop (the merit film puts him at its door)', x: HARRIVE.x, z: HARRIVE.z },
                  { what: 'the tray shop (the run-out film puts him inside its door)', x: TARRIVE.x, z: TARRIVE.z }],
@@ -9245,6 +9549,120 @@
     x.fillStyle = '#b8160e'; x.fillRect(50, 380, 60, 34); x.fillStyle = '#e8c23a'; x.font = 'bold 22px serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('令', 80, 397);
     return done(THREE, c, false);
   }
+  /* ---- CP10 · the opening film's screens: what he was reading, the night after the medium. A results page (a tall
+     page, its window scrolled by the texture's offset — 289 of its 1100 rows on the screen at once), an article, the
+     forum thread the fifth result opens, the cursor, and the city through the office's windows. The words are world
+     art (a page is what it says on it); the sites are no one's — a search box, a forum, an article with no masthead. */
+  function oText(x, s, X, Y, W, lh) {                          // words wrapped into a width; answers the y after them
+    const ws = s.split(' '); let line = '', y = Y;
+    for (const w of ws) {
+      const t = line ? line + ' ' + w : w;
+      if (x.measureText(t).width > W && line) { x.fillText(line, X, y); line = w; y += lh; } else line = t;
+    }
+    if (line) { x.fillText(line, X, y); y += lh; }
+    return y;
+  }
+  function oChrome(x, W, url) {                                 // the browser's own strip: a tab, the address, the dots
+    x.fillStyle = '#dfe3e8'; x.fillRect(0, 0, W, 44);
+    x.fillStyle = '#ffffff'; x.fillRect(10, 6, 150, 18); x.fillStyle = '#5f6670'; x.font = '11px sans-serif'; x.textAlign = 'left';
+    x.textBaseline = 'middle'; x.fillText(url.split('/')[0], 18, 15);
+    x.fillStyle = '#f6f7f9'; x.fillRect(10, 27, W - 20, 14); x.fillStyle = '#4a515a'; x.font = '10px sans-serif'; x.fillText(url, 18, 34);
+    for (const [cx, col] of [[W - 40, '#c8ccd2'], [W - 26, '#c8ccd2'], [W - 12, '#e25555']]) { x.fillStyle = col; x.beginPath(); x.arc(cx, 15, 4, 0, Math.PI * 2); x.fill(); }
+    x.textBaseline = 'alphabetic';
+  }
+  const O_RESULTS = [
+    ['Why do my hands move by themselves when I chant?', 'meditation-help forum › practice', 'Many people feel the body sway or the hands lift in deep concentration. Teachers say: do not chase it, and do not be afraid of it.'],
+    ['Spirit possession: signs, myths, and what to do', 'an article · culture & belief', 'In many traditions, a sudden change in voice or movement is read as a spirit. Doctors, monks and mediums explain it differently.'],
+    ['Involuntary movement during chanting — is it normal?', 'dhamma Q&A › ask a teacher', 'A monk answers: some feel energy, some feel nothing. What matters is what you do with it. Ask a teacher you trust.'],
+    ['Thai amulets and their powers: a beginner\'s guide', 'amulet collectors\' notes', 'Luang Phor, Somdej, Phra Pidta... what collectors look for, and why a temple\'s blessing matters to them.'],
+    ['What is a Yin amulet? (please read before you buy)', 'amulet talk forum › questions', 'Phra Ngan, Kumanthong, Nang Tani... amulets said to be bound to a spirit. Read the first post before you go looking.'],
+    ['Phra Ngan, Kumanthong, Nang Tani: Yin amulets explained', 'amulet collectors\' notes', 'Believers say a Yin amulet must be cared for and respected. Collectors disagree about almost everything else.'],
+    ['Should you test an amulet\'s power? A monk answers', 'dhamma Q&A › ask a teacher', '"Why do you want to test it?" he asks. "Ask yourself that first."'],
+    ['Old amulet shops at Golden Mile — where to go', 'a city food & shopping blog', 'Thai grocers, Thai food, and the shops upstairs that sell amulets, if you know where to look.'],
+    ['Chinatown antique shops that still sell old amulets', 'a city heritage blog', 'Some of the old shophouses keep trays of pieces behind the counter. Ask, and they may bring one out.'],
+    ['Can an amulet be haunted?', 'amulet talk forum › stories', '"I bought one second-hand and I could not sleep for a week." 214 replies.']
+  ];
+  function makeSearchListT(THREE, cnv) {
+    const W = 512, H = 1100, [c, x] = sized(cnv, W, H);
+    x.fillStyle = '#ffffff'; x.fillRect(0, 0, W, H);
+    oChrome(x, W, 'search/?q=hands+moving+on+their+own+during+chanting');
+    // the box, with what he typed in it
+    x.strokeStyle = '#c4c9d0'; x.lineWidth = 1.5; x.fillStyle = '#ffffff';
+    x.beginPath(); x.roundRect ? x.roundRect(22, 58, W - 44, 30, 15) : x.rect(22, 58, W - 44, 30); x.fill(); x.stroke();
+    x.fillStyle = '#202124'; x.font = '14px sans-serif'; x.textAlign = 'left'; x.fillText('hands moving on their own during chanting', 42, 78);
+    x.strokeStyle = '#4285f4'; x.lineWidth = 2; x.beginPath(); x.arc(W - 46, 73, 6, 0, Math.PI * 2); x.stroke();
+    x.beginPath(); x.moveTo(W - 42, 77); x.lineTo(W - 36, 83); x.stroke();
+    x.fillStyle = '#70757a'; x.font = '11px sans-serif'; x.fillText('About 1,240,000 results (0.41 seconds)', 24, 112);
+    x.fillStyle = '#e8eaed'; x.fillRect(22, 120, W - 44, 1);
+    O_RESULTS.forEach(([title, where, snip], i) => {
+      const y = 140 + i * 91;
+      x.fillStyle = '#3c4043'; x.font = '11px sans-serif'; x.fillText(where, 24, y);
+      x.fillStyle = i === 4 ? '#5e2bb8' : '#1a0dab'; x.font = '17px sans-serif'; x.fillText(title, 24, y + 22);
+      x.fillStyle = '#4d5156'; x.font = '12px sans-serif'; oText(x, snip, 24, y + 42, W - 60, 16);
+    });
+    return done(THREE, c, false);
+  }
+  function makeArticleT(THREE, cnv) {
+    const W = 512, H = 289, [c, x] = sized(cnv, W, H), r = rng(6011);
+    x.fillStyle = '#fbfaf7'; x.fillRect(0, 0, W, H);
+    oChrome(x, W, 'culture-and-belief/spirit-possession-signs');
+    x.fillStyle = '#1d1d1f'; x.font = 'bold 21px serif'; x.textAlign = 'left';
+    oText(x, 'Spirit possession: signs, myths, and what to do', 24, 76, W - 48, 25);
+    x.fillStyle = '#7a7268'; x.font = '11px sans-serif'; x.fillText('Culture & belief  ·  12 min read', 24, 120);
+    // a picture: a temple's hall at dusk, painted soft
+    const g = x.createLinearGradient(0, 132, 0, 210); g.addColorStop(0, '#3a2a40'); g.addColorStop(1, '#a8603c');
+    x.fillStyle = g; x.fillRect(24, 132, 170, 120);
+    x.fillStyle = '#20141c'; x.beginPath(); x.moveTo(40, 252); x.lineTo(70, 190); x.lineTo(109, 160); x.lineTo(148, 190); x.lineTo(178, 252); x.fill();
+    x.fillStyle = '#e2b24a'; for (let i = 0; i < 5; i++) x.fillRect(66 + i * 18, 214, 6, 20);
+    x.fillStyle = '#2b2a28'; x.font = '12px serif';
+    let y = oText(x, 'Across Southeast Asia, a body that moves by itself, a voice that is not quite your own, a sudden heat or cold, is often read as a spirit. Mediums read it one way.', 206, 142, W - 230, 15);
+    oText(x, 'Doctors read it another. Monks often answer with a question: what were you doing when it began?', 206, y + 4, W - 230, 15);
+    x.fillStyle = 'rgba(40,40,40,0.18)'; for (let i = 0; i < 2; i++) x.fillRect(24, 262 + i * 10, (W - 48) * (0.7 + 0.3 * r()), 4);
+    return done(THREE, c, false);
+  }
+  function makeForumT(THREE, cnv) {
+    const W = 512, H = 289, [c, x] = sized(cnv, W, H);
+    x.fillStyle = '#eef0f3'; x.fillRect(0, 0, W, H);
+    oChrome(x, W, 'amulet-talk/questions/what-is-a-yin-amulet');
+    x.fillStyle = '#26303b'; x.fillRect(0, 44, W, 22);
+    x.fillStyle = '#d9dfe6'; x.font = '11px sans-serif'; x.textAlign = 'left'; x.fillText('AMULET TALK   ›   Questions', 14, 59);
+    x.fillStyle = '#ffffff'; x.fillRect(10, 72, W - 20, H - 80);
+    x.fillStyle = '#1b2733'; x.font = 'bold 16px sans-serif'; x.fillText('What is a Yin amulet? (please read before you buy)', 22, 94);
+    x.fillStyle = '#8a94a0'; x.font = '10px sans-serif'; x.fillText('pinned  ·  posted by an old member  ·  1,893 replies', 22, 108);
+    x.fillStyle = '#c9a24a'; x.beginPath(); x.arc(32, 130, 10, 0, Math.PI * 2); x.fill();
+    x.fillStyle = '#2b2f36'; x.font = '12px sans-serif';
+    let y = oText(x, 'Yin amulets (Phra Ngan, Kumanthong, Nang Tani and others) are said to be bound to a spirit. People who keep them believe she must be cared for and respected, every day.', 50, 128, W - 80, 15);
+    y = oText(x, 'Please do not buy one to "test" it, or to prove anything to yourself.', 50, y + 4, W - 80, 15);
+    x.font = 'bold 12px sans-serif';
+    y = oText(x, 'If something is happening to you, ask a proper teacher first.', 50, y + 4, W - 80, 15);
+    x.fillStyle = '#e3e7ec'; x.fillRect(22, y + 6, W - 44, 1);
+    x.fillStyle = '#56606b'; x.font = '11px sans-serif';
+    oText(x, 'Reply: There is an old mall in town with a shop on the top floor. The auntie there knows a lot. Go in the afternoon.', 50, y + 24, W - 80, 14);
+    return done(THREE, c, false);
+  }
+  function makeCursorT(THREE, cnv) {
+    const [c, x] = sized(cnv, 64, 88);
+    x.clearRect(0, 0, 64, 88);
+    x.beginPath(); x.moveTo(6, 4); x.lineTo(6, 70); x.lineTo(22, 55); x.lineTo(33, 80); x.lineTo(43, 75); x.lineTo(32, 51); x.lineTo(54, 51); x.closePath();
+    x.fillStyle = '#ffffff'; x.fill(); x.lineWidth = 4; x.strokeStyle = '#111111'; x.stroke();
+    return done(THREE, c, false);
+  }
+  /* the city at night through the office's windows (e3c1's makeCity, its numbers) */
+  function makeOfficeCity(THREE, cnv) {
+    const S = 1024, [c, x] = cnv(S), r = rng(17);
+    const g = x.createLinearGradient(0, 0, 0, S); g.addColorStop(0, '#060912'); g.addColorStop(0.7, '#1a2140'); g.addColorStop(1, '#2c2a3a');
+    x.fillStyle = g; x.fillRect(0, 0, S, S);
+    for (const [n, h0, h1, col, lit] of [[26, 0.25, 0.55, '#11172a', 0.25], [16, 0.45, 0.85, '#0a0e1a', 0.4]]) {
+      for (let i = 0; i < n; i++) {
+        const w = 30 + r() * 70, xx = r() * S, h = (h0 + r() * (h1 - h0)) * S;
+        x.fillStyle = col; x.fillRect(xx, S - h, w, h);
+        for (let wy = S - h + 8; wy < S - 6; wy += 10) for (let wx = xx + 4; wx < xx + w - 4; wx += 8)
+          if (r() < lit) { x.fillStyle = r() < 0.8 ? 'rgba(255,214,140,0.9)' : 'rgba(170,210,255,0.9)'; x.fillRect(wx, wy, 4, 5); }
+        if (h > S * 0.6) { x.fillStyle = '#ff3b30'; x.fillRect(xx + w / 2 - 2, S - h - 6, 5, 5); }
+      }
+    }
+    return done(THREE, c, false);
+  }
   /* the shop's name card, its printed face */
   function makeCardFrontT(THREE, cnv) {
     const [c, x] = sized(cnv, 512, 304);
@@ -9421,9 +9839,51 @@
     });
   }
 
+  /* THE OPENING FILM (CP10, §4.0): "Seeking" — every picture from stage.filmO's frame(t) (the merit film's shape); this
+     holds only its cues and its fades. It opens on black (the v4.6 law) and ends on it: the chapter card lies over the
+     black, and play begins where the film leaves him, inside her door. The office's hum, his keys and the click; the
+     Golden Mile shop's own air (its beds, World H's); the old mall's (World Y's: the empty floor, the drone, her song from
+     the far end, louder as he comes); the tube, the beads, the bell. (Its score is the drone for now: the film's own
+     music is generated when the account has credits again — docs/V22.0-E3C4-PLAN.md §12) */
+  function introFilm(c, s, api) {
+    const { tr, step, sfx, sfxFade, fade, rawK, stage } = api;
+    const F = stage.filmO, T = F.T;
+    c.keepFade = true;
+    fade(0, 0, 1, 1);
+    tr(0, T.end, (k, t) => F.frame(t, api), rawK);
+    // O1 · his desk at night
+    sfx(0.2, 'f4office', 0.5);
+    sfx(0.5, 'f4keys', 0.42);                            // the search typed in the dark
+    sfx(0.6, 'y4dread', 0.2);                            // the drone under all of it
+    fade(0.6, 2.2, 1, 0);
+    sfx(1.0, 'z4pro1', 1);                               // "After that night at the medium... I couldn't leave it alone..."  → 8.97
+    sfx(8.2, 'f4click', 0.5);                            // the fifth result: "What is a Yin amulet?"
+    fade(11.0, 11.85, 0, 1);
+    sfxFade(11.0, 11.85, 'f4office');
+    // O2 · Golden Mile, shop to shop (the shop's own air from World H's beds)
+    fade(11.95, 12.6, 1, 0);
+    sfx(12.4, 'z4pro2', 1);                              // "I went from shop to shop. Amulets, masters... anyone who might know something."  → 19.48
+    sfx(15.55, 'f4shopbell', 0.5);                       // in through the shop's door
+    sfx(21.3, 'x4set', 0.3);                             // the tray brought across the glass
+    fade(23.2, 23.9, 0, 1);
+    sfxFade(22.6, 24.0, 'y4dread');
+    // O3 · the old mall, the top floor (World Y's beds: the empty floor, the drone, her song far off)
+    fade(24.1, 25.2, 1, 0);
+    sfx(25.0, 'z4pro3', 1);                              // "One afternoon, on the top floor of an old mall, I found a shop I had never noticed before."  → 30.72
+    sfx(34.5, 'y4tube', 0.45);                           // the one tube stuttering, ahead of him
+    sfx(36.6, 'y4tube', 0.35);
+    sfx(39.0, 'z4pro4', 1);                              // "Nobody else was up there... just an old song, coming from that shop."  → 44.41
+    // O4 · her door: the beads, the bell, the song close now
+    sfx(T.beads, 'y4beads', 0.6);
+    sfx(T.bell, 'y4bell', 0.45);
+    fade(50.6, 52.0, 0, 1);
+    step(T.end, () => F.end());
+  }
+
   (window.__CHAPTERS__ = window.__CHAPTERS__ || {}).e3c4 = Object.assign(DATA, {
     build,
     scenes: [scOpen, scHome, scDown, scTeacher],
+    intro: introFilm,
     films: { merit: meritFilm, runout: runoutFilm }
   });
 })();
