@@ -17,6 +17,7 @@ view/
 
 # one-off debug harnesses and unshrunk intermediates
 masters/*/src/*.glb
+masters/*/src/*.log
 masters/*/prep/
 dbg*.mjs
 dbg*.html

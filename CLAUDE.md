@@ -6403,7 +6403,7 @@ What the baseline contains, by release:
   a tween's start, a bookmark moved in the tick of its payment, the comment trap mid-line). Waiting on Chad: his
   towkay model; the film's own score and four sounds (the ElevenLabs workspace had no credits; World Y's drone carries
   the film until then); the closing music (take c, his preview 2, in use). Sheet v116 (155 rows; v44 stays the link).
-  Deploy `6adc145363176ea81df31c91`, byte-verified (253 files), then the ending-B fix.
+  Deploy `6adc145363176ea81df31c91`, then the ending-B fix `6adc1634df5880b7c198e8c1`, each byte-verified (253 files).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
