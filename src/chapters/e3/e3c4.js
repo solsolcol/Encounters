@@ -3852,7 +3852,7 @@
       { const L = 8.2, f = new THREE.Mesh(new THREE.PlaneGeometry(L, TWAY.z1 - TWAY.z0), mFfw), uv = f.geometry.attributes.uv;
         for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * L / 0.4, uv.getY(i) * (TWAY.z1 - TWAY.z0) / 0.4);
         f.rotation.x = -Math.PI / 2; f.position.set(0, 0.003, (TWAY.z0 + TWAY.z1) / 2); f.receiveShadow = true; G.add(f); }
-      { const c = new THREE.Mesh(new THREE.PlaneGeometry(W + 0.02, TWAY.z1 - TWAY.z0), M({ color: 0x5c544a, roughness: 0.9 }));
+      { const c = new THREE.Mesh(new THREE.PlaneGeometry(W + 0.02, TWAY.z1 - TWAY.z0), M({ color: 0xd4cab8, roughness: 0.9, emissive: 0x4a4236 }));   // (the street's, buildStreetT)
         c.rotation.x = Math.PI / 2; c.position.set(0, TFRONT.way, (TWAY.z0 + TWAY.z1) / 2); G.add(c); }
       // the shop's signboard: on the fascia over the five-foot way, to the street — and a second over the counter, inside
       { const sg = new THREE.Mesh(new THREE.PlaneGeometry(4.4, 0.69), M({ map: tSign, roughness: 0.4, metalness: 0.15 }));
@@ -4146,7 +4146,7 @@
               roofTex = tex(makePanTiles(THREE, cnv)), vergeTex = tex(makeVerge(THREE, cnv)), hdbTex = tex(makeHdbDay(THREE, cnv)),
               shutTex = tex(makeShutter(THREE, cnv)), ffwTex = tex(makePeranakanTiles(THREE, cnv));
         const bPl = batch(), bWin = batch(), bSign = batch(), bFan = batch(), bBalu = batch(), bAC = batch(), bBlade = batch(),
-              bRoof = batch(), bFloor = batch(), bVerge = batch(), bShut = batch(), bIn = batch(), bHdb = batch(), bRoad = batch();
+              bRoof = batch(), bFloor = batch(), bVerge = batch(), bShut = batch(), bIn = batch(), bHdb = batch(), bRoad = batch(), bCeil = batch();
         const WCELL = (i) => [i / 8 + 0.002, 0.004, (i + 1) / 8 - 0.002, 0.996];
         const SCELL = (i) => { const cc = i % 2, rr = Math.floor(i / 2); return [cc * 0.5 + 0.003, 1 - (rr + 1) * 80 / 1024 + 0.002, (cc + 1) * 0.5 - 0.003, 1 - rr * 80 / 1024 - 0.002]; };
         const BCELL = (i) => [i * 0.5 + 0.004, 0.004, (i + 1) * 0.5 - 0.004, 0.996];
@@ -4238,7 +4238,7 @@
           bPl.box(w, Y1 - Gw, 0.45, 0, (Gw + Y1) / 2, 0.225, wallC, { k: 0.92 });
           const sg = kind === 'kopi' ? 0 : kind === 'mart' ? 1 : dealSign();
           bSign.quad(w - 0.75, 0.5, 0, (Gw + Y1) / 2, -0.006, 0xffffff, { ry: Math.PI, cell: SCELL(sg) });
-          bPl.quad(w, F, 0, Gw, F / 2, 0x5c544a, { rx: Math.PI / 2 });
+          bCeil.quad(w, F, 0, Gw, F / 2, 0xd4cab8, { rx: Math.PI / 2 });
           if (sg === 10 || sg === 3) {
             const bx = -w / 2 + 0.3, by = Y1 + 1.3;
             bPl.box(0.1, 1.95, 0.72, bx, by, -0.42, 0x2a2420);
@@ -4324,6 +4324,10 @@
           bPl.add(new THREE.CylinderGeometry(1.3, 1.3, 2.2, 10), x + w * 0.25, h + 1.1, z, 0x9a9690);
         }
         bPl.build(dayMat(null));
+        /* the five-foot ways' ceilings: painted plaster, and lit — from below by the street and the tiles, which no light
+           here does (a downward face takes only the hemisphere's dark ground colour), so the bounce is an emissive warm
+           grey (CP11: dark paint lit that way drew every walk along the shops with a black void for its top third) */
+        bCeil.build(dayMat(null, { emissive: 0x4a4236, emissiveIntensity: 1 }));
         bWin.build(dayMat(winTex));
         bSign.build(dayMat(signTex, { roughness: 0.6 }));
         bFan.build(dayMat(fanTex));
@@ -5726,12 +5730,12 @@
       if (E) {                                                     // (CP9: an ending puts it — closed, carried, in his drawer)
         bundleG.visible = !!E.vis;
         if (!E.vis) return;
-        bundleG.position.set(E.x, E.y, E.z);
+        bundleG.position.set(E.x, E.y, E.z); bundleG.rotation.set(E.rx || 0, E.ry || 0, 0);   // (B stands it on its edge into the bag)
         for (let i = 0; i < flaps.length; i++) { const F = flaps[i], u = smooth(cl01((E.open || 0) * 1.6 - i * 0.2)); F.piv.rotation.x = F.shut * (1 - u); }
         return;
       }
       const B = tX.bundle;
-      bundleG.visible = B.on;
+      bundleG.visible = B.on; bundleG.rotation.set(0, 0, 0);
       if (!B.on) return;
       const t = B.t;
       if (t < 0.5) bundleG.position.lerpVectors(B_FROM, B_LIFT, smooth(t / 0.5));
@@ -6746,9 +6750,11 @@
        the window onto the blocks at night. Lit by nothing: the night is a daylight preset, the lamp is painted */
     const bagG = new THREE.Group(); bagG.visible = false; worldT.add(bagG);            // its origin at the top of the fold
     { const bm = M({ map: tex(makeBagT(THREE, cnv)), roughness: 0.93 });
-      const body = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.25, 0.1), bm); body.position.y = -0.155; body.castShadow = false; bagG.add(body);
-      const fold = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.035, 0.104), bm); fold.position.set(0, -0.035, 0.003); fold.rotation.x = 0.22; bagG.add(fold); }
-    const BAG_H = 0.28;                                                               // the fold's top over the bag's bottom
+      /* (CP11: 0.2 × 0.25 × 0.1 stood 0.66 m from his eyes on the counter and filled a phone's frame — a box the size of
+         the owner's chest. A small paper bag for one wrapped piece, and it stands on HIS side of the counter now) */
+      const body = new THREE.Mesh(new THREE.BoxGeometry(0.19, 0.2, 0.075), bm); body.position.y = -0.125; body.castShadow = false; bagG.add(body);
+      const fold = new THREE.Mesh(new THREE.BoxGeometry(0.19, 0.03, 0.078), bm); fold.position.set(0, -0.03, 0.002); fold.rotation.x = 0.22; bagG.add(fold); }
+    const BAG_H = 0.225;                                                              // the fold's top over the bag's bottom
     const RMZ = -250;
     const eRoom = new THREE.Group(); eRoom.position.set(0, 0, RMZ); eRoom.visible = false; worldT.add(eRoom);
     const roomLive = { lamp: 1, glow: [], bulb: null, clockTex: null, clockC: null, clockX: null, clockShown: '', drawer: null, screen: null, analog: null };
@@ -6805,6 +6811,9 @@
       box(DX1 - DX0, 0.035, 0.62, (DX0 + DX1) / 2, DT, DZ, mWood, R, false);
       box(0.03, DT, 0.58, DX0 + 0.03, DT / 2, DZ, mWood, R, false);
       box(0.42, DT - 0.04, 0.58, DX1 - 0.21, (DT - 0.04) / 2, DZ, mWood, R, false);
+      // its back panel, between the leg and the pedestal (CP11: without it the white skirting under the desk read, on a
+      // phone, as a lit bar floating across the bottom of every desk shot)
+      box(DX1 - 0.42 - (DX0 + 0.045), 0.6, 0.015, (DX1 - 0.42 + DX0 + 0.045) / 2, 0.42, DZ - 0.27, mWood, R, false);
       for (const y of [0.42, 0.22]) box(0.38, 0.17, 0.012, DX1 - 0.21, y, DZ + 0.296, mWood, R, false);
       { const dr = new THREE.Group(); dr.position.set(DX1 - 0.21, 0.6, DZ); R.add(dr);
         box(0.38, 0.14, 0.012, 0, 0, 0.296, mWood, dr, false);                       // its front
@@ -7319,16 +7328,24 @@
         endLive.where = 'shop'; eDay(T_STILL); eClock(false, 25);
         // on the owner for the asking and his answer — in a little while he answers, his lean over the counter as he
         // wraps it — down to the bag, the bag taken
-        const yo = S0.ry, po = T_OWN, pb = eyePitch(PILE_POS.x, TCNT.top + 0.12, PILE_POS.z);
+        // (CP11: the lens came down onto the pile itself and a phone's frame was all bag; it settles on a two-shot of
+        // the counter's far half now — his face at the top, the bundle and the bag on the wood under it)
+        const yo = S0.ry, po = T_OWN, pb = eyePitch(PILE_POS.x, TCNT.top + 0.22, TCNT.z - 0.15);
         const k1 = eS(0, 0.9, t), k2 = eS(EB.bag - 0.4, EB.bag + 0.6, t);
         eLens(BASE_FOV - 7 * eS(3.2, 5.8, t) * (1 - k2));
         eCam(S0.x, S0.y + 0.005 * Math.sin(t * 1.5), S0.z, yo, (S0.p + (po - S0.p) * k1) * (1 - k2) + pb * k2, 0);
         eOwner(TX + 0.55, -6.85, 0, 0.15 * eS(EB.wrap0 - 0.3, EB.wrap0 + 0.3, t) * (1 - eS(EB.wrap1, EB.wrap1 + 0.7, t)));
-        // the bundle closed, into a paper bag on the counter, and the bag to him
+        // the bundle closed; a paper bag stood open on HIS side of the counter; the bundle drawn across the wood to it,
+        // stood on its edge and let down in; the bag folded over and pushed across to him (CP11: the bag stood ON the
+        // bundle at the lens)
         const shut = eS(EB.wrap0, EB.wrap1, t);
-        eBundle(t < EB.bagIn ? { x: PILE_POS.x - TX, y: TCNT.top, z: PILE_POS.z, open: 1 - shut, vis: true } : { vis: false });
+        const BGX = PILE_POS.x - TX + 0.04, BGZ = TCNT.z - 0.13, PX = PILE_POS.x - TX;
+        const slide = eS(EB.bag + 0.1, EB.bag + 0.7, t), up = eS(EB.bag + 0.65, EB.bag + 0.85, t), dn = eS(EB.bag + 0.85, EB.bagIn, t);
+        eBundle(t < EB.bagIn ? { x: PX + (BGX - PX) * slide, y: TCNT.top + 0.28 * up - 0.185 * dn, z: PILE_POS.z + (BGZ + 0.125 - PILE_POS.z) * slide - 0.125 * up,
+                                 rx: -Math.PI / 2 * up, open: 1 - shut, vis: true } : { vis: false });
         const bagShown = t >= EB.bag && t < EB.take0 + 0.6;
-        if (t < EB.take0) { if (bagG.parent !== worldT) eDrop(); bagG.visible = bagShown; bagG.position.set(PILE_POS.x - TX, TCNT.top + BAG_H, PILE_POS.z - 0.04 + 0.1 * eS(EB.bagIn + 0.6, EB.take0, t)); bagG.rotation.set(0, 0.15, 0); bagG.scale.setScalar(1); }
+        if (t < EB.take0) { if (bagG.parent !== worldT) eDrop(); bagG.visible = bagShown; bagG.position.set(BGX, TCNT.top + BAG_H, BGZ + 0.26 * eS(EB.bagIn + 0.6, EB.take0 - 0.2, t)); bagG.rotation.set(0, 0.15, 0); bagG.scale.setScalar(1);
+                            bagG.children[1].rotation.x = 0.22 + 1.2 * (1 - eS(EB.bagIn, EB.bagIn + 0.35, t)); }
         else eHoldUp(api, bagG, eS(EB.take0, EB.take0 + 0.6, t) * (1 - eS(EB.take1 - 0.3, EB.take1, t)), { lift: 0.12, tilt: 0.25 });
         if (t < EB.take0) eHandsAway(api);
         for (const k of ORDER) { ePresHome(); ePres(k, 0.62); }
@@ -7397,7 +7414,8 @@
         const kk = eS(EB.turn0, EB.turn1, t), w = Math.max(0, t - EB.walkOut), zz = B_CNT.z + 1.2 * w, ph2 = w * Math.PI * 2.0;
         eCam(B_CNT.x, 1.62 + (w > 0 ? 0.022 * Math.abs(Math.sin(ph2)) : 0), Math.min(1.6, zz), eMix(0, Math.PI, kk), -0.03, 0);
       }
-      // the bag in his hand coming in, then on the counter by the owner
+      // the bag in his hand coming in, then on the counter by the owner (folded shut: the room left it open)
+      bagG.children[1].rotation.x = 0.22;
       if (t < EB.put) eHoldUp(api, bagG, eS(EB.morning, EB.morning + 0.5, t), { lift: 0.04, tilt: 0.1, relax: 0.6 });
       else { if (bagG.parent !== worldT) eDrop(); eHandsAway(api); bagG.visible = true; bagG.position.set(PILE_POS.x - TX - 0.12, TCNT.top + BAG_H, PILE_POS.z - 0.12); bagG.rotation.set(0, -0.3, 0); }
     }

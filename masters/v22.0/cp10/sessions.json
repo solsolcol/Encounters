@@ -1,10 +1,64 @@
 {
  "_flow": "vA5xBsMM94eNH3RUuWPo (e3c4 CP10 · the opening film); effects eleven_text_to_sound_v2 (duration as a PARAMETER), three takes each; the score eleven_music_v2, three takes",
- "f4scroll": ["L9wZ2OhDv4ZrHeZh07hO", "EQB6lWgZhoOqKJYddjBm", "JE0B0KbCRpoctfFAkqkz"],
- "f4click": ["MqCdo2ZGn64V88a9Mnkk", "OzCEjtg4xnwOP43GvS8O", "GiBwieBoee2IzcOOvGon"],
- "f4siren": ["fG88m6TsQADBOKnsueDZ", "edvG1eoEU6LXDC2h3V4D", "p4bNhniTecxAGUA4Qkc1"],
- "f4escal": ["pQMZXE0osHcIVAjRAcPm", "xehXMudu5mDx5IwUqAMB", "nENfOArTt8oeGvoGskVz"],
- "f4tray": ["cvUAFLB2ONN0lubhbPdr", "h0ez61zkuZxmYCoPtwbF", "T8I3LZLaSNQYtsicJhw6"],
- "f4shopbell": ["4cnVC9VQctGC0eGeSGkx", "Mv9gEw5LQxf1AKj6r685", "Uc8je17pPVedlsq3DMoC"],
- "f4music": ["rdYSp8wzSMt5fEXQlpca", "nILR55lAHfhiqwnMeDyk", "5ATiQakhu5zU1YaKt8bu"]
+ "f4scroll": [
+  "L9wZ2OhDv4ZrHeZh07hO",
+  "EQB6lWgZhoOqKJYddjBm",
+  "JE0B0KbCRpoctfFAkqkz"
+ ],
+ "f4click": [
+  "MqCdo2ZGn64V88a9Mnkk",
+  "OzCEjtg4xnwOP43GvS8O",
+  "GiBwieBoee2IzcOOvGon"
+ ],
+ "f4siren": [
+  "fG88m6TsQADBOKnsueDZ",
+  "edvG1eoEU6LXDC2h3V4D",
+  "p4bNhniTecxAGUA4Qkc1"
+ ],
+ "f4escal": [
+  "pQMZXE0osHcIVAjRAcPm",
+  "xehXMudu5mDx5IwUqAMB",
+  "nENfOArTt8oeGvoGskVz"
+ ],
+ "f4tray": [
+  "cvUAFLB2ONN0lubhbPdr",
+  "h0ez61zkuZxmYCoPtwbF",
+  "T8I3LZLaSNQYtsicJhw6"
+ ],
+ "f4shopbell": [
+  "4cnVC9VQctGC0eGeSGkx",
+  "Mv9gEw5LQxf1AKj6r685",
+  "Uc8je17pPVedlsq3DMoC"
+ ],
+ "f4music": [
+  "rdYSp8wzSMt5fEXQlpca",
+  "nILR55lAHfhiqwnMeDyk",
+  "5ATiQakhu5zU1YaKt8bu"
+ ],
+ "_note_24oct": "the first runs (above) failed with no credits; re-run 24 Oct ~01:30 (the *_run2 sessions) failed the same way — \"This request exceeds your quota of 127573. You have 0 credits remaining\" / \"Insufficient funds\"; nothing charged. Run the nodes again when the workspace has credits.",
+ "f4music_run2": [
+  "wWaLcYYWHrWBiFKbtP4X",
+  "HBaBCYSJwMZqApfW6z8W",
+  "VFflHwPwmzIbmeBnTSdK"
+ ],
+ "f4scroll_run2": [
+  "ze4lKfkZ6mOTuFsBvbLB",
+  "JEGTWDl1ovYo5LzqQ34z",
+  "7kDcUMOQxTxUvzjtNkyh"
+ ],
+ "f4siren_run2": [
+  "tsQPc35Tjx2HdPPR1AfQ",
+  "WAQYwhI54QZnTbPCuDDg",
+  "JQ8qWeJbJBbSBDQoJ1Gu"
+ ],
+ "f4escal_run2": [
+  "F2FeGuSifKplx7laZEcM",
+  "C5Gjse8BJLZszQykwnGc",
+  "1mUvJOil5VIeG0c9EZge"
+ ],
+ "f4tray_run2": [
+  "EIP5GULyfhoq3wmYOJpV",
+  "2UI97qXcbNNIbSuWdD3q",
+  "GD39UtWkhxBF7wwBSgXS"
+ ]
 }
