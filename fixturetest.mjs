@@ -49,7 +49,14 @@ out.reachesPlay = true;
    every duration below is tiny and every wait is a poll. */
 const K = {};
 const dbg = () => p.evaluate(() => window.__enc.kitDebug());
-const settle = () => p.waitForTimeout(700);
+/* v22.0: 700 ms AND three drawn frames. A teleport is noticed by the frame loop (the hotspot under the lens, the bed
+   in reach), and on a loaded box one frame outlasts 700 ms — the fixed wait alone failed hotspotBadge, hotspotFires,
+   poseLies, poseStands, conductWaits and conductOnCard together, all six reading a frame that had not run yet (the
+   v8.7 law: a fixed wait in a harness is a coin toss) */
+const settle = async () => {
+  await p.waitForTimeout(700);
+  await p.evaluate(() => new Promise(r => { let k = 0; const f = () => (++k >= 3 ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); }));
+};
 // the objective set from INSIDE build() reached the HUD; the phase is kept and saved
 K.objectiveShown = await p.evaluate(() => {
   const el = document.getElementById('objective');
