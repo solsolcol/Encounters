@@ -6274,3 +6274,9 @@ cut (sharing its vertices and maps) when it is small.
   (`getAnimations({ subtree: true })`) AND `document.elementFromPoint` at the point is the choice itself, then tap. And
   read a scene's own state only after its first drawn frame: the ending's name is set there, not when the cutscene
   becomes active.
+- **Probe law: two resumes are compared only from a state that cannot move on by itself** (v22.3). The same-sitting
+  probe resumes a save (A), reads it, goes back to the title and resumes whatever A has saved since (B). e2c3's spawn
+  faces a torch spot, so a look fires under the reticle a few seconds into A: read before it, A says 0/6, the autosave
+  then writes `look:1`, and B lands on 1/6 — "different", though each landed exactly where its own save says (v22.2 met
+  the same in the other order, A read on that look's COMPLETE beat). Seed the state the comparison is about and face
+  away from anything a look fires: from `look:1` turned 40° clear of every cone, A and B land alike.

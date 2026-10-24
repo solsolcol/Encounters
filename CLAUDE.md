@@ -6512,7 +6512,9 @@ What the baseline contains, by release:
   - Three words; sheet v118 (v44 stays the link).
   - Deploys `6adc65beedbc96b6a29c712a`, `6adc6a732f97622dcc3aa617` (her weeping held) and `6adc813d8e7e820f970ea524`
     (the photographs' three), each byte-verified (253 served files); harnesses text, csp, hosted and chapter green on
-    the second.
+    the second, and fixture, restart, resume, state, menu, walk, leak, cine, sanity, inv and title on the third, with
+    v22.2's two regression probes (the Yin amulet three ways in; the same-sitting Continue in five chapters — e2c3's
+    first reading differed only because a look fired between the probe's two readings, LEARNINGS).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
