@@ -107,8 +107,8 @@
              'altarrow', 'altarrowfar', 'amushelf', 'traynear', 'trayfar', 'lersimask', 'hanuamulet', 'hanuamuletlod',
              'mstr_lpthuad', 'mstr_lptimpray', 'mstr_somdejtoh', 'mstr_lptimbench', 'mstr_achanmun', 'mstr_lpphiboon',
              'owner', 'staffman', 'granny', 'botak', 'admintee', 'hanuman',
-             /* World T (CP8): the street's parked cars, CHAD'S lersi amulet, his Thao Wessuwan and naga as the tray's two
-                other pieces (and the presences they call), the towkay */
+             /* World T (CP8): the street's parked cars, CHAD'S lersi amulet, his Thao Wessuwan as the tray's second piece,
+                his naga coiled inside the third, the crystal ball (v22.1) — and the presences they call — the towkay */
              'cars', 'lersiamulet', 'lersiamuletlod', 'wessred', 'naga', 'towkay',
              /* the opening film (CP10): his desk at night in e3c1's office, Chad's Mersus Office */
              'filmoffice'],
@@ -180,7 +180,7 @@
       hotStool: 'Sit at the counter',
       hotLersi: 'Hold the Lersi',
       hotWess: 'Hold the Thao Wessuwan',
-      hotNaga: 'Hold the Phaya Naga',
+      hotNaga: 'Hold the naga crystal ball',
       notePieces: 'Let your mind open to three pieces, one after another.'
     },
     sayPrefix: 'z4'
@@ -5335,17 +5335,18 @@
        He comes in out of the run and the owner has tea on. The order is to sit at the counter — the stool's glow, or a
        press. Seated (the stool's own height, drawn up to the counter; his look his own through the stool's swing), the
        owner tells him what he has noticed and slides the tray across: three pieces on red velvet — CHAD'S lersi amulet
-       at every triangle on a teak foot, CHAD'S Thao Wessuwan as a small red figure, CHAD'S naga laid flat as a small
-       jade one. Each is pressed (or tapped), taken in his hand and ANSWERED, and every answer STAYS behind him:
+       at every triangle on a teak foot, CHAD'S Thao Wessuwan as a small red figure, and (v22.1, Chad's call) a naga
+       crystal ball on a gilt lotus stand with CHAD'S naga coiled inside it. Each is pressed (or tapped), taken in his
+       hand and ANSWERED, and every answer STAYS behind him:
          THE LERSI — the fans wind down and the clock's tick slows, incense smoke rises round the counter out of nothing,
            dry leaves come down out of the ceiling, the light goes amber, a deep OM under a forest at night; behind him
            the old hermit's face forms in the air of the shop, amber, two metres tall (cut out of the amulet itself).
          THAO WESSUWAN — four steps down the street, each one nearer and heavier, the lens and the cups shaking, the
            lamps swinging, dust out of the joists, the sun on the floor going out step by step; the light goes red-gold,
            and in the road outside the open front a giant stands — his legs like pillars, the rest of him above the shop.
-         PHAYA NAGA — water all round, the room under it: light rippling over the floor, the walls and the ceiling, drops
-           rising UPWARD past him, the light going teal, a long hiss; a jade serpent comes in off the street across the
-           floor behind him and rears.
+         THE NAGA CRYSTAL BALL — the naga inside it wakes, teal, turning; then water all round, the room under it: light
+           rippling over the floor, the walls and the ceiling, drops rising UPWARD past him, the light going teal, a long
+           hiss; a jade serpent (the same scan) comes in off the street across the floor behind him and rears.
        The view is DRAWN ROUND to each as it comes, held while he speaks, and given back (e3c3's seated turn: the stool's
        swing re-aimed every frame through kit.pose('lying')). Each presence stays, fainter; the light goes back to the
        afternoon; the piece is set back on the velvet. Then the fourth piece, in faded red cloth, unwrapped by the owner;
@@ -5420,6 +5421,50 @@
     const pcG = {};
     for (const k of ORDER) { const g = new THREE.Group(); g.position.set(SLOT[k], PAD_Y, 0); trayG.add(g); pcG[k] = g; }
     box(0.046, 0.01, 0.028, 0, 0.005, -0.004, mTrayTeak, pcG.lersi, false);     // the Lersi's foot, a teak block it stands in
+
+    /* ---- THE NAGA CRYSTAL BALL (v22.1, Chad: "Instead of a naga on the tray, replace that naga with a naga crystal
+       ball, the naga model can still appear as special effect"). A ball of pale sea-green crystal, 5.2 cm across, on a
+       small gilt lotus stand, and inside it CHAD'S naga coiled on itself with its head raised, pale as the etching in a
+       crystal — the way such a ball is kept (แก้วพญานาค, the naga's crystal). The glass is DRAWN, never lit: two painted
+       matcaps (its body, then its skin laid on additively), unlit and untoned, so no light is added, and no refraction
+       pass (that would draw the whole shop a second time on a phone). In his hands the naga inside wakes — teal,
+       brighter, turning slowly, a glow at its heart — and the serpent that comes in off the street behind him is the
+       same scan, six metres long. He lifts the ball off its stand; the stand stays on the velvet. */
+    const BALL_R = 0.026, BALL_K = 1.22;                         // the coiled naga inside: 1.22 of the ball's radius across
+    const BALL_SIT = 0.0137 + Math.sqrt(BALL_R * BALL_R - 0.0135 * 0.0135);   // resting on the cup's rim (its radius 13.5 mm, its height 13.7)
+    const tBallBody = tex(makeCrystalBodyT(THREE, cnv)), tBallSkin = tex(makeCrystalSkinT(THREE, cnv)), tBallCore = tex(makeGlowTex(THREE, cnv, [255, 255, 255]));
+    const ballGeo = new THREE.SphereGeometry(1, 64, 48);
+    const lotusGeo = new THREE.LatheGeometry([[0.0001, 0], [0.0165, 0], [0.0172, 0.0012], [0.0168, 0.0026], [0.0135, 0.0036], [0.0085, 0.0048], [0.0072, 0.0068],
+      [0.0082, 0.0086], [0.0115, 0.0108], [0.0138, 0.0128], [0.0142, 0.0136], [0.0128, 0.0139]].map(([r, y]) => new THREE.Vector2(r, y)), 40);
+    const petalGeo = new THREE.SphereGeometry(1, 12, 8);
+    owned.push({ dispose: () => { ballGeo.dispose(); lotusGeo.dispose(); petalGeo.dispose(); } });
+    function crystalBall(r) {
+      const g = new THREE.Group();
+      const body = new THREE.Mesh(ballGeo, new THREE.MeshMatcapMaterial({ matcap: tBallBody, transparent: true, opacity: 0.74, depthWrite: false, fog: false, toneMapped: false }));
+      const skin = new THREE.Mesh(ballGeo, new THREE.MeshMatcapMaterial({ matcap: tBallSkin, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false, toneMapped: false }));
+      const core = new THREE.Sprite(new THREE.SpriteMaterial({ map: tBallCore, color: 0x6affd2, transparent: true, opacity: 0, depthWrite: false,
+        blending: THREE.AdditiveBlending, fog: false, toneMapped: false }));
+      body.scale.setScalar(r); skin.scale.setScalar(r);
+      core.scale.setScalar(r * 2.2); core.visible = false;
+      // drawn in this order, none writing depth: the body, then the naga inside adding its light over it, its heart, the skin
+      body.renderOrder = 60; core.renderOrder = 62; skin.renderOrder = 63;
+      for (const m of [body, skin]) { m.castShadow = false; m.receiveShadow = false; }
+      mats.push(body.material, skin.material, core.material);
+      const inner = new THREE.Group(); g.add(body, inner, core, skin);
+      return { g, body, skin, core, inner, r, nm: null, U: null, face: 0, spin: 0 };
+    }
+    // the stand, on the velvet at the naga's place: a round foot, a neck, a cup, and ten petals round it leaning out
+    const ballStand = new THREE.Group(); ballStand.position.set(SLOT.naga, PAD_Y, 0); trayG.add(ballStand);
+    { const cup = new THREE.Mesh(lotusGeo, matGold); cup.castShadow = false; cup.receiveShadow = true; ballStand.add(cup);
+      const pet = new THREE.InstancedMesh(petalGeo, matGold, 10), M4 = new THREE.Matrix4(), A = new THREE.Matrix4();
+      for (let i = 0; i < 10; i++) {
+        const a = i / 10 * Math.PI * 2;
+        A.makeRotationY(a); M4.copy(A).multiply(new THREE.Matrix4().makeTranslation(0.0104, 0.0112, 0))
+          .multiply(new THREE.Matrix4().makeRotationZ(-0.62)).multiply(new THREE.Matrix4().makeScale(0.0058, 0.0094, 0.0022));
+        pet.setMatrixAt(i, M4);
+      }
+      pet.instanceMatrix.needsUpdate = true; pet.computeBoundingSphere(); pet.castShadow = false; pet.receiveShadow = true; ballStand.add(pet); }
+    const ballTray = crystalBall(BALL_R); ballTray.g.position.y = BALL_SIT; pcG.naga.add(ballTray.g);
     const trayPlace = () => {
       const e = smooth(tX.tray.k), a = smooth(tX.tray.aside);
       trayG.position.set(TTRAY.x + 0.40 * a, TCNT.top, TCNT.z - 0.17 + (TTRAY.z - (TCNT.z - 0.17)) * e);
@@ -5433,7 +5478,7 @@
     const HOLD_T = {
       lersi: { pos: [0.018, 0.012, -0.19], tilt: -0.25, s: 0.085 },
       wess:  { pos: [0.02, -0.004, -0.205], tilt: -0.18, s: 0.06 },
-      naga:  { pos: [0.02, -0.006, -0.2], tilt: -0.42, s: 0.1 }
+      naga:  { pos: [0.02, -0.006, -0.2], tilt: -0.42, s: 0.052 }     // (v22.1: the crystal ball, built a unit across: 5.2 cm, the size it is on the velvet)
     };
     const PIECE_GLOW = { lersi: 0xffb060, wess: 0xff6a3a, naga: 0x6af0c8 };
     const heldG = {}, heldModel = {}, heldMats = { lersi: [], wess: [], naga: [] }, heldHalo = {};
@@ -5444,6 +5489,7 @@
         depthWrite: false, blending: THREE.AdditiveBlending, fog: false })); mats.push(sp.material);   // depth-tested: the piece hides it where it stands
       sp.renderOrder = 49; sp.position.set(0, 0, -0.02); sp.scale.setScalar(0.12); g.add(sp); heldHalo[k] = sp;
     }
+    const ballHeld = crystalBall(0.5); heldModel.naga.add(ballHeld.g);   // the ball in his hands (its naga lands with the scan)
     owned.push({ dispose: () => { for (const k of ORDER) if (kit && kit.holding && kit.holding() === heldG[k]) kit.hold(null); } });
     function glowMats(root, color, k) {
       root.traverse(q => {
@@ -5461,7 +5507,7 @@
        close on it — a figure standing on the back of his fingers.) Now he takes each between his joined palms, the
        anjali kit.pray holds — the way a sacred piece is held to be felt — and it rises out of his fingertips, its face to
        him. CLASP is for a probe (stage.trayTry). */
-    const CLASP = { lersi: { lift: 0.05, ahead: 0 }, wess: { lift: 0.065, ahead: 0 }, naga: { lift: 0.06, ahead: 0 }, y: -0.27 };
+    const CLASP = { lersi: { lift: 0.05, ahead: 0 }, wess: { lift: 0.065, ahead: 0 }, naga: { lift: 0.105, ahead: 0 }, y: -0.27 };   // (v22.1: the ball rides above his fingertips, never between his palms)
     function pieceShow(k, where) {
       pcG[k].visible = where !== 'hand';
       heldG[k].visible = where === 'hand';
@@ -5588,6 +5634,103 @@
       m.position.set(-(bb.min.x + bb.max.x) / 2, -bb.min.y, 0);
       return { w, m, bb, len: bb.max.z - bb.min.z };
     }
+    /* CHAD'S naga COILED, for inside the crystal ball (v22.1): the scan laid flat, then every vertex carried onto a flat
+       spiral that tightens toward the head — a point s along the body lands s along the spiral (its arc length tabled),
+       each cross-section turned with the spiral's own heading, its height kept and lifted a little as it winds in — so
+       the tail lies outside, the coils inside it, and the head rears up out of the middle. Bent once, at load, from the
+       scan's own triangles; returned a unit across, centred, with the turn that faces its head to +z (toward him). */
+    const COIL = { turns: 1.6, k: 0.6, rise: 0.06, n: 720 };
+    function nagaCoil(src) {
+      const t = nagaFlat(src); t.w.updateMatrixWorld(true);
+      const L = t.len, z0 = t.bb.min.z, TH = COIL.turns * Math.PI * 2, N = COIL.n, K = COIL.k;
+      const arc = new Float64Array(N + 1);
+      for (let i = 1; i <= N; i++) { const u = (i - 0.5) / N; arc[i] = arc[i - 1] + Math.hypot((1 - K * u) * TH, K) / N; }
+      const R0 = L / arc[N];
+      const uAt = (sv) => { const a = sv * arc[N]; let lo = 0, hi = N;
+        while (hi - lo > 1) { const md = (lo + hi) >> 1; if (arc[md] < a) lo = md; else hi = md; }
+        return (lo + (a - arc[lo]) / Math.max(1e-12, arc[hi] - arc[lo])) / N; };
+      const parts = []; let map = null;
+      t.m.traverse(q => { if (q.isMesh) { parts.push(q); if (!map && q.material && q.material.map) map = q.material.map; } });
+      let nv = 0, ni = 0;
+      for (const q of parts) { const G = q.geometry; nv += G.attributes.position.count; ni += G.index ? G.index.count : G.attributes.position.count; }
+      const pos = new Float32Array(nv * 3), nrm = new Float32Array(nv * 3), uv = new Float32Array(nv * 2);
+      const idx = nv > 65535 ? new Uint32Array(ni) : new Uint16Array(ni);
+      const v = new THREE.Vector3(), nn = new THREE.Vector3(), nmx = new THREE.Matrix3();
+      let o = 0, oi = 0;
+      for (const q of parts) {
+        const G = q.geometry, P = G.attributes.position, Nm = G.attributes.normal, U = G.attributes.uv, I = G.index;
+        nmx.getNormalMatrix(q.matrixWorld);
+        for (let i = 0; i < P.count; i++) {
+          v.fromBufferAttribute(P, i).applyMatrix4(q.matrixWorld);
+          const u = uAt(Math.min(1, Math.max(0, (v.z - z0) / L))), th = TH * u, R = R0 * (1 - K * u), c = Math.cos(th), sn = Math.sin(th);
+          const ph = Math.atan2(-R0 * K * c - R * TH * sn, -R0 * K * sn + R * TH * c), cp = Math.cos(ph), sp = Math.sin(ph), j = o + i;
+          pos[3 * j] = R * c + v.x * cp; pos[3 * j + 1] = v.y + COIL.rise * L * u; pos[3 * j + 2] = R * sn - v.x * sp;
+          if (Nm) { nn.fromBufferAttribute(Nm, i).applyMatrix3(nmx).normalize();
+                    nrm[3 * j] = nn.x * cp + nn.z * sp; nrm[3 * j + 1] = nn.y; nrm[3 * j + 2] = -nn.x * sp + nn.z * cp; }
+          if (U) { uv[2 * j] = U.getX(i); uv[2 * j + 1] = U.getY(i); }
+        }
+        if (I) for (let jj = 0; jj < I.count; jj++) idx[oi + jj] = I.getX(jj) + o; else for (let jj = 0; jj < P.count; jj++) idx[oi + jj] = o + jj;
+        oi += I ? I.count : P.count; o += P.count;
+      }
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(pos, 3)); geo.setAttribute('normal', new THREE.BufferAttribute(nrm, 3));
+      geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2)); geo.setIndex(new THREE.BufferAttribute(idx, 1));
+      geo.computeBoundingBox();
+      const bb = geo.boundingBox, cx = (bb.min.x + bb.max.x) / 2, cy = (bb.min.y + bb.max.y) / 2, cz = (bb.min.z + bb.max.z) / 2;
+      const ext = Math.max(bb.max.x - bb.min.x, bb.max.y - bb.min.y, bb.max.z - bb.min.z);
+      geo.translate(-cx, -cy, -cz); geo.scale(1 / ext, 1 / ext, 1 / ext); geo.computeBoundingSphere();
+      const th1 = TH, R1 = R0 * (1 - K);
+      const face = -Math.atan2(-R0 * K * Math.cos(th1) - R1 * TH * Math.sin(th1), -R0 * K * Math.sin(th1) + R1 * TH * Math.cos(th1));
+      return { geo, map, face };
+    }
+    /* the naga inside the glass: its own map read as LIGHT (its scales as brightness, never their colour), brightest at
+       its edges, added over the ball's body — a white etching on the velvet, teal and alive in his hands */
+    function crystalNaga(B, coil, k) {
+      const U = { uTint: { value: new THREE.Color(0xc4dcd8) }, uRim: { value: new THREE.Color(0xe8fffa) } };
+      const m = new THREE.MeshBasicMaterial({ map: coil.map || null, transparent: true, opacity: 0, depthWrite: false,
+        blending: THREE.AdditiveBlending, fog: false, toneMapped: false });
+      m.onBeforeCompile = (sh) => {
+        Object.assign(sh.uniforms, U);
+        sh.vertexShader = 'varying vec3 vCbN;\nvarying vec3 vCbV;\n' + sh.vertexShader.replace('#include <project_vertex>',
+          '#include <project_vertex>\n  vCbN = normalize(normalMatrix * normal);\n  vCbV = -mvPosition.xyz;');
+        sh.fragmentShader = 'uniform vec3 uTint;\nuniform vec3 uRim;\nvarying vec3 vCbN;\nvarying vec3 vCbV;\n' +
+          sh.fragmentShader.replace('#include <map_fragment>', '#include <map_fragment>\n' +
+            '  float cbL = dot(diffuseColor.rgb, vec3(0.3, 0.59, 0.11));\n' +
+            '  float cbF = pow(1.0 - abs(dot(normalize(vCbN), normalize(vCbV))), 1.7);\n' +
+            '  diffuseColor.rgb = uTint * (0.25 + 0.9 * cbL) + uRim * cbF;\n  diffuseColor.a *= 0.28 + 0.95 * cbF;');
+      };
+      m.customProgramCacheKey = () => 'e3c4crystalnaga';
+      mats.push(m);
+      const mesh = new THREE.Mesh(coil.geo, m); mesh.renderOrder = 61; mesh.castShadow = false; mesh.receiveShadow = false;
+      mesh.scale.setScalar(k * B.r); B.inner.add(mesh);
+      B.inner.rotation.y = coil.face; B.face = coil.face; B.nm = m; B.U = U;
+    }
+    /* every frame: the glass takes the room's light (it is painted, so it is told — the afternoon, the amber, the red,
+       the teal, the stillness), and the naga inside wakes by `g` in his hands, turning slowly with a glow at its heart;
+       once it has answered, the ball on the velvet keeps a little of it */
+    const _bt = new THREE.Color(), _btA = new THREE.Color(1.0, 0.82, 0.6), _btR = new THREE.Color(1.0, 0.7, 0.6),
+          _btT = new THREE.Color(0.62, 1.0, 0.94), _btS = new THREE.Color(0.8, 0.8, 0.8);
+    const _bnW = new THREE.Color(0xc4dcd8), _bnT = new THREE.Color(0x58ffd0), _brW = new THREE.Color(0xe8fffa), _brT = new THREE.Color(0xa8fff0);
+    function ballTick(wdt, g) {
+      const frozen = !!tLive.frozen, after = held.has('naga');
+      _bt.setRGB(1, 1, 1).lerp(_btA, 0.7 * tX.amber).lerp(_btR, 0.7 * tX.red).lerp(_btT, 0.75 * tX.teal);
+      if (frozen) _bt.lerp(_btS, 0.6);
+      const beat = 0.8 + 0.2 * Math.sin(tLive.t * 3.0);
+      for (const B of [ballTray, ballHeld]) {
+        const live = B === ballHeld ? g : (after ? 0.3 : 0);
+        B.body.material.color.copy(_bt).multiplyScalar(0.94 + 0.45 * live);
+        B.skin.material.color.copy(_bt);
+        const co = B === ballHeld ? 0.7 * g * beat : 0.16 * live;
+        B.core.visible = co > 0.004; B.core.material.opacity = co;
+        if (!B.nm) continue;
+        B.U.uTint.value.copy(_bnW).lerp(_bnT, Math.min(1, live * 1.5));
+        B.U.uRim.value.copy(_brW).lerp(_brT, Math.min(1, live * 1.5));
+        B.nm.opacity = 0.38 + 0.6 * live * (B === ballHeld ? beat : 1);
+        if (!frozen) B.spin += wdt * (B === ballHeld ? 0.55 * g : 0.12 * live);
+        B.inner.rotation.y = B.face + (B === ballHeld ? B.spin : 0.3 * Math.sin(B.spin * 2.4));
+      }
+      if (!frozen) ballHeld.g.position.y = 0.06 * g * Math.sin(tLive.t * 1.5);   // (a unit across: 3 mm of float as it answers)
+    }
 
     /* the pieces' models: every one a clone of one parse (v15.0), the tray's and his hand's and the presence's */
     const L_S = 0.066;                                            // the Lersi on its foot: 6.6 cm (its file is 1.0 unit tall, centred)
@@ -5622,21 +5765,10 @@
     }).catch(err => { console.warn('wessred failed to load', err); ctx.loadFail && ctx.loadFail('wessred', err); });
     parseOnce('naga').then(gl => {
       if (!alive) return;
-      // on the tray: 15 cm, its head toward him, jade
-      const t = nagaFlat(gl.scene); t.w.scale.setScalar(0.15 / t.len); t.m.position.z = -(t.bb.min.z + t.bb.max.z) / 2;
-      t.m.traverse(q => {
-        if (!q.isMesh) return;
-        q.castShadow = false; q.receiveShadow = true;
-        const c = q.material.clone(); c.color.multiply(new THREE.Color(0xbff2d8)); c.roughness = 0.28; c.metalness = 0.05;
-        if (c.emissive) { c.emissive.set(0x0c3a28); c.emissiveIntensity = 0.25; }
-        q.material = c; mats.push(c);
-      });
-      pcG.naga.add(t.w);
-      // in his hand: the same, by its middle
-      const h = nagaFlat(gl.scene); h.m.position.z = -(h.bb.min.z + h.bb.max.z) / 2; h.m.position.y -= (h.bb.max.y - h.bb.min.y) / 2;
-      h.w.scale.setScalar(1 / h.len);                            // a unit long; HOLD_T.s sets its size
-      glowMats(h.w, PIECE_GLOW.naga, 'naga'); heldModel.naga.add(h.w);
-      heldModel.naga.rotation.order = 'YXZ'; heldModel.naga.rotation.set(-Math.PI / 2, Math.PI / 2, 0);   // upright between his palms, its head (the file's +z) up, its hood turned to show its profile (photographed: face-on it was a thin stick)
+      // INSIDE THE CRYSTAL BALL (v22.1): the scan coiled once and shared by the ball on the velvet and the ball in his
+      // hands, each with its own material so each can be lit as it is
+      const coil = nagaCoil(gl.scene); owned.push({ dispose: () => coil.geo.dispose() });
+      crystalNaga(ballTray, coil, BALL_K); crystalNaga(ballHeld, coil, BALL_K);
       // THE SERPENT: 6.8 m, its head front on its group's origin, turned to come at him; jade
       const Pz = PRES.naga, n = nagaFlat(gl.scene);
       n.m.position.z = -n.bb.max.z;
@@ -5858,6 +5990,7 @@
       const run = ++tX.run;
       const at = (t, fn) => after(t, () => { if (run === tX.run && tX.on === k) fn(); });
       tX.on = k;
+      if (k === 'naga') ballHeld.spin = 0;                       // (v22.1: the naga inside faces him as he lifts it)
       kit.objective(null, { complete: false });                 // (CP11: a pickup played OBJECTIVE COMPLETE with the count unmoved)
       pieceShow(k, 'hand');
       if (worldSfx) worldSfx('x4pick', 0.6, 1, 0);
@@ -6062,6 +6195,7 @@
         for (const m of heldMats[k]) m.emissiveIntensity = g * (0.35 + 0.35 * beat);
         heldHalo[k].visible = g > 0.01; heldHalo[k].material.opacity = 0.6 * g * beat;
       }
+      ballTick(wdt, hk === 'naga' ? tX.glow : 0);
       presTick(wdt);
       fxTick(wdt);
       if (play || (endLive.on && endLive.where === 'shop')) tickTick();
@@ -6351,7 +6485,7 @@
         hits: tapBox(pieceAt('wess').x - 0.06, TCNT.top, TTRAY.z - 0.07, pieceAt('wess').x + 0.06, TCNT.top + 0.2, TTRAY.z + 0.07),
         enabled: () => pieceReady('wess'), onInteract() { return holdPiece('wess'); } },
       { id: 'pcNaga', pos: pieceAt('naga'), radius: 1.6, prompt: W.hotNaga, markY: 0.06,
-        hits: tapBox(pieceAt('naga').x - 0.06, TCNT.top, TTRAY.z - 0.1, pieceAt('naga').x + 0.06, TCNT.top + 0.12, TTRAY.z + 0.1),
+        hits: tapBox(pieceAt('naga').x - 0.05, TCNT.top, TTRAY.z - 0.07, pieceAt('naga').x + 0.05, TCNT.top + 0.1, TTRAY.z + 0.07),   // (v22.1: the ball on its stand)
         enabled: () => pieceReady('naga'), onInteract() { return holdPiece('naga'); } }
     ];
 
@@ -9694,6 +9828,79 @@
     }
     x.putImageData(img, 0, 0);
     return done(THREE, c, true);
+  }
+  /* the naga crystal ball (v22.1), drawn as two MATCAPS: a disc whose every point is what the glass shows where its
+     surface faces that way on the screen (its top is the ball's top, whatever the view). THE BODY is the room seen
+     through it, upside down as a ball shows it — the dark velvet and the counter above, the shop's warm wood across the
+     middle, the bright open front below — in a pale sea-green glass, the light it gathers into a bright crescent low
+     inside, and the dark band of its edge, where the glass turns the light back on itself */
+  function makeCrystalBodyT(THREE, cnv) {
+    const S = 512, [c, x] = cnv(S), C = S / 2, R = S * 0.495;
+    x.fillStyle = '#0e1c1a'; x.fillRect(0, 0, S, S);
+    x.save(); x.beginPath(); x.arc(C, C, R, 0, Math.PI * 2); x.clip();
+    const g = x.createLinearGradient(0, C - R, 0, C + R);
+    g.addColorStop(0.00, '#40262a'); g.addColorStop(0.18, '#563430'); g.addColorStop(0.36, '#7a6448'); g.addColorStop(0.52, '#ad9e80');
+    g.addColorStop(0.68, '#dcd4be'); g.addColorStop(0.84, '#f0ebdd'); g.addColorStop(1.00, '#f8f5ec');
+    x.fillStyle = g; x.fillRect(0, 0, S, S);
+    // the shop in it, soft: the counter's edge across it, the posts of the open front standing in the light (inverted)
+    x.fillStyle = 'rgba(40,26,20,0.32)'; x.fillRect(0, C - 0.16 * R, S, 0.09 * R);
+    for (const [px, w] of [[-0.52, 0.07], [-0.08, 0.05], [0.46, 0.08]]) {
+      for (let i = 0; i < 6; i++) { x.fillStyle = 'rgba(70,56,40,0.07)'; x.fillRect(C + (px - w * (1 + i * 0.35)) * R, C + 0.05 * R, 2 * w * (1 + i * 0.35) * R, 0.9 * R); }
+    }
+    x.globalCompositeOperation = 'multiply'; x.fillStyle = '#a6ead8'; x.fillRect(0, 0, S, S);
+    x.globalCompositeOperation = 'source-over';
+    // the light it gathers, a crescent low inside it
+    x.save(); x.translate(C, C + 0.6 * R); x.scale(1, 0.34);
+    const f = x.createRadialGradient(0, 0, 0, 0, 0, 0.64 * R);
+    f.addColorStop(0, 'rgba(255,255,250,0.92)'); f.addColorStop(0.45, 'rgba(225,255,244,0.42)'); f.addColorStop(1, 'rgba(200,255,236,0)');
+    x.fillStyle = f; x.beginPath(); x.arc(0, 0, 0.64 * R, 0, Math.PI * 2); x.fill(); x.restore();
+    // its heart a little clearer, luminous
+    const h = x.createRadialGradient(C, C - 0.06 * R, 0, C, C - 0.06 * R, 0.56 * R);
+    h.addColorStop(0, 'rgba(196,255,238,0.2)'); h.addColorStop(1, 'rgba(196,255,238,0)');
+    x.fillStyle = h; x.fillRect(0, 0, S, S);
+    // the dark band of its edge
+    const e = x.createRadialGradient(C, C, 0.7 * R, C, C, R);
+    e.addColorStop(0, 'rgba(3,14,12,0)'); e.addColorStop(0.55, 'rgba(3,14,12,0.5)'); e.addColorStop(0.88, 'rgba(2,10,9,0.82)'); e.addColorStop(1, 'rgba(6,20,18,0.72)');
+    x.fillStyle = e; x.fillRect(0, 0, S, S);
+    x.restore();
+    return done(THREE, c, false);
+  }
+  /* ...and THE SKIN, laid on additively (black adds nothing): the thin bright line of its rim (glass reflects most where
+     it turns away), brighter above than below, the shop's open front reflected small and hot on its left shoulder with
+     the posts across it, a sparkle beside it, and a dim warm gleam low on the right, the lamp behind the counter */
+  function makeCrystalSkinT(THREE, cnv) {
+    const S = 512, [c, x] = cnv(S), C = S / 2, R = S * 0.495;
+    x.fillStyle = '#000'; x.fillRect(0, 0, S, S);
+    const e = x.createRadialGradient(C, C, 0.78 * R, C, C, R);
+    e.addColorStop(0, 'rgba(0,0,0,1)'); e.addColorStop(0.5, 'rgba(46,84,76,1)'); e.addColorStop(0.82, 'rgba(160,214,200,1)'); e.addColorStop(1, 'rgba(236,255,250,1)');
+    x.fillStyle = e; x.beginPath(); x.arc(C, C, R, 0, Math.PI * 2); x.fill();
+    x.globalCompositeOperation = 'multiply';
+    const v = x.createLinearGradient(0, C - R, 0, C + R); v.addColorStop(0, '#ffffff'); v.addColorStop(0.55, '#b4b4b4'); v.addColorStop(1, '#565656');
+    x.fillStyle = v; x.fillRect(0, 0, S, S);
+    x.globalCompositeOperation = 'lighter';
+    // the open front, reflected: a soft glow, then a rounded pane built up in layers, the posts across it
+    const wx = C - 0.38 * R, wy = C - 0.42 * R;
+    const gl = x.createRadialGradient(wx, wy, 0, wx, wy, 0.34 * R);
+    gl.addColorStop(0, 'rgba(255,255,250,0.42)'); gl.addColorStop(1, 'rgba(255,255,250,0)');
+    x.fillStyle = gl; x.fillRect(0, 0, S, S);
+    x.save(); x.translate(wx, wy); x.rotate(-0.52);
+    const pane = (w, h, r) => { x.beginPath(); x.moveTo(-w + r, -h); x.lineTo(w - r, -h); x.quadraticCurveTo(w, -h, w, -h + r); x.lineTo(w, h - r);
+      x.quadraticCurveTo(w, h, w - r, h); x.lineTo(-w + r, h); x.quadraticCurveTo(-w, h, -w, h - r); x.lineTo(-w, -h + r); x.quadraticCurveTo(-w, -h, -w + r, -h); x.fill(); };
+    for (let i = 5; i >= 0; i--) { x.fillStyle = `rgba(255,255,252,${i === 0 ? 0.72 : 0.09})`; pane(0.135 * R + i * 2.2, 0.085 * R + i * 2.2, 0.036 * R + i); }
+    x.globalCompositeOperation = 'source-over'; x.fillStyle = 'rgba(0,0,0,0.4)';
+    for (const px of [-0.045, 0.045]) x.fillRect(px * R - 1, -0.09 * R, 2, 0.18 * R);
+    x.fillRect(-0.145 * R, -0.01 * R, 0.29 * R, 2);
+    x.restore();
+    x.globalCompositeOperation = 'lighter';
+    const sp = x.createRadialGradient(C - 0.17 * R, C - 0.6 * R, 0, C - 0.17 * R, C - 0.6 * R, 0.07 * R);
+    sp.addColorStop(0, 'rgba(255,255,255,1)'); sp.addColorStop(0.25, 'rgba(255,255,255,0.6)'); sp.addColorStop(1, 'rgba(255,255,255,0)');
+    x.fillStyle = sp; x.fillRect(0, 0, S, S);
+    x.save(); x.translate(C + 0.5 * R, C + 0.5 * R); x.rotate(-0.78); x.scale(1, 0.3);
+    const lo = x.createRadialGradient(0, 0, 0, 0, 0, 0.2 * R);
+    lo.addColorStop(0, 'rgba(255,214,160,0.42)'); lo.addColorStop(1, 'rgba(255,214,160,0)');
+    x.fillStyle = lo; x.beginPath(); x.arc(0, 0, 0.2 * R, 0, Math.PI * 2); x.fill(); x.restore();
+    x.globalCompositeOperation = 'source-over';
+    return done(THREE, c, false);
   }
 
   /* ============================================================ THE ENDINGS
