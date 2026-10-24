@@ -6441,8 +6441,12 @@ What the baseline contains, by release:
     twenty seconds later. A reload's Continue was always right. `freshStage()` (main.js) now puts the kit and the
     stage back the way a build leaves them whenever Continue or New game does not rebuild, without restart()'s
     autosave, and the chapter re-reads the saved phase on its first frame exactly as after a reload. Every chapter's
-    same-sitting Continue now lands where a reload's would. Measured after: "Pick up the amulet", the amulet on her
-    satin and pressable, and pressing it begins the experience again.
+    same-sitting Continue now lands where a reload's would. Measured after, on a phone with real taps, three ways in:
+    Back to the title and Continue, and a reload and Continue, each land on "Pick up the amulet" with the amulet on her
+    satin, and pressing it begins the experience again; Select a chapter replays it from the start ("Look around the
+    shop · 0/3"), the amulet in its box. No page error on any. And in five chapters across episodes 2 and 3 (e3c3's
+    two worlds, e3c4's World T, e3c2, e2c3) a same-sitting Continue lands exactly where a rebuild of the same save
+    does — chapter, phase, world, objective and place (`dbg-sameseat.mjs`).
   - THE CEILING: the five-foot way's ceiling lay in the plane of the fascia beam's underside, so the two fought for
     the strip along the street edge (stripes on the shop's ceiling, a jagged staircase on the neighbours'). The street's
     ceilings sit 1 cm under the beams now and the shop's 12 mm (v19.3's coplanar law, again).
