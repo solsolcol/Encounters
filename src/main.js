@@ -179,6 +179,12 @@ let CH_KEY = CH_ASKED || 'ch1';
 let CH = (window.__CHAPTERS__ || {})[CH_KEY];
 if (!CH) throw new Error('no chapter registered — chapters/ch1.js must load before the engine');
 const BOOT_CH = CH_KEY;      // where New game goes back to, whatever a save said
+/* v22.3: has the world standing been PLAYED since it was built? A stage that has only been built is exactly what a
+   build leaves, and freshStage() leaves it alone — a deep link's new game keeps what build() set up (the fixture's
+   objective and phase, set from inside build(): v22.2 reset them away and fixturetest said so); one that has been
+   played is put back before a Continue or a New game lays a run over it. Declared up here, before the first build
+   and the first frame, so nothing can reach it before it exists. */
+let stageDirty = false;
 
 /* The order chapters are played in, taken from their own `episode` and
    `id`. A chapter does not need to know what comes after it — the registry
@@ -1897,7 +1903,10 @@ function chillPaint(show) {
     return;
   }
   if (!chill.on) { chill.on = true; E.blur.classList.remove('hide'); E.tint.classList.remove('hide'); }
-  const k = chill.k, b = chill.beat * k;
+  /* (v22.3, L8-7: QUANTISED — the beat's decay and a STEADY drift moved the signature on nearly every frame of the cold,
+     and every move restyles a full-screen backdrop filter; at a hundredth of k and a tenth of a beat the steps are
+     under half a pixel of blur, and the painter writes a tenth as often) */
+  const k = Math.round(chill.k * 100) / 100, b = Math.round(chill.beat * k * 10) / 10;
   const blur = 1.2 + 9.5 * k + 4.5 * b;                       // CSS px, at the very edge
   const clear = Math.max(16, 66 - 30 * k - 14 * b);           // how much of the middle stays sharp, % of the way to a corner
   const sig = blur.toFixed(1) + ' ' + clear.toFixed(1) + ' ' + k.toFixed(3) + ' ' + b.toFixed(2);
@@ -4411,10 +4420,11 @@ function evPress(x, y, pid) {
   if (ev && ev.started && !ev.briefing && ev.kind === 'resist' && ev.down) { resistTap(ev); return; }
   const e = ev; if (!e || !e.started || e.down) return;
   if (e.briefing) {                          // v8.7: START closes the briefing; nothing else counts
+    const locked = !!document.pointerLockElement;   // (v22.3, L8-1: read before evBegin hands a STEADY drag the pointer back)
     evBegin();
     /* v22.0: but a STEADY drag starts with the finger that pressed START — held down from START and dragged, it moved
        nothing while the mark drifted out (the drag answers by its delta, so it may begin anywhere) */
-    if (ev === e && e.kind === 'steady') { e.down = true; e.downAt = e.t; e.downX = x; e.downY = y; e.lastX = x; e.lastY = y; e.pid = pid; }
+    if (ev === e && e.kind === 'steady') { e.down = true; e.downAt = e.t; e.downX = x; e.downY = y; e.lastX = x; e.lastY = y; e.pid = pid; e.seed = locked; }
     return;
   }
   const o = e.o;
@@ -4433,7 +4443,7 @@ function evPress(x, y, pid) {
     case 'mash':
       e.bar = Math.min(1, e.bar + o.gain); e.hits++; snd('uiclick', 0.18, 1.1); break;
     case 'resist': resistTap(e); break;
-    case 'steady': e.lastX = x; e.lastY = y; e.pid = pid; break;   // v22.0: the drag starts where the finger lands, and is that finger's
+    case 'steady': e.lastX = x; e.lastY = y; e.pid = pid; e.seed = false; break;   // v22.0: the drag starts where the finger lands, and is that finger's
     case 'heartbeat': {
       /* v9.4: the beat comes off the SCHEDULE, because the gaps shrink. A
          press is graded on how far it lands from the beat's centre as a
@@ -4527,6 +4537,10 @@ function evMove(x, y, pid) {
   /* v22.0: the mark moves with the DRAG, by its delta, so a finger may land
      anywhere and answer the tremor from there */
   if (e.kind === 'steady' && e.started && !e.briefing && e.R) {
+    /* (v22.3, L8-1: START pressed under the pointer lock seeds the drag at the screen's middle, the lock is handed
+       back, and the browser puts the cursor back where the lock was taken — the first move jumped the mark up to 2.6
+       rings off. That drag begins from the first real move instead) */
+    if (e.seed) { e.seed = false; e.lastX = x; e.lastY = y; return; }
     const g = +e.o.gain || 1;
     e.mx += (x - e.lastX) * g; e.my += (y - e.lastY) * g; e.lastX = x; e.lastY = y;
   }
@@ -11757,6 +11771,7 @@ function rebuildStage(next) {
   stage.dispose();
   for (const im of instCull) if (!inScene(im)) instCull.delete(im);
   stage = ch.build(CHCTX);
+  stageDirty = false;                // v22.3: built, not yet played (freshStage reads it)
   stage.world.add(ghost);            // she is the engine's, but rides the world
   BLOCKERS = stage.blockers;
   noteProp.material.map = stage.noteTex;      // the old one was just disposed
@@ -12873,9 +12888,11 @@ function worldWord(on = true) {
    are put back the way a fresh build leaves them — restart()'s own reset and
    the hands' rest, WITHOUT its autosave (the save being resumed must not be
    overwritten by the chapter's start) — and the chapter re-reads the saved
-   phase on its first frame, exactly as it does after a reload. A chapter
-   just built (a reload's Continue into chapter 1) is reset as the chapter
-   selector has always reset one straight after building it. */
+   phase on its first frame, exactly as it does after a reload. v22.3: and
+   only a world that has been PLAYED is put back (`stageDirty`): one only
+   built — a reload's Continue into chapter 1, a deep link's new game — is
+   already what a build leaves, and resetting it took away what build() had
+   set up (the fixture's objective and phase; fixturetest caught it). */
 function freshStage() {
   kitReset();
   stage.reset();
@@ -12895,7 +12912,7 @@ function resumeRun() {
   // land in the right chapter FIRST: setChapter rebuilds the world, and
   // anything placed before it would be placed in the outgoing one
   if (s.ch !== CH_KEY) setChapter(s.ch);
-  else freshStage();               // v22.2: no rebuild — so the world the last run left is put back first
+  else if (stageDirty) freshStage();   // v22.2: no rebuild — so the world the last run left is put back first (v22.3: if it was played)
   enterWorld(() => {
     /* `done` means the chapter was sealed and there is nothing after it —
        the game is finished. Continue then means "play it again", so the
@@ -12956,7 +12973,7 @@ function newGame(wipe = true) {
      should start episode 1 with no items at all." */
   invClearAll();
   if (wipe && CH_KEY !== BOOT_CH) setChapter(BOOT_CH);
-  else freshStage();               // v22.2: and a new game in the chapter already standing starts from what a build leaves
+  else if (stageDirty) freshStage();   // v22.2: and a new game in the chapter already standing starts from what a build leaves (v22.3: if it was played)
   ward.ep = episodeOf(CH_KEY); ward.charge = ward.enter = WARD_FULL;   // v14.7: a new game, a full amulet
   syncBars();
   enterWorld(() => {
@@ -13847,6 +13864,7 @@ function tick(now = 0) {
   const gap = state === 'title' ? IDLE_MIN_MS : FRAME_MIN_MS;
   if (gap && now - lastFrame < gap) return;
   lastFrame = now;
+  if (state !== 'title') stageDirty = true;   // v22.3: a run has been entered on this world (freshStage reads it)
 
   clock.update();
   const dt = Math.min(clock.getDelta(), 0.05);
@@ -14068,6 +14086,14 @@ function tick(now = 0) {
   stage.updateFire(t);
   kitFrame(dt, t, dLookX, dLookY);   // v7.0: the play kit's own frame — events, timer, pose, daylight, clock
   autosave();          // throttled, and only ever during play — see autosave()
+  /* v22.3: THE SKY WHERE HE IS. The sky (its dome, stars, sun, moon and
+     clouds) is a group at the world's origin, and a chapter world built far
+     from it — episode 3 chapter 4's Chinatown street at x −250 — stood outside
+     the dome and past the far plane from most of it: its sky was the
+     background's one flat colour, with no sunset and no stars in it. A stage
+     may say where its sky stands (`stage.skyAt()` → {x, z}, or null for the
+     origin); a stage that declares nothing is drawn exactly as before. */
+  { const so = stage.skyAt ? stage.skyAt() : null; sky.position.set(so ? so.x : 0, 0, so ? so.z : 0); }
 
   /* Smoke, embers and the star twinkle run at half rate on a phone. All
      three are slow, soft and blurred, so the eye cannot tell — but each one

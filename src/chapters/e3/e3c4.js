@@ -150,6 +150,7 @@
       evSteady: 'Steady',
       evSteadyBrief: 'Your hand is shaking. Keep her steady, and set her down gently: drag to hold the amulet inside the ring.',
       presenceCold: 'It is so cold.',
+      presenceWarn: 'Sanity drops while the cold holds you.',     // (v22.3, L7-1: the engine's fallback ordered action he cannot take)
       noteSteady: 'Knew your energy was not compatible with hers, and set her down gently, with respect.',
       noteSlip: 'Let her slip from your hand.',
       noteMerit: 'Promised to make merit in her name, and did.',
@@ -173,7 +174,9 @@
       evLetGoWait: 'Hold…',
       evLetGoGo: 'LET GO',
       noteLetGo: 'Let go of the Hanuman piece at once.',
+      noteLetGoLater: 'Let go of the Hanuman piece, in the end.',
       noteLate: 'Held on to the Hanuman piece too long.',
+      noteEarly: 'Tried to let go of the Hanuman piece too soon.',
       // THE TRAY SHOP
       objSit: 'Sit at the counter',
       objPieces: 'Hold the pieces · {n}/3',
@@ -240,6 +243,7 @@
     const TSTOOL = { x: TX + 0.55, z: -5.0 };             // his stool, at the counter's middle
     const TOWN = { x: TX + 0.55, z: -6.85 };              // the owner, behind it
     const PILE_POS = new THREE.Vector3(TX + 0.55, 0, -5.82);   // the fourth piece, on the counter in front of him
+    const REFL_X = -10.4;                                  // ending A's dark window, two doors west (local to WORLD T; the street is built round it)
 
     /* ----------------------------------------------------------- materials */
     const mats = [];
@@ -494,14 +498,16 @@
 
       /* ---- the front: glass either side of the door on a tiled sill, a header, the door frame, the beads */
       const SILL = 0.78, GL = YDOOR.h;
-      for (const [x0, x1] of [[YSHOP.x0, YDOOR.x0], [YDOOR.x1, YSHOP.x1]]) {
+      /* (v22.3, L2-5: each run ends 1 cm inside its door jamb — the sill, its cap and the end mullion ended in the jamb's
+         inner face and fought it) */
+      for (const [x0, x1] of [[YSHOP.x0, YDOOR.x0 - 0.01], [YDOOR.x1 + 0.01, YSHOP.x1]]) {
         const w = x1 - x0, cx = (x0 + x1) / 2;
         box(w, SILL, 0.2, cx, SILL / 2, 0.1, mWoodDk, G, false);
         box(w, 0.05, 0.26, cx, SILL + 0.025, 0.1, mWood, G, false);
         const g1 = new THREE.Mesh(new THREE.PlaneGeometry(w, GL - SILL), mGlassDirty); g1.position.set(cx, (SILL + GL) / 2, 0.1); g1.renderOrder = 2; G.add(g1);
         // aluminium mullions: either end and one in the middle
         for (const mx of [x0 + 0.02, cx, x1 - 0.02]) box(0.04, GL - SILL, 0.06, mx, (SILL + GL) / 2, 0.1, mAlu, G, false);
-        box(w, 0.05, 0.08, cx, GL + 0.025, 0.1, mAlu, G, false);
+        box(w, 0.05, 0.08, cx, GL + 0.021, 0.1, mAlu, G, false);   // (v22.3, L2-4: its underside 4 mm under the header's)
         // old lace, half drawn, just inside the glass
         const lace = new THREE.Mesh(new THREE.PlaneGeometry(w * 0.62, (GL - SILL) * 0.72), mLace);
         lace.position.set(x0 < 0 ? x0 + w * 0.31 : x1 - w * 0.31, SILL + (GL - SILL) * 0.62, -0.04); G.add(lace);
@@ -510,11 +516,11 @@
       boxT(W, H - GL, 0.2, 0, (H + GL) / 2, 0.1, mPlasterR, 2.2);           // the header over door and glass
       // the painted words on the right-hand glass, read from the corridor (and backwards from inside)
       { const p = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 0.5), new THREE.MeshStandardMaterial({ map: tGlassWords, transparent: true, depthWrite: false, roughness: 0.5, side: THREE.DoubleSide }));
-        mats.push(p.material); p.position.set((YDOOR.x1 + YSHOP.x1) / 2, 1.62, 0.205); G.add(p); }
+        mats.push(p.material); p.position.set((YDOOR.x1 + YSHOP.x1) / 2, 1.62, 0.134); G.add(p); }   // (v22.3, L2-7: 4 mm proud of the middle mullion, not 10.5 cm off the glass)
       // the door frame, and the door itself folded back against the inside of the left glass
       box(0.07, GL, 0.24, YDOOR.x0 - 0.035, GL / 2, 0.1, mWoodDk, G, false);
       box(0.07, GL, 0.24, YDOOR.x1 + 0.035, GL / 2, 0.1, mWoodDk, G, false);
-      box(YDOOR.x1 - YDOOR.x0 + 0.14, 0.08, 0.24, 0, GL + 0.04, 0.1, mWoodDk, G, false);
+      box(YDOOR.x1 - YDOOR.x0 + 0.14, 0.08, 0.24, 0, GL + 0.032, 0.1, mWoodDk, G, false);   // the lintel (v22.3, L2-4: 8 mm under the header)
       { const leaf = new THREE.Group(); leaf.position.set(YDOOR.x0 - 0.02, 0, -0.02); leaf.rotation.y = Math.PI * 0.94; G.add(leaf);
         box(0.92, 0.06, 0.05, 0.46, 0.03, 0, mWoodDk, leaf, false); box(0.92, 0.06, 0.05, 0.46, GL - 0.06, 0, mWoodDk, leaf, false);
         box(0.06, GL - 0.06, 0.05, 0.03, GL / 2, 0, mWoodDk, leaf, false); box(0.06, GL - 0.06, 0.05, 0.89, GL / 2, 0, mWoodDk, leaf, false);
@@ -1046,8 +1052,9 @@
         floorAt(CW, YMALL.z1 - YMALL.z0, ccx, (YMALL.z0 + YMALL.z1) / 2, mTerr, G);
         const ceil = ceilAt(CW, YMALL.z1 - YMALL.z0, ccx, CH, (YMALL.z0 + YMALL.z1) / 2, mCeilC, G);
         // the ends of the corridor (blockers, and seen)
-        walls.push(box(0.2, CH, 5.2, X0 - 0.1, CH / 2, 2.5, mPillar, G, false));
-        walls.push(box(0.2, CH, 5.2, X1 + 0.1, CH / 2, 2.5, mPillar, G, false));
+        /* (v22.3, L2-8: to z 5.0, where the void's own end walls begin — they shared the plane over z 5.0–5.1) */
+        walls.push(box(0.2, CH, 5.1, X0 - 0.1, CH / 2, 2.45, mPillar, G, false));
+        walls.push(box(0.2, CH, 5.1, X1 + 0.1, CH / 2, 2.45, mPillar, G, false));
         // the shopfronts along z 0, either side of hers: shutters down, one half up on a dark unit, one TO LET
         const units = [[X0, -18.6, 'shut'], [-18.6, -13.2, 'glass'], [-13.2, -7.8, 'half'], [-7.8, -2.65, 'shut'], [2.65, X1, 'shut']];
         units.forEach(([a, b, kind], ui) => {
@@ -1072,7 +1079,11 @@
         });
         // pillars between the units, tiled; and either side of her door
         const mPillarT = matRep(mPillar, repeatTex(tPlaster, 1, 1)); mPillarT.color.set(0xb4ada2);
-        for (const px of [-18.6, -13.2, -7.8, -2.65, 2.65]) boxT(0.5, CH, 0.5, px, CH / 2, 0.25, mPillarT, 1.6);
+        for (const px of [-18.6, -13.2, -7.8, -2.65, 2.65]) walls.push(boxT(0.5, CH, 0.5, px, CH / 2, 0.25, mPillarT, 1.6));   // (v22.3, L2-3: blockers — he walked 30 cm into each)
+        /* (v22.3, L2-6: a dark backing over the whole run of fronts, from the shutters' tops to the ceiling, so the slits
+           over each fascia, between the shutters and the fascias and over her board show the space above the units and
+           not the sky) */
+        { const bk = new THREE.Mesh(new THREE.PlaneGeometry(CW, CH - 2.6), M({ color: 0x24211e, roughness: 1 })); bk.position.set(ccx, (2.6 + CH) / 2, -0.005); G.add(bk); }
         // her own fascia: a red board, a gold border, and what she sells in gold letters (CP5a: an open shop says
         // what it is; the words are world art — the jetty sign's precedent — and name no real business)
         { const sign = new THREE.Mesh(new THREE.PlaneGeometry(4.9, 0.52), M({ map: tex(makeYinFascia(THREE, cnv)), roughness: 0.6, emissive: 0x2a0a04, emissiveIntensity: 0.6 }));
@@ -1131,7 +1142,7 @@
             glowPlane(3.4, 2.2, 0xffd8a8, 0.10, ux, 0.013, YVOID.z1 + 2.0, -Math.PI / 2);
           } }
         // bulkheads up to the skylight on both sides of the void, and the skylight: an afternoon through its panes
-        for (const bz of [RZ, YVOID.z1]) { const b = new THREE.Mesh(new THREE.PlaneGeometry(CW, YVOID.sky - CH), mSlab); b.position.set(ccx, (CH + YVOID.sky) / 2, bz); b.rotation.y = bz === RZ ? Math.PI : 0; G.add(b); }
+        for (const bz of [RZ, YVOID.z1]) { const b = new THREE.Mesh(new THREE.PlaneGeometry(CW, YVOID.sky - CH), mSlab); b.position.set(ccx, (CH + YVOID.sky) / 2, bz); b.rotation.y = bz === RZ ? 0 : Math.PI; G.add(b); }   // (v22.3, L2-2: each faces the void — both faced away, so the sky showed over the far walkway)
         { const sky = new THREE.Mesh(new THREE.PlaneGeometry(CW, vd), new THREE.MeshBasicMaterial({ map: repeatTex(tSky, CW / 4, 1), color: 0xc4ced6, fog: false }));
           mats.push(sky.material); sky.rotation.x = Math.PI / 2; sky.position.set(ccx, YVOID.sky, vz); G.add(sky); }
         /* CP10 · the void's two ENDS were open: down the atrium from the railing, and straight ahead up the escalator the
@@ -1273,7 +1284,8 @@
       const parent = o.parent || worldY;
       const group = new THREE.Group(); group.position.set(o.x, 0, o.z); group.rotation.y = o.ry || 0; parent.add(group);
       let wx = o.x; for (let p = parent; p && p !== world; p = p.parent) wx += p.position.x;
-      const P = { key, group, wx, model: null, mixer: null, idle: null, talk: null, head: null, headWrote: null, ready: false, o,
+      let wz = o.z; for (let p = parent; p && p !== world; p = p.parent) wz += p.position.z;   // (v22.3, L8-3: the pockets stand off in z)
+      const P = { key, group, wx, wz, model: null, mixer: null, idle: null, talk: null, head: null, headWrote: null, ready: false, o,
                   talkUntil: 0, talkW: 0, lookYaw: 0, lookPitch: 0, look: o.look || 0, rootIdle: new THREE.Vector3(), rootTalk: new THREE.Vector3(),
                   inner: null, alpha: o.hidden ? 0 : 1, mats: [] };
       if (o.hidden) group.visible = false;
@@ -1399,7 +1411,7 @@
     function personTalk(P, secs) { if (P) P.talkUntil = performance.now() / 1000 + secs; }
     function peopleTick(wdt) {
       for (const P of people) {
-        if (!P.ready || !P.group.visible || Math.abs(P.wx - yaw.position.x) > 80) continue;
+        if (!P.ready || !P.group.visible || Math.abs(P.wx - yaw.position.x) > 80 || Math.abs(P.wz - yaw.position.z) > 80) continue;
         if (P.head && P.headWrote) P.head.quaternion.copy(P.headWrote);
         armsPre(P);
         const want = performance.now() / 1000 < P.talkUntil ? (P.o.talkWeight || 1) : 0;
@@ -1437,7 +1449,12 @@
     let yT = 0, tubeStut = 0;
     const _bm = new THREE.Matrix4();
     function yTick(wdt) {
-      if (Math.abs(yaw.position.x) > 60 || wdt <= 0) return;
+      /* (v22.3, L8-3: World Y by z as well as x — the merit temple and the office stand 250 m off in z, and the beads,
+         the curtain's wave and the escalator ran through both films; and the bead curtain, which is never frustum-
+         culled — its instance matrices begin at the origin — is drawn only here, where it was drawn from every world) */
+      const inYw = Math.abs(yaw.position.x) <= 60 && Math.abs(yaw.position.z) <= 60;
+      if (yLive.beads && yLive.beads.red) yLive.beads.red.visible = yLive.beads.dark.visible = inYw;
+      if (!inYw || wdt <= 0) return;
       yT += wdt;
       const L = yLive.k;
       // the tubes: steady, with the faint shimmer a fluorescent tube has (CP5a: they no longer stutter by
@@ -2198,7 +2215,7 @@
         }
         // the split air-conditioner over the staff's side, and its trunking
         box(0.95, 0.3, 0.24, -4.36, 2.55, -5.2, matWhite, shopG, false).rotation.y = Math.PI / 2;
-        box(0.02, 0.04, 0.6, -4.25, 2.4, -5.2, matDark, shopG, false);
+        box(0.02, 0.04, 0.6, -4.245, 2.4, -5.2, matDark, shopG, false);   // (v22.3: 5 mm proud of the unit's face, which it fought)
       }
 
       /* ---------------------------------------------------- the glass front
@@ -2367,15 +2384,15 @@
       /* the strips behind the counters are the staff's: between a counter's
          padded back and the cabinets' (0.30 m, open at both ends) the lens could
          walk in and stand inside the man there — a thin box fills each */
-      solids.push(hidBox(0.02, 1.4, 3.2, -3.79, 0.7, (LCNT.z0 + LCNT.z1) / 2));
-      solids.push(hidBox(0.02, 1.4, 3.0, 3.80, 0.7, (RCNT.z0 + RCNT.z1) / 2));
+      solids.push(hidBox(0.58, 1.4, 3.2, -3.79, 0.7, (LCNT.z0 + LCNT.z1) / 2));   // (v22.3: the whole gap, counter to cabinets — a 2 cm strip left a slot either side)
+      solids.push(hidBox(0.6, 1.4, 3.0, 3.80, 0.7, (RCNT.z0 + RCNT.z1) / 2));     // (v22.3: a 1 cm slot either side let a diagonal push behind the counter, through the owner)
 
       /* -------------------------------------------- the owner's working end
          A wooden top at the back of his counter: the loupe, the lamp, the till,
          a receipt book, a calculator, his phone, his tea. */
       {
         const z = RCNT.z1 + 0.42, x = (RCNT.x0 + RCNT.x1) / 2, y = RCNT.top + 0.008;
-        box(0.62, 0.02, 0.8, x, y, z, matWoodL, shopG);
+        box(0.64, 0.02, 0.8, x, y, z, matWoodL, shopG);   // (v22.3: 1 cm over the chrome rims either side — its sides were their outer faces)
         box(0.3, 0.16, 0.26, x + 0.08, y + 0.09, z - 0.2, matBlack, shopG);                   // the till
         box(0.22, 0.02, 0.18, x + 0.08, y + 0.18, z - 0.2, matDark, shopG).rotation.x = -0.4;
         box(0.12, 0.012, 0.16, x - 0.12, y + 0.016, z + 0.12, matDark, shopG);                 // the calculator
@@ -3263,7 +3280,7 @@
         // the piers between the far side's shops, and on our side the wall where no shop is
         for (let i = 1; i < 7; i++) box(0.2, MALL.H, 0.3, MALL.x0 + i * 4, MALL.H / 2, MALL.z1 + 0.06, matWallB, mallG, false);
         for (const s of [-1, 1]) {
-          box(1.06, MALL.H, 0.2, s * 5.03, MALL.H / 2, -0.14, matWallB, mallG, false);
+          box(1.05, MALL.H, 0.2, s * 5.035, MALL.H / 2, -0.14, matWallB, mallG, false);   // (v22.3: its end 1 cm inside the shop's side wall, whose face it shared)
           box(0.2, MALL.H, 0.3, s * 9.5, MALL.H / 2, -0.1, matWallB, mallG, false);
           box(0.56, MALL.H, 0.2, s * 13.72, MALL.H / 2, -0.14, matWallB, mallG, false);
         }
@@ -3341,7 +3358,7 @@
     /* the shopper: up and down the corridor's far side at a stroll, turning round at each end (a quarter of a second of
        stepping in place); his take's rate from the ground he covers, so his feet never skate (the v9.3 law: STRIDE is
        the Walking take's own, measured at e2c1 — 1.33–1.44 m a cycle for a man of 1.72) */
-    const WALK = { z: 4.05, x0: -11.5, x1: 11.5, v: 1.15, stride: 1.38, turn: 0.8 };
+    const WALK = { z: 3.80, x0: -11.5, x1: 11.5, v: 1.15, stride: 1.38, turn: 0.8 };   // (v22.3, L3-6: 25 cm in from the far side — at 4.05 his hand went through the kitchen's outdoor table)
     const walk = { x: -8.5, dir: 1, turnT: 0 };
     hLive.walker = mkPerson('admintee', { parent: H.mallG, x: walk.x, z: WALK.z, ry: Math.PI / 2, height: 1.74, idle: 'Walking', look: 0,
       then: (P) => { hLive.walkDur = P.idle ? P.idle.getClip().duration : 0;
@@ -3804,7 +3821,24 @@
       for (const s of [-1, 1]) {
         blockerOnly(1.1, H, 0.2, s * 3.55, H / 2, -0.1);                              // the neighbours' shutters either side
         blockerOnly(0.2, H, TWAY.z1, s * 4.1, H / 2, TWAY.z1 / 2);                    // the five-foot way, closed at both ends
+        /* (v22.3, L4-3: and something there to close it — the wall stood in the open, 0.8 m past the shop's pier, with the
+           tiles, the ceiling and the shutters running on: crates stacked against the neighbour's shutter and a potted
+           palm by the kerb. The gap left between them, under the eye, is the one the endings' walks take at z 1.15.) */
+        const crate = M({ color: 0x8a6a44, roughness: 0.85 }), crate2 = M({ color: 0x6e5236, roughness: 0.88 });
+        for (let i = 0; i < 3; i++) box(0.55, 0.4, 0.45, s * (4.42 + (i % 2) * 0.05), 0.2 + i * 0.4, 0.3 + i * 0.1, i % 2 ? crate2 : crate, G);
+        box(0.5, 0.36, 0.4, s * 4.95, 0.18, 0.62, crate2, G);
+        { const pot = lathe([[0, 0], [0.16, 0], [0.2, 0.34], [0.22, 0.36], [0, 0.36]], M({ color: 0x9a5a3a, roughness: 0.8 }), s * 4.38, 0, 1.62);
+          void pot;
+          const leaf = M({ color: 0x3e6a30, roughness: 0.8 });
+          for (let k = 0; k < 7; k++) {
+            const fr = new THREE.Mesh(new THREE.ConeGeometry(0.07, 0.62, 5), leaf);
+            const a = k / 7 * Math.PI * 2;
+            fr.position.set(s * 4.38 + Math.cos(a) * 0.12, 0.62, 1.62 + Math.sin(a) * 0.12);
+            fr.rotation.set(Math.sin(a) * 0.55, 0, -Math.cos(a) * 0.55); G.add(fr);
+          } }
       }
+      // (v22.3, L4-3: our row's pillars either side of the shop stand on the way's street edge, and he walked into them)
+      for (const s of [-1, 1]) solidOnly(0.4, 3.4, 0.4, s * 3.0, 1.7, 2.0);
       blockerOnly(8.4, 1.4, 0.2, 0, 0.7, TWAY.z1 + 0.15);                            // the kerb: he does not walk into the road
       // the floor: old cement tiles, 0.2 m, one sheet to every 0.8 m
       { const f = floorAt(W, D, 0, cz, mTiles, G), uv = f.geometry.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * W / 0.8, uv.getY(i) * D / 0.8); }
@@ -3826,7 +3860,7 @@
       /* ---- THE FRONT, folded open: two plaster piers, a header with a carved gilt fretwork panel over the opening (both
          faces), the old folding timber doors stacked back against the piers, and a granite sill across the threshold */
       const OW = W - TFRONT.pier * 2;                                                 // the opening's width
-      for (const s of [-1, 1]) boxT(TFRONT.pier, H, 0.3, s * (W / 2 - TFRONT.pier / 2), H / 2, -0.05, mPlaster, 2.6);
+      for (const s of [-1, 1]) boxT(TFRONT.pier, H, 0.3, s * (W / 2 - TFRONT.pier / 2), H / 2, -0.05, mPlaster, H);   // (v22.3, L4-7: one repeat a pier — at 2.6 the plaster's low dirt band came round again at 2.6 m, a tone step over the folded doors)
       boxT(OW, H - TFRONT.head, 0.3, 0, (H + TFRONT.head) / 2, -0.05, mPlaster, 2.6);
       for (const [z, ry] of [[-0.205, Math.PI], [0.105, 0]]) {
         const fr = new THREE.Mesh(new THREE.PlaneGeometry(OW, 0.56), M({ map: tFret, roughness: 0.4, metalness: 0.2 }));
@@ -3845,6 +3879,10 @@
             for (const py of [0.75, 1.95]) box(0.04, 0.8, 0.3, 0, py, 0.0, panelMat, g, false);
             box(0.045, 0.06, 0.05, 0, 1.36, -0.16, mBrass, g, false);
           }
+          // (v22.3, L4-3: solid — the right set was walk-through, the right wall's blocker only starting at x 2.8, and the
+          // piers' inner 18 cm could be walked into)
+          solidOnly(0.56, 2.66, 0.42, s * 2.51, 1.33, -0.325);
+          solidOnly(TFRONT.pier, H, 0.3, s * (W / 2 - TFRONT.pier / 2), H / 2, -0.05);
         }
       }
 
@@ -3892,7 +3930,8 @@
       const CENSER = [[0, 0], [0.05, 0.03], [0.08, 0.06], [0.085, 0.1], [0.07, 0.12], [0.04, 0.125], [0.0, 0.125]];
       const POT = [[0, 0], [0.05, 0], [0.065, 0.03], [0.07, 0.06], [0.06, 0.085], [0.03, 0.095], [0.02, 0.105], [0.0, 0.105]];
       const mBooks = [0x5a2a1a, 0x2a3a4a, 0x6a5a3a, 0x3a2a2a].map(c => M({ color: c, roughness: 0.85 }));
-      const place = (y, zc, w, fn) => { let z = zc - w / 2 + 0.12; while (z < zc + w / 2 - 0.12) { const used = fn(z, y); z += used + 0.06 + r() * 0.08; } };
+      const place = (y, zc, w, fn) => { let z = zc - w / 2 + 0.18; while (z < zc + w / 2 - 0.18) {   // (v22.3: 0.12 sank four jars 3–4 cm into the side panels)
+        const used = fn(z, y); z += used + 0.06 + r() * 0.08; } };
       const AG = new THREE.Group(); G.add(AG);                                    // merged by material once built
       bays.forEach(([za, zb]) => {
         const w = za - zb, zc = (za + zb) / 2;
@@ -3946,7 +3985,8 @@
         box(0.03, ch - 0.62, 0.03, RX - cd, (ch + 0.62) / 2, zc, mTeak, G, false);
         // Chad's framed trays, standing up on the shelves inside, their faces to the shop (−x)
         const S = 0.2, list = [], e = new THREE.Euler(0, -Math.PI / 2, 0, 'YXZ');
-        for (const [y0, n] of [[0.64, 2], [1.12, 2], [1.6, 2]]) for (let i = 0; i < n; i++) list.push([xc + 0.02, y0 + 1.0973 * S / 2, zc + (i - 0.5) * 0.46, e, S]);
+        for (const [y0, n] of [[0.621, 2], [1.107, 2], [1.587, 2]])   // (v22.3: on the cupboard's top and the glass shelves' — they floated 1.4–2 cm)
+          for (let i = 0; i < n; i++) list.push([xc + 0.02, y0 + 1.0973 * S / 2, zc + (i - 0.5) * 0.46, e, S]);
         H_TRAYS(list, [], G);
         solids.push(hidBox(cd, ch, cw, xc, ch / 2, zc, G));
         const strip = box(0.02, 0.012, cw - 0.1, RX - cd + 0.06, ch - 0.03, zc, new THREE.MeshBasicMaterial({ color: 0xffd6a0 }), G, false); mats.push(strip.material);
@@ -4059,7 +4099,7 @@
         const len = Math.hypot(H, TSTAIR.zFoot - TSTAIR.zTop), ang = Math.atan2(H, TSTAIR.zFoot - TSTAIR.zTop);
         const sgr = boxT(0.05, 0.28, len, TSTAIR.x0 - 0.02, H / 2 - 0.1, (TSTAIR.zFoot + TSTAIR.zTop) / 2, mTeakDk, 0.9, st); sgr.rotation.x = ang;
         const rail = boxT(0.05, 0.06, len, TSTAIR.x0 - 0.02, H / 2 + 0.85, (TSTAIR.zFoot + TSTAIR.zTop) / 2, mTeak, 0.9, st); rail.rotation.x = ang;
-        for (let i = 1; i < n; i += 1) { const z = TSTAIR.zFoot - (i + 0.5) * run, y = (i + 1) * rise; cyl(0.015, 0.015, 0.86, TSTAIR.x0 - 0.02, y + 0.43, z, mTeakDk, 6, st); }
+        for (let i = 1; i < n; i += 1) { const z = TSTAIR.zFoot - (i + 0.5) * run, y = (i + 1) * rise; cyl(0.015, 0.015, 0.71, TSTAIR.x0 - 0.02, y + 0.355, z, mTeakDk, 6, st); }   // (v22.3: 0.86 poked 10 cm up through the rail, whose centreline is 0.71 over each tread)
         cyl(0.04, 0.04, 1.1, TSTAIR.x0 - 0.02, 0.55, TSTAIR.zFoot, mTeak, 8, st);         // the newel
         solids.push(hidBox(w + 0.05, 1.4, TSTAIR.zFoot - TSTAIR.zTop, xc, 0.7, (TSTAIR.zFoot + TSTAIR.zTop) / 2, G));
         // the dark opening it climbs into
@@ -4067,7 +4107,8 @@
       { const cal = new THREE.Mesh(new THREE.PlaneGeometry(0.34, 0.51), M({ map: tCal, roughness: 0.85 })); cal.position.set(-0.7, 1.75, TSHOP.z0 + 0.012); G.add(cal); }
       // the owner's side of the counter: a low cabinet of stock in paper packets and a stool he never sits on
       boxT(1.6, 0.9, 0.4, -0.15, 0.45, TSHOP.z0 + 0.22, mTeakDk, 1.0);
-      for (let i = 0; i < 9; i++) box(0.14, 0.05 + r() * 0.06, 0.1, -0.85 + i * 0.17, 0.93 + r() * 0.02, TSHOP.z0 + 0.22, [mPaper, mVelvet, mRedLac][i % 3], G, false);
+      for (let i = 0; i < 9; i++) { const ph = 0.05 + r() * 0.06; r();   // (v22.3: on the cabinet's top at 0.9 — they floated and sank up to 2.5 cm; the second draw kept so the seed deals as before)
+        box(0.14, ph, 0.1, -0.85 + i * 0.17, 0.9 + ph / 2, TSHOP.z0 + 0.22, [mPaper, mVelvet, mRedLac][i % 3], G, false); }
       solids.push(hidBox(1.6, 0.9, 0.4, -0.15, 0.45, TSHOP.z0 + 0.22, G));
 
       /* ---- THE FANS and THE LAMPS: two ceiling fans turning slowly (the kit's own), three green enamel pendants on their
@@ -4095,7 +4136,7 @@
          THIS afternoon (a standard material on the vertex colour) where chapter 3's was lit by painted street lamps */
       function buildStreetT() {
         const rS = rng(4108);
-        const SG = new THREE.Group(); G.add(SG);
+        const SG = new THREE.Group(); G.add(SG); tLive.streetG = SG;   // (v22.3, L8-2: drawn only from World T itself — updateNotes)
         const dayMat = (map, o = {}) => { const m = new THREE.MeshStandardMaterial({ vertexColors: true, map: map || null, roughness: 0.92, metalness: 0, ...o }); mats.push(m); return m; };
         const unlitMat = (map, o = {}) => { const m = new THREE.MeshBasicMaterial({ vertexColors: true, map: map || null, ...o }); mats.push(m); return m; };
         const FR = new THREE.Matrix4(), _M = new THREE.Matrix4(), _L = new THREE.Matrix4(), _NM = new THREE.Matrix3(),
@@ -4148,7 +4189,8 @@
               roofTex = tex(makePanTiles(THREE, cnv)), vergeTex = tex(makeVerge(THREE, cnv)), hdbTex = tex(makeHdbDay(THREE, cnv)),
               shutTex = tex(makeShutter(THREE, cnv)), ffwTex = tex(makePeranakanTiles(THREE, cnv));
         const bPl = batch(), bWin = batch(), bSign = batch(), bFan = batch(), bBalu = batch(), bAC = batch(), bBlade = batch(),
-              bRoof = batch(), bFloor = batch(), bVerge = batch(), bShut = batch(), bIn = batch(), bHdb = batch(), bRoad = batch(), bCeil = batch();
+              bRoof = batch(), bFloor = batch(), bVerge = batch(), bShut = batch(), bIn = batch(), bHdb = batch(), bRoad = batch(), bCeil = batch(),
+              bShutR = batch();
         const WCELL = (i) => [i / 8 + 0.002, 0.004, (i + 1) / 8 - 0.002, 0.996];
         const SCELL = (i) => { const cc = i % 2, rr = Math.floor(i / 2); return [cc * 0.5 + 0.003, 1 - (rr + 1) * 80 / 1024 + 0.002, (cc + 1) * 0.5 - 0.003, 1 - rr * 80 / 1024 - 0.002]; };
         const BCELL = (i) => [i * 0.5 + 0.004, 0.004, (i + 1) * 0.5 - 0.004, 0.996];
@@ -4271,6 +4313,17 @@
           if (!shop) {
             // a shutter half up on some by day (a dark shop behind it), right down on the rest
             const up = rS() < 0.35 ? 1.2 : 0;
+            /* (v22.3, L5-1: ending A's dark window is on this row, and its last scare — someone a step behind him — stands
+               in the dark room behind the glass, which this shutter, right down, hid; the part of it behind the glass is its
+               own mesh, taken away while the window shows. Split in the frame's x, so the world-projected texture runs on.) */
+            const rA = xc - REFL_X - 1.4, rB = xc - REFL_X + 1.4;
+            if (!far && rB > -sw / 2 && rA < sw / 2 && up < 2.4) {
+              const a = Math.max(-sw / 2, rA), b = Math.min(sw / 2, rB), yT = fy + 3.0, yG = fy + 2.56, yL = fy + up;
+              if (a > -sw / 2) bShut.quad(a + sw / 2, 3.0 - up, (a - sw / 2) / 2, fy + 1.5 + up / 2, F - 0.02, 0xd8dadc, { ry: Math.PI });
+              if (b < sw / 2) bShut.quad(sw / 2 - b, 3.0 - up, (b + sw / 2) / 2, fy + 1.5 + up / 2, F - 0.02, 0xd8dadc, { ry: Math.PI });
+              bShut.quad(b - a, yT - yG, (a + b) / 2, (yT + yG) / 2, F - 0.02, 0xd8dadc, { ry: Math.PI });
+              bShutR.quad(b - a, yG - yL, (a + b) / 2, (yG + yL) / 2, F - 0.02, 0xd8dadc, { ry: Math.PI });
+            } else
             bShut.quad(sw, 3.0 - up, 0, fy + 1.5 + up / 2, F - 0.02, 0xd8dadc, { ry: Math.PI });
             if (up) bIn.quad(sw, up, 0, fy + up / 2, F + 0.05, 0x2a2622, { ry: Math.PI, k: 0.55 });
             bPl.box(sw + 0.1, 0.3, 0.32, 0, fy + 3.15, F - 0.16, 0x4a4e54);
@@ -4289,9 +4342,11 @@
           for (const s of [-1, 1]) bPl.box(0.45, oh, 0.2, s * (w / 2 - 0.225), fy + oh / 2, F + 0.1, wallC, { k: 0.85 });
           const wallIn = warm ? 0xe8d4b0 : 0xe6eef4, floorIn = warm ? 0xbca88c : 0xd4d8da, ceilIn = warm ? 0xf0e2c8 : 0xf4f6f8;
           bIn.quad(sw, Dd, 0, fy + 0.002, F + Dd / 2, floorIn, { rx: -Math.PI / 2, k: 0.48 });
-          bIn.quad(sw, Dd, 0, fy + oh, F + Dd / 2, ceilIn, { rx: Math.PI / 2, k: 0.4 });
-          bIn.quad(Dd, oh, -sw / 2, fy + oh / 2, F + Dd / 2, wallIn, { ry: Math.PI / 2, k: 0.5 });
-          bIn.quad(Dd, oh, sw / 2, fy + oh / 2, F + Dd / 2, wallIn, { ry: -Math.PI / 2, k: 0.5 });
+          // (v22.3, L4-5: 1 cm in from the pilasters' inner faces and 1 cm under the lintel's underside — in their planes,
+          // facing the same way, the two fought for the same pixels and flickered across the road)
+          bIn.quad(sw, Dd, 0, fy + oh - 0.01, F + Dd / 2, ceilIn, { rx: Math.PI / 2, k: 0.4 });
+          bIn.quad(Dd, oh, -sw / 2 + 0.01, fy + oh / 2, F + Dd / 2, wallIn, { ry: Math.PI / 2, k: 0.5 });
+          bIn.quad(Dd, oh, sw / 2 - 0.01, fy + oh / 2, F + Dd / 2, wallIn, { ry: -Math.PI / 2, k: 0.5 });
           for (const z of [1.2, 3.2, 5.0]) for (const x of [-sw / 4, sw / 4]) bIn.box(1.2, 0.05, 0.08, x, fy + oh - 0.04, F + z, 0xffffff, { k: 1.4 });
           const back = new THREE.Mesh(new THREE.PlaneGeometry(sw, oh), unlitMat(tex(warm ? makeKopiBack(THREE, cnv) : makeMartBack(THREE, cnv)), { vertexColors: false, color: warm ? 0xc8c0b0 : 0xc8ccd0 }));
           back.applyMatrix4(_M.multiplyMatrices(FR, _L.compose(_V.set(0, fy + oh / 2, F + Dd), _Q.setFromEuler(_E.set(0, Math.PI, 0)), _S1)));
@@ -4334,7 +4389,10 @@
         bFloor.box(148, 0.15, 2.0, 0, 0.075, 17.0, 0xb0aaa0, { ws: 0.4 });
         bVerge.box(180, 0.1, 0.86, 0, 0.05, 15.57, 0xffffff, { ws: 1.5 });
         const ROAD_L = 180;
-        bRoad.quad(ROAD_L, 12.2, 0, -0.03, 8.66, 0xffffff, { rx: -Math.PI / 2, ws: 6 });
+        /* (v22.3, L4-1: the road under the far kerb, and a concrete edge from the five-foot way's tiles to the near kerb —
+           both strips were open to nothing, a band of the background colour along the foot of each kerb from the door) */
+        bRoad.quad(ROAD_L, 12.46, 0, -0.03, 8.79, 0xffffff, { rx: -Math.PI / 2, ws: 6 });
+        bPl.box(ROAD_L, 0.02, 0.25, 0, -0.009, 2.315, 0xa8a49a);
         // our own five-foot way's tiles on either side of the shop's (buildWorldT lays the shop's)
         for (const s of [-1, 1]) bFloor.quad(68.9, 2.2, s * (4.1 + 34.45), 0.003, 1.1, 0xb0aaa0, { rx: -Math.PI / 2, ws: 0.4 });
         // the road's paint: a broken white line down the middle, double yellow along both kerbs
@@ -4361,6 +4419,7 @@
         bFloor.build(dayMat(ffwTex, { roughness: 0.6 }));
         bVerge.build(dayMat(vergeTex));
         bShut.build(dayMat(shutTex, { roughness: 0.55, metalness: 0.2 }));
+        tLive.reflShut = bShutR.build(dayMat(shutTex, { roughness: 0.55, metalness: 0.2 }));   // (v22.3: down except while ending A's window shows)
         bIn.build(unlitMat(null));
         bHdb.build(dayMat(hdbTex));
         bRoad.build(dayMat(tex(makeDayAsphalt(THREE, cnv))));
@@ -4394,6 +4453,8 @@
         return SG;
       }
       buildStreetT();
+      // (v22.3, L4-3: the street's own pots inside the way's reach have their column too — one stood at x 3.55 with none)
+      for (const p of tLive.pots || []) if (Math.abs(p.x) < 4.3 && p.z > 0 && p.z < TWAY.z1) solidOnly(0.44, 1.0, 0.44, p.x, 0.5, p.z);
       mergeByMaterial(AG);
       tLive.built = true;
     }
@@ -4529,6 +4590,16 @@
       return THREE.MathUtils.clamp(Math.sin(a) * 0.75, -0.75, 0.75);
     }
     const quiet = () => !lineQ.length && !speak.pending && dayClock.t >= speak.until;
+    /* v22.3: a one-shot let go of — ramped out over `secs` and stopped (an attempt's pull that outlived it, L3-1; her
+       weeping when she goes, L7-6). snd() hands the source back with its gain on `__g` for exactly this. */
+    function srcFade(s, secs = 0.25) {
+      if (!s || !s.__g) return;
+      try {
+        const g = s.__g.gain, t = s.context.currentTime;
+        g.cancelScheduledValues(t); g.setValueAtTime(g.value, t); g.linearRampToValueAtTime(0.0001, t + secs);
+        s.stop(t + secs + 0.05);
+      } catch (e) { /* already stopped */ }
+    }
 
     /* only the lines said IN PLAY are warmed here (each decoded buffer is ~1 MB a five seconds on a phone): the films
        warm their own cues (kit.film), the endings and the cards are warmed by startDecision */
@@ -4552,6 +4623,10 @@
     const held = new Set();                    // the tray's three pieces
     const LOOK_N = 3, PIECE_N = 3;
     let worldRun = 0;                          // a world change's run token (a reset or a second change cancels the first)
+    /* v22.3 (L7-3/L6-1/L4-4): a world arrived in held under its black — the order, its chime and every hotspot's "!" wait
+       for the picture (they came up on the black during the warm, seconds before it lifted: e3c3's ST-4/VP-6 shape) */
+    let wDark = false;
+    let decOpen = false;   // (v22.3, L4-7: the decision has opened by itself once — until then the pile is not pressable)
     function setPhase(p, tag) {
       phase = p;
       if (kit) kit.setPhase(tag ? p + ':' + tag : p);
@@ -4559,6 +4634,7 @@
     }
     function objectiveFor(p, tag) {
       if (!kit) return;
+      if (wDark) { kit.objective(null, { complete: false }); return; }
       // the Hanuman in his hand, or let go and lying on the glass: no order to pick it up (a Continue into either
       // restored "Pick up the Hanuman" over a piece already let go)
       // (and the Yin: her in his hand, or set down — CP11: the pickup played COMPLETE, a blank order, COMPLETE)
@@ -4605,7 +4681,7 @@
       return true;
     }
     function pickLocket() {
-      if (phase !== 'yinHold' || yin.on) return false;
+      if (phase !== 'yinHold' || yin.on || yin.setDown) return false;      // (v22.3: set down already — a resume says her answer)
       yinStart();
       return true;
     }
@@ -4626,6 +4702,8 @@
          away here either way (meritEnd: the pocket hidden, the lens's width back, the envelope out of his hand, the
          captions cleared — captions run on wall time and outlive a skipped film) */
       const done = () => { meritEnd(); bankOnce({ s: 3, note: W.noteMerit }); toWorld('H', false); };
+      // (v22.3: the door's order goes quietly — the film shows him leave, and its COMPLETE was painted on the black after it)
+      kit.objective(null, { complete: false });
       if (!kit.film || !kit.film('merit', { onDone: done })) done();
     }
 
@@ -4835,7 +4913,9 @@
             if (G.shows === 1) worldSfx('y4sting', 0.4, 1, pan);
             // she CRIES (Chad: "when the ghost appears, i want the ghost to have a pitiful crying voice echoing"):
             // a young woman's broken weeping, laid with an echo that carries down the tiles and back (cry.sh)
-            worldSfx('y4cry', 0.78, 1, pan);
+            // (v22.3, L7-6: one at a time — her last one let go if it is still sounding)
+            if (G.cry) srcFade(G.cry, 0.3);
+            G.cry = worldSfx('y4cry', 0.78, 1, pan);
           }
         } else G.nextAt = dayClock.t + 0.4;
       }
@@ -4848,6 +4928,7 @@
         G.a += (want - G.a) * (1 - Math.exp(-wdt * (want > G.a ? 2.2 : 14)));
         if (want === 0 && G.a < 0.02) {
           G.placed = false; G.a = 0;
+          srcFade(G.cry, 0.7); G.cry = null;                             // (v22.3, L7-6: her weeping goes with her — 10 s long, it overlapped her next)
           if (G.to > 0 && G.shows < 2) { G.side = -G.side; G.nextAt = dayClock.t + 2.6; } else G.to = 0;
         }
       }
@@ -4856,9 +4937,12 @@
       for (const m of P.mats) { m.opacity = G.a; if (m.color) m.color.setRGB(0.86 + 0.08 * G.a, 0.88 + 0.07 * G.a, 0.97); if (m.emissive) m.emissive.setRGB(0.05 * G.a, 0.06 * G.a, 0.09 * G.a); }
       P.group.visible = G.a > 0.01;
     }
-    /* the breath, the static, the light, the lid, the bell — every frame (the shop lives in every state) */
-    function yinTick(wdt) {
+    /* the breath, the static, the light, the lid, the bell — every frame (the shop lives in every state). v22.3 (L1-1):
+       but his breath and its shiver come only in PLAY, and the tape's stop key only where the shop is heard (mixBedsY's
+       states) — a pause menu or Back to the title mid-cold had them breathing over the menu and the title music */
+    function yinTick(wdt, st) {
       if (wdt <= 0) return;
+      const heardY = st === 'play' || st === 'unlock' || st === 'choose' || st === 'menu' || st === 'inventory';
       const ease = (v, to, s) => v + (to - v) * (1 - Math.exp(-wdt / s));
       yin.cold = ease(yin.cold, yin.coldTo, yin.coldTo > yin.cold ? 1.6 : 1.4);
       yin.numb = ease(yin.numb, yin.numbTo, 0.5);
@@ -4870,14 +4954,14 @@
         yin.rate = ease(yin.rate, 0.02, 0.42);
         if (yin.rate < 0.1 && !yin.clicked) {
           yin.clicked = true; yin.stopped = true;
-          if (worldSfx && worldOf(yaw.position.x) === 'Y') worldSfx('y4tapeclick', 0.5, 1, panAt(RADIO.x, RADIO.z));
+          if (worldSfx && heardY && worldOf(yaw.position.x) === 'Y') worldSfx('y4tapeclick', 0.5, 1, panAt(RADIO.x, RADIO.z));
         }
       } else yin.rate = ease(yin.rate, rateTo, 0.9);
       const fk = yin.cold;
       // the velvet box's lid
       if (yLive.box) yLive.box.lid.rotation.z += (-1.9 * yLive.box.open - yLive.box.lid.rotation.z) * (1 - Math.exp(-wdt * 3));
       // his breath, every 2.4 s while it is cold
-      if (fk > 0.35 && yin.on) {
+      if (fk > 0.35 && yin.on && st === 'play') {
         yin.puffT -= wdt;
         if (yin.puffT <= 0) {
           yin.puffT = 2.4;
@@ -5047,7 +5131,10 @@
     function mixBedsY(wdt, st) {
       const B = DATA.ambience.beds, inY = worldOf(yaw.position.x) === 'Y';
       const filmMall = st === 'cine' && oLive.on && oLive.where === 'mall';   // CP10: the opening film's old mall
-      const live = inY && (st === 'play' || st === 'unlock' || st === 'choose' || st === 'menu' || filmMall);
+      // (v22.3, L7-4: the bag too — opening it silenced this shop's beds alone; L6-3: and the chapter card after the
+      // opening film, which lands on this shop — its song dropped out under the card and came back with play)
+      const card = st === 'cine' && !booted && !oLive.on && !endLive.on;
+      const live = inY && (st === 'play' || st === 'unlock' || st === 'choose' || st === 'menu' || st === 'inventory' || filmMall || card);
       const d = Math.hypot(yaw.position.x - RADIO.x, yaw.position.z - RADIO.z);
       const outside = yaw.position.z > 0.15;
       const att = (1 / (1 + (d / (filmMall ? 5.0 : 2.6)) ** 2)) * (outside ? 0.45 : 1);   // (the film hears it from the far end)
@@ -5068,7 +5155,8 @@
       yin.run++;
       yin.on = false; yin.setDown = false; yin.showing = false; yin.cold = yin.coldTo = 0; yin.numb = yin.numbTo = 0; yin.puffT = 0;
       yin.rate = 1; yin.stopping = false; yin.stopped = false; yin.clicked = false; yin.bellSwing = 0; yin.radioDip = 0;
-      Object.assign(yin.girl, { a: 0, to: 0, shows: 0, side: 1, placed: false, nextAt: 0 });
+      srcFade(yin.girl.cry, 0.2);
+      Object.assign(yin.girl, { a: 0, to: 0, shows: 0, side: 1, placed: false, nextAt: 0, cry: null });
       viewTurn.on = false;
       coldTo({ chill: [0, 0], smear: [0, 0], pulse: null });     // nothing of the cold outlives a reset (kitReset also clears it)
       if (yLive.girl) yLive.girl.group.visible = false;
@@ -5168,20 +5256,28 @@
       // (2.5–3.9 s: the pull's take peaks 2.5 s in, and cued from START it must peak INSIDE the window — CP11: with
       // 1.0–2.4 it peaked after the window had closed in half the tries)
       const open = 2.5 + 1.4 * hash(hanX.run * 7 + hanX.tries, 59);
+      /* v22.3 (L3-1): the pull belongs to its own attempt — cued from START so it peaks on LET GO, and taken back the
+         moment that attempt ends without it (an early press left it cued, so it peaked inside the NEXT attempt's
+         "Hold…", where answering it was another early miss) */
+      const att = { live: true, src: null };
       kit.event({
         kind: 'timed', label: W.evLetGo, brief: first ? W.evLetGoBrief : undefined, demo: 'wait', low: true,
         waitWord: W.evLetGoWait, goWord: W.evLetGoGo, open, close: open + 0.75, guard: 0.35,   // (a double tap on START is not a press)
         // the pull builds to its peak 2.5 s into its take: cued so the peak lands on LET GO
-        onBegin: () => after(Math.max(0, open - 2.5), () => { if (run === hanX.run && hanX.on && worldSfx) worldSfx('h4pull', 0.72, 1, 0); })
+        onBegin: () => after(Math.max(0, open - 2.5), () => { if (att.live && run === hanX.run && hanX.on && worldSfx) att.src = worldSfx('h4pull', 0.72, 1, 0); })
       }).then(r => {
-        if (r && r.aborted) return;                                 // (a faint: nothing paid, no retry)
+        att.live = false;
+        if (r && r.aborted) { srcFade(att.src, 0.3); return; }     // (a faint: nothing paid, no retry)
         if (run !== hanX.run || !hanX.on || hanX.released) return;
-        if (r && r.ok) { kit.conduct({ s: 3, note: W.noteLetGo }); hanRelease(run); return; }
+        // (v22.3, L7-5: the card says how it went — at once, or in the end)
+        if (r && r.ok) { kit.conduct({ s: 3, note: first ? W.noteLetGo : W.noteLetGoLater }); hanRelease(run); return; }
+        srcFade(att.src, 0.35);                                     // the pull that was building for this window goes with it
         hanX.tries++;
         const early = !!(r && r.early);
         // too soon: its grip tightens (the hands pulled further); too late: it surges (the gold, the buzz) — either
         // costs him, and it comes again
         kit.award('sanity', early ? -4 : -6, { minigame: true });
+        if (getState() !== 'play') return;                          // v22.3 (L1-4): a price that fainted him ends the beat
         if (kit.flash) kit.flash({ color: 'rgba(255,190,80,0.45)', secs: 0.5 });
         if (worldSfx) worldSfx(early ? 'h4rattle' : 'h4surge', 0.62, 1, 0);
         if (kit.pulse) kit.pulse({ kick: true });
@@ -5189,7 +5285,8 @@
         kit.tremble(1.1, { secs: 0.2 }); after(0.6, () => { if (run === hanX.run && !hanX.released) kit.tremble(0.75, { secs: 0.6 }); });
         hanX.kick = 0.04;
         // (paid in the same moment the bookmark moves to 'done': CP11 paid it 0.8 s before, inside an autosave's reach)
-        if (hanX.tries >= 3) { after(0.8, () => { if (run !== hanX.run || hanX.released) return; kit.conduct({ s: -3, note: W.noteLate, minigame: true }); hanRelease(run); }); return; }
+        // (v22.3, L7-5: and the third miss's own kind — three presses before LET GO lit are not "too long")
+        if (hanX.tries >= 3) { after(0.8, () => { if (run !== hanX.run || hanX.released) return; kit.conduct({ s: -3, note: early ? W.noteEarly : W.noteLate, minigame: true }); hanRelease(run); }); return; }
         after(1.4, () => hanLetGo(run));
       });
     }
@@ -5296,11 +5393,20 @@
       const P = hLive.walker; if (!P || !P.ready) return;
       // out of the lift lobby at the corridor's west end, east along the shopfronts' side; he steps back against them as
       // the running man comes at him and turns his head to follow him past
-      const x = -9.6 + 1.15 * (t - RF.stare1), aside = smooth(cl01((t - 9.0) / 0.7)) * (1 - smooth(cl01((t - 11.4) / 1.0)));
-      P.group.visible = x > -13.4;
-      P.group.position.set(x, 0, 1.45 - 0.75 * aside);
-      P.group.rotation.y = Math.PI / 2 - 0.5 * aside;
-      if (P.idle && hLive.walkDur) P.idle.setEffectiveTimeScale((1 - 0.6 * aside) * WALK.v * hLive.walkDur / WALK.stride);
+      /* (v22.3, L3-2: he is in the corridor from the cut to R3 — he used to come into a landscape screen's R2 out of
+         nothing at 15 m; and as he steps back he STOPS: his walk went on at full speed under a take slowed to 40 %, a
+         0.75 m glide. Now he slows to a stand and steps back 0.4 m, and his take runs at the ground he covers along the
+         way he faces — the v9.3 law) */
+      const ASIDE = (u) => smooth(cl01((u - 9.0) / 1.0)) * (1 - smooth(cl01((u - 11.4) / 1.0)));
+      const aside = ASIDE(t);
+      let held = 0;                                                  // the time he has stood still, ∫ aside
+      if (t > 9.0) { const n = 24, h = (t - 9.0) / n; for (let i = 0; i < n; i++) held += ASIDE(9.0 + (i + 0.5) * h) * h; }
+      const x = -9.6 + 1.15 * (Math.max(0, t - RF.stare1) - held), ry = Math.PI / 2 - 0.5 * aside;
+      P.group.visible = t >= RF.stare1;
+      P.group.position.set(x, 0, 1.45 - 0.4 * aside);
+      P.group.rotation.y = ry;
+      const e = 0.02, vz = -0.4 * (ASIDE(t + e) - ASIDE(t - e)) / (2 * e), vx = 1.15 * (1 - aside);
+      if (P.idle && hLive.walkDur) P.idle.setEffectiveTimeScale((vx * Math.sin(ry) + vz * Math.cos(ry)) * hLive.walkDur / WALK.stride);
     }
     function runFrame(t, api) {
       if (!runLive.on) runBegin();
@@ -5643,7 +5749,7 @@
       const face = new THREE.Mesh(geo, src.material); inner.add(face);
       spectral(face, L_LERSI, Pz.mats);
       Pz.g.position.set(LFACE.x, LFACE.y, LFACE.z); Pz.g.rotation.y = Math.PI;
-      presHalo(Pz, 0xffa040, 3.6, 0.32, LFACE.x, LFACE.y + 0.1, LFACE.z - 0.25);
+      presHalo(Pz, 0xffa040, 3.6, 0.32, LFACE.x, LFACE.y + 0.1, LFACE.z + 0.25);   // (v22.3: behind the face as seen from his seat — it was 0.25 m in front)
       Pz.ready = true;
     }
     /* the naga laid flat: it was baked for a stair (v16.7: its body rises 32° toward its tail), so turned back about x by
@@ -5783,7 +5889,7 @@
       gi.scale.setScalar(s); Pz.g.add(gi); Pz.inner = gi;
       spectral(gi, L_WESS, Pz.mats);
       Pz.g.position.set(GIANT.x, 0, GIANT.z); Pz.g.rotation.y = Math.PI;
-      presHalo(Pz, 0xff5a2a, 11, 0.22, GIANT.x, 3.2, GIANT.z - 1.6);
+      presHalo(Pz, 0xff5a2a, 11, 0.22, GIANT.x, 3.2, GIANT.z + 1.6);   // (v22.3: behind him, out in the road — it was 1.6 m in front)
       Pz.ready = true;
     }).catch(err => { console.warn('wessred failed to load', err); ctx.loadFail && ctx.loadFail('wessred', err); });
     parseOnce('naga').then(gl => {
@@ -5952,7 +6058,7 @@
       lersi: () => [TX + LFACE.x, LFACE.y + 0.05, LFACE.z],
       wess: () => [TX + GIANT.x, 5.0, GIANT.z],
       naga: () => [TX + NAGA_END.x, 1.45, NAGA_END.z + 0.2],
-      all: () => [TX + 0.25, 1.95, -1.4]
+      all: () => [TX - 0.15, 1.95, -1.4]          // (v22.3: nearer the hermit — at +0.25 a phone lost ~19 % of his face)
     };
     function lookRound(k, secs, span = 0.4) {
       const [x, y, z] = PRES_AT[k](), yw = eyeYaw(x, z);
@@ -6184,7 +6290,9 @@
       if (tX.bundle.on) { tX.bundle.t += wdt; tX.bundle.open = ease(tX.bundle.open, tX.bundle.openTo, 0.55); }
       bundlePlace();
       tX.ut += wdt;
-      const EB2 = endLive.bundleAt, uk = !tLive.frozen ? 0 : EB2 ? (EB2.vis ? cl01(EB2.open || 0) : 0) : tX.bundle.on ? cl01(tX.bundle.open) : 0;
+      // (v22.3, L5-5: never in his room — the shop's stopped clock left `frozen` set through ending B's night, and the smoke
+      // and the cold glow rose off the bundle on his desk, off the empty cloth too; the plan says nothing happens there)
+      const EB2 = endLive.bundleAt, uk = (!tLive.frozen || endLive.where === 'room') ? 0 : EB2 ? (EB2.vis ? cl01(EB2.open || 0) : 0) : tX.bundle.on ? cl01(tX.bundle.open) : 0;
       uGlow.visible = uk > 0.01; uGlow.material.opacity = 0.32 * uk * (0.8 + 0.2 * Math.sin(tX.ut * 1.7));
       for (const sm of uSmoke) {
         sm.m.visible = uk > 0.01; if (!sm.m.visible) continue;
@@ -6303,7 +6411,13 @@
           if (!L.on) continue;
           L.life += wdt;
           if (L.y > L.landY) {
-            L.y = Math.max(L.landY, L.y - L.vy * wdt); L.x += Math.sin(t * 1.7 + L.ph) * 0.18 * wdt; L.z += Math.cos(t * 1.3 + L.ph) * 0.1 * wdt;
+            L.x += Math.sin(t * 1.7 + L.ph) * 0.18 * wdt; L.z += Math.cos(t * 1.3 + L.ph) * 0.1 * wdt;
+            /* (v22.3, L4-6: where it lands is where it IS — fixed at the spawn, a leaf that drifted off the counter lay flat
+               in mid-air at its height for seven seconds, and one that drifted onto it fell through the wood) */
+            const over = L.x > TCNT.x0 && L.x < TCNT.x1 && Math.abs(L.z - TCNT.z) < TCNT.d / 2;
+            if (over && L.y < TCNT.top + 0.003 && L.y > TCNT.top - 0.1) L.y = TCNT.top + 0.003;
+            L.landY = over && L.y >= TCNT.top + 0.003 ? TCNT.top + 0.003 : 0.008;
+            L.y = Math.max(L.landY, L.y - L.vy * wdt);
             L.m.rotation.set(Math.sin(t * 2.1 + L.ph) * 1.2, L.ph + t * 0.8, Math.cos(t * 1.7 + L.ph) * 0.9);
             if (L.y <= L.landY) { L.m.rotation.set(-Math.PI / 2, 0, L.ph); L.life = 0; }
           } else if (L.life > 7) { const k = 1 - cl01((L.life - 7) / 0.6); L.m.scale.setScalar(Math.max(0.001, k)); if (k <= 0) { L.on = false; L.m.visible = false; } }
@@ -6405,8 +6519,12 @@
       }
     }
     function openWhenClear(t0) {
-      if (phase !== 'decide' || getState() !== 'play') return;
+      if (phase !== 'decide') return;
+      /* (v22.3, L4-7: the pile is pressable only from here, so this never gives up — a splash or a window up at this
+         moment used to leave the decision unopened, which the live pile covered; a tick later it tries again) */
+      if (getState() !== 'play') { after(0.25, () => openWhenClear(t0)); return; }
       if (kit && kit.getFade && kit.getFade() > 0.03 && dayClock.t - t0 < 6) { after(0.1, () => openWhenClear(t0)); return; }
+      decOpen = true;
       startDecision();
     }
 
@@ -6417,7 +6535,8 @@
     function placeIn(w) {
       const p = w === 'H' ? HARRIVE : w === 'T' ? TARRIVE : { x: DATA.spawn.x, z: DATA.spawn.z };
       yaw.position.x = p.x; yaw.position.z = p.z;
-      yaw.rotation.y = 0; pitch.rotation.x = -0.02;
+      /* (v22.3, L6-4: World H faces the owner who greets him — "Ah, you came back!" was said from 69° off every screen) */
+      yaw.rotation.y = w === 'H' ? Math.atan2(-(HX + 3.98 - p.x), -(-2.45 - p.z)) : 0; pitch.rotation.x = -0.02;
       if (kit) { kit.daylight(w === 'H' ? H_DAY : w === 'T' ? T_DAY : null, 0); kit.pose('standing', { secs: 0.05 }); }
     }
     function toWorld(w, resumed, at, tag) {
@@ -6431,14 +6550,20 @@
         if (w === 'H') hEnter(at || 'han', tag);
         else if (w === 'T') tEnter(at || 'tray', resumed);
       }
-      setPhase(at || (w === 'H' ? 'han' : 'tray'), at === 'trayHold' ? [...held].join(',') : at === 'hanHold' && tag === 'done' ? 'done' : undefined);
+      wDark = !resumed;
+      const tagNow = at === 'trayHold' ? [...held].join(',') : at === 'hanHold' && tag === 'done' ? 'done' : undefined;
+      /* v22.3 (L7-2): all three already held before a Continue — the fourth piece comes again (below), and no "Hold the
+         pieces · 3/3" is posted for it to clear a second later with an OBJECTIVE COMPLETE for a beat done before the save */
+      if (w === 'T' && held.size >= PIECE_N) { phase = at || 'tray'; if (kit) { kit.setPhase(tagNow ? phase + ':' + tagNow : phase); kit.objective(null, { complete: false }); } }
+      else setPhase(at || (w === 'H' ? 'han' : 'tray'), tagNow);
       const warmed = !cold && kit && kit.warm ? kit.warm() : Promise.resolve(0);   // (a preplace was warmed by the curtain)
       warmed.then(() => {
         if (!alive || run !== worldRun) return;
         if (!resumed) {
-          if (w === 'H') { queueLine('z4han0', () => after(SECS.z4han0 * 0.6, () => { if (kit) kit.fade(0, 1.6); })); queueGap(0.6);
+          const lift = () => { if (run !== worldRun) return; if (kit) kit.fade(0, 1.6); wDark = false; objectiveFor(phase); };   // (the order with the picture)
+          if (w === 'H') { queueLine('z4han0', () => after(SECS.z4han0 * 0.6, lift)); queueGap(0.6);
                            queueLine('ow4hello', () => personTalk(hLive.owner, SECS.ow4hello)); queueLine('z4fine'); }
-          else { queueLine('z4tray0', () => after(SECS.z4tray0 * 0.6, () => { if (kit) kit.fade(0, 1.6); })); queueGap(0.6);
+          else { queueLine('z4tray0', () => after(SECS.z4tray0 * 0.6, lift)); queueGap(0.6);
                  queueLine('to4hello', () => { personTalk(tLive.owner, SECS.to4hello); after(0.9, () => teaPour()); }); }
           queueFn(() => { if (kit) kit.root(false); });
         } else if (kit) {
@@ -6455,7 +6580,7 @@
     const _ndc = new THREE.Vector3();
     const INTERACT_R = 2.4;
     const pile = new THREE.Group(); pile.position.copy(PILE_POS); world.add(pile);
-    const pileLive = () => phase === 'decide' && worldOf(yaw.position.x) === 'T';
+    const pileLive = () => decOpen && phase === 'decide' && worldOf(yaw.position.x) === 'T';   // (v22.3: not while z4feel is still said)
     function pileDist() { return Math.hypot(yaw.position.x - PILE_POS.x, yaw.position.z - PILE_POS.z); }
     function pileScreen() { camera.updateMatrixWorld(); return _ndc.set(PILE_POS.x, 1.0, PILE_POS.z).project(camera); }
     function pileInView() {
@@ -6493,7 +6618,7 @@
       { id: 'keeper', pos: { x: KEEP.x, y: 1.35, z: KEEP.z }, radius: 2.6, prompt: W.hotKeeper, markY: 0.3,
         enabled: () => phase === 'yinKeeper' && quiet(), onInteract() { return keeperShows(); } },
       { id: 'locket', pos: { x: YBOX.x, y: YCNT.top + 0.1, z: YBOX.z }, radius: 2.2, prompt: W.hotLocket, markY: 0.2,
-        enabled: () => phase === 'yinHold' && !yin.on && quiet(), onInteract() { return pickLocket(); } },
+        enabled: () => phase === 'yinHold' && !yin.on && !yin.setDown && quiet(), onInteract() { return pickLocket(); } },
       { id: 'owner', pos: { x: HX + 3.98, y: 1.45, z: -2.45 }, radius: 2.7, prompt: W.hotOwner, markY: 0.3,
         enabled: () => phase === 'han' && quiet(), onInteract() { return ownerShows(); } },
       { id: 'hanuman', pos: { x: HX + H.LPT.x, y: H.RCNT.top + 0.12, z: H.LPT.z }, radius: 2.2, prompt: W.hotHanuman, markY: 0.12,
@@ -6511,6 +6636,7 @@
         hits: tapBox(pieceAt('naga').x - 0.05, TCNT.top, TTRAY.z - 0.07, pieceAt('naga').x + 0.05, TCNT.top + 0.1, TTRAY.z + 0.07),   // (v22.1: the ball on its stand)
         enabled: () => pieceReady('naga'), onInteract() { return holdPiece('naga'); } }
     ];
+    for (const h of hotspots) { const en = h.enabled; h.enabled = () => !wDark && (!en || en()); }   // (v22.3: none under an arrival's black)
 
     /* ---------------------------------------------------------- per frame */
     function watchTick() {
@@ -6522,9 +6648,13 @@
     function updateNotes(dt, t) {
       const now = wallNow();
       const wdt = lastFrame ? Math.min(0.5, now - lastFrame) : 0; lastFrame = now;
+      /* (v22.3, L8-2: World T's street is merged a batch a material, the batches' spheres 95 m across, so they passed the
+         frustum from World Y, both pockets and ending B's room and went to the GPU to be clipped by its far plane —
+         it is drawn only from World T itself, the shop, the five-foot way and the road) */
+      if (tLive.streetG) tLive.streetG.visible = yaw.position.x < -100 && yaw.position.z > -150;
       yTick(wdt); peopleTick(wdt);
       const st = getState();
-      yinTick(wdt); mixBedsY(wdt, st); mixBedsM(wdt);
+      yinTick(wdt, st); mixBedsY(wdt, st); mixBedsM(wdt);
       hTick(wdt); mixBedsH(wdt, st);
       tTickAll(wdt, st); mixBedsT(wdt, st); mixBedsE(wdt, st);
       const live = st === 'play' || st === 'unlock' || st === 'choose';
@@ -6580,9 +6710,27 @@
          stays open, the tape stopped, and the door waits */
       if (p === 'yinHold' || p === 'yinDone') { if (yLive.box) { yLive.box.open = 1; yLive.box.lid.rotation.z = -1.9; } }
       if (p === 'yinDone') { yin.stopped = true; yin.clicked = true; yin.rate = 0.02; }
+      /* v22.3 (L1-2): set down already, her merit line not yet begun — the whole answer is said again, as live: his
+         promise, the bell, her two lines, him standing at her box (rooted, no order), and the door's order on her merit
+         line (yinDone). It used to resume on her merit line alone, so a save taken in the ~11 s after the set-down lost
+         the promise the merit note and ending B refer back to. They pay nothing. */
+      if (setDown) {
+        yin.setDown = true;
+        setPhase('yinHold', 'down');
+        if (kit) kit.root(true);
+        queueGap(1.0);
+        queueLine('z4yin');
+        queueFn(() => { yin.bellSwing = 0.6; if (worldSfx) worldSfx('y4bell', 0.3, 1, panAt(DOORBELL.x, DOORBELL.z)); });
+        queueGap(1.2);
+        queueLine('yk4heard', () => personTalk(yLive.keeper, SECS.yk4heard));
+        queueLine('yk4merit', () => { personTalk(yLive.keeper, SECS.yk4merit); yinDone(); });
+        return;
+      }
       setPhase(p, p === 'yin' && looked.size ? [...looked].join(',') : undefined);
       if (p === 'yinDone' && kit && kit.waypoint) kit.waypoint({ x: 0, y: 1.3, z: 0.1 });
-      if (setDown) { queueGap(1.0); queueLine('yk4merit', () => personTalk(yLive.keeper, SECS.yk4merit)); }
+      /* v22.3 (L1-3): a Continue saved while she handed it over (yinHold, her last line spoken over the bookmark) hears
+         her say it again before the box is offered — the order to pick it up is hers */
+      if (p === 'yinHold') queueLine('yk4gentle', () => personTalk(yLive.keeper, SECS.yk4gentle));
     }
 
     /* ------------------------------------------------------------------ THE MERIT FILM, driven
@@ -6624,14 +6772,50 @@
       pitch.rotation.x = Math.atan2(dy, Math.hypot(dx, dz));
     }
     function lerp3(a, b, k) { return [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k]; }
+    /* (v22.3, L8-4: the stream was a new TubeGeometry every frame of both pours — new buffers on the GPU sixty times a
+       second; it is ONE tube now, made once, its rings re-laid along the fall in place) */
+    const ST_K = 28, ST_R = 6;
+    const _qsP = new THREE.Vector3(), _qsT = new THREE.Vector3(), _qsN = new THREE.Vector3(), _qsB = new THREE.Vector3(), _qsZ = new THREE.Vector3(0, 0, 1), _qsX = new THREE.Vector3(1, 0, 0);
+    function mStreamGeo() {
+      if (mLive.streamGeo) return mLive.streamGeo;
+      const n = ST_K * (ST_R + 1), g = new THREE.BufferGeometry(), uv = new Float32Array(n * 2), idx = [];
+      g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(n * 3), 3).setUsage(THREE.DynamicDrawUsage));
+      g.setAttribute('normal', new THREE.BufferAttribute(new Float32Array(n * 3), 3).setUsage(THREE.DynamicDrawUsage));
+      for (let i = 0; i < ST_K; i++) for (let j = 0; j <= ST_R; j++) { const k = i * (ST_R + 1) + j; uv[k * 2] = i / (ST_K - 1); uv[k * 2 + 1] = j / ST_R; }   // TubeGeometry's layout
+      g.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+      for (let i = 0; i < ST_K - 1; i++) for (let j = 0; j < ST_R; j++) {
+        const a = i * (ST_R + 1) + j, b = (i + 1) * (ST_R + 1) + j, c = (i + 1) * (ST_R + 1) + j + 1, d = i * (ST_R + 1) + j + 1;
+        idx.push(a, b, d, b, c, d);
+      }
+      g.setIndex(idx);
+      mLive.streamGeo = g; mLive.stream.geometry = g;
+      return g;
+    }
     function mStreamTo(p0, dir, speed, yEnd, radius) {           // a falling stream's tube, from p0 to the level yEnd (the pocket's own coordinates: the tube is its child)
       const pts = []; let x = p0.x, y = p0.y, z = p0.z, vx = dir.x * speed, vy = dir.y * speed, vz = dir.z * speed;
       for (let i = 0; i < 40 && y > yEnd; i++) { pts.push(new THREE.Vector3(x, y, z)); const h = 0.012; x += vx * h; y += vy * h; z += vz * h; vy -= 9.8 * h; }
       pts.push(new THREE.Vector3(x, Math.max(yEnd, y), z));
       if (pts.length < 2) pts.push(new THREE.Vector3(x, yEnd, z));
-      const g = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), Math.max(4, pts.length * 2), radius, 6, false);
-      if (mLive.streamGeo) mLive.streamGeo.dispose();
-      mLive.streamGeo = g; mLive.stream.geometry = g;
+      // the fall's polyline, cut into ST_K rings evenly by length, each ring round the tangent there
+      const g = mStreamGeo(), pos = g.attributes.position.array, nor = g.attributes.normal.array, L = [0];
+      for (let i = 1; i < pts.length; i++) L.push(L[i - 1] + pts[i].distanceTo(pts[i - 1]));
+      const total = Math.max(1e-6, L[L.length - 1]);
+      let seg = 0;
+      for (let i = 0; i < ST_K; i++) {
+        const sl = total * i / (ST_K - 1);
+        while (seg < pts.length - 2 && L[seg + 1] < sl) seg++;
+        const a = pts[seg], b = pts[Math.min(seg + 1, pts.length - 1)], f = cl01((sl - L[seg]) / Math.max(1e-6, L[seg + 1] - L[seg]));
+        _qsP.lerpVectors(a, b, f); _qsT.subVectors(b, a); if (_qsT.lengthSq() < 1e-12) _qsT.set(0, -1, 0); _qsT.normalize();
+        _qsN.crossVectors(_qsT, _qsZ); if (_qsN.lengthSq() < 1e-6) _qsN.crossVectors(_qsT, _qsX);
+        _qsN.normalize(); _qsB.crossVectors(_qsT, _qsN);
+        for (let j = 0; j <= ST_R; j++) {
+          const th = j / ST_R * Math.PI * 2, c = Math.cos(th), sn = Math.sin(th), k = (i * (ST_R + 1) + j) * 3;
+          const nx = c * _qsN.x + sn * _qsB.x, ny = c * _qsN.y + sn * _qsB.y, nz = c * _qsN.z + sn * _qsB.z;
+          nor[k] = nx; nor[k + 1] = ny; nor[k + 2] = nz;
+          pos[k] = _qsP.x + radius * nx; pos[k + 1] = _qsP.y + radius * ny; pos[k + 2] = _qsP.z + radius * nz;
+        }
+      }
+      g.attributes.position.needsUpdate = true; g.attributes.normal.needsUpdate = true;
       return pts[pts.length - 1];
     }
     let mShotWas = '', mHolding = false, mLit = null;
@@ -6757,7 +6941,12 @@
         v.rotation.set(0, 0, -0.35 - 0.62 * tip);
         mLive.water.visible = inside && fillK > 0.01;
         const lvl = 0.02 + 0.042 * fillK;
-        mLive.water.position.y = lvl; mLive.water.scale.setScalar(Math.min(1.12, (0.058 + 0.5 * lvl) / 0.08));
+        mLive.water.position.y = lvl;
+        /* (v22.3, L6-5: its radius is the bowl's INSIDE at that level — the lathe's own inner profile, a hair in — where
+           it grew from 6.8 cm at the bottom, through the wall, 6.4 cm there) */
+        { const y = lvl, ir = y <= 0.016 ? 0 : y < 0.026 ? 0.06 * (y - 0.016) / 0.01 : y < 0.05 ? 0.06 + 0.02 * (y - 0.026) / 0.024
+                       : y < 0.074 ? 0.08 + 0.008 * (y - 0.05) / 0.024 : 0.088 + 0.006 * Math.min(1, (y - 0.074) / 0.008);
+          mLive.water.scale.setScalar(Math.max(0.01, ir * 0.996 - 0.0015) / 0.08); }
         const st = mLive.stream;
         if (pouring && flow > 0.02) {
           v.updateMatrix();
@@ -6793,7 +6982,7 @@
         const lift = smooth(cl01((t - (MF.earth1 + 0.4)) / 0.8));
         b2.visible = out && lift < 0.98;
         // its foot at the top edge of the low frame (S6's lens): held from above, the rest of it out of the picture
-        b2.position.set(spot.x - 0.07, spot.y + 0.37 + 0.6 * lift, spot.z + 0.09);
+        b2.position.set(spot.x - 0.07, spot.y + 0.46 + 0.6 * lift, spot.z + 0.09);   // (v22.3, L6-2: 9 cm up — at 0.37 a desktop saw 88–100 % of it, pouring, held by no one; now its lip pours from the top fifth and the rest is above the frame)
         b2.rotation.set(0, Math.PI / 4, 0); b2.rotateOnAxis(_mt.set(1, 0, 0), -1.25 * tilt);
         const eflow = out && t > MF.earth0 && t < MF.earth1 ? Math.min(1, (t - MF.earth0) * 3) * Math.min(1, (MF.earth1 - t) * 2) : 0;
         if (out && eflow > 0.02) {
@@ -7006,7 +7195,7 @@
       box(0.42, DT - 0.04, 0.58, DX1 - 0.21, (DT - 0.04) / 2, DZ, mWood, R, false);
       // its back panel, between the leg and the pedestal (CP11: without it the white skirting under the desk read, on a
       // phone, as a lit bar floating across the bottom of every desk shot)
-      box(DX1 - 0.42 - (DX0 + 0.045), 0.6, 0.015, (DX1 - 0.42 + DX0 + 0.045) / 2, 0.42, DZ - 0.27, mWood, R, false);
+      box(DX1 - 0.42 - (DX0 + 0.045), 0.72, 0.015, (DX1 - 0.42 + DX0 + 0.045) / 2, 0.36, DZ - 0.27, mWood, R, false);   // (v22.3, L5-6: to the floor — the skirting still showed under it)
       for (const y of [0.42, 0.22]) box(0.38, 0.17, 0.012, DX1 - 0.21, y, DZ + 0.296, mWood, R, false);
       { const dr = new THREE.Group(); dr.position.set(DX1 - 0.21, 0.6, DZ); R.add(dr);
         box(0.38, 0.14, 0.012, 0, 0, 0.296, mWood, dr, false);                       // its front
@@ -7163,7 +7352,7 @@
     /* ---- A · THE DARK WINDOW down the five-foot way: a shop shut for the night two doors west, its glass over a dark
        room, the street behind him painted in it — and for a moment, a step behind where he stands, someone in it (a real
        figure, the staff man's scan in the dark, mirrored in where the glass would put what is behind him) */
-    const REFL = { x: -10.4, z: 0.07 };
+    const REFL = { x: REFL_X, z: 0.07 };
     const reflG = new THREE.Group(); reflG.visible = false; worldT.add(reflG);
     { const inner = new THREE.Mesh(new THREE.BoxGeometry(2.8, 2.5, 3.4), new THREE.MeshBasicMaterial({ color: 0x07080b, side: THREE.BackSide })); mats.push(inner.material);
       inner.position.set(REFL.x, 1.3, REFL.z - 1.72); reflG.add(inner);
@@ -7277,12 +7466,12 @@
       api.handsRoot.visible = false;
     }
     // the clock: running again (C, D, B's morning) or not; its minute hand put on (A: twenty minutes gone)
-    function eClock(run, minutes) {
+    function eClock(run, minutes, hour = 4) {
       tLive.clockOn = run; tLive.frozen = !run;
       if (run) { tX.silentTo = 0; tX.fanTo = 1; tX.tickTo = 1; } else tLive.fanK = 0;
       const H2 = tLive.clockHands; if (!H2) return;
       const m = minutes === undefined ? 25 : minutes;
-      H2.mG.rotation.z = -m / 60 * Math.PI * 2; H2.hG.rotation.z = -(4 + m / 60) / 12 * Math.PI * 2;
+      H2.mG.rotation.z = -m / 60 * Math.PI * 2; H2.hG.rotation.z = -((hour % 12) + m / 60) / 12 * Math.PI * 2;
     }
     function eBundle(o) { endLive.bundleAt = o; }
     /* the five-foot way's potted plants (buildStreetT records them, in World T's own numbers): a walk along it bends
@@ -7310,7 +7499,11 @@
     function endBegin(k, api) {
       endLive.on = k; endLive.where = 'shop'; endLive.day = null; endLive.presOwn = true; endLive.halos = true;
       endLive.tension = 0.45; endLive.bundleAt = null; endLive.dusk = endLive.room = 0;
-      endLive.t0 = { x: yaw.position.x, y: yaw.position.y, z: yaw.position.z, ry: yaw.rotation.y, p: pitch.rotation.x };
+      /* (v22.3, L5-3: the shop half is shot at the owner — the seat's own heading, 0 — never along wherever the decision
+         found his free look: a player who had turned to the three behind him had B's answer, C's and D's framed on a wall
+         or the door, and C's turn, which starts from 0, jumped by that much in one frame. A turned view cuts to the
+         counter as the panel closes.) */
+      endLive.t0 = { x: yaw.position.x, y: yaw.position.y, z: yaw.position.z, ry: 0, p: pitch.rotation.x };
       endLive.spilt = false;
       for (const c of tLive.cups) if (!c.home) c.home = { p: c.cup.position.clone(), r: c.cup.rotation.clone() };
       const P = tLive.owner; endLive.owner0 = P && P.group ? { p: P.group.position.clone(), r: P.group.rotation.clone() } : null;
@@ -7325,6 +7518,7 @@
       eBasis();
       if (k === 'A') endA(t, api); else if (k === 'B') endB(t, api); else if (k === 'C') endC(t, api); else endD(t, api);
       presOver.visible = endLive.presVis;
+      if (tLive.reflShut) tLive.reflShut.visible = !reflG.visible;   // (v22.3: the shutter behind ending A's window, up while it shows)
     }
     function endReset() {
       eDrop();
@@ -7333,6 +7527,7 @@
       eLids(0, 0); ripple.visible = redWash.visible = false;
       floorTk.visible = puddle.visible = glassW.visible = bagG.visible = cardG.visible = penG.visible = false;
       eRoom.visible = false; reflG.visible = false; eLamps(0); roomClock('23:47');
+      if (tLive.reflShut) tLive.reflShut.visible = true;
       if (roomLive.drawer) roomLive.drawer.position.z = -1.49;
       if (eShade) { eShade.group.visible = false; }
       if (tLive.stool) { tLive.stool.position.set(TSTOOL.x - TX, 0, TSTOOL.z); tLive.stool.rotation.set(0, 0, 0); }
@@ -7531,11 +7726,19 @@
         const slide = eS(EB.bag + 0.1, EB.bag + 0.7, t), up = eS(EB.bag + 0.65, EB.bag + 0.85, t), dn = eS(EB.bag + 0.85, EB.bagIn, t);
         eBundle(t < EB.bagIn ? { x: PX + (BGX - PX) * slide, y: TCNT.top + 0.28 * up - 0.185 * dn, z: PILE_POS.z + (BGZ + 0.125 - PILE_POS.z) * slide - 0.125 * up,
                                  rx: -Math.PI / 2 * up, open: 1 - shut, vis: true } : { vis: false });
-        const bagShown = t >= EB.bag && t < EB.take0 + 0.6;
-        if (t < EB.take0) { if (bagG.parent !== worldT) eDrop(); bagG.visible = bagShown; bagG.position.set(BGX, TCNT.top + BAG_H, BGZ + 0.26 * eS(EB.bagIn + 0.6, EB.take0 - 0.2, t)); bagG.rotation.set(0, 0.15, 0); bagG.scale.setScalar(1);
-                            bagG.children[1].rotation.x = 0.22 + 1.2 * (1 - eS(EB.bagIn, EB.bagIn + 0.35, t)); }
-        else eHoldUp(api, bagG, eS(EB.take0, EB.take0 + 0.6, t) * (1 - eS(EB.take1 - 0.3, EB.take1, t)), { lift: 0.12, tilt: 0.25 });
-        if (t < EB.take0) eHandsAway(api);
+        /* (v22.3, L5-4: it popped onto the counter at 6.6 and vanished from it at 9.5 into a hand below the frame — an
+           empty counter. Now the owner brings it up from under the counter on his side, over its back edge, and it is
+           pushed across to him and stays there until the black; the morning carries it in.) */
+        tX.tea = tX.teaTo = 1;
+        // (up behind the counter's back edge first, clear of the wood, then over it and down: z −6.40 is past the edge at −6.31)
+        const bagShown = t >= EB.bag - 0.45, up1 = eS(EB.bag - 0.45, EB.bag - 0.2, t), over = eS(EB.bag - 0.2, EB.bag, t);
+        if (bagG.parent !== worldT) eDrop();
+        bagG.visible = bagShown;
+        bagG.position.set(BGX, TCNT.top + BAG_H - 0.42 * (1 - up1) + 0.05 * up1 * (1 - over),
+                          -6.40 + (BGZ + 6.40) * over + 0.26 * eS(EB.bagIn + 0.6, EB.take0 - 0.2, t));
+        bagG.rotation.set(0, 0.15, 0); bagG.scale.setScalar(1);
+        bagG.children[1].rotation.x = 0.22 + 1.2 * (1 - eS(EB.bagIn, EB.bagIn + 0.35, t));
+        eHandsAway(api);
         for (const k of ORDER) { ePresHome(); ePres(k, 0.62); }
         return;
       }
@@ -7590,7 +7793,10 @@
         return;
       }
       // ---- the morning, the shop's door: the bag back
-      eRoom.visible = false; endLive.where = 'shop'; eDay(T_DAY); eClock(true, 10); endLive.tension = 0;
+      // (v22.3, L5-7: the next MORNING — ten past ten, the shop just open; it read 4:10, before yesterday's 4:25 — and
+      // yesterday's tea gone from the cups)
+      eRoom.visible = false; endLive.where = 'shop'; eDay(T_DAY); eClock(true, 10, 10); endLive.tension = 0;
+      tX.tea = tX.teaTo = 0;
       if (kit && kit.chill) kit.chill(0, { secs: 0 });
       for (const k of ORDER) ePres(k, 0);
       eBundle({ vis: false }); eTk(true);
@@ -7609,7 +7815,9 @@
       }
       // the bag in his hand coming in, then on the counter by the owner (folded shut: the room left it open)
       bagG.children[1].rotation.x = 0.22;
-      if (t < EB.put) eHoldUp(api, bagG, eS(EB.morning, EB.morning + 0.5, t), { lift: 0.04, tilt: 0.1, relax: 0.6 });
+      // (v22.3, L5-4: carried where it can be seen — up into the frame as he says he is bringing it back, down to the
+      // counter as he sets it there; held at lift 0.04 it hung under a hand below the frame, never on screen)
+      if (t < EB.put) eHoldUp(api, bagG, eS(EB.walk0 + 0.4, EB.walk0 + 1.4, t) * (1 - eS(EB.put - 0.7, EB.put - 0.1, t)), { lift: 0.42, tilt: 0.1, relax: 0.6 });
       else { if (bagG.parent !== worldT) eDrop(); eHandsAway(api); bagG.visible = true; bagG.position.set(PILE_POS.x - TX - 0.12, TCNT.top + BAG_H, PILE_POS.z - 0.12); bagG.rotation.set(0, -0.3, 0); }
     }
 
@@ -7682,10 +7890,11 @@
        inside either. "Do you know anyone who can teach me properly?" The owner writes on the back of his card: go and
        see this temple, there is a monk there who teaches meditation, not like me, play-play. The card changes hands; the
        three fade; the clock ticks again. Outside, evening, the street lamps coming on, the card in his hand. */
-    const ED = { push0: 0.3, push1: 1.8, wrap0: 11.0, wrap1: 12.6, write0: 25.3, pen0: 25.6, pen1: 26.9, slide0: 27.9, slide1: 28.7,
+    const ED = { push0: 0.3, push1: 1.8, wrap0: 11.0, wrap1: 12.6, write0: 25.3, pen0: 25.6, pen1: 26.9, insert0: 27.0, slide0: 27.9, slide1: 28.7,
                  take0: 29.0, take1: 29.6, bow0: 30.6, bow1: 31.6, away0: 33.6, away1: 34.4, turn0: 33.0, turn1: 34.6, fadeL: 33.6, fadeN: 34.3, fadeG: 35.0,
                  clock: 34.0, out: 35.8, street: 36.8, lamps0: 41.5, lamps1: 44.5, pocket0: 46.6, pocket1: 47.4, walk0: 47.6, end: 56.2 };
     const D_KERB = { x: TX + 0.7, y: 1.62, z: 2.05 };
+    const D_CARD_DX = 0.3, D_CARD_Z = -6.08;                         // (v22.3) the card, written to the bundle's right: clear of the tray (to x 0.77) and the abacus (from 0.96)
     function endD(t, api) {
       const S0 = endLive.t0;
       if (t < ED.street) {
@@ -7702,22 +7911,20 @@
           if (k === 'naga') { P.g.position.y = -1.2 * u * u; }
           ePres(k, 0.62 * (1 - u));
         }
-        // THE CARD: written on the counter (an insert, the pen at the line), slid across, taken up in his fingers
-        const writing = t >= ED.write0 && t < ED.take0;
+        /* THE CARD (v22.3, L5-2): written by the owner, bent over the counter to the RIGHT of the wrapped bundle — it was
+           written behind it and slid through it, and the insert hung over the bundle, so the cloth filled a phone's frame
+           and hid two of its three lines; the insert comes once it is written (no pen writing by itself with no hand in
+           it): the card on the glass, his pen set down beside it, the card pushed across to him, taken up in his fingers */
+        const cardX = PILE_POS.x - TX + D_CARD_DX;
+        const writing = t >= ED.write0 - 0.3 && t < ED.take0;
         if (writing) {
           if (cardG.parent !== worldT) eDrop();
           cardG.visible = true;
           const sl = eS(ED.slide0, ED.slide1, t);
-          cardG.position.set(PILE_POS.x - TX - 0.02, TCNT.top + 0.0035, -6.08 + 0.3 * sl); cardG.rotation.set(-Math.PI / 2, 0, 0.08 - 0.1 * sl);
-          const p = cl01((t - ED.pen0) / (ED.pen1 - ED.pen0));
-          cardWrite(p * CARD_N);
-          penG.visible = t < ED.pen1 + 0.5;
-          if (penG.visible) {
-            const li = Math.min(2, Math.floor(p * 3)), lp = (p * 3) % 1, lift = t > ED.pen1 ? eS(ED.pen1, ED.pen1 + 0.4, t) : 0;
-            const nx = -0.034 + 0.07 * (p >= 1 ? 1 : lp) + 0.002 * li, nz = -0.012 + 0.015 * (p >= 1 ? 2 : li);
-            penG.position.set(cardG.position.x + nx, cardG.position.y + 0.001 + 0.03 * lift + 0.0015 * Math.abs(Math.sin(t * 31)), cardG.position.z + nz);
-            penG.rotation.set(-0.45, 0.3, 0.35);
-          }
+          cardG.position.set(cardX, TCNT.top + 0.0035, D_CARD_Z + 0.3 * sl); cardG.rotation.set(-Math.PI / 2, 0, 0.08 - 0.1 * sl);
+          cardWrite(cl01((t - ED.pen0) / (ED.pen1 - ED.pen0)) * CARD_N);
+          penG.visible = t >= ED.insert0;                   // set down beside it, past the card's far edge, once it is written
+          if (penG.visible) { penG.position.set(cardX + 0.07, TCNT.top + 0.0045, D_CARD_Z - 0.07); penG.rotation.set(0, 0.15, Math.PI / 2); }
         } else if (t >= ED.take0) {                     // held until the black (CP11: dropped at a third of the fade)
           cardWrite(CARD_N); penG.visible = false;
           eHoldUp(api, cardG, eS(ED.take0, ED.take1, t), { lift: 0.36, tilt: -0.05 });
@@ -7733,18 +7940,20 @@
         // the three going
         const pBundle = eyePitch(PILE_POS.x, TCNT.top + 0.05, PILE_POS.z);
         let yy = S0.ry, pp, xx = S0.x, yh = S0.y, zz = S0.z, roll = 0;
-        if (t < ED.write0 - 0.2) {
+        if (t < ED.insert0) {
           // on the owner: in a little as he asks (the lens, and his own lean toward the counter); down to the cloth as the
           // owner leans over to wrap it; closer again on the question; held for the answer (CP9 held one frame for 22 s)
           const k = eS(ED.push1 - 0.2, ED.push1 + 0.8, t), wrapK = eS(ED.wrap0 - 0.3, ED.wrap0 + 0.4, t) * (1 - eS(ED.wrap1, ED.wrap1 + 0.8, t));
           pp = (S0.p + (pBundle + 0.06 - S0.p) * eS(0, 0.4, t)) * (1 - k) + T_OWN * k;
           pp += (pBundle + 0.1 - pp) * wrapK * 0.7;
+          // (and down to his hands as he writes: v22.3)
+          pp += (eyePitch(TX + cardX, TCNT.top + 0.12, D_CARD_Z) - pp) * eS(ED.write0 - 0.3, ED.write0 + 0.4, t) * 0.55;
           const lean = 0.05 * eS(2.6, 8.6, t) + 0.05 * eS(17.0, 21.0, t);
           xx = S0.x - Math.sin(S0.ry) * lean; zz = S0.z - Math.cos(S0.ry) * lean;
           eLens(BASE_FOV - 7 * eS(2.6, 8.6, t) - 7 * eS(17.0, 21.0, t) + 6 * wrapK);
         } else if (t < ED.take0) {
-          // the insert: low over the counter, the card under the pen
-          const cx = PILE_POS.x - 0.02, cz = -6.08 + 0.3 * eS(ED.slide0, ED.slide1, t);
+          // the insert: low over the counter, the card written, the pen beside it, the card coming across to him
+          const cx = TX + cardX, cz = D_CARD_Z + 0.3 * eS(ED.slide0, ED.slide1, t);
           xx = cx + 0.02; yh = TCNT.top + 0.3; zz = cz + 0.24; yy = eYaw(xx, zz, cx, cz); pp = ePitch(xx, yh, zz, cx, TCNT.top, cz);
           eLens(46);
         } else {
@@ -7753,7 +7962,8 @@
           eLens(BASE_FOV);
         }
         eCam(xx, yh + 0.004 * Math.sin(t * 1.5), zz, yy, pp, roll);
-        eOwner(TX + 0.55, -6.85, 0, 0.16 * eS(ED.wrap0 - 0.3, ED.wrap0 + 0.3, t) * (1 - eS(ED.wrap1, ED.wrap1 + 0.7, t)));
+        eOwner(TX + 0.55, -6.85, 0, 0.16 * eS(ED.wrap0 - 0.3, ED.wrap0 + 0.3, t) * (1 - eS(ED.wrap1, ED.wrap1 + 0.7, t))
+                                    + 0.2 * eS(ED.write0 - 0.4, ED.write0 + 0.2, t) * (1 - eS(ED.insert0 - 0.2, ED.insert0 + 0.6, t)));   // (bent to write)
         eLamps(0);
         return;
       }
@@ -8033,7 +8243,8 @@
       dropTodo(); speakReset(); lineQ.length = 0; heard.clear();
       booted = false; preplaced = ''; dayClock.t = 0; lastWall = 0;
       looked.clear(); held.clear();
-      worldRun++;
+      worldRun++; wDark = false; decOpen = false;
+      for (const P of people) { P.talkUntil = 0; P.talkW = 0; }   // (v22.3, L1-5: nobody left mouthing a line that is not said)
       yinReset();
       meritEnd(); duskK = 0;                         // the merit film's world put away (a replay can start inside it)
       hanReset(); runEnd();                          // World H: the piece, the vision, the lens, the door, the run-out's stares
@@ -8097,6 +8308,10 @@
               glow: () => 0 },
       drum: null, ash: null, embers: null, heroNote: null, smoke: null, flying: null,
       jossTips: [], fireLight: null,
+      /* (v22.3, L4-2: the sky where he is — away from World Y the engine's sky stood round the origin, out of reach, and
+         World T's street had the background's flat colour for a sky, no dusk and no stars; centred on him it is a sky
+         at any distance. World Y, at the origin, keeps the engine's own.) */
+      skyAt: () => worldOf(yaw.position.x) === 'Y' ? null : { x: yaw.position.x, z: yaw.position.z },
       get noteStorm() { return 1; },
       set noteStorm(v) {},
       film: { HX, TX, YSHOP, HSHOP, TSHOP, HARRIVE, TARRIVE },

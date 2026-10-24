@@ -6199,3 +6199,57 @@ cut (sharing its vertices and maps) when it is small.
   lower neighbour, or at the end of a row, the street sees the sky underneath it. A pitched roof needs its back slope,
   its gables and something under the rear eave. Where identical neighbours overlap their overhangs, offset every other
   one by a few millimetres so the overhangs never share a plane.
+
+## v22.3 — episode 3 chapter 4, debugged in depth
+
+- **A world built far from the origin takes its sky with it** (v22.3). The engine's sky (the dome, the stars, the sun,
+  the moon and the clouds) is one group at the world's origin, and the dome is a 150 m sphere drawn from the INSIDE
+  (`BackSide`). From World T, 250 m out, the camera stands outside the dome: the near half faces away and is culled, the
+  far half is past the far plane, so the street's sky was the background's one flat colour, with no evening and no
+  stars. e3c3 got round it at v21.0 by building the shrine its own stars. The engine now asks the stage where its sky
+  stands (`stage.skyAt()` → `{x, z}`, or null for the origin) and moves the group there every frame. A stage that
+  declares nothing is drawn exactly as before.
+- **A reset is for a world that has been PLAYED** (v22.3). v22.2's `freshStage()` (a Continue or a New game in the
+  chapter already standing) also ran on a world straight out of `build()`, and took away what build() had set up: the
+  fixture's objective and phase. fixturetest caught it. `stageDirty` is cleared by every build and set by the first
+  frame that is not the title, and freshStage runs only when it is set.
+- **Read the pointer lock before you hand it back** (v22.3). A STEADY drag begun by pressing START under the pointer
+  lock was seeded at the screen's middle. The lock is then released, Chromium puts the cursor back where the lock was
+  taken, and the first move's delta threw the mark up to 2.6 rings off. A drag begun under the lock now starts from its
+  first real move. Read `document.pointerLockElement` BEFORE the call that releases it.
+- **An attempt owns its sounds** (v22.3). LET GO's pull (the roar that peaks on the window) was cued from START and
+  never cancelled. After an early press ended the attempt, the OLD pull peaked during the NEXT attempt's "Hold…", and
+  answering it was another miss. In a timed minigame, a cue that belongs to one attempt is held by that attempt and
+  faded (`srcFade`) when the attempt ends any other way.
+- **An arrival under its black posts nothing** (v22.3, e3c3's ST-4 in a second chapter). At both world arrivals, the
+  new order, its chime, the COMPLETE beat and the stool's "!" (drawn above the black) came up during the warm, seconds
+  before the picture. `wDark` holds the objective and disables every hotspot from the moment a world is entered under
+  its black until the black lifts with his first line, and the lift posts the order. Any chapter that changes worlds
+  under a black wants the same.
+- **A far world's batches are gated by where he is, not by the frustum** (v22.3). World T's street is merged into one
+  batch per material, so each batch's bounding sphere is the whole street (r 95). From World Y, the merit temple, the
+  office and ending B's room it passed the frustum test and was submitted, ~32k triangles, only for the far plane to
+  clip it. Hide a far world's groups by position (`x < −100`), every frame.
+- **One dynamic geometry rewritten in place, never a new one per frame** (v22.3). The merit film's pour built a new
+  `TubeGeometry` every frame of both pours, which means new GPU buffers every frame. One tube with dynamic buffers,
+  re-laid along the fall in place, draws the same thing.
+- **"Behind" is a side of the LENS, not of the number** (v22.3). The Lersi's and the giant's halos had comments saying
+  "behind the figure" and z offsets that put them between the figure and his seat. Write a depth order as "further
+  from the camera" and check it by photograph from the seat the scene is seen from.
+- **A landing height is where the thing is, every frame** (v22.3). Falling leaves fixed their landing height when they
+  spawned and then drifted up to 21 cm: some lay flat in mid-air past the counter's edge for seven seconds, others sank
+  through its top. The height is read under the leaf on the frame it lands.
+- **A resume re-says the line its bookmark skipped, when that line carries an order** (v22.3, v7.3's law for words). A
+  Continue saved in the 11.5 s after the Yin set-down re-said only her merit line, so his promise and her answer, which
+  the merit note and ending B refer back to, were never heard. One saved inside her "pick it up" lost the only order on
+  the screen. A resume into such a bookmark says the line again, as live. A line that carries no order can be left.
+- **Scan a world for coplanar faces; do not wait to see them flicker** (v22.3). Lens 4 rebuilt World T in node from the
+  chapter's own source and scanned it for open rays to the sky and for same-facing faces sharing a plane; the scan
+  reproduced v22.2's fascia/ceiling fight when that fix was reverted. Across the three worlds the lenses found more such
+  pairs (World Y's shopfront heads, door jambs and corridor ends; World H's corners, counter top and trunking; World T's
+  far row of open fronts) that no photograph had caught, because a flicker shows only at some angles and some
+  distances. The fix is
+  always the same: a few millimetres, or one face ending inside the other.
+- **A fix written in the plan is not a fix in the code** (v22.3). L7-6 was marked fixed in the findings and the source
+  had no change for it. It was found by reading the full diff before the commit, finding by finding against the list.
+  Do that read with the list open, not from memory.

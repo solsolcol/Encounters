@@ -505,7 +505,7 @@
       }
       // the split air-conditioner over the staff's side, and its trunking
       box(0.95, 0.3, 0.24, -4.36, 2.55, -5.2, matWhite, shopG, false).rotation.y = Math.PI / 2;
-      box(0.02, 0.04, 0.6, -4.25, 2.4, -5.2, matDark, shopG, false);
+      box(0.02, 0.04, 0.6, -4.245, 2.4, -5.2, matDark, shopG, false);   // (v22.3: 5 mm proud of the unit's face, which it fought)
     }
 
     /* ---------------------------------------------------- the glass front
@@ -656,15 +656,15 @@
     /* the strips behind the counters are the staff's: between a counter's
        padded back and the cabinets' (0.30 m, open at both ends) the lens could
        walk in and stand inside the man there — a thin box fills each */
-    solids.push(hidBox(0.02, 1.4, 3.2, -3.79, 0.7, (LCNT.z0 + LCNT.z1) / 2));
-    solids.push(hidBox(0.02, 1.4, 3.0, 3.80, 0.7, (RCNT.z0 + RCNT.z1) / 2));
+    solids.push(hidBox(0.58, 1.4, 3.2, -3.79, 0.7, (LCNT.z0 + LCNT.z1) / 2));   // (v22.3: the whole gap, counter to cabinets — a 2 cm strip left a slot either side)
+    solids.push(hidBox(0.6, 1.4, 3.0, 3.80, 0.7, (RCNT.z0 + RCNT.z1) / 2));     // (v22.3: a 1 cm slot either side let a diagonal push behind the counter, through the owner)
 
     /* -------------------------------------------- the owner's working end
        A wooden top at the back of his counter: the loupe, the lamp, the till,
        a receipt book, a calculator, his phone, his tea. */
     {
       const z = RCNT.z1 + 0.42, x = (RCNT.x0 + RCNT.x1) / 2, y = RCNT.top + 0.008;
-      box(0.62, 0.02, 0.8, x, y, z, matWoodL, shopG);
+      box(0.64, 0.02, 0.8, x, y, z, matWoodL, shopG);   // (v22.3: 1 cm over the chrome rims either side — its sides were their outer faces)
       box(0.3, 0.16, 0.26, x + 0.08, y + 0.09, z - 0.2, matBlack, shopG);                   // the till
       box(0.22, 0.02, 0.18, x + 0.08, y + 0.18, z - 0.2, matDark, shopG).rotation.x = -0.4;
       box(0.12, 0.012, 0.16, x - 0.12, y + 0.016, z + 0.12, matDark, shopG);                 // the calculator
@@ -1596,7 +1596,7 @@
       // the piers between the far side's shops, and on our side the wall where no shop is
       for (let i = 1; i < 7; i++) box(0.2, MALL.H, 0.3, MALL.x0 + i * 4, MALL.H / 2, MALL.z1 + 0.06, matWallB, mallG, false);
       for (const s of [-1, 1]) {
-        box(1.06, MALL.H, 0.2, s * 5.03, MALL.H / 2, -0.14, matWallB, mallG, false);
+        box(1.05, MALL.H, 0.2, s * 5.035, MALL.H / 2, -0.14, matWallB, mallG, false);   // (v22.3: its end 1 cm inside the shop's side wall, whose face it shared)
         box(0.2, MALL.H, 0.3, s * 9.5, MALL.H / 2, -0.1, matWallB, mallG, false);
         box(0.56, MALL.H, 0.2, s * 13.72, MALL.H / 2, -0.14, matWallB, mallG, false);
       }
@@ -2901,9 +2901,11 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
         for (const s of [-1, 1]) bPl.box(0.45, oh, 0.2, s * (w / 2 - 0.225), fy + oh / 2, F + 0.1, wallC, { k: 0.85 });
         const wallIn = warm ? 0xe8d4b0 : 0xe6eef4, floorIn = warm ? 0xbca88c : 0xd4d8da, ceilIn = warm ? 0xf0e2c8 : 0xf4f6f8;
         bIn.quad(sw, D, 0, fy + 0.002, F + D / 2, floorIn, { rx: -Math.PI / 2, k: 0.48 });
-        bIn.quad(sw, D, 0, fy + oh, F + D / 2, ceilIn, { rx: Math.PI / 2, k: 0.4 });
-        bIn.quad(D, oh, -sw / 2, fy + oh / 2, F + D / 2, wallIn, { ry: Math.PI / 2, k: 0.5 });
-        bIn.quad(D, oh, sw / 2, fy + oh / 2, F + D / 2, wallIn, { ry: -Math.PI / 2, k: 0.5 });
+        // (v22.3: 1 cm in from the jambs' inner faces and 1 cm under the lintel — in their planes, facing the same way, the
+        // two flickered across the road; found in episode 3 chapter 4's copy of this street)
+        bIn.quad(sw, D, 0, fy + oh - 0.01, F + D / 2, ceilIn, { rx: Math.PI / 2, k: 0.4 });
+        bIn.quad(D, oh, -sw / 2 + 0.01, fy + oh / 2, F + D / 2, wallIn, { ry: Math.PI / 2, k: 0.5 });
+        bIn.quad(D, oh, sw / 2 - 0.01, fy + oh / 2, F + D / 2, wallIn, { ry: -Math.PI / 2, k: 0.5 });
         for (const z of [1.2, 3.2, 5.0]) for (const x of [-sw / 4, sw / 4]) bIn.box(1.2, 0.05, 0.08, x, fy + oh - 0.04, F + z, 0xffffff, { k: 1.4 });
         // its back wall: the stall and its menu, or the shelves
         const back = new THREE.Mesh(new THREE.PlaneGeometry(sw, oh), unlitMat(tex(warm ? makeKopiBack(THREE, cnv) : makeMartBack(THREE, cnv)), { vertexColors: false, color: warm ? 0xd8d0c0 : 0xd8dce0 }));
