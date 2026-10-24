@@ -3853,7 +3853,9 @@
         for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * L / 0.4, uv.getY(i) * (TWAY.z1 - TWAY.z0) / 0.4);
         f.rotation.x = -Math.PI / 2; f.position.set(0, 0.003, (TWAY.z0 + TWAY.z1) / 2); f.receiveShadow = true; G.add(f); }
       { const c = new THREE.Mesh(new THREE.PlaneGeometry(W + 0.02, TWAY.z1 - TWAY.z0), M({ color: 0xd4cab8, roughness: 0.9, emissive: 0x4a4236 }));   // (the street's, buildStreetT)
-        c.rotation.x = Math.PI / 2; c.position.set(0, TFRONT.way, (TWAY.z0 + TWAY.z1) / 2); G.add(c); }
+        // (12 mm under the way's own line: the fascia over the shop's opening has its underside there, and the street's
+        // ceilings either side 10 mm under it — v22.2, one plane each, so nothing flickers)
+        c.rotation.x = Math.PI / 2; c.position.set(0, TFRONT.way - 0.012, (TWAY.z0 + TWAY.z1) / 2); G.add(c); }
       // the shop's signboard: on the fascia over the five-foot way, to the street — and a second over the counter, inside
       { const sg = new THREE.Mesh(new THREE.PlaneGeometry(4.4, 0.69), M({ map: tSign, roughness: 0.4, metalness: 0.15 }));
         sg.position.set(0, 3.7, TWAY.z1 + 0.012); G.add(sg);
@@ -4160,6 +4162,7 @@
         let lastSign = -1;
         const dealSign = () => { let s; do { s = 2 + ((rS() * 14) | 0); } while (s === lastSign); lastSign = s; return s; };
 
+        let nRoof = 0;
         function shophouse(x0, x1, far, kind) {
           const w = x1 - x0, xc = (x0 + x1) / 2;
           const Gw = far ? 3.9 : 3.4, F = far ? 2.0 : 2.2, fy = far ? 0.15 : 0;
@@ -4231,14 +4234,34 @@
           } else {
             const lift = style === 'late' ? 0.5 : 0;
             if (lift) bPl.box(w, 0.5, 0.2, 0, T + 0.3 + 0.25, 0.0, wallC);
-            const z0 = -0.32, z1 = 4.2, rise = 1.75, len = Math.hypot(z1 - z0, rise), ang = Math.atan2(rise, z1 - z0);
-            bRoof.box(w + 0.03, 0.1, len, 0, T + 0.3 + lift + rise / 2, (z0 + z1) / 2, 0xa05a3e, { rx: -ang, ws: 0.5 });
+            /* v22.2 (Chad: "the shophouses with the roof, the roof does not look complete"): the roof was its FRONT slope
+               alone, a slab that stopped in mid-air half-way back over the house's flat top, open underneath at both ends —
+               so wherever a neighbour stands lower, and at each row's last house, the street saw the sky through the roof.
+               A whole pitched roof now: the front slope up to a ridge over the middle of the house, the back slope down to
+               its rear eave, a capping along the ridge, a gable wall closing each end under the slopes, and a strip of wall
+               along the back under the rear eave. Every other house sets its roof 12 mm higher, so two neighbours of one
+               height never lay their 1.5 cm overhangs in the same plane (which would flicker). */
+            const yb = T + 0.3 + lift + (nRoof++ % 2) * 0.012, z0 = -0.32, z2 = 9.17, zr = (z0 + z2) / 2, rise = 1.75;
+            const run = zr - z0, len = Math.hypot(run, rise), ang = Math.atan2(rise, run);
+            bRoof.box(w + 0.03, 0.1, len, 0, yb + rise / 2, (z0 + zr) / 2, 0xa05a3e, { rx: -ang, ws: 0.5 });
+            bRoof.box(w + 0.03, 0.1, len, 0, yb + rise / 2, (zr + z2) / 2, 0xa05a3e, { rx: ang, ws: 0.5 });
+            bRoof.box(w + 0.03, 0.12, 0.26, 0, yb + rise + 0.03, zr, 0x8a4a32, { ws: 0.5 });
+            // the gables: the house's sides from its flat top up under the slopes (2 cm under the slabs' centre line, so the
+            // join is inside the tiles), set 2 cm in from the side so they never share a plane with the house below them
+            const sl = (z) => yb - 0.02 + rise * (z <= zr ? (z - z0) / run : (z2 - z) / run);
+            const gs = new THREE.Shape([new THREE.Vector2(0, T - 0.02), new THREE.Vector2(8.85, T - 0.02), new THREE.Vector2(8.85, sl(8.85)),
+                                        new THREE.Vector2(zr, sl(zr)), new THREE.Vector2(0, sl(0))]);
+            for (const s of [-1, 1]) bPl.add(new THREE.ExtrudeGeometry(gs, { depth: 0.12, bevelEnabled: false }), s > 0 ? w / 2 - 0.02 : -w / 2 + 0.14, 0, 0, wallC, { ry: -Math.PI / 2, k: 0.8 });
+            bPl.box(w - 0.04, sl(8.85) - T + 0.02, 0.2, 0, (T + sl(8.85)) / 2, 8.75, wallC, { k: 0.8 });
           }
           if (upper) { bPl.box(w, Y1 - Gw, 0.45, 0, (Gw + Y1) / 2, 0.225, wallC, { k: 0.92 }); return; }   // the shop's own fascia, its sign hung on it by buildWorldT
           bPl.box(w, Y1 - Gw, 0.45, 0, (Gw + Y1) / 2, 0.225, wallC, { k: 0.92 });
           const sg = kind === 'kopi' ? 0 : kind === 'mart' ? 1 : dealSign();
           bSign.quad(w - 0.75, 0.5, 0, (Gw + Y1) / 2, -0.006, 0xffffff, { ry: Math.PI, cell: SCELL(sg) });
-          bCeil.quad(w, F, 0, Gw, F / 2, 0xd4cab8, { rx: Math.PI / 2 });
+          // (1 cm under the fascia's underside: in its plane, the two faces fought for the same pixels and the strip along
+          // the way's street edge flickered as he walked — v22.2, Chad: "a texture on the ceiling of the corridor that
+          // flickers and glitches as player walks")
+          bCeil.quad(w, F, 0, Gw - 0.01, F / 2, 0xd4cab8, { rx: Math.PI / 2 });
           if (sg === 10 || sg === 3) {
             const bx = -w / 2 + 0.3, by = Y1 + 1.3;
             bPl.box(0.1, 1.95, 0.72, bx, by, -0.42, 0x2a2420);
@@ -8091,6 +8114,7 @@
       info: () => ({ phase, t: +dayClock.t.toFixed(2), queued: lineQ.length, heard: [...heard], looked: [...looked], held: [...held],
                      until: +speak.until.toFixed(2), pending: speak.pending ? speak.pending.name : null, world: worldOf(yaw.position.x),
                      yin: { on: yin.on, cold: +yin.cold.toFixed(2), numb: +yin.numb.toFixed(2), rate: +yin.rate.toFixed(3), stopped: yin.stopped,
+                            locket: yLive.locket ? yLive.locket.visible : null,   // (v22.2: on her satin, where he can pick it up)
                             girl: { placed: yin.girl.placed, a: +yin.girl.a.toFixed(2), shows: yin.girl.shows, side: yin.girl.side, at: yin.girl.at || null,
                                     ready: !!(yLive.girl && yLive.girl.ready), to: yin.girl.to, fail: yin.girl.fail || null },
                             beds: DATA.ambience.beds.map(b => b.map(v => typeof v === 'number' ? +v.toFixed(3) : v)), wrong: wrongI },

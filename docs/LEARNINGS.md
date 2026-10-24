@@ -6161,3 +6161,41 @@ cut (sharing its vertices and maps) when it is small.
   and the bag in ending B's room kept whatever turn and size the shop's shot had left it. Found by reading the full
   diff before the commit, not by any harness: chaptertest, tdzscan and undefscan all pass a statement turned into a
   comment. Before a commit, scan the ADDED lines for code after a `//` (a call ending `);`, an assignment).
+- **Glass is drawn, never lit: a MATCAP does what a refraction pass would, at no cost** (v22.1). The naga crystal ball
+  needed to read as glass on a phone. Transmission (MeshPhysicalMaterial) draws the whole opaque scene a second time
+  into a texture whenever the ball is on screen, and a lit, transparent standard material looks like grey plastic. Two
+  MeshMatcapMaterials sharing one sphere give the look:
+  - the BODY, at 0.74 opacity, is painted as the room seen through the ball upside down (dark above, bright below),
+    with a crescent of gathered light low inside and a dark band at the edge;
+  - the SKIN is laid on ADDITIVELY over it (black adds nothing): the rim, a reflected window and a sparkle.
+
+  A matcap is looked up in VIEW space, so its top is always the ball's top on the screen. That is the right answer for
+  glass, whatever the view. Unlit, untoned and fog-free, it adds no light and keeps one program for the world's pass
+  and the hands' pass. The glass is TOLD the room's light every frame (its colour), because it cannot see it. Anything
+  inside (the coiled naga) is additive and drawn between the two layers, with nothing writing depth.
+- **A probe that moves the view and then projects a point must bring the rig's matrices up to date itself** (v22.1).
+  The ball probe turned and narrowed the lens for its close-ups, put the view back, waited 800 ms and projected the
+  ball to tap it. On a box drawing a frame a second there was no frame in those 800 ms, so the projection answered for
+  the close-up and the tap landed on the screen's middle, missing the ball. Fix it in the probe: call
+  `yaw.updateMatrixWorld(true)` and wait for a drawn frame before projecting. Also, a SEATED view (`kit.pose('lying')`)
+  puts the eye back every frame, so a probe's close-up there turns and narrows the lens (`camera.fov`, handed back
+  after) rather than moving the eye.
+- **Continue is a reset too** (v22.2). Continue rebuilt the world only when the save was in ANOTHER chapter. In the
+  same chapter (menu → Back to the title → Continue) it kept the stage and the kit exactly as the last run left them
+  and laid the save over them: episode 3 chapter 4's Yin experience was still running, the amulet still out of her
+  box, its pickup switched off, so the player was stuck. A chapter reads its saved phase once, on its first frame after
+  a build or a reset, so a save laid over a live stage is never read. `freshStage()` puts the kit and the stage back
+  the way a build leaves them whenever Continue (or New game) does not rebuild, without `restart()`'s autosave, which
+  would overwrite the save being resumed. Two consequences for probes: a probe that seeds a save and RELOADS can never
+  reach this bug, because a reload always builds; and the same-sitting path (play → title → Continue) needs its own
+  probe.
+- **A ceiling laid in the plane of a beam's underside flickers, and a port carries the bug with it** (v22.2). v19.3's
+  law ("two flat boxes that share a top fight over it") again: the five-foot way's ceiling was a plane at the fascia's
+  underside height, and over the fascia's 45 cm depth the two faces fought for the same pixels. The strip along the
+  way's street edge striped and stepped as he walked. The street builder was ported from episode 3 chapter 3 to
+  chapter 4, so both chapters had it. Drop the plane a centimetre, and give the overlapping neighbour a different
+  height again.
+- **A roof is a closed volume** (v22.2). A single slope slab looks complete only from straight in front of it. Beside a
+  lower neighbour, or at the end of a row, the street sees the sky underneath it. A pitched roof needs its back slope,
+  its gables and something under the rear eave. Where identical neighbours overlap their overhangs, offset every other
+  one by a few millimetres so the overhangs never share a plane.

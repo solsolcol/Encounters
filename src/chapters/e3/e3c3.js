@@ -2771,6 +2771,7 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
       const dealSign = () => { let s; do { s = 2 + ((rS() * 14) | 0); } while (s === lastSign); lastSign = s; return s; };
 
       /* ---- ONE SHOPHOUSE, in its own frame. G: the five-foot way's ceiling; F: its depth; fy: its floor */
+      let nRoof = 0;
       function shophouse(x0, x1, far, kind) {
         const w = x1 - x0, xc = (x0 + x1) / 2;
         const G = far ? 3.9 : 3.4, F = far ? 2.0 : 2.2, fy = far ? 0.15 : 0;
@@ -2849,8 +2850,21 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
         } else {
           const lift = style === 'late' ? 0.5 : 0;
           if (lift) bPl.box(w, 0.5, 0.2, 0, T + 0.3 + 0.25, 0.0, wallC);
-          const z0 = -0.32, z1 = 4.2, rise = 1.75, len = Math.hypot(z1 - z0, rise), ang = Math.atan2(rise, z1 - z0);
-          bRoof.box(w + 0.03, 0.1, len, 0, T + 0.3 + lift + rise / 2, (z0 + z1) / 2, 0xa05a3e, { rx: -ang, ws: 0.5 });
+          /* v22.2: a whole pitched roof, as episode 3 chapter 4's daylight copy of this street has it (Chad, there: "the
+             shophouses with the roof, the roof does not look complete") — the front slope alone stopped in mid-air half-way
+             back, open underneath at both ends, so the sky showed through it beside every lower neighbour. Front and back
+             slopes to a ridge over the middle of the house, a capping, gables under both ends, a strip of wall under the
+             rear eave; every other house 12 mm higher, so two overhangs never share a plane */
+          const yb = T + 0.3 + lift + (nRoof++ % 2) * 0.012, z0 = -0.32, z2 = 9.17, zr = (z0 + z2) / 2, rise = 1.75;
+          const run = zr - z0, len = Math.hypot(run, rise), ang = Math.atan2(rise, run);
+          bRoof.box(w + 0.03, 0.1, len, 0, yb + rise / 2, (z0 + zr) / 2, 0xa05a3e, { rx: -ang, ws: 0.5 });
+          bRoof.box(w + 0.03, 0.1, len, 0, yb + rise / 2, (zr + z2) / 2, 0xa05a3e, { rx: ang, ws: 0.5 });
+          bRoof.box(w + 0.03, 0.12, 0.26, 0, yb + rise + 0.03, zr, 0x8a4a32, { ws: 0.5 });
+          const sl = (z) => yb - 0.02 + rise * (z <= zr ? (z - z0) / run : (z2 - z) / run);
+          const gs = new THREE.Shape([new THREE.Vector2(0, T - 0.02), new THREE.Vector2(8.85, T - 0.02), new THREE.Vector2(8.85, sl(8.85)),
+                                      new THREE.Vector2(zr, sl(zr)), new THREE.Vector2(0, sl(0))]);
+          for (const s of [-1, 1]) bPl.add(new THREE.ExtrudeGeometry(gs, { depth: 0.12, bevelEnabled: false }), s > 0 ? w / 2 - 0.02 : -w / 2 + 0.14, 0, 0, wallC, { ry: -Math.PI / 2, k: 0.8 });
+          bPl.box(w - 0.04, sl(8.85) - T + 0.02, 0.2, 0, (T + sl(8.85)) / 2, 8.75, wallC, { k: 0.8 });
         }
         if (upper) return;
         /* the ground floor: the fascia beam over the way with its signboard, the way's ceiling (a tube on in some),
@@ -2858,7 +2872,7 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
         bPl.box(w, Y1 - G, 0.45, 0, (G + Y1) / 2, 0.225, wallC, { k: 0.92 });
         const sg = kind === 'kopi' ? 0 : kind === 'mart' ? 1 : dealSign(), sLit = sg < 2 || sg === 12 || rS() < 0.26;
         (sLit ? bSignL : bSignN).quad(w - 0.75, 0.5, 0, (G + Y1) / 2, -0.006, sLit ? 0xffffff : 0xffffff, { ry: Math.PI, cell: SCELL(sg), k: sLit ? 0.92 : 1 });
-        bPl.quad(w, F, 0, G, F / 2, 0x5c544a, { rx: Math.PI / 2 });
+        bPl.quad(w, F, 0, G - 0.01, F / 2, 0x5c544a, { rx: Math.PI / 2 });   // (v22.2: 1 cm under the fascia's underside — in its plane the two flickered)
         if (shop || rS() < 0.3) {
           bIn.box(1.2, 0.05, 0.08, 0, G - 0.05, F * 0.45, 0xffffff, { k: shop ? 1.3 : 1.1 });
           if (far && !shop) light(xc, G - 0.25, 16.0 + F * 0.45, 0xe4eeff, 1.3, 1.5);   // its light on the way (the facade over it faces away)

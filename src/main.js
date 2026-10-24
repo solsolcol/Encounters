@@ -12858,6 +12858,35 @@ function worldWord(on = true) {
   else w.classList.add('hide');
 }
 
+/* v22.2 · A CHAPTER PICKED UP AGAIN IN THE SAME SITTING STARTS FROM WHAT A
+   BUILD LEAVES. Chad: "When restarting or continuing game, the yin amulet on
+   the table disappears, and i cannot find anything to interact with and get
+   stuck in progress." Continue rebuilds the world only when the save is in
+   ANOTHER chapter (setChapter). Back to the title and Continue in the SAME
+   chapter kept the world exactly as it was left — episode 3 chapter 4's Yin
+   experience still running, the amulet in his hand and gone from her table,
+   its pickup switched off while the experience runs — and then laid a save
+   over it that says "begin the experience again from its pickup", which the
+   chapter never read, because it reads its phase once, on its first frame
+   after a build or a reset. The kit was never reset either, so a minigame
+   left open stayed open. So when there is no rebuild, the kit and the stage
+   are put back the way a fresh build leaves them — restart()'s own reset and
+   the hands' rest, WITHOUT its autosave (the save being resumed must not be
+   overwritten by the chapter's start) — and the chapter re-reads the saved
+   phase on its first frame, exactly as it does after a reload. A chapter
+   just built (a reload's Continue into chapter 1) is reset as the chapter
+   selector has always reset one straight after building it. */
+function freshStage() {
+  kitReset();
+  stage.reset();
+  noteProp.visible = false;
+  if (prayerArmL) prayerArmL.visible = false;
+  if (rightHandModel) setHandCurl(rightHandModel, 1);
+  armR.visible = true;
+  armR.rotation.set(0.50, 0.28, -0.48);
+  vmKey.intensity = VM_REST.key;
+  layoutHands();
+}
 /* Continue: the default, and what the big button does whenever there is
    anything to come back to. */
 function resumeRun() {
@@ -12866,6 +12895,7 @@ function resumeRun() {
   // land in the right chapter FIRST: setChapter rebuilds the world, and
   // anything placed before it would be placed in the outgoing one
   if (s.ch !== CH_KEY) setChapter(s.ch);
+  else freshStage();               // v22.2: no rebuild — so the world the last run left is put back first
   enterWorld(() => {
     /* `done` means the chapter was sealed and there is nothing after it —
        the game is finished. Continue then means "play it again", so the
@@ -12926,6 +12956,7 @@ function newGame(wipe = true) {
      should start episode 1 with no items at all." */
   invClearAll();
   if (wipe && CH_KEY !== BOOT_CH) setChapter(BOOT_CH);
+  else freshStage();               // v22.2: and a new game in the chapter already standing starts from what a build leaves
   ward.ep = episodeOf(CH_KEY); ward.charge = ward.enter = WARD_FULL;   // v14.7: a new game, a full amulet
   syncBars();
   enterWorld(() => {

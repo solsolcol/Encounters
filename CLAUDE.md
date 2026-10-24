@@ -6428,7 +6428,31 @@ What the baseline contains, by release:
     moved (sheet v117, three cells; v44 stays the link).
   - CHECKED: photographed on a phone at every beat of the piece (the tray, two close-ups, held, awake, the serpent),
     with no page error. Continue checked at World T's five phases.
-  - Deploy `6adc3954a720c164ecdba0b8`, byte-verified (253 files). docs/V22.0-E3C4-PLAN.md §12.3 is the record.
+  - Deploy `6adc3954a720c164ecdba0b8`, byte-verified (253 files). Harnesses chapter, text, csp, hosted, leak, cine
+    and walk green after it (7/7). docs/V22.0-E3C4-PLAN.md §12.3 is the record.
+- **v22.2** THE AMULET BACK ON HER SATIN, THE CORRIDOR'S CEILING, AND WHOLE ROOFS — Chad's three bugs in episode 3
+  chapter 4: *"When restarting or continuing game, the yin amulet on the table disappears, and i cannot find anything
+  to interact with and get stuck in progress"*; *"when the player walks out to the street aling the corridor, there is
+  a texture on the ceiling of the corridor that flickers and glitches as player walks"*; *"on the street opposite, the
+  shophouses with the roof, the roof does not look complete"*.
+  - THE AMULET was the ENGINE's, and reproduced on a phone with real taps (`dbg-e3c4yinstuck.mjs`). Continue rebuilt
+    the world only when the save was in ANOTHER chapter. Back to the title and Continue in the SAME chapter kept the
+    Yin experience running: the amulet in his hand and off her satin, its pickup switched off, no objective, the same
+    twenty seconds later. A reload's Continue was always right. `freshStage()` (main.js) now puts the kit and the
+    stage back the way a build leaves them whenever Continue or New game does not rebuild, without restart()'s
+    autosave, and the chapter re-reads the saved phase on its first frame exactly as after a reload. Every chapter's
+    same-sitting Continue now lands where a reload's would. Measured after: "Pick up the amulet", the amulet on her
+    satin and pressable, and pressing it begins the experience again.
+  - THE CEILING: the five-foot way's ceiling lay in the plane of the fascia beam's underside, so the two fought for
+    the strip along the street edge (stripes on the shop's ceiling, a jagged staircase on the neighbours'). The street's
+    ceilings sit 1 cm under the beams now and the shop's 12 mm (v19.3's coplanar law, again).
+  - THE ROOFS were a front slope alone, a slab ending in mid-air half-way back, so the sky showed under it beside
+    every lower neighbour. Each is a whole pitched roof now: both slopes to a ridge over the house's middle, a capping,
+    a gable under each end, a strip of wall under the rear eave, and every other house's roof 12 mm higher so the
+    overhangs never share a plane.
+  - The same street stands in episode 3 chapter 3, at night, from the same code, so it has both fixes too.
+  - Deploy `6adc42813401ea7784504094`, byte-verified (253 files). No word moved; sheet v117 stands (v44 the link).
+    docs/V22.0-E3C4-PLAN.md §12.4 is the record; three laws in LEARNINGS.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
