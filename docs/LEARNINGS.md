@@ -6248,8 +6248,19 @@ cut (sharing its vertices and maps) when it is small.
   reproduced v22.2's fascia/ceiling fight when that fix was reverted. Across the three worlds the lenses found more such
   pairs (World Y's shopfront heads, door jambs and corridor ends; World H's corners, counter top and trunking; World T's
   far row of open fronts) that no photograph had caught, because a flicker shows only at some angles and some
-  distances. The fix is
-  always the same: a few millimetres, or one face ending inside the other.
+  distances. The fix is always the same: a few millimetres, or one face ending inside the other.
 - **A fix written in the plan is not a fix in the code** (v22.3). L7-6 was marked fixed in the findings and the source
   had no change for it. It was found by reading the full diff before the commit, finding by finding against the list.
   Do that read with the list open, not from memory.
+- **A thing seen through glass needs to differ from what is behind the glass, not from the glass** (v22.3, P-1). Ending
+  A's figure "a step behind him" stood in a near-black room behind a reflection painted at 62 %. A slate-grey figure in
+  a black room, seen through 38 % of window, reached the screen as about 4/255 of difference: the code was right, the
+  figure was there, and no player could see it. The lens's photographs at the 0.95 s it shows were the first to look.
+  Work out what reaches the eye (the figure's light, times what the glass lets through, against the same for the room)
+  before trusting a scare to a dark shape behind glass.
+- **A strip 180 m long and a few centimetres wide is laid in lengths** (v22.3, P-3). The double yellow line was one box
+  the length of the street, 9 cm wide. Where it passed the lens it had to be clipped, and the rasterizer drew it THROUGH
+  the pillar in front of it: a dashed yellow line across the pillar's face, in one view and not its mirror image. A
+  projection through the shot's own lens proved which it was (the dashes sat on the line's path, not on the pillar's
+  diagonal, where a clipping crack would be). Long thin geometry that passes the camera is cut into lengths of about
+  10 m. It costs a few hundred triangles.

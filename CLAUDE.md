@@ -6999,6 +6999,8 @@ docs/V22.0-E3C4-PLAN.md** is its build memory (Chad's words, the design, every c
 fixes); its Chinatown towkay is a STAND-IN until Chad's model (docs/E3-MODELS.md), its opening film waits
 on its own score and four sounds (no ElevenLabs credits at the time; the recipe is in
 masters/v22.0/cp10/sessions.json), and its closing music is take c until Chad picks between c and a.
+Its deep debug at v22.3 — **docs/V22.3-PLAN.md** — lists every finding of eight code lenses and the phone
+photographs, each with its verdict and fix, and what was left alone and why.
 **Chad's message of 22 Oct 2026 on episode 3 chapter 3 —
 docs/V21.17-PLAN.md** (the lorong's buses, Golden Mile's shops, and the opening film
 rebuilt as his ride in on the bus) shipped in three milestones, v21.17 to v21.19, and

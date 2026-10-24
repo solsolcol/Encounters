@@ -4392,12 +4392,16 @@
         /* (v22.3, L4-1: the road under the far kerb, and a concrete edge from the five-foot way's tiles to the near kerb —
            both strips were open to nothing, a band of the background colour along the foot of each kerb from the door) */
         bRoad.quad(ROAD_L, 12.46, 0, -0.03, 8.79, 0xffffff, { rx: -Math.PI / 2, ws: 6 });
-        bPl.box(ROAD_L, 0.02, 0.25, 0, -0.009, 2.315, 0xa8a49a);
+        /* (v22.3, P-3: the thin strips in 12 m lengths — one 180 m box 9 cm wide is a triangle the rasterizer clips badly
+           where it passes the lens, and it drew the double yellow line THROUGH the pillar in front of it, a dashed yellow
+           line across the pillar's face from the end of the five-foot way) */
+        const SEG = 12, strip = (fn) => { for (let x = -ROAD_L / 2 + SEG / 2; x < ROAD_L / 2; x += SEG) fn(x); };
+        strip(x => bPl.box(SEG, 0.02, 0.25, x, -0.009, 2.315, 0xa8a49a));
         // our own five-foot way's tiles on either side of the shop's (buildWorldT lays the shop's)
         for (const s of [-1, 1]) bFloor.quad(68.9, 2.2, s * (4.1 + 34.45), 0.003, 1.1, 0xb0aaa0, { rx: -Math.PI / 2, ws: 0.4 });
         // the road's paint: a broken white line down the middle, double yellow along both kerbs
         for (let x = -88; x < 88; x += 6) bPl.box(3.0, 0.004, 0.12, x + 1.5, -0.02, 8.66, 0xf2f0e8);
-        for (const z of [2.86, 3.0, 14.32, 14.46]) bPl.box(ROAD_L, 0.004, 0.09, 0, -0.02, z, 0xe8c63a);
+        for (const z of [2.86, 3.0, 14.32, 14.46]) strip(x => bPl.box(SEG, 0.004, 0.09, x, -0.02, z, 0xe8c63a));
         // over the roofs: blocks of flats, by day
         for (const [x, z, w, h] of [[-48, 52, 36, 46], [-10, 62, 32, 54], [26, 50, 34, 40], [54, 60, 30, 50], [-30, -60, 40, 48], [30, -58, 36, 42]]) {
           bHdb.box(w, h, 12, x, h / 2, z, 0xffffff, { uv: [w / 24, h / 44.8] });
@@ -7817,7 +7821,9 @@
       bagG.children[1].rotation.x = 0.22;
       // (v22.3, L5-4: carried where it can be seen — up into the frame as he says he is bringing it back, down to the
       // counter as he sets it there; held at lift 0.04 it hung under a hand below the frame, never on screen)
-      if (t < EB.put) eHoldUp(api, bagG, eS(EB.walk0 + 0.4, EB.walk0 + 1.4, t) * (1 - eS(EB.put - 0.7, EB.put - 0.1, t)), { lift: 0.42, tilt: 0.1, relax: 0.6 });
+      // (v22.3, P-2: and low enough to leave the owner's face above it — at 0.42 a phone's frame was all bag for the whole
+      // of "Uncle... I'm bringing it back", the CP11 "all bag" frame again)
+      if (t < EB.put) eHoldUp(api, bagG, eS(EB.walk0 + 0.4, EB.walk0 + 1.4, t) * (1 - eS(EB.put - 0.7, EB.put - 0.1, t)), { lift: 0.27, tilt: 0.1, relax: 0.6 });
       else { if (bagG.parent !== worldT) eDrop(); eHandsAway(api); bagG.visible = true; bagG.position.set(PILE_POS.x - TX - 0.12, TCNT.top + BAG_H, PILE_POS.z - 0.12); bagG.rotation.set(0, -0.3, 0); }
     }
 
