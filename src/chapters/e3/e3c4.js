@@ -369,8 +369,8 @@
     }
 
     /* ============================================== WORLD Y · THE YIN SHOP (CP4)
-       An old mall's top floor one afternoon: a dead corridor of shutters along an atrium void, its escalator taped
-       off, and at the far end the one unit still open — a narrow shop lit red, an old song on a cassette. Lamps are
+       An old mall's top floor one afternoon: a dead corridor of shutters along an atrium void, its escalator running
+       up out of the floor below (CP10), and at the far end the one unit still open — a narrow shop lit red, an old song on a cassette. Lamps are
        emissive and painted (the v15.1 law: a light count never changes in play): a red bulb on the spirit altar,
        one tube that flickers, candles; every pool of light on a wall or the floor is an additive plane. What moves
        (the flames, the tube, the beads, the back curtain, the dust, the smoke) is driven from yTick each frame. */
@@ -1091,8 +1091,7 @@
             const g2 = glowPlane(1.6, 2.8, 0xeef4ff, 0.16, x, CH - 0.006, 2.4, Math.PI / 2);
             if (fl) fl.push(g1, g2);
           } }
-        // the railing over the void: a steel handrail, balusters, glass panels; a gap where the escalator lands,
-        // taped off with a barrier
+        // the railing over the void: a steel handrail, balusters, glass panels; a gap where the escalator lands
         const RZ = YMALL.z1, GAP0 = -14.2, GAP1 = -12.4;
         for (const [a, b] of [[X0, GAP0], [GAP1, X1]]) {
           const w = b - a, cx = (a + b) / 2;
@@ -1135,17 +1134,111 @@
         for (const bz of [RZ, YVOID.z1]) { const b = new THREE.Mesh(new THREE.PlaneGeometry(CW, YVOID.sky - CH), mSlab); b.position.set(ccx, (CH + YVOID.sky) / 2, bz); b.rotation.y = bz === RZ ? Math.PI : 0; G.add(b); }
         { const sky = new THREE.Mesh(new THREE.PlaneGeometry(CW, vd), new THREE.MeshBasicMaterial({ map: repeatTex(tSky, CW / 4, 1), color: 0xc4ced6, fog: false }));
           mats.push(sky.material); sky.rotation.x = Math.PI / 2; sky.position.set(ccx, YVOID.sky, vz); G.add(sky); }
-        // the escalator, rising out of the floor below to the taped-off landing (the opening film rides it)
+        /* CP10 · the void's two ENDS were open: down the atrium from the railing, and straight ahead up the escalator the
+           opening film rides, there was nothing — the night behind the set. Each end is a wall now from the floor below to
+           the skylight, banded where the floors are, and keeps what an old mall keeps there: at the far (east) end, the
+           floor's number painted big, a cloth banner letting the empty units, a lightbox with a sale nobody took down (one
+           tube dead), a lit unit on the floor below; at the west end, an older banner, the number again, a shutter below.
+           The far walkway's two ends are walled too, and the floor below has a far side (dark units, two lit). */
+        { const tLease = tex(makeYinLease(THREE, cnv)), tLevel = tex(makeYinLevel(THREE, cnv));
+          const mLease = M({ map: tLease, roughness: 0.92, side: THREE.DoubleSide });
+          const mLevel = M({ map: tLevel, roughness: 0.9, transparent: true, depthWrite: false });
+          const endWall = (x, ry, sgn) => {
+            tiled(vd, YVOID.sky - YVOID.floor, mPillarT, 2.4, x, (YVOID.sky + YVOID.floor) / 2, vz, ry);
+            tiled(3, CH, mPillarT, 2.4, x, CH / 2, YVOID.z1 + 1.5, ry);                       // the far walkway's end
+            box(0.06, 0.42, vd, x + sgn * 0.03, -0.21, vz, mSlab, G, false);                    // the floor's slab edge
+            box(0.05, 0.16, vd, x + sgn * 0.025, CH + 0.08, vz, mSlab, G, false);               // the ceiling line
+            box(0.05, 0.42, vd, x + sgn * 0.025, YVOID.floor + 3.4, vz, mSlab, G, false);       // the floor below's
+          };
+          endWall(X1, -Math.PI / 2, -1);
+          endWall(X0, Math.PI / 2, 1);
+          // the east end: the number, the banner on its rod and wires, the lightbox, the lit unit below
+          { const lv = new THREE.Mesh(new THREE.PlaneGeometry(1.0, 1.25), mLevel); lv.rotation.y = -Math.PI / 2; lv.position.set(X1 - 0.012, 4.25, 6.2); G.add(lv);
+            const bn = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 4.9), mLease); bn.rotation.y = -Math.PI / 2; bn.position.set(X1 - 0.08, 3.65, 10.0); G.add(bn);
+            box(0.035, 0.035, 1.56, X1 - 0.08, 6.12, 10.0, mSteel, G, false);
+            for (const wz of [9.35, 10.65]) box(0.008, 0.28, 0.008, X1 - 0.08, 6.26, wz, mSteel, G, false);
+            const tSale = tex(makeYinSaleBox(THREE, cnv));
+            box(0.18, 1.47, 3.72, X1 - 0.09, 1.375, 7.1, M({ color: 0x3c4044, roughness: 0.5, metalness: 0.6 }), G, false);
+            const face = new THREE.Mesh(new THREE.PlaneGeometry(3.6, 1.35), new THREE.MeshBasicMaterial({ map: tSale, color: 0xc8d0d0 }));
+            mats.push(face.material); face.rotation.y = -Math.PI / 2; face.position.set(X1 - 0.185, 1.375, 7.1); G.add(face);
+            glowPlane(4.4, 2.2, 0xd8eef0, 0.07, X1 - 0.19, 1.375, 7.3, 0, -Math.PI / 2);
+            const lu = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 2.6), mDarkUnit); lu.rotation.y = -Math.PI / 2; lu.position.set(X1 - 0.02, YVOID.floor + 1.3, 7.6); G.add(lu);
+            glowPlane(3.6, 2.2, 0xffd8a0, 0.14, X1 - 0.04, YVOID.floor + 1.3, 7.6, 0, -Math.PI / 2); }
+          // the west end: an older banner, the number, a shutter on the floor below
+          { const bn = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 4.9), mLease); bn.rotation.y = Math.PI / 2; bn.position.set(X0 + 0.08, 3.4, 6.9); G.add(bn);
+            bn.material = mLease.clone(); bn.material.color.set(0xd4c4b8); mats.push(bn.material);
+            box(0.035, 0.035, 1.56, X0 + 0.08, 5.87, 6.9, mSteel, G, false);
+            for (const wz of [6.25, 7.55]) box(0.008, 0.52, 0.008, X0 + 0.08, 6.14, wz, mSteel, G, false);
+            const lv = new THREE.Mesh(new THREE.PlaneGeometry(1.0, 1.25), mLevel); lv.rotation.y = Math.PI / 2; lv.position.set(X0 + 0.012, 4.25, 9.6); G.add(lv);
+            tiled(5.0, 2.6, mShutter, 2.6, X0 + 0.02, YVOID.floor + 1.3, 8.4, Math.PI / 2); }
+          // the floor below's far side, under the far walkway: dark units, two of them lit
+          { const fl = new THREE.Mesh(new THREE.PlaneGeometry(CW, 4.18), mDarkUnit); fl.rotation.y = Math.PI; fl.position.set(ccx, YVOID.floor + 2.09, YVOID.z1 - 0.3); G.add(fl);
+            for (const lx of [-12, -1.5]) glowPlane(3.2, 2.2, 0xffd8a0, 0.12, lx, YVOID.floor + 1.3, YVOID.z1 - 0.32, 0, Math.PI); } }
+        /* CP10 · and the corridor's own east end, which the film's walk looks down the whole way to her door, was a bare
+           white wall: the stair door with its sign and EXIT over it, the hose reel in its red cabinet, a notice board, a bin */
+        { const ex = X1 - 0.01, mDoor = M({ color: 0x6c706a, roughness: 0.55, metalness: 0.2 });
+          box(0.04, 2.22, 1.14, X1 - 0.02, 1.11, 3.9, M({ color: 0x3e403e, roughness: 0.5 }), G, false);
+          const dr = new THREE.Mesh(new THREE.PlaneGeometry(1.0, 2.1), mDoor); dr.rotation.y = -Math.PI / 2; dr.position.set(X1 - 0.045, 1.05, 3.9); G.add(dr);
+          const win = new THREE.Mesh(new THREE.PlaneGeometry(0.24, 0.5), mDarkUnit); win.rotation.y = -Math.PI / 2; win.position.set(X1 - 0.048, 1.55, 3.9); G.add(win);
+          box(0.035, 0.04, 0.78, X1 - 0.075, 1.0, 3.9, mSteel, G, false);
+          const tHose = tex(makeYinHoseSign(THREE, cnv)), sgn = (lo, w, h, y, z) => {
+            const g2 = new THREE.PlaneGeometry(w, h), uv = g2.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setY(i, lo + uv.getY(i) * 0.5);
+            const m = new THREE.Mesh(g2, M({ map: tHose, roughness: 0.6 })); m.rotation.y = -Math.PI / 2; m.position.set(ex - 0.01, y, z); G.add(m); return m; };
+          sgn(0, 0.62, 0.155, 2.33, 3.9);                                                    // STAIRCASE
+          const exS = new THREE.Mesh(new THREE.PlaneGeometry(0.42, 0.16), new THREE.MeshBasicMaterial({ map: tExit, toneMapped: false })); mats.push(exS.material);
+          exS.rotation.y = -Math.PI / 2; exS.position.set(ex - 0.02, 2.62, 3.9); G.add(exS);
+          glowPlane(1.4, 0.8, 0x40ff80, 0.16, ex - 0.03, 2.6, 3.9, 0, -Math.PI / 2);
+          // the hose reel: a red cabinet, its glass, the reel inside
+          { const mCab = M({ color: 0xa8241c, roughness: 0.45 });
+            box(0.04, 0.9, 0.75, X1 - 0.02, 1.25, 1.25, mCab, G, false);                       // its back
+            for (const dy of [-0.435, 0.435]) box(0.22, 0.03, 0.75, X1 - 0.11, 1.25 + dy, 1.25, mCab, G, false);
+            for (const dz of [-0.36, 0.36]) box(0.22, 0.9, 0.03, X1 - 0.11, 1.25, 1.25 + dz, mCab, G, false); }
+          const reel = new THREE.Mesh(new THREE.TorusGeometry(0.24, 0.05, 8, 20), M({ color: 0xc02a20, roughness: 0.5 })); reel.rotation.y = Math.PI / 2; reel.position.set(X1 - 0.11, 1.25, 1.25); G.add(reel);
+          const gl = new THREE.Mesh(new THREE.PlaneGeometry(0.68, 0.82), mGlass); gl.rotation.y = -Math.PI / 2; gl.position.set(X1 - 0.215, 1.25, 1.25); gl.renderOrder = 2; G.add(gl);
+          sgn(0.5, 0.6, 0.15, 1.86, 1.25);                                                   // FIRE HOSE REEL
+          walls.push(hidBox(0.3, 1.4, 0.85, X1 - 0.15, 0.7, 1.25, G));
+          // the notice board, a few sheets pinned to it, and the bin under it
+          box(0.03, 0.66, 0.92, X1 - 0.015, 1.45, 2.55, M({ color: 0x9a7650, roughness: 0.95 }), G, false);
+          [[1.6, 2.32, 0.22, 0.3, 0xece4d2], [1.52, 2.62, 0.2, 0.26, 0xf2e8a8], [1.3, 2.78, 0.18, 0.22, 0xe6e0d4], [1.28, 2.42, 0.24, 0.18, 0xdcd6e2]]
+            .forEach(([y, z, w, h, col]) => { const p = new THREE.Mesh(new THREE.PlaneGeometry(w, h), M({ color: col, roughness: 0.9 })); p.rotation.y = -Math.PI / 2; p.position.set(X1 - 0.033, y, z); G.add(p); });
+          cyl(0.19, 0.17, 0.62, X1 - 0.28, 0.31, 2.55, M({ color: 0x4e5e52, roughness: 0.6 }), 16, G);
+          walls.push(hidBox(0.45, 1.0, 0.45, X1 - 0.28, 0.5, 2.55, G)); }
+        // the escalator, rising out of the floor below to its landing (the opening film rides it)
         { const e0 = new THREE.Vector3(-21.2, YVOID.floor, 6.25), e1 = new THREE.Vector3(GAP0 + 0.3, 0, 6.25);
           const len = e0.distanceTo(e1), ang = Math.atan2(e1.y - e0.y, e1.x - e0.x), mid = e0.clone().lerp(e1, 0.5);
           const truss = new THREE.Group(); truss.position.copy(mid); truss.rotation.z = ang; G.add(truss);
           box(len, 0.5, 1.1, 0, -0.35, 0, M({ color: 0x5e6266, roughness: 0.5, metalness: 0.6 }), truss, false);
           for (const sz of [-0.58, 0.58]) { box(len, 0.9, 0.06, 0, 0.35, sz, mGlassDirty, truss, false); box(len, 0.06, 0.1, 0, 0.82, sz, mRubber, truss, false); }
+          // CP10 (the opening film rides it, and on a phone its steps were black slabs): steel skirts beside the steps, the
+          // balustrade's light under each handrail (painted: an emissive strip, no lamp — v15.1). (The handrails' curl at
+          // each end was tried and taken out: on a stair with no level run at its head, the curl stood tilted with the
+          // incline and read from the step as two black horns.)
+          { const mLightStrip = new THREE.MeshBasicMaterial({ color: 0xd2e2ee }); mats.push(mLightStrip);
+            for (const sz of [-0.51, 0.51]) box(len, 0.24, 0.02, 0, 0.02, sz, mSteel, truss, false);
+            for (const sz of [-0.545, 0.545]) box(len, 0.022, 0.012, 0, 0.73, sz, mLightStrip, truss, false); }
+          // the steps: a grooved tread with its yellow nose and sides, a cleated riser, steel elsewhere (BoxGeometry's
+          // groups: +x −x +y −y +z −z)
+          const mTread = M({ map: tex(makeYinTread(THREE, cnv)), roughness: 0.42, metalness: 0.6 });
+          const mRiser = M({ map: tex(makeYinRiser(THREE, cnv)), roughness: 0.5, metalness: 0.55 });
           const stepG = new THREE.BoxGeometry(0.4, 0.2, 1.0), nS = Math.floor(len / 0.4);
-          const steps = new THREE.InstancedMesh(stepG, mSteel, nS); const mtx = new THREE.Matrix4();
+          const steps = new THREE.InstancedMesh(stepG, [mSteel, mRiser, mTread, mSteel, mSteel, mSteel], nS); const mtx = new THREE.Matrix4();
           for (let k = 0; k < nS; k++) { const t = (k + 0.5) / nS; const x = e0.x + (e1.x - e0.x) * t, y = e0.y + (e1.y - e0.y) * t; mtx.makeTranslation(x, y - 0.06, 6.25); steps.setMatrixAt(k, mtx); }
           steps.instanceMatrix.needsUpdate = true; steps.computeBoundingSphere(); G.add(steps);
-          box(1.8, 0.03, 1.2, GAP0 + 0.9 + 0.3, 0.015, 6.25, mSteel, G, false);
+          // its head's landing: a slab of the floor reaching out from the corridor's edge to the stair (CP10: a 3 cm plate
+          // alone over the void read, from the last step, as a table), steel on top, glass on its two open sides, and a
+          // short panel closing the railing's gap down to the landing's width
+          { const lx0 = e1.x, lx1 = GAP1 + 0.3, lz0 = RZ, lz1 = 6.85, lcx = (lx0 + lx1) / 2, lcz = (lz0 + lz1) / 2, lw = lx1 - lx0, ld = lz1 - lz0;
+            box(lw, 0.42, ld, lcx, -0.21, lcz, mSlab, G, false);
+            box(lw, 0.012, ld, lcx, 0.006, lcz, mSteel, G, false);
+            for (const [w, d, x, z] of [[lw, 0.06, lcx, lz1], [0.06, ld, lx1, lcz], [lx0 - GAP0, 0.06, (GAP0 + lx0) / 2, RZ]]) {
+              box(w, 1.05, d, x, 0.525, z, mGlassDirty, G, false);
+              box(Math.max(w, 0.08), 0.05, Math.max(d, 0.08), x, 1.07, z, mSteel, G, false);
+            } }
+          // the comb plates at its head and foot, yellow where the steps go under; the foot's own landing on the floor below
+          { const mComb = M({ color: 0xd2ac26, roughness: 0.45, metalness: 0.4 });
+            box(0.08, 0.02, 0.98, e1.x + 0.04, e1.y + 0.022, 6.25, mComb, G, false);
+            box(1.6, 0.03, 1.2, e0.x - 0.8, e0.y + 0.015, 6.25, mSteel, G, false);
+            box(0.08, 0.02, 0.98, e0.x - 0.04, e0.y + 0.035, 6.25, mComb, G, false); }
           yLive.escalator = { e0, e1, steps, nS, z: 6.25, v: 0.6 };    // (CP10: running up, 0.6 m a second — yTick; the opening film rides it)
         }
         // the EXIT at the corridor's west end, green over a shut fire door
@@ -7492,7 +7585,9 @@
     const oLive = { on: false, where: '', day: undefined, page: -1 };
     const offU = {
       nAmb: { value: new THREE.Color(0.05, 0.056, 0.085) },
-      nPA: { value: new THREE.Vector3(1.30, 1.12, OFFZ - 0.10) }, nCA: { value: new THREE.Color(0.40, 0.60, 1.05) }, nRA: { value: 2.5 },
+      // (the screens' pool: 0.40/0.60/1.05 lit the white desk near-white on a desktop's wide frame — a lit room, not a
+      // desk at night; at this level the lamp's warm pool reads beside it)
+      nPA: { value: new THREE.Vector3(1.30, 1.12, OFFZ - 0.10) }, nCA: { value: new THREE.Color(0.27, 0.41, 0.74) }, nRA: { value: 2.3 },
       nPB: { value: new THREE.Vector3(-5.5, 3.4, OFFZ - 6.0) }, nCB: { value: new THREE.Color(0.15, 0.15, 0.18) }, nRB: { value: 6.0 },
       nPC: { value: new THREE.Vector3(1.95, 0.98, OFFZ + 0.14) }, nCC: { value: new THREE.Color(0.95, 0.66, 0.36) }, nRC: { value: 1.25 }
     };
@@ -7611,10 +7706,15 @@
        floor he is arriving on — a function of the clock, so the walk can turn off the look it ends on */
     function oRide(t) {
       const E = yLive.escalator, L = E ? E.e0.distanceTo(E.e1) : 8.63;
-      const u = Math.min(1, 0.5 + ESC_V * (t - O_T.o3) / L);
+      const u = Math.min(1, 0.5 + (E ? E.v : 0.6) * (t - O_T.o3) / L);
       const ex = E ? E.e0.x + (E.e1.x - E.e0.x) * u : -17, ey = (E ? E.e0.y + (E.e1.y - E.e0.y) * u : -2) + 1.58, ez = E ? E.z : 6.25;
-      const top = oS(28.8, O_T.o3b + 0.6, t);
-      return { ex, ey, ez, tx: ex + 4, ty: ey + 1.0 * (1 - top), tz: ez - 1.6 * top };
+      // CP10 (the phone photographs: the ride stared down the atrium at its far end the whole way up): up the stair at
+      // first — the steps, the rails, the skylight, the far end's banner — and as his eyes clear the floor (26.3), round
+      // onto the one lit shopfront at the far end of the corridor, the shop he says he had never noticed, settled on it by
+      // 29.8 while "...a shop I had never noticed before" is said. Eased in yaw and pitch, not through a lerp of two points.
+      const s = oS(26.3, 29.8, t), dx = 0 - ex, dy = 1.6 - ey, dz = 0.3 - ez;
+      const yaw = Math.atan2(-dz, dx) * s, pit = Math.atan2(1.1, 4) * (1 - s) + Math.atan2(dy, Math.hypot(dx, dz)) * s;
+      return { ex, ey, ez, tx: ex + 6 * Math.cos(pit) * Math.cos(yaw), ty: ey + 6 * Math.sin(pit), tz: ez - 6 * Math.cos(pit) * Math.sin(yaw) };
     }
     function oBegin() { oLive.on = true; oLive.where = ''; oLive.day = undefined; oLive.page = -1; }
     function oFrame(t, api) {
@@ -7655,11 +7755,14 @@
       }
       // ---- O2 · Golden Mile, shop to shop (World H, its own numbers + HX)
       if (where === 'gm') {
+        // (the customer browsing the staff's counter stands 0.6 m further along it for the film: at her own place her
+        // chatting hand came into the counter shot's desktop frame; oEnd puts her back)
+        const G0 = hLive.cust && hLive.cust[0]; if (G0 && G0.group) G0.group.position.z = G0.o.z - 0.6;
         if (t < O_T.o2b) {                                          // the corridor, past the fronts, to the shop's glass
           const k = oS(O_T.o2, O_T.o2b + 0.6, t), x = HX - 11.0 + 4.6 * k, ph = (t - O_T.o2) * Math.PI * 2.1;
           oPut(x, 1.62 + 0.02 * Math.abs(Math.sin(ph)), 2.7 - 0.2 * k, x + 4.0, 1.45, 0.9 - 0.7 * k);
         } else if (t < O_T.o2c) {                                   // the staff's counter: amulets under the glass
-          const k = oS(O_T.o2b - 0.4, O_T.o2c + 0.4, t), z = -1.45 - 1.35 * k, C = H.LCNT;
+          const k = oS(O_T.o2b - 0.4, O_T.o2c + 0.4, t), z = -1.45 - 1.1 * k, C = H.LCNT;
           oPut(HX - 2.35, 1.42, z, HX + (C.x0 + C.x1) / 2 - 0.05, 0.62, z - 0.25);
         } else {                                                    // the owner's counter: a tray slid across, his head shaking
           const k = oS(O_T.o2c, O_T.o3, t), z = -2.75;
@@ -7703,6 +7806,7 @@
     function oEnd() {
       oLive.on = false; oLive.where = ''; offG.visible = false; oTray.visible = false; hLive.look = false;
       if (hLive.owner) hLive.owner.shakeAmp = 0;
+      { const G0 = hLive.cust && hLive.cust[0]; if (G0 && G0.group) G0.group.position.z = G0.o.z; }
       oFlick(true);
       scrMatR.map = scrArt; scrMatR.needsUpdate = true; oLive.page = -1;
     }
@@ -8201,7 +8305,8 @@
     x.fillStyle = '#c41a14'; x.fillRect(12, 12, 232, 120);
     x.fillStyle = '#fff4e0'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.font = 'bold 66px sans-serif'; x.fillText('TO LET', 128, 74);
     x.fillStyle = '#1a1a1a'; x.font = 'bold 30px sans-serif'; x.fillText('招 租', 128, 168);
-    x.font = 'bold 22px sans-serif'; x.fillText('Unit #04-', 128, 214); x.fillText('Call 9 1 3 7 · 4 2 0 8', 128, 252);
+    // (CP10: no telephone number — a made-up one can belong to someone real; the management office instead)
+    x.font = 'bold 22px sans-serif'; x.fillText('Unit #04-', 128, 214); x.font = 'bold 17px sans-serif'; x.fillText('Enquire: Mgmt Office L1', 128, 252);
     for (let i = 0; i < 24; i++) yBlob(x, 256, r() * 256, r() * 342, 14 + r() * 30, `rgba(150,120,70,${0.06 + r() * 0.1})`);
     x.fillStyle = 'rgba(230,226,200,0.7)'; x.fillRect(100, 0, 56, 14); x.fillRect(100, 330, 56, 12);
     return yDone(THREE, c, false);
@@ -8212,6 +8317,115 @@
     x.fillStyle = '#0a8a3a'; x.fillRect(0, 0, 256, 98);
     x.fillStyle = '#e8fff0'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.font = 'bold 50px sans-serif'; x.fillText('EXIT', 150, 42); x.font = 'bold 22px sans-serif'; x.fillText('出 口', 150, 80);
     x.fillStyle = '#e8fff0'; x.fillRect(20, 16, 50, 66); x.fillStyle = '#0a8a3a'; x.fillRect(28, 24, 34, 52);
+    return yDone(THREE, c, false);
+  }
+  /* CP10: the atrium's two ends were open to nothing (the opening film's escalator rides up looking straight at the far
+     one). These are what an old mall keeps there. A long cloth banner hung in the void, sun-faded red, letting the
+     empty units — its words are world art and name nobody (1.5 x 5.25 m) */
+  function makeYinLease(THREE, cnv) {
+    const [c, x] = ySized(cnv, 256, 896), r = yRng(211);
+    const g = x.createLinearGradient(0, 0, 0, 896); g.addColorStop(0, '#9a4a3e'); g.addColorStop(0.5, '#a8584a'); g.addColorStop(1, '#8c3e34');
+    x.fillStyle = g; x.fillRect(0, 0, 256, 896);
+    // the fold lines a cloth keeps from its box, and the sun on its upper half
+    for (let y = 60; y < 896; y += 112) { const f = x.createLinearGradient(0, y - 10, 0, y + 10); f.addColorStop(0, 'rgba(0,0,0,0)'); f.addColorStop(0.5, 'rgba(40,10,6,0.22)'); f.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = f; x.fillRect(0, y - 10, 256, 20); }
+    x.fillStyle = 'rgba(255,236,214,0.10)'; x.fillRect(0, 0, 256, 400);
+    x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillStyle = '#f4e6cc';
+    x.font = 'bold 96px serif'; ['旺', '铺', '招', '租'].forEach((ch, i) => x.fillText(ch, 128, 96 + i * 108));
+    x.fillStyle = '#efe0c2'; x.font = 'bold 44px sans-serif'; ['UNITS', 'FOR', 'LEASE'].forEach((w, i) => x.fillText(w, 128, 560 + i * 52));
+    x.fillStyle = 'rgba(244,230,204,0.85)'; x.fillRect(36, 720, 184, 3);
+    x.font = 'bold 21px sans-serif'; x.fillText('ENQUIRE AT', 128, 752); x.fillText('MGMT OFFICE', 128, 780); x.fillText('LEVEL 1', 128, 808);
+    // water marks and grime, the grommets at the top
+    for (let i = 0; i < 26; i++) yBlob(x, 256, r() * 256, r() * 896, 14 + r() * 46, `rgba(${r() < 0.6 ? '60,28,20' : '230,214,190'},${0.05 + r() * 0.09})`);
+    for (let i = 0; i < 9; i++) { x.fillStyle = `rgba(70,40,26,${0.12 + r() * 0.1})`; x.fillRect(r() * 256, 300 + r() * 560, 2 + r() * 2, 30 + r() * 90); }
+    for (const gx of [22, 234]) { x.fillStyle = '#6e6a60'; x.beginPath(); x.arc(gx, 16, 8, 0, Math.PI * 2); x.fill(); x.fillStyle = '#2a2622'; x.beginPath(); x.arc(gx, 16, 4, 0, Math.PI * 2); x.fill(); }
+    yGrain(x, 256, 896, 14, r);
+    return yDone(THREE, c, false);
+  }
+  /* an advertising lightbox, one of its tubes dead: a mall sale nobody took down, its reds gone to the cyan an old print
+     fades to (4.8 x 1.8 m) */
+  function makeYinSaleBox(THREE, cnv) {
+    const [c, x] = ySized(cnv, 1024, 384), r = yRng(223);
+    const g = x.createLinearGradient(0, 0, 1024, 384); g.addColorStop(0, '#cfe4e2'); g.addColorStop(1, '#b6d2d4');
+    x.fillStyle = g; x.fillRect(0, 0, 1024, 384);
+    // a few shopping bags, drawn plainly, in the faded colours
+    [[120, 250, '#c9a6b8'], [210, 270, '#a8c0cc'], [300, 255, '#d4c49a']].forEach(([bx, by, col], i) => {
+      x.fillStyle = col; x.fillRect(bx - 50, by - 80, 100, 120);
+      x.strokeStyle = 'rgba(80,90,96,0.6)'; x.lineWidth = 5; x.beginPath(); x.arc(bx, by - 80, 26, Math.PI, 0); x.stroke();
+      x.fillStyle = 'rgba(255,255,255,0.35)'; x.fillRect(bx - 50, by - 80, 14, 120);
+    });
+    x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.fillStyle = '#b07890'; x.font = 'bold 92px sans-serif'; x.fillText('MID-YEAR SALE', 690, 120);
+    x.fillStyle = '#5c7a8c'; x.font = 'bold 64px sans-serif'; x.fillText('UP TO 70% OFF', 690, 214);
+    x.fillStyle = '#7a8e96'; x.font = 'bold 38px serif'; x.fillText('年 中 大 减 价', 690, 290);
+    x.font = 'bold 24px sans-serif'; x.fillText('ALL PARTICIPATING OUTLETS · LEVELS 1 – 4', 690, 340);
+    // the dead tube: the left third in shadow, a soft edge; dead insects along the bottom of the box
+    const d = x.createLinearGradient(0, 0, 420, 0); d.addColorStop(0, 'rgba(10,14,18,0.62)'); d.addColorStop(1, 'rgba(10,14,18,0)');
+    x.fillStyle = d; x.fillRect(0, 0, 420, 384);
+    for (let i = 0; i < 60; i++) { x.fillStyle = `rgba(40,34,26,${0.4 + r() * 0.4})`; x.fillRect(r() * 1024, 368 + r() * 14, 2 + r() * 4, 2 + r() * 3); }
+    for (let i = 0; i < 18; i++) yBlob(x, 1024, r() * 1024, r() * 384, 20 + r() * 60, `rgba(80,74,60,${0.04 + r() * 0.06})`);
+    return yDone(THREE, c, false);
+  }
+  /* the store directory at the other end: a brown board with its letters pushed in, half its units blank (1.6 x 2.0 m) */
+  function makeYinDirectory(THREE, cnv) {
+    const [c, x] = ySized(cnv, 512, 640), r = yRng(227);
+    x.fillStyle = '#3a2a20'; x.fillRect(0, 0, 512, 640);
+    x.fillStyle = '#d8c69a'; x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.font = 'bold 34px sans-serif'; x.fillText('STORE DIRECTORY', 256, 40); x.font = 'bold 26px serif'; x.fillText('商 场 指 南', 256, 78);
+    x.fillRect(30, 100, 452, 2);
+    const names = ['', 'TAILOR', '', 'PHOTO STUDIO', '', '', 'TRAVEL', '', 'WATCH & CLOCK', '', 'BOOKS', '', '', 'TEXTILE', '', 'OPTICAL', '', ''];
+    x.textAlign = 'left'; x.font = 'bold 15px monospace';
+    for (let lv = 4; lv >= 1; lv--) {
+      const y0 = 124 + (4 - lv) * 128;
+      x.fillStyle = '#e8d8ae'; x.font = 'bold 22px sans-serif'; x.fillText('LEVEL ' + lv, 30, y0 + 10);
+      x.font = 'bold 15px monospace';
+      for (let i = 0; i < 6; i++) {
+        const col = i % 2, row = i >> 1, tx = 30 + col * 236, ty = y0 + 38 + row * 28, nm = names[(lv * 5 + i) % names.length];
+        x.fillStyle = '#c8b68a'; x.fillText('#0' + lv + '-' + String(10 + i * 3), tx, ty);
+        if (nm) x.fillText(nm, tx + 76, ty); else { x.fillStyle = 'rgba(200,182,138,0.18)'; x.fillRect(tx + 76, ty - 6, 120, 12); }
+      }
+    }
+    for (let i = 0; i < 20; i++) yBlob(x, 512, r() * 512, r() * 640, 12 + r() * 40, `rgba(${r() < 0.5 ? '255,240,210' : '10,6,4'},${0.04 + r() * 0.06})`);
+    yGrain(x, 512, 640, 10, r);
+    return yDone(THREE, c, false);
+  }
+  /* the floor's number, painted big on the wall at the escalator's head, the way every mall marks its levels */
+  function makeYinLevel(THREE, cnv) {
+    const [c, x] = ySized(cnv, 256, 320), r = yRng(229);
+    x.clearRect(0, 0, 256, 320);
+    x.fillStyle = 'rgba(122,26,20,0.88)'; x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.font = 'bold 230px sans-serif'; x.fillText('4', 128, 128);
+    x.font = 'bold 40px sans-serif'; x.fillText('LEVEL', 128, 262); x.font = 'bold 30px serif'; x.fillText('四 楼', 128, 300);
+    // the paint worn back to the wall in places
+    x.globalCompositeOperation = 'destination-out';
+    for (let i = 0; i < 70; i++) { x.fillStyle = `rgba(0,0,0,${0.2 + r() * 0.5})`; x.fillRect(r() * 256, r() * 320, 2 + r() * 10, 1 + r() * 3); }
+    x.globalCompositeOperation = 'source-over';
+    return yDone(THREE, c, false);
+  }
+  /* an escalator step's tread: grooved aluminium running the way it travels, a yellow nose, yellow at both sides (the
+     box's +y face: u along the run, 0.4 m; v across, 1.0 m) */
+  function makeYinTread(THREE, cnv) {
+    const [c, x] = ySized(cnv, 128, 256);
+    x.fillStyle = '#5a5e62'; x.fillRect(0, 0, 128, 256);
+    for (let y = 0; y < 256; y += 6) { x.fillStyle = '#7e8286'; x.fillRect(0, y, 128, 2); x.fillStyle = '#34373a'; x.fillRect(0, y + 3, 128, 2); }
+    x.fillStyle = '#d8b228'; x.fillRect(0, 0, 16, 256); x.fillRect(0, 0, 128, 9); x.fillRect(0, 247, 128, 9);
+    x.fillStyle = 'rgba(60,50,10,0.35)'; for (let y = 0; y < 256; y += 6) x.fillRect(0, y + 3, 16, 2);
+    return yDone(THREE, c, false);
+  }
+  /* its riser: the cleated face, ribs running up it (the box's −x face: u across, v up) */
+  function makeYinRiser(THREE, cnv) {
+    const [c, x] = ySized(cnv, 256, 64);
+    x.fillStyle = '#2c2f32'; x.fillRect(0, 0, 256, 64);
+    for (let u = 0; u < 256; u += 4) { x.fillStyle = '#4c5054'; x.fillRect(u, 0, 2, 64); }
+    x.fillStyle = '#c8a424'; x.fillRect(0, 0, 6, 64); x.fillRect(250, 0, 6, 64);
+    return yDone(THREE, c, false);
+  }
+  /* the hose reel's label, and the staircase door's sign, white on red and black on white */
+  function makeYinHoseSign(THREE, cnv) {
+    const [c, x] = ySized(cnv, 256, 128);
+    x.fillStyle = '#b81c14'; x.fillRect(0, 0, 256, 64); x.fillStyle = '#f4f0e8'; x.fillRect(0, 64, 256, 64);
+    x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.fillStyle = '#ffffff'; x.font = 'bold 30px sans-serif'; x.fillText('FIRE HOSE REEL', 128, 32);
+    x.fillStyle = '#1a1a1a'; x.font = 'bold 30px sans-serif'; x.fillText('STAIRCASE  楼梯', 128, 96);
     return yDone(THREE, c, false);
   }
   /* a bottle's label: yellowed paper, a red rule, two lines of script */

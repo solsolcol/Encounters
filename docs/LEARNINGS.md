@@ -6112,3 +6112,15 @@ cut (sharing its vertices and maps) when it is small.
   follow. A player cannot reach the room with the blessing's queue unfinished (`endBless` is its last item, and only
   it opens the walkway), and `reset()` empties the queue; but a probe that jumps phases mid-queue sees an order no
   player can, and should read it as the probe's, not the game's.
+
+## v22.0 — episode 3 chapter 4
+
+- **A name that is never declared throws only on the frame its line runs** (v22.0). e3c4's opening film read an
+  `ESC_V` that no scope declared, in the function that rides the escalator, and the film threw 24 s in, on the first
+  frame of the ride — every frame before it was fine, and so was every harness that never plays the film. `tdzscan`
+  cannot see it (it finds names read before their `let`, and this one had no `let` at all), `chaptertest` builds the
+  stage and never runs a film, and the syntax check passes it. `tools/probes/undefscan.mjs` parses a chapter with
+  acorn, models its scopes (function, block, catch, for-let, class, params, var and function hoisting) and prints
+  every name it READS that nothing declares and no browser global provides; every chapter scans clean. A plain
+  `x = …` to an undeclared name is left alone on purpose: in a plain script that is a sloppy-mode global, not a throw
+  (e2c3's `S`). Run it beside tdzscan before a chapter is deployed.
