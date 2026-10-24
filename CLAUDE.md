@@ -6514,7 +6514,9 @@ What the baseline contains, by release:
     (the photographs' three), each byte-verified (253 served files); harnesses text, csp, hosted and chapter green on
     the second, and fixture, restart, resume, state, menu, walk, leak, cine, sanity, inv and title on the third, with
     v22.2's two regression probes (the Yin amulet three ways in; the same-sitting Continue in five chapters — e2c3's
-    first reading differed only because a look fired between the probe's two readings, LEARNINGS).
+    first reading differed only because a look fired between the probe's two readings, LEARNINGS). Milestone backup
+    bundle made (chapter 4 shipped at v22.0): 1008 MB in 49 parts of 20 MB that reassemble byte-identical, at
+    `622d56d`; it replaces v21.0's.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
