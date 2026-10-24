@@ -60,5 +60,36 @@
   "EIP5GULyfhoq3wmYOJpV",
   "2UI97qXcbNNIbSuWdD3q",
   "GD39UtWkhxBF7wwBSgXS"
+ ],
+ "_note_24oct_run3": "24 Oct ~15:55 UTC, after Chad said the account has credits: run 3 (four takes each) was accepted and then REFUSED, every one of the 20: the effects \"This request exceeds your quota of 127573. You have 0 credits remaining, while 15 credits are required for this request.\", the score \"Insufficient funds\"; nothing generated, nothing charged. The account the ElevenLabs connector is signed into is not the one with his credits (or they have not reached it). Run the nodes again once it has them.",
+ "f4music_run3": [
+  "pqDwWWzXmswJnU9kqDcO",
+  "yCnHluPsQGlMKx7Cfbrt",
+  "oYxgeb8bY71FSuDN8ieU",
+  "uUTHCbmXEU24d8itita5"
+ ],
+ "f4scroll_run3": [
+  "ydz5AsrdT9ZvcKyIhGeh",
+  "sHIHPKbmTakRXXwVofNq",
+  "EkkFm9kqf2ZBqBc6355d",
+  "lA3A2fEHd8nyL1SWgWP9"
+ ],
+ "f4siren_run3": [
+  "1eEUWtLHczLImq70yyYU",
+  "AB1wCowgJKT6PzMCK0HM",
+  "cVhgFgOKVnnDfC085RBn",
+  "DReTVJCguBKvJ6zlgTee"
+ ],
+ "f4escal_run3": [
+  "c4NLfT9TSrBfeYBRpoTp",
+  "oJKAATR0m5OSErsjLrLI",
+  "YFEdQuvSX8jm1uH3dNYG",
+  "8XnfMm49Gf3OomNEonOn"
+ ],
+ "f4tray_run3": [
+  "d7le9tA5SGRLjwqzGFY3",
+  "D4QJlGBmpu8IRxhyejuD",
+  "2cO8imssGqSNz1xE85PH",
+  "JNvDGaBgkB36LFe1p8Z4"
  ]
 }
