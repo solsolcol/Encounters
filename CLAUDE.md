@@ -7146,8 +7146,12 @@ chapter 4's ending B built out), revised four times the same day — the four op
 §2.5 THE PROMISE: taking them in is a promise of care and merit for life; and rev 4, §2.6 THE PURPOSE, which
 governs the rest: monk-made Kumanthong are not yin baby spirits, they are made out of compassion and helped by
 merit to a better birth, never kept for greed, never asked for anything against the precepts; the three now come
-from the Golden Mile owner and the counter is PLAYED; the facts are in docs/research/V23.0-KUMANTHONG.md — nothing
-is built until he says go, and only its CP11 needs ElevenLabs credits;
+from the Golden Mile owner and the counter is PLAYED; then every claim was checked against
+docs/research/V23.0-KUMANTHONG.md and the plan corrected (its §2.7: the misconception is the trapped, blood-fed spirit
+sent to harm, every belief is said as a belief, plain water first every night, "if you truly cannot, bring them
+back — never leave them", "they keep the precepts" said instead as the owner's belief that the temple kind will not
+help with wrong; seven questions left for Chad in §2.3 15–21) — nothing is built until he says go, and only its CP11
+needs ElevenLabs credits;
 v16.0 shipped chapter 1,
 The Luck I Went Looking For — `src/chapters/e3/e3c1.js`; v18.0 chapter 2, The
 Hands That Moved — `src/chapters/e3/e3c2.js`, docs/V18.0-E3C2-PLAN.md; v21.0
