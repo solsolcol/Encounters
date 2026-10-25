@@ -7138,7 +7138,11 @@ and customers are STAND-INS until Chad's models land (docs/E3-MODELS.md says
 which rig stands in for each, and each is a one-line swap). Episode 3 chapter
 2's three batches (docs/V19.4-PLAN.md) are all done.
 
-Next up: **episode 3 chapter 5**, The Children On My Altar (S1·10, the Kumanthong — the last of the case file; v16.0 shipped chapter 1,
+Next up: **episode 3 chapter 5**, The Children On My Altar (S1·10, the Kumanthong — the last of the case file; its
+BUILD PLAN is **docs/V23.0-E3C5-PLAN.md**, written 25 Oct 2026 from Chad's answers (three kumanthong, one incense
+stick each, the drink as the play, opening himself to all three NOT an option, the decision after, his room from
+chapter 4's ending B built out) — nothing is built until he says go, and only its CP11 needs ElevenLabs credits;
+v16.0 shipped chapter 1,
 The Luck I Went Looking For — `src/chapters/e3/e3c1.js`; v18.0 chapter 2, The
 Hands That Moved — `src/chapters/e3/e3c2.js`, docs/V18.0-E3C2-PLAN.md; v21.0
 chapter 3, The Dance On Buddha Day — `src/chapters/e3/e3c3.js`,

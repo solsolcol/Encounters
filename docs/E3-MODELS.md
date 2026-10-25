@@ -104,19 +104,34 @@ scene. Priority ★ = the chapter looks wrong without it.
 - **The Yin girl** — a pale, long-haired young woman (for a translucent face).
 - (The **LP Tim Khun Paen** is already in the game — it appears here.)
 
-## Chapter 5 · The Children On My Altar (his own home, not episode 1's flat)
-- ★ **A home interior** — his own flat or house (a different home from episode 1).
-- ★ **Kumanthong figures** — Thai golden child figures with a topknot (6–8; one
-  or two models reused and tinted is fine).
+## Chapter 5 · The Children On My Altar (his own room — docs/V23.0-E3C5-PLAN.md)
+Chad, 25 Oct: THREE kumanthong (not six), one incense stick each and NO
+candles, and his home is the room from chapter 4's ending B, built out.
+- ✅ **His room** — chapter 4's ending-B room (`buildRoom` in e3c4.js), ported
+  and built out with more detail (plan §4.1). No model needed.
 - ✅ **Three kumanthong models** — ARRIVED 23 Oct (Drive folder
   `1Jj5s0xuYuXUYw8Ep0ixe8GilmMhp7RAg`: `kuman1.glb` 108 MB, `kuman2.glb` 261 MB,
   `kuman3.glb` 73 MB; Chad: "use it if you need to, or use it for the kumanthong
-  chapter"). Downloaded to `masters/v22.0/src/` (git-ignored, re-downloadable);
-  they are this chapter's — prepped at full detail when chapter 5 is built (the
-  Yin shop's own kuman thong are already on Chad's yin shelf model).
-- ★ **A home altar table** (carved, gilt or red).
-- Props: red drinks in small cups · fruit · candles · incense · garlands.
-- **A child silhouette** (for the shadow children — any small child model).
+  chapter"). Downloaded to `masters/v22.0/src/` (git-ignored, re-downloadable).
+  Photographed 25 Oct: kuman1 is the RED one (standing, hands on hips,
+  frowning, 597k triangles); kuman3 the SHY one (crouching, hands over his
+  mouth, 451k); kuman2 the LITTLE one (seated in añjali, two long locks of real
+  hair, a jasmine garland, a ring of bells, 7.0M). Prepped at full detail at
+  the plan's CP1 (the Yin shop's own kuman thong stay on Chad's yin shelf model).
+- ✅ **The keeper** who gives them to him — Chad's Yin shop keeper (`yinkeeper`),
+  already in the game.
+- **Optional · a home altar table** (carved, gilt or red) — otherwise built from
+  primitives or a Tailandia pack piece (plan §2.3 7).
+- **Optional · a rigged adult Master Zav** (the white adult scan through Mixamo's
+  auto-rigger, with a sitting idle) — it would let a few shots show him from
+  behind as the children take him; otherwise every shot stays in his eyes (plan
+  §2.3 6).
+- Props (all drawn or built, none needed): red soda in small bottles with bendy
+  straws · one incense stick each in sand · sweets · toys (a tin car, a ball, a
+  paper pinwheel) · garlands. No candles.
+- ~~A child silhouette for the shadow children~~ — dropped: the children are
+  never shown as bodies (the no-block-figures rule); each arrives as a glowing
+  double of its own scan.
 
 Credits: send the link to each model's page as usual and it goes in the credits
 panel.
