@@ -7141,8 +7141,12 @@ which rig stands in for each, and each is a one-line swap). Episode 3 chapter
 Next up: **episode 3 chapter 5**, The Children On My Altar (S1·10, the Kumanthong — the last of the case file; its
 BUILD PLAN is **docs/V23.0-E3C5-PLAN.md**, written 25 Oct 2026 from Chad's answers (three kumanthong, one incense
 stick each, the drink as the play, opening himself to all three NOT an option, the decision after, his room from
-chapter 4's ending B built out), revised twice the same day — the four options made four kinds, then rev 2, its
-§2.4 THE HEART: the three are children to be felt for, never feared, and option C is Chad's greed option — nothing
+chapter 4's ending B built out), revised four times the same day — the four options made four kinds; rev 2, its
+§2.4 THE HEART: the three are children to be felt for, never feared, and option C is Chad's greed option; rev 3,
+§2.5 THE PROMISE: taking them in is a promise of care and merit for life; and rev 4, §2.6 THE PURPOSE, which
+governs the rest: monk-made Kumanthong are not yin baby spirits, they are made out of compassion and helped by
+merit to a better birth, never kept for greed, never asked for anything against the precepts; the three now come
+from the Golden Mile owner and the counter is PLAYED; the facts are in docs/research/V23.0-KUMANTHONG.md — nothing
 is built until he says go, and only its CP11 needs ElevenLabs credits;
 v16.0 shipped chapter 1,
 The Luck I Went Looking For — `src/chapters/e3/e3c1.js`; v18.0 chapter 2, The
