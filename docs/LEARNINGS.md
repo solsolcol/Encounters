@@ -6382,3 +6382,30 @@ cut (sharing its vertices and maps) when it is small.
   lean for "the three threads of smoke" every frame from CP7's first draft, and no code anywhere drew a thread of
   smoke: the embers glowed and nothing rose from them, which no number and no harness could notice. Before a beat
   is called done, find the READER of every state it writes (grep the name; one hit is a write into the void).
+- **A slab's `top` is its centre until proven otherwise — and that law has now cost this game twice** (v23.0 CP8;
+  v5.03 was the first). Chapter 5's room places its desk things at `DT + 0.018`, because the desk slab is a 35 mm box
+  centred on `DESK.top`. Three things in the endings were laid at `DESK.top` plus a hair: B's phone at dawn and D's
+  envelope were never drawn at all, and only the barrel of D's pen stood out of the wood. Play's lighter, from CP6,
+  stood 1.8 cm sunk in the slab. The probe that found the phone, `dbg-e3c5pick.mjs`, raycasts the TRIANGLES at a point
+  of the screen; a test against bounding spheres only reports the room's walls at distance 0, because the lens is
+  inside them. When something is missing from a shot, name what the ray hits first.
+- **A runner on a top is a second surface** (v23.0 CP8). The altar's red runner is 4 mm thick across most of its top,
+  so anything flat laid at `A.top` plus a hair inside its span is under the cloth. C's folded wishes were never seen,
+  and A's dust lay under the runner while half of it hung in the air past the altar's front edge.
+- **A one-sided card laid face down is invisible** (v23.0 CP8). "The owner's card face down in the dust" turned its
+  front to the wood. The material draws front faces only, so from above nothing was drawn and the shot had no card in
+  it. Lay the card face up under the dust, or give it a back.
+- **A swivel chair turns with the man in it** (v23.0 CP8). When the lens is his eye turning round in his desk chair,
+  the chair's own back filled the lower right of a phone's frame, 0.3 m from the lens. A static chair stays facing the
+  desk while he turns, so its back comes round to face him. The endings turn the chair with the look whenever the lens
+  sits in it, and `endReset` puts it back.
+- **A phone held up to the lens must fill the frame, and its face wants twice its layout's pixels** (v23.0 CP8).
+  At 0.235 m from a 72° lens, the replies on his phone were about 9 px high on a phone, and the old member's warning,
+  which carries ending B's lesson, could not be read. At 0.152 m the phone is 70% of the frame's height, inside the
+  letterbox, and three quarters of a phone's width. Its canvas is drawn at 2× (one `setTransform`), and its
+  notification cards at 15/19 px rather than 12/13.
+- **Joined hands in a close-up come up from below the frame, and they stop low** (v23.0 CP8). Drawn at the clasp's own
+  height (`y` −0.17), the añjali filled a phone's frame and hid the child he was praying to. Blended in from rest,
+  one hand crossed the frame pointing at the sweets, because a blend passes through every pose between rest and the
+  clasp. The clasp is now drawn whole (`k` 1) and only RISEN into the frame from below its edge (`y` from −0.68 to
+  −0.28), so the joined fingers end in the lower quarter of the frame and no half-formed hand is ever seen.
