@@ -2328,11 +2328,11 @@ const HPOSE = {
   reach:   { r: { fx: 0.326, fy: -0.652, z: -0.383, fing: [-0.090, -0.060, -0.989], palm: [0.477, -0.872, -0.071], w: -0.317, d: 0.600, f: 'soft' } },
   place:   { r: { fx: 0.296, fy: -0.319, z: -0.348, fing: [-0.291, 0.118, -0.943], palm: [0.518, -0.511, -0.686], w: -0.460, d: 0.360, f: 'grip' }, py: -0.08, pz: -0.06 },
   bottle:  { l: { fx: -0.241, fy: -0.972, z: -0.319, fing: [0.327, 0.468, -0.816], palm: [0.811, 0.291, 0.493], w: -0.640, d: 0.447, f: 'grip' },
-             r: { rel: [-0.005, 0.061, -0.021], fing: [-0.820, 0.140, -0.539], palm: [-0.323, -0.856, -0.384], w: -0.133, d: 0.270, f: 'grip' }, twist: true },
+             r: { rel: [-0.016, 0.081, -0.014], fing: [-0.820, 0.140, -0.539], palm: [-0.323, -0.856, -0.384], w: -0.133, d: 0.270, f: 'grip' }, twist: true },
   straw:   { l: { fx: 0.010, fy: -1.148, z: -0.401, fing: [0.424, 0.270, -0.860], palm: [0.893, -0.226, 0.370], w: -0.700, d: 0.375, f: 'grip' },
-             r: { rel: [0.000, 0.196, 0.018], fing: [-0.284, 0.209, -0.925], palm: [-0.235, -0.900, -0.380], w: -0.159, d: 0.547, f: 'pinch' } },
+             r: { rel: [0.002, 0.218, 0.026], fing: [-0.284, 0.209, -0.925], palm: [-0.235, -0.900, -0.380], w: -0.159, d: 0.547, f: 'pinch' } },
   lighter: { l: { fx: -0.346, fy: -0.379, z: -0.410, fing: [0.335, 0.542, -0.771], palm: [0.909, -0.350, 0.156], w: -0.546, d: 0.354, f: 'grip' },
-             r: { rel: [0.020, -0.092, -0.015], fing: [-0.387, 0.396, -0.833], palm: [-0.274, -0.900, -0.294], w: -0.673, d: 0.295, f: 'grip' } },
+             r: { rel: [0.025, -0.074, 0.000], fing: [-0.387, 0.396, -0.833], palm: [-0.274, -0.900, -0.294], w: -0.673, d: 0.295, f: 'grip' } },
   hips:    { r: { fx: 0.750, fy: -0.860, z: -0.477, fing: [0.091, -0.991, 0.100], palm: [-0.421, 0.094, 0.888], w: 1.136, d: 0.477, f: 'flat' }, l: 'mirror' },
   cross:   { r: { fx: -0.556, fy: -0.975, z: -0.349, fing: [-0.989, 0.082, -0.052], palm: [0.124, -0.715, 0.694], w: -0.077, d: -0.068, f: 'relax' },
              l: { fx: 0.331, fy: -0.980, z: -0.358, fing: [0.767, 0.238, -0.582], palm: [0.452, -0.564, 0.691], w: -0.451, d: 0.335, f: 'relax' } },
@@ -2436,16 +2436,22 @@ const hpHalfH = z => Math.tan(THREE.MathUtils.degToRad(vmCam.fov / 2)) * Math.ab
    left hand steadies, the sticks over its lighter — so the two stay together on every screen. */
 function hpHand(S, mir, P, p, left, outP, outQ, outF, outG, other) {
   hpBasis(S.fing, S.palm, mir, outQ);
+  /* (v23.0 CP6: the palm's offset in the hand is the DRAWN palm's — the left hand is a mirrored copy of the right
+     (buildPrayerArm), so its palm is HOLD_PALM_L however its pose is written; a pose that wrote its left out (not
+     'mirror') took the right's offset, a point 2.4 cm across the left hand from its palm, and measured the right's
+     `rel` from there — measured by fixturetest against kit.handPalm. The three such poses' `rel` carry the 2.4 cm,
+     so every hand stands where it stood) */
+  const hx = left ? -HOLD_PALM.x : mir * HOLD_PALM.x;
   if (S.rel && other) {
     outG.set(other.x + mir * S.rel[0], other.y + S.rel[1], other.z + S.rel[2]);
-    outP.copy(outG).sub(_hpV.set(mir * HOLD_PALM.x, HOLD_PALM.y, HOLD_PALM.z).applyQuaternion(outQ));
+    outP.copy(outG).sub(_hpV.set(hx, HOLD_PALM.y, HOLD_PALM.z).applyQuaternion(outQ));
   } else {
     const z = S.z + (P.pz || 0) * p + (left && P.ldz ? P.ldz : 0);
     const hh = hpHalfH(z), hw = hh * vmCam.aspect;
     let x = S.x != null ? S.x : S.fx * hw;
     x += Math.sign(x || 1) * (P.px || 0) * p;
     outP.set(mir * x, (S.y != null ? S.y : S.fy * hh) + (P.py || 0) * p, z);
-    outG.copy(outP).add(_hpV.set(mir * HOLD_PALM.x, HOLD_PALM.y, HOLD_PALM.z).applyQuaternion(outQ));
+    outG.copy(outP).add(_hpV.set(hx, HOLD_PALM.y, HOLD_PALM.z).applyQuaternion(outQ));
   }
   for (let i = 0; i < fingerPose.length; i++) {
     hpFingerInto(S.f, i, outF[i]);
@@ -2486,6 +2492,15 @@ function hpTarget(name, p, opts, o) {
     _hpQ.setFromAxisAngle(_hpUp, a);
     o.rp.sub(o.rg).applyQuaternion(_hpQ).add(o.rg);           // about the upright through the palm, over the cap
     o.rq.premultiply(_hpQ);
+  }
+  /* v23.0 (CP6): `sx` — both hands moved across together so the right palm (or, with `sxHand: 'left'`, the left's)
+     stands at that share of the half-width at its own depth, on every screen. A pose places a hand as a share of the
+     frame and reaches from there by fixed lengths, so on a narrow phone the bottle its hands held stood half off the
+     right edge (by photograph); the chapter names where the thing in its hands should stand instead. Absent: unmoved */
+  if (opts && Number.isFinite(opts.sx)) {
+    const G = opts.sxHand === 'left' && SL ? o.lg : o.rg, dx = opts.sx * hpHalfH(G.z) * vmCam.aspect - G.x;
+    o.rp.x += dx; o.rg.x += dx;
+    if (SL) { o.lp.x += dx; o.lg.x += dx; }
   }
   o.rw = P.r.w || 0; o.rd = P.r.d || 0; hpArm(o.rq, o.rw, o.rd);
   if (SL) { o.lw = SL.w || 0; o.ld = SL.d || 0; hpArm(o.lq, o.lw, -o.ld); } else o.lw = o.ld = 0;
@@ -2534,6 +2549,23 @@ function hpWrite(o) {
     if (prayerArmL) prayerArmL.visible = false;
     if (hpWristL) hpWristSet(hpWristL, 0, 0); hp.lw = hp.ld = 0;
   }
+}
+/* v23.0 (S40): WHERE A HAND'S PALM IS NOW — its centre in the hands' scene (the viewmodel's world), by the very rule a
+   pose's `rel` is measured with (hpHand's outG): the hand's own turn — the arm's, less the wrist's drawn bend (hpArm:
+   A = H·Rx(w)·Ry(d), the left's d negated) — applied to HOLD_PALM (mirrored for the left), from the arm's pivot. So a
+   chapter can stand a thing BETWEEN the two hands as the pose meant it (episode 3 chapter 5's bottle, steadied by the
+   left while the right turns its cap): a palm read off the arm's own frame instead is off by the wrist's turn — 10 cm
+   at the bottle pose, which laid the bottle on its side (by measurement, CP6). null when that hand is not drawn. Reads
+   only; nothing before e3c5 calls it. */
+const _hpPq = new THREE.Quaternion(), _hpPw = new THREE.Quaternion();
+function kitHandPalm(hand, out = new THREE.Vector3()) {
+  const left = hand === 'left', A = left ? prayerArmL : armR;
+  if (!A || (left && !A.visible)) return null;
+  const w = left ? (hp.lw || 0) : (hp.rw || 0), d = left ? -(hp.ld || 0) : (hp.rd || 0);
+  _hpPq.copy(A.quaternion).multiply(_hpPw.setFromAxisAngle(_hpUp, -d)).multiply(_hpPw.setFromAxisAngle(_hpX1, -w));
+  out.set(left ? -HOLD_PALM.x : HOLD_PALM.x, HOLD_PALM.y, HOLD_PALM.z).applyQuaternion(_hpPq).add(A.position);
+  handsRoot.updateWorldMatrix(true, false);
+  return out.applyMatrix4(handsRoot.matrixWorld);
 }
 function kitHandPose(name, k, opts = {}) {
   if (name && !HPOSE[name]) { console.warn('kit.handPose: no pose named', name); return false; }
@@ -5907,6 +5939,7 @@ const KIT = {
   hold: kitHold,                   // v21.0: the twenty-seventh seam — a thing in his right hand, or held in the clasp (v23.0: or his left)
   holding: hand => (hand === 'left' ? heldPropL : heldProp),
   handPose: kitHandPose,           // v23.0: S40 — the hands into one of a library of poses, eased (the fortieth seam)
+  handPalm: kitHandPalm,           // v23.0: S40 — where a hand's palm is now, by the rule a pose's `rel` is measured with
   handPoseNow: () => (hp.on ? { name: hp.name, k: hp.k, p: hp.p, u: hp.u } : null),
   hands: kitHandsSet,              // v18.0: the hands taken — out of the clasp into a Thai-dance gesture by k
   getHands: () => hands.k,

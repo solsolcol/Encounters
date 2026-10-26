@@ -1782,6 +1782,23 @@ await p.evaluate(() => window.__enc.kit.pray(false, { secs: 0 }));
 K.holdLeft = await p.evaluate(() => { const e = window.__enc, o = new (e.handsRoot.constructor)();
   e.kit.hold(o, { hand: 'left' }); const a = e.armNow(), held = a.heldL && e.kit.holding('left') === o && !e.kit.holding();
   e.kit.hold(null); const b = e.armNow(); return held && !b.heldL && !b.held; });
+/* (CP6) where a palm is — kit.handPalm, by the very rule a pose's `rel` is measured with: at the bottle pose the right
+   palm stands `rel` from the left (a palm read off the arm's own frame was 10 cm out) — and `sx`, both hands moved
+   across so the named palm stands at that share of the half-width at its depth, on any screen */
+await p.evaluate(() => window.__enc.kit.handPose('bottle', 1, { secs: 0, p: 0 }));
+await until(() => { const h = window.__enc.hpose(); return h.on && h.name === 'bottle' && h.u >= 1; }, 20000).catch(() => {});
+await p.waitForTimeout(300);
+K.handPalmRel = await p.evaluate(() => { const e = window.__enc, L = e.kit.handPalm('left'), R = e.kit.handPalm('right');
+  if (!L || !R) return false;
+  const rel = e.hposeTable.bottle.r.rel;
+  return Math.hypot(R.x - L.x - rel[0], R.y - L.y - rel[1], R.z - L.z - rel[2]) < 0.01; });
+await p.evaluate(() => window.__enc.kit.handPose('bottle', 1, { p: 0, sx: 0.3 }));
+await p.waitForTimeout(400);
+K.handPoseSx = await p.evaluate(() => { const R = window.__enc.kit.handPalm('right'); if (!R) return false;
+  const share = R.x / (Math.tan(26 * Math.PI / 180) * Math.abs(R.z) * (innerWidth / innerHeight));
+  return Math.abs(share - 0.3) < 0.05; });
+await p.evaluate(() => window.__enc.kit.handPose(null, 0, { secs: 0 }));
+await until(() => window.__enc.hpose().on === false, 20000).catch(() => {});
 /* a film takes a pose back on its first frame (it draws its own with api.handPose) */
 await p.evaluate(() => window.__enc.kit.handPose('cross', 1, { secs: 0 }));
 await until(() => window.__enc.hpose().on && window.__enc.armNow().lv, 20000).catch(() => {});

@@ -6308,3 +6308,26 @@ cut (sharing its vertices and maps) when it is small.
   with an empty `onDone` left the film's closing black up (the black a film ends on is the kit's), and the next film run
   in the same session played its whole length under it: every frame black, which reads as a broken film. Lift the
   kit's fade in the probe's own `onDone` (or play the film through the chapter's own order, whose hand-back does).
+- **A splice the static checks pass can still run in the wrong ORDER** (v23.0 CP6). Episode 3 chapter 5's offerings
+  were spliced in by anchor beside the counter's build — and the room, whose places the drinks stand on, is built
+  further down the same `build()`. Syntax, the dead-zone scan and the undeclared-name scan all passed (every name
+  existed; the array was declared — just empty), and the first boot threw `Cannot read properties of undefined
+  (reading 'x')` before `__enc` existed, so every probe waited its full two minutes for nothing. A call that READS what
+  another call builds goes after that call; check the line numbers of both before the first boot, and let the first
+  boot be a cheap one that listens for `pageerror`.
+- **A palm read off the arm's own frame is off by the wrist's turn** (v23.0 CP6). S40 places a hand by its palm in the
+  HAND's frame (the arm's turn less the wrist's bend — hpArm), so `armR.localToWorld(HOLD_PALM)` is somewhere else: at
+  the bottle pose, 10 cm deeper than the left palm where the pose had put it 6 cm above, and the bottle drawn between
+  the two palms lay on its side pointing away from the lens. Measured, not guessed (`dbg-e3c5bottle.mjs` reports both);
+  the chapter now asks the engine (`kit.handPalm`, the rule `rel` uses), so the two can never drift apart. And the
+  fixture's proof of exactly that claim failed by 2.4 cm, which is the second half of the lesson: the left hand is a
+  MIRRORED copy of the right (`buildPrayerArm`), so its palm is always the mirrored offset (`HOLD_PALM_L`), but a pose
+  that wrote its left out instead of saying 'mirror' took the right's offset, a point across the left hand from its
+  palm, and measured the right hand's `rel` from there. The measured gap was 0.024 m times the left hand's own x axis
+  to the tenth of a millimetre; the engine uses the drawn palm now, and the three such poses' `rel` carry the 2.4 cm so
+  every hand stands where the photographs approved it. A proof written against the claim found the claim was half true.
+- **A pose placed as a share of the frame reaches by fixed lengths** (v23.0 CP6). S40 puts a hand's wrist at a share of
+  the half-width at its depth, and the palm and whatever it holds hang off that wrist by real centimetres — so on a
+  narrow phone the share shrinks and the held thing walks right: the bottle stood half off the frame's edge. A pose
+  that holds a thing names where THAT thing stands (`sx`, a share of the half-width for a named palm), and the engine
+  moves both hands across to put it there on every screen.

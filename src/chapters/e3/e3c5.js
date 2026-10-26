@@ -258,7 +258,31 @@
       card14: 'bring them back. Never leave them.',
       // THE ROOM
       objSit: 'Sit with them',
-      hotMat: 'Sit with them'
+      hotMat: 'Sit with them',
+      /* PLAY I · the offerings (CP6, §4.2) */
+      objWater: 'Their water, then their drinks · {n}/3',
+      objGiveRed: 'Give it to the red one',
+      objGiveShy: 'Give it to the shy one',
+      objGiveLittle: 'Give it to the little one',
+      objIncense: 'Light their incense',
+      objSticks: 'Give each one his incense · {n}/3',
+      hotJug: 'Their water',
+      hotDrinks: 'Their drinks',
+      hotPlace: 'Give it to him',
+      hotPacket: 'Their incense',
+      hotBowl: 'His stick',
+      briefCapTitle: 'His drink',
+      briefCap: 'Twist the cap off: circle your finger around it. Then slide the straw in, and bend it to him.',
+      briefCapKey: 'Twist the cap off: drag the mouse in a circle around it, or hold E. Then slide the straw in, and bend it to him.',
+      craftCap: 'Twist the cap off',
+      craftStraw: 'Slide the straw in',
+      craftBend: 'Bend the straw to him',
+      craftWater: 'Hold to pour their water',
+      craftLight: 'Strike the lighter',
+      craftCatch: 'Hold the tips in the flame',
+      craftWave: 'Wave the flames out',
+      craftWind: 'Wind the box',
+      noteCare: 'You prepared their drinks with care.'
     },
     sayPrefix: 'z5'
   };
@@ -2205,6 +2229,633 @@
     }
     buildCounter();
 
+    /* THE OFFERINGS' THINGS (CP6, §4.2): a short glass bottle of red drink with its label, a screw cap on a ratchet ring;
+       a striped bendy straw in a paper sleeve; a disposable lighter; a packet of joss sticks and three sticks; the bag he
+       carried home, on the desk. One builder each, so the bottle in his hand (drawn in the hands' pass, kit.hold) and the
+       three he sets down at the altar are the same thing. Sizes in metres: the bottle 0.175 tall, 0.03 round; the straw
+       0.21. */
+    const tFlame = tex(makeYinFlame(THREE, cnv));
+    const mGlassB = M({ color: 0xe8f0ec, roughness: 0.06, metalness: 0.05, transparent: true, opacity: 0.32, depthWrite: false });
+    const mDrink  = M({ color: 0xb8101a, roughness: 0.18, emissive: 0x2a0204, emissiveIntensity: 0.6 });
+    const mLabel  = M({ map: tex(makeSodaLabelT(THREE, cnv)), roughness: 0.55 });
+    const mCapB   = M({ color: 0xc8141e, roughness: 0.35, metalness: 0.2 });
+    const tStraw  = tex(makeStrawT(THREE, cnv)); tStraw.wrapS = tStraw.wrapT = THREE.RepeatWrapping; tStraw.repeat.set(1, 14);
+    const mStraw  = M({ map: tStraw, roughness: 0.4 });
+    const mFlex   = M({ color: 0xf0eee8, roughness: 0.5 });
+    const mSleeve = M({ map: tex(makeSleeveT(THREE, cnv)), roughness: 0.9, side: THREE.DoubleSide });
+    const BOTTLE_PROF = [[0, 0], [0.026, 0], [0.03, 0.006], [0.03, 0.104], [0.027, 0.12], [0.017, 0.136], [0.0128, 0.146], [0.0128, 0.161]];
+    const BOTTLE_CAP_Y = 0.1625;                         // the ring's top: the cap sits on it, 13 mm tall
+    function makeBottle() {
+      const g = new THREE.Group();
+      const glass = new THREE.Mesh(new THREE.LatheGeometry(BOTTLE_PROF.map(([a, b]) => new THREE.Vector2(a, b)), 26), mGlassB);
+      glass.renderOrder = 3; g.add(glass);
+      const liq = new THREE.Mesh(new THREE.LatheGeometry([[0, 0.004], [0.0272, 0.004], [0.0272, 0.103], [0.0242, 0.119], [0.0148, 0.134], [0, 0.134]]
+        .map(([a, b]) => new THREE.Vector2(a, b)), 22), mDrink); g.add(liq);
+      const lab = new THREE.Mesh(new THREE.CylinderGeometry(0.0304, 0.0304, 0.058, 30, 1, true), mLabel); lab.position.y = 0.064; lab.renderOrder = 2; g.add(lab);
+      const ring = cyl(0.0136, 0.0136, 0.004, 0, BOTTLE_CAP_Y - 0.002, 0, mCapB, 18, g);
+      const cap = new THREE.Group(); cap.position.y = BOTTLE_CAP_Y; g.add(cap);
+      const cm = cyl(0.0144, 0.0144, 0.013, 0, 0.0065, 0, mCapB, 22, cap);
+      for (let i = 0; i < 18; i++) { const a = i / 18 * Math.PI * 2; const rb = box(0.0014, 0.011, 0.0016, Math.cos(a) * 0.0146, 0.0065, Math.sin(a) * 0.0146, mCapB, cap, false); rb.rotation.y = -a; }
+      void cm; void ring;
+      for (const o of [glass, liq, lab]) o.castShadow = false;
+      return { g, cap, liq, lab };
+    }
+    /* the straw: its foot at y 0, along +y; the bendy neck 0.172 up, and the short top above it on a hinge (bend = the
+       top's turn toward the child) */
+    function makeStraw() {
+      const g = new THREE.Group();
+      cyl(0.0028, 0.0028, 0.17, 0, 0.085, 0, mStraw, 8, g);
+      const flex = cyl(0.0031, 0.0031, 0.012, 0, 0.176, 0, mFlex, 8, g); void flex;
+      const top = new THREE.Group(); top.position.y = 0.182; g.add(top);
+      cyl(0.0028, 0.0028, 0.034, 0, 0.017, 0, mStraw, 8, top);
+      return { g, top };
+    }
+    /* the sleeve, a paper tube the straw slides out of; torn open at its top */
+    function makeSleeve() {
+      const s = new THREE.Mesh(new THREE.CylinderGeometry(0.0036, 0.0036, 0.2, 8, 1, true), mSleeve); s.castShadow = false;
+      return s;
+    }
+    /* a disposable lighter: a green plastic body, a steel hood and its wheel; its flame a painted sprite (hidden until lit) */
+    function makeLighter() {
+      const g = new THREE.Group();
+      box(0.024, 0.07, 0.012, 0, 0.035, 0, M({ color: 0x2a8a4a, roughness: 0.25, transparent: true, opacity: 0.85 }), g, false);
+      box(0.024, 0.013, 0.012, 0, 0.0765, 0, M({ color: 0xb8bcc4, roughness: 0.3, metalness: 0.8 }), g, false);
+      const w = cyl(0.0045, 0.0045, 0.008, 0.004, 0.083, 0, M({ color: 0x6a6c70, roughness: 0.4, metalness: 0.8 }), 12, g); w.rotation.x = Math.PI / 2;
+      const fl = new THREE.Sprite(new THREE.SpriteMaterial({ map: tFlame, color: 0xffc070, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false, fog: false }));
+      mats.push(fl.material); fl.scale.set(0.014, 0.034, 1); fl.position.set(-0.004, 0.103, 0); fl.visible = false; g.add(fl);
+      return { g, flame: fl };
+    }
+    /* three joss sticks, fanned a little, their tips (a glowing ember and a small flame each) at +y */
+    function makeSticks() {
+      const g = new THREE.Group(), tips = [];
+      const mS = M({ color: 0x9a2418, roughness: 0.8 }), mH = M({ color: 0xd8a868, roughness: 0.7 });
+      for (let i = 0; i < 3; i++) {
+        const s = new THREE.Group(); s.rotation.z = (i - 1) * 0.07; g.add(s);
+        cyl(0.0013, 0.0013, 0.06, 0, 0.03, 0, mH, 5, s);               // its bare handle
+        cyl(0.0018, 0.0018, 0.16, 0, 0.14, 0, mS, 5, s);               // the incense on it
+        const tip = new THREE.Group(); tip.position.y = 0.221; s.add(tip);
+        const em = new THREE.Mesh(new THREE.SphereGeometry(0.0022, 6, 4), B({ color: 0xff7a2a, toneMapped: false })); em.visible = false; tip.add(em);
+        const fl = new THREE.Sprite(new THREE.SpriteMaterial({ map: tFlame, color: 0xffb060, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false, fog: false }));
+        mats.push(fl.material); fl.scale.set(0.008, 0.018, 1); fl.position.y = 0.008; fl.visible = false; tip.add(fl);
+        tips.push({ em, fl });
+      }
+      return { g, tips };
+    }
+    /* ======================================================== PLAY I · THE OFFERINGS (CP6, §4.2)
+       22:50, his room. Their water, then their drinks — each bottle opened in his own hands (the cap twisted off, the
+       straw slid in, its neck bent to the child) and carried to its child; then the incense lit at the desk and given,
+       one stick each; then the mat, the music box wound, añjali, and the night's dedication. Every step is the engine's
+       `craft` (S37) on a held prop — gentle: no grade, no price, no failure — and every order a press. What a Continue
+       must not lose is a RECEIPT in the phase string (v7.3) — `care:water,d.red,d.shy,d.little,lit,i.red,i.shy,i.little,
+       care`; a Continue inside a drink begins that drink again, its bottle back in the bag. */
+    const TOUCHY = !!((window.matchMedia && matchMedia('(pointer: coarse)').matches) || 'ontouchstart' in window);   // (the engine's HAS_TOUCH: which words a brief gives)
+    const CARE_ORDER = ['water', 'd.red', 'd.shy', 'd.little', 'lit', 'i.red', 'i.shy', 'i.little', 'care'];
+    const careDone = new Set();
+    let careBusy = false;
+    const drinksN = () => KIDS.filter(K => careDone.has('d.' + K.key)).length;
+    const sticksN = () => KIDS.filter(K => careDone.has('i.' + K.key)).length;
+    const careTag = () => CARE_ORDER.filter(r => careDone.has(r)).join(',');
+    function careSave() { if (kit) kit.setPhase(careDone.size ? 'care:' + careTag() : 'care'); }
+    function careStep() {                      // the order still open
+      if (!careDone.has('water')) return 'water';
+      if (drinksN() < 3) return careLive.carry >= 0 ? 'carry' : 'drink';
+      if (!careDone.has('lit')) return 'light';
+      if (sticksN() < 3) return 'stick';
+      return 'sit';
+    }
+    const KEYCAP = { red: 'Red', shy: 'Shy', little: 'Little' };
+    function careObjective() {
+      if (careBusy) return null;
+      const s = careStep();
+      if (s === 'water' || s === 'drink') return W.objWater.replace('{n}', String(drinksN()));
+      if (s === 'carry') return W['objGive' + KEYCAP[KIDS[careLive.carry].key]];
+      if (s === 'light') return W.objIncense;
+      if (s === 'stick') return W.objSticks.replace('{n}', String(sticksN()));
+      return W.objSit;
+    }
+    const careOk = () => phase === 'care' && !careBusy && quiet();
+    const nextKid = () => KIDS.findIndex(K => !careDone.has('d.' + K.key));
+    /* the viewmodel's lens (its own: 52°, at the origin of the hands' scene, looking down −z) — what a held thing's point
+       on the screen is, for the craft's `at` (S37: a thing in his hand is projected by the chapter) */
+    const VM_T = Math.tan(26 * Math.PI / 180), _vp = new THREE.Vector3();
+    function vmAt(obj, ox = 0, oy = 0, oz = 0) {
+      if (!obj || !obj.parent) return null;
+      obj.updateWorldMatrix(true, false);
+      const p = obj.localToWorld(_vp.set(ox, oy, oz));
+      if (p.z > -0.01) return null;
+      return { sx: 0.5 + 0.5 * (p.x / -p.z) / (VM_T * camera.aspect), sy: 0.5 - 0.5 * (p.y / -p.z) / VM_T };
+    }
+    /* the hands' poses that hold a thing, with where that thing stands across the frame on every screen (S40's `sx`: the
+       palm named at that share of the half-width at its depth — by photograph, on a phone the bottle's pose put it half
+       off the right edge): the cap, a little right of the middle; the straw over the neck, likewise; the lighter's flame
+       in the middle */
+    const HOLD_SX = { bottle: { sx: 0.10 }, straw: { sx: 0.12 }, lighter: { sx: 0.0, sxHand: 'left' } };
+    function handsTo(name, k, o = {}) {
+      if (!kit || !kit.handPose) return;
+      const X = name && HOLD_SX[name];
+      kit.handPose(name, k, X ? Object.assign({}, o, X) : o);
+    }
+    const _pl = new THREE.Vector3(), _pr = new THREE.Vector3(), _ax = new THREE.Vector3(), _up = new THREE.Vector3(0, 1, 0);
+    const _q = new THREE.Quaternion(), _m4 = new THREE.Matrix4(), _m4b = new THREE.Matrix4(), _sc = new THREE.Vector3(1, 1, 1);
+    /* THE BOTTLE IN HIS HANDS: its axis from his left palm toward his right, its base `grip` below the left palm — so the
+       cap is in his right fingers in the 'bottle' pose and the straw is over its neck in the 'straw' pose (S40's poses
+       were found with these two palms where they are) — written every frame in the left hand's own frame. The palms are
+       the engine's (kit.handPalm, the rule `rel` is measured with): read off each arm's own frame they were 10 cm out
+       by the wrist's turn, and the bottle lay on its side pointing away from the lens (by measurement, CP6) */
+    function heldFrame() {
+      const H = careLive.held; if (!H || !H.g.parent || !kit || !kit.handPalm) return;
+      if (!kit.handPalm('left', _pl) || !kit.handPalm('right', _pr)) return;
+      const L = H.g.parent; L.updateWorldMatrix(true, false);
+      _ax.subVectors(_pr, _pl); const d = _ax.length(); if (d < 1e-4) return; _ax.multiplyScalar(1 / d);
+      const grip = careLive.grip === 'cap' ? BOTTLE_CAP_Y + 0.0065 - d : 0.045;     // the cap's middle in his right fingers, or held low for the straw
+      standAt(H.g, _pl.clone().addScaledVector(_ax, -grip), _ax);
+    }
+    /* a thing held in a hand, stood with its +y along `dir` and its origin at `at` (both in the hands' scene), written in
+       its hand's own frame */
+    function standAt(obj, at, dir) {
+      const L = obj.parent; if (!L) return;
+      L.updateWorldMatrix(true, false);
+      _q.setFromUnitVectors(_up, dir);
+      _m4.compose(at, _q, _sc);
+      _m4b.copy(L.matrixWorld).invert().multiply(_m4);
+      _m4b.decompose(obj.position, obj.quaternion, obj.scale);
+    }
+    /* THE LIGHTER AND THE STICKS IN HIS HANDS (the incense at the desk): the lighter UPRIGHT in his left fist, its middle in
+       the palm and tipped a little toward the lens, so its wheel and its flame are seen; the three sticks out of his
+       right fist pointing straight at that flame, their tips reaching it as the hold fills (careLive.catchK) — by
+       photograph: held by fixed turns in each hand's frame, the lighter hung at 45° and the tips stood well clear of
+       the flame they were meant to catch in */
+    /* CARRIED: a thing in his right hand as he walks — stood upright through the palm, its lower part in the fist and a
+       little toward the lens (by photograph: held by a fixed turn in the arm's frame, the bottle hung below the frame's
+       edge and only the straw's tip was seen) */
+    const _cu = new THREE.Vector3(0, 1, 0.12).normalize();
+    function carryFrame(obj, below) {
+      if (!kit || !kit.handPalm || !kit.handPalm('right', _pr)) return;
+      standAt(obj, _pr.clone().addScaledVector(_cu, -below), _cu);
+    }
+    /* the yaw from where he stands to a place on the altar */
+    function altarYaw(x, z) { return Math.atan2(-(x - yaw.position.x), -(z - yaw.position.z)); }
+    const _lu = new THREE.Vector3(), _lf = new THREE.Vector3(), _ld = new THREE.Vector3();
+    function lighterFrame() {
+      const Lg = careLive.lighter, St = careLive.sticks;
+      if (!Lg || !St || !Lg.g.parent || !St.g.parent || !kit || !kit.handPalm) return;
+      if (!kit.handPalm('left', _pl) || !kit.handPalm('right', _pr)) return;
+      _lu.set(0, 1, 0.18).normalize();
+      standAt(Lg.g, _pl.clone().addScaledVector(_lu, -0.035), _lu);
+      _lf.copy(_pl).addScaledVector(_lu, -0.035 + 0.103);                  // the flame (makeLighter: its sprite at 0.103)
+      _ld.subVectors(_lf, _pr); const reach = _ld.length(); if (reach < 1e-3) return; _ld.multiplyScalar(1 / reach);
+      const short = 0.221 - reach + 0.045 * (1 - smooth(cl01(careLive.catchK)));   // (makeSticks: the tips at 0.221)
+      standAt(St.g, _pr.clone().addScaledVector(_ld, -short), _ld);
+    }
+    /* AT THE DESK: he sits on his chair, the eye down to 1.18 m over the desk (kit.pose — as the mat's sitting is), rooted */
+    const CHAIR = { x: -0.32, z: -1.02 };
+    function sitAtDesk(resumed) {
+      careLive.seat = true;
+      yaw.position.x = CHAIR.x; yaw.position.z = CHAIR.z;
+      if (kit) { kit.root(true); kit.pose('lying', { y: 1.18, yaw: 0, span: 1.1, pitchLo: -1.1, pitchHi: 0.4, secs: resumed ? 0.05 : 0.8 }); }
+      yaw.rotation.y = 0; pitch.rotation.x = -0.62;          // square to the desk (by photograph: a press kept the look it was made
+                                                              // with, and the lamp's shade filled the top of a phone's frame)
+    }
+    function standUp() {
+      careLive.seat = false;
+      if (kit) { kit.pose('standing', { secs: 0.6 }); kit.root(false); }
+    }
+    /* ORDER 1a · THEIR WATER: a hold at the jug — his hand on it, the jug tips, the three cups fill one after another */
+    function pourWater() {
+      if (careStep() !== 'water' || !careOk() || !kit || !kit.event) return false;
+      careBusy = true; kit.objective(null);
+      const J = roomLive.jug;
+      kit.event({ kind: 'craft', label: W.hotJug, steps: [{ g: 'hold', secs: 1.2, word: W.craftWater }],
+        at: () => (J ? { x: J.position.x, y: J.position.y + 0.08, z: J.position.z } : null),
+        onProgress: (s, k) => { careLive.pour = k; },
+      }).then((r) => {
+        if (!alive) return;
+        careLive.pour = 1; careDone.add('water'); careSave();
+        sfxAt('k5pour', 0.4, ALTAR.x0, (ALTAR.z0 + ALTAR.z1) / 2);
+        queueGap(0.4); queueLine('z5water');
+        queueFn(() => { careBusy = false; objectiveFor('care'); });
+        void r;
+      });
+      return true;
+    }
+    function waterFrame() {
+      const k = careLive.pour;
+      roomLive.cups.forEach((C, i) => {
+        const f = cl01(k * 3 - i);
+        C.water.visible = f > 0.02;
+        C.water.position.y = ALTAR.top + 0.01 + 0.037 * f;
+      });
+      if (roomLive.jug) roomLive.jug.rotation.x = careBusy && careStep() === 'water' ? -0.9 * Math.sin(Math.PI * cl01(k)) : 0;
+    }
+    /* ORDER 1b · THEIR DRINKS, one at a time: at the desk, the bottle out of the bag into his hands, then the craft — the
+       cap twisted off (a ratchet click every 30°, the seal at 270°, the cap lifting off at the end, and set aside on the
+       desk), the straw slid in out of its sleeve (bubbles rising), its neck bent; then he stands with it in his right hand
+       and the order names the child it is for */
+    function atDeskDrink() {
+      if (careStep() !== 'drink' || !careOk() || !kit || !kit.event) return false;
+      const i = nextKid(); if (i < 0) return false;
+      careBusy = true; kit.objective(null);
+      sitAtDesk(false);
+      if (!careLive.bagSaid) { careLive.bagSaid = true; queueGap(0.6); queueLine('z5bag'); }
+      queueGap(0.3);
+      queueFn(() => drinkCraft(i));
+      return true;
+    }
+    function drinkCraft(i) {
+      const K = KIDS[i], H = careLive.held;
+      heldReset();                                         // a fresh bottle: cap on, straw in its sleeve over it
+      sfxAt('k5bottleout', 0.45, CHAIR.x, CHAIR.z - 0.4);
+      kit.hold(H.g, { hand: 'left' });
+      careLive.grip = 'cap';
+      handsTo('bottle', 1, { secs: 0.6, p: 0 });
+      const first = !careLive.briefed; careLive.briefed = true;
+      let clicks = 0, sealed = false, stiffSaid = false;
+      kit.event({ kind: 'craft', label: W.briefCapTitle, brief: first ? (TOUCHY ? W.briefCap : W.briefCapKey) : undefined, demo: 'twist',
+        steps: [{ g: 'twist', turns: K.capTurns, word: W.craftCap },
+                { g: 'slide', dir: 'down', len: 0.2, word: W.craftStraw },
+                { g: 'slide', dir: 'side', len: 0.08, word: W.craftBend }],
+        at: () => (careLive.grip === 'cap' ? vmAt(H.cap, 0, 0.006, 0) : vmAt(H.g, 0, BOTTLE_CAP_Y, 0)),
+        onProgress: (s, k) => {
+          if (s === 0) {
+            const deg = k * K.capTurns * 360;
+            careLive.capA = deg * Math.PI / 180;
+            handsTo('bottle', 1, { p: careLive.capA });
+            while (clicks < Math.floor(deg / 30)) { clicks++; sfxAt(K.capTurns > 1.6 ? 'k5stiff' : 'k5ratchet', 0.32, CHAIR.x, CHAIR.z - 0.4); }
+            if (!sealed && deg >= 270) { sealed = true; sfxAt('k5seal', 0.5, CHAIR.x, CHAIR.z - 0.4); sfxAt('k5hiss', 0.35, CHAIR.x, CHAIR.z - 0.4); }
+            if (K.capTurns > 1.6 && !stiffSaid && deg >= 200) { stiffSaid = true; queueLine('z5stiff'); }   // the little one's stiff cap: "Come on... open..." (§4.2)
+          } else if (s === 1) careLive.slide = k;
+          else careLive.bend = k;
+        },
+        onStep: (s) => {
+          if (s === 0) {                                   // the cap off, into his fingers, and set down on the desk
+            sfxAt('k5capoff', 0.45, CHAIR.x, CHAIR.z - 0.4); careLive.capOff = true; capAside(i);
+            careLive.grip = 'straw'; handsTo('straw', 1, { secs: 0.5 });
+            sfxAt('k5tear', 0.35, CHAIR.x, CHAIR.z - 0.4); careLive.sleeveOff = true; sleeveAside(i);
+          } else if (s === 1) {
+            sfxAt('k5slide', 0.4, CHAIR.x, CHAIR.z - 0.4); after(0.3, () => sfxAt('k5bubbles', 0.3, CHAIR.x, CHAIR.z - 0.4));
+            if (K.key === 'shy') after(1.1, () => sfxAt('k5plip', 0.22, CHAIR.x, CHAIR.z - 0.4));   // one bubble back up: almost a giggle (§4.2)
+          } else sfxAt('k5bend', 0.35, CHAIR.x, CHAIR.z - 0.4);
+        },
+        onFoam: () => { careLive.foamed = true; careLive.foamT = 1; sfxAt('k5foam', 0.4, CHAIR.x, CHAIR.z - 0.4); },
+      }).then(() => {
+        if (!alive) return;
+        careLive.slide = 1; careLive.bend = 1;
+        if (kit.handPose) kit.handPose(null, 0, { secs: 0.5 });
+        kit.hold(null, { hand: 'left' }); kit.hold(null);
+        careLive.grip = '';
+        kit.hold(H.g, { pos: HELD_R.pos, rot: HELD_R.rot });   // in his right hand now, as he stands
+        careLive.carry = i;
+        standUp();
+        viewTo(altarYaw(ROW.back, ALTAR_Z[i]), -0.42, 0.9);   // and his look goes to the one it is for (by photograph: it stayed on the desk)
+        after(0.95, () => { careBusy = false; objectiveFor('care'); placeRing(i, true); });   // (once the look has arrived: the turn writes it till then)
+      });
+    }
+    /* TO HIM: the place before the child glows on the runner; a press there crouches him (the eye dips to 1.0), his hand
+       sets the bottle down with its straw's bend turned to the child's mouth, he says his line, and the child's eyes catch
+       the lamp for a moment — a glint, the first hint, nothing more (§4.2) */
+    const HELD_R = { pos: [0.02, -0.17, -0.15], rot: [0.15, 0, 0] };   // (by photograph, CP6)
+    function placeRing(i, on) { for (let j = 0; j < 3; j++) if (careLive.rings[j]) careLive.rings[j].visible = on && j === i; }
+    function placeDrink(i) {
+      if (careStep() !== 'carry' || careLive.carry !== i || !careOk() || !kit) return false;
+      const K = KIDS[i];
+      careBusy = true; kit.objective(null); placeRing(i, false);
+      kneelBefore(i, ROW.back, ALTAR_Z[i] + 0.06);
+      if (kit.handPose) kit.handPose('place', 1, { secs: 0.5 });
+      after(0.65, () => {
+        kit.hold(null);
+        if (kit.handPose) kit.handPose(null, 0, { secs: 0.5 });
+        careLive.placed[i] = true; bottleShow(i, true);
+        sfxAt('k5set', 0.42, ROW.back, ALTAR_Z[i]);
+        careDone.add('d.' + K.key); careLive.carry = -1; careSave();
+      });
+      queueGap(0.9);
+      /* his line to that child (each name written out, so chaptertest checks all three), and the glint halfway through it */
+      const glintAt = (name) => () => after(Math.max(0.6, (SECS[name] || 2.4) * 0.5), () => glint(i));
+      if (i === 0) queueLine('z5red', glintAt('z5red'));
+      else if (i === 1) queueLine('z5shy', glintAt('z5shy'));
+      else queueLine('z5little', glintAt('z5little'));
+      queueGap(0.3);
+      queueFn(() => {
+        kit.pose('standing', { secs: 0.6 }); kit.root(false);
+        if (drinksN() === 3 && !careLive.foamed && !careDone.has('care')) {      // their drinks, prepared with care (the receipt is the note, v7.3)
+          careDone.add('care'); careSave(); if (kit.conduct) kit.conduct({ a: 3, note: W.noteCare });
+        }
+        /* and his look goes back to the desk, where the next drink (or, after the third, the incense) waits — by photograph:
+           standing up 0.4 m from the altar, the little one's head filled a phone's frame and the next order was behind him */
+        const dx = DESK_AT.bag[0] - yaw.position.x, dz = DESK_AT.bag[1] - yaw.position.z;
+        viewTo(Math.atan2(-dx, -dz), Math.atan2(DESK.top + 0.1 - 1.62, Math.hypot(dx, dz)), 1.1);
+        after(1.15, () => { careBusy = false; objectiveFor('care'); });
+      });
+      return true;
+    }
+    function glint(i) { const G = careLive.glints[i]; if (G) { G.t = 0.0001; G.sp.visible = true; } }
+    /* he steps up to the altar before that child and crouches there, his look on the place — a short glide on wall time,
+       rooted while he does it (by photograph: he crouched wherever the press found him, and from the room's middle the
+       drink went down out of his reach and out of the frame) */
+    const KNEEL_X = ALTAR.x0 - 0.40;
+    function kneelBefore(i, x, z) {
+      const tx = KNEEL_X, tz = ALTAR_Z[i] + 0.03;
+      careLive.glide = { fx: yaw.position.x, fz: yaw.position.z, tx, tz, t0: wallNow(), secs: 0.55 };
+      kit.root(true);
+      kit.pose('lying', { y: 1.0, yaw: -Math.PI / 2, span: 1.2, pitchLo: -1.0, pitchHi: 0.5, secs: 0.5 });
+      viewTo(Math.atan2(-(x - tx), -(z - tz)), Math.atan2(ALTAR.top + 0.1 - 1.0, Math.hypot(x - tx, z - tz)), 0.6);
+    }
+    function glideFrame() {
+      const G = careLive.glide; if (!G) return;
+      const k = smooth(cl01((wallNow() - G.t0) / G.secs));
+      yaw.position.x = G.fx + (G.tx - G.fx) * k; yaw.position.z = G.fz + (G.tz - G.fz) * k;
+      if (k >= 1) careLive.glide = null;
+    }
+    /* ORDER 2 · THEIR INCENSE, at the desk again: the lighter in his left hand — the first strike only sparks, the second
+       lights it, a warm glow on his hands — the three sticks' tips held in the flame till they catch, and waved out: three
+       embers, three threads of smoke */
+    function atDeskIncense() {
+      if (careStep() !== 'light' || !careOk() || !kit || !kit.event) return false;
+      careBusy = true; kit.objective(null);
+      sitAtDesk(false);
+      const Lg = careLive.lighter, St = careLive.sticks;
+      kit.hold(Lg.g, { hand: 'left', pos: LIGHTER_L.pos, rot: LIGHTER_L.rot });
+      kit.hold(St.g, { pos: STICKS_R.pos, rot: STICKS_R.rot });
+      handsTo('lighter', 1, { secs: 0.6 });
+      careLive.catchK = 0; careLive.lighterOn = true;
+      let taps = 0;
+      kit.event({ kind: 'craft', label: W.objIncense,
+        steps: [{ g: 'tap', n: 2, word: W.craftLight }, { g: 'hold', secs: 1.4, word: W.craftCatch }, { g: 'swipe', dir: 'side', word: W.craftWave }],
+        at: () => vmAt(Lg.g, 0, 0.09, 0),
+        onProgress: (s, k) => {
+          if (s === 0) {
+            const t = Math.round(k * 2);
+            while (taps < t) { taps++; if (taps === 1) { sfxAt('k5spark', 0.4, CHAIR.x, CHAIR.z - 0.4); careLive.sparkT = 0.25; }
+                                       else { sfxAt('k5flick', 0.45, CHAIR.x, CHAIR.z - 0.4); Lg.flame.visible = true; } }
+          } else if (s === 1) {
+            careLive.catchK = k;
+            St.tips.forEach((T, j) => { T.em.visible = k > 0.35 + j * 0.15; T.fl.visible = k > 0.55 + j * 0.12; });
+          }
+        },
+        onStep: (s) => {
+          if (s === 1) sfxAt('k5catch', 0.4, CHAIR.x, CHAIR.z - 0.4);
+          if (s === 2) { sfxAt('k5wave', 0.4, CHAIR.x, CHAIR.z - 0.4); Lg.flame.visible = false; St.tips.forEach(T => { T.fl.visible = false; T.em.visible = true; }); }
+        },
+      }).then(() => {
+        if (!alive) return;
+        Lg.flame.visible = false; St.tips.forEach(T => { T.fl.visible = false; T.em.visible = true; });
+        careLive.lighterOn = false;
+        kit.hold(null, { hand: 'left' });
+        kit.hold(St.g, { pos: STICKS_R.pos, rot: STICKS_R.rot });   // (the sticks back to how his hand carries them)
+        if (kit.handPose) kit.handPose(null, 0, { secs: 0.5 });
+        careDone.add('lit'); careSave();
+        queueGap(0.3); queueLine('z5incense');
+        queueFn(() => { standUp(); viewTo(altarYaw(ROW.mid, ALTAR_Z[1]), -0.42, 0.9); after(0.95, () => { careBusy = false; objectiveFor('care'); }); });
+      });
+      return true;
+    }
+    const LIGHTER_L = { pos: [-0.012, -0.03, -0.15], rot: [0, 0, 0] };   // (by photograph, CP6)
+    const STICKS_R = { pos: [0.012, -0.06, -0.15], rot: [-0.3, 0, 0] };  // (by photograph, CP6)
+    /* ORDER 3 · ONE STICK EACH: a press at each sand bowl pushes one stick into the sand; its smoke rises straight up */
+    function giveStick(i) {
+      const K = KIDS[i];
+      if (careStep() !== 'stick' || careDone.has('i.' + K.key) || !careOk()) return false;
+      careBusy = true;
+      kneelBefore(i, ROW.mid, ALTAR_Z[i]);
+      if (kit.handPose) kit.handPose('place', 1, { secs: 0.4 });
+      after(0.65, () => {
+        careDone.add('i.' + K.key); careSave(); stickShow(i, true);
+        sfxAt('k5sand', 0.4, ROW.mid, ALTAR_Z[i]);
+        const n = sticksN() - 1, St = careLive.sticks;                    // one fewer in his hand
+        if (St.g.children[n]) St.g.children[n].visible = false;
+        if (kit.handPose) kit.handPose(null, 0, { secs: 0.4 });
+        if (sticksN() === 3) { kit.hold(null); setPhase('sit'); }
+        after(0.6, () => {
+          kit.pose('standing', { secs: 0.5 }); kit.root(false);
+          /* the third given, the mat is beside him and below the frame (by photograph): his look goes down to it, its mark at
+             the frame's foot — unless he stands on it already, when careFrame sits him */
+          const mdx = MAT.x - yaw.position.x, mdz = MAT.z - yaw.position.z;
+          if (phase === 'sit' && Math.hypot(mdx, mdz) > 0.28) { viewTo(Math.atan2(-mdx, -mdz), -0.85, 0.9); after(0.95, () => { careBusy = false; objectiveFor(phase); }); }
+          else { careBusy = false; objectiveFor(phase); }
+        });
+      });
+      return true;
+    }
+    /* ORDER 4 · SIT WITH THEM: the mat; the music box wound (one turn of its key — the cap taught the gesture, so no brief,
+       the hint drawn at the key), its lid lifting and the lullaby; añjali, his words to them, a bow, and the night's
+       dedication; the clock at 23:12. (CP7 takes it on from here: the question, and the openings.) */
+    function sitWithThem() {
+      if (phase !== 'sit' || seated || !quiet() || careBusy || !kit) return false;
+      careBusy = true; kit.objective(null);
+      sitDown(false);
+      /* his look to the box as he settles (it stands at the little one's end — 41° right of the altar from the mat, off a
+         phone's frame), and back to the three for the clasp (by photograph: a press made looking down at the rug left
+         the three above the frame and the key's hint in the panel's corner) */
+      const BX = 1.30, BZ = (RISER.z1 + ALTAR.z1) / 2;
+      viewTo(Math.atan2(-(BX - MAT.x), -(BZ - MAT.z)), Math.atan2(ALTAR.top + 0.08 - 0.9, Math.hypot(BX - MAT.x, BZ - MAT.z)), 1.0);
+      after(1.0, () => {
+        const B = roomLive.box;
+        const keyAt = () => { if (!roomLive.boxKey) return null; const p = roomLive.boxKey.getWorldPosition(new THREE.Vector3()); return { x: p.x, y: p.y, z: p.z }; };
+        const go = kit.event ? kit.event({ kind: 'craft', label: W.craftWind, steps: [{ g: 'twist', turns: 1, word: W.craftWind }], at: keyAt,
+          onProgress: (s, k) => { if (roomLive.boxKey) roomLive.boxKey.rotation.x = k * Math.PI * 2; } }) : Promise.resolve();
+        void B;
+        go.then(() => {
+          if (!alive) return;
+          sfxAt('k5wind', 0.45, 1.30, (RISER.z1 + ALTAR.z1) / 2);
+          careLive.boxOpenTo = 1;
+          viewTo(-Math.PI / 2, -0.12, 1.4);                     // (back to the three, for the clasp)
+          after(0.8, () => sfxAt('k5lullaby', 0.5, 1.30, (RISER.z1 + ALTAR.z1) / 2));
+          after(1.6, () => {
+            if (kit.pray) kit.pray(true, { secs: 1.0, y: -0.33 });
+            queueGap(0.8); queueLine('z5eat');
+            queueGap(0.6); queueFn(() => { careLive.bowT = 0.0001; sfxAt('k5wai', 0.3, MAT.x, MAT.z); });
+            queueGap(2.0); queueLine('z5dedic');
+            queueGap(0.8);
+            queueFn(() => {
+              if (kit.pray) kit.pray(false, { secs: 0.8 });
+              roomClock('23:12');
+              setPhase('decide');                          // (CP7: open1 — the question — goes here)
+              after(1.2, () => { careBusy = false; openDecision(); });
+            });
+          });
+        });
+      });
+      return true;
+    }
+    /* the things of PLAY I in the room: the bag on the desk and the incense packet beside it; the three bottles he will set
+       before them (each with its straw, bent to its child) and their glowing places; the stick he gives each, standing in
+       its sand; the caps and the sleeves he sets aside on the desk; a glint for each child's eyes; and the bottle, straw,
+       lighter and sticks that ride his hands */
+    const careLive = { carry: -1, pour: 0, foamed: false, foamT: 0, briefed: false, bagSaid: false, seat: false, grip: '',
+                       capA: 0, slide: 0, bend: 0, capOff: false, sleeveOff: false, catchK: 0, sparkT: 0, boxOpen: 0, boxOpenTo: 0,
+                       bowT: 0, held: null, heldStraw: null, heldSleeve: null, lighter: null, sticks: null,
+                       bottles: [], placed: [false, false, false], rings: [], glints: [], sticksSet: [], capsDesk: [], sleevesDesk: [],
+                       deskBag: null, packet: null };
+    const DESK_AT = { bag: [-0.80, -1.33], packet: [-0.62, -1.26], caps: [[-0.10, -1.25], [-0.06, -1.27], [-0.02, -1.25]],
+                      sleeves: [[-0.24, -1.24], [-0.21, -1.26], [-0.18, -1.24]] };
+    function buildOfferings() {
+      const R = worldR, A = ALTAR, DT = DESK.top;
+      // the bottles at the altar (the drinkAt places), each with its straw bent toward its child (+x, up the riser)
+      for (let i = 0; i < 3; i++) {
+        const P = roomLive.drinkAt[i], b = makeBottle(), st = makeStraw();
+        b.g.position.copy(P); b.cap.visible = false;                        // (set down open: its cap is on the desk)
+        st.g.position.y = 0.012; st.top.rotation.z = -1.15; b.g.add(st.g);   // its bend toward the child (+x)
+        b.g.visible = false; R.add(b.g);
+        careLive.bottles.push(b);
+        const ring = glowP(0.16, 0.16, 0xffd8a0, 0.55, P.x, A.top + 0.008, P.z, -Math.PI / 2); ring.visible = false; careLive.rings.push(ring);
+        const gl = new THREE.Sprite(new THREE.SpriteMaterial({ map: tGlow, color: 0xfff0d0, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false, fog: false }));
+        mats.push(gl.material); gl.scale.setScalar(0.05); gl.position.set(RISER.x - 0.05, A.top + A.riser + KIDS[i].h * 0.8, ALTAR_Z[i]); gl.visible = false; R.add(gl);
+        careLive.glints.push({ sp: gl, t: 0 });
+        // his stick in the sand (one each), its ember the altar's own (roomLive.embers)
+        const sk = new THREE.Group(); sk.position.set(ROW.mid, A.top + 0.03, ALTAR_Z[i]); sk.visible = false; R.add(sk);
+        cyl(0.0018, 0.0018, 0.16, 0, 0.09, 0, M({ color: 0x9a2418, roughness: 0.8 }), 5, sk);
+        careLive.sticksSet.push(sk);
+        // the cap and the torn sleeve, set aside on the desk
+        const c = new THREE.Group(); c.position.set(DESK_AT.caps[i][0], DT + 0.018, DESK_AT.caps[i][1]); c.rotation.x = Math.PI; c.visible = false; R.add(c);
+        cyl(0.0144, 0.0144, 0.013, 0, 0.0065, 0, mCapB, 18, c); careLive.capsDesk.push(c);
+        const sl = makeSleeve(); sl.scale.set(1, 0.4, 1); sl.rotation.set(0.2, 0.4 * i, Math.PI / 2); sl.position.set(DESK_AT.sleeves[i][0], DT + 0.02, DESK_AT.sleeves[i][1]); sl.visible = false; R.add(sl);
+        careLive.sleevesDesk.push(sl);
+      }
+      // the incense packet on the desk
+      { const pk = new THREE.Group(); pk.position.set(DESK_AT.packet[0], DT + 0.018, DESK_AT.packet[1]); pk.rotation.set(0, 0.5, Math.PI / 2 - 0.02); R.add(pk);
+        box(0.036, 0.22, 0.012, 0, 0.11, 0, M({ map: tex(makeIncensePackT(THREE, cnv)), roughness: 0.8 }), pk, false);
+        careLive.packet = pk; }
+      // the things that ride his hands (never in the world: kit.hold carries them)
+      { const b = makeBottle(), st = makeStraw(), sl = makeSleeve();
+        b.g.add(st.g); b.g.add(sl);
+        careLive.held = { g: b.g, cap: b.cap, straw: st, sleeve: sl }; }
+      careLive.lighter = makeLighter();
+      careLive.sticks = makeSticks();
+    }
+    /* the desk's bag is the counter's own (built after the room): a clone, on his desk where the home film sets it down */
+    function deskBag() {
+      if (careLive.deskBag || !cntLive.bag) return;
+      const b = cntLive.bag.clone(); b.position.set(DESK_AT.bag[0], DESK.top + 0.018, DESK_AT.bag[1]); b.rotation.y = 0.3; b.scale.setScalar(1); b.visible = true;
+      worldR.add(b); careLive.deskBag = b;
+    }
+    function heldReset() {
+      const H = careLive.held; if (!H) return;
+      careLive.capA = 0; careLive.slide = 0; careLive.bend = 0; careLive.capOff = false; careLive.sleeveOff = false; careLive.foamT = 0;
+      H.cap.visible = true; H.cap.rotation.y = 0; H.cap.position.y = BOTTLE_CAP_Y;
+      H.sleeve.visible = true; heldStrawFrame();
+    }
+    /* the straw in his hands: in its sleeve above the neck, then sliding down into the drink, then its neck bent */
+    function heldStrawFrame() {
+      const H = careLive.held; if (!H) return;
+      const y = BOTTLE_CAP_Y + 0.02 + (0.012 - BOTTLE_CAP_Y - 0.02) * smooth(cl01(careLive.slide));
+      H.straw.g.position.y = y; H.straw.top.rotation.z = -1.15 * smooth(cl01(careLive.bend));
+      H.straw.g.visible = careLive.capOff;
+      H.sleeve.position.y = BOTTLE_CAP_Y + 0.12; H.sleeve.visible = !careLive.sleeveOff && careLive.capOff;
+    }
+    function capAside(i) { const H = careLive.held; if (H) H.cap.visible = false; if (careLive.capsDesk[i]) careLive.capsDesk[i].visible = true; }
+    function sleeveAside(i) { if (careLive.sleevesDesk[i]) careLive.sleevesDesk[i].visible = true; }
+    function bottleShow(i, on) { const B = careLive.bottles[i]; if (B) B.g.visible = on; }
+    function stickShow(i, on) { if (careLive.sticksSet[i]) careLive.sticksSet[i].visible = on; if (roomLive.embers[i]) roomLive.embers[i].visible = on; }
+    /* per frame (in the room): the held bottle's place in his hands, its cap's turn and lift, the straw, the water, the
+       glints, the box's lid, the bow */
+    function careFrame(wdt) {
+      glideFrame();
+      /* the mat sits him the moment he steps onto it (§4.2: "walking onto it sits him"), as a press on it does */
+      if (phase === 'sit' && !seated && !careBusy && getState() === 'play' && Math.hypot(yaw.position.x - MAT.x, yaw.position.z - MAT.z) < 0.28) sitWithThem();
+      if (careLive.grip) heldFrame();
+      if (careLive.lighterOn) lighterFrame();
+      else if (careLive.carry >= 0 && careLive.held && careLive.held.g.parent && !careLive.grip) carryFrame(careLive.held.g, 0.06);
+      else if (careDone.has('lit') && sticksN() < 3 && careLive.sticks && careLive.sticks.g.parent) carryFrame(careLive.sticks.g, 0.05);
+      const H = careLive.held;
+      if (H && careLive.grip === 'cap') { H.cap.rotation.y = careLive.capA; H.cap.position.y = BOTTLE_CAP_Y + 0.004 * cl01(careLive.capA / (Math.PI * 3)); }
+      heldStrawFrame();
+      waterFrame();
+      for (const G of careLive.glints) if (G.t > 0) {
+        G.t += wdt; const k = G.t / 0.9; G.sp.material.opacity = 0.9 * Math.sin(Math.PI * cl01(k));
+        if (k >= 1) { G.t = 0; G.sp.visible = false; }
+      }
+      careLive.boxOpen += (careLive.boxOpenTo - careLive.boxOpen) * (1 - Math.exp(-wdt / 0.35));
+      if (roomLive.boxLid) roomLive.boxLid.rotation.x = -1.9 * smooth(cl01(careLive.boxOpen));
+      if (roomLive.boxDrum && careLive.boxOpen > 0.5) roomLive.boxDrum.rotation.x += wdt * 2.2;
+      if (careLive.bowT > 0) {                                // the bow: the eye dips 0.35 rad and comes back (1.6 s)
+        const prev = careLive.bowT; careLive.bowT += wdt; const f = (t) => 0.35 * Math.sin(Math.PI * cl01(t / 1.6));
+        pitch.rotation.x -= f(careLive.bowT) - f(prev);
+        if (careLive.bowT >= 1.6) careLive.bowT = 0;
+      }
+    }
+    /* a Continue into PLAY I: the room as its receipts say — the cups full, the drinks given set down, the cap and sleeve of
+       each on the desk, the sticks given standing lit, the sticks in his hand once lit — and the step still owed; a drink
+       begun and not given begins again (§10.1) */
+    function careResume(tagStr) {
+      careDone.clear();
+      for (const r of String(tagStr || '').split(',')) if (CARE_ORDER.includes(r)) careDone.add(r);
+      careBusy = false; careLive.carry = -1; careLive.grip = ''; careLive.seat = false;
+      careLive.pour = careDone.has('water') ? 1 : 0;
+      KIDS.forEach((K, i) => {
+        const given = careDone.has('d.' + K.key);
+        careLive.placed[i] = given; bottleShow(i, given);
+        if (careLive.capsDesk[i]) careLive.capsDesk[i].visible = given;
+        if (careLive.sleevesDesk[i]) careLive.sleevesDesk[i].visible = given;
+        stickShow(i, careDone.has('i.' + K.key));
+      });
+      careLive.bagSaid = careDone.has('d.red') || careDone.has('d.shy') || careDone.has('d.little');
+      careLive.briefed = careLive.bagSaid;
+      placeRing(-1, false);
+      if (kit) {
+        kit.hold(null);
+        if (careDone.has('lit') && sticksN() < 3) {          // the sticks still to give, lit, in his hand
+          kit.hold(careLive.sticks.g, { pos: STICKS_R.pos, rot: STICKS_R.rot });
+          const n = sticksN();                                      // (the ones given leave his hand from the first: giveStick)
+          careLive.sticks.tips.forEach((T, j) => { T.fl.visible = false; T.em.visible = j >= n; });
+          careLive.sticks.g.children.forEach((c, j) => { c.visible = j >= n; });
+        }
+      }
+    }
+    /* the room's PLAY I as build() leaves it (the reset law) */
+    function careReset() {
+      careDone.clear(); careBusy = false;
+      Object.assign(careLive, { carry: -1, pour: 0, foamed: false, foamT: 0, briefed: false, bagSaid: false, seat: false, grip: '',
+                                capA: 0, slide: 0, bend: 0, capOff: false, sleeveOff: false, catchK: 0, sparkT: 0, boxOpen: 0, boxOpenTo: 0, bowT: 0,
+                                lighterOn: false });
+      careLive.placed = [false, false, false];
+      for (let i = 0; i < 3; i++) { bottleShow(i, false); stickShow(i, false); if (careLive.capsDesk[i]) careLive.capsDesk[i].visible = false;
+                                    if (careLive.sleevesDesk[i]) careLive.sleevesDesk[i].visible = false; }
+      for (const G of careLive.glints) { G.t = 0; G.sp.visible = false; }
+      placeRing(-1, false);
+      if (careLive.lighter) careLive.lighter.flame.visible = false;
+      if (careLive.sticks) { careLive.sticks.tips.forEach(T => { T.em.visible = false; T.fl.visible = false; }); careLive.sticks.g.children.forEach(c => { c.visible = true; }); }
+      careLive.glide = null;
+      if (roomLive.boxKey) roomLive.boxKey.rotation.x = 0;
+      if (roomLive.jug) roomLive.jug.rotation.x = 0;
+      waterFrame();
+    }
+    /* probes only: one of PLAY I's held moments, held still — so the props in his hands are photographed against their
+       poses without a minigame running (the poses are eased on wall time; a probe waits them out) */
+    function careLab(what, k = 0) {
+      if (!kit || !careLive.held) return false;
+      kit.hold(null); careLive.grip = ''; careLive.lighterOn = false;
+      if (what === 'bottle' || what === 'straw') {
+        heldReset(); kit.hold(careLive.held.g, { hand: 'left' });
+        careLive.grip = what === 'bottle' ? 'cap' : 'straw';
+        if (what === 'straw') { careLive.capOff = true; careLive.slide = k; if (careLive.held) careLive.held.cap.visible = false; }
+        else careLive.capA = k;
+        handsTo(what, 1, { secs: 0.05, p: what === 'bottle' ? k : 0 });
+      } else if (what === 'carry') {
+        if (kit.handPose) kit.handPose(null, 0, { secs: 0.05 });
+        careLive.capOff = true; careLive.slide = 1; careLive.bend = 1;
+        kit.hold(careLive.held.g, { pos: HELD_R.pos, rot: HELD_R.rot });
+      } else if (what === 'lighter') {
+        kit.hold(careLive.lighter.g, { hand: 'left', pos: LIGHTER_L.pos, rot: LIGHTER_L.rot });
+        kit.hold(careLive.sticks.g, { pos: STICKS_R.pos, rot: STICKS_R.rot });
+        careLive.lighter.flame.visible = k > 0.5;
+        careLive.catchK = Math.max(0, k - 1); careLive.lighterOn = true;
+        handsTo('lighter', 1, { secs: 0.05 });
+      } else if (kit.handPose) kit.handPose(null, 0, { secs: 0.05 });
+      return true;
+    }
+    /* THE ROOM'S ARRIVAL LOOK: onto the altar — from the jug at its near end to the little one at its far end, the middle
+       of that span, and down onto them — on any screen (by photograph, CP5: from the door at the old look a phone saw a
+       bare wall, the altar and the first order's jug off its right edge) */
+    function roomArriveLook() {
+      const az = (x, z) => Math.atan2(-(x - yaw.position.x), -(z - yaw.position.z));
+      const a0 = az(ROW.mid, ALTAR.z0 + 0.08), a1 = az(RISER.x, ALTAR_Z[2]);
+      /* (a narrow screen leans toward the jug, the first order: at the span's middle a phone put its mark on the frame's
+         left edge — by photograph — so there the aim is a third of the way along, the little one at the right edge) */
+      const f = 0.5 - 0.17 * cl01((1.0 - camera.aspect) / 0.54);
+      yaw.rotation.y = a0 + Math.atan2(Math.sin(a1 - a0), Math.cos(a1 - a0)) * f;
+      pitch.rotation.x = -0.6;
+    }
+
     /* ---------------------------------------------------------- the owner (CP5)
        Chapter 4's mkPerson — its rigged path, by its own code and numbers (e3c4.js at v22.5): sized from POSED BONES and
        grounded on the lowest (the v3.8/v4.7 law), each take's foot centre measured so his talking take never walks him
@@ -2883,6 +3534,11 @@
 
 
     buildRoomR();
+    /* PLAY I's things (CP6): after the room, whose cups, places and box they stand on (built before it, the first boot
+       read the drinks' places before there were any) */
+    buildOfferings(); deskBag(); careReset();
+    if (warmSounds) warmSounds(['k5pour', 'k5bottleout', 'k5ratchet', 'k5stiff', 'k5seal', 'k5hiss', 'k5capoff', 'k5tear', 'k5slide', 'k5bubbles',
+                                'k5plip', 'k5bend', 'k5foam', 'k5spark', 'k5flick', 'k5catch', 'k5wave', 'k5sand', 'k5wai']);   // PLAY I's own (CP6)
     buildTemple();                                   // World M (CP5): after everything it reads at call time
 
     /* ---- FILM M's NIGHT (§4.0b, §4.1c, V30): the hall's dais end by candlelight — a low lacquered table before the dais, a
@@ -3171,7 +3827,7 @@
     function objectiveFor(p) {
       if (!kit) return;
       if (wDark) { kit.objective(null, { complete: false }); return; }
-      const o = p === 'counter' ? counterObjective() : { sit: W.objSit, decide: null }[p];
+      const o = p === 'counter' ? counterObjective() : p === 'care' ? careObjective() : { sit: W.objSit, decide: null }[p];
       kit.objective(o || null);
     }
 
@@ -3181,7 +3837,7 @@
     function placeIn(w) {
       if (w === 'R') {
         yaw.position.x = R_ARRIVE.x; yaw.position.z = R_ARRIVE.z;
-        yaw.rotation.y = 0; pitch.rotation.x = -0.05;          // into the room, the altar on the right (CP4 aims it)
+        roomArriveLook();                                      // onto the altar, the jug to the little one (CP6)
       } else {
         yaw.position.x = S_SPAWN.x; yaw.position.z = S_SPAWN.z;
         yaw.rotation.y = DATA.spawn.rot; pitch.rotation.x = -0.12;
@@ -3450,7 +4106,7 @@
       if (kit && kit.hold && cntLive.bagHeld) kit.hold(cntLive.bagHeld, { pos: BAG_HELD.pos, rot: BAG_HELD.rot });
       after(1.0, () => {
         if (kit) kit.setPhase('care');
-        const done = () => { if (alive) toWorld('R', false, 'sit'); };
+        const done = () => { if (alive) { careResume(''); toWorld('R', false, 'care'); } };
         if (!kit || !kit.film || !kit.film('home', { onDone: done })) done();
       });
       return true;
@@ -3501,13 +4157,6 @@
     function openDecision() {
       decOpen = true;
       if (getState() === 'play') startDecision();
-    }
-    function sitWithThem() {
-      if (phase !== 'sit' || seated || !quiet()) return false;
-      sitDown(false);
-      setPhase('decide');
-      after(1.2, () => openDecision());
-      return true;
     }
 
     /* ------------------------------------------------------- the decision */
@@ -3564,7 +4213,29 @@
       { id: 'bag', pos: { ...cntAt(CNT.x, CNT.z), y: CNT.y + 0.16 }, radius: 2.6, aim: 0.25, pressAim: true, markY: 0.24, prompt: W.hotBag,
         hits: tapBox(SX + CNT.x - 0.1, CNT.y - 0.01, CNT.z - 0.15, SX + CNT.x + 0.1, CNT.y + 0.42, CNT.z + 0.15),
         enabled: () => cntStep() === 'bag' && cntOk(), onInteract() { return takeHome(); } },
-      { id: 'mat', pos: { x: MAT.x, y: 0.9, z: MAT.z }, radius: 1.6, prompt: W.hotMat, markY: -0.3,
+      /* PLAY I (CP6): their water (the jug), their drinks (the bag on the desk), each drink's place, their incense (the
+         packet), each one's sand; all `pressAim` with `hits`, as the counter's are */
+      { id: 'jug', pos: { x: ROW.mid, y: ALTAR.top + 0.08, z: ALTAR.z0 + 0.08 }, radius: 1.8, aim: 0.25, pressAim: true, markY: 0.16, prompt: W.hotJug,
+        hits: tapBox(ROW.mid - 0.06, ALTAR.top, ALTAR.z0 + 0.02, ROW.mid + 0.06, ALTAR.top + 0.14, ALTAR.z0 + 0.14),
+        enabled: () => careStep() === 'water' && careOk(), onInteract() { return pourWater(); } },
+      { id: 'drinks', pos: { x: DESK_AT.bag[0], y: DESK.top + 0.15, z: DESK_AT.bag[1] }, radius: 1.9, aim: 0.3, pressAim: true, markY: 0.22, prompt: W.hotDrinks,
+        hits: tapBox(DESK_AT.bag[0] - 0.12, DESK.top, DESK_AT.bag[1] - 0.12, DESK_AT.bag[0] + 0.12, DESK.top + 0.36, DESK_AT.bag[1] + 0.12),
+        enabled: () => careStep() === 'drink' && careOk(), onInteract() { return atDeskDrink(); } },
+      ...KIDS.map((K, i) => ({
+        id: 'place_' + K.key, pos: { x: ROW.back, y: ALTAR.top + 0.1, z: ALTAR_Z[i] + 0.06 }, radius: 1.6, aim: 0.18, pressAim: true, markY: 0.14, prompt: W.hotPlace,
+        hits: tapBox(ROW.back - 0.06, ALTAR.top, ALTAR_Z[i] + 0.0, ROW.back + 0.06, ALTAR.top + 0.2, ALTAR_Z[i] + 0.12),
+        enabled: () => careStep() === 'carry' && careLive.carry === i && careOk(), onInteract() { return placeDrink(i); } })),
+      { id: 'packet', pos: { x: DESK_AT.packet[0], y: DESK.top + 0.08, z: DESK_AT.packet[1] }, radius: 1.9, aim: 0.3, pressAim: true, markY: 0.16, prompt: W.hotPacket,
+        hits: tapBox(DESK_AT.packet[0] - 0.13, DESK.top, DESK_AT.packet[1] - 0.08, DESK_AT.packet[0] + 0.13, DESK.top + 0.08, DESK_AT.packet[1] + 0.08),
+        enabled: () => careStep() === 'light' && careOk(), onInteract() { return atDeskIncense(); } },
+      ...KIDS.map((K, i) => ({
+        id: 'sand_' + K.key, pos: { x: ROW.mid, y: ALTAR.top + 0.06, z: ALTAR_Z[i] }, radius: 1.6, aim: 0.16, pressAim: true, markY: 0.12, prompt: W.hotBowl,
+        hits: tapBox(ROW.mid - 0.05, ALTAR.top, ALTAR_Z[i] - 0.05, ROW.mid + 0.05, ALTAR.top + 0.08, ALTAR_Z[i] + 0.05),
+        enabled: () => careStep() === 'stick' && !careDone.has('i.' + K.key) && careOk(), onInteract() { return giveStick(i); } })),
+      /* (a tap on the rug or on its mark sits him, as a press does — by photograph, a phone's tap on the "!" pressed
+         nothing — and stepping onto it does too: careFrame) */
+      { id: 'mat', pos: { x: MAT.x, y: 0.9, z: MAT.z }, radius: 1.6, aim: 0.35, pressAim: true, prompt: W.hotMat, markY: -0.3,
+        hits: tapBox(MAT.x - 0.32, 0, MAT.z - 0.5, MAT.x + 0.32, 0.06, MAT.z + 0.5),
         enabled: () => phase === 'sit' && !seated && quiet(), onInteract() { return sitWithThem(); } }
     ];
     for (const h of hotspots) { const en = h.enabled; h.enabled = () => !wDark && (!en || en()); }   // none under an arrival's black
@@ -3600,7 +4271,7 @@
       /* the counter's motion — the owner's mixer, the things he sets down, the box — on WALL time and ABOVE the state's
          return, so his films draw them too (v5.19: the mixers above the cine return); the lean rides the chapter clock */
       const wdt = cntWall ? Math.min(0.5, now - cntWall) : 0; cntWall = now;
-      peopleTick(wdt); setsTick(wdt); boxTick(wdt); viewTick(); leanTick();
+      peopleTick(wdt); setsTick(wdt); boxTick(wdt); viewTick(); leanTick(); careFrame(wdt);
       const st = getState();
       const live = st === 'play' || st === 'unlock' || st === 'choose';
       /* a Continue into the room is put there UNDER the chapter card, so the card lifts on the world it resumes in */
@@ -3626,12 +4297,12 @@
        phase resumes at the mat. */
     function resumeAt(p0) {
       const tag = String(p0 || '').split(':'), p = PHASES.includes(tag[0]) ? tag[0] : 'counter';
-      if (PHASES.indexOf(p) >= PHASES.indexOf('care')) return { w: 'R', at: p === 'decide' ? 'decide' : 'sit' };
+      if (PHASES.indexOf(p) >= PHASES.indexOf('care')) return { w: 'R', at: p === 'decide' ? 'decide' : p === 'care' ? 'care' : 'sit', tag: tag[1] || '' };
       return null;
     }
     function applyPhase(p) {
       const RA = resumeAt(p);
-      if (RA) { toWorld(RA.w, true, RA.at); return; }
+      if (RA) { careResume(RA.at === 'care' ? RA.tag : CARE_ORDER.slice(0, 8).join(',')); toWorld(RA.w, true, RA.at, RA.at === 'care' ? RA.tag : undefined); return; }
       const tag = String(p || '').split(':');
       /* a first arrival: his look down a little, so the owner's face and the three on the glass are both in the frame (by
          photograph: at the spawn's own pitch the three's feet were cut by the bottom edge) */
@@ -3673,6 +4344,7 @@
       worldM.visible = false;
       roomReset();
       counterReset();
+      careReset();
       for (const h of hotspots) { h.done = false; h.dwellT = 0; }
       if (kit) {
         kit.root(false); kit.pose('standing', { secs: 0.05 });
@@ -3750,8 +4422,10 @@
                      until: +speak.until.toFixed(2), pending: speak.pending ? speak.pending.name : null,
                      seated, decOpen, kids: kidLive.map(L => L.K.key + (L.ready ? '' : '?')),
                      counter: { step: cntStep(), done: cntTag(), busy: cntBusy, opened: cntLive.opened, lean: !!cntLive.lean,
-                                owner: !!(cntLive.owner && cntLive.owner.ready) } }),
+                                owner: !!(cntLive.owner && cntLive.owner.ready) },
+                     care: { step: careStep(), done: careTag(), busy: careBusy, carry: careLive.carry, seat: careLive.seat, foamed: careLive.foamed } }),
       counter: { solve: leanSolve, LEAN, BAG_HELD, sets: cntLive.sets, live: cntLive },   // the counter's handles (§4.0b), for probes
+      careLab, careLive,                                       // PLAY I's held moments and its live state (CP6), for probes
       madeF, cardF,                                            // the counter's films' controllers (film M, film K): every picture a function of their clock
       ownerTalk: (secs) => personTalk(cntLive.owner, secs),    // a film's line from the owner rides his talking take
       nightSet,
@@ -4172,6 +4846,52 @@
       for (let k = 0; k < 4; k++) { const a = k * Math.PI / 2 + Math.PI / 4; x.beginPath(); x.ellipse(cx + Math.cos(a) * 11, cy + Math.sin(a) * 11, 6, 3, a, 0, Math.PI * 2); x.fill(); }
     }
     return done(THREE, c, false);
+  }
+  /* (CP6) the red drink's label, wrapped once round its bottle: a pink-white band, a drawn strawberry, its name in plain
+     capitals (no brand — a generic red soda, the kind every Thai shrine is given), a little fine print, and a seam */
+  function makeSodaLabelT(THREE, cnv) {
+    const [c, x] = sized(cnv, 512, 128), r = rng(6113);
+    const g = x.createLinearGradient(0, 0, 0, 128); g.addColorStop(0, '#fbe4e2'); g.addColorStop(1, '#f2c8c4');
+    x.fillStyle = g; x.fillRect(0, 0, 512, 128);
+    x.fillStyle = '#c8141e'; x.fillRect(0, 0, 512, 14); x.fillRect(0, 114, 512, 14);
+    for (const ox of [96, 352]) {                         // the label shows its face twice round the bottle
+      x.fillStyle = '#d81c26'; x.beginPath(); x.moveTo(ox - 22, 44); x.quadraticCurveTo(ox - 26, 92, ox, 100); x.quadraticCurveTo(ox + 26, 92, ox + 22, 44);
+      x.quadraticCurveTo(ox, 34, ox - 22, 44); x.fill();
+      x.fillStyle = '#f6e27a'; for (let i = 0; i < 14; i++) x.fillRect(ox - 16 + r() * 32, 50 + r() * 40, 2, 3);
+      x.fillStyle = '#2e8a3a'; x.beginPath(); x.ellipse(ox - 8, 40, 10, 5, -0.5, 0, Math.PI * 2); x.ellipse(ox + 8, 40, 10, 5, 0.5, 0, Math.PI * 2); x.fill();
+      x.fillStyle = '#8a0c14'; x.font = 'bold 26px sans-serif'; x.textAlign = 'left'; x.textBaseline = 'middle';
+      x.fillText('RED', ox + 34, 54); x.font = 'bold 15px sans-serif'; x.fillText('STRAWBERRY', ox + 34, 78);
+      x.fillStyle = 'rgba(80,20,20,0.6)'; x.font = '9px sans-serif'; x.fillText('325 ml', ox + 34, 98);
+    }
+    x.fillStyle = 'rgba(120,40,40,0.35)'; x.fillRect(250, 14, 2, 100);  // its seam
+    return done(THREE, c, true);
+  }
+  /* a striped drinking straw: white with a red stripe running round it (drawn along u, so its repeat winds it) */
+  function makeStrawT(THREE, cnv) {
+    const [c, x] = sized(cnv, 64, 64);
+    x.fillStyle = '#f4f2ee'; x.fillRect(0, 0, 64, 64);
+    x.fillStyle = '#d8283a';
+    for (let k = -1; k < 3; k++) { x.beginPath(); x.moveTo(k * 32, 64); x.lineTo(k * 32 + 14, 64); x.lineTo(k * 32 + 14 + 32, 0); x.lineTo(k * 32 + 32, 0); x.fill(); }
+    return done(THREE, c, true);
+  }
+  /* the straw's paper sleeve: thin white paper, a printed band of small red marks */
+  function makeSleeveT(THREE, cnv) {
+    const [c, x] = sized(cnv, 64, 256), r = rng(6127);
+    x.fillStyle = '#f7f5f0'; x.fillRect(0, 0, 64, 256);
+    for (let i = 0; i < 60; i++) { x.fillStyle = `rgba(200,40,50,${(0.4 + r() * 0.3).toFixed(2)})`; x.fillRect(r() * 64, r() * 256, 4, 2); }
+    return done(THREE, c, true);
+  }
+  /* the incense packet: red paper, a gold lotus and its plain name, the sticks' red ends showing at its open top */
+  function makeIncensePackT(THREE, cnv) {
+    const [c, x] = sized(cnv, 128, 512), r = rng(6131);
+    x.fillStyle = '#b8141c'; x.fillRect(0, 0, 128, 512);
+    x.fillStyle = '#e8b84a'; x.fillRect(8, 8, 112, 4); x.fillRect(8, 500, 112, 4);
+    x.strokeStyle = '#e8b84a'; x.lineWidth = 3;
+    for (let k = 0; k < 5; k++) { const a = -Math.PI / 2 + (k - 2) * 0.42; x.beginPath(); x.ellipse(64 + Math.cos(a) * 18, 180 + Math.sin(a) * 18, 9, 22, a + Math.PI / 2, 0, Math.PI * 2); x.stroke(); }
+    x.fillStyle = '#e8b84a'; x.font = 'bold 18px serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.fillText('JOSS', 64, 250); x.fillText('STICKS', 64, 274);
+    for (let i = 0; i < 400; i++) { x.fillStyle = `rgba(0,0,0,${(r() * 0.08).toFixed(3)})`; x.fillRect(r() * 128, r() * 512, 2, 2); }
+    return done(THREE, c, true);
   }
   /* the paper bag's kraft (CP5): brown paper, its fibres, a darker crease near its foot and a small red seal */
   function makeKraftT(THREE, cnv) {
