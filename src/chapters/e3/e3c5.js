@@ -354,6 +354,131 @@
     /* the cards */ 'z5A': 4.4, 'z5B': 4.0, 'z5C': 3.0, 'z5D': 3.6
   };
 
+  /* M1 · THE PREVIEW'S PLACEHOLDERS (CP10, §12 — §2.3 8): until the voices are recorded, every line not yet recorded is
+     shown where its voice will go — its words at their estimated length (SECS), the speaker under them — so the chapter
+     can be played and its words read before a credit is spent. The table is the registry's words, written by
+     tools/e3c5caps.mjs (re-run it after the sheet's words change; chaptertest checks it is current). CP11 deletes the
+     table, its markers, previewCap and previewCues, and their calls: a recorded line needs none of it */
+  /* PREVIEW CAPTIONS BEGIN */
+  const PREVIEW_CAPS = {
+    z5pro1: ['While I was still searching for answers... I began keeping Kumanthong.', 'him'],
+    ow5hello: ['Ah, you came. Come, come... I want you to meet three small ones.', 'the owner'],
+    z5yinq: ['Uncle... aren\'t these yin? Baby ghosts... the kind people trap with black magic, feed with blood... that turn on you if you ever stop?', 'him'],
+    ow5yin: ['Children, yes. Ghosts to be afraid of, no. What you\'re thinking of — trapped with black magic, fed with blood, sent to hurt people — that\'s something else. These three came from a temple. A Luang Phor gave them a home there... out of compassion.', 'the owner'],
+    ow5monk: ['Small ones who passed on young, with nowhere to go yet. Nobody forces them to stay... they come of their own free will. They help a kind person a little. And they can\'t make merit for themselves, so you make it, and you give it to them. We believe it helps them on, toward a better birth.', 'the owner'],
+    ow5red: ['This one... a family took him home for luck. When the luck didn\'t come fast enough, they brought him back. Didn\'t want him any more.', 'the owner'],
+    ow5shy: ['This one, an old auntie looked after him for twenty years. When she passed on, her family brought him back to me... with her music box.', 'the owner'],
+    ow5little: ['And this small one... somebody left him at a temple gate. Nobody knows where he came from.', 'the owner'],
+    ow5give: ['So think of them like small children... with nowhere to go. You give them drink, you make merit for them... you are giving them something they never had.', 'the owner'],
+    z5children: ['Children... with nowhere to go.', 'him'],
+    ow5never: ['But listen, ah. Never keep them for greed. Not for money, not for lottery numbers... if that is why you want them, don\'t take them.', 'the owner'],
+    ow5wrong: ['And never ask them to do anything wrong. The ones from a temple, we believe, won\'t help you do wrong. Children grow like the one who raises them... so you keep the precepts yourself.', 'the owner'],
+    ow5promise: ['And not for one month, not for one year. Every day you look after them, you keep making merit for them... as long as you live. If one day you really cannot, you bring them back to me, or to a temple. Never just leave them. Can or not?', 'the owner'],
+    z5promise: ['Every day. I promise.', 'him'],
+    ow5careful: ['Look after them like your own, ah. But don\'t play-play with them.', 'the owner'],
+    z5pro2: ['I saw it as another way of making merit... and showing compassion.', 'him'],
+    z5pro3: ['So I took them home... and made offerings to them, every day.', 'him'],
+    z5pro4: ['Then one night, after everything else I had been through... I wanted to know something.', 'him'],
+    z5water: ['Water first... never let it run dry.', 'him'],
+    z5bag: ['Three red drinks. Three straws. Same as every night, since the day I promised.', 'him'],
+    z5red: ['There you go, big boss. Your favourite.', 'him'],
+    z5shy: ['This one\'s yours. Don\'t be shy.', 'him'],
+    z5little: ['And this one\'s for you, little one.', 'him'],
+    z5stiff: ['Come on... open...', 'him'],
+    z5incense: ['One stick each.', 'him'],
+    z5eat: ['Come... eat. This is for you three.', 'him'],
+    z5dedic: ['May the merit I make reach you three... and one day, may you go on to a better birth.', 'him'],
+    z5wonder: ['Every night they just sit here... I wonder what they feel.', 'him'],
+    z5ask: ['What would happen... if I deliberately opened myself to my own Kumanthong?', 'him'],
+    z5loose: ['Just... let my mind loosen.', 'him'],
+    z5b1: ['Mine! These are all MINE!', 'the red one, through him'],
+    z5b2: ['Nobody touches my things! Nobody!', 'the red one, through him'],
+    z5b3: ['More! I want MORE!', 'the red one, through him'],
+    z5b4: ['...They didn\'t want me any more.', 'the red one, through him'],
+    z5back1: ['That wasn\'t me... That was him.', 'him'],
+    z5back1b: ['He wasn\'t angry. He just wanted someone to want him.', 'him'],
+    z5again1: ['...One more.', 'him'],
+    z5s1: ['Hehe... you can\'t see me...', 'the shy one, through him'],
+    z5s2: ['Shhh... hide... hide...', 'the shy one, through him'],
+    z5s3: ['Mine... my secret...', 'the shy one, through him'],
+    z5s4: ['Come and find me... ...Nobody ever comes.', 'the shy one, through him'],
+    z5back2: ['Ow—!', 'him'],
+    z5back2b: ['I was hiding under my own desk... waiting for someone to find me.', 'him'],
+    z5again2: ['One more. Just one more.', 'him'],
+    z5l1: ['Everyone goes away...', 'the little one, through him'],
+    z5l2: ['You won\'t go... right?', 'the little one, through him'],
+    z5l3: ['Stay... stay with me...', 'the little one, through him'],
+    z5sob: ['(sobbing quietly)', 'the little one, through him'],
+    z5out: ['His incense had burnt out... but he held on to me. He didn\'t want to be left alone again.', 'him'],
+    z5come: ['I\'m sorry... I have to go back...', 'him'],
+    z5gasp: ['(gasping for air)', 'him'],
+    z5time: ['Almost three hours... gone.', 'him'],
+    z5felt: ['To be wanted... to be found... to not be left alone. That\'s all they ever wanted.', 'him'],
+    z5fasc: ['And at that moment... I was fascinated by it.', 'him'],
+    z5A1: ['He asked me to stay... Tomorrow night, I will.', 'him'],
+    z5A2: ['Every night, it was easier to go...', 'him'],
+    ma5vm: ['Boy... why you never pick up? Ma worried, you know. Call me back, okay?', 'Ma, on his voicemail'],
+    z5A3: ['...and harder to come back.', 'him'],
+    z5Agig: ['(a small dry giggle)', 'him'],
+    z5A4: ['That... wasn\'t me.', 'him'],
+    z5A5: ['I stopped being sure where they ended... and where I began.', 'him'],
+    z5A6: ['They needed someone to look after them... and I couldn\'t do it any more.', 'him'],
+    z5B1: ['Nobody would believe this... unless I told them.', 'him'],
+    z5B2: ['I wrote it all down. Every child... every voice.', 'him'],
+    z5B3: ['Two hundred replies... by morning.', 'him'],
+    z5B4: ['Someone had tried it... because of me. And I didn\'t know what to tell them.', 'him'],
+    z5B5: ['The shy one hid from everyone... and I showed him to everyone.', 'him'],
+    z5B6: ['I wanted someone to believe me. Instead I made them a horror story... and showed strangers the way in.', 'him'],
+    z5C1: ['If they\'re real... then they can help me.', 'him'],
+    z5C2: ['Bring me luck. Bring me orders... please.', 'him'],
+    z5C3: ['The orders came. Maybe it was them... maybe it wasn\'t. I didn\'t care. I only wanted more.', 'him'],
+    z5C4: ['More orders. More money. A bigger place... a little more luck. Just a little more.', 'him'],
+    z5Cevil: ['And him... make him lose everything.', 'him'],
+    z5Claugh: ['(laughing alone, too long)', 'him'],
+    z5C5: ['If I stop asking... will it all go away?', 'him'],
+    z5C6: ['They were only children... and I had turned them into a wishing well.', 'him'],
+    z5C7: ['Nothing answered. They wouldn\'t do wrong... even when I asked them to.', 'him'],
+    z5D1: ['I\'m sorry. That was my mistake... not yours.', 'him'],
+    z5D2: ['I won\'t open that door again. But I\'m not going anywhere.', 'him'],
+    z5D3: ['In the morning, I went to the temple... and made merit in their names.', 'him'],
+    z5D4: ['For the three children in my care... may this merit reach you. May you be well... and one day, may you go on to a better birth.', 'him'],
+    mk5teach: ['Give without bargaining. Keep your precepts. Then dedicate the merit. That is what you can do for them.', 'the monk'],
+    z5D5: ['I kept caring for them every day, and making merit in their names, for years. And I never opened that door again.', 'him'],
+    z5D6: ['If one day I can\'t look after them... someone will. I made sure of it.', 'him'],
+    z5epi0: ['They were never something to fear. Only children with nowhere to go... and what they needed from me was care, merit and kindness, for as long as I live.', 'him'],
+    z5epi1: ['Looking back today, I can see clearly how dangerous... and how completely unnecessary that experiment was.', 'him'],
+    z5epi2: ['Some lessons are only learned by living them.', 'him'],
+    z5epi3: ['This is the one experiment I would tell everybody never to repeat.', 'him'],
+  };
+  /* PREVIEW CAPTIONS END */
+  function previewCap(kit, name) {
+    const P = PREVIEW_CAPS[name];
+    if (!P || !kit || !kit.captions) return false;
+    /* a long line in pieces of about a dozen words, broken after a sentence where one ends, each held for its share of
+       the line's words (the owner's longest run 15–17 s: whole, it stood six lines tall over a phone's picture) */
+    const words = P[0].split(' '), parts = [];
+    let cur = [];
+    for (const w of words) {
+      cur.push(w);
+      if (words.length > 14 && (cur.length >= 12 || (cur.length >= 6 && /[.?!—]$/.test(w)))) { parts.push(cur); cur = []; }
+    }
+    if (cur.length) { if (parts.length && cur.length < 4) parts[parts.length - 1].push(...cur); else parts.push(cur); }
+    const secs = SECS[name] || 2.5;
+    let at = 0;
+    kit.captions(parts.map(pw => { const e = { at, end: at + secs * pw.length / words.length, text: pw.join(' '), sub: P[1] }; at = e.end; return e; }));
+    return true;
+  }
+  /* a film's or a scene's own planned lines, each captioned on its cue's frame; at the end the captions go with the
+     picture (a skip runs the passed steps in the order they were pushed, so the clearing one runs last) */
+  function previewCues(c, api) {
+    if (!c || !Array.isArray(c.stings) || !Array.isArray(c.tracks) || !api || !api.step) return;
+    const mine = c.stings.filter(st => PREVIEW_CAPS[st.kind]);
+    if (!mine.length) return;
+    const end = c.tracks.reduce((m, tr) => Math.max(m, tr.t1), 0);
+    for (const st of mine) api.step(st.at, () => previewCap(api.kit, st.kind));
+    api.step(end, () => { if (api.kit && api.kit.captions) api.kit.captions(null); });
+  }
+
   /* the first two possessions' clocks (CP7, §4.4): plain numbers at the chapter's top level, so each film reads its own
      times directly — and chaptertest, which walks a film against a stand-in stage whose every lookup is 0, sees the real
      ones and can hold each cue to its film's length (a table read through the stage there is all zeros) */
@@ -4826,6 +4951,7 @@
     function sayLine(name, vol = 1, onStart, pan) {
       if (dayClock.t < speak.until) return false;
       const start = () => { speak.until = dayClock.t + (SECS[name] || 2.5) + 0.25; heard.add(name); if (onStart) onStart(); };
+      if (PREVIEW_CAPS[name]) { start(); previewCap(kit, name); return true; }   // (M1, CP10: a line not recorded yet — its words, at once)
       if ((soundOff && soundOff()) || !worldSfx) { start(); return true; }
       if (worldSfx(name, vol, 1, pan)) { start(); return true; }
       speak.pending = { name, vol, start, pan, give: dayClock.t + 1.6 };
@@ -8182,6 +8308,7 @@
     sfx(OFT.open, 'k5shopbell', 0.6);                    // the door's bell as it opens
     fade(OFT.black0, OFT.black1, 0, 1);
     step(OFT.end, () => F.end());
+    previewCues(c, api);                                   // (M1's placeholders, CP10)
   }
   function playFilm(c, api) {                  // the shape every film from play keeps (CP5, CP7, CP9 fill each)
     const { step, fade } = api;
@@ -8208,6 +8335,7 @@
     sfxFade(T.b2, T.end - 0.4, 'k5chantlow');
     fade(T.b2, T.b2 + 1.6, 0, 1);                        // and black, which the counter lifts
     step(T.end, () => MF.end());
+    previewCues(c, api);                                   // (M1's placeholders, CP10)
   }
   /* FILM K · "The Card" (§4.0b, CP5): the card on his glass, read down line by line; then his face, and what he asks of the
      one who takes them home — every picture from stage.cardF's frame(t); its lines on his talking take */
@@ -8226,6 +8354,7 @@
     step(T.k3 + 21.8, () => stage.ownerTalk(16.0));
     fade(T.end - 1.0, T.end - 0.1, 0, 1);
     step(T.end, () => KF.end());
+    previewCues(c, api);                                   // (M1's placeholders, CP10)
   }
   /* THE HOME FILM · "Every Day" (§4.0c, CP9): every picture from stage.homeF's frame(t); this holds its cues, its fades and
      the one track. It begins on the counter's black (the kit hands it over) and its last black is handed to the kit's
@@ -8259,6 +8388,7 @@
     sfx(HFT.lamp2, 'k5switch', 0.45);                    // the lamp on their faces
     fade(HFT.black0, HFT.black0 + 1.0, 0, 1);            // black, handed to play
     step(HFT.end, () => F.end());
+    previewCues(c, api);                                   // (M1's placeholders, CP10)
   }
   /* POSSESSION 1 · THE RED ONE (§4.4, CP7): every picture from stage.redF's frame(t); this holds its cues (literal, the
      CUE_RE law), its STAMP (the player's three taps: a craft event the film runs on through; untapped, he stamps by
@@ -8293,6 +8423,7 @@
     sfx(T.self + 3.5, 'z5back1b', 1);                        // "He wasn't angry. He just wanted someone to want him."
     sfx(T.end - 1.6, 'z5again1', 1);                         // "...One more."  (CP9: 0.3 s clear of the line before, on its estimate)
     step(T.end, () => F.end());
+    previewCues(c, api);                                   // (M1's placeholders, CP10)
   }
   /* POSSESSION 2 · THE SHY ONE (§4.4, CP7): stage.shyF's pictures; its PEEK (drag the fingers apart: a craft slide the
      film runs on through) and its lines. */
@@ -8324,6 +8455,7 @@
     sfx(T.little, 'k5bells', 0.35);
     sfx(T.little + 1.3, 'z5again2', 1);                      // "One more. Just one more."  (CP9: clear of the line before, on its estimate)
     step(T.end, () => F.end());
+    previewCues(c, api);                                   // (M1's placeholders, CP10)
   }
   /* POSSESSION 3 · THE LITTLE ONE, and COME BACK (§4.4–§4.5, CP7): stage.littleF's pictures to the surface; then COME
      BACK, an event the film WAITS on (eventWait: the climb is his, and the film goes on when he is back); then the
@@ -8354,6 +8486,7 @@
     sfx(T.come + 0.5, 'z5gasp', 1);
     tr(T.come + 0.2, T.come + 4.2, (k, t) => stage.surfaceFrame(t - T.come - 0.2, api), rawK);
     step(T.come + 4.2, () => F.end());
+    previewCues(c, api);                                   // (M1's placeholders, CP10)
   }
 
   /* ============================================================ THE ENDINGS (CP8, §4.8) AND THE EPILOGUE (§4.9)
@@ -8372,6 +8505,7 @@
     step(T.end, () => { api.handsRoot.visible = true; });
     c.endFade = 1;
     c.keep.view = true;
+    previewCues(c, api);                                   // (M1's placeholders, CP10)
   }
   /* THE EPILOGUE's sound and its blacks: the counter fades up as the lullaby rises; his first line over the three; the
      black; the case file's own last words over it */

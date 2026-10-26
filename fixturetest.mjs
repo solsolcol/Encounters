@@ -519,7 +519,23 @@ async function runEvent(opts, drive) {
     if (o.tapEveryT) { let next = o.tapEveryT; const f = () => { if (window.__evR !== null) return; const d = window.__enc.kitDebug().event;
       if (d && d.started && !d.briefing && d.t >= next) { window.__enc.evPress(); window.__enc.evRelease(); next += o.tapEveryT; }
       tapT = requestAnimationFrame(f); }; tapT = requestAnimationFrame(f); }
-    window.__enc.kit.event(o).then(r => { if (tap) clearInterval(tap); if (tapT) cancelAnimationFrame(tapT); window.__evR = r; });
+    /* v23.0 CP10: or one press at each of `pressAtT`'s event times, on the event's own clock, from inside the page — a
+       graded beat pressed through a round trip from the harness lands late on a loaded box and scores as a miss (the
+       heartbeat check below failed two pair runs in three that way) */
+    let pressT = 0;
+    if (o.pressAtT) {                 // (on the frame NEAREST the beat — the grade is |t − beat|, early or late alike — since a
+      const ts = o.pressAtT.slice();  //  loaded box steps this clock up to 0.25 s a frame, and the first frame past it can be that late)
+      let prev = null, step = 0;
+      const f = () => { if (window.__evR !== null) return; const d = window.__enc.kitDebug().event;
+        if (d && d.started && !d.briefing && ts.length) {
+          if (prev !== null && d.t > prev) step = d.t - prev;
+          prev = d.t;
+          if (d.t + step / 2 >= ts[0]) { ts.shift(); window.__enc.evPress(); window.__enc.evRelease(); }
+        }
+        pressT = requestAnimationFrame(f); };
+      pressT = requestAnimationFrame(f);
+    }
+    window.__enc.kit.event(o).then(r => { if (tap) clearInterval(tap); if (tapT) cancelAnimationFrame(tapT); if (pressT) cancelAnimationFrame(pressT); window.__evR = r; });
   }, opts);
   // started — or already over, for a kind that can resolve on its first frame
   await p.waitForFunction(() => { const d = window.__enc.kitDebug(); return window.__evR !== null || !!(d.event && d.event.started); }, null, { timeout: 30000 });
@@ -548,9 +564,11 @@ r = await runEvent({ kind: 'stabilise', secs: 0.25, grace: 2 }, press);    K.evS
 // beats at 0.5 and 1.0 with ±0.2 windows: wide enough for a clock that steps 0.05 a frame
 /* v9.3: the heartbeat is GRADED now, so a press is scored on how close to
    the beat it lands rather than merely inside a window. Beats at 0.5 and
-   1.0; pressing as near them as a 0.05 s clock allows must come out ahead. */
-r = await runEvent({ kind: 'heartbeat', n: 2, bpm: 120, win: 0.34, zone: 1, lead: 0.5 },
-                   async () => { await untilT(0.5); await tapOnce(); await untilT(1.0); await tapOnce(); });
+   1.0; pressing as near them as the event's clock allows must come out ahead
+   (v23.0 CP10: pressed from inside the page on that clock — `pressAtT` —
+   because through a round trip from here the presses landed late on a loaded
+   box and scored as misses) */
+r = await runEvent({ kind: 'heartbeat', n: 2, bpm: 120, win: 0.34, zone: 1, lead: 0.5, pressAtT: [0.5, 1.0] });
 const beatAnswered = r.sum;
 K.evHeartbeat = r.band.length === 2;
 /* v18.0: RESIST (the twenty-fifth seam), a RAPID-TAP fight since 3 Oct.

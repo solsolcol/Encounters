@@ -6421,3 +6421,10 @@ cut (sharing its vertices and maps) when it is small.
 - **Three things side by side are one thing at a time on a phone** (v23.0 CP9). From the mat, a 50° lens on a
   portrait phone is 0.38 m wide at the riser, and the three stand 0.35 m apart. Centred on the middle one, a phone saw
   the children "set out one by one" as a single child appearing. A narrow screen goes to each one as it is set down.
+- **A graded press must be made on the clock it is graded on, at the frame nearest the mark** (v23.0 CP10). The
+  fixture's `evHeartbeatRewardsTiming` failed three runs in four when two harnesses shared this box. It waited for the
+  beat with a poll from the harness and pressed with a second round trip, so its presses landed a frame or two late on
+  a clock that steps up to 0.25 s a frame under load, and graded as misses. Pressed from inside the page at the first
+  frame past the beat, it still failed: that frame can be a quarter-second late. The grade is |t − beat|, early or
+  late alike, so the check now presses on whichever frame is nearer the beat, and it has passed under load since.
+  v19.4 learned the same about a rate test: tap on the clock that is being measured.
