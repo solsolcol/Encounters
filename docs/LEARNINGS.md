@@ -6409,3 +6409,15 @@ cut (sharing its vertices and maps) when it is small.
   one hand crossed the frame pointing at the sweets, because a blend passes through every pose between rest and the
   clasp. The clasp is now drawn whole (`k` 1) and only RISEN into the frame from below its edge (`y` from −0.68 to
   −0.28), so the joined fingers end in the lower quarter of the frame and no half-formed hand is ever seen.
+- **A walk's roadside beat is timed from where the walker IS, not from the film's round numbers** (v23.0 CP9). The
+  opening film rolled the grocer's shutter down at 8.4 s because that felt like the middle of the corridor. He had
+  passed the grocer's at 7.7 s, so the shutter came down metres behind him and the glance meant for it found the
+  kitchen's shutter, already down. Solve the walk's own curve for the moment he is abreast of the thing, and put the
+  beat and the look a little before it.
+- **A walk through a doorway is two segments** (v23.0 CP9). One straight lerp from outside his door to a point across
+  the room left the doorway 41 cm off its middle, through the jamb. Walk to a point just inside the door, through
+  the opening's middle, and only then across the room. Where the walk ends matters too: from just inside the door,
+  the open leaf stood 13 cm from the lens and the chair's back hid the thing the shot was about.
+- **Three things side by side are one thing at a time on a phone** (v23.0 CP9). From the mat, a 50° lens on a
+  portrait phone is 0.38 m wide at the riser, and the three stand 0.35 m apart. Centred on the middle one, a phone saw
+  the children "set out one by one" as a single child appearing. A narrow screen goes to each one as it is set down.

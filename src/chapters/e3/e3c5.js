@@ -218,7 +218,7 @@
     plannedSounds: [
       // the opening film, the counter, the home film
       'k5bundle', 'k5figset', 'k5bellsfaint', 'k5wind', 'k5pen', 'k5chantlow', 'k5door', 'k5switch', 'k5unwrap', 'k5rain',
-      'k5shutter', 'k5shopbell',
+      'k5shutter', 'k5shopbell', 'k5steps',
       // the offerings
       'k5bag', 'k5bottleout', 'k5ratchet', 'k5stiff', 'k5seal', 'k5hiss', 'k5capoff', 'k5foam', 'k5tear', 'k5slide',
       'k5bubbles', 'k5plip', 'k5bend', 'k5set', 'k5spark', 'k5flick', 'k5catch', 'k5wave', 'k5sand', 'k5wai',
@@ -380,6 +380,19 @@
   for (const k in END) END[k].end = END[k].epi + EPI.len;
   const DT = { court: 32.0, bell: 33.1, door: 35.6, kneel: 40.0, teach: 48.5, pour0: 55.8, pour1: 66.4, earth: 68.0,
                earth0: 68.6, earth1: 71.0, lights: 71.4, home: 76.0 };   // (CP8: the lights' climb 2.1 s → 4.6 s, the music's time to swell)
+
+  /* THE OPENING FILM's clock (CP9, §4.0a): black and the mall's hush; O1, his eyes down the corridor at closing time; O2,
+     the owner through his glass; the door's bell; black, and the chapter card over it */
+  const OFT = { o1: 3.0, line: 5.0, sh0: 4.6, sh1: 7.6, o2: 14.0, up: 15.6, beckon: 16.6, door: 18.6, open: 19.9,
+                black0: 20.6, black1: 21.6, end: 22.0 };
+
+  /* THE HOME FILM's clock (CP9, §4.0c): H1 the door at the first dusk, the lamp, the bag; four close inserts (the three
+     set out on the new altar, the box and the card, the first drink, the first stick); H2 the weeks — the altar from the
+     bed as the days run, the desk wall (the calendar's days crossed, a receipt each Buddha Day), the three alone in the
+     afternoon; H3 tonight at 22:50 — the door in the dark, the shop's bag, the lamp on their faces; its black handed
+     to play */
+  const HFT = { open: 0.6, lamp: 2.4, ins: 4.0, ins2: 6.3, ins3: 8.6, ins4: 10.8, h2: 13.0, h2b: 20.0, h2c: 23.5, h3: 27.0,
+                bag: 29.4, lamp2: 30.6, black0: 33.6, end: 35.0 };
 
   const smooth = k => k * k * (3 - 2 * k);
   const cl01 = x => Math.max(0, Math.min(1, x));
@@ -561,6 +574,7 @@
       NIGHT:     { win: 'night', lamp: 1,    screens: 1,    ceil: 0 },
       DEEP:      { win: 'late',  lamp: 0,    screens: 0,    ceil: 0 },
       DUSK:      { win: 'dusk',  lamp: 0,    screens: 0,    ceil: 0 },
+      DUSKLIT:   { win: 'dusk',  lamp: 1,    screens: 0,    ceil: 0 },      // (CP9: the home film's first evening, the desk lamp switched on)
       DAWN:      { win: 'dawn',  lamp: 0,    screens: 0,    ceil: 0 },
       MORNING:   { win: 'day',   lamp: 0,    screens: 0,    ceil: 0 },
       AFTERNOON: { win: 'day',   lamp: 0,    screens: 0.7,  ceil: 0 },
@@ -574,7 +588,7 @@
     function look(name, secs = 0) {
       const L = LOOKS[name];
       if (!L) return;
-      if (kit) kit.daylight(PRESETS[name], secs);
+      if (kit) kit.daylight(PRESETS[name === 'DUSKLIT' ? 'DUSK' : name], secs);
       setWindow(L.win);
       const k = roomLive.lookK;
       roomLive.look = { name, from: { lamp: k.lamp, screens: k.screens, ceil: k.ceil }, to: L, t0: wallNow(), secs: Math.max(0, secs) };
@@ -1119,6 +1133,7 @@
 
       const shopG = new THREE.Group(); world.add(shopG);      // WORLD A
       const doorLeaves = [];                                  // (World H: the shop door's two leaves, which open)
+      let grocerShutter = null;                               // (CP9: the grocer's own roller shutter, which the opening film rolls down)
       const mallG = new THREE.Group(); world.add(mallG);      // the corridor past the glass
       const box = (w, h, d, x, y, z, mat, parent = world, cast = true) => {
         const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
@@ -2148,12 +2163,19 @@
            facing it (−z), the shop's glass looking onto the kitchen, the massage parlour and the goldsmith; and on our
            side facing +z, the film's walk passing the coach agency and the money changer */
         shopRow(mallG, [                                                   // (World S: `closed` — every one shut for the night)
-          { x: -12, z: MALL.z1, ry: Math.PI, kind: 'travel', seed: 11, closed: true }, { x: -8, z: MALL.z1, ry: Math.PI, kind: 'grocery', seed: 12, closed: true },
+          { x: -12, z: MALL.z1, ry: Math.PI, kind: 'travel', seed: 11, closed: true }, { x: -8, z: MALL.z1, ry: Math.PI, kind: 'grocery', seed: 12 },   // (CP9: open, behind its own shutter below)
           { x: -4, z: MALL.z1, ry: Math.PI, kind: 'food', seed: 13, closed: true },    { x: 0, z: MALL.z1, ry: Math.PI, kind: 'massage', seed: 14, closed: true },
           { x: 4, z: MALL.z1, ry: Math.PI, kind: 'gold', seed: 15, closed: true },     { x: 8, z: MALL.z1, ry: Math.PI, kind: 'phone', seed: 16, closed: true },
           { x: 12, z: MALL.z1, ry: Math.PI, kind: 'shut', seed: 17 },
           { x: -11.5, z: MALL.z0, ry: 0, kind: 'shut', seed: 21 },                     { x: -7.5, z: MALL.z0, ry: 0, kind: 'snack', seed: 22, closed: true },
           { x: 7.5, z: MALL.z0, ry: 0, kind: 'money', seed: 23, closed: true },        { x: 11.5, z: MALL.z0, ry: 0, kind: 'tickets', seed: 24, closed: true }]);
+        /* (CP9) the GROCER'S, open behind a roller shutter of its own — down in play like every neighbour's, and rolled down
+           on the opening film's walk as he passes: the one neighbour still closing up. The neighbours' own shutter, by its
+           numbers (the texture's repeat, the colour, the roller box); rolled by its height, the slats riding its foot */
+        { const tS = tex(makeShutter(THREE, cnv)); tS.wrapS = tS.wrapT = THREE.RepeatWrapping; tS.repeat.set(4, 2.6);
+          grocerShutter = new THREE.Mesh(new THREE.PlaneGeometry(3.88, 2.75), new THREE.MeshStandardMaterial({ map: tS, color: 0xcfd2d0, roughness: 0.6, metalness: 0.3 }));
+          grocerShutter.rotation.y = Math.PI; grocerShutter.position.set(-8, 2.75 / 2, MALL.z1 + 0.02); mallG.add(grocerShutter);
+          box(3.88, 0.2, 0.24, -8, 2.75 - 0.1, MALL.z1 + 0.06, new THREE.MeshStandardMaterial({ color: 0x5c6066, roughness: 0.5 }), mallG, false); }
         // the piers between the far side's shops, and on our side the wall where no shop is
         for (let i = 1; i < 7; i++) box(0.2, MALL.H, 0.3, MALL.x0 + i * 4, MALL.H / 2, MALL.z1 + 0.06, matWallB, mallG, false);
         for (const s of [-1, 1]) {
@@ -2192,7 +2214,7 @@
         /* (v21.2: the HAPPY VESAK DAY banner that hung across the corridor is gone — Buddha Day is an uposatha day) */
       }
 
-      return { shopG, mallG, SHOP, MALL, DOOR, LCNT, RCNT, ALTAR, OWN, LPT, MSTR, CLOCK, lpCase, clockTo, flames, doorLeaves };
+      return { shopG, mallG, SHOP, MALL, DOOR, LCNT, RCNT, ALTAR, OWN, LPT, MSTR, CLOCK, lpCase, clockTo, flames, doorLeaves, grocerShutter };
     }
     const SH = buildShop();
 
@@ -4536,6 +4558,170 @@
         }
       }
     };
+    /* THE OPENING FILM (CP9, §4.0a): O1 his eyes down Golden Mile's corridor at closing time — out of the lift lobby, the
+       neighbours' shutters down, every other tube out, the grocer's rolling down as he passes, one shop still lit ahead —
+       and O2 through its glass: the owner at his counter, a small bundle in red cloth before him; he looks up and
+       beckons; the door's bell as it opens; black. Every picture from this frame(t). End and reset put the grocer's
+       shutter down and the doors shut (the reset law) */
+    function grocerAt(k) {                                   // the grocer's shutter: 1 down, 0 rolled up into its box
+      const g = SH.grocerShutter; if (!g) return;
+      const kk = Math.max(0.001, Math.min(1, k)), H = 2.75;
+      g.scale.y = kk; g.position.y = H - H * kk / 2; g.material.map.repeat.y = 2.6 * kk; g.visible = kk > 0.002;
+    }
+    function doorsTo(k, only) { for (const L of SH.doorLeaves) L.hinge.rotation.y = only && L.s !== only ? 0 : L.s * 1.38 * k; }
+    const introF = {
+      T: OFT,
+      begin() { fLive.lit = null; fLive.shot = 'O'; grocerAt(0); doorsTo(0); },
+      end() { grocerAt(1); doorsTo(0); cntLive.ownerLook = 0; fLive.shot = ''; lensTo(72); if (fLive.hands) { fLive.hands.visible = true; fLive.hands = null; } },
+      frame(t, api) {
+        if (fLive.shot !== 'O') introF.begin();
+        if (api && api.handsRoot) { fLive.hands = api.handsRoot; api.handsRoot.visible = false; }   // his hands are not in it
+        fLight(SHOP_EVE); lensTo(72);
+        const ss = smooth;
+        grocerAt(t < OFT.sh0 ? 0 : ss(cl01((t - OFT.sh0) / (OFT.sh1 - OFT.sh0))));
+        cntLive.ownerLook = t >= OFT.up ? 1 : 0;                 // the owner's eyes come up to the glass
+        if (t < OFT.o2) {                                        // O1 · the corridor: out of the lift lobby, down toward the light
+          const u = cl01((t - OFT.o1) / (OFT.o2 - OFT.o1)), w = 0.25 * ss(u) + 0.75 * u;   // (eased from the lift, then steady)
+          const x = -12.6 + 11.2 * w, z = 2.4 - 0.4 * w, bob = 0.011 * Math.sin(w * 11.2 / 0.72 * Math.PI);
+          /* to the grocer's, rolling down on his right as he comes up to it and passes (by photograph, CP9: rolled at 8.4 it
+             came down a few metres behind him, and the glance found the kitchen's shutter, already down) */
+          const glance = ss(cl01((t - 4.8) / 0.8)) * (1 - ss(cl01((t - 6.6) / 0.9)));
+          const left = ss(cl01((t - 10.8) / 3.0));                                       // and round to the one lit front ahead
+          yaw.position.set(SX + x, 1.62 + bob, z);
+          yaw.rotation.y = -Math.PI / 2 - 0.95 * glance + 0.62 * left; pitch.rotation.x = -0.05 - 0.04 * left;
+        } else if (t < OFT.door) {                                // O2 · his glass: the owner, the bundle; he looks up, beckons
+          const k = ss(cl01((t - OFT.o2) / (OFT.door - OFT.o2)));
+          const p = lerp3([1.42, 1.62, 1.78], [1.18, 1.6, 1.42], k);
+          camAt(SX + p[0], p[1], p[2], SX + OWN.x - 0.4, 1.32 + 0.1 * k, OWN.z + 0.1);
+        } else {                                                  // to the door: he reaches it, its bell, it opens; black
+          const k = ss(cl01((t - OFT.door) / (OFT.open - OFT.door))), push = ss(cl01((t - OFT.open - 0.4) / 1.3));
+          const p = lerp3(lerp3([1.18, 1.6, 1.42], [0.18, 1.62, 1.0], k), [0.1, 1.62, 0.6], push);
+          const q = lerp3([OWN.x - 0.4, 1.42, OWN.z + 0.1], [0.05, 1.45, -2.0], k);
+          camAt(SX + p[0], p[1], p[2], SX + q[0], q[1], q[2]);
+          doorsTo(ss(cl01((t - OFT.open) / 0.8)), 1);            // the leaf before him opens out toward him, to his right
+        }
+      }
+    };
+    /* THE HOME FILM (CP9, §4.0c), in his room: every picture from this frame(t). The room is set by the film's own clock —
+       the three, the box and the card, the drinks, the sticks, the bag, the receipts and the calendar's page — and end()
+       hands it to PLAY I exactly as a Continue at 22:50 finds it (careResume then sets the offerings) */
+    const homeLive = { on: false, cals: null };
+    function homeKids(n) { kidLive.forEach((L, i) => { if (L.altar) L.altar.visible = i < n; }); }
+    function homeReceipts(n) { roomLive.receipts.forEach((r, i) => { r.visible = i < n; }); }
+    function homeCal(i) {                                    // his October, day by day: the 4th … the 24th crossed through
+      const cal = roomLive.calendar; if (!cal) return;
+      if (!cal.userData.map0) cal.userData.map0 = cal.material.map;
+      if (!homeLive.cals) homeLive.cals = [4, 8, 12, 16, 20, 24].map(d => tex(makeCalendarT(THREE, cnv, d)));
+      const want = i < 0 ? cal.userData.map0 : homeLive.cals[Math.min(homeLive.cals.length - 1, i)];
+      if (cal.material.map !== want) { cal.material.map = want; cal.material.needsUpdate = true; }
+    }
+    function homeDoor(k) { if (roomLive.door) roomLive.door.rotation.y = -1.1 * k; }    // (it opens INTO the room; at −1.1 its edge clears the altar's end)
+    const homeF = {
+      T: HFT,
+      begin() {
+        homeLive.on = true; fLive.lit = null; fLive.shot = 'H'; endLive.looked = '';
+        for (let i = 0; i < 3; i++) { bottleShow(i, false); stickShow(i, false); stubShow(i, false); }
+        if (roomLive.box) roomLive.box.visible = false; if (roomLive.card) roomLive.card.visible = false;
+        careLive.boxOpen = careLive.boxOpenTo = 0; careLive.drumRate = 0;
+        homeKids(0); homeReceipts(1); homeCal(0); cityOut(1);
+        if (careLive.deskBag) careLive.deskBag.visible = true;
+      },
+      end() {
+        homeLive.on = false; fLive.shot = '';
+        homeKids(3); homeReceipts(roomLive.receipts.length); homeCal(-1); homeDoor(0);
+        if (roomLive.box) roomLive.box.visible = true; if (roomLive.card) roomLive.card.visible = true;
+        careLive.boxOpen = careLive.boxOpenTo = 0; careLive.drumRate = 1;
+        careLive.bottles.forEach(B => { if (B && B.liq) B.liq.scale.y = 1; });
+        for (let i = 0; i < 3; i++) { bottleShow(i, false); stickShow(i, false); }
+        if (careLive.deskBag) careLive.deskBag.visible = true;
+        lensTo(72); if (fLive.hands) { fLive.hands.visible = true; fLive.hands = null; }
+      },
+      frame(t, api) {
+        if (fLive.shot !== 'H') homeF.begin();
+        if (api && api.handsRoot) { fLive.hands = api.handsRoot; api.handsRoot.visible = false; }   // no hands: the things move by themselves (Chad's ruling)
+        const ss = smooth, T = HFT;
+        lensTo(72);
+        if (t < T.ins) {                                     // H1 · the door at the first dusk; in; the lamp; the bag on the desk
+          endLook(t < T.lamp ? 'DUSK' : 'DUSKLIT');
+          homeDoor(ss(cl01((t - T.open) / 1.0)));
+          /* through the middle of the doorway, then on past the mat to where the bag can be seen over the chair's back (CP9,
+             by photograph: from just inside the door the chair's back stood in front of it, and the open door beside the lens) */
+          const k1 = ss(cl01((t - (T.open + 0.5)) / 1.3)), k2 = ss(cl01((t - (T.open + 1.5)) / 1.3)), turn = ss(cl01((t - (T.lamp - 0.2)) / 1.3));
+          const p = lerp3(lerp3([DOOR.x, 1.62, 3.0], [R_ARRIVE.x, 1.62, R_ARRIVE.z], k1), [0.0, 1.66, 0.35], k2);
+          const q = lerp3([DOOR.x, 1.5, 0.0], [DESK_AT.bag[0], DESK.top + 0.12, DESK_AT.bag[1]], turn);
+          camAt(p[0], p[1], p[2], q[0], q[1], q[2]);
+        } else if (t < T.h2) {                               // the four inserts, close
+          endLook('DUSKLIT');
+          homeDoor(0);
+          if (t < T.ins2) {                                   // the three set out on the new altar, one by one, the dusk city behind
+            homeKids(t > T.ins + 0.5 ? (t > T.ins + 1.1 ? (t > T.ins + 1.7 ? 3 : 2) : 1) : 0);
+            lensTo(50);
+            const k = ss(cl01((t - T.ins) / (T.ins2 - T.ins)));
+            /* a wide screen holds all three; a narrow one sees one at a time, so it goes to each as it is set down (CP9, by
+               photograph: centred on the middle one, a phone never saw the first or the last arrive) */
+            const zt = camera.aspect >= 1 ? ALTAR_Z[1]
+              : ALTAR_Z[0] + (ALTAR_Z[1] - ALTAR_Z[0]) * ss(cl01((t - (T.ins + 0.85)) / 0.45)) + (ALTAR_Z[2] - ALTAR_Z[1]) * ss(cl01((t - (T.ins + 1.45)) / 0.45));
+            camAt(MAT.x + 0.05 - 0.08 * k, 1.02, (camera.aspect >= 1 ? MAT.z : zt) - 0.05, RISER.x, ALTAR.top + ALTAR.riser + 0.12, zt);
+          } else if (t < T.ins3) {                            // the music box at the altar's end, the owner's card against it
+            homeKids(3);
+            if (roomLive.box) roomLive.box.visible = t > T.ins2 + 0.3;
+            if (roomLive.card) roomLive.card.visible = t > T.ins2 + 1.0;
+            lensTo(44);
+            const bz = (RISER.z1 + ALTAR.z1) / 2;
+            camAt(1.30 - 0.50, ALTAR.top + 0.28, bz - 0.24, 1.28, ALTAR.top + 0.05, bz);
+          } else if (t < T.ins4) {                            // the first red drink, set down before the red one
+            homeKids(3); if (roomLive.box) roomLive.box.visible = true; if (roomLive.card) roomLive.card.visible = true;
+            bottleShow(0, t > T.ins3 + 0.4);
+            lensTo(46);
+            camAt(ROW.back - 0.42, ALTAR.top + 0.26, ALTAR_Z[0] + 0.14, ROW.back, ALTAR.top + 0.09, ALTAR_Z[0] + 0.06);
+          } else {                                            // and the first stick lit in its sand
+            bottleShow(0, true);
+            if (t > T.ins4 + 0.6) stickFresh(0); else stickShow(0, false);
+            lensTo(48);
+            camAt(ROW.mid - 0.46, ALTAR.top + 0.36, ALTAR_Z[0] - 0.05, ROW.mid, ALTAR.top + 0.06, ALTAR_Z[0]);
+          }
+        } else if (t < T.h3) {                               // H2 · THE WEEKS
+          homeKids(3); if (roomLive.box) roomLive.box.visible = true; if (roomLive.card) roomLive.card.visible = true;
+          if (careLive.deskBag) careLive.deskBag.visible = false;
+          const u = t - T.h2, days = ['DUSK', 'NIGHT', 'DEEP', 'DAWN', 'MORNING', 'AFTERNOON'], step = 0.38;
+          const dd = days[Math.floor(u / step) % days.length], night = dd === 'NIGHT' || dd === 'DEEP';
+          endLook(t < T.h2c ? dd : 'AFTERNOON');
+          cityOut(dd === 'NIGHT' || dd === 'DUSK' ? 1 : dd === 'DEEP' ? 0 : -1);
+          careLive.boxOpen = careLive.boxOpenTo = night && t < T.h2c ? 1 : 0;   // (its lid open every night, shut every morning)
+          const day = Math.floor(u / (step * days.length));
+          for (let i = 0; i < 3; i++) {                       // fresh each evening, drunk down by the afternoon
+            bottleShow(i, true); const B = careLive.bottles[i];
+            if (B && B.liq) B.liq.scale.y = 1 - 0.5 * ((Math.floor(u / step) % days.length) / (days.length - 1));
+            if (dd === 'DUSK' || dd === 'NIGHT') stickFresh(i); else { stickShow(i, false); stubShow(i, true); }
+          }
+          homeReceipts(1 + Math.min(roomLive.receipts.length - 1, Math.floor(day * 0.9)));
+          homeCal(Math.floor(day * 0.8));
+          if (t < T.h2b || t >= T.h2c) {                     // the altar from the bed, locked off; then the three alone in the afternoon
+            lensTo(t >= T.h2c ? 56 : 66);
+            camAt(BED.x1 - 0.3, 1.05, 0.45, RISER.x, ALTAR.top + 0.32, (ALTAR_Z[0] + ALTAR_Z[2]) / 2);
+          } else {                                            // the desk wall: his calendar crossed day by day, a receipt each Buddha Day
+            /* (a wide screen holds both; a narrow one sees the calendar, then the board) */
+            const narrow = camera.aspect < 1, half = t < (T.h2b + T.h2c) / 2, ax = narrow ? (half ? 0.85 : -0.5) : 0.15;
+            lensTo(58);
+            camAt(ax, 1.42, narrow ? -0.95 : -0.62, ax, 1.44, -1.79);
+          }
+        } else {                                             // H3 · TONIGHT, 22:50: the door in the dark, the bag, the lamp
+          homeKids(3); if (roomLive.box) roomLive.box.visible = true; if (roomLive.card) roomLive.card.visible = true;
+          careLive.boxOpen = careLive.boxOpenTo = 0;
+          for (let i = 0; i < 3; i++) { bottleShow(i, false); stickShow(i, false); stubShow(i, true); }
+          homeReceipts(roomLive.receipts.length); homeCal(-1);
+          endLook(t < T.lamp2 ? 'DEEP' : 'NIGHT'); cityOut(0);
+          if (careLive.deskBag) careLive.deskBag.visible = t > T.bag;
+          homeDoor(ss(cl01((t - (T.h3 + 0.4)) / 1.0)) * (1 - ss(cl01((t - (T.bag + 0.6)) / 0.8))));
+          /* and, the lamp on, he comes in front of them: their faces in its light, as play will find them (CP9, by photograph:
+             from the door they were three dark shapes seen from the side) */
+          const k = ss(cl01((t - (T.h3 + 0.9)) / 1.6)), turn = ss(cl01((t - (T.lamp2 + 0.2)) / 1.6)), come = ss(cl01((t - (T.lamp2 + 0.4)) / 1.8));
+          const p = lerp3(lerp3([DOOR.x, 1.62, 3.0], [R_ARRIVE.x, 1.62, R_ARRIVE.z], k), [0.45, 1.62, 0.55], come);
+          const q = lerp3([DESK_AT.bag[0], DESK.top + 0.1, DESK_AT.bag[1]], [RISER.x, ALTAR.top + ALTAR.riser + 0.14, ALTAR_Z[1]], turn);
+          camAt(p[0], p[1], p[2], q[0], q[1], q[2]);
+        }
+      }
+    };
     /* FILM K · "The Card" (§4.0b): K1 his eyes go down to the card on the glass; K2 a macro down it, line by line (k5pen:
        the last stroke of his pen heard as the lens arrives — CP9 brings the pen into the frame); K3 the lens lifts to his
        face — he looks straight at the player — over ow5never, ow5wrong and ow5promise. */
@@ -6200,6 +6386,7 @@
       careReset();
       openReset();
       endReset();                              // (whatever an ending touched, as build() left it: CP8)
+      grocerAt(1); doorsTo(0);                 // (the corridor as play has it: the grocer's shut, the doors shut — CP9)
       for (const h of hotspots) { h.done = false; h.dwellT = 0; }
       if (kit) {
         kit.root(false); kit.pose('standing', { secs: 0.05 });
@@ -6266,7 +6453,7 @@
       skyAt: () => worldOf(yaw.position.x) === 'R' ? null : { x: yaw.position.x, z: yaw.position.z },
       get noteStorm() { return 1; },
       set noteStorm(v) {},
-      film: { SX, MX, ROOM, SHOP, RCNT, OWN, MAT, R_ARRIVE, S_SPAWN, worldM },
+      film: { SX, MX, ROOM, SHOP, RCNT, OWN, MAT, R_ARRIVE, S_SPAWN, worldM, SH },   // (SH: the shop's handles — its doors, the grocer's shutter — for probes, CP9)
       pileVia: { what: 'his room\'s mat (the home film carries him there)', x: MAT.x, z: MAT.z },
       arrivals: [{ what: 'his room (the home film puts him inside its door)', x: R_ARRIVE.x, z: R_ARRIVE.z }],
       get phase() { return phase; },
@@ -6282,7 +6469,7 @@
                      open: { busy: openLive.busy, kid: openLive.kid, k: +openLive.k.toFixed(2), came: littleLive.cameBack, slips: littleLive.slipN } }),
       counter: { solve: leanSolve, LEAN, BAG_HELD, sets: cntLive.sets, live: cntLive },   // the counter's handles (§4.0b), for probes
       careLab, careLive,                                       // PLAY I's held moments and its live state (CP6), for probes
-      madeF, cardF,                                            // the counter's films' controllers (film M, film K): every picture a function of their clock
+      madeF, cardF, introF, homeF,                             // the counter's films' controllers (film M, film K), the opening film's and the home film's (CP9): every picture a function of their clock
       redF, shyF, littleF, W,                                  // the three possessions' controllers (CP7), and the words their events show
       endT: { begin: endBegin, frame: endFrame, yatha: endYatha, live: endLive, props: endProps, END },   // the endings' controller (CP8), and its clocks (for probes)
       redStampTo, redStampAuto, redStampEnd, shyGap, shyPeekEnd, comeOpts, comeBegin, comeDone, surfaceStart, surfaceFrame,
@@ -7975,17 +8162,26 @@
      Stubs until CP9 (the opening film and the home film), CP5 (the counter's films M and K) and CP7 (the three
      possessions). Each begins and ends as it will: the opening film on black and back to it (the v4.6 law, the card
      over its black); a film from play out of the picture into black, its black handed to the kit's fade (v21.0). */
+  /* THE OPENING FILM · "Closing Time" (§4.0a, CP9): every picture from stage.introF's frame(t); this holds its cues, its
+     fades and the one track that calls it. It begins on black and ends on it, the chapter card over that black (the v4.6
+     law: keepFade). Every cue literal (the CUE_RE law), its times at file scope (CP7's law) */
   function introFilm(c, s, api) {
-    const { step, fade, stage } = api;
-    const F = stage.film;
+    const { tr, step, sfx, fade, rawK, stage } = api;
+    const F = stage.introF;
     c.keepFade = true;
     c.endFade = 1;
     fade(0, 0, 1, 1);
-    // O1 · the corridor at closing time, the shop's glass ahead (CP9 walks it)
-    step(0, () => { api.yaw.position.set(F.SX + 0.6, 1.62, 3.4); api.yaw.rotation.y = 0; api.pitch.rotation.x = -0.04; });
-    fade(0.6, 1.6, 1, 0);
-    fade(3.4, 4.2, 0, 1);
-    step(4.4, () => {});
+    tr(0, OFT.end, (k, t) => F.frame(t, api), rawK);
+    sfx(0.2, 'k5mall', 0.5);                             // the mall's hush after hours
+    sfx(0.9, 'k5shutter', 0.22);                         // a shutter rolling down, far off
+    fade(OFT.o1, OFT.o1 + 1.4, 1, 0);                    // O1 · up on the corridor
+    sfx(OFT.o1, 'k5steps', 0.4);                         // his own steps on the corridor's tiles, out of the lift lobby to the light
+    sfx(OFT.line, 'z5pro1', 1);                          // "While I was still searching for answers... I began keeping Kumanthong."
+    sfx(OFT.sh0, 'k5shutter', 0.5);                      // the grocer's, rolling down as he passes
+    step(OFT.beckon, () => stage.ownerTalk(2.2));        // the owner beckons (his talking take: his hands)
+    sfx(OFT.open, 'k5shopbell', 0.6);                    // the door's bell as it opens
+    fade(OFT.black0, OFT.black1, 0, 1);
+    step(OFT.end, () => F.end());
   }
   function playFilm(c, api) {                  // the shape every film from play keeps (CP5, CP7, CP9 fill each)
     const { step, fade } = api;
@@ -8031,7 +8227,39 @@
     fade(T.end - 1.0, T.end - 0.1, 0, 1);
     step(T.end, () => KF.end());
   }
-  function homeFilm(c, s, api) { playFilm(c, api); }       // "Every Day" (CP9)
+  /* THE HOME FILM · "Every Day" (§4.0c, CP9): every picture from stage.homeF's frame(t); this holds its cues, its fades and
+     the one track. It begins on the counter's black (the kit hands it over) and its last black is handed to the kit's
+     fade: PLAY I lifts it. Cues literal, times at file scope */
+  function homeFilm(c, s, api) {
+    const { tr, step, sfx, fade, rawK, stage } = api;
+    const F = stage.homeF;
+    c.keepFade = true;
+    c.endFade = 1;
+    fade(0, 0, 1, 1);
+    tr(0, HFT.end, (k, t) => F.frame(t, api), rawK);
+    fade(0.2, 1.0, 1, 0);                                // up on the flat's corridor and his door
+    sfx(HFT.open, 'k5door', 0.45);                       // the door
+    sfx(HFT.lamp, 'k5switch', 0.45);                     // the lamp
+    fade(HFT.ins - 0.25, HFT.ins, 0, 1); fade(HFT.ins, HFT.ins + 0.3, 1, 0);   // (a cut through black to the inserts)
+    sfx(HFT.ins + 0.4, 'z5pro2', 1);                     // "I saw it as another way of making merit... and showing compassion."
+    sfx(HFT.ins + 0.5, 'k5unwrap', 0.4);
+    sfx(HFT.ins + 0.5, 'k5figset', 0.35); sfx(HFT.ins + 1.1, 'k5figset', 0.35); sfx(HFT.ins + 1.7, 'k5figset', 0.35);
+    sfx(HFT.ins2 + 0.3, 'k5set', 0.35);                  // the box set down
+    sfx(HFT.ins3 + 0.4, 'k5set', 0.35);                  // the first drink
+    sfx(HFT.ins4 + 0.3, 'k5flick', 0.4); sfx(HFT.ins4 + 0.6, 'k5catch', 0.35);
+    fade(HFT.h2 - 0.3, HFT.h2, 0, 1); fade(HFT.h2, HFT.h2 + 0.5, 1, 0);       // H2 · the weeks
+    sfx(HFT.h2 + 0.2, 'k5theme', 0.5);                   // the lullaby's theme under the weeks
+    sfx(HFT.h2 + 1.0, 'z5pro3', 1);                      // "So I took them home... and made offerings to them, every day."
+    sfx(HFT.h2 + 5.0, 'k5rain', 0.3);                    // rain once
+    sfx(HFT.h2 + 8.0, 'k5koel', 0.3);                    // a koel at a dawn
+    fade(HFT.h3 - 0.3, HFT.h3, 0, 1); fade(HFT.h3, HFT.h3 + 0.6, 1, 0);       // H3 · tonight
+    sfx(HFT.h3 + 0.4, 'k5door', 0.45);
+    sfx(HFT.h3 + 1.6, 'z5pro4', 1);                      // "Then one night, after everything else I had been through... I wanted to know something."
+    sfx(HFT.bag, 'k5bag', 0.4);                          // the shop's bag set on the desk
+    sfx(HFT.lamp2, 'k5switch', 0.45);                    // the lamp on their faces
+    fade(HFT.black0, HFT.black0 + 1.0, 0, 1);            // black, handed to play
+    step(HFT.end, () => F.end());
+  }
   /* POSSESSION 1 · THE RED ONE (§4.4, CP7): every picture from stage.redF's frame(t); this holds its cues (literal, the
      CUE_RE law), its STAMP (the player's three taps: a craft event the film runs on through; untapped, he stamps by
      himself) and its lines. Begins on the yield's last frame (no black); ends on his own view on the mat, handed back to
@@ -8063,7 +8291,7 @@
     sfx(T.leave, 'k5leave', 0.6);
     sfx(T.self, 'z5back1', 1);                               // "That wasn't me... That was him."
     sfx(T.self + 3.5, 'z5back1b', 1);                        // "He wasn't angry. He just wanted someone to want him."
-    sfx(T.end - 2.0, 'z5again1', 1);                         // "...One more."
+    sfx(T.end - 1.6, 'z5again1', 1);                         // "...One more."  (CP9: 0.3 s clear of the line before, on its estimate)
     step(T.end, () => F.end());
   }
   /* POSSESSION 2 · THE SHY ONE (§4.4, CP7): stage.shyF's pictures; its PEEK (drag the fingers apart: a craft slide the
@@ -8086,13 +8314,15 @@
     sfx(T.scuttle + 0.6, 'z5s2', 1);                         // "Shhh... hide... hide..."
     sfx(T.coin, 'k5coin', 0.5);
     sfx(T.coin + 0.6, 'z5s3', 1);                            // "Mine... my secret..."
+    sfx(T.wait - 1.6, 'k5giggle', 0.32);                     // (CP9) under the desk, a smaller giggle: the wait is his game
     sfx(T.wait + 0.4, 'z5s4', 1);                            // "Come and find me... ...Nobody ever comes."
     sfx(T.leave, 'k5leave2', 0.5);
     sfx(T.bonk, 'k5bonk', 0.7);
     sfx(T.bonk + 0.15, 'z5back2', 1);                        // "Ow—!"
+    sfx(T.out, 'k5scuttle', 0.35);                           // (CP9) and he crawls out from under it, himself
     sfx(T.out + 1.0, 'z5back2b', 1);                         // "I was hiding under my own desk... waiting for someone to find me."
     sfx(T.little, 'k5bells', 0.35);
-    sfx(T.little + 0.8, 'z5again2', 1);                      // "One more. Just one more."
+    sfx(T.little + 1.3, 'z5again2', 1);                      // "One more. Just one more."  (CP9: clear of the line before, on its estimate)
     step(T.end, () => F.end());
   }
   /* POSSESSION 3 · THE LITTLE ONE, and COME BACK (§4.4–§4.5, CP7): stage.littleF's pictures to the surface; then COME
