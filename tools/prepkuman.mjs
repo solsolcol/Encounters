@@ -38,8 +38,13 @@
    WebP on a PLAIN source — never EXT_texture_webp, which rescueTextures
    cannot read (v14.12).
 
+     node `<name>_dist`  (v23.0 CP4, env DIST) a third, lighter cut of the
+                         same vertices for the figure across the room (from
+                         the door and the bed, past 1.25 m): on a phone the
+                         three then cost ~75k triangles there, not 361k
+
      node tools/prepkuman.mjs <in.glb> <out.glb> <name> [farTris]
-     env: ERR (0 = every triangle), COLPX, NPX, MRPX, FACE=neg (half turn) */
+     env: ERR (0 = every triangle), COLPX, NPX, MRPX, FACE=neg (half turn), DIST (tris of the third level) */
 import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { metalRough, prune, flatten, clearNodeTransform, meshopt } from '@gltf-transform/functions';
@@ -129,6 +134,15 @@ if (FT) {
   const fn = doc.createNode(`${NAME}_far`).setMesh(doc.createMesh(`${NAME}_far`).addPrimitive(fp));
   root.listScenes()[0].addChild(fn);
   report.push(`far ${idx.length / 3} (permissive, error ${e.toFixed(4)})`);
+}
+if (process.env.DIST) {
+  const tris = Math.floor(+process.env.DIST);
+  const [idx, e] = MeshoptSimplifier.simplifyWithAttributes(I, P, 3, UV, 2, [1, 1], null, tris * 3, +(process.env.DISTERR || 0.05), ['Permissive']);
+  const dp = doc.createPrimitive().setMaterial(prim.getMaterial()).setIndices(doc.createAccessor().setType('SCALAR').setArray(new Uint32Array(idx)).setBuffer(buf));
+  for (const sem of prim.listSemantics()) dp.setAttribute(sem, prim.getAttribute(sem));
+  const dn = doc.createNode(`${NAME}_dist`).setMesh(doc.createMesh(`${NAME}_dist`).addPrimitive(dp));
+  root.listScenes()[0].addChild(dn);
+  report.push(`dist ${idx.length / 3} (permissive, error ${e.toFixed(4)})`);
 }
 
 /* the sheets */
