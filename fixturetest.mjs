@@ -1665,6 +1665,15 @@ r = await runEvent({ kind: 'yield', fill: 0.4 }, async () => { await p.keyboard.
 K.yieldKey = r.ok === true;
 r = await runEvent({ kind: 'yield', fill: 0.4 }, async () => { await ptr('pointerdown', C.x, C.y, { pt: 'mouse', id: 1 }); await untilEv(evGone, null, 30000); await ptr('pointerup', C.x, C.y, { pt: 'mouse', id: 1 }); });
 K.yieldMouse = r.ok === true;
+/* (CP7) a yield that fills by itself once pressed latches a press shorter than a frame: down and up in one task, with no
+   frame between them — on a slow phone a quick tap — and it still fills (the latch was read on the frame) */
+r = await runEvent({ kind: 'yield', fill: 0.4, auto: true, autoAfter: 9999 }, async () => {
+  await p.evaluate(([x, y]) => { const el = document.getElementById('event');
+    for (const type of ['pointerdown', 'pointerup']) el.dispatchEvent(new PointerEvent(type, { pointerType: 'touch', pointerId: 13,
+      isPrimary: true, clientX: x, clientY: y, bubbles: true, cancelable: true })); }, [C.x, C.y]);
+  await untilEv(evGone, null, 30000);
+});
+K.yieldAutoTapLatched = r.ok === true;
 /* S39 · SURFACE: a finger dragging up climbs back; left alone it slips — sanity paid, never under the floor — and
    after `secs` it gives up for him (never a soft-lock) */
 r = await runEvent({ kind: 'surface', secs: 40, start: 0.3, sink: 0.04, pull: 0.04, goal: 0.8, hold: 0.2, lead: 0.2 }, async () => {
@@ -1787,16 +1796,16 @@ K.holdLeft = await p.evaluate(() => { const e = window.__enc, o = new (e.handsRo
    across so the named palm stands at that share of the half-width at its depth, on any screen */
 await p.evaluate(() => window.__enc.kit.handPose('bottle', 1, { secs: 0, p: 0 }));
 await until(() => { const h = window.__enc.hpose(); return h.on && h.name === 'bottle' && h.u >= 1; }, 20000).catch(() => {});
-await p.waitForTimeout(300);
-K.handPalmRel = await p.evaluate(() => { const e = window.__enc, L = e.kit.handPalm('left'), R = e.kit.handPalm('right');
+/* (CP7: both POLL — read after a fixed wait they failed under a loaded box, where 0.3 s can hold no drawn frame and the
+   0.6 s ease to `sx` is two thirds done after 0.4: the v8.7 law, written into CP6's own checks) */
+K.handPalmRel = await until(() => { const e = window.__enc, L = e.kit.handPalm('left'), R = e.kit.handPalm('right');
   if (!L || !R) return false;
   const rel = e.hposeTable.bottle.r.rel;
-  return Math.hypot(R.x - L.x - rel[0], R.y - L.y - rel[1], R.z - L.z - rel[2]) < 0.01; });
+  return Math.hypot(R.x - L.x - rel[0], R.y - L.y - rel[1], R.z - L.z - rel[2]) < 0.01; }, 20000).then(() => true, () => false);
 await p.evaluate(() => window.__enc.kit.handPose('bottle', 1, { p: 0, sx: 0.3 }));
-await p.waitForTimeout(400);
-K.handPoseSx = await p.evaluate(() => { const R = window.__enc.kit.handPalm('right'); if (!R) return false;
+K.handPoseSx = await until(() => { const R = window.__enc.kit.handPalm('right'); if (!R) return false;
   const share = R.x / (Math.tan(26 * Math.PI / 180) * Math.abs(R.z) * (innerWidth / innerHeight));
-  return Math.abs(share - 0.3) < 0.05; });
+  return Math.abs(share - 0.3) < 0.05; }, 20000).then(() => true, () => false);
 await p.evaluate(() => window.__enc.kit.handPose(null, 0, { secs: 0 }));
 await until(() => window.__enc.hpose().on === false, 20000).catch(() => {});
 /* a film takes a pose back on its first frame (it draws its own with api.handPose) */

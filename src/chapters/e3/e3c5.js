@@ -282,7 +282,22 @@
       craftCatch: 'Hold the tips in the flame',
       craftWave: 'Wave the flames out',
       craftWind: 'Wind the box',
-      noteCare: 'You prepared their drinks with care.'
+      noteCare: 'You prepared their drinks with care.',
+      /* PLAY II · the question and the openings (CP7, §4.3–§4.6) */
+      objOpenRed: 'Open yourself to the red one',
+      objOpenShy: 'Open yourself to the shy one',
+      objOpenLittle: 'Open yourself to the little one',
+      objSitAgain: 'Sit with them',
+      hotOpen: 'Open yourself',
+      briefYield: 'Press and hold. Let your mind loosen.',
+      briefYieldKey: 'Hold the mouse button, E or Space. Let your mind loosen.',
+      craftStamp: 'Stamp!',
+      craftPeek: 'Peek through your fingers',
+      objComeBack: 'Come back',
+      briefSurface: 'COME BACK — draw yourself up toward the light. He doesn\'t want you to go. Keep rising.',
+      briefSurfaceKey: 'COME BACK — move the mouse up, or tap W or ↑, to rise toward the light. He doesn\'t want you to go. Keep rising.',
+      noteCameBack: 'You came back on your own.',
+      noteHard: 'It took everything to come back.'
     },
     sayPrefix: 'z5'
   };
@@ -309,6 +324,14 @@
     /* the epilogue */ 'z5epi0': 9.0, 'z5epi1': 7.4, 'z5epi2': 3.0, 'z5epi3': 4.2,
     /* the cards */ 'z5A': 4.4, 'z5B': 4.0, 'z5C': 3.0, 'z5D': 3.6
   };
+
+  /* the first two possessions' clocks (CP7, §4.4): plain numbers at the chapter's top level, so each film reads its own
+     times directly — and chaptertest, which walks a film against a stand-in stage whose every lookup is 0, sees the real
+     ones and can hold each cue to its film's length (a table read through the stage there is all zeros) */
+  const RFT = { rise: 0, come: 1.2, contact: 2.2, stand: 3.0, stamp: 5.5, march: 9.0, win: 10.4, desk: 12.4, back: 14.0,
+                grab: 15.0, slam: 18.0, flop: 22.0, leave: 24.5, self: 27.0, end: 36.0 };
+  const SFT = { scurry: 0, contact: 2.0, peek0: 3.0, peek: 5.5, scuttle: 9.0, under: 11.0, look: 14.0, coin: 16.0,
+                wait: 21.0, leave: 24.0, bonk: 26.0, out: 28.0, little: 32.0, end: 36.0 };
 
   const smooth = k => k * k * (3 - 2 * k);
   const cl01 = x => Math.max(0, Math.min(1, x));
@@ -644,10 +667,13 @@
          here put a curtain in front of the red one and through the altar's top) */
       { const cm = M({ color: 0x7a8aa0, roughness: 0.96, side: THREE.DoubleSide });
         const CY0 = WY0 + 0.03, CY1 = 2.24, CL = CY1 - CY0;
+        /* (the right-hand drape hangs from its own hinge at the window's edge: the red one sweeps it aside, CP7) */
+        const cr = new THREE.Group(); cr.position.set(x1 - 0.12, 0, WZ1 + 0.1); R.add(cr); roomLive.curtain = cr;
         for (let i = 0; i < 6; i++) { const s = i < 3 ? -1 : 1, k = i % 3;
           const p = new THREE.Mesh(new THREE.PlaneGeometry(0.13, CL), cm);
           p.position.set(x1 - 0.12 - 0.022 * (k % 2), (CY0 + CY1) / 2, s < 0 ? WZ0 - 0.1 + k * 0.05 : WZ1 + 0.1 - k * 0.05);
-          p.rotation.y = -Math.PI / 2 + (k % 2 ? 0.5 : -0.5); R.add(p); }
+          p.rotation.y = -Math.PI / 2 + (k % 2 ? 0.5 : -0.5);
+          if (s > 0) { p.position.x -= cr.position.x; p.position.z -= cr.position.z; cr.add(p); } else R.add(p); }
         for (const z of [WZ0 - 0.06, WZ1 + 0.06]) { const tb = cyl(0.012, 0.012, 0.16, x1 - 0.1, 1.25, z, M({ color: 0xc8b07a, roughness: 0.6 }), 8, R); tb.rotation.x = Math.PI / 2; }   // the tie-backs
         box(0.03, 0.03, WZ1 - WZ0 + 0.8, x1 - 0.12, 2.25, (WZ0 + WZ1) / 2, mDark, R, false); }
       thai('fern', 1.40, 0, 1.46, { parent: R, fit: 0.36, cast: false });             // a potted fern in the corner past the altar's end
@@ -655,8 +681,8 @@
       roomLive.floorGlow = glowP(1.4, 1.8, 0x8aa4d8, 0.16, 0.7, 0.012, 0.45, -Math.PI / 2);
       setWindow('night');
       /* ---- THE DESK (chapter 4's), made real: its drawer, the lamp and its pool, the laptop, the second monitor on an
-         arm with his dashboard, a dashcam on its stand, a notebook and pen, a mug on a coaster, his phone, the alarm
-         clock, a charging cable; the office chair before it */
+         arm with his dashboard, a dashcam on its stand, a notebook and pen, a mug on a coaster, the alarm clock, a
+         charging cable; the office chair before it */
       const DT = DESK.top, DX0 = DESK.x0, DX1 = DESK.x1, DZ = -1.49;
       box(DX1 - DX0, 0.035, 0.62, (DX0 + DX1) / 2, DT, DZ, mWood, R, false);
       box(0.03, DT, 0.58, DX0 + 0.03, DT / 2, DZ, mWood, R, false);
@@ -698,11 +724,11 @@
         cyl(0.012, 0.016, 0.05, 0, 0.025, 0, mDark, 10, dc);
         box(0.07, 0.035, 0.04, 0, 0.068, 0, M({ color: 0x14161a, roughness: 0.3, metalness: 0.5 }), dc, false);
         const lens = cyl(0.012, 0.012, 0.012, 0, 0.068, 0.024, M({ color: 0x0a0c10, roughness: 0.05, metalness: 0.8 }), 14, dc); lens.rotation.x = Math.PI / 2; }
-      { const nb = box(0.15, 0.012, 0.21, -0.48, DT + 0.024, -1.36, M({ color: 0x2a3a5a, roughness: 0.8 }), R, false); nb.rotation.y = 0.18;   // a notebook and its pen
-        const pen = cyl(0.004, 0.004, 0.14, -0.4, DT + 0.034, -1.34, M({ color: 0x14141a, roughness: 0.3 }), 8, R); pen.rotation.set(Math.PI / 2, 0, 0.6); }
+      { const nb = box(0.15, 0.012, 0.21, -0.50, DT + 0.024, -1.42, M({ color: 0x2a3a5a, roughness: 0.8 }), R, false); nb.rotation.y = 0.18;   // a notebook and its pen
+        const pen = cyl(0.004, 0.004, 0.14, -0.49, DT + 0.034, -1.42, M({ color: 0x14141a, roughness: 0.3 }), 8, R); pen.rotation.set(Math.PI / 2, 0, 0.6); }   // (on the notebook, set back: at its old place the pen's end stood behind the bottle he opens, a black line across it, and the incense packet lies where the notebook's front edge was — by photograph)
       { const mug = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.036, 0.095, 18), M({ color: 0xe8e2d6, roughness: 0.5 })); mug.position.set(0.17, DT + 0.07, -1.33); R.add(mug);
         cyl(0.05, 0.05, 0.005, 0.17, DT + 0.02, -1.33, M({ color: 0x6a4a2a, roughness: 0.8 }), 20, R);                                   // its coaster
-        box(0.075, 0.008, 0.15, 0.06, DT + 0.022, -1.24, M({ color: 0x14161a, roughness: 0.3, metalness: 0.4 }), R, false);              // his phone
+        // (his phone is in his pocket, not on the desk: it slides out onto the floor beside him after the little one — CP7)
         const cab = cyl(0.003, 0.003, 0.5, 0.0, DT + 0.021, -1.32, mWhite, 6, R); cab.rotation.set(0, 0.9, Math.PI / 2);                  // its cable
         const ac = new THREE.Group(); ac.position.set(0.24, DT + 0.018, -1.62); ac.rotation.y = -0.35; R.add(ac);
         cyl(0.05, 0.05, 0.03, 0, 0.065, 0, M({ color: 0xa83a2a, roughness: 0.4, metalness: 0.3 }), 20, ac).rotation.x = Math.PI / 2;
@@ -740,10 +766,14 @@
           const b = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.13, 0.16), mats6);
           b.position.set(0.5 + col * 0.205 + (r() - 0.5) * 0.01, 0.065 + row * 0.13, -1.66 + lay * 0.17); b.rotation.y = (r() - 0.5) * 0.06;
           b.castShadow = !LOW; b.receiveShadow = true; R.add(b);
+          if (k === 10) { roomLive.cartonTop = b; b.userData.home = { x: b.position.x, y: b.position.y, z: b.position.z, ry: b.rotation.y }; }   // (the red one swipes it off, CP7)
         }
         solids.push(hidBox(0.62, 0.26, 0.34, 0.705, 0.13, -1.58, R));
         const td = box(0.12, 0.06, 0.05, 0.62, 0.29, -1.62, M({ color: 0xc8241c, roughness: 0.5 }), R, false); td.rotation.y = 0.3;           // the tape dispenser, on top
         const bw = cyl(0.12, 0.12, 0.38, 1.02, 0.12, -1.6, M({ color: 0xdfe8ee, roughness: 0.3, transparent: true, opacity: 0.85 }), 20, R); bw.rotation.x = Math.PI / 2; }
+      /* a coin lost under the desk, that the shy one finds (CP7): hidden until his film, by the desk after it */
+      { const coin = cyl(0.011, 0.011, 0.0018, -0.30, 0.0009, -1.47, M({ color: 0xd4a84a, roughness: 0.3, metalness: 0.9 }), 16, R);
+        coin.visible = false; coin.userData.home = coin.position.clone(); roomLive.coin = coin; }
       /* ---- THE BED (chapter 4's place), made real: a slatted frame on legs, a mattress in a fitted sheet, two pillows,
          a rumpled blanket, a T-shirt folded at its foot; the bedside table and its red LED clock; the shelf over it with
          its books and the small Buddha */
@@ -2338,6 +2368,14 @@
     /* the viewmodel's lens (its own: 52°, at the origin of the hands' scene, looking down −z) — what a held thing's point
        on the screen is, for the craft's `at` (S37: a thing in his hand is projected by the chapter) */
     const VM_T = Math.tan(26 * Math.PI / 180), _vp = new THREE.Vector3();
+    /* a thing in the WORLD, where it falls on the screen (shares of the frame, the craft's `at`): the bottle on the desk */
+    function worldAt(obj, ox = 0, oy = 0, oz = 0) {
+      if (!obj || !obj.parent) return null;
+      obj.updateWorldMatrix(true, false);
+      const p = obj.localToWorld(_vp.set(ox, oy, oz)).project(camera);
+      if (p.z > 1) return null;
+      return { sx: 0.5 + 0.5 * p.x, sy: 0.5 - 0.5 * p.y };
+    }
     function vmAt(obj, ox = 0, oy = 0, oz = 0) {
       if (!obj || !obj.parent) return null;
       obj.updateWorldMatrix(true, false);
@@ -2345,11 +2383,12 @@
       if (p.z > -0.01) return null;
       return { sx: 0.5 + 0.5 * (p.x / -p.z) / (VM_T * camera.aspect), sy: 0.5 - 0.5 * (p.y / -p.z) / VM_T };
     }
-    /* the hands' poses that hold a thing, with where that thing stands across the frame on every screen (S40's `sx`: the
-       palm named at that share of the half-width at its depth — by photograph, on a phone the bottle's pose put it half
-       off the right edge): the cap, a little right of the middle; the straw over the neck, likewise; the lighter's flame
-       in the middle */
-    const HOLD_SX = { bottle: { sx: 0.10 }, straw: { sx: 0.12 }, lighter: { sx: 0.0, sxHand: 'left' } };
+    /* the hands' pose that holds a thing, with where that thing stands across the frame on every screen (S40's `sx`: the
+       palm named at that share of the half-width at its depth — by photograph, on a phone a held thing stood half off
+       the right edge): the lighter's flame in the middle. (The bottle is not held while it is opened: Chad, v23.0 CP7 —
+       "if you know its impossible for you to get the fingers right, then dont do that animation, just have the bottle
+       animate itself": it stands on the desk and opens under the player's finger) */
+    const HOLD_SX = {};                                       // (the lighter is not held either: it lights itself on the desk — the same call)
     function handsTo(name, k, o = {}) {
       if (!kit || !kit.handPose) return;
       const X = name && HOLD_SX[name];
@@ -2357,19 +2396,6 @@
     }
     const _pl = new THREE.Vector3(), _pr = new THREE.Vector3(), _ax = new THREE.Vector3(), _up = new THREE.Vector3(0, 1, 0);
     const _q = new THREE.Quaternion(), _m4 = new THREE.Matrix4(), _m4b = new THREE.Matrix4(), _sc = new THREE.Vector3(1, 1, 1);
-    /* THE BOTTLE IN HIS HANDS: its axis from his left palm toward his right, its base `grip` below the left palm — so the
-       cap is in his right fingers in the 'bottle' pose and the straw is over its neck in the 'straw' pose (S40's poses
-       were found with these two palms where they are) — written every frame in the left hand's own frame. The palms are
-       the engine's (kit.handPalm, the rule `rel` is measured with): read off each arm's own frame they were 10 cm out
-       by the wrist's turn, and the bottle lay on its side pointing away from the lens (by measurement, CP6) */
-    function heldFrame() {
-      const H = careLive.held; if (!H || !H.g.parent || !kit || !kit.handPalm) return;
-      if (!kit.handPalm('left', _pl) || !kit.handPalm('right', _pr)) return;
-      const L = H.g.parent; L.updateWorldMatrix(true, false);
-      _ax.subVectors(_pr, _pl); const d = _ax.length(); if (d < 1e-4) return; _ax.multiplyScalar(1 / d);
-      const grip = careLive.grip === 'cap' ? BOTTLE_CAP_Y + 0.0065 - d : 0.045;     // the cap's middle in his right fingers, or held low for the straw
-      standAt(H.g, _pl.clone().addScaledVector(_ax, -grip), _ax);
-    }
     /* a thing held in a hand, stood with its +y along `dir` and its origin at `at` (both in the hands' scene), written in
        its hand's own frame */
     function standAt(obj, at, dir) {
@@ -2380,11 +2406,6 @@
       _m4b.copy(L.matrixWorld).invert().multiply(_m4);
       _m4b.decompose(obj.position, obj.quaternion, obj.scale);
     }
-    /* THE LIGHTER AND THE STICKS IN HIS HANDS (the incense at the desk): the lighter UPRIGHT in his left fist, its middle in
-       the palm and tipped a little toward the lens, so its wheel and its flame are seen; the three sticks out of his
-       right fist pointing straight at that flame, their tips reaching it as the hold fills (careLive.catchK) — by
-       photograph: held by fixed turns in each hand's frame, the lighter hung at 45° and the tips stood well clear of
-       the flame they were meant to catch in */
     /* CARRIED: a thing in his right hand as he walks — stood upright through the palm, its lower part in the fist and a
        little toward the lens (by photograph: held by a fixed turn in the arm's frame, the bottle hung below the frame's
        edge and only the straw's tip was seen) */
@@ -2395,18 +2416,6 @@
     }
     /* the yaw from where he stands to a place on the altar */
     function altarYaw(x, z) { return Math.atan2(-(x - yaw.position.x), -(z - yaw.position.z)); }
-    const _lu = new THREE.Vector3(), _lf = new THREE.Vector3(), _ld = new THREE.Vector3();
-    function lighterFrame() {
-      const Lg = careLive.lighter, St = careLive.sticks;
-      if (!Lg || !St || !Lg.g.parent || !St.g.parent || !kit || !kit.handPalm) return;
-      if (!kit.handPalm('left', _pl) || !kit.handPalm('right', _pr)) return;
-      _lu.set(0, 1, 0.18).normalize();
-      standAt(Lg.g, _pl.clone().addScaledVector(_lu, -0.035), _lu);
-      _lf.copy(_pl).addScaledVector(_lu, -0.035 + 0.103);                  // the flame (makeLighter: its sprite at 0.103)
-      _ld.subVectors(_lf, _pr); const reach = _ld.length(); if (reach < 1e-3) return; _ld.multiplyScalar(1 / reach);
-      const short = 0.221 - reach + 0.045 * (1 - smooth(cl01(careLive.catchK)));   // (makeSticks: the tips at 0.221)
-      standAt(St.g, _pr.clone().addScaledVector(_ld, -short), _ld);
-    }
     /* AT THE DESK: he sits on his chair, the eye down to 1.18 m over the desk (kit.pose — as the mat's sitting is), rooted */
     const CHAIR = { x: -0.32, z: -1.02 };
     function sitAtDesk(resumed) {
@@ -2465,21 +2474,19 @@
       const K = KIDS[i], H = careLive.held;
       heldReset();                                         // a fresh bottle: cap on, straw in its sleeve over it
       sfxAt('k5bottleout', 0.45, CHAIR.x, CHAIR.z - 0.4);
-      kit.hold(H.g, { hand: 'left' });
-      careLive.grip = 'cap';
-      handsTo('bottle', 1, { secs: 0.6, p: 0 });
+      deskBottle(true);                                    // out of the bag, stood on the desk before him
+      viewTo(Math.atan2(-(WORK.x - CHAIR.x), -(WORK.z - CHAIR.z)), Math.atan2(DESK.top + 0.12 - DESK_EYE, Math.hypot(WORK.x - CHAIR.x, WORK.z - CHAIR.z)), 0.6);
       const first = !careLive.briefed; careLive.briefed = true;
       let clicks = 0, sealed = false, stiffSaid = false;
       kit.event({ kind: 'craft', label: W.briefCapTitle, brief: first ? (TOUCHY ? W.briefCap : W.briefCapKey) : undefined, demo: 'twist',
         steps: [{ g: 'twist', turns: K.capTurns, word: W.craftCap },
                 { g: 'slide', dir: 'down', len: 0.2, word: W.craftStraw },
                 { g: 'slide', dir: 'side', len: 0.08, word: W.craftBend }],
-        at: () => (careLive.grip === 'cap' ? vmAt(H.cap, 0, 0.006, 0) : vmAt(H.g, 0, BOTTLE_CAP_Y, 0)),
+        at: () => (careLive.capOff ? worldAt(H.g, 0, BOTTLE_CAP_Y, 0) : worldAt(H.cap, 0, 0.006, 0)),
         onProgress: (s, k) => {
           if (s === 0) {
             const deg = k * K.capTurns * 360;
             careLive.capA = deg * Math.PI / 180;
-            handsTo('bottle', 1, { p: careLive.capA });
             while (clicks < Math.floor(deg / 30)) { clicks++; sfxAt(K.capTurns > 1.6 ? 'k5stiff' : 'k5ratchet', 0.32, CHAIR.x, CHAIR.z - 0.4); }
             if (!sealed && deg >= 270) { sealed = true; sfxAt('k5seal', 0.5, CHAIR.x, CHAIR.z - 0.4); sfxAt('k5hiss', 0.35, CHAIR.x, CHAIR.z - 0.4); }
             if (K.capTurns > 1.6 && !stiffSaid && deg >= 200) { stiffSaid = true; queueLine('z5stiff'); }   // the little one's stiff cap: "Come on... open..." (§4.2)
@@ -2487,9 +2494,8 @@
           else careLive.bend = k;
         },
         onStep: (s) => {
-          if (s === 0) {                                   // the cap off, into his fingers, and set down on the desk
+          if (s === 0) {                                   // the cap off, and set down on the desk
             sfxAt('k5capoff', 0.45, CHAIR.x, CHAIR.z - 0.4); careLive.capOff = true; capAside(i);
-            careLive.grip = 'straw'; handsTo('straw', 1, { secs: 0.5 });
             sfxAt('k5tear', 0.35, CHAIR.x, CHAIR.z - 0.4); careLive.sleeveOff = true; sleeveAside(i);
           } else if (s === 1) {
             sfxAt('k5slide', 0.4, CHAIR.x, CHAIR.z - 0.4); after(0.3, () => sfxAt('k5bubbles', 0.3, CHAIR.x, CHAIR.z - 0.4));
@@ -2500,9 +2506,7 @@
       }).then(() => {
         if (!alive) return;
         careLive.slide = 1; careLive.bend = 1;
-        if (kit.handPose) kit.handPose(null, 0, { secs: 0.5 });
-        kit.hold(null, { hand: 'left' }); kit.hold(null);
-        careLive.grip = '';
+        deskBottle(false);
         kit.hold(H.g, { pos: HELD_R.pos, rot: HELD_R.rot });   // in his right hand now, as he stands
         careLive.carry = i;
         standUp();
@@ -2574,14 +2578,14 @@
       careBusy = true; kit.objective(null);
       sitAtDesk(false);
       const Lg = careLive.lighter, St = careLive.sticks;
-      kit.hold(Lg.g, { hand: 'left', pos: LIGHTER_L.pos, rot: LIGHTER_L.rot });
-      kit.hold(St.g, { pos: STICKS_R.pos, rot: STICKS_R.rot });
-      handsTo('lighter', 1, { secs: 0.6 });
-      careLive.catchK = 0; careLive.lighterOn = true;
+      careLive.catchK = 0; deskIncense('stage');
+      /* his look onto the packet's mouth and the lighter, at the flame's height (the bottle's own move) */
+      { const tx = PKT_O.x + 0.07, ty = DESK.top + 0.09, tz = PKT_O.z;
+        viewTo(Math.atan2(-(tx - CHAIR.x), -(tz - CHAIR.z)), Math.atan2(ty - DESK_EYE, Math.hypot(tx - CHAIR.x, tz - CHAIR.z)), 0.6); }
       let taps = 0;
       kit.event({ kind: 'craft', label: W.objIncense,
         steps: [{ g: 'tap', n: 2, word: W.craftLight }, { g: 'hold', secs: 1.4, word: W.craftCatch }, { g: 'swipe', dir: 'side', word: W.craftWave }],
-        at: () => vmAt(Lg.g, 0, 0.09, 0),
+        at: () => worldAt(Lg.g, 0, 0.09, 0),
         onProgress: (s, k) => {
           if (s === 0) {
             const t = Math.round(k * 2);
@@ -2599,15 +2603,52 @@
       }).then(() => {
         if (!alive) return;
         Lg.flame.visible = false; St.tips.forEach(T => { T.fl.visible = false; T.em.visible = true; });
-        careLive.lighterOn = false;
-        kit.hold(null, { hand: 'left' });
-        kit.hold(St.g, { pos: STICKS_R.pos, rot: STICKS_R.rot });   // (the sticks back to how his hand carries them)
-        if (kit.handPose) kit.handPose(null, 0, { secs: 0.5 });
+        careLive.catchK = 0; deskIncense('left');                    // (the packet and the lighter stay where they were used)
+        kit.hold(St.g, { pos: STICKS_R.pos, rot: STICKS_R.rot });   // (the sticks to his hand, to carry to them)
         careDone.add('lit'); careSave();
         queueGap(0.3); queueLine('z5incense');
         queueFn(() => { standUp(); viewTo(altarYaw(ROW.mid, ALTAR_Z[1]), -0.42, 0.9); after(0.95, () => { careBusy = false; objectiveFor('care'); }); });
       });
       return true;
+    }
+    /* THE INCENSE LIGHTS ITSELF (Chad, on the bottle: "if you know its impossible for you to get the fingers right, then
+       dont do that animation, just have the bottle animate itself" — and the two hands holding the lighter and the sticks
+       were the same broken fingers, by photograph): for this order the packet lies on the desk before him, its mouth
+       toward the lighter standing beside it, the three sticks out of the mouth. A tap strikes the lighter, the hold leans
+       the sticks' tips down into its flame, the flick puts the flames out — the player's finger moves them, as it turns
+       the cap. 'stage' sets all three out; 'left' leaves the packet and the lighter where they were used (the sticks are
+       his to carry); off puts the packet home and takes the lighter and the sticks off the desk */
+    const PKT_O = { x: -0.30, z: -1.265 };                       // the packet's mouth: where the sticks lean from
+    const STICK_OUT = 0.161, STICK_UP = 1.08;                    // the sticks' length out of the mouth; their lean at rest (rad above level)
+    function deskIncense(mode) {
+      const Lg = careLive.lighter, St = careLive.sticks, Pk = careLive.packet; if (!Lg || !St || !Pk) return;
+      careLive.incDesk = mode === 'stage';
+      if (mode) {
+        Pk.position.set(PKT_O.x - 0.22, DESK.top + 0.018, PKT_O.z); Pk.rotation.set(0, 0, -Math.PI / 2 + 0.02);
+        if (Lg.g.parent !== worldR) worldR.add(Lg.g);
+        const lx = PKT_O.x + 0.142;
+        Lg.g.position.set(lx, DESK.top, PKT_O.z); Lg.g.rotation.set(0, Math.atan2(CHAIR.x - lx, CHAIR.z - PKT_O.z), 0); Lg.g.scale.setScalar(1);
+        if (mode === 'stage') { if (St.g.parent !== worldR) { if (St.g.parent) St.g.parent.remove(St.g); worldR.add(St.g); } St.g.scale.setScalar(1); incenseFrame(); }
+      } else {
+        Pk.position.set(DESK_AT.packet[0], DESK.top + 0.018, DESK_AT.packet[1]); Pk.rotation.set(0, 0.5, Math.PI / 2 - 0.02);
+        if (Lg.g.parent === worldR) worldR.remove(Lg.g);
+        if (St.g.parent === worldR) worldR.remove(St.g);
+      }
+    }
+    const _io = new THREE.Vector3(), _ifl = new THREE.Vector3(), _idF = new THREE.Vector3(), _id0 = new THREE.Vector3(), _idd = new THREE.Vector3();
+    const _iq = new THREE.Quaternion(), _iy = new THREE.Vector3(0, 1, 0);
+    function incenseFrame() {                                    // every frame of the order: the sticks leaning by catchK
+      const Lg = careLive.lighter, St = careLive.sticks; if (!Lg || !St || St.g.parent !== worldR) return;
+      _io.set(PKT_O.x, DESK.top + 0.02, PKT_O.z);
+      Lg.g.updateWorldMatrix(true, true); Lg.flame.getWorldPosition(_ifl); _ifl.y -= 0.006;     // (into the flame's foot)
+      _idF.subVectors(_ifl, _io); const reach = _idF.length(); _idF.multiplyScalar(1 / reach);
+      const hz = Math.hypot(_idF.x, _idF.z) || 1;
+      _id0.set(Math.cos(STICK_UP) * _idF.x / hz, Math.sin(STICK_UP), Math.cos(STICK_UP) * _idF.z / hz);
+      const k = smooth(cl01(careLive.catchK));
+      _idd.copy(_id0).lerp(_idF, k).normalize();
+      _iq.setFromUnitVectors(_iy, _idd); St.g.quaternion.copy(_iq);
+      const out = STICK_OUT + (reach - STICK_OUT) * k;          // (and slid out, so at full lean the tips sit in the flame)
+      St.g.position.copy(_io).addScaledVector(_idd, out - 0.221);  // (makeSticks: the tips at 0.221 from the base)
     }
     const LIGHTER_L = { pos: [-0.012, -0.03, -0.15], rot: [0, 0, 0] };   // (by photograph, CP6)
     const STICKS_R = { pos: [0.012, -0.06, -0.15], rot: [-0.3, 0, 0] };  // (by photograph, CP6)
@@ -2669,8 +2710,7 @@
             queueFn(() => {
               if (kit.pray) kit.pray(false, { secs: 0.8 });
               roomClock('23:12');
-              setPhase('decide');                          // (CP7: open1 — the question — goes here)
-              after(1.2, () => { careBusy = false; openDecision(); });
+              after(1.2, () => { careBusy = false; askBeat(); });   // the question, and the openings (CP7)
             });
           });
         });
@@ -2686,8 +2726,17 @@
                        bowT: 0, held: null, heldStraw: null, heldSleeve: null, lighter: null, sticks: null,
                        bottles: [], placed: [false, false, false], rings: [], glints: [], sticksSet: [], capsDesk: [], sleevesDesk: [],
                        deskBag: null, packet: null };
+    /* where a drink is opened: on the desk before his chair, in front of the laptop (its base's front edge at z −1.315),
+       straight ahead of him; the eye at the desk */
+    const WORK = { x: -0.34, z: -1.265 }, DESK_EYE = 1.18;
+    function deskBottle(on) {
+      const H = careLive.held; if (!H) return;
+      careLive.onDesk = !!on;
+      if (on) { if (H.g.parent !== worldR) worldR.add(H.g); H.g.position.set(WORK.x, DESK.top + 0.018, WORK.z); H.g.rotation.set(0, -0.5, 0); H.g.scale.setScalar(1); }
+      else if (H.g.parent === worldR) worldR.remove(H.g);
+    }
     const DESK_AT = { bag: [-0.80, -1.33], packet: [-0.62, -1.26], caps: [[-0.10, -1.25], [-0.06, -1.27], [-0.02, -1.25]],
-                      sleeves: [[-0.24, -1.24], [-0.21, -1.26], [-0.18, -1.24]] };
+                      sleeves: [[0.145, -1.235], [0.16, -1.255], [0.175, -1.24]] };   // (beyond the caps: the incense is lit where they used to lie)
     function buildOfferings() {
       const R = worldR, A = ALTAR, DT = DESK.top;
       // the bottles at the altar (the drinkAt places), each with its straw bent toward its child (+x, up the riser)
@@ -2751,13 +2800,13 @@
     function careFrame(wdt) {
       glideFrame();
       /* the mat sits him the moment he steps onto it (§4.2: "walking onto it sits him"), as a press on it does */
-      if (phase === 'sit' && !seated && !careBusy && getState() === 'play' && Math.hypot(yaw.position.x - MAT.x, yaw.position.z - MAT.z) < 0.28) sitWithThem();
-      if (careLive.grip) heldFrame();
-      if (careLive.lighterOn) lighterFrame();
+      if ((phase === 'sit' || phase === 'open3') && !seated && !careBusy && !openLive.busy && getState() === 'play'
+          && Math.hypot(yaw.position.x - MAT.x, yaw.position.z - MAT.z) < 0.28) { if (phase === 'sit') sitWithThem(); else sitAgain(); }
+      if (careLive.incDesk) incenseFrame();
       else if (careLive.carry >= 0 && careLive.held && careLive.held.g.parent && !careLive.grip) carryFrame(careLive.held.g, 0.06);
       else if (careDone.has('lit') && sticksN() < 3 && careLive.sticks && careLive.sticks.g.parent) carryFrame(careLive.sticks.g, 0.05);
       const H = careLive.held;
-      if (H && careLive.grip === 'cap') { H.cap.rotation.y = careLive.capA; H.cap.position.y = BOTTLE_CAP_Y + 0.004 * cl01(careLive.capA / (Math.PI * 3)); }
+      if (H && careLive.onDesk && !careLive.capOff) { H.cap.rotation.y = careLive.capA; H.cap.position.y = BOTTLE_CAP_Y + 0.004 * cl01(careLive.capA / (Math.PI * 3)); }
       heldStrawFrame();
       waterFrame();
       for (const G of careLive.glints) if (G.t > 0) {
@@ -2791,6 +2840,7 @@
       careLive.bagSaid = careDone.has('d.red') || careDone.has('d.shy') || careDone.has('d.little');
       careLive.briefed = careLive.bagSaid;
       placeRing(-1, false);
+      deskIncense(careDone.has('lit') ? 'left' : false);    // (the packet and the lighter where the lighting left them)
       if (kit) {
         kit.hold(null);
         if (careDone.has('lit') && sticksN() < 3) {          // the sticks still to give, lit, in his hand
@@ -2807,6 +2857,7 @@
       Object.assign(careLive, { carry: -1, pour: 0, foamed: false, foamT: 0, briefed: false, bagSaid: false, seat: false, grip: '',
                                 capA: 0, slide: 0, bend: 0, capOff: false, sleeveOff: false, catchK: 0, sparkT: 0, boxOpen: 0, boxOpenTo: 0, bowT: 0,
                                 lighterOn: false });
+      deskBottle(false); deskIncense(false);
       careLive.placed = [false, false, false];
       for (let i = 0; i < 3; i++) { bottleShow(i, false); stickShow(i, false); if (careLive.capsDesk[i]) careLive.capsDesk[i].visible = false;
                                     if (careLive.sleevesDesk[i]) careLive.sleevesDesk[i].visible = false; }
@@ -2823,23 +2874,21 @@
        poses without a minigame running (the poses are eased on wall time; a probe waits them out) */
     function careLab(what, k = 0) {
       if (!kit || !careLive.held) return false;
-      kit.hold(null); careLive.grip = ''; careLive.lighterOn = false;
+      kit.hold(null); careLive.grip = ''; careLive.lighterOn = false; deskIncense(false);
       if (what === 'bottle' || what === 'straw') {
-        heldReset(); kit.hold(careLive.held.g, { hand: 'left' });
-        careLive.grip = what === 'bottle' ? 'cap' : 'straw';
+        heldReset(); deskBottle(true);
         if (what === 'straw') { careLive.capOff = true; careLive.slide = k; if (careLive.held) careLive.held.cap.visible = false; }
         else careLive.capA = k;
-        handsTo(what, 1, { secs: 0.05, p: what === 'bottle' ? k : 0 });
+        if (kit.handPose) kit.handPose(null, 0, { secs: 0.05 });
       } else if (what === 'carry') {
         if (kit.handPose) kit.handPose(null, 0, { secs: 0.05 });
         careLive.capOff = true; careLive.slide = 1; careLive.bend = 1;
         kit.hold(careLive.held.g, { pos: HELD_R.pos, rot: HELD_R.rot });
-      } else if (what === 'lighter') {
-        kit.hold(careLive.lighter.g, { hand: 'left', pos: LIGHTER_L.pos, rot: LIGHTER_L.rot });
-        kit.hold(careLive.sticks.g, { pos: STICKS_R.pos, rot: STICKS_R.rot });
+      } else if (what === 'lighter') {                        // (k: 0 unlit, 1 lit, 1..2 the sticks leaning in)
+        deskIncense('stage');
         careLive.lighter.flame.visible = k > 0.5;
-        careLive.catchK = Math.max(0, k - 1); careLive.lighterOn = true;
-        handsTo('lighter', 1, { secs: 0.05 });
+        careLive.catchK = Math.max(0, k - 1);
+        if (kit.handPose) kit.handPose(null, 0, { secs: 0.05 });
       } else if (kit.handPose) kit.handPose(null, 0, { secs: 0.05 });
       return true;
     }
@@ -2855,6 +2904,746 @@
       yaw.rotation.y = a0 + Math.atan2(Math.sin(a1 - a0), Math.cos(a1 - a0)) * f;
       pitch.rotation.x = -0.6;
     }
+
+    /* THE DOUBLES (CP7, §4.4): each child's own scan, a light in his shape — translucent, glowing at its edges (a rim that
+       brightens where the surface turns away from the lens), its colour his (red-gold, amber, pale blue). The FAR level's
+       geometry (100–141k triangles; the near level is for a macro and is 4–10× that), under one unlit shader: additive, no
+       depth write, so the room shows through him and he never hides behind a seam of his own. Unlit, so no light state of
+       the room's makes a new program for it (v15.1), and the curtain's warm compiles it (it hangs in the room, hidden).
+       Never a block figure: the scan or nothing (the v21.16 rule) — until the scan has landed there is no double. */
+    const DOUBLE_TINT = [0xffa060, 0xffc070, 0x9cc8ff];        // the red one's red-gold, the shy one's amber, the little one's pale blue
+    const doubles = [null, null, null];
+    function makeDoubleMat(hex) {
+      const m = new THREE.ShaderMaterial({
+        uniforms: { uCol: { value: new THREE.Color(hex) }, uK: { value: 0 }, uRim: { value: 1.8 } },
+        vertexShader: `varying vec3 vN; varying vec3 vV;
+          void main() { vec4 mv = modelViewMatrix * vec4(position, 1.0); vN = normalize(normalMatrix * normal); vV = normalize(-mv.xyz);
+                        gl_Position = projectionMatrix * mv; }`,
+        fragmentShader: `uniform vec3 uCol; uniform float uK; uniform float uRim; varying vec3 vN; varying vec3 vV;
+          void main() { float r = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), uRim);
+                        gl_FragColor = vec4(uCol * (0.34 + 1.2 * r) * uK, 1.0); }`,   // (the body's share raised from 0.18: by photograph, a small one far off read as rings)
+        transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.FrontSide, toneMapped: false, fog: false
+      });                                                         // (front faces only: both sides of every fold added up into rings — by photograph)
+      mats.push(m);
+      return m;
+    }
+    /* THE DEPTH PRIME: the same body drawn first into depth alone, so the light above is drawn on its NEAREST surface only.
+       The scans carry shells inside shells (the robe over the body, the garland over both), and additive light adds every
+       one of them: front faces alone still read as rings on a small one seen from above (by photograph, the shy one at
+       the mat). Drawn in the transparent pass (after the room, which it must never punch through), just before the light
+       (renderOrder 4, the light 5), the same vertex code so the depths agree, pushed a hair back so the nearest surface
+       passes the light's test and the shells behind it do not */
+    let doublePrime = null;
+    function makeDoublePrime() {
+      if (doublePrime) return doublePrime;
+      doublePrime = new THREE.ShaderMaterial({
+        vertexShader: `void main() { vec4 mv = modelViewMatrix * vec4(position, 1.0); gl_Position = projectionMatrix * mv; }`,
+        fragmentShader: `void main() { gl_FragColor = vec4(0.0); }`,
+        transparent: true, colorWrite: false, depthWrite: true, depthTest: true, side: THREE.FrontSide,
+        polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 2, toneMapped: false, fog: false
+      });
+      mats.push(doublePrime);
+      return doublePrime;
+    }
+    /* his double: built from the far level the moment the scan has landed (and kept: one per child, in the room) */
+    function doubleOf(i) {
+      if (doubles[i]) return doubles[i];
+      const L = kidLive[i]; if (!L || !L.ready || !L.farSrc) return null;
+      const K = KIDS[i], mat = makeDoubleMat(DOUBLE_TINT[i]);
+      const g = new THREE.Group(), body = L.farSrc.clone(), prime = L.farSrc.clone();
+      body.traverse(o => { if (o.isMesh) { o.material = mat; o.castShadow = false; o.receiveShadow = false; o.renderOrder = 5; } });
+      prime.traverse(o => { if (o.isMesh) { o.material = makeDoublePrime(); o.castShadow = false; o.receiveShadow = false; o.renderOrder = 4; } });
+      g.add(prime); g.add(body); g.scale.setScalar(K.h);
+      g.position.copy(L.altar.position); g.rotation.y = L.altar.rotation.y;
+      g.visible = false; worldR.add(g);
+      doubles[i] = { g, mat, K, home: g.position.clone(), ry: g.rotation.y };
+      return doubles[i];
+    }
+    /* a double's light, 0..1 (its uK), and where it stands — the films write both every frame from their own clocks */
+    function doubleSet(i, k, x, y, z, ry, s = 1) {
+      const D = doubleOf(i); if (!D) return;
+      D.g.visible = k > 0.003; D.mat.uniforms.uK.value = k;
+      if (x != null) D.g.position.set(x, y, z);
+      if (ry != null) D.g.rotation.y = ry;
+      D.g.scale.setScalar(D.K.h * s);
+    }
+    function doublesOff() { for (let i = 0; i < 3; i++) if (doubles[i]) { doubles[i].g.visible = false; doubles[i].mat.uniforms.uK.value = 0; doubles[i].g.position.copy(doubles[i].home); doubles[i].g.rotation.y = doubles[i].ry; } }
+    /* ======================================================== PLAY II · THE QUESTION, AND THE OPENINGS (CP7, §4.3)
+       After the dedication: the music box's last phrase, his look on each face, and his question — then three orders, one
+       child at a time, each answered by a press on that child and a YIELD (S38: press and hold, the ring fills; let go
+       and it waits — never graded, never failed). Filled, the possession plays (a film from play, its own clock), and
+       hands him back where it left him, the next order open. The third fills by itself once pressed: each time the door
+       opens more easily, because he has already opened it twice (the case file's "one after another"). What a Continue
+       must not lose: the phase — open1 (asked), open2 (the red one done, on the mat), open3 (the shy one done, by the
+       desk), after (the little one done, on the floor by the bed), decide. */
+    const openLive = { busy: false, briefed: false, k: 0, kid: -1, smearW: 0 };
+    const OPEN_I = { open1: 0, open2: 1, open3: 2 };
+    function openOk() { return OPEN_I[phase] !== undefined && !openLive.busy && quiet(); }
+    function openObjective() {
+      if (openLive.busy) return null;
+      const i = OPEN_I[phase];
+      if (i === 2 && !seated) return W.objSitAgain;               // by the desk, after the shy one: back to the mat first
+      return [W.objOpenRed, W.objOpenShy, W.objOpenLittle][i];
+    }
+    /* the question (§4.3): the box's tune ends; his look rests on the red one, the shy one, the little one; he wonders what
+       they feel, and then he asks it */
+    function askBeat() {
+      openLive.busy = true; if (kit) kit.objective(null);
+      setPhase('open1');
+      careLive.boxOpenTo = 1;                                      // (the lid stays up: the tune ends on its own)
+      let t = 0.6;
+      for (let i = 0; i < 3; i++) { const j = i; after(t, () => viewTo(kidYaw(j), kidPitch(j), 1.1)); t += 1.6; }
+      after(t, () => {
+        queueLine('z5wonder');                                     // "Every night they just sit here... I wonder what they feel."
+        queueGap(1.0);
+        queueLine('z5ask');                                        // "What would happen... if I deliberately opened myself to my own Kumanthong?"
+        queueGap(0.6);
+        /* his look back to the red one, the first order's, before it opens (by photograph: it stayed on the little one,
+           the last face, with the red one off a phone's frame) */
+        queueFn(() => { viewTo(kidYaw(0), kidPitch(0), 0.9); after(0.95, () => { openLive.busy = false; objectiveFor('open1'); }); });
+      });
+    }
+    /* where his look goes to see one of them from the mat */
+    function kidYaw(i) { const dx = RISER.x - yaw.position.x, dz = ALTAR_Z[i] - yaw.position.z; return Math.atan2(-dx, -dz); }
+    function kidPitch(i) {
+      const d = Math.hypot(RISER.x - yaw.position.x, ALTAR_Z[i] - yaw.position.z);
+      return Math.atan2(ALTAR.top + ALTAR.riser + KIDS[i].h * 0.6 - yaw.position.y, d);
+    }
+    /* THE YIELD: on the child, the ring filling while held; the room loosening with it — its sound sinking, the edges of
+       sight softening, the three threads of smoke leaning toward him, the child's eyes catching the lamp and holding it */
+    function openPress(i) {
+      if (OPEN_I[phase] !== i || !seated || !openOk() || !kit || !kit.event) return false;
+      const K = KIDS[i];
+      openLive.busy = true; openLive.kid = i; kit.objective(null);
+      if (i === 0) queueLine('z5loose');                           // "Just... let my mind loosen." (the first time)
+      const first = !openLive.briefed; openLive.briefed = true;
+      kit.event({ kind: 'yield', label: [W.objOpenRed, W.objOpenShy, W.objOpenLittle][i], brief: first ? (TOUCHY ? W.briefYield : W.briefYieldKey) : undefined,
+        demo: 'press', fill: K.yieldSecs, back: 0.45, auto: !!K.auto, autoAfter: 9999,
+        at: () => ({ x: RISER.x, y: ALTAR.top + ALTAR.riser + K.h * 0.62, z: ALTAR_Z[i] }),
+        onHold: (k) => { openLive.k = k; },
+      }).then(() => {
+        if (!alive) return;
+        openLive.k = 0;                                          // (the loosening lets go as the film takes over: its own light and lens)
+        possess(i);
+      });
+      return true;
+    }
+    /* the room loosening by k (every frame while a yield runs, and back to nothing after) */
+    function openFrame(wdt) {
+      const k = openLive.busy && openLive.kid >= 0 && phase !== 'after' ? openLive.k : 0;
+      if (kit && kit.smear) {
+        const want = 0.22 * k;
+        if (Math.abs(want - (openLive.smearW || 0)) > 0.02) { openLive.smearW = want; kit.smear(want, { secs: 0.3 }); }
+      }
+      roomLive.smokeLean = k;                                      // (the room's smoke frame leans the threads toward the mat)
+      for (let i = 0; i < 3; i++) { const G = careLive.glints[i]; if (G && openLive.kid === i && k > 0.6 && G.t === 0) { G.t = 0.0001; G.sp.visible = true; } }
+    }
+    /* the possessions: a film from play (§4.4), its first time unskippable (S41), handing him back where it leaves him */
+    function possess(i) {
+      const key = ['red', 'shy', 'little'][i];
+      const firstTime = !(ctx.sealedBefore && ctx.sealedBefore('e3c5'));
+      const done = () => {
+        if (!alive) return;
+        openLive.busy = false; openLive.k = 0; openLive.kid = -1; peekSet(0);
+        if (kit && kit.smear) { kit.smear(0, { secs: 0.4 }); openLive.smearW = 0; }
+        if (i === 0) { landOn('mat'); lookToOrder(1); roomClock('23:21'); setPhase('open2'); }      // (§10.1: the clock as each one left it)
+        else if (i === 1) { landOn('desk'); lookToOrder(2); roomClock('23:33'); setPhase('open3'); }
+        else { landOn('bed'); setPhase('after'); afterBeat(false); return; }
+        if (kit) kit.fade(0, 0.8);
+        after(0.7, () => objectiveFor(phase));
+      };
+      if (!kit || !kit.film || !kit.film(key, { noSkip: firstTime, onDone: done })) done();
+    }
+    /* where a possession leaves him: on the mat (the red one's flop), sitting on the floor by the desk (the shy one's), or
+       on the floor against the bed's frame (the little one's) — the pose and the look the film's last frame had */
+    function landOn(where) {
+      if (!kit) return;
+      if (where === 'mat') { sitDown(true); return; }
+      seated = false;
+      if (where === 'desk') { yaw.position.x = -0.05; yaw.position.z = -0.85; kit.root(true); kit.pose('lying', { y: 0.62, yaw: -Math.PI * 0.62, span: 1.2, pitchLo: -0.8, pitchHi: 0.5, secs: 0.05 }); }
+      /* (by the bed his neck's range is centred between the altar and the clock behind him on the left — 2.1 rad apart — so
+         the aftermath can turn him to both: centred on the altar, the clamp held the look 0.9 rad short of the clock) */
+      else { yaw.position.x = BYBED.x; yaw.position.z = BYBED.z; kit.root(true); kit.pose('lying', { y: BYBED.eye, yaw: -0.55, span: 1.3, pitchLo: -0.8, pitchHi: 0.5, secs: 0.05 }); }
+    }
+    /* back to the mat after the shy one (open3): the mat's own order, then the little one's */
+    function sitAgain() {
+      if (phase !== 'open3' || seated || !quiet() || openLive.busy) return false;
+      if (kit) kit.pose('standing', { secs: 0.3 });
+      sitDown(false);
+      /* and his look onto the little one, whose order is next (by photograph: sat down, a phone looked at the box and the
+         pinwheel, the order's child off its edge) */
+      { const dx = RISER.x - MAT.x, dz = ALTAR_Z[2] - MAT.z;
+        viewTo(Math.atan2(-dx, -dz), Math.atan2(ALTAR.top + ALTAR.riser + KIDS[2].h * 0.6 - MAT_EYE, Math.hypot(dx, dz)), 0.9); }
+      after(1.0, () => objectiveFor('open3'));
+      return true;
+    }
+    /* THE AFTERMATH (§4.6, play): on the floor by the bed; his look drawn to the clock (02:47 — it read 23:12); the room's
+       evidence; his look on the three; and the decision opens by itself (the altar is the pile) */
+    function afterBeat(resumed) {
+      openLive.busy = true; if (kit) kit.objective(null);
+      roomClock('02:47');
+      afterEvidence();
+      if (kit) kit.fade(0, resumed ? 0.8 : 1.6);
+      /* the phone on the floor beside him wakes, and his look goes down to it: 02:47 (the screen sleeps again after) */
+      after(resumed ? 0.4 : 2.0, () => { phone.S.draw('time', 0, '02:47'); phoneLook(1.2); after(7.5, () => phone.S.draw('dark')); });
+      queueGap(resumed ? 0.8 : 3.6);
+      queueLine('z5time');                                         // "Almost three hours... gone."
+      queueGap(1.4);
+      queueFn(() => { for (let i = 0; i < 3; i++) { const j = i; after(j * 1.4, () => viewTo(kidYaw(j), kidPitch(j), 1.0)); } });
+      queueGap(4.4);
+      queueLine('z5felt');                                         // "To be wanted... to be found... to not be left alone. That's all they ever wanted."
+      queueGap(0.8);
+      queueLine('z5fasc');                                         // "And at that moment... I was fascinated by it."
+      queueFn(() => { const v = decLook(); viewTo(v.ry, v.px, 1.0); });   // the three, where the decision's panel leaves them
+      queueGap(1.1);
+      queueFn(() => { openLive.busy = false; setPhase('decide'); openDecision(); });
+    }
+    /* what the night left (each also stood up by a Continue past it): the sticks burnt to grey stubs, the red one's bottle
+       half empty, the top carton on the floor, the coin by the desk */
+    function afterEvidence() {
+      phone.g.visible = true;
+      for (let i = 0; i < 3; i++) stubShow(i, true);
+      const B = careLive.bottles[0]; if (B && B.liq) B.liq.scale.y = 0.5;
+      if (roomLive.cartonTop) cartonDown(true);
+      if (roomLive.coin) roomLive.coin.visible = true;
+    }
+    /* where his look goes to read the clock on the bedside table (its face at (−1.29, 0.53, −1.07), turned to the room) */
+    const CLOCK_AT = { x: -1.285, y: 0.534, z: -1.073 };
+    function clockYaw() { return Math.atan2(-(CLOCK_AT.x - yaw.position.x), -(CLOCK_AT.z - yaw.position.z)); }
+    function clockPitch() { return Math.atan2(CLOCK_AT.y - yaw.position.y, Math.hypot(CLOCK_AT.x - yaw.position.x, CLOCK_AT.z - yaw.position.z)); }
+    /* a Continue into PLAY II (§10.1): the offerings all given (their drinks on the runner, a stick lit before each), the box
+       played out, the clock at 23:12 — and what each possession left behind it: after the red one, his bottle half drunk
+       and the top carton on the floor (open2 on); after the shy one, the coin by the desk (open3 on); after the little one,
+       the sticks burnt to stubs and the clock at 02:47 (after, decide). He is put where the last one left him, and the order
+       still open is offered (the question is not asked twice) */
+    function openResume(p) {
+      const n = { open1: 0, open2: 1, open3: 2, after: 3, decide: 3 }[p] || 0;
+      careLive.boxOpen = careLive.boxOpenTo = 1;
+      roomClock(['23:12', '23:21', '23:33', '02:47'][Math.min(3, n)]);
+      if (n >= 1) { const B = careLive.bottles[0]; if (B && B.liq) B.liq.scale.y = 0.5; cartonDown(true); }
+      if (n >= 2 && roomLive.coin) { roomLive.coin.visible = true; roomLive.coin.position.set(BYDESK.x + 0.18, 0.004, BYDESK.z + 0.1); roomLive.coin.rotation.set(0, 0.4, 0); }
+      if (n >= 3) { for (let i = 0; i < 3; i++) stubShow(i, true); look('NIGHT', 0); phone.g.visible = true; phone.S.draw('dark'); }
+      if (n === 0 || n === 1) landOn('mat');
+      else if (n === 2) landOn('desk');
+      else landOn('bed');
+      lookToOrder(n);
+      openLive.busy = false;
+    }
+    /* his look where the order still open is: on that child from the mat, at the seated eye; on the mat from beside the
+       desk. A Continue lands on it (by photograph: one into open1 left a phone looking past the red one, off the frame's
+       left edge), and so does the end of a possession — a film hands play back the look it was STARTED from, so after
+       the red one his eyes were back on the red one with the order asking for the shy one (by photograph) */
+    function lookToOrder(n) {
+      if (n <= 1) {
+        const dx = RISER.x - MAT.x, dz = ALTAR_Z[n] - MAT.z;
+        yaw.rotation.y = Math.atan2(-dx, -dz);
+        pitch.rotation.x = Math.atan2(ALTAR.top + ALTAR.riser + KIDS[n].h * 0.6 - MAT_EYE, Math.hypot(dx, dz));
+      } else if (n === 2) {
+        const dx = MAT.x - BYDESK.x, dz = MAT.z - BYDESK.z;
+        yaw.rotation.y = Math.atan2(-dx, -dz); pitch.rotation.x = -0.3;
+      } else { const v = decLook(); yaw.rotation.y = v.ry; pitch.rotation.x = v.px; }   // (after, decide: the decision's framing)
+    }
+    /* THE THREE ABOVE A PHONE'S DECISION PANEL (by photograph: on the little one's level look they stood in the middle of
+       a phone's screen, under the panel, which covers its lower two thirds, while the stat bars cover its top fifth) —
+       the shy one in the middle of the three, and his eye lowered until they stand in the band between the two; on a
+       wide screen the panel sits low (e3c4's tDec) and they stand a little above the middle */
+    function decLook() {                                       // (from where landOn('bed') puts him: his eye may still be easing there)
+      const dx = RISER.x - BYBED.x, dz = ALTAR_Z[1] - BYBED.z, d = Math.hypot(dx, dz);
+      const mid = Math.atan2(ALTAR.top + ALTAR.riser + 0.12 - BYBED.eye, d);   // (the three stand 0.20–0.26 on the riser)
+      const ndc = camera.aspect < 1 ? 0.47 : 0.25;
+      return { ry: Math.atan2(-dx, -dz), px: mid - Math.atan(ndc * Math.tan(camera.fov * Math.PI / 360)) };
+    }
+    /* PLAY II as build() leaves it (the reset law): no double, nothing a possession moved still moved */
+    function openReset() {
+      openLive.busy = false; openLive.briefed = false; openLive.k = 0; openLive.kid = -1; openLive.smearW = 0;
+      doublesOff();
+      cartonDown(false);
+      if (roomLive.curtain) roomLive.curtain.rotation.y = 0;
+      if (roomLive.coin) { roomLive.coin.visible = false; roomLive.coin.position.copy(roomLive.coin.userData.home); roomLive.coin.rotation.set(0, 0, 0); }
+      const B = careLive.bottles[0]; if (B) { if (B.liq) B.liq.scale.y = 1; if (B.home) B.g.position.copy(B.home); }
+      for (let i = 0; i < 3; i++) stubShow(i, false);
+      cityOut(-1);
+      for (const R of RATTLE) R.o.position.y = R.y0;
+      redLive.stamps.length = 0; redLive.taps = 0; redLive.auto = false;
+      shyLive.gap = 0; peekSet(0); lensOff();
+      phone.g.visible = false; phone.S.draw('dark');
+      littleLive.cameBack = false; littleLive.slipN = 0; littleLive.briefed = false;
+      fLive.shot = '';
+    }
+    /* POSSESSION 1 · THE RED ONE (§4.4, ~36 s): every picture a function of the film's own clock (a seek, a skip and a slow
+       frame land on the same picture). From his eyes on the mat: the red double rises off its base and comes to him the
+       way a child runs up to be picked up; CONTACT, a warm bloom, the room RED-GOLD, the lens wider; he STANDS, hands on
+       his hips, chin up — and the player's STAMP (three taps; untapped, he stamps by himself); he marches the room like a
+       king (the curtain swept aside, the city below; the top carton swiped off the stack); his own bottle to his mouth,
+       slurped half empty and slammed down; the tantrum burns out, he flops onto the mat, arms crossed, and the bossy voice
+       goes small; the double settles back into its figure like a sigh; himself again, breathing hard. Nothing in the room
+       moves by itself: only what his own hand did. */
+    const redLive = { stamps: [], taps: 0, lastTap: -9, nowT: 0, auto: false };
+    const MAT_EYE = 0.90, STAND_EYE = 1.62;
+    /* his path through the room (x, eye, z, and where he looks), and the times he reaches each place */
+    const RED_PATH = [
+      { t: RFT.stand, p: [MAT.x, STAND_EYE, MAT.z], look: [RISER.x, 1.0, ALTAR_Z[0]] },
+      { t: RFT.march, p: [MAT.x, STAND_EYE, MAT.z], look: [RISER.x, 1.0, ALTAR_Z[0]] },
+      { t: RFT.win, p: [1.0, STAND_EYE, 1.32], look: [1.75, 1.05, 0.55] },          // the window: the curtain aside, the city below
+      { t: RFT.desk, p: [0.72, STAND_EYE, -0.92], look: [0.62, 0.22, -1.58] },      // the ROADEYE stack, its top carton
+      { t: RFT.back, p: [0.92, STAND_EYE, 0.12], look: [RISER.x, 0.95, ALTAR_Z[0]] },// back at the altar, his own place
+      { t: RFT.flop, p: [0.92, STAND_EYE, 0.12], look: [RISER.x, 0.95, ALTAR_Z[0]] },
+      { t: RFT.flop + 0.6, p: [MAT.x, MAT_EYE, MAT.z], look: [RISER.x, 0.92, ALTAR_Z[0]] },
+      /* and at the end a long look at the shy one, whose turn it is next (§4.4: "a long look at the shy one; the order
+         returns" — by photograph, the film ended on the red one's face with the next order on a child out of the frame) */
+      { t: RFT.end - 3.4, p: [MAT.x, MAT_EYE, MAT.z], look: [RISER.x, 0.92, ALTAR_Z[0]] },
+      { t: RFT.end - 1.8, p: [MAT.x, MAT_EYE, MAT.z], look: [RISER.x, 0.90, ALTAR_Z[1]] }
+    ];
+    function pathAt(P, t) {
+      if (t <= P[0].t) return P[0];
+      for (let j = 1; j < P.length; j++) if (t < P[j].t) {
+        const a = P[j - 1], b = P[j], k = smooth(cl01((t - a.t) / (b.t - a.t)));
+        return { p: lerp3(a.p, b.p, k), look: lerp3(a.look, b.look, k), k };
+      }
+      return P[P.length - 1];
+    }
+    const redF = {
+      T: RFT,
+      begin() { fLive.shot = 'red'; fLive.lit = null; redLive.taps = 0; redLive.lastTap = -9; redLive.stamps.length = 0; redLive.auto = false; },
+      end() {
+        fLive.shot = ''; lensTo(72); doublesOff();
+        look('NIGHT', 0.01);
+      },
+      /* a tap of the STAMP (the event's progress), or one he makes himself: the lens bobs, the bottles and the bowls jump
+         on the runner (a damped spring each), ash drops from the sticks */
+      frame(t, api) {
+        if (fLive.shot !== 'red') redF.begin();
+        redLive.nowT = t;                                       // (a tap lands at the film's own time)
+        const D0 = doubleOf(0), K = KIDS[0], baseY = ALTAR.top + ALTAR.riser + 0.006;
+        /* the double: up off its base, toward him, into him */
+        if (t < RFT.contact + 0.3) {
+          const kr = smooth(cl01(t / RFT.come)), kc = smooth(cl01((t - RFT.come) / (RFT.contact - RFT.come)));
+          const from = [RISER.x, baseY + 0.04 * kr, ALTAR_Z[0]], to = [MAT.x + 0.30, MAT_EYE - 0.12, MAT.z - 0.02];
+          const q = lerp3(from, to, kc);
+          doubleSet(0, (0.35 + 0.65 * kr) * (1 - smooth(cl01((t - RFT.contact) / 0.3))), q[0], q[1], q[2], -Math.PI / 2, 1 + 0.15 * kr);
+        } else if (t < RFT.leave) doubleSet(0, 0);
+        else {                                                  // settling back into its figure like a sigh
+          const kl = smooth(cl01((t - RFT.leave) / 2.2));
+          const q = lerp3([yaw.position.x + 0.25, yaw.position.y - 0.1, yaw.position.z], [RISER.x, baseY, ALTAR_Z[0]], kl);
+          doubleSet(0, 0.8 * Math.sin(Math.PI * cl01(kl * 1.0 + 0.0001)), q[0], q[1], q[2], -Math.PI / 2, 1.15 - 0.15 * kl);
+        }
+        /* the light and the lens: RED-GOLD from contact to the settling, 72 → 84 → 72 */
+        if (t >= RFT.contact && t < RFT.leave) { if (fLive.lit !== 'RED') { look('RED', 0.6); fLive.lit = 'RED'; } }
+        else if (t >= RFT.leave && fLive.lit !== 'NIGHT') { look('NIGHT', 2.0); fLive.lit = 'NIGHT'; }
+        const kw = smooth(cl01((t - RFT.contact) / 0.8)) * (1 - smooth(cl01((t - RFT.leave) / 2.2)));
+        lensTo(72 + (K.lens - 72) * kw);
+        /* where he is and where he looks */
+        let P, L;
+        if (t < RFT.stand) { P = [MAT.x, MAT_EYE, MAT.z]; L = [RISER.x, baseY + 0.12 + 0.2 * smooth(cl01((t - RFT.come) / 1.0)) * 0, ALTAR_Z[0]]; }
+        else {
+          const A = pathAt(RED_PATH, t); P = A.p; L = A.look;
+          const ks = smooth(cl01((t - RFT.stand) / 0.6)); if (t < RFT.stand + 0.6) P = [P[0], MAT_EYE + (STAND_EYE - MAT_EYE) * ks, P[2]];
+        }
+        /* a child's bouncing walk while he marches, the stamps' bob, his chin up (8 degrees) while he is the red one */
+        let bob = 0;
+        if (t >= RFT.march && t < RFT.flop) bob += 0.025 * Math.abs(Math.sin((t - RFT.march) * Math.PI * 2.2));
+        for (const s of redLive.stamps) { const u = t - s; if (u >= 0 && u < 0.5) bob -= 0.05 * Math.sin(Math.PI * u / 0.5); }
+        camAt(P[0], P[1] + bob, P[2], L[0], L[1], L[2]);
+        if (t >= RFT.stand && t < RFT.flop) pitch.rotation.x += 0.14 * smooth(cl01((t - RFT.stand) / 0.5)) * (1 - smooth(cl01((t - RFT.flop + 0.6) / 0.6)));
+        /* his hands: on his hips from the stand, reaching for his bottle at the grab, crossed after the flop, down at the end */
+        if (api && api.handPose) {
+          /* (hips and the crossed arms raised clear of the letterbox's bottom bar, `sy`: drawn for play, both sat behind it) */
+          if (t >= RFT.stand && t < RFT.grab) api.handPose('hips', smooth(cl01((t - RFT.stand) / 0.5)));
+          else if (t >= RFT.grab && t < RFT.slam + 0.4) api.handPose('reach', smooth(cl01((t - RFT.grab) / 0.5)));
+          else if (t >= RFT.flop + 0.6 && t < RFT.leave + 1.5) api.handPose('cross', smooth(cl01((t - RFT.flop - 0.6) / 0.5)) * (1 - smooth(cl01((t - RFT.leave - 0.8) / 0.7))));
+          else api.handPose(null, 0);
+        }
+        /* the runner's things jump at each stamp and at the slam (a damped spring), and the window's curtain is swept aside */
+        redRattle(t);
+        if (roomLive.curtain) roomLive.curtain.rotation.y = -0.9 * smooth(cl01((t - RFT.win + 0.4) / 0.5)) * (1 - smooth(cl01((t - 26) / 2)));
+        /* the top carton: swiped off the stack at the desk, on the floor from then on */
+        if (roomLive.cartonTop) cartonFall(cl01((t - RFT.desk - 0.2) / 0.7));
+        /* his bottle: up to his mouth at the grab, slurped half empty, slammed down */
+        redBottle(t);
+      }
+    };
+    /* the runner's things jump: each stamp and the slam set a damped spring under every bottle, cup and bowl (a function of
+       the film's clock and the list of stamp times, so a seek lands on the same picture) */
+    const RATTLE = [];                                           // filled at build: { o, y0 } for each bottle, cup and bowl
+    function redRattle(t) {
+      let a = 0;
+      for (const s of redLive.stamps) { const u = t - s; if (u >= 0 && u < 0.9) a += 0.006 * Math.exp(-u * 5) * Math.abs(Math.sin(u * 38)); }
+      { const u = t - RFT.slam; if (u >= 0 && u < 1.2) a += 0.012 * Math.exp(-u * 4) * Math.abs(Math.sin(u * 30)); }
+      for (const R of RATTLE) R.o.position.y = R.y0 + a * (0.6 + 0.4 * Math.sin(R.y0 * 977));
+    }
+    /* the top carton swiped off the stack: off its place, over, and onto the floor beside the stack (k 0 → 1); it stays down */
+    function cartonFall(k) {
+      const C = roomLive.cartonTop; if (!C) return;
+      const H = C.userData.home, kk = k * k;
+      C.position.set(H.x + 0.22 * k, H.y + (0.08 - H.y) * kk + 0.08 * Math.sin(Math.PI * k), H.z + 0.28 * k);   // (on its side: 0.16 deep)
+      C.rotation.set(Math.PI / 2 * k, H.ry + 0.4 * k, 0);
+    }
+    function cartonDown(on) { if (roomLive.cartonTop) cartonFall(on ? 1 : 0); }
+    /* his own bottle: lifted from its place to his mouth (the straw's bend to his lips) at the grab, its level falling by half
+       through the slurp, slammed back down at the slam — written in the world, in front of the lens */
+    const _rb = new THREE.Vector3(), _rf = new THREE.Vector3();
+    function redBottle(t) {
+      const B = careLive.bottles[0]; if (!B) return;
+      const home = B.home || (B.home = B.g.position.clone());
+      const up = smooth(cl01((t - RFT.grab) / 0.8)) * (1 - smooth(cl01((t - RFT.slam) / 0.25)));
+      if (up > 0.001) {
+        camera.getWorldPosition(_rb); camera.getWorldDirection(_rf);
+        const p = _rb.clone().addScaledVector(_rf, 0.2); p.y -= 0.16;
+        B.g.position.lerpVectors(home, p, up);
+      } else B.g.position.copy(home);
+      if (B.liq) B.liq.scale.y = 1 - 0.5 * smooth(cl01((t - RFT.grab - 1.0) / 1.8));
+    }
+    /* POSSESSION 2 · THE SHY ONE (§4.4, ~36 s): a game of hide-and-seek, never a scare. The amber double crouches out of
+       its round base and SCURRIES low across the floor to hide behind him (the lens turns to follow, and it has hidden);
+       contact from behind — the world warm amber and soft, the lens wider, and he drops to a crouch with his hands over
+       his eyes (the player's PEEK: drag the fingers apart and the room shows through the gap); he scuttles under his own
+       desk, finds a coin and holds it up to the lamp, and curls up there to wait to be found, and nobody comes; the double
+       drifts back to its base like dust; BONK — his head on the desk's underside; he crawls out and sits by the desk, the
+       coin in his hand, and his look goes to the shy one, and then to the little one, whose bells ring softly. */
+    const shyLive = { gap: 0, gapT: 0 };
+    const CROUCH_EYE = 0.55, UNDER_EYE = 0.35;
+    const UNDER = { x: -0.42, z: -1.42 };                    // under his desk, by the drawer side, looking out at the room
+    const BYDESK = { x: -0.05, z: -0.85 };                   // sitting on the floor by the desk after (landOn('desk'))
+    const BYBED = { x: -0.42, z: 0.55, eye: 0.58 };          // on the floor against the bed's frame (landOn('bed'): the aftermath, the decision)
+    const shyF = {
+      T: SFT,
+      begin() { fLive.shot = 'shy'; fLive.lit = null; shyLive.gap = 0; },
+      end() { fLive.shot = ''; lensTo(72); doublesOff(); look('NIGHT', 0.01); if (kit && kit.smear) kit.smear(0, { secs: 0.3 }); },
+      frame(t, api) {
+        if (fLive.shot !== 'shy') shyF.begin();
+        const K = KIDS[1], baseY = ALTAR.top + ALTAR.riser + 0.006;
+        /* the double: crouched out of its base, scurrying low across the floor round to behind him (a game), into him */
+        if (t < SFT.contact + 0.3) {
+          const k1 = smooth(cl01(t / 0.5)), k2 = smooth(cl01((t - 0.5) / 1.4)), q = shyAt(t);
+          doubleSet(1, 0.85 * k1 * (1 - smooth(cl01((t - SFT.contact) / 0.3))), q[0], q[1], q[2], -Math.PI / 2 + k2 * 2.6, 1);
+        } else if (t < SFT.leave) doubleSet(1, 0);
+        else {                                                  // back to its base as dust (a fading drift)
+          const kl = smooth(cl01((t - SFT.leave) / 2.0));
+          const q = lerp3([UNDER.x + 0.3, 0.15, UNDER.z + 0.4], [RISER.x, baseY, ALTAR_Z[1]], kl);
+          doubleSet(1, 0.5 * Math.sin(Math.PI * kl), q[0], q[1], q[2], -Math.PI / 2, 1);
+        }
+        /* the light, the softness and the lens: AMBER and smeared from contact to the double's leaving, 72 → 90 → 72 */
+        if (t >= SFT.contact && t < SFT.leave) { if (fLive.lit !== 'AMBER') { look('AMBER', 0.6); fLive.lit = 'AMBER'; if (kit && kit.smear) kit.smear(0.18, { secs: 0.6 }); } }
+        else if (t >= SFT.leave && fLive.lit !== 'NIGHT') { look('NIGHT', 2.0); fLive.lit = 'NIGHT'; if (kit && kit.smear) kit.smear(0, { secs: 1.5 }); }
+        const kw = smooth(cl01((t - SFT.contact) / 0.8)) * (1 - smooth(cl01((t - SFT.leave) / 2.0)));
+        lensTo(72 + (K.lens - 72) * kw);
+        /* where he is and where he looks */
+        let P, L;
+        if (t < SFT.contact) {                                  // on the mat, his look following it round behind him (it runs to his right)
+          P = [MAT.x, MAT_EYE, MAT.z];
+          L = lerp3([RISER.x, 0.85, ALTAR_Z[1]], shyAt(t), smooth(cl01((t - 0.3) / 0.6)));
+        } else if (t < SFT.scuttle) {                           // dropped to a crouch on the mat, his look back to the altar
+          const kc = smooth(cl01((t - SFT.contact) / 0.5));
+          P = [MAT.x, MAT_EYE + (CROUCH_EYE - MAT_EYE) * kc, MAT.z];
+          L = lerp3(shyAt(SFT.contact), [RISER.x, 0.7, ALTAR_Z[1]], smooth(cl01((t - SFT.contact) / 0.7)));
+        } else if (t < SFT.under + 0.6) {                       // scuttling, low and quick, under the desk
+          const ks = smooth(cl01((t - SFT.scuttle) / (SFT.under + 0.6 - SFT.scuttle)));
+          P = lerp3([MAT.x, CROUCH_EYE, MAT.z], [UNDER.x, UNDER_EYE, UNDER.z], ks);
+          P[1] += 0.02 * Math.abs(Math.sin((t - SFT.scuttle) * 9));
+          L = lerp3([0.0, 0.2, -1.4], [RISER.x, 0.55, 0.35], smooth(cl01((t - SFT.under) / 0.6)));
+        } else if (t < SFT.bonk) {                              // under the desk: out at the room — the altar huge across the floor
+          P = [UNDER.x, UNDER_EYE, UNDER.z];
+          const kcoin = smooth(cl01((t - SFT.coin) / 0.6)) * (1 - smooth(cl01((t - SFT.wait) / 0.6)));
+          L = lerp3([RISER.x, 0.55, 0.35], [-0.2, 0.62, -1.1], kcoin);   // up at the coin against the lamp, then back out
+        } else if (t < SFT.out + 1.0) {                         // BONK, and crawling out
+          const kb = cl01((t - SFT.bonk) / 0.25), ko = smooth(cl01((t - SFT.out) / 1.0));
+          P = lerp3([UNDER.x, UNDER_EYE + 0.06 * Math.sin(Math.PI * kb), UNDER.z], [BYDESK.x, 0.62, BYDESK.z], ko);
+          L = [RISER.x, 0.8, ALTAR_Z[1]];
+        } else {                                                // by the desk: to the shy one, then to the little one
+          const kl = smooth(cl01((t - SFT.little) / 1.2));
+          P = [BYDESK.x, 0.62, BYDESK.z]; L = lerp3([RISER.x, 0.82, ALTAR_Z[1]], [RISER.x, 0.85, ALTAR_Z[2]], kl);
+        }
+        camAt(P[0], P[1], P[2], L[0], L[1], L[2]);
+        /* the bonk's shake */
+        { const u = t - SFT.bonk; if (u >= 0 && u < 0.6) { const s = 0.05 * Math.exp(-u * 6); yaw.rotation.y += s * Math.sin(u * 70); pitch.rotation.x += s * Math.cos(u * 61); } }
+        /* his hands over his eyes, from the crouch (the PEEK's drag parts them) and again as he waits — drawn from INSIDE
+           (peekSet): the rig's hands at his face were two cut wrists and a wall of fingers, and at his mouth by the desk a
+           shape nobody should see (by photograph, on a phone), so this film draws no rig hands at all (Chad, on the
+           bottle: "if you know its impossible for you to get the fingers right, then dont do that animation") */
+        if (api && api.handPose) api.handPose(null, 0);
+        if (api && api.handsRoot) api.handsRoot.visible = false;
+        if (t >= SFT.peek0 && t < SFT.scuttle) peekSet(smooth(cl01((t - SFT.peek0) / 0.5)) * (1 - smooth(cl01((t - SFT.scuttle + 0.5) / 0.5))), shyLive.gap, t);
+        else if (t >= SFT.wait && t < SFT.leave) peekSet(smooth(cl01((t - SFT.wait) / 0.6)) * (1 - smooth(cl01((t - SFT.leave + 0.3) / 0.5))), 0.35, t);
+        else peekSet(0);
+        /* the coin: on the floor under the desk until he finds it, then up to the lamp, then in his hand by the desk */
+        shyCoin(t);
+      }
+    };
+    /* where the shy double is on its scurry (a function of the film's clock): off its base, low across the floor to his
+       front-right, round his right side, and behind him */
+    function shyAt(t) {
+      const baseY = ALTAR.top + ALTAR.riser + 0.006, k2 = smooth(cl01((t - 0.5) / 1.4));
+      const pts = [[RISER.x, baseY, ALTAR_Z[1]], [1.0, 0.02, 0.9], [0.35, 0.02, 0.85], [0.22, 0.02, 0.42]];
+      const seg = Math.min(2, Math.floor(k2 * 3)), u = k2 * 3 - seg;
+      return lerp3(pts[seg], pts[seg + 1], u);
+    }
+    const _cs1 = new THREE.Vector3(), _cf1 = new THREE.Vector3();
+    function shyCoin(t) {
+      const C = roomLive.coin; if (!C) return;
+      const home = C.userData.home;
+      const up = smooth(cl01((t - SFT.coin) / 0.7)) * (1 - smooth(cl01((t - SFT.wait) / 0.6)));
+      C.visible = t >= SFT.look;
+      if (up > 0.001) {
+        camera.getWorldPosition(_cs1); camera.getWorldDirection(_cf1);
+        const p = _cs1.clone().addScaledVector(_cf1, 0.15); p.y += 0.012;   // (0.22 m off, by photograph, it was a speck on a phone)
+        C.position.lerpVectors(home, p, up); C.rotation.set(Math.PI / 2 * up, 0, 0);
+      } else if (t >= SFT.wait) { C.position.set(BYDESK.x + 0.18, 0.004, BYDESK.z + 0.1); C.rotation.set(0, 0.4, 0); }
+      else { C.position.copy(home); C.rotation.set(0, 0, 0); }
+    }
+    /* POSSESSION 3 · THE LITTLE ONE (§4.4, ~45 s, COME BACK inside it): the yield filled by itself; the bells; the lamp
+       low and the room deep BLUE; the blue double rises, small and pale, its two long locks drifting as if under water —
+       and does NOT come to him: it waits, hands joined, the way a child waits to be noticed. HE goes to IT, kneeling
+       close until its face fills the view; a slow fade into the blue; the city's
+       lit windows going out one by one, hours passing; the three sticks burning down fast; tears on the lens and a sob;
+       the little one's stick burns to its end and its ember dies; his own voice, far off; then COME BACK (S39, inside
+       the film): the screen sunk in deep blue water, the lamp a blurred light above, he a small pale light below with
+       the little one's smaller blue light beside him, holding on — and SURFACING: sound and white-gold light, colour, the
+       lamp blooming, and he falls back against the bed's frame, gasping. */
+    const LFT = { bells: 0, rise: 1.5, go: 3.5, into: 6.0, l1: 9.0, city: 13.0, l2: 16.0, tears: 21.0, tick: 27.0, out: 29.0,
+                  come: 35.0, surf: 0, end: 0 };                 // (surf and end follow COME BACK's own length: the film waits on it)
+    const littleLive = { cameBack: false, slipN: 0, lv: 0 };
+    const KNEEL = { x: 1.05, z: ALTAR_Z[2] };                  // kneeling close before the little one, his face filling the view
+    const littleF = {
+      T: LFT,
+      begin() { fLive.shot = 'little'; fLive.lit = null; littleLive.lv = 0; },
+      end() { fLive.shot = ''; lensTo(72); doublesOff(); look('NIGHT', 0.01); cityOut(-1); lensOff(); },
+      frame(t, api) {
+        if (fLive.shot !== 'little') littleF.begin();
+        const K = KIDS[2], baseY = ALTAR.top + ALTAR.riser + 0.006;
+        if (t >= 0 && fLive.lit !== 'BLUE' && t < LFT.come) { look('BLUE', 1.4); fLive.lit = 'BLUE'; }
+        /* the double: rises small and pale, waits with its hands joined; its locks drift (its own slow sway) */
+        const kr = smooth(cl01((t - LFT.rise) / 1.6)), kf = 1 - smooth(cl01((t - LFT.into) / 2.5));
+        doubleSet(2, 0.9 * kr * kf, RISER.x - 0.05 * kr, baseY + 0.05 * kr + 0.006 * Math.sin(t * 1.3), ALTAR_Z[2], -Math.PI / 2 + 0.05 * Math.sin(t * 0.7), 1);
+        /* the lens: from the mat, he goes to it and kneels close; the lens narrows to 62 as he goes into the blue */
+        const kg = smooth(cl01((t - LFT.go) / 2.5));
+        const L = [RISER.x, baseY + K.h * (0.62 + 0.1 * kg), ALTAR_Z[2]];
+        /* (and from the fade into the blue, nearer still and never quite still — under water nothing stands still; by
+           photograph the close-up held one picture for twenty seconds) */
+        const kd = smooth(cl01((t - LFT.into) / (LFT.come - LFT.into))), fl = 0.004 * Math.sin(t * 0.8) * smooth(cl01((t - LFT.into) / 2));
+        const P = lerp3(lerp3([MAT.x, MAT_EYE, MAT.z], [KNEEL.x, baseY + K.h * 0.72, KNEEL.z], kg), L, 0.18 * kd);
+        camAt(P[0], P[1] + fl, P[2], L[0], L[1], L[2]);
+        lensTo(72 + (K.lens - 72) * smooth(cl01((t - LFT.into) / 2.0)));
+        /* his hands are not in this film (the shy one's law): a small añjali at the frame's foot read as a lump on the
+           little one's base, and the rig's resting hand rose out of the water at COME BACK (by photograph, on a phone) */
+        if (api && api.handPose) api.handPose(null, 0);
+        if (api && api.handsRoot) api.handsRoot.visible = false;
+        /* the city's lit windows going out one by one (V12), the three sticks burning down fast */
+        if (t < LFT.come) cityOut(1 - smooth(cl01((t - LFT.city) / 7)));   // (the 'late' painting under it; at 1 it reads as the night's)
+        stubBurn(cl01((t - LFT.city) / (LFT.tick - LFT.city)));
+        if (t >= LFT.tick && careLive.sticksSet[2]) { if (roomLive.embers[2]) roomLive.embers[2].visible = false; }
+        littleLens(t);                                            // the blue, his hair, the tears (on the lens)
+      }
+    };
+    /* the sticks burning down (k 0 → 1: their incense shrinks to a grey stub; the little one's ember goes last) */
+    function stubBurn(k) {
+      careLive.sticksSet.forEach((sk, i) => {
+        const inc = sk.children[0], h = 1 - 0.85 * k; if (inc) { inc.scale.y = h; inc.position.y = 0.01 + 0.08 * h; }
+        if (roomLive.embers[i]) roomLive.embers[i].position.y = ALTAR.top + 0.03 + 0.01 + 0.16 * h;   // the ember rides the burning tip down
+      });
+    }
+    function stubShow(i, on) {                                   // a burnt-out stick: a grey stub, no ember (the aftermath and after)
+      const sk = careLive.sticksSet[i]; if (!sk) return; sk.visible = on;
+      const inc = sk.children[0]; if (inc) { inc.scale.y = on ? 0.15 : 1; inc.position.y = on ? 0.01 + 0.08 * 0.15 : 0.09; inc.material = on ? mStub : mStickLit; }
+      if (roomLive.embers[i]) { roomLive.embers[i].visible = false; roomLive.embers[i].position.y = ALTAR.top + 0.2; }
+    }
+    /* the films' handles on play-side state (each film keeps only cues and steps; these hold what an event moves) */
+    function redStampTo(n) {                                 // a tap of the STAMP: one stamp at the film's current time
+      while (redLive.taps < Math.min(3, n)) { redLive.taps++; redLive.stamps.push(redLive.nowT); sfxAt('k5stamp', 0.55, yaw.position.x, yaw.position.z); }
+      redLive.lastTap = redLive.nowT;
+    }
+    /* untapped for 2.5 s, he stamps by himself — three, 0.45 s apart, at times fixed on the film's clock (so a seek and
+       a slow frame land on the same picture); a player who has tapped at all keeps his own */
+    function redStampAuto(j) {
+      if (j === 0) {
+        redLive.auto = redLive.taps === 0;
+        if (redLive.auto && kit && kit.eventActive && kit.eventActive()) kit.abortEvent();
+      }
+      if (!redLive.auto) return;
+      redLive.stamps.push(RFT.stamp + 2.5 + 0.45 * j); redLive.taps = j + 1;
+      sfxAt('k5stamp', 0.55, yaw.position.x, yaw.position.z);
+    }
+    function redStampEnd() { if (kit && kit.eventActive && kit.eventActive()) kit.abortEvent(); }   // the march: what was stamped stands
+    /* the peek drawn from inside (makePeekT): two planes on the CAMERA, a hand's breadth past the near plane, drawn over
+       everything and unlit (no light state of the room makes a new program for them). `k` brings the hands in from the
+       sides to his face, `gap` parts them (the PEEK's drag, stage.shyGap); a breath of sway. Off (k 0) is not drawn */
+    const peek = (() => {
+      const T = tex(makePeekT(THREE, cnv)), g = new THREE.Group(), gL = new THREE.PlaneGeometry(1, 1), gR = new THREE.PlaneGeometry(1, 1);
+      { const uv = gR.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setX(i, 1 - uv.getX(i)); }
+      const mat = B({ map: T, transparent: true, depthTest: false, depthWrite: false, toneMapped: false, fog: false });
+      const L = new THREE.Mesh(gL, mat), R = new THREE.Mesh(gR, mat);
+      for (const m of [L, R]) { m.renderOrder = 9990; m.frustumCulled = false; g.add(m); }
+      g.visible = false; camera.add(g);
+      g.dispose = () => { gL.dispose(); gR.dispose(); };
+      owned.push(g);                                                // (dispose takes it off the camera, which outlives the chapter)
+      return { g, L, R };
+    })();
+    function peekSet(k, gap, t) {
+      if (!(k > 0.002)) { if (peek.g.visible) peek.g.visible = false; return; }
+      peek.g.visible = true;
+      const d = 0.1, h = d * Math.tan(camera.fov * Math.PI / 360), w = h * camera.aspect;
+      const e = w * (0.035 + 1.15 * cl01(gap) + 1.3 * (1 - k)), sway = 0.012 * w * Math.sin(t * 1.7);
+      peek.g.position.set(0, 0.015 * h * Math.sin(t * 1.3), -d);
+      peek.L.scale.set(2.3 * w, 2.6 * h, 1); peek.L.position.set(-e - 1.15 * w + sway, 0, 0);
+      peek.R.scale.set(2.3 * w, 2.6 * h, 1); peek.R.position.set(e + 1.15 * w + sway, 0, 0);
+    }
+    /* THE LITTLE ONE'S FILM ON THE LENS (V10, V11, V15): planes on the camera like the peek's, unlit, drawn over everything.
+       The blue the picture sinks into (from the fade into the blue to COME BACK); the TEARS — drops running down the lens on
+       the film's clock, each with its wet line above it; two LOCKS of his hair drifting at the frame's edges; and COME
+       BACK's WATER — deep blue lit from above, the caustics, bubbles rising, the lamp a warm blur above, his small pale light
+       at the level the climb has reached and the little one's smaller blue light beside it, a ring when the bells ring and
+       he holds on, and letting go as he rises. Every picture a function of a clock (the film's; the water's of the event's
+       own level and the wall), so a seek and a slow frame land on the same picture */
+    const lens = (() => {
+      const g = new THREE.Group(); g.visible = false; camera.add(g);
+      const geo = new THREE.PlaneGeometry(1, 1);
+      const mk = (map, order, add, color) => {
+        const m = new THREE.Mesh(geo, B({ map, color: color === undefined ? 0xffffff : color, transparent: true, depthTest: false, depthWrite: false,
+          toneMapped: false, fog: false, blending: add ? THREE.AdditiveBlending : THREE.NormalBlending }));
+        m.renderOrder = order; m.frustumCulled = false; m.visible = false; g.add(m); return m;
+      };
+      const tDrop = tex(makeDropT(THREE, cnv)), tTrail = tex(makeTrailT(THREE, cnv)), tLock = tex(makeLockT(THREE, cnv)), tBub = tex(makeBubbleT(THREE, cnv));
+      const tCau = tex(makeCausticT(THREE, cnv)); tCau.repeat.set(3, 4.1);   // (the cells' size on a plane the frame's whole height)
+      const L = { g, waterOn: false, waterT0: 0,
+        wash: mk(tex(makeWashT(THREE, cnv)), 9980, false), water: mk(tex(makeWaterT(THREE, cnv)), 9981, false), caus: mk(tCau, 9982, true),
+        lamp: mk(tGlow, 9983, true, 0xffd8a0), him: mk(tGlow, 9984, true, 0xf4f6ff), kid: mk(tGlow, 9984, true, 0x8cbcff), ring: mk(tBub, 9984, true, 0x8cbcff),
+        bubs: [], drops: [], trails: [], locks: [] };
+      L.caus.material.alphaMap = tex(makeDepthFadeT(THREE, cnv));   // (the light from above fading with depth: no line across the water)
+      for (let i = 0; i < 10; i++) L.bubs.push(mk(tBub, 9983, true, 0xc8e4ff));
+      for (let i = 0; i < 6; i++) { L.trails.push(mk(tTrail, 9985, false)); L.drops.push(mk(tDrop, 9986, false)); }
+      for (let i = 0; i < 2; i++) L.locks.push(mk(tLock, 9985, false));
+      g.dispose = () => geo.dispose();
+      owned.push(g);                                                // (dispose takes it off the camera)
+      return L;
+    })();
+    /* HIS PHONE, on the floor beside him after the little one (it slid from his pocket as he fell back against the bed's
+       frame): the aftermath reads the hour off it — from the floor the bed's head hides the bedside clock (by photograph,
+       "his look drawn to the clock" found only the pillow) — and ending A's nights find it there again (CP8). Its top
+       away from him, so he reads it the right way up */
+    const PHONE_FLOOR = { x: -0.06, z: -0.02, ry: 0.4 };
+    const phone = (() => {
+      const S2 = makePhoneScreen(THREE, cnv); tex(S2.t);
+      const g = new THREE.Group(); g.visible = false; worldR.add(g);
+      box(0.075, 0.008, 0.155, 0, 0.004, 0, M({ color: 0x14161a, roughness: 0.3, metalness: 0.4 }), g, false);
+      const scr = new THREE.Mesh(new THREE.PlaneGeometry(0.066, 0.143), B({ map: S2.t, toneMapped: false }));
+      scr.rotation.x = -Math.PI / 2; scr.position.y = 0.0085; g.add(scr);
+      g.position.set(PHONE_FLOOR.x, 0.001, PHONE_FLOOR.z); g.rotation.y = PHONE_FLOOR.ry;
+      return { g, scr, S: S2 };
+    })();
+    function phoneLook(secs) {                                       // his look down onto it, from where he sits
+      const dx = PHONE_FLOOR.x - yaw.position.x, dz = PHONE_FLOOR.z - yaw.position.z, d = Math.hypot(dx, dz);
+      viewTo(Math.atan2(-dx, -dz), Math.max(-0.78, Math.atan2(0.01 - yaw.position.y, d)), secs);
+    }
+    function lensWH() { const d = 0.1, h = d * Math.tan(camera.fov * Math.PI / 360); return { d, h, w: h * camera.aspect }; }
+    function lensPut(m, x, y, sw, sh, op) {
+      m.visible = op > 0.003; if (!m.visible) return;
+      m.position.set(x, y, 0); m.scale.set(sw, sh, 1); m.material.opacity = Math.min(1, op);
+    }
+    function lensOff() {
+      lens.waterOn = false; lens.g.visible = false;
+      for (const m of lens.g.children) m.visible = false;
+    }
+    /* the tears (each: its time after the tears begin, x as a share of the half-width, the height it starts at as a share
+       of the half-height, and how fast it runs, in half-heights a second) */
+    const DROPS = [[0.0, -0.34, 0.55, 0.10], [0.9, 0.22, 0.40, 0.14], [1.7, -0.08, 0.62, 0.08], [2.8, 0.41, 0.30, 0.12], [4.0, -0.52, 0.20, 0.11], [5.2, 0.05, 0.48, 0.09]];
+    function littleLens(t) {
+      const { d, h, w } = lensWH(); lens.g.position.set(0, 0, -d);
+      const out = 1 - smooth(cl01((t - (LFT.come - 0.6)) / 0.6));
+      const kw = smooth(cl01((t - LFT.into) / 2.5)) * out, kh = smooth(cl01((t - LFT.into - 1.0) / 3.0)) * out, kt = cl01((t - LFT.tears) / 0.5) * out;
+      if (!(kw > 0.003 || kh > 0.003 || kt > 0.003)) { if (!lens.waterOn) lensOff(); return; }
+      lens.g.visible = true;
+      lensPut(lens.wash, 0, 0, 2.2 * w, 2.2 * h, 0.85 * kw);
+      lens.locks.forEach((m, i) => {                                 // his locks, one at each edge, drifting as if under water
+        const sgn = i ? 1 : -1, sway = 0.06 * w * Math.sin(t * 0.55 + i * 2.1) + 0.03 * w * Math.sin(t * 1.3 + i);
+        lensPut(m, sgn * w * 0.86 + sway, h * 0.15 + 0.03 * h * Math.sin(t * 0.4 + i), 0.5 * h, 2.4 * h, 0.75 * kh);
+        m.rotation.z = sgn * 0.18 + 0.06 * Math.sin(t * 0.5 + i * 1.7);
+      });
+      DROPS.forEach(([t0, fx, fy, v], i) => {                        // each drop rests a moment, then runs, its wet line above it
+        const u = t - LFT.tears - t0, D = lens.drops[i], R = lens.trails[i];
+        if (u < 0 || kt <= 0) { D.visible = R.visible = false; return; }
+        const run = Math.max(0, u - 0.6), y0 = fy * h, y = y0 - v * h * run - 0.02 * h * run * run, x = fx * w + 0.01 * w * Math.sin(u * 3 + i);
+        const sz = 0.075 * h * (1 + 0.15 * (i % 3)), op = smooth(cl01(u / 0.4)) * kt * (y < -1.2 * h ? 0 : 1);
+        lensPut(D, x, y, sz, sz * 1.15, op);
+        const len = Math.max(0.001, y0 - y);
+        lensPut(R, x, y + len / 2 + sz * 0.3, sz * 0.35, len + sz * 0.4, op * 0.8);
+      });
+    }
+    function comeWaterOn(on) {
+      lens.waterOn = !!on; lens.waterT0 = wallNow();
+      for (const m of [lens.water, lens.caus, lens.lamp, lens.him, lens.kid, lens.ring, ...lens.bubs]) m.visible = false;
+      if (on) lens.g.visible = true; else lensOff();
+    }
+    function comeWaterFrame(lv) {                                    // every frame of COME BACK (the surface event's onLevel)
+      if (!lens.waterOn) return;
+      const { d, h, w } = lensWH(), now = wallNow(), kin = smooth(cl01((now - lens.waterT0) / 0.6));
+      lens.g.visible = true; lens.g.position.set(0, 0, -d);
+      for (const m of [lens.wash, ...lens.locks, ...lens.drops, ...lens.trails]) m.visible = false;
+      lensPut(lens.water, 0, 0, 2.2 * w, 2.2 * h, 0.94 * kin);
+      lens.caus.material.map.offset.set((now * 0.021) % 1, (now * 0.013) % 1);
+      lensPut(lens.caus, 0, 0, 2.2 * w, 2.2 * h, (0.16 + 0.22 * lv) * kin);
+      const hy = -0.72 * h + 1.5 * h * lv;                            // his light, at the level the climb has reached
+      lensPut(lens.lamp, 0, 0.95 * h, (0.9 + 1.4 * lv) * h, (0.9 + 1.4 * lv) * h, (0.5 + 0.5 * lv) * kin);
+      lensPut(lens.him, 0, hy, 0.20 * h, 0.20 * h, 0.95 * kin);
+      const held = Math.max(0, lv - 0.55) * 1.7;                      // beside him, holding on — and letting go as he rises
+      const ky = hy - 0.12 * h - held * h, kx = 0.16 * w * (1 - 0.3 * Math.min(1, held));
+      lensPut(lens.kid, kx, ky, 0.13 * h, 0.13 * h, 0.9 * kin * (1 - 0.5 * cl01(held)));
+      const pu = littleLive.pullT ? now - littleLive.pullT : 9;        // a ring when the bells ring
+      lensPut(lens.ring, kx, ky, (0.15 + 0.9 * pu) * h, (0.15 + 0.9 * pu) * h, 0.7 * (1 - cl01(pu / 0.9)) * kin);
+      lens.bubs.forEach((m, i) => {
+        const sp = 0.10 + 0.05 * (i % 4), yy = ((now * sp + (i * 0.618) % 1) % 1) * 2.4 * h - 1.2 * h;
+        lensPut(m, (((i * 0.37) % 1) - 0.5) * 1.6 * w + 0.02 * w * Math.sin(now * 2 + i), yy, 0.03 * h, 0.03 * h,
+                0.6 * kin * (1 - cl01((yy + 0.2 * h) / h)));
+      });
+    }
+    function shyGap(k) { shyLive.gap = k; if (k > 0.3 && !shyLive.peeked) { shyLive.peeked = true; sfxAt('k5peek', 0.4, yaw.position.x, yaw.position.z); } }
+    function shyPeekEnd() { if (kit && kit.eventActive && kit.eventActive()) kit.abortEvent(); shyLive.gap = 0; }
+    /* COME BACK (§4.5, S39 inside the little one's film): the water, the light above, his light and the little one's
+       below; each pull the bells and a soft blue ring from below; a slip costs 4 sanity (floored, never a faint; the
+       Luang Phu Tim's and Gao Yord's cuts apply — evCut); inside 12 s "You came back on your own" (+4 awareness);
+       slower "It took everything to come back"; after 30 s the light comes down to him (gaveUp) */
+    function comeOpts() {
+      const first = !littleLive.briefed; littleLive.briefed = true;
+      return { kind: 'surface', label: W.objComeBack, brief: first ? (TOUCHY ? W.briefSurface : W.briefSurfaceKey) : undefined,
+               demo: 'surface', start: 0.18, lead: 0.4, sink: 0.07, pull: 0.16, pullGap0: 1.6, pullGap1: 2.4, floorK: 0.12,
+               slip: 4, minSanity: 10, goal: 0.92, hold: 0.4, full: 12, secs: 30,
+               onPull: () => { sfxAt('k5pull', 0.45, yaw.position.x, yaw.position.z); sfxAt('k5bells', 0.3, RISER.x, ALTAR_Z[2]); littleLive.pullT = wallNow(); },
+               onSlip: (n) => { littleLive.slipN = n; },
+               onLevel: (k) => { littleLive.lv = k; comeWaterFrame(k); } };
+    }
+    function comeBegin() { littleLive.lv = 0.18; look('SURFACE', 0.6); comeWaterOn(true); }
+    function comeDone(r) {
+      littleLive.cameBack = !!(r && r.ok && !r.gaveUp);
+      const fast = r && r.ok && !r.gaveUp && r.score >= 0.99;
+      if (kit && kit.conduct) kit.conduct(fast ? { a: 4, note: W.noteCameBack } : { note: W.noteHard });
+    }
+    function surfaceStart() { comeWaterOn(false); look('NIGHT', 0.8); if (kit && kit.flash) kit.flash({ color: '#fff2d6', secs: 1.4 }); }   // a rush of white-gold light
+    /* the surfacing (4 s): a rush of white-gold light that fades as colour returns; he falls back against the bed's frame */
+    function surfaceFrame(u, api) {
+      const k = smooth(cl01(u / 1.2));
+      const P = lerp3([KNEEL.x, 0.75, KNEEL.z], [-0.42, 0.58, 0.55], k), L = [RISER.x, 0.9, 0.4];
+      camAt(P[0], P[1] - 0.04 * Math.sin(Math.PI * cl01(u / 0.5)), P[2], L[0], L[1], L[2]);
+      lensTo(KIDS[2].lens + (72 - KIDS[2].lens) * smooth(cl01(u / 1.6)));   // (the blue's narrow lens opens with the gasp, not on the cut to play)
+      if (api && api.handPose) api.handPose(null, 0);
+      if (api && api.handsRoot) api.handsRoot.visible = false;
+    }
+    /* THE CITY'S LIT WINDOWS GOING OUT ONE BY ONE (V12, the little one's hours): over the window's 'late' painting, one plane
+       carrying exactly the windows the night has lit and 'late' has not — painted by the very loop that paints the view
+       (makeWindowT: the same seed, so the same windows) — each with the moment it goes out written in its alpha; the
+       material's alphaTest is that moment, so as cityOut runs from 1 to 0 they go dark one by one, and nothing is drawn
+       on a canvas mid-film (an unlit material, and its alphaTest stays above 0: no new program at any point) */
+    function buildCityOut() {
+      if (!roomLive.view || roomLive.cityOv) return;
+      const v = roomLive.view;
+      const o = new THREE.Mesh(new THREE.PlaneGeometry(14, 9), B({ map: tex(makeWindowLitT(THREE, cnv)), toneMapped: false, fog: false, alphaTest: 0.2 }));
+      o.position.copy(v.position); o.position.x -= 0.03; o.rotation.copy(v.rotation); o.visible = false; worldR.add(o);
+      roomLive.cityOv = o;
+    }
+    function cityOut(k) {                                       // k 1 → 0: the night's windows → 'late'; k < 0 hides it
+      const o = roomLive.cityOv; if (!o) return;
+      if (k < 0) { o.visible = false; return; }
+      o.visible = true; o.material.alphaTest = 0.2 + 0.8 * (1 - cl01(k)) + 0.001;
+    }
+    /* a burnt-out stick's grey stub, and its lit colour back */
+    const mStub = M({ color: 0x8a8580, roughness: 0.95 }), mStickLit = M({ color: 0x9a2418, roughness: 0.8 });
 
     /* ---------------------------------------------------------- the owner (CP5)
        Chapter 4's mkPerson — its rigged path, by its own code and numbers (e3c4.js at v22.5): sized from POSED BONES and
@@ -3537,6 +4326,13 @@
     /* PLAY I's things (CP6): after the room, whose cups, places and box they stand on (built before it, the first boot
        read the drinks' places before there were any) */
     buildOfferings(); deskBag(); careReset();
+    /* PLAY II's (CP7): what the red one's stamps and his slam make jump on the runner, and the window's hours */
+    for (const Bt of careLive.bottles) RATTLE.push({ o: Bt.g, y0: Bt.g.position.y });
+    for (const C of roomLive.cups) RATTLE.push({ o: C.cup, y0: C.cup.position.y });
+    for (const bw of roomLive.bowls) RATTLE.push({ o: bw, y0: bw.position.y });
+    for (const ty of roomLive.toys) RATTLE.push({ o: ty, y0: ty.position.y });
+    buildCityOut();
+    if (warmSounds) warmSounds(['k5stamp', 'k5peek', 'k5pull', 'k5bells', 'k5loosen', 'k5glint']);   // PLAY II's own (CP7)
     if (warmSounds) warmSounds(['k5pour', 'k5bottleout', 'k5ratchet', 'k5stiff', 'k5seal', 'k5hiss', 'k5capoff', 'k5tear', 'k5slide', 'k5bubbles',
                                 'k5plip', 'k5bend', 'k5foam', 'k5spark', 'k5flick', 'k5catch', 'k5wave', 'k5sand', 'k5wai']);   // PLAY I's own (CP6)
     buildTemple();                                   // World M (CP5): after everything it reads at call time
@@ -3745,6 +4541,7 @@
         for (const o of [far, dist]) if (o) o.traverse(m => { if (m.isMesh) m.material = near.material; });
         for (const o of [near, far, dist]) if (o) o.traverse(m => { if (m.isMesh) { m.castShadow = false; m.receiveShadow = false; } });
         const src = { near, far, dist };
+        L.farSrc = far;                                        // (his double is a copy of this level, CP7)
         // on the riser under the window, facing into the room (−x): a model at ry θ faces (sin θ, 0, cos θ)
         L.altar = kidLOD(src, K.h);
         L.altar.position.set(RISER.x, ALTAR.top + ALTAR.riser + 0.006, ALTAR_Z[K.slot]);
@@ -3827,7 +4624,8 @@
     function objectiveFor(p) {
       if (!kit) return;
       if (wDark) { kit.objective(null, { complete: false }); return; }
-      const o = p === 'counter' ? counterObjective() : p === 'care' ? careObjective() : { sit: W.objSit, decide: null }[p];
+      const o = p === 'counter' ? counterObjective() : p === 'care' ? careObjective() : OPEN_I[p] !== undefined ? openObjective()
+              : { sit: W.objSit, after: null, decide: null }[p];
       kit.objective(o || null);
     }
 
@@ -3856,7 +4654,11 @@
         if (!alive || run !== worldRun) return;
         if (kit) kit.fade(0, resumed ? 1.2 : 1.6);
         wDark = false; objectiveFor(phase);
-        if (phase === 'decide') { sitDown(true); openDecision(); }
+        /* (a Continue into the decision opens it once he is on the floor by the bed and the black has lifted: opened on the
+           boot's frame, his eye was still at standing height — a stopped clock eases no pose — and a phone saw the window
+           over the panel, the three below it; by photograph) */
+        if (phase === 'decide') after(resumed ? 1.3 : 0.3, () => { if (alive && phase === 'decide' && !decOpen) openDecision(); });
+        else if (phase === 'after') afterBeat(true);           // the aftermath's lines are its beat: said again (CP7)
       });
     }
 
@@ -4234,9 +5036,14 @@
         enabled: () => careStep() === 'stick' && !careDone.has('i.' + K.key) && careOk(), onInteract() { return giveStick(i); } })),
       /* (a tap on the rug or on its mark sits him, as a press does — by photograph, a phone's tap on the "!" pressed
          nothing — and stepping onto it does too: careFrame) */
+      ...KIDS.map((K, i) => ({
+        id: 'open_' + K.key, pos: { x: RISER.x, y: ALTAR.top + ALTAR.riser + K.h * 0.6, z: ALTAR_Z[i] }, radius: 1.8, aim: 0.22, pressAim: true, markY: 0.14, prompt: W.hotOpen,
+        hits: tapBox(RISER.x - 0.08, ALTAR.top + ALTAR.riser, ALTAR_Z[i] - 0.08, RISER.x + 0.08, ALTAR.top + ALTAR.riser + K.h, ALTAR_Z[i] + 0.08),
+        enabled: () => OPEN_I[phase] === i && seated && openOk(), onInteract() { return openPress(i); } })),
       { id: 'mat', pos: { x: MAT.x, y: 0.9, z: MAT.z }, radius: 1.6, aim: 0.35, pressAim: true, prompt: W.hotMat, markY: -0.3,
         hits: tapBox(MAT.x - 0.32, 0, MAT.z - 0.5, MAT.x + 0.32, 0.06, MAT.z + 0.5),
-        enabled: () => phase === 'sit' && !seated && quiet(), onInteract() { return sitWithThem(); } }
+        enabled: () => (phase === 'sit' || phase === 'open3') && !seated && quiet() && !openLive.busy,
+        onInteract() { return phase === 'open3' ? sitAgain() : sitWithThem(); } }
     ];
     for (const h of hotspots) { const en = h.enabled; h.enabled = () => !wDark && (!en || en()); }   // none under an arrival's black
 
@@ -4252,6 +5059,38 @@
       if (roomLive.louvre) roomLive.louvre.rotation.x = 0.45 + 0.3 * Math.sin(now * 2 * Math.PI / 11);
       if (roomLive.pinwheel) roomLive.pinwheel.rotation.z += dt * 1.6 * roomLive.fanK;
       if (!roomLive.yantDone && kit && getState() === 'play') { roomLive.yantDone = true; yantPrint(); }
+      smokeFrame(now);
+    }
+    /* THE INCENSE'S SMOKE (V13): a thread from each lit stick's ember — soft billboards rising off the tip on wall time,
+       swaying and spreading as they climb and thinning out — that LEANS toward him while a yield fills (smokeLean, from
+       openFrame) and rises STRAIGHT when he keeps the door shut (smokeStill, ending D's payoff). Painted, never a light;
+       drawn only over an ember that burns, so it rides the stick down as it burns and dies with the ember */
+    const SMOKE_N = 14;                                      // (at 7 a thread read as a string of beads: by photograph)
+    function smokeFrame(now) {
+      if (!roomLive.smoke) {
+        const tS = tex(makeWispT(THREE, cnv));             // (World M's cloud of puffs, at this size, was not seen at all: by photograph)
+        roomLive.smoke = roomLive.embers.map(() => Array.from({ length: SMOKE_N }, (_, j) => {
+          const m = new THREE.SpriteMaterial({ map: tS, color: 0xd6d0c8, transparent: true, opacity: 0, depthWrite: false, fog: false }); mats.push(m);
+          const sp = new THREE.Sprite(m); sp.visible = false; worldR.add(sp); return { sp, ph: j / SMOKE_N };
+        }));
+      }
+      const lean = roomLive.smokeLean || 0, still = roomLive.smokeStill || 0;
+      roomLive.embers.forEach((em, i) => {
+        const on = em.visible;
+        for (const s of roomLive.smoke[i]) {
+          if (!on) { s.sp.visible = false; continue; }
+          const u = (now * 0.3 + s.ph + i * 0.37) % 1;            // its place up the thread (0 → 1 in a little over three seconds)
+          /* a thin thread off the tip, curling and widening as it climbs (the sway and the width grow with the height) */
+          const sway = (1 - 0.85 * still) * (0.003 + 0.034 * u * u) * Math.sin(now * 1.3 + i * 2.1 + u * 6.0);
+          const ln = 0.24 * lean * u * u;                          // (toward the mat: −x, and across to its z)
+          const ax = MAT.x - em.position.x, az = MAT.z - em.position.z, al = Math.hypot(ax, az) || 1;
+          s.sp.position.set(em.position.x + ln * ax / al + 0.3 * sway, em.position.y + 0.004 + 0.36 * u, em.position.z + ln * az / al + sway);
+          const sz = 0.014 + 0.095 * u * u * (1 - 0.45 * still);
+          s.sp.scale.set(sz, Math.max(0.05, sz * 1.6), 1);         // (tall enough that each overlaps the next)
+          s.sp.material.opacity = 0.5 * Math.min(1, u * 8) * Math.pow(1 - u, 1.3);
+          s.sp.visible = true;
+        }
+      });
     }
     /* THE SAK YANT HE CHOSE (chapter 1), printed and pinned to his cork board: read once, on his first frame in the room,
        from the equipped Sak Yant box (none — a player who came in by the selector — and the board carries no print) */
@@ -4271,7 +5110,7 @@
       /* the counter's motion — the owner's mixer, the things he sets down, the box — on WALL time and ABOVE the state's
          return, so his films draw them too (v5.19: the mixers above the cine return); the lean rides the chapter clock */
       const wdt = cntWall ? Math.min(0.5, now - cntWall) : 0; cntWall = now;
-      peopleTick(wdt); setsTick(wdt); boxTick(wdt); viewTick(); leanTick(); careFrame(wdt);
+      peopleTick(wdt); setsTick(wdt); boxTick(wdt); viewTick(); leanTick(); careFrame(wdt); openFrame(wdt);
       const st = getState();
       const live = st === 'play' || st === 'unlock' || st === 'choose';
       /* a Continue into the room is put there UNDER the chapter card, so the card lifts on the world it resumes in */
@@ -4297,12 +5136,17 @@
        phase resumes at the mat. */
     function resumeAt(p0) {
       const tag = String(p0 || '').split(':'), p = PHASES.includes(tag[0]) ? tag[0] : 'counter';
-      if (PHASES.indexOf(p) >= PHASES.indexOf('care')) return { w: 'R', at: p === 'decide' ? 'decide' : p === 'care' ? 'care' : 'sit', tag: tag[1] || '' };
+      if (PHASES.indexOf(p) >= PHASES.indexOf('care')) return { w: 'R', at: p, tag: tag[1] || '' };
       return null;
     }
     function applyPhase(p) {
       const RA = resumeAt(p);
-      if (RA) { careResume(RA.at === 'care' ? RA.tag : CARE_ORDER.slice(0, 8).join(',')); toWorld(RA.w, true, RA.at, RA.at === 'care' ? RA.tag : undefined); return; }
+      if (RA) {
+        careResume(RA.at === 'care' ? RA.tag : CARE_ORDER.slice(0, 8).join(','));
+        toWorld(RA.w, true, RA.at, RA.at === 'care' ? RA.tag : undefined);
+        if (['open1', 'open2', 'open3', 'after', 'decide'].includes(RA.at)) openResume(RA.at);   // where the last possession left him (CP7)
+        return;
+      }
       const tag = String(p || '').split(':');
       /* a first arrival: his look down a little, so the owner's face and the three on the glass are both in the frame (by
          photograph: at the spawn's own pitch the three's feet were cut by the bottom edge) */
@@ -4345,6 +5189,7 @@
       roomReset();
       counterReset();
       careReset();
+      openReset();
       for (const h of hotspots) { h.done = false; h.dwellT = 0; }
       if (kit) {
         kit.root(false); kit.pose('standing', { secs: 0.05 });
@@ -4423,10 +5268,14 @@
                      seated, decOpen, kids: kidLive.map(L => L.K.key + (L.ready ? '' : '?')),
                      counter: { step: cntStep(), done: cntTag(), busy: cntBusy, opened: cntLive.opened, lean: !!cntLive.lean,
                                 owner: !!(cntLive.owner && cntLive.owner.ready) },
-                     care: { step: careStep(), done: careTag(), busy: careBusy, carry: careLive.carry, seat: careLive.seat, foamed: careLive.foamed } }),
+                     care: { step: careStep(), done: careTag(), busy: careBusy, carry: careLive.carry, seat: careLive.seat, foamed: careLive.foamed },
+                     open: { busy: openLive.busy, kid: openLive.kid, k: +openLive.k.toFixed(2), came: littleLive.cameBack, slips: littleLive.slipN } }),
       counter: { solve: leanSolve, LEAN, BAG_HELD, sets: cntLive.sets, live: cntLive },   // the counter's handles (§4.0b), for probes
       careLab, careLive,                                       // PLAY I's held moments and its live state (CP6), for probes
       madeF, cardF,                                            // the counter's films' controllers (film M, film K): every picture a function of their clock
+      redF, shyF, littleF, W,                                  // the three possessions' controllers (CP7), and the words their events show
+      redStampTo, redStampAuto, redStampEnd, shyGap, shyPeekEnd, comeOpts, comeBegin, comeDone, surfaceStart, surfaceFrame,
+      openLive, doubles: { of: doubleOf, set: doubleSet, off: doublesOff }, cityOut,   // (for probes)
       ownerTalk: (secs) => personTalk(cntLive.owner, secs),    // a film's line from the owner rides his talking take
       nightSet,
       hotspots,
@@ -4537,6 +5386,170 @@
         }
       }
       x.fillStyle = `rgba(255,220,160,${S.deck})`; x.fillRect(x0, 600, w, 40);                  // the void deck
+    }
+    return done(THREE, c, false);
+  }
+  /* THE PEEK, from inside (CP7): his left hand over his eyes as he sees it — not the hand but the light through it. The
+     rig's hands ten centimetres from the lens were two cut wrists and a wall of fingers (by photograph, on a phone), so
+     the peek is drawn from the inside: deep warm dark at the outer side, the flesh thinner and redder toward the inner
+     edge (u = 1), which glows and is soft. The right hand is the same, mirrored by its UVs. Never a hand drawn on a
+     canvas: no outline, no finger, only dark and light (the v21.16 rule is about figures; this is a darkness that parts) */
+  function makePeekT(THREE, cnv) {
+    const [c, x] = sized(cnv, 256, 256);
+    x.clearRect(0, 0, 256, 256);
+    /* row by row: the hand dark and warm out to its inner edge, the edge glowing where the light comes through the thin
+       flesh of the fingers' sides, then feathered away — and that edge not a ruled line but four fingers' worth of soft
+       scallops (by photograph: two gaps cut inside each hand read as a curtain's folds, so the hand has none now; the room
+       is seen only where the hands part) */
+    for (let y = 0; y < 256; y++) {
+      const v = y / 255, bump = 0.035 * Math.abs(Math.sin(v * Math.PI * 4.0 + 0.4)) * (0.5 + 0.5 * v);
+      const e = (0.86 + bump) * 256, f = 18;                     // where the edge is, and how soft
+      const g = x.createLinearGradient(0, 0, e + f, 0);
+      const k0 = Math.max(0, (e - 60) / (e + f)), k1 = Math.max(0, (e - 10) / (e + f)), k2 = e / (e + f);
+      g.addColorStop(0, 'rgba(10,3,2,0.98)');
+      g.addColorStop(k0, 'rgba(26,8,5,0.97)');
+      g.addColorStop(k1, 'rgba(110,40,16,0.92)');
+      g.addColorStop(k2, 'rgba(232,118,52,0.55)');
+      g.addColorStop(1, 'rgba(255,150,70,0)');
+      x.fillStyle = g; x.fillRect(0, y, e + f, 1);
+    }
+    const vv = x.createLinearGradient(0, 0, 0, 256);                // darker where the fingertips curl at the top and the heel below
+    vv.addColorStop(0, 'rgba(0,0,0,0.45)'); vv.addColorStop(0.3, 'rgba(0,0,0,0)'); vv.addColorStop(0.8, 'rgba(0,0,0,0)'); vv.addColorStop(1, 'rgba(0,0,0,0.35)');
+    x.globalCompositeOperation = 'source-atop'; x.fillStyle = vv; x.fillRect(0, 0, 256, 256); x.globalCompositeOperation = 'source-over';
+    return done(THREE, c, false);
+  }
+  /* HIS PHONE'S SCREEN (CP7; the endings add their states at CP8): upright, one canvas redrawn only when its state
+     moves. 'time' is the lock screen, the hour big; 'dark' is the screen off */
+  function makePhoneScreen(THREE, cnv) {
+    const W = 288, H = 624, [c, x] = sized(cnv, W, H), t = done(THREE, c, false);
+    let last = '';
+    function draw(state, n = 0, clock = '02:47') {
+      const key = state + ':' + (n | 0) + ':' + clock; if (key === last) return; last = key;
+      x.textAlign = 'left'; x.textBaseline = 'alphabetic';
+      x.fillStyle = '#0c0e12'; x.fillRect(0, 0, W, H);
+      if (state !== 'dark') {
+        const g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#1a2234'); g.addColorStop(1, '#0a0c14'); x.fillStyle = g; x.fillRect(0, 0, W, H);
+        x.fillStyle = '#e8eaee'; x.font = 'bold 13px sans-serif'; x.textAlign = 'right'; x.fillText('61%', W - 14, 21);
+        x.textAlign = 'center'; x.font = '84px sans-serif'; x.fillText(clock, W / 2, 190);
+      }
+      t.needsUpdate = true;
+    }
+    draw('dark');
+    return { t, draw, W, H };
+  }
+  /* THE LITTLE ONE'S FILM, ON THE LENS (CP7 — V10 the tears, V11 his hair at the frame's edge, V15 COME BACK's water):
+     each a small painting, no figure in any of them. The blue the picture sinks into, clear in the middle and deep at the
+     edges; a drop on the lens (a lens of its own: a dark rim above, a bright one below, a point of light) and the wet line
+     it leaves; a lock of his hair, pale as his double; deep water lit from above; the light on water seen from under it
+     (a net of bright lines that tiles); a bubble */
+  function makeWashT(THREE, cnv) {
+    const [c, x] = sized(cnv, 256, 256);
+    const g = x.createRadialGradient(128, 122, 26, 128, 128, 184);
+    g.addColorStop(0, 'rgba(40,90,170,0)'); g.addColorStop(0.45, 'rgba(26,62,132,0.30)'); g.addColorStop(1, 'rgba(6,18,48,0.92)');
+    x.fillStyle = g; x.fillRect(0, 0, 256, 256);
+    return done(THREE, c, false);
+  }
+  function makeDropT(THREE, cnv) {
+    const [c, x] = sized(cnv, 64, 64);
+    x.clearRect(0, 0, 64, 64);
+    const body = x.createRadialGradient(32, 34, 4, 32, 32, 26);
+    body.addColorStop(0, 'rgba(200,220,255,0.10)'); body.addColorStop(0.75, 'rgba(160,190,240,0.18)'); body.addColorStop(1, 'rgba(160,190,240,0)');
+    x.fillStyle = body; x.beginPath(); x.arc(32, 32, 26, 0, Math.PI * 2); x.fill();
+    x.lineWidth = 3; x.strokeStyle = 'rgba(10,20,40,0.38)'; x.beginPath(); x.arc(32, 32, 21, Math.PI * 1.05, Math.PI * 1.95); x.stroke();
+    x.strokeStyle = 'rgba(235,245,255,0.58)'; x.beginPath(); x.arc(32, 32, 21, Math.PI * 0.15, Math.PI * 0.85); x.stroke();
+    x.fillStyle = 'rgba(255,255,255,0.78)'; x.beginPath(); x.arc(25, 24, 3.2, 0, Math.PI * 2); x.fill();
+    return done(THREE, c, false);
+  }
+  function makeTrailT(THREE, cnv) {
+    const [c, x] = sized(cnv, 16, 128);
+    const g = x.createLinearGradient(0, 0, 16, 0);
+    g.addColorStop(0, 'rgba(180,205,245,0)'); g.addColorStop(0.5, 'rgba(205,222,250,0.32)'); g.addColorStop(1, 'rgba(180,205,245,0)');
+    x.fillStyle = g; x.fillRect(0, 0, 16, 128);
+    const v = x.createLinearGradient(0, 0, 0, 128); v.addColorStop(0, 'rgba(0,0,0,1)'); v.addColorStop(1, 'rgba(0,0,0,0)');
+    x.globalCompositeOperation = 'destination-out'; x.fillStyle = v; x.fillRect(0, 0, 16, 128); x.globalCompositeOperation = 'source-over';
+    return done(THREE, c, false);
+  }
+  function makeLockT(THREE, cnv) {
+    const [c, x] = sized(cnv, 128, 512), r = rng(5251);
+    x.clearRect(0, 0, 128, 512);
+    for (let i = 0; i < 14; i++) {
+      const x0 = 30 + r() * 68, a = 0.10 + r() * 0.22, w = 0.8 + r() * 1.6, ph = r() * 6, amp = 6 + r() * 12;
+      x.strokeStyle = `rgba(190,215,255,${a.toFixed(3)})`; x.lineWidth = w; x.beginPath();
+      for (let y = 0; y <= 512; y += 8) { const xx = x0 + amp * Math.sin(y / 70 + ph) * (y / 512); if (y) x.lineTo(xx, y); else x.moveTo(xx, y); }
+      x.stroke();
+    }
+    return done(THREE, c, false);
+  }
+  function makeWaterT(THREE, cnv) {
+    const [c, x] = sized(cnv, 8, 256);
+    const g = x.createLinearGradient(0, 0, 0, 256);
+    g.addColorStop(0, '#2a6a8e'); g.addColorStop(0.25, '#123e5c'); g.addColorStop(0.6, '#08223a'); g.addColorStop(1, '#030c18');
+    x.fillStyle = g; x.fillRect(0, 0, 8, 256);
+    return done(THREE, c, false);
+  }
+  function makeCausticT(THREE, cnv) {
+    const S = 128, [c, x] = sized(cnv, S, S), r = rng(5263), pts = [];
+    for (let i = 0; i < 18; i++) pts.push([r() * S, r() * S]);
+    const img = x.createImageData(S, S);
+    for (let y = 0; y < S; y++) for (let xx = 0; xx < S; xx++) {
+      let d1 = 1e9, d2 = 1e9;
+      for (const [px, py] of pts) for (let oy = -S; oy <= S; oy += S) for (let ox = -S; ox <= S; ox += S) {
+        const dx = xx - px - ox, dy = y - py - oy, d = dx * dx + dy * dy;
+        if (d < d1) { d2 = d1; d1 = d; } else if (d < d2) d2 = d;
+      }
+      const v = Math.max(0, 1 - (Math.sqrt(d2) - Math.sqrt(d1)) / 6), o = (y * S + xx) * 4;
+      img.data[o] = 150 * v; img.data[o + 1] = 210 * v; img.data[o + 2] = 255 * v; img.data[o + 3] = 255;
+    }
+    x.putImageData(img, 0, 0);
+    return done(THREE, c, true);
+  }
+  /* COME BACK's light from above, fading with depth: the caustics' alpha, full near the top of the frame and gone a
+     sixth of the way up from its foot (their plane is 2.2 half-heights tall, so the frame is v 0.05–0.95 of it). By
+     photograph, the caustics on a plane of their own ended in a hard line across the water; a linear map (no colour) */
+  function makeDepthFadeT(THREE, cnv) {
+    const [c, x] = sized(cnv, 4, 256), g = x.createLinearGradient(0, 256, 0, 0);
+    g.addColorStop(0, '#000'); g.addColorStop(0.18, '#000'); g.addColorStop(0.85, '#fff'); g.addColorStop(1, '#fff');
+    x.fillStyle = g; x.fillRect(0, 0, 4, 256);
+    const t = done(THREE, c, false); t.colorSpace = THREE.NoColorSpace;
+    return t;
+  }
+  /* a wisp of incense smoke: a soft upright puff, densest down its middle (V13) */
+  function makeWispT(THREE, cnv) {
+    const [c, x] = sized(cnv, 64, 128), r = rng(5279);
+    x.clearRect(0, 0, 64, 128);
+    for (let i = 0; i < 9; i++) {
+      const px = 32 + (r() - 0.5) * 14, py = 64 + (r() - 0.5) * 60, R = 14 + r() * 14;
+      const g = x.createRadialGradient(px, py, 0, px, py, R);
+      g.addColorStop(0, 'rgba(255,255,255,0.34)'); g.addColorStop(0.55, 'rgba(255,255,255,0.12)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+      x.fillStyle = g; x.fillRect(px - R, py - R, R * 2, R * 2);
+    }
+    return done(THREE, c, false);
+  }
+  function makeBubbleT(THREE, cnv) {
+    const [c, x] = sized(cnv, 32, 32); x.clearRect(0, 0, 32, 32);
+    x.lineWidth = 2; x.strokeStyle = 'rgba(200,230,255,0.7)'; x.beginPath(); x.arc(16, 16, 11, 0, Math.PI * 2); x.stroke();
+    x.fillStyle = 'rgba(255,255,255,0.8)'; x.beginPath(); x.arc(12, 11, 2.2, 0, Math.PI * 2); x.fill();
+    return done(THREE, c, false);
+  }
+  /* the windows the night has lit and 'late' has not — the very loop of makeWindowT (the same seed, so the same windows),
+     each in its lit colour as it reads over the facade, with the moment it goes out (a seeded order) in its alpha: the
+     little one's hours (cityOut) */
+  function makeWindowLitT(THREE, cnv) {
+    const N = WIN_STATES.night, Lt = WIN_STATES.late, [c, x] = sized(cnv, 1024, 640), r = rng(5149), rt = rng(5197);
+    x.clearRect(0, 0, 1024, 640);
+    for (const [x0, w, top] of [[40, 300, 120], [400, 260, 170], [700, 300, 90]]) {
+      const floors = Math.floor((600 - top) / 26);
+      for (let f = 0; f < floors; f++) {
+        const y = top + 12 + f * 26;
+        for (let u = 0; u < Math.floor((w - 20) / 22); u++) {
+          const roll = r(), warm = r() < 0.5, xx = x0 + 10 + u * 22;
+          if (roll < N.lit && roll >= Lt.lit) {
+            const a = 0.2 + 0.8 * (0.02 + 0.96 * rt());
+            x.fillStyle = warm ? `rgba(219,185,123,${a.toFixed(3)})` : `rgba(152,167,187,${a.toFixed(3)})`;
+            x.fillRect(xx, y, 14, 11);
+          }
+        }
+      }
     }
     return done(THREE, c, false);
   }
@@ -5704,9 +6717,99 @@
     step(T.end, () => KF.end());
   }
   function homeFilm(c, s, api) { playFilm(c, api); }       // "Every Day" (CP9)
-  function redFilm(c, s, api) { playFilm(c, api); }        // possession 1 · the red one (CP7)
-  function shyFilm(c, s, api) { playFilm(c, api); }        // possession 2 · the shy one (CP7)
-  function littleFilm(c, s, api) { playFilm(c, api); }     // possession 3 · the little one, and COME BACK (CP7)
+  /* POSSESSION 1 · THE RED ONE (§4.4, CP7): every picture from stage.redF's frame(t); this holds its cues (literal, the
+     CUE_RE law), its STAMP (the player's three taps: a craft event the film runs on through; untapped, he stamps by
+     himself) and its lines. Begins on the yield's last frame (no black); ends on his own view on the mat, handed back to
+     play. */
+  function redFilm(c, s, api) {
+    const { tr, step, sfx, fade, rawK, stage, event } = api;
+    const F = stage.redF, T = RFT, W = stage.W;
+    c.keepFade = true;
+    c.endFade = 0;
+    tr(0, T.end, (k, t) => F.frame(t, api), rawK);
+    sfx(0.0, 'k5rise', 0.6);                                 // the double rising off its base
+    sfx(T.contact, 'k5enter', 0.7);                          // a soft swell, a child's breath of a laugh
+    sfx(T.stand, 'k5red', 0.5);                              // the bossy motif: toy drum, ching, klong yao
+    sfx(T.stand + 0.2, 'z5b1', 1);                           // "Mine! These are all MINE!"
+    event(T.stamp, { kind: 'craft', label: W.craftStamp, steps: [{ g: 'tap', n: 3, word: W.craftStamp }],
+                     at: { sx: 0.5, sy: 0.74 }, onProgress: (si, k) => stage.redStampTo(Math.round(k * 3)) });
+    step(T.stamp + 2.5, () => stage.redStampAuto(0));          // untapped for 2.5 s, he stamps by himself
+    step(T.stamp + 2.95, () => stage.redStampAuto(1));
+    step(T.stamp + 3.4, () => stage.redStampAuto(2));
+    step(T.march - 0.05, () => stage.redStampEnd());          // (the march: the stamp's moment is over)
+    sfx(T.march, 'z5b2', 1);                                 // "Nobody touches my things! Nobody!"
+    sfx(T.desk + 0.6, 'k5thud', 0.6);                        // the carton hits the floor
+    sfx(T.grab + 1.0, 'k5slurp', 0.6);
+    sfx(T.slam, 'k5slam', 0.7);
+    sfx(T.slam + 0.05, 'k5rattle', 0.5);
+    sfx(T.slam + 0.3, 'z5b3', 1);                            // "More! I want MORE!"
+    sfx(T.flop + 0.5, 'k5bump', 0.6);
+    sfx(T.flop + 1.2, 'z5b4', 1);                            // "...They didn't want me any more."
+    sfx(T.leave, 'k5leave', 0.6);
+    sfx(T.self, 'z5back1', 1);                               // "That wasn't me... That was him."
+    sfx(T.self + 3.5, 'z5back1b', 1);                        // "He wasn't angry. He just wanted someone to want him."
+    sfx(T.end - 2.0, 'z5again1', 1);                         // "...One more."
+    step(T.end, () => F.end());
+  }
+  /* POSSESSION 2 · THE SHY ONE (§4.4, CP7): stage.shyF's pictures; its PEEK (drag the fingers apart: a craft slide the
+     film runs on through) and its lines. */
+  function shyFilm(c, s, api) {
+    const { tr, step, sfx, rawK, stage, event } = api;
+    const F = stage.shyF, T = SFT, W = stage.W;
+    c.keepFade = true;
+    c.endFade = 0;
+    tr(0, T.end, (k, t) => F.frame(t, api), rawK);
+    sfx(0.2, 'k5scurry', 0.6);
+    sfx(1.3, 'k5giggle', 0.5);                               // behind him, a child who wants to be found
+    sfx(T.contact, 'k5enter2', 0.6);
+    sfx(T.peek0, 'k5shy', 0.45);                             // the music box and a plucked khim
+    sfx(T.peek0 + 0.2, 'z5s1', 1);                           // "Hehe... you can't see me..."
+    event(T.peek, { kind: 'craft', label: W.craftPeek, steps: [{ g: 'slide', dir: 'side', len: 0.14, word: W.craftPeek }],
+                    at: { sx: 0.5, sy: 0.55 }, onProgress: (si, k) => stage.shyGap(k) });
+    step(T.scuttle - 0.05, () => stage.shyPeekEnd());
+    sfx(T.scuttle, 'k5scuttle', 0.6);
+    sfx(T.scuttle + 0.6, 'z5s2', 1);                         // "Shhh... hide... hide..."
+    sfx(T.coin, 'k5coin', 0.5);
+    sfx(T.coin + 0.6, 'z5s3', 1);                            // "Mine... my secret..."
+    sfx(T.wait + 0.4, 'z5s4', 1);                            // "Come and find me... ...Nobody ever comes."
+    sfx(T.leave, 'k5leave2', 0.5);
+    sfx(T.bonk, 'k5bonk', 0.7);
+    sfx(T.bonk + 0.15, 'z5back2', 1);                        // "Ow—!"
+    sfx(T.out + 1.0, 'z5back2b', 1);                         // "I was hiding under my own desk... waiting for someone to find me."
+    sfx(T.little, 'k5bells', 0.35);
+    sfx(T.little + 0.8, 'z5again2', 1);                      // "One more. Just one more."
+    step(T.end, () => F.end());
+  }
+  /* POSSESSION 3 · THE LITTLE ONE, and COME BACK (§4.4–§4.5, CP7): stage.littleF's pictures to the surface; then COME
+     BACK, an event the film WAITS on (eventWait: the climb is his, and the film goes on when he is back); then the
+     surfacing. */
+  function littleFilm(c, s, api) {
+    const { tr, step, sfx, fade, rawK, stage, eventWait } = api;
+    const F = stage.littleF, T = F.T, W = stage.W;
+    c.keepFade = true;
+    c.endFade = 0;
+    tr(0, T.come, (k, t) => F.frame(t, api), rawK);
+    sfx(0.0, 'k5bells', 0.45);
+    sfx(T.rise, 'k5under', 0.5);
+    sfx(T.rise + 0.4, 'k5hair', 0.35);
+    sfx(T.into, 'k5lonely', 0.5);                            // the lullaby on khlui and bowed saw u, tender
+    sfx(T.l1, 'z5l1', 1);                                    // "Everyone goes away..."
+    sfx(T.l2, 'z5l2', 1);                                    // "You won't go... right?"
+    sfx(T.tears, 'z5sob', 1);
+    sfx(T.tears + 1.6, 'z5l3', 1);                           // "Stay... stay with me..."
+    sfx(T.tick, 'k5tick', 0.4);
+    sfx(T.out, 'k5bells', 0.3);
+    sfx(T.out + 0.6, 'z5out', 1);                            // "His incense had burnt out... but he held on to me..."
+    sfx(T.come - 0.8, 'z5come', 1);                          // "I'm sorry... I have to go back..." (said as the climb begins: a voice plays on
+                                                             //  through a paused film, and eventWait pauses this one until he is back)
+    step(T.come - 0.1, () => stage.comeBegin());
+    eventWait(T.come, stage.comeOpts(), (r) => stage.comeDone(r));
+    step(T.come + 0.2, () => stage.surfaceStart());
+    sfx(T.come + 0.25, 'k5surface', 0.8);                    // (it plays when the film runs on — after he is back)
+    sfx(T.come + 0.5, 'z5gasp', 1);
+    tr(T.come + 0.2, T.come + 4.2, (k, t) => stage.surfaceFrame(t - T.come - 0.2, api), rawK);
+    step(T.come + 4.2, () => F.end());
+  }
 
   /* ============================================================ THE ENDINGS
      Stubs until CP8: each holds the decision's picture a moment and goes to black, the card over its black. */

@@ -271,7 +271,7 @@ Object.assign(window.__TEXT__, {
   'event.craftSwipe':    'FLICK IT',
   'event.craftSwipeWhere': 'Flick your finger across, fast',
   'event.craftSwipeKey': 'Drag across fast, or press E',
-  'event.yield':         'LET GO',
+  'event.yield':         'LET YOUR MIND LOOSEN',
   'event.yieldWhere':    'Press and hold anywhere',
   'event.yieldWhereKey': 'Hold the mouse button, or hold E',
   'event.surface':       'COME BACK UP',

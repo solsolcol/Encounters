@@ -6331,3 +6331,54 @@ cut (sharing its vertices and maps) when it is small.
   narrow phone the share shrinks and the held thing walks right: the bottle stood half off the frame's edge. A pose
   that holds a thing names where THAT thing stands (`sx`, a share of the half-width for a named palm), and the engine
   moves both hands across to put it there on every screen.
+- **A press shorter than a frame is a press that never happened** (v23.0 CP7). The S38 yield read "is anything held?"
+  once a frame, so a tap that went down and up between two frames — a slow phone, or a probe's 0.3 s press at a frame a
+  second — was never seen, and the third yield (which fills by itself once pressed) never began: the little one's door
+  stayed shut with the player's finger already lifted. The press is LATCHED where it arrives (`evPress`), and the
+  frame's first setup keeps a latch it finds. Any "press once to start" reads the event, never only the frame's state;
+  the fixture proves it with a down and an up in one task (`yieldAutoTapLatched`).
+- **A recording stand-in stage answers zero, so a film's timetable must not live on the stage** (v23.0 CP7). chaptertest
+  walks every film and scene against a proxy stage whose every lookup is 0, and two films read their own clocks off
+  `stage.redF.T` — so every cue time was 0 + offset and the late-cue check failed both films with cues "past the film's
+  length". The timetables are file-scope constants now (RFT, SFT), read by the film and by its stage controller alike:
+  the numbers a scene is timed by are the numbers the checker sees.
+- **A second function of the same name silently replaces the first** (v23.0 CP7). In a chapter's closure, two
+  `function waterFrame` declarations are not an error (sloppy mode): the LAST one wins for every caller. COME BACK's
+  new water frame would have taken over the cups' water frame — the order that fills their cups would have drawn
+  nothing, with no error anywhere — and syntax, the dead-zone and the undeclared-name scans all passed. Found by
+  reading; now checked by `grep -o "function [A-Za-z_$][A-Za-z0-9_$]*" file | sort | uniq -d` (the one hit that stays
+  is "function of", from comments).
+- **His own hands at ten centimetres are two cut wrists and a wall of fingers** (v23.0 CP7). The arm rig is built to
+  be seen at arm's length; posed over his eyes (the peek) or at his mouth, its fingers filled a phone's frame and the
+  cut ends of its wrists showed (by photograph) — the same lesson as the bottle's fingers (Chad: "if you know its
+  impossible for you to get the fingers right, then dont do that animation"). What a beat needs of his hands up close
+  is drawn ON THE LENS instead: planes on the camera, past the near plane, unlit, drawn over everything — the peek is
+  the warm dark of a hand seen from inside with the room in the gaps, the tears are drops running down the glass, the
+  blue is a wash from the edges. No light state makes a new program for them; `dispose` must take them off the
+  camera, which outlives the chapter (`owned`).
+- **A film from play hands back the look it was STARTED from** (v23.0 CP7). After the red one's possession his eyes
+  were back on the red one (where the yield was pressed) while the order asked for the shy one, off a phone's frame (by
+  photograph). The film's `onDone` sets the look the NEXT order needs, as a Continue into that phase already did — one
+  function for both (`lookToOrder`).
+- **Raising a film's hands above the letterbox fills the frame with arms** (v23.0 CP7). Hands on the hips and arms
+  crossed sit at the frame's lower corners, under a film's bars; lifted by a share of the half-height to clear them, the
+  forearms became great slabs across the picture on a phone and a desktop alike (by photograph). Under the bars they
+  stay: a stance is told by the lens's height and its sway, and the hands are seen where they act.
+- **A minigame that pauses a film is a WALL in the film's clock** (v23.0 CP7). A cutscene's clock advances by up to
+  half a second a frame, and the pass that ran a step pausing the film for its minigame (`api.eventWait`) went on to run
+  every step whose time it had crossed in that same pass: on a phone at a few frames a second, the surfacing after COME
+  BACK — its white-gold light, its camera, his gasp — ran before the climb had begun, and the climb was played under
+  the scene it was meant to lead to (by photograph). A step that pauses is marked (`pauses`) and the clock stops AT it
+  (`cineUpdate`); nothing after it runs until the minigame hands the film back. Only `eventWait` marks a step so.
+- **Additive light on a scan adds up every shell inside it** (v23.0 CP7). A child's double — the scan itself under an
+  unlit additive rim shader — read as stacked glowing rings: the scans carry shells inside shells (the robe over the
+  body, the garland over both), and with depth writing off every one of them added its light; front faces only
+  (`FrontSide`) still left rings on a small one seen from above (by photograph). The cure is a DEPTH PRIME: the same
+  body drawn first into depth alone (colour writes off, a hair of polygon offset back), then the light on top with the
+  depth test on, so only the NEAREST surface is lit. Both go in the TRANSPARENT pass (prime renderOrder below the
+  light's), after the room — a prime drawn among the opaque objects would punch a hole through whatever is drawn
+  after it and behind it. Proven by photograph (v12.3's lesson: a pre-pass that is not photographed is a guess).
+- **A value one part writes and nothing reads is a feature that does not exist** (v23.0 CP7). The yields wrote a
+  lean for "the three threads of smoke" every frame from CP7's first draft, and no code anywhere drew a thread of
+  smoke: the embers glowed and nothing rose from them, which no number and no harness could notice. Before a beat
+  is called done, find the READER of every state it writes (grep the name; one hit is a write into the void).

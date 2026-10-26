@@ -4839,6 +4839,10 @@ function evPress(x, y, pid) {
     case 'resist': resistTap(e); break;
     case 'steady': e.lastX = x; e.lastY = y; e.pid = pid; e.seed = false; break;   // v22.0: the drag starts where the finger lands, and is that finger's
     case 'craft': evCraftPress(e, x, y); break;            // v23.0: a step begins where the finger lands
+    /* v23.0 (CP7): a yield that fills by itself once pressed latches the press HERE, not on the next frame — a tap
+       shorter than a frame (a slow phone, or the probe's 0.3 s press at a frame a second) was never seen down, and the
+       little one's door never opened */
+    case 'yield': e.yPressed = true; break;
     case 'surface': if (e.keyHeld) evSurfaceRise(e, o.keyRise); else e.sy = y; break;   // v23.0: a key strikes it up; a finger drags it
     case 'heartbeat': {
       /* v9.4: the beat comes off the SCHEDULE, because the gaps shrink. A
@@ -5289,7 +5293,7 @@ function evCraftFrame(e, o, wdt, bar) {
    third time the door opens by itself). `onHold(k, held)` every frame, so a chapter loosens the world by k. Never
    graded, never failed: full is the result. Its own picture, `press`. */
 function evYieldFrame(e, o, wdt, bar) {
-  if (e.yk === undefined) { e.yk = 0; e.yPressed = false; const el = $('evYield'); if (el) el.classList.remove('hide'); }
+  if (e.yk === undefined) { e.yk = 0; e.yPressed = !!e.yPressed; const el = $('evYield'); if (el) el.classList.remove('hide'); }   // (a press made before the first frame is kept)
   const held = !!(e.down || e.keyHeld);
   if (held) e.yPressed = true;
   const auto = !!o.auto && (e.yPressed || e.t >= o.autoAfter);
@@ -12660,6 +12664,12 @@ function cineUpdate() {
   rdt = Math.min(rdt, 0.5);          // a stalled frame advances, never leaps
   const before = c.t;
   c.t = Math.min(c.t + rdt, c.dur);
+  /* v23.0: a step that PAUSES the film (eventWait) is a wall in its clock. A slow frame advances up to half a second,
+     and the pass that ran the pausing step went on to run every step, track and sting after it up to the new time — on
+     a phone at a few frames a second, episode 3 chapter 5's surfacing (its light, its camera, its gasp) ran before
+     COME BACK began, under the minigame. The clock stops on the wall; nothing past it runs until the event resolves.
+     Only eventWait marks a step so, and only that chapter (and the fixture) waits in a film. */
+  for (const tr of c.tracks) if (tr.pauses && !tr.done && tr.t0 > before - 1e-9 && tr.t0 < c.t) c.t = tr.t0;
   for (const s of c.stings) {
     if (!s.fired && s.at > before - 1e-9 && s.at <= c.t) {
       s.fired = true; sting(s.kind, s.vol === undefined ? 1 : s.vol);
@@ -12864,13 +12874,16 @@ function sceneApi(c) {
        keys belong to the event while it is live; the Skip button still ends
        the film, and a skip resolves the event as skipped. */
     event: (at, opts, onDone) => step(at, () => { kitEvent(opts).then(r => { if (typeof onDone === 'function') onDone(r); }); }),
-    eventWait: (at, opts, onDone) => step(at, () => {
-      const mine = cine; if (mine) mine.paused = true;
-      kitEvent(opts).then(r => {
-        if (cine === mine && mine) { mine.paused = false; mine.last = performance.now(); }
-        if (typeof onDone === 'function') onDone(r);
+    eventWait: (at, opts, onDone) => {
+      step(at, () => {
+        const mine = cine; if (mine) mine.paused = true;
+        kitEvent(opts).then(r => {
+          if (cine === mine && mine) { mine.paused = false; mine.last = performance.now(); }
+          if (typeof onDone === 'function') onDone(r);
+        });
       });
-    }),
+      c.tracks[c.tracks.length - 1].pauses = true;      // v23.0: a wall in the film's clock (cineUpdate)
+    },
     music: cineMusic,                // v6.6: hold the explore music down (a film with its own theme)
     handsRoot, armR, noteProp,
     buildPrayerArm, prayerArm: () => prayerArmL,

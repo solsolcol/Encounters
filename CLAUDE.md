@@ -7097,7 +7097,10 @@ assigned where a texture belonged; and the clearance is ISSUED at the start
 of play rather than inferred from an empty bag, which had left both counters
 dead from the chapter's first frame (docs/LEARNINGS.md).
 
-In flight: nothing queued. **Episode 3 chapter 4, The Pieces That Answered, shipped at v22.0 —
+In flight: episode 3 chapter 5 (v23.0, docs/V23.0-E3C5-PLAN.md). **Queued for AFTER it** (Chad, 26 Oct: "Queue these
+in when you are completely done with chapter 5"): seven small notes on episode 3 chapter 4 — the merit film's music, orb
+and held climb, the flicker behind its monk, the Hanuman moving with his eyes, the giant's stomps, ending A's
+reflection, ending B's plain bag, ending D's card — verbatim in **docs/V23.1-E3C4-QUEUED.md**. **Episode 3 chapter 4, The Pieces That Answered, shipped at v22.0 —
 docs/V22.0-E3C4-PLAN.md** is its build memory (Chad's words, the design, every checkpoint, the review's
 fixes); its Chinatown towkay is a STAND-IN until Chad's model (docs/E3-MODELS.md), its opening film has had
 its own score and four sounds since v22.4 (the score is take 3 of four until Chad picks by ear — the previews
