@@ -503,7 +503,10 @@ async function runEvent(opts, drive) {
   await p.evaluate(o => {
     window.__evR = null;
     // a callback cannot cross into the page, so a check names a counter instead
-    if (o.slipTag) { const t = o.slipTag; o.onSlip = () => { window[t] = (window[t] || 0) + 1; }; }
+    if (o.slipTag) { const t = o.slipTag; o.onSlip = () => { window[t] = (window[t] || 0) + 1; window.__sanAtSlip = window.__enc.stats.sanity; }; }
+    // v23.0: a craft's steps and its foam, the same way
+    if (o.stepTag) { const t = o.stepTag; o.onStep = i => { (window[t] = window[t] || []).push(i); }; }
+    if (o.foamTag) { const t = o.foamTag; o.onFoam = () => { window[t] = (window[t] || 0) + 1; }; }
     // v21.2: a steady focus target's ready() reads a flag the check flips
     if (o.readyTag) { const t = o.readyTag; o.targets = o.targets.map(q => Object.assign({}, q, { ready: () => !!window[t] })); }
     // a rapid-tap event is tapped from inside the page, on its own timer
@@ -1566,6 +1569,228 @@ r = await runEvent({ kind: 'focus', graded: true, steady: true, readyTag: '__nev
                      waitMax: 1.5, missCost: 3, penalty: { stat: 'awareness' }, award: { stat: 'sanity', per: 1, hi: 6 } });
 K.focusSteadyNeverFree = r.kind === 'focus' && r.band.length === 0 && await p.evaluate(() => Math.abs(window.__enc.stats.awareness - 40) < 1e-9);
 K.focusSteadyLookGoes = await p.evaluate(() => !document.getElementById('evDot').classList.contains('steady'));
+/* ---------------------------------------------------------------- v23.0 · S37–S41
+   The hands-on kinds and the poses, for episode 3 chapter 5 — each by REAL pointer events on the overlay (v18.3: a
+   minigame probe drives the real input path), and the keys by the real keyboard. */
+const ptr = (type, x, y, o = {}) => p.evaluate(([type, x, y, o]) => {
+  document.getElementById('event').dispatchEvent(new PointerEvent(type, { pointerType: o.pt || 'touch', pointerId: o.id || 11,
+    isPrimary: true, clientX: x, clientY: y, bubbles: true, cancelable: true }));
+}, [type, x, y, o]);
+const evd = () => p.evaluate(() => window.__enc.kitDebug().event);
+const untilEv = (fn, arg, ms = 30000) => p.waitForFunction(fn, arg, { timeout: ms, polling: 50 }).then(() => true, () => false);
+const evGone = () => !window.__enc.kitDebug().event;
+const siAt = n => { const d = window.__enc.kitDebug().event; return !d || d.si >= n; };
+/* a twist: a finger round the point (cx, cy) at radius 120 px, `turns` of a circle in 15° moves, either way; `fast`
+   puts every move in one task (no time between them, so the care is spoilt) */
+const twist = (cx, cy, turns, dir = 1, fast = false) => p.evaluate(([cx, cy, turns, dir, fast]) => new Promise(done => {
+  const host = document.getElementById('event');
+  const fire = (type, a) => host.dispatchEvent(new PointerEvent(type, { pointerType: 'touch', pointerId: 11, isPrimary: true,
+    clientX: cx + 120 * Math.cos(a), clientY: cy + 120 * Math.sin(a), bubbles: true, cancelable: true }));
+  const n = Math.ceil(turns * 24) + 2; let i = 0;
+  fire('pointerdown', 0);
+  if (fast) { for (i = 1; i <= n; i++) fire('pointermove', dir * i * Math.PI / 12); fire('pointerup', dir * n * Math.PI / 12); return done(); }
+  const f = () => { i++; fire('pointermove', dir * i * Math.PI / 12); if (i >= n) { fire('pointerup', dir * i * Math.PI / 12); done(); } else setTimeout(f, 40); };
+  setTimeout(f, 40);
+}), [cx, cy, turns, dir, fast]);
+const C = await p.evaluate(() => ({ x: innerWidth * 0.5, y: innerHeight * 0.5, w: innerWidth, h: innerHeight }));
+await p.evaluate(() => { window.__steps = []; window.__foam = 0; });
+/* S37 · CRAFT: five steps in order — a twist, a slide down, two taps, a hold, a flick — each by a finger */
+r = await runEvent({ kind: 'craft', at: { sx: 0.5, sy: 0.5 }, fast: 720, minR: 40,
+                     steps: [{ g: 'twist', turns: 1 }, { g: 'slide', dir: 'down', len: 0.2 }, { g: 'tap', n: 2 }, { g: 'hold', secs: 0.4 }, { g: 'swipe', dir: 'side', dist: 0.2 }],
+                     stepTag: '__steps' }, async () => {
+  /* the hint is drawn AT the prop, with the step's own class */
+  K.craftHint = await p.waitForFunction(([cx, cy]) => { const el = document.getElementById('evCraft');
+    if (!el || el.classList.contains('hide') || el.className.indexOf('g-twist') < 0) return false;
+    const m = /translate\(([-\d.]+)px, ([-\d.]+)px\)/.exec(el.style.transform || ''); return !!m && Math.abs(+m[1] - cx) < 2 && Math.abs(+m[2] - cy) < 2; },
+    [C.x, C.y], { timeout: 20000, polling: 100 }).then(() => true, () => false);
+  await twist(C.x, C.y, 1.15, 1);
+  K.craftTwist = await untilEv(siAt, 1);
+  // a slide the WRONG way does nothing
+  await ptr('pointerdown', C.x, C.y); await ptr('pointermove', C.x, C.y - 200); await ptr('pointerup', C.x, C.y - 200);
+  K.craftSlideWrongWay = (await evd()).si === 1 && (await evd()).sk === 0;
+  await ptr('pointerdown', C.x, C.y); for (let k = 1; k <= 5; k++) await ptr('pointermove', C.x, C.y + 45 * k); await ptr('pointerup', C.x, C.y + 225);
+  K.craftSlide = await untilEv(siAt, 2);
+  await ptr('pointerdown', C.x, C.y); await ptr('pointerup', C.x, C.y);
+  K.craftTapOne = (await evd()).si === 2;
+  await ptr('pointerdown', C.x, C.y); await ptr('pointerup', C.x, C.y);
+  K.craftTap = await untilEv(siAt, 3);
+  await ptr('pointerdown', C.x, C.y);
+  K.craftHold = await untilEv(siAt, 4);
+  await ptr('pointerup', C.x, C.y);
+  // a flick needs its SPEED: a slow drag begins again from where it is; a quick one completes it
+  K.craftSwipeNeedsSpeed = await p.evaluate(([cx, cy, w]) => new Promise(done => {
+    const host = document.getElementById('event');
+    const fire = (type, x) => host.dispatchEvent(new PointerEvent(type, { pointerType: 'touch', pointerId: 11, isPrimary: true, clientX: x, clientY: cy, bubbles: true, cancelable: true }));
+    fire('pointerdown', cx - 150);
+    setTimeout(() => { fire('pointermove', cx - 150 + w * 0.3); const slow = window.__enc.kitDebug().event.si === 4; fire('pointerup', cx - 150 + w * 0.3); done(slow); }, 900);
+  }), [C.x, C.y, C.w]);
+  await p.evaluate(([cx, cy, w]) => {
+    const host = document.getElementById('event');
+    const fire = (type, x) => host.dispatchEvent(new PointerEvent(type, { pointerType: 'touch', pointerId: 11, isPrimary: true, clientX: x, clientY: cy, bubbles: true, cancelable: true }));
+    fire('pointerdown', cx - 150); fire('pointermove', cx - 150 + w * 0.3); fire('pointerup', cx - 150 + w * 0.3);
+  }, [C.x, C.y, C.w]);
+});
+K.craftDone = r.kind === 'craft' && r.ok === true && r.care === true
+  && await p.evaluate(() => JSON.stringify(window.__steps) === '[0,1,2,3,4]');
+/* the twist counts EITHER way, and too fast spoils the care (the cap foams over) */
+r = await runEvent({ kind: 'craft', at: { sx: 0.5, sy: 0.5 }, steps: [{ g: 'twist', turns: 0.6 }], foamTag: '__foam' }, async () => {
+  await twist(C.x, C.y, 0.75, -1, true);
+});
+K.craftTwistOtherWay = r.ok === true;
+K.craftTooFastFoams = r.care === false && await p.evaluate(() => window.__foam >= 1);
+/* keys: E held turns a twist; a press taps */
+r = await runEvent({ kind: 'craft', at: { sx: 0.5, sy: 0.5 }, keyRate: 720, steps: [{ g: 'twist', turns: 0.5 }, { g: 'tap', n: 1 }] }, async () => {
+  await p.keyboard.down('KeyE');
+  await untilEv(siAt, 1);
+  await p.keyboard.up('KeyE');
+  await p.keyboard.press('Space');
+});
+K.craftKeys = r.ok === true;
+/* S38 · YIELD: a held finger fills it; let go, it waits; held again, it is full */
+r = await runEvent({ kind: 'yield', fill: 1.2, at: { sx: 0.5, sy: 0.5 } }, async () => {
+  K.yieldRing = await p.evaluate(() => !document.getElementById('evYield').classList.contains('hide'));
+  await ptr('pointerdown', C.x, C.y);
+  await untilEv(() => { const d = window.__enc.kitDebug().event; return !d || d.yk >= 0.3; });
+  await ptr('pointerup', C.x, C.y);
+  const a = (await evd()).yk; await p.waitForTimeout(1500); const d = await evd();
+  K.yieldPauses = !!d && Math.abs(d.yk - a) < 1e-6;
+  await ptr('pointerdown', C.x, C.y);
+  await untilEv(evGone, null, 30000);
+  await ptr('pointerup', C.x, C.y);
+});
+K.yieldFills = r.kind === 'yield' && r.ok === true;
+r = await runEvent({ kind: 'yield', fill: 0.4, auto: true, autoAfter: 0.3 }, null);           // nobody touches it: it lets go by itself
+K.yieldAuto = r.ok === true;
+r = await runEvent({ kind: 'yield', fill: 0.4 }, async () => { await p.keyboard.down('KeyE'); await untilEv(evGone, null, 30000); await p.keyboard.up('KeyE'); });
+K.yieldKey = r.ok === true;
+r = await runEvent({ kind: 'yield', fill: 0.4 }, async () => { await ptr('pointerdown', C.x, C.y, { pt: 'mouse', id: 1 }); await untilEv(evGone, null, 30000); await ptr('pointerup', C.x, C.y, { pt: 'mouse', id: 1 }); });
+K.yieldMouse = r.ok === true;
+/* S39 · SURFACE: a finger dragging up climbs back; left alone it slips — sanity paid, never under the floor — and
+   after `secs` it gives up for him (never a soft-lock) */
+r = await runEvent({ kind: 'surface', secs: 40, start: 0.3, sink: 0.04, pull: 0.04, goal: 0.8, hold: 0.2, lead: 0.2 }, async () => {
+  K.surfaceGauge = await p.evaluate(() => !document.getElementById('evSurface').classList.contains('hide'));
+  for (let i = 0; i < 12; i++) {
+    await ptr('pointerdown', C.x, C.y + 150); for (let k = 1; k <= 4; k++) await ptr('pointermove', C.x, C.y + 150 - 75 * k); await ptr('pointerup', C.x, C.y - 150);
+    if (await p.evaluate(() => window.__evR !== null)) break;
+  }
+});
+K.surfaceDragWins = r.kind === 'surface' && r.ok === true && !r.gaveUp && r.score > 0;
+/* (the fixture's own ghost drains sanity the whole time, so the slip is read from what IT charged, and the floor at
+   the moment it charged) */
+await p.evaluate(() => { window.__enc.stats.sanity = 30; window.__sanAtSlip = null; });
+r = await runEvent({ kind: 'surface', secs: 2.4, start: 0.3, sink: 0.6, pull: 0.2, pullGap0: 0.5, pullGap1: 0.6, floorK: 0.2, slip: 25, minSanity: 10, lead: 0.1,
+                     slipTag: '__surfSlip' }, null);
+const sanFloor = await p.evaluate(() => window.__sanAtSlip);
+K.surfaceGivesUp = r.ok === true && r.gaveUp === true && r.score === 0;
+K.surfaceSlipCosts = r.slips >= 1 && r.slipPaid > 0;
+K.surfaceFloorHolds = sanFloor !== null && sanFloor >= 10 - 1e-9;
+await p.evaluate(() => { window.__enc.stats.sanity = 100; });
+r = await runEvent({ kind: 'surface', secs: 40, start: 0.5, sink: 0.02, pull: 0.02, goal: 0.8, hold: 0.2, keyRise: 0.08, lead: 0.2 }, async () => {
+  for (let i = 0; i < 40; i++) { await p.keyboard.press('KeyW'); if (await p.evaluate(() => window.__evR !== null)) break; }
+});
+K.surfaceKeys = r.ok === true && !r.gaveUp;
+/* and INSIDE A FILM: the climb film pauses on it (api.eventWait), then goes on and hands back to play */
+K.surfaceInFilm = await p.evaluate(() => { window.__climbR = null; const e = window.__enc;
+  return e.kit.film('climb', { onDone: () => e.kit.fade(0, 0.3) }); });
+if (K.surfaceInFilm) {
+  K.surfaceInFilm = await until(() => window.__climbR !== null && window.__enc.getState() === 'play', 90000).then(() => true, () => false)
+    && await p.evaluate(() => window.__climbR.kind === 'surface' && window.__climbR.ok === true);
+  await until(() => window.__enc.kit.getFade() < 0.02, 30000).catch(() => {});
+}
+/* and each briefing SHOWS its game (Chad's v18.2 rule): the kind's own picture — a fingertip circling a cap, a ring
+   filling under a pressing finger, a mark climbing its gauge */
+for (const [kind, pic, extra] of [['craft', 'twist', { steps: [{ g: 'tap' }] }], ['yield', 'press', { fill: 0.2 }], ['surface', 'surface', { secs: 0.6 }]]) {
+  let shown = false;
+  r = await runEvent(Object.assign({ kind, brief: 'How it is played.' }, extra), async () => {
+    shown = await p.evaluate(pic => { const dm = document.getElementById('evDemo');
+      return dm.className === pic && getComputedStyle(dm).display !== 'none'; }, pic);
+    await tapOnce();                      // START
+    if (kind === 'craft') { await p.waitForTimeout(300); await tapOnce(); }
+    if (kind === 'yield') { await press(); await untilEv(evGone, null, 30000); await release(); }
+  });
+  K['brief_' + kind] = shown && r.ok === true;
+}
+/* S41 · a film with noSkip: past the 3.0 s mark there is no Skip button, and the keys and the skip do nothing; it
+   ends by itself and hands back. The same film without it shows its Skip (unchanged). */
+K.noSkipFilm = await p.evaluate(() => { const e = window.__enc; window.__filmDone = null;
+  return e.kit.film('probe', { noSkip: true, onDone: (r) => { window.__filmDone = { skipped: !!r.skipped }; e.kit.fade(0, 0.3); } }); });
+if (K.noSkipFilm) {
+  await until(() => window.__enc.cine.t() > 3.1, 60000).catch(() => {});
+  K.noSkipNoButton = await p.evaluate(() => window.__enc.cine.noSkip() === true && window.__enc.cine.skipShown() === false);
+  await p.keyboard.press('Escape'); await p.keyboard.press('Space');
+  await p.evaluate(() => document.getElementById('cineSkip').click());     // even a click on the (hidden) button
+  K.noSkipIgnoresKeys = await p.evaluate(() => window.__enc.getState() === 'cine');
+  K.noSkipEndsItself = await until(() => window.__filmDone && window.__enc.getState() === 'play', 60000).then(() => true, () => false)
+    && await p.evaluate(() => window.__filmDone.skipped === false);
+  await until(() => window.__enc.kit.getFade() < 0.02, 30000).catch(() => {});
+}
+K.skipStillShows = await p.evaluate(() => { const e = window.__enc; window.__filmDone = null;
+  return e.kit.film('probe', { onDone: () => { window.__filmDone = true; e.kit.fade(0, 0.3); } }); });
+if (K.skipStillShows) {
+  await until(() => window.__enc.cine.t() > 3.1, 60000).catch(() => {});
+  K.skipStillShows = await p.evaluate(() => window.__enc.cine.noSkip() === false && window.__enc.cine.skipShown() === true);
+  await p.evaluate(() => document.getElementById('cineSkip').click());
+  await until(() => window.__filmDone && window.__enc.getState() === 'play', 60000).catch(() => {});
+  await until(() => window.__enc.kit.getFade() < 0.02, 30000).catch(() => {});
+}
+/* S41 · sealedBefore: a chapter's read-only question to the progress store */
+K.sealedBefore = await p.evaluate(() => {
+  const KEY = 'mz.encounters.progress', was = localStorage.getItem(KEY), st = window.__enc.stage;
+  try {
+    localStorage.setItem(KEY, JSON.stringify({ reached: 'ch2', sealed: { ch1: { score: 70, rank: 'B' } }, t: Date.now() }));
+    return st.sealedBefore('ch1') === true && st.sealedBefore('ch2') === false;
+  } finally { if (was === null) localStorage.removeItem(KEY); else localStorage.setItem(KEY, was); }
+});
+/* S40 · THE POSES. From idle, asking for k 0 writes nothing at all (bit for bit); every pose draws (the arm moves, a
+   two-handed pose shows the left hand, a one-handed one does not); eased in and back out, the arm ends EXACTLY where
+   it began; kit.pray on over a pose eases to the clasp and hands it to kit.pray; the child's clasp is lower; the
+   left hand holds a thing and lets it go; kitReset clears a pose. */
+await until(() => window.__enc.getState() === 'play', 30000).catch(() => {});
+const arm0 = await p.evaluate(() => window.__enc.armNow());
+await p.evaluate(() => window.__enc.kit.handPose('reach', 0));
+await p.waitForTimeout(700);
+K.hposeZeroWritesNothing = JSON.stringify(await p.evaluate(() => window.__enc.armNow())) === JSON.stringify(arm0)
+  && await p.evaluate(() => window.__enc.hpose().on === false);
+const POSES = { reach: false, place: false, bottle: true, straw: true, lighter: true, hips: true, cross: true, peek: true, mouth: true, pray: true, small: true };
+let drew = true;
+await p.evaluate(a0 => { window.__a0 = a0; }, arm0);
+for (const [name, two] of Object.entries(POSES)) {
+  await p.evaluate(n => window.__enc.kit.handPose(n, 1, { secs: 0 }), name);
+  const ok = await p.waitForFunction(([n, two]) => { const e = window.__enc, a = e.armNow(), h = e.hpose();
+    return h.on && h.name === n && a.lv === two && Math.hypot(a.rp[0] - window.__a0.rp[0], a.rp[1] - window.__a0.rp[1], a.rp[2] - window.__a0.rp[2]) > 0.005; },
+    [name, two], { timeout: 20000, polling: 100 }).then(() => true, () => false);
+  if (!ok) { drew = false; console.log('pose did not draw', name, JSON.stringify(await p.evaluate(() => ({ h: window.__enc.hpose(), a: window.__enc.armNow() })))); }
+}
+K.hposeEachDraws = drew;
+await p.evaluate(() => window.__enc.kit.handPose(null, 0, { secs: 0.3 }));
+await until(() => window.__enc.hpose().on === false, 20000).catch(() => {});
+await p.waitForTimeout(400);
+K.hposeBackExactly = await p.evaluate(a0 => {
+  // the same turn: the same four numbers, or all four negated (a slerp may land on either)
+  const a = window.__enc.armNow(), same = (q, r) => q.every((v, i) => v === r[i]) || q.every((v, i) => v === -r[i]);
+  return a.rp.every((v, i) => v === a0.rp[i]) && same(a.rq, a0.rq) && a.rf.every((q, i) => same(q, a0.rf[i])) && a.lv === false;
+}, arm0);
+await p.evaluate(() => window.__enc.kit.handPose('lighter', 1, { secs: 0.2 }));
+await until(() => window.__enc.hpose().u >= 1, 20000).catch(() => {});
+await p.evaluate(() => window.__enc.kit.pray(true, { secs: 0.3 }));
+K.hposeToPray = await until(() => { const e = window.__enc; return e.hpose().on === false && e.prayDebug().k === 1 && e.kit.praying(); }, 20000).then(() => true, () => false);
+await p.evaluate(() => window.__enc.kit.pray(false, { secs: 0 }));
+await p.waitForTimeout(400);
+await p.evaluate(() => window.__enc.kit.pray(true, { secs: 0, small: true }));
+K.praySmall = await until(() => Math.abs(window.__enc.prayDebug().ay - (-0.33)) < 1e-3, 20000).then(() => true, () => false);
+await p.evaluate(() => window.__enc.kit.pray(false, { secs: 0 }));
+K.holdLeft = await p.evaluate(() => { const e = window.__enc, o = new (e.handsRoot.constructor)();
+  e.kit.hold(o, { hand: 'left' }); const a = e.armNow(), held = a.heldL && e.kit.holding('left') === o && !e.kit.holding();
+  e.kit.hold(null); const b = e.armNow(); return held && !b.heldL && !b.held; });
+/* a film takes a pose back on its first frame (it draws its own with api.handPose) */
+await p.evaluate(() => window.__enc.kit.handPose('cross', 1, { secs: 0 }));
+await until(() => window.__enc.hpose().on && window.__enc.armNow().lv, 20000).catch(() => {});
+K.hposeTakenByFilm = await p.evaluate(() => { const e = window.__enc; window.__filmDone = null;
+  const ok = e.kit.film('probe', { onDone: () => { window.__filmDone = true; e.kit.fade(0, 0.3); } });
+  return ok && e.hpose().on === false; });
+await until(() => window.__filmDone && window.__enc.getState() === 'play', 60000).catch(() => {});
+await until(() => window.__enc.kit.getFade() < 0.02, 30000).catch(() => {});
+K.hposeFilmHandsBack = await p.evaluate(a0 => { const a = window.__enc.armNow(); return a.lv === false && a.rp.every((v, i) => v === a0.rp[i]); }, arm0);
 await p.evaluate(() => { window.__enc.stats.sanity = 100; window.__enc.stats.awareness = 50; });
 // the lens level again, as the block found it: the walk to the pile below sets only the yaw
 await p.evaluate(() => { window.__enc.pitch.rotation.x = 0; });
@@ -1619,6 +1844,12 @@ out.swapsBack = await p.evaluate(() => {
 await p.waitForTimeout(1500);
 out.aliveAfterSwap = await p.evaluate(() =>
   isFinite(window.__enc.pileDist()) && window.__enc.getState() !== 'error');
+/* v23.0 · S40: and kitReset clears a pose (here, at the end — it clears the conduct the card above read) */
+await p.evaluate(() => window.__enc.kit.handPose('cross', 1, { secs: 0 }));
+await until(() => window.__enc.hpose().on && window.__enc.armNow().lv, 20000).catch(() => {});
+await p.evaluate(() => window.__enc.kitReset());
+await p.waitForTimeout(400);
+K.hposeClearedByReset = await p.evaluate(() => { const e = window.__enc, a = e.armNow(); return e.hpose().on === false && a.lv === false; });
 
 console.log(JSON.stringify(out, null, 1));
 const MUST = ['bootedFixture', 'noChapterAssets', 'blockersFromChapter', 'cardShowsFixture',

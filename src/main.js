@@ -1708,18 +1708,31 @@ const weaponLog = [];                        // for the probes: every shot, hit 
    hands back on its first frame (the scene owns them), and kitReset clears
    it. Nothing before e3c1 calls it. */
 const PRAY = { y: -0.235, z: -0.375, low: -0.46 };
-const pray = { k: 0, to: 0, secs: 1.4, last: 0, was: 0, y: PRAY.y };
+const pray = { k: 0, to: 0, secs: 1.4, last: 0, was: 0, y: PRAY.y, z: PRAY.z };   // v23.0: z too (a child's clasp is nearer the body)
 let prayRestQ = null;
 const PRAY_Q0 = new THREE.Quaternion();
 function kitPraySet(on, opts = {}) {
+  /* v23.0: a pose holds the hands (kit.handPose) — ease from it to the clasp, which kit.pray then holds, or
+     back to the rest; nothing jumps either way */
+  if (hp.on) {
+    if (on) { prayWhere(opts); kitHandPose('pray', 1, { secs: opts.secs !== undefined ? opts.secs : 1.4, toPray: true }); }
+    else kitHandPose(null, 0, { secs: opts.secs });
+    return;
+  }
   pray.to = on ? 1 : 0;
   pray.secs = Math.max(0.01, opts.secs !== undefined ? +opts.secs : 1.4);
   /* v16.5: `y` — how high the clasp is held. Chapter 1's −0.235 is the
      default; a chapter may hold it LOWER (Chad, on e3c1: "move the prayer
      hands down even more so that i cannot see that protruding thumbs") */
-  if (on) pray.y = Number.isFinite(opts.y) ? +opts.y : PRAY.y;
+  if (on) prayWhere(opts);
   if (opts.secs === 0) pray.k = pray.to;
   pray.last = performance.now();
+}
+/* v23.0: `small` — a child's añjali (episode 3 chapter 5's little one), lower and nearer the body; the chapter
+   adds kit.tremble itself */
+function prayWhere(opts) {
+  pray.y = opts.small ? PRAY_SMALL.y : Number.isFinite(opts.y) ? +opts.y : PRAY.y;
+  pray.z = opts.small ? PRAY_SMALL.z : PRAY.z;
 }
 /* v21.0: A THING IN HIS HAND, in play (the twenty-seventh seam). A chapter
    hands over an Object3D and it rides the right arm — a child of it, so it is
@@ -1732,9 +1745,28 @@ function kitPraySet(on, opts = {}) {
    `hold(null)` lets go (detached, not disposed — the chapter owns its
    geometry); kitReset lets go too. Episode 3 chapter 3's joss sticks, held
    through three bows. Nothing before it calls this. */
-let heldProp = null;
+let heldProp = null, heldPropL = null;
 const HOLD_PALM = new THREE.Vector3(0.012, -0.052, -0.148);
+/* v23.0: `{ hand: 'left' }` puts the thing in the LEFT hand (the mirrored clone's group, outside its mirror, so
+   the thing itself is not mirrored), at `pos`/`rot` in that hand's frame — the palm is at HOLD_PALM's mirror —
+   for episode 3 chapter 5's bottle and lighter, steadied by the left while the right works. `hold(null)` with
+   no hand lets go of both (a scene's first frame, kitReset); `{ hand: 'right' }` or a thing with no hand is the
+   right, as it always was, and leaves the left alone. */
+const HOLD_PALM_L = new THREE.Vector3(-0.012, -0.052, -0.148);
 function kitHold(obj, opts = {}) {
+  const left = opts.hand === 'left', both = !obj && !opts.hand;
+  if (left || both) {
+    if (heldPropL && prayerArmL && heldPropL.parent === prayerArmL) prayerArmL.remove(heldPropL);
+    heldPropL = null;
+    if (left) {
+      const L = obj ? buildPrayerArm() : null;
+      if (!L) return;                            // nothing to hold with until the hands have landed
+      heldPropL = obj; L.add(obj);
+      const p = opts.pos || [HOLD_PALM_L.x, HOLD_PALM_L.y, HOLD_PALM_L.z], r = opts.rot || [0, 0, 0];
+      obj.position.set(p[0], p[1], p[2]); obj.rotation.set(r[0], r[1], r[2]);
+      return;
+    }
+  }
   if (heldProp && heldProp.parent === armR) armR.remove(heldProp);   // only from his hand: a chapter may have put it somewhere since
   heldProp = obj || null;
   if (!obj) return;
@@ -1766,12 +1798,12 @@ function prayPut(k, done) {
     if (rightHandModel) setHandCurl(rightHandModel, 1);
     return;
   }
-  armR.position.set(armBase.x + (half - armBase.x) * e, armBase.y + (pray.y - armBase.y) * e, armBase.z + (PRAY.z - armBase.z) * e);
+  armR.position.set(armBase.x + (half - armBase.x) * e, armBase.y + (pray.y - armBase.y) * e, armBase.z + (pray.z - armBase.z) * e);
   armR.quaternion.slerpQuaternions(prayRestQ, PRAYER_R, e);
   const L = buildPrayerArm();
   if (L) {
     L.visible = e > 0.001;
-    L.position.set(-half, PRAY.low + (pray.y - PRAY.low) * e, PRAY.z);
+    L.position.set(-half, PRAY.low + (pray.y - PRAY.low) * e, pray.z);
     L.quaternion.slerpQuaternions(PRAY_Q0, PRAYER_L, e);   // from the arm's own built rest, as scChant's startL
     setHandPrayer(L.userData.model, e);
   }
@@ -2257,6 +2289,303 @@ function handsFrame() {
   const e = hands.k * hands.k * (3 - 2 * hands.k);
   camera.rotation.z = e * (0.044 * Math.sin(hands.t * 0.52) + 0.014 * Math.sin(hands.t * 1.31));   // v20.1: the sway 80 % of what it was, with the hands' swings (Chad: "slightly reducing the amount of total motion")
   hands.was = hands.k;
+}
+/* v23.0 · S40 · THE HANDS' POSES — THE FORTIETH SEAM. Episode 3 chapter 5 (S1·10) is a night of small
+   things done with both hands — a bottle steadied while its cap is turned, a straw pinched over its neck, a
+   lighter held up to three sticks, a drink set down on the runner — and three children whose gestures he makes
+   from the inside: hands on the hips, arms crossed, palms over the eyes, hands at the mouth. kit.pray's clasp
+   and kit.hands' dance were each ONE pose; this is a library of them, built the way PRAYER_R was: each hand
+   from a BASIS — where its fingers point and which way its palm faces, in the lens's own frame (+x right, +y
+   up, −z ahead) — never from tuned Euler angles, at a place given as a share of the frame AT ITS OWN DEPTH
+   (layoutHands' rule), so a phone and a desktop both see it. The left hand is the mirrored clone
+   (buildPrayerArm), and one formula makes both bases: with the mirror inside the left's group, mirroring the
+   two directions conjugates the right's rotation exactly as PRAYER_L conjugates PRAYER_R.
+   `kit.handPose(name, k, { secs, p })` eases there on WALL time (the v7.4 law) from whatever the hands are
+   drawing — the walking rest, kit.pray's clasp, another pose — by a SNAPSHOT of the drawn state, so a change of
+   pose is never a jump; `k` is how far into the pose (a chapter may drive it every frame: the same name never
+   restarts the ease — v18.0's trap) and `p` is the pose's own variable (the cap's angle, the gap between the
+   fingers, how far a thing is lowered), followed at once. null or k 0 eases back to the walking rest and ends
+   by writing it EXACTLY as prayPut's done branch does, so an arm a pose has let go of is the arm no pose ever
+   touched; and from idle, asking for k 0 writes nothing at all. kit.pray on while a pose holds the hands
+   eases to the clasp from here and hands it to kit.pray at the end, so nothing jumps either way. kitReset
+   clears it; a scene takes it back on its first frame and draws its own with `api.handPose(name, k, o)` at
+   exactly k (from rest, or from `o.from`). Written only while a pose is on or easing, so a chapter that never
+   asks draws what it always drew. Nothing before e3c5 calls it. */
+const HPOSE = {
+  /* each hand: fx/fy (shares of the half-width and half-height at depth z) or x/y in metres, or `rel` (below);
+     its fingers' direction and its palm's (the HAND's look; the arm is solved from it); `w`, the wrist bent
+     toward the palm, and `d`, sideways (radians); its fingers' shape (curl — the walking hand; relax; soft — open, a
+     little spread; flat — straight and closed; open — straight and spread; grip; pinch), and `fp`, a shape `p` blends toward.
+     `l: 'mirror'` is the right's mirror image; a pose with no `l` leaves the left hand down. px/py/pz move a
+     hand by `p`; ldz sets the left a little deeper so two hands that meet do not pass through each other;
+     `twist` turns the right hand by `p` about the upright through its palm (the cap); `rel` places the right by
+     its palm at that offset (metres, the lens's frame) from the left's palm.
+     The numbers of the first seven were FOUND, not chosen (dbg-e3c5posesearch.mjs, v20.1's method generalised):
+     an evolution search scored on eight screen shapes — no upper-arm vertex on screen on any of them, the arm
+     leading back toward its own shoulder at (±0.17, −0.24, +0.02) (the rig's elbow cannot bend, so this is what
+     keeps a right arm coming from the lower right and a left from the lower left), the named points where the
+     scene needs them on a phone and a desktop. They are where the props' own placing starts (CP6, CP7). */
+  reach:   { r: { fx: 0.326, fy: -0.652, z: -0.383, fing: [-0.090, -0.060, -0.989], palm: [0.477, -0.872, -0.071], w: -0.317, d: 0.600, f: 'soft' } },
+  place:   { r: { fx: 0.296, fy: -0.319, z: -0.348, fing: [-0.291, 0.118, -0.943], palm: [0.518, -0.511, -0.686], w: -0.460, d: 0.360, f: 'grip' }, py: -0.08, pz: -0.06 },
+  bottle:  { l: { fx: -0.241, fy: -0.972, z: -0.319, fing: [0.327, 0.468, -0.816], palm: [0.811, 0.291, 0.493], w: -0.640, d: 0.447, f: 'grip' },
+             r: { rel: [-0.005, 0.061, -0.021], fing: [-0.820, 0.140, -0.539], palm: [-0.323, -0.856, -0.384], w: -0.133, d: 0.270, f: 'grip' }, twist: true },
+  straw:   { l: { fx: 0.010, fy: -1.148, z: -0.401, fing: [0.424, 0.270, -0.860], palm: [0.893, -0.226, 0.370], w: -0.700, d: 0.375, f: 'grip' },
+             r: { rel: [0.000, 0.196, 0.018], fing: [-0.284, 0.209, -0.925], palm: [-0.235, -0.900, -0.380], w: -0.159, d: 0.547, f: 'pinch' } },
+  lighter: { l: { fx: -0.346, fy: -0.379, z: -0.410, fing: [0.335, 0.542, -0.771], palm: [0.909, -0.350, 0.156], w: -0.546, d: 0.354, f: 'grip' },
+             r: { rel: [0.020, -0.092, -0.015], fing: [-0.387, 0.396, -0.833], palm: [-0.274, -0.900, -0.294], w: -0.673, d: 0.295, f: 'grip' } },
+  hips:    { r: { fx: 0.750, fy: -0.860, z: -0.477, fing: [0.091, -0.991, 0.100], palm: [-0.421, 0.094, 0.888], w: 1.136, d: 0.477, f: 'flat' }, l: 'mirror' },
+  cross:   { r: { fx: -0.556, fy: -0.975, z: -0.349, fing: [-0.989, 0.082, -0.052], palm: [0.124, -0.715, 0.694], w: -0.077, d: -0.068, f: 'relax' },
+             l: { fx: 0.331, fy: -0.980, z: -0.358, fing: [0.767, 0.238, -0.582], palm: [0.452, -0.564, 0.691], w: -0.451, d: 0.335, f: 'relax' } },
+  peek:    { r: { x: 0.036, y: -0.120, z: -0.112, fing: [-0.10, 0.99, 0.06], palm: [0.0, -0.06, 1.0], f: 'flat', fp: 'open' }, l: 'mirror', px: 0.024 },
+  mouth:   { r: { x: 0.014, y: -0.205, z: -0.104, fing: [-0.12, 0.94, -0.32], palm: [0.0, 0.32, 0.95], f: 'relax' }, l: 'mirror', ldz: -0.010 },
+  /* the clasp, so a scene can draw it (play's is kit.pray's own): `pray` at kit.pray's height or `o.y`, and
+     `small` — a child's añjali, lower and nearer the body (kit.pray's `small`) */
+  pray: 'clasp', small: 'clasp'
+};
+const PRAY_SMALL = { y: -0.33, z: -0.31 };
+const HP_GRIP  = { index: 2.3, middle: 2.4, ring: 2.45, pinky: 2.5, thumb: 1.5 };    // the walking curl, this many times over
+const HP_PINCH = { index: 1.55, middle: 2.5, ring: 2.6, pinky: 2.7, thumb: 2.0 };
+const hp = { on: false, name: null, k: 0, p: 0, u: 1, secs: 0.6, last: 0, o: {}, toPray: false, rw: 0, rd: 0, lw: 0, ld: 0 };
+let hpGrip = null, hpPinch = null, hpBonesR = null, hpBonesL = null, hpFrom = null;
+const hpMk = () => ({ rp: new THREE.Vector3(), rq: new THREE.Quaternion(), lp: new THREE.Vector3(), lq: new THREE.Quaternion(), lv: 0, rf: [], lf: [],
+                     rw: 0, rd: 0, lw: 0, ld: 0, rg: new THREE.Vector3(), lg: new THREE.Vector3() });
+/* the WRIST: this rig's elbow never bends and its hand is rigid on the forearm, so a hand turned down onto a cap
+   would carry its forearm up past the lens. A pose may bend the wrist (`w`, toward the palm; `d`, sideways), so
+   the hand keeps its look while the forearm comes in from under the frame. The hand bone's own turn at rest and
+   its frame against the arm's are taken once; the bend is applied in that frame, and the rest is written back
+   by copy, so a wrist no pose has bent is the wrist as loaded. */
+let hpWristR = null, hpWristL = null, hpWristQ0 = null, hpWristB = null, hpWristDirty = false;
+const _hpR = new THREE.Quaternion(), _hpG = new THREE.Quaternion(), _hpQx = new THREE.Quaternion(), _hpQy = new THREE.Quaternion();
+const _hpX1 = new THREE.Vector3(1, 0, 0);
+const hpSnap = hpMk(), hpA = hpMk(), hpB = hpMk(), hpB2 = hpMk(), hpR0 = hpMk(), hpC = hpMk();
+const _hpF = new THREE.Vector3(), _hpP = new THREE.Vector3(), _hpX = new THREE.Vector3(), _hpY = new THREE.Vector3(), _hpZ = new THREE.Vector3();
+const _hpM = new THREE.Matrix4(), _hpQ = new THREE.Quaternion(), _hpV = new THREE.Vector3(), _hpLa = new THREE.Vector3(), _hpLb = new THREE.Vector3();
+const _hpUp = new THREE.Vector3(0, 1, 0);
+function hpReady() {
+  if (!handsReady || !rightOriented || !rightHandModel || !fingerPose || !restPose || !prayerPose) return false;
+  if (!hpBonesR) {
+    hpBonesR = fingerPose.map(f => rightHandModel.getObjectByName(f.name));
+    hpWristR = rightHandModel.getObjectByName('handR');
+    if (hpWristR) {
+      hpWristQ0 = hpWristR.quaternion.clone();
+      armR.updateWorldMatrix(true, true);
+      const m = new THREE.Matrix4().copy(armR.matrixWorld).invert().multiply(hpWristR.matrixWorld), sc = new THREE.Vector3();
+      hpWristB = new THREE.Quaternion(); m.decompose(new THREE.Vector3(), hpWristB, sc);   // the hand bone's frame against the arm's (uniform scale)
+    }
+    for (const s of [hpSnap, hpA, hpB, hpB2, hpR0, hpC]) for (let i = 0; i < fingerPose.length; i++) { s.rf.push(new THREE.Quaternion()); s.lf.push(new THREE.Quaternion()); }
+    /* the grip and the pinch: the walking curl's own turn at each joint (a turn about the hand's across axis,
+       found when the hand landed), taken this many times over from the straight, closed hand — the same flex
+       the walking hand has always shown, deeper */
+    hpGrip = []; hpPinch = [];
+    const I = new THREE.Quaternion(), d = new THREE.Quaternion(), e = new THREE.Quaternion();
+    for (const f of fingerPose) {
+      const r = restPose[f.name] || f.curled, pr = prayerPose[f.name] || r;
+      d.copy(r).invert().multiply(f.curled);
+      const m = /^f_(index|middle|ring|pinky)0[123]R$/.exec(f.name), key = m ? m[1] : 'thumb';
+      hpGrip.push(new THREE.Quaternion().copy(pr).multiply(e.slerpQuaternions(I, d, HP_GRIP[key])));
+      hpPinch.push(new THREE.Quaternion().copy(pr).multiply(e.slerpQuaternions(I, d, HP_PINCH[key])));
+    }
+  }
+  return true;
+}
+function hpBonesLeft() {
+  const L = buildPrayerArm();
+  if (!L) return null;
+  if (!hpBonesL) { hpBonesL = fingerPose.map(f => L.userData.model.getObjectByName(f.name)); hpWristL = L.userData.model.getObjectByName('handR'); }
+  return hpBonesL;
+}
+/* R = Rx(w)·Ry(d) in the arm's frame; the hand turns by R⁻¹ about the wrist, so the bone takes q0·(B⁻¹·R⁻¹·B).
+   The mirrored left takes the same turn in its own (mirrored) frame — a bend toward its palm and a mirrored
+   sideways — which is why its arm is solved with Ry(−d). */
+function hpWristSet(bone, w, d) {
+  if (!bone || !hpWristQ0) return;
+  if (!w && !d) { bone.quaternion.copy(hpWristQ0); return; }
+  _hpR.multiplyQuaternions(_hpQx.setFromAxisAngle(_hpX1, w), _hpQy.setFromAxisAngle(_hpUp, d)).invert();
+  _hpG.copy(hpWristB).invert().multiply(_hpR).multiply(hpWristB);
+  bone.quaternion.copy(hpWristQ0).multiply(_hpG);
+  hpWristDirty = true;
+}
+function hpWristRest() {
+  if (!hpWristDirty) return;
+  hpWristDirty = false;
+  if (hpWristR) hpWristR.quaternion.copy(hpWristQ0);
+  if (hpWristL) hpWristL.quaternion.copy(hpWristQ0);
+}
+function hpFingerInto(state, i, out) {
+  const f = fingerPose[i], n = f.name;
+  switch (state) {
+    case 'flat':  return out.copy(prayerPose[n] || f.curled);
+    case 'open':  return out.copy(restPose[n] || f.curled);
+    case 'relax': return out.slerpQuaternions(f.curled, prayerPose[n] || f.curled, 0.45);
+    case 'soft':  return out.slerpQuaternions(f.curled, restPose[n] || f.curled, 0.55);    // a hand reaching to touch: open, a little spread
+    case 'grip':  return out.copy(hpGrip[i]);
+    case 'pinch': return out.copy(hpPinch[i]);
+    default:      return out.copy(f.curled);
+  }
+}
+function hpBasis(fing, palm, mir, q) {
+  _hpF.set(mir * fing[0], fing[1], fing[2]).normalize();
+  _hpP.set(mir * palm[0], palm[1], palm[2]); _hpP.addScaledVector(_hpF, -_hpP.dot(_hpF)).normalize();
+  _hpX.crossVectors(_hpP, _hpF); _hpY.copy(_hpP).negate(); _hpZ.copy(_hpF).negate();
+  return q.setFromRotationMatrix(_hpM.makeBasis(_hpX, _hpY, _hpZ));
+}
+const hpHalfH = z => Math.tan(THREE.MathUtils.degToRad(vmCam.fov / 2)) * Math.abs(z);
+/* one hand of a pose: the wrist pivot into outP, the HAND's turn into outQ (the arm's is solved from it once the
+   wrist's bend is known — hpArm), its fingers into outF, and its palm's centre into outG. `rel` places this hand
+   by its palm, at that offset (metres, the lens's frame) from the OTHER hand's palm — a cap over the bottle the
+   left hand steadies, the sticks over its lighter — so the two stay together on every screen. */
+function hpHand(S, mir, P, p, left, outP, outQ, outF, outG, other) {
+  hpBasis(S.fing, S.palm, mir, outQ);
+  if (S.rel && other) {
+    outG.set(other.x + mir * S.rel[0], other.y + S.rel[1], other.z + S.rel[2]);
+    outP.copy(outG).sub(_hpV.set(mir * HOLD_PALM.x, HOLD_PALM.y, HOLD_PALM.z).applyQuaternion(outQ));
+  } else {
+    const z = S.z + (P.pz || 0) * p + (left && P.ldz ? P.ldz : 0);
+    const hh = hpHalfH(z), hw = hh * vmCam.aspect;
+    let x = S.x != null ? S.x : S.fx * hw;
+    x += Math.sign(x || 1) * (P.px || 0) * p;
+    outP.set(mir * x, (S.y != null ? S.y : S.fy * hh) + (P.py || 0) * p, z);
+    outG.copy(outP).add(_hpV.set(mir * HOLD_PALM.x, HOLD_PALM.y, HOLD_PALM.z).applyQuaternion(outQ));
+  }
+  for (let i = 0; i < fingerPose.length; i++) {
+    hpFingerInto(S.f, i, outF[i]);
+    if (S.fp && p > 0) outF[i].slerp(hpFingerInto(S.fp, i, _hpQ), Math.min(1, p));
+  }
+}
+function hpArm(q, w, d) {      // the arm's turn from the hand's: A = H·Rx(w)·Ry(d)
+  if (w) q.multiply(_hpQx.setFromAxisAngle(_hpX1, w));
+  if (d) q.multiply(_hpQy.setFromAxisAngle(_hpUp, d));
+  return q;
+}
+function hpRest(o) {
+  if (!prayRestQ) prayRestQ = new THREE.Quaternion().setFromEuler(new THREE.Euler(0.50, 0.28, -0.48));
+  o.rp.copy(armBase); o.rq.copy(prayRestQ);
+  for (let i = 0; i < fingerPose.length; i++) o.rf[i].copy(fingerPose[i].curled);
+  o.lv = 0; o.rw = o.rd = o.lw = o.ld = 0;
+  return o;
+}
+/* the whole pose `name` (k 1) at variable p into o */
+function hpTarget(name, p, opts, o) {
+  const P = HPOSE[name];
+  if (P === 'clasp') {
+    const half = HAND_W * 0.085, small = name === 'small';
+    const y = small ? PRAY_SMALL.y : (opts && Number.isFinite(opts.y) ? +opts.y : pray.y), z = small ? PRAY_SMALL.z : pray.z;
+    o.rp.set(half, y, z); o.rq.copy(PRAYER_R);
+    o.lp.set(-half, y, z); o.lq.copy(PRAYER_L); o.lv = 1;
+    o.rw = o.rd = o.lw = o.ld = 0;
+    for (let i = 0; i < fingerPose.length; i++) { hpFingerInto('flat', i, o.rf[i]); o.lf[i].copy(o.rf[i]); }
+    return o;
+  }
+  const SL = P.l ? (P.l === 'mirror' ? P.r : P.l) : null, ml = P.l === 'mirror' ? -1 : 1;
+  /* the left first when the right is placed by it (`rel`) */
+  if (SL) { hpHand(SL, ml, P, p, true, o.lp, o.lq, o.lf, o.lg, null); o.lv = 1; } else o.lv = 0;
+  hpHand(P.r, 1, P, p, false, o.rp, o.rq, o.rf, o.rg, SL ? o.lg : null);
+  if (P.twist) {             // the wrist following the cap: strokes of ~70°, the last fifth of each a regrip back
+    const S = 1.2, ph = (((p % S) + S) % S) / S;
+    const a = (ph < 0.82 ? ph / 0.82 - 0.5 : 0.5 - (ph - 0.82) / 0.18) * S * 0.9;
+    _hpQ.setFromAxisAngle(_hpUp, a);
+    o.rp.sub(o.rg).applyQuaternion(_hpQ).add(o.rg);           // about the upright through the palm, over the cap
+    o.rq.premultiply(_hpQ);
+  }
+  o.rw = P.r.w || 0; o.rd = P.r.d || 0; hpArm(o.rq, o.rw, o.rd);
+  if (SL) { o.lw = SL.w || 0; o.ld = SL.d || 0; hpArm(o.lq, o.lw, -o.ld); } else o.lw = o.ld = 0;
+  return o;
+}
+function hpRead(o) {
+  o.rp.copy(armR.position); o.rq.copy(armR.quaternion);
+  o.rw = hp.rw || 0; o.rd = hp.rd || 0; o.lw = hp.lw || 0; o.ld = hp.ld || 0;   // the wrist as last drawn
+  for (let i = 0; i < fingerPose.length; i++) if (hpBonesR[i]) o.rf[i].copy(hpBonesR[i].quaternion);
+  const L = prayerArmL, BL = L && L.visible ? hpBonesLeft() : null;
+  if (BL) {
+    o.lv = 1; o.lp.copy(L.position); o.lq.copy(L.quaternion);
+    for (let i = 0; i < fingerPose.length; i++) if (BL[i]) o.lf[i].copy(BL[i].quaternion);
+  } else o.lv = 0;
+  return o;
+}
+const hpLow = (v, out) => out.set(v.x, -(hpHalfH(v.z) * 1.9 + 0.06), v.z);   // under the frame at that depth
+function hpBlend(a, b, e, out) {
+  out.rp.lerpVectors(a.rp, b.rp, e); out.rq.slerpQuaternions(a.rq, b.rq, e);
+  for (let i = 0; i < fingerPose.length; i++) out.rf[i].slerpQuaternions(a.rf[i], b.rf[i], e);
+  out.rw = a.rw + (b.rw - a.rw) * e; out.rd = a.rd + (b.rd - a.rd) * e;
+  out.lw = (a.lv ? a.lw : b.lw) + ((b.lv ? b.lw : a.lw) - (a.lv ? a.lw : b.lw)) * e;
+  out.ld = (a.lv ? a.ld : b.ld) + ((b.lv ? b.ld : a.ld) - (a.lv ? a.ld : b.ld)) * e;
+  if (!a.lv && !b.lv) { out.lv = 0; out.lw = out.ld = 0; return out; }
+  /* a hidden left hand rises from under the frame in the other end's shape, or sinks there */
+  if (a.lv) _hpLa.copy(a.lp); else hpLow(b.lp, _hpLa);
+  if (b.lv) _hpLb.copy(b.lp); else hpLow(a.lp, _hpLb);
+  const qa = a.lv ? a.lq : b.lq, qb = b.lv ? b.lq : a.lq, fa = a.lv ? a.lf : b.lf, fb = b.lv ? b.lf : a.lf;
+  out.lp.lerpVectors(_hpLa, _hpLb, e); out.lq.slerpQuaternions(qa, qb, e);
+  for (let i = 0; i < fingerPose.length; i++) out.lf[i].slerpQuaternions(fa[i], fb[i], e);
+  out.lv = 1;
+  return out;
+}
+function hpWrite(o) {
+  armR.position.copy(o.rp); armR.quaternion.copy(o.rq);
+  for (let i = 0; i < fingerPose.length; i++) if (hpBonesR[i]) hpBonesR[i].quaternion.copy(o.rf[i]);
+  hpWristSet(hpWristR, o.rw, o.rd); hp.rw = o.rw; hp.rd = o.rd;
+  if (o.lv) {
+    const BL = hpBonesLeft();
+    if (!BL) return;
+    const L = prayerArmL;
+    L.visible = true; L.position.copy(o.lp); L.quaternion.copy(o.lq);
+    for (let i = 0; i < fingerPose.length; i++) if (BL[i]) BL[i].quaternion.copy(o.lf[i]);
+    hpWristSet(hpWristL, o.lw, o.ld); hp.lw = o.lw; hp.ld = o.ld;
+  } else {
+    if (prayerArmL) prayerArmL.visible = false;
+    if (hpWristL) hpWristSet(hpWristL, 0, 0); hp.lw = hp.ld = 0;
+  }
+}
+function kitHandPose(name, k, opts = {}) {
+  if (name && !HPOSE[name]) { console.warn('kit.handPose: no pose named', name); return false; }
+  const kk = Math.max(0, Math.min(1, k === undefined ? 1 : (+k || 0)));
+  const want = name && kk > 0 ? name : null;
+  if (opts.p !== undefined) hp.p = +opts.p || 0;
+  if (!hp.on && !want) return true;                    // nothing drawn and nothing asked: nothing is written
+  if (hp.on && want === hp.name) { hp.k = kk; hp.o = opts; return true; }   // the same pose: k and p follow at once; the ease runs on
+  /* a change: ease from whatever the hands are drawing now, and this pose owns the arm from here (kit.pray
+     and kit.hands give it up without writing anything — the snapshot is where they left it) */
+  hpFrom = hpReady() ? hpRead(hpSnap) : null;
+  pray.k = pray.to = 0; pray.was = 0;
+  if (hands.k > 0 || hands.was > 0) { hands.k = hands.to = 0; hands.was = 0; hands.t = 0; camera.rotation.z = 0; }
+  hp.on = true; hp.name = want; hp.k = kk; hp.o = opts; hp.toPray = !!opts.toPray;
+  hp.secs = Math.max(0.01, opts.secs !== undefined ? +opts.secs : 0.6);
+  hp.u = opts.secs === 0 || !hpFrom ? 1 : 0; hp.last = performance.now();
+  if (!want && hp.u >= 1 && hpReady()) hpOff();      // straight back, at once
+  return true;
+}
+function hpOff() {
+  const was = hp.on;
+  hp.on = false; hp.name = null; hp.k = 0; hp.p = 0; hp.u = 1; hp.toPray = false; hp.o = {}; hpFrom = null; hp.last = 0;
+  hp.rw = hp.rd = hp.lw = hp.ld = 0;
+  hpWristRest();
+  if (was) prayPut(0, true);                            // the walking rest, exactly as the engine leaves it
+}
+function hpFrame() {
+  if (!hp.on || !hpReady()) return;
+  const now = performance.now(), dt = hp.last ? Math.min(1, (now - hp.last) / 1000) : 0; hp.last = now;
+  if (hp.u < 1) hp.u = Math.min(1, hp.u + dt / hp.secs);
+  if (hp.name) {
+    if (hp.k < 1) hpBlend(hpRest(hpR0), hpTarget(hp.name, hp.p, hp.o, hpB2), hp.k, hpB);
+    else hpTarget(hp.name, hp.p, hp.o, hpB);
+  } else hpRest(hpB);
+  if (hpFrom && hp.u < 1) hpWrite(hpBlend(hpFrom, hpB, hp.u * hp.u * (3 - 2 * hp.u), hpA));
+  else hpWrite(hpB);
+  if (hp.u >= 1) {
+    hpFrom = null;
+    if (!hp.name) hpOff();
+    else if (hp.toPray) {                               // the clasp reached: kit.pray holds it from here, drawing exactly this
+      hp.on = false; hp.name = null; hp.toPray = false;
+      pray.to = pray.k = pray.was = 1; pray.last = now;
+    }
+  }
+}
+/* a scene's own: the pose at exactly k, from the rest or from `o.from` (another pose) */
+function hpDraw(name, k, o = {}) {
+  if (!hpReady()) return;
+  const kk = Math.max(0, Math.min(1, +k || 0));
+  if (o.from && HPOSE[o.from]) hpTarget(o.from, o.pFrom !== undefined ? +o.pFrom : (+o.p || 0), o, hpR0); else hpRest(hpR0);
+  if (!name || !HPOSE[name] || kk <= 0) { hpWrite(hpR0); return; }
+  hpWrite(hpBlend(hpR0, hpTarget(name, +o.p || 0, o, hpB2), kk, hpC));
 }
 let kitRooted = false, kitHurt = null;       // v11.1: the player held in place; the red damage frame + a bleed until the player acts
 let invUrge = null;                          // v11.6: an item the bag button pulses for until it is equipped (kit.give)
@@ -3847,6 +4176,9 @@ const EV_DEMO = {
   mash: 'rapid', hold: 'look', stabilise: 'look',
   heartbeat: 'beat', match: 'drag', focus: 'spot', sequence: 'bar', resist: 'rapid',   // v21.0: focus has its own (lights at places, a fingertip on each)
   steady: 'steady',                      // v22.0: a mark pushed off by a tremor, a fingertip dragging it back into its ring
+  craft: 'twist',                        // v23.0: a fingertip circling a cap (the first step taught, the rest hinted at the prop)
+  yield: 'press',                        // v23.0: a fingertip pressing and holding while a ring fills
+  surface: 'surface',                    // v23.0: a mark climbing a gauge under a fingertip dragging up, sinking when let go
 };
 const EV_DEFAULT = {
   tap:       { secs: 4 },
@@ -3895,13 +4227,25 @@ const EV_DEFAULT = {
      of a radius and come every tugGap0 → tugGap1 seconds; out of the ring for
      `grace` seconds together it SLIPS; `pass` is the share of the time in. */
   steady:    { secs: 8, ring: 0.15, amp0: 0.32, amp1: 0.95, tug0: 0.45, tug1: 1.0, tugGap0: 1.8, tugGap1: 0.9,
-               grace: 1.2, lead: 0.7, pass: 0.6, seed: 7, gain: 1 }
+               grace: 1.2, lead: 0.7, pass: 0.6, seed: 7, gain: 1 },
+  /* v23.0: CRAFT — the thirty-seventh seam (see evCraftFrame): hands-on STEPS on a held prop, in order; gentle, never
+     graded; `fast` the twist speed (degrees a second) past which the care is spoilt; `minR` the radius (px) a twist
+     is read at; `keyRate` how fast a held E twists (degrees a second) */
+  craft:     { secs: 0, fast: 720, minR: 40, keyRate: 360, slideKey: 0.8, swipeT: 0.6, lead: 0.15 },
+  /* v23.0: YIELD — the thirty-eighth seam (see evYieldFrame): a ring fills over `fill` seconds while anything is held;
+     let go and it waits (or drains at `back` a second); `auto` fills on its own once `autoAfter` seconds have run */
+  yield:     { secs: 0, fill: 4.0, back: 0, auto: false, autoAfter: 0.8 },
+  /* v23.0: SURFACE — the thirty-ninth seam (see evSurfaceFrame): a mark on a gauge climbed by a drag up (or W / ↑ /
+     Space struck fast) against a constant `sink` and a PULL every `pullGap` seconds; under `floorK` a slip costs
+     `slip` sanity (never below `minSanity`); over `goal` for `hold` seconds he is back; `secs` gives up for him */
+  surface:   { secs: 40, start: 0.3, sink: 0.11, span: 0.55, keyRise: 0.055, pull: 0.12, pullGap0: 1.6, pullGap1: 2.4,
+               floorK: 0.15, goal: 0.86, hold: 0.4, slip: 3, minSanity: 10, full: 10, lead: 0.6 }
 };
 // the literals texttest looks for; the kind picks the row
 const EV_LABEL = { tap: 'event.tap', timed: 'event.timed', mash: 'event.mash', hold: 'event.hold',
                    stabilise: 'event.stabilise', heartbeat: 'event.heartbeat', focus: 'event.focus',
                    sequence: 'event.sequence', match: 'event.match', resist: 'event.resist',
-                   steady: 'event.steady' };
+                   steady: 'event.steady', craft: 'event.craft', yield: 'event.yield', surface: 'event.surface' };
 /* ------------------------------------------------------ v9.3 · THE LADDER
    Chad, of the minigames: "no stakes, no damage, no repercussions ... they
    were supposed to require precise timing to pass, and every mistimed tap or
@@ -4245,6 +4589,7 @@ function evBrief() {
   $('evMatch').classList.add('hide');
   $('evDot').classList.add('hide');
   $('evSteady')?.classList.add('hide');   // v22.0
+  for (const id of ['evCraft', 'evYield', 'evSurface']) $(id)?.classList.add('hide');   // v23.0
   snd('uiclick', 0.3);
 }
 function evStart() {
@@ -4287,7 +4632,7 @@ function evBegin() {
      blank panel, and a player was asked to time a press against nothing:
      Chad, of it, "The minigame seems broken and im not sure what its
      supposed to do." Episode 1 declares no events, so it cannot reach this. */
-  $('evTrack').classList.toggle('hide', !(e.kind === 'mash' || e.kind === 'hold' || e.kind === 'stabilise' || e.kind === 'tap' || e.kind === 'match' || e.kind === 'sequence' || e.kind === 'resist' || e.kind === 'steady'));
+  $('evTrack').classList.toggle('hide', !(e.kind === 'mash' || e.kind === 'hold' || e.kind === 'stabilise' || e.kind === 'tap' || e.kind === 'match' || e.kind === 'sequence' || e.kind === 'resist' || e.kind === 'steady' || e.kind === 'craft' || e.kind === 'yield'));   // (v23.0: and the hands-on two, their progress)
   $('evBar').style.width = (e.kind === 'mash' ? e.bar * 100 : e.kind === 'match' ? 100 : 0) + '%';
   $('evItem').classList.toggle('hide', e.kind !== 'sequence');
   $('evDemo').classList.add('hide');       // v10.3: the briefing's illustration goes with the briefing
@@ -4303,6 +4648,8 @@ function evBegin() {
      does not even show up". The rapid-tap fight says it, under its word. */
   if (e.kind === 'resist') $('evNote').textContent = o.whereWord || T(HAS_TOUCH ? 'event.resistWhere' : 'event.resistWhereKey');   // v18.5: a desktop has no screen to tap
   if (e.kind === 'steady') $('evNote').textContent = o.whereWord || T(HAS_TOUCH ? 'event.steadyWhere' : 'event.steadyWhereKey');   // v22.0: where the drag goes
+  if (e.kind === 'yield') $('evNote').textContent = o.whereWord || T(HAS_TOUCH ? 'event.yieldWhere' : 'event.yieldWhereKey');       // v23.0
+  if (e.kind === 'surface') $('evNote').textContent = o.whereWord || T(HAS_TOUCH ? 'event.surfaceWhere' : 'event.surfaceWhereKey');
   if (e.kind === 'sequence') evShowItem();
   /* v9.4: a drag needs a cursor, and under pointer lock there is none - the
      mouse's clientX/clientY freeze, so the tiles could never be picked up.
@@ -4319,6 +4666,10 @@ function evBegin() {
   /* v22.0: a STEADY drag is a cursor's too — under pointer lock the mouse has
      no position to drag from — so the pointer is handed back as for the match */
   else if (e.kind === 'steady') { evSteadyBuild(e); document.exitPointerLock?.(); }
+  /* v23.0: a hands-on step is read round its prop, and the surface by a drag up — both need a cursor, so the pointer is
+     handed back as for the match; a yield is a press anywhere, and keeps the lock */
+  else if (e.kind === 'craft') { evCraftBuild(e); $('evCraft')?.classList.remove('hide'); document.exitPointerLock?.(); }
+  else if (e.kind === 'surface') document.exitPointerLock?.();
   snd('uiclick', 0.3);
 }
 function evShowItem() {
@@ -4367,6 +4718,7 @@ function evResolve(extra) {
     $('evDot').classList.add('hide'); $('evDrag').classList.add('hide');
     $('evDot').classList.remove('steady', 'pop');   // v21.2: a steady light's own look goes with its event
     $('evSteady')?.classList.add('hide');            // v22.0: and the steady ring with its
+    for (const id of ['evCraft', 'evYield', 'evSurface']) $(id)?.classList.add('hide');   // v23.0: the hands-on hints with theirs
     $('evMatch').classList.add('hide');
     $('evIcon').textContent = ''; $('evCombo').textContent = '';
     $('evSrc').textContent = ''; $('evDst').textContent = '';
@@ -4378,6 +4730,10 @@ function evResolve(extra) {
                  landed in and what they summed to — so a chapter or a harness can
                  read how it was played, not just whether it passed. */
               band: e.band.slice(), sum: e.sum };
+  /* v23.0: what the hands-on kinds report — the care a craft was done with, a surface's slips and whether it gave up
+     for him */
+  if (e.kind === 'craft') r.care = extra.care !== undefined ? !!extra.care : e.care !== false;
+  if (e.kind === 'surface') { r.slips = e.slips || 0; r.gaveUp = !!extra.gaveUp; r.slipPaid = e.slipPaid || 0; }
   const aw = e.o.award;
   if (aw && aw.stat && !r.aborted && !r.skipped) {
     if (e.band.length) {
@@ -4450,6 +4806,8 @@ function evPress(x, y, pid) {
       e.bar = Math.min(1, e.bar + o.gain); e.hits++; snd('uiclick', 0.18, 1.1); break;
     case 'resist': resistTap(e); break;
     case 'steady': e.lastX = x; e.lastY = y; e.pid = pid; e.seed = false; break;   // v22.0: the drag starts where the finger lands, and is that finger's
+    case 'craft': evCraftPress(e, x, y); break;            // v23.0: a step begins where the finger lands
+    case 'surface': if (e.keyHeld) evSurfaceRise(e, o.keyRise); else e.sy = y; break;   // v23.0: a key strikes it up; a finger drags it
     case 'heartbeat': {
       /* v9.4: the beat comes off the SCHEDULE, because the gaps shrink. A
          press is graded on how far it lands from the beat's centre as a
@@ -4531,6 +4889,8 @@ function evRelease(pid) {
   /* the release carries no coordinates, so the drop lands where the last
      move put it - and evPress seeds those, for a tap that never moved */
   if (e.kind === 'match') { evMatchDrop(e.lastX, e.lastY); return; }
+  if (e.kind === 'craft') evCraftRelease(e);              // v23.0
+  if (e.kind === 'surface') e.sy = undefined;
   if (e.kind === 'hold' && e.t < e.o.secs) evResolve({ ok: false, score: 0 });
   if (e.kind === 'stabilise' && e.t < e.o.secs) evResolve({ ok: false, score: 0 });
 }
@@ -4540,6 +4900,12 @@ function evMove(x, y, pid) {
   if (e.kind === 'steady' && e.pid !== undefined && pid !== undefined && pid !== e.pid) return;
   e.drift = Math.max(e.drift, Math.hypot(x - e.downX, y - e.downY));
   if (e.kind === 'match') { e.lastX = x; e.lastY = y; if (e.drag) { evDragTo(x, y); evMatchHover(x, y); } }
+  /* v23.0: a hands-on step reads the drag round its prop; the surface rises with a drag UP (never pushed down by one) */
+  if (e.kind === 'craft' && e.started && !e.briefing) evCraftMove(e, x, y);
+  if (e.kind === 'surface' && e.started && !e.briefing && e.sy !== undefined) {
+    const dy = e.sy - y; e.sy = y;
+    if (dy > 0) evSurfaceRise(e, dy / Math.max(60, e.o.span * innerHeight));
+  }
   /* v22.0: the mark moves with the DRAG, by its delta, so a finger may land
      anywhere and answer the tremor from there */
   if (e.kind === 'steady' && e.started && !e.briefing && e.R) {
@@ -4711,6 +5077,257 @@ function evSteadyFrame(e, o, wdt, bar) {
     evResolve({ ok: e.share >= o.pass, score: e.share });
   }
 }
+/* ---------------------------------------------------------- v23.0 · HANDS ON
+   Three kinds for episode 3 chapter 5, where the play is in his HANDS (the drinks he opens for three children every
+   night, the incense, the music box) and in letting go (the yield) and coming back (the surface). None grades, none
+   fails, none can soft-lock; each draws its own hint AT the thing it is about, and the briefing's picture (EV_DEMO).
+   No chapter before it opens any of them. */
+/* WHERE IT IS — the prop's (or the figure's) point on the screen, in CSS px. `at` may answer a point in the WORLD
+   ({x, y, z}, projected through the world's lens) or one already on the screen ({sx, sy}, shares of its width and
+   height: a thing in his hand is drawn through the viewmodel's own lens, so the chapter projects it); with none, the
+   middle a little low, where his hands are. */
+function evAt(e) {
+  const o = e.o;
+  let P = o.at;
+  if (typeof P === 'function') { try { P = P(); } catch { P = null; } }
+  if (P && Number.isFinite(P.sx)) return { x: P.sx * innerWidth, y: P.sy * innerHeight, on: true };
+  if (P && Number.isFinite(P.x) && Number.isFinite(P.z)) {
+    const n = projectTo(P.x, Number.isFinite(P.y) ? P.y : 1.0, P.z);
+    return { x: (n.x * 0.5 + 0.5) * innerWidth, y: (-n.y * 0.5 + 0.5) * innerHeight, on: n.z < 1 };
+  }
+  return { x: innerWidth / 2, y: innerHeight * 0.62, on: true };
+}
+/* a drag's reach along a step's direction (px) */
+function evDirOf(dir, dx, dy) {
+  switch (dir) {
+    case 'down': return dy;
+    case 'up': return -dy;
+    case 'left': return -dx;
+    case 'right': return dx;
+    case 'any': return Math.hypot(dx, dy);
+    default: return Math.abs(dx);            // 'side': either way across
+  }
+}
+const EV_DIR_DEG = { down: 90, up: -90, left: 180, right: 0, side: 0, any: 0 };
+/* the words, literal so texttest can find every one: [the order, where it goes (a finger), where it goes (a desktop)] */
+const CRAFT_WORDS = {
+  twist: ['event.craftTwist', 'event.craftTwistWhere', 'event.craftTwistKey'],
+  slide: ['event.craftSlide', 'event.craftSlideWhere', 'event.craftSlideKey'],
+  tap:   ['event.craftTap', 'event.craftTapWhere', 'event.craftTapKey'],
+  hold:  ['event.craftHold', 'event.craftHoldWhere', 'event.craftHoldKey'],
+  swipe: ['event.craftSwipe', 'event.craftSwipeWhere', 'event.craftSwipeKey'],
+};
+/* v23.0 · CRAFT — THE THIRTY-SEVENTH SEAM. Hands-on STEPS on a held prop, in order: `steps: [{ g: 'twist', turns },
+   { g: 'slide', dir, len }, { g: 'tap', n }, { g: 'hold', secs }, { g: 'swipe', dir, dist }]`, each read round the
+   prop's point (`at`):
+   - TWIST: the angle a finger sweeps round the point, either way (read only past `minR` px from it), until `turns`;
+     faster than `fast` degrees a second spoils the care (`onFoam(i)`, once a step; the result's `care` false);
+   - SLIDE: the drag along `dir` ('down', 'up', 'left', 'right', or 'side' — either way across) as a share `len` of
+     the screen's height; the wrong way does nothing;
+   - TAP: `n` presses;  HOLD: `secs` held (let go, it waits);  SWIPE: a FLICK along `dir` over `dist` of the screen's
+     width inside `swipeT` seconds (a slow drag begins again from where it is).
+   On a desktop the pointer lock is handed back (the mouse drags as a finger does); E held twists at `keyRate`, slides
+   and holds; a press of Space or E taps and flicks. Each step draws its own looping hint AT the prop (#evCraft — a
+   fingertip circling, pulling, tapping, pressing or flicking) with its progress. `onProgress(i, k)` as a step moves,
+   `onStep(i)` as it completes; the result is ok with `care`. Gentle: no grade, no price, no failure. */
+function evCraftBuild(e) {
+  const o = e.o;
+  const G = ['twist', 'slide', 'tap', 'hold', 'swipe'];
+  e.steps = (Array.isArray(o.steps) && o.steps.length ? o.steps : [{ g: 'tap' }]).map(s => ({
+    g: G.includes(s && s.g) ? s.g : 'tap',
+    turns: Math.max(0.1, +s.turns || 1), dir: s.dir || (s.g === 'slide' ? 'down' : 'side'),
+    len: Math.max(0.03, +s.len || 0.18), n: Math.max(1, Math.round(+s.n || 1)), secs: Math.max(0.05, +s.secs || 1.2),
+    dist: Math.max(0.05, +s.dist || 0.25), fast: Number.isFinite(+s.fast) ? +s.fast : o.fast,
+    word: s.word, where: s.where }));
+  e.si = 0; e.sk = 0; e.care = true; e.foamed = new Set(); e.cx = innerWidth / 2; e.cy = innerHeight / 2;
+  evCraftStepReset(e);
+  evCraftShow(e);
+}
+function evCraftStepReset(e) {
+  e.sk = 0; e.twA = null; e.twSum = 0; e.twLog = []; e.ctaps = 0; e.held = 0; e.slKey = 0; e.slBase = 0;
+  e.sl0 = null; e.sw = null;
+  /* each step begins with a FRESH press: a finger (or E) still down from the step before is not this step's — a
+     thumb still circling after the cap came off slid the straw halfway in (the fixture's twist found it) */
+  e.needUp = !!(e.down || e.keyHeld);
+}
+function evCraftShow(e) {
+  const s = e.steps[e.si], el = $('evCraft');
+  if (!s) return;
+  if (el) {
+    el.className = 'g-' + s.g;
+    el.style.setProperty('--cang', (EV_DIR_DEG[s.dir] || 0) + 'deg');
+    el.style.setProperty('--ck', '0');
+  }
+  const W = CRAFT_WORDS[s.g];
+  $('evPrompt').textContent = s.word || e.o.prompt || T(W[0]);
+  $('evNote').textContent = s.where || T(HAS_TOUCH ? W[1] : W[2]);
+}
+function evCraftSet(e, k) {
+  if (ev !== e || !e.steps[e.si]) return;
+  k = Math.min(1, k);
+  if (k <= e.sk + 1e-6 && k < 1) return;           // never back
+  e.sk = Math.max(e.sk, k);
+  if (typeof e.o.onProgress === 'function') { try { e.o.onProgress(e.si, e.sk); } catch (err) { console.warn('craft onProgress failed', err); } }
+  if (e.sk >= 1) evCraftNext(e);
+}
+function evCraftNext(e) {
+  const i = e.si;
+  if (typeof e.o.onStep === 'function') { try { e.o.onStep(i); } catch (err) { console.warn('craft onStep failed', err); } }
+  if (ev !== e) return;                            // (the chapter ended it in its own callback)
+  if (e.o.haptic !== false) haptic(16);
+  e.si++;
+  if (e.si >= e.steps.length) { evResolve({ ok: true, score: e.care ? 1 : 0.6, care: e.care }); return; }
+  evCraftStepReset(e);
+  evCraftShow(e);
+}
+function evCraftTwist(e, x, y) {
+  const s = e.steps[e.si], c = evAt(e), dx = x - c.x, dy = y - c.y;
+  if (Math.hypot(dx, dy) < e.o.minR) { e.twA = null; return; }   // too near the middle to read a turn
+  const a = Math.atan2(dy, dx), now = performance.now() / 1000;
+  if (e.twA !== null) {
+    let da = a - e.twA;
+    while (da > Math.PI) da -= 2 * Math.PI;
+    while (da < -Math.PI) da += 2 * Math.PI;
+    e.twSum += da;
+    // its speed over the last quarter second: past `fast` the care is spoilt (the cap foams over)
+    e.twLog.push({ t: now, d: Math.abs(da) });
+    while (e.twLog.length && now - e.twLog[0].t > 0.25) e.twLog.shift();
+    const degS = e.twLog.reduce((q, r) => q + r.d, 0) / 0.25 * 180 / Math.PI;
+    if (degS > s.fast && !e.foamed.has(e.si)) {
+      e.foamed.add(e.si); e.care = false;
+      if (typeof e.o.onFoam === 'function') { try { e.o.onFoam(e.si); } catch (err) { console.warn('craft onFoam failed', err); } }
+    }
+    evCraftSet(e, Math.abs(e.twSum) / (s.turns * 2 * Math.PI));
+  }
+  e.twA = a;
+}
+function evCraftPress(e, x, y) {
+  const s = e.steps[e.si]; if (!s) return;
+  e.cx = x; e.cy = y; e.needUp = false;
+  if (e.keyHeld) {                                 // a key: a tap and a flick are one press; the frame does the rest
+    if (s.g === 'tap') { e.ctaps++; evCraftSet(e, e.ctaps / s.n); }
+    else if (s.g === 'swipe') evCraftSet(e, 1);
+    return;
+  }
+  switch (s.g) {
+    case 'twist': e.twA = null; evCraftTwist(e, x, y); break;
+    case 'slide': e.sl0 = { x, y }; e.slBase = e.sk; break;
+    case 'tap': e.ctaps++; evCraftSet(e, e.ctaps / s.n); break;
+    case 'swipe': e.sw = { x, y, t: performance.now() / 1000 }; break;
+    default: break;                                // hold: the frame counts it while down
+  }
+}
+function evCraftMove(e, x, y) {
+  const s = e.steps[e.si]; if (!s || e.keyHeld || e.needUp) return;
+  e.cx = x; e.cy = y;
+  if (s.g === 'twist') evCraftTwist(e, x, y);
+  else if (s.g === 'slide' && e.sl0) {
+    const d = evDirOf(s.dir, x - e.sl0.x, y - e.sl0.y);
+    evCraftSet(e, e.slBase + Math.max(0, d) / Math.max(20, s.len * innerHeight));
+  } else if (s.g === 'swipe' && e.sw) {
+    const now = performance.now() / 1000;
+    if (now - e.sw.t > e.o.swipeT) { e.sw = { x, y, t: now }; return; }   // too slow for a flick: begin again from here
+    if (evDirOf(s.dir, x - e.sw.x, y - e.sw.y) >= s.dist * innerWidth) evCraftSet(e, 1);
+  }
+}
+function evCraftRelease(e) {
+  e.twA = null; e.sl0 = null; e.sw = null; e.needUp = false;
+}
+function evCraftFrame(e, o, wdt, bar) {
+  if (!e.steps) evCraftBuild(e);
+  const s = e.steps[e.si];
+  if (!s) return;
+  if (e.needUp) { /* the last step's finger or key: nothing until it lifts */ }
+  else if (s.g === 'hold' && (e.down || e.keyHeld)) { e.held += wdt; evCraftSet(e, e.held / s.secs); }
+  else if (e.keyHeld && s.g === 'twist') { e.twSum += wdt * o.keyRate * Math.PI / 180; evCraftSet(e, Math.abs(e.twSum) / (s.turns * 2 * Math.PI)); }
+  else if (e.keyHeld && s.g === 'slide') { e.slKey += wdt / Math.max(0.1, o.slideKey); evCraftSet(e, e.slKey); }
+  if (ev !== e) return;
+  const el = $('evCraft');
+  if (el) {
+    const c = evAt(e);
+    el.style.transform = `translate(${c.x.toFixed(0)}px, ${c.y.toFixed(0)}px)`;
+    el.style.setProperty('--ck', e.sk.toFixed(3));
+    el.classList.toggle('off', !c.on);
+  }
+  if (bar) bar.style.width = (100 * (e.si + e.sk) / e.steps.length).toFixed(1) + '%';
+}
+/* v23.0 · YIELD — THE THIRTY-EIGHTH SEAM. Press and hold to LET GO: a ring at a point (`at`) fills over `fill` seconds
+   while anything is held — a finger, the mouse, E or Space; let go and it waits where it is (or drains at `back` a
+   second). `auto` fills it on its own once `autoAfter` seconds have run, or once it has been pressed at all (the
+   third time the door opens by itself). `onHold(k, held)` every frame, so a chapter loosens the world by k. Never
+   graded, never failed: full is the result. Its own picture, `press`. */
+function evYieldFrame(e, o, wdt, bar) {
+  if (e.yk === undefined) { e.yk = 0; e.yPressed = false; const el = $('evYield'); if (el) el.classList.remove('hide'); }
+  const held = !!(e.down || e.keyHeld);
+  if (held) e.yPressed = true;
+  const auto = !!o.auto && (e.yPressed || e.t >= o.autoAfter);
+  if (held || auto) e.yk = Math.min(1, e.yk + wdt / Math.max(0.05, o.fill));
+  else if (o.back > 0) e.yk = Math.max(0, e.yk - wdt * o.back);
+  const el = $('evYield');
+  if (el) {
+    const c = evAt(e);
+    el.style.transform = `translate(${c.x.toFixed(0)}px, ${c.y.toFixed(0)}px)`;
+    el.style.setProperty('--yk', e.yk.toFixed(3));
+    el.classList.toggle('held', held || auto);
+    el.classList.toggle('off', !c.on);
+  }
+  if (bar) bar.style.width = (100 * e.yk).toFixed(1) + '%';
+  if (typeof o.onHold === 'function') { try { o.onHold(e.yk, held || auto); } catch (err) { console.warn('yield onHold failed', err); } }
+  if (ev === e && e.yk >= 1) evResolve({ ok: true, score: 1 });
+}
+/* v23.0 · SURFACE — THE THIRTY-NINTH SEAM. Climb back against a pull: a vertical gauge (#evSurface) whose mark rises
+   with a drag UP (a finger, or the mouse with its button held — the lock is handed back), or with W / ↑ / Space / E
+   struck fast; it sinks at `sink` a second, and every `pullGap0`–`pullGap1` seconds it is PULLED down by `pull`
+   (`onPull(level)` — the chapter rings its bells and draws its ring). Each time it goes under `floorK` a SLIP costs
+   `slip` sanity, never below `minSanity`; over `goal` for `hold` seconds he is back (ok, scored by the time it took:
+   full marks within `full` seconds). After `secs` it gives up FOR him — ok, at score 0, `gaveUp` — so it can never
+   soft-lock. It runs in play or inside a film (v7.0's api.event). `onLevel(k)` every frame. Its own picture,
+   `surface`. */
+function evSurfaceFrame(e, o, wdt) {
+  if (e.lv === undefined) {
+    e.lv = Math.max(0, Math.min(1, +o.start || 0)); e.goalT = 0; e.slips = 0; e.slipArmed = true;
+    e.pullN = 0; e.nextPull = o.lead + o.pullGap0 + (o.pullGap1 - o.pullGap0) * 0.5;
+    const el = $('evSurface');
+    if (el) { el.classList.remove('hide'); el.style.setProperty('--sg', o.goal.toFixed(3)); el.style.setProperty('--sf', o.floorK.toFixed(3)); }
+  }
+  const live = e.t >= o.lead;
+  if (live) {
+    e.lv = Math.max(0, e.lv - o.sink * wdt);
+    if (e.t >= e.nextPull) {
+      e.pullN++;
+      e.lv = Math.max(0, e.lv - o.pull);
+      // the gap between pulls wanders inside its range on a fixed stream, so every run is the same run
+      const u = 0.5 + 0.5 * Math.sin(e.pullN * 2.399);
+      e.nextPull = e.t + o.pullGap0 + (o.pullGap1 - o.pullGap0) * u;
+      e.pullAt = e.t;
+      if (o.haptic !== false) haptic(20);
+      if (typeof o.onPull === 'function') { try { o.onPull(e.lv); } catch (err) { console.warn('surface onPull failed', err); } }
+    }
+  }
+  if (e.lv < o.floorK) {
+    if (e.slipArmed && live) {
+      e.slipArmed = false; e.slips++;
+      const room = Math.max(0, (stats.sanity || 0) - o.minSanity), d = Math.min(+o.slip || 0, room);
+      if (d > 0) { const c = evCut(-d); kitAward('sanity', c, EV_PRICE); e.slipPaid = (e.slipPaid || 0) - c; }
+      if (typeof o.onSlip === 'function') { try { o.onSlip(e.slips); } catch (err) { console.warn('surface onSlip failed', err); } }
+    }
+  } else if (e.lv > o.floorK + 0.08) e.slipArmed = true;
+  e.goalT = e.lv >= o.goal ? e.goalT + wdt : 0;
+  const el = $('evSurface');
+  if (el) {
+    el.style.setProperty('--lv', e.lv.toFixed(3));
+    el.classList.toggle('pull', e.pullAt !== undefined && e.t - e.pullAt < 0.35);
+    el.classList.toggle('low', e.lv < o.floorK);
+    el.classList.toggle('near', e.lv >= o.goal);
+  }
+  if (typeof o.onLevel === 'function') { try { o.onLevel(e.lv); } catch (err) { console.warn('surface onLevel failed', err); } }
+  if (ev !== e) return;
+  if (e.goalT >= o.hold) {
+    const late = Math.max(0, e.t - o.full) / Math.max(1, o.secs - o.full);
+    evResolve({ ok: true, score: Math.max(0.3, 1 - 0.7 * Math.min(1, late)) });
+  } else if (o.secs > 0 && e.t >= o.secs) evResolve({ ok: true, score: 0, gaveUp: true });
+}
+function evSurfaceRise(e, k) { e.lv = Math.min(1, (e.lv || 0) + k); }
 function evNextItem() {
   const e = ev; e.idx++;
   e.slotT = 0;                       // v9.3: the new item's window starts now
@@ -4821,6 +5438,9 @@ function evFrame(dt, dLookX, dLookY) {
       break;
     }
     case 'steady': evSteadyFrame(e, o, wdt, bar); break;   // v22.0: the thirty-first seam
+    case 'craft': evCraftFrame(e, o, wdt, bar); break;     // v23.0: the thirty-seventh
+    case 'yield': evYieldFrame(e, o, wdt, bar); break;     // v23.0: the thirty-eighth
+    case 'surface': evSurfaceFrame(e, o, wdt); break;      // v23.0: the thirty-ninth
     case 'stabilise': {
       if (!e.down) { if (e.t > o.grace && e.downAt < 0) evResolve({ ok: false, score: 0 }); break; }
       const steady = 1 - Math.min(1, e.look / o.tol);
@@ -4987,9 +5607,13 @@ function evFrame(dt, dLookX, dLookY) {
    reach the cutscene skip or the pile while one is */
 function evKey(e, isDown) {
   if (!ev || !ev.started) return false;
-  if (e.code !== 'Space' && e.code !== 'Enter' && e.code !== 'KeyE') return false;
+  const up = ev.kind === 'surface' && (e.code === 'KeyW' || e.code === 'ArrowUp');   // v23.0: the surface climbs on W and ↑ too
+  if (e.code !== 'Space' && e.code !== 'Enter' && e.code !== 'KeyE' && !up) return false;
   if (isDown && e.repeat) { e.preventDefault(); return true; }
   e.preventDefault();
+  /* v23.0: a hands-on kind knows the press is a KEY's (E held twists, slides and holds; a press taps, flicks and
+     strikes the surface up) — never the press that closes a briefing */
+  if (ev.kind === 'craft' || ev.kind === 'yield' || ev.kind === 'surface') ev.keyHeld = isDown && !ev.briefing;
   if (isDown) evPress(innerWidth / 2, innerHeight / 2); else evRelease();
   return true;
 }
@@ -5150,6 +5774,8 @@ function kitReset() {
   prayOff();                             // v16.5: a run never starts with the hands still together
   kitHold(null);                         // v21.0: nor with something still in his hand
   pray.y = PRAY.y;                       // v18.4: and at chapter 1's height until the chapter says otherwise (handsPut reads it)
+  pray.z = PRAY.z;                       // v23.0: and depth
+  hpOff();                               // v23.0: nor in a pose (kit.handPose)
   handsOff();                            // v18.0: nor with them still moving on their own
   trem.k = trem.to = 0; trem.t = 0; trem.last = 0;   // v22.0: nor shaking
   coldOff();                             // v22.0: nor cold — no chill at the edges, his own heart back, no smear
@@ -5243,6 +5869,11 @@ function kitFilm(key, opts = {}) {
   c = cine;
   c.film = true;                 // a skip by gesture may re-lock the mouse (skipFilmOrScene): play follows
   c.inPlay = key;
+  /* v23.0 · THE FORTY-FIRST SEAM: `noSkip` — a film that must be SEEN, the first time: no Skip button and its keys
+     ignored for the whole film (episode 3 chapter 5 passes it only while the chapter has never been completed —
+     ctx.sealedBefore — for the three possessions and the counter's two films, the purpose's own words). A
+     probe's __enc.cine.skip() still ends it. Absent, every film is exactly as it was. */
+  c.noSkip = !!opts.noSkip;
   return true;
 }
 const KIT = {
@@ -5272,9 +5903,11 @@ const KIT = {
   captionNow: () => (capPainted.k >= 0 && kitCaps ? { ...kitCaps.list[capPainted.k], k: capPainted.k } : null),
   root: on => { kitRooted = !!on; },   // v11.1: hold the player in place (the look and the torch still work)
   pray: kitPraySet,                // v16.5: the hands into añjali in PLAY — episode 1 chapter 1's scene D pose, exactly
-  praying: () => pray.to > 0,
-  hold: kitHold,                   // v21.0: the twenty-seventh seam — a thing in his right hand, or held in the clasp
-  holding: () => heldProp,
+  praying: () => pray.to > 0 || (hp.on && hp.toPray),
+  hold: kitHold,                   // v21.0: the twenty-seventh seam — a thing in his right hand, or held in the clasp (v23.0: or his left)
+  holding: hand => (hand === 'left' ? heldPropL : heldProp),
+  handPose: kitHandPose,           // v23.0: S40 — the hands into one of a library of poses, eased (the fortieth seam)
+  handPoseNow: () => (hp.on ? { name: hp.name, k: hp.k, p: hp.p, u: hp.u } : null),
   hands: kitHandsSet,              // v18.0: the hands taken — out of the clasp into a Thai-dance gesture by k
   getHands: () => hands.k,
   tremble: kitTremble,             // v22.0: the hands shaking by k (the thirty-second seam)
@@ -5396,6 +6029,9 @@ function kitDebug() {
                          /* v22.0: the steady ring — where the mark is (px from the
                             ring's centre), the ring's radius, the share held */
                          mx: ev.mx, my: ev.my, R: ev.R, share: ev.share, outRun: ev.outRun,
+                         /* v23.0: the hands-on kinds — a craft's step and its progress, a yield's fill, a surface's level */
+                         si: ev.si, sk: ev.sk, steps: ev.steps ? ev.steps.length : undefined, care: ev.care, keyHeld: !!ev.keyHeld,
+                         yk: ev.yk, lv: ev.lv, slips: ev.slips, goalT: ev.goalT, pulls: ev.pullN,
                          /* v9.4: the rhythm game's run and the match's progress */
                          beat: ev.beat, combo: ev.combo, best: ev.bestCombo,
                          done: ev.done, wrong: ev.wrong } : null,
@@ -5459,6 +6095,10 @@ const CHCTX = {
      the root's own space: (root, cx, cy, cz, radius) */
   cullBySphere,
   loadFail,                           // v15.1: a model landed but its placement threw
+  /* v23.0 (S41): HAS THIS CHAPTER EVER BEEN COMPLETED — read-only, from the progress store the selector's ranks come
+     from (a sealed result on record). Episode 3 chapter 5 keeps its films unskippable until it has been (noSkip). A
+     function, so the store is read at the moment of asking (sealedResults is declared further down). */
+  sealedBefore: (key) => { try { return !!sealedResults()[key]; } catch { return false; } },
   unifySkeletons,                     // v15.2: one exact skeleton per freshly parsed model
   /* THE HEAD BONE, named once for everybody (v5.01). Every rigged human in
      this game is a Mixamo skeleton, and glTF SANITIZES its node names:
@@ -11890,6 +12530,8 @@ function restoreWorld(s, keep) {
   noteProp.visible = false;
   if (prayerArmL) prayerArmL.visible = false;
   if (rightHandModel) setHandCurl(rightHandModel, 1);
+  hpWristRest();                    // v23.0: and a wrist a scene's pose bent (api.handPose)
+  hp.rw = hp.rd = hp.lw = hp.ld = 0;
   ghost.position.copy(s.gPos);
   ghost.rotation.y = s.gRotY;
   if (keep.ghostGone) { reveal = 0; ghostOpacity(0); }
@@ -11923,6 +12565,7 @@ function playCineFn(sceneFn, onDone, startFade = 0) {
     keep: {}, endFade: 0, snap, onDone
   };
   prayOff();                       // v16.5: a scene takes the hands back from kit.pray, on its first frame
+  hpOff();                         // v23.0: and from kit.handPose (it draws its own with api.handPose)
   kitHold(null);                   // v21.0: and lets go of whatever kit.hold put in them (it would ride the arm the scene poses)
   /* v18.0: and from kit.hands — the scene is told where they were (it may
      carry the gesture on with api.handsPose), the sway's roll is not kept */
@@ -11994,7 +12637,7 @@ function cineUpdate() {
     const sp = c.ghostMix(c.t);
     if (sp > 0) ghostMixer.update(rdt * sp);
   }
-  skipBtn.classList.toggle('hide', c.t < CINE_SKIP_AT);   // v6.6: 3.0 s, every cutscene
+  skipBtn.classList.toggle('hide', c.t < CINE_SKIP_AT || !!c.noSkip);   // v6.6: 3.0 s, every cutscene (v23.0: never, on a noSkip film)
   if (c.t >= c.dur && !c.paused) cineEnd();
 }
 
@@ -12081,13 +12724,14 @@ function skipCine() {
    leads to an outcome card with buttons. Never from __enc.cine.skip(): a
    request with no gesture is refused and marks the page as unable to lock. */
 function skipFilmOrScene() {
+  if (cine && cine.noSkip) return;   // v23.0 (S41): a film that must be seen once — no button, no keys
   const film = !!(cine && cine.film);
   skipCine();
   if (film) tryLock();
 }
 skipBtn.addEventListener('click', e => { e.stopPropagation(); skipFilmOrScene(); });
 addEventListener('keydown', e => {
-  if (state === 'cine' && cine && cine.t > CINE_SKIP_AT && !evActive() &&   // v7.0: a live event owns the keys
+  if (state === 'cine' && cine && cine.t > CINE_SKIP_AT && !evActive() && !cine.noSkip &&   // v7.0: a live event owns the keys (v23.0: a noSkip film owns them too)
       (e.code === 'Escape' || e.code === 'KeyE' || e.code === 'Space' || e.code === 'Enter')) {
     skipFilmOrScene();
   }
@@ -12169,6 +12813,10 @@ function A(c) {
    `reveal` changes under the scene's feet, so capturing any of them by
    value at scene-build time would freeze the wrong answer.               */
 function sceneApi(c) {
+  /* v23.0: `event` and `eventWait` below are scheduled as steps, and `step` is A(c)'s LOCAL — so since v7.0 both have
+     thrown a ReferenceError ("step is not defined") the moment a scene called one. No chapter ever did until episode
+     3 chapter 5's COME BACK (a surface event inside a film); the fixture's climb film found it. The same step, here. */
+  const step = (t0, fn) => c.tracks.push({ t0, t1: t0, fn, once: true });
   return {
     ...A(c),
     rawK, smoothK, mixAngle, faceFrom, THREE, SHRINE, stage,
@@ -12197,6 +12845,9 @@ function sceneApi(c) {
        play, at a k and a flow time the scene chooses; handsFrom is where play
        left them, so a scene can carry the gesture on without a jump */
     handsPose: (k, t, o) => handsPut(Math.max(0, Math.min(1, k)), t, o),
+    /* v23.0: S40 — a pose from the library at exactly k (from the rest, or `o.from`), drawn now; the scene
+       drives k with its own tracks */
+    handPose: (name, k, o) => hpDraw(name, k, o),
     handsFrom: () => ({ k: handsFrom.k, t: handsFrom.t, roll: handsFrom.roll }),
     rightHand: () => rightHandModel, setHandCurl,
     vmKey, vmFire, vmHemi,
@@ -14135,7 +14786,7 @@ function tick(now = 0) {
   if (state !== 'title' && handsReady) {
     torchPropSync();                       // v11.1: hand or torch, decided on the frame
     weaponPropSync();                      // v12.0: or the weapon, over both
-    if (state !== 'cine') { prayFrame(); handsFrame(); }   // v16.5: the praying hands; v18.0: and the hands taken (a scene owns the hands itself)
+    if (state !== 'cine') { prayFrame(); handsFrame(); hpFrame(); }   // v16.5: the praying hands; v18.0: and the hands taken; v23.0: and a pose (a scene owns the hands itself)
   }
   /* v15: COVERED FRAMES. While an OPAQUE layer covers the whole canvas — the
      title, the chapter card once it is forced solid, a film or a scene held
@@ -14457,6 +15108,20 @@ window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () =
                  prayArmRebuild: () => { if (prayerArmL) { handsRoot.remove(prayerArmL); prayerArmL.traverse(o => { if (o.isMesh) o.material.dispose(); }); prayerArmL = null; } return !!buildPrayerArm(); },
                  camRoll: () => camera.rotation.z,         // v18.0: the body's sway under kit.hands
                  handsAt: (k, t, o) => handsPut(k, t, o),  // v20.1: probes pose the gesture at any flow time (where the arm's cut end goes)
+                 /* v23.0: S40 for the fixture and the search — the state, a pose drawn at any k, the table to try numbers on,
+                    and the arm as it stands (position, rotation, both hands' finger turns, whether the left is drawn) */
+                 hpose: () => ({ on: hp.on, name: hp.name, k: hp.k, p: hp.p, u: +hp.u.toFixed(3), toPray: hp.toPray }),
+                 hposeAt: (name, k, o) => hpDraw(name, k, o || {}),
+                 hposeTable: HPOSE,
+                 kitReset,                                 // v23.0: the fixture proves a pose is cleared by it
+                 armNow: () => {
+                   const L = prayerArmL, BL = hpReady() && L ? hpBonesLeft() : null;
+                   return { rp: armR.position.toArray(), rq: armR.quaternion.toArray(),
+                            rf: hpBonesR ? hpBonesR.map(b => (b ? b.quaternion.toArray() : null)) : null,
+                            lv: !!(L && L.visible), lp: L ? L.position.toArray() : null, lq: L ? L.quaternion.toArray() : null,
+                            lf: BL ? BL.map(b => (b ? b.quaternion.toArray() : null)) : null,
+                            heldL: !!heldPropL, held: !!heldProp };
+                 },
                  tremble: () => ({ k: +trem.k.toFixed(3), to: trem.to, ox: trem.ox, oy: trem.oy, or: trem.or }),   // v22.0: the shake, for the fixture
                  /* v22.0: the cold, for the fixture and the probes — the chill's layer and filter as painted, the heart's
                     beats as heard, the smear's draws and copies */
@@ -14631,7 +15296,9 @@ window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () =
                    dur: () => (cine ? cine.dur : 0),
                    seek: (t) => { if (cine) { cine.paused = true; cine.t = t; cineSeek(t); } },
                    resume: () => { if (cine) { cine.paused = false; cine.last = performance.now(); } },
-                   skip: skipCine
+                   skip: skipCine,
+                   noSkip: () => !!(cine && cine.noSkip),   // v23.0 (S41)
+                   skipShown: () => !skipBtn.classList.contains('hide')
                  },
                  perf: () => ({ shadowAuto: renderer.shadowMap.autoUpdate,
                                 shadowPending: renderer.shadowMap.needsUpdate,

@@ -705,6 +705,123 @@ body.finePtr .wpnBtn{position:relative;margin-bottom:12px}
 #event.steady.danger .evpanel{border-color:rgba(232,72,58,.9);animation:rise .3s var(--ease),resistShake .12s linear infinite}
 #event.steady #evBar{background:linear-gradient(90deg,#6FB8E8,#CFEAFF);transition:none}
 #event.steady #evNote{font-size:.8rem;color:#EDE6D4;opacity:.9;letter-spacing:.05em;text-transform:none}
+/* v23.0 · twist — a fingertip circling a cap round and round, the cap turning with it (craft: the drinks' caps, the
+   music box's key) */
+#evDemo.twist .dto,#evDemo.twist .dtc,#evDemo.twist .dtf{display:block}
+#evDemo .dto{position:absolute;left:50%;top:50%;width:52px;height:52px;margin:-26px 0 0 -26px;border-radius:50%;
+  border:2px dashed rgba(99,214,200,.6)}
+#evDemo .dtc{position:absolute;left:50%;top:50%;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;
+  background:repeating-conic-gradient(from 0deg,#C8392C 0 12deg,#E8604A 12deg 24deg);
+  box-shadow:0 0 0 2px rgba(255,255,255,.28),0 0 12px rgba(232,96,74,.45);animation:dtcSpin 2.4s linear infinite}
+#evDemo .dtf{position:absolute;left:50%;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;
+  background:rgba(255,255,255,.92);box-shadow:0 0 0 4px rgba(255,255,255,.22),0 0 14px rgba(255,255,255,.5);
+  animation:dtfOrbit 2.4s linear infinite}
+@keyframes dtcSpin{to{transform:rotate(-360deg)}}
+@keyframes dtfOrbit{from{transform:rotate(0deg) translateX(26px)}to{transform:rotate(-360deg) translateX(26px)}}
+/* v23.0 · press — a fingertip coming down and HOLDING while a warm light fills the ring under it, then letting go
+   (yield: let your mind loosen) */
+#evDemo.press .dpr,#evDemo.press .dpg,#evDemo.press .dpf{display:block}
+#evDemo .dpr{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;
+  border:2px solid rgba(240,196,128,.8);box-shadow:0 0 12px rgba(240,196,128,.3)}
+#evDemo .dpg{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,230,180,.9) 0 38%,rgba(240,196,128,.4) 66%,transparent 71%);
+  animation:dpg 2.8s ease-in infinite}
+#evDemo .dpf{position:absolute;left:50%;top:50%;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;
+  background:rgba(255,255,255,.92);box-shadow:0 0 0 4px rgba(255,255,255,.22),0 0 14px rgba(255,255,255,.5);
+  animation:dpf 2.8s ease-in-out infinite}
+@keyframes dpg{0%,12%{transform:scale(.12);opacity:0}16%{opacity:.85}78%{transform:scale(1);opacity:1}
+  86%{transform:scale(1.22);opacity:.25}100%{transform:scale(.12);opacity:0}}
+@keyframes dpf{0%{transform:translate(36px,22px);opacity:0}10%{transform:translate(0,0);opacity:.95}
+  14%,80%{transform:translate(0,0) scale(.8);opacity:.95}88%{transform:translate(0,0) scale(1);opacity:.6}
+  100%{transform:translate(36px,22px);opacity:0}}
+/* v23.0 · surface — a light on a gauge sinking, a fingertip dragging it up to the line at the top, and it sinking
+   again when let go (surface: come back up) */
+#evDemo.surface .dsg,#evDemo.surface .dsm,#evDemo.surface .dsf{display:block}
+#evDemo .dsg{position:absolute;left:50%;top:4px;width:14px;height:56px;margin-left:-7px;border-radius:7px;
+  background:linear-gradient(0deg,rgba(30,60,130,.6),rgba(150,205,255,.18));border:1px solid rgba(160,215,245,.6)}
+#evDemo .dsg::before{content:'';position:absolute;left:-7px;right:-7px;top:6px;height:2px;
+  background:rgba(255,236,190,.9);box-shadow:0 0 8px rgba(255,236,190,.8)}
+#evDemo .dsm{position:absolute;left:50%;top:-3px;width:14px;height:14px;margin-left:-7px;border-radius:50%;
+  background:radial-gradient(circle,#FFF6E0 0 35%,rgba(255,226,170,.7) 60%,transparent 72%);
+  box-shadow:0 0 10px rgba(255,226,170,.85);animation:dsm 3.2s ease-in-out infinite}
+#evDemo .dsf{position:absolute;left:50%;top:-5px;width:18px;height:18px;margin-left:14px;border-radius:50%;
+  background:rgba(255,255,255,.92);box-shadow:0 0 0 4px rgba(255,255,255,.22),0 0 14px rgba(255,255,255,.5);
+  animation:dsf 3.2s ease-in-out infinite}
+@keyframes dsm{0%{transform:translateY(40px)}12%{transform:translateY(46px)}50%{transform:translateY(8px)}
+  64%{transform:translateY(6px)}76%{transform:translateY(16px)}88%{transform:translateY(42px)}100%{transform:translateY(40px)}}
+@keyframes dsf{0%,10%{transform:translateY(48px);opacity:0}16%{transform:translateY(46px);opacity:.95}
+  50%{transform:translateY(8px);opacity:.95}58%,100%{transform:translateY(2px);opacity:0}}
+/* v23.0 · THE HANDS-ON KINDS IN PLAY — like steady's, the world is the minigame: the panel stands at the TOP, small and
+   see-through, and the hint is drawn AT the thing (the prop in his hands, the figure on the altar, the gauge) */
+#event.full.craft,#event.full.yield,#event.full.surface{align-items:flex-start;padding-bottom:0;background:transparent;
+  padding-top:calc(max(14px,env(safe-area-inset-top)) + 18px + var(--objH,40px) + 12px)}
+#event.full.craft .evpanel,#event.full.yield .evpanel,#event.full.surface .evpanel{width:min(84vw,320px);gap:6px;padding:9px 16px;
+  background:rgba(7,8,11,.5)}
+#event.full.craft #evPrompt,#event.full.yield #evPrompt,#event.full.surface #evPrompt{font-size:1.02rem;letter-spacing:.16em;
+  min-height:1.2em;font-weight:700;color:#F3E2C0;text-shadow:0 0 12px rgba(240,196,128,.45)}
+#event.craft #evNote,#event.yield #evNote,#event.surface #evNote{font-size:.8rem;color:#EDE6D4;opacity:.9;letter-spacing:.05em;
+  text-transform:none}
+#event.craft #evBar,#event.yield #evBar{background:linear-gradient(90deg,#C89A5A,#F3E2C0);transition:none}
+#evCraft,#evYield{position:fixed;left:0;top:0;width:0;height:0;pointer-events:none;z-index:1}
+#evCraft.off,#evYield.off{opacity:0}
+#evCraft .cprog{position:absolute;left:0;top:0;width:100px;height:100px;margin:-50px 0 0 -50px;border-radius:50%;
+  background:conic-gradient(rgba(99,214,200,.9) calc(var(--ck,0) * 360deg),rgba(255,255,255,.14) 0);
+  -webkit-mask:radial-gradient(circle,transparent 0 45px,#000 46px 50px,transparent 51px);
+  mask:radial-gradient(circle,transparent 0 45px,#000 46px 50px,transparent 51px);
+  filter:drop-shadow(0 0 6px rgba(99,214,200,.55))}
+#evCraft .cpath,#evCraft .cline{display:none}
+#evCraft .cpath{position:absolute;left:0;top:0;width:76px;height:76px;margin:-38px 0 0 -38px;border-radius:50%;
+  border:2px dashed rgba(255,255,255,.6)}
+#evCraft .cline{position:absolute;left:0;top:-1px;width:110px;height:2px;transform-origin:0 50%;transform:rotate(var(--cang,0deg));
+  background:repeating-linear-gradient(90deg,rgba(255,255,255,.65) 0 8px,transparent 8px 14px)}
+#evCraft .cline::after{content:'';position:absolute;right:-12px;top:-7px;border:8px solid transparent;border-left:12px solid rgba(255,255,255,.75)}
+#evCraft .cfinger{position:absolute;left:0;top:0;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;
+  background:rgba(255,255,255,.9);box-shadow:0 0 0 5px rgba(255,255,255,.2),0 0 18px rgba(255,255,255,.55)}
+#evCraft.g-twist .cpath{display:block}
+#evCraft.g-twist .cfinger{animation:cTwist 1.6s linear infinite}
+#evCraft.g-slide .cline,#evCraft.g-swipe .cline{display:block}
+#evCraft.g-slide .cfinger{animation:cSlide 1.5s ease-in-out infinite}
+#evCraft.g-swipe .cfinger{animation:cSwipe 1.1s cubic-bezier(.2,.8,.2,1) infinite}
+#evCraft.g-tap .cfinger{animation:cTap .9s ease-in-out infinite}
+#evCraft.g-hold .cfinger{animation:cHold 1.8s ease-in-out infinite}
+@keyframes cTwist{from{transform:rotate(0deg) translateX(38px)}to{transform:rotate(-360deg) translateX(38px)}}
+@keyframes cSlide{0%{transform:rotate(var(--cang,0deg)) translateX(0);opacity:0}12%{opacity:.95}
+  70%{transform:rotate(var(--cang,0deg)) translateX(100px);opacity:.95}85%,100%{transform:rotate(var(--cang,0deg)) translateX(100px);opacity:0}}
+@keyframes cSwipe{0%,20%{transform:rotate(var(--cang,0deg)) translateX(0);opacity:0}28%{opacity:.95}
+  52%{transform:rotate(var(--cang,0deg)) translateX(110px);opacity:.95}64%,100%{transform:rotate(var(--cang,0deg)) translateX(118px);opacity:0}}
+@keyframes cTap{0%,100%{transform:scale(1);opacity:.9}45%{transform:scale(.62);opacity:1}60%{transform:scale(.7)}}
+@keyframes cHold{0%{transform:translate(30px,26px);opacity:0}14%{transform:translate(0,0);opacity:.95}
+  22%,84%{transform:scale(.78);opacity:.95}100%{transform:scale(1);opacity:0}}
+#evYield .yring{position:absolute;left:0;top:0;width:124px;height:124px;margin:-62px 0 0 -62px;border-radius:50%;
+  background:conic-gradient(rgba(255,214,150,.95) calc(var(--yk,0) * 360deg),rgba(255,255,255,.12) 0);
+  -webkit-mask:radial-gradient(circle,transparent 0 56px,#000 57px 61px,transparent 62px);
+  mask:radial-gradient(circle,transparent 0 56px,#000 57px 61px,transparent 62px);
+  filter:drop-shadow(0 0 8px rgba(255,200,130,.6))}
+#evYield .yfill{position:absolute;left:0;top:0;width:124px;height:124px;margin:-62px 0 0 -62px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,226,170,.42) 0 30%,rgba(240,190,120,.16) 60%,transparent 70%);
+  transform:scale(calc(.35 + .65 * var(--yk,0)));opacity:calc(.3 + .7 * var(--yk,0))}
+#evYield .yfinger{position:absolute;left:0;top:0;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;
+  background:rgba(255,255,255,.9);box-shadow:0 0 0 5px rgba(255,255,255,.2),0 0 18px rgba(255,255,255,.55);
+  animation:cHold 2.2s ease-in-out infinite;transition:opacity .25s}
+#evYield.held .yfinger{opacity:0;animation:none}
+#evSurface{position:fixed;right:max(26px,9vw);top:26vh;width:22px;height:46vh;pointer-events:none;z-index:1}
+#evSurface .sgauge{position:absolute;inset:0;border-radius:11px;
+  background:linear-gradient(0deg,rgba(14,28,70,.78),rgba(110,170,235,.22) 78%,rgba(255,240,205,.38));
+  border:1px solid rgba(160,215,245,.6);box-shadow:0 0 18px rgba(120,190,240,.28)}
+#evSurface .sfloor{position:absolute;left:0;right:0;bottom:0;height:calc(var(--sf,.15) * 100%);border-radius:0 0 11px 11px;
+  background:rgba(40,60,130,.6)}
+#evSurface .sgoal{position:absolute;left:-12px;right:-12px;top:calc((1 - var(--sg,.86)) * 100%);height:2px;
+  background:rgba(255,236,190,.95);box-shadow:0 0 10px rgba(255,236,190,.9);transition:height .2s}
+#evSurface .smk{position:absolute;left:50%;top:calc((1 - var(--lv,.3)) * 100%);width:32px;height:32px;margin:-16px 0 0 -16px;
+  border-radius:50%;background:radial-gradient(circle,#FFF6E0 0 32%,rgba(255,226,170,.75) 58%,transparent 72%);
+  box-shadow:0 0 18px rgba(255,226,170,.85);transition:box-shadow .2s}
+#evSurface.pull .smk{box-shadow:0 0 28px rgba(150,190,255,.95)}
+#evSurface.low .sgauge{border-color:rgba(150,170,255,.9)}
+#evSurface.near .sgoal{height:4px}
+#evSurface .sfing{position:absolute;left:-48px;top:62%;width:24px;height:24px;border-radius:50%;
+  background:rgba(255,255,255,.88);box-shadow:0 0 0 4px rgba(255,255,255,.2),0 0 14px rgba(255,255,255,.5);
+  animation:sFing 1.8s ease-in-out infinite}
+@keyframes sFing{0%{transform:translateY(40px);opacity:0}15%{opacity:.9}70%{transform:translateY(-70px);opacity:.9}100%{transform:translateY(-80px);opacity:0}}
 #evSteady{position:fixed;left:50%;top:56%;width:0;height:0;pointer-events:none;z-index:1}
 #evSteady .sring,#evSteady .sgrace{position:absolute;left:0;top:0;border-radius:50%;
   width:calc(var(--sr,60px) * 2);height:calc(var(--sr,60px) * 2);margin:calc(var(--sr,60px) * -1) 0 0 calc(var(--sr,60px) * -1)}
@@ -1762,7 +1879,7 @@ svg.sic{width:1.15em;height:1.15em;vertical-align:-.18em;flex:none;overflow:visi
      height (`--objH`, measured by the frame), with 12 px of air. */
   body.hasObj #haunt{padding-top:calc(max(14px,env(safe-area-inset-top)) + 166px + var(--objH,0px) + 12px)}
   /* v21.1: and STAY PRESENT's panel — on a phone it stood at the desktop's +18 px, over the very bars its misses move */
-  #event.full.resist,#event.full.focus,#event.full.steady{padding-top:calc(max(14px,env(safe-area-inset-top)) + 166px + var(--objH,40px) + 12px)}   /* (v22.0: and STEADY's — over the bars its drift and slip move) */
+  #event.full.resist,#event.full.focus,#event.full.steady,#event.full.craft,#event.full.yield,#event.full.surface{padding-top:calc(max(14px,env(safe-area-inset-top)) + 166px + var(--objH,40px) + 12px)}   /* (v22.0: and STEADY's — over the bars its drift and slip move) */
   /* v8.3: the marks are bigger on a phone — the screen is a third the width
      of a desktop's and the same 34 px diamond reads as a speck on it */
   .hmark{width:44px;height:44px;margin:-22px 0 0 -22px}
@@ -3086,7 +3203,7 @@ body.finePtr .galPull,body.finePtr .galEndHint{display:block}
     <span class="stencil" id="evLabel"></span>
     <!-- v10.3: the briefing's looping illustration - a tile dragged from the
          left column onto its slot on the right (shown for demo: 'drag') -->
-    <div id="evDemo" class="hide" aria-hidden="true"><i class="dslot"></i><i class="dslot dst"></i><b class="dtile"></b><span class="dhand"></span><i class="dbar"></i><i class="dfill"></i><i class="dband"></i><span class="dtap"></span><i class="dtgt"></i><i class="dring"></i><i class="dring r2"></i><span class="dhit"></span><i class="dhold"></i><span class="dfinger"></span><span class="dret"></span><i class="dspot"></i><i class="dsring"></i><span class="dstap"></span><i class="dqr"></i><b class="dqm"></b><span class="dqf"></span><i class="dwb"></i><i class="dwr"></i><span class="dwf"></span></div>
+    <div id="evDemo" class="hide" aria-hidden="true"><i class="dslot"></i><i class="dslot dst"></i><b class="dtile"></b><span class="dhand"></span><i class="dbar"></i><i class="dfill"></i><i class="dband"></i><span class="dtap"></span><i class="dtgt"></i><i class="dring"></i><i class="dring r2"></i><span class="dhit"></span><i class="dhold"></i><span class="dfinger"></span><span class="dret"></span><i class="dspot"></i><i class="dsring"></i><span class="dstap"></span><i class="dqr"></i><b class="dqm"></b><span class="dqf"></span><i class="dwb"></i><i class="dwr"></i><span class="dwf"></span><i class="dto"></i><i class="dtc"></i><span class="dtf"></span><i class="dpr"></i><i class="dpg"></i><span class="dpf"></span><i class="dsg"></i><b class="dsm"></b><span class="dsf"></span></div>
     <!-- v9.7: THREE rings in flight, not one. A single ring had to both
          approach the next beat and show that you were late for the last one,
          and it could do neither: it froze on the target for the whole late
@@ -3107,6 +3224,11 @@ body.finePtr .galPull,body.finePtr .galEndHint{display:block}
   <div id="evDrag" class="hide"></div>
   <!-- v22.0: STEADY — the ring the mark must stay in, and the mark -->
   <div id="evSteady" class="hide" aria-hidden="true"><i class="sring"></i><i class="sgrace"></i><b class="smark"></b></div>
+  <!-- v23.0: the hands-on kinds' hints, drawn AT the thing they are about: a craft step's fingertip and its progress
+       ring at the prop, a yield's ring filling round the figure, the surface's gauge -->
+  <div id="evCraft" class="hide" aria-hidden="true"><i class="cprog"></i><i class="cpath"></i><i class="cline"></i><span class="cfinger"></span></div>
+  <div id="evYield" class="hide" aria-hidden="true"><i class="yfill"></i><i class="yring"></i><span class="yfinger"></span></div>
+  <div id="evSurface" class="hide" aria-hidden="true"><i class="sgauge"></i><i class="sfloor"></i><i class="sgoal"></i><b class="smk"></b><span class="sfing"></span></div>
 </div>
 
 <!-- decision -->

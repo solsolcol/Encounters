@@ -435,6 +435,8 @@
 
     return (S = {
       world, noteTex, blockers: blockers(), groundAt,
+      /* v23.0 · S41: the progress store's read-only question, as a chapter asks it (fixturetest proves it answers) */
+      sealedBefore: k => (ctx.sealedBefore ? ctx.sealedBefore(k) : null),
       ready: () => true,                       // nothing to wait for
       pile: { pos: PILE_POS, radius: INTERACT_R, group: pile,
               dist: pileDist, screen: pileScreen, inView: pileInView,
@@ -493,9 +495,20 @@
     c.endFade = 1;
   };
 
+  /* v23.0 · S39: a film that PAUSES on a surface event (api.eventWait) — the climb back runs inside a film and the
+     film goes on, and hands back to play, once it resolves */
+  const fiClimb = (c, s, api) => {
+    const { fade, eventWait } = api;
+    eventWait(0.4, { kind: 'surface', secs: 1.6, start: 0.4, sink: 0.4, lead: 0.1, slip: 0, minSanity: 10 },
+              r => { window.__climbR = r; });
+    fade(1.2, 2.0, 0, 1);
+    c.keepFade = true;
+    c.endFade = 1;
+  };
+
   (window.__CHAPTERS__ = window.__CHAPTERS__ || {}).chtest = Object.assign(DATA, {
     build,
-    films: { probe: fiProbe },
+    films: { probe: fiProbe, climb: fiClimb },
     scenes: [scTake, scBreak, scLook, scLeave]
   });
 })();
