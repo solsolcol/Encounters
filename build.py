@@ -489,6 +489,16 @@ ASSETS = {
     'lersiamulet':      ('assets/lersiamulet.glb', True, False),
     'lersiamuletlod':   ('assets/lersiamuletlod.glb', True, False),
     'towkay':           ('assets/towkay.glb', True, False),
+    # e3c5 v23.0 CP1: CHAD'S three kumanthong (Drive folder 1Jj5s0xuYuXUYw8Ep0ixe8GilmMhp7RAg) — the children on his
+    # altar, seen in MACRO, so the v14.14 standard holds: ONE file each carrying two levels over the same vertices
+    # (node `<key>_near`, node `<key>_far` — tools/prepkuman.mjs), colour 4096, normal and metal-roughness 2048.
+    # The red one (kuman1): every triangle (597k) near, 120k far. The shy one (kuman3): every triangle (451k), 100k.
+    # The little one (kuman2): a 7.0M-triangle scan fused into ONE piece (hair, garland and bells included), cut under
+    # an error of 0.0003 of its extent — 0.07 mm on the 0.24 m figure, under a pixel at the closest macro — to 1.39M,
+    # its strands kept whole; 141k far. Photographed at 0.3 / 0.9 / 2.1 m on a phone (masters/v23.0/kuman/shots)
+    'kumanred':         ('assets/kumanred.glb', True, False),
+    'kumanshy':         ('assets/kumanshy.glb', True, False),
+    'kumanlittle':      ('assets/kumanlittle.glb', True, False),
 }
 
 # Hosted-only assets: shipped as a URL, never inlined as base64.
@@ -517,7 +527,8 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'mstr_somdejtoh', 'mstr_achanmun', 'mstr_lpthuad', 'mstr_lptimpray', 'mstr_lptimbench', 'mstr_lpphiboon',
            'taoistrow', 'ptg_zhenwu', 'ptg_jade', 'yinptg', 'yingirl', 'yinghost', 'yinkeeper', 'yinamulet', 'yinamuletlod', 'yinshelf', 'yinshelflod', 'yinskull',
            'traynear', 'trayfar', 'amushelf', 'altarrowfar', 'monkshop', 'hanuamulet', 'hanuamuletlod',
-           'lersiamulet', 'lersiamuletlod', 'towkay'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone
+           'lersiamulet', 'lersiamuletlod', 'towkay',
+           'kumanred', 'kumanshy', 'kumanlittle'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone
 HOSTED_ONLY |= E2_ONLY
 
 # The split packs are hosted-only: there is no __..._B64__ token for them and

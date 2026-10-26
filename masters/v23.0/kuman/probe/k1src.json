@@ -1,0 +1,7 @@
+{ "models": [{ "file": "masters/v22.0/src/kuman1.glb", "h": 0.26 }],
+  "floor": 0.8,
+  "shots": [
+    { "name": "macro-phone", "w": 390, "h": 844, "fov": 44, "pos": [0.02, 1.0, 0.27], "at": [0, 0.97, 0] },
+    { "name": "face-desk", "w": 1280, "h": 800, "fov": 30, "pos": [0.05, 1.01, 0.30], "at": [0, 1.0, 0] },
+    { "name": "side-desk", "w": 1280, "h": 800, "fov": 30, "pos": [0.40, 1.0, 0.10], "at": [0, 0.95, 0] }
+  ] }

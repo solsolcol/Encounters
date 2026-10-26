@@ -1,0 +1,11 @@
+{ "models": [
+    { "file": "assets/kumanred.glb", "h": 0.26, "x": -0.32, "node": "kumanred_far" },
+    { "file": "assets/kumanshy.glb", "h": 0.20, "x": 0.0, "node": "kumanshy_far" },
+    { "file": "assets/kumanlittle.glb", "h": 0.24, "x": 0.32, "node": "kumanlittle_far" } ],
+  "floor": 0.8,
+  "shots": [
+    { "name": "mat-phone", "w": 390, "h": 844, "fov": 72, "pos": [0, 0.90, 0.93], "at": [0, 0.92, 0] },
+    { "name": "mat-desk", "w": 1280, "h": 800, "fov": 72, "pos": [0, 0.90, 0.93], "at": [0, 0.92, 0] },
+    { "name": "bed-phone", "w": 390, "h": 844, "fov": 72, "pos": [0.2, 1.0, 2.1], "at": [0, 0.92, 0] },
+    { "name": "bed-desk", "w": 1280, "h": 800, "fov": 72, "pos": [0.2, 1.0, 2.1], "at": [0, 0.92, 0] }
+  ] }

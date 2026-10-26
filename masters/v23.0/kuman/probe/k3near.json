@@ -1,0 +1,12 @@
+{ "models": [
+    { "file": "assets/kumanred.glb", "h": 0.26, "x": -0.32, "node": "kumanred_near" },
+    { "file": "assets/kumanshy.glb", "h": 0.20, "x": 0.0, "node": "kumanshy_near" },
+    { "file": "assets/kumanlittle.glb", "h": 0.24, "x": 0.32, "node": "kumanlittle_near" } ],
+  "floor": 0.8,
+  "shots": [
+    { "name": "macro-red-phone", "w": 390, "h": 844, "fov": 44, "pos": [-0.31, 1.0, 0.27], "at": [-0.32, 0.97, 0] },
+    { "name": "macro-shy-phone", "w": 390, "h": 844, "fov": 44, "pos": [0.01, 0.95, 0.25], "at": [0, 0.92, 0] },
+    { "name": "macro-little-phone", "w": 390, "h": 844, "fov": 44, "pos": [0.33, 0.98, 0.28], "at": [0.32, 0.94, 0] },
+    { "name": "macro-little-desk", "w": 1280, "h": 800, "fov": 44, "pos": [0.33, 0.98, 0.30], "at": [0.32, 0.93, 0] },
+    { "name": "hair-little-desk", "w": 1280, "h": 800, "fov": 30, "pos": [0.55, 0.93, 0.18], "at": [0.40, 0.90, 0] }
+  ] }
