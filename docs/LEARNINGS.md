@@ -6289,3 +6289,22 @@ cut (sharing its vertices and maps) when it is small.
   error, and quote that error to the person whose account it is — the message is what lets them see which account and
   which allowance is meant. Nothing refused is charged, so running the same nodes again after a refusal for credits is
   not the "never repeat a generation" trap.
+- **A thing laid on a displaced surface rests on the displacement, never on the base** (v23.0 CP5). Episode 3 chapter
+  5's card was set 1.5 mm over the counter's top because the owner's cloth was built 1.5 mm up — but the cloth's
+  creases and its lifted edge rise to 8 mm above that base, so the card lay INSIDE the cloth. Film K's whole second shot,
+  a macro reading the card line by line, read a red cloth with nothing on it, on every screen. Under the card the cloth
+  now lies flat (pressed by it, its creases fading out over 2 cm), and the card rests on the flat. v5.03's note inside
+  the wood, a second time: measure the surface a thing lies on where it lies.
+- **A touch drawn in the hands' pass covers what it touches** (v23.0 CP5). The viewmodel is drawn after the world, so
+  the hand stands in front of everything. With the fingertips solved onto the little one's crown, the back of the hand
+  hid the whole child, on a phone and a desktop alike. A touch rests on the side of its subject that the hand comes
+  from (here the lock of hair on the frame's right), and on a narrow screen, where the hand is a larger share of the
+  frame, further out on it. Six candidate spots were photographed on each screen before one was chosen.
+- **In a film the letterbox is the frame's edge** (v23.0 CP5). Film M's hall shot pushed in and down with its aim
+  sinking, and the monk's head went under the top bar by the shot's middle. The vertical lens is the same on every
+  screen, so it happened on a desktop exactly as on a phone. A subject near the top must clear the bar (about 0.78 of
+  the half-height at this game's bars), not the canvas; the aim rises as the lens comes in.
+- **Probe law: a film run from a probe hands back what the chapter's hand-back would have** (v23.0 CP5). `kit.film`
+  with an empty `onDone` left the film's closing black up (the black a film ends on is the kit's), and the next film run
+  in the same session played its whole length under it: every frame black, which reads as a broken film. Lift the
+  kit's fade in the probe's own `onDone` (or play the film through the chapter's own order, whose hand-back does).

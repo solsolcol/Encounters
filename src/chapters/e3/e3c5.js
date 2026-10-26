@@ -347,11 +347,14 @@
     const ALTAR_Z = [0.05, 0.40, 0.75];                   // each one's place along the riser
     /* WORLD S · the owner's glass (local numbers): the red cloth's middle on its top face (the 16 mm sheet is centred on
        the counter's top, 1.0) and the three on it, left to right as he faces them (−z is his left); the music box past
-       the little one, short of the empty stand; the card past the red one, short of the owner's working end (CP5, by the
-       counter's own measures: the stand at z −2.0, its wood from −3.08) */
+       the little one, short of the empty stand; his card on the cloth's front, before the shy one, where the three are in
+       a phone's frame (by photograph: laid past the red one, as first built, a phone's narrow view held neither it nor
+       its mark when the order said to read it); his pen at his working end (by the counter's own measures: the stand at
+       z −2.0, its wood from −3.08) */
     const CNT = { x: 3.22, y: 1.009, z: -2.62, w: 0.34, l: 0.66 };
     const CNT_Z = [-2.83, -2.62, -2.41];
-    const CNT_BOX = { x: 3.24, z: -2.20 }, CNT_CARD = { x: 3.085, z: -3.005 }, CNT_PEN = { x: 3.14, z: -3.115 };
+    const CNT_BOX = { x: 3.24, z: -2.20 }, CNT_CARD = { x: 3.10, z: -2.62 }, CNT_PEN = { x: 3.14, z: -3.115 };
+    const CARD_HX = 0.049, CARD_HZ = 0.035;               // his card's half-size: 98 mm away from him (its lines' length), 70 across
     const KID_LOD = 0.55;                                 // the near level inside this (§6: only for a figure in macro — the mat is 0.88 m off)
     const KID_DIST = 1.25;                                // and the lightest past this (the door, the bed: §6, CP4's measure)
 
@@ -2143,10 +2146,14 @@
       {
         const geo = new THREE.PlaneGeometry(CNT.w, CNT.l, 14, 26); geo.rotateX(-Math.PI / 2);
         const p = geo.attributes.position;
+        /* (where his card will lie, the cloth lies flat — pressed under it — so the card rests on it: laid at the cloth's
+           base, its creases and its lifted edge stood up to 8 mm through the card, and film K read a card nobody could see) */
+        const ccx = CNT_CARD.x - CNT.x, ccz = CNT_CARD.z - CNT.z;
         for (let i = 0; i < p.count; i++) {
           const x = p.getX(i), z = p.getZ(i), ex = Math.abs(x) / (CNT.w / 2), ez = Math.abs(z) / (CNT.l / 2);
           const crease = 0.0018 * Math.sin(z * 38 + x * 9) * Math.sin(x * 24) + 0.0012 * Math.sin(z * 71 - x * 17);
-          p.setY(i, 0.0015 + Math.max(0, crease + 0.0015) + 0.004 * Math.pow(Math.max(ex, ez), 6));
+          const under = cl01(Math.max(Math.abs(x - ccx) - CARD_HX, Math.abs(z - ccz) - CARD_HZ, 0) / 0.02);
+          p.setY(i, 0.0015 + Math.max(0, crease * under + 0.0015) + 0.004 * Math.pow(Math.max(ex, ez), 6) * under);
         }
         geo.computeVertexNormals();
         const cl = new THREE.Mesh(geo, mCloth); cl.position.set(CNT.x, T, CNT.z); cl.receiveShadow = true; G.add(cl);
@@ -2158,11 +2165,11 @@
         const MB = makeMusicBox(G); MB.group.position.set(CNT_BOX.x, T, CNT_BOX.z); MB.group.rotation.y = -Math.PI / 2;
         cntLive.box = MB; cntLive.boxSet = mkSet(MB.group);
       }
-      /* HIS CARD, laid on the glass past the red one, its words the right way up for the player (film K reads it), and his
-         pen beside it on the wood of his working end */
+      /* HIS CARD, laid on the cloth before the three, its words the right way up for the player (film K reads it), and his
+         pen on the wood of his working end */
       {
-        const g = new THREE.Group(); g.position.set(CNT_CARD.x, T + 0.0006, CNT_CARD.z); G.add(g);
-        const cd = new THREE.Mesh(new THREE.PlaneGeometry(0.07, 0.098), M({ map: tCard(), roughness: 0.9 }));
+        const g = new THREE.Group(); g.position.set(CNT_CARD.x, T + 0.0036, CNT_CARD.z); G.add(g);   // on the cloth's pressed-flat 3 mm
+        const cd = new THREE.Mesh(new THREE.PlaneGeometry(CARD_HZ * 2, CARD_HX * 2), M({ map: tCard(), roughness: 0.9 }));
         cd.rotation.set(-Math.PI / 2, -Math.PI / 2, 0, 'YXZ'); cd.receiveShadow = true; g.add(cd);
         cntLive.card = cd; cntLive.cardSet = mkSet(g);
         const pen = new THREE.Group(); pen.position.set(CNT_PEN.x, T + 0.0145, CNT_PEN.z); pen.rotation.y = 0.12; G.add(pen);
@@ -2906,7 +2913,9 @@
         nightSet.flames.push({ fl, halo, k: sz * 2.1, y: fl.position.y });
       }
       // a small brass bowl of sand with three sticks, its smoke rising
-      { const bx = tx + 0.16, bz = tz;
+      /* (by photograph: on the tray's monk-side rim the sticks stood between the lens and the three in M3's close-up — it
+         stands at the table's near corner, beside the offerings, out of both shots' line to them) */
+      { const bx = tx - 0.19, bz = tz - 0.27;
         const bowl = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.034, 0.04, 20), M({ color: 0xb8893c, roughness: 0.3, metalness: 0.85 })); bowl.position.set(bx, F + 0.351, bz); G.add(bowl);
         const mStick = M({ color: 0x8a2a18, roughness: 0.8 });
         for (let i = 0; i < 3; i++) { const st = cyl(0.0018, 0.0018, 0.2, bx + (i - 1) * 0.012, F + 0.37 + 0.1, bz + (i - 1) * 0.004, mStick, 5, G); st.rotation.z = (i - 1) * 0.08; }
@@ -2932,11 +2941,16 @@
       const T = nightSet.tray, b = new THREE.Vector3(T.x + 0.2, T.y + 0.003, T.z);   // (on the rim's ring, its nearest point to him)
       /* from his joined hands it falls onto the dais, runs to its front and over the gilt lip, and down to the ring (by
          photograph: a sag BELOW both ends — the first cut — ran it through the dais's front, so it seemed to stop in mid-air) */
-      const F = MHALL.F, lipX = MDAIS.x - MDAIS.w / 2 - 0.02, topY = F + MDAIS.h + 0.026;
-      const down = new THREE.Vector3(Math.max(lipX + 0.14, a.x - 0.2), topY + 0.002, a.z + (b.z - a.z) * 0.6);
-      const curve = new THREE.CatmullRomCurve3([a, new THREE.Vector3(a.x - 0.1, (a.y + topY) / 2 + 0.05, a.z + (b.z - a.z) * 0.3), down,
-                                                new THREE.Vector3(lipX - 0.005, topY, a.z + (b.z - a.z) * 0.8), b], false, 'centripetal');
-      nightSet.thread = new THREE.Mesh(new THREE.TubeGeometry(curve, 40, 0.0022, 5, false), nightSet.threadMat);
+      const F = MHALL.F, lipX = MDAIS.x - MDAIS.w / 2 - 0.02, topY = F + MDAIS.h + 0.034;   // (a hair over the carpet: at 4 mm the curve dipped into it, a gap in the thread)
+      /* three pieces, so no piece can dip under the carpet (a spline through them all did, and broke the thread there): the
+         fall from his hands onto the dais, a straight run along it to the lip, and the drop from the lip to the ring */
+      const down = new THREE.Vector3(Math.max(lipX + 0.14, a.x - 0.2), topY, a.z + (b.z - a.z) * 0.6);
+      const lip = new THREE.Vector3(lipX - 0.005, topY, a.z + (b.z - a.z) * 0.8);
+      const curve = new THREE.CurvePath();
+      curve.add(new THREE.QuadraticBezierCurve3(a, new THREE.Vector3(down.x + 0.02, (a.y + topY) / 2, (a.z + down.z) / 2), down));
+      curve.add(new THREE.LineCurve3(down, lip));
+      curve.add(new THREE.QuadraticBezierCurve3(lip, new THREE.Vector3(lip.x - 0.05, topY, lip.z), b));
+      nightSet.thread = new THREE.Mesh(new THREE.TubeGeometry(curve, 72, 0.0022, 5, false), nightSet.threadMat);
       nightSet.g.add(nightSet.thread);
     }
 
@@ -2997,8 +3011,12 @@
           fLight(TEMPLE_NIGHT); lensTo(52);
           const k = ss(cl01((t - MFT.m2) / (MFT.m3 - MFT.m2)));
           const p = lerp3([T.x - 1.35, F + 1.02, T.z + 1.05], [T.x - 0.98, F + 0.9, T.z + 0.72], k);
-          /* a narrow screen turns a little toward the tray (by photograph: on a phone the three sat at its left edge) */
-          const q = lerp3([T.x + 0.62, F + 0.66 - 0.06 * k, T.z - 0.04], [T.x, T.y + 0.1, T.z], camera.aspect < 1 ? 0.45 : 0);
+          /* a narrow screen turns a little toward the tray (by photograph: on a phone the three sat at its left edge); and the
+             aim RISES as the lens comes in and down, so his face stays clear of the letterbox's top bar on every screen (by
+             photograph: aimed lower as it came in, his eyes went under the bar by the shot's middle, on a phone and a desktop
+             alike — the frame's height is the same on both) */
+          const ay = F + 0.70 + 0.10 * k;
+          const q = lerp3([T.x + 0.62, ay, T.z - 0.04], [T.x, ay, T.z], camera.aspect < 1 ? 0.45 : 0);   // (across only: tipped down too, it put his face out of the top)
           camAt(MX + p[0], p[1], p[2], MX + q[0], q[1], q[2]);
         } else {                               // M3 · the little one's face in the candlelight, the lens drifting nearer
           fLight(TEMPLE_NIGHT); lensTo(46);
@@ -3023,16 +3041,19 @@
         if (api && api.handsRoot) { fLive.hands = api.handsRoot; api.handsRoot.visible = false; }   // nor in this one: the card and his face
         fLight(SHOP_EVE);
         const ss = smooth, cx = SX + CNT_CARD.x, cz = CNT_CARD.z, cy = CNT.y + 0.001;
+        /* a narrow screen stands a fifth further off, so the card's whole width is in it (by photograph: on a phone the
+           first letter of each line was cut by the frame's left edge) */
+        const back = camera.aspect < 1 ? 1.2 : 1;
         if (t < KFT.k2) {                       // K1 · down to the card
           const k = ss(cl01(t / KFT.k2));
           lensTo(72 - 28 * k);
-          const p = lerp3([S_SPAWN.x, 1.62, S_SPAWN.z], [cx - 0.064, cy + 0.15, cz], k);   // (K2's first frame)
+          const p = lerp3([S_SPAWN.x, 1.62, S_SPAWN.z], [cx + 0.036 - 0.1 * back, cy + 0.15 * back, cz], k);   // (K2's first frame)
           camAt(p[0], p[1], p[2], cx + 0.036 * k, cy, cz);
         } else if (t < KFT.k3) {               // K2 · read down it (its top is +x, away from him): from the first line to the last
           lensTo(44);
           const k = ss(cl01((t - KFT.k2) / (KFT.k3 - 0.6 - KFT.k2)));
           const along = 0.036 - 0.072 * k;      // from 3.6 cm up the card to 3.6 cm down it
-          camAt(cx + along - 0.1, cy + 0.15, cz, cx + along, cy, cz);
+          camAt(cx + along - 0.1 * back, cy + 0.15 * back, cz, cx + along, cy, cz);
         } else {                               // K3 · up to his face, and he looks straight at him
           lensTo(40);
           const k = ss(cl01((t - KFT.k3) / 2.0)), push = ss(cl01((t - KFT.k3) / (KFT.end - KFT.k3)));
@@ -3256,6 +3277,7 @@
         if (!alive) return;
         cntLive.ownerLook = 0;
         if (kit) kit.fade(0, 1.2);
+        if (key === 'card') viewTo(ownerYaw(), promisePitch(), 1.2);   // the promise is HIS: the look comes up to him as the black lifts
         /* the order and its marks wait for the picture (chapter 4's v22.3 law; by photograph, on a phone: the next order and
            three "!" stood on the film's black while it lifted) */
         after(0.9, () => { cntBusy = false; objectiveFor('counter'); });
@@ -3316,15 +3338,20 @@
     }
     /* where the eye goes for the touch is SOLVED from where the reach pose puts the fingertips on THIS screen (the pose is a
        share of the frame at its own depth, so it moves with the aspect — S40): the eye stays at its height, the lens faces
-       the counter (+x), and stands where those fingertips land on the crown of the little one's head. `tip` is the hand's
+       the counter (+x), and stands where those fingertips land on the long lock of hair that falls beside the little one's
+       head on the side his hand comes from (+z, the right of the frame) — `dz` out from his middle, `dy` of his height up.
+       On his crown, the back of the hand stood between the lens and the whole child (by photograph, on a phone and a
+       desktop). A narrow screen makes the hand a larger share of the frame, so there it rests further out on the lock and
+       a little lower (by photograph: 7.5 cm out and 0.70 up on a desktop, 9.5 and 0.60 on a phone). `tip` is the hand's
        reach past its own place, along its fingers (by photograph) */
     const LEAN = { secs: 1.0, reach: 0.9, hold: 1.4, back: 0.8, tip: 0.17 };
+    const touchAt = () => { const n = cl01((1.0 - camera.aspect) / 0.54); return { dz: 0.075 + 0.02 * n, dy: 0.70 - 0.10 * n, dx: 0 }; };
     const _lv = new THREE.Vector3(), _le = new THREE.Euler();
-    function leanSolve() {
-      const H = _lv.set(SX + CNT.x - 0.01, CNT.y + KIDS[2].h * 0.93, CNT_Z[2]).clone();
+    function leanSolve(o = touchAt()) {
+      const H = _lv.set(SX + CNT.x + (o.dx || 0), CNT.y + KIDS[2].h * o.dy, CNT_Z[2] + o.dz).clone();
       const t = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)), R = { fx: 0.326, fy: -0.652, z: 0.383 }, fd = [-0.090, -0.060, -0.989];
       const f = new THREE.Vector3(R.fx * t * camera.aspect * R.z + fd[0] * LEAN.tip, R.fy * t * R.z + fd[1] * LEAN.tip, -R.z + fd[2] * LEAN.tip);
-      const ey = yaw.position.y, ry = -Math.PI / 2;
+      const ey = yaw.position.y, ry = -Math.PI / 2 + (o.ry || 0);
       let best = -0.4, err = Infinity;
       for (let th = -1.25; th <= 0.25; th += 0.005) {
         const y = f.y * Math.cos(th) - f.z * Math.sin(th), e = Math.abs(H.y - y - ey);
@@ -3346,6 +3373,15 @@
        hand and high enough that the owner's face stays under the HUD (by photograph, on a phone: at the arrival's pitch
        the three sat behind the hand, and at its yaw the first of them was cut by the frame's left edge) */
     const CNT_LOOK = -0.29;
+    /* and where it goes for the promise: up onto the owner, his "!" (over his head) a little under the objective box on any
+       screen — 0.4 of the half-height above the middle — and the three still in the frame under him (by photograph, on a
+       phone: after film K the look stayed down on the three, and the order "Give him your promise" had no mark in the
+       frame, its "!" behind the round buttons) */
+    function ownerYaw() { const dx = SX + OWN.x - yaw.position.x, dz = OWN.z - yaw.position.z; return Math.atan2(-dx, -dz); }
+    function promisePitch() {
+      const d = Math.hypot(SX + OWN.x - yaw.position.x, OWN.z - yaw.position.z), up = Math.atan2(1.78 - yaw.position.y, d);
+      return up - Math.atan(0.4 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)));
+    }
     function clothYaw() { const dx = SX + CNT.x - yaw.position.x, dz = CNT_Z[1] - yaw.position.z; return Math.atan2(-dx, -dz); }
     function viewTo(ry, px, secs) {
       cntLive.view = { t0: dayClock.t, secs, from: { ry: yaw.rotation.y, px: pitch.rotation.x }, to: { ry, px } };
@@ -3379,7 +3415,7 @@
     function promise() {
       if (cntStep() !== 'vow' || !cntOk()) return false;
       cntBusy = true; if (kit) kit.objective(null);
-      if (kit && kit.pray) kit.pray(true, { secs: 0.9 });
+      if (kit && kit.pray) kit.pray(true, { secs: 0.9, y: -0.33 });   // (the episode's own height: at the default the clasp hid the three and the owner on a phone)
       queueGap(1.0);
       queueLine('z5promise');
       queueGap(0.5);
@@ -3441,6 +3477,11 @@
       if (kit) kit.root(true);
       cntSave();
       const s = cntStep();
+      /* a Continue looks where the play-through looks at that order: down onto the three once the cloth is open, up to the
+         owner for the promise and the bag (by photograph, on a phone: at the spawn's own look the three sat behind his hand
+         and the card's "!" in the frame's corner) */
+      if (cntLive.opened && !packedUp && s !== 'vow') { yaw.rotation.y = clothYaw(); pitch.rotation.x = CNT_LOOK; }
+      if (s === 'vow' || s === 'bag') { yaw.rotation.y = ownerYaw(); pitch.rotation.x = promisePitch(); }
       if (s === 'hello') { objectiveFor('counter'); counterHello(); return; }
       if (s === 'give') { cntBusy = true; objectiveFor('counter'); giveBeat(); return; }
       objectiveFor('counter');
@@ -3515,11 +3556,13 @@
       { id: 'card', pos: { ...cntAt(CNT_CARD.x, CNT_CARD.z), y: CNT.y + 0.01 }, radius: 2.6, aim: 0.2, pressAim: true, markY: 0.16, prompt: W.hotCard,
         hits: tapBox(SX + CNT_CARD.x - 0.07, CNT.y - 0.01, CNT_CARD.z - 0.06, SX + CNT_CARD.x + 0.07, CNT.y + 0.05, CNT_CARD.z + 0.06),
         enabled: () => cntStep() === 'card' && cntOk(), onInteract() { return readCard(); } },
-      { id: 'promise', pos: { ...cntAt(OWN.x, OWN.z), y: 1.38 }, radius: 3.0, markY: 0.4, prompt: W.hotPromise,
+      /* (the promise and the bag answer a tap on their mark as the others here do — `pressAim`: by photograph, on a phone a
+         tap on the bag's "!", which floats over its handles, pressed nothing) */
+      { id: 'promise', pos: { ...cntAt(OWN.x, OWN.z), y: 1.38 }, radius: 3.0, aim: 0.3, pressAim: true, markY: 0.4, prompt: W.hotPromise,
         hits: tapBox(SX + OWN.x - 0.3, 0.95, OWN.z - 0.35, SX + OWN.x + 0.3, 1.8, OWN.z + 0.35),
         enabled: () => cntStep() === 'vow' && cntOk(), onInteract() { return promise(); } },
-      { id: 'bag', pos: { ...cntAt(CNT.x, CNT.z), y: CNT.y + 0.16 }, radius: 2.6, markY: 0.24, prompt: W.hotBag,
-        hits: tapBox(SX + CNT.x - 0.1, CNT.y - 0.01, CNT.z - 0.15, SX + CNT.x + 0.1, CNT.y + 0.36, CNT.z + 0.15),
+      { id: 'bag', pos: { ...cntAt(CNT.x, CNT.z), y: CNT.y + 0.16 }, radius: 2.6, aim: 0.25, pressAim: true, markY: 0.24, prompt: W.hotBag,
+        hits: tapBox(SX + CNT.x - 0.1, CNT.y - 0.01, CNT.z - 0.15, SX + CNT.x + 0.1, CNT.y + 0.42, CNT.z + 0.15),
         enabled: () => cntStep() === 'bag' && cntOk(), onInteract() { return takeHome(); } },
       { id: 'mat', pos: { x: MAT.x, y: 0.9, z: MAT.z }, radius: 1.6, prompt: W.hotMat, markY: -0.3,
         enabled: () => phase === 'sit' && !seated && quiet(), onInteract() { return sitWithThem(); } }
@@ -3592,7 +3635,7 @@
       const tag = String(p || '').split(':');
       /* a first arrival: his look down a little, so the owner's face and the three on the glass are both in the frame (by
          photograph: at the spawn's own pitch the three's feet were cut by the bottom edge) */
-      if (!p) { yaw.rotation.y = clothYaw(); pitch.rotation.x = -0.22; }   // (on the cloth's middle: on a phone the three fill its width)
+      if (!p) { yaw.rotation.y = DATA.spawn.rot; pitch.rotation.x = -0.22; }   // (on him: he speaks first; the cloth's opening turns the look to the three)
       counterResume(tag[0] === 'counter' ? tag[1] : '');          // the counter, as its receipts say (§10.1)
     }
 
