@@ -336,6 +336,7 @@ Object.assign(window.__TEXT__, {
   'chapters.yes':        'Play it',
   'chapters.no':         'Back',
   'chapters.unwritten':  'Not yet written',
+  'chapters.preview':    'In the works',                        // v23.0: a chapter built but not yet released (`preview`)
   'chapters.episode':    'Episode {n}',
   'chapters.chapter':    'Chapter {n}',
   'chapters.inProgress': 'In progress',                         // v6.2: a chapter reached but not yet sealed

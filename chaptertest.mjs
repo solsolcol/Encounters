@@ -218,20 +218,39 @@ const audioDir = join(DIR, 'assets', 'audio');
 const HAVE_SOUND = new Set(readdirSync(audioDir)
   .filter(f => f.endsWith('.mp3')).map(f => f.slice(0, -4)));
 
+/* v23.0: a PREVIEW chapter (S42 — registered, out of the run) is built before its sound is recorded. It may cue a
+   sound that does not exist yet ONLY if the sound is planned: a voice line with a planned (`est`) row of its own in
+   src/voicelines.js, or a name the chapter lists in `plannedSounds`. Such a cue plays nothing until then (an unknown
+   kind is silent — sting()), which is why it is allowed nowhere else: a typo is still a typo, and the day `preview`
+   comes off every cue must resolve like any other chapter's, and `plannedSounds` must be gone. */
+const plannedVoice = {};
+try {
+  const vw = {};
+  new Function('window', readFileSync(join(DIR, 'src', 'voicelines.js'), 'utf8'))(vw);
+  for (const l of (vw.__VOICE__ && vw.__VOICE__.LINES) || []) if (l.est) (plannedVoice[l.ch] = plannedVoice[l.ch] || new Set()).add(l.id);
+} catch { /* reported below, where the registry is checked */ }
 for (const f of files) {
   const src = readFileSync(join(chapDir, f), 'utf8');
+  const ckey = f.split('/').pop().replace(/\.js$/, ''), cch = chapters[ckey];
+  if (cch && !cch.preview && Array.isArray(cch.plannedSounds) && cch.plannedSounds.length) {
+    bad(f, `declares plannedSounds but is not a preview chapter — a released chapter's every sound must exist`);
+  }
+  const planned = new Set(cch && cch.preview ? [...(cch.plannedSounds || []), ...(plannedVoice[ckey] || [])] : []);
+  let plannedCued = 0;
   const cues = [...src.matchAll(/\bsfx\(\s*[^,)]+,\s*'([a-zA-Z0-9_]+)'/g)].map(m => m[1]);
   const uniq = [...new Set(cues)].sort();
   console.log(`${f}: ${cues.length} cutscene cues, ${uniq.length} distinct — ${uniq.join(' ') || '(none)'}`);
   for (const kind of uniq) {
     if (SPECIAL_KINDS.has(kind)) continue;
     const sample = STING_TO_SAMPLE[kind];
+    if (!sample && planned.has(kind)) { plannedCued++; continue; }
     if (!sample) {
       bad(f, `cue '${kind}' is not a kind in STING_SAMPLE — it plays nothing`);
     } else if (!HAVE_SOUND.has(sample)) {
       bad(f, `cue '${kind}' maps to sample '${sample}', which has no assets/audio/${sample}.mp3`);
     }
   }
+  if (plannedCued) console.log(`${f}: ${plannedCued} of its cues are PLANNED sounds, not yet recorded (a preview chapter — silent until then)`);
 }
 // and every sample the table names must exist too, so a renamed file is
 // caught here rather than in whichever scene happens to use it
@@ -261,7 +280,12 @@ if (VOICE && Array.isArray(VOICE.LINES)) {
   }
   for (const l of VOICE.LINES) {
     const file = l.id === 'voice' ? join(DIR, 'assets', 'voice.mp3') : join(audioDir, `${l.id}.mp3`);
-    if (!existsSync(file)) errs.push(`voice: row '${l.id}' has no take on disk`);
+    /* v23.0: a PLANNED line (`est: true`, the plan's estimated length) has no take yet — allowed only while its
+       chapter is still `preview` (out of the run), so no planned line can ship unrecorded; once recorded its `est`
+       flag goes and the take must be on disk like any other */
+    if (l.est) {
+      if (!(chapters[l.ch] && chapters[l.ch].preview)) errs.push(`voice: row '${l.id}' is still a planned line (est) in '${l.ch}', which is not a preview chapter — record it or keep the chapter in preview`);
+    } else if (!existsSync(file)) errs.push(`voice: row '${l.id}' has no take on disk`);
     if (!VOICE.SPEAKERS?.[l.who]) errs.push(`voice: row '${l.id}' names an unknown speaker '${l.who}'`);
     if (!VOICE.CHAPTERS?.[l.ch]) errs.push(`voice: row '${l.id}' names an unknown chapter '${l.ch}'`);
     if (typeof l.text !== 'string' || !l.text.trim() || l.text.includes('???')) {
@@ -320,7 +344,7 @@ if (VOICE && Array.isArray(VOICE.LINES)) {
   if (!adultLit) errs.push('voice: main.js has no ADULT_TAKES set');
   else {
     const inEngine = new Set([...adultLit[1].matchAll(/'([^']+)'/g)].map(m => m[1]));
-    const inRegistry = new Set(VOICE.LINES.filter(l => l.who === 'jamesAdult').map(l => l.id));
+    const inRegistry = new Set(VOICE.LINES.filter(l => l.who === 'jamesAdult' && !l.est).map(l => l.id));   // (a planned line joins the bus when it is recorded)
     for (const id of inRegistry) {
       if (!inEngine.has(id)) errs.push(`voice: '${id}' is jamesAdult in the registry but missing from ADULT_TAKES in main.js`);
     }

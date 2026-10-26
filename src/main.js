@@ -211,8 +211,14 @@ function episodeOf(key) {
 const chapterOrder = () => Object.keys(window.__CHAPTERS__ || {})
   .sort((a, b) => (episodeOf(a) - episodeOf(b))
     || ((window.__CHAPTERS__[a].id || 0) - (window.__CHAPTERS__[b].id || 0)));
+/* v23.0 (the forty-second seam): a chapter that declares `preview: true` is REGISTERED but out of the run — never
+   "next", never reached, never a Continue; the selector shows it as "In the works", and only a ?ch= link opens it
+   (which saves nothing and unlocks nothing — CH_ASKED). It exists so a chapter can be built on the branch, and a
+   preview deployed for Chad to play, while any release made meanwhile ships it hidden. No chapter before episode 3
+   chapter 5 declares it, so the run is unchanged for every one of them. */
+const isPreview = k => !!(window.__CHAPTERS__ && window.__CHAPTERS__[k] && window.__CHAPTERS__[k].preview);
 function nextChapterKey(after = CH_KEY) {
-  const order = chapterOrder().filter(k => (window.__CHAPTERS__[k].id || 0) < 90);
+  const order = chapterOrder().filter(k => (window.__CHAPTERS__[k].id || 0) < 90 && !isPreview(k));
   const i = order.indexOf(after);
   return (i >= 0 && i + 1 < order.length) ? order[i + 1] : null;
 }
@@ -8474,6 +8480,7 @@ function loadCheckpoint() {
     // Same rule as ?ch= — an unknown key falls back, never bricks the boot.
     if (!s || typeof s !== 'object' || (s.v !== 1 && s.v !== SAVE_V)) return null;
     if (!chapterExists(s.ch)) return null;
+    if (isPreview(s.ch)) return null;          // v23.0: a chapter in the works is never a Continue
     return s;
   } catch { return null; }         // absent, unreadable, or half-written
 }
@@ -10800,6 +10807,8 @@ function chapterStops(n) {
     const k = built[i];
     if (!k) { out.push({ k: null, s: 'unwritten' }); continue; }
     const here = k === CH_KEY && state !== 'title';
+    /* v23.0: a chapter in the works stands on the line, locked and saying so — unless a ?ch= link is playing it */
+    if (isPreview(k) && !here) { out.push({ k, sealed: false, s: 'locked', preview: true }); continue; }
     const sealed = !!results[k] || orderIdx(k) < topIdx;   // a result on record, or a later chapter reached (a store from before v6.2 has no results)
     out.push({ k, sealed, s: here ? 'now' : sealed ? 'done' : open.includes(k) ? 'open' : 'locked', rank: results[k] && results[k].rank });
   }
@@ -10879,7 +10888,8 @@ function paintChapters(smooth = false) {
       const ch = window.__CHAPTERS__[x.k];
       b.dataset.ch = x.k;
       txt.appendChild(mk('span', 'num', ch.cardLabel || x.k));
-      txt.appendChild(mk('span', 'name', ok ? (ch.title || '') : T('chapters.locked')));
+      txt.appendChild(mk('span', 'name', ok ? (ch.title || '') : x.preview ? T('chapters.preview') : T('chapters.locked')));
+      if (x.preview) b.classList.add('preview');
       if (ok) b.onclick = () => askChapter(x.k);
     } else {
       txt.appendChild(mk('span', 'num', T('chapters.chapter', 'Chapter {n}').replace('{n}', String(i + 1))));
@@ -14432,6 +14442,7 @@ async function skelLab(key, o = {}) {
 }
 window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () => state,   // v8.7: pitch, so a probe can aim the lens at the floor
                  skelLab,                                  // v15.2: the merge, proven
+                 chapterNext: (k) => nextChapterKey(k), chapterStops, isPreview,   // v23.0: the preview seam, for the fixture
                  kit: KIT, kitDebug, interactNow,          // v7.0: the play kit, by state
                  /* v21.9: where a hotspot's mark is on the screen (CSS px), so a probe can tap it as a thumb would */
                  hotMarkAt: (id) => { const h = hotspotList().find(s => s && s.id === id); if (!h) return null;

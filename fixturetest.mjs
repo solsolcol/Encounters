@@ -353,6 +353,27 @@ K.praySeam = await p.evaluate(async () => {
 }).catch(() => false);
 await settle();
 
+/* v23.0: A CHAPTER IN THE WORKS (the forty-second seam) — a chapter that declares `preview` is registered and out of
+   the run: never the next chapter, and on the selector a locked stop that says so. Proven on a chapter of the run
+   that is NOT in the works, made so for a moment and put back, so the proof holds whichever chapter is in the works
+   (or none): with episode 1 chapter 2 in the works, chapter 1's next is chapter 3, and chapter 2's stop is locked and
+   marked; put back, chapter 1's next is chapter 2 again. */
+K.previewSeam = await p.evaluate(() => {
+  const E = window.__enc, C = window.__CHAPTERS__;
+  if (!C || !C.ch1 || !C.ch2 || !C.ch3 || !E.chapterNext || !E.chapterStops) return false;
+  const before = E.chapterNext('ch1') === 'ch2' && !E.isPreview('ch2');
+  const had = Object.prototype.hasOwnProperty.call(C.ch2, 'preview'), was = C.ch2.preview;
+  C.ch2.preview = true;
+  let held = false;
+  try {
+    const row = (E.chapterStops(1) || []).find(x => x && x.k === 'ch2');
+    held = E.isPreview('ch2') && E.chapterNext('ch1') === 'ch3' && !!row && row.s === 'locked' && row.preview === true;
+  } finally { if (had) C.ch2.preview = was; else delete C.ch2.preview; }
+  const back = E.chapterNext('ch1') === 'ch2' && !E.isPreview('ch2');
+  return before && held && back;
+}).catch(() => false);
+await settle();
+
 /* v22.0: THE TREMBLE (the thirty-second seam) — kit.tremble(1) shakes the
    viewmodel's root a little every frame (the offset moves and is non-zero),
    and back at 0 nothing at all is laid on: the offset is exactly zero, so a
