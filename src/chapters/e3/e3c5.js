@@ -113,7 +113,22 @@
     bg: 0x020a10, fog: [0x04141e, 0.035],
     hemi: [0x5ab0c8, 0x020608, 0.48], key: [0x9adcf0, 0.40, 0, 8, 0], fill: [0x2a6a8a, 0.18],
     vmHemi: [0x6ab8d0, 0x020608, 0.55], vmKey: [0xa8e0f0, 0.45] });
-  const PRESETS = { NIGHT, DEEP, DUSK, DAWN, MORNING, AFTERNOON, HARSH, RED, AMBER, BLUE, SURFACE, SHOP_EVE };
+  /* WORLD M's two (§4.1c, CP5): the hall by candlelight for the counter's film M — dark, warm, the light low from the
+     candles on the table before the monk (+x of the three), so their faces are lit and his is in shadow; and first light
+     for ending D (CP8 tunes it) — pale gold low in the east, the sky blue-grey to pink, the hall's lamps still lit */
+  const TEMPLE_NIGHT = room({
+    stops: [[0.00, '#0c0e18'], [0.12, '#0a0b14'], [0.35, '#080810'], [0.65, '#06060c'], [1.00, '#040408']],
+    bg: 0x050508, fog: [0x0a0806, 0.035],
+    hemi: [0xffb878, 0x140c08, 0.34], key: [0xffa860, 0.78, 4, 1.0, 0.6], fill: [0x5a4a80, 0.07],
+    vmHemi: [0xffc890, 0x140c08, 0.4], vmKey: [0xffb070, 0.6]
+  });
+  const TEMPLE_DAWN = room({
+    stops: [[0.00, '#f3c59a'], [0.12, '#e6b2a2'], [0.35, '#b8a6b8'], [0.65, '#8696b4'], [1.00, '#5a6a94']],
+    bg: 0x8a96b0, fog: [0xc8b8b0, 0.006],
+    hemi: [0xffe8d0, 0x4a4038, 0.85], key: [0xffd8a8, 0.9, 8, 3.0, 4], fill: [0xb8c8f0, 0.3],
+    vmHemi: [0xffe8d0, 0x4a4038, 0.9], vmKey: [0xffd8a8, 0.85]
+  });
+  const PRESETS = { NIGHT, DEEP, DUSK, DAWN, MORNING, AFTERNOON, HARSH, RED, AMBER, BLUE, SURFACE, SHOP_EVE, TEMPLE_NIGHT, TEMPLE_DAWN };
 
   const DATA = {
     id: 5,
@@ -166,7 +181,12 @@
 
     /* the three kumanthong (CP1: one file each, a near and a far level over the same vertices); CP4 and CP5 add the
        room's and the shop's, and the temple's */
-    assets: ['kumanred', 'kumanshy', 'kumanlittle', 'thaikit', 'buddhahd', 'buddhalod', 'slipper'],   // (the room: the kit's fan, rug, fern and garlands; the shelf's small Buddha; his slippers)
+    assets: ['kumanred', 'kumanshy', 'kumanlittle', 'thaikit', 'buddhahd', 'buddhalod', 'slipper',   // (the room: the kit's fan, rug, fern and garlands; the shelf's small Buddha; his slippers)
+             /* World S (CP5): chapter 3's shop by its own models (chapter 4's World H), its owner, and the old masters */
+             'altarrow', 'altarrowfar', 'amushelf', 'traynear', 'trayfar', 'lersimask', 'owner',
+             'mstr_lpthuad', 'mstr_lptimpray', 'mstr_somdejtoh', 'mstr_lptimbench', 'mstr_achanmun', 'mstr_lpphiboon',
+             /* World M (CP5): chapter 4's temple by its own models — Chad's monk and the estate's block beyond its wall */
+             'monkshop', 'hdb'],
     items: [],
 
     musicVol: 0,
@@ -220,6 +240,22 @@
       hotCard: 'His card',
       hotPromise: 'I promise',
       hotBag: 'Take them home',
+      /* his card (§2.5 3), line by line as he wrote it — the card is DRAWN from these (CARD_LAYOUT), so a change here is
+         a change on the card in his room and on his glass alike */
+      card1: 'AS THEIR LUANG PHOR TAUGHT.',
+      card2: 'EVERY NIGHT —',
+      card3: 'fresh water, never let it run dry',
+      card4: 'a sweet drink each',
+      card5: 'one stick each',
+      card6: 'wind the box',
+      card7: 'talk to them kindly',
+      card8: 'EVERY BUDDHA DAY —',
+      card9: 'make merit in their names',
+      card10: 'NEVER for greed.',
+      card11: 'NEVER ask them for anything wrong.',
+      card12: 'FOR AS LONG AS YOU LIVE —',
+      card13: 'and if one day you truly cannot,',
+      card14: 'bring them back. Never leave them.',
       // THE ROOM
       objSit: 'Sit with them',
       hotMat: 'Sit with them'
@@ -252,10 +288,13 @@
 
   const smooth = k => k * k * (3 - 2 * k);
   const cl01 = x => Math.max(0, Math.min(1, x));
+  const hash = (i, s) => { const x = Math.sin(i * 127.1 + s * 311.7) * 43758.5453; return x - Math.floor(x); };   // (chapter 4's: World M's scatter)
 
   function build(ctx) {
-    const { THREE, GLTFLoader, scene, camera, yaw, pitch, LOW, kit, cnv,
-            assetBytes, rescueTextures, getState, startDecision, worldSfx, warmSounds, soundOff, unifySkeletons } = ctx;
+    const { THREE, GLTFLoader, cloneSkinned, scene, camera, yaw, pitch, LOW, kit, cnv, makeSoftDot, loadImageTexture, redoShadows,
+            assetBytes, rescueTextures, getState, startDecision, worldSfx, warmSounds, soundOff, HEAD_RE, unifySkeletons, plantTrees,
+            makeHellNote } = ctx;
+    const treeStands = [];                                // (CP5: World M's, chapter 4's — freed before the sweep, v6.15)
 
     /* (the v21.1 TDZ law: everything a builder or a frame asks for is declared up here, before anything is built) */
     const owned = [];
@@ -263,6 +302,7 @@
     const parsedGlb = new Map();
     const madeTex = [];
     const tex = (t) => { madeTex.push(t); return t; };
+    const noteTex = tex(makeHellNote());                  // the contract wants one (the engine's note prop reads it at boot)
     const mats = [];
     const M = (o) => { const m = new THREE.MeshStandardMaterial(o); mats.push(m); return m; };
     const B = (o) => { const m = new THREE.MeshBasicMaterial(o); mats.push(m); return m; };   // unlit: a screen, a glow, a painted view
@@ -305,20 +345,29 @@
       { key: 'little', asset: 'kumanlittle', h: 0.24, slot: 2, preset: 'BLUE',  lens: 62, motif: 'k5lonely', toy: 'pinwheel', capTurns: 2.0, yieldSecs: 0.6, auto: true }
     ];
     const ALTAR_Z = [0.05, 0.40, 0.75];                   // each one's place along the riser
-    const CNT_Z = [-2.75, -2.45, -2.15];                  // and on the red cloth on the glass
+    /* WORLD S · the owner's glass (local numbers): the red cloth's middle on its top face (the 16 mm sheet is centred on
+       the counter's top, 1.0) and the three on it, left to right as he faces them (−z is his left); the music box past
+       the little one, short of the empty stand; the card past the red one, short of the owner's working end (CP5, by the
+       counter's own measures: the stand at z −2.0, its wood from −3.08) */
+    const CNT = { x: 3.22, y: 1.009, z: -2.62, w: 0.34, l: 0.66 };
+    const CNT_Z = [-2.83, -2.62, -2.41];
+    const CNT_BOX = { x: 3.24, z: -2.20 }, CNT_CARD = { x: 3.085, z: -3.005 }, CNT_PEN = { x: 3.14, z: -3.115 };
     const KID_LOD = 0.55;                                 // the near level inside this (§6: only for a figure in macro — the mat is 0.88 m off)
     const KID_DIST = 1.25;                                // and the lightest past this (the door, the bed: §6, CP4's measure)
 
     /* ----------------------------------------------------------- materials */
-    const matWallS  = M({ color: 0xf1ece2, roughness: 0.92 });    // WORLD S (CP5 ports chapter 4's World H)
-    const matFloorS = M({ color: 0xd8d0c0, roughness: 0.35 });
-    const matMall   = M({ color: 0x8a8478, roughness: 0.5 });
-    const matWallM  = M({ color: 0xe6dccb, roughness: 0.9 });     // WORLD M (CP5 ports chapter 4's temple)
-    const matFloorM = M({ color: 0x9a7a52, roughness: 0.4 });
-    const matWood   = M({ color: 0x3e2414, roughness: 0.5 });
-    const matRed    = M({ color: 0x8e1d14, roughness: 0.6 });
-    const matGlass  = M({ color: 0xbfd8d8, roughness: 0.05, metalness: 0.1, transparent: true, opacity: 0.35 });
     const matProxy  = M({ color: 0x8d7a66, roughness: 0.9 });
+    /* THE MUSIC BOX's (§4.1 1, §4.0b) and HIS CARD's: one in his room and one on the owner's glass — the same box and
+       the same card, before he gives them (CP5: built by one function, the card's sheet drawn once) */
+    const mBoxW = M({ color: 0x5a3a22, roughness: 0.45 }), mBoxBrass = M({ color: 0xc8a050, roughness: 0.3, metalness: 0.85 });
+    let tInlayT = null, tCardT = null;
+    const tCard = () => tCardT || (tCardT = tex(makeOwnerCardT(THREE, cnv, cardLines())));
+    /* the counter's live parts (World S, §4.0b), declared here with the room's (the v21.1 dead-zone law): the things he
+       sets down on the glass (`sets`), the three on their cloth, the box, the card, the pen and the bag; the lens leaning
+       over the glass to the little one (`lean`); the owner's look into a film's lens (`ownerLook`) */
+    const cntLive = { sets: [], kidSet: [null, null, null], bundleSet: null, clothSet: null, boxSet: null, cardSet: null, penSet: null,
+                      bagSet: null, box: null, bag: null, bagHeld: null, lean: null, owner: null, ownerLook: 0, opened: false,
+                      helloOn: false, lull: false, boxOpen: 0, boxOpenTo: 0, windT: 0, view: null };
 
     const world = new THREE.Group();
     scene.add(world);
@@ -331,14 +380,6 @@
       const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
       m.position.set(x, y, z); m.castShadow = cast && !LOW; m.receiveShadow = true;
       parent.add(m); return m;
-    };
-    const floorAt = (w, d, x, z, mat, parent) => {
-      const f = new THREE.Mesh(new THREE.PlaneGeometry(w, d), mat);
-      f.rotation.x = -Math.PI / 2; f.position.set(x, 0, z); f.receiveShadow = true; parent.add(f); return f;
-    };
-    const ceilAt = (w, d, x, y, z, mat, parent) => {
-      const c = new THREE.Mesh(new THREE.PlaneGeometry(w, d), mat);
-      c.rotation.x = Math.PI / 2; c.position.set(x, y, z); parent.add(c); return c;
     };
 
     /* ------------------------------------------------- one parse per asset */
@@ -370,6 +411,22 @@
       parent.add(m); return m;
     };
     const hidBox = (w, h, d, x, y, z, parent) => { const m = box(w, h, d, x, y, z, matProxy, parent, false); m.visible = false; return m; };
+    /* the old auntie's music box: a walnut box, its lid inlaid, a brass comb and drum inside, its key at the side (its
+       front is its local +z, the hinge at the back) — {group, lid, key, drum} */
+    function makeMusicBox(parent) {
+      const mb = new THREE.Group(); parent.add(mb);
+      box(0.16, 0.07, 0.11, 0, 0.035, 0, mBoxW, mb, false);
+      box(0.1, 0.004, 0.03, 0.01, 0.062, -0.02, mBoxBrass, mb, false);                  // the comb
+      const drum = cyl(0.012, 0.012, 0.06, 0.01, 0.066, 0.015, mBoxBrass, 14, mb); drum.rotation.z = Math.PI / 2;
+      const lid = new THREE.Group(); lid.position.set(0, 0.07, -0.055); mb.add(lid);
+      box(0.162, 0.018, 0.112, 0, 0.009, 0.055, mBoxW, lid, false);
+      if (!tInlayT) tInlayT = tex(makeInlayT(THREE, cnv));
+      const inl = new THREE.Mesh(new THREE.PlaneGeometry(0.13, 0.085), M({ map: tInlayT, roughness: 0.5 })); inl.rotation.x = -Math.PI / 2; inl.position.set(0, 0.0185, 0.055); lid.add(inl);
+      const key = new THREE.Group(); key.position.set(0.085, 0.035, 0); mb.add(key);
+      const sh = cyl(0.003, 0.003, 0.02, 0.01, 0, 0, mBoxBrass, 6, key); sh.rotation.z = Math.PI / 2;
+      const bow = new THREE.Mesh(new THREE.TorusGeometry(0.009, 0.0025, 6, 14), mBoxBrass); bow.position.x = 0.024; bow.rotation.y = Math.PI / 2; key.add(bow);
+      return { group: mb, lid, key, drum };
+    }
     const tGlow = tex(makeGlowT(THREE, cnv));
     function glowP(w, h, color, op, x, y, z, rx, ry, parent = worldR) {
       const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), B({ map: tGlow, color, transparent: true, opacity: op, depthWrite: false,
@@ -457,9 +514,13 @@
           m.traverse(q => { if (!q.isMesh) return; q.castShadow = o.cast !== false && !LOW; q.receiveShadow = true; q.material = buddhaMat(q.material); });
           lod.addLevel(w, d);
         };
-        level(lo.scene.getObjectByName('buddha_mid'), 0);
-        level(lo.scene.getObjectByName('buddha_far'), 4 * h);
+        /* (CP5: chapter 4's `hd` — every triangle of his statue while it is big on screen, the shop's and the temple's
+           altars — and `then`, both as chapter 4 has them) */
+        if (o.hd) { level(hd.scene, 0); level(lo.scene.getObjectByName('buddha_mid'), (o.hdAt || 4) * h); }
+        else level(lo.scene.getObjectByName('buddha_mid'), 0);
+        level(lo.scene.getObjectByName('buddha_far'), (o.hd ? 12 : 4) * h);
         g.add(lod);
+        if (o.then) o.then(g, lod);
       }).catch(err => { console.warn('buddha failed to load', err); ctx.loadFail && ctx.loadFail('buddhahd', err); });
       return g;
     }
@@ -868,50 +929,2120 @@
         const hd = new THREE.Mesh(new THREE.TorusGeometry(0.022, 0.004, 6, 16, Math.PI), mJ); hd.position.set(0, 0.07, -0.036); hd.rotation.set(0, Math.PI / 2, Math.PI / 2); j.add(hd);
         const wl = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.033, 0.05, 16), B({ color: 0x8ab0c8, transparent: true, opacity: 0.4 })); wl.position.y = 0.03; j.add(wl); }
       // THE MUSIC BOX at the far end, its lid shut; the card against it
-      { const mb = new THREE.Group(); mb.position.set(1.30, A.top, (RISER.z1 + A.z1) / 2); mb.rotation.y = -Math.PI / 2; R.add(mb); roomLive.box = mb;   // past the riser's end, its front to the mat
-        const mW = M({ color: 0x5a3a22, roughness: 0.45 });
-        box(0.16, 0.07, 0.11, 0, 0.035, 0, mW, mb, false);
-        const comb = box(0.1, 0.004, 0.03, 0.01, 0.062, -0.02, mBrass, mb, false); void comb;
-        const drum = cyl(0.012, 0.012, 0.06, 0.01, 0.066, 0.015, mBrass, 14, mb); drum.rotation.z = Math.PI / 2; roomLive.boxDrum = drum;
-        const lid = new THREE.Group(); lid.position.set(0, 0.07, -0.055); mb.add(lid); roomLive.boxLid = lid;
-        box(0.162, 0.018, 0.112, 0, 0.009, 0.055, mW, lid, false);
-        const inl = new THREE.Mesh(new THREE.PlaneGeometry(0.13, 0.085), M({ map: tex(makeInlayT(THREE, cnv)), roughness: 0.5 })); inl.rotation.x = -Math.PI / 2; inl.position.set(0, 0.0185, 0.055); lid.add(inl);
-        const key = new THREE.Group(); key.position.set(0.085, 0.035, 0); mb.add(key); roomLive.boxKey = key;
-        const sh = cyl(0.003, 0.003, 0.02, 0.01, 0, 0, mBrass, 6, key); sh.rotation.z = Math.PI / 2;
-        const bow = new THREE.Mesh(new THREE.TorusGeometry(0.009, 0.0025, 6, 14), mBrass); bow.position.x = 0.024; bow.rotation.y = Math.PI / 2; key.add(bow); }
-      { const cd = new THREE.Mesh(new THREE.PlaneGeometry(0.07, 0.098), M({ map: tex(makeOwnerCardT(THREE, cnv)), roughness: 0.9 }));
+      { const MB = makeMusicBox(R), mb = MB.group;                       // (CP5: one builder for this box and the owner's)
+        mb.position.set(1.30, A.top, (RISER.z1 + A.z1) / 2); mb.rotation.y = -Math.PI / 2;   // past the riser's end, its front to the mat
+        roomLive.box = mb; roomLive.boxLid = MB.lid; roomLive.boxKey = MB.key; roomLive.boxDrum = MB.drum; }
+      { const cd = new THREE.Mesh(new THREE.PlaneGeometry(0.07, 0.098), M({ map: tCard(), roughness: 0.9 }));
         cd.position.set(1.23, A.top + 0.048, (RISER.z1 + A.z1) / 2); cd.rotation.set(0, -Math.PI / 2, 0, 'YXZ'); cd.rotateX(-0.22); R.add(cd); roomLive.card = cd; }
       // the mat before it, where he sits (the kit's rug)
       roomLive.mat = thai('rug', MAT.x, 0.002, MAT.z, { parent: R, fit: 0.95, cast: false, ry: Math.PI / 2 });
     }
 
-    /* ------------------------------------------------------- WORLD S (CP2) */
-    {
-      const G = worldS;
-      floorAt(SHOP.x1 - SHOP.x0, SHOP.z1 - SHOP.z0, 0, (SHOP.z0 + SHOP.z1) / 2, matFloorS, G);
-      ceilAt(SHOP.x1 - SHOP.x0, SHOP.z1 - SHOP.z0, 0, SHOP.H, (SHOP.z0 + SHOP.z1) / 2, matWallS, G);
-      const T = 0.12;
-      walls.push(box(SHOP.x1 - SHOP.x0 + 2 * T, SHOP.H, T, 0, SHOP.H / 2, SHOP.z0 - T / 2, matWallS, G, false));
-      walls.push(box(T, SHOP.H, SHOP.z1 - SHOP.z0, SHOP.x0 - T / 2, SHOP.H / 2, (SHOP.z0 + SHOP.z1) / 2, matWallS, G, false));
-      walls.push(box(T, SHOP.H, SHOP.z1 - SHOP.z0, SHOP.x1 + T / 2, SHOP.H / 2, (SHOP.z0 + SHOP.z1) / 2, matWallS, G, false));
-      // the glass front onto the corridor, with its door (rooted at the counter, he never walks out: CP5 decides)
-      walls.push(box(SHOP.x1 - SHOP.x0 - 1.2, 2.4, 0.03, 0.6, 1.2, SHOP.z1, matGlass, G, false));
-      walls.push(box(0.2, 2.4, 0.03, SHOP.x0 + 0.1, 1.2, SHOP.z1, matGlass, G, false));
-      floorAt(MALL.x1 - MALL.x0, MALL.z1 - MALL.z0, 0, (MALL.z0 + MALL.z1) / 2, matMall, G);
-      walls.push(box(MALL.x1 - MALL.x0, MALL.H, T, 0, MALL.H / 2, MALL.z1 + T / 2, matMall, G, false));
-      // the owner's counter, the cloth on its glass
-      solids.push(box(RCNT.x1 - RCNT.x0, RCNT.top, RCNT.z0 - RCNT.z1, (RCNT.x0 + RCNT.x1) / 2, RCNT.top / 2, (RCNT.z0 + RCNT.z1) / 2, matWood, G));
-      box(0.34, 0.004, 0.86, (RCNT.x0 + RCNT.x1) / 2 - 0.05, RCNT.top + 0.002, OWN.z, matRed, G, false);
+    /* ============================================== WORLD S · THE OWNER'S SHOP, AT CLOSING TIME (CP5)
+       Since rev 4 the three come from the Golden Mile owner (§4.1b): his shop — chapter 3's World A as chapter 4 copied
+       it for its World H (e3c4.js, buildWorldH, at v22.5) — COPIED again by its own code (a chapter never imports
+       another), under World S's group at x +250, at CLOSING TIME: no staff and no customers (nobody is built), the
+       radio off, the candles unlit, the Luang Phu Tim's stand on his counter empty, half the shop's panels and the
+       corridor's tubes off, every neighbour's shutter down, the clock at ten past seven. Everything between here and
+       the return is chapter 4's, line for line and with its own comments, unless a comment says (World S: ...). */
+    function buildShop() {
+      const world = worldS;                                // (chapter 3's World A stood at the origin; chapter 4's World H and this one at x +250)
+      /* ------------------------------------------------------------- the map
+         WORLD A, THE SHOP: inner faces x -4.5…4.5, z -7 (the altar's wall) … 0
+         (the glass front onto the mall), a 2.9 m T-bar ceiling. Glass counters
+         down both sides — the staff's on the left, the OWNER's on the right
+         with the LP Tim in its own case on top — wall cabinets of framed
+         amulets behind the left, the old masters' photographs behind the
+         right, the altar against the back wall. The mall's corridor runs past
+         the glass, z 0…5. (World S: the shrine's origin, the celebration's mats,
+         the monk's and the staff man's places are chapter 4's and are not here.) */
+      const SHOP = { x0: -4.5, x1: 4.5, z0: -7.0, z1: 0.0, H: 2.9 };
+      const MALL = { x0: -14, x1: 14, z0: 0.0, z1: 5.0, H: 3.6 };
+      const DOOR = { x0: -0.62, x1: 0.62, h: 2.25 };       // the glass double door (shut in play)
+      const LCNT = { x0: -3.5, x1: -2.9, z0: -0.9, z1: -4.1, top: 1.0 };   // the staff's counter, its glass face to +x
+      const RCNT = { x0: 2.9, x1: 3.5, z0: -1.0, z1: -3.9, top: 1.0 };     // the OWNER's counter, its face to -x
+      const ALTAR = { x: 0, z: -6.65, w: 2.3, d: 0.70, h: 0.92 };         // the altar cabinet, its back to the wall (v21.8: 0.70 deep, the statue row's own depth)
+      const STEP = { w: 1.5, d: 0.24, h: 0.6, z: ALTAR.z + ALTAR.d / 2 + 0.12 };   // v21.8: the offerings' step before the cabinet
+      const OWN = { x: 3.98, z: -2.45 };                   // the owner, behind his counter
+      const LPT = { x: 3.1, z: -2.0 };                     // the LP Tim's case on the owner's counter
+      const MSTR = { y0: 1.90, h: 0.50, z: -2.5 };           // v21.9: the old masters' one row on the owner's wall (its lowest edge, its height, its middle)
+      const CLOCK = { x: 0, y: 2.56, z: -0.06 };           // over the door, inside, facing the shop
+
+      /* ----------------------------------------------------------- materials */
+      const tileTex = tex(makeShopTiles(THREE, cnv)); tileTex.repeat.set((SHOP.x1 - SHOP.x0) / 1.2, (SHOP.z1 - SHOP.z0) / 1.2);
+      const terrTex = tex(makeTerrazzo(THREE, cnv)); terrTex.repeat.set((MALL.x1 - MALL.x0) / 1.2, (MALL.z1 - MALL.z0) / 1.2);
+      const ceilTex = tex(makeCeilGrid(THREE, cnv)); ceilTex.repeat.set((SHOP.x1 - SHOP.x0) / 1.2, (SHOP.z1 - SHOP.z0) / 1.2);
+      const mallCeilTex = tex(makeCeilGrid(THREE, cnv)); mallCeilTex.repeat.set((MALL.x1 - MALL.x0) / 1.2, (MALL.z1 - MALL.z0) / 1.2);
+      const matFloor  = new THREE.MeshStandardMaterial({ map: tileTex, roughness: 0.32, metalness: 0.05 });
+      const matTerr   = new THREE.MeshStandardMaterial({ map: terrTex, roughness: 0.45, metalness: 0.04 });
+      const matCeil   = new THREE.MeshStandardMaterial({ map: ceilTex, roughness: 0.95 });
+      const matMallCeil = new THREE.MeshStandardMaterial({ map: mallCeilTex, roughness: 0.95 });
+      const matWall   = new THREE.MeshStandardMaterial({ color: 0xf1ece2, roughness: 0.92 });
+      const matWallB  = new THREE.MeshStandardMaterial({ color: 0xe6dccb, roughness: 0.92 });   // the mall's
+      const matDark   = new THREE.MeshStandardMaterial({ color: 0x15100e, roughness: 0.8 });
+      const matRed    = new THREE.MeshStandardMaterial({ color: 0x8e1d14, roughness: 0.42 });
+      const matRedD   = new THREE.MeshStandardMaterial({ color: 0x5a1009, roughness: 0.55 });
+      const matGold   = new THREE.MeshStandardMaterial({ color: 0xd9a63c, roughness: 0.3, metalness: 0.55, emissive: 0x3a2406, emissiveIntensity: 0.6 });
+      const matWood   = new THREE.MeshStandardMaterial({ color: 0x3e2414, roughness: 0.5 });
+      const matWoodL  = new THREE.MeshStandardMaterial({ color: 0x8a5a34, roughness: 0.55 });
+      const matSteel  = new THREE.MeshStandardMaterial({ color: 0xb8bcc2, roughness: 0.3, metalness: 0.7 });
+      /* the shutters' roller boxes, painted steel: in polished steel they mirrored the sky's environment and read as a
+         glowing lavender strip across the top of every shutter (VB-7) */
+      const matBoxSteel = new THREE.MeshStandardMaterial({ color: 0x5c6066, roughness: 0.62, metalness: 0.3 });
+      const matAlu    = new THREE.MeshStandardMaterial({ color: 0xc9ccd0, roughness: 0.35, metalness: 0.6 });
+      const matChrome = new THREE.MeshStandardMaterial({ color: 0xe8ecf0, roughness: 0.12, metalness: 0.9 });
+      const matCream  = new THREE.MeshStandardMaterial({ color: 0xe9dfc8, roughness: 0.9 });
+      const matBlack  = new THREE.MeshStandardMaterial({ color: 0x1a1a1c, roughness: 0.45 });
+      const matWhite  = new THREE.MeshStandardMaterial({ color: 0xf4f2ec, roughness: 0.6 });
+      const matProxy  = new THREE.MeshStandardMaterial({ color: 0x8d7a66, roughness: 0.9 });
+      const matGlass  = new THREE.MeshStandardMaterial({ color: 0xd8e6ee, roughness: 0.06, metalness: 0.1, transparent: true, opacity: 0.13,
+                                                          depthWrite: false, side: THREE.DoubleSide });
+      const matGlassS = new THREE.MeshStandardMaterial({ color: 0xe8f0f4, roughness: 0.05, metalness: 0.1, transparent: true, opacity: 0.22,
+                                                          depthWrite: false, side: THREE.DoubleSide });   // a shelf's, seen edge-on
+      const matPanel  = new THREE.MeshBasicMaterial({ color: 0xf6f8ff });                                 // an LED ceiling panel
+      const matTube   = new THREE.MeshBasicMaterial({ color: 0xeef4ff });
+      const matLED    = new THREE.MeshBasicMaterial({ color: 0xfff4e0 });
+      const matFlame  = new THREE.MeshBasicMaterial({ color: 0xffc46a, transparent: true, opacity: 0.95, depthWrite: false, blending: THREE.AdditiveBlending });
+
+      const shopG = new THREE.Group(); world.add(shopG);      // WORLD A
+      const doorLeaves = [];                                  // (World H: the shop door's two leaves, which open)
+      const mallG = new THREE.Group(); world.add(mallG);      // the corridor past the glass
+      const box = (w, h, d, x, y, z, mat, parent = world, cast = true) => {
+        const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
+        m.position.set(x, y, z); m.castShadow = cast && !LOW; m.receiveShadow = true;
+        parent.add(m); return m;
+      };
+      const cyl = (r0, r1, h, x, y, z, mat, seg = 14, parent = world) => {
+        const m = new THREE.Mesh(new THREE.CylinderGeometry(r0, r1, h, seg), mat);
+        m.position.set(x, y, z); m.castShadow = !LOW; m.receiveShadow = true;
+        parent.add(m); return m;
+      };
+      const plane = (w, h, mat, x, y, z, ry = 0, parent = world) => {
+        const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat);
+        m.position.set(x, y, z); m.rotation.y = ry; m.receiveShadow = true;
+        parent.add(m); return m;
+      };
+      const texMat = (t, o = {}) => new THREE.MeshStandardMaterial({ map: tex(t), roughness: 0.8, ...o });
+      /* an invisible box that is only a blocker (collision reads it whether it
+         is drawn or not) */
+      const hidBox = (w, h, d, x, y, z, parent = shopG) => { const m = box(w, h, d, x, y, z, matProxy, parent, false); m.visible = false; return m; };
+
+      /* ============================================== WORLD A · THE SHOP
+         ------------------------------------------------- floor, ceiling, walls */
+      {
+        const W = SHOP.x1 - SHOP.x0, D = SHOP.z1 - SHOP.z0;
+        const fl = new THREE.Mesh(new THREE.PlaneGeometry(W, D), matFloor);
+        fl.rotation.x = -Math.PI / 2; fl.position.set(0, 0, (SHOP.z0 + SHOP.z1) / 2); fl.receiveShadow = true; shopG.add(fl);
+        const ce = new THREE.Mesh(new THREE.PlaneGeometry(W, D), matCeil);
+        ce.rotation.x = Math.PI / 2; ce.position.set(0, SHOP.H, (SHOP.z0 + SHOP.z1) / 2); shopG.add(ce);
+        walls.push(box(W + 0.4, SHOP.H, 0.2, 0, SHOP.H / 2, SHOP.z0 - 0.1, matWall, shopG, false));
+        walls.push(box(0.2, SHOP.H, D, SHOP.x0 - 0.1, SHOP.H / 2, (SHOP.z0 + SHOP.z1) / 2, matWall, shopG, false));
+        walls.push(box(0.2, SHOP.H, D, SHOP.x1 + 0.1, SHOP.H / 2, (SHOP.z0 + SHOP.z1) / 2, matWall, shopG, false));
+        // a skirting all round, dark wood
+        box(W, 0.1, 0.02, 0, 0.05, SHOP.z0 + 0.01, matWood, shopG, false);
+        box(0.02, 0.1, D, SHOP.x0 + 0.01, 0.05, (SHOP.z0 + SHOP.z1) / 2, matWood, shopG, false);
+        box(0.02, 0.1, D, SHOP.x1 - 0.01, 0.05, (SHOP.z0 + SHOP.z1) / 2, matWood, shopG, false);
+        // six LED panels in the grid and a downlight over each counter's run
+        const matPanelOff = new THREE.MeshStandardMaterial({ color: 0x9aa0a6, roughness: 0.6 });   // (World S: closing — half of them off)
+        for (const px of [-1.5, 1.5]) for (const pz of [-1.2, -3.0, -4.8]) {
+          const p = new THREE.Mesh(new THREE.PlaneGeometry(0.6, 1.2), (px < 0) !== (pz < -2) ? matPanelOff : matPanel);
+          p.rotation.x = Math.PI / 2; p.position.set(px, SHOP.H - 0.005, pz); shopG.add(p);
+        }
+        for (const [dx, dz] of [[-3.2, -1.4], [-3.2, -2.6], [-3.2, -3.8], [3.2, -1.5], [3.2, -2.6], [3.2, -3.6], [0, -6.2]]) {
+          const d = new THREE.Mesh(new THREE.CircleGeometry(0.07, 16), matLED);
+          d.rotation.x = Math.PI / 2; d.position.set(dx, SHOP.H - 0.006, dz); shopG.add(d);
+        }
+        // the split air-conditioner over the staff's side, and its trunking
+        box(0.95, 0.3, 0.24, -4.36, 2.55, -5.2, matWhite, shopG, false).rotation.y = Math.PI / 2;
+        box(0.02, 0.04, 0.6, -4.245, 2.4, -5.2, matDark, shopG, false);   // (v22.3: 5 mm proud of the unit's face, which it fought)
+      }
+
+      /* ---------------------------------------------------- the glass front
+         Aluminium mullions, a transom at the door's head, a solid bulkhead over
+         it (the clock hangs there), the door's long chrome pulls and its brass
+         bell, the shop's name in gold leaf on the glass. The front is ONE
+         blocker the whole width: the door is shut in play. */
+      {
+        const yT = DOOR.h, bulk = SHOP.H - yT;
+        /* (World H: the door OPENS — he runs out through it, the run-out film — so the glass is two side panes and the
+           doorway's two leaves, each hung on its outer stile, glass in an aluminium frame with its pull inside and out,
+           swinging OUT into the corridor; in play the doorway is shut by an invisible blocker across the whole front, as
+           chapter 3's one glass box was) */
+        for (const s of [-1, 1]) box(SHOP.x1 - DOOR.x1, SHOP.H, 0.12, s * (DOOR.x1 + SHOP.x1) / 2, SHOP.H / 2, 0.06, matGlass, shopG, false);
+        walls.push(hidBox(SHOP.x1 - SHOP.x0, SHOP.H, 0.12, 0, SHOP.H / 2, 0.06));
+        for (const s of [-1, 1]) {
+          const hinge = new THREE.Group(); hinge.position.set(s * DOOR.x1, 0, 0.06); shopG.add(hinge);
+          const w = DOOR.x1 - 0.01, cx = -s * w / 2;                     // from its hinge to the middle, where the two meet
+          box(w - 0.08, yT - 0.24, 0.012, cx, 0.18 + (yT - 0.24) / 2, 0, matGlass, hinge, false);
+          for (const ex of [0.025, w - 0.025]) box(0.05, yT - 0.02, 0.05, -s * ex, (yT - 0.02) / 2, 0, matAlu, hinge, false);   // the stiles
+          box(w, 0.06, 0.05, cx, yT - 0.05, 0, matAlu, hinge, false);   // the head rail
+          box(w, 0.18, 0.05, cx, 0.09, 0, matAlu, hinge, false);        // the kick rail
+          // its long chrome pull, inside and out, 0.1 m from where the two leaves meet (chapter 3's pulls, carried on the leaf)
+          for (const fz of [-0.06, 0.06]) {
+            const p = cyl(0.014, 0.014, 0.9, -s * (w - 0.1), 1.05, fz, matChrome, 8, hinge); p.castShadow = false;
+            for (const py of [1.48, 0.62]) cyl(0.01, 0.01, 0.06, -s * (w - 0.1), py, fz / 2, matChrome, 6, hinge).rotation.x = Math.PI / 2;
+          }
+          doorLeaves.push({ hinge, s });
+          if (s < 0) {                                                 // the OPEN sign hangs in the left leaf, on its cord
+            /* (World S: closing time — he has turned it, so the corridor reads CLOSED and the shop's side OPEN) */
+            const openM = texMat(makeSignTxt(THREE, cnv, 'CLOSED  休息', '#8a1a14', '#fff6d0', 3.2), { emissive: 0xffffff, emissiveIntensity: 0.12 });
+            openM.emissiveMap = openM.map; plane(0.36, 0.12, openM, 0.62 - 0.3, 1.72, -0.08, 0, hinge);
+            plane(0.36, 0.12, texMat(makeSignTxt(THREE, cnv, 'OPEN  营业中', '#1f6a3a', '#fff6d0', 3.2)), 0.62 - 0.3, 1.72, -0.082, Math.PI, hinge);
+            for (const sx of [-1, 1]) box(0.003, yT - 1.78, 0.003, 0.62 - 0.3 + sx * 0.15, (yT + 1.78) / 2, -0.081, matBlack, hinge, false);
+          }
+        }
+        box(SHOP.x1 - SHOP.x0, bulk, 0.16, 0, yT + bulk / 2, 0.02, matWall, shopG, false);           // the bulkhead
+        box(SHOP.x1 - SHOP.x0, 0.06, 0.1, 0, yT, 0.03, matAlu, shopG, false);                         // the transom
+        box(SHOP.x1 - SHOP.x0, 0.06, 0.1, 0, 0.03, 0.03, matAlu, shopG, false);                       // the sill
+        for (const mx of [SHOP.x0 + 0.04, -2.6, DOOR.x0, DOOR.x1, 2.6, SHOP.x1 - 0.04]) box(0.06, yT, 0.1, mx, yT / 2, 0.03, matAlu, shopG, false);
+        // (World H: the middle mullion and the door's pulls are the leaves' own now, above) its bell
+        const bell = cyl(0.02, 0.045, 0.07, DOOR.x1 - 0.12, yT - 0.08, -0.05, matGold, 12, shopG); bell.castShadow = false;
+        // the name in gold leaf, twice: on the left pane and the right (it reads backwards from inside, as it should)
+        const nameM = new THREE.MeshBasicMaterial({ map: tex(makeGlassName(THREE, cnv)), transparent: true, depthWrite: false, side: THREE.DoubleSide });
+        for (const sx of [-1.6, 1.6]) plane(1.8, 0.675, nameM, sx, 1.62, 0.005, 0, shopG);
+        // (World H: the OPEN sign hangs in the left leaf now, above)
+      }
+
+      /* -------------------------------------- CHAD'S AMULET DISPLAY TRAY (v21.8)
+         (Chad: "Use these 2 models to replace all of your generated rows of
+         amulet displays in the shop, both the horizontal ones and vertical
+         ones, as well as the standing shelves at the wall" — and then: "you
+         removed too much detail from the amulet display trays and shelf. I
+         wanted it as real 3d, not just texture".) Every tray in the shop is his
+         scan, REAL 3D, at three levels picked by how far it is from the eye:
+         within 1.25 m his scan cut to 6 % with its own maps (47.5k triangles —
+         photographed at the closest a player can stand over a counter it reads
+         as the full 792k scan); out to 2.4 m, and beyond it, the same geometry
+         at 6k and 1.6k, its UV seams taken away by projecting the tray's own
+         front view onto it (a scan's atlas will not cut that far with its
+         seams in, and a cut across them smears one amulet's colour into the
+         next — photographed). Two trays to a level-of-detail group, so the
+         ones under the player's hands are full and the ones across the room
+         are light. The drawn velvet and framed rows each group replaces stay
+         drawn until both files have landed: a failed download costs the nicer
+         prop, never the shop (the v4.7 rule). */
+      const TRAY = { w: 1.9036, h: 1.0973, d: 0.0973 };          // the scan's own board, in its units: x centred, y 0..h, face +z
+      const TRAY_ENV = 0.3;                                       // the room's reflection on its gilt frames (bracketed by photograph)
+      const TRAY_NEAR = 1.25, TRAY_MID = 2.4;                      // where a pair goes to its next lighter level (m, from the pair's middle)
+      const trayGroups = [];                                      // { lists: [tray placements], standIns, parent }
+      let trayLevels = null;                                      // [{ geo, mat, node }] near, mid, far, once both files have landed
+      const _trayMat = new Map();
+      const trayMat = (m) => { let c = _trayMat.get(m); if (!c) { c = m.clone(); c.envMap = scene.environment || null; c.envMapIntensity = TRAY_ENV; _trayMat.set(m, c); owned.push({ dispose: () => c.dispose() }); } return c; };
+      /* one group of trays: `list` is [x, y, z, euler, scale] per tray (the tray's middle), in pairs; `standIns` are the
+         drawn things it replaces */
+      function trayGroup(list, standIns, parent = shopG) {
+        const g = { list, standIns, parent };
+        trayGroups.push(g);
+        if (trayLevels) trayBuild(g);
+      }
+      function trayBuild(g) {
+        const q = new THREE.Quaternion(), v = new THREE.Vector3(), sv = new THREE.Vector3(), m4 = new THREE.Matrix4();
+        const lift = new THREE.Matrix4().makeTranslation(0, -TRAY.h / 2, 0);   // the file stands on its base: its middle to the origin
+        for (let k = 0; k < g.list.length; k += 2) {
+          const pair = g.list.slice(k, k + 2), c = new THREE.Vector3();
+          for (const [x, y, z] of pair) c.add(v.set(x, y, z));
+          c.multiplyScalar(1 / pair.length);
+          const lod = new THREE.LOD(); lod.position.copy(c); g.parent.add(lod);
+          trayLevels.forEach((L, li) => {
+            const I = new THREE.InstancedMesh(L.geo, L.mat, pair.length);
+            pair.forEach(([x, y, z, e, sc], i) => {
+              q.setFromEuler(e);
+              m4.compose(v.set(x - c.x, y - c.y, z - c.z), q, sv.set(sc, sc, sc)).multiply(lift).multiply(L.node);
+              I.setMatrixAt(i, m4);
+            });
+            I.instanceMatrix.needsUpdate = true; I.computeBoundingSphere();
+            I.castShadow = false; I.receiveShadow = true;
+            lod.addLevel(I, [0, TRAY_NEAR, TRAY_MID][li]);
+          });
+        }
+        for (const o of g.standIns) o.visible = false;
+      }
+      Promise.all([parseOnce('traynear'), parseOnce('trayfar')]).then(([nearG, farG]) => {
+        if (!alive) return;
+        /* each level's geometry, material and the matrix of its node (the quantization's own scale and offset live on
+           the node, and an instanced copy must carry them) */
+        const level = (root, name) => {
+          root.updateMatrixWorld(true);
+          let mesh = null; root.traverse(o => { if (o.isMesh && (!name || o.name === name) && !mesh) mesh = o; });
+          if (!mesh) throw new Error('tray file has no ' + (name || 'mesh'));
+          return { geo: mesh.geometry, mat: trayMat(mesh.material), node: mesh.matrixWorld.clone() };
+        };
+        trayLevels = [level(nearG.scene), level(farG.scene, 'tray_mid'), level(farG.scene, 'tray_far')];
+        for (const g of trayGroups) trayBuild(g);
+      }).catch(err => { console.warn('the amulet trays failed to load', err); ctx.loadFail && ctx.loadFail('traynear', err); });
+
+      /* ------------------------------------------------- a glass counter
+         A dark-wood plinth, a glass box over velvet trays (two levels), chrome
+         edges, an LED strip under the top's customer edge. `face` is the side
+         the customer stands on (+1 = +x, -1 = -x).
+         v21.8: the trays are Chad's — two rows across and as many as fit along,
+         at both levels, each one's amulets standing up the right way for the
+         customer (their tops away from him). */
+      const trayTex = [0, 1, 2, 3].map(i => tex(makeVelvetTray(THREE, cnv, 11 + i * 7)));
+      function counter(c, face, seed) {
+        const g = new THREE.Group(); shopG.add(g);
+        const w = c.x1 - c.x0, L = c.z0 - c.z1, cx = (c.x0 + c.x1) / 2, cz = (c.z0 + c.z1) / 2;
+        box(w, 0.36, L, cx, 0.18, cz, matWood, g);
+        box(w + 0.02, 0.03, L + 0.02, cx, 0.375, cz, matChrome, g, false);
+        const vel = new THREE.MeshStandardMaterial({ map: trayTex[seed % 4], roughness: 0.9 });
+        const vel2 = new THREE.MeshStandardMaterial({ map: trayTex[(seed + 1) % 4], roughness: 0.9 });
+        const t1 = new THREE.Mesh(new THREE.PlaneGeometry(L - 0.06, w - 0.08), vel); t1.rotation.set(-Math.PI / 2, 0, face > 0 ? Math.PI / 2 : -Math.PI / 2);
+        t1.position.set(cx, 0.4, cz); g.add(t1);
+        box(w - 0.04, 0.012, L - 0.04, cx, 0.68, cz, matGlassS, g, false);                               // the glass shelf
+        const t2 = t1.clone(); t2.material = vel2; t2.position.y = 0.69; g.add(t2);
+        {
+          /* Chad's trays at real size (an amulet ~4 cm across): two rows across the counter, `n` along it, lying on the
+             velvet at both levels; the drawn amulets on the velvet go when they land, and the velvet stays as the floor
+             they lie on */
+          const S = 0.225, tw = TRAY.w * S, th = TRAY.h * S, tt = TRAY.d * S, gap = 0.012;
+          const n = Math.floor((L - 0.05 + gap) / (tw + gap)), e = new THREE.Euler(-Math.PI / 2, face > 0 ? Math.PI / 2 : -Math.PI / 2, 0, 'YXZ');
+          const list = [];
+          for (const y0 of [0.401, 0.691]) for (let i = 0; i < n; i++) for (const a of [-1, 1])         // in pairs, across
+            list.push([cx + a * (th / 2 + 0.012), y0 + tt / 2, cz + (i - (n - 1) / 2) * (tw + gap), e, S]);
+          const plain = new THREE.MeshStandardMaterial({ color: 0x4e0a0d, roughness: 0.92 });
+          owned.push({ dispose: () => plain.dispose() });
+          /* the stand-in here is the drawn amulets, not the velvet: "hiding" it gives both levels the plain velvet (and
+             hands the drawn materials to dispose(), which no longer meets them on a mesh) */
+          const swap = { set visible(v) { if (!v && t1.material !== plain) { owned.push({ dispose: () => { vel.dispose(); vel2.dispose(); } }); t1.material = plain; t2.material = plain; } }, get visible() { return true; } };
+          trayGroup(list, [swap], g);
+        }
+        // the glass: front, back, ends, top — the top a touch thicker, with a chrome rim
+        box(0.012, 0.62, L, face > 0 ? c.x1 : c.x0, 0.69, cz, matGlass, g, false);
+        box(0.012, 0.62, L, face > 0 ? c.x0 : c.x1, 0.69, cz, matGlass, g, false);
+        for (const zz of [c.z0, c.z1]) box(w, 0.62, 0.012, cx, 0.69, zz, matGlass, g, false);
+        box(w, 0.016, L, cx, c.top, cz, matGlassS, g, false);
+        for (const zz of [c.z0, c.z1]) box(w + 0.02, 0.022, 0.02, cx, c.top, zz, matChrome, g, false);
+        for (const xx of [c.x0, c.x1]) box(0.02, 0.022, L + 0.02, xx, c.top, cz, matChrome, g, false);
+        for (const zz of [c.z0, c.z1]) for (const xx of [c.x0, c.x1]) box(0.022, 0.62, 0.022, xx, 0.69, zz, matChrome, g, false);
+        const led = box(0.01, 0.012, L - 0.08, face > 0 ? c.x1 - 0.03 : c.x0 + 0.03, c.top - 0.03, cz, matLED, g, false);
+        led.castShadow = false;
+        solids.push(box(w, c.top, L, cx, c.top / 2, cz, matProxy, g, false)); g.children[g.children.length - 1].visible = false;
+        return g;
+      }
+      counter(LCNT, 1, 0);
+      counter(RCNT, -1, 2);
+      /* the strips behind the counters are the staff's: between a counter's
+         padded back and the cabinets' (0.30 m, open at both ends) the lens could
+         walk in and stand inside the man there — a thin box fills each */
+      solids.push(hidBox(0.58, 1.4, 3.2, -3.79, 0.7, (LCNT.z0 + LCNT.z1) / 2));   // (v22.3: the whole gap, counter to cabinets — a 2 cm strip left a slot either side)
+      solids.push(hidBox(0.6, 1.4, 3.0, 3.80, 0.7, (RCNT.z0 + RCNT.z1) / 2));     // (v22.3: a 1 cm slot either side let a diagonal push behind the counter, through the owner)
+
+      /* -------------------------------------------- the owner's working end
+         A wooden top at the back of his counter: the loupe, the lamp, the till,
+         a receipt book, a calculator, his phone, his tea. */
+      {
+        const z = RCNT.z1 + 0.42, x = (RCNT.x0 + RCNT.x1) / 2, y = RCNT.top + 0.008;
+        box(0.64, 0.02, 0.8, x, y, z, matWoodL, shopG);   // (v22.3: 1 cm over the chrome rims either side — its sides were their outer faces)
+        box(0.3, 0.16, 0.26, x + 0.08, y + 0.09, z - 0.2, matBlack, shopG);                   // the till
+        box(0.22, 0.02, 0.18, x + 0.08, y + 0.18, z - 0.2, matDark, shopG).rotation.x = -0.4;
+        box(0.12, 0.012, 0.16, x - 0.12, y + 0.016, z + 0.12, matDark, shopG);                 // the calculator
+        box(0.16, 0.012, 0.22, x - 0.1, y + 0.014, z - 0.1, matCream, shopG);                  // the receipt book
+        box(0.075, 0.008, 0.15, x + 0.14, y + 0.012, z + 0.22, matBlack, shopG).rotation.y = 0.3;   // his phone
+        cyl(0.035, 0.03, 0.07, x + 0.18, y + 0.045, z + 0.04, matWhite, 12, shopG);            // his tea
+        const lamp = new THREE.Group(); lamp.position.set(x + 0.2, y, z + 0.34); shopG.add(lamp);
+        cyl(0.06, 0.07, 0.02, 0, 0.01, 0, matBlack, 14, lamp); cyl(0.008, 0.008, 0.34, 0, 0.18, 0, matChrome, 6, lamp);
+        const sh = cyl(0.03, 0.07, 0.08, -0.06, 0.34, 0, matBlack, 14, lamp); sh.rotation.z = 0.7;
+        const loupe = new THREE.Group(); loupe.position.set(x - 0.18, y + 0.01, z + 0.32); shopG.add(loupe);
+        cyl(0.02, 0.02, 0.018, 0, 0.009, 0, matBlack, 14, loupe);
+        cyl(0.018, 0.018, 0.004, 0, 0.02, 0, matGlassS, 14, loupe);
+      }
+
+      /* ----------------------------------- THE LP TIM's stand (World S: EMPTY, as chapter 4 left it before the owner
+         set the Hanuman on it — he gave the Luang Phu Tim away in chapter 3 and the Hanuman went home in chapter 4, so
+         the stand, its cushion and its easel are all there is, and nothing is loaded for it) */
+      const lpCase = new THREE.Group(); lpCase.position.set(LPT.x, RCNT.top + 0.01, LPT.z); shopG.add(lpCase);
+      box(0.13, 0.03, 0.13, 0, 0.015, 0, matWood, lpCase);
+      box(0.11, 0.012, 0.11, 0, 0.036, 0, new THREE.MeshStandardMaterial({ color: 0x7a0c12, roughness: 0.95 }), lpCase);
+      const lpTilt = new THREE.Group(); lpTilt.position.set(0, 0.042, 0); lpTilt.rotation.set(-0.2, -Math.PI / 2, 0, 'YXZ'); lpCase.add(lpTilt);
+      box(0.026, 0.05, 0.005, 0, 0.025, -0.014, matWood, lpTilt, false);                       // the easel
+
+      /* ----------------------------------------------- CHAD'S DISPLAY SHELF (v21.8)
+         His shelf of images — twenty on five shelves, Buddhas, monks, deities
+         and hermits, 1.082 x 1.899 x 0.32 m, baked on its base centre facing +z
+         — stands on the staff's wall behind the staff man (Chad: "the shelf
+         behind the man was supposed to be the shelf i provided you") — three
+         of them (the back-left corner's pair went for the lersi masks, later in
+         v21.8). THREE levels in the one file, three index lists
+         over one set of vertices (tools/lodpair.mjs LEVELS): EVERY triangle of
+         his scan (594k) within 1.5 m of a shelf's middle (Chad: "you removed
+         too much detail from the amulet display trays and shelf"), a 178k cut
+         to 2.6 m, a 40k cut beyond — the same images across the shop. The
+         images' gilt takes the room's reflection as the Buddha's does. */
+      const SHELF = { w: 1.082, d: 0.32, mid: 0.95 };
+      /* (CP8: `parent` — the tray shop stands two of them against its own wall, in World T) */
+      function displayShelf(x, z, ry, standIn, parent = shopG) {
+        parseOnce('amushelf').then(g => {
+          if (!alive) return;
+          const src = g.scene.clone(true), lod = new THREE.LOD();
+          lod.position.set(x, SHELF.mid, z); lod.rotation.y = ry;
+          for (const [name, d] of [['amushelf_near', 0], ['amushelf_mid', 1.5], ['amushelf_far', 2.6]]) {
+            const n = src.getObjectByName(name);
+            if (!n) throw new Error('amushelf has no ' + name);
+            const w = new THREE.Group(); w.position.y = -SHELF.mid; w.add(n);
+            w.traverse(q => { if (!q.isMesh) return; q.castShadow = false; q.receiveShadow = true; q.material = buddhaMat(q.material); });
+            lod.addLevel(w, d);
+          }
+          parent.add(lod);
+          if (standIn) standIn.visible = false;
+        }).catch(err => { console.warn('the display shelf failed to load', err); ctx.loadFail && ctx.loadFail('amushelf', err); });
+      }
+
+      /* ------------------------------------------------ the staff's wall
+         Three of his shelves, their backs to the wall, facing into the shop
+         where three tall glass cabinets of framed amulets stood; the cabinets
+         stand in until the shelf lands (a failed download costs the nicer
+         prop, never the shop — v4.7). */
+      const atlas = tex(makeAmuletAtlas(THREE, cnv));
+      const kindMats = Array.from({ length: 8 }, (_, k) => {
+        const t = atlas.clone(); t.needsUpdate = true; t.repeat.set(0.25, 0.5); t.offset.set((k % 4) * 0.25, k < 4 ? 0.5 : 0); madeTex.push(t);
+        return new THREE.MeshStandardMaterial({ map: t, roughness: 0.6 });
+      });
+      {
+        const CAB = { x: SHOP.x0 + 0.22, d: 0.4, h: 2.1, zs: [-0.95, -2.25, -3.55], w: 1.2 };
+        const cabG = new THREE.Group(); shopG.add(cabG);                  // the stand-in: the old cabinets and their rows
+        const frames = [], faces = Array.from({ length: 8 }, () => []);
+        let n = 0;
+        for (const cz of CAB.zs) {
+          box(CAB.d, 0.24, CAB.w, CAB.x, 0.12, cz, matWood, cabG);                                    // plinth
+          box(CAB.d, 0.06, CAB.w, CAB.x, CAB.h, cz, matWood, cabG);                                   // crown
+          box(0.02, CAB.h - 0.24, CAB.w, CAB.x - CAB.d / 2 + 0.01, 0.24 + (CAB.h - 0.24) / 2, cz, matRedD, cabG, false);   // back
+          for (const s of [-1, 1]) box(CAB.d, CAB.h - 0.24, 0.03, CAB.x, 0.24 + (CAB.h - 0.24) / 2, cz + s * CAB.w / 2, matWood, cabG, false);
+          box(0.012, CAB.h - 0.3, CAB.w - 0.04, CAB.x + CAB.d / 2, 0.24 + (CAB.h - 0.24) / 2, cz, matGlass, cabG, false);   // the glass doors
+          box(0.012, CAB.h - 0.3, 0.012, CAB.x + CAB.d / 2 + 0.006, 0.24 + (CAB.h - 0.24) / 2, cz, matChrome, cabG, false);
+          for (let sh = 0; sh < 5; sh++) {
+            const y = 0.32 + sh * 0.34;
+            box(CAB.d - 0.04, 0.012, CAB.w - 0.06, CAB.x, y, cz, matGlassS, cabG, false);
+            box(0.008, 0.01, CAB.w - 0.1, CAB.x + CAB.d / 2 - 0.03, y + 0.31, cz, matLED, cabG, false);
+            for (let i = 0; i < 8; i++) {
+              const zz = cz - CAB.w / 2 + 0.1 + i * 0.143, k = (i * 3 + sh * 5 + n) % 8;
+              frames.push([CAB.x - 0.08, y + 0.075, zz]);
+              faces[k].push([CAB.x - 0.0715, y + 0.075, zz]);
+            }
+          }
+          solids.push(hidBox(CAB.d, CAB.h, CAB.w, CAB.x, CAB.h / 2, cz));
+          n++;
+        }
+        const fG = new THREE.BoxGeometry(0.016, 0.12, 0.095), m4 = new THREE.Matrix4();
+        const fI = new THREE.InstancedMesh(fG, matGold, frames.length); frames.forEach((p, i) => fI.setMatrixAt(i, m4.makeTranslation(...p)));
+        fI.castShadow = false; cabG.add(fI);
+        const pG = new THREE.PlaneGeometry(0.08, 0.105), rot = new THREE.Matrix4().makeRotationY(Math.PI / 2);
+        faces.forEach((list, k) => {
+          if (!list.length) return;
+          const I = new THREE.InstancedMesh(pG, kindMats[k], list.length);
+          list.forEach((p, i) => I.setMatrixAt(i, new THREE.Matrix4().makeTranslation(...p).multiply(rot)));
+          I.castShadow = false; cabG.add(I);
+        });
+        /* his shelves on the cabinets' own spots: the back 1 cm off the wall, the front (+z in the file) turned to +x */
+        for (const cz of CAB.zs) displayShelf(SHOP.x0 + SHELF.d / 2 + 0.012, cz, Math.PI / 2, cabG);
+      }
+
+      /* ------------------------------------------- the owner's wall: THE OLD MASTERS
+         Over a low cabinet behind his counter, the shop's Thai calendar beside
+         them, a shelf of boxed cases under.
+         v21.8 · CHAD'S FIVE (Chad: "For the monk portraits in the amulet shop,
+         replace all your generated ones with these 5. Credits are the URLs
+         provided. Please use them cleanly in the game, with no alterations.
+         This is important in respect to these masters"). The nine drawn
+         likenesses are gone. Each photograph is its source's own bytes
+         (masters/v21.8/portraits/SOURCES.md: the page, the file, its sha1),
+         drawn UNLIT and outside tone mapping, so the screen shows each one's
+         own colour; never cropped, scaled only as a whole, at its own aspect.
+         Luang Phu Tim's two — the master of the shop's prized amulet — in
+         plain gilt frames built ROUND the photographs; Luang Pu Thuad, Somdej
+         Toh and Ajahn Mun, whose pictures carry their own gold frames, hang as
+         they are (their corners are the file's own transparency). Since v21.9
+         all five hang in ONE ROW high on the wall, over the owner's head (the
+         row's own note, below). Credited in the panel, one row a page.
+         v21.10 · A SIXTH (Chad: "Please add lp phiboon attached image here as
+         one additional monk portrait to be on the same row as existing monk
+         portraits on the wall in the amulet shop. Frame it nicely"): LP
+         Phiboon, the photograph Chad attached, byte for byte, in a FINE frame —
+         a two-step gilt moulding, a crimson velvet liner, gilt corner blocks
+         with a rosette each — at the row's door end. */
+      {
+        const wx = SHOP.x1 - 0.012;
+        /* v21.10: the fine frame's border (moulding + liner) and its liner, and its two materials */
+        const FINE_B = 0.062, FINE_L = 0.028;
+        const matVelvet = new THREE.MeshStandardMaterial({ color: 0x6a0e14, roughness: 0.96 });
+        const matGoldHi = new THREE.MeshStandardMaterial({ color: 0xf2c86e, roughness: 0.24, metalness: 0.6, emissive: 0x4a3008, emissiveIntensity: 0.65 });
+        /* an ImageBitmap upload ignores UNPACK_FLIP_Y (the WebGL rule), so the photograph's first row arrives at v = 0:
+           the plane's own v is turned round to stand it upright — the picture itself is never touched */
+        const portrait = (key, mime, w, h, y, z, frame) => {
+          const g = new THREE.Group(); g.position.set(wx - 0.004, y, z); g.rotation.y = -Math.PI / 2; shopG.add(g);
+          const fine = frame === 'fine';
+          // a soft shadow on the wall, a little under it, so it hangs ON the wall rather than being painted into it
+          const sw = fine ? (w + 2 * FINE_B) * 1.06 : w * 1.12, shh = fine ? (h + 2 * FINE_B) * 1.06 : h * 1.1;
+          const sh = new THREE.Mesh(new THREE.PlaneGeometry(sw, shh), new THREE.MeshBasicMaterial({
+            map: (() => { const t = makeSoftDot('rgba(0,0,0,0.55)', 'rgba(0,0,0,0)'); madeTex.push(t); return t; })(),
+            transparent: true, depthWrite: false, fog: false }));
+          sh.position.set(0.006, -0.018, -0.002); g.add(sh);
+          if (fine) {
+            /* v21.10 · THE FINE FRAME (LP Phiboon's — "Frame it nicely"): from the back, a dark board, a crimson velvet
+               liner FINE_L wide round the photograph with a thin gilt slip at its inner edge, then a gilt moulding
+               FINE_M wide in two steps — a broad flat and a raised bead along its inner edge, so the light catches a
+               line round the picture — and a gilt block at each corner carrying a small rosette. The photograph itself
+               is never touched: it lies on the velvet, inside the slip. */
+            const L = FINE_L, M = FINE_B - FINE_L, W = w + 2 * FINE_B, H = h + 2 * FINE_B;
+            box(W, H, 0.008, 0, 0, 0.004, matDark, g, false);                                   // the board
+            box(w + 2 * L, h + 2 * L, 0.004, 0, 0, 0.010, matVelvet, g, false);                // the liner
+            const sl = 0.006;                                                                    // the slip
+            box(w + 2 * sl, sl, 0.006, 0, h / 2 + sl / 2, 0.013, matGoldHi, g, false);
+            box(w + 2 * sl, sl, 0.006, 0, -h / 2 - sl / 2, 0.013, matGoldHi, g, false);
+            box(sl, h, 0.006, -w / 2 - sl / 2, 0, 0.013, matGoldHi, g, false);
+            box(sl, h, 0.006, w / 2 + sl / 2, 0, 0.013, matGoldHi, g, false);
+            const iw = w + 2 * L, ih = h + 2 * L;                                              // the moulding's inner edge
+            box(W, M, 0.026, 0, ih / 2 + M / 2, 0.013, matGold, g, false);                      // the broad flat, round
+            box(W, M, 0.026, 0, -ih / 2 - M / 2, 0.013, matGold, g, false);
+            box(M, ih, 0.026, -iw / 2 - M / 2, 0, 0.013, matGold, g, false);
+            box(M, ih, 0.026, iw / 2 + M / 2, 0, 0.013, matGold, g, false);
+            const bd = 0.009;                                                                    // the bead along it
+            box(iw + 2 * bd, bd, 0.034, 0, ih / 2 + bd / 2, 0.017, matGoldHi, g, false);
+            box(iw + 2 * bd, bd, 0.034, 0, -ih / 2 - bd / 2, 0.017, matGoldHi, g, false);
+            box(bd, ih, 0.034, -iw / 2 - bd / 2, 0, 0.017, matGoldHi, g, false);
+            box(bd, ih, 0.034, iw / 2 + bd / 2, 0, 0.017, matGoldHi, g, false);
+            const cb = M + 0.012, rG = new THREE.CylinderGeometry(0.011, 0.013, 0.008, 16);   // the corner blocks
+            for (const sx of [-1, 1]) for (const sy of [-1, 1]) {
+              const cx = sx * (W / 2 - cb / 2 + 0.004), cy = sy * (H / 2 - cb / 2 + 0.004);
+              box(cb, cb, 0.036, cx, cy, 0.018, matGold, g, false);
+              const ro = new THREE.Mesh(rG, matGoldHi); ro.rotation.x = Math.PI / 2; ro.position.set(cx, cy, 0.039); g.add(ro);
+            }
+          } else if (frame) {                                  // a gilt moulding round it, standing proud of the picture, and a dark board behind
+            const fw = 0.032, fd = 0.026;
+            box(w + 2 * fw, fw, fd, 0, h / 2 + fw / 2, fd / 2, matGold, g, false);
+            box(w + 2 * fw, fw, fd, 0, -h / 2 - fw / 2, fd / 2, matGold, g, false);
+            box(fw, h, fd, -w / 2 - fw / 2, 0, fd / 2, matGold, g, false);
+            box(fw, h, fd, w / 2 + fw / 2, 0, fd / 2, matGold, g, false);
+            box(w, h, 0.006, 0, 0, 0.003, matDark, g, false);
+          }
+          const geo = new THREE.PlaneGeometry(w, h), uv = geo.attributes.uv;
+          for (let i = 0; i < uv.count; i++) uv.setY(i, 1 - uv.getY(i));
+          const mat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: !frame, alphaTest: frame ? 0 : 0.02, toneMapped: false, fog: false });
+          const m = new THREE.Mesh(geo, mat); m.position.z = fine ? 0.0125 : frame ? 0.0075 : 0.004; m.visible = false; g.add(m);
+          loadImageTexture(key, mime).then(t => {
+            if (!alive || !t) return;
+            madeTex.push(t); mat.map = t; mat.needsUpdate = true; m.visible = true;
+          }).catch(() => {});
+          return g;
+        };
+        /* Luang Phu Tim at prayer (250 x 333) and on his bench (450 x 600), both 3:4; the three mybuddha108 portraits
+           320 x 418. Left to right as seen from the shop floor (+z is the viewer's right on this wall).
+           v21.9 · ONE ROW, AT THE TOP (Chad: "the shop owner standing is covering the monk portraits behind. I want the
+           monk portraits to all be in a single row at the top so that they are not covered"). Until v21.9 Luang Phu
+           Tim's two hung over the other three, and those three (1.0–1.4 m) were behind the owner's back. He is 1.66 m
+           tall, 0.51 m off this wall, and from anywhere the counter lets the player stand his head covers nothing on
+           it above 1.70 m — the row's lowest edge is MSTR.y0, 1.90. All five the same height on the wall (MSTR.h, the
+           gilt mouldings included), each at its own aspect, never cropped; in the order the two rows had: Luang Pu
+           Thuad, Luang Phu Tim at prayer, Somdej Toh in the middle under the shelf-shrine, Luang Phu Tim on his bench,
+           Ajahn Mun.
+           v21.10: and LP Phiboon at the door end (+z) — his photograph 318 x 500, in the fine frame (FINE_B a side), so
+           the row keeps its rhythm of framed portraits and photographs; six, recentred on the shelf-shrine, whose
+           middle now falls in the gap between Somdej Toh and Luang Phu Tim on his bench */
+        const FWD = 0.032, GAP = 0.12, RH = MSTR.h, RY = MSTR.y0 + MSTR.h / 2;   // (FWD: the moulding portrait() builds round a photograph)
+        const border = fr => fr === 'fine' ? FINE_B : fr ? FWD : 0;
+        const row = [
+          ['mstr_lpthuad', 'image/png', RH * 320 / 418, RH, false],
+          ['mstr_lptimpray', 'image/jpeg', (RH - 2 * FWD) * 250 / 333, RH - 2 * FWD, true],
+          ['mstr_somdejtoh', 'image/png', RH * 320 / 418, RH, false],
+          ['mstr_lptimbench', 'image/jpeg', (RH - 2 * FWD) * 450 / 600, RH - 2 * FWD, true],
+          ['mstr_achanmun', 'image/png', RH * 320 / 418, RH, false],
+          ['mstr_lpphiboon', 'image/jpeg', (RH - 2 * FINE_B) * 318 / 500, RH - 2 * FINE_B, 'fine']
+        ];
+        const outer = row.map(([, , w, , fr]) => w + 2 * border(fr));
+        const rowLen = outer.reduce((a, b) => a + b, 0) + GAP * (row.length - 1);
+        MSTR.half = rowLen / 2;                                // (the row's half-length: its tap box, lkMasters)
+        let rz = MSTR.z - rowLen / 2;
+        row.forEach(([key, mime, w, h, fr], i) => { portrait(key, mime, w, h, RY, rz + outer[i] / 2, fr); rz += outer[i] + GAP; });
+        /* the shelf-shrine's brackets, a quarter-metre either side of its middle. Until v21.10 they stood down the gaps
+           either side of Somdej Toh, the row's middle; with six the middle is a gap, so they stand OVER the two
+           portraits beside it, their struts stopping 4 cm above the frames' tops (MSTR.y0 + MSTR.h) */
+        const BRZ = 0.25, BRY0 = MSTR.y0 + MSTR.h + 0.04;
+        box(0.4, 0.86, 2.8, SHOP.x1 - 0.2, 0.43, -2.45, matWood, shopG);                             // the low cabinet
+        box(0.42, 0.03, 2.82, SHOP.x1 - 0.2, 0.875, -2.45, matWoodL, shopG);
+        const br = texMat(makeBoxRow(THREE, cnv));
+        /* v21.8: the low cabinet's front shows Chad's trays — two to a panel in a gilt frame, where the drawn boxes stood
+           (they stay, standing in, until the trays land) */
+        const boxRows = [], lowTrays = [], LS = 0.24, lw = TRAY.w * LS, lh = TRAY.h * LS, lt = TRAY.d * LS, le = new THREE.Euler(0, -Math.PI / 2, 0);
+        for (const zz of [-1.6, -3.3]) {
+          boxRows.push(plane(1.1, 0.27, br, SHOP.x1 - 0.405, 0.6, zz, -Math.PI / 2, shopG));
+          for (const a of [-1, 1]) lowTrays.push([SHOP.x1 - 0.4 - lt / 2 - 0.002, 0.6, zz + a * (lw / 2 + 0.008), le, LS]);
+          const fx = SHOP.x1 - 0.4 - 0.011, fw = 0.018, W2 = lw * 2 + 0.016 + 2 * fw, H2 = lh + 2 * fw;
+          const rim = new THREE.Group(); rim.visible = false; shopG.add(rim);
+          box(0.022, fw, W2, fx, 0.6 + H2 / 2 - fw / 2, zz, matGold, rim, false);
+          box(0.022, fw, W2, fx, 0.6 - H2 / 2 + fw / 2, zz, matGold, rim, false);
+          for (const a of [-1, 1]) box(0.022, H2, fw, fx, 0.6, zz + a * (W2 / 2 - fw / 2), matGold, rim, false);
+          boxRows.push({ set visible(v) { rim.visible = !v; }, get visible() { return !rim.visible; } });
+        }
+        trayGroup(lowTrays, boxRows);
+        plane(0.42, 0.63, texMat(makeCalendar(THREE, cnv)), wx - 0.002, 1.55, -4.45, -Math.PI / 2, shopG);   // (v21.10: 0.3 m back, clear of the longer row's end)
+        solids.push(hidBox(0.4, 0.9, 2.8, SHOP.x1 - 0.2, 0.45, -2.45));
+        // a small shelf-shrine over the photographs: a Buddha, a garland, two candles
+        /* (on two gilt brackets, with a gold lip along its front: seen from the counter it was a dark-red slab floating
+           on nothing behind the SANITY row — VP-9) */
+        box(0.28, 0.03, 0.7, SHOP.x1 - 0.14, 2.62, -2.5, matRed, shopG);
+        box(0.012, 0.045, 0.7, SHOP.x1 - 0.282, 2.62, -2.5, matGold, shopG, false);
+        for (const dz of [-BRZ, BRZ]) {
+          box(0.2, 0.025, 0.03, SHOP.x1 - 0.1, 2.59, -2.5 + dz, matGold, shopG, false);
+          const st = box(0.02, 2.6 - BRY0, 0.03, SHOP.x1 - 0.02, (2.6 + BRY0) / 2, -2.5 + dz, matGold, shopG, false);
+          const dg = box(0.018, 0.24, 0.025, SHOP.x1 - 0.09, 2.52, -2.5 + dz, matGold, shopG, false); dg.rotation.z = 0.78;
+          st.castShadow = dg.castShadow = false;
+        }
+        thai('buddha', SHOP.x1 - 0.15, 2.635, -2.5, { s: 0.42, ry: -Math.PI / 2, parent: shopG, cast: false });
+      }
+
+      /* ---------------------------------------------------- the clock
+         Over the door, inside. Its hands are meshes, so the trance's fifteen
+         minutes can pass on it (stage.clockTo). */
+      const clockG = new THREE.Group(); clockG.position.set(CLOCK.x, CLOCK.y, CLOCK.z); clockG.rotation.y = Math.PI; shopG.add(clockG);
+      {
+        const face = new THREE.Mesh(new THREE.CircleGeometry(0.17, 32), texMat(makeClockFace(THREE, cnv), { roughness: 0.6 }));
+        face.position.z = 0.012; clockG.add(face);
+        const rim = new THREE.Mesh(new THREE.TorusGeometry(0.175, 0.012, 8, 32), matBlack); rim.position.z = 0.012; clockG.add(rim);
+      }
+      const hourHand = new THREE.Group(), minHand = new THREE.Group();
+      for (const [hand, L, wd] of [[hourHand, 0.09, 0.012], [minHand, 0.13, 0.008]]) {
+        const b = new THREE.Mesh(new THREE.BoxGeometry(wd, L, 0.004), matBlack); b.position.set(0, L / 2 - 0.015, 0); hand.add(b);
+        hand.position.z = 0.02; clockG.add(hand);
+      }
+      function clockTo(h, m) {
+        minHand.rotation.z = -(m / 60) * Math.PI * 2;
+        hourHand.rotation.z = -((h % 12) + m / 60) / 12 * Math.PI * 2;
+      }
+      clockTo(19, 10);                                      // (World S: ten past seven, closing time)
+
+      /* ------------------------------------------------------- THE ALTAR
+         A red-lacquer cabinet with gilt rims against the back wall, the red
+         board of gilt lattice behind; candles, fruit and orchids on the
+         cabinet's two ends; lilies in tall vases either side, a red valance over
+         the whole, and a strip of warm light washing the board.
+         v21.8 (Chad: "For the altar area, use the row of altar statues that was
+         used in the sakyant ajahn room in ep 3 chp 1, so it looks more like a
+         real amulet shop"): the three tiers and their three Buddhas are gone,
+         and CHAD'S ROW OF ALTAR STATUES stands on the cabinet — the Buddha in
+         his gilt arch at its middle, the hermits, the old masters and the
+         guardians round him (e3c1's `altarrow`, its own facing, its base cloth
+         a few mm off the gilt top, the v19.3 law). The cabinet is 0.70 deep now,
+         the row's own depth at its scale. Before it a LOW STEP carries the
+         incense pot and the offering trays (the tiers' front used to), and the
+         monk who leads the chant sits before the step on his cushion (MONK). */
+      const altarG = new THREE.Group(); shopG.add(altarG);
+      const flames = [];                                     // lit at the celebration: the staff man the left, the owner the right (v21.8)
+      const flameGlowTex = tex(makeGlowTex(THREE, cnv, [255, 196, 120]));
+      let radioLed = null;
+      const ALT_TOP = ALTAR.h, ALT_TOPY = ALT_TOP + 0.02;     // the gilt slab's top: what things stand ON
+      /* the row at 0.74: its base 1.904 x 0.889 and 1.111 tall at 1 (measured, dbg-rowgrid), so 1.41 x 0.66, 0.82 tall;
+         its back 3 cm off the red board. The Buddha at its middle has his face 0.74 up the scan and 0.13 in front of
+         its centre (the grid photographs, front and side) */
+      const ROW_S = 0.74, ROW_D = 0.889 * ROW_S, ROW_Z = SHOP.z0 + 0.042 + ROW_D / 2;
+      const ROW_FACE = { x: ALTAR.x, y: ALT_TOPY + 0.003 + 0.74 * ROW_S, z: ROW_Z - 0.13 * ROW_S };
+      {
+        const { x, z, w, d, h } = ALTAR;
+        box(w, h, d, x, h / 2, z, matRed, altarG);
+        box(w + 0.04, 0.04, d + 0.04, x, h, z, matGold, altarG);
+        box(w + 0.04, 0.08, d + 0.04, x, 0.04, z, matGold, altarG);
+        for (const s of [-1, 1]) {                                     // drawer and cupboard fronts with gilt pulls
+          box(w * 0.42, 0.2, 0.012, x + s * w * 0.23, h - 0.16, z + d / 2 + 0.006, matRedD, altarG, false);
+          box(w * 0.42, 0.5, 0.012, x + s * w * 0.23, 0.38, z + d / 2 + 0.006, matRedD, altarG, false);
+          cyl(0.012, 0.012, 0.04, x + s * w * 0.23, h - 0.16, z + d / 2 + 0.02, matGold, 8, altarG).rotation.x = Math.PI / 2;
+        }
+        solids.push(hidBox(w, 1.4, d, x, 0.7, z));
+        // the board behind
+        plane(2.5, 1.9, texMat(makeAltarScreen(THREE, cnv), { roughness: 0.5, emissive: 0x3a0804, emissiveIntensity: 0.3 }), x, 1.92, SHOP.z0 + 0.012, 0, altarG);
+        // a red valance with a gilt fringe across the ceiling over it
+        box(2.9, 0.22, 0.04, x, SHOP.H - 0.11, z + 0.1, matRed, altarG, false);
+        box(2.9, 0.03, 0.05, x, SHOP.H - 0.225, z + 0.1, matGold, altarG, false);
+        /* THE ROW. A gold Buddha stands in for it until the scan lands (a failed download costs the row, never the
+           altar — v4.7) */
+        const standIn = thai('buddha', x, ALT_TOPY, ROW_Z - 0.05, { s: 1.4, parent: altarG, cast: false });
+        /* TWO LEVELS (the shop is seen across a room): the full row (419k triangles) within 2.6 m of its middle, and
+           beyond it a permissive cut of 126k that wears the full row's own maps (tools/permcut.mjs NOTEX=1) —
+           photographed side by side at 1.3 m only the steps under the principal image differ, and from the mats on.
+           (Chad: "why is the row of altar statues all in gold colour? what happened to the original texture and
+           colours?" — the cut had lost its UVs: prune() drops a vertex attribute no texture reads, and NOTEX had taken
+           the textures, so beyond 2.6 m the whole row sampled one gilt texel. permcut keeps them now, and the file
+           was cut again: the same 125,622 triangles, with their UVs) */
+        Promise.all([parseOnce('altarrow'), parseOnce('altarrowfar')]).then(([gltf, farG]) => {
+          if (!alive) return;
+          const RH = 1.111 * ROW_S, lod = new THREE.LOD();
+          lod.position.set(x, ALT_TOPY + 0.003 + RH / 2, ROW_Z); altarG.add(lod);
+          let mat = null;
+          const level = (src, d) => {
+            const m = src.clone(true); m.scale.setScalar(ROW_S); m.position.y = -RH / 2;
+            m.traverse(o => { if (!o.isMesh) return; o.castShadow = false; o.receiveShadow = true;
+              if (!mat) mat = o.material; else o.material = mat; });
+            lod.addLevel(m, d);
+          };
+          level(gltf.scene, 0); level(farG.scene, 2.6);
+          standIn.visible = false;
+        }).catch(err => { console.warn('altarrow failed to load', err); ctx.loadFail && ctx.loadFail('altarrow', err); });
+        /* the cabinet's two ends (the row leaves 0.45 m each side): a candle at the front corner, the fruit behind it,
+           an orchid at the back */
+        const orange = new THREE.MeshStandardMaterial({ color: 0xf08a1e, roughness: 0.6 }), apple = new THREE.MeshStandardMaterial({ color: 0xb8241a, roughness: 0.4 });
+        for (const s of [-1, 1]) {
+          const ex = x + s * 0.93;
+          thai('candle', ex, ALT_TOPY, z + 0.23, { s: 0.55, cast: false, parent: altarG });
+          thai('orchid', x + s * 1.0, ALT_TOPY, z - 0.25, { s: 0.38, cast: false, parent: altarG });
+          cyl(0.11, 0.095, 0.02, ex, ALT_TOPY + 0.01, z - 0.02, matGold, 18, altarG);
+          for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2;
+            const f = new THREE.Mesh(new THREE.SphereGeometry(0.034, 12, 10), i % 2 ? apple : orange);
+            f.position.set(ex + Math.cos(a) * 0.058, ALT_TOPY + 0.054, z - 0.02 + Math.sin(a) * 0.058); altarG.add(f); }
+          const top = new THREE.Mesh(new THREE.SphereGeometry(0.036, 12, 10), orange); top.position.set(ex, ALT_TOPY + 0.1, z - 0.02); altarG.add(top);
+        }
+        // the candle flames (painted light), over the candles' wicks
+        for (const s of [-1, 1]) {
+          const g = new THREE.Group(); g.position.set(x + s * 0.93, ALT_TOPY + 0.25, z + 0.23); g.visible = false; altarG.add(g);
+          const f = new THREE.Mesh(new THREE.SphereGeometry(0.012, 8, 6), matFlame); f.scale.set(1, 2.2, 1); g.add(f);
+          const glow = new THREE.Mesh(new THREE.PlaneGeometry(0.17, 0.17), new THREE.MeshBasicMaterial({ map: flameGlowTex, transparent: true, depthWrite: false,
+            blending: THREE.AdditiveBlending, opacity: 0.75 }));
+          g.add(glow); g.userData = { core: f, glow };
+          flames.push(g);
+        }
+        /* THE STEP before the cabinet: red lacquer under a gilt slab, the incense pot at its middle, two trays of
+           offerings, the shop's small bell (v21.8: what the tiers' front carried) */
+        box(STEP.w, STEP.h, STEP.d, x, STEP.h / 2, STEP.z, matRed, altarG);
+        box(STEP.w + 0.03, 0.025, STEP.d + 0.03, x, STEP.h, STEP.z, matGold, altarG);
+        box(STEP.w + 0.03, 0.06, STEP.d + 0.03, x, 0.03, STEP.z, matGold, altarG);
+        solids.push(hidBox(STEP.w, STEP.h, STEP.d, x, STEP.h / 2, STEP.z));
+        const STY = STEP.h + 0.0125;
+        thai('incense', x, STY, STEP.z, { s: 0.42, cast: false, parent: altarG });
+        for (const s of [-1, 1]) thai('phan', x + s * 0.42, STY, STEP.z, { s: 0.42, cast: false, parent: altarG });
+        const bellM = cyl(0.03, 0.05, 0.07, x - 0.66, STY + 0.035, STEP.z, matGold, 14, altarG); bellM.castShadow = false;
+        /* lilies either side (the two lotus bowls that stood in front of them are
+           gone: the staff man lit the candles and switched on the radio standing
+           IN them, and the owner's stool stood against one) */
+        for (const s of [-1, 1]) { thai('lily', x + s * 1.48, 0, z + 0.05, { s: 0.8, parent: altarG }); solids.push(hidBox(0.3, 1.0, 0.3, x + s * 1.48, 0.5, z + 0.05)); }   // (walked through until v21.1 — GF-7)
+        // the warm wash on the board (painted: no light)
+        const wash = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 1.6), new THREE.MeshBasicMaterial({ map: tex(makeGlowTex(THREE, cnv, [255, 190, 110])),
+          transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0.32 }));
+        wash.position.set(x, 1.95, SHOP.z0 + 0.03); altarG.add(wash);
+        /* the radio on its own little table (v21.2: Thai traditional music, not a chant). v21.8: it plays while he
+           browses, and the OWNER turns it off on his way to his stool — a monk leads the chant now, and nobody chants
+           over the radio */
+        box(0.42, 0.62, 0.36, x + 1.95, 0.31, z + 0.02, matWood, altarG);
+        const radio = box(0.32, 0.16, 0.14, x + 1.95, 0.7, z + 0.02, matBlack, altarG);
+        for (const s of [-1, 1]) { const sp = new THREE.Mesh(new THREE.CircleGeometry(0.045, 16), matDark); sp.position.set(x + 1.95 + s * 0.1, 0.7, z + 0.095); altarG.add(sp); }
+        radioLed = new THREE.Mesh(new THREE.CircleGeometry(0.007, 10), new THREE.MeshBasicMaterial({ color: 0x6aff8a }));
+        radioLed.position.set(x + 1.95, 0.755, z + 0.093); radioLed.visible = false; altarG.add(radioLed);   // (World S: off)
+        solids.push(hidBox(0.42, 0.8, 0.36, x + 1.95, 0.4, z + 0.02));
+        void radio;
+      }
+
+      /* ------------------------------------------ the back corners
+         Left: the lersi masks over their cabinet. Right: the water dispenser, a
+         standing fan, and the curtained way to the back room. */
+      {
+        /* v21.8 (Chad: "why are there the shelves right next to the altar? Replace them with row of lersi masks instead,
+           those from the sakyant ajahn room. Make sure all the original colours and textures make it through
+           correctly"): the corner beside the altar is CHAD'S ROW OF LERSI MASKS — e3c1's `lersimask`, as it hangs over
+           Ajahn Krukai: its own two shelves on their brackets, its back on the back wall, every mask in its own paint
+           (the scan drawn exactly as it comes: its maps, its material, untouched; no cut, no LOD). Its lower shelf at
+           1.25 m, its spires 0.25 m under the ceiling; under it a low cabinet in the altar's red lacquer and gilt, its
+           candles and incense pot before the masks (e3c1's ledge carried the same). Two red boards stand in until it
+           lands (a failed download costs the masks, never the corner — v4.7) */
+        const sx = -3.0, MS = 1.0, MY = 1.25, CAB_H = 0.9, cz = SHOP.z0 + 0.24;
+        const maskStand = [box(2.0, 0.05, 0.32, sx, MY + 0.05, SHOP.z0 + 0.17, matRed, shopG, false),
+                           box(2.0, 0.05, 0.32, sx, MY + 0.75, SHOP.z0 + 0.17, matRed, shopG, false)];
+        parseOnce('lersimask').then(gltf => {
+          if (!alive) return;
+          const m = gltf.scene.clone(true);
+          m.scale.setScalar(MS); m.position.set(sx, MY, SHOP.z0 + 0.012 + 0.308 * MS);   // (its back, z −0.308 at 1, on the wall)
+          m.traverse(o => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = true; } });
+          shopG.add(m);
+          for (const h of maskStand) h.visible = false;
+        }).catch(err => { console.warn('lersimask failed to load', err); ctx.loadFail && ctx.loadFail('lersimask', err); });
+        box(2.0, CAB_H, 0.46, sx, CAB_H / 2, cz, matRed, shopG);
+        box(2.04, 0.04, 0.5, sx, CAB_H, cz, matGold, shopG);
+        box(2.04, 0.08, 0.5, sx, 0.04, cz, matGold, shopG);
+        for (const s of [-1, 1]) {
+          box(0.86, 0.6, 0.012, sx + s * 0.46, 0.44, cz + 0.236, matRedD, shopG, false);
+          cyl(0.012, 0.012, 0.04, sx + s * 0.08, 0.5, cz + 0.25, matGold, 8, shopG).rotation.x = Math.PI / 2;
+          thai('candle', sx + s * 0.78, CAB_H + 0.02, cz + 0.05, { s: 0.55, cast: false, parent: shopG });
+        }
+        thai('incense', sx, CAB_H + 0.02, cz + 0.06, { s: 0.42, cast: false, parent: shopG });
+        solids.push(hidBox(2.0, 1.4, 0.56, sx, 0.7, SHOP.z0 + 0.28));
+        // the water dispenser, its blue bottle, the cups
+        box(0.32, 1.0, 0.32, 3.95, 0.5, -6.6, matWhite, shopG);
+        cyl(0.13, 0.13, 0.42, 3.95, 1.21, -6.6, new THREE.MeshStandardMaterial({ color: 0x7ab4e6, roughness: 0.15, transparent: true, opacity: 0.75 }), 16, shopG);
+        solids.push(hidBox(0.36, 1.4, 0.36, 3.95, 0.7, -6.6));
+        thai('standfan', 3.2, 0, -6.55, { s: 0.9, ry: -0.6, parent: shopG }); solids.push(hidBox(0.4, 1.2, 0.4, 3.2, 0.6, -6.55));   // (GF-7)
+        // the back room's doorway on the right wall, a maroon curtain in it
+        box(0.04, 2.15, 1.0, SHOP.x1 - 0.02, 1.075, -5.6, matWood, shopG, false);
+        plane(0.92, 2.0, new THREE.MeshStandardMaterial({ color: 0x6a1420, roughness: 0.95, side: THREE.DoubleSide }), SHOP.x1 - 0.05, 1.0, -5.6, -Math.PI / 2, shopG);
+      }
+
+
+      /* v21.18 · GOLDEN MILE'S SHOPS, BUILT (Chad: "Now for the row of shops inside golden mile itself, these shops now
+         look too basic, and they can all be improved much further with more detail"). Each neighbour was ONE painted
+         plane — a band, a name, a few rectangles for goods — flat from every angle the shop's glass and the film's walk
+         see it from. Each is a SHOP now: a recess 2.4 m deep with its back and side walls, a ceiling with its lit
+         panels, a floor of its own; an aluminium front with glass and its doors folded open; a lightbox on a fascia
+         over it; and inside and out what that kind of shop holds — a grocer's shelves, fridge and crates of fruit at the
+         door, a travel agent's desk, brochures and A-board, a kitchen's counter, tables and menu, a massage parlour's
+         recliners and curtain, a goldsmith's lit cases, a phone shop's counter and wall of cases, a money changer's
+         rates, a coach agency's departures and luggage, a snack shop, a unit shuttered TO LET. Lit by World A's own
+         light and by painted glows (no lamp: the v15.1 law); nothing casts or takes a shadow; and MERGED — a batch a
+         material and the goods instanced, a dozen draws for the corridor. A bay is built in its own frame (x across it
+         to the viewer's right, z out toward the corridor, its front at z 0) and the frame turns it to face its row's
+         way. The film's podium on Beach Road takes the same builder (v21.19). */
+      const SHOP_SIGNS = tex(makeMallSigns(THREE, cnv)), SHOP_POSTERS = tex(makeMallPosters(THREE, cnv));
+      const SHOP_SEATED = [];      // the diners a row lists: seated further down, once the baked stills exist (sitterStill)
+      const SIGN_CELL = (i) => [0.004, 1 - (i + 1) * 128 / 1280 + 0.004, 0.996, 1 - i * 128 / 1280 - 0.004];
+      const POST_CELL = (i) => { const cx = i % 4, cy = Math.floor(i / 4); return [cx / 4 + 0.004, 1 - (cy + 1) / 4 + 0.004, (cx + 1) / 4 - 0.004, 1 - cy / 4 - 0.004]; };
+      const PC = (k) => POST_CELL(MALL_POSTER[k]);
+      /* a kind: its sign (a row of the signs' atlas), its walls, floor and light, how it is dressed, its goods' colours */
+      const SHOP_KINDS = {
+        travel:  { sign: 0, wall: 0xe6edf4, floor: 0xb9c0c8, lamp: 0xf4f8ff, dress: 'travel' },
+        grocery: { sign: 1, wall: 0xf0efe6, floor: 0xc4c2b4, lamp: 0xf6fbff, dress: 'grocery', pal: [0xd8261c, 0xf2b81c, 0x2a8a3a, 0x1e5aa8, 0xe86a1a, 0xf4f0e6, 0x8a2ad8, 0xc8a46a] },
+        snack:   { sign: 9, wall: 0xf6eedc, floor: 0xc8bca4, lamp: 0xfff6e6, dress: 'grocery', pal: [0xf2b81c, 0xe84a8a, 0xd8261c, 0x7ac83a, 0xf2783a, 0x8a4a2a, 0xfff2c8, 0x3ab4d8], noFridge: true },
+        food:    { sign: 2, wall: 0xf4e6d0, floor: 0xa89a86, lamp: 0xfff2dc, dress: 'food' },
+        massage: { sign: 3, wall: 0xf0d6c8, floor: 0x8a6a56, lamp: 0xffe6cc, dress: 'massage' },
+        gold:    { sign: 4, wall: 0x8a1610, floor: 0xd8cfc0, lamp: 0xfff2d8, dress: 'gold' },
+        phone:   { sign: 5, wall: 0xeef0f2, floor: 0xb4b8bc, lamp: 0xf0f6ff, dress: 'phone', pal: [0x1a1a1a, 0xe8e8e8, 0xd8261c, 0x1e5aa8, 0xf2b81c, 0x2a8a3a, 0xe84a8a, 0x8a2ad8] },
+        money:   { sign: 7, wall: 0xe4ece6, floor: 0xb0b4ae, lamp: 0xf2fff6, dress: 'money' },
+        tickets: { sign: 8, wall: 0xf4ecd8, floor: 0xb8b0a0, lamp: 0xfff8e8, dress: 'tickets' },
+        shut:    { sign: 6, dress: 'shut' } };
+      const _sm4 = new THREE.Matrix4(), _sq4 = new THREE.Quaternion(), _se4 = new THREE.Euler(0, 0, 0, 'YXZ'), _sv4 = new THREE.Vector3(), _ss4 = new THREE.Vector3(), _sn3 = new THREE.Matrix3(), _sc4 = new THREE.Color();
+      /* a batch, World A's (buildStreet's shape): every piece posed in the current bay's frame, merged into one mesh */
+      function shopBatch(parent) {
+        const P = [], N = [], C = [], U = [], I = []; let FR = null;
+        const B = {
+          frame(m) { FR = m; return B; },
+          add(geo, x, y, z, col, o = {}) {
+            _se4.set(o.rx || 0, o.ry || 0, o.rz || 0, 'YXZ'); _sq4.setFromEuler(_se4);
+            _sm4.compose(_sv4.set(x, y, z), _sq4, _ss4.set(1, 1, 1)).premultiply(FR); _sn3.getNormalMatrix(_sm4);
+            _sc4.set(col);
+            const pa = geo.attributes.position, na = geo.attributes.normal, ua = geo.attributes.uv, base = P.length / 3;
+            for (let i = 0; i < pa.count; i++) {
+              _sv4.fromBufferAttribute(pa, i).applyMatrix4(_sm4); P.push(_sv4.x, _sv4.y, _sv4.z);
+              _sv4.fromBufferAttribute(na, i).applyMatrix3(_sn3).normalize(); N.push(_sv4.x, _sv4.y, _sv4.z);
+              C.push(_sc4.r, _sc4.g, _sc4.b);
+              if (o.cell) { const q = o.cell; U.push(q[0] + ua.getX(i) * (q[2] - q[0]), q[1] + ua.getY(i) * (q[3] - q[1])); }
+              else U.push(ua.getX(i), ua.getY(i));
+            }
+            if (geo.index) for (let i = 0; i < geo.index.count; i++) I.push(base + geo.index.getX(i));
+            else for (let i = 0; i < pa.count; i++) I.push(base + i);
+            geo.dispose();
+            return B;
+          },
+          box(w, h, d, x, y, z, col, o) { return B.add(new THREE.BoxGeometry(w, h, d), x, y, z, col, o); },
+          quad(w, h, x, y, z, col, o) { return B.add(new THREE.PlaneGeometry(w, h), x, y, z, col, o); },
+          cyl(r, h, x, y, z, col, o = {}) { return B.add(new THREE.CylinderGeometry(o.r1 ?? r, r, h, o.seg || 12), x, y, z, col, o); },
+          build(mat) {
+            if (!I.length) return null;
+            const g = new THREE.BufferGeometry();
+            g.setAttribute('position', new THREE.Float32BufferAttribute(P, 3));
+            g.setAttribute('normal', new THREE.Float32BufferAttribute(N, 3));
+            g.setAttribute('color', new THREE.Float32BufferAttribute(C, 3));
+            g.setAttribute('uv', new THREE.Float32BufferAttribute(U, 2));
+            g.setIndex(P.length / 3 > 65535 ? new THREE.Uint32BufferAttribute(I, 1) : new THREE.Uint16BufferAttribute(I, 1));
+            g.computeBoundingSphere();
+            const m = new THREE.Mesh(g, mat); m.castShadow = false; m.receiveShadow = false;
+            parent.add(m); return m;
+          },
+        };
+        return B;
+      }
+      /* a row of bays: [{ x, z, ry, kind, seed }], each a whole shop; o.H the ceiling it stands under (the fascia
+         reaches it), o.fascia its colour, o.mats to share one set of materials between rows */
+      function shopRow(parent, bays, o = {}) {
+        const lit = shopBatch(parent), metal = shopBatch(parent), glow = shopBatch(parent), post = shopBatch(parent),
+              bright = shopBatch(parent), sign = shopBatch(parent), glass = shopBatch(parent), shut = shopBatch(parent);
+        const goods = [], cans = [], fruit = [], gold = [];
+        const FR = new THREE.Matrix4(); let BAY = null;
+        const HW = 1.94, D = 2.4, CH = 2.75, MH = o.H || 3.6, ALU = 0xc4c8cc, STEEL = 0x9aa0a6;
+        const put = (list, x, y, z, sx, sy, sz, col, ry = 0, rx = 0) => {
+          _se4.set(rx, ry, 0, 'YXZ'); _sq4.setFromEuler(_se4);
+          list.push({ m: new THREE.Matrix4().compose(_sv4.set(x, y, z), _sq4, _ss4.set(sx, sy, sz)).premultiply(FR), col });
+        };
+        /* goods along a shelf board from u0 to u1 (x when along x, z when along z), standing on height y, against `back`
+           (the wall side's coordinate): packets, cans and bottles, a little gap between, dealt from the bay's own stream */
+        const stock = (rnd, pal, along, u0, u1, y, back, depth, face, maxH = 0.32) => {
+          let u = u0 + 0.02;
+          while (u < u1 - 0.06) {
+            const kind = rnd(), col = pal[Math.floor(rnd() * pal.length)];
+            if (kind < 0.55) {                                         // a packet or a box
+              const w = 0.07 + rnd() * 0.1, h = Math.min(maxH, 0.1 + rnd() * 0.24), d = Math.min(depth - 0.04, 0.1 + rnd() * 0.12);
+              if (u + w > u1) break;
+              const c = back + face * (d / 2 + 0.02);
+              if (along === 'x') put(goods, u + w / 2, y + h / 2, c, w, h, d, col); else put(goods, c, y + h / 2, u + w / 2, d, h, w, col);
+              u += w + 0.012;
+            } else {                                                   // a row of cans or bottles, front to back
+              const tall = rnd() < 0.4, r = tall ? 0.034 : 0.032, h = tall ? Math.min(maxH, 0.26) : 0.12;
+              for (let k = 0; k < 2; k++) {
+                const c = back + face * (0.06 + k * 0.08);
+                if (along === 'x') put(cans, u + r, y + h / 2, c, r * 2, h, r * 2, col); else put(cans, c, y + h / 2, u + r, r * 2, h, r * 2, col);
+              }
+              u += r * 2 + 0.01;
+            }
+          }
+        };
+        /* an open steel shelf unit against a wall: uprights, boards, stock on every board */
+        const shelfX = (rnd, pal, x0, x1, zBack, depth, tiers) => {
+          for (const x of [x0, x1]) metal.box(0.04, tiers[tiers.length - 1] + 0.1, depth, x, (tiers[tiers.length - 1] + 0.1) / 2, zBack + depth / 2, STEEL);
+          tiers.forEach((y, i) => { metal.box(x1 - x0, 0.025, depth, (x0 + x1) / 2, y, zBack + depth / 2, i % 2 ? 0xd8dadc : 0xcfd2d6);
+            if (i < tiers.length - 1) stock(rnd, pal, 'x', x0 + 0.03, x1 - 0.03, y + 0.013, zBack, depth, 1, Math.min(0.32, tiers[i + 1] - y - 0.06)); });
+          lit.quad(x1 - x0, tiers[tiers.length - 1], (x0 + x1) / 2, tiers[tiers.length - 1] / 2, zBack + 0.004, 0xdedcd4);   // its back panel
+        };
+        const shelfZ = (rnd, pal, z0, z1, xBack, depth, tiers, face) => {     // face −1: against the right wall, facing −x
+          for (const z of [z0, z1]) metal.box(depth, tiers[tiers.length - 1] + 0.1, 0.04, xBack + face * depth / 2, (tiers[tiers.length - 1] + 0.1) / 2, z, STEEL);
+          tiers.forEach((y, i) => { metal.box(depth, 0.025, z1 - z0, xBack + face * depth / 2, y, (z0 + z1) / 2, i % 2 ? 0xd8dadc : 0xcfd2d6);
+            if (i < tiers.length - 1) stock(rnd, pal, 'z', z0 + 0.03, z1 - 0.03, y + 0.013, xBack, depth, face, Math.min(0.32, tiers[i + 1] - y - 0.06)); });
+        };
+        const chair = (x, z, col, ry = 0) => {                           // a plastic chair: seat, back, four legs
+          const c = Math.cos(ry), s = Math.sin(ry), at = (dx, dz) => [x + dx * c + dz * s, z - dx * s + dz * c];
+          let p = at(0, 0); lit.box(0.42, 0.05, 0.42, p[0], 0.45, p[1], col, { ry });
+          p = at(0, 0.2); lit.box(0.42, 0.4, 0.04, p[0], 0.68, p[1], col, { ry, rx: 0.12 });
+          for (const [dx, dz] of [[-0.18, -0.18], [0.18, -0.18], [-0.18, 0.18], [0.18, 0.18]]) { p = at(dx, dz); metal.box(0.025, 0.44, 0.025, p[0], 0.22, p[1], 0x444444); }
+        };
+        const aBoard = (x, z, cell, frame = 0x2a2a2a) => {                  // an A-board on the corridor's floor
+          lit.box(0.54, 0.86, 0.03, x, 0.44, z, frame, { rx: -0.16 });
+          post.quad(0.48, 0.48, x, 0.56, z, 0xffffff, { rx: -0.16, cell });
+          lit.box(0.54, 0.86, 0.03, x, 0.44, z - 0.14, frame, { rx: 0.16 });
+        };
+        const pot = (x, z, h = 0.34) => {                                  // a potted palm: a pot, a fan of leaves
+          lit.cyl(0.15, h, x, h / 2, z, 0xa8582a, { r1: 0.19, seg: 12 });
+          for (let k = 0; k < 7; k++) put(goods, x + Math.cos(k * 0.9) * 0.12, h + 0.32, z + Math.sin(k * 0.9) * 0.12, 0.05, 0.62, 0.16, 0x2f7a32, k * 0.9, 0.35);
+        };
+        const DRESS = {
+          grocery(K, rnd) {
+            shelfX(rnd, K.pal, -1.86, 1.86, -D + 0.02, 0.42, [0.1, 0.5, 0.9, 1.3, 1.7, 2.06]);
+            shelfZ(rnd, K.pal, -1.92, -0.62, HW - 0.02, 0.36, [0.1, 0.48, 0.86, 1.24, 1.62], -1);
+            if (!K.noFridge) {                                             // the drinks fridge on the left: open-fronted behind glass, lit inside
+              const fx = -HW + 0.36, fz = -1.25;
+              lit.box(0.05, 2.0, 0.64, -HW + 0.035, 1.0, fz, 0xe6e6e8);
+              for (const s of [-1, 1]) lit.box(0.7, 2.0, 0.04, fx, 1.0, fz + s * 0.3, 0xe6e6e8);
+              lit.box(0.7, 0.16, 0.64, fx, 0.08, fz, 0xe6e6e8); lit.box(0.72, 0.24, 0.66, fx, 2.12, fz, 0xc8201a);
+              glow.quad(0.56, 1.72, -HW + 0.062, 1.02, fz, 0xdcecff, { ry: Math.PI / 2 });
+              for (let r = 0; r < 4; r++) {
+                metal.box(0.6, 0.02, 0.56, fx + 0.02, 0.28 + r * 0.43, fz, 0xd0d4d8);
+                for (let k = 0; k < 6; k++) for (let j = 0; j < 2; j++) put(cans, -HW + 0.34 + j * 0.16, 0.42 + r * 0.43, fz - 0.22 + k * 0.088, 0.062, 0.25, 0.062, K.pal[(r * 3 + k + j) % K.pal.length]);
+              }
+              glass.quad(0.6, 1.76, -HW + 0.712, 1.02, fz, 0xffffff, { ry: Math.PI / 2 });
+            } else shelfZ(rnd, K.pal, -1.92, -0.62, -HW + 0.02, 0.36, [0.1, 0.48, 0.86, 1.24, 1.62], 1);
+            // the till by the door
+            lit.box(0.86, 0.95, 0.46, 1.25, 0.475, -0.5, 0xd8d0c0); lit.box(0.92, 0.04, 0.52, 1.25, 0.97, -0.5, 0x3a3a3a);
+            lit.box(0.3, 0.16, 0.22, 1.2, 1.07, -0.55, 0x1a1a1a); glow.quad(0.2, 0.1, 1.2, 1.12, -0.437, 0x7ad8ff);
+            // at the door: produce in crates on a stepped stand, sacks of rice
+            lit.box(1.5, 0.42, 0.5, -1.0, 0.21, 0.4, 0x6a4a2a); lit.box(1.5, 0.3, 0.32, -1.0, 0.57, 0.3, 0x6a4a2a);
+            const cr = [[-1.37, 0.47, 0.5, 0xf2b81c], [-0.63, 0.47, 0.5, 0x6ab42a], [-1.37, 0.77, 0.3, 0xd8201a], [-0.63, 0.77, 0.3, 0xf28a1c]];
+            for (const [x, y, z, col] of cr) {
+              lit.box(0.66, 0.14, 0.32, x, y, z, rnd() < 0.5 ? 0x2a6a3a : 0x9a6a3a);
+              for (let k = 0; k < 18; k++) put(fruit, x - 0.27 + (k % 6) * 0.11 + rnd() * 0.02, y + 0.08 + (k > 11 ? 0.06 : 0), z - 0.1 + Math.floor(k / 6) % 2 * 0.1, 0.1, 0.09, 0.1, col);
+            }
+            for (let k = 0; k < 3; k++) { lit.box(0.44, 0.22, 0.62, 1.32, 0.11 + k * 0.22, 0.36, 0xf4f0e2, { ry: k * 0.08 }); }
+            post.quad(0.4, 0.3, 1.32, 0.55, 0.672, 0xffffff, { cell: PC('rice') });
+            post.quad(0.5, 0.5, -1.3, 1.5, -0.025, 0xffffff, { cell: PC('noodles') });
+          },
+          travel(K, rnd) {
+            lit.box(2.3, 0.75, 0.6, -0.15, 0.375, -1.78, 0xe8eef4); lit.box(2.4, 0.04, 0.66, -0.15, 0.77, -1.78, 0x2a4a7a);
+            for (const x of [-0.75, 0.45]) { lit.box(0.5, 0.33, 0.04, x, 1.04, -1.9, 0x121214); glow.quad(0.46, 0.29, x, 1.04, -1.878, 0x9ad0ff); metal.box(0.04, 0.12, 0.04, x, 0.85, -1.9, 0x333333); }
+            chair(-0.75, -2.15, 0x2a2a2e, Math.PI); chair(-0.6, -1.12, 0x1e5aa8); chair(0.45, -1.12, 0x1e5aa8);
+            [['bangkok', -1.2], ['phuket', 0], ['hatyai', 1.2]].forEach(([k, x]) => { lit.box(0.68, 0.68, 0.02, x, 1.78, -D + 0.012, 0xf2f2f2); post.quad(0.62, 0.62, x, 1.78, -D + 0.024, 0xffffff, { cell: PC(k) }); });
+            // the brochure rack on the right wall, the departures on the left
+            lit.box(0.04, 1.2, 1.1, HW - 0.04, 1.3, -1.0, 0xd8d8d8);
+            for (let r = 0; r < 4; r++) for (let k = 0; k < 4; k++) put(goods, HW - 0.09, 0.86 + r * 0.29, -1.38 + k * 0.25, 0.03, 0.22, 0.16, [0x1e5aa8, 0xf2b81c, 0xd8261c, 0x2a8a3a, 0xe84a8a][(r + k * 2) % 5], 0, 0.18);
+            bright.quad(0.9, 0.9, -HW + 0.02, 1.6, -1.2, 0xffffff, { ry: Math.PI / 2, cell: PC('timetable') });
+            aBoard(1.3, 0.55, PC('coach'));
+            // a brochure stand at the door
+            metal.box(0.04, 1.2, 0.04, -1.35, 0.6, 0.42, 0x555555); metal.box(0.4, 0.03, 0.3, -1.35, 0.02, 0.42, 0x555555);
+            for (let k = 0; k < 3; k++) put(goods, -1.35, 0.55 + k * 0.28, 0.5, 0.36, 0.22, 0.03, [0x2a8a3a, 0x1e5aa8, 0xe86a1a][k], 0, -0.2);
+            post.quad(0.48, 0.48, 1.32, 1.45, -0.025, 0xffffff, { cell: PC('phuket') });
+          },
+          food(K, rnd) {
+            metal.box(3.72, 0.92, 0.62, 0, 0.46, -D + 0.33, 0xc0c4c8); metal.box(3.76, 0.04, 0.66, 0, 0.94, -D + 0.33, 0xdadde0);
+            for (let k = 0; k < 4; k++) put(cans, -1.3 + k * 0.85, 1.08, -D + 0.3, 0.32, 0.26, 0.32, 0xb8bcc0);         // the pots
+            glass.quad(3.6, 0.3, 0, 1.12, -D + 0.66, 0xffffff);
+            for (let k = 0; k < 6; k++) put(goods, -1.5 + k * 0.6, 0.985, -D + 0.52, 0.42, 0.05, 0.22, [0xd8501c, 0xe8c040, 0x3a8a2a, 0x7a3a1a, 0xc8642a, 0xf0e0b0][k]);
+            bright.quad(1.5, 0.75, -0.55, 1.88, -D + 0.012, 0xffffff, { cell: PC('menu') });
+            post.quad(0.8, 0.8, 1.15, 1.85, -D + 0.012, 0xffffff, { cell: PC('tomyum') });
+            for (const x of [-0.95, 0.85]) {                               // two tables, stools round them
+              lit.box(0.64, 0.03, 0.64, x, 0.74, -1.05, 0xe6dcc8); metal.box(0.05, 0.72, 0.05, x, 0.37, -1.05, 0x6a6a6a); metal.box(0.4, 0.02, 0.4, x, 0.01, -1.05, 0x6a6a6a);
+              for (const [dx, dz] of [[-0.45, 0], [0.45, 0], [0, 0.42]]) lit.cyl(0.15, 0.45, x + dx, 0.225, -1.05 + dz, (dx + dz) > 0 ? 0xd8261c : 0x1e5aa8, { r1: 0.13 });
+            }
+            /* two at lunch, one at each table, turned to it (real seated people baked to a still — the v21.16 rule; a
+               phone seats the one) */
+            const dine = (who, lx, lz, fx, fz, low) => {
+              const v = new THREE.Vector3(lx, 0.45, lz).applyMatrix4(FR);
+              SHOP_SEATED.push({ who, parent, x: v.x, y: v.y, z: v.z, ry: (BAY.ry || 0) + Math.atan2(fx, fz), low });
+            };
+            dine('sitman', -1.4, -1.05, 1, 0, true);
+            dine('sitwoman', 1.3, -1.05, -1, 0, false);
+            // outside: a table for two and the menu on an easel
+            lit.box(0.6, 0.03, 0.6, -1.25, 0.74, 0.5, 0xe6dcc8); metal.box(0.05, 0.72, 0.05, -1.25, 0.37, 0.5, 0x6a6a6a);
+            for (const dx of [-0.42, 0.42]) lit.cyl(0.15, 0.45, -1.25 + dx, 0.225, 0.5, 0x1e5aa8, { r1: 0.13 });
+            aBoard(1.32, 0.5, PC('menu'), 0x5a2a0a);
+            post.quad(0.46, 0.46, 1.32, 1.5, -0.025, 0xffffff, { cell: PC('tomyum') });
+          },
+          massage(K, rnd) {
+            lit.box(1.0, 0.95, 0.46, 1.28, 0.475, -0.62, 0x6a2a3a); lit.box(1.06, 0.04, 0.52, 1.28, 0.97, -0.62, 0xe8d8c8);
+            lit.cyl(0.07, 0.14, 1.45, 1.06, -0.62, 0xf4f2ee);                                                                    // an orchid on the desk
+            for (let k = 0; k < 6; k++) put(fruit, 1.45 + Math.sin(k) * 0.08, 1.25 + k * 0.05, -0.62 + Math.cos(k) * 0.05, 0.07, 0.05, 0.07, k % 2 ? 0xd85aa8 : 0xf4e6f4);
+            for (const x of [-1.25, -0.12]) {                               // two foot-massage recliners
+              lit.box(0.64, 0.36, 1.0, x, 0.18, -1.72, 0x4a1414); lit.box(0.62, 0.12, 0.6, x, 0.42, -1.82, 0x7a2424);
+              lit.box(0.62, 0.78, 0.14, x, 0.78, -2.18, 0x7a2424, { rx: -0.34 });
+              for (const s of [-1, 1]) lit.box(0.1, 0.2, 0.62, x + s * 0.33, 0.56, -1.86, 0x4a1414);
+              lit.box(0.4, 0.3, 0.4, x, 0.15, -0.92, 0x7a2424); put(goods, x, 0.31, -0.92, 0.36, 0.02, 0.36, 0xf2f0ea);
+            }
+            metal.box(1.5, 0.03, 0.03, 1.15, 2.28, -1.45, 0xc8b89a);        // the curtain on its rail
+            for (let k = 0; k < 8; k++) lit.box(0.19, 2.04, 0.02, 0.48 + k * 0.19, 1.24, -1.45 + (k % 2) * 0.05, 0xd8b88a, { ry: k % 2 ? 0.32 : -0.32 });
+            post.quad(0.7, 0.7, -0.7, 1.72, -D + 0.012, 0xffffff, { cell: PC('massage') });
+            lit.box(0.66, 0.66, 0.02, 0.62, 1.78, -D + 0.012, 0xc89a3a); post.quad(0.6, 0.6, 0.62, 1.78, -D + 0.024, 0xffffff, { cell: PC('elephant') });
+            // outside: the price list on an easel, a palm
+            for (const s of [-1, 1]) metal.box(0.03, 1.3, 0.03, -1.3 + s * 0.22, 0.62, 0.52, 0x5a3a1a, { rz: s * -0.12 });
+            post.quad(0.52, 0.52, -1.3, 1.02, 0.56, 0xffffff, { rx: -0.12, cell: PC('massage') });
+            pot(1.55, 0.38);
+          },
+          gold(K, rnd) {
+            const cases = [[0, -1.98, 3.5, 0.55], [-1.58, -1.12, 0.5, 1.0], [1.58, -1.12, 0.5, 1.0]];
+            for (const [x, z, w, d] of cases) {                              // the lit glass cases: a red base, a bright bed, gold on it, glass over
+              lit.box(w, 0.86, d, x, 0.43, z, 0x5a0a08); glow.quad(w - 0.06, d - 0.06, x, 0.865, z, 0xfff0c8, { rx: -Math.PI / 2 });
+              glass.box(w, 0.3, d, x, 1.02, z, 0xffffff);
+              metal.box(w + 0.02, 0.025, d + 0.02, x, 1.18, z, 0xd8b04a);
+              const n = Math.round(w * d * 26);
+              for (let k = 0; k < n; k++) {
+                const gx = x + (rnd() - 0.5) * (w - 0.12), gz = z + (rnd() - 0.5) * (d - 0.12);
+                if (rnd() < 0.5) put(gold, gx, 0.885, gz, 0.11, 0.015, 0.11, 0xffc84a, rnd() * 3); else put(gold, gx, 0.9, gz, 0.04, 0.05, 0.16, 0xffd86a, rnd() * 3);
+              }
+            }
+            lit.box(1.0, 1.0, 0.02, 0, 1.78, -D + 0.012, 0xd8a83a); bright.quad(0.92, 0.92, 0, 1.78, -D + 0.024, 0xffffff, { cell: PC('goldrate') });
+            lit.box(0.6, 0.9, 0.55, -1.5, 0.45, -2.05, 0x3a3a3c); metal.box(0.08, 0.08, 0.04, -1.45, 0.6, -1.76, 0xd8b04a);   // the safe
+            for (const x of [-1.2, 1.2]) put(fruit, x, 2.35, -1.2, 0.26, 0.32, 0.26, 0xd8201a);                                // two red lanterns
+            for (const s of [-1, 1]) for (let k = 0; k < 6; k++) metal.box(0.025, 2.2, 0.025, s * (HW - 0.12 - k * 0.06), 1.1, -0.06, 0x8a8e92);   // the grille, folded back
+          },
+          phone(K, rnd) {
+            lit.box(2.6, 0.95, 0.5, -0.4, 0.475, -1.22, 0x2a2a2e); glass.box(2.6, 0.04, 0.5, -0.4, 0.97, -1.22, 0xffffff);
+            for (let k = 0; k < 9; k++) { const x = -1.55 + k * 0.29; put(goods, x, 0.93, -1.22, 0.075, 0.012, 0.15, 0x111111, 0.1); glow.quad(0.06, 0.12, x, 0.937, -1.22, [0x3a9ae8, 0xe84a8a, 0x3ad88a][k % 3], { rx: -Math.PI / 2, rz: 0.1 }); }
+            lit.box(3.6, 1.62, 0.03, 0, 1.46, -D + 0.016, 0xdcdcd4);                                                          // the wall of cases
+            for (let r = 0; r < 6; r++) for (let c = 0; c < 8; c++) put(goods, -1.47 + c * 0.42, 0.86 + r * 0.25, -D + 0.05, 0.13, 0.2, 0.025, K.pal[(r * 5 + c * 3) % K.pal.length]);
+            lit.box(0.04, 0.52, 0.88, HW - 0.04, 1.95, -1.4, 0x111111); glow.quad(0.82, 0.46, HW - 0.065, 1.95, -1.4, 0x3a8ae8, { ry: -Math.PI / 2 });
+            chair(-0.4, -1.9, 0x2a2a2e, Math.PI);
+            aBoard(1.32, 0.5, PC('sim'), 0x0a1a4a);
+            post.quad(0.46, 0.46, -1.32, 1.45, -0.025, 0xffffff, { cell: PC('sim') });
+          },
+          money(K, rnd) {
+            lit.box(3.8, 1.02, 0.5, 0, 0.51, -0.95, 0x1e3a2e); lit.box(3.84, 0.04, 0.56, 0, 1.04, -0.95, 0xc8ccc4);
+            glass.quad(3.8, 1.2, 0, 1.66, -0.95, 0xffffff); metal.box(3.84, 0.04, 0.04, 0, 2.27, -0.95, ALU);
+            for (const x of [-1.0, 1.0]) { lit.box(0.4, 0.06, 0.24, x, 1.07, -0.85, 0x2a2a2a); metal.box(0.03, 1.2, 0.03, x * 0.5, 1.66, -0.95, ALU); }
+            bright.quad(1.5, 1.5, 0.3, 1.55, -D + 0.012, 0xffffff, { cell: PC('rates') });
+            lit.box(0.6, 0.9, 0.55, -1.45, 0.45, -2.05, 0x3a3a3c);
+            post.quad(0.4, 0.4, -1.35, 1.6, -0.025, 0xffffff, { cell: PC('rates') });     // (on the left pane: on the right it stood over the big board)
+          },
+          tickets(K, rnd) {
+            lit.box(1.9, 0.95, 0.56, -0.7, 0.475, -1.6, 0xd8261c); lit.box(1.96, 0.04, 0.6, -0.7, 0.97, -1.6, 0xf4f0e6);
+            lit.box(0.48, 0.32, 0.04, -0.9, 1.12, -1.75, 0x121214); glow.quad(0.44, 0.28, -0.9, 1.12, -1.728, 0x9ad0ff);
+            chair(-0.7, -2.05, 0x2a2a2e, Math.PI); chair(-0.9, -0.95, 0xd8261c);
+            bright.quad(1.2, 1.2, 0.95, 1.7, -D + 0.012, 0xffffff, { cell: PC('timetable') });
+            post.quad(0.7, 0.7, -0.8, 1.85, -D + 0.012, 0xffffff, { cell: PC('coach') });
+            post.quad(0.6, 0.6, -HW + 0.012, 1.7, -0.9, 0xffffff, { ry: Math.PI / 2, cell: PC('hatyai') });
+            lit.box(0.42, 0.62, 0.24, 1.3, 0.31, -0.55, 0x2a4a8a); metal.box(0.2, 0.2, 0.02, 1.3, 0.72, -0.55, 0x333333);        // luggage, waiting
+            lit.box(0.38, 0.55, 0.22, 1.62, 0.275, -0.85, 0x8a2a2a);
+            for (let k = 0; k < 3; k++) lit.box(0.5, 0.36, 0.4, -1.55 + (k % 2) * 0.06, 0.18 + k * 0.36, -0.45, 0xb88a5a, { ry: k * 0.1 });
+            aBoard(-1.3, 0.55, PC('hatyai'), 0x8e0e08);
+            post.quad(0.46, 0.46, 1.32, 1.5, -0.025, 0xffffff, { cell: PC('coach') });
+          },
+        };
+        for (const bay of bays) {
+          FR.makeRotationY(bay.ry || 0).setPosition(bay.x, 0, bay.z); BAY = bay;
+          for (const b of [lit, metal, glow, post, bright, sign, glass, shut]) b.frame(FR);
+          const K = SHOP_KINDS[bay.kind], rnd = rng(bay.seed || 2118);
+          // the fascia over the front and its lightbox (every bay, the shut one's long dark)
+          lit.quad(2 * HW + 0.24, MH - CH, 0, CH + (MH - CH) / 2, 0.004, o.fascia || 0xe2d8c6);
+          lit.box(3.74, 0.64, 0.12, 0, CH + 0.43, 0.064, 0x1c1c1e);
+          sign.quad(3.64, 0.56, 0, CH + 0.43, 0.126, K.dress === 'shut' || bay.closed ? 0x8a8a8a : 0xffffff, { cell: SIGN_CELL(K.sign) });
+          if (K.dress === 'shut' || bay.closed) {                          // a roller shutter down, a poster on it
+            shut.quad(2 * HW, CH, 0, CH / 2, -0.02, 0xcfd2d0);
+            lit.box(2 * HW, 0.2, 0.24, 0, CH - 0.1, -0.06, 0x5c6066);
+            if (K.dress === 'shut') {                                      // (World S: a shop only closed for the night has no TO LET)
+              post.quad(0.62, 0.62, 0.7, 1.45, -0.012, 0xffffff, { cell: PC('tolet') });
+              post.quad(0.5, 0.5, -0.9, 1.3, -0.012, 0xf0e8e0, { cell: PC('calendar'), rz: 0.04 });
+            }
+            continue;
+          }
+          // the shell: floor, back and side walls, ceiling and its lit panels, the skirting
+          lit.quad(2 * HW, D, 0, 0.006, -D / 2, K.floor, { rx: -Math.PI / 2 });
+          lit.quad(2 * HW, CH, 0, CH / 2, -D, K.wall);
+          lit.quad(D, CH, -HW, CH / 2, -D / 2, K.wall, { ry: Math.PI / 2 });
+          lit.quad(D, CH, HW, CH / 2, -D / 2, K.wall, { ry: -Math.PI / 2 });
+          lit.quad(2 * HW, D, 0, CH, -D / 2, 0xeeece6, { rx: Math.PI / 2 });
+          for (const sx of [-0.95, 0.95]) glow.quad(0.56, 1.12, sx, CH - 0.008, -D * 0.52, K.lamp, { rx: Math.PI / 2 });
+          lit.box(2 * HW, 0.09, 0.012, 0, 0.045, -D + 0.006, 0x5a5450);
+          // the front: aluminium posts, the door's mullions, a transom, a sill; glass in the sides and over the door
+          for (const s of [-1, 1]) metal.box(0.07, CH, 0.09, s * (HW - 0.035), CH / 2, 0, ALU);
+          for (const s of [-1, 1]) metal.box(0.05, 2.25, 0.08, s * 0.6, 1.125, 0, ALU);
+          metal.box(2 * HW, 0.06, 0.09, 0, 2.25, 0, ALU); metal.box(2 * HW, 0.05, 0.1, 0, 0.025, 0, ALU);
+          for (const s of [-1, 1]) glass.quad(HW - 0.66, 2.16, s * (0.6 + (HW - 0.6) / 2), 1.13, -0.012, 0xffffff);
+          glass.quad(2 * HW - 0.1, 0.42, 0, 2.5, -0.012, 0xffffff);
+          /* the two door leaves folded back into the shop: glass in an aluminium FRAME — two stiles, a head rail, a kick
+             rail and a pull bar on each face (the first build drew each leaf as one solid aluminium slab, and every front
+             read as two grey boards standing in its doorway) */
+          for (const s of [-1, 1]) {
+            const lx = s * 0.57;
+            for (const z of [-0.06, -0.56]) metal.box(0.035, 2.18, 0.045, lx, 1.11, z, ALU);
+            metal.box(0.035, 0.07, 0.54, lx, 2.165, -0.31, ALU); metal.box(0.035, 0.18, 0.54, lx, 0.11, -0.31, ALU);
+            for (const f of [-1, 1]) {
+              metal.box(0.018, 0.46, 0.018, lx + f * 0.05, 1.08, -0.47, 0xdfe2e4);
+              for (const y of [0.88, 1.28]) metal.box(0.04, 0.014, 0.014, lx + f * 0.03, y, -0.47, 0xdfe2e4);
+            }
+            glass.quad(0.5, 2.1, lx, 1.11, -0.31, 0xffffff, { ry: s * Math.PI / 2 });
+          }
+          lit.box(1.1, 0.012, 0.56, 0, 0.012, -0.34, 0x34302e);          // the doormat
+          DRESS[K.dress](K, rnd);
+        }
+        // built: one mesh a material, the goods instanced (a material nothing ended up using is let go at once)
+        const M = {
+          lit: new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.78 }),
+          metal: new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.32, metalness: 0.55 }),
+          glow: new THREE.MeshBasicMaterial({ vertexColors: true }),
+          post: new THREE.MeshStandardMaterial({ map: SHOP_POSTERS, vertexColors: true, roughness: 0.55, emissive: 0xffffff, emissiveMap: SHOP_POSTERS, emissiveIntensity: 0.22 }),
+          bright: new THREE.MeshBasicMaterial({ map: SHOP_POSTERS, vertexColors: true }),
+          sign: new THREE.MeshBasicMaterial({ map: SHOP_SIGNS, vertexColors: true }),
+          glass: new THREE.MeshStandardMaterial({ color: 0xdfeaf0, roughness: 0.05, metalness: 0.1, transparent: true, opacity: 0.12, depthWrite: false, side: THREE.DoubleSide }),
+          shut: (() => { const t = tex(makeShutter(THREE, cnv)); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(4, 2.6); return new THREE.MeshStandardMaterial({ map: t, vertexColors: true, roughness: 0.6, metalness: 0.3 }); })(),
+          goods: new THREE.MeshStandardMaterial({ roughness: 0.55 }),
+          gold: new THREE.MeshStandardMaterial({ roughness: 0.25, metalness: 0.6, emissive: 0x5a3a08, emissiveIntensity: 0.55 }) };
+        const out = [lit.build(M.lit), metal.build(M.metal), glow.build(M.glow), post.build(M.post),
+                     bright.build(M.bright), sign.build(M.sign), glass.build(M.glass), shut.build(M.shut)];
+        const inst = (list, geo, mat) => {
+          if (!list.length) { geo.dispose(); return null; }
+          const im = new THREE.InstancedMesh(geo, mat, list.length);
+          list.forEach((g, i) => { im.setMatrixAt(i, g.m); im.setColorAt(i, _sc4.set(g.col)); });
+          im.instanceMatrix.needsUpdate = true; im.instanceColor.needsUpdate = true;
+          im.computeBoundingSphere(); im.castShadow = false; im.receiveShadow = false; parent.add(im); return im;
+        };
+        out.push(inst(goods, new THREE.BoxGeometry(1, 1, 1), M.goods),
+                 inst(cans, new THREE.CylinderGeometry(0.5, 0.5, 1, 10), M.goods),
+                 inst(fruit, new THREE.SphereGeometry(0.5, 10, 8), M.goods),
+                 inst(gold, new THREE.BoxGeometry(1, 1, 1), M.gold));
+        const used = new Set(out.filter(Boolean).map(m => m.material));
+        for (const m of Object.values(M)) if (!used.has(m)) m.dispose();
+        return out.filter(Boolean);
+      }
+
+      /* ============================================== THE MALL, past the glass
+         Golden Mile Complex's corridor (v21.2: Chad names the mall): terrazzo, a
+         low ceiling of fluorescent troughs, square columns clad in tile, the
+         neighbours' fronts on both sides. Nothing out here is walkable in
+         play — it is what the glass looks onto, and the film's way in. */
+      {
+        const W = MALL.x1 - MALL.x0, D = MALL.z1 - MALL.z0, mz = (MALL.z0 + MALL.z1) / 2;
+        const fl = new THREE.Mesh(new THREE.PlaneGeometry(W, D), matTerr); fl.rotation.x = -Math.PI / 2; fl.position.set(0, 0, mz); fl.receiveShadow = true; mallG.add(fl);
+        /* the ceiling runs 0.3 m into both walls, and a solid wall stands behind the far side's shopfronts: the fronts
+           are 2.95 m planes under a 3.6 m ceiling, and the first film's walk showed the SKY over every one of them */
+        const ce = new THREE.Mesh(new THREE.PlaneGeometry(W, D + 0.6), matMallCeil); ce.rotation.x = Math.PI / 2; ce.position.set(0, MALL.H, mz); mallG.add(ce);
+        box(W, MALL.H, 0.2, 0, MALL.H / 2, MALL.z1 + 2.55, matWallB, mallG, false);   // (v21.18: behind the far side's shops, which are built now)
+        const matTubeOff = new THREE.MeshStandardMaterial({ color: 0x8a8e92, roughness: 0.5 });       // (World S: after hours, every other one off)
+        for (let i = 0; i < 7; i++) { const t = box(2.4, 0.04, 0.12, -12 + i * 4, MALL.H - 0.02, mz, i % 2 ? matTubeOff : matTube, mallG, false); t.castShadow = false; }
+        /* the neighbours (v21.18: BUILT, shopRow above — they were one painted plane each): across the corridor
+           facing it (−z), the shop's glass looking onto the kitchen, the massage parlour and the goldsmith; and on our
+           side facing +z, the film's walk passing the coach agency and the money changer */
+        shopRow(mallG, [                                                   // (World S: `closed` — every one shut for the night)
+          { x: -12, z: MALL.z1, ry: Math.PI, kind: 'travel', seed: 11, closed: true }, { x: -8, z: MALL.z1, ry: Math.PI, kind: 'grocery', seed: 12, closed: true },
+          { x: -4, z: MALL.z1, ry: Math.PI, kind: 'food', seed: 13, closed: true },    { x: 0, z: MALL.z1, ry: Math.PI, kind: 'massage', seed: 14, closed: true },
+          { x: 4, z: MALL.z1, ry: Math.PI, kind: 'gold', seed: 15, closed: true },     { x: 8, z: MALL.z1, ry: Math.PI, kind: 'phone', seed: 16, closed: true },
+          { x: 12, z: MALL.z1, ry: Math.PI, kind: 'shut', seed: 17 },
+          { x: -11.5, z: MALL.z0, ry: 0, kind: 'shut', seed: 21 },                     { x: -7.5, z: MALL.z0, ry: 0, kind: 'snack', seed: 22, closed: true },
+          { x: 7.5, z: MALL.z0, ry: 0, kind: 'money', seed: 23, closed: true },        { x: 11.5, z: MALL.z0, ry: 0, kind: 'tickets', seed: 24, closed: true }]);
+        // the piers between the far side's shops, and on our side the wall where no shop is
+        for (let i = 1; i < 7; i++) box(0.2, MALL.H, 0.3, MALL.x0 + i * 4, MALL.H / 2, MALL.z1 + 0.06, matWallB, mallG, false);
+        for (const s of [-1, 1]) {
+          box(1.05, MALL.H, 0.2, s * 5.035, MALL.H / 2, -0.14, matWallB, mallG, false);   // (v22.3: its end 1 cm inside the shop's side wall, whose face it shared)
+          box(0.2, MALL.H, 0.3, s * 9.5, MALL.H / 2, -0.1, matWallB, mallG, false);
+          box(0.56, MALL.H, 0.2, s * 13.72, MALL.H / 2, -0.14, matWallB, mallG, false);
+        }
+        box(SHOP.x1 - SHOP.x0, MALL.H - SHOP.H, 0.2, 0, SHOP.H + (MALL.H - SHOP.H) / 2, 0.04, matWallB, mallG, false);
+        for (const s of [-1, 1]) box(0.2, MALL.H, D + 0.4, s * MALL.x1, MALL.H / 2, mz, matWallB, mallG, false);
+        /* v21.18 · THE CORRIDOR'S END, where the film's walk looks (on a phone, the middle of the picture: it was a bare
+           wall): a lift lobby — two lift doors in steel frames, a floor lamp over each, the call buttons — the mall's
+           directory between them, and the green EXIT hung from the ceiling before it */
+        { const ex = -MALL.x1 + 0.1;                                  // the end wall's inner face
+          const steel = new THREE.MeshStandardMaterial({ color: 0xc2c8ce, roughness: 0.26, metalness: 0.55 }),
+                frameS = new THREE.MeshStandardMaterial({ color: 0x8c9298, roughness: 0.35, metalness: 0.5 }),
+                lamp = new THREE.MeshBasicMaterial({ color: 0xffb648 }), dark = new THREE.MeshStandardMaterial({ color: 0x15171a, roughness: 0.5 });
+          for (const z of [1.05, 3.95]) {
+            box(0.06, 2.42, 1.3, ex + 0.03, 1.21, z, frameS, mallG, false);
+            for (const sd of [-1, 1]) box(0.04, 2.24, 0.56, ex + 0.08, 1.12, z + sd * 0.285, steel, mallG, false);
+            box(0.05, 0.02, 0.012, ex + 0.1, 1.12, z, dark, mallG, false);
+            box(0.04, 0.18, 0.52, ex + 0.05, 2.62, z, dark, mallG, false); plane(0.16, 0.08, lamp, ex + 0.075, 2.62, z, Math.PI / 2, mallG);
+            box(0.03, 0.26, 0.11, ex + 0.05, 1.12, z + (z < 2.5 ? 0.82 : -0.82), frameS, mallG, false);
+            for (const y of [1.07, 1.17]) plane(0.034, 0.034, lamp, ex + 0.068, y, z + (z < 2.5 ? 0.82 : -0.82), Math.PI / 2, mallG);
+          }
+          box(0.05, 1.5, 1.0, ex + 0.025, 1.5, 2.5, dark, mallG, false);
+          plane(0.92, 1.38, new THREE.MeshBasicMaterial({ map: tex(makeMallDirectory(THREE, cnv)), color: 0xe6e6e6 }), ex + 0.055, 1.5, 2.5, Math.PI / 2, mallG);
+          box(0.08, 0.3, 0.7, ex + 1.6, MALL.H - 0.42, 2.5, new THREE.MeshStandardMaterial({ color: 0xe8e8e2, roughness: 0.5 }), mallG, false);
+          for (const sd of [-1, 1]) plane(0.64, 0.24, new THREE.MeshBasicMaterial({ map: tex(makeExitSign(THREE, cnv)) }), ex + 1.6 + sd * 0.041, MALL.H - 0.42, 2.5, sd * Math.PI / 2, mallG);
+          for (const sd of [-0.25, 0.25]) box(0.012, 0.27, 0.012, ex + 1.6, MALL.H - 0.135, 2.5 + sd, frameS, mallG, false);
+        }
+        // the shop's own lightbox over its front
+        const lbM = new THREE.MeshBasicMaterial({ map: tex(makeLightbox(THREE, cnv)) });
+        plane(4.2, 0.6, lbM, 0, SHOP.H + 0.36, 0.15, 0, mallG);
+        // two columns clad in small tiles
+        for (const s of [-1, 1]) box(0.6, MALL.H, 0.6, s * 7.0, MALL.H / 2, 3.2, new THREE.MeshStandardMaterial({ color: 0xcfc6b4, roughness: 0.6 }), mallG);
+        /* (v21.2: the HAPPY VESAK DAY banner that hung across the corridor is gone — Buddha Day is an uposatha day) */
+      }
+
+      return { shopG, mallG, SHOP, MALL, DOOR, LCNT, RCNT, ALTAR, OWN, LPT, MSTR, CLOCK, lpCase, clockTo, flames, doorLeaves };
     }
+    const SH = buildShop();
+
+    /* ============================================== THE COUNTER (CP5, §4.0b)
+       On the owner's glass between him and the player: the red bundle and — once he has opened it — its cloth with the
+       three on it, the old auntie's music box, his card and pen, then the paper bag. Each is SET DOWN the way chapter 4's
+       owner set the Hanuman on its stand (e3c4's standShow): a beat into his line it rises the last 5 cm into its place
+       and grows from 0.6 to its size in about a fifth of a second. His takes never bring his hands to the glass, so a
+       thing he puts down arrives on his words; nothing is ever seen to slide across the counter by itself. */
+    function mkSet(obj, s0 = 1) {
+      const S = { obj, to: 0, k: 0, y0: obj ? obj.position.y : 0, s0 };
+      cntLive.sets.push(S);
+      if (obj) setDraw(S);
+      return S;
+    }
+    function setDraw(S) {
+      if (!S || !S.obj) return;
+      const e = smooth(S.k);
+      S.obj.visible = S.k > 0.002;
+      S.obj.position.y = S.y0 - 0.05 * (1 - e);
+      S.obj.scale.setScalar(S.s0 * (0.6 + 0.4 * e));
+    }
+    function setShow(S, on, now) { if (!S) return; S.to = on ? 1 : 0; if (now) S.k = S.to; setDraw(S); }
+    function setsTick(wdt) {
+      for (const S of cntLive.sets) {
+        if (S.k === S.to) continue;
+        S.k += (S.to - S.k) * (1 - Math.exp(-wdt / 0.16));
+        if (Math.abs(S.to - S.k) < 0.003) S.k = S.to;
+        setDraw(S);
+      }
+    }
+    function buildCounter() {
+      const G = SH.shopG, T = CNT.y;
+      const mCloth = M({ map: tex(makeRedClothT(THREE, cnv)), roughness: 0.5 });
+      const mSilk = M({ map: tex(makeRedClothT(THREE, cnv, false)), roughness: 0.45 });   // (the bundle's: by photograph, the border wrapped round a ball read as a striped sack)
+      /* THE BUNDLE: the red silk drawn up round the three and knotted on top — a squashed sphere flattened where it sits
+         on the glass, its folds gathered toward the knot, two ears of the knot standing up */
+      {
+        const g = new THREE.Group(); g.position.set(CNT.x, T, CNT.z); G.add(g);
+        const geo = new THREE.SphereGeometry(1, 30, 20), p = geo.attributes.position, v = new THREE.Vector3();
+        for (let i = 0; i < p.count; i++) {
+          v.fromBufferAttribute(p, i);
+          const th = Math.atan2(v.z, v.x), up = cl01((v.y + 1) / 2);
+          const fold = 1 + (0.06 * Math.sin(7 * th + 1.3) + 0.035 * Math.sin(13 * th + 0.4)) * up * up;
+          v.x *= fold; v.z *= fold;
+          if (v.y < -0.45) v.y = -0.45 - (v.y + 0.45) * 0.08;
+          p.setXYZ(i, v.x * 0.12, (v.y + 0.45) * 0.09, v.z * 0.17);
+        }
+        geo.computeVertexNormals();
+        const body = new THREE.Mesh(geo, mSilk); body.castShadow = !LOW; body.receiveShadow = true; g.add(body);
+        const knot = new THREE.Mesh(new THREE.SphereGeometry(0.021, 14, 10), mSilk); knot.position.y = 0.13; knot.scale.set(1, 0.8, 1.1); g.add(knot);
+        for (const s of [-1, 1]) {
+          const ear = new THREE.Mesh(new THREE.ConeGeometry(0.018, 0.058, 10), mSilk);
+          ear.position.set(0.004, 0.152, s * 0.025); ear.rotation.set(s * 0.9, 0, 0); g.add(ear);
+        }
+        cntLive.bundleSet = mkSet(g);
+        setShow(cntLive.bundleSet, true, true);            // there before the opening film, as the film shows it through the glass
+      }
+      /* THE CLOTH, opened out on the glass under them: the silk square, its gold border, a few soft creases where it was
+         knotted, its edges lifting a little off the glass */
+      {
+        const geo = new THREE.PlaneGeometry(CNT.w, CNT.l, 14, 26); geo.rotateX(-Math.PI / 2);
+        const p = geo.attributes.position;
+        for (let i = 0; i < p.count; i++) {
+          const x = p.getX(i), z = p.getZ(i), ex = Math.abs(x) / (CNT.w / 2), ez = Math.abs(z) / (CNT.l / 2);
+          const crease = 0.0018 * Math.sin(z * 38 + x * 9) * Math.sin(x * 24) + 0.0012 * Math.sin(z * 71 - x * 17);
+          p.setY(i, 0.0015 + Math.max(0, crease + 0.0015) + 0.004 * Math.pow(Math.max(ex, ez), 6));
+        }
+        geo.computeVertexNormals();
+        const cl = new THREE.Mesh(geo, mCloth); cl.position.set(CNT.x, T, CNT.z); cl.receiveShadow = true; G.add(cl);
+        cntLive.clothSet = mkSet(cl);
+      }
+      for (let i = 0; i < 3; i++) if (!cntLive.kidSet[i]) cntLive.kidSet[i] = mkSet(null);   // the three land async (their loader fills these)
+      /* THE OLD AUNTIE'S MUSIC BOX, brought out as the shy one's story is told: past the little one, its front to him */
+      {
+        const MB = makeMusicBox(G); MB.group.position.set(CNT_BOX.x, T, CNT_BOX.z); MB.group.rotation.y = -Math.PI / 2;
+        cntLive.box = MB; cntLive.boxSet = mkSet(MB.group);
+      }
+      /* HIS CARD, laid on the glass past the red one, its words the right way up for the player (film K reads it), and his
+         pen beside it on the wood of his working end */
+      {
+        const g = new THREE.Group(); g.position.set(CNT_CARD.x, T + 0.0006, CNT_CARD.z); G.add(g);
+        const cd = new THREE.Mesh(new THREE.PlaneGeometry(0.07, 0.098), M({ map: tCard(), roughness: 0.9 }));
+        cd.rotation.set(-Math.PI / 2, -Math.PI / 2, 0, 'YXZ'); cd.receiveShadow = true; g.add(cd);
+        cntLive.card = cd; cntLive.cardSet = mkSet(g);
+        const pen = new THREE.Group(); pen.position.set(CNT_PEN.x, T + 0.0145, CNT_PEN.z); pen.rotation.y = 0.12; G.add(pen);
+        const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.0045, 0.0045, 0.13, 12), M({ color: 0x14161c, roughness: 0.35, metalness: 0.2 }));
+        barrel.rotation.z = Math.PI / 2; pen.add(barrel);
+        const tip = new THREE.Mesh(new THREE.ConeGeometry(0.0045, 0.014, 12), M({ color: 0xc8c8cc, roughness: 0.25, metalness: 0.85 }));
+        tip.rotation.z = -Math.PI / 2; tip.position.x = 0.072; pen.add(tip);
+        const clip = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.0015, 0.003), M({ color: 0xd2a84a, roughness: 0.3, metalness: 0.8 }));
+        clip.position.set(-0.04, 0.005, 0); pen.add(clip);
+        cntLive.pen = pen; cntLive.penSet = mkSet(pen);
+      }
+      /* THE PAPER BAG he packs them into: kraft paper, its wide face to the player, its top open with the red knot over
+         the rim, a twisted paper handle on each wide face */
+      {
+        const g = new THREE.Group(); g.position.set(CNT.x, T, CNT.z); G.add(g);
+        const mK = M({ map: tex(makeKraftT(THREE, cnv)), roughness: 0.92, side: THREE.DoubleSide });
+        const BD = 0.15, BW = 0.25, BH = 0.27;                    // its depth (x), its width (z, to the player), its height
+        for (const [w, x, z, ry] of [[BW, BD / 2, 0, Math.PI / 2], [BW, -BD / 2, 0, -Math.PI / 2], [BD, 0, BW / 2, 0], [BD, 0, -BW / 2, Math.PI]]) {
+          const s = new THREE.Mesh(new THREE.PlaneGeometry(w, BH), mK); s.position.set(x, BH / 2, z); s.rotation.y = ry; s.castShadow = !LOW; s.receiveShadow = true; g.add(s);
+        }
+        const fl = new THREE.Mesh(new THREE.PlaneGeometry(BD, BW), mK); fl.rotation.x = -Math.PI / 2; fl.position.y = 0.002; g.add(fl);
+        const knot = new THREE.Mesh(new THREE.SphereGeometry(0.05, 16, 12), mSilk); knot.position.y = BH - 0.012; knot.scale.set(0.95, 0.62, 1.5); g.add(knot);
+        const mH = M({ color: 0xa8865a, roughness: 0.9 });
+        for (const s of [-1, 1]) {
+          const x = s * (BD / 2 + 0.002);
+          const c = new THREE.CatmullRomCurve3([new THREE.Vector3(x, BH - 0.03, -0.055), new THREE.Vector3(x, BH + 0.06, -0.02), new THREE.Vector3(x, BH + 0.06, 0.02), new THREE.Vector3(x, BH - 0.03, 0.055)]);
+          g.add(new THREE.Mesh(new THREE.TubeGeometry(c, 18, 0.0045, 6, false), mH));
+        }
+        cntLive.bag = g; cntLive.bagSet = mkSet(g);
+        cntLive.bagHeld = g.clone();                              // the same bag in his hand (the geometry and materials shared)
+        cntLive.bagHeld.position.set(0, 0, 0); cntLive.bagHeld.scale.setScalar(1); cntLive.bagHeld.visible = true;
+      }
+    }
+    buildCounter();
+
+    /* ---------------------------------------------------------- the owner (CP5)
+       Chapter 4's mkPerson — its rigged path, by its own code and numbers (e3c4.js at v22.5): sized from POSED BONES and
+       grounded on the lowest (the v3.8/v4.7 law), each take's foot centre measured so his talking take never walks him
+       through his counter (ch3's granny, v5.22), culled by a sphere round the posed skin (v18.5's law), the head's look
+       laid on after the mixer and put back before it runs again (the v11.5 law), and chapter 3's stand-in shoulders eased
+       toward his body (armsPre / armsPost). A failed download leaves his place empty, never a block of a person (v21.16). */
+    const people = [];
+    const _pv = new THREE.Vector3(), _pq = new THREE.Quaternion(), _pe = new THREE.Euler(), _hp = new THREE.Vector3(), _cp = new THREE.Vector3();
+    function mkPerson(key, o) {
+      const parent = o.parent;
+      const group = new THREE.Group(); group.position.set(o.x, 0, o.z); group.rotation.y = o.ry || 0; parent.add(group);
+      let wx = o.x; for (let p = parent; p && p !== world; p = p.parent) wx += p.position.x;
+      let wz = o.z; for (let p = parent; p && p !== world; p = p.parent) wz += p.position.z;
+      const P = { key, group, wx, wz, model: null, mixer: null, idle: null, talk: null, head: null, headWrote: null, ready: false, o,
+                  talkUntil: 0, talkW: 0, lookYaw: 0, lookPitch: 0, look: o.look || 0, rootIdle: new THREE.Vector3(), rootTalk: new THREE.Vector3(),
+                  inner: null };
+      parseOnce(key).then((gltf) => {
+        if (!alive) return;
+        const g = cloneSkinned(gltf.scene);
+        g.traverse(m => { if (m.isMesh) { m.castShadow = !LOW; m.receiveShadow = false;
+          /* a Meshy scan (Chad's owner): black cloth flush against white in the atlas, so every shrunken copy of the sheet
+             greys it — drawn without mipmaps (v19.8, v21.32) */
+          for (const mm of [].concat(m.material)) { const t = mm && mm.map;
+            if (t && t.generateMipmaps !== false) { t.generateMipmaps = false; t.minFilter = THREE.LinearFilter; t.needsUpdate = true; } } } });
+        g.traverse(b => { if (b.isBone && HEAD_RE.test(b.name) && !P.head) P.head = b; });
+        const mx = new THREE.AnimationMixer(g);
+        const clip = (n) => gltf.animations.find(a => a.name === n);
+        const idleC = clip(o.idle) || gltf.animations[0], talkC = o.talk ? clip(o.talk) : null;
+        const footOf = (c) => {
+          const a = mx.clipAction(c); a.reset().setEffectiveWeight(1).play(); mx.update(0); g.updateMatrixWorld(true);
+          const s = new THREE.Vector3(); let n = 0;
+          g.traverse(b => { if (b.isBone && /Foot(_\d+)?$/i.test(b.name)) { b.getWorldPosition(_pv); s.add(_pv); n++; } });
+          a.stop(); return n ? s.divideScalar(n) : s;
+        };
+        if (idleC) P.rootIdle.copy(footOf(idleC));
+        if (talkC) P.rootTalk.copy(footOf(talkC)); else P.rootTalk.copy(P.rootIdle);
+        // height from the posed bones across the idle take; the floor from its lowest frame
+        let lo = Infinity, hi = -Infinity;
+        if (idleC) {
+          const a = mx.clipAction(idleC); a.reset().setEffectiveWeight(1).play();
+          for (const tt of [0, 1, 2, 3, 4, 5].map(k => idleC.duration * k / 6)) {
+            mx.setTime(tt); g.updateMatrixWorld(true);
+            g.traverse(b => { if (!b.isBone) return; b.getWorldPosition(_pv); lo = Math.min(lo, _pv.y); hi = Math.max(hi, _pv.y); });
+          }
+          a.stop();
+        }
+        if (!(hi > lo)) { console.warn(key + ': no bones to size by'); return; }
+        const crown = (() => { let c = false; g.traverse(b => { if (b.isBone && /HeadTop_End|head_end|headtop/i.test(b.name)) c = true; }); return c; })();
+        const s = o.height / ((hi - lo) / (crown ? 1 : 0.935));
+        const inner = new THREE.Group(); inner.scale.setScalar(s); inner.position.y = -lo * s + 0.005; inner.add(g); group.add(inner);
+        P.inner = inner; P.model = g; P.mixer = mx; P.scale = s;
+        if (idleC) { P.idle = mx.clipAction(idleC); P.idle.reset().setEffectiveTimeScale(o.idleRate || 1).setEffectiveWeight(1).play(); }
+        g.traverse(b => { if (b.isBone && /Hips(_\d+)?$/.test(b.name) && !P.hips) P.hips = b; });
+        if (talkC) { P.talk = mx.clipAction(talkC); P.talk.reset().setEffectiveTimeScale(o.talkRate || 1).setEffectiveWeight(0).play(); }
+        mx.update(0.0001);
+        P.ready = true;
+        // the culling sphere round the posed skin, world space, generous
+        group.updateMatrixWorld(true);
+        const bb = new THREE.Box3();
+        g.traverse(m => { if (!m.isSkinnedMesh) return; m.skeleton.update(); const n = m.geometry.attributes.position.count, st = Math.max(1, Math.floor(n / 3000));
+          for (let i = 0; i < n; i += st) { m.getVertexPosition(i, _pv); _pv.applyMatrix4(m.matrixWorld); bb.expandByPoint(_pv); } });
+        if (!bb.isEmpty()) {
+          const sph = bb.getBoundingSphere(new THREE.Sphere()); sph.radius = Math.max(sph.radius * 1.4, 1.2);
+          g.traverse(m => { if (!m.isSkinnedMesh) return; m.frustumCulled = true; const inv = m.matrixWorld.clone().invert(), k = m.matrixWorld.getMaxScaleOnAxis() || 1;
+            m.boundingSphere = new THREE.Sphere(sph.center.clone().applyMatrix4(inv), sph.radius / k); });
+        }
+        owned.push({ dispose: () => mx.stopAllAction() });
+        if (o.then) o.then(P);
+        redoShadows();
+      }).catch(err => { console.warn(key + ' failed to load', err); if (ctx.loadFail) ctx.loadFail(key, err); });
+      people.push(P);
+      return P;
+    }
+    /* CHAPTER 3's STAND-IN SHOULDERS (its armsPre/armsPost, v21.1): a take retargeted onto a rig from another carries the
+       source's shoulders a little shrugged and its arms ~14° out — each shoulder and upper arm is turned toward the body's
+       own down by a few degrees after the mixer, and put back before it writes again (the v11.5 law) */
+    const _amA = new THREE.Vector3(), _amB = new THREE.Vector3(), _amD = new THREE.Vector3(), _amQ = new THREE.Quaternion(), _amP = new THREE.Quaternion();
+    function armsPre(P) { if (P.armWrote) P.armBones.forEach((b, i) => b.quaternion.copy(P.armWrote[i])); }
+    function armsPost(P) {
+      const F = P.o.armFix; if (!F || !P.model || !P.hips) return;
+      if (!P.armBones) {
+        const find = (re) => { let q = null; P.model.traverse(b => { if (!q && b.isBone && re.test(b.name)) q = b; }); return q; };
+        P.armBones = [find(/LeftShoulder(_\d+)?$/), find(/RightShoulder(_\d+)?$/), find(/LeftArm(_\d+)?$/), find(/RightArm(_\d+)?$/)];
+        P.armNeck = find(/Neck(_\d+)?$/);
+        if (P.armBones.some(b => !b) || !P.armNeck) { P.o.armFix = null; P.armBones = null; return; }
+        P.armWrote = P.armBones.map(b => b.quaternion.clone());
+      }
+      P.armBones.forEach((b, i) => P.armWrote[i].copy(b.quaternion));
+      P.model.updateMatrixWorld(true);
+      P.hips.getWorldPosition(_amA); P.armNeck.getWorldPosition(_amB); _amD.subVectors(_amA, _amB).normalize();   // the body's own down
+      P.armBones.forEach((b, i) => {
+        const ch = b.children.find(c => c.isBone); if (!ch) return;
+        b.getWorldPosition(_amA); ch.getWorldPosition(_amB);
+        _amB.sub(_amA).normalize(); _amA.crossVectors(_amB, _amD);
+        if (_amA.lengthSq() < 1e-8) return;
+        _amA.normalize(); b.parent.getWorldQuaternion(_amP); _amA.applyQuaternion(_amP.invert());
+        b.quaternion.premultiply(_amQ.setFromAxisAngle(_amA, THREE.MathUtils.degToRad(i < 2 ? F.sh : F.arm)));
+        b.updateMatrixWorld(true);
+      });
+    }
+    /* he speaks: the talking take eased in over his idle for the line's length, on WALL time */
+    function personTalk(P, secs) { if (P) P.talkUntil = performance.now() / 1000 + secs; }
+    function peopleTick(wdt) {
+      for (const P of people) {
+        if (!P.ready || !P.group.visible || Math.abs(P.wx - yaw.position.x) > 80 || Math.abs(P.wz - yaw.position.z) > 80) continue;
+        if (P.head && P.headWrote) P.head.quaternion.copy(P.headWrote);
+        armsPre(P);
+        const want = performance.now() / 1000 < P.talkUntil ? (P.o.talkWeight || 1) : 0;
+        P.talkW += (want - P.talkW) * (1 - Math.exp(-wdt * 3.2));
+        if (P.talk) { P.talk.setEffectiveWeight(P.talkW); P.idle && P.idle.setEffectiveWeight(1 - P.talkW * 0.85); }
+        if (P.mixer) P.mixer.update(wdt);
+        // the two takes stand him in different places: keep his feet where the idle puts them
+        if (P.talk) { _pv.copy(P.rootTalk).sub(P.rootIdle).multiplyScalar(P.talkW); P.model.position.set(-_pv.x, 0, -_pv.z); }
+        armsPost(P);
+        if (P.head) {
+          if (!P.headWrote) P.headWrote = new THREE.Quaternion();
+          P.headWrote.copy(P.head.quaternion);
+          let ty = 0, tp = 0;
+          const filmLook = cntLive.ownerLook > 0 && P.wx > 100;            // film K: he looks straight at him
+          if (P.look > 0 && (getState() === 'play' || filmLook)) {
+            P.head.getWorldPosition(_hp); camera.getWorldPosition(_cp);
+            const dx = _cp.x - _hp.x, dz = _cp.z - _hp.z, dy = _cp.y - _hp.y;
+            const a = Math.atan2(dx, dz) - P.group.rotation.y, yawTo = Math.atan2(Math.sin(a), Math.cos(a));
+            if (Math.abs(yawTo) < 1.7 && Math.hypot(dx, dz) < (filmLook ? 12 : 7)) { ty = THREE.MathUtils.clamp(yawTo, -0.9, 0.9); tp = THREE.MathUtils.clamp(-Math.atan2(dy, Math.hypot(dx, dz)), -0.35, 0.3); }
+          }
+          const k = 1 - Math.exp(-wdt * 2.4);
+          P.lookYaw += (ty * P.look - P.lookYaw) * k; P.lookPitch += (tp * P.look - P.lookPitch) * k;
+          if (Math.abs(P.lookYaw) + Math.abs(P.lookPitch) > 1e-4) { _pe.set(P.lookPitch, P.lookYaw, 0, 'YXZ'); _pq.setFromEuler(_pe); P.head.quaternion.multiply(_pq); }
+        }
+      }
+    }
+    /* CHAD'S owner behind his counter, turned to the player (chapter 4's World H numbers: v21.32's model on its
+       retargeted standing idle and his own talking take, his shoulders eased toward his body) */
+    cntLive.owner = mkPerson('owner', { parent: SH.shopG, x: SH.OWN.x, z: SH.OWN.z, ry: -Math.PI / 2, height: 1.66, idle: 'Idle_9',
+      talk: 'Talk_with_Hands_Open', talkWeight: 0.85, look: 1, armFix: { sh: 6, arm: 7 } });
+
+    /* a sound at a place in the world, panned by where it is against his look (the lens's right, in the ground's plane) */
+    function panAt(x, z) {
+      const dx = x - yaw.position.x, dz = z - yaw.position.z, d = Math.hypot(dx, dz) || 1, a = yaw.rotation.y;
+      return cl01(((dx * Math.cos(a) - dz * Math.sin(a)) / d + 1) / 2) * 2 - 1;
+    }
+    function sfxAt(name, vol, x, z) { if (worldSfx && !(soundOff && soundOff())) worldSfx(name, vol, 1, x == null ? 0 : panAt(x, z) * 0.7); }
+    if (warmSounds) warmSounds(['k5bundle', 'k5figset', 'k5set', 'k5wind', 'k5lullaby', 'k5bellsfaint', 'k5slip', 'k5bag']);
+
+    /* ============================================== WORLD M · THE TEMPLE (CP5)
+       Chapter 4's merit-film temple (e3c4.js, its World M, at v22.5), COPIED by its own code and numbers (a chapter never
+       imports another) — under World M's group at x −250 here (chapter 4 stood it at z +250). Its own comment follows, and
+       where this chapter differs a comment says (World M: ...): the counter's film M sees its hall by candlelight
+       (TEMPLE_NIGHT) and ending D its courtyard and hall at first light (TEMPLE_DAWN, CP8).
+       --- chapter 4's comment: THE TEMPLE AT SUNSET (CP6 · the merit film)
+       S1·09: "Later I went to a temple and made a contribution dedicated to her." A Thai temple in Singapore at
+       sunset, built for the one film that shows it: a courtyard of slabs with its bell in a little pavilion and a
+       bodhi tree on a white plinth, the hall on its base with three stepped gables against the glow (chapter 2's
+       recipes: slab roofs with tiles, gilt edges, naga bargeboards and chofa), the city's blocks beyond the wall, and
+       inside — polished floor, red columns, Chad's Buddha at the back, Chad's monk on his dais by the east wall, the
+       donation box by the door, the silver bowl and the brass vessel for kruat nam. 250 m from every world (the far
+       plane is 160 m, v8.9) under a sky of its own (the engine's is centred on the origin, v21.0). Nobody walks here:
+       it is drawn only while its film runs (worldM.visible), so play never pays for it, and the chapter's entry curtain
+       has already drawn it once, forced visible, so nothing in it compiles or uploads on screen (v14.15/v15.1).
+       Lit by the film's own daylight (M_DUSK outside, M_HALL in) — never a new light (v15.1). */
+    const MHALL = { x0: -6, x1: 6, z0: -16, z1: -2, F: 0.45, H: 5.0, T: 0.3 };   // its floor on a 0.45 base; walls 5 m over it
+    const MDOOR = { hw: 1.2, h: 3.2 };
+    const MDAIS = { x: 5.0, z: -8.6, w: 1.4, d: 2.6, h: 0.45 };     // the monk's dais against the east wall; he faces −x
+    const MKNEEL = { x: 3.2, z: -8.6 };                               // where he kneels before it, facing +x
+    const MBOWL = { x: 3.78, z: -8.42 };                              // the bowl on the floor before his knees
+    const MBOX = { x: -3.1, z: -3.5 };                                // the donation box, inside the door on the left
+    const MTREE = { x: 9.4, z: 6.2, r: 1.75, h: 0.42 };               // the bodhi on its plinth, east of the hall's front
+    const MBELL = { x: -9.0, z: 4.6 };                                // the bell in its pavilion, west of the path
+    const MALT = { z: -15.25, w: 3.6, d: 1.3 };                       // the Buddha's altar against the back wall
+    /* (World M: its group is the chapter's own, at x −250 — declared with the other two worlds) */
+    const mLive = { on: false, shot: '', dusk: 0, duskTo: 0, flames: [], smoke: [], motes: [], petals: [], drops: [], ripples: [],
+                    stream: null, streamOut: null, water: null, wet: null, mote: null, trail: [], bell: null, envelope: null, envIn: null,
+                    vessel: null, bowl: null, bowl2: null, shafts: [], t: 0 };
+    const merit = { monk: { model: null, bones: [], head: null, neck: null, rest: null, ready: false } };
+    function buildTemple() {
+      const G = worldM, F = MHALL.F;
+      const tSky = tex(makeMSky(THREE, cnv)), tSlab = tex(makeMSlabs(THREE, cnv)), tPlaster = tex(makeMPlaster(THREE, cnv));
+      const tFloor = tex(makeMFloor(THREE, cnv)), tTile = tex(makeMTiles(THREE, cnv, '#c4622a', '#5a240e')), tTile2 = tex(makeMTiles(THREE, cnv, '#a8321c', '#561208'));
+      const tEarth = tex(makeMEarth(THREE, cnv)), tGrass = tex(makeMGrass(THREE, cnv)), tWin = tex(makeMWindow(THREE, cnv));
+      const tScreen = tex(makeMScreen(THREE, cnv)), tBox = tex(makeMBoxFront(THREE, cnv)), tEnv = tex(makeMEnvelope(THREE, cnv));
+      const tPetal = tex(makeMLeaf(THREE, cnv)), tRip = tex(makeMRipple(THREE, cnv)), tStream = tex(makeMStream(THREE, cnv));
+      const tGlow = tex(makeYinGlow(THREE, cnv)), tFlame = tex(makeYinFlame(THREE, cnv)), tSmoke = tex(makeYinSmoke(THREE, cnv));   // (World M: chapter 4 borrowed World Y's; this chapter draws its own)
+      const mSlab = M({ map: tSlab, roughness: 0.88, color: 0xc8beb0 }); tSlab.repeat.set(16, 16);
+      const mPlaster = M({ map: tPlaster, roughness: 0.9 }); tPlaster.repeat.set(3, 1);
+      const mWhite = M({ color: 0xece6da, roughness: 0.85 });
+      const mFloor = M({ map: tFloor, roughness: 0.22, metalness: 0.05 }); tFloor.repeat.set(6, 7);
+      const mLac = M({ color: 0x7e140c, roughness: 0.32, metalness: 0.05 });
+      const mLacD = M({ color: 0x4e0c06, roughness: 0.4 });
+      const mTeak = M({ color: 0x4a2a16, roughness: 0.55 });
+      const mSoffit = M({ color: 0x4a2c1a, roughness: 0.85 });
+      const mEarth = M({ map: tEarth, roughness: 1 }); tEarth.repeat.set(2, 2);
+      const mGrass = M({ map: tGrass, roughness: 1, color: 0xa8b090 }); tGrass.repeat.set(8, 8);
+      const mWinGlow = new THREE.MeshBasicMaterial({ map: tWin, fog: false }); mats.push(mWinGlow);   // (World M: its handle — at night the windows are dark)
+      mLive.winGlow = mWinGlow;
+      const mSilver = M({ color: 0xd8dadc, roughness: 0.18, metalness: 0.9 });
+      const mBrass = M({ color: 0xc89a48, roughness: 0.26, metalness: 0.85 });
+      const mSaffron = M({ color: 0xc8701c, roughness: 0.85 });
+      const mCarpet = M({ color: 0x8a1c14, roughness: 0.95 });
+      const gold = M({ color: 0xd9a63c, roughness: 0.3, metalness: 0.55, emissive: 0x3a2406, emissiveIntensity: 0.6 });   // (World M: chapter 4's matGold)
+      const matDark = M({ color: 0x15100e, roughness: 0.8 });                                                               // (and its matDark)
+
+      /* ---- the sky: a dome of its own, the sun low behind the hall and a little to its west (makeMSky) */
+      { const sky = new THREE.Mesh(new THREE.SphereGeometry(138, 48, 24), new THREE.MeshBasicMaterial({ map: tSky, side: THREE.BackSide, fog: false, depthWrite: false }));
+        mats.push(sky.material); sky.renderOrder = -5; sky.frustumCulled = false; G.add(sky); }
+
+      /* ---- the ground: the courtyard's slabs, grass beyond the walls, the path's kerbs */
+      { const yard = new THREE.Mesh(new THREE.PlaneGeometry(30, 28), mSlab); yard.rotation.x = -Math.PI / 2; yard.position.set(0, 0, 8); yard.receiveShadow = true; G.add(yard);
+        const lawn = new THREE.Mesh(new THREE.PlaneGeometry(260, 260), mGrass); lawn.rotation.x = -Math.PI / 2; lawn.position.set(0, -0.02, 0); G.add(lawn);
+        const under = new THREE.Mesh(new THREE.PlaneGeometry(14, 16), mSlab); under.rotation.x = -Math.PI / 2; under.position.set(0, 0.004, -9); G.add(under); }
+      // the courtyard wall, white with gilt-capped piers; the gate at the south
+      { const wallH = 1.7;
+        const seg = (x0, z0, x1, z1) => { const L = Math.hypot(x1 - x0, z1 - z0), a = Math.atan2(z1 - z0, x1 - x0);
+          const w = box(L, wallH, 0.24, (x0 + x1) / 2, wallH / 2, (z0 + z1) / 2, mWhite, G, false); w.rotation.y = -a;
+          box(L + 0.08, 0.08, 0.32, (x0 + x1) / 2, wallH + 0.04, (z0 + z1) / 2, mLac, G, false).rotation.y = -a;
+          for (let s = 0; s <= L + 0.01; s += 3.2) { const px = x0 + (x1 - x0) * s / L, pz = z0 + (z1 - z0) * s / L;
+            box(0.42, wallH + 0.3, 0.42, px, (wallH + 0.3) / 2, pz, mWhite, G, false);
+            const bud = new THREE.Mesh(new THREE.SphereGeometry(0.13, 10, 8), gold); bud.scale.y = 1.6; bud.position.set(px, wallH + 0.5, pz); G.add(bud); } };
+        seg(-15, -20, -15, 22); seg(15, -20, 15, 22); seg(-15, 22, -2.2, 22); seg(2.2, 22, 15, 22); seg(-15, -20, 15, -20); }
+
+      /* ---- THE HALL: its base, walls, door, windows; roofs in three steps; gables with naga and chofa */
+      { const cx = 0, cz = (MHALL.z0 + MHALL.z1) / 2, W = MHALL.x1 - MHALL.x0, D = MHALL.z1 - MHALL.z0, T = MHALL.T, top = F + MHALL.H;
+        box(W + 0.8, F, D + 0.8, cx, F / 2, cz, mWhite, G, false);                                      // the base
+        box(W + 0.86, 0.06, D + 0.86, cx, F - 0.03, cz, gold, G, false);                                // its gilt lip
+        for (let i = 0; i < 3; i++) box(3.4, 0.15, 0.4, 0, 0.075 + i * 0.15, MHALL.z1 + 1.2 - i * 0.4, mWhite, G, false);   // the steps
+        // the walls: the back, the two sides, and the front in three pieces round the door
+        const wall = (w, h, d, x, y, z) => box(w, h, d, x, y, z, mPlaster, G, false);
+        wall(W, MHALL.H, T, cx, F + MHALL.H / 2, MHALL.z0 - T / 2);
+        wall(T, MHALL.H, D + 2 * T, MHALL.x0 - T / 2, F + MHALL.H / 2, cz);
+        wall(T, MHALL.H, D + 2 * T, MHALL.x1 + T / 2, F + MHALL.H / 2, cz);
+        const side = (W / 2 - MDOOR.hw);
+        wall(side, MHALL.H, T, MHALL.x0 + side / 2, F + MHALL.H / 2, MHALL.z1 + T / 2);
+        wall(side, MHALL.H, T, MHALL.x1 - side / 2, F + MHALL.H / 2, MHALL.z1 + T / 2);
+        wall(MDOOR.hw * 2, MHALL.H - MDOOR.h, T, 0, F + MDOOR.h + (MHALL.H - MDOOR.h) / 2, MHALL.z1 + T / 2);
+        // the door's gilt frame and its pointed crown, outside and in; the two leaves folded back against the wall inside
+        for (const zf of [MHALL.z1 + T + 0.01, MHALL.z1 - 0.01]) {
+          for (const s of [-1, 1]) box(0.14, MDOOR.h, 0.05, s * (MDOOR.hw + 0.07), F + MDOOR.h / 2, zf, gold, G, false);
+          box(MDOOR.hw * 2 + 0.28, 0.14, 0.05, 0, F + MDOOR.h + 0.07, zf, gold, G, false);
+          const cr = new THREE.Mesh(new THREE.ShapeGeometry(mCrown(THREE, MDOOR.hw * 2 + 0.5, 1.2)), gold); cr.position.set(0, F + MDOOR.h + 0.14, zf); if (zf < MHALL.z1) cr.rotation.y = Math.PI; G.add(cr);
+        }
+        for (const s of [-1, 1]) { const leaf = box(MDOOR.hw, MDOOR.h - 0.05, 0.06, s * (MDOOR.hw + MDOOR.hw / 2 + 0.02), F + MDOOR.h / 2, MHALL.z1 - 0.06, mLac, G, false);
+          box(MDOOR.hw * 0.7, 0.04, 0.02, leaf.position.x, F + 2.2, MHALL.z1 - 0.1, gold, G, false); box(MDOOR.hw * 0.7, 0.04, 0.02, leaf.position.x, F + 0.9, MHALL.z1 - 0.1, gold, G, false); }
+        // windows: framed, crowned, glowing with the sunset from inside (painted, never a light)
+        const winAt = [];
+        for (const z of [-4.6, -12.4]) for (const s of [-1, 1]) winAt.push({ x: s > 0 ? MHALL.x1 : MHALL.x0, z, s });
+        for (const w of winAt) {
+          const xi = w.x - w.s * 0.005, xo = w.x + w.s * (T + 0.012);
+          const glow = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 2.0), mWinGlow); glow.position.set(xi, F + 2.0, w.z); glow.rotation.y = w.s > 0 ? -Math.PI / 2 : Math.PI / 2; G.add(glow);
+          const dark = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 2.0), mLacD); dark.position.set(xo, F + 2.0, w.z); dark.rotation.y = w.s > 0 ? Math.PI / 2 : -Math.PI / 2; G.add(dark);
+          for (const xx of [xi - w.s * 0.03, xo]) {
+            for (const dz of [-1, 1]) box(0.06, 2.12, 0.08, xx, F + 2.0, w.z + dz * 0.64, gold, G, false);
+            box(0.06, 0.08, 1.36, xx, F + 0.96, w.z, gold, G, false);
+            const cr = new THREE.Mesh(new THREE.ShapeGeometry(mCrown(THREE, 1.5, 0.8)), gold); cr.position.set(xx, F + 3.04, w.z);
+            cr.rotation.y = (xx === xo) === (w.s > 0) ? Math.PI / 2 : -Math.PI / 2; G.add(cr);
+          }
+          mLive.shafts.push({ x: xi, z: w.z, s: w.s });
+        }
+        // the ceiling: dark teak boards and beams; the interior's dado
+        const ce = new THREE.Mesh(new THREE.PlaneGeometry(W, D), mTeak); ce.rotation.x = Math.PI / 2; ce.position.set(cx, top - 0.01, cz); G.add(ce);
+        for (let z = MHALL.z0 + 1.6; z < MHALL.z1; z += 2.4) box(W, 0.22, 0.18, cx, top - 0.12, z, mLacD, G, false);
+        for (const s of [-1, 1]) { box(0.02, 0.9, D, s * (W / 2 - 0.01), F + 0.45, cz, mLac, G, false); box(0.03, 0.05, D, s * (W / 2 - 0.015), F + 0.92, cz, gold, G, false); }
+        box(W, 0.9, 0.02, cx, F + 0.45, MHALL.z0 + 0.01, mLac, G, false);
+        // the floor: polished stone; a red runner from the door to the altar
+        const fl = new THREE.Mesh(new THREE.PlaneGeometry(W, D), mFloor); fl.rotation.x = -Math.PI / 2; fl.position.set(cx, F + 0.002, cz); fl.receiveShadow = true; G.add(fl);
+        const run = new THREE.Mesh(new THREE.PlaneGeometry(1.4, D - 2.2), mCarpet); run.rotation.x = -Math.PI / 2; run.position.set(0, F + 0.006, cz + 0.6); G.add(run);
+        for (const s of [-1, 1]) { const e = new THREE.Mesh(new THREE.PlaneGeometry(0.06, D - 2.2), gold); e.rotation.x = -Math.PI / 2; e.position.set(s * 0.73, F + 0.007, cz + 0.6); G.add(e); }
+        // two rows of red-lacquered columns, gilt bands and lotus capitals
+        const capG = new THREE.LatheGeometry([[0.2, 0], [0.24, 0.06], [0.3, 0.16], [0.34, 0.26], [0.36, 0.3]].map(([a, b]) => new THREE.Vector2(a, b)), 12);
+        for (const s of [-1, 1]) for (const z of [-5.6, -10.4, -13.8]) {
+          const x = s * 2.45;
+          cyl(0.2, 0.2, MHALL.H - 0.35, x, F + (MHALL.H - 0.35) / 2, z, mLac, 14, G);
+          for (const by of [0.5, 1.4, MHALL.H - 0.8]) cyl(0.215, 0.215, 0.07, x, F + by, z, gold, 14, G);
+          const cap = new THREE.Mesh(capG, gold); cap.position.set(x, F + MHALL.H - 0.35, z); G.add(cap);
+        }
+        // the roofs in three steps, as chapter 2's: the hall's two tiers, then the porch's stepping forward over the steps
+        const tileFor = (t0, slope, len) => { const t = t0.clone(); t.repeat.set(slope / 2.8, len / 2.8); t.needsUpdate = true; madeTex.push(t); return M({ map: t, roughness: 0.6 }); };
+        const roofPair = (z0, z1, hw, eave, ridge, tt) => {
+          const rise = ridge - eave, slope = Math.hypot(rise, hw), ang = Math.atan2(rise, hw), len = z1 - z0, tile = tileFor(tt, slope, len);
+          for (const s of [-1, 1]) {
+            const p = new THREE.Mesh(new THREE.BoxGeometry(slope, 0.16, len), [gold, gold, tile, mSoffit, gold, gold]);
+            p.rotation.z = -s * ang; p.position.set(s * hw / 2, (eave + ridge) / 2 - 0.08 / Math.cos(ang), (z0 + z1) / 2); G.add(p);
+          }
+          box(0.24, 0.26, len, 0, ridge + 0.06, (z0 + z1) / 2, gold, G, false);
+          return { ang };
+        };
+        const fins = [], finD = new THREE.Object3D();
+        const nagaEdge = (x0, y0, x1, y1, z, s) => {
+          const L = Math.hypot(x1 - x0, y1 - y0), nx = (y1 - y0) / L * s, ny = Math.abs(x1 - x0) / L, th = Math.atan2(-nx, ny);
+          for (let d = 0.35; d < L - 0.2; d += 0.32) { const k = d / L;
+            finD.position.set(x0 + (x1 - x0) * k + nx * 0.1, y0 + (y1 - y0) * k + ny * 0.1, z); finD.rotation.set(0, 0, th + s * 0.35); finD.scale.set(1, 1, 0.35); finD.updateMatrix(); fins.push(finD.matrix.clone()); }
+          const g = new THREE.Group(); g.position.set(x0 + s * 0.05, y0 + 0.02, z); G.add(g);
+          g.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(0, 0, 0), new THREE.Vector3(s * 0.16, 0.06, 0), new THREE.Vector3(s * 0.24, 0.26, 0), new THREE.Vector3(s * 0.2, 0.44, 0)]), 10, 0.05, 6, false), gold));
+          const hd = new THREE.Mesh(new THREE.SphereGeometry(0.075, 10, 8), gold); hd.scale.set(1.3, 0.85, 0.8); hd.position.set(s * 0.25, 0.47, 0); g.add(hd);
+          for (let c = 0; c < 3; c++) { const cr = new THREE.Mesh(new THREE.ConeGeometry(0.022, 0.14 - c * 0.02, 5), gold); cr.position.set(s * (0.2 - c * 0.05), 0.56 - c * 0.02, 0); cr.rotation.z = s * (0.3 + c * 0.25); g.add(cr); }
+          g.scale.setScalar(1.6);
+        };
+        const gableFront = (z, hw, eave, ridge) => {
+          const rise = ridge - eave, ang = Math.atan2(rise, hw), slope = Math.hypot(rise, hw);
+          const carve = M({ map: tex(makeMGable(THREE, cnv, hw * 2, rise)), roughness: 0.5, metalness: 0.2, side: THREE.DoubleSide });
+          const tg = new THREE.ShapeGeometry(mTri(THREE, hw * 1.9, rise * 0.95)), tu = tg.attributes.uv, tp = tg.attributes.position;
+          for (let i = 0; i < tu.count; i++) tu.setXY(i, tp.getX(i) / (hw * 1.9) + 0.5, tp.getY(i) / (rise * 0.95));
+          const tri = new THREE.Mesh(tg, carve); tri.position.set(0, eave, z); G.add(tri);
+          box(hw * 1.9, 0.26, 0.14, 0, eave + 0.05, z + 0.05, gold, G, false);
+          box(hw * 1.9, 0.12, 0.16, 0, eave + 0.24, z + 0.06, mLac, G, false);
+          for (const s of [-1, 1]) { const b = box(slope + 0.35, 0.22, 0.12, s * hw / 2, (eave + ridge) / 2 + 0.1, z + 0.06, gold, G, false); b.rotation.z = -s * ang; nagaEdge(s * (hw + 0.1), eave + 0.05, 0, ridge + 0.15, z + 0.08, s); }
+          const cf = []; for (let i = 0; i <= 10; i++) { const k = i / 10; cf.push(new THREE.Vector3(0, ridge + k * 1.3, z + k * k * 0.75)); }
+          G.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(cf), 16, 0.08, 6, false), gold));
+        };
+        const RW = W + 2 * T, WT = top;
+        const A = { hw: RW / 2 + 1.2, ridge: 12.4, z0: MHALL.z0 - T - 0.9, z1: MHALL.z1 + T + 0.9 };
+        A.eave = (WT + 0.08 - 1.2 * A.ridge / A.hw) / (1 - 1.2 / A.hw);
+        const lowerY = (d) => A.eave + (A.hw - d) * (A.ridge - A.eave) / A.hw;
+        const B = { hw: A.hw - 1.5, ridge: 14.6, z0: A.z0 + 1.6, z1: A.z1 - 1.6 }; B.eave = lowerY(B.hw) + 0.6;
+        roofPair(A.z0, A.z1, A.hw, A.eave, A.ridge, tTile);
+        const rB = roofPair(B.z0, B.z1, B.hw, B.eave, B.ridge, tTile2);
+        for (const s of [-1, 1]) { const dx = B.hw - 0.45, y0 = lowerY(dx) - 0.15, y1 = B.eave + 0.45 * Math.tan(rB.ang) - 0.1;
+          box(0.12, y1 - y0, B.z1 - B.z0 - 0.4, s * dx, (y0 + y1) / 2, (B.z0 + B.z1) / 2, mWhite, G, false); }
+        gableFront(A.z1, A.hw, A.eave, A.ridge); gableFront(B.z1, B.hw, B.eave, B.ridge);
+        for (const t2 of [A, B]) { const tri = new THREE.Mesh(new THREE.ShapeGeometry(mTri(THREE, t2.hw * 1.9, (t2.ridge - t2.eave) * 0.95)), gold); tri.position.set(0, t2.eave, t2.z0); tri.rotation.y = Math.PI; G.add(tri); }
+        // the porch: its own roof stepping forward over the steps, on two white pillars and a lacquered beam
+        const P = { hw: 3.6, eave: 4.3, ridge: 6.9, z0: MHALL.z1 + T, z1: MHALL.z1 + 2.2 };
+        roofPair(P.z0, P.z1, P.hw, P.eave, P.ridge, tTile); gableFront(P.z1, P.hw, P.eave, P.ridge);
+        for (const s of [-1, 1]) { const px = s * 2.7, pz = MHALL.z1 + 1.9;
+          box(0.62, 0.3, 0.62, px, 0.15, pz, mWhite, G, false); box(0.4, 4.0, 0.4, px, 0.3 + 2.0, pz, mWhite, G, false);
+          for (const by of [0.7, 2.4, 3.9]) box(0.43, 0.07, 0.43, px, by, pz, gold, G, false);
+          const cap = new THREE.Mesh(capG, gold); cap.scale.setScalar(1.05); cap.position.set(px, 4.25, pz); G.add(cap); }
+        box(6.2, 0.3, 0.36, 0, 4.5, MHALL.z1 + 1.9, mLac, G, false);
+        { const bladeIM = new THREE.InstancedMesh(new THREE.ConeGeometry(0.075, 0.24, 3), gold, fins.length);
+          fins.forEach((m, i) => bladeIM.setMatrixAt(i, m)); bladeIM.instanceMatrix.needsUpdate = true; bladeIM.computeBoundingSphere(); G.add(bladeIM); }
+        // little bells under the eaves
+        { const hang = []; for (const s of [-1, 1]) for (let z = A.z1 - 0.6; z > A.z0 + 0.5; z -= 1.6) hang.push([s * (A.hw - 0.05), A.eave - 0.08, z]);
+          const bellG = new THREE.LatheGeometry([[0, 0.09], [0.005, 0.09], [0.005, 0.0], [0.03, -0.005], [0.045, -0.04], [0.06, -0.1], [0.064, -0.11], [0, -0.11]].map(([a, b]) => new THREE.Vector2(a, b)), 10);
+          const im = new THREE.InstancedMesh(bellG, gold, hang.length), d = new THREE.Object3D();
+          hang.forEach(([x, y, z], i) => { d.position.set(x, y, z); d.rotation.set(0, i * 0.7, (hash(i, 77) - 0.5) * 0.12); d.scale.setScalar(1.6); d.updateMatrix(); im.setMatrixAt(i, d.matrix); });
+          im.instanceMatrix.needsUpdate = true; im.computeBoundingSphere(); G.add(im); }
+      }
+
+      /* ---- inside: the altar, the Buddha, candles, flowers, incense; the monk's dais; the box; the bowl and vessel */
+      { // the Buddha's altar: a red-and-gold screen on the back wall, three stepped tiers
+        const scr = new THREE.Mesh(new THREE.PlaneGeometry(4.4, 4.2), M({ map: tScreen, roughness: 0.55, metalness: 0.15 })); scr.position.set(0, F + 2.2, MHALL.z0 + 0.03); G.add(scr);
+        for (let i = 0; i < 3; i++) { const w = MALT.w - i * 0.6, d = MALT.d - i * 0.3, h = 0.42;
+          box(w, h, d, 0, F + h / 2 + i * h, MALT.z - 0.15 + i * 0.15, i % 2 ? mLac : gold, G, false);
+          box(w + 0.04, 0.03, d + 0.04, 0, F + (i + 1) * h, MALT.z - 0.15 + i * 0.15, gold, G, false); }
+        const altTop = F + 3 * 0.42;
+        thai('buddha', 0, altTop, MALT.z + 0.15, { s: 4.0, hd: true, hdAt: 2.5, parent: G, cast: false });
+        for (const s of [-1, 1]) {
+          thai('candle', s * 0.9, F + 2 * 0.42, MALT.z + 0.05, { parent: G, s: 1.4 });
+          thai('orchid', s * 1.35, F + 0.42, MALT.z - 0.2, { parent: G, s: 1.3 });
+          thai('lotusbowl', s * 0.55, F + 2 * 0.42, MALT.z + 0.1, { parent: G, s: 0.8 });
+        }
+        thai('incense', 0, F + 2 * 0.42, MALT.z + 0.3, { parent: G, s: 1.0 });
+        // the flames on the altar and the dais, and the incense's smoke (painted; never a light)
+        for (const [x, y, z] of [[-0.9, F + 2 * 0.42 + 0.34, MALT.z + 0.05], [0.9, F + 2 * 0.42 + 0.34, MALT.z + 0.05], [MDAIS.x - 0.55, F + MDAIS.h + 0.26, MDAIS.z + 1.0]]) {
+          const fm = new THREE.SpriteMaterial({ map: tFlame, color: 0xffd090, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }); mats.push(fm);
+          const fl = new THREE.Sprite(fm); fl.scale.set(0.05, 0.11, 1); fl.position.set(x, y, z); G.add(fl);
+          const hm = new THREE.SpriteMaterial({ map: tGlow, color: 0xff9a40, transparent: true, opacity: 0.35, depthWrite: false, blending: THREE.AdditiveBlending }); mats.push(hm);
+          const halo = new THREE.Sprite(hm); halo.scale.set(0.5, 0.5, 1); halo.position.set(x, y, z); G.add(halo);
+          mLive.flames.push({ fl, halo, k: Math.random() * 6, y });
+        }
+        for (let i = 0; i < 6; i++) { const m = new THREE.SpriteMaterial({ map: tSmoke, color: 0xe8e0d8, transparent: true, opacity: 0, depthWrite: false }); mats.push(m);
+          const sp = new THREE.Sprite(m); G.add(sp); mLive.smoke.push({ sp, t: i / 6, k: i * 1.7 }); }
+        mLive.smokeAt = new THREE.Vector3(0, F + 2 * 0.42 + 0.3, MALT.z + 0.3);
+
+        // the monk's dais: carpeted, gilt-edged, its back panel on the wall; a backrest cushion; a phan of flowers
+        const dx = MDAIS.x, dz = MDAIS.z, dw = MDAIS.w, dd = MDAIS.d, dh = MDAIS.h;
+        box(dw, dh, dd, dx, F + dh / 2, dz, mLac, G, false);
+        box(dw + 0.04, 0.04, dd + 0.04, dx, F + dh, dz, gold, G, false);
+        const top = new THREE.Mesh(new THREE.PlaneGeometry(dw - 0.1, dd - 0.1), mCarpet); top.rotation.x = -Math.PI / 2; top.position.set(dx, F + dh + 0.022, dz); G.add(top);
+        const panel = new THREE.Mesh(new THREE.PlaneGeometry(dd, 2.6), M({ map: tScreen, roughness: 0.55, metalness: 0.15 })); panel.position.set(MHALL.x1 - 0.03, F + dh + 1.3, dz); panel.rotation.y = -Math.PI / 2; G.add(panel);
+        thai('cushtri', MHALL.x1 - 0.32, F + dh, dz, { parent: G, ry: -Math.PI / 2, s: 1.0 });
+        thai('phan', dx - 0.55, F + dh, dz - 0.95, { parent: G, s: 0.9 });
+        thai('candle', dx - 0.55, F + dh, dz + 1.0, { parent: G, s: 0.9 });
+        thai('reedmat', MKNEEL.x - 0.05, F, MKNEEL.z, { parent: G, ry: Math.PI / 2, s: 1.0 });
+        // a ceremonial fan (talapat) standing in its holder beside him: a gilt-rimmed leaf on a lacquered pole
+        { const fan = new THREE.Group(); fan.position.set(dx + 0.15, F + dh, dz - 0.95); G.add(fan);
+          cyl(0.012, 0.012, 1.5, 0, 0.75, 0, mLacD, 8, fan);
+          const leaf = new THREE.Mesh(new THREE.CircleGeometry(0.26, 24), M({ color: 0x8a1810, roughness: 0.6, side: THREE.DoubleSide })); leaf.scale.y = 1.25; leaf.position.y = 1.2; leaf.rotation.y = -Math.PI / 2; fan.add(leaf);
+          const rim = new THREE.Mesh(new THREE.TorusGeometry(0.26, 0.012, 6, 32), gold); rim.scale.y = 1.25; rim.position.y = 1.2; rim.rotation.y = -Math.PI / 2; fan.add(rim); }
+
+        // the donation box by the door: a lacquered stand, a teak box with its slot and its sign
+        { const g = new THREE.Group(); g.position.set(MBOX.x, F, MBOX.z); G.add(g);
+          box(0.72, 0.74, 0.5, 0, 0.37, 0, mLac, g, false); box(0.76, 0.03, 0.54, 0, 0.75, 0, gold, g, false);
+          box(0.56, 0.44, 0.38, 0, 0.77 + 0.22, 0, mTeak, g, false);
+          const fr = new THREE.Mesh(new THREE.PlaneGeometry(0.54, 0.42), M({ map: tBox, roughness: 0.6 })); fr.position.set(0, 0.99, 0.191); g.add(fr);
+          box(0.58, 0.02, 0.4, 0, 1.22, 0, mTeak, g, false);                               // the lid, teak
+          for (const [w, d, x, z] of [[0.6, 0.016, 0, 0.2], [0.6, 0.016, 0, -0.2], [0.016, 0.4, 0.29, 0], [0.016, 0.4, -0.29, 0]]) box(w, 0.024, d, x, 1.221, z, gold, g, false);   // its gilt edge
+          box(0.30, 0.004, 0.064, 0, 1.232, 0, gold, g, false);                               // the brass slot plate
+          const slot = new THREE.Mesh(new THREE.PlaneGeometry(0.24, 0.012), matDark); slot.rotation.x = -Math.PI / 2; slot.position.set(0, 1.2345, 0); g.add(slot); }   // the slot, flush (CP6: a raised black bar read as a block on the lid)
+        // the envelope in the box's slot (the insert) and his own (the hand): the same drawn front
+        { const mE = M({ map: tEnv, roughness: 0.85 }), mEb = M({ color: 0xf2ede0, roughness: 0.9 });
+          const mk = () => { const e = new THREE.Group();
+            const f = new THREE.Mesh(new THREE.PlaneGeometry(0.17, 0.095), mE); f.position.z = 0.0011; e.add(f);
+            const b = new THREE.Mesh(new THREE.BoxGeometry(0.17, 0.095, 0.002), mEb); e.add(b);
+            return e; };
+          mLive.envelope = mk(); mLive.envelope.visible = false;                         // his, for kit.hold
+          const ins = mk(); ins.rotation.set(0, 0, 0); ins.position.set(MBOX.x, F + 1.235 + 0.05, MBOX.z); ins.visible = false; G.add(ins); mLive.envIn = ins;
+          owned.push({ dispose: () => mLive.envelope.traverse(o => { if (o.geometry) o.geometry.dispose(); }) }); }
+        // the silver bowl and the brass vessel for kruat nam, on the floor before his knees
+        { const bowl = new THREE.Group(); bowl.position.set(MBOWL.x, F, MBOWL.z); G.add(bowl);
+          const prof = [[0.0, 0.0], [0.05, 0.0], [0.055, 0.012], [0.075, 0.03], [0.088, 0.055], [0.094, 0.075], [0.098, 0.082], [0.094, 0.082], [0.088, 0.074], [0.08, 0.05], [0.06, 0.026], [0.0, 0.016]];
+          const bg = new THREE.LatheGeometry(prof.map(([a, b]) => new THREE.Vector2(a, b)), 40);
+          const b = new THREE.Mesh(bg, mSilver); bowl.add(b);
+          const ring = new THREE.Mesh(new THREE.TorusGeometry(0.096, 0.003, 6, 40), mSilver); ring.rotation.x = Math.PI / 2; ring.position.y = 0.082; bowl.add(ring);
+          // its water: a disc whose level rises as it fills (mTick), with the ripples on it
+          const wm = new THREE.MeshStandardMaterial({ color: 0x9fb6c0, roughness: 0.05, metalness: 0.1, transparent: true, opacity: 0.72 }); mats.push(wm);
+          const water = new THREE.Mesh(new THREE.CircleGeometry(0.08, 32), wm); water.rotation.x = -Math.PI / 2; water.position.y = 0.022; water.visible = false; bowl.add(water);
+          mLive.water = water; mLive.bowl = bowl;
+          for (let i = 0; i < 5; i++) { const rm = new THREE.MeshBasicMaterial({ map: tRip, transparent: true, opacity: 0, depthWrite: false, color: 0xfff4e8 }); mats.push(rm);
+            const r = new THREE.Mesh(new THREE.PlaneGeometry(0.05, 0.05), rm); r.rotation.x = -Math.PI / 2; r.position.y = 0.0225; bowl.add(r); mLive.ripples.push({ r, t: i / 5 }); }
+          // the vessel: a small brass kendi — round body, a neck, a spout — held from above the frame, tipping
+          const v = new THREE.Group(); G.add(v); mLive.vessel = v;
+          const vb = new THREE.LatheGeometry([[0, 0], [0.035, 0.002], [0.055, 0.02], [0.062, 0.05], [0.055, 0.08], [0.03, 0.1], [0.018, 0.115], [0.02, 0.15], [0.026, 0.158], [0.0, 0.158]].map(([a, b]) => new THREE.Vector2(a, b)), 28);
+          const body = new THREE.Mesh(vb, mBrass); v.add(body);
+          const sp = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(0.04, 0.05, 0), new THREE.Vector3(0.08, 0.07, 0), new THREE.Vector3(0.11, 0.095, 0)]), 8, 0.007, 8, false), mBrass); v.add(sp);
+          v.userData.spout = new THREE.Vector3(0.112, 0.096, 0);
+          v.visible = false; }
+        // the water itself: a thin stream (a tube re-shaped every frame from the spout to the surface) with its flow
+        { const sm = new THREE.MeshBasicMaterial({ map: tStream, color: 0xe8f4ff, transparent: true, opacity: 0.7, depthWrite: false, side: THREE.DoubleSide }); mats.push(sm);
+          tStream.wrapS = tStream.wrapT = THREE.RepeatWrapping;
+          mLive.streamMat = sm; mLive.streamGeo = null;
+          const st = new THREE.Mesh(new THREE.BufferGeometry(), sm); st.visible = false; st.frustumCulled = false; G.add(st); mLive.stream = st;
+          for (let i = 0; i < 10; i++) { const gm = new THREE.SpriteMaterial({ map: tGlow, color: 0xfff0d8, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }); mats.push(gm);
+            const s = new THREE.Sprite(gm); s.scale.set(0.012, 0.012, 1); s.visible = false; G.add(s); mLive.drops.push({ s, t: i / 10 }); } }
+        // light through the west windows: slanted shafts of the sunset, dust turning in them (painted)
+        for (const w of mLive.shafts) {
+          if (w.s > 0) continue;
+          const shm = new THREE.MeshBasicMaterial({ map: tex(makeMShaft(THREE, cnv)), color: 0xffc890, transparent: true, opacity: 0.22, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, fog: false }); mats.push(shm);
+          const sh = new THREE.Mesh(new THREE.PlaneGeometry(5.2, 1.3), shm);
+          sh.position.set(w.x + 2.3, F + 1.25, w.z + 0.9); sh.rotation.set(0, -0.62, -0.42); G.add(sh); w.mesh = sh;
+        }
+      }
+
+      /* ---- the courtyard: the bell in its pavilion, the bodhi on its plinth, lamps, a spirit house, plants */
+      { // the bell pavilion: four red posts, a small two-step roof, the bronze bell hanging with its striker
+        const g = new THREE.Group(); g.position.set(MBELL.x, 0, MBELL.z); g.rotation.y = 0.5; G.add(g);
+        box(2.6, 0.3, 2.6, 0, 0.15, 0, mWhite, g, false);
+        for (const sx of [-1, 1]) for (const sz of [-1, 1]) { cyl(0.09, 0.09, 2.9, sx * 1.05, 0.3 + 1.45, sz * 1.05, mLac, 10, g); cyl(0.1, 0.1, 0.06, sx * 1.05, 0.9, sz * 1.05, gold, 10, g); }
+        box(2.5, 0.16, 2.5, 0, 3.25, 0, mLac, g, false);
+        const roof = new THREE.Mesh(new THREE.ConeGeometry(2.1, 1.2, 4, 1), M({ map: tTile, roughness: 0.6 })); roof.rotation.y = Math.PI / 4; roof.position.y = 3.95; g.add(roof);
+        const roof2 = new THREE.Mesh(new THREE.ConeGeometry(1.1, 0.9, 4, 1), M({ map: tTile2, roughness: 0.6 })); roof2.rotation.y = Math.PI / 4; roof2.position.y = 4.75; g.add(roof2);
+        const fin = new THREE.Mesh(new THREE.ConeGeometry(0.08, 1.0, 8), gold); fin.position.y = 5.6; g.add(fin);
+        const swing = new THREE.Group(); swing.position.set(0, 3.15, 0); g.add(swing);
+        cyl(0.012, 0.012, 0.4, 0, -0.2, 0, mLacD, 6, swing);
+        const bg = new THREE.LatheGeometry([[0, 0.0], [0.04, 0.0], [0.07, -0.03], [0.12, -0.2], [0.17, -0.45], [0.22, -0.62], [0.24, -0.66], [0.0, -0.66]].map(([a, b]) => new THREE.Vector2(a, b)), 28);
+        const bell = new THREE.Mesh(bg, M({ color: 0x8a6a34, roughness: 0.35, metalness: 0.8 })); bell.position.y = -0.4; swing.add(bell);
+        mLive.bell = { swing, t: -9 };
+        const striker = cyl(0.05, 0.05, 1.0, 0.5, 2.3, 0, mTeak, 8, g); striker.rotation.z = Math.PI / 2;
+      }
+      { // the bodhi's plinth: a white ring wall with a gilt lip, earth inside; the cloth round the trunk once it lands
+        const t = MTREE;
+        const ringO = new THREE.Mesh(new THREE.CylinderGeometry(t.r, t.r, t.h, 40, 1, true), mWhite); ringO.position.set(t.x, t.h / 2, t.z); G.add(ringO);
+        const lip = new THREE.Mesh(new THREE.TorusGeometry(t.r, 0.06, 6, 48), gold); lip.rotation.x = Math.PI / 2; lip.position.set(t.x, t.h, t.z); G.add(lip);
+        const earth = new THREE.Mesh(new THREE.CircleGeometry(t.r - 0.03, 40), mEarth); earth.rotation.x = -Math.PI / 2; earth.position.set(t.x, t.h - 0.02, t.z); G.add(earth);
+        // the wet patch the water makes (a darker, glossier disc that grows), and the bowl that pours it (the insert)
+        const wm = new THREE.MeshStandardMaterial({ color: 0x1c120a, roughness: 0.25, transparent: true, opacity: 0, depthWrite: false, alphaMap: tex(makeMWet(THREE, cnv)) }); mats.push(wm);
+        const wet = new THREE.Mesh(new THREE.CircleGeometry(0.34, 28), wm); wet.rotation.x = -Math.PI / 2; wet.position.set(t.x - 0.62, t.h - 0.012, t.z + 0.42); G.add(wet); mLive.wet = wet;
+        const b2 = mLive.bowl.clone(true); b2.visible = false; G.add(b2); mLive.bowl2 = b2;
+        b2.traverse(o => { if (o === b2) return; if (o.material && o.material.transparent) o.visible = false; });   // (its own water hidden: the stream leaves it)
+        // fallen bodhi leaves on the earth, lying flat, one instanced mesh (CP6: drawn roots, thick or thin, read as worms
+        // and as cut cigars at the insert's distance; a planter under a bodhi has its leaves, not its roots, on show)
+        { const lm = new THREE.MeshStandardMaterial({ map: tPetal, alphaTest: 0.45, side: THREE.DoubleSide, roughness: 0.85 }); mats.push(lm);
+          const LN = 70, leaves = new THREE.InstancedMesh(new THREE.PlaneGeometry(0.075, 0.095), lm, LN);
+          const lmx = new THREE.Matrix4(), lq = new THREE.Quaternion(), le = new THREE.Euler(), lc = new THREE.Color();
+          for (let i = 0; i < LN; i++) {
+            const a = hash(i, 51) * Math.PI * 2, rr = 0.35 + Math.sqrt(hash(i, 53)) * (t.r - 0.45);
+            le.set(-Math.PI / 2 + (hash(i, 55) - 0.5) * 0.25, 0, hash(i, 57) * Math.PI * 2, 'XZY'); lq.setFromEuler(le);
+            const s = 0.75 + hash(i, 59) * 0.5;
+            lmx.compose(new THREE.Vector3(t.x + Math.cos(a) * rr, t.h - 0.016 + hash(i, 61) * 0.004, t.z + Math.sin(a) * rr), lq, new THREE.Vector3(s, s, s));
+            leaves.setMatrixAt(i, lmx);
+            leaves.setColorAt(i, lc.set([0xb8a060, 0x8a6a3a, 0xc8b070, 0x7a8a40, 0x9a7a44][i % 5]));
+          }
+          leaves.receiveShadow = true; leaves.computeBoundingSphere(); G.add(leaves); }
+        // the warm glow the light is born in, on the wet earth (painted, additive)
+        { const gg = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.9), new THREE.MeshBasicMaterial({ map: tGlow, color: 0xffd8a0, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, fog: false }));
+          mats.push(gg.material); gg.rotation.x = -Math.PI / 2; gg.position.set(t.x - 0.62, t.h - 0.004, t.z + 0.42); gg.visible = false; G.add(gg); mLive.groundGlow = gg; }
+        // bodhi leaves let go by the breeze (CP6: frangipani petals drew as white stars against the dusk), and the
+        // light that rises from the water
+        for (let i = 0; i < 18; i++) { const pm = new THREE.SpriteMaterial({ map: tPetal, color: [0xffffff, 0xe8e0a0, 0xc8d890][i % 3], transparent: true, opacity: 0, depthWrite: false }); mats.push(pm);
+          const s = new THREE.Sprite(pm); s.visible = false; G.add(s); mLive.petals.push({ s, i }); }
+        const mm = new THREE.SpriteMaterial({ map: tGlow, color: 0xfff6e0, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, fog: false }); mats.push(mm);
+        mLive.mote = new THREE.Sprite(mm); mLive.mote.visible = false; G.add(mLive.mote);
+        const hm = new THREE.SpriteMaterial({ map: tGlow, color: 0xffd8a0, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, fog: false }); mats.push(hm);
+        mLive.moteHalo = new THREE.Sprite(hm); mLive.moteHalo.visible = false; G.add(mLive.moteHalo);
+        for (let i = 0; i < 14; i++) { const tm = new THREE.SpriteMaterial({ map: tGlow, color: 0xfff0d0, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, fog: false }); mats.push(tm);
+          const s = new THREE.Sprite(tm); s.visible = false; G.add(s); mLive.trail.push({ s, i }); }
+      }
+      // lamps along the path (warm, just lit: painted), a spirit house, potted plants and the kit's pieces
+      for (const [x, z] of [[-2.6, 8], [2.6, 8], [-2.6, 14], [2.6, 14], [-2.6, 20], [2.6, 20]]) {
+        cyl(0.05, 0.07, 2.4, x, 1.2, z, mLacD, 8, G);
+        const lamp = new THREE.Mesh(new THREE.SphereGeometry(0.16, 12, 10), new THREE.MeshBasicMaterial({ color: 0xffd8a0, fog: false })); mats.push(lamp.material); lamp.position.set(x, 2.5, z); G.add(lamp);
+        const hm = new THREE.SpriteMaterial({ map: tGlow, color: 0xffb060, transparent: true, opacity: 0.4, depthWrite: false, blending: THREE.AdditiveBlending }); mats.push(hm);
+        const h = new THREE.Sprite(hm); h.scale.set(1.3, 1.3, 1); h.position.set(x, 2.5, z); G.add(h);
+      }
+      thai('spirit', -11.5, 0, 14.5, { parent: G, ry: Math.PI / 2, s: 1.2 });
+      for (const [x, z, k, s] of [[-4.2, 0.4, 'lotusbowl', 1.4], [4.2, 0.4, 'lotusbowl', 1.4], [-7.6, -1.5, 'travpalm', 1.6], [7.6, -1.5, 'travpalm', 1.6], [12.5, 15, 'banana', 1.5], [-12.6, 9, 'fern', 1.6], [6.6, 13.5, 'urnclay', 1.3], [-6.4, 13.2, 'waterjar', 1.2]])
+        thai(k, x, 0, z, { parent: G, s, ry: hash(x, z) * 6 });
+      // a small white chedi on the west, its spire gilt
+      { const cg = new THREE.Group(); cg.position.set(-11.5, 0, -10); G.add(cg);
+        for (let i = 0; i < 4; i++) box(3.2 - i * 0.7, 0.5, 3.2 - i * 0.7, 0, 0.25 + i * 0.5, 0, mWhite, cg, false);
+        const bell = new THREE.Mesh(new THREE.SphereGeometry(0.9, 20, 14, 0, Math.PI * 2, 0, Math.PI / 2), mWhite); bell.scale.y = 1.4; bell.position.y = 2.0; cg.add(bell);
+        const spire = new THREE.Mesh(new THREE.ConeGeometry(0.32, 3.4, 16), gold); spire.position.y = 4.9; cg.add(spire);
+        for (let i = 0; i < 6; i++) { const r = new THREE.Mesh(new THREE.TorusGeometry(0.3 - i * 0.04, 0.04, 6, 16), gold); r.rotation.x = Math.PI / 2; r.position.y = 3.4 + i * 0.22; cg.add(r); } }
+      // trees: the bodhi itself (always — the film is built on its roots), and the city's trees beyond the wall
+      if (plantTrees) {
+        treeStands.push(plantTrees(G, [{ x: MTREE.x, y: MTREE.h - 0.02, z: MTREE.z, h: 12.5, always: true, kind: 0 }], { seed: 271, tint: 0xf0c8a0, shadow: false }));
+        treeStands.push(plantTrees(G, [[-13, 18], [13, 19], [-13.4, -4], [13.6, -6], [-20, 6], [20, 8], [-24, -14], [22, -20], [-6, 30], [8, 32], [-30, 24], [30, 26], [0, -30], [-16, -32], [16, -30]]
+          .map(([x, z], i) => ({ x, z, h: 7 + (i % 4) * 1.4 })), { seed: 277, tint: 0xd8b090, lowKeep: 0.6 }));
+      }
+      // the city beyond: HDB blocks round the temple, their windows coming on (chapter 3's estate recipe, the game's block)
+      parseOnce('hdb').then(gl => {
+        if (!alive) return;
+        const est = new THREE.Group(); G.add(est);
+        for (const [x, z, ry] of [[-46, -62, 0.2], [-8, -78, -0.1], [34, -66, 0.35], [70, -30, 1.4], [-74, -18, -1.3], [62, 40, 0.9], [-60, 52, -0.6], [10, 92, 0.05]]) {
+          const b = gl.scene.clone(true); b.scale.setScalar(0.001); b.rotation.y = ry; b.updateMatrixWorld(true);
+          const bb = new THREE.Box3().setFromObject(b); b.position.set(x - (bb.min.x + bb.max.x) / 2, -bb.min.y, z - (bb.min.z + bb.max.z) / 2); est.add(b);
+        }
+        est.traverse(o => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = false; } });
+      }).catch(err => { console.warn('hdb failed to load', err); ctx.loadFail && ctx.loadFail('hdb', err); });
+
+      /* ---- Chad's monk on his dais (chapter 3's shop monk, the same file): seated cross-legged on his own floor take,
+         grounded on his posed skin, his hands joined by a two-bone solve with the palms measured off his own skin
+         (e3c3's monkPray), his head a little bowed; while the chant runs his head dips on each of its four phrases */
+      { const mk = merit.monk;
+        const g0 = new THREE.Group(); g0.position.set(MDAIS.x + 0.12, F + MDAIS.h, MDAIS.z); g0.rotation.y = -Math.PI / 2; G.add(g0); mk.group = g0;
+        const cush = box(0.72, 0.06, 0.68, 0, 0.03, 0.05, mSaffron, g0, false);
+        parseOnce('monkshop').then((gltf) => {
+          if (!alive) return;
+          const g = cloneSkinned(gltf.scene);
+          g.traverse(o => { if (o.isBone) mk.bones.push(o); if (o.isMesh) { o.castShadow = false; o.receiveShadow = false; } });
+          g0.add(g); mk.model = g;
+          g.updateMatrixWorld(true);
+          let lo = Infinity, hi = -Infinity;
+          for (const b of mk.bones) { b.getWorldPosition(_mv); lo = Math.min(lo, _mv.y); hi = Math.max(hi, _mv.y); }
+          const crown = mk.bones.some(b => /HeadTop_End|head_end/.test(b.name));
+          if (isFinite(lo) && hi > lo) g.scale.multiplyScalar(1.70 / ((hi - lo) / (crown ? 1 : 0.935)));
+          const clip = (gltf.animations || []).find(c => c.name === 'Sit_Cross_Legged_on_Floor');
+          if (clip) { const mixer = new THREE.AnimationMixer(g), act = mixer.clipAction(clip);
+            act.play(); act.time = clip.duration * 0.3; act.paused = true; mixer.update(0);
+            owned.push({ dispose: () => mixer.stopAllAction() }); }
+          g.updateMatrixWorld(true);
+          let sl = Infinity, seat = Infinity;
+          g.traverse(o => {
+            if (!o.isSkinnedMesh) return;
+            o.skeleton.update();
+            const hb = o.skeleton.bones.map(b => /hips|pelvis/i.test(b.name));
+            const sI = o.geometry.attributes.skinIndex, sW = o.geometry.attributes.skinWeight, n = o.geometry.attributes.position.count;
+            for (let i = 0; i < n; i += 7) {
+              o.getVertexPosition(i, _mv); _mv.applyMatrix4(o.matrixWorld); if (_mv.y < sl) sl = _mv.y;
+              if (sI && sW) { let w = 0; for (let k = 0; k < 4; k++) if (hb[sI.getComponent(i, k)]) w += sW.getComponent(i, k); if (w > 0.5 && _mv.y < seat) seat = _mv.y; }
+            }
+          });
+          const cushTop = g0.position.y + 0.06;
+          if (isFinite(sl)) g.position.y += (isFinite(seat) ? Math.max(cushTop - 0.008 - seat, cushTop - 0.045 - sl) : cushTop + 0.012 - sl) / g0.scale.y;
+          g.updateMatrixWorld(true);
+          mk.head = mkBone(mk, /(^|[^A-Za-z])Head(_\d+)?$|mixamorigHead(_\d+)?$/);
+          if (mk.head) {
+            const tp0 = mk.head.children.find(ch => ch.isBone && /HeadTop|head_end/i.test(ch.name)) || mk.head.children.find(ch => ch.isBone);
+            if (tp0) { const fwd = new THREE.Vector3(-1, 0, 0), hp = mk.head.getWorldPosition(new THREE.Vector3()), tp = tp0.getWorldPosition(new THREE.Vector3());
+              mkAim(mk.head, tp.sub(hp).normalize(), new THREE.Vector3(0, 1, 0).multiplyScalar(Math.cos(0.2)).addScaledVector(fwd, Math.sin(0.2)).normalize()); g.updateMatrixWorld(true); }
+          }
+          mkPray(mk, new THREE.Vector3(-1, 0, 0));
+          mk.rest = mk.head ? mk.head.quaternion.clone() : null;
+          g.updateMatrixWorld(true);
+          // his culling sphere round his posed skin (v18.5's law), generous
+          const bb = new THREE.Box3();
+          g.traverse(o => { if (!o.isSkinnedMesh) return; o.skeleton.update(); const n = o.geometry.attributes.position.count, st = Math.max(1, Math.floor(n / 3000));
+            for (let i = 0; i < n; i += st) { o.getVertexPosition(i, _mv); _mv.applyMatrix4(o.matrixWorld); bb.expandByPoint(_mv); } });
+          if (!bb.isEmpty()) { const sph = bb.getBoundingSphere(new THREE.Sphere()); sph.radius = Math.max(sph.radius * 1.4, 1.1);
+            g.traverse(o => { if (!o.isSkinnedMesh) return; o.frustumCulled = true; const inv = o.matrixWorld.clone().invert(), k = o.matrixWorld.getMaxScaleOnAxis() || 1;
+              o.boundingSphere = new THREE.Sphere(sph.center.clone().applyMatrix4(inv), sph.radius / k); }); }
+          mk.ready = true;
+        }).catch(err => { console.warn('monk failed to load', err); ctx.loadFail && ctx.loadFail('monkshop', err); });
+      }
+    }
+    /* the monk's bones and his añjali, e3c3's own (mAim, mPalmOf, mPalmTo, mPalmReach, monkPray), copied — a chapter
+       imports nothing: turn a bone so a world direction `from` becomes `to`; find a hand's palm off its own skin; turn
+       the palm to the other hand; solve each arm twice so the wrists stand the palms' thickness apart */
+    const _mq = new THREE.Quaternion(), _mq2 = new THREE.Quaternion(), _mv = new THREE.Vector3();
+    const mkBone = (mk, re) => mk.bones.find(b => re.test(b.name)) || null;
+    function mkAim(bone, from, to) {
+      _mq.setFromUnitVectors(from, to);
+      bone.getWorldQuaternion(_mq2); _mq2.premultiply(_mq);
+      const pq = bone.parent ? bone.parent.getWorldQuaternion(new THREE.Quaternion()) : new THREE.Quaternion();
+      bone.quaternion.copy(pq.invert().multiply(_mq2));
+    }
+    function mkPalmOf(mk, hand, tip, S) {
+      mk.model.updateMatrixWorld(true);
+      const pts = [];
+      mk.model.traverse(o => {
+        if (!o.isSkinnedMesh || !o.skeleton) return;
+        const bi = o.skeleton.bones.indexOf(hand), ti = tip ? o.skeleton.bones.indexOf(tip) : -1;
+        const sI = o.geometry.attributes.skinIndex, sW = o.geometry.attributes.skinWeight;
+        if (bi < 0 || !sI || !sW) return;
+        o.skeleton.update();
+        const n = o.geometry.attributes.position.count;
+        for (let i = 0; i < n; i++) {
+          let w = 0; for (let k = 0; k < 4; k++) { const j = sI.getComponent(i, k); if (j === bi || (ti >= 0 && j === ti)) w += sW.getComponent(i, k); }
+          if (w < 0.6) continue;
+          o.getVertexPosition(i, _mv); _mv.applyMatrix4(o.matrixWorld);
+          pts.push(hand.worldToLocal(_mv.clone()));
+        }
+      });
+      if (pts.length < 30) return null;
+      const f = (tip ? tip.position.clone() : new THREE.Vector3(0, 1, 0)).normalize();
+      const m = new THREE.Vector3(); for (const q of pts) m.add(q); m.multiplyScalar(1 / pts.length);
+      const e1 = new THREE.Vector3(1, 0, 0); if (Math.abs(e1.dot(f)) > 0.9) e1.set(0, 0, 1);
+      e1.addScaledVector(f, -e1.dot(f)).normalize();
+      const e2 = new THREE.Vector3().crossVectors(f, e1), d = new THREE.Vector3();
+      let saa = 0, sab = 0, sbb = 0;
+      for (const q of pts) { d.subVectors(q, m); const a = d.dot(e1), b = d.dot(e2); saa += a * a; sab += a * b; sbb += b * b; }
+      const th = 0.5 * Math.atan2(2 * sab, saa - sbb);
+      const w = e1.clone().multiplyScalar(Math.cos(th)).addScaledVector(e2, Math.sin(th));
+      let s3 = 0; for (const q of pts) { const x = d.subVectors(q, m).dot(w); s3 += x * x * x; }
+      const thumb = w.clone().multiplyScalar(s3 < 0 ? -1 : 1);
+      const palm = S === 'Left' ? new THREE.Vector3().crossVectors(f, thumb) : new THREE.Vector3().crossVectors(thumb, f);
+      return { pts: pts.filter((_, i) => i % 2 === 0), f, palm: palm.normalize() };
+    }
+    function mkPalmTo(hand, pl, inward) {
+      const hq = hand.getWorldQuaternion(new THREE.Quaternion());
+      const Fv = pl.f.clone().applyQuaternion(hq).normalize();
+      const N = pl.palm.clone().applyQuaternion(hq), Tv = inward.clone();
+      N.addScaledVector(Fv, -N.dot(Fv)); Tv.addScaledVector(Fv, -Tv.dot(Fv));
+      if (N.lengthSq() < 1e-8 || Tv.lengthSq() < 1e-8) return;
+      N.normalize(); Tv.normalize();
+      const ang = Math.atan2(new THREE.Vector3().crossVectors(N, Tv).dot(Fv), N.dot(Tv));
+      _mq.setFromAxisAngle(Fv, ang);
+      hand.getWorldQuaternion(_mq2); _mq2.premultiply(_mq);
+      const pq = hand.parent ? hand.parent.getWorldQuaternion(new THREE.Quaternion()) : new THREE.Quaternion();
+      hand.quaternion.copy(pq.invert().multiply(_mq2));
+    }
+    function mkPalmReach(hand, pl, inward) {
+      hand.updateWorldMatrix(true, false);
+      const wr = hand.getWorldPosition(new THREE.Vector3()), q = [];
+      for (const pt of pl.pts) q.push(_mv.copy(pt).applyMatrix4(hand.matrixWorld).sub(wr).dot(inward));
+      q.sort((x, y) => x - y);
+      return Math.max(0.005, q[Math.floor(q.length * 0.97)] || 0);
+    }
+    function mkPray(mk, fwd) {
+      const g = mk.model; g.updateMatrixWorld(true);
+      const side = new THREE.Vector3(fwd.z, 0, -fwd.x), up = new THREE.Vector3(0, 1, 0);
+      const chestB = mkBone(mk, /LeftShoulder(_\d+)?$/), chest = chestB && chestB.parent;
+      if (!chest) return;
+      const C = chest.getWorldPosition(new THREE.Vector3());
+      for (const sd of [1, -1]) {
+        const S = sd > 0 ? 'Left' : 'Right';
+        const arm = mkBone(mk, new RegExp(S + 'Arm(_\\d+)?$')), fore = mkBone(mk, new RegExp(S + 'ForeArm(_\\d+)?$')), hand = mkBone(mk, new RegExp(S + 'Hand(_\\d+)?$'));
+        if (!arm || !fore || !hand) continue;
+        const tip = hand.children.find(ch => ch.isBone);
+        const pl = mkPalmOf(mk, hand, tip, S), inward = side.clone().multiplyScalar(-sd);
+        const solve = (spread) => {
+          const sh = arm.getWorldPosition(new THREE.Vector3()), el = fore.getWorldPosition(new THREE.Vector3()), wr = hand.getWorldPosition(new THREE.Vector3());
+          const a = sh.distanceTo(el), b = el.distanceTo(wr);
+          const T0 = C.clone().addScaledVector(fwd, 0.10 + a * 0.55).addScaledVector(up, -0.09).addScaledVector(side, sd * spread);
+          const dvec = T0.clone().sub(sh); let dl = dvec.length();
+          dl = Math.min(Math.max(dl, Math.abs(a - b) + 0.01), a + b - 0.005);
+          const dir = dvec.normalize();
+          const pole = up.clone().multiplyScalar(-1).addScaledVector(side, sd * 0.55).addScaledVector(fwd, -0.15).normalize();
+          const n = pole.addScaledVector(dir, -pole.dot(dir)).normalize();
+          const cosA = (a * a + dl * dl - b * b) / (2 * a * dl), sinA = Math.sqrt(Math.max(0, 1 - cosA * cosA));
+          const elbow = sh.clone().addScaledVector(dir, a * cosA).addScaledVector(n, a * sinA);
+          mkAim(arm, el.clone().sub(sh).normalize(), elbow.clone().sub(sh).normalize());
+          g.updateMatrixWorld(true);
+          const el2 = fore.getWorldPosition(new THREE.Vector3()), wr2 = hand.getWorldPosition(new THREE.Vector3());
+          const T1 = sh.clone().addScaledVector(dir, dl);
+          mkAim(fore, wr2.clone().sub(el2).normalize(), T1.clone().sub(el2).normalize());
+          g.updateMatrixWorld(true);
+          const el3 = fore.getWorldPosition(new THREE.Vector3()), wr3 = hand.getWorldPosition(new THREE.Vector3());
+          const hdir = tip ? tip.getWorldPosition(new THREE.Vector3()).sub(wr3).normalize() : wr3.clone().sub(el3).normalize();
+          mkAim(hand, hdir, up.clone().multiplyScalar(0.92).addScaledVector(fwd, 0.25).addScaledVector(side, pl ? 0 : -sd * 0.12).normalize());
+          g.updateMatrixWorld(true);
+          if (pl) { mkPalmTo(hand, pl, inward); g.updateMatrixWorld(true); }
+        };
+        solve(0.035);
+        if (pl) solve(mkPalmReach(hand, pl, inward) + 0.002);
+      }
+    }
+
 
     buildRoomR();
+    buildTemple();                                   // World M (CP5): after everything it reads at call time
 
-    /* ------------------------------------------------------- WORLD M (CP2) */
-    {
-      const G = worldM;
-      floorAt(16, 16, 0, -6, matFloorM, G);
-      box(16, 6, 0.3, 0, 3, -14, matWallM, G, false);
+    /* ---- FILM M's NIGHT (§4.0b, §4.1c, V30): the hall's dais end by candlelight — a low lacquered table before the dais, a
+       gold tray on it with the three facing the monk, two candles on the table's far side and a small bowl of incense, and
+       the white thread (sai sin) from his joined hands to a ring round them: a monk chanting a blessing holds one (the
+       research's F13: ordinary practice, consistent with consecration; kept). Nothing from a cemetery or a body is anywhere
+       in it (§2.7). Drawn only while film M runs (worldM.visible and its own group) */
+    const nightSet = { g: null, tray: null, flames: [], smoke: [], thread: null, ring: null, built: false };
+    function buildNightSet() {
+      const F = MHALL.F, G = new THREE.Group(); G.visible = false; worldM.add(G); nightSet.g = G;
+      const tx = MDAIS.x - MDAIS.w / 2 - 0.36, tz = MDAIS.z;
+      nightSet.tray = { x: tx, y: F + 0.347, z: tz };
+      const mLacq = M({ color: 0x5a0e08, roughness: 0.35 }), mG = M({ color: 0xd9a63c, roughness: 0.3, metalness: 0.6, emissive: 0x3a2406, emissiveIntensity: 0.5 });
+      box(0.52, 0.04, 0.74, tx, F + 0.3, tz, mLacq, G, false);
+      box(0.54, 0.012, 0.76, tx, F + 0.325, tz, mG, G, false);
+      for (const sx of [-1, 1]) for (const sz of [-1, 1]) box(0.04, 0.28, 0.04, tx + sx * 0.22, F + 0.14, tz + sz * 0.33, mLacq, G, false);
+      const tray = new THREE.Mesh(new THREE.CylinderGeometry(0.21, 0.19, 0.016, 36), mG); tray.position.set(tx, F + 0.339, tz); G.add(tray);
+      // two candles on the far (monk's) side of the table, and their painted flames and glow
+      const tFl = tex(makeYinFlame(THREE, cnv)), tGl = tex(makeYinGlow(THREE, cnv)), tSm = tex(makeYinSmoke(THREE, cnv));
+      const mWax = M({ color: 0xf2e6c8, roughness: 0.7 });
+      for (const sz of [-1, 1]) {
+        const cx = tx + 0.18, cz = tz + sz * 0.27;
+        cyl(0.018, 0.018, 0.13, cx, F + 0.331 + 0.065, cz, mWax, 12, G);
+        const fm = new THREE.SpriteMaterial({ map: tFl, color: 0xffd090, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }); mats.push(fm);
+        const fl = new THREE.Sprite(fm); fl.scale.set(0.028, 0.06, 1); fl.position.set(cx, F + 0.331 + 0.155, cz); G.add(fl);
+        const hm = new THREE.SpriteMaterial({ map: tGl, color: 0xff9a40, transparent: true, opacity: 0.45, depthWrite: false, blending: THREE.AdditiveBlending }); mats.push(hm);
+        const halo = new THREE.Sprite(hm); halo.scale.set(0.42, 0.42, 1); halo.position.copy(fl.position); G.add(halo);
+        nightSet.flames.push({ fl, halo, k: sz * 2.1, y: fl.position.y });
+      }
+      // a small brass bowl of sand with three sticks, its smoke rising
+      { const bx = tx + 0.16, bz = tz;
+        const bowl = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.034, 0.04, 20), M({ color: 0xb8893c, roughness: 0.3, metalness: 0.85 })); bowl.position.set(bx, F + 0.351, bz); G.add(bowl);
+        const mStick = M({ color: 0x8a2a18, roughness: 0.8 });
+        for (let i = 0; i < 3; i++) { const st = cyl(0.0018, 0.0018, 0.2, bx + (i - 1) * 0.012, F + 0.37 + 0.1, bz + (i - 1) * 0.004, mStick, 5, G); st.rotation.z = (i - 1) * 0.08; }
+        for (let i = 0; i < 4; i++) { const m = new THREE.SpriteMaterial({ map: tSm, color: 0xe8e0d8, transparent: true, opacity: 0, depthWrite: false }); mats.push(m);
+          const sp = new THREE.Sprite(m); G.add(sp); nightSet.smoke.push({ sp, t: i / 4, x: bx, y: F + 0.57, z: bz }); } }
+      // the thread's ring round the three on the tray (the run up to his hands is laid once he has landed: threadLay)
+      nightSet.threadMat = M({ color: 0xf2ece0, roughness: 0.85, emissive: 0x2a2620 });
+      /* (by photograph: a ring at 0.17 m passed in front of the little one and read across his chest in the close-up — it
+         follows the tray's own rim now, round all three at their feet) */
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(0.2, 0.0022, 6, 56), nightSet.threadMat); ring.rotation.x = Math.PI / 2; ring.position.set(tx, F + 0.35, tz); G.add(ring);
+      nightSet.ring = ring;
     }
+    buildNightSet();
+    /* the thread from his joined hands down to the ring, sagging between (a tube laid once, when he and his prayer pose have
+       landed: the hands' middle read off his bones) */
+    function threadLay() {
+      if (nightSet.thread || !merit.monk.ready || !merit.monk.model) return;
+      const mk = merit.monk, L = mkBone(mk, /LeftHand(_\d+)?$/), R = mkBone(mk, /RightHand(_\d+)?$/);
+      if (!L || !R) return;
+      mk.model.updateMatrixWorld(true);
+      const a = L.getWorldPosition(new THREE.Vector3()).add(R.getWorldPosition(new THREE.Vector3())).multiplyScalar(0.5);
+      worldM.worldToLocal(a);
+      const T = nightSet.tray, b = new THREE.Vector3(T.x + 0.2, T.y + 0.003, T.z);   // (on the rim's ring, its nearest point to him)
+      /* from his joined hands it falls onto the dais, runs to its front and over the gilt lip, and down to the ring (by
+         photograph: a sag BELOW both ends — the first cut — ran it through the dais's front, so it seemed to stop in mid-air) */
+      const F = MHALL.F, lipX = MDAIS.x - MDAIS.w / 2 - 0.02, topY = F + MDAIS.h + 0.026;
+      const down = new THREE.Vector3(Math.max(lipX + 0.14, a.x - 0.2), topY + 0.002, a.z + (b.z - a.z) * 0.6);
+      const curve = new THREE.CatmullRomCurve3([a, new THREE.Vector3(a.x - 0.1, (a.y + topY) / 2 + 0.05, a.z + (b.z - a.z) * 0.3), down,
+                                                new THREE.Vector3(lipX - 0.005, topY, a.z + (b.z - a.z) * 0.8), b], false, 'centripetal');
+      nightSet.thread = new THREE.Mesh(new THREE.TubeGeometry(curve, 40, 0.0022, 5, false), nightSet.threadMat);
+      nightSet.g.add(nightSet.thread);
+    }
+
+    /* ======================================================== THE COUNTER'S FILMS (CP5; CP9 photographs and polishes)
+       Every picture is a function of the film's clock (chapter 4's stage.merit shape: a seek, a skip and a slow phone land
+       on the same frame); the film functions below hold only their cues, fades and the one track that calls frame(t).
+       The light follows the shot, set only when it changes (fLight). */
+    const fLive = { lit: null, shot: '', hands: null };
+    function fLight(p) { if (fLive.lit !== p && kit && kit.daylight) { kit.daylight(p, 0); fLive.lit = p; } }
+    function camAt(px, py, pz, tx, ty, tz) {
+      yaw.position.set(px, py, pz);
+      const dx = tx - px, dy = ty - py, dz = tz - pz;
+      yaw.rotation.y = Math.atan2(-dx, -dz); pitch.rotation.x = Math.atan2(dy, Math.hypot(dx, dz));
+    }
+    function lensTo(f) { if (camera.fov !== f) { camera.fov = f; camera.updateProjectionMatrix(); } }
+    const lerp3 = (a, b, k) => [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k];
+    function candles(t) {                      // the night set's flames, flickering on the film's clock
+      for (const f of nightSet.flames) {
+        const fl = 1 + 0.12 * Math.sin(t * 13 + f.k) + 0.07 * Math.sin(t * 29 + f.k * 3);
+        f.fl.scale.set(0.028 * fl, 0.06 * (2 - fl) * 0.95, 1); f.fl.position.y = f.y + 0.002 * Math.sin(t * 17 + f.k);
+        f.halo.material.opacity = 0.42 + 0.06 * Math.sin(t * 11 + f.k);
+      }
+      for (const s of nightSet.smoke) {
+        const u = (s.t + t * 0.11) % 1;
+        s.sp.position.set(s.x + Math.sin(u * 7 + s.t * 9) * 0.03 * u, s.y + u * 0.55, s.z + Math.cos(u * 5) * 0.02 * u);
+        const sc = 0.06 + u * 0.22; s.sp.scale.set(sc, sc, 1); s.sp.material.opacity = 0.16 * Math.sin(Math.PI * u);
+      }
+    }
+    /* FILM M · "Where They Came From" (§4.0b): M1 the lens drops to the three on his glass; black; M2 the hall at night, the
+       three on their tray before the monk, the thread from his hands, his chant low; M3 the little one's face in the
+       candlelight; black — and the counter lifts it (the kit's fade). ow5monk runs under all of it. */
+    const MFT = { b1: 2.5, m2: 3.2, m3: 11.0, b2: 16.6, end: 19.2 };
+    const madeF = {
+      T: MFT,
+      begin() { worldM.visible = true; nightSet.g.visible = true; threadLay(); fLive.lit = null; fLive.shot = '';
+                if (mLive.winGlow) mLive.winGlow.color.setHex(0x101622);                // the windows dark (they glowed with chapter 4's sunset)
+                for (const w of mLive.shafts) if (w.mesh) w.mesh.visible = false; },
+      end() { worldM.visible = false; nightSet.g.visible = false; fLive.lit = null;
+              if (fLive.hands) { fLive.hands.visible = true; fLive.hands = null; }    // (chapter 4's law: nothing else gives the hands back after a film)
+              if (mLive.winGlow) mLive.winGlow.color.setHex(0xffffff);
+              for (const w of mLive.shafts) if (w.mesh) w.mesh.visible = true;
+              if (kit) kit.daylight(null, 0); lensTo(72); },
+      frame(t, api) {
+        if (!worldM.visible) madeF.begin();
+        if (api && api.handsRoot) { fLive.hands = api.handsRoot; api.handsRoot.visible = false; }   // his hands are not in this film
+        const ss = smooth, T = nightSet.tray, F = MHALL.F;
+        candles(t);
+        if (t < MFT.m2) {                      // M1 · at the counter: his eyes drop to the three on the red cloth
+          /* all three in the frame on THIS screen (by photograph: on a phone the first cut kept only the middle one) — the
+             lens narrows only where the screen is wide, and the lens stops as far back as its width needs: 0.29 m either
+             side of the middle one, at 29 degrees down onto them */
+          const k = ss(cl01(t / 2.4)), zoom = camera.aspect >= 1 ? 14 : 0;
+          fLight(SHOP_EVE); lensTo(72 - zoom * k);
+          const hw = Math.tan((72 - zoom) * Math.PI / 360) * camera.aspect, D = Math.max(0.64, 0.29 / hw);
+          const p = lerp3([S_SPAWN.x, 1.62, S_SPAWN.z], [SX + CNT.x - 0.875 * D, CNT.y + 0.10 + 0.484 * D, CNT.z - 0.02], k);
+          camAt(p[0], p[1], p[2], SX + CNT.x, CNT.y + 0.12 - 0.02 * k, CNT.z);
+        } else if (t < MFT.m3) {               // M2 · the hall at night: over the three's shoulders to the monk, drifting in
+          fLight(TEMPLE_NIGHT); lensTo(52);
+          const k = ss(cl01((t - MFT.m2) / (MFT.m3 - MFT.m2)));
+          const p = lerp3([T.x - 1.35, F + 1.02, T.z + 1.05], [T.x - 0.98, F + 0.9, T.z + 0.72], k);
+          /* a narrow screen turns a little toward the tray (by photograph: on a phone the three sat at its left edge) */
+          const q = lerp3([T.x + 0.62, F + 0.66 - 0.06 * k, T.z - 0.04], [T.x, T.y + 0.1, T.z], camera.aspect < 1 ? 0.45 : 0);
+          camAt(MX + p[0], p[1], p[2], MX + q[0], q[1], q[2]);
+        } else {                               // M3 · the little one's face in the candlelight, the lens drifting nearer
+          fLight(TEMPLE_NIGHT); lensTo(46);
+          const k = ss(cl01((t - MFT.m3) / (MFT.b2 + 0.6 - MFT.m3)));
+          const fz = T.z + 0.12, fy = T.y + 0.205;
+          const p = lerp3([T.x + 0.46, fy + 0.06, fz + 0.2], [T.x + 0.33, fy + 0.03, fz + 0.12], k);
+          camAt(MX + p[0], p[1], p[2], MX + T.x, fy, fz);
+        }
+      }
+    };
+    /* FILM K · "The Card" (§4.0b): K1 his eyes go down to the card on the glass; K2 a macro down it, line by line (k5pen:
+       the last stroke of his pen heard as the lens arrives — CP9 brings the pen into the frame); K3 the lens lifts to his
+       face — he looks straight at the player — over ow5never, ow5wrong and ow5promise. */
+    const KFT = { k2: 1.5, k3: 13.6, end: 52.8 };
+    const _kv = new THREE.Vector3();
+    const cardF = {
+      T: KFT,
+      begin() { fLive.lit = null; fLive.shot = 'K'; cntLive.ownerLook = 1; },
+      end() { cntLive.ownerLook = 0; fLive.shot = ''; lensTo(72); if (fLive.hands) { fLive.hands.visible = true; fLive.hands = null; } },
+      frame(t, api) {
+        if (fLive.shot !== 'K') cardF.begin();
+        if (api && api.handsRoot) { fLive.hands = api.handsRoot; api.handsRoot.visible = false; }   // nor in this one: the card and his face
+        fLight(SHOP_EVE);
+        const ss = smooth, cx = SX + CNT_CARD.x, cz = CNT_CARD.z, cy = CNT.y + 0.001;
+        if (t < KFT.k2) {                       // K1 · down to the card
+          const k = ss(cl01(t / KFT.k2));
+          lensTo(72 - 28 * k);
+          const p = lerp3([S_SPAWN.x, 1.62, S_SPAWN.z], [cx - 0.064, cy + 0.15, cz], k);   // (K2's first frame)
+          camAt(p[0], p[1], p[2], cx + 0.036 * k, cy, cz);
+        } else if (t < KFT.k3) {               // K2 · read down it (its top is +x, away from him): from the first line to the last
+          lensTo(44);
+          const k = ss(cl01((t - KFT.k2) / (KFT.k3 - 0.6 - KFT.k2)));
+          const along = 0.036 - 0.072 * k;      // from 3.6 cm up the card to 3.6 cm down it
+          camAt(cx + along - 0.1, cy + 0.15, cz, cx + along, cy, cz);
+        } else {                               // K3 · up to his face, and he looks straight at him
+          lensTo(40);
+          const k = ss(cl01((t - KFT.k3) / 2.0)), push = ss(cl01((t - KFT.k3) / (KFT.end - KFT.k3)));
+          const P = cntLive.owner && cntLive.owner.head ? cntLive.owner.head.getWorldPosition(_kv) : _kv.set(SX + OWN.x, 1.55, OWN.z);
+          const p = lerp3([cx - 0.136, cy + 0.15, cz], [SX + 2.36 + 0.28 * push, 1.6, OWN.z - 0.05], k);
+          camAt(p[0], p[1], p[2], P.x, P.y - 0.02, P.z);
+        }
+      }
+    };
+
 
     /* ------------------------------------------------ THE THREE (CP1's scans)
        ONE parse each; a LOD per place — the near level only for a figure close to the lens (KID_LOD), the far one
@@ -942,11 +3073,18 @@
         L.altar.position.set(RISER.x, ALTAR.top + ALTAR.riser + 0.006, ALTAR_Z[K.slot]);
         L.altar.rotation.y = -Math.PI / 2;
         worldR.add(L.altar);
-        // and on the red cloth on the owner's glass, facing him (−x as well)
+        // and on the red cloth on the owner's glass, facing him (−x as well) — SET DOWN there as the owner opens the cloth
         L.counter = kidLOD(src, K.h);
-        L.counter.position.set((RCNT.x0 + RCNT.x1) / 2 - 0.05, RCNT.top + 0.004, CNT_Z[K.slot]);
+        L.counter.position.set(CNT.x, CNT.y + 0.003, CNT_Z[K.slot]);
         L.counter.rotation.y = -Math.PI / 2;
         worldS.add(L.counter);
+        // and on the tray before the monk in World M's hall (film M), facing him (+x)
+        L.night = kidLOD(src, K.h);
+        L.night.position.set(nightSet.tray.x, nightSet.tray.y, nightSet.tray.z + (K.slot - 1) * 0.12);
+        L.night.rotation.y = Math.PI / 2;
+        nightSet.g.add(L.night);
+        const st = cntLive.kidSet[K.slot] || (cntLive.kidSet[K.slot] = mkSet(null));
+        st.obj = L.counter; st.y0 = L.counter.position.y; st.s0 = K.h; setDraw(st);
         L.ready = true;
       }).catch(e => { console.warn('e3c5: ' + K.asset + ' could not be placed — ' + (e && e.message)); if (ctx.loadFail) ctx.loadFail(K.asset, e); });
     }
@@ -1012,7 +3150,7 @@
     function objectiveFor(p) {
       if (!kit) return;
       if (wDark) { kit.objective(null, { complete: false }); return; }
-      const o = { counter: W.objTake, sit: W.objSit, decide: null }[p];
+      const o = p === 'counter' ? counterObjective() : { sit: W.objSit, decide: null }[p];
       kit.objective(o || null);
     }
 
@@ -1045,14 +3183,267 @@
       });
     }
 
-    /* ------------------------------------------------------- the counter (CP2)
-       CP5 plays the counter in full (§4.0b): the misconception and its answer, film M, each child met, the card, the
-       promise. Here, the one order that carries him home. */
-    function takeHome() {
-      if (phase !== 'counter' || !quiet()) return false;
-      const done = () => { if (alive) toWorld('R', false, 'sit'); };
-      if (!kit || !kit.film || !kit.film('home', { onDone: done })) done();
+    /* ------------------------------------------------------- the counter (CP5, §4.0b)
+       The black lifts on the counter: the owner across the glass, the red bundle between them, the old masters behind
+       him. He stands there rooted and free to look (kit.root). FIVE ORDERS, each answered by a press and never by a
+       timer (v21.9's pressAim — the reticle on the thing, or a tap on it); every line on the queue, so a press is held
+       while one is said (quiet()) and a line is never dropped (the v9.5 queue). What a Continue must not lose is a
+       RECEIPT in the phase string (v7.3) — `counter:yin,m.red,m.shy,m.little,give,card,vow`:
+         yin       the first look, his question, the owner's answer and film M — written as the film STARTS: kit.film
+                   saves first, so a save made inside it lands just after it (§10.1)
+         m.<kid>   each child met — written when the owner's line about him ENDS, so a Continue never loses a story
+         give      the owner's words over the three and the touch of the little one's hair
+         card      film K (written as it starts, as yin)
+         vow       the promise, once the three are in the bag
+       A resume lands on the order still open with the finished beats in place, and says nothing twice. */
+    const CNT_ORDER = ['yin', 'm.red', 'm.shy', 'm.little', 'give', 'card', 'vow'];
+    const cntDone = new Set();
+    let cntBusy = false;                       // between a press and its next order: the lines, the films, the touch, the wrap
+    const metN = () => KIDS.filter(K => cntDone.has('m.' + K.key)).length;
+    const cntTag = () => CNT_ORDER.filter(r => cntDone.has(r)).join(',');
+    function cntSave() { if (kit) kit.setPhase(cntDone.size ? 'counter:' + cntTag() : 'counter'); }
+    function cntStep() {                       // the order still open
+      if (!cntDone.has('yin')) return cntLive.opened ? 'look' : 'hello';
+      if (metN() < 3) return 'meet';
+      if (!cntDone.has('give')) return 'give';
+      if (!cntDone.has('card')) return 'card';
+      if (!cntDone.has('vow')) return 'vow';
+      return 'bag';
+    }
+    function counterObjective() {
+      if (cntBusy) return null;
+      const s = cntStep();
+      return s === 'look' ? W.objLookBundle : s === 'meet' ? W.objMeet.replace('{n}', String(metN()))
+           : s === 'card' ? W.objCard : s === 'vow' ? W.objPromise : s === 'bag' ? W.objTake : null;
+    }
+    const cntOk = () => phase === 'counter' && !cntBusy && quiet();
+    const atCnt = (o) => [SX + o.x, o.z];      // a counter place in the world's own x
+
+    /* HELLO, and the bundle opened: the three set out on its cloth one by one */
+    function counterHello() {
+      if (cntLive.helloOn) return;
+      cntLive.helloOn = true;
+      queueGap(0.9);
+      queueLine('ow5hello', () => { personTalk(cntLive.owner, SECS.ow5hello); after(Math.max(1.6, SECS.ow5hello * 0.6), openBundle); });
+    }
+    function openBundle(now) {
+      if (cntLive.opened) return;
+      cntLive.opened = true;
+      setShow(cntLive.bundleSet, false, now); setShow(cntLive.clothSet, true, now);
+      if (now) { for (const S of cntLive.kidSet) setShow(S, true, true); return; }
+      sfxAt('k5bundle', 0.55, ...atCnt(CNT));
+      viewTo(clothYaw(), CNT_LOOK, 1.3);                // his look comes down onto the three (by photograph: on a phone the first was cut)
+      KIDS.forEach((K, i) => after(0.55 + 0.45 * i, () => { setShow(cntLive.kidSet[i], true); sfxAt('k5figset', 0.42, SX + CNT.x, CNT_Z[i]); }));
+      after(0.55 + 0.45 * 2 + 0.8, () => { if (phase === 'counter') objectiveFor('counter'); });   // ORDER 1, once all three are out
+    }
+    /* ORDER 1 · what he has brought out: the misconception, its answer, and film M (where they came from) */
+    function lookBundle() {
+      if (cntStep() !== 'look' || !cntOk()) return false;
+      cntBusy = true; if (kit) kit.objective(null);                    // OBJECTIVE COMPLETE: he has looked
+      queueGap(0.5);
+      queueLine('z5yinq');
+      queueGap(0.4);
+      queueLine('ow5yin', () => personTalk(cntLive.owner, SECS.ow5yin));
+      queueGap(0.6);
+      queueFn(() => cntFilm('made', 'yin'));
       return true;
+    }
+    /* a film from the counter (M, K): its receipt first, so the save kit.film makes as it starts already has it; the
+       film hands its black to the kit's fade and the counter lifts it, his look where it was (restoreWorld) */
+    function cntFilm(key, receipt) {
+      cntDone.add(receipt); cntSave();
+      const done = () => {
+        if (!alive) return;
+        cntLive.ownerLook = 0;
+        if (kit) kit.fade(0, 1.2);
+        /* the order and its marks wait for the picture (chapter 4's v22.3 law; by photograph, on a phone: the next order and
+           three "!" stood on the film's black while it lifted) */
+        after(0.9, () => { cntBusy = false; objectiveFor('counter'); });
+      };
+      /* `noSkip` only until the chapter has been completed once (S41: the purpose's own words must be seen the first time) */
+      const firstTime = !(ctx.sealedBefore && ctx.sealedBefore('e3c5'));
+      if (!kit || !kit.film || !kit.film(key, { noSkip: firstTime, onDone: done })) done();
+    }
+    /* ORDER 2 · meet each of them, in any order: the owner's story of each — the shy one's with the old auntie's music
+       box, wound and set by them, its lullaby playing on to the end of the counter */
+    function meetKid(K) {
+      if (cntStep() !== 'meet' || cntDone.has('m.' + K.key) || !cntOk()) return false;
+      cntDone.add('m.' + K.key);
+      const last = metN() === 3;
+      if (last) { cntBusy = true; if (kit) kit.objective(null); }       // the third: OBJECTIVE COMPLETE (e3c3's browse)
+      else objectiveFor('counter');                                     // the count is a beat each time
+      const name = 'ow5' + K.key;
+      queueGap(0.35);
+      queueLine(name, () => {
+        personTalk(cntLive.owner, SECS[name]);
+        if (K.key === 'shy') after(Math.max(1.2, SECS[name] * 0.72), () => windBox(false));   // "...with her music box."
+      });
+      queueFn(cntSave);                                                 // the receipt when his line ENDS
+      if (last) queueFn(giveBeat);
+      return true;
+    }
+    function windBox(now) {
+      setShow(cntLive.boxSet, true, now);
+      if (now) { cntLive.boxOpen = cntLive.boxOpenTo = 1; startLull(); return; }
+      sfxAt('k5set', 0.42, ...atCnt(CNT_BOX));
+      after(0.5, () => { sfxAt('k5wind', 0.55, ...atCnt(CNT_BOX)); cntLive.windT = 1.3; });
+      after(1.9, () => { cntLive.boxOpenTo = 1; startLull(); });
+    }
+    function startLull() { cntLive.lull = true; sfxAt('k5lullaby', 0.5, ...atCnt(CNT_BOX)); }
+    function boxTick(wdt) {
+      const B = cntLive.box; if (!B) return;
+      cntLive.boxOpen += (cntLive.boxOpenTo - cntLive.boxOpen) * (1 - Math.exp(-wdt / 0.35));
+      if (Math.abs(cntLive.boxOpenTo - cntLive.boxOpen) < 0.002) cntLive.boxOpen = cntLive.boxOpenTo;
+      B.lid.rotation.x = -1.9 * smooth(cl01(cntLive.boxOpen));
+      if (cntLive.windT > 0) { cntLive.windT -= wdt; B.key.rotation.x += wdt * 9; }
+      if (cntLive.lull) B.drum.rotation.x += wdt * 0.9;
+    }
+    /* 3/3 · what he is giving them — and THE TOUCH: the lens leans over the glass to the little one, his right hand reaches
+       into the frame (kit.handPose 'reach') and its fingers rest on the little one's long hair; the bells on its ring
+       tinkle once, very faintly; the hand and the lens go back. Then the card, set down on the glass past the red one */
+    function giveBeat() {
+      cntBusy = true;
+      queueGap(0.7);
+      queueLine('ow5give', () => { personTalk(cntLive.owner, SECS.ow5give); after(Math.max(2.0, SECS.ow5give * 0.48), leanIn); });
+      queueGap(0.3);
+      queueLine('z5children');
+      queueGap(0.9);
+      queueFn(() => {
+        setShow(cntLive.cardSet, true); setShow(cntLive.penSet, true); sfxAt('k5slip', 0.45, ...atCnt(CNT_CARD));
+        cntDone.add('give'); cntSave();
+        after(0.7, () => { cntBusy = false; objectiveFor('counter'); });       // ORDER 3
+      });
+    }
+    /* where the eye goes for the touch is SOLVED from where the reach pose puts the fingertips on THIS screen (the pose is a
+       share of the frame at its own depth, so it moves with the aspect — S40): the eye stays at its height, the lens faces
+       the counter (+x), and stands where those fingertips land on the crown of the little one's head. `tip` is the hand's
+       reach past its own place, along its fingers (by photograph) */
+    const LEAN = { secs: 1.0, reach: 0.9, hold: 1.4, back: 0.8, tip: 0.17 };
+    const _lv = new THREE.Vector3(), _le = new THREE.Euler();
+    function leanSolve() {
+      const H = _lv.set(SX + CNT.x - 0.01, CNT.y + KIDS[2].h * 0.93, CNT_Z[2]).clone();
+      const t = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)), R = { fx: 0.326, fy: -0.652, z: 0.383 }, fd = [-0.090, -0.060, -0.989];
+      const f = new THREE.Vector3(R.fx * t * camera.aspect * R.z + fd[0] * LEAN.tip, R.fy * t * R.z + fd[1] * LEAN.tip, -R.z + fd[2] * LEAN.tip);
+      const ey = yaw.position.y, ry = -Math.PI / 2;
+      let best = -0.4, err = Infinity;
+      for (let th = -1.25; th <= 0.25; th += 0.005) {
+        const y = f.y * Math.cos(th) - f.z * Math.sin(th), e = Math.abs(H.y - y - ey);
+        if (e < err) { err = e; best = th; }
+      }
+      const v = f.clone().applyEuler(_le.set(best, ry, 0, 'YXZ'));
+      return { x: H.x - v.x, z: H.z - v.z, ry, px: best };
+    }
+    function leanIn() {
+      if (cntLive.lean || !kit) return;
+      cntLive.lean = { t0: dayClock.t, from: { x: yaw.position.x, z: yaw.position.z, ry: yaw.rotation.y, px: pitch.rotation.x }, to: leanSolve(), backAt: Infinity };
+      const L = LEAN;
+      after(L.secs, () => { if (kit.handPose) kit.handPose('reach', 1, { secs: L.reach }); });
+      after(L.secs + L.reach, () => sfxAt('k5bellsfaint', 0.32, SX + CNT.x, CNT_Z[2]));
+      after(L.secs + L.reach + L.hold, () => { if (kit.handPose) kit.handPose(null, 0, { secs: L.back }); });
+      after(L.secs + L.reach + L.hold + L.back * 0.5, () => { if (cntLive.lean) cntLive.lean.backAt = dayClock.t - cntLive.lean.t0; });
+    }
+    /* where his look goes when the cloth opens: onto the middle of the three, low enough that all three stand above his
+       hand and high enough that the owner's face stays under the HUD (by photograph, on a phone: at the arrival's pitch
+       the three sat behind the hand, and at its yaw the first of them was cut by the frame's left edge) */
+    const CNT_LOOK = -0.29;
+    function clothYaw() { const dx = SX + CNT.x - yaw.position.x, dz = CNT_Z[1] - yaw.position.z; return Math.atan2(-dx, -dz); }
+    function viewTo(ry, px, secs) {
+      cntLive.view = { t0: dayClock.t, secs, from: { ry: yaw.rotation.y, px: pitch.rotation.x }, to: { ry, px } };
+    }
+    function viewTick() {
+      const V = cntLive.view; if (!V) return;
+      const k = smooth(cl01((dayClock.t - V.t0) / V.secs)), dy = Math.atan2(Math.sin(V.to.ry - V.from.ry), Math.cos(V.to.ry - V.from.ry));
+      yaw.rotation.y = V.from.ry + dy * k; pitch.rotation.x = V.from.px + (V.to.px - V.from.px) * k;
+      if (k >= 1) cntLive.view = null;
+    }
+    function leanTick() {
+      const L = cntLive.lean; if (!L) return;
+      const t = dayClock.t - L.t0, k = smooth(cl01(t / LEAN.secs)) * (1 - smooth(cl01((t - L.backAt) / LEAN.secs)));
+      const F = L.from, T = L.to, dy = Math.atan2(Math.sin(T.ry - F.ry), Math.cos(T.ry - F.ry));
+      yaw.position.x = F.x + (T.x - F.x) * k; yaw.position.z = F.z + (T.z - F.z) * k;
+      yaw.rotation.y = F.ry + dy * k; pitch.rotation.x = F.px + (T.px - F.px) * k;
+      if (t > L.backAt + LEAN.secs) cntLive.lean = null;
+    }
+    /* ORDER 3 · his card: film K reads it, line by line, and then his face — what he asks of the one who takes them */
+    function readCard() {
+      if (cntStep() !== 'card' || !cntOk()) return false;
+      cntBusy = true; if (kit) kit.objective(null);
+      queueGap(0.3);
+      queueFn(() => cntFilm('card', 'card'));
+      return true;
+    }
+    /* ORDER 4 · the promise: a single press (the hold is the yield's, §4.3 — the hand that promises must never feel like the
+       hand that opens the door), his hands joined in añjali, his words; the owner's face softens; then he wraps them in
+       their cloth and packs them, the box and the card into a paper bag — a beat in the dark (the kit's own fade), and the
+       bag on the glass when the light comes back */
+    function promise() {
+      if (cntStep() !== 'vow' || !cntOk()) return false;
+      cntBusy = true; if (kit) kit.objective(null);
+      if (kit && kit.pray) kit.pray(true, { secs: 0.9 });
+      queueGap(1.0);
+      queueLine('z5promise');
+      queueGap(0.5);
+      queueFn(() => { if (kit && kit.pray) kit.pray(false, { secs: 0.8 }); });
+      queueGap(0.4);
+      queueLine('ow5careful', () => personTalk(cntLive.owner, SECS.ow5careful));
+      queueGap(0.5);
+      queueFn(wrapUp);
+      return true;
+    }
+    function wrapUp() {
+      if (kit) kit.fade(1, 0.45);
+      after(0.55, () => { packed(); sfxAt('k5bag', 0.55, ...atCnt(CNT)); });
+      after(1.7, () => {
+        if (kit) kit.fade(0, 0.8);
+        cntDone.add('vow'); cntSave();
+        after(0.5, () => { cntBusy = false; objectiveFor('counter'); });     // ORDER 5
+      });
+    }
+    function packed() {                       // the three, the cloth, the box and the card in the bag; his pen stays on the wood
+      for (const S of [cntLive.bundleSet, cntLive.clothSet, cntLive.boxSet, cntLive.cardSet, ...cntLive.kidSet]) setShow(S, false, true);
+      setShow(cntLive.bagSet, true, true);
+      cntLive.lull = false; cntLive.boxOpen = cntLive.boxOpenTo = 0;
+    }
+    /* ORDER 5 · take them home: the bag in his hand, and the home film (CP9). The phase moves on BEFORE the film — the home
+       film is not a phase, so a Continue after the bag lands at 22:50 in his room (§10.1) */
+    const BAG_HELD = { pos: [0.02, -0.2, -0.16], rot: [0, 0, 0] };   // (in the right arm's frame; its palm at (0.012, -0.052, -0.148) — by photograph)
+    function takeHome() {
+      if (cntStep() !== 'bag' || !cntOk()) return false;
+      cntBusy = true; if (kit) kit.objective(null);
+      setShow(cntLive.bagSet, false, true);
+      if (kit && kit.hold && cntLive.bagHeld) kit.hold(cntLive.bagHeld, { pos: BAG_HELD.pos, rot: BAG_HELD.rot });
+      after(1.0, () => {
+        if (kit) kit.setPhase('care');
+        const done = () => { if (alive) toWorld('R', false, 'sit'); };
+        if (!kit || !kit.film || !kit.film('home', { onDone: done })) done();
+      });
+      return true;
+    }
+    /* a Continue (or a first arrival): the counter exactly as its receipts say — the things on the glass, the box out and
+       playing once the shy one is met — and the beat still owed, never one already said */
+    function counterResume(tagStr) {
+      cntDone.clear();
+      for (const r of String(tagStr || '').split(',')) if (CNT_ORDER.includes(r)) cntDone.add(r);
+      cntBusy = false; cntLive.helloOn = false; cntLive.lean = null; cntLive.view = null; cntLive.ownerLook = 0;
+      cntLive.opened = cntDone.has('yin');
+      const packedUp = cntDone.has('vow');
+      setShow(cntLive.bundleSet, !cntLive.opened, true);
+      setShow(cntLive.clothSet, cntLive.opened && !packedUp, true);
+      for (const S of cntLive.kidSet) setShow(S, cntLive.opened && !packedUp, true);
+      const boxOut = cntDone.has('m.shy') && !packedUp;
+      setShow(cntLive.boxSet, boxOut, true);
+      cntLive.boxOpen = cntLive.boxOpenTo = boxOut ? 1 : 0; cntLive.lull = false; cntLive.windT = 0;
+      if (boxOut) startLull();
+      setShow(cntLive.cardSet, cntDone.has('give') && !packedUp, true);
+      setShow(cntLive.penSet, cntDone.has('give'), true);
+      setShow(cntLive.bagSet, packedUp, true);
+      phase = 'counter';
+      if (kit) kit.root(true);
+      cntSave();
+      const s = cntStep();
+      if (s === 'hello') { objectiveFor('counter'); counterHello(); return; }
+      if (s === 'give') { cntBusy = true; objectiveFor('counter'); giveBeat(); return; }
+      objectiveFor('counter');
     }
 
     /* -------------------------------------------------------- the room (CP2)
@@ -1099,10 +3490,37 @@
     }
 
     /* ------------------------------------------------------------- hotspots
-       Anchors at EYE height on the thing itself (the v7.5 law) */
+       Anchors on the thing itself (the v7.5 law); the counter's are PRESSED, never timed — the reticle on the thing and a
+       press, or a tap on the thing (`hits`) or its mark (v21.9's pressAim; e3c4's tapBox) */
+    const _tapRay = new THREE.Raycaster(), _tapPtr = new THREE.Vector2(), _tapHit = new THREE.Vector3();
+    const tapBox = (x0, y0, z0, x1, y1, z1) => {
+      const bb = new THREE.Box3(new THREE.Vector3(x0, y0, z0), new THREE.Vector3(x1, y1, z1));
+      return (cx, cy) => {
+        camera.updateMatrixWorld();
+        _tapPtr.set((cx / innerWidth) * 2 - 1, -(cy / innerHeight) * 2 + 1);
+        _tapRay.setFromCamera(_tapPtr, camera);
+        return !!_tapRay.ray.intersectBox(bb, _tapHit);
+      };
+    };
+    const cntAt = (x, z) => ({ x: SX + x, z });
     const hotspots = [
-      { id: 'bag', pos: { x: SX + (RCNT.x0 + RCNT.x1) / 2 - 0.05, y: RCNT.top + 0.2, z: OWN.z }, radius: 2.4, prompt: W.hotBag, markY: 0.12,
-        enabled: () => phase === 'counter' && quiet(), onInteract() { return takeHome(); } },
+      { id: 'bundle', pos: { ...cntAt(CNT.x, CNT.z), y: CNT.y + 0.1 }, radius: 2.6, aim: 0.22, pressAim: true, markY: 0.22, prompt: W.hotBundle,
+        hits: tapBox(SX + CNT.x - CNT.w / 2, CNT.y - 0.01, CNT.z - CNT.l / 2, SX + CNT.x + CNT.w / 2, CNT.y + 0.3, CNT.z + CNT.l / 2),
+        enabled: () => cntStep() === 'look' && cntOk(), onInteract() { return lookBundle(); } },
+      ...KIDS.map((K, i) => ({
+        id: 'kid_' + K.key, pos: { ...cntAt(CNT.x, CNT_Z[i]), y: CNT.y + K.h * 0.55 }, radius: 2.6, aim: 0.09, pressAim: true,
+        markY: K.h * 0.45 + 0.07, prompt: W['hot' + K.key[0].toUpperCase() + K.key.slice(1)],
+        hits: tapBox(SX + CNT.x - 0.08, CNT.y - 0.01, CNT_Z[i] - 0.085, SX + CNT.x + 0.08, CNT.y + K.h + 0.03, CNT_Z[i] + 0.085),
+        enabled: () => cntStep() === 'meet' && !cntDone.has('m.' + K.key) && cntOk(), onInteract() { return meetKid(K); } })),
+      { id: 'card', pos: { ...cntAt(CNT_CARD.x, CNT_CARD.z), y: CNT.y + 0.01 }, radius: 2.6, aim: 0.2, pressAim: true, markY: 0.16, prompt: W.hotCard,
+        hits: tapBox(SX + CNT_CARD.x - 0.07, CNT.y - 0.01, CNT_CARD.z - 0.06, SX + CNT_CARD.x + 0.07, CNT.y + 0.05, CNT_CARD.z + 0.06),
+        enabled: () => cntStep() === 'card' && cntOk(), onInteract() { return readCard(); } },
+      { id: 'promise', pos: { ...cntAt(OWN.x, OWN.z), y: 1.38 }, radius: 3.0, markY: 0.4, prompt: W.hotPromise,
+        hits: tapBox(SX + OWN.x - 0.3, 0.95, OWN.z - 0.35, SX + OWN.x + 0.3, 1.8, OWN.z + 0.35),
+        enabled: () => cntStep() === 'vow' && cntOk(), onInteract() { return promise(); } },
+      { id: 'bag', pos: { ...cntAt(CNT.x, CNT.z), y: CNT.y + 0.16 }, radius: 2.6, markY: 0.24, prompt: W.hotBag,
+        hits: tapBox(SX + CNT.x - 0.1, CNT.y - 0.01, CNT.z - 0.15, SX + CNT.x + 0.1, CNT.y + 0.36, CNT.z + 0.15),
+        enabled: () => cntStep() === 'bag' && cntOk(), onInteract() { return takeHome(); } },
       { id: 'mat', pos: { x: MAT.x, y: 0.9, z: MAT.z }, radius: 1.6, prompt: W.hotMat, markY: -0.3,
         enabled: () => phase === 'sit' && !seated && quiet(), onInteract() { return sitWithThem(); } }
     ];
@@ -1132,9 +3550,14 @@
       const pn = new THREE.Mesh(new THREE.SphereGeometry(0.006, 8, 6), M({ color: 0xc82a20, roughness: 0.4 })); pn.position.set(0.215, 0.08 + w * A / 2 - 0.012, 0.009);
       roomLive.yantBoard.add(pn);
     }
+    let cntWall = 0;
     function updateNotes(dt, t) {
       const now = wallNow();
       roomFrame(now);
+      /* the counter's motion — the owner's mixer, the things he sets down, the box — on WALL time and ABOVE the state's
+         return, so his films draw them too (v5.19: the mixers above the cine return); the lean rides the chapter clock */
+      const wdt = cntWall ? Math.min(0.5, now - cntWall) : 0; cntWall = now;
+      peopleTick(wdt); setsTick(wdt); boxTick(wdt); viewTick(); leanTick();
       const st = getState();
       const live = st === 'play' || st === 'unlock' || st === 'choose';
       /* a Continue into the room is put there UNDER the chapter card, so the card lifts on the world it resumes in */
@@ -1166,7 +3589,11 @@
     function applyPhase(p) {
       const RA = resumeAt(p);
       if (RA) { toWorld(RA.w, true, RA.at); return; }
-      setPhase('counter');
+      const tag = String(p || '').split(':');
+      /* a first arrival: his look down a little, so the owner's face and the three on the glass are both in the frame (by
+         photograph: at the spawn's own pitch the three's feet were cut by the bottom edge) */
+      if (!p) { yaw.rotation.y = clothYaw(); pitch.rotation.x = -0.22; }   // (on the cloth's middle: on a phone the three fill its width)
+      counterResume(tag[0] === 'counter' ? tag[1] : '');          // the counter, as its receipts say (§10.1)
     }
 
     /* ---------------------------------------------------------- lifecycle */
@@ -1181,6 +3608,19 @@
       if (roomLive.boxLid) roomLive.boxLid.rotation.x = 0;
       for (const em of roomLive.embers) em.visible = false;
     }
+    /* the counter as build() leaves it (the reset law): the bundle wrapped on the glass, nothing else out, the box shut and
+       silent, no beat said, no lean, no film's look */
+    function counterReset() {
+      cntDone.clear(); cntBusy = false;
+      cntLive.opened = false; cntLive.helloOn = false; cntLive.lean = null; cntLive.view = null; cntLive.ownerLook = 0;
+      cntLive.lull = false; cntLive.boxOpen = cntLive.boxOpenTo = 0; cntLive.windT = 0;
+      for (const S of cntLive.sets) setShow(S, false, true);
+      setShow(cntLive.bundleSet, true, true);
+      if (cntLive.box) { cntLive.box.lid.rotation.x = 0; cntLive.box.key.rotation.x = 0; cntLive.box.drum.rotation.x = 0; }
+      for (const P of people) { P.talkUntil = 0; }
+      if (fLive.hands) { fLive.hands.visible = true; fLive.hands = null; }   // a film cut short by a reset gives his hands back too
+      madeF.end(); cardF.end();                // (and its sets, its windows, its lens and its look)
+    }
     function snap() { return { phase }; }
     function restore() {}
     function reset() {
@@ -1189,9 +3629,12 @@
       worldRun++; wDark = false; decOpen = false; seated = false;
       worldM.visible = false;
       roomReset();
+      counterReset();
       for (const h of hotspots) { h.done = false; h.dwellT = 0; }
       if (kit) {
         kit.root(false); kit.pose('standing', { secs: 0.05 });
+        if (kit.hold) kit.hold(null);
+        if (kit.handPose) kit.handPose(null, 0, { secs: 0 });
         if (kit.pray) kit.pray(false, { secs: 0 });
         kit.presence(0);
         look('NIGHT', 0);                      // the room as it is at 22:50 (its glows, the window), for the next arrival
@@ -1210,6 +3653,8 @@
     }
     function dispose() {
       alive = false;
+      for (const g of treeStands) g && g.userData.disposeTrees?.();   // (CP5: before the sweep, or it walks into the shared kit — v6.15)
+      treeStands.length = 0;
       const geos = new Set(), ms = new Set();
       world.traverse(o => {
         if (o.geometry) geos.add(o.geometry);
@@ -1238,7 +3683,7 @@
     }
 
     return (S = {
-      world, blockers: blockers(),
+      world, noteTex, blockers: blockers(),
       ready: () => true,
       pile: { pos: PILE_POS, radius: INTERACT_R, group: pile,
               dist: pileDist, screen: pileScreen, inView: pileInView,
@@ -1260,7 +3705,13 @@
       kids: () => kidLive.map(L => ({ key: L.K.key, ready: L.ready })),
       info: () => ({ phase, t: +dayClock.t.toFixed(2), queued: lineQ.length, heard: [...heard], world: worldOf(yaw.position.x),
                      until: +speak.until.toFixed(2), pending: speak.pending ? speak.pending.name : null,
-                     seated, decOpen, kids: kidLive.map(L => L.K.key + (L.ready ? '' : '?')) }),
+                     seated, decOpen, kids: kidLive.map(L => L.K.key + (L.ready ? '' : '?')),
+                     counter: { step: cntStep(), done: cntTag(), busy: cntBusy, opened: cntLive.opened, lean: !!cntLive.lean,
+                                owner: !!(cntLive.owner && cntLive.owner.ready) } }),
+      counter: { solve: leanSolve, LEAN, BAG_HELD, sets: cntLive.sets, live: cntLive },   // the counter's handles (§4.0b), for probes
+      madeF, cardF,                                            // the counter's films' controllers (film M, film K): every picture a function of their clock
+      ownerTalk: (secs) => personTalk(cntLive.owner, secs),    // a film's line from the owner rides his talking take
+      nightSet,
       hotspots,
       updateNotes, updatePile, updateFire, updateSlow,
       snap, restore, reset, dispose
@@ -1401,11 +3852,303 @@
   }
   /* THE OWNER'S CARD (§2.5 3): his rules in his neat capitals, a little soft at the corners from months against the
      music box; its words are the plan's, as he wrote them */
-  const CARD_RULES = ['AS THEIR LUANG PHOR TAUGHT.', '', 'EVERY NIGHT —', 'fresh water, never let it run dry', 'a sweet drink each',
-                      'one stick each', 'wind the box', 'talk to them kindly', '', 'EVERY BUDDHA DAY —', 'make merit in their names', '',
-                      'NEVER for greed.', 'NEVER ask them for anything wrong.', '', 'FOR AS LONG AS YOU LIVE —',
-                      'and if one day you truly cannot,', 'bring them back. Never leave them.'];
-  function makeOwnerCardT(THREE, cnv) {
+  /* ======================================================== WORLD M's SURFACES (CP5)
+     Chapter 4's temple's drawn sheets, copied by their own code with the helpers they use (its World Y's yRng, yDone,
+     ySized and yBlob, and its painted flame, smoke and glow) — a chapter imports nothing. */
+  function yRng(seed) { let s = seed >>> 0 || 1; return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
+  function yDone(THREE, c, rep) {
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+    if (rep) { t.wrapS = t.wrapT = THREE.RepeatWrapping; }
+    return t;
+  }
+  function ySized(cnv, W, H) { const [c, x] = cnv(W); c.height = H; return [c, x]; }
+  /* a blob drawn nine times, so a stain that crosses an edge comes back on the far side (a tile that wraps) */
+  function yBlob(x, S, px, py, rad, col) {
+    for (const ox of [-S, 0, S]) for (const oy of [-S, 0, S]) {
+      const cx = px + ox, cy = py + oy;
+      if (cx + rad < 0 || cy + rad < 0 || cx - rad > S || cy - rad > S) continue;
+      const g = x.createRadialGradient(cx, cy, 0, cx, cy, rad); g.addColorStop(0, col); g.addColorStop(1, 'rgba(0,0,0,0)');
+      x.fillStyle = g; x.fillRect(cx - rad, cy - rad, rad * 2, rad * 2);
+    }
+  }
+  function makeYinFlame(THREE, cnv) {
+    const [c, x] = ySized(cnv, 64, 128);
+    x.clearRect(0, 0, 64, 128);
+    x.save(); x.translate(32, 92); x.scale(1, 2.6);
+    const g = x.createRadialGradient(0, 0, 0, 0, 0, 30); g.addColorStop(0, 'rgba(255,255,240,1)'); g.addColorStop(0.25, 'rgba(255,226,140,0.95)'); g.addColorStop(0.55, 'rgba(255,140,40,0.55)'); g.addColorStop(1, 'rgba(255,90,10,0)');
+    x.fillStyle = g; x.beginPath(); x.arc(0, 0, 30, 0, Math.PI * 2); x.fill(); x.restore();
+    const b = x.createRadialGradient(32, 110, 0, 32, 110, 10); b.addColorStop(0, 'rgba(120,150,255,0.6)'); b.addColorStop(1, 'rgba(120,150,255,0)');
+    x.fillStyle = b; x.fillRect(16, 96, 32, 30);
+    return yDone(THREE, c, false);
+  }
+  /* a soft curl of smoke */
+  function makeYinSmoke(THREE, cnv) {
+    const S = 128, [c, x] = cnv(S), r = yRng(89);
+    x.clearRect(0, 0, S, S);
+    for (let i = 0; i < 14; i++) { const px = 64 + (r() - 0.5) * 40, py = 64 + (r() - 0.5) * 50, R = 14 + r() * 20; const g = x.createRadialGradient(px, py, 0, px, py, R); g.addColorStop(0, 'rgba(255,255,255,0.18)'); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; x.fillRect(px - R, py - R, R * 2, R * 2); }
+    return yDone(THREE, c, false);
+  }
+  /* painted light: a soft round glow, white (each plane's colour tints it) */
+  function makeYinGlow(THREE, cnv) {
+    const S = 128, [c, x] = cnv(S);
+    const g = x.createRadialGradient(64, 64, 0, 64, 64, 64); g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(0.3, 'rgba(255,255,255,0.5)'); g.addColorStop(0.65, 'rgba(255,255,255,0.12)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+    x.fillStyle = g; x.fillRect(0, 0, S, S);
+    return yDone(THREE, c, false);
+  }
+  function makeMSky(THREE, cnv) {
+    const W = 2048, H = 1024, [c, x] = ySized(cnv, W, H), r = yRng(211);
+    const g = x.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0.00, '#131a38'); g.addColorStop(0.16, '#232c5a'); g.addColorStop(0.28, '#433f74'); g.addColorStop(0.36, '#7a5a80');
+    g.addColorStop(0.42, '#b86e7c'); g.addColorStop(0.465, '#e48c6a'); g.addColorStop(0.495, '#f4ad74'); g.addColorStop(0.50, '#e89a6a');
+    g.addColorStop(0.53, '#6e4a46'); g.addColorStop(0.62, '#33262a'); g.addColorStop(1.0, '#171214');
+    x.fillStyle = g; x.fillRect(0, 0, W, H);
+    const SU = 0.857 * W, SV = (90 - 5) / 180 * H;
+    // the sun's half of the sky warmer and brighter, the far half cooler: soft washes drawn twice across the seam
+    const wash = (cx, cy, rx, ry, col) => { for (const ox of [-W, 0, W]) { x.save(); x.translate(cx + ox, cy); x.scale(1, ry / rx);
+      const rg = x.createRadialGradient(0, 0, 0, 0, 0, rx); rg.addColorStop(0, col); rg.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = rg; x.fillRect(-rx, -rx, rx * 2, rx * 2); x.restore(); } };
+    wash(SU, SV, W * 0.42, H * 0.30, 'rgba(255,170,90,0.55)');
+    wash(SU, SV, W * 0.16, H * 0.12, 'rgba(255,214,150,0.75)');
+    wash(SU - W / 2, H * 0.40, W * 0.40, H * 0.22, 'rgba(70,72,130,0.45)');
+    // long clouds in the band above the horizon, each lit from below by the sun's distance round the sky
+    for (let i = 0; i < 70; i++) {
+      const cy = H * (0.30 + r() * 0.17), cx = r() * W, len = W * (0.05 + r() * 0.16), th = 4 + r() * 11;
+      let du = Math.abs(cx - SU); du = Math.min(du, W - du) / (W / 2);               // 0 at the sun, 1 opposite
+      const near = Math.max(0, 1 - du * 1.6), lift = (cy - H * 0.30) / (H * 0.17);
+      const body = `rgba(${Math.round(70 + 60 * near)},${Math.round(52 + 30 * near)},${Math.round(78 - 10 * near)},${0.45 + 0.3 * r()})`;
+      const lit = `rgba(255,${Math.round(150 + 70 * near)},${Math.round(110 + 40 * near)},${(0.25 + 0.55 * near) * (0.6 + 0.4 * lift)})`;
+      for (const ox of [-W, 0, W]) {
+        x.fillStyle = body; x.beginPath(); x.ellipse(cx + ox, cy, len / 2, th, 0, 0, Math.PI * 2); x.fill();
+        x.fillStyle = lit; x.beginPath(); x.ellipse(cx + ox, cy + th * 0.55, len / 2 * 0.92, th * 0.42, 0, 0, Math.PI * 2); x.fill();
+      }
+    }
+    // the sun itself, just over the line, and its bloom
+    const sg = x.createRadialGradient(SU, SV, 0, SU, SV, 60); sg.addColorStop(0, 'rgba(255,248,226,1)'); sg.addColorStop(0.12, 'rgba(255,236,190,1)'); sg.addColorStop(0.35, 'rgba(255,190,120,0.5)'); sg.addColorStop(1, 'rgba(255,160,90,0)');
+    x.fillStyle = sg; x.fillRect(SU - 60, SV - 60, 120, 120);
+    // the first stars on the far, dark side
+    for (let i = 0; i < 120; i++) { const sx = (SU - W / 2 + (r() - 0.5) * W * 0.7 + W) % W, sy = r() * H * 0.24;
+      x.fillStyle = `rgba(255,255,255,${0.2 + r() * 0.5})`; x.fillRect(sx, sy, 1.4, 1.4); }
+    return yDone(THREE, c, false);
+  }
+  function makeMSlabs(THREE, cnv) {
+    const S = 256, [c, x] = cnv(S), r = yRng(223);
+    x.fillStyle = '#5e5a54'; x.fillRect(0, 0, S, S);
+    for (let i = 0; i < 2; i++) for (let j = 0; j < 2; j++) { const v = 150 + r() * 26; x.fillStyle = `rgb(${v},${v - 6},${v - 14})`; x.fillRect(i * 128 + 2, j * 128 + 2, 124, 124); }
+    for (let k = 0; k < 40; k++) yBlob(x, S, r() * S, r() * S, 6 + r() * 22, `rgba(${r() < 0.5 ? '70,62,52' : '210,204,190'},${0.05 + r() * 0.08})`);
+    return yDone(THREE, c, true);
+  }
+  function makeMPlaster(THREE, cnv) {
+    const S = 256, [c, x] = cnv(S), r = yRng(227);
+    x.fillStyle = '#ece6da'; x.fillRect(0, 0, S, S);
+    for (let k = 0; k < 60; k++) yBlob(x, S, r() * S, r() * S, 8 + r() * 30, `rgba(${r() < 0.6 ? '200,188,170' : '255,252,246'},${0.06 + r() * 0.08})`);
+    return yDone(THREE, c, true);
+  }
+  function makeMFloor(THREE, cnv) {
+    const S = 256, [c, x] = cnv(S), r = yRng(229);
+    x.fillStyle = '#d8ccb8'; x.fillRect(0, 0, S, S);
+    for (let k = 0; k < 30; k++) yBlob(x, S, r() * S, r() * S, 10 + r() * 34, `rgba(${r() < 0.5 ? '186,170,148' : '236,228,214'},${0.12 + r() * 0.12})`);
+    x.strokeStyle = 'rgba(150,132,110,0.35)'; x.lineWidth = 1;
+    for (let k = 0; k < 9; k++) { x.beginPath(); let px = r() * S, py = r() * S; x.moveTo(px, py); for (let s = 0; s < 6; s++) { px += (r() - 0.3) * 40; py += (r() - 0.5) * 30; x.lineTo(px, py); } x.stroke(); }
+    x.fillStyle = 'rgba(110,92,72,0.55)'; x.fillRect(0, 0, S, 2); x.fillRect(0, 0, 2, S);
+    return yDone(THREE, c, true);
+  }
+  function makeMTiles(THREE, cnv, a, b) {
+    const S = 256, [c, x] = cnv(S);
+    x.fillStyle = a; x.fillRect(0, 0, S, S);
+    x.translate(S, 0); x.rotate(Math.PI / 2);
+    for (let row = 0; row < 8; row++) for (let i = 0; i < 8; i++) {
+      const ox = (row % 2) * 16;
+      x.fillStyle = b; x.beginPath(); x.arc(i * 32 + ox, row * 32 + 30, 16, 0, Math.PI); x.fill();
+      x.fillStyle = 'rgba(255,255,255,0.07)'; x.fillRect(i * 32 + ox - 14, row * 32 + 4, 28, 6);
+    }
+    return yDone(THREE, c, true);
+  }
+  function makeMEarth(THREE, cnv) {
+    const S = 256, [c, x] = cnv(S), r = yRng(233);
+    x.fillStyle = '#4a3624'; x.fillRect(0, 0, S, S);
+    for (let k = 0; k < 90; k++) yBlob(x, S, r() * S, r() * S, 4 + r() * 18, `rgba(${r() < 0.5 ? '30,20,12' : '110,86,60'},${0.12 + r() * 0.18})`);
+    for (let k = 0; k < 160; k++) { x.fillStyle = `rgba(${150 + r() * 60},${130 + r() * 50},${100 + r() * 40},${0.3 + r() * 0.4})`; x.fillRect(r() * S, r() * S, 1 + r() * 2, 1 + r() * 2); }
+    // fallen leaves on the earth
+    for (let k = 0; k < 14; k++) { x.save(); x.translate(r() * S, r() * S); x.rotate(r() * 6); x.fillStyle = `rgba(${120 + r() * 60},${80 + r() * 40},${30},0.7)`;
+      x.beginPath(); x.ellipse(0, 0, 9, 4, 0, 0, Math.PI * 2); x.fill(); x.restore(); }
+    return yDone(THREE, c, true);
+  }
+  function makeMGrass(THREE, cnv) {
+    const S = 256, [c, x] = cnv(S), r = yRng(239);
+    x.fillStyle = '#4e5c34'; x.fillRect(0, 0, S, S);
+    for (let k = 0; k < 120; k++) yBlob(x, S, r() * S, r() * S, 6 + r() * 26, `rgba(${r() < 0.5 ? '64,80,40' : '96,104,58'},${0.15 + r() * 0.2})`);
+    return yDone(THREE, c, true);
+  }
+  /* a window from inside at sunset: the sky going from gold to rose behind a lattice, a branch across it */
+  function makeMWindow(THREE, cnv) {
+    const [c, x] = ySized(cnv, 128, 212), r = yRng(241);
+    const g = x.createLinearGradient(0, 0, 0, 212); g.addColorStop(0, '#d8869a'); g.addColorStop(0.55, '#ffb878'); g.addColorStop(1, '#ffd8a0');
+    x.fillStyle = g; x.fillRect(0, 0, 128, 212);
+    x.strokeStyle = 'rgba(40,24,20,0.85)'; x.lineWidth = 3;
+    x.beginPath(); x.moveTo(-10, 150); x.quadraticCurveTo(50, 120, 140, 136); x.stroke();
+    for (let k = 0; k < 40; k++) { x.fillStyle = 'rgba(40,30,22,0.8)'; x.beginPath(); x.ellipse(r() * 140, 110 + r() * 50, 5, 2.5, r() * 3, 0, Math.PI * 2); x.fill(); }
+    x.fillStyle = 'rgba(60,30,18,0.92)';
+    for (let i = 1; i < 4; i++) x.fillRect(i * 32 - 2, 0, 4, 212);
+    for (let j = 1; j < 6; j++) x.fillRect(0, j * 35 - 2, 128, 4);
+    return yDone(THREE, c, false);
+  }
+  /* the red board behind the Buddha and the monk: a gilt border and a lattice of four-petal flowers (Chad's v19.1 —
+     no halo, no arch behind the image) */
+  function makeMScreen(THREE, cnv) {
+    const [c, x] = ySized(cnv, 512, 512);
+    x.fillStyle = '#6e1008'; x.fillRect(0, 0, 512, 512);
+    x.strokeStyle = '#d8a44a'; x.lineWidth = 10; x.strokeRect(14, 14, 484, 484); x.lineWidth = 3; x.strokeRect(32, 32, 448, 448);
+    x.fillStyle = '#d8a44a';
+    for (let i = 0; i < 9; i++) for (let j = 0; j < 9; j++) {
+      const cx = 56 + i * 50 + (j % 2) * 25, cy = 56 + j * 50; if (cx > 470) continue;
+      for (let k = 0; k < 4; k++) { x.save(); x.translate(cx, cy); x.rotate(k * Math.PI / 2); x.beginPath(); x.ellipse(0, -7, 4, 7, 0, 0, Math.PI * 2); x.fill(); x.restore(); }
+      x.beginPath(); x.arc(cx, cy, 2.5, 0, Math.PI * 2); x.fill();
+    }
+    return yDone(THREE, c, false);
+  }
+  /* the donation box's front: teak, a gilt rule, ตู้ทำบุญ (a merit box) over DONATION and 功德箱 */
+  function makeMBoxFront(THREE, cnv) {
+    const [c, x] = ySized(cnv, 512, 400), r = yRng(251);
+    const g = x.createLinearGradient(0, 0, 0, 400); g.addColorStop(0, '#5a3218'); g.addColorStop(1, '#40220e'); x.fillStyle = g; x.fillRect(0, 0, 512, 400);
+    for (let k = 0; k < 60; k++) { x.strokeStyle = `rgba(${r() < 0.5 ? '30,16,6' : '120,80,40'},0.25)`; x.beginPath(); const y = r() * 400; x.moveTo(0, y); x.bezierCurveTo(170, y + (r() - 0.5) * 20, 340, y + (r() - 0.5) * 20, 512, y); x.stroke(); }
+    x.strokeStyle = '#d8a44a'; x.lineWidth = 8; x.strokeRect(14, 14, 484, 372);
+    x.fillStyle = '#e8bf62'; x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.font = 'bold 72px sans-serif'; x.fillText('ตู้ทำบุญ', 256, 130);
+    x.font = 'bold 52px sans-serif'; x.fillText('DONATION', 256, 236);
+    x.font = 'bold 46px serif'; x.fillText('功 德 箱', 256, 318);
+    return yDone(THREE, c, false);
+  }
+  /* his envelope: plain white, and on it in his own hand, in pen, who it is for */
+  function makeMEnvelope(THREE, cnv) {
+    const [c, x] = ySized(cnv, 512, 286), r = yRng(257);
+    x.fillStyle = '#f6f2e8'; x.fillRect(0, 0, 512, 286);
+    for (let k = 0; k < 20; k++) yBlob(x, 512, r() * 512, r() * 286, 20 + r() * 40, `rgba(${r() < 0.5 ? '220,212,196' : '255,255,250'},0.18)`);
+    x.strokeStyle = 'rgba(160,150,130,0.45)'; x.lineWidth = 2; x.beginPath(); x.moveTo(0, 0); x.lineTo(256, 120); x.lineTo(512, 0); x.stroke();
+    x.save(); x.translate(256, 190); x.rotate(-0.035);
+    x.fillStyle = '#1c2a5a'; x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.font = 'italic 600 34px Georgia, serif'; x.fillText('For the young lady', 0, -20);
+    x.font = 'italic 600 34px Georgia, serif'; x.fillText('of the amulet', 6, 24);
+    x.strokeStyle = '#1c2a5a'; x.lineWidth = 2; x.beginPath(); x.moveTo(-120, 52); x.quadraticCurveTo(0, 60, 120, 50); x.stroke();
+    x.restore();
+    return yDone(THREE, c, false);
+  }
+  /* a falling bodhi leaf: heart-shaped, wide at the stalk, with its long drip tip; gold-green, its midrib and veins */
+  function makeMLeaf(THREE, cnv) {
+    const S = 128, [c, x] = cnv(S);
+    x.clearRect(0, 0, S, S); x.translate(64, 58);
+    const g = x.createLinearGradient(0, -40, 0, 56); g.addColorStop(0, '#d8c060'); g.addColorStop(0.5, '#a8a848'); g.addColorStop(1, '#7c8a34');
+    x.fillStyle = g; x.beginPath(); x.moveTo(0, -30);
+    x.bezierCurveTo(24, -50, 46, -18, 30, 6); x.bezierCurveTo(20, 22, 6, 30, 1, 60);
+    x.lineTo(-1, 60); x.bezierCurveTo(-6, 30, -20, 22, -30, 6); x.bezierCurveTo(-46, -18, -24, -50, 0, -30); x.fill();
+    x.strokeStyle = 'rgba(250,240,190,0.7)'; x.lineWidth = 1.6; x.beginPath(); x.moveTo(0, -30); x.lineTo(0, 58); x.stroke();
+    x.lineWidth = 0.9;
+    for (let i = 0; i < 6; i++) { const y = -22 + i * 9; x.beginPath(); x.moveTo(0, y); x.quadraticCurveTo(12, y - 4, 24 - i * 2.5, y - 10 + i); x.moveTo(0, y); x.quadraticCurveTo(-12, y - 4, -24 + i * 2.5, y - 10 + i); x.stroke(); }
+    return yDone(THREE, c, false);
+  }
+  /* the wet patch's alpha: soft all round, a little uneven (CP6: a hard-edged disc read as a hole in the earth) */
+  function makeMWet(THREE, cnv) {
+    const S = 128, [c, x] = cnv(S), r = yRng(281);
+    const g = x.createRadialGradient(64, 64, 6, 64, 64, 62); g.addColorStop(0, '#ffffff'); g.addColorStop(0.5, '#d0d0d0'); g.addColorStop(1, '#000000');
+    x.fillStyle = g; x.fillRect(0, 0, S, S);
+    for (let k = 0; k < 14; k++) yBlob(x, S, 34 + r() * 60, 34 + r() * 60, 6 + r() * 14, 'rgba(255,255,255,0.3)');
+    return yDone(THREE, c, false);
+  }
+  function makeMRipple(THREE, cnv) {
+    const S = 128, [c, x] = cnv(S);
+    const g = x.createRadialGradient(64, 64, 40, 64, 64, 62); g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(0.55, 'rgba(255,255,255,0.9)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+    x.fillStyle = g; x.fillRect(0, 0, S, S);
+    return yDone(THREE, c, false);
+  }
+  /* the stream: streaks along its length (v runs down it), brighter at the core, scrolled each frame */
+  function makeMStream(THREE, cnv) {
+    const [c, x] = ySized(cnv, 64, 256), r = yRng(263);
+    x.clearRect(0, 0, 64, 256);
+    const g = x.createLinearGradient(0, 0, 64, 0); g.addColorStop(0, 'rgba(255,255,255,0.15)'); g.addColorStop(0.5, 'rgba(255,255,255,0.75)'); g.addColorStop(1, 'rgba(255,255,255,0.15)');
+    x.fillStyle = g; x.fillRect(0, 0, 64, 256);
+    for (let k = 0; k < 40; k++) { x.fillStyle = `rgba(255,255,255,${0.25 + r() * 0.5})`; x.fillRect(8 + r() * 48, r() * 256, 1 + r() * 2, 10 + r() * 40); }
+    return yDone(THREE, c, true);
+  }
+  /* a shaft of low sun through a window: bright at its root, soft at its edges, gone by its far end */
+  function makeMShaft(THREE, cnv) {
+    const [c, x] = ySized(cnv, 256, 64);
+    const g = x.createLinearGradient(0, 0, 256, 0); g.addColorStop(0, 'rgba(255,255,255,0.9)'); g.addColorStop(0.6, 'rgba(255,255,255,0.35)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+    x.fillStyle = g; x.fillRect(0, 0, 256, 64);
+    const v = x.createLinearGradient(0, 0, 0, 64); v.addColorStop(0, 'rgba(0,0,0,1)'); v.addColorStop(0.3, 'rgba(0,0,0,0)'); v.addColorStop(0.7, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,1)');
+    x.globalCompositeOperation = 'destination-out'; x.fillStyle = v; x.fillRect(0, 0, 256, 64); x.globalCompositeOperation = 'source-over';
+    return yDone(THREE, c, false);
+  }
+  /* a gable's carved panel (chapter 2's makeGableCarve): drawn to the gable's own triangle, gold kanok on dark red */
+  function makeMGable(THREE, cnv, w, h) {
+    const W = 1024, Hh = Math.max(128, Math.round(W * h / w)), [c, x] = ySized(cnv, W, Hh), r = yRng(269);
+    x.fillStyle = '#6e110a'; x.fillRect(0, 0, W, Hh);
+    x.save(); x.beginPath(); x.moveTo(W * 0.03, Hh); x.lineTo(W / 2, Hh * 0.03); x.lineTo(W * 0.97, Hh); x.closePath(); x.clip();
+    x.fillStyle = '#7d140c'; x.fillRect(0, 0, W, Hh);
+    const leaf = (cx, cy, sz, ang) => { x.save(); x.translate(cx, cy); x.rotate(ang);
+      x.beginPath(); x.moveTo(0, sz); x.quadraticCurveTo(sz * 0.55, sz * 0.25, 0, -sz); x.quadraticCurveTo(-sz * 0.55, sz * 0.25, 0, sz); x.fill(); x.restore(); };
+    x.fillStyle = '#d6a648';
+    const step = Hh / 9;
+    for (let row = 0; row < 9; row++) { const y = Hh - step * (row + 0.6), half = (W / 2) * (y / Hh), n = Math.max(1, Math.round(half * 2 / (step * 1.15)));
+      for (let i = 0; i < n; i++) { const xx = W / 2 - half + (i + 0.5) * (half * 2 / n); leaf(xx, y, step * 0.42, (xx - W / 2) / W * 1.2 + (r() - 0.5) * 0.15); } }
+    x.strokeStyle = '#e8bf62'; x.lineWidth = Math.max(2, Hh * 0.012);
+    for (let i = 0; i < 26; i++) { const cy = Hh * (0.35 + r() * 0.6), span = (W / 2) * (cy / Hh), cx = W / 2 + (r() * 2 - 1) * span * 0.85, rr = step * (0.25 + r() * 0.3);
+      x.beginPath(); x.arc(cx, cy, rr, r() * 6, r() * 6 + 3.6); x.stroke(); }
+    x.restore();
+    x.strokeStyle = '#e8bf62'; x.lineWidth = Math.max(4, Hh * 0.03);
+    x.beginPath(); x.moveTo(W * 0.04, Hh * 0.985); x.lineTo(W / 2, Hh * 0.04); x.lineTo(W * 0.96, Hh * 0.985); x.closePath(); x.stroke();
+    const mx = W / 2, my = Hh * 0.66, mr = Math.min(Hh * 0.2, W * 0.07);
+    x.fillStyle = '#e8bf62'; x.beginPath(); x.arc(mx, my, mr, 0, Math.PI * 2); x.fill();
+    x.fillStyle = '#7d140c'; x.beginPath(); x.arc(mx, my, mr * 0.74, 0, Math.PI * 2); x.fill();
+    x.fillStyle = '#e8bf62'; x.beginPath(); x.arc(mx, my, mr * 0.36, 0, Math.PI * 2); x.fill();
+    for (let i = 0; i < 12; i++) leaf(mx + Math.cos(i / 12 * Math.PI * 2) * mr * 1.25, my + Math.sin(i / 12 * Math.PI * 2) * mr * 1.25, mr * 0.28, i / 12 * Math.PI * 2 + Math.PI / 2);
+    return yDone(THREE, c, false);
+  }
+  /* the pointed gilt crown over a Thai door or window, and a gable's plain triangle (chapter 2's) */
+  function mCrown(THREE, w, h) {
+    const s = new THREE.Shape();
+    s.moveTo(-w / 2, 0);
+    s.quadraticCurveTo(-w * 0.40, h * 0.50, -w * 0.10, h * 0.74); s.quadraticCurveTo(-w * 0.02, h * 0.84, 0, h);
+    s.quadraticCurveTo(w * 0.02, h * 0.84, w * 0.10, h * 0.74); s.quadraticCurveTo(w * 0.40, h * 0.50, w / 2, 0);
+    s.lineTo(-w / 2, 0);
+    return s;
+  }
+  function mTri(THREE, w, h) { const s = new THREE.Shape(); s.moveTo(-w / 2, 0); s.lineTo(w / 2, 0); s.lineTo(0, h); s.lineTo(-w / 2, 0); return s; }
+  /* THE RED CLOTH the three are wrapped in on the owner's glass (CP5): red silk, a fine weave and a sheen, a gold border
+     and a thin inner line — drawn at a millimetre a pixel to the cloth's own 340 × 660 mm, so its border is one width
+     all round */
+  function makeRedClothT(THREE, cnv, border = true) {
+    const Wd = 340, Ht = 660, [c, x] = sized(cnv, Wd, Ht), r = rng(5203);
+    const g = x.createLinearGradient(0, 0, Wd, Ht);
+    g.addColorStop(0, '#a3161a'); g.addColorStop(0.45, '#c42a24'); g.addColorStop(0.55, '#b51f1e'); g.addColorStop(1, '#8e1216');
+    x.fillStyle = g; x.fillRect(0, 0, Wd, Ht);
+    for (let i = 0; i < Ht; i += 2) { x.fillStyle = `rgba(${r() < 0.5 ? '60,0,4' : '255,120,110'},${(0.02 + r() * 0.035).toFixed(3)})`; x.fillRect(0, i, Wd, 1); }
+    for (let i = 0; i < Wd; i += 2) { x.fillStyle = `rgba(${r() < 0.5 ? '60,0,4' : '255,120,110'},${(0.015 + r() * 0.03).toFixed(3)})`; x.fillRect(i, 0, 1, Ht); }
+    if (!border) return done(THREE, c, false);          // (the bundle: drawn up round them, its border is somewhere underneath)
+    x.strokeStyle = '#d8a83c'; x.lineWidth = 9; x.strokeRect(16, 16, Wd - 32, Ht - 32);
+    x.strokeStyle = 'rgba(232,190,90,0.85)'; x.lineWidth = 2; x.strokeRect(30, 30, Wd - 60, Ht - 60);
+    for (const [cx, cy] of [[30, 30], [Wd - 30, 30], [30, Ht - 30], [Wd - 30, Ht - 30]]) {
+      x.fillStyle = '#e0b448'; x.beginPath(); x.arc(cx, cy, 6, 0, Math.PI * 2); x.fill();
+      for (let k = 0; k < 4; k++) { const a = k * Math.PI / 2 + Math.PI / 4; x.beginPath(); x.ellipse(cx + Math.cos(a) * 11, cy + Math.sin(a) * 11, 6, 3, a, 0, Math.PI * 2); x.fill(); }
+    }
+    return done(THREE, c, false);
+  }
+  /* the paper bag's kraft (CP5): brown paper, its fibres, a darker crease near its foot and a small red seal */
+  function makeKraftT(THREE, cnv) {
+    const S = 256, [c, x] = cnv(S), r = rng(5209);
+    x.fillStyle = '#b88d5c'; x.fillRect(0, 0, S, S);
+    for (let i = 0; i < 1400; i++) {
+      x.strokeStyle = `rgba(${r() < 0.5 ? '120,84,48' : '214,178,132'},${(0.12 + r() * 0.2).toFixed(2)})`; x.lineWidth = 1;
+      const px = r() * S, py = r() * S, a = r() * Math.PI, l = 3 + r() * 9;
+      x.beginPath(); x.moveTo(px, py); x.lineTo(px + Math.cos(a) * l, py + Math.sin(a) * l); x.stroke();
+    }
+    x.fillStyle = 'rgba(90,60,30,0.16)'; x.fillRect(0, S * 0.84, S, 3);
+    x.strokeStyle = 'rgba(176,32,26,0.75)'; x.lineWidth = 3; x.beginPath(); x.arc(S / 2, S * 0.44, 26, 0, Math.PI * 2); x.stroke();
+    x.fillStyle = 'rgba(176,32,26,0.7)'; x.font = 'bold 22px serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('福', S / 2, S * 0.44 + 1);
+    return done(THREE, c, false);
+  }
+  /* (CP5: its words are the sheet's — DATA.words card1…card14; '' is a gap between his paragraphs) */
+  const CARD_LAYOUT = ['card1', '', 'card2', 'card3', 'card4', 'card5', 'card6', 'card7', '', 'card8', 'card9', '',
+                       'card10', 'card11', '', 'card12', 'card13', 'card14'];
+  const cardLines = () => CARD_LAYOUT.map(k => (k ? DATA.words[k] || '' : ''));
+  function makeOwnerCardT(THREE, cnv, CARD_RULES) {
     const [c, x] = sized(cnv, 512, 720), r = rng(5179);
     x.fillStyle = '#f2ecdc'; x.fillRect(0, 0, 512, 720);
     for (let i = 0; i < 900; i++) { x.fillStyle = `rgba(140,120,80,${(r() * 0.06).toFixed(3)})`; x.fillRect(r() * 512, r() * 720, 3, 3); }
@@ -1776,6 +4519,367 @@
     return done(THREE, c, false);
   }
 
+  /* ====================================================== WORLD S's DRAWN SURFACES (CP5)
+     Chapter 4's (e3c4.js, its shop's: the floor's tiles, the corridor's terrazzo, the ceiling grid, the name on the
+     glass, the lightbox, the mall's directory, the EXIT, the neighbours' signs and posters, the velvet trays, the
+     framed amulets, the Thai calendar, the clock's face, the red board behind the altar, the boxed cases, the roller
+     shutter), copied by their own code — a chapter imports nothing. */
+  function makeGlowTex(THREE, cnv, rgb) {
+    const S = 128, [c, x] = cnv(S);
+    const g = x.createRadialGradient(64, 64, 2, 64, 64, 64);
+    g.addColorStop(0, `rgba(${rgb[0]},${rgb[1]},${rgb[2]},1)`); g.addColorStop(0.35, `rgba(${rgb[0]},${rgb[1]},${rgb[2]},0.45)`); g.addColorStop(1, `rgba(${rgb[0]},${rgb[1]},${rgb[2]},0)`);
+    x.fillStyle = g; x.fillRect(0, 0, S, S);
+    return done(THREE, c, false);
+  }
+  /* a small printed sign: words on a coloured card, sized to its aspect */
+  function makeSignTxt(THREE, cnv, text, bg, fg, aspect) {
+    const W = 512, H = Math.round(W / aspect), [c, x] = sized(cnv, W, H);
+    x.fillStyle = bg; x.fillRect(0, 0, W, H);
+    x.strokeStyle = fg; x.lineWidth = Math.max(2, H * 0.05); x.strokeRect(H * 0.08, H * 0.08, W - H * 0.16, H - H * 0.16);
+    let px = Math.floor(H * 0.56); x.font = 'bold ' + px + 'px sans-serif';
+    while (x.measureText(text).width > W * 0.86 && px > 6) { px -= 2; x.font = 'bold ' + px + 'px sans-serif'; }
+    x.fillStyle = fg; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(text, W / 2, H * 0.54);
+    return done(THREE, c, false);
+  }
+  /* the shop's floor: 600 mm porcelain, warm white, a faint vein, grout */
+  function makeShopTiles(THREE, cnv) {
+    const S = 512, [c, x] = cnv(S), r = rng(3);
+    for (let i = 0; i < 2; i++) for (let j = 0; j < 2; j++) {
+      const g = 226 + r() * 10;
+      x.fillStyle = `rgb(${g},${g - 4},${g - 12})`; x.fillRect(i * 256, j * 256, 256, 256);
+      for (let k = 0; k < 6; k++) {                      // soft veining
+        x.strokeStyle = `rgba(150,140,128,${0.05 + r() * 0.06})`; x.lineWidth = 1 + r() * 2;
+        x.beginPath(); let px = i * 256 + r() * 256, py = j * 256 + r() * 256; x.moveTo(px, py);
+        for (let q = 0; q < 5; q++) { px += r() * 60 - 30; py += r() * 60 - 30; x.lineTo(px, py); }
+        x.stroke();
+      }
+      const gr = x.createLinearGradient(i * 256, j * 256, i * 256 + 256, j * 256 + 256);   // a polish sheen
+      gr.addColorStop(0, 'rgba(255,255,255,0.0)'); gr.addColorStop(0.5, 'rgba(255,255,255,0.08)'); gr.addColorStop(1, 'rgba(255,255,255,0.0)');
+      x.fillStyle = gr; x.fillRect(i * 256, j * 256, 256, 256);
+    }
+    x.fillStyle = '#b9b0a2'; for (const p of [0, 255]) { x.fillRect(0, p, S, 2); x.fillRect(p, 0, 2, S); }
+    return done(THREE, c, true);
+  }
+  /* the old mall's terrazzo: cream, chips of grey, rust, black and white,
+     brass divider strips on a 1.2 m grid */
+  function makeTerrazzo(THREE, cnv) {
+    const S = 512, [c, x] = cnv(S), r = rng(19);
+    x.fillStyle = '#d8ccb4'; x.fillRect(0, 0, S, S);
+    const cols = ['#8c8478', '#6e3b28', '#2a2622', '#f2ece0', '#a89c88', '#b7643e'];
+    for (let i = 0; i < 5200; i++) {
+      x.fillStyle = cols[(r() * cols.length) | 0];
+      x.globalAlpha = 0.45 + r() * 0.5;
+      const w = 1 + r() * 5, h = 1 + r() * 4;
+      x.beginPath(); x.ellipse(r() * S, r() * S, w, h, r() * 3, 0, Math.PI * 2); x.fill();
+    }
+    x.globalAlpha = 1;
+    const gr = x.createRadialGradient(S * 0.4, S * 0.6, 20, S * 0.4, S * 0.6, S * 0.7);   // a century of feet
+    gr.addColorStop(0, 'rgba(255,250,240,0.10)'); gr.addColorStop(1, 'rgba(90,80,60,0.10)');
+    x.fillStyle = gr; x.fillRect(0, 0, S, S);
+    x.fillStyle = '#a8864a'; x.fillRect(0, 0, S, 3); x.fillRect(0, 0, 3, S);
+    return done(THREE, c, true);
+  }
+  /* the 600 mm T-bar ceiling: fissured mineral tiles in a thin grey grid */
+  function makeCeilGrid(THREE, cnv) {
+    const S = 512, [c, x] = cnv(S), r = rng(23);
+    x.fillStyle = '#ece9e2'; x.fillRect(0, 0, S, S);
+    for (let i = 0; i < 2600; i++) { x.fillStyle = `rgba(120,116,108,${0.05 + r() * 0.12})`; x.fillRect(r() * S, r() * S, 1 + r() * 2, 1); }
+    x.fillStyle = '#9a968e'; for (const p of [0, 254]) { x.fillRect(0, p, S, 4); x.fillRect(p, 0, 4, S); }
+    return done(THREE, c, true);
+  }
+  /* the shop's name on its glass in gold leaf: Thai, Chinese and English, as a
+     Singapore Thai-amulet shop writes it (transparent between the letters) */
+  function makeGlassName(THREE, cnv) {
+    const [c, x] = sized(cnv, 1024, 384);
+    x.clearRect(0, 0, 1024, 384);
+    const gold = x.createLinearGradient(0, 0, 0, 384);
+    gold.addColorStop(0, '#ffe6a0'); gold.addColorStop(0.5, '#d4a23e'); gold.addColorStop(1, '#a8761e');
+    x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.shadowColor = 'rgba(40,20,0,0.6)'; x.shadowBlur = 4;
+    x.fillStyle = gold; x.font = 'bold 92px sans-serif'; x.fillText('พระเครื่องสยาม', 512, 92);
+    x.font = 'bold 64px sans-serif'; x.fillText('暹 罗 佛 牌', 512, 200);
+    x.font = 'bold 56px serif'; x.fillText('SIAM AMULET HOUSE', 512, 300);
+    x.shadowBlur = 0; x.strokeStyle = '#d4a23e'; x.lineWidth = 3;
+    x.beginPath(); x.moveTo(170, 248); x.lineTo(854, 248); x.stroke();
+    return done(THREE, c, false);
+  }
+  /* the lightbox over the front, facing the corridor */
+  function makeLightbox(THREE, cnv) {
+    const [c, x] = sized(cnv, 1024, 192);
+    const g = x.createLinearGradient(0, 0, 0, 192); g.addColorStop(0, '#b01c14'); g.addColorStop(1, '#7a0e08');
+    x.fillStyle = g; x.fillRect(0, 0, 1024, 192);
+    x.strokeStyle = '#f2c14e'; x.lineWidth = 6; x.strokeRect(8, 8, 1008, 176);
+    x.fillStyle = '#ffe08a'; x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.font = 'bold 70px sans-serif'; x.fillText('SIAM AMULET HOUSE  暹罗佛牌', 512, 72);
+    x.fillStyle = '#fff4dc'; x.font = 'bold 34px sans-serif'; x.fillText('พระเครื่อง · AMULETS · BUDDHA IMAGES · 佛像', 512, 142);
+    return done(THREE, c, false);
+  }
+  /* v21.18 · the corridor's end: the mall's directory — its name, the floors and what is on them (generic names), a
+     plan of this floor with a red YOU ARE HERE; and the green EXIT over the way out */
+  function makeMallDirectory(THREE, cnv) {
+    const [c, x] = sized(cnv, 512, 768);
+    x.fillStyle = '#16212c'; x.fillRect(0, 0, 512, 768);
+    x.fillStyle = '#c9a24c'; x.fillRect(0, 0, 512, 104);
+    x.fillStyle = '#1c1408'; x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.font = 'bold 38px sans-serif'; x.fillText('GOLDEN MILE COMPLEX', 256, 40);
+    x.font = 'bold 22px sans-serif'; x.fillText('DIRECTORY  ·  ผังร้านค้า  ·  商场指南', 256, 80);
+    const floors = [['LEVEL 3', ['Karaoke Lounge', 'Thai Disco', 'Travel Agents']], ['LEVEL 2', ['Thai Restaurants', 'Coach Ticketing', 'Massage']],
+                    ['LEVEL 1', ['Thai Mart', 'Amulets', 'Money Changer', 'Mobile']], ['B1', ['Supermarket', 'Food Court']]];
+    let y = 136;
+    for (const [fl, units] of floors) {
+      x.fillStyle = '#c9a24c'; x.fillRect(24, y - 16, 112, 32);
+      x.fillStyle = '#1c1408'; x.font = 'bold 20px sans-serif'; x.fillText(fl, 80, y);
+      x.fillStyle = '#e8eef2'; x.font = '19px sans-serif'; x.textAlign = 'left';
+      units.forEach((u, i) => x.fillText(u, 156 + (i % 2) * 176, y + Math.floor(i / 2) * 26 - (units.length > 2 ? 12 : 0)));
+      x.textAlign = 'center'; y += 74;
+    }
+    // this floor's plan: the corridor, the shops either side, the lifts at its end
+    const px = 40, py = 448, pw = 432, ph = 250;
+    x.fillStyle = '#22303e'; x.fillRect(px, py, pw, ph);
+    x.strokeStyle = '#8aa0b4'; x.lineWidth = 2;
+    for (let i = 0; i < 7; i++) { x.strokeRect(px + 8 + i * 60, py + 10, 54, 70); x.strokeRect(px + 8 + i * 60, py + ph - 80, 54, 70); }
+    x.fillStyle = '#d8b04a'; x.fillRect(px + 8 + 3 * 60, py + ph - 80, 54, 70);              // the amulet shop
+    x.fillStyle = '#5a6a7a'; x.fillRect(px + 2, py + 96, 30, 58);                             // the lifts
+    x.fillStyle = '#e8263c'; x.beginPath(); x.arc(px + 60, py + 125, 11, 0, Math.PI * 2); x.fill();
+    x.fillStyle = '#ffffff'; x.font = 'bold 18px sans-serif'; x.textAlign = 'left'; x.fillText('YOU ARE HERE', px + 80, py + 126);
+    x.textAlign = 'center'; x.fillStyle = '#9ab0c4'; x.font = '16px sans-serif'; x.fillText('LIFT  ลิฟต์  电梯', px + pw / 2 + 40, py + ph + 30);
+    return done(THREE, c, false);
+  }
+  function makeExitSign(THREE, cnv) {
+    const [c, x] = sized(cnv, 256, 96);
+    x.fillStyle = '#0f8a3e'; x.fillRect(0, 0, 256, 96);
+    x.fillStyle = '#ffffff'; x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.font = 'bold 46px sans-serif'; x.fillText('EXIT 出口', 150, 50);
+    x.beginPath(); x.moveTo(28, 50); x.lineTo(58, 28); x.lineTo(58, 42); x.lineTo(80, 42); x.lineTo(80, 58); x.lineTo(58, 58); x.lineTo(58, 72); x.closePath(); x.fill();
+    return done(THREE, c, false);
+  }
+  /* v21.18 · THE MALL'S SHOPS, BUILT — the drawn parts. Their signboards, one atlas: ten lightboxes of 1024 × 128,
+     each a shop's own (a lit face, a bright edge, the name in English with its Thai or Chinese, a line under it) */
+  const MALL_SIGNS = [
+    { bg: ['#1e5aa8', '#0f356c'], edge: '#9fd0ff', ink: '#ffffff', name: 'BANGKOK TRAVEL  ทัวร์', sub: 'BUS · AIR · TOURS · VISA' },
+    { bg: ['#23824a', '#12512b'], edge: '#ffe27a', ink: '#fff6cc', name: 'THAI MART  ร้านค้าไทย', sub: 'FRESH FROM BANGKOK DAILY' },
+    { bg: ['#e07a18', '#a24a08'], edge: '#ffe2a8', ink: '#fffaf0', name: 'THAI KITCHEN  อาหารไทย', sub: 'BOAT NOODLES · TOM YUM · MOOKATA' },
+    { bg: ['#c2457a', '#7e1f4a'], edge: '#ffd0e4', ink: '#fff4fa', name: 'THAI MASSAGE  นวดไทย', sub: 'FOOT · BODY · HERBAL COMPRESS' },
+    { bg: ['#9a1810', '#5a0a06'], edge: '#ffd24a', ink: '#ffd84e', name: '金 店   GOLDSMITH', sub: '916 · 999 GOLD  ·  BUY & SELL' },
+    { bg: ['#1a1c22', '#08090c'], edge: '#3ad0ff', ink: '#8ae8ff', name: 'MOBILE CENTRE', sub: 'REPAIR · TOP-UP · THAI SIM' },
+    { bg: ['#8a8478', '#5e5a52'], edge: '#b8b2a4', ink: '#d6d0c2', name: 'SUCCESS TRADING', sub: '' , faded: true },
+    { bg: ['#14523e', '#0a3024'], edge: '#7affc8', ink: '#e8fff4', name: 'MONEY CHANGER  แลกเงิน', sub: 'THB · MYR · USD · RMB' },
+    { bg: ['#d8261c', '#8e0e08'], edge: '#ffe14a', ink: '#ffe94e', name: 'HAT YAI EXPRESS', sub: 'COACHES DAILY · HAT YAI · KL · BANGKOK' },
+    { bg: ['#f2b81c', '#c47e08'], edge: '#fff6cc', ink: '#5a1608', name: 'THAI SNACKS  ขนมไทย', sub: 'SWEETS · DRIED FRUIT · CHILLI PASTE' }];
+  function makeMallSigns(THREE, cnv) {
+    const [c, x] = sized(cnv, 1024, 1280);
+    MALL_SIGNS.forEach((s, i) => {
+      const y = i * 128, g = x.createLinearGradient(0, y, 0, y + 128);
+      g.addColorStop(0, s.bg[0]); g.addColorStop(1, s.bg[1]);
+      x.fillStyle = g; x.fillRect(0, y, 1024, 128);
+      x.strokeStyle = s.edge; x.lineWidth = 6; x.strokeRect(6, y + 6, 1012, 116);
+      x.globalAlpha = 0.18; x.fillStyle = '#ffffff'; x.fillRect(12, y + 12, 1000, 36); x.globalAlpha = 1;   // the lightbox's own sheen
+      x.fillStyle = s.ink; x.textAlign = 'center'; x.textBaseline = 'middle';
+      x.font = `bold ${s.sub ? 54 : 64}px sans-serif`; x.fillText(s.name, 512, y + (s.sub ? 52 : 64));
+      if (s.sub) { x.font = 'bold 26px sans-serif'; x.fillText(s.sub, 512, y + 102); }
+      if (s.faded) {                                        // an old sign nobody has lit for years: streaks, a corner gone
+        x.globalAlpha = 0.35; for (let k = 0; k < 40; k++) { x.fillStyle = k % 2 ? '#4a463e' : '#a29c8e'; x.fillRect((k * 97) % 1000, y + 8, 3 + (k % 4), 112); }
+        x.globalAlpha = 1; x.fillStyle = '#3a3630'; x.beginPath(); x.moveTo(900, y + 128); x.lineTo(1024, y + 70); x.lineTo(1024, y + 128); x.fill();
+      }
+    });
+    return done(THREE, c, false);
+  }
+  /* their posters, menus and boards, one atlas of sixteen 256 × 256 cells (see MALL_POSTER for which is which) */
+  const MALL_POSTER = { bangkok: 0, phuket: 1, hatyai: 2, timetable: 3, menu: 4, massage: 5, rates: 6, sim: 7,
+                        tolet: 8, noodles: 9, goldrate: 10, elephant: 11, tomyum: 12, coach: 13, calendar: 14, rice: 15 };
+  function makeMallPosters(THREE, cnv) {
+    const [c, x] = sized(cnv, 1024, 1024), r = rng(2118);
+    const cell = (i, fn) => { const cx = (i % 4) * 256, cy = Math.floor(i / 4) * 256; x.save(); x.translate(cx, cy); x.beginPath(); x.rect(0, 0, 256, 256); x.clip(); fn(); x.restore(); };
+    const txt = (s, X, Y, px, col, al = 'center') => { x.fillStyle = col; x.textAlign = al; x.textBaseline = 'middle'; x.font = `bold ${px}px sans-serif`; x.fillText(s, X, Y); };
+    const sky = (a, b) => { const g = x.createLinearGradient(0, 0, 0, 256); g.addColorStop(0, a); g.addColorStop(1, b); x.fillStyle = g; x.fillRect(0, 0, 256, 256); };
+    cell(0, () => { sky('#f4a040', '#6a1c10');                                   // BANGKOK: a temple's spires at sunset
+      x.fillStyle = '#ffd890'; x.beginPath(); x.arc(170, 96, 30, 0, 7); x.fill();
+      x.fillStyle = '#2a0e08';
+      for (const [px, h, w] of [[60, 120, 30], [110, 160, 40], [168, 110, 28], [210, 80, 22]]) { x.beginPath(); x.moveTo(px, 210 - h); x.lineTo(px + w / 2, 210); x.lineTo(px - w / 2, 210); x.fill(); x.fillRect(px - w * 0.7, 196, w * 1.4, 16); }
+      x.fillRect(0, 210, 256, 46); txt('BANGKOK', 128, 232, 34, '#ffe6a8'); });
+    cell(1, () => { sky('#3ab4e8', '#f2e2a8');                                   // PHUKET: sea, sand, a longtail boat
+      x.fillStyle = '#1a7ab0'; x.fillRect(0, 120, 256, 60); x.fillStyle = '#f6e6b0'; x.fillRect(0, 180, 256, 76);
+      x.fillStyle = '#7a3a14'; x.beginPath(); x.moveTo(60, 150); x.lineTo(170, 150); x.lineTo(150, 168); x.lineTo(76, 168); x.fill();
+      x.fillStyle = '#2a5a1c'; for (const px of [20, 228]) { x.fillRect(px, 70, 6, 110); x.beginPath(); x.ellipse(px + 3, 70, 40, 12, 0.3, 0, 7); x.fill(); }
+      txt('PHUKET', 128, 226, 38, '#0e4a78'); });
+    cell(2, () => { sky('#4a3a9a', '#e8708a');                                   // HAT YAI: the city at dusk
+      x.fillStyle = '#1a1430'; for (let k = 0; k < 9; k++) { const h = 50 + r() * 90; x.fillRect(k * 29, 200 - h, 26, h); }
+      x.fillStyle = '#ffd86a'; for (let k = 0; k < 40; k++) x.fillRect(4 + r() * 248, 110 + r() * 86, 3, 4);
+      x.fillStyle = '#1a1430'; x.fillRect(0, 200, 256, 56); txt('HAT YAI', 128, 228, 36, '#ffe0f0'); });
+    cell(3, () => { x.fillStyle = '#101418'; x.fillRect(0, 0, 256, 256);          // the coach timetable, an LED board
+      txt('DEPARTURES  ออกเดินทาง', 128, 22, 17, '#ffd23a');
+      [['HAT YAI', '08:00'], ['HAT YAI', '10:30'], ['K. LUMPUR', '13:00'], ['BANGKOK', '15:45'], ['HAT YAI', '21:00'], ['SONGKHLA', '22:30']].forEach(([d, t], k) => {
+        txt(d, 18, 58 + k * 32, 19, '#ff8a2a', 'left'); txt(t, 238, 58 + k * 32, 19, '#7aff8a', 'right'); }); });
+    cell(4, () => { x.fillStyle = '#fff4dc'; x.fillRect(0, 0, 256, 256);          // the kitchen's menu: six dishes, a price each
+      txt('MENU  เมนู', 128, 20, 20, '#a8320a');
+      const dish = [['#d8501c', 'TOM YUM'], ['#7a3a1a', 'BOAT NOODLE'], ['#e8c040', 'PAD THAI'], ['#3a8a2a', 'GREEN CURRY'], ['#c8642a', 'BASIL PORK'], ['#f0e0b0', 'MANGO RICE']];
+      dish.forEach(([col, n], k) => { const X = 46 + (k % 3) * 82, Y = 72 + Math.floor(k / 3) * 96;
+        x.fillStyle = '#f8f8f4'; x.beginPath(); x.arc(X, Y, 30, 0, 7); x.fill(); x.fillStyle = col; x.beginPath(); x.arc(X, Y, 23, 0, 7); x.fill();
+        txt(n, X, Y + 42, 11, '#3a1a0a'); txt('$' + (5 + k % 3), X, Y + 56, 12, '#a8320a'); }); });
+    cell(5, () => { x.fillStyle = '#5a1a3a'; x.fillRect(0, 0, 256, 256);          // the massage price list
+      x.strokeStyle = '#f2c4d8'; x.lineWidth = 3; x.strokeRect(8, 8, 240, 240);
+      txt('PRICE LIST', 128, 34, 22, '#ffd8ea');
+      [['FOOT 45 min', '$28'], ['THAI 1 hr', '$38'], ['OIL 1 hr', '$42'], ['HERBAL 90 min', '$58']].forEach(([a, b], k) => { txt(a, 20, 82 + k * 40, 17, '#fff0f6', 'left'); txt(b, 236, 82 + k * 40, 17, '#ffd24a', 'right'); }); });
+    cell(6, () => { x.fillStyle = '#060806'; x.fillRect(0, 0, 256, 256);          // the money changer's rates, red and green LEDs
+      txt('WE BUY    WE SELL', 128, 18, 16, '#ffffff');
+      [['THB', '25.40', '24.10'], ['MYR', '3.42', '3.28'], ['USD', '1.33', '1.30'], ['RMB', '5.36', '5.10'], ['IDR', '11,850', '11,200']].forEach(([c3, a, b], k) => {
+        txt(c3, 12, 52 + k * 42, 20, '#ffffff', 'left'); txt(a, 158, 52 + k * 42, 20, '#ff3a2a', 'right'); txt(b, 246, 52 + k * 42, 20, '#3aff6a', 'right'); }); });
+    cell(7, () => { sky('#0a1a4a', '#2a6ad8');                                   // the phone shop's offer
+      x.fillStyle = '#ffffff'; x.fillRect(150, 40, 70, 130); x.fillStyle = '#2a8ae8'; x.fillRect(156, 50, 58, 104);
+      txt('THAI SIM', 80, 70, 28, '#ffe14a'); txt('$10', 80, 120, 46, '#ffffff'); txt('5G · 30 DAYS', 128, 210, 22, '#bfe6ff'); });
+    cell(8, () => { x.fillStyle = '#f4f2ea'; x.fillRect(0, 0, 256, 256);          // TO LET
+      x.fillStyle = '#c81e14'; x.fillRect(0, 0, 256, 74); txt('TO LET', 128, 40, 50, '#ffffff');
+      txt('SHOP UNIT', 128, 110, 24, '#1a1a1a'); txt('Enquiries', 128, 156, 20, '#3a3a3a'); txt('9xxx xxxx', 128, 190, 26, '#1a1a1a'); });
+    cell(9, () => { x.fillStyle = '#ffe23a'; x.fillRect(0, 0, 256, 256);          // the grocer's offer
+      txt('PROMO!', 128, 34, 34, '#d8201a'); for (let k = 0; k < 5; k++) { x.fillStyle = ['#e8401a', '#2a9a3a', '#e8a01a', '#8a2ad8', '#1a7ad8'][k]; x.fillRect(18 + k * 46, 80, 38, 56); }
+      txt('INSTANT NOODLES', 128, 168, 20, '#3a1a0a'); txt('5 FOR $3', 128, 212, 36, '#d8201a'); });
+    cell(10, () => { x.fillStyle = '#7a0a06'; x.fillRect(0, 0, 256, 256);         // the goldsmith's board: 金, 福, today's price
+      txt('金', 70, 80, 90, '#ffd24a'); txt('福', 190, 80, 90, '#ffd24a');
+      txt('916 GOLD', 128, 170, 26, '#ffe6a0'); txt('TODAY $102 /g', 128, 212, 24, '#ffffff'); });
+    cell(11, () => { sky('#2a6a3a', '#d8b86a');                                   // a framed picture: an elephant in a field
+      x.fillStyle = '#4a4440'; x.beginPath(); x.ellipse(128, 150, 70, 46, 0, 0, 7); x.fill(); x.fillRect(80, 170, 22, 50); x.fillRect(150, 170, 22, 50);
+      x.beginPath(); x.ellipse(196, 132, 30, 34, 0, 0, 7); x.fill(); x.fillRect(214, 140, 14, 70);
+      x.strokeStyle = '#c89a3a'; x.lineWidth = 10; x.strokeRect(5, 5, 246, 246); });
+    cell(12, () => { x.fillStyle = '#2a0a06'; x.fillRect(0, 0, 256, 256);         // TOM YUM, a bowl
+      x.fillStyle = '#f2f0ea'; x.beginPath(); x.arc(128, 128, 92, 0, 7); x.fill(); x.fillStyle = '#e0501a'; x.beginPath(); x.arc(128, 128, 78, 0, 7); x.fill();
+      x.fillStyle = '#f4a8a0'; for (let k = 0; k < 6; k++) { x.beginPath(); x.ellipse(128 + Math.cos(k) * 40, 128 + Math.sin(k * 1.3) * 34, 16, 9, k, 0, 7); x.fill(); }
+      x.fillStyle = '#4ab43a'; for (let k = 0; k < 8; k++) x.fillRect(90 + r() * 80, 96 + r() * 70, 9, 4);
+      txt('TOM YUM GOONG', 128, 236, 22, '#ffd24a'); });
+    cell(13, () => { sky('#f0f4f8', '#b8d0e8');                                  // a coach, side on
+      x.fillStyle = '#ffffff'; x.fillRect(20, 90, 216, 90); x.fillStyle = '#d8261c'; x.fillRect(20, 150, 216, 16); x.fillStyle = '#1a2a3a'; x.fillRect(30, 100, 196, 34);
+      x.fillStyle = '#1a1a1a'; for (const px of [64, 190]) { x.beginPath(); x.arc(px, 182, 16, 0, 7); x.fill(); }
+      txt('TO HAT YAI', 128, 40, 28, '#d8261c'); txt('DAILY · $45', 128, 226, 26, '#1a1a1a'); });
+    cell(14, () => { x.fillStyle = '#fffaf2'; x.fillRect(0, 0, 256, 256);          // a calendar
+      x.fillStyle = '#c81e14'; x.fillRect(0, 0, 256, 56); txt('2026', 128, 30, 30, '#ffffff');
+      for (let k = 0; k < 35; k++) txt(String(k % 31 + 1), 24 + (k % 7) * 35, 80 + Math.floor(k / 7) * 34, 15, k % 7 === 0 ? '#c81e14' : '#2a2a2a'); });
+    cell(15, () => { x.fillStyle = '#f6f2e6'; x.fillRect(0, 0, 256, 256);          // a rice sack's print
+      x.fillStyle = '#1e7a3a'; x.fillRect(0, 70, 256, 110); txt('JASMINE RICE', 128, 104, 26, '#ffffff'); txt('ข้าวหอมมะลิ', 128, 146, 26, '#ffe14a'); txt('5 KG', 128, 214, 30, '#1e7a3a'); });
+    return done(THREE, c, false);
+  }
+  /* one amulet in its case, for the atlas: k picks the kind */
+  function drawAmulet(x, cx, cy, s, k, r) {
+    const casing = k % 3 === 0 ? '#d6a640' : k % 3 === 1 ? '#c8ccd2' : '#2a2a2a';
+    const clay = ['#c9b48e', '#8a6a44', '#5a4a3a', '#d8c8a4', '#b08a5a', '#7a5a3a', '#e0d0b0', '#a07a50'][k % 8];
+    x.save(); x.translate(cx, cy);
+    const shape = (pad) => {
+      x.beginPath();
+      if (k === 2) { x.moveTo(0, -s - pad); x.lineTo(s * 0.8 + pad, s * 0.8 + pad); x.lineTo(-s * 0.8 - pad, s * 0.8 + pad); x.closePath(); }
+      else if (k === 3 || k === 5) x.arc(0, 0, s * (k === 5 ? 1.0 : 0.8) + pad, 0, Math.PI * 2);
+      else if (k === 4) { x.moveTo(-s * 0.6 - pad, s + pad); x.lineTo(-s * 0.6 - pad, -s * 0.3); x.lineTo(0, -s - pad); x.lineTo(s * 0.6 + pad, -s * 0.3); x.lineTo(s * 0.6 + pad, s + pad); x.closePath(); }
+      else if (k === 7) { x.rect(-s * 0.25 - pad, -s - pad, s * 0.5 + 2 * pad, 2 * s + 2 * pad); }
+      else x.rect(-s * 0.62 - pad, -s - pad, s * 1.24 + 2 * pad, 2 * s + 2 * pad);
+    };
+    x.fillStyle = casing; shape(s * 0.12); x.fill();
+    x.fillStyle = clay; shape(0); x.fill();
+    // the image on its face: a seated figure under an arch, or a monk's head on a coin
+    x.fillStyle = 'rgba(40,24,10,0.55)';
+    if (k === 3 || k === 5) { x.beginPath(); x.arc(0, -s * 0.15, s * 0.32, 0, Math.PI * 2); x.fill(); x.fillRect(-s * 0.4, s * 0.15, s * 0.8, s * 0.35); }
+    else if (k === 7) { for (let i = -3; i <= 3; i++) x.fillRect(-s * 0.2, i * s * 0.26, s * 0.4, s * 0.06); }
+    else {
+      x.beginPath(); x.arc(0, -s * 0.38, s * 0.16, 0, Math.PI * 2); x.fill();
+      x.beginPath(); x.moveTo(-s * 0.36, s * 0.42); x.quadraticCurveTo(0, -s * 0.3, s * 0.36, s * 0.42); x.closePath(); x.fill();
+      x.fillRect(-s * 0.46, s * 0.42, s * 0.92, s * 0.1);
+      if (k === 0) { x.strokeStyle = 'rgba(40,24,10,0.5)'; x.lineWidth = 2; x.beginPath(); x.arc(0, -s * 0.1, s * 0.5, Math.PI, 0); x.stroke(); }
+    }
+    x.fillStyle = 'rgba(255,255,255,0.22)'; x.beginPath(); x.ellipse(-s * 0.2, -s * 0.5, s * 0.25, s * 0.1, -0.5, 0, Math.PI * 2); x.fill();
+    x.restore();
+  }
+  /* red velvet under a counter's glass, rows of cased amulets on it */
+  function makeVelvetTray(THREE, cnv, seed) {
+    const [c, x] = sized(cnv, 1024, 256), r = rng(seed);
+    const g = x.createLinearGradient(0, 0, 0, 256); g.addColorStop(0, '#6a0c10'); g.addColorStop(1, '#4a0608');
+    x.fillStyle = g; x.fillRect(0, 0, 1024, 256);
+    for (let i = 0; i < 1800; i++) { x.fillStyle = `rgba(${r() < 0.5 ? '120,20,24' : '30,0,2'},${r() * 0.3})`; x.fillRect(r() * 1024, r() * 256, 2, 2); }
+    for (let row = 0; row < 3; row++) for (let i = 0; i < 16; i++) {
+      drawAmulet(x, 34 + i * 63 + (row % 2) * 12, 46 + row * 80, 24, (i + row * 3 + (seed % 5)) % 8, r);
+      x.fillStyle = '#f4ecd8'; x.fillRect(22 + i * 63 + (row % 2) * 12, 78 + row * 80, 26, 9);   // its price tag
+    }
+    return done(THREE, c, false);
+  }
+  /* framed amulets, one kind to a cell, for the wall cabinets */
+  function makeAmuletAtlas(THREE, cnv) {
+    const [c, x] = sized(cnv, 1024, 512), r = rng(77);
+    for (let k = 0; k < 8; k++) {
+      const cx = (k % 4) * 256, cy = ((k / 4) | 0) * 256;
+      x.fillStyle = '#efe6d0'; x.fillRect(cx, cy, 256, 256);
+      x.fillStyle = '#5a0a0c'; x.fillRect(cx + 18, cy + 18, 220, 220);                    // the velvet of the frame's mount
+      drawAmulet(x, cx + 128, cy + 128, 70, k, r);
+    }
+    return done(THREE, c, false);
+  }
+  /* a Thai wall calendar: the red header, a temple picture, the month's grid */
+  function makeCalendar(THREE, cnv) {
+    const [c, x] = sized(cnv, 256, 384);
+    x.fillStyle = '#fbf7ee'; x.fillRect(0, 0, 256, 384);
+    x.fillStyle = '#b21a12'; x.fillRect(0, 0, 256, 40);
+    x.fillStyle = '#ffe08a'; x.font = 'bold 22px sans-serif'; x.textAlign = 'center'; x.fillText('พฤษภาคม 2569', 128, 28);
+    const g = x.createLinearGradient(0, 44, 0, 196); g.addColorStop(0, '#f6b04a'); g.addColorStop(1, '#8a2a12');
+    x.fillStyle = g; x.fillRect(12, 46, 232, 150);
+    x.fillStyle = '#e8b030'; x.beginPath(); x.moveTo(128, 70); x.lineTo(168, 180); x.lineTo(88, 180); x.fill();   // a chedi
+    x.fillStyle = '#3a2a2a'; x.font = '15px sans-serif';
+    for (let d = 0; d < 31; d++) { const col = d % 7, row = (d / 7) | 0; x.fillStyle = d === 30 ? '#b21a12' : '#3a2a2a'; x.fillText(String(d + 1), 26 + col * 34, 226 + row * 32); }
+    return done(THREE, c, false);
+  }
+  /* the wall clock's face (the hands are meshes, so the time can pass) */
+  function makeClockFace(THREE, cnv) {
+    const S = 256, [c, x] = cnv(S);
+    x.fillStyle = '#fbfaf6'; x.beginPath(); x.arc(128, 128, 124, 0, Math.PI * 2); x.fill();
+    x.strokeStyle = '#2a2a2a'; x.lineWidth = 6; x.stroke();
+    x.fillStyle = '#1a1a1a'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.font = 'bold 26px sans-serif';
+    for (let h = 1; h <= 12; h++) { const a = h / 12 * Math.PI * 2; x.fillText(String(h), 128 + Math.sin(a) * 96, 128 - Math.cos(a) * 96); }
+    for (let m = 0; m < 60; m++) { const a = m / 60 * Math.PI * 2, L = m % 5 ? 6 : 12; x.lineWidth = m % 5 ? 2 : 4;
+      x.beginPath(); x.moveTo(128 + Math.sin(a) * 118, 128 - Math.cos(a) * 118); x.lineTo(128 + Math.sin(a) * (118 - L), 128 - Math.cos(a) * (118 - L)); x.stroke(); }
+    return done(THREE, c, false);
+  }
+  /* the red board behind the shop's Buddha (chapter 1's v19.1 lai rot nam,
+     redrawn at a shop's size) */
+  function makeAltarScreen(THREE, cnv) {
+    const W = 768, H = 640, [c, x] = sized(cnv, W, H), r = rng(41);
+    const GOLD = '#d7a548', GOLD2 = '#f0cf7a', DEEP = '#6d140e';
+    const g = x.createRadialGradient(W / 2, H * 0.42, 50, W / 2, H * 0.5, W * 0.72);
+    g.addColorStop(0, '#7a1a12'); g.addColorStop(1, '#5a0f0a');
+    x.fillStyle = g; x.fillRect(0, 0, W, H);
+    const B = 70, P = 80;
+    x.save(); x.beginPath(); x.rect(B, B, W - 2 * B, H - 2 * B); x.clip();
+    x.strokeStyle = GOLD; x.lineWidth = 2.5;
+    for (let k = -H; k < W + H; k += P) { x.beginPath(); x.moveTo(k, 0); x.lineTo(k + H, H); x.stroke(); x.beginPath(); x.moveTo(k, H); x.lineTo(k + H, 0); x.stroke(); }
+    const flower = (cx, cy, rr) => {
+      x.fillStyle = GOLD;
+      for (let i = 0; i < 4; i++) { x.save(); x.translate(cx, cy); x.rotate(i * Math.PI / 2);
+        x.beginPath(); x.moveTo(0, 0); x.bezierCurveTo(rr * 0.55, -rr * 0.35, rr * 0.75, -rr * 0.05, rr, 0); x.bezierCurveTo(rr * 0.75, rr * 0.05, rr * 0.55, rr * 0.35, 0, 0); x.fill(); x.restore(); }
+      x.fillStyle = GOLD2; x.beginPath(); x.arc(cx, cy, rr * 0.2, 0, Math.PI * 2); x.fill();
+    };
+    for (let row = 0, y = 0; y <= H + P; row++, y += P / 2) for (let xx = (row % 2) * P / 2; xx <= W + P; xx += P) flower(xx, y, 20);
+    x.restore();
+    x.fillStyle = DEEP; x.fillRect(0, 0, W, B); x.fillRect(0, H - B, W, B); x.fillRect(0, 0, B, H); x.fillRect(W - B, 0, B, H);
+    x.strokeStyle = GOLD; x.lineWidth = 5; x.strokeRect(10, 10, W - 20, H - 20); x.lineWidth = 3; x.strokeRect(B - 6, B - 6, W - 2 * B + 12, H - 2 * B + 12);
+    for (let i = 0; i < 900; i++) { x.fillStyle = `rgba(${r() < 0.5 ? '255,220,150' : '30,6,4'},${r() * 0.07})`; x.fillRect(r() * W, r() * H, 2 + r() * 3, 1 + r() * 2); }
+    return done(THREE, c, false);
+  }
+  /* boxes of amulet cases on the back shelves, labels in Thai and English */
+  function makeBoxRow(THREE, cnv) {
+    const [c, x] = sized(cnv, 512, 128), r = rng(53);
+    x.fillStyle = '#3a2a1e'; x.fillRect(0, 0, 512, 128);
+    for (let i = 0; i < 12; i++) {
+      const w = 34 + r() * 8; x.fillStyle = ['#e8e0cc', '#c8a050', '#d8d4cc', '#8a1a14', '#f2ecd8'][(r() * 5) | 0];
+      x.fillRect(6 + i * 42, 20 + r() * 20, w, 108);
+      x.fillStyle = 'rgba(60,30,10,0.8)'; x.font = 'bold 12px sans-serif'; x.fillText(['LP', 'พระ', '#', 'AJ', 'วัด'][i % 5] + ((i * 37) % 90 + 10), 10 + i * 42, 70);
+    }
+    return done(THREE, c, false);
+  }
+
+  /* the roller shutter's slats, grey and rust-streaked */
+  function makeShutter(THREE, cnv) {
+    const [c, x] = sized(cnv, 256, 256), r = rng(73);
+    for (let y = 0; y < 256; y += 16) {
+      const g = x.createLinearGradient(0, y, 0, y + 16);
+      g.addColorStop(0, '#9aa0a4'); g.addColorStop(0.45, '#c8ccd0'); g.addColorStop(0.55, '#7c8286'); g.addColorStop(1, '#5c6064');
+      x.fillStyle = g; x.fillRect(0, y, 256, 16);
+    }
+    for (let i = 0; i < 40; i++) { x.fillStyle = `rgba(120,64,30,${0.05 + r() * 0.12})`; x.fillRect(r() * 256, r() * 256, 2 + r() * 3, 10 + r() * 50); }
+    return done(THREE, c, true);
+  }
+
   /* ============================================================== THE FILMS
      Stubs until CP9 (the opening film and the home film), CP5 (the counter's films M and K) and CP7 (the three
      possessions). Each begins and ends as it will: the opening film on black and back to it (the v4.6 law, the card
@@ -1799,8 +4903,43 @@
     fade(0, 0.6, 0, 1);
     step(1.2, () => {});
   }
-  function madeFilm(c, s, api) { playFilm(c, api); }       // film M · "Where They Came From" (CP5)
-  function cardFilm(c, s, api) { playFilm(c, api); }       // film K · "The Card" (CP5)
+  /* FILM M · "Where They Came From" (§4.0b, CP5): from his glass to the temple hall where the three were given a home, and
+     back — every picture from stage.madeF's frame(t); this holds only its cues, its fades and the one track that calls it.
+     ow5monk runs under all of it; the monk's chant low under the hall; its last black is handed to the kit's fade and the
+     counter lifts it. Every cue is literal (the CUE_RE law), so the engine warms it before the film can start. */
+  function madeFilm(c, s, api) {
+    const { tr, step, sfx, sfxFade, fade, rawK, stage } = api;
+    const MF = stage.madeF, T = MF.T;
+    c.keepFade = true;
+    c.endFade = 1;
+    tr(0, T.end, (k, t) => MF.frame(t, api), rawK);
+    sfx(0.8, 'ow5monk', 1);                              // "Small ones who passed on young, with nowhere to go yet..."
+    step(0.8, () => stage.ownerTalk(2.2));               // (his first words at the counter, before the lens leaves it)
+    fade(T.b1, T.m2 - 0.1, 0, 1);                        // into black
+    fade(T.m2 + 0.1, T.m2 + 1.3, 1, 0);                  // M2 · the hall at night
+    sfx(T.m2 + 0.2, 'k5chantlow', 0.5);                  // the monk chanting low
+    sfxFade(T.b2, T.end - 0.4, 'k5chantlow');
+    fade(T.b2, T.b2 + 1.6, 0, 1);                        // and black, which the counter lifts
+    step(T.end, () => MF.end());
+  }
+  /* FILM K · "The Card" (§4.0b, CP5): the card on his glass, read down line by line; then his face, and what he asks of the
+     one who takes them home — every picture from stage.cardF's frame(t); its lines on his talking take */
+  function cardFilm(c, s, api) {
+    const { tr, step, sfx, fade, rawK, stage } = api;
+    const KF = stage.cardF, T = KF.T;
+    c.keepFade = true;
+    c.endFade = 1;
+    tr(0, T.end, (k, t) => KF.frame(t, api), rawK);
+    sfx(T.k2 + 0.3, 'k5pen', 0.45);                      // the last stroke of his pen, as the lens arrives on the card
+    sfx(T.k3 + 0.6, 'ow5never', 1);                      // "But listen, ah. Never keep them for greed..."
+    step(T.k3 + 0.6, () => stage.ownerTalk(8.5));
+    sfx(T.k3 + 9.7, 'ow5wrong', 1);                      // "And never ask them to do anything wrong..."
+    step(T.k3 + 9.7, () => stage.ownerTalk(11.5));
+    sfx(T.k3 + 21.8, 'ow5promise', 1);                   // "And not for one month, not for one year... Can or not?"
+    step(T.k3 + 21.8, () => stage.ownerTalk(16.0));
+    fade(T.end - 1.0, T.end - 0.1, 0, 1);
+    step(T.end, () => KF.end());
+  }
   function homeFilm(c, s, api) { playFilm(c, api); }       // "Every Day" (CP9)
   function redFilm(c, s, api) { playFilm(c, api); }        // possession 1 · the red one (CP7)
   function shyFilm(c, s, api) { playFilm(c, api); }        // possession 2 · the shy one (CP7)
