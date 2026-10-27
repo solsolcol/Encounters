@@ -483,6 +483,7 @@ if (VOICE && Array.isArray(VOICE.LINES)) {
         sfxFade: T,                                           // v15.3: a cue fading with the picture — a timed track
 
         event: at => T(at, at), eventWait: at => T(at, at),
+        phone: T,                                             // v24.0: S48 — a film's phone, a timed track
         sfx: (at, kind) => cues.push({ at: +at || 0, kind: String(kind) }),
         music: () => {}, duck: () => {},
         rawK, smoothK, mixAngle: (a, b, k) => a + (b - a) * k, faceFrom: () => 0,

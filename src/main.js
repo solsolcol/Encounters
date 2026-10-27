@@ -1527,7 +1527,12 @@ function plantTrees(parent, spots, opts = {}) {
   const keep = LOW && opts.lowKeep !== undefined ? opts.lowKeep : 1;
   const kept = spots.map((sp, i) => keep >= 1 || !!sp.always || rnd(i, 7) <= keep);
   group.userData.planted = spots.filter((sp, i) => kept[i]);
-  treeKit().then(kinds => {
+  /* v24.0 · S46 · A CHAPTER'S OWN KIT — the FORTY-SIXTH SEAM, `opts.kit`: kinds of parts ([{ geo, mat, m, leaf }], or a
+     Promise of them), each kind standing one metre tall at scale 1, planted by the same dealing, instancing, per-tree
+     culling, `lowKeep` and `planted` record as Chad's four trees — so a chapter can plant a sugar palm or a banana
+     without a second copy of any of it. The kit's geometries and maps stay the chapter's to dispose; a stand still
+     clones the materials, which `disposeTrees` frees. Every existing stand passes no kit and takes the default. */
+  (opts.kit ? Promise.resolve(opts.kit) : treeKit()).then(kinds => {
     if (dead || !kinds) return;
     const live = kinds.map((k, i) => k && i).filter(i => i !== false && kinds[i]);
     if (!live.length) return;
@@ -4225,6 +4230,7 @@ const EV_DEMO = {
   craft: 'twist',                        // v23.0: a fingertip circling a cap (the first step taught, the rest hinted at the prop)
   yield: 'press',                        // v23.0: a fingertip pressing and holding while a ring fills
   surface: 'surface',                    // v23.0: a mark climbing a gauge under a fingertip dragging up, sinking when let go
+  change: 'change',                      // v24.0: a small room that blinks; one thing moves in the dark and a fingertip taps it; a blink where nothing moves and the finger holds back
 };
 const EV_DEFAULT = {
   tap:       { secs: 4 },
@@ -4285,13 +4291,20 @@ const EV_DEFAULT = {
      Space struck fast) against a constant `sink` and a PULL every `pullGap` seconds; under `floorK` a slip costs
      `slip` sanity (never below `minSanity`); over `goal` for `hold` seconds he is back; `secs` gives up for him */
   surface:   { secs: 40, start: 0.3, sink: 0.11, span: 0.55, keyRise: 0.055, pull: 0.12, pullGap0: 1.6, pullGap1: 2.4,
-               floorK: 0.15, goal: 0.86, hold: 0.4, slip: 3, minSanity: 10, full: 10, lead: 0.6 }
+               floorK: 0.15, goal: 0.86, hold: 0.4, slip: 3, minSanity: 10, full: 10, lead: 0.6 },
+  /* v24.0: CHANGE — WHAT CHANGED? (the forty-fourth seam, see evChangeFrame): rounds of DARK then LIT; the chapter alters
+     its world in the dark (`apply(round)`) and is told each phase (`onPhase(round, 'dark' | 'lit')`); in the light the
+     player taps only what changed. A right tap pays `hit` awareness, a wrong one costs `falseCost` sanity, a change left
+     untapped costs `miss` awareness — each on the spot, each a minigame's price (evCut). `tol` is how near a tap must
+     land, as a share of the screen's shorter side */
+  change:    { secs: 0, lit: 2.5, dark: 1.5, lead: 0.6, hit: 3, falseCost: 3, miss: 1, tol: 0.11 }
 };
 // the literals texttest looks for; the kind picks the row
 const EV_LABEL = { tap: 'event.tap', timed: 'event.timed', mash: 'event.mash', hold: 'event.hold',
                    stabilise: 'event.stabilise', heartbeat: 'event.heartbeat', focus: 'event.focus',
                    sequence: 'event.sequence', match: 'event.match', resist: 'event.resist',
-                   steady: 'event.steady', craft: 'event.craft', yield: 'event.yield', surface: 'event.surface' };
+                   steady: 'event.steady', craft: 'event.craft', yield: 'event.yield', surface: 'event.surface',
+                   change: 'event.change' };
 /* ------------------------------------------------------ v9.3 · THE LADDER
    Chad, of the minigames: "no stakes, no damage, no repercussions ... they
    were supposed to require precise timing to pass, and every mistimed tap or
@@ -4716,6 +4729,8 @@ function evBegin() {
      handed back as for the match; a yield is a press anywhere, and keeps the lock */
   else if (e.kind === 'craft') { evCraftBuild(e); $('evCraft')?.classList.remove('hide'); document.exitPointerLock?.(); }
   else if (e.kind === 'surface') document.exitPointerLock?.();
+  /* v24.0: WHAT CHANGED? is a tap ON the thing — a desktop needs its cursor back (as the graded focus) */
+  else if (e.kind === 'change') { evChangeBuild(e); document.exitPointerLock?.(); $('evNote').textContent = o.whereWord || T(HAS_TOUCH ? 'event.changeWhere' : 'event.changeWhereKey'); }
   snd('uiclick', 0.3);
 }
 function evShowItem() {
@@ -4780,6 +4795,7 @@ function evResolve(extra) {
      for him */
   if (e.kind === 'craft') r.care = extra.care !== undefined ? !!extra.care : e.care !== false;
   if (e.kind === 'surface') { r.slips = e.slips || 0; r.gaveUp = !!extra.gaveUp; r.slipPaid = e.slipPaid || 0; }
+  if (e.kind === 'change') { r.right = e.chRight || 0; r.wrong = e.chWrong || 0; r.missed = e.chMissed || 0; r.rounds = (e.chLog || []).slice(); }   // v24.0 (S44)
   const aw = e.o.award;
   if (aw && aw.stat && !r.aborted && !r.skipped) {
     if (e.band.length) {
@@ -4810,6 +4826,106 @@ function evResolve(extra) {
   }
   if (!r.aborted && !r.skipped) snd(r.ok ? 'uiconfirm' : 'uiclick', r.ok ? 0.5 : 0.25);
   e.res(r);
+}
+/* ── v24.0 · S44 · WHAT CHANGED? — the FORTY-FOURTH SEAM, event kind `change` ─────────────────────────────────────
+   Episode 4 chapter 1's storm: the power is cut, the room is two candles and the black between lightning, and the
+   lightning is a blink. "The lightning shows the room. Remember it. When it flashes again, tap only what has changed.
+   If nothing has changed, tap nothing." Its lesson is the chapter's: notice only what is really there — a wrong tap
+   is certainty moving ahead of the evidence, and it costs.
+   The chapter supplies `spots` ({ id, pos: {x, y, z} } in the world, or `hits(cx, cy)`), `rounds` (the ids changed in
+   each round — round 0 the baseline, an empty round a round where nothing changed), `apply(round)` (the change, made in
+   the dark) and `onPhase(round, phase)` (it lights its own room). Each round is DARK then LIT; taps count only in the
+   light, and each spot once. Marks are drawn where the tap landed: a jade ring for a right one, a red cross for a
+   wrong one, and at the end of a round a soft red ring on what was missed. Every price is paid ON THE SPOT, through
+   evCut (a worn Gao Yord or LP Tim softens it), and never in Wisdom (the trial's rule: an interaction moves Sanity
+   and Awareness only). On wall time (the v9.7 law). */
+function evChangeBuild(e) {
+  const o = e.o;
+  e.chSpots = Array.isArray(o.spots) ? o.spots : [];
+  e.chRounds = Array.isArray(o.rounds) ? o.rounds.map(r => (Array.isArray(r) ? r : [])) : [[]];
+  e.chRound = -1; e.chPhase = 'lead'; e.chT0 = e.t; e.chTapped = new Set();
+  e.chRight = 0; e.chWrong = 0; e.chMissed = 0; e.chLog = [];
+  const host = evEl();
+  let L = $('chgMarks');
+  if (!L && host) { L = document.createElement('div'); L.id = 'chgMarks'; host.appendChild(L); }
+  if (L) L.textContent = '';
+}
+const _chgV = new THREE.Vector3();
+function evChangeScreen(sp) {
+  if (!sp || !sp.pos) return null;
+  camera.updateMatrixWorld();
+  _chgV.set(sp.pos.x, sp.pos.y, sp.pos.z).project(camera);
+  if (_chgV.z > 1) return null;
+  return { x: (_chgV.x + 1) / 2 * innerWidth, y: (1 - _chgV.y) / 2 * innerHeight };
+}
+function evChangeMark(x, y, cls) {
+  const L = $('chgMarks'); if (!L) return;
+  const m = document.createElement('i'); m.className = 'chg ' + cls;
+  m.style.left = x.toFixed(0) + 'px'; m.style.top = y.toFixed(0) + 'px';
+  L.appendChild(m);
+  setTimeout(() => m.remove(), cls === 'miss' ? 1500 : 1100);
+}
+function evChangePhase(e, round, phase) {
+  e.chRound = round; e.chPhase = phase; e.chT0 = e.t;
+  if (phase === 'dark' && round > 0 && typeof e.o.apply === 'function') { try { e.o.apply(round); } catch (err) { console.warn('change apply failed', err); } }
+  if (typeof e.o.onPhase === 'function') { try { e.o.onPhase(round, phase); } catch (err) { console.warn('change onPhase failed', err); } }
+  if (phase === 'lit') e.chTapped = new Set();
+  evEl()?.classList.toggle('chgDark', phase !== 'lit');
+}
+function evChangeEndRound(e) {
+  /* what changed this round and was never tapped is a miss — shown where it was, paid now */
+  const ids = e.chRounds[e.chRound] || [];
+  let missed = 0;
+  for (const id of ids) if (!e.chTapped.has(id)) {
+    missed++;
+    const sp = e.chSpots.find(q => q.id === id), at = evChangeScreen(sp);
+    if (at) evChangeMark(at.x, at.y, 'miss');
+  }
+  if (missed) { e.chMissed += missed; const d = evCut(-e.o.miss * missed); if (d) kitAward('awareness', d, EV_PRICE); }
+  e.chLog.push({ round: e.chRound, changed: ids.length, right: ids.filter(id => e.chTapped.has(id)).length, missed });
+}
+function evChangeFrame(e) {
+  const o = e.o, el = e.t - e.chT0, n = e.chRounds.length;
+  if (e.chPhase === 'lead') { if (el >= o.lead) evChangePhase(e, 0, 'dark'); return; }
+  if (e.chPhase === 'dark') { if (el >= o.dark) evChangePhase(e, e.chRound, 'lit'); return; }
+  if (e.chPhase === 'lit' && el >= o.lit) {
+    evChangeEndRound(e);
+    if (e.chRound + 1 < n) evChangePhase(e, e.chRound + 1, 'dark');
+    else {
+      evEl()?.classList.remove('chgDark');
+      if (typeof o.onPhase === 'function') { try { o.onPhase(n, 'end'); } catch {} }
+      const total = e.chRounds.reduce((a, r) => a + r.length, 0);
+      const score = total ? Math.max(0, (e.chRight - 0.5 * e.chWrong) / total) : (e.chWrong ? 0 : 1);
+      evResolve({ ok: e.chRight >= e.chWrong && e.chRight >= Math.ceil(total / 2), score });
+    }
+  }
+}
+function evChangePress(e, x, y) {
+  if (e.chPhase !== 'lit') return;
+  const o = e.o, ids = e.chRounds[e.chRound] || [];
+  const tol = o.tol * Math.min(innerWidth, innerHeight);
+  let best = null, bd = Infinity;
+  for (const id of ids) {
+    if (e.chTapped.has(id)) continue;
+    const sp = e.chSpots.find(q => q.id === id);
+    if (!sp) continue;
+    if (typeof sp.hits === 'function') { if (sp.hits(x, y)) { best = id; bd = 0; break; } continue; }
+    const at = evChangeScreen(sp); if (!at) continue;
+    const d = Math.hypot(at.x - x, at.y - y);
+    if (d < tol * (sp.tol || 1) && d < bd) { bd = d; best = id; }
+  }
+  if (best) {
+    e.chTapped.add(best); e.chRight++; e.hits++;
+    evChangeMark(x, y, 'right');
+    kitAward('awareness', o.hit, EV_PRICE);
+    snd('uiconfirm', 0.45); haptic(26);
+  } else {
+    e.chWrong++; e.misses++;
+    evChangeMark(x, y, 'wrong');
+    const d = evCut(-o.falseCost); if (d) kitAward('sanity', d, EV_PRICE);
+    snd('beatmiss', 0.5); haptic([30, 40, 30]);
+    const f = $('hudflash'); if (f) kitFlashSet({ color: '#d0402c', secs: 0.4 });
+  }
 }
 /* v19.4: a tap in the rapid-tap fight FILLS the bar by its gain, on the
    instant it lands — between frames as well, so a fast thumb on a slow phone
@@ -4859,6 +4975,7 @@ function evPress(x, y, pid) {
        little one's door never opened */
     case 'yield': e.yPressed = true; break;
     case 'surface': if (e.keyHeld) evSurfaceRise(e, o.keyRise); else e.sy = y; break;   // v23.0: a key strikes it up; a finger drags it
+    case 'change': evChangePress(e, x, y); e.down = false; break;   // v24.0: every tap is its own (S44)
     case 'heartbeat': {
       /* v9.4: the beat comes off the SCHEDULE, because the gaps shrink. A
          press is graded on how far it lands from the beat's centre as a
@@ -5411,6 +5528,7 @@ function evFrame(dt, dLookX, dLookY) {
   e.t += wdt;
   e.wallLast = nowMs;
   if (e.down) e.look += Math.abs(dLookX) + Math.abs(dLookY);
+  if (e.kind === 'change') { evChangeFrame(e); return; }   // v24.0 (S44)
   const bar = $('evBar');
   switch (e.kind) {
     case 'tap':
@@ -5720,6 +5838,467 @@ function kitInit() {
   }
 }
 let poseWall = 0, dayWall = 0;
+/* ── v24.0 · S45 · WEATHER — THE FORTY-FIFTH SEAM, `kit.rain(k, o)` and `kit.lightning(o)` ──────────────────────
+   Episode 4 chapter 1 is a monsoon afternoon in the rice country: the storm builds through the visit, arrives as the
+   master begins, peaks in the dark of WHAT CHANGED?, and stops all at once for the decision (docs/V24.0-E4C1-PLAN.md
+   §3.3). So the weather is the engine's, and no chapter before it asks for any:
+   RAIN is streaks round the lens, drawn by the graphics card from a time and the camera — one mesh, one draw, no
+   per-frame work on the CPU but six uniforms — anchored in the WORLD (a box of streaks wrapping round him as he
+   walks, never moving with him), each streak a thin quad turned to face him about its own fall; `k` is how much of
+   it falls (each streak has its own threshold, so thinning is an even thinning), eased on WALL time (the v7.4 law);
+   LOW draws 1200 where a desktop draws 3200. It is the chapter's to keep it outside (a room's own windows paint
+   theirs): k 0 hides the mesh.
+   LIGHTNING is a light, never a new one (v15.1: a light count changed on screen builds shaders on screen): the three
+   lights the daylight already drives are lifted for a flicker of half a second and given back exactly, a cool wash
+   lies over the screen with them, and the thunder follows by the distance (`near` 1 overhead, 0 far off). The verbs
+   only record; the frame does the work (the kit's law). kitReset clears both. */
+const WX_N = LOW ? 1200 : 3200, WX_BOX = [28, 14, 28];
+const wx = { mesh: null, mat: null, k: 0, from: 0, to: 0, t0: 0, secs: 0, wind: [0.12, 0.04], flash: null, base: null, thunder: [], el: null, level: 0 };
+function wxBuild() {
+  if (wx.mesh) return;
+  const N = WX_N, pos = new Float32Array(N * 4 * 3), seed = new Float32Array(N * 4 * 4), corner = new Float32Array(N * 4 * 2), idx = [];
+  let r = 0x9e3779b9;
+  const rnd = () => { r ^= r << 13; r >>>= 0; r ^= r >>> 17; r ^= r << 5; r >>>= 0; return r / 4294967296; };
+  for (let i = 0; i < N; i++) {
+    const a = rnd(), b = rnd(), c = rnd(), d = rnd();
+    for (let v = 0; v < 4; v++) {
+      const j = i * 4 + v;
+      seed.set([a, b, c, d], j * 4);
+      corner.set([(v & 1) ? 1 : -1, (v & 2) ? 1 : 0], j * 2);
+    }
+    const o = i * 4; idx.push(o, o + 2, o + 1, o + 1, o + 2, o + 3);
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  g.setAttribute('aSeed', new THREE.BufferAttribute(seed, 4));
+  g.setAttribute('aCorner', new THREE.BufferAttribute(corner, 2));
+  g.setIndex(idx);
+  wx.mat = new THREE.ShaderMaterial({
+    uniforms: { uTime: { value: 0 }, uK: { value: 0 }, uCam: { value: new THREE.Vector3() }, uBox: { value: new THREE.Vector3(...WX_BOX) },
+                uWind: { value: new THREE.Vector2(0.12, 0.04) }, uLen: { value: 0.55 }, uWidth: { value: LOW ? 0.016 : 0.011 },
+                uSpeed: { value: 9.0 }, uColor: { value: new THREE.Color(0xc8d4e4) }, uOpacity: { value: 0.34 } },
+    vertexShader: `
+      uniform float uTime, uK, uLen, uWidth, uSpeed; uniform vec3 uCam, uBox; uniform vec2 uWind;
+      attribute vec4 aSeed; attribute vec2 aCorner; varying float vA; varying float vEnd;
+      void main() {
+        if (aSeed.w > uK) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); vA = 0.0; vEnd = 0.0; return; }
+        float fall = uSpeed * uTime;
+        vec3 w;
+        w.x = uCam.x + mod(aSeed.x * uBox.x - uCam.x, uBox.x) - uBox.x * 0.5;
+        w.z = uCam.z + mod(aSeed.z * uBox.z - uCam.z, uBox.z) - uBox.z * 0.5;
+        w.y = uCam.y + mod(aSeed.y * uBox.y - fall - uCam.y, uBox.y) - uBox.y * 0.4;
+        vec3 dir = normalize(vec3(uWind.x, -1.0, uWind.y));
+        vec3 to = w - cameraPosition;
+        vec3 side = normalize(cross(dir, to + vec3(0.0001)));
+        vec3 p = w - dir * uLen * aCorner.y + side * uWidth * aCorner.x;
+        float d = length(to);
+        vA = smoothstep(uBox.x * 0.5, uBox.x * 0.18, d) * smoothstep(0.35, 1.3, d);
+        vEnd = aCorner.y;
+        gl_Position = projectionMatrix * viewMatrix * vec4(p, 1.0);
+      }`,
+    fragmentShader: `
+      uniform vec3 uColor; uniform float uOpacity; varying float vA; varying float vEnd;
+      void main() {
+        float a = uOpacity * vA * (1.0 - vEnd * 0.75) * smoothstep(0.0, 0.12, vEnd) * smoothstep(1.0, 0.82, vEnd);
+        if (a < 0.003) discard;
+        gl_FragColor = vec4(uColor, a);
+      }`,
+    transparent: true, depthWrite: false, fog: false
+  });
+  wx.mesh = new THREE.Mesh(g, wx.mat);
+  wx.mesh.frustumCulled = false; wx.mesh.renderOrder = 6; wx.mesh.visible = false;
+  scene.add(wx.mesh);
+}
+function kitRain(k, o = {}) {
+  wxBuild();
+  wx.from = wx.k; wx.to = Math.max(0, Math.min(1, +k || 0));
+  wx.t0 = performance.now() / 1000; wx.secs = Math.max(0, +o.secs || 0);
+  if (Array.isArray(o.wind)) wx.wind = [+o.wind[0] || 0, +o.wind[1] || 0];
+  if (wx.mat) {
+    if (o.len) wx.mat.uniforms.uLen.value = +o.len;
+    if (o.opacity) wx.mat.uniforms.uOpacity.value = +o.opacity;
+    if (o.color != null) wx.mat.uniforms.uColor.value.set(o.color);
+  }
+  if (!wx.secs) { wx.k = wx.to; }
+}
+function kitLightning(o = {}) {
+  const power = Math.max(0, Math.min(2, o.power == null ? 1 : +o.power));
+  const near = Math.max(0, Math.min(1, o.near == null ? 0.5 : +o.near));
+  /* the flicker: a main stroke, a dip, a return stroke and a fade — half a second, more strokes when it is near */
+  const strokes = near > 0.6 ? [[0, 1], [0.06, 0.25], [0.11, 0.9], [0.2, 0.35], [0.27, 0.7], [0.55, 0]]
+                             : [[0, 0.85], [0.08, 0.2], [0.14, 0.6], [0.45, 0]];
+  /* its clock starts on the frame that first DRAWS it (v13.1's muzzle-flash law): a half-second flicker on a phone at a
+     frame a second would otherwise be over before it was ever seen */
+  wx.flash = { t0: 0, power, strokes, color: new THREE.Color(o.color == null ? 0xd8e4ff : o.color), wash: o.wash == null ? 1 : +o.wash };
+  const names = Array.isArray(o.thunder) ? o.thunder : o.thunder ? [o.thunder] : [];
+  if (names.length) {
+    const nm = names[Math.floor(Math.random() * names.length)];
+    wx.thunder.push({ at: performance.now() / 1000 + 0.12 + (1 - near) * 2.3, name: nm, vol: (o.vol == null ? 1 : +o.vol) * (0.55 + 0.45 * near) });
+  }
+}
+function wxEnvelope(f, now) {
+  const t = now - f.t0, S = f.strokes;
+  if (t >= S[S.length - 1][0]) return -1;
+  for (let i = 0; i < S.length - 1; i++) if (t >= S[i][0] && t < S[i + 1][0]) {
+    const k = (t - S[i][0]) / (S[i + 1][0] - S[i][0]);
+    return S[i][1] + (S[i + 1][1] - S[i][1]) * k;
+  }
+  return 0;
+}
+const _wxC = new THREE.Color();
+function weatherFrame() {
+  const now = performance.now() / 1000;
+  if (wx.mesh) {
+    if (wx.secs > 0 && wx.k !== wx.to) {
+      const u = Math.min(1, (now - wx.t0) / wx.secs);
+      wx.k = wx.from + (wx.to - wx.from) * u * u * (3 - 2 * u);
+      if (u >= 1) wx.k = wx.to;
+    }
+    wx.mesh.visible = wx.k > 0.002;
+    if (wx.mesh.visible) {
+      const U = wx.mat.uniforms;
+      U.uTime.value = now % 1000; U.uK.value = wx.k;
+      camera.getWorldPosition(U.uCam.value);
+      U.uWind.value.set(wx.wind[0], wx.wind[1]);
+    }
+  }
+  for (let i = wx.thunder.length - 1; i >= 0; i--) {
+    const q = wx.thunder[i];
+    if (now >= q.at) { wx.thunder.splice(i, 1); snd(q.name, q.vol); }
+  }
+  const f = wx.flash;
+  if (!f) { wx.base = null; wx.level = 0; return; }
+  if (!wx.base) wx.base = { h: hemi.intensity, k: moon.intensity, f: fill.intensity, hc: hemi.color.getHex(), vh: vmHemi.intensity };
+  if (!f.t0) f.t0 = now;
+  const e = wxEnvelope(f, now);
+  if (e < 0) {                                   // over: every light exactly as it was
+    hemi.intensity = wx.base.h; moon.intensity = wx.base.k; fill.intensity = wx.base.f; hemi.color.setHex(wx.base.hc);
+    vmHemi.intensity = wx.base.vh;
+    wx.flash = null; wx.base = null; wx.level = 0;
+    if (wx.el) wx.el.style.opacity = '0';
+    return;
+  }
+  const a = e * f.power;
+  wx.level = a;                                  // (a chapter reads it to light what it painted: a window's storm, a wall)
+  hemi.intensity = wx.base.h * (1 + 3.2 * a);
+  moon.intensity = wx.base.k * (1 + 1.6 * a);
+  fill.intensity = wx.base.f * (1 + 4.0 * a);
+  hemi.color.setHex(wx.base.hc).lerp(_wxC.copy(f.color), Math.min(1, a));
+  vmHemi.intensity = wx.base.vh * (1 + 2.2 * a);
+  const el = wx.el || (wx.el = $('wxflash'));
+  if (el) { el.style.opacity = String(Math.min(0.85, 0.55 * a * f.wash)); el.style.background = '#' + f.color.getHexString(); }
+}
+function wxReset() {
+  wx.k = wx.to = wx.from = 0; wx.secs = 0; wx.thunder.length = 0;
+  if (wx.mesh) wx.mesh.visible = false;
+  if (wx.flash && wx.base) { hemi.intensity = wx.base.h; moon.intensity = wx.base.k; fill.intensity = wx.base.f; hemi.color.setHex(wx.base.hc); vmHemi.intensity = wx.base.vh; }
+  wx.flash = null; wx.base = null; wx.level = 0;
+  if (wx.el || $('wxflash')) (wx.el || $('wxflash')).style.opacity = '0';
+}
+/* ── v24.0 · S48 · A PHONE IN A FILM — the FORTY-EIGHTH SEAM, `api.phone(t0, t1, spec)` ──────────────────────────
+   Episode 4 chapter 1's film turns on a message (Pong's: "Brother!! Come Thailand..."), and episode 5 has a video call
+   to come: a phone's screen laid over the picture, its chat typed in on the FILM'S clock. It is a pure function of that
+   clock — each frame draws what the screen shows at time t, so a seek, a skip or a slow phone lands on the same screen
+   (v19.5's law) — and it goes at t1, and with the film (cineEnd). `spec`: { name, sub, ava: { text, color },
+   msgs: [{ at, who: 'them' | 'me', text, typing }] } — a message from `them` is preceded by `typing` seconds of the
+   three dots; one from `me` is typed into the bar over `typing` seconds and sent at `at`. The DOM is rebuilt only when
+   what it shows changes. Episodes 1–3 never call it. */
+const fphone = { el: null, sig: '' };
+function filmPhoneDraw(spec, lt) {
+  const el = fphone.el || (fphone.el = $('filmPhone'));
+  if (!el || !spec) return;
+  const msgs = Array.isArray(spec.msgs) ? spec.msgs : [];
+  const shown = [], typingThem = msgs.some(m => m.who !== 'me' && lt >= m.at - (m.typing || 0) && lt < m.at);
+  let draft = '';
+  for (const m of msgs) {
+    if (lt >= m.at) shown.push(m);
+    else if (m.who === 'me' && lt >= m.at - (m.typing || 0)) {
+      const k = (lt - (m.at - m.typing)) / Math.max(0.01, m.typing);
+      draft = m.text.slice(0, Math.max(0, Math.round(m.text.length * k)));
+    }
+  }
+  const sig = shown.length + '|' + (typingThem ? 1 : 0) + '|' + draft;
+  el.classList.remove('hide');
+  if (sig === fphone.sig) return;
+  fphone.sig = sig;
+  const esc = v => String(v == null ? '' : v).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const ava = spec.ava || {};
+  el.querySelector('.fpAva').textContent = ava.text || (spec.name || '?').slice(0, 1);
+  el.querySelector('.fpAva').style.background = ava.color || '#3a6ea5';
+  el.querySelector('.fpName').textContent = spec.name || '';
+  el.querySelector('.fpSub').textContent = typingThem ? (spec.typingWord || 'typing…') : (spec.sub || '');
+  el.querySelector('.fpMsgs').innerHTML = shown.map((m, i) =>
+    `<div class="fpMsg ${m.who === 'me' ? 'me' : 'them'}${i === shown.length - 1 ? ' new' : ''}">${esc(m.text)}</div>`).join('')
+    + (typingThem ? '<div class="fpMsg them dots"><i></i><i></i><i></i></div>' : '');
+  const bar = el.querySelector('.fpInput');
+  bar.textContent = draft;
+  bar.classList.toggle('empty', !draft);
+  const box = el.querySelector('.fpMsgs'); box.scrollTop = box.scrollHeight;
+}
+function filmPhoneHide() {
+  const el = fphone.el || (fphone.el = $('filmPhone'));
+  if (el) el.classList.add('hide');
+  fphone.sig = '';
+}
+/* ── v24.0 · S43 · THE LEDGER — the FORTY-THIRD SEAM, `kit.ledger` ───────────────────────────────────────────────
+   Episode 4 chapter 1 teaches one thing — LOOK — and the ledger is where it is done: his own shop's stock book, whose
+   back pages become what he saw. Each entry is offered as two sentences in pencil on the page, one a FACT (what was
+   there) and one a MEANING (what he might decide it means), never labelled; the player writes one, and that is the
+   entry. It rides the run to the end of the EPISODE (chapter 2 reads it back), is cleared by a new game and by a new
+   episode, and a resume restores it.
+   `kit.ledger.write(id, { page, title, prompt, fact, meaning, brief, sound })` answers a Promise of 'fact' |
+   'meaning' (null if the run is torn down under it); an entry already written answers at once with its own kind, so a
+   resume never asks twice. `entries()` reads them; `open(page)` shows a page to read; `set(list)`/`clear()` are the
+   save's.
+   THE BOOK is a real thing in his hands' pass (drawn after the world, so a wall never cuts it): a cloth-bound ledger
+   rising from under the frame, its page drawn live on a canvas in the game's own italic serif with a slight hand's
+   wander, sized for the PHONE first (the page's width, not its height, is what a narrow screen runs out of), unlit so
+   it reads in a power cut. A tap or a click on a sentence (or 1 / 2, or the arrows and Enter) writes it: the pencil
+   inks over, left to right, and the other sentence fades. Like the choose window it is a screen STATE of its own,
+   `ledger`, so every "is it play?" gate closes under it and a chapter's clock waits. Episodes 1–3 never call it. */
+const LED_W = 900, LED_H = 1250, LED_ASPECT = LED_W / LED_H, LED_INK = 1.1;
+const led = { entries: [], ep: 0, open: false, mode: null, opts: null, id: null, page: null, resolve: null,
+              root: null, book: null, pageMesh: null, cnv: null, ctx: null, tex: null, k: 0, to: 0, wall: 0,
+              opts2: null, order: null, rects: [], hover: -1, chosen: -1, inkT0: 0, t0: 0, doneT: 0, fontOk: false, el: null };
+const _ledRay = new THREE.Raycaster(), _ledNdc = new THREE.Vector2();
+function ledgerBuild() {
+  if (led.root) return;
+  led.cnv = document.createElement('canvas'); led.cnv.width = LED_W; led.cnv.height = LED_H;
+  led.ctx = led.cnv.getContext('2d');
+  led.tex = new THREE.CanvasTexture(led.cnv); led.tex.colorSpace = THREE.SRGBColorSpace;
+  led.tex.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+  led.root = new THREE.Group(); led.root.visible = false;
+  led.book = new THREE.Group(); led.root.add(led.book);
+  const cloth = new THREE.MeshStandardMaterial({ color: 0x23402f, roughness: 0.85 });
+  const edge = new THREE.MeshStandardMaterial({ color: 0xe8dcc0, roughness: 0.9 });
+  /* the board behind, the page block's edge, the page; the left page curls away to the spine — all in units of one
+     page height (the frame scales the group) */
+  const board = new THREE.Mesh(new THREE.BoxGeometry(LED_ASPECT * 1.07, 1.05, 0.03), cloth); board.position.set(0, 0, -0.03); led.book.add(board);
+  const block = new THREE.Mesh(new THREE.BoxGeometry(LED_ASPECT * 1.01, 1.01, 0.022), edge); block.position.set(0.004, -0.004, -0.012); led.book.add(block);
+  led.pageMesh = new THREE.Mesh(new THREE.PlaneGeometry(LED_ASPECT, 1), new THREE.MeshBasicMaterial({ map: led.tex, toneMapped: false }));
+  led.book.add(led.pageMesh);
+  const left = new THREE.Mesh(new THREE.PlaneGeometry(LED_ASPECT * 0.5, 1), new THREE.MeshBasicMaterial({ color: 0xd8ccb0, toneMapped: false, side: THREE.DoubleSide }));
+  left.position.set(-LED_ASPECT * 0.5 - LED_ASPECT * 0.22, 0, -0.06); left.rotation.y = 0.55; led.book.add(left);
+  const spine = new THREE.Mesh(new THREE.BoxGeometry(0.03, 1.06, 0.05), cloth); spine.position.set(-LED_ASPECT * 0.52, 0, -0.03); led.book.add(spine);
+  vmScene.add(led.root);
+}
+const ledHash = s => { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; };
+function ledWrap(ctx, text, maxW) {
+  const out = []; let cur = '';
+  for (const w of String(text).split(/\s+/)) {
+    const t = cur ? cur + ' ' + w : w;
+    if (cur && ctx.measureText(t).width > maxW) { out.push(cur); cur = w; } else cur = t;
+  }
+  if (cur) out.push(cur);
+  return out;
+}
+/* a line in his hand: each word a hair off the baseline and the slant, seeded by the line, so it never shimmers */
+function ledHand(ctx, line, x, y, seed) {
+  let r = seed >>> 0 || 1;
+  const rnd = () => { r ^= r << 13; r >>>= 0; r ^= r >>> 17; r ^= r << 5; r >>>= 0; return r / 4294967296; };
+  let cx = x;
+  for (const w of line.split(' ')) {
+    ctx.save(); ctx.translate(cx, y + (rnd() - 0.5) * 3.2); ctx.rotate((rnd() - 0.5) * 0.028);
+    ctx.fillText(w, 0, 0); ctx.restore();
+    cx += ctx.measureText(w + ' ').width;
+  }
+}
+const LED_FONT = (px) => `italic 500 ${px}px "Cormorant Garamond", Georgia, serif`;
+function ledgerPaint(now) {
+  const ctx = led.ctx, W = LED_W, H = LED_H, o = led.opts || {};
+  ctx.save();
+  ctx.fillStyle = '#f2e9d4'; ctx.fillRect(0, 0, W, H);
+  const g = ctx.createRadialGradient(W * 0.5, H * 0.45, H * 0.2, W * 0.5, H * 0.5, H * 0.8);
+  g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(1, 'rgba(120,96,60,0.16)'); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  ctx.strokeStyle = 'rgba(110,150,190,0.45)'; ctx.lineWidth = 2;
+  for (let y = 212; y < H - 40; y += 58) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+  ctx.strokeStyle = 'rgba(196,70,58,0.55)'; ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.moveTo(118, 0); ctx.lineTo(118, H); ctx.stroke();
+  ctx.textBaseline = 'alphabetic';
+  // the page's title, in ink, underlined
+  ctx.fillStyle = '#1d2c63'; ctx.font = LED_FONT(66);
+  const title = o.title || '';
+  if (title) { ledHand(ctx, title, 140, 150, ledHash(title)); ctx.strokeStyle = 'rgba(29,44,99,0.7)'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(140, 168); ctx.lineTo(140 + Math.min(W - 180, ctx.measureText(title).width + 18), 166); ctx.stroke(); }
+  // what is already on this page
+  let y = 212 + 58 - 14;
+  ctx.font = LED_FONT(40); ctx.fillStyle = '#1d2c63';
+  const mine = led.entries.filter(e => e.page === led.page);
+  const keep = led.mode === 'write' ? 6 : 14;
+  for (const e of mine.slice(-keep)) {
+    for (const [i, ln] of ledWrap(ctx, e.text, W - 190).entries()) { ledHand(ctx, (i ? '' : '— ') + ln, i ? 172 : 140, y, ledHash(e.id + i)); y += 58; }
+  }
+  led.rects = [];
+  if (led.mode === 'write') {
+    y += 18;
+    if (o.prompt) { ctx.font = '600 26px Archivo, Inter, sans-serif'; ctx.fillStyle = 'rgba(70,64,56,0.75)'; ctx.fillText(String(o.prompt).toUpperCase(), 140, y); y += 30; }
+    ctx.font = LED_FONT(42);
+    const inkK = led.chosen >= 0 ? Math.min(1, (now - led.inkT0) / LED_INK) : 0;
+    led.order.forEach((which, i) => {
+      const text = which === 'fact' ? o.fact : o.meaning;
+      const lines = ledWrap(ctx, text, W - 200);
+      const top = y + 8, bottom = y + 18 + lines.length * 58;
+      led.rects.push({ x0: 120, y0: top - 6, x1: W - 30, y1: bottom + 6, which });
+      const isChosen = led.chosen === i, faded = led.chosen >= 0 && !isChosen;
+      if (led.hover === i && led.chosen < 0) { ctx.fillStyle = 'rgba(255,214,90,0.32)'; ctx.fillRect(126, top, W - 160, bottom - top); }
+      // the margin's number
+      ctx.globalAlpha = faded ? Math.max(0, 1 - inkK * 1.6) : 1;
+      ctx.strokeStyle = 'rgba(80,80,80,0.6)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(70, top + 46, 22, 0, Math.PI * 2); ctx.stroke();
+      ctx.font = '600 26px Archivo, Inter, sans-serif'; ctx.fillStyle = 'rgba(70,70,70,0.85)'; ctx.textAlign = 'center'; ctx.fillText(String(i + 1), 70, top + 55); ctx.textAlign = 'left';
+      ctx.font = LED_FONT(42);
+      lines.forEach((ln, j) => {
+        const by = y + 58 + j * 58;
+        ctx.fillStyle = 'rgba(96,96,94,0.9)';            // pencil
+        ledHand(ctx, ln, 140, by, ledHash(text + j));
+        if (isChosen && inkK > 0) {                       // the ink, over it, left to right
+          const span = (inkK * lines.length - j);
+          if (span > 0) { ctx.save(); ctx.beginPath(); ctx.rect(130, by - 50, (W - 160) * Math.min(1, span), 64); ctx.clip();
+                          ctx.fillStyle = '#1d2c63'; ledHand(ctx, ln, 140, by, ledHash(text + j)); ctx.restore(); }
+        }
+      });
+      ctx.globalAlpha = 1;
+      y = bottom + 30;
+    });
+  }
+  ctx.restore();
+  led.tex.needsUpdate = true;
+}
+function ledgerLayout() {
+  /* the page at 0.30 m: as tall as 62 % of the frame, or as wide as 78 % of it, whichever is smaller (a phone runs out
+     of width first); centred, a little low, tilted back as a book is held */
+  const z = 0.30, fov = THREE.MathUtils.degToRad(vmCam.fov), hh = z * Math.tan(fov / 2), hw = hh * vmCam.aspect;
+  const ph = Math.min(hh * 1.24, (hw * 1.56) / LED_ASPECT);
+  const e = led.k * led.k * (3 - 2 * led.k);
+  const yT = -hh * 0.06, y0 = -hh - ph * 0.7;
+  led.book.scale.setScalar(ph);
+  led.book.position.set(ph * 0.04, y0 + (yT - y0) * e, -z);
+  led.book.rotation.set(-0.32 + 0.22 * (1 - e), 0.02, 0.012);
+  led.root.position.copy(handsRoot.position).multiplyScalar(0.5);
+  led.root.rotation.set(handsRoot.rotation.x * 0.4, handsRoot.rotation.y * 0.4, handsRoot.rotation.z * 0.4);
+  /* the page lit like the room, never so dark it cannot be read */
+  const lum = Math.max(0.72, Math.min(1, 0.58 + 0.45 * vmHemi.intensity));
+  led.pageMesh.material.color.setScalar(lum);
+}
+function ledgerHint(on) {
+  const el = led.el || (led.el = $('ledHint'));
+  if (!el) return;
+  if (!on) { el.classList.add('hide'); return; }
+  const o = led.opts || {};
+  el.querySelector('.lhBrief').textContent = led.mode === 'write' ? (o.brief || '') : '';
+  el.querySelector('.lhHow').textContent = led.mode === 'write'
+    ? (document.body.classList.contains('finePtr') ? T('ledger.hintKey', 'Click what you will write, or press 1 or 2') : T('ledger.hint', 'Tap what you will write'))
+    : T('ledger.close', 'Tap to close the book');
+  el.classList.remove('hide');
+}
+function ledgerOpen(mode, id, opts) {
+  ledgerBuild();
+  led.open = true; led.mode = mode; led.id = id; led.opts = opts || {}; led.page = (opts && opts.page) || 'notes';
+  led.hover = -1; led.chosen = -1; led.to = 1; led.t0 = performance.now(); led.doneT = 0;
+  led.order = (ledHash(String(id)) & 1) ? ['meaning', 'fact'] : ['fact', 'meaning'];
+  for (const k in keys) keys[k] = false;
+  state = 'ledger';
+  document.body.classList.add('ledgeropen');
+  document.exitPointerLock?.();
+  if (!led.fontOk && document.fonts && document.fonts.load) {
+    document.fonts.load(LED_FONT(42)).then(() => { led.fontOk = true; if (led.open) ledgerPaint(performance.now() / 1000); }).catch(() => {});
+  }
+  ledgerPaint(performance.now() / 1000);
+  led.root.visible = true;
+  ledgerHint(true);
+  const sn = (led.opts.sound || {}).open; if (!(sn && snd(sn, 0.7))) snd('uiclick', 0.5);
+  haptic(12);
+}
+function ledgerChoose(i) {
+  if (!led.open || led.mode !== 'write' || led.chosen >= 0 || i < 0 || i > 1) return false;
+  if (performance.now() - led.t0 < UNLOCK_GUARD) return false;
+  led.chosen = i; led.inkT0 = performance.now() / 1000;
+  const sn = (led.opts.sound || {}).write; if (!(sn && snd(sn, 0.8))) snd('uiconfirm', 0.55);
+  haptic([10, 30, 10, 30, 14]);
+  return true;
+}
+function ledgerFinish(how) {
+  if (!led.open) return;
+  const kind = how === 'force' || led.chosen < 0 ? null : led.order[led.chosen];
+  const o = led.opts || {};
+  if (kind && !led.entries.some(e => e.id === led.id)) {
+    led.ep = episodeOf(CH_KEY);
+    led.entries.push({ id: String(led.id), page: led.page, kind, text: String(kind === 'fact' ? o.fact : o.meaning) });
+  }
+  led.open = false; led.to = 0; led.mode = led.mode === 'write' ? 'write' : 'read';
+  document.body.classList.remove('ledgeropen');
+  ledgerHint(false);
+  if (how === 'force') { led.k = 0; if (led.root) led.root.visible = false; }
+  else { const sn = (o.sound || {}).close; if (sn) snd(sn, 0.6); if (state === 'ledger') { state = 'play'; tryLock(); } }
+  const res = led.resolve; led.resolve = null;
+  if (res) res(kind || (how === 'read' ? true : null));
+}
+function ledgerFrame() {
+  if (!led.root) return;
+  const now = performance.now() / 1000, dt = led.wall ? Math.min(0.25, now - led.wall) : 0; led.wall = now;
+  if (led.k !== led.to) led.k = led.to > led.k ? Math.min(1, led.k + dt / 0.45) : Math.max(0, led.k - dt / 0.4);
+  if (led.k <= 0 && !led.open) { led.root.visible = false; return; }
+  led.root.visible = true;
+  if (led.open && led.mode === 'write' && led.chosen >= 0) {
+    ledgerPaint(now);
+    if (now - led.inkT0 > LED_INK + 0.55) ledgerFinish('write');
+  }
+  ledgerLayout();
+}
+function ledgerHit(cx, cy) {
+  if (!led.pageMesh || !led.root.visible) return -1;
+  _ledNdc.set((cx / innerWidth) * 2 - 1, -(cy / innerHeight) * 2 + 1);
+  vmScene.updateMatrixWorld();
+  _ledRay.setFromCamera(_ledNdc, vmCam);
+  const hit = _ledRay.intersectObject(led.pageMesh, false)[0];
+  if (!hit || !hit.uv) return -1;
+  const px = hit.uv.x * LED_W, py = (1 - hit.uv.y) * LED_H;
+  return led.rects.findIndex(r => px >= r.x0 && px <= r.x1 && py >= r.y0 && py <= r.y1);
+}
+addEventListener('pointermove', e => {
+  if (!led.open || led.mode !== 'write' || led.chosen >= 0 || e.pointerType === 'touch') return;
+  const i = ledgerHit(e.clientX, e.clientY);
+  if (i !== led.hover) { led.hover = i; ledgerPaint(performance.now() / 1000); }
+});
+addEventListener('pointerdown', e => {
+  if (!led.open) return;
+  if (led.mode === 'read') { if (performance.now() - led.t0 > UNLOCK_GUARD) ledgerFinish('read'); return; }
+  const i = ledgerHit(e.clientX, e.clientY);
+  if (i >= 0) { led.hover = i; ledgerChoose(i); }
+}, true);
+addEventListener('keydown', e => {
+  if (!led.open) return;
+  if (led.mode === 'read') { if (['Escape', 'KeyE', 'Enter', 'Space'].includes(e.code) && !e.repeat) { e.preventDefault(); ledgerFinish('read'); } return; }
+  if (/^(Digit|Numpad)[12]$/.test(e.code)) { e.preventDefault(); ledgerChoose(+e.code.slice(-1) - 1); return; }
+  if (['ArrowUp', 'ArrowDown', 'KeyW', 'KeyS'].includes(e.code)) { e.preventDefault(); if (led.chosen < 0) { led.hover = led.hover === 0 ? 1 : 0; ledgerPaint(performance.now() / 1000); } return; }
+  if (['Enter', 'Space', 'KeyE', 'NumpadEnter'].includes(e.code) && !e.repeat && led.hover >= 0) { e.preventDefault(); ledgerChoose(led.hover); }
+});
+function ledgerLoad(sl) {
+  led.entries.length = 0; led.ep = 0;
+  if (!sl || typeof sl !== 'object') return;
+  const ep = Number(sl.ep);
+  if (!Number.isInteger(ep) || ep !== episodeOf(CH_KEY)) return;     // a ledger belongs to its episode
+  led.ep = ep;
+  for (const e of (Array.isArray(sl.entries) ? sl.entries : [])) {
+    if (e && typeof e.id === 'string' && (e.kind === 'fact' || e.kind === 'meaning') && typeof e.text === 'string')
+      led.entries.push({ id: e.id, page: typeof e.page === 'string' ? e.page : 'notes', kind: e.kind, text: e.text });
+  }
+}
+const kitLedger = {
+  write(id, opts = {}) {
+    const had = led.entries.find(e => e.id === String(id));
+    if (had) return Promise.resolve(had.kind);
+    if (led.open || cho.ids || unl.id || state !== 'play' || fainting || !opts.fact || !opts.meaning) return Promise.resolve(null);
+    return new Promise(res => { ledgerOpen('write', String(id), opts); led.resolve = res; });
+  },
+  open(page, opts = {}) {
+    if (led.open || state !== 'play') return Promise.resolve(null);
+    return new Promise(res => { ledgerOpen('read', 'read', Object.assign({ page }, opts)); led.resolve = res; });
+  },
+  entries: () => led.entries.map(e => ({ ...e })),
+  isOpen: () => led.open,
+  set: list => ledgerLoad({ ep: episodeOf(CH_KEY), entries: list }),
+  clear: () => { led.entries.length = 0; led.ep = 0; }
+};
+
 function kitFrame(dt, t, dLookX, dLookY) {
   if (!kitInited) kitInit();
   /* v11.6: the bag button asks while a given item waits unequipped (a class
@@ -5791,6 +6370,8 @@ function kitFrame(dt, t, dLookX, dLookY) {
     }
   } else if (kitTimer) kitTimer.last = 0;
   paintObjective();
+  weatherFrame();                   // v24.0: the rain and the lightning, if a chapter asked for any (S45)
+  ledgerFrame();                    // v24.0: the ledger, if it is up or going down (S43)
   flashRun();                       // v8.7: the kit's screen flash, if one was asked for
   captionsFrame();                  // v21.30: the captions, if a chapter asked for any
   paintWaypoint();
@@ -5821,6 +6402,8 @@ function kitReset() {
   objReset();                       // v8.7: and the beats queued against the old objective
   kitFlashReq = null;
   kitCaps = null;                   // v21.30: and no caption left up from the run before
+  wxReset();                        // v24.0: no rain and no lightning left over from the run before (S45)
+  if (led.open) ledgerFinish('force'); else if (led.root) { led.k = led.to = 0; led.root.visible = false; }   // v24.0 (S43)
   kitPose = 'standing'; eyeY = 1.62; poseFrom = poseTo = 1.62; poseT = 1; pitchLo = -1.2; pitchHi = 1.2;
   chapterPresence = 0;
   dayTween = null;
@@ -5958,6 +6541,11 @@ const KIT = {
   haptic,
   flash: kitFlashSet,              // v8.7: one wash of colour over the screen
   captions: kitCaptionsSet,        // v21.30: the thirtieth seam — a voice's words at the bottom of the screen, and what they mean
+  ledger: kitLedger,               // v24.0: S43 — his stock book: write a fact or a meaning, read it back (the forty-third seam)
+  rain: kitRain,                   // v24.0: S45 — rain round the lens, k 0…1 eased over secs (the forty-fifth seam)
+  lightning: kitLightning,         // v24.0: S45 — a flicker of the lights that are already there, a wash, the thunder by its distance
+  rainNow: () => wx.k,
+  flashNow: () => wx.level,        // v24.0: how bright the lightning is this frame (0 between strokes), for what a chapter painted
   captionNow: () => (capPainted.k >= 0 && kitCaps ? { ...kitCaps.list[capPainted.k], k: capPainted.k } : null),
   root: on => { kitRooted = !!on; },   // v11.1: hold the player in place (the look and the torch still work)
   pray: kitPraySet,                // v16.5: the hands into añjali in PLAY — episode 1 chapter 1's scene D pose, exactly
@@ -6004,6 +6592,7 @@ const KIT = {
      kitChoose). Answers a Promise of the id; gives nothing itself. */
   choose: kitChoose,
   chooseOpen: () => !!cho.ids,
+  pick: kitPick,                         // v24.0: S47 — a few plain options (a word, a colour) in the choose window
   gallery: kitGallery,                   // v21.10: THE GALLERY, the twenty-ninth seam
   galleryOpen: () => gal.open,
   itemWarm: id => { if (ITEM_DEFS[id]) { itemArtGet(id); ivModel(id); } },
@@ -9239,6 +9828,8 @@ function worldState() {
     /* v14.7: the amulet's charge, the episode it belongs to and its value at
        this chapter's entry — absent from every save before v14.7 */
     ward: { charge: ward.charge, ep: ward.ep, enter: ward.enter },
+    /* v24.0: the ledger's entries and the episode they belong to (S43) — absent from every save before it */
+    ledger: { ep: led.ep, entries: led.entries.map(e => ({ ...e })) },
     /* v12.0: the weapon's rounds and magazines, absent from every save
        before this release and from every chapter without a weapon */
     ...(weaponDecl ? { weapon: { rounds: weaponRounds, mags: weaponMags } } : {})
@@ -9288,6 +9879,7 @@ function applyState(st) {
      it — entering a new episode recharges the amulet. */
   wardLoad(st.ward);
   wardEpisode();
+  ledgerLoad(st.ledger);   // v24.0: the ledger, tolerated absent; another episode's is not this one's (S43)
   syncBars();
   return true;
 }
@@ -10002,7 +10594,7 @@ addEventListener('keydown', e => {
    for the answer. There is no Esc: a choice that asks to be made must be.
    Confirm is refused for its first 0.6 s, so the press that sat him down
    cannot also choose for him. Only episode 3 chapter 1 calls it. */
-const cho = { ids: null, sel: -1, t0: 0, resolve: null, outT: 0, sealing: false, sealT: 0, sound: null };
+const cho = { ids: null, sel: -1, t0: 0, resolve: null, outT: 0, sealing: false, sealT: 0, sound: null, plain: false };
 /* v17.6b (Chad: "after the player confirms ... there should be sound effects
    and visual effects instead of just abruptly closing the window"): Confirm
    SEALS the choice first — the picked card swells and burns gold, a ring of
@@ -10060,6 +10652,7 @@ function chooseClose(how) {
   if (how !== 'force') {
     if (cho.sel < 0 || cho.sealing) return false;
     if (performance.now() - cho.t0 < UNLOCK_GUARD) return false;
+    if (cho.plain) { snd('uiconfirm', 0.6); haptic([16, 40, 24]); return chooseFinish('pick'); }   // v24.0: a pick (S47) is a quiet click
     chooseSeal();
     return true;
   }
@@ -10097,6 +10690,7 @@ function chooseFinish(how) {
     else { el.classList.add('out'); cho.outT = setTimeout(() => { el.classList.add('hide'); el.classList.remove('sealing'); }, 420); }
   }
   const res = cho.resolve; cho.resolve = null;
+  if (cho.plain) { cho.plain = false; if (el) setTimeout(() => el.classList.remove('pick'), how === 'force' ? 0 : 430); }   // v24.0 (S47)
   if (how !== 'force') {
     state = 'play';
     tryLock();
@@ -10125,6 +10719,41 @@ addEventListener('keydown', e => {
     chooseClose('key');
   }
 });
+
+/* ── v24.0 · S47 · PICK — the FORTY-SEVENTH SEAM, `kit.pick(options, opts)` ─────────────────────────────────────
+   Episode 4 chapter 1's master asks the day he was born, and a day is not an item: a pick is a few PLAIN options —
+   a word, a colour, a line under it — in the choose window (v17.6's own: the same state `choose`, the same keys, the
+   same guard, every "is it play?" gate closed), laid out as a compact grid of swatches, answered with the option's
+   id. No seal: a choice of weekday is a quiet click, not a Sak Yant. Episodes 1–3 never call it. */
+function kitPick(options, opts = {}) {
+  const list = (Array.isArray(options) ? options : []).filter(o => o && o.id);
+  const el = $('choose');
+  if (!list.length || !el || cho.ids || unl.id || state !== 'play' || fainting) return Promise.resolve(null);
+  clearTimeout(cho.outT);
+  cho.ids = list.map(o => o.id); cho.sel = -1; cho.sealing = false; cho.plain = true; cho.sound = null;
+  el.classList.remove('sealing'); el.classList.add('pick');
+  for (const k in keys) keys[k] = false;
+  state = 'choose';
+  $('choLabel').textContent = opts.label || T('choose.label', 'Choose one');
+  $('choTitle').textContent = opts.title || '';
+  $('choTitle').classList.toggle('hide', !opts.title);
+  const esc = v => String(v == null ? '' : v).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  $('choList').innerHTML = list.map((o, i) =>
+    `<button class="choCard pickCard" type="button" role="radio" aria-checked="false" data-i="${i}" style="--d:${(0.08 + i * 0.05).toFixed(2)}s">`
+    + `<span class="pickSw" style="--sw:${esc(o.color || '#888')}"><span class="choNum">${i + 1}</span></span>`
+    + `<span class="choText"><span class="choName">${esc(o.label)}</span>${o.sub ? `<span class="choDesc">${esc(o.sub)}</span>` : ''}</span></button>`).join('');
+  const ok = $('choOk');
+  ok.textContent = opts.confirm || T('choose.confirm', 'Confirm');
+  ok.disabled = true;
+  $('choHint').textContent = opts.hint || T('choose.hint', 'Pick one, then confirm');
+  el.classList.remove('hide', 'out');
+  document.body.classList.add('chooseopen');
+  document.exitPointerLock?.();
+  snd('uiclick', 0.5);
+  haptic(14);
+  cho.t0 = performance.now();
+  return new Promise(res => { cho.resolve = res; });
+}
 
 /* ── v21.10: THE GALLERY — the TWENTY-NINTH SEAM, `kit.gallery(opts)` ─────
    Chad: "when the player interacts with the row of portraits by clicking or E
@@ -12836,6 +13465,7 @@ function cineEnd() {
   /* v21.1: the black is the kit's element too, so the kit forgets it with it:
      left at 1, a later kit.fade(0) would first snap the screen back to black */
   if (!c.keepFade) { clearCineFade(); kitFade = null; kitFadeNow = 0; }
+  filmPhoneHide();                         // v24.0: a film's phone goes with the film (S48)
   letterboxOff();                          // v15: the whole frame again, before the bars start to move
   document.body.classList.remove('cine');
   skipBtn.classList.add('hide');
@@ -12993,6 +13623,8 @@ function sceneApi(c) {
       c.tracks[c.tracks.length - 1].pauses = true;      // v23.0: a wall in the film's clock (cineUpdate)
     },
     music: cineMusic,                // v6.6: hold the explore music down (a film with its own theme)
+    /* v24.0: S48 — a phone's screen over the picture, its chat typed on the film's clock (filmPhoneDraw) */
+    phone: (t0, t1, spec) => c.tracks.push({ t0, t1, fn: (k, t) => { if (k >= 1) filmPhoneHide(); else filmPhoneDraw(spec, t - t0); } }),
     handsRoot, armR, noteProp,
     buildPrayerArm, prayerArm: () => prayerArmL,
     /* v18.0: the hands taken, from a scene — the same pose kit.hands draws in
@@ -13792,6 +14424,7 @@ function newGame(wipe = true) {
      into episode 2 in the same sitting kept the torch. Chad: "The player
      should start episode 1 with no items at all." */
   invClearAll();
+  kitLedger.clear();      // v24.0: and a new game's ledger is empty (S43)
   if (wipe && CH_KEY !== BOOT_CH) setChapter(BOOT_CH);
   else if (stageDirty) freshStage();   // v22.2: and a new game in the chapter already standing starts from what a build leaves (v22.3: if it was played)
   ward.ep = episodeOf(CH_KEY); ward.charge = ward.enter = WARD_FULL;   // v14.7: a new game, a full amulet
@@ -14999,7 +15632,7 @@ function tick(now = 0) {
   // can never poke through a wall however close you stand to one — v15: and
   // only when there is a hand (or a torch, or a rifle) to draw: a pass with
   // nothing visible in it clears a depth buffer and draws nothing
-  if (state !== 'title' && handsReady && (!OPT.vmSkip || anyVisibleMesh(handsRoot))) {
+  if (state !== 'title' && handsReady && (!OPT.vmSkip || anyVisibleMesh(handsRoot) || (led.root && led.root.visible))) {   // v24.0: and the ledger's book (S43)
     renderer.autoClear = false;
     renderer.clearDepth();
     renderer.render(vmScene, vmCam);
@@ -15380,6 +16013,26 @@ window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () =
                                 banner: !!$('wardBreak')?.classList.contains('on') }),
                  unlockState: () => ({ id: unl.id, state }),
                  chooseState: () => ({ ids: cho.ids, sel: cho.sel, sealing: cho.sealing, state }),        // v17.6
+                 /* v24.0: the episode-4 seams, for the fixture's proofs — the ledger (S43), the weather (S45), a film's phone
+                    (S48) and WHAT CHANGED? (S44) */
+                 ledgerState: () => ({ open: led.open, mode: led.mode, chosen: led.chosen, k: +led.k.toFixed(3), ep: led.ep, state,
+                                       order: led.order ? led.order.slice() : null, rects: led.rects.length,
+                                       entries: led.entries.map(e => ({ ...e })), drawn: !!(led.root && led.root.visible) }),
+                 ledgerRectScreen: i => {
+                   const r = led.rects[i]; if (!r || !led.pageMesh) return null;
+                   vmScene.updateMatrixWorld();
+                   const u = (r.x0 + r.x1) / 2 / LED_W, v = 1 - (r.y0 + r.y1) / 2 / LED_H;
+                   const pt = new THREE.Vector3((u - 0.5) * LED_ASPECT, v - 0.5, 0).applyMatrix4(led.pageMesh.matrixWorld).project(vmCam);
+                   return { x: (pt.x + 1) / 2 * innerWidth, y: (1 - pt.y) / 2 * innerHeight, which: r.which };
+                 },
+                 wxState: () => ({ k: +wx.k.toFixed(3), to: wx.to, visible: !!(wx.mesh && wx.mesh.visible), flash: !!wx.flash,
+                                   hemi: +hemi.intensity.toFixed(4), base: wx.base ? +wx.base.h.toFixed(4) : null, thunder: wx.thunder.length }),
+                 filmPhoneState: () => { const el = $('filmPhone');
+                   return el ? { shown: !el.classList.contains('hide'), msgs: el.querySelectorAll('.fpMsg:not(.dots)').length,
+                                 dots: !!el.querySelector('.fpMsg.dots'), draft: el.querySelector('.fpInput')?.textContent || '' } : null; },
+                 changeState: () => (ev && ev.kind === 'change' ? { round: ev.chRound, phase: ev.chPhase, right: ev.chRight || 0,
+                                       wrong: ev.chWrong || 0, missed: ev.chMissed || 0 } : null),
+                 changeSpotScreen: (pos) => { const at = evChangeScreen({ pos }); return at; },
                  galleryState: () => ({ open: gal.open, i: gal.i, n: gal.pages ? gal.pages.length : 0,   // v21.10
                                         seen: gal.seen ? [...gal.seen] : [], done: gal.done, img: gal.img, state,
                                         pull: +galPullNow(performance.now()).toFixed(3), armed: gal.armed,      // v21.23

@@ -1,0 +1,16 @@
+# E4C1 — research corrections to carry into CP8/CP9 words (from docs/research/V24.0-E4C1-SAMNAK.md, 27 Oct)
+- Takrut is WORN on a cord (waist, neck, arm) — not kept in the till. Fix the item words and ending A's "facing the door" per item.
+- Wednesday splits: Wednesday (day, green) and Wednesday NIGHT (from 6 pm, Rahu, smoky near-black). Day picker needs 8 options (or a follow-up). Friday = sky blue.
+- Pa Noi's particle: "ka" after a statement, "na kha" after a request.
+- Her skirt: "pha thung" (central Thailand), not "pha sin". (E4-MODELS look text.)
+- The teacher's money: "kha khru" (never "pajjai").
+- Gate sign must NOT read สำนักสงฆ์ (a monks' place).
+- Mangoes out of season in the rains: guavas, bananas, longan, palm sugar.
+- Client kneels legs folded to one side, feet pointing away; wai on arrival and leaving; he returns it.
+- Pha yant framed on the wall FACING THE DOOR, below the Buddha shelf. Nang Kwak faces out to the shop door.
+- The pao: reciting a katha and blowing onto the crown so the person is liked/favoured (Royal Institute dictionary).
+- Laundry line must not hang over a path (a man with power won't walk under women's clothes) — Siam Society.
+- The presence's breast cloth + cropped hair = the classic Nang Kwak figure look: players may read her as Nang Kwak. Chad's call — ask.
+- Chant: Nang Kwak short katha (Thairath & KTC): L1 นะโม ตัสสะ ภะคะวะโต อะระหะโต สัมมาสัมพุทธัสสะ ×3 (A Chanting Guide's English); L2 เอหิ จิตตัง มหาลาภัง ปิยัง มะมะ มามา — a Thai folk formula in Pali-sounding words, NOT real Pali: caption must say so ("roughly"). Truly-Pali option from the long version: มหาลาภา ภะวันตุ เม "May great gains be mine."
+- Not confirmed: offering amounts (only a symbolic ฿24), a queue-number whiteboard, writing on a slate in old script, Suphan Buri/Nakhon Pathom for palms.
+- Fairness holds: a practitioner in Thairath tells clients to think before they believe.

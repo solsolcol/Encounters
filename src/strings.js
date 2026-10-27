@@ -279,6 +279,10 @@ Object.assign(window.__TEXT__, {
   'event.surfaceWhereKey': 'Drag up, or press W or ↑ quickly',
   'event.focus':         'TAP THE LIGHT',
   'event.focusKey':      'CLICK THE LIGHT',            // v21.0: the same, on a desktop
+  // v24.0 · S44: WHAT CHANGED? — its word in the panel, and where the taps go (a phone; a desktop)
+  'event.change':        'WHAT CHANGED?',
+  'event.changeWhere':   'Tap only what has changed',
+  'event.changeWhereKey':'Click only what has changed',
   'event.sequence':      'TAP EACH ONE',
   'event.match':         'DRAG EACH ITEM TO ITS PLACE',
   'event.matchOk':       'MATCHED',
@@ -482,6 +486,10 @@ Object.assign(window.__TEXT__, {
   'choose.label':        'Choose one',
   'choose.confirm':      'Confirm',
   'choose.hint':         'Pick one, then confirm',
+  // v24.0 · S43: the ledger (his stock book) — how to write in it, and how to close it when it is open to read
+  'ledger.hint': 'Tap what you will write',
+  'ledger.hintKey': 'Click what you will write, or press 1 or 2',
+  'ledger.close': 'Tap to close the book',
   // v21.10 · THE GALLERY (kit.gallery): pages to turn, a picture and its story
   'gallery.label':       'Gallery',
   'gallery.lived':       'Lived',

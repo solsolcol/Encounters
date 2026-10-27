@@ -1074,6 +1074,127 @@ K.yantGuards = await p.evaluate(() => {
   return Object.values(res).every(Boolean);
 });
 if (!K.yantGuards) console.log('yant guards', JSON.stringify(await p.evaluate(() => window.__yg)));
+/* v24.0 · S47: PICK — a few plain options in the choose window, compact and swatched; refused with nothing picked and
+   inside the guard; a pick and a confirm answer at once (no seal) and hand back play */
+K.pickOpens = await p.evaluate(() => {
+  const e = window.__enc;
+  window.__picked = undefined;
+  e.kit.pick([{ id: 'sun', label: 'Sunday', color: '#d9342b' }, { id: 'mon', label: 'Monday', color: '#f2c94c', sub: 'yellow' }],
+             { title: 'What day were you born?' }).then(id => { window.__picked = id; });
+  const st = e.chooseState(), el = document.getElementById('choose');
+  const refusedEmpty = e.chooseClose('key') === false;
+  e.chooseSel(1);
+  const refusedGuard = e.chooseClose('key') === false;
+  return e.getState() === 'choose' && st.ids.length === 2 && el.classList.contains('pick')
+    && document.querySelectorAll('#choList .pickSw').length === 2 && refusedEmpty && refusedGuard;
+});
+await p.waitForTimeout(800);
+K.pickAnswers = await p.evaluate(() => {
+  const e = window.__enc;
+  const ok = e.chooseClose('key') === true;
+  return ok && e.chooseState().sealing === false;
+}) && await until(() => window.__picked === 'mon' && window.__enc.getState() === 'play'
+                       && !document.getElementById('choose').classList.contains('pick'), 30000).then(() => true, () => false);
+
+/* v24.0 · S43: THE LEDGER — a write opens the book in its own state with two lines on the page; a REAL click on the
+   FACT line inks it and answers 'fact', hands back play and keeps the entry; the same id again answers at once; the
+   entry rides worldState and comes back through applyState */
+K.ledgerOpens = await p.evaluate(() => {
+  const e = window.__enc;
+  window.__led = undefined;
+  e.kit.ledger.write('fx1', { page: 'test', title: 'WHAT I SAW', prompt: 'the table',
+                              fact: 'The cup was moved along the table.', meaning: 'Someone moved the cup to warn me.',
+                              brief: 'Write down what you saw.' }).then(k => { window.__led = k; });
+  const st = e.ledgerState();
+  return e.getState() === 'ledger' && st.open === true && st.mode === 'write' && st.rects === 2
+    && !document.getElementById('ledHint').classList.contains('hide');
+});
+await until(() => window.__enc.ledgerState().k >= 0.99, 30000).catch(() => {});
+await p.waitForTimeout(700);
+const ledFact = await p.evaluate(() => { const e = window.__enc, st = e.ledgerState(); const i = st.order.indexOf('fact'); return e.ledgerRectScreen(i); });
+K.ledgerRectOnScreen = !!ledFact && ledFact.which === 'fact' && ledFact.x > 0 && ledFact.y > 0;
+if (ledFact) await p.mouse.click(ledFact.x, ledFact.y);
+K.ledgerWrites = await until(() => window.__led === 'fact' && window.__enc.getState() === 'play', 60000).then(() => true, () => false)
+  && await p.evaluate(() => { const en = window.__enc.ledgerState().entries; return en.length === 1 && en[0].kind === 'fact' && en[0].id === 'fx1'; });
+K.ledgerOnce = await p.evaluate(async () => {
+  const e = window.__enc;
+  const k = await e.kit.ledger.write('fx1', { page: 'test', fact: 'a', meaning: 'b' });
+  return k === 'fact' && e.getState() === 'play' && e.ledgerState().open === false;
+});
+K.ledgerSaved = await p.evaluate(() => {
+  const e = window.__enc, st = e.worldState();
+  const inSave = st.ledger && st.ledger.entries.length === 1 && st.ledger.entries[0].kind === 'fact';
+  e.kit.ledger.clear();
+  const cleared = e.ledgerState().entries.length === 0;
+  e.applyState(st);
+  const back = e.ledgerState().entries;
+  return inSave && cleared && back.length === 1 && back[0].id === 'fx1';
+});
+K.ledgerBookDown = await until(() => window.__enc.ledgerState().drawn === false, 30000).then(() => true, () => false);
+
+/* v24.0 · S45: RAIN mounts and goes; LIGHTNING lifts the lights it already has and gives them back exactly */
+/* (the rain is drawn by the frame: two frames, then look) */
+K.rainMounts = await p.evaluate(async () => { const e = window.__enc; e.kit.rain(1); await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); const w = e.wxState(); return w.visible && w.k === 1; });
+K.lightningLifts = await p.evaluate(() => new Promise(res => {
+  const e = window.__enc, h0 = e.wxState().hemi;
+  e.kit.lightning({ power: 1, near: 1 });
+  let seen = false, lvl = 0, n = 0;
+  const f = () => { const w = e.wxState(); if (w.flash && w.hemi > h0 * 1.2) seen = true;
+    lvl = Math.max(lvl, e.kit.flashNow());       // (and a chapter can read how bright it is, to light what it painted)
+    if (++n > 400) return res(false);
+    if (seen && !w.flash) return res(Math.abs(w.hemi - h0) < 1e-6 && lvl > 0.2 && e.kit.flashNow() === 0);
+    requestAnimationFrame(f); };
+  requestAnimationFrame(f);
+}));
+K.rainStops = await p.evaluate(async () => { const e = window.__enc; e.kit.rain(0); await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); const w = e.wxState(); return !w.visible && w.k === 0; });
+
+/* v24.0 · S44: WHAT CHANGED? — a baseline with no tap, a round where one thing changed (a right tap pays awareness, a
+   wrong tap costs sanity, each on the spot), a round where nothing changed and nothing is tapped; apply() runs in the
+   dark, onPhase reports each phase */
+K.changeRounds = await p.evaluate(() => new Promise(res => {
+  const e = window.__enc, cam = e.camera;
+  cam.updateMatrixWorld(); const m = cam.matrixWorld.elements;
+  const P = { x: m[12], y: m[13], z: m[14] }, fl = Math.hypot(m[8], m[10]) || 1, F = { x: -m[8] / fl, z: -m[10] / fl };
+  const at = (dx, dy) => ({ x: P.x + F.x * 3 - F.z * dx, y: P.y + dy, z: P.z + F.z * 3 + F.x * dx });   // 3 m ahead, dx to the right
+  const A = at(-0.6, 0), Bp = at(0.6, -0.2);
+  e.stats.sanity = 90; e.stats.awareness = 50;
+  const log = [], applied = [], paid = {};
+  let tapped = false;
+  /* each tap is paid ON THE SPOT, so each is measured across its own press (the fixture's world may drain sanity over
+     the seconds the event runs; a worn amulet takes a hit before sanity does) */
+  const charge = () => (e.ward ? (e.ward().charge || 0) : 0);
+  e.kit.event({ kind: 'change', lead: 0.2, dark: 0.35, lit: 1.4, hit: 3, falseCost: 3, miss: 1,
+    spots: [{ id: 'a', pos: A }, { id: 'b', pos: Bp }], rounds: [[], ['a'], []],
+    apply: r => applied.push(r), onPhase: (r, ph) => log.push(r + ph) }).then(r => {
+      res(r.right === 1 && r.wrong === 1 && r.missed === 0 && applied.join() === '1,2'
+          && log.includes('1lit') && log.includes('2lit') && log[log.length - 1] === '3end'
+          && paid.right === 3 && Math.abs(paid.wrong - 3) < 1e-9);
+    });
+  const tick = () => {
+    const c = e.changeState(); if (!c) return;
+    if (c.round === 1 && c.phase === 'lit' && !tapped) {   // (both taps in the one frame that sees it lit: a slow box may show it once)
+      tapped = true;
+      const a0 = e.stats.awareness, s = e.changeSpotScreen(A); e.evPress(s.x, s.y); e.evRelease(); paid.right = e.stats.awareness - a0;
+      const s0 = e.stats.sanity, w0 = charge(); e.evPress(8, 8); e.evRelease(); paid.wrong = (s0 - e.stats.sanity) + (w0 - charge());
+    }
+    requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}));
+await p.evaluate(() => { const e = window.__enc; e.stats.sanity = 100; e.stats.awareness = 50; });
+/* v24.0 · S48: A PHONE IN A FILM — its chat shows while the film runs (a message from them, then his own sent) and is
+   gone when the film ends */
+K.phoneInFilm = await p.evaluate(() => { const e = window.__enc; window.__phDone = null; window.__phSeen = 0;
+  const ok = e.kit.film('phone', { onDone: () => { window.__phDone = true; } });
+  const f = () => { const ph = e.filmPhoneState(); if (ph && ph.shown) window.__phSeen = Math.max(window.__phSeen, ph.msgs); if (!window.__phDone) requestAnimationFrame(f); };
+  requestAnimationFrame(f);
+  return ok; })
+  && await until(() => window.__phDone === true && window.__enc.getState() === 'play', 60000).then(() => true, () => false)
+  && await p.evaluate(() => window.__phSeen >= 1 && window.__enc.filmPhoneState().shown === false);
+/* v24.0 · S46: A CHAPTER'S OWN KIT — the fixture plants a stand of two kinds of its own (a cone, a post) through the
+   engine's plantTrees; it lands with one instanced mesh a kind, every spot planted (one marked `always`) */
+K.kitStand = await until(() => { const k = window.__enc.stage.kitStandInfo && window.__enc.stage.kitStandInfo(); return !!k && k.parts === 2; }, 60000).then(() => true, () => false)
+  && await p.evaluate(() => { const k = window.__enc.stage.kitStandInfo(); return k.planted === 3 && k.inst === 3 && k.kinds === 'cone,post'; });
 /* v21.10: THE TWENTY-NINTH SEAM — kit.gallery. It opens in a state of its own on
    the first page not yet read, refuses a turn inside its guard, counts a page
    READ only after it has stood on screen (wall time), turns by a real click on
@@ -1897,11 +2018,12 @@ await p.waitForTimeout(1500);
 out.aliveAfterSwap = await p.evaluate(() =>
   isFinite(window.__enc.pileDist()) && window.__enc.getState() !== 'error');
 /* v23.0 · S40: and kitReset clears a pose (here, at the end — it clears the conduct the card above read) */
-await p.evaluate(() => window.__enc.kit.handPose('cross', 1, { secs: 0 }));
+await p.evaluate(() => { window.__enc.kit.handPose('cross', 1, { secs: 0 }); window.__enc.kit.rain(1); });   // (v24.0: and rain, for the reset to clear)
 await until(() => window.__enc.hpose().on && window.__enc.armNow().lv, 20000).catch(() => {});
 await p.evaluate(() => window.__enc.kitReset());
 await p.waitForTimeout(400);
 K.hposeClearedByReset = await p.evaluate(() => { const e = window.__enc, a = e.armNow(); return e.hpose().on === false && a.lv === false; });
+K.rainClearedByReset = await p.evaluate(() => { const w = window.__enc.wxState(); return !w.visible && w.k === 0 && w.thunder === 0; });   // v24.0 (S45)
 
 console.log(JSON.stringify(out, null, 1));
 const MUST = ['bootedFixture', 'noChapterAssets', 'blockersFromChapter', 'cardShowsFixture',

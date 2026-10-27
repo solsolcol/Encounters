@@ -417,7 +417,25 @@
       if (kit) kit.conduct({ note: r.hit ? 'You hit the target.' : 'You missed.' });
     }
 
+    /* v24.0 · S46: a stand from the chapter's OWN kit — two kinds (a cone, a post), one spot the chapter depends on
+       (`always`) — planted by the engine's own dealing, instancing and per-tree culling (fixturetest proves it) */
+    const kitGeos = [new THREE.ConeGeometry(0.25, 1, 6).translate(0, 0.5, 0), new THREE.BoxGeometry(0.16, 1, 0.16).translate(0, 0.5, 0)];
+    const kitMat = new THREE.MeshStandardMaterial({ color: 0x3a6a3a, roughness: 0.9 });
+    const kitI = new THREE.Matrix4();
+    const kitStand = ctx.plantTrees ? ctx.plantTrees(world, [
+      { x: 9, z: -9, h: 2.2, kind: 0 }, { x: 10, z: -9.5, h: 1.6, kind: 1 }, { x: 11, z: -9, h: 2.6, kind: 0, always: true }
+    ], { kit: [[{ geo: kitGeos[0], mat: kitMat, m: kitI, leaf: false }], [{ geo: kitGeos[1], mat: kitMat, m: kitI, leaf: false }]], seed: 5 }) : null;
+    function kitStandInfo() {
+      if (!kitStand) return null;
+      return { planted: kitStand.userData.planted.length, parts: kitStand.children.length,
+               inst: kitStand.children.reduce((a, c) => a + (c.isInstancedMesh ? c.instanceMatrix.count : 0), 0),
+               kinds: kitStand.children.map(c => c.geometry === kitGeos[0] ? 'cone' : c.geometry === kitGeos[1] ? 'post' : '?').sort().join(',') };
+    }
+
     function dispose() {
+      if (kitStand && kitStand.userData.disposeTrees) kitStand.userData.disposeTrees();
+      for (const g of kitGeos) g.dispose();
+      kitMat.dispose();
       const geos = new Set(), mats = new Set();
       world.traverse(o => {
         if (o.geometry) geos.add(o.geometry);
@@ -434,7 +452,7 @@
     }
 
     return (S = {
-      world, noteTex, blockers: blockers(), groundAt,
+      world, noteTex, blockers: blockers(), groundAt, kitStandInfo,
       /* v23.0 · S41: the progress store's read-only question, as a chapter asks it (fixturetest proves it answers) */
       sealedBefore: k => (ctx.sealedBefore ? ctx.sealedBefore(k) : null),
       ready: () => true,                       // nothing to wait for
@@ -495,6 +513,16 @@
     c.endFade = 1;
   };
 
+  /* v24.0 · S48: a film with a phone's chat over it (api.phone) — a message typed in, one sent, gone with the film */
+  const fiPhone = (c, s, api) => {
+    const { fade, step, phone } = api;
+    phone(0.2, 3.2, { name: 'Pong', sub: 'online', ava: { text: 'P', color: '#b8742a' },
+                      msgs: [{ at: 0.6, who: 'them', text: 'Brother!! Come Thailand.', typing: 0.3 },
+                             { at: 1.6, who: 'me', text: 'Who is he?', typing: 0.6 }] });
+    step(3.6, () => {});
+    fade(3.4, 3.8, 0, 0);
+  };
+
   /* v23.0 · S39: a film that PAUSES on a surface event (api.eventWait) — the climb back runs inside a film and the
      film goes on, and hands back to play, once it resolves */
   const fiClimb = (c, s, api) => {
@@ -508,7 +536,7 @@
 
   (window.__CHAPTERS__ = window.__CHAPTERS__ || {}).chtest = Object.assign(DATA, {
     build,
-    films: { probe: fiProbe, climb: fiClimb },
+    films: { probe: fiProbe, climb: fiClimb, phone: fiPhone },
     scenes: [scTake, scBreak, scLook, scLeave]
   });
 })();
