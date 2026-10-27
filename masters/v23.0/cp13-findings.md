@@ -241,3 +241,11 @@ touched, and every fix photographed again on the build that carries it (v23.0).
 - THE EPISODE-COMPLETE CARD on a phone and a desktop (dbg-e3c5epcard.mjs): chapter 4 → chapter 5 in the run; the five
   chapters tallied, the episode ranked and CASE CLOSED; the trail's next case is episode 4, "not yet written — come back
   for it"; back to the title with the run marked done.
+- THE DESKTOP PLAY-THROUGH by real input (v23.1's build, 27 Oct; dbg-e3c5flow.mjs VIEW=desktop OPT=C FILM_WAIT=1500):
+  Start, the opening film, the counter's orders pressed with the reticle and E, films M and K, the bag and the home
+  film, the offerings by mouse drag (the caps twisted, the straws slid and bent, the sticks lit and waved out, the box
+  wound), the three openings, the decision clicked, ending C and its card: PASS, no page error (the desktop runs muted,
+  so the voice log is the phone run's). Its first run "stalled" after E on the bundle — the press had landed; a
+  1280 × 800 software render under load drew a frame every 4–8 s and the chapter clock (0.5 s a frame at most) ran
+  the owner's 31 s of lines at a sixteenth of real time, past the probe's 300 s wait (LEARNINGS, v23.1). Measured alone
+  at 0.22–0.25 frames a second, the film began on the second predicted.
