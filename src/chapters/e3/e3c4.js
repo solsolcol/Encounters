@@ -7943,8 +7943,10 @@
     /* (v22.3) the card was written to the bundle's right, clear of the tray where it stood — but by the endings the tray is
        SET ASIDE, to x 0.73–1.17, and the card slid in under it (v23.1, Chad: "it slides under the tray of amulets"). It is
        written to the bundle's LEFT now, where the counter is clear from the tea set (to x −0.4) to the bundle (from 0.43),
-       and slides across to him there */
-    const D_CARD_DX = -0.3, D_CARD_Z = -6.08;
+       and slides across to him there. (Photographed: at −0.3 the end of the slide ran its corner 11 mm into the near tea
+       cup at x 0.19; at −0.25 it stops 32 mm clear of that cup's rim, 40 mm short of the far cup, and 12 cm short of the
+       bundle, wrapped again by then) */
+    const D_CARD_DX = -0.25, D_CARD_Z = -6.08;
     function endD(t, api) {
       const S0 = endLive.t0;
       if (t < ED.street) {
