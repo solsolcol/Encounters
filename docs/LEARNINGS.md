@@ -6505,3 +6505,23 @@ cut (sharing its vertices and maps) when it is small.
   vision reviews in a row saw "no beckon", and the first fix (a nod) was invisible to the same probe. Anything a film
   is ABOUT is posed by the film's own clock (the v6.4 law: `bkU`/`nodU`, set by the frame function from `t`), so a
   seek, a pause, a skip and a slow phone all show the same arm. Wall time is for what play does between frames.
+- **A mark names a THING: stand it over that thing, not over where the act lands** (v23.0 CP13). Episode 3 chapter 5's
+  "give it to him" mark was raised over the hotspot's own point — the drink's place, 0.13 m in front of the child and
+  0.06 m to his side — so from where a player stands it rode a third of the way toward the next child, and on a phone it
+  read as the next one's. A mark is drawn over the hotspot's `pos` (`h.pos + markY`): when the act lands somewhere other
+  than the thing the order names, anchor the hotspot on the thing and keep the act's tap box (`hits`) where it lands.
+- **A prop on the line to a minigame's point is part of the minigame** (v23.0 CP13). The little one's pinwheel stood
+  exactly on the line from the mat to the music box's key — the line crossed the altar's front row 1.2 cm from it — so
+  its stick ran through the wind's ring. Before a gesture is drawn at a point, check the line from where the player will
+  be to that point.
+- **A background command dies at its timeout; a long probe chain runs detached** (v23.0 CP13, a session law). A
+  `run_in_background` command is killed at its timeout (two hours at most), and a chain of probes on this box runs longer
+  than that (every beat photographed on a desktop, a real-tap play-through, Continue from every phase). Launch the chain
+  as a script under `setsid nohup … & disown`, have it write a milestone line to its own log as each step ends, and
+  watch that log (a Monitor on the milestones, re-armed when it expires). Never edit a chain's script while it runs: bash
+  reads a script as it goes.
+- **Probe law: read a hint's place only after the frame that places it** (v23.0 CP13). The real-tap play-through
+  circled the second drink's cap round the wrong point and stalled at 17 %: an event opened with no brief was read on
+  the frame it opened, and `#evCraft` still stood where the last event's last step (the straw's bend) had left it —
+  the frame moves it. The first drink's brief, and the photographing probe's shot before its twist, had hidden the race.
+  Two frames before reading where a gesture is to be made.

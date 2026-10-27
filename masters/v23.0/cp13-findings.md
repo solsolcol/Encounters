@@ -188,3 +188,56 @@ Two reviewers read every film frame of v22.9, each finding checked against the c
   thinner than a pixel aliases at any cut: the cost of his model at its own detail); the owner's collar (his scan's own
   atlas, three chapters old); the garlands as beads, the riser's highlight, the pins over the receipts' titles, a pixel
   step in the calendar's edge (each small, each a passing frame).
+
+## PLAY'S VISION REVIEW (v22.9's photographs of the offerings and the openings, phone and desktop) — what was fixed
+Every frame of PLAY I and PLAY II read on a phone and a desktop; each finding checked against the code before it was
+touched, and every fix photographed again on the build that carries it (v23.0).
+- the beckon, again (the films' review had made it a flap of the near hand): straight out over the counter it read as a
+  man showing his stock, and aimed at the lens it foreshortened to a bar across his belly. The near arm goes 45° off the
+  line to the glass, toward the corridor at his left where the one he calls stands, the hand at his shoulder, palm down.
+- a carried drink and the three sticks hung beside an OPEN hand, which read as a hand that had let go of them (Chad's
+  bottle ruling: no grip is drawn that cannot be made right): the engine's `kit.hold` takes `bare`, and the hand's model
+  goes while the thing is carried and comes back the moment it is let go (`fixturetest` proves both halves).
+- on a phone a hands-on panel stands under the stat bars, to 39 % of the height: at the desk it lay over the straw as it
+  slid in and bent — a narrow screen aims 5 cm higher there, so the bottle stands lower in the frame; and in PEEK-A-BOO
+  it lay over the shy one in the gap between the fingers, the very thing the game is about — a hands-on kind may stand
+  `low` (at the foot of the screen, as chapter 4's events can), and PEEK does.
+- standing up from the sand reset his look to the level, and on a phone the frame held the block outside the window,
+  the next child under its bottom edge: his eyes go down to the next one waiting, and the order comes once the look has
+  arrived.
+- the glint, at 5 cm and near-white, sat between the red one's eyes like a third eye, glowing on his scowl: a catch-light
+  now, smaller and warm, at one eye.
+- the place marks stood at the runner's height, between two of the three from where he stands and over the next one's
+  shoulder: raised over each child's head — and, photographed again, still a third of the way to the next one, because
+  the mark is drawn over the hotspot's own point and that was the drink's place, before the child and to his side. The
+  hotspot is anchored on the child now; the tap box stays on the drink's place.
+- the laptop's white page sat behind the stat bars at the desk on a phone, and their cream words vanished into it: its
+  screen in a dark theme.
+- the music box's key was on the far end, hidden behind the box from the mat, and the wind's ring was drawn over the
+  owner's card: on the end toward the mat. Photographed again, the little one's pinwheel stood exactly on the line from
+  the mat to the key (1.2 cm off it), its stick through the wind's ring: his toy and his saucer of sweets change sides,
+  the pinwheel 2 cm further over, clear of ending C's last toy packet.
+
+## THE ENDINGS' PHOTOGRAPHS (v22.9's, a phone, every 2.5 s of all four) — what was fixed
+- ending C's last shot, under "They were only children... and I had turned them into a wishing well.", held the middle
+  one alone on a phone, the other two cut by its edges: a narrow screen stands 0.42 m further back from the mat.
+- CHECKED, NOT A BUG: the epilogue's last eighteen seconds are black in every ending — the case file's own last words are
+  said over it under the lullaby, as the plan has it (§4.9).
+
+## PART 2's CHECKS, on the release build (v23.0, deploy 6ae0698bba55723a21ff6151)
+- The photographs, again, on the build that carries every fix above: the opening film's beckon (four frames on a phone);
+  the offerings on a phone and a desktop, every step (47 frames each); the three openings on a phone and a desktop (48
+  each); ending C's closing shot on a phone. No page error in any of them.
+- THE REAL-TAP PLAY-THROUGH on a phone (dbg-e3c5flow.mjs, OPT D): Start to the card by real taps and drags — the film,
+  the counter's seven orders, films M and K, the bag and the home film, the offerings, the three openings (the STAMP
+  tapped, the PEEK dragged, COME BACK drawn up), the decision tapped, ending D and its card: PASS, 67 lines heard in
+  order, none over another, no page error. Its first run stalled at the second drink — the probe's own race, not the
+  game's (LEARNINGS: read a hint's place only after the frame that places it).
+- CONTINUE from a real save at every phase, on a phone, through the title (dbg-e3c5cont.mjs): a run that finished
+  chapter 4 while chapter 5 was a preview now continues into chapter 5's start; the counter, the counter after the gift
+  ("Read his card"), the offerings at their start, after the red one's drink (1/3), and after the sticks ("Sit with
+  them"), the sit, the three openings, the aftermath and the decision each land where they should, in their world, with
+  their order and no page error.
+- THE EPISODE-COMPLETE CARD on a phone and a desktop (dbg-e3c5epcard.mjs): chapter 4 → chapter 5 in the run; the five
+  chapters tallied, the episode ranked and CASE CLOSED; the trail's next case is episode 4, "not yet written — come back
+  for it"; back to the title with the run marked done.
