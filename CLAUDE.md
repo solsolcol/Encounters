@@ -6618,6 +6618,47 @@ What the baseline contains, by release:
   the music box's key, and a phone's closing shot of ending C that cut two of the three. Played start to finish on a phone by real taps (Start to the card: 67 lines in order, none over another, no page error), and Continue from all 12 of its phases lands right. Sheet v121
   (3 rows added — the three minigames' titles — and 101 changed: nine words and 92 voice lines' measured lengths;
   v44 stays the link). Deploy `6ae0698bba55723a21ff6151`, byte-verified (259 served files); the full suite ran on v23.1's build, which carries it.
+- **v23.1** CHAD'S SEVEN NOTES ON THE PIECES THAT ANSWERED — queued on 26 Oct while chapter 5 was built ("Queue these in
+  when you are completely done with chapter 5") and done after it shipped; docs/V23.1-E3C4-QUEUED.md has his words
+  verbatim, the plan read off the code before anything moved, and the record. All in `src/chapters/e3/e3c4.js` and one
+  sound; `src/main.js` untouched, so every other chapter is unchanged by construction. THE MERIT FILM: the coda under
+  the water given to the roots +3.5 dB (0.6 → 0.9; its file peaks −2.9 dBFS, so nothing clips), the rising light a
+  quarter larger on screen with a brighter halo and trail, and the climb held 2.5 s longer — the lens rises with the
+  light for 8.1 s where it rose for 5.6, the picture and the music go at 48.5–51.1 where they went at 46.0–48.6, the
+  film 50.9 s; and, photographed on a phone, the bodhi's canopy hid the light from two seconds into its climb (at v22.3
+  too), so the light, its halo and its trail draw through the leaves now (no depth test, after the scene; nothing else
+  stands between the lens and its path). The FLICKER behind its monk was the dais's back panel lying in the face of the
+  dado's gold strip (the v19.3/v22.2 coplanar law), 1.5 cm in front of it now, as chapter 5's copy was fixed at v23.0.
+  THE HANUMAN: while it is up the lens sways and shivers — laid on his look as deltas and taken off the next frame, the
+  yaw and the pitch only (the roll is the gesture's own) — and the figure is held to the lens three times as tightly
+  (its follow 2.2 → 6.5/s), so the shop moves behind it and it stays on him. THE FIRST DEPLOY FROZE IT: the push wrote
+  the camera rig's `yaw`, and a `const yaw` lower in the same function (the figure's own turn) shadowed the rig's for
+  the whole body — "Cannot access 'yaw' before initialization" on every frame the vision was up, LET GO never coming, on
+  the live site for about forty minutes until the phone probe of World H (it captures page errors) found it; the inner
+  name is `faceYaw`, and `tools/probes/usebefore.mjs` now finds the class in any function (real scopes, closures left
+  alone — it reports exactly this bug on the shipped file and nothing else in the game) and **`npm run build` runs it**
+  over every chapter and main.js, so acorn and acorn-walk are dev dependencies (LEARNINGS). THE THAO WESSUWAN: each
+  step's shake nearly twice what it was (0.35 + 0.22·i → 0.7 + 0.4·i, the hands' tremble with it) and the stomp louder
+  twice over — played louder (0.45 + 0.17·i → 0.55 + 0.15·i, at most 1) and made louder in its file by its AVERAGE with
+  its peak held under a lookahead limiter (masters/v23.1/make.sh: −29.5 → −23.5 dBFS RMS), because a gain over 1 on the
+  cue would clip once it sums with the giant's breath and the rattle. ENDING A: the figure a step behind him in the dark
+  window is Chad's female ghost (World Y's own still scan) under the reflection's pale, faintly self-lit treatment
+  (v22.3 P-1) — a still figure now takes its landing callback as a rigged one always did — and, photographed, she is
+  narrower than the man was, so she stands 18 cm further into the right-hand pane, clear of the window's middle bar.
+  ENDING B: the shop's paper bag is plain kraft, its printed name gone. ENDING D: the owner's card was written to the
+  bundle's right, clear of the tray where the tray once stood — but by the endings the tray is SET ASIDE, to x
+  0.73–1.17, and the card slid in under it; it is written to the bundle's LEFT now and slides across to him there, 5 cm
+  further from the near tea cup than first written (photographed: the slide's end ran its corner 11 mm into it); the
+  counter is a glass case, so the card lies on the glass with the display trays under it, as every card on that counter
+  always has. No word moved; sheet v121 stands (v44 the link). Deploys `6ae07ff1c1a4603901fffd5a`,
+  `6ae08537126aaaa59febb90f` (the light through the leaves), `6ae086a233b5376bcc56ff99` (the vision unfrozen),
+  `6ae08d79c84f657911f2bae3` (the reflection in its pane) and `6ae093395b8992797cca6e3c` (the card clear of the cup),
+  each byte-verified (259 served files); every one of the seven photographed on a phone on the build that carries it;
+  the full suite 24 of 24 on the first v23.1 build and leak again on the last; the merit film's climb, the Hanuman
+  vision through LET GO and the run-out, the giant's tray beat to the decision, ending A's reflection, B's bag and D's
+  card photographed on a phone on the build that carries each. One probe law from the same afternoon, in LEARNINGS: a
+  chapter clock capped at half a second a frame runs at a sixteenth of real time on a software render at desktop size
+  under load, so a probe's wait for a beat is minutes there, not seconds.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -7154,10 +7195,9 @@ assigned where a texture belonged; and the clearance is ISSUED at the start
 of play rather than inferred from an empty bag, which had left both counters
 dead from the chapter's first frame (docs/LEARNINGS.md).
 
-In flight: Chad's seven notes on episode 3 chapter 4 (v23.1; queued 26 Oct while chapter 5 was built — "Queue these in
-when you are completely done with chapter 5") — the merit film's music, orb and held climb, the flicker behind its monk,
-the Hanuman moving with his eyes, the giant's stomps, ending A's reflection, ending B's plain bag, ending D's card —
-verbatim with the plan and the record in **docs/V23.1-E3C4-QUEUED.md**. **Episode 3 chapter 5, The Children On My
+Nothing is in flight. Chad's seven notes on episode 3 chapter 4 (queued 26 Oct while chapter 5 was built) shipped at
+v23.1 — **docs/V23.1-E3C4-QUEUED.md** has them verbatim, the plan and the record, with what the phone photographs
+found after the first deploy. **Episode 3 chapter 5, The Children On My
 Altar, shipped at v23.0 — docs/V23.0-E3C5-PLAN.md** is its build memory (§15 the log, checkpoint by checkpoint;
 masters/v23.0/cp13-findings.md its review). **Episode 3 chapter 4, The Pieces That Answered, shipped at v22.0 —
 docs/V22.0-E3C4-PLAN.md** is its build memory (Chad's words, the design, every checkpoint, the review's

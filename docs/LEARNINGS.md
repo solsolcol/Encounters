@@ -6535,3 +6535,12 @@ cut (sharing its vertices and maps) when it is small.
   before a declaration is left alone, since it normally runs after), it reports exactly this bug on the shipped file and
   nothing else in the game, and **`npm run build` runs it** over every chapter and main.js. When an edit reaches for an
   outer name inside a long function, search that function for a declaration of the same name first.
+- **Probe law: a chapter clock capped per frame runs at a fraction of real time on a slow render — a beat's wait is
+  minutes there** (v23.1). The desktop real-input play-through of episode 3 chapter 5 "stalled" after E on the bundle:
+  the press had landed (the objective cleared, the counter busy), and the probe waited 300 s for film M, which never
+  came. Measured from the chapter's own clock: 8.5 → 11 s over 41 s of wall time. A chapter clock adds at most 0.5 s
+  per frame (so a stall never skips a beat), and a 1280 × 800 software render of that counter, with three browsers on
+  four cores, drew a frame every ~8 s — the clock ran at a sixteenth of real time and the two lines before the film
+  needed minutes. The phone's 390 × 844 had passed the same step. Before calling a desktop stall a bug, read the
+  chapter clock across the wait; a probe that waits on a chapter's beats at desktop size takes its wait from an
+  environment variable (`FILM_WAIT`), not a constant.
