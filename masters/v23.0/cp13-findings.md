@@ -148,3 +148,43 @@ the session transcript, not repeated here)
 - the card's mark: on its edge. The NEVER lines set as rules, a line after a comma unbulleted, every line fitted.
 - NOTE: chapter 4's merit film has the same two flame heights (+0.34 at s 1.4, +0.26 at s 0.9). Left alone, outside
   Chad's notes on that scene; in the report.
+
+## THE FILMS' SECOND VISION REVIEW (v22.9's photographs, phone and desktop) — what was fixed
+Two reviewers read every film frame of v22.9, each finding checked against the code before it was touched.
+- the opening film's door push (HIGH): his eyes held on the owner all along the glass put the gold name across his face
+  (暹 on it at 20.0 on a phone, the name across his waist at 20.5) and the shut leaf's 8-sided pull hung by the lens.
+  His eyes go where he walks now, along the glass to the door's MIDDLE and in as BOTH leaves swing out to his sides
+  (their edges never come nearer x 0 than they start: 0.4 m off the lens at the closest), and to the owner once he is in
+  the doorway, where no glass stands between them. The film 22.0 → 22.8 s.
+- O1's last 0.7 s had the owner's head behind the door's right jamb on a phone (the walk ran on at full pace to the cut):
+  he slows to a stop 2.5 m short of the door's middle (an eased walk, its steps fading as he slows), the owner in the
+  right leaf's clear glass for the last second.
+- O2's mullion (x 2.6) stood down the left third of a phone's frame for four seconds: the lens 0.55 m to its right,
+  the mullion 22° off his eyes — outside a phone's 18.6°.
+- the beckon read as nothing — and in the PHOTOGRAPHS it never could: the nod and the talking take ran on WALL time and
+  every probe pauses the film to shoot it, so by the frame the gesture was long over. His near hand comes up toward the
+  corridor now, palm down, and flaps three times (the Thai "come"), aimed per bone in his body's frame after the mixer
+  and put back before it writes again (the v11.5 law); the hand and the nod are posed by the FILM's clock (the v6.4 law),
+  so a seek, a pause and a slow phone show the same arm.
+- the corridor's far end was a bare wall in a phone's frame for the walk's first five seconds (chapter 5 walks the
+  other way from chapter 3's): a second lift lobby, the first mirrored.
+- the home film's bag of drinks popped onto the desk with the lens still on it: a close insert as it is SET DOWN, lowered
+  into the frame from its top (the hand above the frame), its sound on the landing.
+- the closing shot cut the red one and the little one at a phone's edges, their faces 40 px under a window that filled
+  60 % of it: a narrow screen comes lower and nearer and goes along them in the lamp's light.
+- the weeks from the bed were a thin band on a phone: a narrow screen draws in to 48°/46° (the three 0.85 m fill nine
+  tenths of its width).
+- the first stick's insert had no smoke: aimed at the bowl, the frame's top stood 0.1 m over the tip; aimed up the stick.
+- the drink's cap read as a flat red lid with the straw pushed through it: the tamper ring was a CLOSED disc over the
+  bottle's mouth, wider than its neck — an open band round the glass under the mouth now, the cap's skirt reaching down
+  over the mouth to meet it.
+- the roll of bubble wrap read from the door as a glass capsule, a ghostly blob on the floor (see-through at 0.85, in a
+  chapter about spirits): opaque, its two ends the darker grey of a sheet rolled on itself.
+- CHECKED, NOT A BUG: the day/night cycle of the weeks "never moved" between 15.2 and 17.3 and 24.1 and 25.7 — the
+  frames were one 2.28 s day apart and the last two inside the afternoon's held shot. It turns, a step every 0.38 s.
+- LEFT, with the reason: the corridor's column passing the frame mid-glance (a pan past a pillar, 0.3 s); the grocer's
+  half-sphere fruit and its sign under the letterbox (small, far, a passing shot); the little one's hair as specks at a
+  distance (Chad's scan keeps every strand as a strand — a 35k cut broke them into specks at CP4, and an opaque strand
+  thinner than a pixel aliases at any cut: the cost of his model at its own detail); the owner's collar (his scan's own
+  atlas, three chapters old); the garlands as beads, the riser's highlight, the pins over the receipts' titles, a pixel
+  step in the calendar's edge (each small, each a passing frame).

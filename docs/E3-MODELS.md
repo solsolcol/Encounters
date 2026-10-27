@@ -133,5 +133,13 @@ candles, and his home is the room from chapter 4's ending B, built out.
   never shown as bodies (the no-block-figures rule); each arrives as a glowing
   double of its own scan.
 
+- **Shipped at v23.0**: the three as `kumanred` (the red one), `kumanshy` (the shy one) and `kumanlittle` (the little
+  one), each with a near level at full detail and lighter levels for a distance (the counter's three draw their
+  lightest from 0.9 m, since at 1.1 m the far level was 361k triangles for three figures 140 px tall); each child's
+  double (the glowing one that rises in a possession) is its own scan, built when it lands and warmed under the
+  curtain; a soft contact shadow under each, since their scans cast none. Neither optional piece was needed: the home
+  altar is built from primitives and the Tailandia packs, and every shot stays in his eyes. Chad's own models, so no
+  credit rows (the v5.23 rule).
+
 Credits: send the link to each model's page as usual and it goes in the credits
 panel.

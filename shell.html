@@ -762,6 +762,10 @@ body.finePtr .wpnBtn{position:relative;margin-bottom:12px}
 #event.craft #evNote,#event.yield #evNote,#event.surface #evNote{font-size:.8rem;color:#EDE6D4;opacity:.9;letter-spacing:.05em;
   text-transform:none}
 #event.craft #evBar,#event.yield #evBar{background:linear-gradient(90deg,#C89A5A,#F3E2C0);transition:none}
+/* v23.0 CP13: a hands-on kind may stand LOW (`low: true`, chapter 4's word) — at the foot of the screen, whatever the
+   phone's rule above the bars says (episode 3 chapter 5's PEEK-A-BOO: the shy one stands in the gap between the fingers,
+   where the top panel lay on a phone) */
+#event.full.craft.low,#event.full.yield.low,#event.full.surface.low{align-items:flex-end;padding-top:0;padding-bottom:max(18px,env(safe-area-inset-bottom))}
 #evCraft,#evYield{position:fixed;left:0;top:0;width:0;height:0;pointer-events:none;z-index:1}
 #evCraft.off,#evYield.off{opacity:0}
 #evCraft .cprog{position:absolute;left:0;top:0;width:100px;height:100px;margin:-50px 0 0 -50px;border-radius:50%;

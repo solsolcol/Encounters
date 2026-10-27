@@ -6289,6 +6289,8 @@ cut (sharing its vertices and maps) when it is small.
   error, and quote that error to the person whose account it is — the message is what lets them see which account and
   which allowance is meant. Nothing refused is charged, so running the same nodes again after a refusal for credits is
   not the "never repeat a generation" trap.
+## v23.0 — episode 3 chapter 5
+
 - **A thing laid on a displaced surface rests on the displacement, never on the base** (v23.0 CP5). Episode 3 chapter
   5's card was set 1.5 mm over the counter's top because the owner's cloth was built 1.5 mm up — but the cloth's
   creases and its lifted edge rise to 8 mm above that base, so the card lay INSIDE the cloth. Film K's whole second shot,
@@ -6428,3 +6430,78 @@ cut (sharing its vertices and maps) when it is small.
   frame past the beat, it still failed: that frame can be a quarter-second late. The grade is |t − beat|, early or
   late alike, so the check now presses on whichever frame is nearer the beat, and it has passed under load since.
   v19.4 learned the same about a rate test: tap on the clock that is being measured.
+- **A transcriber hears a Singlish particle as part of the word before it** (v23.0 CP11). The owner's "But listen, ah."
+  came back from the local transcriber as "But listener." in all four takes. A pair was re-said for nothing, because
+  the takes were right. Before re-saying a line that a transcript says is wrong, transcribe it again with the script as
+  the transcriber's initial prompt (faster-whisper's `initial_prompt`). Biased like that, it heard "listen ah..." in
+  every take, and the first take ships.
+- **A music model's audio input carries neither the melody nor the key** (v23.0 CP11). The chapter's theme was asked
+  to grow out of the lullaby, given to Music v2.5 through the music node's audio input. It came back in G major,
+  36 s long, with a melody of its own (the lullaby is in C). The input steers the sound, not the notes. Every cue is
+  asked by TEXT in the lullaby's key and lilt (all ten came back in C), and wherever the tune itself must be heard,
+  the box plays the lullaby's own take, processed offline (`music/fates.py`).
+- **Do not re-word a prompt to get past a model's filter** (v23.0 CP11). The effects model refused "a small child's
+  soft muffled giggle" under its terms filter, in both takes. Finding words the filter lets through would be the wrong
+  lesson. The giggle is the shy one's own laugh, cut from his second voice take: the same child, already approved.
+- **A bed made for "a room at night" comes back as sub-bass, which a phone plays as nothing** (v23.0 CP11; v10.4's
+  law, met four times in one chapter). The flat at night, three in the morning, the fan and the yield's riser came
+  back 83–100 % under 120 Hz. Measure every bed's bands before it is picked. Ask again for the audible band (a hum,
+  the city, a far road, a ticking fan). Where the model will not give it (the fan's second take was the same), take
+  the game's own bed that already works: `k5fan` is chapter 3's `shrinefan`, byte for byte.
+- **A state read off a transition is gone when the transition is** (v23.0 CP12). The room's beds were mixed from
+  `roomLive.look.name`, the light preset in progress. But `lookFrame` sets `roomLive.look` to null the moment its ease
+  is done, and an instant look (`look(name, 0)`, which every ending uses) is done on the frame it is set. So after any
+  look had settled, the mix read the default, NIGHT: ending B's three in the morning would have played the evening's
+  room tone under a deep-night picture. The name is kept on its own field (`roomLive.lookName`), written by `look()`
+  and never cleared by the ease. Keep what a reader needs on its own field, not on the transition object.
+- **A timing scan must model the pause an event makes, at its quickest** (v23.0 CP12). The little one's film pauses
+  at COME BACK (`eventWait`) while a voice cued before the pause plays on. A scan that walked the film's clock
+  straight through could not see that "I have to go back" (3.68 s) would still be speaking when the gasp came. A
+  slow climb hides it; a fast one (0.8 s of event: its lead and its hold) puts the two together. The scan now shifts
+  everything after a wait by the event's quickest length, and the line starts 2.6 s before the climb, so it is over
+  1.08 s in.
+- **A sound probe on this box runs at a third of real time unless it halves the pixels** (v23.0 CP12). The engine's
+  clocks (the film's and the chapter's) advance at most 0.5 s a frame, so under two frames a second they fall behind
+  the audio clock. A phone at DPR 1 drew the counter at under a frame a second: the films ran at about a third of
+  real time and the lines came out spread apart. Spread-out lines can hide an overlap, but they can never invent one.
+  At DPR 0.5 the same phone's endings ran at 0.94 of real time. A probe of the SOUND renders at half the pixels and
+  reports its own film-clock speed; the static scan stays the proof of the spacing.
+- **A walk outlasts its footsteps when a take is shorter than the shot** (v23.0 CP12). The opening film's walk to the
+  shop takes 11 s; `k5steps` is 6.0 s. So from 9 s he walked on in silence toward the glass. When the shot is longer
+  than the take, cue the steps again, then fade them out where he stops (`sfxFade`).
+- **A probe that teleports cannot see a player stuck in a blocker** (v23.0 CP13). `collide()` tests only the point he
+  would land on against the room's solids (padded 0.14, columned floor to 1.40), so a player PUT inside one can turn
+  and never take a step. Standing up from the desk chair left him on its seat, inside the chair's own column, with the
+  next order two metres off. Every probe passed, because each one teleported him to the next thing. A place a scene or
+  a pose puts him down goes in the stage's `arrivals`, and walktest floods from it.
+- **A skip runs every step it has not run yet — after `c.skipped` is set** (v23.0 CP13). `skipCine` seeks to the end
+  and fires each unrun `once` step, so a film skipped before its event's time opened the event in PLAY, after the film,
+  with nobody to answer it. An event step in a film checks `c.skipped` and resolves as skipped instead.
+- **An event aborted by a reset resolves after the reset** (v23.0 CP13). `kitReset` aborts the live event, and its
+  promise's `then` runs as a microtask — after `restart()` has finished and `stage.reset()` has put the chapter back.
+  The handler then marked its act done in the fresh run. Every handler stops on `r.aborted`, not only on `!alive`.
+- **A one-shot the world plays outlives the screen it was played for** (v23.0 CP13). `worldSfx` handed back its source
+  and nobody kept it, so the 14 s pour, the lullaby and the aftermath's held note played on over the title and into
+  the next run (only voices were stopped there). The engine keeps every source worldSfx plays and brings them down at
+  the title and at a restart, beside `stopLiveVoices`.
+- **A copied set carries its z-fight with it** (v23.0 CP13). Chapter 5's temple is chapter 4's by its own code, and
+  the panel behind the monk lay in the face of the dado's gold strip in both: Chad saw the flicker in chapter 4 and the
+  vision review found it in chapter 5. Fixed in the copy, it is also a note against the original.
+- **A flame placed by eye sits in the wax** (v23.0 CP13). The kit's candle is a candlestick, a taper and a tip (0.23,
+  0.36 and 0.41 m at scale 1), and chapter 4's flames were placed at a guess, 0.11 and 0.23 m down inside the wax.
+  Measure the model's own tip (its radius by height) and put the flame on it, times its scale.
+- **The voiced share says whether a take whispers** (v23.0 CP13). "I'm sorry... I have to go back..." was tagged a
+  whisper and sent through his compressor. Measured, it is 38 % voiced, under the game's own whispers (47–56 %), so it
+  goes round the compressor with them (`WHISPER_TAKES`). A whisper through a 4:1 compressor comes out as loud as speech
+  (v6.9).
+- **A deploy needs half a gigabyte free in the folder it runs from** (v23.0 CP13). The deploy tool zips the whole site
+  (430 MB) into its working directory before it uploads. On a disk with 200 MB left it failed part-way, with nothing
+  sent, and left a partial zip inside `dist/`. The second deploy did not upload it (byte-verify found it unserved), but
+  it went into a snapshot taken from dist. Check the free space before a deploy, and delete a failed run's
+  `deploy-*.zip` from dist before the next.
+- **A probe that pauses a film cannot photograph a gesture on wall time** (v23.0 CP13). The opening film's beckon (a
+  talking take and a nod) ran on `performance.now()`, and every film probe seeks the film to a frame — which PAUSES it —
+  and spends ten seconds or more on each screenshot. By the time a frame was taken the gesture had long ended, so two
+  vision reviews in a row saw "no beckon", and the first fix (a nod) was invisible to the same probe. Anything a film
+  is ABOUT is posed by the film's own clock (the v6.4 law: `bkU`/`nodU`, set by the frame function from `t`), so a
+  seek, a pause, a skip and a slow phone all show the same arm. Wall time is for what play does between frames.

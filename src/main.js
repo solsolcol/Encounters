@@ -1754,6 +1754,11 @@ function prayWhere(opts) {
    geometry); kitReset lets go too. Episode 3 chapter 3's joss sticks, held
    through three bows. Nothing before it calls this. */
 let heldProp = null, heldPropL = null;
+/* v23.0: `{ bare: true }` carries the thing with the hand OUT OF SIGHT — the hand's model hidden on the frame while the
+   thing is held (torchPropSync derives it), shown again the moment it is let go. Episode 3 chapter 5's drinks and
+   incense: Chad's ruling on a hand that cannot be made to grip ("dont do that animation, just have the bottle animate
+   itself") — an open hand drawn beside a carried bottle read as a hand that had let go of it */
+let heldBare = false;
 const HOLD_PALM = new THREE.Vector3(0.012, -0.052, -0.148);
 /* v23.0: `{ hand: 'left' }` puts the thing in the LEFT hand (the mirrored clone's group, outside its mirror, so
    the thing itself is not mirrored), at `pos`/`rot` in that hand's frame — the palm is at HOLD_PALM's mirror —
@@ -1777,6 +1782,7 @@ function kitHold(obj, opts = {}) {
   }
   if (heldProp && heldProp.parent === armR) armR.remove(heldProp);   // only from his hand: a chapter may have put it somewhere since
   heldProp = obj || null;
+  heldBare = !!(obj && opts.bare);
   if (!obj) return;
   armR.add(obj);
   if (opts.clasp) {
@@ -3317,7 +3323,7 @@ function torchPropSync() {
     torchProp.visible = torchUp > 0.001 && armR.visible && !weaponVis;
     torchProp.position.set(torchBase.x, torchBase.y - SWAP_DROP * (1 - torchUp), torchBase.z);
   }
-  if (handModel) handModel.visible = handDown < 0.999 && !weaponVis;
+  if (handModel) handModel.visible = handDown < 0.999 && !weaponVis && !heldBare;   // (v23.0: a thing carried bare)
   /* the arm is written ONLY while a swap is on (or on the frame it ends,
      to put it back exactly): episode 1's scenes move `armR.position`
      themselves (ch1, ch3, ch4), and a per-frame reset would fight them */

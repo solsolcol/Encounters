@@ -451,7 +451,15 @@ K.holdSeam = await p.evaluate(async () => {
   const w = c.position.clone(); c.getWorldPosition(w);                  // the hands' pass is drawn from its origin, looking down -z
   const mid = c.parent === arm && E.prayDebug().k === 1 && Math.abs(w.x) < 0.02 && w.z < 0;
   E.kit.hold(null); E.kit.pray(false, { secs: 0 });
-  return clasp && swap && off && mid && c.parent === null;
+  /* v23.0: `bare` — a thing carried with the hand out of sight: the hand's model hidden on the frame while it is held,
+     shown again the moment it is let go (the hand's root is the right hand model's parent) */
+  const frame2 = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+  const hm = E.rightHand && E.rightHand() ? E.rightHand().parent : null;
+  const d = new Obj(); E.kit.hold(d, { bare: true }); await frame2();
+  const bareHid = !!hm && hm.visible === false && d.parent === arm;
+  E.kit.hold(null); await frame2();
+  const bareBack = !!hm && hm.visible === true && d.parent === null;
+  return clasp && swap && off && mid && c.parent === null && bareHid && bareBack;
 }).catch(() => false);
 await settle();
 

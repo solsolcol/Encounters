@@ -1451,3 +1451,35 @@ The script carries one tag naming an emotion each (`[puzzled]`, `[thoughtful]`);
 space after the first ellipsis and the capital on "Buddha" are for the read — not one of his words moved. His chain is
 the v16.0/v18.6 one (high-pass 70 Hz, mono, peak-matched to −6.85 mp3 / −6.6 ogg, 64 kbps Opus). Both are e3c3's own
 pack, warmed by the chapter; the shared pack did not move.
+
+## v23.0 · episode 3 chapter 5, The Children On My Altar
+
+Its whole sound, made at CP11 on the e3c5 flows and picked by measurement; `masters/v23.0/make.sh` names every pick and
+why, one line a sound, and `masters/v23.0/{voices,sfx,music}/sessions.json` hold the session ids (the only handle on a
+generation).
+
+- **92 voice lines** in four voices: Brian (him), the Golden Mile owner (chapter 3's, `rTCcr5snLtTho4KbH96N`), Ma
+  (Matilda, episode 1's) and the temple monk (Arthur, episode 3 chapter 1's); the monk's verse is chapter 4's own take
+  under this chapter's name (`mk5yatha`). Two takes a line (eleven_v3), transcribed locally (faster-whisper with word
+  timings), and ranked: the words exactly first, then an end that is not on signal, then the quieter head, then the
+  pauses where the script has its ellipses. An end left on signal is faded over 0.12 s. **THE CHILDREN SPEAK THROUGH
+  HIM**: his voice in a child's register, eleven_v4 (v3 kept him at his own pitch whatever the tag), measured by
+  median pitch and voiced share (`voices/child.py`); nothing is pitch-shifted.
+- **70 effects** (eleven_text_to_sound_v2, `duration_seconds` as a parameter — the v9.2 law), each measured for its
+  bands (a take mostly under 120 Hz is nothing on a phone, v10.4), its onset, its end and its holes; four came back
+  silent and were never used. The effects model refused the shy one's giggle under its filter; it is his own giggle,
+  cut from his second voice take, not a re-worded prompt (LEARNINGS).
+- **The beds**, looped by hand (`../v22.0/cp9/loopfast.py`) and levelled by RMS: the night, three in the morning and
+  the dawn re-made for the band a phone plays; the fan is chapter 3's `shrinefan` byte for byte; the shop and its
+  corridor are chapter 4's.
+- **The music**: ONE lullaby (`k5lullaby`, C major, 3/4 at 72), which the music box plays itself wherever it is wound;
+  every other cue asked in its key and lilt, because the music model's audio input carries neither the melody nor the
+  key (LEARNINGS); the box's three fates in the endings are made from the lullaby's own take offline
+  (`music/fates.py`).
+
+CP13 moved four things and no take: "I'm sorry... I have to go back..." (`z5come`, 38 % voiced) goes round his
+compressor with the game's other whispers; the water's pour is heard only while the water moves, not after the cups
+are full; the yield has the riser it was designed with (`k5loosen`, once a yield, heard while held) and the room's
+beds sink under it by 1 − 0.6·k; and the lullaby's theme comes in softly under film K's twelve seconds of reading.
+Every one-shot a chapter's world plays is now brought down at the title and at a restart (the engine's
+`stopWorldSfx`).
