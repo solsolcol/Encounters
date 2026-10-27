@@ -7250,11 +7250,12 @@ which rig stands in for each, and each is a one-line swap). Episode 3 chapter
 
 Next up: **EPISODE 4**, Not Every Master Should Be Trusted — the casebook's S1·11, which follows S1·10 (Chad, 27 Oct:
 the episodes follow the encounters casebook; the Love Spell, S1·16, was Episode 4 in the v6.0 list and is Episode 5
-since v23.2) — PROPOSED, awaiting Chad's decisions: **docs/V24.0-EPISODE4-PLAN.md**, built on Master Z's own
-five-chapter trial episode for this case (THE FIRST MASTER · A SECOND OPINION · THE WARNING · WHAT FOLLOWED · THE
-REAL LESSON — every choice and lesson his; all nine trial episodes are copied verbatim into
-**docs/source/mztrial-episodes.md**) with the case file's shop, fog, wallet and clearing around them (S1·12, I
-Finally Found My Answers, follows it in the casebook). EPISODE 3 IS COMPLETE (v23.0; chapter 5, The Children
+since v23.2) — PROPOSED, awaiting Chad's decisions: **docs/V24.0-EPISODE4-PLAN.md**. At his word ("compressed
+into 2 or even 1 chapter … more progression … meet grandmaster pho for the first time and begin his cultivation
+journey, along with monkhood. Refer to the casebook") it runs S1·11 (the wrong master, in one chapter, on Master Z's
+own trial episode — all nine trial episodes are copied verbatim into **docs/source/mztrial-episodes.md**) → S1·12
+(Grandmaster Pho at the Wai Kru; open and close) → S2·02 (the night he lost control; the fifth precept) → S2·03
+(two masters, one message: ordain) → S2·04 and S2·05 (his first monkhood, and the kettle). EPISODE 3 IS COMPLETE (v23.0; chapter 5, The Children
 On My Altar — `src/chapters/e3/e3c5.js`, docs/V23.0-E3C5-PLAN.md, its plan written 25 Oct 2026 from Chad's answers and
 revised four times — §2.3–§2.7 his rulings, docs/research/V23.0-KUMANTHONG.md the research behind every belief;
 v16.0 shipped chapter 1,
