@@ -113,7 +113,8 @@
     hemi: [0x5ab0c8, 0x020608, 0.48], key: [0x9adcf0, 0.40, 0, 8, 0], fill: [0x2a6a8a, 0.18],
     vmHemi: [0x6ab8d0, 0x020608, 0.55], vmKey: [0xa8e0f0, 0.45] });
   /* WORLD M's two (§4.1c, CP5): the hall by candlelight for the counter's film M — dark, warm, the light low from the
-     candles on the table before the monk (+x of the three), so their faces are lit and his is in shadow; and first light
+     candles on the table before the monk (+x of the three), their faces and his lit warm (CP13, by photograph: his face
+     reads kind in it, never shadowed — he is where the compassion comes from); and first light
      for ending D (CP8 tunes it) — pale gold low in the east, the sky blue-grey to pink, the hall's lamps still lit */
   const TEMPLE_NIGHT = room({
     stops: [[0.00, '#0c0e18'], [0.12, '#0a0b14'], [0.35, '#080810'], [0.65, '#06060c'], [1.00, '#040408']],
@@ -161,15 +162,18 @@
       { k: 'A', text: 'Open yourself to them again — and stay as long as they want.',
         d: { sanity: -18, awareness: -9, wisdom: -27 }, verdict: 'worst', critical: true,
         say: 'I promised to look after them. In the end, there was no one left to do it.',
-        teach: 'Loving them is not becoming them. Even with no ill intent on either side, Kumanthong are regarded in traditional belief as Yin while a living person carries Yang, and immersing yourself in them again and again wears away your own balance. Once you are lost, the care and the merit you promised them stop.' },
+        /* (CP13, §2.3 14: the case file's balance, said of every spirit and as the old belief — "Kumanthong are regarded
+           as Yin" read as the very misconception the chapter clears, and the Yin of chapter 4's shop) */
+        teach: 'Loving them is not becoming them. The old belief holds that a spirit is Yin and a living person Yang: even with no ill intent on either side, immersing yourself in them again and again wears away your own balance. Once you are lost, the care and the merit you promised them stop.' },
       { k: 'B', text: 'Post it all on the amulet forum — let everyone know it\'s real.',
         d: { sanity: -9, awareness: 6, wisdom: -12 }, verdict: 'bad',
         say: 'They were children, not a horror story. I showed strangers the way in.',
-        teach: 'They are children, not a horror story. You do not need possession, trance or dramatic manifestations to prove a spiritual connection. Told as a thrill, a dangerous experiment becomes an invitation, and strangers take one in without knowing what it asks of them.' },
+        /* (CP13, the words lens: its first sentence was the card line's own, and "take one in" had no noun) */
+        teach: 'You do not need possession, trance or dramatic manifestations to prove a spiritual connection. Told as a thrill, a dangerous experiment becomes an invitation: strangers try it, or take a Kumanthong home, without knowing what it asks of them.' },
       { k: 'C', text: 'Talk to them every day — and wish for everything you want.',
         d: { sanity: -15, awareness: -6, wisdom: -18 }, verdict: 'bad',
         say: 'I stopped giving to them. I only kept asking.',
-        teach: 'Do not be driven by greed. Kumanthong kept with compassion are kept first for their sake; whatever help they give is a gift, not a wage, and the ones from a temple are believed never to help with anything wrong. Kept for wealth, care turns into a bargain, and the wanting never stops.' },
+        teach: 'Do not be driven by greed. Kumanthong kept with compassion are kept first for their sake; whatever help they give is a gift, not a wage, and the ones from a temple are believed never to help with anything wrong. Keep them for wealth, and care turns into a bargain in which the wanting never stops.' },
       { k: 'D', text: 'Keep caring for them — but never open yourself to them again.',
         d: { sanity: 15, awareness: 24, wisdom: 30 }, verdict: 'best',
         say: 'I kept my promise every day, and I kept my own door shut.',
@@ -177,7 +181,8 @@
     ],
     /* Chad's purpose first, then S1·10's own lesson; the second person; no Pali tag (§2.3 9); its beliefs said as
        beliefs (§2.7) */
-    core: 'Kumanthong given a home at a temple are not the trapped, blood-fed spirits of frightening stories. Kept well, they are kept out of compassion: children with nowhere to go, believed to help a kind keeper a little and to be carried toward a better birth by the merit he makes for them. Never keep one for greed or ask one for anything wrong. Take one in only if you can care for it, and make merit for it, for life — and never invite one to enter or take control of you.',
+    /* (CP13, the words lens: "Kept well, they are kept" said kept twice, and a child was "it") */
+    core: 'Kumanthong given a home at a temple are not the trapped, blood-fed spirits of frightening stories. They are kept out of compassion: children with nowhere to go, believed to help a kind keeper a little and to be carried toward a better birth by the merit he makes for them. Never keep one for greed or ask one for anything wrong. Take one in only if you can care for him, and make merit for him, for life — and never invite one to enter or take control of you.',
 
     /* S42: registered, out of the run, until its sound is recorded (CP11 takes this out) */
     preview: true,
@@ -265,7 +270,7 @@
       objSit: 'Sit with them',
       hotMat: 'Sit with them',
       /* PLAY I · the offerings (CP6, §4.2) */
-      objWater: 'Their water, then their drinks · {n}/3',
+      objWater: 'Give them water, then drinks · {n}/3',   // (CP13: an order, and short enough that a phone's box keeps its count on one line)
       objGiveRed: 'Give it to the red one',
       objGiveShy: 'Give it to the shy one',
       objGiveLittle: 'Give it to the little one',
@@ -277,8 +282,8 @@
       hotPacket: 'Their incense',
       hotBowl: 'His stick',
       briefCapTitle: 'His drink',
-      briefCap: 'Twist the cap off: circle your finger around it. Then slide the straw in, and bend it to him.',
-      briefCapKey: 'Twist the cap off: drag the mouse in a circle around it, or hold E. Then slide the straw in, and bend it to him.',
+      briefCap: 'Twist the cap off gently: circle your finger slowly around it. Then slide the straw in, and bend it to him.',
+      briefCapKey: 'Twist the cap off gently: drag the mouse slowly in a circle around it, or hold E. Then slide the straw in, and bend it to him.',
       craftCap: 'Twist the cap off',
       craftStraw: 'Slide the straw in',
       craftBend: 'Bend the straw to him',
@@ -287,6 +292,7 @@
       craftCatch: 'Hold the tips in the flame',
       craftWave: 'Wave the flames out',
       craftWind: 'Wind the box',
+      titleBox: 'The music box',
       noteCare: 'You prepared their drinks with care.',
       /* PLAY II · the question and the openings (CP7, §4.3–§4.6) */
       objOpenRed: 'Open yourself to the red one',
@@ -297,10 +303,12 @@
       briefYield: 'Press and hold. Let your mind loosen.',
       briefYieldKey: 'Hold the mouse button, E or Space. Let your mind loosen.',
       craftStamp: 'Stamp!',
+      titleStamp: 'Stamp with him',
       craftPeek: 'Peek through your fingers',
+      titlePeek: 'Peek-a-boo',
       objComeBack: 'Come back',
-      briefSurface: 'COME BACK — draw yourself up toward the light. He doesn\'t want you to go. Keep rising.',
-      briefSurfaceKey: 'COME BACK — move the mouse up, or tap W or ↑, to rise toward the light. He doesn\'t want you to go. Keep rising.',
+      briefSurface: 'COME BACK — drag your finger up to rise toward the light. He doesn\'t want you to go. Keep rising.',
+      briefSurfaceKey: 'COME BACK — hold the mouse button and drag up, or tap W or ↑ quickly, to rise toward the light. He doesn\'t want you to go. Keep rising.',
       noteCameBack: 'You came back on your own.',
       noteHard: 'It took everything to come back.'
     },
@@ -457,7 +465,8 @@
     const matProxy  = M({ color: 0x8d7a66, roughness: 0.9 });
     /* THE MUSIC BOX's (§4.1 1, §4.0b) and HIS CARD's: one in his room and one on the owner's glass — the same box and
        the same card, before he gives them (CP5: built by one function, the card's sheet drawn once) */
-    const mBoxW = M({ color: 0x5a3a22, roughness: 0.45 }), mBoxBrass = M({ color: 0xc8a050, roughness: 0.3, metalness: 0.85 });
+    const mBoxW = M({ color: 0x5a3a22, roughness: 0.45 }), mBoxBrass = M({ color: 0xc8a050, roughness: 0.3, metalness: 0.85 }),
+          mBoxFelt = M({ color: 0x8a1e22, roughness: 0.95 });
     let tInlayT = null, tCardT = null;
     const tCard = () => tCardT || (tCardT = tex(makeOwnerCardT(THREE, cnv, cardLines())));
     /* the counter's live parts (World S, §4.0b), declared here with the room's (the v21.1 dead-zone law): the things he
@@ -509,13 +518,28 @@
       parent.add(m); return m;
     };
     const hidBox = (w, h, d, x, y, z, parent) => { const m = box(w, h, d, x, y, z, matProxy, parent, false); m.visible = false; return m; };
+    /* a multi-material box draws once per face; adjacent faces that share a material are made one draw (CP13, the
+       geometry lens: the twelve cartons and nine books were 126 draws) */
+    function mergeGroups(geo, mats) {
+      const out = [];
+      for (const gr of geo.groups) {
+        const last = out[out.length - 1];
+        if (last && mats[last.materialIndex] === mats[gr.materialIndex] && last.start + last.count === gr.start) last.count += gr.count;
+        else out.push({ start: gr.start, count: gr.count, materialIndex: gr.materialIndex });
+      }
+      geo.groups = out; return geo;
+    }
     /* the old auntie's music box: a walnut box, its lid inlaid, a brass comb and drum inside, its key at the side (its
        front is its local +z, the hinge at the back) — {group, lid, key, drum} */
     function makeMusicBox(parent) {
       const mb = new THREE.Group(); parent.add(mb);
-      box(0.16, 0.07, 0.11, 0, 0.035, 0, mBoxW, mb, false);
-      box(0.1, 0.004, 0.03, 0.01, 0.062, -0.02, mBoxBrass, mb, false);                  // the comb
-      const drum = cyl(0.012, 0.012, 0.06, 0.01, 0.066, 0.015, mBoxBrass, 14, mb); drum.rotation.z = Math.PI / 2;
+      /* (CP13, the geometry lens: the body was a SOLID block — the comb lay buried in it and an 8 mm sliver of the drum was
+         all an open lid showed. Now a base, four walls and a red lining, the works inside it) */
+      box(0.16, 0.03, 0.11, 0, 0.015, 0, mBoxW, mb, false);
+      for (const sz of [-1, 1]) { box(0.16, 0.04, 0.008, 0, 0.05, sz * 0.051, mBoxW, mb, false); box(0.008, 0.04, 0.094, sz * 0.076, 0.05, 0, mBoxW, mb, false); }
+      box(0.144, 0.002, 0.094, 0, 0.031, 0, mBoxFelt, mb, false);                         // the lining
+      box(0.1, 0.004, 0.03, 0.01, 0.036, -0.02, mBoxBrass, mb, false);                  // the comb
+      const drum = cyl(0.012, 0.012, 0.06, 0.01, 0.046, 0.015, mBoxBrass, 14, mb); drum.rotation.z = Math.PI / 2;
       const lid = new THREE.Group(); lid.position.set(0, 0.07, -0.055); mb.add(lid);
       box(0.162, 0.018, 0.112, 0, 0.009, 0.055, mBoxW, lid, false);
       if (!tInlayT) tInlayT = tex(makeInlayT(THREE, cnv));
@@ -731,6 +755,13 @@
       solids.push(hidBox(0.34, 0.6, 0.34, 1.40, 0.3, 1.46, R));
       roomLive.floorGlow = glowP(1.4, 1.8, 0x8aa4d8, 0.16, 0.7, 0.012, 0.45, -Math.PI / 2);
       setWindow('night');
+      /* every other state painted now, under the curtain, each on a hidden scrap the curtain's warm uploads (CP13, the
+         geometry lens: painted on first use, the home film's weeks painted and uploaded three in 1.5 s on screen) */
+      for (const st of Object.keys(WIN_STATES)) {
+        if (!roomLive.viewTex[st]) roomLive.viewTex[st] = tex(makeWindowT(THREE, cnv, st));
+        const hp = new THREE.Mesh(new THREE.PlaneGeometry(0.01, 0.01), B({ map: roomLive.viewTex[st] }));
+        hp.visible = false; hp.position.set(x1 + 0.5, 1.5, 0); R.add(hp);
+      }
       /* ---- THE DESK (chapter 4's), made real: its drawer, the lamp and its pool, the laptop, the second monitor on an
          arm with his dashboard, a dashcam on its stand, a notebook and pen, a mug on a coaster, the alarm clock, a
          charging cable; the office chair before it */
@@ -754,7 +785,9 @@
         const sh = new THREE.Mesh(new THREE.ConeGeometry(0.085, 0.13, 20, 1, true), mg); sh.position.set(0.25, 0.37, 0.2); sh.rotation.set(-0.55, 0, 0.35); L.add(sh);
         const bl = new THREE.Mesh(new THREE.SphereGeometry(0.028, 12, 8), B({ color: 0xfff0c8, toneMapped: false }));
         bl.position.set(0.24, 0.33, 0.21); L.add(bl); roomLive.bulb = bl; }
-      roomLive.glow.push(glowP(1.25, 1.0, 0xffcc80, 0.55, -0.42, DT + 0.022, -1.38, -Math.PI / 2));
+      /* (CP13, the geometry lens: the pool ran 0.30 m past the desk's front edge and the laptop's 0.23 m, painted light
+         hanging in the air over the chair; drawn back onto the desk, only their faint rims past its edge) */
+      roomLive.glow.push(glowP(1.25, 0.84, 0xffcc80, 0.55, -0.42, DT + 0.022, -1.50, -Math.PI / 2));
       roomLive.glow.push(glowP(1.9, 1.6, 0xffc070, 0.32, -0.55, 1.15, z0 + 0.03));     // (in front of the board and the papers, so it lights them too)
       roomLive.glow.push(glowP(0.42, 0.42, 0xfff0c8, 0.6, -0.58, DT + 0.33, -1.42));
       { const lp = new THREE.Group(); lp.position.set(-0.2, DT + 0.018, -1.43); lp.rotation.y = -0.08; R.add(lp);
@@ -763,7 +796,7 @@
         box(0.33, 0.215, 0.008, 0, 0.108, 0, M({ color: 0x2a2c30, roughness: 0.4, metalness: 0.5 }), hinge, false);
         const scr = new THREE.Mesh(new THREE.PlaneGeometry(0.31, 0.195), B({ map: tex(makeLaptopT(THREE, cnv)), toneMapped: false }));
         scr.position.set(0, 0.108, 0.0045); hinge.add(scr); roomLive.screen = scr;
-        roomLive.screenGlow.push(glowP(0.7, 0.5, 0xb8d0ff, 0.12, -0.2, DT + 0.021, -1.2, -Math.PI / 2)); }
+        roomLive.screenGlow.push(glowP(0.7, 0.4, 0xb8d0ff, 0.12, -0.2, DT + 0.021, -1.30, -Math.PI / 2)); }
       { const mon = new THREE.Group(); mon.position.set(0.12, DT + 0.018, -1.68); mon.rotation.y = -0.18; R.add(mon);   // the second monitor, on its arm
         cyl(0.05, 0.06, 0.02, 0, 0.01, 0, mDark, 16, mon);
         cyl(0.012, 0.012, 0.3, 0, 0.16, 0, mDark, 8, mon);
@@ -813,10 +846,10 @@
       /* ---- THE ROADEYE CORNER by the desk: twelve of his cartons, a tape dispenser, a roll of bubble wrap */
       { const tBox = tex(makeDashBox(THREE, cnv)), mBoxF = M({ map: tBox, roughness: 0.85 }), mBoxS = M({ color: 0xb48c5c, roughness: 0.85 });
         const mats6 = [mBoxS, mBoxS, mBoxS, mBoxS, mBoxF, mBoxS];
-        const r = rng(5211);
+        const r = rng(5211), cGeo = mergeGroups(new THREE.BoxGeometry(0.2, 0.13, 0.16), mats6);   // (one shape for all twelve: three draws each)
         for (let k = 0; k < 12; k++) {
           const col = k % 3, row = Math.floor(k / 3) % 2, lay = Math.floor(k / 6);
-          const b = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.13, 0.16), mats6);
+          const b = new THREE.Mesh(cGeo, mats6);
           b.position.set(0.5 + col * 0.205 + (r() - 0.5) * 0.01, 0.065 + row * 0.13, -1.66 + lay * 0.17); b.rotation.y = (r() - 0.5) * 0.06;
           b.castShadow = !LOW; b.receiveShadow = true; R.add(b); (roomLive.cartons = roomLive.cartons || []).push(b);   // (C sends them out, CP8)
           if (k === 10) { roomLive.cartonTop = b; b.userData.home = { x: b.position.x, y: b.position.y, z: b.position.z, ry: b.rotation.y }; }   // (the red one swipes it off, CP7)
@@ -842,11 +875,32 @@
         for (let k = 0; k < 9; k++) box(0.92, 0.012, 0.07, BX, 0.305, BZ - 0.9 + k * 0.225, mWood, R, false);       // the slats, at its sides
         box(0.92, 0.17, 1.96, BX, 0.395, BZ, mSheet, R, false);                                                     // the mattress in its sheet
         const mPil = M({ map: tex(makeWeaveT(THREE, cnv, '#d8dcd6', 5223)), roughness: 0.95 });
-        for (const dx of [-0.2, 0.2]) { const pl = new THREE.Mesh(new THREE.SphereGeometry(0.2, 16, 10), mPil); pl.scale.set(0.95, 0.3, 0.7); pl.position.set(BX + dx, 0.52, BZ - 0.82); pl.rotation.y = dx * 0.4; R.add(pl); }
+        /* (CP13, the films' vision review: a squashed sphere read as a plate — a cushion now, its middle puffed and its
+           seams thin, as a pillow is) */
+        const pilGeo = new THREE.BoxGeometry(0.42, 0.12, 0.3, 12, 2, 10), pp = pilGeo.attributes.position;
+        for (let k = 0; k < pp.count; k++) {
+          const fx = Math.min(1, Math.abs(pp.getX(k)) / 0.21), fz = Math.min(1, Math.abs(pp.getZ(k)) / 0.15);
+          const puff = Math.sqrt(Math.max(0, (1 - fx ** 4) * (1 - fz ** 4)));
+          pp.setY(k, pp.getY(k) * (0.12 + 0.88 * puff)); pp.setX(k, pp.getX(k) * (1 - 0.06 * fz * fz)); pp.setZ(k, pp.getZ(k) * (1 - 0.06 * fx * fx));
+        }
+        pilGeo.computeVertexNormals();
+        for (const dx of [-0.2, 0.2]) { const pl = new THREE.Mesh(pilGeo, mPil); pl.position.set(BX + dx, 0.53, BZ - 0.82); pl.rotation.y = dx * 0.4; R.add(pl); }
         const mBl = M({ map: tex(makeWeaveT(THREE, cnv, '#3a4a6a', 5227)), roughness: 0.96 });
-        const bl = box(0.94, 0.05, 1.1, BX, 0.5, BZ + 0.35, mBl, R, false); bl.rotation.z = 0.02;
-        for (const [dz, rx, h] of [[-0.18, -0.25, 0.08], [-0.05, 0.3, 0.07], [0.08, -0.2, 0.06]]) { const f = box(0.9, h, 0.14, BX + 0.01, 0.52 + h / 3, BZ + dz, mBl, R, false); f.rotation.x = rx; }
-        box(0.3, 0.03, 0.24, BX + 0.12, 0.5, BZ + 0.82, M({ map: tex(makeWeaveT(THREE, cnv, '#c8ccd2', 5229)), roughness: 0.95 }), R, false).rotation.y = 0.15;   // a T-shirt, folded
+        /* (CP13, the films' vision review: a slab and three boxes read as a stack of blue boxes — ONE cloth now, turned back
+           at its head in soft folds, rumpled, and hanging over the mattress's sides; it stops short of the foot, where the
+           T-shirt lies on the bare sheet — the geometry lens found it 1 cm UNDER the old blanket's top) */
+        { const BLW = 1.04, BLL = 0.94, blGeo = new THREE.PlaneGeometry(BLW, BLL, 30, 28); blGeo.rotateX(-Math.PI / 2);
+          const bp = blGeo.attributes.position;
+          for (let k = 0; k < bp.count; k++) {
+            const x = bp.getX(k), z = bp.getZ(k), u = (z + BLL / 2) / BLL;          // u: 0 at its head, 1 at its foot
+            let y = 0.012 + 0.006 * Math.sin(x * 13 + z * 7) * Math.sin(z * 9 - x * 3)    // the rumple
+                  + 0.045 * Math.exp(-(((u - 0.07) / 0.06) ** 2)) + 0.03 * Math.exp(-(((u - 0.2) / 0.05) ** 2));   // the turned-back folds at its head
+            const over = Math.abs(x) - 0.46; if (over > 0) y -= over * 1.6 + over * over * 6;   // and over the sides
+            bp.setY(k, y);
+          }
+          blGeo.computeVertexNormals();
+          const bl = new THREE.Mesh(blGeo, M({ map: mBl.map, roughness: 0.96, side: THREE.DoubleSide })); bl.position.set(BX, 0.48, BZ + 0.24); bl.receiveShadow = true; R.add(bl); }
+        box(0.3, 0.03, 0.24, BX + 0.12, 0.495, BZ + 0.84, M({ map: tex(makeWeaveT(THREE, cnv, '#c8ccd2', 5229)), roughness: 0.95 }), R, false).rotation.y = 0.15;   // a T-shirt, folded
         solids.push(hidBox(0.96, 0.5, 2.0, BX, 0.25, BZ, R)); }
       box(0.4, 0.5, 0.38, x0 + 0.24, 0.25, -1.18, mWood, R, false);
       solids.push(hidBox(0.4, 0.5, 0.38, x0 + 0.24, 0.25, -1.18, R));
@@ -861,10 +915,13 @@
                         ['Starting a Small Business', '#3a5a3a', '#f0e8d0'], ['The Buddha\'s Words', '#6a4a2a', '#f0dca0'], ['Singapore Street Directory', '#c8a83a', '#2a2a2a'],
                         ['Night Market Recipes', '#5a2a4a', '#f0d8e0'], ['Teach Yourself Thai', '#2a6a7a', '#f0f0e0'], ['Kindness', '#8a6a3a', '#f8f0d8']];
         let z = -0.15;
+        const mPages = M({ color: 0xe8e0cc, roughness: 0.9 });
         titles.forEach(([tt, bg, fg], i) => { const h = 0.17 + (i % 4) * 0.018, w = 0.028 + (i % 3) * 0.008;
-          const mats6 = [M({ color: bg, roughness: 0.8 }), M({ map: tex(makeSpineT(THREE, cnv, tt, bg, fg)), roughness: 0.8 }), M({ color: 0xe8e0cc, roughness: 0.9 }),
-                         M({ color: 0xe8e0cc, roughness: 0.9 }), M({ color: bg, roughness: 0.8 }), M({ color: bg, roughness: 0.8 })];
-          const bk = new THREE.Mesh(new THREE.BoxGeometry(0.16, h, w), mats6); bk.position.set(x0 + 0.12, 1.613 + h / 2, z + w / 2); R.add(bk);
+          /* (CP13, the geometry lens: the spine is the box's +x face, the one toward the room — at −x it faced the wall; and
+             its cover and pages one material each, so a book is four draws, not six) */
+          const mCov = M({ color: bg, roughness: 0.8 });
+          const mats6 = [M({ map: tex(makeSpineT(THREE, cnv, tt, bg, fg)), roughness: 0.8 }), mCov, mPages, mPages, mCov, mCov];
+          const bk = new THREE.Mesh(mergeGroups(new THREE.BoxGeometry(0.16, h, w), mats6), mats6); bk.position.set(x0 + 0.12, 1.613 + h / 2, z + w / 2); R.add(bk);
           z += w + 0.004; }); }
       thai('buddha', x0 + 0.14, 1.613, 0.6, { s: 0.22, parent: R, cast: false, ry: Math.PI / 2 });
       /* ---- the WARDROBE against the front wall, between the bed's foot and the door, a backpack leaning on it */
@@ -885,9 +942,11 @@
         cyl(0.07, 0.08, 0.05, 0, H - 0.025, 0.1, mWhite, 16, R); }
       { const acu = new THREE.Group(); acu.position.set(DOOR.x, 2.42, z1 - 0.12); acu.rotation.y = Math.PI; R.add(acu);
         box(0.84, 0.27, 0.2, 0, 0, 0, mWhite, acu, false);
-        const lv = new THREE.Group(); lv.position.set(0, -0.12, -0.09); acu.add(lv);
-        box(0.74, 0.008, 0.06, 0, 0, -0.03, M({ color: 0xd8d8d2, roughness: 0.5 }), lv, false); roomLive.louvre = lv;
-        const led = new THREE.Mesh(new THREE.CircleGeometry(0.005, 10), B({ color: 0x4aa8ff, toneMapped: false })); led.position.set(0.34, -0.06, -0.101); led.rotation.y = Math.PI; acu.add(led);
+        /* (CP13, the geometry lens: the group is turned π to face the room, so its FRONT is local +z — the louvre and the
+           LED were at local −z, swinging and glowing inside the unit at its back, against the wall) */
+        const lv = new THREE.Group(); lv.position.set(0, -0.12, 0.09); acu.add(lv);
+        box(0.74, 0.008, 0.06, 0, 0, 0.03, M({ color: 0xd8d8d2, roughness: 0.5 }), lv, false); roomLive.louvre = lv;
+        const led = new THREE.Mesh(new THREE.CircleGeometry(0.005, 10), B({ color: 0x4aa8ff, toneMapped: false })); led.position.set(0.34, -0.06, 0.101); acu.add(led);
         glowP(0.05, 0.05, 0x4aa8ff, 0.5, DOOR.x - 0.34, 2.36, z1 - 0.225, 0, Math.PI); }
       /* ---- by the door: a switch and a power socket; the slippers; the laundry basket in the bed's foot corner; a
          small bin under the desk; a cable along the skirting */
@@ -925,8 +984,18 @@
         cap.position.set(-0.42, 1.74, -0.12); cap.scale.set(1, 0.6, 1); cap.rotation.x = -1.2; hg.add(cap);
         const cg = new THREE.Group(); cg.position.set(DOOR.x, 0, z1); R.add(cg); roomLive.corridor = cg;
         const mC = M({ color: 0x3a3c40, roughness: 0.9 });
-        box(1.6, 0.01, 4.2, 0, 0.005, 2.1, mC, cg, false); box(0.05, 2.6, 4.2, -0.8, 1.3, 2.1, mC, cg, false); box(0.05, 2.6, 4.2, 0.8, 1.3, 2.1, mC, cg, false);
-        box(1.6, 0.05, 4.2, 0, 2.6, 2.1, mC, cg, false); box(1.6, 2.6, 0.05, 0, 1.3, 4.2, mC, cg, false);
+        /* (CP13, the geometry lens: begun 6 mm behind the door wall — at 0 their ends lay IN the room's wall plane, facing
+           the room, and the left wall's and the ceiling's ends flickered through it as dark stripes) */
+        box(1.6, 0.01, 4.194, 0, 0.005, 2.103, mC, cg, false); box(0.05, 2.6, 4.194, -0.8, 1.3, 2.103, mC, cg, false); box(0.05, 2.6, 4.194, 0.8, 1.3, 2.103, mC, cg, false);
+        box(1.6, 0.05, 4.194, 0, 2.6, 2.103, mC, cg, false); box(1.6, 2.6, 0.05, 0, 1.3, 4.2, mC, cg, false);
+        /* the wall round his door seen FROM the corridor (CP13, by photograph: the front wall's pieces face into the room
+           only, so the home film's two shots from the corridor saw through them — the room's fan over the door, the
+           wardrobe's back and the light switch floating beside it): its outer face across the corridor's width, either
+           side of the doorway and over it up to the corridor's ceiling, 3 mm out on the corridor's side */
+        for (const [w, h, x, y] of [[0.8 - DOOR.w / 2, 2.6, -(0.8 + DOOR.w / 2) / 2, 1.3], [0.8 - DOOR.w / 2, 2.6, (0.8 + DOOR.w / 2) / 2, 1.3],
+                                    [DOOR.w, 2.6 - DOOR.h, 0, (DOOR.h + 2.6) / 2]]) {
+          const o = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mC); o.position.set(x, y, 0.003); cg.add(o);
+        }
         roomLive.tvGlow = glowP(1.2, 1.4, 0x6a8ad8, 0.25, DOOR.x + 0.2, 1.2, z1 + 4.15, 0, Math.PI); }
       /* ---- the ceiling's lamp (chapter 4's), off but for HARSH; its light painted on the ceiling and the floor */
       roomLive.ceilLamp = cyl(0.18, 0.2, 0.06, 0, H - 0.03, 0.1, M({ color: 0xeceae4, roughness: 0.6, emissive: 0xfff8ec, emissiveIntensity: 0 }), 24, R);
@@ -969,7 +1038,8 @@
       const top = RY + A.riser;
       const mCup = M({ color: 0xe8eef2, roughness: 0.08, metalness: 0.05, transparent: true, opacity: 0.55 });
       const mWater = B({ color: 0x8ab0c8, transparent: true, opacity: 0.55 });
-      const mSand = M({ color: 0xcab48a, roughness: 0.95 }), mBowl = M({ color: 0x7a4a2a, roughness: 0.6 });
+      const mSand = M({ color: 0xcab48a, roughness: 0.95 }), mBowl = M({ color: 0x7a4a2a, roughness: 0.6, side: THREE.DoubleSide });
+      let BOWL_GEO = null;
       const mSaucer = M({ color: 0xf2eee4, roughness: 0.3 });
       const SWEET = [0xd83a3a, 0xf2c23a, 0x3ab06a, 0xe87ab0];
       for (let i = 0; i < 3; i++) {
@@ -981,7 +1051,11 @@
         // his drink's place (empty until play fills it, CP6)
         roomLive.drinkAt.push(new THREE.Vector3(ROW.back, A.top + 0.005, z + 0.06));
         // his bowl of sand, for ONE stick
-        const bw = cyl(0.032, 0.022, 0.035, ROW.mid, A.top + 0.0195, z, mBowl, 16, R);
+        /* (CP13, the films' vision review: a tapered cylinder read as a cupcake case in the close inserts — a turned bowl,
+           its belly round and its lip rolled; its origin at its foot, so the rattle's y0 is the altar's top) */
+        const bw = new THREE.Mesh(BOWL_GEO || (BOWL_GEO = new THREE.LatheGeometry([[0, 0.002], [0.017, 0.002], [0.02, 0.004], [0.026, 0.011], [0.0305, 0.021],
+          [0.0325, 0.03], [0.033, 0.0355], [0.0315, 0.037], [0.0295, 0.0355], [0.029, 0.033]].map(([a, b]) => new THREE.Vector2(a, b)), 28)), mBowl);
+        bw.position.set(ROW.mid, A.top, z); bw.castShadow = !LOW; bw.receiveShadow = true; R.add(bw);
         cyl(0.029, 0.029, 0.004, ROW.mid, A.top + 0.034, z, mSand, 16, R);
         roomLive.bowls.push(bw);
         // a saucer of sweets, at the front
@@ -991,9 +1065,24 @@
         // his toy, at the front beside them
         const toy = new THREE.Group(); toy.position.set(ROW.front, A.top + 0.002, z + 0.075); R.add(toy); roomLive.toys.push(toy);
         if (i === 0) {           // the tin car, red
-          box(0.06, 0.022, 0.03, 0, 0.02, 0, M({ color: 0xc8281c, roughness: 0.3, metalness: 0.6 }), toy, false).rotation.y = Math.PI / 2;
-          box(0.03, 0.018, 0.026, 0, 0.038, -0.004, M({ color: 0x9ac8e8, roughness: 0.2, metalness: 0.3 }), toy, false);
-          for (const [dz, dx] of [[-0.02, -0.016], [-0.02, 0.016], [0.02, -0.016], [0.02, 0.016]]) { const w = cyl(0.008, 0.008, 0.006, dx, 0.008, dz, mL, 10, toy); w.rotation.z = Math.PI / 2; }
+          /* (CP13, the films' vision review: two boxes on four discs read as a blockout beside the scans — a little car's
+             side, its hood, cabin and boot, extruded with a rounded edge, its windows, its wheels with bright hubs; its
+             length along z, as the box's was) */
+          const sh = new THREE.Shape();
+          sh.moveTo(-0.032, 0.008); sh.lineTo(-0.032, 0.021); sh.quadraticCurveTo(-0.031, 0.024, -0.025, 0.025); sh.lineTo(-0.018, 0.026);
+          sh.quadraticCurveTo(-0.014, 0.037, -0.006, 0.0375); sh.lineTo(0.006, 0.0375); sh.quadraticCurveTo(0.012, 0.036, 0.016, 0.026);
+          sh.lineTo(0.028, 0.024); sh.quadraticCurveTo(0.032, 0.023, 0.032, 0.019); sh.lineTo(0.032, 0.008); sh.lineTo(-0.032, 0.008);
+          const cg = new THREE.ExtrudeGeometry(sh, { depth: 0.024, bevelEnabled: true, bevelThickness: 0.002, bevelSize: 0.0015, bevelSegments: 2, curveSegments: 6 });
+          cg.translate(0, 0, -0.012);
+          const body = new THREE.Mesh(cg, M({ color: 0xc8281c, roughness: 0.3, metalness: 0.6 })); body.rotation.y = Math.PI / 2; toy.add(body);
+          const win = new THREE.Shape(); win.moveTo(-0.0165, 0.0265); win.quadraticCurveTo(-0.013, 0.035, -0.006, 0.0355); win.lineTo(0.006, 0.0355);
+          win.quadraticCurveTo(0.011, 0.034, 0.0145, 0.0265); win.lineTo(-0.0165, 0.0265);
+          const wg = new THREE.ShapeGeometry(win), mWin = M({ color: 0x9ac8e8, roughness: 0.15, metalness: 0.3, side: THREE.DoubleSide });
+          for (const sx of [-1, 1]) { const wm = new THREE.Mesh(wg, mWin); wm.rotation.y = Math.PI / 2; wm.position.x = sx * 0.0141; toy.add(wm); }
+          const mHub = M({ color: 0xd8d8d0, roughness: 0.25, metalness: 0.85 });
+          for (const [dz, dx] of [[-0.02, -0.0145], [-0.02, 0.0145], [0.02, -0.0145], [0.02, 0.0145]]) {
+            const w = cyl(0.0085, 0.0085, 0.006, dx, 0.0085, dz, mL, 16, toy); w.rotation.z = Math.PI / 2;
+            const hb = cyl(0.0042, 0.0042, 0.0065, dx + Math.sign(dx) * 0.0004, 0.0085, dz, mHub, 12, toy); hb.rotation.z = Math.PI / 2; }
         } else if (i === 1) {    // the rubber ball, a stripe round it
           const b = new THREE.Mesh(new THREE.SphereGeometry(0.022, 16, 12), M({ color: 0x2a7ac8, roughness: 0.6 })); b.position.y = 0.022; toy.add(b);
           const st = new THREE.Mesh(new THREE.TorusGeometry(0.0222, 0.004, 6, 24), M({ color: 0xf2d23a, roughness: 0.6 })); st.position.y = 0.022; st.rotation.x = 0.4; toy.add(st);
@@ -1005,7 +1094,7 @@
             const bl = new THREE.Mesh(new THREE.ShapeGeometry(sh), M({ color: cols[k], roughness: 0.8, side: THREE.DoubleSide })); bl.rotation.z = k * Math.PI / 2; pw.add(bl); }
         }
         // his EMBER (the stick's glowing tip, CP6 lights it): an emissive point and its glow, hidden until then
-        const em = new THREE.Group(); em.position.set(ROW.mid, A.top + 0.2, z); em.visible = false; R.add(em);
+        const em = new THREE.Group(); em.position.set(ROW.mid, A.top + 0.19, z); em.visible = false; R.add(em);   // (the stick's tip: CP13 lowered it 1 cm into its sand)
         const dot = new THREE.Mesh(new THREE.SphereGeometry(0.0035, 8, 6), B({ color: 0xff8a3a, toneMapped: false })); em.add(dot);
         const gl = new THREE.Sprite(new THREE.SpriteMaterial({ map: tGlow, color: 0xff7a2a, transparent: true, opacity: 0.7, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false, fog: false }));
         mats.push(gl.material); gl.scale.setScalar(0.05); em.add(gl);
@@ -1039,9 +1128,12 @@
       // the water jug, at the near end
       { const j = new THREE.Group(); j.position.set(ROW.mid, A.top, A.z0 + 0.08); R.add(j); roomLive.jug = j;
         const mJ = M({ color: 0xa8c4cc, roughness: 0.1, metalness: 0.05, transparent: true, opacity: 0.6 });
-        const body = new THREE.Mesh(new THREE.LatheGeometry([[0.0, 0], [0.034, 0.002], [0.04, 0.03], [0.036, 0.07], [0.02, 0.1], [0.022, 0.115]].map(([a, b]) => new THREE.Vector2(a, b)), 18), mJ);
+        /* (CP13, the films' vision review: 18 sides and six points read as a faceted cone — a smooth pitcher now, its belly,
+           its waist and its flared lip, and a fuller handle) */
+        const body = new THREE.Mesh(new THREE.LatheGeometry([[0.0, 0], [0.03, 0], [0.035, 0.003], [0.039, 0.016], [0.041, 0.034], [0.04, 0.052],
+          [0.035, 0.07], [0.027, 0.088], [0.0235, 0.1], [0.0245, 0.109], [0.028, 0.116], [0.0295, 0.118]].map(([a, b]) => new THREE.Vector2(a, b)), 36), mJ);
         j.add(body);
-        const hd = new THREE.Mesh(new THREE.TorusGeometry(0.022, 0.004, 6, 16, Math.PI), mJ); hd.position.set(0, 0.07, -0.036); hd.rotation.set(0, Math.PI / 2, Math.PI / 2); j.add(hd);
+        const hd = new THREE.Mesh(new THREE.TorusGeometry(0.026, 0.0045, 8, 20, Math.PI), mJ); hd.position.set(0, 0.07, -0.04); hd.rotation.set(0, Math.PI / 2, Math.PI / 2); j.add(hd);
         const wl = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.033, 0.05, 16), B({ color: 0x8ab0c8, transparent: true, opacity: 0.4 })); wl.position.y = 0.03; j.add(wl); }
       // THE MUSIC BOX at the far end, its lid shut; the card against it
       { const MB = makeMusicBox(R), mb = MB.group;                       // (CP5: one builder for this box and the owner's)
@@ -2245,9 +2337,12 @@
         const geo = new THREE.SphereGeometry(1, 30, 20), p = geo.attributes.position, v = new THREE.Vector3();
         for (let i = 0; i < p.count; i++) {
           v.fromBufferAttribute(p, i);
+          /* (CP13, the counter's vision review: with folds of 6 % it read as a smooth red balloon — deeper folds, and the
+             cloth GATHERED toward the knot, narrowing over its top third, so it is silk drawn up and tied) */
           const th = Math.atan2(v.z, v.x), up = cl01((v.y + 1) / 2);
-          const fold = 1 + (0.06 * Math.sin(7 * th + 1.3) + 0.035 * Math.sin(13 * th + 0.4)) * up * up;
-          v.x *= fold; v.z *= fold;
+          const fold = 1 + (0.13 * Math.sin(7 * th + 1.3) + 0.06 * Math.sin(13 * th + 0.4)) * up * up;
+          const gather = 1 - 0.5 * smooth(cl01((up - 0.62) / 0.38));
+          v.x *= fold * gather; v.z *= fold * gather;
           if (v.y < -0.45) v.y = -0.45 - (v.y + 0.45) * 0.08;
           p.setXYZ(i, v.x * 0.12, (v.y + 0.45) * 0.09, v.z * 0.17);
         }
@@ -2272,7 +2367,10 @@
         for (let i = 0; i < p.count; i++) {
           const x = p.getX(i), z = p.getZ(i), ex = Math.abs(x) / (CNT.w / 2), ez = Math.abs(z) / (CNT.l / 2);
           const crease = 0.0018 * Math.sin(z * 38 + x * 9) * Math.sin(x * 24) + 0.0012 * Math.sin(z * 71 - x * 17);
-          const under = cl01(Math.max(Math.abs(x - ccx) - CARD_HX, Math.abs(z - ccz) - CARD_HZ, 0) / 0.02);
+          /* (CP13, the counter's vision review: flat only to the card's own edge, the cloth's 2.5 cm grid had triangles that
+             climbed out of the flat INSIDE the card's edge — a stepped notch bit its corner in film K's macro; flat for
+             2.5 cm past it, a grid cell, before the creases begin) */
+          const under = cl01((Math.max(Math.abs(x - ccx) - CARD_HX, Math.abs(z - ccz) - CARD_HZ, 0) - 0.025) / 0.02);
           p.setY(i, 0.0015 + Math.max(0, crease * under + 0.0015) + 0.004 * Math.pow(Math.max(ex, ez), 6) * under);
         }
         geo.computeVertexNormals();
@@ -2311,7 +2409,7 @@
           const s = new THREE.Mesh(new THREE.PlaneGeometry(w, BH), mK); s.position.set(x, BH / 2, z); s.rotation.y = ry; s.castShadow = !LOW; s.receiveShadow = true; g.add(s);
         }
         const fl = new THREE.Mesh(new THREE.PlaneGeometry(BD, BW), mK); fl.rotation.x = -Math.PI / 2; fl.position.y = 0.002; g.add(fl);
-        const knot = new THREE.Mesh(new THREE.SphereGeometry(0.05, 16, 12), mSilk); knot.position.y = BH - 0.012; knot.scale.set(0.95, 0.62, 1.5); g.add(knot);
+        const knot = new THREE.Mesh(new THREE.SphereGeometry(0.05, 16, 12), mSilk); knot.position.y = BH - 0.03; knot.scale.set(0.95, 0.62, 1.5); g.add(knot);   // (CP13: lower in its mouth — at BH − 0.012 it sat on the rim like a cushion)
         const mH = M({ color: 0xa8865a, roughness: 0.9 });
         for (const s of [-1, 1]) {
           const x = s * (BD / 2 + 0.002);
@@ -2405,7 +2503,9 @@
        must not lose is a RECEIPT in the phase string (v7.3) — `care:water,d.red,d.shy,d.little,lit,i.red,i.shy,i.little,
        care`; a Continue inside a drink begins that drink again, its bottle back in the bag. */
     const TOUCHY = !!((window.matchMedia && matchMedia('(pointer: coarse)').matches) || 'ontouchstart' in window);   // (the engine's HAS_TOUCH: which words a brief gives)
-    const CARE_ORDER = ['water', 'd.red', 'd.shy', 'd.little', 'lit', 'i.red', 'i.shy', 'i.little', 'care'];
+    /* (CP13, the save lens: 'foam' is a receipt too — a cap twisted too fast was remembered only in memory, so a Continue
+       paid the care award it had spoilt; it stands after 'care', outside the first eight a later phase restores) */
+    const CARE_ORDER = ['water', 'd.red', 'd.shy', 'd.little', 'lit', 'i.red', 'i.shy', 'i.little', 'care', 'foam'];
     const careDone = new Set();
     let careBusy = false;
     const drinksN = () => KIDS.filter(K => careDone.has('d.' + K.key)).length;
@@ -2481,9 +2581,14 @@
       standAt(obj, _pr.clone().addScaledVector(_cu, -below), _cu);
     }
     /* the yaw from where he stands to a place on the altar */
-    function altarYaw(x, z) { return Math.atan2(-(x - yaw.position.x), -(z - yaw.position.z)); }
+    function altarYaw(x, z, from) { const p = from || yaw.position; return Math.atan2(-(x - p.x), -(z - p.z)); }
     /* AT THE DESK: he sits on his chair, the eye down to 1.18 m over the desk (kit.pose — as the mat's sitting is), rooted */
     const CHAIR = { x: -0.32, z: -1.02 };
+    /* where standing up from it puts him (CP13, the geometry lens): the chair's own column (padded, floor to 1.40) holds
+       the spot he sat on, and collide() refuses every step that lands inside a blocker — so, stood up there and let go,
+       he could turn but never walk, and the next order (the altar, 2 m off) was out of reach. He steps back and to his
+       right as he rises, onto open floor clear of the chair, the desk and the shelf (walktest floods from it: arrivals) */
+    const STAND_UP = { x: 0.22, z: -0.62 };
     function sitAtDesk(resumed) {
       careLive.seat = true;
       yaw.position.x = CHAIR.x; yaw.position.z = CHAIR.z;
@@ -2493,7 +2598,9 @@
     }
     function standUp() {
       careLive.seat = false;
-      if (kit) { kit.pose('standing', { secs: 0.6 }); kit.root(false); }
+      if (!kit) return;
+      kit.pose('standing', { secs: 0.6 });
+      careLive.glide = { fx: yaw.position.x, fz: yaw.position.z, tx: STAND_UP.x, tz: STAND_UP.z, t0: wallNow(), secs: 0.6, unroot: true };
     }
     /* ORDER 1a · THEIR WATER: a hold at the jug — his hand on it, the jug tips, the three cups fill one after another */
     function pourWater() {
@@ -2502,18 +2609,40 @@
       const J = roomLive.jug;
       kit.event({ kind: 'craft', label: W.hotJug, steps: [{ g: 'hold', secs: 1.2, word: W.craftWater }],
         at: () => (J ? { x: J.position.x, y: J.position.y + 0.08, z: J.position.z } : null),
-        onProgress: (s, k) => { careLive.pour = k; },
+        onProgress: (s, k) => { careLive.pour = k; pourSound(); },
       }).then((r) => {
-        if (!alive) return;
-        careLive.pour = 1; careDone.add('water'); careSave();
-        sfxAt('k5pour', 0.4, ALTAR.x0, (ALTAR.z0 + ALTAR.z1) / 2);
+        /* (CP13, the save lens: an event aborted by a Retry or a faint resolves AFTER the reset, and its handler went on
+           to mark the act done in the fresh run — every handler here stops on an abort) */
+        if (!alive || (r && r.aborted)) return;
+        careLive.pour = 1; careDone.add('water');
+        pourStop(0.35);
         queueGap(0.4); queueLine('z5water');
-        queueFn(() => { careBusy = false; objectiveFor('care'); });
+        /* (CP13, the save lens: every PLAY I receipt is WRITTEN after its line — written before, a Continue in the
+           line's seconds restored the act done and the line never said) */
+        queueFn(() => { careSave(); careBusy = false; objectiveFor('care'); });
         void r;
       });
       return true;
     }
+    /* (CP13, the sound lens: the pour played its fourteen-second take AFTER the cups were full. It plays while the jug
+       pours now — started on the hold's first progress, heard only while the hold is moving the water (a hand let go
+       holds the jug still and the water stops), brought down when the third cup is full) */
+    const POUR_VOL = 0.4;
+    function pourSound() {
+      careLive.pourAt = wallNow();
+      if (!careLive.pourS) {
+        const P = careLive.pourS = sfxAt('k5pour', POUR_VOL, ALTAR.x0, (ALTAR.z0 + ALTAR.z1) / 2);
+        if (P) P.addEventListener('ended', () => { if (careLive.pourS === P) careLive.pourS = null; });
+      }
+    }
+    function pourStop(secs) { const P = careLive.pourS; careLive.pourS = null; sfxDown(P, secs); }
+    function pourGain() {
+      const P = careLive.pourS, g = P && P.__g && P.__g.gain; if (!g) return;
+      const want = wallNow() - (careLive.pourAt || 0) < 0.15 ? POUR_VOL : 0.0001;
+      try { g.setTargetAtTime(want, P.context.currentTime, 0.05); } catch { /* over */ }
+    }
     function waterFrame() {
+      pourGain();
       const k = careLive.pour;
       roomLive.cups.forEach((C, i) => {
         const f = cl01(k * 3 - i);
@@ -2568,15 +2697,15 @@
             if (K.key === 'shy') after(1.1, () => sfxAt('k5plip', 0.22, CHAIR.x, CHAIR.z - 0.4));   // one bubble back up: almost a giggle (§4.2)
           } else sfxAt('k5bend', 0.35, CHAIR.x, CHAIR.z - 0.4);
         },
-        onFoam: () => { careLive.foamed = true; careLive.foamT = 1; sfxAt('k5foam', 0.4, CHAIR.x, CHAIR.z - 0.4); },
-      }).then(() => {
-        if (!alive) return;
+        onFoam: () => { careLive.foamed = true; careLive.foamT = 1; careDone.add('foam'); sfxAt('k5foam', 0.4, CHAIR.x, CHAIR.z - 0.4); },
+      }).then((r) => {
+        if (!alive || (r && r.aborted)) return;
         careLive.slide = 1; careLive.bend = 1;
         deskBottle(false);
         kit.hold(H.g, { pos: HELD_R.pos, rot: HELD_R.rot });   // in his right hand now, as he stands
         careLive.carry = i;
         standUp();
-        viewTo(altarYaw(ROW.back, ALTAR_Z[i]), -0.42, 0.9);   // and his look goes to the one it is for (by photograph: it stayed on the desk)
+        viewTo(altarYaw(ROW.back, ALTAR_Z[i], STAND_UP), -0.42, 0.9);   // and his look goes to the one it is for (by photograph: it stayed on the desk)
         after(0.95, () => { careBusy = false; objectiveFor('care'); placeRing(i, true); });   // (once the look has arrived: the turn writes it till then)
       });
     }
@@ -2596,7 +2725,7 @@
         if (kit.handPose) kit.handPose(null, 0, { secs: 0.5 });
         careLive.placed[i] = true; bottleShow(i, true);
         sfxAt('k5set', 0.42, ROW.back, ALTAR_Z[i]);
-        careDone.add('d.' + K.key); careLive.carry = -1; careSave();
+        careDone.add('d.' + K.key); careLive.carry = -1;
       });
       queueGap(0.9);
       /* his line to that child (each name written out, so chaptertest checks all three), and the glint halfway through it */
@@ -2607,9 +2736,10 @@
       queueGap(0.3);
       queueFn(() => {
         kit.pose('standing', { secs: 0.6 }); kit.root(false);
-        if (drinksN() === 3 && !careLive.foamed && !careDone.has('care')) {      // their drinks, prepared with care (the receipt is the note, v7.3)
-          careDone.add('care'); careSave(); if (kit.conduct) kit.conduct({ a: 3, note: W.noteCare });
+        if (drinksN() === 3 && !careLive.foamed && !careDone.has('foam') && !careDone.has('care')) {      // their drinks, prepared with care (the receipt is the note, v7.3)
+          careDone.add('care'); if (kit.conduct) kit.conduct({ a: 3, note: W.noteCare });
         }
+        careSave();                                   // (the drink's receipt and the award's, together, after his line — CP13)
         /* and his look goes back to the desk, where the next drink (or, after the third, the incense) waits — by photograph:
            standing up 0.4 m from the altar, the little one's head filled a phone's frame and the next order was behind him */
         const dx = DESK_AT.bag[0] - yaw.position.x, dz = DESK_AT.bag[1] - yaw.position.z;
@@ -2634,7 +2764,7 @@
       const G = careLive.glide; if (!G) return;
       const k = smooth(cl01((wallNow() - G.t0) / G.secs));
       yaw.position.x = G.fx + (G.tx - G.fx) * k; yaw.position.z = G.fz + (G.tz - G.fz) * k;
-      if (k >= 1) careLive.glide = null;
+      if (k >= 1) { careLive.glide = null; if (G.unroot && kit) kit.root(false); }   // (standUp's: rooted until he is off the chair's spot)
     }
     /* ORDER 2 · THEIR INCENSE, at the desk again: the lighter in his left hand — the first strike only sparks, the second
        lights it, a warm glow on his hands — the three sticks' tips held in the flame till they catch, and waved out: three
@@ -2666,14 +2796,14 @@
           if (s === 1) sfxAt('k5catch', 0.4, CHAIR.x, CHAIR.z - 0.4);
           if (s === 2) { sfxAt('k5wave', 0.4, CHAIR.x, CHAIR.z - 0.4); Lg.flame.visible = false; St.tips.forEach(T => { T.fl.visible = false; T.em.visible = true; }); }
         },
-      }).then(() => {
-        if (!alive) return;
+      }).then((r) => {
+        if (!alive || (r && r.aborted)) return;
         Lg.flame.visible = false; St.tips.forEach(T => { T.fl.visible = false; T.em.visible = true; });
         careLive.catchK = 0; deskIncense('left');                    // (the packet and the lighter stay where they were used)
         kit.hold(St.g, { pos: STICKS_R.pos, rot: STICKS_R.rot });   // (the sticks to his hand, to carry to them)
-        careDone.add('lit'); careSave();
+        careDone.add('lit');
         queueGap(0.3); queueLine('z5incense');
-        queueFn(() => { standUp(); viewTo(altarYaw(ROW.mid, ALTAR_Z[1]), -0.42, 0.9); after(0.95, () => { careBusy = false; objectiveFor('care'); }); });
+        queueFn(() => { careSave(); standUp(); viewTo(altarYaw(ROW.mid, ALTAR_Z[1], STAND_UP), -0.42, 0.9); after(0.95, () => { careBusy = false; objectiveFor('care'); }); });
       });
       return true;
     }
@@ -2758,11 +2888,11 @@
       after(1.0, () => {
         const B = roomLive.box;
         const keyAt = () => { if (!roomLive.boxKey) return null; const p = roomLive.boxKey.getWorldPosition(new THREE.Vector3()); return { x: p.x, y: p.y, z: p.z }; };
-        const go = kit.event ? kit.event({ kind: 'craft', label: W.craftWind, steps: [{ g: 'twist', turns: 1, word: W.craftWind }], at: keyAt,
+        const go = kit.event ? kit.event({ kind: 'craft', label: W.titleBox, steps: [{ g: 'twist', turns: 1, word: W.craftWind }], at: keyAt,
           onProgress: (s, k) => { if (roomLive.boxKey) roomLive.boxKey.rotation.x = k * Math.PI * 2; } }) : Promise.resolve();
         void B;
-        go.then(() => {
-          if (!alive) return;
+        go.then((r) => {
+          if (!alive || (r && r.aborted)) return;
           sfxAt('k5wind', 0.45, 1.30, (RISER.z1 + ALTAR.z1) / 2);
           careLive.boxOpenTo = 1;
           viewTo(-Math.PI / 2, -0.12, 1.4);                     // (back to the three, for the clasp)
@@ -2791,7 +2921,7 @@
                        capA: 0, slide: 0, bend: 0, capOff: false, sleeveOff: false, catchK: 0, sparkT: 0, boxOpen: 0, boxOpenTo: 0,
                        bowT: 0, held: null, heldStraw: null, heldSleeve: null, lighter: null, sticks: null,
                        bottles: [], placed: [false, false, false], rings: [], glints: [], sticksSet: [], capsDesk: [], sleevesDesk: [],
-                       deskBag: null, packet: null };
+                       deskBag: null, drinksBag: null, packet: null, pourS: null, pourAt: 0 };
     /* where a drink is opened: on the desk before his chair, in front of the laptop (its base's front edge at z −1.315),
        straight ahead of him; the eye at the desk */
     const WORK = { x: -0.34, z: -1.265 }, DESK_EYE = 1.18;
@@ -2817,7 +2947,9 @@
         mats.push(gl.material); gl.scale.setScalar(0.05); gl.position.set(RISER.x - 0.05, A.top + A.riser + KIDS[i].h * 0.8, ALTAR_Z[i]); gl.visible = false; R.add(gl);
         careLive.glints.push({ sp: gl, t: 0 });
         // his stick in the sand (one each), its ember the altar's own (roomLive.embers)
-        const sk = new THREE.Group(); sk.position.set(ROW.mid, A.top + 0.03, ALTAR_Z[i]); sk.visible = false; R.add(sk);
+        /* (CP13, the geometry lens: at A.top + 0.03 its foot stood 4 mm OVER the sand, which the close inserts showed; 1 cm
+           lower it goes 6 mm in — the embers' heights below follow it) */
+        const sk = new THREE.Group(); sk.position.set(ROW.mid, A.top + 0.02, ALTAR_Z[i]); sk.visible = false; R.add(sk);
         cyl(0.0018, 0.0018, 0.16, 0, 0.09, 0, M({ color: 0x9a2418, roughness: 0.8 }), 5, sk);
         careLive.sticksSet.push(sk);
         // the cap and the torn sleeve, set aside on the desk
@@ -2837,11 +2969,44 @@
       careLive.lighter = makeLighter();
       careLive.sticks = makeSticks();
     }
-    /* the desk's bag is the counter's own (built after the room): a clone, on his desk where the home film sets it down */
+    /* the desk's bag is the counter's own (built after the room): a clone, on his desk where the home film sets it down —
+       the FIRST dusk's; and tonight's, the provision shop's (§4.0c H3: "a provision-shop bag, three red bottles showing"),
+       which play's z5bag is about (CP13, the films' vision review: tonight and play showed the amulet shop's bag with the
+       red bundle still in its mouth, weeks later) */
     function deskBag() {
       if (careLive.deskBag || !cntLive.bag) return;
-      const b = cntLive.bag.clone(); b.position.set(DESK_AT.bag[0], DESK.top + 0.018, DESK_AT.bag[1]); b.rotation.y = 0.3; b.scale.setScalar(1); b.visible = true;
+      const b = cntLive.bag.clone(); b.position.set(DESK_AT.bag[0], DESK.top + 0.018, DESK_AT.bag[1]); b.rotation.y = 0.3; b.scale.setScalar(1); b.visible = false;
       worldR.add(b); careLive.deskBag = b;
+      const d = makeDrinksBag(); d.position.set(DESK_AT.bag[0], DESK.top + 0.018, DESK_AT.bag[1]); d.rotation.y = 0.25; d.visible = true;
+      worldR.add(d); careLive.drinksBag = d;
+    }
+    /* the provision shop's carrier: plain white plastic (no words on it — Chad's ruling on chapter 4's bag), its two loop
+       handles up, and over its rim the necks and caps of three red drinks (only what shows above it is built) */
+    function makeDrinksBag() {
+      const g = new THREE.Group();
+      const mP = M({ color: 0xf0f0ea, roughness: 0.6, side: THREE.DoubleSide });
+      const BW = 0.22, BD = 0.12, BH = 0.13;
+      for (const [w, x, z, ry] of [[BW, 0, BD / 2, 0], [BW, 0, -BD / 2, Math.PI], [BD, BW / 2, 0, Math.PI / 2], [BD, -BW / 2, 0, -Math.PI / 2]]) {
+        const sd = new THREE.Mesh(new THREE.PlaneGeometry(w, BH, 4, 3), mP); sd.position.set(x, BH / 2, z); sd.rotation.y = ry;
+        const pa = sd.geometry.attributes.position;                         // (a soft, slumped plastic: its rim dips and its faces bow)
+        for (let k = 0; k < pa.count; k++) { const u = pa.getX(k) / (w / 2), v = pa.getY(k) / (BH / 2);
+          pa.setZ(k, 0.008 * (1 - u * u) * (0.6 + 0.4 * v)); if (v > 0.99) pa.setY(k, pa.getY(k) - 0.012 * (1 - u * u)); }
+        sd.geometry.computeVertexNormals(); sd.castShadow = !LOW; sd.receiveShadow = true; g.add(sd);
+      }
+      const fl = new THREE.Mesh(new THREE.PlaneGeometry(BW, BD), mP); fl.rotation.x = -Math.PI / 2; fl.position.y = 0.002; g.add(fl);
+      for (const sz of [-1, 1]) {                                            // the handles, a loop over each long face
+        const z = sz * (BD / 2 - 0.004);
+        const c = new THREE.CatmullRomCurve3([new THREE.Vector3(-0.07, BH - 0.01, z), new THREE.Vector3(-0.05, BH + 0.07, z * 0.6),
+                                              new THREE.Vector3(0.05, BH + 0.07, z * 0.6), new THREE.Vector3(0.07, BH - 0.01, z)]);
+        g.add(new THREE.Mesh(new THREE.TubeGeometry(c, 16, 0.006, 6, false), mP));
+      }
+      for (let k = 0; k < 3; k++) {                                          // three drinks: the shoulder, the neck and the cap over the rim
+        const x = (k - 1) * 0.066, z = k === 1 ? 0.012 : -0.01;
+        cyl(0.017, 0.027, 0.03, x, 0.128, z, mDrink, 16, g).castShadow = false;
+        cyl(0.0128, 0.0128, 0.022, x, 0.152, z, mDrink, 12, g).castShadow = false;
+        cyl(0.0144, 0.0144, 0.013, x, BOTTLE_CAP_Y + 0.0065, z, mCapB, 16, g);
+      }
+      return g;
     }
     function heldReset() {
       const H = careLive.held; if (!H) return;
@@ -2895,7 +3060,7 @@
       careDone.clear();
       for (const r of String(tagStr || '').split(',')) if (CARE_ORDER.includes(r)) careDone.add(r);
       careBusy = false; careLive.carry = -1; careLive.grip = ''; careLive.seat = false;
-      careLive.pour = careDone.has('water') ? 1 : 0;
+      careLive.pour = careDone.has('water') ? 1 : 0; careLive.foamed = careDone.has('foam');
       KIDS.forEach((K, i) => {
         const given = careDone.has('d.' + K.key);
         careLive.placed[i] = given; bottleShow(i, given);
@@ -2924,14 +3089,17 @@
                                 capA: 0, slide: 0, bend: 0, capOff: false, sleeveOff: false, catchK: 0, sparkT: 0, boxOpen: 0, boxOpenTo: 0, bowT: 0,
                                 lighterOn: false });
       deskBottle(false); deskIncense(false);
+      if (careLive.deskBag) careLive.deskBag.visible = false;        // (play's desk: tonight's bag of drinks, CP13)
+      if (careLive.drinksBag) careLive.drinksBag.visible = true;
       careLive.placed = [false, false, false];
-      for (let i = 0; i < 3; i++) { bottleShow(i, false); stickShow(i, false); if (careLive.capsDesk[i]) careLive.capsDesk[i].visible = false;
+      for (let i = 0; i < 3; i++) { bottleShow(i, false); stubShow(i, false); if (careLive.capsDesk[i]) careLive.capsDesk[i].visible = false;
                                     if (careLive.sleevesDesk[i]) careLive.sleevesDesk[i].visible = false; }
       for (const G of careLive.glints) { G.t = 0; G.sp.visible = false; }
       placeRing(-1, false);
       if (careLive.lighter) careLive.lighter.flame.visible = false;
       if (careLive.sticks) { careLive.sticks.tips.forEach(T => { T.em.visible = false; T.fl.visible = false; }); careLive.sticks.g.children.forEach(c => { c.visible = true; }); }
       careLive.glide = null;
+      pourStop(0.12);
       if (roomLive.boxKey) roomLive.boxKey.rotation.x = 0;
       if (roomLive.jug) roomLive.jug.rotation.x = 0;
       waterFrame();
@@ -3042,7 +3210,7 @@
        opens more easily, because he has already opened it twice (the case file's "one after another"). What a Continue
        must not lose: the phase — open1 (asked), open2 (the red one done, on the mat), open3 (the shy one done, by the
        desk), after (the little one done, on the floor by the bed), decide. */
-    const openLive = { busy: false, briefed: false, k: 0, kid: -1, smearW: 0 };
+    const openLive = { busy: false, briefed: false, k: 0, kid: -1, smearW: 0, held: false, loosenS: null, loosenUsed: false, sink: 1 };
     const OPEN_I = { open1: 0, open2: 1, open3: 2 };
     function openOk() { return OPEN_I[phase] !== undefined && !openLive.busy && quiet(); }
     function openObjective() {
@@ -3054,8 +3222,10 @@
     /* the question (§4.3): the box's tune ends; his look rests on the red one, the shy one, the little one; he wonders what
        they feel, and then he asks it */
     function askBeat() {
+      /* (CP13, the save lens: open1 is written when the question has been asked — written first, a Continue in its ten
+         seconds landed on the first opening with "What would happen..." never said; until then a Continue sits him down
+         again, the dedication and the question with it) */
       openLive.busy = true; if (kit) kit.objective(null);
-      setPhase('open1');
       careLive.boxOpenTo = 1;                                      // (the lid stays up: the tune ends on its own)
       let t = 0.6;
       for (let i = 0; i < 3; i++) { const j = i; after(t, () => viewTo(kidYaw(j), kidPitch(j), 1.1)); t += 1.6; }
@@ -3066,7 +3236,7 @@
         queueGap(0.6);
         /* his look back to the red one, the first order's, before it opens (by photograph: it stayed on the little one,
            the last face, with the red one off a phone's frame) */
-        queueFn(() => { viewTo(kidYaw(0), kidPitch(0), 0.9); after(0.95, () => { openLive.busy = false; objectiveFor('open1'); }); });
+        queueFn(() => { viewTo(kidYaw(0), kidPitch(0), 0.9); after(0.95, () => { openLive.busy = false; setPhase('open1'); }); });
       });
     }
     /* where his look goes to see one of them from the mat */
@@ -3080,23 +3250,44 @@
     function openPress(i) {
       if (OPEN_I[phase] !== i || !seated || !openOk() || !kit || !kit.event) return false;
       const K = KIDS[i];
-      openLive.busy = true; openLive.kid = i; kit.objective(null);
+      /* (CP13: the order goes WITHOUT the jade OBJECTIVE COMPLETE — opening himself to them is the act the epilogue
+         tells everybody never to repeat, and a HUD that congratulates it says the opposite: v8.7's `complete: false`) */
+      openLive.busy = true; openLive.kid = i; kit.objective(null, { complete: false });
+      openLive.loosenUsed = false;
       if (i === 0) queueLine('z5loose');                           // "Just... let my mind loosen." (the first time)
       const first = !openLive.briefed; openLive.briefed = true;
       kit.event({ kind: 'yield', label: [W.objOpenRed, W.objOpenShy, W.objOpenLittle][i], brief: first ? (TOUCHY ? W.briefYield : W.briefYieldKey) : undefined,
         demo: 'press', fill: K.yieldSecs, back: 0.45, auto: !!K.auto, autoAfter: 9999,
         at: () => ({ x: RISER.x, y: ALTAR.top + ALTAR.riser + K.h * 0.62, z: ALTAR_Z[i] }),
-        onHold: (k) => { openLive.k = k; },
-      }).then(() => {
-        if (!alive) return;
-        openLive.k = 0;                                          // (the loosening lets go as the film takes over: its own light and lens)
+        onHold: (k, held) => { openLive.k = k; openLive.held = !!held; loosenSound(); },
+      }).then((r) => {
+        if (!alive || (r && r.aborted)) return;
+        openLive.k = 0; openLive.held = false;                   // (the loosening lets go as the film takes over: its own light and lens)
+        loosenStop(0.6);
         possess(i);
       });
       return true;
     }
+    /* THE YIELD'S SOUND (CP13, the sound lens: §5's design had none of it). The riser — a breath turning into a hum, his
+       breathing slowing in it — starts the first time he holds, is heard only while he holds (let go, and it eases
+       away with everything else), once per yield; and the room's own beds sink under it by k (mixBeds) */
+    const LOOSEN_VOL = 0.5;
+    function loosenSound() {
+      if (!openLive.held || openLive.loosenS || openLive.loosenUsed || openLive.kid < 0) return;
+      openLive.loosenUsed = true;
+      const S = openLive.loosenS = sfxAt('k5loosen', LOOSEN_VOL, RISER.x, ALTAR_Z[openLive.kid]);
+      if (S) S.addEventListener('ended', () => { if (openLive.loosenS === S) openLive.loosenS = null; });
+    }
+    function loosenStop(secs) { const S = openLive.loosenS; openLive.loosenS = null; sfxDown(S, secs); }
+    function loosenGain() {
+      const S = openLive.loosenS, g = S && S.__g && S.__g.gain; if (!g) return;
+      try { g.setTargetAtTime(openLive.held ? LOOSEN_VOL : 0.0001, S.context.currentTime, 0.12); } catch { /* over */ }
+    }
     /* the room loosening by k (every frame while a yield runs, and back to nothing after) */
     function openFrame(wdt) {
+      loosenGain();
       const k = openLive.busy && openLive.kid >= 0 && phase !== 'after' ? openLive.k : 0;
+      openLive.sink += ((1 - 0.6 * cl01(k)) - openLive.sink) * (1 - Math.exp(-(wdt || 0) / 0.5));
       if (kit && kit.smear) {
         const want = 0.22 * k;
         if (Math.abs(want - (openLive.smearW || 0)) > 0.02) { openLive.smearW = want; kit.smear(want, { secs: 0.3 }); }
@@ -3113,7 +3304,7 @@
         openLive.busy = false; openLive.k = 0; openLive.kid = -1; peekSet(0);
         if (kit && kit.smear) { kit.smear(0, { secs: 0.4 }); openLive.smearW = 0; }
         if (i === 0) { landOn('mat'); lookToOrder(1); roomClock('23:21'); setPhase('open2'); }      // (§10.1: the clock as each one left it)
-        else if (i === 1) { landOn('desk'); lookToOrder(2); roomClock('23:33'); setPhase('open3'); }
+        else if (i === 1) { landOn('desk'); lookToOrder(2); roomClock('23:49'); setPhase('open3'); }   // (CP13: 23:33 made z5time's "almost three hours" to 02:47 three and a quarter)
         else { landOn('bed'); setPhase('after'); afterBeat(false); return; }
         if (kit) kit.fade(0, 0.8);
         after(0.7, () => objectiveFor(phase));
@@ -3186,7 +3377,7 @@
     function openResume(p) {
       const n = { open1: 0, open2: 1, open3: 2, after: 3, decide: 3 }[p] || 0;
       careLive.boxOpen = careLive.boxOpenTo = 1;
-      roomClock(['23:12', '23:21', '23:33', '02:47'][Math.min(3, n)]);
+      roomClock(['23:12', '23:21', '23:49', '02:47'][Math.min(3, n)]);
       if (n >= 1) { const B = careLive.bottles[0]; if (B && B.liq) B.liq.scale.y = 0.5; cartonDown(true); }
       if (n >= 2 && roomLive.coin) { roomLive.coin.visible = true; roomLive.coin.position.set(BYDESK.x + 0.18, 0.004, BYDESK.z + 0.1); roomLive.coin.rotation.set(0, 0.4, 0); }
       if (n >= 3) { for (let i = 0; i < 3; i++) stubShow(i, true); look('NIGHT', 0); phone.g.visible = true; phone.S.draw('dark'); }
@@ -3223,6 +3414,7 @@
     /* PLAY II as build() leaves it (the reset law): no double, nothing a possession moved still moved */
     function openReset() {
       openLive.busy = false; openLive.briefed = false; openLive.k = 0; openLive.kid = -1; openLive.smearW = 0;
+      openLive.held = false; openLive.loosenUsed = false; openLive.sink = 1; loosenStop(0.12);
       doublesOff();
       cartonDown(false);
       if (roomLive.curtain) roomLive.curtain.rotation.y = 0;
@@ -3315,8 +3507,12 @@
         /* his hands: on his hips from the stand, reaching for his bottle at the grab, crossed after the flop, down at the end */
         if (api && api.handPose) {
           /* (hips and the crossed arms raised clear of the letterbox's bottom bar, `sy`: drawn for play, both sat behind it) */
+          /* (CP13, the films lens: the hands JUMPED twice — hips straight to the rest at the grab, then reaching up out of
+             it, and the reach snapped to the rest after the slam. The reach now blends FROM the hips, and lets go over
+             half a second) */
           if (t >= RFT.stand && t < RFT.grab) api.handPose('hips', smooth(cl01((t - RFT.stand) / 0.5)));
-          else if (t >= RFT.grab && t < RFT.slam + 0.4) api.handPose('reach', smooth(cl01((t - RFT.grab) / 0.5)));
+          else if (t >= RFT.grab && t < RFT.slam + 0.4) api.handPose('reach', smooth(cl01((t - RFT.grab) / 0.5)), { from: 'hips' });
+          else if (t >= RFT.slam + 0.4 && t < RFT.slam + 0.9) api.handPose('reach', 1 - smooth(cl01((t - RFT.slam - 0.4) / 0.5)));
           else if (t >= RFT.flop + 0.6 && t < RFT.leave + 1.5) api.handPose('cross', smooth(cl01((t - RFT.flop - 0.6) / 0.5)) * (1 - smooth(cl01((t - RFT.leave - 0.8) / 0.7))));
           else api.handPose(null, 0);
         }
@@ -3374,10 +3570,15 @@
     const BYBED = { x: -0.42, z: 0.55, eye: 0.58 };          // on the floor against the bed's frame (landOn('bed'): the aftermath, the decision)
     const shyF = {
       T: SFT,
-      begin() { fLive.shot = 'shy'; fLive.lit = null; shyLive.gap = 0; },
-      end() { fLive.shot = ''; lensTo(72); doublesOff(); look('NIGHT', 0.01); if (kit && kit.smear) kit.smear(0, { secs: 0.3 }); },
+      begin() { fLive.shot = 'shy'; fLive.lit = null; shyLive.gap = 0; shyLive.peeked = false; },   // (CP13: the peek's sound, once a film — it was once a session)
+      end() { fLive.shot = ''; lensTo(72); doublesOff(); look('NIGHT', 0.01); if (kit && kit.smear) kit.smear(0, { secs: 0.3 }); chairHome(); },
       frame(t, api) {
         if (fLive.shot !== 'shy') shyF.begin();
+        /* he shoves the desk chair aside as he scuttles under the desk (CP13, the geometry lens: the scuttle ran 2–8 cm
+           under its seat and the crawl out went THROUGH it, a dark slab across the lens); end() and the resets put it
+           back. It goes as he reaches it, so it reads as pushed — from the mat its slide would be in view */
+        if (roomLive.chair) { const kp = smooth(cl01((t - 10.2) / 0.6));
+          roomLive.chair.position.x = -0.32 - 0.45 * kp; roomLive.chair.rotation.y = 0.25 + 0.5 * kp; }
         const K = KIDS[1], baseY = ALTAR.top + ALTAR.riser + 0.006;
         /* the double: crouched out of its base, scurrying low across the floor round to behind him (a game), into him */
         if (t < SFT.contact + 0.3) {
@@ -3390,8 +3591,9 @@
           doubleSet(1, 0.5 * Math.sin(Math.PI * kl), q[0], q[1], q[2], -Math.PI / 2, 1);
         }
         /* the light, the softness and the lens: AMBER and smeared from contact to the double's leaving, 72 → 90 → 72 */
-        if (t >= SFT.contact && t < SFT.leave) { if (fLive.lit !== 'AMBER') { look('AMBER', 0.6); fLive.lit = 'AMBER'; if (kit && kit.smear) kit.smear(0.18, { secs: 0.6 }); } }
-        else if (t >= SFT.leave && fLive.lit !== 'NIGHT') { look('NIGHT', 2.0); fLive.lit = 'NIGHT'; if (kit && kit.smear) kit.smear(0, { secs: 1.5 }); }
+        /* (CP13: no kit.smear here — it is painted in play only, so in a film it was never drawn; ending C's likewise) */
+        if (t >= SFT.contact && t < SFT.leave) { if (fLive.lit !== 'AMBER') { look('AMBER', 0.6); fLive.lit = 'AMBER'; } }
+        else if (t >= SFT.leave && fLive.lit !== 'NIGHT') { look('NIGHT', 2.0); fLive.lit = 'NIGHT'; }
         const kw = smooth(cl01((t - SFT.contact) / 0.8)) * (1 - smooth(cl01((t - SFT.leave) / 2.0)));
         lensTo(72 + (K.lens - 72) * kw);
         /* where he is and where he looks */
@@ -3504,13 +3706,13 @@
     function stubBurn(k) {
       careLive.sticksSet.forEach((sk, i) => {
         const inc = sk.children[0], h = 1 - 0.85 * k; if (inc) { inc.scale.y = h; inc.position.y = 0.01 + 0.08 * h; }
-        if (roomLive.embers[i]) roomLive.embers[i].position.y = ALTAR.top + 0.03 + 0.01 + 0.16 * h;   // the ember rides the burning tip down
+        if (roomLive.embers[i]) roomLive.embers[i].position.y = ALTAR.top + 0.02 + 0.01 + 0.16 * h;   // the ember rides the burning tip down
       });
     }
     function stubShow(i, on) {                                   // a burnt-out stick: a grey stub, no ember (the aftermath and after)
       const sk = careLive.sticksSet[i]; if (!sk) return; sk.visible = on;
       const inc = sk.children[0]; if (inc) { inc.scale.y = on ? 0.15 : 1; inc.position.y = on ? 0.01 + 0.08 * 0.15 : 0.09; inc.material = on ? mStub : mStickLit; }
-      if (roomLive.embers[i]) { roomLive.embers[i].visible = false; roomLive.embers[i].position.y = ALTAR.top + 0.2; }
+      if (roomLive.embers[i]) { roomLive.embers[i].visible = false; roomLive.embers[i].position.y = ALTAR.top + 0.19; }
     }
     /* the films' handles on play-side state (each film keeps only cues and steps; these hold what an event moves) */
     function redStampTo(n) {                                 // a tap of the STAMP: one stamp at the film's current time
@@ -3678,6 +3880,7 @@
     }
     function comeBegin() { littleLive.lv = 0.18; look('SURFACE', 0.6); comeWaterOn(true); }
     function comeDone(r) {
+      if (r && r.skipped) return;                       // (CP13: a skipped film banks no note either way)
       littleLive.cameBack = !!(r && r.ok && !r.gaveUp);
       const fast = r && r.ok && !r.gaveUp && r.score >= 0.99;
       if (kit && kit.conduct) kit.conduct(fast ? { a: 4, note: W.noteCameBack } : { note: W.noteHard });
@@ -3841,6 +4044,13 @@
           const k = 1 - Math.exp(-wdt * 2.4);
           P.lookYaw += (ty * P.look - P.lookYaw) * k; P.lookPitch += (tp * P.look - P.lookPitch) * k;
           if (Math.abs(P.lookYaw) + Math.abs(P.lookPitch) > 1e-4) { _pe.set(P.lookPitch, P.lookYaw, 0, 'YXZ'); _pq.setFromEuler(_pe); P.head.quaternion.multiply(_pq); }
+          /* a nod, twice — "come in" (CP13, the films' vision review: the opening film's beckon was his talking take alone,
+             his hands below the glass case from the corridor, and read as nothing). On wall time; a positive pitch is down */
+          if (P.nodT) {
+            const u = (performance.now() / 1000 - P.nodT) / 1.4;
+            if (u < 0 || u >= 1) P.nodT = 0;
+            else { _pe.set(0.2 * Math.sin(u * Math.PI * 2) ** 2, 0, 0, 'YXZ'); _pq.setFromEuler(_pe); P.head.quaternion.multiply(_pq); }
+          }
         }
       }
     }
@@ -3854,7 +4064,14 @@
       const dx = x - yaw.position.x, dz = z - yaw.position.z, d = Math.hypot(dx, dz) || 1, a = yaw.rotation.y;
       return cl01(((dx * Math.cos(a) - dz * Math.sin(a)) / d + 1) / 2) * 2 - 1;
     }
-    function sfxAt(name, vol, x, z) { if (worldSfx && !(soundOff && soundOff())) worldSfx(name, vol, 1, x == null ? 0 : panAt(x, z) * 0.7); }
+    function sfxAt(name, vol, x, z) { return worldSfx && !(soundOff && soundOff()) ? worldSfx(name, vol, 1, x == null ? 0 : panAt(x, z) * 0.7) : null; }
+    /* a one-shot brought down, not cut dead (the engine's worldSfx hands back the source and its gain, `__g`) */
+    function sfxDown(src, secs = 0.3) {
+      if (!src) return;
+      try { const t = src.context.currentTime, g = src.__g && src.__g.gain;
+            if (g) { g.cancelScheduledValues(t); g.setValueAtTime(g.value, t); g.linearRampToValueAtTime(0.0001, t + secs); }
+            src.stop(t + secs + 0.02); } catch { /* already over */ }
+    }
     if (warmSounds) warmSounds(['k5bundle', 'k5figset', 'k5set', 'k5wind', 'k5lullaby', 'k5bellsfaint', 'k5slip', 'k5bag']);
 
     /* ============================================== WORLD M · THE TEMPLE (CP5)
@@ -4064,7 +4281,11 @@
         }
         thai('incense', 0, F + 2 * 0.42, MALT.z + 0.3, { parent: G, s: 1.0 });
         // the flames on the altar and the dais, and the incense's smoke (painted; never a light)
-        for (const [x, y, z] of [[-0.9, F + 2 * 0.42 + 0.34, MALT.z + 0.05], [0.9, F + 2 * 0.42 + 0.34, MALT.z + 0.05], [MDAIS.x - 0.55, F + MDAIS.h + 0.26, MDAIS.z + 1.0]]) {
+        /* (CP13, the counter's vision review: the dais flame stood in the candle's wax. Measured off the kit's candle: a
+           candlestick to its dish at 0.23, the taper to 0.36, its tip to 0.411 at s 1 — so each flame is put on its own
+           candle's tip, 0.41 × its scale, where chapter 4's numbers had them 0.11 and 0.23 m down in the wax) */
+        const TIP = 0.41;
+        for (const [x, y, z] of [[-0.9, F + 2 * 0.42 + TIP * 1.4, MALT.z + 0.05], [0.9, F + 2 * 0.42 + TIP * 1.4, MALT.z + 0.05], [MDAIS.x - 0.55, F + MDAIS.h + TIP * 0.9, MDAIS.z + 1.0]]) {
           const fm = new THREE.SpriteMaterial({ map: tFlame, color: 0xffd090, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }); mats.push(fm);
           const fl = new THREE.Sprite(fm); fl.scale.set(0.05, 0.11, 1); fl.position.set(x, y, z); G.add(fl);
           const hm = new THREE.SpriteMaterial({ map: tGlow, color: 0xff9a40, transparent: true, opacity: 0.35, depthWrite: false, blending: THREE.AdditiveBlending }); mats.push(hm);
@@ -4080,7 +4301,10 @@
         box(dw, dh, dd, dx, F + dh / 2, dz, mLac, G, false);
         box(dw + 0.04, 0.04, dd + 0.04, dx, F + dh, dz, gold, G, false);
         const top = new THREE.Mesh(new THREE.PlaneGeometry(dw - 0.1, dd - 0.1), mCarpet); top.rotation.x = -Math.PI / 2; top.position.set(dx, F + dh + 0.022, dz); G.add(top);
-        const panel = new THREE.Mesh(new THREE.PlaneGeometry(dd, 2.6), M({ map: tScreen, roughness: 0.55, metalness: 0.15 })); panel.position.set(MHALL.x1 - 0.03, F + dh + 1.3, dz); panel.rotation.y = -Math.PI / 2; G.add(panel);
+        /* (CP13, the counter's vision review: at x1 − 0.03 the panel lay IN the face of the dado's gold strip, which runs the
+           wall's length at F + 0.92 — a dashed gold line flickered across it behind the monk; 1.5 cm in front of it now. It
+           is chapter 4's merit film's panel too, the flicker Chad named there) */
+        const panel = new THREE.Mesh(new THREE.PlaneGeometry(dd, 2.6), M({ map: tScreen, roughness: 0.55, metalness: 0.15 })); panel.position.set(MHALL.x1 - 0.045, F + dh + 1.3, dz); panel.rotation.y = -Math.PI / 2; G.add(panel);
         thai('cushtri', MHALL.x1 - 0.32, F + dh, dz, { parent: G, ry: -Math.PI / 2, s: 1.0 });
         thai('phan', dx - 0.55, F + dh, dz - 0.95, { parent: G, s: 0.9 });
         thai('candle', dx - 0.55, F + dh, dz + 1.0, { parent: G, s: 0.9 });
@@ -4236,7 +4460,7 @@
          (e3c3's monkPray), his head a little bowed; while the chant runs his head dips on each of its four phrases */
       { const mk = merit.monk;
         const g0 = new THREE.Group(); g0.position.set(MDAIS.x + 0.12, F + MDAIS.h, MDAIS.z); g0.rotation.y = -Math.PI / 2; G.add(g0); mk.group = g0;
-        const cush = box(0.72, 0.06, 0.68, 0, 0.03, 0.05, mSaffron, g0, false);
+        const cush = box(0.9, 0.06, 0.74, 0, 0.03, 0.05, mSaffron, g0, false);   // (CP13, the counter's vision review: at 0.72 his crossed feet hung over its ends)
         parseOnce('monkshop').then((gltf) => {
           if (!alive) return;
           const g = cloneSkinned(gltf.scene);
@@ -4406,6 +4630,12 @@
     if (warmSounds) warmSounds(['k5epi', 'z5epi0', 'z5epi1', 'z5epi2', 'z5epi3']);
     if (warmSounds) warmSounds(['k5pour', 'k5bottleout', 'k5ratchet', 'k5stiff', 'k5seal', 'k5hiss', 'k5capoff', 'k5tear', 'k5slide', 'k5bubbles',
                                 'k5plip', 'k5bend', 'k5foam', 'k5spark', 'k5flick', 'k5catch', 'k5wave', 'k5sand', 'k5wai']);   // PLAY I's own (CP6)
+    /* every line said in PLAY (CP13, the sound lens: none was warmed, and sayLine says a line whose bytes have not
+       decoded silently after 1.6 s — behind the films' 66 cues the owner's hello could be a moving mouth with no voice;
+       e3c1–e3c4 each warm theirs, e3c4's as PLAY_LINES) */
+    if (warmSounds) warmSounds(['ow5hello', 'z5yinq', 'ow5yin', 'ow5red', 'ow5shy', 'ow5little', 'ow5give', 'z5children', 'z5promise',
+                                'ow5careful', 'z5water', 'z5bag', 'z5red', 'z5shy', 'z5little', 'z5stiff', 'z5incense', 'z5eat', 'z5dedic',
+                                'z5wonder', 'z5ask', 'z5loose', 'z5time', 'z5felt', 'z5fasc']);
     buildTemple();                                   // World M (CP5): after everything it reads at call time
 
     /* ---- FILM M's NIGHT (§4.0b, §4.1c, V30): the hall's dais end by candlelight — a low lacquered table before the dais, a
@@ -4564,7 +4794,8 @@
     const introF = {
       T: OFT,
       begin() { fLive.lit = null; fLive.shot = 'O'; grocerAt(0); doorsTo(0); },
-      end() { grocerAt(1); doorsTo(0); cntLive.ownerLook = 0; fLive.shot = ''; lensTo(72); if (fLive.hands) { fLive.hands.visible = true; fLive.hands = null; } },
+      end() { grocerAt(1); doorsTo(0); cntLive.ownerLook = 0; fLive.shot = ''; lensTo(72); if (fLive.hands) { fLive.hands.visible = true; fLive.hands = null; }
+              if (cntLive.owner) { cntLive.owner.talkUntil = 0; cntLive.owner.nodT = 0; } },
       frame(t, api) {
         if (fLive.shot !== 'O') introF.begin();
         if (api && api.handsRoot) { fLive.hands = api.handsRoot; api.handsRoot.visible = false; }   // his hands are not in it
@@ -4576,20 +4807,30 @@
           const u = cl01((t - OFT.o1) / (OFT.o2 - OFT.o1)), w = 0.25 * ss(u) + 0.75 * u;   // (eased from the lift, then steady)
           const x = -12.6 + 11.2 * w, z = 2.4 - 0.4 * w, bob = 0.011 * Math.sin(w * 11.2 / 0.72 * Math.PI);
           /* to the grocer's, rolling down on his right as he comes up to it and passes (by photograph, CP9: rolled at 8.4 it
-             came down a few metres behind him, and the glance found the kitchen's shutter, already down) */
+             came down a few metres behind him, and the glance found the kitchen's shutter, already down). CP13, by photograph
+             again: a FIXED turn of 0.95 put the corridor's column (x −7, z 3.2) dead in the middle of a phone's frame at
+             7.0 s, the shutter a sliver at its edge — his eyes go to the shutter's middle wherever he is, which keeps the
+             column 35–44° off to the right; and round to the one lit front ahead from 7.8, his eyes on its middle as he
+             comes up to it (from 10.8 a phone looked at the blank wall at the corridor's end for three seconds) */
           const glance = ss(cl01((t - 4.8) / 0.8)) * (1 - ss(cl01((t - 6.6) / 0.9)));
-          const left = ss(cl01((t - 10.8) / 3.0));                                       // and round to the one lit front ahead
+          const left = ss(cl01((t - 7.8) / 2.2));
+          const toShut = Math.atan2(MALL.z1 - z, -8 - x), toShop = Math.min(0.95, Math.atan2(z, 0 - x));   // (from his heading, +x: right is +, left is +)
           yaw.position.set(SX + x, 1.62 + bob, z);
-          yaw.rotation.y = -Math.PI / 2 - 0.95 * glance + 0.62 * left; pitch.rotation.x = -0.05 - 0.04 * left;
+          yaw.rotation.y = -Math.PI / 2 - toShut * glance + toShop * left; pitch.rotation.x = -0.05 - 0.04 * left;
         } else if (t < OFT.door) {                                // O2 · his glass: the owner, the bundle; he looks up, beckons
+          /* (CP13, by photograph: from x 1.2–1.4 the line to the bundle crossed the glass where its gold name is, and HOUSE
+             lay across the bundle; from 2.35–2.55 it crosses the clear pane past the name's end, x 2.5) */
           const k = ss(cl01((t - OFT.o2) / (OFT.door - OFT.o2)));
-          const p = lerp3([1.42, 1.62, 1.78], [1.18, 1.6, 1.42], k);
+          const p = lerp3([2.55, 1.62, 1.8], [2.35, 1.6, 1.45], k);
           camAt(SX + p[0], p[1], p[2], SX + OWN.x - 0.4, 1.32 + 0.1 * k, OWN.z + 0.1);
-        } else {                                                  // to the door: he reaches it, its bell, it opens; black
+        } else {                                                  // to the door: he reaches it, its bell, it opens; in; black
+          /* (CP13, by photograph: the push followed the shop's middle to the altar at the back, and the owner who had just
+             beckoned him left the frame — a phone's at 19.2 s. His eyes stay on the owner now, along the glass to the door
+             and in through the leaf that opens: x 0.3 passes 0.27 m from the shut leaf's edge and 0.2 m from the open
+             one's) */
           const k = ss(cl01((t - OFT.door) / (OFT.open - OFT.door))), push = ss(cl01((t - OFT.open - 0.4) / 1.3));
-          const p = lerp3(lerp3([1.18, 1.6, 1.42], [0.18, 1.62, 1.0], k), [0.1, 1.62, 0.6], push);
-          const q = lerp3([OWN.x - 0.4, 1.42, OWN.z + 0.1], [0.05, 1.45, -2.0], k);
-          camAt(SX + p[0], p[1], p[2], SX + q[0], q[1], q[2]);
+          const p = lerp3(lerp3([2.35, 1.6, 1.45], [0.32, 1.62, 0.95], k), [0.3, 1.62, -0.45], push);
+          camAt(SX + p[0], p[1], p[2], SX + OWN.x - 0.35, 1.42 + 0.06 * k, OWN.z + 0.1);
           doorsTo(ss(cl01((t - OFT.open) / 0.8)), 1);            // the leaf before him opens out toward him, to his right
         }
       }
@@ -4617,15 +4858,19 @@
         careLive.boxOpen = careLive.boxOpenTo = 0; careLive.drumRate = 0;
         homeKids(0); homeReceipts(1); homeCal(0); cityOut(1);
         if (careLive.deskBag) careLive.deskBag.visible = true;
+        if (careLive.drinksBag) careLive.drinksBag.visible = false;
       },
       end() {
         homeLive.on = false; fLive.shot = '';
+        if (homeLive.clk !== '22:50') { homeLive.clk = '22:50'; roomClock('22:50'); }
         homeKids(3); homeReceipts(roomLive.receipts.length); homeCal(-1); homeDoor(0);
         if (roomLive.box) roomLive.box.visible = true; if (roomLive.card) roomLive.card.visible = true;
         careLive.boxOpen = careLive.boxOpenTo = 0; careLive.drumRate = 1;
         careLive.bottles.forEach(B => { if (B && B.liq) B.liq.scale.y = 1; });
-        for (let i = 0; i < 3; i++) { bottleShow(i, false); stickShow(i, false); }
-        if (careLive.deskBag) careLive.deskBag.visible = true;
+        /* (CP13: stubShow, not stickShow — H3 leaves the sticks as burnt stubs, and play's first stick was shown as one) */
+        for (let i = 0; i < 3; i++) { bottleShow(i, false); stubShow(i, false); }
+        if (careLive.deskBag) careLive.deskBag.visible = false;
+        if (careLive.drinksBag) careLive.drinksBag.visible = true;
         lensTo(72); if (fLive.hands) { fLive.hands.visible = true; fLive.hands = null; }
       },
       frame(t, api) {
@@ -4633,6 +4878,9 @@
         if (api && api.handsRoot) { fLive.hands = api.handsRoot; api.handsRoot.visible = false; }   // no hands: the things move by themselves (Chad's ruling)
         const ss = smooth, T = HFT;
         lensTo(72);
+        /* his bedside clock: the first evening's hour, then tonight's (CP13, the films' vision review: it read 22:50 under
+           a dusk sky) */
+        { const clk = t < T.h2 ? '19:24' : '22:50'; if (homeLive.clk !== clk) { homeLive.clk = clk; roomClock(clk); } }
         if (t < T.ins) {                                     // H1 · the door at the first dusk; in; the lamp; the bag on the desk
           endLook(t < T.lamp ? 'DUSK' : 'DUSKLIT');
           homeDoor(ss(cl01((t - T.open) / 1.0)));
@@ -4675,6 +4923,8 @@
         } else if (t < T.h3) {                               // H2 · THE WEEKS
           homeKids(3); if (roomLive.box) roomLive.box.visible = true; if (roomLive.card) roomLive.card.visible = true;
           if (careLive.deskBag) careLive.deskBag.visible = false;
+          if (careLive.drinksBag) careLive.drinksBag.visible = false;
+          homeLive.weeksT = wallNow();                        // (CP13: the beds hold one quiet morning through it — mixBeds)
           const u = t - T.h2, days = ['DUSK', 'NIGHT', 'DEEP', 'DAWN', 'MORNING', 'AFTERNOON'], step = 0.38;
           const dd = days[Math.floor(u / step) % days.length], night = dd === 'NIGHT' || dd === 'DEEP';
           endLook(t < T.h2c ? dd : 'AFTERNOON');
@@ -4703,8 +4953,12 @@
           for (let i = 0; i < 3; i++) { bottleShow(i, false); stickShow(i, false); stubShow(i, true); }
           homeReceipts(roomLive.receipts.length); homeCal(-1);
           endLook(t < T.lamp2 ? 'DEEP' : 'NIGHT'); cityOut(0);
-          if (careLive.deskBag) careLive.deskBag.visible = t > T.bag;
-          homeDoor(ss(cl01((t - (T.h3 + 0.4)) / 1.0)) * (1 - ss(cl01((t - (T.bag + 0.6)) / 0.8))));
+          if (careLive.deskBag) careLive.deskBag.visible = false;
+          if (careLive.drinksBag) careLive.drinksBag.visible = t > T.bag;
+          /* (CP13, the films lens: it shut from 30.0 with the lens still at R_ARRIVE, 0.67 m from the hinge — inside the
+             leaf's 0.82 m sweep — so the door passed through the camera. It shuts behind him once he has come 0.4 of the
+             way to the three, a metre from the hinge, the lens turned to them) */
+          homeDoor(ss(cl01((t - (T.h3 + 0.4)) / 1.0)) * (1 - ss(cl01((t - (T.lamp2 + 1.2)) / 0.8))));
           /* and, the lamp on, he comes in front of them: their faces in its light, as play will find them (CP9, by photograph:
              from the door they were three dark shapes seen from the side) */
           const k = ss(cl01((t - (T.h3 + 0.9)) / 1.6)), turn = ss(cl01((t - (T.lamp2 + 0.2)) / 1.6)), come = ss(cl01((t - (T.lamp2 + 0.4)) / 1.8));
@@ -4722,9 +4976,13 @@
     const cardF = {
       T: KFT,
       begin() { fLive.lit = null; fLive.shot = 'K'; cntLive.ownerLook = 1; },
-      end() { cntLive.ownerLook = 0; fLive.shot = ''; lensTo(72); if (fLive.hands) { fLive.hands.visible = true; fLive.hands = null; } },
+      end() { cntLive.ownerLook = 0; fLive.shot = ''; lensTo(72); if (fLive.hands) { fLive.hands.visible = true; fLive.hands = null; } kidForce(1, null);
+              if (cntLive.owner) cntLive.owner.talkUntil = 0; },   // (CP13: a skip runs all three of his talks at once — 20 s of silent gesture)
       frame(t, api) {
         if (fLive.shot !== 'K') cardF.begin();
+        /* the shy one stands just past the card, only his feet at the frame's top edge while it is read: his far level
+           there, not the 451k near one his 0.24–0.30 m would choose (CP13, the geometry lens) */
+        kidForce(1, t < KFT.k3 ? 1 : null);
         if (api && api.handsRoot) { fLive.hands = api.handsRoot; api.handsRoot.visible = false; }   // nor in this one: the card and his face
         fLight(SHOP_EVE);
         const ss = smooth, cx = SX + CNT_CARD.x, cz = CNT_CARD.z, cy = CNT.y + 0.001;
@@ -4744,7 +5002,11 @@
         } else {                               // K3 · up to his face, and he looks straight at him
           lensTo(40);
           const k = ss(cl01((t - KFT.k3) / 2.0)), push = ss(cl01((t - KFT.k3) / (KFT.end - KFT.k3)));
+          /* (CP13, the counter's vision review: aimed at his head BONE, the lens followed every sway of his talking take —
+             on a phone his face drifted from the left third to past the middle; it holds on where his face is at rest, a
+             quarter of his head's sway, so he moves in the frame and the frame does not chase him) */
           const P = cntLive.owner && cntLive.owner.head ? cntLive.owner.head.getWorldPosition(_kv) : _kv.set(SX + OWN.x, 1.55, OWN.z);
+          P.set(SX + OWN.x + (P.x - SX - OWN.x) * 0.25, 1.53 + (P.y - 1.53) * 0.25, OWN.z + (P.z - OWN.z) * 0.25);
           const p = lerp3([cx - 0.136, cy + 0.15, cz], [SX + 2.36 + 0.28 * push, 1.6, OWN.z - 0.05], k);
           camAt(p[0], p[1], p[2], P.x, P.y - 0.02, P.z);
         }
@@ -4757,14 +5019,34 @@
        wearing the near one's material over the same vertices. Each file is baked base-down on y 0, height 1.0,
        facing +z (CP1), so a place is a position, a turn and a height in metres. */
     const kidLive = KIDS.map(K => ({ K, altar: null, counter: null, ready: false }));
-    function kidLOD(src, h) {
+    const KID_SHADOW_GEO = new THREE.PlaneGeometry(1, 1);
+    let kidShadowMat = null;
+    /* hold the counter copy of child `i` on one level (null hands it back to the distance) */
+    function kidForce(i, lvl) {
+      const g = kidLive[i] && kidLive[i].counter, lod = g && g.children[0]; if (!lod || !lod.isLOD) return;
+      if (lvl == null) { lod.autoUpdate = true; return; }
+      lod.autoUpdate = false;
+      const n = Math.min(lvl, lod.levels.length - 1); lod.levels.forEach((L, j) => { L.object.visible = j === n; });
+    }
+    /* (CP13, the geometry lens: `noNear` — a copy no shot ever holds in macro: the temple tray's red and shy ones, beside
+       the little one's close-up; `distAt` — the counter's, 1.10–1.17 m from him, where the far level was 361k triangles
+       for three figures 140 px tall: the lightest from 0.9, the lean's close look still finds the far and near ones) */
+    function kidLOD(src, h, o = {}) {
       const lod = new THREE.LOD();
-      const near = src.near.clone(), far = src.far.clone();
-      const wn = new THREE.Group(); wn.add(near);
+      const far = src.far.clone();
       const wf = new THREE.Group(); wf.add(far);
-      lod.addLevel(wn, 0); lod.addLevel(wf, KID_LOD);
-      if (src.dist) { const wd = new THREE.Group(); wd.add(src.dist.clone()); lod.addLevel(wd, KID_DIST); }
+      if (o.noNear) lod.addLevel(wf, 0);
+      else { const wn = new THREE.Group(); wn.add(src.near.clone()); lod.addLevel(wn, 0); lod.addLevel(wf, KID_LOD); }
+      if (src.dist) { const wd = new THREE.Group(); wd.add(src.dist.clone()); lod.addLevel(wd, o.distAt || KID_DIST); }
       const g = new THREE.Group(); g.add(lod); g.scale.setScalar(h);
+      /* a soft contact shadow under the base (CP13, the counter's vision review: the three cast no shadow — castShadow is
+         off on their scans — and in film K's macro the shy one's base hung over the cloth like a disc); 1 mm under the
+         base, whatever it stands on */
+      if (src.foot) {
+        if (!kidShadowMat) { const t = makeSoftDot('rgba(0,0,0,0.6)', 'rgba(0,0,0,0)'); madeTex.push(t); kidShadowMat = B({ map: t, transparent: true, depthWrite: false }); }
+        const sh = new THREE.Mesh(KID_SHADOW_GEO, kidShadowMat); sh.rotation.x = -Math.PI / 2; sh.position.y = -0.001 / h;
+        sh.scale.setScalar(src.foot); sh.renderOrder = 1; g.add(sh);
+      }
       return g;
     }
     for (const L of kidLive) {
@@ -4775,7 +5057,9 @@
         if (!near || !far) throw new Error(`${K.asset}: no ${K.asset}_near / ${K.asset}_far node`);
         for (const o of [far, dist]) if (o) o.traverse(m => { if (m.isMesh) m.material = near.material; });
         for (const o of [near, far, dist]) if (o) o.traverse(m => { if (m.isMesh) { m.castShadow = false; m.receiveShadow = false; } });
-        const src = { near, far, dist };
+        /* the base's reach, in the file's own units (base-down, height 1.0): its shadow a little wider than the widest of it */
+        const fb = new THREE.Box3().setFromObject(far), fs = fb.getSize(new THREE.Vector3());
+        const src = { near, far, dist, foot: Math.max(fs.x, fs.z) * 1.15 };
         L.farSrc = far;                                        // (his double is a copy of this level, CP7)
         // on the riser under the window, facing into the room (−x): a model at ry θ faces (sin θ, 0, cos θ)
         L.altar = kidLOD(src, K.h);
@@ -4783,18 +5067,21 @@
         L.altar.rotation.y = -Math.PI / 2;
         worldR.add(L.altar);
         // and on the red cloth on the owner's glass, facing him (−x as well) — SET DOWN there as the owner opens the cloth
-        L.counter = kidLOD(src, K.h);
+        L.counter = kidLOD(src, K.h, { distAt: 0.9 });
         L.counter.position.set(CNT.x, CNT.y + 0.003, CNT_Z[K.slot]);
         L.counter.rotation.y = -Math.PI / 2;
         worldS.add(L.counter);
         // and on the tray before the monk in World M's hall (film M), facing him (+x)
-        L.night = kidLOD(src, K.h);
+        L.night = kidLOD(src, K.h, K.slot < 2 ? { noNear: true } : {});
         L.night.position.set(nightSet.tray.x, nightSet.tray.y, nightSet.tray.z + (K.slot - 1) * 0.12);
         L.night.rotation.y = Math.PI / 2;
         nightSet.g.add(L.night);
         const st = cntLive.kidSet[K.slot] || (cntLive.kidSet[K.slot] = mkSet(null));
         st.obj = L.counter; st.y0 = L.counter.position.y; st.s0 = K.h; setDraw(st);
         L.ready = true;
+        /* and its double, built now and hung hidden in the room (CP13, the geometry lens: built on the possession's first
+           frame, its two shader programs compiled on screen as it rose) — the entry curtain's warm compiles it */
+        doubleOf(kidLive.indexOf(L));
       }).catch(e => { console.warn('e3c5: ' + K.asset + ' could not be placed — ' + (e && e.message)); if (ctx.loadFail) ctx.loadFail(K.asset, e); });
     }
 
@@ -4873,7 +5160,9 @@
         roomArriveLook();                                      // onto the altar, the jug to the little one (CP6)
       } else {
         yaw.position.x = S_SPAWN.x; yaw.position.z = S_SPAWN.z;
-        yaw.rotation.y = DATA.spawn.rot; pitch.rotation.x = -0.12;
+        /* (CP13, the films' vision review: on a phone the resting hand covered half the bundle on the glass, the thing to
+           press; a phone's look a little lower lifts it above the fingertips, the owner's face still under the stats) */
+        yaw.rotation.y = DATA.spawn.rot; pitch.rotation.x = camera.aspect < 1 ? -0.22 : -0.12;
       }
       if (kit) { if (w === 'R') look('NIGHT', 0); else kit.daylight(null, 0); kit.pose('standing', { secs: 0.05 }); }
     }
@@ -4962,12 +5251,15 @@
       queueFn(() => cntFilm('made', 'yin'));
       return true;
     }
-    /* a film from the counter (M, K): its receipt first, so the save kit.film makes as it starts already has it; the
-       film hands its black to the kit's fade and the counter lifts it, his look where it was (restoreWorld) */
+    /* a film from the counter (M, K): its receipt is WRITTEN when it ends (CP13, the save lens: written first, the save
+       kit.film makes as it starts already had it, and a phone closed during the film never showed its words — the owner's
+       answer to the misconception, or his card — on a Continue); the film hands its black to the kit's fade and the
+       counter lifts it, his look where it was (restoreWorld) */
     function cntFilm(key, receipt) {
-      cntDone.add(receipt); cntSave();
+      cntDone.add(receipt);
       const done = () => {
         if (!alive) return;
+        cntSave();
         cntLive.ownerLook = 0;
         if (kit) kit.fade(0, 1.2);
         if (key === 'card') viewTo(ownerYaw(), promisePitch(), 1.2);   // the promise is HIS: the look comes up to him as the black lifts
@@ -5013,9 +5305,9 @@
       if (cntLive.windT > 0) { cntLive.windT -= wdt; B.key.rotation.x += wdt * 9; }
       if (cntLive.lull) B.drum.rotation.x += wdt * 0.9;
     }
-    /* 3/3 · what he is giving them — and THE TOUCH: the lens leans over the glass to the little one, his right hand reaches
-       into the frame (kit.handPose 'reach') and its fingers rest on the little one's long hair; the bells on its ring
-       tinkle once, very faintly; the hand and the lens go back. Then the card, set down on the glass past the red one */
+    /* 3/3 · what he is giving them — and THE TOUCH: the lens leans over the glass to the little one until his face and his
+       long hair fill the frame; the bells on his ring tinkle once, very faintly; the lens goes back (CP13: no hand — see
+       leanSolve). Then the card, set down on the glass past the red one */
     function giveBeat() {
       cntBusy = true;
       queueGap(0.7);
@@ -5029,37 +5321,25 @@
         after(0.7, () => { cntBusy = false; objectiveFor('counter'); });       // ORDER 3
       });
     }
-    /* where the eye goes for the touch is SOLVED from where the reach pose puts the fingertips on THIS screen (the pose is a
-       share of the frame at its own depth, so it moves with the aspect — S40): the eye stays at its height, the lens faces
-       the counter (+x), and stands where those fingertips land on the long lock of hair that falls beside the little one's
-       head on the side his hand comes from (+z, the right of the frame) — `dz` out from his middle, `dy` of his height up.
-       On his crown, the back of the hand stood between the lens and the whole child (by photograph, on a phone and a
-       desktop). A narrow screen makes the hand a larger share of the frame, so there it rests further out on the lock and
-       a little lower (by photograph: 7.5 cm out and 0.70 up on a desktop, 9.5 and 0.60 on a phone). `tip` is the hand's
-       reach past its own place, along its fingers (by photograph) */
-    const LEAN = { secs: 1.0, reach: 0.9, hold: 1.4, back: 0.8, tip: 0.17 };
-    const touchAt = () => { const n = cl01((1.0 - camera.aspect) / 0.54); return { dz: 0.075 + 0.02 * n, dy: 0.70 - 0.10 * n, dx: 0 }; };
-    const _lv = new THREE.Vector3(), _le = new THREE.Euler();
-    function leanSolve(o = touchAt()) {
-      const H = _lv.set(SX + CNT.x + (o.dx || 0), CNT.y + KIDS[2].h * o.dy, CNT_Z[2] + o.dz).clone();
-      const t = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)), R = { fx: 0.326, fy: -0.652, z: 0.383 }, fd = [-0.090, -0.060, -0.989];
-      const f = new THREE.Vector3(R.fx * t * camera.aspect * R.z + fd[0] * LEAN.tip, R.fy * t * R.z + fd[1] * LEAN.tip, -R.z + fd[2] * LEAN.tip);
-      const ey = yaw.position.y, ry = -Math.PI / 2 + (o.ry || 0);
-      let best = -0.4, err = Infinity;
-      for (let th = -1.25; th <= 0.25; th += 0.005) {
-        const y = f.y * Math.cos(th) - f.z * Math.sin(th), e = Math.abs(H.y - y - ey);
-        if (e < err) { err = e; best = th; }
-      }
-      const v = f.clone().applyEuler(_le.set(best, ry, 0, 'YXZ'));
-      return { x: H.x - v.x, z: H.z - v.z, ry, px: best };
+    /* the touch's timing: the lean in, the moment the touch would land (the bells), the hold, the lean back (CP13: the
+       reach pose that the lens was once solved for is gone — leanSolve below) */
+    const LEAN = { secs: 1.0, reach: 0.9, hold: 1.4, back: 0.8 };
+    const _lv = new THREE.Vector3();
+    /* THE TOUCH, without a hand (CP13, the counter's vision review: the reach pose's hand read, on a phone, as a fist of
+       flesh filling the lower half of the frame over the little one, and on a desktop as a bare tube whose knuckles hid
+       his face — no fingers to be seen resting on anything; Chad's ruling on the bottle: "if you know its impossible for
+       you to get the fingers right, then dont do that animation"). The lens leans in over the glass until his face and
+       his long hair fill the middle of the frame, from 0.40 m back at the standing eye; the bells on his ring tinkle once,
+       very faintly, at the moment the touch would have landed; and it leans back */
+    function leanSolve() {
+      const H = _lv.set(SX + CNT.x, CNT.y + KIDS[2].h * 0.72, CNT_Z[2]), ey = yaw.position.y, back = 0.40;
+      return { x: H.x - back, z: H.z, ry: -Math.PI / 2, px: Math.atan2(H.y - ey, back) };
     }
     function leanIn() {
       if (cntLive.lean || !kit) return;
       cntLive.lean = { t0: dayClock.t, from: { x: yaw.position.x, z: yaw.position.z, ry: yaw.rotation.y, px: pitch.rotation.x }, to: leanSolve(), backAt: Infinity };
       const L = LEAN;
-      after(L.secs, () => { if (kit.handPose) kit.handPose('reach', 1, { secs: L.reach }); });
       after(L.secs + L.reach, () => sfxAt('k5bellsfaint', 0.32, SX + CNT.x, CNT_Z[2]));
-      after(L.secs + L.reach + L.hold, () => { if (kit.handPose) kit.handPose(null, 0, { secs: L.back }); });
       after(L.secs + L.reach + L.hold + L.back * 0.5, () => { if (cntLive.lean) cntLive.lean.backAt = dayClock.t - cntLive.lean.t0; });
     }
     /* where his look goes when the cloth opens: onto the middle of the three, low enough that all three stand above his
@@ -5167,6 +5447,9 @@
       setShow(cntLive.penSet, cntDone.has('give'), true);
       setShow(cntLive.bagSet, packedUp, true);
       phase = 'counter';
+      /* (CP13, the save lens: a Continue put him where the save was taken — mid-lean over the glass during the touch —
+         and rooted him there; the counter is played from one mark) */
+      yaw.position.x = S_SPAWN.x; yaw.position.z = S_SPAWN.z;
       if (kit) kit.root(true);
       cntSave();
       const s = cntStep();
@@ -5239,7 +5522,7 @@
         markY: K.h * 0.45 + 0.07, prompt: W['hot' + K.key[0].toUpperCase() + K.key.slice(1)],
         hits: tapBox(SX + CNT.x - 0.08, CNT.y - 0.01, CNT_Z[i] - 0.085, SX + CNT.x + 0.08, CNT.y + K.h + 0.03, CNT_Z[i] + 0.085),
         enabled: () => cntStep() === 'meet' && !cntDone.has('m.' + K.key) && cntOk(), onInteract() { return meetKid(K); } })),
-      { id: 'card', pos: { ...cntAt(CNT_CARD.x, CNT_CARD.z), y: CNT.y + 0.01 }, radius: 2.6, aim: 0.2, pressAim: true, markY: 0.16, prompt: W.hotCard,
+      { id: 'card', pos: { ...cntAt(CNT_CARD.x, CNT_CARD.z), y: CNT.y + 0.01 }, radius: 2.6, aim: 0.2, pressAim: true, markY: 0.05, prompt: W.hotCard,   // (CP13: at 0.16 its "!" stood on the shy one's chest behind it)
         hits: tapBox(SX + CNT_CARD.x - 0.07, CNT.y - 0.01, CNT_CARD.z - 0.06, SX + CNT_CARD.x + 0.07, CNT.y + 0.05, CNT_CARD.z + 0.06),
         enabled: () => cntStep() === 'card' && cntOk(), onInteract() { return readCard(); } },
       /* (the promise and the bag answer a tap on their mark as the others here do — `pressAim`: by photograph, on a phone a
@@ -5348,13 +5631,14 @@
     }
     /* the desk chair turns with him while he sits in it (CP8: a swivel chair; turned to the altar, its own back filled the
        lower right of a phone's frame — the pick probe named it, 0.3 m from the lens) */
+    function chairHome() { const ch = roomLive.chair; if (ch) { ch.position.x = -0.32; ch.rotation.y = 0.25; } }   // (where build() stands it)
     function chairTurn() {
       const ch = roomLive.chair; if (!ch) return;
       const on = Math.hypot(yaw.position.x - CHAIR.x, yaw.position.z - CHAIR.z) < 0.16 && yaw.position.y > 0.85;
       ch.rotation.y = on ? 0.25 + yaw.rotation.y : 0.25;
     }
     /* the ending's light at once (a look a shot asks for, set once per shot change) */
-    function endLook(name) { if (endLive.looked !== name) { endLive.looked = name; look(name, 0); } }
+    function endLook(name) { if (endLive.looked !== name) { endLive.looked = name; fLive.lit = null; look(name, 0); } }   // (CP13: the room's look replaces a film light, so fLight's memory of it goes)
     function endBegin(k, api) {
       const P = endProps();
       endLive.on = k; endLive.shot = ''; endLive.looked = '';
@@ -5397,9 +5681,10 @@
       if (careLive.incDesk) deskIncense(false);
       if (endLive.dTray) endLive.dTray.visible = false;
       if (endLive.dLights) endLive.dLights.forEach(L => { L.m.visible = L.h.visible = false; });
+      dMonkRest();                                            // (the temple monk's head back at his rest: film M sees him too)
       dashLate(false); calSwap(null);
       if (P && P.cardDust) P.cardDust.visible = false;
-      if (roomLive.chair) roomLive.chair.rotation.y = 0.25;
+      chairHome();
       if (roomLive.tapeDisp) roomLive.tapeDisp.position.y = 0.29;
       Object.assign(endLive, { on: '', shot: '', looked: '' });
     }
@@ -5517,7 +5802,9 @@
         const bz = (RISER.z1 + ALTAR.z1) / 2, u = t - T.a7;
         camAt(1.30 - 0.44, 0.97, bz + 0.21, 1.30, ALTAR.top + 0.05, bz + 0.01);
         careLive.boxOpen = careLive.boxOpenTo = ss(cl01((u - 0.2) / 0.6));
-        const w = ss(cl01((u - 0.8) / 1.0)), r = Math.max(0, Math.min(u - 1.9, 4.5)), run = 2.2 * (r - r * r / 9);   // (4.95 rad in all)
+        /* (CP13, the sound lens: the run's 12.5 s take sounds past 63 s while the drum stopped at 56.4 — the drum now turns
+           slower and slower until the black at 57.9, and the take is faded with the black) */
+        const w = ss(cl01((u - 0.8) / 1.0)), r = Math.max(0, Math.min(u - 1.9, 6.0)), run = 1.65 * (r - r * r / 12);   // (4.95 rad in all)
         if (roomLive.boxKey) roomLive.boxKey.rotation.x = -Math.PI * 2 * w + Math.PI * 2 * (run / 4.95);
         if (roomLive.boxDrum) roomLive.boxDrum.rotation.x = run;
       }
@@ -5528,7 +5815,7 @@
       const sk = careLive.sticksSet[i]; if (!sk) return;
       sk.visible = true;
       const inc = sk.children[0]; if (inc) { inc.scale.y = 1; inc.position.y = 0.09; inc.material = mStickLit; }
-      if (roomLive.embers[i]) { roomLive.embers[i].visible = true; roomLive.embers[i].position.y = ALTAR.top + 0.03 + 0.01 + 0.16; }
+      if (roomLive.embers[i]) { roomLive.embers[i].visible = true; roomLive.embers[i].position.y = ALTAR.top + 0.02 + 0.01 + 0.16; }
     }
 
     /* ---------------------------------------------------------------- THE EPILOGUE (§4.9, every ending, 30 s)
@@ -5543,7 +5830,12 @@
       if (cntLive.box) { cntLive.boxOpen = cntLive.boxOpenTo = 1; }
     }
     function epiFrame(u, api) {
-      if (endLive.shot !== 'epi') { endLive.shot = 'epi'; endLive.looked = ''; epiSet(); fLight(SHOP_EVE); lensOff(); }
+      if (endLive.shot !== 'epi') {
+        endLive.shot = 'epi'; endLive.looked = ''; epiSet(); fLight(SHOP_EVE); lensOff();
+        /* (CP13, the films lens: a skip from B's phone shots jumps straight here, and the phone stayed on the lens under
+           the card — B's own last shots put it down, a skip never runs them) */
+        if (phone.g.parent === camera) phoneBeforeEyes(false);
+      }
       if (api && api.handsRoot) api.handsRoot.visible = false;
       if (api && api.handPose) api.handPose(null, 0);
       /* all three in the frame on THIS screen (film M's rule): the lens as far back as the screen's width needs, 0.29 m either
@@ -5646,7 +5938,9 @@
         const k = ss(cl01((t - T.b5) / 2.2));
         const bz = Math.sin(t * 55) * 0.002 * (Math.sin(t * 5.3) > 0.2 ? 1 : 0);
         phone.g.position.x = 0.04 + bz + 0.004 * (t - T.b5);
-        P.ph = P.ph || 0; phone.S.draw('buzz', Math.min(207, Math.floor(12 + (t - T.b5) * 40)));
+        /* (CP13: its count steps 12 times a second — every new number is a repaint and an upload of a 576×1248 canvas — and
+           its bar reads the lock screen's hour, not the night's 02:47) */
+        P.ph = P.ph || 0; phone.S.draw('buzz', Math.min(207, Math.floor(12 + Math.floor((t - T.b5) * 12) / 12 * 40)), '06:58');
         camAt(CHAIR.x, 0.92 + 0.26 * k, CHAIR.z - 0.05 * (1 - k), 0.04, DESK.top + 0.03, -1.27);
       } else if (sh === 'b11') {                              // up from the phone at the three in the grey morning
         const k = ss(cl01((t - T.b11) / 1.6));
@@ -5658,8 +5952,10 @@
         camAt(ROW.mid - 0.46, 0.96, ALTAR_Z[1] - 0.04, ROW.mid, ALTAR.top + 0.10 + 0.08 * k, ALTAR_Z[1]);
       } else {                                                // b6 … b10: the phone before his eyes
         const scroll = sh === 'b6' ? Math.floor((t - T.b6) * 1.4) : 0;
+        /* (CP13: the share count climbs in twelfths of a second and stops at the 1,206 the delete dialog then reports — it
+           ran on to 1,289 and went DOWN; the morning's hour in the bar) */
         phone.S.draw(sh === 'b6' ? 'thread' : sh === 'b7' ? 'repost' : sh === 'b8' ? 'member' : sh === 'b9' ? 'dm' : (t < T.b10 + 1.5 ? 'delete' : 'deleted'),
-                     sh === 'b6' ? scroll : sh === 'b7' ? Math.floor(380 + (t - T.b7) * 260) : 0);
+                     sh === 'b6' ? scroll : sh === 'b7' ? Math.min(1206, Math.floor(380 + Math.floor((t - T.b7) * 12) / 12 * 260)) : 0, '07:02');
         const shake = sh === 'b9' ? 0.004 * ss(cl01((t - T.b9 - 1.0) / 1.5)) : 0;
         phone.g.position.x = shake * Math.sin(t * 31); phone.g.position.y = -0.004 + shake * Math.sin(t * 27 + 1);
         camAt(CHAIR.x, 1.18, CHAIR.z, CHAIR.x, 1.05, CHAIR.z - 1.0);
@@ -5684,7 +5980,9 @@
       const R = worldR, A = ALTAR, C = { bottles: [], toys: [], wishes: [], slips: [] };
       const WORDS = ['ORDERS', 'MONEY', 'LUCK'], tW = WORDS.map(w => tex(makeWishT(THREE, cnv, w)));
       // the extra drinks, night by night: (child, offset along the runner, night it appears)
-      [[0, -0.09, 1], [0, 0.09, 2], [1, -0.09, 1], [1, 0.09, 3], [2, -0.09, 2], [0, -0.16, 3], [2, 0.09, 3]].forEach(([i, dz, night], k) => {
+      /* (CP13, the geometry lens: at ±0.09 six of the seven stood 1.6–2.4 cm into a water cup or a first bottle; at ±0.13
+         each clears its own child's cup and bottle and the next child's extra) */
+      [[0, -0.13, 1], [0, 0.13, 2], [1, -0.13, 1], [1, 0.13, 3], [2, -0.13, 2], [0, -0.20, 3], [2, 0.13, 3]].forEach(([i, dz, night], k) => {
         const b = makeBottle(); b.cap.visible = false;
         const st = makeStraw(); st.g.position.y = 0.012; st.top.rotation.z = -1.15; b.g.add(st.g);
         b.g.position.set(ROW.back + (k % 2 ? -0.03 : 0.02), A.top, ALTAR_Z[i] + dz); b.g.rotation.y = (k * 1.7) % 1 - 0.5;
@@ -5776,7 +6074,9 @@
         lensTo(56);
         const k = ss(cl01((t - T.c4) / (T.c5 - T.c4)));
         camAt(MAT.x + 0.15 + 0.12 * k, MAT_EYE + 0.06, MAT.z, RISER.x, ALTAR.top + ALTAR.riser + 0.12, (ALTAR_Z[0] + ALTAR_Z[2]) / 2);
-        for (let i = 0; i < 3; i++) { const G = careLive.glints[i]; if (G) { G.sp.visible = true; G.sp.material.opacity = 0.6 + 0.3 * Math.sin(t * 2 + i); } }
+        /* the lamp caught in their eyes, STILL (CP13: pulsing while he wished, they read as answering his greed — and the
+           lesson is that nothing answers) */
+        for (let i = 0; i < 3; i++) { const G = careLive.glints[i]; if (G) { G.sp.visible = true; G.sp.material.opacity = 0.6; } }
       } else if (sh === 'c5') {                                  // 03:33, every light on; the box wound too far, playing too fast
         lensTo(50);
         for (const G of careLive.glints) G.sp.visible = false;
@@ -5811,8 +6111,8 @@
         const k = ss(cl01((t - T.c11) / (T.epi - T.c11)));
         camAt(MAT.x - 0.1 * k, MAT_EYE + 0.05, MAT.z, RISER.x, ALTAR.top + ALTAR.riser + 0.12, (ALTAR_Z[0] + ALTAR_Z[2]) / 2);
       }
-      if (sh === 'c8' && kit && kit.smear) kit.smear(0.3, { secs: 0.4 });
-      else if (sh === 'c9' && kit && kit.smear) kit.smear(0, { secs: 1.0 });
+      /* (CP13, the films lens: the smear this shot asked for is painted in play only — PULSE_LIVE — so it never showed in
+         a scene; the call is gone rather than given a cine flag, which would change pictures already photographed) */
     }
 
     /* ---------------------------------------------------------------- D · CARE FOR THEM (best, §4.8 D)
@@ -5915,7 +6215,10 @@
       if (sh !== endLive.shot) { endLive.shot = sh; dState(sh); }
       /* his hands: joined in d4 (the clasp at its own height — the añjali every chapter of this episode has used), and at the
          temple's kneel; never at a thing in close-up */
-      const prayK = sh === 'd4' ? ss(cl01((t - (T.d4 + 0.2)) / 0.8)) : 0;
+      /* (CP13, the films lens: the temple's kneel had no joined hands — the plan's §4.8 D at 40.0 — so they join there too,
+         for the shot from his eyes; the teaching's shot is from the side and cuts them away) */
+      const kneel = sh === 'temple' && t >= DT.kneel && t < DT.teach;
+      const prayK = sh === 'd4' ? ss(cl01((t - (T.d4 + 0.2)) / 0.8)) : kneel ? ss(cl01((t - (DT.kneel + 0.3)) / 0.8)) : 0;
       if (api && api.handsRoot) api.handsRoot.visible = prayK > 0.002;
       /* the clasp low, the three above the joined fingers (CP8: at the clasp's own height the hands covered the middle one on a
          phone, and on their way up from rest one hand passed through the frame pointing at the sweets): drawn whole, and
@@ -5994,6 +6297,7 @@
         }
       } else if (sh === 'y2' || sh === 'y4' || sh === 'y6') {   // the temple at dawn, again and again, in a different season's light
         fLight(sh === 'y2' ? TEMPLE_DAWN_HOT : sh === 'y4' ? TEMPLE_DAWN_RAIN : TEMPLE_DAWN);
+        endLive.looked = '';                                  // (CP13: so the room's next day is lit again, not left in the temple's light)
         const F = MHALL.F, u = t - (sh === 'y2' ? T.y2 : sh === 'y4' ? T.y4 : T.y6);
         if (endLive.dTray) endLive.dTray.visible = true;
         mCam(MKNEEL.x - 0.35 + 0.04 * u, F + 1.05, MKNEEL.z + 0.35, MDAIS.x, F + 0.85, MDAIS.z);
@@ -6106,8 +6410,29 @@
       }
       dTempleFx(t);
     }
+    /* THE MONK'S HEAD (CP13, the films lens: chapter 4's nod was lost in the copy, and his teaching was said by a
+       statue). It lifts a little from the tray to him as he speaks, and dips on each phrase of his teaching (measured on
+       the shipped take: 0, 2.80, 5.12, 8.06 s) and of the verse (chapter 4's measure of the same take: 0, 3.56, 6.71,
+       9.73 s) — absolute from his rest, never stacked (v11.5); he faces −x, so a turn about +z bows him forward */
+    const _dq = new THREE.Quaternion(), _dz = new THREE.Vector3(0, 0, 1);
+    function dMonkHead(t) {
+      const mk = merit.monk;
+      if (!mk.ready || !mk.head || !mk.rest) return;
+      if (!mk.restW) {
+        mk.head.quaternion.copy(mk.rest); mk.head.updateWorldMatrix(true, false);
+        mk.restW = mk.head.getWorldQuaternion(new THREE.Quaternion());
+        mk.parW = mk.head.parent.getWorldQuaternion(new THREE.Quaternion()).invert();
+      }
+      let nod = -0.1 * smooth(cl01((t - (DT.teach + 0.1)) / 1.0)) * (1 - smooth(cl01((t - (DT.pour0 - 1.6)) / 1.0)));
+      const dip = (t0, ps, a) => { let m = 0; for (const p of ps) { const d = t - t0 - p; if (d > 0 && d < 2.4) m = Math.max(m, Math.sin(Math.PI * d / 2.4) * a); } return m; };
+      nod += dip(DT.teach + 0.3, [0, 2.80, 5.12, 8.06], 0.08) + dip(DT.pour0 - 0.6, [0, 3.56, 6.71, 9.73], 0.11);
+      _dq.setFromAxisAngle(_dz, nod);
+      mk.head.quaternion.copy(mk.parW).multiply(_dq.multiply(mk.restW));
+    }
+    function dMonkRest() { const mk = merit.monk; if (mk.ready && mk.head && mk.rest) mk.head.quaternion.copy(mk.rest); }
     function dTempleFx(t) {
       const F = MHALL.F;
+      dMonkHead(t);
       /* the bell, struck: it swings and settles */
       { const b = mLive.bell, d = t - DT.bell; if (b) b.swing.rotation.z = d > 0 ? Math.sin(d * 4.2) * 0.16 * Math.exp(-d * 0.7) : 0; }
       /* the tray of offerings before his knees: rice, sweets, the three small red sodas (from the kneel on) */
@@ -6311,13 +6636,16 @@
         const out = yaw.position.z > 0.15;
         if (fLive.shot !== 'O') { want.air = out ? 0.03 : 0.11; want.mall = out ? 0.3 : 0.12; }
       } else if (w === 'R') {
-        const little = fLive.shot === 'little' && L === 'BLUE';
-        /* (CP12, the endings: A's grey afternoon and C's harsh small hours are ONLY THE FAN, the room emptied of its
-           night; D's night is three in the morning, after the possessions, so it is the deep bed; and D's years, a day
-           and a night every two seconds, hold one quiet morning under the music rather than flicker through five beds) */
-        const years = endLive.on === 'D' && /^y\d/.test(endLive.shot);
-        const bare = film && (L === 'DRAINED' || L === 'HARSH');
-        const day = L === 'DAWN' || L === 'MORNING', aft = L === 'AFTERNOON';
+        /* (CP13: the little one's water holds through COME BACK too — its look is SURFACE, and the water went to 0 the
+           moment the climb began, under the deepest blue) */
+        const little = fLive.shot === 'little' && (L === 'BLUE' || L === 'SURFACE');
+        /* (CP12, the endings: C's harsh small hours are ONLY THE FAN, the room emptied of its night; A's grey afternoon
+           is the fan and the day bed, as the plan's A table has it (CP13); D's night is three in the morning, after the
+           possessions, so it is the deep bed; and D's years and the home film's weeks — a day and a night every two
+           seconds — hold one quiet morning under the music rather than flicker through five beds) */
+        const years = (endLive.on === 'D' && /^y\d/.test(endLive.shot)) || (homeLive.on && wallNow() - (homeLive.weeksT || 0) < 0.3);
+        const bare = film && L === 'HARSH';
+        const day = L === 'DAWN' || L === 'MORNING', aft = L === 'AFTERNOON' || L === 'DRAINED';
         const deep = L === 'DEEP' || (L === 'BLUE' && !little) || (!film && (phase === 'after' || phase === 'decide'))
                   || (film && endLive.on === 'D' && L === 'NIGHT');
         const poss = L === 'RED' || L === 'AMBER' || L === 'SURFACE' || little;
@@ -6328,7 +6656,7 @@
         else if (deep) want.deep = 0.5;
         else want.night = poss ? (L === 'SURFACE' ? 0 : 0.08) : 0.3;
         want.under = little ? 0.6 : 0;
-        if (roomLive.fan) want.fan = (bare ? 0.15 : day || aft || years ? 0.06 : 0.1) * roomLive.fanK;
+        if (roomLive.fan) want.fan = (bare || L === 'DRAINED' ? 0.15 : day || aft || years ? 0.06 : 0.1) * roomLive.fanK;
         if (!film && !card) {
           if (phase === 'care' || (phase === 'sit' && !(careLive.boxOpenTo >= 1))) want.care = 0.22;
           if (OPEN_I[phase] !== undefined) want.held = 0.2;
@@ -6339,8 +6667,11 @@
         bedMix[k] += (want[k] - bedMix[k]) * (1 - Math.exp(-wdt / tau));
       }
       const B = DATA.ambience.beds;
-      B[0][1] = bedMix.air; B[1][1] = bedMix.mall; B[2][1] = bedMix.night; B[3][1] = bedMix.fan; B[3][3] = Math.max(0.4, roomLive.fanK);
-      B[4][1] = bedMix.deep; B[5][1] = bedMix.dawn; B[6][1] = bedMix.under; B[7][1] = bedMix.care; B[8][1] = bedMix.held;
+      /* (CP13: and the room's sound sinks under a yield, by k — eased by openFrame, so the film that takes over finds it
+         coming back rather than jumping) */
+      const sink = w === 'R' ? openLive.sink : 1;
+      B[0][1] = bedMix.air; B[1][1] = bedMix.mall; B[2][1] = bedMix.night * sink; B[3][1] = bedMix.fan * sink; B[3][3] = Math.max(0.4, roomLive.fanK);
+      B[4][1] = bedMix.deep * sink; B[5][1] = bedMix.dawn; B[6][1] = bedMix.under; B[7][1] = bedMix.care; B[8][1] = bedMix.held * sink;
     }
     function updateNotes(dt, t) {
       const now = wallNow();
@@ -6389,7 +6720,9 @@
       const tag = String(p || '').split(':');
       /* a first arrival: his look down a little, so the owner's face and the three on the glass are both in the frame (by
          photograph: at the spawn's own pitch the three's feet were cut by the bottom edge) */
-      if (!p) { yaw.rotation.y = DATA.spawn.rot; pitch.rotation.x = -0.22; }   // (on him: he speaks first; the cloth's opening turns the look to the three)
+      /* (CP13, the save lens: the phase reads 'counter' with no receipts on a normal arrival, and the look was skipped —
+         the bundle sat under the resting hand on a phone) */
+      if (!p || p === 'counter') { yaw.rotation.y = DATA.spawn.rot; pitch.rotation.x = -0.22; }   // (on him: he speaks first; the cloth's opening turns the look to the three)
       counterResume(tag[0] === 'counter' ? tag[1] : '');          // the counter, as its receipts say (§10.1)
     }
 
@@ -6409,7 +6742,7 @@
     /* the counter as build() leaves it (the reset law): the bundle wrapped on the glass, nothing else out, the box shut and
        silent, no beat said, no lean, no film's look */
     function counterReset() {
-      cntDone.clear(); cntBusy = false;
+      cntDone.clear(); cntBusy = false; kidForce(1, null);
       cntLive.opened = false; cntLive.helloOn = false; cntLive.lean = null; cntLive.view = null; cntLive.ownerLook = 0;
       cntLive.lull = false; cntLive.boxOpen = cntLive.boxOpenTo = 0; cntLive.windT = 0;
       for (const S of cntLive.sets) setShow(S, false, true);
@@ -6484,6 +6817,21 @@
       S = null;
     }
 
+    /* THE ENDINGS' THINGS, made now (CP13, the films lens — v14.15's law: they were built on first use, on screen, each
+       texture painted and uploaded and each program compiled in the middle of a scene). Every one is built here, under
+       the curtain, hidden; and a map an ending SWAPS in (the late dashboard, the calendar's pages, the laptop's thread,
+       D's crossed months) is hung on a hidden scrap, so the curtain's warm uploads it with the rest */
+    {
+      const P = endProps(); cProps(); const D = dProps();
+      dashLate(true); dashLate(false); calSwap('A'); calSwap('C'); calSwap(null); laptopPage(true); laptopPage(false);
+      if (D.calPage && D.cals.length) { D.calPage.material.map = D.cals[0]; D.calPage.material.needsUpdate = true; }   // (its program with a map, from the start)
+      for (const m of [P.dashL, P.calA, P.calC, P.page && P.page.t, ...(D.cals || [])]) {
+        if (!m) continue;
+        const hp = new THREE.Mesh(new THREE.PlaneGeometry(0.01, 0.01), B({ map: m }));
+        hp.visible = false; hp.position.set(0, 1.5, 0); worldR.add(hp);
+      }
+    }
+
     return (S = {
       world, noteTex, blockers: blockers(),
       ready: () => true,
@@ -6500,7 +6848,8 @@
       set noteStorm(v) {},
       film: { SX, MX, ROOM, SHOP, RCNT, OWN, MAT, R_ARRIVE, S_SPAWN, worldM, SH },   // (SH: the shop's handles — its doors, the grocer's shutter — for probes, CP9)
       pileVia: { what: 'his room\'s mat (the home film carries him there)', x: MAT.x, z: MAT.z },
-      arrivals: [{ what: 'his room (the home film puts him inside its door)', x: R_ARRIVE.x, z: R_ARRIVE.z }],
+      arrivals: [{ what: 'his room (the home film puts him inside its door)', x: R_ARRIVE.x, z: R_ARRIVE.z },
+                 { what: 'beside his desk (standing up from the chair puts him there, CP13)', x: STAND_UP.x, z: STAND_UP.z }],
       get phase() { return phase; },
       setPhase, applyPhase, after, dayClock, sayLine,
       look, presets: PRESETS, room: roomLive,                 // the room's looks (§10.2), for the films and for probes
@@ -6520,6 +6869,7 @@
       redStampTo, redStampAuto, redStampEnd, shyGap, shyPeekEnd, comeOpts, comeBegin, comeDone, surfaceStart, surfaceFrame,
       openLive, doubles: { of: doubleOf, set: doubleSet, off: doublesOff }, cityOut,   // (for probes)
       ownerTalk: (secs) => personTalk(cntLive.owner, secs),    // a film's line from the owner rides his talking take
+      ownerNod: () => { if (cntLive.owner) cntLive.owner.nodT = performance.now() / 1000; },   // and his nod (the opening's beckon, CP13)
       nightSet,
       hotspots,
       updateNotes, updatePile, updateFire, updateSlow,
@@ -7462,14 +7812,21 @@
       x.fillStyle = g; x.fillRect(cx - 70, cy - 70, 140, 140);
     }
     x.fillStyle = '#20263a'; x.textBaseline = 'alphabetic';
-    let y = 64;
+    let y = 64, prev = '';
     for (const line of CARD_RULES) {
-      if (!line) { y += 14; continue; }
-      const head = line === line.toUpperCase();
-      x.font = head ? 'bold 27px sans-serif' : '25px sans-serif';
+      if (!line) { y += 14; prev = ''; continue; }
+      /* (CP13, the counter's vision review: a NEVER line is a rule of its own, set as a heading — bulleted, the two NEVERs
+         read as Buddha-day rules under EVERY BUDDHA DAY) */
+      const head = line === line.toUpperCase() || /^NEVER\b/.test(line);
+      /* (CP13: a line that carries on the one above it — that one ends on a comma — takes no bullet of its own: "bring
+         them back" was bulleted as a rule of its own) */
+      const cont = !head && /,\s*$/.test(prev);
+      let px = head ? 27 : 25;
+      x.font = head ? `bold ${px}px sans-serif` : `${px}px sans-serif`;
+      while (x.measureText(line).width > 512 - (head ? 36 : 56) - 14 && px > 16) { px--; x.font = head ? `bold ${px}px sans-serif` : `${px}px sans-serif`; }   // (fitted: the sheet may lengthen a line)
       x.fillText(line, head ? 36 : 56, y);
-      if (!head) { x.beginPath(); x.arc(42, y - 8, 3.5, 0, Math.PI * 2); x.fill(); }
-      y += head ? 36 : 33;
+      if (!head && !cont) { x.beginPath(); x.arc(42, y - 8, 3.5, 0, Math.PI * 2); x.fill(); }
+      y += head ? 36 : 33; prev = head ? '' : line;
     }
     return done(THREE, c, false);
   }
@@ -7513,7 +7870,7 @@
     x.fillStyle = '#3a3020'; x.font = '10px sans-serif'; x.fillText('RECEIPT OF MERIT', 80, 40);
     x.fillStyle = '#c8a44a'; x.beginPath(); x.arc(80, 70, 16, 0, Math.PI * 2); x.fill();
     x.fillStyle = '#3a3020'; x.textAlign = 'left'; x.font = '10px sans-serif';
-    const lines = i === 0 ? ['in the name of', 'the young woman', '(her portrait)'] : ['in the names of', 'the three children', 'in my care'];
+    const lines = i === 0 ? ['in the name of', 'the young lady', 'of the amulet'] : ['in the names of', 'the three children', 'in my care'];   // (CP13: "(her portrait)" read as a note to the printer)
     lines.forEach((l, k) => x.fillText(l, 18, 110 + k * 16));
     for (let k = 0; k < 4; k++) { x.fillStyle = 'rgba(60,50,30,0.35)'; x.fillRect(18, 168 + k * 12, 70 + r() * 50, 2); }
     x.fillStyle = 'rgba(30,60,140,0.7)'; x.beginPath(); x.ellipse(118, 206, 22, 14, -0.2, 0, Math.PI * 2); x.fill();   // the temple's stamp
@@ -8135,7 +8492,7 @@
     const [c, x] = sized(cnv, 256, 384);
     x.fillStyle = '#fbf7ee'; x.fillRect(0, 0, 256, 384);
     x.fillStyle = '#b21a12'; x.fillRect(0, 0, 256, 40);
-    x.fillStyle = '#ffe08a'; x.font = 'bold 22px sans-serif'; x.textAlign = 'center'; x.fillText('พฤษภาคม 2569', 128, 28);
+    x.fillStyle = '#ffe08a'; x.font = 'bold 22px sans-serif'; x.textAlign = 'center'; x.fillText('ตุลาคม 2568', 128, 28);   // (CP13: October, B.E. 2568 — his room's month; it read May 2569)
     const g = x.createLinearGradient(0, 44, 0, 196); g.addColorStop(0, '#f6b04a'); g.addColorStop(1, '#8a2a12');
     x.fillStyle = g; x.fillRect(12, 46, 232, 150);
     x.fillStyle = '#e8b030'; x.beginPath(); x.moveTo(128, 70); x.lineTo(168, 180); x.lineTo(88, 180); x.fill();   // a chedi
@@ -8221,11 +8578,12 @@
     sfx(0.9, 'k5shutter', 0.22);                         // a shutter rolling down, far off
     fade(OFT.o1, OFT.o1 + 1.4, 1, 0);                    // O1 · up on the corridor
     sfx(OFT.o1, 'k5steps', 0.4);                         // his own steps on the corridor's tiles, out of the lift lobby to the light
-    sfx(OFT.o1 + 6.0, 'k5steps', 0.4);                   // (CP12: the take is 6.0 s and the walk 11 — the second carries him to the glass)
+    sfx(OFT.o1 + 3.9, 'k5steps', 0.4);                   // (CP13: the take's footfalls are its first 3.75 s of 6.0, and the walk
+    sfx(OFT.o1 + 7.8, 'k5steps', 0.4);                   //  is 11 — a fresh take every 3.9 s carries him to the glass)
     sfx(OFT.line, 'z5pro1', 1);                          // "While I was still searching for answers... I began keeping Kumanthong."
     sfx(OFT.sh0, 'k5shutter', 0.5);                      // the grocer's, rolling down as he passes
     sfxFade(OFT.o2 - 0.4, OFT.o2 + 0.2, 'k5steps');      // and they stop where he stops, at the owner's glass
-    step(OFT.beckon, () => stage.ownerTalk(2.2));        // the owner beckons (his talking take: his hands)
+    step(OFT.beckon, () => { stage.ownerTalk(2.2); stage.ownerNod(); });   // the owner beckons (his talking take, and a nod: CP13)
     sfx(OFT.open, 'k5shopbell', 0.6);                    // the door's bell as it opens
     fade(OFT.black0, OFT.black1, 0, 1);
     step(OFT.end, () => F.end());
@@ -8259,12 +8617,17 @@
   /* FILM K · "The Card" (§4.0b, CP5): the card on his glass, read down line by line; then his face, and what he asks of the
      one who takes them home — every picture from stage.cardF's frame(t); its lines on his talking take */
   function cardFilm(c, s, api) {
-    const { tr, step, sfx, fade, rawK, stage } = api;
+    const { tr, step, sfx, sfxFade, fade, rawK, stage } = api;
     const KF = stage.cardF, T = KFT;
     c.keepFade = true;
     c.endFade = 1;
     tr(0, T.end, (k, t) => KF.frame(t, api), rawK);
     sfx(T.k2 + 0.3, 'k5pen', 0.45);                      // the last stroke of his pen, as the lens arrives on the card
+    /* (CP13, the sound lens: the twelve seconds the card is READ were the shop's room tone and nothing else. The
+       lullaby's theme — the home film's, under the weeks the card is about — comes in softly under the reading, and
+       goes as he looks up, before the owner speaks) */
+    sfx(T.k2 + 0.9, 'k5theme', 0.32);
+    sfxFade(T.k3 - 0.4, T.k3 + 0.9, 'k5theme');
     sfx(T.k3 + 0.6, 'ow5never', 1);                      // "But listen, ah. Never keep them for greed..."  (10.7 s)
     step(T.k3 + 0.6, () => stage.ownerTalk(10.4));
     sfx(T.k3 + 11.6, 'ow5wrong', 1);                     // "And never ask them to do anything wrong..."  (15.7 s)
@@ -8321,7 +8684,7 @@
     sfx(T.contact, 'k5enter', 0.7);                          // a soft swell, a child's breath of a laugh
     sfx(T.stand, 'k5red', 0.5);                              // the bossy motif: toy drum, ching, klong yao
     sfx(T.stand + 0.2, 'z5b1', 1);                           // "Mine! These are all MINE!"
-    event(T.stamp, { kind: 'craft', label: W.craftStamp, steps: [{ g: 'tap', n: 3, word: W.craftStamp }],
+    event(T.stamp, { kind: 'craft', label: W.titleStamp, steps: [{ g: 'tap', n: 3, word: W.craftStamp }],
                      at: { sx: 0.5, sy: 0.74 }, onProgress: (si, k) => stage.redStampTo(Math.round(k * 3)) });
     step(T.stamp + 2.5, () => stage.redStampAuto(0));          // untapped for 2.5 s, he stamps by himself
     step(T.stamp + 2.95, () => stage.redStampAuto(1));
@@ -8344,17 +8707,20 @@
   /* POSSESSION 2 · THE SHY ONE (§4.4, CP7): stage.shyF's pictures; its PEEK (drag the fingers apart: a craft slide the
      film runs on through) and its lines. */
   function shyFilm(c, s, api) {
-    const { tr, step, sfx, rawK, stage, event } = api;
+    const { tr, step, sfx, fade, rawK, stage, event } = api;
     const F = stage.shyF, T = SFT, W = stage.W;
     c.keepFade = true;
-    c.endFade = 0;
+    /* (CP13, the films lens: it handed play a different view and eye height with no black between — on the floor by the
+       desk, turned to the little one — so it ends on a short black, after his last line, which the kit's fade lifts) */
+    c.endFade = 1;
+    fade(T.end - 0.55, T.end - 0.05, 0, 1);
     tr(0, T.end, (k, t) => F.frame(t, api), rawK);
     sfx(0.2, 'k5scurry', 0.6);
     sfx(1.3, 'k5giggle', 0.5);                               // behind him, a child who wants to be found
     sfx(T.contact, 'k5enter2', 0.6);
     sfx(T.peek0, 'k5shy', 0.45);                             // the music box and a plucked khim
     sfx(T.peek0 + 0.2, 'z5s1', 1);                           // "Hehe... you can't see me..."
-    event(T.peek, { kind: 'craft', label: W.craftPeek, steps: [{ g: 'slide', dir: 'side', len: 0.14, word: W.craftPeek }],
+    event(T.peek, { kind: 'craft', label: W.titlePeek, steps: [{ g: 'slide', dir: 'side', len: 0.14, word: W.craftPeek }],
                     at: { sx: 0.5, sy: 0.55 }, onProgress: (si, k) => stage.shyGap(k) });
     step(T.scuttle - 0.05, () => stage.shyPeekEnd());
     sfx(T.scuttle, 'k5scuttle', 0.6);
@@ -8379,7 +8745,7 @@
     const { tr, step, sfx, sfxFade, fade, rawK, stage, eventWait } = api;
     const F = stage.littleF, T = LFT, W = stage.W;
     c.keepFade = true;
-    c.endFade = 0;
+    c.endFade = 1;                                           // (CP13: as the shy one's — the surfacing ends on a short black, the aftermath by the bed lifts out of it)
     tr(0, T.come, (k, t) => F.frame(t, api), rawK);
     sfx(0.0, 'k5bells', 0.45);
     /* (the water under him is a bed now — mixBeds, while his light is the little one's — CP11) */
@@ -8404,6 +8770,7 @@
     sfxFade(T.come + 0.2, T.come + 3.2, 'k5climb');           // (and the climb goes down under the surfacing)
     sfx(T.come + 0.5, 'z5gasp', 1);
     tr(T.come + 0.2, T.come + 5.8, (k, t) => stage.surfaceFrame(t - T.come - 0.2, api), rawK);   // (CP12: 4.2 → 5.8, the gasp's 5.07 s inside it)
+    fade(T.come + 5.25, T.come + 5.75, 0, 1);
     step(T.come + 5.8, () => F.end());
   }
 
@@ -8438,7 +8805,7 @@
   }
   /* A · STAY WITH THEM (worst): pity without a boundary, told in his body */
   function scStay(c, s, api) {
-    const { sfx, fade } = api;
+    const { sfx, sfxFade, fade } = api;
     endScene(c, api, 'A', (T) => {
       sfx(0.3, 'z5A1', 1);                                   // "He asked me to stay... Tomorrow night, I will."  (→ ~3.7)
       fade(T.a1 - 0.25, T.a1, 0, 1); fade(T.a1, T.a1 + 0.35, 1, 0);          // (a cut through black: night two)
@@ -8460,19 +8827,21 @@
       sfx(37.0, 'z5A4', 1);                                  // "That... wasn't me."  (→ ~39.0)
       sfx(44.0, 'z5A5', 1);                                  // "I stopped being sure where they ended... and where I began."  (→ ~48.6)
       sfx(T.a7 + 0.7, 'k5endA', 0.6);                        // the key turned once: the box running down
+      sfxFade(T.fade, T.epi - 0.15, 'k5endA');               // (CP13: and it goes with the black, never under the epilogue's lullaby)
       sfx(52.0, 'z5A6', 1);                                  // "They needed someone to look after them... and I couldn't do it any more."  (→ ~56.6)
       fade(T.fade, T.epi - 0.15, 0, 1);
     });
   }
   /* B · TELL THE WORLD (bad): he gives the experiment to strangers, and they make it the horror the chapter clears */
   function scTell(c, s, api) {
-    const { sfx, fade } = api;
+    const { sfx, sfxFade, fade } = api;
     endScene(c, api, 'B', (T) => {
       sfx(0.5, 'z5B1', 1);                                   // "Nobody would believe this... unless I told them."  (→ ~3.5)
       sfx(T.b1 + 1.0, 'k5wake', 0.45);                       // the laptop wakes
       sfx(T.b2 + 0.4, 'k5type', 0.5);                        // his keys: the title, the body
       sfx(T.b2 + 1.5, 'z5B2', 1);                            // "I wrote it all down. Every child... every voice."  (→ ~11.4)
       sfx(T.b2 + 5.6, 'k5type', 0.45);
+      sfxFade(T.b3 - 0.3, T.b3, 'k5type');                   // (CP13: his keys stop where he posts — the take ran on to 17.6)
       sfx(T.b3, 'k5post', 0.5);                              // POST
       fade(T.b5 - 0.5, T.b5, 0, 1); fade(T.b5, T.b5 + 0.9, 1, 0);           // (a dissolve through black: the dawn)
       sfx(T.b5 + 1.0, 'k5buzz', 0.45); sfx(T.b5 + 1.4, 'k5ping', 0.35);
@@ -8486,6 +8855,7 @@
       sfx(T.b10 + 1.5, 'k5delete', 0.45);                    // Delete thread? → Thread deleted.
       sfx(T.b11 + 0.5, 'z5B5', 1);                           // "The shy one hid from everyone... and I showed him to everyone."  (→ ~54.8)
       sfx(T.b12 + 0.1, 'k5endB', 0.6);                       // the lullaby scattered into echoes
+      sfxFade(T.fade, T.epi - 0.15, 'k5endB');               // (CP13: gone with the black — it sounded on to 69.6, under the epilogue)
       sfx(T.b12 + 0.5, 'z5B6', 1);                           // "I wanted someone to believe me. Instead I made them a horror story..."  (→ ~62.8)
       sfx(T.b12 + 1.0, 'k5flick', 0.3); sfx(T.b12 + 1.8, 'k5catch', 0.3);
       fade(T.fade, T.epi - 0.15, 0, 1);
@@ -8493,7 +8863,7 @@
   }
   /* C · WISH FOR IT ALL (bad — Chad's option): he stops giving and starts asking, and nothing answers the wrong he asks */
   function scWish(c, s, api) {
-    const { sfx, fade } = api;
+    const { sfx, sfxFade, fade } = api;
     endScene(c, api, 'C', (T) => {
       sfx(0.5, 'z5C1', 1);                                   // "If they're real... then they can help me."  (→ ~3.3)
       sfx(T.c1 + 0.6, 'z5C2', 1);                            // "Bring me luck. Bring me orders... please."  (→ ~7.6)
@@ -8510,6 +8880,7 @@
       sfx(T.c5 + 2.0, 'k5boxfast', 0.45);                    // and it plays too fast
       sfx(T.c6 + 0.1, 'k5wake', 0.4);                        // the laptop: the rival's shop
       sfx(T.c6 + 1.0, 'z5Cevil', 1);                         // "And him... make him lose everything."  (→ ~36.3)
+      sfxFade(T.c7 + 0.1, T.c7 + 0.3, 'k5boxfast');          // (CP13: the overwound tune ends where the slip begins — two tunes in two keys)
       sfx(T.c7 + 0.2, 'k5boxstop', 0.5);                     // nothing answers: the box slips and stops mid-phrase
       sfx(T.c8, 'z5Claugh', 1);                              // his laugh, alone, too long  (→ ~42.5)
       sfx(T.c9 + 0.3, 'z5C5', 1);                            // "If I stop asking... will it all go away?"  (→ ~48.0)
@@ -8522,7 +8893,7 @@
   }
   /* D · CARE FOR THEM (best): loving kindness with a boundary, for life */
   function scCare(c, s, api) {
-    const { sfx, fade, step, stage } = api;
+    const { sfx, sfxFade, fade, step, stage } = api;
     endScene(c, api, 'D', (T) => {
       sfx(0.5, 'z5D1', 1);                                   // "I'm sorry. That was my mistake... not yours."  (→ ~3.9)
       sfx(T.d1 + 0.6, 'k5sand', 0.35); sfx(T.d1 + 1.2, 'k5sand', 0.35); sfx(T.d1 + 1.8, 'k5sand', 0.35);   // the stubs lifted out
@@ -8531,9 +8902,11 @@
       sfx(T.d1b + 4.1, 'k5wave', 0.4);                       // waved out
       sfx(T.d2 + 0.5, 'k5sand', 0.4); sfx(T.d2 + 1.2, 'k5sand', 0.4); sfx(T.d2 + 1.9, 'k5sand', 0.4);       // one in each bowl
       sfx(T.d2b + 0.2, 'k5pour', 0.4);                       // the cups topped up
+      sfxFade(T.d2c, T.d2c + 0.5, 'k5pour');                 // (CP13: a top-up is a second and a half; the take is 14 s)
       sfx(T.d2c + 0.3, 'k5capoff', 0.4); sfx(T.d2c + 0.9, 'k5slide', 0.35);  // the red one's drink, new
       sfx(T.d3 + 0.3, 'k5wind', 0.45);                       // the box wound, gently
       sfx(T.d3 + 2.0, 'k5lullaby', 0.5);                     // and it plays
+      sfxFade(T.court - 0.6, T.court + 0.3, 'k5lullaby');    // (CP13: the box is at home — it played on into the temple the next morning)
       sfx(T.d4 + 0.2, 'k5wai', 0.4);
       sfx(T.d4 + 0.5, 'z5D2', 1);                            // "I won't open that door again. But I'm not going anywhere."  (→ ~26.5)
       sfx(T.d5 + 0.2, 'k5calm', 0.5);                        // the smoke straight; the bells still
@@ -8545,6 +8918,7 @@
       sfx(DT.pour0 - 0.6, 'mk5yatha', 1);                    // the Yathā vārivahā as the water is poured
       step(DT.pour0 - 0.6, () => stage.endT.yatha());        // (its four lines captioned, chapter 4's)
       sfx(DT.pour0 + 0.1, 'k5pour', 0.45);
+      sfxFade(DT.pour1 - 0.7, DT.pour1 + 0.7, 'k5pour');     // (CP13: the sound stops with the stream, as chapter 4's does)
       sfx(DT.earth0, 'k5ground', 0.45);                      // the water given to the earth
       sfx(DT.lights, 'k5lights', 0.8);                       // and three lights rising (CP8: louder, its swell given 2.5 s more)
       fade(T.home - 0.3, T.home, 0, 1); fade(T.home, T.home + 0.7, 1, 0);   // home, the morning

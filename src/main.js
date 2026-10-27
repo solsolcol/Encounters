@@ -1711,6 +1711,14 @@ const PRAY = { y: -0.235, z: -0.375, low: -0.46 };
 const pray = { k: 0, to: 0, secs: 1.4, last: 0, was: 0, y: PRAY.y, z: PRAY.z };   // v23.0: z too (a child's clasp is nearer the body)
 let prayRestQ = null;
 const PRAY_Q0 = new THREE.Quaternion();
+/* v23.0 CP13: the hidden left arm put back to its built rest — the pose library (S40) and the gesture leave their turn
+   and their fingers on it when they hide it, and chapter 1's ending D starts its clasp FROM the arm's own quaternion
+   (startL): after episode 3 chapter 5 in the same session it would have begun from a bottle's hold */
+function prayArmRest() {
+  if (!prayerArmL) return;
+  prayerArmL.quaternion.copy(PRAY_Q0);
+  if (prayerArmL.userData.model) setHandPrayer(prayerArmL.userData.model, 0);   // its fingers to the walking curl
+}
 function kitPraySet(on, opts = {}) {
   /* v23.0: a pose holds the hands (kit.handPose) — ease from it to the clasp, which kit.pray then holds, or
      back to the rest; nothing jumps either way */
@@ -1794,7 +1802,7 @@ function prayPut(k, done) {
   if (done) {                                    // back exactly as the rest of the engine leaves it
     armR.rotation.set(0.50, 0.28, -0.48);
     armR.position.copy(armBase);
-    if (prayerArmL) prayerArmL.visible = false;
+    if (prayerArmL) { prayerArmL.visible = false; prayArmRest(); }
     if (rightHandModel) setHandCurl(rightHandModel, 1);
     return;
   }
@@ -2546,7 +2554,7 @@ function hpWrite(o) {
     for (let i = 0; i < fingerPose.length; i++) if (BL[i]) BL[i].quaternion.copy(o.lf[i]);
     hpWristSet(hpWristL, o.lw, o.ld); hp.lw = o.lw; hp.ld = o.ld;
   } else {
-    if (prayerArmL) prayerArmL.visible = false;
+    if (prayerArmL && prayerArmL.visible) { prayerArmL.visible = false; prayArmRest(); }
     if (hpWristL) hpWristSet(hpWristL, 0, 0); hp.lw = hp.ld = 0;
   }
 }
@@ -4823,6 +4831,7 @@ function evPress(x, y, pid) {
   }
   const o = e.o;
   e.down = true; e.downAt = e.t; e.downX = x; e.downY = y; e.drift = 0; e.look = 0;
+  e.pid = pid;                               // (v23.0 CP13: whose finger it is — a hands-on gesture is one finger's, ONE_FINGER)
   $('evBtn')?.classList.add('down');
   switch (e.kind) {
     case 'tap':
@@ -4916,10 +4925,13 @@ function evPress(x, y, pid) {
     default: break;   // hold / stabilise: the press is the beginning of the hold
   }
 }
+/* v22.0: a steady drag is one finger's; v23.0 CP13: and so are the hands-on gestures — a second finger landing on a
+   phone (the hand that holds it) moved a twist's circle and its lifting let go of a held yield */
+const ONE_FINGER = new Set(['steady', 'craft', 'yield', 'surface']);
 function evRelease(pid) {
   const e = ev; if (!e || !e.down) return;
   // v22.0: a steady drag is one finger's — a second thumb lifting does not end it
-  if (e.kind === 'steady' && e.pid !== undefined && pid !== undefined && pid !== e.pid) return;
+  if (ONE_FINGER.has(e.kind) && e.pid !== undefined && pid !== undefined && pid !== e.pid) return;
   e.down = false;
   $('evBtn')?.classList.remove('down');
   /* the release carries no coordinates, so the drop lands where the last
@@ -4933,7 +4945,7 @@ function evRelease(pid) {
 function evMove(x, y, pid) {
   const e = ev; if (!e || !e.down) return;
   // v22.0: and its moves are that finger's (a second thumb's alternated with the first and jumped the mark)
-  if (e.kind === 'steady' && e.pid !== undefined && pid !== undefined && pid !== e.pid) return;
+  if (ONE_FINGER.has(e.kind) && e.pid !== undefined && pid !== undefined && pid !== e.pid) return;
   e.drift = Math.max(e.drift, Math.hypot(x - e.downX, y - e.downY));
   if (e.kind === 'match') { e.lastX = x; e.lastY = y; if (e.drag) { evDragTo(x, y); evMatchHover(x, y); } }
   /* v23.0: a hands-on step reads the drag round its prop; the surface rises with a drag UP (never pushed down by one) */
@@ -5225,17 +5237,19 @@ function evCraftTwist(e, x, y) {
     while (da > Math.PI) da -= 2 * Math.PI;
     while (da < -Math.PI) da += 2 * Math.PI;
     e.twSum += da;
-    // its speed over the last quarter second: past `fast` the care is spoilt (the cap foams over)
-    e.twLog.push({ t: now, d: Math.abs(da) });
+    // its speed over the last quarter second: past `fast` the care is spoilt (the cap foams over). (v23.0 CP13: over the
+    // time the moves really took — a slow phone's sparse moves each carry a big turn, and a quarter second over one of
+    // them doubled its speed and foamed a careful twist)
+    e.twLog.push({ t: now, d: Math.abs(da), dt: e.twT ? Math.min(1, now - e.twT) : 0.016 });
     while (e.twLog.length && now - e.twLog[0].t > 0.25) e.twLog.shift();
-    const degS = e.twLog.reduce((q, r) => q + r.d, 0) / 0.25 * 180 / Math.PI;
+    const degS = e.twLog.reduce((q, r) => q + r.d, 0) / Math.max(0.25, e.twLog.reduce((q, r) => q + r.dt, 0)) * 180 / Math.PI;
     if (degS > s.fast && !e.foamed.has(e.si)) {
       e.foamed.add(e.si); e.care = false;
       if (typeof e.o.onFoam === 'function') { try { e.o.onFoam(e.si); } catch (err) { console.warn('craft onFoam failed', err); } }
     }
     evCraftSet(e, Math.abs(e.twSum) / (s.turns * 2 * Math.PI));
   }
-  e.twA = a;
+  e.twA = a; e.twT = now;
 }
 function evCraftPress(e, x, y) {
   const s = e.steps[e.si]; if (!s) return;
@@ -5363,7 +5377,9 @@ function evSurfaceFrame(e, o, wdt) {
     evResolve({ ok: true, score: Math.max(0.3, 1 - 0.7 * Math.min(1, late)) });
   } else if (o.secs > 0 && e.t >= o.secs) evResolve({ ok: true, score: 0, gaveUp: true });
 }
-function evSurfaceRise(e, k) { e.lv = Math.min(1, (e.lv || 0) + k); }
+/* (v23.0 CP13: never before its first frame has set it up — a W struck between START and that frame made e.lv defined,
+   so the set-up never ran: no pulls, a NaN hold that could never be met, and the gauge left hidden) */
+function evSurfaceRise(e, k) { if (e.lv === undefined) return; e.lv = Math.min(1, e.lv + k); }
 function evNextItem() {
   const e = ev; e.idx++;
   e.slotT = 0;                       // v9.3: the new item's window starts now
@@ -6096,6 +6112,14 @@ for (const n of ['hudok', 'hudnext', 'hudfail']) WARM_WANT.add(n);
 WARM_WANT.add('itemunlock');
 /* v14.11: the amulet's crack and its shatter, the engine's for the same reason */
 WARM_WANT.add('wardcrack'); WARM_WANT.add('wardbreak');
+/* v23.0 CP13: every one-shot a chapter's WORLD fires (worldSfx), held so the title and a restart can bring it down
+   (stopWorldSfx, beside stopLiveVoices) — a lullaby, a held note, a pour fourteen seconds long was carried on over
+   the title screen and into the next run. Declared before CHCTX, which reads it. */
+const liveWorldSfx = new Set();
+function worldSfxKeep(s) {
+  if (s) { liveWorldSfx.add(s); s.addEventListener('ended', () => liveWorldSfx.delete(s)); }
+  return s;
+}
 const CHCTX = {
   THREE, GLTFLoader: GLTFLoaderMO, cloneSkinned, scene, camera, yaw, pitch, LOW,   // v8.7: `pitch` so a chapter may level the lens as well as turn it
   kit: KIT,                        // v7.0: the play kit — declared by a chapter, absent for chapters 1–5
@@ -6107,7 +6131,7 @@ const CHCTX = {
   /* the thirteenth leak (v4.91): a chapter's WORLD may make a noise outside a
      cutscene — footsteps in the kitchen, a chair dragged in an empty room.
      Chapter 4's haunting is never seen, so this is the whole haunting. */
-  worldSfx: (name, vol, rate, pan) => snd(name, vol, rate, pan),
+  worldSfx: (name, vol, rate, pan) => worldSfxKeep(snd(name, vol, rate, pan)),
   /* v21.0: WHETHER THE GAME IS MUTED, read-only. A chapter that paces its
      people on their lines holds a line whose sample has not decoded yet (the
      v8.0 law) — and a muted game plays nothing, so every line was held, then
@@ -6135,7 +6159,7 @@ const CHCTX = {
   /* v23.0 (S41): HAS THIS CHAPTER EVER BEEN COMPLETED — read-only, from the progress store the selector's ranks come
      from (a sealed result on record). Episode 3 chapter 5 keeps its films unskippable until it has been (noSkip). A
      function, so the store is read at the moment of asking (sealedResults is declared further down). */
-  sealedBefore: (key) => { try { return !!sealedResults()[key]; } catch { return false; } },
+  sealedBefore: (key) => { if (SEALED_NOW.has(key)) return true; try { return !!sealedResults()[key]; } catch { return false; } },
   unifySkeletons,                     // v15.2: one exact skeleton per freshly parsed model
   /* THE HEAD BONE, named once for everybody (v5.01). Every rigged human in
      this game is a Mixamo skeleton, and glTF SANITIZES its node names:
@@ -7031,7 +7055,9 @@ addEventListener('keydown', e => {
   if (e.code === 'KeyQ' && state === 'play' && weaponWant()) { weaponAdsToggle(); return; }   // v12.2: aim
   keys[e.code] = true;
 });
-addEventListener('keyup', e => { if (evKey(e, false)) return; keys[e.code] = false; });
+/* (v23.0 CP13: a key let go is let go whoever reads it — a W released while a surface event owned it stayed held in
+   keys[] and walked him on after the event) */
+addEventListener('keyup', e => { keys[e.code] = false; evKey(e, false); });
 
 let lookX = 0, lookY = 0;            // accumulated look delta this frame
 let lastWallLook = 0;                // v12.2: the recoil spring runs on WALL time
@@ -8123,7 +8149,8 @@ const WHISPER_TAKES = new Set(['vpick1', 'vpick2', 'vpick3',
   'n1C1',     // v7.1: "Eh. You awake?" — whispered to the next bed after lights out
   'n2sigh',   // v10.8: the defeated sigh at three in the morning — a breath through the 4:1 bus comes out as loud as speech (v6.9), so it goes round it
   'n3C1', 'n3C2',   // v11.0: whispered to the next scrape in the jungle (chapter 3, scene C)
-  'z5s2', 'z5sob']);   // v23.0: the shy one whispering "hide... hide..." (9.5 % voiced) and the little one's breath of a sob (2 %)
+  'z5s2', 'z5sob',     // v23.0: the shy one whispering "hide... hide..." (9.5 % voiced) and the little one's breath of a sob (2 %)
+  'z5come']);          // v23.0 CP13: "I'm sorry... I have to go back..." whispered into the climb (38 % voiced — under vpick's 47-56 %)
 const WHISPER_GAIN = 0.55;           // -5.2 dB: through a replica of the chain (dbg-whisperbus) his narration sits at -12.7 dBFS RMS, the whispers at -26 to -28.5 — 11 to 16 dB under him
 let whisperOut = null;
 function whisperStage() {
@@ -11381,7 +11408,11 @@ function sealedResults() {
   const s = progressRead();
   return (s.sealed && typeof s.sealed === 'object') ? s.sealed : {};
 }
+/* v23.0 CP13: a chapter finished in THIS session, ?ch= link or not — a deep link saves nothing, so its noSkip films
+   (S41) stayed unskippable on every replay of the same session */
+const SEALED_NOW = new Set();
 function markSealed(key, score, rank) {
+  SEALED_NOW.add(key);
   if (CH_ASKED) return false;
   if (!chapterExists(key) || chId(key) >= 90) return false;
   try {
@@ -11450,6 +11481,7 @@ function returnToTitle() {
   document.body.classList.remove('inplay');
   showHaunt(false);
   stopBed(); stopCineVoices(); stopLiveVoices();   // v21.0: nor a line play was still saying
+  stopWorldSfx();                                   // v23.0: nor a sound its world was still making
   for (const n of liveLoops) loopVol(n, 0);   // ALL of them: silenceChapterLoops() keeps this chapter's own
   if (narSrc) { try { narSrc.stop(); } catch {} narSrc = null; }
   clearTimeout(voiceTimer); voicePending = false;   // his opening line must not land on the title screen
@@ -12628,7 +12660,7 @@ function restoreWorld(s, keep) {
   vmKey.intensity = VM_REST.key;
   layoutHands();
   noteProp.visible = false;
-  if (prayerArmL) prayerArmL.visible = false;
+  if (prayerArmL) { prayerArmL.visible = false; prayArmRest(); }
   if (rightHandModel) setHandCurl(rightHandModel, 1);
   hpWristRest();                    // v23.0: and a wrist a scene's pose bent (api.handPose)
   hp.rw = hp.rd = hp.lw = hp.ld = 0;
@@ -12936,9 +12968,16 @@ function sceneApi(c) {
        film runs on; `eventWait` PAUSES the film until it resolves. The skip
        keys belong to the event while it is live; the Skip button still ends
        the film, and a skip resolves the event as skipped. */
-    event: (at, opts, onDone) => step(at, () => { kitEvent(opts).then(r => { if (typeof onDone === 'function') onDone(r); }); }),
+    /* (v23.0 CP13: a skip runs every step it has not run yet — after c.skipped is set — so a skip from before an event's
+       time started the event AFTER the film, in play (episode 3 chapter 5's COME BACK, once the film is skippable). A
+       skipped film's event is resolved as skipped and never opened) */
+    event: (at, opts, onDone) => step(at, () => {
+      if (c.skipped) { if (typeof onDone === 'function') onDone({ kind: opts && opts.kind, ok: false, skipped: true }); return; }
+      kitEvent(opts).then(r => { if (typeof onDone === 'function') onDone(r); });
+    }),
     eventWait: (at, opts, onDone) => {
       step(at, () => {
+        if (c.skipped) { if (typeof onDone === 'function') onDone({ kind: opts && opts.kind, ok: false, skipped: true }); return; }
         const mine = cine; if (mine) mine.paused = true;
         kitEvent(opts).then(r => {
           if (cine === mine && mine) { mine.paused = false; mine.last = performance.now(); }
@@ -13783,6 +13822,20 @@ function paintTitle() {
     }
   }
 }
+/* v23.0 CP13: a run FINISHED at what was then the last chapter, which has a chapter after it now — every player who
+   sealed episode 3 chapter 4 while chapter 5 was a preview (v22.6–v22.9) holds a save marked done at e3c4, which
+   Continue replays and the selector treats as the end, so the release would have locked them out of chapter 5. The
+   finished save moves to the next chapter's start, and that chapter is reached, as finish() would have done had the
+   chapter existed (a ?ch= link writes nothing) */
+if (!CH_ASKED) try {
+  const raw = localStorage.getItem(SAVE_KEY), s = raw && JSON.parse(raw);
+  const next = s && s.done && chapterExists(s.ch) ? nextChapterKey(s.ch) : null;
+  if (next) {
+    markReached(next);
+    localStorage.setItem(SAVE_KEY, JSON.stringify({ ...s, ch: next, done: false, at: null, phase: null,
+                                                     conduct: { s: 0, a: 0, notes: [] }, t: Date.now() }));
+  }
+} catch { /* unreadable: loadCheckpoint says the same */ }
 paintTitle();
 { const s = loadCheckpoint(); if (s && s.ch) markReached(s.ch); }   // a run already past chapter 1 opens what it reached (v5.12)
 /* v14.14: THE BAG IS THE SAVE'S FROM THE FIRST FRAME. Chad: "when the
@@ -14469,6 +14522,20 @@ const SPAWN = { pos: yaw.position.clone(), rot: yaw.rotation.y };
    (worldSfx), a card line, the opening line — is not carried onto the title
    or into the next run (stopCineVoices only ever held a scene's own). Ramped,
    not cut dead (the v5.30 edges). */
+function stopWorldSfx() {
+  const t = actx ? actx.currentTime : 0;
+  for (const s of [...liveWorldSfx]) {
+    try {
+      if (s.__g) {
+        s.__g.gain.cancelScheduledValues(t);
+        s.__g.gain.setValueAtTime(s.__g.gain.value, t);
+        s.__g.gain.linearRampToValueAtTime(0.0001, t + 0.12);
+      }
+      s.stop(t + 0.14);
+    } catch { /* already finished on its own */ }
+  }
+  liveWorldSfx.clear();
+}
 function stopLiveVoices() {
   if (voiceSrc) { try { voiceSrc.stop(); } catch {} voiceSrc = null; }
   if (!actx) return;
@@ -14524,6 +14591,7 @@ function restart() {
   stopBed();
   stopCineVoices();                // and anything the last scene left ringing
   stopLiveVoices();                // v21.0: and any line play was still saying
+  stopWorldSfx();                  // v23.0: and any sound its world was still making
   if (narSrc) { try { narSrc.stop(); } catch {} narSrc = null; }
   for (const k in narrated) delete narrated[k];
   fainting = false;
