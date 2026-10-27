@@ -5664,8 +5664,10 @@
         enabled: () => careStep() === 'drink' && careOk(), onInteract() { return atDeskDrink(); } },
       ...KIDS.map((K, i) => ({
         /* (its mark over his head, CP13 — the play's vision review: at the runner's height it stood between two of them from
-           where he stands, over the next one's shoulder) */
-        id: 'place_' + K.key, pos: { x: ROW.back, y: ALTAR.top + 0.1, z: ALTAR_Z[i] + 0.06 }, radius: 1.6, aim: 0.18, pressAim: true, markY: K.h + 0.1, prompt: W.hotPlace,
+           where he stands, over the next one's shoulder; and raised over the drink's place, 0.13 m before him and 0.06 to
+           his left, it still stood a third of the way to the next one on a phone. Anchored on the child himself now — the
+           tap box stays on the drink's place) */
+        id: 'place_' + K.key, pos: { x: RISER.x, y: ALTAR.top + 0.1, z: ALTAR_Z[i] }, radius: 1.6, aim: 0.18, pressAim: true, markY: K.h + 0.1, prompt: W.hotPlace,
         hits: tapBox(ROW.back - 0.06, ALTAR.top, ALTAR_Z[i] + 0.0, ROW.back + 0.06, ALTAR.top + 0.2, ALTAR_Z[i] + 0.12),
         enabled: () => careStep() === 'carry' && careLive.carry === i && careOk(), onInteract() { return placeDrink(i); } })),
       { id: 'packet', pos: { x: DESK_AT.packet[0], y: DESK.top + 0.08, z: DESK_AT.packet[1] }, radius: 1.9, aim: 0.3, pressAim: true, markY: 0.16, prompt: W.hotPacket,
