@@ -224,7 +224,9 @@ function readVoice() {
     const c = m && chapters[l.ch] && (chapters[l.ch].choices || []).find(x => x.k === m[1]);
     if (c) where += ` — “${c.text}”`;
     return { id: l.id, who: sp.name || l.who, chapter: V.CHAPTERS[l.ch] || l.ch,
-             where, text: l.text, secs: l.secs, note: l.note || '' };
+             where, text: l.text, secs: l.secs,
+             /* v24.0: a line said in Thai carries its English (`gloss`) into the notes, so the sheet says what is said */
+             note: [l.note, l.gloss && `In English: ${l.gloss}`].filter(Boolean).join(' · ') };
   });
 }
 // the same rows in the four-column shape of the text sheet, for the CSV

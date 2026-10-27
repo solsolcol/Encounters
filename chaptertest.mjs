@@ -1,3 +1,4 @@
+import { spawnSync } from 'node:child_process';
 /* Is every chapter's data complete, sane and in bounds?
 
    This is the file that stops the test suite growing a browser harness per
@@ -662,6 +663,60 @@ if (VOICE && Array.isArray(VOICE.LINES)) {
       if (!re.test(readFileSync(join(chapDir, f), 'utf8'))) errs.push(`ERR pinned '${p.key}' (${p.who}) is no longer used by ${f}`);
   }
   console.log(`pinned models: ${PINNED.map(p => p.key).join(', ')} checked`);
+}
+
+/* v24.0: FRESH (Chad, 27 Oct 2026: "I don't want to see a reuse of old assets and environments as it makes things
+   look very repetitive. I want a new episode to feel fresh and different, so players feel real progression"). A
+   chapter of episode 4 or later may not load a model or an image a chapter of an EARLIER episode loads, nor cue a
+   sound one cues, unless it declares it in `reuse` with its reason — and every declared reuse is printed on every
+   run, so a placeholder still standing in for one of Chad's models is a reminder that cannot be missed
+   (docs/E4-MODELS.md). A declaration nothing uses is an error too, so the list stays true. */
+{
+  const FRESH_FROM = 4;
+  const srcOf = {};
+  for (const f of files) srcOf[f.split('/').pop().replace(/\.js$/, '')] = readFileSync(join(chapDir, f), 'utf8');
+  const soundsOf = (k, ch) => {
+    const src = srcOf[k] || '', out = new Set();
+    for (const m of src.matchAll(/\bsfx(?:Fade)?\(\s*[^,)]+,\s*(?:[^,)]+,\s*)?'([a-zA-Z0-9_]+)'/g)) out.add(m[1]);
+    for (const m of src.matchAll(/\b(?:worldSfx|sayLine|queueLine)\(\s*'([a-zA-Z0-9_]+)'/g)) out.add(m[1]);
+    for (const b of ((ch.ambience || {}).beds || [])) if (Array.isArray(b) && typeof b[0] === 'string') out.add(b[0]);
+    return out;
+  };
+  const oldAssets = new Map(), oldSounds = new Map();
+  for (const [k, ch] of Object.entries(chapters)) {
+    if ((ch.episode || 1) >= FRESH_FROM) continue;
+    for (const a of ch.assets || []) { if (!oldAssets.has(a)) oldAssets.set(a, new Set()); oldAssets.get(a).add(k); }
+    for (const s of soundsOf(k, ch)) { if (!oldSounds.has(s)) oldSounds.set(s, new Set()); oldSounds.get(s).add(k); }
+  }
+  let checked = 0;
+  for (const [k, ch] of Object.entries(chapters)) {
+    if ((ch.episode || 1) < FRESH_FROM) continue;
+    checked++;
+    const reuse = ch.reuse || {}, used = new Set();
+    for (const a of ch.assets || []) if (oldAssets.has(a)) {
+      used.add(a);
+      if (!reuse[a]) errs.push(`ERR ${k}: FRESH — model/image '${a}' is ${[...oldAssets.get(a)].join(', ')}'s; declare it in \`reuse\` with its reason, or make the chapter its own`);
+    }
+    for (const sn of soundsOf(k, ch)) if (oldSounds.has(sn)) {
+      used.add(sn);
+      if (!reuse[sn]) errs.push(`ERR ${k}: FRESH — sound '${sn}' is ${[...oldSounds.get(sn)].join(', ')}'s; declare it in \`reuse\` with its reason, or give the chapter its own`);
+    }
+    for (const r of Object.keys(reuse)) if (!used.has(r)) errs.push(`ERR ${k}: declares reuse of '${r}', which it no longer takes from an earlier episode — remove it from \`reuse\``);
+    const list = Object.entries(reuse);
+    console.log(`fresh: ${k} takes nothing from episodes 1–${FRESH_FROM - 1} but ${list.length} declared:` +
+                (list.length ? '\n' + list.map(([a, why]) => `  REMINDER — ${a}: ${why}`).join('\n') : ' (none)'));
+  }
+  if (!checked) console.log('fresh: no chapter of episode 4 or later yet');
+}
+
+/* v24.0: a PREVIEW chapter's placeholder captions (tools/previewcaps.mjs) must be the registry's words as they stand */
+for (const [k, ch] of Object.entries(chapters)) {
+  if (!ch.preview) continue;
+  const f = files.find(x => x.split('/').pop() === k + '.js');
+  if (!f || !readFileSync(join(chapDir, f), 'utf8').includes('PREVIEW CAPTIONS BEGIN')) continue;
+  const r = spawnSync(process.execPath, [join(DIR, 'tools', 'previewcaps.mjs'), k, '--check'], { encoding: 'utf8' });
+  if (r.status !== 0) errs.push(`ERR ${(r.stderr || r.stdout || '').trim()}`);
+  else console.log((r.stdout || '').trim());
 }
 
 console.log('errors:', errs.length ? errs : 'none');

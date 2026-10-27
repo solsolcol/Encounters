@@ -172,3 +172,38 @@ L = [
 ("q1C", "jamesAdult", "Under outcome card C", "Fear made up my mind before I knew anything at all."),
 ("q1D", "jamesAdult", "Under outcome card D", "I knew when to leave. Understanding could wait."),
 ]
+
+# The English of every line that is said (wholly or partly) in Thai, as heard — for the sheet (Chad reads what is
+# said) and for the M1 preview's captions. In the finished chapter the Thai is NOT captioned: he hears it and gets
+# only what Pong gives him (§2.2 3), and so does the player.
+GLOSS = {
+ "pn1num": "Hello... Fourteen — number fourteen, kha. Wait at the sala, kha.",
+ "pn1water": "Drink some water first... drink water first, kha. Very hot today.",
+ "pn1n10": "Number ten!", "pn1n11": "Number eleven!", "pn1n12": "Number twelve!", "pn1n13": "Number thirteen!",
+ "pn1n14": "Number fourteen! Fourteen!",
+ "pg1sbq": "Uncle... has the Ajahn lived here long?",
+ "sb1a": "I've lived here sixty years... the Ajahn only came five years ago. Before that, I don't know where he came from either.",
+ "fm1hello": "Hello... sit, sit, make yourself comfortable.",
+ "fm1shop": "What kind of shop do you have?",
+ "pg1th1": "An amulet shop, Ajahn. Just opened in Singapore.",
+ "fm1good": "Good, good... an amulet shop: you make merit and earn a living at the same time.",
+ "fm1day": "What day were you born?",
+ "fm1hm": "Mm...",
+ "fm1read": "His shop is a good place, many people walk past... but money doesn't stay. It comes in and goes out, like water through the hands. If he wants it to stay, I can help... but he must make merit often too, and keep his mind calm.",
+ "pn1tray": "Please.",
+ "fm1items": "Choose whichever piece you like. Don't feel you have to.",
+ "fm1anu": "I rejoice in your merit.",
+ "fm1eyes": "You may close your eyes. Relax.",
+ "fm1blessA": "May your trade go well. May you prosper.",
+ "fm1Abye": "Go well, come back well.",
+ "pn1mango": "Take some mangoes with you... take mango, kha! From our tree. Very sweet.",
+ "pg1B2": "Ajahn... he asks who is standing behind you.",
+ "fm1B1": "That one has been in this house longer than me... not many people see them.",
+ "fm1B2": "Who taught him?",
+ "fm1B3": "If he wants to learn, come back. I can teach him to use it.",
+ "fm1C1": "Oh... it's all right, it's all right.",
+ "fm1C2": "It's still slippery outside. Go carefully.",
+ "pn1C1": "Wait, wait, an umbrella! Wait — umbrella, kha! Rain coming again!",
+ "pg1D1": "Ajahn, he says thank you very much. That's enough for today.",
+ "fm1D1": "Of course, of course. No problem. As you like.",
+}

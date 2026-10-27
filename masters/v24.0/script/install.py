@@ -2,8 +2,9 @@
 # plus the chapter's speakers and its sheet name. Re-runnable: it replaces its own block between the markers.
 import re, sys, json
 sys.path.insert(0, 'masters/v24.0/script')
-from lines import L
+from lines import L, GLOSS
 FIXED = {'fm1chant': 28.0, 'fm1chant2': 40.0}
+NOCAP = {'fm1chant', 'fm1chant2'}   # a chant is captioned in its own lines (as every chant since v21.31), never by the preview
 def est(i, text):
     if i in FIXED: return FIXED[i]
     t = re.sub(r'\[[^\]]*\]', ' ', text)
@@ -25,7 +26,9 @@ rows = [BEGIN,
  '       its English is in `where`, for Chad. chaptertest allows an `est` row only in a chapter that is still `preview`. */']
 for (i, who, where, text) in L:
     rows.append(f'    {{ id: {js(i)}, who: {js(who)}, ch: "e4c1", where: {js(where)},')
-    rows.append(f'      text: {js(text)}, secs: {est(i, text)}, est: true }},')
+    gl = f', gloss: {js(GLOSS[i])}' if i in GLOSS else ''
+    if i in NOCAP: gl += ', nocap: true'
+    rows.append(f'      text: {js(text)}{gl}, secs: {est(i, text)}, est: true }},')
 rows.append(END)
 block = '\n'.join(rows)
 if BEGIN in s:
