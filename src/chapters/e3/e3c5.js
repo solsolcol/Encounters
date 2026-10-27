@@ -335,15 +335,24 @@
      times directly — and chaptertest, which walks a film against a stand-in stage whose every lookup is 0, sees the real
      ones and can hold each cue to its film's length (a table read through the stage there is all zeros) */
   const RFT = { rise: 0, come: 1.2, contact: 2.2, stand: 3.0, stamp: 5.5, march: 9.0, win: 10.4, desk: 12.4, back: 14.0,
-                grab: 15.0, slam: 18.0, flop: 22.0, leave: 24.5, self: 27.0, end: 36.0 };
+                grab: 15.0, slam: 18.0, flop: 22.0, leave: 24.5, self: 27.0, end: 38.4 };   // (CP12: end 36 → 38.4, "One more" after his line)
   const SFT = { scurry: 0, contact: 2.0, peek0: 3.0, peek: 5.5, scuttle: 9.0, under: 11.0, look: 14.0, coin: 16.0,
-                wait: 21.0, leave: 24.0, bonk: 26.0, out: 28.0, little: 32.0, end: 36.0 };
+                wait: 21.0, leave: 24.0, bonk: 26.0, out: 28.0, little: 33.6, end: 38.0 };   // (CP12: little 32 → 33.6, end 36 → 38)
+  /* the little one's film, film M and film K, here at the top level for the same reason (CP12: they were inside build(),
+     so the stand-in read them as zeros and could not hold their cues to their lengths). LFT: the tears' line after the
+     sob, and COME BACK 5.2 s later so his far voice finishes first and "I have to go back" is done before the quickest
+     climb can surface him (lead 0.4 + hold 0.4 s); MFT: the owner's telling (22.6 s) runs over the temple
+     to its end; KFT: the card's three asks, each after the one before (10.7, 15.7, 20.2 s) */
+  const LFT = { bells: 0, rise: 1.5, go: 3.5, into: 6.0, l1: 9.0, city: 13.0, l2: 16.0, tears: 21.0, tick: 27.0, out: 29.0,
+                come: 40.2, surf: 0, end: 0 };                 // (surf and end follow COME BACK's own length: the film waits on it)
+  const MFT = { b1: 2.5, m2: 3.2, m3: 12.8, b2: 21.8, end: 24.8 };
+  const KFT = { k2: 1.5, k3: 13.6, end: 62.6 };
 
   /* THE ENDINGS' CLOCKS (CP8, §4.8–§4.9): plain numbers at the top level, so a scene, its controller and chaptertest's
      recording stand-in all read the same times (CP7's law: a stand-in stage answers zero). Each ending's shots, then the
      epilogue at `epi` (the same 30 s in every ending, its own times in EPI); `end` is where the card lies over its black.
      DT is ending D's temple (chapter 4's merit film's shots, on D's clock) */
-  const EPI = { len: 30, fade0: 11.0, fade1: 12.0 };
+  const EPI = { len: 32, fade0: 12.8, fade1: 13.8 };   // (CP12: the measured lines — 30 s, 11.0, 12.0 on the estimates)
   const END = {
     A: { a1: 3.5, a2: 6.0, a2b: 8.6, a3: 13.0, a4: 17.0, vm: 19.5, dark: 25.5, a5: 29.0, gig: 33.0, turn: 34.0,
          a6: 40.0, a6b: 42.5, a6c: 45.0, a6d: 47.5, a7: 50.0, fade: 57.0, epi: 58.5 },
@@ -351,12 +360,13 @@
          b12: 56.5, fade: 63.0, epi: 64.5 },
     C: { c1: 4.0, c2: 9.0, c2b: 11.7, c2c: 14.4, c3: 17.0, c4: 22.0, c5: 29.0, c6: 32.5, c7: 37.0, c8: 40.0, c9: 44.5,
          c10: 49.0, c11: 54.0, fade: 63.5, epi: 65.0 },
-    D: { d1: 5.0, d1b: 7.5, d2: 13.0, d2b: 15.5, d2c: 17.0, d3: 19.0, d4: 22.0, d5: 28.0, court: 32.0, home: 76.0,
-         years: 80.0, y2: 82.5, y3: 83.4, y4: 85.9, y5: 86.8, y6: 89.1, env: 90.0, envBox: 94.3, last: 96.0, fade: 97.1, epi: 98.5 }
+    D: { d1: 5.0, d1b: 7.5, d2: 13.0, d2b: 15.5, d2c: 17.0, d3: 19.0, d4: 22.0, d5: 28.0, court: 32.0, home: 85.5,
+         years: 89.5, y2: 92.0, y3: 92.9, y4: 95.4, y5: 96.3, y6: 98.6, env: 100.5, envBox: 104.8, last: 106.5, fade: 107.6, epi: 109.0 }
   };
   for (const k in END) END[k].end = END[k].epi + EPI.len;
-  const DT = { court: 32.0, bell: 33.1, door: 35.6, kneel: 40.0, teach: 48.5, pour0: 55.8, pour1: 66.4, earth: 68.0,
-               earth0: 68.6, earth1: 71.0, lights: 71.4, home: 76.0 };   // (CP8: the lights' climb 2.1 s → 4.6 s, the music's time to swell)
+  const DT = { court: 32.0, bell: 33.1, door: 35.6, kneel: 40.0, teach: 53.4, pour0: 65.3, pour1: 75.9, earth: 77.5,
+               earth0: 78.1, earth1: 80.5, lights: 80.9, home: 85.5 };   // (CP8: the lights' climb 2.1 s → 4.6 s, the music's time to swell;
+                                                                         //  CP12: from the teaching on +9.5 s — his dedication is 12.8 s, the monk's 10.4)
 
   /* THE OPENING FILM's clock (CP9, §4.0a): black and the mall's hush; O1, his eyes down the corridor at closing time; O2,
      the owner through his glass; the door's bell; black, and the chapter card over it */
@@ -398,7 +408,7 @@
                        embers: [], door: null, corridor: null, tvGlow: null, box: null, boxLid: null, boxKey: null, boxDrum: null, card: null,
                        cups: [], bowls: [], toys: [], drinkAt: [], jug: null, mat: null, yantPrint: null, yantDone: false, receipts: [], kids: null,
                        screenGlow: [], ceilLamp: null, ceilGlow: [], viewSky: null, viewGround: null, pinwheel: null, yantBoard: null,
-                       look: null, lookK: { lamp: 1, screens: 1, ceil: 0 } };
+                       look: null, lookName: 'NIGHT', lookK: { lamp: 1, screens: 1, ceil: 0 } };
     const wallNow = () => performance.now() / 1000;
     let DESK_DRAWER_Z = -1.49;                            // (the drawer's shut place, set where it is built)
 
@@ -569,6 +579,7 @@
       setWindow(L.win);
       const k = roomLive.lookK;
       roomLive.look = { name, from: { lamp: k.lamp, screens: k.screens, ceil: k.ceil }, to: L, t0: wallNow(), secs: Math.max(0, secs) };
+      roomLive.lookName = name;                           // (CP12: kept after the ease is done — roomLive.look goes null then)
       if (!(secs > 0)) lookFrame(true);
     }
     function lookFrame(snapNow) {
@@ -3455,8 +3466,7 @@
        the film): the screen sunk in deep blue water, the lamp a blurred light above, he a small pale light below with
        the little one's smaller blue light beside him, holding on — and SURFACING: sound and white-gold light, colour, the
        lamp blooming, and he falls back against the bed's frame, gasping. */
-    const LFT = { bells: 0, rise: 1.5, go: 3.5, into: 6.0, l1: 9.0, city: 13.0, l2: 16.0, tears: 21.0, tick: 27.0, out: 29.0,
-                  come: 35.0, surf: 0, end: 0 };                 // (surf and end follow COME BACK's own length: the film waits on it)
+    /* (LFT is at the top level since CP12) */
     const littleLive = { cameBack: false, slipN: 0, lv: 0 };
     const KNEEL = { x: 1.05, z: ALTAR_Z[2] };                  // kneeling close before the little one, his face filling the view
     const littleF = {
@@ -3673,7 +3683,8 @@
       if (kit && kit.conduct) kit.conduct(fast ? { a: 4, note: W.noteCameBack } : { note: W.noteHard });
     }
     function surfaceStart() { comeWaterOn(false); look('NIGHT', 0.8); if (kit && kit.flash) kit.flash({ color: '#fff2d6', secs: 1.4 }); }   // a rush of white-gold light
-    /* the surfacing (4 s): a rush of white-gold light that fades as colour returns; he falls back against the bed's frame */
+    /* the surfacing (5.6 s since CP12, his gasp inside it): a rush of white-gold light that fades as colour returns; he
+       falls back against the bed's frame */
     function surfaceFrame(u, api) {
       const k = smooth(cl01(u / 1.2));
       const P = lerp3([KNEEL.x, 0.75, KNEEL.z], [-0.42, 0.58, 0.55], k), L = [RISER.x, 0.9, 0.4];
@@ -4494,7 +4505,7 @@
     /* FILM M · "Where They Came From" (§4.0b): M1 the lens drops to the three on his glass; black; M2 the hall at night, the
        three on their tray before the monk, the thread from his hands, his chant low; M3 the little one's face in the
        candlelight; black — and the counter lifts it (the kit's fade). ow5monk runs under all of it. */
-    const MFT = { b1: 2.5, m2: 3.2, m3: 11.0, b2: 16.6, end: 19.2 };
+    /* (MFT is at the top level since CP12) */
     const madeF = {
       T: MFT,
       begin() { worldM.visible = true; nightSet.g.visible = true; threadLay(); fLive.lit = null; fLive.shot = '';
@@ -4706,7 +4717,7 @@
     /* FILM K · "The Card" (§4.0b): K1 his eyes go down to the card on the glass; K2 a macro down it, line by line (k5pen:
        the last stroke of his pen heard as the lens arrives — CP9 brings the pen into the frame); K3 the lens lifts to his
        face — he looks straight at the player — over ow5never, ow5wrong and ow5promise. */
-    const KFT = { k2: 1.5, k3: 13.6, end: 52.8 };
+    /* (KFT is at the top level since CP12) */
     const _kv = new THREE.Vector3();
     const cardF = {
       T: KFT,
@@ -6293,7 +6304,7 @@
     const bedMix = { air: 0, mall: 0, night: 0, fan: 0, deep: 0, dawn: 0, under: 0, care: 0, held: 0 };
     function mixBeds(wdt, st) {
       if (!(wdt > 0)) return;
-      const w = worldOf(yaw.position.x), L = roomLive.look ? roomLive.look.name : 'NIGHT';
+      const w = worldOf(yaw.position.x), L = roomLive.lookName || 'NIGHT';
       const film = st === 'cine', card = st === 'result' || st === 'complete';
       const want = { air: 0, mall: 0, night: 0, fan: 0, deep: 0, dawn: 0, under: 0, care: 0, held: 0 };
       if (w === 'S') {
@@ -6301,15 +6312,23 @@
         if (fLive.shot !== 'O') { want.air = out ? 0.03 : 0.11; want.mall = out ? 0.3 : 0.12; }
       } else if (w === 'R') {
         const little = fLive.shot === 'little' && L === 'BLUE';
-        const day = L === 'DAWN' || L === 'MORNING', aft = L === 'AFTERNOON' || L === 'DRAINED';
-        const deep = L === 'DEEP' || (L === 'BLUE' && !little) || (!film && (phase === 'after' || phase === 'decide'));
+        /* (CP12, the endings: A's grey afternoon and C's harsh small hours are ONLY THE FAN, the room emptied of its
+           night; D's night is three in the morning, after the possessions, so it is the deep bed; and D's years, a day
+           and a night every two seconds, hold one quiet morning under the music rather than flicker through five beds) */
+        const years = endLive.on === 'D' && /^y\d/.test(endLive.shot);
+        const bare = film && (L === 'DRAINED' || L === 'HARSH');
+        const day = L === 'DAWN' || L === 'MORNING', aft = L === 'AFTERNOON';
+        const deep = L === 'DEEP' || (L === 'BLUE' && !little) || (!film && (phase === 'after' || phase === 'decide'))
+                  || (film && endLive.on === 'D' && L === 'NIGHT');
         const poss = L === 'RED' || L === 'AMBER' || L === 'SURFACE' || little;
-        if (day) want.dawn = 0.32;
+        if (years) want.dawn = 0.18;
+        else if (bare) { /* only the fan */ }
+        else if (day) want.dawn = 0.32;
         else if (aft) want.dawn = 0.16;
         else if (deep) want.deep = 0.5;
         else want.night = poss ? (L === 'SURFACE' ? 0 : 0.08) : 0.3;
         want.under = little ? 0.6 : 0;
-        if (roomLive.fan) want.fan = (day || aft ? 0.06 : 0.1) * roomLive.fanK;
+        if (roomLive.fan) want.fan = (bare ? 0.15 : day || aft || years ? 0.06 : 0.1) * roomLive.fanK;
         if (!film && !card) {
           if (phase === 'care' || (phase === 'sit' && !(careLive.boxOpenTo >= 1))) want.care = 0.22;
           if (OPEN_I[phase] !== undefined) want.held = 0.2;
@@ -8192,7 +8211,7 @@
      fades and the one track that calls it. It begins on black and ends on it, the chapter card over that black (the v4.6
      law: keepFade). Every cue literal (the CUE_RE law), its times at file scope (CP7's law) */
   function introFilm(c, s, api) {
-    const { tr, step, sfx, fade, rawK, stage } = api;
+    const { tr, step, sfx, sfxFade, fade, rawK, stage } = api;
     const F = stage.introF;
     c.keepFade = true;
     c.endFade = 1;
@@ -8202,8 +8221,10 @@
     sfx(0.9, 'k5shutter', 0.22);                         // a shutter rolling down, far off
     fade(OFT.o1, OFT.o1 + 1.4, 1, 0);                    // O1 · up on the corridor
     sfx(OFT.o1, 'k5steps', 0.4);                         // his own steps on the corridor's tiles, out of the lift lobby to the light
+    sfx(OFT.o1 + 6.0, 'k5steps', 0.4);                   // (CP12: the take is 6.0 s and the walk 11 — the second carries him to the glass)
     sfx(OFT.line, 'z5pro1', 1);                          // "While I was still searching for answers... I began keeping Kumanthong."
     sfx(OFT.sh0, 'k5shutter', 0.5);                      // the grocer's, rolling down as he passes
+    sfxFade(OFT.o2 - 0.4, OFT.o2 + 0.2, 'k5steps');      // and they stop where he stops, at the owner's glass
     step(OFT.beckon, () => stage.ownerTalk(2.2));        // the owner beckons (his talking take: his hands)
     sfx(OFT.open, 'k5shopbell', 0.6);                    // the door's bell as it opens
     fade(OFT.black0, OFT.black1, 0, 1);
@@ -8222,7 +8243,7 @@
      counter lifts it. Every cue is literal (the CUE_RE law), so the engine warms it before the film can start. */
   function madeFilm(c, s, api) {
     const { tr, step, sfx, sfxFade, fade, rawK, stage } = api;
-    const MF = stage.madeF, T = MF.T;
+    const MF = stage.madeF, T = MFT;
     c.keepFade = true;
     c.endFade = 1;
     tr(0, T.end, (k, t) => MF.frame(t, api), rawK);
@@ -8239,17 +8260,17 @@
      one who takes them home — every picture from stage.cardF's frame(t); its lines on his talking take */
   function cardFilm(c, s, api) {
     const { tr, step, sfx, fade, rawK, stage } = api;
-    const KF = stage.cardF, T = KF.T;
+    const KF = stage.cardF, T = KFT;
     c.keepFade = true;
     c.endFade = 1;
     tr(0, T.end, (k, t) => KF.frame(t, api), rawK);
     sfx(T.k2 + 0.3, 'k5pen', 0.45);                      // the last stroke of his pen, as the lens arrives on the card
-    sfx(T.k3 + 0.6, 'ow5never', 1);                      // "But listen, ah. Never keep them for greed..."
-    step(T.k3 + 0.6, () => stage.ownerTalk(8.5));
-    sfx(T.k3 + 9.7, 'ow5wrong', 1);                      // "And never ask them to do anything wrong..."
-    step(T.k3 + 9.7, () => stage.ownerTalk(11.5));
-    sfx(T.k3 + 21.8, 'ow5promise', 1);                   // "And not for one month, not for one year... Can or not?"
-    step(T.k3 + 21.8, () => stage.ownerTalk(16.0));
+    sfx(T.k3 + 0.6, 'ow5never', 1);                      // "But listen, ah. Never keep them for greed..."  (10.7 s)
+    step(T.k3 + 0.6, () => stage.ownerTalk(10.4));
+    sfx(T.k3 + 11.6, 'ow5wrong', 1);                     // "And never ask them to do anything wrong..."  (15.7 s)
+    step(T.k3 + 11.6, () => stage.ownerTalk(15.4));
+    sfx(T.k3 + 27.6, 'ow5promise', 1);                   // "And not for one month, not for one year... Can or not?"  (20.2 s)
+    step(T.k3 + 27.6, () => stage.ownerTalk(19.9));
     fade(T.end - 1.0, T.end - 0.1, 0, 1);
     step(T.end, () => KF.end());
   }
@@ -8280,7 +8301,7 @@
     sfx(HFT.h2 + 8.0, 'k5koel', 0.3);                    // a koel at a dawn
     fade(HFT.h3 - 0.3, HFT.h3, 0, 1); fade(HFT.h3, HFT.h3 + 0.6, 1, 0);       // H3 · tonight
     sfx(HFT.h3 + 0.4, 'k5door', 0.45);
-    sfx(HFT.h3 + 1.6, 'z5pro4', 1);                      // "Then one night, after everything else I had been through... I wanted to know something."
+    sfx(HFT.h3 + 1.2, 'z5pro4', 1);                      // "Then one night, after everything else I had been through... I wanted to know something."  (CP12: 6.7 s, inside the film)
     sfx(HFT.bag, 'k5bag', 0.4);                          // the shop's bag set on the desk
     sfx(HFT.lamp2, 'k5switch', 0.45);                    // the lamp on their faces
     fade(HFT.black0, HFT.black0 + 1.0, 0, 1);            // black, handed to play
@@ -8317,7 +8338,7 @@
     sfx(T.leave, 'k5leave', 0.6);
     sfx(T.self, 'z5back1', 1);                               // "That wasn't me... That was him."
     sfx(T.self + 3.5, 'z5back1b', 1);                        // "He wasn't angry. He just wanted someone to want him."
-    sfx(T.end - 1.6, 'z5again1', 1);                         // "...One more."  (CP9: 0.3 s clear of the line before, on its estimate)
+    sfx(T.end - 2.6, 'z5again1', 1);                         // "...One more."  (CP12: 0.35 s after the line before, measured)
     step(T.end, () => F.end());
   }
   /* POSSESSION 2 · THE SHY ONE (§4.4, CP7): stage.shyF's pictures; its PEEK (drag the fingers apart: a craft slide the
@@ -8348,7 +8369,7 @@
     sfx(T.out, 'k5scuttle', 0.35);                           // (CP9) and he crawls out from under it, himself
     sfx(T.out + 1.0, 'z5back2b', 1);                         // "I was hiding under my own desk... waiting for someone to find me."
     sfx(T.little, 'k5bells', 0.35);
-    sfx(T.little + 1.3, 'z5again2', 1);                      // "One more. Just one more."  (CP9: clear of the line before, on its estimate)
+    sfx(T.little + 1.4, 'z5again2', 1);                      // "One more. Just one more."  (CP12: 0.3 s after the line before, measured)
     step(T.end, () => F.end());
   }
   /* POSSESSION 3 · THE LITTLE ONE, and COME BACK (§4.4–§4.5, CP7): stage.littleF's pictures to the surface; then COME
@@ -8356,7 +8377,7 @@
      surfacing. */
   function littleFilm(c, s, api) {
     const { tr, step, sfx, sfxFade, fade, rawK, stage, eventWait } = api;
-    const F = stage.littleF, T = F.T, W = stage.W;
+    const F = stage.littleF, T = LFT, W = stage.W;
     c.keepFade = true;
     c.endFade = 0;
     tr(0, T.come, (k, t) => F.frame(t, api), rawK);
@@ -8367,12 +8388,14 @@
     sfx(T.l1, 'z5l1', 1);                                    // "Everyone goes away..."
     sfx(T.l2, 'z5l2', 1);                                    // "You won't go... right?"
     sfx(T.tears, 'z5sob', 1);
-    sfx(T.tears + 1.6, 'z5l3', 1);                           // "Stay... stay with me..."
+    sfx(T.tears + 3.3, 'z5l3', 1);                           // "Stay... stay with me..."  (CP12: after the sob, 3.0 s)
     sfx(T.tick, 'k5tick', 0.4);
     sfx(T.out, 'k5bells', 0.3);
     sfx(T.out + 0.6, 'z5out', 1);                            // "His incense had burnt out... but he held on to me..."
-    sfx(T.come - 0.8, 'z5come', 1);                          // "I'm sorry... I have to go back..." (said as the climb begins: a voice plays on
-                                                             //  through a paused film, and eventWait pauses this one until he is back)
+    sfx(T.come - 2.6, 'z5come', 1);                          // "I'm sorry... I have to go back..." (said into the climb: a voice plays on
+                                                             //  through a paused film, and eventWait pauses this one until he is back;
+                                                             //  CP12: 3.68 s, so it is done 1.08 s into the climb — the quickest
+                                                             //  surfacing is 0.8 s of event, then the gasp 0.5 s after it)
     sfx(T.come - 0.4, 'k5climb', 0.6);                       // COME BACK: the swell toward the light (it plays on through the paused film)
     step(T.come - 0.1, () => stage.comeBegin());
     eventWait(T.come, stage.comeOpts(), (r) => stage.comeDone(r));
@@ -8380,8 +8403,8 @@
     sfx(T.come + 0.25, 'k5surface', 0.8);                    // (it plays when the film runs on — after he is back)
     sfxFade(T.come + 0.2, T.come + 3.2, 'k5climb');           // (and the climb goes down under the surfacing)
     sfx(T.come + 0.5, 'z5gasp', 1);
-    tr(T.come + 0.2, T.come + 4.2, (k, t) => stage.surfaceFrame(t - T.come - 0.2, api), rawK);
-    step(T.come + 4.2, () => F.end());
+    tr(T.come + 0.2, T.come + 5.8, (k, t) => stage.surfaceFrame(t - T.come - 0.2, api), rawK);   // (CP12: 4.2 → 5.8, the gasp's 5.07 s inside it)
+    step(T.come + 5.8, () => F.end());
   }
 
   /* ============================================================ THE ENDINGS (CP8, §4.8) AND THE EPILOGUE (§4.9)
@@ -8409,9 +8432,9 @@
     sfx(e + 0.2, 'k5epi', 0.7);                              // the lullaby, in full (the episode's closing music)
     sfx(e + 1.5, 'z5epi0', 1);                               // "They were never something to fear..."  (→ ~10.5)
     fade(e + EPI.fade0, e + EPI.fade1, 0, 1);
-    sfx(e + 12.0, 'z5epi1', 1);                              // "Looking back today, I can see clearly how dangerous..."  (→ ~19.4)
-    sfx(e + 20.5, 'z5epi2', 1);                              // "Some lessons are only learned by living them."  (→ ~23.5)
-    sfx(e + 25.0, 'z5epi3', 1);                              // "This is the one experiment I would tell everybody never to repeat."  (→ ~29.2)
+    sfx(e + 14.5, 'z5epi1', 1);                              // "Looking back today, I can see clearly how dangerous..."  (→ 22.7)
+    sfx(e + 23.4, 'z5epi2', 1);                              // "Some lessons are only learned by living them."  (→ 25.7)
+    sfx(e + 26.6, 'z5epi3', 1);                              // "This is the one experiment I would tell everybody never to repeat."  (→ 30.5)
   }
   /* A · STAY WITH THEM (worst): pity without a boundary, told in his body */
   function scStay(c, s, api) {
@@ -8422,7 +8445,6 @@
       sfx(T.a1 + 0.15, 'k5flick', 0.35);                     // the lighter
       sfx(T.a1 + 0.9, 'k5enter', 0.45);                      // the blue, from the edges of sight
       fade(T.a2 - 0.3, T.a2, 0, 1); fade(T.a2, T.a2 + 0.6, 1, 0);
-      sfx(T.a2 + 0.1, 'k5dawnbed', 0.5);                     // the dawn: the room's hush, a far road
       sfx(T.a2 + 1.0, 'k5koel', 0.35);                       // a koel outside, the first bird
       sfx(9.0, 'z5A2', 1);                                   // "Every night, it was easier to go..."  (→ ~11.8)
       sfx(T.a3 + 0.5, 'k5doorbell', 0.32);                   // the flat's doorbell, far off through the door; nobody answers
@@ -8434,7 +8456,6 @@
       sfx(T.vm, 'ma5vm', 1);                                 // "Boy... why you never pick up?..."  (→ ~25.5)
       sfx(25.8, 'z5A3', 1);                                  // "...and harder to come back."  (→ ~28.0)
       fade(T.a5 - 0.4, T.a5, 0, 1); fade(T.a5, T.a5 + 0.8, 1, 0);
-      sfx(T.a5 + 0.2, 'k5fan', 0.35);                        // a grey afternoon: only the fan
       sfx(T.gig, 'z5Agig', 1);                               // a giggle — out of HIS mouth
       sfx(37.0, 'z5A4', 1);                                  // "That... wasn't me."  (→ ~39.0)
       sfx(44.0, 'z5A5', 1);                                  // "I stopped being sure where they ended... and where I began."  (→ ~48.6)
@@ -8447,7 +8468,6 @@
   function scTell(c, s, api) {
     const { sfx, fade } = api;
     endScene(c, api, 'B', (T) => {
-      sfx(0.0, 'k5deep', 0.5);                               // the room at three in the morning
       sfx(0.5, 'z5B1', 1);                                   // "Nobody would believe this... unless I told them."  (→ ~3.5)
       sfx(T.b1 + 1.0, 'k5wake', 0.45);                       // the laptop wakes
       sfx(T.b2 + 0.4, 'k5type', 0.5);                        // his keys: the title, the body
@@ -8455,7 +8475,6 @@
       sfx(T.b2 + 5.6, 'k5type', 0.45);
       sfx(T.b3, 'k5post', 0.5);                              // POST
       fade(T.b5 - 0.5, T.b5, 0, 1); fade(T.b5, T.b5 + 0.9, 1, 0);           // (a dissolve through black: the dawn)
-      sfx(T.b5 + 0.2, 'k5dawnbed', 0.5);
       sfx(T.b5 + 1.0, 'k5buzz', 0.45); sfx(T.b5 + 1.4, 'k5ping', 0.35);
       sfx(T.b5 + 2.2, 'k5buzz', 0.45); sfx(T.b5 + 2.6, 'k5ping', 0.35);
       sfx(T.b6 + 0.4, 'k5scroll', 0.4);
@@ -8476,7 +8495,6 @@
   function scWish(c, s, api) {
     const { sfx, fade } = api;
     endScene(c, api, 'C', (T) => {
-      sfx(0.0, 'k5deep', 0.5);
       sfx(0.5, 'z5C1', 1);                                   // "If they're real... then they can help me."  (→ ~3.3)
       sfx(T.c1 + 0.6, 'z5C2', 1);                            // "Bring me luck. Bring me orders... please."  (→ ~7.6)
       fade(T.c2 - 0.3, T.c2, 0, 1); fade(T.c2, T.c2 + 0.4, 1, 0);           // (cut under black: the next days)
@@ -8493,7 +8511,6 @@
       sfx(T.c6 + 0.1, 'k5wake', 0.4);                        // the laptop: the rival's shop
       sfx(T.c6 + 1.0, 'z5Cevil', 1);                         // "And him... make him lose everything."  (→ ~36.3)
       sfx(T.c7 + 0.2, 'k5boxstop', 0.5);                     // nothing answers: the box slips and stops mid-phrase
-      sfx(T.c7 + 0.6, 'k5fan', 0.35);                        // only the fan
       sfx(T.c8, 'z5Claugh', 1);                              // his laugh, alone, too long  (→ ~42.5)
       sfx(T.c9 + 0.3, 'z5C5', 1);                            // "If I stop asking... will it all go away?"  (→ ~48.0)
       sfx(T.c10 + 0.4, 'k5endC', 0.55);                      // the lullaby OVERWOUND
@@ -8507,7 +8524,6 @@
   function scCare(c, s, api) {
     const { sfx, fade, step, stage } = api;
     endScene(c, api, 'D', (T) => {
-      sfx(0.0, 'k5deep', 0.45);
       sfx(0.5, 'z5D1', 1);                                   // "I'm sorry. That was my mistake... not yours."  (→ ~3.9)
       sfx(T.d1 + 0.6, 'k5sand', 0.35); sfx(T.d1 + 1.2, 'k5sand', 0.35); sfx(T.d1 + 1.8, 'k5sand', 0.35);   // the stubs lifted out
       sfx(T.d1b + 0.5, 'k5flick', 0.45);                     // the lighter
@@ -8522,7 +8538,6 @@
       sfx(T.d4 + 0.5, 'z5D2', 1);                            // "I won't open that door again. But I'm not going anywhere."  (→ ~26.5)
       sfx(T.d5 + 0.2, 'k5calm', 0.5);                        // the smoke straight; the bells still
       fade(T.court - 0.6, T.court, 0, 1); fade(T.court, T.court + 0.8, 1, 0);   // (a slow dissolve to first light)
-      sfx(T.court + 0.1, 'k5dawnbed', 0.5);
       sfx(DT.bell, 'k5tbell', 0.6);                          // the bell in its pavilion
       sfx(T.court + 1.5, 'z5D3', 1);                         // "In the morning, I went to the temple... and made merit in their names."  (→ ~37.9)
       sfx(DT.kneel + 0.5, 'z5D4', 1);                        // "For the three children in my care... may this merit reach you..."  (→ ~48.5)
