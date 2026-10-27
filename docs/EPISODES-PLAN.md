@@ -52,6 +52,11 @@ teacher"): Episode 4 is S1·11 in two chapters, S1·12, S1·13, and S1·14–S1�
 S1·16–S1·20, one case a chapter — the gift — ending on Season 1's finale, its name proposed as *The Language I
 Couldn't Understand* until he picks. docs/V24.0-EPISODE4-PLAN.md, fifth draft.)
 
+(v23.5, Chad: the grouping is approved and Episode 5 is **The Signal And The Translator** — Master Z's own refrain
+that closes cases five to seven, "Sensitivity gives you the signal. Cultivation gives you the translator." Ajahn
+Krukai's model stays exactly as it is, the master who gave the player his first Sak Yant; `chaptertest` pins it, so
+Episode 4's first master can only arrive under his own key. docs/V24.0-EPISODE4-PLAN.md, sixth draft.)
+
 Episode 1's title is what chapter 1's card has carried since v2.1 — "The
 Hell Note / I Should Never Have Taken" — which says what an episode IS here:
 one case file from the site, told in five chapters. The other nine are case

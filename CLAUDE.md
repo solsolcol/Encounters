@@ -6694,6 +6694,18 @@ What the baseline contains, by release:
   `assets/ajarn.glb`) and as its 43 MB scan (`masters/v16.8/src/ajarn.glb`), to come back under its own key. Two cells
   in `src/strings.js`, nothing else moved; docs/V24.0-EPISODE4-PLAN.md is the fifth draft. Sheet v124 (two cells; v44
   stays the link). Deploy `6ae0d982639f2c856c782a32`, byte-verified (259 served files); harnesses text and menu green.
+- **v23.5** THE SIGNAL AND THE TRANSLATOR, AND KRUKAI PINNED — Chad, on the fifth draft: *"Ok this is good. The Signal
+  And The Translator is good. Make sure ajahn krukai's model in ep3 is unaffected and untouched. It is important that
+  krukai is in the game as the master who gave the player his first sakyant."* The grouping is approved, and Episode 5
+  is **The Signal And The Translator** (Master Z's own refrain closing cases five to seven: "Sensitivity gives you the
+  signal. Cultivation gives you the translator."). Krukai was checked untouched: `assets/ajarn.glb` is the same bytes
+  since v18.7 (sha1 d6d3e53f…, 3,002,988 bytes), the live copy is identical, and only e3c1 seats him. He is now PINNED:
+  `chaptertest` fails if build.py's `ajarn` row is re-pointed, the file changes by a byte, or e3c1 stops using it —
+  proven by breaking each of the three on a throwaway copy of the test, never on the model. Episode 4's first master,
+  the original Sak Yant Ajarn, arrives under his own key (`firstmaster`) from git (5124aa7) and masters/v16.8, and
+  Krukai's own return in the casebook (S2·01) will be the same model under the same key. One cell in
+  `src/strings.js`; docs/V24.0-EPISODE4-PLAN.md is the sixth draft. Sheet v125 (one cell; v44 stays the link). Deploy
+  `6ae0dd073892cf6653dfaa44`, byte-verified (259 served files); harnesses chapter, text and menu green.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -7277,15 +7289,20 @@ which rig stands in for each, and each is a one-line swap). Episode 3 chapter
 
 Next up: **EPISODE 4 · THE TEACHER IN WHITE** (Chad's name) — the casebook's S1·11 to S1·15, from the master he did
 not know to his first cases at his teacher's side — PROPOSED, awaiting Chad's remaining decisions:
-**docs/V24.0-EPISODE4-PLAN.md** (its fifth draft; §0 what he decided, §1 the two episodes' two stories, §5 what is
+**docs/V24.0-EPISODE4-PLAN.md** (its sixth draft; §0 what he decided, §1 the two episodes' two stories, §5 what is
 still his). S1·11 in two chapters (the master he did not know, who wears the original Sak Yant Ajarn's model; then the
 fog, Lersi Chin's clearing and the warning — built on Master Z's own trial episode, its 5.1 and 5.3 the two decisions
 verbatim; all nine trial episodes are copied verbatim into **docs/source/mztrial-episodes.md**) → S1·12 (Grandmaster
 Pho at the Wai Kru; open and close) → S1·13 (case one: the woman who rose from her wheelchair) → S1·14 and S1·15 (cases
-two and three, one chapter: the smell nobody else could smell). Episode 5 (proposed: *The Language I Couldn't
-Understand*) is S1·16–S1·20, cases four to eight, one a chapter, ending on Season 1's finale; the casebook's own hinge
-between the two is the end of case four, "I had thought I was only there to assist my teacher." Grandmaster Pho and
-Lersi Chin are Chad's models, with their voices (the Ah Pek's too, whose case comes later in the casebook). EPISODE 3
+two and three, one chapter: the smell nobody else could smell). Episode 5, **The Signal And The Translator** (Chad's
+name, v23.5), is S1·16–S1·20, cases four to eight, one a chapter, ending on Season 1's finale; the casebook's own hinge
+between the two is the end of case four, "I had thought I was only there to assist my teacher" (the grouping is
+Chad's, approved v23.5). Grandmaster Pho and Lersi Chin are Chad's models, with their voices (the Ah Pek's too, whose
+case comes later in the casebook). **Ajahn Krukai's model is PINNED** (v23.5, Chad: *"Make sure ajahn krukai's model
+in ep3 is unaffected and untouched. It is important that krukai is in the game as the master who gave the player his
+first sakyant."*): `ajarn` / `assets/ajarn.glb` are the bytes that shipped at v18.7, `chaptertest` fails on any change
+to the key, the file or e3c1's use of it, and Episode 4's first master — the original Sak Yant Ajarn — arrives under
+his own key, `firstmaster`, restored from git (5124aa7) and masters/v16.8. EPISODE 3
 IS COMPLETE (v23.0; chapter 5, The Children
 On My Altar — `src/chapters/e3/e3c5.js`, docs/V23.0-E3C5-PLAN.md, its plan written 25 Oct 2026 from Chad's answers and
 revised four times — §2.3–§2.7 his rulings, docs/research/V23.0-KUMANTHONG.md the research behind every belief;
@@ -7321,9 +7338,10 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v124** (`masters/v23.4/masterz-text-v124.xlsx`, v123 with Episodes 4 and 5's names — `ep4.title` "The
-Teacher In White" (Chad's pick), `ep5.title` "The Language I Couldn't Understand" (proposed, until he picks); two cells
-changed, nothing else. v123 was `masters/v23.3/masterz-text-v123.xlsx`, v122 with Episodes 4 and 5's names —
+**THE SHEET IS v125** (`masters/v23.5/masterz-text-v125.xlsx`, v124 with Episode 5's name — `ep5.title` "The Signal
+And The Translator" (Chad's pick); one cell changed, nothing else. v124 was `masters/v23.4/masterz-text-v124.xlsx`, v123
+with Episodes 4 and 5's names — `ep4.title` "The Teacher In White" (Chad's pick), `ep5.title` "The Language I Couldn't
+Understand" (proposed, until he picks); two cells changed, nothing else. v123 was `masters/v23.3/masterz-text-v123.xlsx`, v122 with Episodes 4 and 5's names —
 `ep4.title` "The Path To The Robe" (Chad's pick), `ep5.title` "My First Monkhood" (the casebook's title for where
 monkhood begins, until he names it); two cells changed, nothing else. v122 was `masters/v23.2/masterz-text-v122.xlsx`, v121 with Episodes 4
 and 5's names swapped — `ep4.title` "Not Every Master Should Be Trusted", `ep5.title` "The Love Spell That Followed Me

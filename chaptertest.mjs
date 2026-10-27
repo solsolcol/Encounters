@@ -15,6 +15,7 @@
    window.__CHAPTERS__, so all this needs is a stub window and eval.       */
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
+import { createHash } from 'node:crypto';
 import { DIR } from './testlib.mjs';
 
 const errs = [];
@@ -633,6 +634,34 @@ if (VOICE && Array.isArray(VOICE.LINES)) {
     }
   }
   console.log(`briefing pictures: ${kinds.length} kinds, ${briefed} briefed events, drawn: ${[...drawn].join(' ')}`);
+}
+
+/* v23.5: PINNED MODELS (Chad, 27 Oct 2026: "Make sure ajahn krukai's model in
+   ep3 is unaffected and untouched. It is important that krukai is in the game
+   as the master who gave the player his first sakyant."). Episode 4's first
+   master wears the ORIGINAL Sak Yant Ajarn (v16.8's, kept in git and masters)
+   under a key of his OWN — never by re-pointing `ajarn` or re-baking its file.
+   So the key must still name Krukai's file, the file must be the exact bytes
+   that shipped at v18.7, and episode 3 chapter 1's private room must still
+   seat him. A change here is a change Chad has to ask for. */
+{
+  const PINNED = [
+    { key: 'ajarn', file: 'assets/ajarn.glb', sha1: 'd6d3e53f8e9bff260b1f0e6f3b7723466b5641d1',
+      who: 'Ajahn Krukai, the master who gave the player his first Sak Yant (e3c1, v18.7)',
+      used: [['e3/e3c1.js', /mkRig\('ajarn'/]] },
+  ];
+  for (const p of PINNED) {
+    const row = buildPy.match(new RegExp(`^\\s*'${p.key}':\\s*\\('([^']+)'`, 'm'));
+    if (!row) { errs.push(`ERR pinned '${p.key}' (${p.who}) has no row in build.py`); continue; }
+    if (row[1] !== p.file) errs.push(`ERR pinned '${p.key}' (${p.who}) now points at ${row[1]}, not ${p.file}`);
+    const path = join(DIR, p.file);
+    if (!existsSync(path)) { errs.push(`ERR pinned '${p.key}': ${p.file} is missing`); continue; }
+    const got = createHash('sha1').update(readFileSync(path)).digest('hex');
+    if (got !== p.sha1) errs.push(`ERR pinned '${p.key}' (${p.who}): ${p.file} changed (sha1 ${got.slice(0, 12)}, pinned ${p.sha1.slice(0, 12)}) — give a new model its own key`);
+    for (const [f, re] of p.used)
+      if (!re.test(readFileSync(join(chapDir, f), 'utf8'))) errs.push(`ERR pinned '${p.key}' (${p.who}) is no longer used by ${f}`);
+  }
+  console.log(`pinned models: ${PINNED.map(p => p.key).join(', ')} checked`);
 }
 
 console.log('errors:', errs.length ? errs : 'none');

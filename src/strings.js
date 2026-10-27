@@ -396,7 +396,7 @@ Object.assign(window.__TEXT__, {
   'ep4.label':           'Episode 4',
   'ep4.title':           'The Teacher In White',                 // v23.4: Chad's pick — S1·11 (two chapters), S1·12, S1·13, S1·14–15: finding his teacher, learning at his side
   'ep5.label':           'Episode 5',
-  'ep5.title':           'The Language I Couldn\'t Understand', // v23.4: proposed to Chad — S1·16–S1·20, the casebook's cases four to eight (S1·17's own title)
+  'ep5.title':           'The Signal And The Translator',       // v23.5: Chad's pick — S1·16–S1·20, the casebook's cases four to eight: the work comes for him, then through him
   'ep6.label':           'Episode 6',
   'ep6.title':           'The Ghost Clinging To Her Back',
   'ep7.label':           'Episode 7',
