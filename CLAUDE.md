@@ -7302,7 +7302,11 @@ case comes later in the casebook). **Ajahn Krukai's model is PINNED** (v23.5, Ch
 in ep3 is unaffected and untouched. It is important that krukai is in the game as the master who gave the player his
 first sakyant."*): `ajarn` / `assets/ajarn.glb` are the bytes that shipped at v18.7, `chaptertest` fails on any change
 to the key, the file or e3c1's use of it, and Episode 4's first master — the original Sak Yant Ajarn — arrives under
-his own key, `firstmaster`, restored from git (5124aa7) and masters/v16.8. EPISODE 3
+his own key, `firstmaster`, restored from git (5124aa7) and masters/v16.8. **Chapter 1's full build plan is
+docs/V24.0-E4C1-PLAN.md** (27 Oct 2026, Chad: *"Work on the full build plan for episode 4 chapter 1 now ... I don't want
+to see a reuse of old assets and environments ... Be like a creative director."*) — everything in its world new and
+checked so by `chaptertest` (FRESH), three new ways to play (ASK, THE LEDGER, WHAT CHANGED?), awaiting his picks on its
+§2.3. EPISODE 3
 IS COMPLETE (v23.0; chapter 5, The Children
 On My Altar — `src/chapters/e3/e3c5.js`, docs/V23.0-E3C5-PLAN.md, its plan written 25 Oct 2026 from Chad's answers and
 revised four times — §2.3–§2.7 his rulings, docs/research/V23.0-KUMANTHONG.md the research behind every belief;
