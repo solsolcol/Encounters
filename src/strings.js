@@ -394,9 +394,9 @@ Object.assign(window.__TEXT__, {
   'ep3.label':           'Episode 3',
   'ep3.title':           'How It All Began',                 // v16.0: Chad's title — Season 1 · 6–10 condensed
   'ep4.label':           'Episode 4',
-  'ep4.title':           'The Path To The Robe',                 // v23.3: Chad's pick — S1·11, S1·12, S2·02, S2·03, to the decision to ordain (S1·11's own title until then)
+  'ep4.title':           'The Teacher In White',                 // v23.4: Chad's pick — S1·11 (two chapters), S1·12, S1·13, S1·14–15: finding his teacher, learning at his side
   'ep5.label':           'Episode 5',
-  'ep5.title':           'My First Monkhood',                    // v23.3: Chad — Episode 5 is monkhood itself; S2·04's own title until he names it (the Love Spell, S1·16, was here until v23.3)
+  'ep5.title':           'The Language I Couldn\'t Understand', // v23.4: proposed to Chad — S1·16–S1·20, the casebook's cases four to eight (S1·17's own title)
   'ep6.label':           'Episode 6',
   'ep6.title':           'The Ghost Clinging To Her Back',
   'ep7.label':           'Episode 7',

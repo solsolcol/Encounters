@@ -46,6 +46,12 @@ now; where it goes, and whether episodes 6–10 follow the casebook too, is his.
 and S1·14 (docs/V24.0-EPISODE4-PLAN.md, fourth draft), and the next episode picks up at case three. The names in the
 game for Episodes 4 and 5 change when he picks new ones.)
 
+(v23.4, Chad: Episode 4 is **The Teacher In White**, and each episode keeps a story of its own — so the two are
+regrouped on the casebook's hinge at the end of case four (S1·16, "I had thought I was only there to assist my
+teacher"): Episode 4 is S1·11 in two chapters, S1·12, S1·13, and S1·14–S1·15 as one chapter — the teacher; Episode 5 is
+S1·16–S1·20, one case a chapter — the gift — ending on Season 1's finale, its name proposed as *The Language I
+Couldn't Understand* until he picks. docs/V24.0-EPISODE4-PLAN.md, fifth draft.)
+
 Episode 1's title is what chapter 1's card has carried since v2.1 — "The
 Hell Note / I Should Never Have Taken" — which says what an episode IS here:
 one case file from the site, told in five chapters. The other nine are case
