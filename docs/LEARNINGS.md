@@ -6544,3 +6544,25 @@ cut (sharing its vertices and maps) when it is small.
   needed minutes. The phone's 390 × 844 had passed the same step. Before calling a desktop stall a bug, read the
   chapter clock across the wait; a probe that waits on a chapter's beats at desktop size takes its wait from an
   environment variable (`FILM_WAIT`), not a constant.
+
+## v24.0 — episode 4 chapter 1
+
+- **A seam proven by its STATE has not been proven to DRAW** (v24.0 CP5). The rain round the lens (S45, CP3) passed
+  every fixture check — mounted, `visible`, `uK` at 1, stopped by a reset — and had never put a streak on any screen:
+  each streak's two triangles wind clockwise as seen from the lens (its side is `cross(fall, view)`), so the default
+  front-face culling dropped the whole field. The draw call was issued (72 → 73 calls) and rasterized nothing. Found
+  only because the compound was photographed raining and was dry. A procedural quad built in a vertex shader decides
+  its own winding: give it both faces, or prove the winding — and photograph every seam that is meant to be seen,
+  forced red and wide if need be (v12.3's pre-pass law, met a second time).
+- **Never `smoothstep(hi, lo, x)`** (v24.0 CP5). GLSL leaves `smoothstep` undefined when edge0 ≥ edge1; most drivers
+  happen to run the formula backwards and so it "works", which is how two of them shipped in the rain shader. Write
+  `1.0 - smoothstep(lo, hi, x)`; `grep` finds the class (a numeric first edge larger than the second).
+- **Probe law: a photograph after a change can show the frame BEFORE it** (v24.0 CP5). On the compound one software
+  frame took up to seventeen seconds, so a screenshot taken a fixed wait after `kit.rain(1)` showed the dry frame and
+  the mesh's state read as never updated. Wait for two `requestAnimationFrame`s inside the page before a screenshot
+  that must show a change (the probes' `tris()` does), and read the state in the same task as the frame that wrote it.
+- **A width written as `GX + 0.2 − x0` is a wall across the gate** (v24.0 CP5). The compound's low wall and its fence
+  blocker left of the gate were each `(gate half-width) − (fence x0)` wide — 18 m where 13.7 belonged — so both ran from
+  the fence to the middle of the gateway: a white slab in the first frame of play and an invisible wall over half the
+  way in. Its mirror on the right, `x1 − GX − 0.2`, was right. When one side of a symmetric pair is written by hand,
+  write the other as the first one's mirror, and photograph from where the player stands.

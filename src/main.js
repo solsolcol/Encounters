@@ -5892,18 +5892,21 @@ function wxBuild() {
         vec3 side = normalize(cross(dir, to + vec3(0.0001)));
         vec3 p = w - dir * uLen * aCorner.y + side * uWidth * aCorner.x;
         float d = length(to);
-        vA = smoothstep(uBox.x * 0.5, uBox.x * 0.18, d) * smoothstep(0.35, 1.3, d);
+        vA = (1.0 - smoothstep(uBox.x * 0.18, uBox.x * 0.5, d)) * smoothstep(0.35, 1.3, d);   // never smoothstep(hi, lo): undefined in GLSL, and SwiftShader drew nothing
         vEnd = aCorner.y;
         gl_Position = projectionMatrix * viewMatrix * vec4(p, 1.0);
       }`,
     fragmentShader: `
       uniform vec3 uColor; uniform float uOpacity; varying float vA; varying float vEnd;
       void main() {
-        float a = uOpacity * vA * (1.0 - vEnd * 0.75) * smoothstep(0.0, 0.12, vEnd) * smoothstep(1.0, 0.82, vEnd);
+        float a = uOpacity * vA * (1.0 - vEnd * 0.75) * smoothstep(0.0, 0.12, vEnd) * (1.0 - smoothstep(0.82, 1.0, vEnd));
         if (a < 0.003) discard;
         gl_FragColor = vec4(uColor, a);
       }`,
-    transparent: true, depthWrite: false, fog: false
+    /* both faces: every streak's two triangles wind clockwise on screen (its side is cross(fall, view)), so the default
+       front-face culling dropped the whole field — the seam's state was right and nothing was ever drawn (v24.0, found
+       by photograph: a probe that reads `visible` and `uK` cannot see it) */
+    transparent: true, depthWrite: false, fog: false, side: THREE.DoubleSide
   });
   wx.mesh = new THREE.Mesh(g, wx.mat);
   wx.mesh.frustumCulled = false; wx.mesh.renderOrder = 6; wx.mesh.visible = false;

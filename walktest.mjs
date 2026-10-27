@@ -29,7 +29,9 @@ p.on('pageerror', e => errs.push(where + ': ' + e.message));
    opens) and with new per-frame code to catch a throw in */
 /* v23.0: and episode 3 chapter 5 (a preview chapter until its sound is recorded — `?ch=` still opens it): the counter
    in World S where play begins, and his room, which the home film puts him down inside the door of */
-const KEYS = ['ch3', 'e2c1', 'e2c2', 'e2c3', 'e2c4', 'e2c5', 'e3c1', 'e3c2', 'e3c3', 'e3c4', 'e3c5'];
+/* v24.0: and episode 4 chapter 1 (a preview while it is built): the compound, from beside the pickup at the gate to the
+   receiving room's door, and the room itself, where pressing that door puts him down */
+const KEYS = ['ch3', 'e2c1', 'e2c2', 'e2c3', 'e2c4', 'e2c5', 'e3c1', 'e3c2', 'e3c3', 'e3c4', 'e3c5', 'e4c1'];
 /* WALK_ONLY=e3c3 walks one chapter (a re-check after a fix, not the release run) */
 for (const key of (process.env.WALK_ONLY ? KEYS.filter(k => process.env.WALK_ONLY.split(',').includes(k)) : KEYS)) {
   where = key;
