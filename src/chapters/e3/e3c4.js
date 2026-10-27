@@ -1315,6 +1315,7 @@
             } });
           for (const [par, pm] of pres) par.add(pm);
           P.inner = inner; P.model = g; P.mixer = null; P.scale = s; P.ready = true;
+          if (o.then) o.then(P);                                   // (v23.1: ending A's reflection recolours her, as the rigged ones are)
         }).catch(err => { console.warn(key + ' failed to load', err); ctx.loadFail && ctx.loadFail(key, err); });
         people.push(P);
         return P;
@@ -1772,7 +1773,10 @@
         box(dw, dh, dd, dx, F + dh / 2, dz, mLac, G, false);
         box(dw + 0.04, 0.04, dd + 0.04, dx, F + dh, dz, gold, G, false);
         const top = new THREE.Mesh(new THREE.PlaneGeometry(dw - 0.1, dd - 0.1), mCarpet); top.rotation.x = -Math.PI / 2; top.position.set(dx, F + dh + 0.022, dz); G.add(top);
-        const panel = new THREE.Mesh(new THREE.PlaneGeometry(dd, 2.6), M({ map: tScreen, roughness: 0.55, metalness: 0.15 })); panel.position.set(MHALL.x1 - 0.03, F + dh + 1.3, dz); panel.rotation.y = -Math.PI / 2; G.add(panel);
+        /* (v23.1, Chad: "a flickering glitchy texture behind the monk": at x1 − 0.03 the panel lay IN the face of the dado's
+           gold strip, which runs the wall's length at F + 0.92 — the strip fought it; 1.5 cm in front of it now, as chapter
+           5's copy of this hall was fixed at v23.0) */
+        const panel = new THREE.Mesh(new THREE.PlaneGeometry(dd, 2.6), M({ map: tScreen, roughness: 0.55, metalness: 0.15 })); panel.position.set(MHALL.x1 - 0.045, F + dh + 1.3, dz); panel.rotation.y = -Math.PI / 2; G.add(panel);
         thai('cushtri', MHALL.x1 - 0.32, F + dh, dz, { parent: G, ry: -Math.PI / 2, s: 1.0 });
         thai('phan', dx - 0.55, F + dh, dz - 0.95, { parent: G, s: 0.9 });
         thai('candle', dx - 0.55, F + dh, dz + 1.0, { parent: G, s: 0.9 });
@@ -3561,7 +3565,7 @@
     /* ---- THE EXPERIENCE'S STATE, every number eased on wall time; `run` cancels a beat a reset or a second start
        has made stale (the Yin's shape) */
     const hanX = { on: false, run: 0, released: false, tries: 0, uw: 0, uwTo: 0, gold: 0, goldTo: 0, emb: 0, embTo: 0,
-                   glintT: -1, ring: -1, fovK: 0, fovTo: 0, kick: 0, kickWas: 0, silent: 0,
+                   glintT: -1, ring: -1, fovK: 0, fovTo: 0, kick: 0, kickWas: 0, silent: 0, pushWas: { p: 0, y: 0 },
                    vis: { on: false, t: 0, placed: false, burst: 0, base: new THREE.Vector3() } };
     const _hq = new THREE.Quaternion(), _hu = new THREE.Vector3(), _hv = new THREE.Vector3(), _hc = new THREE.Vector3(), _hw = new THREE.Vector3();
     const _vt = new THREE.Vector3(), _vo = new THREE.Vector3();
@@ -3574,12 +3578,26 @@
     }
     function visTick(wdt) {
       const V = hanX.vis;
+      // (v23.1) last frame's push on the lens comes off first: the vision is solved from the look the player owns
+      if (hanX.pushWas.p || hanX.pushWas.y) { pitch.rotation.x -= hanX.pushWas.p; yaw.rotation.y -= hanX.pushWas.y; hanX.pushWas.p = hanX.pushWas.y = 0; }
       if (!V.on || !visReady) { hanVis.visible = visHalo.visible = visEmb.visible = false; return; }
       V.t += wdt;
       const rise = smooth(cl01(V.t / 1.5)), lean = smooth(cl01((V.t - 0.8) / 2.4));
       if (V.burst > 0) V.burst = Math.min(1, V.burst + wdt / 0.55);
       const b = V.burst, k = rise * (1 - b);
       hanVis.visible = k > 0.003;
+      /* THE PUSH (v23.1, Chad: "the screen can slightly shake or move around so that the hanuman looks like it is moving
+         along together with the player's camera movement. Like it is really trying to get into the player"): while it is
+         up the lens sways and shivers — laid on his look and taken off again next frame (the roll is the gesture's own,
+         kit.hands, so only the yaw and the pitch) — and the figure is solved from the lens as it is after that and held to
+         it tightly below: the shop moves behind it and it stays on him, a sway the follow keeps up with, a shiver it does
+         not */
+      if (k > 0.003 && getState() === 'play') {
+        const tt = hLive.t, a = k * (0.5 + 0.5 * lean);
+        hanX.pushWas.p = a * (0.012 * Math.sin(tt * 1.7) + 0.005 * Math.sin(tt * 11.3));
+        hanX.pushWas.y = a * (0.016 * Math.sin(tt * 1.1 + 0.6) + 0.004 * Math.sin(tt * 13.7 + 2.0));
+        pitch.rotation.x += hanX.pushWas.p; yaw.rotation.y += hanX.pushWas.y;
+      }
       // ITS FACE'S PLACE ON THIS FRAME: on the ray through (0, VIS.ndc) of the lens as it IS — its pitch included. (CP7,
       // photographed: he takes the piece looking DOWN at its stand, 16° under the level, and a face solved on the level
       // rode up behind the stat bars on a phone and off the top of a desktop's frame — worse as the lens drew in on the
@@ -3597,7 +3615,7 @@
       const sc = 1 + 0.35 * smooth(b);
       _vo.set(FACE.x * VIS.h * sc, FACE.y * VIS.h * sc, FACE.z * VIS.h * sc).applyEuler(hanVis.rotation);
       _vt.sub(_vo);
-      if (!V.placed) { V.base.copy(_vt); V.placed = true; } else V.base.lerp(_vt, 1 - Math.exp(-wdt * 2.2));
+      if (!V.placed) { V.base.copy(_vt); V.placed = true; } else V.base.lerp(_vt, 1 - Math.exp(-wdt * 6.5));   // (v23.1: 2.2 → 6.5, held to his eyes)
       hanVis.position.copy(V.base); hanVis.position.y -= VIS.h * 0.55 * (1 - rise);
       hanVis.scale.setScalar(sc);
       hanVis.updateMatrixWorld(true);
@@ -5338,6 +5356,7 @@
       Object.assign(hanX, { on: false, released: false, shown: false, tries: 0, uw: 0, uwTo: 0, gold: 0, goldTo: 0, emb: 0, embTo: 0,
                             glintT: -1, ring: -1, fovK: 0, fovTo: 0, silent: 0 });
       if (hanX.kick || hanX.kickWas) { pitch.rotation.x -= hanX.kickWas; hanX.kick = hanX.kickWas = 0; }
+      if (hanX.pushWas.p || hanX.pushWas.y) { pitch.rotation.x -= hanX.pushWas.p; yaw.rotation.y -= hanX.pushWas.y; hanX.pushWas.p = hanX.pushWas.y = 0; }
       Object.assign(hanX.vis, { on: false, t: 0, placed: false, burst: 0 });
       hanVis.visible = visHalo.visible = visEmb.visible = false;
       hanHeldShow(null);
@@ -6159,11 +6178,14 @@
       at(6.8, () => answered('wess', run, 'z4wess', 'to4wess'));
     }
     function giantStep(i) {
-      const v = 0.45 + 0.17 * i, x = 14 - i * 4.2;               // down the street from the right, nearer each time
+      /* (v23.1, Chad: "have the floor shaking effect shake even more, and the stomping sound effects made louder": each
+         step's shake nearly twice what it was, and the stomp both played louder and made louder in its file by its average,
+         its peak held — masters/v23.1/make.sh) */
+      const v = Math.min(1, 0.55 + 0.15 * i), x = 14 - i * 4.2;   // down the street from the right, nearer each time
       if (worldSfx) worldSfx('x4step', v, 1, panAt(TX + x, 9));
-      tX.shake = Math.max(tX.shake, 0.35 + 0.22 * i); tX.cupJ = 1; tX.lamp = Math.max(tX.lamp, 0.02 + 0.014 * i);
+      tX.shake = Math.max(tX.shake, 0.7 + 0.4 * i); tX.cupJ = 1; tX.lamp = Math.max(tX.lamp, 0.02 + 0.014 * i);
       tX.sunTo = 1 - 0.21 * (i + 1); tX.redTo = 0.25 * (i + 1);
-      if (kit) kit.tremble(0.2 + 0.1 * i, { secs: 0.05 });
+      if (kit) kit.tremble(0.3 + 0.15 * i, { secs: 0.05 });
       after(0.35, () => { if (kit && tX.on === 'wess') kit.tremble(0.04, { secs: 0.6 }); });
       if (i >= 1) { tX.dustT = 0; tX.dustAmt = Math.min(1, 0.5 + 0.2 * i); if (worldSfx) worldSfx('x4dust', 0.3 + 0.1 * i, 1, 0); }
       if (i >= 1 && worldSfx) worldSfx('x4rattle', 0.25 + 0.12 * i, 1, panAt(TX + TSHOP.x0 + 0.3, -3.2));   // the antiques on their shelves
@@ -6749,7 +6771,7 @@
          S4  22.2–26.6  the pour: the brass vessel's thin stream into the silver bowl as the monk begins the verse
          S4b 26.6–30.6  the monk chanting, his head dipping with each line
          S4c 30.6–35.7  the bowl filling, the stream thinning to drops; black
-         S6  35.7–48.4  the bodhi's roots: the bowl's water poured on the earth, the breeze, leaves falling, a pale light
+         S6  35.7–50.9  the bodhi's roots: the bowl's water poured on the earth, the breeze, leaves falling, a pale light
                         rising from the wet earth and the lens rising with it into the dusk; black */
     const M_DUSK = {
       stops: [[0.00, '#f4ad74'], [0.10, '#e48c6a'], [0.30, '#b86e7c'], [0.60, '#433f74'], [1.00, '#131a38']],
@@ -6765,8 +6787,11 @@
       stars: 0, moon: 0, sun: 0, clouds: 0,
       vmHemi: [0xffe2c8, 0x4a3426, 1.0], vmKey: [0xffc890, 0.85]
     };
-    const MF = { s1: 0.85, s2: 8.6, s2b: 12.0, s3: 14.0, s4: 22.2, s4b: 26.6, s4c: 30.6, s6: 35.7, end: 48.4,
+    const MF = { s1: 0.85, s2: 8.6, s2b: 12.0, s3: 14.0, s4: 22.2, s4b: 26.6, s4c: 30.6, s6: 35.7, end: 50.9,   // (v23.1: the climb held 2.5 s longer, Chad's ask)
                  chant: 22.4, pour0: 22.6, pour1: 34.5, earth0: 36.4, earth1: 39.4, breeze: 39.4, mote: 40.4 };
+    /* (v23.1, Chad: "As it flies up into the sky, have the scene extend for about 2-3 more seconds, so the music has more
+       time to swell up". The lens rises with the light for 8.1 s where it rose for 5.6, and the picture goes 2.5 s later) */
+    const MF_CLIMB = 8.1, MF_GONE = MF.end - 2.2;              // the climb's length; when the light and the picture start to go
     const _mp = new THREE.Vector3(), _mt = new THREE.Vector3(), _ms = new THREE.Vector3(), _mw = new THREE.Vector3(), _mqa = new THREE.Quaternion();
     const wz = (z) => z + MZ;                                   // pocket-local z to the world's
     function camLook(px, py, pz, tx, ty, tz) {                  // put the lens at p (local), aimed at t (local)
@@ -6860,7 +6885,7 @@
         else if (!kit.holding || kit.holding() === mLive.envelope) kit.hold(null);
         mHolding = wantHold;
       }
-      const fov = shot === 'S2b' ? 40 : shot === 'S4' ? 36 : shot === 'S4b' ? 46 : shot === 'S4c' ? 34 : shot === 'S6' ? 46 + 10 * ss(cl01((t - (MF.mote + 0.2)) / 5.6)) : 72;
+      const fov = shot === 'S2b' ? 40 : shot === 'S4' ? 36 : shot === 'S4b' ? 46 : shot === 'S4c' ? 34 : shot === 'S6' ? 46 + 10 * ss(cl01((t - (MF.mote + 0.2)) / MF_CLIMB)) : 72;
       if (camera.fov !== fov) { camera.fov = fov; camera.updateProjectionMatrix(); }
       if (shot !== mShotWas) { mShotWas = shot; if (shot === 'S3' && api && api.dirtyShadows) api.dirtyShadows(2); }
 
@@ -6900,7 +6925,7 @@
            the lens rises and turns up with the light, up the trunk, through the canopy, into the dusk. (The first cut
            stood two metres back with the whole bowl in the air and no one holding it, the trunk a dark mass behind) */
         const spot = { x: MTREE.x - 0.62, y: MTREE.h, z: MTREE.z + 0.42 };
-        const rk = ss(cl01((t - (MF.mote + 0.2)) / 5.6)), push = ss(cl01((t - MF.s6) / (MF.mote - MF.s6)));
+        const rk = ss(cl01((t - (MF.mote + 0.2)) / MF_CLIMB)), push = ss(cl01((t - MF.s6) / (MF.mote - MF.s6)));
         const mote = moteAt(t, spot);
         /* (from the trunk's side: looking down at the spot with the trunk off to the right of the frame — on a phone's
            narrow frame out of it — where the first insert stood across the spot from the trunk and filled the top of
@@ -7025,18 +7050,19 @@
         if (m.visible) {
           const p = moteAt(t, spot);
           m.position.set(p.x, p.y, p.z); h.position.copy(m.position);
-          const born = cl01(mu / 1.2), fadeTop = 1 - cl01((t - 46.2) / 1.6);
+          const born = cl01(mu / 1.2), fadeTop = 1 - cl01((t - MF_GONE) / 1.6);
           const pulse = 0.85 + 0.15 * Math.sin(mu * 5.2);
-          // held at a constant size on screen (a little over a degree, its halo seven), however far it has climbed
+          // held at a constant size on screen (a degree and a half, its halo eight and a half), however far it has climbed
+          // (v23.1, Chad: "have the glowing orb effects be slightly more prominent" — a quarter larger, its halo brighter)
           const dcam = Math.hypot(yaw.position.x - p.x, yaw.position.y - p.y, yaw.position.z - wz(p.z));
-          const sc = Math.max(0.03, dcam * 0.022) * (0.55 + 0.45 * born) * pulse; m.scale.set(sc, sc, 1); h.scale.set(sc * 7, sc * 7, 1);
-          m.material.opacity = born * fadeTop; h.material.opacity = 0.42 * born * fadeTop * pulse;
+          const sc = Math.max(0.038, dcam * 0.028) * (0.55 + 0.45 * born) * pulse; m.scale.set(sc, sc, 1); h.scale.set(sc * 8.5, sc * 8.5, 1);
+          m.material.opacity = born * fadeTop; h.material.opacity = 0.55 * born * fadeTop * pulse;
           mLive.trail.forEach((tr, i) => {
             const tt = t - (i + 1) * 0.11; tr.s.visible = tt > MF.mote + 0.2;
             if (!tr.s.visible) return;
             const q = moteAt(tt, spot); tr.s.position.set(q.x + Math.sin(i * 2.1 + t) * 0.03, q.y, q.z + Math.cos(i * 1.7 + t) * 0.03);
-            const s = Math.max(0.012, Math.hypot(yaw.position.x - q.x, yaw.position.y - q.y, yaw.position.z - wz(q.z)) * 0.008) * (1 - i / mLive.trail.length); tr.s.scale.set(s, s, 1);
-            tr.s.material.opacity = 0.8 * (1 - i / mLive.trail.length) * born * fadeTop;
+            const s = Math.max(0.015, Math.hypot(yaw.position.x - q.x, yaw.position.y - q.y, yaw.position.z - wz(q.z)) * 0.010) * (1 - i / mLive.trail.length); tr.s.scale.set(s, s, 1);
+            tr.s.material.opacity = 0.9 * (1 - i / mLive.trail.length) * born * fadeTop;
           });
         } else mLive.trail.forEach(tr => { tr.s.visible = false; });
       }
@@ -7370,7 +7396,9 @@
     // under the painted street at 0.62, reached the screen ~4/255 apart, so he whipped round at nothing the player was
     // shown. Pale and faintly self-lit, he reads as a man in the glass, seen through the reflection; a black silhouette
     // was photographed too and reads as someone standing inside the shop, which the turn to the street would contradict)
-    const eShade = mkPerson('staffman', { parent: worldT, x: REFL.x + 0.42, z: REFL.z - 1.95, ry: 0, height: 1.7, idle: 'Idle_9', hidden: true,
+    /* (v23.1, Chad: "when a guy model appears in the window reflection, change that to the female ghost model instead" —
+       CHAD'S ghost, World Y's own scan, still, under the same reflection's treatment) */
+    const eShade = mkPerson('yinghost', { parent: worldT, x: REFL.x + 0.42, z: REFL.z - 1.95, ry: 0, height: 1.6, still: true, hidden: true,
       then: (P) => { P.model.traverse(m => { if (!m.isMesh) return; m.material = m.material.clone(); m.material.color.setHex(0x6e7484);
                                                  if (m.material.emissive) m.material.emissive.setHex(0x2a2d36); mats.push(m.material); m.castShadow = false; }); } });
 
@@ -7904,7 +7932,11 @@
                  take0: 29.0, take1: 29.6, bow0: 30.6, bow1: 31.6, away0: 33.6, away1: 34.4, turn0: 33.0, turn1: 34.6, fadeL: 33.6, fadeN: 34.3, fadeG: 35.0,
                  clock: 34.0, out: 35.8, street: 36.8, lamps0: 41.5, lamps1: 44.5, pocket0: 46.6, pocket1: 47.4, walk0: 47.6, end: 56.2 };
     const D_KERB = { x: TX + 0.7, y: 1.62, z: 2.05 };
-    const D_CARD_DX = 0.3, D_CARD_Z = -6.08;                         // (v22.3) the card, written to the bundle's right: clear of the tray (to x 0.77) and the abacus (from 0.96)
+    /* (v22.3) the card was written to the bundle's right, clear of the tray where it stood — but by the endings the tray is
+       SET ASIDE, to x 0.73–1.17, and the card slid in under it (v23.1, Chad: "it slides under the tray of amulets"). It is
+       written to the bundle's LEFT now, where the counter is clear from the tea set (to x −0.4) to the bundle (from 0.43),
+       and slides across to him there */
+    const D_CARD_DX = -0.3, D_CARD_Z = -6.08;
     function endD(t, api) {
       const S0 = endLive.t0;
       if (t < ED.street) {
@@ -7934,7 +7966,7 @@
           cardG.position.set(cardX, TCNT.top + 0.0035, D_CARD_Z + 0.3 * sl); cardG.rotation.set(-Math.PI / 2, 0, 0.08 - 0.1 * sl);
           cardWrite(cl01((t - ED.pen0) / (ED.pen1 - ED.pen0)) * CARD_N);
           penG.visible = t >= ED.insert0;                   // set down beside it, past the card's far edge, once it is written
-          if (penG.visible) { penG.position.set(cardX + 0.07, TCNT.top + 0.0045, D_CARD_Z - 0.07); penG.rotation.set(0, 0.15, Math.PI / 2); }
+          if (penG.visible) { penG.position.set(cardX - 0.07, TCNT.top + 0.0045, D_CARD_Z - 0.07); penG.rotation.set(0, -0.15, Math.PI / 2); }   // (v23.1: on the card's far side from the bundle)
         } else if (t >= ED.take0) {                     // held until the black (CP11: dropped at a third of the fade)
           cardWrite(CARD_N); penG.visible = false;
           eHoldUp(api, cardG, eS(ED.take0, ED.take1, t), { lift: 0.36, tilt: -0.05 });
@@ -9533,7 +9565,7 @@
     c.endFade = 1;                                       // and stays black from the frame it ends (CP11: it fell to 0 for a frame)
     fade(0, 0.8, 0, 1);                                  // out of the Yin shop, into black
     step(0.85, () => MC.begin());
-    tr(0.85, 48.4, (k, t) => MC.frame(t, api));
+    tr(0.85, 50.9, (k, t) => MC.frame(t, api));          // (v23.1: 48.4 → 50.9, the stage's MF.end — this function cannot see MF)
     fade(1.2, 2.6, 1, 0);                                // S1 · the courtyard at sunset
     sfx(1.4, 'm4music', 0.55);
     sfx(1.9, 'z4tem1', 1);                               // "Later I went to a temple..."
@@ -9555,14 +9587,14 @@
     sfxFade(33.8, 35.2, 'm4pour');
     fade(35.0, 35.7, 0, 1);                              // the bowl full: black
     fade(36.0, 37.2, 1, 0);                              // S6 · the bodhi's roots in the dusk
-    sfx(36.2, 'm4coda', 0.6);
+    sfx(36.2, 'm4coda', 0.9);                            // (v23.1, Chad: "have that emotional music play louder" — +3.5 dB)
     sfx(36.6, 'm4ground', 0.7);                          // the water given to the earth
     sfx(39.4, 'm4leaves', 0.6);                          // the breeze, the petals
     sfx(40.4, 'm4rise', 0.55);                           // the light rising from the wet earth
     sfx(43.0, 'z4tem2', 1);
-    fade(46.0, 48.0, 0, 1);
-    sfxFade(46.0, 48.6, 'm4coda');
-    step(48.4, () => MC.end());
+    fade(48.5, 50.5, 0, 1);                              // (v23.1: the climb held 2.5 s longer, the music given its swell)
+    sfxFade(48.5, 51.1, 'm4coda');
+    step(50.9, () => MC.end());
   }
   /* THE RUN-OUT (CP7): out of the shop and down the corridor to its end — every picture from stage.runout's frame(t);
      the film holds only its cues, its one fade and the track that draws it (the merit film's shape) */
@@ -10198,9 +10230,7 @@
     for (let i = 0; i < 2200; i++) { x.fillStyle = `rgba(${r() < 0.5 ? '90,62,30' : '210,180,130'},${(0.05 + r() * 0.08).toFixed(3)})`; x.fillRect(r() * 256, r() * 320, 1 + r() * 2, 1 + r() * 4); }
     for (let i = 0; i < 9; i++) { x.strokeStyle = `rgba(80,56,28,${(0.12 + r() * 0.15).toFixed(3)})`; x.lineWidth = 1 + r() * 1.5;
       x.beginPath(); const y = r() * 320; x.moveTo(0, y); x.lineTo(256, y + (r() - 0.5) * 60); x.stroke(); }
-    x.fillStyle = '#9a1c16'; x.textAlign = 'center'; x.textBaseline = 'middle';
-    x.font = 'bold 44px serif'; x.fillText('源 發', 128, 150); x.fillText('古 玩', 128, 200);
-    x.font = 'bold 14px serif'; x.fillText('GUAN HUAT', 128, 240);
+    // (v23.1, Chad: "i dont want any text to be on the paper bag. Just make it a plain brown paper bag" — the shop's name gone)
     return done(THREE, c, false);
   }
   /* an HDB bedroom's painted wall: pale blue-grey, a faint roller texture */
